@@ -267,9 +267,9 @@ static inline void TankTriggerNear(s32 x, s32 z, s32 dist) {
         nas = TankMines[i];
         if (nas != NULL) {
             eng = nas->Engine;
-            d = x - eng->unk10.x;
+            d = x - eng->XYZ.x;
             if (d >= -dist && d <= dist) {
-                d = z - eng->unk10.z;
+                d = z - eng->XYZ.z;
                 if (d >= -dist && d <= dist) {
                     nas->UserInfo.status = 1;
                 }
@@ -365,9 +365,9 @@ static inline NAS *TankRocketNear(s32 x, s32 z, s32 dist) {
         nas = TankObjects[i];
         if (nas != NULL) {
             eng = nas->Engine;
-            d = x - eng->unk10.x;
+            d = x - eng->XYZ.x;
             if (d >= -dist && d <= dist) {
-                d = z - eng->unk10.z;
+                d = z - eng->XYZ.z;
                 if (d >= -dist && d <= dist) {
                     return nas;
                 }
@@ -394,14 +394,14 @@ static inline s32 TankRocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
             continue;
         }
         e = Heroes[i].hero_eng;
-        d = arg0 - e->unk10.x;
+        d = arg0 - e->XYZ.x;
         if (d < -arg2) {
             continue;
         }
         if (arg2 < d) {
             continue;
         }
-        d = arg1 - e->unk10.z;
+        d = arg1 - e->XYZ.z;
         if (-arg2 < d && d < arg2) {
             return i;
         }
@@ -457,14 +457,14 @@ static inline s32 TankMoveFindHero(s32 player, s32 x, s32 z, s32 lim) {
             continue;
         }
         e = h->hero_eng;
-        d = x - e->unk10.x;
+        d = x - e->XYZ.x;
         if (d < -lim) {
             continue;
         }
         if (lim < d) {
             continue;
         }
-        d = z - e->unk10.z;
+        d = z - e->XYZ.z;
         n = -lim;
         if (n < d && d < lim) {
             return i;
@@ -559,21 +559,21 @@ static inline s32 TankWithin(EXTengine *e, s32 x, s32 y, s32 z, s32 rx, s32 ry, 
     s32 dy;
     s32 dz;
 
-    dx = e->unk10.x - x;
+    dx = e->XYZ.x - x;
     if (dx >= rx + 1) {
         return 0;
     }
     if (dx < -rx) {
         return 0;
     }
-    dy = e->unk10.y - y;
+    dy = e->XYZ.y - y;
     if (dy >= ry + 1) {
         return 0;
     }
     if (dy < -ry) {
         return 0;
     }
-    dz = e->unk10.z - z;
+    dz = e->XYZ.z - z;
     if (dz >= rz + 1) {
         return 0;
     }
@@ -615,8 +615,8 @@ static inline s32 *TankShellAngleOffsets(void) {
 static inline void TankPuffSetAngle(NAS *puff, s32 angle) {
     subengine *s;
 
-    puff->Engine->unk1E = angle;
-    puff->Engine->unk5E = 1;
+    puff->Engine->xform.rot.vy = angle;
+    puff->Engine->xform.dirty = 1;
     for (s = puff->Engine->sub; s != NULL; s = s->next) {
         s->flags |= 0x20000000;
     }
@@ -658,14 +658,14 @@ static inline s32 PickupFindHero(s32 x, s32 z) {
             continue;
         }
         e = Heroes[i].hero_eng;
-        d = x - e->unk10.x;
+        d = x - e->XYZ.x;
         if (d < -0x200) {
             continue;
         }
         if (r < d) {
             continue;
         }
-        d = z - e->unk10.z;
+        d = z - e->XYZ.z;
         n = -0x200;
         if (n < d && d < 0x200) {
             return i;
@@ -692,7 +692,7 @@ void MoeJoeBecomeHero(NAS *nas, s32 id);
         if (ta_->HullSFX != sfx_) {                                         \
             ta_->HullSFX = sfx_;                                            \
             if (sfx_ != 0) {                                                \
-                PlaySfx(sfx_, &(pEngine)->sfx, &(pEngine)->unk10, 0x1000,   \
+                PlaySfx(sfx_, &(pEngine)->sfx, &(pEngine)->XYZ, 0x1000,   \
                         0x1E00, 0);                                         \
             } else if ((pEngine)->sfx != NULL) {                            \
                 StopSfx((pEngine)->sfx);                                    \

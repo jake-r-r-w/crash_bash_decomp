@@ -34,9 +34,9 @@ void InitialiseHUB(void) {
     }
     SetHeroAction(0, 0);
     size = HubHeroSizes[hero->hero_name];
-    eng->unk2C.z = size;
-    eng->unk2C.y = size;
-    eng->unk2C.x = size;
+    eng->xform.scale.vz = size;
+    eng->xform.scale.vy = size;
+    eng->xform.scale.vx = size;
     G6A->warpRoom = WarpRoomIndex(G6A->mode);
     HubInitGateways();
     SetupSceneMarks(((u8 *)MapScene->dbase));
@@ -275,7 +275,7 @@ void HubPreMoveHero(s32 arg0) {
         step = 0;
     }
     stop = 0;
-    ang = eng->unk1E;
+    ang = eng->xform.rot.vy;
     if (((GameState *)GameInfo)->adventure.unk74 != 0) {
         eng->flags &= ~0x8000;
         if (Heroes[0].hero_shadow != NULL) {
@@ -416,7 +416,7 @@ void HubPreMoveHero(s32 arg0) {
                 if (Heroes[0].hero_shadow != NULL) {
                     Heroes[0].hero_shadow->flags &= ~0x8000;
                 }
-                HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
+                HubSpawnFlash(&Heroes[0].hero_eng->XYZ.x, 9);
             } else {
                 PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
             }
@@ -447,7 +447,7 @@ void HubPreMoveHero(s32 arg0) {
                 ((GameState *)GameInfo)->levelFlags |= 0x10;
                 break;
             }
-            HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
+            HubSpawnFlash(&Heroes[0].hero_eng->XYZ.x, 9);
             HubGoToMode(HubGateways[GameGateway].table->level);
             SetHeroAction(0, 1);
             if (Heroes[0].hero_shadow != NULL) {
@@ -461,7 +461,7 @@ void HubPreMoveHero(s32 arg0) {
             }
             break;
         case 4:
-            HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
+            HubSpawnFlash(&Heroes[0].hero_eng->XYZ.x, 9);
             SetHeroAction(0, 1);
             if (Heroes[0].hero_shadow != NULL) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
@@ -470,7 +470,7 @@ void HubPreMoveHero(s32 arg0) {
             GotoProcess(&SaveScreenProcess, 0x200);
             break;
         default:
-            HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
+            HubSpawnFlash(&Heroes[0].hero_eng->XYZ.x, 9);
             break;
         }
     }
@@ -484,7 +484,7 @@ done:
     mv->forward_angle = ang;
     if (Heroes[arg0].hero_aseq != 10 && HubHeroPressed != 0) {
         HubHeroPressed = 0;
-        Heroes[arg0].hero_eng->unk1E = ang;
+        Heroes[arg0].hero_eng->xform.rot.vy = ang;
         mv->facing_angle = ang;
     }
     HubCamTarget();
@@ -518,8 +518,8 @@ void HubOpenDoorMenu(s32 arg0) {
     HubDoorMenuRecs[3].unk1E = ((GameState *)GameInfo)->adventure.unkE4[2][arg0] ? 5 : 6;
     e = GetEngineSlot(1);
     PlaceEngineSlot(1, (PlaceRec *)HubDoorMenuRecs);
-    e->unk10.y = 200;
-    e->unk10.x = 0;
+    e->XYZ.y = 200;
+    e->XYZ.x = 0;
     HubDoorChoice = 0;
     e->flags = (e->flags & ~0x8000) | 0x10000000;
     if (((GameState *)GameInfo)->adventure.unkE4[0][arg0] != 0) {
@@ -540,7 +540,7 @@ void HubOpenDoorMenu(s32 arg0) {
     p = e->sub;
     w = (((HubDoorChoices << n) + HubDoorChoices) * 15) << n;
     p[1].unk76 = w;
-    e->unk10.x = 320 - (w >> n);
+    e->XYZ.x = 320 - (w >> n);
     sub = GetEngineSlot(n)->sub;
     p = &sub[5];
     switch (HubDoorChoices - 3) {
@@ -621,7 +621,7 @@ void HubDoorMenuUpdate(void) {
                     PlaceEngineSlot(2, recs);
                 }
             }
-            GetEngineSlot(2)->unk10.y = (HubDoorFade >> 4) - 200;
+            GetEngineSlot(2)->XYZ.y = (HubDoorFade >> 4) - 200;
             break;
         case 5:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
@@ -633,13 +633,13 @@ void HubDoorMenuUpdate(void) {
                 }
                 PlaceEngineSlot(2, recs);
             }
-            GetEngineSlot(2)->unk10.y = 0x280 - (HubDoorFade >> 4);
+            GetEngineSlot(2)->XYZ.y = 0x280 - (HubDoorFade >> 4);
             break;
         case 4:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
                 PlaceEngineSlot(2, HubSavePanels[GameLanguage]);
             }
-            GetEngineSlot(2)->unk10.y = (HubDoorFade >> 4) - 200;
+            GetEngineSlot(2)->XYZ.y = (HubDoorFade >> 4) - 200;
             break;
         }
     } else {
@@ -846,7 +846,7 @@ void PlotPathEffect(NAS *nas) {
     if (ext == NULL) {
         return;
     }
-    angle = ((-(get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) - MainCamera.xform.angle.vy) << 20) >> 20;
+    angle = ((-(get_angle(nas->Engine->XYZ.x, nas->Engine->XYZ.z) & 0xFFF) - MainCamera.xform.angle.vy) << 20) >> 20;
     if (ext->kind < 4) {
         if (abs(angle) > 0x400) {
             nas->Engine->sub->flags &= 0xFFFF7FFF;
@@ -854,24 +854,24 @@ void PlotPathEffect(NAS *nas) {
             nas->Engine->sub->flags |= 0x8000;
         }
     }
-    nas->Engine->unk5E = 1;
+    nas->Engine->xform.dirty = 1;
     switch (ext->state) {
     case 0:
-        key_interp_pos(ext->path, ext->pos, &nas->Engine->unk10);
+        key_interp_pos(ext->path, ext->pos, &nas->Engine->XYZ);
         old = key_find(ext->path, 0);
         ext->key = old;
         if (ext->kind < 3) {
             ext->keyFlags = old->flags;
             ext->dir = 0;
             PathFace(old, 0, &rot);
-            nas->Engine->unk1E = rot.y;
-            nas->Engine->unk1C = rot.x;
+            nas->Engine->xform.rot.vy = rot.y;
+            nas->Engine->xform.rot.vx = rot.x;
             ext->state = 2;
             ((void (*)(EXTanimator *, s32))GotoLinkAnim)(ext->anim, ext->kind * 2);
             RunNasAnim(nas);
         }
         if ((u32)(ext->kind - 3) < 2) {
-            ext->fx = CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1627, 0x11);
+            ext->fx = CreateNAS(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1627, 0x11);
             ext->state = 5;
             nas->Engine->flags &= 0xFFFF7FFF;
         }
@@ -889,7 +889,7 @@ void PlotPathEffect(NAS *nas) {
         } else {
             ext->pos = ext->pos - ext->speed;
         }
-        key_interp_pos(ext->path, ext->pos, &nas->Engine->unk10);
+        key_interp_pos(ext->path, ext->pos, &nas->Engine->XYZ);
         k = key_find(ext->path, ext->pos);
         if (ext->dir == 0) {
             type = ((u16 *)&k->flags)[1];
@@ -912,8 +912,8 @@ void PlotPathEffect(NAS *nas) {
             }
         }
         PathFace(k, ext->dir, &rot);
-        nas->Engine->unk1E = rot.y;
-        nas->Engine->unk1C = rot.x;
+        nas->Engine->xform.rot.vy = rot.y;
+        nas->Engine->xform.rot.vx = rot.x;
         RunNasAnim(nas);
         return;
     case 3:
@@ -990,7 +990,7 @@ void InitPathEffect(NAS *nas) {
         nas->Engine->sub->u6C.dbase = MapScene->dbase;
         nas->Engine->sub->entity = 0x2018;
         nas->Engine->sub->flags &= 0xFEFFFFFF;
-        nas->Engine->unk5D = 2;
+        nas->Engine->xform.order = 2;
         ext->unk18 = 0;
         ext->unk24 = 0xC;
         ext->unk14 = 0;
@@ -1084,7 +1084,7 @@ void HubDoorMenu2Render(void) {
         if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
-            e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
+            e->XYZ.y = 0x1D6 - (HubDoorFade >> 5);
             eng_render_subs(GetEngineSlot(1));
         }
     }
@@ -1110,7 +1110,7 @@ void HubDoorMenuRender(void) {
         if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
-            e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
+            e->XYZ.y = 0x1D6 - (HubDoorFade >> 5);
             eng_render_subs(GetEngineSlot(1));
         }
     }
@@ -1195,8 +1195,8 @@ s32 HubDistXZ(EXTengine *arg0, EXTengine *arg1) {
     s32 temp_v0;
     s32 temp_v0_2;
 
-    temp_v0 = (arg1->unk10.x) - (arg0->unk10.x);
-    temp_v0_2 = (arg1->unk10.z) - (arg0->unk10.z);
+    temp_v0 = (arg1->XYZ.x) - (arg0->XYZ.x);
+    temp_v0_2 = (arg1->XYZ.z) - (arg0->XYZ.z);
     return (temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2);
 }
 
@@ -1246,7 +1246,7 @@ void HubCameraFollow(camera_info_tag *arg0, s32 arg1) {
         n = 3;
     }
     HubCamFromPath((u8 *)&v, n);
-    v.at = *(CamXYZ *)&Heroes[0].hero_eng->unk10;
+    v.at = *(CamXYZ *)&Heroes[0].hero_eng->XYZ;
     v.rot.vy = -HubHeroRing.angle;
     if (arg1 != 0) {
         cam_ease_to(cam, &v, NULL);
@@ -1307,8 +1307,8 @@ void HubCamTarget(void) {
     v[1] = b;
     b >>= 12;
     v[1] = b;
-    Heroes->hero_eng->unk10.x = a;
-    Heroes->hero_eng->unk10.z = v[1];
+    Heroes->hero_eng->XYZ.x = a;
+    Heroes->hero_eng->XYZ.z = v[1];
 }
 
 void HubShowShadow(s32 arg0) {
@@ -1325,7 +1325,7 @@ void HubShowShadow(s32 arg0) {
 
         shadow->flags |= 0x8000;
         eng = hero->hero_eng;
-        shadow->unk10 = eng->unk10;
+        shadow->XYZ = eng->XYZ;
     }
 }
 
@@ -1345,7 +1345,7 @@ void HubCreateShadow(s32 arg0) {
     if (s != NULL) {
         s->sub->u6C.dbase = &HeroModelBank[DB_AdventureItems];
         s->sub->entity = 0x2020;
-        s->unk10 = h->hero_eng->unk10;
+        s->XYZ = h->hero_eng->XYZ;
         s->flags |= 0x8041;
         s->sub->unk76 = 0x800;
         s->sub->flags |= 0x40000000;
@@ -1964,8 +1964,8 @@ void PodiumShowScores(void) {
         PodiumScore4[1] = n % 10 + 0x30;
         PodiumScore4[0] = n / 10 % 10 + 0x30;
         PlaceEngineSlot(6, &PodiumScoreCount);
-        e->unk10.x = 0x28;
-        e->unk10.y = 0x21C;
+        e->XYZ.x = 0x28;
+        e->XYZ.y = 0x21C;
         e->flags |= 0x10008000;
     }
 }
@@ -1976,8 +1976,8 @@ void InitSparkGFX(NAS *arg0) {
 
     arg0->Engine->sub->flags = 0x8000;
     arg0->UserInfo.user1 = 0;
-    arg0->Engine->unk5D = 0;
-    arg0->Engine->unk5C = 1;
+    arg0->Engine->xform.order = 0;
+    arg0->Engine->xform.hasScale = 1;
     if (eng_add_subs(arg0->Engine, 12) != 12 || fx_alloc_buffers((u8 *)&HubSparkFxDef, (u8 *)arg0->Engine->sub) == 0) {
         KillNAS(arg0);
         return;
@@ -2258,9 +2258,9 @@ void PodiumScoresUp(void) {
 
     eng = GetEngineSlot(6);
     if (eng != NULL) {
-        temp_a0 = eng->unk10.y;
+        temp_a0 = eng->XYZ.y;
         if (temp_a0 < 0x21C) {
-            eng->unk10.y = temp_a0 + 5;
+            eng->XYZ.y = temp_a0 + 5;
         }
     }
 }
@@ -2271,9 +2271,9 @@ void PodiumScoresDown(void) {
 
     eng = GetEngineSlot(6);
     if (eng != NULL) {
-        temp_a0 = eng->unk10.y;
+        temp_a0 = eng->XYZ.y;
         if (temp_a0 >= 0x155) {
-            eng->unk10.y = temp_a0 - 5;
+            eng->XYZ.y = temp_a0 - 5;
         }
     }
 }
@@ -2534,8 +2534,8 @@ void HubSaveMenuInit(void) {
     s = HubNameSubs;
     list = (SubInitList *)HubNamePages;
     p = list->items;
-    HubNameEngine.unk10.x = 0xC4;
-    HubNameEngine.unk10.y = 0xBE;
+    HubNameEngine.XYZ.x = 0xC4;
+    HubNameEngine.XYZ.y = 0xBE;
     HubNameEngine.flags |= 0x10000000;
     if (i < list->count) {
         do {
@@ -2558,11 +2558,11 @@ void HubSaveMenuInit(void) {
     set_fade(&ScreenFade, -0x300, 0);
     cam_init((camera_info_tag *)HubSaveCamera);
     PlaceEngineSlot(0, HubNameLetters);
-    GetEngineSlot(0)->unk10.x = 0xC8;
-    GetEngineSlot(0)->unk10.y = 0x6E;
+    GetEngineSlot(0)->XYZ.x = 0xC8;
+    GetEngineSlot(0)->XYZ.y = 0x6E;
     PlaceEngineSlot(1, HubNamePanel);
-    GetEngineSlot(1)->unk10.x = 0;
-    GetEngineSlot(1)->unk10.y = 0;
+    GetEngineSlot(1)->XYZ.x = 0;
+    GetEngineSlot(1)->XYZ.y = 0;
 }
 
 void HubSaveMenuRender(void) {
@@ -2633,8 +2633,8 @@ void HubSaveMenuSubs(SubInitList *list) {
         subs_init_array(&HubNameEngine, 0x21, HubNameSubs);
     } while (0);
     s = HubNameSubs;
-    HubNameEngine.unk10.x = 0xC4;
-    HubNameEngine.unk10.y = 0xBE;
+    HubNameEngine.XYZ.x = 0xC4;
+    HubNameEngine.XYZ.y = 0xBE;
     HubNameEngine.flags |= 0x10000000;
     p = list->items;
     if (list->count > 0) {

@@ -631,8 +631,8 @@ void InitScreenLabels(void) {
     }
     eng->sub->flags &= 0xFFFF7FFF;
 end:
-    GetEngineSlot(3)->unk10.x = 0x140;
-    GetEngineSlot(3)->unk10.y = 0x118;
+    GetEngineSlot(3)->XYZ.x = 0x140;
+    GetEngineSlot(3)->XYZ.y = 0x118;
     GetEngineSlot(3)->flags &= 0xEFFFFFFF;
 }
 
@@ -672,19 +672,19 @@ void UpdateScreenLabels(void) {
         return;
     }
     eng->flags = 0x10008000;
-    eng->unk10.x = 0x140;
-    eng->unk5D = 0;
-    eng->unk10.y = 0x118;
-    eng->unk10.z = 0;
+    eng->XYZ.x = 0x140;
+    eng->xform.order = 0;
+    eng->XYZ.y = 0x118;
+    eng->XYZ.z = 0;
     switch (p[1]) {
     case 0:
-        eng->unk20 = lerp_angle(-0x800, 0, 0x14, p[2]);
-        eng->unk1C = lerp_angle(-0x400, 0, 0x14, p[2]);
+        eng->xform.rot.vz = lerp_angle(-0x800, 0, 0x14, p[2]);
+        eng->xform.rot.vx = lerp_angle(-0x400, 0, 0x14, p[2]);
         v = interp(0x800, 0x1800, 0x14, p[2]);
-        eng->unk2C.z = v;
-        eng->unk2C.y = v;
-        eng->unk2C.x = v;
-        eng->unk5E = 1;
+        eng->xform.scale.vz = v;
+        eng->xform.scale.vy = v;
+        eng->xform.scale.vx = v;
+        eng->xform.dirty = 1;
         s = GetEngineSlot(3)->sub + 2;
         for (i = 0; i < ScreenCount; i++) {
             s->unk20.z = 0x199;
@@ -780,8 +780,8 @@ void UpdateScreenLabels(void) {
         }
         {
             s32 *r = &ScreenLabelState;
-            eng->unk1E = lerp_angle(0, 0x800, 0x14, ++r[2]);
-            eng->unk5E = 1;
+            eng->xform.rot.vy = lerp_angle(0, 0x800, 0x14, ++r[2]);
+            eng->xform.dirty = 1;
             if (r[2] >= 0x14) {
                 r[1] = 3;
             }

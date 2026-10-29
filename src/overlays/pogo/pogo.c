@@ -664,13 +664,13 @@ loop:
                     break;
                 }
             }
-            e->unk1E = a;
+            e->xform.rot.vy = a;
             m = h->hero_move;
             if (m != NULL) {
                 m->forward_angle = a;
                 m->facing_angle = a;
             }
-            e->unk5E = 1;
+            e->xform.dirty = 1;
         }
         e = h->hero_powerup;
         if (e != NULL) {
@@ -687,10 +687,10 @@ loop:
         }
         e = h->hero_shadow;
         if (e != NULL) {
-            e->unk2C.z = 0x1A00;
-            e->unk2C.y = 0x1A00;
-            e->unk2C.x = 0x1A00;
-            e->unk5E = 1;
+            e->xform.scale.vz = 0x1A00;
+            e->xform.scale.vy = 0x1A00;
+            e->xform.scale.vx = 0x1A00;
+            e->xform.dirty = 1;
         }
         PogoAI_InitHero(i);
         h++;
@@ -994,8 +994,8 @@ void Update_Occupancy(void) {
     }
     for (k = 0; k < 4; k++) {
         he = Heroes[k].hero_eng;
-        hx = (he->unk10.x + 0x800) >> 9;
-        hz = (he->unk10.z + 0x800) >> 9;
+        hx = (he->XYZ.x + 0x800) >> 9;
+        hz = (he->XYZ.z + 0x800) >> 9;
         if ((u32)hx < 8 && (u32)hz < 8) {
             PogoGrid[hx][hz].occupied = k + 1;
         }
@@ -1003,8 +1003,8 @@ void Update_Occupancy(void) {
     if (PogoRooNas != 0) {
         eng = *(EXTengine **)(PogoRooNas + 0x54);
         if (eng != NULL) {
-            x = (eng->unk10.x + 0x800) >> 9;
-            z = (eng->unk10.z + 0x800) >> 9;
+            x = (eng->XYZ.x + 0x800) >> 9;
+            z = (eng->XYZ.z + 0x800) >> 9;
             if ((u32)x < 8 && z >= 0 && z < 8) {
                 PogoGrid[x][z].occupied = 5;
             }
@@ -1449,8 +1449,8 @@ void PreMovePOGO(u32 arg0) {
 
     hb = Heroes;
     h = &hb[arg0];
-    x = (h->hero_eng->unk10.x + 0x800) >> 9;
-    z = (h->hero_eng->unk10.z + 0x800) >> 9;
+    x = (h->hero_eng->XYZ.x + 0x800) >> 9;
+    z = (h->hero_eng->XYZ.z + 0x800) >> 9;
     if (Pickup_IsClaimable(arg0, x, z) != 0) {
         Pickup_Claim(x, z, arg0);
     }
@@ -1528,10 +1528,10 @@ void PostMovePOGO(u32 i) {
             sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
             sub->unk50 = 1;
             sub->flags |= 0x8000;
-            Heroes[i].hero_fx->unk5D = 1;
-            Heroes[i].hero_fx->unk10 = *(SLONG_XYZ *)&v;
-            Heroes[i].hero_fx->unk1E = Heroes[i].hero_eng->unk1E;
-            Heroes[i].hero_fx->unk5E = 1;
+            Heroes[i].hero_fx->xform.order = 1;
+            Heroes[i].hero_fx->XYZ = *(SLONG_XYZ *)&v;
+            Heroes[i].hero_fx->xform.rot.vy = Heroes[i].hero_eng->xform.rot.vy;
+            Heroes[i].hero_fx->xform.dirty = 1;
             if (Heroes[i].hero_mode == 0x3A) {
                 PogoBounceCount[i] += 5;
                 if (PogoBounceCount[i] > 45) {
@@ -1543,7 +1543,7 @@ void PostMovePOGO(u32 i) {
                     PogoBounceCount[i] = 5;
                 }
             }
-            Heroes[i].hero_fx->unk1C = (PogoBounceCount[i] << 12) / 360;
+            Heroes[i].hero_fx->xform.rot.vx = (PogoBounceCount[i] << 12) / 360;
             switch (name) {
             case 3:
                 n = CortexSmokeFrame;
@@ -1593,11 +1593,11 @@ bool TestHeroPogo(u32 arg0) {
             e = h->hero_eng;
             sx = rcossin_tbl[(angle - 0x400) & 0xFFF].unk2;
             sz = rcossin_tbl[angle & 0xFFF].unk2;
-            t = e->unk10.x;
+            t = e->XYZ.x;
             t -= sx * 512 >> 12;
             t += 0x800;
             x = t >> 9;
-            u = e->unk10.z - (sz * 512 >> 12);
+            u = e->XYZ.z - (sz * 512 >> 12);
             u += 0x800;
             z = u >> 9;
             if ((u32)x >= 8 || z < 0 || z >= 8) {
@@ -1667,8 +1667,8 @@ void HeroPogo(u32 arg0) {
     }
     shadow = hero->hero_shadow;
     if (shadow != NULL) {
-        shadow->unk2C.x = shadow->unk2C.y = shadow->unk2C.z = (abs(max / 2 - n) << 8) + 0xC00;
-        shadow->unk5E = 1;
+        shadow->xform.scale.vx = shadow->xform.scale.vy = shadow->xform.scale.vz = (abs(max / 2 - n) << 8) + 0xC00;
+        shadow->xform.dirty = 1;
     }
     if (n <= PogoTilesLow[hero->hero_name] || max - PogoTilesHigh[hero->hero_name] < n) {
         hero->hero_move->jump_ctrl &= 0xBF;
@@ -1856,9 +1856,9 @@ void HeroPogoTazing(u32 arg0) {
     if (eng != NULL) {
         mv = h->hero_move;
         if (mv != NULL) {
-            d = angle_diff(eng->unk1E, mv->facing_angle);
-            eng->unk5E = 1;
-            eng->unk1E += d >> 3;
+            d = angle_diff(eng->xform.rot.vy, mv->facing_angle);
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += d >> 3;
         }
     }
     if (--PogoPlay[arg0].timer <= 0) {
@@ -1908,9 +1908,9 @@ void HeroPogoWinner(u32 arg0) {
     }
     eng = Heroes[arg0].hero_eng;
     if (eng != NULL) {
-        s32 r = angle_diff_abs(0, eng->unk1E);
-        eng->unk5E = 1;
-        eng->unk1E += r >> 3;
+        s32 r = angle_diff_abs(0, eng->xform.rot.vy);
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy += r >> 3;
     }
 }
 
@@ -1930,7 +1930,7 @@ void SetHeroPogoLoser(u32 arg0) {
     Heroes[arg0].hero_move->jump_acc = 0;
     Heroes[arg0].hero_move->jump_dec = 0;
     Heroes[arg0].hero_move->jump_dir = -1;
-    pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
+    pos = (s32 *)&Heroes[arg0].hero_eng->XYZ;
     p = &HeroModelBank[DB_PogoObjects];
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
@@ -1967,10 +1967,10 @@ void HeroPogoLoser(u32 arg0) {
     eng = h->hero_eng;
     h->hero_frozen = 2;
     if (eng != NULL) {
-        eng->unk1E = (eng->unk1E + 0xE3) % 4096;
-        eng->unk5E = 1;
+        eng->xform.rot.vy = (eng->xform.rot.vy + 0xE3) % 4096;
+        eng->xform.dirty = 1;
         if (((GameFrameCount + arg0) & 3) == 0) {
-            pos = (s32 *)&eng->unk10;
+            pos = (s32 *)&eng->XYZ;
             p = &HeroModelBank[DB_PogoObjects];
             nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
             if (nas != NULL) {
@@ -2003,33 +2003,33 @@ bool TestHeroPogoDazed(u32 arg0) {
     if (!(h->hero_status & 0x800) && !(PogoPlay[arg0].flags & 1)) {
         return 0;
     }
-    x = (h->hero_eng->unk10.x + 0x800) >> 9;
-    z = (h->hero_eng->unk10.z + 0x800) >> 9;
+    x = (h->hero_eng->XYZ.x + 0x800) >> 9;
+    z = (h->hero_eng->XYZ.z + 0x800) >> 9;
     if (h->hero_mode != 0x3B && h->hero_last_mode != 0x3B) {
         switch (h->hero_name) {
         case 1:
-            PlaySfx(3, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(3, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         case 3:
-            PlaySfx(0x67, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x67, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         case 2:
-            PlaySfx(0x35, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x35, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         case 5:
-            PlaySfx(0x12F, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x12F, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         case 6:
-            PlaySfx(0x161, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x161, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         case 7:
-            PlaySfx(0xFD, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0xFD, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         case 4:
-            PlaySfx(0x99, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x99, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         case 8:
-            PlaySfx(0xCB, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0xCB, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         }
     }
@@ -2057,8 +2057,8 @@ void SetHeroPogoDazed(u32 arg0) {
     Pickup_Lose(arg0);
     pad_rumble_small(arg0, 0x1E);
     Player_SnapToTile(arg0);
-    x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
-    z = (Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9;
+    x = (Heroes[arg0].hero_eng->XYZ.x + 0x800) >> 9;
+    z = (Heroes[arg0].hero_eng->XYZ.z + 0x800) >> 9;
     if ((u32)x < 8 && z >= 0 && z < 8) {
         PogoSquare *cb = PogoGrid[0];
         c = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)cb);
@@ -2082,8 +2082,8 @@ void HeroPogoDazed(u32 arg0) {
     PogoPlayer *s;
     EXTengine *eng;
 
-    x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
-    z = (Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9;
+    x = (Heroes[arg0].hero_eng->XYZ.x + 0x800) >> 9;
+    z = (Heroes[arg0].hero_eng->XYZ.z + 0x800) >> 9;
     if ((u32)x < 8 && z >= 0 && z < 8) {
         PogoSquare *cb = PogoGrid[0];
         c = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)cb);
@@ -2113,9 +2113,9 @@ void HeroPogoDazed(u32 arg0) {
     if (s->flags & 1) {
         eng = h->hero_eng;
         if (eng != NULL) {
-            s32 r = angle_diff_abs(0, eng->unk1E);
-            eng->unk5E = 1;
-            eng->unk1E += r >> 3;
+            s32 r = angle_diff_abs(0, eng->xform.rot.vy);
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += r >> 3;
         }
     }
     HeroTestFall(arg0);
@@ -2147,7 +2147,7 @@ void AddDingoSmoke(u32 arg0) {
     subengine *s;
     u8 *p;
 
-    pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
+    pos = (s32 *)&Heroes[arg0].hero_eng->XYZ;
     p = &HeroModelBank[DB_PogoObjects];
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
@@ -2172,8 +2172,8 @@ void AddDingoSmoke(u32 arg0) {
         eng = r->Engine;
         if (eng != NULL) {
             u32 a = (u32)(Random(360) << 12) / 360;
-            eng->unk5E = 1;
-            eng->unk1E = a;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy = a;
             for (s = eng->sub; s != NULL; s = s->next) {
                 if (s->entity != 0x2022) {
                     s->flags |= 0x20000000;
@@ -2192,7 +2192,7 @@ void AddSomeDust(u32 arg0) {
     subengine *s;
     u8 *p;
 
-    pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
+    pos = (s32 *)&Heroes[arg0].hero_eng->XYZ;
     p = &HeroModelBank[DB_PogoObjects];
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
@@ -2217,8 +2217,8 @@ void AddSomeDust(u32 arg0) {
         eng = r->Engine;
         if (eng != NULL) {
             u32 a = (u32)(Random(360) << 12) / 360;
-            eng->unk5E = 1;
-            eng->unk1E = a;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy = a;
             for (s = eng->sub; s != NULL; s = s->next) {
                 s->flags |= 0x20000000;
             }
@@ -2235,7 +2235,7 @@ void AddBrioSmoke(u32 arg0) {
     subengine *s;
     u8 *p;
 
-    pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
+    pos = (s32 *)&Heroes[arg0].hero_eng->XYZ;
     p = &HeroModelBank[DB_PogoObjects];
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
@@ -2260,8 +2260,8 @@ void AddBrioSmoke(u32 arg0) {
         eng = r->Engine;
         if (eng != NULL) {
             u32 a = (u32)(Random(360) << 12) / 360;
-            eng->unk5E = 1;
-            eng->unk1E = a;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy = a;
             for (s = eng->sub; s != NULL; s = s->next) {
                 s->flags |= 0x20000000;
             }
@@ -2289,15 +2289,15 @@ void PogoHero_ExtraEffects(s32 arg0) {
             }
             if (state != 0) {
                 if (sub_find_point(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
-                    pu->unk10 = *(SLONG_XYZ *)&pos;
+                    pu->XYZ = *(SLONG_XYZ *)&pos;
                     dy = PogoHeroHeights[h->hero_name];
                 } else {
                     dy = 0x280;
-                    pu->unk10 = h->hero_eng->unk10;
+                    pu->XYZ = h->hero_eng->XYZ;
                 }
-                pu->unk5E = 1;
-                pu->unk10.y -= dy;
-                pu->unk1E += 0x71;
+                pu->xform.dirty = 1;
+                pu->XYZ.y -= dy;
+                pu->xform.rot.vy += 0x71;
                 if ((u16)PogoPlay[arg0].status != 6 || PogoPlay[arg0].timer >= 0x5B ||
                     !((GameFrameCount >> 2) & 1)) {
                     sub->flags |= 0x8000;
@@ -2329,7 +2329,7 @@ s32 Bank_Tiles(s32 arg0) {
     }
     if (count != 0) {
         eng = Heroes[arg0].hero_eng;
-        Handle_Score(arg0, (eng->unk10.x + 0x800) >> 9, (eng->unk10.z + 0x800) >> 9, count);
+        Handle_Score(arg0, (eng->XYZ.x + 0x800) >> 9, (eng->XYZ.z + 0x800) >> 9, count);
     }
     return count;
 }
@@ -2523,8 +2523,8 @@ void Tile_FireTnt(s32 arg0, s32 arg1) {
     for (i = 0; i < 4; i++) {
         h = &Heroes[i];
         near = 0;
-        if (abs((arg0 << 9) - (((h->hero_eng->unk10.x + 0x800) >> 9) << 9)) < 0x300) {
-            near = abs((arg1 << 9) - (((h->hero_eng->unk10.z + 0x800) >> 9) << 9)) < 0x300;
+        if (abs((arg0 << 9) - (((h->hero_eng->XYZ.x + 0x800) >> 9) << 9)) < 0x300) {
+            near = abs((arg1 << 9) - (((h->hero_eng->XYZ.z + 0x800) >> 9) << 9)) < 0x300;
         }
         if (near && !(h->hero_status & 0x800)) {
             Player_SetDazed(i);
@@ -2577,15 +2577,15 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
     for (i = 0; i < 4; i++) {
         h = &Heroes[i];
         near = 0;
-        if (abs((arg0 << 9) - (((h->hero_eng->unk10.x + 0x800) >> 9) << 9)) < 0x300) {
-            near = abs((arg1 << 9) - (((h->hero_eng->unk10.z + 0x800) >> 9) << 9)) < 0x300;
+        if (abs((arg0 << 9) - (((h->hero_eng->XYZ.x + 0x800) >> 9) << 9)) < 0x300) {
+            near = abs((arg1 << 9) - (((h->hero_eng->XYZ.z + 0x800) >> 9) << 9)) < 0x300;
         }
         if (near && !(h->hero_status & 0x800)) {
             if (((GameState *)GameInfo)->mode == 0xC
                 && (((GameState *)GameInfo)->levelFlags & 0x80)
                 && ((GameState *)GameInfo)->heroOut[i] == 0) {
                 Player_SetPoisoned(i);
-                PlaySfx(0x529, NULL, (SLONG_XYZ *)&h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x529, NULL, (SLONG_XYZ *)&h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
             } else {
                 Player_SetDazed(i);
             }
@@ -2805,28 +2805,28 @@ loop_j:
 void PlayBoingNoise(u32 arg0) {
     switch (Heroes[arg0].hero_name) {
     case 4:
-        PlaySfx(0x561, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x561, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 3:
-        PlaySfx(0x560, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x560, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 5:
-        PlaySfx(0x562, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x562, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 6:
-        PlaySfx(0x563, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x563, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 1:
-        PlaySfx(0x55E, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x55E, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 2:
-        PlaySfx(0x55F, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x55F, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 7:
-        PlaySfx(0x564, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x564, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 8:
-        PlaySfx(0x565, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x565, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     }
 }
@@ -2840,8 +2840,8 @@ void Set_Tile_Under_Player(u32 arg0, bool arg1) {
     s32 owner;
 
     eng = Heroes[arg0].hero_eng;
-    x = (eng->unk10.x + 0x800) >> 9;
-    z = (eng->unk10.z + 0x800) >> 9;
+    x = (eng->XYZ.x + 0x800) >> 9;
+    z = (eng->XYZ.z + 0x800) >> 9;
     if ((u32)x >= 8) {
         return;
     }
@@ -2903,16 +2903,16 @@ void Set_Tile_Under_Player(u32 arg0, bool arg1) {
 void PlaySquareChangeNoise(u32 arg0) {
     switch (arg0) {
     case 0:
-        PlaySfx(0x55A, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x55A, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 1:
-        PlaySfx(0x55B, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x55B, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 2:
-        PlaySfx(0x55C, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x55C, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 3:
-        PlaySfx(0x55D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x55D, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     }
 }
@@ -2920,16 +2920,16 @@ void PlaySquareChangeNoise(u32 arg0) {
 void PlaySquareLockedNoise(u32 arg0) {
     switch (arg0) {
     case 0:
-        PlaySfx(0x54E, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x54E, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 1:
-        PlaySfx(0x54F, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x54F, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 2:
-        PlaySfx(0x550, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x550, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 3:
-        PlaySfx(0x551, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x551, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     }
 }
@@ -3010,7 +3010,7 @@ void PogoFour_FreezeMyTiles(s32 arg0) {
     }
 done:
     if (n != 0) {
-        PlaySfx(0x54C, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x54C, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -3059,7 +3059,7 @@ void PogoFour_UnfreezeMyTiles(s32 arg0) {
     }
 done:
     if (n != 0) {
-        PlaySfx(0x54D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x54D, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -3088,7 +3088,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
     }
     switch (nas->UserInfo.flags) {
     case 10:
-        PlaySfx(0x514, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x514, NULL, &Heroes[arg2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         Bank_Tiles(arg2);
         nas->UserInfo.status = 4;
         break;
@@ -3096,7 +3096,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         nas->UserInfo.status = 5;
         if (GAME->heroOut[arg2] == 0 && !(GAME->exitFlags & 0x801)) {
             Player_SetPoisoned(arg2);
-            PlaySfx(0x529, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x529, NULL, &Heroes[arg2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         }
         break;
     case 5: {
@@ -3112,7 +3112,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
 
             h = &hb[arg2];
         }
-        PlaySfx(0x41C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x41C, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
         slot->status = 5;
         slot->timer = 0xF0;
         Pogo_PowerupAnim(arg2, 0x200C);
@@ -3131,7 +3131,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PickupSet(arg2, 1);
         Pogo_PowerupAnim(arg2, 0x200D);
         number_of_powerups--;
-        PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         if (GAME->heroOut[arg2] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
@@ -3140,7 +3140,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PickupSet(arg2, 2);
         Pogo_PowerupAnim(arg2, 0x201B);
         number_of_powerups--;
-        PlaySfx(0x438, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x438, NULL, &Heroes[arg2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         if (GAME->heroOut[arg2] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
@@ -3148,7 +3148,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
     case 4:
         Pogo_PickupSet(arg2, 4);
         Pogo_PowerupAnim(arg2, 0x2040);
-        PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         if (GAME->heroOut[arg2] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
@@ -3158,7 +3158,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PickupSet(arg2, 3);
         Pogo_PowerupAnim(arg2, 0x2002);
         number_of_powerups--;
-        PlaySfx(0x51E, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x51E, NULL, &Heroes[arg2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         if (GAME->heroOut[arg2] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
@@ -3167,9 +3167,9 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
     Tiles_CheckForIslands(arg2);
     if (nas->Engine != NULL) {
         if (nas->UserInfo.flags == 10) {
-            Pogo_SpawnPuff(&nas->Engine->unk10.x, 3, &HeroModelBank[DB_PogoObjects]);
+            Pogo_SpawnPuff(&nas->Engine->XYZ.x, 3, &HeroModelBank[DB_PogoObjects]);
         } else {
-            Pogo_SpawnPuff(&nas->Engine->unk10.x, 1, &HeroModelBank[DB_PogoObjects]);
+            Pogo_SpawnPuff(&nas->Engine->XYZ.x, 1, &HeroModelBank[DB_PogoObjects]);
         }
     }
     if (nas->UserInfo.flags < 10) {
@@ -3480,8 +3480,8 @@ s32 Fire_Tazer(s32 arg0, s32 arg1) {
     if (mv != NULL) {
         dz = 0;
         eng = Heroes[arg0].hero_eng;
-        x = (eng->unk10.x + 0x800) >> 9;
-        z = (eng->unk10.z + 0x800) >> 9;
+        x = (eng->XYZ.x + 0x800) >> 9;
+        z = (eng->XYZ.z + 0x800) >> 9;
         dx = 0;
         switch (mv->facing_angle >> 10) {
         case 0:
@@ -3503,9 +3503,9 @@ s32 Fire_Tazer(s32 arg0, s32 arg1) {
     }
     return n;
 spawn:
-    x = Heroes[arg0].hero_eng->unk10.x;
-    z = Heroes[arg0].hero_eng->unk10.z;
-    *(SLONG_XYZ *)pos = Heroes[arg0].hero_eng->unk10;
+    x = Heroes[arg0].hero_eng->XYZ.x;
+    z = Heroes[arg0].hero_eng->XYZ.z;
+    *(SLONG_XYZ *)pos = Heroes[arg0].hero_eng->XYZ;
     pos[1] -= 0x80;
     switch (mv->facing_angle >> 10) {
     case 0:
@@ -3540,11 +3540,11 @@ spawn:
     if (e == NULL) {
         return n;
     }
-    e->unk1E = (mv->facing_angle + 0x400) % 0x1000;
+    e->xform.rot.vy = (mv->facing_angle + 0x400) % 0x1000;
     if ((mv->facing_angle >> 10) & 1) {
-        e->unk1C = 0x400;
+        e->xform.rot.vx = 0x400;
     }
-    e->unk5E = 1;
+    e->xform.dirty = 1;
     if (n >= 2) {
         nas->UserInfo.flags = eng_add_subs(e, n - 1);
     }
@@ -3564,7 +3564,7 @@ spawn:
     do {
         do {
             PogoPlay[arg0].tazer = nas;
-            PlaySfx(0x520, NULL, (SLONG_XYZ *)&Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x520, NULL, (SLONG_XYZ *)&Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         } while (0);
     } while (0);
     if (PogoPlay[arg0].status == 5 && Heroes[arg0].hero_aseq == 0x2F) {
@@ -3608,8 +3608,8 @@ next_sub:
         slot = slots;
         h = heroes;
         sub->entity = ((GameFrameCount + n++) & 7) + 0x2003;
-        x = (eng->unk10.x + 0x800) >> 9;
-        z = (eng->unk10.z + 0x800) >> 9;
+        x = (eng->XYZ.x + 0x800) >> 9;
+        z = (eng->XYZ.z + 0x800) >> 9;
     next_hero:
         if (i < 4) {
             if (slot->tazer == nas) {
@@ -3620,9 +3620,9 @@ next_sub:
                 goto skip;
             }
             he = h->hero_eng;
-            hx = (he->unk10.x + 0x800) >> 9;
-            hz = (he->unk10.z + 0x800) >> 9;
-            dir = eng->unk1E >> 10;
+            hx = (he->XYZ.x + 0x800) >> 9;
+            hz = (he->XYZ.z + 0x800) >> 9;
+            dir = eng->xform.rot.vy >> 10;
             switch (dir) {
             case 0:
                 if (hz == z && !(hx < x)) {
@@ -3688,18 +3688,18 @@ void Plot_PogoPickup(NAS *nas) {
     switch (nas->UserInfo.status) {
     case 0:
     case 1:
-        PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-        eng->unk2C.x = 0x100;
-        eng->unk2C.y = 0x100;
-        eng->unk2C.z = 0x100;
+        PlaySfx(0x3FA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+        eng->xform.scale.vx = 0x100;
+        eng->xform.scale.vy = 0x100;
+        eng->xform.scale.vz = 0x100;
         eng->flags |= 0x21;
         eng->sub->unk76 = 0x100;
         nas->UserInfo.status = 2;
-        eng->unk1E = dir << 10;
-        eng->unk5E = 1;
+        eng->xform.rot.vy = dir << 10;
+        eng->xform.dirty = 1;
         break;
     case 2:
-        scale = eng->unk2C.x;
+        scale = eng->xform.scale.vx;
         scale += 0x100;
         if (scale >= 0x1000) {
             nas->UserInfo.status = 3;
@@ -3707,19 +3707,19 @@ void Plot_PogoPickup(NAS *nas) {
             nas->UserInfo.user2 = PogoObjectTimes[PogoLevelIndex];
             eng->flags &= ~0x21;
         }
-        eng->unk2C.x = scale;
-        eng->unk2C.y = scale;
-        eng->unk2C.z = scale;
+        eng->xform.scale.vx = scale;
+        eng->xform.scale.vy = scale;
+        eng->xform.scale.vz = scale;
         eng->sub->unk76 = scale;
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         break;
     case 3:
         if (nas->UserInfo.user2 != 0) {
             nas->UserInfo.user2--;
         }
-        d = angle_diff_abs(dir << 10, eng->unk1E) >> 3;
-        eng->unk5E = 1;
-        eng->unk1E += d;
+        d = angle_diff_abs(dir << 10, eng->xform.rot.vy) >> 3;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy += d;
         if (d < 2) {
             nas->UserInfo.user1 = (nas->UserInfo.user1 + 1) & 3;
         }
@@ -3743,7 +3743,7 @@ void Init_PogoPowerup(NAS *nas) {
         e->sub->entity = 0x200B;
         e->sub->unk68 = -0x10;
         e->sub->flags |= 0x02000000;
-        e->unk10.y -= 0x1000;
+        e->XYZ.y -= 0x1000;
         m = AddMotion(nas);
         if (m != NULL) {
             m->Ymax = 0xA0;
@@ -3757,9 +3757,9 @@ void Init_PogoPowerup(NAS *nas) {
         e2 = AddExtEngine(nas, 1);
         if (e2 != NULL) {
             sub = e2->sub;
-            e2->unk10.x = e->unk10.x;
-            e2->unk10.y = e->unk10.y;
-            e2->unk10.z = e->unk10.z;
+            e2->XYZ.x = e->XYZ.x;
+            e2->XYZ.y = e->XYZ.y;
+            e2->XYZ.z = e->XYZ.z;
             if (sub != NULL) {
                 sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                 sub->entity = 0x2029;
@@ -3769,7 +3769,7 @@ void Init_PogoPowerup(NAS *nas) {
                 sub->flags |= 0x40008041;
             }
         }
-        PlaySfx(0x41F, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x41F, NULL, &e->XYZ, 0x1000, 0x1E00, 0);
     }
     nas->UserInfo.flags = 0;
     nas->UserInfo.status = 0;
@@ -3795,8 +3795,8 @@ void Plot_PogoPowerup(NAS *nas) {
     case 1:
     case 2:
     case 4:
-        eng->unk5E = 1;
-        eng->unk1E += 0x38;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy += 0x38;
         break;
     case 5:
         break;
@@ -3814,13 +3814,13 @@ void Plot_PogoPowerup(NAS *nas) {
     e2 = eng->Engine;
     if (e2 != NULL) {
         sub = e2->sub;
-        e2->unk10.x = eng->unk10.x;
-        e2->unk10.z = eng->unk10.z;
-        e2->unk10.y = World_floor_level;
+        e2->XYZ.x = eng->XYZ.x;
+        e2->XYZ.z = eng->XYZ.z;
+        e2->XYZ.y = World_floor_level;
         if (sub != NULL) {
             scale = 0;
-            if (abs(eng->unk10.y - World_floor_level) < 0x200) {
-                scale = 0x1000 - abs(eng->unk10.y - World_floor_level) * 6;
+            if (abs(eng->XYZ.y - World_floor_level) < 0x200) {
+                scale = 0x1000 - abs(eng->XYZ.y - World_floor_level) * 6;
             }
             sub->unk20.z = scale;
             sub->unk20.y = scale;
@@ -3840,7 +3840,7 @@ void Plot_PogoPowerup(NAS *nas) {
         if (nas->UserInfo.status == 0) {
             nas->UserInfo.user2 = PogoObjectTimes[PogoLevelIndex];
             nas->UserInfo.status = 3;
-            PlaySfx(0x420, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x420, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         mot = FindExtension(nas, 0x800);
         if (mot != NULL) {
@@ -3883,31 +3883,31 @@ void Plot_PogoBanker(NAS *nas) {
             pos = c->sub;
             c->pickup = (HeroInfo *)nas;
             if (pos != NULL) {
-                eng->unk10.x = pos->x;
-                eng->unk10.y = World_floor_level;
-                eng->unk10.z = pos->z;
-                eng->unk2C.x = 0;
-                eng->unk2C.y = 0;
-                eng->unk2C.z = 0;
+                eng->XYZ.x = pos->x;
+                eng->XYZ.y = World_floor_level;
+                eng->XYZ.z = pos->z;
+                eng->xform.scale.vx = 0;
+                eng->xform.scale.vy = 0;
+                eng->xform.scale.vz = 0;
                 eng->flags |= 0x8021;
-                eng->unk5E = 1;
+                eng->xform.dirty = 1;
                 nas->UserInfo.status = 2;
                 nas->UserInfo.user2 = PogoObjectTimes[PogoLevelIndex];
-                PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x3FA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
         }
         break;
     case 2:
-        scale = eng->unk2C.x + 0x100;
+        scale = eng->xform.scale.vx + 0x100;
         if (scale >= 0x1000) {
             scale = 0x1000;
             eng->flags &= ~0x21;
             nas->UserInfo.status = 3;
         }
-        eng->unk2C.z = scale;
-        eng->unk2C.y = scale;
-        eng->unk2C.x = scale;
-        eng->unk5E = 1;
+        eng->xform.scale.vz = scale;
+        eng->xform.scale.vy = scale;
+        eng->xform.scale.vx = scale;
+        eng->xform.dirty = 1;
         break;
     case 3:
         if (nas->UserInfo.user2 != 0) {
@@ -3953,10 +3953,10 @@ void Plot_PogoMushroom(NAS *nas) {
         if (pos == NULL) {
             break;
         }
-        eng->unk10.x = pos->x;
-        eng->unk10.y = World_floor_level;
-        eng->unk10.z = pos->z;
-        Pogo_SpawnPuff((s32 *)&eng->unk10, 0, &HeroModelBank[DB_ArenaPogoPainterCrystalarena]);
+        eng->XYZ.x = pos->x;
+        eng->XYZ.y = World_floor_level;
+        eng->XYZ.z = pos->z;
+        Pogo_SpawnPuff((s32 *)&eng->XYZ, 0, &HeroModelBank[DB_ArenaPogoPainterCrystalarena]);
         nas->UserInfo.status = 6;
         nas->UserInfo.user1 = 0x12;
         break;
@@ -3966,22 +3966,22 @@ void Plot_PogoMushroom(NAS *nas) {
         }
         break;
     case 1:
-        cx = (eng->unk10.x + 0x800) >> 9;
-        cz = (eng->unk10.z + 0x800) >> 9;
+        cx = (eng->XYZ.x + 0x800) >> 9;
+        cz = (eng->XYZ.z + 0x800) >> 9;
         nas->UserInfo.status = 0;
         if (SquareIsFreeForMushroom(cx, cz) != 0) {
             PogoSquare *cb = PogoGrid[0];
             c = (PogoSquare *)(cz * sizeof(PogoSquare) + cx * sizeof(PogoGrid[0]) + (u32)cb);
             c->pickup = (HeroInfo *)nas;
             if (c->sub != NULL) {
-                eng->unk2C.x = 0x1000;
-                eng->unk2C.z = 0x1000;
-                eng->unk2C.y = 0;
-                eng->unk5E = 1;
+                eng->xform.scale.vx = 0x1000;
+                eng->xform.scale.vz = 0x1000;
+                eng->xform.scale.vy = 0;
+                eng->xform.dirty = 1;
                 eng->flags |= 0x8000;
                 nas->UserInfo.status = 2;
                 nas->UserInfo.user1 = 0;
-                PlaySfx(0x528, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x528, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
         }
         break;
@@ -3992,8 +3992,8 @@ void Plot_PogoMushroom(NAS *nas) {
             nas->UserInfo.user1 = Random(0x28) + 0x28;
             nas->UserInfo.status = 3;
         }
-        eng->unk2C.y = scale;
-        eng->unk5E = 1;
+        eng->xform.scale.vy = scale;
+        eng->xform.dirty = 1;
         break;
     case 3:
         if (--nas->UserInfo.user1 <= 0) {
@@ -4008,7 +4008,7 @@ void Plot_PogoMushroom(NAS *nas) {
                 }
             }
         }
-        Pogo_SpawnPuff((s32 *)&eng->unk10, 1, &HeroModelBank[DB_PogoObjects]);
+        Pogo_SpawnPuff((s32 *)&eng->XYZ, 1, &HeroModelBank[DB_PogoObjects]);
         eng->flags &= ~0x8000;
         nas->UserInfo.status = 0;
         nas->UserInfo.user1 = Random(0x14) + 0x1E;
@@ -4269,12 +4269,12 @@ bool SquareIsFreeForMushroom(s32 arg0, s32 arg1) {
 }
 
 void Player_RampToTile(u32 arg0) {
-    s32 x = Heroes[arg0].hero_eng->unk10.x;
+    s32 x = Heroes[arg0].hero_eng->XYZ.x;
     s32 tx = (((x + 0x800) >> 9) << 9) - 0x700;
-    s32 tz = (((Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9) << 9) - 0x700;
+    s32 tz = (((Heroes[arg0].hero_eng->XYZ.z + 0x800) >> 9) << 9) - 0x700;
 
-    Heroes[arg0].hero_eng->unk10.x = x - (x - tx) / 4;
-    Heroes[arg0].hero_eng->unk10.z -= (Heroes[arg0].hero_eng->unk10.z - tz) / 4;
+    Heroes[arg0].hero_eng->XYZ.x = x - (x - tx) / 4;
+    Heroes[arg0].hero_eng->XYZ.z -= (Heroes[arg0].hero_eng->XYZ.z - tz) / 4;
 }
 
 void Fire_Rocket(s32 arg0, s32 arg1) {
@@ -4309,7 +4309,7 @@ void Fire_Rocket(s32 arg0, s32 arg1) {
         }
         Fire_RocketInDir(arg0, mode, angle, 0x180);
         eng = Heroes[arg0].hero_eng;
-        PlaySfx(0x522, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x522, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
         if (PogoPlay[arg0].status == 5 && Heroes[arg0].hero_aseq == 0x2F) {
             SetHeroAction(arg0, 0x39);
         }
@@ -4332,8 +4332,8 @@ void Fire_RocketFourWays(s32 arg0, s32 arg1) {
     heroes = Heroes;
     h = &heroes[arg0];
     eng = h->hero_eng;
-    x = (eng->unk10.x + 0x800) >> 9;
-    z = (eng->unk10.z + 0x800) >> 9;
+    x = (eng->XYZ.x + 0x800) >> 9;
+    z = (eng->XYZ.z + 0x800) >> 9;
     PlayThrowNoise(arg0);
     if (x > 0) {
         Fire_RocketInDir(arg0, 2, 0x400, 0x180);
@@ -4347,7 +4347,7 @@ void Fire_RocketFourWays(s32 arg0, s32 arg1) {
     if (z < 7) {
         Fire_RocketInDir(arg0, 2, 0x800, 0x180);
     }
-    PlaySfx(0x43C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(0x43C, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
     if (PogoPlay[arg0].status == 5 && h->hero_aseq == 0x2F) {
         SetHeroAction(arg0, 0x39);
     }
@@ -4362,28 +4362,28 @@ void Fire_RocketFourWays(s32 arg0, s32 arg1) {
 void PlayThrowNoise(u32 arg0) {
     switch (Heroes[arg0].hero_name) {
     case 1:
-        PlaySfx(0x10, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x10, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 3:
-        PlaySfx(0x74, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x74, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 2:
-        PlaySfx(0x42, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x42, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 5:
-        PlaySfx(0x13C, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x13C, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 6:
-        PlaySfx(0x16E, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x16E, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 7:
-        PlaySfx(0x10A, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x10A, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 4:
-        PlaySfx(0xA6, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0xA6, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 8:
-        PlaySfx(0xD8, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0xD8, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     }
 }
@@ -4423,8 +4423,8 @@ void Plot_PogoProjectile(NAS *arg0) {
         return;
     }
     if (arg0->UserInfo.flags & 2) {
-        e->unk10.x -= (rcossin_tbl[(arg0->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 8;
-        e->unk10.z -= (rcossin_tbl[arg0->UserInfo.status & 0xFFF].unk2 * 9) >> 8;
+        e->XYZ.x -= (rcossin_tbl[(arg0->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 8;
+        e->XYZ.z -= (rcossin_tbl[arg0->UserInfo.status & 0xFFF].unk2 * 9) >> 8;
     }
     j = 0;
     n = 0;
@@ -4490,15 +4490,15 @@ void Plot_PogoProjectile(NAS *arg0) {
             if (i != me) {
                 he = h->hero_eng;
                 if (he != NULL) {
-                    dx = he->unk10.x - e->unk10.x;
-                    dz = he->unk10.z - e->unk10.z;
+                    dx = he->XYZ.x - e->XYZ.x;
+                    dz = he->XYZ.z - e->XYZ.z;
                     if ((csqrt(dx * dx + dz * dz) >> 6) < 0xA0) {
                         hit = 1;
                         if (!(h->hero_status & 0x800)) {
                             if (arg0->UserInfo.user2 == 3) {
                                 do {
                                     Tiles_PlayerIsStealing(me, i);
-                                    PlaySfx(0x552, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                                    PlaySfx(0x552, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
                                 } while (0);
                             }
                             do {
@@ -4528,8 +4528,8 @@ void Plot_PogoProjectile(NAS *arg0) {
             goto heroes;
         }
         if (GameMode == 0xA) {
-            x = (e->unk10.x + 0x800) >> 9;
-            z = (e->unk10.z + 0x800) >> 9;
+            x = (e->XYZ.x + 0x800) >> 9;
+            z = (e->XYZ.z + 0x800) >> 9;
             if ((u32)x < 8 && z >= 0 && z < 8) {
                 cell = (NAS *)PogoGrid[x][z].pickup;
                 if (cell != NULL && cell->UserInfo.flags == 0xB) {
@@ -4539,8 +4539,8 @@ void Plot_PogoProjectile(NAS *arg0) {
             }
         }
         if (!hit) {
-            px = e->unk10.x;
-            pz = e->unk10.z;
+            px = e->XYZ.x;
+            pz = e->XYZ.z;
             lim = 0x800;
             if (px < -0xA00 || px > lim || pz < -0xA00 || pz > lim) {
                 hit = 1;
@@ -4549,9 +4549,9 @@ void Plot_PogoProjectile(NAS *arg0) {
                 return;
             }
         }
-        pos = (s32 *)&e->unk10;
+        pos = (s32 *)&e->XYZ;
         p = &HeroModelBank[DB_PogoObjects];
-        nas = CreateNAS(e->unk10.x, pos[1], pos[2], 0x1605, 0x11);
+        nas = CreateNAS(e->XYZ.x, pos[1], pos[2], 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
@@ -4567,7 +4567,7 @@ void Plot_PogoProjectile(NAS *arg0) {
                 nas->InitDelete(nas);
             }
         }
-        PlaySfx(0x521, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x521, NULL, &e->XYZ, 0x1000, 0x1E00, 0);
         arg0->UserInfo.flags &= 0xFFFC;
         first->flags &= ~0x8000;
     } else if (arg0->UserInfo.user1 != 0 && n == 0) {
@@ -4662,7 +4662,7 @@ loop:
             Tiles_MakeUpIslandMap(buf, i);
             Tiles_FloodFillIslandMap(buf, i);
             if (Tiles_CountUnflagged(buf, i, 1)) {
-                PlaySfx(0x51D, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x51D, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 if (g->mode == 11) {
                     Bank_Tiles(i);
                 }
@@ -4805,8 +4805,8 @@ bool PogoAI_CanPlayerShootAnyone(u32 hero) {
     i = 0;
     eng = Heroes[hero].hero_eng;
     g = GameInfo;
-    x = (eng->unk10.x + 0x800) >> 9;
-    z = (eng->unk10.z + 0x800) >> 9;
+    x = (eng->XYZ.x + 0x800) >> 9;
+    z = (eng->XYZ.z + 0x800) >> 9;
     dir = Heroes[hero].hero_move->facing_angle >> 10;
     p = Heroes;
 loop:
@@ -4815,8 +4815,8 @@ loop:
         if (i == hero || i == mate) {
             goto next;
         }
-        ox = (p->hero_eng->unk10.x + 0x800) >> 9;
-        oz = (p->hero_eng->unk10.z + 0x800) >> 9;
+        ox = (p->hero_eng->XYZ.x + 0x800) >> 9;
+        oz = (p->hero_eng->XYZ.z + 0x800) >> 9;
         switch (dir) {
         case 0:
             if (oz < z && x == ox) {
@@ -4872,8 +4872,8 @@ bool PogoAI_CanPlayerShootAnyoneFourWays(u32 hero) {
     }
     eng = Heroes[hero].hero_eng;
     g = GameInfo;
-    x = (eng->unk10.x + 0x800) >> 9;
-    z = (eng->unk10.z + 0x800) >> 9;
+    x = (eng->XYZ.x + 0x800) >> 9;
+    z = (eng->XYZ.z + 0x800) >> 9;
     p = Heroes;
 loop:
     if (i == hero) {
@@ -4884,8 +4884,8 @@ loop:
             goto next;
         }
     } while (0);
-    ox = (p->hero_eng->unk10.x + 0x800) >> 9;
-    oz = (p->hero_eng->unk10.z + 0x800) >> 9;
+    ox = (p->hero_eng->XYZ.x + 0x800) >> 9;
+    oz = (p->hero_eng->XYZ.z + 0x800) >> 9;
     if (x != ox) {
         do {
             if (z != oz) {
@@ -4928,14 +4928,14 @@ bool PogoAI_CanPlayerShockAnyone(u32 hero) {
     eng = Heroes[hero].hero_eng;
     g = GameInfo;
     p = Heroes;
-    x = (eng->unk10.x + 0x800) >> 9;
-    z = (eng->unk10.z + 0x800) >> 9;
+    x = (eng->XYZ.x + 0x800) >> 9;
+    z = (eng->XYZ.z + 0x800) >> 9;
     for (;;) {
         if (i >= 4) {
             goto end;
         }
         if (i != hero && i != mate) {
-            if ((u32)(csqrt(PogoSquaredDistanceToDestination(x, z, p->hero_eng->unk10.x, p->hero_eng->unk10.z)) >> 6) < 0x381) {
+            if ((u32)(csqrt(PogoSquaredDistanceToDestination(x, z, p->hero_eng->XYZ.x, p->hero_eng->XYZ.z)) >> 6) < 0x381) {
                 if ((*(u16 *)(g + 0x32) & 0x20) && g[i + 0x5C] != 0) {
                     return 0;
                 }
@@ -4979,8 +4979,8 @@ void PogoAI_MoveTowardsTarget(u32 hero) {
         ai->AIpad = 0;
         tx = ai->TargetXYZ.x;
         tz = ai->TargetXYZ.z;
-        x = (Heroes[hero].hero_eng->unk10.x + 0x800) >> 9;
-        z = (Heroes[hero].hero_eng->unk10.z + 0x800) >> 9;
+        x = (Heroes[hero].hero_eng->XYZ.x + 0x800) >> 9;
+        z = (Heroes[hero].hero_eng->XYZ.z + 0x800) >> 9;
     } while (0);
     if (x == tx && z == tz) {
         if (ai->AImode == 3 || ai->AImode == 7) {
@@ -5200,8 +5200,8 @@ void PogoAI_ScanForClosestPickup(u32 arg0, s32 *arg1, s32 *arg2) {
 
     best = -1;
     eng = Heroes[arg0].hero_eng;
-    hx = (eng->unk10.x + 0x800) >> 9;
-    hz = (eng->unk10.z + 0x800) >> 9;
+    hx = (eng->XYZ.x + 0x800) >> 9;
+    hz = (eng->XYZ.z + 0x800) >> 9;
     i = 0;
     while (1) {
         if (i >= 8) {
@@ -5407,8 +5407,8 @@ bool PogoAI_StartEnclosing(u32 arg0, EXTbotai *ai) {
         if (eng != NULL) {
             base = PogoAIPlay;
             m = (PogoAIPlayer *)(arg0 * sizeof(PogoAIPlayer) + (u32)base);
-            x = (eng->unk10.x + 0x800) >> 9;
-            z = (eng->unk10.z + 0x800) >> 9;
+            x = (eng->XYZ.x + 0x800) >> 9;
+            z = (eng->XYZ.z + 0x800) >> 9;
             odd = GameFrameCount & 1;
             m->count = 0;
             m->steps = 8;
@@ -5472,8 +5472,8 @@ bool PogoAI_StartEncircling(u32 hero, EXTbotai *goal) {
         return 0;
     }
     best = 0x0FFFFFFF;
-    ox = (eng->unk10.x + 0x800) >> 9;
-    oz = (eng->unk10.z + 0x800) >> 9;
+    ox = (eng->XYZ.x + 0x800) >> 9;
+    oz = (eng->XYZ.z + 0x800) >> 9;
     bx = ox;
     bz = oz;
     px = ox << 9;
@@ -5591,10 +5591,10 @@ void Init_PogoRipperRoo(NAS *nas) {
         dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_Roo]);
         e->sub->u6C.dbase = &HeroModelBank[DB_Roo];
         e->sub->entity = 0x2001;
-        e->unk5D = 0;
+        e->xform.order = 0;
         nas->UserInfo.status = 0;
-        e->unk10.x = -0x100;
-        e->unk10.z = 0x900;
+        e->XYZ.x = -0x100;
+        e->XYZ.z = 0x900;
         m = AddMotion(nas);
         if (m != NULL) {
             m->Ymax = 0xA0;
@@ -5608,9 +5608,9 @@ void Init_PogoRipperRoo(NAS *nas) {
         e2 = AddExtEngine(nas, 1);
         if (e2 != NULL) {
             sub = e2->sub;
-            e2->unk10.x = e->unk10.x;
-            e2->unk10.y = e->unk10.y;
-            e2->unk10.z = e->unk10.z;
+            e2->XYZ.x = e->XYZ.x;
+            e2->XYZ.y = e->XYZ.y;
+            e2->XYZ.z = e->XYZ.z;
             if (sub != NULL) {
                 sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                 sub->entity = 0x2029;
@@ -5662,20 +5662,20 @@ void Plot_PogoRipperRoo(NAS *nas) {
         e2 = e->Engine;
         if (e2 != NULL) {
             sub = e2->sub;
-            e2->unk10.x = e->unk10.x;
-            ez = e->unk10.z;
-            e2->unk10.y = World_floor_level;
-            e2->unk10.z = ez;
+            e2->XYZ.x = e->XYZ.x;
+            ez = e->XYZ.z;
+            e2->XYZ.y = World_floor_level;
+            e2->XYZ.z = ez;
             if (sub != NULL) {
-                scale = 0x1600 - abs(e->unk10.y - World_floor_level) * 4;
+                scale = 0x1600 - abs(e->XYZ.y - World_floor_level) * 4;
                 sub->unk20.z = scale;
                 sub->unk20.y = scale;
                 sub->unk20.x = scale;
                 sub->unk52 = 1;
             }
         }
-        x = (e->unk10.x + 0x800) >> 9;
-        z = (e->unk10.z + 0x800) >> 9;
+        x = (e->XYZ.x + 0x800) >> 9;
+        z = (e->XYZ.z + 0x800) >> 9;
         if ((u32)x < 8 && z >= 0 && z < 8) {
             PogoGrid[x][z].occupied = 5;
         }
@@ -5683,8 +5683,8 @@ void Plot_PogoRipperRoo(NAS *nas) {
     switch (nas->UserInfo.status) {
     case 0:
         RooTileX = -1;
-        e->unk10.x = -0x100;
-        e->unk10.z = 0x900;
+        e->XYZ.x = -0x100;
+        e->XYZ.z = 0x900;
         RooTileX = -1; /* set twice in the original: its registers need this store */
         RooSpeedX = 0;
         RooSpeedZ = 0;
@@ -5698,7 +5698,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
             RooDir = (GameFrameCount & 1) ? 1 : 3;
             nas->UserInfo.user1 = Random(0x3C) + 0x64;
             nas->UserInfo.status = 2;
-            PlaySfx(0x542, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x542, NULL, &e->XYZ, 0x1000, 0x1E00, 0);
             GotoLinkAnim(anim, 1);
             RooBounce = 0;
         }
@@ -5716,8 +5716,8 @@ void Plot_PogoRipperRoo(NAS *nas) {
             for (i = 0; i < 4; i++) {
                 near = 0;
                 if (GAME->heroOut[i] == 0) {
-                    if (abs(e->unk10.x - Heroes[i].hero_eng->unk10.x) < 0x580) {
-                        near = abs(e->unk10.z - Heroes[i].hero_eng->unk10.z) < 0x580;
+                    if (abs(e->XYZ.x - Heroes[i].hero_eng->XYZ.x) < 0x580) {
+                        near = abs(e->XYZ.z - Heroes[i].hero_eng->XYZ.z) < 0x580;
                     }
                     if (near && !(Heroes[i].hero_status & 0x800)) {
                         nas->UserInfo.user1 = 0;
@@ -5726,8 +5726,8 @@ void Plot_PogoRipperRoo(NAS *nas) {
             }
         }
         if (nas->UserInfo.user1 > 0) {
-            RooTileX = (e->unk10.x + 0x800) >> 9;
-            RooTileZ = (e->unk10.z + 0x800) >> 9;
+            RooTileX = (e->XYZ.x + 0x800) >> 9;
+            RooTileZ = (e->XYZ.z + 0x800) >> 9;
             switch (RooDir) {
             case 0:
                 RooTileZ -= 2;
@@ -5744,8 +5744,8 @@ void Plot_PogoRipperRoo(NAS *nas) {
             }
             Roo_ChangeDirOnEdge();
         } else {
-            RooTileX = (e->unk10.x + 0x800) >> 9;
-            RooTileZ = (e->unk10.z + 0x800) >> 9;
+            RooTileX = (e->XYZ.x + 0x800) >> 9;
+            RooTileZ = (e->XYZ.z + 0x800) >> 9;
             if (RooTileX == 8) {
                 RooDir = 1;
             } else if (RooTileX == -1) {
@@ -5799,7 +5799,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
             if (GameFrameCount & 1) {
                 sfx = 0x542;
             }
-            PlaySfx(sfx, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(sfx, NULL, &e->XYZ, 0x1000, 0x1E00, 0);
         }
         Roo_UpdateVelocities(e);
         break;
@@ -5811,8 +5811,8 @@ void Plot_PogoRipperRoo(NAS *nas) {
         if (!Roo_Bounce(nas)) {
             break;
         }
-        tx = (e->unk10.x + 0x800) >> 9;
-        tz = (e->unk10.z + 0x800) >> 9;
+        tx = (e->XYZ.x + 0x800) >> 9;
+        tz = (e->XYZ.z + 0x800) >> 9;
         if ((u32)tx < 8 && tz >= 0 && tz < 8 && RooSteps < 100) {
             if (nas->UserInfo.status == 3) {
                 if (RooSteps == RooWait) {
@@ -5848,16 +5848,16 @@ void Plot_PogoRipperRoo(NAS *nas) {
                     }
                     near = 0;
                     if (GAME->heroOut[i] == 0) {
-                        if (abs(e->unk10.x - Heroes[i].hero_eng->unk10.x) < 0x480) {
-                            near = abs(e->unk10.z - Heroes[i].hero_eng->unk10.z) < 0x480;
+                        if (abs(e->XYZ.x - Heroes[i].hero_eng->XYZ.x) < 0x480) {
+                            near = abs(e->XYZ.z - Heroes[i].hero_eng->XYZ.z) < 0x480;
                         }
                         if (near && !(Heroes[i].hero_status & 0x800)) {
-                            cx = (e->unk10.x + 0x800) >> 9;
-                            cz = (e->unk10.z + 0x800) >> 9;
+                            cx = (e->XYZ.x + 0x800) >> 9;
+                            cz = (e->XYZ.z + 0x800) >> 9;
                             PogoGrid[cx][cz].player = 5;
                             PogoGrid[cx][cz].mode = 6;
                             PogoGrid[cx][cz].timer = TileLockTimes[PogoLevelIndex][0];
-                            Tile_Update((e->unk10.x + 0x800) >> 9, (e->unk10.z + 0x800) >> 9);
+                            Tile_Update((e->XYZ.x + 0x800) >> 9, (e->XYZ.z + 0x800) >> 9);
                         }
                     }
                     i++;
@@ -5884,10 +5884,10 @@ void Plot_PogoRipperRoo(NAS *nas) {
         if (nas->UserInfo.user1 > 0) {
             nas->UserInfo.user1--;
         }
-        e->unk5E = 1;
-        e->unk1E += 0x16;
+        e->xform.dirty = 1;
+        e->xform.rot.vy += 0x16;
         if (e->sub->entity == 0x4012) {
-            PlaySfx(0x522, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x522, NULL, &e->XYZ, 0x1000, 0x1E00, 0);
             Roo_FireRocket(e);
         }
         if (nas->UserInfo.user1 <= 0 || (GameExitFlags & 0x801)) {
@@ -5920,12 +5920,12 @@ void Roo_UpdatePosition(EXTengine *eng) {
         PogoGrid[x][z].reserved = 5;
     }
     if ((u32)(RooBounce - 2) < 10) {
-        eng->unk10.x += RooSpeedX;
-        eng->unk10.z += RooSpeedZ;
+        eng->XYZ.x += RooSpeedX;
+        eng->XYZ.z += RooSpeedZ;
     }
-    a = angle_diff(RooAngle, eng->unk1E);
-    eng->unk5E = 1;
-    eng->unk1E -= a >> 1;
+    a = angle_diff(RooAngle, eng->xform.rot.vy);
+    eng->xform.dirty = 1;
+    eng->xform.rot.vy -= a >> 1;
 }
 
 bool Roo_ChangeDirOnEdge(void) {
@@ -6001,8 +6001,8 @@ bool Roo_FindNewSquare(EXTengine *eng) {
     do {
         ok = 1;
         count++;
-        RooTileX = (eng->unk10.x + 0x800) >> 9;
-        RooTileZ = (eng->unk10.z + 0x800) >> 9;
+        RooTileX = (eng->XYZ.x + 0x800) >> 9;
+        RooTileZ = (eng->XYZ.z + 0x800) >> 9;
         z = RooDir;
         px = &RooTileX;
         if (count > 5) {
@@ -6080,22 +6080,22 @@ bool Roo_FindNewSquare(EXTengine *eng) {
 void Roo_GoBoing(EXTengine *eng) {
     switch (Random(6)) {
     case 0:
-        PlaySfx(0x53C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x53C, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 1:
-        PlaySfx(0x53D, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x53D, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 2:
-        PlaySfx(0x53E, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x53E, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 3:
-        PlaySfx(0x53F, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x53F, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 4:
-        PlaySfx(0x540, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x540, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 5:
-        PlaySfx(0x541, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x541, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     }
 }
@@ -6105,9 +6105,9 @@ void Roo_FireRocket(EXTengine *eng) {
     EXTengine *e;
     subengine *sub;
     subengine *s;
-    s32 x = eng->unk10.x;
-    s32 z = eng->unk10.z;
-    s32 angle = eng->unk1E;
+    s32 x = eng->XYZ.x;
+    s32 z = eng->XYZ.z;
+    s32 angle = eng->xform.rot.vy;
 
     nas = CreateNAS(x, World_floor_level - 0x200, z, 0x1404, 0x11);
     if (nas != NULL) {
@@ -6133,8 +6133,8 @@ void Roo_FireRocket(EXTengine *eng) {
                     s->unk04 = 0x90;
                 }
                 sub->entity = 0x200D;
-                e->unk1E = (angle + 0xC00) % 0x1000;
-                e->unk5E = 1;
+                e->xform.rot.vy = (angle + 0xC00) % 0x1000;
+                e->xform.dirty = 1;
                 nas->UserInfo.flags |= 1;
             }
         }
@@ -6152,15 +6152,15 @@ void Roo_ShootAtHumans(NAS *nas) {
     if (eng == NULL) {
         return;
     }
-    x = (eng->unk10.x + 0x800) >> 9;
-    z = (eng->unk10.z + 0x800) >> 9;
+    x = (eng->XYZ.x + 0x800) >> 9;
+    z = (eng->XYZ.z + 0x800) >> 9;
     for (; i < 4; i++) {
         if (GAME->heroOut[i] != 0 || Heroes[i].hero_mode == 0x3B) {
             continue;
         }
         he = Heroes[i].hero_eng;
-        hx = (he->unk10.x + 0x800) >> 9;
-        hz = (he->unk10.z + 0x800) >> 9;
+        hx = (he->XYZ.x + 0x800) >> 9;
+        hz = (he->XYZ.z + 0x800) >> 9;
         if (x != hx && z != hz) {
             continue;
         }
@@ -6189,8 +6189,8 @@ void Roo_FireProjectile(EXTengine *eng, s32 angle) {
     subengine *sub;
     subengine *s;
 
-    s32 x = eng->unk10.x;
-    s32 z = eng->unk10.z;
+    s32 x = eng->XYZ.x;
+    s32 z = eng->XYZ.z;
 
     nas = CreateNAS(x, World_floor_level - 0x280, z, 0x1404, 0x11);
     if (nas != NULL) {
@@ -6216,13 +6216,13 @@ void Roo_FireProjectile(EXTengine *eng, s32 angle) {
                     s->unk04 = 0x90;
                 }
                 sub->entity = 0x200D;
-                e->unk1E = (angle + 0xC00) % 0x1000;
-                e->unk5E = 1;
+                e->xform.rot.vy = (angle + 0xC00) % 0x1000;
+                e->xform.dirty = 1;
                 nas->UserInfo.flags |= 1;
             }
         }
     }
-    PlaySfx(0x522, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(0x522, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
 }
 
 void Init_PogoPadlock(NAS *nas) {
@@ -6234,17 +6234,17 @@ void Init_PogoPadlock(NAS *nas) {
     if (e != NULL) {
         e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
         e->sub->entity = 0x2041;
-        e->unk2C.z = 0x1000;
-        e->unk2C.y = 0x1000;
-        e->unk2C.x = 0x1000;
-        e->unk5C = 1;
+        e->xform.scale.vz = 0x1000;
+        e->xform.scale.vy = 0x1000;
+        e->xform.scale.vx = 0x1000;
+        e->xform.hasScale = 1;
         e->flags &= ~0x8000;
         e2 = AddExtEngine(nas, 1);
         if (e2 != NULL) {
             sub = e2->sub;
-            e2->unk10.x = e->unk10.x;
-            e2->unk10.y = World_floor_level;
-            e2->unk10.z = e->unk10.z;
+            e2->XYZ.x = e->XYZ.x;
+            e2->XYZ.y = World_floor_level;
+            e2->XYZ.z = e->XYZ.z;
             e2->flags &= ~0x8000;
             if (sub != NULL) {
                 sub->entity = 0x2029;
@@ -6295,8 +6295,8 @@ void Plot_PogoPadlock(NAS *nas) {
     flags = nas->UserInfo.flags;
     count = flags & 0xFF;
     level = flags >> 8;
-    eng->unk5E = 1;
-    eng->unk1E += 0x38;
+    eng->xform.dirty = 1;
+    eng->xform.rot.vy += 0x38;
     eng2 = eng->Engine;
     switch (nas->UserInfo.status) {
     case 0:
@@ -6312,10 +6312,10 @@ void Plot_PogoPadlock(NAS *nas) {
         count = init & 0xFF;
         nas->UserInfo.flags = init;
         level = init >> 8;
-        eng->unk2C.y = 0;
-        eng->unk5E = 1;
-        eng->unk10.x = (x << 9) - 0x700;
-        eng->unk10.z = (z << 9) - 0x700;
+        eng->xform.scale.vy = 0;
+        eng->xform.dirty = 1;
+        eng->XYZ.x = (x << 9) - 0x700;
+        eng->XYZ.z = (z << 9) - 0x700;
         eng->flags |= 0x8000;
         if (eng2 == NULL) {
             break;
@@ -6323,13 +6323,13 @@ void Plot_PogoPadlock(NAS *nas) {
         eng2->flags |= 0x8000;
         goto follow;
     case 1:
-        eng->unk2C.y += 0x100;
-        if (eng->unk2C.y > 0x1000) {
-            eng->unk2C.y = 0x1000;
+        eng->xform.scale.vy += 0x100;
+        if (eng->xform.scale.vy > 0x1000) {
+            eng->xform.scale.vy = 0x1000;
             nas->UserInfo.status = 3;
             nas->UserInfo.user1 = PadlockTimes[level];
         }
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         break;
     case 3:
         if (--nas->UserInfo.user1 > 0) {
@@ -6344,8 +6344,8 @@ void Plot_PogoPadlock(NAS *nas) {
         break;
     case 4:
         tries = 0;
-        cz = (eng->unk10.z + 0x800) >> 9;
-        cx = (eng->unk10.x + 0x800) >> 9;
+        cz = (eng->XYZ.z + 0x800) >> 9;
+        cx = (eng->XYZ.x + 0x800) >> 9;
         do {
             do {
                 ok = 1;
@@ -6396,13 +6396,13 @@ void Plot_PogoPadlock(NAS *nas) {
         cell = nas->UserInfo.user2;
         tx = ((cell & 7) << 9) - 0x700;
         tz = (((cell >> 3) & 7) << 9) - 0x700;
-        dx = (tx - eng->unk10.x) / 6;
-        dz = (tz - eng->unk10.z) / 6;
-        eng->unk10.x += dx;
-        eng->unk10.z += dz;
+        dx = (tx - eng->XYZ.x) / 6;
+        dz = (tz - eng->XYZ.z) / 6;
+        eng->XYZ.x += dx;
+        eng->XYZ.z += dz;
         if (--nas->UserInfo.user1 <= 0) {
-            eng->unk10.x = tx;
-            eng->unk10.z = tz;
+            eng->XYZ.x = tx;
+            eng->XYZ.z = tz;
             nas->UserInfo.status = 3;
             nas->UserInfo.user1 = PadlockTimes[level];
         }
@@ -6410,8 +6410,8 @@ void Plot_PogoPadlock(NAS *nas) {
             break;
         }
     follow:
-        eng2->unk10.x = eng->unk10.x;
-        eng2->unk10.z = eng->unk10.z;
+        eng2->XYZ.x = eng->XYZ.x;
+        eng2->XYZ.z = eng->XYZ.z;
         break;
     case 6:
         eng->flags &= ~0x8000;
@@ -6420,7 +6420,7 @@ void Plot_PogoPadlock(NAS *nas) {
         }
         nas->UserInfo.user1 = 0x78;
         nas->UserInfo.status = 0;
-        Pogo_SpawnPuff((s32 *)&eng->unk10, 1, &HeroModelBank[DB_PogoObjects]);
+        Pogo_SpawnPuff((s32 *)&eng->XYZ, 1, &HeroModelBank[DB_PogoObjects]);
         break;
     }
     nas->UserInfo.flags = ((level & 0xFF) << 8) | (count & 0xFF);
@@ -6432,8 +6432,8 @@ bool PogoPadlock_IsHere(s32 arg0, s32 arg1) {
     if (PogoPadlockNas != NULL) {
         e = PogoPadlockNas->Engine;
         if (e != NULL) {
-            if ((u16)PogoPadlockNas->UserInfo.status >= 3 && (e->unk10.x + 0x800) >> 9 == arg0
-                && (e->unk10.z + 0x800) >> 9 == arg1) {
+            if ((u16)PogoPadlockNas->UserInfo.status >= 3 && (e->XYZ.x + 0x800) >> 9 == arg0
+                && (e->XYZ.z + 0x800) >> 9 == arg1) {
                 return 1;
             }
         }
@@ -6504,8 +6504,8 @@ void Roo_UpdateVelocities(EXTengine *eng) {
     s32 dx;
     s32 dz;
 
-    dx = (RooTileX << 9) - eng->unk10.x - 0x700;
-    dz = (RooTileZ << 9) - eng->unk10.z - 0x700;
+    dx = (RooTileX << 9) - eng->XYZ.x - 0x700;
+    dz = (RooTileZ << 9) - eng->XYZ.z - 0x700;
     RooSpeedX = dx / 10;
     RooSpeedZ = dz / 10;
     RooAngle = get_angle(dx, dz) + 0x800;
@@ -6555,7 +6555,7 @@ bool PogoAI_GoForMyOwn(u32 arg0, EXTbotai *ai)
     EXTengine *e = Heroes[arg0].hero_eng;
     s32 a = Heroes[arg0].hero_move->facing_angle >> 10;
 
-    if (PogoAI_RadialSearch(arg0, (e->unk10.x + 0x800) >> 9, (e->unk10.z + 0x800) >> 9,
+    if (PogoAI_RadialSearch(arg0, (e->XYZ.x + 0x800) >> 9, (e->XYZ.z + 0x800) >> 9,
                       a, &x, &z) != 0) {
         ai->AImode = 7;
         ai->TargetXYZ.x = x;
@@ -6664,8 +6664,8 @@ void Create_PogoProjectile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
                     sub->entity = 0x2040;
                     break;
                 }
-                e->unk1E = (arg5 + 0xC00) % 0x1000;
-                e->unk5E = 1;
+                e->xform.rot.vy = (arg5 + 0xC00) % 0x1000;
+                e->xform.dirty = 1;
                 nas->UserInfo.flags |= 1;
             }
         }
@@ -6676,8 +6676,8 @@ void Fire_RocketInDir(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     EXTengine *eng;
 
     eng = Heroes[arg0].hero_eng;
-    Create_PogoProjectile(arg1, (((eng->unk10.x + 0x800) >> 9) << 9) - 0x700,
-                  (((eng->unk10.z + 0x800) >> 9) << 9) - 0x700, arg3, arg0 & 7, arg2);
+    Create_PogoProjectile(arg1, (((eng->XYZ.x + 0x800) >> 9) << 9) - 0x700,
+                  (((eng->XYZ.z + 0x800) >> 9) << 9) - 0x700, arg3, arg0 & 7, arg2);
 }
 
 void Player_SetPoisoned(u32 arg0) {
@@ -6725,8 +6725,8 @@ s32 Player_CalcForwardSpeed(u32 arg0, s32 arg1)
 }
 
 void Player_SnapToTile(u32 arg0) {
-    Heroes[arg0].hero_eng->unk10.x = (((Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9) << 9) - 0x700;
-    Heroes[arg0].hero_eng->unk10.z = (((Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9) << 9) - 0x700;
+    Heroes[arg0].hero_eng->XYZ.x = (((Heroes[arg0].hero_eng->XYZ.x + 0x800) >> 9) << 9) - 0x700;
+    Heroes[arg0].hero_eng->XYZ.z = (((Heroes[arg0].hero_eng->XYZ.z + 0x800) >> 9) << 9) - 0x700;
 }
 
 bool SquareContainsMushroom(s32 arg0, s32 arg1) {
@@ -6848,7 +6848,7 @@ void Tiles_CheckForIslands(s32 arg0) {
         Tiles_MakeUpIslandMap(grid, arg0);
         Tiles_FloodFillIslandMap(grid, arg0);
         if (Tiles_CountUnflagged(grid, arg0, 1) != 0) {
-            PlaySfx(0x51D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x51D, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             if (((GameState *)GameInfo)->mode == 11) {
                 Bank_Tiles(arg0);
             }
@@ -6914,7 +6914,7 @@ void Init_PogoTazer(NAS *nas) {
     if (e != NULL) {
         e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
         e->sub->entity = 0x2005;
-        e->unk5D = 2;
+        e->xform.order = 2;
     }
     nas->UserInfo.flags = 0;
     if (nas->Failure != 0) {
@@ -6992,7 +6992,7 @@ bool SetTile_PogoThree(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
             }
             Tiles_CheckForIslands(arg0);
             if (arg3 != 0) {
-                PlaySfx(0x515, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x515, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             }
             return 1;
         }
@@ -7025,7 +7025,7 @@ void ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
     if (nas != NULL) {
         if (nas->Engine != NULL) {
-            PlaySfx(0x515, NULL, &nas->Engine->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x515, NULL, &nas->Engine->XYZ, 0x1000, 0x1E00, 0);
         }
         dir = nas->UserInfo.user1 & 3;
         for (i = 0; i < arg3; i++) {
@@ -7199,7 +7199,7 @@ void Tile_Clear(s32 arg0, s32 arg1) {
 }
 
 s32 GetPogoContour(EXTengine *arg0) {
-    return arg0->unk10.y - World_floor_level;
+    return arg0->XYZ.y - World_floor_level;
 }
 
 void AddTazerRing(u32 arg0) {
@@ -7209,7 +7209,7 @@ void AddTazerRing(u32 arg0) {
     s32 *ext;
     u8 *p;
 
-    pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
+    pos = (s32 *)&Heroes[arg0].hero_eng->XYZ;
     p = &HeroModelBank[DB_PogoObjects];
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
@@ -7230,7 +7230,7 @@ void AddTazerRing(u32 arg0) {
     } else {
         r = NULL;
     }
-    r->Engine->unk10.y -= 0x40;
+    r->Engine->XYZ.y -= 0x40;
 }
 
 void Player_SetReserve(u32 arg0, s32 arg1, s32 arg2) {
@@ -7272,9 +7272,9 @@ void HeroPogoTied(u32 arg0) {
     Pickup_Lose(arg0);
     eng = h->hero_eng;
     if (eng != NULL) {
-        s32 r = angle_diff_abs(0, eng->unk1E);
-        eng->unk5E = 1;
-        eng->unk1E += r >> 3;
+        s32 r = angle_diff_abs(0, eng->xform.rot.vy);
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy += r >> 3;
     }
     ProcessHeroAnim(arg0);
 }
@@ -7563,7 +7563,7 @@ void PogoCreateShadow(u32 arg0) {
     if (s != NULL) {
         s->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
         s->sub->entity = 0x2029;
-        s->unk10 = h->hero_eng->unk10;
+        s->XYZ = h->hero_eng->XYZ;
         s->flags |= 0x8041;
         s->sub->unk76 = 0x800;
         s->sub->flags |= 0x40000000;

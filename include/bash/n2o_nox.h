@@ -378,8 +378,8 @@ static inline void MineBurst(NAS *e) {
     SLONG_XYZ *tp;
     s32 mode;
 
-    tp = &e->Engine->unk10;
-    nas = CreateNAS(e->Engine->unk10.x, tp->y, tp->z, 0x1605, 0x11);
+    tp = &e->Engine->XYZ;
+    nas = CreateNAS(e->Engine->XYZ.x, tp->y, tp->z, 0x1605, 0x11);
     mode = 1;
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -671,9 +671,9 @@ void NoxInitAsteroids(void);
 static inline s32 AstDist(s32 *o, EXTengine *q) {
     s32 dx, dy, dz;
 
-    dx = o[1] - q->unk10.x;
-    dy = o[2] - q->unk10.y;
-    dz = o[3] - q->unk10.z;
+    dx = o[1] - q->XYZ.x;
+    dy = o[2] - q->XYZ.y;
+    dz = o[3] - q->XYZ.z;
     return dx * dx + dy * dy + dz * dz;
 }
 
@@ -719,16 +719,16 @@ static inline void AstSfx(void) {
 /* NoxUpdateAsteroids: flags 0x40000000 and sets the fade (unk76) of an object
  * between 0x5000 and 0x6000 ahead of hero engine e. */
 #define AST_NEAR(o, e)                                       \
-    if (o->pos.z < e->unk10.z + 0x6000) {                    \
+    if (o->pos.z < e->XYZ.z + 0x6000) {                    \
         o->flags |= 0x40000000;                              \
-        o->unk76 = abs(e->unk10.z - o->pos.z) - 0x5000;      \
+        o->unk76 = abs(e->XYZ.z - o->pos.z) - 0x5000;      \
         if (o->unk76 >= 0x1000) {                            \
             o->unk76 = 0xFFF;                                \
         }                                                    \
         if (o->unk76 < 0) {                                  \
             o->unk76 = 0xFFF;                                \
         }                                                    \
-        if (o->pos.z < e->unk10.z + 0x5000) {                \
+        if (o->pos.z < e->XYZ.z + 0x5000) {                \
             o->unk76 = 0;                                    \
             o->flags &= ~0x40000000;                         \
         }                                                    \
@@ -794,9 +794,9 @@ static inline void BossHeroSteer(s32 i) {
     HeroInfo *h = &base[i];
     EXTengine *e = h->hero_eng;
 
-    e->unk1C += ((*t - e->unk1C) << 20) >> 23;
-    h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
-    h->hero_eng->unk5E = 1;
+    e->xform.rot.vx += ((*t - e->xform.rot.vx) << 20) >> 23;
+    h->hero_eng->xform.rot.vy += angle_diff(h->hero_eng->xform.rot.vy, h->hero_move->forward_angle) >> 2;
+    h->hero_eng->xform.dirty = 1;
 }
 
 void NoxAsteroidHitHero(s32 *arg0, s32 arg1);

@@ -484,11 +484,11 @@ s32 RaceAI_DodgeSpinners(s32 player) {
     SLONG_XYZ pos;
 
     i = 0;
-    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * rcossin_tbl[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    pos.x = Heroes[player].hero_eng->XYZ.x - (0x40 * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
     h = &Heroes[player];
     pos.y = 0;
     p = RaceSpinnerBoxes;
-    pos.z = h->hero_eng->unk10.z - (0x40 * rcossin_tbl[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
+    pos.z = h->hero_eng->XYZ.z - (0x40 * rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
 loop:
     if (i < 6) {
         if (XZBoxToSphere(*p, &pos, 1, &pos) != -1) {
@@ -563,9 +563,9 @@ void RaceAI_SpinnerBrake(s32 player) {
     s32 r;
     HeroInfo *h;
 
-    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * rcossin_tbl[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    pos.x = Heroes[player].hero_eng->XYZ.x - (0x40 * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
     pos.y = 0;
-    pos.z = Heroes[player].hero_eng->unk10.z - (0x40 * rcossin_tbl[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
+    pos.z = Heroes[player].hero_eng->XYZ.z - (0x40 * rcossin_tbl[Heroes[player].hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
     i = 0;
     if (Heroes[player].hero->FUX != NULL) {
         do {
@@ -613,7 +613,7 @@ void RaceAI_AvoidBarrels(s32 player) {
     besti = -1;
     i = 0;
     p = RaceBarrels;
-    ang = get_angle(Heroes[player].hero_eng->unk10.x, Heroes[player].hero_eng->unk10.z) & 0xFFF;
+    ang = get_angle(Heroes[player].hero_eng->XYZ.x, Heroes[player].hero_eng->XYZ.z) & 0xFFF;
     ang -= 0x400;
     ang &= 0xFFF;
     hp = &Heroes[player];
@@ -625,8 +625,8 @@ loop:
             x = o->unk04;
             z = o->unk0C;
             if ((((get_angle(x, z) & 0xFFF) - 0x400) & 0xFFF) >= ang) {
-                x -= hp->hero_eng->unk10.x;
-                z -= hp->hero_eng->unk10.z;
+                x -= hp->hero_eng->XYZ.x;
+                z -= hp->hero_eng->XYZ.z;
                 d = x * x + z * z;
                 if (d < bestd) {
                     bestd = d;
@@ -644,12 +644,12 @@ loop:
         h = &base[player];
         a[0] = 0;
         a[2] = 0;
-        b[0] = rcossin_tbl[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
+        b[0] = rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2;
         b[1] = 0;
-        b[2] = rcossin_tbl[h->hero_eng->unk1E & 0xFFF].unk2;
+        b[2] = rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2;
         best = &RaceBarrels[besti];
-        c[0] = best->sub->unk04 - h->hero_eng->unk10.x;
-        c[2] = best->sub->unk0C - h->hero_eng->unk10.z;
+        c[0] = best->sub->unk04 - h->hero_eng->XYZ.x;
+        c[2] = best->sub->unk0C - h->hero_eng->XYZ.z;
         c[3] = 0x180;
         if (RaceRayHit(a, b, c) != 0) {
             x = best->sub->unk04;
@@ -695,8 +695,8 @@ void RaceAI_AvoidObjects(s32 player) {
         e = n->Engine;
         if (e != NULL) {
             he = Heroes[player].hero_eng;
-            dx = he->unk10.x - e->unk10.x;
-            dz = he->unk10.z - e->unk10.z;
+            dx = he->XYZ.x - e->XYZ.x;
+            dz = he->XYZ.z - e->XYZ.z;
             d = dx * dx + dz * dz;
             if (d < bestd) {
                 best = n;
@@ -710,18 +710,18 @@ void RaceAI_AvoidObjects(s32 player) {
         h = &base[player];
         a[0] = 0;
         a[2] = 0;
-        b[0] = rcossin_tbl[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
+        b[0] = rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2;
         b[1] = 0;
-        b[2] = rcossin_tbl[h->hero_eng->unk1E & 0xFFF].unk2;
-        c[0] = best->Engine->unk10.x - h->hero_eng->unk10.x;
-        c[2] = best->Engine->unk10.z - h->hero_eng->unk10.z;
+        b[2] = rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2;
+        c[0] = best->Engine->XYZ.x - h->hero_eng->XYZ.x;
+        c[2] = best->Engine->XYZ.z - h->hero_eng->XYZ.z;
         c[3] = 0x180;
         if (RaceRayHit(a, b, c) != 0) {
-            d = best->Engine->unk10.x;
-            z = best->Engine->unk10.z;
+            d = best->Engine->XYZ.x;
+            z = best->Engine->XYZ.z;
             x = d * d + z * z;
-            d = h->hero_eng->unk10.x;
-            z = h->hero_eng->unk10.z;
+            d = h->hero_eng->XYZ.x;
+            z = h->hero_eng->XYZ.z;
             if (x < d * d + z * z) {
                 h->hero_ai->AIpad &= ~0x20;
                 h->hero_ai->AIpad |= 0x80;
@@ -841,8 +841,8 @@ s32 RaceAI_UseCloseWeapon(s32 player)
     }
     do
     {
-      dx = h->hero_eng->unk10.x - o->hero_eng->unk10.x;
-      dz = h->hero_eng->unk10.z - o->hero_eng->unk10.z;
+      dx = h->hero_eng->XYZ.x - o->hero_eng->XYZ.x;
+      dz = h->hero_eng->XYZ.z - o->hero_eng->XYZ.z;
       new_var = (dx * dx) + (dz * dz);
       if (new_var < 0x90000)
       {
@@ -901,17 +901,17 @@ loop:
         if (RaceAI_PickVictim(player) != i) {
             goto next;
         }
-        a = get_angle(o->hero_eng->unk10.x, o->hero_eng->unk10.z) & 0xFFF;
-        if ((((a - (get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF)) << 20) >> 20) < 100) {
+        a = get_angle(o->hero_eng->XYZ.x, o->hero_eng->XYZ.z) & 0xFFF;
+        if ((((a - (get_angle(h->hero_eng->XYZ.x, h->hero_eng->XYZ.z) & 0xFFF)) << 20) >> 20) < 100) {
             goto next;
         }
         from[0] = 0;
         from[2] = 0;
-        to[0] = trig[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 2048 >> 12;
+        to[0] = trig[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 2048 >> 12;
         to[1] = 0;
-        do { to[2] = trig[h->hero_eng->unk1E & 0xFFF].unk2 * 2048 >> 12; } while (0);
-        rel[0] = o->hero_eng->unk10.x - h->hero_eng->unk10.x;
-        rel[2] = o->hero_eng->unk10.z - h->hero_eng->unk10.z;
+        do { to[2] = trig[h->hero_eng->xform.rot.vy & 0xFFF].unk2 * 2048 >> 12; } while (0);
+        rel[0] = o->hero_eng->XYZ.x - h->hero_eng->XYZ.x;
+        rel[2] = o->hero_eng->XYZ.z - h->hero_eng->XYZ.z;
         rel[3] = 0x180;
         if (RaceRayHit(from, to, rel) != 0) {
             h->hero_ai->AIpad |= 0x2000;
@@ -955,24 +955,24 @@ s32 RaceAI_SteerAtVictim(s32 player)
                     goto next;
                 }
             } while (0);
-            ang = get_angle(o->hero_eng->unk10.x, o->hero_eng->unk10.z) & 0xFFF;
+            ang = get_angle(o->hero_eng->XYZ.x, o->hero_eng->XYZ.z) & 0xFFF;
             h = (HeroInfo *)(player * (s32)sizeof(HeroInfo) + (s32)base);
-            if ((((ang - (get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF)) << 20) >> 20) < 100) {
+            if ((((ang - (get_angle(h->hero_eng->XYZ.x, h->hero_eng->XYZ.z) & 0xFFF)) << 20) >> 20) < 100) {
                 goto next;
             }
             a[0] = 0;
             a[2] = 0;
-            b[0] = trig[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 0x17D >> 10;
+            b[0] = trig[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x17D >> 10;
             b[1] = 0;
             do {
-                b[2] = trig[h->hero_eng->unk1E & 0xFFF].unk2 * 0x17D >> 10;
+                b[2] = trig[h->hero_eng->xform.rot.vy & 0xFFF].unk2 * 0x17D >> 10;
             } while (0);
-            c[0] = o->hero_eng->unk10.x - h->hero_eng->unk10.x;
-            c[2] = o->hero_eng->unk10.z - h->hero_eng->unk10.z;
+            c[0] = o->hero_eng->XYZ.x - h->hero_eng->XYZ.x;
+            c[2] = o->hero_eng->XYZ.z - h->hero_eng->XYZ.z;
             c[3] = 0x180;
             if (RaceRayHit(a, b, c) != 0 && o->hero->FUX != NULL) {
-                x = o->hero_eng->unk10.x;
-                z = o->hero_eng->unk10.z;
+                x = o->hero_eng->XYZ.x;
+                z = o->hero_eng->XYZ.z;
                 if (x * x + z * z > 0x310000) {
                     h->hero_ai->AIpad |= 0x20;
                     h->hero_ai->AIpad &= ~0x80;
@@ -1015,9 +1015,9 @@ s32 arg0;
         nas = RaceNearestPickup(arg0);
         found = NULL;
         if (nas != NULL) {
-            if (DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&hero->hero_eng->unk10) <= 0x270FFF) {
-                angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
-                if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
+            if (DistXZSq((SLONG_XYZ *)&nas->Engine->XYZ, (SLONG_XYZ *)&hero->hero_eng->XYZ) <= 0x270FFF) {
+                angle = get_angle(nas->Engine->XYZ.x, nas->Engine->XYZ.z) & 0xFFF;
+                if ((get_angle(hero->hero_eng->XYZ.x, hero->hero_eng->XYZ.z) & 0xFFF) < angle) {
                     found = nas;
                     goto done;
                 }
@@ -1054,15 +1054,15 @@ void RaceInitHeroAngle(s32 player) {
     h = &base[player];
     if (h->hero_frozen == 0) {
         if (!(h->hero_ctrl & 1)) {
-            h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+            h->hero_eng->xform.rot.vy += angle_diff(h->hero_eng->xform.rot.vy, h->hero_move->forward_angle) >> 2;
             if (GAME->heroOut[player] != 0) {
-                h->hero_eng->unk20 += angle_diff(h->hero_eng->unk20, RaceSteer[player]) >> 3;
+                h->hero_eng->xform.rot.vz += angle_diff(h->hero_eng->xform.rot.vz, RaceSteer[player]) >> 3;
             } else {
-                h->hero_eng->unk20 += angle_diff(h->hero_eng->unk20, RaceSteer[player]) >> 2;
+                h->hero_eng->xform.rot.vz += angle_diff(h->hero_eng->xform.rot.vz, RaceSteer[player]) >> 2;
             }
         }
         Heroes[player].hero_ctrl &= ~1;
-        Heroes[player].hero_eng->unk5E = 1;
+        Heroes[player].hero_eng->xform.dirty = 1;
     }
 }
 
@@ -1236,16 +1236,16 @@ u32 RaceAI_FollowTrack(s32 player) {
                 d = 0;
             }
             d += 0x200;
-            pos.x = h->hero_eng->unk10.x - (d * rcossin_tbl[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+            pos.x = h->hero_eng->XYZ.x - (d * rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
             pos.y = 0;
-            pos.z = h->hero_eng->unk10.z - (d * rcossin_tbl[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
+            pos.z = h->hero_eng->XYZ.z - (d * rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
             if (PointInZone(&pos.x, 0) != 0) {
                 h->hero_ai->AIpad |= 0x80;
                 h->hero_ai->AIpad &= ~0x8000;
             }
-            pos.x = h->hero_eng->unk10.x - (rcossin_tbl[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 0x79 >> 8);
+            pos.x = h->hero_eng->XYZ.x - (rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x79 >> 8);
             pos.y = 0;
-            pos.z = h->hero_eng->unk10.z - (rcossin_tbl[h->hero_eng->unk1E & 0xFFF].unk2 * 0x79 >> 8);
+            pos.z = h->hero_eng->XYZ.z - (rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2 * 0x79 >> 8);
             if (GameMode == 0x17 && (d = PointInZone(&pos.x, 3) != 1)) {
                 h->hero_ai->AIpad |= 0x20;
                 h->hero_ai->AIpad &= ~0x8000;
@@ -1287,9 +1287,9 @@ void RaceAI_SteerAhead(s32 player) {
                 d = 0;
             }
             d += 0xBE8;
-            pos.x = Heroes[player].hero_eng->unk10.x - (d * rcossin_tbl[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+            pos.x = Heroes[player].hero_eng->XYZ.x - (d * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
             pos.y = 0;
-            pos.z = Heroes[player].hero_eng->unk10.z - (d * rcossin_tbl[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
+            pos.z = Heroes[player].hero_eng->XYZ.z - (d * rcossin_tbl[Heroes[player].hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
             Heroes[player].hero_ai->AIpad |= 0x8000;
             Heroes[player].hero_ai->AIpad |= RaceAI_FollowTrack(player);
             Heroes[player].hero_ai->AIpad |= 0x800;
@@ -1305,8 +1305,8 @@ void RaceAI_SteerTo(s32 player, SLONG_XYZ *pos) {
 
     base = Heroes;
     hero = base + player;
-    d = (((get_angle(hero->hero_eng->unk10.x - pos->x, hero->hero_eng->unk10.z - pos->z) & 0xFFF) -
-          hero->hero_eng->unk1E) << 20) >> 20;
+    d = (((get_angle(hero->hero_eng->XYZ.x - pos->x, hero->hero_eng->XYZ.z - pos->z) & 0xFFF) -
+          hero->hero_eng->xform.rot.vy) << 20) >> 20;
     if (d > 500) {
         hero->hero_ai->AIpad |= 0x20;
         hero->hero_ai->AIpad &= ~0x80;
@@ -1327,9 +1327,9 @@ static inline NAS *RacePickupAheadInline(s32 arg0) {
     nas = RaceNearestPickup(arg0);
     if (nas != NULL) {
         hero = &Heroes[arg0];
-        if (DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&hero->hero_eng->unk10) <= 0x270FFF) {
-            angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
-            if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
+        if (DistXZSq((SLONG_XYZ *)&nas->Engine->XYZ, (SLONG_XYZ *)&hero->hero_eng->XYZ) <= 0x270FFF) {
+            angle = get_angle(nas->Engine->XYZ.x, nas->Engine->XYZ.z) & 0xFFF;
+            if ((get_angle(hero->hero_eng->XYZ.x, hero->hero_eng->XYZ.z) & 0xFFF) < angle) {
                 return nas;
             }
         }
@@ -1345,7 +1345,7 @@ void RaceAI_ChasePickup(s32 arg0) {
     if (ext != NULL) {
         nas = RacePickupAheadInline(arg0);
         if (nas != NULL) {
-            RaceAI_SteerTo(arg0, &nas->Engine->unk10);
+            RaceAI_SteerTo(arg0, &nas->Engine->XYZ);
             return;
         }
         ext[6] = (s32)RaceAI_SteerAhead;
@@ -1677,15 +1677,15 @@ s32 RaceBarrelHitHero(RaceBarrel *b) {
             return hit;
         }
         e = Heroes[i].hero_eng;
-        dx = e->unk10.x - obj->unk04;
-        dz = e->unk10.z - obj->unk0C;
+        dx = e->XYZ.x - obj->unk04;
+        dz = e->XYZ.z - obj->unk0C;
         d = dx * dx + dz * dz;
         if (d < 0x24000) {
             d = csqrt(d) >> 6;
             angle = get_angle(dx, dz) & 0xFFF;
             d = 0x180 - d;
-            e->unk10.x += d * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
-            e->unk10.z += d * rcossin_tbl[angle].unk2 >> 12;
+            e->XYZ.x += d * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
+            e->XYZ.z += d * rcossin_tbl[angle].unk2 >> 12;
             RaceBarrelBump(i, b);
             if (Heroes[i].hero_mode != 0x61) {
                 r = Random(2);
@@ -2664,16 +2664,16 @@ void InitialiseRACE(void) {
         }
         printf("hero status %d\n", Heroes[i].hero_status);
         RaceInitHeroMove(i);
-        Heroes[i].hero_eng->unk5D = 1;
+        Heroes[i].hero_eng->xform.order = 1;
         fux = AddExt(Heroes[i].hero, 0x174, 0x10000000);
         if (fux == NULL) {
             continue;
         }
         he = Heroes[i].hero_eng;
         move = Heroes[i].hero_move;
-        he->unk1E = 0;
+        he->xform.rot.vy = 0;
         move->forward_angle = 0;
-        Heroes[i].hero_eng->unk5E = 1;
+        Heroes[i].hero_eng->xform.dirty = 1;
         sub = Heroes[i].hero_eng->sub;
         sub->flags |= 0x8000;
         ai = AddExt(Heroes[i].hero, 0x20, 0x20000000);
@@ -2714,7 +2714,7 @@ void InitialiseRACE(void) {
         fux->unk140 = 0;
         fux->unk148 = 0;
         RaceUnused1 = 0;
-        Heroes[i].hero_eng->unk10.y = RaceFloorLevel;
+        Heroes[i].hero_eng->XYZ.y = RaceFloorLevel;
         fux->unk150 = RaceDecel;
         fux->unk154 = RaceMoveTune5;
         fux->unk14C = RaceJumpVel;
@@ -2727,11 +2727,11 @@ void InitialiseRACE(void) {
         if (eng != NULL) {
             fux->unk1C = eng;
             eng->sub->flags &= ~0x8000;
-            eng->unk5C = 1;
-            eng->unk5D = 0;
-            eng->unk2C.x = 0x800;
-            eng->unk2C.y = 0x800;
-            eng->unk2C.z = 0x800;
+            eng->xform.hasScale = 1;
+            eng->xform.order = 0;
+            eng->xform.scale.vx = 0x800;
+            eng->xform.scale.vy = 0x800;
+            eng->xform.scale.vz = 0x800;
         }
     }
     if (G63->mode == 0x1A) {
@@ -2860,8 +2860,8 @@ void RacePreMoveHero(s32 player) {
                         }
                         m->x_acc = fux->unk158;
                         m->z_acc = fux->unk158;
-                        m->x_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
+                        m->x_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
                         if (AiPlayerSkill[player].level >= 0x17 && G63B->heroOut[player] != 0) {
                             fux->unk58 -= 0x180 - RaceSteerAngles[AiPlayerSkill[player].level - 0x16];
                         } else if (Heroes[player].hero_mode != 0x61) {
@@ -2895,8 +2895,8 @@ void RacePreMoveHero(s32 player) {
                             fux->unk13C >>= 3;
                             fux->unk140 >>= 3;
                         }
-                        m->x_max = fux->unk14C * rcossin_tbl[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max = fux->unk14C * rcossin_tbl[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
+                        m->x_max = fux->unk14C * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->unk14C * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
                     }
                 }
             }
@@ -2921,23 +2921,23 @@ s32 RaceKeepOnTrack(s32 arg0, s32 arg1) {
 
     eng = Heroes[arg0].hero_eng;
     if (eng != NULL) {
-        dist = csqrt(eng->unk10.x * eng->unk10.x + eng->unk10.z * eng->unk10.z) >> 6;
+        dist = csqrt(eng->XYZ.x * eng->XYZ.x + eng->XYZ.z * eng->XYZ.z) >> 6;
         if (arg1 == 0) {
             if (dist > 0xB00) {
-                s32 ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+                s32 ang = get_angle(eng->XYZ.x, eng->XYZ.z) & 0xFFF;
                 s32 c = rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
                 s32 d = dist - 0xAFC;
-                eng->unk10.x -= d * c >> 12;
-                eng->unk10.z -= d * rcossin_tbl[ang].unk2 >> 12;
+                eng->XYZ.x -= d * c >> 12;
+                eng->XYZ.z -= d * rcossin_tbl[ang].unk2 >> 12;
                 return 1;
             }
         } else {
             if (dist < 0x464) {
-                s32 ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+                s32 ang = get_angle(eng->XYZ.x, eng->XYZ.z) & 0xFFF;
                 s32 c = rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
                 s32 d = dist - 0x460;
-                eng->unk10.x -= d * c >> 12;
-                eng->unk10.z -= d * rcossin_tbl[ang].unk2 >> 12;
+                eng->XYZ.x -= d * c >> 12;
+                eng->XYZ.z -= d * rcossin_tbl[ang].unk2 >> 12;
                 return 1;
             }
         }
@@ -2979,7 +2979,7 @@ void RaceMoveHero(s32 player) {
     h = hb + player;
     fux = (RaceFux *)h->hero->FUX;
     if (fux != NULL) {
-        pos = h->hero_eng->unk10;
+        pos = h->hero_eng->XYZ;
         vx = fux->unk13C;
         vz = fux->unk140;
         eng = h->hero_eng;
@@ -3028,14 +3028,14 @@ void RaceMoveHero(s32 player) {
                 }
             }
         }
-        eng->OldXYZ = eng->unk10;
+        eng->OldXYZ = eng->XYZ;
         if (G63->mode == 0x19) {
             i = 0;
             while (1) {
                 if (i >= 6) {
                     break;
                 }
-                if (XZBoxToSphere(RaceSpinnerBoxes[i], &Heroes[player].hero_eng->unk10, 0, &pos) == 4 &&
+                if (XZBoxToSphere(RaceSpinnerBoxes[i], &Heroes[player].hero_eng->XYZ, 0, &pos) == 4 &&
                     RacePistons[i].state == 1) {
                     ga = get_angle(eng->OldXYZ.x - pos.x, eng->OldXYZ.z - pos.z) & 0xFFF;
                     vx = -(rcossin_tbl[(ga - 0x400) & 0xFFF].unk2 * 6);
@@ -3105,8 +3105,8 @@ void RaceMoveHero(s32 player) {
         } while (0);
         e = h2->hero_eng;
         pz = pos.z;
-        h2->hero_eng->unk10.x += pos.x - e->unk10.x;
-        h2->hero_eng->unk10.z += pz - e->unk10.z;
+        h2->hero_eng->XYZ.x += pos.x - e->XYZ.x;
+        h2->hero_eng->XYZ.z += pz - e->XYZ.z;
         if (!(h2->hero_status & 0x200)) {
             b = 0;
             while (1) {
@@ -3117,8 +3117,8 @@ void RaceMoveHero(s32 player) {
                     if (G63->mode != 0x18 && G63->mode != 0x1A) {
                         hit = RaceTrackCollide(&pos, &out, 200, 1, 0);
                     } else {
-                        hit = Heroes[player].hero_eng->unk10.x * Heroes[player].hero_eng->unk10.x +
-                                  Heroes[player].hero_eng->unk10.z * Heroes[player].hero_eng->unk10.z >
+                        hit = Heroes[player].hero_eng->XYZ.x * Heroes[player].hero_eng->XYZ.x +
+                                  Heroes[player].hero_eng->XYZ.z * Heroes[player].hero_eng->XYZ.z >
                             (G63->mode == 0x1A ? 0xA90000 : 0x900000);
                     }
                     if (hit && Heroes[player].hero_mode != 0x61) {
@@ -3211,7 +3211,7 @@ void RaceHeroIdle(s32 player) {
 
     base = Heroes;
     h1 = &base[player];
-    h1->hero_eng->unk1C -= h1->hero_eng->unk1C >> 1;
+    h1->hero_eng->xform.rot.vx -= h1->hero_eng->xform.rot.vx >> 1;
     f = (RaceSwimFux *)h1->hero->FUX;
     if (f == NULL) {
         return;
@@ -3231,7 +3231,7 @@ void RaceHeroIdle(s32 player) {
     if (h2->hero_move == NULL) {
         return;
     }
-    h2->hero_eng->unk5E = 1;
+    h2->hero_eng->xform.dirty = 1;
     spawned = 0;
     if (f->unk24 == 0) {
         pb = (PadState *)Pads;
@@ -3292,10 +3292,10 @@ void RaceHeroIdle(s32 player) {
                     hb = Heroes;
                     h = &hb[player];
                     e = h->hero_eng;
-                    pos.x = e->unk10.x + (rcossin_tbl[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    pos.x = e->XYZ.x + (rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
                     e = h->hero_eng;
-                    pos.z = e->unk10.z + (rcossin_tbl[e->unk1E & 0xFFF].unk2 * 25 >> 9);
-                    pos.y = h->hero_eng->unk10.y;
+                    pos.z = e->XYZ.z + (rcossin_tbl[e->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
+                    pos.y = h->hero_eng->XYZ.y;
                 }
                 if (--f->unk48 == -1) {
                     if (G63B->mode == 0x18 && (G63B->levelFlags & 0x80) && G63B->heroOut[player] == 0) {
@@ -3328,16 +3328,16 @@ void RaceHeroIdle(s32 player) {
             if (((PadState *)Pads)[player].dir & 0x800) {
                 if (f->unk90 == 0) {
                     if (player == 0) {
-                        PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                     }
                     if (player == 1) {
-                        PlaySfx(0x645, &Heroes[1].hero_eng->sfx, &Heroes[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x645, &Heroes[1].hero_eng->sfx, &Heroes[1].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                     }
                     if (player == 2) {
-                        PlaySfx(0x646, &Heroes[2].hero_eng->sfx, &Heroes[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x646, &Heroes[2].hero_eng->sfx, &Heroes[2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                     }
                     if (player == 3) {
-                        PlaySfx(0x647, &Heroes[3].hero_eng->sfx, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x647, &Heroes[3].hero_eng->sfx, &Heroes[3].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                     }
                     f->unk90 = 1;
                 }
@@ -3348,10 +3348,10 @@ void RaceHeroIdle(s32 player) {
                     hb = Heroes;
                     h = &hb[player];
                     e = h->hero_eng;
-                    pos.x = e->unk10.x + (rcossin_tbl[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    pos.x = e->XYZ.x + (rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
                     e = h->hero_eng;
-                    pos.z = e->unk10.z + (rcossin_tbl[e->unk1E & 0xFFF].unk2 * 25 >> 9);
-                    pos.y = h->hero_eng->unk10.y;
+                    pos.z = e->XYZ.z + (rcossin_tbl[e->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
+                    pos.y = h->hero_eng->XYZ.y;
                 }
                 if (--f->unk4C == -1) {
                     if (G63B->mode == 0x18 && (G63B->levelFlags & 0x80) && G63B->heroOut[player] == 0) {
@@ -3379,10 +3379,10 @@ void RaceHeroIdle(s32 player) {
             EXTengine *e2;
 
             e2 = h2->hero_eng;
-            pos.x = e2->unk10.x + (rcossin_tbl[(e2->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            pos.x = e2->XYZ.x + (rcossin_tbl[(e2->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
             e2 = h2->hero_eng;
-            pos.z = e2->unk10.z + (rcossin_tbl[e2->unk1E & 0xFFF].unk2 * 25 >> 9);
-            pos.y = h2->hero_eng->unk10.y;
+            pos.z = e2->XYZ.z + (rcossin_tbl[e2->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
+            pos.y = h2->hero_eng->XYZ.y;
             if (GameMode != 0x19) {
                 CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
             } else {
@@ -3394,7 +3394,7 @@ void RaceHeroIdle(s32 player) {
     if (G63B->mode == 0x1A) {
         RaceFloorLevel = -0xB4;
     }
-    Heroes[player].hero_eng->unk10.y = RaceFloorLevel;
+    Heroes[player].hero_eng->XYZ.y = RaceFloorLevel;
     RaceHeroUsePickup(player);
     if (G63B->mode == 0x19) {
         RaceHeroTestJump(player);
@@ -3416,12 +3416,12 @@ void SetRaceHeroOffTrack(s32 player) {
 
     base = Heroes;
     h = &base[player];
-    h->hero_eng->unk1C = 0;
-    h->hero_eng->unk5E = 1;
+    h->hero_eng->xform.rot.vx = 0;
+    h->hero_eng->xform.dirty = 1;
     TestRaceHeroWon(player);
     f = (RaceResetFux *)h->hero->FUX;
     if (f != NULL) {
-        f->unk54 = get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF;
+        f->unk54 = get_angle(h->hero_eng->XYZ.x, h->hero_eng->XYZ.z) & 0xFFF;
         f->unk6C = 0x300;
         f->unk60 = 0;
         f->unk80 = 2;
@@ -3450,7 +3450,7 @@ void SetRaceHeroOffTrack(s32 player) {
         if (player == 3) {
             PlaySfx(0x653, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        h->hero_eng->unk5E = 1;
+        h->hero_eng->xform.dirty = 1;
         SetHeroSeq(player, 0x4B);
         if (G63->mode == 0x19) {
             SetHeroSeq(player, 0x54);
@@ -3515,10 +3515,10 @@ void RaceHeroOffTrack(s32 player) {
         h->hero_eng->sub->unk68 = 0;
         ProcessHeroAnim(player);
         h->hero_move->forward_angle = ((f->unk54 - 0x200) << 20) >> 20;
-        h->hero_eng->unk1E = ((f->unk54 - 0x200) << 20) >> 20;
-        h->hero_eng->unk20 = 0;
+        h->hero_eng->xform.rot.vy = ((f->unk54 - 0x200) << 20) >> 20;
+        h->hero_eng->xform.rot.vz = 0;
         h->hero_frozen = 2;
-        h->hero_eng->unk1C -= h->hero_eng->unk1C >> 1;
+        h->hero_eng->xform.rot.vx -= h->hero_eng->xform.rot.vx >> 1;
         m = h->hero_move;
         if (m != NULL) {
             m->x_max = 0;
@@ -3539,16 +3539,16 @@ void RaceHeroOffTrack(s32 player) {
             if (((PadState *)Pads)[player].dir & 0x8000) {
                 if (f->unk90 == 0) {
                     if (player == 0) {
-                        PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                     }
                     if (player == 1) {
-                        PlaySfx(0x645, &Heroes[1].hero_eng->sfx, &Heroes[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x645, &Heroes[1].hero_eng->sfx, &Heroes[1].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                     }
                     if (player == 2) {
-                        PlaySfx(0x646, &Heroes[2].hero_eng->sfx, &Heroes[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x646, &Heroes[2].hero_eng->sfx, &Heroes[2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                     }
                     if (player == 3) {
-                        PlaySfx(0x647, &Heroes[3].hero_eng->sfx, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x647, &Heroes[3].hero_eng->sfx, &Heroes[3].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                     }
                     f->unk90 = 1;
                 }
@@ -3556,10 +3556,10 @@ void RaceHeroOffTrack(s32 player) {
                     hb = Heroes;
                     h2 = &hb[player];
                     e = h2->hero_eng;
-                    sp.x = e->unk10.x + (rcossin_tbl[(e->unk1E - 0x400) & 0xFFF].unk2 * 256 >> 12);
+                    sp.x = e->XYZ.x + (rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 256 >> 12);
                     e = h2->hero_eng;
-                    sp.z = e->unk10.z + (rcossin_tbl[e->unk1E & 0xFFF].unk2 * 256 >> 12);
-                    sp.y = h2->hero_eng->unk10.y;
+                    sp.z = e->XYZ.z + (rcossin_tbl[e->xform.rot.vy & 0xFFF].unk2 * 256 >> 12);
+                    sp.y = h2->hero_eng->XYZ.y;
                     CreateNAS(sp.x, sp.y, sp.z, 0x1709, 0x11);
                     f->unk48 = 4;
                 }
@@ -3586,26 +3586,26 @@ void RaceHeroOffTrack(s32 player) {
             if (G63->mode == 0x19) {
                 SetHeroSeq(player, 0x52);
             }
-            h->hero_eng->unk10.x -= rcossin_tbl[(f->unk54 - 0x400) & 0xFFF].unk2 * 512 >> 12;
-            h->hero_eng->unk10.z -= rcossin_tbl[f->unk54 & 0xFFF].unk2 * 512 >> 12;
-            h->hero_eng->unk10.y = -0x578;
-            h->hero_eng->unk20 = 0;
+            h->hero_eng->XYZ.x -= rcossin_tbl[(f->unk54 - 0x400) & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->XYZ.z -= rcossin_tbl[f->unk54 & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->XYZ.y = -0x578;
+            h->hero_eng->xform.rot.vz = 0;
             if (G63->mode == 0x17) {
-                RaceDiveSplash(&h->hero_eng->unk10, 9);
+                RaceDiveSplash(&h->hero_eng->XYZ, 9);
             }
             if (GameMode == 0x18) {
-                RaceDiveSplash(&Heroes[player].hero_eng->unk10, 9);
+                RaceDiveSplash(&Heroes[player].hero_eng->XYZ, 9);
             }
             if (GameMode == 0x19) {
-                RaceDiveSplash(&Heroes[player].hero_eng->unk10, 5);
+                RaceDiveSplash(&Heroes[player].hero_eng->XYZ, 5);
             }
             if (GameMode == 0x1A) {
-                RaceDiveSplash(&Heroes[player].hero_eng->unk10, 9);
+                RaceDiveSplash(&Heroes[player].hero_eng->XYZ, 9);
             }
             PlaySfx(0x655, NULL, NULL, 0x1000, 0x1E00, 0);
         }
     }
-    Heroes[player].hero_eng->unk5E = 1;
+    Heroes[player].hero_eng->xform.dirty = 1;
 }
 
 void SetRaceHeroRun(s32 player) {
@@ -3622,8 +3622,8 @@ void SetRaceHeroRun(s32 player) {
         m = h->hero_move;
         if (m != NULL) {
             spd = HeroHooks.RunSpeeds[h->hero_name * 3];
-            m->x_vel = (spd * rcossin_tbl[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
-            m->z_vel = (spd * rcossin_tbl[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
+            m->x_vel = (spd * rcossin_tbl[(h->hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2) >> 12;
+            m->z_vel = (spd * rcossin_tbl[(h->hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2) >> 12;
         }
         f->unk40 = 0;
     }
@@ -3637,7 +3637,7 @@ void RaceHeroRun(s32 player) {
 
     base = Heroes;
     h = &base[player];
-    h->hero_eng->unk10.y = 0;
+    h->hero_eng->XYZ.y = 0;
     f = (RaceFux40 *)h->hero->FUX;
     if (f == NULL) {
         return;
@@ -3646,7 +3646,7 @@ void RaceHeroRun(s32 player) {
     if (m == NULL) {
         return;
     }
-    h->hero_eng->unk10.y = 0;
+    h->hero_eng->XYZ.y = 0;
     if (++f->unk40 > 20) {
         SetHeroAction(player, 0x5B);
         if (GameMode == 0x19) {
@@ -3657,8 +3657,8 @@ void RaceHeroRun(s32 player) {
     if (((PadState *)Pads)[player].dir & 0x8000) {
         m->x_acc = 0xC;
         m->z_acc = 0xC;
-        m->x_max = (RaceJumpVel * rcossin_tbl[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
-        m->z_max = (RaceJumpVel * rcossin_tbl[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
+        m->x_max = (RaceJumpVel * rcossin_tbl[(h->hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2) >> 12;
+        m->z_max = (RaceJumpVel * rcossin_tbl[(h->hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2) >> 12;
     }
     ProcessHeroAnim(player);
     RaceHeroUsePickup(player);
@@ -3768,13 +3768,13 @@ void RaceHeroDazed(s32 arg0) {
         ProcessHeroAnim(arg0);
     }
     hero->hero_frozen = 2;
-    hero->hero_eng->unk5E = 1;
+    hero->hero_eng->xform.dirty = 1;
     if (RaceJumpAbove(arg0)) {
-        Heroes[arg0].hero_eng->unk10.y -= abs(RaceFloorLevel - Heroes[arg0].hero_eng->unk10.y);
-        Heroes[arg0].hero_eng->unk1C -= Heroes[arg0].hero_eng->unk1C >> 1;
-        Heroes[arg0].hero_eng->unk1E += 0x100;
+        Heroes[arg0].hero_eng->XYZ.y -= abs(RaceFloorLevel - Heroes[arg0].hero_eng->XYZ.y);
+        Heroes[arg0].hero_eng->xform.rot.vx -= Heroes[arg0].hero_eng->xform.rot.vx >> 1;
+        Heroes[arg0].hero_eng->xform.rot.vy += 0x100;
     } else {
-        Heroes[arg0].hero_eng->unk1C += 0x80;
+        Heroes[arg0].hero_eng->xform.rot.vx += 0x80;
     }
     if (fux->unkC-- < 0) {
         SetHeroAction(arg0, 0x5B);
@@ -3795,9 +3795,9 @@ void SetRaceHeroJump(s32 player) {
         f->unk138 = 0;
         m = h->hero_move;
         if (m != NULL) {
-            pos.x = h->hero_eng->unk10.x + (rcossin_tbl[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
-            pos.z = h->hero_eng->unk10.z + (rcossin_tbl[h->hero_eng->unk1E & 0xFFF].unk2 * 25 >> 9);
-            pos.y = h->hero_eng->unk10.y;
+            pos.x = h->hero_eng->XYZ.x + (rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            pos.z = h->hero_eng->XYZ.z + (rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
+            pos.y = h->hero_eng->XYZ.y;
             m->jump_acc = 5;
             m->jump_dec = 10;
             m->jump_vel = -0x44;
@@ -3837,7 +3837,7 @@ void RaceHeroJump(s32 player) {
         fux->phase = 1;
     }
     if (fux->phase == 1 && RaceJumpAbove(player)) {
-        Heroes[player].hero_eng->unk10.y -= abs(RaceFloorLevel - Heroes[player].hero_eng->unk10.y);
+        Heroes[player].hero_eng->XYZ.y -= abs(RaceFloorLevel - Heroes[player].hero_eng->XYZ.y);
         SetHeroAction(player, 0x5B);
     }
 }
@@ -3861,7 +3861,7 @@ void RaceHeroOiled(s32 arg0) {
         return;
     }
     hero->hero_frozen = 1000;
-    hero->hero_eng->unk5E = 1;
+    hero->hero_eng->xform.dirty = 1;
     if (fux->unk24-- < 0) {
         move->x_max = 0;
         move->z_max = 0;
@@ -3873,7 +3873,7 @@ void RaceHeroOiled(s32 arg0) {
         }
     } else {
         do {
-            hero->hero_eng->unk1E += 0x100;
+            hero->hero_eng->xform.rot.vy += 0x100;
         } while (0);
     }
 }
@@ -3905,14 +3905,14 @@ void RaceHeroKick(s32 arg0) {
         SetHeroAction(arg0, 0x5B);
         return;
     }
-    pos = &eng->unk10;
+    pos = &eng->XYZ;
     i = 0;
     lim = 0x27100;
     other = base;
 loop:
     found = -1;
     if (i < 4) {
-        if (i == arg0 || DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&other->hero_eng->unk10) >= lim) {
+        if (i == arg0 || DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&other->hero_eng->XYZ) >= lim) {
             other++;
             i++;
             goto loop;
@@ -3923,7 +3923,7 @@ loop:
         move = Heroes[found].hero_move;
         if (move != NULL) {
             eng2 = Heroes[found].hero_eng;
-            angle = get_angle(eng->unk10.x - eng2->unk10.x, eng->unk10.z - eng2->unk10.z) & 0xFFF;
+            angle = get_angle(eng->XYZ.x - eng2->XYZ.x, eng->XYZ.z - eng2->XYZ.z) & 0xFFF;
             if ((u32)(angle - 0x201) < 0xBFF) {
                 move->x_vel = -((rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 7);
                 move->z_vel = -((rcossin_tbl[angle].unk2 * 3) >> 7);
@@ -3966,7 +3966,7 @@ s32 RaceHeroUsePickup(s32 player) {
                 fux->unk18 &= ~1;
                 return 1;
             } else if (t == 0x20) {
-                nas = CreateNAS(eng->unk10.x, eng->unk10.y + 0x60, eng->unk10.z, 0x1708, 0x11);
+                nas = CreateNAS(eng->XYZ.x, eng->XYZ.y + 0x60, eng->XYZ.z, 0x1708, 0x11);
                 if (nas != NULL) {
                     ext = FindExtension(nas, 0x10000000);
                     if (ext != NULL) {
@@ -3979,15 +3979,15 @@ s32 RaceHeroUsePickup(s32 player) {
             } else if (t == 2) {
                 pp = &pos;
                 pos.y = 0;
-                pos.x = eng->unk10.x + ((rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11);
-                pos.z = eng->unk10.z + ((rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 75) >> 11);
+                pos.x = eng->XYZ.x + ((rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 75) >> 11);
+                pos.z = eng->XYZ.z + ((rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 75) >> 11);
                 i = 0;
                 lim = 0x1DE84;
                 other = base;
             loop:
                 found = -1;
                 if (i < 4) {
-                    if (i == player || DistXZSq((SLONG_XYZ *)pp, (SLONG_XYZ *)&other->hero_eng->unk10) >= lim) {
+                    if (i == player || DistXZSq((SLONG_XYZ *)pp, (SLONG_XYZ *)&other->hero_eng->XYZ) >= lim) {
                         other++;
                         i++;
                         goto loop;
@@ -4002,7 +4002,7 @@ s32 RaceHeroUsePickup(s32 player) {
                     return 1;
                 }
             } else if (t == 4) {
-                nas = CreateNAS(eng->unk10.x, -0x20, eng->unk10.z, 0x1704, 0x11);
+                nas = CreateNAS(eng->XYZ.x, -0x20, eng->XYZ.z, 0x1704, 0x11);
                 if (nas != NULL) {
                     ext = FindExtension(nas, 0x10000000);
                     if (ext != NULL) {
@@ -4054,8 +4054,8 @@ s32 RaceHeroTestOil(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = base + arg0;
 
-    if (PointInZone((s32 *)&hero->hero_eng->unk10, 2) == 0 &&
-        PointInZone((s32 *)&hero->hero_eng->unk10, 3) == 0) {
+    if (PointInZone((s32 *)&hero->hero_eng->XYZ, 2) == 0 &&
+        PointInZone((s32 *)&hero->hero_eng->XYZ, 3) == 0) {
         return 0;
     }
     if (hero->hero_mode != 0x60) {
@@ -4073,10 +4073,10 @@ void SetRaceHeroWinner(s32 player) {
     SetHeroSeq(player, 0x48);
     base = Heroes;
     hero = base + player;
-    hero->hero_eng->unk20 = 0;
-    hero->hero_eng->unk1C = 0;
-    hero->hero_eng->unk10.y = RaceFloorLevel;
-    hero->hero_eng->unk5E = 1;
+    hero->hero_eng->xform.rot.vz = 0;
+    hero->hero_eng->xform.rot.vx = 0;
+    hero->hero_eng->XYZ.y = RaceFloorLevel;
+    hero->hero_eng->xform.dirty = 1;
     if (GameMode != 0x19) {
         RequestHeroAnim(player, 0);
         return;
@@ -4487,7 +4487,7 @@ s32 RaceHeroCollide(s32 player)
       {
         continue;
       }
-      dy = abs(oeng->unk10.y - eng->unk10.y);
+      dy = abs(oeng->XYZ.y - eng->XYZ.y);
       if (dy > lim)
       {
         continue;
@@ -4496,8 +4496,8 @@ s32 RaceHeroCollide(s32 player)
       {
         continue;
       }
-      dx = oeng->unk10.x - eng->unk10.x;
-      dz = oeng->unk10.z - eng->unk10.z;
+      dx = oeng->XYZ.x - eng->XYZ.x;
+      dz = oeng->XYZ.z - eng->XYZ.z;
       dist = csqrt((dx * dx) + (dz * dz)) >> 6;
       if (dist >= 0x180)
       {
@@ -4506,8 +4506,8 @@ s32 RaceHeroCollide(s32 player)
       r = Random(4);
       ang = get_angle(dx, dz) & 0xFFF;
       dist = (lim - dist) + 8;
-      eng->unk10.x -= (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-      eng->unk10.z -= (dist * rcossin_tbl[ang].unk2) >> 12;
+      eng->XYZ.x -= (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+      eng->XYZ.z -= (dist * rcossin_tbl[ang].unk2) >> 12;
       RaceHeroesBump(player, i);
       a = (RaceBumpFux *) Heroes[player].hero->FUX;
       hit = 1;
@@ -4615,7 +4615,7 @@ s32 RaceMissileHitHeroes(u8 *arg0, u32 arg1) {
             return -1;
         }
         if (i != arg1 && Heroes[i].hero_mode != 0x61) {
-            d = DistXZSq(arg0, &Heroes[i].hero_eng->unk10);
+            d = DistXZSq(arg0, &Heroes[i].hero_eng->XYZ);
             if (abs(*(s32 *)(arg0 + 4) - *(s32 *)((u8 *)Heroes[i].hero_eng + 0x14)) > 0x180) {
                 break;
             }
@@ -4653,8 +4653,8 @@ void InitRaceMissile(NAS *m) {
     if (ext != NULL) {
         m->Engine->sub->entity = 0x2011;
         m->Engine->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_Powerups]) + 0x2028;
-        m->Engine->unk5D = 2;
-        m->Engine->unk5C = 1;
+        m->Engine->xform.order = 2;
+        m->Engine->xform.hasScale = 1;
         m->Engine->sub->unk51 = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk64 = 0x8C;
@@ -4674,13 +4674,13 @@ void InitRaceMissile(NAS *m) {
             ext->unk5C = e;
             e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
             e->sub->entity = 0x2001;
-            e->unk5C = 1;
-            e->unk5D = 0;
-            e->unk10 = m->Engine->unk10;
+            e->xform.hasScale = 1;
+            e->xform.order = 0;
+            e->XYZ = m->Engine->XYZ;
             e->sub->unk76 = 0x800;
             e->sub->flags |= 0x40008041;
         }
-        PlaySfx(0x522, &m->Engine->sfx, &m->Engine->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x522, &m->Engine->sfx, &m->Engine->XYZ, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -4700,35 +4700,35 @@ void PlotRaceMissile(NAS *m) {
     }
     switch (ext->unk10) {
     case 0:
-        RaceToPolar(&m->Engine->unk10, &ext->unk14);
-        if ((Heroes[ext->unkC].hero_eng->unk1E - ext->unk18) << 20 > 0) {
+        RaceToPolar(&m->Engine->XYZ, &ext->unk14);
+        if ((Heroes[ext->unkC].hero_eng->xform.rot.vy - ext->unk18) << 20 > 0) {
             ext->unk1C = -(ext->unk64 << 8) / ext->unk14;
         } else {
             ext->unk1C = (ext->unk64 << 8) / ext->unk14;
         }
-        m->Engine->unk1E = Heroes[ext->unkC].hero_eng->unk1E;
-        ext->pos = Heroes[ext->unkC].hero_eng->unk10;
+        m->Engine->xform.rot.vy = Heroes[ext->unkC].hero_eng->xform.rot.vy;
+        ext->pos = Heroes[ext->unkC].hero_eng->XYZ;
         ext->unk10 = 1;
         break;
     case 1:
         if (--ext->unk68 == -1) {
-            RaceSpawnPuff(&m->Engine->unk10, 0, &HeroModelBank[DB_CrateEffects]);
+            RaceSpawnPuff(&m->Engine->XYZ, 0, &HeroModelBank[DB_CrateEffects]);
             ext->unk68 = 2;
         }
         break;
     }
-    ext->pos.x -= (ext->unk64 * rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-    ext->pos.z -= (ext->unk64 * rcossin_tbl[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+    ext->pos.x -= (ext->unk64 * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->unk64 * rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
     if (RaceMissileHitHeroes((u8 *)&ext->pos, ext->unkC) != -1) {
-        RaceSpawnPuff(&m->Engine->unk10, 1, &HeroModelBank[DB_CrateEffects]);
+        RaceSpawnPuff(&m->Engine->XYZ, 1, &HeroModelBank[DB_CrateEffects]);
         PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
         if (m->Engine->sfx != NULL) {
             StopSfx(m->Engine->sfx);
         }
     } else {
-        m->Engine->unk5E = 1;
-        if (csqrt(m->Engine->unk10.x * m->Engine->unk10.x
-                  + m->Engine->unk10.z * m->Engine->unk10.z) >> 6 > 0xF00) {
+        m->Engine->xform.dirty = 1;
+        if (csqrt(m->Engine->XYZ.x * m->Engine->XYZ.x
+                  + m->Engine->XYZ.z * m->Engine->XYZ.z) >> 6 > 0xF00) {
             goto kill;
         }
         count = 1;
@@ -4744,12 +4744,12 @@ void PlotRaceMissile(NAS *m) {
             if (i != 1 && RaceTrackCollide(&ext->pos, &hit, 0x96, i, 1) != 0) {
                 n.x = rcossin_tbl[hit.y & 0xFFF].unk2;
                 n.z = rcossin_tbl[(hit.y - 0x400) & 0xFFF].unk2;
-                d.x = -rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2;
-                d.z = -rcossin_tbl[(u16)m->Engine->unk1E & 0xFFF].unk2;
+                d.x = -rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2;
+                d.z = -rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2;
                 dot = (d.x * n.x >> 12) + (d.z * n.z >> 12);
                 r.x = d.x - (dot * n.x >> 11);
                 r.z = d.z - (dot * n.z >> 11);
-                m->Engine->unk1E = get_angle(r.x, r.z) + 0x800;
+                m->Engine->xform.rot.vy = get_angle(r.x, r.z) + 0x800;
                 ext->unk60++;
                 snd = Random(3);
                 if (snd == 0) {
@@ -4763,23 +4763,23 @@ void PlotRaceMissile(NAS *m) {
                 }
             }
         }
-        m->Engine->unk10 = ext->pos;
+        m->Engine->XYZ = ext->pos;
         if (ext->unk5C != NULL) {
-            ext->unk5C->unk10 = m->Engine->unk10;
-            ext->unk5C->unk10.y = 0;
-            ext->unk5C->unk2C.x = m->Engine->unk2C.x;
-            ext->unk5C->unk2C.y = m->Engine->unk2C.y;
-            ext->unk5C->unk2C.z = m->Engine->unk2C.z;
+            ext->unk5C->XYZ = m->Engine->XYZ;
+            ext->unk5C->XYZ.y = 0;
+            ext->unk5C->xform.scale.vx = m->Engine->xform.scale.vx;
+            ext->unk5C->xform.scale.vy = m->Engine->xform.scale.vy;
+            ext->unk5C->xform.scale.vz = m->Engine->xform.scale.vz;
             if (GameMode == 0x1A) {
-                ext->unk5C->unk1E = m->Engine->unk1E;
-                ext->unk5C->unk5E = 1;
-                ext->unk5C->unk10.y = -m->Engine->unk10.y;
+                ext->unk5C->xform.rot.vy = m->Engine->xform.rot.vy;
+                ext->unk5C->xform.dirty = 1;
+                ext->unk5C->XYZ.y = -m->Engine->XYZ.y;
             }
         }
         if (ext->unk60 < 3) {
             return;
         }
-        RaceSpawnPuff(&m->Engine->unk10, 1, &HeroModelBank[DB_CrateEffects]);
+        RaceSpawnPuff(&m->Engine->XYZ, 1, &HeroModelBank[DB_CrateEffects]);
         PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
     }
 kill:
@@ -4795,8 +4795,8 @@ void InitRacePickUp(NAS *m) {
         AddToGroup((NAS **)&RacePickups, m);
         m->Engine->sub->entity = 0x2006;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
-        m->Engine->unk5D = 2;
-        m->Engine->unk5C = 1;
+        m->Engine->xform.order = 2;
+        m->Engine->xform.hasScale = 1;
         ext->unk10 = -0x2000;
         ext->unk1C = 0x200;
         ext->unk40 = 0;
@@ -4811,9 +4811,9 @@ void InitRacePickUp(NAS *m) {
             ext->unk3C = e;
             e->sub->u6C.dbase = (u8 *)&HeroModelBank[DB_CrateEffects] - 0x2028;
             e->sub->entity = 0x2001;
-            e->unk5C = 1;
-            e->unk5D = 0;
-            e->unk10 = m->Engine->unk10;
+            e->xform.hasScale = 1;
+            e->xform.order = 0;
+            e->XYZ = m->Engine->XYZ;
             e->sub->unk76 = 0x800;
             e->sub->flags |= 0x40008041;
         }
@@ -4844,14 +4844,14 @@ void PlotRacePickUp(NAS *m) {
     if (GameMode != 0x19) {
         RaceBounceObject((RaceBounceObj *)m->Engine, (RaceBouncer *)&ext->pad0[0xC]);
     }
-    m->Engine->unk1E += 0x80;
-    m->Engine->unk5E = 1;
+    m->Engine->xform.rot.vy += 0x80;
+    m->Engine->xform.dirty = 1;
     switch (ext->unk38) {
     case 1:
         s = 0xC00;
-        m->Engine->unk2C.x = s;
-        m->Engine->unk2C.y = s;
-        m->Engine->unk2C.z = s;
+        m->Engine->xform.scale.vx = s;
+        m->Engine->xform.scale.vy = s;
+        m->Engine->xform.scale.vz = s;
         m->Engine->sub->entity = 0x2009;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
         break;
@@ -4876,16 +4876,16 @@ void PlotRacePickUp(NAS *m) {
         break;
     }
     if (ext->unk40 == 0) {
-        pos = &m->Engine->unk10;
+        pos = &m->Engine->XYZ;
         i = 0;
         h = Heroes;
     loop:
         if (i < 4) {
             do {
-                d = DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&h->hero_eng->unk10);
+                d = DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&h->hero_eng->XYZ);
                 lim = 0x24000;
                 if (d < lim) {
-                    if (abs(pos->y - h->hero_eng->unk10.y) < 0x200) {
+                    if (abs(pos->y - h->hero_eng->XYZ.y) < 0x200) {
                         found = i;
                         goto done;
                     }
@@ -4932,8 +4932,8 @@ void PlotRacePickUp(NAS *m) {
                     break;
                 case 4:
                     fux->unk18 = 0x10;
-                    CreateNAS(Heroes[found].hero_eng->unk10.x, Heroes[found].hero_eng->unk10.y,
-                                 Heroes[found].hero_eng->unk10.z, 0x1706, 0x11);
+                    CreateNAS(Heroes[found].hero_eng->XYZ.x, Heroes[found].hero_eng->XYZ.y,
+                                 Heroes[found].hero_eng->XYZ.z, 0x1706, 0x11);
                     break;
                 }
             }
@@ -4943,11 +4943,11 @@ void PlotRacePickUp(NAS *m) {
     }
     e = ext->unk3C;
     if (e != NULL) {
-        e->unk10 = m->Engine->unk10;
-        ext->unk3C->unk10.y = 0;
-        ext->unk3C->unk2C.x = m->Engine->unk2C.x;
-        ext->unk3C->unk2C.y = m->Engine->unk2C.y;
-        ext->unk3C->unk2C.z = m->Engine->unk2C.z;
+        e->XYZ = m->Engine->XYZ;
+        ext->unk3C->XYZ.y = 0;
+        ext->unk3C->xform.scale.vx = m->Engine->xform.scale.vx;
+        ext->unk3C->xform.scale.vy = m->Engine->xform.scale.vy;
+        ext->unk3C->xform.scale.vz = m->Engine->xform.scale.vz;
     }
 }
 
@@ -4965,11 +4965,11 @@ void RaceCountLaps(s32 player) {
         hero = base + player;
         fux = (RaceLapFux *)hero->hero->FUX;
         if (fux != NULL) {
-            get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z);
+            get_angle(hero->hero_eng->XYZ.x, hero->hero_eng->XYZ.z);
             e = hero->hero_eng;
-            if (e->unk10.x > 0) {
+            if (e->XYZ.x > 0) {
                 if (e->OldXYZ.z >= -0x1ED) {
-                    if (e->unk10.z < -0x1ED) {
+                    if (e->XYZ.z < -0x1ED) {
                         fux->cross++;
                         fux->side = 1;
                         if (fux->cross >= 2) {
@@ -4980,7 +4980,7 @@ void RaceCountLaps(s32 player) {
                         goto check;
                     }
                 }
-                if (Heroes[player].hero_eng->unk10.z >= -0x1ED) {
+                if (Heroes[player].hero_eng->XYZ.z >= -0x1ED) {
                     fux->side = 0;
                     if (--fux->cross < -1) {
                         fux->cross = -1;
@@ -5188,62 +5188,62 @@ held:
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
-            eng->unk5E = 1;
-            eng->unk1E += 0x80;
-            eng->unk10 = Heroes[p].hero_eng->unk10;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += 0x80;
+            eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
         if (fux->unk18 == 2) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2009;
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
-            eng->unk5E = 1;
-            eng->unk1E += 0x80;
-            eng->unk10 = Heroes[p].hero_eng->unk10;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += 0x80;
+            eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
         if (fux->unk18 == 4) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2005;
             eng->sub->u6C.dbase = MapScene->dbase;
-            eng->unk5E = 1;
-            eng->unk1E += 0x80;
-            eng->unk10 = Heroes[p].hero_eng->unk10;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += 0x80;
+            eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
         if (fux->unk18 == 8) {
             eng->sub->entity = 0x2002;
             eng->sub->u6C.dbase = MapScene->dbase;
-            eng->unk5E = 1;
-            eng->unk1E += 0x80;
-            eng->unk10 = Heroes[p].hero_eng->unk10;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += 0x80;
+            eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
         if (fux->unk18 == 0x10) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
             eng->sub->u6C.dbase = MapScene->dbase;
-            eng->unk5E = 1;
-            eng->unk1E += 0x80;
-            eng->unk10 = Heroes[p].hero_eng->unk10;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += 0x80;
+            eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
         if (fux->unk18 == 0x20) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2017;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
-            eng->unk5E = 1;
-            eng->unk1E += 0x80;
-            eng->unk10 = Heroes[p].hero_eng->unk10;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += 0x80;
+            eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
         if (fux->unk18 == 0x40) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
             eng->sub->u6C.dbase = MapScene->dbase;
-            eng->unk5E = 1;
-            eng->unk1E += 0x80;
-            eng->unk10 = Heroes[p].hero_eng->unk10;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += 0x80;
+            eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
         if (eng->sub->flags & 0x8000) {
-            eng->unk10.y -= 0x200;
+            eng->XYZ.y -= 0x200;
         }
     }
 }
@@ -5416,7 +5416,7 @@ void PlotTNTCrate(NAS *nas) {
                 if (i == 3) {
                     PlaySfx(0x3EF, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
-                pos = (s32 *)&nas->Engine->unk10;
+                pos = (s32 *)&nas->Engine->XYZ;
                 p = &HeroModelBank[DB_CrateObjects];
                 spawned = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
                 if (spawned != NULL) {
@@ -5440,7 +5440,7 @@ void PlotTNTCrate(NAS *nas) {
             h = Heroes;
         loop:
             if (i < 4) {
-                if (DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&h->hero_eng->unk10) < 0x40000 &&
+                if (DistXZSq((SLONG_XYZ *)&nas->Engine->XYZ, (SLONG_XYZ *)&h->hero_eng->XYZ) < 0x40000 &&
                     h->hero_mode != 0x5D) {
                     SetHeroAction(i, 0x5D);
                 }
@@ -5465,8 +5465,8 @@ void InitDinoEgg(NAS *m) {
     ext = AddExt(m, 0x34, 0x10000000);
     if (ext != NULL) {
         ext->anim = (EXTanimator *)ScriptCursorFirst(m, &DinoEggScriptInit);
-        m->Engine->unk5D = 0;
-        m->Engine->unk5C = 1;
+        m->Engine->xform.order = 0;
+        m->Engine->xform.hasScale = 1;
         m->Engine->sub->entity = 0x2005;
         m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
         ext->NasStatus = 0;
@@ -5478,9 +5478,9 @@ void InitDinoEgg(NAS *m) {
             ext->shadow = e;
             e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
             e->sub->entity = 0x2001;
-            e->unk5C = 1;
-            e->unk5D = 0;
-            e->unk10 = m->Engine->unk10;
+            e->xform.hasScale = 1;
+            e->xform.order = 0;
+            e->XYZ = m->Engine->XYZ;
             e->sub->unk76 = 0x800;
             e->sub->flags |= 0x40008041;
         }
@@ -5501,36 +5501,36 @@ void PlotDinoEgg(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    m->Engine->unk5E = 1;
+    m->Engine->xform.dirty = 1;
     status = ext->NasStatus;
     switch (status) {
     case 0:
         h = Heroes[ext->owner].hero_eng;
         ext->NasStatus = 2;
-        ext->yang = m->Engine->unk1E = h->unk1E + 0x800;
+        ext->yang = m->Engine->xform.rot.vy = h->xform.rot.vy + 0x800;
         ext->vel = 0x80;
         ext->dec = 4;
-        RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0);
-        RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 0, 1);
-        m->Engine->unk10.x += (rcossin_tbl[(h->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11;
-        m->Engine->unk10.z += (rcossin_tbl[(u16)h->unk1E & 0xFFF].unk2 * 75) >> 11;
+        RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 1, 0);
+        RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 0, 1);
+        m->Engine->XYZ.x += (rcossin_tbl[(h->xform.rot.vy - 0x400) & 0xFFF].unk2 * 75) >> 11;
+        m->Engine->XYZ.z += (rcossin_tbl[(u16)h->xform.rot.vy & 0xFFF].unk2 * 75) >> 11;
         break;
     case 2:
         if (ext->vel > 0) {
             ext->vel -= ext->dec;
         }
-        m->Engine->unk20 = (rcossin_tbl[(ext->angcounter - 0x400) & 0xFFF].unk2 * 3) >> 5;
+        m->Engine->xform.rot.vz = (rcossin_tbl[(ext->angcounter - 0x400) & 0xFFF].unk2 * 3) >> 5;
         ext->angcounter += 0x80;
-        if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0) {
-            RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
+        if (RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 1, 0) != 0) {
+            RACE_BOUNCE(ext->yang, n, d, r, m->Engine->xform.rot.vy, hit.y);
         }
-        if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
-            RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
+        if (RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 0, 1) != 0) {
+            RACE_BOUNCE(ext->yang, n, d, r, m->Engine->xform.rot.vy, hit.y);
         }
-        m->Engine->unk10.x -= (ext->vel * rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-        m->Engine->unk10.z -= (ext->vel * rcossin_tbl[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
-        m->Engine->unk1E += ((ext->yang - m->Engine->unk1E) << 20) >> 21;
-        if (RaceHitHero((u8 *)&m->Engine->unk10) != -1) {
+        m->Engine->XYZ.x -= (ext->vel * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+        m->Engine->XYZ.z -= (ext->vel * rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
+        m->Engine->xform.rot.vy += ((ext->yang - m->Engine->xform.rot.vy) << 20) >> 21;
+        if (RaceHitHero((u8 *)&m->Engine->XYZ) != -1) {
             KillNAS(m);
             RaceEggCount = 0;
             return;
@@ -5543,17 +5543,17 @@ void PlotDinoEgg(NAS *m) {
         }
         break;
     case 1:
-        m->Engine->unk10.x -= (rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x20) >> 12;
-        m->Engine->unk10.z -= (rcossin_tbl[(u16)m->Engine->unk1E & 0xFFF].unk2 * 0x20) >> 12;
+        m->Engine->XYZ.x -= (rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x20) >> 12;
+        m->Engine->XYZ.z -= (rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2 * 0x20) >> 12;
         ext->angcounter += 0x80;
         RunNasAnim(m);
-        if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0)
-            ext->yang = RaceBounce(m->Engine->unk1E, hit.y);
-        if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
-            RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
+        if (RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 1, 0) != 0)
+            ext->yang = RaceBounce(m->Engine->xform.rot.vy, hit.y);
+        if (RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 0, 1) != 0) {
+            RACE_BOUNCE(ext->yang, n, d, r, m->Engine->xform.rot.vy, hit.y);
         }
-        m->Engine->unk1E += ((ext->yang - m->Engine->unk1E) << 20) >> 21;
-        if (RaceHitHero((u8 *)&m->Engine->unk10) != -1) {
+        m->Engine->xform.rot.vy += ((ext->yang - m->Engine->xform.rot.vy) << 20) >> 21;
+        if (RaceHitHero((u8 *)&m->Engine->XYZ) != -1) {
             RaceEggCount = 0;
             KillNAS(m);
             return;
@@ -5561,11 +5561,11 @@ void PlotDinoEgg(NAS *m) {
         break;
     }
     if (ext->shadow != NULL) {
-        ext->shadow->unk10 = m->Engine->unk10;
-        ext->shadow->unk10.y = 0;
-        ext->shadow->unk2C.x = m->Engine->unk2C.x;
-        ext->shadow->unk2C.y = m->Engine->unk2C.y;
-        ext->shadow->unk2C.z = m->Engine->unk2C.z;
+        ext->shadow->XYZ = m->Engine->XYZ;
+        ext->shadow->XYZ.y = 0;
+        ext->shadow->xform.scale.vx = m->Engine->xform.scale.vx;
+        ext->shadow->xform.scale.vy = m->Engine->xform.scale.vy;
+        ext->shadow->xform.scale.vz = m->Engine->xform.scale.vz;
     }
 }
 
@@ -5620,26 +5620,26 @@ void PlotRaceShield(NAS *nas) {
     }
     switch (ext->unkC) {
     case 0:
-        fux->shield = SpawnShieldFx(&nas->Engine->unk10);
+        fux->shield = SpawnShieldFx(&nas->Engine->XYZ);
         PlaySfx(0x43A, NULL, NULL, 0x1000, 0x1E00, 0);
         ext->unkC = 1;
         break;
     case 1:
         i = 0;
         if (fux->shield != NULL) {
-            fux->shield->Engine->unk10 = hero->hero_eng->unk10;
+            fux->shield->Engine->XYZ = hero->hero_eng->XYZ;
         }
         lim = 0xC5C10;
         ext->unk1C = 0x384;
         other = base;
         me = ext->unk14[0];
-        pos = &fux->shield->Engine->unk10;
+        pos = &fux->shield->Engine->XYZ;
         while (1) {
             if (i >= 4) {
                 found = -1;
                 break;
             }
-            if (i != me && DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&other->hero_eng->unk10) < lim) {
+            if (i != me && DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&other->hero_eng->XYZ) < lim) {
                 found = i;
                 break;
             }
@@ -5651,7 +5651,7 @@ void PlotRaceShield(NAS *nas) {
             h = &hb[found];
             eng = nas->Engine;
             eng2 = h->hero_eng;
-            angle = get_angle(eng->unk10.x - eng2->unk10.x, eng->unk10.z - eng2->unk10.z);
+            angle = get_angle(eng->XYZ.x - eng2->XYZ.x, eng->XYZ.z - eng2->XYZ.z);
             c = rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 8;
             s = rcossin_tbl[angle & 0xFFF].unk2 * 8;
             fux2 = (RaceShieldFux *)h->hero->FUX;
@@ -5714,7 +5714,7 @@ loop2:
             if (fux->unk18 == 0x10) {
                 goto clear;
             }
-            pos = h->hero_eng->unk10;
+            pos = h->hero_eng->XYZ;
             tex = &HeroModelBank[DB_PolarObjects];
             tag = CreateNAS(pos.x, pp->y, pp->z, 0x1605, 0x11);
             if (tag != NULL) {
@@ -5771,12 +5771,12 @@ void InitRaceVolcano(NAS *nas) {
             if (eng != NULL) {
                 ext->eng[0] = eng;
                 eng->sub->flags &= ~0x8000;
-                eng->unk5C = 1;
-                eng->unk5D = 2;
+                eng->xform.hasScale = 1;
+                eng->xform.order = 2;
                 eng->sub->entity = 0x2019;
                 eng->sub->u6C.dbase = MapScene->dbase;
-                ext->eng[0]->unk1E = Random(0x1000);
-                ext->eng[0]->unk20 = 0;
+                ext->eng[0]->xform.rot.vy = Random(0x1000);
+                ext->eng[0]->xform.rot.vz = 0;
                 ext->unk144[0] = 0;
                 ext->unk150[0] = 0;
             }
@@ -5838,7 +5838,7 @@ void PlotRaceVolcano(NAS *nas) {
             x = rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 75 >> 9;
             z = rcossin_tbl[ang & 0xFFF].unk2 * 75 >> 9;
             if (ext->eng[rock] != NULL) {
-                ext->eng[rock]->unk1E = ang;
+                ext->eng[rock]->xform.rot.vy = ang;
                 ext->vel[rock].x = x;
                 ext->vel[rock].y = 0;
                 ext->vel[rock].z = z;
@@ -5847,9 +5847,9 @@ void PlotRaceVolcano(NAS *nas) {
                 ext->arc[rock].unk4 = 0;
                 ext->arc[rock].unk18 = 0x100;
                 ext->eng[rock]->sub->flags |= 0x8000;
-                ext->eng[rock]->unk10 = zero;
+                ext->eng[rock]->XYZ = zero;
                 ang += 0x555 + Random(0x200);
-                fx = RaceSpawnPuffRet(&ext->eng[rock]->unk10, 0xA, 0);
+                fx = RaceSpawnPuffRet(&ext->eng[rock]->XYZ, 0xA, 0);
                 ext->unk144[rock] = fx;
                 if (fx != NULL) {
                     if (z < 0) {
@@ -5863,7 +5863,7 @@ void PlotRaceVolcano(NAS *nas) {
             }
         }
         PlaySfx(0x69B, NULL, NULL, 0x1000, 0x1E00, 0);
-        RaceSpawnPuff(&nas->Engine->unk10, 4, NULL);
+        RaceSpawnPuff(&nas->Engine->XYZ, 4, NULL);
         ext->unk10 = 0x14;
         ext->unk14 = -0x80;
         ext->unkC = 2;
@@ -5877,18 +5877,18 @@ void PlotRaceVolcano(NAS *nas) {
             if (n >= 3) {
                 break;
             }
-            ext->eng[n]->unk5E = 1;
+            ext->eng[n]->xform.dirty = 1;
             cur = ext->eng[n];
             if (cur->sub->flags & 0x8000) {
-                cur->unk1C -= 0x80;
+                cur->xform.rot.vx -= 0x80;
                 eng = ext->eng[n];
-                d = eng->unk10.x * eng->unk10.x + eng->unk10.z * eng->unk10.z;
-                ArcUpdate(&zero.x, &ext->vel[n].x, &ext->arc[n], &eng->unk10.x);
+                d = eng->XYZ.x * eng->XYZ.x + eng->XYZ.z * eng->XYZ.z;
+                ArcUpdate(&zero.x, &ext->vel[n].x, &ext->arc[n], &eng->XYZ.x);
                 if (d < 0x90000) {
                     if (ext->unk144[n] != NULL) {
-                        ext->unk144[n]->Engine->unk10.y = 0;
+                        ext->unk144[n]->Engine->XYZ.y = 0;
                     }
-                    if (ext->eng[n]->unk10.y >= -0xFF && ext->arc[n].unk14 > 0) {
+                    if (ext->eng[n]->XYZ.y >= -0xFF && ext->arc[n].unk14 > 0) {
                         ext->arc[n].unk14 = -(ext->arc[n].unk14 * 0x94 >> 8);
                         if (ext->arc[n].unk34 < 0) {
                             ext->arc[n].unk34 = -0x14;
@@ -5905,30 +5905,30 @@ void PlotRaceVolcano(NAS *nas) {
                     }
                 } else {
                     if (ext->unk144[n] != NULL) {
-                        ext->unk144[n]->Engine->unk10.y = 0;
+                        ext->unk144[n]->Engine->XYZ.y = 0;
                     }
-                    if (ext->unk14 == -0x80 && ext->unk14 < ext->eng[n]->unk10.y
+                    if (ext->unk14 == -0x80 && ext->unk14 < ext->eng[n]->XYZ.y
                         && ext->arc[n].unk14 > 0) {
                         ext->arc[n].unk14 = -(ext->arc[n].unk14 * 0x94 >> 8);
-                        ext->eng[n]->unk10.y = ext->unk14;
+                        ext->eng[n]->XYZ.y = ext->unk14;
                     }
                 }
                 if (ext->unk144[n] != NULL) {
-                    ext->unk144[n]->Engine->unk10.x = ext->eng[n]->unk10.x;
-                    ext->unk144[n]->Engine->unk10.z = ext->eng[n]->unk10.z;
+                    ext->unk144[n]->Engine->XYZ.x = ext->eng[n]->XYZ.x;
+                    ext->unk144[n]->Engine->XYZ.z = ext->eng[n]->XYZ.z;
                 }
                 if (d > 0x900000) {
                     if (ext->eng[n] != NULL) {
-                        RaceSpawnPuff(&ext->eng[n]->unk10, 1, NULL);
+                        RaceSpawnPuff(&ext->eng[n]->XYZ, 1, NULL);
                         RACE_SFX4(0x69C, 0x69D, 0x69E, 0x69F);
                         ext->eng[n]->sub->flags &= ~0x8000;
                         ext->arc[n].unk4 = 0;
-                        ext->eng[n]->unk10.y = 0;
+                        ext->eng[n]->XYZ.y = 0;
                         KillNAS(ext->unk144[n]);
                         ext->unk144[n] = NULL;
                     }
                 } else if (ext->unk150[n]-- < 0) {
-                    RaceSpawnPuff(&ext->eng[n]->unk10, 3, NULL);
+                    RaceSpawnPuff(&ext->eng[n]->XYZ, 3, NULL);
                     ext->unk150[n] = Random(3) + 8;
                 }
             }
@@ -5949,14 +5949,14 @@ void PlotRaceVolcano(NAS *nas) {
                     if (j >= 4) {
                         break;
                     }
-                    if (RaceDistSq(&ext->eng[n]->unk10, &Heroes[j].hero_eng->unk10) < 0x27100) {
+                    if (RaceDistSq(&ext->eng[n]->XYZ, &Heroes[j].hero_eng->XYZ) < 0x27100) {
                         if (Heroes[j].hero_mode != 0x5D) {
                             SetHeroAction(j, 0x5D);
                         }
-                        RaceSpawnPuff(&ext->eng[n]->unk10, 1, NULL);
+                        RaceSpawnPuff(&ext->eng[n]->XYZ, 1, NULL);
                         ext->eng[n]->sub->flags &= ~0x8000;
                         ext->arc[n].unk4 = 0;
-                        ext->eng[n]->unk10.y = 0;
+                        ext->eng[n]->XYZ.y = 0;
                         if (ext->unk144[n] != NULL) {
                             KillNAS(ext->unk144[n]);
                             ext->unk144[n] = NULL;
@@ -6065,9 +6065,9 @@ s32 RaceExplodeHitHeroes(SLONG_XYZ *pos) {
         if (i >= 4) {
             return hit;
         }
-        dx = Heroes[i].hero_eng->unk10.x - pos->x;
-        dz = Heroes[i].hero_eng->unk10.z - pos->z;
-        dy = Heroes[i].hero_eng->unk10.y - pos->y;
+        dx = Heroes[i].hero_eng->XYZ.x - pos->x;
+        dz = Heroes[i].hero_eng->XYZ.z - pos->z;
+        dy = Heroes[i].hero_eng->XYZ.y - pos->y;
         if (dx * dx + dz * dz + dy * dy < 0x90000) {
             if (Heroes[i].hero_mode != 0x61) {
                 if (Heroes[i].hero_mode != 0x5D) {
@@ -6107,7 +6107,7 @@ void InitBarrelRoll(NAS *m) {
     if (ext != NULL) {
         m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
         m->Engine->sub->entity = 0x2037;
-        m->Engine->unk5D = 1;
+        m->Engine->xform.order = 1;
         ext->unkC = 0xC;
         ext->unk78 = 0;
         ext->unk50 = 0xA0;
@@ -6117,27 +6117,27 @@ void InitBarrelRoll(NAS *m) {
         ext->vel.x = (rcossin_tbl[(r + 0xA00) & 0xFFF].unk2 * 9) >> 4;
         r += 0xE00;
         ext->vel.z = (rcossin_tbl[r & 0xFFF].unk2 * 9) >> 4;
-        m->Engine->unk1E = -r;
+        m->Engine->xform.rot.vy = -r;
         ext->pos.z = 0x1B00;
         ext->vel.y = 0;
         ext->pos.x = 0;
         ext->pos.y = -0x100;
-        m->Engine->unk10 = ext->pos;
-        m->Engine->unk5E = 1;
+        m->Engine->XYZ = ext->pos;
+        m->Engine->xform.dirty = 1;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
             e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
             e->sub->entity = 0x2001;
-            e->unk5C = 1;
-            e->unk5D = 0;
-            e->unk10 = m->Engine->unk10;
+            e->xform.hasScale = 1;
+            e->xform.order = 0;
+            e->XYZ = m->Engine->XYZ;
             e->sub->unk76 = 0x800;
             e->sub->flags |= 0x40008041;
-            e->unk2C.z = 0x4000;
-            e->unk2C.y = 0x4000;
-            e->unk2C.x = 0x4000;
-            ext->shadow->unk5E = 1;
+            e->xform.scale.vz = 0x4000;
+            e->xform.scale.vy = 0x4000;
+            e->xform.scale.vx = 0x4000;
+            ext->shadow->xform.dirty = 1;
         }
     }
 }
@@ -6148,33 +6148,33 @@ void PlotBarrelRoll(NAS *nas) {
 
     ext = FindExtension(nas, 0x10000000);
     if (ext != NULL) {
-        if (RaceExplodeHitHeroes(&nas->Engine->unk10) != 0) {
-            RaceSpawnPuff(&nas->Engine->unk10, 1, &HeroModelBank[DB_CrateEffects]);
+        if (RaceExplodeHitHeroes(&nas->Engine->XYZ) != 0) {
+            RaceSpawnPuff(&nas->Engine->XYZ, 1, &HeroModelBank[DB_CrateEffects]);
             KillNAS(nas);
             return;
         }
-        nas->Engine->unk1C += 0x200;
-        if (ArcUpdate(&ext->pos.x, &ext->vel.x, &ext->unkC,&nas->Engine->unk10.x) != 0) {
+        nas->Engine->xform.rot.vx += 0x200;
+        if (ArcUpdate(&ext->pos.x, &ext->vel.x, &ext->unkC,&nas->Engine->XYZ.x) != 0) {
             ext->unk20 = -((ext->unk20 * 200) >> 8);
-            nas->Engine->unk10.y = ext->unk24;
+            nas->Engine->XYZ.y = ext->unk24;
             n = ext->unk78 + 1;
             ext->unk40 *= 200;
             ext->unk44 *= 200;
             ext->unk78 = n;
             ext->unk40 >>= 8;
             ext->unk44 >>= 8;
-            if (nas->Engine->unk10.x * nas->Engine->unk10.x +
-                    nas->Engine->unk10.z * nas->Engine->unk10.z > 0x900000) {
-                RaceSpawnPuff(&nas->Engine->unk10, 1, &HeroModelBank[DB_CrateEffects]);
+            if (nas->Engine->XYZ.x * nas->Engine->XYZ.x +
+                    nas->Engine->XYZ.z * nas->Engine->XYZ.z > 0x900000) {
+                RaceSpawnPuff(&nas->Engine->XYZ, 1, &HeroModelBank[DB_CrateEffects]);
                 KillNAS(nas);
                 return;
             }
         }
-        ext->shadow->unk10 = nas->Engine->unk10;
-        ext->shadow->unk10.y = 0x100;
+        ext->shadow->XYZ = nas->Engine->XYZ;
+        ext->shadow->XYZ.y = 0x100;
     }
-    nas->Engine->unk5E = 1;
-    ext->shadow->unk5E = 1;
+    nas->Engine->xform.dirty = 1;
+    ext->shadow->xform.dirty = 1;
 }
 
 void InitTrackGlob(NAS *m) {
@@ -6188,7 +6188,7 @@ void InitTrackGlob(NAS *m) {
         AddToGroup((NAS **)&RaceObjects, (NAS *)m);
         m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
         m->Engine->sub->entity = 0x4100;
-        m->Engine->unk5D = 1;
+        m->Engine->xform.order = 1;
         ext->unk10 = 0x10;
         ext->unk54 = 0x40;
         ext->unkC = 0;
@@ -6202,20 +6202,20 @@ void InitTrackGlob(NAS *m) {
         ext->unk6C = (rcossin_tbl[angle & 0xFFF].unk2 * 7) >> 4;
         ext->unk68 = 0;
         ext->unk84 = 0x5A;
-        m->Engine->unk1E = 0;
-        ext->pos = m->Engine->unk10;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.rot.vy = 0;
+        ext->pos = m->Engine->XYZ;
+        m->Engine->xform.dirty = 1;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->eng = e;
             e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
             e->sub->entity = 0x2001;
-            e->unk5C = 1;
-            e->unk5D = 0;
-            e->unk10 = m->Engine->unk10;
+            e->xform.hasScale = 1;
+            e->xform.order = 0;
+            e->XYZ = m->Engine->XYZ;
             e->sub->unk76 = 0x800;
             e->sub->flags |= 0x40008041;
-            ext->eng->unk5E = 1;
+            ext->eng->xform.dirty = 1;
         }
     }
 }
@@ -6239,11 +6239,11 @@ void PlotTrackGlob(NAS *nas) {
     }
     switch (ext->unkC) {
     case 0:
-        if (ArcUpdate(&ext->pos.x, &ext->unk64, &ext->unk10, &nas->Engine->unk10.x) != 0) {
+        if (ArcUpdate(&ext->pos.x, &ext->unk64, &ext->unk10, &nas->Engine->XYZ.x) != 0) {
             ext->unkC = 1;
             GotoLinkAnim((EXTanimator *)ext->cursor, 0);
             RunNasAnim(nas);
-            nas->Engine->unk10.y = 0;
+            nas->Engine->XYZ.y = 0;
         }
         break;
     case 1:
@@ -6252,8 +6252,8 @@ void PlotTrackGlob(NAS *nas) {
     loop1:
         if (i < 4) {
             do {
-                dx = nas->Engine->unk10.x - h->hero_eng->unk10.x;
-                dz = nas->Engine->unk10.z - h->hero_eng->unk10.z;
+                dx = nas->Engine->XYZ.x - h->hero_eng->XYZ.x;
+                dz = nas->Engine->XYZ.z - h->hero_eng->XYZ.z;
                 if (dx * dx + dz * dz < 0x10000) {
                     if (h->hero_mode != 0x5D) {
                         SetHeroAction(i, 0x5D);
@@ -6274,19 +6274,19 @@ void PlotTrackGlob(NAS *nas) {
         break;
     case 2:
         RunNasAnim(nas);
-        angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
+        angle = get_angle(nas->Engine->XYZ.x, nas->Engine->XYZ.z) & 0xFFF;
         angle += 0x400;
         angle &= 0xFFF;
         i = 0;
         ext->unk88 = angle;
-        nas->Engine->unk10.x -= 0x20 * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
+        nas->Engine->XYZ.x -= 0x20 * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
         h = Heroes;
-        nas->Engine->unk10.z -= 0x20 * rcossin_tbl[ext->unk88 & 0xFFF].unk2 >> 12;
+        nas->Engine->XYZ.z -= 0x20 * rcossin_tbl[ext->unk88 & 0xFFF].unk2 >> 12;
     loop2:
         if (i < 4) {
             do {
-                if ((nas->Engine->unk10.x - h->hero_eng->unk10.x) * (nas->Engine->unk10.x - h->hero_eng->unk10.x) +
-                        (nas->Engine->unk10.z - h->hero_eng->unk10.z) * (nas->Engine->unk10.z - h->hero_eng->unk10.z) < 0x10000) {
+                if ((nas->Engine->XYZ.x - h->hero_eng->XYZ.x) * (nas->Engine->XYZ.x - h->hero_eng->XYZ.x) +
+                        (nas->Engine->XYZ.z - h->hero_eng->XYZ.z) * (nas->Engine->XYZ.z - h->hero_eng->XYZ.z) < 0x10000) {
                     if (h->hero_mode != 0x5D) {
                         SetHeroAction(i, 0x5D);
                     }
@@ -6299,7 +6299,7 @@ void PlotTrackGlob(NAS *nas) {
             goto loop2;
         }
         e = nas->Engine;
-        e->unk1E -= (s32)((e->unk1E - ext->unk88) << 20) >> 22;
+        e->xform.rot.vy -= (s32)((e->xform.rot.vy - ext->unk88) << 20) >> 22;
         if (angle < 0x400) {
             ext->unkC = 3;
         }
@@ -6307,19 +6307,19 @@ void PlotTrackGlob(NAS *nas) {
     case 3:
         RunNasAnim(nas);
         ext->unk88 = 0x800;
-        nas->Engine->unk10.x -= 0x20 * rcossin_tbl[(ext->unk88 - 0x400) & 0xFFF].unk2 >> 12;
-        nas->Engine->unk10.z -= 0x20 * rcossin_tbl[ext->unk88 & 0xFFF].unk2 >> 12;
+        nas->Engine->XYZ.x -= 0x20 * rcossin_tbl[(ext->unk88 - 0x400) & 0xFFF].unk2 >> 12;
+        nas->Engine->XYZ.z -= 0x20 * rcossin_tbl[ext->unk88 & 0xFFF].unk2 >> 12;
         e = nas->Engine;
-        e->unk1E -= (s32)((e->unk1E - ext->unk88) << 20) >> 22;
-        if (nas->Engine->unk10.x * nas->Engine->unk10.x + nas->Engine->unk10.z * nas->Engine->unk10.z > 0x790000) {
+        e->xform.rot.vy -= (s32)((e->xform.rot.vy - ext->unk88) << 20) >> 22;
+        if (nas->Engine->XYZ.x * nas->Engine->XYZ.x + nas->Engine->XYZ.z * nas->Engine->XYZ.z > 0x790000) {
             KillNAS(nas);
             return;
         }
         break;
     }
-    ext->eng->unk10 = nas->Engine->unk10;
-    ext->eng->unk10.y = 0x40;
-    nas->Engine->unk5E = 1;
+    ext->eng->XYZ = nas->Engine->XYZ;
+    ext->eng->XYZ.y = 0x40;
+    nas->Engine->xform.dirty = 1;
 }
 
 void InitDac(NAS *m) {
@@ -6329,22 +6329,22 @@ void InitDac(NAS *m) {
     ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
-        m->Engine->unk5C = 1;
-        m->Engine->unk5D = 2;
-        m->Engine->unk2C.x = 0x2000;
-        m->Engine->unk2C.y = 0x2000;
-        m->Engine->unk2C.z = 0x2000;
-        m->Engine->unk10.x = (rcossin_tbl[0x800].unk2 * 7) >> 4;
-        m->Engine->unk10.z = (rcossin_tbl[0xC00].unk2 * 7) >> 4;
+        m->Engine->xform.hasScale = 1;
+        m->Engine->xform.order = 2;
+        m->Engine->xform.scale.vx = 0x2000;
+        m->Engine->xform.scale.vy = 0x2000;
+        m->Engine->xform.scale.vz = 0x2000;
+        m->Engine->XYZ.x = (rcossin_tbl[0x800].unk2 * 7) >> 4;
+        m->Engine->XYZ.z = (rcossin_tbl[0xC00].unk2 * 7) >> 4;
         m->Engine->sub->unk68 = -0x300;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk10 = (s32)ScriptCursorFirst(m, &DacScriptInit);
         RunNasAnim(m);
-        m->Engine->unk1E = 0x800;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.rot.vy = 0x800;
+        m->Engine->xform.dirty = 1;
         ext->unkC = 0;
         ext->unk18 = 0xF0;
-        m->Engine->unk10.y = -0x600;
+        m->Engine->XYZ.y = -0x600;
         ext->unk1C = -0x600;
         ext->unk24 = 0;
         ext->shadow = NULL;
@@ -6353,17 +6353,17 @@ void InitDac(NAS *m) {
             ext->shadow = e;
             e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
             e->sub->entity = 0x2001;
-            e->unk5C = 1;
-            e->unk2C.x = 0x2000;
-            e->unk2C.y = 0x2000;
-            e->unk2C.z = 0x2000;
+            e->xform.hasScale = 1;
+            e->xform.scale.vx = 0x2000;
+            e->xform.scale.vy = 0x2000;
+            e->xform.scale.vz = 0x2000;
             e->sub->unk68 = -0x300;
             e->sub->flags |= 0x02000000;
-            e->unk5D = 0;
-            e->unk10 = m->Engine->unk10;
+            e->xform.order = 0;
+            e->XYZ = m->Engine->XYZ;
             e->sub->unk76 = 0x800;
             e->sub->flags |= 0x40008041;
-            ext->shadow->unk5E = 1;
+            ext->shadow->xform.dirty = 1;
         }
     }
 }
@@ -6382,22 +6382,22 @@ void PlotDac(NAS *nas) {
         return;
     }
     RunNasAnim(nas);
-    nas->Engine->unk5E = 1;
+    nas->Engine->xform.dirty = 1;
     switch (ext->state) {
     found:
         ext->player = p;
         goto sfx;
     case 0:
-        nas->Engine->unk10.y -= (nas->Engine->unk10.y - ext->height) >> 4;
-        ext->angle = ((get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) + 0x400) & 0xFFF;
-        nas->Engine->unk10.x += rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2 * 32 >> 12;
-        nas->Engine->unk10.z += rcossin_tbl[ext->angle & 0xFFF].unk2 * 32 >> 12;
+        nas->Engine->XYZ.y -= (nas->Engine->XYZ.y - ext->height) >> 4;
+        ext->angle = ((get_angle(nas->Engine->XYZ.x, nas->Engine->XYZ.z) & 0xFFF) + 0x400) & 0xFFF;
+        nas->Engine->XYZ.x += rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2 * 32 >> 12;
+        nas->Engine->XYZ.z += rcossin_tbl[ext->angle & 0xFFF].unk2 * 32 >> 12;
         {
             s32 r;
-            r = nas->Engine->unk1E - 0x800;
-            nas->Engine->unk1E -= ((r - ext->angle) << 20) >> 22;
+            r = nas->Engine->xform.rot.vy - 0x800;
+            nas->Engine->xform.rot.vy -= ((r - ext->angle) << 20) >> 22;
         }
-        nas->Engine->unk1C -= (nas->Engine->unk1C << 20) >> 22;
+        nas->Engine->xform.rot.vx -= (nas->Engine->xform.rot.vx << 20) >> 22;
         if (ext->timer-- < 0) {
             i = 0;
             p = Random(4);
@@ -6426,13 +6426,13 @@ void PlotDac(NAS *nas) {
             ext->timer = 0xF3C;
             return;
         }
-        dy = nas->Engine->unk10.y - ext->height;
-        nas->Engine->unk10.y -= dy >> 4;
+        dy = nas->Engine->XYZ.y - ext->height;
+        nas->Engine->XYZ.y -= dy >> 4;
         base = Heroes;
         h = &base[ext->player];
-        dx = nas->Engine->unk10.x - h->hero_eng->unk10.x;
-        dz = nas->Engine->unk10.z - h->hero_eng->unk10.z;
-        dy = nas->Engine->unk10.y - h->hero_eng->unk10.y;
+        dx = nas->Engine->XYZ.x - h->hero_eng->XYZ.x;
+        dz = nas->Engine->XYZ.z - h->hero_eng->XYZ.z;
+        dy = nas->Engine->XYZ.y - h->hero_eng->XYZ.y;
         dd = dx * dx + dz * dz;
         if (dd + dy * dy < 0x40000) {
             PlaySfx(0x6A1, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -6453,13 +6453,13 @@ void PlotDac(NAS *nas) {
         a = get_angle(dx, dz) & 0xFFF;
         b = get_angle(dy, csqrt(dd) >> 6);
         ext->angle = a;
-        nas->Engine->unk10.x -= (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 5) >> 9;
-        nas->Engine->unk10.z -= (rcossin_tbl[ext->angle & 0xFFF].unk2 * 5) >> 9;
+        nas->Engine->XYZ.x -= (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 5) >> 9;
+        nas->Engine->XYZ.z -= (rcossin_tbl[ext->angle & 0xFFF].unk2 * 5) >> 9;
         eng = nas->Engine;
-        eng->unk1E -= ((eng->unk1E - ext->angle) << 20) >> 22;
-        nas->Engine->unk1C -= ((nas->Engine->unk1C - (-b & 0xFFF)) << 20) >> 22;
-        if (nas->Engine->unk1C > 0x200) {
-            nas->Engine->unk1C = 0x200;
+        eng->xform.rot.vy -= ((eng->xform.rot.vy - ext->angle) << 20) >> 22;
+        nas->Engine->xform.rot.vx -= ((nas->Engine->xform.rot.vx - (-b & 0xFFF)) << 20) >> 22;
+        if (nas->Engine->xform.rot.vx > 0x200) {
+            nas->Engine->xform.rot.vx = 0x200;
         }
         if (ext->timer-- < 0) {
             ext->height = -0x600;
@@ -6468,12 +6468,12 @@ void PlotDac(NAS *nas) {
         }
         break;
     }
-    ext->shadow->unk2C.x = (nas->Engine->unk10.y + 0x600) * 5 + 0x3000;
-    ext->shadow->unk2C.y = (nas->Engine->unk10.y + 0x600) * 5 + 0x3000;
-    ext->shadow->unk2C.z = (nas->Engine->unk10.y + 0x600) * 5 + 0x3000;
-    ext->shadow->unk5E = 1;
-    ext->shadow->unk10 = nas->Engine->unk10;
-    ext->shadow->unk10.y = 0x40;
+    ext->shadow->xform.scale.vx = (nas->Engine->XYZ.y + 0x600) * 5 + 0x3000;
+    ext->shadow->xform.scale.vy = (nas->Engine->XYZ.y + 0x600) * 5 + 0x3000;
+    ext->shadow->xform.scale.vz = (nas->Engine->XYZ.y + 0x600) * 5 + 0x3000;
+    ext->shadow->xform.dirty = 1;
+    ext->shadow->XYZ = nas->Engine->XYZ;
+    ext->shadow->XYZ.y = 0x40;
 }
 
 void RaceResetJumps(void) {
@@ -6543,10 +6543,10 @@ void PlotInnerRipple(NAS *m) {
         if (ext->max < ext->scale) {
             ext->scale = ext->max;
         }
-        m->Engine->unk2C.x = ext->scale + 0x400;
-        m->Engine->unk2C.y = ext->scale + 0x400;
-        m->Engine->unk2C.z = ext->scale + 0x400;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.scale.vx = ext->scale + 0x400;
+        m->Engine->xform.scale.vy = ext->scale + 0x400;
+        m->Engine->xform.scale.vz = ext->scale + 0x400;
+        m->Engine->xform.dirty = 1;
         sub = m->Engine->sub;
         if ((s16)sub->unk76 >= 0xFFF) {
             KillTriggerNas(m);
@@ -6568,13 +6568,13 @@ void InitInnerRipple(NAS *m) {
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
         m->Engine->sub->entity = 0x2018;
         m->Engine->sub->flags |= 0x40000000;
-        m->Engine->unk5C = 1;
-        m->Engine->unk5D = 0;
+        m->Engine->xform.hasScale = 1;
+        m->Engine->xform.order = 0;
         m->Engine->sub->unk76 = 0;
-        m->Engine->unk2C.x = 0x400;
-        m->Engine->unk2C.y = 0x400;
-        m->Engine->unk2C.z = 0x400;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.scale.vx = 0x400;
+        m->Engine->xform.scale.vy = 0x400;
+        m->Engine->xform.scale.vz = 0x400;
+        m->Engine->xform.dirty = 1;
     }
 }
 
@@ -6587,11 +6587,11 @@ void PlotRippled(NAS *m) {
         if (ext->max < ext->scale) {
             ext->scale = ext->max;
         }
-        m->Engine->unk2C.x = ext->scale + 0x400;
-        m->Engine->unk2C.y = ext->scale + 0x400;
-        m->Engine->unk2C.z = ext->scale + 0x400;
+        m->Engine->xform.scale.vx = ext->scale + 0x400;
+        m->Engine->xform.scale.vy = ext->scale + 0x400;
+        m->Engine->xform.scale.vz = ext->scale + 0x400;
         m->Engine->sub->unk76 += ext->fade;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.dirty = 1;
         if ((s16)m->Engine->sub->unk76 >= 0xFFF) {
             KillTriggerNas(m);
         }
@@ -6608,15 +6608,15 @@ void InitRippled(NAS *m) {
         ext->scale = 0;
         ext->unk18 = 0x190;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
-        m->Engine->unk5C = 1;
-        m->Engine->unk2C.x = 0x400;
-        m->Engine->unk2C.y = 0x400;
-        m->Engine->unk2C.z = 0x400;
+        m->Engine->xform.hasScale = 1;
+        m->Engine->xform.scale.vx = 0x400;
+        m->Engine->xform.scale.vy = 0x400;
+        m->Engine->xform.scale.vz = 0x400;
         m->Engine->sub->entity = 0x2018;
         m->Engine->sub->flags = 0x40008000;
-        m->Engine->unk5D = 0;
-        m->Engine->unk5C = 1;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.order = 0;
+        m->Engine->xform.hasScale = 1;
+        m->Engine->xform.dirty = 1;
         m->Engine->sub->unk76 = 0;
     }
 }
@@ -6724,7 +6724,7 @@ s32 RaceDazeHeroNear(u8 *arg0) {
     hero = Heroes;
 loop:
     if (i < 4) {
-        if (DistXZSq(arg0, &hero->hero_eng->unk10) < 0x6184) {
+        if (DistXZSq(arg0, &hero->hero_eng->XYZ) < 0x6184) {
             if (hero->hero_mode != 0x5D) {
                 SetHeroAction(i, 0x5D);
             }
@@ -6738,8 +6738,8 @@ loop:
 }
 
 void InitTNTCrate(NAS *m) {
-    m->Engine->unk5D = 2;
-    m->Engine->unk5C = 1;
+    m->Engine->xform.order = 2;
+    m->Engine->xform.hasScale = 1;
     m->Engine->sub->entity = 0x2009;
     m->Engine->sub->u6C.dbase = (s32)&HeroModelBank[DB_CrateObjects];
     m->UserInfo.status = 0;
@@ -6783,8 +6783,8 @@ s32 RaceHeroNear(u8 *arg0, s32 arg1) {
     hero = Heroes;
 loop:
     if (i < 4) {
-        if (DistXZSq(arg0, &hero->hero_eng->unk10) < arg1 * arg1) {
-            if (abs(((s32 *)arg0)[1] - hero->hero_eng->unk10.y) < 0x200) {
+        if (DistXZSq(arg0, &hero->hero_eng->XYZ) < arg1 * arg1) {
+            if (abs(((s32 *)arg0)[1] - hero->hero_eng->XYZ.y) < 0x200) {
                 return i;
             }
         }
@@ -6802,10 +6802,10 @@ void RaceFireMissile(s32 player) {
     NAS *nas;
     s32 *ext;
 
-    pos = hero->hero_eng->unk10;
+    pos = hero->hero_eng->XYZ;
     nas = CreateNAS(pos.x, pos.y - 0x80, pos.z, 0x1701, 0x11);
     if (nas != NULL) {
-        nas->Engine->unk1E = hero->hero_eng->unk1E;
+        nas->Engine->xform.rot.vy = hero->hero_eng->xform.rot.vy;
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
             ext[3] = player;
@@ -6842,7 +6842,7 @@ s32 RaceTrackAngle(s32 arg0) {
     s32 angle;
 
     eng = Heroes[arg0].hero_eng;
-    angle = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+    angle = get_angle(eng->XYZ.x, eng->XYZ.z) & 0xFFF;
     angle = 0x152C - angle;
     angle &= 0xFFF;
     printf(RaceMsgPlayerAngle, arg0, angle);
@@ -6882,8 +6882,8 @@ s32 RaceHeroBreatheFire(s32 arg0) {
     fux = (RaceFuxCount *)hero->hero->FUX;
     if (fux != NULL && fux->unk3C > 0 &&
         (((PadState *)Pads)[arg0].dirPressed & 0x8000)) {
-        nas = CreateNAS(hero->hero_eng->unk10.x, hero->hero_eng->unk10.y,
-                           hero->hero_eng->unk10.z, 0x1705, 0x11);
+        nas = CreateNAS(hero->hero_eng->XYZ.x, hero->hero_eng->XYZ.y,
+                           hero->hero_eng->XYZ.z, 0x1705, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
@@ -6929,7 +6929,7 @@ s32 RaceOtherHeroNear(u8 *arg0, u32 arg1, s32 arg2) {
 loop:
     if (i < 4) {
         if (i != arg1) {
-            if (DistXZSq(arg0, &hero->hero_eng->unk10) < arg2 * arg2) {
+            if (DistXZSq(arg0, &hero->hero_eng->XYZ) < arg2 * arg2) {
                 return i;
             }
         }
@@ -6955,7 +6955,7 @@ void SetRaceHeroOiled(s32 player) {
         if (move != NULL) {
             a = Random(0x300);
             b = Random(0x300);
-            b = hero->hero_eng->unk1E + a - b;
+            b = hero->hero_eng->xform.rot.vy + a - b;
             fux->unk24 = 0x2D;
             fux->unk20 = b;
             fux->unk28 = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
@@ -7002,8 +7002,8 @@ void RaceAxisAngleToQuat(s32 *arg0, s32 *arg1)
 
 void RaceInitHero(s32 arg0) {
     SetHeroAction(arg0, 0x5B);
-    Heroes[arg0].hero_eng->unk1E = 0;
-    Heroes[arg0].hero_eng->unk5E = 1;
+    Heroes[arg0].hero_eng->xform.rot.vy = 0;
+    Heroes[arg0].hero_eng->xform.dirty = 1;
 }
 
 s32 RaceFallToFloor(s32 player) {
@@ -7019,9 +7019,9 @@ s32 RaceFallToFloor(s32 player) {
         } else {
             move->jump_vel += move->jump_dec;
         }
-        y = eng->unk10.y += move->jump_vel;
+        y = eng->XYZ.y += move->jump_vel;
         if (move->jump_vel < 0 && y < RaceFloorLevel) {
-            eng->unk10.y += abs(RaceFloorLevel - y);
+            eng->XYZ.y += abs(RaceFloorLevel - y);
             return 1;
         }
     }
@@ -7041,7 +7041,7 @@ s32 RaceJumpUp(s32 player) {
         } else {
             move->jump_vel += move->jump_dec;
         }
-        y = eng->unk10.y += move->jump_vel;
+        y = eng->XYZ.y += move->jump_vel;
         if (move->jump_vel > 0 && y > RaceFloorLevel) {
             return 1;
         }
@@ -7107,7 +7107,7 @@ NAS *RaceNearestPickup(s32 arg0) {
     hero = base + arg0;
 loop:
     if (nas != NULL) {
-        dist = DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&hero->hero_eng->unk10);
+        dist = DistXZSq((SLONG_XYZ *)&nas->Engine->XYZ, (SLONG_XYZ *)&hero->hero_eng->XYZ);
         do {
             if (dist < min) {
                 min = dist;
@@ -7165,9 +7165,9 @@ NAS *RacePickupAhead(s32 arg0) {
     if (nas != NULL) {
         base = Heroes;
         hero = base + arg0;
-        if (DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&hero->hero_eng->unk10) <= 0x270FFF) {
-            angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
-            if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
+        if (DistXZSq((SLONG_XYZ *)&nas->Engine->XYZ, (SLONG_XYZ *)&hero->hero_eng->XYZ) <= 0x270FFF) {
+            angle = get_angle(nas->Engine->XYZ.x, nas->Engine->XYZ.z) & 0xFFF;
+            if ((get_angle(hero->hero_eng->XYZ.x, hero->hero_eng->XYZ.z) & 0xFFF) < angle) {
                 return nas;
             }
         }

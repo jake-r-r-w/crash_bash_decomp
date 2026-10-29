@@ -463,9 +463,9 @@ void InitialiseBASH(void) {
     BashSpaceClearTiles();
     MarkHeroesOnGrid();
     for (i = 0; i < 4; i++) {
-        a = get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z);
+        a = get_angle(Heroes[i].hero_eng->XYZ.x, Heroes[i].hero_eng->XYZ.z);
         m = Heroes[i].hero_move;
-        Heroes[i].hero_eng->unk1E = a;
+        Heroes[i].hero_eng->xform.rot.vy = a;
         m->facing_angle = a;
         m->forward_angle = a;
     }
@@ -586,7 +586,7 @@ void BashSnowMoveHero(s32 arg0) {
             } else {
                 step = m->x_dec;
             }
-            if (Heroes[arg0].hero_eng->unk10.y < World_floor_level) {
+            if (Heroes[arg0].hero_eng->XYZ.y < World_floor_level) {
                 step = 0x80;
             }
             if (m->x_vel < m->x_max) {
@@ -607,7 +607,7 @@ void BashSnowMoveHero(s32 arg0) {
             } else {
                 step = m->z_dec;
             }
-            if (Heroes[arg0].hero_eng->unk10.y < World_floor_level) {
+            if (Heroes[arg0].hero_eng->XYZ.y < World_floor_level) {
                 step = 0x80;
             }
             if (m->z_vel < m->z_max) {
@@ -622,8 +622,8 @@ void BashSnowMoveHero(s32 arg0) {
                 }
             }
         }
-        e->unk10.z += m->z_vel >> 2;
-        e->unk10.x += m->x_vel >> 2;
+        e->XYZ.z += m->z_vel >> 2;
+        e->XYZ.x += m->x_vel >> 2;
     }
 }
 
@@ -634,16 +634,16 @@ s32 BashAI_EscapeAngle(s32 arg0) {
 
     for (i = 0; i < 4; i++) {
         if (i != arg0 && !(Heroes[i].hero_status & 0xFA00) && Heroes[i].hero_pu == 0x14) {
-            dx = Heroes[arg0].hero_eng->unk10.x - Heroes[i].hero_eng->unk10.x;
-            dz = Heroes[arg0].hero_eng->unk10.z - Heroes[i].hero_eng->unk10.z;
+            dx = Heroes[arg0].hero_eng->XYZ.x - Heroes[i].hero_eng->XYZ.x;
+            dz = Heroes[arg0].hero_eng->XYZ.z - Heroes[i].hero_eng->XYZ.z;
             if (dx * dx + dz * dz < 0x100000) {
                 return get_angle(dx, dz);
             }
         }
     }
     if (BashPenguinObj != NULL && BashPenguinObj->status == 3) {
-        dx = BashPenguinEng->unk10.x - Heroes[arg0].hero_eng->unk10.x;
-        dz = BashPenguinEng->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+        dx = BashPenguinEng->XYZ.x - Heroes[arg0].hero_eng->XYZ.x;
+        dz = BashPenguinEng->XYZ.z - Heroes[arg0].hero_eng->XYZ.z;
         if (dx * dx + dz * dz < 0x240000) {
             return get_angle(-dx, -dz);
         }
@@ -674,9 +674,9 @@ void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev) {
         for (i = 0; i < 4; i++) {
             o = &Heroes[i];
             if (arg0 != i && i != arg1 && !(o->hero_status & 0xFA00)) {
-                dx = base[arg0].hero_eng->unk10.x - o->hero_eng->unk10.x;
+                dx = base[arg0].hero_eng->XYZ.x - o->hero_eng->XYZ.x;
                 dz = dx * dx;
-                dx = base[arg0].hero_eng->unk10.z - o->hero_eng->unk10.z;
+                dx = base[arg0].hero_eng->XYZ.z - o->hero_eng->XYZ.z;
                 d = dz + dx * dx;
                 if (d < min) {
                     best = i;
@@ -694,8 +694,8 @@ void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev) {
     loop2:
         for (i = 0; i < 4; i++) {
             if (i != arg0 && i != arg1) {
-                d = angle_diff_abs(arg2, get_angle(Heroes[i].hero_eng->unk10.x - Heroes[arg0].hero_eng->unk10.x,
-                                                  Heroes[i].hero_eng->unk10.z - Heroes[arg0].hero_eng->unk10.z));
+                d = angle_diff_abs(arg2, get_angle(Heroes[i].hero_eng->XYZ.x - Heroes[arg0].hero_eng->XYZ.x,
+                                                  Heroes[i].hero_eng->XYZ.z - Heroes[arg0].hero_eng->XYZ.z));
                 if (d < min) {
                     min = d;
                     best = i;
@@ -782,8 +782,8 @@ void Bash_HeroBot(s32 arg0) {
         }
         if (ok) {
             e = Heroes[arg0].hero_eng;
-            dx = neng->unk10.x - e->unk10.x;
-            dz = neng->unk10.z - e->unk10.z;
+            dx = neng->XYZ.x - e->XYZ.x;
+            dz = neng->XYZ.z - e->XYZ.z;
             dist = dx * dx + dz * dz;
             ang = get_angle(dx, dz);
         } else {
@@ -801,14 +801,14 @@ void Bash_HeroBot(s32 arg0) {
                     target = -1;
                     ai->AImode = 1;
                 } else {
-                    dx = BashPenguinEng->unk10.x - Heroes[arg0].hero_eng->unk10.x;
-                    dz = BashPenguinEng->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+                    dx = BashPenguinEng->XYZ.x - Heroes[arg0].hero_eng->XYZ.x;
+                    dz = BashPenguinEng->XYZ.z - Heroes[arg0].hero_eng->XYZ.z;
                     dist = dx * dx + dz * dz;
                     ang = get_angle(dx, dz);
                 }
             } else {
-                dx = BashAITargetPoints[target].x - Heroes[arg0].hero_eng->unk10.x;
-                dz = BashAITargetPoints[target].z - Heroes[arg0].hero_eng->unk10.z;
+                dx = BashAITargetPoints[target].x - Heroes[arg0].hero_eng->XYZ.x;
+                dz = BashAITargetPoints[target].z - Heroes[arg0].hero_eng->XYZ.z;
                 dist = dx * dx + dz * dz;
                 ang = get_angle(dx, dz);
             }
@@ -817,8 +817,8 @@ void Bash_HeroBot(s32 arg0) {
                 ok = 1;
             }
             if (ok) {
-                dx = Heroes[target].hero_eng->unk10.x - Heroes[arg0].hero_eng->unk10.x;
-                dz = Heroes[target].hero_eng->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+                dx = Heroes[target].hero_eng->XYZ.x - Heroes[arg0].hero_eng->XYZ.x;
+                dz = Heroes[target].hero_eng->XYZ.z - Heroes[arg0].hero_eng->XYZ.z;
                 dist = dx * dx + dz * dz;
                 ang = get_angle(dx, dz);
             } else {
@@ -854,8 +854,8 @@ void Bash_HeroBot(s32 arg0) {
         }
         for (i = 0; i < 4; i++) {
             if (i != arg0 && Heroes[i].hero_ai->TargetPlayer == arg0) {
-                dx = Heroes[i].hero_eng->unk10.x - Heroes[arg0].hero_eng->unk10.x;
-                dz = Heroes[i].hero_eng->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+                dx = Heroes[i].hero_eng->XYZ.x - Heroes[arg0].hero_eng->XYZ.x;
+                dz = Heroes[i].hero_eng->XYZ.z - Heroes[arg0].hero_eng->XYZ.z;
                 if (dx * dx + dz * dz < 0x240000) {
                     ai->TargetPlayer = -1;
                     ai->AImode = 1;
@@ -1240,9 +1240,9 @@ void Bash_HeroBot(s32 arg0) {
                     ai->AIsleep = 5;
                 }
             } else {
-                if (Heroes[arg0].hero_eng->unk10.x < -0x780 || Heroes[arg0].hero_eng->unk10.x > 0x780 ||
-                    Heroes[arg0].hero_eng->unk10.z > 0x780 || Heroes[arg0].hero_eng->unk10.z < -0x780) {
-                    if (angle_diff_abs(get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z),
+                if (Heroes[arg0].hero_eng->XYZ.x < -0x780 || Heroes[arg0].hero_eng->XYZ.x > 0x780 ||
+                    Heroes[arg0].hero_eng->XYZ.z > 0x780 || Heroes[arg0].hero_eng->XYZ.z < -0x780) {
+                    if (angle_diff_abs(get_angle(Heroes[arg0].hero_eng->XYZ.x, Heroes[arg0].hero_eng->XYZ.z),
                                       Heroes[arg0].hero_move->forward_angle) > 0x400) {
                         ai->AImode = 13;
                         ai->AIsleep = 5;
@@ -1361,8 +1361,8 @@ void BashAI_ScanAhead(s32 arg0) {
     u8 v;
 
     eng = Heroes[arg0].hero_eng;
-    rx = eng->unk10.x;
-    rz = eng->unk10.z;
+    rx = eng->XYZ.x;
+    rz = eng->XYZ.z;
     mv = Heroes[arg0].hero_move;
     dx = rcossin_tbl[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
     ang = mv->forward_angle;
@@ -1534,8 +1534,8 @@ s32 BashAI_ChooseTarget(s32 player) {
     mate = Heroes[player].hero_teammate;
     he = Heroes[player].hero_eng;
     ai = Heroes[player].hero_ai;
-    px = he->unk10.x;
-    pz = he->unk10.z;
+    px = he->XYZ.x;
+    pz = he->XYZ.z;
     Random(0x100);
     bestNasScore = 0;
     if (BashAI_NearestEnemy(player) < 0x300) {
@@ -1631,8 +1631,8 @@ s32 BashAI_ChooseTarget(s32 player) {
         switch (f->whatami) {
         case 1: case 3: case 4: case 5:
             if (f->status != 1) continue;
-            dx = px - e->unk10.x;
-            dz = pz - e->unk10.z;
+            dx = px - e->XYZ.x;
+            dz = pz - e->XYZ.z;
             d = csqrt(dx * dx + dz * dz) >> 6;
             d = (0x1000 - abs(d - r)) * wt;
             cnt = 0;
@@ -1647,8 +1647,8 @@ s32 BashAI_ChooseTarget(s32 player) {
             continue;
         case 14:
             if (f->status != 1) continue;
-            dx = px - e->unk10.x;
-            dz = pz - e->unk10.z;
+            dx = px - e->XYZ.x;
+            dz = pz - e->XYZ.z;
             d2 = csqrt(dx * dx + dz * dz) >> 6;
             d = 0x800 - d2;
             if (d < 0) d = 0;
@@ -1672,8 +1672,8 @@ s32 BashAI_ChooseTarget(s32 player) {
             }
             continue;
         case 18: case 19: case 25: case 27: case 28:
-            dx = px - e->unk10.x;
-            dz = pz - e->unk10.z;
+            dx = px - e->XYZ.x;
+            dz = pz - e->XYZ.z;
             d = csqrt(dx * dx + dz * dz) >> 6;
             d = abs(d - r) * 0xFA;
             cnt = 0;
@@ -1687,8 +1687,8 @@ s32 BashAI_ChooseTarget(s32 player) {
             }
             continue;
         case 2:
-            dx = px - e->unk10.x;
-            dz = pz - e->unk10.z;
+            dx = px - e->XYZ.x;
+            dz = pz - e->XYZ.z;
             d = csqrt(dx * dx + dz * dz) >> 6;
             d = abs(d - r) * 0x190;
             if (Heroes[player].hero_pu != 0) {
@@ -1705,8 +1705,8 @@ s32 BashAI_ChooseTarget(s32 player) {
             }
             continue;
         case 17:
-            dx = px - e->unk10.x;
-            dz = pz - e->unk10.z;
+            dx = px - e->XYZ.x;
+            dz = pz - e->XYZ.z;
             d2 = csqrt(dx * dx + dz * dz) >> 6;
             d = 0xE00 - d2;
             if (d < 0) d = 0;
@@ -1733,8 +1733,8 @@ s32 BashAI_ChooseTarget(s32 player) {
         if (OVLG->teams != 0 && i == mate) continue;
         if (Heroes[i].hero_status & 0xFA00) continue;
         do {
-            dx = px - Heroes[i].hero_eng->unk10.x;
-            dz = pz - Heroes[i].hero_eng->unk10.z;
+            dx = px - Heroes[i].hero_eng->XYZ.x;
+            dz = pz - Heroes[i].hero_eng->XYZ.z;
         } while (0);
         if (Heroes[player].hero_pu != 0x14) {
             obj = Heroes[i].hero_object;
@@ -1796,8 +1796,8 @@ s32 BashAI_ChooseTarget(s32 player) {
             d = 0x7FFFFF;
             for (k = 0; k < 4; k++) {
                 if (k == player) continue;
-                dx = BashAITargetPoints[i].x - Heroes[k].hero_eng->unk10.x;
-                dz = BashAITargetPoints[i].z - Heroes[k].hero_eng->unk10.z;
+                dx = BashAITargetPoints[i].x - Heroes[k].hero_eng->XYZ.x;
+                dz = BashAITargetPoints[i].z - Heroes[k].hero_eng->XYZ.z;
                 if (dx * dx + dz * dz < d) {
                     d = d2;
                 }
@@ -1911,8 +1911,8 @@ s32 BashAI_NearestEnemy(s32 arg0) {
             if (!(o->hero_status & 0xFA00)) {
                 a = h->hero_eng;
                 b = o->hero_eng;
-                dx = a->unk10.x - b->unk10.x;
-                dz = a->unk10.z - b->unk10.z;
+                dx = a->XYZ.x - b->XYZ.x;
+                dz = a->XYZ.z - b->XYZ.z;
                 d = dx * dx + dz * dz;
                 if (d < min) {
                     min = d;
@@ -2475,9 +2475,9 @@ void PlotBashPenguin(NAS *nas) {
                 }
                 fux->state = 1;
                 fux->unk1C |= 0xA;
-                eng->unk1E = 0xE3;
-                eng->unk10.x = 0;
-                eng->unk10.z = 0;
+                eng->xform.rot.vy = 0xE3;
+                eng->XYZ.x = 0;
+                eng->XYZ.z = 0;
                 RunNasAnim(nas);
                 break;
             case 2:
@@ -2488,7 +2488,7 @@ void PlotBashPenguin(NAS *nas) {
                 if (RunNasAnim(nas) == 8) {
                     fux->state = 3;
                     nas->UserInfo.user1 = 0x800;
-                    PlaySfx(0x427, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x427, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 break;
             case 3:
@@ -2507,8 +2507,8 @@ void PlotBashPenguin(NAS *nas) {
                     d = ((0x500 - abs(r)) >> 6) + 0x28;
                     ang = (nas->UserInfo.user2 + d) & 0xFFF;
                     nas->UserInfo.user2 = ang;
-                    eng->unk10.x = (r * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                    eng->unk10.z = (r * rcossin_tbl[ang].unk2) >> 12;
+                    eng->XYZ.x = (r * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->XYZ.z = (r * rcossin_tbl[ang].unk2) >> 12;
                     eng->sub->entity = 0x2002;
                 } else {
                     GotoLinkAnim(anim, 2);
@@ -2520,10 +2520,10 @@ void PlotBashPenguin(NAS *nas) {
                     RunNasAnim(nas);
                 }
                 BashPenguinPush(eng);
-                eng->unk1E += 0x1C7;
+                eng->xform.rot.vy += 0x1C7;
                 break;
             case 4:
-                eng->unk1E = 0xE3;
+                eng->xform.rot.vy = 0xE3;
                 RunNasAnim(nas);
                 break;
             case 1:
@@ -2549,7 +2549,7 @@ void PlotBashPenguin(NAS *nas) {
             }
         }
     }
-    eng->unk5E = 1;
+    eng->xform.dirty = 1;
 }
 
 void BashSnowMarkPenguin(void) {
@@ -2564,10 +2564,10 @@ void BashSnowMarkPenguin(void) {
             ArenaGrid[z * 20 + x].flags = 0xF0;
         }
     }
-    x = ((BashPenguinEng->unk10.x - 0x80) >> 8) + 10;
-    z = 9 - ((BashPenguinEng->unk10.z - 0x80) >> 8);
-    xhi = ((BashPenguinEng->unk10.x + 0x80) >> 8) + 10;
-    zhi = 9 - ((BashPenguinEng->unk10.z + 0x80) >> 8);
+    x = ((BashPenguinEng->XYZ.x - 0x80) >> 8) + 10;
+    z = 9 - ((BashPenguinEng->XYZ.z - 0x80) >> 8);
+    xhi = ((BashPenguinEng->XYZ.x + 0x80) >> 8) + 10;
+    zhi = 9 - ((BashPenguinEng->XYZ.z + 0x80) >> 8);
     if (x < 20) {
         if (z < 20) {
             ArenaGrid[z * 20 + x].flags |= 0x40;
@@ -2610,8 +2610,8 @@ void BashPenguinPush(EXTengine *self) {
         return;
     }
     radius = rec->radius;
-    top = self->unk10.y + rec->unk2;
-    bot = self->unk10.y + rec->height;
+    top = self->XYZ.y + rec->unk2;
+    bot = self->XYZ.y + rec->height;
     for (; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xF800)) {
             eng = Heroes[i].hero_eng;
@@ -2620,17 +2620,17 @@ void BashPenguinPush(EXTengine *self) {
                 if (r == NULL) {
                     continue;
                 }
-                etop = eng->unk10.y + r->unk2;
-                ebot = eng->unk10.y + r->height;
+                etop = eng->XYZ.y + r->unk2;
+                ebot = eng->XYZ.y + r->height;
                 if (bot < etop && ebot < top) {
-                    dx = eng->unk10.x - self->unk10.x;
-                    dz = eng->unk10.z - self->unk10.z;
+                    dx = eng->XYZ.x - self->XYZ.x;
+                    dz = eng->XYZ.z - self->XYZ.z;
                     rr = r->radius;
                     rr += radius;
                     dist = dx * dx + dz * dz;
                     rr *= rr;
                     if (dist < rr) {
-                        Heroes[i].hero_move->reactive_angle = get_angle(self->unk10.x, self->unk10.z);
+                        Heroes[i].hero_move->reactive_angle = get_angle(self->XYZ.x, self->XYZ.z);
                         Heroes[i].hero_move->reactive_speed = 0x60;
                         HeroTakeHit(i, NULL, -1, 0x8005, 0x446);
                     }
@@ -2650,11 +2650,11 @@ void BashPenguinPush(EXTengine *self) {
         if (r == NULL) {
             continue;
         }
-        etop = eng->unk10.y + r->unk2;
-        ebot = eng->unk10.y + r->height;
+        etop = eng->XYZ.y + r->unk2;
+        ebot = eng->XYZ.y + r->height;
         if (bot < etop && ebot < top) {
-            dx = eng->unk10.x - self->unk10.x;
-            dz = eng->unk10.z - self->unk10.z;
+            dx = eng->XYZ.x - self->XYZ.x;
+            dz = eng->XYZ.z - self->XYZ.z;
             rr = r->radius;
             rr += radius;
             dist = dx * dx + dz * dz;
@@ -2662,8 +2662,8 @@ void BashPenguinPush(EXTengine *self) {
                 ang = get_angle(-dx, -dz);
                 dist = csqrt(dist) >> 6;
                 dist = rr - dist;
-                eng->unk10.x -= (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                eng->unk10.z -= (dist * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                eng->XYZ.x -= (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                eng->XYZ.z -= (dist * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                 obj = FindExtension(nas, 0x1000);
                 if (obj != NULL) {
                     if (obj->can_do & 8) {
@@ -2693,9 +2693,9 @@ void InitTumbler(NAS *nas) {
         sub->u6C.dbase = MapScene->dbase;
         eng->sub->entity = 0x200A;
         eng->flags &= 0xFFFF7FFF;
-        eng->unk10 = MapPoints[8].pos;
-        eng->unk5D = 1;
-        eng->unk5C = 1;
+        eng->XYZ = MapPoints[8].pos;
+        eng->xform.order = 1;
+        eng->xform.hasScale = 1;
         eng_add_subs_n(eng, 1);
         sub = sub->next;
         if (sub != NULL) {
@@ -2771,35 +2771,35 @@ void PlotTumbler(NAS *nas) {
             }
         }
         if (Heroes[hero].hero_status & 0xFA00) {
-            PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
+            PlayHitEffect(&eng->XYZ.x, (HitInfo *)obj, 1);
             KillTriggerNas(nas);
             return;
         }
     spawn:
         BashTumblerAim((BashTumbler *)eng, move, hero);
-        child = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1108, 0x11);
+        child = CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1108, 0x11);
         if (child != NULL) {
             ceng = child->Engine;
             if (ceng != NULL) {
-                ceng->unk1E = eng->unk1E;
+                ceng->xform.rot.vy = eng->xform.rot.vy;
             }
         }
         eng->flags |= 0x8000;
         nas->UserInfo.status = 2;
-        PlaySfx(0x409, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x409, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         return;
     case 2:
         if (GravitateNas(nas) != 0) {
-            eng->unk10.y += 0x20;
+            eng->XYZ.y += 0x20;
             CrateCollide(eng, 0, -1, 0);
-            eng->unk10.y -= 0x20;
-            PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 0);
+            eng->XYZ.y -= 0x20;
+            PlayHitEffect(&eng->XYZ.x, (HitInfo *)obj, 0);
             KillTriggerNas(nas);
             return;
         }
         if (CrateCollide(eng, 0, obj->unk16, 1) != 0) {
-            eng->unk10.y += 0x80;
-            PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
+            eng->XYZ.y += 0x80;
+            PlayHitEffect(&eng->XYZ.x, (HitInfo *)obj, 1);
             KillTriggerNas(nas);
             return;
         }
@@ -2884,7 +2884,7 @@ s32 BashFirePowerup(s32 arg0)
             RoundWinner = arg0;
             switch (h->hero_pu) {
             case 0x19:
-                n = CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1103, 0x11);
+                n = CreateNAS(h->hero_eng->XYZ.x, h->hero_eng->XYZ.y, h->hero_eng->XYZ.z, 0x1103, 0x11);
                 if (n != NULL) {
                     n->UserInfo.user1 = arg0;
                     h->hero_attack_timer = 0x14;
@@ -2893,7 +2893,7 @@ s32 BashFirePowerup(s32 arg0)
                 }
                 break;
             case 0x1B:
-                n = CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1104, 0x11);
+                n = CreateNAS(h->hero_eng->XYZ.x, h->hero_eng->XYZ.y, h->hero_eng->XYZ.z, 0x1104, 0x11);
                 if (n != NULL) {
                     n->UserInfo.user1 = arg0;
                     h->hero_attack_timer = 0x14;
@@ -2902,7 +2902,7 @@ s32 BashFirePowerup(s32 arg0)
                 }
                 break;
             case 0x1C:
-                n = CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1105, 0x11);
+                n = CreateNAS(h->hero_eng->XYZ.x, h->hero_eng->XYZ.y, h->hero_eng->XYZ.z, 0x1105, 0x11);
                 if (n != NULL) {
                     n->UserInfo.user1 = arg0;
                     h->hero_attack_timer = 0x28;
@@ -2958,12 +2958,12 @@ s32 BashMissileHitTest(x, y, z, size, skip, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->unk10.y + rec->unk2 + size;
-        bot = eng->unk10.y + rec->height - size;
+        top = eng->XYZ.y + rec->unk2 + size;
+        bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
-            dx = eng->unk10.x - x;
+            dx = eng->XYZ.x - x;
             dist = dx * dx;
-            dz = eng->unk10.z - z;
+            dz = eng->XYZ.z - z;
             dist += dz * dz;
             rr = rec->radius + size;
             rr *= rr;
@@ -2984,12 +2984,12 @@ s32 BashMissileHitTest(x, y, z, size, skip, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->unk10.y + rec->unk2 + size;
-        bot = eng->unk10.y + rec->height - size;
+        top = eng->XYZ.y + rec->unk2 + size;
+        bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
-            dx = eng->unk10.x - x;
+            dx = eng->XYZ.x - x;
             dist = dx * dx;
-            dz = eng->unk10.z - z;
+            dz = eng->XYZ.z - z;
             dist += dz * dz;
             rr = rec->radius + size;
             rr *= rr;
@@ -3019,7 +3019,7 @@ void InitBash8way(NAS *nas) {
         nas->UserInfo.user2 = Heroes[RoundWinner].hero_move->facing_angle;
         eng_add_subs_n(eng, 7);
         sub = eng->sub;
-        eng->unk5D = 0;
+        eng->xform.order = 0;
         for (; sub != NULL; sub = sub->next) {
             sub->unk51 = 0;
             sub->u6C.dbase = &HeroModelBank[DB_Powerups];
@@ -3037,8 +3037,8 @@ void InitBash8way(NAS *nas) {
             mot->Ydec = 0;
             mot->Ydir = 0;
         }
-        eng->unk10.y -= 0xE0;
-        PlaySfx(0x43C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        eng->XYZ.y -= 0xE0;
+        PlaySfx(0x43C, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     }
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -3081,9 +3081,9 @@ void PlotBash8way(NAS *nas) {
                     sub->unk0C -= (speed * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                     t = sub->unk08 + mot->Yvel;
                     sub->unk08 = t;
-                    x = eng->unk10.x + sub->unk04;
-                    y = eng->unk10.y + t;
-                    z = eng->unk10.z + sub->unk0C;
+                    x = eng->XYZ.x + sub->unk04;
+                    y = eng->XYZ.y + t;
+                    z = eng->XYZ.z + sub->unk0C;
                     dead = 0;
                     sub->unk12 = a;
                     if (y >= World_floor_level) {
@@ -3119,8 +3119,8 @@ void InitBashHomer(NAS *nas) {
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         eng->sub->entity = 0x200F;
         eng_add_subs_n(eng, 1);
-        eng->unk5D = 0;
-        eng->unk5C = 1;
+        eng->xform.order = 0;
+        eng->xform.hasScale = 1;
         eng->flags |= 0x21;
         sub = eng->sub;
         sub = sub->next;
@@ -3148,15 +3148,15 @@ void InitBashHomer(NAS *nas) {
             mot->Ydec = 0;
             mot->Ydir = 0;
         }
-        PlaySfx(0x43B, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x43B, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
         best = -1;
         bestd = 0x800;
         for (i = 0; i < 4; i++) {
             u1 = nas->UserInfo.user1;
             if (i != u1 && (OVLG->teams == 0 || Heroes[i].hero_teammate != u1)) {
                 d = angle_diff_abs(nas->UserInfo.user2,
-                                  get_angle(eng->unk10.x - Heroes[i].hero_eng->unk10.x,
-                                            eng->unk10.z - Heroes[i].hero_eng->unk10.z));
+                                  get_angle(eng->XYZ.x - Heroes[i].hero_eng->XYZ.x,
+                                            eng->XYZ.z - Heroes[i].hero_eng->XYZ.z));
                 if (d < bestd) {
                     bestd = d;
                     best = i;
@@ -3165,7 +3165,7 @@ void InitBashHomer(NAS *nas) {
         }
         nas->UserInfo.status = best;
         nas->UserInfo.flags = 0x64;
-        eng->unk10.y -= 0x180;
+        eng->XYZ.y -= 0x180;
     }
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -3196,8 +3196,8 @@ void PlotBashHomer(NAS *nas) {
             ang = nas->UserInfo.user2;
             target = nas->UserInfo.status;
             if (target != -1) {
-                d = angle_diff(get_angle(eng->unk10.x - Heroes[target].hero_eng->unk10.x,
-                                            eng->unk10.z - Heroes[target].hero_eng->unk10.z), ang);
+                d = angle_diff(get_angle(eng->XYZ.x - Heroes[target].hero_eng->XYZ.x,
+                                            eng->XYZ.z - Heroes[target].hero_eng->XYZ.z), ang);
                 if (abs(d) < 0x40) {
                     if (d < 0) {
                         ang += 0x40;
@@ -3209,17 +3209,17 @@ void PlotBashHomer(NAS *nas) {
                 }
                 nas->UserInfo.user2 = ang;
                 he = Heroes[target].hero_eng;
-                dx = eng->unk10.x - he->unk10.x;
-                dz = eng->unk10.z - he->unk10.z;
+                dx = eng->XYZ.x - he->XYZ.x;
+                dz = eng->XYZ.z - he->XYZ.z;
                 if (dx * dx + dz * dz < 0x40000) {
-                    eng->unk10.y -= (eng->unk10.y - (he->unk10.y - 0xA0)) >> 2;
+                    eng->XYZ.y -= (eng->XYZ.y - (he->XYZ.y - 0xA0)) >> 2;
                 }
             }
-            eng->unk10.x -= (mot->Xvel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            eng->unk10.z -= (mot->Xvel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
-            x = eng->unk10.x;
-            y = eng->unk10.y;
-            z = eng->unk10.z;
+            eng->XYZ.x -= (mot->Xvel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            eng->XYZ.z -= (mot->Xvel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+            x = eng->XYZ.x;
+            y = eng->XYZ.y;
+            z = eng->XYZ.z;
             if (y >= World_floor_level || nas->UserInfo.flags == 0) {
                 BashSpawnMissileExplode(x, World_floor_level, z, nas->UserInfo.user1, 0x1B);
                 dead = 1;
@@ -3229,10 +3229,10 @@ void PlotBashHomer(NAS *nas) {
                 dead = 1;
             }
             nas->UserInfo.flags--;
-            if ((u32)(eng->unk10.x + 0x1000) > 0x2000) {
+            if ((u32)(eng->XYZ.x + 0x1000) > 0x2000) {
                 dead = 1;
             }
-            if ((u32)(eng->unk10.z + 0x1000) > 0x2000) {
+            if ((u32)(eng->XYZ.z + 0x1000) > 0x2000) {
                 dead = 1;
             }
         }
@@ -3257,8 +3257,8 @@ void InitBashShox(NAS *nas) {
             nas->FUX = (void *)x;
             eng_add_subs_n(eng, 6);
             sub = eng->sub;
-            eng->unk5D = 0;
-            eng->unk5C = 1;
+            eng->xform.order = 0;
+            eng->xform.hasScale = 1;
             eng->flags |= 0x21;
             if (sub != NULL) {
                 i = 0;
@@ -3276,7 +3276,7 @@ void InitBashShox(NAS *nas) {
                     i++;
                 } while (sub != NULL);
             }
-            PlaySfx(0x43A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x43A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
     }
     if (nas->Failure != 0) {
@@ -3304,12 +3304,12 @@ void PlotBashShox(NAS *nas) {
     eng = nas->Engine;
     dead = 1;
     if (eng != NULL) {
-        px = eng->unk10.x;
+        px = eng->XYZ.x;
         x = nas->FUX;
-        pz = eng->unk10.z;
-        py = eng->unk10.y - 0x100;
+        pz = eng->XYZ.z;
+        py = eng->XYZ.y - 0x100;
         if (x != NULL) {
-            eng->unk10 = Heroes[nas->UserInfo.user1].hero_eng->unk10;
+            eng->XYZ = Heroes[nas->UserInfo.user1].hero_eng->XYZ;
             sub = eng->sub;
             size = 0;
             for (i = 0; sub != NULL; i++, sub = sub->next) {
@@ -3342,7 +3342,7 @@ void PlotBashShox(NAS *nas) {
                 h = &base[hit];
                 if ((h->hero_immunity | h->hero_hit) == 0) {
                     he = h->hero_eng;
-                    ang = get_angle(px - he->unk10.x, pz - he->unk10.z);
+                    ang = get_angle(px - he->XYZ.x, pz - he->XYZ.z);
                     mv = h->hero_move;
                     vc = mv->velocity_calc;
                     if (vc == 1) {
@@ -3442,10 +3442,10 @@ void InitBoing(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        eng->unk10.y -= 0x100;
+        eng->XYZ.y -= 0x100;
         eng->sub->u6C.dbase = MapScene->dbase;
-        eng->unk5D = 1;
-        eng->unk5C = 1;
+        eng->xform.order = 1;
+        eng->xform.hasScale = 1;
         ScriptCursorFirst(nas, &BoingScriptInit);
     }
     if (nas->Failure != 0) {
@@ -3472,7 +3472,7 @@ void InitBashPenguin(NAS *nas) {
             obj->whatami = 0xE;
             obj->can_do |= 2;
         }
-        eng->unk5D = 1;
+        eng->xform.order = 1;
         FetchDefaultColBox(eng, 0x50);
         BashSnowMarkPenguin();
     }
@@ -3521,9 +3521,9 @@ void BashDrawView(void) {
 }
 
 s32 GetBashContour(EXTengine *eng) {
-    s32 x = (eng->unk10.x + 0x800) >> 9;
-    s32 z = (eng->unk10.z + 0x800) >> 9;
-    s32 dy = eng->unk10.y - World_floor_level;
+    s32 x = (eng->XYZ.x + 0x800) >> 9;
+    s32 z = (eng->XYZ.z + 0x800) >> 9;
+    s32 dy = eng->XYZ.y - World_floor_level;
 
     if ((u32)x >= 8 || (u32)z >= 8) {
         return dy;
@@ -3562,8 +3562,8 @@ void BashSpaceMarkHoles(void) {
 void BashSpaceDropTile(s32 arg0) {
     EXTengine *eng = Heroes[arg0].hero_eng;
     BashCell *base = BashSpaceTiles[0];
-    s32 xi = (eng->unk10.x + 0x800) >> 9;
-    s32 zi = (eng->unk10.z + 0x800) >> 9;
+    s32 xi = (eng->XYZ.x + 0x800) >> 9;
+    s32 zi = (eng->XYZ.z + 0x800) >> 9;
     BashCell *cell = (BashCell *)((char *)base + (zi * 12 + xi * 0x60));  /* matching: base[xi * 8 + zi] is two insns longer */
     BashObj *obj = cell->obj;
 
@@ -3705,38 +3705,38 @@ s32 BASH_KeepInBounds(EXTengine *arg0) {
     var_a2 = 0;
     if ((arg0->collision_box.flags) & 0x40) {
         temp_a0 = 0x800 - (arg0->collision_box.radius);
-        if (temp_a0 < (arg0->unk10.x)) {
-            (arg0->unk10.x) = temp_a0;
+        if (temp_a0 < (arg0->XYZ.x)) {
+            (arg0->XYZ.x) = temp_a0;
             var_a2 = 1;
         }
         temp_v1 = -temp_a0;
-        if ((arg0->unk10.x) < temp_v1) {
-            (arg0->unk10.x) = temp_v1;
+        if ((arg0->XYZ.x) < temp_v1) {
+            (arg0->XYZ.x) = temp_v1;
             var_a2 = 1;
         }
-        if (temp_a0 < (arg0->unk10.z)) {
-            (arg0->unk10.z) = temp_a0;
+        if (temp_a0 < (arg0->XYZ.z)) {
+            (arg0->XYZ.z) = temp_a0;
             var_a2 = 1;
         }
-        if ((arg0->unk10.z) < temp_v1) {
-            (arg0->unk10.z) = temp_v1;
+        if ((arg0->XYZ.z) < temp_v1) {
+            (arg0->XYZ.z) = temp_v1;
             goto block_17;
         }
     } else {
-        if ((arg0->unk10.x) >= 0x801) {
-            (arg0->unk10.x) = 0x800;
+        if ((arg0->XYZ.x) >= 0x801) {
+            (arg0->XYZ.x) = 0x800;
             var_a2 = 1;
         }
-        if ((arg0->unk10.x) < -0x800) {
-            (arg0->unk10.x) = -0x800;
+        if ((arg0->XYZ.x) < -0x800) {
+            (arg0->XYZ.x) = -0x800;
             var_a2 = 1;
         }
-        if ((arg0->unk10.z) >= 0x801) {
-            (arg0->unk10.z) = 0x800;
+        if ((arg0->XYZ.z) >= 0x801) {
+            (arg0->XYZ.z) = 0x800;
             var_a2 = 1;
         }
-        if ((arg0->unk10.z) < -0x800) {
-            (arg0->unk10.z) = -0x800;
+        if ((arg0->XYZ.z) < -0x800) {
+            (arg0->XYZ.z) = -0x800;
 block_17:
             var_a2 = 1;
         }
@@ -3851,8 +3851,8 @@ void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2) {
     }
     arg1->sum = sum;
     arg1->steps = steps;
-    dx = arg0->x - Heroes[arg2].hero_eng->unk10.x;
-    dz = arg0->z - Heroes[arg2].hero_eng->unk10.z;
+    dx = arg0->x - Heroes[arg2].hero_eng->XYZ.x;
+    dz = arg0->z - Heroes[arg2].hero_eng->XYZ.z;
     ang = get_angle(dx, dz);
     dist = csqrt(dx * dx + dz * dz);
     arg0->angle = ang;

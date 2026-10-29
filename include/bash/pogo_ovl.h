@@ -99,7 +99,7 @@ static inline void Pogo_ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
     if (nas != NULL) {
         if (nas->Engine != NULL) {
-            PlaySfx(0x515, NULL, &nas->Engine->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x515, NULL, &nas->Engine->XYZ, 0x1000, 0x1E00, 0);
         }
         dir = nas->UserInfo.user1 & 3;
         for (i = 0; i < arg3; i++) {

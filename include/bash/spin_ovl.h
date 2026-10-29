@@ -77,11 +77,11 @@ extern SpinCell SpinDropPoints[4][16];
 #define SPIN_FLOAT(eng, g, y, s)                       \
     do {                                                \
         (g) = World_floor_level;                               \
-        (y) = (eng)->unk10.y;                           \
+        (y) = (eng)->XYZ.y;                           \
         (y) += 0x300;                                   \
         (s) = (y) - (g);                                \
         if (abs(s) > 0x10) {                            \
-            (eng)->unk10.y -= (s) >> 6;                 \
+            (eng)->XYZ.y -= (s) >> 6;                 \
         }                                               \
     } while (0)
 
@@ -90,8 +90,8 @@ extern SpinCell SpinDropPoints[4][16];
     do {                                                                            \
         (shadow) = (eng)->Engine;                                                   \
         if ((shadow) != NULL) {                                                     \
-            (shadow)->unk10 = (eng)->unk10;                                         \
-            (shadow)->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);        \
+            (shadow)->XYZ = (eng)->XYZ;                                         \
+            (shadow)->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);        \
         }                                                                           \
     } while (0)
 

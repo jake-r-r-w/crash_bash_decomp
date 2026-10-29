@@ -1059,8 +1059,8 @@ void PolarUpdateScene(void)
           if (!(Heroes[i].hero_status & 0xFA00))
           {
             k = Heroes[i].hero_move->mass;
-            sx += Heroes[i].hero_eng->unk10.x * k;
-            sz += Heroes[i].hero_eng->unk10.z * k;
+            sx += Heroes[i].hero_eng->XYZ.x * k;
+            sz += Heroes[i].hero_eng->XYZ.z * k;
           }
         }
 
@@ -1071,10 +1071,10 @@ void PolarUpdateScene(void)
           if (((r == 1) || (r == 5)) || (r == 7))
           {
             eng = PolarProximity->eng;
-            sx += eng->unk10.x << 10;
+            sx += eng->XYZ.x << 10;
             sx >>= 8;
             sx /= 5;
-            sz += eng->unk10.z << 10;
+            sz += eng->XYZ.z << 10;
             sz >>= 8;
             sz /= 5;
           }
@@ -1098,8 +1098,8 @@ void PolarUpdateScene(void)
       {
         if (!(Heroes[i].hero_status & 0xFA00))
         {
-          sx += Heroes[i].hero_eng->unk10.x;
-          sz += Heroes[i].hero_eng->unk10.z;
+          sx += Heroes[i].hero_eng->XYZ.x;
+          sz += Heroes[i].hero_eng->XYZ.z;
         }
       }
 
@@ -1107,13 +1107,13 @@ void PolarUpdateScene(void)
       loop:
       if (p != 0)
       {
-        if ((((NAS *) p)->Engine != 0) && (((NAS *) p)->Engine->unk10.y == 0))
+        if ((((NAS *) p)->Engine != 0) && (((NAS *) p)->Engine->XYZ.y == 0))
         {
           ext = FindExtension((NAS *) p, 0x10000000);
           if (ext != 0)
           {
-            sx += ((NAS *) p)->Engine->unk10.x;
-            sz += ((NAS *) p)->Engine->unk10.z;
+            sx += ((NAS *) p)->Engine->XYZ.x;
+            sz += ((NAS *) p)->Engine->XYZ.z;
             if (ext->unk4C != 0)
             {
               sx *= ext->unk4C;
@@ -1357,8 +1357,8 @@ s32 PolarBombHitHeroes(NAS *nas, s32 dist) {
             || h->hero_immunity != 0 || h->hero_mode == 0x4D || h->hero_mode == 0x50) {
             goto next;
         }
-        dx = nas->Engine->unk10.x - h->hero_eng->unk10.x;
-        dz = nas->Engine->unk10.z - h->hero_eng->unk10.z;
+        dx = nas->Engine->XYZ.x - h->hero_eng->XYZ.x;
+        dz = nas->Engine->XYZ.z - h->hero_eng->XYZ.z;
         if (dist <= dx * dx + dz * dz) {
             goto next;
         }
@@ -1397,11 +1397,11 @@ s32 PolarBombHitHeroes(NAS *nas, s32 dist) {
                 PlaySfx(0xFD, NULL, NULL, 0x1000, vol, 0);
                 break;
             }
-            h->hero_move->forward_angle = nas->Engine->unk1E;
-            h->hero_eng->unk5D = 2;
+            h->hero_move->forward_angle = nas->Engine->xform.rot.vy;
+            h->hero_eng->xform.order = 2;
             h->hero_move->forward_angle = 0x800;
-            h->hero_eng->unk1E = 0x800;
-            h->hero_eng->unk5E = 1;
+            h->hero_eng->xform.rot.vy = 0x800;
+            h->hero_eng->xform.dirty = 1;
             if (h->hero_mode != 0x57) {
                 SetHeroAction(i, 0x57);
             }
@@ -1443,16 +1443,16 @@ s32 PolarBombHitHeroes(NAS *nas, s32 dist) {
             }
             move = h->hero_move;
             if (move != NULL) {
-                obj = CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1611, 0x11);
+                obj = CreateNAS(h->hero_eng->XYZ.x, h->hero_eng->XYZ.y, h->hero_eng->XYZ.z, 0x1611, 0x11);
                 if (obj != NULL) {
                     b = FindExtension(obj, 0x10000000);
                     if (b != NULL) {
-                        b->angle = nas->Engine->unk1E;
-                        obj->Engine->unk1E = nas->Engine->unk1E;
-                        h->hero_move->forward_angle = nas->Engine->unk1E + 0x800;
-                        b->start = h->hero_eng->unk10;
-                        b->pos.x = h->hero_eng->unk10.x - ((t[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * spd) >> 12);
-                        b->pos.z = h->hero_eng->unk10.z - ((t[nas->Engine->unk1E & 0xFFF].unk2 * spd) >> 12);
+                        b->angle = nas->Engine->xform.rot.vy;
+                        obj->Engine->xform.rot.vy = nas->Engine->xform.rot.vy;
+                        h->hero_move->forward_angle = nas->Engine->xform.rot.vy + 0x800;
+                        b->start = h->hero_eng->XYZ;
+                        b->pos.x = h->hero_eng->XYZ.x - ((t[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * spd) >> 12);
+                        b->pos.z = h->hero_eng->XYZ.z - ((t[nas->Engine->xform.rot.vy & 0xFFF].unk2 * spd) >> 12);
                         b->pos.y = 0;
                         SetHeroAction(i, 0x56);
                         h->hero_immunity = 0x3C;
@@ -1486,7 +1486,7 @@ s32 PolarBombOwnerEngine(NAS *nas)
   loop:
   if (i < 4)
   {
- do { if (!(hero->hero_status & 0x2000)) { s32 dx; s32 dz; EXTengine *a; EXTengine *b; a = nas->Engine; b = hero->hero_eng; dx = a->unk10.x - b->unk10.x; dz = a->unk10.z - b->unk10.z; if (((dx * dx) + (dz * dz)) > 0x15F8F) { goto next; } if (FindExtension(hero->hero, 0x20000000) != 0) { ext[5] = i; } return 1; } next: hero++; i++; } while (0);
+ do { if (!(hero->hero_status & 0x2000)) { s32 dx; s32 dz; EXTengine *a; EXTengine *b; a = nas->Engine; b = hero->hero_eng; dx = a->XYZ.x - b->XYZ.x; dz = a->XYZ.z - b->XYZ.z; if (((dx * dx) + (dz * dz)) > 0x15F8F) { goto next; } if (FindExtension(hero->hero, 0x20000000) != 0) { ext[5] = i; } return 1; } next: hero++; i++; } while (0);
     goto loop;
   }
 
@@ -1501,7 +1501,7 @@ void InitPolarBomb(NAS *m) {
     if (ext != NULL) {
         m->Engine->sub->entity = 0x201A;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
-        m->Engine->unk5D = 2;
+        m->Engine->xform.order = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk30 = 2;
         ext->unk74 = 0x56;
@@ -1514,12 +1514,12 @@ void InitPolarBomb(NAS *m) {
         if (e != NULL) {
             e->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
             e->sub->entity = 0x202F;
-            e->Engine->unk5C = 1;
-            e->Engine->unk5D = 0;
-            e->Engine->unk2C.x = 0xC00;
-            e->Engine->unk2C.y = 0xC00;
-            e->Engine->unk2C.z = 0xC00;
-            e->unk10 = m->Engine->unk10;
+            e->Engine->xform.hasScale = 1;
+            e->Engine->xform.order = 0;
+            e->Engine->xform.scale.vx = 0xC00;
+            e->Engine->xform.scale.vy = 0xC00;
+            e->Engine->xform.scale.vz = 0xC00;
+            e->XYZ = m->Engine->XYZ;
             e->flags |= 0x8041;
             e->sub->unk76 = 0x200;
             e->sub->flags |= 0x40000000;
@@ -1541,18 +1541,18 @@ void PlotPolarBomb(NAS *m) {
     }
     switch (ext->unkC) {
     case 0:
-        if ((CheckMelted(&m->Engine->unk10, 0) ^ 1) != 0) {
+        if ((CheckMelted(&m->Engine->XYZ, 0) ^ 1) != 0) {
             ext->unk48 = 0x100;
             m->Engine->sub->unk68 = 0x200;
-            if (m->Engine->unk10.y >= ext->unk48) {
+            if (m->Engine->XYZ.y >= ext->unk48) {
                 PlaySfx(0x494, NULL, NULL, 0x1000, 0x1E00, 0);
                 KillNAS(m);
                 break;
             }
         }
-        if (ArcUpdate(ext->from, ext->to, &ext->unk30, &m->Engine->unk10.x) != 0) {
-            PlaySfx((CheckMelted(&m->Engine->unk10, 0) ^ 1) != 0 ? 0x494 : 0x48F, NULL, NULL, 0x1000, 0x1E00, 0);
-            nas = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+        if (ArcUpdate(ext->from, ext->to, &ext->unk30, &m->Engine->XYZ.x) != 0) {
+            PlaySfx((CheckMelted(&m->Engine->XYZ, 0) ^ 1) != 0 ? 0x494 : 0x48F, NULL, NULL, 0x1000, 0x1E00, 0);
+            nas = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1605, 0x11);
             if (nas != NULL) {
                 nas->Engine->flags |= 0x200000;
                 fx = (ExtSpawn5910 *)nas->FUX;
@@ -1569,11 +1569,11 @@ void PlotPolarBomb(NAS *m) {
             break;
         }
         if (ext->unk10-- < 0) {
-            smoke = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
+            smoke = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1612, 0x11);
             if (smoke != NULL) {
-                smoke->Engine->unk2C.x = 0x5DC;
-                smoke->Engine->unk2C.y = 0x5DC;
-                smoke->Engine->unk2C.z = 0x5DC;
+                smoke->Engine->xform.scale.vx = 0x5DC;
+                smoke->Engine->xform.scale.vy = 0x5DC;
+                smoke->Engine->xform.scale.vz = 0x5DC;
                 bx = FindExtension(smoke, 0x10000000);
                 if (bx != NULL) {
                     bx[3] = 0x400;
@@ -1584,15 +1584,15 @@ void PlotPolarBomb(NAS *m) {
             ext->unk10 = Random(2);
         }
         if (m->FUX != NULL) {
-            ((EXTengine *)m->FUX)->unk10 = m->Engine->unk10;
-            ((EXTengine *)m->FUX)->unk10.y = 0;
-            ((EXTengine *)m->FUX)->unk2C.x = (0x100 - abs(m->Engine->unk10.y)) * 8 + 0xC00;
-            ((EXTengine *)m->FUX)->unk2C.y = (0x100 - abs(m->Engine->unk10.y)) * 8 + 0xC00;
-            ((EXTengine *)m->FUX)->unk2C.z = (0x100 - abs(m->Engine->unk10.y)) * 8 + 0xC00;
-            ((EXTengine *)m->FUX)->unk5E = 1;
+            ((EXTengine *)m->FUX)->XYZ = m->Engine->XYZ;
+            ((EXTengine *)m->FUX)->XYZ.y = 0;
+            ((EXTengine *)m->FUX)->xform.scale.vx = (0x100 - abs(m->Engine->XYZ.y)) * 8 + 0xC00;
+            ((EXTengine *)m->FUX)->xform.scale.vy = (0x100 - abs(m->Engine->XYZ.y)) * 8 + 0xC00;
+            ((EXTengine *)m->FUX)->xform.scale.vz = (0x100 - abs(m->Engine->XYZ.y)) * 8 + 0xC00;
+            ((EXTengine *)m->FUX)->xform.dirty = 1;
         }
-        m->Engine->unk1C += 0x100;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.rot.vx += 0x100;
+        m->Engine->xform.dirty = 1;
         if (PolarBombHitHeroes(m, 0x15F90) != 0) {
             ext->unkC = 1;
             ext->unk10 = 0;
@@ -1604,7 +1604,7 @@ void PlotPolarBomb(NAS *m) {
             ((EXTengine *)m->FUX)->sub->flags &= ~0x8000;
         }
         if (ext->unk10 == 0) {
-            CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1614, 0x11);
+            CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1614, 0x11);
             PolarBombHitHeroes(m, 0x35EE4);
         }
         ext->unk10++;
@@ -1636,8 +1636,8 @@ void PlotBombGFX(NAS *m) {
     }
     switch (ext[3]) {
     case 0:
-        m->Engine->unk1E += 0x20;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.rot.vy += 0x20;
+        m->Engine->xform.dirty = 1;
         if (PolarBombOwnerEngine(m) == 0) {
             return;
         }
@@ -1713,19 +1713,19 @@ void PlotBombGFX(NAS *m) {
         if (hero == NULL) {
             return;
         }
-        m->Engine->unk10 = Heroes[ext[5]].hero_eng->unk10;
+        m->Engine->XYZ = Heroes[ext[5]].hero_eng->XYZ;
         h = &Heroes[ext[5]];
         if (h->hero_name == 1) {
-            m->Engine->unk10.y -= (h->hero_eng->unk2C.x * 0x258) >> 12;
+            m->Engine->XYZ.y -= (h->hero_eng->xform.scale.vx * 0x258) >> 12;
         } else {
-            m->Engine->unk10.y -= (h->hero_eng->unk2C.x * 0x300) >> 12;
+            m->Engine->XYZ.y -= (h->hero_eng->xform.scale.vx * 0x300) >> 12;
         }
-        m->Engine->unk1E += 0x20;
+        m->Engine->xform.rot.vy += 0x20;
         e = m->Engine;
-        e->unk2C.z = 0x800;
-        e->unk2C.y = 0x800;
-        e->unk2C.x = 0x800;
-        m->Engine->unk5E = 1;
+        e->xform.scale.vz = 0x800;
+        e->xform.scale.vy = 0x800;
+        e->xform.scale.vx = 0x800;
+        m->Engine->xform.dirty = 1;
         if (hero[10] != 0) {
             return;
         }
@@ -1755,13 +1755,13 @@ void PolarInitHeroAngle(s32 player) {
     if (h->hero_frozen == 0) {
         if (!(h->hero_ctrl & 1)) {
             if (h->hero_mode != 0x52) {
-                h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+                h->hero_eng->xform.rot.vy += angle_diff(h->hero_eng->xform.rot.vy, h->hero_move->forward_angle) >> 2;
             } else {
-                h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 5;
+                h->hero_eng->xform.rot.vy += angle_diff(h->hero_eng->xform.rot.vy, h->hero_move->forward_angle) >> 5;
             }
         }
         Heroes[player].hero_ctrl &= ~1;
-        Heroes[player].hero_eng->unk5E = 1;
+        Heroes[player].hero_eng->xform.dirty = 1;
     }
 }
 
@@ -1841,8 +1841,8 @@ void PolarInitHeroEngine(s32 arg0) {
                 }
             }
         }
-        e->unk10.z += m->z_vel;
-        e->unk10.x += m->x_vel;
+        e->XYZ.z += m->z_vel;
+        e->XYZ.x += m->x_vel;
     }
 }
 
@@ -1874,9 +1874,9 @@ void PolarSpawnObjects(void) {
         }
         if (PolarRoundState != 0) {
             hero->hero_status = status | 0x2000;
-            pos.x = hero->hero_eng->unk10.x;
-            pos.y = hero->hero_eng->unk10.y - 0x80;
-            pos.z = hero->hero_eng->unk10.z;
+            pos.x = hero->hero_eng->XYZ.x;
+            pos.y = hero->hero_eng->XYZ.y - 0x80;
+            pos.z = hero->hero_eng->XYZ.z;
             tex = &HeroModelBank[DB_PolarObjects];
             p = &pos;
             nas = CreateNAS(pos.x, p->y, p->z, 0x1605, 0x11);
@@ -2118,7 +2118,7 @@ void PolarAI_TryAttack(s32 player) {
     if (TestForTeamMate(player, fux->target) != 0) {
         return;
     }
-    DistXZSq((SLONG_XYZ *)&base[fux->target].hero_eng->unk10, (SLONG_XYZ *)&h->hero_eng->unk10);
+    DistXZSq((SLONG_XYZ *)&base[fux->target].hero_eng->XYZ, (SLONG_XYZ *)&h->hero_eng->XYZ);
     if (PolarAI_ShotBlocked(player) == 0) {
         return;
     }
@@ -2232,8 +2232,8 @@ loop:
         if (i < 4) {
             min = 0x07FFFFFF;
             if (i != player && TestForTeamMate(player, i) == 0 && !(h->hero_status & 0x2000)) {
-                pos = h->hero_eng->unk10;
-                if (DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10) < min) {
+                pos = h->hero_eng->XYZ;
+                if (DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->XYZ) < min) {
                     best = i;
                 }
             }
@@ -2281,8 +2281,8 @@ void PolarAI_DoAttack(s32 player) {
                     && Heroes[fux->target].hero_mode != 0x50
                     && Heroes[fux->target].hero_immunity == 0
                     && TestForTeamMate(player, i) == 0) {
-                    pos = Heroes[i].hero_eng->unk10;
-                    d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&Heroes[player].hero_eng->unk10);
+                    pos = Heroes[i].hero_eng->XYZ;
+                    d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&Heroes[player].hero_eng->XYZ);
                     if (d < dist) {
                         dist = d;
                         best = i;
@@ -2324,8 +2324,8 @@ void PolarAI_DoAttack(s32 player) {
                 }
                 if (i != player && !(Heroes[i].hero_status & 0x2000) && !skip
                     && Heroes[i].hero_mode != 0x50) {
-                    pos = Heroes[i].hero_eng->unk10;
-                    d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&Heroes[player].hero_eng->unk10);
+                    pos = Heroes[i].hero_eng->XYZ;
+                    d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&Heroes[player].hero_eng->XYZ);
                     if (d < dist) {
                         dist = d;
                         best = i;
@@ -2346,8 +2346,8 @@ void PolarAI_DoAttack(s32 player) {
                         && Heroes[fux->target].hero_mode != 0x50
                         && Heroes[fux->target].hero_immunity == 0
                         && TestForTeamMate(player, i) == 0) {
-                        pos = Heroes[i].hero_eng->unk10;
-                        d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&Heroes[player].hero_eng->unk10);
+                        pos = Heroes[i].hero_eng->XYZ;
+                        d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&Heroes[player].hero_eng->XYZ);
                         if (d < dist) {
                             dist = d;
                             best = i;
@@ -2375,8 +2375,8 @@ void PolarAI_DoAttack(s32 player) {
         return;
     }
     PolarAI_TryAttack(player);
-    fux->vel = Heroes[fux->target].hero_eng->unk10;
-    fux->pos = Heroes[player].hero_eng->unk10;
+    fux->vel = Heroes[fux->target].hero_eng->XYZ;
+    fux->pos = Heroes[player].hero_eng->XYZ;
     PolarAI_SteerToTarget(player);
 }
 
@@ -2404,9 +2404,9 @@ void PolarAI_DoHunt(s32 player) {
     if (fux != NULL) {
         fux->unk3C = 1;
         if (PolarBeamOwner != NULL) {
-            fux->vel = PolarBeamOwner->unk54->unk10;
+            fux->vel = PolarBeamOwner->unk54->XYZ;
         }
-        fux->pos = h->hero_eng->unk10;
+        fux->pos = h->hero_eng->XYZ;
         if (fux->unk24-- < 0) {
             fux->state = 5;
             fux->func = PolarEmptyStub6;
@@ -2435,8 +2435,8 @@ bool IsPlayerInRange(u32 player, u32 target) {
         }
         a = h->hero_eng;
         b = base[target].hero_eng;
-        dx = a->unk10.x - b->unk10.x;
-        dz = a->unk10.z - b->unk10.z;
+        dx = a->XYZ.x - b->XYZ.x;
+        dz = a->XYZ.z - b->XYZ.z;
         if (dx * dx + dz * dz > 0x3D08FF) {
             return 0;
         }
@@ -2480,8 +2480,8 @@ void DoGetBomb(u32 player) {
     nas = PolarFreeBomb();
     if (nas != NULL) {
         fux->unk3C = 1;
-        fux->vel = nas->Engine->unk10;
-        fux->pos = Heroes[player].hero_eng->unk10;
+        fux->vel = nas->Engine->XYZ;
+        fux->pos = Heroes[player].hero_eng->XYZ;
         if (fux->unk24-- < 0) {
             fux->state = 5;
             fux->func = PolarEmptyStub6;
@@ -2536,8 +2536,8 @@ loop:
     if (i < 4) {
         do {
             if (i != player && !(o->hero_status & 0x2000)) {
-                pos = o->hero_eng->unk10;
-                d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
+                pos = o->hero_eng->XYZ;
+                d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->XYZ);
                 if (d < dist) {
                     dist = d;
                     best = i;
@@ -2551,7 +2551,7 @@ loop:
     if (move != NULL) {
         a = Heroes[player].hero_eng;
         b = Heroes[best].hero_eng;
-        move->forward_angle = get_angle(a->unk10.x - b->unk10.x, a->unk10.z - b->unk10.z) & 0xFFF;
+        move->forward_angle = get_angle(a->XYZ.x - b->XYZ.x, a->XYZ.z - b->XYZ.z) & 0xFFF;
     }
     if (dist <= 0xFFFFF) {
         fux->unk2C = best;
@@ -2587,7 +2587,7 @@ void PolarAI_DoWander(s32 player) {
         if (EnsureMateNotObstructingMate(player) != 0) {
             return;
         }
-        fux->pos = h->hero_eng->unk10;
+        fux->pos = h->hero_eng->XYZ;
         dx = fux->vel.x - fux->pos.x;
         dz = fux->vel.z - fux->pos.z;
         if (dx * dx + dz * dz > 0x24000) {
@@ -2641,8 +2641,8 @@ void PolarAI_DoChase(s32 player) {
         fux->func = PolarEmptyStub6;
         return;
     }
-    fux->vel = h->hero_eng->unk10;
-    fux->pos = Heroes[player].hero_eng->unk10;
+    fux->vel = h->hero_eng->XYZ;
+    fux->pos = Heroes[player].hero_eng->XYZ;
     PolarAI_SteerToTarget();
 }
 
@@ -2678,12 +2678,12 @@ void PolarAI_DoBeam(s32 player) {
     }
     fux->unk3C = 1;
     if (PolarBeamOwner != NULL) {
-        fux->vel = PolarBeamOwner->unk54->unk10;
+        fux->vel = PolarBeamOwner->unk54->XYZ;
     }
-    fux->pos = Heroes[player].hero_eng->unk10;
+    fux->pos = Heroes[player].hero_eng->XYZ;
     e = PolarBeamOwner->unk54;
-    dx = eng->unk10.x - e->unk10.x;
-    dz = eng->unk10.z - e->unk10.z;
+    dx = eng->XYZ.x - e->XYZ.x;
+    dz = eng->XYZ.z - e->XYZ.z;
     if (dx * dx + dz * dz < 0x19000) {
         fux->state = 5;
         fux->func = PolarEmptyStub6;
@@ -2714,14 +2714,14 @@ bool Player2PlayerRayTest(u32 player, u32 target) {
         goto ret0;
     }
     a = h->hero_eng;
-    ang = a->unk1E;
+    ang = a->xform.rot.vy;
     b = base[target].hero_eng;
     vel.vx = PolarIceRadius * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
     vel.vz = PolarIceRadius * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
     pos.vx = 0;
     pos.vz = 0;
-    d.vx = b->unk10.x - a->unk10.x;
-    d.vz = b->unk10.z - a->unk10.z;
+    d.vx = b->XYZ.x - a->XYZ.x;
+    d.vz = b->XYZ.z - a->XYZ.z;
     d.vy = 0;
     d.pad = 200;
     ret = 1;
@@ -2755,8 +2755,8 @@ s32 PolarAI_ShotBlocked(s32 self) {
 loop:
     if (i < 4) {
         if (i != self && !((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
-            pos = h->hero_eng->unk10;
-            d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
+            pos = h->hero_eng->XYZ;
+            d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->XYZ);
             if (d < min) {
                 min = d;
                 best = i;
@@ -2810,8 +2810,8 @@ loop:
     do {
         if (i < 4) {
             if (i != self && !((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
-                pos = h->hero_eng->unk10;
-                d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
+                pos = h->hero_eng->XYZ;
+                d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->XYZ);
                 if (d < min) {
                     min = d;
                     best = i;
@@ -2924,8 +2924,8 @@ void PolarAI_AvoidMelt(s32 player)
           s32 dd;
           if (((i != player) && (!((st = o->hero_status) & 0x2000))) && (!(st & 0x8000)))
           {
-            pos.v = o->hero_eng->unk10;
-            dd = DistXZSq((SLONG_XYZ *)(&pos.v), (SLONG_XYZ *)(&me->hero_eng->unk10));
+            pos.v = o->hero_eng->XYZ;
+            dd = DistXZSq((SLONG_XYZ *)(&pos.v), (SLONG_XYZ *)(&me->hero_eng->XYZ));
             if (dd < min)
             {
               min = dd;
@@ -2999,8 +2999,8 @@ void PolarAI_AvoidMelt(s32 player)
         s32 dd;
         if ((i != player) && (!(o->hero_status & 0x2000)))
         {
-          pos.v = o->hero_eng->unk10;
-          dd = DistXZSq((SLONG_XYZ *)(&pos.v), (SLONG_XYZ *)(&me1->hero_eng->unk10));
+          pos.v = o->hero_eng->XYZ;
+          dd = DistXZSq((SLONG_XYZ *)(&pos.v), (SLONG_XYZ *)(&me1->hero_eng->XYZ));
           if (dd < bestd)
           {
             bestd = dd;
@@ -3018,16 +3018,16 @@ void PolarAI_AvoidMelt(s32 player)
   }
   if (mv != 0)
   {
-    mv->forward_angle = get_angle(Heroes[player].hero_eng->unk10.x - Heroes[fux->unk2C].hero_eng->unk10.x, Heroes[player].hero_eng->unk10.z - Heroes[fux->unk2C].hero_eng->unk10.z) & 0xFFF;
+    mv->forward_angle = get_angle(Heroes[player].hero_eng->XYZ.x - Heroes[fux->unk2C].hero_eng->XYZ.x, Heroes[player].hero_eng->XYZ.z - Heroes[fux->unk2C].hero_eng->XYZ.z) & 0xFFF;
   }
   my = Heroes[player].hero_eng;
   ve = Heroes[fux->unk2C].hero_eng;
-  d[0].vx = (*((u16 *) (&ve->unk10.x))) - (*((u16 *) (&my->unk10.x)));
-  d[0].vz = (*((u16 *) (&ve->unk10.z))) - (*((u16 *) (&my->unk10.z)));
+  d[0].vx = (*((u16 *) (&ve->XYZ.x))) - (*((u16 *) (&my->XYZ.x)));
+  d[0].vz = (*((u16 *) (&ve->XYZ.z))) - (*((u16 *) (&my->XYZ.z)));
   d[0].vy = 0;
   d[0].pad = 0xFA;
-  dx = ve->unk10.x - my->unk10.x;
-  dz = ve->unk10.z - my->unk10.z;
+  dx = ve->XYZ.x - my->XYZ.x;
+  dz = ve->XYZ.z - my->XYZ.z;
   if (((dx * dx) + (dz * dz)) > 0x283E3F)
   {
     goto end;
@@ -3052,8 +3052,8 @@ void PolarAI_AvoidMelt(s32 player)
         e2 = hp->hero_eng;
         if (((j != player) && (j != fux->unk2C)) && (!(hp->hero_status & 0x2000)))
         {
-          d2[0].vx = (*((u16 *) (&e2->unk10.x))) - (*((u16 *) (&my->unk10.x)));
-          d2[0].vz = (*((u16 *) (&e2->unk10.z))) - (*((u16 *) (&my->unk10.z)));
+          d2[0].vx = (*((u16 *) (&e2->XYZ.x))) - (*((u16 *) (&my->XYZ.x)));
+          d2[0].vz = (*((u16 *) (&e2->XYZ.z))) - (*((u16 *) (&my->XYZ.z)));
           d2[0].vy = 0;
           d2[0].pad = 0xFA;
           if (PolarRayHit(&v2, &v1, d2, &out) == 1)
@@ -3073,8 +3073,8 @@ void PolarAI_AvoidMelt(s32 player)
       HeroInfo *b2;
       b2 = Heroes;
       me2 = &b2[player];
-      pos.v.x = me2->hero_eng->unk10.x - v1.vx;
-      pos.v.z = me2->hero_eng->unk10.z - v1.vz;
+      pos.v.x = me2->hero_eng->XYZ.x - v1.vx;
+      pos.v.z = me2->hero_eng->XYZ.z - v1.vz;
       if (GameMode != 0x14)
       {
         ok = CheckMelted(&pos.v, 0);
@@ -3082,7 +3082,7 @@ void PolarAI_AvoidMelt(s32 player)
         here:
         fux->vel = pos.v;
 
-        fux->pos = Heroes[player].hero_eng->unk10;
+        fux->pos = Heroes[player].hero_eng->XYZ;
         PolarAI_SteerToTarget(player);
         fux->angle = ang;
         goto end;
@@ -3095,7 +3095,7 @@ void PolarAI_AvoidMelt(s32 player)
       if (ok != 0)
       {
         fux->vel = pos.v;
-        fux->pos = me2->hero_eng->unk10;
+        fux->pos = me2->hero_eng->XYZ;
         PolarAI_SteerToTarget(player);
         done = 1;
       }
@@ -3122,8 +3122,8 @@ void PolarAI_AvoidMelt(s32 player)
 
       found = 0;
       k = 0;
-      pos.v.x = Heroes[player].hero_eng->unk10.x - v1.vx;
-      pos.v.z = Heroes[player].hero_eng->unk10.z - v1.vz;
+      pos.v.x = Heroes[player].hero_eng->XYZ.x - v1.vx;
+      pos.v.z = Heroes[player].hero_eng->XYZ.z - v1.vz;
       for (;;)
       {
         EXTengine *e3;
@@ -3134,8 +3134,8 @@ void PolarAI_AvoidMelt(s32 player)
         e3 = Heroes[k].hero_eng;
         if (((k != player) && (k != fux->unk2C)) && (!(Heroes[k].hero_status & 0x2000)))
         {
-          d2[0].vx = (*((u16 *) (&e3->unk10.x))) - (*((u16 *) (&my->unk10.x)));
-          d2[0].vz = (*((u16 *) (&e3->unk10.z))) - (*((u16 *) (&my->unk10.z)));
+          d2[0].vx = (*((u16 *) (&e3->XYZ.x))) - (*((u16 *) (&my->XYZ.x)));
+          d2[0].vz = (*((u16 *) (&e3->XYZ.z))) - (*((u16 *) (&my->XYZ.z)));
           d2[0].vy = 0;
           d2[0].pad = 0xFA;
           if (PolarRayHit(&v2, &v1, d2, &out) == 1)
@@ -3154,7 +3154,7 @@ void PolarAI_AvoidMelt(s32 player)
           if (CheckMelted(&pos.v, 0) != 0)
           {
             fux->vel = pos.v;
-            fux->pos = Heroes[player].hero_eng->unk10;
+            fux->pos = Heroes[player].hero_eng->XYZ;
             PolarAI_SteerToTarget(player);
             fux->angle = ang;
             goto end;
@@ -3249,8 +3249,8 @@ void PolarAI_DoIceWalk(s32 player) {
             do {
                 s32 dist;
                 if (i != player && !(o->hero_status & 0x2000)) {
-                    pos.v = o->hero_eng->unk10;
-                    dist = DistXZSq((SLONG_XYZ *)&pos.v, (SLONG_XYZ *)&me->hero_eng->unk10);
+                    pos.v = o->hero_eng->XYZ;
+                    dist = DistXZSq((SLONG_XYZ *)&pos.v, (SLONG_XYZ *)&me->hero_eng->XYZ);
                     if (dist < bestd) {
                         bestd = dist;
                         best = i;
@@ -3265,8 +3265,8 @@ void PolarAI_DoIceWalk(s32 player) {
         if (((GameState *)GameInfo)->mode == 0x12 && PolarProximity != NULL) {
             a = PolarProximity->eng;
             b = Heroes[player].hero_eng;
-            dx = a->unk10.x - b->unk10.x;
-            dz = a->unk10.z - b->unk10.z;
+            dx = a->XYZ.x - b->XYZ.x;
+            dz = a->XYZ.z - b->XYZ.z;
             dx = dx * dx + dz * dz;
             if (dx < bestd) {
                 prox = 1;
@@ -3276,11 +3276,11 @@ void PolarAI_DoIceWalk(s32 player) {
     }
     if (mv != NULL) {
         if (prox == 0) {
-            ax = Heroes[player].hero_eng->unk10.x - Heroes[fux->unk2C].hero_eng->unk10.x;
-            az = Heroes[player].hero_eng->unk10.z - Heroes[fux->unk2C].hero_eng->unk10.z;
+            ax = Heroes[player].hero_eng->XYZ.x - Heroes[fux->unk2C].hero_eng->XYZ.x;
+            az = Heroes[player].hero_eng->XYZ.z - Heroes[fux->unk2C].hero_eng->XYZ.z;
         } else {
-            ax = Heroes[player].hero_eng->unk10.x - PolarProximity->eng->unk10.x;
-            az = Heroes[player].hero_eng->unk10.z - PolarProximity->eng->unk10.z;
+            ax = Heroes[player].hero_eng->XYZ.x - PolarProximity->eng->XYZ.x;
+            az = Heroes[player].hero_eng->XYZ.z - PolarProximity->eng->XYZ.z;
         }
         mv->forward_angle = get_angle(ax, az) & 0xFFF;
     }
@@ -3290,7 +3290,7 @@ void PolarAI_DoIceWalk(s32 player) {
         goto aim;
 escape:
         fux->vel = pos.v;
-        fux->pos = Heroes[player].hero_eng->unk10;
+        fux->pos = Heroes[player].hero_eng->XYZ;
         PolarAI_SteerToTarget(player);
         fux->angle = ang;
         goto end;
@@ -3298,12 +3298,12 @@ escape:
         ve = PolarProximity->eng;
     }
 aim:
-    d[0].vx = *(u16 *)&ve->unk10.x - *(u16 *)&my->unk10.x;
-    d[0].vz = *(u16 *)&ve->unk10.z - *(u16 *)&my->unk10.z;
+    d[0].vx = *(u16 *)&ve->XYZ.x - *(u16 *)&my->XYZ.x;
+    d[0].vz = *(u16 *)&ve->XYZ.z - *(u16 *)&my->XYZ.z;
     d[0].vy = 0;
     d[0].pad = 0x10E;
-    dx = ve->unk10.x - my->unk10.x;
-    dz = ve->unk10.z - my->unk10.z;
+    dx = ve->XYZ.x - my->XYZ.x;
+    dz = ve->XYZ.z - my->XYZ.z;
     dx = dx * dx + dz * dz;
     if (dx > 0x283E3F) {
         goto end;
@@ -3324,8 +3324,8 @@ aim:
                 EXTengine *e2;
                 e2 = hp->hero_eng;
                 if (j != player && j != fux->unk2C && !(hp->hero_status & 0x2000)) {
-                    d2[0].vx = *(u16 *)&e2->unk10.x - *(u16 *)&my->unk10.x;
-                    d2[0].vz = *(u16 *)&e2->unk10.z - *(u16 *)&my->unk10.z;
+                    d2[0].vx = *(u16 *)&e2->XYZ.x - *(u16 *)&my->XYZ.x;
+                    d2[0].vz = *(u16 *)&e2->XYZ.z - *(u16 *)&my->XYZ.z;
                     d2[0].vy = 0;
                     d2[0].pad = 0x10E;
                     if (PolarRayHit(&v2, &v1, d2, &out) == 1) {
@@ -3343,11 +3343,11 @@ aim:
 
             hb = Heroes;
             me2 = &hb[player];
-            pos.v.x = me2->hero_eng->unk10.x - v1.vx;
-            pos.v.z = me2->hero_eng->unk10.z - v1.vz;
+            pos.v.x = me2->hero_eng->XYZ.x - v1.vx;
+            pos.v.z = me2->hero_eng->XYZ.z - v1.vz;
             if (CheckMelted(&pos.v, 0) != 0) {
                 fux->vel = pos.v;
-                fux->pos = me2->hero_eng->unk10;
+                fux->pos = me2->hero_eng->XYZ;
                 PolarAI_SteerToTarget(player);
                 bestd = 1;
             }
@@ -3368,17 +3368,17 @@ aim:
             }
             found = 0;
             i = 0;
-            pos.v.x = Heroes[player].hero_eng->unk10.x - v1.vx;
+            pos.v.x = Heroes[player].hero_eng->XYZ.x - v1.vx;
             q = Heroes;
-            pos.v.z = Heroes[player].hero_eng->unk10.z - v1.vz;
+            pos.v.z = Heroes[player].hero_eng->XYZ.z - v1.vz;
         loop3:
             if (i < 4) {
                 do {
                     EXTengine *e3;
                     e3 = q->hero_eng;
                     if (i != player && i != fux->unk2C && !(q->hero_status & 0x2000)) {
-                        d3[0].vx = *(u16 *)&e3->unk10.x - *(u16 *)&my->unk10.x;
-                        d3[0].vz = *(u16 *)&e3->unk10.z - *(u16 *)&my->unk10.z;
+                        d3[0].vx = *(u16 *)&e3->XYZ.x - *(u16 *)&my->XYZ.x;
+                        d3[0].vz = *(u16 *)&e3->XYZ.z - *(u16 *)&my->XYZ.z;
                         d3[0].vy = 0;
                         d3[0].pad = 0x10E;
                         if (PolarRayHit(&v2, &v1, d3, &out) == 1) {
@@ -3443,9 +3443,9 @@ s32 player;
     }
     fux->unk3C = 1;
     fux->vel = *(SLONG_XYZ *)&PolarCentre;
-    fux->pos = h->hero_eng->unk10;
-    dx = eng->unk10.x - PolarCentre.vx;
-    dz = eng->unk10.z - PolarCentre.vz;
+    fux->pos = h->hero_eng->XYZ;
+    dx = eng->XYZ.x - PolarCentre.vx;
+    dz = eng->XYZ.z - PolarCentre.vz;
     if (dx * dx + dz * dz < 0x19000) {
         fux->state = 5;
         fux->func = PolarEmptyStub6;
@@ -3594,7 +3594,7 @@ s32 TestWanderChance(s32 player) {
         v.x = (rcossin_tbl[r & 0xFFF].unk2 * spd) >> 12;
         v.z = (rcossin_tbl[(r - 0x400) & 0xFFF].unk2 * spd) >> 12;
         f->vel = v;
-        f->pos = h->hero_eng->unk10;
+        f->pos = h->hero_eng->XYZ;
     }
     fux->state = 9;
     fux->func = PolarAI_DoWander;
@@ -3779,8 +3779,8 @@ void DoChooseNewAction(u32 player) {
                 s32 dz;
 
                 if (p != NULL && (m = p->unk58) != NULL) {
-                    dx = p->eng->unk10.x - Heroes[player].hero_eng->unk10.x;
-                    dz = p->eng->unk10.z - Heroes[player].hero_eng->unk10.z;
+                    dx = p->eng->XYZ.x - Heroes[player].hero_eng->XYZ.x;
+                    dz = p->eng->XYZ.z - Heroes[player].hero_eng->XYZ.z;
                     if (dx * dx + dz * dz <= 0xB0643 && (m->mode == one || m->mode == 5)) {
                         PolarAIFlags[i] |= 0x100;
                     }
@@ -3826,7 +3826,7 @@ void DoChooseNewAction(u32 player) {
             goto stop;
         }
         if (eng != NULL) {
-            if (PolarArenaRadius2 < DistXZSq((SLONG_XYZ *)&PolarCentre, (SLONG_XYZ *)&eng->unk10)) {
+            if (PolarArenaRadius2 < DistXZSq((SLONG_XYZ *)&PolarCentre, (SLONG_XYZ *)&eng->XYZ)) {
                 PolarAIFlags[player] |= 1;
             }
             if (PolarBeamOwner != NULL && (l = PolarBeamOwner->unk58) != NULL) {
@@ -3892,8 +3892,8 @@ void DoChooseNewAction(u32 player) {
                 s32 dx;
                 s32 dz;
 
-                dx = a->unk10.x - c->unk10.x;
-                dz = a->unk10.z - c->unk10.z;
+                dx = a->XYZ.x - c->XYZ.x;
+                dz = a->XYZ.z - c->XYZ.z;
                 if (dx * dx + dz * dz <= 0x4D1C3F) {
                     all[6] = -1;
                     POLAR_ATTACK(fux, hp, player, i, f, j);
@@ -4208,13 +4208,13 @@ loop:
             if (v->mode == 0x15 && (v->levelFlags & 0x80) && ((GameState *)g)->heroOut[0] == 0) {
                 SetHeroAction(i, 0x54);
             }
-            h->hero_eng->unk5C = 1;
-            h->hero_eng->unk5D = 0;
-            h->hero_eng->unk10.y = 0;
+            h->hero_eng->xform.hasScale = 1;
+            h->hero_eng->xform.order = 0;
+            h->hero_eng->XYZ.y = 0;
             eng = h->hero_eng;
-            eng->unk2C.z = 0x1000;
-            eng->unk2C.y = 0x1000;
-            eng->unk2C.x = 0x1000;
+            eng->xform.scale.vz = 0x1000;
+            eng->xform.scale.vy = 0x1000;
+            eng->xform.scale.vx = 0x1000;
             if (v->mode == 0x12) {
                 dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_ArenaPolarTiltSeal]);
             }
@@ -4223,11 +4223,11 @@ loop:
             }
             ResetMass(i);
             eng2 = h->hero_eng;
-            ang = ((get_angle(eng2->unk10.x - PolarCentre.vx, eng2->unk10.z - PolarCentre.vz) + 0x800) & 0xFFF) + 0x800;
+            ang = ((get_angle(eng2->XYZ.x - PolarCentre.vx, eng2->XYZ.z - PolarCentre.vz) + 0x800) & 0xFFF) + 0x800;
             move->forward_angle = ang;
-            h->hero_eng->unk1E = ang;
-            h->hero_eng->unk5E = 1;
-            h->hero_shadow->unk1E = h->hero_eng->unk1E;
+            h->hero_eng->xform.rot.vy = ang;
+            h->hero_eng->xform.dirty = 1;
+            h->hero_shadow->xform.rot.vy = h->hero_eng->xform.rot.vy;
             h->hero_ai->AItimer1 = 0;
             fux = (PolarFux *)h->hero->FUX;
             if (fux == NULL) {
@@ -4447,7 +4447,7 @@ void UpdatePOLAR(void) {
         if (i >= 4) {
             break;
         }
-        if (Heroes[i].hero_eng->unk10.y > 0) {
+        if (Heroes[i].hero_eng->XYZ.y > 0) {
             RemoveCamera(Heroes[i].hero);
         }
         if (Heroes[i].hero_mode == 0x50) {
@@ -4514,8 +4514,8 @@ s32 PolarHeroCollisions(s32 player) {
         if (player != i && !(Heroes[i].hero_status & 0x2000)) {
             e = Heroes[i].hero_eng;
             if (e != NULL) {
-                dx = e->unk10.x - eng->unk10.x;
-                dz = e->unk10.z - eng->unk10.z;
+                dx = e->XYZ.x - eng->XYZ.x;
+                dz = e->XYZ.z - eng->XYZ.z;
                 d = csqrt(dx * dx + dz * dz) >> 6;
                 if (d < range) {
                     h = &Heroes[player];
@@ -4562,7 +4562,7 @@ s32 PolarHeroCollisions(s32 player) {
                         }
                         e = FindExtension(hp->hero, 0x20000000);
                         if (e != NULL) {
-                            ((PolarAi *)e)->unkB0->unk10 = hp->hero_eng->unk10;
+                            ((PolarAi *)e)->unkB0->XYZ = hp->hero_eng->XYZ;
                             if (((PolarAi *)e)->unkB0 != NULL) {
                             switch (hp->hero_name) {
                             case 1:
@@ -4717,8 +4717,8 @@ s32 PolarHeroCollisions(s32 player) {
                             }
                         }
                     }
-                    eng->unk10.x -= ((d + 2) * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                    eng->unk10.z -= ((d + 2) * rcossin_tbl[ang].unk2) >> 12;
+                    eng->XYZ.x -= ((d + 2) * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->XYZ.z -= ((d + 2) * rcossin_tbl[ang].unk2) >> 12;
                 }
             }
         }
@@ -4755,17 +4755,17 @@ s32 PolarHeroCollisions(s32 player) {
             e = *(EXTengine **)(p + 0x54);
             if (e != NULL && e != eng) {
                 ai = FindExtension((NAS *)p, 0x10000000);
-                if (ai != NULL && ai->unkB4 == 0 && abs(e->unk10.y - eng->unk10.y) <= range) {
-                    dx = e->unk10.x - eng->unk10.x;
-                    dz = e->unk10.z - eng->unk10.z;
+                if (ai != NULL && ai->unkB4 == 0 && abs(e->XYZ.y - eng->XYZ.y) <= range) {
+                    dx = e->XYZ.x - eng->XYZ.x;
+                    dz = e->XYZ.z - eng->XYZ.z;
                     d = csqrt(dx * dx + dz * dz) >> 6;
                     if (d < range) {
                         e = FindExtension((NAS *)p, 0x20000000);
                         if (e != NULL) {
                             ang = get_angle(dx, dz) & 0xFFF;
                             d = range - d + 2;
-                            eng->unk10.x -= (d * t[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                            eng->unk10.z -= (d * t[ang].unk2) >> 12;
+                            eng->XYZ.x -= (d * t[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                            eng->XYZ.z -= (d * t[ang].unk2) >> 12;
                             PolarHeroBounceOff(player, (EXTheromove *)e);
                             hit = 1;
                             if (((EXTheromove *)e)->x_vel * ((EXTheromove *)e)->x_vel + ((EXTheromove *)e)->z_vel * ((EXTheromove *)e)->z_vel > 0x2400) {
@@ -4910,12 +4910,12 @@ void PolarBeamRelease(s32 arg0, s32 arg1, s32 arg2) {
             eng = h->hero_eng;
             shadow = h->hero_shadow;
             if (eng != NULL && shadow != NULL) {
-                eng->unk2C.x = 0x1000;
-                eng->unk2C.y = 0x1000;
-                eng->unk2C.z = 0x1000;
-                shadow->unk2C.x = 0x1000;
-                shadow->unk2C.y = 0x1000;
-                shadow->unk2C.z = 0x1000;
+                eng->xform.scale.vx = 0x1000;
+                eng->xform.scale.vy = 0x1000;
+                eng->xform.scale.vz = 0x1000;
+                shadow->xform.scale.vx = 0x1000;
+                shadow->xform.scale.vy = 0x1000;
+                shadow->xform.scale.vz = 0x1000;
                 ResetMass(arg0);
                 PolarHeroMass[arg0] = HeroHooks.RunSpeeds[h->hero_name * 3];
             }
@@ -4965,7 +4965,7 @@ void InitTransmuterBeam(NAS *m) {
     ext->offtime = Random(0x5A) + 0xD2;
     ext->NasStatus = 1;
     ext->ittimer = -1;
-    ext->aimpoint = *(SLONG_XYZ *)&m->Engine->unk10;
+    ext->aimpoint = *(SLONG_XYZ *)&m->Engine->XYZ;
     ext->rad = 0x5DC;
     ext->pause = 0;
     ext->addang = 8;
@@ -4973,7 +4973,7 @@ void InitTransmuterBeam(NAS *m) {
     ext->pause = Random(0x3C);
     m->UserInfo.user1 = 0;
     ext->chasetimer = 0x1E0;
-    ext->glow = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    ext->glow = n = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1605, 0x11);
     if (n != NULL) {
         bx = FindExtension(n, 0x10000000);
         if (bx != NULL) {
@@ -5001,7 +5001,7 @@ void InitTransmuterBeam(NAS *m) {
             ext->glow->InitDelete(ext->glow);
         }
     }
-    ext->shadow = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    ext->shadow = n = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1605, 0x11);
     if (n != NULL) {
         n->Engine->flags |= 0x200000;
         bx = FindExtension(ext->shadow, 0x10000000);
@@ -5031,7 +5031,7 @@ void InitTransmuterBeam(NAS *m) {
     }
     m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
     m->Engine->sub->entity = 0x2013;
-    m->Engine->unk5D = 2;
+    m->Engine->xform.order = 2;
     m->Engine->flags |= 0x200000;
     ext->it_eng = NULL;
     e = AddExtEngine(m, 2);
@@ -5167,7 +5167,7 @@ void PlotTransmuterBeam(NAS *m) {
     if (TB_MODE13() && TBV->pause == 0 && PolarClock == 0 && ext->NasStatus == 1) {
         if (++m->UserInfo.user1 == 0x3C) {
             e1 = m->Engine;
-            n = CreateNAS(e1->unk10.x, 0x80, e1->unk10.z, 0x1605, 0x11);
+            n = CreateNAS(e1->XYZ.x, 0x80, e1->XYZ.z, 0x1605, 0x11);
             if (n != NULL) {
                 n->Engine->flags |= 0x200000;
                 bx = (ExtSpawn5910 *)n->FUX;
@@ -5229,8 +5229,8 @@ void PlotTransmuterBeam(NAS *m) {
                 if (i == 1 && TBV->teams == 0) {
                     goto next1;
                 }
-                lx = m->Engine->unk10.x - Heroes[i].hero_eng->unk10.x;
-                lz = m->Engine->unk10.z - Heroes[i].hero_eng->unk10.z;
+                lx = m->Engine->XYZ.x - Heroes[i].hero_eng->XYZ.x;
+                lz = m->Engine->XYZ.z - Heroes[i].hero_eng->XYZ.z;
                 if (lx * lx + lz * lz > 0x18FFF) {
                     goto next1;
                 }
@@ -5244,8 +5244,8 @@ void PlotTransmuterBeam(NAS *m) {
                 BeamTimer = 1;
             next1:;
             }
-            ((NAS *)m->UserInfo.user2)->Engine->unk10.x = m->Engine->unk10.x;
-            ((NAS *)m->UserInfo.user2)->Engine->unk10.z = m->Engine->unk10.z;
+            ((NAS *)m->UserInfo.user2)->Engine->XYZ.x = m->Engine->XYZ.x;
+            ((NAS *)m->UserInfo.user2)->Engine->XYZ.z = m->Engine->XYZ.z;
         }
     }
     for (i = 0;; i++) {
@@ -5257,8 +5257,8 @@ void PlotTransmuterBeam(NAS *m) {
             break;
         }
         if (!(Heroes[i].hero_status & 0x2000)) {
-            lx = m->Engine->unk10.x - Heroes[i].hero_eng->unk10.x;
-            lz = m->Engine->unk10.z - Heroes[i].hero_eng->unk10.z;
+            lx = m->Engine->XYZ.x - Heroes[i].hero_eng->XYZ.x;
+            lz = m->Engine->XYZ.z - Heroes[i].hero_eng->XYZ.z;
             ld = lx * lx + lz * lz;
             if (ld < best) {
                 closest = i;
@@ -5287,11 +5287,11 @@ void PlotTransmuterBeam(NAS *m) {
                 tr = rcossin_tbl;
                 a = BeamState >> 1;
                 me = m->Engine;
-                ox = me->unk10.x - (ext->aimpoint.x + (((ext->rad << 8) >> 8) * tr[(tr[(a - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12));
+                ox = me->XYZ.x - (ext->aimpoint.x + (((ext->rad << 8) >> 8) * tr[(tr[(a - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12));
                 sa = tr[a & 0xFFF].unk2;
-                oz = me->unk10.z - (ext->aimpoint.z + (ext->rad * tr[sa & 0xFFF].unk2 >> 12));
-                me->unk10.x -= ox >> 4;
-                m->Engine->unk10.z -= oz >> 4;
+                oz = me->XYZ.z - (ext->aimpoint.z + (ext->rad * tr[sa & 0xFFF].unk2 >> 12));
+                me->XYZ.x -= ox >> 4;
+                m->Engine->XYZ.z -= oz >> 4;
                 if (ox * ox + oz * oz < 0x1000) {
                     BeamCount = 0;
                     BeamDelay = 0;
@@ -5307,51 +5307,51 @@ void PlotTransmuterBeam(NAS *m) {
                 me = m->Engine;
                 te = h3->hero_eng;
                 BeamDelay++;
-                ddx = me->unk10.x - te->unk10.x;
-                ddz = me->unk10.z - te->unk10.z;
-                me->unk10.x -= ddx >> 5;
-                m->Engine->unk10.z -= ddz >> 5;
+                ddx = me->XYZ.x - te->XYZ.x;
+                ddz = me->XYZ.z - te->XYZ.z;
+                me->XYZ.x -= ddx >> 5;
+                m->Engine->XYZ.z -= ddz >> 5;
             }
         } else {
             TrigEntry *tr;
 
             tr = rcossin_tbl;
             t2 = BeamState >> 1;
-            m->Engine->unk10.x = ext->aimpoint.x + (((ext->rad << 8) >> 8) * tr[(tr[(t2 - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12);
+            m->Engine->XYZ.x = ext->aimpoint.x + (((ext->rad << 8) >> 8) * tr[(tr[(t2 - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12);
             BeamTimer = 0;
             t5 = tr[t2 & 0xFFF].unk2;
-            m->Engine->unk10.z = ext->aimpoint.z + (ext->rad * tr[t5 & 0xFFF].unk2 >> 12);
+            m->Engine->XYZ.z = ext->aimpoint.z + (ext->rad * tr[t5 & 0xFFF].unk2 >> 12);
         }
         if (PolarClock == 0) {
-            m->Engine->unk10.y = ext->aimpoint.y + (rcossin_tbl[((ext->yang << 4) - 0x400) & 0xFFF].unk2 * 64 >> 12);
+            m->Engine->XYZ.y = ext->aimpoint.y + (rcossin_tbl[((ext->yang << 4) - 0x400) & 0xFFF].unk2 * 64 >> 12);
         } else {
-            m->Engine->unk10.y -= 0x10;
+            m->Engine->XYZ.y -= 0x10;
         }
         ext->yang += ext->addang;
         if (BeamCount == 0) {
             BeamState += ext->addang;
         }
         if (ext->glow != NULL) {
-            ext->glow->Engine->unk10 = m->Engine->unk10;
+            ext->glow->Engine->XYZ = m->Engine->XYZ;
             ext->glow->Engine->sub->unk68 = 0x200;
             if (GameMode == 0x12) {
-                ext->glow->Engine->unk10.y -= 0x40;
+                ext->glow->Engine->XYZ.y -= 0x40;
             } else {
-                ext->glow->Engine->unk10.y -= 0x60;
+                ext->glow->Engine->XYZ.y -= 0x60;
             }
         }
     }
-    m->Engine->unk5E = 1;
+    m->Engine->xform.dirty = 1;
     if (ext->shadow != NULL) {
-        ext->shadow->Engine->unk10 = m->Engine->unk10;
+        ext->shadow->Engine->XYZ = m->Engine->XYZ;
         ext->shadow->Engine->sub->unk68 = 0x100;
-        ext->shadow->Engine->unk10.y = 0x5E;
+        ext->shadow->Engine->XYZ.y = 0x5E;
     }
     me = m->Engine;
     ce = Heroes[closest].hero_eng;
-    dx = me->unk10.x - ce->unk10.x;
-    dz = me->unk10.z - ce->unk10.z;
-    dy = (me->unk10.y - ce->unk10.y) + 0x1C2;
+    dx = me->XYZ.x - ce->XYZ.x;
+    dz = me->XYZ.z - ce->XYZ.z;
+    dy = (me->XYZ.y - ce->XYZ.y) + 0x1C2;
     d = csqrt(dx * dx + dz * dz) >> 6;
     yaw = get_angle(dx, dz) & 0xFFF;
     pitch = get_angle(-dy, d);
@@ -5374,7 +5374,7 @@ void PlotTransmuterBeam(NAS *m) {
                     }
                 }
                 e2 = m->Engine;
-                n = CreateNAS(e2->unk10.x, 0x5E, e2->unk10.z, 0x1605, 0x11);
+                n = CreateNAS(e2->XYZ.x, 0x5E, e2->XYZ.z, 0x1605, 0x11);
                 if (n != NULL) {
                     ext->beam = n;
                     n->Engine->flags |= 0x200000;
@@ -5419,9 +5419,9 @@ void PlotTransmuterBeam(NAS *m) {
         }
         pitch = 0x400;
     }
-    m->Engine->unk1C -= ((m->Engine->unk1C - pitch) << 20) >> 22;
-    m->Engine->unk1E -= ((m->Engine->unk1E - yaw) << 20) >> 22;
-    m->Engine->unk20 = 0;
+    m->Engine->xform.rot.vx -= ((m->Engine->xform.rot.vx - pitch) << 20) >> 22;
+    m->Engine->xform.rot.vy -= ((m->Engine->xform.rot.vy - yaw) << 20) >> 22;
+    m->Engine->xform.rot.vz = 0;
     if (TB_MODE13()) {
         if (ext->glow != NULL) {
             ext->glow->Engine->sub->entity = 0x2008;
@@ -5447,8 +5447,8 @@ void PlotTransmuterBeam(NAS *m) {
             if (i >= 4) {
                 break;
             }
-            lx = Heroes[i].hero_eng->unk10.x - m->Engine->unk10.x;
-            lz = Heroes[i].hero_eng->unk10.z - m->Engine->unk10.z;
+            lx = Heroes[i].hero_eng->XYZ.x - m->Engine->XYZ.x;
+            lz = Heroes[i].hero_eng->XYZ.z - m->Engine->XYZ.z;
             ld = lx * lx + lz * lz;
             if (Heroes[i].hero_status & 0x2000 || ext->effect_player != -1 || ld > 0x18FFF) {
                 continue;
@@ -5464,7 +5464,7 @@ void PlotTransmuterBeam(NAS *m) {
                 ext->beam = NULL;
             }
             e3 = m->Engine;
-            n = CreateNAS(e3->unk10.x, 0x5E, e3->unk10.z, 0x1605, 0x11);
+            n = CreateNAS(e3->XYZ.x, 0x5E, e3->XYZ.z, 0x1605, 0x11);
             if (n != NULL) {
                 n->Engine->flags |= 0x200000;
                 bx = (ExtSpawn5910 *)n->FUX;
@@ -5542,9 +5542,9 @@ void PlotTransmuterBeam(NAS *m) {
                 ext->hero_last_action[i] = 6;
                 PlaySfx(0x464, NULL, NULL, 0x1000, 0x1E00, 0);
                 e = m->Engine;
-                PlaySfx(0x465, &e->sfx, &e->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x465, &e->sfx, &e->XYZ, 0x1000, 0x1E00, 0);
                 e = ext->it_eng;
-                PlaySfx(0x452, &e->sfx, &e->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x452, &e->sfx, &e->XYZ, 0x1000, 0x1E00, 0);
                 SetHeroAction(i, 0x4F);
                 a1x = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
                 if (a1x != NULL) {
@@ -5573,20 +5573,20 @@ void PlotTransmuterBeam(NAS *m) {
         if (ext->hero_action_timer[ext->effect_player] > 0) {
             ext->hero_action_timer[ext->effect_player]--;
         }
-        hs->unk5C = 1;
+        hs->xform.hasScale = 1;
         if (ext->hero_in_beam_timer > 0) {
             ext->hero_in_beam_timer--;
         }
         switch (ext->hero_action[ext->effect_player]) {
         case 0:
             if (ext->hero_in_beam_timer <= 0) {
-                if (he->unk2C.x > 0xA00) {
-                    he->unk2C.x -= 0x100;
-                    he->unk2C.y -= 0x100;
-                    he->unk2C.z -= 0x100;
-                    hs->unk2C.x -= 0x100;
-                    hs->unk2C.y -= 0x100;
-                    hs->unk2C.z -= 0x100;
+                if (he->xform.scale.vx > 0xA00) {
+                    he->xform.scale.vx -= 0x100;
+                    he->xform.scale.vy -= 0x100;
+                    he->xform.scale.vz -= 0x100;
+                    hs->xform.scale.vx -= 0x100;
+                    hs->xform.scale.vy -= 0x100;
+                    hs->xform.scale.vz -= 0x100;
                 } else {
                     ai = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
                     if (ai != NULL) {
@@ -5603,13 +5603,13 @@ void PlotTransmuterBeam(NAS *m) {
             break;
         case 1:
             if (ext->hero_in_beam_timer <= 0) {
-                if (he->unk2C.x < 0x1771) {
-                    he->unk2C.x += 0x100;
-                    he->unk2C.y += 0x100;
-                    he->unk2C.z += 0x100;
-                    hs->unk2C.x += 0x100;
-                    hs->unk2C.y += 0x100;
-                    hs->unk2C.z += 0x100;
+                if (he->xform.scale.vx < 0x1771) {
+                    he->xform.scale.vx += 0x100;
+                    he->xform.scale.vy += 0x100;
+                    he->xform.scale.vz += 0x100;
+                    hs->xform.scale.vx += 0x100;
+                    hs->xform.scale.vy += 0x100;
+                    hs->xform.scale.vz += 0x100;
                 } else {
                     ext->hero_action[ext->effect_player] = -1;
                     ai = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
@@ -5641,7 +5641,7 @@ void PlotTransmuterBeam(NAS *m) {
             if (ext->hero_in_beam_timer <= 0) {
                 ext->itplayer = ext->effect_player;
                 if (ext->it_eng != NULL) {
-                    ext->it_eng->unk10 = Heroes[ext->itplayer].hero_eng->unk10;
+                    ext->it_eng->XYZ = Heroes[ext->itplayer].hero_eng->XYZ;
                     ext->it_eng->sub->flags |= 0x8000;
                 }
                 ext->ittimer = 0x12C;
@@ -5663,7 +5663,7 @@ void PlotTransmuterBeam(NAS *m) {
                 ext->itplayer = ext->effect_player;
                 do {
                     if (k2 == ext->itplayer && !(Heroes[k2].hero_status & 0x2000) && ext->light_eng[k2] != NULL) {
-                        ext->light_eng[k2]->unk10 = Heroes[k2].hero_eng->unk10;
+                        ext->light_eng[k2]->XYZ = Heroes[k2].hero_eng->XYZ;
                         ext->light_eng[k2]->sub->flags |= 0x8000;
                     }
                     k2++;
@@ -5685,37 +5685,37 @@ void PlotTransmuterBeam(NAS *m) {
         if (ext->hero_action_timer[ext->effect_player] == 0) {
             switch (ext->hero_last_action[ext->effect_player]) {
             case 0:
-                if (he->unk2C.x < 0x1000) {
-                    he->unk2C.x += 0x100;
-                    he->unk2C.y += 0x100;
-                    he->unk2C.z += 0x100;
-                    hs->unk2C.x += 0x100;
-                    hs->unk2C.y += 0x100;
-                    hs->unk2C.z += 0x100;
+                if (he->xform.scale.vx < 0x1000) {
+                    he->xform.scale.vx += 0x100;
+                    he->xform.scale.vy += 0x100;
+                    he->xform.scale.vz += 0x100;
+                    hs->xform.scale.vx += 0x100;
+                    hs->xform.scale.vy += 0x100;
+                    hs->xform.scale.vz += 0x100;
                 } else {
                     ext->hero_last_action[ext->effect_player] = -1;
                     PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[Heroes[ext->effect_player].hero_name * 3];
                     ext->onoff_timer = 0;
                     ResetMass(ext->effect_player);
                     ext->effect_player = -1;
-                    he->unk2C.x = 0x1000;
+                    he->xform.scale.vx = 0x1000;
                 }
                 break;
             case 1:
-                if (he->unk2C.x > 0x1000) {
-                    he->unk2C.x -= 0x100;
-                    he->unk2C.y -= 0x100;
-                    he->unk2C.z -= 0x100;
-                    hs->unk2C.x -= 0x100;
-                    hs->unk2C.y -= 0x100;
-                    hs->unk2C.z -= 0x100;
+                if (he->xform.scale.vx > 0x1000) {
+                    he->xform.scale.vx -= 0x100;
+                    he->xform.scale.vy -= 0x100;
+                    he->xform.scale.vz -= 0x100;
+                    hs->xform.scale.vx -= 0x100;
+                    hs->xform.scale.vy -= 0x100;
+                    hs->xform.scale.vz -= 0x100;
                 } else {
                     ext->hero_last_action[ext->effect_player] = -1;
                     ResetMass(ext->effect_player);
                     PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[Heroes[ext->effect_player].hero_name * 3];
                     ext->onoff_timer = 0;
                     ext->effect_player = -1;
-                    he->unk2C.x = 0x1000;
+                    he->xform.scale.vx = 0x1000;
                 }
                 break;
             case 2:
@@ -5749,41 +5749,41 @@ void PlotTransmuterBeam(NAS *m) {
                             sfx_set_pitch(ext->it_eng->sfx, (0x12C - t3) * 0xF00 / 300 + 0x1E00);
                         }
                         if (ext->it_eng != NULL) {
-                            ext->it_eng->unk10 = Heroes[ext->itplayer].hero_eng->unk10;
+                            ext->it_eng->XYZ = Heroes[ext->itplayer].hero_eng->XYZ;
                             if (PolarRoundState == 0) {
                                 ext->it_eng->sub->flags |= 0x8000;
                             } else {
                                 ext->it_eng->sub->flags &= ~0x8000;
                             }
-                            ext->it_eng->unk1E += 0x80;
-                            ext->it_eng->unk5E = 1;
+                            ext->it_eng->xform.rot.vy += 0x80;
+                            ext->it_eng->xform.dirty = 1;
                             switch (Heroes[ext->itplayer].hero_name) {
                             case 1:
-                                ext->it_eng->unk10.y -= 0x258;
+                                ext->it_eng->XYZ.y -= 0x258;
                                 break;
                             case 2:
-                                ext->it_eng->unk10.y -= 0x300;
+                                ext->it_eng->XYZ.y -= 0x300;
                                 break;
                             case 3:
-                                ext->it_eng->unk10.y -= 0x300;
+                                ext->it_eng->XYZ.y -= 0x300;
                                 break;
                             case 4:
-                                ext->it_eng->unk10.y -= 0x300;
+                                ext->it_eng->XYZ.y -= 0x300;
                                 break;
                             case 5:
-                                ext->it_eng->unk10.y -= 0x300;
+                                ext->it_eng->XYZ.y -= 0x300;
                                 break;
                             case 6:
-                                ext->it_eng->unk10.y -= 0x300;
+                                ext->it_eng->XYZ.y -= 0x300;
                                 break;
                             case 7:
-                                ext->it_eng->unk10.y -= 0x364;
+                                ext->it_eng->XYZ.y -= 0x364;
                                 break;
                             case 8:
-                                ext->it_eng->unk10.y -= 0x364;
+                                ext->it_eng->XYZ.y -= 0x364;
                                 break;
                             default:
-                                ext->it_eng->unk10.y -= 0x300;
+                                ext->it_eng->XYZ.y -= 0x300;
                                 break;
                             }
                         }
@@ -5797,11 +5797,11 @@ void PlotTransmuterBeam(NAS *m) {
                             if (hq != NULL) {
                                 NAS *dn;
 
-                                dn = CreateNAS(hq->unk10.x, hq->unk10.y - 0x898, hq->unk10.z, 0x1602, 0x11);
+                                dn = CreateNAS(hq->XYZ.x, hq->XYZ.y - 0x898, hq->XYZ.z, 0x1602, 0x11);
                                 if (dn != NULL) {
                                     wx = FindExtension(dn, 0x10000000);
                                     if (wx != NULL) {
-                                        wx->unkC = hq->unk10.y;
+                                        wx->unkC = hq->XYZ.y;
                                         wx->unk1C = ext->itplayer;
                                     }
                                 }
@@ -5846,41 +5846,41 @@ void PlotTransmuterBeam(NAS *m) {
                                 if (k != ext->itplayer || (Heroes[k].hero_status & 0x2000)) {
                                     ext->light_eng[k]->sub->flags &= ~0x8000;
                                 } else if (ext->light_eng[k] != NULL) {
-                                    ext->light_eng[k]->unk10 = Heroes[k].hero_eng->unk10;
+                                    ext->light_eng[k]->XYZ = Heroes[k].hero_eng->XYZ;
                                     if (PolarRoundState == 0) {
                                         ext->light_eng[k]->sub->flags |= 0x8000;
                                     } else {
                                         ext->light_eng[k]->sub->flags &= ~0x8000;
                                     }
-                                    ext->light_eng[k]->unk1E += 0x80;
-                                    ext->light_eng[k]->unk5E = 1;
+                                    ext->light_eng[k]->xform.rot.vy += 0x80;
+                                    ext->light_eng[k]->xform.dirty = 1;
                                     switch (Heroes[k].hero_name) {
                                     case 1:
-                                        ext->light_eng[k]->unk10.y -= 0x258;
+                                        ext->light_eng[k]->XYZ.y -= 0x258;
                                         break;
                                     case 2:
-                                        ext->light_eng[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->XYZ.y -= 0x300;
                                         break;
                                     case 3:
-                                        ext->light_eng[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->XYZ.y -= 0x300;
                                         break;
                                     case 4:
-                                        ext->light_eng[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->XYZ.y -= 0x300;
                                         break;
                                     case 5:
-                                        ext->light_eng[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->XYZ.y -= 0x300;
                                         break;
                                     case 6:
-                                        ext->light_eng[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->XYZ.y -= 0x300;
                                         break;
                                     case 7:
-                                        ext->light_eng[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->XYZ.y -= 0x300;
                                         break;
                                     case 8:
-                                        ext->light_eng[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->XYZ.y -= 0x300;
                                         break;
                                     default:
-                                        ext->light_eng[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->XYZ.y -= 0x300;
                                         break;
                                     }
                                 }
@@ -5965,10 +5965,10 @@ void PlotWeightDeath(NAS *m) {
     if (ext->unk24-- >= 0) {
         return;
     }
-    m->Engine->unk10.y += ext->unk10;
+    m->Engine->XYZ.y += ext->unk10;
     ext->unk10 += ext->unk14;
-    if (ext->unkC < m->Engine->unk10.y) {
-        m->Engine->unk10.y -= abs(m->Engine->unk10.y - ext->unkC);
+    if (ext->unkC < m->Engine->XYZ.y) {
+        m->Engine->XYZ.y -= abs(m->Engine->XYZ.y - ext->unkC);
         if (++ext->unk18 < 5) {
             ext->unk10 = -ext->unk10 >> 3;
             if (ext->unk18 == 1) {
@@ -6012,26 +6012,26 @@ void GravityMotionUpdate(NAS *nas, GravityMotion *m) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        eng->unk10.x += m->vx;
-        eng->unk10.y += m->vy;
-        eng->unk10.z += m->vz;
+        eng->XYZ.x += m->vx;
+        eng->XYZ.y += m->vy;
+        eng->XYZ.z += m->vz;
         m->vx += m->ax;
         m->vy += m->ay;
         m->vz += m->az;
         if (m->flags & 4) {
-            nas->Engine->unk1C += m->rx;
+            nas->Engine->xform.rot.vx += m->rx;
         }
         if (m->flags & 8) {
-            nas->Engine->unk1E += m->ry;
+            nas->Engine->xform.rot.vy += m->ry;
         }
         if (m->flags & 0x10) {
-            nas->Engine->unk20 += m->rz;
+            nas->Engine->xform.rot.vz += m->rz;
         }
-        nas->Engine->unk5E = 1;
+        nas->Engine->xform.dirty = 1;
         floor = m->floor;
-        y = eng->unk10.y;
+        y = eng->XYZ.y;
         if (y >= floor) {
-            eng->unk10.y -= abs(y - floor);
+            eng->XYZ.y -= abs(y - floor);
             if (m->flags & 1) {
                 m->vy = -m->vy >> 1;
             }
@@ -6116,21 +6116,21 @@ void PlotScratchMaster(NAS *m) {
     }
     e = Heroes[m->UserInfo.user1].hero_shadow;
     if (e != NULL) {
-        if ((e->unk10.x - e->OldXYZ.x) * (e->unk10.x - e->OldXYZ.x)
-            + (e->unk10.z - e->OldXYZ.z) * (e->unk10.z - e->OldXYZ.z) > 0 && s != NULL) {
+        if ((e->XYZ.x - e->OldXYZ.x) * (e->XYZ.x - e->OldXYZ.x)
+            + (e->XYZ.z - e->OldXYZ.z) * (e->XYZ.z - e->OldXYZ.z) > 0 && s != NULL) {
             if (Heroes[m->UserInfo.user1].hero_mode == 0x49) {
                 if (!(m->UserInfo.user2++ & 1) && !(s->flags & 0x8000)) {
-                    *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->unk10;
-                    if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x > 0x1000) {
+                    *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->XYZ;
+                    if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx > 0x1000) {
                         s->unk50 = 1;
-                        dx = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                        dx = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
                         s->unk20.z = dx;
                         s->unk20.y = dx;
                         s->unk20.x = dx;
                     }
-                    if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x < 0x1000) {
+                    if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx < 0x1000) {
                         s->unk50 = 1;
-                        v = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                        v = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
                         s->unk20.z = v;
                         s->unk20.y = v;
                         s->unk20.x = v;
@@ -6141,7 +6141,7 @@ void PlotScratchMaster(NAS *m) {
                     } else {
                         s->flags = 0x40008061;
                     }
-                    ang = Heroes[m->UserInfo.user1].hero_eng->unk1E + 0x800;
+                    ang = Heroes[m->UserInfo.user1].hero_eng->xform.rot.vy + 0x800;
                     s->unk52 = 1;
                     s->unk76 = 0x400;
                     s->unk12 = ang;
@@ -6150,28 +6150,28 @@ void PlotScratchMaster(NAS *m) {
             if (Heroes[m->UserInfo.user1].hero_mode == 0x4A
                 && Heroes[m->UserInfo.user1].hero_anim->Aindex == 9
                 && !(s->flags & 0x8000)) {
-                if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x > 0x1000) {
+                if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx > 0x1000) {
                     s->unk50 = 1;
-                    w = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                    w = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
                     s->unk20.z = w;
                     s->unk20.y = w;
                     s->unk20.x = w;
                 }
-                if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x < 0x1000) {
+                if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx < 0x1000) {
                     s->unk50 = 1;
-                    x = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                    x = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
                     s->unk20.z = x;
                     s->unk20.y = x;
                     s->unk20.x = x;
                 }
-                *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->unk10;
+                *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->XYZ;
                 if (GameMode == 0x15) {
                     s->flags = 0x40008021;
                     s->entity = 0x2030;
                 } else {
                     s->flags = 0x40008061;
                 }
-                ang = Heroes[m->UserInfo.user1].hero_eng->unk1E + 0x800;
+                ang = Heroes[m->UserInfo.user1].hero_eng->xform.rot.vy + 0x800;
                 s->unk76 = 0;
                 s->unk52 = 1;
                 s->unk12 = ang;
@@ -6268,9 +6268,9 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
                         d = csqrt(d) >> 6;
                         d = 0x14A - d;
                         d += 2;
-                        eng->unk10.x -= d * t[(ang - 0x400) & 0xFFF].unk2 >> 12;
-                        eng->unk10.z -= d * t[ang].unk2 >> 12;
-                        ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+                        eng->XYZ.x -= d * t[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                        eng->XYZ.z -= d * t[ang].unk2 >> 12;
+                        ang = get_angle(eng->XYZ.x, eng->XYZ.z) & 0xFFF;
                         mv = Heroes[player].hero_move;
                         if (mv != NULL) {
                             sp = csqrt(mv->x_vel * mv->x_vel + mv->z_vel * mv->z_vel) >> 6;
@@ -6482,8 +6482,8 @@ void InitUkaPolarMask(NAS *m) {
         m->Engine->sub->entity = 0x200C;
     }
     m->UserInfo.user1 = 0;
-    m->Engine->unk10.x = 0;
-    m->Engine->unk10.z = 0;
+    m->Engine->XYZ.x = 0;
+    m->Engine->XYZ.z = 0;
     ext->unk10 = -1;
     r = Random(4);
     if (r == 0) {
@@ -6503,7 +6503,7 @@ void InitUkaPolarMask(NAS *m) {
     ext->unk1C4 = 1;
     ext->unk1C8 = 1;
     ext->unk68 = -1;
-    ext->pos = *(SLONG_XYZ *)&m->Engine->unk10;
+    ext->pos = *(SLONG_XYZ *)&m->Engine->XYZ;
     ext->unk64 = 0x5A;
     ext->unk6C = 5;
     for (i = 0; i < 16; i++) {
@@ -6516,7 +6516,7 @@ void InitUkaPolarMask(NAS *m) {
     if (n != NULL) {
         AddCamera(n);
     }
-    ext->bit = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    ext->bit = n = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1605, 0x11);
     if (n != NULL) {
         n->Engine->flags |= 0x200000;
         bx = FindExtension(ext->bit, 0x10000000);
@@ -6592,15 +6592,15 @@ void PlotUkaPolarMask(NAS *m) {
         }
         ext->bit->Engine->flags &= ~0x8000;
     }
-    seg = ((get_angle(m->Engine->unk10.x, m->Engine->unk10.z) + 1) & 0xFFF) >> 8;
+    seg = ((get_angle(m->Engine->XYZ.x, m->Engine->XYZ.z) + 1) & 0xFFF) >> 8;
     cs = rcossin_tbl[(ext->unk9C - 0x400) & 0xFFF].unk2;
     sn = rcossin_tbl[ext->unk9C & 0xFFF].unk2;
     ty = (cs * 3) >> 5;
     tx = tz = sn * 128 >> 12;
     if (ext->unk14 != 2) {
-        m->Engine->unk10.y = ext->pos.y + (cs * 64 >> 12);
+        m->Engine->XYZ.y = ext->pos.y + (cs * 64 >> 12);
     }
-    m->Engine->unk5E = 1;
+    m->Engine->xform.dirty = 1;
     if (ext->unk1CC < 0) {
         ext->unk9C += 0x40;
     } else {
@@ -6634,7 +6634,7 @@ void PlotUkaPolarMask(NAS *m) {
             if (h->hero_status & 0x2000) {
                 continue;
             }
-            if (DistXZSq((SLONG_XYZ *)&m->Engine->unk10, (SLONG_XYZ *)&h->hero_eng->unk10) > 0x18FFF) {
+            if (DistXZSq((SLONG_XYZ *)&m->Engine->XYZ, (SLONG_XYZ *)&h->hero_eng->XYZ) > 0x18FFF) {
                 continue;
             }
             {
@@ -6651,7 +6651,7 @@ void PlotUkaPolarMask(NAS *m) {
             ext->unk14 = 3;
             ext->unkC = kind;
             PlaySfx(0x44C, &m->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
-            ext->unkAC = CreateNAS(m->Engine->unk10.x, 0x5E, m->Engine->unk10.z, 0x1605, 0x11);
+            ext->unkAC = CreateNAS(m->Engine->XYZ.x, 0x5E, m->Engine->XYZ.z, 0x1605, 0x11);
             if (ext->unkAC != NULL) {
                 bx = FindExtension(ext->unkAC, 0x10000000);
                 if (bx != NULL) {
@@ -6672,7 +6672,7 @@ void PlotUkaPolarMask(NAS *m) {
                 PlaySfx(0x451, NULL, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i & 3, 0x4F);
                 ext->unkB4 = 0x3C;
-                PlaySfx(0x452, &ext->eng->sfx, &ext->eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x452, &ext->eng->sfx, &ext->eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             case 2:
                 ext->unk64 = Random(0x3C) + 0x5A;
@@ -6713,7 +6713,7 @@ void PlotUkaPolarMask(NAS *m) {
     }
     switch (ext->unk14) {
     case 2:
-        m->Engine->unk10.y -= 0x10;
+        m->Engine->XYZ.y -= 0x10;
         ext->bit->Engine->flags &= ~0x8000;
         break;
     case 4:
@@ -6729,20 +6729,20 @@ void PlotUkaPolarMask(NAS *m) {
             }
             return;
         }
-        if (m->Engine->unk10.x < ext->unk1D0) {
-            m->Engine->unk10.x += 0x20;
+        if (m->Engine->XYZ.x < ext->unk1D0) {
+            m->Engine->XYZ.x += 0x20;
         }
-        if (ext->unk1D0 < m->Engine->unk10.x) {
-            m->Engine->unk10.x -= 0x20;
+        if (ext->unk1D0 < m->Engine->XYZ.x) {
+            m->Engine->XYZ.x -= 0x20;
         }
-        if (m->Engine->unk10.z < ext->unk1D8) {
-            m->Engine->unk10.z += 0x20;
+        if (m->Engine->XYZ.z < ext->unk1D8) {
+            m->Engine->XYZ.z += 0x20;
         }
-        if (ext->unk1D8 < m->Engine->unk10.z) {
-            m->Engine->unk10.z -= 0x20;
+        if (ext->unk1D8 < m->Engine->XYZ.z) {
+            m->Engine->XYZ.z -= 0x20;
         }
-        ext->mask->Engine->unk10 = m->Engine->unk10;
-        ext->mask->Engine->unk10.y = 0x100;
+        ext->mask->Engine->XYZ = m->Engine->XYZ;
+        ext->mask->Engine->XYZ.y = 0x100;
         if (ext->unk1B8 < ext->unk1CC) {
             ext->unk1B8 += ext->unk1C4;
             if (ext->unk1B8 > ext->unk1CC) {
@@ -6756,7 +6756,7 @@ void PlotUkaPolarMask(NAS *m) {
             }
         }
         m->UserInfo.user1 += ext->unk1B8;
-        ga = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
+        ga = get_angle(m->Engine->XYZ.x, m->Engine->XYZ.z) & 0xFFF;
         d = ((ga - ext->angle) << 20) >> 20;
         abs(d);
         if (ext->unk1B8 == ext->unk1CC) {
@@ -6767,8 +6767,8 @@ void PlotUkaPolarMask(NAS *m) {
             }
         }
         {
-            s32 dx = m->Engine->unk10.x - ext->unk1D0;
-            s32 dz = m->Engine->unk10.z - ext->unk1D8;
+            s32 dx = m->Engine->XYZ.x - ext->unk1D0;
+            s32 dz = m->Engine->XYZ.z - ext->unk1D8;
 
             p = dx * dx + dz * dz;
         }
@@ -6780,7 +6780,7 @@ void PlotUkaPolarMask(NAS *m) {
             PlaySfx(0x489, NULL, NULL, 0x1000, 0x1E00, 0);
             PlaySfx(0x44C, &m->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
             UkaMaskSetSegments(seg, (UkaMaskSet *)ext);
-            n = CreateNAS(m->Engine->unk10.x, 0x5E, m->Engine->unk10.z, 0x1605, 0x11);
+            n = CreateNAS(m->Engine->XYZ.x, 0x5E, m->Engine->XYZ.z, 0x1605, 0x11);
             if (n != NULL) {
                 bx = FindExtension(n, 0x10000000);
                 if (bx != NULL) {
@@ -6802,7 +6802,7 @@ void PlotUkaPolarMask(NAS *m) {
                 }
             }
             v &= 0xF;
-            ga = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
+            ga = get_angle(m->Engine->XYZ.x, m->Engine->XYZ.z) & 0xFFF;
             ext->angle = ((v << 8) - 0x40) & 0xFFF;
             ext->unk1D0 = (rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2 * 0x115) >> 9;
             ext->unk1D8 = (rcossin_tbl[ext->angle & 0xFFF].unk2 * 0x115) >> 9;
@@ -6833,7 +6833,7 @@ void PlotUkaPolarMask(NAS *m) {
             if (ext->unk70-- <= 0) {
                 ext->unk6C = ext->unk10;
                 if (ext->eng != NULL) {
-                    ext->eng->unk10 = Heroes[ext->unk6C].hero_eng->unk10;
+                    ext->eng->XYZ = Heroes[ext->unk6C].hero_eng->XYZ;
                     ext->eng->sub->flags |= 0x8000;
                 }
                 ext->unk68 = 0x12C;
@@ -6867,13 +6867,13 @@ void PlotUkaPolarMask(NAS *m) {
             EXTengine *sh = Heroes[ext->unk10].hero_shadow;
 
             if (ext->unk70-- <= 0) {
-                if (e->unk2C.x > 0xA00) {
-                    e->unk2C.x -= 0x100;
-                    e->unk2C.y -= 0x100;
-                    e->unk2C.z -= 0x100;
-                    sh->unk2C.x -= 0x100;
-                    sh->unk2C.y -= 0x100;
-                    sh->unk2C.z -= 0x100;
+                if (e->xform.scale.vx > 0xA00) {
+                    e->xform.scale.vx -= 0x100;
+                    e->xform.scale.vy -= 0x100;
+                    e->xform.scale.vz -= 0x100;
+                    sh->xform.scale.vx -= 0x100;
+                    sh->xform.scale.vy -= 0x100;
+                    sh->xform.scale.vz -= 0x100;
                 } else {
                     ext->unk18[ext->unk10] = -1;
                     SetHeroAction(ext->unk10, 0x49);
@@ -6888,14 +6888,14 @@ void PlotUkaPolarMask(NAS *m) {
             if (ext->unk70-- <= 0) {
                 if (Heroes[ext->unk10].hero_mode != 0x52) {
                     SetHeroAction(ext->unk10, 0x52);
-                    Heroes[ext->unk10].hero_eng->unk10.y -= 0x14C;
+                    Heroes[ext->unk10].hero_eng->XYZ.y -= 0x14C;
                     {
                         HeroInfo *h8 = &Heroes[ext->unk10];
                         EXTheromove *m8 = h8->hero_move;
 
                         if (m8 != NULL) {
-                            ang = get_angle(h8->hero_eng->unk10.x, h8->hero_eng->unk10.z) & 0xFFF;
-                            Heroes[ext->unk10].hero_eng->unk1E = ang;
+                            ang = get_angle(h8->hero_eng->XYZ.x, h8->hero_eng->XYZ.z) & 0xFFF;
+                            Heroes[ext->unk10].hero_eng->xform.rot.vy = ang;
                             Heroes[ext->unk10].hero_move->forward_angle = ang;
                             m8->x_max = -(rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12);
                             m8->z_max = -(rcossin_tbl[ang].unk2 * 64 >> 12);
@@ -6920,53 +6920,53 @@ void PlotUkaPolarMask(NAS *m) {
             EXTengine *sh = Heroes[ext->unk10].hero_shadow;
 
             if (ext->unkB4-- < 0) {
-                if (m->Engine->unk10.x < 0) {
-                    m->Engine->unk10.x += 0x18;
+                if (m->Engine->XYZ.x < 0) {
+                    m->Engine->XYZ.x += 0x18;
                 }
-                if (m->Engine->unk10.x > 0) {
-                    m->Engine->unk10.x -= 0x18;
+                if (m->Engine->XYZ.x > 0) {
+                    m->Engine->XYZ.x -= 0x18;
                 }
-                if (m->Engine->unk10.z < 0) {
-                    m->Engine->unk10.z += 0x18;
+                if (m->Engine->XYZ.z < 0) {
+                    m->Engine->XYZ.z += 0x18;
                 }
-                if (m->Engine->unk10.z > 0) {
-                    m->Engine->unk10.z -= 0x18;
+                if (m->Engine->XYZ.z > 0) {
+                    m->Engine->XYZ.z -= 0x18;
                 }
             }
             if (ext->unk64-- < 0) {
-                if (e->unk2C.x < 0x1000) {
-                    e->unk2C.x += 0x100;
-                    e->unk2C.y += 0x100;
-                    e->unk2C.z += 0x100;
-                    sh->unk2C.x += 0x100;
-                    sh->unk2C.y += 0x100;
-                    sh->unk2C.z += 0x100;
+                if (e->xform.scale.vx < 0x1000) {
+                    e->xform.scale.vx += 0x100;
+                    e->xform.scale.vy += 0x100;
+                    e->xform.scale.vz += 0x100;
+                    sh->xform.scale.vx += 0x100;
+                    sh->xform.scale.vy += 0x100;
+                    sh->xform.scale.vz += 0x100;
                 } else {
                     ext->unk28[ext->unk10] = -1;
                     PolarHeroMass[ext->unk10] = HeroHooks.RunSpeeds[Heroes[ext->unk10].hero_name * 3];
                     ResetMass(ext->unk10);
                     ext->unk10 = -1;
                     ext->unk14 = 0;
-                    e->unk2C.x = 0x1000;
-                    e->unk2C.y = 0x1000;
-                    e->unk2C.z = 0x1000;
+                    e->xform.scale.vx = 0x1000;
+                    e->xform.scale.vy = 0x1000;
+                    e->xform.scale.vz = 0x1000;
                 }
             }
             break;
         }
         case 2:
             if (ext->unkB4-- < 0) {
-                if (m->Engine->unk10.x < 0) {
-                    m->Engine->unk10.x += 0x18;
+                if (m->Engine->XYZ.x < 0) {
+                    m->Engine->XYZ.x += 0x18;
                 }
-                if (m->Engine->unk10.x > 0) {
-                    m->Engine->unk10.x -= 0x18;
+                if (m->Engine->XYZ.x > 0) {
+                    m->Engine->XYZ.x -= 0x18;
                 }
-                if (m->Engine->unk10.z < 0) {
-                    m->Engine->unk10.z += 0x18;
+                if (m->Engine->XYZ.z < 0) {
+                    m->Engine->XYZ.z += 0x18;
                 }
-                if (m->Engine->unk10.z > 0) {
-                    m->Engine->unk10.z -= 0x18;
+                if (m->Engine->XYZ.z > 0) {
+                    m->Engine->XYZ.z -= 0x18;
                 }
             }
             if (ext->unk64-- < 0) {
@@ -6980,17 +6980,17 @@ void PlotUkaPolarMask(NAS *m) {
             break;
         case 8:
             if (ext->unkB4-- < 0) {
-                if (m->Engine->unk10.x < 0) {
-                    m->Engine->unk10.x += 0x18;
+                if (m->Engine->XYZ.x < 0) {
+                    m->Engine->XYZ.x += 0x18;
                 }
-                if (m->Engine->unk10.x > 0) {
-                    m->Engine->unk10.x -= 0x18;
+                if (m->Engine->XYZ.x > 0) {
+                    m->Engine->XYZ.x -= 0x18;
                 }
-                if (m->Engine->unk10.z < 0) {
-                    m->Engine->unk10.z += 0x18;
+                if (m->Engine->XYZ.z < 0) {
+                    m->Engine->XYZ.z += 0x18;
                 }
-                if (m->Engine->unk10.z > 0) {
-                    m->Engine->unk10.z -= 0x18;
+                if (m->Engine->XYZ.z > 0) {
+                    m->Engine->XYZ.z -= 0x18;
                 }
             }
             if (ext->unk64-- < 0) {
@@ -7000,24 +7000,24 @@ void PlotUkaPolarMask(NAS *m) {
                 ext->unk28[ext->unk10] = -1;
                 if (Heroes[ext->unk10].hero_mode != 0x49) {
                     SetHeroAction(ext->unk10, 0x49);
-                    Heroes[ext->unk10].hero_eng->unk10.y += 0x14C;
+                    Heroes[ext->unk10].hero_eng->XYZ.y += 0x14C;
                     ext->unk10 = -1;
                 }
             }
             break;
         case 5:
             if (ext->unkB4-- < 0) {
-                if (m->Engine->unk10.x < 0) {
-                    m->Engine->unk10.x += 0x18;
+                if (m->Engine->XYZ.x < 0) {
+                    m->Engine->XYZ.x += 0x18;
                 }
-                if (m->Engine->unk10.x > 0) {
-                    m->Engine->unk10.x -= 0x18;
+                if (m->Engine->XYZ.x > 0) {
+                    m->Engine->XYZ.x -= 0x18;
                 }
-                if (m->Engine->unk10.z < 0) {
-                    m->Engine->unk10.z += 0x18;
+                if (m->Engine->XYZ.z < 0) {
+                    m->Engine->XYZ.z += 0x18;
                 }
-                if (m->Engine->unk10.z > 0) {
-                    m->Engine->unk10.z -= 0x18;
+                if (m->Engine->XYZ.z > 0) {
+                    m->Engine->XYZ.z -= 0x18;
                 }
             }
             ext->unk64--;
@@ -7034,19 +7034,19 @@ void PlotUkaPolarMask(NAS *m) {
             if (ext->unk68 > 0) {
                 ext->unk68--;
                 if (ext->eng != NULL) {
-                    ext->eng->unk10 = Heroes[ext->unk6C].hero_eng->unk10;
+                    ext->eng->XYZ = Heroes[ext->unk6C].hero_eng->XYZ;
                     ext->eng->sub->flags |= 0x8000;
-                    ext->eng->unk1E += 0x80;
-                    ext->eng->unk5E = 1;
+                    ext->eng->xform.rot.vy += 0x80;
+                    ext->eng->xform.dirty = 1;
                     switch (Heroes[ext->unk6C].hero_name) {
                     case 1:
-                        ext->eng->unk10.y -= 0x258;
+                        ext->eng->XYZ.y -= 0x258;
                         break;
                     case 7:
-                        ext->eng->unk10.y -= 0x364;
+                        ext->eng->XYZ.y -= 0x364;
                         break;
                     case 8:
-                        ext->eng->unk10.y -= 0x364;
+                        ext->eng->XYZ.y -= 0x364;
                         break;
                     case 2:
                     case 3:
@@ -7054,7 +7054,7 @@ void PlotUkaPolarMask(NAS *m) {
                     case 5:
                     case 6:
                     default:
-                        ext->eng->unk10.y -= 0x300;
+                        ext->eng->XYZ.y -= 0x300;
                         break;
                     }
                 }
@@ -7066,13 +7066,13 @@ void PlotUkaPolarMask(NAS *m) {
                     Heroes[ext->unk6C].hero_status |= 0x2000;
                     he = Heroes[ext->unk6C].hero_eng;
                     if (he != NULL) {
-                        NAS *sp = CreateNAS(he->unk10.x, he->unk10.y - 0x898, he->unk10.z, 0x1602, 0x11);
+                        NAS *sp = CreateNAS(he->XYZ.x, he->XYZ.y - 0x898, he->XYZ.z, 0x1602, 0x11);
 
                         if (sp != NULL) {
                             UkaBitExt *sx = FindExtension(sp, 0x10000000);
 
                             if (sx != NULL) {
-                                sx->unkC = he->unk10.y;
+                                sx->unkC = he->XYZ.y;
                                 sx->unk1C = ext->unk6C;
                             }
                         }
@@ -7110,13 +7110,13 @@ void PlotUkaPolarMask(NAS *m) {
         }
         break;
     }
-    m->Engine->unk1C += (tx - m->Engine->unk1C) >> 2;
-    m->Engine->unk1E += (ty - m->Engine->unk1E) >> 2;
-    m->Engine->unk20 += (tz - m->Engine->unk20) >> 2;
+    m->Engine->xform.rot.vx += (tx - m->Engine->xform.rot.vx) >> 2;
+    m->Engine->xform.rot.vy += (ty - m->Engine->xform.rot.vy) >> 2;
+    m->Engine->xform.rot.vz += (tz - m->Engine->xform.rot.vz) >> 2;
     if (ext->bit != NULL) {
-        ext->bit->Engine->unk10 = m->Engine->unk10;
+        ext->bit->Engine->XYZ = m->Engine->XYZ;
         ext->bit->Engine->sub->unk68 = 0x100;
-        ext->bit->Engine->unk10.y = 0x5E;
+        ext->bit->Engine->XYZ.y = 0x5E;
     }
 }
 
@@ -7152,11 +7152,11 @@ s32 PolarBoxOverlap(EXTengine *a, s32 b, EXTengine *c, s32 d)
   }
 
   new_var5 = (PolarBox *) (&m);
-  v.vx = c->unk10.x - ((unsigned long long) a->unk10.x);
-  v.vz = c->unk10.z - a->unk10.z;
-  rot.vx = -a->unk1C;
-  new_var4 = (rot.vy = -a->unk1E);
-  rot.vz = -a->unk20;
+  v.vx = c->XYZ.x - ((unsigned long long) a->XYZ.x);
+  v.vz = c->XYZ.z - a->XYZ.z;
+  rot.vx = -a->xform.rot.vx;
+  new_var4 = (rot.vy = -a->xform.rot.vy);
+  rot.vz = -a->xform.rot.vz;
   RotMatrixZYX(&rot, (MATRIX *) (bp = new_var5));
   new_var2 = (MATRIX *) bp;
   new_var = (bp = &box);
@@ -7242,13 +7242,13 @@ s32 PolarBoxOverlap(EXTengine *a, s32 b, EXTengine *c, s32 d)
   if (dist < (*rp))
   {
     push = abs((*rp) - dist);
-    rot.vx = a->unk1C;
-    rot.vy = a->unk1E;
-    rot.vz = a->unk20;
+    rot.vx = a->xform.rot.vx;
+    rot.vy = a->xform.rot.vy;
+    rot.vz = a->xform.rot.vz;
     RotMatrix(&rot, &m);
     ApplyMatrixLV(&m, &dir, &dir);
-    c->unk10.x += (push * dir.vx) >> 12;
-    c->unk10.z += (push * dir.vz) >> 12;
+    c->XYZ.x += (push * dir.vx) >> 12;
+    c->XYZ.z += (push * dir.vz) >> 12;
     return 1;
   }
   return 0;
@@ -7268,24 +7268,24 @@ void InitPolarWalrus(NAS *m) {
         m->Engine->sub->entity = 0x4000;
         m->UserInfo.status = 0;
         AddToGroup((NAS **)&PolarBears, (NAS *)m);
-        m->Engine->unk10.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.y = 0x400;
-        m->Engine->unk1E = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
+        m->Engine->XYZ.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->XYZ.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->XYZ.y = 0x400;
+        m->Engine->xform.rot.vy = get_angle(m->Engine->XYZ.x, m->Engine->XYZ.z) & 0xFFF;
         m->Engine->sub->flags &= ~0x8000;
         ext->state = 0;
-        m->Engine->unk5C = 1;
-        m->Engine->unk5D = 0;
-        m->Engine->unk2C.x = 0x1F40;
-        m->Engine->unk2C.y = 0x1F40;
-        m->Engine->unk2C.z = 0x1F40;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.hasScale = 1;
+        m->Engine->xform.order = 0;
+        m->Engine->xform.scale.vx = 0x1F40;
+        m->Engine->xform.scale.vy = 0x1F40;
+        m->Engine->xform.scale.vz = 0x1F40;
+        m->Engine->xform.dirty = 1;
         m->Engine->sub->unk68 = 0x200;
         ext->arc[0] = 0x10;
         ext->unk58 = 0x28;
         ext->arc[1] = 0;
         ext->arc[6] = 0;
-        ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
+        ext->from = *(SLONG_XYZ *)&m->Engine->XYZ;
         ext->to.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
         ext->to.y = 0;
         ext->to.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
@@ -7316,7 +7316,7 @@ void PlotPolarWalrus(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    m->Engine->unk5E = 1;
+    m->Engine->xform.dirty = 1;
     if (PolarClock != 0) {
         RemoveCamera(m);
     }
@@ -7357,7 +7357,7 @@ void PlotPolarWalrus(NAS *m) {
             m->Engine->sub->unk68 = 0;
         }
         RunNasAnim(m);
-        ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x);
+        ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->XYZ.x);
         e2->unk20 = ext->unk48;
         e2->unk40 = ext->unk4C;
         if (ext->cursor->unk1E == 0x18) {
@@ -7372,7 +7372,7 @@ void PlotPolarWalrus(NAS *m) {
         e2->unk20 = ext->unk48;
         e2->unk40 = ext->unk4C;
         RunNasAnim(m);
-        if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x) != 0) {
+        if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->XYZ.x) != 0) {
             r = Random(4);
             ext->state = 1;
             ext->timer = 0x96;
@@ -7405,7 +7405,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->timer = 0;
             ext->maxSpeed = 0x10;
             ext->speed = 0;
-            ext->unk90 = m->Engine->unk1E + 0x800;
+            ext->unk90 = m->Engine->xform.rot.vy + 0x800;
             if (ext->unk84 != NULL) {
                 KillNAS(ext->unk84);
                 ext->unk84 = NULL;
@@ -7420,7 +7420,7 @@ void PlotPolarWalrus(NAS *m) {
         if (ext->cursor->unk1E == 0xD) {
             PlaySfx(0x477, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        m->Engine->unk1E -= (s32)((m->Engine->unk1E - ext->unk90) << 20) >> 24;
+        m->Engine->xform.rot.vy -= (s32)((m->Engine->xform.rot.vy - ext->unk90) << 20) >> 24;
         if (ext->speed != ext->maxSpeed && ext->speed < ext->maxSpeed) {
             ext->speed++;
             if (ext->speed > ext->maxSpeed) {
@@ -7436,10 +7436,10 @@ void PlotPolarWalrus(NAS *m) {
         if (++ext->timer == 0x1E) {
             PlaySfx(0x47A, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        m->Engine->unk10.x -= (ext->speed * rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-        m->Engine->unk10.z -= (ext->speed * rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2) >> 12;
-        pos.x = m->Engine->unk10.x + ((rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x80) >> 12);
-        pos.z = m->Engine->unk10.z + ((rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2 * 0x80) >> 12);
+        m->Engine->XYZ.x -= (ext->speed * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+        m->Engine->XYZ.z -= (ext->speed * rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
+        pos.x = m->Engine->XYZ.x + ((rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x80) >> 12);
+        pos.z = m->Engine->XYZ.z + ((rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2 * 0x80) >> 12);
         e2->unk20 = 0;
         e2->unk40 = 0;
         if ((CheckMelted(&pos, 0) ^ 1) != 0) {
@@ -7464,15 +7464,15 @@ void PlotPolarWalrus(NAS *m) {
         m->Engine->sub->flags &= ~0x8000;
         m->Engine->sub->unk68 = 0x200;
         ang = WalrusState;
-        m->Engine->unk10.x = (rcossin_tbl[(ang + 0x400) & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.z = (rcossin_tbl[(ang + 0x800) & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.y = 0x400;
+        m->Engine->XYZ.x = (rcossin_tbl[(ang + 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->XYZ.z = (rcossin_tbl[(ang + 0x800) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->XYZ.y = 0x400;
         WalrusState += 0x800;
-        ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
+        ext->from = *(SLONG_XYZ *)&m->Engine->XYZ;
         ext->to.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
         ext->to.y = 0;
         ext->to.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
-        m->Engine->unk1E = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
+        m->Engine->xform.rot.vy = get_angle(m->Engine->XYZ.x, m->Engine->XYZ.z) & 0xFFF;
         ext->cursor->unk1E = 0;
         ext->cursor->unk1C = 0;
         ext->cursor->cur = (s32)WalrusFrames;
@@ -7491,23 +7491,23 @@ void InitWalrusFish(NAS *m) {
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &WalrusFishScriptInit);
         m->Engine->flags |= 0x200000;
-        m->Engine->unk10.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.y = 0x400;
+        m->Engine->XYZ.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->XYZ.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->XYZ.y = 0x400;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_ArenaPolarTiltSeal];
         m->Engine->sub->entity = 0x2002;
-        m->Engine->unk5C = 1;
-        m->Engine->unk5D = 0;
-        m->Engine->unk2C.x = 0x1F40;
-        m->Engine->unk2C.y = 0x1F40;
-        m->Engine->unk2C.z = 0x1F40;
+        m->Engine->xform.hasScale = 1;
+        m->Engine->xform.order = 0;
+        m->Engine->xform.scale.vx = 0x1F40;
+        m->Engine->xform.scale.vy = 0x1F40;
+        m->Engine->xform.scale.vz = 0x1F40;
         ext->state = 0;
         m->Engine->sub->unk68 = 0x200;
         ext->arc[0] = 0x10;
         ext->unk54 = 0x28;
         ext->arc[1] = 0;
         ext->arc[6] = 0;
-        ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
+        ext->from = *(SLONG_XYZ *)&m->Engine->XYZ;
         ext->to.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
         ext->to.y = 0;
         ext->to.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
@@ -7515,7 +7515,7 @@ void InitWalrusFish(NAS *m) {
         ext->spin = 0x80;
         ext->timer = 0;
         PlaySfx(0x478, NULL, NULL, 0x1000, 0x1E00, 0);
-        m->Engine->unk5E = 1;
+        m->Engine->xform.dirty = 1;
     }
 }
 
@@ -7526,25 +7526,25 @@ void PlotWalrusFish(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    m->Engine->unk1E += ext->spin;
-    m->Engine->unk1C += 0x100;
-    m->Engine->unk5E = 1;
+    m->Engine->xform.rot.vy += ext->spin;
+    m->Engine->xform.rot.vx += 0x100;
+    m->Engine->xform.dirty = 1;
     switch (ext->state) {
     case 0:
         if (++ext->timer == 0xF) {
             m->Engine->sub->unk68 = 0;
         }
-        if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x) != 0) {
+        if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->XYZ.x) != 0) {
             ext->state = 2;
             PlaySfx(0x479, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         break;
     case 2:
         RunNasAnim(m);
-        m->Engine->unk10.x += ext->vx;
-        m->Engine->unk10.z += ext->vz;
+        m->Engine->XYZ.x += ext->vx;
+        m->Engine->XYZ.z += ext->vz;
         ext->spin >>= 1;
-        m->Engine->unk1C >>= 1;
+        m->Engine->xform.rot.vx >>= 1;
         if (ext->vx < 0) {
             if (++ext->vx <= 0) {
                 goto skip_x;
@@ -7581,8 +7581,8 @@ void PlotSmokeTrail(NAS *m) {
         return;
     }
     if (ext->flag & 1) {
-        m->Engine->unk10.y -= ext->yvel;
-        m->Engine->unk10.x = ext->startx + ((ext->amp * rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2) >> 12);
+        m->Engine->XYZ.y -= ext->yvel;
+        m->Engine->XYZ.x = ext->startx + ((ext->amp * rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2) >> 12);
         ext->amp -= ext->ampdec;
         if (ext->amp < 0) {
             ext->amp = 0;
@@ -7600,16 +7600,16 @@ void PlotSmokeTrail(NAS *m) {
         break;
     case 1:
         m->Engine->sub->unk76 += ext->fadedownrate;
-        m->Engine->unk2C.x -= ext->scalerate;
-        m->Engine->unk2C.y -= ext->scalerate;
-        m->Engine->unk2C.z -= ext->scalerate;
+        m->Engine->xform.scale.vx -= ext->scalerate;
+        m->Engine->xform.scale.vy -= ext->scalerate;
+        m->Engine->xform.scale.vz -= ext->scalerate;
         if ((s16)m->Engine->sub->unk76 >= 0xDAD) {
             KillNAS(m);
             return;
         }
         break;
     }
-    m->Engine->unk5E = 1;
+    m->Engine->xform.dirty = 1;
 }
 
 void InitSimpleExplosion(NAS *m) {
@@ -7655,17 +7655,17 @@ void PlotDingoTail(NAS *m) {
             KillNAS(m);
             return;
         }
-        m->Engine->unk1C += 0x200;
-        m->Engine->unk5E = 1;
-        m->Engine->unk10 = owner->engine->unk10;
-        m->Engine->unk1E = owner->engine->unk1E - 0x400;
-        m->Engine->unk2C.x = owner->engine->unk2C.x;
-        m->Engine->unk2C.y = owner->engine->unk2C.y;
-        m->Engine->unk2C.z = owner->engine->unk2C.z;
+        m->Engine->xform.rot.vx += 0x200;
+        m->Engine->xform.dirty = 1;
+        m->Engine->XYZ = owner->engine->XYZ;
+        m->Engine->xform.rot.vy = owner->engine->xform.rot.vy - 0x400;
+        m->Engine->xform.scale.vx = owner->engine->xform.scale.vx;
+        m->Engine->xform.scale.vy = owner->engine->xform.scale.vy;
+        m->Engine->xform.scale.vz = owner->engine->xform.scale.vz;
         if (owner->subtype == 7) {
-            m->Engine->unk10.y = owner->engine->unk10.y - ((owner->engine->unk2C.x * 0x208) >> 12);
+            m->Engine->XYZ.y = owner->engine->XYZ.y - ((owner->engine->xform.scale.vx * 0x208) >> 12);
         } else {
-            m->Engine->unk10.y = owner->engine->unk10.y - ((owner->engine->unk2C.x * 0x1A4) >> 12);
+            m->Engine->XYZ.y = owner->engine->XYZ.y - ((owner->engine->xform.scale.vx * 0x1A4) >> 12);
         }
         if (owner->anim->frame >= 0xD) {
             m->Engine->sub->unk76 += 0x400;
@@ -7686,26 +7686,26 @@ void PlotBrioPack(NAS *m) {
             return;
         }
         if (owner->anim->frame == 0xC) {
-            nas = CreateNAS(owner->engine->unk10.x,
-                               owner->engine->unk10.y - ((owner->engine->unk2C.x * 0x1A4) >> 12),
-                               owner->engine->unk10.z + 0x40, 0x1613, 0x11);
+            nas = CreateNAS(owner->engine->XYZ.x,
+                               owner->engine->XYZ.y - ((owner->engine->xform.scale.vx * 0x1A4) >> 12),
+                               owner->engine->XYZ.z + 0x40, 0x1613, 0x11);
             if (nas != NULL) {
                 nas->UserInfo.user1 = (s32)owner;
             }
         }
         if (owner->anim->frame >= 0xA) {
-            m->Engine->unk10 = owner->engine->unk10;
-            m->Engine->unk1E = owner->engine->unk1E;
-            m->Engine->unk2C.x = owner->engine->unk2C.x;
-            m->Engine->unk2C.y = owner->engine->unk2C.y;
-            m->Engine->unk2C.z = owner->engine->unk2C.z;
-            m->Engine->unk10.y = owner->engine->unk10.y - ((owner->engine->unk2C.x * 0x1A4) >> 12);
+            m->Engine->XYZ = owner->engine->XYZ;
+            m->Engine->xform.rot.vy = owner->engine->xform.rot.vy;
+            m->Engine->xform.scale.vx = owner->engine->xform.scale.vx;
+            m->Engine->xform.scale.vy = owner->engine->xform.scale.vy;
+            m->Engine->xform.scale.vz = owner->engine->xform.scale.vz;
+            m->Engine->XYZ.y = owner->engine->XYZ.y - ((owner->engine->xform.scale.vx * 0x1A4) >> 12);
         }
         if (owner->anim->frame >= 0x18) {
             m->Engine->sub->unk76 += 0x400;
         }
     }
-    m->Engine->unk5E = 1;
+    m->Engine->xform.dirty = 1;
 }
 
 void InitPackEffect(NAS *m) {
@@ -7752,8 +7752,8 @@ void InitPolarBoss(NAS *nas) {
         ext->cursor = ScriptCursorFirst(nas, &PolarBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->cursor, 0);
         RunNasAnim(nas);
-        ext->unk84 = CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1622, 0x11);
-        s = CreateNAS(nas->Engine->unk10.x, 0, nas->Engine->unk10.z, 0x1620, 0x11);
+        ext->unk84 = CreateNAS(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1622, 0x11);
+        s = CreateNAS(nas->Engine->XYZ.x, 0, nas->Engine->XYZ.z, 0x1620, 0x11);
         if (s != NULL) {
             ext->unk88 = s;
             AddCamera(s);
@@ -7762,7 +7762,7 @@ void InitPolarBoss(NAS *nas) {
         nas->Engine->sub->u6C.dbase = MapScene->dbase;
         nas->Engine->sub->unk68 = 0x300;
         nas->Engine->sub->flags |= 0x02000000;
-        nas->Engine->unk5D = 0;
+        nas->Engine->xform.order = 0;
         BossState.health = 0x14;
         e = FindExtension(Heroes[3].hero, 0x20000000);
         if (e != NULL) {
@@ -7787,9 +7787,9 @@ void InitPolarBoss(NAS *nas) {
         PlaySfx(0x226, &nas->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
         nas->Engine->OldXYZ.x = (rcossin_tbl[(((ext->ang + 0x20) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 2;
         nas->Engine->OldXYZ.z = ((rcossin_tbl[(ext->ang + 0x20) & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
-        get_angle(nas->Engine->OldXYZ.x - nas->Engine->unk10.x, nas->Engine->OldXYZ.z - nas->Engine->unk10.z);
-        nas->Engine->unk1E = 0x800;
-        nas->Engine->unk5E = 1;
+        get_angle(nas->Engine->OldXYZ.x - nas->Engine->XYZ.x, nas->Engine->OldXYZ.z - nas->Engine->XYZ.z);
+        nas->Engine->xform.rot.vy = 0x800;
+        nas->Engine->xform.dirty = 1;
     }
 }
 
@@ -7826,14 +7826,14 @@ void PlotPolarBoss(NAS *m) {
     polarbossnas = m;
     m->UserInfo.user1 = RunNasAnim(m);
     if (!(Heroes[0].hero_mode & 0x2000)) {
-        ang = get_angle(m->Engine->unk10.x - Heroes[0].hero_eng->unk10.x,
-                        m->Engine->unk10.z - Heroes[0].hero_eng->unk10.z) & 0xFFF;
+        ang = get_angle(m->Engine->XYZ.x - Heroes[0].hero_eng->XYZ.x,
+                        m->Engine->XYZ.z - Heroes[0].hero_eng->XYZ.z) & 0xFFF;
     } else {
-        ang = get_angle(m->Engine->unk10.x - Heroes[1].hero_eng->unk10.x,
-                        m->Engine->unk10.z - Heroes[1].hero_eng->unk10.z) & 0xFFF;
+        ang = get_angle(m->Engine->XYZ.x - Heroes[1].hero_eng->XYZ.x,
+                        m->Engine->XYZ.z - Heroes[1].hero_eng->XYZ.z) & 0xFFF;
     }
     if (ext->state != 8) {
-        ext->unk84->Engine->unk1E = ang;
+        ext->unk84->Engine->xform.rot.vy = ang;
     }
     mate = FindExtension(ext->unk84, 0x10000000);
     if (mate != NULL) {
@@ -7861,13 +7861,13 @@ void PlotPolarBoss(NAS *m) {
                 break;
             }
             d = 0x700;
-            pos.x = m->Engine->unk10.x + PolarSinMul((u16)m->Engine->unk1E, d);
-            pos.z = m->Engine->unk10.z + PolarSinMul(m->Engine->unk1E + 0x400, d);
+            pos.x = m->Engine->XYZ.x + PolarSinMul((u16)m->Engine->xform.rot.vy, d);
+            pos.z = m->Engine->XYZ.z + PolarSinMul(m->Engine->xform.rot.vy + 0x400, d);
             pos.x += PolarRandSpread(0x400);
             pos.z += PolarRandSpread(0x400);
             d = 0x500;
-            pos.x = m->Engine->unk10.x - PolarSinMul((u16)m->Engine->unk1E, d);
-            pos.z = m->Engine->unk10.z - PolarSinMul(m->Engine->unk1E + 0x400, d);
+            pos.x = m->Engine->XYZ.x - PolarSinMul((u16)m->Engine->xform.rot.vy, d);
+            pos.z = m->Engine->XYZ.z - PolarSinMul(m->Engine->xform.rot.vy + 0x400, d);
             pos.x += PolarRandSpread(0x5F4);
             pos.z += PolarRandSpread(0x5F4);
         }
@@ -7880,14 +7880,14 @@ void PlotPolarBoss(NAS *m) {
         }
         m->Engine->OldXYZ.x = (rcossin_tbl[(((ext->ang + 0x20) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 2;
         m->Engine->OldXYZ.z = ((rcossin_tbl[(ext->ang + 0x20) & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
-        ext->unk84->Engine->unk10 = m->Engine->unk10;
-        ext->unk88->Engine->unk10 = m->Engine->unk10;
-        ext->unk88->Engine->unk10.y -= 0x400;
-        rot = (get_angle(m->Engine->OldXYZ.x - m->Engine->unk10.x,
-                         m->Engine->OldXYZ.z - m->Engine->unk10.z) & 0xFFF) + 0x400;
-        m->Engine->unk1E -= ((m->Engine->unk1E - rot) << 20) >> 22;
-        m->Engine->unk10.x = (rcossin_tbl[(ext->ang - 0x400) & 0xFFF].unk2 * 3) >> 2;
-        m->Engine->unk10.z = ((rcossin_tbl[ext->ang & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
+        ext->unk84->Engine->XYZ = m->Engine->XYZ;
+        ext->unk88->Engine->XYZ = m->Engine->XYZ;
+        ext->unk88->Engine->XYZ.y -= 0x400;
+        rot = (get_angle(m->Engine->OldXYZ.x - m->Engine->XYZ.x,
+                         m->Engine->OldXYZ.z - m->Engine->XYZ.z) & 0xFFF) + 0x400;
+        m->Engine->xform.rot.vy -= ((m->Engine->xform.rot.vy - rot) << 20) >> 22;
+        m->Engine->XYZ.x = (rcossin_tbl[(ext->ang - 0x400) & 0xFFF].unk2 * 3) >> 2;
+        m->Engine->XYZ.z = ((rcossin_tbl[ext->ang & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
         ext->ang = (ext->ang + ext->unk8C) & 0xFFF;
         if (ext->unk70 != 0) {
             if (ext->phase == 0 || ext->phase == 2 || ext->phase == 4 || ext->phase == 6) {
@@ -7983,8 +7983,8 @@ void PlotPolarBoss(NAS *m) {
                         dz = -0x700;
                     }
                 }
-                nas = CreateNAS(m->Engine->unk10.x + dx, m->Engine->unk10.y - 0x5DC,
-                                   m->Engine->unk10.z + dz, 0x161B, 0x11);
+                nas = CreateNAS(m->Engine->XYZ.x + dx, m->Engine->XYZ.y - 0x5DC,
+                                   m->Engine->XYZ.z + dz, 0x161B, 0x11);
                 if (nas != NULL) {
                     se = FindExtension(nas, 0x10000000);
                     if (se != NULL) {
@@ -8059,7 +8059,7 @@ void PlotPolarBoss(NAS *m) {
                 GotoLinkAnim(pe->anim, 1);
             }
             GotoLinkAnim((EXTanimator *)ext->cursor, 7);
-            nas = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1621, 0x11);
+            nas = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1621, 0x11);
             if (nas != NULL) {
                 be = FindExtension(nas, 0x10000000);
                 if (be != NULL) {
@@ -8132,7 +8132,7 @@ void PlotPolarBoss(NAS *m) {
         }
         break;
     }
-    m->Engine->unk5E = 1;
+    m->Engine->xform.dirty = 1;
 }
 
 s32 BearminatorFindPoint(s32 *arg0, s32 arg1) {
@@ -8177,28 +8177,28 @@ s32 BearminatorFindPoint(s32 *arg0, s32 arg1) {
 
 s32 BearminatorTarget(NAS *m) {
     if (bossmapsub->entity == 0x2008) {
-        if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 1)) {
+        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 1)) {
             return 1;
         }
-        if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 0)) {
+        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 0)) {
             return 0;
         }
     }
     if (bossmapsub->entity == 0x2009) {
-        if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 2)) {
+        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 2)) {
             return 1;
         }
-        if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 0)) {
+        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 0)) {
             return 0;
         }
     }
     if (bossmapsub->entity == 0x200A) {
-        if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 3)) {
+        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 3)) {
             return 0;
         }
     }
     if (bossmapsub->entity == 0x5003) {
-        if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 0)) {
+        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 0)) {
             return 0;
         }
     }
@@ -8270,18 +8270,18 @@ void InitBearminator(NAS *m) {
         e2 = AddExt(m, 0x54, 0x20000000);
         if (e2 != NULL) {
             m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
-            n = CreateNAS(m->Engine->unk10.x, 0, m->Engine->unk10.z, 0x1620, 0x11);
+            n = CreateNAS(m->Engine->XYZ.x, 0, m->Engine->XYZ.z, 0x1620, 0x11);
             if (n != NULL) {
                 ext->unk98 = n;
                 AddCamera(n);
             }
             ext->unkAC = e2;
             ext->unkB4 = 0;
-            m->Engine->unk5C = 1;
-            m->Engine->unk2C.x = 0x1F40;
-            m->Engine->unk2C.y = 0x1F40;
-            m->Engine->unk2C.z = 0x1F40;
-            m->Engine->unk5E = 1;
+            m->Engine->xform.hasScale = 1;
+            m->Engine->xform.scale.vx = 0x1F40;
+            m->Engine->xform.scale.vy = 0x1F40;
+            m->Engine->xform.scale.vz = 0x1F40;
+            m->Engine->xform.dirty = 1;
             m->Engine->flags |= 0x200000;
             AddToGroup((NAS **)&PolarBears, (NAS *)m);
             ext->cursor = ScriptCursorFirst(m, &BearminatorScriptInit);
@@ -8299,11 +8299,11 @@ void InitBearminator(NAS *m) {
             ext->unkA0 = 0;
             ext->unk14 = 0;
             ext->unkA4 = 0;
-            ext->unk18 = m->Engine->unk1E;
+            ext->unk18 = m->Engine->xform.rot.vy;
             ext->unk38 = 0xB;
             ext->unk7C = 0x96;
             ext->unk3C = 0;
-            ext->unk50 = Heroes[0].hero_eng->unk10.y;
+            ext->unk50 = Heroes[0].hero_eng->XYZ.y;
             ext->unk8C = 0;
             ext->unk1C = 0x5A;
             ext->unkA8 = 0;
@@ -8315,32 +8315,32 @@ void InitBearminator(NAS *m) {
                 e->sub->entity = 0x4000;
                 e->sub->unk68 = 0x80;
                 e->sub->flags |= 0x02000000;
-                e->unk10 = m->Engine->unk10;
-                e->unk5D = 0;
+                e->XYZ = m->Engine->XYZ;
+                e->xform.order = 0;
                 e->flags |= 0x200000;
                 e->sub->flags = 0x40008021;
                 e->sub->flags &= ~0x8000;
-                e->unk1E = m->Engine->unk1E;
-                e->unk20 = -0x800;
+                e->xform.rot.vy = m->Engine->xform.rot.vy;
+                e->xform.rot.vz = -0x800;
                 m->FUX = (EXT *)e;
-                e->unk2C.x = 0x1F40;
-                e->unk2C.y = 0x1F40;
-                e->unk2C.z = 0x1F40;
+                e->xform.scale.vx = 0x1F40;
+                e->xform.scale.vy = 0x1F40;
+                e->xform.scale.vz = 0x1F40;
                 e->sub->unk76 = 0xC00;
-                e->unk5E = 1;
+                e->xform.dirty = 1;
             }
             ext->unk9C = NULL;
             f = AddExtEngine(m, 3);
             if (f != NULL) {
                 f->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
                 f->sub->entity = 0x2006;
-                f->unk10 = m->Engine->unk10;
-                f->unk5D = 0;
+                f->XYZ = m->Engine->XYZ;
+                f->xform.order = 0;
                 f->flags |= 0x200000;
                 f->sub->flags &= ~0x8000;
-                f->unk1E = m->Engine->unk1E;
+                f->xform.rot.vy = m->Engine->xform.rot.vy;
                 ext->unk9C = f;
-                f->unk5E = 1;
+                f->xform.dirty = 1;
             }
         }
     }
@@ -8380,14 +8380,14 @@ void PlotBearminator(NAS *m) {
         if (n != NULL) {
             e = m->Engine;
             if (n != e) {
-                dx = n->unk10.x - e->unk10.x;
-                dz = n->unk10.z - e->unk10.z;
+                dx = n->XYZ.x - e->XYZ.x;
+                dz = n->XYZ.z - e->XYZ.z;
                 d = dx * dx + dz * dz;
                 if (d <= 0x3D08F) {
                     s = 0x7D00 - csqrt(d);
                     a = get_angle(dx, dz) & 0xFFF;
-                    m->Engine->unk10.x -= ((s + 2) * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 18;
-                    m->Engine->unk10.z -= ((s + 2) * rcossin_tbl[a].unk2) >> 18;
+                    m->Engine->XYZ.x -= ((s + 2) * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 18;
+                    m->Engine->XYZ.z -= ((s + 2) * rcossin_tbl[a].unk2) >> 18;
                 }
             }
         }
@@ -8406,34 +8406,34 @@ void PlotBearminator(NAS *m) {
             ext->vel[0] = (r * rcossin_tbl[(ext->unk94 - 0x400) & 0xFFF].unk2) >> 12;
             ext->vel[1] = 0;
             ext->vel[2] = (r * rcossin_tbl[ext->unk94 & 0xFFF].unk2) >> 12;
-            *(SLONG_XYZ *)ext->from = m->Engine->unk10;
-            ArcUpdate(ext->from, ext->vel, &ext->unk38, &m->Engine->unk10.x);
+            *(SLONG_XYZ *)ext->from = m->Engine->XYZ;
+            ArcUpdate(ext->from, ext->vel, &ext->unk38, &m->Engine->XYZ.x);
             m->Engine->sub->flags |= 0x8000;
             ext->unkC = 4;
         }
         break;
     case 9:
         if (--ext->unkB0 == -1) {
-            CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
+            CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1612, 0x11);
             ext->unkB0 = 1;
         }
         m->Engine->sub->entity = 0x4100;
-        m->Engine->unk1C += 0x200;
+        m->Engine->xform.rot.vx += 0x200;
         if (ext->unk4C < 0) {
             RemoveCamera(ext->unk98);
         }
-        if (ArcUpdate(ext->from, ext->vel, &ext->unk38, &m->Engine->unk10.x) == 0) {
+        if (ArcUpdate(ext->from, ext->vel, &ext->unk38, &m->Engine->XYZ.x) == 0) {
             break;
         }
         goto kill;
     case 4:
         m->Engine->sub->entity = 0x4100;
-        m->Engine->unk1C += 0x200;
-        if (ArcUpdate(ext->from, ext->vel, &ext->unk38, &m->Engine->unk10.x) != 0) {
+        m->Engine->xform.rot.vx += 0x200;
+        if (ArcUpdate(ext->from, ext->vel, &ext->unk38, &m->Engine->XYZ.x) != 0) {
             s32 r;
 
             if (ext->unkB4 != 0) {
-                m->Engine->unk10.y = 0;
+                m->Engine->XYZ.y = 0;
                 ext->unkC = 9;
                 r = Random(2);
                 if (r == 0) {
@@ -8465,9 +8465,9 @@ void PlotBearminator(NAS *m) {
             } else {
                 ext->unkA0 = 0;
             }
-            m->Engine->unk1C = 0;
+            m->Engine->xform.rot.vx = 0;
             fux->sub->flags |= 0x8000;
-            m->Engine->unk10.y = 0;
+            m->Engine->XYZ.y = 0;
             return;
         }
         break;
@@ -8511,18 +8511,18 @@ void PlotBearminator(NAS *m) {
             GotoLinkAnim((EXTanimator *)ext->cursor, 3);
         }
         h = Heroes[ext->unkA0].hero_eng;
-        ext->unk18 = (get_angle(h->unk10.x - m->Engine->unk10.x, h->unk10.z - m->Engine->unk10.z) + 0x800) & 0xFFF;
+        ext->unk18 = (get_angle(h->XYZ.x - m->Engine->XYZ.x, h->XYZ.z - m->Engine->XYZ.z) + 0x800) & 0xFFF;
         ext->unk9C->sub->flags |= 0x8000;
-        ext->unk9C->unk10 = m->Engine->unk10;
-        ext->unk9C->unk10.y -= 0x19A;
-        ext->unk9C->unk5E = 1;
-        m->Engine->unk1E += ((ext->unk18 - m->Engine->unk1E) << 20) >> 22;
-        ext->unk9C->unk1E = m->Engine->unk1E;
+        ext->unk9C->XYZ = m->Engine->XYZ;
+        ext->unk9C->XYZ.y -= 0x19A;
+        ext->unk9C->xform.dirty = 1;
+        m->Engine->xform.rot.vy += ((ext->unk18 - m->Engine->xform.rot.vy) << 20) >> 22;
+        ext->unk9C->xform.rot.vy = m->Engine->xform.rot.vy;
         if (ext->unk1C-- < 0) {
             ext->unkC = 2;
-            n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y - 0x19A, m->Engine->unk10.z, 0x161C, 0x11);
+            n = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y - 0x19A, m->Engine->XYZ.z, 0x161C, 0x11);
             if (n != NULL) {
-                n->Engine->unk1E = m->Engine->unk1E;
+                n->Engine->xform.rot.vy = m->Engine->xform.rot.vy;
                 ext->unk9C->sub->flags &= ~0x8000;
             }
             cam->x.target = 0;
@@ -8536,7 +8536,7 @@ void PlotBearminator(NAS *m) {
         EXTengine *e;
 
         e = m->Engine;
-        if (e->unk10.z > 0) {
+        if (e->XYZ.z > 0) {
             e->sub->unk68 = 0x400;
         } else {
             e->sub->unk68 = 0x200;
@@ -8597,36 +8597,36 @@ void PlotBearminator(NAS *m) {
                 ext->unkC = 8;
             }
             h = Heroes[ext->unkA0].hero_eng;
-            ext->unk18 = (get_angle(h->unk10.x - m->Engine->unk10.x, h->unk10.z - m->Engine->unk10.z) + 0x800) & 0xFFF;
+            ext->unk18 = (get_angle(h->XYZ.x - m->Engine->XYZ.x, h->XYZ.z - m->Engine->XYZ.z) + 0x800) & 0xFFF;
             ext->unk14 = 1;
         }
-        m->Engine->unk1E += ((ext->unk18 - m->Engine->unk1E) << 20) >> 21;
+        m->Engine->xform.rot.vy += ((ext->unk18 - m->Engine->xform.rot.vy) << 20) >> 21;
         {
             s32 k;
 
             k = AiPlayerSkill[0].level + 0x20;
-            cam->x.target = (k * rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 13;
-            cam->z.target = (k * rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2) >> 13;
+            cam->x.target = (k * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 13;
+            cam->z.target = (k * rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2) >> 13;
         }
         if (Heroes[ext->unkA0].hero_mode == 0x4E) {
             ext->unkC = 6;
             return;
         }
-        BearminatorEaseCam(cam, &m->Engine->unk10.x);
+        BearminatorEaseCam(cam, &m->Engine->XYZ.x);
         if (ext->unk1C-- < 0) {
             hi = &Heroes[ext->unkA0];
             if (hi->hero_mode != 0x4E) {
                 s32 dx;
                 s32 dz;
 
-                dx = m->Engine->unk10.x - hi->hero_eng->unk10.x;
-                dz = m->Engine->unk10.z - hi->hero_eng->unk10.z;
+                dx = m->Engine->XYZ.x - hi->hero_eng->XYZ.x;
+                dz = m->Engine->XYZ.z - hi->hero_eng->XYZ.z;
                 near = dx * dx + dz * dz < 0x40000;
                 if (near != 0)
                 if (near == 1) {
                     ext->unkC = near;
-                    cam->x.target = cam->x.cur = (rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
-                    cam->z.target = cam->z.cur = (rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
+                    cam->x.target = cam->x.cur = (rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
+                    cam->z.target = cam->z.cur = (rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2 * 0x4B) >> 12;
                     GotoLinkAnim((EXTanimator *)ext->cursor, 1);
                     ext->unk1C = 0x5A - (AiPlayerSkill[0].level - 0x10) * 4;
                 }
@@ -8656,27 +8656,27 @@ void PlotBearminator(NAS *m) {
         }
         if (ext->unk14-- < 0) {
             e = m->Engine;
-            x = e->unk10.x;
-            z = e->unk10.z;
+            x = e->XYZ.x;
+            z = e->XYZ.z;
             dx = -x;
             dz = -z;
             if (dx * dx + dz * dz > 0x400000) {
                 a = (get_angle(dx, dz) + 0x800) & 0xFFF;
                 ext->unk18 = a;
-                m->Engine->unk1E += ((a - m->Engine->unk1E) << 20) >> 21;
-                cam->x.target = (rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 3) >> 9;
-                cam->z.target = (rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2 * 3) >> 9;
+                m->Engine->xform.rot.vy += ((a - m->Engine->xform.rot.vy) << 20) >> 21;
+                cam->x.target = (rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 3) >> 9;
+                cam->z.target = (rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2 * 3) >> 9;
             } else {
                 h = Heroes[ext->unkA0].hero_eng;
-                dx = h->unk10.x;
-                dz = h->unk10.z;
+                dx = h->XYZ.x;
+                dz = h->XYZ.z;
                 cam->x.target = 0;
                 cam->z.target = 0;
                 ext->unk18 = (get_angle(dx - x, dz - z) + 0x800) & 0xFFF;
             }
             ext->unk14 = 1;
         }
-        BearminatorEaseCam(cam, &m->Engine->unk10.x);
+        BearminatorEaseCam(cam, &m->Engine->XYZ.x);
         break;
     }
     case 1: {
@@ -8725,13 +8725,13 @@ void PlotBearminator(NAS *m) {
                 ext->unkC = 8;
             }
             h = Heroes[ext->unkA0].hero_eng;
-            ext->unk18 = (get_angle(h->unk10.x - m->Engine->unk10.x, h->unk10.z - m->Engine->unk10.z) + 0x800) & 0xFFF;
+            ext->unk18 = (get_angle(h->XYZ.x - m->Engine->XYZ.x, h->XYZ.z - m->Engine->XYZ.z) + 0x800) & 0xFFF;
             ext->unk14 = 1;
         }
-        m->Engine->unk1E += ((ext->unk18 - m->Engine->unk1E) << 20) >> 21;
-        cam->x.target = (rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
-        cam->z.target = (rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
-        BearminatorEaseCam(cam, &m->Engine->unk10.x);
+        m->Engine->xform.rot.vy += ((ext->unk18 - m->Engine->xform.rot.vy) << 20) >> 21;
+        cam->x.target = (rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
+        cam->z.target = (rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2 * 0x4B) >> 12;
+        BearminatorEaseCam(cam, &m->Engine->XYZ.x);
         if (done != 0) {
             ext->unkC = 0;
             GotoLinkAnim((EXTanimator *)ext->cursor, 0);
@@ -8744,14 +8744,14 @@ void PlotBearminator(NAS *m) {
         break;
     }
     fux->sub->entity = m->Engine->sub->entity;
-    fux->unk1E = m->Engine->unk1E;
-    fux->unk10 = m->Engine->unk10;
+    fux->xform.rot.vy = m->Engine->xform.rot.vy;
+    fux->XYZ = m->Engine->XYZ;
     if (ext->unk98 != NULL) {
-        ext->unk98->Engine->unk10 = m->Engine->unk10;
-        ext->unk98->Engine->unk10.y = 0;
+        ext->unk98->Engine->XYZ = m->Engine->XYZ;
+        ext->unk98->Engine->XYZ.y = 0;
     }
-    fux->unk5E = 1;
-    m->Engine->unk5E = 1;
+    fux->xform.dirty = 1;
+    m->Engine->xform.dirty = 1;
 }
 
 void PlotPolarMissile(NAS *m) {
@@ -8764,7 +8764,7 @@ void PlotPolarMissile(NAS *m) {
     switch (ext->unk10) {
     case 0:
         ext->unk10 = 1;
-        ext->pos = m->Engine->unk10;
+        ext->pos = m->Engine->XYZ;
         break;
     case 1:
         if (--ext->unk60 == -1) {
@@ -8773,19 +8773,19 @@ void PlotPolarMissile(NAS *m) {
         }
         break;
     }
-    ext->pos.x -= (ext->unk5C * rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-    ext->pos.z -= (ext->unk5C * rcossin_tbl[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+    ext->pos.x -= (ext->unk5C * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->unk5C * rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
     if (PolarMissileHitHero(&ext->pos) != -1) {
     blast:
         PolarMissileBlast(m, 1);
     } else {
-        m->Engine->unk5E = 1;
-        m->Engine->unk10 = ext->pos;
+        m->Engine->xform.dirty = 1;
+        m->Engine->XYZ = ext->pos;
         if (ext->unk58 >= 3) {
             goto blast;
         }
-        if (csqrt(m->Engine->unk10.x * m->Engine->unk10.x
-                  + m->Engine->unk10.z * m->Engine->unk10.z) >> 6 <= 0xFA0) {
+        if (csqrt(m->Engine->XYZ.x * m->Engine->XYZ.x
+                  + m->Engine->XYZ.z * m->Engine->XYZ.z) >> 6 <= 0xFA0) {
             return;
         }
         PolarMissileBlast(m, 1);
@@ -8808,11 +8808,11 @@ void PlotBigMissile(NAS *m) {
     if (ext->state != 0) {
         return;
     }
-    if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x) == 0) {
+    if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->XYZ.x) == 0) {
         return;
     }
-    m->Engine->unk10.y = 0x20;
-    pos = &m->Engine->unk10;
+    m->Engine->XYZ.y = 0x20;
+    pos = &m->Engine->XYZ;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         sext = FindExtension(nas, 0x10000000);
@@ -8927,10 +8927,10 @@ void InitSniper(NAS *m) {
         ext->unk7A = 1;
         ext->unk84 = 0;
         ext->unk88 = 0;
-        m->Engine->unk2C.x = 0x1830;
-        m->Engine->unk2C.y = 0x1830;
-        m->Engine->unk2C.z = 0x1830;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.scale.vx = 0x1830;
+        m->Engine->xform.scale.vy = 0x1830;
+        m->Engine->xform.scale.vz = 0x1830;
+        m->Engine->xform.dirty = 1;
         m->Engine->flags |= 0x200000;
         ext->unk10 = NULL;
         ext->unk20 = NULL;
@@ -8941,12 +8941,12 @@ void InitSniper(NAS *m) {
             e->sub->entity = 0x2018;
             e->sub->flags = 0x22000000;
             e->sub->flags &= ~0x8000;
-            e->unk10.x = 0;
-            e->unk10.y = 0;
-            e->unk10.z = 0;
-            e->unk10.x = 0;
-            e->unk10.y = 0;
-            e->unk10.z = 0;
+            e->XYZ.x = 0;
+            e->XYZ.y = 0;
+            e->XYZ.z = 0;
+            e->XYZ.x = 0;
+            e->XYZ.y = 0;
+            e->XYZ.z = 0;
             e->sub->unk68 = -0x600;
         }
         e = AddExtEngine(m, 3);
@@ -8956,12 +8956,12 @@ void InitSniper(NAS *m) {
             e->sub->entity = 0x2019;
             e->sub->flags = 0x22000000;
             e->sub->flags &= ~0x8000;
-            e->unk10.x = 0;
-            e->unk10.y = 0;
-            e->unk10.z = 0;
-            e->unk10.x = 0;
-            e->unk10.y = 0;
-            e->unk10.z = 0;
+            e->XYZ.x = 0;
+            e->XYZ.y = 0;
+            e->XYZ.z = 0;
+            e->XYZ.x = 0;
+            e->XYZ.y = 0;
+            e->XYZ.z = 0;
             e->sub->unk68 = -0x3F4;
         }
         f = AddExtEngine(m, 4);
@@ -8970,17 +8970,17 @@ void InitSniper(NAS *m) {
             f->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
             f->sub->entity = 0x2006;
             f->sub->flags |= 0x02000000;
-            f->unk10 = m->Engine->unk10;
-            f->unk5D = 0;
+            f->XYZ = m->Engine->XYZ;
+            f->xform.order = 0;
             f->flags |= 0x200000;
             f->sub->flags = 0x40008021;
-            f->unk1E = m->Engine->unk1E;
-            f->unk20 = -0x800;
-            f->unk2C.x = 0x1830;
-            f->unk2C.y = 0x1830;
-            f->unk2C.z = 0x1830;
+            f->xform.rot.vy = m->Engine->xform.rot.vy;
+            f->xform.rot.vz = -0x800;
+            f->xform.scale.vx = 0x1830;
+            f->xform.scale.vy = 0x1830;
+            f->xform.scale.vz = 0x1830;
             f->sub->unk76 = 0xC00;
-            f->unk5E = 1;
+            f->xform.dirty = 1;
         }
     }
 }
@@ -9003,20 +9003,20 @@ void PlotSniper(NAS *m) {
     }
     boss = FindExtension(polarbossnas, 0x10000000);
     if (boss != NULL) {
-        m->Engine->unk5E = 1;
+        m->Engine->xform.dirty = 1;
         switch (ext->unkC) {
         case 0:
             if (ext->unk98 < 3) {
-                m->Engine->unk10.y += ext->unk90;
+                m->Engine->XYZ.y += ext->unk90;
                 ext->unk90 += ext->unk8C;
-                y = m->Engine->unk10.y;
+                y = m->Engine->XYZ.y;
                 if (y >= -0x1F) {
-                    m->Engine->unk10.y -= abs(y - 0x20);
+                    m->Engine->XYZ.y -= abs(y - 0x20);
                     ext->unk98++;
                     ext->unk90 = -(ext->unk90 >> 1);
                 }
             }
-            m->Engine->unk1E += 0x40;
+            m->Engine->xform.rot.vy += 0x40;
             if (++ext->unk1C == 0x96) {
                 boss->unk8C = 0xC;
                 PolarMissileBlast(m, 1);
@@ -9034,11 +9034,11 @@ void PlotSniper(NAS *m) {
                     }
                     e = m->Engine;
                     he = Heroes[i].hero_eng;
-                    if ((he->unk10.x - e->unk10.x) * (he->unk10.x - e->unk10.x)
-                        + (he->unk10.z - e->unk10.z) * (he->unk10.z - e->unk10.z) <= 0x23FFF) {
-                        SNIPER_CAM->at.x = polarbossnas->Engine->unk10.x;
-                        SNIPER_CAM->at.y = polarbossnas->Engine->unk10.y + 0x100;
-                        SNIPER_CAM->at.z = polarbossnas->Engine->unk10.z;
+                    if ((he->XYZ.x - e->XYZ.x) * (he->XYZ.x - e->XYZ.x)
+                        + (he->XYZ.z - e->XYZ.z) * (he->XYZ.z - e->XYZ.z) <= 0x23FFF) {
+                        SNIPER_CAM->at.x = polarbossnas->Engine->XYZ.x;
+                        SNIPER_CAM->at.y = polarbossnas->Engine->XYZ.y + 0x100;
+                        SNIPER_CAM->at.z = polarbossnas->Engine->XYZ.z;
                         SNIPER_CAM->eye.x = 0;
                         SNIPER_CAM->eye.y = 0;
                         ext->unk14 = SNIPER_CAM->eye.z;
@@ -9134,18 +9134,18 @@ void PlotSniper(NAS *m) {
                 if (ext->unk84 == 0 && (SNIPER_PAD[ext->unk88].dirPressed & 0x8000)) {
                     ext->unk84 = 1;
                     ext->unk18 = 0xD2;
-                    nas = CreateNAS(Heroes[ext->unk88].hero_eng->unk10.x,
-                                       Heroes[ext->unk88].hero_eng->unk10.y,
-                                       Heroes[ext->unk88].hero_eng->unk10.z, 0x1624, 0x11);
+                    nas = CreateNAS(Heroes[ext->unk88].hero_eng->XYZ.x,
+                                       Heroes[ext->unk88].hero_eng->XYZ.y,
+                                       Heroes[ext->unk88].hero_eng->XYZ.z, 0x1624, 0x11);
                     if (nas != NULL) {
                         mext = FindExtension(nas, 0x10000000);
                         if (mext != NULL) {
                             mext->from = *(SLONG_XYZ *)&ext->unk20->sub->unk04;
-                            mext->to = Heroes[ext->unk88].hero_eng->unk10;
+                            mext->to = Heroes[ext->unk88].hero_eng->XYZ;
                             mext->to.x = SNIPER_CAM->at.x;
                             mext->to.y = SNIPER_CAM->at.y - 0x700;
                             mext->to.z = SNIPER_CAM->at.z - SNIPER_CAM->eye.z + 0x300;
-                            nas->Engine->unk10 = mext->to;
+                            nas->Engine->XYZ = mext->to;
                         }
                     }
                 }
@@ -9176,10 +9176,10 @@ void PlotSniper(NAS *m) {
         }
     }
     if (ext->unk94 != NULL) {
-        ext->unk94->unk10 = m->Engine->unk10;
-        ext->unk94->unk10.y = -m->Engine->unk10.y + 0x40;
-        ext->unk94->unk1E = m->Engine->unk1E;
-        ext->unk94->unk5E = 1;
+        ext->unk94->XYZ = m->Engine->XYZ;
+        ext->unk94->XYZ.y = -m->Engine->XYZ.y + 0x40;
+        ext->unk94->xform.rot.vy = m->Engine->xform.rot.vy;
+        ext->unk94->xform.dirty = 1;
     }
 }
 
@@ -9198,7 +9198,7 @@ void PlotSniperMissile(NAS *m) {
     if (boss == NULL) {
         return;
     }
-    m->Engine->unk5E = 1;
+    m->Engine->xform.dirty = 1;
     switch (ext->unkC) {
     case 0:
         dx = ext->to.x - ext->from.x;
@@ -9208,14 +9208,14 @@ void PlotSniperMissile(NAS *m) {
         ext->yaw = get_angle(dx, dz) & 0xFFF;
         ext->pitch = get_angle(dy, dist) & 0xFFF;
         ext->unkC = 1;
-        m->Engine->unk1E = ext->yaw;
-        m->Engine->unk1C = -ext->pitch;
+        m->Engine->xform.rot.vy = ext->yaw;
+        m->Engine->xform.rot.vx = -ext->pitch;
         break;
     case 1:
         ext->unk34++;
-        m->Engine->unk10.x -= rcossin_tbl[(ext->yaw - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
-        m->Engine->unk10.z -= rcossin_tbl[ext->yaw & 0xFFF].unk2 * 0x100 >> 12;
-        m->Engine->unk10.y -= rcossin_tbl[(ext->pitch - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
+        m->Engine->XYZ.x -= rcossin_tbl[(ext->yaw - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
+        m->Engine->XYZ.z -= rcossin_tbl[ext->yaw & 0xFFF].unk2 * 0x100 >> 12;
+        m->Engine->XYZ.y -= rcossin_tbl[(ext->pitch - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
         if (--ext->unk30 == -1) {
             PolarMissileBlast(m, 0);
             ext->unk30 = 1;
@@ -9294,13 +9294,13 @@ s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
     }
     lo = src->lo;
     hi = src->hi;
-    if (a->unk5C == 1) {
-        lo.v[0] = (lo.v[0] * a->unk2C.x) >> 12;
-        lo.v[1] = (lo.v[1] * a->unk2C.y) >> 12;
-        lo.v[2] = (lo.v[2] * a->unk2C.z) >> 12;
-        hi.v[0] = (hi.v[0] * a->unk2C.x) >> 12;
-        hi.v[1] = (hi.v[1] * a->unk2C.y) >> 12;
-        hi.v[2] = (hi.v[2] * a->unk2C.z) >> 12;
+    if (a->xform.hasScale == 1) {
+        lo.v[0] = (lo.v[0] * a->xform.scale.vx) >> 12;
+        lo.v[1] = (lo.v[1] * a->xform.scale.vy) >> 12;
+        lo.v[2] = (lo.v[2] * a->xform.scale.vz) >> 12;
+        hi.v[0] = (hi.v[0] * a->xform.scale.vx) >> 12;
+        hi.v[1] = (hi.v[1] * a->xform.scale.vy) >> 12;
+        hi.v[2] = (hi.v[2] * a->xform.scale.vz) >> 12;
     }
     if (a->sub->unk50 == 1) {
         lo.v[0] = (lo.v[0] * a->sub->unk20.x) >> 12;
@@ -9310,12 +9310,12 @@ s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
         hi.v[1] = (hi.v[1] * a->sub->unk20.y) >> 12;
         hi.v[2] = (hi.v[2] * a->sub->unk20.z) >> 12;
     }
-    d.vx = b->unk10.x - a->unk10.x;
-    d.vy = b->unk10.y - a->unk10.y;
-    d.vz = b->unk10.z - a->unk10.z;
-    ang.vx = -a->unk1C;
-    ang.vy = -a->unk1E;
-    ang.vz = -a->unk20;
+    d.vx = b->XYZ.x - a->XYZ.x;
+    d.vy = b->XYZ.y - a->XYZ.y;
+    d.vz = b->XYZ.z - a->XYZ.z;
+    ang.vx = -a->xform.rot.vx;
+    ang.vy = -a->xform.rot.vy;
+    ang.vz = -a->xform.rot.vz;
     RotMatrixZYX(&ang, &m);
     ApplyMatrixLV(&m, &d, &d);
     if (d.vx < lo.v[0]) {
@@ -9428,14 +9428,14 @@ s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
         s32 push;
 
         push = abs(p->pad - dist);
-        ang.vx = a->unk1C;
-        ang.vy = a->unk1E;
-        ang.vz = a->unk20;
+        ang.vx = a->xform.rot.vx;
+        ang.vy = a->xform.rot.vy;
+        ang.vz = a->xform.rot.vz;
         RotMatrix(&ang, &m);
         ApplyMatrixLV(&m, &n, &n);
         if (c == 0) {
-            b->unk10.x += (push * n.vx) >> 12;
-            b->unk10.z += (push * n.vz) >> 12;
+            b->XYZ.x += (push * n.vx) >> 12;
+            b->XYZ.z += (push * n.vz) >> 12;
         }
         return 1;
     }
@@ -9450,11 +9450,11 @@ void InitSniperMissile(NAS *m) {
         m->Engine->sub->entity = 0x2006;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
         ext->unkC = 0;
-        m->Engine->unk5C = 1;
-        m->Engine->unk2C.x = 0x2AF8;
-        m->Engine->unk2C.y = 0x2AF8;
-        m->Engine->unk2C.z = 0x2AF8;
-        m->Engine->unk5D = 2;
+        m->Engine->xform.hasScale = 1;
+        m->Engine->xform.scale.vx = 0x2AF8;
+        m->Engine->xform.scale.vy = 0x2AF8;
+        m->Engine->xform.scale.vz = 0x2AF8;
+        m->Engine->xform.order = 2;
         ext->unk30 = 0;
         ext->unk34 = 0;
         PlaySfx(0x522, &m->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -9466,20 +9466,20 @@ void InitBigMissile(NAS *m) {
 
     ext = AddExt(m, 0x7C, 0x10000000);
     if (ext != NULL) {
-        m->Engine->unk5D = 2;
-        m->Engine->unk5C = 1;
+        m->Engine->xform.order = 2;
+        m->Engine->xform.hasScale = 1;
         m->Engine->sub->entity = 0x201A;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
-        m->Engine->unk2C.x = 0x2000;
-        m->Engine->unk2C.y = 0x2000;
-        m->Engine->unk2C.z = 0x2000;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.scale.vx = 0x2000;
+        m->Engine->xform.scale.vy = 0x2000;
+        m->Engine->xform.scale.vz = 0x2000;
+        m->Engine->xform.dirty = 1;
         ext->unkC = 0x10;
         ext->unk50 = 0x96;
         ext->unk10 = 0;
-        ext->unk24 = Heroes[0].hero_eng->unk10.y;
+        ext->unk24 = Heroes[0].hero_eng->XYZ.y;
         ext->unk78 = 0;
-        ext->pos = m->Engine->unk10;
+        ext->pos = m->Engine->XYZ;
         PlaySfx(0x22D, NULL, NULL, 0x1000, 0x1E00, 0);
         PlaySfx(0x22B, NULL, NULL, 0x1000, 0x1E00, 0);
     }
@@ -9509,8 +9509,8 @@ void InitPolarMissile(NAS *m) {
     if (ext != NULL) {
         m->Engine->sub->entity = 0x2006;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
-        m->Engine->unk5D = 2;
-        m->Engine->unk5C = 1;
+        m->Engine->xform.order = 2;
+        m->Engine->xform.hasScale = 1;
         m->Engine->sub->unk51 = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk5C = 0x8C;
@@ -9525,7 +9525,7 @@ void InitPolarMissile(NAS *m) {
         ext->unk54 = 0;
         ext->unk60 = 0;
         ext->unk50 = ext->unk2C;
-        PlaySfx(0x522, &m->Engine->sfx, &m->Engine->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x522, &m->Engine->sfx, &m->Engine->XYZ, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -9543,7 +9543,7 @@ s32 PolarBossDazeHero(u8 *arg0) {
 loop:
     if (i < n) {
         if (!(hero->hero_mode & 0x2000) &&
-            DistXZSq(arg0, &hero->hero_eng->unk10) < 0x7BC4) {
+            DistXZSq(arg0, &hero->hero_eng->XYZ) < 0x7BC4) {
             if (hero->hero_mode != 0x4B) {
                 SetHeroAction(i, 0x4B);
             }
@@ -9572,13 +9572,13 @@ loop:
     if (p != NULL) {
         e = *(EXTengine **)(p + 0x54);
         if (e != NULL && e != m->Engine) {
-            dx = e->unk10.x - m->Engine->unk10.x;
-            dz = e->unk10.z - m->Engine->unk10.z;
+            dx = e->XYZ.x - m->Engine->XYZ.x;
+            dz = e->XYZ.z - m->Engine->XYZ.z;
             if (dx * dx + dz * dz < 0x3D090) {
                 d = 0x7D00 - csqrt(dx * dx + dz * dz);
                 ang = get_angle(dx, dz) & 0xFFF;
-                m->Engine->unk10.x -= ((d + 2) * t[(ang - 0x400) & 0xFFF].unk2) >> 18;
-                m->Engine->unk10.z -= ((d + 2) * t[ang].unk2) >> 18;
+                m->Engine->XYZ.x -= ((d + 2) * t[(ang - 0x400) & 0xFFF].unk2) >> 18;
+                m->Engine->XYZ.z -= ((d + 2) * t[ang].unk2) >> 18;
             }
         }
         p = *(u8 **)(p + 0x20);
@@ -9597,8 +9597,8 @@ s32 PolarBossNear(EXTengine *eng, s32 player) {
     h = base + player;
     if (h->hero_mode != 0x4E) {
         e = h->hero_eng;
-        dx = eng->unk10.x - e->unk10.x;
-        dz = eng->unk10.z - e->unk10.z;
+        dx = eng->XYZ.x - e->XYZ.x;
+        dz = eng->XYZ.z - e->XYZ.z;
         if (dx * dx + dz * dz < 0x40000) {
             return 1;
         }
@@ -9634,7 +9634,7 @@ s32 PolarBossSpeedUp(void) {
 
 void PlotBearBoss(NAS *m) {
     if (FindExtension(m, 0x10000000) != NULL) {
-        m->Engine->unk5E = 1;
+        m->Engine->xform.dirty = 1;
         RunNasAnim(m);
     }
 }
@@ -9644,7 +9644,7 @@ void InitBearBoss(NAS *m) {
 
     ext = AddExt(m, 0x10, 0x10000000);
     if (ext != NULL) {
-        m->Engine->unk5D = 0;
+        m->Engine->xform.order = 0;
         m->Engine->sub->unk68 = 0x300;
         m->Engine->sub->flags |= 0x02000000;
         m->Engine->sub->u6C.dbase = MapScene->dbase;
@@ -9684,14 +9684,14 @@ void PlotPackEffect(NAS *m) {
 }
 
 void PlotCortexPack(NAS *m) {
-    m->Engine->unk5E = 1;
+    m->Engine->xform.dirty = 1;
 }
 
 void InitCortexPack(NAS *m) {
     m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CharsPolar2Dingo];
     m->Engine->sub->entity = 0x2003;
-    m->Engine->unk5D = 2;
-    m->Engine->unk5C = 1;
+    m->Engine->xform.order = 2;
+    m->Engine->xform.hasScale = 1;
     m->Engine->sub->flags |= 0x40000021;
     m->Engine->sub->unk76 = 0;
 }
@@ -9700,8 +9700,8 @@ void InitBrioPack(NAS *m) {
     m->Engine->flags |= 0x200000;
     m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
     m->Engine->sub->entity = 0x2031;
-    m->Engine->unk5D = 2;
-    m->Engine->unk5C = 1;
+    m->Engine->xform.order = 2;
+    m->Engine->xform.hasScale = 1;
     m->Engine->sub->flags |= 0x40000021;
     m->Engine->sub->unk76 = 0;
     m->UserInfo.user2 = 0;
@@ -9712,8 +9712,8 @@ void InitDingoTail(NAS *m) {
     m->Engine->flags |= 0x200000;
     m->Engine->sub->u6C.dbase = (s32)&HeroModelBank[DB_CharsPolar2Dingo];
     m->Engine->sub->entity = 0x2003;
-    m->Engine->unk5D = 2;
-    m->Engine->unk5C = 1;
+    m->Engine->xform.order = 2;
+    m->Engine->xform.hasScale = 1;
     m->Engine->sub->flags |= 0x40000021;
     m->Engine->sub->unk76 = 0;
 }
@@ -9761,9 +9761,9 @@ void InitSmokeTrail(NAS *m) {
         ext->fadedownrate = 0xC8;
         ext->scalerate = 0x60;
         ext->flag = 0;
-        ext->startx = m->Engine->unk10.x;
-        m->Engine->unk5C = 1;
-        m->Engine->unk5D = 0;
+        ext->startx = m->Engine->XYZ.x;
+        m->Engine->xform.hasScale = 1;
+        m->Engine->xform.order = 0;
         ext->angle = Random(0x1000);
     }
 }
@@ -9774,8 +9774,8 @@ void PlotBearDeath(NAS *m) {
     ext = FindExtension(m, 0x10000000);
     if (ext != NULL) {
         RunNasAnim(m);
-        m->Engine->unk1C += 0x100;
-        m->Engine->unk5E = 1;
+        m->Engine->xform.rot.vx += 0x100;
+        m->Engine->xform.dirty = 1;
         if (ext->unk40 > 0) {
             m->Engine->sub->unk68 = 0x200;
         }
@@ -9783,10 +9783,10 @@ void PlotBearDeath(NAS *m) {
             RemoveCamera(m);
         }
         if (--ext->unk84 < 0) {
-            CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
+            CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1612, 0x11);
             ext->unk84 = Random(7) + 1;
         }
-        if (ArcUpdate(&ext->from.x, &ext->to.x, &ext->unk2C, &m->Engine->unk10.x) != 0) {
+        if (ArcUpdate(&ext->from.x, &ext->to.x, &ext->unk2C, &m->Engine->XYZ.x) != 0) {
             KillNAS(m);
         }
     }
@@ -9799,7 +9799,7 @@ void InitBearDeath(NAS *m) {
     if (ext != NULL) {
         ScriptCursorFirst(m, &BearDeathScriptInit);
         m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
-        m->Engine->unk5D = 2;
+        m->Engine->xform.order = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk2C = 2;
         ext->unk70 = 0x32;
@@ -9868,10 +9868,10 @@ void PlotIceBerg(NAS *arg0) {
     EXTengine *temp_v1;
 
     temp_a1 = (arg0->Engine);
-    (temp_a1->unk10.x) = (s32) ((temp_a1->unk10.x) + ((s32) (arg0->UserInfo.user2) >> 8));
+    (temp_a1->XYZ.x) = (s32) ((temp_a1->XYZ.x) + ((s32) (arg0->UserInfo.user2) >> 8));
     temp_v1 = (arg0->Engine);
-    if ((temp_v1->unk10.x) >= 0x1AF5) {
-        (temp_v1->unk10.x) = -0x1C84;
+    if ((temp_v1->XYZ.x) >= 0x1AF5) {
+        (temp_v1->XYZ.x) = -0x1C84;
     }
 }
 
@@ -9948,7 +9948,7 @@ void InitGravityObject(NAS *m) {
         g->ay = 2;
         g->flags = 0;
         g->vz = (t * 27) >> 11;
-        g->floor = *(u16 *)&m->Engine->unk10.y + 0x400;
+        g->floor = *(u16 *)&m->Engine->XYZ.y + 0x400;
         m->FUX = (EXT *)g;
     }
 }
@@ -10072,8 +10072,8 @@ void PolarAI_Proximity(s32 player, s32 idx) {
             if (m != NULL) {
                 a = p->eng;
                 b = Heroes[player].hero_eng;
-                dx = a->unk10.x - b->unk10.x;
-                dz = a->unk10.z - b->unk10.z;
+                dx = a->XYZ.x - b->XYZ.x;
+                dz = a->XYZ.z - b->XYZ.z;
                 if (dx * dx + dz * dz <= 0xB0643) {
                     mode = m->mode;
                     if (mode == 1 || mode == 5) {
@@ -10182,8 +10182,8 @@ u32 FindClosetPlayer(u32 self, s32 *dist) {
 loop:
     if (i < 4) {
         if (i != self &&!((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
-            pos = h->hero_eng->unk10;
-            d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
+            pos = h->hero_eng->XYZ;
+            d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->XYZ);
             if (d < min) {
                 min = d;
                 do {
@@ -10280,7 +10280,7 @@ void PolarAI_Timer1(s32 player) {
         v.x = (rcossin_tbl[r & 0xFFF].unk2 * spd) >> 12;
         v.z = (rcossin_tbl[(r - 0x400) & 0xFFF].unk2 * spd) >> 12;
         f->vel = v;
-        f->pos = h->hero_eng->unk10;
+        f->pos = h->hero_eng->XYZ;
     }
 }
 
@@ -10408,15 +10408,15 @@ void InitBombGFX(NAS *m) {
         m->Engine->sub->entity = 0x2018;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         ext->unkC = 0;
-        m->Engine->unk5C = 1;
+        m->Engine->xform.hasScale = 1;
         AddToGroup((NAS **)&PolarBomb, m);
         m->FUX = NULL;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             e->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
             e->sub->entity = 0x202F;
-            e->unk5D = 0;
-            e->unk10 = m->Engine->unk10;
+            e->xform.order = 0;
+            e->XYZ = m->Engine->XYZ;
             e->flags |= 0x8041;
             e->sub->unk76 = 0x200;
             e->sub->flags |= 0x40000000;
@@ -10552,10 +10552,10 @@ void PolarHeroesCollide(s32 p1, s32 p2) {
                 m2 += (AiPlayerSkill[p2].level - 0x18) << 6;
             }
         }
-        if (Heroes[p1].hero_mode == 0x51 && Heroes[p1].hero_eng->unk2C.x > 0xFA0) {
+        if (Heroes[p1].hero_mode == 0x51 && Heroes[p1].hero_eng->xform.scale.vx > 0xFA0) {
             m1 += 0x220;
         }
-        if (Heroes[p2].hero_mode == 0x51 && Heroes[p2].hero_eng->unk2C.x > 0xFA0) {
+        if (Heroes[p2].hero_mode == 0x51 && Heroes[p2].hero_eng->xform.scale.vx > 0xFA0) {
             m2 += 0x220;
         }
         v1 = move1->x_vel;
@@ -10619,7 +10619,7 @@ void PolarHeroBounceOff(s32 player, EXTheromove *other) {
     s32 b;
 
     if (m1 > 0 && m2 > 0) {
-        if (hero->hero_mode == 0x51 && hero->hero_eng->unk2C.x > 0xFA0) {
+        if (hero->hero_mode == 0x51 && hero->hero_eng->xform.scale.vx > 0xFA0) {
             m1 += 0x220;
         }
         v1 = move->x_vel;
@@ -10685,7 +10685,7 @@ void PolarInitShadow(s32 player) {
         if (shadow != NULL) {
             eng = hero->hero_eng;
             shadow->flags = 0x8000;
-            shadow->unk5C = 1;
+            shadow->xform.hasScale = 1;
             if (eng != NULL) {
                 shadow->sub->u6C.dbase = &HeroModelBank[DB_Polar];
                 tbl = PolarShadowState;
@@ -10694,10 +10694,10 @@ void PolarInitShadow(s32 player) {
                 shadow->sub->entity = *p;
                 shadow->sub->unk68 = 0x80;
                 shadow->sub->flags |= 0x02000000;
-                shadow->unk10 = eng->unk10;
-                shadow->unk5D = 0;
+                shadow->XYZ = eng->XYZ;
+                shadow->xform.order = 0;
                 shadow->sub->flags = 0x8000;
-                shadow->unk5E = 1;
+                shadow->xform.dirty = 1;
             }
         }
     }
@@ -10740,8 +10740,8 @@ void PolarUpdateShadow(s32 player) {
         return;
     }
     shadow->flags |= 0x200000;
-    shadow->unk1E = eng->unk1E;
-    shadow->unk5E = 1;
+    shadow->xform.rot.vy = eng->xform.rot.vy;
+    shadow->xform.dirty = 1;
     if (g->heroes[player] == 9 || h->hero_mode == 0x4E || h->hero_mode == 0x50) {
         shadow->sub->flags &= ~0x8000;
         shadow->flags &= ~0x8000;
@@ -10753,18 +10753,18 @@ void PolarUpdateShadow(s32 player) {
         if (h->hero_name != 1 && h->hero_name != 7 && h->hero_name != 8 && h->hero_name != 2 &&
             h->hero_name != 6 && h->hero_name != 5 && h->hero_name != 4) {
             shadow->sub->entity = 0x4000;
-            shadow->unk1E = eng->unk1E;
-            shadow->unk10 = eng->unk10;
-            shadow->unk5E = 1;
+            shadow->xform.rot.vy = eng->xform.rot.vy;
+            shadow->XYZ = eng->XYZ;
+            shadow->xform.dirty = 1;
             return;
         }
     }
     fux = (PolarWanderFux *)Heroes[player].hero->FUX;
     if (fux != NULL && fux->unk50 != 0) {
         shadow->sub->entity = 0x4000;
-        shadow->unk1E = eng->unk1E;
-        shadow->unk10 = eng->unk10;
-        shadow->unk5E = 1;
+        shadow->xform.rot.vy = eng->xform.rot.vy;
+        shadow->XYZ = eng->XYZ;
+        shadow->xform.dirty = 1;
         return;
     }
     if (eng == NULL) {
@@ -10787,15 +10787,15 @@ void PolarUpdateShadow(s32 player) {
                 shadow->sub->entity = 0x4000;
                 *p = 0x4000;
             }
-            shadow->unk10 = eng->unk10;
+            shadow->XYZ = eng->XYZ;
             if (h2->hero_mode == 0x52) {
                 shadow->sub->u6C.dbase = MapScene->dbase;
-                shadow->unk10.y += 0x298;
+                shadow->XYZ.y += 0x298;
                 shadow->sub->entity = 0x2003;
                 *p = 0x2003;
             }
-            shadow->unk1E = eng->unk1E;
-            shadow->unk5E = 1;
+            shadow->xform.rot.vy = eng->xform.rot.vy;
+            shadow->xform.dirty = 1;
         }
         if (Heroes[player].hero_mode != 0x51) {
             goto mode58;
@@ -10803,7 +10803,7 @@ void PolarUpdateShadow(s32 player) {
     }
     {
         shadow->sub->u6C.dbase = &HeroModelBank[DB_Polar];
-        shadow->unk10 = eng->unk10;
+        shadow->XYZ = eng->XYZ;
         shadow->sub->flags = 0x8000;
         switch (Heroes[player].hero_name) {
         case 4:
@@ -10828,15 +10828,15 @@ void PolarUpdateShadow(s32 player) {
             shadow->sub->entity = PolarShadowFrames3[anim->Aindex - 1][0];
             break;
         }
-        shadow->unk1E = eng->unk1E;
-        shadow->unk5E = 1;
+        shadow->xform.rot.vy = eng->xform.rot.vy;
+        shadow->xform.dirty = 1;
     }
 mode58:
     base3 = Heroes;
     h3 = &base3[player];
     if (h3->hero_mode == 0x58) {
         shadow->sub->u6C.dbase = &HeroModelBank[DB_Polar];
-        shadow->unk10 = eng->unk10;
+        shadow->XYZ = eng->XYZ;
         shadow->sub->flags = 0x8000;
         switch (h3->hero_name) {
         case 1:
@@ -10917,8 +10917,8 @@ mode58:
             }
             break;
         }
-        shadow->unk1E = eng->unk1E;
-        shadow->unk5E = 1;
+        shadow->xform.rot.vy = eng->xform.rot.vy;
+        shadow->xform.dirty = 1;
     }
 }
 
@@ -11046,7 +11046,7 @@ s32 TestPolarHeroMelted(s32 player) {
     if (ext != NULL) {
     if (GameMode != 0x16) {
         act = 0x4E;
-        if (eng != NULL && CheckMelted(&eng->unk10, 0)) {
+        if (eng != NULL && CheckMelted(&eng->XYZ, 0)) {
             return 1;
         }
         mode = Heroes[player].hero_mode;
@@ -11066,7 +11066,7 @@ s32 TestPolarHeroMelted(s32 player) {
         return 0;
     } else if (bossmapsub != NULL) {
         if (bossmapsub->entity == 0x2008
-            && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 1, player)
+            && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->XYZ, 1, player)
             && !(h->hero_status & 0x200)) {
             ext->unkA8 = 1;
             if (h->hero_mode != 0x4E) {
@@ -11074,7 +11074,7 @@ s32 TestPolarHeroMelted(s32 player) {
             }
         }
         if (bossmapsub->entity == 0x2009
-            && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 2, player)
+            && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->XYZ, 2, player)
             && !(Heroes[player].hero_status & 0x200)) {
             ext->unkA8 = 1;
             if (Heroes[player].hero_mode != 0x4E) {
@@ -11082,7 +11082,7 @@ s32 TestPolarHeroMelted(s32 player) {
             }
         }
         if (bossmapsub->entity == 0x200A) {
-            out = ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 3, player) != 1;
+            out = ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->XYZ, 3, player) != 1;
             if (out && !(Heroes[player].hero_status & 0x200)) {
                 ext->unkA8 = 1;
                 if (Heroes[player].hero_mode != 0x4E) {
@@ -11091,7 +11091,7 @@ s32 TestPolarHeroMelted(s32 player) {
             }
         }
         if (bossmapsub->flags & 0x8000) {
-            if (eng != NULL && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 0, player)) {
+            if (eng != NULL && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->XYZ, 0, player)) {
                 ext->unkA8 = 0;
                 return 1;
             }
@@ -11135,8 +11135,8 @@ void SetPolarHeroIdle(s32 player) {
     if (ext != NULL) {
         ext->unk14 = 0;
     }
-    info->hero_eng->unk5D = 0;
-    info->hero_eng->unk1C = 0;
+    info->hero_eng->xform.order = 0;
+    info->hero_eng->xform.rot.vx = 0;
     move = info->hero_move;
     if (move != NULL) {
         speed = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
@@ -11251,7 +11251,7 @@ void PolarHeroIdle(s32 player) {
     PolarTestAttack(player);
     PolarTestSnowball(player);
     TestPolarHeroMelted(player);
-    PolarIceHit(&Heroes[player].hero_eng->unk10, player);
+    PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
     TestPolarHeroWon(player);
 }
 
@@ -11274,19 +11274,19 @@ void PolarHeroRun(s32 player) {
     if (h->hero_anim->Aindex == 4) {
         if (h->hero_move->mass > 0x50) {
             if (player == 0) {
-                PlaySfx(0x49C, &base[0].hero_eng->sfx, &base[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x49C, &base[0].hero_eng->sfx, &base[0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             }
             if (player == 1) {
-                PlaySfx(0x49D, &base[1].hero_eng->sfx, &base[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x49D, &base[1].hero_eng->sfx, &base[1].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             }
             if (player == 2) {
-                PlaySfx(0x49E, &base[2].hero_eng->sfx, &base[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x49E, &base[2].hero_eng->sfx, &base[2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             }
             if (player == 3) {
-                PlaySfx(0x49F, &base[3].hero_eng->sfx, &base[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x49F, &base[3].hero_eng->sfx, &base[3].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             }
         } else {
-            PlaySfx(0x4A0, &h->hero_eng->sfx, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x4A0, &h->hero_eng->sfx, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
         }
     }
     ProcessHeroAnim(player);
@@ -11304,7 +11304,7 @@ void PolarHeroRun(s32 player) {
     PolarTestAttack(player);
     PolarTestSnowball(player);
     TestPolarHeroMelted(player);
-    PolarIceHit(&Heroes[player].hero_eng->unk10, player);
+    PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
     if (TestPolarHeroWon(player) != 0) {
         if (Heroes[player].hero_eng->sfx != NULL) {
             StopSfx(Heroes[player].hero_eng->sfx);
@@ -11355,7 +11355,7 @@ void SetPolarHeroDazed(s32 player) {
             if (GameMode != 0x16) {
                 eng = Heroes[player].hero_eng;
                 ext[0x98 / 4] = 0;
-                nas = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1605, 0x11);
+                nas = CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1605, 0x11);
                 if (nas != NULL) {
                     nas->Engine->flags |= 0x200000;
                     fux = (s32 *)nas->FUX;
@@ -11489,9 +11489,9 @@ void PolarHeroDazed(s32 player) {
         ext = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext != NULL) {
             eng = Heroes[player].hero_eng;
-            x = eng->unk10.x;
-            y = eng->unk10.y;
-            z = eng->unk10.z;
+            x = eng->XYZ.x;
+            y = eng->XYZ.y;
+            z = eng->XYZ.z;
             if (Heroes[player].hero_name == 1) {
                 ProcessHeroAnim(player);
             }
@@ -11550,10 +11550,10 @@ void PolarHeroDazed(s32 player) {
                 ((PadState *)Pads)[player].dirPressed = 0;
                 PolarHeroCollisions(player);
                 TestPolarHeroMelted(player);
-                PolarIceHit(&Heroes[player].hero_eng->unk10, player);
+                PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
                 Heroes[player].hero_frozen = 2;
                 if (ext[0x24 / 4] == 0 && ext[0x1C / 4] >= 0x1F) {
-                    Heroes[player].hero_eng->unk1E += 0x10;
+                    Heroes[player].hero_eng->xform.rot.vy += 0x10;
                     if (PolarRoundState != 0 && !(Heroes[player].hero_status & 0x200)) {
                         Heroes[player].hero_eng->sub->flags &= 0xFFFF7FFF;
                         Heroes[player].hero_shadow->sub->flags &= 0xFFFF7FFF;
@@ -11585,7 +11585,7 @@ void PolarHeroDazed(s32 player) {
                         Heroes[player].hero_eng->sub->entity = 0x4080;
                     }
                 }
-                Heroes[player].hero_eng->unk5E = 1;
+                Heroes[player].hero_eng->xform.dirty = 1;
             }
             if (ext[0x1C / 4]++ >= 0xB5) {
                 ext2 = FindExtension(Heroes[player].hero, 0x20000000);
@@ -11762,9 +11762,9 @@ void PolarHeroChallenge(s32 player) {
         ext = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext != NULL) {
             eng = Heroes[player].hero_eng;
-            x = eng->unk10.x;
-            y = eng->unk10.y;
-            z = eng->unk10.z;
+            x = eng->XYZ.x;
+            y = eng->XYZ.y;
+            z = eng->XYZ.z;
             if (ext[0x98 / 4]-- < 0) {
                 ext[0x98 / 4] = Random(0x14) + 1;
                 nas = CreateNAS(x + 0x60, y - 0x180, z, 0x1612, 0x11);
@@ -11799,12 +11799,12 @@ void PolarHeroChallenge(s32 player) {
                 ((PadState *)Pads)[player].dirPressed = 0;
                 PolarHeroCollisions(player);
                 TestPolarHeroMelted(player);
-                PolarIceHit(&Heroes[player].hero_eng->unk10, player);
+                PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
                 Heroes[player].hero_frozen = 2;
                 if (ext[0x24 / 4] == 0) {
-                    Heroes[player].hero_eng->unk1E += 0x10;
+                    Heroes[player].hero_eng->xform.rot.vy += 0x10;
                 }
-                Heroes[player].hero_eng->unk5E = 1;
+                Heroes[player].hero_eng->xform.dirty = 1;
             }
             if (ext[0x1C / 4]++ >= 0xB5) {
                 ext2 = FindExtension(Heroes[player].hero, 0x20000000);
@@ -11875,10 +11875,10 @@ void PolarHeroTransmute(s32 player) {
             ((PadState *)Pads)[player].dirPressed = 0;
             PolarHeroCollisions(player);
             TestPolarHeroMelted(player);
-            PolarIceHit(&hero->hero_eng->unk10, player);
+            PolarIceHit(&hero->hero_eng->XYZ, player);
             hero->hero_frozen = 2;
-            hero->hero_eng->unk1E += 0x10;
-            hero->hero_eng->unk5E = 1;
+            hero->hero_eng->xform.rot.vy += 0x10;
+            hero->hero_eng->xform.dirty = 1;
             move->x_max = 0;
             move->z_max = 0;
         }
@@ -11940,11 +11940,11 @@ void SetPolarHeroOffice(s32 player) {
             }
             base2 = Heroes;
             h = &base2[player];
-            if (h->hero_eng->unk10.z >= -0x3E7) {
+            if (h->hero_eng->XYZ.z >= -0x3E7) {
                 h->hero_eng->sub->unk68 = 0x200;
             }
             if (GameMode == 0x16) {
-                if (h->hero_eng->unk10.z >= -0x3E7) {
+                if (h->hero_eng->XYZ.z >= -0x3E7) {
                     h->hero_eng->sub->unk68 = 0x320;
                 }
             }
@@ -11962,15 +11962,15 @@ void PolarHeroSlideFromCentre(s32 player) {
     hero = &base[player];
     move = hero->hero_move;
     if (move != NULL) {
-        angle = (get_angle(hero->hero_eng->unk10.x - PolarCentre.vx,
-                           hero->hero_eng->unk10.z - PolarCentre.vz) + 0x800) & 0xFFF;
+        angle = (get_angle(hero->hero_eng->XYZ.x - PolarCentre.vx,
+                           hero->hero_eng->XYZ.z - PolarCentre.vz) + 0x800) & 0xFFF;
         move->forward_angle = angle + 0x800;
         move->x_max = 0;
         move->z_max = 0;
         move->x_vel = (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 0x25) >> 11;
         move->z_vel = (rcossin_tbl[angle].unk2 * 0x25) >> 11;
-        hero->hero_eng->unk10.x += move->x_vel;
-        hero->hero_eng->unk10.z += move->z_vel;
+        hero->hero_eng->XYZ.x += move->x_vel;
+        hero->hero_eng->XYZ.z += move->z_vel;
     }
 }
 
@@ -12004,13 +12004,13 @@ void PolarHeroOffice(s32 player) {
             HeroInfo *b = Heroes;
             h2 = &b[player];
         }
-        h2->hero_eng->unk10.y += 0x60;
+        h2->hero_eng->XYZ.y += 0x60;
         ext->unkAC = 1;
         RemoveCamera(h2->hero);
         if (!(h2->hero_status & 0x200)) {
             h2->hero_status |= 0x2000;
         }
-        if (h2->hero_eng->unk10.y > 0x400) {
+        if (h2->hero_eng->XYZ.y > 0x400) {
             SetHeroAction(player, 0x50);
         }
         return;
@@ -12020,7 +12020,7 @@ void PolarHeroOffice(s32 player) {
         return;
     }
     eng = h->hero_eng;
-    angle = (get_angle(eng->unk10.x - PolarCentre.vx, eng->unk10.z - PolarCentre.vz) + 0x800) & 0xFFF;
+    angle = (get_angle(eng->XYZ.x - PolarCentre.vx, eng->XYZ.z - PolarCentre.vz) + 0x800) & 0xFFF;
     if (ext->unk18 == 0) {
         ext->unk18 = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
     }
@@ -12309,7 +12309,7 @@ void PolarHeroAttackThrow(s32 player) {
                 {
                     EXTengine *eng = hero->hero_eng;
                     hero->hero_frozen = 2;
-                    nas = CreateNAS(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0x1A4) >> 12), eng->unk10.z, 0x1616, 0x11);
+                    nas = CreateNAS(eng->XYZ.x, eng->XYZ.y - ((eng->xform.scale.vx * 0x1A4) >> 12), eng->XYZ.z, 0x1616, 0x11);
                 }
                 ext->unkA4 = nas;
                 if (nas != NULL) {
@@ -12328,7 +12328,7 @@ void PolarHeroAttackThrow(s32 player) {
             if (hero->hero_anim->Aindex == 7) {
                 {
                     EXTengine *eng = hero->hero_eng;
-                    nas = CreateNAS(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0x1A4) >> 12), eng->unk10.z, 0x1615, 0x11);
+                    nas = CreateNAS(eng->XYZ.x, eng->XYZ.y - ((eng->xform.scale.vx * 0x1A4) >> 12), eng->XYZ.z, 0x1615, 0x11);
                 }
                 ext->unkA4 = nas;
                 if (nas != NULL) {
@@ -12351,7 +12351,7 @@ void PolarHeroAttackThrow(s32 player) {
             if (hero->hero_anim->Aindex == 7) {
                 {
                     EXTengine *eng = hero->hero_eng;
-                    nas = CreateNAS(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0xB4) >> 12), eng->unk10.z, 0x1615, 0x11);
+                    nas = CreateNAS(eng->XYZ.x, eng->XYZ.y - ((eng->xform.scale.vx * 0xB4) >> 12), eng->XYZ.z, 0x1615, 0x11);
                 }
                 ext->unkA4 = nas;
                 if (nas != NULL) {
@@ -12435,7 +12435,7 @@ void SetPolarHeroThrowBomb(s32 player) {
     ext = FindExtension(h->hero, 0x20000000);
     if (ext != NULL) {
     dist = 0;
-    pos = h->hero_eng->unk10;
+    pos = h->hero_eng->XYZ;
     pos.y -= 0x100;
     nas = CreateNAS(pos.x, pos.y, pos.z, 0x160D, 0x11);
     if (nas != NULL) {
@@ -12444,8 +12444,8 @@ void SetPolarHeroThrowBomb(s32 player) {
     t->start = pos;
     t->owner = player;
     ext[10]--;
-    nas->Engine->unk1E = base[t->owner].hero_eng->unk1E;
-    to.y = h->hero_eng->unk10.y;
+    nas->Engine->xform.rot.vy = base[t->owner].hero_eng->xform.rot.vy;
+    to.y = h->hero_eng->XYZ.y;
     switch (h->hero_name) {
     case 1:
         PlaySfx(0x17, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -12491,9 +12491,9 @@ void SetPolarHeroThrowBomb(s32 player) {
     base2 = Heroes;
     h2 = &base2[player];
     eng = h2->hero_eng;
-    to.x = eng->unk10.x - (dist * rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    to.x = eng->XYZ.x - (dist * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
     eng = h2->hero_eng;
-    to.z = eng->unk10.z - (dist * rcossin_tbl[eng->unk1E & 0xFFF].unk2 >> 12);
+    to.z = eng->XYZ.z - (dist * rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 >> 12);
     t->pos = to;
     }
     }
@@ -12553,7 +12553,7 @@ void SetPolarHeroSnowball(s32 player) {
         break;
     }
     Heroes[player].hero_eng->sub->u6C.dbase = MapScene->dbase;
-    Heroes[player].hero_eng->unk5D = 2;
+    Heroes[player].hero_eng->xform.order = 2;
 }
 
 void PolarHeroSnowball(s32 player) {
@@ -12574,10 +12574,10 @@ void PolarHeroSnowball(s32 player) {
             }
         }
         PolarHeroCollisions(player);
-        Heroes[player].hero_eng->unk1C += speed;
+        Heroes[player].hero_eng->xform.rot.vx += speed;
         TestPolarHeroMelted(player);
-        PolarIceHit(&Heroes[player].hero_eng->unk10, player);
-        Heroes[player].hero_eng->unk5E = 1;
+        PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
+        Heroes[player].hero_eng->xform.dirty = 1;
     }
 }
 
@@ -12606,8 +12606,8 @@ void SetPolarHeroFootIdle(s32 player) {
         ext->unk14 = 0;
         ext->state = 1;
     }
-    info->hero_eng->unk5D = 0;
-    info->hero_eng->unk1C = 0;
+    info->hero_eng->xform.order = 0;
+    info->hero_eng->xform.rot.vx = 0;
     move = info->hero_move;
     if (move != NULL) {
         speed = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
@@ -12700,7 +12700,7 @@ void PolarHeroFootIdle(s32 player) {
         PolarTestAttack(player);
         PolarTestSnowball(player);
         TestPolarHeroMelted(player);
-        PolarIceHit(&Heroes[player].hero_eng->unk10, player);
+        PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
     }
 }
 
@@ -12724,19 +12724,19 @@ void PolarHeroFootRun(s32 player) {
         if (h->hero_anim->Aindex == 4) {
             if (h->hero_move->mass != 0x50) {
                 if (player == 0) {
-                    PlaySfx(0x49C, &base[0].hero_eng->sfx, &base[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x49C, &base[0].hero_eng->sfx, &base[0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 if (player == 1) {
-                    PlaySfx(0x49D, &base[1].hero_eng->sfx, &base[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x49D, &base[1].hero_eng->sfx, &base[1].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 if (player == 2) {
-                    PlaySfx(0x49E, &base[2].hero_eng->sfx, &base[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x49E, &base[2].hero_eng->sfx, &base[2].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 if (player == 3) {
-                    PlaySfx(0x49F, &base[3].hero_eng->sfx, &base[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x49F, &base[3].hero_eng->sfx, &base[3].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 }
             } else {
-                PlaySfx(0x4A0, &h->hero_eng->sfx, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x4A0, &h->hero_eng->sfx, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
             }
         }
         ProcessHeroAnim(player);
@@ -12754,7 +12754,7 @@ void PolarHeroFootRun(s32 player) {
         PolarTestAttack(player);
         PolarTestSnowball(player);
         TestPolarHeroMelted(player);
-        PolarIceHit(&Heroes[player].hero_eng->unk10, player);
+        PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
     }
 }
 
@@ -12813,7 +12813,7 @@ void SetPolarHeroDead(s32 arg0) {
     if (ext != NULL) {
         ext[0x9C / 4] = 0;
         ext[0x98 / 4] = 0;
-        h->hero_eng->unk5D = 2;
+        h->hero_eng->xform.order = 2;
         status = h->hero_status;
         if (!(status & 0x200)) {
             h->hero_status = status | 0x2000;
@@ -12822,7 +12822,7 @@ void SetPolarHeroDead(s32 arg0) {
         h->hero_eng->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         h->hero_eng->sub->entity = 0x202D;
         eng = h->hero_eng;
-        CreateNAS(eng->unk10.x + 0x80, eng->unk10.y - 0x200, eng->unk10.z, 0x1613, 0x11);
+        CreateNAS(eng->XYZ.x + 0x80, eng->XYZ.y - 0x200, eng->XYZ.z, 0x1613, 0x11);
     }
 }
 
@@ -12849,9 +12849,9 @@ void PolarHeroDead(s32 player) {
         }
         eng = h->hero_eng;
         t = ext[0x9C / 4] + 1;
-        x = eng->unk10.x;
-        y = eng->unk10.y;
-        z = eng->unk10.z;
+        x = eng->XYZ.x;
+        y = eng->XYZ.y;
+        z = eng->XYZ.z;
         ext[0x9C / 4] = t;
         if (t == 4) {
             CreateNAS(x - 0x80, y - 0x100, z, 0x1613, 0x11);
@@ -12908,18 +12908,18 @@ void SetPolarHeroWinner(s32 player) {
 
     tab = Heroes;
     first = &tab[player];
-    first->hero_eng->unk1C = 0;
-    first->hero_eng->unk5E = 1;
-    first->hero_eng->unk5E = 1;
-    first->hero_eng->unk2C.x = 0x1000;
-    first->hero_eng->unk2C.y = 0x1000;
-    first->hero_eng->unk2C.z = 0x1000;
+    first->hero_eng->xform.rot.vx = 0;
+    first->hero_eng->xform.dirty = 1;
+    first->hero_eng->xform.dirty = 1;
+    first->hero_eng->xform.scale.vx = 0x1000;
+    first->hero_eng->xform.scale.vy = 0x1000;
+    first->hero_eng->xform.scale.vz = 0x1000;
     shadow = first->hero_shadow;
     if (shadow != NULL) {
-        shadow->unk2C.x = 0x1000;
-        shadow->unk2C.y = 0x1000;
-        shadow->unk2C.z = 0x1000;
-        shadow->unk5E = 1;
+        shadow->xform.scale.vx = 0x1000;
+        shadow->xform.scale.vy = 0x1000;
+        shadow->xform.scale.vz = 0x1000;
+        shadow->xform.dirty = 1;
     }
     first->hero_eng->sub->flags &= 0xFFBFFFFF;
     if (PolarRoundState != 0 && PolarBeamOwner != NULL) {
@@ -13020,7 +13020,7 @@ void SetPolarHeroWinner(s32 player) {
     if (lost) {
         RemoveCamera(Heroes[player].hero);
     }
-    if (Heroes[player].hero_eng->unk10.y > 0x60) {
+    if (Heroes[player].hero_eng->XYZ.y > 0x60) {
         RemoveCamera(Heroes[player].hero);
     }
     if (ext->state == 0) {
@@ -13038,14 +13038,14 @@ void PolarHeroWinner(s32 player) {
     HeroInfo *hero = base + player;
     EXTheromove *move;
 
-    hero->hero_eng->unk5E = 1;
-    hero->hero_eng->unk2C.x = 0x1000;
-    hero->hero_eng->unk2C.y = 0x1000;
-    hero->hero_eng->unk2C.z = 0x1000;
+    hero->hero_eng->xform.dirty = 1;
+    hero->hero_eng->xform.scale.vx = 0x1000;
+    hero->hero_eng->xform.scale.vy = 0x1000;
+    hero->hero_eng->xform.scale.vz = 0x1000;
     move = hero->hero_move;
     if (move != NULL) {
-        hero->hero_eng->unk1C = 0;
-        hero->hero_eng->unk5E = 1;
+        hero->hero_eng->xform.rot.vx = 0;
+        hero->hero_eng->xform.dirty = 1;
         CheckHeroAnim(player);
         move = hero->hero_move;
         hero->hero_frozen = 0x14;
@@ -13084,7 +13084,7 @@ void SetPolarHeroSquashed(s32 arg0) {
     u16 status;
 
     if (FindExtension(h->hero, 0x20000000) != NULL) {
-        h->hero_eng->unk5D = 2;
+        h->hero_eng->xform.order = 2;
         status = h->hero_status;
         if (!(status & 0x200)) {
             h->hero_status = status | 0x2000;
@@ -13111,7 +13111,7 @@ void PolarHeroHit(s32 player) {
     ProcessHeroAnim(player);
     TestPolarHeroMelted(player);
     PolarHeroCollisions(player);
-    PolarIceHit(&Heroes[player].hero_eng->unk10, player);
+    PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
 }
 
 void SetPolarHeroFootRun(s32 player) {
@@ -13159,7 +13159,7 @@ void PolarHeroAttack(s32 player) {
         }
         ProcessHeroAnim(player);
         TestPolarHeroMelted(player);
-        PolarIceHit(&info->hero_eng->unk10, player);
+        PolarIceHit(&info->hero_eng->XYZ, player);
     }
 }
 

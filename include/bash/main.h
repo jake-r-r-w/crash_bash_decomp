@@ -733,15 +733,6 @@ typedef struct SubFx {
 
 void fx_free_buffers(subengine *sub);
 s32 fx_alloc_buffers_b(FxDef *def, SubFx *fx);
-typedef struct RotScale {
-    /* 0x00 */ SVECTOR rot;
-    /* 0x08 */ u8 pad8[8];
-    /* 0x10 */ VECTOR scale;
-    /* 0x20 */ MATRIX mtx;
-    /* 0x40 */ u8 hasScale;
-    /* 0x41 */ u8 order;
-    /* 0x42 */ s16 dirty;
-} RotScale;
 void quat_to_matrix(SVECTOR *rot, MATRIX *m);
 void rotscale_update(void *arg0);
 PointList *sub_point_list(subengine *sub);

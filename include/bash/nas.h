@@ -265,25 +265,28 @@ typedef struct {
 } FlagRecord;
 BASH_SIZE_CHECK(FlagRecord, 0x10);
 
+/* A rotation and scale and the matrix rotscale_update builds from them (in the order `order`
+ * picks: RotMatrix, YXZ, ZYX or a quaternion). */
+typedef struct RotScale {
+    /* 0x00 */ SVECTOR rot;
+    /* 0x08 */ u8 pad8[8];
+    /* 0x10 */ VECTOR scale;
+    /* 0x20 */ MATRIX mtx;
+    /* 0x40 */ u8 hasScale;
+    /* 0x41 */ u8 order;
+    /* 0x42 */ u16 dirty;    /* set when rot or scale change; rotscale_update clears it */
+} RotScale;
+
 /* Engine extension, made by AddExtEngine(nas, id) from a template: EXTid is
  * id | 0x100. The first one is NAS.Engine; later ones are linked through
  * Engine. 0x0C..0x60 is the prototype's `xyzrf` (an anonymous struct whose
- * layout is not in the fragment), so its fields keep code-derived names. */
+ * layout is not in the fragment): flags, XYZ and a RotScale, by the code. */
 struct EXTengtype {
     /* 0x00 */ s32 EXTid;
     /* 0x04 */ EXTnode Extend;
     /* 0x0C */ u32 flags;
-    /* 0x10 */ SLONG_XYZ unk10;          /* set from the trigger's TrigXYZ */
-    /* 0x1C */ s16 unk1C;
-    /* 0x1E */ s16 unk1E;
-    /* 0x20 */ s16 unk20;
-    /* 0x22 */ u8 unk22[0x2C - 0x22];
-    /* 0x2C */ SLONG_XYZ unk2C;
-    /* 0x38 */ u8 unk38[0x3C - 0x38];
-    /* 0x3C */ u8 unk3C[0x5C - 0x3C];   /* passed to gfx_load_xform (GTE setup) */
-    /* 0x5C */ u8 unk5C;
-    /* 0x5D */ u8 unk5D;
-    /* 0x5E */ u16 unk5E;
+    /* 0x10 */ SLONG_XYZ XYZ;            /* where it is; set from the trigger's TrigXYZ */
+    /* 0x1C */ RotScale xform;           /* its rotation, scale and matrix (gfx_load_xform) */
     /* 0x60 */ SLONG_XYZ OldXYZ;
     /* 0x6C */ subengine *sub;           /* first of the engine's subengines */
     /* 0x70 */ subengine *last;          /* last of them */

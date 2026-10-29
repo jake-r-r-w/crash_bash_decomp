@@ -692,17 +692,17 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             if (g->pause & 0x40) {
                 row = LangHudRows[g->language];
                 i = arg1 + e->y;
-                PanelTab[5].unk10.x = row[0] + 0x140;
-                PanelTab[5].unk10.y = i + row[1];
-                PanelTab[6].unk10.x = row[2] + 0x140;
-                PanelTab[6].unk10.y = i + row[3];
+                PanelTab[5].XYZ.x = row[0] + 0x140;
+                PanelTab[5].XYZ.y = i + row[1];
+                PanelTab[6].XYZ.x = row[2] + 0x140;
+                PanelTab[6].XYZ.y = i + row[3];
             } else {
                 row2 = LangHudRows[g->language];
                 i = arg1 + e->y;
-                PanelTab[5].unk10.x = row2[4] + 0x140;
-                PanelTab[5].unk10.y = i + row2[5];
-                PanelTab[6].unk10.x = row2[6] + 0x140;
-                PanelTab[6].unk10.y = i + row2[7];
+                PanelTab[5].XYZ.x = row2[4] + 0x140;
+                PanelTab[5].XYZ.y = i + row2[5];
+                PanelTab[6].XYZ.x = row2[6] + 0x140;
+                PanelTab[6].XYZ.y = i + row2[7];
             }
             sfx = 0;
             if (g->levelFlags & 0x10) {
@@ -798,10 +798,10 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
         PauseTextHold--;
     }
     eng = PanelTab;
-    eng[5].unk5E = 1;
-    eng[6].unk5E = 1;
-    eng[5].unk1E += 0x40;
-    eng[6].unk1E += 0x40;
+    eng[5].xform.dirty = 1;
+    eng[6].xform.dirty = 1;
+    eng[5].xform.rot.vy += 0x40;
+    eng[6].xform.rot.vy += 0x40;
 }
 
 void DrawPauseMenu(void) {
@@ -1043,8 +1043,8 @@ void DrawAdventureStats(s32 arg0) {
                 break;
             }
         }
-        e->unk10.x = 0x60;
-        e->unk10.y = 0x1F4;
+        e->XYZ.x = 0x60;
+        e->XYZ.y = 0x1F4;
         sub = e->sub;
         if (GAME->levelFlags & 0x10) {
             sub[1].unk04 = sub[3].unk04;
@@ -1086,8 +1086,8 @@ void DrawAdventureStats(s32 arg0) {
         i /= 10;
         PauseDigits4[0] = i % 10 + '0';
         PlaceEngineSlot(4, AdvStatsPanel6);
-        e->unk10.x = 0x60;
-        e->unk10.y = 0x1E0;
+        e->XYZ.x = 0x60;
+        e->XYZ.y = 0x1E0;
         sub = e->sub;
         e->flags |= 0x10008000;
         if (StatsHasPage1 != 0) {
@@ -1117,8 +1117,8 @@ void DrawAdventureStats(s32 arg0) {
         i /= 10;
         PauseDigits4[0] = i % 10 + '0';
         PlaceEngineSlot(4, AdvStatsPanel7);
-        e->unk10.x = 0x60;
-        e->unk10.y = 0x1E0;
+        e->XYZ.x = 0x60;
+        e->XYZ.y = 0x1E0;
         sub = e->sub;
         e->flags |= 0x10008000;
         if (StatsHasPage1 != 0) {
@@ -1182,11 +1182,11 @@ void UpdatePauseSlide(s32 arg0) {
     PauseStatsAllowed = 0;
     switch (StatsPageShown) {
     case 1:
-        if (e->unk10.y > lim) {
-            e->unk10.y -= 0x20;
+        if (e->XYZ.y > lim) {
+            e->XYZ.y -= 0x20;
         }
-        if (e->unk10.y < lim) {
-            e->unk10.y = lim;
+        if (e->XYZ.y < lim) {
+            e->XYZ.y = lim;
         }
         if (StatsHasPage3 != 0 && (((PadState *)Pads)[PausePad].pressed & 0x1000)) {
             StatsPageWanted = 3;
@@ -1194,11 +1194,11 @@ void UpdatePauseSlide(s32 arg0) {
         }
         break;
     case 3:
-        if (e->unk10.y > lim) {
-            e->unk10.y -= 0x20;
+        if (e->XYZ.y > lim) {
+            e->XYZ.y -= 0x20;
         }
-        if (e->unk10.y < lim) {
-            e->unk10.y = lim;
+        if (e->XYZ.y < lim) {
+            e->XYZ.y = lim;
         }
         if (StatsHasPage1 == 0 && StatsHasBonus == 0) {
             break;
@@ -1214,11 +1214,11 @@ void UpdatePauseSlide(s32 arg0) {
         }
         break;
     case 5:
-        if (e->unk10.y > lim) {
-            e->unk10.y -= 0x20;
+        if (e->XYZ.y > lim) {
+            e->XYZ.y -= 0x20;
         }
-        if (e->unk10.y < lim) {
-            e->unk10.y = lim;
+        if (e->XYZ.y < lim) {
+            e->XYZ.y = lim;
         }
         if (StatsHasPage3 != 0 && (((PadState *)Pads)[PausePad].pressed & 0x1000)) {
             StatsPageWanted = 3;
@@ -1226,8 +1226,8 @@ void UpdatePauseSlide(s32 arg0) {
         }
         break;
     case 2:
-        if (e->unk10.y <= 0x1E0) {
-            e->unk10.y += 0x20;
+        if (e->XYZ.y <= 0x1E0) {
+            e->XYZ.y += 0x20;
         } else {
             KillEngineSlot(4);
             DrawAdventureStats(1);
@@ -1239,8 +1239,8 @@ void UpdatePauseSlide(s32 arg0) {
         }
         break;
     case 4:
-        if (e->unk10.y <= 0x1E0) {
-            e->unk10.y += 0x20;
+        if (e->XYZ.y <= 0x1E0) {
+            e->XYZ.y += 0x20;
         } else {
             KillEngineSlot(4);
             DrawAdventureStats(3);
@@ -1260,8 +1260,8 @@ void UpdatePauseSlide(s32 arg0) {
         }
         break;
     case 6:
-        if (e->unk10.y <= 0x1E0) {
-            e->unk10.y += 0x20;
+        if (e->XYZ.y <= 0x1E0) {
+            e->XYZ.y += 0x20;
         } else {
             KillEngineSlot(4);
             DrawAdventureStats(5);
@@ -1274,11 +1274,11 @@ void UpdatePauseSlide(s32 arg0) {
         break;
     case 9:
         if (arg0 != 0) {
-            e->unk10.y = 0x1E0;
+            e->XYZ.y = 0x1E0;
         }
-        if (e->unk10.y < 0x1E0) {
-            e->unk10.y += 0x20;
-            if (e->unk10.y < 0x1E0) {
+        if (e->XYZ.y < 0x1E0) {
+            e->XYZ.y += 0x20;
+            if (e->XYZ.y < 0x1E0) {
                 break;
             }
         }
@@ -1639,7 +1639,7 @@ void UpdateWinCounter(s32 arg0) {
 }
 
 void SetPauseY(s32 arg0) {
-    GetEngineSlot(0)->unk10.y = arg0;
+    GetEngineSlot(0)->XYZ.y = arg0;
 }
 
 s16 PauseRecValue(void) {

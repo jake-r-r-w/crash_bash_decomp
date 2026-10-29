@@ -25,13 +25,13 @@ void BonkSpawnShockwave(s32 arg0) {
     base = Heroes;
     h = base + arg0;
     if (sub_find_point(h->hero_eng, h->hero_sub, 1, &sp18) == NULL) {
-        *(SLONG_XYZ *)&sp18 = h->hero_eng->unk10;
+        *(SLONG_XYZ *)&sp18 = h->hero_eng->XYZ;
     }
     nas = CreateNAS(sp18.vx, World_floor_level - 0x80, sp18.vz, 0x1A03, 0x11);
     sbase = BonkSlots;
     slot = sbase + arg0;
     if (slot->f8 == 1) {
-        PlaySfx(0x72D, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x72D, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
         if (nas != NULL) {
             pad_rumble_small(arg0, 5);
             nas->UserInfo.user2 = 0x8000;
@@ -49,7 +49,7 @@ void BonkSpawnShockwave(s32 arg0) {
     } else {
         BonkMalletHit(&sp18, 0x380, arg0, 0);
     }
-    PlaySfx(BonkShockwaveSfx[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(BonkShockwaveSfx[arg0], NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
 }
 
 void BonkHeroFacing(s32 arg0) {
@@ -58,10 +58,10 @@ void BonkHeroFacing(s32 arg0) {
 
     if (h->hero_frozen == 0 || h->hero_mode == 0x43) {
         if (!(h->hero_ctrl & 1)) {
-            h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+            h->hero_eng->xform.rot.vy += angle_diff(h->hero_eng->xform.rot.vy, h->hero_move->forward_angle) >> 2;
         }
         h->hero_ctrl &= 0xFFFE;
-        h->hero_eng->unk5E = 1;
+        h->hero_eng->xform.dirty = 1;
     }
 }
 
@@ -99,9 +99,9 @@ void SetBonkHeroIdle(s32 idx) {
     SetHeroSeq(idx, 0x33);
     if (h->hero_ctrl & 4) {
         EXTengine *e = h->hero_eng;
-        e->unk2C.z = 0x1000;
-        e->unk2C.y = 0x1000;
-        e->unk2C.x = 0x1000;
+        e->xform.scale.vz = 0x1000;
+        e->xform.scale.vy = 0x1000;
+        e->xform.scale.vx = 0x1000;
         h->hero_ctrl &= 0xFFFB;
     }
 }
@@ -200,7 +200,7 @@ void BonkHeroBackswing(s32 arg0) {
             BonkSlots[arg0].f0 = (s32)t;
             p = t->unk4->unk54;
             h->hero_move->forward_angle =
-                get_angle(h->hero_eng->unk10.x - p->x, h->hero_eng->unk10.z - p->z);
+                get_angle(h->hero_eng->XYZ.x - p->x, h->hero_eng->XYZ.z - p->z);
         }
         if (ProcessHeroAnim(arg0) == 8) {
             if (((PadState *)Pads)[arg0].dir & 0x8000) {
@@ -248,7 +248,7 @@ void BonkHeroSwing(s32 arg0) {
         h->hero_frozen = 10;
         act = ProcessHeroAnim(arg0);
         if (act == 0xC) {
-            PlaySfx(BonkSwingSfx[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(BonkSwingSfx[arg0], NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
         }
         if (act == 8) {
             if (h->hero_last_mode == 0x44 || BonkSlots[arg0].f8 == 1 ||
@@ -270,7 +270,7 @@ void BonkHeroSwing(s32 arg0) {
                     break;
                 }
             }
-            PlaySfx(BonkSwingHitSfx[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(BonkSwingHitSfx[arg0], NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             SetHeroAction(arg0, 0x46);
         }
     }
@@ -325,16 +325,16 @@ s32 BonkHeroKickCollision(s32 arg0) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
-            hi = eng->unk10.y + box->unk2;
-            lo = eng->unk10.y + box->height;
+            hi = eng->XYZ.y + box->unk2;
+            lo = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
-                if (eng->unk5E != 0) {
-                    rotscale_update(&eng->unk1C);
+                if (eng->xform.dirty != 0) {
+                    rotscale_update(&eng->xform);
                 }
-                gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
-                lo2 = eng->unk10.y + box->unk2;
-                hi2 = eng->unk10.y + box->height;
+                gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
+                lo2 = eng->XYZ.y + box->unk2;
+                hi2 = eng->XYZ.y + box->height;
                 if (lo2 < hi2) {
                     tmp = hi2;
                     hi2 = lo2;
@@ -348,7 +348,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                 obj = n->Engine;
                 if (obj != NULL) {
                     rad3 = 0x80;
-                    hi3 = obj->unk10.y;
+                    hi3 = obj->XYZ.y;
                     lo3 = hi3 - 0x100;
                 }
             }
@@ -372,23 +372,23 @@ s32 BonkHeroKickCollision(s32 arg0) {
                     if (e != NULL) {
                         rec = FindCollisionBox(e, 0x40);
                         if (rec != NULL) {
-                            bot = e->unk10.y + rec->unk2;
-                            top = e->unk10.y + rec->height;
+                            bot = e->XYZ.y + rec->unk2;
+                            top = e->XYZ.y + rec->height;
                             if (push != 0) {
                                 r = rec->radius;
                                 r += rad;
                                 rr = r * r;
                                 if (lo < bot && top < hi) {
-                                    dx = e->unk10.x - eng->unk10.x;
-                                    dz = e->unk10.z - eng->unk10.z;
+                                    dx = e->XYZ.x - eng->XYZ.x;
+                                    dz = e->XYZ.z - eng->XYZ.z;
                                     d = dx * dx + dz * dz;
                                     if (d < rr) {
                                         d = csqrt(d) >> 6;
                                         if (d < r) {
                                             ang = get_angle(dx, dz) & 0xFFF;
                                             d = r - d + 1;
-                                            eng->unk10.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
+                                            eng->XYZ.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            eng->XYZ.z -= (d * tbl[ang].unk2) >> 12;
                                             hit = 1;
                                             if (self->hero_pu != 0) {
                                                 (*(void (**)(s32, s32))&HeroHooks.HeroesTouched)(arg0, i);
@@ -401,8 +401,8 @@ s32 BonkHeroKickCollision(s32 arg0) {
                                 }
                             }
                             if (rad2 != 0 && hi2 < bot && top < lo2) {
-                                dx = e->unk10.x - pos.vx;
-                                dz = e->unk10.z - pos.vz;
+                                dx = e->XYZ.x - pos.vx;
+                                dz = e->XYZ.z - pos.vz;
                                 r = rec->radius;
                                 r += rad2;
                                 d = dx * dx + dz * dz;
@@ -414,18 +414,18 @@ s32 BonkHeroKickCollision(s32 arg0) {
                                         ang = get_angle(dx, dz) & 0xFFF;
                                         d = r - d + 1;
                                         if (push != 0) {
-                                            eng->unk10.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
+                                            eng->XYZ.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            eng->XYZ.z -= (d * tbl[ang].unk2) >> 12;
                                         } else {
-                                            e->unk10.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            e->unk10.z += (d * tbl[ang].unk2) >> 12;
+                                            e->XYZ.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            e->XYZ.z += (d * tbl[ang].unk2) >> 12;
                                         }
                                     }
                                 }
                             }
                             if (rad3 != 0 && lo3 < bot && top < hi3) {
-                                dx = e->unk10.x - obj->unk10.x;
-                                dz = e->unk10.z - obj->unk10.z;
+                                dx = e->XYZ.x - obj->XYZ.x;
+                                dz = e->XYZ.z - obj->XYZ.z;
                                 r = rec->radius;
                                 r += rad3;
                                 d = dx * dx + dz * dz;
@@ -437,11 +437,11 @@ s32 BonkHeroKickCollision(s32 arg0) {
                                         ang = get_angle(dx, dz) & 0xFFF;
                                         d = r - d + 1;
                                         if (push != 0) {
-                                            eng->unk10.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
+                                            eng->XYZ.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            eng->XYZ.z -= (d * tbl[ang].unk2) >> 12;
                                         } else {
-                                            e->unk10.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            e->unk10.z += (d * tbl[ang].unk2) >> 12;
+                                            e->XYZ.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            e->XYZ.z += (d * tbl[ang].unk2) >> 12;
                                         }
                                     }
                                 }
@@ -471,11 +471,11 @@ s32 BonkHeroKickCollision(s32 arg0) {
                 if (e == eng) continue;
                 rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
-                bot = e->unk10.y + rec->unk2;
-                top = e->unk10.y + rec->height;
+                bot = e->XYZ.y + rec->unk2;
+                top = e->XYZ.y + rec->height;
                 if (lo < bot && top < hi) {
-                    dx = e->unk10.x - eng->unk10.x;
-                    dz = e->unk10.z - eng->unk10.z;
+                    dx = e->XYZ.x - eng->XYZ.x;
+                    dz = e->XYZ.z - eng->XYZ.z;
                     r = rec->radius;
                     r += rad;
                     d = dx * dx + dz * dz;
@@ -491,8 +491,8 @@ s32 BonkHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->unk1C & 8)) {
@@ -512,13 +512,13 @@ void BonkHeroLoser(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
-    if (h->hero_eng->unk2C.x != 0) {
-        h->hero_eng->unk2C.x -= 0x80;
-        h->hero_eng->unk2C.y -= 0x80;
-        h->hero_eng->unk2C.z -= 0x80;
-        h->hero_eng->unk5E = 1;
-        if (h->hero_eng->unk2C.x <= 0) {
-            BonkSpawnPuff(&h->hero_eng->unk10, 1, &HeroModelBank[DB_MalletObjects]);
+    if (h->hero_eng->xform.scale.vx != 0) {
+        h->hero_eng->xform.scale.vx -= 0x80;
+        h->hero_eng->xform.scale.vy -= 0x80;
+        h->hero_eng->xform.scale.vz -= 0x80;
+        h->hero_eng->xform.dirty = 1;
+        if (h->hero_eng->xform.scale.vx <= 0) {
+            BonkSpawnPuff(&h->hero_eng->XYZ, 1, &HeroModelBank[DB_MalletObjects]);
             if (Heroes[arg0].hero_shadow != NULL) {
                 Heroes[arg0].hero_shadow->flags &= 0xFFFF7FFF;
             }
@@ -648,7 +648,7 @@ void SetBonkHeroBackswing(s32 arg0) {
     BonkSlots[arg0].f0 = 0;
     hero = base + arg0;
     hero->hero_frozen = 10;
-    PlaySfx(BonkBackswingSfx[arg0], NULL, &hero->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(BonkBackswingSfx[arg0], NULL, &hero->hero_eng->XYZ, 0x1000, 0x1E00, 0);
     SetHeroSeq(arg0, 0x35);
 }
 
@@ -720,8 +720,8 @@ void BonkHidePowerup(s32 arg0) {
 }
 
 s32 BonkKeepInBoundsB(EXTengine *eng) {
-    s32 x = eng->unk10.x;
-    s32 z = eng->unk10.z;
+    s32 x = eng->XYZ.x;
+    s32 z = eng->XYZ.z;
     s32 limit;
     s32 ret = 0;
     s32 ang;
@@ -733,16 +733,16 @@ s32 BonkKeepInBoundsB(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->unk10.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->unk10.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
+        eng->XYZ.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->XYZ.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;
 }
 
 s32 BONK_KeepInBounds(EXTengine *eng) {
-    s32 x = eng->unk10.x;
-    s32 z = eng->unk10.z;
+    s32 x = eng->XYZ.x;
+    s32 z = eng->XYZ.z;
     s32 limit;
     s32 ret = 0;
     s32 ang;
@@ -754,8 +754,8 @@ s32 BONK_KeepInBounds(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->unk10.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->unk10.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
+        eng->XYZ.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->XYZ.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;
@@ -771,7 +771,7 @@ void BonkHeroSnapShadow(s32 player) {
     ((void (*)(EXTengine *))BONK_KeepInBounds)(h->hero_eng);
     shadow = h->hero_shadow;
     if (shadow != NULL) {
-        shadow->unk10 = h->hero_eng->unk10;
+        shadow->XYZ = h->hero_eng->XYZ;
     }
 }
 

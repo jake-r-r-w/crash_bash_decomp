@@ -473,7 +473,7 @@ void InitialiseN2O(void) {
     for (i = 0; i < 4; i++) {
         h = &Heroes[i];
         mv = h->hero_move;
-        h->hero_eng->unk1E = 0x800;
+        h->hero_eng->xform.rot.vy = 0x800;
         mv->facing_angle = 0x800;
         mv->forward_angle = 0x800;
         if (N2OBallPhase == 1) {
@@ -659,10 +659,10 @@ void N2OHeroEngineUpdate(s32 arg0) {
     N2OHeroBox *base;
     s32 t;
 
-    if (e->unk5E != 0) {
-        rotscale_update(&e->unk1C);
+    if (e->xform.dirty != 0) {
+        rotscale_update(&e->xform);
     }
-    gfx_load_xform(e->sub, e->unk3C, &e->unk10);
+    gfx_load_xform(e->sub, &e->xform.mtx, &e->XYZ);
     r = FindCollisionBox(e, 1);
     if (r == NULL) goto next;
     {
@@ -676,9 +676,9 @@ void N2OHeroEngineUpdate(s32 arg0) {
         b->b = r->height;
         b->c = r->radius;
         gte_rotate_point((SVECTOR *)r, &sp10);
-        b->x0 = sp10.vx - (&Heroes[arg0])->hero_eng->unk10.x;
-        b->y0 = sp10.vy - (&Heroes[arg0])->hero_eng->unk10.y;
-        b->z0 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
+        b->x0 = sp10.vx - (&Heroes[arg0])->hero_eng->XYZ.x;
+        b->y0 = sp10.vy - (&Heroes[arg0])->hero_eng->XYZ.y;
+        b->z0 = sp10.vz - (&Heroes[arg0])->hero_eng->XYZ.z;
     }
 next:
     r = FindCollisionBox(e, 2);
@@ -692,9 +692,9 @@ next:
         b = (N2OHeroBox *)((s32)base + (s32)b);
         b->d = t;
         gte_rotate_point((SVECTOR *)r, v);
-        b->x1 = sp10.vx - (&Heroes[arg0])->hero_eng->unk10.x;
-        b->y1 = sp10.vy - (&Heroes[arg0])->hero_eng->unk10.y;
-        b->z1 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
+        b->x1 = sp10.vx - (&Heroes[arg0])->hero_eng->XYZ.x;
+        b->y1 = sp10.vy - (&Heroes[arg0])->hero_eng->XYZ.y;
+        b->z1 = sp10.vz - (&Heroes[arg0])->hero_eng->XYZ.z;
     }
 }
 
@@ -714,22 +714,22 @@ void N2OInitHero(s32 i) {
     switch (i) {
     case 0:
         if (GameTeams[0] != 0) {
-            Heroes[0].hero_eng->unk10.x = N2OHeroStarts[1][0];
-            Heroes[0].hero_eng->unk10.z = N2OHeroStarts[1][2];
+            Heroes[0].hero_eng->XYZ.x = N2OHeroStarts[1][0];
+            Heroes[0].hero_eng->XYZ.z = N2OHeroStarts[1][2];
         } else {
-            Heroes[0].hero_eng->unk10.x = N2OHeroStarts[0][0];
-            Heroes[0].hero_eng->unk10.z = N2OHeroStarts[0][2];
+            Heroes[0].hero_eng->XYZ.x = N2OHeroStarts[0][0];
+            Heroes[0].hero_eng->XYZ.z = N2OHeroStarts[0][2];
         }
         break;
     case 1:
-        Heroes[i].hero_eng->unk10.x = N2OHeroStarts[2][0];
-        Heroes[i].hero_eng->unk10.z = N2OHeroStarts[2][2];
+        Heroes[i].hero_eng->XYZ.x = N2OHeroStarts[2][0];
+        Heroes[i].hero_eng->XYZ.z = N2OHeroStarts[2][2];
         break;
     }
     k = 2;
     hb = Heroes;
     h = hb + i;
-    eng->unk5D = 0;
+    eng->xform.order = 0;
     sub = h->hero_sub;
     eng_add_subs_n(eng, k);
     n = sub->next;
@@ -772,7 +772,7 @@ void N2OInitHero(s32 i) {
     h2 = hb2 + i;
     AddToGroup((NAS **)&N2OHeroList, h2->hero);
     SetHeroAction(i, 0x2F);
-    h2->hero_eng->unk10.y = -0x480;
+    h2->hero_eng->XYZ.y = -0x480;
     h2->hero_weapon_count = one;
     if (i == 0) {
         NoxResetHeroes();
@@ -813,26 +813,26 @@ void N2OPlaceHero(s32 i) {
     switch (i) {
     case 0:
         if (mode != 0) {
-            Heroes[0].hero_eng->unk10.x = N2OHeroStarts[1][0];
-            Heroes[0].hero_eng->unk10.z = N2OHeroStarts[1][2];
+            Heroes[0].hero_eng->XYZ.x = N2OHeroStarts[1][0];
+            Heroes[0].hero_eng->XYZ.z = N2OHeroStarts[1][2];
         } else {
-            Heroes[0].hero_eng->unk10.x = N2OHeroStarts[0][0];
-            Heroes[0].hero_eng->unk10.z = N2OHeroStarts[0][2];
+            Heroes[0].hero_eng->XYZ.x = N2OHeroStarts[0][0];
+            Heroes[0].hero_eng->XYZ.z = N2OHeroStarts[0][2];
         }
         break;
     case 1:
         h1 = &Heroes[1];
-        h1->hero_eng->unk10.x = N2OHeroStarts[2][0];
-        h1->hero_eng->unk10.z = N2OHeroStarts[2][2];
+        h1->hero_eng->XYZ.x = N2OHeroStarts[2][0];
+        h1->hero_eng->XYZ.z = N2OHeroStarts[2][2];
         break;
     }
     hp = Heroes;
     h = &hp[i];
-    h->hero_eng->unk10.y = World_floor_level;
-    eng->unk5D = 0;
-    eng->unk20 = 0;
-    eng->unk1E = 0;
-    eng->unk1C = 0;
+    h->hero_eng->XYZ.y = World_floor_level;
+    eng->xform.order = 0;
+    eng->xform.rot.vz = 0;
+    eng->xform.rot.vy = 0;
+    eng->xform.rot.vx = 0;
     sub = h->hero_sub;
     n = sub->next;
     if (n != NULL) {
@@ -868,9 +868,9 @@ void N2OPlaceHero(s32 i) {
     N2OHeroEngineUpdate(i);
     FetchDefaultColBox(eng, 0x50);
     if (i == 1) {
-        Heroes[1].hero_eng->unk10.z = -0x2800;
+        Heroes[1].hero_eng->XYZ.z = -0x2800;
     } else {
-        Heroes[i].hero_eng->unk10.z = -0x2200;
+        Heroes[i].hero_eng->XYZ.z = -0x2200;
     }
     SetHeroAction(i, 0x26);
     Heroes[i].hero_weapon_count = 1;
@@ -990,9 +990,9 @@ void N2OMoveHero(s32 arg0) {
         a1 = rcossin_tbl[(t - 0x400) & 0xFFF].unk2 * 17 >> 10;
         y = World_floor_level;
         d = (rcossin_tbl[(t * 2 - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
-        g->hero_eng->unk10.y = y + d;
+        g->hero_eng->XYZ.y = y + d;
     } else {
-        g->hero_eng->unk10.y = World_floor_level - 0x80;
+        g->hero_eng->XYZ.y = World_floor_level - 0x80;
     }
     ((void (*)(s32))HeroHooks.HeroFacing)(arg0);
     b = Heroes;
@@ -1000,12 +1000,12 @@ void N2OMoveHero(s32 arg0) {
     sp = f->hero_move->forward_speed;
     if (sp != 0) {
         a1 = -sp;
-        f->hero_eng->unk10.x += sp;
+        f->hero_eng->XYZ.x += sp;
     }
-    sp = angle_diff(f->hero_eng->unk20, a1);
+    sp = angle_diff(f->hero_eng->xform.rot.vz, a1);
     {
         EXTengine *e2 = f->hero_eng;
-        e2->unk20 = (u16)e2->unk20 + (sp >> 2);
+        e2->xform.rot.vz = (u16)e2->xform.rot.vz + (sp >> 2);
         N2OHeroBallCollision(arg0, e2);
     }
     if (N2OHeroPushTeammate(arg0) != 0) {
@@ -1018,9 +1018,9 @@ void N2OMoveHero(s32 arg0) {
     }
     e = Heroes;
     h = e + arg0;
-    h->hero_eng->unk5E = 1;
+    h->hero_eng->xform.dirty = 1;
     if (h->hero_mode == 0x26) {
-        h->hero_eng->unk10.y = World_floor_level - 0x80;
+        h->hero_eng->XYZ.y = World_floor_level - 0x80;
         return;
     }
     if (!(h->hero_status & 0xF800)) {
@@ -1129,9 +1129,9 @@ void N2OHeroEnter(s32 arg0) {
     }
     base = Heroes;
     h = &base[arg0];
-    if (h->hero_eng->unk10.z < -0xA00) {
-        h->hero_eng->unk10.z += 0x20;
-        z = h->hero_eng->unk10.z;
+    if (h->hero_eng->XYZ.z < -0xA00) {
+        h->hero_eng->XYZ.z += 0x20;
+        z = h->hero_eng->XYZ.z;
         s = z + 0xA00;
         n = -(s >> 6);
         s >>= 3;
@@ -1139,9 +1139,9 @@ void N2OHeroEnter(s32 arg0) {
             s = 0x40;
         }
         if (s != 0) {
-            h->hero_eng->unk10.z = z - s;
+            h->hero_eng->XYZ.z = z - s;
         } else {
-            h->hero_eng->unk10.z = -0xA00;
+            h->hero_eng->XYZ.z = -0xA00;
         }
         n = 0x1E - n;
         if (n <= 0) {
@@ -1155,7 +1155,7 @@ void N2OHeroEnter(s32 arg0) {
         if (N2OPhaseObject != NULL) {
             *N2OPhaseObject &= 0xFFFF7FFF;
         }
-        h->hero_eng->unk10.z = -0xA00;
+        h->hero_eng->XYZ.z = -0xA00;
         SetHeroAction(arg0, 0x27);
         h->hero_sub->entity = 0x2003;
     }
@@ -1361,25 +1361,25 @@ void N2OHeroWinner(s32 arg0) {
     s32 t;
 
     e = Heroes[arg0].hero_eng;
-    t = e->unk10.z;
+    t = e->XYZ.z;
     flag = 0;
     if (t < -0x500) {
-        e->unk10.z = t + 0x20;
+        e->XYZ.z = t + 0x20;
     } else {
         flag = 1;
     }
     if (GameTeams[0] != 0) {
         if (arg0 == 0) {
             e = Heroes[0].hero_eng;
-            t = e->unk10.x;
+            t = e->XYZ.x;
             if (t >= -0x27F) {
-                e->unk10.x = t - 0x40;
+                e->XYZ.x = t - 0x40;
             }
         } else {
             e = Heroes[arg0].hero_eng;
-            t = e->unk10.x;
+            t = e->XYZ.x;
             if (t < 0x280) {
-                e->unk10.x = t + 0x40;
+                e->XYZ.x = t + 0x40;
             }
         }
     }
@@ -1521,9 +1521,9 @@ void SetN2OHeroDead(s32 arg0) {
     base2 = Heroes;
     temp_s0_2 = &base2[arg0];
     temp_v0 = temp_s0_2->hero_eng;
-    sp18 = temp_v0->unk10;
+    sp18 = temp_v0->XYZ;
     SpawnModelFx(0, (s32 *)&sp18, (s32) &HeroModelBank[DB_PlayerVehicle]);
-    PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->XYZ, 0x1000, 0x1E00, 0);
     HeroBecomeAngel(arg0);
 }
 
@@ -1613,7 +1613,7 @@ void InitN2OBall(NAS *nas) {
                 mot->Zdec = 3;
             }
         }
-        eng->unk5D = 2;
+        eng->xform.order = 2;
         eng->sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
         eng->sub->entity = 0x2009;
         AddToGroup((NAS **)&HeadOfBalls, nas);
@@ -1675,8 +1675,8 @@ void PlotN2OBall(NAS *nas) {
                 mot->Xvel = mot->Xmax;
             }
         }
-        eng->unk10.x -= (mot->Xvel * rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (mot->Xvel * rcossin_tbl[mot->Xa & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (mot->Xvel * rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (mot->Xvel * rcossin_tbl[mot->Xa & 0xFFF].unk2) >> 12;
         if (obj->timer != 0) {
             obj->timer--;
         }
@@ -1687,9 +1687,9 @@ void PlotN2OBall(NAS *nas) {
                 mot->Xvel = 0;
                 mot->Xacc = 0;
                 mot->Xdec = 0;
-                eng->unk10.x = 0x2000;
-                eng->unk10.y = 0x2000;
-                eng->unk10.z = 0x2000;
+                eng->XYZ.x = 0x2000;
+                eng->XYZ.y = 0x2000;
+                eng->XYZ.z = 0x2000;
                 eng->flags &= ~0x8000;
                 break;
             }
@@ -1697,7 +1697,7 @@ void PlotN2OBall(NAS *nas) {
             if (N2OSlotRecs[idx].f16 != 0) {
                 break;
             }
-            eng->unk10 = N2OBallStarts[idx];
+            eng->XYZ = N2OBallStarts[idx];
             N2OSlotRecs[idx].f16 = 0x1F;
             obj->countdown = 0xF;
             obj->status = 12;
@@ -1719,10 +1719,10 @@ void PlotN2OBall(NAS *nas) {
             if (e2 != NULL) {
                 e2->flags |= 0x8000;
             }
-            px = Heroes[3].hero_eng->unk10.x;
-            pz = Heroes[3].hero_eng->unk10.z;
-            dx = eng->unk10.x - px;
-            dz = eng->unk10.z - pz;
+            px = Heroes[3].hero_eng->XYZ.x;
+            pz = Heroes[3].hero_eng->XYZ.z;
+            dx = eng->XYZ.x - px;
+            dz = eng->XYZ.z - pz;
             ang = get_angle(dx, dz);
             mot->Xa = ang;
             mot->Za = ang & 0xFFF;
@@ -1730,8 +1730,8 @@ void PlotN2OBall(NAS *nas) {
             mot->Xdec = 1;
             mot->Zvel = 0;
             obj->timer = 0x14;
-            PlaySfx(0x5A0, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
-            eng->unk10.y = World_floor_level - 0x100;
+            PlaySfx(0x5A0, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
+            eng->XYZ.y = World_floor_level - 0x100;
             mot->Yvel = 0x30;
             mot->Yacc = 0;
             mot->Ydec = 6;
@@ -1758,9 +1758,9 @@ void PlotN2OBall(NAS *nas) {
                 mot->Yvel = mot->Ymax;
             }
             if (mot->Ydir != 0) {
-                eng->unk10.y -= mot->Yvel;
+                eng->XYZ.y -= mot->Yvel;
             } else {
-                eng->unk10.y += mot->Yvel;
+                eng->XYZ.y += mot->Yvel;
             }
             if (mot->Yvel == 0) {
                 mot->Yacc = mot->Ydec;
@@ -1770,11 +1770,11 @@ void PlotN2OBall(NAS *nas) {
             if (mot->Ydir != 0) {
                 break;
             }
-            eng->unk10.y += 0x60;
+            eng->XYZ.y += 0x60;
             if (ApplyContourMoved(eng) != 0) {
                 obj->can_do |= 0x400;
                 if (nas->UserInfo.flags == 0) {
-                    PlaySfx(N2OBallBounceSfx[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(N2OBallBounceSfx[Random(4)], &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
                     nas->UserInfo.flags |= 1;
                 }
                 mot->Yvel = mot->Yvel >> 2;
@@ -1799,14 +1799,14 @@ void PlotN2OBall(NAS *nas) {
                     }
                     mot->Xa = (d + k) & 0xFFF;
                     mot->Zmax = 0;
-                    PlaySfx(N2OBallSfx[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(N2OBallSfx[Random(6)], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 if (N2OBallOut(eng, obj, 0)) {
                     obj->countdown = 4;
                     break;
                 }
             }
-            eng->unk10.y -= 0x60;
+            eng->XYZ.y -= 0x60;
             break;
         case 1:
             d = (s16)N2O_BA_BounceOnBounds((N2OObj *)eng, mot->Xa);
@@ -1821,14 +1821,14 @@ void PlotN2OBall(NAS *nas) {
                 }
                 mot->Xa = (d + k) & 0xFFF;
                 mot->Zmax = 0;
-                PlaySfx(N2OBallSfx[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(N2OBallSfx[Random(6)], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
             if (N2OBallOut(eng, obj, 0)) {
                 obj->countdown = 4;
                 obj->status = 10;
             }
             N2OBlendDirection((N2OBlend *)mot);
-            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
+            eng->XYZ.y = eng->XYZ.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
             break;
         case 0x11:
             if (obj->countdown != 0) {
@@ -1857,7 +1857,7 @@ void PlotN2OBall(NAS *nas) {
             if (N2OBallOut(eng, obj, 1) || done != 0) {
                 obj->status = 0x12;
             }
-            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
+            eng->XYZ.y = eng->XYZ.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
             break;
         case 4:
             if (obj->countdown != 0) {
@@ -1893,7 +1893,7 @@ void PlotN2OBall(NAS *nas) {
             if (mot->Yvel > mot->Ymax) {
                 mot->Yvel = mot->Ymax;
             }
-            eng->unk10.y += mot->Yvel;
+            eng->XYZ.y += mot->Yvel;
             if (N2OBallOut(eng, obj, 1) || done != 0) {
                 obj->status = 0x12;
             }
@@ -1907,7 +1907,7 @@ void PlotN2OBall(NAS *nas) {
                 if (obj->player != 3) {
                     goto explode;
                 }
-                SpawnModelFx(0, &eng->unk10.x, 0);
+                SpawnModelFx(0, &eng->XYZ.x, 0);
                 PlaySfx(HitSfx.hit[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
                 BossState.health -= 0x20;
                 N2OBallsLost++;
@@ -1917,7 +1917,7 @@ void PlotN2OBall(NAS *nas) {
                     BossState.flags |= 0x2000;
                 }
             } else {
-                ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
+                ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, -1, 0);
                 if (!(GameCheats & 1) && !(Heroes[obj->player].hero_status & 0xFA00)) {
                     Heroes[0].hero_health -= 0x10;
                     if (Heroes[0].hero_health < 0) {
@@ -1940,7 +1940,7 @@ void PlotN2OBall(NAS *nas) {
             }
             if (obj->player != 0) {
                 if (obj->player == 3) {
-                    SpawnModelFx(0, (s32 *)&eng->unk10, 0);
+                    SpawnModelFx(0, (s32 *)&eng->XYZ, 0);
                     PlaySfx(N2OHitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
                     BossState.health -= 0x20;
                     if (BossState.health <= 0) {
@@ -1950,7 +1950,7 @@ void PlotN2OBall(NAS *nas) {
                     }
                 }
             } else {
-                ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
+                ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, -1, 0);
                 if (!(GameCheats & 1) && obj->player == 0) {
                     if (!(Heroes[0].hero_status & 0xFA00)) {
                         Heroes[0].hero_health -= 0x10;
@@ -1973,15 +1973,15 @@ void PlotN2OBall(NAS *nas) {
         }
         mot->Zvel = 0;
     }
-    dx = eng->unk10.x - eng->OldXYZ.x;
-    dz = eng->unk10.z - eng->OldXYZ.z;
-    eng->unk1E += (((get_angle(dx, dz) & 0xFFF) - eng->unk1E) << 20) >> 21;
+    dx = eng->XYZ.x - eng->OldXYZ.x;
+    dz = eng->XYZ.z - eng->OldXYZ.z;
+    eng->xform.rot.vy += (((get_angle(dx, dz) & 0xFFF) - eng->xform.rot.vy) << 20) >> 21;
     dist = csqrt(dx * dx + dz * dz);
-    eng->unk5E = 1;
-    eng->unk1C -= dist >> 5;
+    eng->xform.dirty = 1;
+    eng->xform.rot.vx -= dist >> 5;
     if (obj->will_do & 0x100) {
     explode:
-        ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
+        ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, -1, 0);
         KillNAS(nas);
         return;
     }
@@ -1997,7 +1997,7 @@ void PlotN2OBall(NAS *nas) {
     }
     e2 = eng->Engine;
     if (e2 != NULL) {
-        e2->unk10 = eng->unk10;
+        e2->XYZ = eng->XYZ;
         ((N2OHook *)&LevelSpecs.GetContour)->fn(eng);
     }
 }
@@ -2050,17 +2050,17 @@ void N2OInitBoss(void) {
     ResetHeroGlobals();
     sub = Heroes[3].hero_sub;
     eng = Heroes[3].hero_eng;
-    pos = &eng->unk10.x;
+    pos = &eng->XYZ.x;
     *pos = N2OHeroStarts[3][0];
-    eng->unk10.y = World_floor_level;
-    eng->unk10.z = *(s32 *)((u8 *)N2OHeroStarts + 0x2C);  /* matching: N2OHeroStarts[3][2], an array read, can't be scheduled above the store before it */
-    ang = get_angle(Heroes[3].hero_eng->unk10.x, Heroes[3].hero_eng->unk10.z) + 0x7F;
+    eng->XYZ.y = World_floor_level;
+    eng->XYZ.z = *(s32 *)((u8 *)N2OHeroStarts + 0x2C);  /* matching: N2OHeroStarts[3][2], an array read, can't be scheduled above the store before it */
+    ang = get_angle(Heroes[3].hero_eng->XYZ.x, Heroes[3].hero_eng->XYZ.z) + 0x7F;
     ang &= 0xC00;
     mv = Heroes[3].hero_move;
-    eng->unk1E = ang;
+    eng->xform.rot.vy = ang;
     mv->facing_angle = ang;
     mv->forward_angle = ang;
-    eng->unk5D = 0;
+    eng->xform.order = 0;
     anim = &HeroModelBank[DB_Oxide];
     *(u8 **)&sub->u6C.dbase = anim;
     N2OBossAnimTimer = 0xF;
@@ -2071,17 +2071,17 @@ void N2OInitBoss(void) {
     sub->flags |= 0x8000;
     FetchDefaultColBox(eng, 0x50);
     N2OHeroEngineUpdate(3);
-    if (eng->unk10.x > 0x880) {
-        eng->unk10.x = 0x880;
+    if (eng->XYZ.x > 0x880) {
+        eng->XYZ.x = 0x880;
     }
-    if (eng->unk10.x < -0x880) {
-        eng->unk10.x = -0x880;
+    if (eng->XYZ.x < -0x880) {
+        eng->XYZ.x = -0x880;
     }
-    if (eng->unk10.z > 0x880) {
-        eng->unk10.z = 0x880;
+    if (eng->XYZ.z > 0x880) {
+        eng->XYZ.z = 0x880;
     }
-    if (eng->unk10.z < -0x880) {
-        eng->unk10.z = -0x880;
+    if (eng->XYZ.z < -0x880) {
+        eng->XYZ.z = -0x880;
     }
     N2OBossClock = 0;
     N2OBossStepTimer = 0;
@@ -2176,8 +2176,8 @@ void N2OUpdateBoss(void) {
         N2OBossStepKind = 0;
         if (Heroes[3].hero_attack_timer == 0) {
             Heroes[3].hero_eng->flags = 0;
-            PlaySfx(0x586, NULL, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
-            SpawnModelFx(0, &eng->unk10.x, (s32)&HeroModelBank[DB_BallsEffects]);
+            PlaySfx(0x586, NULL, &Heroes[3].hero_eng->XYZ, 0x1000, 0x1E00, 0);
+            SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_BallsEffects]);
             BossState.flags |= 0x8000;
         }
     } else {
@@ -2273,12 +2273,12 @@ void N2OUpdateBoss(void) {
         tm = N2OBossClock;
         q = &World_floor_level;
         v = (rcossin_tbl[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
-        eng->unk10.y = *q + v;
+        eng->XYZ.y = *q + v;
         dx = ((N2OPanRef *)&Heroes[3].hero_move)->p->unkC;
-        eng->unk10.x += dx;
-        v = angle_diff(eng->unk20, -dx);
-        eng->unk5E = 1;
-        eng->unk20 += v >> 2;
+        eng->XYZ.x += dx;
+        v = angle_diff(eng->xform.rot.vz, -dx);
+        eng->xform.dirty = 1;
+        eng->xform.rot.vz += v >> 2;
     }
     if (GameExitFlags & 0x801) {
         return;
@@ -2574,8 +2574,8 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         do {
             t = n->target;
             if (t != NULL) {
-                dx = h->hero_eng->unk10.x - t->x;
-                dz = h->hero_eng->unk10.z - t->z;
+                dx = h->hero_eng->XYZ.x - t->x;
+                dz = h->hero_eng->XYZ.z - t->z;
                 if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->unk14 != 2) {
                     a = get_angle(dx, dz);
                     d = angle_diff(a, h->hero_move->forward_angle);
@@ -2612,7 +2612,7 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         h2 = &base[arg0];
         arg1 = h2->hero_teammate;
         t = best->target;
-        a = get_angle(h2->hero_eng->unk10.x - t->x, h2->hero_eng->unk10.z - t->z);
+        a = get_angle(h2->hero_eng->XYZ.x - t->x, h2->hero_eng->XYZ.z - t->z);
         if (FindExtension((NAS *)best, 0x800) == NULL) {
             goto ret0;
         }
@@ -2694,11 +2694,11 @@ void N2O_HeroBot(u16 *arg0) {
         }
     }
     if (dist != 0x7FFFFF) {
-        ang = get_angle(best.x - Heroes[3].hero_eng->unk10.x, best.z - Heroes[3].hero_eng->unk10.z);
+        ang = get_angle(best.x - Heroes[3].hero_eng->XYZ.x, best.z - Heroes[3].hero_eng->XYZ.z);
         dist = csqrt(dist) >> 6;
     } else {
         dist = 0;
-        ang = get_angle(ai->TargetXYZ.x - Heroes[3].hero_eng->unk10.x, ai->TargetXYZ.z - Heroes[3].hero_eng->unk10.z);
+        ang = get_angle(ai->TargetXYZ.x - Heroes[3].hero_eng->XYZ.x, ai->TargetXYZ.z - Heroes[3].hero_eng->XYZ.z);
     }
     switch (ai->AImode) {
     case 3:
@@ -2738,7 +2738,7 @@ void N2O_HeroBot(u16 *arg0) {
             }
         }
         if (dist != 0) {
-            r = abs(Heroes[3].hero_eng->unk10.x - best.x) + ((AiPlayerSkill[3].level + N2OSkillBias) << 5);
+            r = abs(Heroes[3].hero_eng->XYZ.x - best.x) + ((AiPlayerSkill[3].level + N2OSkillBias) << 5);
             if (abs(r) > 0x280) {
                 if (dist < r) {
                     ai->AIpad |= 0xF00;
@@ -2753,8 +2753,8 @@ void N2O_HeroBot(u16 *arg0) {
         if (dist != 0) {
             goto abort;
         }
-        dx = Heroes[3].hero_eng->unk10.x - ai->TargetXYZ.x;
-        dz = Heroes[3].hero_eng->unk10.z - ai->TargetXYZ.z;
+        dx = Heroes[3].hero_eng->XYZ.x - ai->TargetXYZ.x;
+        dz = Heroes[3].hero_eng->XYZ.z - ai->TargetXYZ.z;
         d = csqrt(dx * dx + dz * dz) >> 6;
         if (d < 0x80) {
             ai->AIsleep = Random(0x3C) + 0x1E;
@@ -2789,7 +2789,7 @@ void N2O_HeroBot(u16 *arg0) {
     case 20:
         break;
     default:
-        ai->TargetXYZ = Heroes[3].hero_eng->unk10;
+        ai->TargetXYZ = Heroes[3].hero_eng->XYZ;
         ai->TargetXYZ.x = Random(0x400) - 0x200;
         ai->AImode = 4;
         break;
@@ -2861,10 +2861,10 @@ void PlotN2Omissile(NAS *nas) {
         return;
     }
     top = World_floor_level - 0xE0;
-    if (eng->unk10.y > top) {
-        eng->unk10.y -= 0x20;
-        if (eng->unk10.y < top) {
-            eng->unk10.y = top;
+    if (eng->XYZ.y > top) {
+        eng->XYZ.y -= 0x20;
+        if (eng->XYZ.y < top) {
+            eng->XYZ.y = top;
         }
     } else {
         sub->unk68 = 0;
@@ -2880,26 +2880,26 @@ void PlotN2Omissile(NAS *nas) {
     if (vel < 0x10) {
         ang = (s16)N2OSlots[nas->UserInfo.user1].f18;
         nas->UserInfo.user2 = ang;
-        eng->unk1E = ang - 0x400;
+        eng->xform.rot.vy = ang - 0x400;
     }
     if (vel > 0x20 && eng->boomshanka != 0) {
         N2OSlots[nas->UserInfo.user1].nas = NULL;
-        PlaySfx(N2OMissileSfx[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(N2OMissileSfx[Random(4)], &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
         eng->boomshanka = 0;
     }
     ang = nas->UserInfo.user2;
     if (sub->flags != 0) {
-        eng->unk10.x -= (vel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (vel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
-        x = eng->unk10.x;
-        y = eng->unk10.y += mot->Yvel;
-        z = eng->unk10.z;
+        eng->XYZ.x -= (vel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (vel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+        x = eng->XYZ.x;
+        y = eng->XYZ.y += mot->Yvel;
+        z = eng->XYZ.z;
         if (z >= -0x1100) {
             hit = N2OMissileHitTest(x, y, z, 0x20, 0xA);
             if (hit == -1) {
                 goto alive;
             }
-            pos = &eng->unk10;
+            pos = &eng->XYZ;
             SpawnModelFx(0, (s32 *)pos, 0);
             PlaySfx(N2OHitSfx[Random(4)], NULL, pos, 0x1000, 0x1E00, 0);
             if (!(OVM->cheats & 1)) {
@@ -2922,7 +2922,7 @@ void PlotN2Omissile(NAS *nas) {
         return;
     }
 alive:
-    eng->unk5E = 1;
+    eng->xform.dirty = 1;
 }
 
 void PlotN2Ofirstmissile(NAS *nas) {
@@ -2952,7 +2952,7 @@ void PlotN2Ofirstmissile(NAS *nas) {
         return;
     }
     if (nas->UserInfo.flags == 0) {
-        eng->unk10.y = N2OSlots[nas->UserInfo.user1].src->y - 0x80;
+        eng->XYZ.y = N2OSlots[nas->UserInfo.user1].src->y - 0x80;
     } else {
         sub->unk68 = 0;
         mot->Xvel += mot->Xacc;
@@ -2967,26 +2967,26 @@ void PlotN2Ofirstmissile(NAS *nas) {
     if (vel < 0x10) {
         ang = (s16)N2OSlots[nas->UserInfo.user1].f18;
         nas->UserInfo.user2 = ang;
-        eng->unk1E = ang - 0x400;
+        eng->xform.rot.vy = ang - 0x400;
     }
     if (vel > 0x20 && eng->boomshanka != 0) {
         N2OSlots[nas->UserInfo.user1].nas = NULL;
-        PlaySfx(N2OMissileSfx[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(N2OMissileSfx[Random(4)], &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
         eng->boomshanka = 0;
     }
     ang = nas->UserInfo.user2;
     if (vel != 0) {
-        eng->unk10.x -= (vel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (vel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
-        x = eng->unk10.x;
-        y = eng->unk10.y += mot->Yvel;
-        z = eng->unk10.z;
+        eng->XYZ.x -= (vel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (vel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+        x = eng->XYZ.x;
+        y = eng->XYZ.y += mot->Yvel;
+        z = eng->XYZ.z;
         if (z >= -0x1100) {
             hit = N2OMissileHitTest(x, y, z, 0x20, 0xA);
             if (hit == -1) {
                 goto alive;
             }
-            pos = &eng->unk10;
+            pos = &eng->XYZ;
             SpawnModelFx(0, (s32 *)pos, 0);
             PlaySfx(N2OHitSfx[Random(4)], NULL, pos, 0x1000, 0x1E00, 0);
             if (!(OVM->cheats & 1)) {
@@ -3009,7 +3009,7 @@ void PlotN2Ofirstmissile(NAS *nas) {
         return;
     }
 alive:
-    eng->unk5E = 1;
+    eng->xform.dirty = 1;
 }
 
 void N2OInitSlots(void) {
@@ -3138,19 +3138,19 @@ loop:
                 if (!(i & 1)) {
                     if (pad->teams != 0) {
                         if (i != 0) {
-                            x -= heroes[(u16)p1].hero_eng->unk10.x;
-                            z -= heroes[(u16)p1].hero_eng->unk10.z;
+                            x -= heroes[(u16)p1].hero_eng->XYZ.x;
+                            z -= heroes[(u16)p1].hero_eng->XYZ.z;
                         } else {
-                            x -= heroes[(u16)p0].hero_eng->unk10.x;
-                            z -= heroes[(u16)p0].hero_eng->unk10.z;
+                            x -= heroes[(u16)p0].hero_eng->XYZ.x;
+                            z -= heroes[(u16)p0].hero_eng->XYZ.z;
                         }
                     } else {
-                        x -= heroes[(u16)p0].hero_eng->unk10.x;
-                        z -= heroes[(u16)p0].hero_eng->unk10.z;
+                        x -= heroes[(u16)p0].hero_eng->XYZ.x;
+                        z -= heroes[(u16)p0].hero_eng->XYZ.z;
                     }
                 } else {
-                    x -= heroes[3].hero_eng->unk10.x;
-                    z -= heroes[3].hero_eng->unk10.z;
+                    x -= heroes[3].hero_eng->XYZ.x;
+                    z -= heroes[3].hero_eng->XYZ.z;
                 }
                 s->f18 = get_angle(x, z);
                 break;
@@ -3196,42 +3196,42 @@ void InitN2ODeadWall(NAS *nas)
     }
     eng = nas->Engine;
     if (eng != 0) {
-        dir = eng->unk10.x;
+        dir = eng->XYZ.x;
         eng->flags &= 0xFFFF7FFF;
         if (dir == 3) {
-            eng->unk10.x = -0x600;
-            eng->unk10.z = 0x880;
-            eng->unk1C = 0x38E;
-            eng->unk1E = 0;
+            eng->XYZ.x = -0x600;
+            eng->XYZ.z = 0x880;
+            eng->xform.rot.vx = 0x38E;
+            eng->xform.rot.vy = 0;
             nas->UserInfo.flags = 2;
             N2OWallsHit |= 2;
         }
         if (dir < 2) {
-            eng->unk10.x = -0x600;
-            eng->unk10.z = -0x880;
-            eng->unk1C = 0x200;
-            eng->unk1E = 0;
+            eng->XYZ.x = -0x600;
+            eng->XYZ.z = -0x880;
+            eng->xform.rot.vx = 0x200;
+            eng->xform.rot.vy = 0;
             nas->UserInfo.flags = 1;
             N2OWallsHit |= 1;
         }
         if (dir == 4) {
-            eng->unk10.x = -0x880;
-            eng->unk10.z = -0x600;
-            eng->unk1E = 0xC00;
-            eng->unk20 = 0;
+            eng->XYZ.x = -0x880;
+            eng->XYZ.z = -0x600;
+            eng->xform.rot.vy = 0xC00;
+            eng->xform.rot.vz = 0;
             nas->UserInfo.flags = dir;
             N2OWallsHit |= 4;
         }
         if (dir == 5) {
-            eng->unk10.x = 0x880;
-            eng->unk10.z = -0x600;
-            eng->unk1E = 0xC00;
-            eng->unk20 = 0;
+            eng->XYZ.x = 0x880;
+            eng->XYZ.z = -0x600;
+            eng->xform.rot.vy = 0xC00;
+            eng->xform.rot.vz = 0;
             nas->UserInfo.flags = 8;
             N2OWallsHit |= 8;
         }
-        eng->unk5D = 2;
-        eng->unk5E = 1;
+        eng->xform.order = 2;
+        eng->xform.dirty = 1;
         if (N2ODeadWallUp == 0) {
             PlaySfx(0x591, &eng->sfx, 0, 0x1000, 0x1E00, 0);
         }
@@ -3334,8 +3334,8 @@ s32 N2OHeroPushTeammate(s32 arg0) {
             eng = h->hero_eng;
             if (eng != NULL && (r = h->hero_move->forward_speed) != 0) {
                 teng = t->hero_eng;
-                dx = eng->unk10.x - teng->unk10.x;
-                dz = eng->unk10.z - teng->unk10.z;
+                dx = eng->XYZ.x - teng->XYZ.x;
+                dz = eng->XYZ.z - teng->XYZ.z;
                 if (eng->collision_box.flags & 0x40) {
                     r = eng->collision_box.radius;
                 } else {
@@ -3344,7 +3344,7 @@ s32 N2OHeroPushTeammate(s32 arg0) {
                 r *= 2;
                 r += 0x90;
                 if (dx * dx + dz * dz < r * r) {
-                    eng->unk10.x = Heroes[mate].hero_eng->unk10.x - ((r * rcossin_tbl[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+                    eng->XYZ.x = Heroes[mate].hero_eng->XYZ.x - ((r * rcossin_tbl[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
                     return 1;
                 }
                 return 0;
@@ -3405,28 +3405,28 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         speed = -Heroes[3].hero_move->forward_speed;
     }
     if (sub_find_point(me, me->sub, 1, &pos) == NULL) {
-        *(SLONG_XYZ *)&pos = me->unk10;
+        *(SLONG_XYZ *)&pos = me->XYZ;
     }
     if (FindCollisionBox(me, 2) != NULL) {
-        if (me->unk5E != 0) {
-            rotscale_update(&me->unk1C);
+        if (me->xform.dirty != 0) {
+            rotscale_update(&me->xform);
         }
-        gfx_load_xform(me->sub, me->unk3C, &me->unk10);
+        gfx_load_xform(me->sub, &me->xform.mtx, &me->XYZ);
     }
-    hy = Heroes[arg0].hero_eng->unk10.y;
+    hy = Heroes[arg0].hero_eng->XYZ.y;
     base = N2OHeroBoxes;
     box = &base[arg0];
     top = hy + box->b;
     bot = hy + box->a;
     rnear = box->c;
     rfar = box->d;
-    nearp.x = Heroes[arg0].hero_eng->unk10.x + box->x0;
-    nearp.y = Heroes[arg0].hero_eng->unk10.y + box->y0;
-    nearp.z = Heroes[arg0].hero_eng->unk10.z + box->z0;
+    nearp.x = Heroes[arg0].hero_eng->XYZ.x + box->x0;
+    nearp.y = Heroes[arg0].hero_eng->XYZ.y + box->y0;
+    nearp.z = Heroes[arg0].hero_eng->XYZ.z + box->z0;
     hero = &Heroes[arg0];
-    farp.x = hero->hero_eng->unk10.x + box->x1;
-    farp.y = hero->hero_eng->unk10.y + box->y1;
-    farp.z = hero->hero_eng->unk10.z + box->z1;
+    farp.x = hero->hero_eng->XYZ.x + box->x1;
+    farp.y = hero->hero_eng->XYZ.y + box->y1;
+    farp.z = hero->hero_eng->XYZ.z + box->z1;
     tbl = rcossin_tbl;
     for (nas = HeadOfSolids;; nas = nas->Solid.Child) {
         if (nas == NULL) {
@@ -3441,7 +3441,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
             continue;
         }
         dz = rec->unk2;
-        y = eng->unk10.y;
+        y = eng->XYZ.y;
         x1 = rec->height;
         if (!(top < y + dz)) {
             continue;
@@ -3459,15 +3459,15 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
             r = rfar;
             tgt = farp;
         }
-        get_angle(eng->unk10.x - pos.vx, eng->unk10.z - pos.vz);
+        get_angle(eng->XYZ.x - pos.vx, eng->XYZ.z - pos.vz);
         obj = FindExtension(nas, 0x1000);
         if (obj == NULL) {
             continue;
         }
         rad += r;
-        y = eng->unk10.x - tgt.x;
+        y = eng->XYZ.x - tgt.x;
         dist = y * y;
-        y = eng->unk10.z - tgt.z;
+        y = eng->XYZ.z - tgt.z;
         dist += y * y;
         if (!(dist < rad * rad)) {
             continue;
@@ -3480,10 +3480,10 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         if (puck != NULL) {
             r = puck->dir;
         } else {
-            r = get_angle(eng->OldXYZ.x - eng->unk10.x, eng->OldXYZ.z - eng->unk10.z);
+            r = get_angle(eng->OldXYZ.x - eng->XYZ.x, eng->OldXYZ.z - eng->XYZ.z);
         }
-        N2OLineToCircleTest(&eng->unk10, r, &tgt, rad + 8);
-        r = get_angle(-eng->unk10.x + tgt.x, -eng->unk10.z + tgt.z) & 0xFFF;
+        N2OLineToCircleTest(&eng->XYZ, r, &tgt, rad + 8);
+        r = get_angle(-eng->XYZ.x + tgt.x, -eng->XYZ.z + tgt.z) & 0xFFF;
         puck = FindExtension(nas, 0x800);
         if (puck == NULL) {
             continue;
@@ -3574,8 +3574,8 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                 if (o != NULL && o != hero) {
                     rec = FindCollisionBox(o, 0x40);
                     if (rec != NULL) {
-                        dx = o->unk10.x - hero->unk10.x;
-                        dz = o->unk10.z - hero->unk10.z;
+                        dx = o->XYZ.x - hero->XYZ.x;
+                        dz = o->XYZ.z - hero->XYZ.z;
                         r = rec->radius;
                         r += arg1;
                         d = dx * dx + dz * dz;
@@ -3589,8 +3589,8 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                                     *(u16 *)(t + 0x1C) |= 8;
                                     ang = get_angle(-dx, -dz) & 0xFFF;
                                     d = r - d + 1;
-                                    o->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                    o->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                    o->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    o->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                     *(u16 *)(t + 0x16) = arg0;
                                     e = FindExtension((NAS *)n, 0x800);
                                     if (e != NULL) {
@@ -3636,8 +3636,8 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
     hit = 0;
     box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
-        top = eng->unk10.y + box->unk2;
-        bot = eng->unk10.y + box->height;
+        top = eng->XYZ.y + box->unk2;
+        bot = eng->XYZ.y + box->height;
         rad = box->radius;
         mine = FindExtension(((NAS **)eng)[-1], 0x800);
         it = HeadOfSolids;
@@ -3648,11 +3648,11 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                     if (other != NULL && other != eng) {
                         rec = FindCollisionBox(other, 0x40);
                         if (rec != NULL) {
-                            lo = other->unk10.y + rec->unk2;
-                            hi = other->unk10.y + rec->height;
+                            lo = other->XYZ.y + rec->unk2;
+                            hi = other->XYZ.y + rec->height;
                             if (bot < lo && hi < top) {
-                                dx = other->unk10.x - eng->unk10.x;
-                                dz = other->unk10.z - eng->unk10.z;
+                                dx = other->XYZ.x - eng->XYZ.x;
+                                dz = other->XYZ.z - eng->XYZ.z;
                                 r = rec->radius;
                                 r += rad;
                                 if ((d = dx * dx + dz * dz) < r * r) {
@@ -3666,21 +3666,21 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                             if (self->flags & 0x80) {
                                                 m = FindExtension(it, 0x800);
                                                 if (m != NULL) {
-                                                    other->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                    other->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                                    other->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                    other->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
                                                     ang += angle_diff((m->dir + 0x800) & 0xFFF, ang);
                                                     ang &= 0xFFF;
                                                     m->dir = ang;
-                                                    PlaySfx(0x580, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                                                    PlaySfx(0x580, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                                                 }
                                             } else {
                                                 if (r / 2 < d) {
                                                     d = r;
                                                 }
-                                                eng->unk10.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z += (d * rcossin_tbl[ang].unk2) >> 12;
+                                                eng->XYZ.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->XYZ.z += (d * rcossin_tbl[ang].unk2) >> 12;
                                                 if (mine != NULL) {
                                                     m = FindExtension(it, 0x800);
                                                     if (m != NULL) {
@@ -3690,7 +3690,7 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                                             m->a = dx;
                                                             mine->a = dx;
                                                         }
-                                                        PlaySfx(0x580, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                                                        PlaySfx(0x580, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                                                     }
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
@@ -3731,10 +3731,10 @@ NAS *N2OBossPushObjects(void) {
     if (me != NULL) {
         rec = FindCollisionBox(me, 0x40);
         if (rec != NULL) {
-            if (me->unk5E != 0) {
-                rotscale_update(&me->unk1C);
+            if (me->xform.dirty != 0) {
+                rotscale_update(&me->xform);
             }
-            gfx_load_xform(me->sub, me->unk3C, &me->unk10);
+            gfx_load_xform(me->sub, &me->xform.mtx, &me->XYZ);
             r0 = rec->radius;
             gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
             for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
@@ -3747,11 +3747,11 @@ NAS *N2OBossPushObjects(void) {
                         ext = FindExtension(nas, 0x1000);
                         if (ext != NULL) {
                             r += r0;
-                            if (ext->unk1C & 8) {
-                                dx = eng->unk10.x - sp10.x;
-                                dz = eng->unk10.z - sp10.z;
+                            if (ext->xform.rot.vx & 8) {
+                                dx = eng->XYZ.x - sp10.x;
+                                dz = eng->XYZ.z - sp10.z;
                                 if (r * r > dx * dx + dz * dz && FindExtension(nas, 0x800) != NULL) {
-                                    ext->unk1E = 0x100;
+                                    ext->xform.rot.vy = 0x100;
                                     return nas;
                                 }
                             }
@@ -3797,12 +3797,12 @@ s32 N2OMissileHitTest(x, y, z, size, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->unk10.y + rec->unk2 + size;
-        bot = eng->unk10.y + rec->height - size;
+        top = eng->XYZ.y + rec->unk2 + size;
+        bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
-            dx = eng->unk10.x - x;
+            dx = eng->XYZ.x - x;
             dist = dx * dx;
-            dz = eng->unk10.z - z;
+            dz = eng->XYZ.z - z;
             dist += dz * dz;
             rr = rec->radius + size;
             rr *= rr;
@@ -3823,12 +3823,12 @@ s32 N2OMissileHitTest(x, y, z, size, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->unk10.y + rec->unk2 + size;
-        bot = eng->unk10.y + rec->height - size;
+        top = eng->XYZ.y + rec->unk2 + size;
+        bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
-            dx = eng->unk10.x - x;
+            dx = eng->XYZ.x - x;
             dist = dx * dx;
-            dz = eng->unk10.z - z;
+            dz = eng->XYZ.z - z;
             dist += dz * dz;
             rr = rec->radius + size;
             rr *= rr;
@@ -3870,8 +3870,8 @@ s32 TestN2OObject2Hero(N2OVel *arg0, s32 arg1) {
         if (rec == NULL) {
             goto next;
         }
-        dx = eng->unk10.x - arg0->x;
-        dz = eng->unk10.z - arg0->z;
+        dx = eng->XYZ.x - arg0->x;
+        dz = eng->XYZ.z - arg0->z;
         r = rec->radius + (arg1 & 0xFFFF);
         r = r * r;
         if ((dx * dx) + (dz * dz) < r) {
@@ -3909,7 +3909,7 @@ void PlotN2ODeadWall(NAS *arg0) {
 }
 
 s32 GetN2OContour(EXTengine *arg0) {
-    return (arg0->unk10.y) - World_floor_level;
+    return (arg0->XYZ.y) - World_floor_level;
 }
 
 void N2OShowPhaseObjects(u16 arg0) {
@@ -3952,13 +3952,13 @@ void N2OCameraFollow(camera_info_tag *cam) {
 
     t = path_get(0x63);
     eng = Heroes[0].hero_eng;
-    z = eng->unk10.z;
+    z = eng->XYZ.z;
     if (GameTeams[0] != 0) {
         if (Heroes[0].hero_status & 0xFA00) {
-            z = Heroes[1].hero_eng->unk10.z;
+            z = Heroes[1].hero_eng->XYZ.z;
         }
         if (Heroes[1].hero_status & 0xFA00) {
-            z = eng->unk10.z;
+            z = eng->XYZ.z;
         }
     }
     if ((!(Heroes[0].hero_status & 0xFA00) || !(Heroes[1].hero_status & 0xFA00)) && t != NULL) {
@@ -4021,7 +4021,7 @@ void N2OSpawnExplosion(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     nas = CreateNAS(arg0, arg1 - 0x80, arg2, 0x1B04, 0x11);
     if (nas != NULL) {
         nas->UserInfo.user1 = arg3;
-        PlaySfx(N2OExplosionSfx[Random(4)], NULL, &nas->Engine->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(N2OExplosionSfx[Random(4)], NULL, &nas->Engine->XYZ, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -4035,7 +4035,7 @@ void InitN2Ofirstmissile(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        eng->unk5D = 0;
+        eng->xform.order = 0;
         sub->u6C.dbase = &HeroModelBank[DB_Oxide];
         sub->entity = 0x2004;
         sub->unk51 = 0;
@@ -4048,10 +4048,10 @@ void InitN2Ofirstmissile(NAS *nas) {
             mot->Xacc = 8;
             mot->Xdec = 0;
         }
-        d = Heroes[0].hero_eng->unk10.x;
-        ang = get_angle(eng->unk10.x - d, eng->unk10.z - d);
+        d = Heroes[0].hero_eng->XYZ.x;
+        ang = get_angle(eng->XYZ.x - d, eng->XYZ.z - d);
         nas->UserInfo.user2 = ang;
-        eng->unk1E = ang - 0x400;
+        eng->xform.rot.vy = ang - 0x400;
         eng->boomshanka = 1;
         nas->UserInfo.flags = 0;
     }
@@ -4069,7 +4069,7 @@ void InitN2Omissile(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        eng->unk5D = 0;
+        eng->xform.order = 0;
         sub->u6C.dbase = &HeroModelBank[DB_Oxide];
         sub->entity = 0x2004;
         sub->unk51 = 0;
@@ -4081,11 +4081,11 @@ void InitN2Omissile(NAS *nas) {
             mot->Xacc = 8;
             mot->Xdec = 0;
         }
-        ang = get_angle(eng->unk10.x - ((s32 *)Heroes[0].hero_eng)[4], eng->unk10.z - ((s32 *)Heroes[0].hero_eng)[4]);
+        ang = get_angle(eng->XYZ.x - ((s32 *)Heroes[0].hero_eng)[4], eng->XYZ.z - ((s32 *)Heroes[0].hero_eng)[4]);
         nas->UserInfo.user2 = ang;
-        eng->unk1E = ang - 0x400;
+        eng->xform.rot.vy = ang - 0x400;
         eng->boomshanka = 1;
-        eng->unk10.y += 0x200;
+        eng->XYZ.y += 0x200;
     }
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -4215,10 +4215,10 @@ void N2OUpdateShadow(s32 arg0) {
     HeroInfo *h = &base[arg0];
     EXTengine *shadow = h->hero_shadow;
 
-    shadow->unk10 = h->hero_eng->unk10;
-    shadow->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(shadow);
-    shadow->unk1E = h->hero_eng->unk1E;
-    shadow->unk5E = 1;
+    shadow->XYZ = h->hero_eng->XYZ;
+    shadow->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(shadow);
+    shadow->xform.rot.vy = h->hero_eng->xform.rot.vy;
+    shadow->xform.dirty = 1;
     if (h->hero_status & 0xF800) {
         shadow->sub->flags &= ~0x8000;
     }
@@ -4231,8 +4231,8 @@ void N2OInitShadow(s32 arg0) {
 
     s->sub->u6C.dbase = &HeroModelBank[DB_PlayerVehicle];
     s->sub->entity = 0x2006;
-    s->unk10 = h->hero_eng->unk10;
-    s->unk5D = 0;
+    s->XYZ = h->hero_eng->XYZ;
+    s->xform.order = 0;
     s->flags |= 0x8041;
     s->sub->unk76 = 0x200;
     s->sub->flags |= 0x42000000;

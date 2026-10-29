@@ -48,7 +48,7 @@ void InitCrateExplode(NAS *arg0) {
 
     if (e != NULL) {
         PlaySfx(HitSfx.crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(2, (s32 *)&e->unk10, &HeroModelBank[DB_CrateObjects]);
+        SpawnModelFx(2, (s32 *)&e->XYZ, &HeroModelBank[DB_CrateObjects]);
     }
     KillNAS(arg0);
 }
@@ -763,8 +763,8 @@ void ShowCardSlot(GameState *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
     PlaceEngineSlot(arg1 + 4, CardSlotPanel);
     e = GetEngineSlot(arg1 + 4);
-    e->unk10.x = arg3;
-    e->unk10.y = arg4;
+    e->XYZ.x = arg3;
+    e->XYZ.y = arg4;
     e->flags |= 0x10000000;
     if (arg2 != 0) {
         e->sub[3].entity = 0;
@@ -802,8 +802,8 @@ void ShowCardSlotStats(GameState *arg0, s32 arg1) {
     EXTengine *e;
 
     e = GetEngineSlot(3);
-    e->unk10.x = 0x28;
-    e->unk10.y = 0xDA;
+    e->XYZ.x = 0x28;
+    e->XYZ.y = 0xDA;
     e->flags |= 0x10000000;
     if (arg1 != 0) {
         EngineSetSlot3Digits(3, 3);
@@ -1270,8 +1270,8 @@ void UpdateCardSlots(void) {
     CardSlotIndex &= 3;
     e = GetEngineSlot(CardSlotIndex | 4);
     e2 = GetEngineSlot(2);
-    e2->unk10.y = e->unk10.y;
-    e2->unk10.x = e->unk10.x;
+    e2->XYZ.y = e->XYZ.y;
+    e2->XYZ.x = e->XYZ.x;
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs(GetEngineSlot(4));
     eng_render_subs(GetEngineSlot(5));
@@ -1380,8 +1380,8 @@ void ShowSaveScreen(void) {
 
     ShowCardSlots();
     PlaceEngineSlot(2, SaveScreenPanel);
-    GetEngineSlot(2)->unk10.x = 0x28;
-    GetEngineSlot(2)->unk10.y = 0x1E;
+    GetEngineSlot(2)->XYZ.x = 0x28;
+    GetEngineSlot(2)->XYZ.y = 0x1E;
     eng = GetEngineSlot(2);
     eng->flags |= 0x10000000;
     cam_init(&SaveCamera);
@@ -1397,8 +1397,8 @@ void RefreshCardSlots(void) {
 
     ShowCardSlots();
     PlaceEngineSlot(2, SaveScreenPanel);
-    GetEngineSlot(2)->unk10.x = 0x28;
-    GetEngineSlot(2)->unk10.y = 0x1E;
+    GetEngineSlot(2)->XYZ.x = 0x28;
+    GetEngineSlot(2)->XYZ.y = 0x1E;
     eng = GetEngineSlot(2);
     eng->flags |= 0x10000000;
 }

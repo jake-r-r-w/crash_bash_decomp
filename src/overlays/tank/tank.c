@@ -632,7 +632,7 @@ s32 arg0;
             }
             me = Heroes[arg0].hero_eng;
             te = h->hero_eng;
-            if (TankNear(ex = me->unk10.x, te->unk10.x) || TankNear(ex = me->unk10.z, te->unk10.z)) {
+            if (TankNear(ex = me->XYZ.x, te->XYZ.x) || TankNear(ex = me->XYZ.z, te->XYZ.z)) {
                 return j;
             }
         }
@@ -684,28 +684,28 @@ s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai) {
     if (i >= 0) {
     if (((GameState *)GameInfo)->mode == 5) {
         te = Heroes[ai->Victim].hero_eng;
-        a = get_angle(eng->unk10.x - te->unk10.x, eng->unk10.z - te->unk10.z);
-        if ((u32)(((eng->unk1E - a) & 0xFFF) - 100) < 0xF39) {
+        a = get_angle(eng->XYZ.x - te->XYZ.x, eng->XYZ.z - te->XYZ.z);
+        if ((u32)(((eng->xform.rot.vy - a) & 0xFFF) - 100) < 0xF39) {
             goto ret0;
         }
     } else {
-    d = eng->unk1E;
+    d = eng->xform.rot.vy;
     dir = (d + ((TA_players[player].TurretReqdDir - d) << 20 >> 22)) & 0xFFF;
-    if (GetSandbagValueTank(eng->unk10.x + (-(rcossin_tbl[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
-                      eng->unk10.z + (-(rcossin_tbl[dir].unk2 << 9) >> 12)) != 0) {
+    if (GetSandbagValueTank(eng->XYZ.x + (-(rcossin_tbl[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
+                      eng->XYZ.z + (-(rcossin_tbl[dir].unk2 << 9) >> 12)) != 0) {
         return 0;
     }
     if (((GameState *)GameInfo)->teams != 0 || ((GameState *)GameInfo)->mode == 9) {
         hb = Heroes;
         me = hb[hb[player].hero_teammate].hero_eng;
-        ex = eng->unk10.x;
-        tx = me->unk10.x;
+        ex = eng->XYZ.x;
+        tx = me->XYZ.x;
         player = tx - ex;
         if (player < 0) {
             player = -player;
         }
-        tz = me->unk10.z;
-        ez = eng->unk10.z;
+        tz = me->XYZ.z;
+        ez = eng->XYZ.z;
         dz = tz - ez;
         if (dz < 0) {
             dz = -dz;
@@ -719,11 +719,11 @@ s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai) {
                 te = hb[ai->Victim].hero_eng;
             } while (0);
         } while (0);
-        dx = te->unk10.x - ex;
+        dx = te->XYZ.x - ex;
         if (dx < 0) {
             dx = -dx;
         }
-        dz = te->unk10.z - ez;
+        dz = te->XYZ.z - ez;
         if (dz < 0) {
             dz = -dz;
         }
@@ -756,8 +756,8 @@ void TankBotDodgeFrom(s32 player, s32 x, s32 z, EXTengine *eng, TA_Bot *ai) {
     s32 px;
     s32 p;
 
-    ex = eng->unk10.x;
-    ez = eng->unk10.z;
+    ex = eng->XYZ.x;
+    ez = eng->XYZ.z;
     a = get_angle(ex - x, ez - z);
     ai->Doing = 2;
     speed = TA_players[player].Speed;
@@ -777,7 +777,7 @@ void TankBotDodgeFrom(s32 player, s32 x, s32 z, EXTengine *eng, TA_Bot *ai) {
         if (ai->AIpad & 0xA0) {
             break;
         }
-        px = eng->unk10.x;
+        px = eng->XYZ.x;
         if (px - 0x400 < 0) {
             goto left;
         }
@@ -807,7 +807,7 @@ void TankBotDodgeFrom(s32 player, s32 x, s32 z, EXTengine *eng, TA_Bot *ai) {
         if (ai->AIpad & 0x50) {
             break;
         }
-        p = eng->unk10.z;
+        p = eng->XYZ.z;
         if (TankArenaMaxZ < p + 0x400) {
             goto up;
         }
@@ -858,7 +858,7 @@ s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai) {
             return 0;
         }
         te = nas->Engine;
-        if (TankNear(ex = eng->unk10.x, te->unk10.x) || TankNear(ex = eng->unk10.z, te->unk10.z)) {
+        if (TankNear(ex = eng->XYZ.x, te->XYZ.x) || TankNear(ex = eng->XYZ.z, te->XYZ.z)) {
             goto hit;
         }
         return 0;
@@ -871,10 +871,10 @@ s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai) {
         return 0;
     }
     te = nas->Engine;
-    if (TankNear(ex = eng->unk10.x, te->unk10.x) || TankNear(ex = eng->unk10.z, te->unk10.z)) {
+    if (TankNear(ex = eng->XYZ.x, te->XYZ.x) || TankNear(ex = eng->XYZ.z, te->XYZ.z)) {
     hit:
         ai->pMine = nas;
-        TankBotDodgeFrom(player, te->unk10.x, te->unk10.z, eng, ai);
+        TankBotDodgeFrom(player, te->XYZ.x, te->XYZ.z, eng, ai);
         return 1;
     }
     return 0;
@@ -941,17 +941,17 @@ void TankBotPlanSteerMove(s32 player, EXTengine *eng, TA_Bot *ai) {
 find:
     j = 0;
     pp = PU_TA_list;
-    ex = eng->unk10.x;
-    ez = eng->unk10.z;
+    ex = eng->XYZ.x;
+    ez = eng->XYZ.z;
     for (; j < 3; j++, pp++) {
         nas = *pp;
         if (nas != NULL) {
             te = nas->Engine;
-            d = ex - te->unk10.x;
+            d = ex - te->XYZ.x;
             if (d < 0) {
                 d = -d;
             }
-            if (d + (ez - te->unk10.z) < 0x600) {
+            if (d + (ez - te->XYZ.z) < 0x600) {
                 tgt = nas;
                 goto found;
             }
@@ -961,8 +961,8 @@ find:
 found:
     if (tgt != NULL) {
         e = tgt->Engine;
-        ai->TargetX = e->unk10.x;
-        ai->TargetZ = e->unk10.z;
+        ai->TargetX = e->XYZ.x;
+        ai->TargetZ = e->XYZ.z;
     } else {
         r = Random(9);
         ai->TargetX = TankBotWanderPoints[r][0];
@@ -979,8 +979,8 @@ avg:
     for (i = 0; i < 4; i++) {
         if (i != player && !(Heroes[player].hero_status & 0xB000)) {
             n++;
-            sx += Heroes[i].hero_eng->unk10.x;
-            sz += Heroes[i].hero_eng->unk10.z;
+            sx += Heroes[i].hero_eng->XYZ.x;
+            sz += Heroes[i].hero_eng->XYZ.z;
         }
     }
     if (n < 2) {
@@ -1061,17 +1061,17 @@ void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai) {
     find:
         j = 0;
         pp = PU_TA_list;
-        ex = eng->unk10.x;
-        ez = eng->unk10.z;
+        ex = eng->XYZ.x;
+        ez = eng->XYZ.z;
         for (; j < 3; j++, pp++) {
             nas = *pp;
             if (nas != NULL) {
                 te = nas->Engine;
-                d = ex - te->unk10.x;
+                d = ex - te->XYZ.x;
                 if (d < 0) {
                     d = -d;
                 }
-                if (d + (ez - te->unk10.z) < 0x600) {
+                if (d + (ez - te->XYZ.z) < 0x600) {
                     tgt = nas;
                     goto found;
                 }
@@ -1081,14 +1081,14 @@ void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai) {
     found:
         if (tgt != NULL) {
             e = tgt->Engine;
-            d = e->unk10.x - ex;
+            d = e->XYZ.x - ex;
             if (d > 0x70) {
                 goto px;
             }
             if (d < -0x70) {
                 goto nx;
             }
-            d = e->unk10.z - ez;
+            d = e->XYZ.z - ez;
             if (d > 0x70) {
                 goto pz;
             }
@@ -1151,7 +1151,7 @@ void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai) {
         if (delay < 5) {
         aim:
             e = Heroes[ai->Victim].hero_eng;
-            a = get_angle(e->unk10.x - eng->unk10.x, e->unk10.z - eng->unk10.z);
+            a = get_angle(e->XYZ.x - eng->XYZ.x, e->XYZ.z - eng->XYZ.z);
             ai->Doing = 4;
             aspeed = TA_players[player].Speed;
             ai->DoingTimer = (aspeed / 2 + 0x200) / aspeed;
@@ -1167,7 +1167,7 @@ void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai) {
             }
         }
         e = Heroes[ai->Victim].hero_eng;
-        TankBotDodgeFrom(player, e->unk10.x, e->unk10.z, eng, ai);
+        TankBotDodgeFrom(player, e->XYZ.x, e->XYZ.z, eng, ai);
         return;
     case 2:
         tab2 = TA_players;
@@ -1202,11 +1202,11 @@ void TankBotSteer(s32 player) {
     switch (ai->Doing) {
     case 4:
     case 7:
-        d = eng->unk10.x - ai->TargetX;
+        d = eng->XYZ.x - ai->TargetX;
         if ((u32)(d + 99) < 199) {
             ai->DoingTimer = 0;
         }
-        a = get_angle(d, eng->unk10.z - ai->TargetZ) - eng->unk1E;
+        a = get_angle(d, eng->XYZ.z - ai->TargetZ) - eng->xform.rot.vy;
         a = (a << 20) >> 20;
         if (a > 40) {
             buttons = 0x820;
@@ -1217,7 +1217,7 @@ void TankBotSteer(s32 player) {
         break;
     case 6:
         te = Heroes[ai->Victim].hero_eng;
-        a = get_angle(eng->unk10.x - te->unk10.x, eng->unk10.z - te->unk10.z) - eng->unk1E;
+        a = get_angle(eng->XYZ.x - te->XYZ.x, eng->XYZ.z - te->XYZ.z) - eng->xform.rot.vy;
         a = (a << 20) >> 20;
         if (a > 70) {
             buttons = 0x20;
@@ -1267,9 +1267,9 @@ void TA_HeroBot(u32 player) {
     if (GameMode != 5 && ai->Victim >= 0) {
         tgt = Heroes[ai->Victim].hero_eng;
         TA_players[player].TurretReqdDir =
-            (get_angle(tgt->unk10.x - eng->unk10.x, tgt->unk10.z - eng->unk10.z) + 0x800) & 0xFFF;
+            (get_angle(tgt->XYZ.x - eng->XYZ.x, tgt->XYZ.z - eng->XYZ.z) + 0x800) & 0xFFF;
     }
-    if (ai->Doing == 5 && !(eng->unk10.x & 0x1FF) && !(eng->unk10.z & 0x1FF)) {
+    if (ai->Doing == 5 && !(eng->XYZ.x & 0x1FF) && !(eng->XYZ.z & 0x1FF)) {
         TankBotPlanGridMove(player, eng, ai);
     }
     if (--ai->DoingTimer <= 0) {
@@ -1279,13 +1279,13 @@ void TA_HeroBot(u32 player) {
         TankBotTryFire(player, eng, ai);
     }
     if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].level + 1) >= 9) {
-        ex = eng->unk10.x;
-        ez = eng->unk10.z;
+        ex = eng->XYZ.x;
+        ez = eng->XYZ.z;
         for (i = 0; i < 8; i++) {
             nas = TankMines[i];
             if (nas != NULL) {
                 te = nas->Engine;
-                d = ex - te->unk10.x;
+                d = ex - te->XYZ.x;
                 if (d > 250) {
                     if (d < 500) {
                         ai->AIpad &= ~0x80;
@@ -1293,7 +1293,7 @@ void TA_HeroBot(u32 player) {
                 } else if (d < -250 && d > -500) {
                     ai->AIpad &= ~0x20;
                 }
-                d = ez - te->unk10.z;
+                d = ez - te->XYZ.z;
                 if (d > 250) {
                     if (d < 500) {
                         ai->AIpad &= ~0x40;
@@ -1615,8 +1615,8 @@ void TA_UpdateLevel(void) {
         ta = &TA_players[i];
         eng = Heroes[i].hero_eng;
         e = ta->Energy;
-        ta->PosX = eng->unk10.x;
-        ta->PosZ = eng->unk10.z;
+        ta->PosX = eng->XYZ.x;
+        ta->PosZ = eng->XYZ.z;
         if (e <= 0) {
             SetHullSFX(i, eng, 0);
             SetTurretSFX(i, (s32)eng, 0);
@@ -1625,7 +1625,7 @@ void TA_UpdateLevel(void) {
     }
     if (TankCountdown <= 0) {
         if (TankCountdown != 0) {
-            PlaySfx(0x4B9, NULL, &TankCountdownEng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x4B9, NULL, &TankCountdownEng->XYZ, 0x1000, 0x1E00, 0);
             TankCountdown = 60;
         }
     } else {
@@ -1790,13 +1790,13 @@ void TA_InitHero(u32 player) {
         return;
     }
     eng = h->hero_eng;
-    eng->unk10.x = (eng->unk10.x + 0x80) & ~0xFF;
-    eng->unk10.z = (eng->unk10.z + 0x80) & ~0xFF;
+    eng->XYZ.x = (eng->XYZ.x + 0x80) & ~0xFF;
+    eng->XYZ.z = (eng->XYZ.z + 0x80) & ~0xFF;
     SetHeroAction(player, 0x6C);
     eng_add_subs(eng, 2);
     sub = eng->sub;
-    eng->unk5D = 1;
-    eng->unk1E = 0x400;
+    eng->xform.order = 1;
+    eng->xform.rot.vy = 0x400;
     sub->unk51 = 1;
     if (((GameState *)g)->mode == 5) {
         sub->unk08 = 0x48;
@@ -1861,8 +1861,8 @@ void TA_InitHero(u32 player) {
     }
     ta->Energy = 0x63;
     hh->hero_health = ta->Energy;
-    ta->PosX = eng->unk10.x;
-    ta->PosZ = eng->unk10.z;
+    ta->PosX = eng->XYZ.x;
+    ta->PosZ = eng->XYZ.z;
     ta->RequestQuickFinish = 0;
     ta->SubWeaponFireDelay = 0;
     if (((GameState *)g1)->mode == 5 && (((GameState *)g1)->levelFlags & 0x80)) {
@@ -1893,7 +1893,7 @@ void TA_InitHero(u32 player) {
         ta->MainWeaponNas[2] = (NAS *)0xFFEEEEFF;
     }
     if (GameMode == 5) {
-        nas = CreateNAS(eng->unk10.x, 0, eng->unk10.z, 0x1320, 0x11);
+        nas = CreateNAS(eng->XYZ.x, 0, eng->XYZ.z, 0x1320, 0x11);
         if (nas != NULL) {
             nas->UserInfo.user1 = player;
         }
@@ -1943,8 +1943,8 @@ void TA_MoveHero(u32 player) {
     ta = &TA_players[player];
     AnimateTankTurret(player);
     if (GameMode != 5) {
-        x = eng->unk10.x;
-        dz = eng->unk10.z - eng->OldXYZ.z;
+        x = eng->XYZ.x;
+        dz = eng->XYZ.z - eng->OldXYZ.z;
         if (x != eng->OldXYZ.x || dz != 0) {
             if (ta->HangaboutTime != 0) {
                 ta->HangaboutTime--;
@@ -1972,8 +1972,8 @@ void TA_MoveHero(u32 player) {
     }
     if (((GameState *)GameInfo)->mode == 8 && GAME->heroOut[player] == 0 &&
         (((GameState *)GameInfo)->levelFlags & 0x80) && ta->HangaboutTime >= 30 && TankLevelOver == 0 &&
-        TankDropDelay <= 0 && (eng->unk10.z > 0x400 || (u32)(eng->unk10.x - 0x301) < 0xDFF)) {
-        nas = CreateNAS(eng->unk10.x, -0x8FC, eng->unk10.z, 0x1308, 0x11);
+        TankDropDelay <= 0 && (eng->XYZ.z > 0x400 || (u32)(eng->XYZ.x - 0x301) < 0xDFF)) {
+        nas = CreateNAS(eng->XYZ.x, -0x8FC, eng->XYZ.z, 0x1308, 0x11);
         if (nas != NULL) {
             nas->UserInfo.status = 6;
             TankDropDelay = 60;
@@ -1989,7 +1989,7 @@ void AnimateTank(u32 player) {
             TA_players[player].IdleAnimCt = Random(0x1E);
             SetHeroSeq(player, 0x5A);
             TA_players[player].IdleAnimCt = 0;
-            PlaySfx(TankTauntSfx[Heroes[player].hero_name - 1], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00,
+            PlaySfx(TankTauntSfx[Heroes[player].hero_name - 1], NULL, &Heroes[player].hero_eng->XYZ, 0x1000, 0x1E00,
                     0);
             return;
         }
@@ -2163,14 +2163,14 @@ void AnimateTankTurret(s32 player) {
         }
         if (sub->entity == 0x4004) {
             e = Heroes[player].hero_eng;
-            puff = TankSpawnBit1605Nas(&e->unk10, 0);
+            puff = TankSpawnBit1605Nas(&e->XYZ, 0);
             if (puff != NULL) {
-                TankPuffSetAngle(puff, eng->unk1E);
+                TankPuffSetAngle(puff, eng->xform.rot.vy);
             }
             tab = TA_players;
             ta2 = &tab[player];
             if (ta2->MainWeaponType == 3) {
-                n = CreateNAS(e->unk10.x, e->unk10.y - 0x12C, e->unk10.z, 0x130B, 0x11);
+                n = CreateNAS(e->XYZ.x, e->XYZ.y - 0x12C, e->XYZ.z, 0x130B, 0x11);
                 if (n != NULL) {
                     fux = AddExt(n, 0x38, 0x10000000);
                     if (fux == NULL) {
@@ -2179,10 +2179,10 @@ void AnimateTankTurret(s32 player) {
                     }
                     n->FUX = (EXT *)fux;
                     se = n->Engine;
-                    dx = -(rcossin_tbl[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
-                    se->unk10.x += dx >> 12;
-                    dz = -(rcossin_tbl[(u16)e->unk1E & 0xFFF].unk2 * 250);
-                    se->unk10.z += dz >> 12;
+                    dx = -(rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 250);
+                    se->XYZ.x += dx >> 12;
+                    dz = -(rcossin_tbl[(u16)e->xform.rot.vy & 0xFFF].unk2 * 250);
+                    se->XYZ.z += dz >> 12;
                     fux->SpeedX = dx >> 13;
                     fux->SpeedY = -0x5B;
                     fux->SpeedZ = dz >> 13;
@@ -2190,7 +2190,7 @@ void AnimateTankTurret(s32 player) {
                     fux->Status = 1;
                     ta2->MainWeaponRounds--;
                     se2 = n->Engine;
-                    PlaySfx(0x4F3, &se2->sfx, &se2->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x4F3, &se2->sfx, &se2->XYZ, 0x1000, 0x1E00, 0);
                 }
             }
         }
@@ -2253,10 +2253,10 @@ void UpdateTankHeroWeapons(s32 player) {
     sub = eng->sub->next;
     sub2 = sub->next;
     if (ta->TurretReqdDir != -1) {
-        d = ta->TurretReqdDir - eng->unk1E;
+        d = ta->TurretReqdDir - eng->xform.rot.vy;
         d = (d << 20) >> 22;
-        eng->unk5E = 1;
-        eng->unk1E += d;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy += d;
         sub2->unk52 = 1;
         sub2->unk12 -= d;
         if ((u32)(d + 3) < 7) {
@@ -2265,14 +2265,14 @@ void UpdateTankHeroWeapons(s32 player) {
     } else if (GameMode != 5) {
         pad = ((PadState *)Pads)[player].dir;
         if (pad & 0xA00) {
-            eng->unk5E = 1;
-            eng->unk1E = (eng->unk1E + 0x40) & 0xFFF;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy = (eng->xform.rot.vy + 0x40) & 0xFFF;
             sub2->unk52 = 1;
             sub2->unk12 = (sub2->unk12 - 0x40) & 0xFFF;
             ta->TurretSFXDuration = 2;
         } else if (pad & 0x500) {
-            eng->unk5E = 1;
-            eng->unk1E = (eng->unk1E - 0x40) & 0xFFF;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy = (eng->xform.rot.vy - 0x40) & 0xFFF;
             sub2->unk52 = 1;
             sub2->unk12 = (sub2->unk12 + 0x40) & 0xFFF;
             ta->TurretSFXDuration = 2;
@@ -2311,7 +2311,7 @@ void UpdateTankHeroWeapons(s32 player) {
                 switch (ta->MainWeaponType) {
                 default:
                 case 11:
-                    n = CreateNAS(eng->unk10.x, eng->unk10.y - 0x113, eng->unk10.z, 0x130C, 0x11);
+                    n = CreateNAS(eng->XYZ.x, eng->XYZ.y - 0x113, eng->XYZ.z, 0x130C, 0x11);
                     if (n == NULL) {
                         break;
                     }
@@ -2329,20 +2329,20 @@ void UpdateTankHeroWeapons(s32 player) {
                     } else {
                         PlaySfx(0x4CD, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
-                    n->Engine->unk10.x += (-(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
-                    n->Engine->unk1E = eng->unk1E;
+                    n->Engine->XYZ.x += (-(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->XYZ.z += (-(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->xform.rot.vy = eng->xform.rot.vy;
                     fux = (EXTobject_TA *)n->FUX;
                     fux->Owner = player;
-                    fux->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x4A) >> 12;
-                    fux->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 0x4A) >> 12;
+                    fux->SpeedX = -(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x4A) >> 12;
+                    fux->SpeedZ = -(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 0x4A) >> 12;
                     if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
                     fux->Status = 1;
-                    obj = TankSpawnBit1605Nas(&n->Engine->unk10, 7);
+                    obj = TankSpawnBit1605Nas(&n->Engine->XYZ, 7);
                     if (obj != NULL) {
-                        TankPuffSetAngle(obj, eng->unk1E);
+                        TankPuffSetAngle(obj, eng->xform.rot.vy);
                     }
                     break;
                 case 0:
@@ -2356,7 +2356,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     ta->TurretAnimPtr = TankShellFireAnim;
                     break;
                 case 8:
-                    n = CreateNAS(eng->unk10.x, eng->unk10.y - 0xFA, eng->unk10.z, 0x130D, 0x11);
+                    n = CreateNAS(eng->XYZ.x, eng->XYZ.y - 0xFA, eng->XYZ.z, 0x130D, 0x11);
                     if (n == NULL) {
                         break;
                     }
@@ -2375,24 +2375,24 @@ void UpdateTankHeroWeapons(s32 player) {
                         PlaySfx(0x4D0, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
                     fux = (EXTobject_TA *)n->FUX;
-                    n->Engine->unk10.x += (-(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
-                    n->Engine->unk1E = eng->unk1E;
-                    fux->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x36) >> 12;
-                    fux->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 0x36) >> 12;
+                    n->Engine->XYZ.x += (-(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->XYZ.z += (-(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->xform.rot.vy = eng->xform.rot.vy;
+                    fux->SpeedX = -(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x36) >> 12;
+                    fux->SpeedZ = -(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 0x36) >> 12;
                     if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
                     fux->Status = 1;
                     fux->Owner = player;
                     ta->FireBreatherSFXDuration = 4;
-                    obj = TankSpawnBit1605Nas(&n->Engine->unk10, 8);
+                    obj = TankSpawnBit1605Nas(&n->Engine->XYZ, 8);
                     if (obj != NULL) {
-                        TankPuffSetAngle(obj, eng->unk1E);
+                        TankPuffSetAngle(obj, eng->xform.rot.vy);
                     }
                     break;
                 case 9:
-                    n = CreateNAS(eng->unk10.x, eng->unk10.y - 0x104, eng->unk10.z, 0x130F, 0x11);
+                    n = CreateNAS(eng->XYZ.x, eng->XYZ.y - 0x104, eng->XYZ.z, 0x130F, 0x11);
                     if (n == NULL) {
                         break;
                     }
@@ -2411,23 +2411,23 @@ void UpdateTankHeroWeapons(s32 player) {
                         PlaySfx(0x4CB, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
                     fux = (EXTobject_TA *)n->FUX;
-                    n->Engine->unk10.x += (-(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
-                    n->Engine->unk1E = eng->unk1E;
-                    fux->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
-                    fux->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
+                    n->Engine->XYZ.x += (-(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->XYZ.z += (-(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->xform.rot.vy = eng->xform.rot.vy;
+                    fux->SpeedX = -(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedZ = -(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 0x2C) >> 12;
                     if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
                     fux->Status = 1;
                     fux->Owner = player;
-                    obj = TankSpawnBit1605Nas(&n->Engine->unk10, 0xF);
+                    obj = TankSpawnBit1605Nas(&n->Engine->XYZ, 0xF);
                     if (obj != NULL) {
-                        TankPuffSetAngle(obj, eng->unk1E);
+                        TankPuffSetAngle(obj, eng->xform.rot.vy);
                     }
                     break;
                 case 10:
-                    n = CreateNAS(eng->unk10.x, eng->unk10.y - 0x14A, eng->unk10.z, 0x130E, 0x11);
+                    n = CreateNAS(eng->XYZ.x, eng->XYZ.y - 0x14A, eng->XYZ.z, 0x130E, 0x11);
                     if (n == NULL) {
                         break;
                     }
@@ -2446,32 +2446,32 @@ void UpdateTankHeroWeapons(s32 player) {
                         PlaySfx(0x4CF, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
                     fux = (EXTobject_TA *)n->FUX;
-                    n->Engine->unk10.x += (-(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
-                    n->Engine->unk1E = eng->unk1E;
-                    fux->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
-                    fux->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
+                    n->Engine->XYZ.x += (-(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->XYZ.z += (-(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->xform.rot.vy = eng->xform.rot.vy;
+                    fux->SpeedX = -(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedZ = -(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 0x2C) >> 12;
                     if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
                     fux->Status = 1;
                     fux->Owner = player;
-                    obj = TankSpawnBit1605Nas(&n->Engine->unk10, 6);
+                    obj = TankSpawnBit1605Nas(&n->Engine->XYZ, 6);
                     if (obj != NULL) {
-                        TankPuffSetAngle(obj, eng->unk1E);
+                        TankPuffSetAngle(obj, eng->xform.rot.vy);
                     }
                     break;
                 case 2:
-                    dir = eng->unk1E;
+                    dir = eng->xform.rot.vy;
                     for (i = 0; i < 2; i++) {
-                        n = CreateNAS(eng->unk10.x, eng->unk10.y - 0xE6, eng->unk10.z, 0x1302, 0x11);
+                        n = CreateNAS(eng->XYZ.x, eng->XYZ.y - 0xE6, eng->XYZ.z, 0x1302, 0x11);
                         if (n != NULL) {
                             PlaySfx(0x522, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                             e = n->Engine;
                             a = dir - TankRocketAngles[i];
-                            e->unk10.x -= (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 0x19) >> 8;
-                            e->unk10.z -= (rcossin_tbl[a & 0xFFF].unk2 * 0x19) >> 8;
-                            e->unk1E = eng->unk1E;
+                            e->XYZ.x -= (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 0x19) >> 8;
+                            e->XYZ.z -= (rcossin_tbl[a & 0xFFF].unk2 * 0x19) >> 8;
+                            e->xform.rot.vy = eng->xform.rot.vy;
                             fux = (EXTobject_TA *)n->FUX;
                             fux->SpeedX = -(rcossin_tbl[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
                             fux->SpeedZ = -(rcossin_tbl[dir & 0xFFF].unk2 * 200) >> 12;
@@ -2487,7 +2487,7 @@ void UpdateTankHeroWeapons(s32 player) {
                 }
             } else if (GAME->heroOut[player] == 0 &&
                        (((PadState *)Pads)[player].dirPressed & 0x8000)) {
-                PlaySfx(0x4F1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x4F1, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
         }
     } else {
@@ -2514,30 +2514,30 @@ void UpdateTankHeroWeapons(s32 player) {
                             break;
                         }
                     }
-                    mine = CreateNAS(eng->unk10.x, eng->unk10.y + 0x14, eng->unk10.z, 0x131D, 0x11);
+                    mine = CreateNAS(eng->XYZ.x, eng->XYZ.y + 0x14, eng->XYZ.z, 0x131D, 0x11);
                     if (mine != NULL) {
                         TankMines[i] = mine;
                         mine->UserInfo.user1 = player;
                     }
                     ta->SubWeaponFireDelay = 0x1E;
-                    PlaySfx(0x50A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-                    PlaySfx(TankMineSfx[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x50A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+                    PlaySfx(TankMineSfx[player], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                     ta->SubWeaponRounds--;
                     SetHeroSeq(player, 0x5B);
                 } else {
-                    TankTriggerNear(eng->unk10.x, eng->unk10.z, 0x100);
-                    CreateNAS(eng->unk10.x, eng->unk10.y + 0x14, eng->unk10.z, 0x1303, 0x11);
+                    TankTriggerNear(eng->XYZ.x, eng->XYZ.z, 0x100);
+                    CreateNAS(eng->XYZ.x, eng->XYZ.y + 0x14, eng->XYZ.z, 0x1303, 0x11);
                     ta->SubWeaponFireDelay = 0x78;
-                    PlaySfx(0x4E9, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-                    PlaySfx(TankMineSfx[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x4E9, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+                    PlaySfx(TankMineSfx[player], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                     ta->SubWeaponRounds--;
                     SetHeroSeq(player, 0x5B);
                 }
             } else if (GAME->heroOut[player] == 0) {
-                PlaySfx(0x4F1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x4F1, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
         } else if (GAME->heroOut[player] == 0) {
-            PlaySfx(0x4F2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x4F2, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
     }
 subdone:
@@ -2545,7 +2545,7 @@ subdone:
         if (ta->ForceFieldDelay != 0) {
             ta->ForceFieldDelay--;
         } else if (((PadState *)Pads)[player].dirPressed & 0x4000) {
-            obj = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1321, 0x11);
+            obj = CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1321, 0x11);
             PlaySfx(TankForceFieldSfx[player], NULL, NULL, 0x1000, 0x1E00, 0);
             if (obj != NULL) {
                 obj->UserInfo.user1 = player;
@@ -2569,7 +2569,7 @@ subdone:
                 case 0x6F:
                     ta->TauntDelay = 0x5A;
                     SetHeroSeq(player, 0x5A);
-                    PlaySfx(TankTauntSfx[h->hero_name - 1], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(TankTauntSfx[h->hero_name - 1], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                     break;
                 }
             }
@@ -2634,7 +2634,7 @@ void SetTankHeroTurn(u32 player) {
     }
     if (done == 0) {
         SetHeroSeq(player, 0x59);
-        PlaySfx(TankTurnSfx[player], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(TankTurnSfx[player], NULL, &Heroes[player].hero_eng->XYZ, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -2674,22 +2674,22 @@ void TankHeroTurn(u32 player) {
             switch (ta->MoveDir) {
             case 2:
                 if (((PadState *)Pads)[player].dir & 0x10) {
-                    eng->unk10.z += ta->Speed;
+                    eng->XYZ.z += ta->Speed;
                 }
                 break;
             case 0:
                 if (((PadState *)Pads)[player].dir & 0x40) {
-                    eng->unk10.z -= ta->Speed;
+                    eng->XYZ.z -= ta->Speed;
                 }
                 break;
             case 3:
                 if (((PadState *)Pads)[player].dir & 0x20) {
-                    eng->unk10.x += ta->Speed;
+                    eng->XYZ.x += ta->Speed;
                 }
                 break;
             case 1:
                 if (((PadState *)Pads)[player].dir & 0x80) {
-                    eng->unk10.x -= ta->Speed;
+                    eng->XYZ.x -= ta->Speed;
                 }
                 break;
             }
@@ -2724,7 +2724,7 @@ void TankHeroSteerMove(s32 player) {
     bank = ta->BankAngle;
     pad = ((PadState *)Pads)[player].dir & 0xF0;
     if (bank != 0) {
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         if (ta->BankAngle > 0) {
             ta->BankAngle -= 10;
             if (ta->BankAngle < 3) {
@@ -2743,19 +2743,19 @@ void TankHeroSteerMove(s32 player) {
             if (ta->BankAngle < -200) {
                 ta->BankAngle = -200;
             }
-            eng->unk1E += ta->Speed * 3 / 2;
+            eng->xform.rot.vy += ta->Speed * 3 / 2;
         }
         if (pad & 0x80) {
             ta->BankAngle += 20;
             if (ta->BankAngle > 200) {
                 ta->BankAngle = 200;
             }
-            eng->unk1E -= ta->Speed * 3 / 2;
+            eng->xform.rot.vy -= ta->Speed * 3 / 2;
         }
-        eng->unk5E = 1;
-        eng->unk1E &= 0xFFF;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy &= 0xFFF;
     }
-    eng->unk20 = ta->BankAngle & 0xFFF;
+    eng->xform.rot.vz = ta->BankAngle & 0xFFF;
     c = ((PadState *)Pads)[player].dir;
     if (c & 0x800) {
         goto thrust;
@@ -2763,8 +2763,8 @@ void TankHeroSteerMove(s32 player) {
     if (c & 0x200) {
     thrust:
         v = ta->Speed;
-        px = v * rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2;
-        pz = v * rcossin_tbl[(u16)eng->unk1E & 0xFFF].unk2;
+        px = v * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2;
+        pz = v * rcossin_tbl[(u16)eng->xform.rot.vy & 0xFFF].unk2;
         ta->SpeedX += -(px >> 12) >> 2;
         ta->SpeedZ += -(pz >> 12) >> 2;
     }
@@ -2778,7 +2778,7 @@ void TankHeroSteerMove(s32 player) {
     if (c < sp || sp < (c = -c)) {
         ta->SpeedZ = c;
     }
-    x = eng->unk10.x + ta->SpeedX;
+    x = eng->XYZ.x + ta->SpeedX;
     if (ta->SpeedX > 0) {
         ta->SpeedX--;
         if (TankArenaMaxX < x) {
@@ -2794,7 +2794,7 @@ void TankHeroSteerMove(s32 player) {
             ta->SpeedX = -ta->SpeedX;
         }
     }
-    z = eng->unk10.z + ta->SpeedZ;
+    z = eng->XYZ.z + ta->SpeedZ;
     if (ta->SpeedZ > 0) {
         ta->SpeedZ--;
         if (TankArenaMaxZ < z) {
@@ -2826,14 +2826,14 @@ void TankHeroSteerMove(s32 player) {
             continue;
         }
         e = h->hero_eng;
-        d = x - e->unk10.x;
+        d = x - e->XYZ.x;
         if (d < -0x1C0) {
             continue;
         }
         if (lim < d) {
             continue;
         }
-        d = z - e->unk10.z;
+        d = z - e->XYZ.z;
         n = -0x1C0;
         if (n < d && d < 0x1C0) {
             hit = i;
@@ -2843,8 +2843,8 @@ void TankHeroSteerMove(s32 player) {
     hit = -1;
 found:
     if (hit < 0) {
-        eng->unk10.x = x;
-        eng->unk10.z = z;
+        eng->XYZ.x = x;
+        eng->XYZ.z = z;
         return;
     }
     if (TankCountdown == 0) {
@@ -2898,8 +2898,8 @@ void TankHeroGridMove(s32 player) {
         return;
     }
     if (((GameState *)GameInfo)->mode == 7 && !(((GameState *)GameInfo)->levelFlags & 0x80)) {
-        dx = TotemTop->Engine->unk10.x - eng->unk10.x;
-        dz = TotemTop->Engine->unk10.z - eng->unk10.z;
+        dx = TotemTop->Engine->XYZ.x - eng->XYZ.x;
+        dz = TotemTop->Engine->XYZ.z - eng->XYZ.z;
         if (dx >= -0x15D) {
             if (dx < 0x15E) {
                 if (dz >= -0x15D) {
@@ -2919,8 +2919,8 @@ void TankHeroGridMove(s32 player) {
                 }
             }
         }
-        dx = TotemBot->Engine->unk10.x - eng->unk10.x;
-        dz = TotemBot->Engine->unk10.z - eng->unk10.z;
+        dx = TotemBot->Engine->XYZ.x - eng->XYZ.x;
+        dz = TotemBot->Engine->XYZ.z - eng->XYZ.z;
         if (dx >= -0x15D) if (dx < 0x15E) if (dz >= -0x15D) if (dz < 0x15E) {
             if (dx < 0) {
                 m = dir & ~0x80;
@@ -2966,7 +2966,7 @@ void TankHeroGridMove(s32 player) {
         break;
     }
 loop:
-    a = (eng->unk1E + sub->unk12) & 0xFFF;
+    a = (eng->xform.rot.vy + sub->unk12) & 0xFFF;
     df = ((angle - a) << 20) >> 20;
     a = (u16)sub->unk12;
     if ((u32)(df + 0x400) > 0x800) {
@@ -2976,12 +2976,12 @@ loop:
     df = df / 4;
     sub->unk12 = (a + df) & 0xFFF;
     sub->unk52 = 1;
-    a = (eng->unk1E + sub->unk12) & 0xFFF;
+    a = (eng->xform.rot.vy + sub->unk12) & 0xFFF;
     sn = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
     cs = rcossin_tbl[a].unk2;
-    x = eng->unk10.x + ((speed * sn) >> 12);
+    x = eng->XYZ.x + ((speed * sn) >> 12);
     fx = x + ((sn * 256) >> 12);
-    z = eng->unk10.z + ((speed * cs) >> 12);
+    z = eng->XYZ.z + ((speed * cs) >> 12);
     fz = z + ((cs * 256) >> 12);
     if (GameMode == 7 && (u32)(x - 0x581) < 0x4FF && z >= 0x581 && z < 0xA80) {
         if (x < 0x800) {
@@ -3015,14 +3015,14 @@ loop:
             continue;
         }
         e = h->hero_eng;
-        d = x - e->unk10.x;
+        d = x - e->XYZ.x;
         if (d < -0x1C0) {
             continue;
         }
         if (lim < d) {
             continue;
         }
-        d = z - e->unk10.z;
+        d = z - e->XYZ.z;
         n = -0x1C0;
         if (n < d && d < 0x1C0) {
             hit = i;
@@ -3034,8 +3034,8 @@ found:
     if (hit < 0) {
         t = ((fz >> 9) * TankMapWidth) + (fx >> 9);
         if (TankLevelsGridMapMiss[t] == 0) {
-            eng->unk10.x = x;
-            eng->unk10.z = z;
+            eng->XYZ.x = x;
+            eng->XYZ.z = z;
         }
     } else if (TankCountdown == 0) {
         TankCountdownEng = eng;
@@ -3093,8 +3093,8 @@ void TankHeroMove(u32 player) {
         }
         half = (speed = ta->Speed) / 2;
         pad = ((PadState *)Pads)[player].dir;
-        x = eng->unk10.x;
-        z = eng->unk10.z;
+        x = eng->XYZ.x;
+        z = eng->XYZ.z;
         dir = pad & 0xF0;
         if (dir == 0) {
             return;
@@ -3119,7 +3119,7 @@ void TankHeroMove(u32 player) {
                     return;
                 }
             }
-            if ((dir & 0x80) && eng->unk10.x != 0x100 &&
+            if ((dir & 0x80) && eng->XYZ.x != 0x100 &&
                 (off = ta->Speed + 0x100, TankMapCell(x - off, z) == 0)) {
                 switch (ta->MoveDir) {
                 case 1:
@@ -3141,7 +3141,7 @@ void TankHeroMove(u32 player) {
                     return;
                 }
             }
-            if ((dir & 0x10) && eng->unk10.z != 0xF00 && TankMapCell(x, z + 0x100) == 0) {
+            if ((dir & 0x10) && eng->XYZ.z != 0xF00 && TankMapCell(x, z + 0x100) == 0) {
                 switch (ta->MoveDir) {
                 case 2:
                     break;
@@ -3162,7 +3162,7 @@ void TankHeroMove(u32 player) {
                     return;
                 }
             }
-            if ((dir & 0x40) && eng->unk10.z != 0x100 &&
+            if ((dir & 0x40) && eng->XYZ.z != 0x100 &&
                 (off = ta->Speed + 0x100, TankMapCell(x, z - off) == 0)) {
                 switch (ta->MoveDir) {
                 case 1:
@@ -3210,17 +3210,17 @@ void TankHeroMove(u32 player) {
         }
         switch (ta->MoveDir) {
         case 2:
-            hit = TankMoveFindHero(player, eng->unk10.x, eng->unk10.z + speed, 0x1C0 - speed);
+            hit = TankMoveFindHero(player, eng->XYZ.x, eng->XYZ.z + speed, 0x1C0 - speed);
             if (hit < 0) {
                 if (TankMapCell(x, z + 0x100) == 0) {
-                    pos = eng->unk10.z + ta->Speed;
+                    pos = eng->XYZ.z + ta->Speed;
                     frac = pos & 0xFF;
-                    eng->unk10.z = pos;
+                    eng->XYZ.z = pos;
                     if (frac > 0x80) {
                         frac -= 0x100;
                     }
                     if (frac >= -half && frac <= half) {
-                        eng->unk10.z = pos - frac;
+                        eng->XYZ.z = pos - frac;
                     }
                 }
             } else if (TankCountdown == 0) {
@@ -3229,18 +3229,18 @@ void TankHeroMove(u32 player) {
             }
             break;
         case 0:
-            hit = TankMoveFindHero(player, eng->unk10.x, eng->unk10.z - speed, 0x1C0);
+            hit = TankMoveFindHero(player, eng->XYZ.x, eng->XYZ.z - speed, 0x1C0);
             if (hit < 0) {
                 off = half + 0x100;
                 if (TankMapCell(x, z - off) == 0) {
-                    pos = eng->unk10.z - ta->Speed;
+                    pos = eng->XYZ.z - ta->Speed;
                     frac = pos & 0xFF;
-                    eng->unk10.z = pos;
+                    eng->XYZ.z = pos;
                     if (frac > 0x80) {
                         frac -= 0x100;
                     }
                     if (frac >= -half && frac <= half) {
-                        eng->unk10.z = pos - frac;
+                        eng->XYZ.z = pos - frac;
                     }
                 }
             } else if (TankCountdown == 0) {
@@ -3249,17 +3249,17 @@ void TankHeroMove(u32 player) {
             }
             break;
         case 3:
-            hit = TankMoveFindHero(player, eng->unk10.x + speed, eng->unk10.z, 0x1C0 - speed);
+            hit = TankMoveFindHero(player, eng->XYZ.x + speed, eng->XYZ.z, 0x1C0 - speed);
             if (hit < 0) {
                 if (TankMapCell(x + 0x100, z) == 0) {
-                    pos = eng->unk10.x + ta->Speed;
+                    pos = eng->XYZ.x + ta->Speed;
                     frac = pos & 0xFF;
-                    eng->unk10.x = pos;
+                    eng->XYZ.x = pos;
                     if (frac > 0x80) {
                         frac -= 0x100;
                     }
                     if (frac >= -half && frac <= half) {
-                        eng->unk10.x = pos - frac;
+                        eng->XYZ.x = pos - frac;
                     }
                 }
             } else if (TankCountdown == 0) {
@@ -3268,18 +3268,18 @@ void TankHeroMove(u32 player) {
             }
             break;
         case 1:
-            hit = TankMoveFindHero(player, eng->unk10.x - speed, eng->unk10.z, 0x1C0);
+            hit = TankMoveFindHero(player, eng->XYZ.x - speed, eng->XYZ.z, 0x1C0);
             if (hit < 0) {
                 off = half + 0x100;
                 if (TankMapCell(x - off, z) == 0) {
-                    pos = eng->unk10.x - ta->Speed;
+                    pos = eng->XYZ.x - ta->Speed;
                     frac = pos & 0xFF;
-                    eng->unk10.x = pos;
+                    eng->XYZ.x = pos;
                     if (frac > 0x80) {
                         frac -= 0x100;
                     }
                     if (frac >= -half && frac <= half) {
-                        eng->unk10.x = pos - frac;
+                        eng->XYZ.x = pos - frac;
                     }
                 }
             } else if (TankCountdown == 0) {
@@ -3308,7 +3308,7 @@ void SetTankHeroRecoil(u32 player) {
         TA_players[player].SpeedY = -0x64;
         SetHeroSeq(player, 0x57);
         Heroes[player].hero_immunity = 0x3C;
-        PlaySfx(TankRecoilSfx[Heroes[player].hero_name - 1][Random(4)], NULL, &Heroes[player].hero_eng->unk10, 0x1000,
+        PlaySfx(TankRecoilSfx[Heroes[player].hero_name - 1][Random(4)], NULL, &Heroes[player].hero_eng->XYZ, 0x1000,
                 0x1E00, 0);
     }
 }
@@ -3322,12 +3322,12 @@ void TankHeroRecoil(u32 arg0) {
     h = &Heroes[arg0];
     TA_players[arg0].SpeedY += 0xC;
     p = &TA_players[arg0];
-    eng->unk10.y += p->SpeedY;
-    if (eng->unk10.y > 0) {
+    eng->XYZ.y += p->SpeedY;
+    if (eng->XYZ.y > 0) {
         p->SpeedY = -p->SpeedY / 2;
-        eng->unk10.y = 0;
+        eng->XYZ.y = 0;
     }
-    eng->sub->next->next->unk08 = -eng->unk10.y / 2;
+    eng->sub->next->next->unk08 = -eng->XYZ.y / 2;
     if (ProcessHeroAnim(arg0) != 0) {
         if (h->hero_status & 0x2000) {
             SetHeroAction(arg0, 0x6A);
@@ -3354,7 +3354,7 @@ void SetTankHeroVictory(u32 arg0) {
     SetHeroSeq(arg0, 0x5A);
     StartHeroVictory(arg0);
     RequestHeroAnim(arg0, 0);
-    Heroes[arg0].hero_eng->unk10.y = 0;
+    Heroes[arg0].hero_eng->XYZ.y = 0;
     sub = Heroes[arg0].hero_eng->sub;
     sub = sub->next;
     sub = sub->next;
@@ -3367,8 +3367,8 @@ void TankHeroVictory(u32 arg0) {
 
     eng = Heroes[arg0].hero_eng;
     sub = Heroes[arg0].hero_sub->next->next;
-    eng->unk1E += 0x15;
-    eng->unk5E = 1;
+    eng->xform.rot.vy += 0x15;
+    eng->xform.dirty = 1;
     if (GAME->mode != 5) {
         sub->unk52 = 1;
         sub->unk12 -= 0x15;
@@ -3404,7 +3404,7 @@ void TankHeroDie(u32 arg0) {
     }
     if (ok == 0 && ProcessHeroAnim(arg0) != 0) {
         eng = Heroes[arg0].hero_eng;
-        pos = (s32 *)&eng->unk10;
+        pos = (s32 *)&eng->XYZ;
         p = &HeroModelBank[DB_TankObjects];
         nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
         if (nas != NULL) {
@@ -3422,7 +3422,7 @@ void TankHeroDie(u32 arg0) {
                 nas->InitDelete(nas);
             }
         }
-        PlaySfx(0x4F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         SetHeroAction(arg0, 0x6B);
     }
 }
@@ -3466,35 +3466,35 @@ retry:
     owner = fux->Owner;
     ret = 0;
     if (GameMode == 8 &&
-        *(((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9) + TankLevelsGridMapTank) != 0 &&
+        *(((eng->XYZ.z >> 9) * TankMapWidth) + (eng->XYZ.x >> 9) + TankLevelsGridMapTank) != 0 &&
         fux->Status != 1) {
-        x = eng->unk10.x;
-        z = eng->unk10.z;
+        x = eng->XYZ.x;
+        z = eng->XYZ.z;
         goto dead;
     }
-    x = eng->unk10.x + fux->SpeedX;
-    z = eng->unk10.z + fux->SpeedZ;
+    x = eng->XYZ.x + fux->SpeedX;
+    z = eng->XYZ.z + fux->SpeedZ;
     if (x < 0 || TankArenaMaxX + 0x100 < x) {
         if (fux->Status == 1) {
         back:
-            eng->unk10.x -= fux->SpeedX;
-            eng->unk10.z -= fux->SpeedZ;
+            eng->XYZ.x -= fux->SpeedX;
+            eng->XYZ.z -= fux->SpeedZ;
             goto retry;
         }
         x += fux->SpeedX = -fux->SpeedX;
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         TankShotBounce = x;
-        eng->unk1E = 0x1000 - eng->unk1E;
+        eng->xform.rot.vy = 0x1000 - eng->xform.rot.vy;
     } else
     if (z < 0 || TankArenaMaxZ + 0x100 < z) {
         if (fux->Status == 1) {
             goto back;
         }
         z += fux->SpeedZ = -fux->SpeedZ;
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         TankShotBounce = z;
-        eng->unk1E = 0x800 - eng->unk1E;
-    } else if (eng->unk10.y >= -400) {
+        eng->xform.rot.vy = 0x800 - eng->xform.rot.vy;
+    } else if (eng->XYZ.y >= -400) {
         v = ((z >> 9) * TankMapWidth) + (x >> 9);
         tile = *(v + TankLevelsGridMapTank);
         if (tile != 0) {
@@ -3502,11 +3502,11 @@ retry:
             if (fux->Status == 1) {
                 goto back;
             }
-            dx = eng->unk10.x - ((tile & 0xF0) << 4);
+            dx = eng->XYZ.x - ((tile & 0xF0) << 4);
             if (dx < 0) {
                 dx = -dx;
             }
-            dz = eng->unk10.z - ((tile & 0xF) << 8);
+            dz = eng->XYZ.z - ((tile & 0xF) << 8);
             if (dz < 0) {
                 dz = -dz;
             }
@@ -3517,9 +3517,9 @@ retry:
                     x += a;
                     fux->SpeedX = a;
                     z += fux->SpeedZ = -fux->SpeedZ;
-                    eng->unk1E = 0x800 - eng->unk1E;
+                    eng->xform.rot.vy = 0x800 - eng->xform.rot.vy;
                 } else {
-                    eng->unk1E = 0x1000 - eng->unk1E;
+                    eng->xform.rot.vy = 0x1000 - eng->xform.rot.vy;
                 }
             } else {
                 a = (sfx = fux->SpeedZ);
@@ -3528,16 +3528,16 @@ retry:
                     z += a;
                     fux->SpeedZ = a;
                     x += fux->SpeedX = -fux->SpeedX;
-                    eng->unk1E = 0x1000 - eng->unk1E;
+                    eng->xform.rot.vy = 0x1000 - eng->xform.rot.vy;
                 } else {
-                    eng->unk1E = 0x800 - eng->unk1E;
+                    eng->xform.rot.vy = 0x800 - eng->xform.rot.vy;
                 }
             }
-            eng->unk5E = 1;
+            eng->xform.dirty = 1;
         }
     }
-    eng->unk10.x = x;
-    eng->unk10.z = z;
+    eng->XYZ.x = x;
+    eng->XYZ.z = z;
     MissileCollideWithPickup(eng);
     hit = TankRocketFindHero(x, z, 0x10E);
     if (hit >= 0) {
@@ -3557,7 +3557,7 @@ retry:
         default:
             goto skip;
         }
-        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(sfx, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     skip:
         if (((GameState *)GameInfo)->mode == 5 && GAME->heroOut[hit] != 0 &&
             TA_players[hit].ForceFieldDelay == 0 && HeroesAllOut == 0 &&
@@ -3572,7 +3572,7 @@ retry:
         }
         goto hit2;
     }
-    if (TankRocketNear(eng->unk10.x, eng->unk10.z, 0xE0) == NULL) {
+    if (TankRocketNear(eng->XYZ.x, eng->XYZ.z, 0xE0) == NULL) {
         if (--fux->Counter != 0) {
             return ret;
         }
@@ -3584,10 +3584,10 @@ hit2:
     ret = 2;
 spawn:
     if (arg3 != 0) {
-        TankSpawnBit1605(&eng->unk10, arg3);
+        TankSpawnBit1605(&eng->XYZ, arg3);
     }
     if (arg2 != 0) {
-        CreateNAS(x, eng->unk10.y, z, arg2, 0x11);
+        CreateNAS(x, eng->XYZ.y, z, arg2, 0x11);
     }
     return ret;
 }
@@ -3607,7 +3607,7 @@ void PlotLaserBitTA(NAS *nas) {
     sub = sub->next;
     sub->unk51 = 0;
     sub->unk14 += 0x32;
-    rot = -eng->unk1E;
+    rot = -eng->xform.rot.vy;
     sub->unk10 = 0;
     sub->unk52 = 1;
     sub->unk12 = rot;
@@ -3626,14 +3626,14 @@ void PlotLaserBitTA(NAS *nas) {
         default:
             goto skip;
         }
-        PlaySfx(sfx, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(sfx, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
     skip:;
     }
     if (hit != 0) {
         if (eng->sfx != NULL) {
             StopSfx(eng->sfx);
         }
-        PlaySfx(0x4E7, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4E7, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         for (i = 0; i < 3; i++) {
             if (TA_players[fux->Owner].MainWeaponNas[i] == nas) {
                 TA_players[fux->Owner].MainWeaponNas[i] = NULL;
@@ -3655,10 +3655,10 @@ void PlotFlamerBitTA(NAS *nas) {
 
     fux = (EXTobject_TA *)nas->FUX;
     eng = nas->Engine;
-    eng->unk5E = 1;
-    eng->unk20 += 0x96;
+    eng->xform.dirty = 1;
+    eng->xform.rot.vz += 0x96;
     if (!(GameFrameCount & 7)) {
-        TankSpawnBit1605(&eng->unk10, 2);
+        TankSpawnBit1605(&eng->XYZ, 2);
     }
     if (MoveTankShot(nas, 0x14, 0x1306, 0xC) != 0) {
         if (eng->sfx != NULL) {
@@ -3677,13 +3677,13 @@ void PlotFlamerBitTA(NAS *nas) {
     if (TankShotBounce != 0) {
         switch ((u32)Random(3)) {
         case 0:
-            PlaySfx(0x4E1, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x4E1, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         case 1:
-            PlaySfx(0x4E2, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x4E2, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         case 2:
-            PlaySfx(0x4E3, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x4E3, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         }
     }
@@ -3701,17 +3701,17 @@ void PlotFlubberTA(NAS *nas) {
 
     eng = nas->Engine;
     fux = (EXTobject_TA *)nas->FUX;
-    eng->unk5E = 1;
-    eng->unk1C += 0x55;
+    eng->xform.dirty = 1;
+    eng->xform.rot.vx += 0x55;
     fux->SpeedY += 0xC;
-    eng->unk10.y += fux->SpeedY;
-    if (eng->unk10.y >= -0x64) {
-        eng->unk10.y = -0x64;
+    eng->XYZ.y += fux->SpeedY;
+    if (eng->XYZ.y >= -0x64) {
+        eng->XYZ.y = -0x64;
         fux->SpeedY = -0x3C;
-        eng->unk10.y -= 0x3C;
+        eng->XYZ.y -= 0x3C;
         if (((GameState *)GameInfo)->mode == 5 ||
             (((GameState *)GameInfo)->mode == 6 && (((GameState *)GameInfo)->levelFlags & 0x80) &&
-             TankLevelsGridMapMiss[((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9)] != 0)) {
+             TankLevelsGridMapMiss[((eng->XYZ.z >> 9) * TankMapWidth) + (eng->XYZ.x >> 9)] != 0)) {
             switch ((u32)Random(4)) {
             case 0:
                 sfx = 0x4F7;
@@ -3728,9 +3728,9 @@ void PlotFlubberTA(NAS *nas) {
             default:
                 goto skip1;
             }
-            PlaySfx(sfx, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(sfx, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
         skip1:
-            TankSpawnBit1605(&eng->unk10, 0x12);
+            TankSpawnBit1605(&eng->XYZ, 0x12);
         } else {
             switch ((u32)Random(6)) {
             case 0:
@@ -3754,9 +3754,9 @@ void PlotFlubberTA(NAS *nas) {
             default:
                 goto skip2;
             }
-            PlaySfx(sfx, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(sfx, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
         skip2:
-            TankSpawnBit1605(&eng->unk10, 9);
+            TankSpawnBit1605(&eng->XYZ, 9);
         }
     }
     if (MoveTankShot(nas, 0x1E, 0x1306, 0xB) != 0) {
@@ -3764,7 +3764,7 @@ void PlotFlubberTA(NAS *nas) {
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
             }
-            PlaySfx(0x4E5, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x4E5, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         } while (0);
         for (i = 0; i < 3; i++) {
             if (TA_players[fux->Owner].MainWeaponNas[i] == nas) {
@@ -3789,7 +3789,7 @@ void PlotFlubberTA(NAS *nas) {
         default:
             goto skip3;
         }
-        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(sfx, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     skip3:;
     }
     if (fux->Status == 1) {
@@ -3798,9 +3798,9 @@ void PlotFlubberTA(NAS *nas) {
     do {
         e = eng->Engine;
         if (e != NULL) {
-            e->unk1E = eng->unk1E;
-            e->unk10 = eng->unk10;
-            e->unk10.y = 0;
+            e->xform.rot.vy = eng->xform.rot.vy;
+            e->XYZ = eng->XYZ;
+            e->XYZ.y = 0;
         }
     } while (0);
 }
@@ -3813,10 +3813,10 @@ void PlotSwirlyTA(NAS *nas) {
     s32 i;
 
     eng = nas->Engine;
-    eng->unk5E = 1;
-    eng->unk1C += 0x17C;
-    eng->unk1E += 0x118;
-    eng->unk20 += 0xB4;
+    eng->xform.dirty = 1;
+    eng->xform.rot.vx += 0x17C;
+    eng->xform.rot.vy += 0x118;
+    eng->xform.rot.vz += 0xB4;
     sub = eng->sub->next;
     sub->unk52 = 1;
     sub->unk10 += 0x46;
@@ -3827,7 +3827,7 @@ void PlotSwirlyTA(NAS *nas) {
         if (eng->sfx != NULL) {
             StopSfx(eng->sfx);
         }
-        PlaySfx(0x4E6, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4E6, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         for (i = 0; i < 3; i++) {
             if (TA_players[fux->Owner].MainWeaponNas[i] == nas) {
                 TA_players[fux->Owner].MainWeaponNas[i] = NULL;
@@ -3851,7 +3851,7 @@ void PlotSwirlyTA(NAS *nas) {
         default:
             goto skip;
         }
-        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(sfx, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     skip:;
     }
     if (fux->Status == 1) {
@@ -3872,12 +3872,12 @@ void PlotShell(NAS *nas) {
     fux = (EXTobject_TA *)nas->FUX;
     eng = nas->Engine;
     fux->SpeedY += 0xC;
-    eng->unk10.y += fux->SpeedY;
-    if (eng->unk10.y > 0) {
-        eng->unk10.y = 0;
+    eng->XYZ.y += fux->SpeedY;
+    if (eng->XYZ.y > 0) {
+        eng->XYZ.y = 0;
         fux->SpeedY = -0x54;
-        eng->unk10.y -= 0x54;
-        pos = &eng->unk10;
+        eng->XYZ.y -= 0x54;
+        pos = &eng->XYZ;
         p = &HeroModelBank[DB_TankObjects];
         puff = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
         if (puff != NULL) {
@@ -3909,7 +3909,7 @@ void PlotShell(NAS *nas) {
         default:
             goto skip;
         }
-        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(sfx, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     skip:
         KillNAS(nas);
         return;
@@ -3919,9 +3919,9 @@ void PlotShell(NAS *nas) {
     }
     e2 = eng->Engine;
     if (e2 != NULL) {
-        e2->unk1E = eng->unk1E;
-        e2->unk10 = eng->unk10;
-        e2->unk10.y = 0;
+        e2->xform.rot.vy = eng->xform.rot.vy;
+        e2->XYZ = eng->XYZ;
+        e2->XYZ.y = 0;
     }
 }
 
@@ -3947,12 +3947,12 @@ void PlotLobber_TA(NAS *nas)
 
   eng = nas->Engine;
   fux = (EXTobject_TA *) nas->FUX;
-  eng->unk10.x += fux->SpeedX;
-  eng->unk10.z += fux->SpeedZ;
+  eng->XYZ.x += fux->SpeedX;
+  eng->XYZ.z += fux->SpeedZ;
   fux->SpeedY += 0xC;
-  eng->unk10.y += fux->SpeedY;
-  fx = eng->unk10.x;
-  fz = eng->unk10.z;
+  eng->XYZ.y += fux->SpeedY;
+  fx = eng->XYZ.x;
+  fz = eng->XYZ.z;
   flim = 0x180;
   for (j = 0; j < 4; j++)
   {
@@ -3970,7 +3970,7 @@ void PlotLobber_TA(NAS *nas)
       continue;
     }
     e = Heroes[j].hero_eng;
-    d = fx - e->unk10.x;
+    d = fx - e->XYZ.x;
     if (d < (-0x180))
     {
       continue;
@@ -3979,7 +3979,7 @@ void PlotLobber_TA(NAS *nas)
     {
       continue;
     }
-    d = fz - e->unk10.z;
+    d = fz - e->XYZ.z;
     lo = -0x180;
     if ((lo < d) && (d < 0x180))
     {
@@ -3999,13 +3999,13 @@ void PlotLobber_TA(NAS *nas)
     s32 hd;
     r = 0x180;
 
-    hx = eng->unk10.x;
-    hz = eng->unk10.z;
+    hx = eng->XYZ.x;
+    hz = eng->XYZ.z;
     for (i = 0; i < 4; i++)
     {
       EXTengine *he;
       he = Heroes[i].hero_eng;
-      hd = hx - he->unk10.x;
+      hd = hx - he->XYZ.x;
       if (hd < (-0x180))
       {
         continue;
@@ -4014,7 +4014,7 @@ void PlotLobber_TA(NAS *nas)
       {
         continue;
       }
-      hd = hz - he->unk10.z;
+      hd = hz - he->XYZ.z;
       if (hd < (-0x180))
       {
         continue;
@@ -4031,15 +4031,15 @@ void PlotLobber_TA(NAS *nas)
   }
 
 
-  if (((fux->SpeedY > 0) && (eng->unk10.y >= (-0x103))) || ((GameMode == 9) && (eng->unk10.z > 0x1000)))
+  if (((fux->SpeedY > 0) && (eng->XYZ.y >= (-0x103))) || ((GameMode == 9) && (eng->XYZ.z > 0x1000)))
   {
-    eng->unk10.y = -0x104;
+    eng->XYZ.y = -0x104;
     if ((GameMode == 9) && (fux->Owner != (-1)))
     {
-      CheckMineToBoss(eng->unk10.x, eng->unk10.y, eng->unk10.z);
+      CheckMineToBoss(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z);
     }
-    x = eng->unk10.x;
-    z = eng->unk10.z;
+    x = eng->XYZ.x;
+    z = eng->XYZ.z;
     lim = 0x180;
     for (hit = 0; hit < 4; hit++)
     {
@@ -4053,7 +4053,7 @@ void PlotLobber_TA(NAS *nas)
         continue;
       }
       e = Heroes[hit].hero_eng;
-      d = x - e->unk10.x;
+      d = x - e->XYZ.x;
       if (d < (-0x180))
       {
         continue;
@@ -4062,7 +4062,7 @@ void PlotLobber_TA(NAS *nas)
       {
         continue;
       }
-      d = z - e->unk10.z;
+      d = z - e->XYZ.z;
       n = -0x180;
       if ((n < d) && (d < 0x180))
       {
@@ -4087,19 +4087,19 @@ void PlotLobber_TA(NAS *nas)
     switch ((u32) Random(4))
     {
       case 0:
-        PlaySfx(0x4BA, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4BA, 0, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
 
       case 1:
-        PlaySfx(0x4BB, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4BB, 0, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
 
       case 2:
-        PlaySfx(0x4BC, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4BC, 0, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
 
       case 3:
-        PlaySfx(0x4BD, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4BD, 0, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
 
     }
@@ -4110,19 +4110,19 @@ void PlotLobber_TA(NAS *nas)
       case 0:
 
       case 1:
-        PlaySfx(0x490, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x490, 0, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
 
       case 2:
 
       case 3:
-        PlaySfx(0x491, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x491, 0, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
 
     }
 
 
-    TankSpawnBit1605(&eng->unk10, 1);
+    TankSpawnBit1605(&eng->XYZ, 1);
 
     KillNAS(nas);
     return;
@@ -4136,15 +4136,15 @@ void PlotLobber_TA(NAS *nas)
   e2 = eng->Engine;
   if (e2 != 0)
   {
-    e2->unk1E = eng->unk1E;
-    e2->unk10 = eng->unk10;
-    if (TankLevelsGridMapTank[((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9)] != 0)
+    e2->xform.rot.vy = eng->xform.rot.vy;
+    e2->XYZ = eng->XYZ;
+    if (TankLevelsGridMapTank[((eng->XYZ.z >> 9) * TankMapWidth) + (eng->XYZ.x >> 9)] != 0)
     {
-      e2->unk10.y = -0x100;
+      e2->XYZ.y = -0x100;
     }
     else
     {
-      e2->unk10.y = 0;
+      e2->XYZ.y = 0;
     }
   }
 
@@ -4167,8 +4167,8 @@ void PlotRocketTA(NAS *nas)
 
     eng = nas->Engine;
     fux = (EXTobject_TA *) nas->FUX;
-    x = eng->unk10.x + fux->SpeedX;
-    z = eng->unk10.z + fux->SpeedZ;
+    x = eng->XYZ.x + fux->SpeedX;
+    z = eng->XYZ.z + fux->SpeedZ;
     if (x < 0 || x >= TankArenaMaxX + 0x100) {
         goto boom;
     }
@@ -4191,7 +4191,7 @@ void PlotRocketTA(NAS *nas)
             if (z < TankArenaMaxZ) {
                 n = (NAS *) *(((z >> 9) * TankMapWidth) + (x >> 9) + TankMapNas);
                 if (n != NULL) {
-                    pos = &n->Engine->unk10;
+                    pos = &n->Engine->XYZ;
                     p = MapScene->dbase;
                     puff = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
                     if (puff != NULL) {
@@ -4215,8 +4215,8 @@ void PlotRocketTA(NAS *nas)
         }
         goto boom;
     }
-    eng->unk10.x = x;
-    eng->unk10.z = z;
+    eng->XYZ.x = x;
+    eng->XYZ.z = z;
     MissileCollideWithPickup(eng);
     hit = TankRocketFindHero(x, z, 0x10E);
     if (hit < 0 || hit == fux->Owner) {
@@ -4229,16 +4229,16 @@ void PlotRocketTA(NAS *nas)
     }
     DamageTankHero(hit, dmg);
 boom:
-    CreateNAS(x, eng->unk10.y, z, 0x1306, 0x11);
+    CreateNAS(x, eng->XYZ.y, z, 0x1306, 0x11);
     KillNAS(nas);
     if (eng->sfx != NULL) {
         StopSfx(eng->sfx);
     }
-    PlaySfx(0x43D, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(0x43D, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     return;
 puff:
     if (!(GameFrameCount & 1)) {
-        TankSpawnBit1605(&eng->unk10, 0x11);
+        TankSpawnBit1605(&eng->XYZ, 0x11);
     }
 }
 
@@ -4259,9 +4259,9 @@ void PlotMine(NAS *nas) {
     g = GameInfo;
     eng = nas->Engine;
     if ((((GameState *)g)->mode == 8 &&
-         TankLevelsGridMapMiss[((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9)] != 0) ||
+         TankLevelsGridMapMiss[((eng->XYZ.z >> 9) * TankMapWidth) + (eng->XYZ.x >> 9)] != 0) ||
         --nas->UserInfo.status == 0) {
-        PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4EA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         CreateMineShrapnelBits(nas);
         for (i = 0; i < 8; i++) {
             if (TankMines[i] == nas) {
@@ -4270,8 +4270,8 @@ void PlotMine(NAS *nas) {
             }
         }
         r = 250;
-        x = eng->unk10.x;
-        z = eng->unk10.z;
+        x = eng->XYZ.x;
+        z = eng->XYZ.z;
         for (i = 0; i < 4; i++) {
             name = Heroes[i].hero_name;
             if (name == 9 &&
@@ -4283,14 +4283,14 @@ void PlotMine(NAS *nas) {
                 continue;
             }
             e = Heroes[i].hero_eng;
-            d = x - e->unk10.x;
+            d = x - e->XYZ.x;
             if (d < -250) {
                 continue;
             }
             if (r < d) {
                 continue;
             }
-            d = z - e->unk10.z;
+            d = z - e->XYZ.z;
             n = -250;
             if (n < d && d < 250) {
                 goto found;
@@ -4320,7 +4320,7 @@ void PlotMine(NAS *nas) {
         nas->Engine->sub->entity = MineFrames[t].v;
     }
     if ((u16)(nas->UserInfo.status % 30) == 0) {
-        PlaySfx(0x4EB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4EB, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -4341,25 +4341,25 @@ void PlotWaterMine(NAS *nas) {
 
     t = nas->UserInfo.user2;
     eng = nas->Engine;
-    eng->unk10.y += TankWaterBob[t & 0xF];
+    eng->XYZ.y += TankWaterBob[t & 0xF];
     nas->UserInfo.user2 = t + 1;
     nas->UserInfo.status = (nas->UserInfo.status + 4) & 0xFFF;
-    eng->unk10.x += (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 7) >> 12;
-    eng->unk10.z += (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 7) >> 12;
-    if (eng->unk10.x > TankArenaMaxX) {
-        eng->unk10.x = TankArenaMaxX;
+    eng->XYZ.x += (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 7) >> 12;
+    eng->XYZ.z += (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 7) >> 12;
+    if (eng->XYZ.x > TankArenaMaxX) {
+        eng->XYZ.x = TankArenaMaxX;
     }
-    if (eng->unk10.x < 0x100) {
-        eng->unk10.x = 0x100;
+    if (eng->XYZ.x < 0x100) {
+        eng->XYZ.x = 0x100;
     }
-    if (eng->unk10.z > TankArenaMaxZ) {
-        eng->unk10.z = TankArenaMaxZ;
+    if (eng->XYZ.z > TankArenaMaxZ) {
+        eng->XYZ.z = TankArenaMaxZ;
     }
-    if (eng->unk10.z < 0x100) {
-        eng->unk10.z = 0x100;
+    if (eng->XYZ.z < 0x100) {
+        eng->XYZ.z = 0x100;
     }
-    x = eng->unk10.x;
-    z = eng->unk10.z;
+    x = eng->XYZ.x;
+    z = eng->XYZ.z;
     r = 400;
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
@@ -4372,14 +4372,14 @@ void PlotWaterMine(NAS *nas) {
             continue;
         }
         e = Heroes[i].hero_eng;
-        d = x - e->unk10.x;
+        d = x - e->XYZ.x;
         if (d < -400) {
             continue;
         }
         if (r < d) {
             continue;
         }
-        d = z - e->unk10.z;
+        d = z - e->XYZ.z;
         n = -400;
         if (n < d && d < 400) {
             hit = i;
@@ -4393,7 +4393,7 @@ found:
             nas->UserInfo.flags = 0;
         }
     } else if (hit >= 0) {
-        PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4EA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         for (j = 0; j < 8; j++) {
             if (TankMines[j] == nas) {
                 TankMines[j] = NULL;
@@ -4439,17 +4439,17 @@ void PlotTorpedo(NAS *nas) {
     eng = nas->Engine;
     if (!(hero->hero_status & 0xA400) && hero->hero_health > 0) {
         t = nas->UserInfo.user2;
-        eng->unk10.y += TankWaterBob[t & 0xF];
+        eng->XYZ.y += TankWaterBob[t & 0xF];
         nas->UserInfo.user2 = t + 1;
         he = hero->hero_eng;
-        angle = get_angle(he->unk10.x - eng->unk10.x, he->unk10.z - eng->unk10.z);
-        eng->unk1E = angle;
-        eng->unk5E = 1;
+        angle = get_angle(he->XYZ.x - eng->XYZ.x, he->XYZ.z - eng->XYZ.z);
+        eng->xform.rot.vy = angle;
+        eng->xform.dirty = 1;
         if (nas->UserInfo.status != 0) {
             nas->UserInfo.status--;
         } else {
-            eng->unk10.x += (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 9) >> 12;
-            eng->unk10.z += (rcossin_tbl[angle & 0xFFF].unk2 * 9) >> 12;
+            eng->XYZ.x += (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 9) >> 12;
+            eng->XYZ.z += (rcossin_tbl[angle & 0xFFF].unk2 * 9) >> 12;
         }
         hb = Heroes;
         h2 = &hb[player];
@@ -4459,12 +4459,12 @@ void PlotTorpedo(NAS *nas) {
         if (h2->hero_immunity != 0) {
             return;
         }
-        dx = eng->unk10.x;
-        if ((u32)(dx - he->unk10.x + 0x15F) > 0x2BE) {
+        dx = eng->XYZ.x;
+        if ((u32)(dx - he->XYZ.x + 0x15F) > 0x2BE) {
             return;
         }
-        dx = eng->unk10.z;
-        if ((u32)(dx - he->unk10.z + 0x15F) > 0x2BE) {
+        dx = eng->XYZ.z;
+        if ((u32)(dx - he->XYZ.z + 0x15F) > 0x2BE) {
             return;
         }
         h2->hero_health = 1;
@@ -4472,10 +4472,10 @@ void PlotTorpedo(NAS *nas) {
         h2->hero_immunity = 0;
         DamageTankHero(player, 0x4B0);
     }
-    pos = &eng->unk10;
+    pos = &eng->XYZ;
     PlaySfx(0x4EA, NULL, pos, 0x1000, 0x1E00, 0);
     p = &HeroModelBank[DB_TankObjects];
-    n = CreateNAS(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
+    n = CreateNAS(eng->XYZ.x, pos->y, pos->z, 0x1605, 0x11);
     if (n != NULL) {
         ext = FindExtension(n, 0x10000000);
         if (ext != NULL) {
@@ -4516,7 +4516,7 @@ void CreateMineShrapnelBits(NAS *nas) {
         for (i = 0; i < 4; i++) {
             dx = MineShrapnelOffsets[i].x;
             dz = MineShrapnelOffsets[i].z;
-            m = CreateNAS(eng->unk10.x + dx, eng->unk10.y, eng->unk10.z + dz, 0x1304, 0x11);
+            m = CreateNAS(eng->XYZ.x + dx, eng->XYZ.y, eng->XYZ.z + dz, 0x1304, 0x11);
             if (m != NULL) {
                 m->UserInfo.user1 = dx;
                 m->UserInfo.user2 = dz;
@@ -4526,7 +4526,7 @@ void CreateMineShrapnelBits(NAS *nas) {
     case 0:
     case 2:
     case 4:
-        pos = &eng->unk10;
+        pos = &eng->XYZ;
         p = &HeroModelBank[DB_TankObjects];
         n = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
@@ -4544,15 +4544,15 @@ void CreateMineShrapnelBits(NAS *nas) {
                 n->InitDelete(n);
             }
         }
-        x = eng->unk10.x;
-        z = eng->unk10.z;
+        x = eng->XYZ.x;
+        z = eng->XYZ.z;
         if (GameMode == 9) {
-            CheckMineToBoss(x, eng->unk10.y, z);
+            CheckMineToBoss(x, eng->XYZ.y, z);
         }
         for (i = 0; i < 4; i++) {
             if (!(Heroes[i].hero_status & 0xFA00)) {
                 he = Heroes[i].hero_eng;
-                if ((u32)(x - he->unk10.x + 0x300) <= 0x600 && (u32)(z - he->unk10.z + 0x2FF) < 0x5FF) {
+                if ((u32)(x - he->XYZ.x + 0x300) <= 0x600 && (u32)(z - he->XYZ.z + 0x2FF) < 0x5FF) {
                     DamageTankHero(i, 0x3C);
                 }
             }
@@ -4581,14 +4581,14 @@ static inline s32 ShrapnelFindHero(s32 x, s32 z) {
             continue;
         }
         e = Heroes[i].hero_eng;
-        d = x - e->unk10.x;
+        d = x - e->XYZ.x;
         if (d < -250) {
             continue;
         }
         if (r < d) {
             continue;
         }
-        d = z - e->unk10.z;
+        d = z - e->XYZ.z;
         n = -250;
         if (n < d && d < 250) {
             return i;
@@ -4614,11 +4614,11 @@ void PlotShrapnelBit(NAS *nas) {
     s32 sfx;
 
     eng = nas->Engine;
-    CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1305, 0x11);
+    CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1305, 0x11);
     dz = nas->UserInfo.user2;
-    z = eng->unk10.z + dz;
+    z = eng->XYZ.z + dz;
     dx = nas->UserInfo.user1;
-    x = eng->unk10.x + dx;
+    x = eng->XYZ.x + dx;
     if (ShrapnelTile(x, z) != 0) {
         goto kill;
     }
@@ -4641,7 +4641,7 @@ found:
     case 3:
         sfx = 0x4BD;
     play:
-        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(sfx, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     }
     if (((GameState *)GameInfo)->mode == 8 && GAME->heroOut[hit] == 0 &&
@@ -4660,16 +4660,16 @@ step:
     if (hit >= 0) {
         goto found;
     }
-    eng->unk10.z = z;
-    eng->unk10.x = x;
+    eng->XYZ.z = z;
+    eng->XYZ.x = x;
     nas->UserInfo.status++;
-    if (TankArenaMaxX + 0x100 < eng->unk10.x || eng->unk10.x < 0x100 ||
-        TankArenaMaxZ + 0x100 < eng->unk10.z || eng->unk10.z < 0x100) {
+    if (TankArenaMaxX + 0x100 < eng->XYZ.x || eng->XYZ.x < 0x100 ||
+        TankArenaMaxZ + 0x100 < eng->XYZ.z || eng->XYZ.z < 0x100) {
         goto kill;
     }
     return;
 kill:
-    CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1305, 0x11);
+    CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1305, 0x11);
     KillNAS(nas);
 }
 
@@ -4726,7 +4726,7 @@ void PlotPickupGenerator_TA(NAS *nas)
           p = PU_TA_list[j];
           if (p != 0)
           {
-            if ((p->Engine->unk10.x != new_var) || (p->Engine->unk10.z != z))
+            if ((p->Engine->XYZ.x != new_var) || (p->Engine->XYZ.z != z))
             {
               break;
             }
@@ -4781,8 +4781,8 @@ void PlotPickupGenerator_TA(NAS *nas)
         {
           continue;
         }
-        x = nas->Engine->unk10.x;
-        z = nas->Engine->unk10.z;
+        x = nas->Engine->XYZ.x;
+        z = nas->Engine->XYZ.z;
         if (PickupFindHero(x, z) >= 0)
         {
           return;
@@ -4790,7 +4790,7 @@ void PlotPickupGenerator_TA(NAS *nas)
         for (k = 0; k < 3; k++)
         {
           p = PU_TA_list[k];
-          if (((p != 0) && (p->Engine->unk10.x == x)) && (p->Engine->unk10.z == z))
+          if (((p != 0) && (p->Engine->XYZ.x == x)) && (p->Engine->XYZ.z == z))
           {
             return;
           }
@@ -4857,46 +4857,46 @@ void InitHelicopterTA(NAS *nas) {
         ext->Status = 3;
         eng = nas->Engine;
         if (++HelicopterCount & 1) {
-            eng->unk1E = 0x400;
-            eng->unk10.x = 0x1800;
+            eng->xform.rot.vy = 0x400;
+            eng->XYZ.x = 0x1800;
             ext->SpeedX = -0x40;
-            eng->unk10.y = -0x400;
+            eng->XYZ.y = -0x400;
         } else {
-            eng->unk1E = 0xC00;
-            eng->unk10.x = -0x800;
+            eng->xform.rot.vy = 0xC00;
+            eng->XYZ.x = -0x800;
             ext->SpeedX = 0x40;
-            eng->unk10.y = -0x400;
+            eng->XYZ.y = -0x400;
         }
         switch ((s16)(GameMode - 5)) {
         case 0:
-            eng->unk10.z = HelicopterZSwamp[Random(4)];
+            eng->XYZ.z = HelicopterZSwamp[Random(4)];
             break;
         case 1:
-            eng->unk10.z = HelicopterZDesert[Random(4)];
+            eng->XYZ.z = HelicopterZDesert[Random(4)];
             break;
         case 2:
-            eng->unk10.z = HelicopterZJungle[Random(4)];
+            eng->XYZ.z = HelicopterZJungle[Random(4)];
             break;
         case 3:
-            eng->unk10.z = HelicopterZMetal[Random(4)];
+            eng->XYZ.z = HelicopterZMetal[Random(4)];
             break;
         case 4:
-            eng->unk10.z = HelicopterZBoss[Random(4)];
+            eng->XYZ.z = HelicopterZBoss[Random(4)];
             break;
         }
         p = &HeroModelBank[DB_TankObjects2];
         sub = eng->sub;
         sub->u6C.dbase = p;
         sub->entity = 0x4080;
-        eng->unk5D = 1;
-        eng->unk5E = 1;
+        eng->xform.order = 1;
+        eng->xform.dirty = 1;
         nas->UserInfo.user2 = 0;
-        PlaySfx(0x4F6, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4F6, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
         e = AddExtEngine(nas, 1);
         if (e != NULL) {
-            e->unk10.x = eng->unk10.x;
-            e->unk10.y = 0;
-            e->unk10.z = eng->unk10.z;
+            e->XYZ.x = eng->XYZ.x;
+            e->XYZ.y = 0;
+            e->XYZ.z = eng->XYZ.z;
             e->sub->unk51 = 2;
             e->sub->u6C.dbase = p;
             e->sub->entity = 0x200F;
@@ -4930,20 +4930,20 @@ void PlotHelicopterTA(NAS *nas) {
     eng = nas->Engine;
     sub = eng->sub;
     if (TankLevelOver != 0) {
-        eng->unk10.y -= 0x32;
+        eng->XYZ.y -= 0x32;
     }
-    eng->unk10.x += fux->SpeedX;
+    eng->XYZ.x += fux->SpeedX;
     if (--nas->UserInfo.user2 < 0) {
         nas->UserInfo.user2 = 7;
     }
     sub->entity = HelicopterFrames[nas->UserInfo.user2].v;
     e2 = eng->Engine;
     if (e2 != NULL) {
-        e2->unk1E = eng->unk1E;
-        e2->unk10 = eng->unk10;
-        e2->unk10.y = 0;
+        e2->xform.rot.vy = eng->xform.rot.vy;
+        e2->XYZ = eng->XYZ;
+        e2->XYZ.y = 0;
     }
-    x = eng->unk10.x;
+    x = eng->XYZ.x;
     if ((u32)(x + 0x800) > 0x2000) {
         KillNAS(nas);
         return;
@@ -4955,18 +4955,18 @@ void PlotHelicopterTA(NAS *nas) {
         p = *s;
         if (p != NULL) {
             if (i) {
-                if (p->Engine->unk10.x != eng->unk10.x || p->Engine->unk10.z != eng->unk10.z) {
+                if (p->Engine->XYZ.x != eng->XYZ.x || p->Engine->XYZ.z != eng->XYZ.z) {
                     break;
                 }
             } else {
-                if (p->Engine->unk10.x != eng->unk10.x || p->Engine->unk10.z != eng->unk10.z) {
+                if (p->Engine->XYZ.x != eng->XYZ.x || p->Engine->XYZ.z != eng->XYZ.z) {
                     break;
                 }
             }
             return;
         }
     }
-    if ((u32)(eng->unk10.x - 2) >= 0xFFD) {
+    if ((u32)(eng->XYZ.x - 2) >= 0xFFD) {
         return;
     }
     if ((u32)Random(0x8000) >= 0x2800) {
@@ -4984,7 +4984,7 @@ void PlotHelicopterTA(NAS *nas) {
 loop:
     if (n < 3) {
         if (*slot == NULL) {
-            p = CreateNAS(eng->unk10.x, eng->unk10.y - 0xC8, eng->unk10.z + 0x3C, 0x1308, 0x11);
+            p = CreateNAS(eng->XYZ.x, eng->XYZ.y - 0xC8, eng->XYZ.z + 0x3C, 0x1308, 0x11);
             if (p == NULL) {
                 return;
             }
@@ -5063,16 +5063,16 @@ void InitPickupTA(NAS *nas) {
     switch ((u32)Random(4)) {
     default:
     case 0:
-        PlaySfx(0x4B0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4B0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 1:
-        PlaySfx(0x4B1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4B1, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 2:
-        PlaySfx(0x4B2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4B2, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 3:
-        PlaySfx(0x4B3, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4B3, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     }
     nas->UserInfo.user2 = 0;
@@ -5086,19 +5086,19 @@ void InitPickupTA(NAS *nas) {
         sub = eng->sub;
         sub->u6C.dbase = p;
         sub->entity = 0x202B;
-        eng->unk5D = 1;
+        eng->xform.order = 1;
         e = AddExtEngine(nas, 1);
         if (e != NULL) {
-            e->unk10.x = eng->unk10.x;
-            e->unk10.y = 0;
-            e->unk10.z = eng->unk10.z;
+            e->XYZ.x = eng->XYZ.x;
+            e->XYZ.y = 0;
+            e->XYZ.z = eng->XYZ.z;
             e->sub->unk51 = 2;
             e->sub->u6C.dbase = p;
             e->sub->entity = 0x202A;
             e->sub->flags |= 0x40000041;
             e->sub->unk76 = 0x800;
             e->sub->unk50 = 1;
-            y = eng->unk10.y + 0x1000;
+            y = eng->XYZ.y + 0x1000;
             e->sub->unk20.x = y;
             e->sub->unk20.z = y;
             e->sub->unk52 = 1;
@@ -5136,7 +5136,7 @@ void PlotPickupTA(NAS *nas) {
     eng = nas->Engine;
     fux = (EXTobject_TA *)nas->FUX;
     dx = 0;
-    if (TankMapCell(d = eng->unk10.x, eng->unk10.z) != 0) {
+    if (TankMapCell(d = eng->XYZ.x, eng->XYZ.z) != 0) {
         goto puff;
     }
     switch (nas->UserInfo.user1) {
@@ -5149,29 +5149,29 @@ void PlotPickupTA(NAS *nas) {
             }
         }
         if (nas->UserInfo.status == 2) {
-            eng->unk5E = 1;
-            eng->unk1E += 0x28;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy += 0x28;
         }
         fux->SpeedY += 8;
-        eng->unk10.y += fux->SpeedY;
-        if (eng->unk10.y >= 0) {
-            eng->unk10.y = -1;
+        eng->XYZ.y += fux->SpeedY;
+        if (eng->XYZ.y >= 0) {
+            eng->XYZ.y = -1;
             fux->SpeedY = -0x28;
-            eng->unk10.y -= 0x28;
+            eng->XYZ.y -= 0x28;
         }
         break;
     case 5:
-        eng->unk10.y += 0x14;
+        eng->XYZ.y += 0x14;
         nas->UserInfo.user2 = (nas->UserInfo.user2 + 0x78) & 0xFFF;
         sn = rcossin_tbl[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2;
-        eng->unk5E = 1;
-        eng->unk20 = (sn * 25) >> 9;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vz = (sn * 25) >> 9;
         dx = -(rcossin_tbl[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2 * 120) >> 12;
-        if (eng->unk10.y < -0x12B) {
+        if (eng->XYZ.y < -0x12B) {
             break;
         }
-        fx = eng->unk10.x;
-        fz = eng->unk10.z;
+        fx = eng->XYZ.x;
+        fz = eng->XYZ.z;
         lim = 0x100;
         for (j = 0; j < 8; j++) {
             n = TankMines[j];
@@ -5179,14 +5179,14 @@ void PlotPickupTA(NAS *nas) {
                 continue;
             }
             e = n->Engine;
-            d = fx - e->unk10.x;
+            d = fx - e->XYZ.x;
             if (d < -0x100) {
                 continue;
             }
             if (lim < d) {
                 continue;
             }
-            d = fz - e->unk10.z;
+            d = fz - e->XYZ.z;
             if (d < -0x100) {
                 continue;
             }
@@ -5196,39 +5196,39 @@ void PlotPickupTA(NAS *nas) {
             n->UserInfo.status = 1;
         }
         if ((u32)((u16)GameMode - 8) >= 2) {
-            TankSpawnBit1605(&eng->unk10, 3);
+            TankSpawnBit1605(&eng->XYZ, 3);
             switch ((u32)Random(4)) {
             case 0:
-                PlaySfx(0x4B4, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x4B4, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             case 1:
-                PlaySfx(0x4B5, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x4B5, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             case 2:
-                PlaySfx(0x4B6, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x4B6, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             case 3:
-                PlaySfx(0x4B7, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x4B7, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             }
         }
-        eng->unk10.y = 0;
+        eng->XYZ.y = 0;
         fux->SpeedY = -0x28;
         nas->UserInfo.user1 = 0;
-        eng->unk20 = 0;
+        eng->xform.rot.vz = 0;
         switch (nas->UserInfo.status) {
         case 2:
             eng->sub->u6C.dbase = &HeroModelBank[DB_TankObjects2];
             eng->sub->entity = 0x2007;
             eng->Engine->sub->u6C.dbase = &HeroModelBank[DB_TankObjects2];
             eng->Engine->sub->entity = 0x200F;
-            eng->Engine->unk1E = eng->unk1E + 0x400;
+            eng->Engine->xform.rot.vy = eng->xform.rot.vy + 0x400;
             eng->Engine->sub->unk20.x = 0x20;
             eng->Engine->sub->unk20.z = 0x60;
-            eng->Engine->unk5E = 1;
+            eng->Engine->xform.dirty = 1;
             break;
         case 6:
-            CreateNAS(eng->unk10.x, -0x14, eng->unk10.z, 0x1303, 0x11);
+            CreateNAS(eng->XYZ.x, -0x14, eng->XYZ.z, 0x1303, 0x11);
             for (i = 0; i < 3; i++) {
                 if (PU_TA_list[i] == nas) {
                     PU_TA_list[i] = NULL;
@@ -5259,18 +5259,18 @@ void PlotPickupTA(NAS *nas) {
         }
         break;
     }
-    eng->unk5E = 1;
-    if (eng->unk10.y < -0x2ED) {
+    eng->xform.dirty = 1;
+    if (eng->XYZ.y < -0x2ED) {
         goto follow;
     }
-    hit = TankRocketFindHero(eng->unk10.x, eng->unk10.z, 0x12C);
+    hit = TankRocketFindHero(eng->XYZ.x, eng->XYZ.z, 0x12C);
     if (hit < 0) {
         goto follow;
     }
     if (TankLevelOver != 0) {
     puff:
-        TankSpawnBit1605(&eng->unk10, 3);
-        PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        TankSpawnBit1605(&eng->XYZ, 3);
+        PlaySfx(0x4EA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         for (k = 0; k < 3; k++) {
             if (PU_TA_list[k] == nas) {
                 PU_TA_list[k] = NULL;
@@ -5289,7 +5289,7 @@ void PlotPickupTA(NAS *nas) {
             v = 0x4B0;
         }
         DamageTankHero(hit, v);
-        CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1306, 0x11);
+        CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1306, 0x11);
         goto puff;
     case 5:
         TA_players[hit].SubWeaponRounds++;
@@ -5350,36 +5350,36 @@ void PlotPickupTA(NAS *nas) {
     switch (nas->UserInfo.status) {
     case 4:
     default:
-        PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x1C2, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         return;
     case 3:
-        PlaySfx(0x48E, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x48E, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         return;
     case 2:
-        PlaySfx(0x51F, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x51F, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         return;
     case 5:
-        PlaySfx(0x4E8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4E8, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         return;
     }
 follow:
     fe = eng->Engine;
     if (fe != NULL) {
-        fe->unk1E = eng->unk1E;
-        fe->unk10 = eng->unk10;
-        x = eng->unk10.x;
-        fe->unk10.y = 0;
-        fe->unk10.x = x + dx;
-        sc = ((eng->unk10.y + 0x1000) * 0xAF0) / 0x1000;
+        fe->xform.rot.vy = eng->xform.rot.vy;
+        fe->XYZ = eng->XYZ;
+        x = eng->XYZ.x;
+        fe->XYZ.y = 0;
+        fe->XYZ.x = x + dx;
+        sc = ((eng->XYZ.y + 0x1000) * 0xAF0) / 0x1000;
         fe->sub->unk20.x = sc;
         fe->sub->unk20.z = sc;
         fe->sub->unk52 = 1;
     }
     if (nas->UserInfo.status == 2) {
-        fe->unk1E = eng->unk1E + 0x400;
+        fe->xform.rot.vy = eng->xform.rot.vy + 0x400;
         fe->sub->unk20.x = 0x3E8;
         fe->sub->unk20.z = 0xAF0;
-        eng->Engine->unk5E = 1;
+        eng->Engine->xform.dirty = 1;
     }
 }
 
@@ -5418,9 +5418,9 @@ bool MissileCollideWithPickup(EXTengine *eng) {
     s32 y;
     s32 z;
 
-    x = eng->unk10.x;
-    y = eng->unk10.y;
-    z = eng->unk10.z;
+    x = eng->XYZ.x;
+    y = eng->XYZ.y;
+    z = eng->XYZ.z;
     for (i = 0;; i++) {
         if (i >= 3) {
             return 0;
@@ -5430,11 +5430,11 @@ bool MissileCollideWithPickup(EXTengine *eng) {
             continue;
         }
         pe = pickup->Engine;
-        if ((u32)(pe->unk10.x - x + 0xFF) < 0x1FF
-            && (u32)(pe->unk10.z - z + 0xFF) < 0x1FF
-            && (u32)(pe->unk10.y - y + 0xFF) < 0x1FF) {
-            SpawnPuff1605(&pe->unk10, 0x10);
-            PlaySfx(0x4B8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        if ((u32)(pe->XYZ.x - x + 0xFF) < 0x1FF
+            && (u32)(pe->XYZ.z - z + 0xFF) < 0x1FF
+            && (u32)(pe->XYZ.y - y + 0xFF) < 0x1FF) {
+            SpawnPuff1605(&pe->XYZ, 0x10);
+            PlaySfx(0x4B8, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             for (j = 0; j < 3; j++) {
                 if (PU_TA_list[j] == pickup) {
                     PU_TA_list[j] = NULL;
@@ -5454,15 +5454,15 @@ void PlotRock_TA(NAS *nas) {
         e = nas->Engine;
         nas->UserInfo.status = 0;
         {
-            s32 z = e->unk10.z >> 9;
-            s32 x = e->unk10.x >> 9;
+            s32 z = e->XYZ.z >> 9;
+            s32 x = e->XYZ.x >> 9;
             u8 v = ((x << 5) | 0x10) + ((z * 2) + 1);
             TankLevelsGridMapMiss[(z * TankMapWidth) + x] = v;
             TankLevelsGridMapTank[(z * TankMapWidth) + x] = v;
         }
         {
-            s32 z = nas->Engine->unk10.z >> 9;
-            s32 x = nas->Engine->unk10.x >> 9;
+            s32 z = nas->Engine->XYZ.z >> 9;
+            s32 x = nas->Engine->XYZ.x >> 9;
             u8 v = ((x << 5) | 0x10) + ((z * 2) + 1);
             s32 i = (z * TankMapWidth) + x;
             TankLevelsGridMapMiss[i] = v;
@@ -5491,8 +5491,8 @@ void PlotPeriscope(NAS *nas) {
     switch (fux->Status) {
     case 1:
         if (--fux->Counter == 30) {
-            PeriscopePuff = TankPeriscopePuff(&nas->Engine->unk10, 1);
-            PlaySfx(0x4FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PeriscopePuff = TankPeriscopePuff(&nas->Engine->XYZ, 1);
+            PlaySfx(0x4FB, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         if (fux->Counter <= 0) {
             fux->Status = 4;
@@ -5500,7 +5500,7 @@ void PlotPeriscope(NAS *nas) {
         }
         break;
     case 4:
-        TankPeriscopePuff(&nas->Engine->unk10, 0);
+        TankPeriscopePuff(&nas->Engine->XYZ, 0);
         fux->Counter--;
         switch (fux->Counter) {
         case 3:
@@ -5528,11 +5528,11 @@ void PlotPeriscope(NAS *nas) {
         break;
     case 0:
         if (!(GameFrameCount & 0x3F)) {
-            TankPeriscopePuff(&nas->Engine->unk10, 0);
+            TankPeriscopePuff(&nas->Engine->XYZ, 0);
         }
         sub = eng->sub;
-        eng->unk5E = 1;
-        eng->unk1E += 30;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy += 30;
         sub = sub->next;
         sub->unk51 = 0;
         sub->unk52 = 1;
@@ -5544,23 +5544,23 @@ void PlotPeriscope(NAS *nas) {
         for (i = 0; i < 4; i++) {
             if (Heroes[i].hero_name != 9 && !(Heroes[i].hero_status & 0xFA00) && GAME->heroOut[i] == 0) {
                 e = Heroes[i].hero_eng;
-                if ((u32)(((eng->unk1E - get_angle(eng->unk10.x - e->unk10.x, eng->unk10.z - e->unk10.z)) & 0xFFF) - 0x15) >= 0xFD7U) {
+                if ((u32)(((eng->xform.rot.vy - get_angle(eng->XYZ.x - e->XYZ.x, eng->XYZ.z - e->XYZ.z)) & 0xFFF) - 0x15) >= 0xFD7U) {
                     fux->Status = 10;
                     fux->Counter = 0;
-                    PlaySfx(0x4FC, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x4FC, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 }
             }
         }
         break;
     case 10:
         if (!(GameFrameCount & 0x1F)) {
-            TankPeriscopePuff(&nas->Engine->unk10, 0);
+            TankPeriscopePuff(&nas->Engine->XYZ, 0);
         }
         frame = PeriscopeFrames[fux->Counter];
         if (++fux->Counter == 9) {
-            n = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1319, 0x11);
+            n = CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1319, 0x11);
             if (n != NULL) {
-                n->Engine->unk1E = eng->unk1E;
+                n->Engine->xform.rot.vy = eng->xform.rot.vy;
             }
         }
         if (frame == 0) {
@@ -5571,7 +5571,7 @@ void PlotPeriscope(NAS *nas) {
         eng->sub->next->entity = frame;
         break;
     case 11:
-        TankPeriscopePuff(&nas->Engine->unk10, 0);
+        TankPeriscopePuff(&nas->Engine->XYZ, 0);
         fux->Counter--;
         switch (fux->Counter) {
         case 3:
@@ -5604,7 +5604,7 @@ void PlotPeriscope(NAS *nas) {
         }
         break;
     case 5:
-        TankPeriscopePuff(&nas->Engine->unk10, 0);
+        TankPeriscopePuff(&nas->Engine->XYZ, 0);
         fux->Counter--;
         switch (fux->Counter) {
         case 3:
@@ -5643,7 +5643,7 @@ void PlotPeriscopeGun(NAS *nas) {
     e->sub->entity++;
     switch (nas->Engine->sub->entity) {
     case 0x4081:
-        shell = CreateNAS(e->unk10.x, e->unk10.y - 200, e->unk10.z, 0x130B, 0x11);
+        shell = CreateNAS(e->XYZ.x, e->XYZ.y - 200, e->XYZ.z, 0x130B, 0x11);
         if (shell == NULL) {
             return;
         }
@@ -5655,10 +5655,10 @@ void PlotPeriscopeGun(NAS *nas) {
         }
         shell->FUX = (EXT *)ext;
         se = shell->Engine;
-        dx = -(rcossin_tbl[(e->unk1E - 0x400) & 0xFFF].unk2 * 620);
-        se->unk10.x += dx >> 12;
-        dz = -(rcossin_tbl[(u16)e->unk1E & 0xFFF].unk2 * 620);
-        se->unk10.z += dz >> 12;
+        dx = -(rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 620);
+        se->XYZ.x += dx >> 12;
+        dz = -(rcossin_tbl[(u16)e->xform.rot.vy & 0xFFF].unk2 * 620);
+        se->XYZ.z += dz >> 12;
         ext->SpeedY = -150;
         ext->Owner = -1;
         ext->SpeedX = dx >> 16;
@@ -5682,8 +5682,8 @@ void PlotBoatField(NAS *nas) {
 
     src = Heroes[nas->UserInfo.user1].hero_eng;
     dst = nas->Engine;
-    dst->unk10.x = src->unk10.x;
-    dst->unk10.z = src->unk10.z;
+    dst->XYZ.x = src->XYZ.x;
+    dst->XYZ.z = src->XYZ.z;
     t = nas->UserInfo.user2;
     nas->UserInfo.user2 = t + 1;
     switch (t) {
@@ -5691,7 +5691,7 @@ void PlotBoatField(NAS *nas) {
     case 4:
     case 9:
     case 14:
-        pos = (s32 *)&dst->unk10;
+        pos = (s32 *)&dst->XYZ;
         p = &HeroModelBank[DB_TankVehicle];
         n = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
         if (n != NULL) {
@@ -5771,8 +5771,8 @@ void PlotPillar(NAS *nas) {
             return;
         }
         r = 0x1FF;
-        x = eng->unk10.x;
-        z = eng->unk10.z;
+        x = eng->XYZ.x;
+        z = eng->XYZ.z;
         for (i = 0; i < 4; i++) {
             name = Heroes[i].hero_name;
             if (name == 9 &&
@@ -5784,14 +5784,14 @@ void PlotPillar(NAS *nas) {
                 continue;
             }
             e = Heroes[i].hero_eng;
-            d = x - e->unk10.x;
+            d = x - e->XYZ.x;
             if (d < -0x1FF) {
                 continue;
             }
             if (r < d) {
                 continue;
             }
-            d = z - e->unk10.z;
+            d = z - e->XYZ.z;
             n = -0x1FF;
             if (n < d && d < 0x1FF) {
                 hit = i;
@@ -5801,14 +5801,14 @@ void PlotPillar(NAS *nas) {
         hit = -1;
     found:
         if (hit < 0) {
-            if (TankLevelsGridMapMiss[((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9)] != 0) {
+            if (TankLevelsGridMapMiss[((eng->XYZ.z >> 9) * TankMapWidth) + (eng->XYZ.x >> 9)] != 0) {
                 KillNAS(nas);
                 return;
             }
             nas->UserInfo.user1 = 4;
             {
-                s32 z = eng->unk10.z >> 9;
-                s32 x = eng->unk10.x >> 9;
+                s32 z = eng->XYZ.z >> 9;
+                s32 x = eng->XYZ.x >> 9;
                 u8 v = ((x << 5) | 0x10) + ((z * 2) + 1);
                 TankLevelsGridMapMiss[(z * TankMapWidth) + x] = v;
                 TankLevelsGridMapTank[(z * TankMapWidth) + x] = v;
@@ -5824,9 +5824,9 @@ void PlotPillar(NAS *nas) {
         nas->UserInfo.status++;
         return;
     case 4:
-        eng->unk10.y -= 0x1E;
-        if (eng->unk10.y <= 0) {
-            eng->unk10.y = 0;
+        eng->XYZ.y -= 0x1E;
+        if (eng->XYZ.y <= 0) {
+            eng->XYZ.y = 0;
             nas->UserInfo.user1 = 0;
         }
         return;
@@ -5841,17 +5841,17 @@ void PlotPillar(NAS *nas) {
         }
         return;
     case 5:
-        eng->unk10.y += 0x1E;
-        if (eng->unk10.y >= 0xB8) {
-            obj = CreateNAS(eng->unk10.x, 0, eng->unk10.z, 0x1312, 0x11);
+        eng->XYZ.y += 0x1E;
+        if (eng->XYZ.y >= 0xB8) {
+            obj = CreateNAS(eng->XYZ.x, 0, eng->XYZ.z, 0x1312, 0x11);
             if (obj != NULL) {
                 obj->UserInfo.user1 = 7;
                 obj->UserInfo.status = 3;
                 obj->Engine->sub->entity = 0x400F;
             }
             {
-                s32 z = eng->unk10.z >> 9;
-                s32 x = eng->unk10.x >> 9;
+                s32 z = eng->XYZ.z >> 9;
+                s32 x = eng->XYZ.x >> 9;
                 TankLevelsGridMapMiss[(z * TankMapWidth) + x] = 0;
                 TankLevelsGridMapTank[(z * TankMapWidth) + x] = 0;
             }
@@ -5884,14 +5884,14 @@ static inline s32 TotemFindHero(s32 x, s32 z, s32 r) {
             continue;
         }
         e = Heroes[i].hero_eng;
-        d = x - e->unk10.x;
+        d = x - e->XYZ.x;
         if (d < -r) {
             continue;
         }
         if (r < d) {
             continue;
         }
-        d = z - e->unk10.z;
+        d = z - e->XYZ.z;
         if (-r < d && d < r) {
             return i;
         }
@@ -5944,8 +5944,8 @@ void PlotTotemPole(NAS *nas) {
             nas->UserInfo.user2--;
             return;
         }
-        eng->unk5E = 1;
-        eng->unk1E += 0x22;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy += 0x22;
         for (i = 0; i < 4; i++) {
             if (Heroes[i].hero_name == 9) {
                 continue;
@@ -5957,7 +5957,7 @@ void PlotTotemPole(NAS *nas) {
                 continue;
             }
             e = Heroes[i].hero_eng;
-            if ((u32)(((eng->unk1E - get_angle(eng->unk10.x - e->unk10.x, eng->unk10.z - e->unk10.z)) & 0xFFF) - 0x15) < 0xFD7) {
+            if ((u32)(((eng->xform.rot.vy - get_angle(eng->XYZ.x - e->XYZ.x, eng->XYZ.z - e->XYZ.z)) & 0xFFF) - 0x15) < 0xFD7) {
                 continue;
             }
             fux->Status = 0xD;
@@ -5987,8 +5987,8 @@ void InitTotemBit(NAS *nas, s32 id) {
     ext->Status = 1;
     eng = nas->Engine;
     sub = eng->sub;
-    eng->unk5D = 0;
-    eng->unk1E = 0;
+    eng->xform.order = 0;
+    eng->xform.rot.vy = 0;
     sub->u6C.dbase = &HeroModelBank[DB_ArenaTankJungleObjects];
     if (id == 0x131B) {
         sub->entity = 0x4180;
@@ -6028,9 +6028,9 @@ void TotemBitExplode(EXTengine *arg0) {
     s32 lim;
     HeroInfo *h;
 
-    saved = arg0->unk10.y;
-    arg0->unk10.y = 0x12C;
-    pos = &arg0->unk10;
+    saved = arg0->XYZ.y;
+    arg0->XYZ.y = 0x12C;
+    pos = &arg0->XYZ;
     p = &HeroModelBank[DB_ArenaTankJungleObjects];
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
@@ -6051,18 +6051,18 @@ void TotemBitExplode(EXTengine *arg0) {
     lim = 0x300;
     i = 0;
     h = Heroes;
-    x = arg0->unk10.x;
-    z = arg0->unk10.z;
+    x = arg0->XYZ.x;
+    z = arg0->XYZ.z;
     for (; i < 4; i++, h++) {
-        d = x - h->hero_eng->unk10.x;
+        d = x - h->hero_eng->XYZ.x;
         if (d >= -0x300 && d <= lim) {
-            d = z - h->hero_eng->unk10.z;
+            d = z - h->hero_eng->XYZ.z;
             if (d >= -0x300 && d <= lim) {
                 DamageTankHero(i, 0x3C);
             }
         }
     }
-    arg0->unk10.y = saved;
+    arg0->XYZ.y = saved;
     PlaySfx(0x505, NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
@@ -6083,8 +6083,8 @@ void PlotTotemBit(NAS *nas, s32 id) {
 
     eng = nas->Engine;
     ext = (EXTobject_TA *)nas->FUX;
-    x = eng->unk10.x;
-    z = eng->unk10.z;
+    x = eng->XYZ.x;
+    z = eng->XYZ.z;
     switch ((u32)ext->Status) {
     case 1:
         pole = TotemPole;
@@ -6097,9 +6097,9 @@ void PlotTotemBit(NAS *nas, s32 id) {
             }
             break;
         case 0x24:
-            if (eng->unk1E != pole->Engine->unk1E) {
-                eng->unk1E = pole->Engine->unk1E;
-                eng->unk5E = 1;
+            if (eng->xform.rot.vy != pole->Engine->xform.rot.vy) {
+                eng->xform.rot.vy = pole->Engine->xform.rot.vy;
+                eng->xform.dirty = 1;
             }
             break;
         case 0x11:
@@ -6108,7 +6108,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
                 ext->SpeedY = -0x5A;
                 ext->SpeedX = -0x1E;
                 ext->SpeedZ = -0x2D;
-                PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x504, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
             break;
         case 0:
@@ -6117,7 +6117,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
                 ext->SpeedY = -0x5A;
                 ext->SpeedX = 0x1E;
                 ext->SpeedZ = -0x2D;
-                PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x504, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
             break;
         }
@@ -6126,18 +6126,18 @@ void PlotTotemBit(NAS *nas, s32 id) {
         v = *ext->pAnimList++;
         if (v != 0) {
             if (v == -1) {
-            n = CreateNAS(eng->unk10.x, eng->unk10.y - 100, eng->unk10.z, 0x130E, 0x11);
+            n = CreateNAS(eng->XYZ.x, eng->XYZ.y - 100, eng->XYZ.z, 0x130E, 0x11);
             if (n != NULL) {
                 ne = n->Engine;
                 nx = (EXTobject_TA *)n->FUX;
                 ne->sub->u6C.dbase = &HeroModelBank[DB_ArenaTankJungleObjects];
                 ne->sub->entity = 0x2006;
                 nx->Owner = v;
-                ne->unk10.x += -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 300) >> 12;
-                ne->unk10.z += -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 300) >> 12;
-                ne->unk1E = eng->unk1E;
-                nx->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 60) >> 12;
-                nx->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 60) >> 12;
+                ne->XYZ.x += -(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 300) >> 12;
+                ne->XYZ.z += -(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 300) >> 12;
+                ne->xform.rot.vy = eng->xform.rot.vy;
+                nx->SpeedX = -(rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 60) >> 12;
+                nx->SpeedZ = -(rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 60) >> 12;
             }
             } else {
                 eng->sub->entity = v;
@@ -6154,17 +6154,17 @@ void PlotTotemBit(NAS *nas, s32 id) {
         break;
     case 5:
         ext->SpeedY += 12;
-        eng->unk10.y += ext->SpeedY;
-        x = eng->unk10.x + ext->SpeedX;
-        z = eng->unk10.z + ext->SpeedZ;
-        if (eng->unk10.y < 0) {
+        eng->XYZ.y += ext->SpeedY;
+        x = eng->XYZ.x + ext->SpeedX;
+        z = eng->XYZ.z + ext->SpeedZ;
+        if (eng->XYZ.y < 0) {
             break;
         }
-        eng->unk10.y = 0;
+        eng->XYZ.y = 0;
         if (ext->SpeedY >= 0x25) {
             TotemBitExplode(eng);
         } else {
-            PlaySfx(0x506, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x506, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         if (ext->SpeedY < 13) {
             ext->Status = 0;
@@ -6185,14 +6185,14 @@ void PlotTotemBit(NAS *nas, s32 id) {
         ext->TargetIndex = (ext->TargetIndex + 1) & 0xF;
         ext->TargetX = TotemTargets[ext->TargetIndex][0];
         ext->TargetZ = *(s32 *)FILE_AT(TotemTargets, (ext->TargetIndex * 8) | 4);
-        ext->SpeedX = (ext->TargetX - eng->unk10.x) / 31;
-        ext->SpeedZ = (ext->TargetZ - eng->unk10.z) / 31;
+        ext->SpeedX = (ext->TargetX - eng->XYZ.x) / 31;
+        ext->SpeedZ = (ext->TargetZ - eng->XYZ.z) / 31;
         a = get_angle(ext->SpeedX, ext->SpeedZ) + 0x800;
-        a -= eng->unk1E;
+        a -= eng->xform.rot.vy;
         a = (a << 20) >> 20;
         a /= 12;
         ext->Speed = a;
-        PlaySfx(0x507, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x507, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 0x25:
         v = *ext->pAnimList++;
@@ -6201,10 +6201,10 @@ void PlotTotemBit(NAS *nas, s32 id) {
             k = nas->UserInfo.status++;
             k -= 16;
             if (k > 0) {
-                eng->unk1E += ext->Speed;
-                eng->unk5E = 1;
-                x = eng->unk10.x + ext->SpeedX * k / 12;
-                z = eng->unk10.z + ext->SpeedZ * k / 12;
+                eng->xform.rot.vy += ext->Speed;
+                eng->xform.dirty = 1;
+                x = eng->XYZ.x + ext->SpeedX * k / 12;
+                z = eng->XYZ.z + ext->SpeedZ * k / 12;
             }
         } else {
             ext->pAnimList = TotemAnim29;
@@ -6217,15 +6217,15 @@ void PlotTotemBit(NAS *nas, s32 id) {
             ext->Status = 0x26;
             ext->pAnimList = TotemAnim26;
             nas->UserInfo.status = 0;
-            a = -eng->unk1E;
+            a = -eng->xform.rot.vy;
             a = (a << 20) >> 20;
             a /= 12;
             ext->Speed = a;
             break;
         }
         eng->sub->entity = v;
-        x = eng->unk10.x + ext->SpeedX;
-        z = eng->unk10.z + ext->SpeedZ;
+        x = eng->XYZ.x + ext->SpeedX;
+        z = eng->XYZ.z + ext->SpeedZ;
         break;
     case 0x26:
         v = *ext->pAnimList++;
@@ -6234,10 +6234,10 @@ void PlotTotemBit(NAS *nas, s32 id) {
             t = nas->UserInfo.status++;
             if (t < 12) {
                 t = 12 - t;
-                x = eng->unk10.x + ext->SpeedX * t / 12;
-                z = eng->unk10.z + ext->SpeedZ * t / 12;
-                eng->unk1E += ext->Speed;
-                eng->unk5E = 1;
+                x = eng->XYZ.x + ext->SpeedX * t / 12;
+                z = eng->XYZ.z + ext->SpeedZ * t / 12;
+                eng->xform.rot.vy += ext->Speed;
+                eng->xform.dirty = 1;
             }
         } else if (TankLevelOver != 0) {
             ext->Status = 0;
@@ -6246,7 +6246,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
         } else {
             ext->pAnimList = TotemAnim27;
             ext->Status = 0x27;
-            PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x504, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x27:
@@ -6266,20 +6266,20 @@ void PlotTotemBit(NAS *nas, s32 id) {
         break;
     }
     if (TankRocketFindHero(x, z, 0x180) < 0) {
-        eng->unk10.x = x;
-        eng->unk10.z = z;
+        eng->XYZ.x = x;
+        eng->XYZ.z = z;
     }
-    if (eng->unk10.x > TankArenaMaxX) {
-        eng->unk10.x = TankArenaMaxX;
+    if (eng->XYZ.x > TankArenaMaxX) {
+        eng->XYZ.x = TankArenaMaxX;
     }
-    if (eng->unk10.x < 0x100) {
-        eng->unk10.x = 0x100;
+    if (eng->XYZ.x < 0x100) {
+        eng->XYZ.x = 0x100;
     }
-    if (eng->unk10.z > TankArenaMaxZ) {
-        eng->unk10.z = TankArenaMaxZ;
+    if (eng->XYZ.z > TankArenaMaxZ) {
+        eng->XYZ.z = TankArenaMaxZ;
     }
-    if (eng->unk10.z < 0x100) {
-        eng->unk10.z = 0x100;
+    if (eng->XYZ.z < 0x100) {
+        eng->XYZ.z = 0x100;
     }
     MissileCollideWithPickup(eng);
 }
@@ -6306,12 +6306,12 @@ void CheckMineToBoss(s32 x, s32 y, s32 z) {
                     nas->UserInfo.user2 = 0x3C;
                     nas->UserInfo.status = 0;
                     eng->sub->entity = 0x2006;
-                    TankSpawnBit1605B(&eng->unk10, 0);
+                    TankSpawnBit1605B(&eng->XYZ, 0);
                 } else {
                     nas->UserInfo.user2 = 0x3C;
                     nas->UserInfo.status = 0;
                     eng->sub->entity = 0x2008;
-                    TankSpawnBit1605B(&eng->unk10, 0);
+                    TankSpawnBit1605B(&eng->XYZ, 0);
                 }
             }
         }
@@ -6334,12 +6334,12 @@ void CheckMineToBoss(s32 x, s32 y, s32 z) {
                     nas->UserInfo.user2 = 0x3C;
                     nas->UserInfo.status = 0;
                     eng->sub->entity = 0x2007;
-                    TankSpawnBit1605B(&eng->unk10, 1);
+                    TankSpawnBit1605B(&eng->XYZ, 1);
                 } else {
                     nas->UserInfo.user2 = 0x3C;
                     nas->UserInfo.status = 0;
                     eng->sub->entity = 0x2005;
-                    TankSpawnBit1605B(&eng->unk10, 1);
+                    TankSpawnBit1605B(&eng->XYZ, 1);
                 }
             }
         }
@@ -6362,12 +6362,12 @@ void CheckMineToBoss(s32 x, s32 y, s32 z) {
                     nas->UserInfo.user2 = 0x3C;
                     nas->UserInfo.status = 0;
                     eng->sub->entity = 0x2025;
-                    TankSpawnBit1605B(&eng->unk10, 2);
+                    TankSpawnBit1605B(&eng->XYZ, 2);
                 } else {
                     nas->UserInfo.user2 = 0x3C;
                     nas->UserInfo.status = 0;
                     eng->sub->entity = 0x2026;
-                    TankSpawnBit1605B(&eng->unk10, 2);
+                    TankSpawnBit1605B(&eng->XYZ, 2);
                 }
             }
         }
@@ -6410,8 +6410,8 @@ void InitTankBoss(NAS *nas) {
     sub->entity = 0x2002;
     sub->unk68 = 0x100;
     sub->flags |= 0x02000000;
-    eng->unk5D = 0;
-    eng->unk10.y = 0x7D0;
+    eng->xform.order = 0;
+    eng->XYZ.y = 0x7D0;
     ext->Status = TankBossStartStatus;
     TankBossStatus = TankBossStartStatus;
     switch (TankBossStartStatus) {
@@ -6486,12 +6486,12 @@ void PlotTankBoss(NAS *nas) {
         }
         break;
     case 0x2D:
-        if ((eng->unk10.y -= 0x1E) <= 0) {
+        if ((eng->XYZ.y -= 0x1E) <= 0) {
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
             }
-            PlaySfx(0x259, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-            eng->unk10.y = 0;
+            PlaySfx(0x259, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+            eng->XYZ.y = 0;
             fux->Status = 0x2E;
             fux->Counter = 0x1E;
             PlaySfx(0x25B, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -6512,21 +6512,21 @@ void PlotTankBoss(NAS *nas) {
             TankBossCrashTurrets[2]->UserInfo.flags == TankBossCrashTurrets[1]->UserInfo.flags) {
             fux->Status = 0x30;
             fux->Counter = 0x2D;
-            PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x25A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x30:
-        eng->unk10.y += TankBossBob[fux->Counter & 0xF];
+        eng->XYZ.y += TankBossBob[fux->Counter & 0xF];
         if (--fux->Counter <= 0) {
             fux->Status = 0x31;
         }
         break;
     case 0x31:
-        if ((eng->unk10.y += 10) >= 0x2B6) {
+        if ((eng->XYZ.y += 10) >= 0x2B6) {
             KillNAS(TankBossCrashTurrets[0]);
             KillNAS(TankBossCrashTurrets[1]);
             KillNAS(TankBossCrashTurrets[2]);
-            eng->unk10.y = 0x2B6;
+            eng->XYZ.y = 0x2B6;
             fux->Status = 0x32;
             fux->Counter = 0x33;
             PlaySfx(0x25C, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -6549,22 +6549,22 @@ void PlotTankBoss(NAS *nas) {
             TankBossCortexTurrets[3]->UserInfo.flags == TankBossCortexTurrets[2]->UserInfo.flags) {
             fux->Status = 0x34;
             fux->Counter = 0x2D;
-            PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x25A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x34:
-        eng->unk10.y += TankBossBob[fux->Counter & 0xF];
+        eng->XYZ.y += TankBossBob[fux->Counter & 0xF];
         if (--fux->Counter <= 0) {
             fux->Status = 0x35;
         }
         break;
     case 0x35:
-        if ((eng->unk10.y += 10) >= 0x4BF) {
+        if ((eng->XYZ.y += 10) >= 0x4BF) {
             KillNAS(TankBossCortexTurrets[0]);
             KillNAS(TankBossCortexTurrets[1]);
             KillNAS(TankBossCortexTurrets[2]);
             KillNAS(TankBossCortexTurrets[3]);
-            eng->unk10.y = 0x4BF;
+            eng->XYZ.y = 0x4BF;
             fux->Status = 0x36;
             fux->Counter = 0x3C;
             PlaySfx(0x25C, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -6585,18 +6585,18 @@ void PlotTankBoss(NAS *nas) {
             TankBossRocketTurrets[1]->UserInfo.flags == TankBossRocketTurrets[0]->UserInfo.flags) {
             fux->Status = 0x38;
             fux->Counter = 0x5A;
-            PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x25A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x38:
-        eng->unk10.y += TankBossBob[fux->Counter & 0xF];
+        eng->XYZ.y += TankBossBob[fux->Counter & 0xF];
         if (--fux->Counter <= 0) {
             fux->Status = 0x39;
             fux->Counter = 0x5A;
         }
         break;
     case 0x39:
-        if ((eng->unk10.y += 10) >= 0x7D0) {
+        if ((eng->XYZ.y += 10) >= 0x7D0) {
             KillNAS(TankBossRocketTurrets[0]);
             KillNAS(TankBossRocketTurrets[1]);
             TankBossStartStatus = 0x3A;
@@ -6635,23 +6635,23 @@ s32 TankBossTurretFindTarget(EXTengine *eng) {
     if (TankLevelOver != 0) {
         return -1;
     }
-    x = eng->unk10.x;
-    z = eng->unk10.z;
-    ang = eng->unk1E;
+    x = eng->XYZ.x;
+    z = eng->XYZ.z;
+    ang = eng->xform.rot.vy;
     if ((u32)Random(0x20) < (u32)AiPlayerSkill[3].level) {
         return -1;
     }
     if (Heroes[0].hero_health <= 0 || (Heroes[0].hero_status & 0xFA00)) {
         TankBossTargets[0].z = -1;
     } else {
-        TankBossTargets[0].x = Heroes[0].hero_eng->unk10.x;
-        TankBossTargets[0].z = Heroes[0].hero_eng->unk10.z;
+        TankBossTargets[0].x = Heroes[0].hero_eng->XYZ.x;
+        TankBossTargets[0].z = Heroes[0].hero_eng->XYZ.z;
     }
     if (GameTeams[0] == 0 || Heroes[1].hero_health <= 0 || (Heroes[1].hero_status & 0xFA00)) {
         TankBossTargets[1].z = -1;
     } else {
-        TankBossTargets[1].x = Heroes[1].hero_eng->unk10.x;
-        TankBossTargets[1].z = Heroes[1].hero_eng->unk10.z;
+        TankBossTargets[1].x = Heroes[1].hero_eng->XYZ.x;
+        TankBossTargets[1].z = Heroes[1].hero_eng->XYZ.z;
     }
     if (TankBossStatus == 0x37) {
         if (TankTurretSees(0, 0, x, z, ang)) {
@@ -6718,7 +6718,7 @@ void TankBossCrashTurretFire(EXTengine *arg0) {
     s32 dz;
     s32 ang;
 
-    shell = CreateNAS(arg0->unk10.x, arg0->unk10.y - 0xF0, arg0->unk10.z, 0x130E, 0x11);
+    shell = CreateNAS(arg0->XYZ.x, arg0->XYZ.y - 0xF0, arg0->XYZ.z, 0x130E, 0x11);
     if (shell == NULL) {
         return;
     }
@@ -6726,25 +6726,25 @@ void TankBossCrashTurretFire(EXTengine *arg0) {
     se = shell->Engine;
     ext->Counter *= 2;
     PlaySfx(0x4CE, &se->sfx, NULL, 0x1000, 0x1E00, 0);
-    se->unk10.x += -(rcossin_tbl[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
-    se->unk10.z += -(rcossin_tbl[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
-    se->unk1E = arg0->unk1E;
-    ext->SpeedX = -(rcossin_tbl[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 58) >> 12;
+    se->XYZ.x += -(rcossin_tbl[(arg0->xform.rot.vy - 0x400) & 0xFFF].unk2 * 400) >> 12;
+    se->XYZ.z += -(rcossin_tbl[(u16)arg0->xform.rot.vy & 0xFFF].unk2 * 400) >> 12;
+    se->xform.rot.vy = arg0->xform.rot.vy;
+    ext->SpeedX = -(rcossin_tbl[(arg0->xform.rot.vy - 0x400) & 0xFFF].unk2 * 58) >> 12;
     ext->SpeedY = -0x10;
-    dz = rcossin_tbl[(u16)arg0->unk1E & 0xFFF].unk2;
+    dz = rcossin_tbl[(u16)arg0->xform.rot.vy & 0xFFF].unk2;
     ext->Status = 1;
     ext->Owner = -1;
     ext->SpeedZ = -(dz * 58) >> 12;
 loop:
-    if (se->unk10.z > TankArenaMaxZ + 0x100) {
-        se->unk10.z -= 0x10;
+    if (se->XYZ.z > TankArenaMaxZ + 0x100) {
+        se->XYZ.z -= 0x10;
         goto loop;
     }
-    n = TankSpawnBit1605Nas(&shell->Engine->unk10, 6);
+    n = TankSpawnBit1605Nas(&shell->Engine->XYZ, 6);
     if (n != NULL) {
-        ang = arg0->unk1E;
-        n->Engine->unk1E = ang;
-        n->Engine->unk5E = 1;
+        ang = arg0->xform.rot.vy;
+        n->Engine->xform.rot.vy = ang;
+        n->Engine->xform.dirty = 1;
         for (sub = n->Engine->sub; sub != NULL; sub = sub->next) {
             sub->flags |= 0x20000000;
         }
@@ -6762,7 +6762,7 @@ void PlotTankBossCrashTurret(NAS *nas) {
     u16 *tbl;
 
     eng = nas->Engine;
-    eng->unk10.y = TankBossEng->unk10.y - 0x46;
+    eng->XYZ.y = TankBossEng->XYZ.y - 0x46;
     switch (nas->UserInfo.status) {
     case 4:
         nas->UserInfo.user2--;
@@ -6771,7 +6771,7 @@ void PlotTankBossCrashTurret(NAS *nas) {
         }
         break;
     case 1:
-        eng->unk10.z -= 0x30;
+        eng->XYZ.z -= 0x30;
         nas->UserInfo.flags -= 0x30;
         if (nas->UserInfo.flags > 1000) {
             nas->UserInfo.flags = 0;
@@ -6781,7 +6781,7 @@ void PlotTankBossCrashTurret(NAS *nas) {
         }
         break;
     case 39:
-        a = eng->unk10.x;
+        a = eng->XYZ.x;
         switch (a) {
         case 0x300:
         default:
@@ -6794,7 +6794,7 @@ void PlotTankBossCrashTurret(NAS *nas) {
             a = 0x200;
             break;
         }
-        a -= eng->unk1E;
+        a -= eng->xform.rot.vy;
         a = (a << 20) >> 20;
         if (a >= 0) {
             if (a < 20) {
@@ -6802,16 +6802,16 @@ void PlotTankBossCrashTurret(NAS *nas) {
                 nas->UserInfo.status = 13;
                 break;
             }
-            eng->unk1E += 20;
+            eng->xform.rot.vy += 20;
         } else {
             if (a >= -19) {
                 ((TankTurretFireFn)TankBossCrashTurretFire)(eng, 10, -1);
                 nas->UserInfo.status = 13;
                 break;
             }
-            eng->unk1E -= 20;
+            eng->xform.rot.vy -= 20;
         }
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         break;
     case 13:
         k = nas->UserInfo.user2;
@@ -6834,35 +6834,35 @@ void PlotTankBossCrashTurret(NAS *nas) {
             }
             nas->UserInfo.user2 = 60;
             nas->UserInfo.status = 0;
-            eng->unk1E &= 0xFFF;
+            eng->xform.rot.vy &= 0xFFF;
         } else {
             eng->sub->entity = v;
         }
         break;
     case 0:
         if (nas->UserInfo.flags != 2) {
-            if (eng->unk1E <= 16) {
+            if (eng->xform.rot.vy <= 16) {
                 nas->UserInfo.user2 = 0;
                 nas->UserInfo.status = 14;
             } else {
-                if (eng->unk1E < 0x800) {
-                    eng->unk1E -= 16;
+                if (eng->xform.rot.vy < 0x800) {
+                    eng->xform.rot.vy -= 16;
                 } else {
-                    eng->unk1E += 16;
+                    eng->xform.rot.vy += 16;
                 }
-                eng->unk5E = 1;
-                eng->unk1E &= 0xFFF;
+                eng->xform.dirty = 1;
+                eng->xform.rot.vy &= 0xFFF;
             }
         }
         break;
     case 14:
         if (nas->UserInfo.user1 & 1) {
-            eng->unk1E += 16;
+            eng->xform.rot.vy += 16;
         } else {
-            eng->unk1E -= 16;
+            eng->xform.rot.vy -= 16;
         }
-        eng->unk5E = 1;
-        t = eng->unk1E &= 0xFFF;
+        eng->xform.dirty = 1;
+        t = eng->xform.rot.vy &= 0xFFF;
         if ((u32)(t - 900) < 0x8F9U) {
             nas->UserInfo.user2 = 0;
             if (nas->UserInfo.user1 & 1) {
@@ -6874,12 +6874,12 @@ void PlotTankBossCrashTurret(NAS *nas) {
         break;
     case 15:
         do {
-            eng->unk1E = (eng->unk1E - 16) & 0xFFF;
+            eng->xform.rot.vy = (eng->xform.rot.vy - 16) & 0xFFF;
         } while (0);
-        u = eng->unk1E;
-        eng->unk5E = 1;
+        u = eng->xform.rot.vy;
+        eng->xform.dirty = 1;
         if ((u32)(u - 900) < 0x8F9U) {
-            eng->unk1E = u + 16;
+            eng->xform.rot.vy = u + 16;
             nas->UserInfo.user2 = 0;
             nas->UserInfo.status = 16;
             break;
@@ -6898,12 +6898,12 @@ void PlotTankBossCrashTurret(NAS *nas) {
         break;
     case 16:
         do {
-            eng->unk1E = (eng->unk1E + 16) & 0xFFF;
+            eng->xform.rot.vy = (eng->xform.rot.vy + 16) & 0xFFF;
         } while (0);
-        t = eng->unk1E;
-        eng->unk5E = 1;
+        t = eng->xform.rot.vy;
+        eng->xform.dirty = 1;
         if ((u32)(t - 900) < 0x8F9U) {
-            eng->unk1E = t - 16;
+            eng->xform.rot.vy = t - 16;
             nas->UserInfo.user2 = 0;
             nas->UserInfo.status = 15;
             break;
@@ -6932,7 +6932,7 @@ void TankBossCortexTurretFire(EXTengine *arg0) {
     s32 dz;
     s32 ang;
 
-    shell = CreateNAS(arg0->unk10.x, arg0->unk10.y - 0x113, arg0->unk10.z, 0x130C, 0x11);
+    shell = CreateNAS(arg0->XYZ.x, arg0->XYZ.y - 0x113, arg0->XYZ.z, 0x130C, 0x11);
     if (shell == NULL) {
         return;
     }
@@ -6940,24 +6940,24 @@ void TankBossCortexTurretFire(EXTengine *arg0) {
     ext->Counter = ext->Counter * 5 / 3;
     se = shell->Engine;
     PlaySfx(0x4CC, &se->sfx, NULL, 0x1000, 0x1E00, 0);
-    se->unk10.x += -(rcossin_tbl[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
-    se->unk10.z += -(rcossin_tbl[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
-    se->unk1E = arg0->unk1E;
-    ext->SpeedX = -(rcossin_tbl[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 74) >> 12;
-    dz = rcossin_tbl[(u16)arg0->unk1E & 0xFFF].unk2;
+    se->XYZ.x += -(rcossin_tbl[(arg0->xform.rot.vy - 0x400) & 0xFFF].unk2 * 400) >> 12;
+    se->XYZ.z += -(rcossin_tbl[(u16)arg0->xform.rot.vy & 0xFFF].unk2 * 400) >> 12;
+    se->xform.rot.vy = arg0->xform.rot.vy;
+    ext->SpeedX = -(rcossin_tbl[(arg0->xform.rot.vy - 0x400) & 0xFFF].unk2 * 74) >> 12;
+    dz = rcossin_tbl[(u16)arg0->xform.rot.vy & 0xFFF].unk2;
     ext->Status = 1;
     ext->Owner = -1;
     ext->SpeedZ = -(dz * 74) >> 12;
 loop:
-    if (se->unk10.z > TankArenaMaxZ + 0x100) {
-        se->unk10.z -= 0x10;
+    if (se->XYZ.z > TankArenaMaxZ + 0x100) {
+        se->XYZ.z -= 0x10;
         goto loop;
     }
-    n = TankSpawnBit1605Nas(&shell->Engine->unk10, 7);
+    n = TankSpawnBit1605Nas(&shell->Engine->XYZ, 7);
     if (n != NULL) {
-        ang = arg0->unk1E;
-        n->Engine->unk1E = ang;
-        n->Engine->unk5E = 1;
+        ang = arg0->xform.rot.vy;
+        n->Engine->xform.rot.vy = ang;
+        n->Engine->xform.dirty = 1;
         for (sub = n->Engine->sub; sub != NULL; sub = sub->next) {
             sub->flags |= 0x20000000;
         }
@@ -6971,12 +6971,12 @@ void PlotTankBossCortexTurret(NAS *nas) {
     s32 u;
 
     eng = nas->Engine;
-    eng->unk10.y = TankBossEng->unk10.y - 0x2B6;
+    eng->XYZ.y = TankBossEng->XYZ.y - 0x2B6;
     switch (nas->UserInfo.status) {
     case 17:
         if (TankBossStatus == 0x32) {
-            eng->unk5E = 1;
-            eng->unk1C += 20;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vx += 20;
         } else if (TankBossStatus == 0x33) {
             nas->UserInfo.flags = 0;
             nas->UserInfo.status = 39;
@@ -6984,7 +6984,7 @@ void PlotTankBossCortexTurret(NAS *nas) {
         }
         break;
     case 39:
-        a = eng->unk10.x;
+        a = eng->XYZ.x;
         switch (a) {
         case 0x300:
         default:
@@ -7000,7 +7000,7 @@ void PlotTankBossCortexTurret(NAS *nas) {
             a = 200;
             break;
         }
-        a -= eng->unk1E;
+        a -= eng->xform.rot.vy;
         a = (a << 20) >> 20;
         if (a >= 0) {
             if (a < 20) {
@@ -7009,16 +7009,16 @@ void PlotTankBossCortexTurret(NAS *nas) {
                 nas->UserInfo.user2 = 0;
                 break;
             }
-            eng->unk1E += 16;
+            eng->xform.rot.vy += 16;
         } else {
             if (a >= -19) {
                 TankBossCortexTurretFire(eng);
                 nas->UserInfo.status = 13;
                 break;
             }
-            eng->unk1E -= 16;
+            eng->xform.rot.vy -= 16;
         }
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         break;
     case 13:
         nas->UserInfo.user2 = 60;
@@ -7026,28 +7026,28 @@ void PlotTankBossCortexTurret(NAS *nas) {
         break;
     case 0:
         if (nas->UserInfo.flags != 2) {
-            if (eng->unk1E <= 16) {
+            if (eng->xform.rot.vy <= 16) {
                 nas->UserInfo.user2 = 0;
                 nas->UserInfo.status = 14;
             } else {
-                if (eng->unk1E < 0x800) {
-                    eng->unk1E -= 16;
+                if (eng->xform.rot.vy < 0x800) {
+                    eng->xform.rot.vy -= 16;
                 } else {
-                    eng->unk1E += 16;
+                    eng->xform.rot.vy += 16;
                 }
-                eng->unk5E = 1;
-                eng->unk1E &= 0xFFF;
+                eng->xform.dirty = 1;
+                eng->xform.rot.vy &= 0xFFF;
             }
         }
         break;
     case 14:
         if (nas->UserInfo.user1 & 1) {
-            eng->unk1E += 16;
+            eng->xform.rot.vy += 16;
         } else {
-            eng->unk1E -= 16;
+            eng->xform.rot.vy -= 16;
         }
-        eng->unk5E = 1;
-        t = eng->unk1E &= 0xFFF;
+        eng->xform.dirty = 1;
+        t = eng->xform.rot.vy &= 0xFFF;
         if ((u32)(t - 900) < 0x8F9U) {
             nas->UserInfo.user2 = 0;
             if (nas->UserInfo.user1 & 1) {
@@ -7059,12 +7059,12 @@ void PlotTankBossCortexTurret(NAS *nas) {
         break;
     case 15:
         do {
-            eng->unk1E = (eng->unk1E - 16) & 0xFFF;
+            eng->xform.rot.vy = (eng->xform.rot.vy - 16) & 0xFFF;
         } while (0);
-        u = eng->unk1E;
-        eng->unk5E = 1;
+        u = eng->xform.rot.vy;
+        eng->xform.dirty = 1;
         if ((u32)(u - 900) < 0x8F9U) {
-            eng->unk1E = u + 16;
+            eng->xform.rot.vy = u + 16;
             nas->UserInfo.user2 = 0;
             nas->UserInfo.status = 16;
             break;
@@ -7072,12 +7072,12 @@ void PlotTankBossCortexTurret(NAS *nas) {
         goto fire;
     case 16:
         do {
-            eng->unk1E = (eng->unk1E + 16) & 0xFFF;
+            eng->xform.rot.vy = (eng->xform.rot.vy + 16) & 0xFFF;
         } while (0);
-        t = eng->unk1E;
-        eng->unk5E = 1;
+        t = eng->xform.rot.vy;
+        eng->xform.dirty = 1;
         if ((u32)(t - 900) < 0x8F9U) {
-            eng->unk1E = t - 16;
+            eng->xform.rot.vy = t - 16;
             nas->UserInfo.user2 = 0;
             nas->UserInfo.status = 15;
             break;
@@ -7102,7 +7102,7 @@ void TankBossRocketTurretFire(NAS *nas, EXTengine *eng) {
     EXTobject_TA *fux;
     EXTengine *e;
 
-    dir = eng->unk1E;
+    dir = eng->xform.rot.vy;
     for (i = 0; ; i++) {
         {
             s32 k;
@@ -7110,22 +7110,22 @@ void TankBossRocketTurretFire(NAS *nas, EXTengine *eng) {
                 break;
             }
         }
-        n = CreateNAS(eng->unk10.x, eng->unk10.y - 0xFA, eng->unk10.z, 0x1302, 0x11);
+        n = CreateNAS(eng->XYZ.x, eng->XYZ.y - 0xFA, eng->XYZ.z, 0x1302, 0x11);
         if (n != NULL) {
             PlaySfx(0x522, &n->Engine->sfx, (fux = (EXTobject_TA *)n->FUX, (SLONG_XYZ *)NULL), 0x1000, 0x1E00, 0);
             e = n->Engine;
             a = dir - TankShellAngleOffsets()[i];
-            e->unk10.x -= (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 245) >> 11;
-            e->unk10.z -= (rcossin_tbl[a & 0xFFF].unk2 * 245) >> 11;
-            e->unk1E = eng->unk1E;
+            e->XYZ.x -= (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 245) >> 11;
+            e->XYZ.z -= (rcossin_tbl[a & 0xFFF].unk2 * 245) >> 11;
+            e->xform.rot.vy = eng->xform.rot.vy;
             fux->SpeedX = -(rcossin_tbl[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
             fux->SpeedZ = -(rcossin_tbl[dir & 0xFFF].unk2 * 200) >> 12;
             fux->Status = 1;
             fux->Owner = -1;
         }
-        puff = TankSpawnBit1605Nas(&n->Engine->unk10, 7);
+        puff = TankSpawnBit1605Nas(&n->Engine->XYZ, 7);
         if (puff != NULL) {
-            TankPuffSetAngle(puff, eng->unk1E);
+            TankPuffSetAngle(puff, eng->xform.rot.vy);
         }
     }
     nas->UserInfo.user2 = 0x78;
@@ -7142,7 +7142,7 @@ void PlotTankBossRocketTurret(NAS *nas) {
     s32 t;
 
     eng = nas->Engine;
-    eng->unk10.y = TankBossEng->unk10.y - 0x4BF;
+    eng->XYZ.y = TankBossEng->XYZ.y - 0x4BF;
     if (TankBossStatus < 0x36) {
         return;
     }
@@ -7157,9 +7157,9 @@ void PlotTankBossRocketTurret(NAS *nas) {
     case 17:
         if (TankBossStatus == 0x36) {
             eng->flags = 0x8000;
-            eng->unk5E = 1;
-            eng->unk10.z -= 10;
-            eng->unk10.y -= 3;
+            eng->xform.dirty = 1;
+            eng->XYZ.z -= 10;
+            eng->XYZ.y -= 3;
             nas->UserInfo.user2 = 30;
         } else if (TankBossStatus == 0x37) {
             if (--nas->UserInfo.user2 <= 0) {
@@ -7171,18 +7171,18 @@ void PlotTankBossRocketTurret(NAS *nas) {
         break;
     case 19:
         t = ++nas->UserInfo.user2 & 0x3F;
-        if (eng->unk10.x > 0x900) {
+        if (eng->XYZ.x > 0x900) {
             if (t < 0x20) {
-                eng->unk1E += 30;
+                eng->xform.rot.vy += 30;
             } else {
-                eng->unk1E -= 30;
+                eng->xform.rot.vy -= 30;
             }
         } else if (t >= 0x20) {
-            eng->unk1E += 30;
+            eng->xform.rot.vy += 30;
         } else {
-            eng->unk1E -= 30;
+            eng->xform.rot.vy -= 30;
         }
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         if (nas->UserInfo.user2 > 30 && TankBossTurretFindTarget(eng) >= 0) {
             nas->UserInfo.status = 10;
             nas->UserInfo.user2 = TankBossRocketDelay;
@@ -7208,17 +7208,17 @@ void PlotTankBossRocketTurret(NAS *nas) {
         }
         break;
     case 18:
-        eng->unk5E = 1;
-        if (eng->unk10.x > 0x900) {
-            if (eng->unk1E < 0xFCF) {
-                eng->unk1E = (eng->unk1E - 20) & 0xFFF;
+        eng->xform.dirty = 1;
+        if (eng->XYZ.x > 0x900) {
+            if (eng->xform.rot.vy < 0xFCF) {
+                eng->xform.rot.vy = (eng->xform.rot.vy - 20) & 0xFFF;
                 break;
             }
-        } else if (eng->unk1E < 0) {
-            eng->unk1E = (eng->unk1E + 20) & 0xFFF;
+        } else if (eng->xform.rot.vy < 0) {
+            eng->xform.rot.vy = (eng->xform.rot.vy + 20) & 0xFFF;
             break;
         }
-        eng->unk1E = 0;
+        eng->xform.rot.vy = 0;
         nas->UserInfo.status = 19;
         nas->UserInfo.user2 = 0;
         break;
@@ -7274,16 +7274,16 @@ void InitMoeJoe(NAS *nas, s32 id) {
         ext->Status = TankBossStartStatus;
         break;
     case 0x2C:
-        eng->unk10.y = 0x1001;
-        eng->unk10.z = 0x1001;
+        eng->XYZ.y = 0x1001;
+        eng->XYZ.z = 0x1001;
         sub->unk68 = 0x100;
         sub->flags |= 0x02000000;
         ext->Status = 5;
         break;
     case 0x3A:
         ext->Status = TankBossStartStatus;
-        eng->unk10.y = 0x480;
-        eng->unk10.z = 0x1001;
+        eng->XYZ.y = 0x480;
+        eng->XYZ.z = 0x1001;
         sub->unk68 = 0x100;
         sub->flags |= 0x02000000;
         break;
@@ -7361,21 +7361,21 @@ void AnimateMoeJoeTurret(s32 player) {
         }
         if (sub->entity == 0x4004) {
             e = Heroes[player].hero_eng;
-            puff = TankSpawnBit1605Nas(&e->unk10, 0);
+            puff = TankSpawnBit1605Nas(&e->XYZ, 0);
             if (puff != NULL) {
-                TankPuffSetAngle(puff, eng->unk1E);
+                TankPuffSetAngle(puff, eng->xform.rot.vy);
             }
             if (TA_players[player].MainWeaponType == 3) {
-                n = CreateNAS(e->unk10.x, e->unk10.y - 0x12C, e->unk10.z, 0x130B, 0x11);
+                n = CreateNAS(e->XYZ.x, e->XYZ.y - 0x12C, e->XYZ.z, 0x130B, 0x11);
                 if (n != NULL) {
                     PlaySfx(0x4F3, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     fux = AddExt(n, 0x38, 0x10000000);
                     n->FUX = fux;
                     se = n->Engine;
-                    dx = -(rcossin_tbl[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
-                    se->unk10.x += dx >> 12;
-                    dz = -(rcossin_tbl[(u16)e->unk1E & 0xFFF].unk2 * 250);
-                    se->unk10.z += dz >> 12;
+                    dx = -(rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 250);
+                    se->XYZ.x += dx >> 12;
+                    dz = -(rcossin_tbl[(u16)e->xform.rot.vy & 0xFFF].unk2 * 250);
+                    se->XYZ.z += dz >> 12;
                     fux->SpeedX = dx >> 13;
                     fux->SpeedY = -0x5B;
                     fux->SpeedZ = dz >> 13;
@@ -7578,30 +7578,30 @@ void MoeJoeMove(s32 player) {
         return;
     }
     if ((pad & 0x20) && dir != 0x20) {
-        ex = eng->unk10.x;
+        ex = eng->XYZ.x;
         if (TankArenaMaxX - speed < ex ||
-            TankMapCell(ex + speed + 0x100, eng->unk10.z) != 0) {
+            TankMapCell(ex + speed + 0x100, eng->XYZ.z) != 0) {
             dir = pad & 0xD0;
         }
     }
     if ((dir & 0x80) && dir != 0x80) {
-        ex = eng->unk10.x;
+        ex = eng->XYZ.x;
         if (ex < speed + 0x100 ||
-            TankMapCell(ex - speed - 0x100, eng->unk10.z) != 0) {
+            TankMapCell(ex - speed - 0x100, eng->XYZ.z) != 0) {
             dir &= ~0x80;
         }
     }
     if ((dir & 0x10) && dir != 0x10) {
-        ez = eng->unk10.z;
+        ez = eng->XYZ.z;
         if (TankArenaMaxZ - speed < ez ||
-            TankMapCell(eng->unk10.x, ez + speed + 0x100) != 0) {
+            TankMapCell(eng->XYZ.x, ez + speed + 0x100) != 0) {
             dir &= ~0x10;
         }
     }
     if ((dir & 0x40) && dir != 0x40) {
-        ez = eng->unk10.z;
+        ez = eng->XYZ.z;
         if (ez < speed + 0x100 ||
-            TankMapCell(eng->unk10.x, ez - speed - 0x100) != 0) {
+            TankMapCell(eng->XYZ.x, ez - speed - 0x100) != 0) {
             dir &= ~0x40;
         }
     }
@@ -7633,7 +7633,7 @@ void MoeJoeMove(s32 player) {
         break;
     }
 loop:
-    a = (eng->unk1E + sub->unk12) & 0xFFF;
+    a = (eng->xform.rot.vy + sub->unk12) & 0xFFF;
     df = ((angle - a) << 20) >> 20;
     a = (u16)sub->unk12;
     if ((u32)(df + 0x400) > 0x800) {
@@ -7643,12 +7643,12 @@ loop:
     df = df / 4;
     sub->unk12 = (a + df) & 0xFFF;
     sub->unk52 = 1;
-    a = (eng->unk1E + sub->unk12) & 0xFFF;
+    a = (eng->xform.rot.vy + sub->unk12) & 0xFFF;
     sn = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
     cs = rcossin_tbl[a].unk2;
-    x = eng->unk10.x + ((speed * sn) >> 12);
+    x = eng->XYZ.x + ((speed * sn) >> 12);
     fx = x + ((sn * 256) >> 12);
-    z = eng->unk10.z + ((speed * cs) >> 12);
+    z = eng->XYZ.z + ((speed * cs) >> 12);
     fz = z + ((cs * 256) >> 12);
     lim = 0x1C0;
     for (i = 0; i < 4; i++) {
@@ -7666,14 +7666,14 @@ loop:
             continue;
         }
         e = h->hero_eng;
-        d = x - e->unk10.x;
+        d = x - e->XYZ.x;
         if (d < -0x1C0) {
             continue;
         }
         if (lim < d) {
             continue;
         }
-        d = z - e->unk10.z;
+        d = z - e->XYZ.z;
         n = -0x1C0;
         if (n < d && d < 0x1C0) {
             hit = i;
@@ -7685,8 +7685,8 @@ found:
     if (hit < 0) {
         t = ((fz >> 9) * TankMapWidth) + (fx >> 9);
         if (TankLevelsGridMapMiss[t] == 0) {
-            eng->unk10.x = x;
-            eng->unk10.z = z;
+            eng->XYZ.x = x;
+            eng->XYZ.z = z;
         }
     } else if (TankCountdown == 0) {
         TankCountdownEng = eng;
@@ -7706,12 +7706,12 @@ void MoeJoeRecoil(s32 arg0) {
     eng = Heroes[arg0].hero_eng;
     TA_players[arg0].SpeedY += 0xC;
     p = &TA_players[arg0];
-    eng->unk10.y += p->SpeedY;
-    if (eng->unk10.y > 0) {
+    eng->XYZ.y += p->SpeedY;
+    if (eng->XYZ.y > 0) {
         p->SpeedY = -p->SpeedY / 2;
-        eng->unk10.y = 0;
+        eng->XYZ.y = 0;
     }
-    eng->sub->next->next->unk08 = -eng->unk10.y / 2;
+    eng->sub->next->next->unk08 = -eng->XYZ.y / 2;
     if (arg0 == 3) {
         val = *MoeAnimPtr++;
         Heroes[3].hero_sub->entity = val;
@@ -7797,7 +7797,7 @@ void MoeJoeDie(s32 arg0) {
     }
     if (val == 0) {
         eng = Heroes[arg0].hero_eng;
-        pos = (s32 *)&eng->unk10;
+        pos = (s32 *)&eng->XYZ;
         p = &HeroModelBank[DB_TankObjects];
         nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
         if (nas != NULL) {
@@ -7815,7 +7815,7 @@ void MoeJoeDie(s32 arg0) {
                 nas->InitDelete(nas);
             }
         }
-        PlaySfx(0x4F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x4F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         mode = Heroes[arg0].hero_mode;
         Heroes[arg0].hero_mode = 0x6B;
         Heroes[arg0].hero_last_mode = mode;
@@ -7910,8 +7910,8 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     ((PadState *)Pads)[p].dir = 0;
     ((PadState *)Pads)[p].dirPressed = 0;
     eng = Heroes[p].hero_eng;
-    eng->unk10.z = 0xF00;
-    eng->unk10.x = (eng->unk10.x + 0x80) & ~0xFF;
+    eng->XYZ.z = 0xF00;
+    eng->XYZ.x = (eng->XYZ.x + 0x80) & ~0xFF;
     mode = Heroes[p].hero_mode;
     Heroes[p].hero_mode = 0x6E;
     Heroes[p].hero_last_mode = mode;
@@ -7937,8 +7937,8 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     ta->Speed = ta->Speed * (AiPlayerSkill[p].level + 0x54) / 100;
     ta->Energy = 0x63;
     Heroes[p].hero_health = ta->Energy;
-    ta->PosX = eng->unk10.x;
-    ta->PosZ = eng->unk10.z;
+    ta->PosX = eng->XYZ.x;
+    ta->PosZ = eng->XYZ.z;
     ta->SubWeaponFireDelay = 0;
     ta->SubWeaponRounds = 0;
     ta->FireBreatherSFXDuration = 0;
@@ -8001,22 +8001,22 @@ void PlotMoeJoeHero(NAS *nas, s32 id) {
         HeroGhost(p);
         break;
     }
-    if (eng->unk10.x > TankArenaMaxX) {
-        eng->unk10.x = TankArenaMaxX;
+    if (eng->XYZ.x > TankArenaMaxX) {
+        eng->XYZ.x = TankArenaMaxX;
     }
-    if (eng->unk10.x < 0x100) {
-        eng->unk10.x = 0x100;
+    if (eng->XYZ.x < 0x100) {
+        eng->XYZ.x = 0x100;
     }
-    if (eng->unk10.z > TankArenaMaxZ) {
-        eng->unk10.z = TankArenaMaxZ;
+    if (eng->XYZ.z > TankArenaMaxZ) {
+        eng->XYZ.z = TankArenaMaxZ;
     }
-    if (eng->unk10.z < 0x100) {
-        eng->unk10.z = 0x100;
+    if (eng->XYZ.z < 0x100) {
+        eng->XYZ.z = 0x100;
     }
     AnimateMoeJoeTurret(p);
     if (GameMode != 5) {
-        x = eng->unk10.x;
-        dz = eng->unk10.z - eng->OldXYZ.z;
+        x = eng->XYZ.x;
+        dz = eng->XYZ.z - eng->OldXYZ.z;
         if (x != eng->OldXYZ.x || dz != 0) {
             if (ta->HangaboutTime != 0) {
                 ta->HangaboutTime--;
@@ -8069,9 +8069,9 @@ void PlotMoeJoe(NAS *nas, s32 id) {
     }
     if (TankBossStatus == 0) {
         sub->u6C.dbase = &HeroModelBank[DB_ArenaBossKomodoKomodotank];
-        eng->unk2C.x = 0x1266;
-        eng->unk2C.y = 0x1266;
-        eng->unk2C.z = 0x1266;
+        eng->xform.scale.vx = 0x1266;
+        eng->xform.scale.vy = 0x1266;
+        eng->xform.scale.vz = 0x1266;
         sub->entity++;
         if (id == 0x131E) {
             if ((u16)(sub->entity - 0x4180) >= 20) {
@@ -8086,28 +8086,28 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         fux = (EXTobject_TA *)nas->FUX;
         switch (fux->Status) {
         case 4:
-            eng->unk10.y -= 0x14;
-            if (eng->unk10.y < 0) {
+            eng->XYZ.y -= 0x14;
+            if (eng->XYZ.y < 0) {
                 fux->Status = 0x29;
                 fux->Counter = 1;
             }
             break;
         case 0x29:
-            eng->unk10.z -= 0x3C;
-            if ((u32)(Heroes[0].hero_eng->unk10.x - eng->unk10.x + 0x1FF) < 0x3FF) {
-                z = eng->unk10.z - 0x200;
-                if (z < Heroes[0].hero_eng->unk10.z) {
-                    Heroes[0].hero_eng->unk10.z = z;
+            eng->XYZ.z -= 0x3C;
+            if ((u32)(Heroes[0].hero_eng->XYZ.x - eng->XYZ.x + 0x1FF) < 0x3FF) {
+                z = eng->XYZ.z - 0x200;
+                if (z < Heroes[0].hero_eng->XYZ.z) {
+                    Heroes[0].hero_eng->XYZ.z = z;
                 }
             }
             if (GameTeams[0] != 0 &&
-                (u32)(Heroes[1].hero_eng->unk10.x - eng->unk10.x + 0x1FF) < 0x3FF) {
-                z = eng->unk10.z - 0x200;
-                if (z < Heroes[1].hero_eng->unk10.z) {
-                    Heroes[1].hero_eng->unk10.z = z;
+                (u32)(Heroes[1].hero_eng->XYZ.x - eng->XYZ.x + 0x1FF) < 0x3FF) {
+                z = eng->XYZ.z - 0x200;
+                if (z < Heroes[1].hero_eng->XYZ.z) {
+                    Heroes[1].hero_eng->XYZ.z = z;
                 }
             }
-            if (eng->unk10.z <= 0xF00) {
+            if (eng->XYZ.z <= 0xF00) {
                 MoeJoeBecomeHero(nas, id);
                 fux->Status = 0x3B;
             }
@@ -8118,13 +8118,13 @@ void PlotMoeJoe(NAS *nas, s32 id) {
     if (TankBossStatus == 0x3A) {
         fux->Status = 4;
         sub->u6C.dbase = &HeroModelBank[DB_ArenaBossKomodoKomodotank];
-        eng->unk10.y = 0x480;
+        eng->XYZ.y = 0x480;
         if (id == 0x131E) {
-            eng->unk10.x = 0xD00;
+            eng->XYZ.x = 0xD00;
             sub->entity = 0x4180;
             TankBossCrashTurrets[0] = nas;
         } else {
-            eng->unk10.x = 0x400;
+            eng->XYZ.x = 0x400;
             sub->entity = 0x400A;
             TankBossCrashTurrets[1] = nas;
         }
@@ -8177,11 +8177,11 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         break;
     case 0x24:
         if (id == 0x131E) {
-            eng->unk1E += 0x96;
+            eng->xform.rot.vy += 0x96;
         } else {
-            eng->unk1E -= 0x96;
+            eng->xform.rot.vy -= 0x96;
         }
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         if (--fux->Counter <= 0) {
             fux->Status = 9;
             if (id == 0x131F) {
@@ -8192,13 +8192,13 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         }
         break;
     case 9:
-        eng->unk10.z += 0x46;
+        eng->XYZ.z += 0x46;
         if (id == 0x131E) {
-            eng->unk10.x -= 0xD;
+            eng->XYZ.x -= 0xD;
         } else {
-            eng->unk10.x += 0xD;
+            eng->XYZ.x += 0xD;
         }
-        if (eng->unk10.z > 0x1100) {
+        if (eng->XYZ.z > 0x1100) {
             fux->Status = 5;
             fux->SpeedY = -0x46;
             sub->unk68 = 0x100;
@@ -8207,25 +8207,25 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         break;
     case 5:
         fux->SpeedY += 0xC;
-        eng->unk10.y += fux->SpeedY;
-        if (eng->unk10.y > 0x1000) {
-            eng->unk1E = 0;
-            eng->unk5E = 1;
-            eng->unk10.z = TankBossEng->unk10.z + 0x100;
+        eng->XYZ.y += fux->SpeedY;
+        if (eng->XYZ.y > 0x1000) {
+            eng->xform.rot.vy = 0;
+            eng->xform.dirty = 1;
+            eng->XYZ.z = TankBossEng->XYZ.z + 0x100;
             fux->Status = 0;
             fux->Counter = Random(0x5A) + 0x1E;
-            eng->unk2C.x = 0x14CC;
-            eng->unk2C.y = 0x14CC;
-            eng->unk2C.z = 0x14CC;
-            eng->unk5C = 1;
+            eng->xform.scale.vx = 0x14CC;
+            eng->xform.scale.vy = 0x14CC;
+            eng->xform.scale.vz = 0x14CC;
+            eng->xform.hasScale = 1;
             if (id == 0x131E) {
                 anim = 0x2028;
                 fux->pAnimList = MoeScript0;
-                eng->unk10.x = 0xA00;
+                eng->XYZ.x = 0xA00;
             } else {
                 anim = 0x2027;
                 fux->pAnimList = JoeScript0;
-                eng->unk10.x = 0x810;
+                eng->XYZ.x = 0x810;
             }
             m = (ModelRec *)&HeroModelBank[DB_ArenaBossKomodoArenaobjects];
             sub->u6C.dbase = m;
@@ -8237,7 +8237,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         }
         break;
     case 0:
-        eng->unk10.y = TankBossEng->unk10.y - 0x528;
+        eng->XYZ.y = TankBossEng->XYZ.y - 0x528;
         if (--fux->Counter <= 0) {
             fux->Status = 0x27;
             switch (Random(8)) {
@@ -8320,7 +8320,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         }
         break;
     case 0x27:
-        eng->unk10.y = TankBossEng->unk10.y - 0x528;
+        eng->XYZ.y = TankBossEng->XYZ.y - 0x528;
         p = fux->pAnimList;
         anim = *p;
         if (GameFrameCount & 1) {
@@ -8434,9 +8434,9 @@ void InitTankBossRocketTurret(NAS *nas) {
 
     eng = nas->Engine;
     sub = eng->sub;
-    eng->unk5D = 0;
-    eng->unk10.z += 0x258;
-    eng->unk10.y += 0xC8;
+    eng->xform.order = 0;
+    eng->XYZ.z += 0x258;
+    eng->XYZ.y += 0xC8;
     sub->u6C.dbase = &HeroModelBank[DB_ArenaBossKomodoArenaobjects];
     if (nas->UserInfo.flags == 0) {
         sub->entity = 0x2024;
@@ -8454,7 +8454,7 @@ void InitTankBossCortexTurret(NAS *nas) {
     subengine *sub;
 
     eng = nas->Engine;
-    eng->unk5D = 1;
+    eng->xform.order = 1;
     sub = eng->sub;
     sub->u6C.dbase = &HeroModelBank[DB_ArenaBossKomodoArenaobjects];
     sub->entity = 0x2004;
@@ -8470,7 +8470,7 @@ void InitTankBossCrashTurret(NAS *nas) {
 
     eng = nas->Engine;
     sub = eng->sub;
-    eng->unk10.z += 0x100;
+    eng->XYZ.z += 0x100;
     v = 0x100;
     nas->UserInfo.flags = v;
     nas->UserInfo.user2 = 0x168;
@@ -8515,21 +8515,21 @@ s32 TankBossPickHero(void) {
 s32 TankWithinBox(EXTengine *eng, s32 x, s32 y, s32 z) {
     s32 d;
 
-    d = eng->unk10.x - x;
+    d = eng->XYZ.x - x;
     if (d > 0x250) {
         return 0;
     }
     if (d < -0x250) {
         return 0;
     }
-    d = eng->unk10.y - y;
+    d = eng->XYZ.y - y;
     if (d > 0x200) {
         return 0;
     }
     if (d < -0x200) {
         return 0;
     }
-    d = eng->unk10.z - z;
+    d = eng->XYZ.z - z;
     if (d > 0x500) {
         return 0;
     }
@@ -8568,8 +8568,8 @@ void InitTotemPole(NAS *nas) {
         ext->Status = 1;
         e = nas->Engine;
         e->flags = 0;
-        TotemTop = CreateNAS(e->unk10.x, e->unk10.y - 0x294, e->unk10.z, 0x131B, 0x11);
-        TotemBot = CreateNAS(e->unk10.x, e->unk10.y - 0x14A, e->unk10.z, 0x131C, 0x11);
+        TotemTop = CreateNAS(e->XYZ.x, e->XYZ.y - 0x294, e->XYZ.z, 0x131B, 0x11);
+        TotemBot = CreateNAS(e->XYZ.x, e->XYZ.y - 0x14A, e->XYZ.z, 0x131C, 0x11);
         if (nas->Failure == 0) {
             return;
         }
@@ -8599,7 +8599,7 @@ void PlotPillarCover(NAS *nas) {
 
 void InitPillarCover(NAS *nas) {
     EXTengine *e = nas->Engine;
-    e->unk10.y = 0;
+    e->XYZ.y = 0;
     e->sub->u6C.dbase = MapScene->dbase;
 }
 
@@ -8608,7 +8608,7 @@ void InitPillar(NAS *nas) {
     subengine *s;
     nas->UserInfo.user1 = 1;
     nas->UserInfo.status = 6;
-    e->unk10.y = 0xB8;
+    e->XYZ.y = 0xB8;
     s = e->sub;
     s->u6C.dbase = MapScene->dbase;
     s->unk68 = 0x20;
@@ -8634,11 +8634,11 @@ void PlotBoatWake(NAS *nas) {
 
     src = Heroes[nas->UserInfo.user1].hero_eng;
     dst = nas->Engine;
-    t = src->unk1E;
-    dst->unk5E = 1;
-    dst->unk1E = t;
-    dst->unk10.x = src->unk10.x;
-    dst->unk10.z = src->unk10.z;
+    t = src->xform.rot.vy;
+    dst->xform.dirty = 1;
+    dst->xform.rot.vy = t;
+    dst->XYZ.x = src->XYZ.x;
+    dst->XYZ.z = src->XYZ.z;
     if (nas->UserInfo.status == 0) {
         nas->UserInfo.status = 0;
     }
@@ -8679,7 +8679,7 @@ void InitPeriscope(NAS *nas) {
         one = 1;
         ext->Status = one;
         eng = nas->Engine;
-        eng->unk5D = 0;
+        eng->xform.order = 0;
         p = MapScene->dbase;
         s = eng->sub;
         s->flags = 0;
@@ -8809,7 +8809,7 @@ void InitTorpedo(NAS *nas) {
     nas->UserInfo.status = 0x5A;
     nas->UserInfo.flags = 0x11;
     nas->UserInfo.user2 = 0;
-    eng->unk10.y = -0x14;
+    eng->XYZ.y = -0x14;
     sub = eng->sub;
     sub->u6C.dbase = MapScene->dbase;
     sub->entity = 0x2001;
@@ -8833,7 +8833,7 @@ void InitWaterMine(NAS *nas) {
     nas->UserInfo.status = GameFrameCount;
     e = nas->Engine;
     nas->UserInfo.user2 = 0;
-    e->unk10.y = -0x14;
+    e->XYZ.y = -0x14;
     s = e->sub;
     s->u6C.dbase = MapScene->dbase;
     s->entity = 0x2001;
@@ -8848,7 +8848,7 @@ void InitMine(NAS *nas) {
     s32 i;
 
     eng = nas->Engine;
-    eng->unk10.y = -0x14;
+    eng->XYZ.y = -0x14;
     sub = eng->sub;
     sub->u6C.dbase = &HeroModelBank[DB_TankObjects2];
     sub->entity = 0x2005;
@@ -8895,12 +8895,12 @@ void InitLobber_TA(NAS *nas) {
     eng = nas->Engine;
     eng->sub->u6C.dbase = &HeroModelBank[DB_TankObjects];
     eng->sub->entity = 0x200C;
-    eng->unk5D = 1;
+    eng->xform.order = 1;
     e2 = AddExtEngine(nas, 1);
     if (e2 != NULL) {
-        e2->unk10.x = eng->unk10.x;
-        e2->unk10.y = 0;
-        e2->unk10.z = eng->unk10.z;
+        e2->XYZ.x = eng->XYZ.x;
+        e2->XYZ.y = 0;
+        e2->XYZ.z = eng->XYZ.z;
         e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
         e2->sub->entity = 0x2001;
         e2->sub->flags |= 0x40000041;
@@ -8919,12 +8919,12 @@ void InitShell(NAS *nas) {
     eng = nas->Engine;
     eng->sub->u6C.dbase = &HeroModelBank[DB_TankObjects];
     eng->sub->entity = 0x200C;
-    eng->unk5D = 1;
+    eng->xform.order = 1;
     e2 = AddExtEngine(nas, 1);
     if (e2 != NULL) {
-        e2->unk10.x = eng->unk10.x;
-        e2->unk10.y = 0;
-        e2->unk10.z = eng->unk10.z;
+        e2->XYZ.x = eng->XYZ.x;
+        e2->XYZ.y = 0;
+        e2->XYZ.z = eng->XYZ.z;
         e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
         e2->sub->entity = 0x2001;
         e2->sub->flags |= 0x40000041;
@@ -8945,7 +8945,7 @@ void InitSwirlyTA(NAS *nas) {
         ext->maxloops = 0x87;
         eng = nas->Engine;
         sub = eng->sub;
-        eng->unk5D = 0;
+        eng->xform.order = 0;
         sub->u6C.dbase = p;
         sub->entity = 0x2038;
         sub->flags |= 0x20000000;
@@ -8982,12 +8982,12 @@ void InitFlubberTA(NAS *nas) {
         sub = eng->sub;
         sub->u6C.dbase = p;
         sub->entity = 0x2016;
-        eng->unk5D = 1;
+        eng->xform.order = 1;
         e2 = AddExtEngine(nas, 1);
         if (e2 != NULL) {
-            e2->unk10.x = eng->unk10.x;
-            e2->unk10.y = 0;
-            e2->unk10.z = eng->unk10.z;
+            e2->XYZ.x = eng->XYZ.x;
+            e2->XYZ.y = 0;
+            e2->XYZ.z = eng->XYZ.z;
             e2->sub->unk51 = 2;
             e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
             e2->sub->entity = 0x2001;
@@ -9015,7 +9015,7 @@ void InitFlamerBitTA(NAS *nas) {
     nas->FUX = (EXT *)ext;
     ext->Counter = 0x3F;
     eng = nas->Engine;
-    eng->unk5D = 1;
+    eng->xform.order = 1;
     sub = eng->sub;
     eng->flags |= 0x21;
     sub->u6C.dbase = &HeroModelBank[DB_TankObjects];
@@ -9039,7 +9039,7 @@ void InitLaserBitTA(NAS *nas) {
     ext->Counter = 0x5A;
     eng = nas->Engine;
     sub = eng->sub;
-    eng->unk5D = 0;
+    eng->xform.order = 0;
     sub->u6C.dbase = &HeroModelBank[DB_TankObjects];
     sub->entity = 0x2021;
     eng->flags |= 0x21;
@@ -9082,8 +9082,8 @@ void SetTankHeroDie(u32 player) {
 }
 
 s32 TankBlockPadNear(s32 flags, NAS *nas, EXTengine *eng) {
-    s32 dx = nas->Engine->unk10.x - eng->unk10.x;
-    s32 dz = nas->Engine->unk10.z - eng->unk10.z;
+    s32 dx = nas->Engine->XYZ.x - eng->XYZ.x;
+    s32 dz = nas->Engine->XYZ.z - eng->XYZ.z;
 
     if (dx < -0x15D) {
         return flags;
@@ -9177,7 +9177,7 @@ void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX) {
                 StopSfx(pEngine->sfx);
             }
         } else {
-            PlaySfx(ReqdSFX, &pEngine->sfx, &pEngine->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(ReqdSFX, &pEngine->sfx, &pEngine->XYZ, 0x1000, 0x1E00, 0);
         }
     }
 }
@@ -9209,9 +9209,9 @@ void DamageTankHeroesNear(s32 x, s32 z, s32 range, s32 arg3) {
     i = 0;
     neg = -range;
     for (h = Heroes; i < 4; i++, h++) {
-        d = x - h->hero_eng->unk10.x;
+        d = x - h->hero_eng->XYZ.x;
         if (d >= neg && d <= range) {
-            d = z - h->hero_eng->unk10.z;
+            d = z - h->hero_eng->XYZ.z;
             if (d >= neg && d <= range) {
                 DamageTankHero(i, arg3);
             }
@@ -9224,22 +9224,22 @@ bool TA_KeepInBounds(EXTengine *p) {
     s32 lim;
 
     r = 0;
-    if (p->unk10.x > TankArenaMaxX) {
+    if (p->XYZ.x > TankArenaMaxX) {
         lim = TankArenaMaxX;
-        p->unk10.x = lim;
+        p->XYZ.x = lim;
         r = 1;
     }
-    if (p->unk10.x < 0x100) {
-        p->unk10.x = 0x100;
+    if (p->XYZ.x < 0x100) {
+        p->XYZ.x = 0x100;
         r = 1;
     }
-    if (p->unk10.z > TankArenaMaxZ) {
+    if (p->XYZ.z > TankArenaMaxZ) {
         lim = TankArenaMaxZ;
-        p->unk10.z = lim;
+        p->XYZ.z = lim;
         r = 1;
     }
-    if (p->unk10.z < 0x100) {
-        p->unk10.z = 0x100;
+    if (p->XYZ.z < 0x100) {
+        p->XYZ.z = 0x100;
         r = 1;
     }
     return r;
@@ -9302,9 +9302,9 @@ void TriggerTankMinesNear(s32 x, s32 z, s32 dist) {
         nas = TankMines[i];
         if (nas != NULL) {
             eng = nas->Engine;
-            d = x - eng->unk10.x;
+            d = x - eng->XYZ.x;
             if (d >= -dist && d <= dist) {
-                d = z - eng->unk10.z;
+                d = z - eng->XYZ.z;
                 if (d >= -dist && d <= dist) {
                     nas->UserInfo.status = 1;
                 }
@@ -9323,9 +9323,9 @@ NAS *FindTankObjectNear(s32 x, s32 z, s32 dist) {
         nas = TankObjects[i];
         if (nas != NULL) {
             eng = nas->Engine;
-            d = x - eng->unk10.x;
+            d = x - eng->XYZ.x;
             if (d >= -dist && d <= dist) {
-                d = z - eng->unk10.z;
+                d = z - eng->XYZ.z;
                 if (d >= -dist && d <= dist) {
                     return nas;
                 }
@@ -9369,8 +9369,8 @@ void ClearTankObjects(void) {
 void SetPuffAngle(NAS *puff, s16 angle) {
     subengine *sub;
 
-    puff->Engine->unk1E = angle;
-    puff->Engine->unk5E = 1;
+    puff->Engine->xform.rot.vy = angle;
+    puff->Engine->xform.dirty = 1;
     sub = puff->Engine->sub;
     if (sub != NULL) {
         do {
@@ -9403,11 +9403,11 @@ s32 TankFindHeroNear(s32 x, s32 z, s32 r, s32 skip) {
             continue;
         }
         eng = Heroes[i].hero_eng;
-        dx = x - eng->unk10.x;
+        dx = x - eng->XYZ.x;
         if (dx < -r || r < dx) {
             continue;
         }
-        dz = z - eng->unk10.z;
+        dz = z - eng->XYZ.z;
         if (dz <= -r || dz >= r) {
             continue;
         }
@@ -9433,14 +9433,14 @@ s32 RocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
             continue;
         }
         e = Heroes[i].hero_eng;
-        d = arg0 - e->unk10.x;
+        d = arg0 - e->XYZ.x;
         if (d < -arg2) {
             continue;
         }
         if (arg2 < d) {
             continue;
         }
-        d = arg1 - e->unk10.z;
+        d = arg1 - e->XYZ.z;
         if (-arg2 < d && d < arg2) {
             return i;
         }
@@ -9470,8 +9470,8 @@ void SetTankMapCellNas(NAS *nas) {
     s32 idx;
     u8 temp_a2;
 
-    temp_a1 = nas->Engine->unk10.z >> 9;
-    temp_a0 = nas->Engine->unk10.x >> 9;
+    temp_a1 = nas->Engine->XYZ.z >> 9;
+    temp_a0 = nas->Engine->XYZ.x >> 9;
     temp_a2 = ((temp_a0 << 5) | 0x10) + ((temp_a1 * 2) + 1);
     idx = (temp_a1 * TankMapWidth) + temp_a0;
     TankLevelsGridMapMiss[idx] = temp_a2;
@@ -9532,11 +9532,11 @@ NAS *FindTankPickupNear(s32 x, s32 z, s32 range) {
         nas = PU_TA_list[i];
         if (nas != NULL) {
             eng = nas->Engine;
-            d = x - eng->unk10.x;
+            d = x - eng->XYZ.x;
             if (d < 0) {
                 d = -d;
             }
-            if (d + (z - eng->unk10.z) < range) {
+            if (d + (z - eng->XYZ.z) < range) {
                 return nas;
             }
         }
@@ -9553,7 +9553,7 @@ void TankBotAimTurret(s32 player, EXTengine *eng, s32 *arg2) {
         if (hero >= 0) {
             target = Heroes[hero].hero_eng;
             TA_players[player].TurretReqdDir =
-                (get_angle(target->unk10.x - eng->unk10.x, target->unk10.z - eng->unk10.z) + 0x800) & 0xFFF;
+                (get_angle(target->XYZ.x - eng->XYZ.x, target->XYZ.z - eng->XYZ.z) + 0x800) & 0xFFF;
         }
     }
 }

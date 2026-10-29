@@ -3314,10 +3314,10 @@ FlagPoint *sub_find_point(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out)
         }
         p = &pts[i];
         if (p->flags & flag) {
-            if (eng->unk5E != 0) {
-                rotscale_update(&eng->unk1C);
+            if (eng->xform.dirty != 0) {
+                rotscale_update(&eng->xform);
             }
-            gfx_load_xform(sub, eng->unk3C, &eng->unk10);
+            gfx_load_xform(sub, &eng->xform.mtx, &eng->XYZ);
             gte_ldv0(p);
             gte_rt();
             gte_stlvl(out);

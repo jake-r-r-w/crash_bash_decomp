@@ -1647,8 +1647,8 @@ void CharSelectRender(void) {
     EXTengine *eng;
 
     eng = GetEngineSlot(0);
-    eng->unk10.x = -0x140;
-    eng->unk10.y = -0xF0;
+    eng->XYZ.x = -0x140;
+    eng->XYZ.y = -0xF0;
     RenderTitlesBackdropAndMenu();
     gfx_set_viewport(&TitlesMenuView, &CharSelectCamera);
     RenderState.modelDp = ScreenFade.amount;

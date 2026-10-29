@@ -407,8 +407,8 @@ loop:
     if (i < 4) {
         do {
             if (i != self && !((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
-                pos = h->hero_eng->unk10;
-                d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
+                pos = h->hero_eng->XYZ;
+                d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->XYZ);
                 if (d < min) {
                     min = d;
                     best = i;
@@ -961,7 +961,7 @@ static inline s32 PolarMissileHitHero(SLONG_XYZ *pos) {
         }
         h = &Heroes[i];
         if (!(h->hero_mode & 0x2000)
-            && DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&h->hero_eng->unk10) < 0x7BC4) {
+            && DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&h->hero_eng->XYZ) < 0x7BC4) {
             if (h->hero_mode != 0x4B) {
                 SetHeroAction(i, 0x4B);
             }
@@ -979,7 +979,7 @@ static inline void PolarMissileBlast(NAS *m, s32 kind) {
     NAS *nas;
     ExtSpawn5910 *x;
 
-    pos = &m->Engine->unk10;
+    pos = &m->Engine->XYZ;
     anim = &HeroModelBank[DB_RoboPolar];
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {

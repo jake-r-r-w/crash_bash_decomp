@@ -182,8 +182,8 @@ static inline void BC038Release(T_BC038Fux *fux) {
 }
 
 #define BC038_SNAP(eng)                                     \
-    (eng)->unk10.x = ((eng)->unk10.x & ~0xFF) + 0x80;       \
-    (eng)->unk10.z = ((eng)->unk10.z & ~0xFF) + 0x80
+    (eng)->XYZ.x = ((eng)->XYZ.x & ~0xFF) + 0x80;       \
+    (eng)->XYZ.z = ((eng)->XYZ.z & ~0xFF) + 0x80
 
 #define BC038_STOP(ext)                                     \
     (ext)->decel = 0;                                       \

@@ -404,10 +404,10 @@ void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1) {
     s32 dx, dz;
     u8 *p;
 
-    hx = Heroes[arg0].hero_eng->unk10.x;
-    hz = Heroes[arg0].hero_eng->unk10.z;
+    hx = Heroes[arg0].hero_eng->XYZ.x;
+    hz = Heroes[arg0].hero_eng->XYZ.z;
     h = &Heroes[arg0];
-    a = get_angle(arg1->unk10.x - hx, arg1->unk10.z - hz);
+    a = get_angle(arg1->XYZ.x - hx, arg1->XYZ.z - hz);
     switch (h->hero_name) {
     case 3:
     case 4:
@@ -420,10 +420,10 @@ void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1) {
     a &= 0xFFF;
     dx = (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 256) >> 12;
     dz = (rcossin_tbl[a].unk2 * 256) >> 12;
-    get_angle(arg1->unk10.x + dx - hx, arg1->unk10.z + dz - hz);
+    get_angle(arg1->XYZ.x + dx - hx, arg1->XYZ.z + dz - hz);
     p = (arg0 * 0x30) + ChaseHeroSlots;
-    *(s32 *)(p + 0xC) = arg1->unk10.x + dx;
-    *(s32 *)(p + 0x10) = arg1->unk10.z + dz;
+    *(s32 *)(p + 0xC) = arg1->XYZ.x + dx;
+    *(s32 *)(p + 0x10) = arg1->XYZ.z + dz;
     *(s32 *)(p + 0x14) = get_angle(*(s32 *)(p + 0xC) - hx, *(s32 *)(p + 0x10) - hz);
 }
 
@@ -439,8 +439,8 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
     ChaseCoalFux *fux;
 
     if (Random(0x40) <= AiPlayerSkill[arg0].level + 0x20) {
-        x = arg1->unk10.x;
-        z = arg1->unk10.z;
+        x = arg1->XYZ.x;
+        z = arg1->XYZ.z;
         if ((arg2->pickup = ChaseNearPickup(x, z)) != NULL) {
             arg2->state = 5;
             arg2->timer = 0x96;
@@ -451,7 +451,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
         if (arg2->unk20 <= 0) {
             arg2->state = 7;
             arg2->timer = 0x3C;
-            arg2->angle = get_angle(arg1->unk10.x, arg1->unk10.z);
+            arg2->angle = get_angle(arg1->XYZ.x, arg1->XYZ.z);
             return;
         }
         best = NULL;
@@ -459,8 +459,8 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
             nas = ChaseBarrels[i];
             if (nas != NULL) {
                 eng = nas->Engine;
-                dx = eng->unk10.x - x;
-                dz = eng->unk10.z - z;
+                dx = eng->XYZ.x - x;
+                dz = eng->XYZ.z - z;
                 dx *= dx;
                 dz *= dz;
                 d = csqrt(dx + dz) >> 6;
@@ -510,7 +510,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
     arg2->state = 4;
     arg2->x = Random(0x1100) - 0x880;
     arg2->z = Random(0x1100) - 0x880;
-    arg2->angle = get_angle(arg2->x - arg1->unk10.x, arg2->z - arg1->unk10.z);
+    arg2->angle = get_angle(arg2->x - arg1->XYZ.x, arg2->z - arg1->XYZ.z);
 }
 
 
@@ -553,13 +553,13 @@ void Chase_HeroBot(s32 arg0) {
     if (--ai->timer <= 0) {
         ChaseAI_ChooseTarget(arg0, eng, ai);
     } else {
-        ChaseNearPickup(eng->unk10.x, eng->unk10.z);
+        ChaseNearPickup(eng->XYZ.x, eng->XYZ.z);
     }
     switch (ai->state) {
     case 4:
         ai->unk8 |= DirPadBits[((ai->angle + off) >> 9) & 7];
-        if (ai->timer < 5 || ((d = ai->x - eng->unk10.x, (u32)(d + 99) < 199) &&
-                              (dz = ai->z - eng->unk10.z, (u32)(dz + 99) < 199))) {
+        if (ai->timer < 5 || ((d = ai->x - eng->XYZ.x, (u32)(d + 99) < 199) &&
+                              (dz = ai->z - eng->XYZ.z, (u32)(dz + 99) < 199))) {
             ai->state = 1;
             ai->timer = 1;
             ai->unk8 |= 0x2000;
@@ -583,8 +583,8 @@ void Chase_HeroBot(s32 arg0) {
         if (Random(0x20) < AiPlayerSkill[arg0].level) {
             nas = ai->target;
             fux = (ChaseCoalFux *)nas->FUX;
-            x = eng->unk10.x;
-            z = eng->unk10.z;
+            x = eng->XYZ.x;
+            z = eng->XYZ.z;
             if (fux->owner == arg0) {
                 fux->owner = -21;
             }
@@ -594,8 +594,8 @@ void Chase_HeroBot(s32 arg0) {
                 nas = ChaseBarrels[i];
                 if (nas != NULL) {
                     e = nas->Engine;
-                    dx = e->unk10.x - x;
-                    dz = e->unk10.z - z;
+                    dx = e->XYZ.x - x;
+                    dz = e->XYZ.z - z;
                     dx *= dx;
                     dz *= dz;
                     d = csqrt(dx + dz) >> 6;
@@ -630,8 +630,8 @@ void Chase_HeroBot(s32 arg0) {
         if (ai->unk20 > 0) {
             goto rethink;
         }
-        dx = eng->unk10.x;
-        dz = eng->unk10.z;
+        dx = eng->XYZ.x;
+        dz = eng->XYZ.z;
         dx *= dx;
         dz *= dz;
         if ((csqrt(dx + dz) >> 6) >= ChaseArenaRadius - 200) {
@@ -656,8 +656,8 @@ void Chase_HeroBot(s32 arg0) {
             nas = ChaseBarrels[i];
             if (nas != NULL) {
                 e = nas->Engine;
-                dx = e->unk10.x - eng->unk10.x;
-                dz = e->unk10.z - eng->unk10.z;
+                dx = e->XYZ.x - eng->XYZ.x;
+                dz = e->XYZ.z - eng->XYZ.z;
                 dx *= dx;
                 dz *= dz;
                 d = csqrt(dx + dz) >> 6;
@@ -913,8 +913,8 @@ void ChaseInitHero(s32 arg0) {
     }
     SetHeroAction(arg0, 0x71);
     eng = h->hero_eng;
-    eng->unk5D = 1;
-    eng->unk1E = 0x400;
+    eng->xform.order = 1;
+    eng->xform.rot.vy = 0x400;
     st = ChaseHeroState[arg0];
     eng_add_subs(eng, 1);
     sub = eng->sub;
@@ -928,7 +928,7 @@ void ChaseInitHero(s32 arg0) {
     st[0x12] = 0;
     ChaseFlameState[arg0] = 0;
     ChaseFlameSfxHandle[arg0] = 0;
-    nas = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1D09, 0x11);
+    nas = CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1D09, 0x11);
     nas->UserInfo.user2 = arg0;
     ChaseFlameTimer[arg0] = (s32)nas->Engine;
     ChaseFlameObj[arg0] = 0;
@@ -1049,9 +1049,9 @@ void ChaseMoveHero(s32 arg0) {
             m->x_vel = m->x_max;
         }
         if (m->x_dir != 0) {
-            e->unk10.x -= m->x_vel;
+            e->XYZ.x -= m->x_vel;
         } else {
-            e->unk10.x += m->x_vel;
+            e->XYZ.x += m->x_vel;
         }
         m->z_vel += m->z_acc - m->z_dec;
         if (m->z_vel < 0) {
@@ -1061,9 +1061,9 @@ void ChaseMoveHero(s32 arg0) {
             m->z_vel = m->z_max;
         }
         if (m->z_dir != 0) {
-            e->unk10.z -= m->z_vel;
+            e->XYZ.z -= m->z_vel;
         } else {
-            e->unk10.z += m->z_vel;
+            e->XYZ.z += m->z_vel;
         }
         break;
     case 3:
@@ -1103,18 +1103,18 @@ void ChaseMoveHero(s32 arg0) {
                 }
             }
         }
-        e->unk10.z += m->z_vel;
-        e->unk10.x += m->x_vel;
+        e->XYZ.z += m->z_vel;
+        e->XYZ.x += m->x_vel;
         break;
     case 9:
         break;
     case 1:
     default:
-        e->unk10.x -= (m->forward_speed * rcossin_tbl[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
-        e->unk10.z -= (m->forward_speed * rcossin_tbl[m->forward_angle & 0xFFF].unk2) >> 12;
+        e->XYZ.x -= (m->forward_speed * rcossin_tbl[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
+        e->XYZ.z -= (m->forward_speed * rcossin_tbl[m->forward_angle & 0xFFF].unk2) >> 12;
         if (m->reactive_speed != 0) {
-            e->unk10.x -= (m->reactive_speed * rcossin_tbl[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
-            e->unk10.z -= (m->reactive_speed * rcossin_tbl[m->reactive_angle & 0xFFF].unk2) >> 12;
+            e->XYZ.x -= (m->reactive_speed * rcossin_tbl[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
+            e->XYZ.z -= (m->reactive_speed * rcossin_tbl[m->reactive_angle & 0xFFF].unk2) >> 12;
             m->reactive_speed -= 4;
             if (m->reactive_speed < 0) {
                 m->reactive_speed = 0;
@@ -1122,14 +1122,14 @@ void ChaseMoveHero(s32 arg0) {
         }
         break;
     }
-    if ((Pads[arg0].dir & 0x8000) && e0->unk10.y >= -0x31) {
+    if ((Pads[arg0].dir & 0x8000) && e0->XYZ.y >= -0x31) {
         ChaseHeroSpeed[arg0] = 0xF;
         e0 = Heroes[arg0].hero_eng;
         st = ChaseHeroState[arg0];
         t = NULL;
         if ((NAS *)st[0x12] == NULL
-            || (ne = ((NAS *)st[0x12])->Engine, dx = e0->unk10.x - ne->unk10.x, dx = dx * dx,
-                dz = e0->unk10.z - ne->unk10.z, dz = dz * dz, dx + dz >= 0x400)) {
+            || (ne = ((NAS *)st[0x12])->Engine, dx = e0->XYZ.x - ne->XYZ.x, dx = dx * dx,
+                dz = e0->XYZ.z - ne->XYZ.z, dz = dz * dz, dx + dz >= 0x400)) {
             t = ChaseSpawnCoal(arg0);
         }
         if (t != NULL) {
@@ -1140,14 +1140,14 @@ void ChaseMoveHero(s32 arg0) {
             ChaseFlameObj[arg0] = 0;
         }
     }
-    if ((Pads[arg0].dir & 0x2A00) && e0->unk10.y >= -0x31 && ChaseHeroState[arg0][0x14] != 0) {
-        v = &e0->unk10;
+    if ((Pads[arg0].dir & 0x2A00) && e0->XYZ.y >= -0x31 && ChaseHeroState[arg0][0x14] != 0) {
+        v = &e0->XYZ;
         PlaySfx(0x43A, NULL, v, 0x1000, 0x1E00, 0);
         ChaseHidePowerup(arg0);
-        CoalChainHit(e0->unk10.x, e0->unk10.z, arg0, 0, 0x380, 0);
-        ChaseHitHeroesNear(e0->unk10.x, e0->unk10.z, arg0, 0x380);
+        CoalChainHit(e0->XYZ.x, e0->XYZ.z, arg0, 0, 0x380, 0);
+        ChaseHitHeroesNear(e0->XYZ.x, e0->XYZ.z, arg0, 0x380);
         anim = &HeroModelBank[DB_KegObjects];
-        nas = CreateNAS(e0->unk10.x, v->y, v->z, 0x1605, 0x11);
+        nas = CreateNAS(e0->XYZ.x, v->y, v->z, 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
@@ -1178,12 +1178,12 @@ s32 ChaseHeroTestDrop(s32 arg0) {
             if (h->hero_ctrl & 8) {
                 return 0;
             }
-            if (World_floor_level < h->hero_eng->unk10.y + h->hero_sub->unk08) {
+            if (World_floor_level < h->hero_eng->XYZ.y + h->hero_sub->unk08) {
                 if (ContourHeight == 0x7FFFFFFF) {
                     SetHeroAction(arg0, 0x79);
                     return 1;
                 }
-                h->hero_eng->unk10.y = World_floor_level;
+                h->hero_eng->XYZ.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
             }
         }
@@ -1242,16 +1242,16 @@ s32 ChaseHeroKickCollision(s32 arg0) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
-            hi = eng->unk10.y + box->unk2;
-            lo = eng->unk10.y + box->height;
+            hi = eng->XYZ.y + box->unk2;
+            lo = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
-                if (eng->unk5E != 0) {
-                    rotscale_update(&eng->unk1C);
+                if (eng->xform.dirty != 0) {
+                    rotscale_update(&eng->xform);
                 }
-                gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
-                lo2 = eng->unk10.y + box->unk2;
-                hi2 = eng->unk10.y + box->height;
+                gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
+                lo2 = eng->XYZ.y + box->unk2;
+                hi2 = eng->XYZ.y + box->height;
                 if (lo2 < hi2) {
                     tmp = hi2;
                     hi2 = lo2;
@@ -1265,7 +1265,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                 obj = n->Engine;
                 if (obj != NULL) {
                     rad3 = 0x80;
-                    hi3 = obj->unk10.y;
+                    hi3 = obj->XYZ.y;
                     lo3 = hi3 - 0x100;
                 }
             }
@@ -1289,23 +1289,23 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                     if (e != NULL) {
                         rec = FindCollisionBox(e, 0x40);
                         if (rec != NULL) {
-                            bot = e->unk10.y + rec->unk2;
-                            top = e->unk10.y + rec->height;
+                            bot = e->XYZ.y + rec->unk2;
+                            top = e->XYZ.y + rec->height;
                             if (push != 0) {
                                 r = rec->radius;
                                 r += rad;
                                 rr = r * r;
                                 if (lo < bot && top < hi) {
-                                    dx = e->unk10.x - eng->unk10.x;
-                                    dz = e->unk10.z - eng->unk10.z;
+                                    dx = e->XYZ.x - eng->XYZ.x;
+                                    dz = e->XYZ.z - eng->XYZ.z;
                                     d = dx * dx + dz * dz;
                                     if (d < rr) {
                                         d = csqrt(d) >> 6;
                                         if (d < r) {
                                             ang = get_angle(dx, dz) & 0xFFF;
                                             d = r - d + 1;
-                                            eng->unk10.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
+                                            eng->XYZ.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            eng->XYZ.z -= (d * tbl[ang].unk2) >> 12;
                                             hit = 1;
                                             if (self->hero_pu != 0) {
                                                 (*(void (**)(s32, s32))&HeroHooks.HeroesTouched)(arg0, i);
@@ -1318,8 +1318,8 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                                 }
                             }
                             if (rad2 != 0 && hi2 < bot && top < lo2) {
-                                dx = e->unk10.x - pos.vx;
-                                dz = e->unk10.z - pos.vz;
+                                dx = e->XYZ.x - pos.vx;
+                                dz = e->XYZ.z - pos.vz;
                                 r = rec->radius;
                                 r += rad2;
                                 d = dx * dx + dz * dz;
@@ -1331,18 +1331,18 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                                         ang = get_angle(dx, dz) & 0xFFF;
                                         d = r - d + 1;
                                         if (push != 0) {
-                                            eng->unk10.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
+                                            eng->XYZ.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            eng->XYZ.z -= (d * tbl[ang].unk2) >> 12;
                                         } else {
-                                            e->unk10.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            e->unk10.z += (d * tbl[ang].unk2) >> 12;
+                                            e->XYZ.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            e->XYZ.z += (d * tbl[ang].unk2) >> 12;
                                         }
                                     }
                                 }
                             }
                             if (rad3 != 0 && lo3 < bot && top < hi3) {
-                                dx = e->unk10.x - obj->unk10.x;
-                                dz = e->unk10.z - obj->unk10.z;
+                                dx = e->XYZ.x - obj->XYZ.x;
+                                dz = e->XYZ.z - obj->XYZ.z;
                                 r = rec->radius;
                                 r += rad3;
                                 d = dx * dx + dz * dz;
@@ -1354,11 +1354,11 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                                         ang = get_angle(dx, dz) & 0xFFF;
                                         d = r - d + 1;
                                         if (push != 0) {
-                                            eng->unk10.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
+                                            eng->XYZ.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            eng->XYZ.z -= (d * tbl[ang].unk2) >> 12;
                                         } else {
-                                            e->unk10.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                            e->unk10.z += (d * tbl[ang].unk2) >> 12;
+                                            e->XYZ.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            e->XYZ.z += (d * tbl[ang].unk2) >> 12;
                                         }
                                     }
                                 }
@@ -1388,11 +1388,11 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                 if (e == eng) continue;
                 rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
-                bot = e->unk10.y + rec->unk2;
-                top = e->unk10.y + rec->height;
+                bot = e->XYZ.y + rec->unk2;
+                top = e->XYZ.y + rec->height;
                 if (lo < bot && top < hi) {
-                    dx = e->unk10.x - eng->unk10.x;
-                    dz = e->unk10.z - eng->unk10.z;
+                    dx = e->XYZ.x - eng->XYZ.x;
+                    dz = e->XYZ.z - eng->XYZ.z;
                     r = rec->radius;
                     r += rad;
                     d = dx * dx + dz * dz;
@@ -1408,8 +1408,8 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->unk1C & 8)) {
@@ -1514,14 +1514,14 @@ void ChaseHeroRun(s32 arg0) {
                         break;
                     }
                     switch (h->hero_name) {
-                    case 1: PlaySfx(0xA, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
-                    case 2: PlaySfx(0x3C, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
-                    case 3: PlaySfx(0x6E, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
-                    case 4: PlaySfx(0xA0, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
-                    case 7: PlaySfx(0x104, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
-                    case 8: PlaySfx(0xD2, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
-                    case 5: PlaySfx(0x136, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
-                    case 6: PlaySfx(0x168, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
+                    case 1: PlaySfx(0xA, NULL, &e->XYZ, 0x1000, 0x1E00, 0); break;
+                    case 2: PlaySfx(0x3C, NULL, &e->XYZ, 0x1000, 0x1E00, 0); break;
+                    case 3: PlaySfx(0x6E, NULL, &e->XYZ, 0x1000, 0x1E00, 0); break;
+                    case 4: PlaySfx(0xA0, NULL, &e->XYZ, 0x1000, 0x1E00, 0); break;
+                    case 7: PlaySfx(0x104, NULL, &e->XYZ, 0x1000, 0x1E00, 0); break;
+                    case 8: PlaySfx(0xD2, NULL, &e->XYZ, 0x1000, 0x1E00, 0); break;
+                    case 5: PlaySfx(0x136, NULL, &e->XYZ, 0x1000, 0x1E00, 0); break;
+                    case 6: PlaySfx(0x168, NULL, &e->XYZ, 0x1000, 0x1E00, 0); break;
                     }
                     break;
                 case 9:
@@ -1606,11 +1606,11 @@ void ChaseHeroFall(s32 arg0) {
         SetHeroAction(arg0, 0x7B);
     } else if (!(h->hero_ctrl & 8)) {
         e = h->hero_eng;
-        if (World_floor_level < e->unk10.y + h->hero_sub->unk08) {
+        if (World_floor_level < e->XYZ.y + h->hero_sub->unk08) {
             if (ContourHeight == 0x7FFFFFFF) {
                 SetHeroAction(arg0, 0x79);
             } else {
-                e->unk10.y = World_floor_level;
+                e->XYZ.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
             }
         }
@@ -1626,10 +1626,10 @@ void SetChaseHeroDrop(s32 arg0) {
     EXTengine *e;
 
     h = base + arg0;
-    h->hero_eng->unk10.x &= ~0x1FF;
-    h->hero_eng->unk10.x += 0x100;
-    h->hero_eng->unk10.z &= ~0x1FF;
-    h->hero_eng->unk10.z += 0x100;
+    h->hero_eng->XYZ.x &= ~0x1FF;
+    h->hero_eng->XYZ.x += 0x100;
+    h->hero_eng->XYZ.z &= ~0x1FF;
+    h->hero_eng->XYZ.z += 0x100;
     h->hero_move->velocity_enable = 0;
     h->hero_move->forward_speed = 0;
     h->hero_move->jump_ctrl |= 0x10;
@@ -1648,7 +1648,7 @@ void SetChaseHeroDrop(s32 arg0) {
     if (h->hero_last_mode != 0x73) {
         SetHeroSeq(arg0, 0x66);
     }
-    PlaySfx(0x410, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(0x410, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
 }
 
 void SetChaseHeroLand(s32 arg0) {
@@ -1752,7 +1752,7 @@ void SetChaseHeroHit(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     SetHeroSeq(arg0, 0x68);
-    PlaySfx(ChaseHitSfx[h->hero_name - 1][Random(4)], 0, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(ChaseHitSfx[h->hero_name - 1][Random(4)], 0, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
 }
 
 void ChaseHeroHit(s32 arg0) {
@@ -1877,12 +1877,12 @@ void SetChaseHeroWinner(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
-    h->hero_eng->unk10.y = World_floor_level - 0x200;
+    h->hero_eng->XYZ.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
-        h->hero_eng->unk10.y -= dy;
+        h->hero_eng->XYZ.y -= dy;
     } else {
-        h->hero_eng->unk10.y = World_floor_level;
+        h->hero_eng->XYZ.y = World_floor_level;
     }
     {
         HeroInfo *b2 = Heroes;
@@ -1908,12 +1908,12 @@ void ChaseHeroWinner(s32 arg0) {
     if (h->hero_health < 2) {
         h->hero_health = 2;
     }
-    h->hero_eng->unk10.y = World_floor_level - 0x200;
+    h->hero_eng->XYZ.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
-        h->hero_eng->unk10.y -= dy;
+        h->hero_eng->XYZ.y -= dy;
     } else {
-        h->hero_eng->unk10.y = World_floor_level;
+        h->hero_eng->XYZ.y = World_floor_level;
     }
     CheckHeroAnim(arg0);
     if (UpdateHeroVictory(arg0) != 0) {
@@ -1948,12 +1948,12 @@ void SetChaseHeroLose(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
-    h->hero_eng->unk10.y = World_floor_level - 0x200;
+    h->hero_eng->XYZ.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
-        h->hero_eng->unk10.y -= dy;
+        h->hero_eng->XYZ.y -= dy;
     } else {
-        h->hero_eng->unk10.y = World_floor_level;
+        h->hero_eng->XYZ.y = World_floor_level;
     }
     {
         HeroInfo *b2 = Heroes;
@@ -1967,7 +1967,7 @@ void SetChaseHeroLose(s32 arg0) {
         g->hero_pu = 0;
         g->hero_pu_timer = 0;
         SetHeroSeq(arg0, 0x61);
-        v = &g->hero_eng->unk10;
+        v = &g->hero_eng->XYZ;
         anim = &HeroModelBank[DB_KegObjects];
         nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
         if (nas != NULL) {
@@ -1991,10 +1991,10 @@ void SetChaseHeroLose(s32 arg0) {
         HeroInfo *k = b3 + arg0;
         EXTengine *eng = k->hero_eng;
 
-        eng->unk5C = 1;
-        eng->unk2C.x = 0x1000;
-        eng->unk2C.y = 0x1000;
-        eng->unk2C.z = 0x1000;
+        eng->xform.hasScale = 1;
+        eng->xform.scale.vx = 0x1000;
+        eng->xform.scale.vy = 0x1000;
+        eng->xform.scale.vz = 0x1000;
         eng->Engine->sub->flags = 0;
         RemoveCamera(k->hero);
     }
@@ -2011,24 +2011,24 @@ void ChaseHeroLose(s32 arg0) {
     if (h->hero_health < 2) {
         h->hero_health = 2;
     }
-    h->hero_eng->unk10.y = World_floor_level - 0x200;
+    h->hero_eng->XYZ.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
-        h->hero_eng->unk10.y -= dy;
+        h->hero_eng->XYZ.y -= dy;
     } else {
-        h->hero_eng->unk10.y = World_floor_level;
+        h->hero_eng->XYZ.y = World_floor_level;
     }
     ProcessHeroAnim(arg0);
     eng = Heroes[arg0].hero_eng;
-    eng->unk5C = 1;
-    if (eng->unk2C.x > 0x12C) {
-        eng->unk2C.x -= 0x12C;
-        eng->unk2C.y -= 0x12C;
-        eng->unk2C.z -= 0x12C;
+    eng->xform.hasScale = 1;
+    if (eng->xform.scale.vx > 0x12C) {
+        eng->xform.scale.vx -= 0x12C;
+        eng->xform.scale.vy -= 0x12C;
+        eng->xform.scale.vz -= 0x12C;
     } else {
-        eng->unk2C.x = 3;
-        eng->unk2C.y = 3;
-        eng->unk2C.z = 3;
+        eng->xform.scale.vx = 3;
+        eng->xform.scale.vy = 3;
+        eng->xform.scale.vz = 3;
     }
 }
 
@@ -2043,10 +2043,10 @@ static inline s32 BarrelNearHero(s32 x, s32 z, s32 r) {
         if (Heroes[i].hero_status & 0xC000) {
             continue;
         }
-        d = x - Heroes[i].hero_eng->unk10.x;
+        d = x - Heroes[i].hero_eng->XYZ.x;
         if (d >= -r) {
             if (d <= r) {
-                d = z - Heroes[i].hero_eng->unk10.z;
+                d = z - Heroes[i].hero_eng->XYZ.z;
                 if (d > -r) {
                     if (d < r) {
                         return i;
@@ -2093,8 +2093,8 @@ again:
         }
     } while (BarrelNearHero(x, z, 0x200) >= 0);
     for (i = 0; i < 8; i++) {
-        if (ChaseBarrels[i] != NULL && ChaseBarrels[i]->Engine->unk10.x == x &&
-            ChaseBarrels[i]->Engine->unk10.z == z) {
+        if (ChaseBarrels[i] != NULL && ChaseBarrels[i]->Engine->XYZ.x == x &&
+            ChaseBarrels[i]->Engine->XYZ.z == z) {
             goto again;
         }
     }
@@ -2115,11 +2115,11 @@ void InitBarrelCH(NAS *nas) {
     ext->unk1C = 0x3E8;
     eng = nas->Engine;
     sub = eng->sub;
-    eng->unk2C.x = 0x3E8;
-    eng->unk2C.y = 0x3E8;
-    eng->unk2C.z = 0x3E8;
-    eng->unk5C = 1;
-    eng->unk10.y = 0;
+    eng->xform.scale.vx = 0x3E8;
+    eng->xform.scale.vy = 0x3E8;
+    eng->xform.scale.vz = 0x3E8;
+    eng->xform.hasScale = 1;
+    eng->XYZ.y = 0;
     sub->u6C.dbase = &HeroModelBank[DB_KegObjects];
     n = ++ChaseBarrelCount;
     if ((n & 0x1F) == 0) {
@@ -2160,18 +2160,18 @@ void PlotBarrelCH(NAS *nas) {
     i = 0;
     eng = nas->Engine;
     fux = (BarrelCHExt *)nas->FUX;
-    bx = eng->unk10.x;
-    bz = eng->unk10.z;
+    bx = eng->XYZ.x;
+    bz = eng->XYZ.z;
     do {
         he = Heroes[i].hero_eng;
-        dx = he->unk10.x - bx;
-        dz = he->unk10.z - bz;
+        dx = he->XYZ.x - bx;
+        dz = he->XYZ.z - bz;
         if ((u32)(dx + 0xFF) < 0x1FF && dz >= -0xFF && dz < 0x100) {
             d = (csqrt(dx * dx + dz * dz) >> 6) - 0x70;
             if (d < 0x70) {
                 a = get_angle(dx, dz);
-                he->unk10.x += (d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
-                he->unk10.z += (d * rcossin_tbl[a & 0xFFF].unk2) >> 12;
+                he->XYZ.x += (d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
+                he->XYZ.z += (d * rcossin_tbl[a & 0xFFF].unk2) >> 12;
             }
         }
         i++;
@@ -2182,17 +2182,17 @@ void PlotBarrelCH(NAS *nas) {
             fux->scale = 0x1770;
             fux->growing = 0;
         }
-        eng->unk2C.x = fux->scale;
-        eng->unk2C.y = fux->scale;
-        eng->unk2C.z = fux->scale;
-        eng->unk5E = 1;
+        eng->xform.scale.vx = fux->scale;
+        eng->xform.scale.vy = fux->scale;
+        eng->xform.scale.vz = fux->scale;
+        eng->xform.dirty = 1;
         return;
     }
     if (nas->UserInfo.status != 0) {
-        v = &eng->unk10;
+        v = &eng->XYZ;
         PlaySfx(ChaseBarrelSfx[Random(4)], 0, v, 0x1000, 0x1E00, 0);
         anim = &HeroModelBank[DB_KegObjects];
-        n = CreateNAS(eng->unk10.x, v->y, v->z, 0x1605, 0x11);
+        n = CreateNAS(eng->XYZ.x, v->y, v->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
             if (ext != NULL) {
@@ -2224,10 +2224,10 @@ NAS *ChaseSpawnCoal(s32 arg0) {
     s32 lv = g[0x50];
     ChaseSpawnOfs *o = &ChaseSpawnOffsets[--lv];
     s32 r = o->r;
-    s32 a = (he->unk1E + o->ang) & 0xFFF;
+    s32 a = (he->xform.rot.vy + o->ang) & 0xFFF;
     s32 dx = (r * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
     s32 dz = (r * rcossin_tbl[a].unk2) >> 12;
-    s32 x = he->unk10.x + dx;
+    s32 x = he->XYZ.x + dx;
     s32 y = -o->y;
     s32 z;
     s32 old;
@@ -2240,14 +2240,14 @@ NAS *ChaseSpawnCoal(s32 arg0) {
     if (x >= 0xA00) {
         x = 0x9FF;
     }
-    z = he->unk10.z + dz;
+    z = he->XYZ.z + dz;
     if (z < -0x9FF) {
         z = -0x9FF;
     }
     if (z >= 0xA00) {
         z = 0x9FF;
     }
-    nas = CreateNAS(x, he->unk10.y + y, z, 0x1D02, 0x11);
+    nas = CreateNAS(x, he->XYZ.y + y, z, 0x1D02, 0x11);
     if (nas != NULL) {
         {
             CoalPosInner *p = ((CoalGridObj *)nas)->pos;
@@ -2270,9 +2270,9 @@ NAS *ChaseSpawnCoal(s32 arg0) {
             nas->UserInfo.status = (nas->UserInfo.status * AiPlayerSkill[arg0].level) / 16;
         }
         e = nas->Engine;
-        e->unk1E = he->unk1E;
-        e->unk1C = 0x400;
-        e->unk5E = 1;
+        e->xform.rot.vy = he->xform.rot.vy;
+        e->xform.rot.vx = 0x400;
+        e->xform.dirty = 1;
         ((s32 *)nas->FUX)[0x2C / 4] = arg0;
     }
     return nas;
@@ -2472,12 +2472,12 @@ void PlotCircleFire(NAS *nas) {
         sub->entity = 0x4000;
     }
     nas->UserInfo.status = (nas->UserInfo.status + 0xC) & 0xFFF;
-    eng->unk10.x = (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
-    eng->unk10.z = (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
-    cx = eng->unk10.x;
-    eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
-    eng->unk5E = 1;
-    cz = eng->unk10.z;
+    eng->XYZ.x = (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
+    eng->XYZ.z = (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
+    cx = eng->XYZ.x;
+    eng->xform.rot.vy = (nas->UserInfo.status - 0x400) & 0xFFF;
+    eng->xform.dirty = 1;
+    cz = eng->XYZ.z;
     i = 0;
     grid = ChaseGrid;
     for (;;) {
@@ -2534,10 +2534,10 @@ void PlotEgg(NAS *nas) {
     sub = eng->sub;
     fux = (EggExt *)nas->FUX;
     if (Clock_Time == 0 || (GameExitFlags & 0x801)) {
-        PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-        pos = &eng->unk10;
+        PlaySfx(0x75A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+        pos = &eng->XYZ;
         p = (s32)MapScene->dbase;
-        n = CreateNAS(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
+        n = CreateNAS(eng->XYZ.x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
             if (ext != NULL) {
@@ -2563,46 +2563,46 @@ void PlotEgg(NAS *nas) {
             return;
         }
         if (nas->UserInfo.user2 == 0) {
-            PlaySfx(0x756, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x756, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
-        eng->unk10.x += fux->unk10;
+        eng->XYZ.x += fux->unk10;
         fux->unk14 += 0xC;
-        eng->unk10.y += fux->unk14;
+        eng->XYZ.y += fux->unk14;
         if (++sub->entity == 0x4091) {
             fux->unk30 = 0x29;
             sub->entity = 0x4000;
-            eng->unk10.x = 0;
-            eng->unk10.y = -0x12C;
+            eng->XYZ.x = 0;
+            eng->XYZ.y = -0x12C;
         }
         break;
     case 0x29:
         nas->UserInfo.status = (nas->UserInfo.status - 0xA) & 0xFFF;
-        eng->unk10.x = (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 0x53) >> 7;
-        eng->unk10.z = (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 0x53) >> 7;
-        eng->unk1E = (nas->UserInfo.status + 0x400) & 0xFFF;
-        eng->unk5E = 1;
-        if (eng->unk10.z > 0) {
+        eng->XYZ.x = (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 0x53) >> 7;
+        eng->XYZ.z = (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 0x53) >> 7;
+        eng->xform.rot.vy = (nas->UserInfo.status + 0x400) & 0xFFF;
+        eng->xform.dirty = 1;
+        if (eng->XYZ.z > 0) {
             sub->unk68 = 0x100;
         } else {
             sub->unk68 = -0x100;
         }
         if (++sub->entity == 0x4006) {
-            PlaySfx(0x757, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x757, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         if (sub->entity == 0x400F) {
-            PlaySfx(0x758, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x758, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         if (sub->entity == 0x4012) {
             sub->entity = 0x4000;
-            i = BarrelNearHero(eng->unk10.x, eng->unk10.z, 0x600);
+            i = BarrelNearHero(eng->XYZ.x, eng->XYZ.z, 0x600);
             if (i >= 0 && GAME->heroOut[i] == 0) {
-                PlaySfx(0x759, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-                fux->unk1C = get_angle(Heroes[i].hero_eng->unk10.x - eng->unk10.x,
-                                       Heroes[i].hero_eng->unk10.z - eng->unk10.z);
+                PlaySfx(0x759, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+                fux->unk1C = get_angle(Heroes[i].hero_eng->XYZ.x - eng->XYZ.x,
+                                       Heroes[i].hero_eng->XYZ.z - eng->XYZ.z);
                 fux->unk30 = 0x27;
                 fux->unk14 = -0x64;
                 sub->entity = 0x4080;
-                eng->unk5E = 1;
+                eng->xform.dirty = 1;
             }
         }
         break;
@@ -2611,12 +2611,12 @@ void PlotEgg(NAS *nas) {
             sub->entity = 0x4090;
         }
         fux->unk14 += 0xC;
-        eng->unk10.y += fux->unk14;
-        eng->unk10.x += (rcossin_tbl[(fux->unk1C - 0x400) & 0xFFF].unk2 * 5) >> 8;
-        eng->unk10.z += (rcossin_tbl[fux->unk1C & 0xFFF].unk2 * 5) >> 8;
-        if (eng->unk10.y > 0) {
-            PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-            i = BarrelNearHero(eng->unk10.x, eng->unk10.z, 0x280);
+        eng->XYZ.y += fux->unk14;
+        eng->XYZ.x += (rcossin_tbl[(fux->unk1C - 0x400) & 0xFFF].unk2 * 5) >> 8;
+        eng->XYZ.z += (rcossin_tbl[fux->unk1C & 0xFFF].unk2 * 5) >> 8;
+        if (eng->XYZ.y > 0) {
+            PlaySfx(0x75A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+            i = BarrelNearHero(eng->XYZ.x, eng->XYZ.z, 0x280);
             if (i >= 0) {
                 if (ChaseRoundOver == 0) {
                     HeroInfo *hb = Heroes;
@@ -2634,8 +2634,8 @@ void PlotEgg(NAS *nas) {
             skip = 0x63;
             lim = 0x280;
             i = 0;
-            x = eng->unk10.x;
-            z = eng->unk10.z;
+            x = eng->XYZ.x;
+            z = eng->XYZ.z;
             for (;;) {
                 s32 d;
 
@@ -2643,9 +2643,9 @@ void PlotEgg(NAS *nas) {
                     break;
                 }
                 if (skip != i) {
-                    d = x - Heroes[i].hero_eng->unk10.x;
+                    d = x - Heroes[i].hero_eng->XYZ.x;
                     if (d >= -0x280 && d <= lim) {
-                        d = z - Heroes[i].hero_eng->unk10.z;
+                        d = z - Heroes[i].hero_eng->XYZ.z;
                         if (d >= -0x280 && d <= lim && ChaseRoundOver == 0 && Heroes[i].hero_immunity == 0 &&
                             !(Heroes[i].hero_status & 0xFA00)) {
                             SetHeroAction(i, (u16)HeroActHit);
@@ -2655,9 +2655,9 @@ void PlotEgg(NAS *nas) {
                 }
                 i++;
             }
-            at = &eng->unk10;
+            at = &eng->XYZ;
             p = (s32)MapScene->dbase;
-            n = CreateNAS(eng->unk10.x, at->y, at->z, 0x1605, 0x11);
+            n = CreateNAS(eng->XYZ.x, at->y, at->z, 0x1605, 0x11);
             if (n != NULL) {
                 ext = FindExtension(n, 0x10000000);
                 if (ext != NULL) {
@@ -2729,8 +2729,8 @@ void PlotPUGenerator_CH(NAS *nas) {
             z = (Random(0xE) - 7) << 8;
         } while (BarrelNearHero(x, z, 0x200) >= 0);
         for (j = 0; j < 8; j++) {
-            if (ChaseBarrels[j] != NULL && ChaseBarrels[j]->Engine->unk10.x == x &&
-                ChaseBarrels[j]->Engine->unk10.z == z) {
+            if (ChaseBarrels[j] != NULL && ChaseBarrels[j]->Engine->XYZ.x == x &&
+                ChaseBarrels[j]->Engine->XYZ.z == z) {
                 goto again;
             }
         }
@@ -2761,12 +2761,12 @@ void InitPickupCH(NAS *nas) {
     ext->unk14 = 0;
     eng = nas->Engine;
     nas->FUX = (EXT *)ext;
-    eng->unk5D = 1;
+    eng->xform.order = 1;
     e = AddExtEngine(nas, 1);
     if (e != NULL) {
-        e->unk10.x = eng->unk10.x;
-        e->unk10.y = 0;
-        e->unk10.z = eng->unk10.z;
+        e->XYZ.x = eng->XYZ.x;
+        e->XYZ.y = 0;
+        e->XYZ.z = eng->XYZ.z;
         e->sub->unk51 = 2;
         e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         e->sub->entity = 0x2001;
@@ -2775,7 +2775,7 @@ void InitPickupCH(NAS *nas) {
         e->sub->unk50 = 1;
         e->sub->unk52 = 1;
     }
-    PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(0x3FA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
 }
 
 void PlotPickupCH(NAS *nas) {
@@ -2795,15 +2795,15 @@ void PlotPickupCH(NAS *nas) {
     s32 status;
 
     ext->unk14 += 8;
-    eng->unk10.y += ext->unk14;
-    if (eng->unk10.y >= 0) {
-        eng->unk10.y = -1;
+    eng->XYZ.y += ext->unk14;
+    if (eng->XYZ.y >= 0) {
+        eng->XYZ.y = -1;
         ext->unk14 = -0x28;
-        eng->unk10.y -= 0x28;
+        eng->XYZ.y -= 0x28;
     }
     lim = 0x100;
-    x = eng->unk10.x;
-    z = eng->unk10.z;
+    x = eng->XYZ.x;
+    z = eng->XYZ.z;
     for (i = 0; i < 4; i++) {
         h = &Heroes[i];
         if (h->hero_name == 9) {
@@ -2813,14 +2813,14 @@ void PlotPickupCH(NAS *nas) {
             continue;
         }
         he = h->hero_eng;
-        dx = x - he->unk10.x;
+        dx = x - he->XYZ.x;
         if (dx < -0x100) {
             continue;
         }
         if (dx > lim) {
             continue;
         }
-        dz = z - he->unk10.z;
+        dz = z - he->XYZ.z;
         if (dz > -lim) {
             if (dz < 0x100) {
                 hero = i;
@@ -2841,7 +2841,7 @@ found:
             }
         }
     } else {
-        PlaySfx(0x439, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x439, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         status = nas->UserInfo.status;
         sub = NULL;
         ChaseHidePowerup(hero);
@@ -3351,10 +3351,10 @@ void ChaseHero_ExtraEffects(s32 arg0) {
 
     if (p != NULL) {
         e = h->hero_eng;
-        p->unk10 = e->unk10;
-        p->unk5E = 1;
-        p->unk10.y -= 0x300;
-        p->unk1E = p->unk1E + 0x38;
+        p->XYZ = e->XYZ;
+        p->xform.dirty = 1;
+        p->XYZ.y -= 0x300;
+        p->xform.rot.vy = p->xform.rot.vy + 0x38;
     }
 }
 
@@ -3399,12 +3399,12 @@ void InitEgg(NAS *nas) {
     eng = nas->Engine;
     nas->UserInfo.user2 = 0x78;
     sub = eng->sub;
-    nas->UserInfo.status = eng->unk10.x;
-    eng->unk10.x = 0x600;
-    eng->unk10.y = 0x12C;
-    eng->unk10.z = 0xA60;
-    eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
-    eng->unk5E = 1;
+    nas->UserInfo.status = eng->XYZ.x;
+    eng->XYZ.x = 0x600;
+    eng->XYZ.y = 0x12C;
+    eng->XYZ.z = 0xA60;
+    eng->xform.rot.vy = (nas->UserInfo.status - 0x400) & 0xFFF;
+    eng->xform.dirty = 1;
     scene = (s32)MapScene->dbase;
     sub->entity = 0x4080;
     sub->unk68 = 0x3E7;
@@ -3424,13 +3424,13 @@ void InitCircleFire(NAS *nas) {
     nas->FUX = &ext->ext;
     ext->unk30 = 1;
     eng = nas->Engine;
-    nas->UserInfo.status = eng->unk10.x;
-    eng->unk10.x = (rcossin_tbl[((u16)nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
-    eng->unk10.z = (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
+    nas->UserInfo.status = eng->XYZ.x;
+    eng->XYZ.x = (rcossin_tbl[((u16)nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
+    eng->XYZ.z = (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
     sub = eng->sub;
-    eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
-    eng->unk5E = 1;
-    eng->unk10.y = 0;
+    eng->xform.rot.vy = (nas->UserInfo.status - 0x400) & 0xFFF;
+    eng->xform.dirty = 1;
+    eng->XYZ.y = 0;
     sub->u6C.dbase = &HeroModelBank[DB_KegObjects];
     sub->entity = 0x4000;
     if (nas->Failure != 0) {
@@ -3451,11 +3451,11 @@ void InitCoalFlame(NAS *nas) {
     sub = eng->sub;
     sub->u6C.dbase = &HeroModelBank[DB_KegObjects];
     sub->entity = 0x200E;
-    eng->unk5C = 1;
-    eng->unk2C.x = 0x1000;
-    eng->unk2C.y = 0x1000;
-    eng->unk2C.z = 0x1000;
-    eng->unk5E = 1;
+    eng->xform.hasScale = 1;
+    eng->xform.scale.vx = 0x1000;
+    eng->xform.scale.vy = 0x1000;
+    eng->xform.scale.vz = 0x1000;
+    eng->xform.dirty = 1;
     if (nas->Failure != 0) {
         KillNAS(nas);
     }
@@ -3493,7 +3493,7 @@ void InitCoal(NAS *nas) {
 
     nas->FUX = AddExt(nas, 0x44, 0x10000002);
     eng = nas->Engine;
-    eng->unk5D = 1;
+    eng->xform.order = 1;
     nas->UserInfo.flags = 5;
     nas->UserInfo.user1 = 0;
     sub = eng->sub;
@@ -3546,7 +3546,7 @@ void ChaseHeroDrop(s32 arg0) {
     base = Heroes;
     hero = base + arg0;
     hero->hero_frozen = 2;
-    y = hero->hero_eng->unk10.y + hero->hero_sub->unk08;
+    y = hero->hero_eng->XYZ.y + hero->hero_sub->unk08;
     if (World_floor_level + 0x180 < y) {
         SetHeroAction(arg0, 0x77);
     }
@@ -3637,14 +3637,14 @@ void ChaseHitHeroesNear(s32 x, s32 z, s32 skip, s32 range) {
 loop:
     if (i < 4) {
         if (skip != i) {
-            d = x - h->hero_eng->unk10.x;
+            d = x - h->hero_eng->XYZ.x;
             do {
                 if (d < neg) {
                     goto next;
                 }
             } while (0);
             if (d <= range) {
-                d = z - h->hero_eng->unk10.z;
+                d = z - h->hero_eng->XYZ.z;
                 if (d >= neg && d <= range && ChaseRoundOver == 0 &&
                     h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
                     SetHeroAction(i, (u16)HeroActHit);
@@ -3685,9 +3685,9 @@ s32 ChaseFindHero(s32 x, s32 z, s32 range) {
         h = &Heroes[i];
         if (h->hero_name == 9) continue;
         if (h->hero_status & 0xC000) continue;
-        d = x - h->hero_eng->unk10.x;
+        d = x - h->hero_eng->XYZ.x;
         if (d < -range || range < d) continue;
-        d = z - h->hero_eng->unk10.z;
+        d = z - h->hero_eng->XYZ.z;
         if (-range < d && d < range) return i;
     }
     return -1;
@@ -3785,11 +3785,11 @@ s32 ChaseFindHeroNear(s32 x, s32 z, s32 range, s32 skip) {
             continue;
         }
         eng = h->hero_eng;
-        dx = x - eng->unk10.x;
+        dx = x - eng->XYZ.x;
         if (dx < -range || range < dx) {
             continue;
         }
-        dz = z - eng->unk10.z;
+        dz = z - eng->XYZ.z;
         if (-range < dz && dz < range) {
             return i;
         }
@@ -3806,9 +3806,9 @@ s32 ChaseFindHeroAt(s32 x, s32 z, s32 range) {
         h = &Heroes[i];
         if (h->hero_name == 9) continue;
         if (h->hero_status & 0xC000) continue;
-        d = x - h->hero_eng->unk10.x;
+        d = x - h->hero_eng->XYZ.x;
         if (d < -range || range < d) continue;
-        d = z - h->hero_eng->unk10.z;
+        d = z - h->hero_eng->XYZ.z;
         if (-range < d && d < range) return i;
     }
     return -1;
@@ -3839,11 +3839,11 @@ NAS *ChaseFindPickupNear(s32 x, s32 z, s32 range) {
         nas = ChasePickup[i];
         if (nas != NULL) {
             eng = nas->Engine;
-            d = x - eng->unk10.x;
+            d = x - eng->XYZ.x;
             if (d < 0) {
                 d = -d;
             }
-            if (d + (z - eng->unk10.z) < range) {
+            if (d + (z - eng->XYZ.z) < range) {
                 return nas;
             }
         }
@@ -3855,7 +3855,7 @@ void ChaseAimAt(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4) {
     s32 ang;
     s32 n;
 
-    ang = get_angle(arg3->unk10.x - arg1, arg3->unk10.z - arg2);
+    ang = get_angle(arg3->XYZ.x - arg1, arg3->XYZ.z - arg2);
     arg4->unk0 = 2;
     n = ChaseHeroState[arg0][17];
     arg4->unk4 = (n / 2 + 0x400) / n;

@@ -54,7 +54,7 @@ void BuildCameraFrameList(void) {
                 w = nas->Camera.width;
                 r = w;
                 if (!(g->exitFlags & 0x801)) {
-                    ang = eng->unk1E & 0xFFF;
+                    ang = eng->xform.rot.vy & 0xFFF;
                     dx = -rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * nas->Camera.look_ahead >> 12;
                     dz = -rcossin_tbl[ang].unk2 * nas->Camera.look_ahead >> 12;
                     if (dx < 0) {
@@ -83,11 +83,11 @@ void BuildCameraFrameList(void) {
                         }
                         dx = w;
                     }
-                    camera_add_frame_list((s32)&eng->unk10, l, r, dx >> 1, t >> 1, nas->Camera.height);
+                    camera_add_frame_list((s32)&eng->XYZ, l, r, dx >> 1, t >> 1, nas->Camera.height);
                 } else {
                     dx = nas->Camera.height;
                     dx -= (u32)dx >> 2;
-                    camera_add_frame_list((s32)&eng->unk10, w >> 1, w >> 1, 0, 0, dx);
+                    camera_add_frame_list((s32)&eng->XYZ, w >> 1, w >> 1, 0, 0, dx);
                 }
             }
             nas = nas->Camera.Child;
@@ -493,8 +493,8 @@ void DrawLevelHud(void) {
                 tim = &HeroModelBank[DB_Interface];
                 c0 = 0xD0FF;
                 c1 = 0xFF;
-                pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
-                pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
+                pos.f.x = HUDPLAYERS[i]->XYZ.x + Score[i].Xoffs;
+                pos.f.y = HUDPLAYERS[i]->XYZ.y + Score[i].Yoffs;
                 n = Score[i].score;
                 texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                               pos.w, 0, c0, c0, c1, c1);
@@ -513,8 +513,8 @@ void DrawLevelHud(void) {
                 tim = &HeroModelBank[DB_Interface];
                 c0 = 0xD0FF;
                 c1 = 0xFF;
-                pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
-                pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
+                pos.f.x = HUDPLAYERS[i]->XYZ.x + Score[i].Xoffs;
+                pos.f.y = HUDPLAYERS[i]->XYZ.y + Score[i].Yoffs;
                 n = Score[i].score;
                 texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                               pos.w, 0, c0, c0, c1, c1);
@@ -529,8 +529,8 @@ void DrawLevelHud(void) {
             c0 = 0xD0FF;
             c1 = 0xFF;
             n = Score[i].score;
-            pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
-            pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
+            pos.f.x = HUDPLAYERS[i]->XYZ.x + Score[i].Xoffs;
+            pos.f.y = HUDPLAYERS[i]->XYZ.y + Score[i].Yoffs;
             texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                           pos.w, 0, c0, c0, c1, c1);
         }
@@ -597,8 +597,8 @@ s32 GravitateNas(NAS *nas) {
     if (m->Xvel > m->Xmax) {
         m->Xvel = m->Xmax;
     }
-    eng->unk10.x -= m->Xvel * rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12;
-    eng->unk10.z -= m->Xvel * rcossin_tbl[eng->unk1E & 0xFFF].unk2 >> 12;
+    eng->XYZ.x -= m->Xvel * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12;
+    eng->XYZ.z -= m->Xvel * rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 >> 12;
     m->Yvel += m->Yacc - m->Ydec;
     if (m->Yvel < 0) {
         m->Yvel = 0;
@@ -607,9 +607,9 @@ s32 GravitateNas(NAS *nas) {
         m->Yvel = m->Ymax;
     }
     if (m->Ydir) {
-        eng->unk10.y -= m->Yvel;
+        eng->XYZ.y -= m->Yvel;
     } else {
-        eng->unk10.y += m->Yvel;
+        eng->XYZ.y += m->Yvel;
     }
     if (m->Yvel == 0) {
         s16 acc = m->Ydec;
@@ -724,7 +724,7 @@ void RenderAllNas(void) {
         if (eng != NULL && (nas->NASid & 1)) {
             do {
                 if (!(nas->Class & 0x2000)) {
-                    eng->OldXYZ = eng->unk10;
+                    eng->OldXYZ = eng->XYZ;
                 }
                 eng_render(eng);
                 eng = eng->Engine;

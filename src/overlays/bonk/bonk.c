@@ -399,9 +399,9 @@ void PlotBonkStool(NAS *nas) {
     case 0:
         if (BonkAI_PickEntry(&x, &z) != 0) {
             BonkEntries[nas->UserInfo.user2].unk8 = 1000;
-            e->unk10.x = x;
-            e->unk10.z = z;
-            e->unk10.y = World_floor_level - 0x2000;
+            e->XYZ.x = x;
+            e->XYZ.z = z;
+            e->XYZ.y = World_floor_level - 0x2000;
             BonkKeepInBoundsB(e);
             nas->UserInfo.status = 2;
             if (nas->UserInfo.user1 == 0) {
@@ -426,30 +426,30 @@ void PlotBonkStool(NAS *nas) {
         }
         if (nas->UserInfo.user1 <= 0) {
             nas->UserInfo.status = 10;
-            e->unk5E = 1;
-            e->unk2C.y = 0;
+            e->xform.dirty = 1;
+            e->xform.scale.vy = 0;
             e->flags |= 0x8000;
-            e->unk10.y = World_floor_level;
+            e->XYZ.y = World_floor_level;
             if (e->sub->entity == 0x2015) {
-                PlaySfx(0x72A, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x72A, NULL, &e->XYZ, 0x1000, 0x1E00, 0);
             } else {
-                PlaySfx(0x528, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x528, NULL, &e->XYZ, 0x1000, 0x1E00, 0);
             }
         }
         break;
     case 10:
-        e->unk2C.y += 0x100;
-        if (e->unk2C.y > 0xC00) {
-            e->unk2C.y = 0xC00;
+        e->xform.scale.vy += 0x100;
+        if (e->xform.scale.vy > 0xC00) {
+            e->xform.scale.vy = 0xC00;
             nas->UserInfo.status = 12;
             nas->UserInfo.user1 = BonkStoolHeights[BonkCrateTimer] + Random(BonkStoolTable[BonkCrateTimer]);
             if (e->sub->entity == 0x2015) {
-                pos = e->unk10;
+                pos = e->XYZ;
                 pos.y -= 0x100;
                 Bonk_SpawnPuff((s32 *)&pos, 3, &HeroModelBank[DB_MalletObjects]);
             }
         }
-        e->unk5E = 1;
+        e->xform.dirty = 1;
         break;
     case 12:
         if (BonkEntries[nas->UserInfo.user2].unk8 != 0) {
@@ -475,22 +475,22 @@ void PlotBonkStool(NAS *nas) {
             break;
         }
         if (nas->UserInfo.status == 13) {
-            e->unk2C.y = Random(0x200) + 0xB00;
+            e->xform.scale.vy = Random(0x200) + 0xB00;
         } else {
-            e->unk2C.y = Random(0x800) + 0x800;
+            e->xform.scale.vy = Random(0x800) + 0x800;
         }
-        e->unk5E = 1;
+        e->xform.dirty = 1;
         break;
     case 5:
-        Bonk_SpawnPuff((s32 *)&e->unk10, 0, &HeroModelBank[DB_MalletObjects]);
-        v = &e->unk10;
+        Bonk_SpawnPuff((s32 *)&e->XYZ, 0, &HeroModelBank[DB_MalletObjects]);
+        v = &e->XYZ;
         BonkMalletHit((VECTOR *)v, 0x380, -1, 0);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
         PlaySfx(BonkStoolSfx[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
         break;
     case 4:
-        Bonk_SpawnPuff((s32 *)&e->unk10, 1, &HeroModelBank[DB_MalletObjects]);
+        Bonk_SpawnPuff((s32 *)&e->XYZ, 1, &HeroModelBank[DB_MalletObjects]);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
         break;
@@ -500,7 +500,7 @@ void PlotBonkStool(NAS *nas) {
         if (*p > q[BonkCrateTimer]) {
             nas->UserInfo.status = 1;
             (*p)--;
-            e->unk10.y = World_floor_level - 0x2000;
+            e->XYZ.y = World_floor_level - 0x2000;
         } else {
             nas->UserInfo.status = 0;
             nas->UserInfo.user1 = 0;
@@ -530,7 +530,7 @@ s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
         z = Random(0x1000) - 0x800;
         for (i = 0, h = heroes; i < 4; i++, h++) {
             eng = h->hero_eng;
-            if ((csqrt(BonkDist2XZ(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x400) {
+            if ((csqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x400) {
                 ok = 0;
             }
         }
@@ -539,7 +539,7 @@ s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
                 for (i = 0, e = BonkEntries; i < 10; i++, e++) {
                     if (e->unk4 != 0) {
                         eng = ((NAS *)e->unk4)->Engine;
-                        if ((csqrt(BonkDist2XZ(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x400) {
+                        if ((csqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x400) {
                             ok = 0;
                         }
                     }
@@ -549,7 +549,7 @@ s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
                 for (i = 0, f = BonkEnts; i < 3; i++, f++) {
                     if (f->b != 0) {
                         eng = ((NAS *)f->b)->Engine;
-                        if ((csqrt(BonkDist2XZ(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x300) {
+                        if ((csqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x300) {
                             ok = 0;
                         }
                     }
@@ -572,11 +572,11 @@ void InitBonkCrate(NAS *nas) {
     if (e != NULL) {
         subengine *s;
 
-        e->unk5C = 1;
-        e->unk2C.z = 0;
-        e->unk2C.y = 0;
-        e->unk2C.x = 0;
-        e->unk5E = 1;
+        e->xform.hasScale = 1;
+        e->xform.scale.vz = 0;
+        e->xform.scale.vy = 0;
+        e->xform.scale.vx = 0;
+        e->xform.dirty = 1;
         nas->UserInfo.status = 0;
         nas->UserInfo.user1 = BonkEntCur * 0x5A + 0x1E;
         s = e->sub;
@@ -617,7 +617,7 @@ void PlotBonkCrate(NAS *nas) {
     }
     switch (nas->UserInfo.status) {
     case 0:
-        e->unk10.y = World_floor_level - 0x2000;
+        e->XYZ.y = World_floor_level - 0x2000;
         if (nas->UserInfo.user1 == 0) {
             BonkEnts[nas->UserInfo.user2].c = BonkCrateFrames[BonkSkill];
             nas->UserInfo.user1 = Random(0x5A) + 0x5A;
@@ -625,7 +625,7 @@ void PlotBonkCrate(NAS *nas) {
             BonkEnts[nas->UserInfo.user2].c = 0;
         }
         e->flags &= 0xFFFF7FFF;
-        e->unk1E = Random(0x1000);
+        e->xform.rot.vy = Random(0x1000);
         nas->UserInfo.status = 2;
         break;
     case 2:
@@ -641,29 +641,29 @@ void PlotBonkCrate(NAS *nas) {
         }
     spawn:
         if (BonkAI_PickEntry(&x, &z) != 0) {
-            e->unk10.x = x;
-            e->unk10.z = z;
-            e->unk10.y = World_floor_level;
+            e->XYZ.x = x;
+            e->XYZ.z = z;
+            e->XYZ.y = World_floor_level;
             BonkKeepInBoundsB(e);
             nas->UserInfo.status = 10;
-            e->unk2C.z = 0;
-            e->unk2C.x = 0;
-            e->unk2C.y = 0;
-            e->unk5E = 1;
+            e->xform.scale.vz = 0;
+            e->xform.scale.vx = 0;
+            e->xform.scale.vy = 0;
+            e->xform.dirty = 1;
             e->flags |= 0x8021;
         }
         break;
     case 10:
-        e->unk2C.x += 0x100;
-        if (e->unk2C.y >= 0x1000) {
-            e->unk2C.x = 0x1000;
+        e->xform.scale.vx += 0x100;
+        if (e->xform.scale.vy >= 0x1000) {
+            e->xform.scale.vx = 0x1000;
             nas->UserInfo.status = 12;
             e->flags &= ~0x21;
         }
-        s = e->unk2C.x;
-        e->unk5E = 1;
-        e->unk2C.y = s;
-        e->unk2C.z = s;
+        s = e->xform.scale.vx;
+        e->xform.dirty = 1;
+        e->xform.scale.vy = s;
+        e->xform.scale.vz = s;
         break;
     case 12:
         if (BonkEnts[nas->UserInfo.user2].c > 0) {
@@ -671,21 +671,21 @@ void PlotBonkCrate(NAS *nas) {
         }
         break;
     case 5:
-        Bonk_SpawnPuff((s32 *)&e->unk10, 0, &HeroModelBank[DB_MalletObjects]);
-        v = &e->unk10;
+        Bonk_SpawnPuff((s32 *)&e->XYZ, 0, &HeroModelBank[DB_MalletObjects]);
+        v = &e->XYZ;
         BonkMalletHit((VECTOR *)v, 0x380, -1, 0);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
         PlaySfx(BonkStoolSfx[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
         break;
     case 4:
-        Bonk_SpawnPuff((s32 *)&e->unk10, 2, &HeroModelBank[DB_MalletObjects]);
+        Bonk_SpawnPuff((s32 *)&e->XYZ, 2, &HeroModelBank[DB_MalletObjects]);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
         break;
     case 6:
         nas->UserInfo.user1 = 0;
-        e->unk10.y = World_floor_level - 0x2000;
+        e->XYZ.y = World_floor_level - 0x2000;
         nas->UserInfo.status = 0;
         break;
     }
@@ -709,8 +709,8 @@ s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
     } else {
         best = 0xFFFFFF;
     }
-    x = Heroes[arg0].hero_eng->unk10.x;
-    z = Heroes[arg0].hero_eng->unk10.z;
+    x = Heroes[arg0].hero_eng->XYZ.x;
+    z = Heroes[arg0].hero_eng->XYZ.z;
     if ((arg2 & 0x100) && BonkEntryCur != 0) {
         for (i = 0, e = BonkEntries; i < 10; i++, e++) {
             if (e->unk4 == 0) {
@@ -727,8 +727,8 @@ s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
             if (((BonkPad *)e->unk4)->mode < 0xB) {
                 continue;
             }
-            ex = ((BonkPad *)e->unk4)->eng->unk10.x;
-            ez = ((BonkPad *)e->unk4)->eng->unk10.z;
+            ex = ((BonkPad *)e->unk4)->eng->XYZ.x;
+            ez = ((BonkPad *)e->unk4)->eng->XYZ.z;
             d = csqrt(BonkDist2XZ(x, z, ex, ez));
             d >>= 6;
             if (d < best) {
@@ -756,8 +756,8 @@ s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
             if (((BonkPad *)f->b)->mode < 0xB) {
                 continue;
             }
-            ex = ((BonkPad *)f->b)->eng->unk10.x;
-            ez = ((BonkPad *)f->b)->eng->unk10.z;
+            ex = ((BonkPad *)f->b)->eng->XYZ.x;
+            ez = ((BonkPad *)f->b)->eng->XYZ.z;
             d = csqrt(BonkDist2XZ(x, z, ex, ez));
             d >>= 6;
             if (d < best) {
@@ -798,9 +798,9 @@ void BonkHitTarget(s32 arg0, s32 arg1, BonkTgt2 *t) {
                 BonkKnockBack(arg0, e, big ? 0xA : 2);
                 break;
             }
-            PlaySfx(BonkTargetSfx[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(BonkTargetSfx[arg0], NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             if (big) {
-                PlaySfx(0x72B, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x72B, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
             }
         }
         p->mode = 4;
@@ -831,8 +831,8 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         if (i == b) {
             goto next;
         }
-        ex = h->hero_eng->unk10.x;
-        ez = h->hero_eng->unk10.z;
+        ex = h->hero_eng->XYZ.x;
+        ez = h->hero_eng->XYZ.z;
         if ((csqrt(BonkDist2XZ(x, z, ex, ez)) >> 6) > a) {
             goto next;
         }
@@ -856,7 +856,7 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         h->hero_health = 0x14;
         pad_rumble_small(i, 0xF);
         BonkHidePowerup(i);
-        PlaySfx(HeroHitSfx[h->hero_name][Random(4)], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(HeroHitSfx[h->hero_name][Random(4)], NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
     next:
         i++;
     } while (i < 4);
@@ -866,7 +866,7 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
             e = &BonkEntries[i];
             if (e->unk4 != 0) {
                 eng = ((NAS *)e->unk4)->Engine;
-                if ((csqrt(BonkDist2XZ(x, z, eng->unk10.x, eng->unk10.z)) >> 6) <= a
+                if ((csqrt(BonkDist2XZ(x, z, eng->XYZ.x, eng->XYZ.z)) >> 6) <= a
                     && ((BonkPad *)e->unk4)->mode >= 0xB) {
                     BonkHitTarget(b, 1, (BonkTgt2 *)e);
                 }
@@ -1311,7 +1311,7 @@ void Bonk_HeroBot(s32 arg0)
     if (BonkAI_Closest(arg0, (int *)&hit) != 0) {
         if (hit->nas != ai->pTargetNas && ai->AItimer1 == 0) {
             ai->pTargetNas = hit->nas;
-            ai->TargetXYZ = hit->nas->Engine->unk10;
+            ai->TargetXYZ = hit->nas->Engine->XYZ;
             ai->AItimer1 = 10;
             if (hit->kind == 0x100) {
                 if (BonkSlots[arg0].f8 == 1 || (g->levelFlags & 0x80) ||
@@ -1345,10 +1345,10 @@ void Bonk_HeroBot(s32 arg0)
         while (1) {
             if (i < 4) {
                 if (i != arg0) {
-                    if ((csqrt(bonk_sq(me->hero_eng->unk10.x, me->hero_eng->unk10.z,
-                                        heroes[i].hero_eng->unk10.x, heroes[i].hero_eng->unk10.z)) >> 6) < 0x1000) {
-                        sx += me->hero_eng->unk10.x - heroes[i].hero_eng->unk10.x;
-                        sz += me->hero_eng->unk10.z - heroes[i].hero_eng->unk10.z;
+                    if ((csqrt(bonk_sq(me->hero_eng->XYZ.x, me->hero_eng->XYZ.z,
+                                        heroes[i].hero_eng->XYZ.x, heroes[i].hero_eng->XYZ.z)) >> 6) < 0x1000) {
+                        sx += me->hero_eng->XYZ.x - heroes[i].hero_eng->XYZ.x;
+                        sz += me->hero_eng->XYZ.z - heroes[i].hero_eng->XYZ.z;
                     }
                 }
                 i++;
@@ -1368,8 +1368,8 @@ void Bonk_HeroBot(s32 arg0)
         break;
     case 2:
     case 3:
-        if ((csqrt(bonk_sq(ai->pTargetNas->Engine->unk10.x, ai->pTargetNas->Engine->unk10.z,
-                            Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) >> 6) <
+        if ((csqrt(bonk_sq(ai->pTargetNas->Engine->XYZ.x, ai->pTargetNas->Engine->XYZ.z,
+                            Heroes[arg0].hero_eng->XYZ.x, Heroes[arg0].hero_eng->XYZ.z)) >> 6) <
             BonkAIRange[Heroes[arg0].hero_name]) {
             if ((ai->AImode == 3 && Heroes[arg0].hero_mode != 0x44) ||
                 (ai->AImode == 2 && Heroes[arg0].hero_mode != 0x43)) {
@@ -1379,8 +1379,8 @@ void Bonk_HeroBot(s32 arg0)
         goto face;
     case 4:
     case 5:
-        if ((csqrt(bonk_sq(ai->pTargetNas->Engine->unk10.x, ai->pTargetNas->Engine->unk10.z,
-                            Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) >> 6) <
+        if ((csqrt(bonk_sq(ai->pTargetNas->Engine->XYZ.x, ai->pTargetNas->Engine->XYZ.z,
+                            Heroes[arg0].hero_eng->XYZ.x, Heroes[arg0].hero_eng->XYZ.z)) >> 6) <
             BonkAIRange[Heroes[arg0].hero_name]) {
             if ((ai->AImode == 5 && Heroes[arg0].hero_mode != 0x44) ||
                 (ai->AImode == 4 && Heroes[arg0].hero_mode != 0x43)) {
@@ -1388,8 +1388,8 @@ void Bonk_HeroBot(s32 arg0)
             }
         }
     face:
-        ang = get_angle(ai->pTargetNas->Engine->unk10.x - Heroes[arg0].hero_eng->unk10.x,
-                        ai->pTargetNas->Engine->unk10.z - Heroes[arg0].hero_eng->unk10.z);
+        ang = get_angle(ai->pTargetNas->Engine->XYZ.x - Heroes[arg0].hero_eng->XYZ.x,
+                        ai->pTargetNas->Engine->XYZ.z - Heroes[arg0].hero_eng->XYZ.z);
         ai->AIang = ang;
         ai->AIpad |= DirPadBits[(ang >> 9) & 7];
         break;
@@ -1411,10 +1411,10 @@ s32 BonkAI_NearestEnemy(s32 arg0)
     HeroInfo *t = &Heroes[Heroes[arg0].hero_teammate];
     a = Heroes[arg0].hero_eng;
     b = t->hero_eng;
-    new_var = a->unk10.z;
-    new_var2 = a->unk10.x;
-    dx = b->unk10.x - new_var2;
-    dz = b->unk10.z - new_var;
+    new_var = a->XYZ.z;
+    new_var2 = a->XYZ.x;
+    dx = b->XYZ.x - new_var2;
+    dz = b->XYZ.z - new_var;
     r = (csqrt((dx * dx) + (dz * dz)) >> 6) < 0x501;
   }
   else
@@ -1504,11 +1504,11 @@ void PlotBonkShockwave(NAS *nas) {
 
             nas->UserInfo.user1 = a + ((b - t) >> 1);
         }
-        e->unk1E += 0x71;
+        e->xform.rot.vy += 0x71;
         v = nas->UserInfo.user1;
-        e->unk5E = 1;
-        e->unk2C.z = v;
-        e->unk2C.x = v;
+        e->xform.dirty = 1;
+        e->xform.scale.vz = v;
+        e->xform.scale.vx = v;
     }
 }
 
@@ -1518,12 +1518,12 @@ void InitBonkShockwave(NAS *nas) {
     if (e != NULL) {
         e->sub->u6C.dbase = &HeroModelBank[DB_MalletObjects];
         e->sub->entity = 0x2014;
-        e->unk5C = 1;
-        e->unk2C.y = 0x1000;
-        e->unk5D = 0;
-        e->unk2C.z = 0;
-        e->unk2C.x = 0;
-        e->unk5E = 1;
+        e->xform.hasScale = 1;
+        e->xform.scale.vy = 0x1000;
+        e->xform.order = 0;
+        e->xform.scale.vz = 0;
+        e->xform.scale.vx = 0;
+        e->xform.dirty = 1;
         e->flags |= 0x8021;
         nas->UserInfo.user1 = 0;
         nas->UserInfo.user2 = 0x4000;
@@ -1541,7 +1541,7 @@ void BonkHitObject(s32 arg0, s32 arg1, BonkObj *obj) {
     if (p != NULL) {
         BonkHeroHitFlash(arg0, Random(2));
         p->mode = 4;
-        PlaySfx(BonkObjectSfx[Random(4)], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(BonkObjectSfx[Random(4)], NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -1568,11 +1568,11 @@ void InitBonkStool(NAS *nas) {
     if (e != NULL) {
         subengine *s;
 
-        e->unk5C = 1;
-        e->unk2C.z = 0xC00;
-        e->unk2C.y = 0xC00;
-        e->unk2C.x = 0xC00;
-        e->unk5E = 1;
+        e->xform.hasScale = 1;
+        e->xform.scale.vz = 0xC00;
+        e->xform.scale.vy = 0xC00;
+        e->xform.scale.vx = 0xC00;
+        e->xform.dirty = 1;
         nas->UserInfo.status = 0;
         nas->UserInfo.user1 = 0;
         s = e->sub;
@@ -1740,19 +1740,19 @@ void BonkKnockBack(s32 arg0, EXTengine *p, s32 arg2) {
     GameState *g;
 
     if (p != NULL) {
-        x = p->unk10.x;
+        x = p->XYZ.x;
     } else {
-        x = Heroes[arg0].hero_eng->unk10.x;
+        x = Heroes[arg0].hero_eng->XYZ.x;
     }
     if (p != NULL) {
-        y = p->unk10.y;
+        y = p->XYZ.y;
     } else {
-        y = Heroes[arg0].hero_eng->unk10.y;
+        y = Heroes[arg0].hero_eng->XYZ.y;
     }
     if (p != NULL) {
-        z = p->unk10.z;
+        z = p->XYZ.z;
     } else {
-        z = Heroes[arg0].hero_eng->unk10.z;
+        z = Heroes[arg0].hero_eng->XYZ.z;
     }
     CreateFloatyScore(x, y, z, arg2, 0);
     g = GAME;
@@ -1802,7 +1802,7 @@ void BonkHeroHitFlash(s32 arg0, s32 arg1) {
             s->flags |= 0x8000;
             e->flags |= 0x8000;
         }
-        PlaySfx(0x41C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x41C, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     case 1:
         if (s != NULL) {
@@ -1811,7 +1811,7 @@ void BonkHeroHitFlash(s32 arg0, s32 arg1) {
             s->flags |= 0x8000;
             e->flags |= 0x8000;
         }
-        PlaySfx(0x72E, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x72E, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     default:
         return;
@@ -1826,10 +1826,10 @@ void BonkHero_ExtraEffects(s32 player) {
 
     if (p != NULL) {
         EXTengine *e = h->hero_eng;
-        p->unk10 = e->unk10;
-        p->unk10.y -= BonkPowerupTimes[h->hero_name];
-        p->unk1E += 0x38;
-        p->unk5E = 1;
+        p->XYZ = e->XYZ;
+        p->XYZ.y -= BonkPowerupTimes[h->hero_name];
+        p->xform.rot.vy += 0x38;
+        p->xform.dirty = 1;
     }
     if (BonkSlots[player].f8 == 0) {
         if (--BonkSlots[player].fC <= 0) {

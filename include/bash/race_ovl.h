@@ -523,7 +523,7 @@ loop:
         s32 dist;
 
         do {
-            dist = DistXZSq(pos, &hero->hero_eng->unk10);
+            dist = DistXZSq(pos, &hero->hero_eng->XYZ);
         } while (0);
         if (dist < 0x6184) {
             if (hero->hero_mode != 0x5D) {
@@ -923,7 +923,7 @@ static inline s32 RaceJumpAbove(s32 player) {
         } else {
             move->jump_vel += move->jump_dec;
         }
-        y = eng->unk10.y += move->jump_vel;
+        y = eng->XYZ.y += move->jump_vel;
         if (move->jump_vel > 0 && y > RaceFloorLevel) {
             return 1;
         }
@@ -1118,7 +1118,7 @@ static inline s32 RaceFacing(s32 p) {
     s32 ang;
 
     eng = Heroes[p].hero_eng;
-    ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+    ang = get_angle(eng->XYZ.x, eng->XYZ.z) & 0xFFF;
     ang -= 0x52C;
     ang = 0x1000 - ang;
     ang &= 0xFFF;

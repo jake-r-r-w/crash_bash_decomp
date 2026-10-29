@@ -56,9 +56,9 @@ found:
             if (flags & 1) {
                 eng = AddExtEngine(nas, 1);
                 if (eng != NULL) {
-                    eng->unk10.x = x;
-                    eng->unk10.y = y;
-                    eng->unk10.z = z;
+                    eng->XYZ.x = x;
+                    eng->XYZ.y = y;
+                    eng->XYZ.z = z;
                 } else {
                     if (flags & 0x10) {
                         KillNAS(nas);
@@ -113,9 +113,9 @@ found:
         if (eng == NULL) {
             return NULL;
         }
-        eng->unk10.x = x;
-        eng->unk10.y = y;
-        eng->unk10.z = z;
+        eng->XYZ.x = x;
+        eng->XYZ.y = y;
+        eng->XYZ.z = z;
         nas->InitDelete(nas);
     }
     return nas;
@@ -157,9 +157,9 @@ found:
             nas->Handler = ASTTable[i].Plot;
             eng = AddExtEngine(nas, 1);
             if (eng != NULL) {
-                eng->unk10.x = trig->TrigXYZ.x;
-                eng->unk10.y = trig->TrigXYZ.y;
-                eng->unk10.z = trig->TrigXYZ.z;
+                eng->XYZ.x = trig->TrigXYZ.x;
+                eng->XYZ.y = trig->TrigXYZ.y;
+                eng->XYZ.z = trig->TrigXYZ.z;
                 dir = 0;
                 if (trig->Status & 0x20) {
                     dir = 0xFF;
@@ -631,19 +631,19 @@ void SetNasDefaults(void) {
     EngineTemplate.flags = 0x8000;
     EngineTemplate.Extend.Child = NULL;
     EngineTemplate.Extend.Parent = NULL;
-    EngineTemplate.unk10.z = 0;
-    EngineTemplate.unk10.y = 0;
-    EngineTemplate.unk10.x = 0;
-    EngineTemplate.unk20 = 0;
+    EngineTemplate.XYZ.z = 0;
+    EngineTemplate.XYZ.y = 0;
+    EngineTemplate.XYZ.x = 0;
+    EngineTemplate.xform.rot.vz = 0;
     EngineTemplate.render = eng_render_subs;
-    EngineTemplate.unk1E = 0;
-    EngineTemplate.unk1C = 0;
-    EngineTemplate.unk5E = 1;
-    EngineTemplate.unk5D = 0;
-    EngineTemplate.unk5C = 1;
-    EngineTemplate.unk2C.z = 0x1000;
-    EngineTemplate.unk2C.y = 0x1000;
-    EngineTemplate.unk2C.x = 0x1000;
+    EngineTemplate.xform.rot.vy = 0;
+    EngineTemplate.xform.rot.vx = 0;
+    EngineTemplate.xform.dirty = 1;
+    EngineTemplate.xform.order = 0;
+    EngineTemplate.xform.hasScale = 1;
+    EngineTemplate.xform.scale.vz = 0x1000;
+    EngineTemplate.xform.scale.vy = 0x1000;
+    EngineTemplate.xform.scale.vx = 0x1000;
     EngineTemplate.num_subs = 0;
     EngineTemplate.kill = eng_release_subs_sfx;
     EngineTemplate.sub = NULL;
@@ -1447,7 +1447,7 @@ s16 DoAnimCommand(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                     PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], &eng->sfx, NULL, 0x1000, vol, 0);
                     goto lnext;
                 l800C:
-                    PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, &eng->unk10, 0x1000, vol, 0);
+                    PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, &eng->XYZ, 0x1000, vol, 0);
                     goto lnext;
                 l800B:
                     PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, NULL, 0x1000, vol, 0);
@@ -1541,7 +1541,7 @@ s16 DoAnimCommand2(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) 
                 PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, &eng->sfx, NULL, 0x1000, vol, 0);
                 goto next;
             l800C:
-                PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, NULL, &eng->unk10, 0x1000, vol, 0);
+                PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, NULL, &eng->XYZ, 0x1000, vol, 0);
                 goto next;
             l800E:
                 PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, NULL, NULL, 0x1000, vol, 0);
@@ -1603,8 +1603,8 @@ s32 CheckSolidCollision(NAS *nas) {
     it = HeadOfSolids;
     hit = 0;
     if (eng != NULL && (box = FindCollisionBoxIn(eng, 0x50)) != NULL) {
-        top = eng->unk10.y + box->unk2;
-        bot = eng->unk10.y + box->height;
+        top = eng->XYZ.y + box->unk2;
+        bot = eng->XYZ.y + box->height;
         do {
             FlagRecord *rec;
 
@@ -1616,11 +1616,11 @@ s32 CheckSolidCollision(NAS *nas) {
                 if (other != NULL && other != eng) {
                     rec = FindCollisionBoxIn(other, 0x50);
                     if (rec != NULL) {
-                        lo = other->unk10.y + rec->unk2;
-                        hi = other->unk10.y + rec->height;
+                        lo = other->XYZ.y + rec->unk2;
+                        hi = other->XYZ.y + rec->height;
                         if (bot < lo && hi < top) {
-                            dx = other->unk10.x - eng->unk10.x;
-                            dz = other->unk10.z - eng->unk10.z;
+                            dx = other->XYZ.x - eng->XYZ.x;
+                            dz = other->XYZ.z - eng->XYZ.z;
                             d = dx * dx + dz * dz;
                             r = rec->radius;
                             r *= r;
@@ -1629,8 +1629,8 @@ s32 CheckSolidCollision(NAS *nas) {
                                 ang = get_angle(dx, dz) & 0xFFF;
                                 d = csqrt(d) >> 6;
                                 d = rec->radius - d;
-                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                             }
                         }
                     }
@@ -1693,13 +1693,13 @@ void FetchDefaultColBox(EXTengine *eng, u32 flag) {
 s32 ApplyContourMoved(EXTengine *eng) {
     s32 dy;
 
-    abs(eng->unk10.y - eng->OldXYZ.y);
-    abs(eng->unk10.x - eng->OldXYZ.x);
-    abs(eng->unk10.z - eng->OldXYZ.z);
+    abs(eng->XYZ.y - eng->OldXYZ.y);
+    abs(eng->XYZ.x - eng->OldXYZ.x);
+    abs(eng->XYZ.z - eng->OldXYZ.z);
     if (LevelSpecs.GetContour != NULL) {
         dy = LevelSpecs.GetContour(eng);
     } else {
-        dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
+        dy = AddPlatformContour(eng, eng->XYZ.y - World_floor_level);
     }
     ContourHeight = dy;
     if (dy == 0x7FFFFFFF) {
@@ -1708,7 +1708,7 @@ s32 ApplyContourMoved(EXTengine *eng) {
     if (dy < 0) {
         return 0;
     }
-    eng->unk10.y -= dy;
+    eng->XYZ.y -= dy;
     return 1;
 }
 
@@ -1716,14 +1716,14 @@ s32 FollowUnderContour(EXTengine *eng) {
     s32 lim;
     s32 dy;
 
-    lim = abs(eng->unk10.x - eng->OldXYZ.x);
+    lim = abs(eng->XYZ.x - eng->OldXYZ.x);
     if (lim < 0x10) {
         lim = 4;
     }
     if (LevelSpecs.GetContour != NULL) {
         dy = LevelSpecs.GetContour(eng);
     } else {
-        dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
+        dy = AddPlatformContour(eng, eng->XYZ.y - World_floor_level);
     }
     if (dy == 0x7FFFFFFF) {
         return 0;
@@ -1735,7 +1735,7 @@ s32 FollowUnderContour(EXTengine *eng) {
     if (dy < lim) {
         return 0;
     }
-    eng->unk10.y += dy;
+    eng->XYZ.y += dy;
     return 1;
 }
 
@@ -1743,20 +1743,20 @@ s32 FollowContour(EXTengine *eng) {
     s32 dy;
     int new_var;
 
-    new_var = eng->unk10.x;
+    new_var = eng->XYZ.x;
     new_var = -eng->OldXYZ.x + new_var;
     abs(new_var);
-    abs(eng->unk10.z - eng->OldXYZ.z);
+    abs(eng->XYZ.z - eng->OldXYZ.z);
     if (LevelSpecs.GetContour != NULL) {
         dy = LevelSpecs.GetContour(eng);
     } else {
-        dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
+        dy = AddPlatformContour(eng, eng->XYZ.y - World_floor_level);
     }
     if (dy == 0x7FFFFFFF) {
         return 1;
     }
     if (abs(dy) < 0x20) {
-        eng->unk10.y -= dy;
+        eng->XYZ.y -= dy;
         return 0;
     } else {
         return 1;
@@ -1782,13 +1782,13 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
                 if (other != NULL && other != eng) {
                     rec = FindCollisionBox(other, 0x10);
                     if (rec != NULL) {
-                        dx = other->unk10.x - eng->unk10.x;
-                        dz = other->unk10.z - eng->unk10.z;
+                        dx = other->XYZ.x - eng->XYZ.x;
+                        dz = other->XYZ.z - eng->XYZ.z;
                         r = rec->radius + 0x40;
                         r *= r;
-                        top = other->unk10.y + rec->height;
+                        top = other->XYZ.y + rec->height;
                         if (dx * dx + dz * dz < r) {
-                            dy = eng->unk10.y - top;
+                            dy = eng->XYZ.y - top;
                             if (abs(dy) < abs(y)) {
                                 y = dy;
                                 ContourPlatform = nas;
@@ -1805,7 +1805,7 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
 
 void ApplyContour(EXTengine *eng) {
     if (LevelSpecs.GetContour == NULL) {
-        AddPlatformContour(eng, eng->unk10.y - World_floor_level);
+        AddPlatformContour(eng, eng->XYZ.y - World_floor_level);
     } else {
         LevelSpecs.GetContour(eng);
     }

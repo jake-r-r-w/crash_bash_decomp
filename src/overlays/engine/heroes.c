@@ -127,10 +127,10 @@ void InitialiseHeroes(void) {
         sub = eng->sub;
         h->hero_eng = eng;
         h->hero_sub = sub;
-        eng->unk5D = 0;
-        eng->unk10 = MapPoints[i].pos;
-        h->hero_eng->unk10.y = World_floor_level;
-        eng->OldXYZ = eng->unk10;
+        eng->xform.order = 0;
+        eng->XYZ = MapPoints[i].pos;
+        h->hero_eng->XYZ.y = World_floor_level;
+        eng->OldXYZ = eng->XYZ;
         h->hero_anim = AllocExt400(h->hero);
         name = h->hero_name;
         if ((u32)(name - 1) < 8) {
@@ -153,7 +153,7 @@ void InitialiseHeroes(void) {
             } else {
                 e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
                 e->sub->entity = 0x2001;
-                e->unk10 = eng->unk10;
+                e->XYZ = eng->XYZ;
                 e->flags |= 0x8041;
                 e->sub->unk76 = 0x800;
                 e->sub->flags |= 0x40000000;
@@ -162,9 +162,9 @@ void InitialiseHeroes(void) {
         fx = AddExtEngine(h->hero, 3);
         if (fx != NULL) {
             h->hero_powerup = fx;
-            fx->unk10 = eng->unk10;
+            fx->XYZ = eng->XYZ;
             sub = fx->sub;
-            fx->unk5D = 0;
+            fx->xform.order = 0;
             if (sub != NULL) {
                 sub->u6C.dbase = &HeroModelBank[DB_Powerups];
                 sub->entity = 0;
@@ -175,8 +175,8 @@ void InitialiseHeroes(void) {
         fx = AddExtEngine(h->hero, 3);
         if (fx != NULL) {
             h->hero_fx = fx;
-            fx->unk10 = eng->unk10;
-            fx->unk5D = 0;
+            fx->XYZ = eng->XYZ;
+            fx->xform.order = 0;
             eng_add_subs_n(fx, 3);
             sub = fx->sub;
             fxv = 0x2002;
@@ -226,7 +226,7 @@ void InitialiseHeroes(void) {
                 mv->z_dec = 0;
                 mv->z_dir = 0;
                 ang = MapPoints[i].rot.x;
-                eng->unk1E = ang;
+                eng->xform.rot.vy = ang;
                 mv->facing_angle = ang;
                 mv->forward_angle = ang;
                 mv->HitBy = -1;
@@ -865,7 +865,7 @@ s32 player;
                 PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, NULL, 0x1000, 0x1E00, 0);
                 break;
             case 0x8009:
-                PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             case 0x800A:
                 PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -1115,10 +1115,10 @@ void DefHeroFacing(s32 arg0) {
 
     if (h->hero_frozen == 0) {
         if (!(h->hero_ctrl & 1)) {
-            h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+            h->hero_eng->xform.rot.vy += angle_diff(h->hero_eng->xform.rot.vy, h->hero_move->forward_angle) >> 2;
         }
         h->hero_ctrl &= 0xFFFE;
-        h->hero_eng->unk5E = 1;
+        h->hero_eng->xform.dirty = 1;
     }
 }
 
@@ -1145,9 +1145,9 @@ void DefMoveHero(s32 arg0) {
             m->x_vel = m->x_max;
         }
         if (m->x_dir != 0) {
-            e->unk10.x -= m->x_vel;
+            e->XYZ.x -= m->x_vel;
         } else {
-            e->unk10.x += m->x_vel;
+            e->XYZ.x += m->x_vel;
         }
         m->z_vel += m->z_acc - m->z_dec;
         if (m->z_vel < 0) {
@@ -1157,9 +1157,9 @@ void DefMoveHero(s32 arg0) {
             m->z_vel = m->z_max;
         }
         if (m->z_dir != 0) {
-            e->unk10.z -= m->z_vel;
+            e->XYZ.z -= m->z_vel;
         } else {
-            e->unk10.z += m->z_vel;
+            e->XYZ.z += m->z_vel;
         }
         break;
     case 3:
@@ -1199,18 +1199,18 @@ void DefMoveHero(s32 arg0) {
                 }
             }
         }
-        e->unk10.z += m->z_vel;
-        e->unk10.x += m->x_vel;
+        e->XYZ.z += m->z_vel;
+        e->XYZ.x += m->x_vel;
         break;
     case 9:
         break;
     case 1:
     default:
-        e->unk10.x -= (m->forward_speed * rcossin_tbl[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
-        e->unk10.z -= (m->forward_speed * rcossin_tbl[m->forward_angle & 0xFFF].unk2) >> 12;
+        e->XYZ.x -= (m->forward_speed * rcossin_tbl[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
+        e->XYZ.z -= (m->forward_speed * rcossin_tbl[m->forward_angle & 0xFFF].unk2) >> 12;
         if (m->reactive_speed != 0) {
-            e->unk10.x -= (m->reactive_speed * rcossin_tbl[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
-            e->unk10.z -= (m->reactive_speed * rcossin_tbl[m->reactive_angle & 0xFFF].unk2) >> 12;
+            e->XYZ.x -= (m->reactive_speed * rcossin_tbl[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
+            e->XYZ.z -= (m->reactive_speed * rcossin_tbl[m->reactive_angle & 0xFFF].unk2) >> 12;
             m->reactive_speed -= 4;
             if (m->reactive_speed < 0) {
                 m->reactive_speed = 0;
@@ -1266,19 +1266,19 @@ void HeroApplyJump(s32 arg0) {
                 break;
             }
         } else {
-            h2->hero_eng->unk10.y -= h2->hero_move->jump_vel;
+            h2->hero_eng->XYZ.y -= h2->hero_move->jump_vel;
         }
     } else {
         m->jump_vel += m->jump_acc;
         if (h->hero_move->jump_max < m->jump_vel) {
             h->hero_move->jump_vel = h->hero_move->jump_max;
         }
-        h->hero_eng->unk10.y += h->hero_move->jump_vel;
+        h->hero_eng->XYZ.y += h->hero_move->jump_vel;
         if (h->hero_move->jump_ctrl & 0x10) {
-            y = h->hero_eng->unk10.y;
+            y = h->hero_eng->XYZ.y;
             if (World_floor_level < y) {
                 h->hero_sub->unk08 += y - World_floor_level;
-                h->hero_eng->unk10.y = World_floor_level;
+                h->hero_eng->XYZ.y = World_floor_level;
             }
         }
     }
@@ -1294,13 +1294,13 @@ s32 HeroMovedDist(s32 arg0) {
     s32 dz;
     s32 far;
 
-    dist = abs(h->hero_eng->unk10.x - h->hero_eng->OldXYZ.x);
-    dz = abs(h->hero_eng->unk10.z - h->hero_eng->OldXYZ.z);
+    dist = abs(h->hero_eng->XYZ.x - h->hero_eng->OldXYZ.x);
+    dz = abs(h->hero_eng->XYZ.z - h->hero_eng->OldXYZ.z);
     new_var = 0x40;
     dist = (dist + new_var) + dz;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy == 0x7FFFFFFF) {
-        h->hero_eng->unk10 = h->hero_eng->OldXYZ;
+        h->hero_eng->XYZ = h->hero_eng->OldXYZ;
         return 0;
     }
     if (dy < 0) {
@@ -1312,7 +1312,7 @@ s32 HeroMovedDist(s32 arg0) {
     if (far) {
         return 0;
     }
-    h->hero_eng->unk10.y -= dy;
+    h->hero_eng->XYZ.y -= dy;
     return 1;
 }
 
@@ -1342,16 +1342,16 @@ s32 HeroTestBox(s32 id, u32 flag) {
     if (box == NULL) {
         return -1;
     }
-    if (eng->unk5E != 0) {
-        rotscale_update(&eng->unk1C);
+    if (eng->xform.dirty != 0) {
+        rotscale_update(&eng->xform);
     }
-    gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
+    gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
     i = 0;
     me = h;
     h = base;
     r = box->radius;
-    top = eng->unk10.y + box->unk2;
-    bot = eng->unk10.y + box->height;
+    top = eng->XYZ.y + box->unk2;
+    bot = eng->XYZ.y + box->height;
     gte_rotate_point((SVECTOR *)box, &pos);
     for (; i < 4; i++) {
         if (i == id) {
@@ -1368,11 +1368,11 @@ s32 HeroTestBox(s32 id, u32 flag) {
         if (rec == NULL) {
             continue;
         }
-        lo = eng->unk10.y + rec->unk2;
-        hi = eng->unk10.y + rec->height;
+        lo = eng->XYZ.y + rec->unk2;
+        hi = eng->XYZ.y + rec->height;
         if (bot < lo && hi < top) {
-            dx = eng->unk10.x - pos.vx;
-            dz = eng->unk10.z - pos.vz;
+            dx = eng->XYZ.x - pos.vx;
+            dz = eng->XYZ.z - pos.vz;
             d = dx * dx + dz * dz;
             y = rec->radius + r;
             if (d < y * y) {
@@ -1427,11 +1427,11 @@ void UpdateHeroShadow(s32 idx) {
         h = base + idx;
         s = h->hero_shadow;
         e = h->hero_eng;
-        s->unk10 = e->unk10;
+        s->XYZ = e->XYZ;
         if (h->hero_status & 0xA000) {
             s->sub->flags &= 0xFFFF7FFF;
         }
-        s->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(s);
+        s->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(s);
     }
 }
 
@@ -1618,9 +1618,9 @@ void MarkHeroesOnGrid(void) {
         if ((u32)(hero->hero_name - 1) < 8) {
             eng = hero->hero_eng;
             flag = (i << 5) | 0x80;
-            px = eng->unk10.x >> 8;
+            px = eng->XYZ.x >> 8;
             x = px + 10;
-            z = 9 - (eng->unk10.z >> 8);
+            z = 9 - (eng->XYZ.z >> 8);
             if (x < 0) {
                 continue;
             }
@@ -1775,11 +1775,11 @@ s32 HeroTestFall(s32 arg0) {
             h->hero_sub->unk08 = 0;
         } else if (!(h->hero_ctrl & 8)) {
             e = h->hero_eng;
-            if (World_floor_level < e->unk10.y + h->hero_sub->unk08) {
+            if (World_floor_level < e->XYZ.y + h->hero_sub->unk08) {
                 if (ContourHeight == 0x7FFFFFFF) {
                     goto set6;
                 }
-                e->unk10.y = World_floor_level;
+                e->XYZ.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
             }
         }
@@ -1809,7 +1809,7 @@ s32 HeroTestFall(s32 arg0) {
         case 13:
             base13 = Heroes;
             h13 = base13 + arg0;
-            if (!(h13->hero_ctrl & 8) && World_floor_level < h13->hero_eng->unk10.y + h13->hero_sub->unk08) {
+            if (!(h13->hero_ctrl & 8) && World_floor_level < h13->hero_eng->XYZ.y + h13->hero_sub->unk08) {
                 if (ContourHeight == 0x7FFFFFFF) {
                 set6:
                     SetHeroAction(arg0, 6);
@@ -1850,9 +1850,9 @@ void SetHeroIdle(s32 arg0) {
     h->hero->Camera.look_ahead = 0x400;
     if (h->hero_ctrl & 4) {
         e = h->hero_eng;
-        e->unk2C.z = 0x1000;
-        e->unk2C.y = 0x1000;
-        e->unk2C.x = 0x1000;
+        e->xform.scale.vz = 0x1000;
+        e->xform.scale.vy = 0x1000;
+        e->xform.scale.vx = 0x1000;
         h->hero_ctrl &= 0xFFFB;
     }
 }
@@ -1883,7 +1883,7 @@ void HeroIdle(s32 arg0) {
             m = h->hero_move;
             if (m->velocity_calc == 3) {
                 e = h->hero_eng;
-                if (e->unk10.y < World_floor_level) {
+                if (e->XYZ.y < World_floor_level) {
                     if (h->hero_aseq == 0xE) {
                         SetHeroSeq(arg0, 1);
                     }
@@ -1986,9 +1986,9 @@ void HeroRun(s32 arg0) {
                     case 6: id = 0x168; break;
                     default: goto end;
                     }
-                    PlaySfx(id, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(id, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 } else {
-                    PlaySfx(0x41E, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x41E, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 break;
             case 9:
@@ -2006,7 +2006,7 @@ void HeroRun(s32 arg0) {
                 case 6: id = 0x169; break;
                 default: goto end;
                 }
-                PlaySfx(id, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(id, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             }
         end:
@@ -2084,11 +2084,11 @@ void HeroFall(s32 arg0) {
         SetHeroAction(arg0, 7);
     } else if (!(h->hero_ctrl & 8)) {
         eng = h->hero_eng;
-        if (World_floor_level < eng->unk10.y + h->hero_sub->unk08) {
+        if (World_floor_level < eng->XYZ.y + h->hero_sub->unk08) {
             if (ContourHeight == 0x7FFFFFFF) {
                 SetHeroAction(arg0, 6);
             } else {
-                eng->unk10.y = World_floor_level;
+                eng->XYZ.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
             }
         }
@@ -2104,10 +2104,10 @@ void SetHeroDrop(s32 arg0) {
     EXTengine *e;
 
     h = base + arg0;
-    h->hero_eng->unk10.x &= ~0x1FF;
-    h->hero_eng->unk10.x += 0x100;
-    h->hero_eng->unk10.z &= ~0x1FF;
-    h->hero_eng->unk10.z += 0x100;
+    h->hero_eng->XYZ.x &= ~0x1FF;
+    h->hero_eng->XYZ.x += 0x100;
+    h->hero_eng->XYZ.z &= ~0x1FF;
+    h->hero_eng->XYZ.z += 0x100;
     h->hero_move->velocity_enable = 0;
     h->hero_move->forward_speed = 0;
     h->hero_move->jump_ctrl |= 0x10;
@@ -2126,7 +2126,7 @@ void SetHeroDrop(s32 arg0) {
     if (h->hero_last_mode != 0xD) {
         SetHeroSeq(arg0, 7);
     }
-    PlaySfx(0x410, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(0x410, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
 }
 
 void SetHeroLand(s32 arg0) {
@@ -2268,12 +2268,12 @@ void HeroSpin(s32 arg0) {
             if (HeroCheckPad1000(arg0) == 0) {
                 base = Heroes;
                 h = base + arg0;
-                h->hero_eng->unk1E -= 0x155;
-                idx = (s16)((h->hero_eng->unk1E & 0xFFF) / 341);
+                h->hero_eng->xform.rot.vy -= 0x155;
+                idx = (s16)((h->hero_eng->xform.rot.vy & 0xFFF) / 341);
                 idx = (s16)(idx % 12);
-                h->hero_eng->unk2C.x = HeroSquashCycle[idx];
-                h->hero_eng->unk2C.y = HeroSpinScale[idx];
-                h->hero_eng->unk2C.z = HeroSquashCycle[idx];
+                h->hero_eng->xform.scale.vx = HeroSquashCycle[idx];
+                h->hero_eng->xform.scale.vy = HeroSpinScale[idx];
+                h->hero_eng->xform.scale.vz = HeroSquashCycle[idx];
                 h->hero_ctrl |= 5;
                 id = HeroTestBox(arg0, 0x400);
                 if (id != -1) {
@@ -2281,7 +2281,7 @@ void HeroSpin(s32 arg0) {
                     if ((o->hero_immunity | o->hero_hit) == 0) {
                         me = h->hero_eng;
                         oe = o->hero_eng;
-                        angle = get_angle(me->unk10.x - oe->unk10.x, me->unk10.z - oe->unk10.z);
+                        angle = get_angle(me->XYZ.x - oe->XYZ.x, me->XYZ.z - oe->XYZ.z);
                         m = o->hero_move;
                         vc = m->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
@@ -2356,7 +2356,7 @@ void HeroWhip(s32 arg0) {
                     if ((o->hero_immunity | o->hero_hit) == 0) {
                         me = base[arg0].hero_eng;
                         oe = o->hero_eng;
-                        angle = get_angle(me->unk10.x - oe->unk10.x, me->unk10.z - oe->unk10.z);
+                        angle = get_angle(me->XYZ.x - oe->XYZ.x, me->XYZ.z - oe->XYZ.z);
                         m = o->hero_move;
                         vc = m->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
@@ -2454,8 +2454,8 @@ void HeroShoot(s32 arg0) {
                     if ((h2->hero_immunity | h2->hero_hit) == 0) {
                         h = &base[arg0];
                         if (angle_diff_abs(h->hero_move->forward_angle,
-                                          get_angle(h->hero_eng->unk10.x - h2->hero_eng->unk10.x,
-                                                    h->hero_eng->unk10.z - h2->hero_eng->unk10.z)) < 0x200) {
+                                          get_angle(h->hero_eng->XYZ.x - h2->hero_eng->XYZ.x,
+                                                    h->hero_eng->XYZ.z - h2->hero_eng->XYZ.z)) < 0x200) {
                             angle = h->hero_move->forward_angle;
                             h2->hero_move->forward_angle = angle ^ 0x800;
                             m = h2->hero_move;
@@ -2481,7 +2481,7 @@ void HeroShoot(s32 arg0) {
                 self = &base2[arg0];
                 s = self->hero_fx->sub;
                 if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
-                    self->hero_fx->unk10 = self->hero_eng->unk10;
+                    self->hero_fx->XYZ = self->hero_eng->XYZ;
                     t = self->hero_weapon_timer;
                     i = (s16)t;
                     if (i < 0) {
@@ -2493,9 +2493,9 @@ void HeroShoot(s32 arg0) {
                             s->unk20.x = p[0];
                             s->unk20.y = p[1];
                             s->unk20.x = p[2];
-                            s->unk04 = pos.vx - self->hero_eng->unk10.x;
-                            s->unk08 = pos.vy - self->hero_eng->unk10.y;
-                            s->unk0C = pos.vz - self->hero_eng->unk10.z;
+                            s->unk04 = pos.vx - self->hero_eng->XYZ.x;
+                            s->unk08 = pos.vy - self->hero_eng->XYZ.y;
+                            s->unk0C = pos.vz - self->hero_eng->XYZ.z;
                             s->flags |= 0x20008000;
                             s->unk52 = 1;
                             self->hero_weapon_timer++;
@@ -2574,8 +2574,8 @@ void HeroKick(s32 arg0) {
                     if ((h2->hero_immunity | h2->hero_hit) == 0) {
                         h = &base[arg0];
                         if (angle_diff_abs(h->hero_move->forward_angle,
-                                          get_angle(h->hero_eng->unk10.x - h2->hero_eng->unk10.x,
-                                                    h->hero_eng->unk10.z - h2->hero_eng->unk10.z)) < 0x200) {
+                                          get_angle(h->hero_eng->XYZ.x - h2->hero_eng->XYZ.x,
+                                                    h->hero_eng->XYZ.z - h2->hero_eng->XYZ.z)) < 0x200) {
                             angle = h->hero_move->forward_angle;
                             h2->hero_move->forward_angle = angle ^ 0x800;
                             m = h2->hero_move;
@@ -2615,27 +2615,27 @@ void HeroBecomeAngel(s32 arg0) {
     s = h->hero_sub;
     e->flags |= 0x8021;
     s->flags |= 0x8021;
-    e->unk20 = 0;
-    e->unk1E = 0;
-    e->unk1C = 0;
+    e->xform.rot.vz = 0;
+    e->xform.rot.vy = 0;
+    e->xform.rot.vx = 0;
     s->unk14 = 0;
     s->unk12 = 0;
     s->unk10 = 0;
     h->hero_anim->sub = NULL;
-    e->unk2C.x = 0x1000;
-    e->unk2C.y = 0x1000;
-    e->unk2C.z = 0x1000;
+    e->xform.scale.vx = 0x1000;
+    e->xform.scale.vy = 0x1000;
+    e->xform.scale.vz = 0x1000;
     s->unk20.x = 0x1000;
     s->unk20.y = 0x1000;
     s->unk20.z = 0x1000;
     h->hero_ctrl |= 1;
-    e->unk5E = 1;
+    e->xform.dirty = 1;
     s->unk52 = 1;
     e = h->hero_fx;
     s = e->sub;
-    e->unk20 = 0;
-    e->unk1E = 0;
-    e->unk1C = 0;
+    e->xform.rot.vz = 0;
+    e->xform.rot.vy = 0;
+    e->xform.rot.vx = 0;
     s->unk14 = 0;
     s->unk12 = 0;
     s->unk10 = 0;
@@ -2649,15 +2649,15 @@ void HeroBecomeAngel(s32 arg0) {
     h->hero_move->jump_ctrl = 0;
     s->u6C.dbase = &HeroModelBank[DB_Angel];
     s->entity = 0x2002;
-    e->unk2C.x = 0x1000;
-    e->unk2C.y = 0x1000;
-    e->unk2C.z = 0x1000;
+    e->xform.scale.vx = 0x1000;
+    e->xform.scale.vy = 0x1000;
+    e->xform.scale.vz = 0x1000;
     s->unk20.x = 0x1000;
     s->unk20.y = 0x1000;
     s->unk20.z = 0x1000;
-    e->unk5E = 1;
+    e->xform.dirty = 1;
     s->unk52 = 1;
-    e->unk10 = h->hero_eng->unk10;
+    e->XYZ = h->hero_eng->XYZ;
     *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&h->hero_sub->unk04;
     for (s = s->next; s != NULL; s = s->next) {
         s->unk04 = 0;
@@ -2677,9 +2677,9 @@ void HeroBecomeAngel(s32 arg0) {
         AngelSparkles[i][arg0].unkC = 0;
     }
     if (Random(2) != 0) {
-        PlaySfx(0x1C4, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x1C4, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
     } else {
-        PlaySfx(0x1C3, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(0x1C3, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
     }
     SetHeroAseq(arg0, 1, 0xB);
 }
@@ -2698,13 +2698,13 @@ s32 arg0;
     y = sub->unk08;
     y -= 0x18;
     sub->unk08 = y;
-    Heroes[arg0].hero_eng->unk5D = 4;
+    Heroes[arg0].hero_eng->xform.order = 4;
     Heroes[arg0].hero_sub->unk51 = 4;
-    Heroes[arg0].hero_fx->unk5D = 4;
+    Heroes[arg0].hero_fx->xform.order = 4;
     Heroes[arg0].hero_fx->sub->unk51 = 4;
-    Heroes[arg0].hero_eng->unk5C = 0;
+    Heroes[arg0].hero_eng->xform.hasScale = 0;
     Heroes[arg0].hero_sub->unk50 = 0;
-    Heroes[arg0].hero_fx->unk5C = 0;
+    Heroes[arg0].hero_fx->xform.hasScale = 0;
     Heroes[arg0].hero_fx->sub->unk50 = 0;
     e = Heroes[arg0].hero_fx;
     s = e->sub;
@@ -2715,7 +2715,7 @@ s32 arg0;
         }
         return;
     }
-    e->unk10 = Heroes[arg0].hero_eng->unk10;
+    e->XYZ = Heroes[arg0].hero_eng->XYZ;
     *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&Heroes[arg0].hero_sub->unk04;
     s->flags |= 0x8000;
     ProcessHeroAnim(arg0, y);
@@ -2830,10 +2830,10 @@ s32 UpdateHeroVictory(s32 arg0) {
         p = Heroes;
         h = &p[arg0];
         if (!(h->hero_ctrl & 2)) {
-            h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, ret) >> 2;
+            h->hero_eng->xform.rot.vy += angle_diff(h->hero_eng->xform.rot.vy, ret) >> 2;
         }
         h->hero_ctrl |= 1;
-        h->hero_eng->unk5E = 1;
+        h->hero_eng->xform.dirty = 1;
     } else if ((u16)WinSeqStep < 9) {
         return 1;
     }
@@ -3031,7 +3031,7 @@ void HeroDrop(s32 arg0) {
     s32 sum;
 
     h->hero_frozen = 2;
-    sum = h->hero_eng->unk10.y + h->hero_sub->unk08;
+    sum = h->hero_eng->XYZ.y + h->hero_sub->unk08;
     if (World_floor_level + 0x180 < sum) {
         SetHeroAction(arg0, (u16)HeroActDead);
     }
@@ -3335,21 +3335,21 @@ void ModelCreateShadow(s32 idx) {
             s->sub->entity = 0x2014;
         }
         e = Heroes[idx].hero_eng;
-        s->unk10 = e->unk10;
+        s->XYZ = e->XYZ;
         s->flags |= 0x8041;
         s->sub->unk76 = 0x400;
         s->sub->flags |= 0x40000000;
         if (((GameState *)GameInfo)->mode == 0x17) {
-            s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
+            s->xform.scale.vx = s->xform.scale.vy = s->xform.scale.vz = 0x2000;
         }
         if (((GameState *)GameInfo)->mode == 0x19) {
-            s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
+            s->xform.scale.vx = s->xform.scale.vy = s->xform.scale.vz = 0x2000;
         }
         if (((GameState *)GameInfo)->mode == 0x1A) {
-            s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
+            s->xform.scale.vx = s->xform.scale.vy = s->xform.scale.vz = 0x2000;
         }
         if (((GameState *)GameInfo)->mode == 0x18) {
-            s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
+            s->xform.scale.vx = s->xform.scale.vy = s->xform.scale.vz = 0x2000;
         }
     }
 }
@@ -3364,21 +3364,21 @@ void ModelUpdateShadow(s32 idx) {
         h = base + idx;
         s = h->hero_shadow;
         e = h->hero_eng;
-        s->unk10 = e->unk10;
+        s->XYZ = e->XYZ;
         if (((GameState *)GameInfo)->mode == 0x17) {
-            s->unk10.y = 0;
+            s->XYZ.y = 0;
         }
         if (((GameState *)GameInfo)->mode == 0x19) {
-            s->unk10.y = 0;
+            s->XYZ.y = 0;
         }
         if (((GameState *)GameInfo)->mode == 0x1A) {
-            s->unk10.y = 0;
+            s->XYZ.y = 0;
         }
         if (((GameState *)GameInfo)->mode == 0x18) {
-            s->unk10.y = 0;
+            s->XYZ.y = 0;
         }
-        s->unk1E = h->hero_eng->unk1E;
-        s->unk5E = 1;
+        s->xform.rot.vy = h->hero_eng->xform.rot.vy;
+        s->xform.dirty = 1;
         if (h->hero_status & 0xA400) {
             s->sub->flags &= 0xFFFF7FFF;
         }
@@ -3417,12 +3417,12 @@ void InitScriptFX(NAS *nas)
   }
   eng->flags |= 0x8000;
   new_var->Engine->sub->flags = 0x42008000;
-  new_var->Engine->unk5D = 0;
-  new_var->Engine->unk5C = 1;
+  new_var->Engine->xform.order = 0;
+  new_var->Engine->xform.hasScale = 1;
   eng = new_var->Engine;
-  eng->unk2C.z = 0x1000;
-  eng->unk2C.y = 0x1000;
-  eng->unk2C.x = 0x1000;
+  eng->xform.scale.vz = 0x1000;
+  eng->xform.scale.vy = 0x1000;
+  eng->xform.scale.vx = 0x1000;
   fux = new_var->FUX;
   if (fux == 0)
   {
@@ -3553,7 +3553,7 @@ void InitScriptFX(NAS *nas)
     t->keyindex = 0;
     t->keycount = keys;
     t->framecount = frames;
-    t->start = new_var->Engine->unk10;
+    t->start = new_var->Engine->XYZ;
     t->threadnumber = i;
     t->timer = 0;
     t->threadinfo = 0;
@@ -3862,20 +3862,20 @@ void PlotSmokePoof(NAS *m) {
     if (w != 0) {
         u = (EXTengine **)w;
         if (GameMode != 0x1C) {
-            m->Engine->unk10.x += (u[1]->unk10.x - m->Engine->unk10.x) >> 4;
-            z = (u[1]->unk10.z - (e = m->Engine)->unk10.z) >> 4;
-            x = e->unk10.z;
+            m->Engine->XYZ.x += (u[1]->XYZ.x - m->Engine->XYZ.x) >> 4;
+            z = (u[1]->XYZ.z - (e = m->Engine)->XYZ.z) >> 4;
+            x = e->XYZ.z;
         } else {
-            m->Engine->unk10.x += (u[1]->unk10.x - m->Engine->unk10.x) / 6;
-            z = (u[1]->unk10.z - (e = m->Engine)->unk10.z) / 6;
-            x = e->unk10.z;
+            m->Engine->XYZ.x += (u[1]->XYZ.x - m->Engine->XYZ.x) / 6;
+            z = (u[1]->XYZ.z - (e = m->Engine)->XYZ.z) / 6;
+            x = e->XYZ.z;
         }
         x += z;
-        e->unk10.z = x;
-        m->Engine->unk10.y = u[1]->unk10.y - ((u[1]->unk2C.x * 0x1A4) >> 12);
-        m->Engine->unk2C.x = u[1]->unk2C.x;
-        m->Engine->unk2C.y = u[1]->unk2C.y;
-        m->Engine->unk2C.z = u[1]->unk2C.z;
+        e->XYZ.z = x;
+        m->Engine->XYZ.y = u[1]->XYZ.y - ((u[1]->xform.scale.vx * 0x1A4) >> 12);
+        m->Engine->xform.scale.vx = u[1]->xform.scale.vx;
+        m->Engine->xform.scale.vy = u[1]->xform.scale.vy;
+        m->Engine->xform.scale.vz = u[1]->xform.scale.vz;
     }
     RunNasAnim(m);
 }
@@ -4155,9 +4155,9 @@ void InitSmokePoof(NAS *nas) {
         nas->Engine->sub->flags = 0x40008021;
     }
     if (((GameState *)GameInfo)->mode == 0x17) {
-        nas->Engine->unk2C.x = 0x800;
-        nas->Engine->unk2C.y = 0x800;
-        nas->Engine->unk2C.z = 0x800;
+        nas->Engine->xform.scale.vx = 0x800;
+        nas->Engine->xform.scale.vy = 0x800;
+        nas->Engine->xform.scale.vz = 0x800;
     }
 }
 
@@ -4266,8 +4266,8 @@ void PlotFloatyScore(NAS *nas) {
             }
             break;
         case 1:
-            eng->unk10.y -= 0x20;
-            if (nas->UserInfo.user2 - (rcossin_tbl[0xC00].unk2 * 3 >> 7) >= eng->unk10.y) {
+            eng->XYZ.y -= 0x20;
+            if (nas->UserInfo.user2 - (rcossin_tbl[0xC00].unk2 * 3 >> 7) >= eng->XYZ.y) {
                 nas->UserInfo.status = 2;
                 nas->UserInfo.flags = 0x1E;
             }
@@ -4276,12 +4276,12 @@ void PlotFloatyScore(NAS *nas) {
             ang = ++nas->UserInfo.user1;
             y = nas->UserInfo.user2;
             ang = rcossin_tbl[((ang << 7) & 0xFFF) - 0x400 & 0xFFF].unk2;
-            eng->unk5E = one;
-            eng->unk10.y = y - (ang * 3 >> 7);
-            s = eng->unk2C.x + 0x40;
-            eng->unk2C.z = s;
-            eng->unk2C.y = s;
-            eng->unk2C.x = s;
+            eng->xform.dirty = one;
+            eng->XYZ.y = y - (ang * 3 >> 7);
+            s = eng->xform.scale.vx + 0x40;
+            eng->xform.scale.vz = s;
+            eng->xform.scale.vy = s;
+            eng->xform.scale.vx = s;
             if (--nas->UserInfo.flags == 0) {
                 nas->UserInfo.status = 3;
                 nas->UserInfo.flags = 0x3C;
@@ -4289,9 +4289,9 @@ void PlotFloatyScore(NAS *nas) {
             }
             break;
         case 3:
-            eng->unk10.y -= nas->UserInfo.user1;
-            eng->unk5E = one;
-            eng->unk2C.x = eng->unk2C.y = eng->unk2C.z -= (eng->unk2C.x - 0x800) >> 5;
+            eng->XYZ.y -= nas->UserInfo.user1;
+            eng->xform.dirty = one;
+            eng->xform.scale.vx = eng->xform.scale.vy = eng->xform.scale.vz -= (eng->xform.scale.vx - 0x800) >> 5;
             nas->UserInfo.user1 += 3;
             if (--nas->UserInfo.flags == 0) {
                 KillNAS(nas);
@@ -4337,8 +4337,8 @@ void InitFloatyScore(NAS *nas) {
         nas->UserInfo.flags = 0x1E;
         nas->UserInfo.status = 0;
         nas->UserInfo.user1 = 0;
-        nas->UserInfo.user2 = e->unk10.y - 0x1A0;
-        e->unk5D = 2;
+        nas->UserInfo.user2 = e->XYZ.y - 0x1A0;
+        e->xform.order = 2;
     }
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -4404,15 +4404,15 @@ void UpdateBounceMotion(NAS *nas) {
         m->Yvel = m->Ymax;
     }
     if (m->Ydir) {
-        eng->unk10.y -= m->Yvel;
+        eng->XYZ.y -= m->Yvel;
     } else {
-        eng->unk10.y += m->Yvel;
+        eng->XYZ.y += m->Yvel;
     }
     dy = ((s32 (*)(EXTengine *))ApplyContour)(eng);
     next = eng->Engine;
     if (next != NULL) {
-        next->unk10 = eng->unk10;
-        next->unk10.y -= dy;
+        next->XYZ = eng->XYZ;
+        next->XYZ.y -= dy;
     }
     if (m->Yvel == 0) {
         s16 acc = m->Ydec;
@@ -4449,7 +4449,7 @@ void Init_HealthPU(NAS *nas) {
             obj->whatami = 0x11;
             obj->can_do |= 0x18;
             SetEngineColBox(eng, 0, 0, 0, 0x80, -0x100, 0x40);
-            if (eng->unk10.y == World_floor_level) {
+            if (eng->XYZ.y == World_floor_level) {
                 obj->status = 1;
             } else {
                 obj->status = 4;
@@ -4466,14 +4466,14 @@ void Init_HealthPU(NAS *nas) {
             if (e2 != NULL) {
                 e2->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
                 e2->sub->entity = 0x2001;
-                e2->unk10 = nas->Engine->unk10;
+                e2->XYZ = nas->Engine->XYZ;
                 e2->flags |= 0x8041;
                 e2->sub->unk76 = 0x800;
                 e2->sub->flags |= 0x40000000;
             }
             PlaySfx(0x3FA, NULL, NULL, 0x1000, 0x1E00, 0);
-            x = (eng->unk10.x >> 8) + 10;
-            z = 9 - (eng->unk10.z >> 8);
+            x = (eng->XYZ.x >> 8) + 10;
+            z = 9 - (eng->XYZ.z >> 8);
             if (x >= 20) {
                 x = 19;
             }
@@ -4520,7 +4520,7 @@ void Plot_HealthPU(NAS *nas) {
         mot = FindExtension(nas, 0x800);
         if (mot != NULL && GravitateNas(nas) != 0) {
             if (obj->status == 4) {
-                PlaySfx(HealthPickupSfx[Random(8)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(HealthPickupSfx[Random(8)], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
             obj->status = 1;
             mot->Ydec = 8;
@@ -4548,7 +4548,7 @@ plot:
             if (Heroes[obj->player].hero_health > 20) {
                 Heroes[obj->player].hero_health = 20;
             }
-            PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x1C2, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         KillNAS(nas);
     }
@@ -4590,7 +4590,7 @@ void AddPowerupFloat(NAS *nas) {
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         eng->sub->entity = 0x2001;
         src = nas->Engine;
-        eng->unk10 = src->unk10;
+        eng->XYZ = src->XYZ;
         eng->flags |= 0x8041;
         eng->sub->unk76 = 0x800;
         eng->sub->flags |= 0x40000000;
@@ -4628,19 +4628,19 @@ void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         return;
     }
     hero = Heroes;
-    x = eng->unk10.x;
-    y = eng->unk10.y;
-    z = eng->unk10.z;
+    x = eng->XYZ.x;
+    y = eng->XYZ.y;
+    z = eng->XYZ.z;
     do {
         if (arg2 != i && !(hero[i].hero_status & 0xFA00)) {
             if (arg4 != 0) {
-                if (hero[i].hero_mode == 4 ? hero[i].hero_eng->unk10.y < y - arg4 : arg1 < y) {
+                if (hero[i].hero_mode == 4 ? hero[i].hero_eng->XYZ.y < y - arg4 : arg1 < y) {
                     continue;
                 }
             }
             e = hero[i].hero_eng;
-            dx = e->unk10.x - x;
-            dz = e->unk10.z - z;
+            dx = e->XYZ.x - x;
+            dz = e->XYZ.z - z;
             dist = csqrt(dx * dx + dz * dz) >> 6;
             if (dist < arg1) {
                 if ((GameCheats & 0x80000001) != 0x80000001) {
@@ -4678,15 +4678,15 @@ void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (HitHooks.unkC != NULL) {
         HitHooks.unkC(arg0, arg1, arg2, arg3);
     }
-    if (abs(eng->unk10.y - World_floor_level) < 0x80) {
+    if (abs(eng->XYZ.y - World_floor_level) < 0x80) {
         arg1 = arg1 * arg1;
         for (nas = HeadOfObjects; nas != NULL; nas = nas->Object.Child) {
             fux = (FuxFlags *)nas->FUX;
             if (fux != NULL && (fux->unk1C & 0x100)) {
                 e = nas->Engine;
                 if (e != NULL) {
-                    dx = e->unk10.x - x;
-                    dz = e->unk10.z - z;
+                    dx = e->XYZ.x - x;
+                    dz = e->XYZ.z - z;
                     if (dx * dx + dz * dz < arg1) {
                         fux->unk16 = -1;
                         fux->unk1E |= 0x100;

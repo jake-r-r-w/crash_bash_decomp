@@ -473,9 +473,9 @@ void InitLoadingScreen(void) {
     u16 *p;
 
     *eng = EngineTemplate;
-    eng->unk5D = 0;
-    eng->unk10.x = 0;
-    eng->unk10.y = 0;
+    eng->xform.order = 0;
+    eng->XYZ.x = 0;
+    eng->XYZ.y = 0;
     eng->flags |= 0x10000000;
     eng_add_subs(eng, 2);
     sub = eng->sub;
@@ -1118,8 +1118,8 @@ void InitEngineSlot(s32 arg0, s32 arg1) {
     n = arg1;
     kill_subs(eng->sub);
     *eng = EngineTemplate;
-    eng->unk5C = 1;
-    eng->unk5D = 0;
+    eng->xform.hasScale = 1;
+    eng->xform.order = 0;
     eng->flags |= 0x10000000;
     if (n > 0) {
         subs_init_array(eng, n, subs);
@@ -1153,8 +1153,8 @@ void PlaceEngineSlot(s32 arg0, PlaceRec *recs) {
         n = i;
         kill_subs(eng->sub);
         *eng = EngineTemplate;
-        eng->unk5C = 1;
-        eng->unk5D = 0;
+        eng->xform.hasScale = 1;
+        eng->xform.order = 0;
         eng->flags |= 0x10000000;
         if (n > 0) {
             subs_init_array(eng, n, subs);

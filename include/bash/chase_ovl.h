@@ -447,11 +447,11 @@ static inline NAS *ChaseNearPickup(s32 x, s32 z) {
         nas = ChasePickup[i];
         if (nas != NULL) {
             eng = nas->Engine;
-            d = x - eng->unk10.x;
+            d = x - eng->XYZ.x;
             if (d < 0) {
                 d = -d;
             }
-            if (d + (z - eng->unk10.z) < 0xF00) {
+            if (d + (z - eng->XYZ.z) < 0xF00) {
                 return nas;
             }
         }

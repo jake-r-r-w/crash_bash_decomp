@@ -45,7 +45,7 @@ void BashHeroHit(s32 arg0) {
         case 6:
             sfx = 0x16B;
         play8:
-            PlaySfx(sfx, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(sfx, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
         }
         if (Heroes[arg0].hero_health <= 0 && !(GameCheats & 2)) {
             Heroes[arg0].hero_immunity = 0;
@@ -65,7 +65,7 @@ void BashHeroHit(s32 arg0) {
         default:
             goto done;
         }
-        PlaySfx(sfx, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(sfx, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     }
 done:
@@ -87,7 +87,7 @@ void BashHeroPickup(s32 arg0) {
     h = &b[arg0];
     s = h->hero_fx->sub;
     if (s != NULL && sub_find_point(h->hero_eng, h->hero_sub, 0x40, &pos) != NULL) {
-        h->hero_fx->unk10 = h->hero_eng->unk10;
+        h->hero_fx->XYZ = h->hero_eng->XYZ;
         t = h->hero_weapon_timer;
         if (t >= 0) {
             if (BashPickupScales[t * 3] == 0) {
@@ -96,9 +96,9 @@ void BashHeroPickup(s32 arg0) {
             s->unk20.x = BashPickupScales[t * 3];
             s->unk20.y = BashPickupScales[t * 3 + 1];
             s->unk20.x = BashPickupScales[t * 3 + 2];
-            s->unk04 = pos.vx - h->hero_eng->unk10.x;
-            s->unk08 = pos.vy - h->hero_eng->unk10.y;
-            s->unk0C = pos.vz - h->hero_eng->unk10.z;
+            s->unk04 = pos.vx - h->hero_eng->XYZ.x;
+            s->unk08 = pos.vy - h->hero_eng->XYZ.y;
+            s->unk0C = pos.vz - h->hero_eng->XYZ.z;
             s->flags |= 0x8000;
             s->unk52 = 1;
             h->hero_weapon_timer++;
@@ -173,12 +173,12 @@ rest:
         self = &base2[arg0];
         s = self->hero_fx->sub;
         if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
-            self->hero_fx->unk10 = self->hero_eng->unk10;
+            self->hero_fx->XYZ = self->hero_eng->XYZ;
             v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
             s->unk20.y = s->unk20.x = v;
-            s->unk04 = pos.vx - self->hero_eng->unk10.x;
-            s->unk08 = pos.vy - self->hero_eng->unk10.y;
-            new_var = pos.vz - self->hero_eng->unk10.z;
+            s->unk04 = pos.vx - self->hero_eng->XYZ.x;
+            s->unk08 = pos.vy - self->hero_eng->XYZ.y;
+            new_var = pos.vz - self->hero_eng->XYZ.z;
             s->flags |= 0x8000;
             s->unk52 = 1;
             s->unk0C = new_var;
@@ -231,12 +231,12 @@ rest:
         self = &base2[arg0];
         s = self->hero_fx->sub;
         if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
-            self->hero_fx->unk10 = self->hero_eng->unk10;
+            self->hero_fx->XYZ = self->hero_eng->XYZ;
             v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
             s->unk20.y = s->unk20.x = v;
-            s->unk04 = pos.vx - self->hero_eng->unk10.x;
-            s->unk08 = pos.vy - self->hero_eng->unk10.y;
-            new_var = pos.vz - self->hero_eng->unk10.z;
+            s->unk04 = pos.vx - self->hero_eng->XYZ.x;
+            s->unk08 = pos.vy - self->hero_eng->XYZ.y;
+            new_var = pos.vz - self->hero_eng->XYZ.z;
             s->flags |= 0x8000;
             s->unk52 = 1;
             s->unk0C = new_var;
@@ -271,7 +271,7 @@ void BashHeroThrow(s32 arg0) {
     h = &b[arg0];
     s = h->hero_fx->sub;
     if (s != NULL && sub_find_point(h->hero_eng, h->hero_sub, 0x40, &pos) != NULL) {
-        h->hero_fx->unk10 = h->hero_eng->unk10;
+        h->hero_fx->XYZ = h->hero_eng->XYZ;
         t = h->hero_weapon_timer;
         if (t >= 0) {
             tbl = ThrowArcs;
@@ -282,9 +282,9 @@ void BashHeroThrow(s32 arg0) {
             s->unk20.x = w[0];
             s->unk20.y = w[1];
             s->unk20.x = w[2];
-            s->unk04 = pos.vx - h->hero_eng->unk10.x;
-            s->unk08 = pos.vy - h->hero_eng->unk10.y;
-            s->unk0C = pos.vz - h->hero_eng->unk10.z;
+            s->unk04 = pos.vx - h->hero_eng->XYZ.x;
+            s->unk08 = pos.vy - h->hero_eng->XYZ.y;
+            s->unk0C = pos.vz - h->hero_eng->XYZ.z;
             s->flags |= 0x8000;
             s->unk52 = 1;
             h->hero_weapon_timer++;
@@ -317,12 +317,12 @@ void SetBashHeroBigWeight(s32 arg0) {
     h->hero_status |= 0x2800;
     SetHeroSeq(arg0, 1);
     p = h->hero_powerup;
-    p->unk10 = h->hero_eng->unk10;
+    p->XYZ = h->hero_eng->XYZ;
     p->sub->entity = 0x2002;
     p->flags |= 0x8000;
-    p->unk10.x = (p->unk10.x & ~0xFF) + 0x80;
-    p->unk10.z = (p->unk10.z & ~0xFF) + 0x80;
-    p->unk10.y -= 0x1000;
+    p->XYZ.x = (p->XYZ.x & ~0xFF) + 0x80;
+    p->XYZ.z = (p->XYZ.z & ~0xFF) + 0x80;
+    p->XYZ.y -= 0x1000;
     if (h->hero_object != NULL) {
         h->hero_object->player = h->hero_harm_player;
         h->hero_object->status = 4;
@@ -351,11 +351,11 @@ void BashHeroBigWeight(s32 arg0) {
         h = base + arg0;
         pu = h->hero_powerup;
         if ((u16)h->hero_frozen >= 3) {
-            y = pu->unk10.y;
+            y = pu->XYZ.y;
             if (y < World_floor_level) {
-                pu->unk10.y = y + 0x100;
+                pu->XYZ.y = y + 0x100;
                 if (y + 0x100 >= World_floor_level) {
-                    pu->unk10.y = World_floor_level;
+                    pu->XYZ.y = World_floor_level;
                     if (h->hero_powerup->sfx != NULL) {
                         StopSfx(h->hero_powerup->sfx);
                     }
@@ -366,9 +366,9 @@ void BashHeroBigWeight(s32 arg0) {
                 }
                 Heroes[arg0].hero_frozen = 0x1E;
             }
-            if (abs(World_floor_level - pu->unk10.y) < 0x100) {
-                Heroes[arg0].hero_eng->unk2C.y = 0x100;
-                Heroes[arg0].hero_eng->unk10.y = World_floor_level;
+            if (abs(World_floor_level - pu->XYZ.y) < 0x100) {
+                Heroes[arg0].hero_eng->xform.scale.vy = 0x100;
+                Heroes[arg0].hero_eng->XYZ.y = World_floor_level;
             }
         } else {
             SetHeroAction(arg0, (u16)HeroActDead);
@@ -379,11 +379,11 @@ void BashHeroBigWeight(s32 arg0) {
                 StopSfx(BashSfxEngine.sfx);
             }
             pu->flags &= 0xFFFF7FFF;
-            h->hero_eng->unk2C.y = 0x1000;
+            h->hero_eng->xform.scale.vy = 0x1000;
         }
-        pu->unk10.x = Heroes[arg0].hero_eng->unk10.x;
-        pu->unk10.z = Heroes[arg0].hero_eng->unk10.z;
-        Heroes[arg0].hero_eng->unk5E = 1;
+        pu->XYZ.x = Heroes[arg0].hero_eng->XYZ.x;
+        pu->XYZ.z = Heroes[arg0].hero_eng->XYZ.z;
+        Heroes[arg0].hero_eng->xform.dirty = 1;
         ProcessHeroAnim(arg0);
     }
 }
@@ -456,12 +456,12 @@ void SetBashHeroWinner(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
-    h->hero_eng->unk10.y = World_floor_level - 0x200;
+    h->hero_eng->XYZ.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
-        h->hero_eng->unk10.y -= dy;
+        h->hero_eng->XYZ.y -= dy;
     } else {
-        h->hero_eng->unk10.y = World_floor_level;
+        h->hero_eng->XYZ.y = World_floor_level;
     }
     base2 = Heroes;
     h2 = base2 + arg0;
@@ -483,12 +483,12 @@ void BashHeroWinner(s32 arg0) {
     if (h->hero_health < 2) {
         h->hero_health = 2;
     }
-    h->hero_eng->unk10.y = World_floor_level - 0x200;
+    h->hero_eng->XYZ.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
-        h->hero_eng->unk10.y -= dy;
+        h->hero_eng->XYZ.y -= dy;
     } else {
-        h->hero_eng->unk10.y = World_floor_level;
+        h->hero_eng->XYZ.y = World_floor_level;
     }
     CheckHeroAnim(arg0);
     if (UpdateHeroVictory(arg0) != 0) {
@@ -532,12 +532,12 @@ void SetBashHeroLoser(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
-    h->hero_eng->unk10.y = World_floor_level - 0x200;
+    h->hero_eng->XYZ.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
-        h->hero_eng->unk10.y -= dy;
+        h->hero_eng->XYZ.y -= dy;
     } else {
-        h->hero_eng->unk10.y = World_floor_level;
+        h->hero_eng->XYZ.y = World_floor_level;
     }
     base2 = Heroes;
     h2 = base2 + arg0;
@@ -558,12 +558,12 @@ void BashHeroLoser(s32 arg0) {
     if (h->hero_health < 2) {
         h->hero_health = 2;
     }
-    h->hero_eng->unk10.y = World_floor_level - 0x200;
+    h->hero_eng->XYZ.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
-        h->hero_eng->unk10.y -= dy;
+        h->hero_eng->XYZ.y -= dy;
     } else {
-        h->hero_eng->unk10.y = World_floor_level;
+        h->hero_eng->XYZ.y = World_floor_level;
     }
     ProcessHeroAnim(arg0);
 }
@@ -603,12 +603,12 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
     if (rec == NULL) {
         return NULL;
     }
-    if (me->unk5E != 0) {
-        rotscale_update(&me->unk1C);
+    if (me->xform.dirty != 0) {
+        rotscale_update(&me->xform);
     }
-    gfx_load_xform(me->sub, me->unk3C, &me->unk10);
-    bot = me->unk10.y + rec->unk2;
-    top = me->unk10.y + rec->height;
+    gfx_load_xform(me->sub, &me->xform.mtx, &me->XYZ);
+    bot = me->XYZ.y + rec->unk2;
+    top = me->XYZ.y + rec->height;
     rad = rec->radius;
     gte_rotate_point((SVECTOR *)rec, &pos);
     nas = HeadOfSolids;
@@ -628,11 +628,11 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
         if (rec2 == NULL) {
             continue;
         }
-        lo = eng->unk10.y + rec2->unk2;
-        hi = eng->unk10.y + rec2->height;
+        lo = eng->XYZ.y + rec2->unk2;
+        hi = eng->XYZ.y + rec2->height;
         if (top < lo && hi < bot) {
-            dx = eng->unk10.x - pos.vx;
-            dz = eng->unk10.z - pos.vz;
+            dx = eng->XYZ.x - pos.vx;
+            dz = eng->XYZ.z - pos.vz;
             r = rec2->radius + rad;
             if (dx * dx + dz * dz < r * r) {
                 obj = FindExtension(nas, 0x1000);
@@ -644,7 +644,7 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
                             return nas;
                         } while (0);
                     } else if (angle_diff_abs(Heroes[player].hero_move->forward_angle,
-                                             get_angle(eng->unk10.x - me->unk10.x, eng->unk10.z - me->unk10.z) ^ 0x800) < cone) {
+                                             get_angle(eng->XYZ.x - me->XYZ.x, eng->XYZ.z - me->XYZ.z) ^ 0x800) < cone) {
                         do {
                             obj->player = player;
                             obj->will_do |= mask;
@@ -678,8 +678,8 @@ NAS *BashHeroGrabObject(idx, cone)
     h = &heroes[idx];
     ang = h->hero_move->facing_angle;
     he = h->hero_eng;
-    hx = he->unk10.x - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (rcossin_tbl[ang & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->XYZ.x - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->XYZ.z - (rcossin_tbl[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = (u8 *)n->FUX;
         if (fux == NULL) continue;
@@ -687,11 +687,11 @@ NAS *BashHeroGrabObject(idx, cone)
         e = n->Engine;
         if (e == NULL) continue;
         if (e->platform != NULL) continue;
-        dx = e->unk10.x - hx;
-        dz = e->unk10.z - hz;
+        dx = e->XYZ.x - hx;
+        dz = e->XYZ.z - hz;
         if (dx * dx + dz * dz >= lim) continue;
         if (cone != 0) {
-            a = get_angle(e->unk10.x - he->unk10.x, e->unk10.z - he->unk10.z) ^ 0x800;
+            a = get_angle(e->XYZ.x - he->XYZ.x, e->XYZ.z - he->XYZ.z) ^ 0x800;
             if (angle_diff_abs(Heroes[idx].hero_move->forward_angle, a) < cone) {
                 *(s16 *)(fux + 0x16) = idx;
                 *(u16 *)(fux + 0x1E) |= 1;
@@ -784,16 +784,16 @@ s32 BashHeroKickCollision(s32 arg0) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
-            hi = eng->unk10.y + box->unk2;
-            lo = eng->unk10.y + box->height;
+            hi = eng->XYZ.y + box->unk2;
+            lo = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
-                if (eng->unk5E != 0) {
-                    rotscale_update(&eng->unk1C);
+                if (eng->xform.dirty != 0) {
+                    rotscale_update(&eng->xform);
                 }
-                gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
-                lo2 = eng->unk10.y + box->unk2;
-                hi2 = eng->unk10.y + box->height;
+                gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
+                lo2 = eng->XYZ.y + box->unk2;
+                hi2 = eng->XYZ.y + box->height;
                 if (lo2 < hi2) {
                     tmp = hi2;
                     hi2 = lo2;
@@ -807,7 +807,7 @@ s32 BashHeroKickCollision(s32 arg0) {
                 obj = n->Engine;
                 if (obj != NULL) {
                     rad3 = 0x80;
-                    hi3 = obj->unk10.y;
+                    hi3 = obj->XYZ.y;
                     lo3 = hi3 - 0x100;
                 }
             }
@@ -841,23 +841,23 @@ s32 BashHeroKickCollision(s32 arg0) {
                 if (rec == NULL) {
                     continue;
                 }
-                bot = e->unk10.y + rec->unk2;
-                top = e->unk10.y + rec->height;
+                bot = e->XYZ.y + rec->unk2;
+                top = e->XYZ.y + rec->height;
                 if (push != 0) {
                     r = rec->radius;
                     r += rad;
                     rr = r * r;
                     if (lo < bot && top < hi) {
-                        dx = e->unk10.x - eng->unk10.x;
-                        dz = e->unk10.z - eng->unk10.z;
+                        dx = e->XYZ.x - eng->XYZ.x;
+                        dz = e->XYZ.z - eng->XYZ.z;
                         d = dx * dx + dz * dz;
                         if (d < rr) {
                             d = csqrt(d) >> 6;
                             if (d < r) {
                                 ang = get_angle(dx, dz) & 0xFFF;
                                 d = r - d + 1;
-                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                 hit = 1;
                                 if (self->hero_pu != 0) {
                                     (*(void (**)(s32, s32))&HeroHooks.HeroesTouched)(arg0, i);
@@ -875,8 +875,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                     }
                 }
                 if (rad2 != 0 && hi2 < bot && top < lo2) {
-                    dx = e->unk10.x - pos.vx;
-                    dz = e->unk10.z - pos.vz;
+                    dx = e->XYZ.x - pos.vx;
+                    dz = e->XYZ.z - pos.vz;
                     r = rec->radius;
                     r += rad2;
                     d = dx * dx + dz * dz;
@@ -888,11 +888,11 @@ s32 BashHeroKickCollision(s32 arg0) {
                             ang = get_angle(dx, dz) & 0xFFF;
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                             } else {
-                                e->unk10.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                e->unk10.z += (d * rcossin_tbl[ang].unk2) >> 12;
+                                e->XYZ.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                e->XYZ.z += (d * rcossin_tbl[ang].unk2) >> 12;
                             }
                             if (VelocityCalc < 4) {
                                 if (VelocityCalc >= 2) {
@@ -903,8 +903,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                     }
                 }
                 if (rad3 != 0 && lo3 < bot && top < hi3) {
-                    dx = e->unk10.x - obj->unk10.x;
-                    dz = e->unk10.z - obj->unk10.z;
+                    dx = e->XYZ.x - obj->XYZ.x;
+                    dz = e->XYZ.z - obj->XYZ.z;
                     r = rec->radius;
                     r += rad3;
                     d = dx * dx + dz * dz;
@@ -916,11 +916,11 @@ s32 BashHeroKickCollision(s32 arg0) {
                             ang = get_angle(dx, dz) & 0xFFF;
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                             } else {
-                                e->unk10.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                e->unk10.z += (d * rcossin_tbl[ang].unk2) >> 12;
+                                e->XYZ.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                e->XYZ.z += (d * rcossin_tbl[ang].unk2) >> 12;
                             }
                             if (VelocityCalc < 4) {
                                 if (VelocityCalc >= 2) {
@@ -951,11 +951,11 @@ s32 BashHeroKickCollision(s32 arg0) {
                 if (e == eng) continue;
                 rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
-                bot = e->unk10.y + rec->unk2;
-                top = e->unk10.y + rec->height;
+                bot = e->XYZ.y + rec->unk2;
+                top = e->XYZ.y + rec->height;
                 if (lo < bot && top < hi) {
-                    dx = e->unk10.x - eng->unk10.x;
-                    dz = e->unk10.z - eng->unk10.z;
+                    dx = e->XYZ.x - eng->XYZ.x;
+                    dz = e->XYZ.z - eng->XYZ.z;
                     r = rec->radius;
                     r += rad;
                     d = dx * dx + dz * dz;
@@ -971,8 +971,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->can_do & 8)) {
@@ -1014,19 +1014,19 @@ s32 BashHeroCarryCollision(s32 idx) {
     if (eng != NULL) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
-            bot = eng->unk10.y + box->unk2;
-            top = eng->unk10.y + box->height;
+            bot = eng->XYZ.y + box->unk2;
+            top = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
-                if (eng->unk5E != 0) {
-                    rotscale_update(&eng->unk1C);
+                if (eng->xform.dirty != 0) {
+                    rotscale_update(&eng->xform);
                     sub = eng->sub;
                     eng->sub = sub;
-                    gfx_load_xform(sub, eng->unk3C, &eng->unk10);
+                    gfx_load_xform(sub, &eng->xform.mtx, &eng->XYZ);
                 } else {
                     sub = eng->sub;
                     eng->sub = sub;
-                    gfx_load_xform(sub, eng->unk3C, &eng->unk10);
+                    gfx_load_xform(sub, &eng->xform.mtx, &eng->XYZ);
                 }
                 gte_rotate_point((SVECTOR *)box, &v);
             }
@@ -1044,11 +1044,11 @@ s32 BashHeroCarryCollision(s32 idx) {
                             if (ext != NULL && (ext->status == 1 || ext->status == 0xB)) {
                                 rec = FindCollisionBox(other, 0x40);
                                 if (rec != NULL) {
-                                    lo = other->unk10.y + rec->unk2;
-                                    hi = other->unk10.y + rec->height;
+                                    lo = other->XYZ.y + rec->unk2;
+                                    hi = other->XYZ.y + rec->height;
                                     if (top < lo && hi < bot) {
-                                        dx = other->unk10.x - eng->unk10.x;
-                                        dz = other->unk10.z - eng->unk10.z;
+                                        dx = other->XYZ.x - eng->XYZ.x;
+                                        dz = other->XYZ.z - eng->XYZ.z;
                                         r = rec->radius;
                                         r += 0x78;
                                         d = dx * dx + dz * dz;
@@ -1057,8 +1057,8 @@ s32 BashHeroCarryCollision(s32 idx) {
                                             if (d < r) {
                                                 ang = get_angle(dx, dz) & 0xFFF;
                                                 d = r - d + 1;
-                                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                 hit = 1;
                                                 if (ext->can_do & 8) {
                                                     ext->player = idx;
@@ -1090,16 +1090,16 @@ void *BashHeroObjectAhead(s32 idx, s32 mask) {
     m = mask;
     lim = 0x10000;
     he = Heroes[idx].hero_eng;
-    hx = he->unk10.x - (rcossin_tbl[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (rcossin_tbl[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->XYZ.x - (rcossin_tbl[(he->xform.rot.vy - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->XYZ.z - (rcossin_tbl[he->xform.rot.vy & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = (EXTobject *)n->FUX;
         if (fux == NULL) continue;
         if (!(fux->can_do & m)) continue;
         e = n->Engine;
         if (e == NULL) continue;
-        dx = e->unk10.x - hx;
-        dz = e->unk10.z - hz;
+        dx = e->XYZ.x - hx;
+        dz = e->XYZ.z - hz;
         if (dx * dx + dz * dz < lim) return fux;
     }
     return 0;

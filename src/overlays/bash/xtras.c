@@ -104,8 +104,8 @@ void BashCountObjects(void) {
         f = (T_BB7E8Fux *)n->FUX;
         if (f != NULL) {
             t = f->type;
-            x = (e->unk10.x >> 8) + 10;
-            z = 9 - (e->unk10.z >> 8);
+            x = (e->XYZ.x >> 8) + 10;
+            z = 9 - (e->XYZ.z >> 8);
             if (x >= 20) x = 19;
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
@@ -123,8 +123,8 @@ void BashCountObjects(void) {
             }
         } else {
             c = 0xFF;
-            x = (e->unk10.x >> 8) + 10;
-            z = 9 - (e->unk10.z >> 8);
+            x = (e->XYZ.x >> 8) + 10;
+            z = 9 - (e->XYZ.z >> 8);
             if (x >= 20) x = 19;
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
@@ -155,7 +155,7 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
-                eng->unk5D = 1;
+                eng->xform.order = 1;
                 obj->unk14 = d;
                 CrateCounts[obj->unk14]++;
                 if ((s16)e >= 0) {
@@ -188,31 +188,31 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 }
                 switch ((u16)obj->unk1A) {
                 case 3:
-                    eng->unk10.y = World_floor_level;
+                    eng->XYZ.y = World_floor_level;
                     break;
                 case 7:
-                    eng->unk2C.x = 0x40;
-                    eng->unk2C.y = 0x40;
-                    eng->unk2C.z = 0x40;
-                    eng->unk5D = 1;
-                    eng->unk5C = 1;
-                    eng->unk5E = 1;
+                    eng->xform.scale.vx = 0x40;
+                    eng->xform.scale.vy = 0x40;
+                    eng->xform.scale.vz = 0x40;
+                    eng->xform.order = 1;
+                    eng->xform.hasScale = 1;
+                    eng->xform.dirty = 1;
                     eng->flags = (eng->flags & ~0x8000) | 1;
-                    eng->unk10.y = World_floor_level;
-                    PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    eng->XYZ.y = World_floor_level;
+                    PlaySfx(0x3FA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                     break;
                 case 6:
-                    eng->unk5D = 1;
-                    eng->unk5C = 1;
-                    eng->unk5E = 1;
-                    eng->unk2C.y = 0;
+                    eng->xform.order = 1;
+                    eng->xform.hasScale = 1;
+                    eng->xform.dirty = 1;
+                    eng->xform.scale.vy = 0;
                     eng->flags &= ~0x8000;
-                    eng->unk10.y = World_floor_level;
+                    eng->XYZ.y = World_floor_level;
                     break;
                 }
                 t = k;
-                x = (eng->unk10.x >> 8) + 10;
-                z = 9 - (eng->unk10.z >> 8);
+                x = (eng->XYZ.x >> 8) + 10;
+                z = 9 - (eng->XYZ.z >> 8);
                 if (x >= 20) x = 19;
                 if (x < 0) x = 0;
                 if (z >= 20) z = 19;
@@ -244,14 +244,14 @@ void InitCrate(NAS *arg0) {
             do {
                 again = 0;
                 nas = HeadOfSolids;
-                eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
-                eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+                eng->XYZ.x = (eng->XYZ.x & ~0xFF) + 0x80;
+                eng->XYZ.z = (eng->XYZ.z & ~0xFF) + 0x80;
                 while (nas != NULL) {
                     if (nas->Type == CrateAstType) {
                         other = nas->Engine;
-                        if (other != NULL && other->unk10.x == eng->unk10.x && other->unk10.z == eng->unk10.z) {
-                            eng->unk10.x = Random(0xC00) - 0x600;
-                            eng->unk10.z = Random(0xC00) - 0x600;
+                        if (other != NULL && other->XYZ.x == eng->XYZ.x && other->XYZ.z == eng->XYZ.z) {
+                            eng->XYZ.x = Random(0xC00) - 0x600;
+                            eng->XYZ.z = Random(0xC00) - 0x600;
                             nas = NULL;
                             again = 1;
                         }
@@ -261,10 +261,10 @@ void InitCrate(NAS *arg0) {
                     }
                 }
             } while (again);
-            eng->unk10.y = World_floor_level;
+            eng->XYZ.y = World_floor_level;
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
-            eng->unk5D = 1;
-            eng->unk5C = 1;
+            eng->xform.order = 1;
+            eng->xform.hasScale = 1;
             obj->unk1A = 3;
             if (arg0->trigger != NULL) {
                 obj->unk14 = arg0->trigger->InfoStruct->val1;
@@ -293,8 +293,8 @@ void InitCrate(NAS *arg0) {
                 eng->sub->entity = 0x2013;
                 break;
             }
-            x = (eng->unk10.x >> 8) + 10;
-            z = 9 - (eng->unk10.z >> 8);
+            x = (eng->XYZ.x >> 8) + 10;
+            z = 9 - (eng->XYZ.z >> 8);
             if (x >= 20) {
                 x = 19;
             }
@@ -368,8 +368,8 @@ void PlotCrate(NAS *arg0) {
             fux->flags |= 3;
             break;
         }
-        eng->unk5E = 1;
-        eng->unk1E = 0;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy = 0;
         BC038_SNAP(eng);
         fux->who = -1;
         FetchDefaultColBox(eng, 0x50);
@@ -384,19 +384,19 @@ void PlotCrate(NAS *arg0) {
                         dx = a.vx - b.vx;
                         dy = b.vy - a.vy;
                         dz = a.vz - b.vz;
-                        eng->unk1E = get_angle(dx, dz) - 0x200;
+                        eng->xform.rot.vy = get_angle(dx, dz) - 0x200;
                         ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
-                        eng->unk1C = ang;
-                        eng->unk10.y = b.vy - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->xform.rot.vx = ang;
+                        eng->XYZ.y = b.vy - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
-                        eng->unk20 = 0;
-                        eng->unk10.x = dx;
-                        eng->unk10.z = dz;
+                        eng->xform.rot.vz = 0;
+                        eng->XYZ.x = dx;
+                        eng->XYZ.z = dz;
                     }
                 } else if (sub_find_point(he, he->sub, 1, &b) != NULL) {
-                    eng->unk10 = *(SLONG_XYZ *)&b;
-                    eng->unk1E = he->unk1E;
+                    eng->XYZ = *(SLONG_XYZ *)&b;
+                    eng->xform.rot.vy = he->xform.rot.vy;
                 } else {
                     fux->state = 4;
                 }
@@ -407,14 +407,14 @@ void PlotCrate(NAS *arg0) {
             case 3:
             case 4:
                 BC038Release(fux);
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 5:
             case 6:
             case 7:
                 BC038Release(fux);
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 1:
@@ -424,7 +424,7 @@ void PlotCrate(NAS *arg0) {
                 return;
             case 2:
                 BC038Release(fux);
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 fux->state = 0xE;
                 return;
             default:
@@ -436,7 +436,7 @@ void PlotCrate(NAS *arg0) {
             switch (type) {
             case 2:
                 BC038Release(fux);
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 fux->state = 0xE;
                 return;
             case 3:
@@ -445,7 +445,7 @@ void PlotCrate(NAS *arg0) {
             case 6:
             case 7:
                 BC038Release(fux);
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 1:
@@ -465,9 +465,9 @@ void PlotCrate(NAS *arg0) {
             hb = Heroes;
             fux->flags &= 0xFFDB;
             fux->hit &= 0xFFFB;
-            eng->unk1E = hb[fux->who].hero_move->facing_angle;
-            eng->unk1C = 0;
-            eng->unk20 = 0;
+            eng->xform.rot.vy = hb[fux->who].hero_move->facing_angle;
+            eng->xform.rot.vx = 0;
+            eng->xform.rot.vz = 0;
             ext->speed = BC038_STATB(hb, unk4, fux->who)->speed;
             ext->max = BC038_STATB(hb, unk4, fux->who)->max;
             ext->accel = BC038_STATB(hb, unk4, fux->who)->accel;
@@ -482,46 +482,46 @@ void PlotCrate(NAS *arg0) {
         } else {
             fux->state = 4;
         }
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         break;
     case 6:
-        eng->unk1E = 0;
-        v = eng->unk2C.y;
+        eng->xform.rot.vy = 0;
+        v = eng->xform.scale.vy;
         v += 0x200;
         BC038_SNAP(eng);
         if (v >= 0x1000) {
             v = 0x1000;
             fux->state = 0;
         }
-        eng->unk2C.y = v;
-        eng->unk5E = 1;
+        eng->xform.scale.vy = v;
+        eng->xform.dirty = 1;
         eng->flags |= 0x8000;
         break;
     case 0x10:
-        eng->unk1E = 0;
-        v = eng->unk2C.y;
+        eng->xform.rot.vy = 0;
+        v = eng->xform.scale.vy;
         v -= 0x200;
         BC038_SNAP(eng);
         if (v < 0x41) {
             KillTriggerNas(arg0);
             return;
         }
-        eng->unk2C.y = v;
-        eng->unk5E = 1;
+        eng->xform.scale.vy = v;
+        eng->xform.dirty = 1;
         break;
     case 7:
-        v = eng->unk2C.x;
+        v = eng->xform.scale.vx;
         v += 0x100;
         if (v >= 0x1000) {
             v = 0x1000;
             fux->state = 0;
             eng->flags &= ~0x21;
         }
-        eng->unk2C.x = v;
-        eng->unk2C.y = v;
-        eng->unk2C.z = v;
+        eng->xform.scale.vx = v;
+        eng->xform.scale.vy = v;
+        eng->xform.scale.vz = v;
         eng->sub->unk76 = v;
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         eng->flags |= 0x8000;
         break;
     case 4:
@@ -530,8 +530,8 @@ void PlotCrate(NAS *arg0) {
         ext->unk1C = 6;
         ext->unkC = 0xFF;
         ext->unk1A = 0;
-        eng->unk1C = 0;
-        eng->unk20 = 0;
+        eng->xform.rot.vx = 0;
+        eng->xform.rot.vz = 0;
         fux->state = 8;
         break;
     case 5:
@@ -541,31 +541,31 @@ void PlotCrate(NAS *arg0) {
         ext->unkC = 0xFF;
         ext->unk18 = 0;
         ext->unk1A = 0;
-        eng->unk1C = 0;
-        eng->unk20 = 0;
+        eng->xform.rot.vx = 0;
+        eng->xform.rot.vz = 0;
         fux->state = 8;
         break;
     case 8:
-        if (eng->unk10.y > World_floor_level) {
+        if (eng->XYZ.y > World_floor_level) {
             eng->flags |= 0x02000000;
             eng->sub->unk68 = 0x190;
             eng->sub->flags |= 0x02000000;
             eng->sub->unk68 = 0x190;
         }
         if (GravitateNas(arg0) != 0) {
-            eng->unk10.y += 0x20;
+            eng->XYZ.y += 0x20;
             CrateCollide(eng, (s32)fux, fux->who, 0);
-            eng->unk10.y -= 0x20;
+            eng->XYZ.y -= 0x20;
             switch (type) {
             case 3:
             case 4:
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 5:
             case 6:
             case 7:
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 1:
@@ -573,7 +573,7 @@ void PlotCrate(NAS *arg0) {
                 KillTriggerNas(arg0);
                 return;
             case 2:
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 if (HeroHooks.KeepInBounds(eng) != 0) {
                     KillTriggerNas(arg0);
                     return;
@@ -584,7 +584,7 @@ void PlotCrate(NAS *arg0) {
             case 19:
             case 20:
             case 21:
-                PlaySfx(0x420, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x420, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             default:
                 fux->state = 0;
                 break;
@@ -592,7 +592,7 @@ void PlotCrate(NAS *arg0) {
         }
         if (fux->hit & 2) {
             fux->who = 6;
-            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+            PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
             KillTriggerNas(arg0);
             return;
         }
@@ -600,13 +600,13 @@ void PlotCrate(NAS *arg0) {
             switch (type) {
             case 3:
             case 4:
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 5:
             case 6:
             case 7:
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 1:
@@ -614,7 +614,7 @@ void PlotCrate(NAS *arg0) {
                 KillTriggerNas(arg0);
                 return;
             case 2:
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 fux->state = 0xE;
                 return;
             default:
@@ -627,7 +627,7 @@ void PlotCrate(NAS *arg0) {
         switch (type) {
         case 1:
             BC038Release(fux);
-            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+            PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
             KillTriggerNas(arg0);
             return;
         case 2:
@@ -637,22 +637,22 @@ void PlotCrate(NAS *arg0) {
                 if (who == 0 || (OVLG->teams != 0 && who == 1)) {
                     Heroes[who].hero_health = 2;
                     fux->type = 6;
-                    PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
+                    PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
                     return;
                 }
             }
-            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+            PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
             fux->state = 0xC;
             return;
         case 6:
             BC038Release(fux);
-            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
+            PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
             KillTriggerNas(arg0);
             return;
         case 5:
             fux->count = 0x5A;
             fux->type = 7;
-            PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             v = fux->who;
             fux->state = 0xB;
             fux->timer = 2;
@@ -669,7 +669,7 @@ void PlotCrate(NAS *arg0) {
         case 3:
         case 4:
         case 7:
-            PlaySfx(0x3F9, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x3F9, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
             v = fux->who;
             fux->state = 0xB;
             fux->timer = 2;
@@ -699,35 +699,35 @@ void PlotCrate(NAS *arg0) {
         if (ext->speed > ext->max) {
             ext->speed = ext->max;
         }
-        eng->unk10.x -= (ext->speed * rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (ext->speed * rcossin_tbl[(u16)eng->unk1E & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (ext->speed * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (ext->speed * rcossin_tbl[(u16)eng->xform.rot.vy & 0xFFF].unk2) >> 12;
         switch (ext->dir & 0xF0) {
         case 0x10:
         case 0x30:
         case 0x90:
-            if (ext->tz >= eng->unk10.z) {
+            if (ext->tz >= eng->XYZ.z) {
                 ext->speed = 0;
             }
             break;
         case 0x80:
-            if (eng->unk10.x >= ext->tx) {
+            if (eng->XYZ.x >= ext->tx) {
                 ext->speed = 0;
             }
             break;
         case 0x20:
-            if (ext->tx >= eng->unk10.x) {
+            if (ext->tx >= eng->XYZ.x) {
                 ext->speed = 0;
             }
             break;
         default:
-            if (eng->unk10.z >= ext->tz) {
+            if (eng->XYZ.z >= ext->tz) {
                 ext->speed = 0;
             }
             break;
         }
         if (ext->speed == 0) {
-            eng->unk5E = 1;
-            eng->unk1E = 0;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy = 0;
             BC038_SNAP(eng);
             fux->state = 0;
         }
@@ -741,20 +741,20 @@ void PlotCrate(NAS *arg0) {
                 case 3:
                 case 4:
                     BC038Release(fux);
-                    PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                    PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                     KillTriggerNas(arg0);
                     return;
                 case 5:
                 case 7:
                     BC038Release(fux);
-                    PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                    PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                     KillTriggerNas(arg0);
                     return;
                 }
             } else if (type < 5) {
                 if (type >= 3) {
                     BC038Release(fux);
-                    PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                    PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                     KillTriggerNas(arg0);
                     return;
                 }
@@ -764,18 +764,18 @@ void PlotCrate(NAS *arg0) {
             switch (type) {
             case 3:
             case 4:
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 6:
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
                 KillTriggerNas(arg0);
                 return;
             case 5:
             case 7:
             default:
-                eng->unk5E = 1;
-                eng->unk1E = 0;
+                eng->xform.dirty = 1;
+                eng->xform.rot.vy = 0;
                 BC038_SNAP(eng);
                 fux->state = 0;
                 BC038_STOP(ext);
@@ -789,7 +789,7 @@ void PlotCrate(NAS *arg0) {
             break;
         }
         BC038Release(fux);
-        PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
+        PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
         KillTriggerNas(arg0);
         return;
     case 0xC:
@@ -802,8 +802,8 @@ void PlotCrate(NAS *arg0) {
         ext->unk1A = 0;
         ext->unk1C = 4;
         ext->unkC = 0xFF;
-        eng->unk1C = 0;
-        eng->unk20 = 0;
+        eng->xform.rot.vx = 0;
+        eng->xform.rot.vz = 0;
         switch (fux->kind) {
         case 0x19:
             eng->sub->entity = 0x200B;
@@ -819,7 +819,7 @@ void PlotCrate(NAS *arg0) {
             break;
         case 0x11:
             eng->sub->entity = Random(0xE) + 0x2018;
-            eng->unk5D = 4;
+            eng->xform.order = 4;
             fux->state = 0xD;
             UnlinkObject(arg0);
             RemoveSolid(arg0);
@@ -838,22 +838,22 @@ void PlotCrate(NAS *arg0) {
         if (fux->who != -1 && ext->unkC == 0) {
             fux->flags |= 8;
             if (sub_find_point(Heroes[fux->who].hero_eng, Heroes[fux->who].hero_sub, 0x80, &a) != NULL) {
-                dx = eng->unk10.x - a.vx;
-                dy = eng->unk10.y - a.vy;
-                dz = eng->unk10.z - a.vz;
+                dx = eng->XYZ.x - a.vx;
+                dy = eng->XYZ.y - a.vy;
+                dz = eng->XYZ.z - a.vz;
             } else {
                 hd = Heroes[fux->who].hero_eng;
-                dx = eng->unk10.x - hd->unk10.x;
-                y = eng->unk10.y + 0x180;
-                dy = y - hd->unk10.y;
-                dz = eng->unk10.z - hd->unk10.z;
+                dx = eng->XYZ.x - hd->XYZ.x;
+                y = eng->XYZ.y + 0x180;
+                dy = y - hd->XYZ.y;
+                dz = eng->XYZ.z - hd->XYZ.z;
             }
             dx >>= 2;
             dy >>= 2;
             dz >>= 2;
-            eng->unk10.x -= dx;
-            eng->unk10.y -= dy;
-            eng->unk10.z -= dz;
+            eng->XYZ.x -= dx;
+            eng->XYZ.y -= dy;
+            eng->XYZ.z -= dz;
             dx >>= 1;
             dz >>= 1;
             if (dx == 0 && dz == 0) {
@@ -900,14 +900,14 @@ void PlotCrate(NAS *arg0) {
                     if (Heroes[fux->who].hero_health >= 0x15) {
                         Heroes[fux->who].hero_health = 0x14;
                     }
-                    PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x1C2, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 KillTriggerNas(arg0);
                 return;
             }
         }
-        eng->unk5E = 1;
-        eng->unk1E += 0x71;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vy += 0x71;
         break;
     case 0xE:
         fux->count = 0x96;
@@ -919,8 +919,8 @@ void PlotCrate(NAS *arg0) {
         ext->unk1C = 4;
         ext->unk1A = 0;
         ext->unkC = 0xFF;
-        eng->unk1C = 0;
-        eng->unk20 = 0;
+        eng->xform.rot.vx = 0;
+        eng->xform.rot.vz = 0;
         switch (fux->kind) {
         case 0x19:
             eng->sub->entity = 0x200B;
@@ -937,8 +937,8 @@ void PlotCrate(NAS *arg0) {
         case 0x11:
             arg0->UserInfo.user2 = Random(0x1C);
             eng->sub->entity = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
-            eng->unk5E = 1;
-            eng->unk1E = 0;
+            eng->xform.dirty = 1;
+            eng->xform.rot.vy = 0;
             fux->state = 0xF;
             break;
         default:
@@ -958,11 +958,11 @@ void PlotCrate(NAS *arg0) {
         }
         fux->count--;
         if (fux->kind == 0x11) {
-            eng->unk1E = 0;
+            eng->xform.rot.vy = 0;
             arg0->UserInfo.user1++;
             eng->sub->entity = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
         } else {
-            eng->unk1E += 0x71;
+            eng->xform.rot.vy += 0x71;
         }
         if (ext->unkC == 0) {
             fux->flags |= 8;
@@ -998,29 +998,29 @@ void PlotCrate(NAS *arg0) {
                 if (Heroes[fux->who].hero_health >= 0x15) {
                     Heroes[fux->who].hero_health = 0x14;
                 }
-                PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x1C2, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 KillTriggerNas(arg0);
                 return;
             }
         }
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         break;
     case 0x63:
         if (GravitateNas(arg0) != 0) {
             KillTriggerNas(arg0);
             return;
         }
-        v = eng->unk2C.x;
+        v = eng->xform.scale.vx;
         v -= 0x100;
         if (v < 0x101) {
             KillTriggerNas(arg0);
             return;
         }
-        eng->unk2C.x = v;
-        eng->unk2C.y = v;
-        eng->unk2C.z = v;
+        eng->xform.scale.vx = v;
+        eng->xform.scale.vy = v;
+        eng->xform.scale.vz = v;
         eng->sub->unk76 = v;
-        eng->unk5E = 1;
+        eng->xform.dirty = 1;
         break;
     default:
         if (fux->hit & 0x100) {
@@ -1034,7 +1034,7 @@ void PlotCrate(NAS *arg0) {
                 fux->state = 2;
                 fux->flags |= 4;
                 Heroes[fux->who].hero_object = (EXTobject *)fux;
-                eng->unk1E = Heroes[fux->who].hero_move->facing_angle;
+                eng->xform.rot.vy = Heroes[fux->who].hero_move->facing_angle;
                 fux->hit &= 0xFFFC;
                 fux->flags = (fux->flags & 0xFFFE) | 6;
                 if (type == 5) {
@@ -1046,21 +1046,21 @@ void PlotCrate(NAS *arg0) {
                         }
                     }
                     fux->type = 7;
-                    PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 }
             }
         }
         if (fux->hit & 2) {
             switch (type) {
             case 6:
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
                 KillTriggerNas(arg0);
                 return;
             case 5:
                 if (fux->who == -1) {
                     fux->count = 0x5A;
                     fux->type = 7;
-                    PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                     goto clr;
                 }
                 break;
@@ -1071,16 +1071,16 @@ void PlotCrate(NAS *arg0) {
                 break;
             }
             if (fux->who >= 5) {
-                dx = eng->unk10.x;
-                dz = -eng->unk10.z;
+                dx = eng->XYZ.x;
+                dz = -eng->XYZ.z;
             } else {
                 ho = Heroes[fux->who].hero_eng;
-                dx = eng->unk10.x - ho->unk10.x;
-                dz = ho->unk10.z - eng->unk10.z;
-                PlaySfx(PlayerHitSfx[fux->who], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                dx = eng->XYZ.x - ho->XYZ.x;
+                dz = ho->XYZ.z - eng->XYZ.z;
+                PlaySfx(PlayerHitSfx[fux->who], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
             ang = get_angle(-dx, dz);
-            eng->unk1E = (ang + 0x100) & 0xE00;
+            eng->xform.rot.vy = (ang + 0x100) & 0xE00;
             fux->state = 9;
             fux->hit &= 0xFFFC;
             fux->flags &= 0xFFFC;
@@ -1090,7 +1090,7 @@ void PlotCrate(NAS *arg0) {
         }
     hit8:
         if ((fux->hit & 8) && type == 6) {
-            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
+            PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
             KillTriggerNas(arg0);
             return;
         }
@@ -1098,9 +1098,9 @@ void PlotCrate(NAS *arg0) {
             if (type == 5) {
                 fux->count = 0x5A;
                 fux->type = 7;
-                PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             } else if (type == 6) {
-                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
+                PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
                 KillTriggerNas(arg0);
                 return;
             }
@@ -1120,11 +1120,11 @@ void PlotCrate(NAS *arg0) {
             fux->count--;
             eng->sub->entity = BashTickingCrateModels[fux->count / 30];
             if (fux->count % 30 == 0) {
-                PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
         } else {
             BC038Release(fux);
-            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
+            PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
             KillTriggerNas(arg0);
         }
     }
@@ -1140,8 +1140,8 @@ void InitCratePickup(NAS *arg0) {
 
     eng = arg0->Engine;
     if (eng != NULL) {
-        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
-        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        eng->XYZ.x = (eng->XYZ.x & ~0xFF) + 0x80;
+        eng->XYZ.z = (eng->XYZ.z & ~0xFF) + 0x80;
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         r = Random(4);
         eng->sub->entity = BashPickupModels[r];
@@ -1152,7 +1152,7 @@ void InitCratePickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = r + 0x12;
             obj->countdown = 0x78;
-            if (eng->unk10.y == World_floor_level) {
+            if (eng->XYZ.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -1160,7 +1160,7 @@ void InitCratePickup(NAS *arg0) {
             }
         }
         FetchDefaultColBox(eng, 0x50);
-        pos = &eng->unk10;
+        pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
         id = obj->whatami;
@@ -1192,8 +1192,8 @@ void InitShieldPickup(NAS *arg0) {
 
     eng = arg0->Engine;
     if (eng != NULL) {
-        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
-        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        eng->XYZ.x = (eng->XYZ.x & ~0xFF) + 0x80;
+        eng->XYZ.z = (eng->XYZ.z & ~0xFF) + 0x80;
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         eng->sub->entity = 0x200D;
         obj = (EXTobject *)AddObject(arg0);
@@ -1203,7 +1203,7 @@ void InitShieldPickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x12;
             obj->countdown = 0x78;
-            if (eng->unk10.y == World_floor_level) {
+            if (eng->XYZ.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -1211,7 +1211,7 @@ void InitShieldPickup(NAS *arg0) {
             }
         }
         FetchDefaultColBox(eng, 0x50);
-        pos = &eng->unk10;
+        pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
         id = obj->whatami;
@@ -1244,8 +1244,8 @@ void InitBootsPickup(NAS *arg0) {
 
     eng = arg0->Engine;
     if (eng != NULL) {
-        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
-        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        eng->XYZ.x = (eng->XYZ.x & ~0xFF) + 0x80;
+        eng->XYZ.z = (eng->XYZ.z & ~0xFF) + 0x80;
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         eng->sub->entity = 0x200A;
         obj = (EXTobject *)AddObject(arg0);
@@ -1255,7 +1255,7 @@ void InitBootsPickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x13;
             obj->countdown = 0x78;
-            if (eng->unk10.y == World_floor_level) {
+            if (eng->XYZ.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -1263,7 +1263,7 @@ void InitBootsPickup(NAS *arg0) {
             }
         }
         FetchDefaultColBox(eng, 0x50);
-        pos = &eng->unk10;
+        pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
         id = obj->whatami;
@@ -1296,8 +1296,8 @@ void InitAnvilPickup(NAS *arg0) {
 
     eng = arg0->Engine;
     if (eng != NULL) {
-        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
-        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        eng->XYZ.x = (eng->XYZ.x & ~0xFF) + 0x80;
+        eng->XYZ.z = (eng->XYZ.z & ~0xFF) + 0x80;
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         eng->sub->entity = 0x2011;
         obj = (EXTobject *)AddObject(arg0);
@@ -1307,7 +1307,7 @@ void InitAnvilPickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x14;
             obj->countdown = 0x78;
-            if (eng->unk10.y == World_floor_level) {
+            if (eng->XYZ.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -1315,7 +1315,7 @@ void InitAnvilPickup(NAS *arg0) {
             }
         }
         FetchDefaultColBox(eng, 0x50);
-        pos = &eng->unk10;
+        pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
         id = obj->whatami;
@@ -1348,8 +1348,8 @@ void InitSlowmoPickup(NAS *arg0) {
 
     eng = arg0->Engine;
     if (eng != NULL) {
-        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
-        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        eng->XYZ.x = (eng->XYZ.x & ~0xFF) + 0x80;
+        eng->XYZ.z = (eng->XYZ.z & ~0xFF) + 0x80;
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         eng->sub->entity = 0x2009;
         obj = (EXTobject *)AddObject(arg0);
@@ -1359,7 +1359,7 @@ void InitSlowmoPickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x15;
             obj->countdown = 0x78;
-            if (eng->unk10.y == World_floor_level) {
+            if (eng->XYZ.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -1367,7 +1367,7 @@ void InitSlowmoPickup(NAS *arg0) {
             }
         }
         FetchDefaultColBox(eng, 0x50);
-        pos = &eng->unk10;
+        pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
         id = obj->whatami;
@@ -1400,8 +1400,8 @@ void PlotPickup(NAS *arg0) {
     if (eng == NULL) {
         return;
     }
-    eng->unk5E = 1;
-    eng->unk1E += 0x71;
+    eng->xform.dirty = 1;
+    eng->xform.rot.vy += 0x71;
     obj = (EXTobject *)arg0->FUX;
     if (obj == NULL) {
         return;
@@ -1411,7 +1411,7 @@ void PlotPickup(NAS *arg0) {
     case 5:
         if (GravitateNas(arg0) != 0) {
             if (obj->status == 4) {
-                PlaySfx(0x420, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x420, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
             obj->status = 1;
             obj->can_do |= 0x18;
@@ -1429,7 +1429,7 @@ void PlotPickup(NAS *arg0) {
             case 0x12:
                 Heroes[obj->player].hero_pu_timer = 0x12C;
                 Heroes[obj->player].hero_powerup->sub->entity = 0x200D;
-                PlaySfx(0x41B, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x41B, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 h = &Heroes[obj->player];
                 h->hero_harm_Nas = NULL;
                 h->hero_harm_player = -1;
@@ -1439,18 +1439,18 @@ void PlotPickup(NAS *arg0) {
             case 0x13:
                 Heroes[obj->player].hero_pu_timer = 0xF0;
                 Heroes[obj->player].hero_powerup->sub->entity = eng->sub->entity;
-                PlaySfx(0x41C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x41C, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             case 0x14:
                 Heroes[obj->player].hero_pu_timer = 0xF0;
                 Heroes[obj->player].hero_powerup->sub->entity = 0x2011;
                 PlaySfx(0x452, &BashSfxEngine.sfx, NULL, 0x1000, 0x1E00, 0);
-                PlaySfx(0x41A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x41A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             default:
                 Heroes[obj->player].hero_pu_timer = 0xF0;
                 Heroes[obj->player].hero_powerup->sub->entity = eng->sub->entity;
-                PlaySfx(0x41D, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(0x41D, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 break;
             }
         }
@@ -1458,7 +1458,7 @@ void PlotPickup(NAS *arg0) {
         obj->countdown--;
         return;
     }
-    CreateNAS(eng->unk10.x, eng->unk10.y - 0x100, eng->unk10.z, 0x207, 0x11);
+    CreateNAS(eng->XYZ.x, eng->XYZ.y - 0x100, eng->XYZ.z, 0x207, 0x11);
     KillNAS(arg0);
 }
 
@@ -1521,7 +1521,7 @@ void BashHero_ExtraEffects(s32 arg0) {
         sub = pu->sub;
         if (sub_find_point(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
             top = pos.vy - 0x40;
-            y = top - h->hero_eng->unk10.y;
+            y = top - h->hero_eng->XYZ.y;
         } else {
             switch (h->hero_name) {
             case 1:
@@ -1541,7 +1541,7 @@ void BashHero_ExtraEffects(s32 arg0) {
                 break;
             }
         }
-        pu->unk10 = Heroes[arg0].hero_eng->unk10;
+        pu->XYZ = Heroes[arg0].hero_eng->XYZ;
         sub->unk08 = y;
         switch (Heroes[arg0].hero_pu) {
         case 0x1B:
@@ -1553,8 +1553,8 @@ void BashHero_ExtraEffects(s32 arg0) {
             h2 = b2 + arg0;
             if (h2->hero_weapon_count != 0) {
                 sub->flags |= 0x8000;
-                pu->unk10 = h2->hero_eng->unk10;
-                pu->unk1E += 0xAA;
+                pu->XYZ = h2->hero_eng->XYZ;
+                pu->xform.rot.vy += 0xAA;
             } else {
                 h2->hero_pu = 0x1E;
                 h2->hero_pu_timer = 0;
@@ -1574,9 +1574,9 @@ void BashHero_ExtraEffects(s32 arg0) {
             h4 = b4 + arg0;
             if (h4->hero_pu_timer != 0) {
                 sub->flags |= 0x8000;
-                pu->unk10 = h4->hero_eng->unk10;
+                pu->XYZ = h4->hero_eng->XYZ;
                 do {
-                    pu->unk1E += 0xAA;
+                    pu->xform.rot.vy += 0xAA;
                 } while (0);
                 if (BashSfxEngine.sfx != NULL) {
                     t = h4->hero_pu_timer;
@@ -1591,7 +1591,7 @@ void BashHero_ExtraEffects(s32 arg0) {
                 }
                 h4->hero_pu = 0;
                 SetHeroAction(arg0, 0x12);
-                pu->unk1E = 0;
+                pu->xform.rot.vy = 0;
                 sub->unk08 = 0;
             }
             break;
@@ -1600,12 +1600,12 @@ void BashHero_ExtraEffects(s32 arg0) {
             h5 = b5 + arg0;
             if (h5->hero_pu_timer != 0) {
                 sub->flags |= 0x8000;
-                pu->unk10 = h5->hero_eng->unk10;
-                pu->unk1E += 0xAA;
+                pu->XYZ = h5->hero_eng->XYZ;
+                pu->xform.rot.vy += 0xAA;
                 sub->unk0C = sub->unk08 >> 1;
             } else {
                 h5->hero_pu = 0;
-                pu->unk1E = 0;
+                pu->xform.rot.vy = 0;
                 sub->unk04 = 0;
                 sub->unk08 = 0;
                 sub->unk0C = 0;
@@ -1622,11 +1622,11 @@ void BashHero_ExtraEffects(s32 arg0) {
                 h6->hero_pu = 0;
                 sub->flags &= ~0x8000;
             }
-            pu->unk10 = Heroes[arg0].hero_eng->unk10;
-            pu->unk1E += 0xAA;
+            pu->XYZ = Heroes[arg0].hero_eng->XYZ;
+            pu->xform.rot.vy += 0xAA;
             break;
         }
-        pu->unk5E = 1;
+        pu->xform.dirty = 1;
     }
 }
 
@@ -1650,8 +1650,8 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
     box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         r = box->radius;
-        top = eng->unk10.y + box->unk2;
-        bot = eng->unk10.y + box->height;
+        top = eng->XYZ.y + box->unk2;
+        bot = eng->XYZ.y + box->height;
         if (heroes != 0) {
             for (i = 0; i < 4; i++) {
                 if (who == i) {
@@ -1668,12 +1668,12 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
                 if (rec == NULL) {
                     continue;
                 }
-                lo = e->unk10.y + rec->unk2;
-                hi = e->unk10.y + rec->height;
+                lo = e->XYZ.y + rec->unk2;
+                hi = e->XYZ.y + rec->height;
                 if (bot < lo && hi < top) {
-                    dx = e->unk10.x - eng->unk10.x;
+                    dx = e->XYZ.x - eng->XYZ.x;
                     dz = dx * dx;
-                    dx = e->unk10.z - eng->unk10.z;
+                    dx = e->XYZ.z - eng->XYZ.z;
                     d = dz + dx * dx;
                     rr = rec->radius + r;
                     rr = rr * rr;
@@ -1689,12 +1689,12 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
                 if (e != NULL && e != eng) {
                     rec = FindCollisionBox(e, 0x40);
                     if (rec != NULL) {
-                        lo = e->unk10.y + rec->unk2;
-                        hi = e->unk10.y + rec->height;
+                        lo = e->XYZ.y + rec->unk2;
+                        hi = e->XYZ.y + rec->height;
                         if (bot < lo && hi < top) {
-                            dx = e->unk10.x - eng->unk10.x;
+                            dx = e->XYZ.x - eng->XYZ.x;
                             dz = dx * dx;
-                            dx = e->unk10.z - eng->unk10.z;
+                            dx = e->XYZ.z - eng->XYZ.z;
                             d = dz + dx * dx;
                             rr = rec->radius + r;
                             rr = rr * rr;
@@ -1744,19 +1744,19 @@ NAS *CrateHitSolids(EXTengine *eng, s32 who) {
     box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         r = box->radius;
-        top = eng->unk10.y + box->unk2;
-        bot = eng->unk10.y + box->height;
+        top = eng->XYZ.y + box->unk2;
+        bot = eng->XYZ.y + box->height;
         for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
             if (nas->Class & 0x200) {
                 e = nas->Engine;
                 if (e != NULL && e != eng) {
                     rec = FindCollisionBox(e, 0x40);
                     if (rec != NULL) {
-                        lo = e->unk10.y + rec->unk2;
-                        hi = e->unk10.y + rec->height;
+                        lo = e->XYZ.y + rec->unk2;
+                        hi = e->XYZ.y + rec->height;
                         if (bot < lo && hi < top) {
-                            dx = e->unk10.x - eng->unk10.x;
-                            dz = e->unk10.z - eng->unk10.z;
+                            dx = e->XYZ.x - eng->XYZ.x;
+                            dz = e->XYZ.z - eng->XYZ.z;
                             rr = rec->radius + r;
                             rr = rr * rr;
                             if (dx * dx + dz * dz < rr) {
@@ -1806,8 +1806,8 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
     i = 0;
     if (rec != NULL) {
         r = rec->radius;
-        bottom = eng->unk10.y + rec->unk2;
-        top = eng->unk10.y + rec->height;
+        bottom = eng->XYZ.y + rec->unk2;
+        top = eng->XYZ.y + rec->height;
         for (; i < 4; i++) {
             h = &Heroes[i];
             if (h->hero_status & 0xF800) {
@@ -1821,11 +1821,11 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
             if (rec2 == NULL) {
                 continue;
             }
-            lo = other->unk10.y + rec2->unk2;
-            hi = other->unk10.y + rec2->height;
+            lo = other->XYZ.y + rec2->unk2;
+            hi = other->XYZ.y + rec2->height;
             if (top < lo && hi < bottom) {
-                dx = other->unk10.x - eng->unk10.x;
-                dz = other->unk10.z - eng->unk10.z;
+                dx = other->XYZ.x - eng->XYZ.x;
+                dz = other->XYZ.z - eng->XYZ.z;
                 sum = rec2->radius + r;
                 sum = sum * sum;
                 if (dx * dx + dz * dz < sum) {
@@ -1845,7 +1845,7 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
 
 void CrateBreak(EXTengine *eng, T_BC038Fux *fux) {
     PlaySfx(HitSfx.crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-    SpawnModelFx(2, (s32 *)&eng->unk10, (s32)&HeroModelBank[DB_CrateObjects]);
+    SpawnModelFx(2, (s32 *)&eng->XYZ, (s32)&HeroModelBank[DB_CrateObjects]);
     if ((HeroHooks.KeepInBounds(eng) ^ 1) != 0) {
         CreateNAS(((s32 *)eng)[4], ((s32 *)eng)[5], ((s32 *)eng)[6], 0x206, 0x11);
     }
@@ -1904,14 +1904,14 @@ void CrateFindFreeSpot(EXTengine *eng) {
     do {
         again = 0;
         nas = HeadOfSolids;
-        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
-        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        eng->XYZ.x = (eng->XYZ.x & ~0xFF) + 0x80;
+        eng->XYZ.z = (eng->XYZ.z & ~0xFF) + 0x80;
         while (nas != NULL) {
             if (nas->Type == CrateAstType) {
                 other = nas->Engine;
-                if (other != NULL && other->unk10.x == eng->unk10.x && other->unk10.z == eng->unk10.z) {
-                    eng->unk10.x = Random(0xC00) - 0x600;
-                    eng->unk10.z = Random(0xC00) - 0x600;
+                if (other != NULL && other->XYZ.x == eng->XYZ.x && other->XYZ.z == eng->XYZ.z) {
+                    eng->XYZ.x = Random(0xC00) - 0x600;
+                    eng->XYZ.z = Random(0xC00) - 0x600;
                     nas = NULL;
                     again = 1;
                 }

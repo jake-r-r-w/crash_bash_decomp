@@ -498,7 +498,7 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
     if (slot->unkC == 0) {
         h = Heroes;
         if (!(*(s32 *)&h->hero_teammate & 0x22000000) &&
-            NoxBoxToSphere((SLONG_XYZ *)arg0, &h->hero_eng->unk10, 1, &h->hero_eng->unk10) != -1) {
+            NoxBoxToSphere((SLONG_XYZ *)arg0, &h->hero_eng->XYZ, 1, &h->hero_eng->XYZ) != -1) {
             r = Random(4);
             if (r == 0) {
                 PlaySfx(0x28B, 0, 0, 0x1000, 0x1E00, 0);
@@ -524,7 +524,7 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
         if (g2->teams != 0) {
             h2 = Heroes;
             if (!(*(s32 *)&h2[1].hero_teammate & 0x22000000) &&
-            NoxBoxToSphere((SLONG_XYZ *)arg0, &h2[1].hero_eng->unk10, 1, &h2[1].hero_eng->unk10) != -1) {
+            NoxBoxToSphere((SLONG_XYZ *)arg0, &h2[1].hero_eng->XYZ, 1, &h2[1].hero_eng->XYZ) != -1) {
             r = Random(4);
             if (r == 0) {
                 PlaySfx(0x28B, 0, 0, 0x1000, 0x1E00, 0);
@@ -561,14 +561,14 @@ void NoxStartPhase1(void)
   N2OBallPhase = one;
   GameAdventure.unkAB[0x1F] = 0;
   N2OShowPhaseObjects(one);
-  Heroes[0].hero_eng->unk2C.x = 0x1000;
-  Heroes[0].hero_eng->unk2C.y = 0x1000;
-  Heroes[0].hero_eng->unk2C.z = 0x1000;
-  Heroes[1].hero_eng->unk2C.x = 0x1000;
-  (&(*(Heroes + 1)).hero_eng->unk2C)->y = 0x1000;
-  Heroes[1].hero_eng->unk2C.z = 0x1000;
-  Heroes[0].hero_eng->unk5E = 1;
-  Heroes[1].hero_eng->unk5E = 1;
+  Heroes[0].hero_eng->xform.scale.vx = 0x1000;
+  Heroes[0].hero_eng->xform.scale.vy = 0x1000;
+  Heroes[0].hero_eng->xform.scale.vz = 0x1000;
+  Heroes[1].hero_eng->xform.scale.vx = 0x1000;
+  (&(*(Heroes + 1)).hero_eng->xform.scale)->vy = 0x1000;
+  Heroes[1].hero_eng->xform.scale.vz = 0x1000;
+  Heroes[0].hero_eng->xform.dirty = 1;
+  Heroes[1].hero_eng->xform.dirty = 1;
   KillAllNas();
   N2OPlaceHero(0);
   N2OPlaceHero(1);
@@ -620,18 +620,18 @@ void NoxUpdateAsteroids(void) {
                     o->unk24 += 0x80;
                     o->unk28 += 0x80;
                 }
-                if (Heroes[0].hero_eng->unk2C.x > 0) {
-                    Heroes[0].hero_eng->unk2C.x -= 0x30;
+                if (Heroes[0].hero_eng->xform.scale.vx > 0) {
+                    Heroes[0].hero_eng->xform.scale.vx -= 0x30;
                 }
-                if (Heroes[0].hero_eng->unk2C.x < 0) {
-                    Heroes[0].hero_eng->unk2C.x = 0;
+                if (Heroes[0].hero_eng->xform.scale.vx < 0) {
+                    Heroes[0].hero_eng->xform.scale.vx = 0;
                 }
-                Heroes[0].hero_eng->unk2C.y = Heroes[0].hero_eng->unk2C.x;
-                Heroes[0].hero_eng->unk2C.z = Heroes[0].hero_eng->unk2C.x;
+                Heroes[0].hero_eng->xform.scale.vy = Heroes[0].hero_eng->xform.scale.vx;
+                Heroes[0].hero_eng->xform.scale.vz = Heroes[0].hero_eng->xform.scale.vx;
                 if (((GameState *)GameInfo)->teams != 0) {
-                    Heroes[1].hero_eng->unk2C.x = Heroes[0].hero_eng->unk2C.x;
-                    Heroes[1].hero_eng->unk2C.y = Heroes[0].hero_eng->unk2C.x;
-                    Heroes[1].hero_eng->unk2C.z = Heroes[0].hero_eng->unk2C.x;
+                    Heroes[1].hero_eng->xform.scale.vx = Heroes[0].hero_eng->xform.scale.vx;
+                    Heroes[1].hero_eng->xform.scale.vy = Heroes[0].hero_eng->xform.scale.vx;
+                    Heroes[1].hero_eng->xform.scale.vz = Heroes[0].hero_eng->xform.scale.vx;
                 }
                 NoxAsteroidTimer--;
                 if (NoxAsteroidTimer == -1) {
@@ -684,11 +684,11 @@ void NoxUpdateAsteroids(void) {
             if (kind < 4) {
                 o->flags |= 0x8000;
                 AST_TRACKED_HERO(e,
-                    if (o->pos.z < e->unk10.z - 0x800) {
+                    if (o->pos.z < e->XYZ.z - 0x800) {
                         o->flags &= ~0x8000;
                     })
                 AST_TRACKED_HERO(e,
-                    if (e->unk10.z + 0x6000 < o->pos.z) {
+                    if (e->XYZ.z + 0x6000 < o->pos.z) {
                         o->flags &= ~0x8000;
                     })
             } else if ((u8)(kind - 5) < 6) {
@@ -703,7 +703,7 @@ void NoxUpdateAsteroids(void) {
                     }
                     AST_TRACKED_HERO(e,
                         lim = NoxAsteroids[nAst].unk20;
-                        zl = e->unk10.z - lim;
+                        zl = e->XYZ.z - lim;
                         if (o->pos.z < zl) {
                             o->flags &= ~0x8000;
                             if (NoxAsteroids[nAst].unk14 == 0) {
@@ -714,22 +714,22 @@ void NoxUpdateAsteroids(void) {
                     o->flags |= 0x8000;
                     if (k->kind == 6 || k->kind == 9 || k->kind == 10) {
                         AST_TRACKED_HERO(e,
-                            if (o->pos.z < e->unk10.z - 0x800) {
+                            if (o->pos.z < e->XYZ.z - 0x800) {
                                 o->flags &= ~0x8000;
                             })
                     }
                 }
                 AST_TRACKED_HERO(e,
-                    if (e->unk10.z + 0x6000 < o->pos.z) {
+                    if (e->XYZ.z + 0x6000 < o->pos.z) {
                         o->flags &= ~0x8000;
                     })
             } else {
                 AST_TRACKED_HERO(e,
-                    if (o->pos.z < e->unk10.z - 0x1000) {
+                    if (o->pos.z < e->XYZ.z - 0x1000) {
                         o->flags &= ~0x8000;
                     })
                 AST_TRACKED_HERO(e,
-                    if (e->unk10.z + 0x6000 < o->pos.z) {
+                    if (e->XYZ.z + 0x6000 < o->pos.z) {
                         o->flags &= ~0x8000;
                     })
             }
@@ -771,8 +771,8 @@ void NoxUpdate(void) {
     if (NoxStarted == 0) {
         NoxCameraNasB = NULL;
         NoxCameraNas = NULL;
-        NoxHeroStartA = Heroes[0].hero_eng->unk10;
-        NoxHeroStartB = Heroes[1].hero_eng->unk10;
+        NoxHeroStartA = Heroes[0].hero_eng->XYZ;
+        NoxHeroStartB = Heroes[1].hero_eng->XYZ;
         first = CreateNAS(0, 0, 0, 0x1C03, 0x11);
         NoxCameraNas = first;
         if (first != NULL) {
@@ -826,9 +826,9 @@ void NoxHeroCollide(s32 arg0) {
         h = &base[i];
         if (i != arg0 && !(h->hero_status & 0xFA00)) {
             me = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
-            dx = h->hero_eng->unk10.x - me->hero_eng->unk10.x;
-            dz = h->hero_eng->unk10.y - me->hero_eng->unk10.y;
-            dy = h->hero_eng->unk10.z - me->hero_eng->unk10.z;
+            dx = h->hero_eng->XYZ.x - me->hero_eng->XYZ.x;
+            dz = h->hero_eng->XYZ.y - me->hero_eng->XYZ.y;
+            dy = h->hero_eng->XYZ.z - me->hero_eng->XYZ.z;
             dist = csqrt(dx * dx + dz * dz + dy * dy) >> 6;
             if (dist < 0x300) {
                 om = h->hero_move;
@@ -851,8 +851,8 @@ void NoxHeroCollide(s32 arg0) {
                 }
                 ang = (u16)get_angle(dx, dz) & 0xFFF;
                 push = 0x304 - dist;
-                me->hero_eng->unk10.x -= push * trig[(u16)(ang - 0x400) & 0xFFF].unk2 >> 12;
-                me->hero_eng->unk10.y -= push * trig[ang].unk2 >> 12;
+                me->hero_eng->XYZ.x -= push * trig[(u16)(ang - 0x400) & 0xFFF].unk2 >> 12;
+                me->hero_eng->XYZ.y -= push * trig[ang].unk2 >> 12;
             }
         }
         i++;
@@ -917,8 +917,8 @@ void NoxPreMoveHero(s32 arg0) {
         spd = NoxSpeedScale;
         base2 = Heroes;
         hh = &base2[arg0];
-        m->x_max = (spd * rcossin_tbl[(hh->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 11;
-        m->jump_max = (spd * rcossin_tbl[(hh->hero_eng->unk1C + 0x400) & 0xFFF].unk2) >> 11;
+        m->x_max = (spd * rcossin_tbl[(hh->hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2) >> 11;
+        m->jump_max = (spd * rcossin_tbl[(hh->hero_eng->xform.rot.vx + 0x400) & 0xFFF].unk2) >> 11;
         if (NoxBossHitTimer == 0) {
             m->z_max = spd;
         } else {
@@ -928,15 +928,15 @@ void NoxPreMoveHero(s32 arg0) {
             m->x_max = 0;
             NoxHeroSteer[arg0] = 0;
             e = hh->hero_eng;
-            e->unk10.y += (-0xAF0 - e->unk10.y) >> 5;
+            e->XYZ.y += (-0xAF0 - e->XYZ.y) >> 5;
             if (((GameState *)GameInfo)->teams == 0) {
                 e2 = hh->hero_eng;
-                e2->unk10.x -= e2->unk10.x >> 5;
+                e2->XYZ.x -= e2->XYZ.x >> 5;
             } else {
                 if (NoxHeroTiltA == 0) {
                     if (!(base2[0].hero_status & 0x2000) && !(base2[1].hero_status & 0x2000)) {
                         NoxHeroTiltD = 0;
-                        if (base2[0].hero_eng->unk10.x <= base2[1].hero_eng->unk10.x) {
+                        if (base2[0].hero_eng->XYZ.x <= base2[1].hero_eng->XYZ.x) {
                             NoxHeroTiltB = 0;
                             NoxHeroTiltC = 1;
                         } else {
@@ -954,7 +954,7 @@ void NoxPreMoveHero(s32 arg0) {
                         h2 = &base3[arg0];
                         if (!(h2->hero_status & 0x2000)) {
                             e = h2->hero_eng;
-                            e->unk10.x -= (NoxHeroesAlive * 0x302 + e->unk10.x) >> 5;
+                            e->XYZ.x -= (NoxHeroesAlive * 0x302 + e->XYZ.x) >> 5;
                         }
                     }
                     if (arg0 == NoxHeroTiltC) {
@@ -962,12 +962,12 @@ void NoxPreMoveHero(s32 arg0) {
                         h2 = &base4[arg0];
                         if (!(h2->hero_status & 0x2000)) {
                             e = h2->hero_eng;
-                            e->unk10.x -= (e->unk10.x - NoxHeroesAlive * 0x302) >> 5;
+                            e->XYZ.x -= (e->XYZ.x - NoxHeroesAlive * 0x302) >> 5;
                         }
                     }
                 } else {
                     e = Heroes[arg0].hero_eng;
-                    e->unk10.x -= e->unk10.x >> 5;
+                    e->XYZ.x -= e->XYZ.x >> 5;
                 }
             }
         }
@@ -997,24 +997,24 @@ void NoxMoveHero(s32 arg0) {
     hb = Heroes;
     h = hb + arg0;
     if (!(h->hero_status & 0x200)) {
-        eng->unk10.x += m->x_vel;
-        eng->unk10.z += m->z_vel;
-        eng->unk10.y += m->jump_vel;
+        eng->XYZ.x += m->x_vel;
+        eng->XYZ.z += m->z_vel;
+        eng->XYZ.y += m->jump_vel;
     }
-    if (h->hero_eng->unk10.y < -0xB00) {
-        h->hero_eng->unk10.y = -0xB00;
+    if (h->hero_eng->XYZ.y < -0xB00) {
+        h->hero_eng->XYZ.y = -0xB00;
         m->jump_vel = 0;
     }
-    if (h->hero_eng->unk10.y > 0) {
-        h->hero_eng->unk10.y = 0;
+    if (h->hero_eng->XYZ.y > 0) {
+        h->hero_eng->XYZ.y = 0;
         m->jump_vel = 0;
     }
-    if (h->hero_eng->unk10.x < -0xA00) {
-        h->hero_eng->unk10.x = -0xA00;
+    if (h->hero_eng->XYZ.x < -0xA00) {
+        h->hero_eng->XYZ.x = -0xA00;
         m->x_vel = 0;
     }
-    if (h->hero_eng->unk10.x > 0xA00) {
-        h->hero_eng->unk10.x = 0xA00;
+    if (h->hero_eng->XYZ.x > 0xA00) {
+        h->hero_eng->XYZ.x = 0xA00;
         m->x_vel = 0;
     }
     N2OHeroSpeed[arg0] = m->x_vel;
@@ -1038,11 +1038,11 @@ void NoxHeroFly(s32 arg0) {
 
     hb = Heroes;
     h = &hb[arg0];
-    h->hero_eng->unk5E = 1;
+    h->hero_eng->xform.dirty = 1;
     if (N2OHeroUpdateSpeed() != 0) {
         ProcessHeroAnim(arg0);
     }
-    ang = h->hero_eng->unk1E;
+    ang = h->hero_eng->xform.rot.vy;
     x1 = (rcossin_tbl[ang & 0xFFF].unk2 * 0x67) >> 10;
     z1 = (rcossin_tbl[(ang + 0x400) & 0xFFF].unk2 * 0x67) >> 10;
     x2 = (rcossin_tbl[(ang - 0x800) & 0xFFF].unk2 * 0x67) >> 10;
@@ -1055,11 +1055,11 @@ void NoxHeroFly(s32 arg0) {
         PlaySfx(0x2B7, 0, 0, 0x1000, 0x1E00, 0);
     }
     if ((Pads[arg0].dirPressed & 0x8000) && NoxBossDead == 0) {
-        nas = CreateNAS(h->hero_eng->unk10.x + x1, h->hero_eng->unk10.y + 0x80,
-                           h->hero_eng->unk10.z + z1, 0x1C07, 0x11);
+        nas = CreateNAS(h->hero_eng->XYZ.x + x1, h->hero_eng->XYZ.y + 0x80,
+                           h->hero_eng->XYZ.z + z1, 0x1C07, 0x11);
         if (nas != NULL) {
-            nas->Engine->unk1E = h->hero_eng->unk1E + 0x810;
-            nas->Engine->unk1C = h->hero_eng->unk1C;
+            nas->Engine->xform.rot.vy = h->hero_eng->xform.rot.vy + 0x810;
+            nas->Engine->xform.rot.vx = h->hero_eng->xform.rot.vx;
             if (arg0 == 0) {
                 r = Random(4);
                 if (r == 0) {
@@ -1079,11 +1079,11 @@ void NoxHeroFly(s32 arg0) {
         }
         hb2 = Heroes;
         h = &hb2[arg0];
-        nas = CreateNAS(h->hero_eng->unk10.x + x2, h->hero_eng->unk10.y + 0x80,
-                           h->hero_eng->unk10.z + z2, 0x1C07, 0x11);
+        nas = CreateNAS(h->hero_eng->XYZ.x + x2, h->hero_eng->XYZ.y + 0x80,
+                           h->hero_eng->XYZ.z + z2, 0x1C07, 0x11);
         if (nas != NULL) {
-            nas->Engine->unk1E = h->hero_eng->unk1E + 0x7F0;
-            nas->Engine->unk1C = h->hero_eng->unk1C;
+            nas->Engine->xform.rot.vy = h->hero_eng->xform.rot.vy + 0x7F0;
+            nas->Engine->xform.rot.vx = h->hero_eng->xform.rot.vx;
             if (arg0 == 1) {
                 r = Random(4);
                 if (r == 0) {
@@ -1126,7 +1126,7 @@ void SetNoxHeroDead(s32 arg0) {
         RemoveCamera(NoxCameraNasB);
     }
     ret = NULL;
-    p = &h->hero_eng->unk10;
+    p = &h->hero_eng->XYZ;
     nas = CreateNAS(p->x, p->y, p->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -1158,35 +1158,35 @@ void InitAsteroidRoll(NAS *m) {
     ext = AddExt(m, 0x80, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->u6C.dbase = MapScene->dbase;
-        m->Engine->unk5D = 1;
+        m->Engine->xform.order = 1;
         ext->arc[0] = 0xC;
         ext->bounces = 0;
         ext->unk50 = 0xA0;
         ext->arc[1] = 0;
         ext->floor = 0;
-        ext->to.x = Heroes->hero_eng->unk10.x;
+        ext->to.x = Heroes->hero_eng->XYZ.x;
         ext->to.z = (rcossin_tbl[0].unk2 * 9) >> 4;
-        m->Engine->unk1E = 0;
+        m->Engine->xform.rot.vy = 0;
         ext->to.y = 0;
-        ext->from.x = Heroes->hero_eng->unk10.x;
+        ext->from.x = Heroes->hero_eng->XYZ.x;
         ext->from.z = 0x1B00;
         ext->from.y = -0x100;
-        m->Engine->unk10 = ext->from;
-        m->Engine->unk5E = 1;
+        m->Engine->XYZ = ext->from;
+        m->Engine->xform.dirty = 1;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
             e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
             e->sub->entity = 0x2001;
-            e->unk5C = 1;
-            e->unk5D = 0;
-            e->unk10 = m->Engine->unk10;
+            e->xform.hasScale = 1;
+            e->xform.order = 0;
+            e->XYZ = m->Engine->XYZ;
             e->sub->unk76 = 0x800;
             e->sub->flags |= 0x40008041;
-            e->unk2C.z = 0x4000;
-            e->unk2C.y = 0x4000;
-            e->unk2C.x = 0x4000;
-            ext->shadow->unk5E = 1;
+            e->xform.scale.vz = 0x4000;
+            e->xform.scale.vy = 0x4000;
+            e->xform.scale.vx = 0x4000;
+            ext->shadow->xform.dirty = 1;
         }
     }
 }
@@ -1197,10 +1197,10 @@ void PlotAsteroidRoll(NAS *nas) {
 
     ext = FindExtension(nas, 0x10000000);
     if (ext != NULL) {
-        nas->Engine->unk1C += 0x200;
-        if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &nas->Engine->unk10.x) != 0) {
+        nas->Engine->xform.rot.vx += 0x200;
+        if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &nas->Engine->XYZ.x) != 0) {
             ext->vy = -((ext->vy * 200) >> 8);
-            nas->Engine->unk10.y = ext->floor;
+            nas->Engine->XYZ.y = ext->floor;
             n = ext->bounces + 1;
             ext->vx *= 200;
             ext->bounces = n;
@@ -1208,17 +1208,17 @@ void PlotAsteroidRoll(NAS *nas) {
             ext->vx >>= 8;
             ext->vz >>= 8;
             if (n == 4 ||
-                nas->Engine->unk10.x * nas->Engine->unk10.x +
-                        nas->Engine->unk10.z * nas->Engine->unk10.z > 0x6400000) {
+                nas->Engine->XYZ.x * nas->Engine->XYZ.x +
+                        nas->Engine->XYZ.z * nas->Engine->XYZ.z > 0x6400000) {
                 KillNAS(nas);
                 return;
             }
         }
-        ext->shadow->unk10 = nas->Engine->unk10;
-        ext->shadow->unk10.y = 0x100;
+        ext->shadow->XYZ = nas->Engine->XYZ;
+        ext->shadow->XYZ.y = 0x100;
     }
-    nas->Engine->unk5E = 1;
-    ext->shadow->unk5E = 1;
+    nas->Engine->xform.dirty = 1;
+    ext->shadow->xform.dirty = 1;
 }
 
 void PlotNitroMine(NAS *nas) {
@@ -1230,14 +1230,14 @@ void PlotNitroMine(NAS *nas) {
     s32 dy;
     s32 z;
 
-    nas->Engine->unk1C += 0x20;
-    nas->Engine->unk1E += 0x20;
-    nas->Engine->unk5E = 1;
+    nas->Engine->xform.rot.vx += 0x20;
+    nas->Engine->xform.rot.vy += 0x20;
+    nas->Engine->xform.dirty = 1;
     eng = nas->Engine;
-    dx = eng->unk10.x - Heroes[0].hero_eng->unk10.x;
-    dz = eng->unk10.z - Heroes[0].hero_eng->unk10.z;
-    dy = eng->unk10.y - Heroes[0].hero_eng->unk10.y;
-    if (MineHitLaser(*(LaserPos *)&eng->unk10, 0x90000)) {
+    dx = eng->XYZ.x - Heroes[0].hero_eng->XYZ.x;
+    dz = eng->XYZ.z - Heroes[0].hero_eng->XYZ.z;
+    dy = eng->XYZ.y - Heroes[0].hero_eng->XYZ.y;
+    if (MineHitLaser(*(LaserPos *)&eng->XYZ, 0x90000)) {
         MineBurst(nas);
         MineSfx();
         goto kill;
@@ -1253,9 +1253,9 @@ void PlotNitroMine(NAS *nas) {
     }
     if (*GameTeams != 0 && (h = Heroes, !(*(s32 *)&h[1].hero_teammate & 0x22000000))) {
         me = nas->Engine;
-        if ((me->unk10.x - h[1].hero_eng->unk10.x) * (me->unk10.x - h[1].hero_eng->unk10.x)
-            + (me->unk10.y - h[1].hero_eng->unk10.y) * (me->unk10.y - h[1].hero_eng->unk10.y)
-            + (me->unk10.z - h[1].hero_eng->unk10.z) * (me->unk10.z - h[1].hero_eng->unk10.z) < 0x40000) {
+        if ((me->XYZ.x - h[1].hero_eng->XYZ.x) * (me->XYZ.x - h[1].hero_eng->XYZ.x)
+            + (me->XYZ.y - h[1].hero_eng->XYZ.y) * (me->XYZ.y - h[1].hero_eng->XYZ.y)
+            + (me->XYZ.z - h[1].hero_eng->XYZ.z) * (me->XYZ.z - h[1].hero_eng->XYZ.z) < 0x40000) {
             MineBurst(nas);
             if ((((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001
                 && !(Heroes[1].hero_status & 0x2000) && Heroes[1].hero_mode != 0x31) {
@@ -1266,9 +1266,9 @@ void PlotNitroMine(NAS *nas) {
             goto kill;
         }
     }
-    z = nas->Engine->unk10.z;
-    if (z < Heroes[0].hero_eng->unk10.z - 0x11F4 ||
-        (*GameTeams != 0 && z < Heroes[1].hero_eng->unk10.z - 0x11F4)) {
+    z = nas->Engine->XYZ.z;
+    if (z < Heroes[0].hero_eng->XYZ.z - 0x11F4 ||
+        (*GameTeams != 0 && z < Heroes[1].hero_eng->XYZ.z - 0x11F4)) {
     kill:
         KillNAS(nas);
     }
@@ -1295,41 +1295,41 @@ void PlotNitroMissile(NAS *nas) {
 
     if (*GameTeams != 0) {
         if ((Heroes[0].hero_status & 0x2000) && (Heroes[1].hero_status & 0x2000)) {
-            ((void (*)(s32, s32, s32, u16, u16))CreateNAS)(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1C09, 0x11);
+            ((void (*)(s32, s32, s32, u16, u16))CreateNAS)(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1C09, 0x11);
             goto kill;
         }
     } else if (Heroes[0].hero_status & 0x2000) {
-        CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1C09, 0x11);
+        CreateNAS(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1C09, 0x11);
         goto kill;
     }
     ext = FindExtension(nas, 0x10000000);
     if (ext == NULL) {
         return;
     }
-    nas->Engine->unk5E = 1;
+    nas->Engine->xform.dirty = 1;
     if (ext->unk18-- < 0) {
-        CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1C09, 0x11);
+        CreateNAS(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1C09, 0x11);
         ext->unk18 = 1;
     }
     switch (ext->unkC) {
     case 0:
         he = Heroes[ext->unk14].hero_eng;
-        dx = nas->Engine->unk10.x - he->unk10.x;
+        dx = nas->Engine->XYZ.x - he->XYZ.x;
         xx = dx * dx;
-        dz = nas->Engine->unk10.z - he->unk10.z;
+        dz = nas->Engine->XYZ.z - he->XYZ.z;
         zz = dz * dz;
-        dy = nas->Engine->unk10.y - he->unk10.y + 0x100;
+        dy = nas->Engine->XYZ.y - he->XYZ.y + 0x100;
         d = csqrt(xx + zz) >> 6;
         a = get_angle(dx, dz) & 0xFFF;
         b = get_angle(-dy, d);
-        nas->Engine->unk1E += ((a - nas->Engine->unk1E) << 20) >> 20;
-        nas->Engine->unk1C += ((b - nas->Engine->unk1C) << 20) >> 20;
-        nas->Engine->unk10.x -= rcossin_tbl[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.z -= rcossin_tbl[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.y += rcossin_tbl[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->xform.rot.vy += ((a - nas->Engine->xform.rot.vy) << 20) >> 20;
+        nas->Engine->xform.rot.vx += ((b - nas->Engine->xform.rot.vx) << 20) >> 20;
+        nas->Engine->XYZ.x -= rcossin_tbl[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.z -= rcossin_tbl[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.y += rcossin_tbl[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 55 >> 10;
         eng = nas->Engine;
         h = &Heroes[ext->unk14];
-        if (eng->unk10.z < h->hero_eng->unk10.z) {
+        if (eng->XYZ.z < h->hero_eng->XYZ.z) {
             ext->unkC = 1;
             r = Random(4);
             if (r == 0) {
@@ -1355,7 +1355,7 @@ void PlotNitroMissile(NAS *nas) {
         if (xx + dy * dy + zz > 0x3FFFF) {
             return;
         }
-        pos = &eng->unk10;
+        pos = &eng->XYZ;
         n = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
             e2 = FindExtension(n, 0x10000000);
@@ -1389,10 +1389,10 @@ void PlotNitroMissile(NAS *nas) {
         }
         goto kill;
     case 1:
-        nas->Engine->unk10.x -= rcossin_tbl[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.z -= rcossin_tbl[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.y += rcossin_tbl[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        if (nas->Engine->unk10.z < Heroes[ext->unk14].hero_eng->unk10.z - 0x1000) {
+        nas->Engine->XYZ.x -= rcossin_tbl[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.z -= rcossin_tbl[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.y += rcossin_tbl[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        if (nas->Engine->XYZ.z < Heroes[ext->unk14].hero_eng->XYZ.z - 0x1000) {
             goto kill;
         }
         return;
@@ -1432,9 +1432,9 @@ void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
         }
         e = arg1->eng;
         do {
-            tz = target->unk10.z;
+            tz = target->XYZ.z;
         } while (0);
-        d = abs(tz - e->unk10.z);
+        d = abs(tz - e->XYZ.z);
     } while (0);
     if ((Heroes[0].hero_status & 0x2000) && (Heroes[1].hero_status & 0x2000)) {
         arg0->pos += NoxSpeedScale;
@@ -1442,9 +1442,9 @@ void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
         arg0->pos += 0x400;
     }
     key_interp_pos(arg0->keys, arg0->pos, &pt);
-    arg1->eng->unk10.x += (pt.x - arg1->eng->unk10.x) >> 4;
-    arg1->eng->unk10.z += (pt.z - arg1->eng->unk10.z) >> 4;
-    arg1->eng->unk10.y += (pt.y - arg1->eng->unk10.y) >> 4;
+    arg1->eng->XYZ.x += (pt.x - arg1->eng->XYZ.x) >> 4;
+    arg1->eng->XYZ.z += (pt.z - arg1->eng->XYZ.z) >> 4;
+    arg1->eng->XYZ.y += (pt.y - arg1->eng->XYZ.y) >> 4;
     p = (s32 *)key_find(arg0->keys, arg0->pos);
     out = ang;
     if (p[5] & 0x2000) {
@@ -1457,8 +1457,8 @@ void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
     dist = csqrt(dx * dx + dz * dz) >> 6;
     out[1] = get_angle(dx, dz);
     ang[0] = -get_angle(dy, dist);
-    arg1->eng->unk1E += ((ang[1] - arg1->eng->unk1E) << 20) >> 23;
-    arg1->eng->unk1C += ((ang[0] - arg1->eng->unk1C) << 20) >> 23;
+    arg1->eng->xform.rot.vy += ((ang[1] - arg1->eng->xform.rot.vy) << 20) >> 23;
+    arg1->eng->xform.rot.vx += ((ang[0] - arg1->eng->xform.rot.vx) << 20) >> 23;
 }
 
 void InitNitroBoss(NAS *nas) {
@@ -1468,22 +1468,22 @@ void InitNitroBoss(NAS *nas) {
 
     if (ext != NULL) {
         nas->Engine->sub->u6C.dbase = MapScene->dbase;
-        nas->Engine->unk2C.x = 0x1830;
-        nas->Engine->unk2C.y = 0x1830;
-        nas->Engine->unk2C.z = 0x1830;
+        nas->Engine->xform.scale.vx = 0x1830;
+        nas->Engine->xform.scale.vy = 0x1830;
+        nas->Engine->xform.scale.vz = 0x1830;
         ResetHeroGlobals();
         BossState.health = 0xFF;
         NoxBossPathPos = 0;
         ext->cursor = ScriptCursorFirst(nas, &NoxBossScriptInit);
-        nas->Engine->unk5D = 2;
-        nas->Engine->unk5C = 1;
+        nas->Engine->xform.order = 2;
+        nas->Engine->xform.hasScale = 1;
         RunNasAnim(nas);
         nas->UserInfo.user1 = 0;
         ext->unk14 = 0x3200;
         scene = MapScene;
         p = scene->unk2C;
         ext->keys = (KeyBlock *)(p + (*(s32 *)(p + 4) + 4));
-        key_interp_pos(ext->keys, ext->unk14, &nas->Engine->unk10);
+        key_interp_pos(ext->keys, ext->unk14, &nas->Engine->XYZ);
         ext->unk18 = 0;
         ext->unk1C = 0;
         ext->unk20 = 0;
@@ -1515,7 +1515,7 @@ void PlotNitroBoss(NAS *nas) {
     }
     fl = (u16 *)&BossState;
     if (fl[2] & 0x8000) {
-        pos = &nas->Engine->unk10;
+        pos = &nas->Engine->XYZ;
         n = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
             s = FindExtension(n, 0x10000000);
@@ -1532,7 +1532,7 @@ void PlotNitroBoss(NAS *nas) {
         N2OBossNas = NULL;
         return;
     }
-    nas->Engine->unk5E = 1;
+    nas->Engine->xform.dirty = 1;
     switch (ext->unk18) {
     case 0:
         NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
@@ -1553,12 +1553,12 @@ void PlotNitroBoss(NAS *nas) {
             }
         }
         if (k == 5) {
-            nas->Engine->unk2C.x -= 0x300;
-            if (nas->Engine->unk2C.x < 0) {
-                nas->Engine->unk2C.x = 0;
+            nas->Engine->xform.scale.vx -= 0x300;
+            if (nas->Engine->xform.scale.vx < 0) {
+                nas->Engine->xform.scale.vx = 0;
             }
-            nas->Engine->unk2C.y = nas->Engine->unk2C.x;
-            nas->Engine->unk2C.z = nas->Engine->unk2C.x;
+            nas->Engine->xform.scale.vy = nas->Engine->xform.scale.vx;
+            nas->Engine->xform.scale.vz = nas->Engine->xform.scale.vx;
         }
         if (k == 6) {
             NoxBossHits = 1;
@@ -1570,7 +1570,7 @@ void PlotNitroBoss(NAS *nas) {
             if (GameTeams[0] == 0) {
                 if (!(Heroes[0].hero_status & 0x2000)) {
                     e = nas->Engine;
-                    m = CreateNAS(e->unk10.x, e->unk10.y, e->unk10.z, 0x1C04, 0x11);
+                    m = CreateNAS(e->XYZ.x, e->XYZ.y, e->XYZ.z, 0x1C04, 0x11);
                     if (m != NULL) {
                         q = FindExtension(m, 0x10000000);
                         if (q != NULL) {
@@ -1581,7 +1581,7 @@ void PlotNitroBoss(NAS *nas) {
             } else {
                 if (!(Heroes[0].hero_status & 0x2000)) {
                     e = nas->Engine;
-                    m = CreateNAS(e->unk10.x, e->unk10.y, e->unk10.z, 0x1C04, 0x11);
+                    m = CreateNAS(e->XYZ.x, e->XYZ.y, e->XYZ.z, 0x1C04, 0x11);
                     if (m != NULL) {
                         r = FindExtension(m, 0x10000000);
                         if (r != NULL) {
@@ -1591,7 +1591,7 @@ void PlotNitroBoss(NAS *nas) {
                 }
                 if (!(Heroes[1].hero_status & 0x2000)) {
                     e = nas->Engine;
-                    m = CreateNAS(e->unk10.x, e->unk10.y, e->unk10.z, 0x1C04, 0x11);
+                    m = CreateNAS(e->XYZ.x, e->XYZ.y, e->XYZ.z, 0x1C04, 0x11);
                     if (m != NULL) {
                         t = FindExtension(m, 0x10000000);
                         if (t != NULL) {
@@ -1615,7 +1615,7 @@ void PlotNitroBoss(NAS *nas) {
         NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
         if (ext->unk20-- < 0) {
             e2 = nas->Engine;
-            CreateNAS(e2->unk10.x, e2->unk10.y, e2->unk10.z, 0x1C05, 0x11);
+            CreateNAS(e2->XYZ.x, e2->XYZ.y, e2->XYZ.z, 0x1C05, 0x11);
             ext->unk20 = 3;
         }
         k3 = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
@@ -1644,7 +1644,7 @@ void InitSpiralSat(NAS *nas) {
     s32 i, mode;
 
     if (ext != NULL) {
-        ext->c = nas->Engine->unk10;
+        ext->c = nas->Engine->XYZ;
         ext->unk3C = 0;
         ext->unk40 = Random(0x1000);
         i = 0;
@@ -1658,13 +1658,13 @@ void InitSpiralSat(NAS *nas) {
                 ext->ang[i] = i << 10;
                 ext->eng[i] = e;
                 ext->radius = 0x800;
-                e->unk10.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
-                e->unk10.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
-                e->unk10.z = ext->c.z;
+                e->XYZ.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+                e->XYZ.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
+                e->XYZ.z = ext->c.z;
                 e->sub->u6C.dbase = ((s32)MapScene->dbase);
                 e->sub->entity = 0x201A;
                 e->sub->flags = 0x8000;
-                q =&e->unk10;
+                q =&e->XYZ;
                 s = CreateNAS(q->x, q->y, q->z, 0x1605, 0x11);
                 mode = 2;
                 if (s != NULL) {
@@ -1712,7 +1712,7 @@ void PlotSpiralSat(NAS *nas) {
                 continue;
             }
             if (((GameState *)GameInfo)->teams == 0) {
-                if (Heroes[0].hero_eng->unk10.z + 0x6000 < f->unk10.z) {
+                if (Heroes[0].hero_eng->XYZ.z + 0x6000 < f->XYZ.z) {
                     f->sub->flags &= ~0x8000;
                     if (ext->sat[i] != NULL) {
                         ext->sat[i]->Engine->flags &= ~0x8000;
@@ -1721,7 +1721,7 @@ void PlotSpiralSat(NAS *nas) {
                     goto show;
                 }
             } else if (!(Heroes[0].hero_status & 0x2000)) {
-                if (Heroes[0].hero_eng->unk10.z + 0x6000 < f->unk10.z) {
+                if (Heroes[0].hero_eng->XYZ.z + 0x6000 < f->XYZ.z) {
                     f->sub->flags &= ~0x8000;
                     if (ext->sat[i] != NULL) {
                         ext->sat[i]->Engine->flags &= ~0x8000;
@@ -1729,7 +1729,7 @@ void PlotSpiralSat(NAS *nas) {
                 } else {
                     goto show;
                 }
-            } else if (Heroes[1].hero_eng->unk10.z + 0x6000 < f->unk10.z) {
+            } else if (Heroes[1].hero_eng->XYZ.z + 0x6000 < f->XYZ.z) {
                 f->sub->flags &= ~0x8000;
                 if (ext->sat[i] != NULL) {
                     ext->sat[i]->Engine->flags &= ~0x8000;
@@ -1747,12 +1747,12 @@ void PlotSpiralSat(NAS *nas) {
             if (!(e->sub->flags & 0x8000)) {
                 continue;
             }
-            dx = e->unk10.x - Heroes[0].hero_eng->unk10.x;
-            dz = e->unk10.z - Heroes[0].hero_eng->unk10.z;
-            dy = e->unk10.y - Heroes[0].hero_eng->unk10.y;
+            dx = e->XYZ.x - Heroes[0].hero_eng->XYZ.x;
+            dz = e->XYZ.z - Heroes[0].hero_eng->XYZ.z;
+            dy = e->XYZ.y - Heroes[0].hero_eng->XYZ.y;
             if (!(Heroes[0].hero_status & 0x2000) && dx * dx + dy * dy + dz * dz < 0x90000) {
-                r = &e->unk10;
-                s = CreateNAS(e->unk10.x, r->y, r->z, 0x1605, 0x11);
+                r = &e->XYZ;
+                s = CreateNAS(e->XYZ.x, r->y, r->z, 0x1605, 0x11);
                 mode = 0;
                 if (s != NULL) {
                     le = FindExtension(s, 0x10000000);
@@ -1771,11 +1771,11 @@ void PlotSpiralSat(NAS *nas) {
             }
             if (((GameState *)GameInfo)->teams != 0 && !(Heroes[1].hero_status & 0x2000)) {
                 g = ext->eng[i];
-                if ((g->unk10.x - Heroes[1].hero_eng->unk10.x) * (g->unk10.x - Heroes[1].hero_eng->unk10.x)
-                    + (g->unk10.y - Heroes[1].hero_eng->unk10.y) * (g->unk10.y - Heroes[1].hero_eng->unk10.y)
-                    + (g->unk10.z - Heroes[1].hero_eng->unk10.z) * (g->unk10.z - Heroes[1].hero_eng->unk10.z) < 0x90000) {
-                    q = &g->unk10;
-                    s = CreateNAS(g->unk10.x, q->y, q->z, 0x1605, 0x11);
+                if ((g->XYZ.x - Heroes[1].hero_eng->XYZ.x) * (g->XYZ.x - Heroes[1].hero_eng->XYZ.x)
+                    + (g->XYZ.y - Heroes[1].hero_eng->XYZ.y) * (g->XYZ.y - Heroes[1].hero_eng->XYZ.y)
+                    + (g->XYZ.z - Heroes[1].hero_eng->XYZ.z) * (g->XYZ.z - Heroes[1].hero_eng->XYZ.z) < 0x90000) {
+                    q = &g->XYZ;
+                    s = CreateNAS(g->XYZ.x, q->y, q->z, 0x1605, 0x11);
                     mode = 0;
                     if (s != NULL) {
                         le = FindExtension(s, 0x10000000);
@@ -1794,14 +1794,14 @@ void PlotSpiralSat(NAS *nas) {
                     goto kill;
                 }
             }
-            ext->eng[i]->unk1C += 0x40;
-            ext->eng[i]->unk1E += 0x40;
-            ext->eng[i]->unk5E = 1;
-            ext->eng[i]->unk10.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
-            ext->eng[i]->unk10.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
-            ext->eng[i]->unk10.z = ext->c.z;
+            ext->eng[i]->xform.rot.vx += 0x40;
+            ext->eng[i]->xform.rot.vy += 0x40;
+            ext->eng[i]->xform.dirty = 1;
+            ext->eng[i]->XYZ.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+            ext->eng[i]->XYZ.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
+            ext->eng[i]->XYZ.z = ext->c.z;
             if (ext->sat[i] != NULL) {
-                ext->sat[i]->Engine->unk10 = ext->eng[i]->unk10;
+                ext->sat[i]->Engine->XYZ = ext->eng[i]->XYZ;
             }
             if (ext->unk40 < 0x800) {
                 ext->ang[i] += 0x30;
@@ -1813,9 +1813,9 @@ void PlotSpiralSat(NAS *nas) {
         ext->radius = abs((rcossin_tbl[(ext->unk40 - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
         ext->unk40 = (ext->unk40 + 0x18) & 0xFFF;
     }
-    z = nas->Engine->unk10.z;
+    z = nas->Engine->XYZ.z;
     j = 0;
-    if (z < Heroes[0].hero_eng->unk10.z - 0x800) {
+    if (z < Heroes[0].hero_eng->XYZ.z - 0x800) {
         p = ext;
         for (; j < 4; j++) {
             if (p->sat[0] != NULL) {
@@ -1825,7 +1825,7 @@ void PlotSpiralSat(NAS *nas) {
         }
         goto kill;
     }
-    if (*GameTeams != 0 && z < Heroes[1].hero_eng->unk10.z - 0x800) {
+    if (*GameTeams != 0 && z < Heroes[1].hero_eng->XYZ.z - 0x800) {
         p = ext;
         for (mode = 0; mode < 4; mode++) {
             if (p->sat[0] != NULL) {
@@ -1841,21 +1841,21 @@ void PlotSpiralSat(NAS *nas) {
 void PlotMineSFX(NAS *nas) {
     s32 z;
 
-    nas->Engine->unk10.z = nas->UserInfo.user1;
+    nas->Engine->XYZ.z = nas->UserInfo.user1;
     if (GameTeams[0] == 0) {
-        if (Heroes[0].hero_eng->unk10.z + 0x6000 < nas->Engine->unk10.z) {
+        if (Heroes[0].hero_eng->XYZ.z + 0x6000 < nas->Engine->XYZ.z) {
             nas->Engine->sub->flags &= ~0x8000;
         } else {
             nas->Engine->sub->flags |= 0x8000;
         }
     } else if (!(Heroes[0].hero_status & 0x2000)) {
-        if (Heroes[0].hero_eng->unk10.z + 0x6000 < nas->Engine->unk10.z) {
+        if (Heroes[0].hero_eng->XYZ.z + 0x6000 < nas->Engine->XYZ.z) {
             nas->Engine->sub->flags &= ~0x8000;
         } else {
             nas->Engine->sub->flags |= 0x8000;
         }
     } else {
-        if (Heroes[1].hero_eng->unk10.z + 0x6000 < nas->Engine->unk10.z) {
+        if (Heroes[1].hero_eng->XYZ.z + 0x6000 < nas->Engine->XYZ.z) {
             nas->Engine->sub->flags &= ~0x8000;
         } else {
             nas->Engine->sub->flags |= 0x8000;
@@ -1863,9 +1863,9 @@ void PlotMineSFX(NAS *nas) {
     }
     nas->UserInfo.user2++;
     if (nas->Engine->sub->flags & 0x8000) {
-        z = nas->Engine->unk10.z;
-        if (z < Heroes[0].hero_eng->unk10.z + 0xC00 ||
-            (GameTeams[0] != 0 && z < Heroes[1].hero_eng->unk10.z + 0xC00)) {
+        z = nas->Engine->XYZ.z;
+        if (z < Heroes[0].hero_eng->XYZ.z + 0xC00 ||
+            (GameTeams[0] != 0 && z < Heroes[1].hero_eng->XYZ.z + 0xC00)) {
             if (nas->UserInfo.status == 0) {
                 PlaySfx(0x29B, NULL, NULL, 0x1000, 0x1E00, 0);
             }
@@ -1894,25 +1894,25 @@ void PlotLaserShoot(NAS *nas) {
     s32 dz;
     s32 r;
 
-    nas->Engine->unk10.x += rcossin_tbl[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 12;
-    nas->Engine->unk10.z += rcossin_tbl[nas->Engine->unk1E & 0xFFF].unk2 * 1024 >> 12;
-    nas->Engine->unk10.y -= rcossin_tbl[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->XYZ.x += rcossin_tbl[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->XYZ.z += rcossin_tbl[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->XYZ.y -= rcossin_tbl[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 1024 >> 12;
     if (nas->UserInfo.user2 == 0) {
         nas->Engine->sub->entity = 0x201D;
     }
     if (nas->UserInfo.user2 == 1) {
         nas->Engine->sub->entity = 0x201E;
     }
-    nas->Engine->unk5E = 1;
+    nas->Engine->xform.dirty = 1;
     nas->UserInfo.user1++;
     if (N2OBossNas != NULL) {
         e = nas->Engine;
         t = N2OBossNas->Engine;
-        dx = e->unk10.x - t->unk10.x;
-        dy = e->unk10.y - t->unk10.y;
-        dz = e->unk10.z - t->unk10.z;
+        dx = e->XYZ.x - t->XYZ.x;
+        dy = e->XYZ.y - t->XYZ.y;
+        dz = e->XYZ.z - t->XYZ.z;
         if (dx * dx + dy * dy + dz * dz <= 0x8FFFF) {
-            p = &e->unk10;
+            p = &e->XYZ;
             s = CreateNAS(p->x, p->y, p->z, 0x1605, 0x11);
             if (s != NULL) {
                 ext = FindExtension(s, 0x10000000);
@@ -2075,14 +2075,14 @@ void NoxCameraFollow(void) {
     s32 y;
 
     cam = &MainCamera;
-    cam->at.x += (((e->unk10.x + Heroes[1].hero_eng->unk10.x) >> 1) - cam->at.x) >> 3;
-    cam->at.z = e->unk10.z;
-    y = e->unk10.y;
+    cam->at.x += (((e->XYZ.x + Heroes[1].hero_eng->XYZ.x) >> 1) - cam->at.x) >> 3;
+    cam->at.z = e->XYZ.z;
+    y = e->XYZ.y;
     cam->eye.z = 0x990;
     cam->eye.x = 0;
     cam->xform.angle.vx = 0x1A8;
     cam->at.y = y;
-    cam->xform.angle.vz = e->unk20 >> 3;
+    cam->xform.angle.vz = e->xform.rot.vz >> 3;
 }
 
 void InitLaserShoot(LaserShoot *arg0) {
@@ -2170,9 +2170,9 @@ void NoxSpawnSmokeBoost(void) {
 
 void NoxHeroWinner(s32 arg0) {
     CheckHeroAnim(arg0);
-    Heroes[arg0].hero_eng->unk1E = 0x800;
+    Heroes[arg0].hero_eng->xform.rot.vy = 0x800;
     Heroes[arg0].hero_move->forward_angle = 0x800;
-    Heroes[arg0].hero_eng->unk5E = 1;
+    Heroes[arg0].hero_eng->xform.dirty = 1;
     if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
@@ -2182,11 +2182,11 @@ void NoxHeroWinner(s32 arg0) {
 void SetNoxHeroWinner(s32 arg0) {
     StartHeroVictory(arg0);
     RequestHeroAnim(arg0, 0);
-    Heroes[arg0].hero_eng->unk20 = 0;
+    Heroes[arg0].hero_eng->xform.rot.vz = 0;
     NoxSpeedScale = 0;
-    Heroes[arg0].hero_eng->unk1C = 0;
-    Heroes[arg0].hero_eng->unk1E = 0x800;
-    Heroes[arg0].hero_eng->unk5E = 1;
+    Heroes[arg0].hero_eng->xform.rot.vx = 0;
+    Heroes[arg0].hero_eng->xform.rot.vy = 0x800;
+    Heroes[arg0].hero_eng->xform.dirty = 1;
 }
 
 s32 TestNoxHeroWon(s32 arg0) {
@@ -2219,7 +2219,7 @@ void NoxHeroHit(s32 arg0) {
 void SetNoxHeroHit(s32 arg0) {
     EXTengine *e = Heroes[arg0].hero_eng;
 
-    CreateNAS(e->unk10.x, e->unk10.y, e->unk10.z + 0x400, 0x1C09, 0x11);
+    CreateNAS(e->XYZ.x, e->XYZ.y, e->XYZ.z + 0x400, 0x1C09, 0x11);
     pad_rumble_small(arg0, 0xA);
     ((void (*)(s32, s32, s32))pad_rumble_big)(arg0, 0xA, 0xFF);
 }
@@ -2248,8 +2248,8 @@ void NoxHeroFacing(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
-    h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
-    h->hero_eng->unk5E = 1;
+    h->hero_eng->xform.rot.vy += angle_diff(h->hero_eng->xform.rot.vy, h->hero_move->forward_angle) >> 2;
+    h->hero_eng->xform.dirty = 1;
 }
 
 s32 Nox_KeepInBounds(void) {
@@ -2291,9 +2291,9 @@ void PlotDummyCamera(NAS *nas) {
     nas->Camera.width = Heroes[nas->UserInfo.user1].hero->Camera.width;
     nas->Camera.height = Heroes[nas->UserInfo.user1].hero->Camera.height;
     nas->Camera.look_ahead = Heroes[nas->UserInfo.user1].hero->Camera.look_ahead;
-    nas->Engine->unk10 = Heroes[nas->UserInfo.user1].hero_eng->unk10;
-    if (nas->Engine->unk10.y < -0x900) {
-        nas->Engine->unk10.y = -0x900;
+    nas->Engine->XYZ = Heroes[nas->UserInfo.user1].hero_eng->XYZ;
+    if (nas->Engine->XYZ.y < -0x900) {
+        nas->Engine->XYZ.y = -0x900;
     }
 }
 
@@ -2402,9 +2402,9 @@ void NoxResetHeroes(void) {
     NoxHeroTiltB = 0;
     NoxHeroTiltC = 0;
     NoxHeroTiltD = 0;
-    Heroes->hero_eng->unk10.y = -0x480;
+    Heroes->hero_eng->XYZ.y = -0x480;
     NoxHeroesAlive = 1;
-    Heroes[1].hero_eng->unk10.y = -0x480;
+    Heroes[1].hero_eng->XYZ.y = -0x480;
 }
 
 void NoxInit(void) {

@@ -189,23 +189,23 @@ void UpdatePanel(void) {
 void InitBigScore(void) {
     BigScore1 = EngineTemplate;
     BigScore1.flags = 0x10008000;
-    BigScore1.unk10.x = 0x82;
-    BigScore1.unk10.y = 0x8C;
-    BigScore1.unk10.z = 0;
+    BigScore1.XYZ.x = 0x82;
+    BigScore1.XYZ.y = 0x8C;
+    BigScore1.XYZ.z = 0;
     subs_init_array(&BigScore1, 1, &BigScoreParts1);
     PlaceFlashSub((PlaceSub *)&BigScoreParts1, -0x30, 0, left_score, 0);
-    BigScore1.unk5D = 0;
-    BigScore1.unk5C = 1;
+    BigScore1.xform.order = 0;
+    BigScore1.xform.hasScale = 1;
     BigScoreParts1.flags &= ~0x10000000;
     BigScore2 = EngineTemplate;
     BigScore2.flags = 0x10008000;
-    BigScore2.unk10.x = 0x1E0;
-    BigScore2.unk10.y = 0x8C;
-    BigScore2.unk10.z = 0;
+    BigScore2.XYZ.x = 0x1E0;
+    BigScore2.XYZ.y = 0x8C;
+    BigScore2.XYZ.z = 0;
     subs_init_array(&BigScore2, 1, &BigScoreParts2);
     PlaceFlashSub((PlaceSub *)&BigScoreParts2, -0x30, 0, right_score, 0);
-    BigScore2.unk5C = 1;
-    BigScore2.unk5D = 0;
+    BigScore2.xform.hasScale = 1;
+    BigScore2.xform.order = 0;
     BigScore_scale = 0x10;
     BigScore_teamA = 0;
     BigScore_teamB = 0;
@@ -239,11 +239,11 @@ void UpdateBigScore(void) {
 
     if (CupMode != 0) {
         lim = 0xA00;
-        if (BigScore1.unk10.y > 0x5A) {
-            BigScore1.unk10.y -= 8;
+        if (BigScore1.XYZ.y > 0x5A) {
+            BigScore1.XYZ.y -= 8;
         }
-        if (BigScore2.unk10.y > 0x5A) {
-            BigScore2.unk10.y -= 8;
+        if (BigScore2.XYZ.y > 0x5A) {
+            BigScore2.XYZ.y -= 8;
         }
         for (i = 0; i < 4; i++) {
             if ((s16)Score[i].Yoffs > -0x100) {
@@ -268,15 +268,15 @@ void UpdateBigScore(void) {
     e = &BigScore1;
     v = (u16)BigScore_scale;
     do {
-        e->unk2C.x = v;
-        e->unk2C.y = v;
-        e->unk2C.z = v;
+        e->xform.scale.vx = v;
+        e->xform.scale.vy = v;
+        e->xform.scale.vz = v;
     } while (0);
     do {
         f = &BigScore2;
-        f->unk2C.x = v;
-        f->unk2C.y = v;
-        f->unk2C.z = v;
+        f->xform.scale.vx = v;
+        f->xform.scale.vy = v;
+        f->xform.scale.vz = v;
     } while (0);
 
     hb = Heroes;
@@ -387,8 +387,8 @@ void UpdateBigScore(void) {
     d = n / 10;
     d = n - d * 10;
     ((char *)right_score)[0] = d + '0';
-    BigScore1.unk5E = 1;
-    BigScore2.unk5E = 1;
+    BigScore1.xform.dirty = 1;
+    BigScore2.xform.dirty = 1;
 }
 
 void Set_Clock(u16 time, u16 flags) {
@@ -637,9 +637,9 @@ void InitIcons4(void) {
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
-        ((EXTengine **)&Icon)[i]->unk10.x = IconPos4[PanelHeroOrder[i]][0];
-        ((EXTengine **)&Icon)[i]->unk10.y = IconPos4[PanelHeroOrder[i]][1];
-        ((EXTengine **)&Icon)[i]->unk10.z = 0;
+        ((EXTengine **)&Icon)[i]->XYZ.x = IconPos4[PanelHeroOrder[i]][0];
+        ((EXTengine **)&Icon)[i]->XYZ.y = IconPos4[PanelHeroOrder[i]][1];
+        ((EXTengine **)&Icon)[i]->XYZ.z = 0;
         sub->entity = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
@@ -670,9 +670,9 @@ void InitIcons2(void) {
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
-        ((EXTengine **)&Icon)[i]->unk10.x = IconPos2[PanelHeroOrder[i]][0];
-        ((EXTengine **)&Icon)[i]->unk10.y = IconPos2[PanelHeroOrder[i]][1];
-        ((EXTengine **)&Icon)[i]->unk10.z = 0;
+        ((EXTengine **)&Icon)[i]->XYZ.x = IconPos2[PanelHeroOrder[i]][0];
+        ((EXTengine **)&Icon)[i]->XYZ.y = IconPos2[PanelHeroOrder[i]][1];
+        ((EXTengine **)&Icon)[i]->XYZ.z = 0;
         sub->entity = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
@@ -1523,7 +1523,7 @@ void CheckHeroesAllOut(void) {
         e = GetEngineSlot(5);
         PlaceEngineSlot(5, HeroesOutPanel);
         PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
-        e->unk10.y = 0x1F4;
+        e->XYZ.y = 0x1F4;
         e->flags |= 0x10008000;
         PanelCtrl = (PanelCtrl & 0xFFFF7FFF) | 0x4000;
     }
@@ -1541,8 +1541,8 @@ void UpdateOutMessage(void) {
     }
     e = GetEngineSlot(5);
     if (PanelCtrl & 0x10000) {
-        if (e->unk10.y < 0x258) {
-            e->unk10.y += 0x20;
+        if (e->XYZ.y < 0x258) {
+            e->XYZ.y += 0x20;
         } else {
             PanelCtrl &= ~0x4000;
         }
@@ -1552,10 +1552,10 @@ void UpdateOutMessage(void) {
         PanelCtrl |= 0x10000;
         return;
     }
-    if (e->unk10.y < 0x17D) {
-        e->unk10.y = 0x17C;
+    if (e->XYZ.y < 0x17D) {
+        e->XYZ.y = 0x17C;
     } else {
-        e->unk10.y -= 0x10;
+        e->XYZ.y -= 0x10;
     }
     i = 0;
     for (;;) {
@@ -1906,18 +1906,18 @@ found:
         break;
     case 9:
         for (i = 0; i < 4; i++) {
-            if (HUDPLAYERS[i]->unk10.y >= -0xFF) {
-                HUDPLAYERS[i]->unk10.y -= 8;
+            if (HUDPLAYERS[i]->XYZ.y >= -0xFF) {
+                HUDPLAYERS[i]->XYZ.y -= 8;
             }
         }
         if (Clock_XYZ[1] >= -0xFF) {
             Clock_XYZ[1] -= 8;
         }
-        if (BigScore1.unk10.y >= -0xFF) {
-            BigScore1.unk10.y -= 8;
+        if (BigScore1.XYZ.y >= -0xFF) {
+            BigScore1.XYZ.y -= 8;
         }
-        if (BigScore2.unk10.y >= -0xFF) {
-            BigScore2.unk10.y -= 8;
+        if (BigScore2.XYZ.y >= -0xFF) {
+            BigScore2.XYZ.y -= 8;
         }
         if (CupTimer == 0) {
             if (PauseChoice == 0) {
@@ -1937,18 +1937,18 @@ found:
         break;
     case 10:
         for (i = 0; i < 4; i++) {
-            if (HUDPLAYERS[i]->unk10.y >= -0xFF) {
-                HUDPLAYERS[i]->unk10.y -= 8;
+            if (HUDPLAYERS[i]->XYZ.y >= -0xFF) {
+                HUDPLAYERS[i]->XYZ.y -= 8;
             }
         }
         if (Clock_XYZ[1] >= -0xFF) {
             Clock_XYZ[1] -= 8;
         }
-        if (BigScore1.unk10.y >= -0xFF) {
-            BigScore1.unk10.y -= 8;
+        if (BigScore1.XYZ.y >= -0xFF) {
+            BigScore1.XYZ.y -= 8;
         }
-        if (BigScore2.unk10.y >= -0xFF) {
-            BigScore2.unk10.y -= 8;
+        if (BigScore2.XYZ.y >= -0xFF) {
+            BigScore2.XYZ.y -= 8;
         }
         if (CupTimer == 0) {
             switch (PauseChoice) {
@@ -2236,22 +2236,22 @@ void InitBossHealthBar(void) {
     e->sub->flags |= 0x10008000;
     e->sub->u6C.dbase = &HeroModelBank[DB_Interface];
     e->sub->entity = 0x2022;
-    e->unk5D = 0;
-    e->unk5C = 1;
-    e->unk2C.x = 0xE00;
-    e->unk2C.y = 0xE00;
-    e->unk2C.z = 0xE00;
+    e->xform.order = 0;
+    e->xform.hasScale = 1;
+    e->xform.scale.vx = 0xE00;
+    e->xform.scale.vy = 0xE00;
+    e->xform.scale.vz = 0xE00;
     e++;
     subs_init_array(e, 1, &PauseVolSubB);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;
     e->sub->u6C.dbase = &HeroModelBank[DB_Interface];
     e->sub->entity = 0x2022;
-    e->unk5D = 0;
-    e->unk5C = 1;
-    e->unk2C.x = 0xE00;
-    e->unk2C.y = 0xE00;
-    e->unk2C.z = 0xE00;
+    e->xform.order = 0;
+    e->xform.hasScale = 1;
+    e->xform.scale.vx = 0xE00;
+    e->xform.scale.vy = 0xE00;
+    e->xform.scale.vz = 0xE00;
 }
 
 /* data, in address order (tools/scripts/data2c.py) */

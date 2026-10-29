@@ -415,9 +415,9 @@ void InitialisePAPU(void) {
     PapuShuffleDropPoints();
     MarkHeroesOnGrid();
     for (i = 0; i < 4; i++) {
-        angle = get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z);
+        angle = get_angle(Heroes[i].hero_eng->XYZ.x, Heroes[i].hero_eng->XYZ.z);
         move = Heroes[i].hero_move;
-        Heroes[i].hero_eng->unk1E = angle;
+        Heroes[i].hero_eng->xform.rot.vy = angle;
         move->facing_angle = angle;
         move->forward_angle = angle;
         Heroes[i].hero_ctrl |= 8;
@@ -797,8 +797,8 @@ void InitPapuBoss(NAS *nas) {
         ResetHeroGlobals();
         eng->sub->u6C.dbase = &HeroModelBank[DB_Papu];
         eng->sub->entity = 0x2001;
-        eng->unk5C = 1;
-        eng->unk5E = 1;
+        eng->xform.hasScale = 1;
+        eng->xform.dirty = 1;
         FetchDefaultColBox(eng, 0x40);
         cur = ScriptCursorFirst(nas, &PapuBossScriptInit);
         RunNasAnim(nas);
@@ -861,13 +861,13 @@ void PlotPapuBoss(NAS *nas) {
         if (frame == 8) {
             PapuBossCount = 0;
         } else if (frame == 0xC) {
-            PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x1F8, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         break;
     case 8:
         switch (frame) {
         case 0xC:
-            PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x1F8, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         case 0xD:
             PapuSpawnMinions(PapuAttackWave);
             break;
@@ -927,7 +927,7 @@ void PlotPapuBoss(NAS *nas) {
             }
         }
         if (frame == 0xC) {
-            PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x1F8, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         if (PapuBossRate != 0) {
             PapuBossRate--;
@@ -959,7 +959,7 @@ void PlotPapuBoss(NAS *nas) {
         break;
     case 20:
         if (frame == 0xC) {
-            o = CreateNAS(eng->unk10.x, eng->unk10.y - 0x800, eng->unk10.z, 0x1203, 0x11);
+            o = CreateNAS(eng->XYZ.x, eng->XYZ.y - 0x800, eng->XYZ.z, 0x1203, 0x11);
             if (o != NULL) {
                 AppendExtension((NAS *)nas, (NAS *)o);
             }
@@ -1053,7 +1053,7 @@ void PlotPapuBoss(NAS *nas) {
         }
         break;
     }
-    eng->unk5E = 1;
+    eng->xform.dirty = 1;
     PapuBoss.unk28 = 0;
 }
 
@@ -1088,8 +1088,8 @@ NAS *PapuMinionFindCrate(s32 arg0) {
             if (e != NULL && e->platform == NULL) {
                 f = (T_B4B9CFux *)n->FUX;
                 if (f != NULL && ((mul = 1, f->type == 4) || (f->type == 5 && (mul = 5))) && f->status == 1) {
-                    dx = pz - e->unk10.x;
-                    dz = px - e->unk10.z;
+                    dx = pz - e->XYZ.x;
+                    dz = px - e->XYZ.z;
                     dx += Random(r);
                     dz += Random(r);
                     score = csqrt(dx * dx + dz * dz) >> 6;
@@ -1138,8 +1138,8 @@ s32 PapuPickSpawnPoint(PapuPos *arg0) {
         for (j = 0; j < 4; j++) {
             if (!(Heroes[i].hero_status & 0xFA00)) {
                 EXTengine *e = Heroes[i].hero_eng;
-                dx = PapuSpawnPoints[i].x - e->unk10.x;
-                dz = PapuSpawnPoints[i].x - e->unk10.z;
+                dx = PapuSpawnPoints[i].x - e->XYZ.x;
+                dz = PapuSpawnPoints[i].x - e->XYZ.z;
                 if (dx * dx + dz * dz <= 0x8FFFF) {
                     score = 0;
                 }
@@ -1168,7 +1168,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
     if (eng != 0)
     {
       eng->sub->u6C.dbase = &HeroModelBank[DB_Minion];
-      eng->unk5D = 0;
+      eng->xform.order = 0;
       eng->sub->entity = 0x2001;
       eng->flags &= 0xFFFF7FFF;
       FetchDefaultColBox(eng, 0x50);
@@ -1191,7 +1191,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
         s->pad4[0] = (s32) eng;
         s->pad4[1] = (s32) eng->sub;
         s->pad4[4] = (s32) AddMotion(nas);
-        *((SLONG_XYZ *) s->unk34) = eng->unk10;
+        *((SLONG_XYZ *) s->unk34) = eng->XYZ;
         s->unk26 = 0xA;
         obj = (PapuObj *) AddObject(nas);
         if (obj != 0)
@@ -1287,8 +1287,8 @@ void PlotPapuMinion(NAS *nas)
     }
     if (hit) {
       target_eng = target->Engine;
-      dx = target_eng->unk10.x - eng->unk10.x;
-      dz = target_eng->unk10.z - eng->unk10.z;
+      dx = target_eng->XYZ.x - eng->XYZ.x;
+      dz = target_eng->XYZ.z - eng->XYZ.z;
       angle = get_angle(-dx, -dz);
       dist = csqrt(dx * dx + dz * dz) >> 6;
     }
@@ -1300,13 +1300,13 @@ void PlotPapuMinion(NAS *nas)
   switch (fux->state) {
   case 5:
     move->speed = 0;
-    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     break;
   case 1:
     move->speed = 0;
     if (fux->unk22 == 0) {
-      PlaySfx(0x1FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-      SpawnModelFx(0, &eng->unk10.x, (s32)&HeroModelBank[DB_Minion]);
+      PlaySfx(0x1FA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+      SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Minion]);
       fux->unk22 = 5;
       fux->state = 2;
     } else {
@@ -1345,22 +1345,22 @@ void PlotPapuMinion(NAS *nas)
     break;
   case 6:
     dx = ((s32 (*)(EXTengine *))ApplyContour)(eng);
-    i = (s16)((s16)(((eng->unk1E -= 0x155) & 0xFFF) / 341) % 12);
-    eng->unk10.y -= dx;
+    i = (s16)((s16)(((eng->xform.rot.vy -= 0x155) & 0xFFF) / 341) % 12);
+    eng->XYZ.y -= dx;
     if (frame == 8) {
       fux->state = 0;
       if (eng->sfx != NULL) {
         StopSfx(eng->sfx);
       }
-      eng->unk5C = 0;
-      eng->unk2C.x = 0x1000;
-      eng->unk2C.y = 0x1000;
-      eng->unk2C.z = 0x1000;
+      eng->xform.hasScale = 0;
+      eng->xform.scale.vx = 0x1000;
+      eng->xform.scale.vy = 0x1000;
+      eng->xform.scale.vz = 0x1000;
     } else {
-      eng->unk5C = 1;
-      eng->unk2C.x = HeroSquashCycle[i];
-      eng->unk2C.y = HeroSpinScale[i];
-      eng->unk2C.z = HeroSquashCycle[i];
+      eng->xform.hasScale = 1;
+      eng->xform.scale.vx = HeroSquashCycle[i];
+      eng->xform.scale.vy = HeroSpinScale[i];
+      eng->xform.scale.vz = HeroSquashCycle[i];
     }
     who = PapuHitHeroesFlag(eng, 0x400);
     if (who != -1) {
@@ -1377,13 +1377,13 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0x20;
     break;
   case 7:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     hit = (s32)PapuMinionObjectAhead(slot, 0x180);
     if (hit != 0) {
       for (i = 0; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xFA00) &&
-            angle_diff_abs(eng->unk1E, get_angle(eng->unk10.x - Heroes[i].hero_eng->unk10.x,
-                                                eng->unk10.z - Heroes[i].hero_eng->unk10.z)) < level * 4 + 0x1C0) {
+            angle_diff_abs(eng->xform.rot.vy, get_angle(eng->XYZ.x - Heroes[i].hero_eng->XYZ.x,
+                                                eng->XYZ.z - Heroes[i].hero_eng->XYZ.z)) < level * 4 + 0x1C0) {
           GotoLinkAnim(anim, 0x10);
           fux->state = 6;
           break;
@@ -1410,7 +1410,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 8:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->speed = 0;
     if (PapuMinionSlots[slot].pad4[6] != 0) {
       if (frame == 8) {
@@ -1446,7 +1446,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 9:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     if (PapuMinionSlots[slot].pad4[6] == 0) {
       fux->unk1E |= 2;
       break;
@@ -1460,7 +1460,7 @@ void PlotPapuMinion(NAS *nas)
     if (fux->unk20 != 0) {
       fux->unk20--;
       if (frame == 8 && dist < 0x600 &&
-          angle_diff_abs(angle, eng->unk1E) < (0x20 - level) * 4 + 0x40) {
+          angle_diff_abs(angle, eng->xform.rot.vy) < (0x20 - level) * 4 + 0x40) {
         fux->target = NULL;
         fux->state = 0xA;
         GotoLinkAnim(anim, 0xA);
@@ -1480,9 +1480,9 @@ void PlotPapuMinion(NAS *nas)
     GotoLinkAnim(anim, 0xA);
     break;
   case 13:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
-    dx = PapuSpawnPoints[nas->UserInfo.user2].x - eng->unk10.x;
-    dz = PapuSpawnPoints[nas->UserInfo.user2].z - eng->unk10.z;
+    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    dx = PapuSpawnPoints[nas->UserInfo.user2].x - eng->XYZ.x;
+    dz = PapuSpawnPoints[nas->UserInfo.user2].z - eng->XYZ.z;
     angle = get_angle(-dx, -dz);
     dist = csqrt(dx * dx + dz * dz) >> 6;
     if (dist < 0x200) {
@@ -1492,7 +1492,7 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0x20;
     break;
   case 10:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->speed = 0;
     if (frame == 8) {
       fux->state = 0;
@@ -1504,7 +1504,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 12:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->speed = 0;
     pick = (s32)PapuMinionSlots[slot].pad4[6];
     if (pick != 0) {
@@ -1518,7 +1518,7 @@ void PlotPapuMinion(NAS *nas)
     GotoLinkAnim(anim, 0xD);
     break;
   case 11:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->speed = 0;
     PapuMinionSlots[slot].pad4[6] = 0;
     if (frame != 8) {
@@ -1528,12 +1528,12 @@ void PlotPapuMinion(NAS *nas)
       break;
     }
     PapuMinionSlots[slot].unk0 = 0;
-    PlaySfx(0x1FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-    SpawnModelFx(0, &eng->unk10.x, (s32)&HeroModelBank[DB_Minion]);
+    PlaySfx(0x1FB, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+    SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Minion]);
     KillNAS(nas);
     return;
   default:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     fux->unk1C |= 0x102;
     move->speed = 0;
     move->push = 0;
@@ -1549,18 +1549,18 @@ void PlotPapuMinion(NAS *nas)
     break;
   }
   if (fux->state != 6) {
-    s32 turn = angle_diff(eng->unk1E, move->angle) >> 2;
+    s32 turn = angle_diff(eng->xform.rot.vy, move->angle) >> 2;
     if (turn != 0) {
-      eng->unk1E += turn;
+      eng->xform.rot.vy += turn;
     } else {
-      eng->unk1E = move->angle;
+      eng->xform.rot.vy = move->angle;
     }
   }
-  eng->unk10.x -= (move->speed * rcossin_tbl[(move->angle - 0x400) & 0xFFF].unk2) >> 12;
-  eng->unk10.z -= (move->speed * rcossin_tbl[(u16)move->angle & 0xFFF].unk2) >> 12;
+  eng->XYZ.x -= (move->speed * rcossin_tbl[(move->angle - 0x400) & 0xFFF].unk2) >> 12;
+  eng->XYZ.z -= (move->speed * rcossin_tbl[(u16)move->angle & 0xFFF].unk2) >> 12;
   if (move->push != 0) {
-    eng->unk10.x -= (move->push * rcossin_tbl[(move->push_angle - 0x400) & 0xFFF].unk2) >> 12;
-    eng->unk10.z -= (move->push * rcossin_tbl[(u16)move->push_angle & 0xFFF].unk2) >> 12;
+    eng->XYZ.x -= (move->push * rcossin_tbl[(move->push_angle - 0x400) & 0xFFF].unk2) >> 12;
+    eng->XYZ.z -= (move->push * rcossin_tbl[(u16)move->push_angle & 0xFFF].unk2) >> 12;
     move->push -= 4;
     if ((s16)move->push < 0) {
       move->push = 0;
@@ -1578,10 +1578,10 @@ void PlotPapuMinion(NAS *nas)
     fux->state = 0xB;
     fux->unk1C &= 0xFEFD;
     fux->unk1E &= 0xFEFD;
-    PlaySfx(PapuMinionSfx[Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(PapuMinionSfx[Random(4)], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     GotoLinkAnim(anim, 0xD);
   }
-  eng->unk5E = 1;
+  eng->xform.dirty = 1;
 }
 
 void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
@@ -1700,13 +1700,13 @@ s32 PapuHitHeroes(EXTengine *eng) {
 
     box = FindCollisionBox(eng, 0x400);
     if (box != NULL) {
-        if (eng->unk5E != 0) {
-            rotscale_update(&eng->unk1C);
+        if (eng->xform.dirty != 0) {
+            rotscale_update(&eng->xform);
         }
-        gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
+        gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
         r = box->radius;
-        top = eng->unk10.y + box->unk2;
-        bot = eng->unk10.y + box->height;
+        top = eng->XYZ.y + box->unk2;
+        bot = eng->XYZ.y + box->height;
         gte_rotate_point((SVECTOR *)box, &pos);
         for (i = 0; i < 4; i++) {
             if (Heroes[i].hero_status & 0xF800) {
@@ -1720,11 +1720,11 @@ s32 PapuHitHeroes(EXTengine *eng) {
             if (rec == NULL) {
                 continue;
             }
-            lo = eng->unk10.y + rec->unk2;
-            hi = eng->unk10.y + rec->height;
+            lo = eng->XYZ.y + rec->unk2;
+            hi = eng->XYZ.y + rec->height;
             if (bot < lo && hi < top) {
-                dx = eng->unk10.x - pos.vx;
-                dz = eng->unk10.z - pos.vz;
+                dx = eng->XYZ.x - pos.vx;
+                dz = eng->XYZ.z - pos.vz;
                 d = dx * dx + dz * dz;
                 if (d < (rec->radius + r) * (rec->radius + r)) {
                     HeroTakeHit(i, NULL, -1, 0x8008, 0x446);
@@ -1753,13 +1753,13 @@ s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
     if (box == NULL) {
         return -1;
     }
-    if (eng->unk5E != 0) {
-        rotscale_update(&eng->unk1C);
+    if (eng->xform.dirty != 0) {
+        rotscale_update(&eng->xform);
     }
-    gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
+    gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
     r = box->radius;
-    top = eng->unk10.y + box->unk2;
-    bot = eng->unk10.y + box->height;
+    top = eng->XYZ.y + box->unk2;
+    bot = eng->XYZ.y + box->height;
     gte_rotate_point((SVECTOR *)box, &pos);
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_status & 0xF800) {
@@ -1773,11 +1773,11 @@ s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
         if (rec == NULL) {
             continue;
         }
-        lo = eng->unk10.y + rec->unk2;
-        hi = eng->unk10.y + rec->height;
+        lo = eng->XYZ.y + rec->unk2;
+        hi = eng->XYZ.y + rec->height;
         if (bot < lo && hi < top) {
-            dx = eng->unk10.x - pos.vx;
-            dz = eng->unk10.z - pos.vz;
+            dx = eng->XYZ.x - pos.vx;
+            dz = eng->XYZ.z - pos.vz;
             d = dx * dx + dz * dz;
             if (d < (rec->radius + r) * (rec->radius + r)) {
                 return i;
@@ -1804,14 +1804,14 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
 
     box = FindCollisionBox(eng, 0x400);
     if (box != NULL) {
-        if (eng->unk5E != 0) {
-            rotscale_update(&eng->unk1C);
+        if (eng->xform.dirty != 0) {
+            rotscale_update(&eng->xform);
         }
-        gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
+        gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
         r = box->radius;
         new_var = box;
-        top = eng->unk10.y + new_var->unk2;
-        bot = eng->unk10.y + new_var->height;
+        top = eng->XYZ.y + new_var->unk2;
+        bot = eng->XYZ.y + new_var->height;
         gte_rotate_point((SVECTOR *)new_var, &pos);
         for (n = HeadOfSolids; n != NULL; n = n->Solid.Child) {
             if (!(n->Class & 0x200)) {
@@ -1825,11 +1825,11 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
             if (rec == NULL) {
                 continue;
             }
-            lo = o->unk10.y + rec->unk2;
-            hi = o->unk10.y + rec->height;
+            lo = o->XYZ.y + rec->unk2;
+            hi = o->XYZ.y + rec->height;
             if (bot < lo && hi < top) {
-                dx = o->unk10.x - pos.vx;
-                unused = o->unk10.z - pos.vz;
+                dx = o->XYZ.x - pos.vx;
+                unused = o->XYZ.z - pos.vz;
                 if (dx * dx + unused * unused < (rec->radius + r) * (rec->radius + r)) {
                     x = FindExtension(n, 0x1000);
                     if (x != NULL && (*(u16 *)(x + 0x1C) & mask)) {
@@ -1862,13 +1862,13 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
 
     box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
-    if (eng->unk5E != 0) {
-        rotscale_update(&eng->unk1C);
+    if (eng->xform.dirty != 0) {
+        rotscale_update(&eng->xform);
     }
-    gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
+    gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
     r = box->radius;
-    top = eng->unk10.y + box->unk2;
-    bot = eng->unk10.y + box->height;
+    top = eng->XYZ.y + box->unk2;
+    bot = eng->XYZ.y + box->height;
     gte_rotate_point((SVECTOR *)box, &pos);
     for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
         if (nas->Class & 0x200) {
@@ -1876,11 +1876,11 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
             if (e != NULL && e != eng) {
                 rec = FindCollisionBox(e, 0x40);
                 if (rec != NULL) {
-                    lo = e->unk10.y + rec->unk2;
-                    hi = e->unk10.y + rec->height;
+                    lo = e->XYZ.y + rec->unk2;
+                    hi = e->XYZ.y + rec->height;
                     if (bot < lo && hi < top) {
-                        dx = e->unk10.x - pos.vx;
-                        dz = e->unk10.z - pos.vz;
+                        dx = e->XYZ.x - pos.vx;
+                        dz = e->XYZ.z - pos.vz;
                         rr = rec->radius + r;
                         if (dx * dx + dz * dz < rr * rr) {
                             obj = FindExtension(nas, 0x1000);
@@ -1933,8 +1933,8 @@ s32 PapuMinionKick(u32 idx) {
     eng = (EXTengine *)PapuMinionSlots[idx].pad4[0];
     if (eng != NULL && (box = FindCollisionBox(eng, 0x40)) != NULL) {
     r = box->radius;
-    top = eng->unk10.y + box->unk2;
-    bot = eng->unk10.y + box->height;
+    top = eng->XYZ.y + box->unk2;
+    bot = eng->XYZ.y + box->height;
     for (i = 0; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xF800)) {
             if (((s16 *)PapuMinionSlots[idx].pad4[4])[7] == 0) {
@@ -1946,24 +1946,24 @@ s32 PapuMinionKick(u32 idx) {
             if (e != NULL) {
                 rec = FindCollisionBox(e, 0x40);
                 if (rec != NULL) {
-                    lo = e->unk10.y + rec->unk2;
-                    hi = e->unk10.y + rec->height;
+                    lo = e->XYZ.y + rec->unk2;
+                    hi = e->XYZ.y + rec->height;
                     if (can) {
                         rr = rec->radius;
                         rr += r;
                         rr2 = rr * rr;
                         if (bot < lo && hi < top) {
-                            dx = e->unk10.x - eng->unk10.x;
-                            dz = e->unk10.z - eng->unk10.z;
+                            dx = e->XYZ.x - eng->XYZ.x;
+                            dz = e->XYZ.z - eng->XYZ.z;
                             d2 = dx * dx + dz * dz;
                             if (d2 < rr2) {
                                 d2 = csqrt(d2) >> 6;
                                 if (d2 < rr) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     d2 = rr - d2 + 1;
-                                    eng->unk10.x -= d2 * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    eng->XYZ.x -= d2 * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
                                     hit = 1;
-                                    eng->unk10.z -= d2 * rcossin_tbl[ang].unk2 >> 12;
+                                    eng->XYZ.z -= d2 * rcossin_tbl[ang].unk2 >> 12;
                                 }
                             }
                         }
@@ -1987,11 +1987,11 @@ s32 PapuMinionKick(u32 idx) {
             if (e != NULL && e != eng) {
                 rec = FindCollisionBox(e, 0x40);
                 if (rec != NULL) {
-                    lo = e->unk10.y + rec->unk2;
-                    hi = e->unk10.y + rec->height;
+                    lo = e->XYZ.y + rec->unk2;
+                    hi = e->XYZ.y + rec->height;
                     if (bot < lo && hi < top) {
-                        dx = e->unk10.x - eng->unk10.x;
-                        dz = e->unk10.z - eng->unk10.z;
+                        dx = e->XYZ.x - eng->XYZ.x;
+                        dz = e->XYZ.z - eng->XYZ.z;
                         rr = rec->radius;
                         rr += r;
                         d2 = dx * dx + dz * dz;
@@ -2006,8 +2006,8 @@ s32 PapuMinionKick(u32 idx) {
                                 }
                                 d2 = rr - d2 + 1;
                                 if (can) {
-                                    eng->unk10.x -= d2 * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-                                    eng->unk10.z -= d2 * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
+                                    eng->XYZ.x -= d2 * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    eng->XYZ.z -= d2 * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
                                 }
                                 obj = FindExtension(nas, 0x1000);
                                 if (obj != NULL && (obj->can_do & 8)) {
@@ -2224,10 +2224,10 @@ s32 PapuHeroOverPit(s32 arg0) {
     PapuTile *t;
 
     eng = Heroes[arg0].hero_eng;
-    ix = (eng->unk10.x + 0x700) >> 9;
-    iz = (eng->unk10.z + 0x700) >> 9;
+    ix = (eng->XYZ.x + 0x700) >> 9;
+    iz = (eng->XYZ.z + 0x700) >> 9;
     if ((u32)ix < 7U && (u32)iz < 7U) {
-        y = eng->unk10.y - World_floor_level;
+        y = eng->XYZ.y - World_floor_level;
         t = PapuTiles[ix][iz].sub;
         if (t != NULL) {
             y -= t->unk8;
@@ -2245,9 +2245,9 @@ s32 GetPapuContour(EXTengine *eng) {
     s32 iz;
     PapuTile *t;
 
-    y = eng->unk10.y - World_floor_level;
-    ix = (eng->unk10.x + 0x700) >> 9;
-    iz = (eng->unk10.z + 0x700) >> 9;
+    y = eng->XYZ.y - World_floor_level;
+    ix = (eng->XYZ.x + 0x700) >> 9;
+    iz = (eng->XYZ.z + 0x700) >> 9;
     if ((u32)ix >= 7U || (u32)iz >= 7U) {
         return y - 0x800;
     }
@@ -2286,38 +2286,38 @@ s32 PAPU_KeepInBounds(EXTengine *arg0) {
     var_a2 = 0;
     if ((arg0->collision_box.flags) & 0x40) {
         temp_a0 = 0x6A0 - (arg0->collision_box.radius);
-        if (temp_a0 < (arg0->unk10.x)) {
-            (arg0->unk10.x) = temp_a0;
+        if (temp_a0 < (arg0->XYZ.x)) {
+            (arg0->XYZ.x) = temp_a0;
             var_a2 = 1;
         }
         temp_v1 = -temp_a0;
-        if ((arg0->unk10.x) < temp_v1) {
-            (arg0->unk10.x) = temp_v1;
+        if ((arg0->XYZ.x) < temp_v1) {
+            (arg0->XYZ.x) = temp_v1;
             var_a2 = 1;
         }
-        if (temp_a0 < (arg0->unk10.z)) {
-            (arg0->unk10.z) = temp_a0;
+        if (temp_a0 < (arg0->XYZ.z)) {
+            (arg0->XYZ.z) = temp_a0;
             var_a2 = 1;
         }
-        if ((arg0->unk10.z) < temp_v1) {
-            (arg0->unk10.z) = temp_v1;
+        if ((arg0->XYZ.z) < temp_v1) {
+            (arg0->XYZ.z) = temp_v1;
             goto block_17;
         }
     } else {
-        if ((arg0->unk10.x) >= 0x601) {
-            (arg0->unk10.x) = 0x600;
+        if ((arg0->XYZ.x) >= 0x601) {
+            (arg0->XYZ.x) = 0x600;
             var_a2 = 1;
         }
-        if ((arg0->unk10.x) < -0x600) {
-            (arg0->unk10.x) = -0x600;
+        if ((arg0->XYZ.x) < -0x600) {
+            (arg0->XYZ.x) = -0x600;
             var_a2 = 1;
         }
-        if ((arg0->unk10.z) >= 0x601) {
-            (arg0->unk10.z) = 0x600;
+        if ((arg0->XYZ.z) >= 0x601) {
+            (arg0->XYZ.z) = 0x600;
             var_a2 = 1;
         }
-        if ((arg0->unk10.z) < -0x600) {
-            (arg0->unk10.z) = -0x600;
+        if ((arg0->XYZ.z) < -0x600) {
+            (arg0->XYZ.z) = -0x600;
 block_17:
             var_a2 = 1;
         }
@@ -2399,31 +2399,31 @@ void PlotPapuColumn(NAS *nas) {
     s32 cur;
 
     if (e != NULL && nas->UserInfo.user1 != 0) {
-        cur = e->unk10.y + 0x140;
-        e->unk10.y = cur;
+        cur = e->XYZ.y + 0x140;
+        e->XYZ.y = cur;
         lim = MapPoints[2].pos.y;
         if (nas->Family.Parent != NULL) {
             other = nas->Family.Parent->Engine;
             if (other != NULL) {
-                lim = other->unk10.y;
+                lim = other->XYZ.y;
                 d = lim - cur;
                 if (d < 0) {
                     d = 0;
                 }
                 if (d < 0x200) {
-                    other->unk2C.y = d * 8;
+                    other->xform.scale.vy = d * 8;
                     BossState.flags |= 0x2000;
                 }
             }
         }
-        if (lim < e->unk10.y) {
+        if (lim < e->XYZ.y) {
             PlaySfx(0x20C, NULL, NULL, 0x1000, 0x1E00, 0);
             BossState.health = 0;
             BossState.flags |= 0x8000;
-            e->unk10.y = lim;
+            e->XYZ.y = lim;
             nas->UserInfo.user1 = 0;
         }
-        e->unk5E = 1;
+        e->xform.dirty = 1;
     }
 }
 
@@ -2433,8 +2433,8 @@ void InitPapuColumn(NAS *nas) {
     if (e != NULL) {
         e->sub->u6C.dbase = ((obj_dbase *)MapScene->dbase);
         e->sub->entity = 0x200C;
-        e->unk5D = 0;
-        e->unk5C = 1;
+        e->xform.order = 0;
+        e->xform.hasScale = 1;
     }
     nas->UserInfo.user1 = 1;
     if (nas->Failure != 0) {
@@ -2653,8 +2653,8 @@ void PapuCountObjects(void) {
         f = (T_B80B0Fux *)n->FUX;
         if (f != NULL) {
             t = f->type;
-            x = (e->unk10.x >> 8) + 10;
-            z = 9 - (e->unk10.z >> 8);
+            x = (e->XYZ.x >> 8) + 10;
+            z = 9 - (e->XYZ.z >> 8);
             if (x >= 20) x = 19;
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
@@ -2672,8 +2672,8 @@ void PapuCountObjects(void) {
             }
         } else {
             c = 0xFF;
-            x = (e->unk10.x >> 8) + 10;
-            z = 9 - (e->unk10.z >> 8);
+            x = (e->XYZ.x >> 8) + 10;
+            z = 9 - (e->XYZ.z >> 8);
             if (x >= 20) x = 19;
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
@@ -2706,7 +2706,7 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
-                eng->unk5D = 1;
+                eng->xform.order = 1;
                 obj->unk14 = d;
                 CrateCounts[obj->unk14]++;
                 obj->unk1A = 7;
@@ -2723,18 +2723,18 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                     eng->sub->entity = 0x2013;
                     break;
                 }
-                eng->unk2C.x = 0x40;
-                eng->unk2C.y = 0x40;
-                eng->unk2C.z = 0x40;
-                eng->unk5D = 1;
-                eng->unk5C = 1;
-                eng->unk5E = 1;
+                eng->xform.scale.vx = 0x40;
+                eng->xform.scale.vy = 0x40;
+                eng->xform.scale.vz = 0x40;
+                eng->xform.order = 1;
+                eng->xform.hasScale = 1;
+                eng->xform.dirty = 1;
                 eng->flags |= 1;
-                eng->unk10.y = World_floor_level;
-                p = &eng->unk10;
+                eng->XYZ.y = World_floor_level;
+                p = &eng->XYZ;
                 PlaySfx(0x3FA, NULL, p, 0x1000, 0x1E00, 0);
                 t = k;
-                x = (eng->unk10.x >> 8) + 10;
+                x = (eng->XYZ.x >> 8) + 10;
                 z = 9 - (p->z >> 8);
                 if (x >= 20) x = 19;
                 if (x < 0) x = 0;
@@ -2767,14 +2767,14 @@ void InitPACrate(NAS *arg0) {
             do {
                 again = 0;
                 nas = HeadOfSolids;
-                eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
-                eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+                eng->XYZ.x = (eng->XYZ.x & ~0xFF) + 0x80;
+                eng->XYZ.z = (eng->XYZ.z & ~0xFF) + 0x80;
                 while (nas != NULL) {
                     if (nas->Type == CrateAstType) {
                         other = nas->Engine;
-                        if (other != NULL && other->unk10.x == eng->unk10.x && other->unk10.z == eng->unk10.z) {
-                            eng->unk10.x = Random(0xC00) - 0x600;
-                            eng->unk10.z = Random(0xC00) - 0x600;
+                        if (other != NULL && other->XYZ.x == eng->XYZ.x && other->XYZ.z == eng->XYZ.z) {
+                            eng->XYZ.x = Random(0xC00) - 0x600;
+                            eng->XYZ.z = Random(0xC00) - 0x600;
                             nas = NULL;
                             again = 1;
                         }
@@ -2784,10 +2784,10 @@ void InitPACrate(NAS *arg0) {
                     }
                 }
             } while (again);
-            eng->unk10.y = World_floor_level;
+            eng->XYZ.y = World_floor_level;
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
-            eng->unk5D = 1;
-            eng->unk5C = 1;
+            eng->xform.order = 1;
+            eng->xform.hasScale = 1;
             obj->unk1A = 3;
             if (arg0->trigger != NULL) {
                 obj->unk14 = arg0->trigger->InfoStruct->val1;
@@ -2806,8 +2806,8 @@ void InitPACrate(NAS *arg0) {
                 eng->sub->entity = 0x2013;
                 break;
             }
-            x = (eng->unk10.x >> 8) + 10;
-            z = 9 - (eng->unk10.z >> 8);
+            x = (eng->XYZ.x >> 8) + 10;
+            z = 9 - (eng->XYZ.z >> 8);
             if (x >= 20) {
                 x = 19;
             }

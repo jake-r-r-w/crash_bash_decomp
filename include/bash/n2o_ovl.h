@@ -458,7 +458,7 @@ static inline s32 N2OBallOut(EXTengine *eng, EXTobject *obj, s32 wide) {
     if (wide != 0) {
         lim = 0x1200;
     }
-    x = eng->unk10.x;
+    x = eng->XYZ.x;
     if (x > lim) {
         obj->player = -1;
         return 1;
@@ -467,7 +467,7 @@ static inline s32 N2OBallOut(EXTengine *eng, EXTobject *obj, s32 wide) {
         obj->player = -1;
         return 1;
     }
-    z = eng->unk10.z;
+    z = eng->XYZ.z;
     if (z > lim) {
         obj->player = 3;
         return 1;
@@ -479,10 +479,10 @@ static inline s32 N2OBallOut(EXTengine *eng, EXTobject *obj, s32 wide) {
     if (wide != 0) {
         if (z < -0xA00) {
             if (x > 0x600) {
-                eng->unk10.x = 0x600;
+                eng->XYZ.x = 0x600;
             }
-            if (eng->unk10.x < -0x600) {
-                eng->unk10.x = -0x600;
+            if (eng->XYZ.x < -0x600) {
+                eng->XYZ.x = -0x600;
             }
         }
     }
