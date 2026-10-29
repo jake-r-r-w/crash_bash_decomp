@@ -84,7 +84,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
     }
     track = res;
     if (track != NULL) {
-        k = ObjTrack_FindKey((ObjKey *)&track->type.entity[4], ci->time.h.frame);
+        k = ObjTrack_FindKey(&track->type.entity.key, ci->time.h.frame);
         key = k;
         d = &th->type.anim.sub;
         f = key->len;
@@ -107,7 +107,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
             w = key->weight;
         }
         w = 0x1000 - w;
-        d->flags |= track->type.entity[1] | 0x8000;
+        d->flags |= track->type.entity.flags | 0x8000;
         if (w != 0) {
             d->scale = w;
             d->flags |= 0x40000000;
@@ -168,7 +168,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
         cam->eye.x = 0;
         cam->eye.y = 0;
         cam->at = *(CamXYZ *)&key->at;
-        cam->dist = track->type.camera[1];
+        cam->dist = track->type.camera.dist;
         if (key->len != 0) {
             len = key->len << 8;
             t = (ci->time.w >> 8) - (key->start << 8);
@@ -187,8 +187,8 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
 }
 
 void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
-    AnimKey *k;
-    AnimKey *key;
+    script_key_anim *k;
+    script_key_anim *key;
     ModelFile *p;
     script_header *r;
     script_thread *res;
@@ -232,27 +232,27 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
     pose = (AnimPose *)&th->type.entity.sub;
     if (res != NULL) {
         range = (AnimRange *)&res->type.anim;
-        k = AnimTrack_FindKey((AnimKey *)res->type.anim.key, ci->time.h.frame);
+        k = AnimTrack_FindKey((script_key_anim *)res->type.anim.key, ci->time.h.frame);
         key = k;
         f = ci->time.w - (res->start_frame << 16);
         frame = AnimRange_Frame(range, f);
         pose->frame = frame;
         pose->unk74 = range->base + range->lo;
-        len = key->len;
+        len = key->frame.len;
         if (len != 0) {
             len <<= 8;
-            t = (ci->time.w >> 8) - (key->start << 8);
-            quat_slerp_ex_frac((s32)key->rot, (s32)key[1].rot, (s32)pose->rot, len, t, (s32)key->frac);
-            CamVec3_Lerp(&pose->pos, &key->pos, &key[1].pos, len, t);
-            CamVec3_Lerp(&pose->scale, &key->scale, &key[1].scale, len, t);
-            a = interp(key->alpha, key[1].alpha, len << 8, t);
+            t = (ci->time.w >> 8) - (key->frame.start << 8);
+            quat_slerp_ex_frac((s32)key->quat, (s32)key[1].quat, (s32)pose->rot, len, t, (s32)key->quat_interp);
+            CamVec3_Lerp(&pose->pos, (CamVec3 *)&key->pos, (CamVec3 *)&key[1].pos, len, t);
+            CamVec3_Lerp(&pose->scale, (CamVec3 *)&key->scale, (CamVec3 *)&key[1].scale, len, t);
+            a = interp(key->fade, key[1].fade, len << 8, t);
         } else {
-            pose->pos = key->pos;
-            *(AnimRot *)pose->rot = *(AnimRot *)key->rot;
-            pose->scale.v[0] = key->scale.v[0];
-            pose->scale.v[1] = key->scale.v[1];
-            pose->scale.v[2] = key->scale.v[2];
-            a = key->alpha;
+            pose->pos = *(CamVec3 *)&key->pos;
+            *(AnimRot *)pose->rot = *(AnimRot *)key->quat;
+            pose->scale.v[0] = key->scale.x;
+            pose->scale.v[1] = key->scale.y;
+            pose->scale.v[2] = key->scale.z;
+            a = key->fade;
         }
         a = 0x1000 - a;
         if (a != 0) {
@@ -519,15 +519,15 @@ void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
     d = &th->type.subscript.sub;
     if (res != NULL && ci->time.w >= (res->start_frame << 16) &&
         !(th->type.subscript.sub.flags & 0x8000)) {
-        d->XYZ.x = res->type.subscript.key[2];
-        d->XYZ.y = res->type.subscript.key[3];
-        d->XYZ.z = res->type.subscript.key[4];
-        d->xform.rot.vx = *(u16 *)&res->type.subscript.key[5];
-        d->xform.rot.vy = *(u16 *)&res->type.subscript.key[6];
-        d->xform.rot.vz = *(u16 *)&res->type.subscript.key[7];
-        d->xform.scale.vx = res->type.subscript.key[15];
-        d->xform.scale.vy = res->type.subscript.key[16];
-        d->xform.scale.vz = res->type.subscript.key[17];
+        d->XYZ.x = res->type.subscript.key.pos.x;
+        d->XYZ.y = res->type.subscript.key.pos.y;
+        d->XYZ.z = res->type.subscript.key.pos.z;
+        d->xform.rot.vx = *(u16 *)&res->type.subscript.key.ang.x;
+        d->xform.rot.vy = *(u16 *)&res->type.subscript.key.ang.y;
+        d->xform.rot.vz = *(u16 *)&res->type.subscript.key.ang.z;
+        d->xform.scale.vx = res->type.subscript.key.scale.x;
+        d->xform.scale.vy = res->type.subscript.key.scale.y;
+        d->xform.scale.vz = res->type.subscript.key.scale.z;
         d->xform.order = 0;
         t = *(u16 *)&res->type.subscript.sort_priority;
         d->xform.dirty = 1;
@@ -1260,7 +1260,7 @@ void init_entity_thread(script_thread *def, script_control_info *ci, s32 num) {
         sub->entity = 0;
         sub->flags = 0;
         sub->u6C.dbase = v;
-        w = *(u16 *)&def->type.entity[5];
+        w = *(u16 *)&def->type.entity.key.len;
         sub->otz = w;
         if ((w << 16) != 0) {
             sub->flags |= 0x2000000;
@@ -1342,7 +1342,7 @@ void init_model_thread(script_thread *def, script_control_info *ci, s32 num) {
         sub->entity = 0;
         sub->flags = 0;
         sub->u6C.dbase = v;
-        w = *(u16 *)&def->type.entity[2];
+        w = *(u16 *)&def->type.entity.unk8;
         sub->otz = w;
         if ((w << 16) != 0) {
             sub->flags |= 0x2000000;

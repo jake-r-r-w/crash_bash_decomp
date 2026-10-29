@@ -3572,7 +3572,7 @@ void InitScriptFX(NAS *nas)
         sub->u6C.dbase = dbase;
         sub->otz = id;
         sub->flags = 0x42000000;
-        sub->flags = (((u32) th->type.entity[1]) | 0x42000000) & (~0x8000);
+        sub->flags = (((u32) th->type.entity.flags) | 0x42000000) & (~0x8000);
         if (sd->flags & 8)
       {
         sub->xform.order = 3;

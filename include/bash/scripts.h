@@ -86,9 +86,9 @@ static inline CamKey *CamTrack_FindKey(u8 *track, s32 v) {
     return key;
 }
 
-static inline AnimKey *AnimTrack_FindKey(AnimKey *key, s32 v) {
-    while (key->len != 0) {
-        if (v >= key->start && v < key->start + key->len) {
+static inline script_key_anim *AnimTrack_FindKey(script_key_anim *key, s32 v) {
+    while (key->frame.len != 0) {
+        if (v >= key->frame.start && v < key->frame.start + key->frame.len) {
             return key;
         }
         key++;

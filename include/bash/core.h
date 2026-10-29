@@ -14,6 +14,29 @@
 
 #include "bash/nas.h"
 
+typedef struct {
+    s32 v[3];
+} CamVec3;
+
+typedef struct {
+    s32 v[4];
+} ObjQuat;
+
+/* A 0x50-byte key of the object track update_model_thread walks (from track + 0x24);
+ * it interpolates from one key to the next. */
+typedef struct ObjKey {
+    /* 0x00 */ s32 start;
+    /* 0x04 */ s32 len; /* 0 ends the track */
+    /* 0x08 */ s16 entity;
+    /* 0x0A */ s16 padA;
+    /* 0x0C */ CamVec3 pos;
+    /* 0x18 */ s32 pad18[3];
+    /* 0x24 */ ObjQuat rot;
+    /* 0x34 */ s32 frac[3];  /* quat_slerp_ex_frac's table */
+    /* 0x40 */ CamVec3 scale;
+    /* 0x4C */ s32 weight;  /* interpolated between keys */
+} ObjKey;
+
 typedef struct { s32 x, y, z; } CamXYZ;
 
 /* At +0x54 of camera_info_tag; gfx_object_matrix takes a pointer to it. */
@@ -92,17 +115,50 @@ typedef struct pcontrol pcontrol;
 typedef struct threaddata threaddata;
 typedef struct EXTscriptdata EXTscriptdata;
 
+/* A key's frame span (struct ._338 in the fragment). */
+typedef struct script_key_frame {
+    /* 0x00 */ s32 start;
+    /* 0x04 */ s32 len;
+} script_key_frame;
+
+/* A subscript's key (struct script_key_subscript, 0x48 bytes): a script_key_anim without the
+ * fade (update_sub_thread reads it so). */
+typedef struct script_key_subscript {
+    /* 0x00 */ script_key_frame frame;
+    /* 0x08 */ SLONG_XYZ pos;
+    /* 0x14 */ SLONG_XYZ ang;
+    /* 0x20 */ s32 quat[4];
+    /* 0x30 */ s32 quat_interp[3];
+    /* 0x3C */ SLONG_XYZ scale;
+} script_key_subscript;
+
+/* An entity thread (struct ._343, 0x60 bytes): flags the sub takes, then its first key. */
+typedef struct script_command_entity {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 flags;        /* or'd into the sub's flags */
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ ObjKey key;
+} script_command_entity;
+
+/* A camera thread (struct ._340, 0x30 bytes). */
+typedef struct script_command_camera {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 dist;         /* the camera's distance */
+    /* 0x08 */ s32 unk8[10];
+} script_command_camera;
+
 struct script_command_subscript {
     /* 0x00 */ s32 script_num;
     /* 0x04 */ s32 sort_priority;
     /* 0x08 */ s32 spare1;
     /* 0x0C */ s32 spare2;
-    /* 0x10 */ s32 key[18]; /* struct script_key_subscript (0x48 bytes), not in the fragment */
+    /* 0x10 */ script_key_subscript key;
 };
 BASH_SIZE_CHECK(script_command_subscript, 0x58);
 
 struct script_key_anim {
-    /* 0x00 */ s32 frame[2]; /* struct ._338 (0x8 bytes), not in the fragment */
+    /* 0x00 */ script_key_frame frame;
     /* 0x08 */ SLONG_XYZ pos;
     /* 0x14 */ SLONG_XYZ ang;
     /* 0x20 */ s32 quat[4]; /* struct ._316 (0x10 bytes), not in the fragment */
@@ -176,8 +232,8 @@ struct script_thread {
     /* 0x10 */ s32 key_frame_count;
     /* 0x14 */ union {
         /* 0x00 */ partdata particle;
-        /* 0x00 */ s32 entity[24]; /* struct ._343 (0x60 bytes), not in the fragment */
-        /* 0x00 */ s32 camera[12]; /* struct ._340 (0x30 bytes), not in the fragment */
+        /* 0x00 */ script_command_entity entity;
+        /* 0x00 */ script_command_camera camera;
         /* 0x00 */ script_command_anim anim;
         /* 0x00 */ script_command_fade fade;
         /* 0x00 */ script_command_subscript subscript;

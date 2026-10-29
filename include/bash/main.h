@@ -57,9 +57,6 @@ extern s32 GameLanguage;
 /* A viewpoint: its position (+0xC) is subtracted from world positions before
  * they go through the GTE (view_project_volume, view_project). */
 
-typedef struct {
-    s32 v[3];
-} CamVec3;
 
 /* A 0x20-byte block play_script copies whole. */
 typedef struct {
@@ -80,41 +77,13 @@ s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 
 
-/* A 0x4C-byte animation key of the track update_entity_thread walks (at track+0x30). */
-typedef struct AnimKey {
-    /* 0x00 */ s32 start;
-    /* 0x04 */ s32 len;   /* 0 ends the track */
-    /* 0x08 */ CamVec3 pos;
-    /* 0x14 */ s32 pad14[3];
-    /* 0x20 */ s32 rot[4];
-    /* 0x30 */ s32 frac[3];  /* quat_slerp_ex_frac's table */
-    /* 0x3C */ CamVec3 scale;
-    /* 0x48 */ s32 alpha;
-} AnimKey;
 
 typedef struct {
     s32 v[4];
 } AnimRot;
 
 
-typedef struct {
-    s32 v[4];
-} ObjQuat;
 
-/* A 0x50-byte key of the object track update_model_thread walks (from track + 0x24);
- * it interpolates from one key to the next. */
-typedef struct ObjKey {
-    /* 0x00 */ s32 start;
-    /* 0x04 */ s32 len; /* 0 ends the track */
-    /* 0x08 */ s16 entity;
-    /* 0x0A */ s16 padA;
-    /* 0x0C */ CamVec3 pos;
-    /* 0x18 */ s32 pad18[3];
-    /* 0x24 */ ObjQuat rot;
-    /* 0x34 */ s32 frac[3];  /* quat_slerp_ex_frac's table */
-    /* 0x40 */ CamVec3 scale;
-    /* 0x4C */ s32 weight;  /* interpolated between keys */
-} ObjKey;
 
 
 /* Frame range of an animation track (at track+0x14). */
