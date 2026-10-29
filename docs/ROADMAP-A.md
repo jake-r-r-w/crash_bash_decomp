@@ -701,3 +701,8 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
 - [x] 5.6 No local RetroArch path in CLAUDE.md (2026-10-29). It points to PLAYING.md (Playing it), which
   gives RetroArch's default Windows folder as the example, and names the `RETROARCH` /
   `RETROARCH_CORE` variables the playtest harness reads for another install.
+- [x] 5.7 The agent log tidied (2026-10-29): 2,766 lines to 815.
+  - The session log keeps only 2026-10-28 and 29, the 40 entries since the source became complete.
+    The 234 older entries are in the git history, and their results are in ROADMAP-A.
+  - The stale progress-check note was removed (`check_progress.py` is gone).
+  - Current state, Next, Open leads and the Gotchas stay.
