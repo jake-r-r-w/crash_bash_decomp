@@ -246,17 +246,12 @@ struct script_control_info {
 };
 BASH_SIZE_CHECK(script_control_info, 0x1C);
 
-/* The transform block gfx_object_matrix reads (at +0xC or +0x1C of its owner). */
+/* The prototype's xyzrf (struct ._319, 0x54 bytes): flags, a position and a RotScale. It begins a
+ * subengine and sits at +0xC of an EXTengine, which spell it out; gfx_object_matrix reads it. */
 typedef struct {
     u32 flags;      /* 0x00: 0x10000000 screen space, 0x20000000 screen-aligned */
-    s32 x, y, z;    /* 0x04 */
-    u8 unk10[0x10]; /* 0x10: passed to rotscale_update (0x20 bytes) */
-    s32 sx, sy, sz; /* 0x20: scale for screen-aligned (gfx_setup_xform) */
-    u8 unk2C[4];
-    MATRIX rot;     /* 0x30 */
-    u8 unk50;       /* 0x50: nonzero: scale the screen-aligned matrix */
-    u8 unk51;       /* 0x51: 4: no transform */
-    u16 unk52;      /* 0x52: nonzero: rot needs rebuilding */
+    SLONG_XYZ XYZ;  /* 0x04 */
+    RotScale xform; /* 0x10: its scale is the screen-aligned one (gfx_setup_xform); order 4: none */
 } GfxXform;
 
 struct script_handler {

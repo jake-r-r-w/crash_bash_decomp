@@ -565,12 +565,12 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
     }
     p = n;
     if (p != NULL) {
-        *(CamVec3 *)&p->xyzrf.x = *arg3;
-        *(Blk32 *)&p->xyzrf.rot = *arg2;
+        *(CamVec3 *)&p->xyzrf.XYZ.x = *arg3;
+        *(Blk32 *)&p->xyzrf.xform.mtx = *arg2;
         p->xyzrf.flags = 0x8000;
-        p->xyzrf.unk51 = 4;
-        p->xyzrf.unk50 = 0;
-        p->xyzrf.unk52 = 0;
+        p->xyzrf.xform.order = 4;
+        p->xyzrf.xform.hasScale = 0;
+        p->xyzrf.xform.dirty = 0;
         e = arg0->data;
         hdr = NULL;
         if (e != NULL) {

@@ -1154,11 +1154,11 @@ void gfx_setup_xform(void *arg0, MATRIX *arg1, VECTOR *arg2, u8 *arg3, GteSetup 
         GfxState *gs;
 
         out->trans = NULL;
-        ScreenTrans.vz = pos->vz + obj->z;
+        ScreenTrans.vz = pos->vz + obj->XYZ.z;
         out->trans = &ScreenTrans;
         gs = &RenderState;
-        out->ofx = ((GfxScreen *)gs->unk28)->x + obj->x;
-        out->ofy = ((GfxScreen *)gs->unk28)->y + obj->y;
+        out->ofx = ((GfxScreen *)gs->unk28)->x + obj->XYZ.x;
+        out->ofy = ((GfxScreen *)gs->unk28)->y + obj->XYZ.y;
     } else {
         GfxState *gs = &RenderState;
         out->ofx = ((GfxScreen *)gs->unk28)->x;
@@ -1166,36 +1166,36 @@ void gfx_setup_xform(void *arg0, MATRIX *arg1, VECTOR *arg2, u8 *arg3, GteSetup 
     }
     if (!(flags & 0x10010000)) {
         if (flags & 0x80000) {
-            ApplyMatrixLV(&RenderState.cam->view, (VECTOR *)&obj->x, (VECTOR *)RenderState.unk88);
+            ApplyMatrixLV(&RenderState.cam->view, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.unk88);
             ((VECTOR *)RenderState.unk88)->vx += ((VECTOR *)RenderState.cam)->vx;
             ((VECTOR *)RenderState.unk88)->vy += ((VECTOR *)RenderState.cam)->vy;
             ((VECTOR *)RenderState.unk88)->vz += ((VECTOR *)RenderState.cam)->vz;
         } else {
-            ApplyMatrixLV(m, (VECTOR *)&obj->x, (VECTOR *)RenderState.unk88);
+            ApplyMatrixLV(m, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.unk88);
             GfxAddTrans(pos);
         }
         out->trans = (VECTOR *)RenderState.unk88;
     }
-    if (obj->unk51 != 4) {
-        if (obj->unk52 != 0) {
-            rotscale_update(obj->unk10);
+    if (obj->xform.order != 4) {
+        if (obj->xform.dirty != 0) {
+            rotscale_update(&obj->xform);
         }
         if (flags & 0x40000) {
-            MulMatrix0(&RenderState.cam->view, &obj->rot, (MATRIX *)RenderState.unk84);
+            MulMatrix0(&RenderState.cam->view, &obj->xform.mtx, (MATRIX *)RenderState.unk84);
         } else if (flags & 0x20000000) {
-            if (obj->unk50 != 0) {
+            if (obj->xform.hasScale != 0) {
                 RenderState.unk84 = (u8 *)&RenderState.unk8C;
-                RenderState.unk8C.m[0][0] = (RenderState.cam->rot.m[0][0] * obj->sx) >> 12;
-                RenderState.unk8C.m[1][1] = (RenderState.cam->rot.m[1][1] * obj->sy) >> 12;
-                RenderState.unk8C.m[2][2] = (RenderState.cam->rot.m[2][2] * obj->sz) >> 12;
+                RenderState.unk8C.m[0][0] = (RenderState.cam->rot.m[0][0] * obj->xform.scale.vx) >> 12;
+                RenderState.unk8C.m[1][1] = (RenderState.cam->rot.m[1][1] * obj->xform.scale.vy) >> 12;
+                RenderState.unk8C.m[2][2] = (RenderState.cam->rot.m[2][2] * obj->xform.scale.vz) >> 12;
             } else {
                 RenderState.unk84 = (u8 *)&RenderState.cam->rot;
             }
         } else {
-            MulMatrix0(m, &obj->rot, (MATRIX *)RenderState.unk84);
+            MulMatrix0(m, &obj->xform.mtx, (MATRIX *)RenderState.unk84);
         }
         if ((flags & 0x10010000) == 0x10000) {
-            ApplyMatrixLV((MATRIX *)RenderState.unk84, (VECTOR *)&obj->x, (VECTOR *)RenderState.unk88);
+            ApplyMatrixLV((MATRIX *)RenderState.unk84, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.unk88);
             if (flags & 0x80000) {
                 ((VECTOR *)RenderState.unk88)->vx += ((VECTOR *)RenderState.cam)->vx;
                 ((VECTOR *)RenderState.unk88)->vy += ((VECTOR *)RenderState.cam)->vy;
@@ -1736,8 +1736,8 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
     out = &gs->unkAC;
     cs = &gs->cam->xform;
     if (flags & 0x10000000) {
-        ((GfxScreen *)gs->unk28)->x = obj->x + gs->ofx;
-        ((GfxScreen *)gs->unk28)->y = obj->y + gs->ofy;
+        ((GfxScreen *)gs->unk28)->x = obj->XYZ.x + gs->ofx;
+        ((GfxScreen *)gs->unk28)->y = obj->XYZ.y + gs->ofy;
         if (flags & 0x20000000) {
             out->m[0][0] = cs->scale.vx;
             out->m[0][1] = 0;
@@ -1749,10 +1749,10 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
             out->m[2][1] = 0;
             out->m[2][2] = cs->scale.vz;
         } else {
-            if (obj->unk52 != 0) {
-                rotscale_update(obj->unk10);
+            if (obj->xform.dirty != 0) {
+                rotscale_update(&obj->xform);
             }
-            MulMatrix0(view, &obj->rot, out);
+            MulMatrix0(view, &obj->xform.mtx, out);
         }
         out->t[0] = view->t[0];
         out->t[1] = view->t[1];
@@ -1766,9 +1766,9 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
             rot = &MapSceneMatrix;
         }
         pos = &RenderState.cam->at.x;
-        v.vx = obj->x - pos[0];
-        v.vy = obj->y - pos[1];
-        v.vz = obj->z - pos[2];
+        v.vx = obj->XYZ.x - pos[0];
+        v.vy = obj->XYZ.y - pos[1];
+        v.vz = obj->XYZ.z - pos[2];
         ApplyMatrixLV(rot, &v, (VECTOR *)out->t);
         out->t[0] += view->t[0];
         out->t[1] += view->t[1];
@@ -1784,10 +1784,10 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
             out->m[2][1] = 0;
             out->m[2][2] = cs->scale.vz;
         } else {
-            if (obj->unk52 != 0) {
-                rotscale_update(obj->unk10);
+            if (obj->xform.dirty != 0) {
+                rotscale_update(&obj->xform);
             }
-            MulMatrix0(rot, &obj->rot, out);
+            MulMatrix0(rot, &obj->xform.mtx, out);
         }
     }
     RenderState.otzAdd = ((GfxScreen *)RenderState.unk28)->otz;
