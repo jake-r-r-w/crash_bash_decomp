@@ -22,10 +22,13 @@ are one), in one read and finds each inside it by its sector offset. The game fi
 through the CD's file system, so the DAT may grow. Without --grow a bigger overlay is an
 error.
 
-    pack_disc.py [--out DIR] [--use OVL=PATH ...] [--grow]
+    pack_disc.py [--out DIR] [--use OVL=PATH ...] [--grow] [--exe PATH --elf ELF] [--dat ID=PATH ...]
 
 --out packs into DIR (CrashBash.bin/.cue and DIR/disc/) instead of build/; --use takes an
 overlay's binary from PATH instead of build/<ovl>.bin (the shifted build, tools/scripts/shift.py).
+--exe takes the boot exe from PATH, and --elf names its link, where the DAT index and the file
+groups are found by name (DatIndex, FileGroups) when the exe moved (tools/scripts/shift_all.py).
+--dat writes PATH over DAT entry ID (hex; no bigger than the entry), after the DAT is built.
 """
 import argparse
 import hashlib
@@ -128,19 +131,29 @@ def span(entries, first, count):
     return (last["sector"] - entries[first]["sector"]) * dat.SECTOR + -(-last["size"] // dat.SECTOR) * dat.SECTOR
 
 
-def write_index(exe_path, proj, old, meta):
+def exe_tables(elf):
+    """(DatIndex, FileGroups) addresses from an exe's link, or the retail ones."""
+    if not elf:
+        return dat.TABLE, GROUPS
+    nm = subprocess.run(["mipsel-linux-gnu-nm", elf], capture_output=True, text=True, check=True).stdout
+    at = {l.split()[2]: int(l.split()[0], 16) for l in nm.splitlines() if len(l.split()) == 3}
+    return at["DatIndex"], at["FileGroups"]
+
+
+def write_index(exe_path, proj, old, meta, table=None, groups=None):
     """The exe's DAT index ({u32 sector, u32 size} per entry at dat.TABLE) from a relaid DAT's
     index, and its file groups' byte sizes, each grown by its span's growth (the loader reads a
     group in one go; 6 of the 130 stored sizes aren't the span formula's, so only the change is
     applied)."""
     t_addr = int(proj["header"]["t_addr"], 16)
+    table, groups = table or dat.TABLE, groups or GROUPS
     with open(exe_path, "r+b") as f:
-        f.seek(0x800 + dat.TABLE - t_addr)
+        f.seek(0x800 + table - t_addr)
         f.write(b"".join(e["sector"].to_bytes(4, "little") + e["size"].to_bytes(4, "little")
                          for e in meta["entries"]))
         n = len(meta["entries"])
         for g in range(0x400):
-            at = 0x800 + GROUPS - t_addr + 12 * g
+            at = 0x800 + groups - t_addr + 12 * g
             f.seek(at)
             first, count, size = (int.from_bytes(f.read(4), "little") for _ in range(3))
             if count == 0 or first + count > n:
@@ -160,6 +173,9 @@ def main():
     ap.add_argument("--use", action="append", default=[], metavar="OVL=PATH",
                     help="take an overlay's binary from PATH")
     ap.add_argument("--grow", action="store_true", help="lay the DAT out again around an overlay bigger than its slot")
+    ap.add_argument("--exe", help="the boot exe (default build/<name>.exe)")
+    ap.add_argument("--elf", help="the exe's link, to find its DAT index by name (an exe that moved)")
+    ap.add_argument("--dat", action="append", default=[], metavar="ID=PATH", help="write PATH over DAT entry ID")
     a = ap.parse_args()
     if a.out:
         OUT, IMAGE, CUE = f"{a.out}/disc", f"{a.out}/CrashBash.bin", f"{a.out}/CrashBash.cue"
@@ -177,7 +193,7 @@ def main():
     exe = f"{FILES}/{proj['exe']}"
     copy_tree({os.path.normpath(exe)})
 
-    put(exe, read(f"build/{proj['name']}.exe"), size=os.path.getsize(exe))
+    put(exe, read(a.exe or f"build/{proj['name']}.exe"), size=os.path.getsize(exe))
     if not os.path.exists(os.path.join(dat.ASSETS, dat.INDEX)):
         print(f"pack_disc: no {dat.ASSETS}/ yet: extracting it from the retail DAT")
         dat.extract()
@@ -195,7 +211,7 @@ def main():
         os.remove(p)                 # a hard link into the cache: replace it, don't write through it
         meta = dat.build(p, grow={entry[n]: d for n, d in big.items()})
     if big:
-        write_index(exe, proj, old, meta)
+        write_index(exe, proj, old, meta, *exe_tables(a.elf))
         for n, d in big.items():
             e = meta["entries"][entry[n]]
             print(f"pack_disc: {n} is {len(d)} bytes, over its slot: the DAT is laid out again "
@@ -203,6 +219,14 @@ def main():
     for o in proj.get("overlays", []):
         e = meta["entries"][entry[o["name"]]]
         put(dats[o["name"]], bins[o["name"]], e["sector"] * dat.SECTOR, e["size"])
+
+    for spec in a.dat:
+        i, path = spec.split("=", 1)
+        e = meta["entries"][int(i, 16)]
+        d = read(path)
+        if len(d) > e["size"]:
+            die(f"--dat {i}: {len(d)} bytes, the entry holds {e['size']}")
+        put(next(iter(set(dats.values()))), d, e["sector"] * dat.SECTOR, e["size"])
 
     run(["mkpsxiso", "-y", "-q", "-o", IMAGE, "-c", CUE, LAYOUT])
     sha = hashlib.sha1(read(IMAGE)).hexdigest()
