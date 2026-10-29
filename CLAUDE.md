@@ -92,7 +92,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   plain numbers holding an address, a symbol's or one inside a data object (pointers a shift would leave behind). `struct_layout.py TYPE` a
   struct's members by cc1's own layout, `retype.py FILE FUNC VAR TYPE` a byte pointer's offsets as fields,
   `fold_views.py CANON VIEW...` view structs folded into one, `diff_funcs.py` every function that differs,
-  `raw_offsets.py [--src DIR]` byte-pointer reads the typed check misses (the exe by default), `decl_dups.py` declarations a header repeats (kept at zero by its test; `--views` lists the overlays' views)
+  `raw_offsets.py [--src DIR]` byte-pointer reads the typed check misses (the exe by default),
+  `hidden.py` (`make hidden`) the final test's nothing-hidden scan (every linked object from src/,
+  PsyQ or a listed exception; no asm include, parked draft or address name), `decl_dups.py` declarations a header repeats (kept at zero by its test; `--views` lists the overlays' views)
   (docs/CONVENTIONS.md, Names). `tools/scripts/model_slots.py` lists each exe model slot with the archive files
   every game loads into it. `tools/scripts/data2c.py OVL [--rodata SYM ...] [--strings-only]` writes an overlay's asm data as C
   (OVL `engine` or `main` for main.exe too; `--strings-only` for just the string blocks)

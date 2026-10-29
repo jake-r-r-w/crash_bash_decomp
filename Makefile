@@ -62,7 +62,7 @@ S_FILES   := $(shell find asm -path asm/nonmatchings -prune -o -name '*.s' -prin
 BIN_FILES := $(shell find asm/bin -name '*.bin' 2>/dev/null)
 O_FILES   := $(C_FILES:%=build/%.o) $(S_FILES:%=build/%.o) $(BIN_FILES:%=build/%.o)
 
-.PHONY: all build split check verify disc disc-check shift shift-all test-tools diff permute progress objdiff-config clean
+.PHONY: all build split check verify disc disc-check shift shift-all test-tools hidden diff permute progress objdiff-config clean
 
 # Two passes: splat must have produced asm/ before the object list above is computed.
 # The splat pass is serial (-j1) even under make -j: concurrent splat runs share asm/ and gave
@@ -215,6 +215,11 @@ disc-check: disc
 # the asm filters (dmpsx.py, aspsx_fill.py) against known before/after cases
 test-tools:
 	@$(PYTHON) -m unittest discover -s tools/scripts/tests
+
+# The final test's nothing-hidden scan (ROADMAP-B 4.2): every linked object is built from src/
+# or is a PsyQ object or a listed exception; no asm include, parked draft or address name.
+hidden: build
+	@$(PYTHON) tools/scripts/hidden.py
 
 # ---- matching helpers (tools/scripts/decomp.py) ----
 diff:
