@@ -1,5 +1,6 @@
 #include "common.h"
 #include "bash/main.h"
+#include "bash/modchip.h"
 
 s32 count_completion(u8 *arg0) {
     s32 q;

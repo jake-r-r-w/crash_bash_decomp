@@ -1,5 +1,6 @@
 #include "common.h"
 #include "bash/modchip.h"
+#include "bash/modchip_msg.h"
 
 extern u8 D_BFC7FF52;
 extern s32 ModchipState;

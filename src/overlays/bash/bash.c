@@ -3242,7 +3242,6 @@ void PlotBashHomer(NAS *nas) {
     }
 }
 
-extern u16 RoundWinner;
 
 void InitBashShox(NAS *nas) {
     EXTengine *eng;

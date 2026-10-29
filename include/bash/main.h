@@ -748,8 +748,6 @@ extern s32 SavedSp;
 extern s32 LoadPermanentBuf;
 extern u8 ExportTable[];
 extern s32 *LangModeTypeTexts[];
-void modchip_check_region(void);
-void modchip_step();
 extern s32 SoundCritical;
 extern s32 MusicNext;
 extern s32 MusicCur;

@@ -48,7 +48,6 @@ extern u16 ArkHeroSpeed[];
 extern s16 ArkHeroSpeedDelta[];
 extern s32 ArkHeroStarts[4][3];
 
-extern u16 RoundWinner;
 
 extern s32 ArkBallTimer;
 

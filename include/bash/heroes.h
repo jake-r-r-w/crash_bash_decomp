@@ -32,6 +32,7 @@ s32 HeroStubFalse(void);
 s32 SetHeroSeq(s32 player, s32 seq);
 void SetHeroAction(s32 player, s32 action);
 extern u16 HeroLastHarm[4];
+extern u16 RoundWinner;
 extern s32 *CrateHitShapes[];
 extern s32 *CrateHitShapes2[];
 extern u16 HeroHitSfx[][4];

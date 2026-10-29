@@ -151,7 +151,6 @@ s32 GetBashContour(EXTengine *eng);
 void BashRestartLevel(void);
 
 extern s16 BashExplodeScales[][3];
-extern u16 RoundWinner;
 extern s16 BashAIVictim;
 s32 BashAI_PickVictim(s32 arg0);
 void BashCrateMaster(void);

@@ -23,7 +23,6 @@ extern u8 CdResult[]; /* CD response buffer */
 extern s32 ModchipWaitCount;
 
 s32 modchip_cd_wait(s32 arg0);
-void modchip_show_warning(void);
 s32 modchip_step(s32 arg0);
 
 extern s32 ModchipVSync; /* VSync count at the last step */
