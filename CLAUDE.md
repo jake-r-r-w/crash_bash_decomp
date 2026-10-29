@@ -87,7 +87,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   leaked header's order).
   `tools/scripts/rename_unit.py OLD NEW PREFIX` renames an overlay unit everywhere and
   `rename_file.py SEG NEW` one of its files (no byte
-  changes); `field_rename.py OLD NEW` a struct field's uses after its struct (by cc1's
+  changes); `field_uses.py STRUCT` every use of a struct's fields (by cc1, for naming them), `field_rename.py OLD NEW` a struct field's uses after its struct (by cc1's
   missing-member errors, so shared names like `unk6C` are safe); `bytes_ptrs.py` data arrays of
   plain numbers holding an address, a symbol's or one inside a data object (pointers a shift would leave behind). `struct_layout.py TYPE` a
   struct's members by cc1's own layout, `retype.py FILE FUNC VAR TYPE` a byte pointer's offsets as fields,
