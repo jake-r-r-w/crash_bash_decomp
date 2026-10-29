@@ -234,7 +234,7 @@ class Build:
         run([LD, "-r", "-b", "binary", "-o", img + ".o", img])
         t = t.replace(f"build/{src}.o", img + ".o")
         # the engine's .bss image: zeros (the intro's two words are 0 in retail too, and
-        # LoadModeText fills ModeTextBuffer before anything reads it)
+        # LoadModeOverlay fills ModeTextBuffer before anything reads it)
         src = "asm/bin/overlays/engine/engine_bss.bin"
         img = f"{OUT}/engine_bss.bin"
         open(img, "wb").write(bytes(os.path.getsize(src)))

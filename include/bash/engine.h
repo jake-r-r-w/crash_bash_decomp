@@ -178,7 +178,7 @@ extern s32 GraphicsMode;
 extern s32 IdleFrames;
 extern s16 core_process;
 extern u8 *SlotBase;
-extern s32 ModeTextLoaded;
+extern s32 ModeOverlayLoaded;
 extern u8 SlotHeapStart[];
 extern ArenaDef DefaultArenaDef;
 extern process_info RunGame;

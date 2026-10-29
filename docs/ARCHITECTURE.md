@@ -482,7 +482,7 @@ there (small numbers, no text, no pointers), so like the slot image it stays a m
 from the disc (`engine_bss` in engine.yaml, its own segment so it isn't grouped with `.data`),
 counted apart from the data to turn into C. Source builds (`shift_all.py`) write zeros there
 instead (2026-10-29). The intro's two words are 0 in retail's image too, and the game clears
-them before reading; `LoadModeText` fills the buffer during every mode's load, before anything
+them before reading; `LoadModeOverlay` fills the buffer during every mode's load, before anything
 reads it. The engine's tables that point into the buffer
 (`D_800985F0`, the pause menu's per-mode panel sets) point at the text file's records.
 

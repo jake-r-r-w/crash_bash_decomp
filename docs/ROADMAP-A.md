@@ -553,14 +553,15 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   A quaternion and its slerp table stay word arrays, since that's their shape. Polar's
   `ang[2]` stays too: nothing reads it.
 - [x] The overlays' byte-pointer reads (2026-10-29; ROADMAP-B's 1.8). `raw_offsets.py --src
-  src/overlays` found 84 functions (375 lines); 5 are left (6 lines), each on purpose:
+  src/overlays` found 84 functions (375 lines); 4 are left (5 lines), each on purpose:
   - Polar's hero states, `InitScriptFX`, the cameras, the hub's gateways, titles' menus and the
     rest read their structs by name (`MapPath` keys, `EXTsmoketrail`, `EXTscriptdata`, subengines,
     `MeshHeader`, ...). Where a field read changes the code (address operand order, signedness),
     the raw form stays, marked `/* matching: */`.
   - Left: `UpdatePowerIcons` (the engine reads each game's own extension, so it can't know its
-    type), Nox's two hit tests (their callers pass the object as `s32 *`), `LoadModeText` (the
-    mode text file's header) and `HeroCopyPosStub` (an unused stub).
+    type), Nox's two hit tests (their callers pass the object as `s32 *`) and `HeroCopyPosStub`
+    (an unused stub). The fifth, `LoadModeText`'s "header" read, turned out to be the overlay
+    file's `file.size`: it is `LoadModeOverlay` now, and `ModeTextFiles` is `ModeOverlayFiles`.
 - [x] `func_800115D8` takes `_mal_area *` (2026-10-29; ROADMAP-B's 1.7): `mal_alloc_owned_low(s32
   bytes, void **owner, _mal_area *heap, s32 flags)`, its ten callers passing `&MainHeap`.
 

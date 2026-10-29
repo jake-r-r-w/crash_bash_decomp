@@ -139,9 +139,9 @@ EXTengine *GetEngineSlot(s32 arg0);
 
 void SetupSceneMarks(u8 *arg0);
 
-s32 LoadModeText(void);
+s32 LoadModeOverlay(void);
 extern s32 *ModeTextTables[];
-extern file *ModeTextFiles[];
+extern file *ModeOverlayFiles[];
 extern u8 *ModeTextLoadAddr;
 
 void LoadModeFiles(void);

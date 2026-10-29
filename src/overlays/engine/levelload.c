@@ -5,24 +5,26 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-s32 LoadModeText(void) {
+/* Loads the mode's text (into ModeTextBuffer) and its minigame overlay (into the slot, unless it
+ * is there already); returns where the overlay ends, the heap's new start. */
+s32 LoadModeOverlay(void) {
     GameState *g;
-    u8 *p;
+    file *p;
     s32 **tab = ModeTextTables;
     s32 **rp;
 
     g = (GameState *)GameInfo;
     rp =&tab[GAME->language];
-    p = (u8 *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
+    p = (file *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
     if (p != NULL) {
         load_file_direct(p, ModeTextLoadAddr);
     }
-    p = (u8 *)ModeTextFiles[ModeTypes[g->mode * 3] - 0x101];
-    if ((s32)p != ModeTextLoaded) {
+    p = ModeOverlayFiles[ModeTypes[g->mode * 3] - 0x101];
+    if ((s32)p != ModeOverlayLoaded) {
         load_file_direct(p, SlotBase);
-        ModeTextLoaded = (s32)p;
+        ModeOverlayLoaded = (s32)p;
     }
-    return (s32)(SlotBase + *(s32 *)(p + 4));  /* the mode text file's header: +4 its data's offset */
+    return (s32)(SlotBase + p->size);
 }
 
 void AnimateLoadingIcon(void) {
@@ -135,7 +137,7 @@ void InitLevelLoad(void) {
         vab_transfer_check();
     }
     InitHeapToRamTop(&MainHeap, (s32)SlotHeapStart);
-    start = LoadModeText() + 7;
+    start = LoadModeOverlay() + 7;
     start &= ~7;
     InitHeapToRamTop(&MainHeap, start);
     SetupLevelSpecs(&DefaultArenaDef);
@@ -585,7 +587,7 @@ void InitScriptScene(void) {
     }
     SceneStep = 0;
     sound_reinit();
-    ModeTextLoaded = 0;
+    ModeOverlayLoaded = 0;
     mal_init(&MainHeap, SlotBase, 0x801FF000 - (s32)SlotBase);
     smallnode_init();
     cfg = &SceneLevelConfig;
@@ -1295,7 +1297,8 @@ extern u8 file_group_TOXIC[];
 extern u8 file_group_WATER[];
 
 GfxViewport LoadingViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0, 0x200, -0x100, 0, 0, 0, 1 };
-file *ModeTextFiles[14] = {
+/* each mode type's minigame overlay (DAT entries 487 and 716..728), from mode type 0x101 */
+file *ModeOverlayFiles[14] = {
     &DatIndex[722], &DatIndex[721], &DatIndex[720], &DatIndex[728], &DatIndex[727],
     &DatIndex[726], &DatIndex[725], &DatIndex[724], &DatIndex[487], &DatIndex[723],
     &DatIndex[719], &DatIndex[717], &DatIndex[716], &DatIndex[718],
@@ -1309,7 +1312,7 @@ s32 *ModeTextTables[5] = {
     (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang,
     (void *)&ModeTextFilesLang,
 };
-s32 ModeTextLoaded = 0;
+s32 ModeOverlayLoaded = 0;
 EngineCfg DefaultLevelConfig = {
     { 0, 0x20, 0, 0, 0x10, 0, 0, 0, 0, 1, 0, 0 }, { 0x80, 0x200, 0x20 }, (void *)&VramAreas,
     (void *)&VramNodePool, 0x20, 0x400,
