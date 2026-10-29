@@ -709,3 +709,14 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
 - [x] 5.8 The progress history committed (2026-10-29). `.decomp/history.json` is tracked and goes in
   with each progress update, as it has since 5.1, so the tree stays clean. CONTRIBUTING's rule now
   names it next to `docs/`.
+- [x] 5.9 The leak and prototype docs re-read (2026-10-29). PROTOTYPES.md and ARCHITECTURE.md (Leaked
+  source, Prototype debug types) describe the sources without quoting them:
+  - paths, counts, offsets and names cited as evidence;
+  - no copied struct text, comments or code;
+  - the 24 mangled names in PROTOTYPES are single symbols.
+
+  The recovered headers in `include/bash/` (`tank.h`, `pogo.h`, `arkenoid.h`, `polar.h`) hold
+  declarations only: enums, structs and prototypes, with no leaked comments or helper bodies.
+
+  The one change: the four places that said where the prototype discs are archived now just name the
+  discs, so nothing points to where to get game images.

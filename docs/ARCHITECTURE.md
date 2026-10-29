@@ -771,7 +771,7 @@ own header (`tank`, `pogo`, `arkenoid`, `polar`). Differences from the leak:
 
 ### Prototype debug types
 
-Three prototype discs are archived on Hidden Palace (Aug 23, Sep 14 and
+Three prototype discs are known (Aug 23, Sep 14 and
 Oct 9 2000; the Oct 9 one is a PAL review build, `SCES_028.34`). Keep the
 images in `protos/` (git-ignored); commit only the names and types derived
 from them. None ships a `.SYM` or `.MAP` file, and none has a text leak like

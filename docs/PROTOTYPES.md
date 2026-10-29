@@ -82,9 +82,9 @@ breaks the match is dropped (`--apply`; without it, it only lists).
 | Disc | Build | Leak | What it gave |
 |---|---|---|---|
 | Retail `SCUS_945.70` | release | 40 KB of preprocessed headers (engine entry `+0x54000`) | ~400 prototypes, the AST enums and the Tank/Pogo/Arkenoid/Polar structs (`bash/tank.h`, `pogo.h`, `arkenoid.h`, `polar.h`) |
-| Aug 23 2000 prototype (Hidden Palace) | early | engine entry `+0x4E000`: an SN object for `PSX_PAD.CPP`, its ~90-header include list, 788 type records | source directory and header names (`Core\Shell`, `GameEng\Titles`, ...) |
-| Sep 14 2000 prototype (Hidden Palace) | early | none | exe comparison; earlier compiles (Earlier compiles of a function) |
-| Oct 9 2000 prototype (Hidden Palace; PAL review build `SCES_028.34`) | close to retail | engine entry `+0x40002`: 3447 type records | the engine's own types (`NAS`, `EXTengine`, `subengine`, `HeroInfo`, ...), every AST enum: names for 201 AST Init/Plot functions; the `include/bash/` game headers |
+| Aug 23 2000 prototype | early | engine entry `+0x4E000`: an SN object for `PSX_PAD.CPP`, its ~90-header include list, 788 type records | source directory and header names (`Core\Shell`, `GameEng\Titles`, ...) |
+| Sep 14 2000 prototype | early | none | exe comparison; earlier compiles (Earlier compiles of a function) |
+| Oct 9 2000 prototype (PAL review build `SCES_028.34`) | close to retail | engine entry `+0x40002`: 3447 type records | the engine's own types (`NAS`, `EXTengine`, `subengine`, `HeroInfo`, ...), every AST enum: names for 201 AST Init/Plot functions; the `include/bash/` game headers |
 | Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine entry `+0x2BE15`: 4611 type records, **30 function records**, 44 globals, 1021 line records | the engine units `panel` (`PANEL.CPP`) and `pause` (`PAUSE.CPP`); 23 function and 33 global names, 13 locals, the global types; the shell's types (`SWORD_XY`, `process_info`, `fade_info`, ...) and enums |
 | PlayStation Demo Disc 1.3 (`SCUS-94618`, mastered 2000-08-30) | the Jampack build | the same as Jampack: the same `CRASHBSH.EXE` and `.DAT`, byte for byte | nothing new; dates the Jampack build to 2000-08-30 or earlier |
 | PAL retail (`SCES-02834`, mastered 2000-10-23) | release | none: the engine's spare space is zeros and `0x01` filler, no leftover memory | nothing |
