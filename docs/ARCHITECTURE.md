@@ -1178,21 +1178,24 @@ signature alone is not enough.
   set a target.
   Of the three `(p, EXTbotai *)` planners, `PogoAI_StartEncircling` decides
   through `PogoAI_ClaimingThisTileWillEncircle` (its old `PogoGoal` was
-  `EXTbotai`: `TargetXYZ.x/z`, `AImode`); `func_800C0F08` (radial search)
-  and `func_800BE6C4` (needs 9+ own tiles) are GoForMyOwn / StartEnclosing
-  in some order: left unnamed.
-- **Ambiguous, left unnamed:**
-  - The leak declares `Roo_FireRocket(EXTengine *)` and
-    `Roo_FireRocket(EXTengine *, s32)`. The one-argument one is
-    `Roo_FireRocket` (`0x800BFFF4`: fires along the Roo's facing; it sits
-    before `Roo_ShootAtHumans` as in the leak); `func_800C02AC(eng, dir)`,
-    which `Roo_ShootAtHumans` calls, matches the other declaration but must
-    have had another name in this build.
-  - `func_800C9B5C()` counts a list linked through `+0x20`, which could be
-    `CountBears`.
-  - `get_angle(x, z)` returns a 12-bit angle, as the leak's inline
-    `get_angle` does. That's one use, so not yet proof.
-  - The rest of the reached helpers have no prototype in the leak.
+  `EXTbotai`: `TargetXYZ.x/z`, `AImode`). The other two are settled by their code
+  (2026-10-29, ROADMAP-B 2.3). `PogoAI_StartEnclosing` (`0x800BE6C4`) only runs in the
+  territory modes (0xB, 0xC) with 9+ own tiles, and then sets up a walk of 8 steps,
+  clockwise or not, around them. It sits next to `StartEncircling` in code.
+  `PogoAI_GoForMyOwn` (`0x800C0F08`) radial-searches from the bot's square and heading
+  for a tile to take (`AImode` 7), next to `PogoAI_CountMyTiles`.
+- **Once ambiguous, now settled** (2026-10-29, ROADMAP-B 2.3):
+  - The leak declares two overloads of the C++ function `Roo_FireRocket`:
+    `(EXTengine *)` and `(EXTengine *, s32)`.
+    - The one-argument one is `Roo_FireRocket` (`0x800BFFF4`). It fires along the Roo's facing,
+      and it sits before `Roo_ShootAtHumans`, as in the leak.
+    - The two-argument one is `0x800C02AC`, which `Roo_ShootAtHumans` calls with a direction.
+      C can't overload, so it is `Roo_FireProjectile` (pogo.h notes the leak's name).
+  - `CountBears()` (`0x800C9B5C`, the leak's `s32 CountBears()` in polar.h) counts the
+    `PolarBears` list, linked through `+0x20`.
+  - `get_angle(x, z)` is the leak's inline from polar.h's `CalcCurrentSector`, and every caller
+    masks it to 12 bits as that inline does (Core engine functions).
+  - The rest of the reached helpers have no prototype in the leak, so their names are descriptive.
 
 ## Core engine functions
 

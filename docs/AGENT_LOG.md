@@ -137,8 +137,6 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   arrays are their shape) and Polar's `ang[2]` (struct ._23; nothing reads it).
 - Sound voices: `func_80022504` is "stop all" (`StopSfx` inlined in a loop), `func_800228C4`
   unlinks without stopping, `func_80022924` allocates, `func_80022984` inits the pool.
-- Ambiguous naming leads are listed in ARCHITECTURE.md ("Functions reached
-  from the AST pairs").
 
 ## Gotchas
 
