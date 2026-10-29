@@ -71,17 +71,28 @@ build all:
 	@$(MAKE) --no-print-directory -j1 $(LD_SCRIPT) $(OVL_LDS)
 	@$(MAKE) --no-print-directory $(TARGET) $(OVL_BINS)
 
-split:
+split: | $(EXTRACTED) $(PSYQ_SDK)/lib
 	@for y in $(YAML) $(OVL_YAMLS); do $(PYTHON) -m splat split $$y || exit 1; done
+
+# Your disc and your PsyQ are all a build needs (README, Quick Start). The first build unpacks the
+# .cue in disc/ (decomp.py extract: the exe, the code overlays and the game data in assets/), then
+# splats it; a missing disc or SDK stops with what to do.
+DISC_CUE  := $(firstword $(wildcard disc/*.cue))
+EXTRACTED := disc/$(EXE)
+$(EXTRACTED):
+	@test -n "$(DISC_CUE)" || { echo "make: no disc: put your Crash Bash (USA) .bin and .cue in disc/ (README, Quick Start)" >&2; exit 1; }
+	$(DECOMP) extract $(DISC_CUE)
+$(PSYQ_SDK)/lib:
+	@echo "make: no PsyQ in $(PSYQ_SDK)/: unpack psyq-4.7-converted-full.7z there, or run tools/get_psyq.sh on the host (README, Quick Start)" >&2; exit 1
 
 # splat leaves an unchanged linker script alone, so without the touch it stays older than its
 # inputs and every build re-runs every split
-$(LD_SCRIPT): $(YAML) $(CFG)/sym.main.txt $(CFG)/rel.main.txt
+$(LD_SCRIPT): $(YAML) $(CFG)/sym.main.txt $(CFG)/rel.main.txt | $(EXTRACTED) $(PSYQ_SDK)/lib
 	$(PYTHON) -m splat split $(YAML)
 	@touch $@
 
 # an overlay's yaml reads sym.main.txt, sym.engine.txt and its own sym.<ovl>.txt
-linkers/%.ld: $(CFG)/overlays/%.yaml $(CFG)/sym.main.txt $(CFG)/sym.engine.txt $(CFG)/sym.%.txt
+linkers/%.ld: $(CFG)/overlays/%.yaml $(CFG)/sym.main.txt $(CFG)/sym.engine.txt $(CFG)/sym.%.txt | $(EXTRACTED)
 	$(PYTHON) -m splat split $<
 	@touch $@
 
