@@ -7,16 +7,6 @@ The work already done is in [ROADMAP-A.md](ROADMAP-A.md).
 When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 `tools/dk make progress` so the roadmap badge updates.
 
-## Part 2 - Names and loose ends
-
-| # | Task | Notes | Done |
-|---|------|-------|------|
-| 2.1 | Natural forms of the three steering matches | `func_800B4048`, `func_800BE914`, `PlotTransmuterBeam` (AGENT_LOG, Open leads) | [ ] |
-| 2.2 | The demo discs' last symbols | `cam_init`, 11 more, classes with no stand-in, `ProcessPauseUD` (PROTOTYPES.md, Left) | [ ] |
-| 2.3 | The ambiguous names | ARCHITECTURE.md, Functions reached from the AST pairs | [ ] |
-| 2.4 | Did both gcc 2.7.2 units use `-fno-rerun-cse-after-loop`? | `main/modchip`, `main/modchip_msg` | [ ] |
-| 2.5 | Source builds write zeros in the engine's .bss (decided 2026-10-29) | Check the game writes each leftover word before reading it, have `shift_all.py` zero it as it does the slot, and playtest. The matching build keeps reading it from the disc. | [ ] |
-
 ## Part 3 - Documentation
 
 | # | Task | Notes | Done |

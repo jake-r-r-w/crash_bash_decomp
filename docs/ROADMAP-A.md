@@ -563,3 +563,27 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
     mode text file's header) and `HeroCopyPosStub` (an unused stub).
 - [x] `func_800115D8` takes `_mal_area *` (2026-10-29; ROADMAP-B's 1.7): `mal_alloc_owned_low(s32
   bytes, void **owner, _mal_area *heap, s32 flags)`, its ten callers passing `&MainHeap`.
+
+## Names and loose ends (ROADMAP-B Part 2, done 2026-10-29)
+
+- [x] The three steering matches' natural forms (2.1). They are recorded as steering, and kept:
+  - `func_800B4048` and `func_800BE914`: tools/cc1 variants showed the steered tie or copy is
+    all that differs. No natural C shape reaches it in this compiler (MATCHING.md, the
+    `QTY_CMP_PRI` and register-copy rows).
+  - `PlotTransmuterBeam`: an empty block or a redundant store in place of the dead
+    `if (TB_MODE13()) c++;` both lose the base's register. A counter nobody reads is plausible
+    leftover code in the original, so this one may be natural as written.
+- [x] The demo discs' last symbols (2.2):
+  - The C++ class `file` is the archive entry `{sector, size}`. `DatIndex` is a `file[992]`,
+    the loaders take `file *`, and the games' file lists are `GroupFile` triples.
+  - Six functions take the demos' prototypes.
+  - Every class the demos name has its stand-in, `ProcessPauseUD` is named, and the texture
+    entry is one type. PROTOTYPES.md, Left, lists each.
+- [x] The ambiguous names (2.3). Each is settled by its code: Pogo's `StartEnclosing` and
+  `GoForMyOwn`, the `Roo_FireRocket` overload (`Roo_FireProjectile`), `CountBears` and
+  `get_angle` (ARCHITECTURE.md, Functions reached from the AST pairs).
+- [x] Both gcc 2.7.2 units take `-fno-rerun-cse-after-loop` (2.4). `modchip_msg` matches with
+  it, and with it `msg_print` takes its plainest form.
+- [x] Source builds write zeros in the engine's .bss (2.5). `shift_all.py` zeros the image as it
+  does the slot. The game clears the intro's two words before reading them, and fills the mode
+  text buffer before reading it. The zeroed build boots and loads the mode text there.

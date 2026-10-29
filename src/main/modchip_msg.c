@@ -71,7 +71,7 @@ void msg_print(u8 *str, TextPos *pos, s32 arg2) {
         } else if (c == ' ') {
             pos->x += 8;
         } else {
-            glyph = (u8 *)0xBFC7F8DE + (*(volatile u8 *)str - 0x21) * 15;
+            glyph = ROM_ASCII_FONT + (*(volatile u8 *)str - 0x21) * 15;
             w = msg_glyph_width(glyph);
             pos->w = w - ((u32)w >> 16) + 1;
             msg_draw_glyph(pos, glyph, arg2, w);

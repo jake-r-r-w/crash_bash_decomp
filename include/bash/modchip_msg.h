@@ -8,6 +8,9 @@
 #include "common.h"
 #include "bash/nas.h"
 
+/* The BIOS ROM's 8x15 ASCII font, from '!' (msg_print, when the kanji ROM isn't used). */
+#define ROM_ASCII_FONT ((u8 *)0xBFC7F8DE)
+
 /* The debug text printer's cursor (msg_print). */
 typedef struct TextPos {
     /* 0x00 */ s16 x;

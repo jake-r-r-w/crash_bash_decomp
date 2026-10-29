@@ -101,28 +101,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   target doesn't. Without the pins it builds with t-registers and no frame
   (structure 171/173). The original was almost certainly written with
   these register variables (Sony-style GTE code).
-- **The steering matches' natural forms** (low priority; each is matched):
-  - `func_800B4048`'s tail (MATCHING.md Diff patterns, the `QTY_CMP_PRI`
-    row): `t = v; v = (s32)Heroes;` keeps the copy through cse2 and
-    combine, and the always-zero `(t * 60) & 3` wins local-alloc's tie for
-    the `*60` chain. The Oct 9 build has the same copy (with `*42` and
-    `*72`); `protos func_800B4048 --diff Oct_9 --file F.c` matches its tail
-    with the first loop's `v` as the sum, the masked value in the clock
-    local `a`, 16-bit `x`/`y` and the 72% before the loop, except that
-    combine still folds the copy.
-  - `func_800BE914` (the register-copy row): copy 1 is plain C (`pa` set
-    again before its shift); copies 2-4 need a dead `c += t;` after the
-    `if` blocks (cse) and three always-zero `((t << 8) & 0xFF)` terms
-    (combine). The second division's remainder shows the block between the
-    divisions was whole (the `divmodsi4` row), so it wasn't a branch.
-  - `PlotTransmuterBeam` (the unfolded-base row): a dead `if (TB_MODE13())
-    c++;` keeps the mode test's base live until jump2.
-- **Finish the demo discs' symbols** (PROTOTYPES.md, Left): `cam_init`
-  and the 11 the tool can't write, the classes with no stand-in (`geo`,
-  `geo_entity`, `joypad_info`, `tga_header`, `file`, ...), merging the
-  other views of `obj_texture` (AnimEntry, TexDst2A84C) and of the camera,
-  `ProcessPauseUD` (very likely `func_8007F1A8`). The link groups place no
-  file inside the engine. Full reports: `protos/<disc>/scan.md`.
+- **The steering matches** (`func_800B4048`, `func_800BE914`, `PlotTransmuterBeam`) are kept
+  as steering (ROADMAP-A, Names and loose ends). Their rows in MATCHING.md hold the analysis.
 - **Typing pass for the overlays with no struct coverage** (spin, dino,
   n2o: enums only), with `field_survey.py`.
 - The gcc 2.7.2 units (`main/modchip`, `main/modchip_msg`): their toolchain
@@ -474,6 +454,15 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B Part 2 done):**
+  - The demos' `file` class types the archive index and every loader.
+    `DatIndex` is a `file[992]`, and the lists are `GroupFile` triples.
+  - Both 2.7.2 units share one set of flags.
+  - The engine's .bss is zeros in source builds (it boots, and the mode text loads).
+  - The three steering matches stay as they are, and the stale naming notes are settled.
+  - Gotcha: drop a cast like `(s32)&DatIndex[` only after retyping the field it fills.
+    Compare warnings over a full rebuild (touch every .c), both with and without the
+    change. An incremental build only shows the files it recompiled.
 - **2026-10-29 (ROADMAP-B 1.8 done, Part 1 complete):** the overlays' byte-pointer reads are
   typed: 84 functions down to 5 left on purpose (ROADMAP-A lists them). Trying each typed form
   and keeping it only on a match worked well; fold renames still need a hand pass for
