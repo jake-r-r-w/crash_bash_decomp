@@ -50,6 +50,40 @@ Keys: arrows (d-pad), Z (cross), X (circle), A (square), S (triangle), Enter (st
 Shift (select), Q/W (L1/R1), F1 (menu), Esc twice (quit). A pad works without setup. Any other
 emulator works too; DuckStation needs a real BIOS dump.
 
+## The fully shifted build (`make shift-all`)
+
+`tools/dk make shift-all PAD=0x40` builds a disc in which every binary has moved:
+`build/shiftall/CrashBash.bin`/`.cue` (tools/scripts/shift_all.py). From the matching build's
+objects (nothing is recompiled) it pads the exe, the engine and every slot overlay by PAD before
+their first C rodata, text and data, so the engine loads 3 × PAD higher and the slot 6 × PAD
+higher, and links them against each other's new addresses, repeating until nothing changes
+(two links). Where the matching build fixes an address, the tool moves it:
+
+- splat's name lists (`linkers/*_undefined_*`, `undefined_syms_manual.txt`, the PsyQ names)
+  link names at their retail addresses: each line becomes a fallback a definition overrides; a
+  name another binary defines takes its new address there; a name nothing defines (a .bss
+  buffer, a label inside a data object) moves by position: its binary's base shift plus a pad
+  for each pad point at or below it, from the matching build's link maps.
+- `HeapStart` (`0x80078C90`: where the exe loads the engine and its heap starts) and
+  `SlotHeapStart` follow the exe's and the slot's ends; the slot's id word its base.
+- Sections the scripts pin at retail addresses (the exe's PsyQ .bss and `bios_1` .data, the
+  engine's .bss image) move by position.
+- The exe header's initial PC is patched to `__SN_ENTRY_POINT`'s new address, and Sony's
+  startup code (`2MBYTE.OBJ`, kept as raw words in `asm/main/psyq/2mbyte.s`, so without
+  relocations: it clears the .bss, sets `$gp` and calls `InitHeap` and `machine_init` by
+  number) is assembled from a copy that names what it uses, byte for byte the same code.
+- The mode text files (`overlays/text/*.bin`) point into the engine's `ModeTextBuffer`: their
+  1,645 pointers move with it (`pack_disc.py --dat`).
+
+Then it checks that no name a binary uses still links by a retail address in a range that
+moved, packs the disc with the moved exe (`pack_disc.py --exe --elf`: the DAT index is found by
+name) and the bigger engine and overlays (`--grow`). `--pad-main`, `--pad-engine` and
+`--pad-slot` move one binary at a time (0 leaves it), to bisect a crash; at PAD 0 every binary
+is the matching build's (the engine's slot image aside, which is zeros). Playtested 2026-10-29:
+the front end, the pause screens' text, a load and a save (a new slot, its sum right), the hub
+and the minigames. The save holds an address (`GameState.boot`; a slot saved on the shifted
+build holds a different one): harmless here, since the game doesn't seem to read it on load.
+
 ## The shifted build (`make shift`)
 
 `tools/dk make shift OVL=tank PAD=0x40` builds a disc in which one slot overlay's every

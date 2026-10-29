@@ -491,10 +491,18 @@ load extract and are documented.
   title screens, mode text and menus, sound packs with the music as SEQ and MIDI), and the save
   on a memory card too (`card.py`). The disc has no movies: `BASHY.` is 30 MB of zeros, and
   `SPYRO3/` is the bundled Spyro 3 demo, not Crash Bash's (docs/ASSETS.md).
-- [ ] Shift everything at once: pad `main.exe` and the engine too, and relink
+- [x] Shift everything at once: pad `main.exe` and the engine too, and relink
   every overlay against their new addresses instead of the fixed ones in
   `configs/USA/sym.main.txt` and `sym.engine.txt`. This needs every overlay's
   data to be C, since a pointer left in a data blob keeps its old address.
+  Done 2026-10-29: `make shift-all` (`tools/scripts/shift_all.py`) moves the exe, the engine
+  and all 14 overlays at once (the engine to `0x80078D50`, the slot to `0x800B3434`), and the
+  disc boots and plays (playtested: the front end, the pause screens' text, a load and a save,
+  the hub, the minigames). What had kept addresses fixed: splat's name lists (now fallbacks a
+  definition overrides, the rest moved by position), `HeapStart` and `SlotHeapStart`, the
+  pinned PsyQ and engine .bss sections, the exe header's entry point, Sony's startup code
+  (`2MBYTE.OBJ`, raw words: the tool assembles a copy that names what it uses), and the mode
+  text files' pointers into the engine (docs/PLAYING.md, The fully shifted build).
 - [ ] A build with a current GCC for MIPS (`NON_MATCHING`).
 - [ ] Every file at quality level 4 ([CONVENTIONS.md](CONVENTIONS.md)), with no
   placeholder names.

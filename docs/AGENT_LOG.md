@@ -60,10 +60,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 Phase 6 (ROADMAP.md). In rough order:
 
-1. **Shift everything at once** (the big proof): pad `main.exe` and the engine too, and relink
-   every overlay against their new addresses instead of the fixed ones in `sym.main.txt` and
-   `sym.engine.txt`. Every overlay's data is C now, which was its blocker. `make shift` and
-   `shift.py` do one overlay today; this is the same for all units together.
+1. Done 2026-10-29: **everything shifted at once** (`make shift-all`; it boots and plays).
 2. **Quality level 4**: the 113 untyped game functions (`progress`), the overlays' 136 views of
    engine globals (`decl_dups.py --views`: fold each into the one type), the exe's 69 raw-offset
    functions (mostly the heap's block arithmetic and `export_exe_functions`' slot offsets), and the
@@ -472,6 +469,17 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-29 (Phase 6: everything shifted at once):** `shift_all.py` (`make shift-all`) pads the
+  exe, the engine and all 14 overlays and relinks them against each other until the addresses
+  settle (two links). Fixed addresses found and moved: splat's name lists (fallbacks; others'
+  definitions; position-mapped .bss and interior labels), `HeapStart` (`0x80078C90` in the retail
+  link), `SlotHeapStart`, the slot id word, the pinned PsyQ/engine .bss sections, the header's
+  entry point, the mode text pointers. The first disc crashed before anything drew: Sony's
+  startup code (`2MBYTE.OBJ`) is raw words with absolute addresses; bisecting (one binary
+  padded at a time) put it in the exe, and the tool now assembles a copy naming what it uses
+  (identical at pad 0). The second disc plays (front end, pause text, load, save, hub,
+  minigames). Gotcha: GNU as writes `break 1` differently from the original `0x0000004D`.
 
 - **2026-10-29 (housekeeping):** dead code out of tools/scripts (`decomp.py auto` and the six
   helpers only it used, `sort_protos.py`, which also respaced headers, three unused functions,

@@ -1399,7 +1399,8 @@ dated 1998). Sony's converted libraries (`ext/psyq47/lib/*.a`) contain the
 objects the game was linked with, and all of the library code is linked from
 them instead of being decompiled: 281 objects, byte-identical, plus Sony's
 hand-written `2MBYTE.OBJ` (`asm/main/psyq/2mbyte.s`, not in the converted
-libraries). 254 were found by signature (`psyq_match.py`); the last 27 are
+libraries; kept as raw words, so its addresses don't relocate: the fully shifted build
+assembles a copy that names them, docs/PLAYING.md). 254 were found by signature (`psyq_match.py`); the last 27 are
 tiny wrappers that are byte-identical to each other apart from what they call
 or which global they use (`CdSync`, `CdFlush`, `CdStatus`, ...), so the
 signatures left them unnamed. `tools/scripts/psyq_gaps.py` found them by
