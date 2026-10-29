@@ -176,17 +176,17 @@ extern u16 HeroIdleSfx[];
 typedef struct {
     /* 0x00 */ s32 gravity;
     /* 0x04 */ s32 started;
-    /* 0x08 */ s32 unk8;
+    /* 0x08 */ s32 pad8;
     /* 0x0C */ s32 vy0;
-    /* 0x10 */ s32 unk10;
+    /* 0x10 */ s32 pad10;
     /* 0x14 */ s32 vy;
     /* 0x18 */ s32 floor;
-    /* 0x1C */ s32 unk1C[2];
+    /* 0x1C */ s32 pad1C[2];
     /* 0x24 */ s32 angle;
-    /* 0x28 */ s32 unk28[3];
+    /* 0x28 */ s32 pad28[3];
     /* 0x34 */ s32 vx;
     /* 0x38 */ s32 vz;
-    /* 0x3C */ s32 unk3C[2];
+    /* 0x3C */ s32 pad3C[2];
     /* 0x44 */ s32 speed;
 } Arc;
 
@@ -237,7 +237,7 @@ typedef struct {
 
 
 typedef struct EngineLevelInfo {
-    /* 0x00 */ u8 unk0[0xBC];
+    /* 0x00 */ u8 pad0[0xBC];
     /* 0xBC */ u8 *unkBC;
     /* 0xC0 */ u8 *unkC0;
 } EngineLevelInfo;
@@ -292,7 +292,7 @@ typedef struct HudBox {
     /* 0x08 */ s16 z;
     /* 0x0A */ s16 width;
     /* 0x0C */ s16 bottom;
-    /* 0x0E */ s16 unkE;
+    /* 0x0E */ s16 padE;
     /* 0x10 */ s32 colour;
     /* 0x14 */ s32 unk14;
 } HudBox;
@@ -368,8 +368,8 @@ typedef struct {
 /* A script keyframe (0x50 bytes): get_script_track + 0x24 starts the array (InitScriptFX, PlotScriptFX). */
 typedef struct ScriptKey {
     /* 0x00 */ s32 frame;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
+    /* 0x04 */ s32 pad4;
+    /* 0x08 */ s32 pad8;
     /* 0x0C */ s32 x, y, z;
     /* 0x18 */ s32 rx, ry, rz;
     /* 0x24 */ Quat quat;

@@ -27,7 +27,7 @@ typedef struct PapuPos {
 
 typedef struct PapuEntry {
     /* 0x0 */ s32 unk0;
-    /* 0x4 */ s16 unk4;
+    /* 0x4 */ s16 pad4;
     /* 0x6 */ s16 unk6;
     /* 0x8 */ s16 unk8;
     /* 0xA */ s16 unkA;
@@ -51,7 +51,7 @@ typedef struct PapuObj {
 } PapuObj;
 typedef struct PapuTile {
     s32 unk0;
-    s32 unk4;
+    s32 pad4;
     s32 unk8;
     u8 padC[0x74 - 0xC];
     u16 unk74;

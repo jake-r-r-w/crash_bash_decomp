@@ -28,9 +28,9 @@ typedef struct GlyphRow {
 /* the debug text screens, indexed by MsgFontRom */
 typedef struct TextScreen {
     /* 0x00 */ u8 rowBytes; /* bytes per glyph row */
-    /* 0x01 */ u8 unk1;
+    /* 0x01 */ u8 pad1;
     /* 0x02 */ u8 w;
-    /* 0x03 */ u8 unk3;
+    /* 0x03 */ u8 pad3;
     /* 0x04 */ s16 x;
     /* 0x06 */ s16 y;
     /* 0x08 */ u8 *text;

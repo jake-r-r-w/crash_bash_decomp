@@ -636,7 +636,7 @@ void PolarHeroInBeam(s32 player);
 /* A rising slot as RiserSetReset steps it: 16 of them at +0xB8. */
 typedef struct PolarRiser {
     /* 0x0 */ s32 active;
-    /* 0x4 */ s32 unk4;
+    /* 0x4 */ s32 pad4;
     /* 0x8 */ s32 height;
     /* 0xC */ s16 base;
     /* 0xE */ s16 padE;
@@ -1179,7 +1179,7 @@ typedef struct BearminatorExt2 {
     /* 0x44 */ u8 pad44[0x48 - 0x44];
     /* 0x48 */ s16 unk48;
     /* 0x4A */ s16 unk4A;
-    /* 0x4C */ s16 unk4C;
+    /* 0x4C */ s16 pad4C;
     /* 0x4E */ s16 unk4E;
     /* 0x50 */ u8 pad50[4];
 } BearminatorExt2;

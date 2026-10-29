@@ -19,9 +19,9 @@ void psxpogo_render_tile();
 
 /* What a board cell's unk4 points to (Plot_PogoBanker reads its x and z). */
 typedef struct {
-    /* 0x00 */ s32 unk0;
+    /* 0x00 */ s32 pad0;
     /* 0x04 */ s32 x;
-    /* 0x08 */ s32 unk8;
+    /* 0x08 */ s32 pad8;
     /* 0x0C */ s32 z;
 } PogoCellPos;
 
@@ -313,10 +313,10 @@ typedef enum PogoMode {
 
 /* PogoQuality_Init: per-mode entries picked by teams, with two values at 0xE/0x10. */
 typedef struct PogoModeEntry {
-    /* 0x00 */ u8 unk0[0xE];
+    /* 0x00 */ u8 pad0[0xE];
     /* 0x0E */ u16 unkE;
     /* 0x10 */ u16 unk10;
-    /* 0x12 */ u8 unk12[2];
+    /* 0x12 */ u8 pad12[2];
 } PogoModeEntry;
 extern PogoModeEntry PogoPainterAiHuman;
 extern PogoModeEntry PogoPainterAiHumanAlt;

@@ -490,7 +490,7 @@ static inline s32 LaserInBox(s32 *arg0, s32 *arg1) {
     return 0;
 }
 typedef struct BossScene {
-    /* 0x00 */ s32 unk0;
+    /* 0x00 */ s32 pad0;
     /* 0x04 */ u8 pad04[0x28];
     /* 0x2C */ u8 *unk2C;
 } BossScene;

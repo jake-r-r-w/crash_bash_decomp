@@ -9,9 +9,9 @@
 #include "bash/hub_ovl.h"
 
 typedef struct HubSpawnExt {
-    u8 unk0[0xC];
+    u8 pad0[0xC];
     s32 *unkC;
-    u8 unk10[0x34 - 0x10];
+    u8 pad10[0x34 - 0x10];
     s32 unk34;
 } HubSpawnExt;
 extern s32 PodiumTies;
@@ -31,11 +31,11 @@ typedef struct HubTrail {
     /* 0x0A0 */ u8 padA0[0xE0 - 0xA0];
     /* 0x0E0 */ HubPt ang[8];
     /* 0x120 */ s32 unk120;
-    /* 0x124 */ s32 unk124;
+    /* 0x124 */ s32 pad124;
     /* 0x128 */ s32 unk128;
     /* 0x12C */ s32 unk12C;
-    /* 0x130 */ s32 unk130;
-    /* 0x134 */ s32 unk134;
+    /* 0x130 */ s32 pad130;
+    /* 0x134 */ s32 pad134;
     /* 0x138 */ s32 unk138;
 } HubTrail;
 typedef struct HubTrailDst {
@@ -55,20 +55,20 @@ extern s32 HubNamePage;
 extern s32 HubNameLen;
 typedef struct HubEntry12 {
     s32 unk0;
-    s32 unk4;
+    s32 pad4;
     s32 unk8;
 } HubEntry12;
 extern HubEntry12 HubNamePages[];
 /* name-entry key, 0x10 bytes, at HubNamePages[].unk0 */
 typedef struct HubKey {
-    /* 0x0 */ s32 unk0;
+    /* 0x0 */ s32 pad0;
     /* 0x4 */ u8 *unk4;
     /* 0x8 */ s16 unk8;
     /* 0xA */ s8 unkA;
     /* 0xB */ s8 unkB;
     /* 0xC */ s8 unkC;
     /* 0xD */ s8 unkD;
-    /* 0xE */ s16 unkE;
+    /* 0xE */ s16 padE;
 } HubKey;
 typedef struct PodiumFx {
     /* 0x00 */ u8 pad0[4];
@@ -240,7 +240,7 @@ extern s32 PodiumHeroX[];
 
 /* HubHeroRing as seen by InitialiseHUB. */
 typedef struct {
-    /* 0x00 */ s32 unk0;
+    /* 0x00 */ s32 pad0;
     /* 0x04 */ s32 angle;
     /* 0x08 */ u32 radius;
     /* 0x0C */ u32 radiusMin;

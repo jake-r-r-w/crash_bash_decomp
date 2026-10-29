@@ -270,7 +270,7 @@ BASH_SIZE_CHECK(FlagRecord, 0x10);
 typedef struct RotScale {
     /* 0x00 */ SVECTOR rot;
     /* 0x08 */ s32 unk8;     /* a subengine's +0x18 (the panels' counters clear it) */
-    /* 0x0C */ s32 unkC;
+    /* 0x0C */ s32 padC;
     /* 0x10 */ VECTOR scale;
     /* 0x20 */ MATRIX mtx;
     /* 0x40 */ u8 hasScale;
@@ -319,7 +319,7 @@ struct subengine {
     /* 0x60 */ subengine *prev;
     /* 0x64 */ u8 unk64[0x68 - 0x64];
     /* 0x68 */ s16 unk68;
-    /* 0x6A */ u8 unk6A[2];
+    /* 0x6A */ u8 pad6A[2];
     /* 0x6C */ union {
         struct obj_dbase *dbase;     /* a model's: the record its entity is in */
         char *text;                  /* a text panel's */
@@ -337,16 +337,16 @@ struct subengine {
     /* 0x78 */ s32 unk78;
     /* 0x7C */ s32 unk7C;
     /* 0x80 */ s32 unk80;
-    /* 0x84 */ u8 unk84[0x8A - 0x84];
+    /* 0x84 */ u8 pad84[0x8A - 0x84];
     /* 0x8A */ s16 unk8A;
-    /* 0x8C */ u8 unk8C[0x8E - 0x8C];
+    /* 0x8C */ u8 pad8C[0x8E - 0x8C];
     /* 0x8E */ u16 unk8E;
     /* 0x90 */ s32 unk90;
     /* 0x94 */ s16 unk94;
-    /* 0x96 */ u8 unk96[0x9C - 0x96];
+    /* 0x96 */ u8 pad96[0x9C - 0x96];
     /* 0x9C */ s32 unk9C;
     /* 0xA0 */ s16 unkA0;
-    /* 0xA2 */ u8 unkA2[0xA8 - 0xA2];
+    /* 0xA2 */ u8 padA2[0xA8 - 0xA2];
 };
 BASH_SIZE_CHECK(subengine, 0xA8);
 
@@ -620,8 +620,8 @@ typedef struct GameState {
     /* 0x027 */ u8 maxPlayers;
     /* 0x028 */ u8 cup;
     /* 0x029 */ u8 cupRound;
-    /* 0x02A */ u8 unk2A;
-    /* 0x02B */ u8 unk2B;
+    /* 0x02A */ u8 pad2A;
+    /* 0x02B */ u8 pad2B;
     /* 0x02C */ s32 language;
     /* 0x030 */ u16 exitFlags;
     /* 0x032 */ u16 levelFlags;
@@ -632,7 +632,7 @@ typedef struct GameState {
     /* 0x03A */ u16 battleWins;
     /* 0x03C */ s16 levelLoadModel;
     /* 0x03E */ s16 unk3E;
-    /* 0x040 */ s16 unk40;
+    /* 0x040 */ s16 pad40;
     /* 0x042 */ s16 cupLeader;
     /* 0x044 */ s16 teamSide[2];
     /* 0x048 */ s16 teamLeader[2];
@@ -672,11 +672,11 @@ BASH_SIZE_CHECK(LevSpec, 0x2C);
  * is from Tank's data (the next object starts 0x28 bytes on); the fields are
  * not known yet. */
 typedef struct shell_setup {
-    /* 0x00 */ s32 unk0[6];
-    /* 0x18 */ void *unk18;
-    /* 0x1C */ void *unk1C;
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
+    /* 0x00 */ s32 pad0[6];
+    /* 0x18 */ void *pad18;
+    /* 0x1C */ void *pad1C;
+    /* 0x20 */ s32 pad20;
+    /* 0x24 */ s32 pad24;
 } shell_setup;
 BASH_SIZE_CHECK(shell_setup, 0x28);
 

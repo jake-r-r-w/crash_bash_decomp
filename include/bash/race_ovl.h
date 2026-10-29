@@ -59,7 +59,7 @@ void RaceHeroesBump(s32 a, s32 b);
 
 /* Extension 0x20000000 as RaceAI_Think drives it. */
 typedef struct EXTraceai {
-    /* 0x00 */ s32 unk0[5];
+    /* 0x00 */ s32 pad0[5];
     /* 0x14 */ s32 unk14;
     /* 0x18 */ void (*unk18)(s32 player);
 } EXTraceai;
@@ -95,7 +95,7 @@ typedef struct RaceEaseCam {
 
 /* Shield extension, AddExt(nas, 0x20, 0x10000000). */
 typedef struct EXTraceshield {
-    /* 0x00 */ s32 unk0[3];
+    /* 0x00 */ s32 pad0[3];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14[2];
@@ -110,20 +110,20 @@ typedef struct RaceFux18 {
 
 /* A hero's FUX as SetRaceHeroIdle clears it. */
 typedef struct RaceHeroFux {
-    /* 0x00 */ u8 unk0[0x8C];
+    /* 0x00 */ u8 pad0[0x8C];
     /* 0x8C */ s32 unk8C;
     /* 0x90 */ s32 unk90;
 } RaceHeroFux;
 
 /* A hero's FUX as SetRaceHeroRun clears it: a word at 0x40. */
 typedef struct RaceFux40 {
-    /* 0x00 */ u8 unk0[0x40];
+    /* 0x00 */ u8 pad0[0x40];
     /* 0x40 */ s32 unk40;
 } RaceFux40;
 
 /* A hero's FUX as SetRaceHeroJump clears it: a word at 0x138. */
 typedef struct RaceFux138 {
-    /* 0x000 */ u8 unk0[0x138];
+    /* 0x000 */ u8 pad0[0x138];
     /* 0x138 */ s32 unk138;
 } RaceFux138;
 
@@ -131,12 +131,12 @@ typedef struct RaceFux138 {
 
 /* A hero's FUX as RaceHeroBreatheFire reads it: a count at 0x3C. */
 typedef struct RaceFuxCount {
-    /* 0x00 */ u8 unk0[0x3C];
+    /* 0x00 */ u8 pad0[0x3C];
     /* 0x3C */ s32 unk3C;
 } RaceFuxCount;
 /* A hero's FUX as SetRaceHeroOiled fills it. */
 typedef struct RaceSpinFux {
-    /* 0x00 */ u8 unk0[0x20];
+    /* 0x00 */ u8 pad0[0x20];
     /* 0x20 */ s32 unk20;
     /* 0x24 */ s32 unk24;
     /* 0x28 */ s32 unk28;
@@ -144,7 +144,7 @@ typedef struct RaceSpinFux {
 
 /* A hero's FUX as RaceHeroOiled counts it down: a timer at 0x24. */
 typedef struct RaceFuxTimer {
-    /* 0x00 */ u8 unk0[0x24];
+    /* 0x00 */ u8 pad0[0x24];
     /* 0x24 */ s32 unk24;
 } RaceFuxTimer;
 
@@ -160,7 +160,7 @@ typedef struct RaceSpawnFux {
 typedef struct RaceSpawnExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
+    /* 0x10 */ s32 pad10;
     /* 0x14 */ s32 unk14;
 } RaceSpawnExt;
 
@@ -168,7 +168,7 @@ s32 RaceHeroUsePickup(s32 player);
 
 void InitRaceShield(NAS *nas);
 typedef struct EXTracefire {
-    /* 0x00 */ s32 unk0[4];
+    /* 0x00 */ s32 pad0[4];
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
@@ -176,7 +176,7 @@ typedef struct EXTracefire {
 } EXTracefire;
 /* Inner ripple extension (id 0x10000000). */
 typedef struct EXTinnerripple {
-    /* 0x00 */ s32 unk0[3];
+    /* 0x00 */ s32 pad0[3];
     /* 0x0C */ s32 scale;
     /* 0x10 */ s32 speed;
     /* 0x14 */ s32 max;
@@ -184,20 +184,20 @@ typedef struct EXTinnerripple {
 } EXTinnerripple;
 /* Rippled extension, AddExt(nas, 0x1C, 0x10000000). */
 typedef struct EXTrippled {
-    /* 0x00 */ s32 unk0[3];
+    /* 0x00 */ s32 pad0[3];
     /* 0x0C */ s32 scale;
     /* 0x10 */ s32 speed;
     /* 0x14 */ s32 max;
     /* 0x18 */ s32 unk18;
 } EXTrippled;
 typedef struct RaceBouncer {
-    s32 unk0;
+    s32 pad0;
     s32 vel;      /* 0x04 */
-    s32 unk8;
-    s32 unkC;
+    s32 pad8;
+    s32 padC;
     s32 accel;    /* 0x10 */
-    s32 unk14;
-    s32 unk18;
+    s32 pad14;
+    s32 pad18;
     s32 limit;    /* 0x1C */
     s32 damp;     /* 0x20 */
     s32 flags;    /* 0x24 */
@@ -205,7 +205,7 @@ typedef struct RaceBouncer {
 } RaceBouncer;
 
 typedef struct RaceBounceObj {
-    s32 unk0[5];
+    s32 pad0[5];
     s32 pos;      /* 0x14 */
 } RaceBounceObj;
 
@@ -241,9 +241,9 @@ extern s32 RaceUnused1;
 
 /* A hero's race FUX, AddExt(nas, 0x174, 0x10000000) in InitialiseRACE. */
 typedef struct RaceFux {
-    /* 0x000 */ s32 unk0[3];
+    /* 0x000 */ s32 pad0[3];
     /* 0x00C */ s32 unkC;
-    /* 0x010 */ s32 unk10;
+    /* 0x010 */ s32 pad10;
     /* 0x014 */ s32 unk14;
     /* 0x018 */ s32 unk18;
     /* 0x01C */ EXTengine *eng;
@@ -260,15 +260,15 @@ typedef struct RaceFux {
     /* 0x048 */ s32 unk48;
     /* 0x04C */ s32 unk4C;
     /* 0x050 */ s32 unk50;
-    /* 0x054 */ s32 unk54;
+    /* 0x054 */ s32 pad54;
     /* 0x058 */ s32 steer;  /* the steering turn, less each frame */
     /* 0x05C */ u8 pad5C[0x130 - 0x5C];
     /* 0x130 */ s32 unk130;
     /* 0x134 */ s32 unk134;
-    /* 0x138 */ s32 unk138;
+    /* 0x138 */ s32 pad138;
     /* 0x13C */ s32 vx;  /* its velocity; speed is their length */
     /* 0x140 */ s32 vz;
-    /* 0x144 */ s32 unk144;
+    /* 0x144 */ s32 pad144;
     /* 0x148 */ s32 unk148;
     /* 0x14C */ s32 jumpVel;  /* RaceJumpVel */
     /* 0x150 */ s32 decel;  /* RaceDecel */
@@ -284,7 +284,7 @@ typedef struct RaceFux {
 
 /* Extension 0x20000000 as InitialiseRACE sets it up. */
 typedef struct RaceAiExt {
-    /* 0x00 */ s32 unk0[3];
+    /* 0x00 */ s32 pad0[3];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 angle;  /* the hero's forward_angle when it started */
     /* 0x14 */ s32 speed;  /* RaceAISpeeds for the hero */
@@ -294,44 +294,44 @@ typedef struct RaceAiExt {
 
 /* hero->FUX as reset by SetRaceHeroOffTrack. */
 typedef struct RaceResetFux {
-    /* 0x000 */ u8 unk0[0x18];
+    /* 0x000 */ u8 pad0[0x18];
     /* 0x018 */ s32 unk18;
-    /* 0x01C */ u8 unk1C[0x24 - 0x1C];
+    /* 0x01C */ u8 pad1C[0x24 - 0x1C];
     /* 0x024 */ s32 unk24;
-    /* 0x028 */ u8 unk28[0x54 - 0x28];
+    /* 0x028 */ u8 pad28[0x54 - 0x28];
     /* 0x054 */ s32 unk54;
-    /* 0x058 */ u8 unk58[0x60 - 0x58];
+    /* 0x058 */ u8 pad58[0x60 - 0x58];
     /* 0x060 */ s32 unk60;
-    /* 0x064 */ u8 unk64[0x6C - 0x64];
+    /* 0x064 */ u8 pad64[0x6C - 0x64];
     /* 0x06C */ s32 unk6C;
-    /* 0x070 */ u8 unk70[0x78 - 0x70];
+    /* 0x070 */ u8 pad70[0x78 - 0x70];
     /* 0x078 */ s32 unk78;
     /* 0x07C */ s32 unk7C;
     /* 0x080 */ s32 unk80;
-    /* 0x084 */ u8 unk84[0x88 - 0x84];
+    /* 0x084 */ u8 pad84[0x88 - 0x84];
     /* 0x088 */ s32 unk88;
-    /* 0x08C */ u8 unk8C[0x90 - 0x8C];
+    /* 0x08C */ u8 pad8C[0x90 - 0x8C];
     /* 0x090 */ s32 unk90;
-    /* 0x094 */ u8 unk94[0x128 - 0x94];
+    /* 0x094 */ u8 pad94[0x128 - 0x94];
     /* 0x128 */ _sfx_handler *unk128;
-    /* 0x12C */ u8 unk12C[0x144 - 0x12C];
+    /* 0x12C */ u8 pad12C[0x144 - 0x12C];
     /* 0x144 */ s32 unk144;
-    /* 0x148 */ u8 unk148[0x168 - 0x148];
+    /* 0x148 */ u8 pad148[0x168 - 0x148];
     /* 0x168 */ s32 unk168;
 } RaceResetFux;
 
 /* hero->FUX as RaceHeroOffTrack (the dive) reads it. */
 typedef struct RaceDiveFux {
-    /* 0x000 */ u8 unk0[0x48];
+    /* 0x000 */ u8 pad0[0x48];
     /* 0x048 */ s32 unk48;
-    /* 0x04C */ u8 unk4C[0x54 - 0x4C];
+    /* 0x04C */ u8 pad4C[0x54 - 0x4C];
     /* 0x054 */ s32 unk54;
-    /* 0x058 */ s32 unk58;
+    /* 0x058 */ s32 pad58;
     /* 0x05C */ RaceBouncer bounce;
     /* 0x088 */ s32 unk88;
-    /* 0x08C */ s32 unk8C;
+    /* 0x08C */ s32 pad8C;
     /* 0x090 */ s32 unk90;
-    /* 0x094 */ u8 unk94[0x13C - 0x94];
+    /* 0x094 */ u8 pad94[0x13C - 0x94];
     /* 0x13C */ s32 unk13C;
     /* 0x140 */ s32 unk140;
     /* 0x144 */ s32 unk144;
@@ -339,21 +339,21 @@ typedef struct RaceDiveFux {
 
 /* hero->FUX as RaceHeroIdle (the swim) reads it. */
 typedef struct RaceSwimFux {
-    /* 0x000 */ u8 unk0[0x24];
+    /* 0x000 */ u8 pad0[0x24];
     /* 0x024 */ s32 unk24;
-    /* 0x028 */ u8 unk28[0x48 - 0x28];
+    /* 0x028 */ u8 pad28[0x48 - 0x28];
     /* 0x048 */ s32 unk48;
     /* 0x04C */ s32 unk4C;
-    /* 0x050 */ u8 unk50[0x58 - 0x50];
+    /* 0x050 */ u8 pad50[0x58 - 0x50];
     /* 0x058 */ s32 unk58;
-    /* 0x05C */ u8 unk5C[0x8C - 0x5C];
+    /* 0x05C */ u8 pad5C[0x8C - 0x5C];
     /* 0x08C */ s32 unk8C;
     /* 0x090 */ s32 unk90;
-    /* 0x094 */ u8 unk94[0xA4 - 0x94];
+    /* 0x094 */ u8 pad94[0xA4 - 0x94];
     /* 0x0A4 */ SLONG_XYZ unkA4;
-    /* 0x0B0 */ u8 unkB0[0x128 - 0xB0];
+    /* 0x0B0 */ u8 padB0[0x128 - 0xB0];
     /* 0x128 */ _sfx_handler *unk128;
-    /* 0x12C */ u8 unk12C[0x168 - 0x12C];
+    /* 0x12C */ u8 pad12C[0x168 - 0x12C];
     /* 0x168 */ s32 unk168;
     /* 0x16C */ s32 unk16C;
 } RaceSwimFux;
@@ -365,7 +365,7 @@ extern s32 RaceOver;
 typedef struct EXTracedac {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 state;
-    /* 0x10 */ s32 unk10;
+    /* 0x10 */ s32 pad10;
     /* 0x14 */ s32 angle;
     /* 0x18 */ s32 timer;
     /* 0x1C */ s32 height;
@@ -374,7 +374,7 @@ typedef struct EXTracedac {
 } EXTracedac;
 
 typedef struct RaceObj74 {
-    /* 0x00 */ u8 unk0[0x74];
+    /* 0x00 */ u8 pad0[0x74];
     /* 0x74 */ s16 unk74;
 } RaceObj74;
 extern RaceObj74 *RaceGlowObj;
@@ -384,9 +384,9 @@ extern s32 RaceStartDelay;
 
 /* Spinning object MaintainCentre updates: rotation at 0x10, its matrix at 0x30. */
 typedef struct RaceSpinObj {
-    /* 0x00 */ u8 unk0[0x10];
+    /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ SVECTOR rot;
-    /* 0x18 */ u8 unk18[0x30 - 0x18];
+    /* 0x18 */ u8 pad18[0x30 - 0x18];
     /* 0x30 */ MATRIX mat;
 } RaceSpinObj;
 extern RaceSpinObj *RaceSpinner;
@@ -398,7 +398,7 @@ s32 RacePistonPattern();
 typedef struct RacePatStep {
     /* 0x00 */ s32 hold;
     /* 0x04 */ s32 delay; /* -1: never */
-    /* 0x08 */ s32 unk8;
+    /* 0x08 */ s32 pad8;
 } RacePatStep;
 
 /* A RacePistonPattern pattern: its steps and its length. */
@@ -574,14 +574,14 @@ extern s32 RacePickupCount;
 
 /* A hero's FUX as RacePickupMaster reads it: a held pick-up and its engine. */
 typedef struct RaceFuxHeld {
-    /* 0x00 */ u8 unk0[0x18];
+    /* 0x00 */ u8 pad0[0x18];
     /* 0x18 */ s32 unk18;
     /* 0x1C */ EXTengine *unk1C;
 } RaceFuxHeld;
 
 /* A hero's FUX as RacePickupRespawn reads it: a state at 0x18. */
 typedef struct RaceFuxState {
-    /* 0x00 */ u8 unk0[0x18];
+    /* 0x00 */ u8 pad0[0x18];
     /* 0x18 */ s32 unk18;
     /* 0x1C */ u8 pad1C[0x24 - 0x1C];
     /* 0x24 */ s32 unk24;
@@ -736,7 +736,7 @@ s32 RaceOtherHeroNear(u8 *arg0, u32 arg1, s32 arg2);
 s32 RaceAI_TargetShare(s32 arg0, s32 arg1);
 /* Glob extension, AddExt(nas, 0x1C, 0x10000000). */
 typedef struct EXTglob {
-    /* 0x00 */ s32 unk0[3];
+    /* 0x00 */ s32 pad0[3];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ ScriptCursor *unk10;
     /* 0x14 */ s32 unk14;
@@ -825,7 +825,7 @@ s32 RaceFallToFloor(s32 player);
 
 /* Ripple extension (id 0x10000000) as PlotRippled reads it. */
 typedef struct EXTripple {
-    /* 0x00 */ s32 unk0[3];
+    /* 0x00 */ s32 pad0[3];
     /* 0x0C */ s32 scale;
     /* 0x10 */ s32 step;
     /* 0x14 */ s32 max;
@@ -857,7 +857,7 @@ void SetRaceHeroOiled(s32 player);
 
 /* Track glob extension, AddExt(nas, 0x8C, 0x10000000). */
 typedef struct EXTtrackglob {
-    /* 0x00 */ s32 unk0[3];
+    /* 0x00 */ s32 pad0[3];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
@@ -989,23 +989,23 @@ void SetRaceHeroOffTrack(s32 player);
 
 /* A hero's FUX as PlotRaceTag counts it down. */
 typedef struct RaceTagFux {
-    /* 0x00 */ u8 unk0[0xC];
+    /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ u8 unk10[0x8];
+    /* 0x10 */ u8 pad10[0x8];
     /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 unk1C[0x10];
+    /* 0x1C */ u8 pad1C[0x10];
     /* 0x2C */ s32 unk2C;
 } RaceTagFux;
 
 /* The 0x10000000 extension of the 0x1605 tag spawned by PlotRaceTag. */
 typedef struct RaceTagExt {
-    /* 0x00 */ u8 unk0[0xC];
+    /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ u8 unk10[0x8];
+    /* 0x10 */ u8 pad10[0x8];
     /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 unk1C[0x4];
+    /* 0x1C */ u8 pad1C[0x4];
     /* 0x20 */ s32 unk20;
-    /* 0x24 */ u8 unk24[0x4];
+    /* 0x24 */ u8 pad24[0x4];
     /* 0x28 */ s32 unk28;
 } RaceTagExt;
 
@@ -1046,7 +1046,7 @@ typedef struct RaceShieldFux {
     /* 0x000 */ u8 pad0[0x130];
     /* 0x130 */ s32 unk130;
     /* 0x134 */ NAS *shield;
-    /* 0x138 */ s32 unk138;
+    /* 0x138 */ s32 pad138;
     /* 0x13C */ s32 unk13C;
     /* 0x140 */ s32 unk140;
 } RaceShieldFux;
@@ -1055,12 +1055,12 @@ typedef struct RaceShieldFux {
 typedef struct RaceShieldFxExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 unk14;
+    /* 0x10 */ s32 pad10;
+    /* 0x14 */ s32 pad14;
     /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
+    /* 0x1C */ s32 pad1C;
     /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
+    /* 0x24 */ s32 pad24;
     /* 0x28 */ s32 unk28;
 } RaceShieldFxExt;
 
@@ -1082,9 +1082,9 @@ void RaceChooseWinnerTeam();
 
 /* hero->FUX as RaceChooseWinner (round result) reads it. */
 typedef struct RaceResultFux {
-    /* 0x000 */ u8 unk0[0x128];
+    /* 0x000 */ u8 pad0[0x128];
     /* 0x128 */ _sfx_handler *unk128;
-    /* 0x12C */ u8 unk12C[0x148 - 0x12C];
+    /* 0x12C */ u8 pad12C[0x148 - 0x12C];
     /* 0x148 */ s32 unk148;
 } RaceResultFux;
 
@@ -1198,7 +1198,7 @@ typedef struct RaceRot {
 /* The blend between two collision objects RaceTrackCollideB takes. */
 typedef struct RaceSegBlend {
     s32 t;          /* 0x0 */
-    s32 unk4;
+    s32 pad4;
     s32 idx;        /* 0x8 */
     RaceRot *rot;  /* 0xC */
 } RaceSegBlend;

@@ -28,7 +28,7 @@ typedef struct {
     /* 0x10 */ s16 unk10;
     /* 0x12 */ s16 unk12;
     /* 0x14 */ s16 unk14;
-    /* 0x16 */ s16 unk16;
+    /* 0x16 */ s16 pad16;
     /* 0x18 */ s16 unk18;
     /* 0x1A */ s16 unk1A;
     /* 0x1C */ s16 unk1C;

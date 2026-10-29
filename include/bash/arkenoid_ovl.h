@@ -453,7 +453,7 @@ extern u16 ArkGrabFrames[];
 /* Ark_HeroBot: the object lists (HeadOfBalls by next, HeadOfObjects by child). */
 typedef struct ArkenoidAiFux {
     u8 pad0[0x1A];
-    u16 unk1A;
+    u16 pad1A;
     u8 pad1C[0x24 - 0x1C];
     s16 unk24;
 } ArkenoidAiFux;
@@ -461,7 +461,7 @@ typedef struct ArkenoidAiFux {
 typedef struct ArkenoidAiExt {
     u8 pad0[0x16];
     u16 unk16;
-    u16 unk18;
+    u16 pad18;
     u16 unk1A;
 } ArkenoidAiExt;
 

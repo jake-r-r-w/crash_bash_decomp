@@ -22,7 +22,7 @@ typedef struct {
 /* Extension 0x1000 checked by PapuHeroCarryCollision. */
 typedef struct {
     /* 0x00 */ u8 pad0[0x14];
-    /* 0x14 */ u16 unk14;
+    /* 0x14 */ u16 pad14;
     /* 0x16 */ s16 unk16;
     /* 0x18 */ u8 pad18[2];
     /* 0x1A */ u16 unk1A;

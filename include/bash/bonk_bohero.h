@@ -33,7 +33,7 @@ typedef struct BonkInner {
 } BonkInner;
 
 typedef struct BonkTarget {
-    /* 0x00 */ s32 unk0;
+    /* 0x00 */ s32 pad0;
     /* 0x04 */ BonkInner *unk4;
 } BonkTarget;
 

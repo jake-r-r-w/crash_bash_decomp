@@ -24,7 +24,7 @@ typedef struct {
     s16 unk8;
     s16 unkA;
     s16 unkC;
-    s16 unkE;
+    s16 padE;
 } CamFrameEntry;  /* CameraFrameList: a thing the camera keeps in frame */
 extern s32 camera_frame_list_size;
 extern CamFrameEntry CameraFrameList[];
@@ -146,7 +146,7 @@ extern s32 SaveMenuState;
 
 /* InitLevelLoad's level setup config (LevelConfig, or DefaultLevelConfig if unset). */
 typedef struct EngineCfg {
-    /* 0x00 */ u8 unk0[0xC];
+    /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 pools[3];       /* prims_init */
     /* 0x18 */ VramArea *areas;    /* vram_init */
     /* 0x1C */ FreeNode *pool;
@@ -185,7 +185,7 @@ typedef struct EngineMarker {
 typedef struct EngineMarkerPos {
     /* 0x00 */ s32 x, y, z;
     /* 0x0C */ s16 unkC;
-    /* 0x0E */ u8 unkE[6];
+    /* 0x0E */ u8 padE[6];
 } EngineMarkerPos;
 extern EngineMarker SceneMarks[];
 extern EngineMarkerPos SceneMarkPos[];

@@ -92,7 +92,7 @@ extern subengine *TankMoeSub;  /* Heroes[3].hero_sub */
 typedef struct MineOffset {
     /* 0x00 */ s32 x;
     /* 0x04 */ s32 z;
-    /* 0x08 */ s32 unk8;
+    /* 0x08 */ s32 pad8;
 } MineOffset;
 extern MineOffset MineShrapnelOffsets[4];
 void SetMoeJoeDead(s32 hero, s32 last_mode);
@@ -749,9 +749,9 @@ extern u8 TankSwampMap[];
 
 /* A 0x38-byte model record of HeroModelBank (see TANK_MODEL). */
 typedef struct ModelRec {
-    /* 0x00 */ u8 unk0[0xC];
+    /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 on;
-    /* 0x10 */ u8 unk10[0x38 - 0x10];
+    /* 0x10 */ u8 pad10[0x38 - 0x10];
 } ModelRec;
 
 /* PlotMoeJoe: anim scripts, Moe (0x131E) and Joe */

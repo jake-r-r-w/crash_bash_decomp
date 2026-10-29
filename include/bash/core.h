@@ -19,7 +19,7 @@ typedef struct { s32 x, y, z; } CamXYZ;
 /* At +0x54 of camera_info_tag; gfx_object_matrix takes a pointer to it. */
 typedef struct {
     SVECTOR angle; /* 0x00: the view's rotation (cam_build_view's RotMatrix) */
-    u8 unk8[8];
+    u8 pad8[8];
     VECTOR scale; /* 0x10: diagonal of the screen-aligned matrix (cam_set_projection) */
 } GfxCamScale;
 
@@ -30,16 +30,16 @@ typedef struct camera_info_tag {  /* the Oct 9 prototype's name (cam_init, draw_
     /* 0x00 */ CamXYZ eye;    /* the eye's offset in view space (view.t; cam_init's eye.z 0x300) */
     /* 0x0C */ CamXYZ at;     /* the point looked at, in the world */
     /* 0x18 */ s32 dist;      /* the projection distance (GTE H; cam_init 0x140) */
-    /* 0x1C */ u8 unk1C[0x38 - 0x1C];
+    /* 0x1C */ u8 pad1C[0x38 - 0x1C];
     /* 0x38 */ s32 shakeTime; /* frames of shake left (UpdateCamera, cam_build_view) */
     /* 0x3C */ s32 shakeAmp;
     /* 0x40 */ s32 flipY;     /* cam_set_projection: nonzero negates scale.vy */
-    /* 0x44 */ u8 unk44[0x54 - 0x44];
+    /* 0x44 */ u8 pad44[0x54 - 0x44];
     /* 0x54 */ GfxCamScale xform;
     /* 0x74 */ MATRIX view;
     /* 0x94 */ u8 scaled;     /* cam_build_view scales view by xform.scale (cam_init: 1) */
     /* 0x95 */ u8 unk95;
-    /* 0x96 */ u8 unk96[2];
+    /* 0x96 */ u8 pad96[2];
     /* 0x98 */ MATRIX rot;    /* rotation for screen-aligned objects */
 } camera_info_tag;
 

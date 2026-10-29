@@ -154,7 +154,7 @@ typedef struct CharCard {
     /* 0x0C */ s32 y;
     /* 0x10 */ s32 target;
     /* 0x14 */ s32 model;     /* index into HeroModelBank */
-    /* 0x18 */ s32 unk18;
+    /* 0x18 */ s32 pad18;
     /* 0x1C */ s32 anim;      /* the selector's Atable when picked: a CharSelectAnim* */
     /* 0x20 */ s32 sfx;
     /* 0x24 */ u8 *sub;       /* set by CharSelectInit */
@@ -248,7 +248,7 @@ static inline s32 TitlesSteer(s32 pos, s32 tgt, s32 vx, s32 lim) {
 }
 /* rcossin_tbl read bytewise: hi is the sine's high byte. */
 typedef struct {
-    s16 unk0;
+    s16 pad0;
     s8 lo;
     s8 hi;
 } TitlesTrig;

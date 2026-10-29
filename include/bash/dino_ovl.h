@@ -151,13 +151,13 @@ typedef struct DinoObj {
 
 /* DinoChooseWinnerTeam: the 0x10000000 extension of the spawned 0x1605 effect. */
 typedef struct DinoPuff {
-    /* 0x00 */ u8 unk0[0xC];
+    /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ u8 unk10[0x18 - 0x10];
+    /* 0x10 */ u8 pad10[0x18 - 0x10];
     /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 unk1C[0x20 - 0x1C];
+    /* 0x1C */ u8 pad1C[0x20 - 0x1C];
     /* 0x20 */ s32 unk20;
-    /* 0x24 */ u8 unk24[0x28 - 0x24];
+    /* 0x24 */ u8 pad24[0x28 - 0x24];
     /* 0x28 */ s32 unk28;
 } DinoPuff;
 
@@ -326,8 +326,8 @@ typedef struct DinoAiExt {
     SLONG_XYZ target; /* 0x1C */
     s32 unk28;        /* 0x28 */
     s32 victim;       /* 0x2C: nearest other hero */
-    s32 unk30;
-    s32 unk34;
+    s32 pad30;
+    s32 pad34;
     s32 unk38;        /* 0x38 */
     s32 angle;        /* 0x3C */
     s32 timer;        /* 0x40 */

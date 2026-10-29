@@ -207,7 +207,7 @@ typedef struct MarkObj {
     /* 0xC */ MarkSrc *src;
 } MarkObj;
 typedef struct MarkCtx {
-    /* 0x0 */ s32 unk0;
+    /* 0x0 */ s32 pad0;
     /* 0x4 */ MarkObj *obj;
     /* 0x8 */ s32 unk8;
     /* 0xC */ u8 unkC;

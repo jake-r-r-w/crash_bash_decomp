@@ -73,7 +73,7 @@ typedef struct CamKey {
     /* 0x04 */ s32 len;   /* 0 ends the track */
     /* 0x08 */ CamVec3 at;
     /* 0x14 */ CamVec3 eye;
-    /* 0x20 */ u8 unk20[8];
+    /* 0x20 */ u8 pad20[8];
 } CamKey;
 
 s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
@@ -85,7 +85,7 @@ typedef struct AnimKey {
     /* 0x00 */ s32 start;
     /* 0x04 */ s32 len;   /* 0 ends the track */
     /* 0x08 */ CamVec3 pos;
-    /* 0x14 */ s32 unk14[3];
+    /* 0x14 */ s32 pad14[3];
     /* 0x20 */ s32 rot[4];
     /* 0x30 */ s32 unk30[3];
     /* 0x3C */ CamVec3 scale;
@@ -107,9 +107,9 @@ typedef struct ObjKey {
     /* 0x00 */ s32 start;
     /* 0x04 */ s32 len; /* 0 ends the track */
     /* 0x08 */ s16 unk8;
-    /* 0x0A */ s16 unkA;
+    /* 0x0A */ s16 padA;
     /* 0x0C */ CamVec3 pos;
-    /* 0x18 */ s32 unk18[3];
+    /* 0x18 */ s32 pad18[3];
     /* 0x24 */ ObjQuat rot;
     /* 0x34 */ s32 unk34[3];
     /* 0x40 */ CamVec3 scale;
@@ -133,11 +133,11 @@ typedef struct {
     /* 0x04 */ CamVec3 pos;
     /* 0x10 */ s32 rot[4];
     /* 0x20 */ CamVec3 scale;
-    /* 0x2C */ u8 unk2C[0x24];
+    /* 0x2C */ u8 pad2C[0x24];
     /* 0x50 */ u8 unk50;
     /* 0x51 */ u8 unk51;
     /* 0x52 */ s16 unk52;
-    /* 0x54 */ u8 unk54[0x1C];
+    /* 0x54 */ u8 pad54[0x1C];
     /* 0x70 */ s32 frame;
     /* 0x74 */ s16 unk74;
     /* 0x76 */ s16 unk76;
@@ -173,9 +173,9 @@ typedef union {
  * records (ModelFile.meshes) and the entities'. Offsets are counted from their own field. */
 typedef struct MeshHeader {
     /* 0x00 */ struct PrimSet *set; /* its prims while drawn (primset_alloc), marked dead on release */
-    /* 0x04 */ s32 unk4;
+    /* 0x04 */ s32 pad4;
     /* 0x08 */ u16 faces;
-    /* 0x0A */ s16 unkA;
+    /* 0x0A */ s16 padA;
     /* 0x0C */ u32 flags;
     /* 0x10 */ s32 verts;   /* a bounding box, then s16 x, y, z and a u16 a vertex */
     /* 0x14 */ s32 runs;    /* the strips: a flags byte and a count byte each, ended by count 0xFF */
@@ -185,7 +185,7 @@ typedef struct MeshHeader {
     /* 0x24 */ s32 end;
     /* 0x28 */ s32 normals; /* 0: none */
     /* 0x2C */ s32 points;  /* a PointList (sub_point_list), 0: none */
-    /* 0x30 */ u32 unk30;
+    /* 0x30 */ u32 pad30;
 } MeshHeader;
 
 /* A model file's header (docs/ASSETS.md, Model files): the offsets are counted from their own
@@ -193,18 +193,18 @@ typedef struct MeshHeader {
  * of mesh animation n, 0x5000 | i entity i (from 1). */
 typedef struct ModelFile {
     /* 0x00 */ u32 tag;        /* 0x0C160029 */
-    /* 0x04 */ u32 unk4;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ s32 unkC;
+    /* 0x04 */ u32 pad4;
+    /* 0x08 */ s32 pad8;
+    /* 0x0C */ s32 padC;
     /* 0x10 */ s32 mapAnims;   /* the map's animations (map_enviroment.map_animations, from 8 past it) */
-    /* 0x14 */ s32 unk14;
+    /* 0x14 */ s32 pad14;
     /* 0x18 */ s32 maps;       /* a map_list: the level's maps (an arena's) */
     /* 0x1C */ s32 entities;   /* the map directory: s32 count, then ModelEntity each */
     /* 0x20 */ s32 colors;     /* u32 RGB + code, 3 a face */
     /* 0x24 */ s32 uvs;        /* u16 u | v << 8 */
     /* 0x28 */ s32 verts;      /* the animations' default vertex pool */
-    /* 0x2C */ s32 unk2C;
-    /* 0x30 */ u32 unk30[3];
+    /* 0x2C */ s32 pad2C;
+    /* 0x30 */ u32 pad30[3];
     /* 0x3C */ s32 anims;      /* s32 count, then DbaseAnim: chunks loaded from the file on demand */
     /* 0x40 */ s32 nMeshAnims;
     /* 0x44 */ s32 meshAnims;  /* FileEntry each (by name hash) */
@@ -218,7 +218,7 @@ typedef struct ModelFile {
 /* ModelFile.entities: a count, then one of these each. */
 typedef struct ModelEntity {
     /* 0x00 */ s32 mesh;  /* from here to its MeshHeader, 0: none */
-    /* 0x04 */ s32 unk4;
+    /* 0x04 */ s32 pad4;
     /* 0x08 */ s32 group; /* entry_block_value */
 } ModelEntity;
 
@@ -260,16 +260,16 @@ typedef struct GfxTexInfo {
  * kill_sprim_sub): one primitive per frame buffer. */
 typedef struct {
     POLY_GT4 *prim; /* from new_sprim, freed with release_sprim */
-    u8 unk4[8];
+    u8 pad4[8];
 } ModelObjSlot;
 
 typedef struct {
     u32 flags;               /* 0x00: 0x8000 visible */
-    u8 unk4[0x68];
+    u8 pad4[0x68];
     struct obj_dbase *model; /* 0x6C */
-    u8 unk70[4];
+    u8 pad70[4];
     u16 index;               /* 0x74: passed to entity_address */
-    u8 unk76[0x16];
+    u8 pad76[0x16];
     u16 unk8C;               /* 0x8C: clut to set on the next draw */
     u16 unk8E;               /* 0x8E: texture index to set on the next draw */
     ModelObjSlot slots[2];  /* 0x90: indexed by FrameCount & 1 */
@@ -293,19 +293,19 @@ typedef struct {
     s32 dp;        /* 0x0C: depth-cue factor for gte_lddp */
     void *viewport; /* 0x10: GfxViewport (gfx_set_viewport) */
     s32 modelDp;   /* 0x14: dp for ModelObj quads (draw_model_quad); the screen fade */
-    u8 unk18[4];
+    u8 pad18[4];
     s16 clipX1;    /* 0x1C: viewport clip right/bottom on screen */
     s16 clipY1;
     s32 ofx;   /* 0x20: geometry offset x (scaled by the screen width / 640) */
     s32 ofy;   /* 0x24: geometry offset y (halved) */
     u8 unk28[0xC]; /* 0x28: a GfxScreen */
     SVECTOR gteIn; /* 0x34: GTE scratch, a position relative to the view (view_project_volume) */
-    u8 unk3C[4];
+    u8 pad3C[4];
     u32 *ot;   /* 0x40 */
     s16 otzAdd; /* 0x44: added to the average Z before it is halved */
     s16 otLen;  /* 0x46: entries in ot */
     struct camera_info_tag *cam; /* 0x48 */
-    u8 unk4C[0x28];
+    u8 pad4C[0x28];
     VECTOR gteOut; /* 0x74: gteIn rotated and translated */
     u8 *unk84; /* 0x84: = unkCC */
     u8 *unk88; /* 0x88: = unk10C */
@@ -319,15 +319,15 @@ typedef struct {
 typedef struct {
     SLONG_XYZ pos; /* 0x00 */
     s32 key;   /* 0x0C */
-    u8 unk10[4];
+    u8 pad10[4];
     u32 flags; /* 0x14 */
-    u8 unk18[4];
+    u8 pad18[4];
 } KeyEntry;
 
 typedef struct {
-    u8 unk0[4];
+    u8 pad0[4];
     s32 count; /* 0x04 */
-    u8 unk8[0x44];
+    u8 pad8[0x44];
     KeyEntry entries[1]; /* 0x4C */
 } KeyBlock;
 
@@ -358,7 +358,7 @@ struct _sfx_handler {
     s32 unk24;               /* 0x24: PlaySfx's 5th argument (0x1E00) */
     s32 unk28;               /* 0x28: -1 when started */
     s32 unk2C;               /* 0x2C: -1 when allocated; sfx_key_off stops it */
-    s32 unk30;
+    s32 pad30;
     s32 id;                  /* 0x34: the SfxTable id */
 };
 BASH_SIZE_CHECK(_sfx_handler, 0x38);
@@ -388,7 +388,7 @@ typedef struct sfx_machine_bank_info {
 /* Points drawn as one-pixel tiles by plot_point_sprites (an engine API entry). */
 typedef struct {
     SVECTOR v;
-    u8 unk8[0x10];
+    u8 pad8[0x10];
 } PointSpriteSrc;
 
 typedef struct {
@@ -398,7 +398,7 @@ typedef struct {
 } PointSpriteSet;
 
 typedef struct {
-    u8 unk0[0x6C];
+    u8 pad0[0x6C];
     PointSpriteSet set; /* 0x6C */
 } PointSprites;
 
@@ -460,17 +460,17 @@ typedef struct PoolNode {
 } PoolNode;
 
 typedef struct SlotTarget {
-    /* 0x00 */ u8 unk0[0x56];
+    /* 0x00 */ u8 pad0[0x56];
     /* 0x56 */ u16 flag;
 } SlotTarget;
 
 typedef struct SlotEntry {
     /* 0x00 */ SlotTarget *target;
-    /* 0x04 */ u8 unk4[0x30];
+    /* 0x04 */ u8 pad4[0x30];
 } SlotEntry;
 
 typedef struct SlotList {
-    /* 0x00 */ u8 unk0[0x54];
+    /* 0x00 */ u8 pad0[0x54];
     /* 0x54 */ s32 count;
     /* 0x58 */ SlotEntry entries[1];
 } SlotList;
@@ -485,14 +485,14 @@ typedef struct NodePool {
 /* Data with a table of self-relative offsets at +0x1C: entry i points to
  * &offs[i] + offs[i] (offset_table_entry). */
 typedef struct OffsetTable {
-    /* 0x00 */ u8 unk0[0x1C];
+    /* 0x00 */ u8 pad0[0x1C];
     /* 0x1C */ s32 offs[1];
 } OffsetTable;
 
 /* 0x18-byte entry of an id-keyed table ended by id 0x3E7 (FindIdEntry). */
 typedef struct IdEntry {
     /* 0x00 */ u16 id;
-    /* 0x02 */ u8 unk2[0x16];
+    /* 0x02 */ u8 pad2[0x16];
 } IdEntry;
 
 /* A pad's motors (PadState.rumble; pad_set_rumble_big and _small, pad_rumble_send). */
@@ -517,7 +517,7 @@ typedef struct PadState {
     /* 0x1C */ PadRumble rumble;
     /* 0x2C */ s32 forced;         /* set_joypad: 1 */
     /* 0x30 */ s32 forcedButtons;  /* set_joypad: the buttons */
-    /* 0x34 */ s32 unk34;
+    /* 0x34 */ s32 pad34;
     /* 0x38 */ union { s32 w; s16 lo; } angle;  /* the left stick's (some games read the low half) */
     /* 0x3C */ s32 dist;
     /* 0x40 */ s32 lastHeld;       /* the buttons, for the next frame's edges */
@@ -554,11 +554,11 @@ typedef struct {
 typedef struct MusicEntry {
     /* 0x00 */ s32 file;
     /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
-    /* 0x06 */ u8 unk6[2];
+    /* 0x06 */ u8 pad6[2];
     /* 0x08 */ s32 unk8;                 /* music_play_level: music file */
     /* 0x0C */ s32 unkC;                 /* music_play_level: alt music file (flag 0x80) */
     /* 0x10 */ s16 tempo;
-    /* 0x12 */ u8 unk12[0x14 - 0x12];
+    /* 0x12 */ u8 pad12[0x14 - 0x12];
 } MusicEntry;
 
 /* Loader: file loader state (loader_reset resets it), with its queue of loads
@@ -822,9 +822,9 @@ extern s32 CardDirCount;
 
 /* 0x28-byte entries starting at 0x800675D4; CardDirCount is the count. */
 typedef struct {
-    u8 unk0[0x18];
+    u8 pad0[0x18];
     s32 size; /* 0x18 */
-    u8 unk1C[0xC];
+    u8 pad1C[0xC];
 } SizeEntry;
 extern SizeEntry CardDir[];
 extern const char CardFileName[];
@@ -959,7 +959,7 @@ typedef struct ArenaDef {
     /* 0x04 */ u16 firstNas;       /* FirstNas, less 4 */
     /* 0x06 */ u16 nasHeapKB;      /* NasHeapSize in KB */
     /* 0x08 */ u16 subPool;        /* SubPoolCount */
-    /* 0x0A */ u8 unkA[2];
+    /* 0x0A */ u8 padA[2];
     /* 0x0C */ void *triggers;     /* LevelTriggerData */
     /* 0x10 */ s32 config;         /* LevelConfig */
     /* 0x14 */ s32 boot;           /* GameState.boot */
@@ -1013,11 +1013,11 @@ extern s32 CdReadStatus;
 
 /* 32-byte records of LevelRecs, indexed by LevelRecIndex (SetLevelCameraMode). */
 typedef struct {
-    /* 0x00 */ u8 unk0[4];
+    /* 0x00 */ u8 pad0[4];
     /* 0x04 */ s32 heroLoadArg;  /* passed to queue_dbase_load by QueueHeroModels */
-    /* 0x08 */ u8 unk8[4];
+    /* 0x08 */ u8 pad8[4];
     /* 0x0C */ u16 cameraMode;  /* CameraMode for the level (SetLevelCameraMode) */
-    /* 0x0E */ u8 unkE[0x12];
+    /* 0x0E */ u8 padE[0x12];
 } EngineRec32;
 extern EngineRec32 *LevelRecs;
 extern s32 ArchiveSector;
@@ -1197,7 +1197,7 @@ typedef struct Words3 {
 } Words3;
 
 typedef struct SortKey {
-    s32 unk0;
+    s32 pad0;
     s32 unk4;
 } SortKey;
 typedef struct SortNode {
@@ -1293,7 +1293,7 @@ extern s32 ScriptTrackThread;
 /* update_emitter_thread: per-particle state, 0x28 bytes */
 typedef struct EmitPart {
     s32 age;
-    s32 unk4;
+    s32 pad4;
     s32 vel[3];
     u8 pad14[0x14];
 } EmitPart;
@@ -1512,7 +1512,7 @@ typedef struct {
     s32 b[3]; /* 0x10 */
 } PosEntry;
 typedef struct {
-    u8 unk0[0x70];
+    u8 pad0[0x70];
     s32 y; /* 0x70 */
     s32 z; /* 0x74 */
     s32 x; /* 0x78 */
@@ -1525,7 +1525,7 @@ typedef struct {
     s32 x;       /* 0x04 */
     s32 y;       /* 0x08 */
     s32 z;       /* 0x0C */
-    u8 unk10[0x5C];
+    u8 pad10[0x5C];
     u8 *str;     /* 0x6C */
     u32 c0;      /* 0x70 */
     u32 c1;      /* 0x74 */
@@ -1643,8 +1643,8 @@ struct obj_textureset;
 /* texture_upload_list: count at +0, then 0x10-byte entries from +4. */
 typedef struct {
     s32 idx;      /* 0x0: record index into the 0x38-byte table */
-    s32 unk4;
-    s32 unk8;
+    s32 pad4;
+    s32 pad8;
     FreeHdr *pos; /* 0xC: VRAM slot from vram_take */
 } TexUploadEntry;
 
@@ -1728,7 +1728,7 @@ extern u8 PadActAlign[];
 /* Raw controller packet read by pad_read_packet (status byte, type in the top nibble). */
 typedef struct PadPacket {
     /* 0x00 */ u8 status;
-    /* 0x01 */ u8 unk1;
+    /* 0x01 */ u8 pad1;
     /* 0x02 */ u16 buttons;
     /* 0x04 */ u8 rx;
     /* 0x05 */ u8 ry;
@@ -1911,13 +1911,13 @@ typedef struct { s32 w[8]; } PlacementBlk;
 typedef struct Placement {
     /* 0x00 */ u32 flags;
     /* 0x04 */ SLONG_XYZ pos;
-    /* 0x10 */ u8 unk10[0x28 - 0x10];
+    /* 0x10 */ u8 pad10[0x28 - 0x10];
     /* 0x28 */ PlacementBlk blk;
-    /* 0x48 */ u8 unk48[0x74 - 0x48];
+    /* 0x48 */ u8 pad48[0x74 - 0x48];
     /* 0x74 */ u8 unk74[4];
-    /* 0x78 */ u8 unk78[0x88 - 0x78];
+    /* 0x78 */ u8 pad78[0x88 - 0x78];
     /* 0x88 */ u16 unk88;
-    /* 0x8A */ u8 unk8A[0x9C - 0x8A];
+    /* 0x8A */ u8 pad8A[0x9C - 0x8A];
     /* 0x9C */ u16 unk9C;
     /* 0x9E */ u16 unk9E;
 } Placement;
@@ -1967,7 +1967,7 @@ typedef struct BossRecord {
     u16 flags;
     s16 health;
     s16 unk8;
-    s16 unkA;
+    s16 padA;
 } BossRecord;
 extern BossRecord BossState;
 
@@ -1989,7 +1989,7 @@ typedef struct HudEntry {
 typedef struct ScreenMode {
     RECT buf0;
     RECT buf1;
-    s32 unk10[2];
+    s32 pad10[2];
 } ScreenMode;
 
 #endif /* BASH_MAIN_H */
