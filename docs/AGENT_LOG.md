@@ -70,8 +70,8 @@ ROADMAP-B.md, Part 1 onwards. In rough order:
    doesn't carry over. Where it stopped is in the Open leads.
 4. **ARCHITECTURE.md** as a description of the game's systems.
 
-Needing the user: the memory-image question (ROADMAP-B 1.1: may a source build write zeros
-where the slot's and the engine's .bss hold build-machine leftovers?).
+Decided 2026-10-29: source builds write zeros in the memory images (ROADMAP-A 1.1); zeroing the
+engine's .bss is ROADMAP-B 3.5.
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads

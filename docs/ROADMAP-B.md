@@ -11,7 +11,6 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 1.1 | Memory images: may a source build write zeros where the engine's and slot's .bss hold build-machine leftovers? | The shift builds already zero the slot's and play. The exe's .bss is in its file too (ARCHITECTURE.md, The exe's .bss). | [ ] |
 | 1.2 | Modern GCC build: drop it, or finish it? | Shelved 2026-10-29. Boots to a black screen: libsnd's `.bss` order differs from retail's (AGENT_LOG, Open leads). A PC port replaces PsyQ anyway. | [ ] |
 
 ## Part 2 - Typing (quality level 4)
@@ -34,6 +33,7 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 | 3.2 | The demo discs' last symbols | `cam_init`, 11 more, classes with no stand-in, `ProcessPauseUD` (PROTOTYPES.md, Left) | [ ] |
 | 3.3 | The ambiguous names | ARCHITECTURE.md, Functions reached from the AST pairs | [ ] |
 | 3.4 | Did both gcc 2.7.2 units use `-fno-rerun-cse-after-loop`? | `main/modchip`, `main/modchip_msg` | [ ] |
+| 3.5 | Source builds write zeros in the engine's .bss (decided, ROADMAP-A 1.1) | Check the game writes each leftover word before reading it, have `shift_all.py` zero it as it does the slot, and playtest. The matching build keeps reading it from the disc. | [ ] |
 
 ## Part 4 - Documentation
 
