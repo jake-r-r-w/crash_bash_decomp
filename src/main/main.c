@@ -1003,7 +1003,7 @@ u8 *mal_alloc(s32 arg0, _mal_area *arg1) {
 
     mal_compact(arg1);
     b = mal_take_high(arg0, arg1);
-    data = (u8 *)(b + 1);
+    data = (u8 *)MAL_DATA(b);
     if (b == NULL) {
         low = arg1->lowest;
         next = NULL;
@@ -1016,7 +1016,7 @@ u8 *mal_alloc(s32 arg0, _mal_area *arg1) {
         }
         mal_compact_from(next, arg1);
         b = mal_take_high(arg0, arg1);
-        data = (u8 *)(b + 1);
+        data = (u8 *)MAL_DATA(b);
         if (b == NULL) {
             mal_print_free();
             data = NULL;
@@ -1038,7 +1038,7 @@ u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1) {
     u8 *data;
 
     b = mal_take_high(); /* arg0 and arg1 pass through */
-    data = (u8 *)(b + 1);
+    data = (u8 *)MAL_DATA(b);
     if (b == NULL) {
         low = arg1->lowest;
         next = NULL;
@@ -1051,7 +1051,7 @@ u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1) {
         }
         mal_compact_from(next, arg1);
         b = mal_take_high(arg0, arg1);
-        data = (u8 *)(b + 1);
+        data = (u8 *)MAL_DATA(b);
         if (b == NULL) {
             mal_print_free();
             return NULL;

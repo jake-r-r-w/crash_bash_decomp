@@ -4787,8 +4787,16 @@ def cmd_permute(a):
 PLACEHOLDER_NAME = re.compile(r"^(func|sub|fn)_[0-9A-Fa-f]{8}$")
 
 
-# raw offset arithmetic m2c leaves behind: a matched function with this is not typed yet
+# raw offset arithmetic m2c leaves behind: a matched function with this is not typed yet. A line
+# whose comment starts "matching:" keeps a byte form on purpose (the comment says what the typed
+# form changes) and counts as typed.
 UNTYPED = re.compile(r"\(\s*(?:u8|s8|char)\s*\*\s*\)\s*\(?\s*\w+\s*\)?\s*\+|M2C_FIELD")
+KEPT_RAW = "/* matching:"
+
+
+def untyped_lines(body):
+    """The lines of BODY with a raw offset not marked as kept for the matching."""
+    return [l for l in body.split("\n") if UNTYPED.search(l) and KEPT_RAW not in l]
 
 
 def unit_meta(unit, proj):
@@ -4825,7 +4833,7 @@ def typed_matched(funcs, stat, proj, syms):
             st = os.stat(src)
         except FileNotFoundError:
             continue
-        ver = [st.st_mtime_ns, st.st_size, UNTYPED.pattern]
+        ver = [st.st_mtime_ns, st.st_size, UNTYPED.pattern, KEPT_RAW]
         ent = cache.get(src)
         if not ent or ent["ver"] != ver:
             ent = cache[src] = {"ver": ver, "names": {}}
@@ -4836,7 +4844,7 @@ def typed_matched(funcs, stat, proj, syms):
             if name not in ent["names"]:
                 text = read(src) if text is None else text
                 body = extract_function(text, name)
-                ent["names"][name] = None if body is None else not UNTYPED.search(body)
+                ent["names"][name] = None if body is None else not untyped_lines(body)
                 dirty = True
             if ent["names"][name] is not None:
                 out[k] = ent["names"][name]
