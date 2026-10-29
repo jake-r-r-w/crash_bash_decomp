@@ -724,3 +724,11 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
   (27 MB), with its COPYING files, and LICENSE and the README already say it's GPL. The matching
   docs, the match-function skill and `jtrace.py` read it. A fetch script wouldn't shrink clones,
   because the history keeps it, and the whole repo packs to 18 MB anyway.
+- [x] 5.11 The toolchain image builds from scratch (2026-10-29). `docker build --no-cache --pull` of
+  `tools/docker/Dockerfile`, under its own tag, took 3 min 16 s. With that image:
+  - `make verify` (a clean rebuild) matched all 16 binaries;
+  - `make test-tools` passed (362 tests);
+  - `make disc-check` rebuilt a disc identical to retail.
+
+  So every tool the image fetches still installs and gives the same output. That closes the one gap
+  4.1 left.

@@ -13,7 +13,6 @@ Before making the repo public.
 
 | # | Task | Where | Notes | Done |
 |---|------|-------|-------|------|
-| 5.11 | The toolchain image builds from scratch | `tools/docker/Dockerfile` | 4.1 reused the existing image. Build it with `--no-cache` on a machine without it, then `make check`. | [ ] |
 | 5.12 | Quiet `make split`'s three splat notices | `configs/USA/sym.main.txt` | "Unable to determine a segment" for `funcEvSpError`, `funcEvSpErrorx`, `MsgFatalMetricsError` (seen in 4.1): give them a `segment:` or `absolute:True`, so a new user's first split prints no error. | [ ] |
 | 5.13 | Final check | repo root | `git status` clean; `.gitignore` lists `disc/`, `protos/`, `asm/`, `assets/`, `ext/`, `build/`, `linkers/`; no binaries in the history. | [ ] |
 | 5.14 | Switch the GitHub repo to public | GitHub settings | After 5.1 to 5.13. | [ ] |
