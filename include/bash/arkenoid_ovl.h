@@ -80,7 +80,7 @@ typedef struct ArkenoidNode {
     struct ArkenoidNode *target;
     struct {
         u8 pad0[0x14];
-        u16 unk14;
+        u16 status;
     } *unk58;
 } ArkenoidNode;
 
@@ -183,9 +183,9 @@ typedef struct {
 typedef struct {
     ArkenoidWallSub *sub;
     u8 pad4[0xA - 0x4];
-    u16 unkA;
+    u16 entity;  /* its sub's entity */
     u8 padC[0xE - 0xC];
-    u16 unkE;
+    u16 entityBase;  /* plus the phase */
     u8 pad10[0x14 - 0x10];
 } ArkenoidWallObj;
 
@@ -195,7 +195,7 @@ typedef struct {
     u32 *flags;
     ArkenoidWallSub *sub;
     u8 pad8[0xE - 0x8];
-    u16 unkE;
+    u16 entity;  /* the door's sub entity */
     u8 pad10[0x14 - 0x10];
 } ArkenoidDoor;
 
@@ -242,7 +242,7 @@ extern u16 CornerFailFrames[];
 
 typedef struct {
     u8 pad0[4];
-    s32 unk4;
+    s32 height;  /* raised by FloorRiseCfg's step to its max */
 } ArkenoidRise;
 
 typedef struct {
@@ -348,19 +348,19 @@ typedef struct ArkenoidScnObj {
     u8 pad60[0x68 - 0x60];
     s16 unk68;
     u8 pad6A[2];
-    u8 *unk6C;
+    u8 *dbase;
     u8 pad70[4];
-    u16 unk74;
+    u16 entity;
 } ArkenoidScnObj;
 
 /* The 0x14-byte link slots InitARKfloor fills (FloorLinks, ArkDoorsA...). */
 typedef struct {
     ArkenoidScnObj *a;
     ArkenoidScnObj *b;
-    u16 unk8;
-    u16 unkA;
-    u16 unkC;
-    u16 unkE;
+    u16 entityA;  /* entities its subs take */
+    u16 entityB;
+    u16 entityC;
+    u16 entityD;
     u16 timer;  /* counted down */
     u16 timer2;  /* counted down */
 } ArkenoidLink;
@@ -407,14 +407,14 @@ typedef struct ArkenoidAiFux {
     u8 pad0[0x1A];
     u16 pad1A;
     u8 pad1C[0x24 - 0x1C];
-    s16 unk24;
+    s16 mode;
 } ArkenoidAiFux;
 
 typedef struct ArkenoidAiExt {
     u8 pad0[0x16];
-    u16 unk16;
+    u16 player;
     u16 pad18;
-    u16 unk1A;
+    u16 status;
 } ArkenoidAiExt;
 
 

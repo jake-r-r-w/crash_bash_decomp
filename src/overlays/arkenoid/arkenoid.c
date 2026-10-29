@@ -2167,7 +2167,7 @@ void SetArkHeroDie(u32 arg0) {
         i = (arg0 == ArkSidePlayer1) * 2;
     }
     if (ArkDoorsA[i].sub != NULL) {
-        ArkDoorsA[i].sub->unk74 = ArkDoorsA[i].unkE;
+        ArkDoorsA[i].sub->unk74 = ArkDoorsA[i].entity;
     }
     m = (GameState *)GameInfo;
     switch (m->mode) {
@@ -2711,7 +2711,7 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
                     if (t != NULL) {
                         dx = h1->hero_eng->XYZ.x - t->x;
                         dz = h1->hero_eng->XYZ.z - t->z;
-                        if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->unk14 == 2) {
+                        if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->status == 2) {
                             goto set_ai;
                         }
                     }
@@ -2735,7 +2735,7 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
             if (t != NULL) {
                 dx = h->hero_eng->XYZ.x - t->x;
                 dz = h->hero_eng->XYZ.z - t->z;
-                if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->unk14 != 2) {
+                if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->status != 2) {
                     a = get_angle(dx, dz);
                     d = angle_diff(a, h->hero_move->forward_angle);
                     if (arg1 == -1) {
@@ -2892,9 +2892,9 @@ void Ark_HeroBot(u32 arg0) {
     k = (0x20 - AiPlayerSkill[arg0].level) << 4;
     for (; n != NULL; n = n->Group.Child) {
         e = n->Engine;
-        if (e != NULL && (ext = (ArkenoidAiExt *)n->FUX) != NULL && ext->unk1A == 1) {
+        if (e != NULL && (ext = (ArkenoidAiExt *)n->FUX) != NULL && ext->status == 1) {
             x = FindExtension((NAS *)n, 0x800);
-            if (x != NULL && ArkBotAimA(arg0, (ArkenoidPos *)&e->XYZ, &pos, x->unk16) != 0) {
+            if (x != NULL && ArkBotAimA(arg0, (ArkenoidPos *)&e->XYZ, &pos, x->player) != 0) {
                 dx = (e->XYZ.x + k) - (pos.x + k);
                 row = e->XYZ.z - pos.z;
                 dx = dx * dx;
@@ -2945,7 +2945,7 @@ void Ark_HeroBot(u32 arg0) {
         for (node = HeadOfObjects; node != NULL; node = node->Object.Child) {
             obj = node->Engine;
             if (obj != NULL && (ext = (ArkenoidAiExt *)node->FUX) != NULL &&
-                ((ArkenoidAiFux *)ext)->unk24 == 0x12) {
+                ((ArkenoidAiFux *)ext)->mode == 0x12) {
                 eng = Heroes[arg0].hero_eng;
                 dx = eng->XYZ.x - obj->XYZ.x;
                 dx += k;
@@ -2977,7 +2977,7 @@ void Ark_HeroBot(u32 arg0) {
         if (ai->AItimer2 < 0x1E) {
             for (node = HeadOfBalls; node != NULL; node = node->Group.Child) {
                 ext = FindExtension((NAS *)node, 0x1000);
-                if (ext != NULL && ext->unk1A == 2 && arg0 == (s16)ext->unk16) {
+                if (ext != NULL && ext->status == 2 && arg0 == (s16)ext->player) {
                     target = ai->TargetPlayer;
                     if (target != -1) {
                         obj = node->Engine;
@@ -2985,7 +2985,7 @@ void Ark_HeroBot(u32 arg0) {
                             x = FindExtension((NAS *)node, 0x800);
                             if (x != NULL) {
                                 at = (ArkenoidPos *)&obj->XYZ;
-                                range = x->unk16;
+                                range = x->player;
                                 if (ArkBotAimA(target, at, &pos, range) != 0) {
                                     ai->AItimer2 = 0;
                                     ai->TargetPlayer = -1;
@@ -4384,36 +4384,36 @@ void InitARKfloor(void) {
     }
     for (i = 0; i < 4; i++) {
         FloorLinks[i].a = 0;
-        FloorLinks[i].unkA = 0;
+        FloorLinks[i].entityB = 0;
         FloorLinks[i].timer2 = 0;
         FloorLinks[i].timer = 0;
         LINK(ArkGoals)[i].a = 0;
         LINK(ArkGoals)[i].b = 0;
-        LINK(ArkGoals)[i].unkE = 0;
-        LINK(ArkGoals)[i].unk8 = 0;
-        LINK(ArkGoals)[i].unkE = 0;
-        LINK(ArkGoals)[i].unk8 = 0;
+        LINK(ArkGoals)[i].entityD = 0;
+        LINK(ArkGoals)[i].entityA = 0;
+        LINK(ArkGoals)[i].entityD = 0;
+        LINK(ArkGoals)[i].entityA = 0;
         LINK(ArkGoals)[i].timer2 = 0;
         LINK(ArkDoorsA)[i].a = 0;
         LINK(ArkDoorsA)[i].b = 0;
-        LINK(ArkDoorsA)[i].unkE = 0;
-        LINK(ArkDoorsA)[i].unk8 = 0;
-        LINK(ArkDoorsA)[i].unkE = 0;
-        LINK(ArkDoorsA)[i].unk8 = 0;
+        LINK(ArkDoorsA)[i].entityD = 0;
+        LINK(ArkDoorsA)[i].entityA = 0;
+        LINK(ArkDoorsA)[i].entityD = 0;
+        LINK(ArkDoorsA)[i].entityA = 0;
         LINK(ArkDoorsA)[i].timer2 = 0;
         LINK(ArkDoorsB)[i].a = 0;
         LINK(ArkDoorsB)[i].b = 0;
-        LINK(ArkDoorsB)[i].unkE = 0;
-        LINK(ArkDoorsB)[i].unk8 = 0;
-        LINK(ArkDoorsB)[i].unkE = 0;
-        LINK(ArkDoorsB)[i].unk8 = 0;
+        LINK(ArkDoorsB)[i].entityD = 0;
+        LINK(ArkDoorsB)[i].entityA = 0;
+        LINK(ArkDoorsB)[i].entityD = 0;
+        LINK(ArkDoorsB)[i].entityA = 0;
         LINK(ArkDoorsB)[i].timer2 = 0;
         LINK(ArkWallObjects)[i].a = 0;
         LINK(ArkWallObjects)[i].b = 0;
-        LINK(ArkWallObjects)[i].unkE = 0;
-        LINK(ArkWallObjects)[i].unk8 = 0;
-        LINK(ArkWallObjects)[i].unkE = 0;
-        LINK(ArkWallObjects)[i].unk8 = 0;
+        LINK(ArkWallObjects)[i].entityD = 0;
+        LINK(ArkWallObjects)[i].entityA = 0;
+        LINK(ArkWallObjects)[i].entityD = 0;
+        LINK(ArkWallObjects)[i].entityA = 0;
         LINK(ArkWallObjects)[i].timer2 = 0;
         ArkWalls[i].pad0 = 0;
         ArkWalls[i].f4 = 0;
@@ -4425,7 +4425,7 @@ void InitARKfloor(void) {
         ArkWalls[i].f1A = 0;
     }
     for (obj = (ArkenoidScnObj *)((u8 *)MapScene->subs); obj != 0; obj = obj->next) {
-        p = (s16 *)model_entry_data(obj->unk6C, obj->unk74);
+        p = (s16 *)model_entry_data(obj->dbase, obj->entity);
         k = *p;
         if (k - 1 < 9) {
             FloorObjectsA[k] = obj;
@@ -4433,20 +4433,20 @@ void InitARKfloor(void) {
         k = *p - 10;
         if (k < 4) {
             FloorLinks[k].a = obj;
-            FloorLinks[k].unkA = obj->unk74;
+            FloorLinks[k].entityB = obj->entity;
             obj->unk68 = 0x44;
             obj->flags |= 0x2000000;
         }
         k = *p - 20;
         if (k < 4) {
             LINK(ArkGoals)[k].a = obj;
-            LINK(ArkGoals)[k].unk8 = obj->unk74;
+            LINK(ArkGoals)[k].entityA = obj->entity;
             switch (((GameState *)GameInfo)->mode) {
             case 14:
-                LINK(ArkGoals)[k].unkA = FloorFramesA[k];
+                LINK(ArkGoals)[k].entityB = FloorFramesA[k];
                 break;
             case 16:
-                LINK(ArkGoals)[k].unkA = FloorFramesC[k];
+                LINK(ArkGoals)[k].entityB = FloorFramesC[k];
                 break;
             }
         }
@@ -4454,39 +4454,39 @@ void InitARKfloor(void) {
         k = t - 30;
         if (k < 4) {
             LINK(ArkGoals)[k].b = obj;
-            LINK(ArkGoals)[k].unkC = obj->unk74;
+            LINK(ArkGoals)[k].entityC = obj->entity;
             switch (((GameState *)GameInfo)->mode) {
             case 14:
-                LINK(ArkGoals)[k].unkE = FloorFramesA[t - 26];
+                LINK(ArkGoals)[k].entityD = FloorFramesA[t - 26];
                 break;
             case 16:
-                LINK(ArkGoals)[k].unkE = FloorFramesC[t - 26];
+                LINK(ArkGoals)[k].entityD = FloorFramesC[t - 26];
                 break;
             }
         }
         k = *p - 50;
         if (k < 4) {
             LINK(ArkDoorsA)[k].a = obj;
-            LINK(ArkDoorsA)[k].unk8 = obj->unk74;
-            LINK(ArkDoorsA)[k].unkA = FloorFramesB[k];
+            LINK(ArkDoorsA)[k].entityA = obj->entity;
+            LINK(ArkDoorsA)[k].entityB = FloorFramesB[k];
         }
         t60 = *p;
         k = t60 - 60;
         if (k < 4) {
             LINK(ArkDoorsA)[k].b = obj;
-            LINK(ArkDoorsA)[k].unkC = obj->unk74;
-            LINK(ArkDoorsA)[k].unkE = FloorFramesB[t60 - 56];
+            LINK(ArkDoorsA)[k].entityC = obj->entity;
+            LINK(ArkDoorsA)[k].entityD = FloorFramesB[t60 - 56];
         }
         k = *p - 80;
         if (k < 4) {
             LINK(ArkWallObjects)[k].a = obj;
-            LINK(ArkWallObjects)[k].unkA = obj->unk74;
-            LINK(ArkWallObjects)[k].unkE = FloorLayout[k][0];
+            LINK(ArkWallObjects)[k].entityB = obj->entity;
+            LINK(ArkWallObjects)[k].entityD = FloorLayout[k][0];
         }
         k = *p - 90;
         if (k < 4) {
             LINK(ArkDoorsB)[k].a = obj;
-            LINK(ArkDoorsB)[k].unkA = obj->unk74;
+            LINK(ArkDoorsB)[k].entityB = obj->entity;
             obj->flags &= ~0x8000;
         }
         k = *p - 100;
@@ -4551,9 +4551,9 @@ void UpdateArkFloor(void)
         if ((p = FloorLinks[j].a) != NULL && ((GameState *)GameInfo)->mode == 14) {
             if (FloorLinks[j].timer2 != 0) {
                 FloorLinks[j].timer++;
-                p->unk74 = FloorLinks[j].unkA + (u16)(((FloorLinks[j].timer >> 2) & 3) + 1);
+                p->entity = FloorLinks[j].entityB + (u16)(((FloorLinks[j].timer >> 2) & 3) + 1);
             } else {
-                p->unk74 = FloorLinks[j].unkA;
+                p->entity = FloorLinks[j].entityB;
                 FloorLinks[j].timer = 0;
             }
         }
@@ -4561,33 +4561,33 @@ void UpdateArkFloor(void)
             switch (((GameState *)GameInfo)->mode) {
             case 14:
                 if (BLINK_E28[j].timer2 != 0) {
-                    p->unk74 = BLINK_E28[j].unkA;
+                    p->entity = BLINK_E28[j].entityB;
                     if (BLINK_E28[j].b != NULL) {
-                        BLINK_E28[j].b->unk74 = BLINK_E28[j].unkE;
+                        BLINK_E28[j].b->entity = BLINK_E28[j].entityD;
                     }
                 } else {
-                    p->unk74 = BLINK_E28[j].unk8;
+                    p->entity = BLINK_E28[j].entityA;
                     if (BLINK_E28[j].b != NULL) {
-                        BLINK_E28[j].b->unk74 = BLINK_E28[j].unkC;
+                        BLINK_E28[j].b->entity = BLINK_E28[j].entityC;
                     }
                 }
                 break;
             case 16:
                 if (BLINK_E28[j].timer == 1) {
-                    p->unk74 = BLINK_E28[j].unkA;
-                    BLINK_E28[j].b->unk74 = BLINK_E28[j].unkE;
+                    p->entity = BLINK_E28[j].entityB;
+                    BLINK_E28[j].b->entity = BLINK_E28[j].entityD;
                 } else {
-                    p->unk74 = BLINK_E28[j].unk8;
-                    BLINK_E28[j].b->unk74 = BLINK_E28[j].unkC;
+                    p->entity = BLINK_E28[j].entityA;
+                    BLINK_E28[j].b->entity = BLINK_E28[j].entityC;
                 }
                 break;
             }
         }
         if ((o = BLINK_D38[j].a) != NULL && BLINK_D38[j].timer2 == 0) {
             if (BLINK_D38[j].timer != 0 && (--BLINK_D38[j].timer & 4)) {
-                o->unk74 = BLINK_D38[j].unkA;
+                o->entity = BLINK_D38[j].entityB;
             } else {
-                BLINK_D38[j].a->unk74 = BLINK_D38[j].unk8;
+                BLINK_D38[j].a->entity = BLINK_D38[j].entityA;
             }
         }
     }
@@ -4608,9 +4608,9 @@ void UpdateArkFloor(void)
         }
         for (i = 0; i < 10; i++) {
             if (FloorObjectsB[i] != NULL) {
-                ((ArkenoidRise *)FloorObjectsB[i])->unk4 += FloorRiseCfg[i].step;
-                if (FloorRiseCfg[i].max < ((ArkenoidRise *)FloorObjectsB[i])->unk4) {
-                    ((ArkenoidRise *)FloorObjectsB[i])->unk4 = FloorRiseCfg[i].reset;
+                ((ArkenoidRise *)FloorObjectsB[i])->height += FloorRiseCfg[i].step;
+                if (FloorRiseCfg[i].max < ((ArkenoidRise *)FloorObjectsB[i])->height) {
+                    ((ArkenoidRise *)FloorObjectsB[i])->height = FloorRiseCfg[i].reset;
                 }
             }
         }
@@ -4836,7 +4836,7 @@ loop:
         {
         c1:
             if (o->sub != NULL) {
-                o->sub->unk74 = o->unkE + phase;
+                o->sub->unk74 = o->entityBase + phase;
             }
             if (w->f1A == 0) {
                 do { do { w->f18 = two; } while (0); } while (0);
@@ -4865,7 +4865,7 @@ loop:
             w->f10 = 0;
             do { do { w->f18 = three; } while (0); } while (0);
             if (o->sub != NULL) {
-                o->sub->unk74 = o->unkA;
+                o->sub->unk74 = o->entity;
             }
             goto end;
         c3:

@@ -79,13 +79,13 @@ typedef struct {
     s32 type;  /* 0x0: 1 open from the start, 2 unlocked by GameInfo[0xE4/0x168 + idx] */
     s32 idx;   /* 0x4: the game mode (GameMode) */
     void *model; /* 0x8 */
-    s32 unkC;  /* 0xC: the model's anim */
+    s32 anim;  /* the model's anim */
 } BattleLevel;
 
 /* One battle arena of the level select (BattleArenas, by GameInfo[0x36]): unk0 its
  * BattleLevel list, unk4 how many. */
 typedef struct {
-    s32 unk0;
+    s32 levels;  /* its BattleLevel records, 16 bytes each */
     s32 count;  /* counted up */
 } BattleArena;
 
@@ -100,17 +100,17 @@ extern s32 LangCheckingCard[];
 
 /* Inline forms of the slot getters LevelListModel / LevelListAnim / LevelListText. */
 static inline s32 TitlesSlotModelI(s32 a, s32 b) {
-    return *(s32 *)(BattleArenas[a].unk0 + (b << 4) + 8);
+    return *(s32 *)(BattleArenas[a].levels + (b << 4) + 8);
 }
 
 static inline s32 TitlesSlotCI(s32 a, s32 b) {
-    return *(s32 *)(BattleArenas[a].unk0 + (b << 4) + 0xC);
+    return *(s32 *)(BattleArenas[a].levels + (b << 4) + 0xC);
 }
 
 extern s32 *LangLevelNames[];
 
 static inline s32 TitlesSlotRowI(s32 a, s32 b) {
-    s32 base = BattleArenas[a].unk0;
+    s32 base = BattleArenas[a].levels;
     s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
     s32 *row = LangLevelNames[*(s32 *)(GameInfo + 0x2C)];
     return row[idx];
@@ -123,7 +123,7 @@ static inline s32 TitlesSlotOn(void) {
     s32 type;
     s32 idx;
 
-    slot = (BattleLevel *)((u8 *)BattleArenas[(s8)g[0x36]].unk0 + ((s8)g[0x37] << 4));
+    slot = (BattleLevel *)((u8 *)BattleArenas[(s8)g[0x36]].levels + ((s8)g[0x37] << 4));
     idx = slot->idx;
     type = slot->type;
     if ((*(s32 *)(g + 4) & 0x2000) || type == 1
@@ -177,17 +177,17 @@ extern s32 LevelSelectReload;
 typedef struct TitlesObj {
     s32 flags;
     s32 flags2;
-    subengine *unk8;
-    subengine *unkC;
-    subengine *unk10;
-    s32 unk14;
-    s32 unk18;
-    s32 unk1C;
-    s32 unk20;
+    subengine *sub;
+    subengine *sub2;
+    subengine *sub3;
+    s32 value;
+    s32 value2;
+    s32 scaleX;  /* steered towards its target; the sub's scale.vx is it >> 4 */
+    s32 scaleY;
     s32 count;  /* counted up */
     s32 y;
     s32 flags3;
-    s32 unk30;
+    s32 card;  /* its CharCards entry */
     Ext400 ext;
 } TitlesObj;
 
@@ -361,12 +361,12 @@ typedef struct {
     s32 val[4];    /* 0x1C: targets for sub[4..7] */
     s32 *tbl;      /* 0x2C: indexed by GameInfo+0x2C */
     s32 flag;  /* tested for zero */
-    s32 unk34;
-    s32 unk38;
-    s32 unk3C;
-    s32 unk40;
-    s32 unk44;
-    s32 unk48;
+    s32 leader0;  /* GameState.teamLeader[0] */
+    s32 leader1;
+    s32 mate0;  /* GameState.teammateChoice[0] */
+    s32 mate1;
+    s32 mate2;
+    s32 mate3;
 } TitlesPreset;
 extern TitlesPreset TeamModePresets[];
 /* MoveTeamBar(i, val) inlined: ease sub[4 + i]'s +0x70 toward val. */

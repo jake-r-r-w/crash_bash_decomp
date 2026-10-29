@@ -1360,17 +1360,17 @@ void InitCharSelector(s32 arg0) {
     e2 = GetEngineSlot(2);
     o = (TitlesObj *)&CharSelectors[arg0];
     s = e2->sub + arg0;
-    o->unk8 = s;
+    o->sub = s;
     t = e0->sub + arg0;
-    o->unkC = t;
-    o->unk10 = e2->sub + (arg0 + 4);
+    o->sub2 = t;
+    o->sub3 = e2->sub + (arg0 + 4);
     o->ext = ExtTemplate400;
     o->flags = 0;
     o->flags2 = arg0;
     o->flags3 = 0;
     o->y = Random(0x1E) + 0x1E;
-    o->unk14 = Random(0x200) - 0x100;
-    o->unk18 = Random(0x200) - 0x100;
+    o->value = Random(0x200) - 0x100;
+    o->value2 = Random(0x200) - 0x100;
     s->xform.hasScale = 1;
     s->unk68 = -0x64;
     s->xform.order = 0;
@@ -1378,7 +1378,7 @@ void InitCharSelector(s32 arg0) {
     s->xform.scale.vy = 0;
     s->flags |= 0x02000000;
     g = &GamePlayers;
-    o->unk30 = arg0;
+    o->card = arg0;
     do {
     } while (0);
     o->count = 0;
@@ -1404,31 +1404,31 @@ void UpdateCharSelector(TitlesSlot *slot) {
     s32 a;
     s32 d;
 
-    s = o->unk8;
-    t = o->unkC;
-    s2 = o->unk10;
-    x = CharCards[o->unk30].x + CharSelectorOffsets[o->flags2].x;
-    y = CharCards[o->unk30].y + CharSelectorOffsets[o->flags2].y;
+    s = o->sub;
+    t = o->sub2;
+    s2 = o->sub3;
+    x = CharCards[o->card].x + CharSelectorOffsets[o->flags2].x;
+    y = CharCards[o->card].y + CharSelectorOffsets[o->flags2].y;
     t->XYZ.x = lerp_snap(t->XYZ.x, x, 0x800);
     t->XYZ.y = lerp_snap(t->XYZ.y, y, 0x800);
     still = abs(t->XYZ.x - x) + abs(t->XYZ.y - y);
     s->XYZ.y = s2->XYZ.y = ((TitlesTrig *)rcossin_tbl)[(FrameCount * o->y - 0x400) & 0xFFF].hi + 0x1A4;
     still = still == 0;
     if (o->flags & 1) {
-        tgt = CharCards[o->unk30].target;
-        v = o->unk14;
-        v = TitlesSteer(o->unk1C, tgt, v, 0x2BC);
-        o->unk14 = v;
-        o->unk1C += v;
-        s->xform.scale.vx = o->unk1C >> 4;
-        v = o->unk18;
-        v = TitlesSteer(o->unk20, tgt, v, 0x3E8);
-        o->unk18 = v;
-        o->unk20 += v;
-        s->xform.scale.vy = o->unk20 >> 4;
+        tgt = CharCards[o->card].target;
+        v = o->value;
+        v = TitlesSteer(o->scaleX, tgt, v, 0x2BC);
+        o->value = v;
+        o->scaleX += v;
+        s->xform.scale.vx = o->scaleX >> 4;
+        v = o->value2;
+        v = TitlesSteer(o->scaleY, tgt, v, 0x3E8);
+        o->value2 = v;
+        o->scaleY += v;
+        s->xform.scale.vy = o->scaleY >> 4;
         {
             EXTengine *e = GetEngineSlot(2);
-            DoAnimCommand(NULL, e, o->unk8, (EXTanimator *)&o->ext);
+            DoAnimCommand(NULL, e, o->sub, (EXTanimator *)&o->ext);
         }
         s->xform.dirty = 1;
         o->count++;
@@ -1437,49 +1437,49 @@ void UpdateCharSelector(TitlesSlot *slot) {
     if (o->flags2 < GamePlayers) {
         if (O69PAD[o->flags2].pressed & 0x80) {
             PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
-            o->unk30--;
+            o->card--;
         }
         if (O69PAD[o->flags2].pressed & 0x20) {
             PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
-            o->unk30++;
+            o->card++;
         }
         if (O69PAD[o->flags2].pressed & 0x10) {
             PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
-            o->unk30 -= 4;
+            o->card -= 4;
         }
         if (O69PAD[o->flags2].pressed & 0x40) {
             PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
-            o->unk30 += 4;
+            o->card += 4;
         }
     }
-    o->unk30 &= 7;
+    o->card &= 7;
     if ((o->flags2 < ((GameState *)GameInfo)->players && (O69PAD[o->flags2].pressed & 0x4000) && still) || o->flags3 != 0) {
         GetEngineSlot(0)->sub[20].flags &= 0xFFFF7FFF;
         GetEngineSlot(0)->sub[21].flags &= 0xFFFF7FFF;
         card = CharCards;
-        if (card[o->unk30].flags & 1) {
+        if (card[o->card].flags & 1) {
             PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
             return;
         }
         if (o->flags3 == 0) {
-            PlaySfx(card[o->unk30].sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(card[o->card].sfx, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        card[o->unk30].flags |= 1;
-        o->unk1C = 0;
-        o->unk20 = 0;
-        o->unk14 = 0;
-        o->unk18 = 0;
+        card[o->card].flags |= 1;
+        o->scaleX = 0;
+        o->scaleY = 0;
+        o->value = 0;
+        o->value2 = 0;
         o->flags |= 1;
         {
-            s->u6C.dbase = &HeroModelBank[card[o->unk30].model];
+            s->u6C.dbase = &HeroModelBank[card[o->card].model];
             s->flags |= 0x8000;
         }
-        GAME->heroes[o->flags2] = card[o->unk30].hero;
-        GAME->heroChoice[o->flags2] = card[o->unk30].hero;
+        GAME->heroes[o->flags2] = card[o->card].hero;
+        GAME->heroChoice[o->flags2] = card[o->card].hero;
         PlaySfx(CharPickSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
         o->ext = ExtTemplate400;
         {
-            s32 w = CharCards[o->unk30].anim;
+            s32 w = CharCards[o->card].anim;
             o->count++;
             o->ext.w[3] = w;
         }
@@ -1721,7 +1721,7 @@ s32 UnlockCardLevels(s32 arg0) {
 outer:
     if (i < 7) {
         j = 0;
-        p = (s32 *)e->unk0;
+        p = (s32 *)e->levels;
         q = p + 1;
         g = GameInfo;
     inner:
@@ -1856,7 +1856,7 @@ void LevelSelectInput(void) {
     GetEngineSlot(0)->sub[4].flags &= ~0x8000;
     GetEngineSlot(0)->sub->XYZ.y = 0x1C;
     GetEngineSlot(0)->sub[9].flags |= 0x8000;
-    if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + ((s8)GAME->arenaLevel << 4)))->type == 2)) {
+    if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].levels + ((s8)GAME->arenaLevel << 4)))->type == 2)) {
         if (CardStatus & 2) {
             if (CardStatus & 0x40) {
                 GetEngineSlot(0)->sub[9].u6C.text = (void *)LangCheckingCard[GAME->language];
@@ -1913,7 +1913,7 @@ void LevelSelectUpdate(void) {
         LevelSelectInput();
     }
     e0 = GetEngineSlot(0);
-    boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + ((s8)GAME->arenaLevel << 4)))->idx;
+    boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].levels + ((s8)GAME->arenaLevel << 4)))->idx;
     w = ModeTypes[boff * 3] - 0x101;
     off = ((s32 **)LangModeTypeTexts)[GAME->language][w];
     e0->sub[6].u6C.dbase = (void *)off;
@@ -1935,7 +1935,7 @@ void LevelSelectUpdate(void) {
         GetEngineSlot(1)->sub[off + 4].flags |= 0x8000;
         e = GetEngineSlot(i + 3);
         fl = GAME->cheats & 0x2000;
-        slot = &((BattleLevel *)BattleArenas[(s8)GAME->arena].unk0)[off];
+        slot = &((BattleLevel *)BattleArenas[(s8)GAME->arena].levels)[off];
         idx = slot->idx;
         type = slot->type;
         s = e->sub;
@@ -1946,8 +1946,8 @@ void LevelSelectUpdate(void) {
             on = 0;
         }
         if (on) {
-            s->u6C.dbase = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + (off << 4)))->model;
-            c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + (off << 4)))->unkC;
+            s->u6C.dbase = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].levels + (off << 4)))->model;
+            c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].levels + (off << 4)))->anim;
             s->entity = c;
             s->xform.rot.vx = 0x7D;
             s->xform.rot.vy = 0;
@@ -1974,7 +1974,7 @@ void LevelSelectUpdate(void) {
         GetEngineSlot(i + 3)->sub->entity = 0;
     }
     h = GAME;
-    NextGameMode = ((BattleLevel *)((u8 *)BattleArenas[(s8)h->arena].unk0 + ((s8)h->arenaLevel << 4)))->idx;
+    NextGameMode = ((BattleLevel *)((u8 *)BattleArenas[(s8)h->arena].levels + ((s8)h->arenaLevel << 4)))->idx;
     q = GetEngineSlot(2)->sub;
     q->xform.rot.vx = 0x7D;
     q->xform.order = 0;
@@ -2031,7 +2031,7 @@ void LevelSelectCursor(s32 arg0) {
 
 s32 IsLevelUnlocked(s32 arg0) {
     u8 *g = GameInfo;
-    u8 *e = (u8 *)BattleArenas[(s8)g[0x36]].unk0 + (arg0 << 4);
+    u8 *e = (u8 *)BattleArenas[(s8)g[0x36]].levels + (arg0 << 4);
     s32 off = *(s32 *)(e + 4);
     s32 type = *(s32 *)e;
     u8 *p;
@@ -2046,7 +2046,7 @@ s32 IsLevelUnlocked(s32 arg0) {
 
 s32 IsCardLevel(s32 arg0) {
     s32 i = GameArena;
-    u8 *s = (u8 *)BattleArenas[i].unk0;
+    u8 *s = (u8 *)BattleArenas[i].levels;
     return *(s32 *)(s + (arg0 << 4)) == 2;
 }
 
@@ -2054,18 +2054,18 @@ void TitlesEmptyStub(void) {
 }
 
 s32 LevelListName(s32 arg0, s32 arg1) {
-    s32 idx = *(s32 *)(BattleArenas[arg0].unk0 + (arg1 << 4) + 4);
+    s32 idx = *(s32 *)(BattleArenas[arg0].levels + (arg1 << 4) + 4);
     s32 w = ModeTypes[idx * 3] - 0x101;
     s32 **tbl = (s32 **)LangModeTypeTexts;
     return tbl[GameLanguage][w];
 }
 
 s32 LevelListModel(s32 arg0, s32 arg1) {
-    return *(s32 *)(BattleArenas[arg0].unk0 + (arg1 << 4) + 8);
+    return *(s32 *)(BattleArenas[arg0].levels + (arg1 << 4) + 8);
 }
 
 s32 LevelListAnim(s32 a, s32 b) {
-    return *(s32 *)(BattleArenas[a].unk0 + (b << 4) + 0xC);
+    return *(s32 *)(BattleArenas[a].levels + (b << 4) + 0xC);
 }
 
 s32 LevelListCount(s32 arg0) {
@@ -2073,18 +2073,18 @@ s32 LevelListCount(s32 arg0) {
 }
 
 s32 LevelListText(s32 a, s32 b) {
-    s32 base = BattleArenas[a].unk0;
+    s32 base = BattleArenas[a].levels;
     s32 idx = *(s32 *)(FILE_AT(base, b << 4) + 4);
     s32 *row = LangLevelNames[GameLanguage];
     return row[idx];
 }
 
 s32 LevelListType(s32 a, s32 b) {
-    return *(s32 *)((u8 *)BattleArenas[a].unk0 + (b << 4));
+    return *(s32 *)((u8 *)BattleArenas[a].levels + (b << 4));
 }
 
 s32 LevelListLevel(s32 a, s32 b) {
-    return *(s32 *)((u8 *)BattleArenas[a].unk0 + (b << 4) + 4);
+    return *(s32 *)((u8 *)BattleArenas[a].levels + (b << 4) + 4);
 }
 
 s32 AnyCardHasLevel(s32 idx) {
@@ -2133,12 +2133,12 @@ void TeamModeShowPreset(void) {
 
     *(s32 *)(s + 0x8F4) = p->tbl[O69PV->language];
     O69PV->teams = p->flag != 0;
-    O69PV->teamLeader[0] = p->unk34;
-    O69PV->teamLeader[1] = p->unk38;
-    O69PV->teammateChoice[0] = p->unk3C;
-    O69PV->teammateChoice[1] = p->unk40;
-    O69PV->teammateChoice[2] = p->unk44;
-    O69PV->teammateChoice[3] = p->unk48;
+    O69PV->teamLeader[0] = p->leader0;
+    O69PV->teamLeader[1] = p->leader1;
+    O69PV->teammateChoice[0] = p->mate0;
+    O69PV->teammateChoice[1] = p->mate1;
+    O69PV->teammateChoice[2] = p->mate2;
+    O69PV->teammateChoice[3] = p->mate3;
 }
 
 void TeamModeUpdate(void) {
