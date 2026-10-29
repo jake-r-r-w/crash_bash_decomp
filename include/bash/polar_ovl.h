@@ -655,45 +655,6 @@ typedef struct UkaMaskSet {
 
 void UkaMaskSetSegments(s32 i, UkaMaskSet *m);
 
-/* InitUkaPolarMask's extension (id 0x40000000, 0x1E0 bytes). */
-typedef struct UkaPolarExt {
-    /* 0x000 */ u8 pad0[0xC];
-    /* 0x00C */ s32 unkC;
-    /* 0x010 */ s32 unk10;
-    /* 0x014 */ s32 unk14;
-    /* 0x018 */ s32 unk18[4];
-    /* 0x028 */ s32 unk28[4];
-    /* 0x038 */ s32 unk38[4];
-    /* 0x048 */ s32 unk48[4];
-    /* 0x058 */ s32 unk58;
-    /* 0x05C */ s32 unk5C;
-    /* 0x060 */ s32 unk60;
-    /* 0x064 */ s32 unk64;
-    /* 0x068 */ s32 unk68;
-    /* 0x06C */ s32 unk6C;
-    /* 0x070 */ s32 unk70;
-    /* 0x074 */ EXTengine *eng;
-    /* 0x078 */ u8 pad78[0x88 - 0x78];
-    /* 0x088 */ SLONG_XYZ pos;
-    /* 0x094 */ u8 pad94[0x9C - 0x94];
-    /* 0x09C */ s32 unk9C;
-    /* 0x0A0 */ u8 padA0[0xA8 - 0xA0];
-    /* 0x0A8 */ NAS *bit;
-    /* 0x0AC */ NAS *unkAC;
-    /* 0x0B0 */ NAS *mask;
-    /* 0x0B4 */ s32 unkB4;
-    /* 0x0B8 */ psector seg[16];
-    /* 0x1B8 */ s32 unk1B8;
-    /* 0x1BC */ s32 unk1BC;
-    /* 0x1C0 */ s32 angle;
-    /* 0x1C4 */ s32 unk1C4;
-    /* 0x1C8 */ s32 unk1C8;
-    /* 0x1CC */ s32 unk1CC;
-    /* 0x1D0 */ s32 unk1D0;
-    /* 0x1D4 */ s32 unk1D4;
-    /* 0x1D8 */ s32 unk1D8;
-    /* 0x1DC */ s32 unk1DC;
-} UkaPolarExt;
 
 /* The 0x1605 bit's extension (id 0x10000000) InitUkaPolarMask sets up. */
 typedef struct UkaBitExt {
@@ -1053,14 +1014,14 @@ typedef struct SniperAim {
 /* Sniper extension (0x9C bytes, id 0x10000000; InitSniper). */
 typedef struct SniperExt {
     /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ EXTengine *unk10;
-    /* 0x14 */ s32 unk14; /* saved camera eye.z */
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
-    /* 0x20 */ EXTengine *unk20;
-    /* 0x24 */ s32 unk24;
-    /* 0x28 */ s32 unk28;
+    /* 0x0C */ s32 state;
+    /* 0x10 */ EXTengine *aimEng;
+    /* 0x14 */ s32 savedEyeZ;  /* the camera's eye.z, put back at the end */
+    /* 0x18 */ s32 timer;
+    /* 0x1C */ s32 timer2;
+    /* 0x20 */ EXTengine *aimEng2;
+    /* 0x24 */ s32 aimX;  /* with aimY, SniperAimUpdate's aim */
+    /* 0x28 */ s32 aimY;
     /* 0x2C */ u8 pad2C[0x50 - 0x2C];
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
@@ -1072,12 +1033,12 @@ typedef struct SniperExt {
     /* 0x78 */ s16 unk78;
     /* 0x7A */ s16 unk7A;
     /* 0x7C */ u8 pad7C[0x84 - 0x7C];
-    /* 0x84 */ s32 unk84;
-    /* 0x88 */ s32 unk88;
-    /* 0x8C */ s32 unk8C;
-    /* 0x90 */ s32 unk90;
-    /* 0x94 */ EXTengine *unk94;
-    /* 0x98 */ s32 unk98;
+    /* 0x84 */ s32 fired;  /* the shot is away */
+    /* 0x88 */ s32 player;  /* the hero aiming */
+    /* 0x8C */ s32 gravity;  /* added to yvel */
+    /* 0x90 */ s32 yvel;  /* the dropped body's fall; halved and turned on a bounce */
+    /* 0x94 */ EXTengine *shadow;  /* mirrors the body under the floor */
+    /* 0x98 */ s32 bounces;
 } SniperExt;
 
 

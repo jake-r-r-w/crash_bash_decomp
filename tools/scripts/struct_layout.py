@@ -104,6 +104,9 @@ def leaves(ty, structs, typedefs):
             w, sg, kind = width(t, size, dims)
             ds = [int(x) for x in dims.split(",")] if dims else []
             n = count(dims)
+            if kind == "struct" and tag in structs and w == 4 and max(
+                    (f[1] + f[2] for f in structs[tag]), default=0) > 4:
+                kind = "ptr"    # a pointer typedef that shares a struct's name (EXTengtype)
             if kind == "struct" and tag in structs:
                 for k in range(n if ds else 1):
                     idx = "".join("[%d]" % v for v in unravel(k, ds)) if ds else ""
