@@ -75,11 +75,6 @@ To check the build is byte for byte the retail game: `tools/dk make check`.
 
 ## Progress
 
-![game code](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjake-r-r-w%2Fcrash_bash_decomp%2Fmain%2Fdocs%2Fbadges%2Fcode.json)
-![functions](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjake-r-r-w%2Fcrash_bash_decomp%2Fmain%2Fdocs%2Fbadges%2Ffunctions.json)
-![PsyQ](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjake-r-r-w%2Fcrash_bash_decomp%2Fmain%2Fdocs%2Fbadges%2Fpsyq.json)
-![roadmap](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjake-r-r-w%2Fcrash_bash_decomp%2Fmain%2Fdocs%2Fbadges%2Froadmap.json)
-
 Progress counts bytes of code produced by matching C, game code and PsyQ
 reported apart. The dashboard is [`docs/index.html`](docs/index.html)
 (self-contained; works from disk or GitHub Pages on `/docs`): progress over
@@ -183,7 +178,7 @@ Spyro 3 demo) come from the disc as they are. The functions, then the data, move
 - `tools/reference/` - third-party source kept to read, not built: GCC 2.8.1 and
   2.7.2.3 (the C compiler and its MIPS target, GPL).
 - `.claude/skills/match-function/` - the agent's matching loop.
-- `.decomp/` - matching state; `docs/` - dashboard, badges and documentation.
+- `.decomp/` - matching state; `docs/` - dashboard and documentation.
 
 Ignored, never committed:
 

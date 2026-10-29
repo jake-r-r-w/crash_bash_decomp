@@ -5,7 +5,7 @@ into its original files, and the assets extracted from the user's own disc (neve
 The work already done is in [ROADMAP-A.md](ROADMAP-A.md).
 
 When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
-`tools/dk make progress` so the roadmap badge updates.
+`tools/dk make progress` so the dashboard updates.
 
 ## Part 5 - Release
 

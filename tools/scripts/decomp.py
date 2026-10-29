@@ -5091,80 +5091,6 @@ def data_summary(funcs, stat, proj, items=None):
     return {"done_b": done, "total_b": total, "pct": 100.0 * done / total if total else 0.0, "slot_b": slot}
 
 
-P_ROADMAPS = ("docs/ROADMAP-A.md", "docs/ROADMAP-B.md")   # done, then to do
-
-
-def roadmap():
-    """Phases of docs/ROADMAP-A.md and -B.md: [{title, done_when, items: [{done, text}]}]. An item is
-    a `- [ ]` line or a table row ending in a `[ ]` cell (its task the second cell). A phase in
-    both files is one phase, under the later title."""
-    phases, by = [], {}
-    for path in P_ROADMAPS:
-        if not os.path.exists(path):
-            continue
-        cur, item = None, None
-        for line in read(path).splitlines():
-            if line.startswith("## "):
-                title = line[3:].strip()
-                key = title.split(" - ")[0]
-                if key in by:
-                    cur = by[key]
-                    cur["title"] = title
-                else:
-                    cur = by[key] = {"title": title, "done_when": "", "items": []}
-                    phases.append(cur)
-                item = None
-                continue
-            if cur is None:
-                continue
-            m = re.match(r"^- \[([ xX])\] (.*)$", line)
-            row = re.match(r"^\|[^|]*\|([^|]*)\|.*\|\s*\[([ xX])\]\s*\|\s*$", line)
-            if m:
-                item = {"done": m.group(1) != " ", "text": m.group(2).strip()}
-                cur["items"].append(item)
-            elif row:
-                cur["items"].append({"done": row.group(2) != " ", "text": row.group(1).strip()})
-                item = None
-            elif item and line.startswith("  ") and line.strip():
-                item["text"] += " " + line.strip()
-            elif line.startswith("**Done when**"):
-                cur["done_when"] = line[len("**Done when**"):].strip()
-                item = "dw"
-            elif item == "dw" and line.strip():
-                cur["done_when"] += " " + line.strip()
-            else:
-                item = None if not line.strip() else item
-    return phases
-
-
-def current_phase(phases):
-    """Index of the first phase with an unticked item, or None when all are done."""
-    return next((i for i, ph in enumerate(phases) if any(not it["done"] for it in ph["items"])), None)
-
-
-def write_badges(g, l):
-    """docs/badges/*.json in shields.io endpoint format, so the README shows live figures without
-    hard-coded numbers. Game code is the headline; Sony's linked objects are reported apart."""
-    def badge(fname, label, msg, pct):
-        color = "brightgreen" if pct >= 90 else "green" if pct >= 50 else "yellow" if pct >= 10 else "orange"
-        jsave(f"docs/badges/{fname}.json", {"schemaVersion": 1, "label": label, "message": msg, "color": color})
-    os.makedirs("docs/badges", exist_ok=True)
-    badge("code", "game code", f"{g['pct']:.2f}%", g["pct"])
-    fp = 100.0 * g["done_f"] / g["total_f"] if g["total_f"] else 0.0
-    badge("functions", "functions", f"{g['done_f']}/{g['total_f']}", fp)
-    badge("psyq", "PsyQ", f"{l['pct']:.2f}%", l["pct"])
-    phases = roadmap()
-    i = current_phase(phases)
-    if phases:
-        if i is None:
-            badge("roadmap", "roadmap", "complete", 100.0)
-        else:
-            its = phases[i]["items"]
-            done = sum(it["done"] for it in its)
-            badge("roadmap", "roadmap", f"{phases[i]['title'].split(' - ')[0]} · {done}/{len(its)}",
-                  100.0 * done / len(its))
-
-
 def backfill_units(hist, funcs, stat, st, proj):
     """Per-unit figures for history points recorded before they were kept: a game function counts
     from its matched_at (untimed matches from the start, overlays once they were indexed), and
@@ -5315,7 +5241,6 @@ def cmd_progress(a):
     write("docs/index.html", read(DASHBOARD).replace("/*DATA*/null", json.dumps(page, separators=(",", ":"))
                                                      .replace("</", "<\\/")))
     g, l = s["game"], s["lib"]
-    write_badges(g, l)
     fmt = lambda t: f"{t['pct']:.2f}% ({t['done_b']}/{t['total_b']} bytes, {t['done_f']}/{t['total_f']} functions)"
     print(f"progress: game code {fmt(g)}; libs {fmt(l)}, +{l['asm_b']} bytes hand-written asm; "
           f"game functions named {g['named_f']}/{g['all_f']}; typed {g['typed_f']}/{g['c_f']} matched; "
