@@ -513,3 +513,6 @@ PROVIDE(libcd_bios_1_bss = 0x80077614);
 /* The end of the exe's .bss (Sony's last .bss ends at 0x80078C90), where the heap starts and
  * the engine loads: the link's end, which psylink gave as a symbol. */
 PROVIDE(HeapStart = 0x80078C90);
+
+/* The BIOS ROM's region byte (modchip_check_region), outside every segment. */
+PROVIDE(BiosRegion = 0xBFC7FF52);

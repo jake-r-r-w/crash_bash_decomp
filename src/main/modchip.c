@@ -2,12 +2,12 @@
 #include "bash/modchip.h"
 #include "bash/modchip_msg.h"
 
-extern u8 D_BFC7FF52;
+extern u8 BiosRegion;  /* the BIOS ROM's region letter: 'A' America, 'E' Europe, 'J' Japan */
 extern s32 ModchipState;
 extern s32 MsgFontRom;
 
 void modchip_check_region(void) {
-    switch (D_BFC7FF52) {
+    switch (BiosRegion) {
     case 0x41:
         ModchipState = 1;
         MsgFontRom = 1;
