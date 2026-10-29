@@ -5083,35 +5083,49 @@ def data_summary(funcs, stat, proj, items=None):
     return {"done_b": done, "total_b": total, "pct": 100.0 * done / total if total else 0.0, "slot_b": slot}
 
 
-P_ROADMAP = "docs/ROADMAP.md"
+P_ROADMAPS = ("docs/ROADMAP-A.md", "docs/ROADMAP-B.md")   # done, then to do
 
 
 def roadmap():
-    """Phases of docs/ROADMAP.md: [{title, done_when, items: [{done, text}]}]."""
-    if not os.path.exists(P_ROADMAP):
-        return []
-    phases, cur, item = [], None, None
-    for line in read(P_ROADMAP).splitlines():
-        if line.startswith("## "):
-            cur = {"title": line[3:].strip(), "done_when": "", "items": []}
-            phases.append(cur)
-            item = None
+    """Phases of docs/ROADMAP-A.md and -B.md: [{title, done_when, items: [{done, text}]}]. An item is
+    a `- [ ]` line or a table row ending in a `[ ]` cell (its task the second cell). A phase in
+    both files is one phase, under the later title."""
+    phases, by = [], {}
+    for path in P_ROADMAPS:
+        if not os.path.exists(path):
             continue
-        if cur is None:
-            continue
-        m = re.match(r"^- \[([ xX])\] (.*)$", line)
-        if m:
-            item = {"done": m.group(1) != " ", "text": m.group(2).strip()}
-            cur["items"].append(item)
-        elif item and line.startswith("  ") and line.strip():
-            item["text"] += " " + line.strip()
-        elif line.startswith("**Done when**"):
-            cur["done_when"] = line[len("**Done when**"):].strip()
-            item = "dw"
-        elif item == "dw" and line.strip():
-            cur["done_when"] += " " + line.strip()
-        else:
-            item = None if not line.strip() else item
+        cur, item = None, None
+        for line in read(path).splitlines():
+            if line.startswith("## "):
+                title = line[3:].strip()
+                key = title.split(" - ")[0]
+                if key in by:
+                    cur = by[key]
+                    cur["title"] = title
+                else:
+                    cur = by[key] = {"title": title, "done_when": "", "items": []}
+                    phases.append(cur)
+                item = None
+                continue
+            if cur is None:
+                continue
+            m = re.match(r"^- \[([ xX])\] (.*)$", line)
+            row = re.match(r"^\|[^|]*\|([^|]*)\|.*\|\s*\[([ xX])\]\s*\|\s*$", line)
+            if m:
+                item = {"done": m.group(1) != " ", "text": m.group(2).strip()}
+                cur["items"].append(item)
+            elif row:
+                cur["items"].append({"done": row.group(2) != " ", "text": row.group(1).strip()})
+                item = None
+            elif item and line.startswith("  ") and line.strip():
+                item["text"] += " " + line.strip()
+            elif line.startswith("**Done when**"):
+                cur["done_when"] = line[len("**Done when**"):].strip()
+                item = "dw"
+            elif item == "dw" and line.strip():
+                cur["done_when"] += " " + line.strip()
+            else:
+                item = None if not line.strip() else item
     return phases
 
 

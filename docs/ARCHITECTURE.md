@@ -507,7 +507,7 @@ is never committed (it holds the leak and copies of the game's files). The
 dashboard and `decomp.py progress` count it apart from the data to turn into C
 (`SLOT_IMAGES` in `decomp.py`; the Data in C tile notes it). The matching build
 keeps it byte for byte; the shiftable `NON_MATCHING` build replaces it with the
-id word and zeros (ROADMAP.md, Phase 3), and Tank's shift test shows whether
+id word and zeros (ROADMAP-A.md, Phase 3), and Tank's shift test shows whether
 the game cares.
 
 ### Leaked source
@@ -1457,7 +1457,7 @@ Every game function is C (2026-10-26). While one wasn't, it stayed in its C
 file as `INCLUDE_ASM(...)`, which pulls `asm/nonmatchings/<seg>/<func>.s`
 into the compiled object, so the build matched at every step. Rodata not yet
 in C is still pulled in the same way (`INCLUDE_RODATA`), and the data and bss
-come from splat's `asm/data/` until they are C (ROADMAP.md). splat (`make split`) regenerates `asm/` and `linkers/`
+come from splat's `asm/data/` until they are C (ROADMAP-A.md). splat (`make split`) regenerates `asm/` and `linkers/`
 from the retail executable; it never overwrites existing `src/` files.
 
 Overlays (registered with `decomp.py add-overlay`) get their own

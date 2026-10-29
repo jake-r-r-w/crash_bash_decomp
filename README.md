@@ -51,7 +51,7 @@ hand, by a person or an AI agent, one function per commit. Every match goes
 through one gate, `decomp.py done`, which checks the change, the function's
 words and a clean rebuild of every binary before it commits. The process and
 its diagram are in [docs/MATCHING.md](docs/MATCHING.md), the order of work in
-[docs/ROADMAP.md](docs/ROADMAP.md), and the rules in
+[docs/ROADMAP-B.md](docs/ROADMAP-B.md) (what is left; [done](docs/ROADMAP-A.md)), and the rules in
 [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/CONVENTIONS.md](docs/CONVENTIONS.md).
 Agents use the `/match-function` skill, or the [swarm](tools/swarm/README.md)
 for many functions at once.

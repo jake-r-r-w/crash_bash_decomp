@@ -1,41 +1,12 @@
-# Roadmap
+# Roadmap A: done
 
-The goal is a **source-only Crash Bash**: the executable and every overlay
-rebuilt byte for byte from C, data included, with no `INCLUDE_ASM` or
-`INCLUDE_RODATA` left, and everything named, typed and split into its
-original files. The game's assets (textures, sounds, models, levels) are not
-part of the source: a tool extracts them from the user's own disc into
-editable formats, and their formats are documented. Assets stay on the
-user's machine and never go in git; only the tools and format documentation
-do. [The final test](#the-final-test) says when it's done: a rebuilt disc,
-and a shifted build that plays the same as retail. Progress lives on the
-dashboard and badges. Tick a box in the commit that finishes that item, and
-run `tools/dk make progress` in it so the dashboard and roadmap badge
-update.
+Everything the roadmap has finished, phase by phase, with what each item found. The work still
+open, the final test and what comes after are in [ROADMAP-B.md](ROADMAP-B.md). When an item there
+is done, move it here in the commit that ticks it.
 
-Preparation goes in the phase that first needs it. When later work turns up
-something new to do, add it to the phase it blocks, not to an earlier one.
-
-## Current focus: Phase 6, the finish
-
-Every game function matches (2026-10-26), and Phases 1 to 5 are done (2026-10-28): every slot
-overlay, the engine and `main.exe` are source-only (no `INCLUDE_ASM`, `INCLUDE_RODATA` or data
-asm anywhere; the data is 100% C), split into their files, named and typed, and every format the
-game loads extracts to editable files (docs/ASSETS.md). What is left is Phase 6: the proofs that
-the source works as source (every overlay, the engine and `main.exe` shifted at once and played;
-a build with a current GCC), the last of the typing (quality level 4 everywhere), and
-ARCHITECTURE.md as a description of the game's systems.
-
-Any build of ours can be played: `tools/dk make disc` packs `build/main.exe`
-and the overlays into `build/CrashBash.bin`/`.cue`, which boots in an
-emulator, and `make disc-check` confirms the matching build packs to the
-retail image byte for byte (docs/PLAYING.md).
-
-Matches are C only (no inline asm; the SDK's `gte_*` macros excepted), and
-natural C comes first: C that only steers the compiler is used when nothing
-natural matches (docs/CONVENTIONS.md, Matching rules). A rework of a matched
-function (a rename, a retype, a natural form) is an ordinary commit once
-`make check` is OK.
+The goal (ROADMAP-B.md): a source-only Crash Bash, rebuilt byte for byte from C, named, typed and
+split into its original files, with the assets extracted from the user's own disc. Phases 1 to 5
+are done (2026-10-28), and so are three of Phase 6's items (2026-10-29).
 
 ## Phase 1 - Foundations: types and names
 
@@ -473,18 +444,11 @@ load extract and are documented.
 
 ## Phase 6 - Finish
 
-**Done when** every test in [The final test](#the-final-test) passes.
+The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.md](ROADMAP-B.md).
 
 - [x] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere (closed 2026-10-28): none since 2026-10-26
   (every function C, every string block C), and no data asm is left in any unit (`decomp.py
   progress`: data 100%).
-- [ ] The memory images: the slot's and the engine's .bss stay files read from
-  the user's disc (build-machine leftovers, not source); decide whether a
-  source build may write zeros there instead (the game shouldn't read them
-  before writing; the shift build already zeroes the slot's). The exe's .bss is
-  written into its file too (zeros, after one two-word function list;
-  ARCHITECTURE.md, The exe's .bss): as C, uninitialised definitions in each file
-  and a link that writes `.bss` out, or the same memory-image treatment.
 - [x] Every remaining disc file (music, movies, anything not covered above)
   extracts, and the formats are documented (closed 2026-10-28): every `CRASHBSH.DAT` entry
   decodes to editable files (texture sets, models with their animations, level data and scripts,
@@ -503,50 +467,3 @@ load extract and are documented.
   pinned PsyQ and engine .bss sections, the exe header's entry point, Sony's startup code
   (`2MBYTE.OBJ`, raw words: the tool assembles a copy that names what it uses), and the mode
   text files' pointers into the engine (docs/PLAYING.md, The fully shifted build).
-- [ ] A build with a current GCC for MIPS (`NON_MATCHING`).
-- [ ] Every file at quality level 4 ([CONVENTIONS.md](CONVENTIONS.md)), with no
-  placeholder names.
-- [ ] `docs/ARCHITECTURE.md` describes the game's systems.
-
-## The final test
-
-The decomp is done when all of these pass. Each proves something a byte match
-alone does not. The tools come earlier: the disc packer in Phase 2, the shifted build in Phase 3 (the Tank
-pilot), and every slot overlay passes a shift test of its own when it's finished. So these tests are the last check on the whole
-game, not the first time anything has been tested.
-
-1. **Clean rebuild.** A fresh clone, the user's disc and `tools/dk make check`
-   (nothing else) rebuild `main.exe` and every overlay, and each matches
-   `configs/USA/checksum.sha`. The disc packer then rebuilds the disc image,
-   and it matches the retail image byte for byte. *Proves: nothing outside the
-   repo is needed except the user's disc.*
-2. **Nothing hidden.** No `INCLUDE_ASM`, `INCLUDE_RODATA`, `.incbin` of code or
-   data, parked function or `func_`/`D_` name anywhere; the only binary inputs
-   are the assets the extractor reads from the disc, and the engine's slot
-   image, which the matching build reads from the disc too (it is the build
-   machine's memory, not source: ARCHITECTURE.md). *Proves: everything is
-   source.*
-3. **Shifted build plays.** The fully shifted `NON_MATCHING` build boots in an
-   emulator and plays: the front end, a save and a load, the hub, and every
-   minigame through to a win. *Proves: no address is hard-coded; the code works
-   as code, not as bytes that happen to land in the right place.*
-4. **Same game.** Played side by side with the retail disc over the same
-   route (front end, a save and a load, the hub, each minigame), the shifted
-   build behaves the same. *Proves: the rebuilt game behaves like the
-   original, not just roughly like it.* Keep the retail disc layout: load
-   times depend on where files sit on the CD.
-5. **A modern compiler.** The source builds with a current GCC for MIPS
-   (warnings allowed, `NON_MATCHING`) and passes test 4. *Proves: the C is
-   correct C, not C that only works because of the old compiler's quirks;
-   this is also the first step of the PC port.*
-
-## Afterwards - decided once the source is complete
-
-These are not phases yet. Each gets its own plan when the final test passes.
-
-- **Native PC port.** Build the C for PC, with assets loaded from the extracted
-  files instead of the CD. That means replacing the PS1 hardware layers (CD,
-  GPU and GTE, SPU sound, pads) with PC equivalents.
-- **The library as C.** Sony's PsyQ code is linked from Sony's own objects.
-  Rewriting it as C that compiles to the same objects would make the whole
-  game source; the PC port replaces most of it anyway, so decide after that.

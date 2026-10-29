@@ -18,7 +18,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `.data` too, except `bios_1.o`'s: `configs/USA/psyq/data_keep.txt`).
   `make check` and `make disc-check` OK. Live figures: `decomp.py progress`
   / `docs/index.html`.
-- [ROADMAP.md](ROADMAP.md): Phases 1 to 5 are done (2026-10-28): matching, the
+- [ROADMAP-A.md](ROADMAP-A.md) and [ROADMAP-B.md](ROADMAP-B.md): Phases 1 to 5 are done (2026-10-28): matching, the
   Tank pilot, every slot overlay, the engine and `main.exe` source-only, and
   every asset format extracted (the shift retests were dropped by decision:
   Phase 6's shift of everything covers them). Phase 6 is next. Figures
@@ -58,7 +58,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-Phase 6 (ROADMAP.md). In rough order:
+ROADMAP-B.md, Part 1 onwards. In rough order:
 
 1. Done 2026-10-29: **everything shifted at once** (`make shift-all`; it boots and plays).
 2. **Quality level 4**: the 113 untyped game functions (`progress`), the overlays' 136 views of
@@ -70,7 +70,7 @@ Phase 6 (ROADMAP.md). In rough order:
    doesn't carry over. Where it stopped is in the Open leads.
 4. **ARCHITECTURE.md** as a description of the game's systems.
 
-Needing the user: the memory-image question (ROADMAP Phase 6: may a source build write zeros
+Needing the user: the memory-image question (ROADMAP-B 1.1: may a source build write zeros
 where the slot's and the engine's .bss hold build-machine leftovers?).
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -140,11 +140,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - Prototype debug types (ARCHITECTURE.md, Prototype debug types): 34
   fields of 15 types whose bodies were on lost pages are word or byte
   arrays; retype them where code shows their fields.
-- Sound voices: the C walkers use `SfxVoicePool.active`; the symbol
-  `SfxActiveVoices` stays only for the data asm (`asm/data/3E4BC.data.s`).
-  Drop it from `sym.main.txt` once that data is C. `func_80022504` is "stop
-  all" (`StopSfx` inlined in a loop), `func_800228C4` unlinks without
-  stopping, `func_80022924` allocates, `func_80022984` inits the pool.
+- Sound voices: `func_80022504` is "stop all" (`StopSfx` inlined in a loop), `func_800228C4`
+  unlinks without stopping, `func_80022924` allocates, `func_80022984` inits the pool.
 - Ambiguous naming leads are listed in ARCHITECTURE.md ("Functions reached
   from the AST pairs").
 
@@ -485,6 +482,13 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-29 (roadmap split):** ROADMAP.md is now two files. ROADMAP-A.md holds the finished
+  work (Phases 1 to 5, and Phase 6's three done items). ROADMAP-B.md holds everything open, in
+  numbered parts with a table each: decisions, typing, loose ends, docs, the final test, release
+  (RELEASE_TODO.md merged in) and afterwards. `decomp.py`'s roadmap badge reads both files and
+  counts table rows ending in `[ ]`. The `SfxActiveVoices` lead was stale: that name is already
+  gone from `sym.main.txt`.
 
 - **2026-10-29 (GCC 12 build, shelved):** every game file builds with GCC 12, and
   `scratch/modern/modern.py` links them. It boots to a black screen: libsnd's `ssinit.o` .bss

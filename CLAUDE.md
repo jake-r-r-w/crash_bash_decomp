@@ -5,7 +5,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 [docs/CONVENTIONS.md](docs/CONVENTIONS.md).
 
 - Every game function matches (2026-10-26). The work now is naming, typing,
-  data to C and file splits (docs/ROADMAP.md); each such change is an
+  data to C and file splits (docs/ROADMAP-B.md; done work in ROADMAP-A.md); each such change is an
   ordinary commit once `tools/dk make check` prints `OK`. The matching tools
   below stay for reworking a function.
 - Everything runs through `tools/dk` (Docker); the host has no Python.
