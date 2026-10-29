@@ -293,6 +293,17 @@ typedef struct {
     u8 pad18[4];
 } KeyEntry;
 
+/* A map path (path_get; docs/ASSETS.md, Map data): its header, then its keys. The game moves
+ * cameras and hub objects along them (key_interp_pos). */
+typedef struct MapPath {
+    /* 0x00 */ s32 nKeys;
+    /* 0x04 */ s32 frames;      /* the last key's */
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 id;
+    /* 0x10 */ s32 unk10[8];
+    /* 0x30 */ KeyEntry keys[2];
+} MapPath;
+
 typedef struct {
     u8 pad0[4];
     s32 count; /* 0x04 */

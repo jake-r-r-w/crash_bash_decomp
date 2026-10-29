@@ -1291,25 +1291,25 @@ void MenuConfirmOrBack(void) {
 }
 
 void TitlesCamFromPath(camera_info_tag *cam, s32 arg1) {
-    u8 *o = (u8 *)path_get(arg1);
+    MapPath *o = (MapPath *)path_get(arg1);
     s32 *p;
     s32 t;
 
     if (o != NULL) {
-        cam->xform.angle.vx = (get_angle(*(s32 *)(o + 0x58) - *(s32 *)(o + 0x3C),
-                                          *(s32 *)(o + 0x50) - *(s32 *)(o + 0x34)) - 0x400) & 0xFFF;
+        cam->xform.angle.vx = (get_angle(o->keys[1].key - o->keys[0].key,
+                                          o->keys[1].pos.y - o->keys[0].pos.y) - 0x400) & 0xFFF;
         cam->xform.angle.vy = 0;
         cam->xform.angle.vz = 0;
-        cam->dist = (((s32)(*(u16 *)(o + 0x40) << 16)) >> 18) + 0x200;
-        cam->at.x = *(s32 *)(o + 0x30);
-        p = (s32 *)(o + 0x30);
+        cam->dist = (((s32)(*(u16 *)&o->keys[0].pad10[0] << 16)) >> 18) + 0x200;
+        cam->at.x = o->keys[0].pos.x;
+        p = (s32 *)&o->keys[0].pos;
         t = p[1];
         cam->at.y = t;
         t = p[2];
         cam->at.z = t;
         cam->eye.y = -p[1];
         cam->eye.x = 0;
-        cam->eye.z = *(s32 *)(o + 0x58);
+        cam->eye.z = o->keys[1].key;
     }
 }
 
