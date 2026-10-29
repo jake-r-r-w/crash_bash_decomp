@@ -79,10 +79,12 @@ Then it checks that no name a binary uses still links by a retail address in a r
 moved, packs the disc with the moved exe (`pack_disc.py --exe --elf`: the DAT index is found by
 name) and the bigger engine and overlays (`--grow`). `--pad-main`, `--pad-engine` and
 `--pad-slot` move one binary at a time (0 leaves it), to bisect a crash; at PAD 0 every binary
-is the matching build's (the engine's slot image aside, which is zeros). Playtested 2026-10-29:
+is the matching build's (the engine's slot image and .bss image aside, which are zeros). Playtested 2026-10-29:
 the front end, the pause screens' text, a load and a save (a new slot, its sum right), the hub
 and the minigames. The save holds an address (`GameState.boot`; a slot saved on the shifted
-build holds a different one): harmless here, since the game doesn't seem to read it on load.
+build holds a different one): harmless here, since the game doesn't seem to read it on load. The zeroed engine .bss (2026-10-29,
+ROADMAP-B 2.5) boots, and its mode text buffer fills with the mode's text at the address
+`ModeTextLoadAddr` gives (read through RetroArch's command interface, `scratch/texttest2.ps1`).
 
 ## The shifted build (`make shift`)
 

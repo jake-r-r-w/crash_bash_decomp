@@ -480,7 +480,10 @@ the current mode's text file (`levelload.c`; the text files' absolute pointers s
 `D_80098594` the slot, `D_80098598` this buffer. The image holds the build machine's leftovers
 there (small numbers, no text, no pointers), so like the slot image it stays a memory image read
 from the disc (`engine_bss` in engine.yaml, its own segment so it isn't grouped with `.data`),
-counted apart from the data to turn into C. The engine's tables that point into the buffer
+counted apart from the data to turn into C. Source builds (`shift_all.py`) write zeros there
+instead (2026-10-29). The intro's two words are 0 in retail's image too, and the game clears
+them before reading; `LoadModeText` fills the buffer during every mode's load, before anything
+reads it. The engine's tables that point into the buffer
 (`D_800985F0`, the pause menu's per-mode panel sets) point at the text file's records.
 
 ### The engine's slot image

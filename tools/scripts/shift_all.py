@@ -233,6 +233,15 @@ class Build:
         open(img, "wb").write(shift.SLOT_ID.to_bytes(4, "little") + bytes(os.path.getsize(src) - 4))
         run([LD, "-r", "-b", "binary", "-o", img + ".o", img])
         t = t.replace(f"build/{src}.o", img + ".o")
+        # the engine's .bss image: zeros (the intro's two words are 0 in retail too, and
+        # LoadModeText fills ModeTextBuffer before anything reads it)
+        src = "asm/bin/overlays/engine/engine_bss.bin"
+        img = f"{OUT}/engine_bss.bin"
+        open(img, "wb").write(bytes(os.path.getsize(src)))
+        run([LD, "-r", "-b", "binary", "-o", img + ".o", img])
+        if f"build/{src}.o" not in t:
+            sys.exit(f"shift_all: {src} not in the engine's link script")
+        t = t.replace(f"build/{src}.o", img + ".o")
         return write(f"{OUT}/engine.ld", t)
 
     def slot_script(self, ovl):
