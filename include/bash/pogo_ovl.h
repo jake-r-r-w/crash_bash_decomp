@@ -29,7 +29,7 @@ extern PogoSquare PogoGrid[8][8];
 /* The board cell at byte offset off from base (PogoGrid). */
 #define CELL_AT(off) ((PogoSquare *)((off) + (u32)base))
 /* The position a board cell's unk4 points to, as PlaySfx takes it. */
-#define CELL_POS(cx, cz) ((SLONG_XYZ *)&((PogoSquare *)((cx) * sizeof(PogoGrid[0]) + (cz) * sizeof(PogoSquare) + (u32)PogoGrid))->sub->unk04)
+#define CELL_POS(cx, cz) (&((PogoSquare *)((cx) * sizeof(PogoGrid[0]) + (cz) * sizeof(PogoSquare) + (u32)PogoGrid))->sub->XYZ)
 
 /* A scene object in the list at MapScene->subs (InitPogo_Tiles). */
 typedef struct PogoObj {

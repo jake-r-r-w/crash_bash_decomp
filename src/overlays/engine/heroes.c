@@ -184,8 +184,8 @@ void InitialiseHeroes(void) {
                 idx = ((u16 *)HeroHooks.HeroModels)[name];
                 fxmask = ~0x8000;
                 sub->flags &= fxmask;
-                sub->unk50 = 1;
-                sub->unk51 = 0;
+                sub->xform.hasScale = 1;
+                sub->xform.order = 0;
                 sub->u6C.dbase = &HeroModelBank[idx];
                 if (name == 3) {
                     sub->entity = fxv;
@@ -1277,7 +1277,7 @@ void HeroApplyJump(s32 arg0) {
         if (h->hero_move->jump_ctrl & 0x10) {
             y = h->hero_eng->XYZ.y;
             if (World_floor_level < y) {
-                h->hero_sub->unk08 += y - World_floor_level;
+                h->hero_sub->XYZ.y += y - World_floor_level;
                 h->hero_eng->XYZ.y = World_floor_level;
             }
         }
@@ -1772,15 +1772,15 @@ s32 HeroTestFall(s32 arg0) {
     if (h->hero_move->jump_max != 0) {
         if (ApplyContourMoved(h->hero_eng) != 0) {
             h->hero_move->jump_max = 0;
-            h->hero_sub->unk08 = 0;
+            h->hero_sub->XYZ.y = 0;
         } else if (!(h->hero_ctrl & 8)) {
             e = h->hero_eng;
-            if (World_floor_level < e->XYZ.y + h->hero_sub->unk08) {
+            if (World_floor_level < e->XYZ.y + h->hero_sub->XYZ.y) {
                 if (ContourHeight == 0x7FFFFFFF) {
                     goto set6;
                 }
                 e->XYZ.y = World_floor_level;
-                h->hero_sub->unk08 = 0;
+                h->hero_sub->XYZ.y = 0;
             }
         }
     } else if ((moved = HeroMovedDist(arg0) != 1)) {
@@ -1809,7 +1809,7 @@ s32 HeroTestFall(s32 arg0) {
         case 13:
             base13 = Heroes;
             h13 = base13 + arg0;
-            if (!(h13->hero_ctrl & 8) && World_floor_level < h13->hero_eng->XYZ.y + h13->hero_sub->unk08) {
+            if (!(h13->hero_ctrl & 8) && World_floor_level < h13->hero_eng->XYZ.y + h13->hero_sub->XYZ.y) {
                 if (ContourHeight == 0x7FFFFFFF) {
                 set6:
                     SetHeroAction(arg0, 6);
@@ -2084,12 +2084,12 @@ void HeroFall(s32 arg0) {
         SetHeroAction(arg0, 7);
     } else if (!(h->hero_ctrl & 8)) {
         eng = h->hero_eng;
-        if (World_floor_level < eng->XYZ.y + h->hero_sub->unk08) {
+        if (World_floor_level < eng->XYZ.y + h->hero_sub->XYZ.y) {
             if (ContourHeight == 0x7FFFFFFF) {
                 SetHeroAction(arg0, 6);
             } else {
                 eng->XYZ.y = World_floor_level;
-                h->hero_sub->unk08 = 0;
+                h->hero_sub->XYZ.y = 0;
             }
         }
     }
@@ -2140,7 +2140,7 @@ void SetHeroLand(s32 arg0) {
     h = base + arg0;
     h->hero_move->velocity_enable = 1;
     h->hero_move->jump_max = 0;
-    h->hero_sub->unk08 = 0;
+    h->hero_sub->XYZ.y = 0;
     SetHeroSeq(arg0, 8);
     if (ContourPlatform != NULL) {
         e = h->hero_eng;
@@ -2490,14 +2490,14 @@ void HeroShoot(s32 arg0) {
                         tbl = ThrowArcs;
                         p = tbl[i];
                         if (*p != 0) {
-                            s->unk20.x = p[0];
-                            s->unk20.y = p[1];
-                            s->unk20.x = p[2];
-                            s->unk04 = pos.vx - self->hero_eng->XYZ.x;
-                            s->unk08 = pos.vy - self->hero_eng->XYZ.y;
-                            s->unk0C = pos.vz - self->hero_eng->XYZ.z;
+                            s->xform.scale.vx = p[0];
+                            s->xform.scale.vy = p[1];
+                            s->xform.scale.vx = p[2];
+                            s->XYZ.x = pos.vx - self->hero_eng->XYZ.x;
+                            s->XYZ.y = pos.vy - self->hero_eng->XYZ.y;
+                            s->XYZ.z = pos.vz - self->hero_eng->XYZ.z;
                             s->flags |= 0x20008000;
-                            s->unk52 = 1;
+                            s->xform.dirty = 1;
                             self->hero_weapon_timer++;
                         } else {
                             s->flags &= ~0x8000;
@@ -2618,27 +2618,27 @@ void HeroBecomeAngel(s32 arg0) {
     e->xform.rot.vz = 0;
     e->xform.rot.vy = 0;
     e->xform.rot.vx = 0;
-    s->unk14 = 0;
-    s->unk12 = 0;
-    s->unk10 = 0;
+    s->xform.rot.vz = 0;
+    s->xform.rot.vy = 0;
+    s->xform.rot.vx = 0;
     h->hero_anim->sub = NULL;
     e->xform.scale.vx = 0x1000;
     e->xform.scale.vy = 0x1000;
     e->xform.scale.vz = 0x1000;
-    s->unk20.x = 0x1000;
-    s->unk20.y = 0x1000;
-    s->unk20.z = 0x1000;
+    s->xform.scale.vx = 0x1000;
+    s->xform.scale.vy = 0x1000;
+    s->xform.scale.vz = 0x1000;
     h->hero_ctrl |= 1;
     e->xform.dirty = 1;
-    s->unk52 = 1;
+    s->xform.dirty = 1;
     e = h->hero_fx;
     s = e->sub;
     e->xform.rot.vz = 0;
     e->xform.rot.vy = 0;
     e->xform.rot.vx = 0;
-    s->unk14 = 0;
-    s->unk12 = 0;
-    s->unk10 = 0;
+    s->xform.rot.vz = 0;
+    s->xform.rot.vy = 0;
+    s->xform.rot.vx = 0;
     e->flags |= 0x8021;
     s->flags |= 0x8021;
     h->hero_move->jump_max = 0;
@@ -2652,17 +2652,17 @@ void HeroBecomeAngel(s32 arg0) {
     e->xform.scale.vx = 0x1000;
     e->xform.scale.vy = 0x1000;
     e->xform.scale.vz = 0x1000;
-    s->unk20.x = 0x1000;
-    s->unk20.y = 0x1000;
-    s->unk20.z = 0x1000;
+    s->xform.scale.vx = 0x1000;
+    s->xform.scale.vy = 0x1000;
+    s->xform.scale.vz = 0x1000;
     e->xform.dirty = 1;
-    s->unk52 = 1;
+    s->xform.dirty = 1;
     e->XYZ = h->hero_eng->XYZ;
-    *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&h->hero_sub->unk04;
+    *(SLONG_XYZ *)&s->XYZ.x = *(SLONG_XYZ *)&h->hero_sub->XYZ.x;
     for (s = s->next; s != NULL; s = s->next) {
-        s->unk04 = 0;
-        s->unk08 = 0;
-        s->unk0C = 0;
+        s->XYZ.x = 0;
+        s->XYZ.y = 0;
+        s->XYZ.z = 0;
         s->u6C.dbase = &HeroModelBank[DB_Angel];
         s->entity = 0x2003;
         s->flags = (s->flags | 0x60000021) & ~0x8000;
@@ -2695,17 +2695,17 @@ s32 arg0;
 
     sub = Heroes[arg0].hero_sub;
     Heroes[arg0].hero_frozen = 2;
-    y = sub->unk08;
+    y = sub->XYZ.y;
     y -= 0x18;
-    sub->unk08 = y;
+    sub->XYZ.y = y;
     Heroes[arg0].hero_eng->xform.order = 4;
-    Heroes[arg0].hero_sub->unk51 = 4;
+    Heroes[arg0].hero_sub->xform.order = 4;
     Heroes[arg0].hero_fx->xform.order = 4;
-    Heroes[arg0].hero_fx->sub->unk51 = 4;
+    Heroes[arg0].hero_fx->sub->xform.order = 4;
     Heroes[arg0].hero_eng->xform.hasScale = 0;
-    Heroes[arg0].hero_sub->unk50 = 0;
+    Heroes[arg0].hero_sub->xform.hasScale = 0;
     Heroes[arg0].hero_fx->xform.hasScale = 0;
-    Heroes[arg0].hero_fx->sub->unk50 = 0;
+    Heroes[arg0].hero_fx->sub->xform.hasScale = 0;
     e = Heroes[arg0].hero_fx;
     s = e->sub;
     if (y < -0xA00) {
@@ -2716,7 +2716,7 @@ s32 arg0;
         return;
     }
     e->XYZ = Heroes[arg0].hero_eng->XYZ;
-    *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&Heroes[arg0].hero_sub->unk04;
+    *(SLONG_XYZ *)&s->XYZ.x = *(SLONG_XYZ *)&Heroes[arg0].hero_sub->XYZ.x;
     s->flags |= 0x8000;
     ProcessHeroAnim(arg0, y);
     for (s = s->next, i = 0; s != NULL; s = s->next, i++) {
@@ -2725,18 +2725,18 @@ s32 arg0;
             if (AngelSparkles[i][arg0].unk6 < 0) {
                 AngelSparkles[i][arg0].unk6 = 0;
             }
-            s->unk04 += AngelSparkles[i][arg0].unk6 * rcossin_tbl[(AngelSparkles[i][arg0].unk4 - 0x400) & 0xFFF].unk2 >> 12;
-            s->unk0C += AngelSparkles[i][arg0].unk6 * rcossin_tbl[AngelSparkles[i][arg0].unk4 & 0xFFF].unk2 >> 12;
+            s->XYZ.x += AngelSparkles[i][arg0].unk6 * rcossin_tbl[(AngelSparkles[i][arg0].unk4 - 0x400) & 0xFFF].unk2 >> 12;
+            s->XYZ.z += AngelSparkles[i][arg0].unk6 * rcossin_tbl[AngelSparkles[i][arg0].unk4 & 0xFFF].unk2 >> 12;
             y = AngelSparkles[i][arg0].unk8;
             y += AngelSparkles[i][arg0].unkA;
             if (y > 0x30) {
                 y = 0x30;
             }
             AngelSparkles[i][arg0].unk8 = y;
-            s->unk08 += y;
+            s->XYZ.y += y;
             s->flags |= 0x8000;
             s->unk76 = AngelSparkles[i][arg0].unkC += 0x60;
-            if (World_floor_level < s->unk08 || AngelSparkles[i][arg0].unkC >= 0x1000) {
+            if (World_floor_level < s->XYZ.y || AngelSparkles[i][arg0].unkC >= 0x1000) {
                 AngelSparkles[i][arg0].unk2 = 0;
                 AngelSparkles[i][arg0].unk0 = Random(10) + 2;
                 s->flags &= ~0x8000;
@@ -2750,7 +2750,7 @@ s32 arg0;
             AngelSparkles[i][arg0].unk8 = -0x40;
             AngelSparkles[i][arg0].unkA = 4;
             AngelSparkles[i][arg0].unkC = 0x100;
-            *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&Heroes[arg0].hero_fx->sub->unk04;
+            *(SLONG_XYZ *)&s->XYZ.x = *(SLONG_XYZ *)&Heroes[arg0].hero_fx->sub->XYZ.x;
         }
     }
 }
@@ -3031,7 +3031,7 @@ void HeroDrop(s32 arg0) {
     s32 sum;
 
     h->hero_frozen = 2;
-    sum = h->hero_eng->XYZ.y + h->hero_sub->unk08;
+    sum = h->hero_eng->XYZ.y + h->hero_sub->XYZ.y;
     if (World_floor_level + 0x180 < sum) {
         SetHeroAction(arg0, (u16)HeroActDead);
     }
@@ -3233,9 +3233,9 @@ s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg
                 }
                 if (def->scaleinend != 0) {
                     st[2] = 0x1000 / def->scaleinend;
-                    obj->unk20.z = 0;
-                    obj->unk20.y = 0;
-                    obj->unk20.x = 0;
+                    obj->xform.scale.vz = 0;
+                    obj->xform.scale.vy = 0;
+                    obj->xform.scale.vx = 0;
                 }
                 if (def->scaleoutstart != 0) {
                     if (life != def->scaleoutstart) {
@@ -3245,7 +3245,7 @@ s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg
                     }
                 }
                 if (def->zrot != 0) {
-                    obj->unk14 = Random(0x1000);
+                    obj->xform.rot.vz = Random(0x1000);
                 }
                 n++;
                 td->particlesactive += 1;
@@ -3274,17 +3274,17 @@ s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg
             }
             t = def->scaleinend;
             if (t != 0 && t >= part->age) {
-                if ((obj->unk20.x += st[2]) <= 0) {
-                    obj->unk20.x = 0;
+                if ((obj->xform.scale.vx += st[2]) <= 0) {
+                    obj->xform.scale.vx = 0;
                 }
-                obj->unk20.y = obj->unk20.z = obj->unk20.x;
+                obj->xform.scale.vy = obj->xform.scale.vz = obj->xform.scale.vx;
             }
             t = def->scaleoutstart;
             if (t != 0 && part->age >= t) {
-                if ((obj->unk20.x -= st[3]) <= 0) {
-                    obj->unk20.x = 0;
+                if ((obj->xform.scale.vx -= st[3]) <= 0) {
+                    obj->xform.scale.vx = 0;
                 }
-                obj->unk20.y = obj->unk20.z = obj->unk20.x;
+                obj->xform.scale.vy = obj->xform.scale.vz = obj->xform.scale.vx;
             }
             vel_update((VelObj *)obj, (VelParams *)def, (VelState *)part);
             if (!(obj->flags & 0x8000) && def->regenparticle != 0) {
@@ -3302,9 +3302,9 @@ s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg
     s32 r;
 
             obj->flags &= ~0x8000;
-            obj->unk20.x = 0x1000;
-            obj->unk20.z = 0x1000;
-            obj->unk20.y = 0x1000;
+            obj->xform.scale.vx = 0x1000;
+            obj->xform.scale.vz = 0x1000;
+            obj->xform.scale.vy = 0x1000;
             *(s16 *)&obj->unk76 = 0;
             t = def->particlesperframe;
             obj = obj->next;
@@ -3575,13 +3575,13 @@ void InitScriptFX(NAS *nas)
         sub->flags = (((u32) th->type.entity[1]) | 0x42000000) & (~0x8000);
         if (sd->flags & 8)
       {
-        sub->unk51 = 3;
+        sub->xform.order = 3;
       }
       else
       {
-        sub->unk51 = 2;
+        sub->xform.order = 2;
       }
-        sub->unk50 = 1;
+        sub->xform.hasScale = 1;
         r = get_script_track(dbase, t->scriptnumber, t->threadnumber);
         kf = 0;
         if (r != 0)
@@ -3592,17 +3592,17 @@ void InitScriptFX(NAS *nas)
       {
         break;
       }
-        sub->unk10 = *((u16 *) (kf + 0x18));
-        sub->unk12 = *((u16 *) (kf + 0x1C));
-        sub->unk14 = *((u16 *) (kf + 0x20));
-        sub->unk04 = *((s32 *) (kf + 0xC));
-        sub->unk08 = *((s32 *) (kf + 0x10));
-        sub->unk0C = *((s32 *) (kf + 0x14));
-        sub->unk20.x = *((s32 *) (kf + 0x40));
-        sub->unk20.y = *((s32 *) (kf + 0x44));
-        sub->unk20.z = *((s32 *) (kf + 0x48));
+        sub->xform.rot.vx = *((u16 *) (kf + 0x18));
+        sub->xform.rot.vy = *((u16 *) (kf + 0x1C));
+        sub->xform.rot.vz = *((u16 *) (kf + 0x20));
+        sub->XYZ.x = *((s32 *) (kf + 0xC));
+        sub->XYZ.y = *((s32 *) (kf + 0x10));
+        sub->XYZ.z = *((s32 *) (kf + 0x14));
+        sub->xform.scale.vx = *((s32 *) (kf + 0x40));
+        sub->xform.scale.vy = *((s32 *) (kf + 0x44));
+        sub->xform.scale.vz = *((s32 *) (kf + 0x48));
         sub->entity = *((u16 *) (kf + 0x8));
-        sub->unk52 = 1;
+        sub->xform.dirty = 1;
         sub = sub->next;
         break;
 
@@ -3646,20 +3646,20 @@ void InitScriptFX(NAS *nas)
             sub->flags &= ~0x8000;
             if (sd->flags & 8)
             {
-              sub->unk51 = 3;
+              sub->xform.order = 3;
             }
             else
             {
-              sub->unk51 = 2;
+              sub->xform.order = 2;
             }
-            sub->unk50 = 1;
-            sub->unk04 = 0;
-            sub->unk08 = 0;
-            sub->unk0C = 0;
+            sub->xform.hasScale = 1;
+            sub->XYZ.x = 0;
+            sub->XYZ.y = 0;
+            sub->XYZ.z = 0;
             sub->entity = *((u16 *) (k + 0x28));
-            sub->unk20.x = 0x1000;
-            sub->unk20.z = 0x1000;
-            sub->unk20.y = 0x1000;
+            sub->xform.scale.vx = 0x1000;
+            sub->xform.scale.vz = 0x1000;
+            sub->xform.scale.vy = 0x1000;
             sub->unk76 = 0;
           }
           sub = sub->next;
@@ -3773,25 +3773,25 @@ void PlotScriptFX(NAS *nas) {
                         f = sd->timer - (start << 8);
                     }
                     if (sub != NULL && (sub->flags & 0x8000)) {
-                        sub->unk52 = 1;
-                        if (sub->unk51 == 3) {
-                            quat_slerp(&cur->quat, &next->quat, (f << 12) / d >> 8, (Quat *)&sub->unk10);
+                        sub->xform.dirty = 1;
+                        if (sub->xform.order == 3) {
+                            quat_slerp(&cur->quat, &next->quat, (f << 12) / d >> 8, (Quat *)&sub->xform.rot.vx);
                         } else {
-                            sub->unk12 = *(u16 *)&cur->ry - ((-next->ry + cur->ry) << 20 >> 20) * f / (d << 8);
-                            sub->unk52 = 1;
-                            sub->unk10 = *(u16 *)&cur->rx - ((-next->rx + cur->rx) << 20 >> 20) * f / (d << 8);
-                            sub->unk52 = 1;
-                            sub->unk14 = *(u16 *)&cur->rz + ((next->rz - cur->rz) << 20 >> 20) * f / (d << 8);
-                            sub->unk52 = 1;
+                            sub->xform.rot.vy = *(u16 *)&cur->ry - ((-next->ry + cur->ry) << 20 >> 20) * f / (d << 8);
+                            sub->xform.dirty = 1;
+                            sub->xform.rot.vx = *(u16 *)&cur->rx - ((-next->rx + cur->rx) << 20 >> 20) * f / (d << 8);
+                            sub->xform.dirty = 1;
+                            sub->xform.rot.vz = *(u16 *)&cur->rz + ((next->rz - cur->rz) << 20 >> 20) * f / (d << 8);
+                            sub->xform.dirty = 1;
                         }
-                        sub->unk04 = cur->x + (next->x - cur->x) * f / (d << 8);
-                        sub->unk0C = cur->z + (next->z - cur->z) * f / (d << 8);
-                        sub->unk08 = cur->y + (next->y - cur->y) * f / (d << 8);
-                        sub->unk20.x = cur->sx + (next->sx - cur->sx) * f / (d << 8);
-                        sub->unk52 = 1;
-                        sub->unk20.y = cur->sy + (next->sy - cur->sy) * f / (d << 8);
-                        sub->unk52 = 1;
-                        sub->unk20.z = cur->sz + (next->sz - cur->sz) * f / (d << 8);
+                        sub->XYZ.x = cur->x + (next->x - cur->x) * f / (d << 8);
+                        sub->XYZ.z = cur->z + (next->z - cur->z) * f / (d << 8);
+                        sub->XYZ.y = cur->y + (next->y - cur->y) * f / (d << 8);
+                        sub->xform.scale.vx = cur->sx + (next->sx - cur->sx) * f / (d << 8);
+                        sub->xform.dirty = 1;
+                        sub->xform.scale.vy = cur->sy + (next->sy - cur->sy) * f / (d << 8);
+                        sub->xform.dirty = 1;
+                        sub->xform.scale.vz = cur->sz + (next->sz - cur->sz) * f / (d << 8);
                         fl = sub->flags & ~0x40000000;
                         sub->flags = fl;
                         alpha = cur->fade + (next->fade - cur->fade) * f / (d << 8);
@@ -3824,11 +3824,11 @@ void PlotScriptFX(NAS *nas) {
                                 return;
                             }
                         }
-                        sub->unk20.x = 0x1000;
-                        sub->unk20.z = 0x1000;
-                        sub->unk20.y = 0x1000;
+                        sub->xform.scale.vx = 0x1000;
+                        sub->xform.scale.vz = 0x1000;
+                        sub->xform.scale.vy = 0x1000;
                         sub->unk76 = 0;
-                        sub->unk52 = 1;
+                        sub->xform.dirty = 1;
                         if (((GameState *)GameInfo)->mode == 0x2C) {
                             sub->flags &= ~0x8000;
                         }
@@ -4213,9 +4213,9 @@ void emit_script_particle(subengine *arg0, partdata *arg1, EmitPart *arg2, s32 *
     t = arg1->scaleinend;
     if (t != 0) {
         arg3[2] = 0x1000 / t;
-        arg0->unk20.z = 0;
-        arg0->unk20.y = 0;
-        arg0->unk20.x = 0;
+        arg0->xform.scale.vz = 0;
+        arg0->xform.scale.vy = 0;
+        arg0->xform.scale.vx = 0;
     }
     u = arg1->scaleoutstart;
     if (u != 0) {
@@ -4226,7 +4226,7 @@ void emit_script_particle(subengine *arg0, partdata *arg1, EmitPart *arg2, s32 *
         }
     }
     if (arg1->zrot != 0) {
-        arg0->unk14 = Random(0x1000);
+        arg0->xform.rot.vz = Random(0x1000);
     }
     arg4->particlesactive += 1;
 }
@@ -4367,7 +4367,7 @@ void CreateFloatyScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             if (sub != NULL) {
                 while (sub != NULL) {
                     sub->u6C.dbase = &HeroModelBank[DB_Interface];
-                    sub->unk04 = off;
+                    sub->XYZ.x = off;
                     sub->entity = arg3 % 10 + 0x200E;
                     sub = sub->next;
                     arg3 /= 10;

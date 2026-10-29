@@ -5039,16 +5039,16 @@ void InitTransmuterBeam(NAS *m) {
         ext->it_eng = e;
         e->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         e->sub->entity = 0x2003;
-        e->sub->unk51 = 0;
+        e->sub->xform.order = 0;
         s2 = e->sub;
-        s2->unk14 = 0;
-        s2->unk12 = 0;
-        s2->unk10 = 0;
-        e->sub->unk50 = 1;
+        s2->xform.rot.vz = 0;
+        s2->xform.rot.vy = 0;
+        s2->xform.rot.vx = 0;
+        e->sub->xform.hasScale = 1;
         sub = e->sub;
-        sub->unk20.z = 0x200;
-        sub->unk20.y = 0x200;
-        sub->unk20.x = 0x200;
+        sub->xform.scale.vz = 0x200;
+        sub->xform.scale.vy = 0x200;
+        sub->xform.scale.vx = 0x200;
         e->sub->flags &= ~0x8000;
         e->flags |= 0x200000;
     }
@@ -5058,16 +5058,16 @@ void InitTransmuterBeam(NAS *m) {
             ext->light_eng[i] = e;
             e->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
             e->sub->entity = 0x2019;
-            e->sub->unk51 = 0;
+            e->sub->xform.order = 0;
             s2 = e->sub;
-            s2->unk14 = 0;
-            s2->unk12 = 0;
-            s2->unk10 = 0;
-            e->sub->unk50 = 1;
+            s2->xform.rot.vz = 0;
+            s2->xform.rot.vy = 0;
+            s2->xform.rot.vx = 0;
+            e->sub->xform.hasScale = 1;
             s2 = e->sub;
-            s2->unk20.z = 0x800;
-            s2->unk20.y = 0x800;
-            s2->unk20.x = 0x800;
+            s2->xform.scale.vz = 0x800;
+            s2->xform.scale.vy = 0x800;
+            s2->xform.scale.vx = 0x800;
             e->sub->flags &= ~0x8000;
             e->flags |= 0x200000;
         }
@@ -6120,20 +6120,20 @@ void PlotScratchMaster(NAS *m) {
             + (e->XYZ.z - e->OldXYZ.z) * (e->XYZ.z - e->OldXYZ.z) > 0 && s != NULL) {
             if (Heroes[m->UserInfo.user1].hero_mode == 0x49) {
                 if (!(m->UserInfo.user2++ & 1) && !(s->flags & 0x8000)) {
-                    *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->XYZ;
+                    *(SLONG_XYZ *)&s->XYZ.x = Heroes[m->UserInfo.user1].hero_eng->XYZ;
                     if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx > 0x1000) {
-                        s->unk50 = 1;
+                        s->xform.hasScale = 1;
                         dx = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
-                        s->unk20.z = dx;
-                        s->unk20.y = dx;
-                        s->unk20.x = dx;
+                        s->xform.scale.vz = dx;
+                        s->xform.scale.vy = dx;
+                        s->xform.scale.vx = dx;
                     }
                     if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx < 0x1000) {
-                        s->unk50 = 1;
+                        s->xform.hasScale = 1;
                         v = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
-                        s->unk20.z = v;
-                        s->unk20.y = v;
-                        s->unk20.x = v;
+                        s->xform.scale.vz = v;
+                        s->xform.scale.vy = v;
+                        s->xform.scale.vx = v;
                     }
                     if (GameMode == 0x15) {
                         s->flags = 0x40008021;
@@ -6142,29 +6142,29 @@ void PlotScratchMaster(NAS *m) {
                         s->flags = 0x40008061;
                     }
                     ang = Heroes[m->UserInfo.user1].hero_eng->xform.rot.vy + 0x800;
-                    s->unk52 = 1;
+                    s->xform.dirty = 1;
                     s->unk76 = 0x400;
-                    s->unk12 = ang;
+                    s->xform.rot.vy = ang;
                 }
             }
             if (Heroes[m->UserInfo.user1].hero_mode == 0x4A
                 && Heroes[m->UserInfo.user1].hero_anim->Aindex == 9
                 && !(s->flags & 0x8000)) {
                 if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx > 0x1000) {
-                    s->unk50 = 1;
+                    s->xform.hasScale = 1;
                     w = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
-                    s->unk20.z = w;
-                    s->unk20.y = w;
-                    s->unk20.x = w;
+                    s->xform.scale.vz = w;
+                    s->xform.scale.vy = w;
+                    s->xform.scale.vx = w;
                 }
                 if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx < 0x1000) {
-                    s->unk50 = 1;
+                    s->xform.hasScale = 1;
                     x = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
-                    s->unk20.z = x;
-                    s->unk20.y = x;
-                    s->unk20.x = x;
+                    s->xform.scale.vz = x;
+                    s->xform.scale.vy = x;
+                    s->xform.scale.vx = x;
                 }
-                *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->XYZ;
+                *(SLONG_XYZ *)&s->XYZ.x = Heroes[m->UserInfo.user1].hero_eng->XYZ;
                 if (GameMode == 0x15) {
                     s->flags = 0x40008021;
                     s->entity = 0x2030;
@@ -6173,8 +6173,8 @@ void PlotScratchMaster(NAS *m) {
                 }
                 ang = Heroes[m->UserInfo.user1].hero_eng->xform.rot.vy + 0x800;
                 s->unk76 = 0;
-                s->unk52 = 1;
-                s->unk12 = ang;
+                s->xform.dirty = 1;
+                s->xform.rot.vy = ang;
             }
         }
     }
@@ -6183,9 +6183,9 @@ void PlotScratchMaster(NAS *m) {
             s->unk76 += 0x60;
             if ((s16)s->unk76 > 0xC00) {
                 s->flags = 0;
-                s->unk20.z = 0x1000;
-                s->unk20.y = 0x1000;
-                s->unk20.x = 0x1000;
+                s->xform.scale.vz = 0x1000;
+                s->xform.scale.vy = 0x1000;
+                s->xform.scale.vx = 0x1000;
             }
         }
     }
@@ -6221,9 +6221,9 @@ void InitIceBerg(NAS *m) {
             }
         }
         m->Engine->sub->flags |= 0x02000000;
-        m->Engine->sub->unk51 = 0;
+        m->Engine->sub->xform.order = 0;
         if (m->UserInfo.user1 == 1) {
-            m->Engine->sub->unk12 = 0x800;
+            m->Engine->sub->xform.rot.vy = 0x800;
             m->Engine->sub->unk68 = 0x200;
         }
         m->Engine->sub->unk68 = 0x200;
@@ -6390,7 +6390,7 @@ void UkaMaskInitRisers(void) {
         v = up;
         vp = &v;
         obj = UkaMaskObjects[i];
-        ApplyMatrixLV((MATRIX *)&((subengine *)obj)->unk2C[4], vp, vp);
+        ApplyMatrixLV(&((subengine *)obj)->xform.mtx, vp, vp);
         i++;
         UkaMaskRisers[(((get_angle(v.vx, vp->vz) + 1) & 0xFFF) >> 8) - 1 & 0xF] = (PolarRiserObj *)obj;
     }
@@ -6534,16 +6534,16 @@ void InitUkaPolarMask(NAS *m) {
         ext->eng = e;
         e->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         e->sub->entity = 0x2003;
-        e->sub->unk51 = 0;
+        e->sub->xform.order = 0;
         s2 = e->sub;
-        s2->unk14 = 0;
-        s2->unk12 = 0;
-        s2->unk10 = 0;
-        e->sub->unk50 = 1;
+        s2->xform.rot.vz = 0;
+        s2->xform.rot.vy = 0;
+        s2->xform.rot.vx = 0;
+        e->sub->xform.hasScale = 1;
         sub = e->sub;
-        sub->unk20.z = 0x200;
-        sub->unk20.y = 0x200;
-        sub->unk20.x = 0x200;
+        sub->xform.scale.vz = 0x200;
+        sub->xform.scale.vy = 0x200;
+        sub->xform.scale.vx = 0x200;
         e->sub->flags &= ~0x8000;
     }
 }
@@ -7630,11 +7630,11 @@ void InitSimpleExplosion(NAS *m) {
                 ext->vel[i].z = Random(0x4C) - Random(0x4C);
                 ext->vel[i].y = Random(0x4C) - Random(0x4C);
                 sub->flags = 0x40008041;
-                sub->unk50 = 1;
-                sub->unk51 = 0;
-                sub->unk20.z = 0x1000;
-                sub->unk20.y = 0x1000;
-                sub->unk20.x = 0x1000;
+                sub->xform.hasScale = 1;
+                sub->xform.order = 0;
+                sub->xform.scale.vz = 0x1000;
+                sub->xform.scale.vy = 0x1000;
+                sub->xform.scale.vx = 0x1000;
                 ext->unk104 = 0;
                 sub->unk76 = 0;
                 sub = sub->next;
@@ -7726,11 +7726,11 @@ void InitPackEffect(NAS *m) {
                 ext->vel[i].z = Random(0x38) - Random(0x38);
                 ext->vel[i].y = Random(0x38) - Random(0x38);
                 sub->flags = 0x40008021;
-                sub->unk50 = 1;
-                sub->unk51 = 0;
-                sub->unk20.z = 0x1000;
-                sub->unk20.y = 0x1000;
-                sub->unk20.x = 0x1000;
+                sub->xform.hasScale = 1;
+                sub->xform.order = 0;
+                sub->xform.scale.vz = 0x1000;
+                sub->xform.scale.vy = 0x1000;
+                sub->xform.scale.vx = 0x1000;
                 ext->unk104 = 0;
                 sub->unk76 = 0;
                 sub = sub->next;
@@ -9050,14 +9050,14 @@ void PlotSniper(NAS *m) {
                         ext->unk10->sub->flags |= 0x8000;
                         ext->unkC = 1;
                         CameraMode = 0;
-                        ext->unk10->sub->unk04 = SNIPER_CAM->at.x;
-                        ext->unk10->sub->unk08 = SNIPER_CAM->at.y - 0x600;
-                        ext->unk10->sub->unk0C = SNIPER_CAM->at.z;
+                        ext->unk10->sub->XYZ.x = SNIPER_CAM->at.x;
+                        ext->unk10->sub->XYZ.y = SNIPER_CAM->at.y - 0x600;
+                        ext->unk10->sub->XYZ.z = SNIPER_CAM->at.z;
                         ext->unk20->sub->flags |= 0x8000;
                         ext->unkC = 1;
-                        ext->unk20->sub->unk04 = SNIPER_CAM->at.x;
-                        ext->unk20->sub->unk08 = SNIPER_CAM->at.y - 0x600;
-                        ext->unk20->sub->unk0C = SNIPER_CAM->at.z;
+                        ext->unk20->sub->XYZ.x = SNIPER_CAM->at.x;
+                        ext->unk20->sub->XYZ.y = SNIPER_CAM->at.y - 0x600;
+                        ext->unk20->sub->XYZ.z = SNIPER_CAM->at.z;
                         ext->unk24 = -0x5DC;
                         ext->unk28 = 0x400;
                         PlaySfx(0x23F, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -9077,7 +9077,7 @@ void PlotSniper(NAS *m) {
             }
             break;
         case 1:
-            ext->unk10->sub->unk04 = SNIPER_CAM->at.x;
+            ext->unk10->sub->XYZ.x = SNIPER_CAM->at.x;
             ext->unk54 = 0;
             ext->unk74 = 0;
             ext->unk18++;
@@ -9096,8 +9096,8 @@ void PlotSniper(NAS *m) {
             if (ext->unk84 == 0) {
                 SniperAimUpdate((SniperAim *)&ext->pad2C[4], &ext->unk24);
                 sub = ext->unk20->sub;
-                dx = SNIPER_CAM->at.x - sub->unk04;
-                dy = SNIPER_CAM->at.y - sub->unk08;
+                dx = SNIPER_CAM->at.x - sub->XYZ.x;
+                dy = SNIPER_CAM->at.y - sub->XYZ.y;
                 if (dx < -0x700) {
                     SNIPER_CAM->at.x += 0x41;
                     i = abs(ext->unk50);
@@ -9126,10 +9126,10 @@ void PlotSniper(NAS *m) {
                 if (SNIPER_CAM->at.x > 0x1000) {
                     SNIPER_CAM->at.x = 0x1000;
                 }
-                ext->unk20->sub->unk04 = SNIPER_CAM->at.x + ext->unk24;
+                ext->unk20->sub->XYZ.x = SNIPER_CAM->at.x + ext->unk24;
                 {
                     s32 ay = ext->unk28 - 0x600;
-                    ext->unk20->sub->unk08 = SNIPER_CAM->at.y + ay;
+                    ext->unk20->sub->XYZ.y = SNIPER_CAM->at.y + ay;
                 }
                 if (ext->unk84 == 0 && (SNIPER_PAD[ext->unk88].dirPressed & 0x8000)) {
                     ext->unk84 = 1;
@@ -9140,7 +9140,7 @@ void PlotSniper(NAS *m) {
                     if (nas != NULL) {
                         mext = FindExtension(nas, 0x10000000);
                         if (mext != NULL) {
-                            mext->from = *(SLONG_XYZ *)&ext->unk20->sub->unk04;
+                            mext->from = *(SLONG_XYZ *)&ext->unk20->sub->XYZ.x;
                             mext->to = Heroes[ext->unk88].hero_eng->XYZ;
                             mext->to.x = SNIPER_CAM->at.x;
                             mext->to.y = SNIPER_CAM->at.y - 0x700;
@@ -9302,13 +9302,13 @@ s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
         hi.v[1] = (hi.v[1] * a->xform.scale.vy) >> 12;
         hi.v[2] = (hi.v[2] * a->xform.scale.vz) >> 12;
     }
-    if (a->sub->unk50 == 1) {
-        lo.v[0] = (lo.v[0] * a->sub->unk20.x) >> 12;
-        lo.v[1] = (lo.v[1] * a->sub->unk20.y) >> 12;
-        lo.v[2] = (lo.v[2] * a->sub->unk20.z) >> 12;
-        hi.v[0] = (hi.v[0] * a->sub->unk20.x) >> 12;
-        hi.v[1] = (hi.v[1] * a->sub->unk20.y) >> 12;
-        hi.v[2] = (hi.v[2] * a->sub->unk20.z) >> 12;
+    if (a->sub->xform.hasScale == 1) {
+        lo.v[0] = (lo.v[0] * a->sub->xform.scale.vx) >> 12;
+        lo.v[1] = (lo.v[1] * a->sub->xform.scale.vy) >> 12;
+        lo.v[2] = (lo.v[2] * a->sub->xform.scale.vz) >> 12;
+        hi.v[0] = (hi.v[0] * a->sub->xform.scale.vx) >> 12;
+        hi.v[1] = (hi.v[1] * a->sub->xform.scale.vy) >> 12;
+        hi.v[2] = (hi.v[2] * a->sub->xform.scale.vz) >> 12;
     }
     d.vx = b->XYZ.x - a->XYZ.x;
     d.vy = b->XYZ.y - a->XYZ.y;
@@ -9511,7 +9511,7 @@ void InitPolarMissile(NAS *m) {
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
         m->Engine->xform.order = 2;
         m->Engine->xform.hasScale = 1;
-        m->Engine->sub->unk51 = 2;
+        m->Engine->sub->xform.order = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk5C = 0x8C;
         ext->unk2C = 0x3000;
@@ -9666,13 +9666,13 @@ void PlotPackEffect(NAS *m) {
         if (sub != NULL) {
             i = 0;
             do {
-                sub->unk04 += ext->vel[i].x;
-                sub->unk08 += ext->vel[i].z;
-                sub->unk0C += ext->vel[i].y;
+                sub->XYZ.x += ext->vel[i].x;
+                sub->XYZ.y += ext->vel[i].z;
+                sub->XYZ.z += ext->vel[i].y;
                 sub->unk76 += 0x100;
-                sub->unk20.x -= 0x80;
-                sub->unk20.y -= 0x80;
-                sub->unk20.z -= 0x80;
+                sub->xform.scale.vx -= 0x80;
+                sub->xform.scale.vy -= 0x80;
+                sub->xform.scale.vz -= 0x80;
                 sub = sub->next;
                 i++;
             } while (sub != NULL);
@@ -9730,13 +9730,13 @@ void PlotSimpleExplosion(NAS *m) {
         if (sub != NULL) {
             i = 0;
             do {
-                sub->unk04 += ext->vel[i].x;
-                sub->unk08 += ext->vel[i].z;
-                sub->unk0C += ext->vel[i].y;
+                sub->XYZ.x += ext->vel[i].x;
+                sub->XYZ.y += ext->vel[i].z;
+                sub->XYZ.z += ext->vel[i].y;
                 sub->unk76 += 0x100;
-                sub->unk20.x -= 0x80;
-                sub->unk20.y -= 0x80;
-                sub->unk20.z -= 0x80;
+                sub->xform.scale.vx -= 0x80;
+                sub->xform.scale.vy -= 0x80;
+                sub->xform.scale.vz -= 0x80;
                 sub = sub->next;
                 i++;
             } while (sub != NULL);
@@ -9889,10 +9889,10 @@ void InitScratchMaster(NAS *m) {
             sub->flags = 0x40000000;
             sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
             sub->entity = 0x2002;
-            sub->unk51 = 2;
-            sub->unk14 = 0;
-            sub->unk12 = 0;
-            sub->unk10 = 0;
+            sub->xform.order = 2;
+            sub->xform.rot.vz = 0;
+            sub->xform.rot.vy = 0;
+            sub->xform.rot.vx = 0;
             sub->unk76 = 0x800;
             sub = sub->next;
         }

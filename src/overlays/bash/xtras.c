@@ -1542,10 +1542,10 @@ void BashHero_ExtraEffects(s32 arg0) {
             }
         }
         pu->XYZ = Heroes[arg0].hero_eng->XYZ;
-        sub->unk08 = y;
+        sub->XYZ.y = y;
         switch (Heroes[arg0].hero_pu) {
         case 0x1B:
-            sub->unk08 -= 0x60;
+            sub->XYZ.y -= 0x60;
             /* fallthrough */
         case 0x19:
         case 0x1C:
@@ -1592,7 +1592,7 @@ void BashHero_ExtraEffects(s32 arg0) {
                 h4->hero_pu = 0;
                 SetHeroAction(arg0, 0x12);
                 pu->xform.rot.vy = 0;
-                sub->unk08 = 0;
+                sub->XYZ.y = 0;
             }
             break;
         case 0x12:
@@ -1602,13 +1602,13 @@ void BashHero_ExtraEffects(s32 arg0) {
                 sub->flags |= 0x8000;
                 pu->XYZ = h5->hero_eng->XYZ;
                 pu->xform.rot.vy += 0xAA;
-                sub->unk0C = sub->unk08 >> 1;
+                sub->XYZ.z = sub->XYZ.y >> 1;
             } else {
                 h5->hero_pu = 0;
                 pu->xform.rot.vy = 0;
-                sub->unk04 = 0;
-                sub->unk08 = 0;
-                sub->unk0C = 0;
+                sub->XYZ.x = 0;
+                sub->XYZ.y = 0;
+                sub->XYZ.z = 0;
                 sub->flags &= ~0x8000;
                 PlaySfx(0x421, NULL, NULL, 0x1000, 0x1E00, 0);
             }

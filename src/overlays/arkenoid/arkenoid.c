@@ -1261,8 +1261,8 @@ void AR_InitHero(u32 arg0) {
         if (n != NULL) {
             n->u6C.dbase = &HeroModelBank[DB_BallsVehicle];
             n->entity = 0x2001;
-            n->unk50 = 1;
-            n->unk51 = 0;
+            n->xform.hasScale = 1;
+            n->xform.order = 0;
             n->flags &= ~0x8000;
         }
     }
@@ -2019,7 +2019,7 @@ void SetArkHeroWinner(u32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     AddCamera(h->hero);
-    h->hero_sub->unk08 = 0;
+    h->hero_sub->XYZ.y = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
     RequestHeroAnim(arg0, 0);
@@ -2119,7 +2119,7 @@ void SetArkHeroLose(u32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk08 = 0;
+    h->hero_sub->XYZ.y = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
     SetHeroSeq(arg0, 0x19);
@@ -2145,7 +2145,7 @@ void SetArkHeroDie(u32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     RemoveCamera(h->hero);
-    h->hero_sub->unk08 = 0;
+    h->hero_sub->XYZ.y = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
     SetHeroSeq(arg0, 0x20);
@@ -2249,11 +2249,11 @@ void ArkHeroKick(u32 arg0) {
         s = sub->next;
         if (s != 0) {
             s->entity = 0x2001;
-            s->unk20.x = scale & 0xFFFF;
-            s->unk20.y = scale & 0xFFFF;
-            s->unk20.z = scale & 0xFFFF;
+            s->xform.scale.vx = scale & 0xFFFF;
+            s->xform.scale.vy = scale & 0xFFFF;
+            s->xform.scale.vz = scale & 0xFFFF;
             s->unk76 = ang;
-            s->unk52 = 1;
+            s->xform.dirty = 1;
             s->flags |= 0x40008021;
         }
     }
@@ -2294,11 +2294,11 @@ void ArkHeroRedKick(u32 arg0) {
         s = a->next;
         if (s != NULL) {
             s->entity = 0x2007;
-            s->unk20.x = v & 0xFFFF;
-            s->unk20.y = v & 0xFFFF;
-            s->unk20.z = v & 0xFFFF;
+            s->xform.scale.vx = v & 0xFFFF;
+            s->xform.scale.vy = v & 0xFFFF;
+            s->xform.scale.vz = v & 0xFFFF;
             s->unk76 = r;
-            s->unk52 = 1;
+            s->xform.dirty = 1;
             s->flags |= 0x40008021;
         }
     }
@@ -2338,10 +2338,10 @@ void ArkHeroGrab(u32 arg0) {
             s->entity = 0x2003;
             s->flags |= 0x40008021;
             t = rcossin_tbl[(((GameFrameCount << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 13;
-            s->unk52 = 1;
-            s->unk20.x = t + 0x1000;
-            s->unk20.y = t + 0x1000;
-            s->unk20.z = t + 0x1000;
+            s->xform.dirty = 1;
+            s->xform.scale.vx = t + 0x1000;
+            s->xform.scale.vy = t + 0x1000;
+            s->xform.scale.vz = t + 0x1000;
             s->unk76 = 0xA00 - t;
         }
     }
@@ -3364,8 +3364,8 @@ void InitBall(NAS *nas) {
                 } while (i >= 0);
                 eng_add_subs_n(e, 6);
                 for (sub = sub->next; sub != NULL; sub = sub->next) {
-                    sub->unk51 = 0;
-                    sub->unk50 = 1;
+                    sub->xform.order = 0;
+                    sub->xform.hasScale = 1;
                     sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
                     sub->entity = 0x200D;
                     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x42000021;
@@ -3886,7 +3886,7 @@ void PlotBall(NAS *nas) {
     } else {
         e2->flags |= 0x8000;
     }
-    sub->unk08 = y - eng->XYZ.y;
+    sub->XYZ.y = y - eng->XYZ.y;
     trail = FindExtension(nas, 0x10000000);
     if (trail == NULL) {
         return;
@@ -3900,13 +3900,13 @@ void PlotBall(NAS *nas) {
         } else {
             sub->flags &= ~0x8000;
         }
-        sub->unk04 = trail->pos[k].x - e2->XYZ.x;
-        sub->unk08 = trail->pos[k].y - (e2->XYZ.y + e2->sub->unk08);
-        sub->unk0C = trail->pos[k].z - e2->XYZ.z;
-        sub->unk20.z = sc;
-        sub->unk20.x = sc;
+        sub->XYZ.x = trail->pos[k].x - e2->XYZ.x;
+        sub->XYZ.y = trail->pos[k].y - (e2->XYZ.y + e2->sub->XYZ.y);
+        sub->XYZ.z = trail->pos[k].z - e2->XYZ.z;
+        sub->xform.scale.vz = sc;
+        sub->xform.scale.vx = sc;
         sc -= 0x180;
-        sub->unk52 = 1;
+        sub->xform.dirty = 1;
         if (sc < 0x100) {
             sc = 0x100;
         }
@@ -4693,7 +4693,7 @@ void Init_ArkDeadWall(NAS *nas)
             do {
                 sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
                 sub->entity = 0;
-                sub->unk04 = off;
+                sub->XYZ.x = off;
                 sub->flags |= 0x21;
                 sub = sub->next;
                 off += 0x200;
@@ -4762,7 +4762,7 @@ void Init_NGArkDeadWall(NAS *arg0) {
             do {
                 sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
                 sub->entity = 0;
-                sub->unk04 = off;
+                sub->XYZ.x = off;
                 sub->flags |= 0x21;
                 sub = sub->next;
                 off += 0x200;
@@ -5149,10 +5149,10 @@ void Plot_RepulseRing(NAS *arg0) {
     s = e->sub;
     s->flags |= 0x40008000;
     t = rcossin_tbl[(((GameFrameCount << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 12;
-    s->unk52 = 1;
-    s->unk20.x = t + 0x1200;
-    s->unk20.y = t + 0x1200;
-    s->unk20.z = t + 0x1200;
+    s->xform.dirty = 1;
+    s->xform.scale.vx = t + 0x1200;
+    s->xform.scale.vy = t + 0x1200;
+    s->xform.scale.vz = t + 0x1200;
     s->unk76 = t + 0x600;
     e->xform.dirty = 1;
     ArkHeroRad2ObjectRepel(arg0->UserInfo.user1, 0x800);
@@ -5224,7 +5224,7 @@ void Init_ArkLaserWall(NAS *nas)
                 sub->u6C.dbase = ((s32)MapScene->dbase);
                 sub->flags |= 0x21;
                 sub->entity = 0x2019;
-                sub->unk04 = off;
+                sub->XYZ.x = off;
                 sub = sub->next;
                 off += 0x200;
             } while (sub != 0);
@@ -5950,11 +5950,11 @@ void Init_RepulseRing(NAS *nas)
     eng->xform.hasScale = 1;
     sub = eng->sub;
     eng->flags |= 0x21;
-    sub->unk51 = (new_var = 0);
+    sub->xform.order = (new_var = 0);
     sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
     sub->entity = 0x2014;
-    sub->unk50 = 1;
-    sub->unk08 = 0x80;
+    sub->xform.hasScale = 1;
+    sub->XYZ.y = 0x80;
     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x21;
     PlaySfx(0x5D6, 0, 0, 0x1000, 0x1E00, new_var);
     PlaySfx(0x5D7, &eng->sfx, 0, 0x1000, 0x1E00, 0);
@@ -6013,12 +6013,12 @@ void Plot_ArkCameraFlash(NAS *arg0)
     ArkenoidCircle *c = &base[arg0->UserInfo.user1];
     if (c->x != 0)
     {
-      sub->unk20.x = c->x;
-      sub->unk20.y = c->z;
+      sub->xform.scale.vx = c->x;
+      sub->xform.scale.vy = c->z;
       new_var = c->r;
       sub->flags |= 0x8000;
-      sub->unk52 = 1;
-      sub->unk20.x = new_var;
+      sub->xform.dirty = 1;
+      sub->xform.scale.vx = new_var;
       arg0->UserInfo.user1 += 1;
     }
     else
@@ -6036,8 +6036,8 @@ void Init_ArkCameraFlash(NAS *arg0) {
         sub = eng->sub;
         val = ((s32)MapScene->dbase);
         (sub->entity) = 0x2017;
-        (sub->unk50) = 1;
-        (sub->unk51) = 0;
+        (sub->xform.hasScale) = 1;
+        (sub->xform.order) = 0;
         (sub->u6C.dbase) = val;
         (arg0->UserInfo.user1) = 0;
     }

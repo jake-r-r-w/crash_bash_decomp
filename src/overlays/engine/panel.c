@@ -644,9 +644,9 @@ void InitIcons4(void) {
         sub = &IconParts[i][1];
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
         sub->flags = 0;
-        sub->unk04 = PanelIconOffset[i].x;
-        sub->unk08 = PanelIconOffset[i].y;
-        sub->unk0C = 0;
+        sub->XYZ.x = PanelIconOffset[i].x;
+        sub->XYZ.y = PanelIconOffset[i].y;
+        sub->XYZ.z = 0;
         sub->entity = 0x3026;
     }
     PanelCtrl |= 2;
@@ -677,9 +677,9 @@ void InitIcons2(void) {
         sub = &IconParts[i][1];
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
         sub->flags = 0;
-        sub->unk04 = PanelIconOffset[i].x;
-        sub->unk08 = PanelIconOffset[i].y;
-        sub->unk0C = 0;
+        sub->XYZ.x = PanelIconOffset[i].x;
+        sub->XYZ.y = PanelIconOffset[i].y;
+        sub->XYZ.z = 0;
         sub->entity = 0x3026;
     }
     PanelCtrl |= 2;
@@ -2185,10 +2185,10 @@ void InitCountdown(void) {
 
     counter = (subengine *)&PanelTab[4];
     countdown_eng = counter;
-    counter->unk0C = 0x8000;
-    *(s32 *)&counter->unk10 = 0;
-    *(s32 *)&counter->unk14 = 0;
-    counter->unk18 = 0;
+    counter->XYZ.z = 0x8000;
+    *(s32 *)&counter->xform.rot.vx = 0;
+    *(s32 *)&counter->xform.rot.vz = 0;
+    counter->xform.unk8 = 0;
     counter->u6C.dbase = &counter_sub;
     sub = &counter_sub;
     if (sub != NULL) {
@@ -2196,14 +2196,14 @@ void InitCountdown(void) {
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
         sub->entity = 0x2004;
         sub->flags = 0x11000000;
-        sub->unk04 = 0x140;
-        sub->unk08 = 0xB4;
-        sub->unk50 = 1;
-        sub->unk0C = 0;
-        sub->unk20.x = 0xA00;
-        sub->unk20.y = 0xA00;
-        sub->unk20.z = 0xA00;
-        sub->unk51 = 0;
+        sub->XYZ.x = 0x140;
+        sub->XYZ.y = 0xB4;
+        sub->xform.hasScale = 1;
+        sub->XYZ.z = 0;
+        sub->xform.scale.vx = 0xA00;
+        sub->xform.scale.vy = 0xA00;
+        sub->xform.scale.vz = 0xA00;
+        sub->xform.order = 0;
         sub->next = NULL;
         sub->prev = NULL;
     }

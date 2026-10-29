@@ -1047,19 +1047,19 @@ void DrawAdventureStats(s32 arg0) {
         e->XYZ.y = 0x1F4;
         sub = e->sub;
         if (GAME->levelFlags & 0x10) {
-            sub[1].unk04 = sub[3].unk04;
+            sub[1].XYZ.x = sub[3].XYZ.x;
         }
         if (GAME->levelFlags & 0x40) {
-            sub[1].unk04 = sub[5].unk04;
+            sub[1].XYZ.x = sub[5].XYZ.x;
         }
         if (GAME->levelFlags & 0x80) {
-            sub[1].unk04 = sub[7].unk04;
+            sub[1].XYZ.x = sub[7].XYZ.x;
         }
         if (GAME->levelFlags & 0x20) {
-            sub[1].unk04 = sub[9].unk04;
+            sub[1].XYZ.x = sub[9].XYZ.x;
         }
         if (GAME->levelFlags & 8) {
-            sub[1].unk04 = sub[11].unk04;
+            sub[1].XYZ.x = sub[11].XYZ.x;
         }
         if (StatsHasPage3 != 0) {
             sub[2].flags |= 0x8000;
@@ -1494,25 +1494,25 @@ void AnimateWinCounter(void) {
 
     switch (WinCounterAnim) {
     case 1:
-        t = counter_sub.unk20.x = (WinCounterSize << 12) / 25;
-        counter_sub.unk20.y = t;
-        counter_sub.unk20.z = t;
-        counter_sub.unk10 = (WinCounterSize << 10) / 25 - 0x400;
+        t = counter_sub.xform.scale.vx = (WinCounterSize << 12) / 25;
+        counter_sub.xform.scale.vy = t;
+        counter_sub.xform.scale.vz = t;
+        counter_sub.xform.rot.vx = (WinCounterSize << 10) / 25 - 0x400;
         if (WinCounterState & 1) {
-            counter_sub.unk12 = counter_sub.unk12 + 0x80;
+            counter_sub.xform.rot.vy = counter_sub.xform.rot.vy + 0x80;
         } else {
-            counter_sub.unk12 = counter_sub.unk12 - 0x80;
+            counter_sub.xform.rot.vy = counter_sub.xform.rot.vy - 0x80;
         }
         if (WinCounterState == 4) {
-            counter_sub.unk04 = 0x140;
+            counter_sub.XYZ.x = 0x140;
         }
-        if (counter_sub.unk20.x < 0x101) {
-            counter_sub.unk20.x = 0x1000;
-            counter_sub.unk20.y = 0x1000;
-            counter_sub.unk20.z = 0x1000;
-            counter_sub.unk12 = 0;
-            counter_sub.unk10 = 0;
-            counter_sub.unk04 = 0x140;
+        if (counter_sub.xform.scale.vx < 0x101) {
+            counter_sub.xform.scale.vx = 0x1000;
+            counter_sub.xform.scale.vy = 0x1000;
+            counter_sub.xform.scale.vz = 0x1000;
+            counter_sub.xform.rot.vy = 0;
+            counter_sub.xform.rot.vx = 0;
+            counter_sub.XYZ.x = 0x140;
             counter_sub.flags &= 0xFFFF7FFF;
             if (WinCounterState == 4) {
                 GameState *g = GAME;
@@ -1520,7 +1520,7 @@ void AnimateWinCounter(void) {
                 g->exitFlags &= 0xEFFF;
             }
         }
-        counter_sub.unk52 = 1;
+        counter_sub.xform.dirty = 1;
         return;
     case 3:
         WinCounterState = 6;
@@ -1542,7 +1542,7 @@ void UpdateWinCounter(s32 arg0) {
             PauseDelay = 3;
             WinCounterAnim = 1;
             counter_sub.flags |= 0x8000;
-            pos = *(SLONG_XYZ *)&counter_sub.unk04;
+            pos = *(SLONG_XYZ *)&counter_sub.XYZ.x;
             pos.y -= 0x300;
             pos.x -= 0x180;
             PlaySfx(0x1A6, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1552,7 +1552,7 @@ void UpdateWinCounter(s32 arg0) {
             PauseDelay = 3;
             WinCounterAnim = 1;
             counter_sub.flags |= 0x8000;
-            pos = *(SLONG_XYZ *)&counter_sub.unk04;
+            pos = *(SLONG_XYZ *)&counter_sub.XYZ.x;
             pos.y -= 0x300;
             pos.x -= 0x180;
             PlaySfx(0x1A5, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1562,7 +1562,7 @@ void UpdateWinCounter(s32 arg0) {
             PauseDelay = 3;
             WinCounterAnim = 1;
             counter_sub.flags |= 0x8000;
-            pos = *(SLONG_XYZ *)&counter_sub.unk04;
+            pos = *(SLONG_XYZ *)&counter_sub.XYZ.x;
             pos.y -= 0x300;
             pos.x -= 0x180;
             PlaySfx(0x1A4, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1576,23 +1576,23 @@ void UpdateWinCounter(s32 arg0) {
             break;
         case 5:
             counter_sub.entity = 0x2006;
-            counter_sub.unk20.x = 0x100;
-            counter_sub.unk20.y = 0x100;
-            counter_sub.unk20.z = 0x100;
-            counter_sub.unk52 = 1;
+            counter_sub.xform.scale.vx = 0x100;
+            counter_sub.xform.scale.vy = 0x100;
+            counter_sub.xform.scale.vz = 0x100;
+            counter_sub.xform.dirty = 1;
             WinCounterState = 0xB;
             WinCounterAnim = 2;
             counter_sub.flags |= 0x8000;
             break;
         case 6:
             counter_sub.entity = 0x201B;
-            counter_sub.unk20.x = 0x100;
-            counter_sub.unk20.y = 0x100;
-            counter_sub.unk20.z = 0x100;
-            counter_sub.unk10 = 0;
-            counter_sub.unk12 = 0;
-            counter_sub.unk14 = 0;
-            counter_sub.unk52 = 1;
+            counter_sub.xform.scale.vx = 0x100;
+            counter_sub.xform.scale.vy = 0x100;
+            counter_sub.xform.scale.vz = 0x100;
+            counter_sub.xform.rot.vx = 0;
+            counter_sub.xform.rot.vy = 0;
+            counter_sub.xform.rot.vz = 0;
+            counter_sub.xform.dirty = 1;
             WinCounterState = 0xB;
             WinCounterAnim = 2;
             counter_sub.flags |= 0x8000;
@@ -1611,24 +1611,24 @@ void UpdateWinCounter(s32 arg0) {
         }
     }
     if (WinCounterState == 0xB) {
-        d = 0x1000 - counter_sub.unk20.x;
-        counter_sub.unk20.x += d >> 3;
-        counter_sub.unk20.y = counter_sub.unk20.x;
-        counter_sub.unk20.z = counter_sub.unk20.x;
-        counter_sub.unk12 = ((rcossin_tbl[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
-        counter_sub.unk52 = 1;
+        d = 0x1000 - counter_sub.xform.scale.vx;
+        counter_sub.xform.scale.vx += d >> 3;
+        counter_sub.xform.scale.vy = counter_sub.xform.scale.vx;
+        counter_sub.xform.scale.vz = counter_sub.xform.scale.vx;
+        counter_sub.xform.rot.vy = ((rcossin_tbl[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.xform.dirty = 1;
         if (d < 0x100) {
             PlaySfx(0x1AF, NULL, NULL, 0x1000, 0x1E00, 0);
             WinCounterState = 0xC;
         }
     }
     if (WinCounterState == 0xC) {
-        t = counter_sub.unk20.x + ((0x1000 - counter_sub.unk20.x) >> 3);
-        counter_sub.unk20.x = t;
-        counter_sub.unk20.y = t;
-        counter_sub.unk20.z = t;
-        counter_sub.unk12 = ((rcossin_tbl[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
-        counter_sub.unk52 = 1;
+        t = counter_sub.xform.scale.vx + ((0x1000 - counter_sub.xform.scale.vx) >> 3);
+        counter_sub.xform.scale.vx = t;
+        counter_sub.xform.scale.vy = t;
+        counter_sub.xform.scale.vz = t;
+        counter_sub.xform.rot.vy = ((rcossin_tbl[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.xform.dirty = 1;
     }
     if (WinCounterSize <= 0) {
         WinCounterSize = 0x19;

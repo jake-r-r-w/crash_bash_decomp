@@ -33,24 +33,24 @@ void AnimateLoadingIcon(void) {
 
     if (LevelLoadStage >= 2 && (o = LoadingIconEngine.sub) != NULL) {
         t = rcossin_tbl;
-        o->unk51 = 0;
-        o->unk12 += 0x20;
+        o->xform.order = 0;
+        o->xform.rot.vy += 0x20;
         f = FrameCount;
-        o->unk10 = *(s32 *)&t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF] >> 20;
-        o->unk12 = *(s32 *)&t[(((f * 140) & 0xFFF) - 0x400) & 0xFFF] >> 21;
-        o->unk14 = (t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF].unk2 +
+        o->xform.rot.vx = *(s32 *)&t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF] >> 20;
+        o->xform.rot.vy = *(s32 *)&t[(((f * 140) & 0xFFF) - 0x400) & 0xFFF] >> 21;
+        o->xform.rot.vz = (t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF].unk2 +
                     t[(((f * 100) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 5;
-        o->unk04 = *(s32 *)&t[(((f * 35) & 0xFFF) - 0x400) & 0xFFF] >> 23;
-        o->unk08 = (t[(((f * 45) & 0xFFF) - 0x400) & 0xFFF].unk2 +
+        o->XYZ.x = *(s32 *)&t[(((f * 35) & 0xFFF) - 0x400) & 0xFFF] >> 23;
+        o->XYZ.y = (t[(((f * 45) & 0xFFF) - 0x400) & 0xFFF].unk2 +
                    t[(((f * 145) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 5;
-        o->unk52 = 1;
+        o->xform.dirty = 1;
         o = o->next;
         if (o != NULL) {
-            o->unk14 += 0x17;
+            o->xform.rot.vz += 0x17;
             i = (-f * 10) & 0xFFF;
-            o->unk10 = *(s32 *)&t[(i - 0x400) & 0xFFF] >> 20;
-            o->unk12 = *(s32 *)&t[i] >> 20;
-            o->unk52 = 1;
+            o->xform.rot.vx = *(s32 *)&t[(i - 0x400) & 0xFFF] >> 20;
+            o->xform.rot.vy = *(s32 *)&t[i] >> 20;
+            o->xform.dirty = 1;
         }
     }
 }
@@ -485,12 +485,12 @@ void InitLoadingScreen(void) {
             sub->u6C.dbase = &HeroModelBank[DB_Loading];
             sub->flags = 0x01008000;
             sub->entity = *p;
-            sub->unk04 = 0;
-            sub->unk08 = 0;
-            sub->unk0C = 0;
+            sub->XYZ.x = 0;
+            sub->XYZ.y = 0;
+            sub->XYZ.z = 0;
             sub = sub->next;
             p++;
-            sub->unk51 = 0;
+            sub->xform.order = 0;
         } while (sub != NULL);
     }
 }
@@ -529,11 +529,11 @@ void DrawSceneMarks(void) {
         *e = SubEngineTemplate;
         e->entity = m->unk0;
         e->u6C.dbase = m->unk8;
-        e->unk51 = 0;
+        e->xform.order = 0;
         s = GameFrameCount;
-        e->unk10 = (s * p->x) >> 12;
-        e->unk12 = (s * p->y) >> 12;
-        e->unk14 = (s * p->z) >> 12;
+        e->xform.rot.vx = (s * p->x) >> 12;
+        e->xform.rot.vy = (s * p->y) >> 12;
+        e->xform.rot.vz = (s * p->z) >> 12;
         e->flags = 0x03008000;
         e->unk68 = p->unkC;
         gte_SetGeomScreen(h);

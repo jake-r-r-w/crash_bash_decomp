@@ -918,7 +918,7 @@ void ChaseInitHero(s32 arg0) {
     st = ChaseHeroState[arg0];
     eng_add_subs(eng, 1);
     sub = eng->sub;
-    sub->unk51 = 1;
+    sub->xform.order = 1;
     sub->entity = ChaseHeroShadowModels[h->hero_name];
     FetchDefaultColBox(eng, 0x50);
     sub->entity = ChaseHeroShadowSizes[h->hero_name];
@@ -1173,18 +1173,18 @@ s32 ChaseHeroTestDrop(s32 arg0) {
     if (h->hero_move->jump_max != 0) {
         if (ApplyContourMoved(h->hero_eng) != 0) {
             h->hero_move->jump_max = 0;
-            h->hero_sub->unk08 = 0;
+            h->hero_sub->XYZ.y = 0;
         } else {
             if (h->hero_ctrl & 8) {
                 return 0;
             }
-            if (World_floor_level < h->hero_eng->XYZ.y + h->hero_sub->unk08) {
+            if (World_floor_level < h->hero_eng->XYZ.y + h->hero_sub->XYZ.y) {
                 if (ContourHeight == 0x7FFFFFFF) {
                     SetHeroAction(arg0, 0x79);
                     return 1;
                 }
                 h->hero_eng->XYZ.y = World_floor_level;
-                h->hero_sub->unk08 = 0;
+                h->hero_sub->XYZ.y = 0;
             }
         }
     } else {
@@ -1606,12 +1606,12 @@ void ChaseHeroFall(s32 arg0) {
         SetHeroAction(arg0, 0x7B);
     } else if (!(h->hero_ctrl & 8)) {
         e = h->hero_eng;
-        if (World_floor_level < e->XYZ.y + h->hero_sub->unk08) {
+        if (World_floor_level < e->XYZ.y + h->hero_sub->XYZ.y) {
             if (ContourHeight == 0x7FFFFFFF) {
                 SetHeroAction(arg0, 0x79);
             } else {
                 e->XYZ.y = World_floor_level;
-                h->hero_sub->unk08 = 0;
+                h->hero_sub->XYZ.y = 0;
             }
         }
     }
@@ -1662,7 +1662,7 @@ void SetChaseHeroLand(s32 arg0) {
     h = base + arg0;
     h->hero_move->velocity_enable = 1;
     h->hero_move->jump_max = 0;
-    h->hero_sub->unk08 = 0;
+    h->hero_sub->XYZ.y = 0;
     SetHeroSeq(arg0, 0x67);
     if (ContourPlatform != NULL) {
         e = h->hero_eng;
@@ -1791,7 +1791,7 @@ void SetChaseHeroDie(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk08 = 0;
+    h->hero_sub->XYZ.y = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
     SetHeroSeq(arg0, 0x61);
@@ -1887,7 +1887,7 @@ void SetChaseHeroWinner(s32 arg0) {
     {
         HeroInfo *b2 = Heroes;
         HeroInfo *g = b2 + arg0;
-        g->hero_sub->unk08 = 0;
+        g->hero_sub->XYZ.y = 0;
         g->hero_pu = 0;
         g->hero_pu_timer = 0;
     }
@@ -1963,7 +1963,7 @@ void SetChaseHeroLose(s32 arg0) {
         NAS *nas;
         s32 *ext;
 
-        g->hero_sub->unk08 = 0;
+        g->hero_sub->XYZ.y = 0;
         g->hero_pu = 0;
         g->hero_pu_timer = 0;
         SetHeroSeq(arg0, 0x61);
@@ -2767,13 +2767,13 @@ void InitPickupCH(NAS *nas) {
         e->XYZ.x = eng->XYZ.x;
         e->XYZ.y = 0;
         e->XYZ.z = eng->XYZ.z;
-        e->sub->unk51 = 2;
+        e->sub->xform.order = 2;
         e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         e->sub->entity = 0x2001;
         e->sub->flags |= 0x40000041;
         e->sub->unk76 = 0x800;
-        e->sub->unk50 = 1;
-        e->sub->unk52 = 1;
+        e->sub->xform.hasScale = 1;
+        e->sub->xform.dirty = 1;
     }
     PlaySfx(0x3FA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
 }
@@ -3546,7 +3546,7 @@ void ChaseHeroDrop(s32 arg0) {
     base = Heroes;
     hero = base + arg0;
     hero->hero_frozen = 2;
-    y = hero->hero_eng->XYZ.y + hero->hero_sub->unk08;
+    y = hero->hero_eng->XYZ.y + hero->hero_sub->XYZ.y;
     if (World_floor_level + 0x180 < y) {
         SetHeroAction(arg0, 0x77);
     }

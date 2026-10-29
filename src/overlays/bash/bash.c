@@ -2430,8 +2430,8 @@ void PlotSnowGlint(NAS *nas) {
                         g->timer[i]--;
                         sub->flags &= 0xFFFF7FFF;
                     } else {
-                        sub->unk04 = Random(0xF00) - 0x780;
-                        sub->unk0C = Random(0xF00) - 0x780;
+                        sub->XYZ.x = Random(0xF00) - 0x780;
+                        sub->XYZ.z = Random(0xF00) - 0x780;
                         sub->flags |= 0x8000;
                         g->timer[i] = Random(3);
                         g->on[i] = 1;
@@ -2702,7 +2702,7 @@ void InitTumbler(NAS *nas) {
             sub->u6C.dbase = MapScene->dbase;
             sub->entity = 0x2001;
             sub->flags |= 0x40008041;
-            sub->unk50 = 1;
+            sub->xform.hasScale = 1;
             sub->unk76 = 0xB00;
         }
         puff = BashSpawnPuff(&MapPoints[8].pos);
@@ -2806,14 +2806,14 @@ void PlotTumbler(NAS *nas) {
         sub = sub->next;
         if (sub != NULL) {
             dy = ((s32 (*)(EXTengine *))ApplyContour)(eng);
-            sub->unk08 = -dy;
+            sub->XYZ.y = -dy;
             dy = 0x1000 - dy;
             if (dy < 0x10) {
                 dy = 0x10;
             }
-            sub->unk20.x = dy;
-            sub->unk20.y = dy;
-            sub->unk20.z = dy;
+            sub->xform.scale.vx = dy;
+            sub->xform.scale.vy = dy;
+            sub->xform.scale.vz = dy;
         }
         return;
     case 9:
@@ -3021,7 +3021,7 @@ void InitBash8way(NAS *nas) {
         sub = eng->sub;
         eng->xform.order = 0;
         for (; sub != NULL; sub = sub->next) {
-            sub->unk51 = 0;
+            sub->xform.order = 0;
             sub->u6C.dbase = &HeroModelBank[DB_Powerups];
             sub->entity = 0x200E;
         }
@@ -3077,15 +3077,15 @@ void PlotBash8way(NAS *nas) {
             for (; sub != NULL; ang += 0x200, sub = sub->next, ang &= 0xFFF) {
                 if (sub->flags != 0) {
                     a = (ang - 0x400) & 0xFFF;
-                    sub->unk04 -= (speed * rcossin_tbl[a].unk2) >> 12;
-                    sub->unk0C -= (speed * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
-                    t = sub->unk08 + mot->Yvel;
-                    sub->unk08 = t;
-                    x = eng->XYZ.x + sub->unk04;
+                    sub->XYZ.x -= (speed * rcossin_tbl[a].unk2) >> 12;
+                    sub->XYZ.z -= (speed * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                    t = sub->XYZ.y + mot->Yvel;
+                    sub->XYZ.y = t;
+                    x = eng->XYZ.x + sub->XYZ.x;
                     y = eng->XYZ.y + t;
-                    z = eng->XYZ.z + sub->unk0C;
+                    z = eng->XYZ.z + sub->XYZ.z;
                     dead = 0;
-                    sub->unk12 = a;
+                    sub->xform.rot.vy = a;
                     if (y >= World_floor_level) {
                         BashSpawnMissileExplode(x, World_floor_level, z, nas->UserInfo.user1, kind);
                         sub->flags = 0;
@@ -3094,7 +3094,7 @@ void PlotBash8way(NAS *nas) {
                         BashSpawnMissileExplode(x, World_floor_level, z, nas->UserInfo.user1, kind);
                         sub->flags = 0;
                     }
-                    sub->unk52 = 1;
+                    sub->xform.dirty = 1;
                 }
             }
         }
@@ -3125,16 +3125,16 @@ void InitBashHomer(NAS *nas) {
         sub = eng->sub;
         sub = sub->next;
         if (sub != NULL) {
-            sub->unk20.x = 0x4000;
-            sub->unk20.y = 0x4000;
-            sub->unk20.z = 0x4000;
-            sub->unk50 = 1;
-            sub->unk51 = 0;
+            sub->xform.scale.vx = 0x4000;
+            sub->xform.scale.vy = 0x4000;
+            sub->xform.scale.vz = 0x4000;
+            sub->xform.hasScale = 1;
+            sub->xform.order = 0;
             sub->u6C.dbase = &HeroModelBank[DB_Powerups];
             sub->entity = 0x2010;
             sub->flags |= 0x21;
             sub = sub->next;
-            sub->unk52 = 1;
+            sub->xform.dirty = 1;
         }
         mot = AddMotion(nas);
         if (mot != NULL) {
@@ -3263,12 +3263,12 @@ void InitBashShox(NAS *nas) {
             if (sub != NULL) {
                 i = 0;
                 do {
-                    sub->unk51 = 0;
-                    sub->unk50 = 1;
+                    sub->xform.order = 0;
+                    sub->xform.hasScale = 1;
                     sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
                     sub->entity = 0x2015;
                     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x21;
-                    sub->unk08 = -0x100;
+                    sub->XYZ.y = -0x100;
                     x->a[i] = i * 5;
                     x->b[i] = 0xC;
                     x->c[i] = 0x1000;
@@ -3320,8 +3320,8 @@ void PlotBashShox(NAS *nas) {
                     } else {
                         sub->flags |= 0x40008000;
                         x->c[i] += 0x500;
-                        sub->unk20.x = x->c[i];
-                        sub->unk20.z = x->c[i];
+                        sub->xform.scale.vx = x->c[i];
+                        sub->xform.scale.vz = x->c[i];
                         sub->unk76 += 0x100;
                         r = x->c[i] * 128 >> 12;
                         if (size < r) {
@@ -3334,7 +3334,7 @@ void PlotBashShox(NAS *nas) {
                         }
                     }
                 }
-                sub->unk52 = 1;
+                sub->xform.dirty = 1;
             }
             hit = BashMissileHitTest(px, py, pz, (size + 0x40) & 0xFFFF, nas->UserInfo.user1, 0xA);
             if (hit != -1 && hit < 4) {
@@ -3378,11 +3378,11 @@ void PlotMissileExplode(NAS *nas) {
         row = tbl[idx];
         sub = eng->sub;
         if (row[0] != 0) {
-            sub->unk20.x = row[0];
-            sub->unk20.y = row[1];
+            sub->xform.scale.vx = row[0];
+            sub->xform.scale.vy = row[1];
             z = row[2];
-            sub->unk52 = 1;
-            sub->unk20.x = z;
+            sub->xform.dirty = 1;
+            sub->xform.scale.vx = z;
             nas->UserInfo.flags++;
             if (idx == 1) {
                 HurtHeroesInRadius((s32)nas, 0x280, nas->UserInfo.user1, nas->UserInfo.user2, 0);
@@ -3402,8 +3402,8 @@ void InitMissileExplode(NAS *nas) {
         sub = eng->sub;
         sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         sub->entity = 0x2010;
-        sub->unk50 = 1;
-        sub->unk51 = 0;
+        sub->xform.hasScale = 1;
+        sub->xform.order = 0;
         eng->flags |= 0x21;
         nas->UserInfo.flags = 0;
     }

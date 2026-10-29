@@ -269,7 +269,8 @@ BASH_SIZE_CHECK(FlagRecord, 0x10);
  * picks: RotMatrix, YXZ, ZYX or a quaternion). */
 typedef struct RotScale {
     /* 0x00 */ SVECTOR rot;
-    /* 0x08 */ u8 pad8[8];
+    /* 0x08 */ s32 unk8;     /* a subengine's +0x18 (the panels' counters clear it) */
+    /* 0x0C */ s32 unkC;
     /* 0x10 */ VECTOR scale;
     /* 0x20 */ MATRIX mtx;
     /* 0x40 */ u8 hasScale;
@@ -310,20 +311,8 @@ BASH_SIZE_CHECK(EXTengine, 0x9C);
  * prototype fragment names the type but does not define it. */
 struct subengine {
     /* 0x00 */ u32 flags;
-    /* 0x04 */ s32 unk04;
-    /* 0x08 */ s32 unk08;
-    /* 0x0C */ s32 unk0C;
-    /* 0x10 */ s16 unk10;
-    /* 0x12 */ s16 unk12;
-    /* 0x14 */ s16 unk14;
-    /* 0x16 */ s16 unk16;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 unk1C[0x20 - 0x1C];
-    /* 0x20 */ SLONG_XYZ unk20;
-    /* 0x2C */ u8 unk2C[0x50 - 0x2C];
-    /* 0x50 */ u8 unk50;
-    /* 0x51 */ u8 unk51;
-    /* 0x52 */ s16 unk52;
+    /* 0x04 */ SLONG_XYZ XYZ;            /* as EXTengine's: 0x00..0x54 is the prototype's xyzrf */
+    /* 0x10 */ RotScale xform;
     /* 0x54 */ void (*hook)(subengine *, s32, u32); /* render_emitter_thread calls it on each node */
     /* 0x58 */ void (*release)(subengine *); /* called when the node is freed */
     /* 0x5C */ subengine *next;

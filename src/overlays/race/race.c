@@ -622,8 +622,8 @@ loop:
     if (i < RaceBarrelCount) {
         o = p->sub;
         if (p->bStatus == 1) {
-            x = o->unk04;
-            z = o->unk0C;
+            x = o->XYZ.x;
+            z = o->XYZ.z;
             if ((((get_angle(x, z) & 0xFFF) - 0x400) & 0xFFF) >= ang) {
                 x -= hp->hero_eng->XYZ.x;
                 z -= hp->hero_eng->XYZ.z;
@@ -648,12 +648,12 @@ loop:
         b[1] = 0;
         b[2] = rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2;
         best = &RaceBarrels[besti];
-        c[0] = best->sub->unk04 - h->hero_eng->XYZ.x;
-        c[2] = best->sub->unk0C - h->hero_eng->XYZ.z;
+        c[0] = best->sub->XYZ.x - h->hero_eng->XYZ.x;
+        c[2] = best->sub->XYZ.z - h->hero_eng->XYZ.z;
         c[3] = 0x180;
         if (RaceRayHit(a, b, c) != 0) {
-            x = best->sub->unk04;
-            z = best->sub->unk0C;
+            x = best->sub->XYZ.x;
+            z = best->sub->XYZ.z;
             d = x * x + z * z;
             if (d < 0x400000) {
                 h->hero_ai->AIpad &= ~0x20;
@@ -1421,7 +1421,7 @@ void RaceInitSpinners(void) {
             if (obj->entity == 0x4000) {
                 RaceSpinnerBoxes[i] = (s32)obj;
                 RacePistons[i].unkC = (s32)obj;
-                obj->unk12 = i * 0x2AA;
+                obj->xform.rot.vy = i * 0x2AA;
                 i++;
             }
         }
@@ -1596,7 +1596,7 @@ void RaceInitBarrels(void) {
         if (obj->entity == 0x5006) {
             b = &RaceBarrels[n];
             b->sub = obj;
-            obj->unk51 = 2;
+            obj->xform.order = 2;
             b->move.mass = 0x80;
             b->move.x_vel = 0;
             b->move.z_vel = 0;
@@ -1606,7 +1606,7 @@ void RaceInitBarrels(void) {
             b->move.x_dec = 0x500;
             b->move.x_max = 0;
             b->move.z_max = 0;
-            b->startpos = *(SLONG_XYZ *)&obj->unk04;
+            b->startpos = *(SLONG_XYZ *)&obj->XYZ.x;
             b->bStatus = 1;
             n++;
         }
@@ -1677,8 +1677,8 @@ s32 RaceBarrelHitHero(RaceBarrel *b) {
             return hit;
         }
         e = Heroes[i].hero_eng;
-        dx = e->XYZ.x - obj->unk04;
-        dz = e->XYZ.z - obj->unk0C;
+        dx = e->XYZ.x - obj->XYZ.x;
+        dz = e->XYZ.z - obj->XYZ.z;
         d = dx * dx + dz * dz;
         if (d < 0x24000) {
             d = csqrt(d) >> 6;
@@ -1723,15 +1723,15 @@ s32 RaceBarrelSpaceFree(RaceBarrel *self) {
         }
         o = b->sub;
         if (b != self && b->bStatus == 1) {
-            dx = obj->unk04 - o->unk04;
-            dz = obj->unk0C - o->unk0C;
+            dx = obj->XYZ.x - o->XYZ.x;
+            dz = obj->XYZ.z - o->XYZ.z;
             d = dx * dx + dz * dz;
             if (d < 0x24000) {
                 d = csqrt(d) >> 6;
                 angle = get_angle(dx, dz) & 0xFFF;
                 d = 0x180 - d;
-                obj->unk04 += d * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
-                obj->unk0C += d * rcossin_tbl[angle].unk2 >> 12;
+                obj->XYZ.x += d * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
+                obj->XYZ.z += d * rcossin_tbl[angle].unk2 >> 12;
             }
         }
     }
@@ -1755,7 +1755,7 @@ void RaceUpdateBarrels(void) {
             b->move.x_max = 0;
             b->move.z_max = 0;
             if (RaceBarrelHitHero(b) != 0) {
-                pos = *(SLONG_XYZ *)&obj->unk04;
+                pos = *(SLONG_XYZ *)&obj->XYZ.x;
                 pos.y = -0xD2;
                 b->bStatus = 0;
                 b->waittime = Random(0x3C) + 0xB4;
@@ -1764,7 +1764,7 @@ void RaceUpdateBarrels(void) {
             }
             break;
         case 2:
-            pos = *(SLONG_XYZ *)&obj->unk04;
+            pos = *(SLONG_XYZ *)&obj->XYZ.x;
             pos.y = 0;
             if (b->waittime == 4) {
                 RaceSpawnPuff(&pos, 9, NULL);
@@ -4655,7 +4655,7 @@ void InitRaceMissile(NAS *m) {
         m->Engine->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_Powerups]) + 0x2028;
         m->Engine->xform.order = 2;
         m->Engine->xform.hasScale = 1;
-        m->Engine->sub->unk51 = 2;
+        m->Engine->sub->xform.order = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk64 = 0x8C;
         ext->unk34 = 0x3000;
@@ -5218,7 +5218,7 @@ held:
         if (fux->unk18 == 0x10) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
-            eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
+            eng->sub->xform.scale.vx = eng->sub->xform.scale.vy = eng->sub->xform.scale.vz = 0x200;
             eng->sub->u6C.dbase = MapScene->dbase;
             eng->xform.dirty = 1;
             eng->xform.rot.vy += 0x80;
@@ -5227,7 +5227,7 @@ held:
         if (fux->unk18 == 0x20) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2017;
-            eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
+            eng->sub->xform.scale.vx = eng->sub->xform.scale.vy = eng->sub->xform.scale.vz = 0x200;
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
             eng->xform.dirty = 1;
             eng->xform.rot.vy += 0x80;
@@ -5236,7 +5236,7 @@ held:
         if (fux->unk18 == 0x40) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
-            eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
+            eng->sub->xform.scale.vx = eng->sub->xform.scale.vy = eng->sub->xform.scale.vz = 0x200;
             eng->sub->u6C.dbase = MapScene->dbase;
             eng->xform.dirty = 1;
             eng->xform.rot.vy += 0x80;

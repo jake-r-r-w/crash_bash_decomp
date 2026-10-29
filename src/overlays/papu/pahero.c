@@ -829,14 +829,14 @@ void PAHeroPickup(s32 arg0) {
             if (w->a == 0) {
                 goto clear;
             }
-            s->unk20.x = w->a;
-            s->unk20.y = w->b;
-            s->unk20.x = w->c;
-            s->unk04 = pos.vx - h->hero_eng->XYZ.x;
-            s->unk08 = pos.vy - h->hero_eng->XYZ.y;
-            s->unk0C = pos.vz - h->hero_eng->XYZ.z;
+            s->xform.scale.vx = w->a;
+            s->xform.scale.vy = w->b;
+            s->xform.scale.vx = w->c;
+            s->XYZ.x = pos.vx - h->hero_eng->XYZ.x;
+            s->XYZ.y = pos.vy - h->hero_eng->XYZ.y;
+            s->XYZ.z = pos.vz - h->hero_eng->XYZ.z;
             s->flags |= 0x8000;
-            s->unk52 = 1;
+            s->xform.dirty = 1;
             h->hero_weapon_timer++;
         } else {
             h->hero_weapon_timer++;
@@ -892,13 +892,13 @@ void PAHeroHold(s32 arg0) {
             if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->XYZ = self->hero_eng->XYZ;
                 v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
-                s->unk20.y = s->unk20.x = v;
-                s->unk04 = pos.vx - self->hero_eng->XYZ.x;
-                s->unk08 = pos.vy - self->hero_eng->XYZ.y;
+                s->xform.scale.vy = s->xform.scale.vx = v;
+                s->XYZ.x = pos.vx - self->hero_eng->XYZ.x;
+                s->XYZ.y = pos.vy - self->hero_eng->XYZ.y;
                 new_var = pos.vz - self->hero_eng->XYZ.z;
                 s->flags |= 0x8000;
-                s->unk52 = 1;
-                s->unk0C = new_var;
+                s->xform.dirty = 1;
+                s->XYZ.z = new_var;
             }
             HeroTestFall(arg0);
         }
@@ -949,13 +949,13 @@ void PAHeroCarry(s32 arg0) {
             if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->XYZ = self->hero_eng->XYZ;
                 v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
-                s->unk20.y = s->unk20.x = v;
-                s->unk04 = pos.vx - self->hero_eng->XYZ.x;
-                s->unk08 = pos.vy - self->hero_eng->XYZ.y;
+                s->xform.scale.vy = s->xform.scale.vx = v;
+                s->XYZ.x = pos.vx - self->hero_eng->XYZ.x;
+                s->XYZ.y = pos.vy - self->hero_eng->XYZ.y;
                 new_var = pos.vz - self->hero_eng->XYZ.z;
                 s->flags |= 0x8000;
-                s->unk52 = 1;
-                s->unk0C = new_var;
+                s->xform.dirty = 1;
+                s->XYZ.z = new_var;
             }
             HeroTestFall(arg0);
         }
@@ -997,14 +997,14 @@ void PAHeroThrow(s32 arg0) {
             if (w[0] == 0) {
                 goto clear;
             }
-            s->unk20.x = w[0];
-            s->unk20.y = w[1];
-            s->unk20.x = w[2];
-            s->unk04 = pos.vx - h->hero_eng->XYZ.x;
-            s->unk08 = pos.vy - h->hero_eng->XYZ.y;
-            s->unk0C = pos.vz - h->hero_eng->XYZ.z;
+            s->xform.scale.vx = w[0];
+            s->xform.scale.vy = w[1];
+            s->xform.scale.vx = w[2];
+            s->XYZ.x = pos.vx - h->hero_eng->XYZ.x;
+            s->XYZ.y = pos.vy - h->hero_eng->XYZ.y;
+            s->XYZ.z = pos.vz - h->hero_eng->XYZ.z;
             s->flags |= 0x8000;
-            s->unk52 = 1;
+            s->xform.dirty = 1;
             h->hero_weapon_timer++;
         } else {
             h->hero_weapon_timer++;
@@ -1085,7 +1085,7 @@ void SetPAHeroWinner(s32 arg0) {
     }
     base2 = Heroes;
     h2 = base2 + arg0;
-    h2->hero_sub->unk08 = 0;
+    h2->hero_sub->XYZ.y = 0;
     h2->hero_pu = 0;
     h2->hero_pu_timer = 0;
     RequestHeroAnim(arg0, 0);

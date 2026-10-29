@@ -1797,22 +1797,22 @@ void TA_InitHero(u32 player) {
     sub = eng->sub;
     eng->xform.order = 1;
     eng->xform.rot.vy = 0x400;
-    sub->unk51 = 1;
+    sub->xform.order = 1;
     if (((GameState *)g)->mode == 5) {
-        sub->unk08 = 0x48;
+        sub->XYZ.y = 0x48;
     }
     sub = sub->next;
-    sub->unk51 = 1;
+    sub->xform.order = 1;
     if (((GameState *)g)->mode == 5) {
         sub->u6C.dbase = &HeroModelBank[DB_TankVehicle];
         sub->entity = 0x2005;
-        sub->unk08 = -0x100;
+        sub->XYZ.y = -0x100;
     } else {
         sub->u6C.dbase = &HeroModelBank[DB_TankObjects2];
         sub->entity = 0x2009;
     }
     sub = sub->next;
-    sub->unk51 = 1;
+    sub->xform.order = 1;
     if (GameMode == 5) {
         sub->u6C.dbase = &HeroModelBank[DB_TankVehicle];
         sub->entity = 0x2001;
@@ -2096,12 +2096,12 @@ void AnimateTankTurret(s32 player) {
         } else if (pad & 0x200) {
         right:
             sub->entity = 0x2006;
-            sub->unk14 -= 0x2A7;
+            sub->xform.rot.vz -= 0x2A7;
         } else {
             sub->entity = 0x2005;
-            sub->unk14 -= 0xB3;
+            sub->xform.rot.vz -= 0xB3;
         }
-        sub->unk52 = 1;
+        sub->xform.dirty = 1;
     }
     if (ta->TurretFiring >= 0) {
         a = *ta->TurretAnimPtr++;
@@ -2257,8 +2257,8 @@ void UpdateTankHeroWeapons(s32 player) {
         d = (d << 20) >> 22;
         eng->xform.dirty = 1;
         eng->xform.rot.vy += d;
-        sub2->unk52 = 1;
-        sub2->unk12 -= d;
+        sub2->xform.dirty = 1;
+        sub2->xform.rot.vy -= d;
         if ((u32)(d + 3) < 7) {
             ta->TurretReqdDir = -1;
         }
@@ -2267,14 +2267,14 @@ void UpdateTankHeroWeapons(s32 player) {
         if (pad & 0xA00) {
             eng->xform.dirty = 1;
             eng->xform.rot.vy = (eng->xform.rot.vy + 0x40) & 0xFFF;
-            sub2->unk52 = 1;
-            sub2->unk12 = (sub2->unk12 - 0x40) & 0xFFF;
+            sub2->xform.dirty = 1;
+            sub2->xform.rot.vy = (sub2->xform.rot.vy - 0x40) & 0xFFF;
             ta->TurretSFXDuration = 2;
         } else if (pad & 0x500) {
             eng->xform.dirty = 1;
             eng->xform.rot.vy = (eng->xform.rot.vy - 0x40) & 0xFFF;
-            sub2->unk52 = 1;
-            sub2->unk12 = (sub2->unk12 + 0x40) & 0xFFF;
+            sub2->xform.dirty = 1;
+            sub2->xform.rot.vy = (sub2->xform.rot.vy + 0x40) & 0xFFF;
             ta->TurretSFXDuration = 2;
         }
     }
@@ -2667,8 +2667,8 @@ void TankHeroTurn(u32 player) {
         ta = &TA_players[player];
         eng = h->hero_eng;
         sub = h->hero_sub->next->next;
-        sub->unk12 += ta->ModeSpeed;
-        sub->unk52 = 1;
+        sub->xform.rot.vy += ta->ModeSpeed;
+        sub->xform.dirty = 1;
         if (--ta->ModeCounter == 0) {
             SetHeroAction(player, 0x6E);
             switch (ta->MoveDir) {
@@ -2966,17 +2966,17 @@ void TankHeroGridMove(s32 player) {
         break;
     }
 loop:
-    a = (eng->xform.rot.vy + sub->unk12) & 0xFFF;
+    a = (eng->xform.rot.vy + sub->xform.rot.vy) & 0xFFF;
     df = ((angle - a) << 20) >> 20;
-    a = (u16)sub->unk12;
+    a = (u16)sub->xform.rot.vy;
     if ((u32)(df + 0x400) > 0x800) {
-        sub->unk12 = (a + 0x800) & 0xFFF;
+        sub->xform.rot.vy = (a + 0x800) & 0xFFF;
         goto loop;
     }
     df = df / 4;
-    sub->unk12 = (a + df) & 0xFFF;
-    sub->unk52 = 1;
-    a = (eng->xform.rot.vy + sub->unk12) & 0xFFF;
+    sub->xform.rot.vy = (a + df) & 0xFFF;
+    sub->xform.dirty = 1;
+    a = (eng->xform.rot.vy + sub->xform.rot.vy) & 0xFFF;
     sn = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
     cs = rcossin_tbl[a].unk2;
     x = eng->XYZ.x + ((speed * sn) >> 12);
@@ -3327,7 +3327,7 @@ void TankHeroRecoil(u32 arg0) {
         p->SpeedY = -p->SpeedY / 2;
         eng->XYZ.y = 0;
     }
-    eng->sub->next->next->unk08 = -eng->XYZ.y / 2;
+    eng->sub->next->next->XYZ.y = -eng->XYZ.y / 2;
     if (ProcessHeroAnim(arg0) != 0) {
         if (h->hero_status & 0x2000) {
             SetHeroAction(arg0, 0x6A);
@@ -3358,7 +3358,7 @@ void SetTankHeroVictory(u32 arg0) {
     sub = Heroes[arg0].hero_eng->sub;
     sub = sub->next;
     sub = sub->next;
-    sub->unk08 = 0;
+    sub->XYZ.y = 0;
 }
 
 void TankHeroVictory(u32 arg0) {
@@ -3370,8 +3370,8 @@ void TankHeroVictory(u32 arg0) {
     eng->xform.rot.vy += 0x15;
     eng->xform.dirty = 1;
     if (GAME->mode != 5) {
-        sub->unk52 = 1;
-        sub->unk12 -= 0x15;
+        sub->xform.dirty = 1;
+        sub->xform.rot.vy -= 0x15;
     }
     ProcessHeroAnim(arg0);
     CheckHeroAnim(arg0);
@@ -3605,12 +3605,12 @@ void PlotLaserBitTA(NAS *nas) {
     fux = (EXTobject_TA *)nas->FUX;
     sub = eng->sub;
     sub = sub->next;
-    sub->unk51 = 0;
-    sub->unk14 += 0x32;
+    sub->xform.order = 0;
+    sub->xform.rot.vz += 0x32;
     rot = -eng->xform.rot.vy;
-    sub->unk10 = 0;
-    sub->unk52 = 1;
-    sub->unk12 = rot;
+    sub->xform.rot.vx = 0;
+    sub->xform.dirty = 1;
+    sub->xform.rot.vy = rot;
     hit = MoveTankShot(nas, 0x14, 0, 0xA);
     if (TankShotBounce != 0) {
         switch ((u32)Random(3)) {
@@ -3818,10 +3818,10 @@ void PlotSwirlyTA(NAS *nas) {
     eng->xform.rot.vy += 0x118;
     eng->xform.rot.vz += 0xB4;
     sub = eng->sub->next;
-    sub->unk52 = 1;
-    sub->unk10 += 0x46;
-    sub->unk12 += 0x8C;
-    sub->unk14 += 0xD2;
+    sub->xform.dirty = 1;
+    sub->xform.rot.vx += 0x46;
+    sub->xform.rot.vy += 0x8C;
+    sub->xform.rot.vz += 0xD2;
     fux = (EXTobject_TA *)nas->FUX;
     if (MoveTankShot(nas, 0x14, 0x1306, 0xD) != 0) {
         if (eng->sfx != NULL) {
@@ -4897,12 +4897,12 @@ void InitHelicopterTA(NAS *nas) {
             e->XYZ.x = eng->XYZ.x;
             e->XYZ.y = 0;
             e->XYZ.z = eng->XYZ.z;
-            e->sub->unk51 = 2;
+            e->sub->xform.order = 2;
             e->sub->u6C.dbase = p;
             e->sub->entity = 0x200F;
             e->sub->flags |= 0x40000041;
             e->sub->unk76 = 0x800;
-            e->sub->unk50 = 1;
+            e->sub->xform.hasScale = 1;
         }
         if (nas->Failure == 0) {
             return;
@@ -5092,16 +5092,16 @@ void InitPickupTA(NAS *nas) {
             e->XYZ.x = eng->XYZ.x;
             e->XYZ.y = 0;
             e->XYZ.z = eng->XYZ.z;
-            e->sub->unk51 = 2;
+            e->sub->xform.order = 2;
             e->sub->u6C.dbase = p;
             e->sub->entity = 0x202A;
             e->sub->flags |= 0x40000041;
             e->sub->unk76 = 0x800;
-            e->sub->unk50 = 1;
+            e->sub->xform.hasScale = 1;
             y = eng->XYZ.y + 0x1000;
-            e->sub->unk20.x = y;
-            e->sub->unk20.z = y;
-            e->sub->unk52 = 1;
+            e->sub->xform.scale.vx = y;
+            e->sub->xform.scale.vz = y;
+            e->sub->xform.dirty = 1;
         }
         if (nas->Failure == 0) {
             return;
@@ -5223,8 +5223,8 @@ void PlotPickupTA(NAS *nas) {
             eng->Engine->sub->u6C.dbase = &HeroModelBank[DB_TankObjects2];
             eng->Engine->sub->entity = 0x200F;
             eng->Engine->xform.rot.vy = eng->xform.rot.vy + 0x400;
-            eng->Engine->sub->unk20.x = 0x20;
-            eng->Engine->sub->unk20.z = 0x60;
+            eng->Engine->sub->xform.scale.vx = 0x20;
+            eng->Engine->sub->xform.scale.vz = 0x60;
             eng->Engine->xform.dirty = 1;
             break;
         case 6:
@@ -5371,14 +5371,14 @@ follow:
         fe->XYZ.y = 0;
         fe->XYZ.x = x + dx;
         sc = ((eng->XYZ.y + 0x1000) * 0xAF0) / 0x1000;
-        fe->sub->unk20.x = sc;
-        fe->sub->unk20.z = sc;
-        fe->sub->unk52 = 1;
+        fe->sub->xform.scale.vx = sc;
+        fe->sub->xform.scale.vz = sc;
+        fe->sub->xform.dirty = 1;
     }
     if (nas->UserInfo.status == 2) {
         fe->xform.rot.vy = eng->xform.rot.vy + 0x400;
-        fe->sub->unk20.x = 0x3E8;
-        fe->sub->unk20.z = 0xAF0;
+        fe->sub->xform.scale.vx = 0x3E8;
+        fe->sub->xform.scale.vz = 0xAF0;
         eng->Engine->xform.dirty = 1;
     }
 }
@@ -5534,8 +5534,8 @@ void PlotPeriscope(NAS *nas) {
         eng->xform.dirty = 1;
         eng->xform.rot.vy += 30;
         sub = sub->next;
-        sub->unk51 = 0;
-        sub->unk52 = 1;
+        sub->xform.order = 0;
+        sub->xform.dirty = 1;
         if (--fux->Counter <= 0) {
             fux->Status = 5;
             fux->Counter = 4;
@@ -7257,14 +7257,14 @@ void InitMoeJoe(NAS *nas, s32 id) {
     eng_add_subs(eng, 2);
     sub = eng->sub;
     s = sub->next;
-    sub->unk51 = 1;
+    sub->xform.order = 1;
     s2 = s->next;
-    s->unk51 = 1;
+    s->xform.order = 1;
     s->u6C.dbase = &HeroModelBank[DB_TankObjects2];
     s->entity = 0x2011;
     s->unk68 = 0x100;
     s->flags = (s->flags & 0xFFFF7FFF) | 0x02000000;
-    s2->unk51 = 1;
+    s2->xform.order = 1;
     s2->u6C.dbase = &HeroModelBank[DB_TankObjects2];
     s2->entity = 0x4300;
     s2->unk68 = 0x100;
@@ -7633,17 +7633,17 @@ void MoeJoeMove(s32 player) {
         break;
     }
 loop:
-    a = (eng->xform.rot.vy + sub->unk12) & 0xFFF;
+    a = (eng->xform.rot.vy + sub->xform.rot.vy) & 0xFFF;
     df = ((angle - a) << 20) >> 20;
-    a = (u16)sub->unk12;
+    a = (u16)sub->xform.rot.vy;
     if ((u32)(df + 0x400) > 0x800) {
-        sub->unk12 = (a + 0x800) & 0xFFF;
+        sub->xform.rot.vy = (a + 0x800) & 0xFFF;
         goto loop;
     }
     df = df / 4;
-    sub->unk12 = (a + df) & 0xFFF;
-    sub->unk52 = 1;
-    a = (eng->xform.rot.vy + sub->unk12) & 0xFFF;
+    sub->xform.rot.vy = (a + df) & 0xFFF;
+    sub->xform.dirty = 1;
+    a = (eng->xform.rot.vy + sub->xform.rot.vy) & 0xFFF;
     sn = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
     cs = rcossin_tbl[a].unk2;
     x = eng->XYZ.x + ((speed * sn) >> 12);
@@ -7711,7 +7711,7 @@ void MoeJoeRecoil(s32 arg0) {
         p->SpeedY = -p->SpeedY / 2;
         eng->XYZ.y = 0;
     }
-    eng->sub->next->next->unk08 = -eng->XYZ.y / 2;
+    eng->sub->next->next->XYZ.y = -eng->XYZ.y / 2;
     if (arg0 == 3) {
         val = *MoeAnimPtr++;
         Heroes[3].hero_sub->entity = val;
@@ -7919,10 +7919,10 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     sub = eng->sub;
     sub->unk68 = 0;
     sub = sub->next;
-    sub->unk51 = 1;
+    sub->xform.order = 1;
     sub->unk68 = 0;
     sub = sub->next;
-    sub->unk51 = 1;
+    sub->xform.order = 1;
     sub->unk68 = 0;
     SetMoeJoeIdle(p);
     tb = TA_players;
@@ -8478,7 +8478,7 @@ void InitTankBossCrashTurret(NAS *nas) {
     sub->u6C.dbase = &HeroModelBank[DB_ArenaBossKomodoArenaobjects];
     sub->entity = 0x2003;
     sub->unk68 = v;
-    sub->unk51 = 0;
+    sub->xform.order = 0;
     sub->flags |= 0x02000000;
 }
 
@@ -8988,12 +8988,12 @@ void InitFlubberTA(NAS *nas) {
             e2->XYZ.x = eng->XYZ.x;
             e2->XYZ.y = 0;
             e2->XYZ.z = eng->XYZ.z;
-            e2->sub->unk51 = 2;
+            e2->sub->xform.order = 2;
             e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
             e2->sub->entity = 0x2001;
             e2->sub->flags |= 0x40000041;
             e2->sub->unk76 = 0x800;
-            e2->sub->unk50 = 1;
+            e2->sub->xform.hasScale = 1;
         }
         if (nas->Failure == 0) {
             return;

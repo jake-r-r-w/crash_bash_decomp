@@ -1559,7 +1559,7 @@ void PlotBalloon(NAS *nas) {
             }
         }
         a = fux->angle + GameFrameCount * 16;
-        eng->sub->unk08 = (rcossin_tbl[(a * 4 - 0x400) & 0xFFF].unk2 + rcossin_tbl[a & 0xFFF].unk2) >> 6;
+        eng->sub->XYZ.y = (rcossin_tbl[(a * 4 - 0x400) & 0xFFF].unk2 + rcossin_tbl[a & 0xFFF].unk2) >> 6;
         SPIN_FLOAT(eng, g, y, s);
     }
     SPIN_SHADOW(eng, shadow);
@@ -1682,7 +1682,7 @@ void SpinHero_ExtraEffects(s32 arg0) {
             }
         }
         pu->XYZ = Heroes[arg0].hero_eng->XYZ;
-        sub->unk08 = y;
+        sub->XYZ.y = y;
         if (Heroes[arg0].hero_pu != 0x13) {
             if (Heroes[arg0].hero_pu == 0x17 && SpinBigDrop > 30) {
                 SpinBigDrop = 30;
@@ -2867,12 +2867,12 @@ void SpinHeroFall(s32 arg0) {
         SetHeroAction(arg0, 7);
     } else {
         eng = h->hero_eng;
-        if (World_floor_level < eng->XYZ.y + h->hero_sub->unk08) {
+        if (World_floor_level < eng->XYZ.y + h->hero_sub->XYZ.y) {
             if (ContourHeight == 0x7FFFFFFF) {
                 SetHeroAction(arg0, 6);
             } else {
                 eng->XYZ.y = World_floor_level;
-                h->hero_sub->unk08 = 0;
+                h->hero_sub->XYZ.y = 0;
             }
         }
     }
@@ -2978,7 +2978,7 @@ void SetSpinHeroWinner(s32 arg0) {
         HeroInfo *h2;
         b2 = Heroes;
         h2 = b2 + arg0;
-        h2->hero_sub->unk08 = 0;
+        h2->hero_sub->XYZ.y = 0;
         h2->hero_pu = 0;
         h2->hero_pu_timer = 0;
     }
@@ -3052,7 +3052,7 @@ void SetSpinHeroLose(s32 arg0) {
     h2->hero_eng->xform.scale.vx = 0x1000;
     h2->hero_eng->xform.scale.vy = 0x1000;
     h2->hero_eng->xform.scale.vz = 0x1000;
-    h2->hero_sub->unk08 = 0;
+    h2->hero_sub->XYZ.y = 0;
     h2->hero_pu = 0;
     h2->hero_pu_timer = 0;
     SetHeroSeq(arg0, 1);

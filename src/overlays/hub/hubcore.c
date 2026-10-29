@@ -942,11 +942,11 @@ void PlotPathEffect(NAS *nas) {
                 if ((u32)(angle - 0x101) < 0xFF) {
                     if (ext->fx->UserInfo.user1 == 1) {
                         s32 s = 0x1000 - Random(0x800);
-                        ext->fx->Engine->sub->unk20.x = s;
-                        ext->fx->Engine->sub->unk20.y = s;
-                        ext->fx->Engine->sub->unk20.z = s;
+                        ext->fx->Engine->sub->xform.scale.vx = s;
+                        ext->fx->Engine->sub->xform.scale.vy = s;
+                        ext->fx->Engine->sub->xform.scale.vz = s;
                         ext->fx->UserInfo.user1 = 0;
-                        ext->fx->Engine->sub->unk52 = 1;
+                        ext->fx->Engine->sub->xform.dirty = 1;
                     }
                     ext->fx->Engine->sub->unk76 = abs(0x180 - abs(angle)) << 5;
                     ext->fx->Engine->sub->flags |= 0x8000;
@@ -962,11 +962,11 @@ void PlotPathEffect(NAS *nas) {
                 if (angle < -0x100) {
                     if (ext->fx->UserInfo.user1 == 1) {
                         s32 s = 0x1000 - Random(0x800);
-                        ext->fx->Engine->sub->unk20.x = s;
-                        ext->fx->Engine->sub->unk20.y = s;
-                        ext->fx->Engine->sub->unk20.z = s;
+                        ext->fx->Engine->sub->xform.scale.vx = s;
+                        ext->fx->Engine->sub->xform.scale.vy = s;
+                        ext->fx->Engine->sub->xform.scale.vz = s;
                         ext->fx->UserInfo.user1 = 0;
-                        ext->fx->Engine->sub->unk52 = 1;
+                        ext->fx->Engine->sub->xform.dirty = 1;
                     }
                     ext->fx->Engine->sub->unk76 = abs(0x180 - abs(angle)) << 5;
                     ext->fx->Engine->sub->flags |= 0x8000;
@@ -1987,9 +1987,9 @@ void InitSparkGFX(NAS *arg0) {
     if (s != NULL) {
         u32 fl;
         do {
-            s->unk51 = 0;
+            s->xform.order = 0;
             nv = &HeroModelBank[DB_AdventureItems];
-            s->unk50 = 1;
+            s->xform.hasScale = 1;
             s->u6C.dbase = nv;
             if (PodiumCheerKind == 0) {
                 s->entity = 0x2021;
@@ -2009,10 +2009,10 @@ void InitSparkGFX(NAS *arg0) {
             if (PodiumCheerKind == 5) {
                 s->entity = 0x2026;
             }
-            s->unk20.x = 0x1000;
+            s->xform.scale.vx = 0x1000;
             fl = 0x20000000;
-            s->unk20.y = 0x1000;
-            s->unk20.z = 0x1000;
+            s->xform.scale.vy = 0x1000;
+            s->xform.scale.vz = 0x1000;
             s->flags = fl;
             s->unk76 = 0;
             s = s->next;
@@ -2304,7 +2304,7 @@ void InitPodiumTrophy(NAS *arg0) {
     if (e != NULL && (e->flags &= ~0x8000, s = e->sub, s != NULL)) {
         s->u6C.dbase = &HeroModelBank[DB_MainmenuModels2];
         s->entity = 0x200A;
-        s->unk51 = 0;
+        s->xform.order = 0;
     } else {
         arg0->Failure = 1;
     }
@@ -2359,7 +2359,7 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
                     s->entity = *(u16 *)(p + t);
                     s->flags |= 0x8000;
                     s = e->sub;
-                    s->unk08 = -*(s32 *)FILE_AT(PodiumHeroX, t);
+                    s->XYZ.y = -*(s32 *)FILE_AT(PodiumHeroX, t);
                 }
             }
         }

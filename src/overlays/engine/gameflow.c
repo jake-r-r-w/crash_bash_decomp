@@ -365,11 +365,11 @@ loop:
             sub->flags &= ~0x8000;
         }
         p++;
-        sub->unk10 = 0x7D;
-        sub->unk12 = 0;
-        sub->unk14 = 0;
-        sub->unk04 = trig[(((GameFrameCount * 20 + (i << 10)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
-        sub->unk08 = (trig[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+        sub->xform.rot.vx = 0x7D;
+        sub->xform.rot.vy = 0;
+        sub->xform.rot.vz = 0;
+        sub->XYZ.x = trig[(((GameFrameCount * 20 + (i << 10)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
+        sub->XYZ.y = (trig[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
         i++;
         goto loop;
     }
@@ -506,10 +506,10 @@ void UpdateCupMenu(void) {
     sub->unk68 = -0x80;
     sub->u6C.dbase = &HeroModelBank[DB_MainmenuModels];
     sub->entity = 0x2006;
-    sub->unk12 = FrameCount * 50;
-    sub->unk10 = 0;
-    sub->unk14 = rcossin_tbl[(((GameFrameCount * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
-    sub->unk52 = 1;
+    sub->xform.rot.vy = FrameCount * 50;
+    sub->xform.rot.vx = 0;
+    sub->xform.rot.vz = rcossin_tbl[(((GameFrameCount * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
+    sub->xform.dirty = 1;
     GetEngineSlot(0)->sub[5].flags |= 0x8000;
     UpdateCardMessage();
 }
@@ -773,8 +773,8 @@ void ShowCardSlot(GameState *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         e->sub[6].entity = 0;
         e->sub[2].u6C.dbase = NULL;
         e->sub[1].u6C.text = LangEmpty[GameLanguage];
-        e->sub[1].unk04 = 0x8096;
-        e->sub[1].unk08 = 0x1E;
+        e->sub[1].XYZ.x = 0x8096;
+        e->sub[1].XYZ.y = 0x1E;
         return;
     }
     e->sub[3].entity = IconImage[arg0->heroChoice[0]];
@@ -782,8 +782,8 @@ void ShowCardSlot(GameState *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     e->sub[5].entity = IconImage[arg0->heroChoice[2]];
     e->sub[6].entity = IconImage[arg0->heroChoice[3]];
     e->sub[1].u6C.text = arg0->name;
-    e->sub[1].unk04 = 0xC;
-    e->sub[1].unk08 = 2;
+    e->sub[1].XYZ.x = 0xC;
+    e->sub[1].XYZ.y = 2;
     n = count_completion((u8 *)arg0);
     PercentText[arg1][0] = n / 100 + '0';
     n %= 100;
@@ -1198,13 +1198,13 @@ void RenderSaveMenu(void) {
     gfx_set_viewport(&SaveBackViewport, &SaveBackCamera);
     e = GetEngineSlot(8);
     s = e->sub;
-    s->unk14 = FrameCount * 20;
-    s->unk12 = 0x293;
-    s->unk50 = 1;
-    s->unk20.z = 0x2800;
-    s->unk20.x = 0x2800;
-    s->unk52 = 1;
-    s->unk51 = 0;
+    s->xform.rot.vz = FrameCount * 20;
+    s->xform.rot.vy = 0x293;
+    s->xform.hasScale = 1;
+    s->xform.scale.vz = 0x2800;
+    s->xform.scale.vx = 0x2800;
+    s->xform.dirty = 1;
+    s->xform.order = 0;
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs(e);
     gfx_set_viewport(&SaveViewport, &SaveCamera);

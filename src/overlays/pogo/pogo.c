@@ -1526,7 +1526,7 @@ void PostMovePOGO(u32 i) {
         sub = Heroes[i].hero_fx->sub;
         if (sub != NULL && sub_find_point(Heroes[i].hero_eng, Heroes[i].hero_sub, 0x200, &v) != NULL) {
             sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
-            sub->unk50 = 1;
+            sub->xform.hasScale = 1;
             sub->flags |= 0x8000;
             Heroes[i].hero_fx->xform.order = 1;
             Heroes[i].hero_fx->XYZ = *(SLONG_XYZ *)&v;
@@ -1564,12 +1564,12 @@ void PostMovePOGO(u32 i) {
             if (n != 20 && n != 0) {
                 n = Random(16);
             }
-            sub->unk50 = 1;
-            sub->unk20.x = 0x1000;
-            sub->unk20.z = 0x1000;
-            sub->unk51 = 0;
-            sub->unk20.y = PogoBounceHeights[n];
-            sub->unk52 = 1;
+            sub->xform.hasScale = 1;
+            sub->xform.scale.vx = 0x1000;
+            sub->xform.scale.vz = 0x1000;
+            sub->xform.order = 0;
+            sub->xform.scale.vy = PogoBounceHeights[n];
+            sub->xform.dirty = 1;
         }
     }
 }
@@ -2535,7 +2535,7 @@ void Tile_FireTnt(s32 arg0, s32 arg1) {
     c->mode = 1;
     c->player = -1;
     c->timer = 0;
-    pos = &c->sub->unk04;
+    pos = &c->sub->XYZ.x;
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     one = 1;
     if (nas != NULL) {
@@ -2597,7 +2597,7 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
     c->player = -1;
     c->timer = 0;
     Tile_Update(arg0, arg1);
-    pos = &c->sub->unk04;
+    pos = &c->sub->XYZ.x;
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -2711,7 +2711,7 @@ loop_j:
                     case 90:
                         do {
                             do {
-                                PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&CELL_AT(off)->sub->unk04, 0x1000, vol, 0);
+                                PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&CELL_AT(off)->sub->XYZ.x, 0x1000, vol, 0);
                             } while (0);
                         } while (0);
                         break;
@@ -2755,7 +2755,7 @@ loop_j:
                     play:
                         do {
                             do {
-                                PlaySfx(sfx, NULL, (SLONG_XYZ *)&CELL_AT(off)->sub->unk04, 0x1000, vol, 0);
+                                PlaySfx(sfx, NULL, (SLONG_XYZ *)&CELL_AT(off)->sub->XYZ.x, 0x1000, vol, 0);
                             } while (0);
                         } while (0);
                         break;
@@ -3555,7 +3555,7 @@ spawn:
         pos[2] += dz;
         sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
         sub->entity = 0x2005;
-        sub->unk04 = t;
+        sub->XYZ.x = t;
         sub->flags |= 0x21;
         sub = sub->next;
         t += 0x200;
@@ -3763,8 +3763,8 @@ void Init_PogoPowerup(NAS *nas) {
             if (sub != NULL) {
                 sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                 sub->entity = 0x2029;
-                sub->unk51 = 2;
-                sub->unk50 = 1;
+                sub->xform.order = 2;
+                sub->xform.hasScale = 1;
                 sub->unk76 = 0x800;
                 sub->flags |= 0x40008041;
             }
@@ -3822,10 +3822,10 @@ void Plot_PogoPowerup(NAS *nas) {
             if (abs(eng->XYZ.y - World_floor_level) < 0x200) {
                 scale = 0x1000 - abs(eng->XYZ.y - World_floor_level) * 6;
             }
-            sub->unk20.z = scale;
-            sub->unk20.y = scale;
-            sub->unk20.x = scale;
-            sub->unk52 = 1;
+            sub->xform.scale.vz = scale;
+            sub->xform.scale.vy = scale;
+            sub->xform.scale.vx = scale;
+            sub->xform.dirty = 1;
         }
     }
     switch (nas->UserInfo.status) {
@@ -4436,9 +4436,9 @@ void Plot_PogoProjectile(NAS *arg0) {
         }
         if (sub->flags & 0x8000) {
             if (((s32)arg0->UserInfo.user1 >> j) & 1) {
-                k = sub->unk20.x;
+                k = sub->xform.scale.vx;
                 if (arg0->UserInfo.flags & 2) {
-                    sub->unk04 += 0x90;
+                    sub->XYZ.x += 0x90;
                 }
                 k -= 0x100;
                 if (k <= 0) {
@@ -4446,10 +4446,10 @@ void Plot_PogoProjectile(NAS *arg0) {
                     sub->flags &= ~0x8000;
                 }
                 n++;
-                sub->unk20.z = k;
-                sub->unk20.y = k;
-                sub->unk20.x = k;
-                sub->unk52 = 1;
+                sub->xform.scale.vz = k;
+                sub->xform.scale.vy = k;
+                sub->xform.scale.vx = k;
+                sub->xform.dirty = 1;
             }
             if (sub->flags & 0x8000) {
                 goto next;
@@ -5614,8 +5614,8 @@ void Init_PogoRipperRoo(NAS *nas) {
             if (sub != NULL) {
                 sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                 sub->entity = 0x2029;
-                sub->unk51 = 2;
-                sub->unk50 = 1;
+                sub->xform.order = 2;
+                sub->xform.hasScale = 1;
                 sub->unk76 = 0x800;
                 sub->flags |= 0x40000041;
             }
@@ -5668,10 +5668,10 @@ void Plot_PogoRipperRoo(NAS *nas) {
             e2->XYZ.z = ez;
             if (sub != NULL) {
                 scale = 0x1600 - abs(e->XYZ.y - World_floor_level) * 4;
-                sub->unk20.z = scale;
-                sub->unk20.y = scale;
-                sub->unk20.x = scale;
-                sub->unk52 = 1;
+                sub->xform.scale.vz = scale;
+                sub->xform.scale.vy = scale;
+                sub->xform.scale.vx = scale;
+                sub->xform.dirty = 1;
             }
         }
         x = (e->XYZ.x + 0x800) >> 9;
@@ -6125,12 +6125,12 @@ void Roo_FireRocket(EXTengine *eng) {
                 for (s = sub->next; s != NULL; s = s->next) {
                     s->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
-                    s->unk20.z = 0x1000;
-                    s->unk20.y = 0x1000;
-                    s->unk20.x = 0x1000;
-                    s->unk50 = 1;
-                    s->unk51 = 0;
-                    s->unk04 = 0x90;
+                    s->xform.scale.vz = 0x1000;
+                    s->xform.scale.vy = 0x1000;
+                    s->xform.scale.vx = 0x1000;
+                    s->xform.hasScale = 1;
+                    s->xform.order = 0;
+                    s->XYZ.x = 0x90;
                 }
                 sub->entity = 0x200D;
                 e->xform.rot.vy = (angle + 0xC00) % 0x1000;
@@ -6208,12 +6208,12 @@ void Roo_FireProjectile(EXTengine *eng, s32 angle) {
                 for (s = sub->next; s != NULL; s = s->next) {
                     s->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
-                    s->unk20.z = 0x1000;
-                    s->unk20.y = 0x1000;
-                    s->unk20.x = 0x1000;
-                    s->unk50 = 1;
-                    s->unk51 = 0;
-                    s->unk04 = 0x90;
+                    s->xform.scale.vz = 0x1000;
+                    s->xform.scale.vy = 0x1000;
+                    s->xform.scale.vx = 0x1000;
+                    s->xform.hasScale = 1;
+                    s->xform.order = 0;
+                    s->XYZ.x = 0x90;
                 }
                 sub->entity = 0x200D;
                 e->xform.rot.vy = (angle + 0xC00) % 0x1000;
@@ -6248,9 +6248,9 @@ void Init_PogoPadlock(NAS *nas) {
             e2->flags &= ~0x8000;
             if (sub != NULL) {
                 sub->entity = 0x2029;
-                sub->unk51 = 2;
+                sub->xform.order = 2;
                 sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
-                sub->unk50 = 1;
+                sub->xform.hasScale = 1;
                 sub->unk76 = 0x800;
                 sub->flags |= 0x40008041;
             }
@@ -6646,12 +6646,12 @@ void Create_PogoProjectile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
                 for (s = sub->next; s != NULL; s = s->next) {
                     s->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
-                    s->unk20.z = 0x1000;
-                    s->unk20.y = 0x1000;
-                    s->unk20.x = 0x1000;
-                    s->unk50 = 1;
-                    s->unk51 = 0;
-                    s->unk04 = 0x90;
+                    s->xform.scale.vz = 0x1000;
+                    s->xform.scale.vy = 0x1000;
+                    s->xform.scale.vx = 0x1000;
+                    s->xform.hasScale = 1;
+                    s->xform.order = 0;
+                    s->XYZ.x = 0x90;
                 }
                 switch (arg0) {
                 case 1:

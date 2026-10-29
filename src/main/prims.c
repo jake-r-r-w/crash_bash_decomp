@@ -2801,8 +2801,8 @@ void mapenv_place_subs(map_enviroment *env) {
     while (--n != -1) {
         *sub = SubEngineTemplate;
         sub->flags = p->flags;
-        *(SLONG_XYZ *)&sub->unk04 = p->pos;
-        *(PlacementBlk *)&sub->unk2C[4] = p->blk;
+        *(SLONG_XYZ *)&sub->XYZ.x = p->pos;
+        *(PlacementBlk *)&sub->xform.mtx = p->blk;
         sub->hook = (void *)draw_map_sub;
         sub->u6C.dbase = env->dbase;
         sub->entity = p->unk88;
@@ -2830,9 +2830,9 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
 
     m = RenderState.cam->view;
     RenderState.dbase = ((subengine *)sub)->u6C.dbase = ((obj_dbase *)MapScene->dbase);
-    v.vx = ((subengine *)sub)->unk04 - RenderState.cam->at.x;
-    v.vy = ((subengine *)sub)->unk08 - RenderState.cam->at.y;
-    v.vz = ((subengine *)sub)->unk0C - RenderState.cam->at.z;
+    v.vx = ((subengine *)sub)->XYZ.x - RenderState.cam->at.x;
+    v.vy = ((subengine *)sub)->XYZ.y - RenderState.cam->at.y;
+    v.vz = ((subengine *)sub)->XYZ.z - RenderState.cam->at.z;
     mp = &m;
     if (!(flags & 0x200000)) {
         rot = &RenderState.cam->view;
@@ -2846,10 +2846,10 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
     if (((subengine *)sub)->flags & 0x20000000) {
         gte_SetRotMatrix(&RenderState.cam->rot);
     } else {
-        if (*(u16 *)&((subengine *)sub)->unk52 != 0) {
-            rotscale_update(&((subengine *)sub)->unk10);
+        if (*(u16 *)&((subengine *)sub)->xform.dirty != 0) {
+            rotscale_update(&((subengine *)sub)->xform.rot.vx);
         }
-        MulMatrix0(rot, (MATRIX *)&((subengine *)sub)->unk2C[4], mp);
+        MulMatrix0(rot, &((subengine *)sub)->xform.mtx, mp);
         gte_SetRotMatrix(mp);
     }
     gte_SetTransMatrix(mp);
@@ -3030,9 +3030,9 @@ void mapscene_place_subs(map_enviroment *env) {
     if (n != -1) do {
         *dst = SubEngineTemplate;
         dst->flags = src->flags;
-        *(Words3 *)&dst->unk04 = *(Words3 *)&src->pos;
-        *(Words4 *)&dst->unk2C[4] = *(Words4 *)&src->blk.w[0];
-        *(Words4 *)&dst->unk2C[0x14] = *(Words4 *)&src->blk.w[4];
+        *(Words3 *)&dst->XYZ.x = *(Words3 *)&src->pos;
+        *(Words4 *)&dst->xform.mtx = *(Words4 *)&src->blk.w[0];
+        *(Words4 *)&dst->xform.mtx.m[2][2] = *(Words4 *)&src->blk.w[4];
         dst->hook = (void (*)(subengine *, s32, u32))draw_map_sub;
         dst->u6C.dbase = env->dbase;
         dst->entity = src->unk88;

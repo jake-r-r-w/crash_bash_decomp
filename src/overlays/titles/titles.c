@@ -577,13 +577,13 @@ void AnimateTitlesBackdrop(void) {
     s32 d;
 
     sub = GetEngineSlot(1)->sub;
-    sub->unk14 = FrameCount * 0x14;
-    sub->unk12 = 0x293;
-    sub->unk50 = 1;
-    sub->unk51 = 0;
-    sub->unk20.z = 0x2800;
-    sub->unk20.x = 0x2800;
-    sub->unk52 = 1;
+    sub->xform.rot.vz = FrameCount * 0x14;
+    sub->xform.rot.vy = 0x293;
+    sub->xform.hasScale = 1;
+    sub->xform.order = 0;
+    sub->xform.scale.vz = 0x2800;
+    sub->xform.scale.vx = 0x2800;
+    sub->xform.dirty = 1;
     eng = GetEngineSlot(1);
     tbl = rcossin_tbl;
     pos = TitlesBackdropPos;
@@ -592,20 +592,20 @@ void AnimateTitlesBackdrop(void) {
     pos.y += (tbl[(((d * 0x2F) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x17) >> 0xC;
     ang = (tbl[(((d * 0x13) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x333) >> 0x10;
     p2 = &eng->sub[1];
-    *(SLONG_XYZ *)&p2->unk04 = pos;
-    p2->unk12 = -0x1C7;
-    p2->unk51 = 0;
-    p2->unk14 = ang;
-    p2->unk52 = 1;
+    *(SLONG_XYZ *)&p2->XYZ.x = pos;
+    p2->xform.rot.vy = -0x1C7;
+    p2->xform.order = 0;
+    p2->xform.rot.vz = ang;
+    p2->xform.dirty = 1;
     DoAnimCommand(NULL, eng, p2, &TitlesBackdropAnimator);
     p2 = &eng->sub[2];
-    *(SLONG_XYZ *)&p2->unk04 = pos;
-    p2->unk51 = 0;
-    p2->unk12 = -0x155;
-    p2->unk14 = ang;
+    *(SLONG_XYZ *)&p2->XYZ.x = pos;
+    p2->xform.order = 0;
+    p2->xform.rot.vy = -0x155;
+    p2->xform.rot.vz = ang;
     p2->flags |= 0x02000000;
     p2->unk68 = 0x80;
-    p2->unk52 = 1;
+    p2->xform.dirty = 1;
 }
 
 void MainMenuUpdate(void) {
@@ -699,11 +699,11 @@ void PlayersMenuUpdate(void) {
     s[2].unk7C = 3;
     s[3].unk7C = 3;
     if (GameMaxPlayers == 2) {
-        s[0].unk08 = -0x22;
-        s[1].unk08 = 0;
+        s[0].XYZ.y = -0x22;
+        s[1].XYZ.y = 0;
     } else {
-        s[0].unk08 = -0x40;
-        s[1].unk08 = -0x1C;
+        s[0].XYZ.y = -0x40;
+        s[1].XYZ.y = -0x1C;
     }
     if (O69CV->maxPlayers == 2) {
         s[2].flags &= ~0x8000;
@@ -813,13 +813,13 @@ void BattleOptionsUpdate(void) {
     subengine *p;
 
     sub = GetEngineSlot(1)->sub;
-    sub->unk14 = FrameCount * 0x14;
-    sub->unk12 = 0x293;
-    sub->unk50 = 1;
-    sub->unk20.z = 0x2800;
-    sub->unk20.x = 0x2800;
-    sub->unk51 = 0;
-    sub->unk52 = 1;
+    sub->xform.rot.vz = FrameCount * 0x14;
+    sub->xform.rot.vy = 0x293;
+    sub->xform.hasScale = 1;
+    sub->xform.scale.vz = 0x2800;
+    sub->xform.scale.vx = 0x2800;
+    sub->xform.order = 0;
+    sub->xform.dirty = 1;
     if (((PadState *)Pads)->pressed & 0x1000) {
         MenuChainBack();
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -898,13 +898,13 @@ void OptionsUpdate(void) {
     subengine *cam;
 
     cam = GetEngineSlot(1)->sub;
-    cam->unk14 = FrameCount * 0x14;
-    cam->unk12 = 0x293;
-    cam->unk50 = 1;
-    cam->unk20.z = 0x2800;
-    cam->unk20.x = 0x2800;
-    cam->unk51 = 0;
-    cam->unk52 = 1;
+    cam->xform.rot.vz = FrameCount * 0x14;
+    cam->xform.rot.vy = 0x293;
+    cam->xform.hasScale = 1;
+    cam->xform.scale.vz = 0x2800;
+    cam->xform.scale.vx = 0x2800;
+    cam->xform.order = 0;
+    cam->xform.dirty = 1;
     sub = GetEngineSlot(4)->sub;
     switch (OptionsPage) {
     case 0:
@@ -1371,11 +1371,11 @@ void InitCharSelector(s32 arg0) {
     o->unk28 = Random(0x1E) + 0x1E;
     o->unk14 = Random(0x200) - 0x100;
     o->unk18 = Random(0x200) - 0x100;
-    s->unk50 = 1;
+    s->xform.hasScale = 1;
     s->unk68 = -0x64;
-    s->unk51 = 0;
-    s->unk20.x = 0;
-    s->unk20.y = 0;
+    s->xform.order = 0;
+    s->xform.scale.vx = 0;
+    s->xform.scale.vy = 0;
     s->flags |= 0x02000000;
     g = &GamePlayers;
     o->unk30 = arg0;
@@ -1409,10 +1409,10 @@ void UpdateCharSelector(TitlesSlot *slot) {
     s2 = o->unk10;
     x = CharCards[o->unk30].x + CharSelectorOffsets[o->unk4].x;
     y = CharCards[o->unk30].y + CharSelectorOffsets[o->unk4].y;
-    t->unk04 = lerp_snap(t->unk04, x, 0x800);
-    t->unk08 = lerp_snap(t->unk08, y, 0x800);
-    still = abs(t->unk04 - x) + abs(t->unk08 - y);
-    s->unk08 = s2->unk08 = ((TitlesTrig *)rcossin_tbl)[(FrameCount * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
+    t->XYZ.x = lerp_snap(t->XYZ.x, x, 0x800);
+    t->XYZ.y = lerp_snap(t->XYZ.y, y, 0x800);
+    still = abs(t->XYZ.x - x) + abs(t->XYZ.y - y);
+    s->XYZ.y = s2->XYZ.y = ((TitlesTrig *)rcossin_tbl)[(FrameCount * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
     still = still == 0;
     if (o->unk0 & 1) {
         tgt = CharCards[o->unk30].target;
@@ -1420,17 +1420,17 @@ void UpdateCharSelector(TitlesSlot *slot) {
         v = TitlesSteer(o->unk1C, tgt, v, 0x2BC);
         o->unk14 = v;
         o->unk1C += v;
-        s->unk20.x = o->unk1C >> 4;
+        s->xform.scale.vx = o->unk1C >> 4;
         v = o->unk18;
         v = TitlesSteer(o->unk20, tgt, v, 0x3E8);
         o->unk18 = v;
         o->unk20 += v;
-        s->unk20.y = o->unk20 >> 4;
+        s->xform.scale.vy = o->unk20 >> 4;
         {
             EXTengine *e = GetEngineSlot(2);
             DoAnimCommand(NULL, e, o->unk8, (EXTanimator *)&o->ext);
         }
-        s->unk52 = 1;
+        s->xform.dirty = 1;
         o->unk24++;
         return;
     }
@@ -1595,15 +1595,15 @@ void CharSelectUpdate(void) {
     AnimateTitlesBackdrop();
     eng = GetEngineSlot(0);
     s = &eng->sub[24];
-    s->unk08 = ((rcossin_tbl[(((GameFrameCount * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
-    s->unk12 = (rcossin_tbl[(((GameFrameCount * 25) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
-    s->unk14 = (rcossin_tbl[(((GameFrameCount * 36) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
-    s->unk52 = 1;
+    s->XYZ.y = ((rcossin_tbl[(((GameFrameCount * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
+    s->xform.rot.vy = (rcossin_tbl[(((GameFrameCount * 25) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s->xform.rot.vz = (rcossin_tbl[(((GameFrameCount * 36) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s->xform.dirty = 1;
     s2 = &GetEngineSlot(0)->sub[25];
-    s2->unk08 = ((rcossin_tbl[(((GameFrameCount * 41) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0xBE;
-    s2->unk12 = (rcossin_tbl[(((GameFrameCount * 35) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
-    s2->unk14 = (rcossin_tbl[(((GameFrameCount * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
-    s2->unk52 = 1;
+    s2->XYZ.y = ((rcossin_tbl[(((GameFrameCount * 41) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0xBE;
+    s2->xform.rot.vy = (rcossin_tbl[(((GameFrameCount * 35) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s2->xform.rot.vz = (rcossin_tbl[(((GameFrameCount * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s2->xform.dirty = 1;
     min = 0x7FFFFFFF;
     for (i = 0; i < ((GameState *)GameInfo)->players; i++) {
         if (CharSelectors[i].pad10[5] < min) {
@@ -1841,7 +1841,7 @@ void LevelSelectInput(void) {
     }
     if (TitlesSlotOn()) {
         GetEngineSlot(0)->sub->u6C.dbase = (void *)TitlesSlotRowI((s8)GAME->arena, (s8)GAME->arenaLevel);
-        GetEngineSlot(0)->sub->unk08 = 8;
+        GetEngineSlot(0)->sub->XYZ.y = 8;
         GetEngineSlot(2)->sub->u6C.dbase = (void *)TitlesSlotModelI((s8)GAME->arena, (s8)GAME->arenaLevel);
         GetEngineSlot(2)->sub->entity = TitlesSlotCI((s8)GAME->arena, (s8)GAME->arenaLevel);
         GetEngineSlot(0)->sub[4].flags |= 0x8000;
@@ -1854,7 +1854,7 @@ void LevelSelectInput(void) {
     e->sub->u6C.text = (void *)tbl[g->language];
     GetEngineSlot(2)->sub->entity = 0;
     GetEngineSlot(0)->sub[4].flags &= ~0x8000;
-    GetEngineSlot(0)->sub->unk08 = 0x1C;
+    GetEngineSlot(0)->sub->XYZ.y = 0x1C;
     GetEngineSlot(0)->sub[9].flags |= 0x8000;
     if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + ((s8)GAME->arenaLevel << 4)))->type == 2)) {
         if (CardStatus & 2) {
@@ -1918,7 +1918,7 @@ void LevelSelectUpdate(void) {
     off = ((s32 **)LangModeTypeTexts)[GAME->language][w];
     e0->sub[6].u6C.dbase = (void *)off;
     t = &GetEngineSlot(0)->sub[1];
-    t->unk08 = lerp_fix12(t->unk08,
+    t->XYZ.y = lerp_fix12(t->XYZ.y,
         *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)GAME->arenaLevel + 4] + 0x72) + 0x32, 0x800);
     i = 0;
     off = 0;
@@ -1949,25 +1949,25 @@ void LevelSelectUpdate(void) {
             s->u6C.dbase = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + (off << 4)))->model;
             c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + (off << 4)))->unkC;
             s->entity = c;
-            s->unk10 = 0x7D;
-            s->unk12 = 0;
-            s->unk14 = 0;
-            s->unk04 = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
-            s->unk08 = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+            s->xform.rot.vx = 0x7D;
+            s->xform.rot.vy = 0;
+            s->xform.rot.vz = 0;
+            s->XYZ.x = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
+            s->XYZ.y = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
         } else {
             s->u6C.dbase = &HeroModelBank[DB_MainmenuModels];
             s->entity = 0x2006;
-            s->unk10 = 0;
-            s->unk12 = FrameCount * 50 + (i << 10);
+            s->xform.rot.vx = 0;
+            s->xform.rot.vy = FrameCount * 50 + (i << 10);
             val = rcossin_tbl[(((GameFrameCount * 100 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2;
-            s->unk04 = 0;
-            s->unk08 = 0;
-            s->unk14 = (val * 25) >> 9;
+            s->XYZ.x = 0;
+            s->XYZ.y = 0;
+            s->xform.rot.vz = (val * 25) >> 9;
         }
         off++;
         i++;
-        s->unk51 = 0;
-        s->unk52 = 1;
+        s->xform.order = 0;
+        s->xform.dirty = 1;
     }
     for (i = (GameArena + BattleArenas)->unk4; i < 4; i++) {
         GetEngineSlot(1)->sub[i + 4].flags &= ~0x8000;
@@ -1976,10 +1976,10 @@ void LevelSelectUpdate(void) {
     h = GAME;
     NextGameMode = ((BattleLevel *)((u8 *)BattleArenas[(s8)h->arena].unk0 + ((s8)h->arenaLevel << 4)))->idx;
     q = GetEngineSlot(2)->sub;
-    q->unk10 = 0x7D;
-    q->unk51 = 0;
-    q->unk04 = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->unk08 = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
-    q->unk52 = 1;
+    q->xform.rot.vx = 0x7D;
+    q->xform.order = 0;
+    q->XYZ.x = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->XYZ.y = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+    q->xform.dirty = 1;
 }
 
 void LevelSelectRender(void) {

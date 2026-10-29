@@ -3657,26 +3657,26 @@ void PlotDinoScratch(NAS *m) {
             }
             m->UserInfo.user2++;
             if (!(s->flags & 0x8000)) {
-                *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->XYZ;
+                *(SLONG_XYZ *)&s->XYZ.x = Heroes[m->UserInfo.user1].hero_eng->XYZ;
                 if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx > 0x1000) {
-                    s->unk50 = 1;
+                    s->xform.hasScale = 1;
                     dx = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
-                    s->unk20.z = dx;
-                    s->unk20.y = dx;
-                    s->unk20.x = dx;
+                    s->xform.scale.vz = dx;
+                    s->xform.scale.vy = dx;
+                    s->xform.scale.vx = dx;
                 }
                 if (Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx < 0x1000) {
-                    s->unk50 = 1;
+                    s->xform.hasScale = 1;
                     v = Heroes[m->UserInfo.user1].hero_eng->xform.scale.vx;
-                    s->unk20.z = v;
-                    s->unk20.y = v;
-                    s->unk20.x = v;
+                    s->xform.scale.vz = v;
+                    s->xform.scale.vy = v;
+                    s->xform.scale.vx = v;
                 }
                 s->flags = 0x40008041;
                 ang = Heroes[m->UserInfo.user1].hero_eng->xform.rot.vy;
-                s->unk52 = 1;
+                s->xform.dirty = 1;
                 s->unk76 = 0x400;
-                s->unk12 = ang + 0x800;
+                s->xform.rot.vy = ang + 0x800;
             }
         }
     }
@@ -3685,9 +3685,9 @@ void PlotDinoScratch(NAS *m) {
             s->unk76 += 0x40;
             if ((s16)s->unk76 > 0xC00) {
                 s->flags = 0;
-                s->unk20.z = 0x1000;
-                s->unk20.y = 0x1000;
-                s->unk20.x = 0x1000;
+                s->xform.scale.vz = 0x1000;
+                s->xform.scale.vy = 0x1000;
+                s->xform.scale.vx = 0x1000;
             }
         }
     }
@@ -3713,10 +3713,10 @@ void InitDinoScratch(NAS *m) {
             sub->flags = 0x40000000;
             sub->u6C.dbase = MapScene->dbase;
             sub->entity = 0x2003;
-            sub->unk51 = 2;
-            sub->unk14 = 0;
-            sub->unk12 = 0;
-            sub->unk10 = 0;
+            sub->xform.order = 2;
+            sub->xform.rot.vz = 0;
+            sub->xform.rot.vy = 0;
+            sub->xform.rot.vx = 0;
             sub->unk76 = 0x800;
             sub = sub->next;
         } while (sub != NULL);

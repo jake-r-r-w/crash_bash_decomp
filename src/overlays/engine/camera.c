@@ -641,19 +641,19 @@ void BobSub(subengine *s) {
     s32 f;
     TrigEntry *e;
 
-    s->unk51 = 0;
+    s->xform.order = 0;
     t = rcossin_tbl;
     f = FrameCount;
     e = &t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF];
-    s->unk10 = *(s32 *)e >> 20;
-    s->unk12 = (t[(((f * 140) & 0xFFF) - 0x400) & 0xFFF].unk2 + 0x800) >> 5;
-    s->unk14 = (e->unk2 + t[(((f * 100) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 5;
-    s->unk04 = *(s32 *)&t[(((f * 35) & 0xFFF) - 0x400) & 0xFFF] >> 23;
-    s->unk04 = (t[((f * 75) - 0x400) & 0xFFF].unk2 * 480) / 4096;
-    s->unk08 = (t[(((f * 45) & 0xFFF) - 0x400) & 0xFFF].unk2 + t[(((f * 145) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 6;
-    s->unk20.z = 0x199;
-    s->unk50 = 1;
-    s->unk52 = 1;
+    s->xform.rot.vx = *(s32 *)e >> 20;
+    s->xform.rot.vy = (t[(((f * 140) & 0xFFF) - 0x400) & 0xFFF].unk2 + 0x800) >> 5;
+    s->xform.rot.vz = (e->unk2 + t[(((f * 100) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 5;
+    s->XYZ.x = *(s32 *)&t[(((f * 35) & 0xFFF) - 0x400) & 0xFFF] >> 23;
+    s->XYZ.x = (t[((f * 75) - 0x400) & 0xFFF].unk2 * 480) / 4096;
+    s->XYZ.y = (t[(((f * 45) & 0xFFF) - 0x400) & 0xFFF].unk2 + t[(((f * 145) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 6;
+    s->xform.scale.vz = 0x199;
+    s->xform.hasScale = 1;
+    s->xform.dirty = 1;
 }
 
 void UpdateScreenLabels(void) {
@@ -687,12 +687,12 @@ void UpdateScreenLabels(void) {
         eng->xform.dirty = 1;
         s = GetEngineSlot(3)->sub + 2;
         for (i = 0; i < ScreenCount; i++) {
-            s->unk20.z = 0x199;
-            s->unk51 = 0;
-            s->unk50 = 1;
+            s->xform.scale.vz = 0x199;
+            s->xform.order = 0;
+            s->xform.hasScale = 1;
             s->flags |= 0x8000;
-            s->unk12 = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
-            s->unk52 = 1;
+            s->xform.rot.vy = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
+            s->xform.dirty = 1;
             s = s->next;
         }
         {
@@ -714,12 +714,12 @@ void UpdateScreenLabels(void) {
     case 1:
         s = GetEngineSlot(3)->sub + 2;
         for (i = 0; i < ScreenCount; i++) {
-            s->unk20.z = 0x199;
-            s->unk51 = 0;
-            s->unk50 = 1;
+            s->xform.scale.vz = 0x199;
+            s->xform.order = 0;
+            s->xform.hasScale = 1;
             s->flags |= 0x8000;
-            s->unk12 = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
-            s->unk52 = 1;
+            s->xform.rot.vy = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
+            s->xform.dirty = 1;
             s = s->next;
         }
         {
@@ -745,12 +745,12 @@ void UpdateScreenLabels(void) {
         if (p[2] < 10) {
             s = GetEngineSlot(3)->sub + 2;
             for (i = 0; i < ScreenCount; i++) {
-                s->unk20.z = 0x199;
-                s->unk51 = 0;
-                s->unk50 = 1;
+                s->xform.scale.vz = 0x199;
+                s->xform.order = 0;
+                s->xform.hasScale = 1;
                 s->flags |= 0x8000;
-                s->unk12 = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
-                s->unk52 = 1;
+                s->xform.rot.vy = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
+                s->xform.dirty = 1;
                 s = s->next;
             }
             {
@@ -835,12 +835,12 @@ void ShowScreenLabels(void) {
     s32 i;
     subengine *s = GetEngineSlot(3)->sub + 2;
     for (i = 0; i < ScreenCount; i++) {
-        s->unk20.z = 0x199;
-        s->unk51 = 0;
-        s->unk50 = 1;
+        s->xform.scale.vz = 0x199;
+        s->xform.order = 0;
+        s->xform.hasScale = 1;
         s->flags |= 0x8000;
-        s->unk12 = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
-        s->unk52 = 1;
+        s->xform.rot.vy = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
+        s->xform.dirty = 1;
         s = s->next;
     }
 }

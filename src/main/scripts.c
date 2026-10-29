@@ -88,22 +88,22 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
         key = k;
         d = &th->type.anim.sub;
         f = key->len;
-        d->unk51 = 3;
+        d->xform.order = 3;
         if (f != 0) {
             len = f << 8;
             t = (ci->time.w >> 8) - (key->start << 8);
-            CamVec3_Lerp((CamVec3 *)&d->unk04, &key->pos, &key[1].pos, len, t);
-            quat_slerp_ex_frac((s32)&key->rot, (s32)&key[1].rot, (s32)&d->unk10, len, t, (s32)key->unk34);
-            d->unk52 = 1;
-            CamVec3_Lerp((CamVec3 *)&d->unk20, &key->scale, &key[1].scale, len, t);
+            CamVec3_Lerp((CamVec3 *)&d->XYZ.x, &key->pos, &key[1].pos, len, t);
+            quat_slerp_ex_frac((s32)&key->rot, (s32)&key[1].rot, (s32)&d->xform.rot.vx, len, t, (s32)key->unk34);
+            d->xform.dirty = 1;
+            CamVec3_Lerp((CamVec3 *)&d->xform.scale, &key->scale, &key[1].scale, len, t);
             w = interp(key->unk4C, key[1].unk4C, len, t);
         } else {
-            *(CamVec3 *)&d->unk04 = key->pos;
-            d->unk52 = 1;
-            *(ObjQuat *)&d->unk10 = key->rot;
-            d->unk20.x = key->scale.v[0];
-            d->unk20.y = key->scale.v[1];
-            d->unk20.z = key->scale.v[2];
+            *(CamVec3 *)&d->XYZ.x = key->pos;
+            d->xform.dirty = 1;
+            *(ObjQuat *)&d->xform.rot.vx = key->rot;
+            d->xform.scale.vx = key->scale.v[0];
+            d->xform.scale.vy = key->scale.v[1];
+            d->xform.scale.vz = key->scale.v[2];
             w = key->unk4C;
         }
         w = 0x1000 - w;
@@ -112,7 +112,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
             d->unk76 = w;
             d->flags |= 0x40000000;
         }
-        d->unk50 = 1;
+        d->xform.hasScale = 1;
         d->entity = key->unk8;
     } else {
         th->type.anim.sub.flags &= ~0x8000;
@@ -328,7 +328,7 @@ void emit_particle(subengine *obj, EmitPart *part, partdata *def) {
     }
     part->age = 0;
     if (def->zrot != 0) {
-        obj->unk14 = Random(0x1000);
+        obj->xform.rot.vz = Random(0x1000);
     }
     if (def->yrotmax < def->yrotmin) {
         r = abs((def->yrotmax - def->yrotmin) << 20 >> 20);
@@ -349,9 +349,9 @@ void emit_particle(subengine *obj, EmitPart *part, partdata *def) {
     part->vel[0] = speed * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 4;
     part->vel[2] = speed * rcossin_tbl[yaw & 0xFFF].unk2 >> 4;
     part->vel[1] = -(speed * rcossin_tbl[pitch & 0xFFF].unk2 >> 4);
-    obj->unk04 = (radius * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 12) + def->pos.x;
-    obj->unk0C = (radius * rcossin_tbl[yaw & 0xFFF].unk2 >> 12) + def->pos.z;
-    obj->unk08 = def->pos.y - (radius * rcossin_tbl[pitch & 0xFFF].unk2 >> 12);
+    obj->XYZ.x = (radius * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 12) + def->pos.x;
+    obj->XYZ.z = (radius * rcossin_tbl[yaw & 0xFFF].unk2 >> 12) + def->pos.z;
+    obj->XYZ.y = def->pos.y - (radius * rcossin_tbl[pitch & 0xFFF].unk2 >> 12);
     obj->flags |= 0x8000;
 }
 
@@ -417,13 +417,13 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
         }
         if (obj->flags & 0x8000) {
             if (part->vel[0] != 0) {
-                obj->unk04 += part->vel[0] >> 8;
+                obj->XYZ.x += part->vel[0] >> 8;
             }
             if (part->vel[1] != 0) {
-                obj->unk08 += part->vel[1] >> 8;
+                obj->XYZ.y += part->vel[1] >> 8;
             }
             if (part->vel[2] != 0) {
-                obj->unk0C += part->vel[2] >> 8;
+                obj->XYZ.z += part->vel[2] >> 8;
             }
             if (def->gxmin != 0) {
                 part->vel[0] += def->gxmin;
@@ -443,8 +443,8 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
             if (def->gzmax != 0x100) {
                 part->vel[2] = (part->vel[2] * def->gzmax) >> 8;
             }
-            obj->unk14 += *(u16 *)&def->zrot;  /* the spin speed's low half */
-            obj->unk52 = 1;
+            obj->xform.rot.vz += *(u16 *)&def->zrot;  /* the spin speed's low half */
+            obj->xform.dirty = 1;
             if (def->particlelifetime < part->age++) {
                 obj->flags &= ~0x8000;
             }
@@ -465,11 +465,11 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
                 if (in != 0 || def->scaleoutstart != 0) {
                     scale = EmitPart_Fade(in, def->scaleoutstart, part->age, def->particlelifetime, 0, 0x1000);
                 }
-                obj->unk20.z = scale;
-                obj->unk20.y = scale;
-                obj->unk20.x = scale;
-                obj->unk50 = 1;
-                obj->unk52 = 1;
+                obj->xform.scale.vz = scale;
+                obj->xform.scale.vy = scale;
+                obj->xform.scale.vx = scale;
+                obj->xform.hasScale = 1;
+                obj->xform.dirty = 1;
             }
         }
         if (spawn != 0 && !(obj->flags & 0x8000)) {
@@ -519,18 +519,18 @@ void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
     d = &th->type.subscript.sub;
     if (res != NULL && ci->time.w >= (res->start_frame << 16) &&
         !(th->type.subscript.sub.flags & 0x8000)) {
-        d->unk04 = res->type.subscript.key[2];
-        d->unk08 = res->type.subscript.key[3];
-        d->unk0C = res->type.subscript.key[4];
-        d->unk10 = *(u16 *)&res->type.subscript.key[5];
-        d->unk12 = *(u16 *)&res->type.subscript.key[6];
-        d->unk14 = *(u16 *)&res->type.subscript.key[7];
-        d->unk20.x = res->type.subscript.key[15];
-        d->unk20.y = res->type.subscript.key[16];
-        d->unk20.z = res->type.subscript.key[17];
-        d->unk51 = 0;
+        d->XYZ.x = res->type.subscript.key[2];
+        d->XYZ.y = res->type.subscript.key[3];
+        d->XYZ.z = res->type.subscript.key[4];
+        d->xform.rot.vx = *(u16 *)&res->type.subscript.key[5];
+        d->xform.rot.vy = *(u16 *)&res->type.subscript.key[6];
+        d->xform.rot.vz = *(u16 *)&res->type.subscript.key[7];
+        d->xform.scale.vx = res->type.subscript.key[15];
+        d->xform.scale.vy = res->type.subscript.key[16];
+        d->xform.scale.vz = res->type.subscript.key[17];
+        d->xform.order = 0;
         t = *(u16 *)&res->type.subscript.sort_priority;
-        d->unk52 = 1;
+        d->xform.dirty = 1;
         d->unk68 = t;
         sub_play_script(ci->dbase, res->type.subscript.script_num, d, 0);
         th->type.subscript.sub.flags |= 0x8000;
@@ -1218,8 +1218,8 @@ void init_emitter_thread(script_thread *def, script_control_info *ci, s32 num) {
                 v = ci->dbase;
                 q->u6C.dbase = v;
                 w = *(u16 *)&def->type.particle.frame;
-                q->unk51 = 0;
-                q->unk52 = 1;
+                q->xform.order = 0;
+                q->xform.dirty = 1;
                 q->entity = w;
                 q = q->next;
             } while (q != NULL);
