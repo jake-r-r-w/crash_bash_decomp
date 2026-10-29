@@ -508,3 +508,19 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   the recovered `CrateVelocity` (0x16 bytes of `u16`). The other stand-ins have no recovered
   type and keep their names. A layout-only search (`scratch/pair2.py`) finds no more: generic
   word arrays fit anything.
+- [x] The exe's raw-offset functions (2026-10-29; ROADMAP-B's 1.3). `tools/scripts/raw_offsets.py`
+  lists the byte-pointer reads the progress check misses: it found 32 functions and 224 lines,
+  and 12 functions are left.
+  - Typed: the loader's records (`ModeDbase` moved to main.h, `file_group_load_info.group` is a
+    `FileGroup *`), the dbase texture loads, the draw buffers, a texture set's animation block,
+    the interface sprites, the script tracks' model and camera fields, and the title screens'
+    TGA header (`tga_header`). The card save's offsets are named (`CARD_SLOTS`, `CARD_FLAGS`,
+    `CARD_SUM`).
+  - Left, each for a reason:
+    - `export_exe_functions`' table: an array indexed by the byte offsets the overlays use;
+    - `prim_write_uvs`: GPU packets built byte by byte, two prim layouts in one buffer;
+    - `prims_init`, `dbase_init_all` and `texture_init_mem_textureset`: pool and bank walks
+      by fixed strides;
+    - seven helpers nothing in this build calls, so no caller shows their argument's type:
+      `script_track_at`, `find_range_30`/`_24`/`_1c`, `list_count`, `name_list_find`,
+      `texsrc_init`.

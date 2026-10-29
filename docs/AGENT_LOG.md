@@ -482,6 +482,11 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 1.3, exe raw offsets):** `raw_offsets.py` (new) finds the reads the
+  progress check's regex misses (`*(T *)(p + N)` on a `u8 *`): 32 exe functions became 12, each
+  left for a reason (ROADMAP-A). Gotcha: `retype.py` only finds an ANSI definition. A K&R one
+  (`SetScreen(arg0) RECT *arg0; {`) reports "no function", so retype it by hand.
+
 - **2026-10-29 (ROADMAP-B 1.2, stand-ins):** the stand-ins with a recovered type are folded
   (ROADMAP-A lists them).
   - Tools: `struct_layout.header_of` finds a `typedef struct X X;` + `struct X {}` type (the
