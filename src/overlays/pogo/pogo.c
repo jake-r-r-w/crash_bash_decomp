@@ -6612,13 +6612,13 @@ void PogoKerb_Init(void) {
 }
 
 void Init_PogoProjectile(NAS *arg0) {
-    if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
-        (*(s16*)((u8*)(arg0) + 92)) = 0;
-        (*(s16*)((u8*)(arg0) + 94)) = 0;
-        (*(s32*)((u8*)(arg0) + 96)) = 0;
-        (*(s32*)((u8*)(arg0) + 100)) = 0;
+    if ((arg0->Engine) != 0) {
+        (arg0->UserInfo.status) = 0;
+        (arg0->UserInfo.flags) = 0;
+        (arg0->UserInfo.user1) = 0;
+        (arg0->UserInfo.user2) = 0;
     }
-    if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
+    if ((arg0->Failure) != 0) {
         KillNAS((NAS *)arg0);
     }
 }

@@ -260,7 +260,7 @@ extern PapuStep *PapuMinionWaves[];
 extern ScriptInit PapuMinionScriptInit;
 NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d);
 
-s32 PAPU_KeepInBounds(u8 *arg0);
+s32 PAPU_KeepInBounds(EXTengine *arg0);
 
 void PapuStopCrates(void);
 

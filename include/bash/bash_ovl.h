@@ -127,9 +127,9 @@ typedef struct BashTumbleMove {
     /* 0x32 */ u16 steps;
 } BashTumbleMove;
 
-void PlotBoing(u8 *arg0);
+void PlotBoing(NAS *arg0);
 
-s32 BASH_KeepInBounds(u8 *arg0);
+s32 BASH_KeepInBounds(EXTengine *arg0);
 
 /* Extension 0x20000002: one entry every 2 bytes, one per subengine. */
 typedef struct SnowGlint {

@@ -329,7 +329,7 @@ void InitGatewayTrophy(void);
 
 s32 HubDist(DistPos *a, DistPos *b);
 
-s32 HubDistXZ(u8 *arg0, u8 *arg1);
+s32 HubDistXZ(EXTengine *arg0, EXTengine *arg1);
 
 void HubGoToMode(s32 arg0);
 
@@ -380,7 +380,7 @@ void PodiumReleaseTrophy(void);
 
 void InitPodiumTrophy(NAS *arg0);
 
-void InitPodiumOdo(u8 *arg0);
+void InitPodiumOdo(NAS *arg0);
 
 typedef struct ScriptExt40 {
     /* 0x00 */ u8 pad00[0x14];

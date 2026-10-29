@@ -3885,24 +3885,24 @@ void InitDinoSmoke(NAS *arg0) {
     }
 }
 
-s32 DinoKeepInBounds(u8 *arg0) {
+s32 DinoKeepInBounds(EXTengine *arg0) {
     s32 var_v1;
 
     var_v1 = 0;
-    if ((*(s32*)((u8*)(arg0) + 16)) >= 0x801) {
-        (*(s32*)((u8*)(arg0) + 16)) = 0x800;
+    if ((arg0->unk10.x) >= 0x801) {
+        (arg0->unk10.x) = 0x800;
         var_v1 = 1;
     }
-    if ((*(s32*)((u8*)(arg0) + 16)) < -0x800) {
-        (*(s32*)((u8*)(arg0) + 16)) = -0x800;
+    if ((arg0->unk10.x) < -0x800) {
+        (arg0->unk10.x) = -0x800;
         var_v1 = 1;
     }
-    if ((*(s32*)((u8*)(arg0) + 24)) >= 0x801) {
-        (*(s32*)((u8*)(arg0) + 24)) = 0x800;
+    if ((arg0->unk10.z) >= 0x801) {
+        (arg0->unk10.z) = 0x800;
         var_v1 = 1;
     }
-    if ((*(s32*)((u8*)(arg0) + 24)) < -0x800) {
-        (*(s32*)((u8*)(arg0) + 24)) = -0x800;
+    if ((arg0->unk10.z) < -0x800) {
+        (arg0->unk10.z) = -0x800;
         var_v1 = 1;
     }
     return var_v1;
@@ -4117,21 +4117,21 @@ s32 DinoPadAngle(s32 arg0) {
     return var_a1;
 }
 
-s32 DinoCompareXZ(u8 *arg0, u8 *arg1) {
+s32 DinoCompareXZ(SLONG_XYZ *arg0, SLONG_XYZ *arg1) {
     s32 temp_a0;
     s32 temp_a0_2;
     s32 temp_a2;
     s32 temp_v0;
     s32 var_v1;
 
-    temp_v0 = (*(s32*)((u8*)(arg0) + 0));
-    temp_a0 = (*(s32*)((u8*)(arg1) + 0));
+    temp_v0 = (arg0->x);
+    temp_a0 = (arg1->x);
     var_v1 = (temp_a0 < temp_v0) << 7;
     if (temp_v0 < temp_a0) {
         var_v1 |= 0x20;
     }
-    temp_a2 = (*(s32*)((u8*)(arg0) + 8));
-    temp_a0_2 = (*(s32*)((u8*)(arg1) + 8));
+    temp_a2 = (arg0->z);
+    temp_a0_2 = (arg1->z);
     if (temp_a0_2 < temp_a2) {
         var_v1 |= 0x40;
     }

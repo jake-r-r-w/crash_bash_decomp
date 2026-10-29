@@ -6652,20 +6652,20 @@ void InitRaceSmokePoof(NAS *nas) {
     nas->UserInfo.user1 = 0;
 }
 
-s32 RaceDist2(u8 *arg0, u8 *arg1) {
+s32 RaceDist2(SLONG_XYZ *arg0, SLONG_XYZ *arg1) {
     s32 temp_v0;
     s32 temp_v0_2;
     s32 temp_v0_3;
 
-    temp_v0 = (*(s32*)((u8*)(arg0) + 0)) - (*(s32*)((u8*)(arg1) + 0));
-    temp_v0_2 = (*(s32*)((u8*)(arg0) + 8)) - (*(s32*)((u8*)(arg1) + 8));
-    temp_v0_3 = (*(s32*)((u8*)(arg0) + 4)) - (*(s32*)((u8*)(arg1) + 4));
+    temp_v0 = (arg0->x) - (arg1->x);
+    temp_v0_2 = (arg0->z) - (arg1->z);
+    temp_v0_3 = (arg0->y) - (arg1->y);
     return (temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2) + (temp_v0_3 * temp_v0_3);
 }
 
-void InitRaceTag(u8 *arg0) {
+void InitRaceTag(NAS *arg0) {
     RaceTagTime = 0x12C;
-    PlaySfx(0x452, (*(s32*)((u8*)(arg0) + 84)) + 0x94, 0, 0x1000, 0x1E00, 0);
+    PlaySfx(0x452, &arg0->Engine->sfx, 0, 0x1000, 0x1E00, 0);
 }
 
 void InitRaceShield(NAS *nas) {

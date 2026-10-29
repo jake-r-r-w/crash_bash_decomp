@@ -1566,7 +1566,7 @@ void PlotPapuMinion(NAS *nas)
     }
   }
   PapuMinionKick(slot);
-  PAPU_KeepInBounds((u8 *)eng);
+  PAPU_KeepInBounds(eng);
   if (fux->unk1E & 0x102) {
     if (PapuMinionSlots[slot].pad4[6] != 0) {
       ((MinionFux *)PapuMinionSlots[slot].pad4[6])->unk16 = fux->unk16;
@@ -2277,46 +2277,46 @@ void PapuStartFloorWave(s32 arg0) {
     PapuWaveFlag = 2;
 }
 
-s32 PAPU_KeepInBounds(u8 *arg0) {
+s32 PAPU_KeepInBounds(EXTengine *arg0) {
     s32 temp_a0;
     s32 temp_v1;
     s32 var_a2;
 
     var_a2 = 0;
-    if ((*(s32*)((u8*)(arg0) + 144)) & 0x40) {
-        temp_a0 = 0x6A0 - (*(s16*)((u8*)(arg0) + 138));
-        if (temp_a0 < (*(s32*)((u8*)(arg0) + 16))) {
-            (*(s32*)((u8*)(arg0) + 16)) = temp_a0;
+    if ((arg0->collision_box.flags) & 0x40) {
+        temp_a0 = 0x6A0 - (arg0->collision_box.radius);
+        if (temp_a0 < (arg0->unk10.x)) {
+            (arg0->unk10.x) = temp_a0;
             var_a2 = 1;
         }
         temp_v1 = -temp_a0;
-        if ((*(s32*)((u8*)(arg0) + 16)) < temp_v1) {
-            (*(s32*)((u8*)(arg0) + 16)) = temp_v1;
+        if ((arg0->unk10.x) < temp_v1) {
+            (arg0->unk10.x) = temp_v1;
             var_a2 = 1;
         }
-        if (temp_a0 < (*(s32*)((u8*)(arg0) + 24))) {
-            (*(s32*)((u8*)(arg0) + 24)) = temp_a0;
+        if (temp_a0 < (arg0->unk10.z)) {
+            (arg0->unk10.z) = temp_a0;
             var_a2 = 1;
         }
-        if ((*(s32*)((u8*)(arg0) + 24)) < temp_v1) {
-            (*(s32*)((u8*)(arg0) + 24)) = temp_v1;
+        if ((arg0->unk10.z) < temp_v1) {
+            (arg0->unk10.z) = temp_v1;
             goto block_17;
         }
     } else {
-        if ((*(s32*)((u8*)(arg0) + 16)) >= 0x601) {
-            (*(s32*)((u8*)(arg0) + 16)) = 0x600;
+        if ((arg0->unk10.x) >= 0x601) {
+            (arg0->unk10.x) = 0x600;
             var_a2 = 1;
         }
-        if ((*(s32*)((u8*)(arg0) + 16)) < -0x600) {
-            (*(s32*)((u8*)(arg0) + 16)) = -0x600;
+        if ((arg0->unk10.x) < -0x600) {
+            (arg0->unk10.x) = -0x600;
             var_a2 = 1;
         }
-        if ((*(s32*)((u8*)(arg0) + 24)) >= 0x601) {
-            (*(s32*)((u8*)(arg0) + 24)) = 0x600;
+        if ((arg0->unk10.z) >= 0x601) {
+            (arg0->unk10.z) = 0x600;
             var_a2 = 1;
         }
-        if ((*(s32*)((u8*)(arg0) + 24)) < -0x600) {
-            (*(s32*)((u8*)(arg0) + 24)) = -0x600;
+        if ((arg0->unk10.z) < -0x600) {
+            (arg0->unk10.z) = -0x600;
 block_17:
             var_a2 = 1;
         }

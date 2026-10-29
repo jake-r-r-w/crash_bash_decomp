@@ -9866,9 +9866,9 @@ void PlotIceBerg(NAS *arg0) {
     u8 *temp_a1;
     u8 *temp_v1;
 
-    temp_a1 = (*(s32*)((u8*)(arg0) + 84));
-    (*(s32*)((u8*)(temp_a1) + 16)) = (s32) ((*(s32*)((u8*)(temp_a1) + 16)) + ((s32) (*(s32*)((u8*)(arg0) + 100)) >> 8));
-    temp_v1 = (*(s32*)((u8*)(arg0) + 84));
+    temp_a1 = (arg0->Engine);
+    (*(s32*)((u8*)(temp_a1) + 16)) = (s32) ((*(s32*)((u8*)(temp_a1) + 16)) + ((s32) (arg0->UserInfo.user2) >> 8));
+    temp_v1 = (arg0->Engine);
     if ((*(s32*)((u8*)(temp_v1) + 16)) >= 0x1AF5) {
         (*(s32*)((u8*)(temp_v1) + 16)) = -0x1C84;
     }
@@ -10374,21 +10374,21 @@ s32 PolarPadAngle(s32 arg0) {
     return var_a1;
 }
 
-s32 PolarCompareXZ(u8 *arg0, u8 *arg1) {
+s32 PolarCompareXZ(SLONG_XYZ *arg0, SLONG_XYZ *arg1) {
     s32 temp_a0;
     s32 temp_a0_2;
     s32 temp_a2;
     s32 temp_v0;
     s32 var_v1;
 
-    temp_v0 = (*(s32*)((u8*)(arg0) + 0));
-    temp_a0 = (*(s32*)((u8*)(arg1) + 0));
+    temp_v0 = (arg0->x);
+    temp_a0 = (arg1->x);
     var_v1 = (temp_a0 < temp_v0) << 7;
     if (temp_v0 < temp_a0) {
         var_v1 |= 0x20;
     }
-    temp_a2 = (*(s32*)((u8*)(arg0) + 8));
-    temp_a0_2 = (*(s32*)((u8*)(arg1) + 8));
+    temp_a2 = (arg0->z);
+    temp_a0_2 = (arg1->z);
     if (temp_a0_2 < temp_a2) {
         var_v1 |= 0x40;
     }
@@ -10467,8 +10467,8 @@ void InitBombMaker(NAS *m) {
     }
 }
 
-u32 PolarAngleOf(u8 *arg0) {
-    return (u32) ((get_angle((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg0) + 8))) - 0x7D) & 0xFFF) >> 8;
+u32 PolarAngleOf(SLONG_XYZ *arg0) {
+    return (u32) ((get_angle((arg0->x), (arg0->z)) - 0x7D) & 0xFFF) >> 8;
 }
 
 bool DoNowt(EXTengine *eng) {

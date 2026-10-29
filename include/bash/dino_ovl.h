@@ -127,7 +127,7 @@ void SetDinoHeroShoot(s32 player);
 
 void SetDinoHeroRun(s32 player);
 
-s32 DinoKeepInBounds(u8 *arg0);
+s32 DinoKeepInBounds(EXTengine *arg0);
 
 void FirstTriggersDINO(void);
 
@@ -205,7 +205,7 @@ s32 DinoGemLoose(s32 arg0);
 
 s32 DinoPadAngle(s32 arg0);
 
-s32 DinoCompareXZ(u8 *arg0, u8 *arg1);
+s32 DinoCompareXZ(SLONG_XYZ *arg0, SLONG_XYZ *arg1);
 
 extern s32 DinoGem0;
 extern NAS *DinoGem1;

@@ -1191,12 +1191,12 @@ s32 HubDist(DistPos *a, DistPos *b) {
     return csqrt(dx * dx + dz * dz) >> 6;
 }
 
-s32 HubDistXZ(u8 *arg0, u8 *arg1) {
+s32 HubDistXZ(EXTengine *arg0, EXTengine *arg1) {
     s32 temp_v0;
     s32 temp_v0_2;
 
-    temp_v0 = (*(s32*)((u8*)(arg1) + 16)) - (*(s32*)((u8*)(arg0) + 16));
-    temp_v0_2 = (*(s32*)((u8*)(arg1) + 24)) - (*(s32*)((u8*)(arg0) + 24));
+    temp_v0 = (arg1->unk10.x) - (arg0->unk10.x);
+    temp_v0_2 = (arg1->unk10.z) - (arg0->unk10.z);
     return (temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2);
 }
 
@@ -2315,14 +2315,14 @@ void InitPodiumTrophy(NAS *arg0) {
     PodiumTrophyObj = (PodiumObj *)arg0;
 }
 
-void InitPodiumOdo(u8 *arg0) {
-    if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
-        (*(s32*)((u8*)(arg0) + 96)) = 0;
-        (*(s32*)((u8*)(arg0) + 100)) = 0;
-        (*(s16*)((u8*)(arg0) + 92)) = 0;
-        (*(s16*)((u8*)(arg0) + 94)) = 0;
+void InitPodiumOdo(NAS *arg0) {
+    if ((arg0->Engine) != 0) {
+        (arg0->UserInfo.user1) = 0;
+        (arg0->UserInfo.user2) = 0;
+        (arg0->UserInfo.status) = 0;
+        (arg0->UserInfo.flags) = 0;
     }
-    if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
+    if ((arg0->Failure) != 0) {
         KillNAS((NAS *)arg0);
     }
 }

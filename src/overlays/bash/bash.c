@@ -3431,8 +3431,8 @@ set:
     }
 }
 
-void PlotBoing(u8 *arg0) {
-    if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
+void PlotBoing(NAS *arg0) {
+    if ((arg0->Engine) != 0) {
         RunNasAnim((NAS *)arg0);
     }
 }
@@ -3697,46 +3697,46 @@ s32 BashAI_HazardAhead(s32 arg0) {
     return 0;
 }
 
-s32 BASH_KeepInBounds(u8 *arg0) {
+s32 BASH_KeepInBounds(EXTengine *arg0) {
     s32 temp_a0;
     s32 temp_v1;
     s32 var_a2;
 
     var_a2 = 0;
-    if ((*(s32*)((u8*)(arg0) + 144)) & 0x40) {
-        temp_a0 = 0x800 - (*(s16*)((u8*)(arg0) + 138));
-        if (temp_a0 < (*(s32*)((u8*)(arg0) + 16))) {
-            (*(s32*)((u8*)(arg0) + 16)) = temp_a0;
+    if ((arg0->collision_box.flags) & 0x40) {
+        temp_a0 = 0x800 - (arg0->collision_box.radius);
+        if (temp_a0 < (arg0->unk10.x)) {
+            (arg0->unk10.x) = temp_a0;
             var_a2 = 1;
         }
         temp_v1 = -temp_a0;
-        if ((*(s32*)((u8*)(arg0) + 16)) < temp_v1) {
-            (*(s32*)((u8*)(arg0) + 16)) = temp_v1;
+        if ((arg0->unk10.x) < temp_v1) {
+            (arg0->unk10.x) = temp_v1;
             var_a2 = 1;
         }
-        if (temp_a0 < (*(s32*)((u8*)(arg0) + 24))) {
-            (*(s32*)((u8*)(arg0) + 24)) = temp_a0;
+        if (temp_a0 < (arg0->unk10.z)) {
+            (arg0->unk10.z) = temp_a0;
             var_a2 = 1;
         }
-        if ((*(s32*)((u8*)(arg0) + 24)) < temp_v1) {
-            (*(s32*)((u8*)(arg0) + 24)) = temp_v1;
+        if ((arg0->unk10.z) < temp_v1) {
+            (arg0->unk10.z) = temp_v1;
             goto block_17;
         }
     } else {
-        if ((*(s32*)((u8*)(arg0) + 16)) >= 0x801) {
-            (*(s32*)((u8*)(arg0) + 16)) = 0x800;
+        if ((arg0->unk10.x) >= 0x801) {
+            (arg0->unk10.x) = 0x800;
             var_a2 = 1;
         }
-        if ((*(s32*)((u8*)(arg0) + 16)) < -0x800) {
-            (*(s32*)((u8*)(arg0) + 16)) = -0x800;
+        if ((arg0->unk10.x) < -0x800) {
+            (arg0->unk10.x) = -0x800;
             var_a2 = 1;
         }
-        if ((*(s32*)((u8*)(arg0) + 24)) >= 0x801) {
-            (*(s32*)((u8*)(arg0) + 24)) = 0x800;
+        if ((arg0->unk10.z) >= 0x801) {
+            (arg0->unk10.z) = 0x800;
             var_a2 = 1;
         }
-        if ((*(s32*)((u8*)(arg0) + 24)) < -0x800) {
-            (*(s32*)((u8*)(arg0) + 24)) = -0x800;
+        if ((arg0->unk10.z) < -0x800) {
+            (arg0->unk10.z) = -0x800;
 block_17:
             var_a2 = 1;
         }

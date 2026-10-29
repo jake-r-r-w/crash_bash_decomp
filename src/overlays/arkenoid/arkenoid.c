@@ -6028,7 +6028,7 @@ void Plot_ArkCameraFlash(NAS *arg0)
 }
 
 void Init_ArkCameraFlash(NAS *arg0) {
-    u8 *eng = (u8*)(*(s32*)((u8*)(arg0) + 84));
+    u8 *eng = (u8*)(arg0->Engine);
     u8 *sub;
     if (eng != NULL) {
         s32 val;
@@ -6038,15 +6038,15 @@ void Init_ArkCameraFlash(NAS *arg0) {
         (*(u8*)(sub + 80)) = 1;
         (*(u8*)(sub + 81)) = 0;
         (*(s32*)(sub + 108)) = val;
-        (*(s32*)((u8*)(arg0) + 96)) = 0;
+        (arg0->UserInfo.user1) = 0;
     }
-    if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
+    if ((arg0->Failure) != 0) {
         KillNAS(arg0);
     }
 }
 
 void Plot_seaweed(NAS *arg0) {
-    if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
+    if ((arg0->Engine) != 0) {
         RunNasAnim(arg0);
     }
 }
