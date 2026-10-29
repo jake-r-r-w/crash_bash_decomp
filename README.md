@@ -208,6 +208,16 @@ how to play it and edit the game data: [docs/PLAYING.md](docs/PLAYING.md)),
 
 ## License
 
-The project's own work (the tools, build files and docs) is MIT-licensed: [LICENSE](LICENSE), which
-also lists what it doesn't cover. Game code and data remain the property of their respective owners;
-this repository contains only reimplementation source.
+The MIT licence in [LICENSE](LICENSE) covers this project's own tooling only. Each part of the
+repository:
+
+| Part | Licence |
+|---|---|
+| `tools/` (except below), `Makefile`, `configs/`, the tests, the docs | MIT, the crash_bash_decomp contributors |
+| `src/`, `include/` | Not licensed by this project: the decompiled C and headers reconstruct Crash Bash, whose code and data belong to their owners (developed by Eurocom, published by Sony Computer Entertainment). That includes the original game headers recovered from the game's archive (`include/bash/arkenoid.h`, `pogo.h`, `polar.h`, `tank.h`). |
+| `tools/reference/` | GPL: the source of GCC 2.8.1 and 2.7.2.3, with their own `COPYING` files |
+| `tools/cc1/patches/` | GPL: changes to GCC, as GCC is |
+
+Nothing here grants any right to the game. The third-party tools the build runs (splat, maspsx,
+m2c, decomp-permuter, mkpsxiso, old-gcc's builds) keep their own licences and are fetched by the
+Docker image, not stored here.

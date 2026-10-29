@@ -675,3 +675,9 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
   - `src/` and `include/`, which reconstruct the game (the recovered original headers included);
   - `tools/reference/` (GCC's source, GPL);
   - `tools/cc1/patches/` (changes to GCC, GPL).
+- [x] 5.2 The README says what the licence covers (2026-10-29). Its License section has a table, part
+  by part:
+  - the tooling, build files, tests and docs are MIT;
+  - `src/` and `include/` are the game's (Eurocom / Sony), and nothing grants any right to it;
+  - `tools/reference/` and `tools/cc1/patches/` are GPL;
+  - the third-party tools the Docker image fetches keep their own licences.
