@@ -249,7 +249,7 @@ static inline s32 EngineExtra105(GameState *arg0) {
 
     n = 0;
     for (i = 0; i < 0x21; i++) {
-        p = (u8 *)arg0 + i;  /* a byte walk: &unkE4[1][i] adds an instruction */
+        p = (u8 *)arg0 + i;  /* a byte walk: &adventure.won[1][i] adds an instruction */
         if (p[0x105] >= 2) {
             n += p[0x105] - 1;
         }

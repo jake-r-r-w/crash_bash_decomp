@@ -247,7 +247,7 @@ void InitSniperMissile(NAS *m);
 void PlotSniperMissile(NAS *m);
 void InitWeatherNas(NAS *m);
 void PlotWeatherNas(NAS *m);
-/* PathEffect, CrystalFlash and SparkGFX are defined in hub (800b4eac.c),
+/* PathEffect, CrystalFlash and SparkGFX are defined in hub (hubcore.c),
  * where CrystalFlash takes other types. */
 void InitPathEffect(NAS *m);
 void PlotPathEffect(NAS *m);

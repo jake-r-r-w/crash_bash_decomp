@@ -399,7 +399,7 @@ extern s32 map[];
 
 void PreInitLevel(void);
 
-/* N2O's star field (nox.c's NoxSparkFx; the engine's link takes it from the overlay's ELF) */
+/* N2O's star field (defined in nox.c; the engine's link takes it from the overlay's ELF) */
 extern FxDef NoxSparkFxDef;
 
 extern FxDef WeatherFxDef; /* the weather's (InitWeatherNas) */

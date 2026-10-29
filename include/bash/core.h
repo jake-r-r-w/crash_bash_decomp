@@ -86,7 +86,7 @@ typedef struct map_tree map_tree;
 typedef struct trigger_list trigger_list;
 typedef struct map_map map_map;
 
-/* A contour of a map's contour grids (map_map.contour_grids; docs/ASSETS.md, Map data): its
+/* A contour of a map's contour grids (map_map.contour_grids; docs/ASSETS.md, Model files: the maps): its
  * bounds, then its edges. PointInZone tests which side of each edge a point is. */
 typedef struct MapEdge {
     /* 0x00 */ s32 unk0[3];

@@ -582,7 +582,7 @@ typedef struct GameOptionSet {
     /* 0x0C */ s8 vibrate[4];
 } GameOptionSet;
 /* GameInfo's last 0x11C bytes (0x8005A684..0x8005A7A0), the adventure's progress: per-level
- * tables of 0x21 bytes. Field names are GameInfo offsets, as gameflow.h's GameStateView. */
+ * tables of 0x21 bytes. The offsets in the comments and pads are GameInfo's. */
 typedef struct AdventureState {
     /* 0x070 */ s32 flag;  /* tested for zero */
     /* 0x074 */ u8 active;          /* in the adventure (not a battle or the demo) */

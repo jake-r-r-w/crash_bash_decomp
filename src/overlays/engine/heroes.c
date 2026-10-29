@@ -1488,7 +1488,7 @@ void SetTweakAi(void) {
     for (i = 0; i < 4; i++) {
         flags = g->levelFlags;
         if (flags & 0x100) {
-            c = ((u8 *)g)[g->mode + 0xAB];  /* bytes from the state: unkAB[mode] adds the other way round */
+            c = ((u8 *)g)[g->mode + 0xAB];  /* bytes from the state: adventure.modeSkill[mode] adds the other way round */
             g->adventure.aiSkill[i] = c;
             t[i].level = ((u16 *)AiSkillTable)[c];
             t[i].quality = 0x10;

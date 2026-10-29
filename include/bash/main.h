@@ -293,7 +293,7 @@ typedef struct {
     u8 pad18[4];
 } KeyEntry;
 
-/* A map path (path_get; docs/ASSETS.md, Map data): its header, then its keys. The game moves
+/* A map path (path_get; docs/ASSETS.md, Model files: the maps): its header, then its keys. The game moves
  * cameras and hub objects along them (key_interp_pos). */
 typedef struct MapPath {
     /* 0x00 */ s32 nKeys;
@@ -917,7 +917,7 @@ typedef struct PlaceRec {
 } PlaceRec;
 extern u8 GameInfo[];
 extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
-extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (views: numPlayers) */
+extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (GameState.players) */
 extern s8 GameArena;             /* GameInfo + 0x36: the BattleArenas entry */
 extern s16 GameTeamLeader[2];    /* GameInfo + 0x48: each team's leading hero */
 extern u8 GameHeroOut[4];        /* GameInfo + 0x5C: each hero out of the game */

@@ -155,7 +155,7 @@ typedef struct CharCard {
     /* 0x10 */ s32 target;
     /* 0x14 */ s32 model;     /* index into HeroModelBank */
     /* 0x18 */ s32 pad18;
-    /* 0x1C */ s32 anim;      /* the selector's Atable when picked: a CharSelectAnim* */
+    /* 0x1C */ s32 anim;      /* the selector's Atable when picked: one of the CharSelectSteps tables */
     /* 0x20 */ s32 sfx;
     /* 0x24 */ u8 *sub;       /* set by CharSelectInit */
 } CharCard;

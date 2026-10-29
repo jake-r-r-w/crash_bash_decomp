@@ -2038,7 +2038,7 @@ void DinoUpdateTargets(void) {
         DinoTargetStep += 0x30;
         for (i = 0, p = DinoTargetObjs; i < 3; i++, p++) {
             if (DinoTargetD != *p) {
-                (*p)->scale -= (s16)(*p)->scale >> 1;  /* matching: the scale is signed here (DinoObj had it s16) */
+                (*p)->scale -= (s16)(*p)->scale >> 1;  /* matching: retail shifts the scale as an s16 here */
             }
         }
     }
