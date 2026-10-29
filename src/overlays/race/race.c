@@ -1183,7 +1183,7 @@ s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
   if (((s32)MapScene->dbase) != 0)
   {
     u8 *q = ((u8 *)MapScene->map);
-    c = arg1 >= (*((s32 *) (((*((s32 *) (q + 0x14))) + 0x14) + q)));
+    c = arg1 >= (*((s32 *) (((*(s32 *)&((map_map *)q)->contour_grids) + 0x14) + q)));  /* the contours' count */
   }
   else
   {
@@ -1197,7 +1197,7 @@ s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
     return 0;
   }
   base = ((u8 *)MapScene->map);
-  off = *((s32 *) (base + 0x14));
+  off = *(s32 *)&((map_map *)base)->contour_grids;
   p = ((u8 *) (&((s32 *) ((base + 0x14) + off))[arg1 + 1])) + ((s32 *) ((base + 0x14) + off))[arg1 + 1];
   if ((new_var = p) != 0)
   {
@@ -1205,11 +1205,11 @@ s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
     a2 = p + 0x5C;
     a3 = p;
     ang = get_angle(arg0[0], arg0[2]) & 0xFFF;
-    n = *((s32 *) (a3 + 0x38));
+    n = ((MapContour *)a3)->nEdges;
     loop:
     if (i < n)
     {
- do { r = *((s32 *) (a3 + 0x64)); a = get_angle(*((s32 *) (a2 - 0x14)), *((s32 *) (a2 - 0xC))) & 0xFFF; b = get_angle(*((s32 *) (a2 - 8)), *((s32 *) a2)) & 0xFFF; if ((a < ang) && (ang < b)) { *arg2 = -r; found = i; } a3 += 0x38; i++; a2 += 0x38; } while (0);
+ do { r = ((MapContour *)a3)->edges[0].angle; a = get_angle(*((s32 *) (a2 - 0x14)), *((s32 *) (a2 - 0xC))) & 0xFFF; b = get_angle(*((s32 *) (a2 - 8)), *((s32 *) a2)) & 0xFFF; if ((a < ang) && (ang < b)) { *arg2 = -r; found = i; } a3 += 0x38; i++; a2 += 0x38; } while (0);
       goto loop;
     }
 
@@ -2053,8 +2053,7 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
         return 0;
     }
     data = ((u8 *)MapScene->map);
-    obj = (RaceSegObj *)((u8 *)&((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1] +
-                          ((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1]);
+    obj = (RaceSegObj *)SELF_REL(&((s32 *)(data + (*(s32 *)&((map_map *)data)->contour_grids + 0x14)))[idx + 1]);
     if (obj != NULL) {
         i = 0;
         dist = 0;
@@ -2191,9 +2190,9 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
         return 0;
     }
     data = ((u8 *)MapScene->map);
-    tbl = (RaceSegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
+    tbl = (RaceSegTable *)(data + (*(s32 *)&((map_map *)data)->contour_grids + 0x14));
     w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
-                        (tbl2 = (RaceSegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
+                        (tbl2 = (RaceSegTable *)(*(s32 *)&((map_map *)data)->contour_grids + (s32)data + 0x14))->offs[idx]);
     if (w != NULL) {
         dist = 0;
         t = 0;
@@ -2350,7 +2349,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
         return 0;
     }
     data = ((u8 *)MapScene->map);
-    tbl = (RaceSegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
+    tbl = (RaceSegTable *)(data + (*(s32 *)&((map_map *)data)->contour_grids + 0x14));
     w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
                         ((RaceSegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
     if (w != NULL) {

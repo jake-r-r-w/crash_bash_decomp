@@ -85,6 +85,26 @@ typedef struct level_music_info level_music_info;
 typedef struct map_tree map_tree;
 typedef struct trigger_list trigger_list;
 typedef struct map_map map_map;
+
+/* A contour of a map's contour grids (map_map.contour_grids; docs/ASSETS.md, Map data): its
+ * bounds, then its edges. PointInZone tests which side of each edge a point is. */
+typedef struct MapEdge {
+    /* 0x00 */ s32 unk0[3];
+    /* 0x0C */ SLONG_XYZ p0;
+    /* 0x18 */ SLONG_XYZ p1;
+    /* 0x24 */ s32 len;        /* p0 to p1 in x, z */
+    /* 0x28 */ s32 angle;
+    /* 0x2C */ s32 unk2C[3];
+} MapEdge;
+
+typedef struct MapContour {
+    /* 0x00 */ SLONG_XYZ min;
+    /* 0x0C */ SLONG_XYZ max;
+    /* 0x18 */ s32 unk18[7];
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 nEdges;
+    /* 0x3C */ MapEdge edges[1];
+} MapContour;
 typedef struct map_list map_list;
 typedef struct map_enviroment map_enviroment;
 typedef struct FillNAS FillNAS;

@@ -3893,11 +3893,11 @@ s32 PointInZone(s32 *arg0, s32 arg1) {
     s32 ang;
 
     base = ((u8 *)MapScene->map);
-    off = *(s32 *)(base + 0x14);  /* the map file's zone records */
-    p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
+    off = *(s32 *)&((map_map *)base)->contour_grids;  /* the map file's zone records */
+    p = SELF_REL(&((s32 *)(base + 0x14 + off))[arg1 + 1]);
     if (p != NULL) {
         i = 0;
-        n = *(s32 *)(p + 0x38);
+        n = ((MapContour *)p)->nEdges;
         t = rcossin_tbl;
         a2 = p + 0x50;
         a3 = p;
@@ -3905,7 +3905,7 @@ s32 PointInZone(s32 *arg0, s32 arg1) {
             if (i >= n) {
                 return 1;
             }
-            ang = *(s32 *)(a3 + 0x64);
+            ang = ((MapContour *)a3)->edges[0].angle;  /* a3 steps an edge at a time */
             v[0] = arg0[0] - *(s32 *)(a2 - 8);
             v[2] = arg0[2] - *(s32 *)a2;
             ang = -ang;

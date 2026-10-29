@@ -1217,8 +1217,8 @@ bool IsPtInALLZone(SLONG_XYZ *arg0, s32 arg1) {
     s32 ry;
 
     base = ((u8 *)MapScene->map);
-    off = *(s32 *)(base + 0x14);
-    p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
+    off = *(s32 *)&((map_map *)base)->contour_grids;
+    p = SELF_REL(&((s32 *)(base + 0x14 + off))[arg1 + 1]);
     if (p != NULL) {
         i = 0;
         cnt = 0;
@@ -1227,7 +1227,7 @@ bool IsPtInALLZone(SLONG_XYZ *arg0, s32 arg1) {
         a3 = p;
         ry = ((((get_angle(arg0->x, arg0->z) - 0x7D) & 0xFFF) >> 8) + 1 & 0xF) << 8;
         t = rcossin_tbl;
-        n = *(s32 *)(p + 0x38);
+        n = ((MapContour *)p)->nEdges;
         for (;;) {
             s32 ang;
 
@@ -1298,11 +1298,11 @@ bool CheckMelted(SLONG_XYZ *arg0, s32 arg1) {
         }
     }
     base = ((u8 *)MapScene->map);
-    off = *(s32 *)(base + 0x14);
-    p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
+    off = *(s32 *)&((map_map *)base)->contour_grids;
+    p = SELF_REL(&((s32 *)(base + 0x14 + off))[arg1 + 1]);
     i = 0;
     if (p != NULL) {
-        n = *(s32 *)(p + 0x38);
+        n = ((MapContour *)p)->nEdges;
         t = rcossin_tbl;
         a2 = p + 0x50;
         a3 = p;
@@ -1310,7 +1310,7 @@ bool CheckMelted(SLONG_XYZ *arg0, s32 arg1) {
             if (i >= n) {
                 return 1;
             }
-            ang = *(s32 *)(a3 + 0x64);
+            ang = ((MapContour *)a3)->edges[0].angle;  /* a3 steps an edge at a time */
             v[0] = arg0->x - *(s32 *)(a2 - 8);
             v[2] = arg0->z - *(s32 *)a2;
             ang = -ang;
@@ -8148,11 +8148,11 @@ s32 BearminatorFindPoint(s32 *arg0, s32 arg1) {
     s32 ang;
 
     base = ((u8 *)MapScene->map);
-    off = *(s32 *)(base + 0x14);
-    p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
+    off = *(s32 *)&((map_map *)base)->contour_grids;
+    p = SELF_REL(&((s32 *)(base + 0x14 + off))[arg1 + 1]);
     if (p != NULL) {
         i = 0;
-        n = *(s32 *)(p + 0x38);
+        n = ((MapContour *)p)->nEdges;
         t = rcossin_tbl;
         a2 = p + 0x50;
         a3 = p;
@@ -8160,7 +8160,7 @@ s32 BearminatorFindPoint(s32 *arg0, s32 arg1) {
             if (i >= n) {
                 return 1;
             }
-            ang = *(s32 *)(a3 + 0x64);
+            ang = ((MapContour *)a3)->edges[0].angle;  /* a3 steps an edge at a time */
             v[0] = arg0[0] - *(s32 *)(a2 - 8);
             v[2] = arg0[2] - *(s32 *)a2;
             ang = -ang;
@@ -11003,11 +11003,11 @@ s32 PolarGetLevelPoint(s32 *arg0, s32 arg1) {
     s32 ang;
 
     base = ((u8 *)MapScene->map);
-    off = *(s32 *)(base + 0x14);
-    p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
+    off = *(s32 *)&((map_map *)base)->contour_grids;
+    p = SELF_REL(&((s32 *)(base + 0x14 + off))[arg1 + 1]);
     if (p != NULL) {
         i = 0;
-        n = *(s32 *)(p + 0x38);
+        n = ((MapContour *)p)->nEdges;
         t = rcossin_tbl;
         a2 = p + 0x50;
         a3 = p;
@@ -11015,7 +11015,7 @@ s32 PolarGetLevelPoint(s32 *arg0, s32 arg1) {
             if (i >= n) {
                 return 1;
             }
-            ang = *(s32 *)(a3 + 0x64);
+            ang = ((MapContour *)a3)->edges[0].angle;  /* a3 steps an edge at a time */
             v[0] = arg0[0] - *(s32 *)(a2 - 8);
             v[2] = arg0[2] - *(s32 *)a2;
             ang = -ang;
