@@ -214,14 +214,6 @@ void ChasePreMoveHero(s32 arg0);
 void ChaseMoveHero(s32 arg0);
 s32 ChaseHeroKickCollision();
 
-/* Extension 0x1000 flagged by ChaseHeroKickCollision. */
-typedef struct ChaseHitFlags {
-    /* 0x00 */ u8 pad0[0x16];
-    /* 0x16 */ s16 unk16;
-    /* 0x18 */ u8 pad18[4];
-    /* 0x1C */ u16 unk1C;
-    /* 0x1E */ u16 unk1E;
-} ChaseHitFlags;
 
 void ChaseHeroWinner(s32 arg0);
 

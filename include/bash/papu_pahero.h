@@ -10,14 +10,6 @@
 
 
 
-typedef struct {
-    /* 0x00 */ u8 pad0[0x14];
-    /* 0x14 */ u16 unk14;
-    /* 0x16 */ s16 unk16;
-    /* 0x18 */ u8 pad18[4];
-    /* 0x1C */ u16 unk1C;
-    /* 0x1E */ u16 unk1E;
-} PapuHitFlags;
 
 /* Extension 0x1000 checked by PapuHeroCarryCollision. */
 typedef struct {
@@ -38,7 +30,7 @@ void PACrateFindFreeSpot(EXTengine *eng);
 extern _sfx_handler *PapuStraySfx;
 void PAHeroDead(s32 arg0);
 
-s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask);
+s32 PACrateHitHeroes(EXTengine *eng, EXTobject *flags, u32 mask);
 
 void SetPAHeroHit(s32 arg0);
 

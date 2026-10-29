@@ -1228,8 +1228,8 @@ void PlotPapuMinion(NAS *nas)
   EXTengine *eng;
   MinionMove *move;
   EXTanimator *anim;
-  MinionFux *fux;
-  MinionFux *other;
+  EXTobject *fux;
+  EXTobject *other;
   NAS *target;
   Slot40 *s;
   s32 dx;
@@ -1261,7 +1261,7 @@ void PlotPapuMinion(NAS *nas)
   if (anim == NULL) {
     return;
   }
-  fux = (MinionFux *)nas->FUX;
+  fux = (EXTobject *)nas->FUX;
   if (fux == NULL) {
     return;
   }
@@ -1278,7 +1278,7 @@ void PlotPapuMinion(NAS *nas)
     }
     if (i == 4) {
       pick = (s32)target->FUX;
-      if (pick != 0 && ((MinionFux *)pick)->state == 1) {
+      if (pick != 0 && ((EXTobject *)pick)->status == 1) {
         hit = 1;
       }
       if (target->Engine->platform != NULL) {
@@ -1297,30 +1297,30 @@ void PlotPapuMinion(NAS *nas)
     fux->target = NULL;
   }
   frame = RunNasAnim(nas);
-  switch (fux->state) {
+  switch (fux->status) {
   case 5:
     move->speed = 0;
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     break;
   case 1:
     move->speed = 0;
-    if (fux->unk22 == 0) {
+    if (fux->countdown == 0) {
       PlaySfx(0x1FA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
       SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Minion]);
-      fux->unk22 = 5;
-      fux->state = 2;
+      fux->countdown = 5;
+      fux->status = 2;
     } else {
-      fux->unk22--;
+      fux->countdown--;
     }
     break;
   case 2:
     move->speed = 0;
-    if (fux->unk22 != 0) {
-      fux->unk22--;
+    if (fux->countdown != 0) {
+      fux->countdown--;
       break;
     }
     eng->flags |= 0x8021;
-    fux->state = 3;
+    fux->status = 3;
     move->unk1E = 0x50;
     move->unk18 = 0;
     move->unk1A = 6;
@@ -1331,16 +1331,16 @@ void PlotPapuMinion(NAS *nas)
   case 3:
     move->speed = 0;
     if (GravitateNas(nas) != 0) {
-      fux->unk1C |= 0x102;
+      fux->can_do |= 0x102;
       eng->flags &= ~0x21;
-      fux->state = 4;
+      fux->status = 4;
       GotoLinkAnim(anim, 4);
     }
     break;
   case 4:
     move->speed = 0;
     if (frame == 8) {
-      fux->state = 0;
+      fux->status = 0;
     }
     break;
   case 6:
@@ -1348,7 +1348,7 @@ void PlotPapuMinion(NAS *nas)
     i = (s16)((s16)(((eng->xform.rot.vy -= 0x155) & 0xFFF) / 341) % 12);
     eng->XYZ.y -= dx;
     if (frame == 8) {
-      fux->state = 0;
+      fux->status = 0;
       if (eng->sfx != NULL) {
         StopSfx(eng->sfx);
       }
@@ -1385,24 +1385,24 @@ void PlotPapuMinion(NAS *nas)
             angle_diff_abs(eng->xform.rot.vy, get_angle(eng->XYZ.x - Heroes[i].hero_eng->XYZ.x,
                                                 eng->XYZ.z - Heroes[i].hero_eng->XYZ.z)) < level * 4 + 0x1C0) {
           GotoLinkAnim(anim, 0x10);
-          fux->state = 6;
+          fux->status = 6;
           break;
         }
       }
       do {
-        if (fux->state != 6) {
-          other = (MinionFux *)((NAS *)hit)->FUX;
+        if (fux->status != 6) {
+          other = (EXTobject *)((NAS *)hit)->FUX;
           if (other != NULL) {
-            other->unk1E |= 1;
-            other->unk16 = PapuMinionSlots[slot].unk22;
+            other->will_do |= 1;
+            other->player = PapuMinionSlots[slot].unk22;
             fux->target = NULL;
-            fux->state = 8;
+            fux->status = 8;
             GotoLinkAnim(anim, 7);
           }
         }
       } while (0);
     } else if (target_eng == NULL) {
-      fux->state = 0;
+      fux->status = 0;
       GotoLinkAnim(anim, 0);
     } else {
       move->angle = angle;
@@ -1414,10 +1414,10 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0;
     if (PapuMinionSlots[slot].pad4[6] != 0) {
       if (frame == 8) {
-        if (((MinionFux *)PapuMinionSlots[slot].pad4[6])->unk14 == 5) {
-          fux->unk20 = 0x5A - Random(level + 0xA);
+        if (((EXTobject *)PapuMinionSlots[slot].pad4[6])->whatami == 5) {
+          fux->timer = 0x5A - Random(level + 0xA);
         } else {
-          fux->unk20 = Random(level * 3 + 0x96) + 0xB4;
+          fux->timer = Random(level * 3 + 0x96) + 0xB4;
         }
         pick = 0;
         if (*GameTeams != 0) {
@@ -1437,32 +1437,32 @@ void PlotPapuMinion(NAS *nas)
       have:
         if (who != -1) {
           fux->target = Heroes[who].hero;
-          fux->state = 9;
+          fux->status = 9;
           GotoLinkAnim(anim, 9);
         }
       }
     } else {
-      fux->unk1E |= 2;
+      fux->will_do |= 2;
     }
     break;
   case 9:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     if (PapuMinionSlots[slot].pad4[6] == 0) {
-      fux->unk1E |= 2;
+      fux->will_do |= 2;
       break;
     }
     hit = (s32)((NAS **)PapuMinionSlots[slot].pad4[6])[-1];
     if (hit == 0 || ((NAS *)hit)->Engine->platform != NULL) {
       fux->target = NULL;
-      fux->state = 0xA;
+      fux->status = 0xA;
       GotoLinkAnim(anim, 0xA);
     }
-    if (fux->unk20 != 0) {
-      fux->unk20--;
+    if (fux->timer != 0) {
+      fux->timer--;
       if (frame == 8 && dist < 0x600 &&
           angle_diff_abs(angle, eng->xform.rot.vy) < (0x20 - level) * 4 + 0x40) {
         fux->target = NULL;
-        fux->state = 0xA;
+        fux->status = 0xA;
         GotoLinkAnim(anim, 0xA);
       }
       if (target_eng != NULL) {
@@ -1471,12 +1471,12 @@ void PlotPapuMinion(NAS *nas)
         break;
       }
       fux->target = NULL;
-      fux->state = 0xA;
+      fux->status = 0xA;
       GotoLinkAnim(anim, 0xA);
       break;
     }
     fux->target = NULL;
-    fux->state = 0xA;
+    fux->status = 0xA;
     GotoLinkAnim(anim, 0xA);
     break;
   case 13:
@@ -1486,7 +1486,7 @@ void PlotPapuMinion(NAS *nas)
     angle = get_angle(-dx, -dz);
     dist = csqrt(dx * dx + dz * dz) >> 6;
     if (dist < 0x200) {
-      fux->state = 0;
+      fux->status = 0;
     }
     move->angle = angle;
     move->speed = 0x20;
@@ -1495,10 +1495,10 @@ void PlotPapuMinion(NAS *nas)
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->speed = 0;
     if (frame == 8) {
-      fux->state = 0;
+      fux->status = 0;
     } else if (frame == 0x10) {
       if (PapuMinionSlots[slot].pad4[6] != 0) {
-        ((MinionFux *)PapuMinionSlots[slot].pad4[6])->unk1E |= 4;
+        ((EXTobject *)PapuMinionSlots[slot].pad4[6])->will_do |= 4;
       }
       PapuMinionSlots[slot].pad4[6] = 0;
     }
@@ -1508,12 +1508,12 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0;
     pick = (s32)PapuMinionSlots[slot].pad4[6];
     if (pick != 0) {
-      ((MinionFux *)pick)->unk16 = fux->unk16;
+      ((EXTobject *)pick)->player = fux->player;
     }
     PapuMinionSlots[slot].pad4[6] = 0;
-    fux->state = 0xB;
-    fux->unk1C &= 0xFEFD;
-    fux->unk1E &= 0xFEFD;
+    fux->status = 0xB;
+    fux->can_do &= 0xFEFD;
+    fux->will_do &= 0xFEFD;
     PapuMinionSlots[slot].unk26 = 0;
     GotoLinkAnim(anim, 0xD);
     break;
@@ -1523,7 +1523,7 @@ void PlotPapuMinion(NAS *nas)
     PapuMinionSlots[slot].pad4[6] = 0;
     if (frame != 8) {
       if (frame == 9 && PapuMinionSlots[slot].unk26 != 0) {
-        fux->state = 0;
+        fux->status = 0;
       }
       break;
     }
@@ -1534,21 +1534,21 @@ void PlotPapuMinion(NAS *nas)
     return;
   default:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
-    fux->unk1C |= 0x102;
+    fux->can_do |= 0x102;
     move->speed = 0;
     move->push = 0;
     fux->target = PapuMinionFindCrate(slot);
     if (fux->target != NULL) {
       GotoLinkAnim(anim, 1);
-      fux->state = 7;
+      fux->status = 7;
     } else {
       nas->UserInfo.user2 = PapuPickSpawnPoint((PapuPos *)eng);
       GotoLinkAnim(anim, 1);
-      fux->state = 0xD;
+      fux->status = 0xD;
     }
     break;
   }
-  if (fux->state != 6) {
+  if (fux->status != 6) {
     s32 turn = angle_diff(eng->xform.rot.vy, move->angle) >> 2;
     if (turn != 0) {
       eng->xform.rot.vy += turn;
@@ -1568,16 +1568,16 @@ void PlotPapuMinion(NAS *nas)
   }
   PapuMinionKick(slot);
   PAPU_KeepInBounds(eng);
-  if (fux->unk1E & 0x102) {
+  if (fux->will_do & 0x102) {
     if (PapuMinionSlots[slot].pad4[6] != 0) {
-      ((MinionFux *)PapuMinionSlots[slot].pad4[6])->unk16 = fux->unk16;
+      ((EXTobject *)PapuMinionSlots[slot].pad4[6])->player = fux->player;
     }
     PapuMinionSlots[slot].pad4[6] = 0;
     move->push = 0x40;
     move->push_angle = (move->angle + 0x800) & 0xFFF;
-    fux->state = 0xB;
-    fux->unk1C &= 0xFEFD;
-    fux->unk1E &= 0xFEFD;
+    fux->status = 0xB;
+    fux->can_do &= 0xFEFD;
+    fux->will_do &= 0xFEFD;
     PlaySfx(PapuMinionSfx[Random(4)], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     GotoLinkAnim(anim, 0xD);
   }

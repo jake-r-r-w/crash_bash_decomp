@@ -859,7 +859,7 @@ void PlotCrate(NAS *arg0) {
             if (dx == 0 && dz == 0) {
                 done = 1;
             }
-            CrateHitHeroes(eng, (HitFlags *)fux, 8);
+            CrateHitHeroes(eng, (EXTobject *)fux, 8);
             if (fux->hit & 8) {
                 done = 1;
             }
@@ -967,7 +967,7 @@ void PlotCrate(NAS *arg0) {
         if (ext->unkC == 0) {
             fux->flags |= 8;
         }
-        CrateHitHeroes(eng, (HitFlags *)fux, 8);
+        CrateHitHeroes(eng, (EXTobject *)fux, 8);
         if ((fux->hit & 8) && fux->who != -1 && fux->who < 5) {
             switch (fux->kind) {
             case 0x19:
@@ -1787,7 +1787,7 @@ NAS *CrateHitSolids(EXTengine *eng, s32 who) {
     return NULL;
 }
 
-s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
+s32 CrateHitHeroes(EXTengine *eng, EXTobject *flags, u32 mask) {
     s32 sum;
     FlagRecord *rec;
     FlagRecord *rec2;
@@ -1830,9 +1830,9 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
                 sum = sum * sum;
                 if (dx * dx + dz * dz < sum) {
                     if (flags != NULL) {
-                        if (flags->unk1C & mask) {
-                            flags->unk16 = i;
-                            flags->unk1E |= mask;
+                        if (flags->can_do & mask) {
+                            flags->player = i;
+                            flags->will_do |= mask;
                         }
                     }
                     return i;

@@ -301,7 +301,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
     FlagRecord *rec;
     FlagRecord *box;
     NAS *n;
-    BonkHitFlags *t;
+    EXTobject *t;
     s32 bot;
     s32 dx;
     s32 dz;
@@ -495,9 +495,9 @@ s32 BonkHeroKickCollision(s32 arg0) {
                                 eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
-                            if (t != NULL && (t->unk1C & 8)) {
-                                t->unk16 = arg0;
-                                t->unk1E |= 8;
+                            if (t != NULL && (t->can_do & 8)) {
+                                t->player = arg0;
+                                t->will_do |= 8;
                             }
                         }
                     }

@@ -529,7 +529,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
     EXTengine *other;
     HeroInfo *h;
     NAS *nas;
-    PapuHitFlags *flags;
+    EXTobject *flags;
     s32 i;
     s32 r;
     s32 top;
@@ -626,19 +626,19 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
             if (dx * dx + dz * dz < lo) {
                 flags = FindExtension(nas, 0x1000);
                 if (flags != NULL) {
-                    if (flags->unk14 >= 0xE && flags->unk14 == self) {
+                    if (flags->whatami >= 0xE && flags->whatami == self) {
                         continue;
                     }
-                    if (flags->unk1C & 8) {
-                        flags->unk16 = -1;
-                        flags->unk1E |= 8;
+                    if (flags->can_do & 8) {
+                        flags->player = -1;
+                        flags->will_do |= 8;
                     }
-                    if (flags->unk1C & 2) {
-                        flags->unk16 = -1;
-                        flags->unk1E |= 2;
+                    if (flags->can_do & 2) {
+                        flags->player = -1;
+                        flags->will_do |= 2;
                     }
                 }
-                if (flags->unk1C & 0x10) {
+                if (flags->can_do & 0x10) {
                     return NULL;
                 }
                 return nas;
@@ -648,7 +648,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
     return NULL;
 }
 
-s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask) {
+s32 PACrateHitHeroes(EXTengine *eng, EXTobject *flags, u32 mask) {
     s32 sum;
     FlagRecord *rec;
     FlagRecord *rec2;
@@ -691,9 +691,9 @@ s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask) {
                 sum = sum * sum;
                 if (dx * dx + dz * dz < sum) {
                     if (flags != NULL) {
-                        if (flags->unk1C & mask) {
-                            flags->unk16 = i;
-                            flags->unk1E |= mask;
+                        if (flags->can_do & mask) {
+                            flags->player = i;
+                            flags->will_do |= mask;
                         }
                     }
                     return i;
@@ -1276,7 +1276,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
     FlagRecord *rec;
     FlagRecord *box;
     NAS *n;
-    PapuHitFlags *t;
+    EXTobject *t;
     s32 bot;
     s32 dx;
     s32 dz;
@@ -1470,9 +1470,9 @@ s32 PapuHeroKickCollision(s32 arg0) {
                                 eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
-                            if (t != NULL && (t->unk1C & 8)) {
-                                t->unk16 = arg0;
-                                t->unk1E |= 8;
+                            if (t != NULL && (t->can_do & 8)) {
+                                t->player = arg0;
+                                t->will_do |= 8;
                             }
                         }
                     }

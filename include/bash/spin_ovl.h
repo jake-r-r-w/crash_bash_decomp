@@ -277,15 +277,6 @@ NAS *SpinHeroGrabObject(s32 idx, s32 mask);
 s32 SpinHeroKickCollision(s32 arg0);
 s32 SpinHeroCarryCollision(s32 idx);
 
-/* Extension 0x1000 flags set by SpinHeroKickCollision and SpinHeroCarryCollision. */
-typedef struct {
-    /* 0x00 */ u8 pad0[0x16];
-    /* 0x16 */ s16 unk16;
-    /* 0x18 */ u8 pad18[2];
-    /* 0x1A */ u16 unk1A;
-    /* 0x1C */ u16 unk1C;
-    /* 0x1E */ u16 unk1E;
-} SpinHitFlags;
 
 s32 SpinRankHeroes(void);
 

@@ -385,20 +385,6 @@ extern u16 PapuTileModels[];
 void PlotPapuBoss(NAS *nas);
 
 void PapuUpdateFloor(void);
-/* PlotPapuMinion's FUX extension. */
-typedef struct MinionFux {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ NAS *target;
-    /* 0x10 */ u8 pad10[0x14 - 0x10];
-    /* 0x14 */ u16 unk14;
-    /* 0x16 */ s16 unk16;
-    /* 0x18 */ s16 pad18;
-    /* 0x1A */ u16 state;
-    /* 0x1C */ u16 unk1C;
-    /* 0x1E */ u16 unk1E;
-    /* 0x20 */ s16 unk20;
-    /* 0x22 */ s16 unk22;
-} MinionFux;
 
 /* PlotPapuMinion's 0x800 extension (movement). */
 typedef struct MinionMove {

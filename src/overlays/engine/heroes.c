@@ -4609,7 +4609,7 @@ void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     EXTengine *eng;
     HeroInfo *hero;
     NAS *nas;
-    FuxFlags *fux;
+    EXTobject *fux;
     EXTengine *e;
     s32 x, y, z;
     s32 dx, dz;
@@ -4681,15 +4681,15 @@ void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (abs(eng->XYZ.y - World_floor_level) < 0x80) {
         arg1 = arg1 * arg1;
         for (nas = HeadOfObjects; nas != NULL; nas = nas->Object.Child) {
-            fux = (FuxFlags *)nas->FUX;
-            if (fux != NULL && (fux->unk1C & 0x100)) {
+            fux = (EXTobject *)nas->FUX;
+            if (fux != NULL && (fux->can_do & 0x100)) {
                 e = nas->Engine;
                 if (e != NULL) {
                     dx = e->XYZ.x - x;
                     dz = e->XYZ.z - z;
                     if (dx * dx + dz * dz < arg1) {
-                        fux->unk16 = -1;
-                        fux->unk1E |= 0x100;
+                        fux->player = -1;
+                        fux->will_do |= 0x100;
                     }
                 }
             }

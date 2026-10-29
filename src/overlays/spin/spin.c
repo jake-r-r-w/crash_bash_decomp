@@ -3260,7 +3260,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
     FlagRecord *rec;
     FlagRecord *box;
     NAS *n;
-    SpinHitFlags *t;
+    EXTobject *t;
     s32 bot;
     s32 dx;
     s32 dz;
@@ -3454,9 +3454,9 @@ s32 SpinHeroKickCollision(s32 arg0) {
                                 eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
-                            if (t != NULL && (t->unk1C & 8)) {
-                                t->unk16 = arg0;
-                                t->unk1E |= 8;
+                            if (t != NULL && (t->can_do & 8)) {
+                                t->player = arg0;
+                                t->will_do |= 8;
                             }
                         }
                     }
@@ -3479,7 +3479,7 @@ s32 SpinHeroCarryCollision(s32 idx) {
     FlagRecord *rec;
     NAS *nas;
     NAS *self;
-    SpinHitFlags *ext;
+    EXTobject *ext;
     s32 dx;
     s32 dz;
     s32 r;
@@ -3520,7 +3520,7 @@ s32 SpinHeroCarryCollision(s32 idx) {
                         other = nas->Engine;
                         if (other != NULL && other != eng) {
                             ext = FindExtension(nas, 0x1000);
-                            if (ext != NULL && (ext->unk1A == 1 || ext->unk1A == 0xB)) {
+                            if (ext != NULL && (ext->status == 1 || ext->status == 0xB)) {
                                 rec = FindCollisionBox(other, 0x40);
                                 if (rec != NULL) {
                                     lo = other->XYZ.y + rec->dy;
@@ -3539,9 +3539,9 @@ s32 SpinHeroCarryCollision(s32 idx) {
                                                 eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
                                                 eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                 hit = 1;
-                                                if (ext->unk1C & 8) {
-                                                    ext->unk16 = idx;
-                                                    ext->unk1E |= 8;
+                                                if (ext->can_do & 8) {
+                                                    ext->player = idx;
+                                                    ext->will_do |= 8;
                                                 }
                                             }
                                         }

@@ -138,13 +138,5 @@ static inline s32 BonkStopInline(s32 arg0) {
 
 void BonkHeroRun(s32 arg0);
 
-/* Extension 0x1000 flags set by BonkHeroKickCollision. */
-typedef struct BonkHitFlags {
-    /* 0x00 */ u8 pad0[0x16];
-    /* 0x16 */ s16 unk16;
-    /* 0x18 */ u8 pad18[4];
-    /* 0x1C */ u16 unk1C;
-    /* 0x1E */ u16 unk1E;
-} BonkHitFlags;
 
 #endif /* BASH_BONK_BOHERO_H */

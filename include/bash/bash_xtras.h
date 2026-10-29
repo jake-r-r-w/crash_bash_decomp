@@ -55,13 +55,6 @@ void InitBootsPickup(NAS *arg0);
 
 s32 CrateFallTime(s32 pos, ExtCurve *c);
 
-typedef struct {
-    /* 0x00 */ u8 pad0[0x16];
-    /* 0x16 */ s16 unk16;
-    /* 0x18 */ u8 pad18[4];
-    /* 0x1C */ u16 unk1C;
-    /* 0x1E */ u16 unk1E;
-} HitFlags;
 
 
 
@@ -74,7 +67,7 @@ void InitAnvilPickup(NAS *arg0);
 
 void InitSlowmoPickup(NAS *arg0);
 
-s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask);
+s32 CrateHitHeroes(EXTengine *eng, EXTobject *flags, u32 mask);
 
 void SetBashHeroHit(s32 arg0);
 

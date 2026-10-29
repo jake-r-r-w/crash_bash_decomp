@@ -2454,7 +2454,7 @@ void PlotSnowGlint(NAS *nas) {
 void PlotBashPenguin(NAS *nas) {
     EXTengine *eng;
     EXTanimator *anim;
-    PenguinFux *fux;
+    EXTobject *fux;
     s32 t;
     s32 r;
     s32 ang;
@@ -2466,15 +2466,15 @@ void PlotBashPenguin(NAS *nas) {
     }
     anim = FindExtension(nas, 0x400);
     if (anim != NULL) {
-        fux = (PenguinFux *)nas->FUX;
+        fux = (EXTobject *)nas->FUX;
         if (fux != NULL) {
-            switch (fux->state) {
+            switch (fux->status) {
             case 0:
                 if (GameExitFlags & 0x801) {
                     goto stop;
                 }
-                fux->state = 1;
-                fux->unk1C |= 0xA;
+                fux->status = 1;
+                fux->can_do |= 0xA;
                 eng->xform.rot.vy = 0xE3;
                 eng->XYZ.x = 0;
                 eng->XYZ.z = 0;
@@ -2486,7 +2486,7 @@ void PlotBashPenguin(NAS *nas) {
                     goto stop;
                 }
                 if (RunNasAnim(nas) == 8) {
-                    fux->state = 3;
+                    fux->status = 3;
                     nas->UserInfo.user1 = 0x800;
                     PlaySfx(0x427, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
                 }
@@ -2512,8 +2512,8 @@ void PlotBashPenguin(NAS *nas) {
                     eng->sub->entity = 0x2002;
                 } else {
                     GotoLinkAnim(anim, 2);
-                    fux->state = 0;
-                    fux->unk1E &= 0xFFF5;
+                    fux->status = 0;
+                    fux->will_do &= 0xFFF5;
                     if (eng->sfx != NULL) {
                         StopSfx(eng->sfx);
                     }
@@ -2530,15 +2530,15 @@ void PlotBashPenguin(NAS *nas) {
             default:
                 if (GameExitFlags & 0x801) {
                 stop:
-                    fux->state = 4;
+                    fux->status = 4;
                     if (eng->sfx != NULL) {
                         StopSfx(eng->sfx);
                     }
                     break;
                 }
-                if (fux->unk1E & 2) {
-                    fux->state = 2;
-                    fux->unk22 = 0x3C;
+                if (fux->will_do & 2) {
+                    fux->status = 2;
+                    fux->countdown = 0x3C;
                     GotoLinkAnim(anim, 1);
                     PlaySfx(0x426, NULL, NULL, 0x1000, 0x1E00, 0);
                     BashRainCount = 0;
