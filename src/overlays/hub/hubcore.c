@@ -178,12 +178,12 @@ void HubInitGateways(void) {
         if (p->table != NULL) {
             obj = (u8 *)path_get(i + 0x65);
             if (obj != NULL) {
-                d = *(Vec3W *)(obj + 0x30);
+                d = *(Vec3W *)&((MapPath *)obj)->keys[0].pos;
                 d.a -= ref.a;
                 d.c -= ref.c;
                 p->radius_inner = csqrt(d.a * d.a + d.c * d.c) >> 6;
                 p->angle = get_angle(d.a, d.c);
-                d = *(Vec3W *)(obj + 0x4C);
+                d = *(Vec3W *)&((MapPath *)obj)->keys[1].pos;
                 d.a -= ref.a;
                 d.c -= ref.c;
                 p->radius_outer = csqrt(d.a * d.a + d.c * d.c) >> 6;
@@ -2662,7 +2662,7 @@ void HubProjectObj(HubRenderObj *obj, s16 *out) {
     s16 *p;
 
     m =(u8 *)map_entity_address(obj->entity, (u8 *)obj->sub->dbase);
-    off = *(s32 *)(m + 0x10);
+    off = ((MeshHeader *)m)->verts;
     out[0] = 0x7FFF;
     out[1] = 0x7FFF;
     out[2] = -0x8000;

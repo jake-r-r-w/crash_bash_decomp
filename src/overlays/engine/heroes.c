@@ -3746,7 +3746,7 @@ void PlotScriptFX(NAS *nas) {
                 r = get_script_track((u8 *)sd->dbase, t->scriptnumber, t->threadnumber);
                 kf = NULL;
                 if (r != NULL) {
-                    kf = (ScriptKey *)(r + 0x24);
+                    kf = (ScriptKey *)&((script_thread *)r)->type.entity.key;
                 }
                 if (kf != NULL) {
                     t->fdata = kf;

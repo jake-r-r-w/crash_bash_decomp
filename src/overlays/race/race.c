@@ -1940,7 +1940,7 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
                 pos = *arg0;
                 grp = r + (((MeshHeader *)r)->runs + 0x14);  /* its runs' self offset */
                 tri = (s16 *)(((MeshHeader *)r)->verts + (s32)r + 0x24);
-                nrm = (RaceNorm *)(r + (*(s32 *)(r + 0x28) + 0x28));
+                nrm = (RaceNorm *)(r + (((MeshHeader *)r)->normals + 0x28));  /* its normals' self offset */
                 for (;;) {
                     s32 count;
 

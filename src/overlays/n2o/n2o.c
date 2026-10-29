@@ -3966,7 +3966,7 @@ void N2OCameraFollow(camera_info_tag *cam) {
         cam->eye.x = 0;
         cam->eye.y = 0;
         cam->eye.z = get_dist_angles(t + 0x13, t + 0xC, &cam->xform.angle.vx);
-        cam->at = *(CamXYZ *)(t + 0xC);
+        cam->at = *(CamXYZ *)&((MapPath *)t)->keys[0].pos;
         cam->dist = 0x200;
         d = -0xA00 - cam->at.z;
         cam->at.z = z - d;

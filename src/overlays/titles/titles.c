@@ -861,9 +861,9 @@ void BattleOptionsRender(void) {
 
     RenderState.modelDp = ScreenFade.amount;
     p = (u8 *)GetEngineSlot(1)->sub;
-    *(s32 *)(p + 0xA8) &= 0xFFFF7FFF;
+    ((subengine *)p)[1].flags &= 0xFFFF7FFF;
     p = (u8 *)GetEngineSlot(1)->sub;
-    *(s32 *)(p + 0x150) &= 0xFFFF7FFF;
+    ((subengine *)p)[2].flags &= 0xFFFF7FFF;
     gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs(GetEngineSlot(1));
@@ -2023,20 +2023,20 @@ void LevelSelectCursor(s32 arg0) {
     s32 v = *(s16 *)((u8 *)GetEngineSlot(1)->sub + GameArenaLevel * 0xA8 + 0x312) + 0x32;
 
     if (arg0 != 0) {
-        *(s32 *)(p + 8) = lerp_fix12(*(s32 *)(p + 8), v, 0x800);
+        ((subengine *)p)->XYZ.y = lerp_fix12(((subengine *)p)->XYZ.y, v, 0x800);
     } else {
-        *(s32 *)(p + 8) = v;
+        ((subengine *)p)->XYZ.y = v;
     }
 }
 
 s32 IsLevelUnlocked(s32 arg0) {
     u8 *g = GameInfo;
     u8 *e = (u8 *)BattleArenas[(s8)g[0x36]].levels + (arg0 << 4);
-    s32 off = *(s32 *)(e + 4);
+    s32 off = ((BattleLevel *)e)->idx;
     s32 type = *(s32 *)e;
     u8 *p;
 
-    if ((*(s32 *)(g + 4) & 0x2000) || type == 1
+    if ((((GameState *)g)->cheats & 0x2000) || type == 1
         || ((p = g + off), type == 2)
             && (p[0xE4] != 0 || p[0x168] != 0)) {
         return 1;
@@ -2193,10 +2193,10 @@ void MoveTeamBar(s32 arg0, s32 arg1) {
     u8 *p = (u8 *)eng->sub + (off + 0x2A0);
     s16 v;
 
-    v = lerp_fix12(*(s16 *)(p + 0x70), arg1, 0x800);
-    *(s16 *)(p + 0x70) = v;
-    *(s16 *)(p + 0x76) = v + 0x78;
-    *(s32 *)((u8 *)eng->sub + off + 4) = *(s16 *)(p + 0x70) + 0x1A;
+    v = lerp_fix12(*(s16 *)&((subengine *)p)->u70.w, arg1, 0x800);
+    *(s16 *)&((subengine *)p)->u70.w = v;
+    ((subengine *)p)->scale = v + 0x78;
+    ((subengine *)((u8 *)eng->sub + off))->XYZ.x = *(s16 *)&((subengine *)p)->u70.w + 0x1A;
 }
 
 void TitlesShellScreenRender(void) {

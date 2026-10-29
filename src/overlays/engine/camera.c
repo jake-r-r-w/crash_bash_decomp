@@ -46,7 +46,7 @@ void UpdateCamera(s32 arg0) {
             cam->eye.x = 0;
             cam->eye.y = 0;
             cam->eye.z = get_dist_angles(obj + 0x13, obj + 0xC, &cam->xform.angle.vx);
-            cam->at = *(CamXYZ *)(obj + 0xC);  /* a path record (map file): its position */
+            cam->at = *(CamXYZ *)&((MapPath *)obj)->keys[0].pos;
             cam->dist = 0x200;
         }
         GameViewport.ofy = 0x15E;
