@@ -17,6 +17,9 @@ consistent.
    `MAL_END`, `MAL_DATA`, `MAL_LAST` and `MAL_OF_LAST` (`bash/main.h`). A byte
    form kept because the typed one changes the code carries a comment starting
    `/* matching:` that says what changes; `progress` counts it as typed.
+   Field names: a member no code touches is `padXX`; one the code only stores keeps `unkXX`
+   (nothing shows what it holds); one the code reads gets a name from those reads
+   (`tools/scripts/unk_fields.py` sorts them, `field_uses.py STRUCT` lists a struct's uses).
 4. **Placed** - the function lives in the translation unit and subsystem file it
    came from, next to the functions and file-local data it shares.
 

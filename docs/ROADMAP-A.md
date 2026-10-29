@@ -524,3 +524,15 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
     - seven helpers nothing in this build calls, so no caller shows their argument's type:
       `script_track_at`, `find_range_30`/`_24`/`_1c`, `list_count`, `name_list_find`,
       `texsrc_init`.
+- [x] Name the `unkXX` fields (2026-10-29; ROADMAP-B's 1.4). Every field the code reads is named:
+  uses of `unkXX` went from 12,440 to about 1,600, and declarations from 1,471 to 428.
+  - What did it: the prototype's `xyzrf` block spelt out (`XYZ`, a `RotScale` `xform`) in
+    `EXTengine`, `subengine` and `GfxXform`. About 90 stand-in views folded into the core
+    types (`EXTobject`, `EXTengine`, `subengine`, `EXTmotion`, `EXTheromove`, `NAS`, `RaceFux`)
+    and into leak types (`EXTtransmuter`, `EXTpolarAI`, `EXTpolarbomb`, `EXTbeardeath`). About
+    450 fields named from their uses.
+  - The 202 fields no code touches are `padXX`.
+  - The 307 still called `unkXX` are only ever stored, mostly zeros and constants at init.
+    Nothing reads them, so nothing shows what they hold.
+  - Tools: `field_uses.py STRUCT` (every use of a struct's fields, by cc1) and `unk_fields.py`
+    (every struct's unk fields sorted into none / write / read).

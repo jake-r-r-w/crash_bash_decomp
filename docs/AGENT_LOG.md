@@ -482,6 +482,21 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 1.4 done):** every field the code reads is named (ROADMAP-A has the
+  numbers). The flow:
+  - `unk_fields.py` (new, tested) sorts every struct's unk fields into none / write / read;
+  - the unused ones become `padXX`;
+  - scans with `fold_views --dry` find the stand-ins that fold cleanly into a core type;
+  - the rest are named from their reads (a pattern proposer did the flags, timers and states).
+
+  The 307 store-only fields stay `unkXX` by convention (CONVENTIONS.md). Gotchas:
+  - A fold changes a field's signedness when the view's type differed (`DinoObj.scale` s16,
+    `N2OBlend.dir` u16): a `(s16)`/`(u16)` cast marked `matching:` restores the load.
+  - A fold also renames another struct's same-named field on the same line (stats' `speed`
+    became `Xvel`, a pillar's `x` became `XYZ.x`). Grep each fold's diff and the build errors
+    for that.
+  - Uses inside header macros and macro arguments need a hand rename.
+
 - **2026-10-29 (ROADMAP-B 1.4, Polar and Race):** four Polar stand-ins are leak types:
   `UkaPolarExt` is `EXTtransmuter`, `PolarFux` is `EXTpolarAI`, `PolarBombExt` is
   `EXTpolarbomb`, `WeightDeathExt` is `EXTbeardeath`. The Sniper, Bearminator, boss, link and
