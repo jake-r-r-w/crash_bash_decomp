@@ -87,6 +87,39 @@ build holds a different one): harmless here, since the game doesn't seem to read
 ROADMAP-B 2.5) boots and plays (playtested by hand 2026-10-29), and its mode text buffer fills with the mode's text at the address
 `ModeTextLoadAddr` gives (read through RetroArch's command interface, `scratch/texttest2.ps1`).
 
+## Playing every minigame automatically (`tools/playtest/playtest.mjs`)
+
+`node tools/playtest/playtest.mjs --build build/shiftall` (host Node; `--modes 0-32`, `--minutes`,
+`--keep` to leave RetroArch open, `PT_TRACE=1` to print every poll) plays every minigame of a built
+disc through to a win, with no screenshots and no hands on the pad. It drives RetroArch's network
+commands on UDP 55355 (`READ_CORE_RAM`, `WRITE_CORE_RAM`), with the build's link maps giving the
+addresses, so it works on any build: retail (`--build build`) or shifted. `tools/playtest/playtest.cfg` is
+appended to the user's RetroArch settings: the command port, the network RetroPad on UDP 55400
+(player 1), uncapped fast-forward and no sound.
+
+How it runs:
+- **Boot.** It boots the disc with fast-forward on. Fast-forward is a toggle that RetroArch drops when
+  it arrives too early, so the harness measures the speed from `FrameCount` and toggles until it is well
+  above 60 vsyncs a second (about 550 on the machine it was written on).
+- **Starting a mode.** From the titles, it writes what the menus would leave: four CPU heroes
+  (`heroOut`, which the bot hook runs for), `NextGameMode`, and `exitFlags` 0x8008, which is
+  `HandleLevelExit`'s "load this mode".
+- **After the load.** It resets `exitFlags` to what a clean load leaves (the intro's 0x1000). At this
+  speed the previous level can move on before the 0x8008 lands, and a stray 0x8008 keeps the new level
+  paused (`UpdatePause`).
+- **The rules pages** wait for Cross. While the level's frame count stands still, the harness taps
+  Cross on the network RetroPad.
+- **The result.** A level is decided when `exitFlags` has 0x800 (a winner, `winner[0]` the character)
+  or 0x1. The end menu is skipped: the next mode's 0x8008 leaves it.
+- **Bosses.** The bots can't beat a boss its own way (Papu needs crates thrown at him and his minions'
+  waves cleared). So for the four boss fights (Papu Pummel, Big Bad Fox, Bearminator, Oxide Ride) the
+  harness holds the heroes at their starting health for 150 game frames of fight, then sets
+  `BossState.flags` 0x8000. Each boss sets that flag itself when it's beaten, and the engine's hero code
+  takes it as the boss out of play. The level then ends through the game's own winner choice and win
+  sequence. What this doesn't test is each boss's own defeat.
+- **Failures.** A level whose frame count stops for a minute is a hang. The results go to
+  `<build>/playtest.json`, with a screenshot of each mode's end in RetroArch's screenshot folder.
+
 ## The shifted build (`make shift`)
 
 `tools/dk make shift OVL=tank PAD=0x40` builds a disc in which one slot overlay's every

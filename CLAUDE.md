@@ -34,7 +34,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   (the exe, the engine and every overlay moved at once, `build/shiftall/CrashBash.cue`; `--pad-main`/
   `--pad-engine`/`--pad-slot` of shift_all.py bisect a crash). To show the user, launch it on the host: `C:/RetroArch-Win64/retroarch.exe -L
   C:/RetroArch-Win64/cores/pcsx_rearmed_libretro.dll build/CrashBash.cue`.
-  See [docs/PLAYING.md](docs/PLAYING.md).
+  See [docs/PLAYING.md](docs/PLAYING.md). `node tools/playtest/playtest.mjs --build build/shiftall`
+  (host Node) plays every minigame to a win by RetroArch RAM reads and writes (PLAYING.md, Playing
+  every minigame automatically).
 - Game data: `assets/` (ignored) holds the archive's files as editable formats
   (`dat.py extract`, run by `decomp.py extract`; formats in
   [docs/ASSETS.md](docs/ASSETS.md)); `make disc` builds `CRASHBSH.DAT` from it. The save on a

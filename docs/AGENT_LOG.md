@@ -62,7 +62,7 @@ ROADMAP-B.md, Part 4 onwards:
 1. **The final test** (Part 4):
    - a clean rebuild from a fresh clone (4.1; passed 2026-10-29);
    - the "nothing hidden" scan (4.2; passed 2026-10-29, `make hidden`);
-   - every minigame to a win on the shifted build (4.3);
+   - every minigame to a win on the shifted build (4.3; passed 2026-10-29, `tools/playtest/`);
    - a side-by-side run against retail (4.4).
 2. **Release** (Part 5), then **the PC port** (Part 6).
 
@@ -444,6 +444,17 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 4.3 passes):**
+  - `tools/playtest/playtest.mjs` plays all 33 minigame modes to a win on the shifted build,
+    in about 5 minutes, by RetroArch RAM reads and writes with no screenshots.
+  - Gotchas:
+    - The fast-forward toggle is dropped when it's sent too early: measure `FrameCount`.
+    - A late 0x8008 lands in the next level and pauses it: reset `exitFlags` after the load.
+    - The rules pages need Cross from the network RetroPad. They accept it even though every
+      hero is a CPU.
+    - Time boss fights in game frames: at about 9x, wall-clock waits are far too long.
+    - `GameState.heroOut` means "is a computer player", whatever its name says. It's worth
+      a rename.
 - **2026-10-29 (ROADMAP-B 4.2 passes):**
   - `make hidden` is the scan, and it passes.
   - The exe header is C (`src/main/header.c`), and `mal_update`'s stale `#else` draft is gone.

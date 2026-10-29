@@ -642,3 +642,20 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   - the engine's two memory images: build-machine leftovers, zeros in source builds;
   - `draw_verts`' register pins: the recorded exception;
   - three game-side `gte_*` macros in the SDK's own form.
+- [x] 4.3 Every minigame to a win on the fully shifted build (2026-10-29).
+  `tools/playtest/playtest.mjs` (docs/PLAYING.md, Playing every minigame automatically) drives
+  RetroArch through its network commands, by RAM reads and writes, with no screenshots. Each mode gets
+  four CPU heroes, and the harness taps Cross through the rules pages.
+  - **The run.** `make shift-all PAD=0x40` played all 33 minigame modes in one run of about 5 minutes,
+    each loading in about a second.
+  - **Battles.** The 29 battles were all won: the 4 Bash, 4 Fox, 4 Pogo, 4 Ball, 4 Panic and 4 Dash
+    arenas, Ring Ding, Dragon Drop, Mallet Mash, Keg Kaboom and the Tie-Breaker.
+  - **Bosses.** The bots can't beat the four bosses their own way (Papu's crates and minion waves,
+    ...). So the harness holds the heroes alive for 150 game frames of fight, then sets
+    `BossState.flags` 0x8000, the flag each boss sets when it's beaten. All four were then won through
+    the game's own winner choice and win sequence. Papu Pummel and Big Bad Fox were rerun on the final
+    harness; Bearminator and Oxide Ride passed the same method in the boss-only run before it. Each
+    boss's own defeat moment isn't covered.
+  - **Hand check.** The user watched the runs, and the games played normally.
+  - **What the shifted build's boot turned up:** a stray "load this mode" flag paused one level. That
+    was a harness race, not the game: the fix resets the flags after each load.

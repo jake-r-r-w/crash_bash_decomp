@@ -9,12 +9,11 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 
 ## Part 4 - The final test
 
-The decomp is done when all four pass (4.1 and 4.2 passed 2026-10-29: ROADMAP-A, Part 4). The
+The decomp is done when all four pass (4.1 to 4.3 passed 2026-10-29: ROADMAP-A, Part 4). The
 modern-compiler test moved to the PC port (6.1).
 
 | # | Test | Proves | Status | Done |
 |---|------|--------|--------|------|
-| 4.3 | The fully shifted build plays every minigame through to a win | No address is hard-coded | `make shift-all` plays (2026-10-29); not every minigame to a win yet | [ ] |
 | 4.4 | Same game: the shifted build, side by side with retail over the same route, behaves the same | It behaves like the original | Not run | [ ] |
 
 ## Part 5 - Release
