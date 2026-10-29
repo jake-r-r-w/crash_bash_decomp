@@ -585,5 +585,5 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
 - [x] Both gcc 2.7.2 units take `-fno-rerun-cse-after-loop` (2.4). `modchip_msg` matches with
   it, and with it `msg_print` takes its plainest form.
 - [x] Source builds write zeros in the engine's .bss (2.5). `shift_all.py` zeros the image as it
-  does the slot. The game clears the intro's two words before reading them, and fills the mode
+  does the slot (playtested by hand 2026-10-29). The game clears the intro's two words before reading them, and fills the mode
   text buffer before reading it. The zeroed build boots and loads the mode text there.

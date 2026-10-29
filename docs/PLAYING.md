@@ -83,7 +83,7 @@ is the matching build's (the engine's slot image and .bss image aside, which are
 the front end, the pause screens' text, a load and a save (a new slot, its sum right), the hub
 and the minigames. The save holds an address (`GameState.boot`; a slot saved on the shifted
 build holds a different one): harmless here, since the game doesn't seem to read it on load. The zeroed engine .bss (2026-10-29,
-ROADMAP-B 2.5) boots, and its mode text buffer fills with the mode's text at the address
+ROADMAP-B 2.5) boots and plays (playtested by hand 2026-10-29), and its mode text buffer fills with the mode's text at the address
 `ModeTextLoadAddr` gives (read through RetroArch's command interface, `scratch/texttest2.ps1`).
 
 ## The shifted build (`make shift`)
