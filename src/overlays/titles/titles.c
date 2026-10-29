@@ -1906,8 +1906,8 @@ void LevelSelectUpdate(void) {
     }
     AnimateTitlesBackdrop();
     a = &HeroModelBank[DB_MainmenuModels];
-    texture_update_anims((obj_textureset *)(a + 0x10));
-    texture_update_anims((obj_textureset *)(a + 0x48));
+    texture_update_anims(&((obj_dbase *)a)->textures);
+    texture_update_anims(&((obj_dbase *)a)[1].textures);
     val = LevelSelectBusy;
     if (val == 0) {
         LevelSelectInput();

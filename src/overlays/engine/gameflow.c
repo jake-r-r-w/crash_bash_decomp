@@ -880,7 +880,7 @@ void UpdateCardPrompt(void) {
                         q->heroOut[2] = src[6];
                         q->heroOut[3] = src[7];
                     }
-                    *GAME = *(GameState *)(src + 8);
+                    *GAME = ((CardSlot *)src)->state;
                     {
                         GameOptionSet *d = &GameOptions;
                         GameState *s = GAME;
@@ -1245,9 +1245,9 @@ void UpdateCardSlots(void) {
 
     if (CardStatus & 2) {
         u8 *c = CardBuffer;  /* the image's sum (CardSaveSum) by the buffer: one instruction less */
-        if (*(s32 *)(c + 0x85C) != CardBufferStamp) {
+        if (*(s32 *)FILE_AT(c, CARD_SUM) != CardBufferStamp) {
             RefreshCardSlots();
-            CardBufferStamp = *(s32 *)(c + 0x85C);
+            CardBufferStamp = *(s32 *)FILE_AT(c, CARD_SUM);
         }
     }
     pad = Pads;

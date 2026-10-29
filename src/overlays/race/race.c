@@ -1410,7 +1410,7 @@ void RaceInitSpinners(void) {
         }
         if (G63->mode == 0x18 && obj->u6C.dbase->data != NULL) {
             r = entity_address(obj->entity, obj->u6C.dbase->data);
-            if (r != NULL && *(s32 *)(r + 0x28) != 0) {
+            if (r != NULL && ((MeshHeader *)r)->normals != 0) {
                 obj->flags &= ~0x8000;
             }
         }
@@ -1936,7 +1936,7 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
         }
         if (!(obj->flags & 0x8000) && obj->u6C.dbase->data != NULL) {
             r = entity_address(obj->entity, obj->u6C.dbase->data);
-            if (r != NULL && *(s32 *)(r + 0x28) != 0) {
+            if (r != NULL && ((MeshHeader *)r)->normals != 0) {
                 pos = *arg0;
                 grp = r + (*(s32 *)(r + 0x14) + 0x14);
                 tri = (s16 *)(*(s32 *)(r + 0x10) + (s32)r + 0x24);
@@ -2351,7 +2351,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     data = ((u8 *)MapScene->map);
     tbl = (RaceSegTable *)(data + (*(s32 *)&((map_map *)data)->contour_grids + 0x14));
     w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
-                        ((RaceSegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
+                        ((RaceSegTable *)(*(s32 *)&((map_map *)data)->contour_grids + (s32)data + 0x14))->offs[idx]);
     if (w != NULL) {
         i = 0;
         dist = 0;
@@ -4615,7 +4615,7 @@ s32 RaceMissileHitHeroes(u8 *arg0, u32 arg1) {
         }
         if (i != arg1 && Heroes[i].hero_mode != 0x61) {
             d = DistXZSq(arg0, &Heroes[i].hero_eng->XYZ);
-            if (abs(*(s32 *)(arg0 + 4) - *(s32 *)((u8 *)Heroes[i].hero_eng + 0x14)) > 0x180) {
+            if (abs(((SLONG_XYZ *)arg0)->y - Heroes[i].hero_eng->XYZ.y) > 0x180) {
                 break;
             }
             if (d < 0x24000) {

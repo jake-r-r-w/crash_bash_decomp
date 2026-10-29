@@ -1001,7 +1001,7 @@ void Update_Occupancy(void) {
         }
     }
     if (PogoRooNas != 0) {
-        eng = *(EXTengine **)(PogoRooNas + 0x54);
+        eng = ((NAS *)PogoRooNas)->Engine;
         if (eng != NULL) {
             x = (eng->XYZ.x + 0x800) >> 9;
             z = (eng->XYZ.z + 0x800) >> 9;

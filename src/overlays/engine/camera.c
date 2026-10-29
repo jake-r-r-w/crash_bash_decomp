@@ -398,11 +398,11 @@ void CameraFrameHeroes(s32 arg0) {
 }
 
 void CamFromPath1(camera_info_tag *cam) {
-    s32 *t = path_get(1);
+    MapPath *t = (MapPath *)path_get(1);
     GameState *g;
 
     if (t != NULL) {
-        cam->xform.angle.vx = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;  /* the path record's two points (+0x34, +0x50) */
+        cam->xform.angle.vx = (get_angle(t->keys[1].key - t->keys[0].key, t->keys[1].pos.y - t->keys[0].pos.y) - 0x400) & 0xFFF;  /* the path's first two keys */
         cam->dist = 0x200;
         g = (GameState *)GameInfo;
         cam->xform.angle.vy = 0;
@@ -427,10 +427,10 @@ void CamFromPath1(camera_info_tag *cam) {
 }
 
 void CamFromPath9(camera_info_tag *cam) {
-    s32 *t = path_get(9);
+    MapPath *t = (MapPath *)path_get(9);
 
     if (t != NULL) {
-        cam->xform.angle.vx = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;  /* as CamFromPath1 */
+        cam->xform.angle.vx = (get_angle(t->keys[1].key - t->keys[0].key, t->keys[1].pos.y - t->keys[0].pos.y) - 0x400) & 0xFFF;  /* as CamFromPath1 */
         cam->xform.angle.vy = 0;
         cam->xform.angle.vz = 0;
         cam->dist = 0x200;
@@ -873,7 +873,7 @@ void RenderScreenLabels(void) {
         s = (s32 *)GetEngineSlot(3)->sub;
         s[new_var = 0xA8 / 4] &= 0xFFFF7FFF;  /* the next subengine's flags: as s[1].flags the branches change */
         if ((GamePause & 0x240) != 0x240) {
-            s[0xA8 / 4] |= 0x8000;
+            ((subengine *)s)[1].flags |= 0x8000;
         }
         eng_render_subs(GetEngineSlot(3));
     }

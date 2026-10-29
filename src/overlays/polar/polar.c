@@ -1234,7 +1234,7 @@ bool IsPtInALLZone(SLONG_XYZ *arg0, s32 arg1) {
             if (i >= n) {
                 break;
             }
-            ang = *(s32 *)(a3 + 0x64) - ry;
+            ang = ((MapContour *)a3)->edges[0].angle - ry;
             v.vx = *(s32 *)(a2 - 8);
             v.vz = *(s32 *)a2;
             v.vy = 0;
@@ -9852,7 +9852,7 @@ void PolarInitDebug(void) {
         if (obj->flags & 0x8000) {
             if (obj->u6C.dbase->data != NULL) {
                 u8 *p = entity_address(obj->entity, obj->u6C.dbase->data);
-                if (p != NULL && *(s32 *)(p + 0x28) != 0) {
+                if (p != NULL && ((MeshHeader *)p)->normals != 0) {
                     *out++ = obj;
                     i++;
                 }
