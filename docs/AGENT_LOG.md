@@ -127,11 +127,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   n2o: enums only), with `field_survey.py`.
 - The gcc 2.7.2 units (`main/modchip`, `main/modchip_msg`): their toolchain
   differences are all in the Makefile and `aspsx_fill.py` (ASPSX's slot
-  filling and load expansion; `8002d488` built with
-  `-fno-rerun-cse-after-loop`; `refill_from_jump` redoes one slot fill
-  where Sony's reorg differs from FSF 2.7.2's). With that flag on
-  `8002e0f0`, `func_8002E25C` stops matching (structure 44/95), so whether
-  both units had it is open.
+  filling and load expansion; both built with `-fno-rerun-cse-after-loop`
+  since 2026-10-29, `msg_print` in its plainest form; `refill_from_jump`
+  redoes one slot fill where Sony's reorg differs from FSF 2.7.2's).
 - Prototype debug types: the fragment's bodiless structs the code shows are typed (2026-10-29).
   Left as word arrays: `script_key_anim.quat`/`quat_interp` (a quaternion and its slerp table:
   arrays are their shape) and Polar's `ang[2]` (struct ._23; nothing reads it).

@@ -104,12 +104,14 @@ build/%.c.o: %.c $(shell find include -name '*.h' 2>/dev/null) $(PIPELINE_DEPS)
 build/src/main/modchip.c.o: CC_VER = 2.7.2-psx
 build/src/main/modchip.c.o: ASPSX_FILL = | $(PYTHON) tools/scripts/aspsx_fill.py
 # No second cse pass: with it, `D_8006788C[1]` folds to a direct `sym+1` access; retail keeps `la` +
-# offsets (func_8002DE2C, func_8002D4F4). main/modchip_msg is not built this way (func_8002E25C breaks).
+# offsets (modchip_cd_wait, modchip_step).
 build/src/main/modchip.c.o: EXTRA_CC1FLAGS = -fno-builtin -fno-rerun-cse-after-loop
-# main/modchip_msg is the same (lui $at stores, addu moves, ASPSX-filled slots; func_8002E618 matches
-# only with these), so 2.7.2 runs from 0x8002D488 to 0x8002E7A8.
+# main/modchip_msg is the same (lui $at stores, addu moves, ASPSX-filled slots; msg_draw_emblem matches
+# only with these), so 2.7.2 runs from 0x8002D488 to 0x8002E7A8. It takes the same flags too: every
+# function matches with them, msg_print in its plainest form (ROADMAP-B 2.4).
 build/src/main/modchip_msg.c.o: CC_VER = 2.7.2-psx
 build/src/main/modchip_msg.c.o: ASPSX_FILL = | $(PYTHON) tools/scripts/aspsx_fill.py
+build/src/main/modchip_msg.c.o: EXTRA_CC1FLAGS = -fno-builtin -fno-rerun-cse-after-loop
 
 build/%.s.o: %.s
 	@mkdir -p $(@D)

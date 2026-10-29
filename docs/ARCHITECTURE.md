@@ -1449,10 +1449,12 @@ the Makefile; `decomp.py`'s `unit_cfg` reads the same lines):
 (`tools/scripts/aspsx_fill.py`: ASPSX's delay-slot filling for `j`/`jr` and
 conditional branches, and its expansion of indexed symbol loads, plus one
 delay-slot fill that Sony's gcc 2.7.2 orders differently from FSF 2.7.2's;
-its docstring lists each with the function it came from). `main/modchip` is
-also built with `-fno-rerun-cse-after-loop`: without that second cse pass, a
-global array read or written at several offsets keeps one `la` base, as
-retail does. Every unit is built with `-fno-builtin` (`EXTRA_CC1FLAGS`): the
+its docstring lists each with the function it came from). Both are also built
+with `-fno-rerun-cse-after-loop`: without that second cse pass, a global array
+read or written at several offsets keeps one `la` base, as retail does
+(`modchip_cd_wait`, `modchip_step`). `modchip_msg` matches with or without it,
+and with it `msg_print` takes its plainest form (`glyph = (u8 *)0xBFC7F8DE +
+(c - 0x21) * 15`), so one setting covers both files (2026-10-29). Every unit is built with `-fno-builtin` (`EXTRA_CC1FLAGS`): the
 game calls `abs`, which gcc 2.8.1 would otherwise inline. FSF GCC 2.7.2.3's
 source is in `tools/reference/gcc-2.7.2.3/`.
 
