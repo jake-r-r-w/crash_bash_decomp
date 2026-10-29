@@ -2319,7 +2319,7 @@ void BashSpaceInitTiles(void) {
     s32 j;
     s32 i;
     BashCell *p;
-    BashObj *obj;
+    subengine *obj;
     u16 *id;
     s16 v;
     BashCell *base;
@@ -2331,12 +2331,12 @@ void BashSpaceInitTiles(void) {
 
     z = 0;
     x = 0;
-    obj = (BashObj *)((u8 *)MapScene->subs);
+    obj = (subengine *)((u8 *)MapScene->subs);
     primpool_init(200);
     if (obj != NULL) {
         base = BashSpaceTiles[0];
         do {
-            id = (u16 *)model_entry_data(obj->model, obj->index);
+            id = (u16 *)model_entry_data(obj->u6C.dbase, obj->entity);
             if ((u16)(*id - 10) < 78) {
                 v = *id;
                 i = 7 - (s16)(v % 10);
@@ -2347,19 +2347,19 @@ void BashSpaceInitTiles(void) {
                 obj->flags |= 0x1000000;
             }
             if (*(s16 *)id == 10) {
-                x = obj->x;
-                z = obj->z;
+                x = obj->XYZ.x;
+                z = obj->XYZ.z;
             }
             obj = obj->next;
         } while (obj != NULL);
     }
     if (x | z) {
-        obj = (BashObj *)((u8 *)MapScene->subs);
+        obj = (subengine *)((u8 *)MapScene->subs);
         if (obj != NULL) {
             do {
-                if (*(s16 *)model_entry_data(obj->model, obj->index) == 5) {
-                    j = obj->x - x;
-                    i = obj->z - z;
+                if (*(s16 *)model_entry_data(obj->u6C.dbase, obj->entity) == 5) {
+                    j = obj->XYZ.x - x;
+                    i = obj->XYZ.z - z;
                     j = (j + 0x80) >> 9;
                     i = ((i + 0x80) >> 9) + 7;
                     obj->flags = (obj->flags | 0x1000000) & ~0x8000;
@@ -2376,7 +2376,7 @@ void BashSpaceInitTiles(void) {
             p = (BashCell *)(off + (u32)base2);
             obj = p->obj;
             if (obj != NULL) {
-                p->flag = obj->index;
+                p->flag = obj->entity;
                 p->flags = 0;
             } else {
                 p->flag = 0;
@@ -2389,7 +2389,7 @@ void BashSpaceInitTiles(void) {
 void BashSpaceTileEdges(void) {
     s32 i;
     s32 j;
-    BashObj *obj;
+    subengine *obj;
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
@@ -3565,7 +3565,7 @@ void BashSpaceDropTile(s32 arg0) {
     s32 xi = (eng->XYZ.x + 0x800) >> 9;
     s32 zi = (eng->XYZ.z + 0x800) >> 9;
     BashCell *cell = (BashCell *)((char *)base + (zi * 12 + xi * 0x60));  /* matching: base[xi * 8 + zi] is two insns longer */
-    BashObj *obj = cell->obj;
+    subengine *obj = cell->obj;
 
     if (obj != NULL) {
         obj->flags &= 0xFFFF7FFF;

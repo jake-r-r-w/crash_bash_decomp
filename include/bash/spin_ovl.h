@@ -9,25 +9,9 @@
 #include "bash/nas.h"
 #include "bash/main.h"
 
-/* A scene object in the list at MapScene->subs (SpinInitScene). */
-typedef struct SpinObj {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ u16 rx;
-    /* 0x12 */ u16 ry;
-    /* 0x14 */ u16 rz;
-    /* 0x16 */ u8 pad16[0x51 - 0x16];
-    /* 0x51 */ u8 unk51;
-    /* 0x52 */ u16 dirty;
-    /* 0x54 */ u8 pad54[0x5C - 0x54];
-    /* 0x5C */ struct SpinObj *next;
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
-    /* 0x6C */ u8 *model;
-    /* 0x70 */ u8 pad70[0x74 - 0x70];
-    /* 0x74 */ u16 index;
-} SpinObj;
 
 typedef struct SpinSlot {
-    /* 0x00 */ SpinObj *obj;
+    /* 0x00 */ subengine *obj;
     /* 0x04 */ s16 fixed[3]; /* used as is when nonzero */
     /* 0x0A */ s16 rate[3];  /* else SpinTurn * rate >> 4 */
 } SpinSlot;
@@ -102,7 +86,7 @@ extern s32 SpinTurnTarget;
 extern s16 SpinAngle;
 extern s16 SpinAngle2;
 extern s16 SpinSpeed;
-extern SpinObj *SpinArenaObjs[10];
+extern subengine *SpinArenaObjs[10];
 extern SpinSlot SpinSlots[10];
 
 #include "bash/main.h"

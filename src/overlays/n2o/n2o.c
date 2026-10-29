@@ -2809,7 +2809,7 @@ void N2OSpawnSlotMissile(s32 a) {
 
     base = N2OSlots;
     s = &base[arg0];
-    y = s->src->y;
+    y = s->src->XYZ.y;
 
     if (s->kind != 3) {
         n = s->nas;
@@ -2952,7 +2952,7 @@ void PlotN2Ofirstmissile(NAS *nas) {
         return;
     }
     if (nas->UserInfo.flags == 0) {
-        eng->XYZ.y = N2OSlots[nas->UserInfo.user1].src->y - 0x80;
+        eng->XYZ.y = N2OSlots[nas->UserInfo.user1].src->XYZ.y - 0x80;
     } else {
         sub->unk68 = 0;
         mot->Xvel += mot->Xacc;
@@ -3083,7 +3083,7 @@ void N2OUpdateSlots(void) {
     HeroInfo *heroes;
     N2OSlot *s;
     N2ORec *r;
-    N2OSlotObj *o;
+    subengine *o;
     s32 i;
     s32 y;
     s32 p0;
@@ -3116,21 +3116,21 @@ loop:
                     PlaySfx(0x2C3, NULL, NULL, 0x1000, 0x1E00, 0);
                     s->f24 = 1;
                 }
-                p0 = o->y;
+                p0 = o->XYZ.y;
                 if (s->f1C < p0) {
                     p0 -= 0x10;
-                    o->y = p0;
+                    o->XYZ.y = p0;
                     if (s->f1C < p0) {
                         goto aim;
                     }
                 }
-                o->y = s->f1C;
+                o->XYZ.y = s->f1C;
                 s->kind = 3;
                 s->f24 = 0;
             case 3:
             aim:
-                x = o->x;
-                z = o->z;
+                x = o->XYZ.x;
+                z = o->XYZ.z;
                 p1 = 1;
                 if (pad->teams == 0 || (p0 = heroes[0].hero_status, p0 &= 0xFA00, p0 = p0 != 0, heroes[1].hero_status & 0xFA00)) {
                     p0 = p1 = 0;
@@ -3159,19 +3159,19 @@ loop:
                     PlaySfx(0x2C3, NULL, NULL, 0x1000, 0x1E00, 0);
                     s->f24 = y;
                 }
-                if (o->y < s->f20) {
-                    o->y += 0x10;
+                if (o->XYZ.y < s->f20) {
+                    o->XYZ.y += 0x10;
                 } else {
-                    o->y = s->f20;
+                    o->XYZ.y = s->f20;
                     s->kind = 0;
                     s->f24 = 0;
                 }
                 break;
             }
-            o->unk51 = 2;
-            y = angle_diff(o->ang, (s16)s->f18);
-            o->unk52 = 1;
-            o->ang += y >> 1;
+            o->xform.order = 2;
+            y = angle_diff(o->xform.rot.vy, (s16)s->f18);
+            o->xform.dirty = 1;
+            o->xform.rot.vy += y >> 1;
         }
         s++;
         i++;

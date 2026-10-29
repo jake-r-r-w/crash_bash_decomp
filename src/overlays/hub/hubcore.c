@@ -1003,17 +1003,17 @@ void PlotCrystalFlash(void) {
 }
 
 void InitCrystalFlash(FxObj *arg0) {
-    arg0->mid->inner->unk6C = ((s32)MapScene->dbase);
-    arg0->mid->inner->unk74 = 0x200E;
-    arg0->mid->inner->unk51 = 0;
-    arg0->mid->inner->unk50 = 1;
-    arg0->mid->inner->unk20 = 0x1000;
-    arg0->mid->inner->unk24 = 0x1000;
-    arg0->mid->inner->unk28 = 0x1000;
-    arg0->mid->inner->unk10 = 0;
-    arg0->mid->inner->unk12 = 0;
-    arg0->mid->inner->unk14 = 0;
-    arg0->mid->inner->unk52 = 1;
+    arg0->mid->inner->u6C.dbase = ((s32)MapScene->dbase);
+    arg0->mid->inner->entity = 0x200E;
+    arg0->mid->inner->xform.order = 0;
+    arg0->mid->inner->xform.hasScale = 1;
+    arg0->mid->inner->xform.scale.vx = 0x1000;
+    arg0->mid->inner->xform.scale.vy = 0x1000;
+    arg0->mid->inner->xform.scale.vz = 0x1000;
+    arg0->mid->inner->xform.rot.vx = 0;
+    arg0->mid->inner->xform.rot.vy = 0;
+    arg0->mid->inner->xform.rot.vz = 0;
+    arg0->mid->inner->xform.dirty = 1;
     arg0->mid->inner->flags |= 0x60000000;
     arg0->unk60 = 0;
 }
@@ -1796,7 +1796,7 @@ void PodiumInitScript(s32 arg0, s32 arg1) {
 
 void PlotPodiumTrophy(PodiumTrophy *arg0) {
     EXTengine *in;
-    PodiumFx *fx;
+    subengine *fx;
     TrigEntry *tb;
     s32 t;
     u16 st;
@@ -1821,13 +1821,13 @@ void PlotPodiumTrophy(PodiumTrophy *arg0) {
             tb = rcossin_tbl;
             t = FrameCount;
 #define TSIN(k) tb[((((t * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
-            fx->unk10 = *(s32 *)&tb[(((t * 0x46) & 0xFFF) - 0x400) & 0xFFF] >> 20;
-            fx->unk12 = (TSIN(0x8C) + 0x800) >> 5;
-            fx->unk14 = (TSIN(0x46) + TSIN(0x64)) >> 5;
-            fx->unk4 = tb[((t * 0x28) - 0x400) & 0xFFF].unk2 * 0x118 / 4096;
-            fx->unk8 = (TSIN(0x2D) + TSIN(0x50)) >> 6;
+            fx->xform.rot.vx = *(s32 *)&tb[(((t * 0x46) & 0xFFF) - 0x400) & 0xFFF] >> 20;
+            fx->xform.rot.vy = (TSIN(0x8C) + 0x800) >> 5;
+            fx->xform.rot.vz = (TSIN(0x46) + TSIN(0x64)) >> 5;
+            fx->XYZ.x = tb[((t * 0x28) - 0x400) & 0xFFF].unk2 * 0x118 / 4096;
+            fx->XYZ.y = (TSIN(0x2D) + TSIN(0x50)) >> 6;
 #undef TSIN
-            fx->unk52 = 1;
+            fx->xform.dirty = 1;
         }
     }
 }

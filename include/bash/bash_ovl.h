@@ -12,12 +12,12 @@
 #include "bash/gameflow.h"
 #include "bash/xtras.h"
 
-struct BashObj;
+struct subengine;
 
 /* A board cell of BashSpaceTiles (0xC bytes, 8x8). */
 typedef struct BashCell {
-    /* 0x00 */ struct BashObj *obj;
-    /* 0x04 */ struct BashObj *obj2;
+    /* 0x00 */ struct subengine *obj;
+    /* 0x04 */ struct subengine *obj2;
     /* 0x08 */ u16 flags; /* flags */
     /* 0x0A */ u16 flag;  /* tested for zero */
 } BashCell;
@@ -81,19 +81,6 @@ extern u16 BashMaxNitro[];
 extern u16 BashMaxCrates[];
 BashPair *BashFindDropPoint(u16 *arg0);
 
-/* A scene object in the list at MapScene->subs (BashSpaceInitTiles). */
-typedef struct BashObj {
-    /* 0x00 */ u32 flags;
-    /* 0x04 */ s32 x;
-    /* 0x08 */ s32 y;
-    /* 0x0C */ s32 z;
-    /* 0x10 */ u8 pad10[0x5C - 0x10];
-    /* 0x5C */ struct BashObj *next;
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
-    /* 0x6C */ u8 *model;
-    /* 0x70 */ u8 pad70[0x74 - 0x70];
-    /* 0x74 */ u16 index;
-} BashObj;
 
 typedef struct BashTumbler {
     /* 0x00 */ u8 pad00[0x10];

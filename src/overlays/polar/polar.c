@@ -616,8 +616,8 @@ u16 PolarHeroModelsB[10] = { 0, 0x11, 0x12, 0x13, 0x16, 0x14, 0x90, 0x15, 0x92, 
 u16 PolarHeroModelsCut[10] = { 0, 0x99, 0x9A, 0x9B, 0x9E, 0x9C, 0xA0, 0x9D, 0x9F, 0 };
 NAS *PolarBomb = 0;
 subengine *bossmapsub = 0;
-SceneObj *PolarSceneA = 0;
-SceneObj *PolarSceneB = 0;
+subengine *PolarSceneA = 0;
+subengine *PolarSceneB = 0;
 s32 PolarSceneWord0 = 0;
 s32 PolarSceneWord1 = 0;
 s32 PolarSceneWord2 = 0x100;
@@ -799,9 +799,9 @@ s32 PolarBeamMode = 0;
 s32 PolarUnused2[2] = {0};
 s32 BeamCount = 0;
 s32 BeamDelay = 0;
-SceneObj *PolarIceObjects[80] = {0};
+subengine *PolarIceObjects[80] = {0};
 PolarRiserObj *UkaMaskRisers[16] = {0};
-SceneObj *UkaMaskObjects[16] = {0};
+subengine *UkaMaskObjects[16] = {0};
 u16 PolarShadowFrames0[31][2] = {
     { 0x4180, 0 }, { 0x4181, 0 }, { 0x4182, 0 }, { 0x4183, 0 }, { 0x4184, 0 }, { 0x4185, 0 },
     { 0x4186, 0 }, { 0x4187, 0 }, { 0x4188, 0 }, { 0x4189, 0 }, { 0x418A, 0 }, { 0x418B, 0 },
@@ -959,7 +959,7 @@ s32 PolarAI_PickVictim(s32 arg0) {
 
 void PolarInitScene(void) {
     s32 i;
-    SceneObj *obj;
+    subengine *obj;
 
     i = 0;
     PolarTiltZ = 0;
@@ -967,7 +967,7 @@ void PolarInitScene(void) {
     bossmapsub = NULL;
     PolarSceneA = NULL;
     PolarSceneTimer = 0;
-    obj =((SceneObj *)MapScene->subs);
+    obj =((subengine *)MapScene->subs);
     PolarSceneA = NULL;
     PolarSceneB = NULL;
     MapSceneRot.vx = 0;
@@ -981,27 +981,27 @@ void PolarInitScene(void) {
             break;
         }
         if (obj->flags & 0x8000) {
-            if (obj->model->data != NULL) {
-                entity_address(obj->index, obj->model->data);
+            if (obj->u6C.dbase->data != NULL) {
+                entity_address(obj->entity, obj->u6C.dbase->data);
                 if (((GameState *)GameInfo)->mode == 0x12) {
                     if (!(((GameState *)GameInfo)->levelFlags & 0x80)) {
-                        if (obj->index == 0x5001 || obj->index == 0x5004) {
+                        if (obj->entity == 0x5001 || obj->entity == 0x5004) {
                             obj->flags |= 0x200000;
                         }
                     } else {
-                        if (obj->index == 0x5001 || obj->index == 0x5004) {
+                        if (obj->entity == 0x5001 || obj->entity == 0x5004) {
                             obj->flags |= 0x200000;
                         }
-                        if (obj->index == 0x5005) {
+                        if (obj->entity == 0x5005) {
                             PolarSceneA = obj;
                         }
-                        if (obj->index == 0x5003) {
+                        if (obj->entity == 0x5003) {
                             PolarSceneB = obj;
-                            PolarSceneCount = obj->unk8;
+                            PolarSceneCount = obj->XYZ.y;
                         }
                     }
                 }
-                if (((GameState *)GameInfo)->mode == 0x16 &&obj->index == 0x5003) {
+                if (((GameState *)GameInfo)->mode == 0x16 &&obj->entity == 0x5003) {
                     bossmapsub = (subengine *)obj;
                     obj->flags |= 0x200000;
                 }
@@ -1028,13 +1028,13 @@ void PolarUpdateScene(void)
   u8 *p;
   EXTengine *eng;
   PolarMissileExt *ext;
-  SceneObj *o;
+  subengine *o;
   o = PolarSceneA;
   if (o != 0)
   {
-    o->unk52 = 1;
-    o->unk51 = 0;
-    o->unk12 += 6;
+    o->xform.dirty = 1;
+    o->xform.order = 0;
+    o->xform.rot.vy += 6;
   }
   if (PolarSceneB != 0)
   {
@@ -4065,7 +4065,7 @@ void DoChooseNewAction(u32 player) {
 }
 
 void InitialisePOLAR(void) {
-    SceneObj *obj;
+    subengine *obj;
     camera_info_tag *cam;
     s32 i;
     s32 *speed;
@@ -4095,7 +4095,7 @@ void InitialisePOLAR(void) {
     PolarRoundState = 0;
     HeroHooks.RunSpeeds = PolarHeroSfx;
     PolarIceRadius = 0x658;
-    obj = ((SceneObj *)MapScene->subs);
+    obj = ((subengine *)MapScene->subs);
     PolarInitWord = 0x800;
     while (obj != NULL) {
         obj->flags |= 0x1000000;
@@ -6233,7 +6233,7 @@ void InitIceBerg(NAS *m) {
 s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
     volatile s32 t0;
     volatile s32 t1;
-    SceneObj *o;
+    subengine *o;
     TrigEntry *t;
     s32 i;
     s32 dx;
@@ -6258,8 +6258,8 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
         while (1) {
             if (o != NULL) {
             if (o->flags & 0x8000) {
-                dx = o->unk4 - pos->x;
-                dz = o->unkC - pos->z;
+                dx = o->XYZ.x - pos->x;
+                dz = o->XYZ.z - pos->z;
                 if (abs(dx) < 0x14B && abs(dz) < 0x14B) {
                     d = dx * dx + dz * dz;
                     if (d <= 0x1A963) {
@@ -6278,7 +6278,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
                             mv->z_vel = -(sp * t[-ang & 0xFFF].unk2 >> 13);
                             sp *= Heroes[player].hero_move->mass;
                             if ((HeroHooks.RunSpeeds[Heroes[player].hero_name * 3] * 0xC000 >> 8) < sp) {
-                                nas = CreateNAS(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
+                                nas = CreateNAS(o->XYZ.x, o->XYZ.y - 0x80, o->XYZ.z, 0x1604, 0x11);
                                 if (nas != NULL) {
                                     m = (EXTmotion *)nas->FUX;
                                     if (m != NULL) {
@@ -6305,7 +6305,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
                                         nas->Engine->sub->unk68 = 0x200;
                                     }
                                 }
-                                nas = CreateNAS(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
+                                nas = CreateNAS(o->XYZ.x, o->XYZ.y - 0x80, o->XYZ.z, 0x1604, 0x11);
                                 if (nas != NULL) {
                                     m2 = (EXTmotion *)nas->FUX;
                                     if (m2 != NULL) {
@@ -6322,7 +6322,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
                                         nas->Engine->sub->unk68 = 0x200;
                                     }
                                 }
-                                nas = CreateNAS(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
+                                nas = CreateNAS(o->XYZ.x, o->XYZ.y - 0x80, o->XYZ.z, 0x1604, 0x11);
                                 if (nas != NULL) {
                                     m2 = (EXTmotion *)nas->FUX;
                                     if (m2 != NULL) {
@@ -6363,19 +6363,19 @@ const char PolarMsgFoundColSubs[] = "found col subs %d\n";
 
 void UkaMaskInitRisers(void) {
     s32 i;
-    SceneObj *obj;
-    SceneObj *scan;
+    subengine *obj;
+    subengine *scan;
     s32 n;
     VECTOR v;
     VECTOR *vp;
 
-    scan = ((SceneObj *)MapScene->subs);
+    scan = ((subengine *)MapScene->subs);
     for (i = 15; i >= 0; i--) {
         UkaMaskObjects[i] = NULL;
     }
     n = 0;
     while (scan != NULL) {
-        if ((scan->flags & 0x8000) && scan->index == 0x4000) {
+        if ((scan->flags & 0x8000) && scan->entity == 0x4000) {
             UkaMaskObjects[n++] = scan;
         }
         scan = scan->next;
@@ -9836,10 +9836,10 @@ void InitSnowMaster(NAS *m) {
 
 void PolarInitDebug(void) {
     s32 i;
-    SceneObj *obj;
-    SceneObj **out;
+    subengine *obj;
+    subengine **out;
 
-    obj = ((SceneObj *)MapScene->subs);
+    obj = ((subengine *)MapScene->subs);
     for (i = 79; i >= 0; i--) {
         PolarIceObjects[i] = NULL;
     }
@@ -9850,8 +9850,8 @@ void PolarInitDebug(void) {
             break;
         }
         if (obj->flags & 0x8000) {
-            if (obj->model->data != NULL) {
-                u8 *p = entity_address(obj->index, obj->model->data);
+            if (obj->u6C.dbase->data != NULL) {
+                u8 *p = entity_address(obj->entity, obj->u6C.dbase->data);
                 if (p != NULL && *(s32 *)(p + 0x28) != 0) {
                     *out++ = obj;
                     i++;

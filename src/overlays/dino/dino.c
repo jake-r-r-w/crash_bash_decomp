@@ -239,14 +239,14 @@ u16 DinoLUPtab[10] = { 3, 0x20D, 0x1601, 0x1603, 0x1605, 0x1607, 0x160A, 0x1619,
 TrigLookUp DinoLUP = { DinoLUPtab, 9 };
 PreMap DINO_PREMAP = { DinoPreLoadDB, DinoWorldInfo, &DinoLUP };
 s32 DinoArenaRadius = 0x658;
-DinoObj *DinoGoal = 0;
+subengine *DinoGoal = 0;
 s32 DinoWanderAngles[8] = { 0, 0x400, 0x800, 0xC00, 0x600, 0xA00, 0xE00, 0x200 };
 u16 DinoWanderTime = 0xFA;
-DinoObj *DinoTargetA = 0;
-DinoObj *DinoTargetB = 0;
-DinoObj *DinoTargetC = 0;
-DinoObj *DinoTargetD = 0;
-DinoObj *DinoTargetE = 0;
+subengine *DinoTargetA = 0;
+subengine *DinoTargetB = 0;
+subengine *DinoTargetC = 0;
+subengine *DinoTargetD = 0;
+subengine *DinoTargetE = 0;
 s32 DinoTargetTimer = 0;
 s32 DinoTargetDelay = 0;
 s32 DinoTargetStep = 0;
@@ -269,8 +269,8 @@ s32 DinoSteerTable[20] = {
     0x30, 0x32, 0x34, 0x36, 0x38, 0x3A, 0x3C, 0x3E, 0x40, 0x4E, 0x52, 0x56, 0x5A, 0x5E, 0x62,
     0x66, 0x6A, 0, 0, 0,
 };
-DinoObj *DinoTargetObjs[3] = {0};
-DinoObj *DinoTargetObjsB[3] = {0};
+subengine *DinoTargetObjs[3] = {0};
+subengine *DinoTargetObjsB[3] = {0};
 s32 DinoGemHooks[1] = { (s32)DinoInitGems };
 
 s32 DinoAI_PickVictim(s32 arg0) {
@@ -1927,39 +1927,39 @@ void InitialiseDINOFirst(void) {
 }
 
 void DinoFindTargets(void) {
-    DinoObj *o;
+    subengine *o;
 
-    for (o = ((DinoObj *)MapScene->subs); o != NULL; o = o->next) {
+    for (o = ((subengine *)MapScene->subs); o != NULL; o = o->next) {
         if (((GameState *)GameInfo)->levelFlags & 0x80) {
-            if (o->index == 0x5002) {
+            if (o->entity == 0x5002) {
                 DinoGoal = o;
                 printf("found target\n");
             }
-            if (o->index == 0x5009) {
+            if (o->entity == 0x5009) {
                 DinoTargetA = o;
                 printf("found target\n");
             }
-            if (o->index == 0x500B) {
+            if (o->entity == 0x500B) {
                 DinoTargetB = o;
                 printf("found target\n");
             }
-            if (o->index == 0x500A) {
+            if (o->entity == 0x500A) {
                 DinoTargetC = o;
                 printf("found target\n");
             }
-            if (o->index == 0x500C) {
+            if (o->entity == 0x500C) {
                 DinoTargetObjsB[0] = o;
                 printf("1\n");
             }
-            if (o->index == 0x500D) {
+            if (o->entity == 0x500D) {
                 DinoTargetObjsB[1] = o;
                 printf("2\n");
             }
-            if (o->index == 0x500E) {
+            if (o->entity == 0x500E) {
                 DinoTargetObjsB[2] = o;
                 printf("3\n");
             }
-        } else if (o->index == 0x5002) {
+        } else if (o->entity == 0x5002) {
             DinoGoal = o;
             printf("found target\n");
         }
@@ -1970,9 +1970,9 @@ void DinoFindTargets(void) {
 }
 
 void DinoUpdateTargets(void) {
-    DinoObj *cur;
-    DinoObj **p;
-    DinoObj **q;
+    subengine *cur;
+    subengine **p;
+    subengine **q;
     s32 i;
     s32 j;
 
@@ -2019,39 +2019,39 @@ void DinoUpdateTargets(void) {
     }
     if (DinoTargetD != NULL) {
         DinoTargetD->flags |= 0x40000000;
-        DinoTargetD->scale = abs((rcossin_tbl[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 3);
+        DinoTargetD->unk76 = abs((rcossin_tbl[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 3);
         if (DinoTargetTimer == 2) {
-            DinoTargetD->r = 0xFFF;
-            DinoTargetD->g = 0;
-            DinoTargetD->b = 0;
+            DinoTargetD->unk78 = 0xFFF;
+            DinoTargetD->unk7C = 0;
+            DinoTargetD->unk80 = 0;
         }
         if (DinoTargetTimer == 1) {
-            DinoTargetD->r = 0xFFF;
-            DinoTargetD->g = 0xFFF;
-            DinoTargetD->b = 0;
+            DinoTargetD->unk78 = 0xFFF;
+            DinoTargetD->unk7C = 0xFFF;
+            DinoTargetD->unk80 = 0;
         }
         if (DinoTargetTimer == 0) {
-            DinoTargetD->r = 0;
-            DinoTargetD->g = 0xFFF;
-            DinoTargetD->b = 0;
+            DinoTargetD->unk78 = 0;
+            DinoTargetD->unk7C = 0xFFF;
+            DinoTargetD->unk80 = 0;
         }
         DinoTargetStep += 0x30;
         for (i = 0, p = DinoTargetObjs; i < 3; i++, p++) {
             if (DinoTargetD != *p) {
-                (*p)->scale -= (*p)->scale >> 1;
+                (*p)->unk76 -= (s16)(*p)->unk76 >> 1;  /* matching: the scale is signed here (DinoObj had it s16) */
             }
         }
     }
     if (DinoTargetE != NULL) {
         DinoTargetE->flags |= 0x40000000;
-        DinoTargetE->scale = abs(rcossin_tbl[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2);
+        DinoTargetE->unk76 = abs(rcossin_tbl[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2);
         cur = DinoTargetE;
-        cur->r = 0;
-        cur->g = 0;
-        cur->b = 0;
+        cur->unk78 = 0;
+        cur->unk7C = 0;
+        cur->unk80 = 0;
         for (j = 0, q = DinoTargetObjsB; j < 3; j++, q++) {
             if (cur != *q) {
-                (*q)->scale -= (*q)->scale >> 1;
+                (*q)->unk76 -= (s16)(*q)->unk76 >> 1;  /* matching: as above */
             }
         }
     }
@@ -2211,14 +2211,14 @@ void DinoScoreGems(void) {
     if (DinoScoreDelay-- < 0) {
         DinoScoreDelay = 0;
     }
-    ((DinoTarget *)DinoGoal)->unk51 = 0;
-    ((DinoTarget *)DinoGoal)->x = (rcossin_tbl[(DinoScoreB - 0x400) & 0xFFF].unk2 * 11) >> 4;
-    ((DinoTarget *)DinoGoal)->z = (rcossin_tbl[DinoScoreB & 0xFFF].unk2 * 11) >> 4;
+    ((subengine *)DinoGoal)->xform.order = 0;
+    ((subengine *)DinoGoal)->XYZ.x = (rcossin_tbl[(DinoScoreB - 0x400) & 0xFFF].unk2 * 11) >> 4;
+    ((subengine *)DinoGoal)->XYZ.z = (rcossin_tbl[DinoScoreB & 0xFFF].unk2 * 11) >> 4;
     {
         s32 h = (u16)DinoScoreB;
 
-        ((DinoTarget *)DinoGoal)->ang = h;
-        ((DinoTarget *)DinoGoal)->ang2 = h * 2;
+        ((subengine *)DinoGoal)->xform.rot.vy = h;
+        ((subengine *)DinoGoal)->xform.rot.vz = h * 2;
     }
     DinoScoreB = ((rcossin_tbl[(DinoScoreFlag - 0x400) & 0xFFF].unk2 * 3) >> 4) & 0xFFF;
     if (DinoScoreB >= 0x2F8 && DinoScoreDelay == 0 && DinoScoreB <= 0x400) {
@@ -2230,7 +2230,7 @@ void DinoScoreGems(void) {
         DinoScoreDelay = 0x5A;
     }
     DinoScoreFlag = (DinoScoreFlag + 0xC) & 0xFFF;
-    ((DinoTarget *)DinoGoal)->unk52 = 1;
+    ((subengine *)DinoGoal)->xform.dirty = 1;
     for (i = 0;; i++) {
         s32 t_;
 
@@ -2260,7 +2260,7 @@ void DinoScoreGems(void) {
         }
         DinoScoreA++;
         spd = csqrt(ext->unkB4 * ext->unkB4 + ext->unkD4 * ext->unkD4) >> 6;
-        a = (((DinoTarget *)DinoGoal)->ang + 0x800) & 0xFFF;
+        a = (((subengine *)DinoGoal)->xform.rot.vy + 0x800) & 0xFFF;
         ext->timer2 = 0x14;
         n.vx = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
         n.vz = rcossin_tbl[a].unk2;

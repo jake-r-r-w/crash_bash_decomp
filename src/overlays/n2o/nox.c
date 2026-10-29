@@ -450,36 +450,36 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
     }
 }
 
-void NoxTurnAsteroid(AngObj *o) {
-    if (o->state == 0x5003) {
-        o->unk52 = 1;
-        o->unk51 = 0;
-        o->ax -= (s32)((0x400 - (s16)o->ax) << 20) >> 23;
+void NoxTurnAsteroid(subengine *o) {
+    if (o->entity == 0x5003) {
+        o->xform.dirty = 1;
+        o->xform.order = 0;
+        o->xform.rot.vx -= (s32)((0x400 - (s16)o->xform.rot.vx) << 20) >> 23;
     }
-    if (o->state == 0x500B) {
-        o->unk52 = 1;
-        o->unk51 = 0;
-        o->ax -= (s32)((0xC00 - (s16)o->ax) << 20) >> 23;
+    if (o->entity == 0x500B) {
+        o->xform.dirty = 1;
+        o->xform.order = 0;
+        o->xform.rot.vx -= (s32)((0xC00 - (s16)o->xform.rot.vx) << 20) >> 23;
     }
-    if (o->state == 0x5019) {
-        o->unk52 = 1;
-        o->unk51 = 0;
-        o->ax -= (s32)((0x400 - (s16)o->ax) << 20) >> 23;
+    if (o->entity == 0x5019) {
+        o->xform.dirty = 1;
+        o->xform.order = 0;
+        o->xform.rot.vx -= (s32)((0x400 - (s16)o->xform.rot.vx) << 20) >> 23;
     }
-    if (o->state == 0x500C) {
-        o->unk52 = 1;
-        o->unk51 = 0;
-        o->ay -= (s32)((0x400 - (s16)o->ax) << 20) >> 23;
+    if (o->entity == 0x500C) {
+        o->xform.dirty = 1;
+        o->xform.order = 0;
+        o->xform.rot.vy -= (s32)((0x400 - (s16)o->xform.rot.vx) << 20) >> 23;
     }
-    if (o->state == 0x501A) {
-        o->unk52 = 1;
-        o->unk51 = 0;
-        o->ay -= (s32)((0x400 - (s16)o->ax) << 20) >> 23;
+    if (o->entity == 0x501A) {
+        o->xform.dirty = 1;
+        o->xform.order = 0;
+        o->xform.rot.vy -= (s32)((0x400 - (s16)o->xform.rot.vx) << 20) >> 23;
     }
-    if (o->state == 0x5004) {
-        o->unk52 = 1;
-        o->unk51 = 0;
-        o->ay -= (s32)((0xC00 - (s16)o->ax) << 20) >> 23;
+    if (o->entity == 0x5004) {
+        o->xform.dirty = 1;
+        o->xform.order = 0;
+        o->xform.rot.vy -= (s32)((0xC00 - (s16)o->xform.rot.vx) << 20) >> 23;
     }
 }
 
@@ -550,7 +550,7 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
             NoxAsteroidSfx();
         }
     } else {
-        NoxTurnAsteroid((AngObj *)arg0);
+        NoxTurnAsteroid((subengine *)arg0);
     }
 }
 

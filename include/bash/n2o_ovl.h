@@ -151,22 +151,10 @@ typedef struct {
 extern N2OCircle *N2OPillarList;
 extern N2OCircle N2OPillars[];
 
-/* The object a N2OSlots slot moves (N2OUpdateSlots). */
-typedef struct N2OSlotObj {
-    /* 0x00 */ u8 pad0[4];
-    /* 0x04 */ s32 x;
-    /* 0x08 */ s32 y;
-    /* 0x0C */ s32 z;
-    /* 0x10 */ u8 pad10[2];
-    /* 0x12 */ s16 ang;
-    /* 0x14 */ u8 pad14[0x3D];
-    /* 0x51 */ u8 unk51;
-    /* 0x52 */ u16 unk52;
-} N2OSlotObj;
 
 
 typedef struct N2OSlot {
-    N2OSlotObj *src;
+    subengine *src;
     s32 unk4;
     NAS *nas;
     u16 f0C;

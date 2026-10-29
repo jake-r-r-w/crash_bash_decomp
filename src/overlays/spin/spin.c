@@ -207,7 +207,7 @@ s32 SpinTurnTarget = 0;
 s16 SpinAngle = 0;
 s16 SpinAngle2 = 0;
 s16 SpinSpeed = 0;
-SpinObj *SpinArenaObjs[10] = {0};
+subengine *SpinArenaObjs[10] = {0};
 s32 SpinASTBase = 0;
 u16 SpinShadowModels[4] = { 0x2013, 0x2012, 0x2010, 0x2011 };
 u16 SpinHitSfx[4] = { 0x446, 0x447, 0x448, 0x449 };
@@ -354,7 +354,7 @@ void SpinShuffleDropPoints(void) {
 
 void SpinInitScene(void) {
     s32 i;
-    SpinObj *obj;
+    subengine *obj;
     s16 *p;
 
     SpinTurn = 0;
@@ -362,27 +362,27 @@ void SpinInitScene(void) {
     SpinSpeed = 1;
     SpinAngle = 0;
     SpinAngle2 = 0;
-    obj = ((SpinObj *)MapScene->subs);
+    obj = ((subengine *)MapScene->subs);
     for (i = 9; i >= 0; i--) {
         SpinArenaObjs[i] = NULL;
     }
     for (; obj != NULL; obj = obj->next) {
-        p = (s16 *)model_entry_data(obj->model, obj->index);
+        p = (s16 *)model_entry_data(obj->u6C.dbase, obj->entity);
         i = *p - 10;
         if ((u32)i < 10) {
             SpinArenaObjs[i] = obj;
-            obj->unk51 = 0;
+            obj->xform.order = 0;
         }
         i = *p - 20;
         if ((u32)i < 10) {
             SpinSlots[i].obj = obj;
-            obj->unk51 = 0;
+            obj->xform.order = 0;
         }
     }
 }
 
 void SpinTurnArena(void) {
-    SpinObj *obj;
+    subengine *obj;
     HeroInfo *h;
     EXTengine *eng;
     EXTengine *e;
@@ -417,33 +417,33 @@ void SpinTurnArena(void) {
     SpinTurnTarget -= SpinAngle2;
     obj = SpinArenaObjs[0];
     if (obj != NULL) {
-        obj->dirty = 1;
-        obj->ry = SpinTurn;
+        obj->xform.dirty = 1;
+        obj->xform.rot.vy = SpinTurn;
     }
     obj = SpinArenaObjs[1];
     if (obj != NULL) {
-        obj->dirty = 1;
-        obj->ry = SpinTurn;
+        obj->xform.dirty = 1;
+        obj->xform.rot.vy = SpinTurn;
     }
     for (i = 0; i < 10; i++) {
         obj = SpinSlots[i].obj;
         if (obj != NULL) {
             if (SpinSlots[i].fixed[0] != 0) {
-                obj->rx = SpinSlots[i].fixed[0];
+                obj->xform.rot.vx = SpinSlots[i].fixed[0];
             } else {
-                obj->rx = (u32)(SpinTurn * SpinSlots[i].rate[0]) >> 4;
+                obj->xform.rot.vx = (u32)(SpinTurn * SpinSlots[i].rate[0]) >> 4;
             }
             if (SpinSlots[i].fixed[1] != 0) {
-                obj->ry = SpinSlots[i].fixed[1];
+                obj->xform.rot.vy = SpinSlots[i].fixed[1];
             } else {
-                obj->ry = (u32)(SpinTurn * SpinSlots[i].rate[1]) >> 4;
+                obj->xform.rot.vy = (u32)(SpinTurn * SpinSlots[i].rate[1]) >> 4;
             }
             if (SpinSlots[i].fixed[2] != 0) {
-                obj->rz = SpinSlots[i].fixed[2];
+                obj->xform.rot.vz = SpinSlots[i].fixed[2];
             } else {
-                obj->rz = (u32)(SpinTurn * SpinSlots[i].rate[2]) >> 4;
+                obj->xform.rot.vz = (u32)(SpinTurn * SpinSlots[i].rate[2]) >> 4;
             }
-            obj->dirty = 1;
+            obj->xform.dirty = 1;
         }
     }
     for (i = 0; i < 4; i++) {

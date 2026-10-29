@@ -4503,8 +4503,8 @@ void UpdateArkFloor(void)
     s32 j;
     ArkenoidScnObj *o;
     ArkenoidScnObj *p;
-    ArkenoidSpr **sp;
-    ArkenoidSpr *s;
+    subengine **sp;
+    subengine *s;
 
     a = (GameFrameCount << 5) & 0xFFF;
     if (GameMode == 0x11) {
@@ -4597,13 +4597,13 @@ void UpdateArkFloor(void)
             ArkWallFlags = 0;
         }
         for (i = 1; i < 10; i++) {
-            sp = (ArkenoidSpr **)&FloorObjectsA[i];
+            sp = (subengine **)&FloorObjectsA[i];
             if (*sp != NULL) {
-                (*sp)->unk51 = 2;
-                (*sp)->unk10 = ArkFloorTiltX;
-                (*sp)->unk14 = ArkFloorTiltZ;
-                (*sp)->unk8 = World_floor_level;
-                (*sp)->unk52 = 1;
+                (*sp)->xform.order = 2;
+                (*sp)->xform.rot.vx = ArkFloorTiltX;
+                (*sp)->xform.rot.vz = ArkFloorTiltZ;
+                (*sp)->XYZ.y = World_floor_level;
+                (*sp)->xform.dirty = 1;
             }
         }
         for (i = 0; i < 10; i++) {
@@ -4615,23 +4615,23 @@ void UpdateArkFloor(void)
             }
         }
         for (i = 0; i < 4; i++) {
-            s = (ArkenoidSpr *)ArkDoorsB[i].flags;
+            s = (subengine *)ArkDoorsB[i].flags;
             if (s != NULL) {
                 if (ArkFloorState == 0) {
                     s->flags &= ~0x8000;
                 }
-                ((ArkenoidSpr *)ArkDoorsB[i].flags)->unk51 = 2;
-                ((ArkenoidSpr *)ArkDoorsB[i].flags)->unk10 = ArkFloorTiltX;
-                ((ArkenoidSpr *)ArkDoorsB[i].flags)->unk14 = ArkFloorTiltZ;
-                ((ArkenoidSpr *)ArkDoorsB[i].flags)->unk8 = World_floor_level;
-                ((ArkenoidSpr *)ArkDoorsB[i].flags)->unk52 = 1;
+                ((subengine *)ArkDoorsB[i].flags)->xform.order = 2;
+                ((subengine *)ArkDoorsB[i].flags)->xform.rot.vx = ArkFloorTiltX;
+                ((subengine *)ArkDoorsB[i].flags)->xform.rot.vz = ArkFloorTiltZ;
+                ((subengine *)ArkDoorsB[i].flags)->XYZ.y = World_floor_level;
+                ((subengine *)ArkDoorsB[i].flags)->xform.dirty = 1;
             }
             if (ArkWallObjects[i].sub != NULL) {
-                ((ArkenoidSpr *)ArkWallObjects[i].sub)->unk51 = 2;
-                ((ArkenoidSpr *)ArkWallObjects[i].sub)->unk10 = ArkFloorTiltX;
-                ((ArkenoidSpr *)ArkWallObjects[i].sub)->unk14 = ArkFloorTiltZ;
-                ((ArkenoidSpr *)ArkWallObjects[i].sub)->unk8 = World_floor_level;
-                ((ArkenoidSpr *)ArkWallObjects[i].sub)->unk52 = 1;
+                ((subengine *)ArkWallObjects[i].sub)->xform.order = 2;
+                ((subengine *)ArkWallObjects[i].sub)->xform.rot.vx = ArkFloorTiltX;
+                ((subengine *)ArkWallObjects[i].sub)->xform.rot.vz = ArkFloorTiltZ;
+                ((subengine *)ArkWallObjects[i].sub)->XYZ.y = World_floor_level;
+                ((subengine *)ArkWallObjects[i].sub)->xform.dirty = 1;
             }
         }
     }

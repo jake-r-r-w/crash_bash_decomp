@@ -239,18 +239,6 @@ extern u16 CornerFailFrames[];
 #define BLINK_E28 ((ArkenoidLink *)ArkGoals)
 #define BLINK_D38 ((ArkenoidLink *)ArkDoorsA)
 
-typedef struct {
-    u32 flags;
-    u8 pad4[4];
-    s32 unk8;
-    u8 padC[4];
-    u16 unk10;
-    u8 pad12[2];
-    u16 unk14;
-    u8 pad16[0x51 - 0x16];
-    u8 unk51;
-    s16 unk52;
-} ArkenoidSpr;
 
 typedef struct {
     u8 pad0[4];

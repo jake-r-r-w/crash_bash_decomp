@@ -43,34 +43,16 @@ typedef struct BombGFXExt {
     /* 0x10 */ u8 pad10[0x1C - 0x10];
 } BombGFXExt;
 
-/* A scene's model object as PolarInitDebug walks the list at MapScene->subs. */
-typedef struct SceneObj {
-    /* 0x00 */ u32 flags; /* 0x8000 visible */
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ u8 pad10[0x12 - 0x10];
-    /* 0x12 */ u16 unk12;
-    /* 0x14 */ u8 pad14[0x51 - 0x14];
-    /* 0x51 */ u8 unk51;
-    /* 0x52 */ s16 unk52;
-    /* 0x54 */ u8 pad54[0x5C - 0x54];
-    /* 0x5C */ struct SceneObj *next;
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
-    /* 0x6C */ obj_dbase *model;
-    /* 0x70 */ u8 pad70[0x74 - 0x70];
-    /* 0x74 */ u16 index;
-} SceneObj;
 
 /* Visible scene objects PolarInitDebug collects. */
-extern SceneObj *PolarIceObjects[80];
+extern subengine *PolarIceObjects[80];
 extern const char PolarMsgFoundColSubs[];
 
 /* Scene objects PolarInitScene picks out by index. */
 extern s32 PolarTiltX;
 extern s32 PolarTiltZ;
-extern SceneObj *PolarSceneA;
-extern SceneObj *PolarSceneB;
+extern subengine *PolarSceneA;
+extern subengine *PolarSceneB;
 extern s32 PolarSceneCount;
 extern s32 PolarSceneTimer;
 
@@ -693,7 +675,7 @@ typedef struct PolarRiserObj {
 extern PolarRiserObj *UkaMaskRisers[16];
 
 /* Scene objects with index 0x4000, UkaMaskInitRisers collects. */
-extern SceneObj *UkaMaskObjects[16];
+extern subengine *UkaMaskObjects[16];
 
 void RiserSetReset(PolarRiserSet *arg0);
 

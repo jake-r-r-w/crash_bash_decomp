@@ -134,18 +134,6 @@ s32 DinoKeepInBounds(EXTengine *arg0);
 
 void FirstTriggersDINO(void);
 
-/* A scene object in the list at MapScene->subs (DinoFindTargets). */
-typedef struct DinoObj {
-    u32 flags;             /* 0x00 */
-    u8 pad4[0x58];
-    struct DinoObj *next; /* 0x5C */
-    u8 pad60[0x14];
-    u16 index;             /* 0x74 */
-    s16 scale;             /* 0x76 */
-    s32 r;                 /* 0x78 */
-    s32 g;                 /* 0x7C */
-    s32 b;                 /* 0x80 */
-} DinoObj;
 
 
 
@@ -182,12 +170,12 @@ typedef struct DinoPuff {
         }                                                                   \
     }
 
-extern DinoObj *DinoGoal;
-extern DinoObj *DinoTargetA;
-extern DinoObj *DinoTargetB;
-extern DinoObj *DinoTargetC;
-extern DinoObj *DinoTargetObjs[3];
-extern DinoObj *DinoTargetObjsB[3];
+extern subengine *DinoGoal;
+extern subengine *DinoTargetA;
+extern subengine *DinoTargetB;
+extern subengine *DinoTargetC;
+extern subengine *DinoTargetObjs[3];
+extern subengine *DinoTargetObjsB[3];
 
 void DinoAI_Think();
 void InitialiseDINOFirst();
@@ -366,7 +354,7 @@ void PlotDinoGem(NAS *m);
 #endif /* BASH_DINO_OVL_H */
 
 extern s32 DinoVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
-extern DinoObj *DinoTargetD, *DinoTargetE;
+extern subengine *DinoTargetD, *DinoTargetE;
 extern s32 DinoTargetTimer, DinoTargetDelay, DinoTargetStep, DinoScoreTimer, DinoTargetFlag;
 void DinoChooseWinnerTeam(s32 arg0, u16 arg1);
 void DinoPreMoveHero();
@@ -399,19 +387,6 @@ typedef struct DinoSceneData {
 
 s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags);
 
-/* DinoScoreGems: DinoGoal (the swinging target) as it moves. */
-typedef struct DinoTarget {
-    u8 pad0[4];
-    s32 x;      /* 0x04 */
-    u8 pad8[4];
-    s32 z;      /* 0x0C */
-    u8 pad10[2];
-    s16 ang;    /* 0x12 */
-    s16 ang2;   /* 0x14 */
-    u8 pad16[0x51 - 0x16];
-    u8 unk51;   /* 0x51 */
-    s16 unk52;  /* 0x52 */
-} DinoTarget;
 
 extern s32 DinoScoreA;
 extern s32 DinoScoreB;
