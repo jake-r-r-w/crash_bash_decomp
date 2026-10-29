@@ -187,15 +187,15 @@ static inline void mal_merge_from(mal *a, _mal_area *arg1, s32 m1) {
 
     mal_unlink(a, arg1);
     size = a->size;
-    b = (mal *)((u8 *)a + (size * 4 + 0x18));
+    b = MAL_AFTER(a, size);
     new_var = a;
     n = b->size;
     prev = a->prev;
-    d = (s32 *)((u8 *)a + 0x18);
+    d = MAL_DATA(a);
     *a = *b;
-    s = (s32 *)((u8 *)b + 0x18);
+    s = MAL_DATA(b);
     new_var->prev = prev;
-    end = (mal *)((u8 *)b + (n * 4 + 0x18));
+    end = MAL_AFTER(b, n);
     new_var2 = size;
     n--;
     *a->owner = (void *)d;
@@ -206,7 +206,7 @@ static inline void mal_merge_from(mal *a, _mal_area *arg1, s32 m1) {
             n--;
         } while (n != m2);
     }
-    b = (mal *)((u8 *)a + (a->size * 4 + 0x18));
+    b = MAL_AFTER(a, a->size);
     end->prev = b;
     b->size = new_var2;
     b->owner = (void **)m1;
@@ -247,14 +247,14 @@ void mal_update(_mal_area *heap) {
         a = heap->lowest;
         mal_unlink(a, heap);
         size = a->size;
-        b = (mal *)((u8 *)a + (size * 4 + 0x18));
+        b = MAL_AFTER(a, size);
         n = b->size;
         prev = a->prev;
-        d = (s32 *)((u8 *)a + 0x18);
+        d = MAL_DATA(a);
         *a = *b;
-        s = (s32 *)((u8 *)b + 0x18);
+        s = MAL_DATA(b);
         a->prev = prev;
-        end = (mal *)((u8 *)b + (n * 4 + 0x18));
+        end = MAL_AFTER(b, n);
         size2 = size;
         n--;
         *a->owner = (void *)d;
@@ -262,7 +262,7 @@ void mal_update(_mal_area *heap) {
             *d++ = *s++;
             n--;
         }
-        b = (mal *)((u8 *)a + (a->size * 4 + 0x18));
+        b = MAL_AFTER(a, a->size);
         end->prev = b;
         b->size = size2;
         b->owner = (void **)-1;
@@ -306,7 +306,7 @@ static inline mal *Heap_NextLowest(_mal_area *heap, s32 m1) {
     if (blk == NULL) {
         return NULL;
     }
-    next = (mal *)((u8 *)blk + (blk->size * 4 + sizeof(mal)));
+    next = MAL_AFTER(blk, blk->size);
     if (next->owner == (void **)m1 || next->size == 0) {
         return NULL;
     }
@@ -324,7 +324,7 @@ void mal_update(_mal_area *heap) {
     s32 budget;
 
     lo = heap->lowest;
-    if (lo == NULL || (nx = (mal *)((u8 *)lo + (lo->size * 4 + 0x18)),
+    if (lo == NULL || (nx = MAL_AFTER(lo, lo->size),
                        nx->owner == (void **)-1) || nx->size == 0) {
         ret = NULL;
     } else {
@@ -392,7 +392,7 @@ void mal_compact_from(mal *arg0, _mal_area *arg1) {
         }
         mal_merge_from(arg1->lowest, arg1, m1);
         nx = arg1->lowest;
-        if (nx == NULL || (nx = (mal *)((u8 *)nx + (nx->size * 4 + 0x18)),
+        if (nx == NULL || (nx = MAL_AFTER(nx, nx->size),
                            nx->owner == (void **)m1) || nx->size == 0) {
             ret = NULL;
         } else {
@@ -439,15 +439,15 @@ void mal_compact_high(_mal_area *heap) {
         } else {
             prev = blk->prev;
         }
-        next = (mal *)((u8 *)blk + (size * 4 + 0x18));
+        next = MAL_AFTER(blk, size);
         if (prev == NULL) {
             continue;
         }
         mal_unlink(blk, heap);
-        dst = (u32 *)((u8 *)blk + (blk->size * 4 + 0x14));
+        dst = MAL_LAST(blk, blk->size);
         n = prev->size;
-        src = (u32 *)((u8 *)prev + (n * 4 + 0x14));
-        new = (mal *)((u8 *)dst - n * 4 - 0x14);
+        src = MAL_LAST(prev, n);
+        new = MAL_OF_LAST(dst, n);
         next->prev = new;
         for (n--; n != -1; n--) {
             *dst-- = *src--;
@@ -469,7 +469,7 @@ static inline mal *mal_compact_next(_mal_area *heap) {
     if (blk == NULL) {
         return NULL;
     }
-    next = (mal *)((u8 *)blk + (blk->size * 4 + sizeof(mal)));
+    next = MAL_AFTER(blk, blk->size);
     if (next->owner == (void **)-1 || next->size == 0) {
         return NULL;
     }
@@ -490,15 +490,15 @@ static inline void mal_compact_merge(mal *arg0, _mal_area *arg1) {
 
     mal_unlink(arg0, arg1);
     size = arg0->size;
-    next = (mal *)((u8 *)arg0 + (size * 4 + 0x18));
+    next = MAL_AFTER(arg0, size);
     new_var = arg0;
     n = next->size;
     prev = arg0->prev;
-    d = (s32 *)((u8 *)arg0 + 0x18);
+    d = MAL_DATA(arg0);
     *arg0 = *next;
-    s = (s32 *)((u8 *)next + 0x18);
+    s = MAL_DATA(next);
     new_var->prev = prev;
-    end = (mal *)((u8 *)next + (n * 4 + 0x18));
+    end = MAL_AFTER(next, n);
     new_var2 = size;
     n--;
     *arg0->owner = (void *)d;
@@ -509,7 +509,7 @@ static inline void mal_compact_merge(mal *arg0, _mal_area *arg1) {
             n--;
         } while (n != m1);
     }
-    next = (mal *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
+    next = MAL_AFTER(arg0, arg0->size);
     end->prev = next;
     next->size = new_var2;
     next->owner = (void **)-1;
@@ -530,7 +530,7 @@ void mal_compact(_mal_area *heap) {
 
 static inline mal *Heap_NextFreeAfter(mal *p) {
     while (p->size != 0) {
-        p = (mal *)((u8 *)p + (p->size * 4 + 0x18));
+        p = MAL_AFTER(p, p->size);
         if (p->owner == NULL) {
             return p;
         }
@@ -627,7 +627,7 @@ mal *mal_take_high(bytes, heap)
             }
         }
     done:
-        nb = (mal *)((u8 *)blk + (blk->size * 4 + 0x18));
+        nb = MAL_AFTER(blk, blk->size);
         nb->size = words;
         nb->prev = blk;
         MEMBLOCK_NEXT(nb)->prev = nb;
@@ -641,7 +641,7 @@ mal *mal_take_high(bytes, heap)
 
 static inline mal *Heap_NextFreeAfter2(mal *p) {
     while (p->size != 0) {
-        p = (mal *)((u8 *)p + (p->size * 4 + 0x18));
+        p = MAL_AFTER(p, p->size);
         if (p->owner == NULL) {
             return p;
         }
@@ -702,7 +702,7 @@ void *mal_take_low(bytes, heap)
         }
         sz = blk->size - 6;
         sz -= words;
-        nb = (mal *)((u8 *)blk + (words * 4 + 0x18));
+        nb = MAL_AFTER(blk, words);
         nb->prev = blk;
         nb->owner = NULL;
         nb->unk0 = 0;
@@ -842,9 +842,9 @@ void *mal_trim_front(void *base, s32 offset, _mal_area *arg2) {
     words -= 6;
     blk = (mal *)base;
     blk--;
-    next = (mal *)((u8 *)blk + (blk->size * 4 + 0x18));
+    next = MAL_AFTER(blk, blk->size);
     prev = blk->prev;
-    nb = (mal *)((u8 *)blk + (words * 4 + 0x18));
+    nb = MAL_AFTER(blk, words);
     nb->owner = blk->owner;
     nb->unk0 = ((mal *)base)[-1].unk0;
     nb->ticks = blk->ticks;
@@ -926,13 +926,13 @@ u8 *mal_trim(u8 *arg0, s32 arg1, _mal_area *arg2) {
     rest = old - words - 6;
     if (rest >= 0x10) {
         blk->size = words;
-        new_blk = (mal *)((u8 *)blk + (0x18 + words * 4));
+        new_blk = MAL_AFTER(blk, words);
         new_blk->owner = neg1;
         new_blk->size = rest;
         new_blk->unk0 = 0;
         new_blk->prev = blk;
-        ((mal *)((u8 *)blk + old * 4 + 0x18))->prev = new_blk;
-        mal_free((u8 *)new_blk + 0x18, heap);
+        MAL_END(blk, old)->prev = new_blk;
+        mal_free((u8 *)MAL_DATA(new_blk), heap);
     }
     return arg0;
 }
@@ -1007,7 +1007,7 @@ u8 *mal_alloc(s32 arg0, _mal_area *arg1) {
     if (b == NULL) {
         low = arg1->lowest;
         next = NULL;
-        if (low != NULL && ((next = (mal *)((u8 *)low + (low->size * 4 + 0x18))),
+        if (low != NULL && ((next = MAL_AFTER(low, low->size)),
                             next->owner == (void **)-1 || next->size == 0)) {
             next = NULL;
         }
@@ -1042,7 +1042,7 @@ u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1) {
     if (b == NULL) {
         low = arg1->lowest;
         next = NULL;
-        if (low != NULL && ((next = (mal *)((u8 *)low + (low->size * 4 + 0x18))),
+        if (low != NULL && ((next = MAL_AFTER(low, low->size)),
                             next->owner == (void **)-1 || next->size == 0)) {
             next = NULL;
         }
@@ -1116,7 +1116,7 @@ mal *mal_take_low_from(mal *blk, s32 words, _mal_area *heap) {
     }
     sz = blk->size - 6;
     sz -= words;
-    split = (mal *)((u8 *)blk + (words * 4 + 0x18));
+    split = MAL_AFTER(blk, words);
     split->prev = blk;
     split->owner = NULL;
     split->unk0 = 0;
@@ -1214,7 +1214,7 @@ void mal_take_high_from(mal *arg0, s32 arg1, _mal_area *arg2) {
         }
     }
 done:
-    nb = (mal *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
+    nb = MAL_AFTER(arg0, arg0->size);
     nb->size = arg1;
     nb->prev = arg0;
     MEMBLOCK_NEXT(nb)->prev = nb;
@@ -1344,7 +1344,7 @@ void mal_compact_step(_mal_area *heap) {
 
     low = heap->lowest;
     next = NULL;
-    if (low != NULL && ((next = (mal *)((u8 *)low + (low->size * 4 + 0x18))),
+    if (low != NULL && ((next = MAL_AFTER(low, low->size)),
                         next->owner == (void **)-1 || next->size == 0)) {
         next = NULL;
     }
@@ -1408,7 +1408,7 @@ mal *mal_next_movable_now(_mal_area *heap) {
     blk = heap->lowest;
     ret = NULL;
     if (blk != NULL) {
-        next = (mal *)((u8 *)blk + (blk->size * 4 + sizeof(mal)));
+        next = MAL_AFTER(blk, blk->size);
         if (next->owner != (void **)-1) {
             ret = next;
             if (next->size == 0) {
@@ -1432,7 +1432,7 @@ mal *mal_after_lowest(_mal_area *heap) {
     if (blk == NULL) {
         return NULL;
     }
-    next = (mal *)((u8 *)blk + (blk->size * 4 + sizeof(mal)));
+    next = MAL_AFTER(blk, blk->size);
     if (next->owner == (void **)-1 || next->size == 0) {
         return NULL;
     }
@@ -1453,15 +1453,15 @@ void mal_move_down(mal *arg0, _mal_area *arg1) {
 
     mal_unlink(arg0, arg1);
     size = arg0->size;
-    next = (mal *)((u8 *)arg0 + (size * 4 + 0x18));
+    next = MAL_AFTER(arg0, size);
     new_var = arg0;
     n = next->size;
     prev = arg0->prev;
-    d = (s32 *)((u8 *)arg0 + 0x18);
+    d = MAL_DATA(arg0);
     *arg0 = *next;
-    s = (s32 *)((u8 *)next + 0x18);
+    s = MAL_DATA(next);
     new_var->prev = prev;
-    end = (mal *)((u8 *)next + (n * 4 + 0x18));
+    end = MAL_AFTER(next, n);
     new_var2 = size;
     n--;
     *arg0->owner = (void *)d;
@@ -1471,7 +1471,7 @@ void mal_move_down(mal *arg0, _mal_area *arg1) {
             n--;
         } while (n != -1);
     }
-    next = (mal *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
+    next = MAL_AFTER(arg0, arg0->size);
     end->prev = next;
     next->size = new_var2;
     next->owner = (void **)-1;
@@ -1494,13 +1494,13 @@ void mal_move_up(mal *arg0, _mal_area *arg1) {
 
     size = arg0->size;
     prev = arg0->prev;
-    next = (mal *)((u8 *)arg0 + (size * 4 + 0x18));
+    next = MAL_AFTER(arg0, size);
     if (prev != NULL) {
         mal_unlink(arg0, arg1);
-        d = (s32 *)((u8 *)arg0 + (arg0->size * 4 + 0x14));
+        d = MAL_LAST(arg0, arg0->size);
         n = prev->size;
-        s = (s32 *)((u8 *)prev + (n * 4 + 0x14));
-        dst = (mal *)((u8 *)d - n * 4 - 0x14);
+        s = MAL_LAST(prev, n);
+        dst = MAL_OF_LAST(d, n);
         next->prev = dst;
         n--;
         while (n != -1) {
