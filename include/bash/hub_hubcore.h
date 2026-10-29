@@ -30,10 +30,10 @@ typedef struct HubTrail {
     /* 0x060 */ HubPt prev[8];
     /* 0x0A0 */ u8 padA0[0xE0 - 0xA0];
     /* 0x0E0 */ HubPt ang[8];
-    /* 0x120 */ s32 unk120;
+    /* 0x120 */ s32 yvel;  /* damped by 0xE6/0x100 */
     /* 0x124 */ s32 pad124;
-    /* 0x128 */ s32 unk128;
-    /* 0x12C */ s32 unk12C;
+    /* 0x128 */ s32 gravity;  /* added to yvel */
+    /* 0x12C */ s32 xvel;  /* damped by 0xE6/0x100 */
     /* 0x130 */ s32 pad130;
     /* 0x134 */ s32 pad134;
     /* 0x138 */ s32 flag2;  /* tested for zero */
@@ -44,7 +44,7 @@ typedef struct HubTrailDst {
     /* 0x08 */ s32 y;
     /* 0x0C */ s32 z;
     /* 0x10 */ u8 pad10[0x76 - 0x10];
-    /* 0x76 */ u16 unk76;
+    /* 0x76 */ u16 angle;  /* turned 0x200 a frame */
 } HubTrailDst;
 
 extern s32 HubDoorFade;
@@ -54,20 +54,20 @@ extern s32 HubNameNext;
 extern s32 HubNamePage;
 extern s32 HubNameLen;
 typedef struct HubEntry12 {
-    s32 unk0;
+    s32 keys;  /* the page's keys */
     s32 pad4;
-    s32 unk8;
+    s32 next;  /* the next name entry (HubNameNext) */
 } HubEntry12;
 extern HubEntry12 HubNamePages[];
 /* name-entry key, 0x10 bytes, at HubNamePages[].unk0 */
 typedef struct HubKey {
     /* 0x0 */ s32 pad0;
-    /* 0x4 */ u8 *unk4;
+    /* 0x4 */ u8 *chars;
     /* 0x8 */ s16 state;  /* switched on */
-    /* 0xA */ s8 unkA;
-    /* 0xB */ s8 unkB;
-    /* 0xC */ s8 unkC;
-    /* 0xD */ s8 unkD;
+    /* 0xA */ s8 left;  /* the moves to the next key */
+    /* 0xB */ s8 right;
+    /* 0xC */ s8 up;
+    /* 0xD */ s8 down;
     /* 0xE */ s16 padE;
 } HubKey;
 typedef struct PodiumTrophy {
@@ -121,9 +121,9 @@ typedef struct HubFt4 {
 /* One row of 8 particles HubInitSparks sets up (0x140 bytes). */
 typedef struct HubSparkRow {
     /* 0x000 */ SVECTOR rot[8];
-    /* 0x040 */ s32 unk40[8];
+    /* 0x040 */ s32 live[8];  /* per spark, nonzero while it shows */
     /* 0x060 */ u8 pad60[0x40];
-    /* 0x0A0 */ SVECTOR unkA0[8];
+    /* 0x0A0 */ SVECTOR vel[8];  /* per spark */
     /* 0x0E0 */ SVECTOR angle[8];
     /* 0x120 */ s32 unk120;
     /* 0x124 */ s32 unk124;
@@ -132,7 +132,7 @@ typedef struct HubSparkRow {
     /* 0x130 */ s32 unk130;
     /* 0x134 */ s32 count;  /* counted up */
     /* 0x138 */ s32 flag;  /* tested for zero */
-    /* 0x13C */ s32 unk13C;
+    /* 0x13C */ s32 brightness;  /* faded by 220/256 */
 } HubSparkRow;
 
 typedef struct HubSparkSet {
@@ -218,9 +218,9 @@ typedef struct {
 /* HubGateways entries (0x28 bytes) as seen by InitialiseHUB. */
 typedef struct {
     /* 0x00 */ u8 pad0[8];
-    /* 0x08 */ u32 unk8;
-    /* 0x0C */ u32 unkC;
-    /* 0x10 */ s32 unk10;
+    /* 0x08 */ u32 radiusMin;  /* the camera's radius is between it and radiusMax */
+    /* 0x0C */ u32 radiusMax;
+    /* 0x10 */ s32 angle;  /* the camera's angle */
     /* 0x14 */ u8 pad14[0x14];
 } HubCamEntry;
 #define CAMTBL6A ((HubCamEntry *)HubGateways)
@@ -393,7 +393,7 @@ void HubStub(void);
 
 typedef struct HubRenderSub {
     u8 padC[0xC];
-    s32 unkC;
+    s32 dbase;  /* its map's dbase */
 } HubRenderSub;
 
 typedef struct HubRenderObj {
@@ -403,7 +403,7 @@ typedef struct HubRenderObj {
     /* 0x6A */ u8 pad6A[2];
     /* 0x6C */ HubRenderSub *sub;
     /* 0x70 */ u8 pad70[4];
-    /* 0x74 */ u16 unk74;
+    /* 0x74 */ u16 entity;
 } HubRenderObj;
 
 extern u8 HubOtBuffer[];

@@ -82,7 +82,7 @@ typedef struct EXTraceshield {
     /* 0x00 */ s32 pad0[3];
     /* 0x0C */ s32 state;  /* switched on */
     /* 0x10 */ s32 timer;  /* counted down */
-    /* 0x14 */ s32 unk14[2];
+    /* 0x14 */ s32 players[2];  /* who it protects */
     /* 0x1C */ s32 unk1C;
 } EXTraceshield;
 
@@ -119,7 +119,7 @@ typedef struct EXTinnerripple {
     /* 0x0C */ s32 scale;
     /* 0x10 */ s32 speed;
     /* 0x14 */ s32 max;
-    /* 0x18 */ s16 unk18;
+    /* 0x18 */ s16 spin;  /* added to the sub's angle */
 } EXTinnerripple;
 /* Rippled extension, AddExt(nas, 0x1C, 0x10000000). */
 typedef struct EXTrippled {
@@ -193,7 +193,7 @@ typedef struct RaceFux {
     /* 0x030 */ s32 cross;          /* the lap line's crossing state */
     /* 0x034 */ s32 laps;
     /* 0x038 */ s32 unk38;
-    /* 0x03C */ s32 unk3C;
+    /* 0x03C */ s32 hits;  /* nonzero after a hit */
     /* 0x040 */ s32 count;  /* counted up */
     /* 0x044 */ s32 unk44;
     /* 0x048 */ s32 timer22;  /* counted down */
@@ -223,7 +223,7 @@ typedef struct RaceFux {
     /* 0x158 */ s32 tune1;  /* RaceMoveTune1, the motion's z_acc */
     /* 0x15C */ s32 accel;  /* RaceAccel, the motion's x_acc */
     /* 0x160 */ s32 turnRate;  /* added to or taken from forward_angle */
-    /* 0x164 */ s32 unk164;
+    /* 0x164 */ s32 bounce2;  /* the bounce factor, 8.8 */
     /* 0x168 */ s32 timer4;  /* counted down */
     /* 0x16C */ s32 timer5;  /* counted down */
     /* 0x170 */ s32 side;
@@ -320,7 +320,7 @@ typedef struct RaceMissileExt {
     /* 0x1C */ s32 angVel;  /* speed over radius, signed by the side */
     /* 0x20 */ s32 unk20;
     /* 0x24 */ u8 pad24[0x34 - 0x24];
-    /* 0x34 */ s32 unk34;
+    /* 0x34 */ s32 speedMax;  /* copied to unk58 */
     /* 0x38 */ u8 pad38[0x40 - 0x38];
     /* 0x40 */ s32 unk40;
     /* 0x44 */ u8 pad44[0x4C - 0x44];
@@ -442,7 +442,7 @@ typedef struct RacePickUpExt {
     /* 0x38 */ s32 state;  /* switched on */
     /* 0x3C */ EXTengine *shadow;  /* an engine on the ground under it */
     /* 0x40 */ s32 flag;  /* tested for zero */
-    /* 0x44 */ s32 unk44;
+    /* 0x44 */ s32 slot;  /* its RacePickupSlots entry */
     /* 0x48 */ s32 count;  /* counted up */
     /* 0x4C */ s32 unk4C;
 } RacePickUpExt;
@@ -462,11 +462,11 @@ typedef struct RaceVolcArc {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
     /* 0x08 */ u8 pad8[0x14 - 0x8];
-    /* 0x14 */ s32 unk14;
+    /* 0x14 */ s32 yvel;  /* reversed and damped on a bounce */
     /* 0x18 */ s32 unk18;
     /* 0x1C */ u8 pad1C[0x34 - 0x1C];
-    /* 0x34 */ s32 unk34;
-    /* 0x38 */ s32 unk38;
+    /* 0x34 */ s32 xdir;
+    /* 0x38 */ s32 zdir;
     /* 0x3C */ u8 pad3C[0x44 - 0x3C];
     /* 0x44 */ s32 unk44;
     /* 0x48 */ u8 pad48[0x54 - 0x48];
@@ -482,7 +482,7 @@ typedef struct RaceVolcanoExt {
     /* 0x024 */ SLONG_XYZ vel[3];
     /* 0x048 */ RaceVolcArc arc[3];
     /* 0x144 */ NAS *nas[3];
-    /* 0x150 */ s32 unk150[3];
+    /* 0x150 */ s32 delay[3];  /* per rock, counted down */
 } RaceVolcanoExt;
 
 /* Squared distance between a and b (PlotRaceVolcano). */
@@ -525,17 +525,17 @@ typedef struct BarrelRollExt {
     /* 0x0C */ s32 arc;  /* ArcUpdate's state */
     /* 0x10 */ s32 unk10;
     /* 0x14 */ u8 pad14[0x20 - 0x14];
-    /* 0x20 */ s32 unk20;
+    /* 0x20 */ s32 yvel;  /* reversed and damped on a bounce */
     /* 0x24 */ s32 y;
     /* 0x28 */ u8 pad28[0x40 - 0x28];
-    /* 0x40 */ s32 unk40;
-    /* 0x44 */ s32 unk44;
+    /* 0x40 */ s32 xvel;  /* damped */
+    /* 0x44 */ s32 zvel;  /* damped */
     /* 0x48 */ u8 pad48[0x50 - 0x48];
     /* 0x50 */ s32 unk50;
     /* 0x54 */ u8 pad54[0x60 - 0x54];
     /* 0x60 */ SLONG_XYZ pos;
     /* 0x6C */ SLONG_XYZ vel;
-    /* 0x78 */ s32 unk78;
+    /* 0x78 */ s32 step;
     /* 0x7C */ EXTengine *shadow;
 } BarrelRollExt;
 
@@ -604,8 +604,8 @@ s32 RaceAI_TargetShare(s32 arg0, s32 arg1);
 /* Glob extension, AddExt(nas, 0x1C, 0x10000000). */
 typedef struct EXTglob {
     /* 0x00 */ s32 pad0[3];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ ScriptCursor *unk10;
+    /* 0x0C */ s32 state;
+    /* 0x10 */ ScriptCursor *cursor;  /* its animation */
     /* 0x14 */ s32 timer;  /* counted down */
     /* 0x18 */ s32 count;  /* counted up */
 } EXTglob;
@@ -725,7 +725,7 @@ typedef struct EXTtrackglob {
     /* 0x2C */ u8 pad2C[0x54 - 0x2C];
     /* 0x54 */ s32 unk54;
     /* 0x58 */ u8 pad58[0x64 - 0x58];
-    /* 0x64 */ s32 unk64;
+    /* 0x64 */ s32 vel;  /* ArcUpdate's velocity */
     /* 0x68 */ s32 unk68;
     /* 0x6C */ s32 unk6C;
     /* 0x70 */ SLONG_XYZ pos;

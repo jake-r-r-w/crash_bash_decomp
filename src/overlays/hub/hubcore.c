@@ -48,17 +48,17 @@ void InitialiseHUB(void) {
         CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
     } else if (G6A->returnToHub != 0) {
         G6A->returnToHub = 0;
-        CAM6A->angle = CAMTBL6A[G6A->gateway].unk10;
-        CAM6A->radius = (CAMTBL6A[G6A->gateway].unkC + CAMTBL6A[G6A->gateway].unk8) >> 1;
+        CAM6A->angle = CAMTBL6A[G6A->gateway].angle;
+        CAM6A->radius = (CAMTBL6A[G6A->gateway].radiusMax + CAMTBL6A[G6A->gateway].radiusMin) >> 1;
     } else {
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 5:
             G6A->gateway = -1;
             CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
-            CAM6A->angle = CAMTBL6A[0].unk10;
+            CAM6A->angle = CAMTBL6A[0].angle;
             break;
         case 2:
-            CAM6A->radius = (CAMTBL6A[G6A->gateway].unkC + CAMTBL6A[G6A->gateway].unk8) >> 1;
+            CAM6A->radius = (CAMTBL6A[G6A->gateway].radiusMax + CAMTBL6A[G6A->gateway].radiusMin) >> 1;
             break;
         default:
             G6A->gateway = -1;
@@ -2083,13 +2083,13 @@ void HubInitSparks(HubSparks *arg0) {
             row->unk120 = (a->unk2 * 256 >> 12) + Random(0x40) - Random(0x40);
             row->unk12C = (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> k) + Random(0x40) - Random(0x40);
             row->angle[i].vz = 0;
-            row->unkA0[i].vz = 0;
-            row->unk40[i] = 0;
+            row->vel[i].vz = 0;
+            row->live[i] = 0;
             row->unk128 = 6;
             row->unk130 = Random(k) - Random(k);
             row->unk124 = 0;
             row->flag = 0;
-            row->unk13C = 0;
+            row->brightness = 0;
             *(u32 *)&src->r0 = 0xA0A0A0;
             src->tpage = (tex->tpage & ~0x60) | 0x20;
             src->clut = tex->clut;
@@ -2116,15 +2116,15 @@ void HubTrailPoint(HubTrailDst *d, HubTrail *t, s32 idx) {
     if (idx == 0) {
         if (t->flag2 != 0) {
             d->flags |= 0x40000000;
-            d->unk76 += 0x200;
+            d->angle += 0x200;
         }
         t->prev[0].x = t->pos[0].x;
         t->prev[0].y = t->pos[0].y;
         d->flags |= 0x8000;
-        t->unk120 = ((t->unk120 + t->unk128) * 0xE6) >> 8;
-        t->unk12C = (t->unk12C * 0xE6) >> 8;
-        t->pos[0].y += *(u16 *)&t->unk120;
-        t->pos[0].x += *(u16 *)&t->unk12C;
+        t->yvel = ((t->yvel + t->gravity) * 0xE6) >> 8;
+        t->xvel = (t->xvel * 0xE6) >> 8;
+        t->pos[0].y += *(u16 *)&t->yvel;
+        t->pos[0].x += *(u16 *)&t->xvel;
         d->x = (s16)t->pos[0].x;
         d->y = (s16)t->pos[0].y;
         d->z = t->pos[0].z;
@@ -2181,11 +2181,11 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
             }
             HubTrailPoint((HubTrailDst *)arg0, (HubTrail *)row, i);
             if (row->flag != 0) {
-                row->unk13C = row->unk13C * 220 >> 8;
+                row->brightness = row->brightness * 220 >> 8;
             } else {
-                row->unk13C = 255 - i * 255 / 8;
+                row->brightness = 255 - i * 255 / 8;
             }
-            c = calc_rgbcode(row->unk13C, row->unk13C, row->unk13C) | 0x2E000000;
+            c = calc_rgbcode(row->brightness, row->brightness, row->brightness) | 0x2E000000;
             if (i == 0) {
                 v.vx = row->rot[0].vx - 0x80;
                 v.vy = row->rot[0].vy - 0x80;
@@ -2231,7 +2231,7 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
                 gte_rtps();
                 gte_stsxy(&prim->x1);
             }
-            if (row->unk40[i] != 0) {
+            if (row->live[i] != 0) {
                 prim->tag = (prim->tag & 0xFF000000) | (RenderState.ot[700] & 0xFFFFFF);
                 p = (SVECTOR *)0xFF000000;
                 RenderState.ot[700] = (RenderState.ot[700] & (u32)p) | ((u32)prim & 0xFFFFFF);
@@ -2440,22 +2440,22 @@ void HubSaveMenuInput(void) {
         cur = s + i;
         j = HubNamePage * sizeof(HubEntry12);
         cur->unk7C = 0;
-        k = (HubKey *)((HubEntry12 *)FILE_AT(HubNamePages, j))->unk0 + i;
+        k = (HubKey *)((HubEntry12 *)FILE_AT(HubNamePages, j))->keys + i;
         pad = (PadState *)Pads;
         if (pad->pressed & 0x80) {
-            HubNameNext += k->unkA;
+            HubNameNext += k->left;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (pad->pressed & 0x20) {
-            HubNameNext += k->unkB;
+            HubNameNext += k->right;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (pad->pressed & 0x10) {
-            HubNameNext += k->unkC;
+            HubNameNext += k->up;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (pad->pressed & 0x40) {
-            HubNameNext += k->unkD;
+            HubNameNext += k->down;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (pad->pressed & 0x4000) {
@@ -2469,7 +2469,7 @@ void HubSaveMenuInput(void) {
                         HubNameLen += 1;
                     }
                     if (HubNameLen == 8) {
-                        HubNameNext = e4->unk8;
+                        HubNameNext = e4->next;
                     }
                 } else {
                     PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2477,7 +2477,7 @@ void HubSaveMenuInput(void) {
                 break;
             case 0:
                 e = &HubNamePages[HubNamePage];
-                c = *k->unk4;
+                c = *k->chars;
                 if (HubNameLen < 8) {
                     GAME->name[HubNameLen] = c;
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2485,7 +2485,7 @@ void HubSaveMenuInput(void) {
                         HubNameLen += 1;
                     }
                     if (HubNameLen == 8) {
-                        HubNameNext = e->unk8;
+                        HubNameNext = e->next;
                     }
                 } else {
                     PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2553,7 +2553,7 @@ void HubSaveMenuInit(void) {
     }
     if (HubNameLen > 0) {
         new_var = &HubNamePages[HubNamePage];
-        HubNameNext = (*new_var).unk8;
+        HubNameNext = (*new_var).next;
     }
     set_fade(&ScreenFade, -0x300, 0);
     cam_init((camera_info_tag *)HubSaveCamera);
@@ -2615,7 +2615,7 @@ void HubNameEntryKey(s8 arg0) {
             HubNameLen += 1;
         }
         if (HubNameLen == 8) {
-            HubNameNext = e->unk8;
+            HubNameNext = e->next;
         }
     } else {
         PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2661,7 +2661,7 @@ void HubProjectObj(HubRenderObj *obj, s16 *out) {
     s32 off;
     s16 *p;
 
-    m =(u8 *)map_entity_address(obj->unk74, (u8 *)obj->sub->unkC);
+    m =(u8 *)map_entity_address(obj->entity, (u8 *)obj->sub->dbase);
     off = *(s32 *)(m + 0x10);
     out[0] = 0x7FFF;
     out[1] = 0x7FFF;
@@ -2758,7 +2758,7 @@ void HubDrawObj(HubRenderObj *obj, void *arg1) {
     s32 d;
     u32 *saved;
 
-    c = obj->sub->unkC;
+    c = obj->sub->dbase;
     if ((obj->flags & 0x8000) && c != 0) {
         saved = RenderState.ot;
         draw_map_object(obj, arg1, obj->flags, c);
@@ -2766,7 +2766,7 @@ void HubDrawObj(HubRenderObj *obj, void *arg1) {
         ClearOTagR(RenderState.ot, 0x138);
         obj->flags |= 0x2000000;
         obj->unk68 = -0x170;
-        draw_object_model(obj->unk74, (u8 *)c, obj->flags, obj);
+        draw_object_model(obj->entity, (u8 *)c, obj->flags, obj);
         HubProjectObj(obj, sp10);
         d = sp10[3];
         y = sp10[1];
