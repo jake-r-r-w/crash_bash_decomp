@@ -1082,7 +1082,7 @@ void *BashHeroObjectAhead(s32 idx, s32 mask) {
     NAS *n;
     EXTengine *he;
     EXTengine *e;
-    EXT *fux;
+    EXTobject *fux;
     s32 hx, hz, dx, dz, lim, m;
 
     n = HeadOfObjects;
@@ -1092,9 +1092,9 @@ void *BashHeroObjectAhead(s32 idx, s32 mask) {
     hx = he->unk10.x - (rcossin_tbl[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
     hz = he->unk10.z - (rcossin_tbl[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
-        fux = n->FUX;
+        fux = (EXTobject *)n->FUX;
         if (fux == NULL) continue;
-        if (!(*(u16 *)((u8 *)fux + 0x1C) & m)) continue;
+        if (!(fux->can_do & m)) continue;
         e = n->Engine;
         if (e == NULL) continue;
         dx = e->unk10.x - hx;

@@ -135,7 +135,7 @@ void ArkHeroPowerupTimers(s32 arg0);
 
 
 
-u8 *ArkFreeBallSlot(void);
+NAS *ArkFreeBallSlot(void);
 
 
 

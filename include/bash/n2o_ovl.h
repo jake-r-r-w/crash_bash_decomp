@@ -10,7 +10,7 @@
 
 
 s32 GetN2OContour(u8 *arg0);
-u8 *N2OFreeBallSlot(void);
+NAS *N2OFreeBallSlot(void);
 void UpdateN2O(void);
 void InitialiseN2OFirst(void);
 void InitialiseN2O(void);

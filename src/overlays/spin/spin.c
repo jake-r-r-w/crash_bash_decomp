@@ -3197,7 +3197,7 @@ NAS *SpinHeroGrabObject(s32 idx, s32 mask) {
     NAS *n;
     EXTengine *he;
     EXTengine *e;
-    EXT *fux;
+    EXTobject *fux;
     HeroInfo *h;
     HeroInfo *hb;
     s32 hx, hz, dx, dz, m, lim;
@@ -3214,20 +3214,20 @@ NAS *SpinHeroGrabObject(s32 idx, s32 mask) {
     hx = he->unk10.x - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
     hz = he->unk10.z - (rcossin_tbl[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
-        fux = n->FUX;
+        fux = (EXTobject *)n->FUX;
         if (fux == NULL) continue;
-        if (!(*(u16 *)((u8 *)fux + 0x1C) & 1)) continue;
+        if (!(fux->can_do & 1)) continue;
         e = n->Engine;
         if (e == NULL) continue;
-        if (*(s32 *)((u8 *)e + 0x80) != 0) continue;
+        if (e->platform != 0) continue;
         dx = e->unk10.x - hx;
         dz = e->unk10.z - hz;
         if (dx * dx + dz * dz >= lim) continue;
         if (um != 0 && angle_diff_abs(Heroes[idx].hero_move->forward_angle,
                 get_angle(e->unk10.x - he->unk10.x, e->unk10.z - he->unk10.z) ^ 0x800) >= um) continue;
         do {
-            *(s16 *)((u8 *)fux + 0x16) = idx;
-            *(u16 *)((u8 *)fux + 0x1E) |= 1;
+            fux->player = idx;
+            fux->will_do |= 1;
             return n;
         } while (0);
     }

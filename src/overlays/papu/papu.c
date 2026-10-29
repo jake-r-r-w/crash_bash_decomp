@@ -2325,21 +2325,21 @@ block_17:
 }
 
 void PapuStopCrates(void) {
-    u8 *temp_v1;
-    u8 *var_a0;
+    EXTobject *temp_v1;
+    NAS *var_a0;
 
     var_a0 = HeadOfObjects;
     if (var_a0 != NULL) {
         do {
-            temp_v1 = (*(s32*)((u8*)(var_a0) + 88));
+            temp_v1 = (EXTobject *)var_a0->FUX;
             if (temp_v1 != NULL) {
-                if ((*(u16*)((u8*)(temp_v1) + 26)) == 1) {
-                    (*(u16*)((u8*)(temp_v1) + 26)) = 4U;
+                if ((temp_v1->status) == 1) {
+                    (temp_v1->status) = 4U;
                 } else {
-                    (*(u16*)((u8*)(temp_v1) + 26)) = 5U;
+                    (temp_v1->status) = 5U;
                 }
             }
-            var_a0 = (*(s32*)((u8*)(var_a0) + 44));
+            var_a0 = (var_a0->Object.Child);
         } while (var_a0 != NULL);
     }
 }

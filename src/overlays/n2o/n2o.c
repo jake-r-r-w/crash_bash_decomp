@@ -4096,17 +4096,17 @@ void N2OSpawnFirstMissile(void) {
     CreateNAS(x, y, z, 0x1B01, 0x11);
 }
 
-u8 *N2OFreeBallSlot(void) {
+NAS *N2OFreeBallSlot(void) {
     s32 var_v0;
-    u8 *temp_v0;
-    u8 *temp_v0_2;
-    u8 *var_v1;
+    NAS *temp_v0;
+    EXTobject *temp_v0_2;
+    NAS *var_v1;
 
     var_v1 = HeadOfBalls;
     var_v0 = 0;
     if (var_v1 != NULL) {
         do {
-            var_v1 = (*(s32*)((u8*)(var_v1) + 32));
+            var_v1 = (var_v1->Group.Child);
             var_v0 += 1;
         } while (var_v1 != NULL);
     }
@@ -4114,10 +4114,10 @@ u8 *N2OFreeBallSlot(void) {
         return NULL;
     }
     temp_v0 = CreateNAS(0x1000, 0x1000, 0x1000, 0x1B01, 0x11);
-    if ((temp_v0 != NULL) && ((*(s32*)((u8*)(temp_v0) + 84)) != 0)) {
-        temp_v0_2 = (*(s32*)((u8*)(temp_v0) + 88));
+    if ((temp_v0 != NULL) && ((temp_v0->Engine) != 0)) {
+        temp_v0_2 = (EXTobject *)temp_v0->FUX;
         if (temp_v0_2 != NULL) {
-            (*(s16*)((u8*)(temp_v0_2) + 26)) = 0;
+            (temp_v0_2->status) = 0;
         }
     }
     return temp_v0;
