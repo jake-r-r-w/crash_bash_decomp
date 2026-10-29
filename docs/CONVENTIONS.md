@@ -11,6 +11,12 @@ consistent.
    have real names (`decomp.py rename`), not `func_8001xxxx` / `D_8004xxxx`.
 3. **Typed** - m2c pointer arithmetic (`*(s32*)((u8*)arg0 + 4)`) is replaced by
    struct fields declared in a header; no `M2C_*` macros or `?` types remain.
+   Byte arithmetic that is the data's own layout goes through a named macro:
+   `FILE_AT(base, off)` and `SELF_REL(p)` (`common.h`) for the offsets a file's
+   header or a variable-size record stores, and the heap's `MAL_AFTER`,
+   `MAL_END`, `MAL_DATA`, `MAL_LAST` and `MAL_OF_LAST` (`bash/main.h`). A byte
+   form kept because the typed one changes the code carries a comment starting
+   `/* matching:` that says what changes; `progress` counts it as typed.
 4. **Placed** - the function lives in the translation unit and subsystem file it
    came from, next to the functions and file-local data it shares.
 

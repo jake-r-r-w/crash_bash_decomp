@@ -646,6 +646,7 @@ first. Rows that need inline asm are not allowed (only C).
 | quotient temps land in a1/a0 instead of a0/a1 with u8 locals | make the digit temps s32 and mask with & 0xFF where compared | `func_8008D488` |
 | andi/li swapped in a final compare block | insert do { } while (0); before the first store in the block | `func_8008D488` |
 | else branch of `if (a < s->f && g != K)` reloads a and s->f from memory | load both into locals before the if (`dz = a; z = s->f; if (dz < z && ...)`) | `func_80096F98` |
+| a load comes after a struct store in ours, before it in the target | the target's load isn't an aggregate access: gcc 2.8's alias check lets a plain `*(s32 *)` read pass a MEM_IN_STRUCT store but not an array element or field; keep the scalar deref (`N2OInitBoss`'s `N2OHeroStarts + 0x2C`) | `N2OInitBoss` |
 | base/off regs swapped in prologue computing base+off+0x14+(i*4+4)+*(base+off+i*4+0x18) | it is a self-relative table entry: write `(u8 *)&((s32 *)(base + 0x14 + off))[i + 1] + ((s32 *)(base + 0x14 + off))[i + 1]` (table expression repeated, not hand-expanded sums) | `func_8008C4C8` |
 | `x >= 0 && x < N` compiles to one `sltiu`, target has `bltz` + `slti` | split it into separate `if (x < 0) continue; if (x >= N) continue;` statements | `func_80086D88` |
 | target has two separate `return 1` blocks (one in the middle, one at the end) but compiled merges them | write `if (x == 0) return 1;` guard then the final expression, not `if (x != 0) { return expr; } return 1;` | `func_800950FC` |

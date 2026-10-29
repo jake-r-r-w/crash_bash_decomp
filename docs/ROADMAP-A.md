@@ -476,3 +476,9 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   retail's, and fixing that is PS1-only work. The PC port compiles the same C with a modern
   compiler and finds the same bugs (ROADMAP-B 6.1), so the final test's modern-compiler test moved
   there. The shelved link is `scratch/modern/modern.py` (AGENT_LOG, Open leads).
+- [x] Type the 113 untyped game functions (2026-10-29; ROADMAP-B's 1.1). Every game function is
+  typed (`progress`: 2537 of 2537). 63 were retyped as fields (`retype.py`), which also gave
+  `ChaseAiState` its last two words and `DinoExt` its physics record at +0x94. 40 put their
+  layout's byte arithmetic through named macros (`FILE_AT`, `SELF_REL`, the heap's `MAL_*`).
+  Ten keep a byte form the matching needs, each marked `/* matching:` with what the typed form
+  changes (CONVENTIONS.md, Quality levels).
