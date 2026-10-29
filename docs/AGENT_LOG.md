@@ -61,7 +61,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ROADMAP-B.md, Part 1 onwards. In rough order:
 
 1. Done 2026-10-29: **everything shifted at once** (`make shift-all`; it boots and plays).
-2. **Quality level 4** (ROADMAP-B Part 1; every function typed and the overlays' views folded since 2026-10-29): the overlays' 136 views of
+2. Done 2026-10-29: **Quality level 4** (ROADMAP-B Part 1; every function typed and the overlays' views folded since 2026-10-29): the overlays' 136 views of
    engine globals (`decl_dups.py --views`: fold each into the one type), the exe's 69 raw-offset
    functions (mostly the heap's block arithmetic and `export_exe_functions`' slot offsets), and the
    `unkXX` fields (ASSETS.md, What isn't decoded, lists the file formats' ones).
@@ -478,6 +478,10 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 1.8 done, Part 1 complete):** the overlays' byte-pointer reads are
+  typed: 84 functions down to 5 left on purpose (ROADMAP-A lists them). Trying each typed form
+  and keeping it only on a match worked well; fold renames still need a hand pass for
+  same-named fields of other structs on the same line and for uses inside macros.
 - **2026-10-29 (ROADMAP-B 1.7 done):** `mal_alloc_owned_low` (the old `func_800115D8`) takes
   `(s32 bytes, void **owner, _mal_area *heap, s32 flags)`. Its ten callers pass `&MainHeap`, not
   `(s32)&MainHeap`.

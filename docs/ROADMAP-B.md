@@ -7,12 +7,6 @@ The work already done is in [ROADMAP-A.md](ROADMAP-A.md).
 When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 `tools/dk make progress` so the roadmap badge updates.
 
-## Part 1 - Typing (quality level 4)
-
-| # | Task | Notes | Done |
-|---|------|-------|------|
-| 1.8 | The overlays' byte-pointer reads | `raw_offsets.py --src src/overlays` finds 84 functions (375 lines) the progress check's typed test misses: `*(T *)(p + N)` and `p[N / 4]` on a byte or word pointer (Polar's hero states, `InitScriptFX`, the hub's and titles' camera paths, titles' menus, ...) | [ ] |
-
 ## Part 2 - Names and loose ends
 
 | # | Task | Notes | Done |
