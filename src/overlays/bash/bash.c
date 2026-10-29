@@ -2376,11 +2376,11 @@ void BashSpaceInitTiles(void) {
             p = (BashCell *)(off + (u32)base2);
             obj = p->obj;
             if (obj != NULL) {
-                p->unkA = obj->index;
-                p->unk8 = 0;
+                p->flag = obj->index;
+                p->flags = 0;
             } else {
-                p->unkA = 0;
-                p->unk8 |= 0x100;
+                p->flag = 0;
+                p->flags |= 0x100;
             }
         }
     }
@@ -2396,14 +2396,14 @@ void BashSpaceTileEdges(void) {
             obj = BashSpaceTiles[i][j].obj2;
             if (obj != NULL) {
                 obj->flags &= ~0x8000;
-                if (BashSpaceTiles[i][j].unkA != 0) {
-                    if (i > 0 && BashSpaceTiles[i - 1][j].unkA == 0) {
+                if (BashSpaceTiles[i][j].flag != 0) {
+                    if (i > 0 && BashSpaceTiles[i - 1][j].flag == 0) {
                         obj->flags |= 0x01008000;
                     }
-                    if (i < 7 && BashSpaceTiles[i + 1][j].unkA == 0) {
+                    if (i < 7 && BashSpaceTiles[i + 1][j].flag == 0) {
                         obj->flags |= 0x01008000;
                     }
-                    if (j > 0 && BashSpaceTiles[i][j - 1].unkA == 0) {
+                    if (j > 0 && BashSpaceTiles[i][j - 1].flag == 0) {
                         obj->flags |= 0x01008000;
                     }
                 }
@@ -3528,7 +3528,7 @@ s32 GetBashContour(EXTengine *eng) {
     if ((u32)x >= 8 || (u32)z >= 8) {
         return dy;
     }
-    if (BashSpaceTiles[x][z].unk8 & 0x100) {
+    if (BashSpaceTiles[x][z].flags & 0x100) {
         return 0x7FFFFFFF;
     }
     return AddPlatformContour(eng, dy);
@@ -3544,7 +3544,7 @@ u16 BashSpaceTileAt(s32 arg0, s32 arg1) {
     if ((u32)y >= 8) {
         return 0;
     }
-    return BashSpaceTiles[x][y].unkA;
+    return BashSpaceTiles[x][y].flag;
 }
 
 void BashSpaceMarkHoles(void) {
@@ -3552,7 +3552,7 @@ void BashSpaceMarkHoles(void) {
 
     for (j = 2; j < 18; j++) {
         for (i = 2; i < 18; i++) {
-            if (BashSpaceTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
+            if (BashSpaceTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].flag == 0) {
                 ArenaGrid[i * 20 + j].flags = 0xFF;
             }
         }
@@ -3569,7 +3569,7 @@ void BashSpaceDropTile(s32 arg0) {
 
     if (obj != NULL) {
         obj->flags &= 0xFFFF7FFF;
-        cell->unkA = 0;
+        cell->flag = 0;
     }
 }
 
@@ -3585,8 +3585,8 @@ void BashSpaceBreakTile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
         if ((u32)arg0 < 8 && (u32)arg2 < 8) {
             if (((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->obj != NULL) {  /* matching: &BashSpaceTiles[arg0][arg2] is CSE'd and allocated differently */
                 *(s32 *)((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->obj &= 0xFFFF7FFF;  /* matching: as above */
-                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->unkA = 0;  /* matching: as above */
-                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->unk8 |= 0x100;  /* matching: as above */
+                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->flag = 0;  /* matching: as above */
+                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->flags |= 0x100;  /* matching: as above */
             }
         }
     }
@@ -3598,8 +3598,8 @@ void BashSpaceClearTiles(void) {
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            BashSpaceTiles[j][i].unkA = 0;
-            BashSpaceTiles[j][i].unk8 = 0;
+            BashSpaceTiles[j][i].flag = 0;
+            BashSpaceTiles[j][i].flags = 0;
         }
     }
 }

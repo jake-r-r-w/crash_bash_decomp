@@ -1555,20 +1555,20 @@ s32 loader_update(void) {
             if (loader_pending() != 0) {
                 return 0;
             }
-            if (ls->unk8 != 0) {
+            if (ls->flag2 != 0) {
                 ls->state = 3;
-                ls->unk8 = 0;
+                ls->flag2 = 0;
             }
         }
         return 0;
     }
-    if (ls->unk4 != 0) {
+    if (ls->flag != 0) {
         r = cd_read_poll();
         if (r > 0) {
             return 0;
         }
         if (r < 0) {
-            buf = (u8 *)ls->unk4;
+            buf = (u8 *)ls->flag;
             goto free;
         } else {
             node = ls->head;
@@ -1580,8 +1580,8 @@ s32 loader_update(void) {
             } else {
                 ls->tail = NULL;
             }
-            buf = (u8 *)ls->unk4;
-            ls->unk4 = 0;
+            buf = (u8 *)ls->flag;
+            ls->flag = 0;
             ls->state = 3;
             if (node->file == NULL) {
             free:
@@ -1610,13 +1610,13 @@ s32 loader_update(void) {
     }
     node = (LoadNode *)head;
     data = loader_alloc(head);
-    ls->unk4 = (s32)data;
+    ls->flag = (s32)data;
     if (data == NULL) {
         return 0;
     }
     if (cd_read(node->file, node->offset / 2048, data, (node->size + 0x7FF) / 2048) < 0) {
-        mal_free((void *)ls->unk4, &MainHeap);
-        ls->unk4 = 0;
+        mal_free((void *)ls->flag, &MainHeap);
+        ls->flag = 0;
     }
     return 0;
 }
@@ -2094,8 +2094,8 @@ void init_file(void) {
     node = (LoadNode *)LoadNodePool;
     i = 0x3E;
     Loader.state = 3;
-    Loader.unk4 = 0;
-    Loader.unk8 = 0;
+    Loader.flag = 0;
+    Loader.flag2 = 0;
     Loader.head = NULL;
     Loader.tail = NULL;
     LoadNodeFree = LoadNodePool;
@@ -2114,7 +2114,7 @@ void loader_cancel(LoadNode *arg0) {
     LoadNode *prev;
     void *temp_v1;
 
-    if (arg0 == Loader.head && Loader.unk4 != 0) {
+    if (arg0 == Loader.head && Loader.flag != 0) {
         *(s32 *)arg0 = 0;
         return;
     }
@@ -2160,7 +2160,7 @@ void loadnode_unlink(LoadNode *arg0) {
 s32 loader_pending(void) {
     LoaderState *p = &Loader;
     s32 a = p->head != NULL;
-    s32 b = p->unk4;
+    s32 b = p->flag;
     s32 s = p->state;
     int new_var;
     if (b == 0) {
@@ -2272,8 +2272,8 @@ s32 mal_can_alloc(s32 arg0) {
 
 void loader_reset(void) {
     Loader.state = 3;
-    Loader.unk4 = 0;
-    Loader.unk8 = 0;
+    Loader.flag = 0;
+    Loader.flag2 = 0;
     Loader.head = NULL;
     Loader.tail = NULL;
 }

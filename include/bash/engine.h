@@ -316,7 +316,7 @@ typedef struct HeroJumpEnt {
 typedef struct EngineHooks {
     /* 0x00 */ s32 InitHero;
     /* 0x04 */ u16 *HeroModels;
-    /* 0x08 */ void *unk8;
+    /* 0x08 */ void *flag;  /* tested for zero */
     /* 0x0C */ u16 *RunSpeeds;
     /* 0x10 */ HeroJumpEnt *JumpEnts;
     /* 0x14 */ void *VictorySeqs;     /* the victory sequences (VictorySeq, pause.h) */

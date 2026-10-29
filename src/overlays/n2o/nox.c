@@ -274,7 +274,7 @@ loop:
                 o->rz = r - Random(0x200);
                 a->ang = Random(0x1000);
                 a->pos = o->pos;
-                a->unk18 = 3;
+                a->timer = 3;
                 a->unk10 = 0;
                 a->unk14 = 0;
                 a->unk20 = 0x800;
@@ -303,7 +303,7 @@ loop:
             }
             if (k->kind == 6 || k->kind == 9 || k->kind == 10) {
                 NoxMines[nMine].unk0 = 0;
-                NoxMines[nMine].unkC = 0;
+                NoxMines[nMine].flag = 0;
                 NoxMines[nMine].ang = Random(0x1000);
                 NoxMines[nMine].y = o->pos.y;
                 o->rx = 0;
@@ -439,7 +439,7 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
         AstSlot *tb2 = NoxAsteroids;
         AstSlot *s = &tb2[arg1];
         if (s->unk1C != 1) {
-            if (s->unk18-- < 0) {
+            if (s->timer-- < 0) {
                 s->unk10 = 1;
                 AstBurst(arg0, 0);
                 AstSfx();
@@ -495,7 +495,7 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
 
     sb = NoxMines;
     slot = &sb[arg1];
-    if (slot->unkC == 0) {
+    if (slot->flag == 0) {
         h = Heroes;
         if (!(*(s32 *)&h->hero_teammate & 0x22000000) &&
             NoxBoxToSphere((SLONG_XYZ *)arg0, &h->hero_eng->XYZ, 1, &h->hero_eng->XYZ) != -1) {
@@ -513,7 +513,7 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
                 PlaySfx(0x28E, 0, 0, 0x1000, 0x1E00, 0);
             }
             g = (GameState *)GameInfo;
-            slot->unkC = 1;
+            slot->flag = 1;
             if ((g->cheats & 0x80000001) != 0x80000001 && h->hero_mode != 0x31) {
                 dmg = MineDamage(g);
                 Heroes[0].hero_health -= dmg;
@@ -538,7 +538,7 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
             if (r == 3) {
                 PlaySfx(0x28E, 0, 0, 0x1000, 0x1E00, 0);
             }
-            NoxMines[arg1].unkC = 1;
+            NoxMines[arg1].flag = 1;
             if ((g2->cheats & 0x80000001) != 0x80000001 && h2[1].hero_mode != 0x31) {
                 dmg = MineDamage(g2);
                 Heroes[1].hero_health -= dmg;
@@ -1307,13 +1307,13 @@ void PlotNitroMissile(NAS *nas) {
         return;
     }
     nas->Engine->xform.dirty = 1;
-    if (ext->unk18-- < 0) {
+    if (ext->timer-- < 0) {
         CreateNAS(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1C09, 0x11);
-        ext->unk18 = 1;
+        ext->timer = 1;
     }
-    switch (ext->unkC) {
+    switch (ext->state) {
     case 0:
-        he = Heroes[ext->unk14].hero_eng;
+        he = Heroes[ext->player].hero_eng;
         dx = nas->Engine->XYZ.x - he->XYZ.x;
         xx = dx * dx;
         dz = nas->Engine->XYZ.z - he->XYZ.z;
@@ -1328,9 +1328,9 @@ void PlotNitroMissile(NAS *nas) {
         nas->Engine->XYZ.z -= rcossin_tbl[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 55 >> 10;
         nas->Engine->XYZ.y += rcossin_tbl[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 55 >> 10;
         eng = nas->Engine;
-        h = &Heroes[ext->unk14];
+        h = &Heroes[ext->player];
         if (eng->XYZ.z < h->hero_eng->XYZ.z) {
-            ext->unkC = 1;
+            ext->state = 1;
             r = Random(4);
             if (r == 0) {
                 PlaySfx(0x29B, 0, 0, 0x1000, 0x1E00, 0);
@@ -1360,8 +1360,8 @@ void PlotNitroMissile(NAS *nas) {
         if (n != NULL) {
             e2 = FindExtension(n, 0x10000000);
             if (e2 != NULL) {
-                e2->unk18 = 0x100;
-                e2->unkC = 0;
+                e2->timer = 0x100;
+                e2->state = 0;
                 e2->unk20 = 1;
                 e2->unk28 = 0;
                 n->InitDelete(n);
@@ -1382,9 +1382,9 @@ void PlotNitroMissile(NAS *nas) {
             if (r == 3) {
                 PlaySfx(0x2AA, 0, 0, 0x1000, 0x1E00, 0);
             }
-            if (Heroes[ext->unk14].hero_mode != 0x31) {
-                Heroes[ext->unk14].hero_health -= MineDamage(g) >> 2;
-                SetHeroAction(ext->unk14, 0x31);
+            if (Heroes[ext->player].hero_mode != 0x31) {
+                Heroes[ext->player].hero_health -= MineDamage(g) >> 2;
+                SetHeroAction(ext->player, 0x31);
             }
         }
         goto kill;
@@ -1392,7 +1392,7 @@ void PlotNitroMissile(NAS *nas) {
         nas->Engine->XYZ.x -= rcossin_tbl[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 55 >> 10;
         nas->Engine->XYZ.z -= rcossin_tbl[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 55 >> 10;
         nas->Engine->XYZ.y += rcossin_tbl[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        if (nas->Engine->XYZ.z < Heroes[ext->unk14].hero_eng->XYZ.z - 0x1000) {
+        if (nas->Engine->XYZ.z < Heroes[ext->player].hero_eng->XYZ.z - 0x1000) {
             goto kill;
         }
         return;
@@ -1484,9 +1484,9 @@ void InitNitroBoss(NAS *nas) {
         p = scene->unk2C;
         ext->keys = (KeyBlock *)(p + (*(s32 *)(p + 4) + 4));
         key_interp_pos(ext->keys, ext->unk14, &nas->Engine->XYZ);
-        ext->unk18 = 0;
-        ext->unk1C = 0;
-        ext->unk20 = 0;
+        ext->state = 0;
+        ext->timer = 0;
+        ext->timer2 = 0;
         ext->unk38 = 0;
         ext->unk30 = 0;
         ext->unk34 = 0;
@@ -1520,8 +1520,8 @@ void PlotNitroBoss(NAS *nas) {
         if (n != NULL) {
             s = FindExtension(n, 0x10000000);
             if (s != NULL) {
-                s->unk18 = 0x100;
-                s->unkC = 0;
+                s->timer = 0x100;
+                s->state = 0;
                 s->unk20 = 1;
                 s->unk28 = 0;
                 n->InitDelete(n);
@@ -1533,15 +1533,15 @@ void PlotNitroBoss(NAS *nas) {
         return;
     }
     nas->Engine->xform.dirty = 1;
-    switch (ext->unk18) {
+    switch (ext->state) {
     case 0:
         NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
         k = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
         if (k == 2) {
-            ext->unk18 = 1;
+            ext->state = 1;
         }
         if (k == 1) {
-            ext->unk18 = 2;
+            ext->state = 2;
         }
         if (k == 4) {
             NoxBossDead = 1;
@@ -1566,7 +1566,7 @@ void PlotNitroBoss(NAS *nas) {
         break;
     case 1:
         NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
-        if (ext->unk1C-- < 0) {
+        if (ext->timer-- < 0) {
             if (GameTeams[0] == 0) {
                 if (!(Heroes[0].hero_status & 0x2000)) {
                     e = nas->Engine;
@@ -1574,7 +1574,7 @@ void PlotNitroBoss(NAS *nas) {
                     if (m != NULL) {
                         q = FindExtension(m, 0x10000000);
                         if (q != NULL) {
-                            q->unk14 = 0;
+                            q->player = 0;
                         }
                     }
                 }
@@ -1585,7 +1585,7 @@ void PlotNitroBoss(NAS *nas) {
                     if (m != NULL) {
                         r = FindExtension(m, 0x10000000);
                         if (r != NULL) {
-                            r->unk14 = 0;
+                            r->player = 0;
                         }
                     }
                 }
@@ -1595,36 +1595,36 @@ void PlotNitroBoss(NAS *nas) {
                     if (m != NULL) {
                         t = FindExtension(m, 0x10000000);
                         if (t != NULL) {
-                            t->unk14 = 1;
+                            t->player = 1;
                         }
                     }
                 }
             }
-            ext->unk1C = 0x1E;
+            ext->timer = 0x1E;
         }
         k2 = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
         if (k2 == 3) {
-            ext->unk18 = 0;
+            ext->state = 0;
         }
         if (k2 == 4) {
             NoxBossDead = 1;
-            ext->unk18 = 0;
+            ext->state = 0;
         }
         break;
     case 2:
         NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
-        if (ext->unk20-- < 0) {
+        if (ext->timer2-- < 0) {
             e2 = nas->Engine;
             CreateNAS(e2->XYZ.x, e2->XYZ.y, e2->XYZ.z, 0x1C05, 0x11);
-            ext->unk20 = 3;
+            ext->timer2 = 3;
         }
         k3 = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
         if (k3 == 3) {
-            ext->unk18 = 0;
+            ext->state = 0;
         }
         if (k3 == 4) {
             NoxBossDead = 1;
-            ext->unk18 = 0;
+            ext->state = 0;
         }
         break;
     case 3:
@@ -1645,8 +1645,8 @@ void InitSpiralSat(NAS *nas) {
 
     if (ext != NULL) {
         ext->c = nas->Engine->XYZ;
-        ext->unk3C = 0;
-        ext->unk40 = Random(0x1000);
+        ext->flag = 0;
+        ext->angle = Random(0x1000);
         i = 0;
         for (;; i++) {
             if (i >= 4) {
@@ -1702,7 +1702,7 @@ void PlotSpiralSat(NAS *nas) {
     s32 z;
 
     ext = FindExtension(nas, 0x10000000);
-    if (ext != NULL && ext->unk3C == 0) {
+    if (ext != NULL && ext->flag == 0) {
         for (i = 0;; i++) {
             if (i >= 4) {
                 goto done;
@@ -1803,15 +1803,15 @@ void PlotSpiralSat(NAS *nas) {
             if (ext->sat[i] != NULL) {
                 ext->sat[i]->Engine->XYZ = ext->eng[i]->XYZ;
             }
-            if (ext->unk40 < 0x800) {
+            if (ext->angle < 0x800) {
                 ext->ang[i] += 0x30;
             } else {
                 ext->ang[i] -= 0x30;
             }
         }
     done:
-        ext->radius = abs((rcossin_tbl[(ext->unk40 - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
-        ext->unk40 = (ext->unk40 + 0x18) & 0xFFF;
+        ext->radius = abs((rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
+        ext->angle = (ext->angle + 0x18) & 0xFFF;
     }
     z = nas->Engine->XYZ.z;
     j = 0;

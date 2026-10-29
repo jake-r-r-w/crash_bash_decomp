@@ -2450,9 +2450,9 @@ void Tile_Update(s32 arg0, s32 arg1) {
                 o->anim = anim;
                 if (c->old_player != c->player) {
                     if (GameFrameCount & 1) {
-                        o->frame = CELL_FRAME(o, tbl[c->old_player] & 0xFFF)->unk26;
+                        o->frame = CELL_FRAME(o, tbl[c->old_player] & 0xFFF)->frame;
                     } else {
-                        o->frame = CELL_FRAME(o, tbl[c->player] & 0xFFF)->unk26;
+                        o->frame = CELL_FRAME(o, tbl[c->player] & 0xFFF)->frame;
                     }
                 }
             }
@@ -2497,7 +2497,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             fr5 = (MV->levelFlags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
             o->anim = fr5;
             fr5 = (MV->levelFlags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
-            o->frame = CELL_FRAME(o, fr5 & 0xFFF)->unk26;
+            o->frame = CELL_FRAME(o, fr5 & 0xFFF)->frame;
             break;
         case 7:
             CELL_SET(o, (MV->levelFlags & 0x80) ? 0x304A : 0x3040, (MV->levelFlags & 0x80) ? 0x304A : 0x3040);
@@ -7629,8 +7629,8 @@ void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags) {
     p0 = obj->slots[0].prim;
     p1 = obj->slots[1].prim;
     if (p0 != NULL && p1 != NULL) {
-        if (obj->unk8E != 0) {
-            ti = &obj->model->textures.tex[obj->unk8E & 0xFFF].info;
+        if (obj->flags2 != 0) {
+            ti = &obj->model->textures.tex[obj->flags2 & 0xFFF].info;
             *(u16 *)&p0->u0 = ti->uv0;
             *(u16 *)&p0->u1 = ti->uv1;
             *(u16 *)&p0->u2 = ti->uv2;
@@ -7641,12 +7641,12 @@ void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags) {
             *(u16 *)&p1->u2 = ti->uv2;
             *(u16 *)&p1->u3 = ti->uv3;
             p1->tpage = ti->tpage;
-            obj->unk8E = 0;
+            obj->flags2 = 0;
         }
-        if (obj->unk8C != 0) {
-            p0->clut = obj->unk8C;
-            p1->clut = obj->unk8C;
-            obj->unk8C = 0;
+        if (obj->flag != 0) {
+            p0->clut = obj->flag;
+            p1->clut = obj->flag;
+            obj->flag = 0;
         }
     }
 }

@@ -381,8 +381,8 @@ typedef struct {
     u16 unkA;
     u16 unkC;
     u16 unkE;
-    u16 unk10;
-    u16 unk12;
+    u16 timer;  /* counted down */
+    u16 timer2;  /* counted down */
 } ArkenoidLink;
 
 extern ArkenoidScnObj *FloorObjectsA[10];
@@ -419,7 +419,7 @@ typedef struct ArkenoidPuck {
     s16 max;
     s16 dir;
     u8 pad18[0x32 - 0x18];
-    u16 unk32;
+    u16 flag;  /* tested for zero */
 } ArkenoidPuck;
 
 /* The spot a grabbed ball is held at (ArkHero2ObjectCollision). */

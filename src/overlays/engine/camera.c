@@ -561,40 +561,40 @@ void InitScreenLabels(void) {
     s32 v;
 
     eng = GetEngineSlot(3);
-    ScreenLabels4P[6].unk1E = HeroNameText[GAME->heroes[0]];
-    ScreenLabels4P[7].unk1E = HeroNameText[GAME->heroes[1]];
-    ScreenLabels4P[8].unk1E = HeroNameText[GAME->heroes[2]];
-    ScreenLabels4P[9].unk1E = HeroNameText[GAME->heroes[3]];
-    ScreenLabels4P[10].unk1E = GAME->adventure.roundPoints[0] + 0x200E;
-    ScreenLabels4P[11].unk1E = GAME->adventure.roundPoints[1] + 0x200E;
-    ScreenLabels4P[12].unk1E = GAME->adventure.roundPoints[2] + 0x200E;
-    ScreenLabels4P[13].unk1E = GAME->adventure.roundPoints[3] + 0x200E;
-    ScreenLabelsTeams[4].unk1E = HeroNameText[GAME->heroes[0]];
-    ScreenLabelsTeams[5].unk1E = HeroNameText[GAME->heroes[1]];
-    ScreenLabelsTeams[6].unk1E = HeroNameText[GAME->heroes[2]];
-    ScreenLabelsTeams[7].unk1E = HeroNameText[GAME->heroes[3]];
-    ScreenLabelsTeams[8].unk1E = GAME->adventure.roundPoints[GAME->teamLeader[0]] + 0x200E;
-    ScreenLabelsTeams[9].unk1E = GAME->adventure.roundPoints[GAME->teamLeader[1]] + 0x200E;
+    ScreenLabels4P[6].player = HeroNameText[GAME->heroes[0]];
+    ScreenLabels4P[7].player = HeroNameText[GAME->heroes[1]];
+    ScreenLabels4P[8].player = HeroNameText[GAME->heroes[2]];
+    ScreenLabels4P[9].player = HeroNameText[GAME->heroes[3]];
+    ScreenLabels4P[10].player = GAME->adventure.roundPoints[0] + 0x200E;
+    ScreenLabels4P[11].player = GAME->adventure.roundPoints[1] + 0x200E;
+    ScreenLabels4P[12].player = GAME->adventure.roundPoints[2] + 0x200E;
+    ScreenLabels4P[13].player = GAME->adventure.roundPoints[3] + 0x200E;
+    ScreenLabelsTeams[4].player = HeroNameText[GAME->heroes[0]];
+    ScreenLabelsTeams[5].player = HeroNameText[GAME->heroes[1]];
+    ScreenLabelsTeams[6].player = HeroNameText[GAME->heroes[2]];
+    ScreenLabelsTeams[7].player = HeroNameText[GAME->heroes[3]];
+    ScreenLabelsTeams[8].player = GAME->adventure.roundPoints[GAME->teamLeader[0]] + 0x200E;
+    ScreenLabelsTeams[9].player = GAME->adventure.roundPoints[GAME->teamLeader[1]] + 0x200E;
     ScreenCount = 0;
-    ScreenLabelsPair[3].unk1E = HeroNameText[GAME->heroes[0]];
-    ScreenLabelsPair[4].unk1E = HeroNameText[GAME->heroes[1]];
-    ScreenLabelsPair[5].unk1E = GAME->adventure.roundPoints[0] + 0x200E;
-    ScreenLabels2P[4].unk1E = HeroNameText[GAME->heroes[0]];
-    ScreenLabels2P[5].unk1E = HeroNameText[GAME->heroes[1]];
-    ScreenLabels2P[6].unk1E = GAME->adventure.roundPoints[0] + 0x200E;
-    ScreenLabels2P[7].unk1E = GAME->adventure.roundPoints[1] + 0x200E;
-    ScreenLabelsOne[3].unk1E = HeroNameText[GAME->heroes[0]];
-    ScreenLabelsOne[4].unk1E = GAME->adventure.roundPoints[0] + 0x200E;
+    ScreenLabelsPair[3].player = HeroNameText[GAME->heroes[0]];
+    ScreenLabelsPair[4].player = HeroNameText[GAME->heroes[1]];
+    ScreenLabelsPair[5].player = GAME->adventure.roundPoints[0] + 0x200E;
+    ScreenLabels2P[4].player = HeroNameText[GAME->heroes[0]];
+    ScreenLabels2P[5].player = HeroNameText[GAME->heroes[1]];
+    ScreenLabels2P[6].player = GAME->adventure.roundPoints[0] + 0x200E;
+    ScreenLabels2P[7].player = GAME->adventure.roundPoints[1] + 0x200E;
+    ScreenLabelsOne[3].player = HeroNameText[GAME->heroes[0]];
+    ScreenLabelsOne[4].player = GAME->adventure.roundPoints[0] + 0x200E;
     switch (GAME->levelFlags & 0xF0) {
     case 0x20:
         v = 0x2021;
         if (GAME->levelFlags & 8) {
             v = 0x2020;
         }
-        ScreenLabels4P[0].unk1E = v;
-        ScreenLabelsTeams[0].unk1E = v;
-        ScreenLabelsPair[0].unk1E = v;
-        ScreenLabelsOne[0].unk1E = v;
+        ScreenLabels4P[0].player = v;
+        ScreenLabelsTeams[0].player = v;
+        ScreenLabelsPair[0].player = v;
+        ScreenLabelsOne[0].player = v;
         if (GAME->teams != 0) {
             PlaceEngineSlot(3, (PlaceRec *)ScreenLabelsPair);
             ScreenCount = 1;
@@ -604,19 +604,19 @@ void InitScreenLabels(void) {
         }
         break;
     case 0x40:
-        ScreenLabelsNotice[0].unk1E = 0x201F;
+        ScreenLabelsNotice[0].player = 0x201F;
         PlaceEngineSlot(3, (PlaceRec *)ScreenLabelsNotice);
         goto end;
     case 0x80:
-        ScreenLabelsNotice[0].unk1E = 0x201E;
+        ScreenLabelsNotice[0].player = 0x201E;
         PlaceEngineSlot(3, (PlaceRec *)ScreenLabelsNotice);
         goto end;
     case 0x10:
     default:
-        ScreenLabels4P[0].unk1E = 0x2022;
-        ScreenLabelsTeams[0].unk1E = 0x2022;
-        ScreenLabelsPair[0].unk1E = 0x2022;
-        ScreenLabelsOne[0].unk1E = 0x2022;
+        ScreenLabels4P[0].player = 0x2022;
+        ScreenLabelsTeams[0].player = 0x2022;
+        ScreenLabelsPair[0].player = 0x2022;
+        ScreenLabelsOne[0].player = 0x2022;
         if (GAME->mode == 0x20) {
             PlaceEngineSlot(3, (PlaceRec *)ScreenLabels2P);
             ScreenCount = 2;

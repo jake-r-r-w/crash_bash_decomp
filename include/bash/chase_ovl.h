@@ -41,11 +41,11 @@ typedef struct EggExt {
     EXT ext;
     u8 pad0C[4];
     s32 unk10;
-    s32 unk14;
+    s32 y;
     u8 pad18[4];
-    s32 unk1C;
+    s32 angle;
     u8 pad20[0x10];
-    s32 unk30;
+    s32 state;  /* switched on */
     u8 pad34[0x10];
 } EggExt;
 
@@ -128,7 +128,7 @@ typedef struct CoalNAS {
     u8 pad0[0x54];
     CoalEng *eng;
     u8 pad58[4];
-    u16 unk5C;
+    u16 timer;  /* counted down */
     u16 unk5E;
     s32 unk60;
 } CoalNAS;
@@ -165,7 +165,7 @@ void UpdateCHASE(void);
 /* InitPickupCH's extension 0x10000006 (0x44 bytes), its NAS.FUX. */
 typedef struct PickupCHExt {
     /* 0x00 */ u8 pad0[0x14];
-    /* 0x14 */ s32 unk14;
+    /* 0x14 */ s32 y;
     /* 0x18 */ u8 pad18[0x44 - 0x18];
 } PickupCHExt;
 
@@ -401,14 +401,14 @@ s32 ChaseDist(ChaseObj *a, ChasePos *b);
 typedef struct ChaseAiState {
     /* 0x00 */ s32 state;
     /* 0x04 */ s32 timer;
-    /* 0x08 */ s32 unk8;
+    /* 0x08 */ s32 flags;
     /* 0x0C */ s32 x;
     /* 0x10 */ s32 z;
     /* 0x14 */ s32 angle;
     /* 0x18 */ NAS *target;
     /* 0x1C */ NAS *pickup;
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
+    /* 0x20 */ s32 timer2;  /* counted down */
+    /* 0x24 */ s32 flag;  /* tested for zero */
     /* 0x28 */ s32 unk28;
     /* 0x2C */ s32 unk2C;
 } ChaseAiState;

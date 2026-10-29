@@ -80,8 +80,8 @@ typedef struct RaceEaseCam {
 /* Shield extension, AddExt(nas, 0x20, 0x10000000). */
 typedef struct EXTraceshield {
     /* 0x00 */ s32 pad0[3];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
+    /* 0x0C */ s32 state;  /* switched on */
+    /* 0x10 */ s32 timer;  /* counted down */
     /* 0x14 */ s32 unk14[2];
     /* 0x1C */ s32 unk1C;
 } EXTraceshield;
@@ -187,35 +187,35 @@ typedef struct RaceFux {
     /* 0x018 */ s32 mode;           /* flags: 0x10 diving, 0x20 bumped, 2, 4 (the Fux views' item/mode) */
     /* 0x01C */ EXTengine *eng;
     /* 0x020 */ s32 unk20;
-    /* 0x024 */ s32 unk24;
+    /* 0x024 */ s32 timer2;  /* counted down */
     /* 0x028 */ s32 unk28;
     /* 0x02C */ s32 timer;
     /* 0x030 */ s32 cross;          /* the lap line's crossing state */
     /* 0x034 */ s32 laps;
     /* 0x038 */ s32 unk38;
     /* 0x03C */ s32 unk3C;
-    /* 0x040 */ s32 unk40;
+    /* 0x040 */ s32 count;  /* counted up */
     /* 0x044 */ s32 unk44;
-    /* 0x048 */ s32 unk48;
-    /* 0x04C */ s32 unk4C;
+    /* 0x048 */ s32 timer22;  /* counted down */
+    /* 0x04C */ s32 timer3;  /* counted down */
     /* 0x050 */ s32 unk50;
     /* 0x054 */ s32 angle;          /* the dive's direction */
     /* 0x058 */ s32 steer;  /* the steering turn, less each frame */
     /* 0x05C */ RaceBouncer bounce;
     /* 0x088 */ s32 bounces;        /* bounces so far (RaceBounceObject) */
-    /* 0x08C */ s32 unk8C;
-    /* 0x090 */ s32 unk90;
+    /* 0x08C */ s32 flag;  /* tested for zero */
+    /* 0x090 */ s32 flag2;  /* tested for zero */
     /* 0x094 */ u8 pad94[0xA4 - 0x94];
     /* 0x0A4 */ SLONG_XYZ sfxPos;   /* where its sounds play from */
     /* 0x0B0 */ u8 padB0[0x128 - 0xB0];
     /* 0x128 */ _sfx_handler *sfx;
     /* 0x12C */ u8 pad12C[4];
-    /* 0x130 */ s32 unk130;
+    /* 0x130 */ s32 flags;
     /* 0x134 */ NAS *shield;
     /* 0x138 */ s32 phase;
     /* 0x13C */ s32 vx;  /* its velocity; speed is their length */
     /* 0x140 */ s32 vz;
-    /* 0x144 */ s32 unk144;
+    /* 0x144 */ s32 flag3;  /* tested for zero */
     /* 0x148 */ s32 started;        /* the lap count has started */
     /* 0x14C */ s32 jumpVel;  /* RaceJumpVel */
     /* 0x150 */ s32 decel;  /* RaceDecel */
@@ -224,8 +224,8 @@ typedef struct RaceFux {
     /* 0x15C */ s32 accel;  /* RaceAccel, the motion's x_acc */
     /* 0x160 */ s32 turnRate;  /* added to or taken from forward_angle */
     /* 0x164 */ s32 unk164;
-    /* 0x168 */ s32 unk168;
-    /* 0x16C */ s32 unk16C;
+    /* 0x168 */ s32 timer4;  /* counted down */
+    /* 0x16C */ s32 timer5;  /* counted down */
     /* 0x170 */ s32 side;
 } RaceFux;
 
@@ -314,7 +314,7 @@ void RacePickupRespawn(void);
 typedef struct RaceMissileExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 owner;  /* the hero who fired it */
-    /* 0x10 */ s32 unk10;
+    /* 0x10 */ s32 state;  /* switched on */
     /* 0x14 */ s32 radius;  /* with angle, its polar position (RaceToPolar) */
     /* 0x18 */ s32 angle;
     /* 0x1C */ s32 angVel;  /* speed over radius, signed by the side */
@@ -328,8 +328,8 @@ typedef struct RaceMissileExt {
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
     /* 0x58 */ s32 unk58;
-    /* 0x5C */ EXTengine *unk5C;
-    /* 0x60 */ s32 unk60;
+    /* 0x5C */ EXTengine *shadow;  /* an engine on the ground under it */
+    /* 0x60 */ s32 count;  /* counted up */
     /* 0x64 */ s32 speed;
     /* 0x68 */ s32 timer;
     /* 0x6C */ SLONG_XYZ pos;
@@ -439,11 +439,11 @@ typedef struct RacePickUpExt {
     /* 0x2C */ s32 unk2C;
     /* 0x30 */ s32 unk30;
     /* 0x34 */ u8 pad34[0x38 - 0x34];
-    /* 0x38 */ s32 unk38;
-    /* 0x3C */ EXTengine *unk3C;
-    /* 0x40 */ s32 unk40;
+    /* 0x38 */ s32 state;  /* switched on */
+    /* 0x3C */ EXTengine *shadow;  /* an engine on the ground under it */
+    /* 0x40 */ s32 flag;  /* tested for zero */
     /* 0x44 */ s32 unk44;
-    /* 0x48 */ s32 unk48;
+    /* 0x48 */ s32 count;  /* counted up */
     /* 0x4C */ s32 unk4C;
 } RacePickUpExt;
 
@@ -475,13 +475,13 @@ typedef struct RaceVolcArc {
 /* Race volcano extension (0x15C bytes, id 0x10000000). */
 typedef struct RaceVolcanoExt {
     /* 0x000 */ u8 pad0[0xC];
-    /* 0x00C */ s32 unkC;
-    /* 0x010 */ s32 unk10;
-    /* 0x014 */ s32 unk14;
+    /* 0x00C */ s32 state;  /* switched on */
+    /* 0x010 */ s32 timer;  /* counted down */
+    /* 0x014 */ s32 y;
     /* 0x018 */ EXTengine *eng[3];
     /* 0x024 */ SLONG_XYZ vel[3];
     /* 0x048 */ RaceVolcArc arc[3];
-    /* 0x144 */ NAS *unk144[3];
+    /* 0x144 */ NAS *nas[3];
     /* 0x150 */ s32 unk150[3];
 } RaceVolcanoExt;
 
@@ -522,11 +522,11 @@ static inline NAS *RaceSpawnPuffRet(SLONG_XYZ *v, s32 kind, s32 mode) {
 /* Barrel roll extension (0x80 bytes, id 0x10000000). */
 typedef struct BarrelRollExt {
     /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;
+    /* 0x0C */ s32 arc;  /* ArcUpdate's state */
     /* 0x10 */ s32 unk10;
     /* 0x14 */ u8 pad14[0x20 - 0x14];
     /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
+    /* 0x24 */ s32 y;
     /* 0x28 */ u8 pad28[0x40 - 0x28];
     /* 0x40 */ s32 unk40;
     /* 0x44 */ s32 unk44;
@@ -606,8 +606,8 @@ typedef struct EXTglob {
     /* 0x00 */ s32 pad0[3];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ ScriptCursor *unk10;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
+    /* 0x14 */ s32 timer;  /* counted down */
+    /* 0x18 */ s32 count;  /* counted up */
 } EXTglob;
 
 extern ScriptInit GlobScriptInit;
@@ -717,8 +717,8 @@ void SetRaceHeroOiled(s32 player);
 /* Track glob extension, AddExt(nas, 0x8C, 0x10000000). */
 typedef struct EXTtrackglob {
     /* 0x00 */ s32 pad0[3];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
+    /* 0x0C */ s32 state;  /* switched on */
+    /* 0x10 */ s32 arc;  /* ArcUpdate's state */
     /* 0x14 */ s32 unk14;
     /* 0x18 */ u8 pad18[0x28 - 0x18];
     /* 0x28 */ s32 unk28;
@@ -731,8 +731,8 @@ typedef struct EXTtrackglob {
     /* 0x70 */ SLONG_XYZ pos;
     /* 0x7C */ ScriptCursor *cursor;
     /* 0x80 */ EXTengine *eng;
-    /* 0x84 */ s32 unk84;
-    /* 0x88 */ s32 unk88;
+    /* 0x84 */ s32 timer;  /* counted down */
+    /* 0x88 */ s32 angle;
 } EXTtrackglob;
 
 extern ScriptInit TrackGlobScriptInit;

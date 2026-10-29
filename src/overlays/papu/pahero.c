@@ -128,7 +128,7 @@ void PlotPACrate(NAS *nas) {
                 eng->xform.rot.vy = Heroes[obj->player].hero_move->facing_angle;
                 eng->xform.rot.vx = 0;
                 eng->xform.rot.vz = 0;
-                slide->unkE = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->a;
+                slide->flag = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->a;
                 slide->unk14 = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->b;
                 slide->unk10 = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->c;
                 slide->unk12 = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->d;
@@ -182,7 +182,7 @@ void PlotPACrate(NAS *nas) {
                 eng->xform.rot.vy = other->xform.rot.vy;
                 eng->xform.rot.vx = 0;
                 eng->xform.rot.vz = 0;
-                slide->unkE = PAPU_STATS(hit_shapes, 1)->a;
+                slide->flag = PAPU_STATS(hit_shapes, 1)->a;
                 slide->unk14 = PAPU_STATS(hit_shapes, 1)->b;
                 slide->unk10 = PAPU_STATS(hit_shapes, 1)->c;
                 slide->unk12 = PAPU_STATS(hit_shapes, 1)->d;
@@ -263,7 +263,7 @@ void PlotPACrate(NAS *nas) {
         hit = PACrateCollide(eng, obj->player, 1);
         if (hit != NULL) {
             if (hit == PapuBoss.nas) {
-                PapuBoss.unk28 = 1;
+                PapuBoss.flag = 1;
             }
             switch (kind) {
             case 4:
@@ -279,7 +279,7 @@ void PlotPACrate(NAS *nas) {
                 slide->unk12 = 0;
                 slide->unk10 = 0;
                 slide->unk14 = 0;
-                slide->unkE = 0;
+                slide->flag = 0;
                 break;
             }
         }
@@ -296,7 +296,7 @@ void PlotPACrate(NAS *nas) {
             if ((u32)c >= 5) {
                 c = 0;
             }
-            slide->unkE = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->a;
+            slide->flag = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->a;
             slide->unk14 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->b;
             slide->unk10 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->c;
             slide->unk12 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->d;
@@ -312,7 +312,7 @@ void PlotPACrate(NAS *nas) {
             if ((u32)c >= 5) {
                 c = 0;
             }
-            slide->unkE = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->a;
+            slide->flag = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->a;
             slide->unk14 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->b;
             slide->unk10 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->c;
             slide->unk12 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->d;
@@ -325,40 +325,40 @@ void PlotPACrate(NAS *nas) {
         }
         break;
     case 0xB:
-        slide->unkE += slide->unk10 - slide->unk12;
-        if (slide->unkE < 0) {
-            slide->unkE = 0;
+        slide->flag += slide->unk10 - slide->unk12;
+        if (slide->flag < 0) {
+            slide->flag = 0;
         }
-        if (slide->unkE > slide->unk14) {
-            slide->unkE = slide->unk14;
+        if (slide->flag > slide->unk14) {
+            slide->flag = slide->unk14;
         }
-        eng->XYZ.x -= (slide->unkE * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
-        eng->XYZ.z -= (slide->unkE * rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (slide->flag * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (slide->flag * rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2) >> 12;
         switch (slide->dir & 0xF0) {
         case 0x10:
         case 0x30:
         case 0x90:
             if (slide->unk2A >= eng->XYZ.z) {
-                slide->unkE = 0;
+                slide->flag = 0;
             }
             break;
         case 0x80:
             if (eng->XYZ.x >= slide->unk16) {
-                slide->unkE = 0;
+                slide->flag = 0;
             }
             break;
         case 0x20:
             if (slide->unk16 >= eng->XYZ.x) {
-                slide->unkE = 0;
+                slide->flag = 0;
             }
             break;
         default:
             if (eng->XYZ.z >= slide->unk2A) {
-                slide->unkE = 0;
+                slide->flag = 0;
             }
             break;
         }
-        if (slide->unkE == 0) {
+        if (slide->flag == 0) {
             eng->xform.dirty = 1;
             eng->xform.rot.vy = 0;
             eng->XYZ.x = (eng->XYZ.x & ~0xFF) + 0x80;
@@ -372,7 +372,7 @@ void PlotPACrate(NAS *nas) {
             slide->unk12 = 0;
             slide->unk10 = 0;
             slide->unk14 = 0;
-            slide->unkE = 0;
+            slide->flag = 0;
             if (obj->timer == 0) {
                 switch (kind) {
                 case 4:
@@ -390,7 +390,7 @@ void PlotPACrate(NAS *nas) {
             }
         }
         if (FollowContour(eng) != 0) {
-            slide->unkE = 0x40;
+            slide->flag = 0x40;
             slide->unk14 = 0x40;
             slide->unk1E = 0x50;
             slide->unk1A = 6;
@@ -458,7 +458,7 @@ void PlotPACrate(NAS *nas) {
                     PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 PAPU_SLOT_OBJ(obj->player - 0x14) = (s32)obj;
-                eng->xform.rot.vy = PAPU_SLOT_DYN(obj->player - 0x14)->unk16;
+                eng->xform.rot.vy = PAPU_SLOT_DYN(obj->player - 0x14)->angle;
                 obj->will_do &= 0xFFFC;
                 obj->can_do = (obj->can_do & 0xFFFC) | 4;
             }

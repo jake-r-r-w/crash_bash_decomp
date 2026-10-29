@@ -471,7 +471,7 @@ s32 DinoAI_PickGem(s32 arg0) {
         ext = FindExtension(DinoGems[idx], 0x10000000);
         if (ext != NULL && ext->unkC == 1) {
             t = DinoAI_PickVictim(arg0);
-            if (t == ext->unk10 && DinoTestTeamMate(arg0, t) == 0) {
+            if (t == ext->timer && DinoTestTeamMate(arg0, t) == 0) {
                 b = Heroes[arg0].hero_eng;
                 a = DinoGems[idx]->Engine;
                 dx = a->XYZ.x - b->XYZ.x;
@@ -602,7 +602,7 @@ void DinoAI_ShootGem(s32 id) {
         e = FindExtension(Heroes[id].hero, 0x10000000);
         near = 0;
         if (e != NULL) {
-            near = (u32)e->unk14 > 0;
+            near = (u32)e->flag > 0;
         }
         if ((near ^ 1) != 0) {
             c->unk28 = -1;
@@ -635,7 +635,7 @@ void DinoAI_ShootGem(s32 id) {
             Heroes[id].hero_ai->AIpad |= 0x8000;
             ((PadState *)Pads)[id].dir = Heroes[id].hero_ai->AIpad;
             c->unk28 = -1;
-            c->unk30 = 8;
+            c->timer2 = 8;
             c->fn = DinoUnusedStub;
             c->state = 0;
         }
@@ -661,7 +661,7 @@ void DinoAI_CarryGem(s32 id) {
         e = FindExtension(Heroes[id].hero, 0x10000000);
         near = 0;
         if (e != NULL) {
-            near = (u32)e->unk14 > 0;
+            near = (u32)e->flag > 0;
         }
         if ((near ^ 1) != 0) {
             c->unk28 = -1;
@@ -677,11 +677,11 @@ void DinoAI_CarryGem(s32 id) {
         }
         c->pos = Heroes[id].hero_eng->XYZ;
         c->tgt = ((DinoPos *)DinoGoal)->pos;
-        if (c->unk30-- > 0) {
+        if (c->timer2-- > 0) {
             DinoAI_SteerToTarget(id);
         }
-        if (c->unk30 < -2) {
-            c->unk30 = 8;
+        if (c->timer2 < -2) {
+            c->timer2 = 8;
         }
         yaw = Heroes[id].hero_eng->xform.rot.vy;
         sc = DinoArenaRadius * 4;
@@ -701,7 +701,7 @@ void DinoAI_CarryGem(s32 id) {
             Heroes[id].hero_ai->AIpad |= 0x8000;
             ((PadState *)Pads)[id].dir = Heroes[id].hero_ai->AIpad;
             c->unk28 = -1;
-            c->unk30 = 8;
+            c->timer2 = 8;
             c->fn = DinoUnusedStub;
             c->state = 0;
         }
@@ -968,7 +968,7 @@ void DinoAI_ReturnGem(s32 id) {
         e = FindExtension(Heroes[id].hero, 0x10000000);
         near = 0;
         if (e != NULL) {
-            near = (u32)e->unk14 > 0;
+            near = (u32)e->flag > 0;
         }
         far = near ^ 1;
         if (far != 0) {
@@ -1067,7 +1067,7 @@ void DinoAI_Wander(s32 arg0) {
     ext2 = FindExtension(Heroes[arg0].hero, 0x10000000);
     ok = 0;
     if (ext2 != NULL) {
-        ok = 0 < (u32)ext2->unk14;
+        ok = 0 < (u32)ext2->flag;
     }
     bad = ok ^ 1;
     if (bad != 0) {
@@ -1221,7 +1221,7 @@ s32 id;
             e = FindExtension(h->hero, 0x10000000);
             near = 0;
             if (e != NULL) {
-                near = (u32)e->unk14 > 0;
+                near = (u32)e->flag > 0;
             }
             if (near != 0) {
                 if (c->state == 0) {
@@ -2130,7 +2130,7 @@ void InitialiseDINO(void) {
         if (c != NULL) {
             c->unk28 = -1;
             c->fn = DinoUnusedStub;
-            c->unk30 = 8;
+            c->timer2 = 8;
             c->state = 0;
         }
         x = AddExt(h->hero, 0x20, 0x10000000);
@@ -2251,8 +2251,8 @@ void DinoScoreGems(void) {
         if (ext == NULL) {
             continue;
         }
-        kind = ext->unkC;
-        if (kind != 3 || ext->unk80 >= 2 || ext->unk8C > 0) {
+        kind = ext->state;
+        if (kind != 3 || ext->count >= 2 || ext->timer2 > 0) {
             continue;
         }
         if (XZBoxToSphere((SLONG_XYZ *)DinoGoal, &nas->Engine->XYZ, 0, &nas->Engine->XYZ) == -1) {
@@ -2261,7 +2261,7 @@ void DinoScoreGems(void) {
         DinoScoreA++;
         spd = csqrt(ext->unkB4 * ext->unkB4 + ext->unkD4 * ext->unkD4) >> 6;
         a = (((DinoTarget *)DinoGoal)->ang + 0x800) & 0xFFF;
-        ext->unk8C = 0x14;
+        ext->timer2 = 0x14;
         n.vx = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
         n.vz = rcossin_tbl[a].unk2;
         d.vx = -rcossin_tbl[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2;
@@ -2280,39 +2280,39 @@ void DinoScoreGems(void) {
             sign = -1;
         }
         if (((GameState *)GameInfo)->levelFlags & 0x80) {
-            if (GAME->heroOut[ext->unk10] == 0) {
+            if (GAME->heroOut[ext->player] == 0) {
                 PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
                 if (ext->unk90 == 5 && (DinoTargetTimer == 2 || DinoScoreTimer == 2)) {
                     PlaySfx(0x6BE, NULL, NULL, 0x1000, 0x1E00, 0);
-                    Heroes[ext->unk10].hero_score += ext->unk90 * sign;
-                    if (Heroes[ext->unk10].hero_score <= 0) {
-                        Heroes[ext->unk10].hero_score = 0;
+                    Heroes[ext->player].hero_score += ext->unk90 * sign;
+                    if (Heroes[ext->player].hero_score <= 0) {
+                        Heroes[ext->player].hero_score = 0;
                     }
-                    Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+                    Heroes[ext->player].hero_score_displayed = Heroes[ext->player].hero_score;
                 }
                 if (ext->unk90 == 3 && (DinoTargetTimer == 1 || DinoScoreTimer == 1)) {
                     PlaySfx(0x6BD, NULL, NULL, 0x1000, 0x1E00, 0);
-                    Heroes[ext->unk10].hero_score += ext->unk90 * sign;
-                    if (Heroes[ext->unk10].hero_score <= 0) {
-                        Heroes[ext->unk10].hero_score = 0;
+                    Heroes[ext->player].hero_score += ext->unk90 * sign;
+                    if (Heroes[ext->player].hero_score <= 0) {
+                        Heroes[ext->player].hero_score = 0;
                     }
-                    Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+                    Heroes[ext->player].hero_score_displayed = Heroes[ext->player].hero_score;
                 }
                 if (ext->unk90 == 2 && (DinoTargetTimer == 0 || DinoScoreTimer == 0)) {
                     PlaySfx(0x6BC, NULL, NULL, 0x1000, 0x1E00, 0);
-                    Heroes[ext->unk10].hero_score += ext->unk90 * sign;
-                    if (Heroes[ext->unk10].hero_score <= 0) {
-                        Heroes[ext->unk10].hero_score = 0;
+                    Heroes[ext->player].hero_score += ext->unk90 * sign;
+                    if (Heroes[ext->player].hero_score <= 0) {
+                        Heroes[ext->player].hero_score = 0;
                     }
-                    Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+                    Heroes[ext->player].hero_score_displayed = Heroes[ext->player].hero_score;
                 }
             } else {
                 PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
-                Heroes[ext->unk10].hero_score += ext->unk90 * sign;
-                if (Heroes[ext->unk10].hero_score <= 0) {
-                    Heroes[ext->unk10].hero_score = 0;
+                Heroes[ext->player].hero_score += ext->unk90 * sign;
+                if (Heroes[ext->player].hero_score <= 0) {
+                    Heroes[ext->player].hero_score = 0;
                 }
-                Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+                Heroes[ext->player].hero_score_displayed = Heroes[ext->player].hero_score;
                 if (ext->unk90 == 1) {
                     PlaySfx(0x6BB, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
@@ -2329,18 +2329,18 @@ void DinoScoreGems(void) {
             }
         } else {
             PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
-            Heroes[ext->unk10].hero_score += ext->unk90 * sign;
-            if (Heroes[ext->unk10].hero_score < 0) {
-                Heroes[ext->unk10].hero_score = 0;
+            Heroes[ext->player].hero_score += ext->unk90 * sign;
+            if (Heroes[ext->player].hero_score < 0) {
+                Heroes[ext->player].hero_score = 0;
             }
             if (((GameState *)GameInfo)->teams != 0 && (((GameState *)GameInfo)->levelFlags & 0x40) &&
-                Heroes[ext->unk10].hero_score == 0) {
-                Heroes[Heroes[ext->unk10].hero_teammate].hero_score += ext->unk90 * sign;
-                if (Heroes[Heroes[ext->unk10].hero_teammate].hero_score < 0) {
-                    Heroes[Heroes[ext->unk10].hero_teammate].hero_score = 0;
+                Heroes[ext->player].hero_score == 0) {
+                Heroes[Heroes[ext->player].hero_teammate].hero_score += ext->unk90 * sign;
+                if (Heroes[Heroes[ext->player].hero_teammate].hero_score < 0) {
+                    Heroes[Heroes[ext->player].hero_teammate].hero_score = 0;
                 }
             }
-            Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+            Heroes[ext->player].hero_score_displayed = Heroes[ext->player].hero_score;
             if (ext->unk90 == 1) {
                 PlaySfx(0x6BB, NULL, NULL, 0x1000, 0x1E00, 0);
             }
@@ -2370,8 +2370,8 @@ void UpdateDINO(void) {
 loop:
     if (i < 4) {
         ext = FindExtension(hero->hero, 0x10000000);
-        if (ext != NULL && ext->unk10 > 0) {
-            ext->unk10--;
+        if (ext != NULL && ext->timer > 0) {
+            ext->timer--;
         }
         hero++;
         i++;
@@ -2863,7 +2863,7 @@ void DinoPreMoveHero(s32 id) {
             m->z_max = 0;
             if ((Pads[id].flags & 1) || h->hero_ai->AImode != 0) {
                 if (h->hero_mode != 0x66 && (((PadState *)Pads)[id].dir & 0xF0)) {
-                    if (ext->unk14 == 0) {
+                    if (ext->flag == 0) {
                         m->forward_angle = (((PadState *)Pads)[id].angle.w + 0x800) & 0xFFF;
                         sc = DinoSteerMin;
                         if (GAME->heroOut[id] != 0) {
@@ -2961,8 +2961,8 @@ void SetDinoHeroDazed(s32 id) {
         mv->z_dec = 9;
         mv->x_dec = 9;
         SetHeroSeq(id, 0x4D);
-        ext->unkC = 7;
-        ext->unk14 = 0;
+        ext->flag = 7;
+        ext->flag2 = 0;
         pad_rumble_small(id, 0xA);
         ((void (*)(s32, s32, s32))pad_rumble_big)(id, 0xA, 0xFF);
         switch (Heroes[id].hero_name) {
@@ -3068,13 +3068,13 @@ s32 DinoHeroTestShoot(s32 arg0) {
 
     a = FindExtension(Heroes[arg0].hero, 0x10000000);
     if (a != NULL) {
-        if (a->unk14 != 0) {
-            b = FindExtension(a->unk18, 0x10000000);
+        if (a->flag2 != 0) {
+            b = FindExtension(a->nas, 0x10000000);
             if (b != NULL && b->unk10 == arg0) {
                 if (((PadState *)Pads)[arg0].dir & 0x8000) {
                     SetHeroAction(arg0, 0x65);
-                    b->unkC = 2;
-                    a->unk14 = 0;
+                    b->flag = 2;
+                    a->flag2 = 0;
                     return 1;
                 }
             }
@@ -3158,10 +3158,10 @@ s32 DinoHeroCollide(s32 hero) {
                             ox = FindExtension(o->hero, 0x10000000);
                         } while (0);
                         if (me->hero_mode != 0x67 && o->hero_mode == 0x66) {
-                            if (mx->unk14 != 0) {
-                                x1 = FindExtension(mx->unk18, 0x10000000);
-                                if (x1 != NULL && x1->unkC == 1) {
-                                    x1->unkC = 5;
+                            if (mx->flag2 != 0) {
+                                x1 = FindExtension(mx->nas, 0x10000000);
+                                if (x1 != NULL && x1->flag == 1) {
+                                    x1->flag = 5;
                                 }
                             }
                             SetHeroAction(hero, 0x67);
@@ -3170,10 +3170,10 @@ s32 DinoHeroCollide(s32 hero) {
                             } while (0);
                         }
                         if (o->hero_mode != 0x67 && me->hero_mode == 0x66) {
-                            if (ox->unk14 != 0) {
-                                x = FindExtension(ox->unk18, 0x10000000);
-                                if (x != NULL && x->unkC == 1) {
-                                    x->unkC = 5;
+                            if (ox->flag2 != 0) {
+                                x = FindExtension(ox->nas, 0x10000000);
+                                if (x != NULL && x->flag == 1) {
+                                    x->flag = 5;
                                 }
                             }
                             SetHeroAction(i, 0x67);
@@ -3212,17 +3212,17 @@ s32 DinoGemCarrier(NAS *m) {
             goto done;
         }
         he =FindExtension(Heroes[i].hero, 0x10000000);
-        if (he != NULL && he->unk14 == 0 && Heroes[i].hero_mode != 0x65 && me->unkC != 1
+        if (he != NULL && he->flag2 == 0 && Heroes[i].hero_mode != 0x65 && me->flag != 1
             && abs(m->Engine->XYZ.y - Heroes[i].hero_eng->XYZ.y) < 0x201
-            && (me->unkC == 0 || me->unkC == 3 || me->unkC == 4)) {
+            && (me->flag == 0 || me->flag == 3 || me->flag == 4)) {
             dx = Heroes[i].hero_eng->XYZ.x - m->Engine->XYZ.x;
             dz = Heroes[i].hero_eng->XYZ.z - m->Engine->XYZ.z;
             if (dx * dx + dz * dz <= 0x3FFFF) {
                 me->unk10 = i;
                 he = FindExtension(Heroes[i].hero, 0x10000000);
                 if (he != NULL) {
-                    he->unk14 = 1;
-                    he->unk18 = m;
+                    he->flag2 = 1;
+                    he->nas = m;
                 }
                 return 1;
             }
@@ -3330,11 +3330,11 @@ void InitDinoGem(NAS *m) {
             m->Engine->sub->entity = 0x2001;
         }
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_DragonObjects];
-        ext->unkC = 6;
-        ext->unk10 = 5;
-        ext->unk80 = 0;
-        ext->unk88 = 0;
-        ext->unk8C = 0;
+        ext->state = 6;
+        ext->player = 5;
+        ext->count = 0;
+        ext->timer = 0;
+        ext->timer2 = 0;
         ext->unk90 = 1;
         ext->unkE2 = 0x100;
         ext->unkB4 = 0;
@@ -3343,7 +3343,7 @@ void InitDinoGem(NAS *m) {
         m->Engine->sub->flags &= 0xFFFF7FFF;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
-            ext->unk84 = e;
+            ext->eng = e;
             e->sub->u6C.dbase = &HeroModelBank[DB_DragonObjects];
             e->sub->entity = 0x2014;
             e->xform.hasScale = 1;
@@ -3354,7 +3354,7 @@ void InitDinoGem(NAS *m) {
             e->XYZ = m->Engine->XYZ;
             e->sub->unk76 = 0x800;
             e->sub->flags |= 0x40008041;
-            ext->unk84->sub->flags &= 0xFFFF7FFF;
+            ext->eng->sub->flags &= 0xFFFF7FFF;
         }
     }
 }
@@ -3383,12 +3383,12 @@ void PlotDinoGem(NAS *m) {
         return;
     }
     m->Engine->xform.dirty = 1;
-    if (ext->unk8C > 0) {
-        ext->unk8C--;
+    if (ext->timer2 > 0) {
+        ext->timer2--;
     }
-    switch (ext->unkC) {
+    switch (ext->state) {
     case 7:
-        ext->unkC = 0;
+        ext->state = 0;
         m->Engine->sub->flags |= 0x8000;
         pos = m->Engine->XYZ;
         pos.y += 0x100;
@@ -3414,7 +3414,7 @@ void PlotDinoGem(NAS *m) {
         break;
     case 0:
         m->Engine->xform.rot.vy += 0x20;
-        ext->unk84->sub->flags |= 0x8000;
+        ext->eng->sub->flags |= 0x8000;
         DinoGemPhysics(m);
         m->Engine->XYZ.x += ext->unkB4;
         m->Engine->XYZ.z += ext->unkD4;
@@ -3444,35 +3444,35 @@ void PlotDinoGem(NAS *m) {
         }
         goto check;
     case 1:
-        ext->unk84->sub->flags &= 0xFFFF7FFF;
+        ext->eng->sub->flags &= 0xFFFF7FFF;
         m->Engine->xform.rot.vy += 0x40;
-        m->Engine->XYZ = Heroes[ext->unk10].hero_eng->XYZ;
+        m->Engine->XYZ = Heroes[ext->player].hero_eng->XYZ;
         m->Engine->XYZ.y -= 0x400;
         break;
     case 2: {
         HeroInfo *hb;
         s32 a;
 
-        ext->unk68 = Heroes[ext->unk10].hero_eng->XYZ;
-        ext->unk68.y -= 0x200;
-        m->Engine->XYZ = ext->unk68;
-        a = Heroes[ext->unk10].hero_eng->xform.rot.vy;
+        ext->pos = Heroes[ext->player].hero_eng->XYZ;
+        ext->pos.y -= 0x200;
+        m->Engine->XYZ = ext->pos;
+        a = Heroes[ext->player].hero_eng->xform.rot.vy;
         m->Engine->xform.scale.vx = 0x1000;
         m->Engine->xform.scale.vy = 0x1000;
         m->Engine->xform.scale.vz = 0x1000;
         ext->unk14 = 0x800;
-        ext->unk28 = 0;
-        ext->unk2C = 0;
+        ext->y = 0;
+        ext->y2 = 0;
         ext->unk48 = -(rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 0xD2) >> 12;
         ext->unk4C = -(rcossin_tbl[a & 0xFFF].unk2 * 0xD2) >> 12;
-        ext->unk80 = 0;
+        ext->count = 0;
         ext->unkB4 = ext->unk48;
         ext->unkD4 = ext->unk4C;
-        ext->unk84->sub->flags |= 0x8000;
+        ext->eng->sub->flags |= 0x8000;
         AddCamera(m);
         found = -1;
-        ext->unkC = 3;
-        hb = &Heroes[ext->unk10];
+        ext->state = 3;
+        hb = &Heroes[ext->player];
         for (i = 3; i > 0; i--) {
             if (PointInZone((s32 *)&hb->hero_eng->XYZ, i) != 0) {
                 found = i;
@@ -3490,8 +3490,8 @@ void PlotDinoGem(NAS *m) {
         if (found == -1) {
             ext->unk90 = 1;
         }
-        m->Engine->xform.rot.vy = Heroes[ext->unk10].hero_eng->xform.rot.vy;
-        ext->unk88 = 4;
+        m->Engine->xform.rot.vy = Heroes[ext->player].hero_eng->xform.rot.vy;
+        ext->timer = 4;
         break;
     }
     case 5: {
@@ -3501,16 +3501,16 @@ void PlotDinoGem(NAS *m) {
         m->Engine->xform.scale.vx = 0x1000;
         m->Engine->xform.scale.vy = 0x1000;
         m->Engine->xform.scale.vz = 0x1000;
-        ext->unk28 = -0x60;
+        ext->y = -0x60;
         ext->unk14 = 8;
-        ext->unk2C = 0;
+        ext->y2 = 0;
         ext->unk48 = (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 0x40) >> 12;
         ext->unk4C = (rcossin_tbl[a & 0xFFF].unk2 * 0x40) >> 12;
-        ext->unk80 = 0;
+        ext->count = 0;
         ext->unkB4 = ext->unk48;
         ext->unkD4 = ext->unk4C;
-        ext->unk84->sub->flags |= 0x8000;
-        ext->unkC = 4;
+        ext->eng->sub->flags |= 0x8000;
+        ext->state = 4;
         SFX4(0x6C0, 0x6C1, 0x6C2, 0x6C3);
         AddCamera(m);
         break;
@@ -3518,58 +3518,58 @@ void PlotDinoGem(NAS *m) {
     case 4:
         m->Engine->XYZ.x += ext->unkB4;
         m->Engine->XYZ.z += ext->unkD4;
-        m->Engine->XYZ.y += ext->unk28;
-        ext->unk28 += ext->unk14;
-        if (ext->unk2C < m->Engine->XYZ.y) {
-            m->Engine->XYZ.y -= abs(m->Engine->XYZ.y - ext->unk2C);
-            ext->unk28 = -ext->unk28 >> 1;
+        m->Engine->XYZ.y += ext->y;
+        ext->y += ext->unk14;
+        if (ext->y2 < m->Engine->XYZ.y) {
+            m->Engine->XYZ.y -= abs(m->Engine->XYZ.y - ext->y2);
+            ext->y = -ext->y >> 1;
             ext->unkB4 >>= 1;
             ext->unkD4 >>= 1;
-            ext->unk80++;
+            ext->count++;
             SFX4(0x6B7, 0x6B8, 0x6B9, 0x6BA);
-            if (ext->unk80 >= 5) {
-                ext->unk80 = 0;
-                ext->unkC = 0;
+            if (ext->count >= 5) {
+                ext->count = 0;
+                ext->state = 0;
                 ext->unkB4 = 0;
                 ext->unkD4 = 0;
-                ext->unk10 = 5;
+                ext->player = 5;
                 return;
             }
         }
         goto check;
     case 3:
-        ext->unk84->sub->flags |= 0x8000;
-        if (ext->unk88-- > 0
-            && (GAME->heroOut[ext->unk10] != 0 || (((PadState *)Pads)[ext->unk10].dir & 0x8000))) {
-            ext->unk28 -= 0x1800;
-            if (ext->unk28 < -0x6000) {
-                ext->unk28 = -0x6000;
+        ext->eng->sub->flags |= 0x8000;
+        if (ext->timer-- > 0
+            && (GAME->heroOut[ext->player] != 0 || (((PadState *)Pads)[ext->player].dir & 0x8000))) {
+            ext->y -= 0x1800;
+            if (ext->y < -0x6000) {
+                ext->y = -0x6000;
             }
         }
         m->Engine->XYZ.x += ext->unkB4;
         m->Engine->XYZ.z += ext->unkD4;
-        m->Engine->XYZ.y += ext->unk28 >> 8;
-        ext->unk28 += ext->unk14;
-        if (ext->unk2C < m->Engine->XYZ.y) {
-            m->Engine->XYZ.y -= abs(m->Engine->XYZ.y - ext->unk2C);
-            ext->unk28 = -ext->unk28 >> 1;
+        m->Engine->XYZ.y += ext->y >> 8;
+        ext->y += ext->unk14;
+        if (ext->y2 < m->Engine->XYZ.y) {
+            m->Engine->XYZ.y -= abs(m->Engine->XYZ.y - ext->y2);
+            ext->y = -ext->y >> 1;
             ext->unkB4 >>= 1;
             ext->unkD4 >>= 1;
-            ext->unk80++;
+            ext->count++;
             SFX4(0x6B7, 0x6B8, 0x6B9, 0x6BA);
-            if (ext->unk80 >= 5) {
-                ext->unk80 = 0;
+            if (ext->count >= 5) {
+                ext->count = 0;
                 RemoveCamera(m);
-                ext->unkC = 0;
+                ext->state = 0;
                 ext->unkB4 = 0;
                 ext->unkD4 = 0;
-                ext->unk10 = 5;
+                ext->player = 5;
                 return;
             }
         }
     check:
         if (DinoGemCarrier(m) != 0) {
-            ext->unkC = 1;
+            ext->state = 1;
             RemoveCamera(m);
             PlaySfx(0x6CD, NULL, NULL, 0x1000, 0x1E00, 0);
             m->Engine->xform.scale.vx = 0x800;
@@ -3579,7 +3579,7 @@ void PlotDinoGem(NAS *m) {
         }
         break;
     }
-    if (ext->unkC != 1) {
+    if (ext->state != 1) {
         EXTengine *e;
         s32 lim;
 
@@ -3617,8 +3617,8 @@ void PlotDinoGem(NAS *m) {
             ext->unkD4 = -(spd * rcossin_tbl[h & 0xFFF].unk2 >> 12);
         }
     }
-    ext->unk84->XYZ = m->Engine->XYZ;
-    ext->unk84->XYZ.y = 0x80;
+    ext->eng->XYZ = m->Engine->XYZ;
+    ext->eng->XYZ.y = 0x80;
 }
 
 void PlotDinoScratch(NAS *m) {
@@ -4045,7 +4045,7 @@ s32 DinoHeroHasGem(s32 arg0) {
     DinoExt *ext;
 
     ext = FindExtension(Heroes[arg0].hero, 0x10000000);
-    if (ext != NULL && ext->unk14 != 0) {
+    if (ext != NULL && ext->flag != 0) {
         return 1;
     }
     return 0;

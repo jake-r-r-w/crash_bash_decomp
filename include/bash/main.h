@@ -270,8 +270,8 @@ typedef struct {
     u8 pad70[4];
     u16 index;               /* 0x74: passed to entity_address */
     u8 pad76[0x16];
-    u16 unk8C;               /* 0x8C: clut to set on the next draw */
-    u16 unk8E;               /* 0x8E: texture index to set on the next draw */
+    u16 flag;  /* tested for zero */
+    u16 flags2;               /* 0x8E: texture index to set on the next draw */
     ModelObjSlot slots[2];  /* 0x90: indexed by FrameCount & 1 */
 } ModelObj;
 
@@ -513,7 +513,7 @@ typedef struct PadState {
     /* 0x0C */ s32 ry;
     /* 0x10 */ s32 lx;
     /* 0x14 */ s32 ly;
-    /* 0x18 */ s32 unk18;
+    /* 0x18 */ s32 flag;  /* tested for zero */
     /* 0x1C */ PadRumble rumble;
     /* 0x2C */ s32 forced;         /* set_joypad: 1 */
     /* 0x30 */ s32 forcedButtons;  /* set_joypad: the buttons */
@@ -565,8 +565,8 @@ typedef struct MusicEntry {
  * (loadlist_push / loadlist_pop, nodes from LoadNodePool). */
 typedef struct LoaderState {
     /* 0x00 */ s32 state;                /* 3 after a reset */
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
+    /* 0x04 */ s32 flag;  /* tested for zero */
+    /* 0x08 */ s32 flag2;  /* tested for zero */
     /* 0x0C */ struct LoadNode *head;
     /* 0x10 */ struct LoadNode *tail;
 } LoaderState;
@@ -932,8 +932,8 @@ typedef struct PlaceRec {
     /* 0x14 */ void *data;   /* a text table (by language), or a sprite's image */
     /* 0x18 */ s32 unk18;
     /* 0x1C */ s16 unk1C;
-    /* 0x1E */ s16 unk1E;
-    /* 0x20 */ s32 unk20;
+    /* 0x1E */ s16 player;  /* a hero's index */
+    /* 0x20 */ s32 flags;
 } PlaceRec;
 extern u8 GameInfo[];
 extern AdventureState GameAdventure;   /* GameInfo + 0x70 */

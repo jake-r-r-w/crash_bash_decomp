@@ -1791,7 +1791,7 @@ void SetDefaultHeroHooks(void) {
     HeroHooks.HeroKickCollision = DefHeroKickCollision;
     HeroHooks.ChooseWinner = DefChooseWinner;
     HeroHooks.HeroesTouched = DefaultTouched;
-    HeroHooks.unk8 = 0;
+    HeroHooks.flag = 0;
     HeroHooks.CreateShadow = 0;
     HeroHooks.UpdateShadow = 0;
     HeroHooks.PostMoveHero = 0;

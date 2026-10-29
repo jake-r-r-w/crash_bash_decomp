@@ -28,8 +28,8 @@ typedef struct DinoPhys {
 typedef struct DinoExt {
     u8 pad[0xC];
     s32 unkC;
-    s32 unk10;
-    s32 unk14;
+    s32 timer;  /* counted down */
+    s32 flag;  /* tested for zero */
     u8 pad18[0x94 - 0x18];
     /* 0x94 */ DinoPhys phys;
 } DinoExt;
@@ -41,7 +41,7 @@ typedef struct DinoChase {
     SLONG_XYZ tgt;    /* 0x1C */
     s32 unk28;
     u8 pad2[4];
-    s32 unk30;
+    s32 timer2;  /* counted down */
     u8 pad2b[4];
     s32 state; /* 0x38 */
     u8 pad3[4];
@@ -50,22 +50,22 @@ typedef struct DinoChase {
 
 typedef struct DinoGem {
     u8 pad0[0xC];
-    s32 unkC;
-    s32 unk10;
+    s32 state;  /* switched on */
+    s32 player;  /* a hero's index */
     s32 unk14;
     u8 pad18[0x10];
-    s32 unk28;
-    s32 unk2C;
+    s32 y;
+    s32 y2;
     u8 pad30[0x18];
     s32 unk48;
     s32 unk4C;
     u8 pad50[0x18];
-    SLONG_XYZ unk68;
+    SLONG_XYZ pos;
     u8 pad74[0xC];
-    s32 unk80;
-    EXTengine *unk84;
-    s32 unk88;
-    s32 unk8C;
+    s32 count;  /* counted up */
+    EXTengine *eng;
+    s32 timer;  /* counted down */
+    s32 timer2;  /* counted down */
     s32 unk90;
     u8 pad94[0x20];
     s32 unkB4;
@@ -110,10 +110,10 @@ s32 DinoHeroCollide(s32 hero);
 s32 DinoHeroTestIdle(s32 hero);
 typedef struct DinoExtB {
     u8 pad[0xC];
-    s32 unkC;
+    s32 flag;  /* tested for zero */
     s32 unk10;
-    s32 unk14;
-    NAS *unk18;
+    s32 flag2;  /* tested for zero */
+    NAS *nas;
 } DinoExtB;
 
 

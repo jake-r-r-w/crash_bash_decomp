@@ -342,8 +342,8 @@ void BonkInitEntries(void) {
     BonkRoundTimer = BonkRoundTime;
     for (i = 0; i < 10; i++) {
         BonkEntries[i].unk0 = 0x100;
-        BonkEntries[i].unk4 = 0;
-        BonkEntries[i].unk8 = 0;
+        BonkEntries[i].flag = 0;
+        BonkEntries[i].timer = 0;
     }
     BonkCrateTimer = 0;
     BonkCrateDelay = BonkEntryCount * 30;
@@ -361,10 +361,10 @@ void BonkCrateMaster(void) {
     }
     if (BonkEntryCur != 0) {
         for (i = 0; i < 10; i++) {
-            NAS *n = (NAS *)BonkEntries[i].unk4;
+            NAS *n = (NAS *)BonkEntries[i].flag;
             if (n != 0 && n->UserInfo.status == 1) {
                 KillNAS(n);
-                BonkEntries[i].unk4 = 0;
+                BonkEntries[i].flag = 0;
             }
         }
     }
@@ -398,17 +398,17 @@ void PlotBonkStool(NAS *nas) {
     switch (nas->UserInfo.status) {
     case 0:
         if (BonkAI_PickEntry(&x, &z) != 0) {
-            BonkEntries[nas->UserInfo.user2].unk8 = 1000;
+            BonkEntries[nas->UserInfo.user2].timer = 1000;
             e->XYZ.x = x;
             e->XYZ.z = z;
             e->XYZ.y = World_floor_level - 0x2000;
             BonkKeepInBoundsB(e);
             nas->UserInfo.status = 2;
             if (nas->UserInfo.user1 == 0) {
-                BonkEntries[nas->UserInfo.user2].unk8 = BonkStoolFrames[BonkSkill];
+                BonkEntries[nas->UserInfo.user2].timer = BonkStoolFrames[BonkSkill];
                 nas->UserInfo.user1 = Random(0x14) + 10;
             } else {
-                BonkEntries[nas->UserInfo.user2].unk8 = 0;
+                BonkEntries[nas->UserInfo.user2].timer = 0;
             }
             e->flags &= 0xFFFF7FFF;
             if (BonkRoundTimer == 0) {
@@ -452,8 +452,8 @@ void PlotBonkStool(NAS *nas) {
         e->xform.dirty = 1;
         break;
     case 12:
-        if (BonkEntries[nas->UserInfo.user2].unk8 != 0) {
-            BonkEntries[nas->UserInfo.user2].unk8--;
+        if (BonkEntries[nas->UserInfo.user2].timer != 0) {
+            BonkEntries[nas->UserInfo.user2].timer--;
         }
         if (--nas->UserInfo.user1 <= 0) {
             nas->UserInfo.status = 13;
@@ -462,8 +462,8 @@ void PlotBonkStool(NAS *nas) {
         break;
     case 13:
     case 14:
-        if (BonkEntries[nas->UserInfo.user2].unk8 != 0) {
-            BonkEntries[nas->UserInfo.user2].unk8--;
+        if (BonkEntries[nas->UserInfo.user2].timer != 0) {
+            BonkEntries[nas->UserInfo.user2].timer--;
         }
         if (--nas->UserInfo.user1 <= 0) {
             if (nas->UserInfo.status == 13) {
@@ -537,8 +537,8 @@ s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
         if (ok) {
             if (BonkEntryCur != 0) {
                 for (i = 0, e = BonkEntries; i < 10; i++, e++) {
-                    if (e->unk4 != 0) {
-                        eng = ((NAS *)e->unk4)->Engine;
+                    if (e->flag != 0) {
+                        eng = ((NAS *)e->flag)->Engine;
                         if ((csqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x400) {
                             ok = 0;
                         }
@@ -713,22 +713,22 @@ s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
     z = Heroes[arg0].hero_eng->XYZ.z;
     if ((arg2 & 0x100) && BonkEntryCur != 0) {
         for (i = 0, e = BonkEntries; i < 10; i++, e++) {
-            if (e->unk4 == 0) {
+            if (e->flag == 0) {
                 continue;
             }
             if (arg2 & 1) {
-                if (((BonkPad *)e->unk4)->mode < 9) {
+                if (((BonkPad *)e->flag)->mode < 9) {
                     continue;
                 }
-                if (e->unk8 != 0) {
+                if (e->timer != 0) {
                     continue;
                 }
             }
-            if (((BonkPad *)e->unk4)->mode < 0xB) {
+            if (((BonkPad *)e->flag)->mode < 0xB) {
                 continue;
             }
-            ex = ((BonkPad *)e->unk4)->eng->XYZ.x;
-            ez = ((BonkPad *)e->unk4)->eng->XYZ.z;
+            ex = ((BonkPad *)e->flag)->eng->XYZ.x;
+            ez = ((BonkPad *)e->flag)->eng->XYZ.z;
             d = csqrt(BonkDist2XZ(x, z, ex, ez));
             d >>= 6;
             if (d < best) {
@@ -864,10 +864,10 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         i = 0;
         do {
             e = &BonkEntries[i];
-            if (e->unk4 != 0) {
-                eng = ((NAS *)e->unk4)->Engine;
+            if (e->flag != 0) {
+                eng = ((NAS *)e->flag)->Engine;
                 if ((csqrt(BonkDist2XZ(x, z, eng->XYZ.x, eng->XYZ.z)) >> 6) <= a
-                    && ((BonkPad *)e->unk4)->mode >= 0xB) {
+                    && ((BonkPad *)e->flag)->mode >= 0xB) {
                     BonkHitTarget(b, 1, (BonkTgt2 *)e);
                 }
             }
@@ -1605,7 +1605,7 @@ void BonkSpawnCrate(void) {
         if (n != NULL) {
             n->UserInfo.user1 = Random(10) + BonkEntryCur * 5;
             n->UserInfo.user2 = BonkEntryCur;
-            BonkEntries[BonkEntryCur].unk4 = (s32)n;
+            BonkEntries[BonkEntryCur].flag = (s32)n;
             BonkEntryCur += 1;
         }
     }

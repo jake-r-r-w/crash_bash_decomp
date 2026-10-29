@@ -113,8 +113,8 @@ typedef struct SpiralExt {
     /* 0x1C */ s32 radius;
     /* 0x20 */ s32 ang[4];
     /* 0x30 */ SLONG_XYZ c;
-    /* 0x3C */ s32 unk3C;
-    /* 0x40 */ s32 unk40;
+    /* 0x3C */ s32 flag;  /* tested for zero */
+    /* 0x40 */ s32 angle;
     /* 0x44 */ NAS *sat[4];
 } SpiralExt;
 
@@ -500,9 +500,9 @@ typedef struct BossExt {
     /* 0x0C */ ScriptCursor *cursor;
     /* 0x10 */ KeyBlock *keys;
     /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
-    /* 0x20 */ s32 unk20;
+    /* 0x18 */ s32 state;  /* switched on */
+    /* 0x1C */ s32 timer;  /* counted down */
+    /* 0x20 */ s32 timer2;  /* counted down */
     /* 0x24 */ u8 pad24[0xC];
     /* 0x30 */ s32 unk30;
     /* 0x34 */ s32 unk34;
@@ -526,10 +526,10 @@ void InitNitroBoss(NAS *nas);
 /* Extension of the objects PlotNitroBoss spawns. */
 typedef struct NitroShotExt {
     /* 0x00 */ u8 pad00[0xC];
-    /* 0x0C */ s32 unkC;
+    /* 0x0C */ s32 state;  /* switched on */
     /* 0x10 */ u8 pad10[4];
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
+    /* 0x14 */ s32 player;  /* a hero's index */
+    /* 0x18 */ s32 timer;  /* counted down */
     /* 0x1C */ u8 pad1C[4];
     /* 0x20 */ s32 unk20;
     /* 0x24 */ u8 pad24[4];
@@ -648,7 +648,7 @@ typedef struct AstSlot {
     /* 0x0C */ s32 ang;
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
+    /* 0x18 */ s32 timer;  /* counted down */
     /* 0x1C */ s32 unk1C;
     /* 0x20 */ s32 unk20;
     /* 0x24 */ s32 unk24;
@@ -657,7 +657,7 @@ typedef struct AstMineSlot {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 ang;
     /* 0x08 */ s32 y;
-    /* 0x0C */ s32 unkC;
+    /* 0x0C */ s32 flag;  /* tested for zero */
 } AstMineSlot;
 extern s32 NoxAsteroidTimer;
 extern AstSlot NoxAsteroids[];

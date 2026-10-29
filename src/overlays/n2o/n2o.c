@@ -488,7 +488,7 @@ void InitialiseN2O(void) {
     SetPanelHeroIconB(0x5C, 0x3088);
     N2OBossRound.unk0 = 0;
     N2OBossRound.unk22 = i + 10;
-    N2OBossRound.unk4 = 0;
+    N2OBossRound.eng = 0;
     N2OBossRound.unk8 = 0;
     N2OBossRound.unkC = 0;
     N2OBossRound.unk10 = 0;
@@ -2085,7 +2085,7 @@ void N2OInitBoss(void) {
     }
     N2OBossClock = 0;
     N2OBossStepTimer = 0;
-    N2OBossRound.unk4 = eng;
+    N2OBossRound.eng = eng;
     N2OBossRound.unk8 = (s32)sub;
     N2OBossRound.unk0 = (s32)Heroes[3].hero;
     sub = sub->next;
@@ -2202,33 +2202,33 @@ void N2OUpdateBoss(void) {
                 if (fl & 0x20) {
                     d += step;
                 }
-                p->unkC += d;
-                if (p->unkC > lim) {
-                    p->unkC = lim;
+                p->flag += d;
+                if (p->flag > lim) {
+                    p->flag = lim;
                 }
-                if (p->unkC < -lim) {
-                    p->unkC = -lim;
+                if (p->flag < -lim) {
+                    p->flag = -lim;
                 }
-                if (p->unkC == 0 && d != 0) {
+                if (p->flag == 0 && d != 0) {
                     sg = 1;
                     if (d < 0) {
                         sg = -1;
                     }
-                    p->unkC = sg;
+                    p->flag = sg;
                 }
-                N2OHeroSpeed[3] = p->unkC;
+                N2OHeroSpeed[3] = p->flag;
             } else {
                 N2OHeroSpeed[3] = 0;
-                if (p->unkC > 0) {
-                    p->unkC -= 0x12;
-                    if (p->unkC < 0) {
-                        p->unkC = 0;
+                if (p->flag > 0) {
+                    p->flag -= 0x12;
+                    if (p->flag < 0) {
+                        p->flag = 0;
                     }
                 }
-                if (p->unkC < 0) {
-                    p->unkC += 0x12;
-                    if (p->unkC > 0) {
-                        p->unkC = 0;
+                if (p->flag < 0) {
+                    p->flag += 0x12;
+                    if (p->flag > 0) {
+                        p->flag = 0;
                     }
                 }
             }
@@ -2274,7 +2274,7 @@ void N2OUpdateBoss(void) {
         q = &World_floor_level;
         v = (rcossin_tbl[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         eng->XYZ.y = *q + v;
-        dx = ((N2OPanRef *)&Heroes[3].hero_move)->p->unkC;
+        dx = ((N2OPanRef *)&Heroes[3].hero_move)->p->flag;
         eng->XYZ.x += dx;
         v = angle_diff(eng->xform.rot.vz, -dx);
         eng->xform.dirty = 1;
@@ -3543,7 +3543,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
                 puck->speed = puck->max + 0x40;
             }
         }
-        if (puck->unk32 == 0 && puck->max < 0x90) {
+        if (puck->flag == 0 && puck->max < 0x90) {
             puck->max += 4;
         }
     }
@@ -3727,7 +3727,7 @@ NAS *N2OBossPushObjects(void) {
     s32 dx;
     s32 dz;
 
-    me = N2OBossRound.unk4;
+    me = N2OBossRound.eng;
     if (me != NULL) {
         rec = FindCollisionBox(me, 0x40);
         if (rec != NULL) {

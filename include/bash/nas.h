@@ -340,7 +340,7 @@ struct subengine {
     /* 0x84 */ u8 pad84[0x8A - 0x84];
     /* 0x8A */ s16 unk8A;
     /* 0x8C */ u8 pad8C[0x8E - 0x8C];
-    /* 0x8E */ u16 unk8E;
+    /* 0x8E */ u16 flags2;
     /* 0x90 */ s32 unk90;
     /* 0x94 */ s16 unk94;
     /* 0x96 */ u8 pad96[0x9C - 0x96];
@@ -584,7 +584,7 @@ typedef struct GameOptionSet {
 /* GameInfo's last 0x11C bytes (0x8005A684..0x8005A7A0), the adventure's progress: per-level
  * tables of 0x21 bytes. Field names are GameInfo offsets, as gameflow.h's GameStateView. */
 typedef struct AdventureState {
-    /* 0x070 */ s32 unk70;
+    /* 0x070 */ s32 flag;  /* tested for zero */
     /* 0x074 */ u8 active;          /* in the adventure (not a battle or the demo) */
     /* 0x075 */ u8 creditsDone;     /* set when the end credits finish (HubEndCredits) */
     /* 0x076 */ u8 modeFlags[0x21]; /* per mode: 0x10, 0x80 flags */

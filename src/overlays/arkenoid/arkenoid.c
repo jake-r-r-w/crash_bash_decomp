@@ -3468,10 +3468,10 @@ void PlotBall(NAS *nas) {
             } else {
                 idx = Random(4);
             }
-            if (FloorLinks[idx].unk12 == 0) {
+            if (FloorLinks[idx].timer2 == 0) {
                 ArkBallCount = -1;
                 eng->XYZ = ((SLONG_XYZ *)ArkBumpers)[idx];
-                FloorLinks[idx].unk12 = 0x1F;
+                FloorLinks[idx].timer2 = 0x1F;
                 obj->countdown = 0xF;
                 obj->status = 12;
             }
@@ -3623,8 +3623,8 @@ void PlotBall(NAS *nas) {
                         break;
                     }
                     i = ArkPlayerSide(obj->player);
-                    BLINK_D38[i].unk12 = 4;
-                    BLINK_D38[i].unk10 = 0x20;
+                    BLINK_D38[i].timer2 = 4;
+                    BLINK_D38[i].timer = 0x20;
                     break;
                 }
             }
@@ -3672,8 +3672,8 @@ void PlotBall(NAS *nas) {
                     break;
                 }
                 i = ArkPlayerSide(obj->player);
-                BLINK_D38[i].unk12 = 4;
-                BLINK_D38[i].unk10 = 0x20;
+                BLINK_D38[i].timer2 = 4;
+                BLINK_D38[i].timer = 0x20;
                 break;
             }
             CalcArkInfluence(mot);
@@ -4385,36 +4385,36 @@ void InitARKfloor(void) {
     for (i = 0; i < 4; i++) {
         FloorLinks[i].a = 0;
         FloorLinks[i].unkA = 0;
-        FloorLinks[i].unk12 = 0;
-        FloorLinks[i].unk10 = 0;
+        FloorLinks[i].timer2 = 0;
+        FloorLinks[i].timer = 0;
         LINK(ArkGoals)[i].a = 0;
         LINK(ArkGoals)[i].b = 0;
         LINK(ArkGoals)[i].unkE = 0;
         LINK(ArkGoals)[i].unk8 = 0;
         LINK(ArkGoals)[i].unkE = 0;
         LINK(ArkGoals)[i].unk8 = 0;
-        LINK(ArkGoals)[i].unk12 = 0;
+        LINK(ArkGoals)[i].timer2 = 0;
         LINK(ArkDoorsA)[i].a = 0;
         LINK(ArkDoorsA)[i].b = 0;
         LINK(ArkDoorsA)[i].unkE = 0;
         LINK(ArkDoorsA)[i].unk8 = 0;
         LINK(ArkDoorsA)[i].unkE = 0;
         LINK(ArkDoorsA)[i].unk8 = 0;
-        LINK(ArkDoorsA)[i].unk12 = 0;
+        LINK(ArkDoorsA)[i].timer2 = 0;
         LINK(ArkDoorsB)[i].a = 0;
         LINK(ArkDoorsB)[i].b = 0;
         LINK(ArkDoorsB)[i].unkE = 0;
         LINK(ArkDoorsB)[i].unk8 = 0;
         LINK(ArkDoorsB)[i].unkE = 0;
         LINK(ArkDoorsB)[i].unk8 = 0;
-        LINK(ArkDoorsB)[i].unk12 = 0;
+        LINK(ArkDoorsB)[i].timer2 = 0;
         LINK(ArkWallObjects)[i].a = 0;
         LINK(ArkWallObjects)[i].b = 0;
         LINK(ArkWallObjects)[i].unkE = 0;
         LINK(ArkWallObjects)[i].unk8 = 0;
         LINK(ArkWallObjects)[i].unkE = 0;
         LINK(ArkWallObjects)[i].unk8 = 0;
-        LINK(ArkWallObjects)[i].unk12 = 0;
+        LINK(ArkWallObjects)[i].timer2 = 0;
         ArkWalls[i].pad0 = 0;
         ArkWalls[i].f4 = 0;
         ArkWalls[i].f8 = 0x60;
@@ -4539,28 +4539,28 @@ void UpdateArkFloor(void)
     } while (i < 4);
 
     for (j = 0; j < 4; j++) {
-        if (FloorLinks[j].unk12 != 0) {
-            FloorLinks[j].unk12--;
+        if (FloorLinks[j].timer2 != 0) {
+            FloorLinks[j].timer2--;
         }
-        if (BLINK_E28[j].unk12 != 0) {
-            BLINK_E28[j].unk12--;
+        if (BLINK_E28[j].timer2 != 0) {
+            BLINK_E28[j].timer2--;
         }
-        if (BLINK_D38[j].unk12 != 0) {
-            BLINK_D38[j].unk12--;
+        if (BLINK_D38[j].timer2 != 0) {
+            BLINK_D38[j].timer2--;
         }
         if ((p = FloorLinks[j].a) != NULL && ((GameState *)GameInfo)->mode == 14) {
-            if (FloorLinks[j].unk12 != 0) {
-                FloorLinks[j].unk10++;
-                p->unk74 = FloorLinks[j].unkA + (u16)(((FloorLinks[j].unk10 >> 2) & 3) + 1);
+            if (FloorLinks[j].timer2 != 0) {
+                FloorLinks[j].timer++;
+                p->unk74 = FloorLinks[j].unkA + (u16)(((FloorLinks[j].timer >> 2) & 3) + 1);
             } else {
                 p->unk74 = FloorLinks[j].unkA;
-                FloorLinks[j].unk10 = 0;
+                FloorLinks[j].timer = 0;
             }
         }
         if ((p = BLINK_E28[j].a) != NULL) {
             switch (((GameState *)GameInfo)->mode) {
             case 14:
-                if (BLINK_E28[j].unk12 != 0) {
+                if (BLINK_E28[j].timer2 != 0) {
                     p->unk74 = BLINK_E28[j].unkA;
                     if (BLINK_E28[j].b != NULL) {
                         BLINK_E28[j].b->unk74 = BLINK_E28[j].unkE;
@@ -4573,7 +4573,7 @@ void UpdateArkFloor(void)
                 }
                 break;
             case 16:
-                if (BLINK_E28[j].unk10 == 1) {
+                if (BLINK_E28[j].timer == 1) {
                     p->unk74 = BLINK_E28[j].unkA;
                     BLINK_E28[j].b->unk74 = BLINK_E28[j].unkE;
                 } else {
@@ -4583,8 +4583,8 @@ void UpdateArkFloor(void)
                 break;
             }
         }
-        if ((o = BLINK_D38[j].a) != NULL && BLINK_D38[j].unk12 == 0) {
-            if (BLINK_D38[j].unk10 != 0 && (--BLINK_D38[j].unk10 & 4)) {
+        if ((o = BLINK_D38[j].a) != NULL && BLINK_D38[j].timer2 == 0) {
+            if (BLINK_D38[j].timer != 0 && (--BLINK_D38[j].timer & 4)) {
                 o->unk74 = BLINK_D38[j].unkA;
             } else {
                 BLINK_D38[j].a->unk74 = BLINK_D38[j].unk8;
@@ -5563,7 +5563,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
                 puck->speed = puck->max + 0x40;
             }
         }
-        if (puck->unk32 == 0 && puck->max < 0x90) {
+        if (puck->flag == 0 && puck->max < 0x90) {
             puck->max += 4;
         }
     }

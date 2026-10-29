@@ -461,10 +461,10 @@ static inline s32 Pogo_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
 extern s32 TileStepFrames[];
 extern s32 TileStepFramesAlt[];
 
-/* A 0x38-byte frame of a cell object's model (Tile_Update reads unk26). */
+/* A 0x38-byte frame of a cell object's model; its +0x26 is the frame CELL_SET_T shows. */
 typedef struct {
     /* 0x00 */ u8 pad0[0x26];
-    /* 0x26 */ u16 unk26;
+    /* 0x26 */ u16 frame;
     /* 0x28 */ u8 pad28[0x38 - 0x28];
 } PogoFrame;
 
@@ -486,9 +486,9 @@ extern u16 TileFramesAlt[][4];
 #define MV ((GameState *)GameInfo)
 /* Set a cell object's animation and its frame (fr: an s32 temp of the caller). */
 #define CELL_SET(o, a, f) \
-    ((o)->anim = (a), fr = (f), (o)->frame = CELL_FRAME(o, fr & 0xFFF)->unk26)
+    ((o)->anim = (a), fr = (f), (o)->frame = CELL_FRAME(o, fr & 0xFFF)->frame)
 #define CELL_SET_T(o, a, f) \
-    ((o)->anim = (a), (o)->frame = CELL_FRAME(o, (f) & 0xFFF)->unk26)
+    ((o)->anim = (a), (o)->frame = CELL_FRAME(o, (f) & 0xFFF)->frame)
 /* &(o)->model->frames[i], as (i * 7) << 3 bytes (sizeof(PogoFrame) is 0x38) */
 #define CELL_FRAME(o, i) ((PogoFrame *)((u32)(o)->model->frames + (((i) * 7) << 3)))
 

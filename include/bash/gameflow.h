@@ -469,7 +469,7 @@ extern HitCallbacks HitHooks;
 
 typedef struct {
     u8 pad0[0x14];
-    u16 unk14;
+    u16 state;  /* switched on */
     s16 unk16;
 } HitInfo;
 /* Intro/cutscene step script run by UpdateIntro. */

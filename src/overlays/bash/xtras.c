@@ -476,7 +476,7 @@ void PlotCrate(NAS *arg0) {
             ext->unk1E = BC038_STATB(hb, hit_shapes, fux->player)->unkA;
             ext->unk1A = BC038_STATB(hb, hit_shapes, fux->player)->unkC;
             ext->unk1C = BC038_STATB(hb, hit_shapes, fux->player)->unkE;
-            ext->unkC = BC038_STATB(hb, hit_shapes, fux->player)->unk10;
+            ext->flag = BC038_STATB(hb, hit_shapes, fux->player)->unk10;
             fux->status = 8;
         }
         } else {
@@ -528,7 +528,7 @@ void PlotCrate(NAS *arg0) {
         ext->unk18 = 0x50;
         ext->unk1E = 0x50;
         ext->unk1C = 6;
-        ext->unkC = 0xFF;
+        ext->flag = 0xFF;
         ext->unk1A = 0;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
@@ -538,7 +538,7 @@ void PlotCrate(NAS *arg0) {
         BC038_SNAP(eng);
         ext->unk1E = 0x50;
         ext->unk1C = 6;
-        ext->unkC = 0xFF;
+        ext->flag = 0xFF;
         ext->unk18 = 0;
         ext->unk1A = 0;
         eng->xform.rot.vx = 0;
@@ -801,7 +801,7 @@ void PlotCrate(NAS *arg0) {
         ext->unk1E = 0xF0;
         ext->unk1A = 0;
         ext->unk1C = 4;
-        ext->unkC = 0xFF;
+        ext->flag = 0xFF;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
         switch (fux->contains) {
@@ -835,7 +835,7 @@ void PlotCrate(NAS *arg0) {
             return;
         }
         done = 0;
-        if (fux->player != -1 && ext->unkC == 0) {
+        if (fux->player != -1 && ext->flag == 0) {
             fux->can_do |= 8;
             if (sub_find_point(Heroes[fux->player].hero_eng, Heroes[fux->player].hero_sub, 0x80, &a) != NULL) {
                 dx = eng->XYZ.x - a.vx;
@@ -918,7 +918,7 @@ void PlotCrate(NAS *arg0) {
         ext->unk1E = 0x50;
         ext->unk1C = 4;
         ext->unk1A = 0;
-        ext->unkC = 0xFF;
+        ext->flag = 0xFF;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
         switch (fux->contains) {
@@ -964,7 +964,7 @@ void PlotCrate(NAS *arg0) {
         } else {
             eng->xform.rot.vy += 0x71;
         }
-        if (ext->unkC == 0) {
+        if (ext->flag == 0) {
             fux->can_do |= 8;
         }
         CrateHitHeroes(eng, (EXTobject *)fux, 8);

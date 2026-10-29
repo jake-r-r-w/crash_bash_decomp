@@ -106,7 +106,7 @@ void PlotPickup(NAS *arg0);
 /* PlotCrate: its extension 0x800 (CrateAimAtGrid's T_BB64C_B). */
 typedef struct {
     /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ u8 unkC;
+    /* 0x0C */ u8 flag;  /* tested for zero */
     /* 0x0D */ u8 dir;
     /* 0x0E */ s16 speed;
     /* 0x10 */ s16 accel;

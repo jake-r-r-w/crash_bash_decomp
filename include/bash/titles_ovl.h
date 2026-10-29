@@ -86,7 +86,7 @@ typedef struct {
  * BattleLevel list, unk4 how many. */
 typedef struct {
     s32 unk0;
-    s32 unk4;
+    s32 count;  /* counted up */
 } BattleArena;
 
 void LevelSelectInput(void);
@@ -175,8 +175,8 @@ extern PlaceRec LevelSelectPlace[];
 extern s32 LevelSelectBusy;
 extern s32 LevelSelectReload;
 typedef struct TitlesObj {
-    s32 unk0;
-    s32 unk4;
+    s32 flags;
+    s32 flags2;
     subengine *unk8;
     subengine *unkC;
     subengine *unk10;
@@ -184,9 +184,9 @@ typedef struct TitlesObj {
     s32 unk18;
     s32 unk1C;
     s32 unk20;
-    s32 unk24;
-    s32 unk28;
-    s32 unk2C;
+    s32 count;  /* counted up */
+    s32 y;
+    s32 flags3;
     s32 unk30;
     Ext400 ext;
 } TitlesObj;
@@ -360,7 +360,7 @@ typedef struct {
     s32 flags[3];  /* 0x10: or-ed into sub[8/9/10].flags */
     s32 val[4];    /* 0x1C: targets for sub[4..7] */
     s32 *tbl;      /* 0x2C: indexed by GameInfo+0x2C */
-    s32 unk30;
+    s32 flag;  /* tested for zero */
     s32 unk34;
     s32 unk38;
     s32 unk3C;

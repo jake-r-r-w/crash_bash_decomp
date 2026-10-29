@@ -197,9 +197,9 @@ loop:
                         p++;
                     }
                 }
-                if (tbl->unk8 != NULL) {
+                if (tbl->flag != NULL) {
                     ModeDbase *p = ModeDbaseLists;
-                    e = ((u16 *)tbl->unk8)[c] * 0x38 + (s32)base;
+                    e = ((u16 *)tbl->flag)[c] * 0x38 + (s32)base;
                     for (j = 0; j < 0x60; j++) {
                         if (e == (s32)p->dbase) {
                             queue_dbase_load((u8 *)p, arg);
@@ -249,9 +249,9 @@ void load_initial_dbases(void)
     if ((k - 1) < 8)
     {
       dbase_asload_with_anims((obj_dbase *) ((((u16 *) h->HeroModels)[k] * 0x38) + ((s32) b)), arg);
-      if (h->unk8 != 0)
+      if (h->flag != 0)
       {
-        dbase_asload_with_anims((obj_dbase *) ((((u16 *) h->unk8)[k] * 0x38) + ((s32) b)), arg);
+        dbase_asload_with_anims((obj_dbase *) ((((u16 *) h->flag)[k] * 0x38) + ((s32) b)), arg);
       }
     }
     i++;
@@ -929,7 +929,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
         }
         switch (rec->type) {
         case 13:
-            switch (rec->unk20 & 0x8F0) {
+            switch (rec->flags & 0x8F0) {
             case 0x800:
                 skip = 0;
                 break;
@@ -1036,7 +1036,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->y = rec->y;
                 s->z = rec->z;
                 s->unk6C = (s32)(&HeroModelBank[rec->unk1C]);
-                s->unk74 = rec->unk1E;
+                s->unk74 = rec->player;
             }
             break;
         case 8:
@@ -1058,7 +1058,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->unk6C = (s32)&HeroModelBank[DB_Interface];
                 {
                     u16 *tbl = IconImage;
-                    s32 name = Heroes[rec->unk1E].hero_name;
+                    s32 name = Heroes[rec->player].hero_name;
                     s->unk74 = tbl[name];
                 }
             }
@@ -1078,7 +1078,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->unk12 = rec->unkE;
                 s->unk14 = rec->unk10;
                 s->unk6C = (s32)(&HeroModelBank[rec->unk1C]);
-                s->unk74 = rec->unk1E;
+                s->unk74 = rec->player;
             }
             break;
         case 5:
@@ -1087,7 +1087,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                sub_play_script((obj_dbase *)(&HeroModelBank[rec->unk1C]), rec->unk1E, (subengine *)s, rec->unk20);
+                sub_play_script((obj_dbase *)(&HeroModelBank[rec->unk1C]), rec->player, (subengine *)s, rec->flags);
             }
             break;
         case 2:
@@ -1195,7 +1195,7 @@ void draw_animated_sub(PlaceSub *arg0, u8 *arg1, s32 arg2) {
     u32 m;
 
     p = arg0->rec;
-    flags = p->unk20;
+    flags = p->flags;
     if (flags & 1) {
         arg0->unk10 += p->unkC;
     }
@@ -1209,7 +1209,7 @@ void draw_animated_sub(PlaceSub *arg0, u8 *arg1, s32 arg2) {
         n = p->unk18;
         if (n != 0) {
             m = FrameCount % n + 1;
-            arg0->unk74 = p->unk1E + ((u16)p->unk18 - m);
+            arg0->unk74 = p->player + ((u16)p->unk18 - m);
         }
     }
     arg0->unk52 = 1;

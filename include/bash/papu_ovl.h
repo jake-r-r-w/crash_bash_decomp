@@ -26,9 +26,9 @@ typedef struct PapuPos {
 } PapuPos;
 
 typedef struct PapuEntry {
-    /* 0x0 */ s32 unk0;
+    /* 0x0 */ s32 flag;  /* tested for zero */
     /* 0x4 */ s16 pad4;
-    /* 0x6 */ s16 unk6;
+    /* 0x6 */ s16 flag2;  /* tested for zero */
     /* 0x8 */ s16 unk8;
     /* 0xA */ s16 unkA;
     /* 0xC */ s16 unkC;
@@ -40,7 +40,7 @@ extern s16 *PapuColumnHeights[];
 extern PapuEntry PapuColumns[20];
 
 typedef struct PapuTile {
-    s32 unk0;
+    s32 flags;
     s32 pad4;
     s32 unk8;
     u8 padC[0x74 - 0xC];
@@ -96,12 +96,12 @@ typedef struct {
 } T_B8080;
 
 typedef struct Slot40 {
-    /* 0x00 */ s32 unk0;
+    /* 0x00 */ s32 flag;  /* tested for zero */
     /* 0x04 */ s32 pad4[7];
     /* 0x20 */ s16 unk20;
     /* 0x22 */ s16 unk22;
     /* 0x24 */ s16 unk24;
-    /* 0x26 */ s16 unk26;
+    /* 0x26 */ s16 flag2;  /* tested for zero */
     /* 0x28 */ s16 unk28;
     /* 0x2A */ s16 unk2A;
     /* 0x2C */ s16 unk2C;
@@ -140,7 +140,7 @@ typedef struct B5E44Pos {
 typedef struct B5E44Dyn {
     /* 0x00 */ s32 pad0[5];
     /* 0x14 */ s16 pad14;
-    /* 0x16 */ s16 unk16;
+    /* 0x16 */ s16 angle;
     /* 0x18 */ s32 pad18;
     /* 0x1C */ s32 pad1C;
     /* 0x20 */ s16 pad20;
@@ -182,7 +182,7 @@ typedef struct PapuBossState {
     /* 0x22 */ s16 unk22;
     /* 0x24 */ s16 unk24;
     /* 0x26 */ s16 unk26;
-    /* 0x28 */ u16 unk28;
+    /* 0x28 */ u16 flag;  /* tested for zero */
     /* 0x2A */ s16 unk2A;
     /* 0x2C */ s16 unk2C;
     /* 0x2E */ s16 unk2E;

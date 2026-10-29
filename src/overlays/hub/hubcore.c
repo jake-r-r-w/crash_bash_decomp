@@ -497,12 +497,12 @@ void HubOpenDoorMenu(s32 arg0) {
     s32 w;
     s32 n;
 
-    HubDoorMenuRecs[5].unk1E = 4;
-    HubDoorMenuRecs[6].unk1E = 4;
+    HubDoorMenuRecs[5].player = 4;
+    HubDoorMenuRecs[6].player = 4;
     if (((GameState *)GameInfo)->adventure.won[1][arg0] != 0) {
-        HubDoorMenuRecs[5].unk1E = 3;
+        HubDoorMenuRecs[5].player = 3;
         if (((GameState *)GameInfo)->adventure.won[1][arg0] >= 2) {
-            HubDoorMenuRecs[6].unk1E = 2;
+            HubDoorMenuRecs[6].player = 2;
         }
     }
     n = ((GameState *)GameInfo)->adventure.stage;
@@ -514,8 +514,8 @@ void HubOpenDoorMenu(s32 arg0) {
     if (((GameState *)GameInfo)->cheats & 0x2000) {
         HubDoorChoices = ((GameState *)GameInfo)->adventure.stage + 3;
     }
-    HubDoorMenuRecs[4].unk1E = ((GameState *)GameInfo)->adventure.won[3][arg0] ? 7 : 8;
-    HubDoorMenuRecs[3].unk1E = ((GameState *)GameInfo)->adventure.won[2][arg0] ? 5 : 6;
+    HubDoorMenuRecs[4].player = ((GameState *)GameInfo)->adventure.won[3][arg0] ? 7 : 8;
+    HubDoorMenuRecs[3].player = ((GameState *)GameInfo)->adventure.won[2][arg0] ? 5 : 6;
     e = GetEngineSlot(1);
     PlaceEngineSlot(1, (PlaceRec *)HubDoorMenuRecs);
     e->XYZ.y = 200;
@@ -2068,7 +2068,7 @@ void HubInitSparks(HubSparks *arg0) {
         if (n == 0) {
             break;
         }
-        row->unk134 = 0;
+        row->count = 0;
         ang = n << 9;
         a = &rcossin_tbl[ang & 0xFFF];
         for (;;) {
@@ -2082,13 +2082,13 @@ void HubInitSparks(HubSparks *arg0) {
             row->rot[i].vz = 0x2000;
             row->unk120 = (a->unk2 * 256 >> 12) + Random(0x40) - Random(0x40);
             row->unk12C = (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> k) + Random(0x40) - Random(0x40);
-            row->unkE0[i].vz = 0;
+            row->angle[i].vz = 0;
             row->unkA0[i].vz = 0;
             row->unk40[i] = 0;
             row->unk128 = 6;
             row->unk130 = Random(k) - Random(k);
             row->unk124 = 0;
-            row->unk138 = 0;
+            row->flag = 0;
             row->unk13C = 0;
             *(u32 *)&src->r0 = 0xA0A0A0;
             src->tpage = (tex->tpage & ~0x60) | 0x20;
@@ -2114,7 +2114,7 @@ void HubTrailPoint(HubTrailDst *d, HubTrail *t, s32 idx) {
     s32 px, py;
 
     if (idx == 0) {
-        if (t->unk138 != 0) {
+        if (t->flag2 != 0) {
             d->flags |= 0x40000000;
             d->unk76 += 0x200;
         }
@@ -2167,11 +2167,11 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
             break;
         }
         if (GamePause == 0) {
-            row->unk134++;
+            row->count++;
         }
         i = 0;
-        if (row->unk134 == 0x14) {
-            row->unk138 = 1;
+        if (row->count == 0x14) {
+            row->flag = 1;
         }
         while (1) {
             SVECTOR v;
@@ -2180,7 +2180,7 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
                 break;
             }
             HubTrailPoint((HubTrailDst *)arg0, (HubTrail *)row, i);
-            if (row->unk138 != 0) {
+            if (row->flag != 0) {
                 row->unk13C = row->unk13C * 220 >> 8;
             } else {
                 row->unk13C = 255 - i * 255 / 8;
@@ -2216,15 +2216,15 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
                 prim->y2 = prim->y3;
             } else {
                 r = 0x80 - i * 16;
-                v.vx = row->rot[i].vx + (r * rcossin_tbl[row->unkE0[i].vz & 0xFFF].unk2 >> 12);
-                v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->unkE0[i].vz + 0x400) & 0xFFF].unk2 >> 12);
+                v.vx = row->rot[i].vx + (r * rcossin_tbl[row->angle[i].vz & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->angle[i].vz + 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
                 gte_ldv0(p);
                 gte_rtps();
                 gte_stsxy(&prim->x3);
-                v.vx = row->rot[i].vx + (r * rcossin_tbl[(((row->unkE0[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
-                v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->unkE0[i].vz - 0x400) & 0xFFF].unk2 >> 12);
+                v.vx = row->rot[i].vx + (r * rcossin_tbl[(((row->angle[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->angle[i].vz - 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
                 gte_ldv0(p);
@@ -2459,7 +2459,7 @@ void HubSaveMenuInput(void) {
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (pad->pressed & 0x4000) {
-            switch (k->unk8) {
+            switch (k->state) {
             case 4:
                 e4 = &HubNamePages[HubNamePage];
                 if (HubNameLen < 8) {

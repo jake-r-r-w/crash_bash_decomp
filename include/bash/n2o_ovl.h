@@ -58,7 +58,7 @@ typedef struct N2OPuck {
     s16 max;
     s16 dir;
     u8 pad18[0x32 - 0x18];
-    u16 unk32;
+    u16 flag;  /* tested for zero */
 } N2OPuck;
 
 
@@ -106,7 +106,7 @@ void SetN2OHeroTaunt(s32 arg0);
 /* Round state cleared by InitialiseN2O. */
 typedef struct N2ORound {
     /* 0x00 */ s32 unk0;
-    /* 0x04 */ EXTengine *unk4;
+    /* 0x04 */ EXTengine *eng;
     /* 0x08 */ s32 unk8;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
@@ -250,7 +250,7 @@ typedef struct N2OPanRef {
 extern u16 N2OBossShotSfx;
 typedef struct N2OPan {
     u8 pad0[0xC];
-    s32 unkC;
+    s32 flag;  /* tested for zero */
 } N2OPan;
 extern u16 N2OHeroPushTimer;
 extern s16 N2OBallsLost;

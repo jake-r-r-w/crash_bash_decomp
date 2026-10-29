@@ -1365,10 +1365,10 @@ void InitCharSelector(s32 arg0) {
     o->unkC = t;
     o->unk10 = e2->sub + (arg0 + 4);
     o->ext = ExtTemplate400;
-    o->unk0 = 0;
-    o->unk4 = arg0;
-    o->unk2C = 0;
-    o->unk28 = Random(0x1E) + 0x1E;
+    o->flags = 0;
+    o->flags2 = arg0;
+    o->flags3 = 0;
+    o->y = Random(0x1E) + 0x1E;
     o->unk14 = Random(0x200) - 0x100;
     o->unk18 = Random(0x200) - 0x100;
     s->xform.hasScale = 1;
@@ -1381,7 +1381,7 @@ void InitCharSelector(s32 arg0) {
     o->unk30 = arg0;
     do {
     } while (0);
-    o->unk24 = 0;
+    o->count = 0;
     if (arg0 < *g) {
         t->flags |= 0x8000;
     } else {
@@ -1407,14 +1407,14 @@ void UpdateCharSelector(TitlesSlot *slot) {
     s = o->unk8;
     t = o->unkC;
     s2 = o->unk10;
-    x = CharCards[o->unk30].x + CharSelectorOffsets[o->unk4].x;
-    y = CharCards[o->unk30].y + CharSelectorOffsets[o->unk4].y;
+    x = CharCards[o->unk30].x + CharSelectorOffsets[o->flags2].x;
+    y = CharCards[o->unk30].y + CharSelectorOffsets[o->flags2].y;
     t->XYZ.x = lerp_snap(t->XYZ.x, x, 0x800);
     t->XYZ.y = lerp_snap(t->XYZ.y, y, 0x800);
     still = abs(t->XYZ.x - x) + abs(t->XYZ.y - y);
-    s->XYZ.y = s2->XYZ.y = ((TitlesTrig *)rcossin_tbl)[(FrameCount * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
+    s->XYZ.y = s2->XYZ.y = ((TitlesTrig *)rcossin_tbl)[(FrameCount * o->y - 0x400) & 0xFFF].hi + 0x1A4;
     still = still == 0;
-    if (o->unk0 & 1) {
+    if (o->flags & 1) {
         tgt = CharCards[o->unk30].target;
         v = o->unk14;
         v = TitlesSteer(o->unk1C, tgt, v, 0x2BC);
@@ -1431,29 +1431,29 @@ void UpdateCharSelector(TitlesSlot *slot) {
             DoAnimCommand(NULL, e, o->unk8, (EXTanimator *)&o->ext);
         }
         s->xform.dirty = 1;
-        o->unk24++;
+        o->count++;
         return;
     }
-    if (o->unk4 < GamePlayers) {
-        if (O69PAD[o->unk4].pressed & 0x80) {
-            PlaySfx(CharMoveSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+    if (o->flags2 < GamePlayers) {
+        if (O69PAD[o->flags2].pressed & 0x80) {
+            PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
             o->unk30--;
         }
-        if (O69PAD[o->unk4].pressed & 0x20) {
-            PlaySfx(CharMoveSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+        if (O69PAD[o->flags2].pressed & 0x20) {
+            PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
             o->unk30++;
         }
-        if (O69PAD[o->unk4].pressed & 0x10) {
-            PlaySfx(CharMoveSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+        if (O69PAD[o->flags2].pressed & 0x10) {
+            PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
             o->unk30 -= 4;
         }
-        if (O69PAD[o->unk4].pressed & 0x40) {
-            PlaySfx(CharMoveSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+        if (O69PAD[o->flags2].pressed & 0x40) {
+            PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
             o->unk30 += 4;
         }
     }
     o->unk30 &= 7;
-    if ((o->unk4 < ((GameState *)GameInfo)->players && (O69PAD[o->unk4].pressed & 0x4000) && still) || o->unk2C != 0) {
+    if ((o->flags2 < ((GameState *)GameInfo)->players && (O69PAD[o->flags2].pressed & 0x4000) && still) || o->flags3 != 0) {
         GetEngineSlot(0)->sub[20].flags &= 0xFFFF7FFF;
         GetEngineSlot(0)->sub[21].flags &= 0xFFFF7FFF;
         card = CharCards;
@@ -1461,7 +1461,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
             PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
             return;
         }
-        if (o->unk2C == 0) {
+        if (o->flags3 == 0) {
             PlaySfx(card[o->unk30].sfx, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         card[o->unk30].flags |= 1;
@@ -1469,18 +1469,18 @@ void UpdateCharSelector(TitlesSlot *slot) {
         o->unk20 = 0;
         o->unk14 = 0;
         o->unk18 = 0;
-        o->unk0 |= 1;
+        o->flags |= 1;
         {
             s->u6C.dbase = &HeroModelBank[card[o->unk30].model];
             s->flags |= 0x8000;
         }
-        GAME->heroes[o->unk4] = card[o->unk30].hero;
-        GAME->heroChoice[o->unk4] = card[o->unk30].hero;
-        PlaySfx(CharPickSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+        GAME->heroes[o->flags2] = card[o->unk30].hero;
+        GAME->heroChoice[o->flags2] = card[o->unk30].hero;
+        PlaySfx(CharPickSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
         o->ext = ExtTemplate400;
         {
             s32 w = CharCards[o->unk30].anim;
-            o->unk24++;
+            o->count++;
             o->ext.w[3] = w;
         }
     }
@@ -1725,7 +1725,7 @@ outer:
         q = p + 1;
         g = GameInfo;
     inner:
-        if (j < e->unk4) {
+        if (j < e->count) {
             if (p[0] == 2) {
                 s32 n;
                 s32 idx = q[0];
@@ -1823,7 +1823,7 @@ void LevelSelectInput(void) {
         GAME->arenaLevel--;
     }
     if ((Pads[0].pressed & 0x40)
-        && (s8)GAME->arenaLevel < BattleArenas[(s8)GAME->arena].unk4 - 1) {
+        && (s8)GAME->arenaLevel < BattleArenas[(s8)GAME->arena].count - 1) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         GAME->arenaLevel++;
     }
@@ -1929,7 +1929,7 @@ void LevelSelectUpdate(void) {
         s32 fl;
         EXTengine *e;
 
-        if (i >= (BattleArenas + (s8)GAME->arena)->unk4) {
+        if (i >= (BattleArenas + (s8)GAME->arena)->count) {
             break;
         }
         GetEngineSlot(1)->sub[off + 4].flags |= 0x8000;
@@ -1969,7 +1969,7 @@ void LevelSelectUpdate(void) {
         s->xform.order = 0;
         s->xform.dirty = 1;
     }
-    for (i = (GameArena + BattleArenas)->unk4; i < 4; i++) {
+    for (i = (GameArena + BattleArenas)->count; i < 4; i++) {
         GetEngineSlot(1)->sub[i + 4].flags &= ~0x8000;
         GetEngineSlot(i + 3)->sub->entity = 0;
     }
@@ -2069,7 +2069,7 @@ s32 LevelListAnim(s32 a, s32 b) {
 }
 
 s32 LevelListCount(s32 arg0) {
-    return BattleArenas[arg0].unk4;
+    return BattleArenas[arg0].count;
 }
 
 s32 LevelListText(s32 a, s32 b) {
@@ -2132,7 +2132,7 @@ void TeamModeShowPreset(void) {
     TITLES_SETBAR(3, p->val[3]);
 
     *(s32 *)(s + 0x8F4) = p->tbl[O69PV->language];
-    O69PV->teams = p->unk30 != 0;
+    O69PV->teams = p->flag != 0;
     O69PV->teamLeader[0] = p->unk34;
     O69PV->teamLeader[1] = p->unk38;
     O69PV->teammateChoice[0] = p->unk3C;

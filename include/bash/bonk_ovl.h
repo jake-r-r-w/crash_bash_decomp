@@ -85,8 +85,8 @@ void InitialiseBONKFirst();
 
 typedef struct BonkEntry {
     s32 unk0;
-    s32 unk4;
-    s32 unk8;
+    s32 flag;  /* tested for zero */
+    s32 timer;  /* counted down */
 } BonkEntry;
 extern s32 BonkEntryCount;
 extern s32 BonkStoolCount;

@@ -706,7 +706,7 @@ void PapuSetColumns(u16 arg0) {
 
     for (i = 0; i < 20; i++) {
         p = &PapuColumns[i];
-        if (p->unk0 != 0) {
+        if (p->flag != 0) {
             s16 v = PapuColumnHeights[arg0][i];
             p->unkE = 4;
             p->unkA = v;
@@ -730,8 +730,8 @@ void PapuMoveColumns(void) {
     i = 0;
     do {
         e = &PapuColumns[i];
-        if ((u16)e->unk6 != 0) {
-            t = (PapuTile *)e->unk0;
+        if ((u16)e->flag2 != 0) {
+            t = (PapuTile *)e->flag;
             v = e->unkA;
             c = e->unkC;
             v += e->unkE;
@@ -741,15 +741,15 @@ void PapuMoveColumns(void) {
             e->unkA = v;
             a = t->unk8 + v;
             if (a < -0xE00) {
-                e->unk6 = 0;
-                t->unk0 &= 0xFFFF7FFF;
+                e->flag2 = 0;
+                t->flags &= 0xFFFF7FFF;
             }
             if (e->unk8 < a) {
                 a = e->unk8;
                 e->unkA = 0;
                 e->unkC = 0;
                 e->unkE = 0;
-                e->unk6 = 0;
+                e->flag2 = 0;
             }
             t->unk8 = a;
         }
@@ -763,7 +763,7 @@ void PapuInitMinionSlots(void) {
 
     for (i = 0; i < 6; i++) {
         p = &PapuMinionSlots[i];
-        p->unk0 = 0;
+        p->flag = 0;
         p->pad4[0] = 0;
         p->pad4[1] = 0;
         p->pad4[2] = 0;
@@ -774,7 +774,7 @@ void PapuInitMinionSlots(void) {
         p->unk20 = 0;
         p->unk22 = i + 0x14;
         p->unk24 = 0;
-        p->unk26 = 0x14;
+        p->flag2 = 0x14;
         p->unk28 = 0;
         p->unk2A = 0;
         p->unk2C = 0;
@@ -818,7 +818,7 @@ void InitPapuBoss(NAS *nas) {
         PapuBoss.unk20 = 0;
         PapuBoss.unk24 = 0;
         PapuBoss.unk26 = 0x14;
-        PapuBoss.unk28 = 0;
+        PapuBoss.flag = 0;
         PapuBoss.unk2A = 0;
         PapuBoss.unk2C = 0;
         PapuBoss.unk2E = 0;
@@ -899,8 +899,8 @@ void PlotPapuBoss(NAS *nas) {
             }
             PapuStopCrates();
             for (j = 0; j < 0x14; j++) {
-                if (PapuColumns[j].unk0 != 0) {
-                    PapuColumns[j].unk6 = 1;
+                if (PapuColumns[j].flag != 0) {
+                    PapuColumns[j].flag2 = 1;
                 }
             }
         }
@@ -915,7 +915,7 @@ void PlotPapuBoss(NAS *nas) {
         }
         break;
     case 12:
-        if (PapuBoss.unk28 != 0) {
+        if (PapuBoss.flag != 0) {
             PapuBossLast = PapuBossCount;
             if (PapuBossFlag != 0) {
                 PapuBossCount = 9;
@@ -938,7 +938,7 @@ void PlotPapuBoss(NAS *nas) {
     case 11:
         empty = 1;
         for (i = 0; i < 6; i++) {
-            if (PapuMinionSlots[i].unk0 != 0) {
+            if (PapuMinionSlots[i].flag != 0) {
                 empty = 0;
             }
         }
@@ -1054,7 +1054,7 @@ void PlotPapuBoss(NAS *nas) {
         break;
     }
     eng->xform.dirty = 1;
-    PapuBoss.unk28 = 0;
+    PapuBoss.flag = 0;
 }
 
 NAS *PapuMinionFindCrate(s32 arg0) {
@@ -1096,7 +1096,7 @@ NAS *PapuMinionFindCrate(s32 arg0) {
                     score *= mul;
                     cnt = 0;
                     for (i = 0; i < 6; i++) {
-                        o = (NAS *)PapuMinionSlots[i].unk0;
+                        o = (NAS *)PapuMinionSlots[i].flag;
                         if (o != NULL && o->FUX != NULL && ((T_B4B9CFux *)o->FUX)->owner == n) {
                             cnt += 2;
                         }
@@ -1174,7 +1174,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
       FetchDefaultColBox(eng, 0x50);
       for (i = 0; i < 6; i++)
       {
-        if (PapuMinionSlots[i].unk0 == 0)
+        if (PapuMinionSlots[i].flag == 0)
         {
           goto found;
         }
@@ -1187,12 +1187,12 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
         nas->UserInfo.user1 = i;
         new_var = (u8 *) PapuMinionSlots;
         s = (Slot40 *) (new_var + (i << 6));
-        s->unk0 = (s32) nas;
+        s->flag = (s32) nas;
         s->pad4[0] = (s32) eng;
         s->pad4[1] = (s32) eng->sub;
         s->pad4[4] = (s32) AddMotion(nas);
         *((SLONG_XYZ *) s->unk34) = eng->XYZ;
-        s->unk26 = 0xA;
+        s->flag2 = 0xA;
         obj = (EXTobject *) AddObject(nas);
         if (obj != 0)
         {
@@ -1514,7 +1514,7 @@ void PlotPapuMinion(NAS *nas)
     fux->status = 0xB;
     fux->can_do &= 0xFEFD;
     fux->will_do &= 0xFEFD;
-    PapuMinionSlots[slot].unk26 = 0;
+    PapuMinionSlots[slot].flag2 = 0;
     GotoLinkAnim(anim, 0xD);
     break;
   case 11:
@@ -1522,12 +1522,12 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0;
     PapuMinionSlots[slot].pad4[6] = 0;
     if (frame != 8) {
-      if (frame == 9 && PapuMinionSlots[slot].unk26 != 0) {
+      if (frame == 9 && PapuMinionSlots[slot].flag2 != 0) {
         fux->status = 0;
       }
       break;
     }
-    PapuMinionSlots[slot].unk0 = 0;
+    PapuMinionSlots[slot].flag = 0;
     PlaySfx(0x1FB, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Minion]);
     KillNAS(nas);
@@ -1623,7 +1623,7 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
           {
             if (d < 0x80)
             {
-              ang = s->dyn->unk16;
+              ang = s->dyn->angle;
             }
             else
             {
@@ -1632,7 +1632,7 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
             s->dyn->unk2A = ang ^ 0x800;
             d = (arg1 - d) >> 3;
             (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->unk22 = d;
-            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->unk16 = (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->unk2A + 0x800;
+            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->angle = (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->unk2A + 0x800;
             PlaySfx(PapuMinionSfx[Random(4)], 0, (SLONG_XYZ *) (&me->x), 0x1000, 0x1E00, 0);
             f->unk1A = 0xC;
           }
@@ -2042,8 +2042,8 @@ void PapuInitTiles(void) {
         }
     }
     for (j = 0; j < 6; j++) {
-        PapuColumns[j].unk0 = 0;
-        PapuColumns[j].unk6 = 0;
+        PapuColumns[j].flag = 0;
+        PapuColumns[j].flag2 = 0;
         PapuColumns[j].unkA = 0;
         PapuColumns[j].unkC = 0;
         PapuColumns[j].unkE = 0;
@@ -2062,7 +2062,7 @@ void PapuInitTiles(void) {
         j = *(s16 *)id - 100;
         if ((u32)j < 20) {
             p = &PapuColumns[j];
-            p->unk0 = (s32)obj;
+            p->flag = (s32)obj;
             p->unk8 = obj->unk8;
         }
         if (j == 50) {
@@ -2384,7 +2384,7 @@ s32 PapuFreeMinionSlot(void) {
     s32 i;
 
     for (i = 0; i < 6; i++) {
-        if (PapuMinionSlots[i].unk0 == 0) {
+        if (PapuMinionSlots[i].flag == 0) {
             return i;
         }
     }
@@ -2450,8 +2450,8 @@ void PapuDropColumns(void) {
     i = 0;
     one = 1;
     for (p = PapuColumns; i < 20; i++, p++) {
-        if (p->unk0 != 0) {
-            p->unk6 = one;
+        if (p->flag != 0) {
+            p->flag2 = one;
         }
     }
 }

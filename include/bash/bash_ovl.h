@@ -18,8 +18,8 @@ struct BashObj;
 typedef struct BashCell {
     /* 0x00 */ struct BashObj *obj;
     /* 0x04 */ struct BashObj *obj2;
-    /* 0x08 */ u16 unk8; /* flags */
-    /* 0x0A */ u16 unkA; /* object index */
+    /* 0x08 */ u16 flags; /* flags */
+    /* 0x0A */ u16 flag;  /* tested for zero */
 } BashCell;
 
 extern BashCell BashSpaceTiles[8][8];

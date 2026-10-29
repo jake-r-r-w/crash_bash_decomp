@@ -36,7 +36,7 @@ typedef struct HubTrail {
     /* 0x12C */ s32 unk12C;
     /* 0x130 */ s32 pad130;
     /* 0x134 */ s32 pad134;
-    /* 0x138 */ s32 unk138;
+    /* 0x138 */ s32 flag2;  /* tested for zero */
 } HubTrail;
 typedef struct HubTrailDst {
     /* 0x00 */ u32 flags;
@@ -63,7 +63,7 @@ extern HubEntry12 HubNamePages[];
 typedef struct HubKey {
     /* 0x0 */ s32 pad0;
     /* 0x4 */ u8 *unk4;
-    /* 0x8 */ s16 unk8;
+    /* 0x8 */ s16 state;  /* switched on */
     /* 0xA */ s8 unkA;
     /* 0xB */ s8 unkB;
     /* 0xC */ s8 unkC;
@@ -145,14 +145,14 @@ typedef struct HubSparkRow {
     /* 0x040 */ s32 unk40[8];
     /* 0x060 */ u8 pad60[0x40];
     /* 0x0A0 */ SVECTOR unkA0[8];
-    /* 0x0E0 */ SVECTOR unkE0[8];
+    /* 0x0E0 */ SVECTOR angle[8];
     /* 0x120 */ s32 unk120;
     /* 0x124 */ s32 unk124;
     /* 0x128 */ s32 unk128;
     /* 0x12C */ s32 unk12C;
     /* 0x130 */ s32 unk130;
-    /* 0x134 */ s32 unk134;
-    /* 0x138 */ s32 unk138;
+    /* 0x134 */ s32 count;  /* counted up */
+    /* 0x138 */ s32 flag;  /* tested for zero */
     /* 0x13C */ s32 unk13C;
 } HubSparkRow;
 

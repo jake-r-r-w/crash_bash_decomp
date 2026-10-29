@@ -448,7 +448,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
             return;
         }
         bestd = 0x8000;
-        if (arg2->unk20 <= 0) {
+        if (arg2->timer2 <= 0) {
             arg2->state = 7;
             arg2->timer = 0x3C;
             arg2->angle = get_angle(arg1->XYZ.x, arg1->XYZ.z);
@@ -497,7 +497,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
     case 2:
     default:
         arg2->timer = Random(0x1E) + 0xF;
-        arg2->unk8 = 0;
+        arg2->flags = 0;
         arg2->state = 1;
         return;
     case 3:
@@ -546,9 +546,9 @@ void Chase_HeroBot(s32 arg0) {
         off = 200;
         break;
     }
-    ai->unk8 = 0;
-    if (ai->unk20 > 0) {
-        ai->unk20--;
+    ai->flags = 0;
+    if (ai->timer2 > 0) {
+        ai->timer2--;
     }
     if (--ai->timer <= 0) {
         ChaseAI_ChooseTarget(arg0, eng, ai);
@@ -557,23 +557,23 @@ void Chase_HeroBot(s32 arg0) {
     }
     switch (ai->state) {
     case 4:
-        ai->unk8 |= DirPadBits[((ai->angle + off) >> 9) & 7];
+        ai->flags |= DirPadBits[((ai->angle + off) >> 9) & 7];
         if (ai->timer < 5 || ((d = ai->x - eng->XYZ.x, (u32)(d + 99) < 199) &&
                               (dz = ai->z - eng->XYZ.z, (u32)(dz + 99) < 199))) {
             ai->state = 1;
             ai->timer = 1;
-            ai->unk8 |= 0x2000;
+            ai->flags |= 0x2000;
         }
         break;
     case 5:
-        if (ai->pickup->Type != ChaseASTIndex(0x1D04) || ai->pickup->NASid == 0 || ai->unk24 != 0) {
+        if (ai->pickup->Type != ChaseASTIndex(0x1D04) || ai->pickup->NASid == 0 || ai->flag != 0) {
             goto rethink;
         }
         ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, ai->pickup->Engine, 0);
-        ai->unk8 |= DirPadBits[((ai->angle + off) >> 9) & 7];
+        ai->flags |= DirPadBits[((ai->angle + off) >> 9) & 7];
         break;
     case 6:
-        if (ai->unk20 <= 0) {
+        if (ai->timer2 <= 0) {
             ChaseAI_ChooseTarget(arg0, eng, ai);
             break;
         }
@@ -624,10 +624,10 @@ void Chase_HeroBot(s32 arg0) {
             }
         }
         ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, ai->target->Engine, 0);
-        ai->unk8 |= DirPadBits[((ai->angle + off) >> 9) & 7];
+        ai->flags |= DirPadBits[((ai->angle + off) >> 9) & 7];
         break;
     case 7:
-        if (ai->unk20 > 0) {
+        if (ai->timer2 > 0) {
             goto rethink;
         }
         dx = eng->XYZ.x;
@@ -639,15 +639,15 @@ void Chase_HeroBot(s32 arg0) {
             ai->timer = 0x3C;
             ai->angle -= 0x400;
         }
-        ai->unk8 |= DirPadBits[(ai->angle >> 9) & 7];
+        ai->flags |= DirPadBits[(ai->angle >> 9) & 7];
         break;
     case 8:
-        if (ai->unk20 > 0) {
+        if (ai->timer2 > 0) {
         rethink:
             ChaseAI_ChooseTarget(arg0, eng, ai);
             break;
         }
-        ai->unk8 |= DirPadBits[(ai->angle >> 9) & 7];
+        ai->flags |= DirPadBits[(ai->angle >> 9) & 7];
         break;
     }
     if (ai->timer & 7) {
@@ -667,7 +667,7 @@ void Chase_HeroBot(s32 arg0) {
             }
         }
         if (n >= 3) {
-            ai->unk8 |= 0x2000;
+            ai->flags |= 0x2000;
         }
     }
     switch (ai->state) {
@@ -677,10 +677,10 @@ void Chase_HeroBot(s32 arg0) {
         break;
     case 5:
     default:
-        ai->unk8 |= 0x8000;
+        ai->flags |= 0x8000;
         break;
     }
-    set_joypad((u8 *)&Pads[arg0], ai->unk8);
+    set_joypad((u8 *)&Pads[arg0], ai->flags);
 }
 
 void InitialiseCHASEFirst(void) {
@@ -2556,7 +2556,7 @@ void PlotEgg(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    switch (fux->unk30) {
+    switch (fux->state) {
     case 0x26:
     default:
         if (--nas->UserInfo.user2 > 0) {
@@ -2566,10 +2566,10 @@ void PlotEgg(NAS *nas) {
             PlaySfx(0x756, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
         eng->XYZ.x += fux->unk10;
-        fux->unk14 += 0xC;
-        eng->XYZ.y += fux->unk14;
+        fux->y += 0xC;
+        eng->XYZ.y += fux->y;
         if (++sub->entity == 0x4091) {
-            fux->unk30 = 0x29;
+            fux->state = 0x29;
             sub->entity = 0x4000;
             eng->XYZ.x = 0;
             eng->XYZ.y = -0x12C;
@@ -2597,10 +2597,10 @@ void PlotEgg(NAS *nas) {
             i = BarrelNearHero(eng->XYZ.x, eng->XYZ.z, 0x600);
             if (i >= 0 && GAME->heroOut[i] == 0) {
                 PlaySfx(0x759, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
-                fux->unk1C = get_angle(Heroes[i].hero_eng->XYZ.x - eng->XYZ.x,
+                fux->angle = get_angle(Heroes[i].hero_eng->XYZ.x - eng->XYZ.x,
                                        Heroes[i].hero_eng->XYZ.z - eng->XYZ.z);
-                fux->unk30 = 0x27;
-                fux->unk14 = -0x64;
+                fux->state = 0x27;
+                fux->y = -0x64;
                 sub->entity = 0x4080;
                 eng->xform.dirty = 1;
             }
@@ -2610,10 +2610,10 @@ void PlotEgg(NAS *nas) {
         if (++sub->entity == 0x4091) {
             sub->entity = 0x4090;
         }
-        fux->unk14 += 0xC;
-        eng->XYZ.y += fux->unk14;
-        eng->XYZ.x += (rcossin_tbl[(fux->unk1C - 0x400) & 0xFFF].unk2 * 5) >> 8;
-        eng->XYZ.z += (rcossin_tbl[fux->unk1C & 0xFFF].unk2 * 5) >> 8;
+        fux->y += 0xC;
+        eng->XYZ.y += fux->y;
+        eng->XYZ.x += (rcossin_tbl[(fux->angle - 0x400) & 0xFFF].unk2 * 5) >> 8;
+        eng->XYZ.z += (rcossin_tbl[fux->angle & 0xFFF].unk2 * 5) >> 8;
         if (eng->XYZ.y > 0) {
             PlaySfx(0x75A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             i = BarrelNearHero(eng->XYZ.x, eng->XYZ.z, 0x280);
@@ -2758,7 +2758,7 @@ void InitPickupCH(NAS *nas) {
     nas->UserInfo.user2 = 0;
     nas->UserInfo.user1 = 5;
     ext = AddExt(nas, 0x44, 0x10000006);
-    ext->unk14 = 0;
+    ext->y = 0;
     eng = nas->Engine;
     nas->FUX = (EXT *)ext;
     eng->xform.order = 1;
@@ -2794,11 +2794,11 @@ void PlotPickupCH(NAS *nas) {
     s32 lim;
     s32 status;
 
-    ext->unk14 += 8;
-    eng->XYZ.y += ext->unk14;
+    ext->y += 8;
+    eng->XYZ.y += ext->y;
     if (eng->XYZ.y >= 0) {
         eng->XYZ.y = -1;
-        ext->unk14 = -0x28;
+        ext->y = -0x28;
         eng->XYZ.y -= 0x28;
     }
     lim = 0x100;
@@ -3393,9 +3393,9 @@ void InitEgg(NAS *nas) {
 
     ext = AddExt(nas, 0x44, 0x10000005);
     nas->FUX = &ext->ext;
-    ext->unk30 = 8;
+    ext->state = 8;
     ext->unk10 = -0x55;
-    ext->unk14 = -0xA0;
+    ext->y = -0xA0;
     eng = nas->Engine;
     nas->UserInfo.user2 = 0x78;
     sub = eng->sub;
@@ -3477,8 +3477,8 @@ void PlotCoal(CoalNAS *nas) {
             nas->unk5E = 0;
         }
     }
-    nas->unk5C--;
-    if (nas->unk5C == 0) {
+    nas->timer--;
+    if (nas->timer == 0) {
         s32 xi = (eng->x + 0xA00) >> 7;
         s32 zi = (eng->z + 0xA00) >> 7;
         s32 idx = zi * 40 + xi;
@@ -3820,11 +3820,11 @@ void ChaseResetSlot(s32 arg0) {
     temp_v0 = (ChaseAiState *)((arg0 * 0x30) + ChaseHeroSlots);
     (temp_v0->state) = 1;
     (temp_v0->timer) = 1;
-    (temp_v0->unk8) = 0;
+    (temp_v0->flags) = 0;
     (temp_v0->target) = 0;
     (temp_v0->pickup) = 0;
-    (temp_v0->unk20) = 0;
-    (temp_v0->unk24) = 0;
+    (temp_v0->timer2) = 0;
+    (temp_v0->flag) = 0;
     (temp_v0->unk28) = 0x8000;
     (temp_v0->unk2C) = 0x8000;
 }

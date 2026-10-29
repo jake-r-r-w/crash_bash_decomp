@@ -76,7 +76,7 @@ typedef struct PapuSlide {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ u8 unkC;
     /* 0x0D */ u8 dir;
-    /* 0x0E */ s16 unkE;
+    /* 0x0E */ s16 flag;  /* tested for zero */
     /* 0x10 */ s16 unk10;
     /* 0x12 */ s16 unk12;
     /* 0x14 */ s16 unk14;

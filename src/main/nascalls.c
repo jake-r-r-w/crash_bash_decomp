@@ -2720,9 +2720,9 @@ void pad_read_packet(PadPacket *p, PadState *in, s32 n) {
     if (p->status == 0) {
         in->flags |= 1;
         in->flags |= PadRumble_update(&in->rumble, n);
-        if (FrameCount > PadLastRead + 10 &&(in->flags & 8) && in->unk18 != 0
+        if (FrameCount > PadLastRead + 10 &&(in->flags & 8) && in->flag != 0
             && PadGetState(n) == 6 && PadSetMainMode(n, 1, 2) == 1) {
-            in->unk18 = 0;
+            in->flag = 0;
             PadLastRead = FrameCount;
         }
         in->flags &= ~6;
@@ -2747,7 +2747,7 @@ void pad_read_packet(PadPacket *p, PadState *in, s32 n) {
     } else {
         in->buttons = 0;
         in->flags = 0;
-        in->unk18 = 1;
+        in->flag = 1;
         in->rumble.unk0 = 0;
         in->rumble.dirty = 0;
         in->rumble.reset = 0;
@@ -2788,7 +2788,7 @@ void pads_read(void) {
         do {
             pad->buttons = 0;
             pad->flags = 0;
-            pad->unk18 = 1;
+            pad->flag = 1;
             pad++;
         } while (--count > 0);
     }
@@ -2809,7 +2809,7 @@ loop:
         i++;
         pad->buttons = 0;
         pad->flags = 0;
-        pad->unk18 = on;
+        pad->flag = on;
         pad->rumble.unk0 = 0;
         pad->rumble.dirty = 0;
         pad->rumble.reset = 0;
@@ -2925,7 +2925,7 @@ s32 pad_rumble_send(PadRumble *r, s32 port) {
 void pad_input_reset(PadState *arg0) {
     arg0->buttons = 0;
     arg0->flags = 0;
-    arg0->unk18 = 1;
+    arg0->flag = 1;
     arg0->rumble.unk0 = 0;
     arg0->rumble.dirty = 0;
     arg0->rumble.reset = 0;

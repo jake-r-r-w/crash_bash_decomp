@@ -11,7 +11,7 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
 
     obj = ((s32 *)arg1)[-1];
     id = arg2 != 0 ? arg1->unk16 : -1;
-    switch (arg1->unk14) {
+    switch (arg1->state) {
     case 5:
     case 7:
         PlaySfx(HitSfx.hit[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
@@ -39,7 +39,7 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
         break;
     }
     if (HitHooks.break_tile != NULL) {
-        HitHooks.break_tile(arg0[0], arg0[1], arg0[2], 0, id, arg1->unk14);
+        HitHooks.break_tile(arg0[0], arg0[1], arg0[2], 0, id, arg1->state);
     }
 }
 
@@ -1662,7 +1662,7 @@ void InitGameState(GameState *arg0) {
     arg0->maxPlayers = 0;
     arg0->cupLeader = -1;
     arg0->teams = 0;
-    arg0->adventure.unk70 = 0;
+    arg0->adventure.flag = 0;
     arg0->language = GraphicsMode;
     arg0->adventure.options = GameOptions;
 }

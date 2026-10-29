@@ -1180,7 +1180,7 @@ void PlotHazardType(NAS *nas) {
         glow->unk1E = 0xF0;
         glow->unk1C = 4;
         glow->unk1A = 0;
-        glow->unkC = 0xFF;
+        glow->flag = 0xFF;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
         owner = fux->player;
@@ -1224,7 +1224,7 @@ void PlotHazardType(NAS *nas) {
         done = 0;
         owner = fux->player;
         if (owner != -1) {
-            if (glow->unkC == 0) {
+            if (glow->flag == 0) {
                 s32 dx;
                 s32 dy;
                 s32 dz;

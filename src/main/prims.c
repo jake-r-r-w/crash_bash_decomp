@@ -1275,7 +1275,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         e = (u8 *)&((FileEntry *)e)->mesh + ((FileEntry *)e)->mesh;
         fr = (s32 *)FILE_AT(anim, frame * 16 + 4);
         if (c & 0x400000) {
-            e = (u8 *)&((ModelFile *)set)->meshes[(d->unk8E & 0xFFF) - 1];
+            e = (u8 *)&((ModelFile *)set)->meshes[(d->flags2 & 0xFFF) - 1];
         }
         if (fr[0] == 0) {
             return;
