@@ -97,33 +97,11 @@ void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b);
 
 NAS *CrateHitSolids(EXTengine *eng, s32 who);
 
-typedef struct {
-    /* 0x00 */ u8 pad0[0x14];
-    /* 0x14 */ u16 unk14;
-    /* 0x16 */ u8 pad16[0x1A - 0x16];
-    /* 0x1A */ s16 unk1A;
-    /* 0x1C */ u16 unk1C;
-    /* 0x1E */ u8 pad1E[0x22 - 0x1E];
-    /* 0x22 */ s16 unk22;
-} T_BBD48Obj;
 
 void InitCrate(NAS *arg0);
 
 void PlotPickup(NAS *arg0);
 
-/* PlotCrate: the crate object (NAS FUX). */
-typedef struct {
-    /* 0x00 */ u8 pad0[0x14];
-    /* 0x14 */ u16 type;
-    /* 0x16 */ s16 who;
-    /* 0x18 */ u8 pad18[2];
-    /* 0x1A */ u16 state;
-    /* 0x1C */ u16 flags;
-    /* 0x1E */ u16 hit;
-    /* 0x20 */ s16 timer;
-    /* 0x22 */ s16 count;
-    /* 0x24 */ s16 kind;
-} T_BC038Fux;
 
 /* PlotCrate: its extension 0x800 (CrateAimAtGrid's T_BB64C_B). */
 typedef struct {
@@ -157,8 +135,8 @@ typedef struct {
 } T_BC038Stats;
 
 /* PlotCrate: frees the carrying hero's hold on the crate (cf. papu's PapuReleaseObj). */
-static inline void BC038Release(T_BC038Fux *fux) {
-    s32 w = fux->who;
+static inline void BC038Release(EXTobject *fux) {
+    s32 w = fux->player;
     HeroInfo *b;
     HeroInfo *h;
 
@@ -189,7 +167,7 @@ static inline void BC038Release(T_BC038Fux *fux) {
 
 /* The crate breaks (PlotCrate passes eng and fux). fux goes unused: a1 is
  * never read, in every disc's copy. */
-void CrateBreak(EXTengine *eng, T_BC038Fux *fux);
+void CrateBreak(EXTengine *eng, EXTobject *fux);
 
 extern u16 BashTickingCrateModels[];
 void PlotCrate(NAS *arg0);

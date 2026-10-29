@@ -39,16 +39,6 @@ extern s16 *PapuColumnHeights[];
 
 extern PapuEntry PapuColumns[20];
 
-/* The object extension (AddObject) InitPACrate fills. */
-typedef struct PapuObj {
-    /* 0x00 */ u8 pad0[0x14];
-    /* 0x14 */ u16 unk14;
-    /* 0x16 */ u8 pad16[0x1A - 0x16];
-    /* 0x1A */ s16 unk1A;
-    /* 0x1C */ u16 unk1C;
-    /* 0x1E */ u8 pad1E[0x22 - 0x1E];
-    /* 0x22 */ s16 unk22;
-} PapuObj;
 typedef struct PapuTile {
     s32 unk0;
     s32 pad4;

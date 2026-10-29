@@ -138,7 +138,7 @@ void BashCountObjects(void) {
 
 u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
     NAS *nas;
-    T_BBD48Obj *obj;
+    EXTobject *obj;
     EXTengine *eng;
     s32 x, z;
     u16 k;
@@ -149,19 +149,19 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
     if (nas != NULL) {
         eng = nas->Engine;
         if (eng != NULL) {
-            obj = (T_BBD48Obj *)AddObject(nas);
+            obj = (EXTobject *)AddObject(nas);
             if (obj != NULL && AddMotion(nas) != NULL) {
                 LinkObject(nas);
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
                 eng->xform.order = 1;
-                obj->unk14 = d;
-                CrateCounts[obj->unk14]++;
+                obj->whatami = d;
+                CrateCounts[obj->whatami]++;
                 if ((s16)e >= 0) {
-                    obj->unk1A = e;
+                    obj->status = e;
                 } else {
-                    obj->unk1A = 6;
+                    obj->status = 6;
                 }
                 switch (k) {
                 case 3:
@@ -175,18 +175,18 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                     break;
                 case 5:
                     eng->sub->entity = 0x2009;
-                    obj->unk22 = 0x5A;
-                    obj->unk1C |= 0x100;
+                    obj->countdown = 0x5A;
+                    obj->can_do |= 0x100;
                     break;
                 case 6:
                     eng->sub->entity = 0x2001;
-                    obj->unk1C |= 0x100;
+                    obj->can_do |= 0x100;
                     break;
                 default:
                     eng->sub->entity = 0x2013;
                     break;
                 }
-                switch ((u16)obj->unk1A) {
+                switch ((u16)obj->status) {
                 case 3:
                     eng->XYZ.y = World_floor_level;
                     break;
@@ -230,7 +230,7 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
 
 void InitCrate(NAS *arg0) {
     EXTengine *eng;
-    T_BBD48Obj *obj;
+    EXTobject *obj;
     NAS *nas;
     EXTengine *other;
     s32 again;
@@ -238,7 +238,7 @@ void InitCrate(NAS *arg0) {
 
     eng = arg0->Engine;
     if (eng != NULL) {
-        obj = (T_BBD48Obj *)AddObject(arg0);
+        obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
             arg0->FUX = (EXT *)obj;
             do {
@@ -265,12 +265,12 @@ void InitCrate(NAS *arg0) {
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
             eng->xform.order = 1;
             eng->xform.hasScale = 1;
-            obj->unk1A = 3;
+            obj->status = 3;
             if (arg0->trigger != NULL) {
-                obj->unk14 = arg0->trigger->InfoStruct->val1;
+                obj->whatami = arg0->trigger->InfoStruct->val1;
             }
-            CrateCounts[obj->unk14]++;
-            switch (obj->unk14) {
+            CrateCounts[obj->whatami]++;
+            switch (obj->whatami) {
             case 3:
                 eng->sub->entity = 0x2008;
                 break;
@@ -282,12 +282,12 @@ void InitCrate(NAS *arg0) {
                 break;
             case 5:
                 eng->sub->entity = 0x2009;
-                obj->unk22 = 0x5A;
-                obj->unk1C |= 0x100;
+                obj->countdown = 0x5A;
+                obj->can_do |= 0x100;
                 break;
             case 6:
                 eng->sub->entity = 0x2001;
-                obj->unk1C |= 0x100;
+                obj->can_do |= 0x100;
                 break;
             default:
                 eng->sub->entity = 0x2013;
@@ -307,7 +307,7 @@ void InitCrate(NAS *arg0) {
             if (z < 0) {
                 z = 0;
             }
-            ArenaGrid[z * 20 + x].flags = obj->unk14;
+            ArenaGrid[z * 20 + x].flags = obj->whatami;
             AddMotion(arg0);
             LinkObject(arg0);
             AddSolid(arg0, 0x300);
@@ -322,7 +322,7 @@ void PlotCrate(NAS *arg0) {
     VECTOR a;
     VECTOR b;
     EXTengine *eng;
-    T_BC038Fux *fux;
+    EXTobject *fux;
     T_BC038Ext *ext;
     EXTengine *he;
     EXTengine *ho;
@@ -342,22 +342,22 @@ void PlotCrate(NAS *arg0) {
     if (eng == NULL) {
         return;
     }
-    fux = (T_BC038Fux *)arg0->FUX;
+    fux = (EXTobject *)arg0->FUX;
     if (fux == NULL) {
         return;
     }
-    type = fux->type;
+    type = fux->whatami;
     ext = FindExtension(arg0, 0x800);
     if (ext == NULL) {
         return;
     }
-    switch (fux->state) {
+    switch (fux->status) {
     case 0:
-        fux->state = 1;
-        fux->flags &= 0xFFD4;
+        fux->status = 1;
+        fux->can_do &= 0xFFD4;
         switch (type) {
         case 6:
-            fux->flags |= 0xA;
+            fux->can_do |= 0xA;
             break;
         case 1:
         case 2:
@@ -365,19 +365,19 @@ void PlotCrate(NAS *arg0) {
         case 4:
         case 5:
         case 7:
-            fux->flags |= 3;
+            fux->can_do |= 3;
             break;
         }
         eng->xform.dirty = 1;
         eng->xform.rot.vy = 0;
         BC038_SNAP(eng);
-        fux->who = -1;
+        fux->player = -1;
         FetchDefaultColBox(eng, 0x50);
         break;
     case 2:
     case 0x13:
-        if (fux->who != -1 && fux->who < 5) {
-            he = Heroes[fux->who].hero_eng;
+        if (fux->player != -1 && fux->player < 5) {
+            he = Heroes[fux->player].hero_eng;
             if (he != NULL) {
                 if (sub_find_point(he, he->sub, 0x10, &a) != NULL) {
                     if (sub_find_point(he, he->sub, 0x20, &b) != NULL) {
@@ -398,11 +398,11 @@ void PlotCrate(NAS *arg0) {
                     eng->XYZ = *(SLONG_XYZ *)&b;
                     eng->xform.rot.vy = he->xform.rot.vy;
                 } else {
-                    fux->state = 4;
+                    fux->status = 4;
                 }
             }
-        if (fux->hit & 2) {
-            fux->who = -1;
+        if (fux->will_do & 2) {
+            fux->player = -1;
             switch (type) {
             case 3:
             case 4:
@@ -425,19 +425,19 @@ void PlotCrate(NAS *arg0) {
             case 2:
                 BC038Release(fux);
                 PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
-                fux->state = 0xE;
+                fux->status = 0xE;
                 return;
             default:
                 BC038_STOP(ext);
                 break;
             }
         }
-        if ((fux->flags & 0x20) && CrateHitSolids(eng, fux->who) != NULL) {
+        if ((fux->can_do & 0x20) && CrateHitSolids(eng, fux->player) != NULL) {
             switch (type) {
             case 2:
                 BC038Release(fux);
                 PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
-                fux->state = 0xE;
+                fux->status = 0xE;
                 return;
             case 3:
             case 4:
@@ -461,26 +461,26 @@ void PlotCrate(NAS *arg0) {
                 break;
             }
         }
-        if (fux->hit & 4) {
+        if (fux->will_do & 4) {
             hb = Heroes;
-            fux->flags &= 0xFFDB;
-            fux->hit &= 0xFFFB;
-            eng->xform.rot.vy = hb[fux->who].hero_move->facing_angle;
+            fux->can_do &= 0xFFDB;
+            fux->will_do &= 0xFFFB;
+            eng->xform.rot.vy = hb[fux->player].hero_move->facing_angle;
             eng->xform.rot.vx = 0;
             eng->xform.rot.vz = 0;
-            ext->speed = BC038_STATB(hb, hit_shapes, fux->who)->speed;
-            ext->max = BC038_STATB(hb, hit_shapes, fux->who)->max;
-            ext->accel = BC038_STATB(hb, hit_shapes, fux->who)->accel;
-            ext->decel = BC038_STATB(hb, hit_shapes, fux->who)->decel;
-            ext->unk18 = BC038_STATB(hb, hit_shapes, fux->who)->unk8;
-            ext->unk1E = BC038_STATB(hb, hit_shapes, fux->who)->unkA;
-            ext->unk1A = BC038_STATB(hb, hit_shapes, fux->who)->unkC;
-            ext->unk1C = BC038_STATB(hb, hit_shapes, fux->who)->unkE;
-            ext->unkC = BC038_STATB(hb, hit_shapes, fux->who)->unk10;
-            fux->state = 8;
+            ext->speed = BC038_STATB(hb, hit_shapes, fux->player)->speed;
+            ext->max = BC038_STATB(hb, hit_shapes, fux->player)->max;
+            ext->accel = BC038_STATB(hb, hit_shapes, fux->player)->accel;
+            ext->decel = BC038_STATB(hb, hit_shapes, fux->player)->decel;
+            ext->unk18 = BC038_STATB(hb, hit_shapes, fux->player)->unk8;
+            ext->unk1E = BC038_STATB(hb, hit_shapes, fux->player)->unkA;
+            ext->unk1A = BC038_STATB(hb, hit_shapes, fux->player)->unkC;
+            ext->unk1C = BC038_STATB(hb, hit_shapes, fux->player)->unkE;
+            ext->unkC = BC038_STATB(hb, hit_shapes, fux->player)->unk10;
+            fux->status = 8;
         }
         } else {
-            fux->state = 4;
+            fux->status = 4;
         }
         eng->xform.dirty = 1;
         break;
@@ -491,7 +491,7 @@ void PlotCrate(NAS *arg0) {
         BC038_SNAP(eng);
         if (v >= 0x1000) {
             v = 0x1000;
-            fux->state = 0;
+            fux->status = 0;
         }
         eng->xform.scale.vy = v;
         eng->xform.dirty = 1;
@@ -514,7 +514,7 @@ void PlotCrate(NAS *arg0) {
         v += 0x100;
         if (v >= 0x1000) {
             v = 0x1000;
-            fux->state = 0;
+            fux->status = 0;
             eng->flags &= ~0x21;
         }
         eng->xform.scale.vx = v;
@@ -532,7 +532,7 @@ void PlotCrate(NAS *arg0) {
         ext->unk1A = 0;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
-        fux->state = 8;
+        fux->status = 8;
         break;
     case 5:
         BC038_SNAP(eng);
@@ -543,7 +543,7 @@ void PlotCrate(NAS *arg0) {
         ext->unk1A = 0;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
-        fux->state = 8;
+        fux->status = 8;
         break;
     case 8:
         if (eng->XYZ.y > World_floor_level) {
@@ -554,7 +554,7 @@ void PlotCrate(NAS *arg0) {
         }
         if (GravitateNas(arg0) != 0) {
             eng->XYZ.y += 0x20;
-            CrateCollide(eng, (s32)fux, fux->who, 0);
+            CrateCollide(eng, (s32)fux, fux->player, 0);
             eng->XYZ.y -= 0x20;
             switch (type) {
             case 3:
@@ -578,7 +578,7 @@ void PlotCrate(NAS *arg0) {
                     KillTriggerNas(arg0);
                     return;
                 }
-                fux->state = 0xE;
+                fux->status = 0xE;
                 return;
             case 18:
             case 19:
@@ -586,17 +586,17 @@ void PlotCrate(NAS *arg0) {
             case 21:
                 PlaySfx(0x420, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             default:
-                fux->state = 0;
+                fux->status = 0;
                 break;
             }
         }
-        if (fux->hit & 2) {
-            fux->who = 6;
+        if (fux->will_do & 2) {
+            fux->player = 6;
             PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
             KillTriggerNas(arg0);
             return;
         }
-        if (CrateCollide(eng, 0, fux->who, 1) != 0) {
+        if (CrateCollide(eng, 0, fux->player, 1) != 0) {
             switch (type) {
             case 3:
             case 4:
@@ -615,7 +615,7 @@ void PlotCrate(NAS *arg0) {
                 return;
             case 2:
                 PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
-                fux->state = 0xE;
+                fux->status = 0xE;
                 return;
             default:
                 BC038_STOP(ext);
@@ -633,16 +633,16 @@ void PlotCrate(NAS *arg0) {
         case 2:
             BC038Release(fux);
             if (OVLG->levelFlags & 0x80) {
-                who = fux->who;
+                who = fux->player;
                 if (who == 0 || (OVLG->teams != 0 && who == 1)) {
                     Heroes[who].hero_health = 2;
-                    fux->type = 6;
+                    fux->whatami = 6;
                     PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
                     return;
                 }
             }
             PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 1);
-            fux->state = 0xC;
+            fux->status = 0xC;
             return;
         case 6:
             BC038Release(fux);
@@ -650,11 +650,11 @@ void PlotCrate(NAS *arg0) {
             KillTriggerNas(arg0);
             return;
         case 5:
-            fux->count = 0x5A;
-            fux->type = 7;
+            fux->countdown = 0x5A;
+            fux->whatami = 7;
             PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
-            v = fux->who;
-            fux->state = 0xB;
+            v = fux->player;
+            fux->status = 0xB;
             fux->timer = 2;
             if ((u32)v >= 5) {
                 v = 0;
@@ -670,8 +670,8 @@ void PlotCrate(NAS *arg0) {
         case 4:
         case 7:
             PlaySfx(0x3F9, &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
-            v = fux->who;
-            fux->state = 0xB;
+            v = fux->player;
+            fux->status = 0xB;
             fux->timer = 2;
             if ((u32)v >= 5) {
                 v = 0;
@@ -684,12 +684,12 @@ void PlotCrate(NAS *arg0) {
             CrateAimAtGrid((T_BB64C_A *)eng, (T_BB64C_B *)ext);
             break;
         default:
-            fux->state = 0;
+            fux->status = 0;
             break;
         }
         break;
     case 3:
-        fux->state = 0;
+        fux->status = 0;
         break;
     case 0xB:
         ext->speed += ext->accel - ext->decel;
@@ -729,12 +729,12 @@ void PlotCrate(NAS *arg0) {
             eng->xform.dirty = 1;
             eng->xform.rot.vy = 0;
             BC038_SNAP(eng);
-            fux->state = 0;
+            fux->status = 0;
         }
         if (fux->timer != 0) {
             fux->timer--;
         }
-        if (CrateCollide(eng, 0, fux->who, 1) != 0) {
+        if (CrateCollide(eng, 0, fux->player, 1) != 0) {
             BC038_STOP(ext);
             if (fux->timer == 0) {
                 switch (type) {
@@ -777,15 +777,15 @@ void PlotCrate(NAS *arg0) {
                 eng->xform.dirty = 1;
                 eng->xform.rot.vy = 0;
                 BC038_SNAP(eng);
-                fux->state = 0;
+                fux->status = 0;
                 BC038_STOP(ext);
                 break;
             }
         }
         break;
     case 0xA:
-        if (fux->count != 0) {
-            fux->count--;
+        if (fux->countdown != 0) {
+            fux->countdown--;
             break;
         }
         BC038Release(fux);
@@ -793,8 +793,8 @@ void PlotCrate(NAS *arg0) {
         KillTriggerNas(arg0);
         return;
     case 0xC:
-        fux->count = 0x78;
-        fux->flags &= 0xFFF4;
+        fux->countdown = 0x78;
+        fux->can_do &= 0xFFF4;
         BC038_SNAP(eng);
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         ext->unk18 = 0x60;
@@ -804,23 +804,23 @@ void PlotCrate(NAS *arg0) {
         ext->unkC = 0xFF;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
-        switch (fux->kind) {
+        switch (fux->contains) {
         case 0x19:
             eng->sub->entity = 0x200B;
-            fux->state = 0xD;
+            fux->status = 0xD;
             break;
         case 0x1B:
             eng->sub->entity = 0x200F;
-            fux->state = 0xD;
+            fux->status = 0xD;
             break;
         case 0x1C:
             eng->sub->entity = 0x200C;
-            fux->state = 0xD;
+            fux->status = 0xD;
             break;
         case 0x11:
             eng->sub->entity = Random(0xE) + 0x2018;
             eng->xform.order = 4;
-            fux->state = 0xD;
+            fux->status = 0xD;
             UnlinkObject(arg0);
             RemoveSolid(arg0);
             break;
@@ -835,14 +835,14 @@ void PlotCrate(NAS *arg0) {
             return;
         }
         done = 0;
-        if (fux->who != -1 && ext->unkC == 0) {
-            fux->flags |= 8;
-            if (sub_find_point(Heroes[fux->who].hero_eng, Heroes[fux->who].hero_sub, 0x80, &a) != NULL) {
+        if (fux->player != -1 && ext->unkC == 0) {
+            fux->can_do |= 8;
+            if (sub_find_point(Heroes[fux->player].hero_eng, Heroes[fux->player].hero_sub, 0x80, &a) != NULL) {
                 dx = eng->XYZ.x - a.vx;
                 dy = eng->XYZ.y - a.vy;
                 dz = eng->XYZ.z - a.vz;
             } else {
-                hd = Heroes[fux->who].hero_eng;
+                hd = Heroes[fux->player].hero_eng;
                 dx = eng->XYZ.x - hd->XYZ.x;
                 y = eng->XYZ.y + 0x180;
                 dy = y - hd->XYZ.y;
@@ -860,7 +860,7 @@ void PlotCrate(NAS *arg0) {
                 done = 1;
             }
             CrateHitHeroes(eng, (EXTobject *)fux, 8);
-            if (fux->hit & 8) {
+            if (fux->will_do & 8) {
                 done = 1;
             }
         }
@@ -868,23 +868,23 @@ void PlotCrate(NAS *arg0) {
             done = 1;
         }
         if (done) {
-            switch (fux->kind) {
+            switch (fux->contains) {
             case 0x19:
             case 0x1B:
             case 0x1C:
-                if (fux->who != -1 && fux->who < 5) {
-                    BashGivePowerup(fux->who, fux->kind);
+                if (fux->player != -1 && fux->player < 5) {
+                    BashGivePowerup(fux->player, fux->contains);
                     BashPowerupTimer = (Random(6) + 2) * 30;
                 }
                 KillTriggerNas(arg0);
                 n = (NAS *)BashCrateList;
                 while (n != NULL) {
-                    fux = (T_BC038Fux *)n->FUX;
+                    fux = (EXTobject *)n->FUX;
                     if (fux != NULL) {
-                        switch (fux->state) {
+                        switch (fux->status) {
                         case 0:
                         case 1:
-                            fux->state = 0x10;
+                            fux->status = 0x10;
                             break;
                         }
                         n = n->Group.Child;
@@ -895,10 +895,10 @@ void PlotCrate(NAS *arg0) {
                 }
                 return;
             case 0x11:
-                if (fux->who != -1 && fux->who < 5) {
-                    Heroes[fux->who].hero_health++;
-                    if (Heroes[fux->who].hero_health >= 0x15) {
-                        Heroes[fux->who].hero_health = 0x14;
+                if (fux->player != -1 && fux->player < 5) {
+                    Heroes[fux->player].hero_health++;
+                    if (Heroes[fux->player].hero_health >= 0x15) {
+                        Heroes[fux->player].hero_health = 0x14;
                     }
                     PlaySfx(0x1C2, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 }
@@ -910,8 +910,8 @@ void PlotCrate(NAS *arg0) {
         eng->xform.rot.vy += 0x71;
         break;
     case 0xE:
-        fux->count = 0x96;
-        fux->flags &= 0xFFF4;
+        fux->countdown = 0x96;
+        fux->can_do &= 0xFFF4;
         BC038_SNAP(eng);
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         ext->unk18 = 0x80;
@@ -921,25 +921,25 @@ void PlotCrate(NAS *arg0) {
         ext->unkC = 0xFF;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
-        switch (fux->kind) {
+        switch (fux->contains) {
         case 0x19:
             eng->sub->entity = 0x200B;
-            fux->state = 0xF;
+            fux->status = 0xF;
             break;
         case 0x1B:
             eng->sub->entity = 0x200F;
-            fux->state = 0xF;
+            fux->status = 0xF;
             break;
         case 0x1C:
             eng->sub->entity = 0x200C;
-            fux->state = 0xF;
+            fux->status = 0xF;
             break;
         case 0x11:
             arg0->UserInfo.user2 = Random(0x1C);
             eng->sub->entity = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
             eng->xform.dirty = 1;
             eng->xform.rot.vy = 0;
-            fux->state = 0xF;
+            fux->status = 0xF;
             break;
         default:
             KillTriggerNas(arg0);
@@ -952,12 +952,12 @@ void PlotCrate(NAS *arg0) {
             return;
         }
         GravitateNas(arg0);
-        if (fux->count == 0) {
+        if (fux->countdown == 0) {
             KillTriggerNas(arg0);
             return;
         }
-        fux->count--;
-        if (fux->kind == 0x11) {
+        fux->countdown--;
+        if (fux->contains == 0x11) {
             eng->xform.rot.vy = 0;
             arg0->UserInfo.user1++;
             eng->sub->entity = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
@@ -965,25 +965,25 @@ void PlotCrate(NAS *arg0) {
             eng->xform.rot.vy += 0x71;
         }
         if (ext->unkC == 0) {
-            fux->flags |= 8;
+            fux->can_do |= 8;
         }
         CrateHitHeroes(eng, (EXTobject *)fux, 8);
-        if ((fux->hit & 8) && fux->who != -1 && fux->who < 5) {
-            switch (fux->kind) {
+        if ((fux->will_do & 8) && fux->player != -1 && fux->player < 5) {
+            switch (fux->contains) {
             case 0x19:
             case 0x1B:
             case 0x1C:
-                BashGivePowerup(fux->who, fux->kind);
+                BashGivePowerup(fux->player, fux->contains);
                 BashPowerupTimer = (Random(6) + 2) * 30;
                 KillTriggerNas(arg0);
                 n = (NAS *)BashCrateList;
                 while (n != NULL) {
-                    fux = (T_BC038Fux *)n->FUX;
+                    fux = (EXTobject *)n->FUX;
                     if (fux != NULL) {
-                        switch (fux->state) {
+                        switch (fux->status) {
                         case 0:
                         case 1:
-                            fux->state = 0x10;
+                            fux->status = 0x10;
                             break;
                         }
                         n = n->Group.Child;
@@ -994,9 +994,9 @@ void PlotCrate(NAS *arg0) {
                 }
                 return;
             case 0x11:
-                Heroes[fux->who].hero_health++;
-                if (Heroes[fux->who].hero_health >= 0x15) {
-                    Heroes[fux->who].hero_health = 0x14;
+                Heroes[fux->player].hero_health++;
+                if (Heroes[fux->player].hero_health >= 0x15) {
+                    Heroes[fux->player].hero_health = 0x14;
                 }
                 PlaySfx(0x1C2, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 KillTriggerNas(arg0);
@@ -1023,81 +1023,81 @@ void PlotCrate(NAS *arg0) {
         eng->xform.dirty = 1;
         break;
     default:
-        if (fux->hit & 0x100) {
-            fux->state = 0xA;
-            fux->count = 0xA;
-            fux->hit &= 0xFEFC;
-            fux->flags &= 0xFEFC;
+        if (fux->will_do & 0x100) {
+            fux->status = 0xA;
+            fux->countdown = 0xA;
+            fux->will_do &= 0xFEFC;
+            fux->can_do &= 0xFEFC;
         }
-        if ((fux->hit & 1) && !(fux->hit & 2)) {
-            if (fux->who != -1 && fux->who < 5) {
-                fux->state = 2;
-                fux->flags |= 4;
-                Heroes[fux->who].hero_object = (EXTobject *)fux;
-                eng->xform.rot.vy = Heroes[fux->who].hero_move->facing_angle;
-                fux->hit &= 0xFFFC;
-                fux->flags = (fux->flags & 0xFFFE) | 6;
+        if ((fux->will_do & 1) && !(fux->will_do & 2)) {
+            if (fux->player != -1 && fux->player < 5) {
+                fux->status = 2;
+                fux->can_do |= 4;
+                Heroes[fux->player].hero_object = (EXTobject *)fux;
+                eng->xform.rot.vy = Heroes[fux->player].hero_move->facing_angle;
+                fux->will_do &= 0xFFFC;
+                fux->can_do = (fux->can_do & 0xFFFE) | 6;
                 if (type == 5) {
-                    fux->count = 0x5A;
+                    fux->countdown = 0x5A;
                     if ((OVLG->levelFlags & 0x80) && OVLG->mode == 1) {
-                        if (fux->who == 0 || (OVLG->teams != 0 && fux->who == OVLG->mode)) {
-                            fux->count = 0x1E;
-                            fux->flags &= 0xFFFB;
+                        if (fux->player == 0 || (OVLG->teams != 0 && fux->player == OVLG->mode)) {
+                            fux->countdown = 0x1E;
+                            fux->can_do &= 0xFFFB;
                         }
                     }
-                    fux->type = 7;
+                    fux->whatami = 7;
                     PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 }
             }
         }
-        if (fux->hit & 2) {
+        if (fux->will_do & 2) {
             switch (type) {
             case 6:
                 PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
                 KillTriggerNas(arg0);
                 return;
             case 5:
-                if (fux->who == -1) {
-                    fux->count = 0x5A;
-                    fux->type = 7;
+                if (fux->player == -1) {
+                    fux->countdown = 0x5A;
+                    fux->whatami = 7;
                     PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                     goto clr;
                 }
                 break;
             default:
-                if (fux->who == -1) {
+                if (fux->player == -1) {
                     goto clr;
                 }
                 break;
             }
-            if (fux->who >= 5) {
+            if (fux->player >= 5) {
                 dx = eng->XYZ.x;
                 dz = -eng->XYZ.z;
             } else {
-                ho = Heroes[fux->who].hero_eng;
+                ho = Heroes[fux->player].hero_eng;
                 dx = eng->XYZ.x - ho->XYZ.x;
                 dz = ho->XYZ.z - eng->XYZ.z;
-                PlaySfx(PlayerHitSfx[fux->who], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
+                PlaySfx(PlayerHitSfx[fux->player], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
             ang = get_angle(-dx, dz);
             eng->xform.rot.vy = (ang + 0x100) & 0xE00;
-            fux->state = 9;
-            fux->hit &= 0xFFFC;
-            fux->flags &= 0xFFFC;
+            fux->status = 9;
+            fux->will_do &= 0xFFFC;
+            fux->can_do &= 0xFFFC;
             goto hit8;
         clr:
-            fux->hit &= 0xFFFC;
+            fux->will_do &= 0xFFFC;
         }
     hit8:
-        if ((fux->hit & 8) && type == 6) {
+        if ((fux->will_do & 8) && type == 6) {
             PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
             KillTriggerNas(arg0);
             return;
         }
         if (eng->platform != NULL) {
             if (type == 5) {
-                fux->count = 0x5A;
-                fux->type = 7;
+                fux->countdown = 0x5A;
+                fux->whatami = 7;
                 PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             } else if (type == 6) {
                 PlayHitEffect(&eng->XYZ.x, (HitInfo *)fux, 0);
@@ -1107,19 +1107,19 @@ void PlotCrate(NAS *arg0) {
         }
         break;
     }
-    t = fux->state;
+    t = fux->status;
     if ((t == 1 || t == 0xB) && FollowContour(eng) != 0) {
-        if (fux->state == 1) {
-            fux->state = 4;
+        if (fux->status == 1) {
+            fux->status = 4;
         } else {
-            fux->state = 5;
+            fux->status = 5;
         }
     }
     if (type == 7) {
-        if (fux->count != 0) {
-            fux->count--;
-            eng->sub->entity = BashTickingCrateModels[fux->count / 30];
-            if (fux->count % 30 == 0) {
+        if (fux->countdown != 0) {
+            fux->countdown--;
+            eng->sub->entity = BashTickingCrateModels[fux->countdown / 30];
+            if (fux->countdown % 30 == 0) {
                 PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
         } else {
@@ -1843,7 +1843,7 @@ s32 CrateHitHeroes(EXTengine *eng, EXTobject *flags, u32 mask) {
     return -1;
 }
 
-void CrateBreak(EXTengine *eng, T_BC038Fux *fux) {
+void CrateBreak(EXTengine *eng, EXTobject *fux) {
     PlaySfx(HitSfx.crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
     SpawnModelFx(2, (s32 *)&eng->XYZ, (s32)&HeroModelBank[DB_CrateObjects]);
     if ((HeroHooks.KeepInBounds(eng) ^ 1) != 0) {

@@ -2683,7 +2683,7 @@ void BashPenguinPush(EXTengine *self) {
 void InitTumbler(NAS *nas) {
     EXTengine *eng;
     EXTmotion *mot;
-    TumblerObj *obj;
+    EXTobject *obj;
     subengine *sub;
     NAS *puff;
 
@@ -2709,11 +2709,11 @@ void InitTumbler(NAS *nas) {
         if (puff != NULL) {
             AppendExtension((NAS *)nas, (NAS *)puff);
         }
-        obj = (TumblerObj *)AddObject(nas);
+        obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
             nas->FUX = (EXT *)obj;
-            obj->unk1A = 1;
-            obj->unk14 = 6;
+            obj->status = 1;
+            obj->whatami = 6;
         }
         mot = AddMotion(nas);
         if (mot != NULL) {
@@ -2737,7 +2737,7 @@ void PlotTumbler(NAS *nas) {
     EXTengine *eng;
     subengine *sub;
     BashTumbleMove *move;
-    TumblerObj *obj;
+    EXTobject *obj;
     NAS *child;
     EXTengine *ceng;
     s32 hero;
@@ -2752,7 +2752,7 @@ void PlotTumbler(NAS *nas) {
     if (move == NULL) {
         return;
     }
-    obj = (TumblerObj *)nas->FUX;
+    obj = (EXTobject *)nas->FUX;
     if (obj == NULL) {
         return;
     }
@@ -2797,7 +2797,7 @@ void PlotTumbler(NAS *nas) {
             KillTriggerNas(nas);
             return;
         }
-        if (CrateCollide(eng, 0, obj->unk16, 1) != 0) {
+        if (CrateCollide(eng, 0, obj->player, 1) != 0) {
             eng->XYZ.y += 0x80;
             PlayHitEffect(&eng->XYZ.x, (HitInfo *)obj, 1);
             KillTriggerNas(nas);

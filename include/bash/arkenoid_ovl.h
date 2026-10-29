@@ -64,21 +64,11 @@ typedef struct {
     s16 r;
 } ArkenoidCircle;
 
-typedef struct ArkenoidGin {
-    u8 pad0[0x14];
-    s16 unk14;
-    u8 pad16[4];
-    s16 unk1A;
-    s16 unk1C;
-    u8 pad1E[2];
-    s16 unk20;
-    s16 unk22;
-} ArkenoidGin;
 
 
 extern ScriptInit NGinScriptInit;
 extern EXTengine *ArkBallSpawner;
-extern ArkenoidGin *ArkNGin;
+extern EXTobject *ArkNGin;
 typedef struct ArkenoidNode {
     u8 pad0[0x10];
     s32 x;
@@ -106,14 +96,6 @@ typedef struct {
 
 extern ArkenoidSlot ArkGoals[];
 
-typedef struct {
-    u8 pad0[0x14];
-    s16 unk14;
-    u8 pad16[4];
-    s16 unk1A;
-    u8 pad1C[8];
-    s16 unk24;
-} ArkenoidSpark;
 
 extern u16 ArkPickupCount;
 extern s16 ArkPickupSpots[];

@@ -387,7 +387,7 @@ void SpinTurnArena(void) {
     EXTengine *eng;
     EXTengine *e;
     NAS *n;
-    SpinFux *f;
+    EXTobject *f;
     s32 i;
     s32 x;
     s32 z;
@@ -466,7 +466,7 @@ void SpinTurnArena(void) {
         h->hero_move->forward_angle &= 0xFFF;
     }
     for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
-        f = (SpinFux *)n->FUX;
+        f = (EXTobject *)n->FUX;
         if (f == NULL) continue;
         e = n->Engine;
         if (e == NULL) continue;
@@ -476,11 +476,11 @@ void SpinTurnArena(void) {
         if (d > 0x640000) continue;
         if (e->XYZ.y < World_floor_level) continue;
         if (d <= 0xC3FFF) continue;
-        d = f->dist;
-        a = f->angle;
+        d = f->coord.dist;
+        a = f->coord.angle;
         a += SpinAngle;
         a &= 0xFFF;
-        f->angle = a;
+        f->coord.angle = a;
         e->XYZ.x = d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
         e->XYZ.z = d * rcossin_tbl[a].unk2 >> 12;
         e->xform.rot.vy = (e->xform.rot.vy + SpinAngle) & 0xFFF;
@@ -792,7 +792,7 @@ void SpinCountObjects(void) {
     s32 j;
     NAS *n;
     EXTengine *e;
-    SpinFux *f;
+    EXTobject *f;
     s32 t;
     s32 x0, x1, z0, z1;
 
@@ -810,9 +810,9 @@ void SpinCountObjects(void) {
     for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
         e = n->Engine;
         if (e == NULL) continue;
-        f = (SpinFux *)n->FUX;
+        f = (EXTobject *)n->FUX;
         if (f == NULL) continue;
-        t = f->kind;
+        t = f->whatami;
         x0 = ((e->XYZ.x - 0x80) >> 8) + 10;
         x1 = ((e->XYZ.x + 0x80) >> 8) + 10;
         z0 = 9 - ((e->XYZ.z - 0x80) >> 8);
@@ -833,15 +833,15 @@ void SpinCountObjects(void) {
                 ArenaGrid[z1 * 20 + x1].flags |= t;
             }
         }
-        if ((u16)(f->kind - 1) < 12) {
-            switch (f->sub) {
+        if ((u16)(f->whatami - 1) < 12) {
+            switch (f->status) {
             case 0:
             case 1:
             case 3:
             case 6:
             case 7:
                 CrateCounts[0]++;
-                CrateCounts[f->kind]++;
+                CrateCounts[f->whatami]++;
                 break;
             }
         }
@@ -966,9 +966,9 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
 {
   NAS *nas;
   EXTengine *eng;
-  SpinFux *fux;
+  EXTobject *fux;
   s32 x;
-  SpinFux *new_var;
+  EXTobject *new_var;
   s32 z;
   u16 mask;
   x = (b * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
@@ -979,11 +979,11 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
     eng = nas->Engine;
     if (eng != 0)
     {
-      fux = (SpinFux *) AddObject(nas);
+      fux = (EXTobject *) AddObject(nas);
       if (fux != 0)
       {
-        fux->angle = a;
-        fux->dist = b;
+        fux->coord.angle = a;
+        fux->coord.dist = b;
         if (AddMotion(nas) != 0)
         {
           LinkObject(nas);
@@ -991,21 +991,21 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
           nas->FUX = (EXT *) fux;
           eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
           eng->xform.order = 1;
-          fux->kind = c;
-          CrateCounts[fux->kind]++;
+          fux->whatami = c;
+          CrateCounts[fux->whatami]++;
           if (d >= 0)
           {
-            fux->sub = d;
+            fux->status = d;
           }
           else
           {
-            fux->sub = 6;
+            fux->status = 6;
           }
           switch (c)
           {
             case 2:
               eng->sub->entity = 0x2014;
-              fux->state = SpinHazardKinds[Random(2)];
+              fux->contains = SpinHazardKinds[Random(2)];
               break;
 
             case 5:
@@ -1014,9 +1014,9 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
               eng->sub->entity = 0x2009;
             }
               z = 0x5A;
-              fux->timer = z;
+              fux->countdown = z;
               new_var = fux;
-              mask = new_var->mask;
+              mask = new_var->can_do;
               goto set_mask;
 
 
@@ -1025,9 +1025,9 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
 
               eng->sub->entity = 0x2001;
             }
-              mask = fux->mask;
+              mask = fux->can_do;
               set_mask:
-            fux->mask = mask | 0x100;
+            fux->can_do = mask | 0x100;
 
               break;
 
@@ -1040,7 +1040,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
 
           }
 
-          switch (fux->sub)
+          switch (fux->status)
           {
             case 3:
               eng->XYZ.y = World_floor_level;
@@ -1083,7 +1083,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
 
 void PlotHazardType(NAS *nas) {
     EXTengine *eng;
-    SpinFux *fux;
+    EXTobject *fux;
     s32 kind;
     SpinGlow *glow;
     s32 v;
@@ -1105,21 +1105,21 @@ void PlotHazardType(NAS *nas) {
         return;
     }
     HeroHooks.KeepInBounds(eng);
-    fux = (SpinFux *)nas->FUX;
+    fux = (EXTobject *)nas->FUX;
     if (fux == NULL) {
         return;
     }
-    kind = fux->kind;
+    kind = fux->whatami;
     glow = FindExtension(nas, 0x800);
     if (glow == NULL) {
         return;
     }
-    switch (fux->sub) {
+    switch (fux->status) {
     case 0:
-        fux->sub = 1;
-        fux->mask = (fux->mask & 0xFFD0) | 0xA;
+        fux->status = 1;
+        fux->can_do = (fux->can_do & 0xFFD0) | 0xA;
         eng->xform.dirty = 1;
-        fux->owner = -1;
+        fux->player = -1;
         FetchDefaultColBox(eng, 0x50);
         break;
     case 6:
@@ -1128,7 +1128,7 @@ void PlotHazardType(NAS *nas) {
         eng->xform.rot.vy = 0;
         if (v >= 0x1000) {
             v = 0x1000;
-            fux->sub = 0;
+            fux->status = 0;
         }
         eng->xform.scale.vy = v;
         eng->xform.dirty = 1;
@@ -1138,7 +1138,7 @@ void PlotHazardType(NAS *nas) {
         v += 0x100;
         if (v >= 0x1000) {
             v = 0x1000;
-            fux->sub = 0;
+            fux->status = 0;
             eng->flags &= ~0x21;
         }
         eng->xform.scale.vx = v;
@@ -1152,7 +1152,7 @@ void PlotHazardType(NAS *nas) {
         case 2:
             SpinDropHazard(fux);
             PlayHitEffect((s32 *)&eng->XYZ, fux, 0);
-            fux->sub = 0xC;
+            fux->status = 0xC;
             break;
         case 6:
             SpinDropHazard(fux);
@@ -1160,21 +1160,21 @@ void PlotHazardType(NAS *nas) {
             KillTriggerNas(nas);
             break;
         case 5:
-            fux->timer = 0x5A;
-            fux->kind = 7;
+            fux->countdown = 0x5A;
+            fux->whatami = 7;
             PlaySfx(0x3F0, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             break;
         default:
-            fux->sub = 0;
+            fux->status = 0;
             break;
         }
         break;
     case 3:
-        fux->sub = 0;
+        fux->status = 0;
         break;
     case 12:
-        fux->timer = 0x78;
-        fux->mask &= 0xFFF4;
+        fux->countdown = 0x78;
+        fux->can_do &= 0xFFF4;
         eng->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
         glow->unk18 = 0x60;
         glow->unk1E = 0xF0;
@@ -1183,7 +1183,7 @@ void PlotHazardType(NAS *nas) {
         glow->unkC = 0xFF;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
-        owner = fux->owner;
+        owner = fux->player;
         if (owner != -1) {
             a = AiPlayerSkill[owner].level;
             b = 0x20 - a;
@@ -1200,19 +1200,19 @@ void PlotHazardType(NAS *nas) {
             }
             r = (u16)Random(t);
             if ((u16)w < r) {
-                fux->state = 0x13;
+                fux->contains = 0x13;
             } else {
-                fux->state = 0x17;
+                fux->contains = 0x17;
             }
         }
-        switch (fux->state) {
+        switch (fux->contains) {
         case 0x17:
             eng->sub->entity = 0x2015;
-            fux->sub = 0xD;
+            fux->status = 0xD;
             break;
         case 0x13:
             eng->sub->entity = 0x2014;
-            fux->sub = 0xD;
+            fux->status = 0xD;
             break;
         }
         break;
@@ -1222,14 +1222,14 @@ void PlotHazardType(NAS *nas) {
             break;
         }
         done = 0;
-        owner = fux->owner;
+        owner = fux->player;
         if (owner != -1) {
             if (glow->unkC == 0) {
                 s32 dx;
                 s32 dy;
                 s32 dz;
 
-                fux->mask |= 8;
+                fux->can_do |= 8;
                 hb = Heroes;
                 h = &hb[owner];
                 if (sub_find_point(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
@@ -1239,10 +1239,10 @@ void PlotHazardType(NAS *nas) {
                 } else {
                     s32 ty;
 
-                    dx = eng->XYZ.x - hb[fux->owner].hero_eng->XYZ.x;
+                    dx = eng->XYZ.x - hb[fux->player].hero_eng->XYZ.x;
                     ty = eng->XYZ.y + 0x180;
-                    dy = ty - hb[fux->owner].hero_eng->XYZ.y;
-                    dz = eng->XYZ.z - hb[fux->owner].hero_eng->XYZ.z;
+                    dy = ty - hb[fux->player].hero_eng->XYZ.y;
+                    dz = eng->XYZ.z - hb[fux->player].hero_eng->XYZ.z;
                 }
                 dx >>= 2;
                 dy >>= 2;
@@ -1255,8 +1255,8 @@ void PlotHazardType(NAS *nas) {
                 if (dx == 0 && dz == 0) {
                     done = 1;
                 }
-                SpinHitHeroes(eng, (SpinHitMask *)fux, 8, fux->owner);
-                if (fux->hit & 8) {
+                SpinHitHeroes(eng, (SpinHitMask *)fux, 8, fux->player);
+                if (fux->will_do & 8) {
                     done = 1;
                 }
             }
@@ -1268,23 +1268,23 @@ void PlotHazardType(NAS *nas) {
             done = 1;
         }
         if (done) {
-            owner = fux->owner;
+            owner = fux->player;
             if (owner != -1 && owner < 5) {
-                Heroes[owner].hero_pu = fux->state;
-                switch (fux->state) {
+                Heroes[owner].hero_pu = fux->contains;
+                switch (fux->contains) {
                 case 0x17:
-                    he = Heroes[fux->owner].hero_powerup;
+                    he = Heroes[fux->player].hero_powerup;
                     PlaySfx(0x5F2, &he->sfx, &he->XYZ, 0x1000, 0x1E00, 0);
-                    Heroes[fux->owner].hero_pu_timer = 0x12C;
-                    Heroes[fux->owner].hero_powerup->sub->entity = 0x2015;
-                    Heroes[fux->owner].hero_powerup->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
+                    Heroes[fux->player].hero_pu_timer = 0x12C;
+                    Heroes[fux->player].hero_powerup->sub->entity = 0x2015;
+                    Heroes[fux->player].hero_powerup->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
                     break;
                 case 0x13:
-                    he = Heroes[fux->owner].hero_powerup;
+                    he = Heroes[fux->player].hero_powerup;
                     PlaySfx(0x5F3, &he->sfx, &he->XYZ, 0x1000, 0x1E00, 0);
-                    Heroes[fux->owner].hero_pu_timer = 0xF0;
-                    Heroes[fux->owner].hero_powerup->sub->entity = 0x2014;
-                    Heroes[fux->owner].hero_powerup->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
+                    Heroes[fux->player].hero_pu_timer = 0xF0;
+                    Heroes[fux->player].hero_powerup->sub->entity = 0x2014;
+                    Heroes[fux->player].hero_powerup->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
                     PlaySfx(0x41C, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                     break;
                 }
@@ -1295,16 +1295,16 @@ void PlotHazardType(NAS *nas) {
         eng->xform.rot.vy += 0x71;
         break;
     default:
-        if (fux->hit & 2) {
-            if (fux->owner != -1) {
-                fux->sub = 9;
-                fux->hit &= 0xFFF4;
-                fux->mask &= 0xFFF4;
+        if (fux->will_do & 2) {
+            if (fux->player != -1) {
+                fux->status = 9;
+                fux->will_do &= 0xFFF4;
+                fux->can_do &= 0xFFF4;
             } else {
-                fux->hit &= 0xFFFC;
+                fux->will_do &= 0xFFFC;
             }
         }
-        if ((fux->hit & 8) && kind == 6) {
+        if ((fux->will_do & 8) && kind == 6) {
             PlayHitEffect((s32 *)&eng->XYZ, fux, 0);
             KillTriggerNas(nas);
         }
@@ -1316,7 +1316,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
     NAS *nas;
     EXTengine *eng;
     EXTengine *shadow;
-    SpinFux *fux;
+    EXTobject *fux;
     EXTmotion *mot;
     s32 x;
     s32 y;
@@ -1332,10 +1332,10 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
         eng = nas->Engine;
         if (eng != NULL) {
             eng->flags |= 0x20000000;
-            fux = (SpinFux *)AddObject(nas);
+            fux = (EXTobject *)AddObject(nas);
             if (fux != NULL) {
-                fux->angle = a;
-                fux->dist = b;
+                fux->coord.angle = a;
+                fux->coord.dist = b;
                 mot = AddMotion(nas);
                 if (mot != NULL) {
                     LinkObject(nas);
@@ -1343,34 +1343,34 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                     nas->FUX = (EXT *)fux;
                     eng->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
                     eng->xform.order = 1;
-                    fux->kind = c;
-                    CrateCounts[fux->kind]++;
+                    fux->whatami = c;
+                    CrateCounts[fux->whatami]++;
                     if (d >= 0) {
-                        fux->sub = d;
+                        fux->status = d;
                     } else {
-                        fux->sub = 3;
+                        fux->status = 3;
                     }
                     switch (c) {
                     case 8:
                         eng->sub->entity = 0x2003;
-                        fux->state = 1;
+                        fux->contains = 1;
                         break;
                     case 9:
                         eng->sub->entity = 0x2001;
-                        fux->state = 2;
+                        fux->contains = 2;
                         break;
                     case 10:
                         eng->sub->entity = 0x2002;
-                        fux->state = 3;
+                        fux->contains = 3;
                         break;
                     case 11:
                         eng->sub->entity = 0x2004;
-                        fux->state = 0;
+                        fux->contains = 0;
                         break;
                     case 12:
                     default:
                         eng->sub->entity = 0x2005;
-                        fux->state = Random(3) + 4;
+                        fux->contains = Random(3) + 4;
                         break;
                     }
                     mot->Xvel = Random(8) + 4;
@@ -1398,7 +1398,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
 
 void PlotBalloon(NAS *nas) {
     EXTengine *eng;
-    SpinFux *fux;
+    EXTobject *fux;
     EXTmotion *mot;
     EXTengine *shadow;
     s32 kind;
@@ -1416,19 +1416,19 @@ void PlotBalloon(NAS *nas) {
         return;
     }
     HeroHooks.KeepInBounds(eng);
-    fux = (SpinFux *)nas->FUX;
+    fux = (EXTobject *)nas->FUX;
     if (fux != NULL) {
-        kind = fux->kind;
+        kind = fux->whatami;
         if ((mot = FindExtension(nas, 0x800)) != NULL) {
-            switch (fux->sub) {
+            switch (fux->status) {
             case 0:
-                fux->sub = 1;
-                fux->mask &= 0xFFF5;
+                fux->status = 1;
+                fux->can_do &= 0xFFF5;
                 if (kind < 0xD) if (kind >= 8) {
-                    fux->mask |= 0xA;
+                    fux->can_do |= 0xA;
                 }
                 eng->xform.dirty = 1;
-                fux->owner = -1;
+                fux->player = -1;
                 FetchDefaultColBox(eng, 0x50);
                 break;
             case 9:
@@ -1437,7 +1437,7 @@ void PlotBalloon(NAS *nas) {
                 case 9:
                 case 10:
                 case 11:
-                    uo = fux->owner;
+                    uo = fux->player;
                     owner = (s16)uo;
                     if (owner != -1 && owner < 4) {
                         if (SpinBalloonTimer != 0) {
@@ -1450,17 +1450,17 @@ void PlotBalloon(NAS *nas) {
                             } else {
                                 SetHeroAction(owner, (u16)HeroActHit);
                                 if (SPIN_GAME->levelFlags & 0x80) {
-                                    owner = fux->owner;
+                                    owner = fux->player;
                                     if (owner == 0 || (SPIN_GAME->teams != 0 && owner == 1)) {
                                         Heroes[owner].hero_health = 0;
-                                        HeroTakeHit(fux->owner, NULL, -1, 1, 8);
+                                        HeroTakeHit(fux->player, NULL, -1, 1, 8);
                                     }
                                 }
                             }
                             SpawnModelFx(SpinBalloonAnims[SpinBalloonOwner], &eng->XYZ.x, (s32)&HeroModelBank[DB_RingObjects]);
                             goto sfx;
                         }
-                        if (fux->state == owner) {
+                        if (fux->contains == owner) {
                             if (GameLevelFlags & 0x40) {
                                 Heroes[uo & 2].hero_score--;
                             } else {
@@ -1469,39 +1469,39 @@ void PlotBalloon(NAS *nas) {
                         } else {
                             SetHeroAction(owner, (u16)HeroActHit);
                             if (SPIN_GAME->levelFlags & 0x80) {
-                                owner = fux->owner;
+                                owner = fux->player;
                                 if (owner == 0 || (SPIN_GAME->teams != 0 && owner == 1)) {
                                     Heroes[owner].hero_health = 0;
-                                    HeroTakeHit(fux->owner, NULL, -1, 1, 8);
+                                    HeroTakeHit(fux->player, NULL, -1, 1, 8);
                                 }
                             }
                         }
                     }
-                    SpawnModelFx(SpinBalloonAnims[fux->state], &eng->XYZ.x, (s32)&HeroModelBank[DB_RingObjects]);
+                    SpawnModelFx(SpinBalloonAnims[fux->contains], &eng->XYZ.x, (s32)&HeroModelBank[DB_RingObjects]);
                 sfx:
                     PlaySfx(SpinBalloonSfx[kind - 8][Random(4)], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
-                    o = fux->owner;
+                    o = fux->player;
                     if (o != -1 && o < 5 && Heroes[o].hero_object == (EXTobject *)fux) {
                         Heroes[o].hero_object = NULL;
-                        if (Heroes[fux->owner].hero_eng->sfx != NULL) {
-                            StopSfx(Heroes[fux->owner].hero_eng->sfx);
+                        if (Heroes[fux->player].hero_eng->sfx != NULL) {
+                            StopSfx(Heroes[fux->player].hero_eng->sfx);
                         }
                     }
                     goto kill;
                 case 12:
                     SpinScoreBalloon(fux);
-                    o = fux->owner;
+                    o = fux->player;
                     if (o != -1 && o < 5 && Heroes[o].hero_object == (EXTobject *)fux) {
                         Heroes[o].hero_object = NULL;
-                        if (Heroes[fux->owner].hero_eng->sfx != NULL) {
-                            StopSfx(Heroes[fux->owner].hero_eng->sfx);
+                        if (Heroes[fux->player].hero_eng->sfx != NULL) {
+                            StopSfx(Heroes[fux->player].hero_eng->sfx);
                         }
                     }
                     SpawnModelFx(4, &eng->XYZ.x, (s32)&HeroModelBank[DB_RingObjects]);
                     goto kill;
                 }
             case 3:
-                fux->sub = 0;
+                fux->status = 0;
                 break;
             case 0x63:
                 if (GravitateNas(nas) != 0) {
@@ -1525,8 +1525,8 @@ void PlotBalloon(NAS *nas) {
                 break;
             }
             if (GameExitFlags & 0x801) {
-                fux->owner = -1;
-                fux->hit |= 8;
+                fux->player = -1;
+                fux->will_do |= 8;
             }
             a = get_angle(-eng->XYZ.x, -eng->XYZ.z) + SpinAngle;
             mot->Zvel = 4;
@@ -1539,13 +1539,13 @@ void PlotBalloon(NAS *nas) {
             eng->XYZ.x -= (mot->Zvel * rcossin_tbl[(mot->Za - 0x400) & 0xFFF].unk2) >> 12;
             eng->XYZ.z -= (mot->Zvel * rcossin_tbl[mot->Za & 0xFFF].unk2) >> 12;
         }
-        if ((u16)fux->state < 4) {
+        if ((u16)fux->contains < 4) {
             t = SpinBalloonTimer;
             if (t != 0) {
                 eng->sub->entity = SpinBalloonModels[SpinBalloonOwner];
                 if (t < 0x1E) {
                     if (t & 2) {
-                        eng->sub->entity = SpinBalloonModels[fux->state];
+                        eng->sub->entity = SpinBalloonModels[fux->contains];
                         if (SpinBalloonFlag == 0) {
                             PlaySfx(0x5EF, NULL, NULL, 0x1000, 0x1E00, 0);
                         }
@@ -1555,19 +1555,19 @@ void PlotBalloon(NAS *nas) {
                     }
                 }
             } else {
-                eng->sub->entity = SpinBalloonModels[fux->state];
+                eng->sub->entity = SpinBalloonModels[fux->contains];
             }
         }
-        a = fux->angle + GameFrameCount * 16;
+        a = fux->coord.angle + GameFrameCount * 16;
         eng->sub->XYZ.y = (rcossin_tbl[(a * 4 - 0x400) & 0xFFF].unk2 + rcossin_tbl[a & 0xFFF].unk2) >> 6;
         SPIN_FLOAT(eng, g, y, s);
     }
     SPIN_SHADOW(eng, shadow);
 }
 
-void SpinScoreBalloon(SpinFux *arg0) {
+void SpinScoreBalloon(EXTobject *arg0) {
     NAS *n;
-    SpinFux *f;
+    EXTobject *f;
     s16 idx;
     u32 a;
     u32 b;
@@ -1580,7 +1580,7 @@ void SpinScoreBalloon(SpinFux *arg0) {
     u16 *p;
 
     n = HeadOfObjects;
-    idx = arg0->owner;
+    idx = arg0->player;
     if (idx != -1) {
         a = AiPlayerSkill[idx].level;
         p = SpinBalloonWeights;
@@ -1602,22 +1602,22 @@ void SpinScoreBalloon(SpinFux *arg0) {
             return;
         }
         r = (u16)Random(t);
-        arg0->state = 4;
+        arg0->contains = 4;
         if ((u16)w0 < r) {
-            arg0->state = 5;
+            arg0->contains = 5;
         }
         if ((u16)w0 + (u16)w1 < (s32)r) {
-            arg0->state = 6;
+            arg0->contains = 6;
         }
     }
-    switch (arg0->state) {
+    switch (arg0->contains) {
     case 5:
         PlaySfx(0x5ED, NULL, NULL, 0x1000, 0x1E00, 0);
         for (; n != NULL; n = n->Object.Child) {
-            f = (SpinFux *)n->FUX;
-            if (f != NULL && (k = f->kind) < 12 && k >= 8 && f->state != arg0->owner) {
-                f->owner = -1;
-                f->hit |= 8;
+            f = (EXTobject *)n->FUX;
+            if (f != NULL && (k = f->whatami) < 12 && k >= 8 && f->contains != arg0->player) {
+                f->player = -1;
+                f->will_do |= 8;
             }
         }
         PlaySfx(0x5F1, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1635,7 +1635,7 @@ void SpinScoreBalloon(SpinFux *arg0) {
         PlaySfx(0x5ED, NULL, NULL, 0x1000, 0x1E00, 0);
         PlaySfx(0x5EE, NULL, NULL, 0x1000, 0x1E00, 0);
         SpinBalloonTimer = 0x96;
-        SpinBalloonOwner = arg0->owner;
+        SpinBalloonOwner = arg0->player;
         break;
     }
 }
@@ -1706,12 +1706,12 @@ void SpinHero_ExtraEffects(s32 arg0) {
     }
 }
 
-s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
+s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, EXTobject *fux) {
     FlagRecord *box;
     HeroInfo *h;
     NAS *it;
     EXTengine *other;
-    SpinFux *f;
+    EXTobject *f;
     s32 hit;
     s32 i;
     s32 bot;
@@ -1742,7 +1742,7 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
                 } else {
                     do {
                         do {
-                            if (fux->state != i) {
+                            if (fux->contains != i) {
                                 goto next;
                             }
                         } while (0);
@@ -1775,9 +1775,9 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
             if (it->Class & 0x200) {
                 other = it->Engine;
                 if (other != NULL && other != eng) {
-                    f = (SpinFux *)it->FUX;
+                    f = (EXTobject *)it->FUX;
                     if (f != NULL) {
-                        kind = f->kind;
+                        kind = f->whatami;
                         if (kind < 0xD) if (kind >= 8) {
                             d = other->XYZ.y;
                             lo = d - 0x100;
@@ -1901,7 +1901,7 @@ const char SpinEmptyString[] = "";
 
 void Spin_HeroBot(s32 arg0) {
     s32 unused[4];
-    SpinFux *nf;
+    EXTobject *nf;
     NAS *nas;
     s32 kind;
     s32 lvl;
@@ -1911,7 +1911,7 @@ void Spin_HeroBot(s32 arg0) {
     u16 r;
     EXTbotai *ai;
     EXTengine *e;
-    SpinFux *f;
+    EXTobject *f;
     PadState *pad;
     s32 inv;
     s32 found;
@@ -1964,9 +1964,9 @@ void Spin_HeroBot(s32 arg0) {
     x = 0;
     z = 0;
     if (nas != NULL && nas->NASid != 0 && (e = nas->Engine) != NULL &&
-        (nf = (SpinFux *)nas->FUX) != NULL) {
-        kind = nf->kind;
-        if (nf->sub == 1) {
+        (nf = (EXTobject *)nas->FUX) != NULL) {
+        kind = nf->whatami;
+        if (nf->status == 1) {
             found = 1;
             x = e->XYZ.x;
             z = e->XYZ.z;
@@ -2102,12 +2102,12 @@ void Spin_HeroBot(s32 arg0) {
             }
             f = SpinHeroObjectNear(arg0, 0xA, 0x400);
             if (f != NULL) {
-                switch (f->kind) {
+                switch (f->whatami) {
                 case 8:
                 case 9:
                 case 10:
                 case 11:
-                    if (f->state != arg0) {
+                    if (f->contains != arg0) {
                         break;
                     }
                     goto sleep3;
@@ -2162,12 +2162,12 @@ void Spin_HeroBot(s32 arg0) {
             }
             f = SpinHeroObjectNear(arg0, 0xA, 0x400);
             if (f != NULL) {
-                switch (k = f->kind) {
+                switch (k = f->whatami) {
                 case 8:
                 case 9:
                 case 10:
                 case 11:
-                    if (f->state != arg0) {
+                    if (f->contains != arg0) {
                         break;
                     }
                     if (k == kind) {
@@ -2332,7 +2332,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
     EXTengine *e;
     EXTengine *he;
     NAS *n;
-    SpinFux *f;
+    EXTobject *f;
     s32 lvl;
     s32 inv;
     s16 w0;
@@ -2410,12 +2410,12 @@ s32 SpinAI_ChooseTarget(s32 player) {
     for (; n != NULL; n = n->Object.Child) {
         e = n->Engine;
         if (e == NULL) continue;
-        f = (SpinFux *)n->FUX;
+        f = (EXTobject *)n->FUX;
         if (f == NULL) continue;
-        switch (f->kind) {
+        switch (f->whatami) {
         case 8: case 9: case 10: case 11:
             if (SpinBalloonTimer != 0 && SpinBalloonOwner != player) continue;
-            if (f->state != player) continue;
+            if (f->contains != player) continue;
             dx = px - e->XYZ.x;
             dz = pz - e->XYZ.z;
             d = csqrt(dx * dx + dz * dz) >> 6;
@@ -3558,8 +3558,8 @@ s32 SpinHeroCarryCollision(s32 idx) {
     return hit;
 }
 
-SpinFux *SpinHeroObjectNear(s32 hero, u16 mask, s32 r) {
-    SpinFux *best = NULL;
+EXTobject *SpinHeroObjectNear(s32 hero, u16 mask, s32 r) {
+    EXTobject *best = NULL;
     NAS *n = HeadOfObjects;
     EXTengine *eng = Heroes[hero].hero_eng;
     s32 cx = eng->XYZ.x;
@@ -3568,15 +3568,15 @@ SpinFux *SpinHeroObjectNear(s32 hero, u16 mask, s32 r) {
     s32 pz = cz - (rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 1024 >> 14);
     s32 bestd;
     s32 lim, dx, dz, d;
-    SpinFux *f;
+    EXTobject *f;
 
     r = r * r;
     bestd = r * 2;
 
     for (; n != NULL; n = n->Object.Child) {
-        f = (SpinFux *)n->FUX;
-        if (f != NULL && (f->mask & mask) && n->Engine != NULL) {
-            if (f->kind == 2) {
+        f = (EXTobject *)n->FUX;
+        if (f != NULL && (f->can_do & mask) && n->Engine != NULL) {
+            if (f->whatami == 2) {
                 lim = 0x10000;
                 dx = n->Engine->XYZ.x - px;
                 dz = n->Engine->XYZ.z - pz;

@@ -1495,7 +1495,7 @@ s32 PapuHeroCarryCollision(s32 idx) {
     FlagRecord *rec;
     NAS *nas;
     NAS *self;
-    PapuPushExt *ext;
+    EXTobject *ext;
     s32 dx;
     s32 dz;
     s32 r;
@@ -1536,7 +1536,7 @@ s32 PapuHeroCarryCollision(s32 idx) {
                         other = nas->Engine;
                         if (other != NULL && other != eng) {
                             ext = FindExtension(nas, 0x1000);
-                            if (ext != NULL && (ext->unk1A == 1 || ext->unk1A == 0xB)) {
+                            if (ext != NULL && (ext->status == 1 || ext->status == 0xB)) {
                                 rec = FindCollisionBox(other, 0x40);
                                 if (rec != NULL) {
                                     lo = other->XYZ.y + rec->dy;
@@ -1555,9 +1555,9 @@ s32 PapuHeroCarryCollision(s32 idx) {
                                                 eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
                                                 eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                 hit = 1;
-                                                if (ext->unk1C & 8) {
-                                                    ext->unk16 = idx;
-                                                    ext->unk1E |= 8;
+                                                if (ext->can_do & 8) {
+                                                    ext->player = idx;
+                                                    ext->will_do |= 8;
                                                 }
                                             }
                                         }

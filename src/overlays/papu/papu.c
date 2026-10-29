@@ -1158,7 +1158,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
   NAS *nas;
   u8 *new_var;
   EXTengine *eng;
-  PapuObj *obj;
+  EXTobject *obj;
   Slot40 *s;
   s32 i;
   nas = CreateNAS(a, b, c, 0x1202, 0x11);
@@ -1193,13 +1193,13 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
         s->pad4[4] = (s32) AddMotion(nas);
         *((SLONG_XYZ *) s->unk34) = eng->XYZ;
         s->unk26 = 0xA;
-        obj = (PapuObj *) AddObject(nas);
+        obj = (EXTobject *) AddObject(nas);
         if (obj != 0)
         {
           nas->FUX = (EXT *) obj;
-          obj->unk1A = 1;
-          obj->unk22 = d;
-          obj->unk14 = s->unk22;
+          obj->status = 1;
+          obj->countdown = d;
+          obj->whatami = s->unk22;
           LinkObject(nas);
           AddSolid(nas, 0x200);
         }
@@ -2687,7 +2687,7 @@ void PapuCountObjects(void) {
 
 NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
     NAS *nas;
-    PapuObj *obj;
+    EXTobject *obj;
     EXTengine *eng;
     s32 x, z;
 
@@ -2700,24 +2700,24 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
     if (nas != NULL) {
         eng = nas->Engine;
         if (eng != NULL) {
-            obj = (PapuObj *)AddObject(nas);
+            obj = (EXTobject *)AddObject(nas);
             if (obj != NULL && AddMotion(nas) != NULL) {
                 LinkObject(nas);
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
                 eng->xform.order = 1;
-                obj->unk14 = d;
-                CrateCounts[obj->unk14]++;
-                obj->unk1A = 7;
+                obj->whatami = d;
+                CrateCounts[obj->whatami]++;
+                obj->status = 7;
                 switch (k) {
                 case 4:
                     eng->sub->entity = 0x2013;
                     break;
                 case 5:
                     eng->sub->entity = 0x2009;
-                    obj->unk22 = 0x5A;
-                    obj->unk1C |= 0x100;
+                    obj->countdown = 0x5A;
+                    obj->can_do |= 0x100;
                     break;
                 default:
                     eng->sub->entity = 0x2013;
@@ -2753,7 +2753,7 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
 
 void InitPACrate(NAS *arg0) {
     EXTengine *eng;
-    PapuObj *obj;
+    EXTobject *obj;
     NAS *nas;
     EXTengine *other;
     s32 again;
@@ -2761,7 +2761,7 @@ void InitPACrate(NAS *arg0) {
 
     eng = arg0->Engine;
     if (eng != NULL) {
-        obj = (PapuObj *)AddObject(arg0);
+        obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
             arg0->FUX = (EXT *)obj;
             do {
@@ -2788,19 +2788,19 @@ void InitPACrate(NAS *arg0) {
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
             eng->xform.order = 1;
             eng->xform.hasScale = 1;
-            obj->unk1A = 3;
+            obj->status = 3;
             if (arg0->trigger != NULL) {
-                obj->unk14 = arg0->trigger->InfoStruct->val1;
+                obj->whatami = arg0->trigger->InfoStruct->val1;
             }
-            CrateCounts[obj->unk14]++;
-            switch (obj->unk14) {
+            CrateCounts[obj->whatami]++;
+            switch (obj->whatami) {
             case 4:
                 eng->sub->entity = 0x2013;
                 break;
             case 5:
                 eng->sub->entity = 0x2009;
-                obj->unk22 = 0x5A;
-                obj->unk1C |= 0x100;
+                obj->countdown = 0x5A;
+                obj->can_do |= 0x100;
                 break;
             default:
                 eng->sub->entity = 0x2013;
@@ -2820,7 +2820,7 @@ void InitPACrate(NAS *arg0) {
             if (z < 0) {
                 z = 0;
             }
-            ArenaGrid[z * 20 + x].flags = obj->unk14;
+            ArenaGrid[z * 20 + x].flags = obj->whatami;
             AddMotion(arg0);
             LinkObject(arg0);
             AddSolid(arg0, 0x300);

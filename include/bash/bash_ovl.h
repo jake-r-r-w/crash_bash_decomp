@@ -239,14 +239,6 @@ void InitBashHomer(NAS *nas);
 
 u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag);
 
-/* The object extension InitTumbler adds (AddObject). */
-typedef struct TumblerObj {
-    /* 0x00 */ u8 pad0[0x14];
-    /* 0x14 */ s16 unk14;
-    /* 0x16 */ s16 unk16;
-    /* 0x18 */ u8 pad18[2];
-    /* 0x1A */ s16 unk1A;
-} TumblerObj;
 
 s32 CrateCollide(EXTengine *eng, s32 arg1, s32 arg2, s32 arg3);
 

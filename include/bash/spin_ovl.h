@@ -55,13 +55,13 @@ extern SpinCell SpinDropPoints[4][16];
         }                                               \
     } while (0)
 
-/* A hit (flags 2|8) pops the object: state 9, hit and mask flags cleared. */
+/* A hit (will_do 2|8) pops the object: status 9, will_do and can_do 2|8 cleared. */
 #define SPIN_CHECK_POP(fux)                            \
     do {                                                \
-        if ((fux)->hit & 0xA) {                         \
-            (fux)->sub = 9;                             \
-            (fux)->hit &= 0xFFF5;                       \
-            (fux)->mask &= 0xFFF5;                      \
+        if ((fux)->will_do & 0xA) {                         \
+            (fux)->status = 9;                             \
+            (fux)->will_do &= 0xFFF5;                       \
+            (fux)->can_do &= 0xFFF5;                      \
         }                                               \
     } while (0)
 
@@ -133,21 +133,6 @@ typedef struct {
     /* 0x1E */ u16 hit;
 } SpinHitMask;
 
-/* NAS.FUX of an object in the HeadOfObjects list (SpinHeroObjectNear). */
-typedef struct SpinFux {
-    /* 0x00 */ u8 pad0[0x14];
-    /* 0x14 */ u16 kind;
-    /* 0x16 */ s16 owner;
-    /* 0x18 */ u8 pad18[0x1A - 0x18];
-    /* 0x1A */ u16 sub;
-    /* 0x1C */ u16 mask;
-    /* 0x1E */ u16 hit;
-    /* 0x20 */ u8 pad20[0x22 - 0x20];
-    /* 0x22 */ s16 timer;
-    /* 0x24 */ s16 state;
-    /* 0x26 */ s16 angle;
-    /* 0x28 */ s16 dist;
-} SpinFux;
 
 /* balloon chance weights, indexed by score and 0x20 - score (SpinScoreBalloon) */
 extern u16 SpinBalloonWeights[];
@@ -174,19 +159,19 @@ void SpinHeroWinner(s32 arg0);
 extern u16 SpinBalloonAnims[];
 
 /* PlotHazardType: let go of a hazard its owner is holding. */
-static inline void SpinDropHazard(SpinFux *fux) {
+static inline void SpinDropHazard(EXTobject *fux) {
     HeroInfo *hb;
     HeroInfo *h;
     s16 owner;
     _sfx_handler *sfx;
 
-    owner = fux->owner;
+    owner = fux->player;
     if (owner != -1 && owner < 5) {
         hb = Heroes;
         h = &hb[owner];
         if (h->hero_object == (EXTobject *)fux) {
             h->hero_object = NULL;
-            sfx = hb[fux->owner].hero_eng->sfx;
+            sfx = hb[fux->player].hero_eng->sfx;
             if (sfx != NULL) {
                 StopSfx(sfx);
             }
@@ -293,7 +278,7 @@ void SpinDropObjects(u16 count, s16 arg1);
 
 void SetSpinHeroFlip(s32 arg0);
 
-SpinFux *SpinHeroObjectNear(s32 hero, u16 mask, s32 r);
+EXTobject *SpinHeroObjectNear(s32 hero, u16 mask, s32 r);
 
 /* InitialiseSPIN */
 extern u16 SpinUnused1;
@@ -305,9 +290,9 @@ void SpinTurnArena(void);
 
 void PlotHazardType(NAS *nas);
 
-void SpinScoreBalloon(SpinFux *arg0);
+void SpinScoreBalloon(EXTobject *arg0);
 
-s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux);
+s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, EXTobject *fux);
 
 s32 SpinAI_ChooseTarget(s32 player);
 

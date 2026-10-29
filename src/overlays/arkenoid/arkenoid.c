@@ -411,7 +411,7 @@ ArkenoidCircle *ArkCircles = 0;
 ArkenoidCircle *ArkBumpers = 0;
 ArkenoidHeroBox ArkHeroBoxes[4] = {0};
 EXTengine *ArkBallSpawner = 0;
-ArkenoidGin *ArkNGin = 0;
+EXTobject *ArkNGin = 0;
 EXTengine ArkCornerEngine = {0};
 EXTengine ArkDieEngine = {0};
 s32 ArkFloorTiltX = 0;
@@ -4119,7 +4119,7 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
 
 void Plot_N_Gin(NAS *arg0) {
     EXTengine *eng;
-    ArkenoidGin *gin;
+    EXTobject *gin;
     s32 i;
     u32 s;
 
@@ -4129,89 +4129,89 @@ void Plot_N_Gin(NAS *arg0) {
     }
     if (FindExtension(arg0, 0x400) != NULL && (gin = ArkNGin) != NULL) {
         if (GameExitFlags & 0x801) {
-            if ((u16)gin->unk1A != 0) {
-                gin->unk1A = 5;
+            if ((u16)gin->status != 0) {
+                gin->status = 5;
                 if (eng->sfx != NULL) {
                     StopSfx(eng->sfx);
                 }
             }
             RunNasAnim(arg0);
         }
-        s = (u16)gin->unk1A;
+        s = (u16)gin->status;
         switch (s) {
         case 1:
             eng->XYZ.y = World_floor_level;
-            gin->unk1A = 2;
-            gin->unk22 = 0xA;
-            gin->unk1C |= 0x90;
+            gin->status = 2;
+            gin->countdown = 0xA;
+            gin->can_do |= 0x90;
             PlaySfx(0x5BE, NULL, NULL, 0x1000, 0x1E00, 0);
             SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Ngin]);
             eng->sub->entity = 0x2001;
             break;
         case 2:
             eng->xform.rot.vy += 0x20;
-            if (gin->unk22 != 0) {
-                gin->unk22--;
+            if (gin->countdown != 0) {
+                gin->countdown--;
             } else {
                 arg0->Class |= 0x200;
                 eng->flags |= 0x8000;
-                gin->unk1A = 3;
+                gin->status = 3;
                 PlaySfx(0x5BF, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
-                gin->unk22 = 0x5A;
-                gin->unk20 = 0x10;
+                gin->countdown = 0x5A;
+                gin->timer = 0x10;
             }
             RunNasAnim(arg0);
             eng->xform.dirty = 1;
             return;
         case 3:
-            eng->xform.rot.vy += gin->unk20;
-            gin->unk20 += 4;
+            eng->xform.rot.vy += gin->timer;
+            gin->timer += 4;
             RunNasAnim(arg0);
-            if (gin->unk22 != 0) {
-                gin->unk22--;
+            if (gin->countdown != 0) {
+                gin->countdown--;
                 break;
             }
             eng->sub->entity = 0x2006;
-            gin->unk1A = 4;
-            gin->unk22 = 0x96;
-            gin->unk20 = Random(0xA) + 0xA;
+            gin->status = 4;
+            gin->countdown = 0x96;
+            gin->timer = Random(0xA) + 0xA;
             if (((GameState *)GameInfo)->levelFlags == 0) {
                 eng->xform.dirty = 1;
                 return;
             }
             if (((GameState *)GameInfo)->teams != 0) {
-                gin->unk22 = 0xD2;
+                gin->countdown = 0xD2;
             }
             break;
         case 4:
             eng->xform.rot.vy += 0x1C7;
             if (((GameState *)GameInfo)->levelFlags & 0x80) {
-                if (gin->unk20 != 0) {
-                    gin->unk20--;
+                if (gin->timer != 0) {
+                    gin->timer--;
                 } else {
                     for (i = 0; i < 4; i++) {
                         if ((i == 0 || (((GameState *)GameInfo)->teams != 0 && i == 1)) && !(Heroes[i].hero_status & 0xFA00)) {
                             if (angle_diff_abs(eng->xform.rot.vy, Heroes[i].hero_move->facing_angle & 0xFFF) < 0xE3) {
                                 ArkSpawnBall();
-                                gin->unk20 = Random(0xB) + 6;
+                                gin->timer = Random(0xB) + 6;
                             } else {
-                                gin->unk20 = Random(5);
+                                gin->timer = Random(5);
                             }
                         }
                     }
                 }
             } else {
-                if (gin->unk20 != 0) {
-                    gin->unk20--;
+                if (gin->timer != 0) {
+                    gin->timer--;
                 } else {
                     ArkSpawnBall();
-                    gin->unk20 = 0xF;
+                    gin->timer = 0xF;
                 }
             }
-            if (gin->unk22 != 0) {
-                gin->unk22--;
+            if (gin->countdown != 0) {
+                gin->countdown--;
             } else {
-                gin->unk1A = 5;
+                gin->status = 5;
             }
             break;
         case 5:
@@ -4220,17 +4220,17 @@ void Plot_N_Gin(NAS *arg0) {
             }
             PlaySfx(0x5C0, NULL, NULL, 0x1000, 0x1E00, 0);
             SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Ngin]);
-            gin->unk1C = 0;
+            gin->can_do = 0;
             eng->XYZ.y = -0x1000;
             eng->flags &= 0xFFFF7FFF;
             NGinState = 0x19;
             arg0->Class &= 0xFDFF;
-            gin->unk1A = 0;
-            gin->unk22 = (Random(0xF) + 8) * 0x1E;
+            gin->status = 0;
+            gin->countdown = (Random(0xF) + 8) * 0x1E;
             break;
         case 0:
         default:
-            gin->unk1C = 0;
+            gin->can_do = 0;
             eng->XYZ.y = -0x1000;
             arg0->Class &= 0xFDFF;
             eng->flags &= 0xFFFF7FFF;
@@ -4238,10 +4238,10 @@ void Plot_N_Gin(NAS *arg0) {
                 eng->xform.dirty = 1;
                 return;
             }
-            if (gin->unk22 != 0) {
-                gin->unk22--;
+            if (gin->countdown != 0) {
+                gin->countdown--;
             } else {
-                gin->unk1A = 1;
+                gin->status = 1;
             }
         }
     }
@@ -4268,7 +4268,7 @@ void ArkCrateMaster(void) {
     }
     gin = 0;
     if (ArkNGin != NULL) {
-        gin = (u16)ArkNGin->unk1A != 0;
+        gin = (u16)ArkNGin->status != 0;
     }
     if (g->mode == 0x10 && PickupCounts[0] == 0) {
         if (CrateMasterWordC != 0) {
@@ -4925,13 +4925,13 @@ void Create_ArkPickup(void)
   HeroInfo *h2;
   EXTengine *eng;
   s32 s;
-  ArkenoidSpark *obj;
+  EXTobject *obj;
   NAS *nas;
   NAS *tgt;
   s32 i;
   s32 k;
   i = 0;
-  if (((u16) ArkNGin->unk1A) != 0)
+  if (((u16) ArkNGin->status) != 0)
   {
     return;
   }
@@ -5012,17 +5012,17 @@ void Create_ArkPickup(void)
 
         k = 0x12;
         Random(8);
-        obj = (ArkenoidSpark *) AddObject(nas);
+        obj = (EXTobject *) AddObject(nas);
         if (obj != 0)
         {
           nas->FUX = (EXT *) obj;
-          obj->unk14 = k;
-          obj->unk1A = 7;
+          obj->whatami = k;
+          obj->status = 7;
         }
 
         eng->flags = 0;
         PickupCounts[0]++;
-        obj->unk24 = k;
+        obj->contains = k;
         nas->UserInfo.user1 = s;
         nas->UserInfo.user2 = 0xB4;
       }
@@ -5094,7 +5094,7 @@ void Plot_Ark_Pickup(NAS *arg0) {
             break;
         }
     }
-    if ((u16)ArkNGin->unk1A != 0) {
+    if ((u16)ArkNGin->status != 0) {
         arg0->UserInfo.user2 = 0;
     }
     if (arg0->UserInfo.user2 != 0) {
@@ -6080,7 +6080,7 @@ void Init_seaweed(NAS *arg0) {
 
 void Init_N_Gin(NAS *nas) {
     EXTengine *eng;
-    ArkenoidGin *obj;
+    EXTobject *obj;
 
     eng = nas->Engine;
     if (eng != NULL) {
@@ -6088,15 +6088,15 @@ void Init_N_Gin(NAS *nas) {
         ArkBallSpawner = eng;
         eng->sub->u6C.dbase = &HeroModelBank[DB_Ngin];
         eng->sub->entity = 0x2001;
-        ArkNGin = obj = (ArkenoidGin *)AddObject(nas);
+        ArkNGin = obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
             LinkObject(nas);
             AddSolid(nas, 0x200);
             nas->FUX = (EXT *)obj;
-            obj->unk14 = 0xE;
-            obj->unk1A = 0;
-            obj->unk22 = 0x186;
-            obj->unk1C = 0;
+            obj->whatami = 0xE;
+            obj->status = 0;
+            obj->countdown = 0x186;
+            obj->can_do = 0;
         }
         eng->XYZ.y = -0x1000;
         nas->Class &= 0xFDFF;
