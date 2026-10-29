@@ -7752,7 +7752,7 @@ void InitPolarBoss(NAS *nas) {
         ext->cursor = ScriptCursorFirst(nas, &PolarBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->cursor, 0);
         RunNasAnim(nas);
-        ext->unk84 = CreateNAS(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1622, 0x11);
+        ext->animNas = CreateNAS(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1622, 0x11);
         s = CreateNAS(nas->Engine->XYZ.x, 0, nas->Engine->XYZ.z, 0x1620, 0x11);
         if (s != NULL) {
             ext->unk88 = s;
@@ -7777,7 +7777,7 @@ void InitPolarBoss(NAS *nas) {
         ext->unk34 = 0;
         ext->unk58 = 0;
         ext->unk54 = 0;
-        ext->unk68 = 0;
+        ext->timer = 0;
         ext->ang = 0;
         ext->unk70 = 1;
         ext->unk74 = 0;
@@ -7833,9 +7833,9 @@ void PlotPolarBoss(NAS *m) {
                         m->Engine->XYZ.z - Heroes[1].hero_eng->XYZ.z) & 0xFFF;
     }
     if (ext->state != 8) {
-        ext->unk84->Engine->xform.rot.vy = ang;
+        ext->animNas->Engine->xform.rot.vy = ang;
     }
-    mate = FindExtension(ext->unk84, 0x10000000);
+    mate = FindExtension(ext->animNas, 0x10000000);
     if (mate != NULL) {
         if (((GameState *)GameInfo)->teams != 0) {
             h = Heroes;
@@ -7853,7 +7853,7 @@ void PlotPolarBoss(NAS *m) {
             return;
         }
     }
-    if (ext->unk68-- < 0) {
+    if (ext->timer-- < 0) {
         for (k = 0;; k++) {
             s32 d;
 
@@ -7871,16 +7871,16 @@ void PlotPolarBoss(NAS *m) {
             pos.x += PolarRandSpread(0x5F4);
             pos.z += PolarRandSpread(0x5F4);
         }
-        ext->unk68 = Random(4) + 5;
+        ext->timer = Random(4) + 5;
     }
     switch (ext->state) {
     case 5:
-        if (ext->unk84->Engine->sfx != NULL) {
-            StopSfx(ext->unk84->Engine->sfx);
+        if (ext->animNas->Engine->sfx != NULL) {
+            StopSfx(ext->animNas->Engine->sfx);
         }
         m->Engine->OldXYZ.x = (rcossin_tbl[(((ext->ang + 0x20) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 2;
         m->Engine->OldXYZ.z = ((rcossin_tbl[(ext->ang + 0x20) & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
-        ext->unk84->Engine->XYZ = m->Engine->XYZ;
+        ext->animNas->Engine->XYZ = m->Engine->XYZ;
         ext->unk88->Engine->XYZ = m->Engine->XYZ;
         ext->unk88->Engine->XYZ.y -= 0x400;
         rot = (get_angle(m->Engine->OldXYZ.x - m->Engine->XYZ.x,
@@ -7921,7 +7921,7 @@ void PlotPolarBoss(NAS *m) {
             pos.z = 0;
             pos.y = 0;
             pos.x = 0;
-            pe = FindExtension(ext->unk84, 0x10000000);
+            pe = FindExtension(ext->animNas, 0x10000000);
             if (pe != NULL) {
                 GotoLinkAnim(pe->anim, 1);
             }
@@ -8048,13 +8048,13 @@ void PlotPolarBoss(NAS *m) {
             if (m->Engine->sfx != NULL) {
                 StopSfx(m->Engine->sfx);
             }
-            PlaySfx(0x227, &ext->unk84->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(0x227, &ext->animNas->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
             return;
         }
         if (ext->phase == 1 || ext->phase == 3 || ext->phase == 5 || ext->phase == 7) {
             NAS *nas;
 
-            pe = FindExtension(ext->unk84, 0x10000000);
+            pe = FindExtension(ext->animNas, 0x10000000);
             if (pe != NULL) {
                 GotoLinkAnim(pe->anim, 1);
             }
@@ -8272,10 +8272,10 @@ void InitBearminator(NAS *m) {
             m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
             n = CreateNAS(m->Engine->XYZ.x, 0, m->Engine->XYZ.z, 0x1620, 0x11);
             if (n != NULL) {
-                ext->unk98 = n;
+                ext->follower = n;
                 AddCamera(n);
             }
-            ext->unkAC = e2;
+            ext->easeCam = e2;
             ext->unkB4 = 0;
             m->Engine->xform.hasScale = 1;
             m->Engine->xform.scale.vx = 0x1F40;
@@ -8285,7 +8285,7 @@ void InitBearminator(NAS *m) {
             m->Engine->flags |= 0x200000;
             AddToGroup((NAS **)&PolarBears, (NAS *)m);
             ext->cursor = ScriptCursorFirst(m, &BearminatorScriptInit);
-            ext->unkC = 3;
+            ext->state = 3;
             e2->unk20 = 0;
             e2->unk4E = v = ((u16)AiPlayerSkill[0].level * 8) - 0x30;
             if (v < 0x10) {
@@ -8296,16 +8296,16 @@ void InitBearminator(NAS *m) {
             e2->unk2A = 1;
             e2->unk48 = 4;
             e2->unk4A = 1;
-            ext->unkA0 = 0;
-            ext->unk14 = 0;
+            ext->target = 0;
+            ext->timer = 0;
             ext->unkA4 = 0;
-            ext->unk18 = m->Engine->xform.rot.vy;
-            ext->unk38 = 0xB;
+            ext->targetAngle = m->Engine->xform.rot.vy;
+            ext->arc = 0xB;
             ext->unk7C = 0x96;
             ext->unk3C = 0;
             ext->unk50 = Heroes[0].hero_eng->XYZ.y;
             ext->unk8C = 0;
-            ext->unk1C = 0x5A;
+            ext->timer2 = 0x5A;
             ext->unkA8 = 0;
             ext->unkB0 = 0;
             m->FUX = NULL;
@@ -8329,7 +8329,7 @@ void InitBearminator(NAS *m) {
                 e->sub->unk76 = 0xC00;
                 e->xform.dirty = 1;
             }
-            ext->unk9C = NULL;
+            ext->fxEng = NULL;
             f = AddExtEngine(m, 3);
             if (f != NULL) {
                 f->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
@@ -8339,7 +8339,7 @@ void InitBearminator(NAS *m) {
                 f->flags |= 0x200000;
                 f->sub->flags &= ~0x8000;
                 f->xform.rot.vy = m->Engine->xform.rot.vy;
-                ext->unk9C = f;
+                ext->fxEng = f;
                 f->xform.dirty = 1;
             }
         }
@@ -8393,7 +8393,7 @@ void PlotBearminator(NAS *m) {
         }
         p = *(u8 **)(p + 0x20);
     }
-    switch (ext->unkC) {
+    switch (ext->state) {
     case 8:
         CameraMode = 0;
         break;
@@ -8403,13 +8403,13 @@ void PlotBearminator(NAS *m) {
             s32 r;
 
             r = Random(0x29C) + 0x400;
-            ext->vel[0] = (r * rcossin_tbl[(ext->unk94 - 0x400) & 0xFFF].unk2) >> 12;
+            ext->vel[0] = (r * rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2) >> 12;
             ext->vel[1] = 0;
-            ext->vel[2] = (r * rcossin_tbl[ext->unk94 & 0xFFF].unk2) >> 12;
+            ext->vel[2] = (r * rcossin_tbl[ext->angle & 0xFFF].unk2) >> 12;
             *(SLONG_XYZ *)ext->from = m->Engine->XYZ;
-            ArcUpdate(ext->from, ext->vel, &ext->unk38, &m->Engine->XYZ.x);
+            ArcUpdate(ext->from, ext->vel, &ext->arc, &m->Engine->XYZ.x);
             m->Engine->sub->flags |= 0x8000;
-            ext->unkC = 4;
+            ext->state = 4;
         }
         break;
     case 9:
@@ -8419,22 +8419,22 @@ void PlotBearminator(NAS *m) {
         }
         m->Engine->sub->entity = 0x4100;
         m->Engine->xform.rot.vx += 0x200;
-        if (ext->unk4C < 0) {
-            RemoveCamera(ext->unk98);
+        if (ext->yvel < 0) {
+            RemoveCamera(ext->follower);
         }
-        if (ArcUpdate(ext->from, ext->vel, &ext->unk38, &m->Engine->XYZ.x) == 0) {
+        if (ArcUpdate(ext->from, ext->vel, &ext->arc, &m->Engine->XYZ.x) == 0) {
             break;
         }
         goto kill;
     case 4:
         m->Engine->sub->entity = 0x4100;
         m->Engine->xform.rot.vx += 0x200;
-        if (ArcUpdate(ext->from, ext->vel, &ext->unk38, &m->Engine->XYZ.x) != 0) {
+        if (ArcUpdate(ext->from, ext->vel, &ext->arc, &m->Engine->XYZ.x) != 0) {
             s32 r;
 
             if (ext->unkB4 != 0) {
                 m->Engine->XYZ.y = 0;
-                ext->unkC = 9;
+                ext->state = 9;
                 r = Random(2);
                 if (r == 0) {
                     PlaySfx(0x228, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -8445,11 +8445,11 @@ void PlotBearminator(NAS *m) {
                 if (r == 2) {
                     PlaySfx(0x22A, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
-                ext->unk4C = -((ext->unk4C * 0xAA) >> 8);
+                ext->yvel = -((ext->yvel * 0xAA) >> 8);
                 return;
             }
             GotoLinkAnim((EXTanimator *)ext->cursor, 2);
-            ext->unkC = 5;
+            ext->state = 5;
             r = Random(2);
             if (r == 0) {
                 PlaySfx(0x228, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -8461,9 +8461,9 @@ void PlotBearminator(NAS *m) {
                 PlaySfx(0x22A, NULL, NULL, 0x1000, 0x1E00, 0);
             }
             if (GameTeams[0] != 0) {
-                ext->unkA0 = r;
+                ext->target = r;
             } else {
-                ext->unkA0 = 0;
+                ext->target = 0;
             }
             m->Engine->xform.rot.vx = 0;
             fux->sub->flags |= 0x8000;
@@ -8476,18 +8476,18 @@ void PlotBearminator(NAS *m) {
         EXTengine *h;
         NAS *n;
 
-        ((PolarEaseCam *)ext->unkAC)->x.cur = 0;
-        ((PolarEaseCam *)ext->unkAC)->z.cur = 0;
-        ((PolarEaseCam *)ext->unkAC)->x.target = 0;
-        ((PolarEaseCam *)ext->unkAC)->z.target = 0;
-        if (ext->unk1C >= 7) {
+        ((PolarEaseCam *)ext->easeCam)->x.cur = 0;
+        ((PolarEaseCam *)ext->easeCam)->z.cur = 0;
+        ((PolarEaseCam *)ext->easeCam)->x.target = 0;
+        ((PolarEaseCam *)ext->easeCam)->z.target = 0;
+        if (ext->timer2 >= 7) {
             if (ext->unkA4-- < 0) {
                 PlaySfx(0x23C, NULL, NULL, 0x1000, 0x1E00, 0);
-                ext->unkA4 = ((0xF - (0x5A - ext->unk1C) * 3) / 90 + 3) * 2;
+                ext->unkA4 = ((0xF - (0x5A - ext->timer2) * 3) / 90 + 3) * 2;
             }
         }
         ext->unkA8++;
-        if (ext->unk1C == 6) {
+        if (ext->timer2 == 6) {
             PlaySfx(0x23D, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (((GameState *)GameInfo)->teams != 0) {
@@ -8495,39 +8495,39 @@ void PlotBearminator(NAS *m) {
 
             hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
             if (hi->hero_status & 0x2000) {
-                ext->unkA0 = hi->hero_teammate;
+                ext->target = hi->hero_teammate;
             }
             if (hb[hb[((GameState *)GameInfo)->teamLeader[0]].hero_teammate].hero_status & 0x2000) {
-                ext->unkA0 = ((GameState *)GameInfo)->teamLeader[0];
+                ext->target = ((GameState *)GameInfo)->teamLeader[0];
             }
             hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
             if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
-                ext->unkC = 8;
+                ext->state = 8;
                 GotoLinkAnim((EXTanimator *)ext->cursor, 3);
                 return;
             }
         } else if (Heroes[0].hero_status & 0x2000) {
-            ext->unkC = 8;
+            ext->state = 8;
             GotoLinkAnim((EXTanimator *)ext->cursor, 3);
         }
-        h = Heroes[ext->unkA0].hero_eng;
-        ext->unk18 = (get_angle(h->XYZ.x - m->Engine->XYZ.x, h->XYZ.z - m->Engine->XYZ.z) + 0x800) & 0xFFF;
-        ext->unk9C->sub->flags |= 0x8000;
-        ext->unk9C->XYZ = m->Engine->XYZ;
-        ext->unk9C->XYZ.y -= 0x19A;
-        ext->unk9C->xform.dirty = 1;
-        m->Engine->xform.rot.vy += ((ext->unk18 - m->Engine->xform.rot.vy) << 20) >> 22;
-        ext->unk9C->xform.rot.vy = m->Engine->xform.rot.vy;
-        if (ext->unk1C-- < 0) {
-            ext->unkC = 2;
+        h = Heroes[ext->target].hero_eng;
+        ext->targetAngle = (get_angle(h->XYZ.x - m->Engine->XYZ.x, h->XYZ.z - m->Engine->XYZ.z) + 0x800) & 0xFFF;
+        ext->fxEng->sub->flags |= 0x8000;
+        ext->fxEng->XYZ = m->Engine->XYZ;
+        ext->fxEng->XYZ.y -= 0x19A;
+        ext->fxEng->xform.dirty = 1;
+        m->Engine->xform.rot.vy += ((ext->targetAngle - m->Engine->xform.rot.vy) << 20) >> 22;
+        ext->fxEng->xform.rot.vy = m->Engine->xform.rot.vy;
+        if (ext->timer2-- < 0) {
+            ext->state = 2;
             n = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y - 0x19A, m->Engine->XYZ.z, 0x161C, 0x11);
             if (n != NULL) {
                 n->Engine->xform.rot.vy = m->Engine->xform.rot.vy;
-                ext->unk9C->sub->flags &= ~0x8000;
+                ext->fxEng->sub->flags &= ~0x8000;
             }
             cam->x.target = 0;
             cam->z.target = 0;
-            ext->unk1C = 0x5A;
+            ext->timer2 = 0x5A;
             GotoLinkAnim((EXTanimator *)ext->cursor, 0);
         }
         break;
@@ -8546,7 +8546,7 @@ void PlotBearminator(NAS *m) {
         if (done != 0) {
         kill:
             PlaySfx(0x45D, NULL, NULL, 0x1000, 0x1E00, 0);
-            KillNAS(ext->unk98);
+            KillNAS(ext->follower);
             KillNAS(m);
             return;
         }
@@ -8575,32 +8575,32 @@ void PlotBearminator(NAS *m) {
         if (BearminatorTarget(m) != 0) {
             goto fall;
         }
-        if (ext->unk14-- < 0) {
+        if (ext->timer-- < 0) {
             if (((GameState *)GameInfo)->teams != 0) {
                 HeroInfo *hb = Heroes;
 
                 hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
                 if (hi->hero_status & 0x2000) {
-                    ext->unkA0 = hi->hero_teammate;
+                    ext->target = hi->hero_teammate;
                 }
                 if (hb[hb[((GameState *)GameInfo)->teamLeader[0]].hero_teammate].hero_status & 0x2000) {
-                    ext->unkA0 = ((GameState *)GameInfo)->teamLeader[0];
+                    ext->target = ((GameState *)GameInfo)->teamLeader[0];
                 }
                 hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
                 if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
-                    ext->unkC = 8;
+                    ext->state = 8;
                     GotoLinkAnim((EXTanimator *)ext->cursor, 3);
                     return;
                 }
             } else if (Heroes[0].hero_status & 0x2000) {
                 GotoLinkAnim((EXTanimator *)ext->cursor, 3);
-                ext->unkC = 8;
+                ext->state = 8;
             }
-            h = Heroes[ext->unkA0].hero_eng;
-            ext->unk18 = (get_angle(h->XYZ.x - m->Engine->XYZ.x, h->XYZ.z - m->Engine->XYZ.z) + 0x800) & 0xFFF;
-            ext->unk14 = 1;
+            h = Heroes[ext->target].hero_eng;
+            ext->targetAngle = (get_angle(h->XYZ.x - m->Engine->XYZ.x, h->XYZ.z - m->Engine->XYZ.z) + 0x800) & 0xFFF;
+            ext->timer = 1;
         }
-        m->Engine->xform.rot.vy += ((ext->unk18 - m->Engine->xform.rot.vy) << 20) >> 21;
+        m->Engine->xform.rot.vy += ((ext->targetAngle - m->Engine->xform.rot.vy) << 20) >> 21;
         {
             s32 k;
 
@@ -8608,13 +8608,13 @@ void PlotBearminator(NAS *m) {
             cam->x.target = (k * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 13;
             cam->z.target = (k * rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2) >> 13;
         }
-        if (Heroes[ext->unkA0].hero_mode == 0x4E) {
-            ext->unkC = 6;
+        if (Heroes[ext->target].hero_mode == 0x4E) {
+            ext->state = 6;
             return;
         }
         BearminatorEaseCam(cam, &m->Engine->XYZ.x);
-        if (ext->unk1C-- < 0) {
-            hi = &Heroes[ext->unkA0];
+        if (ext->timer2-- < 0) {
+            hi = &Heroes[ext->target];
             if (hi->hero_mode != 0x4E) {
                 s32 dx;
                 s32 dz;
@@ -8624,11 +8624,11 @@ void PlotBearminator(NAS *m) {
                 near = dx * dx + dz * dz < 0x40000;
                 if (near != 0)
                 if (near == 1) {
-                    ext->unkC = near;
+                    ext->state = near;
                     cam->x.target = cam->x.cur = (rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
                     cam->z.target = cam->z.cur = (rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2 * 0x4B) >> 12;
                     GotoLinkAnim((EXTanimator *)ext->cursor, 1);
-                    ext->unk1C = 0x5A - (AiPlayerSkill[0].level - 0x10) * 4;
+                    ext->timer2 = 0x5A - (AiPlayerSkill[0].level - 0x10) * 4;
                 }
             }
         }
@@ -8645,16 +8645,16 @@ void PlotBearminator(NAS *m) {
 
         if (BearminatorTarget(m) != 0) {
         fall:
-            ext->unkC = 7;
+            ext->state = 7;
             PlaySfx(0x23E, NULL, NULL, 0x1000, 0x1E00, 0);
             GotoLinkAnim((EXTanimator *)ext->cursor, 4);
             return;
         }
         if (Heroes[0].hero_mode != 0x4E) {
-            ext->unkC = 0;
+            ext->state = 0;
             return;
         }
-        if (ext->unk14-- < 0) {
+        if (ext->timer-- < 0) {
             e = m->Engine;
             x = e->XYZ.x;
             z = e->XYZ.z;
@@ -8662,19 +8662,19 @@ void PlotBearminator(NAS *m) {
             dz = -z;
             if (dx * dx + dz * dz > 0x400000) {
                 a = (get_angle(dx, dz) + 0x800) & 0xFFF;
-                ext->unk18 = a;
+                ext->targetAngle = a;
                 m->Engine->xform.rot.vy += ((a - m->Engine->xform.rot.vy) << 20) >> 21;
                 cam->x.target = (rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 3) >> 9;
                 cam->z.target = (rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2 * 3) >> 9;
             } else {
-                h = Heroes[ext->unkA0].hero_eng;
+                h = Heroes[ext->target].hero_eng;
                 dx = h->XYZ.x;
                 dz = h->XYZ.z;
                 cam->x.target = 0;
                 cam->z.target = 0;
-                ext->unk18 = (get_angle(dx - x, dz - z) + 0x800) & 0xFFF;
+                ext->targetAngle = (get_angle(dx - x, dz - z) + 0x800) & 0xFFF;
             }
-            ext->unk14 = 1;
+            ext->timer = 1;
         }
         BearminatorEaseCam(cam, &m->Engine->XYZ.x);
         break;
@@ -8699,56 +8699,56 @@ void PlotBearminator(NAS *m) {
             }
         }
         if (BearminatorTarget(m) != 0) {
-            ext->unkC = 7;
+            ext->state = 7;
             GotoLinkAnim((EXTanimator *)ext->cursor, 4);
             return;
         }
-        if (ext->unk14-- < 0) {
+        if (ext->timer-- < 0) {
             if (((GameState *)GameInfo)->teams != 0) {
                 HeroInfo *hb = Heroes;
 
                 hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
                 if (hi->hero_status & 0x2000) {
-                    ext->unkA0 = hi->hero_teammate;
+                    ext->target = hi->hero_teammate;
                 }
                 if (hb[hb[((GameState *)GameInfo)->teamLeader[0]].hero_teammate].hero_status & 0x2000) {
-                    ext->unkA0 = ((GameState *)GameInfo)->teamLeader[0];
+                    ext->target = ((GameState *)GameInfo)->teamLeader[0];
                 }
                 hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
                 if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
-                    ext->unkC = 8;
+                    ext->state = 8;
                     GotoLinkAnim((EXTanimator *)ext->cursor, 3);
                     return;
                 }
             } else if (Heroes[0].hero_status & 0x2000) {
                 GotoLinkAnim((EXTanimator *)ext->cursor, 3);
-                ext->unkC = 8;
+                ext->state = 8;
             }
-            h = Heroes[ext->unkA0].hero_eng;
-            ext->unk18 = (get_angle(h->XYZ.x - m->Engine->XYZ.x, h->XYZ.z - m->Engine->XYZ.z) + 0x800) & 0xFFF;
-            ext->unk14 = 1;
+            h = Heroes[ext->target].hero_eng;
+            ext->targetAngle = (get_angle(h->XYZ.x - m->Engine->XYZ.x, h->XYZ.z - m->Engine->XYZ.z) + 0x800) & 0xFFF;
+            ext->timer = 1;
         }
-        m->Engine->xform.rot.vy += ((ext->unk18 - m->Engine->xform.rot.vy) << 20) >> 21;
+        m->Engine->xform.rot.vy += ((ext->targetAngle - m->Engine->xform.rot.vy) << 20) >> 21;
         cam->x.target = (rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
         cam->z.target = (rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2 * 0x4B) >> 12;
         BearminatorEaseCam(cam, &m->Engine->XYZ.x);
         if (done != 0) {
-            ext->unkC = 0;
+            ext->state = 0;
             GotoLinkAnim((EXTanimator *)ext->cursor, 0);
             return;
         }
         break;
     }
     case 2:
-        ext->unkC = 0;
+        ext->state = 0;
         break;
     }
     fux->sub->entity = m->Engine->sub->entity;
     fux->xform.rot.vy = m->Engine->xform.rot.vy;
     fux->XYZ = m->Engine->XYZ;
-    if (ext->unk98 != NULL) {
-        ext->unk98->Engine->XYZ = m->Engine->XYZ;
-        ext->unk98->Engine->XYZ.y = 0;
+    if (ext->follower != NULL) {
+        ext->follower->Engine->XYZ = m->Engine->XYZ;
+        ext->follower->Engine->XYZ.y = 0;
     }
     fux->xform.dirty = 1;
     m->Engine->xform.dirty = 1;
@@ -9224,17 +9224,17 @@ void PlotSniperMissile(NAS *m) {
             PolarMissileBlast(m, 1);
             PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
             boss->unk8C = 0xC;
-            anim = FindExtension(boss->unk84, 0x10000000);
+            anim = FindExtension(boss->animNas, 0x10000000);
             if (anim != NULL) {
                 GotoLinkAnim((EXTanimator *)anim[3], 8);
                 PlaySfx(0x23B, NULL, NULL, 0x1000, 0x1E00, 0);
             }
         } else {
-            if (XZBoxToSphere(boss->unk84->Engine, m->Engine, 1) == 0) {
+            if (XZBoxToSphere(boss->animNas->Engine, m->Engine, 1) == 0) {
                 return;
             }
             PolarMissileBlast(m, 1);
-            anim = FindExtension(boss->unk84, 0x10000000);
+            anim = FindExtension(boss->animNas, 0x10000000);
             if (anim != NULL) {
                 GotoLinkAnim((EXTanimator *)anim[3], 3);
             }
@@ -9251,10 +9251,10 @@ void PlotSniperMissile(NAS *m) {
             if (BossState.health <= 0) {
                 BossState.health = 0;
                 BossState.flags |= 0x8000;
-                anim = FindExtension(boss->unk84, 0x10000000);
+                anim = FindExtension(boss->animNas, 0x10000000);
                 if (anim != NULL) {
                     GotoLinkAnim((EXTanimator *)anim[3], 5);
-                    boss->unk84->Engine->sub->unk68 = 0x238;
+                    boss->animNas->Engine->sub->unk68 = 0x238;
                     boss->state = 8;
                 }
             }

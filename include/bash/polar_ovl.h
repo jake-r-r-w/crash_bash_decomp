@@ -786,14 +786,14 @@ typedef struct PolarBossExt {
     /* 0x5C */ s16 unk5C;
     /* 0x5E */ s16 unk5E;
     /* 0x60 */ u8 pad60[0x68 - 0x60];
-    /* 0x68 */ s32 unk68;
+    /* 0x68 */ s32 timer;
     /* 0x6C */ s32 ang;
     /* 0x70 */ s32 unk70;
     /* 0x74 */ s32 unk74;
     /* 0x78 */ s32 phase;
     /* 0x7C */ u8 pad7C[4];
     /* 0x80 */ s32 unk80;
-    /* 0x84 */ NAS *unk84;
+    /* 0x84 */ NAS *animNas;  /* the boss's animated body (its ext 0x10000000) */
     /* 0x88 */ NAS *unk88;
     /* 0x8C */ s32 unk8C;
     /* 0x90 */ s32 unk90;
@@ -1187,30 +1187,30 @@ typedef struct BearminatorExt2 {
 /* InitBearminator's extension (0xB8 bytes, id 0x10000000). */
 typedef struct BearminatorExt {
     /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;
+    /* 0x0C */ s32 state;
     /* 0x10 */ ScriptCursor *cursor;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
+    /* 0x14 */ s32 timer;
+    /* 0x18 */ s32 targetAngle;  /* turned towards, from the target hero */
+    /* 0x1C */ s32 timer2;
     /* 0x20 */ s32 vel[3];
     /* 0x2C */ s32 from[3];
-    /* 0x38 */ s32 unk38; /* arc state for ArcUpdate */
+    /* 0x38 */ s32 arc;  /* ArcUpdate's state */
     /* 0x3C */ s32 unk3C;
     /* 0x40 */ u8 pad40[0x4C - 0x40];
-    /* 0x4C */ s32 unk4C;
+    /* 0x4C */ s32 yvel;  /* its bounce, damped by 0xAA/0x100 */
     /* 0x50 */ s32 unk50;
     /* 0x54 */ u8 pad54[0x7C - 0x54];
     /* 0x7C */ s32 unk7C;
     /* 0x80 */ u8 pad80[0x8C - 0x80];
     /* 0x8C */ s32 unk8C;
     /* 0x90 */ u8 pad90[0x94 - 0x90];
-    /* 0x94 */ s32 unk94;
-    /* 0x98 */ NAS *unk98;
-    /* 0x9C */ EXTengine *unk9C;
-    /* 0xA0 */ s32 unkA0;
+    /* 0x94 */ s32 angle;  /* the direction it moves in */
+    /* 0x98 */ NAS *follower;  /* a NAS kept at its position */
+    /* 0x9C */ EXTengine *fxEng;  /* an engine kept at its position */
+    /* 0xA0 */ s32 target;  /* the hero it goes for */
     /* 0xA4 */ s32 unkA4;
     /* 0xA8 */ s32 unkA8;
-    /* 0xAC */ BearminatorExt2 *unkAC;
+    /* 0xAC */ BearminatorExt2 *easeCam;
     /* 0xB0 */ s32 unkB0;
     /* 0xB4 */ s32 unkB4;
 } BearminatorExt;
