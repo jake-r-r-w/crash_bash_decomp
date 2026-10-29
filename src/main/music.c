@@ -135,8 +135,8 @@ void music_setup_slot(music_midi *slot) {
 
     SeqHdr *h = (SeqHdr *)slot->data;
 
-    head = (u8 *)h + h->head;
-    body = (u8 *)h + h->body;
+    head = FILE_AT(h, h->head);
+    body = FILE_AT(h, h->body);
     slot->songs[0] = (s32)h + h->o8;
     slot->songs[1] = slot->data + ((SeqHdr *)slot->data)->oC;
     slot->songs[2] = slot->data + ((SeqHdr *)slot->data)->o10;

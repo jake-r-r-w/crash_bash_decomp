@@ -3394,7 +3394,7 @@ void texture_update_anims(obj_textureset *arg0) {
     d = arg0->anims;
     if (d != NULL) {
         if (d->tracksOff != 0) {
-            p = (s32 *)((u8 *)d + d->tracksOff);
+            p = (s32 *)(FILE_AT(d, d->tracksOff));
             n = *p;
             base = (TexFrameAnim *)(p + 1);
             while (1) {
@@ -3414,8 +3414,8 @@ void texture_update_anims(obj_textureset *arg0) {
                     base->pos = pos - (base->count << 8);
                 }
                 if ((base->pos >> 8) != old) {
-                    q = (s32 *)((u8 *)base + base->frames) + (base->pos >> 8);
-                    LoadImage((RECT *)&dst->info.vramX, (u32 *)((u8 *)q + *q));
+                    q = (s32 *)(FILE_AT(base, base->frames)) + (base->pos >> 8);
+                    LoadImage((RECT *)&dst->info.vramX, (u32 *)SELF_REL(q));
                 }
                 base++;
             }
@@ -3978,7 +3978,7 @@ void texture_scroll_step(TexFrameAnim *arg0, obj_textureset *arg1) {
     idx = arg0->pos >> 8;
     if (idx != old) {
         p = (s32 *)((u8 *)arg0 + arg0->frames + idx * 4);
-        LoadImage((RECT *)&rect->info.vramX, (u_long *)((u8 *)p + *p));
+        LoadImage((RECT *)&rect->info.vramX, (u_long *)SELF_REL(p));
     }
 }
 

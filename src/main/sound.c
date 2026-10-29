@@ -118,10 +118,10 @@ void vab_loaded(void *data, sfx_machine_bank_info *slot) {
         VabLoading = NULL;
         SfxBankLoading = NULL;
     }
-    head = (u8 *)data + ((VabFile *)data)->head;
+    head = FILE_AT(data, ((VabFile *)data)->head);
     slot->head = head;
     slot->handle = 0;
-    body = (u8 *)data + ((VabFile *)data)->body;
+    body = FILE_AT(data, ((VabFile *)data)->body);
     id = SsVabOpenHead(slot->head, -1);
     SsVabTransBody(body, id);
     VabHeadId = id;

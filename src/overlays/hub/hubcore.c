@@ -769,14 +769,14 @@ void HubSpawnEffects(void) {
         if (!(i < n)) {
             break;
         }
-        e = (s32 *)((u8 *)p + *p);
+        e = (s32 *)SELF_REL(p);
         if ((u32)(e[3] - 0xC8) < 5) {
             nas = CreateNAS(0, 0, 0, 0x1626, 0x11);
             if (nas != NULL) {
                 ext = FindExtension(nas, 0x10000000);
                 if (ext != NULL) {
                     s32 *q = (s32 *)(((u8 *)MapScene->path) + i * 4);
-                    ext->unkC = (s32 *)((u8 *)q + *q);
+                    ext->unkC = (s32 *)SELF_REL(q);
                     if (e[3] == 0xC8) {
                         ext->unk34 = 0;
                     }

@@ -70,7 +70,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (script_header *)((u8 *)q + *q);
+        r = (script_header *)SELF_REL(q);
     }
     if (r == NULL) {
         res = NULL;
@@ -148,7 +148,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (script_header *)((u8 *)q + *q);
+        r = (script_header *)SELF_REL(q);
     }
     if (r == NULL) {
         res = NULL;
@@ -217,7 +217,7 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (script_header *)((u8 *)q + *q);
+        r = (script_header *)SELF_REL(q);
     }
     if (r == NULL) {
         res = NULL;
@@ -290,7 +290,7 @@ void update_fade_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (script_header *)((u8 *)q + *q);
+        r = (script_header *)SELF_REL(q);
     }
     if (r == NULL) {
         res = NULL;
@@ -384,7 +384,7 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (script_header *)((u8 *)q + *q);
+        r = (script_header *)SELF_REL(q);
     }
     if (r == NULL) {
         res = NULL;
@@ -504,7 +504,7 @@ void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (script_header *)((u8 *)q + *q);
+        r = (script_header *)SELF_REL(q);
     }
     if (r == NULL) {
         res = NULL;
@@ -575,7 +575,7 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
         hdr = NULL;
         if (e != NULL) {
             s32 *r = (s32 *)((u8 *)&e->scripts + e->scripts) + arg1;
-            hdr = (script_header *)((u8 *)r + *r);
+            hdr = (script_header *)SELF_REL(r);
         }
         p->info.flags = arg4;
         p->info.dbase = arg0;
@@ -590,7 +590,7 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
         }
         t = (s32 *)hdr->threaddata;
         for (i = 0; i < hdr->threadcount; i++) {
-            q = (s32 *)((u8 *)t + *t);
+            q = (s32 *)SELF_REL(t);
             fn = ScriptCommands[*q].init;
             if (fn != NULL) {
                 fn(q, &p->info, i);
@@ -625,7 +625,7 @@ s32 update_script(script_control_info *ci) {
         a = NULL;
     } else {
         s32 *t = (s32 *)((u8 *)&c->scripts + c->scripts) + idx;
-        a = (script_header *)((u8 *)t + *t);
+        a = (script_header *)SELF_REL(t);
     }
     if (ci->time.h.frame >= a->end_frame) {
         ci->flags |= 0x10;
@@ -856,7 +856,7 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
         e = NULL;
     } else {
         s = (s32 *)((u8 *)&base->scripts + base->scripts) + arg1;
-        e = (script_header *)((u8 *)s + *s);
+        e = (script_header *)SELF_REL(s);
     }
     p->flags = arg3;
     p->dbase = db;
@@ -870,7 +870,7 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
     i = 0;
     if (e->threadcount > 0) {
         do {
-            u8 *a = (u8 *)q + *q;
+            u8 *a = SELF_REL(q);
             fn = ScriptCommands[*(s32 *)a].init;
             if (fn != NULL) {
                 fn(a, p, i);
@@ -1018,7 +1018,7 @@ void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg
     e = arg0->data;
     if (e != NULL) {
         s32 *p = (s32 *)((u8 *)&e->scripts + e->scripts) + arg1;
-        hdr = (script_header *)((u8 *)p + *p);
+        hdr = (script_header *)SELF_REL(p);
     } else {
         hdr = NULL;
     }
@@ -1035,7 +1035,7 @@ void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg
     }
     t = (s32 *)hdr->threaddata;
     for (i = 0; i < hdr->threadcount; i++) {
-        q = (s32 *)((u8 *)t + *t);
+        q = (s32 *)SELF_REL(t);
         fn = ScriptCommands[*q].init;
         if (fn != NULL) {
             fn(q, arg2, i);
@@ -1400,7 +1400,7 @@ u8 *script_track_at(u8 *arg0, s32 arg1) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (script_header *)((u8 *)q + *q);
+        r = (script_header *)SELF_REL(q);
     }
     if (r == NULL) {
         res = NULL;
@@ -1428,7 +1428,7 @@ u8 *get_script_track(u8 *arg0, s32 arg1, s32 arg2) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + arg1;
-        r = (script_header *)((u8 *)q + *q);
+        r = (script_header *)SELF_REL(q);
     }
     if (r == NULL) {
         return NULL;
@@ -1447,7 +1447,7 @@ u8 *get_script_header(obj_dbase *db, s32 arg1) {
     p = db->data;
     if (p != NULL) {
         e = (s32 *)((u8 *)&p->scripts + p->scripts) + arg1;
-        return (u8 *)e + *e;
+        return SELF_REL(e);
     }
     return NULL;
 }

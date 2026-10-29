@@ -3149,7 +3149,7 @@ loop:
 found:
     if (i >= 0) {
         q = (s32 *)(((u8 *)MapScene->path) + (i << 2));
-        return (s32 *)((u8 *)q + *q);
+        return (s32 *)SELF_REL(q);
     }
     return NULL;
 }

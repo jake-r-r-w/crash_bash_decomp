@@ -3543,7 +3543,7 @@ void InitScriptFX(NAS *nas)
       break;
     }
     t = &sd->threads[i];
-    th = (script_thread *) (((u8 *) ent) + (*ent));  /* the header's self-relative offset to the thread */
+    th = (script_thread *)SELF_REL(ent);  /* the header's self-relative offset to the thread */
     type = th->thread_type;
     frames = th->total_frames;
     keys = th->key_frame_count;
