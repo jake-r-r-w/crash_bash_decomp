@@ -2,7 +2,7 @@
 
 A matching decompilation of Crash Bash (USA, `SCUS_945.70`) for the PlayStation. Every function and
 all the data are C that rebuilds the retail disc byte for byte, and the game's files come out of
-your disc as editable files. A PC port is next ([docs/ROADMAP-B.md](docs/ROADMAP-B.md)).
+your disc as editable files.
 
 ## Notice
 
