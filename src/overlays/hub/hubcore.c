@@ -93,7 +93,7 @@ const char HubTextDefeatPapu[] = "YOU MUST DEFEAT PAPU PAPU BEFORE\nYOU CAN GO T
 void HubInitGateways(void) {
     s32 i;
     HubGateway *p;
-    u8 *o;
+    subengine *o;
     u8 *obj;
     HubTableEntry *e;
     Vec3W ref;
@@ -120,9 +120,9 @@ void HubInitGateways(void) {
         if (o == NULL) {
             break;
         }
-        i = o[0x65] - 1;
+        i = o->ids[1] - 1;
         if ((u32)i < 12) {
-            switch (o[0x64]) {
+            switch (o->ids[0]) {
             case 1:
                 HubGateways[i].spoke = (s32 *)o;
                 break;
@@ -136,15 +136,15 @@ void HubInitGateways(void) {
             case 4:
                 q = &HubGateways[i];
                 q->colour_map = o;
-                k = *(s32 *)o;
+                k = o->flags;
                 g = MapScene;
-                *(void **)(o + 0x54) = HubDrawObj;
-                *(s32 *)o = k & ~0x8000;
-                q->group = entry_block_value(*(u16 *)(o + 0x74), *(ModelFile **)(*(u8 **)g + 0xC));
+                o->hook = HubDrawObj;
+                o->flags = k & ~0x8000;
+                q->group = entry_block_value(o->entity, *(ModelFile **)(*(u8 **)g + 0xC));
                 break;
             }
         }
-        o = *(u8 **)(o + 0x5C);
+        o = o->next;
     }
     for (e = WarpRooms[GameWarpRoom].table; e->gateway != 0; e++) {
         i = e->gateway - 1;
@@ -1353,13 +1353,13 @@ void HubCreateShadow(s32 arg0) {
 }
 
 void HubInitHero(s32 arg0) {
-    u8 *o;
+    subengine *o;
 
     HubCreateShadow(arg0);
     o = (u8 *)path_get(2);
     if (o != NULL) {
-        HubHeroRing.radiusMin = *(s32 *)(o + 0x58);
-        HubHeroRing.radiusMax = *(s32 *)(o + 0x74);
+        HubHeroRing.radiusMin = o->release;
+        HubHeroRing.radiusMax = *(s32 *)&o->entity;
     }
     HubPreMoveHero(arg0);
 }
@@ -1401,7 +1401,7 @@ void HubUpdateRoom(void) {
 }
 
 void HubCullObjects(void) {
-    u8 *o;
+    subengine *o;
     camera_info_tag *cam;
     s32 a;
 
@@ -1411,17 +1411,17 @@ void HubCullObjects(void) {
         if (o == 0) {
             return;
         }
-        if (o[0x64] == 0) {
-            a = (-(get_angle(*(s32 *)(o + 4), *(s32 *)(o + 0xC)) & 0xFFF) - cam->xform.angle.vy) << 20 >> 20;
-            *(s32 *)o &= 0xFFFF7FFF;
+        if (o->ids[0] == 0) {
+            a = (-(get_angle(o->XYZ.x, o->XYZ.z) & 0xFFF) - cam->xform.angle.vy) << 20 >> 20;
+            o->flags &= 0xFFFF7FFF;
             if (a >= 0x301) {
-                *(s32 *)o |= 0x8000;
+                o->flags |= 0x8000;
             }
             if (a < -0x300) {
-                *(s32 *)o |= 0x8000;
+                o->flags |= 0x8000;
             }
         }
-        o = *(u8 **)(o + 0x5C);
+        o = o->next;
     }
 }
 

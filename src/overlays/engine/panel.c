@@ -1090,7 +1090,7 @@ void UpdateHealthIcons(void) {
     s32 i;
     s32 BarLength;
     s32 len;
-    u8 *sub;
+    PanelPrim *sub;
     s32 t;
     subengine (*e)[7];
     s32 c;
@@ -1123,22 +1123,22 @@ void UpdateHealthIcons(void) {
         if (BarLength >= 0x20) {
             BarLength = 0x1F;
         }
-        sub = ((u8 *)&IconParts[0][3]) + i * 0x498;
-        len = BarLength * 2 + *(s16 *)(sub + 0x6C);  /* the bar's quad in the subengine's tail (the prototype's prim_ union, not in the fragment) */
-        *(s16 *)(sub + 0x74) = len;
-        *(s16 *)(sub + 0x84) = len;
+        sub = (PanelPrim *)(((u8 *)&IconParts[0][3]) + i * 0x498);
+        len = BarLength * 2 + sub->u6C.s.x0;  /* the bar's quad in the subengine's tail (the prototype's prim_ union, not in the fragment) */
+        sub->x1 = len;
+        sub->x3 = len;
         if (BarLength != 0) {
-            *(s32 *)sub |= 0x8000;
+            sub->flags |= 0x8000;
         } else {
-            *(s32 *)sub &= 0xFFFF7FFF;
+            sub->flags &= 0xFFFF7FFF;
         }
-        sub = ((u8 *)&IconParts[0][4]) + i * 0x498;
-        *(s16 *)(sub + 0x6C) = len;
-        *(s16 *)(sub + 0x7C) = len;
+        sub = (PanelPrim *)(((u8 *)&IconParts[0][4]) + i * 0x498);
+        sub->u6C.s.x0 = len;
+        sub->x2 = len;
         if (BarLength < 0x1F) {
-            *(s32 *)sub |= 0x8000;
+            sub->flags |= 0x8000;
         } else {
-            *(s32 *)sub &= 0xFFFF7FFF;
+            sub->flags &= 0xFFFF7FFF;
         }
     }
 }
@@ -1245,7 +1245,7 @@ void UpdatePowerIcons(void) {
     s32 BarLength;
     s32 len;
     u8 *e;
-    u8 *sub;
+    PanelPrim *sub;
 
     i = 0;
     off = i;
@@ -1279,22 +1279,22 @@ loop:
             if (BarLength >= 0x40) {
                 BarLength = 0x3F;
             }
-            sub = ((u8 *)&IconParts[0][3]) + off;
-            len = BarLength + *(s16 *)(sub + 0x6C);  /* as UpdateHealthIcons */
-            *(s16 *)(sub + 0x74) = len;
-            *(s16 *)(sub + 0x84) = len;
+            sub = (PanelPrim *)(((u8 *)&IconParts[0][3]) + off);
+            len = BarLength + sub->u6C.s.x0;  /* as UpdateHealthIcons */
+            sub->x1 = len;
+            sub->x3 = len;
             if (BarLength != 0) {
-                *(s32 *)sub |= 0x8000;
+                sub->flags |= 0x8000;
             } else {
-                *(s32 *)sub &= 0xFFFF7FFF;
+                sub->flags &= 0xFFFF7FFF;
             }
-            sub = ((u8 *)&IconParts[0][4]) + off;
-            *(s16 *)(sub + 0x6C) = len;
-            *(s16 *)(sub + 0x7C) = len;
+            sub = (PanelPrim *)(((u8 *)&IconParts[0][4]) + off);
+            sub->u6C.s.x0 = len;
+            sub->x2 = len;
             if (BarLength < 0x3F) {
-                *(s32 *)sub |= 0x8000;
+                sub->flags |= 0x8000;
             } else {
-                *(s32 *)sub &= 0xFFFF7FFF;
+                sub->flags &= 0xFFFF7FFF;
             }
         }
         off += 0x498;

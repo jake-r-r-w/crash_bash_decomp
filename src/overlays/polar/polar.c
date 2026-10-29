@@ -1025,7 +1025,7 @@ void PolarUpdateScene(void)
   s32 a;
   s32 b;
   HeroInfo *h;
-  u8 *p;
+  NAS *p;
   EXTengine *eng;
   PolarMissileExt *ext;
   subengine *o;
@@ -1125,7 +1125,7 @@ void PolarUpdateScene(void)
           }
           count++;
         }
-        p = *((u8 **) (p + 0x20));
+        p = p->Group.Child;
         goto loop;
       }
 
@@ -4490,7 +4490,7 @@ s32 PolarHeroCollisions(s32 player) {
     PolarAi *ai;
     s32 swapped;
     TrigEntry *t;
-    u8 *p;
+    NAS *p;
     u32 i;
     s32 dx;
     s32 r;
@@ -4733,7 +4733,7 @@ s32 PolarHeroCollisions(s32 player) {
                 break;
             }
             if (((NAS *)p)->UserInfo.status != 0) {
-                e = *(EXTengine **)(p + 0x54);
+                e = p->Engine;
                 if (e != NULL && e != eng && PolarBoxOverlap(e, 0, hq->hero_eng, 0) != 0) {
                     mv = FindExtension((NAS *)p, 0x20000000);
                     if (mv != NULL) {
@@ -4742,7 +4742,7 @@ s32 PolarHeroCollisions(s32 player) {
                     }
                 }
             }
-            p = *(u8 **)(p + 0x20);
+            p = p->Group.Child;
         }
     } else {
         range = 0x1F4;
@@ -4752,7 +4752,7 @@ s32 PolarHeroCollisions(s32 player) {
             if (p == NULL) {
                 break;
             }
-            e = *(EXTengine **)(p + 0x54);
+            e = p->Engine;
             if (e != NULL && e != eng) {
                 ai = FindExtension((NAS *)p, 0x10000000);
                 if (ai != NULL && ai->flag2 == 0 && abs(e->XYZ.y - eng->XYZ.y) <= range) {
@@ -4784,7 +4784,7 @@ s32 PolarHeroCollisions(s32 player) {
                     }
                 }
             }
-            p = *(u8 **)(p + 0x20);
+            p = p->Group.Child;
         }
     }
     }
@@ -8350,7 +8350,7 @@ void PlotBearminator(NAS *m) {
     BearminatorExt *ext;
     PolarEaseCam *cam;
     EXTengine *fux;
-    u8 *p;
+    NAS *p;
     s32 done;
 
     ext = FindExtension(m, 0x10000000);
@@ -8391,7 +8391,7 @@ void PlotBearminator(NAS *m) {
                 }
             }
         }
-        p = *(u8 **)(p + 0x20);
+        p = p->Group.Child;
     }
     switch (ext->state) {
     case 8:
@@ -9558,7 +9558,7 @@ loop:
 }
 
 void PolarBossFace(NAS *m) {
-    u8 *p;
+    NAS *p;
     EXTengine *e;
     s32 dx;
     s32 dz;
@@ -9570,7 +9570,7 @@ void PolarBossFace(NAS *m) {
     t = rcossin_tbl;
 loop:
     if (p != NULL) {
-        e = *(EXTengine **)(p + 0x54);
+        e = p->Engine;
         if (e != NULL && e != m->Engine) {
             dx = e->XYZ.x - m->Engine->XYZ.x;
             dz = e->XYZ.z - m->Engine->XYZ.z;
@@ -9581,7 +9581,7 @@ loop:
                 m->Engine->XYZ.z -= ((d + 2) * t[ang].unk2) >> 18;
             }
         }
-        p = *(u8 **)(p + 0x20);
+        p = p->Group.Child;
         goto loop;
     }
 }
@@ -9970,7 +9970,7 @@ void InitWeightDeath(NAS *m) {
 }
 
 s32 PolarOfficeBox(s32 i) {
-    u8 *p;
+    NAS *p;
     EXTengine *eng;
     EXTengine *e;
     HeroInfo *base;
@@ -9978,8 +9978,8 @@ s32 PolarOfficeBox(s32 i) {
     p = PolarBears;
     base = Heroes;
     eng = base[i].hero_eng;
-    for (; p != NULL; p = *(u8 **)(p + 0x20)) {
-        e = *(EXTengine **)(p + 0x54);
+    for (; p != NULL; p = p->Group.Child) {
+        e = p->Engine;
         if (e != NULL && e != eng) {
             if (PolarBoxOverlap(e, 1, base[i].hero_eng, 0) != 0) {
                 return 1;
