@@ -482,6 +482,20 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 1.4, Polar and Race):** four Polar stand-ins are leak types:
+  `UkaPolarExt` is `EXTtransmuter`, `PolarFux` is `EXTpolarAI`, `PolarBombExt` is
+  `EXTpolarbomb`, `WeightDeathExt` is `EXTbeardeath`. The Sniper, Bearminator, boss, link and
+  missile extensions and Race's kart, missile and AI extensions are named from their uses.
+  `unkXX` uses are at 4,096, declarations at 1,227.
+  - Tools: `struct_layout` leaves treat a pointer typedef that shares a struct's name
+    (`EXTengtype`) as a pointer.
+  - Gotcha: fold_views maps an array member (`s32 from[3]`) onto a leaf (`startpoint.x`), so a
+    use that passed the array (its address) now passes the value. Check the diffs of calls taking
+    the old array: `&ext->startpoint.x`.
+  - Left: `EXTwalrus` (its `grav` is an `EXTGravMotion` where our code passes an `Arc`, its
+    `anim` an `EXTanimator` where it reads a script cursor), and `EXTGravMotion`/`Grav`/
+    `EXTpolardata`, which don't line up with our stand-ins.
+
 - **2026-10-29 (ROADMAP-B 1.4, more names):** `field_uses.py` (new, tested) lists every use of a
   struct's fields. It renames them all in the header for one syntax compile and reads cc1's
   missing-member errors, so shared names like `unk10` don't mix in other structs' uses. Named:
