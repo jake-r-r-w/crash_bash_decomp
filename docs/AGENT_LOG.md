@@ -482,6 +482,13 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 1.5 done):** Spin, Dino and N2O's last byte-pointer reads are typed
+  (Dino's winner choice on `GameState`, its contours on `map_map.contour_grids`, Nox's boss keys
+  through `SELF_REL`). `raw_offsets.py --src DIR` now scans overlays too. Over every overlay it
+  found 84 functions, 375 lines the typed check misses: ROADMAP-B 1.8. Gotcha: `retype.py`
+  leaves byte-indexed reads (`g[0xA7]`, `g[i + 0x5C]`) as LEFT lines, so map them by hand from
+  `struct_layout --leaves`.
+
 - **2026-10-29 (ROADMAP-B 1.4 done):** every field the code reads is named (ROADMAP-A has the
   numbers). The flow:
   - `unk_fields.py` (new, tested) sorts every struct's unk fields into none / write / read;

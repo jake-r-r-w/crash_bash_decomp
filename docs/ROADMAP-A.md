@@ -536,3 +536,10 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
     Nothing reads them, so nothing shows what they hold.
   - Tools: `field_uses.py STRUCT` (every use of a struct's fields, by cc1) and `unk_fields.py`
     (every struct's unk fields sorted into none / write / read).
+- [x] Structs for Spin, Dino and N2O (2026-10-29; ROADMAP-B's 1.5). Their recovered headers only
+  have enums, so their structs are ours, and since 1.2 to 1.4 they're typed and named.
+  - `raw_offsets.py --src` now scans any folder. In these three it found 9 functions: Dino's
+    winner choice reads `GameState` fields, its contour reads use `map_map.contour_grids` and
+    the segment structs, and Nox's boss keys go through `SELF_REL`.
+  - The 3 lines left are typed pointer arithmetic, not byte offsets.
+  - The same scan over every overlay found more (ROADMAP-B 1.8).

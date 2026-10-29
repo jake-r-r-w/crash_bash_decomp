@@ -1482,7 +1482,7 @@ void InitNitroBoss(NAS *nas) {
         ext->frame = 0x3200;
         scene = MapScene;
         p = scene->data;
-        ext->keys = (KeyBlock *)(p + (*(s32 *)(p + 4) + 4));
+        ext->keys = (KeyBlock *)SELF_REL((s32 *)(p + 4));
         key_interp_pos(ext->keys, ext->frame, &nas->Engine->XYZ);
         ext->state = 0;
         ext->timer = 0;

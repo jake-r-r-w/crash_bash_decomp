@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Raw offsets the progress check's typed test misses, in the exe's game functions:
 
-    tools/dk python3 tools/scripts/raw_offsets.py
+    tools/dk python3 tools/scripts/raw_offsets.py [--src DIR ...]
 
 `*(T *)(p + N)`, `p[N / 4]` and `(T *)(p + 0xN)` on a byte pointer, where `decomp.py progress`
 only sees a cast at the addition (`(u8 *)p + N`). Lines marked `/* matching:` are left out. Prints
-each function with its lines, most first.
+each function with its lines, most first. --src scans other source folders (default src/main/,
+e.g. --src src/overlays/dino).
 """
 import os
 import re
@@ -28,10 +29,12 @@ def main():
     if any(a in ("-h", "--help") for a in sys.argv[1:]):
         print(__doc__)
         return 0
+    args = sys.argv[1:]
+    dirs = [args[i + 1].rstrip("/") + "/" for i, x in enumerate(args) if x == "--src"] or ["src/main/"]
     funcs, syms, proj = d.need_funcs(), d.sym_names(), d.need_proj()
     out = []
     for k, e in funcs.items():
-        if not e.get("src", "").startswith("src/main/") or d.is_lib(e, proj):
+        if not any(e.get("src", "").startswith(x) for x in dirs) or d.is_lib(e, proj):
             continue
         n = d.cur_name(k, e, syms)
         b = d.extract_function(d.read(e["src"]), n)
