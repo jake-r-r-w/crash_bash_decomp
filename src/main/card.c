@@ -80,7 +80,7 @@ void card_make_header(void) {
         if (h == 0x10) {
             StoreImage(rect, (u_long *)CardIconFrames);
             img = dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306C);
-            StoreImage((RECT *)&img->info.vramX, (u_long *)(CardIconFrames + 0x80));
+            StoreImage((RECT *)&img->info.vramX, (u_long *)FILE_AT(CardIconFrames, 0x80)  /* the second 16x16 4-bit frame */);
             pal = dbase_texture_entry(&HeroModelBank[DB_Font], (u16)img->clut);
             clut.x = pal->pos->x;
             clut.y = pal->pos->y;
@@ -93,8 +93,8 @@ void card_make_header(void) {
         }
     }
     base = CardBuffer;
-    q = (s32 *)(base + 0x200);
-    end = (s32 *)(base + 0x850);
+    q = (s32 *)FILE_AT(base, CARD_SLOTS);
+    end = (s32 *)FILE_AT(base, CARD_FLAGS);
     sum = 0;
     while (q < end) {
         sum += *q++;
@@ -132,17 +132,17 @@ void card_init(void) {
             break;
         }
     }
-    new_var = 0x850;
-    *(s32 *)(CardBuffer + new_var) = 1;
+    new_var = CARD_FLAGS;
+    *(s32 *)FILE_AT(CardBuffer, new_var) = 1;
     i = 7;
     p = CardBuffer + i;
     do {
-        p[0x854] = 0;
+        p[CARD_FLAGS + 4] = 0;
         i--;
         p--;
     } while (i >= 0);
-    end = (s32 *)(CardBuffer + new_var);
-    q = (s32 *)(CardBuffer + 0x200);
+    end = (s32 *)FILE_AT(CardBuffer, new_var);
+    q = (s32 *)FILE_AT(CardBuffer, CARD_SLOTS);
     sum = 0;
     while (q < end) {
         sum += *q++;
@@ -294,13 +294,13 @@ l5:
 l7:
     if (CardSyncResult == 0) {
         p = CardBuffer;
-        q = (s32 *)(p + 0x200);
-        end = (s32 *)(p + 0x850);
+        q = (s32 *)FILE_AT(p, CARD_SLOTS);
+        end = (s32 *)FILE_AT(p, CARD_FLAGS);
         sum = 0;
         while (q < end) {
             sum += *q++;
         }
-        if (*(s32 *)(p + 0x85C) == sum) {
+        if (*(s32 *)FILE_AT(p, CARD_SUM) == sum) {
             CardCommand = 3;
             CardStatus = 0x12;
             return;
@@ -427,17 +427,17 @@ void card_clear_slots(void) {
             break;
         }
     }
-    new_var = 0x850;
-    *(s32 *)(CardBuffer + new_var) = 1;
+    new_var = CARD_FLAGS;
+    *(s32 *)FILE_AT(CardBuffer, new_var) = 1;
     i = 7;
     p = CardBuffer + i;
     do {
-        p[0x854] = 0;
+        p[CARD_FLAGS + 4] = 0;
         i--;
         p--;
     } while (i >= 0);
-    end = (s32 *)(CardBuffer + new_var);
-    q = (s32 *)(CardBuffer + 0x200);
+    end = (s32 *)FILE_AT(CardBuffer, new_var);
+    q = (s32 *)FILE_AT(CardBuffer, CARD_SLOTS);
     sum = 0;
     while (q < end) {
         sum += *q++;
@@ -461,8 +461,8 @@ s32 card_checksum(u8 *arg0) {
     u32 *end;
     s32 sum;
 
-    p = (u32 *)(arg0 + 0x200);
-    end = (u32 *)(arg0 + 0x850);
+    p = (u32 *)FILE_AT(arg0, CARD_SLOTS);
+    end = (u32 *)FILE_AT(arg0, CARD_FLAGS);
     sum = 0;
     while (p < end) {
         sum += *p++;

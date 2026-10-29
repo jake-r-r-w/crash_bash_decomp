@@ -89,7 +89,7 @@ s32 KillNAS(NAS *nas);
 FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
 s16 RunNasAnim(NAS *nas);
 void GotoLinkAnim(EXTanimator *anim, s32 n);
-s32 textureset_mem_size(u8 *arg0);
+s32 textureset_mem_size(TexFile *arg0);
 s32 pad_read_mtap(u8 *src, u8 *dst, s32 n);
 s32 CountObjects(void);
 void ReAdoptChild(NAS *list, NAS *nas);

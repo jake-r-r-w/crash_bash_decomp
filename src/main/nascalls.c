@@ -1157,11 +1157,11 @@ void DrawSpriteTriple(x, y, c0, c1, n)
     tbl = SpriteTripleUVs;
     ids = tbl[n];
     base = &HeroModelBank[DB_Interface];
-    texture_draw_quad((obj_texture *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    texture_draw_quad(&((obj_dbase *)base)->textures.tex[ids[0] & 0xFFF], pos.w, 0, c0, c0, c1, c1);
     pos.f.x = x + 0x9D80 / ScreenRect->w;
-    texture_draw_quad((obj_texture *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    texture_draw_quad(&((obj_dbase *)base)->textures.tex[ids[1] & 0xFFF], pos.w, 0, c0, c0, c1, c1);
     pos.f.x = x + 0x13B00 / ScreenRect->w;
-    texture_draw_quad((obj_texture *)(*(u8 **)(base + 0x18) + (ids[2] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    texture_draw_quad(&((obj_dbase *)base)->textures.tex[ids[2] & 0xFFF], pos.w, 0, c0, c0, c1, c1);
 }
 
 void InitTriggers(void) {
@@ -2584,14 +2584,14 @@ RECT *arg0;
     if (arg0 != NULL) {
         ScreenSetFrame = FrameCount + 1;
         if (ScreenRect == NULL) {
-            u8 *g = DrawBuffers;
-            u8 *h;
+            DrawBuffer *g = (DrawBuffer *)DrawBuffers;
+            DrawBuffer *h;
 
             ClearOTagR((u_long *)g, 0x1000);
-            h = g + 0x400C;
-            *(s32 *)(g + 0x4008) = *(s32 *)(g + 0x4000);
+            h = g + 1;
+            g->prim = g->primStart;
             ClearOTagR((u_long *)h, 0x1000);
-            *(s32 *)(h + 0x4008) = *(s32 *)(h + 0x4000);
+            h->prim = h->primStart;
         }
     } else {
         SetDispMask(0);
@@ -3670,7 +3670,7 @@ static inline void textureset_release_cluts(obj_textureset *arg0, TexClut *p) {
 
 void textureset_release(obj_textureset *arg0) {
     s32 n;
-    u8 *d;
+    AnimData *d;
     s32 *q;
     s32 *r;
     TexClut *b;
@@ -3680,8 +3680,8 @@ void textureset_release(obj_textureset *arg0) {
     textureset_release_cluts(arg0, b);
     d = arg0->anims;
     if (d != NULL) {
-        if (*(s32 *)(d + 4) != 0) {
-            q = (s32 *)(d + (*(s32 *)(d + 4) + 4));
+        if (d->subOff != 0) {
+            q = (s32 *)FILE_AT(d, d->subOff + 4);
             r = q + 1;
             n = *q;
             if (--n != -1) {
@@ -3942,11 +3942,11 @@ void textureset_init(obj_textureset *set, u8 *file) {
 }
 
 /* Size in bytes: 0xB0 plus +8 records of 0x38 and +0xA records of 0xC. */
-s32 textureset_mem_size(u8 *arg0) {
+s32 textureset_mem_size(TexFile *arg0) {
     s32 size;
 
-    size = *(u16 *)(arg0 + 8) * 0x38 + 0xB0;
-    size += *(u16 *)(arg0 + 0xA) * 0xC;
+    size = arg0->nTex * 0x38 + 0xB0;
+    size += arg0->nClut * 0xC;
     return size;
 }
 

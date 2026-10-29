@@ -8,6 +8,13 @@
 #include "common.h"
 #include "bash/main.h"
 
+/* The save's layout in CardBuffer (docs/ASSETS.md, The memory card): the PsyQ save header, then
+ * the four CardSlots, CardSaveFlags with 8 bytes cleared after it, and CardSaveSum (the s32s
+ * from CARD_SLOTS to CARD_FLAGS summed). */
+#define CARD_SLOTS 0x200
+#define CARD_FLAGS 0x850
+#define CARD_SUM   0x85C
+
 void card_init(void);
 s32 ascii_to_sjis(u8 arg0);
 void card_request(s32 arg0);
@@ -102,17 +109,17 @@ static inline void McResetSave(void) {
             break;
         }
     }
-    new_var = 0x850;
-    *(s32 *)(CardBuffer + new_var) = 1;
+    new_var = CARD_FLAGS;
+    *(s32 *)FILE_AT(CardBuffer, new_var) = 1;
     i = 7;
     p = CardBuffer + i;
     do {
-        p[0x854] = 0;
+        p[CARD_FLAGS + 4] = 0;
         i--;
         p--;
     } while (i >= 0);
-    end = (s32 *)(CardBuffer + new_var);
-    q = (s32 *)(CardBuffer + 0x200);
+    end = (s32 *)FILE_AT(CardBuffer, new_var);
+    q = (s32 *)FILE_AT(CardBuffer, CARD_SLOTS);
     i = 0;
     while (q < end) {
         i += *q++;
@@ -143,17 +150,17 @@ static inline void McResetSaveSum(void) {
             break;
         }
     }
-    new_var = 0x850;
-    *(s32 *)(CardBuffer + new_var) = 1;
+    new_var = CARD_FLAGS;
+    *(s32 *)FILE_AT(CardBuffer, new_var) = 1;
     i = 7;
     p = CardBuffer + i;
     do {
-        p[0x854] = 0;
+        p[CARD_FLAGS + 4] = 0;
         i--;
         p--;
     } while (i >= 0);
-    end = (s32 *)(CardBuffer + new_var);
-    q = (s32 *)(CardBuffer + 0x200);
+    end = (s32 *)FILE_AT(CardBuffer, new_var);
+    q = (s32 *)FILE_AT(CardBuffer, CARD_SLOTS);
     sum = 0;
     while (q < end) {
         sum += *q++;
