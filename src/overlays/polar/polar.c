@@ -1278,16 +1278,16 @@ bool CheckMelted(SLONG_XYZ *arg0, s32 arg1) {
         l = PolarBeamOwner->unk58;
         if (l != NULL) {
             sec = (u32)((get_angle(arg0->x, arg0->z) - 0x7D) & 0xFFF) >> 8;
-            if (l->sectors[sec].state == 1) {
+            if (l->sectors[sec].hitcount == 1) {
                 arg1 = 1;
             }
-            if (l->sectors[sec].state == 3 && l->sectors[sec].val >= 0x72 && !IsPtInALLZone(arg0, 2)) {
+            if (l->sectors[sec].hitcount == 3 && l->sectors[sec].status >= 0x72 && !IsPtInALLZone(arg0, 2)) {
                 return 0;
             }
-            if (l->sectors[sec].state == 2 && l->sectors[sec].val >= 0x72 && !IsPtInALLZone(arg0, 3)) {
+            if (l->sectors[sec].hitcount == 2 && l->sectors[sec].status >= 0x72 && !IsPtInALLZone(arg0, 3)) {
                 return 0;
             }
-            if (l->sectors[sec].state == 4 && l->sectors[sec].val >= 0x72) {
+            if (l->sectors[sec].hitcount == 4 && l->sectors[sec].status >= 0x72) {
                 if (!IsPtInALLZone(arg0, 2)) {
                     return 0;
                 }
@@ -6397,7 +6397,7 @@ void UkaMaskInitRisers(void) {
 }
 
 #define UKA_SEG_SET(j, st, a) \
-    { m->seg[j].state = (st); m->seg[j].angle = (a); m->seg[j].t = 0; m->seg[j].count++; }
+    { m->seg[j].status = (st); m->seg[j].baseframe = (a); m->seg[j].secframe = 0; m->seg[j].hitcount++; }
 
 void UkaMaskSetSegments(s32 i, UkaMaskSet *m) {
     s32 next;
@@ -6405,9 +6405,9 @@ void UkaMaskSetSegments(s32 i, UkaMaskSet *m) {
 
     next = (i + 1) & 0xF;
     prev = (i - 1) & 0xF;
-    if (m->seg[i].count == 0) {
+    if (m->seg[i].hitcount == 0) {
         UKA_SEG_SET(i, 1, 0x4000);
-        switch (m->seg[next].state) {
+        switch (m->seg[next].status) {
         case 0:
             UKA_SEG_SET(next, 2, 0x4300);
             break;
@@ -6415,7 +6415,7 @@ void UkaMaskSetSegments(s32 i, UkaMaskSet *m) {
             UKA_SEG_SET(next, 4, 0x4200);
             break;
         }
-        switch (m->seg[prev].state) {
+        switch (m->seg[prev].status) {
         case 0:
             UKA_SEG_SET(prev, 3, 0x4380);
             break;
@@ -6423,8 +6423,8 @@ void UkaMaskSetSegments(s32 i, UkaMaskSet *m) {
             UKA_SEG_SET(prev, 4, 0x4100);
             break;
         }
-    } else if (m->seg[i].count == 1) {
-        switch (m->seg[i].state) {
+    } else if (m->seg[i].hitcount == 1) {
+        switch (m->seg[i].status) {
         case 3:
             UKA_SEG_SET(i, 1, 0x4280);
             break;
@@ -6432,7 +6432,7 @@ void UkaMaskSetSegments(s32 i, UkaMaskSet *m) {
             UKA_SEG_SET(i, 1, 0x4180);
             break;
         }
-        switch (m->seg[prev].state) {
+        switch (m->seg[prev].status) {
         case 0:
             UKA_SEG_SET(prev, 3, 0x4380);
             break;
@@ -6440,7 +6440,7 @@ void UkaMaskSetSegments(s32 i, UkaMaskSet *m) {
             UKA_SEG_SET(prev, 4, 0x4100);
             break;
         }
-        switch (m->seg[next].state) {
+        switch (m->seg[next].status) {
         case 0:
             UKA_SEG_SET(next, 2, 0x4300);
             break;
@@ -6448,8 +6448,8 @@ void UkaMaskSetSegments(s32 i, UkaMaskSet *m) {
             UKA_SEG_SET(next, 4, 0x4200);
             break;
         }
-    } else if (m->seg[i].count == 2) {
-        if (m->seg[i].state == 4) {
+    } else if (m->seg[i].hitcount == 2) {
+        if (m->seg[i].status == 4) {
             UKA_SEG_SET(i, 1, 0x4080);
         }
     }
@@ -6507,10 +6507,10 @@ void InitUkaPolarMask(NAS *m) {
     ext->unk64 = 0x5A;
     ext->unk6C = 5;
     for (i = 0; i < 16; i++) {
-        ext->seg[i].state = 0;
-        ext->seg[i].count = 0;
-        ext->seg[i].t = 0;
-        ext->seg[i].angle = 0;
+        ext->seg[i].status = 0;
+        ext->seg[i].hitcount = 0;
+        ext->seg[i].secframe = 0;
+        ext->seg[i].baseframe = 0;
     }
     ext->mask = n = CreateNAS(0, 0, 0, 0x160B, 0x11);
     if (n != NULL) {
@@ -6607,9 +6607,9 @@ void PlotUkaPolarMask(NAS *m) {
         ext->unk9C -= 0x40;
     }
     for (j = 0; j < 16; j++) {
-        if (ext->seg[j].count != 0 && ext->seg[j].t < 0x74) {
-            ext->seg[j].t += 4;
-            UkaMaskRisers[j]->y = ext->seg[j].angle + ext->seg[j].t;
+        if (ext->seg[j].hitcount != 0 && ext->seg[j].secframe < 0x74) {
+            ext->seg[j].secframe += 4;
+            UkaMaskRisers[j]->y = ext->seg[j].baseframe + ext->seg[j].secframe;
         }
     }
     for (i = 0; i < 4; i++) {
@@ -6793,7 +6793,7 @@ void PlotUkaPolarMask(NAS *m) {
                 }
             }
             for (cnt = 0; cnt < 16; cnt++) {
-                if (ext->seg[v++ & 0xF].state != 1) {
+                if (ext->seg[v++ & 0xF].status != 1) {
                     break;
                 }
                 if (cnt == 0xF) {
@@ -7574,16 +7574,16 @@ void PlotWalrusFish(NAS *m) {
 }
 
 void PlotSmokeTrail(NAS *m) {
-    ExtSmokeTrail *ext;
+    EXTsmoketrail *ext;
 
     ext = FindExtension(m, 0x10000000);
     if (ext == NULL) {
         return;
     }
-    if (ext->flags & 1) {
-        m->Engine->unk10.y -= ext->rise;
-        m->Engine->unk10.x = ext->baseX + ((ext->amp * rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2) >> 12);
-        ext->amp -= ext->ampDecay;
+    if (ext->flag & 1) {
+        m->Engine->unk10.y -= ext->yvel;
+        m->Engine->unk10.x = ext->startx + ((ext->amp * rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2) >> 12);
+        ext->amp -= ext->ampdec;
         if (ext->amp < 0) {
             ext->amp = 0;
         }
@@ -7592,17 +7592,17 @@ void PlotSmokeTrail(NAS *m) {
     }
     switch (m->UserInfo.status) {
     case 0:
-        m->Engine->sub->unk76 -= ext->fadeIn;
+        m->Engine->sub->unk76 -= ext->fadeuprate;
         if ((s16)m->Engine->sub->unk76 < 0) {
             m->Engine->sub->unk76 = 0;
             m->UserInfo.status = 1;
         }
         break;
     case 1:
-        m->Engine->sub->unk76 += ext->fadeOut;
-        m->Engine->unk2C.x -= ext->shrink;
-        m->Engine->unk2C.y -= ext->shrink;
-        m->Engine->unk2C.z -= ext->shrink;
+        m->Engine->sub->unk76 += ext->fadedownrate;
+        m->Engine->unk2C.x -= ext->scalerate;
+        m->Engine->unk2C.y -= ext->scalerate;
+        m->Engine->unk2C.z -= ext->scalerate;
         if ((s16)m->Engine->sub->unk76 >= 0xDAD) {
             KillNAS(m);
             return;
@@ -9748,7 +9748,7 @@ void PlotSimpleExplosion(NAS *m) {
 }
 
 void InitSmokeTrail(NAS *m) {
-    ExtSmokeTrail *ext;
+    EXTsmoketrail *ext;
 
     ext = AddExt(m, 0x30, 0x10000000);
     if (ext != NULL) {
@@ -9757,11 +9757,11 @@ void InitSmokeTrail(NAS *m) {
         m->Engine->sub->flags |= 0x40000041;
         m->Engine->sub->unk76 = 0x1000;
         m->UserInfo.status = 0;
-        ext->fadeIn = 0x400;
-        ext->fadeOut = 0xC8;
-        ext->shrink = 0x60;
-        ext->flags = 0;
-        ext->baseX = m->Engine->unk10.x;
+        ext->fadeuprate = 0x400;
+        ext->fadedownrate = 0xC8;
+        ext->scalerate = 0x60;
+        ext->flag = 0;
+        ext->startx = m->Engine->unk10.x;
         m->Engine->unk5C = 1;
         m->Engine->unk5D = 0;
         ext->angle = Random(0x1000);

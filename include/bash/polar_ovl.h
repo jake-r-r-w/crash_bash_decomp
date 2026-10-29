@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/polar.h"   /* psector, EXTsmoketrail */
 
 /* defined later in polar.c than the data that points at it */
 extern const char PolarAnimWin[];
@@ -126,19 +127,6 @@ typedef struct ExtSpawn5910 {
     /* 0x28 */ s32 unk28;
 } ExtSpawn5910;
 
-/* Extension 0x10000000 of the smoke trail PlotSmokeTrail moves. */
-typedef struct ExtSmokeTrail {
-    /* 0x00 */ u8 pad[0xC];
-    /* 0x0C */ s32 fadeIn;
-    /* 0x10 */ s32 fadeOut;
-    /* 0x14 */ s32 shrink;
-    /* 0x18 */ s32 flags;
-    /* 0x1C */ s32 rise;
-    /* 0x20 */ s32 baseX;
-    /* 0x24 */ s32 amp;
-    /* 0x28 */ s32 ampDecay;
-    /* 0x2C */ s32 angle;
-} ExtSmokeTrail;
 
 extern s32 PolarRoundState;
 
@@ -533,12 +521,6 @@ s32 PolarBombOwnerEngine(NAS *nas);
 
 void PolarSpawnObjects(void);
 
-/* One of the 16 angular sectors CheckMelted checks. */
-typedef struct PolarSector {
-    /* 0x00 */ s32 state;
-    /* 0x04 */ s32 val;
-    /* 0x08 */ s32 pad8[2];
-} PolarSector;
 
 /* Read by PolarBeamLinkState and CheckMelted. */
 typedef struct PolarLink {
@@ -550,7 +532,7 @@ typedef struct PolarLink {
     /* 0x28 */ s32 unk28[(0x6C - 0x28) / 4];
     /* 0x6C */ s32 unk6C;
     /* 0x70 */ u8 pad70[0xBC - 0x70];
-    /* 0xBC */ PolarSector sectors[16];
+    /* 0xBC */ psector sectors[16];
 } PolarLink;
 
 typedef struct PolarOwner {
@@ -673,17 +655,10 @@ typedef struct PolarRiserSet {
     /* 0xB8 */ PolarRiser slot[16];
 } PolarRiserSet;
 
-/* UkaMaskSetSegments's ring of 16 mask segments at +0xB8 of the Uka polar ext. */
-typedef struct UkaMaskSeg {
-    /* 0x0 */ s32 count;
-    /* 0x4 */ s32 state;
-    /* 0x8 */ s32 t;
-    /* 0xC */ s32 angle;
-} UkaMaskSeg;
 
 typedef struct UkaMaskSet {
     /* 0x00 */ u8 pad0[0xB8];
-    /* 0xB8 */ UkaMaskSeg seg[16];
+    /* 0xB8 */ psector seg[16];
 } UkaMaskSet;
 
 void UkaMaskSetSegments(s32 i, UkaMaskSet *m);
@@ -715,7 +690,7 @@ typedef struct UkaPolarExt {
     /* 0x0AC */ NAS *unkAC;
     /* 0x0B0 */ NAS *mask;
     /* 0x0B4 */ s32 unkB4;
-    /* 0x0B8 */ UkaMaskSeg seg[16];
+    /* 0x0B8 */ psector seg[16];
     /* 0x1B8 */ s32 unk1B8;
     /* 0x1BC */ s32 unk1BC;
     /* 0x1C0 */ s32 angle;
