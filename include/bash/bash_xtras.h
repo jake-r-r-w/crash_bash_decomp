@@ -60,7 +60,7 @@ void PlotPickup(NAS *arg0);
 
 
 
-/* PlotCrate: entries of HitHooks.unk0/unk4, by hero_name. */
+/* PlotCrate: entries of HitHooks.hit_shapes2/hit_shapes, by hero_name. */
 typedef struct {
     /* 0x00 */ s16 speed;
     /* 0x02 */ s16 max;

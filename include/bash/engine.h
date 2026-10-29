@@ -85,15 +85,33 @@ typedef struct PanelPrim {
     u8 pad10[0x44];
     void *hook;                     /* its draw function, or a texture */
     u8 pad58[0x10];
-    s16 unk68, pad6A;
+    /* 0x68 */ s16 otz;  /* as subengine's */
+    /* 0x6A */ s16 pad6A;
     union {
         void *ptr;
         struct {
-            s16 unk6C, unk6E;
+            s16 x0;  /* the quad's corners, 0 to 3 */
+            s16 y0;
         } s;
     } u6C;
-    s16 unk70, pad72, unk74, unk76, unk78, pad7A, unk7C, unk7E, unk80, pad82, unk84, unk86, unk88, pad8A;
-    s32 unk8C, unk90, unk94, color;
+    /* 0x70 */ s16 z0;
+    /* 0x72 */ s16 pad72;
+    /* 0x74 */ s16 x1;  /* a model prim's entity instead */
+    /* 0x76 */ s16 y1;
+    /* 0x78 */ s16 z1;
+    /* 0x7A */ s16 pad7A;
+    /* 0x7C */ s16 x2;
+    /* 0x7E */ s16 y2;
+    /* 0x80 */ s16 z2;
+    /* 0x82 */ s16 pad82;
+    /* 0x84 */ s16 x3;
+    /* 0x86 */ s16 y3;
+    /* 0x88 */ s16 z3;
+    /* 0x8A */ s16 pad8A;
+    /* 0x8C */ s32 c0;  /* the corners' colours */
+    /* 0x90 */ s32 c1;
+    /* 0x94 */ s32 c2;
+    /* 0x98 */ s32 c3;
     u8 pad9C[0xC];
 } PanelPrim; /* 0xA8 */
 extern u16 CupMode;
