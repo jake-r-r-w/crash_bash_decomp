@@ -67,7 +67,7 @@ checks) needs `node --test tools/swarm/swarm.test.mjs` (host Node) to pass and a
 case there. Headers,
 config and file splits: ordinary commits after `tools/dk make verify` prints
 `OK`. If a change affects progress, run `tools/dk make progress` and include
-`docs/` in the commit.
+`docs/` and `.decomp/history.json` (the dashboard's history, one entry per run) in the commit.
 
 A change to a game data tool (`tools/scripts/dat.py`, `tex.py`, `mdl.py`,
 `gltf.py`, `sfx.py`, `tga.py`, `txt.py`, `pack_disc.py`) needs `tools/dk make

@@ -13,7 +13,6 @@ Before making the repo public.
 
 | # | Task | Where | Notes | Done |
 |---|------|-------|-------|------|
-| 5.8 | Commit the progress history | `.decomp/history.json` | With each docs update, so it stops showing as modified. | [ ] |
 | 5.9 | Re-read the leak and prototype docs | `docs/PROTOTYPES.md`, `docs/ARCHITECTURE.md` | Describing the sources is fine; nothing may quote the leaked files at length. | [ ] |
 | 5.10 | Decide on `tools/reference/` (26 MB GCC source) | `tools/reference/` | Keep it (GPL, COPYING present) or replace it with a fetch script. | [ ] |
 | 5.11 | The toolchain image builds from scratch | `tools/docker/Dockerfile` | 4.1 reused the existing image. Build it with `--no-cache` on a machine without it, then `make check`. | [ ] |

@@ -706,3 +706,6 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
     The 234 older entries are in the git history, and their results are in ROADMAP-A.
   - The stale progress-check note was removed (`check_progress.py` is gone).
   - Current state, Next, Open leads and the Gotchas stay.
+- [x] 5.8 The progress history committed (2026-10-29). `.decomp/history.json` is tracked and goes in
+  with each progress update, as it has since 5.1, so the tree stays clean. CONTRIBUTING's rule now
+  names it next to `docs/`.
