@@ -43,9 +43,14 @@ def pick(cands, width, prefer=None):
     return None
 
 
-def rewrite(body, var, ty, lv, prefer=None, log=print):
-    """body with VAR's raw accesses rewritten as fields of TYPE (lv: struct_layout.leaves)."""
+def rewrite(body, var, ty, lv, prefer=None, log=print, ptrs=None):
+    """body with VAR's raw accesses rewritten as fields of TYPE (lv: struct_layout.leaves). The
+    pointer fields a raw word read became are added to PTRS: arithmetic on them is scaled now."""
     def field(cast, ptr, off, whole):
+        if ptrs is not None and not ptr:
+            p = pick(lv.get(off), sl.CTYPE[cast][0], prefer) if cast in sl.CTYPE else None
+            if p and any(c[0] == p and c[3] == "ptr" for c in lv.get(off) or []):
+                ptrs.add(p)
         if ptr:
             path = pick(lv.get(off), 4, prefer)
         elif cast in sl.CTYPE:
@@ -73,10 +78,13 @@ def rewrite(body, var, ty, lv, prefer=None, log=print):
     return body
 
 
-def leftovers(body, var):
-    """lines still adding to VAR (scaled by the new type now) or reading it as bytes."""
+def leftovers(body, var, ptrs=()):
+    """lines still adding to VAR (scaled by the new type now) or reading it as bytes, and lines
+    adding to a pointer field that was a raw word (PTRS)."""
+    pf = "|".join(re.escape(p) for p in ptrs)
     return [l.strip() for l in body.split("\n")
-            if re.search(r"\b%s\)?\s*\+|\+ %s\b|\b%s\[|\(u8 ?\*\)\s*\(?%s\b" % (var, var, var, var), l)]
+            if re.search(r"\b%s\)?\s*\+|\+ %s\b|\b%s\[|\(u8 ?\*\)\s*\(?%s\b" % (var, var, var, var), l)
+            or pf and re.search(r"\b%s->(?:%s)\)?\s*[+-]" % (var, pf), l)]
 
 
 def func_span(t, fn):
@@ -125,6 +133,7 @@ def main():
     s, e = func_span(t, a.func)
     body = old = t[s:e]
     pairs = list(zip(a.pairs[::2], a.pairs[1::2]))
+    ptrs = {}
     for var, ty in pairs:
         prefer = None
         if ":" in ty:
@@ -134,12 +143,13 @@ def main():
         lv = sl.leaves(ty, structs, typedefs)
         if not lv:
             raise SystemExit("no layout for %s (pass its header with --header)" % ty)
-        body = rewrite(body, var, ty, lv, prefer)
+        ptrs[var] = set()
+        body = rewrite(body, var, ty, lv, prefer, ptrs=ptrs[var])
     if body == old:
         print("no change")
         return 1
     for var, ty in pairs:
-        for l in leftovers(body, var):
+        for l in leftovers(body, var, ptrs.get(var, ())):
             print("  LEFT (now scaled by the type):", l[:110])
     undo[key] = [old, body]
     os.makedirs("build", exist_ok=True)
