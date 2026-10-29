@@ -268,14 +268,6 @@ typedef struct ArkenoidFux {
     s16 flag;
 } ArkenoidFux;
 
-typedef struct ArkenoidMot {
-    u8 pad0[0xE];
-    s16 a;
-    s16 b;
-    s16 c;
-    s16 lim;
-    s16 dir;
-} ArkenoidMot;
 
 /* A FUX viewed for its flags word (0x80 tested by TestArkObjectObstacles). */
 typedef struct ArkenoidFuxF {
@@ -399,16 +391,6 @@ extern u16 BallFramesA[];
 extern u16 BallFramesB[];
 extern u16 BallFramesC[];
 
-/* Extension 0x800 of a ball (ArkHero2ObjectCollision). */
-typedef struct ArkenoidPuck {
-    u8 pad0[0xE];
-    s16 speed;
-    u8 pad10[4];
-    s16 max;
-    s16 dir;
-    u8 pad18[0x32 - 0x18];
-    u16 flag;  /* tested for zero */
-} ArkenoidPuck;
 
 /* The spot a grabbed ball is held at (ArkHero2ObjectCollision). */
 typedef struct ArkenoidSpot {

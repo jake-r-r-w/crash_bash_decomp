@@ -1226,7 +1226,7 @@ void PlotPapuMinion(NAS *nas)
   s32 slot;
   s32 level;
   EXTengine *eng;
-  MinionMove *move;
+  EXTmotion *move;
   EXTanimator *anim;
   EXTobject *fux;
   EXTobject *other;
@@ -1299,11 +1299,11 @@ void PlotPapuMinion(NAS *nas)
   frame = RunNasAnim(nas);
   switch (fux->status) {
   case 5:
-    move->speed = 0;
+    move->Xvel = 0;
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     break;
   case 1:
-    move->speed = 0;
+    move->Xvel = 0;
     if (fux->countdown == 0) {
       PlaySfx(0x1FA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
       SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Minion]);
@@ -1314,22 +1314,22 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 2:
-    move->speed = 0;
+    move->Xvel = 0;
     if (fux->countdown != 0) {
       fux->countdown--;
       break;
     }
     eng->flags |= 0x8021;
     fux->status = 3;
-    move->unk1E = 0x50;
-    move->unk18 = 0;
-    move->unk1A = 6;
-    move->unk1C = 0;
-    move->unkC = 0;
+    move->Ymax = 0x50;
+    move->Yvel = 0;
+    move->Yacc = 6;
+    move->Ydec = 0;
+    move->Ydir = 0;
     GotoLinkAnim(anim, 3);
     break;
   case 3:
-    move->speed = 0;
+    move->Xvel = 0;
     if (GravitateNas(nas) != 0) {
       fux->can_do |= 0x102;
       eng->flags &= ~0x21;
@@ -1338,7 +1338,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 4:
-    move->speed = 0;
+    move->Xvel = 0;
     if (frame == 8) {
       fux->status = 0;
     }
@@ -1372,9 +1372,9 @@ void PlotPapuMinion(NAS *nas)
     }
     PapuHitSolids(eng, 2, 0x400, (u16)nas->UserInfo.user1);
     if (target_eng != NULL) {
-      move->angle = angle;
+      move->Xa = angle;
     }
-    move->speed = 0x20;
+    move->Xvel = 0x20;
     break;
   case 7:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
@@ -1405,13 +1405,13 @@ void PlotPapuMinion(NAS *nas)
       fux->status = 0;
       GotoLinkAnim(anim, 0);
     } else {
-      move->angle = angle;
-      move->speed = 0x20;
+      move->Xa = angle;
+      move->Xvel = 0x20;
     }
     break;
   case 8:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
-    move->speed = 0;
+    move->Xvel = 0;
     if (PapuMinionSlots[slot].pad4[6] != 0) {
       if (frame == 8) {
         if (((EXTobject *)PapuMinionSlots[slot].pad4[6])->whatami == 5) {
@@ -1466,8 +1466,8 @@ void PlotPapuMinion(NAS *nas)
         GotoLinkAnim(anim, 0xA);
       }
       if (target_eng != NULL) {
-        move->angle = angle;
-        move->speed = 0x18;
+        move->Xa = angle;
+        move->Xvel = 0x18;
         break;
       }
       fux->target = NULL;
@@ -1488,12 +1488,12 @@ void PlotPapuMinion(NAS *nas)
     if (dist < 0x200) {
       fux->status = 0;
     }
-    move->angle = angle;
-    move->speed = 0x20;
+    move->Xa = angle;
+    move->Xvel = 0x20;
     break;
   case 10:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
-    move->speed = 0;
+    move->Xvel = 0;
     if (frame == 8) {
       fux->status = 0;
     } else if (frame == 0x10) {
@@ -1505,7 +1505,7 @@ void PlotPapuMinion(NAS *nas)
     break;
   case 12:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
-    move->speed = 0;
+    move->Xvel = 0;
     pick = (s32)PapuMinionSlots[slot].pad4[6];
     if (pick != 0) {
       ((EXTobject *)pick)->player = fux->player;
@@ -1519,7 +1519,7 @@ void PlotPapuMinion(NAS *nas)
     break;
   case 11:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
-    move->speed = 0;
+    move->Xvel = 0;
     PapuMinionSlots[slot].pad4[6] = 0;
     if (frame != 8) {
       if (frame == 9 && PapuMinionSlots[slot].flag2 != 0) {
@@ -1535,8 +1535,8 @@ void PlotPapuMinion(NAS *nas)
   default:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     fux->can_do |= 0x102;
-    move->speed = 0;
-    move->push = 0;
+    move->Xvel = 0;
+    move->Zvel = 0;
     fux->target = PapuMinionFindCrate(slot);
     if (fux->target != NULL) {
       GotoLinkAnim(anim, 1);
@@ -1549,21 +1549,21 @@ void PlotPapuMinion(NAS *nas)
     break;
   }
   if (fux->status != 6) {
-    s32 turn = angle_diff(eng->xform.rot.vy, move->angle) >> 2;
+    s32 turn = angle_diff(eng->xform.rot.vy, move->Xa) >> 2;
     if (turn != 0) {
       eng->xform.rot.vy += turn;
     } else {
-      eng->xform.rot.vy = move->angle;
+      eng->xform.rot.vy = move->Xa;
     }
   }
-  eng->XYZ.x -= (move->speed * rcossin_tbl[(move->angle - 0x400) & 0xFFF].unk2) >> 12;
-  eng->XYZ.z -= (move->speed * rcossin_tbl[(u16)move->angle & 0xFFF].unk2) >> 12;
-  if (move->push != 0) {
-    eng->XYZ.x -= (move->push * rcossin_tbl[(move->push_angle - 0x400) & 0xFFF].unk2) >> 12;
-    eng->XYZ.z -= (move->push * rcossin_tbl[(u16)move->push_angle & 0xFFF].unk2) >> 12;
-    move->push -= 4;
-    if ((s16)move->push < 0) {
-      move->push = 0;
+  eng->XYZ.x -= (move->Xvel * rcossin_tbl[(move->Xa - 0x400) & 0xFFF].unk2) >> 12;
+  eng->XYZ.z -= (move->Xvel * rcossin_tbl[(u16)move->Xa & 0xFFF].unk2) >> 12;
+  if (move->Zvel != 0) {
+    eng->XYZ.x -= (move->Zvel * rcossin_tbl[(move->Za - 0x400) & 0xFFF].unk2) >> 12;
+    eng->XYZ.z -= (move->Zvel * rcossin_tbl[(u16)move->Za & 0xFFF].unk2) >> 12;
+    move->Zvel -= 4;
+    if ((s16)move->Zvel < 0) {
+      move->Zvel = 0;
     }
   }
   PapuMinionKick(slot);
@@ -1573,8 +1573,8 @@ void PlotPapuMinion(NAS *nas)
       ((EXTobject *)PapuMinionSlots[slot].pad4[6])->player = fux->player;
     }
     PapuMinionSlots[slot].pad4[6] = 0;
-    move->push = 0x40;
-    move->push_angle = (move->angle + 0x800) & 0xFFF;
+    move->Zvel = 0x40;
+    move->Za = (move->Xa + 0x800) & 0xFFF;
     fux->status = 0xB;
     fux->can_do &= 0xFEFD;
     fux->will_do &= 0xFEFD;
@@ -1623,16 +1623,16 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
           {
             if (d < 0x80)
             {
-              ang = s->dyn->angle;
+              ang = s->dyn->Xa;
             }
             else
             {
               ang = get_angle(dx, dz);
             }
-            s->dyn->unk2A = ang ^ 0x800;
+            s->dyn->Za = ang ^ 0x800;
             d = (arg1 - d) >> 3;
-            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->unk22 = d;
-            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->angle = (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->unk2A + 0x800;
+            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->Zvel = d;
+            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->Xa = (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->Za + 0x800;
             PlaySfx(PapuMinionSfx[Random(4)], 0, (SLONG_XYZ *) (&me->x), 0x1000, 0x1E00, 0);
             f->unk1A = 0xC;
           }
@@ -2566,12 +2566,12 @@ void PapuInitCrateHooks(void) {
     HitHooks.hit_shapes2 = CrateHitShapes2;
 }
 
-void PACrateAimAtGrid(EXTengine *a, T_B7F14_B *b) {
+void PACrateAimAtGrid(EXTengine *a, EXTmotion *b) {
     s32 z;
     s32 x;
     s32 sum = 0;
-    s32 v = b->unkE;
-    s32 d = b->unk10 - b->unk12;
+    s32 v = b->Xvel;
+    s32 d = b->Xacc - b->Xdec;
     s32 mx, mz;
 
     if (v != 0) {
@@ -2593,9 +2593,9 @@ void PACrateAimAtGrid(EXTengine *a, T_B7F14_B *b) {
     x += 0x80;
     z &= ~0xFF;
     z += 0x80;
-    b->unk16 = x;
-    b->unk2A = z;
-    b->dir = *(u8 *)FILE_AT(DirPadBits, ((u16)a->xform.rot.vy >> 7) & 0x1C);
+    b->Xa = x;
+    b->Za = z;
+    b->flags = *(u8 *)FILE_AT(DirPadBits, ((u16)a->xform.rot.vy >> 7) & 0x1C);
     x -= a->XYZ.x;
     z -= a->XYZ.z;
     sum = csqrt(x * x + z * z) >> 6;
@@ -2608,7 +2608,7 @@ void PACrateAimAtGrid(EXTengine *a, T_B7F14_B *b) {
         v += d;
     }
     v -= d >> 1;
-    b->unkE = v;
+    b->Xvel = v;
 }
 
 s32 PapuGridKey(EXTengine *p) {

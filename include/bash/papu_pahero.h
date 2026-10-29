@@ -91,7 +91,7 @@ typedef struct PapuSlide {
 
 /* PapuMinionSlots entries: pad4[0] engine, pad4[4] motion, pad4[6] held object. */
 #define PAPU_SLOT_ENG(i) ((EXTengine *)PapuMinionSlots[i].pad4[0])
-#define PAPU_SLOT_DYN(i) ((B5E44Dyn *)PapuMinionSlots[i].pad4[4])
+#define PAPU_SLOT_DYN(i) ((EXTmotion *)PapuMinionSlots[i].pad4[4])
 #define PAPU_SLOT_OBJ(i) (PapuMinionSlots[i].pad4[6])
 
 

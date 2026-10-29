@@ -6005,35 +6005,35 @@ void PlotWeightDeath(NAS *m) {
     }
 }
 
-void GravityMotionUpdate(NAS *nas, GravityMotion *m) {
+void GravityMotionUpdate(NAS *nas, EXTmotion *m) {
     EXTengine *eng;
     s32 y;
     s32 floor;
 
     eng = nas->Engine;
     if (eng != NULL) {
-        eng->XYZ.x += m->vx;
-        eng->XYZ.y += m->vy;
-        eng->XYZ.z += m->vz;
-        m->vx += m->ax;
-        m->vy += m->ay;
-        m->vz += m->az;
+        eng->XYZ.x += m->Xvel;
+        eng->XYZ.y += m->Yvel;
+        eng->XYZ.z += m->Zvel;
+        m->Xvel += m->Xacc;
+        m->Yvel += m->Yacc;
+        m->Zvel += m->Zacc;
         if (m->flags & 4) {
-            nas->Engine->xform.rot.vx += m->rx;
+            nas->Engine->xform.rot.vx += m->Xa;
         }
         if (m->flags & 8) {
-            nas->Engine->xform.rot.vy += m->ry;
+            nas->Engine->xform.rot.vy += m->Ya;
         }
         if (m->flags & 0x10) {
-            nas->Engine->xform.rot.vz += m->rz;
+            nas->Engine->xform.rot.vz += m->Za;
         }
         nas->Engine->xform.dirty = 1;
-        floor = m->floor;
+        floor = m->floorheight;
         y = eng->XYZ.y;
         if (y >= floor) {
             eng->XYZ.y -= abs(y - floor);
             if (m->flags & 1) {
-                m->vy = -m->vy >> 1;
+                m->Yvel = -m->Yvel >> 1;
             }
             if (m->flags & 2) {
                 KillTriggerNas(nas);
@@ -9932,7 +9932,7 @@ void PlotGravityObject(GravityObject *obj) {
 }
 
 void InitGravityObject(NAS *m) {
-    GravityMotion *g;
+    EXTmotion *g;
     s32 t;
 
     g = AddExt(m, 0x34, 0x10000000);
@@ -9940,15 +9940,15 @@ void InitGravityObject(NAS *m) {
         m->Engine->sub->entity = 0x200C;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         m->Engine->sub->flags |= 0x02000000;
-        g->vx = (rcossin_tbl[0xE00].unk2 * 27) >> 11;
+        g->Xvel = (rcossin_tbl[0xE00].unk2 * 27) >> 11;
         t = rcossin_tbl[0x200].unk2;
-        g->vy = -0x54;
-        g->ax = 0;
-        g->az = 0;
-        g->ay = 2;
+        g->Yvel = -0x54;
+        g->Xacc = 0;
+        g->Zacc = 0;
+        g->Yacc = 2;
         g->flags = 0;
-        g->vz = (t * 27) >> 11;
-        g->floor = *(u16 *)&m->Engine->XYZ.y + 0x400;
+        g->Zvel = (t * 27) >> 11;
+        g->floorheight = *(u16 *)&m->Engine->XYZ.y + 0x400;
         m->FUX = (EXT *)g;
     }
 }

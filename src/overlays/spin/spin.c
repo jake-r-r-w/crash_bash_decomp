@@ -1085,7 +1085,7 @@ void PlotHazardType(NAS *nas) {
     EXTengine *eng;
     EXTobject *fux;
     s32 kind;
-    SpinGlow *glow;
+    EXTmotion *glow;
     s32 v;
     s16 owner;
     HeroInfo *h;
@@ -1176,11 +1176,11 @@ void PlotHazardType(NAS *nas) {
         fux->countdown = 0x78;
         fux->can_do &= 0xFFF4;
         eng->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
-        glow->unk18 = 0x60;
-        glow->unk1E = 0xF0;
-        glow->unk1C = 4;
-        glow->unk1A = 0;
-        glow->flag = 0xFF;
+        glow->Yvel = 0x60;
+        glow->Ymax = 0xF0;
+        glow->Ydec = 4;
+        glow->Yacc = 0;
+        glow->Ydir = 0xFF;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
         owner = fux->player;
@@ -1224,7 +1224,7 @@ void PlotHazardType(NAS *nas) {
         done = 0;
         owner = fux->player;
         if (owner != -1) {
-            if (glow->flag == 0) {
+            if (glow->Ydir == 0) {
                 s32 dx;
                 s32 dy;
                 s32 dz;

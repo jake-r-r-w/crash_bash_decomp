@@ -50,16 +50,6 @@ typedef struct N2OHeroBox {
 
 extern N2OHeroBox N2OHeroBoxes[];
 
-/* Extension 0x800 of a ball (N2OHeroBallCollision), as in arkenoid's ArkenoidPuck. */
-typedef struct N2OPuck {
-    u8 pad0[0xE];
-    s16 speed;
-    u8 pad10[4];
-    s16 max;
-    s16 dir;
-    u8 pad18[0x32 - 0x18];
-    u16 flag;  /* tested for zero */
-} N2OPuck;
 
 
 extern u16 N2OBallHitSfx[];
@@ -74,16 +64,6 @@ typedef struct N2OVel {
     s32 z;
 } N2OVel;
 
-typedef struct N2OBlend {
-    u8 pad0[0xE];
-    s16 speed_a;
-    u8 pad10[6];
-    u16 dir;
-    u8 pad18[0xA];
-    s16 speed_b;
-    u8 pad24[6];
-    u16 dir_b;
-} N2OBlend;
 
 typedef struct N2OOut {
     u8 pad0[0x16];
@@ -343,7 +323,7 @@ void N2OHeroKick(s32 arg0);
 
 void InitN2OBall(NAS *nas);
 
-void N2OBlendDirection(N2OBlend *p);
+void N2OBlendDirection(EXTmotion *p);
 
 s32 PickN2OPlayer(s32 arg0);
 
@@ -389,15 +369,6 @@ void NoxMoveHero(s32 arg0);
 
 extern N2OEdge N2OAimEdgesB[];
 
-/* Motion extension (0x800) viewed by TestN2OObjectObstacles. */
-typedef struct N2OMot {
-    u8 pad0[0xE];
-    s16 a;
-    s16 b;
-    s16 c;
-    s16 lim;
-    s16 dir;
-} N2OMot;
 
 /* A FUX viewed for its flags word (0x80 tested by TestN2OObjectObstacles). */
 typedef struct N2OFuxF {

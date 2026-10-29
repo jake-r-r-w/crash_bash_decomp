@@ -301,7 +301,7 @@ void PlotPACrate(NAS *nas) {
             slide->unk10 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->c;
             slide->unk12 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->d;
             PapuGridKey((EXTengine *)eng);
-            PACrateAimAtGrid((EXTengine *)eng, (T_B7F14_B *)slide);
+            PACrateAimAtGrid((EXTengine *)eng, (EXTmotion *)slide);
             break;
         case 4:
         case 7:
@@ -317,7 +317,7 @@ void PlotPACrate(NAS *nas) {
             slide->unk10 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->c;
             slide->unk12 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->d;
             PapuGridKey((EXTengine *)eng);
-            PACrateAimAtGrid((EXTengine *)eng, (T_B7F14_B *)slide);
+            PACrateAimAtGrid((EXTengine *)eng, (EXTmotion *)slide);
             break;
         default:
             obj->status = 0;
@@ -458,7 +458,7 @@ void PlotPACrate(NAS *nas) {
                     PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 PAPU_SLOT_OBJ(obj->player - 0x14) = (s32)obj;
-                eng->xform.rot.vy = PAPU_SLOT_DYN(obj->player - 0x14)->angle;
+                eng->xform.rot.vy = PAPU_SLOT_DYN(obj->player - 0x14)->Xa;
                 obj->will_do &= 0xFFFC;
                 obj->can_do = (obj->can_do & 0xFFFC) | 4;
             }

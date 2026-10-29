@@ -17,12 +17,12 @@ u16 BashDrainsEdgePos = 0;
 u16 BashPowerupTimer = 0;
 u8 *BashCrateList = 0;
 
-void CrateAimAtGrid(EXTengine *a, T_BB64C_B *b) {
+void CrateAimAtGrid(EXTengine *a, EXTmotion *b) {
     s32 z;
     s32 x;
     s32 sum = 0;
-    s32 v = b->unkE;
-    s32 d = b->unk10 - b->unk12;
+    s32 v = b->Xvel;
+    s32 d = b->Xacc - b->Xdec;
     s32 mx, mz;
 
     if (v != 0) {
@@ -44,9 +44,9 @@ void CrateAimAtGrid(EXTengine *a, T_BB64C_B *b) {
     x += 0x80;
     z &= ~0xFF;
     z += 0x80;
-    b->unk16 = x;
-    b->unk2A = z;
-    b->dir = *(u8 *)FILE_AT(DirPadBits, ((u16)a->xform.rot.vy >> 7) & 0x1C);
+    b->Xa = x;
+    b->Za = z;
+    b->flags = *(u8 *)FILE_AT(DirPadBits, ((u16)a->xform.rot.vy >> 7) & 0x1C);
     x -= a->XYZ.x;
     z -= a->XYZ.z;
     sum = csqrt(x * x + z * z) >> 6;
@@ -59,7 +59,7 @@ void CrateAimAtGrid(EXTengine *a, T_BB64C_B *b) {
         v += d;
     }
     v -= d >> 1;
-    b->unkE = v;
+    b->Xvel = v;
 }
 
 s32 BashGridKey(EXTengine *p) {
@@ -323,7 +323,7 @@ void PlotCrate(NAS *arg0) {
     VECTOR b;
     EXTengine *eng;
     EXTobject *fux;
-    T_BC038Ext *ext;
+    EXTmotion *ext;
     EXTengine *he;
     EXTengine *ho;
     EXTengine *hd;
@@ -454,10 +454,10 @@ void PlotCrate(NAS *arg0) {
                 KillTriggerNas(arg0);
                 return;
             default:
-                ext->decel = 0;
-                ext->accel = 0;
-                ext->max = 0;
-                ext->speed = 0;
+                ext->Xdec = 0;
+                ext->Xacc = 0;
+                ext->Xmax = 0;
+                ext->Xvel = 0;
                 break;
             }
         }
@@ -468,15 +468,15 @@ void PlotCrate(NAS *arg0) {
             eng->xform.rot.vy = hb[fux->player].hero_move->facing_angle;
             eng->xform.rot.vx = 0;
             eng->xform.rot.vz = 0;
-            ext->speed = BC038_STATB(hb, hit_shapes, fux->player)->speed;
-            ext->max = BC038_STATB(hb, hit_shapes, fux->player)->max;
-            ext->accel = BC038_STATB(hb, hit_shapes, fux->player)->accel;
-            ext->decel = BC038_STATB(hb, hit_shapes, fux->player)->decel;
-            ext->unk18 = BC038_STATB(hb, hit_shapes, fux->player)->unk8;
-            ext->unk1E = BC038_STATB(hb, hit_shapes, fux->player)->unkA;
-            ext->unk1A = BC038_STATB(hb, hit_shapes, fux->player)->unkC;
-            ext->unk1C = BC038_STATB(hb, hit_shapes, fux->player)->unkE;
-            ext->flag = BC038_STATB(hb, hit_shapes, fux->player)->unk10;
+            ext->Xvel = BC038_STATB(hb, hit_shapes, fux->player)->speed;
+            ext->Xmax = BC038_STATB(hb, hit_shapes, fux->player)->max;
+            ext->Xacc = BC038_STATB(hb, hit_shapes, fux->player)->accel;
+            ext->Xdec = BC038_STATB(hb, hit_shapes, fux->player)->decel;
+            ext->Yvel = BC038_STATB(hb, hit_shapes, fux->player)->unk8;
+            ext->Ymax = BC038_STATB(hb, hit_shapes, fux->player)->unkA;
+            ext->Yacc = BC038_STATB(hb, hit_shapes, fux->player)->unkC;
+            ext->Ydec = BC038_STATB(hb, hit_shapes, fux->player)->unkE;
+            ext->Ydir = BC038_STATB(hb, hit_shapes, fux->player)->unk10;
             fux->status = 8;
         }
         } else {
@@ -525,22 +525,22 @@ void PlotCrate(NAS *arg0) {
         eng->flags |= 0x8000;
         break;
     case 4:
-        ext->unk18 = 0x50;
-        ext->unk1E = 0x50;
-        ext->unk1C = 6;
-        ext->flag = 0xFF;
-        ext->unk1A = 0;
+        ext->Yvel = 0x50;
+        ext->Ymax = 0x50;
+        ext->Ydec = 6;
+        ext->Ydir = 0xFF;
+        ext->Yacc = 0;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
         fux->status = 8;
         break;
     case 5:
         BC038_SNAP(eng);
-        ext->unk1E = 0x50;
-        ext->unk1C = 6;
-        ext->flag = 0xFF;
-        ext->unk18 = 0;
-        ext->unk1A = 0;
+        ext->Ymax = 0x50;
+        ext->Ydec = 6;
+        ext->Ydir = 0xFF;
+        ext->Yvel = 0;
+        ext->Yacc = 0;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
         fux->status = 8;
@@ -659,12 +659,12 @@ void PlotCrate(NAS *arg0) {
             if ((u32)v >= 5) {
                 v = 0;
             }
-            ext->speed = BC038_STAT(hit_shapes2, v)->speed;
-            ext->max = BC038_STAT(hit_shapes2, v)->max;
-            ext->accel = BC038_STAT(hit_shapes2, v)->accel;
-            ext->decel = BC038_STAT(hit_shapes2, v)->decel;
+            ext->Xvel = BC038_STAT(hit_shapes2, v)->speed;
+            ext->Xmax = BC038_STAT(hit_shapes2, v)->max;
+            ext->Xacc = BC038_STAT(hit_shapes2, v)->accel;
+            ext->Xdec = BC038_STAT(hit_shapes2, v)->decel;
             BashGridKey((EXTengine *)eng);
-            CrateAimAtGrid((EXTengine *)eng, (T_BB64C_B *)ext);
+            CrateAimAtGrid((EXTengine *)eng, (EXTmotion *)ext);
             break;
         case 3:
         case 4:
@@ -676,12 +676,12 @@ void PlotCrate(NAS *arg0) {
             if ((u32)v >= 5) {
                 v = 0;
             }
-            ext->speed = BC038_STAT(hit_shapes2, v)->speed;
-            ext->max = BC038_STAT(hit_shapes2, v)->max;
-            ext->accel = BC038_STAT(hit_shapes2, v)->accel;
-            ext->decel = BC038_STAT(hit_shapes2, v)->decel;
+            ext->Xvel = BC038_STAT(hit_shapes2, v)->speed;
+            ext->Xmax = BC038_STAT(hit_shapes2, v)->max;
+            ext->Xacc = BC038_STAT(hit_shapes2, v)->accel;
+            ext->Xdec = BC038_STAT(hit_shapes2, v)->decel;
             BashGridKey((EXTengine *)eng);
-            CrateAimAtGrid((EXTengine *)eng, (T_BB64C_B *)ext);
+            CrateAimAtGrid((EXTengine *)eng, (EXTmotion *)ext);
             break;
         default:
             fux->status = 0;
@@ -692,40 +692,40 @@ void PlotCrate(NAS *arg0) {
         fux->status = 0;
         break;
     case 0xB:
-        ext->speed += ext->accel - ext->decel;
-        if (ext->speed < 0) {
-            ext->speed = 0;
+        ext->Xvel += ext->Xacc - ext->Xdec;
+        if (ext->Xvel < 0) {
+            ext->Xvel = 0;
         }
-        if (ext->speed > ext->max) {
-            ext->speed = ext->max;
+        if (ext->Xvel > ext->Xmax) {
+            ext->Xvel = ext->Xmax;
         }
-        eng->XYZ.x -= (ext->speed * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
-        eng->XYZ.z -= (ext->speed * rcossin_tbl[(u16)eng->xform.rot.vy & 0xFFF].unk2) >> 12;
-        switch (ext->dir & 0xF0) {
+        eng->XYZ.x -= (ext->Xvel * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (ext->Xvel * rcossin_tbl[(u16)eng->xform.rot.vy & 0xFFF].unk2) >> 12;
+        switch (ext->flags & 0xF0) {
         case 0x10:
         case 0x30:
         case 0x90:
-            if (ext->tz >= eng->XYZ.z) {
-                ext->speed = 0;
+            if (ext->Za >= eng->XYZ.z) {
+                ext->Xvel = 0;
             }
             break;
         case 0x80:
-            if (eng->XYZ.x >= ext->tx) {
-                ext->speed = 0;
+            if (eng->XYZ.x >= ext->Xa) {
+                ext->Xvel = 0;
             }
             break;
         case 0x20:
-            if (ext->tx >= eng->XYZ.x) {
-                ext->speed = 0;
+            if (ext->Xa >= eng->XYZ.x) {
+                ext->Xvel = 0;
             }
             break;
         default:
-            if (eng->XYZ.z >= ext->tz) {
-                ext->speed = 0;
+            if (eng->XYZ.z >= ext->Za) {
+                ext->Xvel = 0;
             }
             break;
         }
-        if (ext->speed == 0) {
+        if (ext->Xvel == 0) {
             eng->xform.dirty = 1;
             eng->xform.rot.vy = 0;
             BC038_SNAP(eng);
@@ -797,11 +797,11 @@ void PlotCrate(NAS *arg0) {
         fux->can_do &= 0xFFF4;
         BC038_SNAP(eng);
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
-        ext->unk18 = 0x60;
-        ext->unk1E = 0xF0;
-        ext->unk1A = 0;
-        ext->unk1C = 4;
-        ext->flag = 0xFF;
+        ext->Yvel = 0x60;
+        ext->Ymax = 0xF0;
+        ext->Yacc = 0;
+        ext->Ydec = 4;
+        ext->Ydir = 0xFF;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
         switch (fux->contains) {
@@ -835,7 +835,7 @@ void PlotCrate(NAS *arg0) {
             return;
         }
         done = 0;
-        if (fux->player != -1 && ext->flag == 0) {
+        if (fux->player != -1 && ext->Ydir == 0) {
             fux->can_do |= 8;
             if (sub_find_point(Heroes[fux->player].hero_eng, Heroes[fux->player].hero_sub, 0x80, &a) != NULL) {
                 dx = eng->XYZ.x - a.vx;
@@ -914,11 +914,11 @@ void PlotCrate(NAS *arg0) {
         fux->can_do &= 0xFFF4;
         BC038_SNAP(eng);
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
-        ext->unk18 = 0x80;
-        ext->unk1E = 0x50;
-        ext->unk1C = 4;
-        ext->unk1A = 0;
-        ext->flag = 0xFF;
+        ext->Yvel = 0x80;
+        ext->Ymax = 0x50;
+        ext->Ydec = 4;
+        ext->Yacc = 0;
+        ext->Ydir = 0xFF;
         eng->xform.rot.vx = 0;
         eng->xform.rot.vz = 0;
         switch (fux->contains) {
@@ -964,7 +964,7 @@ void PlotCrate(NAS *arg0) {
         } else {
             eng->xform.rot.vy += 0x71;
         }
-        if (ext->flag == 0) {
+        if (ext->Ydir == 0) {
             fux->can_do |= 8;
         }
         CrateHitHeroes(eng, (EXTobject *)fux, 8);
@@ -1851,15 +1851,15 @@ void CrateBreak(EXTengine *eng, EXTobject *fux) {
     }
 }
 
-s32 CrateFallTime(s32 pos, ExtCurve *c) {
+s32 CrateFallTime(s32 pos, EXTmotion *c) {
     s32 sum = 0;
-    s32 a = c->unkE;
-    s32 b = c->unk18;
-    s32 delta = c->unk1A - c->unk1C;
-    s32 dir = c->unkC;
-    s32 step = c->unk10 - c->unk12;
-    s32 max1 = c->unk14;
-    s32 max2 = c->unk1E;
+    s32 a = c->Xvel;
+    s32 b = c->Yvel;
+    s32 delta = c->Yacc - c->Ydec;
+    s32 dir = c->Ydir;
+    s32 step = c->Xacc - c->Xdec;
+    s32 max1 = c->Xmax;
+    s32 max2 = c->Ymax;
     s32 n = 0;
 
     if (pos < World_floor_level) {
@@ -1885,14 +1885,14 @@ s32 CrateFallTime(s32 pos, ExtCurve *c) {
                 pos += b;
             }
             if (b == 0) {
-                delta = c->unk1C;
+                delta = c->Ydec;
                 dir = 0;
             }
             n++;
         } while (pos < World_floor_level);
     }
-    c->unk30 = sum;
-    c->unk32 = n;
+    c->Fdist = sum;
+    c->Ftime = n;
     return sum;
 }
 

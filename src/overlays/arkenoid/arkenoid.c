@@ -3189,8 +3189,8 @@ NAS *CreateBall(NAS *arg0) {
     ArkenoidEng *src;
     ArkenoidEng *eng;
     ArkenoidFux *fux;
-    ArkenoidMot *dst;
-    ArkenoidMot *srcm;
+    EXTmotion *dst;
+    EXTmotion *srcm;
     s32 dir;
 
     nas = NULL;
@@ -3212,23 +3212,23 @@ NAS *CreateBall(NAS *arg0) {
                         if (dst != NULL) {
                             srcm = FindExtension(arg0, 0x800);
                             if (srcm != NULL) {
-                                dst->b = 4;
-                                dst->c = 1;
-                                dst->a = srcm->a;
-                                dst->lim = srcm->lim;
-                                dir = srcm->dir;
-                                srcm->dir = (dir + 0x2AA) & 0xFFF;
-                                src->x -= rcossin_tbl[(srcm->dir - 0x400) & 0xFFF].unk2 * 128 >> 12;
-                                src->z -= rcossin_tbl[srcm->dir & 0xFFF].unk2 * 128 >> 12;
-                                if (dst->lim < 0x50) {
-                                    dst->lim = 0x50;
+                                dst->Xacc = 4;
+                                dst->Xdec = 1;
+                                dst->Xvel = srcm->Xvel;
+                                dst->Xmax = srcm->Xmax;
+                                dir = srcm->Xa;
+                                srcm->Xa = (dir + 0x2AA) & 0xFFF;
+                                src->x -= rcossin_tbl[(srcm->Xa - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                                src->z -= rcossin_tbl[srcm->Xa & 0xFFF].unk2 * 128 >> 12;
+                                if (dst->Xmax < 0x50) {
+                                    dst->Xmax = 0x50;
                                 }
-                                if (dst->a < dst->lim) {
-                                    dst->a = dst->lim;
+                                if (dst->Xvel < dst->Xmax) {
+                                    dst->Xvel = dst->Xmax;
                                 }
-                                dst->dir = (dir - 0x2AA) & 0xFFF;
-                                eng->x -= rcossin_tbl[(dst->dir - 0x400) & 0xFFF].unk2 * 128 >> 12;
-                                eng->z -= rcossin_tbl[dst->dir & 0xFFF].unk2 * 128 >> 12;
+                                dst->Xa = (dir - 0x2AA) & 0xFFF;
+                                eng->x -= rcossin_tbl[(dst->Xa - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                                eng->z -= rcossin_tbl[dst->Xa & 0xFFF].unk2 * 128 >> 12;
                             }
                         }
                     }
@@ -5313,7 +5313,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
     FlagRecord *rec;
     FlagRecord *fr;
     EXTobject *obj;
-    ArkenoidPuck *puck;
+    EXTmotion *puck;
     s32 r;
     s32 rad;
     s32 back;
@@ -5427,7 +5427,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
                 puck = FindExtension(nas, 0x800);
                 if (puck != NULL && grab != NULL) {
                     rad += rfar;
-                    r = angle_diff(me->xform.rot.vy, puck->dir);
+                    r = angle_diff(me->xform.rot.vy, puck->Xa);
                     if (r > 0x220) {
                         r = 0x220;
                     }
@@ -5458,7 +5458,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
         }
         puck = FindExtension(nas, 0x800);
         if (puck != NULL) {
-            r = puck->dir;
+            r = puck->Xa;
         } else {
             r = get_angle(eng->OldXYZ.x - eng->XYZ.x, eng->OldXYZ.z - eng->XYZ.z);
         }
@@ -5474,14 +5474,14 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
         }
         if (back) {
             r = get_angle(-eng->XYZ.x + farp.x, -eng->XYZ.z + farp.z) & 0xFFF;
-            puck->dir = r;
-            puck->speed = 0;
-            puck->max = 0;
+            puck->Xa = r;
+            puck->Xvel = 0;
+            puck->Xmax = 0;
             obj->status = 2;
             PlaySfx(ArkGrabTimes[arg0 + 4], NULL, &me->XYZ, 0x1000, 0x1E00, 0);
             continue;
         }
-        rad = puck->dir;
+        rad = puck->Xa;
         rad += 0x800;
         rad &= 0xFFF;
         if (obj->whatami == 2) {
@@ -5526,8 +5526,8 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
             ang = r;
             fc = fa;
             sp = abs(speed);
-            x1 = puck->speed * tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-            z2 = puck->speed * tbl[(u16)r].unk2 >> 12;
+            x1 = puck->Xvel * tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+            z2 = puck->Xvel * tbl[(u16)r].unk2 >> 12;
             dz = sp * tbl[(fc - 0x400) & 0xFFF].unk2 >> 12;
             cz = sp * tbl[fa].unk2 >> 12;
             r = (u16)get_angle(x1 + dz, z2 + cz);
@@ -5540,8 +5540,8 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
             ang2 = r;
             fc2 = fb;
             sp = abs(speed);
-            x1 = puck->speed * tbl[(ang2 - 0x400) & 0xFFF].unk2 >> 12;
-            z2 = puck->speed * tbl[r].unk2 >> 12;
+            x1 = puck->Xvel * tbl[(ang2 - 0x400) & 0xFFF].unk2 >> 12;
+            z2 = puck->Xvel * tbl[r].unk2 >> 12;
             dz = sp * tbl[(fc2 - 0x400) & 0xFFF].unk2 >> 12;
             x2 = sp * tbl[fb].unk2 >> 12;
             r = get_angle(x1 + dz, z2 + x2) & 0xFFF;
@@ -5556,15 +5556,15 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
             r += d;
             r &= 0xFFF;
         }
-        puck->dir = r;
+        puck->Xa = r;
         if (speed != 0) {
-            puck->speed += abs(speed);
-            if (puck->speed > puck->max + 0x40) {
-                puck->speed = puck->max + 0x40;
+            puck->Xvel += abs(speed);
+            if (puck->Xvel > puck->Xmax + 0x40) {
+                puck->Xvel = puck->Xmax + 0x40;
             }
         }
-        if (puck->flag == 0 && puck->max < 0x90) {
-            puck->max += 4;
+        if (puck->Ftime == 0 && puck->Xmax < 0x90) {
+            puck->Xmax += 4;
         }
     }
     return 0;
@@ -5775,8 +5775,8 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
     FlagRecord *rec;
     EXTengine *other;
     NAS *it;
-    ArkenoidMot *mine;
-    ArkenoidMot *m;
+    EXTmotion *mine;
+    EXTmotion *m;
     ArkenoidFuxF *fux;
     s32 hit;
     s32 rad;
@@ -5828,9 +5828,9 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                                                     other->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
-                                                    ang += angle_diff((m->dir + 0x800) & 0xFFF, ang);
+                                                    ang += angle_diff((m->Xa + 0x800) & 0xFFF, ang);
                                                     ang &= 0xFFF;
-                                                    m->dir = ang;
+                                                    m->Xa = ang;
                                                     PlaySfx(0x580, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                                                 }
                                             } else {
@@ -5843,18 +5843,18 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                                                     m = FindExtension(it, 0x800);
                                                     if (m != NULL) {
                                                         if (!(fux->flags & 0x80)) {
-                                                            m->dir = ang;
-                                                            dx = (mine->a + m->a) / 2;
-                                                            m->a = dx;
-                                                            mine->a = dx;
+                                                            m->Xa = ang;
+                                                            dx = (mine->Xvel + m->Xvel) / 2;
+                                                            m->Xvel = dx;
+                                                            mine->Xvel = dx;
                                                         }
                                                         PlaySfx(0x580, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                                                     }
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
-                                                    ang += angle_diff((mine->dir + 0x800) & 0xFFF, ang);
+                                                    ang += angle_diff((mine->Xa + 0x800) & 0xFFF, ang);
                                                     ang &= 0xFFF;
-                                                    mine->dir = ang;
+                                                    mine->Xa = ang;
                                                 }
                                             }
                                             hit = 1;

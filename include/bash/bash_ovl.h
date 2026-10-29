@@ -91,23 +91,6 @@ typedef struct BashTumbler {
     /* 0x1E */ s16 angle;
 } BashTumbler;
 
-typedef struct BashTumbleMove {
-    /* 0x00 */ u8 pad00[0xC];
-    /* 0x0C */ u8 dir;
-    /* 0x0D */ u8 pad0D;
-    /* 0x0E */ s16 vel;
-    /* 0x10 */ s16 acc;
-    /* 0x12 */ s16 dec;
-    /* 0x14 */ s16 max;
-    /* 0x16 */ u8 pad16[2];
-    /* 0x18 */ s16 v2;
-    /* 0x1A */ s16 acc2;
-    /* 0x1C */ s16 dec2;
-    /* 0x1E */ s16 max2;
-    /* 0x20 */ u8 pad20[0x10];
-    /* 0x30 */ s16 sum;
-    /* 0x32 */ u16 steps;
-} BashTumbleMove;
 
 void PlotBoing(NAS *arg0);
 
@@ -197,7 +180,7 @@ void BASHSetUp(void);
 
 void BashInitCrateHooks(void);
 
-void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2);
+void BashTumblerAim(BashTumbler *arg0, EXTmotion *arg1, s32 arg2);
 
 typedef struct BashGridCell {
     s32 x;

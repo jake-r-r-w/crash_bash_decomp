@@ -129,17 +129,6 @@ typedef struct B5E44Pos {
     /* 0x18 */ s32 z;
 } B5E44Pos;
 
-typedef struct B5E44Dyn {
-    /* 0x00 */ s32 pad0[5];
-    /* 0x14 */ s16 pad14;
-    /* 0x16 */ s16 angle;
-    /* 0x18 */ s32 pad18;
-    /* 0x1C */ s32 pad1C;
-    /* 0x20 */ s16 pad20;
-    /* 0x22 */ s16 unk22;
-    /* 0x24 */ s16 pad24[3];
-    /* 0x2A */ s16 unk2A;
-} B5E44Dyn;
 
 typedef struct B5E44Owner {
     /* 0x00 */ s32 pad0[21];
@@ -150,7 +139,7 @@ typedef struct B5E44Slot {
     /* 0x00 */ B5E44Obj *obj;
     /* 0x04 */ B5E44Pos *pos;
     /* 0x08 */ s32 pad8[3];
-    /* 0x14 */ B5E44Dyn *dyn;
+    /* 0x14 */ EXTmotion *dyn;
     /* 0x18 */ s32 pad18[10];
 } B5E44Slot;
 
@@ -306,17 +295,6 @@ extern u16 PapuAiSkillAlt[];
 s32 PapuPickSpawnPoint(PapuPos *arg0);
 
 
-typedef struct {
-    u8 pad0[0xD];
-    u8 dir;
-    s16 unkE;
-    s16 unk10;
-    s16 unk12;
-    s16 pad14;
-    s16 unk16;
-    u8 pad18[0x12];
-    s16 unk2A;
-} T_B7F14_B;
 
 void PapuCrateMaster(void);
 
@@ -342,7 +320,7 @@ void PapuInitTiles(void);
 
 void PapuFloorWave(void);
 
-void PACrateAimAtGrid(EXTengine *a, T_B7F14_B *b);
+void PACrateAimAtGrid(EXTengine *a, EXTmotion *b);
 
 void PapuCountObjects(void);
 
@@ -360,23 +338,6 @@ void PlotPapuBoss(NAS *nas);
 
 void PapuUpdateFloor(void);
 
-/* PlotPapuMinion's 0x800 extension (movement). */
-typedef struct MinionMove {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ u8 unkC;
-    /* 0x0D */ u8 padD;
-    /* 0x0E */ s16 speed;
-    /* 0x10 */ u8 pad10[0x16 - 0x10];
-    /* 0x16 */ s16 angle;
-    /* 0x18 */ s16 unk18;
-    /* 0x1A */ s16 unk1A;
-    /* 0x1C */ s16 unk1C;
-    /* 0x1E */ s16 unk1E;
-    /* 0x20 */ s16 pad20;
-    /* 0x22 */ s16 push;
-    /* 0x24 */ u8 pad24[0x2A - 0x24];
-    /* 0x2A */ s16 push_angle;
-} MinionMove;
 
 
 void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16 n7, u16 n8);

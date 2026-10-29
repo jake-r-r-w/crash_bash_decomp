@@ -1827,7 +1827,7 @@ void PlotN2OBall(NAS *nas) {
                 obj->countdown = 4;
                 obj->status = 10;
             }
-            N2OBlendDirection((N2OBlend *)mot);
+            N2OBlendDirection((EXTmotion *)mot);
             eng->XYZ.y = eng->XYZ.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
             break;
         case 0x11:
@@ -2002,18 +2002,18 @@ void PlotN2OBall(NAS *nas) {
     }
 }
 
-void N2OBlendDirection(N2OBlend *p) {
+void N2OBlendDirection(EXTmotion *p) {
     s32 x1;
     s32 z1;
     s16 vel;
     s32 speed;
 
-    speed = p->speed_b;
+    speed = p->Zvel;
     if (speed != 0) {
-        u32 da = p->dir;
-        u32 db = p->dir_b;
+        u32 da = (u16)p->Xa;  /* matching: the angles read unsigned (N2OBlend had them u16) */
+        u32 db = (u16)p->Za;
         s32 a, b, c, d;
-        vel = p->speed_a;
+        vel = p->Xvel;
         a = vel * rcossin_tbl[(da - 0x400) & 0xFFF].unk2;
         b = vel * rcossin_tbl[da & 0xFFF].unk2;
         c = speed * rcossin_tbl[(db - 0x400) & 0xFFF].unk2;
@@ -2022,7 +2022,7 @@ void N2OBlendDirection(N2OBlend *p) {
         z1 = b >> 12;
         x1 += c >> 12;
         z1 += d >> 12;
-        p->dir = get_angle(x1, z1) & 0xFFF;
+        p->Xa = get_angle(x1, z1) & 0xFFF;
     }
 }
 
@@ -3371,7 +3371,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
     EXTengine *eng;
     FlagRecord *rec;
     EXTobject *obj;
-    N2OPuck *puck;
+    EXTmotion *puck;
     s32 r;
     s32 rad;
     s32 d;
@@ -3478,7 +3478,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         }
         puck = FindExtension(nas, 0x800);
         if (puck != NULL) {
-            r = puck->dir;
+            r = puck->Xa;
         } else {
             r = get_angle(eng->OldXYZ.x - eng->XYZ.x, eng->OldXYZ.z - eng->XYZ.z);
         }
@@ -3489,7 +3489,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
             continue;
         }
         obj->player = arg0;
-        rad = puck->dir;
+        rad = puck->Xa;
         rad += 0x800;
         rad &= 0xFFF;
         if (obj->whatami == 2 && !(hero->hero_status & 0xFA00) &&
@@ -3508,8 +3508,8 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         ang = r;
         fc = fa;
         sp = abs(speed);
-        x1 = puck->speed * tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        z2 = puck->speed * tbl[r & 0xFFF].unk2 >> 12;
+        x1 = puck->Xvel * tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        z2 = puck->Xvel * tbl[r & 0xFFF].unk2 >> 12;
         dz = sp * tbl[(fc - 0x400) & 0xFFF].unk2 >> 12;
         cz = sp * tbl[fa].unk2 >> 12;
         r = get_angle(x1 + dz, z2 + cz) & 0xFFF;
@@ -3520,8 +3520,8 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
             ang2 = r;
             fc2 = fb;
             sp = abs(speed);
-            x1 = puck->speed * tbl[(ang2 - 0x400) & 0xFFF].unk2 >> 12;
-            z2 = puck->speed * tbl[r].unk2 >> 12;
+            x1 = puck->Xvel * tbl[(ang2 - 0x400) & 0xFFF].unk2 >> 12;
+            z2 = puck->Xvel * tbl[r].unk2 >> 12;
             dz = sp * tbl[(fc2 - 0x400) & 0xFFF].unk2 >> 12;
             x2 = sp * tbl[fb].unk2 >> 12;
             r = get_angle(x1 + dz, z2 + x2) & 0xFFF;
@@ -3536,15 +3536,15 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
             r += d;
             r &= 0xFFF;
         }
-        puck->dir = r;
+        puck->Xa = r;
         if (speed != 0) {
-            puck->speed += abs(speed);
-            if (puck->speed > puck->max + 0x40) {
-                puck->speed = puck->max + 0x40;
+            puck->Xvel += abs(speed);
+            if (puck->Xvel > puck->Xmax + 0x40) {
+                puck->Xvel = puck->Xmax + 0x40;
             }
         }
-        if (puck->flag == 0 && puck->max < 0x90) {
-            puck->max += 4;
+        if (puck->Ftime == 0 && puck->Xmax < 0x90) {
+            puck->Xmax += 4;
         }
     }
     return 0;
@@ -3618,8 +3618,8 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
     FlagRecord *rec;
     EXTengine *other;
     NAS *it;
-    N2OMot *mine;
-    N2OMot *m;
+    EXTmotion *mine;
+    EXTmotion *m;
     N2OFuxF *fux;
     s32 hit;
     s32 rad;
@@ -3670,9 +3670,9 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                                     other->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
-                                                    ang += angle_diff((m->dir + 0x800) & 0xFFF, ang);
+                                                    ang += angle_diff((m->Xa + 0x800) & 0xFFF, ang);
                                                     ang &= 0xFFF;
-                                                    m->dir = ang;
+                                                    m->Xa = ang;
                                                     PlaySfx(0x580, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                                                 }
                                             } else {
@@ -3685,18 +3685,18 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                                     m = FindExtension(it, 0x800);
                                                     if (m != NULL) {
                                                         if (!(fux->flags & 0x80)) {
-                                                            m->dir = ang;
-                                                            dx = (mine->a + m->a) / 2;
-                                                            m->a = dx;
-                                                            mine->a = dx;
+                                                            m->Xa = ang;
+                                                            dx = (mine->Xvel + m->Xvel) / 2;
+                                                            m->Xvel = dx;
+                                                            mine->Xvel = dx;
                                                         }
                                                         PlaySfx(0x580, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                                                     }
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
-                                                    ang += angle_diff((mine->dir + 0x800) & 0xFFF, ang);
+                                                    ang += angle_diff((mine->Xa + 0x800) & 0xFFF, ang);
                                                     ang &= 0xFFF;
-                                                    mine->dir = ang;
+                                                    mine->Xa = ang;
                                                 }
                                             }
                                             hit = 1;

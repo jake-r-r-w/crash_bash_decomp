@@ -124,16 +124,6 @@ extern u16 SpinBalloonWeights[];
 
 void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero);
 
-/* FindExtension(nas, 0x800) of a hazard (PlotHazardType). */
-typedef struct SpinGlow {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ u8 flag;  /* tested for zero */
-    /* 0x0D */ u8 padD[0x18 - 0xD];
-    /* 0x18 */ s16 unk18;
-    /* 0x1A */ s16 unk1A;
-    /* 0x1C */ s16 unk1C;
-    /* 0x1E */ s16 unk1E;
-} SpinGlow;
 
 void SpinHeroFlip(s32 arg0);
 

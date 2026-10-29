@@ -12,23 +12,6 @@
 
 
 
-typedef struct {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ u8 unkC;
-    /* 0x0D */ u8 padD;
-    /* 0x0E */ s16 unkE;
-    /* 0x10 */ s16 unk10;
-    /* 0x12 */ s16 unk12;
-    /* 0x14 */ s16 unk14;
-    /* 0x16 */ s16 pad16;
-    /* 0x18 */ s16 unk18;
-    /* 0x1A */ s16 unk1A;
-    /* 0x1C */ s16 unk1C;
-    /* 0x1E */ s16 unk1E;
-    /* 0x20 */ u8 pad20[0x10];
-    /* 0x30 */ s16 unk30;
-    /* 0x32 */ s16 unk32;
-} ExtCurve;
 
 typedef struct {
     u8 pad0[0x14];
@@ -45,7 +28,7 @@ void InitShieldPickup(NAS *arg0);
 
 void InitBootsPickup(NAS *arg0);
 
-s32 CrateFallTime(s32 pos, ExtCurve *c);
+s32 CrateFallTime(s32 pos, EXTmotion *c);
 
 
 
@@ -65,19 +48,8 @@ void SetBashHeroHit(s32 arg0);
 
 
 
-typedef struct {
-    u8 pad0[0xD];
-    u8 dir;
-    s16 unkE;
-    s16 unk10;
-    s16 unk12;
-    s16 pad14;
-    s16 unk16;
-    u8 pad18[0x12];
-    s16 unk2A;
-} T_BB64C_B;
 
-void CrateAimAtGrid(EXTengine *a, T_BB64C_B *b);
+void CrateAimAtGrid(EXTengine *a, EXTmotion *b);
 
 NAS *CrateHitSolids(EXTengine *eng, s32 who);
 
@@ -87,23 +59,6 @@ void InitCrate(NAS *arg0);
 void PlotPickup(NAS *arg0);
 
 
-/* PlotCrate: its extension 0x800 (CrateAimAtGrid's T_BB64C_B). */
-typedef struct {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ u8 flag;  /* tested for zero */
-    /* 0x0D */ u8 dir;
-    /* 0x0E */ s16 speed;
-    /* 0x10 */ s16 accel;
-    /* 0x12 */ s16 decel;
-    /* 0x14 */ s16 max;
-    /* 0x16 */ s16 tx;
-    /* 0x18 */ u16 unk18;
-    /* 0x1A */ u16 unk1A;
-    /* 0x1C */ u16 unk1C;
-    /* 0x1E */ u16 unk1E;
-    /* 0x20 */ u8 pad20[0xA];
-    /* 0x2A */ s16 tz;
-} T_BC038Ext;
 
 /* PlotCrate: entries of HitHooks.unk0/unk4, by hero_name. */
 typedef struct {
@@ -141,10 +96,10 @@ static inline void BC038Release(EXTobject *fux) {
     (eng)->XYZ.z = ((eng)->XYZ.z & ~0xFF) + 0x80
 
 #define BC038_STOP(ext)                                     \
-    (ext)->decel = 0;                                       \
-    (ext)->accel = 0;                                       \
-    (ext)->max = 0;                                         \
-    (ext)->speed = 0
+    (ext)->Xdec = 0;                                       \
+    (ext)->Xacc = 0;                                       \
+    (ext)->Xmax = 0;                                         \
+    (ext)->Xvel = 0
 
 #define BC038_STATB(base, tbl, w) (((T_BC038Stats **)HitHooks.tbl)[(base)[w].hero_name])
 #define BC038_STAT(tbl, w) BC038_STATB(Heroes, tbl, w)

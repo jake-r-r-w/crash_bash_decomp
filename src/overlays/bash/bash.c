@@ -2736,7 +2736,7 @@ void InitTumbler(NAS *nas) {
 void PlotTumbler(NAS *nas) {
     EXTengine *eng;
     subengine *sub;
-    BashTumbleMove *move;
+    EXTmotion *move;
     EXTobject *obj;
     NAS *child;
     EXTengine *ceng;
@@ -3792,7 +3792,7 @@ void BashInitCrateHooks(void) {
     HitHooks.hit_shapes2 = CrateHitShapes2;
 }
 
-void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2) {
+void BashTumblerAim(BashTumbler *arg0, EXTmotion *arg1, s32 arg2) {
     s32 y;
     s32 vel;
     s32 v2;
@@ -3814,13 +3814,13 @@ void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2) {
     }
     y = dist;
     sum = 0;
-    vel = arg1->vel;
-    v2 = arg1->v2;
-    dir = arg1->dir;
-    d1 = arg1->acc - arg1->dec;
-    d2 = arg1->acc2 - arg1->dec2;
-    max = arg1->max;
-    max2 = arg1->max2;
+    vel = arg1->Xvel;
+    v2 = arg1->Yvel;
+    dir = arg1->Ydir;
+    d1 = arg1->Xacc - arg1->Xdec;
+    d2 = arg1->Yacc - arg1->Ydec;
+    max = arg1->Xmax;
+    max2 = arg1->Ymax;
     steps = 0;
     while (y < World_floor_level) {
         vel += d1;
@@ -3844,17 +3844,17 @@ void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2) {
             y += v2;
         }
         if (v2 == 0) {
-            d2 = arg1->dec2;
+            d2 = arg1->Ydec;
             dir = 0;
         }
         steps++;
     }
-    arg1->sum = sum;
-    arg1->steps = steps;
+    arg1->Fdist = sum;
+    arg1->Ftime = steps;
     dx = arg0->x - Heroes[arg2].hero_eng->XYZ.x;
     dz = arg0->z - Heroes[arg2].hero_eng->XYZ.z;
     ang = get_angle(dx, dz);
     dist = csqrt(dx * dx + dz * dz);
     arg0->angle = ang;
-    arg1->vel = (u32)(dist >> 6) / arg1->steps;
+    arg1->Xvel = (u32)(dist >> 6) / arg1->Ftime;
 }

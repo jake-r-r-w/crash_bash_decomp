@@ -233,25 +233,6 @@ s32 PolarBoxOverlap(EXTengine *a, s32 b, EXTengine *c, s32 d);
 
 void GravityMotionUpdate();
 
-/* A gravity object's motion block (GravityObject.target). */
-typedef struct GravityMotion {
-    /* 0x00 */ u8 pad0[0xD];
-    /* 0x0D */ u8 flags;
-    /* 0x0E */ s16 vx;
-    /* 0x10 */ s16 ax;
-    /* 0x12 */ u8 pad12[0x16 - 0x12];
-    /* 0x16 */ s16 rx;
-    /* 0x18 */ s16 vy;
-    /* 0x1A */ s16 ay;
-    /* 0x1C */ u8 pad1C[0x20 - 0x1C];
-    /* 0x20 */ s16 ry;
-    /* 0x22 */ s16 vz;
-    /* 0x24 */ s16 az;
-    /* 0x26 */ u8 pad26[0x2A - 0x26];
-    /* 0x2A */ s16 rz;
-    /* 0x2C */ u8 pad2C[0x2E - 0x2C];
-    /* 0x2E */ s16 floor;
-} GravityMotion;
 
 typedef struct GravityObject {
     /* 0x00 */ u8 pad0[0x58];
