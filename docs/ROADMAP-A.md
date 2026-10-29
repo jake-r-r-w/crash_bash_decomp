@@ -757,3 +757,5 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
     - no username, email or local path.
   - Every author email is GitHub's noreply address.
   - The README's first line no longer says "work-in-progress".
+- [x] 5.14 The GitHub repo is public (2026-10-29, switched by the user; `gh repo view` reports PUBLIC):
+  https://github.com/jake-r-r-w/crash_bash_decomp
