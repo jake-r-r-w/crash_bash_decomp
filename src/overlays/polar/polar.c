@@ -3482,7 +3482,7 @@ s32 TestBeamChance(u32 player) {
             if (l == NULL) {
                 goto fail;
             }
-            if (l->unk6C == player) {
+            if (l->aiFlag == player) {
                 return 0;
             }
             r = Random(0x1000);
@@ -3830,18 +3830,18 @@ void DoChooseNewAction(u32 player) {
                 PolarAIFlags[player] |= 1;
             }
             if (PolarBeamOwner != NULL && (l = PolarBeamOwner->unk58) != NULL) {
-                if (l->unk14 == 2) {
-                    PolarBeamMode = l->unk14;
+                if (l->beamMode == 2) {
+                    PolarBeamMode = l->beamMode;
                 } else {
                     PolarBeamMode = 1;
                     fux->flags &= ~1;
                 }
-                if (l->unk6C != 5) {
+                if (l->aiFlag != 5) {
                     if (l->unkC == 5) {
-                        PolarAIFlags[l->unk6C] |= 2;
+                        PolarAIFlags[l->aiFlag] |= 2;
                     }
                     if (l->unkC == 6) {
-                        PolarAIFlags[l->unk6C] |= 0x40;
+                        PolarAIFlags[l->aiFlag] |= 0x40;
                     }
                 }
                 if (l->unk10 != -1) {
@@ -4073,7 +4073,7 @@ void InitialisePOLAR(void) {
     GameState *v;
     u8 *g;
     EXTheromove *move;
-    PolarFux *fux;
+    EXTpolarAI *fux;
     PolarAi *ai;
     subengine *sub;
     EXTengine *eng;
@@ -4229,40 +4229,40 @@ loop:
             h->hero_eng->xform.dirty = 1;
             h->hero_shadow->xform.rot.vy = h->hero_eng->xform.rot.vy;
             h->hero_ai->AItimer1 = 0;
-            fux = (PolarFux *)h->hero->FUX;
+            fux = (EXTpolarAI *)h->hero->FUX;
             if (fux == NULL) {
                 fux = AddExt(h->hero, 0x60, 0x10000000);
                 if (fux != NULL) {
                     h->hero->FUX = (EXT *)fux;
-                    fux->unk24 = 0;
-                    fux->unk38 = 0;
-                    fux->unk48 = 0;
-                    fux->unk30 = 5;
-                    fux->unk44 = fn;
+                    fux->choice_timer = 0;
+                    fux->beamflag = 0;
+                    fux->hit_count = 0;
+                    fux->AI_action = 5;
+                    fux->DoFunction = fn;
                     h->hero_frozen = 0;
-                    fux->unk34 = 0;
-                    fux->unk4C = 0;
-                    fux->unk50 = 0;
-                    fux->unk54 = 0;
-                    fux->unk58 = 0;
+                    fux->AI_sub_action = 0;
+                    fux->ai_status = 0;
+                    fux->tauntflag = 0;
+                    fux->fire_delay_timer = 0;
+                    fux->weightflag = 0;
                     sub = h->hero_eng->sub;
                     sub->flags |= 0x2000000;
                     h->hero_eng->sub->unk68 = 0;
                 }
                 ai = AddExt(h->hero, 0xB8, 0x20000000);
             } else {
-                fux->unk24 = 0;
-                fux->unk38 = 0;
-                fux->unk48 = 0;
-                fux->unk30 = 5;
-                fux->unk44 = fn;
+                fux->choice_timer = 0;
+                fux->beamflag = 0;
+                fux->hit_count = 0;
+                fux->AI_action = 5;
+                fux->DoFunction = fn;
                 h->hero_frozen = 0;
-                fux->unk34 = 0;
-                fux->unk4C = 0;
-                fux->unk50 = 0;
-                fux->unk54 = 0;
-                fux->unk58 = 0;
-                fux->unk5C = 0;
+                fux->AI_sub_action = 0;
+                fux->ai_status = 0;
+                fux->tauntflag = 0;
+                fux->fire_delay_timer = 0;
+                fux->weightflag = 0;
+                fux->attack_delay = 0;
                 sub = h->hero_eng->sub;
                 sub->flags |= 0x2000000;
                 h->hero_eng->sub->unk68 = 0;
@@ -8761,9 +8761,9 @@ void PlotPolarMissile(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    switch (ext->unk10) {
+    switch (ext->state) {
     case 0:
-        ext->unk10 = 1;
+        ext->state = 1;
         ext->pos = m->Engine->XYZ;
         break;
     case 1:
@@ -8773,8 +8773,8 @@ void PlotPolarMissile(NAS *m) {
         }
         break;
     }
-    ext->pos.x -= (ext->unk5C * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
-    ext->pos.z -= (ext->unk5C * rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
+    ext->pos.x -= (ext->speed * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->speed * rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
     if (PolarMissileHitHero(&ext->pos) != -1) {
     blast:
         PolarMissileBlast(m, 1);
@@ -9513,11 +9513,11 @@ void InitPolarMissile(NAS *m) {
         m->Engine->xform.hasScale = 1;
         m->Engine->sub->xform.order = 2;
         m->Engine->sub->flags |= 0x02000000;
-        ext->unk5C = 0x8C;
+        ext->speed = 0x8C;
         ext->unk2C = 0x3000;
         ext->unk38 = 0x700;
         ext->unk4C = 4;
-        ext->unk10 = 0;
+        ext->state = 0;
         ext->unk18 = 0;
         ext->unk58 = 0;
         ext->unk44 = 0;

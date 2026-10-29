@@ -519,10 +519,10 @@ typedef struct PolarLink {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 unk14;
+    /* 0x14 */ s32 beamMode;  /* copied to PolarBeamMode */
     /* 0x18 */ u8 pad18[0x28 - 0x18];
     /* 0x28 */ s32 unk28[(0x6C - 0x28) / 4];
-    /* 0x6C */ s32 unk6C;
+    /* 0x6C */ s32 aiFlag;  /* its index in PolarAIFlags */
     /* 0x70 */ u8 pad70[0xBC - 0x70];
     /* 0xBC */ psector sectors[16];
 } PolarLink;
@@ -873,7 +873,7 @@ s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c);
 /* Polar missile extension (0x70 bytes, id 0x10000000). */
 typedef struct PolarMissileExt {
     /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 unk10;
+    /* 0x10 */ s32 state;
     /* 0x14 */ u8 pad14[4];
     /* 0x18 */ s32 unk18;
     /* 0x1C */ u8 pad1C[0x2C - 0x1C];
@@ -887,7 +887,7 @@ typedef struct PolarMissileExt {
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
     /* 0x58 */ s32 unk58;
-    /* 0x5C */ s32 unk5C;
+    /* 0x5C */ s32 speed;  /* how far pos moves each frame, along the engine's yaw */
     /* 0x60 */ s32 unk60;
     /* 0x64 */ SLONG_XYZ pos;
 } PolarMissileExt;
@@ -1281,23 +1281,6 @@ void SetPolarHeroDazed(s32 player);
 
 void SetPolarHeroChallenge(s32 player);
 
-/* The hero's FUX extension (0x60 bytes) InitialisePOLAR sets up. */
-typedef struct PolarFux {
-    /* 0x00 */ u8 pad0[0x24];
-    /* 0x24 */ s32 unk24;
-    /* 0x28 */ u8 pad28[0x30 - 0x28];
-    /* 0x30 */ s32 unk30;
-    /* 0x34 */ s32 unk34;
-    /* 0x38 */ s32 unk38;
-    /* 0x3C */ u8 pad3C[0x44 - 0x3C];
-    /* 0x44 */ void *unk44;
-    /* 0x48 */ s32 unk48;
-    /* 0x4C */ s32 unk4C;
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-    /* 0x58 */ s32 unk58;
-    /* 0x5C */ s32 unk5C;
-} PolarFux;
 
 /* The hero's 0x20000000 extension (0xB8 bytes). */
 typedef struct PolarAi {
