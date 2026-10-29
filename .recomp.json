@@ -23,11 +23,6 @@
   "approach": "Matching decompilation: every function and all the data are C that rebuilds the retail executable and its 15 overlays byte for byte",
   "started": "2026-10-10",
   "notes": "Every game function is matched, named and typed, and all the data is C. The build rebuilds the retail disc byte for byte, and the game's files come out as editable formats (textures, models, sounds, music, text). Sony's PsyQ libraries are linked from Sony's own objects. Made with splat, maspsx, old-gcc's GCC 2.8.1, m2c, decomp-permuter and our own matching, compiler-analysis and asset tools. You need your own retail copy and the PsyQ SDK to build.",
-  "help": [
-    "The PC port: the game's C built with a current GCC or Clang",
-    "Replacing the PS1 layers (graphics, sound, CD, pads) for PC",
-    "Libsnd's sequencer as C"
-  ],
   "tags": [
     "matching",
     "psx",
