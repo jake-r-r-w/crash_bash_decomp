@@ -341,10 +341,10 @@ struct subengine {
     /* 0x8A */ s16 depth;
     /* 0x8C */ u8 pad8C[0x8E - 0x8C];
     /* 0x8E */ u16 flags2;
-    /* 0x90 */ s32 unk90;
+    /* 0x90 */ s32 sprim;  /* a sprite prim kill_sprim_sub releases */
     /* 0x94 */ s16 unk94;
     /* 0x96 */ u8 pad96[0x9C - 0x96];
-    /* 0x9C */ s32 unk9C;
+    /* 0x9C */ s32 sprim2;
     /* 0xA0 */ s16 unkA0;
     /* 0xA2 */ u8 padA2[0xA8 - 0xA2];
 };
@@ -613,7 +613,7 @@ typedef struct GameState {
     /* 0x014 */ s32 demoTimer;
     /* 0x018 */ char name[8];     /* InitGameState: spaces */
     /* 0x020 */ u8 unk20;
-    /* 0x021 */ s8 unk21;
+    /* 0x021 */ s8 fps;  /* frames a second (50 in PAL mode); the clocks roll frames into seconds by it */
     /* 0x022 */ u8 pad22[2];
     /* 0x024 */ u16 exitDelay;
     /* 0x026 */ u8 players;

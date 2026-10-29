@@ -2234,15 +2234,15 @@ void kill_sprim_sub(subengine *arg0) {
     s32 p;
     s32 q;
 
-    p = arg0->unk90;
+    p = arg0->sprim;
     if (p != 0) {
         release_sprim((void *)p);
-        arg0->unk90 = 0;
+        arg0->sprim = 0;
     }
-    q = arg0->unk9C;
+    q = arg0->sprim2;
     if (q != 0) {
         release_sprim((void *)q);
-        arg0->unk9C = 0;
+        arg0->sprim2 = 0;
     }
 }
 
@@ -2806,12 +2806,12 @@ void mapenv_place_subs(map_enviroment *env) {
         sub->hook = (void *)draw_map_sub;
         sub->u6C.dbase = env->dbase;
         sub->entity = p->entity;
-        sub->depth = p->unk9E;
-        sub->otz = p->unk9C;
-        sub->ids[0] = p->unk74[0];
-        sub->ids[1] = p->unk74[1];
-        sub->ids[2] = p->unk74[2];
-        sub->ids[3] = p->unk74[3];
+        sub->depth = p->depth;
+        sub->otz = p->otz;
+        sub->ids[0] = p->ids[0];
+        sub->ids[1] = p->ids[1];
+        sub->ids[2] = p->ids[2];
+        sub->ids[3] = p->ids[3];
         if (n > 0) {
             sub->next = sub + 1;
         } else {
@@ -3036,12 +3036,12 @@ void mapscene_place_subs(map_enviroment *env) {
         dst->hook = (void (*)(subengine *, s32, u32))draw_map_sub;
         dst->u6C.dbase = env->dbase;
         dst->entity = src->entity;
-        dst->depth = src->unk9E;
-        dst->otz = src->unk9C;
-        dst->ids[0] = src->unk74[0];
-        dst->ids[1] = src->unk74[1];
-        dst->ids[2] = src->unk74[2];
-        dst->ids[3] = src->unk74[3];
+        dst->depth = src->depth;
+        dst->otz = src->otz;
+        dst->ids[0] = src->ids[0];
+        dst->ids[1] = src->ids[1];
+        dst->ids[2] = src->ids[2];
+        dst->ids[3] = src->ids[3];
         if (n > 0) {
             dst->next = dst + 1;
         } else {

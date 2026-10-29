@@ -1914,12 +1914,12 @@ typedef struct Placement {
     /* 0x10 */ u8 pad10[0x28 - 0x10];
     /* 0x28 */ PlacementBlk blk;
     /* 0x48 */ u8 pad48[0x74 - 0x48];
-    /* 0x74 */ u8 unk74[4];
+    /* 0x74 */ u8 ids[4];  /* copied to the sub's ids */
     /* 0x78 */ u8 pad78[0x88 - 0x78];
     /* 0x88 */ u16 entity;  /* copied to the sub's entity */
     /* 0x8A */ u8 pad8A[0x9C - 0x8A];
-    /* 0x9C */ u16 unk9C;
-    /* 0x9E */ u16 unk9E;
+    /* 0x9C */ u16 otz;  /* copied to the sub's otz */
+    /* 0x9E */ u16 depth;  /* copied to the sub's depth */
 } Placement;
 
 

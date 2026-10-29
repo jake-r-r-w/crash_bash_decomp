@@ -44,7 +44,7 @@ extern SetupCam NoxCamera;
 
 typedef struct MineSrc {
     /* 0x00 */ u8 pad00[0x18];
-    /* 0x18 */ s32 unk18;
+    /* 0x18 */ s32 pad18;
 } MineSrc;
 
 typedef struct LaserSub {

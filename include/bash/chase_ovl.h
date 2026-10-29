@@ -109,7 +109,7 @@ void ChaseAimAt(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4);
 
 typedef struct CoalSub {
     u8 pad0[0x74];
-    u16 unk74;
+    u16 pad74;
 } CoalSub;
 
 

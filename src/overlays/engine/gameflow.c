@@ -1600,7 +1600,7 @@ void InitGameState(GameState *arg0) {
     if (VideoMode == 1) {
         t = 0x32;
     }
-    arg0->unk21 = t;
+    arg0->fps = t;
     arg0->heroChoice[0] = j;
     arg0->battleWins = 3;
     arg0->heroChoice[1] = 3;

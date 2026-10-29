@@ -493,9 +493,9 @@ void Draw_Clock(void) {
             bm = (u8)min;
             min = (bm >> 4) * 10 + (bm & 0xF);
             f += 2;
-            if (v->unk21 < f) {
+            if (v->fps < f) {
                 sec++;
-                f -= v->unk21;
+                f -= v->fps;
             }
             if (sec >= 60) {
                 min++;
@@ -526,7 +526,7 @@ void Draw_Clock(void) {
             f -= 2;
             if (f < 0) {
                 sec--;
-                f += ((GameState *)GameInfo)->unk21;
+                f += ((GameState *)GameInfo)->fps;
             }
             if (sec < 0) {
                 min--;

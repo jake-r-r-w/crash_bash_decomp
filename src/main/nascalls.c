@@ -619,8 +619,8 @@ void SetNasDefaults(void) {
     SubEngineTemplate.u70.w = 0;
     SubEngineTemplate.u6C.dbase = NULL;
     SubEngineTemplate.scale = 0;
-    SubEngineTemplate.unk90 = 0;
-    SubEngineTemplate.unk9C = 0;
+    SubEngineTemplate.sprim = 0;
+    SubEngineTemplate.sprim2 = 0;
     SubEngineTemplate.unk94 = 0;
     SubEngineTemplate.unkA0 = 0;
     SubEngineTemplate.unk80 = 0;
