@@ -498,15 +498,15 @@ WWInf PogoWorldInfo[8] = {
     { 0x4D, PogoAnims, PogoLevelDB1 },
     { 0x4E, PogoAnims, PogoLevelDB0 },
 };
-s32 PogoFiles[15] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 535], (s32)&DatIndex[2 * 534], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 531],
-    (s32)&DatIndex[2 * 530], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 533], (s32)&DatIndex[2 * 532], (s32)&HeroModelBank[DB_PogoObjects],
-    (s32)&DatIndex[2 * 529], (s32)&DatIndex[2 * 528], 0, 0, 0,
+GroupFile PogoFiles[5] = {
+    &HeroModelBank[DB_Font], &DatIndex[535], &DatIndex[534], &HeroModelBank[DB_Loading], &DatIndex[531],
+    &DatIndex[530], &HeroModelBank[DB_Interface], &DatIndex[533], &DatIndex[532], &HeroModelBank[DB_PogoObjects],
+    &DatIndex[529], &DatIndex[528], 0, 0, 0,
 };
-s32 PogoLocoFiles[18] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 527], (s32)&DatIndex[2 * 526], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 523],
-    (s32)&DatIndex[2 * 522], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 525], (s32)&DatIndex[2 * 524], (s32)&HeroModelBank[DB_PogoObjects],
-    (s32)&DatIndex[2 * 521], (s32)&DatIndex[2 * 520], (s32)&HeroModelBank[DB_Roo], (s32)&DatIndex[2 * 519], (s32)&DatIndex[2 * 518],
+GroupFile PogoLocoFiles[6] = {
+    &HeroModelBank[DB_Font], &DatIndex[527], &DatIndex[526], &HeroModelBank[DB_Loading], &DatIndex[523],
+    &DatIndex[522], &HeroModelBank[DB_Interface], &DatIndex[525], &DatIndex[524], &HeroModelBank[DB_PogoObjects],
+    &DatIndex[521], &DatIndex[520], &HeroModelBank[DB_Roo], &DatIndex[519], &DatIndex[518],
     0, 0, 0,
 };
 /* the four levels' files (modes 10..13; the engine's table at 0x800A0030): the exe's file group

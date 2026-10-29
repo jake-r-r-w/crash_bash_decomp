@@ -8,6 +8,12 @@
 
 #include "common.h"
 
+/* An archive entry (DatIndex): the demos' C++ class `file` (asload_permanent_callback(file *, ...)). */
+typedef struct file {
+    /* 0x00 */ s32 sector;   /* its first sector in CRASHBSH.DAT */
+    /* 0x04 */ s32 size;     /* bytes */
+} file;
+
 /* A texture set (a dbase's, at +0x10): its textures and their scroll
  * animations. The name is the C++ symbols'
  * (texture_init_mem_textureset__FP14obj_textureset). */
@@ -27,8 +33,8 @@ typedef struct obj_textureset {
  * (dbase_asload_with_anims loads it, the callbacks fill it). The name is the C++ symbols'
  * (dbase_mesh_anim_name_loaded__FP10_obj_dbasePc; the typedef is in bash/core.h). */
 struct obj_dbase {
-    /* 0x00 */ s32 file;              /* &DatIndex[2 * N]: loaded into data once the textures are in */
-    /* 0x04 */ s32 textureFile;       /* &DatIndex[2 * N]: loaded first, into textures */
+    /* 0x00 */ file *file;            /* &DatIndex[N]: loaded into data once the textures are in */
+    /* 0x04 */ file *textureFile;     /* &DatIndex[N]: loaded first, into textures */
     /* 0x08 */ s32 load;              /* the load in flight, or 0 */
     /* 0x0C */ struct ModelFile *data;
     /* 0x10 */ obj_textureset textures;

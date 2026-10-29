@@ -228,10 +228,10 @@ WWInf DinoWorldInfo[2] = {
     { 0xC3, DinoAnims, DinoLevelDB, 1 },
     { 0xBA, DinoAnims, DinoLevelDB, 1 },
 };
-s32 DinoFiles[15] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 351], (s32)&DatIndex[2 * 350], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 347],
-    (s32)&DatIndex[2 * 346], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 349], (s32)&DatIndex[2 * 348], (s32)&HeroModelBank[DB_DragonObjects],
-    (s32)&DatIndex[2 * 345], (s32)&DatIndex[2 * 344], 0, 0,
+GroupFile DinoFiles[5] = {
+    &HeroModelBank[DB_Font], &DatIndex[351], &DatIndex[350], &HeroModelBank[DB_Loading], &DatIndex[347],
+    &DatIndex[346], &HeroModelBank[DB_Interface], &DatIndex[349], &DatIndex[348], &HeroModelBank[DB_DragonObjects],
+    &DatIndex[345], &DatIndex[344], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1C's) */
 file_group_load_info file_group_DINO = { &FileGroups[9], DinoFiles };

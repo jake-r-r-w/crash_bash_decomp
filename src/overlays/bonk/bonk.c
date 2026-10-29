@@ -280,10 +280,10 @@ WWInf BonkWorldInfo[2] = {
     { 0x51, BonkAnims, BonkLevelDB, 0 },
     { 0x52, BonkAnims, BonkLevelDB, 0 },
 };
-s32 BonkFiles[18] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 341], (s32)&DatIndex[2 * 340], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 337],
-    (s32)&DatIndex[2 * 336], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 339], (s32)&DatIndex[2 * 338], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 335], (s32)&DatIndex[2 * 334], (s32)&HeroModelBank[DB_MalletObjects], (s32)&DatIndex[2 * 333], (s32)&DatIndex[2 * 332],
+GroupFile BonkFiles[6] = {
+    &HeroModelBank[DB_Font], &DatIndex[341], &DatIndex[340], &HeroModelBank[DB_Loading], &DatIndex[337],
+    &DatIndex[336], &HeroModelBank[DB_Interface], &DatIndex[339], &DatIndex[338], &HeroModelBank[DB_Powerups],
+    &DatIndex[335], &DatIndex[334], &HeroModelBank[DB_MalletObjects], &DatIndex[333], &DatIndex[332],
     0, 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1D's) */

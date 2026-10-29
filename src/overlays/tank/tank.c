@@ -44,19 +44,19 @@ WWInf TankWorldInfo[9] = {
     { 0x35, TankAnims, TankLevelDB2 },
     { 0x36, TankAnims, TankLevelDB3 },
 };
-s32 TankFiles[24] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 563], (s32)&DatIndex[2 * 562], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 559],
-    (s32)&DatIndex[2 * 558], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 561], (s32)&DatIndex[2 * 560], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 557], (s32)&DatIndex[2 * 556], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 555], (s32)&DatIndex[2 * 554],
-    (s32)&HeroModelBank[DB_TankObjects], (s32)&DatIndex[2 * 553], (s32)&DatIndex[2 * 552], (s32)&HeroModelBank[DB_TankObjects2], (s32)&DatIndex[2 * 551],
-    (s32)&DatIndex[2 * 550], 0, 0, 0,
+GroupFile TankFiles[8] = {
+    &HeroModelBank[DB_Font], &DatIndex[563], &DatIndex[562], &HeroModelBank[DB_Loading], &DatIndex[559],
+    &DatIndex[558], &HeroModelBank[DB_Interface], &DatIndex[561], &DatIndex[560], &HeroModelBank[DB_Powerups],
+    &DatIndex[557], &DatIndex[556], &HeroModelBank[DB_Angel], &DatIndex[555], &DatIndex[554],
+    &HeroModelBank[DB_TankObjects], &DatIndex[553], &DatIndex[552], &HeroModelBank[DB_TankObjects2], &DatIndex[551],
+    &DatIndex[550], 0, 0, 0,
 };
-s32 TankSwampFiles[24] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 549], (s32)&DatIndex[2 * 548], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 545],
-    (s32)&DatIndex[2 * 544], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 547], (s32)&DatIndex[2 * 546], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 543], (s32)&DatIndex[2 * 542], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 541], (s32)&DatIndex[2 * 540],
-    (s32)&HeroModelBank[DB_TankObjects], (s32)&DatIndex[2 * 539], (s32)&DatIndex[2 * 538], (s32)&HeroModelBank[DB_TankVehicle], (s32)&DatIndex[2 * 537],
-    (s32)&DatIndex[2 * 536], 0, 0, 0,
+GroupFile TankSwampFiles[8] = {
+    &HeroModelBank[DB_Font], &DatIndex[549], &DatIndex[548], &HeroModelBank[DB_Loading], &DatIndex[545],
+    &DatIndex[544], &HeroModelBank[DB_Interface], &DatIndex[547], &DatIndex[546], &HeroModelBank[DB_Powerups],
+    &DatIndex[543], &DatIndex[542], &HeroModelBank[DB_Angel], &DatIndex[541], &DatIndex[540],
+    &HeroModelBank[DB_TankObjects], &DatIndex[539], &DatIndex[538], &HeroModelBank[DB_TankVehicle], &DatIndex[537],
+    &DatIndex[536], 0, 0, 0,
 };
 /* The five arenas' files (modes 5..9; the engine's table at 0x800A0030): the exe's file group
  * (24 or 25) and the model list; the swamp's has the hover vehicle. */

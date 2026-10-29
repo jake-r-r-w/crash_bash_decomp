@@ -330,7 +330,7 @@ void sfx_table_init(void) {
     sfx_all_off();
 }
 
-void machine_load_sfx(s32 arg0, sfx_machine_bank_info *slot) {
+void machine_load_sfx(file *arg0, sfx_machine_bank_info *slot) {
     slot->handle = asload_permanent_callback(arg0, vab_loaded, slot);
 }
 
@@ -416,7 +416,7 @@ void sfx_bank_close(s32 *arg0) {
     arg0[1] = -1;
 }
 
-void sfx_bank_load(s32 arg0) {
+void sfx_bank_load(file *arg0) {
     if (SfxBankCount < 6) {
         machine_load_sfx(arg0, &SfxBanks[SfxBankCount]);
         SfxBankCount++;

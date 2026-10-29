@@ -427,7 +427,7 @@ void UpdateSecretLevel(void);
 
 void InitCrateExplode(NAS *arg0);
 
-void LoadScreenImage(s32 *file);
+void LoadScreenImage(file *file);
 
 void UpdateExitDelay(void);
 
@@ -475,7 +475,7 @@ typedef struct {
 /* Intro/cutscene step script run by UpdateIntro. */
 typedef struct {
     /* 0x00 */ s32 type;   /* 1: picture, 2: model */
-    /* 0x04 */ s32 *pic;
+    /* 0x04 */ file *pic;
     /* 0x08 */ u8 *model;
     /* 0x0C */ s32 script;  /* play_script's script */
     /* 0x10 */ s32 music;  /* music_request's track, -1 for none */

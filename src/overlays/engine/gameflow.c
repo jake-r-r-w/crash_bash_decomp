@@ -183,7 +183,7 @@ void InitIntro(void) {
     FirstBootDone = 1;
 }
 
-void LoadScreenImage(s32 *file) {
+void LoadScreenImage(file *file) {
     u8 *a;
     u8 *b;
 
@@ -1823,7 +1823,7 @@ void UpdateGame(void) {
         g = GAME;
         g->frames += 1;
         UpdateLevel();
-        ((void (*)(void *, u8 *))map_update)(MapScene, (u8 *)&MainCamera.at.x);
+        map_update(MapScene, (SLONG_XYZ *)&MainCamera.at);
     } else {
         RenderLevel();
     }
@@ -1898,8 +1898,8 @@ u8 IntroViewport[40] = {
     0, 2, 0, 0, 0xFF, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 IntroStep IntroSteps[4] = {
-    { 1, (void *)&DatIndex[2 * 139], 0, 0, -1, { 0x3B6, 0x3B7, 0x3B8 }, 0x3B9, 0x5A },
-    { 1, (void *)&DatIndex[2 * 138], 0, 0, -1, { 0x3BB, 0x3BC, 0x3BD }, 0x3BE, 0x8C },
+    { 1, &DatIndex[139], 0, 0, -1, { 0x3B6, 0x3B7, 0x3B8 }, 0x3B9, 0x5A },
+    { 1, &DatIndex[138], 0, 0, -1, { 0x3BB, 0x3BC, 0x3BD }, 0x3BE, 0x8C },
     { 2, 0, (void *)&HeroModelBank[DB_CutsceneIntroEurocom], 0, -1, { 0x3C0, 0x3C1, 0x3C2 }, 0x3C3, 0x14 },
     { 2, 0, (void *)&HeroModelBank[DB_CutsceneIntroLogo2], 0, 1, { 0x3C5, 0x3C6, 0x3C7 }, 0x3C8, 0x14 },
 };

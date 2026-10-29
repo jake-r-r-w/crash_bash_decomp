@@ -42,7 +42,7 @@ s32 machine_init(void);
 void ClearVram(void);
 void ClearScreens(void);
 void ResetScreen(void);
-void cd_seek(s32 *arg0, s32 arg1);
+void cd_seek(file *arg0, s32 arg1);
 void cd_read_wait(void);
 void loader_pending_stub(void);
 void cd_unused(void);
@@ -61,7 +61,7 @@ void texture_release_vram(obj_texture *tex);
 void textureset_clear(obj_textureset *ts);
 void RunModules(ModuleEntry *p);
 void FlipScreen(s32 arg0);
-s32 cd_read(s32 *file, s32 b, u8 *c, s32 d);
+s32 cd_read(file *file, s32 b, u8 *c, s32 d);
 extern FreeHdr *vram_take(u8 *);
 /* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
  * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */

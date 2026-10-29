@@ -150,7 +150,7 @@ void music_setup_slot(music_midi *slot) {
     slot->data = (s32)mal_trim_front((void *)slot->data, ((s32 *)slot->data)[1], &MainHeap);
 }
 
-void music_dload_midi(s32 arg0, music_midi *slot, s32 type) {
+void music_dload_midi(file *arg0, music_midi *slot, s32 type) {
     asload_permanent_callback(arg0, music_set_data, slot);
     SpuReserveReverbWorkArea(1);
     SsUtSetReverbType(type);
@@ -177,7 +177,7 @@ void music_free(void) {
     }
 }
 
-void music_load(s32 arg0, s32 type) {
+void music_load(file *arg0, s32 type) {
     music_dload_midi(arg0, &CurrentMusic, type);
 }
 

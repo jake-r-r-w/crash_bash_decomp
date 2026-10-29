@@ -137,9 +137,9 @@ PlaceRec BattleOptionsPlace[12] = {
     { 3, -0x8000, -0xCA, 0, 0, 0, 0, 0, 0, (s32)&TextGameOptions, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 TitlesFiles[9] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 397], (s32)&DatIndex[2 * 396], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 395],
-    (s32)&DatIndex[2 * 394], 0, 0, 0,
+GroupFile TitlesFiles[3] = {
+    &HeroModelBank[DB_Font], &DatIndex[397], &DatIndex[396], &HeroModelBank[DB_Interface], &DatIndex[395],
+    &DatIndex[394], 0, 0, 0,
 };
 /* the engine's table at 0x800A0030 points at it for the front end's modes */
 file_group_load_info file_group_TITLES = { &FileGroups[14], TitlesFiles };
@@ -1114,9 +1114,9 @@ void RunGameInit(void) {
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    LoadScreenImage(&DatIndex[2 * 139]);
+    LoadScreenImage(&DatIndex[139]);
     sfx_table_clear();
-    sfx_bank_load((s32)&DatIndex[2 * 274]);
+    sfx_bank_load(&DatIndex[274]);
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);

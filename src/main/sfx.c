@@ -17,14 +17,14 @@ void music_play_level(s32 arg0, s32 arg1) {
     if (p->mode != 0x28) {
         sfx_table_clear();
         if (p->levelFlags & 0x80) {
-            f = MusicTable[arg0].altFile;
+            f = (s32)MusicTable[arg0].altFile;
         } else {
-            f = MusicTable[arg0].file2;
+            f = (s32)MusicTable[arg0].file2;
         }
-        sfx_bank_load(f);
+        sfx_bank_load((file *)f);
     }
     do {
-        q = &DatIndex[2 * 278];
+        q = &DatIndex[278];
         t8 = (u32)(q - 8);
     } while (0);
     d = ModeTypes;
@@ -37,7 +37,7 @@ void music_play_level(s32 arg0, s32 arg1) {
             f = (s32)q;
         }
     }
-    sfx_bank_load(f);
+    sfx_bank_load((file *)f);
     t = arg1 - 0x101;
     if (t >= 2U) {
         arg1 = t;
@@ -404,108 +404,108 @@ extern const char PauseTextYes[];
 extern const char PauseTextYesNo[];
 
 MusicEntry MusicTable[45] = {
-    { (s32)&DatIndex[2 * 293], 2, { 0, 0 }, (s32)&DatIndex[2 * 167], (s32)&DatIndex[2 * 167], 0x9A, { 0, 0 } },
-    { (s32)&DatIndex[2 * 297], 2, { 0, 0 }, (s32)&DatIndex[2 * 166], (s32)&DatIndex[2 * 166], 0x88, { 0, 0 } },
-    { (s32)&DatIndex[2 * 289], 2, { 0, 0 }, (s32)&DatIndex[2 * 165], (s32)&DatIndex[2 * 165], 0xE1, { 0, 0 } },
-    { (s32)&DatIndex[2 * 298], 2, { 0, 0 }, (s32)&DatIndex[2 * 164], (s32)&DatIndex[2 * 164], 0x90, { 0, 0 } },
-    { (s32)&DatIndex[2 * 290], 2, { 0, 0 }, (s32)&DatIndex[2 * 163], (s32)&DatIndex[2 * 163], 0x88, { 0, 0 } },
-    { (s32)&DatIndex[2 * 283], 2, { 0, 0 }, (s32)&DatIndex[2 * 159], (s32)&DatIndex[2 * 159], 0x90, { 0, 0 } },
-    { (s32)&DatIndex[2 * 281], 2, { 0, 0 }, (s32)&DatIndex[2 * 162], (s32)&DatIndex[2 * 162], 0x74, { 0, 0 } },
-    { (s32)&DatIndex[2 * 282], 2, { 0, 0 }, (s32)&DatIndex[2 * 160], (s32)&DatIndex[2 * 160], 0x79, { 0, 0 } },
-    { (s32)&DatIndex[2 * 280], 2, { 0, 0 }, (s32)&DatIndex[2 * 161], (s32)&DatIndex[2 * 161], 0x6F, { 0, 0 } },
-    { (s32)&DatIndex[2 * 280], 2, { 0, 0 }, (s32)&DatIndex[2 * 158], (s32)&DatIndex[2 * 158], 0x6F, { 0, 0 } },
-    { (s32)&DatIndex[2 * 299], 2, { 0, 0 }, (s32)&DatIndex[2 * 171], (s32)&DatIndex[2 * 171], 0x6C, { 0, 0 } },
-    { (s32)&DatIndex[2 * 286], 2, { 0, 0 }, (s32)&DatIndex[2 * 170], (s32)&DatIndex[2 * 170], 0xB2, { 0, 0 } },
-    { (s32)&DatIndex[2 * 291], 2, { 0, 0 }, (s32)&DatIndex[2 * 169], (s32)&DatIndex[2 * 169], 0xA0, { 0, 0 } },
-    { (s32)&DatIndex[2 * 454], 2, { 0, 0 }, (s32)&DatIndex[2 * 168], (s32)&DatIndex[2 * 168], 0x5F, { 0, 0 } },
-    { (s32)&DatIndex[2 * 296], 2, { 0, 0 }, (s32)&DatIndex[2 * 157], (s32)&DatIndex[2 * 157], 0xA0, { 0, 0 } },
-    { (s32)&DatIndex[2 * 287], 2, { 0, 0 }, (s32)&DatIndex[2 * 156], (s32)&DatIndex[2 * 156], 0x8C, { 0, 0 } },
-    { (s32)&DatIndex[2 * 286], 2, { 0, 0 }, (s32)&DatIndex[2 * 155], (s32)&DatIndex[2 * 155], 0xB2, { 0, 0 } },
-    { (s32)&DatIndex[2 * 302], 2, { 0, 0 }, (s32)&DatIndex[2 * 154], (s32)&DatIndex[2 * 154], 0x83, { 0, 0 } },
-    { (s32)&DatIndex[2 * 279], 2, { 0, 0 }, (s32)&DatIndex[2 * 450], (s32)&DatIndex[2 * 449], 0xD7, { 0, 0 } },
-    { (s32)&DatIndex[2 * 295], 2, { 0, 0 }, (s32)&DatIndex[2 * 451], (s32)&DatIndex[2 * 451], 0xA0, { 0, 0 } },
-    { (s32)&DatIndex[2 * 298], 2, { 0, 0 }, (s32)&DatIndex[2 * 448], (s32)&DatIndex[2 * 448], 0x90, { 0, 0 } },
-    { (s32)&DatIndex[2 * 453], 2, { 0, 0 }, (s32)&DatIndex[2 * 447], (s32)&DatIndex[2 * 447], 0x83, { 0, 0 } },
-    { (s32)&DatIndex[2 * 452], 2, { 0, 0 }, (s32)&DatIndex[2 * 446], (s32)&DatIndex[2 * 446], 0x9D, { 0, 0 } },
-    { (s32)&DatIndex[2 * 285], 2, { 0, 0 }, (s32)&DatIndex[2 * 175], (s32)&DatIndex[2 * 175], 0xC8, { 0, 0 } },
-    { (s32)&DatIndex[2 * 284], 2, { 0, 0 }, (s32)&DatIndex[2 * 174], (s32)&DatIndex[2 * 174], 0xBE, { 0, 0 } },
-    { (s32)&DatIndex[2 * 285], 2, { 0, 0 }, (s32)&DatIndex[2 * 173], (s32)&DatIndex[2 * 173], 0xC8, { 0, 0 } },
-    { (s32)&DatIndex[2 * 283], 2, { 0, 0 }, (s32)&DatIndex[2 * 172], (s32)&DatIndex[2 * 172], 0x90, { 0, 0 } },
-    { (s32)&DatIndex[2 * 279], 2, { 0, 0 }, (s32)&DatIndex[2 * 180], (s32)&DatIndex[2 * 180], 0xD7, { 0, 0 } },
-    { (s32)&DatIndex[2 * 283], 2, { 0, 0 }, (s32)&DatIndex[2 * 179], (s32)&DatIndex[2 * 179], 0x90, { 0, 0 } },
-    { (s32)&DatIndex[2 * 292], 3, { 0, 0 }, (s32)&DatIndex[2 * 178], (s32)&DatIndex[2 * 178], 0x9B, { 0, 0 } },
-    { (s32)&DatIndex[2 * 292], 2, { 0, 0 }, (s32)&DatIndex[2 * 177], (s32)&DatIndex[2 * 177], 0x9B, { 0, 0 } },
-    { (s32)&DatIndex[2 * 285], 2, { 0, 0 }, (s32)&DatIndex[2 * 176], (s32)&DatIndex[2 * 176], 0xC8, { 0, 0 } },
-    { (s32)&DatIndex[2 * 290], 2, { 0, 0 }, (s32)&DatIndex[2 * 166], (s32)&DatIndex[2 * 166], 0x88, { 0, 0 } },
-    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
-    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
-    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
-    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
-    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
-    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
-    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
-    { (s32)&DatIndex[2 * 303], 2, { 0, 0 }, (s32)&DatIndex[2 * 273], (s32)&DatIndex[2 * 273], 0x88, { 0, 0 } },
-    { (s32)&DatIndex[2 * 303], 2, { 0, 0 }, (s32)&DatIndex[2 * 273], (s32)&DatIndex[2 * 273], 0x88, { 0, 0 } },
-    { (s32)&DatIndex[2 * 303], 2, { 0, 0 }, (s32)&DatIndex[2 * 273], (s32)&DatIndex[2 * 273], 0x88, { 0, 0 } },
-    { (s32)&DatIndex[2 * 288], 2, { 0, 0 }, (s32)&DatIndex[2 * 181], (s32)&DatIndex[2 * 181], 0x9C, { 0, 0 } },
-    { (s32)&DatIndex[2 * 301], 0, { 0, 0 }, (s32)&DatIndex[2 * 273], (s32)&DatIndex[2 * 273], 0x78, { 0, 0 } },
+    { &DatIndex[293], 2, { 0, 0 }, &DatIndex[167], &DatIndex[167], 0x9A, { 0, 0 } },
+    { &DatIndex[297], 2, { 0, 0 }, &DatIndex[166], &DatIndex[166], 0x88, { 0, 0 } },
+    { &DatIndex[289], 2, { 0, 0 }, &DatIndex[165], &DatIndex[165], 0xE1, { 0, 0 } },
+    { &DatIndex[298], 2, { 0, 0 }, &DatIndex[164], &DatIndex[164], 0x90, { 0, 0 } },
+    { &DatIndex[290], 2, { 0, 0 }, &DatIndex[163], &DatIndex[163], 0x88, { 0, 0 } },
+    { &DatIndex[283], 2, { 0, 0 }, &DatIndex[159], &DatIndex[159], 0x90, { 0, 0 } },
+    { &DatIndex[281], 2, { 0, 0 }, &DatIndex[162], &DatIndex[162], 0x74, { 0, 0 } },
+    { &DatIndex[282], 2, { 0, 0 }, &DatIndex[160], &DatIndex[160], 0x79, { 0, 0 } },
+    { &DatIndex[280], 2, { 0, 0 }, &DatIndex[161], &DatIndex[161], 0x6F, { 0, 0 } },
+    { &DatIndex[280], 2, { 0, 0 }, &DatIndex[158], &DatIndex[158], 0x6F, { 0, 0 } },
+    { &DatIndex[299], 2, { 0, 0 }, &DatIndex[171], &DatIndex[171], 0x6C, { 0, 0 } },
+    { &DatIndex[286], 2, { 0, 0 }, &DatIndex[170], &DatIndex[170], 0xB2, { 0, 0 } },
+    { &DatIndex[291], 2, { 0, 0 }, &DatIndex[169], &DatIndex[169], 0xA0, { 0, 0 } },
+    { &DatIndex[454], 2, { 0, 0 }, &DatIndex[168], &DatIndex[168], 0x5F, { 0, 0 } },
+    { &DatIndex[296], 2, { 0, 0 }, &DatIndex[157], &DatIndex[157], 0xA0, { 0, 0 } },
+    { &DatIndex[287], 2, { 0, 0 }, &DatIndex[156], &DatIndex[156], 0x8C, { 0, 0 } },
+    { &DatIndex[286], 2, { 0, 0 }, &DatIndex[155], &DatIndex[155], 0xB2, { 0, 0 } },
+    { &DatIndex[302], 2, { 0, 0 }, &DatIndex[154], &DatIndex[154], 0x83, { 0, 0 } },
+    { &DatIndex[279], 2, { 0, 0 }, &DatIndex[450], &DatIndex[449], 0xD7, { 0, 0 } },
+    { &DatIndex[295], 2, { 0, 0 }, &DatIndex[451], &DatIndex[451], 0xA0, { 0, 0 } },
+    { &DatIndex[298], 2, { 0, 0 }, &DatIndex[448], &DatIndex[448], 0x90, { 0, 0 } },
+    { &DatIndex[453], 2, { 0, 0 }, &DatIndex[447], &DatIndex[447], 0x83, { 0, 0 } },
+    { &DatIndex[452], 2, { 0, 0 }, &DatIndex[446], &DatIndex[446], 0x9D, { 0, 0 } },
+    { &DatIndex[285], 2, { 0, 0 }, &DatIndex[175], &DatIndex[175], 0xC8, { 0, 0 } },
+    { &DatIndex[284], 2, { 0, 0 }, &DatIndex[174], &DatIndex[174], 0xBE, { 0, 0 } },
+    { &DatIndex[285], 2, { 0, 0 }, &DatIndex[173], &DatIndex[173], 0xC8, { 0, 0 } },
+    { &DatIndex[283], 2, { 0, 0 }, &DatIndex[172], &DatIndex[172], 0x90, { 0, 0 } },
+    { &DatIndex[279], 2, { 0, 0 }, &DatIndex[180], &DatIndex[180], 0xD7, { 0, 0 } },
+    { &DatIndex[283], 2, { 0, 0 }, &DatIndex[179], &DatIndex[179], 0x90, { 0, 0 } },
+    { &DatIndex[292], 3, { 0, 0 }, &DatIndex[178], &DatIndex[178], 0x9B, { 0, 0 } },
+    { &DatIndex[292], 2, { 0, 0 }, &DatIndex[177], &DatIndex[177], 0x9B, { 0, 0 } },
+    { &DatIndex[285], 2, { 0, 0 }, &DatIndex[176], &DatIndex[176], 0xC8, { 0, 0 } },
+    { &DatIndex[290], 2, { 0, 0 }, &DatIndex[166], &DatIndex[166], 0x88, { 0, 0 } },
+    { &DatIndex[294], 2, { 0, 0 }, &DatIndex[272], &DatIndex[272], 0x78, { 0, 0 } },
+    { &DatIndex[294], 2, { 0, 0 }, &DatIndex[272], &DatIndex[272], 0x78, { 0, 0 } },
+    { &DatIndex[294], 2, { 0, 0 }, &DatIndex[272], &DatIndex[272], 0x78, { 0, 0 } },
+    { &DatIndex[294], 2, { 0, 0 }, &DatIndex[272], &DatIndex[272], 0x78, { 0, 0 } },
+    { &DatIndex[294], 2, { 0, 0 }, &DatIndex[272], &DatIndex[272], 0x78, { 0, 0 } },
+    { &DatIndex[294], 2, { 0, 0 }, &DatIndex[272], &DatIndex[272], 0x78, { 0, 0 } },
+    { &DatIndex[294], 2, { 0, 0 }, &DatIndex[272], &DatIndex[272], 0x78, { 0, 0 } },
+    { &DatIndex[303], 2, { 0, 0 }, &DatIndex[273], &DatIndex[273], 0x88, { 0, 0 } },
+    { &DatIndex[303], 2, { 0, 0 }, &DatIndex[273], &DatIndex[273], 0x88, { 0, 0 } },
+    { &DatIndex[303], 2, { 0, 0 }, &DatIndex[273], &DatIndex[273], 0x88, { 0, 0 } },
+    { &DatIndex[288], 2, { 0, 0 }, &DatIndex[181], &DatIndex[181], 0x9C, { 0, 0 } },
+    { &DatIndex[301], 0, { 0, 0 }, &DatIndex[273], &DatIndex[273], 0x78, { 0, 0 } },
 };
-s32 LevelSfxBanks[14][8] = {
+file *LevelSfxBanks[14][8] = {
     {
-        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
-        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
+        &DatIndex[212], &DatIndex[213], &DatIndex[211], &DatIndex[210],
+        &DatIndex[207], &DatIndex[206], &DatIndex[209], &DatIndex[208],
     },
     {
-        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
-        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
+        &DatIndex[212], &DatIndex[213], &DatIndex[211], &DatIndex[210],
+        &DatIndex[207], &DatIndex[206], &DatIndex[209], &DatIndex[208],
     },
     {
-        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
-        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
+        &DatIndex[212], &DatIndex[213], &DatIndex[211], &DatIndex[210],
+        &DatIndex[207], &DatIndex[206], &DatIndex[209], &DatIndex[208],
     },
     {
-        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
-        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
+        &DatIndex[212], &DatIndex[213], &DatIndex[211], &DatIndex[210],
+        &DatIndex[207], &DatIndex[206], &DatIndex[209], &DatIndex[208],
     },
     {
-        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
-        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
+        &DatIndex[212], &DatIndex[213], &DatIndex[211], &DatIndex[210],
+        &DatIndex[207], &DatIndex[206], &DatIndex[209], &DatIndex[208],
     },
     {
-        (s32)&DatIndex[2 * 188], (s32)&DatIndex[2 * 189], (s32)&DatIndex[2 * 187], (s32)&DatIndex[2 * 186],
-        (s32)&DatIndex[2 * 183], (s32)&DatIndex[2 * 182], (s32)&DatIndex[2 * 185], (s32)&DatIndex[2 * 184],
+        &DatIndex[188], &DatIndex[189], &DatIndex[187], &DatIndex[186],
+        &DatIndex[183], &DatIndex[182], &DatIndex[185], &DatIndex[184],
     },
     {
-        (s32)&DatIndex[2 * 196], (s32)&DatIndex[2 * 197], (s32)&DatIndex[2 * 195], (s32)&DatIndex[2 * 194],
-        (s32)&DatIndex[2 * 191], (s32)&DatIndex[2 * 190], (s32)&DatIndex[2 * 193], (s32)&DatIndex[2 * 192],
+        &DatIndex[196], &DatIndex[197], &DatIndex[195], &DatIndex[194],
+        &DatIndex[191], &DatIndex[190], &DatIndex[193], &DatIndex[192],
     },
     {
-        (s32)&DatIndex[2 * 196], (s32)&DatIndex[2 * 197], (s32)&DatIndex[2 * 195], (s32)&DatIndex[2 * 194],
-        (s32)&DatIndex[2 * 191], (s32)&DatIndex[2 * 190], (s32)&DatIndex[2 * 193], (s32)&DatIndex[2 * 192],
+        &DatIndex[196], &DatIndex[197], &DatIndex[195], &DatIndex[194],
+        &DatIndex[191], &DatIndex[190], &DatIndex[193], &DatIndex[192],
     },
     {
-        (s32)&DatIndex[2 * 204], (s32)&DatIndex[2 * 205], (s32)&DatIndex[2 * 203], (s32)&DatIndex[2 * 202],
-        (s32)&DatIndex[2 * 199], (s32)&DatIndex[2 * 198], (s32)&DatIndex[2 * 201], (s32)&DatIndex[2 * 200],
+        &DatIndex[204], &DatIndex[205], &DatIndex[203], &DatIndex[202],
+        &DatIndex[199], &DatIndex[198], &DatIndex[201], &DatIndex[200],
     },
     {
-        (s32)&DatIndex[2 * 196], (s32)&DatIndex[2 * 197], (s32)&DatIndex[2 * 195], (s32)&DatIndex[2 * 194],
-        (s32)&DatIndex[2 * 191], (s32)&DatIndex[2 * 190], (s32)&DatIndex[2 * 193], (s32)&DatIndex[2 * 192],
+        &DatIndex[196], &DatIndex[197], &DatIndex[195], &DatIndex[194],
+        &DatIndex[191], &DatIndex[190], &DatIndex[193], &DatIndex[192],
     },
     {
-        (s32)&DatIndex[2 * 204], (s32)&DatIndex[2 * 205], (s32)&DatIndex[2 * 203], (s32)&DatIndex[2 * 202],
-        (s32)&DatIndex[2 * 199], (s32)&DatIndex[2 * 198], (s32)&DatIndex[2 * 201], (s32)&DatIndex[2 * 200],
+        &DatIndex[204], &DatIndex[205], &DatIndex[203], &DatIndex[202],
+        &DatIndex[199], &DatIndex[198], &DatIndex[201], &DatIndex[200],
     },
     {
-        (s32)&DatIndex[2 * 188], (s32)&DatIndex[2 * 189], (s32)&DatIndex[2 * 187], (s32)&DatIndex[2 * 186],
-        (s32)&DatIndex[2 * 183], (s32)&DatIndex[2 * 182], (s32)&DatIndex[2 * 185], (s32)&DatIndex[2 * 184],
+        &DatIndex[188], &DatIndex[189], &DatIndex[187], &DatIndex[186],
+        &DatIndex[183], &DatIndex[182], &DatIndex[185], &DatIndex[184],
     },
     {
-        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
-        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
+        &DatIndex[212], &DatIndex[213], &DatIndex[211], &DatIndex[210],
+        &DatIndex[207], &DatIndex[206], &DatIndex[209], &DatIndex[208],
     },
     {
-        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
-        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
+        &DatIndex[212], &DatIndex[213], &DatIndex[211], &DatIndex[210],
+        &DatIndex[207], &DatIndex[206], &DatIndex[209], &DatIndex[208],
     },
 };
 s32 FirstBootDone = 0;

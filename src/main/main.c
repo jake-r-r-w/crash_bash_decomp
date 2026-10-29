@@ -51,7 +51,7 @@ void shell_init(void) {
     init_file();
     pads_init();
     pads_update();
-    load_file_direct(&DatIndex[2 * 991], HeapStart);
+    load_file_direct(&DatIndex[991], HeapStart);
     EngineModule = (ModuleEntry *)HeapStart;
     RunModules(&ShellModules);
 }
@@ -1671,7 +1671,7 @@ loop:
         if (nxt == NULL) {
             goto end;
         }
-        if (*nxt->file + nxt->offset / 2048 < *cur->file + cur->offset / 2048) {
+        if (nxt->file->sector + nxt->offset / 2048 < cur->file->sector + cur->offset / 2048) {
             t = cur->prev;
             nxt->prev = t;
             if (t != NULL) {
@@ -1697,13 +1697,13 @@ end:
     return NULL;
 }
 
-static inline s32 load_group_find(s32 *arg0, s32 *arg1) {
-    s32 *base;
-    s32 *p;
+static inline s32 load_group_find(file *arg0, s32 *arg1) {
+    file *base;
+    file *p;
     s32 n;
     s32 end;
     s32 first;
-    s32 *tbl;
+    file *tbl;
     s32 end2;
     s32 i;
 
@@ -1711,17 +1711,17 @@ static inline s32 load_group_find(s32 *arg0, s32 *arg1) {
     n = arg1[1];
     n--;
     base = tbl;
-    base = base + arg1[0] * 2;
+    base = base + arg1[0];
     end = -1;
-    first = *base;
+    first = base->sector;
     if (n != end) {
         end2 = end;
         p = base;
         i = 0;
         do {
             n -= 1;
-            if (&p[i * 2] == arg0) {
-                return p[i * 2] - first;
+            if (&p[i] == arg0) {
+                return p[i].sector - first;
             }
             i++;
         } while (n != end2);
@@ -1732,25 +1732,25 @@ static inline s32 load_group_find(s32 *arg0, s32 *arg1) {
 static inline void load_group_loop(u8 *arg0, s32 *arg1) {
     s32 first = arg1[0];
     s32 n = arg1[1];
-    s32 *s2 = &DatIndex[first * 2];
-    s32 *s0;
+    file *s2 = &DatIndex[first];
+    file *s0;
 
     if (n != 0) {
         n--;
-        s0 = &DatIndex[(first + n) * 2];
+        s0 = &DatIndex[first + n];
         for (;;) {
             if (n == 0) {
                 return;
             }
-            mal_trim(mal_split_ptr(arg0, (s0[0] - s2[0]) << 11), s0[1], &MainHeap);
+            mal_trim(mal_split_ptr(arg0, (s0->sector - s2->sector) << 11), s0->size, &MainHeap);
             n--;
-            s0 -= 2;
+            s0--;
         }
     }
 }
 
 void load_group_done(u8 *arg0, file_group_load_info *a1) {
-    s32 **c;
+    GroupFile *c;
     s32 *e;
     u8 *h;
     s32 i;
@@ -1764,47 +1764,47 @@ void load_group_done(u8 *arg0, file_group_load_info *a1) {
         return;
     }
     for (;;) {
-        if (*c == NULL) {
+        if (c->dbase == NULL) {
             return;
         }
-        *(s32 *)((u8 *)*c + 0x34) = 0;
+        c->dbase->keep = NULL;
         e = a1->group;
-        h = (u8 *)c[0];
-        i = load_group_find(c[2], e);
+        h = (u8 *)c->dbase;
+        i = load_group_find(c->textureFile, e);
         i <<= 11;
         dbase_group_textures_loaded(arg0 + i, h);
-        i = load_group_find(c[1], e);
+        i = load_group_find(c->file, e);
         i <<= 11;
         dbase_asload_with_anims_callback(arg0 + i, h);
-        c += 3;
+        c++;
     }
 }
 
-static inline s32 load_dbase_find(s32 *arg0, s32 *arg1) {
-    s32 *base;
-    s32 *p;
+static inline s32 load_dbase_find(file *arg0, s32 *arg1) {
+    file *base;
+    file *p;
     s32 n;
     s32 end;
     s32 first;
-    s32 *tbl;
+    file *tbl;
     s32 end2;
 
     tbl = DatIndex;
     n = arg1[1];
     n--;
     base = tbl;
-    base = base + arg1[0] * 2;
+    base = base + arg1[0];
     end = -1;
-    first = *base;
+    first = base->sector;
     if (n != end) {
         end2 = end;
         p = base;
 loop:
         n -= 1;
         if (p == arg0) {
-            return *p - first;
+            return p->sector - first;
         }
-        p += 2;
+        p++;
         if (n == end2) {
             return -1;
         }
@@ -1816,37 +1816,37 @@ loop:
 static inline void load_dbase_loop(u8 *arg0, s32 *arg1) {
     s32 first = arg1[0];
     s32 n = arg1[1];
-    s32 *s2 = &DatIndex[first * 2];
-    s32 *s0;
+    file *s2 = &DatIndex[first];
+    file *s0;
 
     if (n != 0) {
         n--;
-        s0 = &DatIndex[(first + n) * 2];
+        s0 = &DatIndex[first + n];
         for (;;) {
             if (n == 0) {
                 return;
             }
-            mal_trim(mal_split_ptr(arg0, (s0[0] - s2[0]) << 11), s0[1], &MainHeap);
+            mal_trim(mal_split_ptr(arg0, (s0->sector - s2->sector) << 11), s0->size, &MainHeap);
             n--;
-            s0 -= 2;
+            s0--;
         }
     }
 }
 
 void load_dbase_done(u8 *arg0, ModeDbase *a1) {
     s32 *e;
-    s32 **c;
+    GroupFile *c;
     u8 *h;
     s32 i;
 
     load_dbase_loop(arg0, a1->group);
-    c = (s32 **)&a1->dbase;
+    c = (GroupFile *)&a1->dbase;  /* the record's last three words are a GroupFile */
     e = a1->group;
     h = a1->dbase;
-    i = load_dbase_find(c[2], e);
+    i = load_dbase_find(c->textureFile, e);
     i <<= 11;
     dbase_group_textures_loaded(arg0 + i, h);
-    i = load_dbase_find(c[1], e);
+    i = load_dbase_find(c->file, e);
     i <<= 11;
     dbase_asload_with_anims_callback(arg0 + i, h);
 }
@@ -1856,12 +1856,12 @@ u8 *queue_dbase_load(ModeDbase *arg0, s32 arg1) {
     LoadNode *next;
     LoadNode *tail;
     u8 *q;
-    s32 a;
+    file *a;
     s32 b;
     void (*fn)(u8 *, u8 *);
     LoaderState *ls;
 
-    a = (s32)DatIndex + arg0->group->first * 8;
+    a = &DatIndex[arg0->group->first];
     *(s32 *)&arg0->dbase->keep = arg1;
     fn = load_dbase_done;
     ls = &Loader;
@@ -1884,7 +1884,7 @@ u8 *queue_dbase_load(ModeDbase *arg0, s32 arg1) {
     if (q == NULL) {
         printf(MsgTooManyLoadsInQueue);
     }
-    p->file = (s32 *)a;
+    p->file = a;
     p->offset = 0;
     p->mode = 1;
     p->size = b;
@@ -1899,7 +1899,7 @@ u8 *queue_group_load(file_group_load_info *arg0) {
     LoadNode *next;
     LoadNode *tail;
     u8 *q;
-    s32 a;
+    file *a;
     s32 b;
     void (*fn)(u8 *, u8 *);
     LoaderState *ls;
@@ -1910,7 +1910,7 @@ u8 *queue_group_load(file_group_load_info *arg0) {
     if (arg0->files == 0) {
         return NULL;
     }
-    a = (s32)DatIndex + arg0->group->first * 8;
+    a = &DatIndex[arg0->group->first];
     fn = load_group_done;
     ls = &Loader;
     b = arg0->group->size;
@@ -1932,7 +1932,7 @@ u8 *queue_group_load(file_group_load_info *arg0) {
     if (q == NULL) {
         printf(MsgTooManyLoadsInQueue);
     }
-    p->file = (s32 *)a;
+    p->file = a;
     p->offset = 0;
     p->mode = 1;
     p->size = b;
@@ -1942,31 +1942,31 @@ u8 *queue_group_load(file_group_load_info *arg0) {
     return q;
 }
 
-static inline s32 dbase_files_find(s32 *arg0, s32 *arg1) {
-    s32 *base;
-    s32 *p;
+static inline s32 dbase_files_find(file *arg0, s32 *arg1) {
+    file *base;
+    file *p;
     s32 n;
     s32 end;
     s32 first;
-    s32 *tbl;
+    file *tbl;
     s32 end2;
 
     tbl = DatIndex;
     n = arg1[1];
     n--;
     base = tbl;
-    base = base + arg1[0] * 2;
+    base = base + arg1[0];
     end = -1;
-    first = *base;
+    first = base->sector;
     if (n != end) {
         end2 = end;
         p = base;
 loop:
         n -= 1;
         if (p == arg0) {
-            return *p - first;
+            return p->sector - first;
         }
-        p += 2;
+        p++;
         if (n == end2) {
             return -1;
         }
@@ -1975,14 +1975,14 @@ loop:
     return end;
 }
 
-void dbase_files_loaded(s32 **arg0, s32 *arg1, u8 *arg2) {
-    u8 *s2 = (u8 *)arg0[0];
+void dbase_files_loaded(GroupFile *arg0, s32 *arg1, u8 *arg2) {
+    u8 *s2 = (u8 *)arg0->dbase;
     s32 i;
 
-    i = dbase_files_find(arg0[2], arg1);
+    i = dbase_files_find(arg0->textureFile, arg1);
     i <<= 11;
     dbase_group_textures_loaded(arg2 + i, s2);
-    i = dbase_files_find(arg0[1], arg1);
+    i = dbase_files_find(arg0->file, arg1);
     i <<= 11;
     dbase_asload_with_anims_callback(arg2 + i, s2);
 }
@@ -1990,48 +1990,48 @@ void dbase_files_loaded(s32 **arg0, s32 *arg1, u8 *arg2) {
 void group_split_buffer(void *arg0, s32 *arg1) {
     s32 first = arg1[0];
     s32 n = arg1[1];
-    s32 *s2 = &DatIndex[first * 2];
-    s32 *s0;
+    file *s2 = &DatIndex[first];
+    file *s0;
 
     if (n != 0) {
         n--;
-        s0 = &DatIndex[(first + n) * 2];
+        s0 = &DatIndex[first + n];
         for (;;) {
             if (n == 0) {
                 return;
             }
-            mal_trim(mal_split_ptr(arg0, (s0[0] - s2[0]) << 11), s0[1], &MainHeap);
+            mal_trim(mal_split_ptr(arg0, (s0->sector - s2->sector) << 11), s0->size, &MainHeap);
             n--;
-            s0 -= 2;
+            s0--;
         }
     }
 }
 
-s32 group_file_offset(s32 *arg0, s32 *arg1) {
-    s32 *base;
-    s32 *p;
+s32 group_file_offset(file *arg0, s32 *arg1) {
+    file *base;
+    file *p;
     s32 n;
     s32 end;
     s32 first;
-    s32 *tbl;
+    file *tbl;
     s32 end2;
 
     tbl = DatIndex;
     n = arg1[1];
     n--;
     base = tbl;
-    base = base + arg1[0] * 2;
+    base = base + arg1[0];
     end = -1;
-    first = *base;
+    first = base->sector;
     if (n != end) {
         end2 = end;
         p = base;
 loop:
         n -= 1;
         if (p == arg0) {
-            return *p - first;
+            return p->sector - first;
         }
-        p += 2;
+        p++;
         if (n == end2) {
             return -1;
         }
@@ -2170,7 +2170,7 @@ s32 loader_pending(void) {
     return a + new_var;
 }
 
-s32 loader_queue(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6) {
+s32 loader_queue(file *arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6) {
     LoadNode *p;
     LoadNode *next;
     LoadNode *tail;
@@ -2195,7 +2195,7 @@ s32 loader_queue(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg
     if (q == NULL) {
         printf(MsgTooManyLoadsInQueue);
     }
-    p->file = (s32 *)arg0;
+    p->file = arg0;
     p->offset = arg1;
     p->mode = arg5;
     p->size = arg2;
@@ -2291,12 +2291,12 @@ void loadnode_init(void) {
     p->next = NULL;
 }
 
-s32 load_file_wait(s32 *arg0, u8 **arg1) {
+s32 load_file_wait(file *arg0, u8 **arg1) {
     s32 size;
 
-    size = arg0[1];
+    size = arg0->size;
     LoadWaitBuf = NULL;
-    loader_queue((s32)arg0, 0, size, NULL, (u8 *)&LoadWaitBuf, 1, 0);
+    loader_queue(arg0, 0, size, NULL, (u8 *)&LoadWaitBuf, 1, 0);
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
@@ -2306,7 +2306,7 @@ s32 load_file_wait(s32 *arg0, u8 **arg1) {
     return size;
 }
 
-s32 load_file_part_wait(s32 arg0, s32 arg1, u8 **arg2, s32 arg3) {
+s32 load_file_part_wait(file *arg0, s32 arg1, u8 **arg2, s32 arg3) {
     LoadWaitBuf = NULL;
     loader_queue(arg0, arg1, arg3, NULL, (u8 *)&LoadWaitBuf, 1, 0);
     while (loader_pending() != 0) {
@@ -2318,18 +2318,18 @@ s32 load_file_part_wait(s32 arg0, s32 arg1, u8 **arg2, s32 arg3) {
     return 0;
 }
 
-s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u32 **arg2, s32 arg3) {
+s32 asload_chunk_relocatable(file *arg0, s32 arg1, u32 **arg2, s32 arg3) {
     return loader_queue(arg0, arg1, arg3, NULL, arg2, 1, 0);
 }
 
-s32 load_file_permanent(s32 *arg0) {
-    s32 a2 = arg0[1];
+s32 load_file_permanent(file *arg0) {
+    s32 a2 = arg0->size;
 
     if (a2 == -1) {
         return 0;
     }
     LoadPermanentBuf = 0;
-    loader_queue((s32)arg0, 0, a2, NULL, (u8 *)&LoadPermanentBuf, 0, 0);
+    loader_queue(arg0, 0, a2, NULL, (u8 *)&LoadPermanentBuf, 0, 0);
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
@@ -2338,7 +2338,7 @@ s32 load_file_permanent(s32 *arg0) {
     return LoadPermanentBuf;
 }
 
-s32 load_file_to_wait(s32 arg0, s32 arg1, s32 arg2) {
+s32 load_file_to_wait(file *arg0, s32 arg1, s32 arg2) {
     LoadPermanentBuf = 0;
     loader_queue(arg0, arg1, arg2, NULL, (u8 *)&LoadPermanentBuf, 0, 0);
     while (loader_pending() != 0) {
@@ -2349,7 +2349,7 @@ s32 load_file_to_wait(s32 arg0, s32 arg1, s32 arg2) {
     return LoadPermanentBuf;
 }
 
-s32 load_file_direct(s32 *a, u8 *b) {
+s32 load_file_direct(file *a, u8 *b) {
     s32 r;
     s32 n;
     printf("load file start\n");
@@ -2363,7 +2363,7 @@ s32 load_file_direct(s32 *a, u8 *b) {
     }
     do {
         for (;;) {
-            n = a[1];
+            n = a->size;
             if (cd_read(a, 0, b, (n + 0x7FF) / 2048) >= 0) {
                 break;
             }
@@ -2377,20 +2377,20 @@ s32 load_file_direct(s32 *a, u8 *b) {
     return 0;
 }
 
-s32 load_file(s32 *arg0, u8 *arg1) {
-    return loader_queue((s32)arg0, 0, arg0[1], NULL, arg1, 1, 0);
+s32 load_file(file *arg0, u8 *arg1) {
+    return loader_queue(arg0, 0, arg0->size, NULL, arg1, 1, 0);
 }
 
-s32 load_file_to(s32 *arg0, u8 *arg1) {
-    return loader_queue((s32)arg0, 0, arg0[1], NULL, arg1, 0, 0);
+s32 load_file_to(file *arg0, u8 *arg1) {
+    return loader_queue(arg0, 0, arg0->size, NULL, arg1, 0, 0);
 }
 
-s32 load_file_cb(s32 arg0, void (*done)(), void *ctx) {
-    return loader_queue(arg0, 0, ((s32 *)arg0)[1], done, ctx, 1, 0);
+s32 load_file_cb(file *arg0, void (*done)(), void *ctx) {
+    return loader_queue(arg0, 0, arg0->size, done, ctx, 1, 0);
 }
 
-s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx) {
-    return loader_queue(arg0, 0, ((s32 *)arg0)[1], done, ctx, 0, 0);
+s32 asload_permanent_callback(file *arg0, void (*done)(), void *ctx) {
+    return loader_queue(arg0, 0, arg0->size, done, ctx, 0, 0);
 }
 
 #define PS ((PadState *)pad)
@@ -3634,9 +3634,8 @@ _mal_area MainHeap = {0};
 s32 MalFreeBytes = 0;
 s32 MalFreeBlocks = 0;
 s32 MalLargestFree = 0;
-/* The archive's index: {first sector, size in bytes} for each of CRASHBSH.DAT's 992 files,
- * file N at DatIndex[2 * N] (group_file_offset). */
-s32 DatIndex[2 * 992] = {
+/* The archive's index: {first sector, size in bytes} for each of CRASHBSH.DAT's 992 files. */
+file DatIndex[992] = {
     0x0, 0x3770, 0x7, 0x1FB2A, 0x47, 0x3770, 0x4E, 0x3E33C, /* 0 */
     0xCB, 0x3770, 0xD2, 0x2992C, 0x126, 0x3770, 0x12D, 0x293A2, /* 4 */
     0x180, 0x2AD8, 0x186, 0x19F78, 0x1BA, 0x2AD8, 0x1C0, 0x1DD82, /* 8 */

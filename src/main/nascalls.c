@@ -2620,7 +2620,7 @@ void ClearOt(DrawBuffer *arg0) {
     arg0->prim = arg0->primStart;
 }
 
-s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
+s32 cd_read(file *a, s32 b, u8 *c, s32 d) {
     s32 r;
     s32 s;
     r = CdReadStatus;
@@ -2637,7 +2637,7 @@ s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
     if (s > 0) {
         return -1;
     }
-    CdIntToPos(*a + b + ArchiveSector, &CdReadLoc);
+    CdIntToPos(a->sector + b + ArchiveSector, &CdReadLoc);
     if (CdControl(2, (u8 *)&CdReadLoc, 0) == 0 || CdRead(d, (u_long *)c, 0x80) == 0) {
         return -1;
     }
@@ -2650,8 +2650,8 @@ s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
     return CdReadStatus;
 }
 
-void cd_seek(s32 *arg0, s32 arg1) {
-    CdIntToPos(*arg0 + arg1, &CdSeekLoc);
+void cd_seek(file *arg0, s32 arg1) {
+    CdIntToPos(arg0->sector + arg1, &CdSeekLoc);
     CdControlF(CdlSetloc, (u8 *)&CdSeekLoc);
     CdControlF(CdlSeekL, (u8 *)&CdSeekLoc);
 }

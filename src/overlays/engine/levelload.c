@@ -240,9 +240,9 @@ void load_initial_dbases(void)
   t = (u8 *)HeroModelBank;
   h = &HeroHooks;
   src = (s32 *) (&((obj_dbase *) t)[new_var[g->language]]);
-  ((obj_dbase *) t)[DB_Interface].file = src[0];
+  ((obj_dbase *) t)[DB_Interface].file = (file *) src[0];
   b = t;
-  ((obj_dbase *) b)[DB_Interface].textureFile = src[1];
+  ((obj_dbase *) b)[DB_Interface].textureFile = (file *) src[1];
   do
   {
     k = ((u8 *) g)[i + 0x50];
@@ -335,7 +335,7 @@ void UpdateLevelLoad(void) {
         }
         if (GameMode == 0x28 && FirstBootDone == 0) {
             sfx_table_clear();
-            sfx_bank_load((s32)&DatIndex[2 * 273]);
+            sfx_bank_load(&DatIndex[273]);
         }
         set_fade(&ScreenFade, -0x300, 0);
         LevelLoadStage = 2;
@@ -1295,15 +1295,15 @@ extern u8 file_group_TOXIC[];
 extern u8 file_group_WATER[];
 
 GfxViewport LoadingViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0, 0x200, -0x100, 0, 0, 0, 1 };
-s32 * ModeTextFiles[14] = {
-    &DatIndex[2 * 722], &DatIndex[2 * 721], &DatIndex[2 * 720], &DatIndex[2 * 728], &DatIndex[2 * 727],
-    &DatIndex[2 * 726], &DatIndex[2 * 725], &DatIndex[2 * 724], &DatIndex[2 * 487], &DatIndex[2 * 723],
-    &DatIndex[2 * 719], &DatIndex[2 * 717], &DatIndex[2 * 716], &DatIndex[2 * 718],
+file *ModeTextFiles[14] = {
+    &DatIndex[722], &DatIndex[721], &DatIndex[720], &DatIndex[728], &DatIndex[727],
+    &DatIndex[726], &DatIndex[725], &DatIndex[724], &DatIndex[487], &DatIndex[723],
+    &DatIndex[719], &DatIndex[717], &DatIndex[716], &DatIndex[718],
 };
-s32 * ModeTextFilesLang[14] = {  /* ModeTextTables' per-language file list */
-    0, 0, &DatIndex[2 * 142], &DatIndex[2 * 151], &DatIndex[2 * 146], &DatIndex[2 * 141],
-    &DatIndex[2 * 145], &DatIndex[2 * 152], &DatIndex[2 * 144], &DatIndex[2 * 143], &DatIndex[2 * 148],
-    &DatIndex[2 * 147], &DatIndex[2 * 149], &DatIndex[2 * 150],
+file *ModeTextFilesLang[14] = {  /* ModeTextTables' per-language file list */
+    0, 0, &DatIndex[142], &DatIndex[151], &DatIndex[146], &DatIndex[141],
+    &DatIndex[145], &DatIndex[152], &DatIndex[144], &DatIndex[143], &DatIndex[148],
+    &DatIndex[147], &DatIndex[149], &DatIndex[150],
 };
 s32 *ModeTextTables[5] = {
     (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang,
@@ -1325,102 +1325,102 @@ CamVec3 LoadingScriptPos = {0};
 process_info LoadingProcess2 = { InitLoadingCamera, UpdateLoadingScene, RenderLoadingScene, QuitLoadingScene, 0 };
 /* the models each mode loads (LoadModeDbases, QueueHeroModels; the last is the adventure stats') */
 ModeDbase ModeDbaseLists[96] = {
-    { &FileGroups[128], &HeroModelBank[DB_CharsCrateCrash], &DatIndex[2 * 990], &DatIndex[2 * 989] },
-    { &FileGroups[127], &HeroModelBank[DB_CharsCrateCoco], &DatIndex[2 * 988], &DatIndex[2 * 987] },
-    { &FileGroups[126], &HeroModelBank[DB_CharsCrateCortex], &DatIndex[2 * 986], &DatIndex[2 * 985] },
-    { &FileGroups[125], &HeroModelBank[DB_CharsCrateBrio], &DatIndex[2 * 984], &DatIndex[2 * 983] },
-    { &FileGroups[123], &HeroModelBank[DB_CharsCrateDingo], &DatIndex[2 * 980], &DatIndex[2 * 979] },
-    { &FileGroups[122], &HeroModelBank[DB_CharsCrateRilla], &DatIndex[2 * 978], &DatIndex[2 * 977] },
-    { &FileGroups[124], &HeroModelBank[DB_CharsCrateTiny], &DatIndex[2 * 982], &DatIndex[2 * 981] },
-    { &FileGroups[121], &HeroModelBank[DB_CharsCrateKong], &DatIndex[2 * 976], &DatIndex[2 * 975] },
-    { &FileGroups[120], &HeroModelBank[DB_CharsPogoCrash], &DatIndex[2 * 974], &DatIndex[2 * 973] },
-    { &FileGroups[119], &HeroModelBank[DB_CharsPogoCoco], &DatIndex[2 * 972], &DatIndex[2 * 971] },
-    { &FileGroups[118], &HeroModelBank[DB_CharsPogoCortex], &DatIndex[2 * 970], &DatIndex[2 * 969] },
-    { &FileGroups[117], &HeroModelBank[DB_CharsPogoBrio], &DatIndex[2 * 968], &DatIndex[2 * 967] },
-    { &FileGroups[114], &HeroModelBank[DB_CharsPogoDingo], &DatIndex[2 * 962], &DatIndex[2 * 961] },
-    { &FileGroups[113], &HeroModelBank[DB_CharsPogoRilla], &DatIndex[2 * 960], &DatIndex[2 * 959] },
-    { &FileGroups[116], &HeroModelBank[DB_CharsPogoTiny], &DatIndex[2 * 966], &DatIndex[2 * 965] },
-    { &FileGroups[115], &HeroModelBank[DB_CharsPogoKong], &DatIndex[2 * 964], &DatIndex[2 * 963] },
-    { &FileGroups[112], &HeroModelBank[DB_CharsPolar2Crash], &DatIndex[2 * 958], &DatIndex[2 * 957] },
-    { &FileGroups[111], &HeroModelBank[DB_CharsPolar2Coco], &DatIndex[2 * 956], &DatIndex[2 * 955] },
-    { &FileGroups[110], &HeroModelBank[DB_CharsPolar2Cortex], &DatIndex[2 * 954], &DatIndex[2 * 953] },
-    { &FileGroups[107], &HeroModelBank[DB_CharsPolar2Brio], &DatIndex[2 * 948], &DatIndex[2 * 947] },
-    { &FileGroups[108], &HeroModelBank[DB_CharsPolar2Dingo], &DatIndex[2 * 950], &DatIndex[2 * 949] },
-    { &FileGroups[105], &HeroModelBank[DB_CharsPolar2Rilla], &DatIndex[2 * 944], &DatIndex[2 * 943] },
-    { &FileGroups[109], &HeroModelBank[DB_CharsPolar2Tiny], &DatIndex[2 * 952], &DatIndex[2 * 951] },
-    { &FileGroups[106], &HeroModelBank[DB_CharsPolar2Kong], &DatIndex[2 * 946], &DatIndex[2 * 945] },
-    { &FileGroups[104], &HeroModelBank[DB_CharsCrate2Crash], &DatIndex[2 * 942], &DatIndex[2 * 941] },
-    { &FileGroups[103], &HeroModelBank[DB_CharsCrate2Coco], &DatIndex[2 * 940], &DatIndex[2 * 939] },
-    { &FileGroups[102], &HeroModelBank[DB_CharsCrate2Cortex], &DatIndex[2 * 938], &DatIndex[2 * 937] },
-    { &FileGroups[99], &HeroModelBank[DB_CharsCrate2Brio], &DatIndex[2 * 932], &DatIndex[2 * 931] },
-    { &FileGroups[100], &HeroModelBank[DB_CharsCrate2Dingo], &DatIndex[2 * 934], &DatIndex[2 * 933] },
-    { &FileGroups[97], &HeroModelBank[DB_CharsCrate2Rilla], &DatIndex[2 * 928], &DatIndex[2 * 927] },
-    { &FileGroups[101], &HeroModelBank[DB_CharsCrate2Tiny], &DatIndex[2 * 936], &DatIndex[2 * 935] },
-    { &FileGroups[98], &HeroModelBank[DB_CharsCrate2Kong], &DatIndex[2 * 930], &DatIndex[2 * 929] },
-    { &FileGroups[96], &HeroModelBank[DB_CharsPolarCrash], &DatIndex[2 * 926], &DatIndex[2 * 925] },
-    { &FileGroups[95], &HeroModelBank[DB_CharsPolarCoco], &DatIndex[2 * 924], &DatIndex[2 * 923] },
-    { &FileGroups[94], &HeroModelBank[DB_CharsPolarCortex], &DatIndex[2 * 922], &DatIndex[2 * 921] },
-    { &FileGroups[91], &HeroModelBank[DB_CharsPolarBrio], &DatIndex[2 * 916], &DatIndex[2 * 915] },
-    { &FileGroups[92], &HeroModelBank[DB_CharsPolarDingo], &DatIndex[2 * 918], &DatIndex[2 * 917] },
-    { &FileGroups[90], &HeroModelBank[DB_CharsPolarRilla], &DatIndex[2 * 914], &DatIndex[2 * 913] },
-    { &FileGroups[93], &HeroModelBank[DB_CharsPolarTiny], &DatIndex[2 * 920], &DatIndex[2 * 919] },
-    { &FileGroups[89], &HeroModelBank[DB_CharsPolarKong], &DatIndex[2 * 912], &DatIndex[2 * 911] },
-    { &FileGroups[88], &HeroModelBank[DB_CharsBallCrash], &DatIndex[2 * 910], &DatIndex[2 * 909] },
-    { &FileGroups[87], &HeroModelBank[DB_CharsBallCoco], &DatIndex[2 * 908], &DatIndex[2 * 907] },
-    { &FileGroups[86], &HeroModelBank[DB_CharsBallCortex], &DatIndex[2 * 906], &DatIndex[2 * 905] },
-    { &FileGroups[85], &HeroModelBank[DB_CharsBallBrio], &DatIndex[2 * 904], &DatIndex[2 * 903] },
-    { &FileGroups[84], &HeroModelBank[DB_CharsBallDingo], &DatIndex[2 * 902], &DatIndex[2 * 901] },
-    { &FileGroups[83], &HeroModelBank[DB_CharsBallRilla], &DatIndex[2 * 900], &DatIndex[2 * 899] },
-    { &FileGroups[82], &HeroModelBank[DB_CharsBallTiny], &DatIndex[2 * 898], &DatIndex[2 * 897] },
-    { &FileGroups[81], &HeroModelBank[DB_CharsBallKong], &DatIndex[2 * 896], &DatIndex[2 * 895] },
-    { &FileGroups[80], &HeroModelBank[DB_CharsTankCrash], &DatIndex[2 * 894], &DatIndex[2 * 893] },
-    { &FileGroups[79], &HeroModelBank[DB_CharsTankCoco], &DatIndex[2 * 892], &DatIndex[2 * 891] },
-    { &FileGroups[78], &HeroModelBank[DB_CharsTankCortex], &DatIndex[2 * 890], &DatIndex[2 * 889] },
-    { &FileGroups[76], &HeroModelBank[DB_CharsTankBrio], &DatIndex[2 * 886], &DatIndex[2 * 885] },
-    { &FileGroups[75], &HeroModelBank[DB_CharsTankDingo], &DatIndex[2 * 884], &DatIndex[2 * 883] },
-    { &FileGroups[73], &HeroModelBank[DB_CharsTankRilla], &DatIndex[2 * 880], &DatIndex[2 * 879] },
-    { &FileGroups[77], &HeroModelBank[DB_CharsTankTiny], &DatIndex[2 * 888], &DatIndex[2 * 887] },
-    { &FileGroups[74], &HeroModelBank[DB_CharsTankKong], &DatIndex[2 * 882], &DatIndex[2 * 881] },
-    { &FileGroups[72], &HeroModelBank[DB_CharsKegsCrash], &DatIndex[2 * 878], &DatIndex[2 * 877] },
-    { &FileGroups[71], &HeroModelBank[DB_CharsKegsCoco], &DatIndex[2 * 876], &DatIndex[2 * 875] },
-    { &FileGroups[70], &HeroModelBank[DB_CharsKegsCortex], &DatIndex[2 * 874], &DatIndex[2 * 873] },
-    { &FileGroups[68], &HeroModelBank[DB_CharsKegsBrio], &DatIndex[2 * 870], &DatIndex[2 * 869] },
-    { &FileGroups[67], &HeroModelBank[DB_CharsKegsDingo], &DatIndex[2 * 868], &DatIndex[2 * 867] },
-    { &FileGroups[65], &HeroModelBank[DB_CharsKegsRilla], &DatIndex[2 * 864], &DatIndex[2 * 863] },
-    { &FileGroups[69], &HeroModelBank[DB_CharsKegsTiny], &DatIndex[2 * 872], &DatIndex[2 * 871] },
-    { &FileGroups[66], &HeroModelBank[DB_CharsKegsKong], &DatIndex[2 * 866], &DatIndex[2 * 865] },
-    { &FileGroups[64], &HeroModelBank[DB_CharsMalletCrash], &DatIndex[2 * 862], &DatIndex[2 * 861] },
-    { &FileGroups[63], &HeroModelBank[DB_CharsMalletCoco], &DatIndex[2 * 860], &DatIndex[2 * 859] },
-    { &FileGroups[62], &HeroModelBank[DB_CharsMalletCortex], &DatIndex[2 * 858], &DatIndex[2 * 857] },
-    { &FileGroups[61], &HeroModelBank[DB_CharsMalletBrio], &DatIndex[2 * 856], &DatIndex[2 * 855] },
-    { &FileGroups[60], &HeroModelBank[DB_CharsMalletDingo], &DatIndex[2 * 854], &DatIndex[2 * 853] },
-    { &FileGroups[59], &HeroModelBank[DB_CharsMalletRilla], &DatIndex[2 * 852], &DatIndex[2 * 851] },
-    { &FileGroups[58], &HeroModelBank[DB_CharsMalletTiny], &DatIndex[2 * 850], &DatIndex[2 * 849] },
-    { &FileGroups[57], &HeroModelBank[DB_CharsMalletKong], &DatIndex[2 * 848], &DatIndex[2 * 847] },
-    { &FileGroups[56], &HeroModelBank[DB_CharsDinoCrash], &DatIndex[2 * 846], &DatIndex[2 * 845] },
-    { &FileGroups[52], &HeroModelBank[DB_CharsDinoCoco], &DatIndex[2 * 838], &DatIndex[2 * 837] },
-    { &FileGroups[55], &HeroModelBank[DB_CharsDinoCortex], &DatIndex[2 * 844], &DatIndex[2 * 843] },
-    { &FileGroups[51], &HeroModelBank[DB_CharsDinoBrio], &DatIndex[2 * 836], &DatIndex[2 * 835] },
-    { &FileGroups[53], &HeroModelBank[DB_CharsDinoDingo], &DatIndex[2 * 840], &DatIndex[2 * 839] },
-    { &FileGroups[50], &HeroModelBank[DB_CharsDinoRilla], &DatIndex[2 * 834], &DatIndex[2 * 833] },
-    { &FileGroups[54], &HeroModelBank[DB_CharsDinoTiny], &DatIndex[2 * 842], &DatIndex[2 * 841] },
-    { &FileGroups[49], &HeroModelBank[DB_CharsDinoKong], &DatIndex[2 * 832], &DatIndex[2 * 831] },
-    { &FileGroups[48], &HeroModelBank[DB_CharsRaceCrash], &DatIndex[2 * 830], &DatIndex[2 * 829] },
-    { &FileGroups[42], &HeroModelBank[DB_CharsRaceCoco], &DatIndex[2 * 818], &DatIndex[2 * 817] },
-    { &FileGroups[47], &HeroModelBank[DB_CharsRaceCortex], &DatIndex[2 * 828], &DatIndex[2 * 827] },
-    { &FileGroups[44], &HeroModelBank[DB_CharsRaceBrio], &DatIndex[2 * 822], &DatIndex[2 * 821] },
-    { &FileGroups[45], &HeroModelBank[DB_CharsRaceDingo], &DatIndex[2 * 824], &DatIndex[2 * 823] },
-    { &FileGroups[41], &HeroModelBank[DB_CharsRaceRilla], &DatIndex[2 * 816], &DatIndex[2 * 815] },
-    { &FileGroups[46], &HeroModelBank[DB_CharsRaceTiny], &DatIndex[2 * 826], &DatIndex[2 * 825] },
-    { &FileGroups[43], &HeroModelBank[DB_CharsRaceKong], &DatIndex[2 * 820], &DatIndex[2 * 819] },
-    { &FileGroups[40], &HeroModelBank[DB_CharsSplashCrash], &DatIndex[2 * 814], &DatIndex[2 * 813] },
-    { &FileGroups[35], &HeroModelBank[DB_CharsSplashCoco], &DatIndex[2 * 804], &DatIndex[2 * 803] },
-    { &FileGroups[39], &HeroModelBank[DB_CharsSplashCortex], &DatIndex[2 * 812], &DatIndex[2 * 811] },
-    { &FileGroups[33], &HeroModelBank[DB_CharsSplashBrio], &DatIndex[2 * 800], &DatIndex[2 * 799] },
-    { &FileGroups[37], &HeroModelBank[DB_CharsSplashDingo], &DatIndex[2 * 808], &DatIndex[2 * 807] },
-    { &FileGroups[34], &HeroModelBank[DB_CharsSplashRilla], &DatIndex[2 * 802], &DatIndex[2 * 801] },
-    { &FileGroups[38], &HeroModelBank[DB_CharsSplashTiny], &DatIndex[2 * 810], &DatIndex[2 * 809] },
-    { &FileGroups[36], &HeroModelBank[DB_CharsSplashKong], &DatIndex[2 * 806], &DatIndex[2 * 805] },
+    { &FileGroups[128], &HeroModelBank[DB_CharsCrateCrash], &DatIndex[990], &DatIndex[989] },
+    { &FileGroups[127], &HeroModelBank[DB_CharsCrateCoco], &DatIndex[988], &DatIndex[987] },
+    { &FileGroups[126], &HeroModelBank[DB_CharsCrateCortex], &DatIndex[986], &DatIndex[985] },
+    { &FileGroups[125], &HeroModelBank[DB_CharsCrateBrio], &DatIndex[984], &DatIndex[983] },
+    { &FileGroups[123], &HeroModelBank[DB_CharsCrateDingo], &DatIndex[980], &DatIndex[979] },
+    { &FileGroups[122], &HeroModelBank[DB_CharsCrateRilla], &DatIndex[978], &DatIndex[977] },
+    { &FileGroups[124], &HeroModelBank[DB_CharsCrateTiny], &DatIndex[982], &DatIndex[981] },
+    { &FileGroups[121], &HeroModelBank[DB_CharsCrateKong], &DatIndex[976], &DatIndex[975] },
+    { &FileGroups[120], &HeroModelBank[DB_CharsPogoCrash], &DatIndex[974], &DatIndex[973] },
+    { &FileGroups[119], &HeroModelBank[DB_CharsPogoCoco], &DatIndex[972], &DatIndex[971] },
+    { &FileGroups[118], &HeroModelBank[DB_CharsPogoCortex], &DatIndex[970], &DatIndex[969] },
+    { &FileGroups[117], &HeroModelBank[DB_CharsPogoBrio], &DatIndex[968], &DatIndex[967] },
+    { &FileGroups[114], &HeroModelBank[DB_CharsPogoDingo], &DatIndex[962], &DatIndex[961] },
+    { &FileGroups[113], &HeroModelBank[DB_CharsPogoRilla], &DatIndex[960], &DatIndex[959] },
+    { &FileGroups[116], &HeroModelBank[DB_CharsPogoTiny], &DatIndex[966], &DatIndex[965] },
+    { &FileGroups[115], &HeroModelBank[DB_CharsPogoKong], &DatIndex[964], &DatIndex[963] },
+    { &FileGroups[112], &HeroModelBank[DB_CharsPolar2Crash], &DatIndex[958], &DatIndex[957] },
+    { &FileGroups[111], &HeroModelBank[DB_CharsPolar2Coco], &DatIndex[956], &DatIndex[955] },
+    { &FileGroups[110], &HeroModelBank[DB_CharsPolar2Cortex], &DatIndex[954], &DatIndex[953] },
+    { &FileGroups[107], &HeroModelBank[DB_CharsPolar2Brio], &DatIndex[948], &DatIndex[947] },
+    { &FileGroups[108], &HeroModelBank[DB_CharsPolar2Dingo], &DatIndex[950], &DatIndex[949] },
+    { &FileGroups[105], &HeroModelBank[DB_CharsPolar2Rilla], &DatIndex[944], &DatIndex[943] },
+    { &FileGroups[109], &HeroModelBank[DB_CharsPolar2Tiny], &DatIndex[952], &DatIndex[951] },
+    { &FileGroups[106], &HeroModelBank[DB_CharsPolar2Kong], &DatIndex[946], &DatIndex[945] },
+    { &FileGroups[104], &HeroModelBank[DB_CharsCrate2Crash], &DatIndex[942], &DatIndex[941] },
+    { &FileGroups[103], &HeroModelBank[DB_CharsCrate2Coco], &DatIndex[940], &DatIndex[939] },
+    { &FileGroups[102], &HeroModelBank[DB_CharsCrate2Cortex], &DatIndex[938], &DatIndex[937] },
+    { &FileGroups[99], &HeroModelBank[DB_CharsCrate2Brio], &DatIndex[932], &DatIndex[931] },
+    { &FileGroups[100], &HeroModelBank[DB_CharsCrate2Dingo], &DatIndex[934], &DatIndex[933] },
+    { &FileGroups[97], &HeroModelBank[DB_CharsCrate2Rilla], &DatIndex[928], &DatIndex[927] },
+    { &FileGroups[101], &HeroModelBank[DB_CharsCrate2Tiny], &DatIndex[936], &DatIndex[935] },
+    { &FileGroups[98], &HeroModelBank[DB_CharsCrate2Kong], &DatIndex[930], &DatIndex[929] },
+    { &FileGroups[96], &HeroModelBank[DB_CharsPolarCrash], &DatIndex[926], &DatIndex[925] },
+    { &FileGroups[95], &HeroModelBank[DB_CharsPolarCoco], &DatIndex[924], &DatIndex[923] },
+    { &FileGroups[94], &HeroModelBank[DB_CharsPolarCortex], &DatIndex[922], &DatIndex[921] },
+    { &FileGroups[91], &HeroModelBank[DB_CharsPolarBrio], &DatIndex[916], &DatIndex[915] },
+    { &FileGroups[92], &HeroModelBank[DB_CharsPolarDingo], &DatIndex[918], &DatIndex[917] },
+    { &FileGroups[90], &HeroModelBank[DB_CharsPolarRilla], &DatIndex[914], &DatIndex[913] },
+    { &FileGroups[93], &HeroModelBank[DB_CharsPolarTiny], &DatIndex[920], &DatIndex[919] },
+    { &FileGroups[89], &HeroModelBank[DB_CharsPolarKong], &DatIndex[912], &DatIndex[911] },
+    { &FileGroups[88], &HeroModelBank[DB_CharsBallCrash], &DatIndex[910], &DatIndex[909] },
+    { &FileGroups[87], &HeroModelBank[DB_CharsBallCoco], &DatIndex[908], &DatIndex[907] },
+    { &FileGroups[86], &HeroModelBank[DB_CharsBallCortex], &DatIndex[906], &DatIndex[905] },
+    { &FileGroups[85], &HeroModelBank[DB_CharsBallBrio], &DatIndex[904], &DatIndex[903] },
+    { &FileGroups[84], &HeroModelBank[DB_CharsBallDingo], &DatIndex[902], &DatIndex[901] },
+    { &FileGroups[83], &HeroModelBank[DB_CharsBallRilla], &DatIndex[900], &DatIndex[899] },
+    { &FileGroups[82], &HeroModelBank[DB_CharsBallTiny], &DatIndex[898], &DatIndex[897] },
+    { &FileGroups[81], &HeroModelBank[DB_CharsBallKong], &DatIndex[896], &DatIndex[895] },
+    { &FileGroups[80], &HeroModelBank[DB_CharsTankCrash], &DatIndex[894], &DatIndex[893] },
+    { &FileGroups[79], &HeroModelBank[DB_CharsTankCoco], &DatIndex[892], &DatIndex[891] },
+    { &FileGroups[78], &HeroModelBank[DB_CharsTankCortex], &DatIndex[890], &DatIndex[889] },
+    { &FileGroups[76], &HeroModelBank[DB_CharsTankBrio], &DatIndex[886], &DatIndex[885] },
+    { &FileGroups[75], &HeroModelBank[DB_CharsTankDingo], &DatIndex[884], &DatIndex[883] },
+    { &FileGroups[73], &HeroModelBank[DB_CharsTankRilla], &DatIndex[880], &DatIndex[879] },
+    { &FileGroups[77], &HeroModelBank[DB_CharsTankTiny], &DatIndex[888], &DatIndex[887] },
+    { &FileGroups[74], &HeroModelBank[DB_CharsTankKong], &DatIndex[882], &DatIndex[881] },
+    { &FileGroups[72], &HeroModelBank[DB_CharsKegsCrash], &DatIndex[878], &DatIndex[877] },
+    { &FileGroups[71], &HeroModelBank[DB_CharsKegsCoco], &DatIndex[876], &DatIndex[875] },
+    { &FileGroups[70], &HeroModelBank[DB_CharsKegsCortex], &DatIndex[874], &DatIndex[873] },
+    { &FileGroups[68], &HeroModelBank[DB_CharsKegsBrio], &DatIndex[870], &DatIndex[869] },
+    { &FileGroups[67], &HeroModelBank[DB_CharsKegsDingo], &DatIndex[868], &DatIndex[867] },
+    { &FileGroups[65], &HeroModelBank[DB_CharsKegsRilla], &DatIndex[864], &DatIndex[863] },
+    { &FileGroups[69], &HeroModelBank[DB_CharsKegsTiny], &DatIndex[872], &DatIndex[871] },
+    { &FileGroups[66], &HeroModelBank[DB_CharsKegsKong], &DatIndex[866], &DatIndex[865] },
+    { &FileGroups[64], &HeroModelBank[DB_CharsMalletCrash], &DatIndex[862], &DatIndex[861] },
+    { &FileGroups[63], &HeroModelBank[DB_CharsMalletCoco], &DatIndex[860], &DatIndex[859] },
+    { &FileGroups[62], &HeroModelBank[DB_CharsMalletCortex], &DatIndex[858], &DatIndex[857] },
+    { &FileGroups[61], &HeroModelBank[DB_CharsMalletBrio], &DatIndex[856], &DatIndex[855] },
+    { &FileGroups[60], &HeroModelBank[DB_CharsMalletDingo], &DatIndex[854], &DatIndex[853] },
+    { &FileGroups[59], &HeroModelBank[DB_CharsMalletRilla], &DatIndex[852], &DatIndex[851] },
+    { &FileGroups[58], &HeroModelBank[DB_CharsMalletTiny], &DatIndex[850], &DatIndex[849] },
+    { &FileGroups[57], &HeroModelBank[DB_CharsMalletKong], &DatIndex[848], &DatIndex[847] },
+    { &FileGroups[56], &HeroModelBank[DB_CharsDinoCrash], &DatIndex[846], &DatIndex[845] },
+    { &FileGroups[52], &HeroModelBank[DB_CharsDinoCoco], &DatIndex[838], &DatIndex[837] },
+    { &FileGroups[55], &HeroModelBank[DB_CharsDinoCortex], &DatIndex[844], &DatIndex[843] },
+    { &FileGroups[51], &HeroModelBank[DB_CharsDinoBrio], &DatIndex[836], &DatIndex[835] },
+    { &FileGroups[53], &HeroModelBank[DB_CharsDinoDingo], &DatIndex[840], &DatIndex[839] },
+    { &FileGroups[50], &HeroModelBank[DB_CharsDinoRilla], &DatIndex[834], &DatIndex[833] },
+    { &FileGroups[54], &HeroModelBank[DB_CharsDinoTiny], &DatIndex[842], &DatIndex[841] },
+    { &FileGroups[49], &HeroModelBank[DB_CharsDinoKong], &DatIndex[832], &DatIndex[831] },
+    { &FileGroups[48], &HeroModelBank[DB_CharsRaceCrash], &DatIndex[830], &DatIndex[829] },
+    { &FileGroups[42], &HeroModelBank[DB_CharsRaceCoco], &DatIndex[818], &DatIndex[817] },
+    { &FileGroups[47], &HeroModelBank[DB_CharsRaceCortex], &DatIndex[828], &DatIndex[827] },
+    { &FileGroups[44], &HeroModelBank[DB_CharsRaceBrio], &DatIndex[822], &DatIndex[821] },
+    { &FileGroups[45], &HeroModelBank[DB_CharsRaceDingo], &DatIndex[824], &DatIndex[823] },
+    { &FileGroups[41], &HeroModelBank[DB_CharsRaceRilla], &DatIndex[816], &DatIndex[815] },
+    { &FileGroups[46], &HeroModelBank[DB_CharsRaceTiny], &DatIndex[826], &DatIndex[825] },
+    { &FileGroups[43], &HeroModelBank[DB_CharsRaceKong], &DatIndex[820], &DatIndex[819] },
+    { &FileGroups[40], &HeroModelBank[DB_CharsSplashCrash], &DatIndex[814], &DatIndex[813] },
+    { &FileGroups[35], &HeroModelBank[DB_CharsSplashCoco], &DatIndex[804], &DatIndex[803] },
+    { &FileGroups[39], &HeroModelBank[DB_CharsSplashCortex], &DatIndex[812], &DatIndex[811] },
+    { &FileGroups[33], &HeroModelBank[DB_CharsSplashBrio], &DatIndex[800], &DatIndex[799] },
+    { &FileGroups[37], &HeroModelBank[DB_CharsSplashDingo], &DatIndex[808], &DatIndex[807] },
+    { &FileGroups[34], &HeroModelBank[DB_CharsSplashRilla], &DatIndex[802], &DatIndex[801] },
+    { &FileGroups[38], &HeroModelBank[DB_CharsSplashTiny], &DatIndex[810], &DatIndex[809] },
+    { &FileGroups[36], &HeroModelBank[DB_CharsSplashKong], &DatIndex[806], &DatIndex[805] },
 };
 s32 FileGroupNone[2] = {0};
 u8 *ModeFileGroups[45] = {
@@ -1476,10 +1476,10 @@ MarkCtx ExitAMarks[13] = {
     { 0 },
 };
 EngineVabCue ExitAAudio[5] = {
-    { (s32)&DatIndex[2 * 262], 0x780, 0x4AD },
-    { (s32)&DatIndex[2 * 261], 0x781, 0x4AD },
-    { (s32)&DatIndex[2 * 260], 0x782, 0x4AD },
-    { (s32)&DatIndex[2 * 259], 0x783, 0x4AD },
+    { &DatIndex[262], 0x780, 0x4AD },
+    { &DatIndex[261], 0x781, 0x4AD },
+    { &DatIndex[260], 0x782, 0x4AD },
+    { &DatIndex[259], 0x783, 0x4AD },
     { 0 },
 };
 MarkCtx SceneTextGoodwinsMarks[2] = {
@@ -1487,7 +1487,7 @@ MarkCtx SceneTextGoodwinsMarks[2] = {
     { 0 },
 };
 EngineVabCue SceneTextGoodwinsAudio[2] = {
-    { (s32)&DatIndex[2 * 271], 0x76C, 0x4AD },
+    { &DatIndex[271], 0x76C, 0x4AD },
     { 0 },
 };
 MarkCtx ExitBMarks[10] = {
@@ -1503,9 +1503,9 @@ MarkCtx ExitBMarks[10] = {
     { 0 },
 };
 EngineVabCue ExitBAudio[4] = {
-    { (s32)&DatIndex[2 * 258], 0x78A, 0x4AD },
-    { (s32)&DatIndex[2 * 257], 0x78B, 0x4AD },
-    { (s32)&DatIndex[2 * 256], 0x78C, 0x4AD },
+    { &DatIndex[258], 0x78A, 0x4AD },
+    { &DatIndex[257], 0x78B, 0x4AD },
+    { &DatIndex[256], 0x78C, 0x4AD },
     { 0 },
 };
 MarkCtx SceneTextEvilwinsMarks[2] = {
@@ -1524,9 +1524,9 @@ MarkCtx ExitCMarks[5] = {
     { 0 },
 };
 EngineVabCue ExitCAudio[4] = {
-    { (s32)&DatIndex[2 * 265], 0x776, 0x4AD },
-    { (s32)&DatIndex[2 * 264], 0x777, 0x4AD },
-    { (s32)&DatIndex[2 * 263], 0x778, 0x4AD },
+    { &DatIndex[265], 0x776, 0x4AD },
+    { &DatIndex[264], 0x777, 0x4AD },
+    { &DatIndex[263], 0x778, 0x4AD },
     { 0 },
 };
 MarkCtx SceneTextCreditsMarks[4] = {
@@ -1562,17 +1562,17 @@ MarkCtx IntroMovieMarks[20] = {
     { 0 },
 };
 EngineVabCue SceneSharedAudio[12] = {
-    { (s32)&DatIndex[2 * 255], 0x794, 0x255 },
-    { (s32)&DatIndex[2 * 254], 0x795, 0x255 },
-    { (s32)&DatIndex[2 * 253], 0x796, 0x255 },
-    { (s32)&DatIndex[2 * 252], 0x797, 0x255 },
-    { (s32)&DatIndex[2 * 251], 0x798, 0x255 },
-    { (s32)&DatIndex[2 * 250], 0x799, 0x255 },
-    { (s32)&DatIndex[2 * 249], 0x79A, 0x255 },
-    { (s32)&DatIndex[2 * 248], 0x79B, 0x255 },
-    { (s32)&DatIndex[2 * 247], 0x79C, 0x255 },
-    { (s32)&DatIndex[2 * 246], 0x79D, 0x255 },
-    { (s32)&DatIndex[2 * 245], 0x79E, 0x255 },
+    { &DatIndex[255], 0x794, 0x255 },
+    { &DatIndex[254], 0x795, 0x255 },
+    { &DatIndex[253], 0x796, 0x255 },
+    { &DatIndex[252], 0x797, 0x255 },
+    { &DatIndex[251], 0x798, 0x255 },
+    { &DatIndex[250], 0x799, 0x255 },
+    { &DatIndex[249], 0x79A, 0x255 },
+    { &DatIndex[248], 0x79B, 0x255 },
+    { &DatIndex[247], 0x79C, 0x255 },
+    { &DatIndex[246], 0x79D, 0x255 },
+    { &DatIndex[245], 0x79E, 0x255 },
     { 0 },
 };
 ScriptScene IntroMovieMsgs[2] = {
@@ -1594,19 +1594,19 @@ ScriptScene LevelExitMsgsC[4] = {
     { SceneTextCreditsMarks, SceneSharedAudio, 0x1E0000 },
 };
 EngineVabCue SceneUkaData4Audio[2] = {
-    { (s32)&DatIndex[2 * 224], 0x3DD, 0 },
+    { &DatIndex[224], 0x3DD, 0 },
     { 0 },
 };
 EngineVabCue SceneUkaData3Audio[2] = {
-    { (s32)&DatIndex[2 * 225], 0x3DA, 0 },
+    { &DatIndex[225], 0x3DA, 0 },
     { 0 },
 };
 EngineVabCue SceneUkaData2Audio[2] = {
-    { (s32)&DatIndex[2 * 222], 0x3E3, 0 },
+    { &DatIndex[222], 0x3E3, 0 },
     { 0 },
 };
 EngineVabCue SceneUkaDataAudio[2] = {
-    { (s32)&DatIndex[2 * 223], 0x3E0, 0 },
+    { &DatIndex[223], 0x3E0, 0 },
     { 0 },
 };
 MarkCtx SceneUkaData4Marks[2] = {
@@ -1630,19 +1630,19 @@ MarkCtx SceneUkaData2Marks[2] = {
 };
 ScriptScene SceneUkaData2 = { SceneUkaData2Marks, SceneUkaData2Audio, 0x1E0000 };
 EngineVabCue SceneAkuData4Audio[2] = {
-    { (s32)&DatIndex[2 * 220], 0x3DC, 0 },
+    { &DatIndex[220], 0x3DC, 0 },
     { 0 },
 };
 EngineVabCue SceneAkuData3Audio[2] = {
-    { (s32)&DatIndex[2 * 221], 0x3D9, 0 },
+    { &DatIndex[221], 0x3D9, 0 },
     { 0 },
 };
 EngineVabCue SceneAkuData2Audio[2] = {
-    { (s32)&DatIndex[2 * 218], 0x3E2, 0 },
+    { &DatIndex[218], 0x3E2, 0 },
     { 0 },
 };
 EngineVabCue SceneAkuDataAudio[2] = {
-    { (s32)&DatIndex[2 * 219], 0x3DF, 0 },
+    { &DatIndex[219], 0x3DF, 0 },
     { 0 },
 };
 MarkCtx SceneAkuData4Marks[2] = {
@@ -1666,11 +1666,11 @@ MarkCtx SceneAkuData2Marks[2] = {
 };
 ScriptScene SceneAkuData2 = { SceneAkuData2Marks, SceneAkuData2Audio, 0x1E0000 };
 EngineVabCue SceneAkuUkaData2Audio[2] = {
-    { (s32)&DatIndex[2 * 214], 0x3E4, 0 },
+    { &DatIndex[214], 0x3E4, 0 },
     { 0 },
 };
 EngineVabCue SceneAkuUkaDataAudio[2] = {
-    { (s32)&DatIndex[2 * 215], 0x3E1, 0 },
+    { &DatIndex[215], 0x3E1, 0 },
     { 0 },
 };
 MarkCtx SceneAkuUkaDataMarks[2] = {

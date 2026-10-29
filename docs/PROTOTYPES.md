@@ -365,27 +365,37 @@ result fits retail's uses of that label: `first_joypad` and `joypad_idle_count` 
 `vmode_512_ntsc` (from `cdb`), `IconImage` (the per-hero table, from `HealthIconPos`). The
 rest of the candidates land on labels nothing references yet.
 
-**Left.**
+**Left, and how it ended (2026-10-29, ROADMAP-B 2.2).**
 - `cam_init(camera_info_tag *)`: done 2026-10-28. The views are merged into
   `camera_info_tag`, and `MainCamera` is one; `CamView` remains as the head that
   cam_ease_to eases to.
-- 11 prototypes `proto_types.py` can't write: a function pointer parameter
-  (`asload_permanent_callback`), a parameter count that differs
-  (`camera_count_bottom`, `draw_map_sub`, `map_update`, `HeroQuiet`,
-  `DefHero2ObjectCollision`), no definition the tool can find
-  (`dbase_release_all_mesh_anims` is K&R, `prim_write_uvs`, `HeroGhost`),
-  two definitions (`mal_update`), an original header's (`TestBeamChance`).
-- Classes with no stand-in yet: `geo`, `geo_entity` (Euro has its layout),
-  `geo_vertex`, `geo_tristrip`, `joypad_info`, `tga_header`, `file`,
-  `UPOLY_GT3`, `lPOLY_GT4`, `prim_`.
+- The 11 prototypes `proto_types.py` can't write are written by hand where the code agrees:
+  - `file` is the archive's entry, `{sector, size}`. `DatIndex` is a `file[992]` (`&DatIndex[N]`), and
+    every loader takes a `file *`: `loader_queue`, `asload_permanent_callback`,
+    `asload_chunk_relocatable`, `load_file*`, `cd_read`, `cd_seek`, `machine_load_sfx`,
+    `music_dload_midi`. So do the dbases', music table's, cues' and intro's fields. The games'
+    file lists (`XxxFiles`) are `GroupFile` triples (`{dbase, file, textureFile}`), which is what
+    `file_group_load_info.files` holds.
+  - `camera_count_bottom(long, long, SLONG_XYZ *)`, `draw_map_sub(subengine *, MATRIX *, long)`,
+    `map_update(map_enviroment *, SLONG_XYZ *)`, `HeroQuiet(u32)` and
+    `DefHero2ObjectCollision(u32, u16, u16, u16)` take the demo's parameters; the extra ones are
+    unused.
+  - `HeroGhost(u32)` stays K&R, because Tank calls it with no argument.
+  - `dbase_release_all_mesh_anims` and `prim_write_uvs` stay K&R with the demo's types or their
+    stand-ins.
+  - `mal_update` has two definitions only because one is the `NON_MATCHING` copy.
+  - `TestBeamChance` is `bool` in its leaked header and `s32` where it's defined (the same
+    register).
+- The classes the demos name all have stand-ins: `geo` is `ModelFile`, `geo_entity` is `MeshHeader`,
+  `geo_vertex` is `SVECTOR`, `geo_tristrip` is the run bytes `draw_verts` reads, `joypad_info` is
+  `PadState`, `UPOLY_GT3` and `lPOLY_GT4` are `POLY_GT3` and `POLY_GT4`, and `prim_` is the sprite prim
+  `release_sprim` frees. `file` and `tga_header` keep their own names.
 - `PrintNasPos` is never referenced, so it can't be placed.
-- `ProcessPauseUD(int, int)` is very likely `func_8007F1A8`: a 0.49 code
-  match, it sits right before the pause menu in both builds, calls only
-  `PlaySfx` (the cursor's up/down handler), and `func_8007F314` calls it.
-  `Do_SelectorMenu()` and `PreUpdateStats(u16)` are `PAUSE.CPP`-area labels
-  that match nothing in retail.
-- The 0x38-byte texture entry still has three views (`obj_texture`,
-  `AnimEntry`, `TexDst2A84C`) whose fields disagree in type.
+- `ProcessPauseUD(int, int)` is `func_8007F1A8`, named (`src/overlays/engine/pause.c`).
+  `Do_SelectorMenu()` and `PreUpdateStats(u16)` are `PAUSE.CPP`-area labels that match nothing in
+  retail.
+- The 0x38-byte texture entry has one type, `obj_texture`; `AnimEntry` and `TexDst2A84C` are folded
+  into it.
 
 ## Earlier compiles of a function
 

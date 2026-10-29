@@ -288,12 +288,12 @@ char *PapuAnims[12] = {
     (char *)PapuAnimHoldSlow, (char *)PapuAnimHoldThrow, (char *)PapuAnimTauntA, NULL,
 };
 s16 PapuLevelDB[2] = { -1, 0 };
-s32 PapuFiles[27] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 579], (s32)&DatIndex[2 * 578], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 575],
-    (s32)&DatIndex[2 * 574], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 577], (s32)&DatIndex[2 * 576], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 573], (s32)&DatIndex[2 * 572], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 571], (s32)&DatIndex[2 * 570],
-    (s32)&HeroModelBank[DB_CrateObjects], (s32)&DatIndex[2 * 569], (s32)&DatIndex[2 * 568], (s32)&HeroModelBank[DB_Papu], (s32)&DatIndex[2 * 567],
-    (s32)&DatIndex[2 * 566], (s32)&HeroModelBank[DB_Minion], (s32)&DatIndex[2 * 565], (s32)&DatIndex[2 * 564], 0, 0,
+GroupFile PapuFiles[9] = {
+    &HeroModelBank[DB_Font], &DatIndex[579], &DatIndex[578], &HeroModelBank[DB_Loading], &DatIndex[575],
+    &DatIndex[574], &HeroModelBank[DB_Interface], &DatIndex[577], &DatIndex[576], &HeroModelBank[DB_Powerups],
+    &DatIndex[573], &DatIndex[572], &HeroModelBank[DB_Angel], &DatIndex[571], &DatIndex[570],
+    &HeroModelBank[DB_CrateObjects], &DatIndex[569], &DatIndex[568], &HeroModelBank[DB_Papu], &DatIndex[567],
+    &DatIndex[566], &HeroModelBank[DB_Minion], &DatIndex[565], &DatIndex[564], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 4's) */
 file_group_load_info file_group_PAPU = { &FileGroups[26], PapuFiles };

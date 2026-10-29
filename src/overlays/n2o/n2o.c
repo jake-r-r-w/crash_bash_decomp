@@ -310,12 +310,12 @@ s16 N2OLevelDB[4] = { 0x5E, 0x5D, 0x7A, -1 };
 WWInf N2OWorldInfo[1] = {
     { 0x5C, N2OAnims, N2OLevelDB, 1 },
 };
-s32 N2OFiles[27] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 331], (s32)&DatIndex[2 * 330], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 327],
-    (s32)&DatIndex[2 * 326], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 329], (s32)&DatIndex[2 * 328], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 325], (s32)&DatIndex[2 * 324], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 323], (s32)&DatIndex[2 * 322],
-    (s32)&HeroModelBank[DB_PlayerVehicle], (s32)&DatIndex[2 * 319], (s32)&DatIndex[2 * 318], (s32)&HeroModelBank[DB_BallsEffects], (s32)&DatIndex[2 * 321],
-    (s32)&DatIndex[2 * 320], (s32)&HeroModelBank[DB_Oxide], (s32)&DatIndex[2 * 317], (s32)&DatIndex[2 * 316], 0, 0,
+GroupFile N2OFiles[9] = {
+    &HeroModelBank[DB_Font], &DatIndex[331], &DatIndex[330], &HeroModelBank[DB_Loading], &DatIndex[327],
+    &DatIndex[326], &HeroModelBank[DB_Interface], &DatIndex[329], &DatIndex[328], &HeroModelBank[DB_Powerups],
+    &DatIndex[325], &DatIndex[324], &HeroModelBank[DB_Angel], &DatIndex[323], &DatIndex[322],
+    &HeroModelBank[DB_PlayerVehicle], &DatIndex[319], &DatIndex[318], &HeroModelBank[DB_BallsEffects], &DatIndex[321],
+    &DatIndex[320], &HeroModelBank[DB_Oxide], &DatIndex[317], &DatIndex[316], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1F's) */
 file_group_load_info file_group_N2O = { &FileGroups[6], N2OFiles };

@@ -577,23 +577,23 @@ WWInf PolarWorldInfo[10] = {
     { 0x97, PolarAnims, PolarLevelDB2, 1 },
     { 0x98, PolarAnims, PolarLevelDB1, 1 },
 };
-s32 PolarEndFiles[15] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 445], (s32)&DatIndex[2 * 444], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 441],
-    (s32)&DatIndex[2 * 440], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 443], (s32)&DatIndex[2 * 442], (s32)&HeroModelBank[DB_PolarObjects],
-    (s32)&DatIndex[2 * 439], (s32)&DatIndex[2 * 438], 0, 0, 0,
+GroupFile PolarEndFiles[5] = {
+    &HeroModelBank[DB_Font], &DatIndex[445], &DatIndex[444], &HeroModelBank[DB_Loading], &DatIndex[441],
+    &DatIndex[440], &HeroModelBank[DB_Interface], &DatIndex[443], &DatIndex[442], &HeroModelBank[DB_PolarObjects],
+    &DatIndex[439], &DatIndex[438], 0, 0, 0,
 };
-s32 PolarFiles[18] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 437], (s32)&DatIndex[2 * 436], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 433],
-    (s32)&DatIndex[2 * 432], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 435], (s32)&DatIndex[2 * 434], (s32)&HeroModelBank[DB_PolarObjects],
-    (s32)&DatIndex[2 * 431], (s32)&DatIndex[2 * 430], (s32)&HeroModelBank[DB_Polar], (s32)&DatIndex[2 * 429], (s32)&DatIndex[2 * 428],
+GroupFile PolarFiles[6] = {
+    &HeroModelBank[DB_Font], &DatIndex[437], &DatIndex[436], &HeroModelBank[DB_Loading], &DatIndex[433],
+    &DatIndex[432], &HeroModelBank[DB_Interface], &DatIndex[435], &DatIndex[434], &HeroModelBank[DB_PolarObjects],
+    &DatIndex[431], &DatIndex[430], &HeroModelBank[DB_Polar], &DatIndex[429], &DatIndex[428],
     0, 0, 0,
 };
-s32 PolarBossFiles[24] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 427], (s32)&DatIndex[2 * 426], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 423],
-    (s32)&DatIndex[2 * 422], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 425], (s32)&DatIndex[2 * 424], (s32)&HeroModelBank[DB_PolarObjects],
-    (s32)&DatIndex[2 * 421], (s32)&DatIndex[2 * 420], (s32)&HeroModelBank[DB_Polar], (s32)&DatIndex[2 * 419], (s32)&DatIndex[2 * 418],
-    (s32)&HeroModelBank[DB_RoboPolar], (s32)&DatIndex[2 * 417], (s32)&DatIndex[2 * 416], (s32)&HeroModelBank[DB_Powerups], (s32)&DatIndex[2 * 415],
-    (s32)&DatIndex[2 * 414], 0, 0,
+GroupFile PolarBossFiles[8] = {
+    &HeroModelBank[DB_Font], &DatIndex[427], &DatIndex[426], &HeroModelBank[DB_Loading], &DatIndex[423],
+    &DatIndex[422], &HeroModelBank[DB_Interface], &DatIndex[425], &DatIndex[424], &HeroModelBank[DB_PolarObjects],
+    &DatIndex[421], &DatIndex[420], &HeroModelBank[DB_Polar], &DatIndex[419], &DatIndex[418],
+    &HeroModelBank[DB_RoboPolar], &DatIndex[417], &DatIndex[416], &HeroModelBank[DB_Powerups], &DatIndex[415],
+    &DatIndex[414], 0, 0,
 };
 /* the levels' files, in the leak's order (Day, Night, Cut, their challenges, End and its challenge,
  * the boss): the exe's file group and the model list; the engine's table at 0x800A0030 points at

@@ -168,11 +168,11 @@ WWInf SpinWorldInfo[2] = {
     { 0x7D, SpinAnims, SpinLevelDB0, 7 },
     { 0x7E, SpinAnims, SpinLevelDB1, 7 },
 };
-s32 SpinFiles[21] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 363], (s32)&DatIndex[2 * 362], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 359],
-    (s32)&DatIndex[2 * 358], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 361], (s32)&DatIndex[2 * 360], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 357], (s32)&DatIndex[2 * 356], (s32)&HeroModelBank[DB_CrateObjects], (s32)&DatIndex[2 * 355], (s32)&DatIndex[2 * 354],
-    (s32)&HeroModelBank[DB_RingObjects], (s32)&DatIndex[2 * 353], (s32)&DatIndex[2 * 352], 0, 0,
+GroupFile SpinFiles[7] = {
+    &HeroModelBank[DB_Font], &DatIndex[363], &DatIndex[362], &HeroModelBank[DB_Loading], &DatIndex[359],
+    &DatIndex[358], &HeroModelBank[DB_Interface], &DatIndex[361], &DatIndex[360], &HeroModelBank[DB_Powerups],
+    &DatIndex[357], &DatIndex[356], &HeroModelBank[DB_CrateObjects], &DatIndex[355], &DatIndex[354],
+    &HeroModelBank[DB_RingObjects], &DatIndex[353], &DatIndex[352], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1B's) */
 file_group_load_info file_group_RING = { &FileGroups[10], SpinFiles };

@@ -483,7 +483,7 @@ FileEntry *dbase_mesh_anim_rec_release(s32 *arg0, FileEntry *rec) {
 
 /* Inlined copy of dbase_mesh_anim_rec_load (load a record's node); being an inline call
  * is what puts arg1 in v1 and the table in a1. */
-static inline BlockRef *dbase_mesh_anim_load_one(s32 *arg0, FileEntry *arg1) {
+static inline BlockRef *dbase_mesh_anim_load_one(obj_dbase *arg0, FileEntry *arg1) {
     BlockRef *cur;
     BlockRef *node;
     s32 start;
@@ -495,7 +495,7 @@ static inline BlockRef *dbase_mesh_anim_load_one(s32 *arg0, FileEntry *arg1) {
         if (node != NULL) {
             start = arg1->start;
             arg1->block = node;
-            h = asload_chunk_relocatable(*arg0, start, (u32 **)node, arg1->end - start);
+            h = asload_chunk_relocatable(arg0->file, start, (u32 **)node, arg1->end - start);
             node->load = h;
             if (h != 0) {
                 goto ok;
@@ -519,10 +519,10 @@ BlockRef *dbase_mesh_anim_load(obj_dbase *arg0, s32 arg1) {
     }
     e = (FileEntry *)((u8 *)&base->meshAnims + base->meshAnims);
     e += arg1;
-    return dbase_mesh_anim_load_one((s32 *)arg0, e);
+    return dbase_mesh_anim_load_one(arg0, e);
 }
 
-BlockRef *dbase_mesh_anim_rec_load(s32 *file, FileEntry *e) {
+BlockRef *dbase_mesh_anim_rec_load(file **f, FileEntry *e) {
     s32 start;
     s32 load;
     BlockRef *node;
@@ -534,7 +534,7 @@ BlockRef *dbase_mesh_anim_rec_load(s32 *file, FileEntry *e) {
         if (node != NULL) {
             start = e->start;
             e->block = node;
-            load = asload_chunk_relocatable(*file, start, (u32 **)node, e->end - start);
+            load = asload_chunk_relocatable(*f, start, (u32 **)node, e->end - start);
             node->load = load;
             if (load != 0) {
                 return node;
@@ -722,286 +722,286 @@ void dbase_init(obj_dbase *db) {
 
 obj_dbase HeroModelBank[DB_COUNT] = {
     { 0 }, /* DB_Empty */
-    { (s32)&DatIndex[2 * 990], (s32)&DatIndex[2 * 989] }, /* DB_CharsCrateCrash */
-    { (s32)&DatIndex[2 * 988], (s32)&DatIndex[2 * 987] }, /* DB_CharsCrateCoco */
-    { (s32)&DatIndex[2 * 986], (s32)&DatIndex[2 * 985] }, /* DB_CharsCrateCortex */
-    { (s32)&DatIndex[2 * 984], (s32)&DatIndex[2 * 983] }, /* DB_CharsCrateBrio */
-    { (s32)&DatIndex[2 * 982], (s32)&DatIndex[2 * 981] }, /* DB_CharsCrateTiny */
-    { (s32)&DatIndex[2 * 976], (s32)&DatIndex[2 * 975] }, /* DB_CharsCrateKong */
-    { (s32)&DatIndex[2 * 980], (s32)&DatIndex[2 * 979] }, /* DB_CharsCrateDingo */
-    { (s32)&DatIndex[2 * 978], (s32)&DatIndex[2 * 977] }, /* DB_CharsCrateRilla */
-    { (s32)&DatIndex[2 * 974], (s32)&DatIndex[2 * 973] }, /* DB_CharsPogoCrash */
-    { (s32)&DatIndex[2 * 972], (s32)&DatIndex[2 * 971] }, /* DB_CharsPogoCoco */
-    { (s32)&DatIndex[2 * 970], (s32)&DatIndex[2 * 969] }, /* DB_CharsPogoCortex */
-    { (s32)&DatIndex[2 * 968], (s32)&DatIndex[2 * 967] }, /* DB_CharsPogoBrio */
-    { (s32)&DatIndex[2 * 966], (s32)&DatIndex[2 * 965] }, /* DB_CharsPogoTiny */
-    { (s32)&DatIndex[2 * 962], (s32)&DatIndex[2 * 961] }, /* DB_CharsPogoDingo */
-    { (s32)&DatIndex[2 * 964], (s32)&DatIndex[2 * 963] }, /* DB_CharsPogoKong */
-    { (s32)&DatIndex[2 * 960], (s32)&DatIndex[2 * 959] }, /* DB_CharsPogoRilla */
-    { (s32)&DatIndex[2 * 958], (s32)&DatIndex[2 * 957] }, /* DB_CharsPolar2Crash */
-    { (s32)&DatIndex[2 * 956], (s32)&DatIndex[2 * 955] }, /* DB_CharsPolar2Coco */
-    { (s32)&DatIndex[2 * 954], (s32)&DatIndex[2 * 953] }, /* DB_CharsPolar2Cortex */
-    { (s32)&DatIndex[2 * 952], (s32)&DatIndex[2 * 951] }, /* DB_CharsPolar2Tiny */
-    { (s32)&DatIndex[2 * 950], (s32)&DatIndex[2 * 949] }, /* DB_CharsPolar2Dingo */
-    { (s32)&DatIndex[2 * 948], (s32)&DatIndex[2 * 947] }, /* DB_CharsPolar2Brio */
-    { (s32)&DatIndex[2 * 736], (s32)&DatIndex[2 * 735] }, /* DB_Powerups */
-    { (s32)&DatIndex[2 * 796], (s32)&DatIndex[2 * 795] }, /* DB_CrateObjects */
-    { (s32)&DatIndex[2 * 794], (s32)&DatIndex[2 * 793] }, /* DB_RingObjects */
-    { (s32)&DatIndex[2 * 792], (s32)&DatIndex[2 * 791] }, /* DB_Angel */
-    { (s32)&DatIndex[2 * 798], (s32)&DatIndex[2 * 797] }, /* DB_Penguin */
-    { (s32)&DatIndex[2 * 732], (s32)&DatIndex[2 * 731] }, /* DB_Interface */
-    { (s32)&DatIndex[2 * 732], (s32)&DatIndex[2 * 731] }, /* DB_InterfaceInterface22 */
-    { (s32)&DatIndex[2 * 732], (s32)&DatIndex[2 * 731] }, /* DB_InterfaceInterface22_2 */
-    { (s32)&DatIndex[2 * 732], (s32)&DatIndex[2 * 731] }, /* DB_InterfaceInterface22_3 */
-    { (s32)&DatIndex[2 * 732], (s32)&DatIndex[2 * 731] }, /* DB_InterfaceInterface22_4 */
-    { (s32)&DatIndex[2 * 732], (s32)&DatIndex[2 * 731] }, /* DB_InterfaceInterface22_5 */
-    { (s32)&DatIndex[2 * 711], (s32)&DatIndex[2 * 710] }, /* DB_ArenaCrateSpaceArena */
-    { (s32)&DatIndex[2 * 709], (s32)&DatIndex[2 * 708] }, /* DB_ArenaCrateSpaceCrystalarena */
-    { (s32)&DatIndex[2 * 715], (s32)&DatIndex[2 * 714] }, /* DB_ArenaCrateJungleArena */
-    { (s32)&DatIndex[2 * 713], (s32)&DatIndex[2 * 712] }, /* DB_ArenaCrateJungleCrystalarena */
-    { (s32)&DatIndex[2 * 707], (s32)&DatIndex[2 * 706] }, /* DB_ArenaCrateSnowArena */
-    { (s32)&DatIndex[2 * 705], (s32)&DatIndex[2 * 704] }, /* DB_ArenaCrateSnowCrystalarena */
-    { (s32)&DatIndex[2 * 703], (s32)&DatIndex[2 * 702] }, /* DB_ArenaCrateDrainArena */
-    { (s32)&DatIndex[2 * 701], (s32)&DatIndex[2 * 700] }, /* DB_ArenaCrateDrainCrystalarena */
-    { (s32)&DatIndex[2 * 699], (s32)&DatIndex[2 * 698] }, /* DB_ArenaCrateTiebreakerArena */
-    { (s32)&DatIndex[2 * 697], (s32)&DatIndex[2 * 696] }, /* DB_ArenaBossPapuArena */
-    { (s32)&DatIndex[2 * 790], (s32)&DatIndex[2 * 789] }, /* DB_Papu */
-    { (s32)&DatIndex[2 * 788], (s32)&DatIndex[2 * 787] }, /* DB_Minion */
-    { (s32)&DatIndex[2 * 695], (s32)&DatIndex[2 * 694] }, /* DB_ArenaTankSwampArena */
-    { (s32)&DatIndex[2 * 693], (s32)&DatIndex[2 * 692] }, /* DB_ArenaTankDesertArena */
-    { (s32)&DatIndex[2 * 691], (s32)&DatIndex[2 * 690] }, /* DB_ArenaTankJungleArena */
-    { (s32)&DatIndex[2 * 689], (s32)&DatIndex[2 * 688] }, /* DB_ArenaTankMetalArena */
-    { (s32)&DatIndex[2 * 687], (s32)&DatIndex[2 * 686] }, /* DB_ArenaBossKomodoArena */
-    { (s32)&DatIndex[2 * 685], (s32)&DatIndex[2 * 684] }, /* DB_ArenaTankSwampCrystalarena */
-    { (s32)&DatIndex[2 * 683], (s32)&DatIndex[2 * 682] }, /* DB_ArenaTankDesertCrystalarena */
-    { (s32)&DatIndex[2 * 681], (s32)&DatIndex[2 * 680] }, /* DB_ArenaTankJungleCrystalarena */
-    { (s32)&DatIndex[2 * 679], (s32)&DatIndex[2 * 678] }, /* DB_ArenaTankMetalCrystalarena */
-    { (s32)&DatIndex[2 * 786], (s32)&DatIndex[2 * 785] }, /* DB_TankObjects */
-    { (s32)&DatIndex[2 * 784], (s32)&DatIndex[2 * 783] }, /* DB_TankObjects2 */
-    { (s32)&DatIndex[2 * 782], (s32)&DatIndex[2 * 781] }, /* DB_ArenaBossKomodoArenaobjects */
-    { (s32)&DatIndex[2 * 780], (s32)&DatIndex[2 * 779] }, /* DB_ArenaBossKomodoKomodo */
-    { (s32)&DatIndex[2 * 778], (s32)&DatIndex[2 * 777] }, /* DB_ArenaBossKomodoKomodotank */
-    { (s32)&DatIndex[2 * 774], (s32)&DatIndex[2 * 773] }, /* DB_TankVehicle */
-    { (s32)&DatIndex[2 * 776], (s32)&DatIndex[2 * 775] }, /* DB_ArenaTankJungleObjects */
-    { (s32)&DatIndex[2 * 894], (s32)&DatIndex[2 * 893] }, /* DB_CharsTankCrash */
-    { (s32)&DatIndex[2 * 892], (s32)&DatIndex[2 * 891] }, /* DB_CharsTankCoco */
-    { (s32)&DatIndex[2 * 890], (s32)&DatIndex[2 * 889] }, /* DB_CharsTankCortex */
-    { (s32)&DatIndex[2 * 888], (s32)&DatIndex[2 * 887] }, /* DB_CharsTankTiny */
-    { (s32)&DatIndex[2 * 886], (s32)&DatIndex[2 * 885] }, /* DB_CharsTankBrio */
-    { (s32)&DatIndex[2 * 884], (s32)&DatIndex[2 * 883] }, /* DB_CharsTankDingo */
-    { (s32)&DatIndex[2 * 882], (s32)&DatIndex[2 * 881] }, /* DB_CharsTankKong */
-    { (s32)&DatIndex[2 * 880], (s32)&DatIndex[2 * 879] }, /* DB_CharsTankRilla */
-    { (s32)&DatIndex[2 * 772], (s32)&DatIndex[2 * 771] }, /* DB_ArenaMedievalChickenChicken */
-    { (s32)&DatIndex[2 * 675], (s32)&DatIndex[2 * 674] }, /* DB_ArenaPogoPainterArena */
-    { (s32)&DatIndex[2 * 671], (s32)&DatIndex[2 * 670] }, /* DB_ArenaPogoGogoArena */
-    { (s32)&DatIndex[2 * 667], (s32)&DatIndex[2 * 666] }, /* DB_ArenaPogoEplArena */
-    { (s32)&DatIndex[2 * 663], (s32)&DatIndex[2 * 662] }, /* DB_ArenaPogoPadlockArena */
-    { (s32)&DatIndex[2 * 673], (s32)&DatIndex[2 * 672] }, /* DB_ArenaPogoPainterCrystalarena */
-    { (s32)&DatIndex[2 * 669], (s32)&DatIndex[2 * 668] }, /* DB_ArenaPogoGogoCrystalarena */
-    { (s32)&DatIndex[2 * 665], (s32)&DatIndex[2 * 664] }, /* DB_ArenaPogoEplCrystalarena */
-    { (s32)&DatIndex[2 * 661], (s32)&DatIndex[2 * 660] }, /* DB_ArenaPogoPadlockCrystalarena */
-    { (s32)&DatIndex[2 * 770], (s32)&DatIndex[2 * 769] }, /* DB_PogoObjects */
-    { (s32)&DatIndex[2 * 768], (s32)&DatIndex[2 * 767] }, /* DB_Roo */
-    { (s32)&DatIndex[2 * 617], (s32)&DatIndex[2 * 616] }, /* DB_ArenaMedievalMalletArena */
-    { (s32)&DatIndex[2 * 615], (s32)&DatIndex[2 * 614] }, /* DB_ArenaMedievalMalletCrystalarena */
-    { (s32)&DatIndex[2 * 343], (s32)&DatIndex[2 * 342] }, /* DB_MalletObjects */
-    { (s32)&DatIndex[2 * 862], (s32)&DatIndex[2 * 861] }, /* DB_CharsMalletCrash */
-    { (s32)&DatIndex[2 * 860], (s32)&DatIndex[2 * 859] }, /* DB_CharsMalletCoco */
-    { (s32)&DatIndex[2 * 858], (s32)&DatIndex[2 * 857] }, /* DB_CharsMalletCortex */
-    { (s32)&DatIndex[2 * 856], (s32)&DatIndex[2 * 855] }, /* DB_CharsMalletBrio */
-    { (s32)&DatIndex[2 * 854], (s32)&DatIndex[2 * 853] }, /* DB_CharsMalletDingo */
-    { (s32)&DatIndex[2 * 852], (s32)&DatIndex[2 * 851] }, /* DB_CharsMalletRilla */
-    { (s32)&DatIndex[2 * 850], (s32)&DatIndex[2 * 849] }, /* DB_CharsMalletTiny */
-    { (s32)&DatIndex[2 * 848], (s32)&DatIndex[2 * 847] }, /* DB_CharsMalletKong */
-    { (s32)&DatIndex[2 * 613], (s32)&DatIndex[2 * 612] }, /* DB_ArenaBossOxideArena */
-    { (s32)&DatIndex[2 * 742], (s32)&DatIndex[2 * 741] }, /* DB_Oxide */
-    { (s32)&DatIndex[2 * 740], (s32)&DatIndex[2 * 739] }, /* DB_PlayerVehicle */
-    { (s32)&DatIndex[2 * 609], (s32)&DatIndex[2 * 608] }, /* DB_ArenaMedievalKegArena */
-    { (s32)&DatIndex[2 * 607], (s32)&DatIndex[2 * 606] }, /* DB_ArenaMedievalKegCrystalarena */
-    { (s32)&DatIndex[2 * 738], (s32)&DatIndex[2 * 737] }, /* DB_KegObjects */
-    { (s32)&DatIndex[2 * 878], (s32)&DatIndex[2 * 877] }, /* DB_CharsKegsCrash */
-    { (s32)&DatIndex[2 * 876], (s32)&DatIndex[2 * 875] }, /* DB_CharsKegsCoco */
-    { (s32)&DatIndex[2 * 874], (s32)&DatIndex[2 * 873] }, /* DB_CharsKegsCortex */
-    { (s32)&DatIndex[2 * 872], (s32)&DatIndex[2 * 871] }, /* DB_CharsKegsTiny */
-    { (s32)&DatIndex[2 * 870], (s32)&DatIndex[2 * 869] }, /* DB_CharsKegsBrio */
-    { (s32)&DatIndex[2 * 868], (s32)&DatIndex[2 * 867] }, /* DB_CharsKegsDingo */
-    { (s32)&DatIndex[2 * 866], (s32)&DatIndex[2 * 865] }, /* DB_CharsKegsKong */
-    { (s32)&DatIndex[2 * 864], (s32)&DatIndex[2 * 863] }, /* DB_CharsKegsRilla */
-    { (s32)&DatIndex[2 * 659], (s32)&DatIndex[2 * 658] }, /* DB_ArenaBallsCrashArena */
-    { (s32)&DatIndex[2 * 657], (s32)&DatIndex[2 * 656] }, /* DB_ArenaBallsCrashCrystalarena */
-    { (s32)&DatIndex[2 * 655], (s32)&DatIndex[2 * 654] }, /* DB_ArenaBallsBeachArena */
-    { (s32)&DatIndex[2 * 653], (s32)&DatIndex[2 * 652] }, /* DB_ArenaBallsBeachCrystalarena */
-    { (s32)&DatIndex[2 * 651], (s32)&DatIndex[2 * 650] }, /* DB_ArenaBallsNginArena */
-    { (s32)&DatIndex[2 * 649], (s32)&DatIndex[2 * 648] }, /* DB_ArenaBallsNginCrystalarena */
-    { (s32)&DatIndex[2 * 647], (s32)&DatIndex[2 * 646] }, /* DB_ArenaBallsSkyArena */
-    { (s32)&DatIndex[2 * 645], (s32)&DatIndex[2 * 644] }, /* DB_ArenaBallsSkyCrystalarena */
-    { (s32)&DatIndex[2 * 910], (s32)&DatIndex[2 * 909] }, /* DB_CharsBallCrash */
-    { (s32)&DatIndex[2 * 908], (s32)&DatIndex[2 * 907] }, /* DB_CharsBallCoco */
-    { (s32)&DatIndex[2 * 906], (s32)&DatIndex[2 * 905] }, /* DB_CharsBallCortex */
-    { (s32)&DatIndex[2 * 904], (s32)&DatIndex[2 * 903] }, /* DB_CharsBallBrio */
-    { (s32)&DatIndex[2 * 902], (s32)&DatIndex[2 * 901] }, /* DB_CharsBallDingo */
-    { (s32)&DatIndex[2 * 900], (s32)&DatIndex[2 * 899] }, /* DB_CharsBallRilla */
-    { (s32)&DatIndex[2 * 898], (s32)&DatIndex[2 * 897] }, /* DB_CharsBallTiny */
-    { (s32)&DatIndex[2 * 896], (s32)&DatIndex[2 * 895] }, /* DB_CharsBallKong */
-    { (s32)&DatIndex[2 * 762], (s32)&DatIndex[2 * 761] }, /* DB_BallsEffects */
-    { (s32)&DatIndex[2 * 766], (s32)&DatIndex[2 * 765] }, /* DB_BallsVehicle */
-    { (s32)&DatIndex[2 * 764], (s32)&DatIndex[2 * 763] }, /* DB_Ngin */
-    { (s32)&DatIndex[2 * 627], (s32)&DatIndex[2 * 626] }, /* DB_ArenaMedievalRingArena */
-    { (s32)&DatIndex[2 * 625], (s32)&DatIndex[2 * 624] }, /* DB_ArenaMedievalRingCrystalarena */
-    { (s32)&DatIndex[2 * 486], (s32)&DatIndex[2 * 485] }, /* DB_Unkscenery */
-    { (s32)&DatIndex[2 * 484], (s32)&DatIndex[2 * 483] }, /* DB_Polar */
-    { (s32)&DatIndex[2 * 482], (s32)&DatIndex[2 * 481] }, /* DB_Masks */
-    { (s32)&DatIndex[2 * 480], (s32)&DatIndex[2 * 479] }, /* DB_PolarObjects */
-    { (s32)&DatIndex[2 * 478], (s32)&DatIndex[2 * 477] }, /* DB_ArenaPolarPolarArena */
-    { (s32)&DatIndex[2 * 474], (s32)&DatIndex[2 * 473] }, /* DB_ArenaPolarMeltArena */
-    { (s32)&DatIndex[2 * 468], (s32)&DatIndex[2 * 467] }, /* DB_ArenaPolarTiltSeal */
-    { (s32)&DatIndex[2 * 466], (s32)&DatIndex[2 * 465] }, /* DB_ArenaPolarManicArena */
-    { (s32)&DatIndex[2 * 942], (s32)&DatIndex[2 * 941] }, /* DB_CharsCrate2Crash */
-    { (s32)&DatIndex[2 * 940], (s32)&DatIndex[2 * 939] }, /* DB_CharsCrate2Coco */
-    { (s32)&DatIndex[2 * 938], (s32)&DatIndex[2 * 937] }, /* DB_CharsCrate2Cortex */
-    { (s32)&DatIndex[2 * 936], (s32)&DatIndex[2 * 935] }, /* DB_CharsCrate2Tiny */
-    { (s32)&DatIndex[2 * 934], (s32)&DatIndex[2 * 933] }, /* DB_CharsCrate2Dingo */
-    { (s32)&DatIndex[2 * 932], (s32)&DatIndex[2 * 931] }, /* DB_CharsCrate2Brio */
-    { (s32)&DatIndex[2 * 472], (s32)&DatIndex[2 * 471] }, /* DB_ArenaBossBearArena */
-    { (s32)&DatIndex[2 * 464], (s32)&DatIndex[2 * 463] }, /* DB_ArenaBossBearBigbear */
-    { (s32)&DatIndex[2 * 470], (s32)&DatIndex[2 * 469] }, /* DB_Modelmix */
-    { (s32)&DatIndex[2 * 946], (s32)&DatIndex[2 * 945] }, /* DB_CharsPolar2Kong */
-    { (s32)&DatIndex[2 * 462], (s32)&DatIndex[2 * 461] }, /* DB_RoboPolar */
-    { (s32)&DatIndex[2 * 944], (s32)&DatIndex[2 * 943] }, /* DB_CharsPolar2Rilla */
-    { (s32)&DatIndex[2 * 476], (s32)&DatIndex[2 * 475] }, /* DB_ArenaPolarTiltCrystalarena */
-    { (s32)&DatIndex[2 * 928], (s32)&DatIndex[2 * 927] }, /* DB_CharsCrate2Rilla */
-    { (s32)&DatIndex[2 * 930], (s32)&DatIndex[2 * 929] }, /* DB_CharsCrate2Kong */
-    { (s32)&DatIndex[2 * 460], (s32)&DatIndex[2 * 459] }, /* DB_ArenaPolarManicCrystalarena */
-    { (s32)&DatIndex[2 * 458], (s32)&DatIndex[2 * 457] }, /* DB_ArenaPolarMeltCrystalarena */
-    { (s32)&DatIndex[2 * 456], (s32)&DatIndex[2 * 455] }, /* DB_ArenaPolarPolarCrystalarena */
-    { (s32)&DatIndex[2 * 926], (s32)&DatIndex[2 * 925] }, /* DB_CharsPolarCrash */
-    { (s32)&DatIndex[2 * 924], (s32)&DatIndex[2 * 923] }, /* DB_CharsPolarCoco */
-    { (s32)&DatIndex[2 * 922], (s32)&DatIndex[2 * 921] }, /* DB_CharsPolarCortex */
-    { (s32)&DatIndex[2 * 920], (s32)&DatIndex[2 * 919] }, /* DB_CharsPolarTiny */
-    { (s32)&DatIndex[2 * 918], (s32)&DatIndex[2 * 917] }, /* DB_CharsPolarDingo */
-    { (s32)&DatIndex[2 * 916], (s32)&DatIndex[2 * 915] }, /* DB_CharsPolarBrio */
-    { (s32)&DatIndex[2 * 914], (s32)&DatIndex[2 * 913] }, /* DB_CharsPolarRilla */
-    { (s32)&DatIndex[2 * 912], (s32)&DatIndex[2 * 911] }, /* DB_CharsPolarKong */
-    { (s32)&DatIndex[2 * 643], (s32)&DatIndex[2 * 642] }, /* DB_ArenaDashDotArena */
-    { (s32)&DatIndex[2 * 830], (s32)&DatIndex[2 * 829] }, /* DB_CharsRaceCrash */
-    { (s32)&DatIndex[2 * 828], (s32)&DatIndex[2 * 827] }, /* DB_CharsRaceCortex */
-    { (s32)&DatIndex[2 * 826], (s32)&DatIndex[2 * 825] }, /* DB_CharsRaceTiny */
-    { (s32)&DatIndex[2 * 824], (s32)&DatIndex[2 * 823] }, /* DB_CharsRaceDingo */
-    { (s32)&DatIndex[2 * 822], (s32)&DatIndex[2 * 821] }, /* DB_CharsRaceBrio */
-    { (s32)&DatIndex[2 * 639], (s32)&DatIndex[2 * 638] }, /* DB_ArenaDashToxicArena */
-    { (s32)&DatIndex[2 * 641], (s32)&DatIndex[2 * 640] }, /* DB_ArenaDashSplashArena */
-    { (s32)&DatIndex[2 * 637], (s32)&DatIndex[2 * 636] }, /* DB_ArenaDashDanteArena */
-    { (s32)&DatIndex[2 * 760], (s32)&DatIndex[2 * 759] }, /* DB_CrateEffects */
-    { (s32)&DatIndex[2 * 818], (s32)&DatIndex[2 * 817] }, /* DB_CharsRaceCoco */
-    { (s32)&DatIndex[2 * 816], (s32)&DatIndex[2 * 815] }, /* DB_CharsRaceRilla */
-    { (s32)&DatIndex[2 * 820], (s32)&DatIndex[2 * 819] }, /* DB_CharsRaceKong */
-    { (s32)&DatIndex[2 * 814], (s32)&DatIndex[2 * 813] }, /* DB_CharsSplashCrash */
-    { (s32)&DatIndex[2 * 812], (s32)&DatIndex[2 * 811] }, /* DB_CharsSplashCortex */
-    { (s32)&DatIndex[2 * 810], (s32)&DatIndex[2 * 809] }, /* DB_CharsSplashTiny */
-    { (s32)&DatIndex[2 * 808], (s32)&DatIndex[2 * 807] }, /* DB_CharsSplashDingo */
-    { (s32)&DatIndex[2 * 806], (s32)&DatIndex[2 * 805] }, /* DB_CharsSplashKong */
-    { (s32)&DatIndex[2 * 800], (s32)&DatIndex[2 * 799] }, /* DB_CharsSplashBrio */
-    { (s32)&DatIndex[2 * 804], (s32)&DatIndex[2 * 803] }, /* DB_CharsSplashCoco */
-    { (s32)&DatIndex[2 * 802], (s32)&DatIndex[2 * 801] }, /* DB_CharsSplashRilla */
-    { (s32)&DatIndex[2 * 635], (s32)&DatIndex[2 * 634] }, /* DB_ArenaDashToxicCrystalarena */
-    { (s32)&DatIndex[2 * 633], (s32)&DatIndex[2 * 632] }, /* DB_ArenaDashDanteCrystalarena */
-    { (s32)&DatIndex[2 * 631], (s32)&DatIndex[2 * 630] }, /* DB_ArenaDashDotCrystalarena */
-    { (s32)&DatIndex[2 * 629], (s32)&DatIndex[2 * 628] }, /* DB_ArenaDashSplashCrystalarena */
-    { (s32)&DatIndex[2 * 623], (s32)&DatIndex[2 * 622] }, /* DB_ArenaMedievalDragonCrystalarena */
-    { (s32)&DatIndex[2 * 846], (s32)&DatIndex[2 * 845] }, /* DB_CharsDinoCrash */
-    { (s32)&DatIndex[2 * 844], (s32)&DatIndex[2 * 843] }, /* DB_CharsDinoCortex */
-    { (s32)&DatIndex[2 * 842], (s32)&DatIndex[2 * 841] }, /* DB_CharsDinoTiny */
-    { (s32)&DatIndex[2 * 840], (s32)&DatIndex[2 * 839] }, /* DB_CharsDinoDingo */
-    { (s32)&DatIndex[2 * 838], (s32)&DatIndex[2 * 837] }, /* DB_CharsDinoCoco */
-    { (s32)&DatIndex[2 * 834], (s32)&DatIndex[2 * 833] }, /* DB_CharsDinoRilla */
-    { (s32)&DatIndex[2 * 836], (s32)&DatIndex[2 * 835] }, /* DB_CharsDinoBrio */
-    { (s32)&DatIndex[2 * 832], (s32)&DatIndex[2 * 831] }, /* DB_CharsDinoKong */
-    { (s32)&DatIndex[2 * 621], (s32)&DatIndex[2 * 620] }, /* DB_ArenaMedievalDragonArena */
-    { (s32)&DatIndex[2 * 619], (s32)&DatIndex[2 * 618] }, /* DB_DragonObjects */
-    { (s32)&DatIndex[2 * 135], (s32)&DatIndex[2 * 134] }, /* DB_ArenaTestObjects */
-    { (s32)&DatIndex[2 * 730], (s32)&DatIndex[2 * 729] }, /* DB_Loading */
-    { (s32)&DatIndex[2 * 131], (s32)&DatIndex[2 * 130] }, /* DB_MainmenuModels */
-    { (s32)&DatIndex[2 * 129], (s32)&DatIndex[2 * 128] }, /* DB_MainmenuArenaModels2 */
-    { (s32)&DatIndex[2 * 127], (s32)&DatIndex[2 * 126] }, /* DB_MainmenuArenaModels1 */
-    { (s32)&DatIndex[2 * 734], (s32)&DatIndex[2 * 733] }, /* DB_Font */
-    { (s32)&DatIndex[2 * 125], (s32)&DatIndex[2 * 124] }, /* DB_CutsceneIntroEurocom */
-    { (s32)&DatIndex[2 * 123], (s32)&DatIndex[2 * 122] }, /* DB_CutsceneIntroLogo2 */
-    { (s32)&DatIndex[2 * 379], (s32)&DatIndex[2 * 378] }, /* DB_MainmenuModels2 */
-    { (s32)&DatIndex[2 * 393], (s32)&DatIndex[2 * 392] }, /* DB_WarpRoom1Level */
-    { (s32)&DatIndex[2 * 391], (s32)&DatIndex[2 * 390] }, /* DB_WarpRoom2Level */
-    { (s32)&DatIndex[2 * 389], (s32)&DatIndex[2 * 388] }, /* DB_WarpRoom3Level */
-    { (s32)&DatIndex[2 * 387], (s32)&DatIndex[2 * 386] }, /* DB_WarpRoom4Level */
-    { (s32)&DatIndex[2 * 385], (s32)&DatIndex[2 * 384] }, /* DB_WarpRoom5Level */
-    { (s32)&DatIndex[2 * 383], (s32)&DatIndex[2 * 382] }, /* DB_DemoHub2Level */
-    { (s32)&DatIndex[2 * 381], (s32)&DatIndex[2 * 380] }, /* DB_DemoHub1Level */
-    { (s32)&DatIndex[2 * 377], (s32)&DatIndex[2 * 376] }, /* DB_AdventureItems */
-    { (s32)&DatIndex[2 * 758], (s32)&DatIndex[2 * 757] }, /* DB_CharsWarpCrash */
-    { (s32)&DatIndex[2 * 756], (s32)&DatIndex[2 * 755] }, /* DB_CharsWarpCoco */
-    { (s32)&DatIndex[2 * 754], (s32)&DatIndex[2 * 753] }, /* DB_CharsWarpCortex */
-    { (s32)&DatIndex[2 * 752], (s32)&DatIndex[2 * 751] }, /* DB_CharsWarpBrio */
-    { (s32)&DatIndex[2 * 750], (s32)&DatIndex[2 * 749] }, /* DB_CharsWarpTiny */
-    { (s32)&DatIndex[2 * 748], (s32)&DatIndex[2 * 747] }, /* DB_CharsWarpKong */
-    { (s32)&DatIndex[2 * 746], (s32)&DatIndex[2 * 745] }, /* DB_CharsWarpDingo */
-    { (s32)&DatIndex[2 * 744], (s32)&DatIndex[2 * 743] }, /* DB_CharsWarpRilla */
-    { (s32)&DatIndex[2 * 121], (s32)&DatIndex[2 * 120] }, /* DB_CutsceneIntroLogo */
-    { (s32)&DatIndex[2 * 119], (s32)&DatIndex[2 * 118] }, /* DB_CutsceneLevelShot19 */
-    { (s32)&DatIndex[2 * 117], (s32)&DatIndex[2 * 116] }, /* DB_CutsceneLevelShot18 */
-    { (s32)&DatIndex[2 * 115], (s32)&DatIndex[2 * 114] }, /* DB_CutsceneLevelShot17 */
-    { (s32)&DatIndex[2 * 113], (s32)&DatIndex[2 * 112] }, /* DB_CutsceneLevelShot16 */
-    { (s32)&DatIndex[2 * 111], (s32)&DatIndex[2 * 110] }, /* DB_CutsceneLevelShot15 */
-    { (s32)&DatIndex[2 * 109], (s32)&DatIndex[2 * 108] }, /* DB_CutsceneLevelShot14 */
-    { (s32)&DatIndex[2 * 107], (s32)&DatIndex[2 * 106] }, /* DB_CutsceneLevelIntroCrashplain */
-    { (s32)&DatIndex[2 * 105], (s32)&DatIndex[2 * 104] }, /* DB_CutsceneLevelIntroCortexlab */
-    { (s32)&DatIndex[2 * 103], (s32)&DatIndex[2 * 102] }, /* DB_CutsceneLevelIntroShotGroupTeamgood2 */
-    { (s32)&DatIndex[2 * 101], (s32)&DatIndex[2 * 100] }, /* DB_CutsceneLevelIntroShotWelcome3 */
-    { (s32)&DatIndex[2 * 99], (s32)&DatIndex[2 * 98] }, /* DB_CutsceneLevelIntroShotWelcome2 */
-    { (s32)&DatIndex[2 * 97], (s32)&DatIndex[2 * 96] }, /* DB_CutsceneLevelIntroShotWelcome */
-    { (s32)&DatIndex[2 * 95], (s32)&DatIndex[2 * 94] }, /* DB_CutsceneLevelIntroShotGroupTeamevil4 */
-    { (s32)&DatIndex[2 * 93], (s32)&DatIndex[2 * 92] }, /* DB_CutsceneLevelIntroShotGroupTeamevil3 */
-    { (s32)&DatIndex[2 * 91], (s32)&DatIndex[2 * 90] }, /* DB_CutsceneLevelShot13 */
-    { (s32)&DatIndex[2 * 89], (s32)&DatIndex[2 * 88] }, /* DB_CutsceneLevelIntroShotGroupTeamevil2 */
-    { (s32)&DatIndex[2 * 87], (s32)&DatIndex[2 * 86] }, /* DB_CutsceneLevelShot12 */
-    { (s32)&DatIndex[2 * 85], (s32)&DatIndex[2 * 84] }, /* DB_CutsceneLevelIntroShotGroupTeamevil */
-    { (s32)&DatIndex[2 * 83], (s32)&DatIndex[2 * 82] }, /* DB_CutsceneLevelIntroShotGroupTeamgood */
-    { (s32)&DatIndex[2 * 37], (s32)&DatIndex[2 * 36] }, /* DB_CutsceneLevel4 */
-    { (s32)&DatIndex[2 * 35], (s32)&DatIndex[2 * 34] }, /* DB_CutsceneLevel3 */
-    { (s32)&DatIndex[2 * 33], (s32)&DatIndex[2 * 32] }, /* DB_CutsceneLevel2 */
-    { (s32)&DatIndex[2 * 31], (s32)&DatIndex[2 * 30] }, /* DB_CutsceneLevel */
-    { (s32)&DatIndex[2 * 61], (s32)&DatIndex[2 * 60] }, /* DB_CutsceneLevelEndingGoodShot3 */
-    { (s32)&DatIndex[2 * 59], (s32)&DatIndex[2 * 58] }, /* DB_CutsceneLevelShot8 */
-    { (s32)&DatIndex[2 * 57], (s32)&DatIndex[2 * 56] }, /* DB_CutsceneLevelShot7 */
-    { (s32)&DatIndex[2 * 55], (s32)&DatIndex[2 * 54] }, /* DB_CutsceneLevelShot6 */
-    { (s32)&DatIndex[2 * 53], (s32)&DatIndex[2 * 52] }, /* DB_CutsceneLevelEndingGoodShot2 */
-    { (s32)&DatIndex[2 * 51], (s32)&DatIndex[2 * 50] }, /* DB_CutsceneLevelShot5 */
-    { (s32)&DatIndex[2 * 49], (s32)&DatIndex[2 * 48] }, /* DB_CutsceneLevelShot4 */
-    { (s32)&DatIndex[2 * 47], (s32)&DatIndex[2 * 46] }, /* DB_CutsceneLevelShot3 */
-    { (s32)&DatIndex[2 * 45], (s32)&DatIndex[2 * 44] }, /* DB_CutsceneLevelShot2 */
-    { (s32)&DatIndex[2 * 43], (s32)&DatIndex[2 * 42] }, /* DB_CutsceneLevelEndingEvilShot1 */
-    { (s32)&DatIndex[2 * 41], (s32)&DatIndex[2 * 40] }, /* DB_CutsceneLevelEndingGoodShot1 */
-    { (s32)&DatIndex[2 * 39], (s32)&DatIndex[2 * 38] }, /* DB_CutsceneLevelIntro */
-    { (s32)&DatIndex[2 * 81], (s32)&DatIndex[2 * 80] }, /* DB_CutsceneLevelEndingEvilShot8 */
-    { (s32)&DatIndex[2 * 79], (s32)&DatIndex[2 * 78] }, /* DB_CutsceneLevelShot11 */
-    { (s32)&DatIndex[2 * 77], (s32)&DatIndex[2 * 76] }, /* DB_CutsceneLevelShot10 */
-    { (s32)&DatIndex[2 * 75], (s32)&DatIndex[2 * 74] }, /* DB_CutsceneLevelEndingEvilShot7 */
-    { (s32)&DatIndex[2 * 73], (s32)&DatIndex[2 * 72] }, /* DB_CutsceneLevelEndingEvilShot6 */
-    { (s32)&DatIndex[2 * 71], (s32)&DatIndex[2 * 70] }, /* DB_CutsceneLevelShot9 */
-    { (s32)&DatIndex[2 * 69], (s32)&DatIndex[2 * 68] }, /* DB_CutsceneLevelEndingEvilShot5 */
-    { (s32)&DatIndex[2 * 67], (s32)&DatIndex[2 * 66] }, /* DB_CutsceneLevelEndingEvilShot4 */
-    { (s32)&DatIndex[2 * 65], (s32)&DatIndex[2 * 64] }, /* DB_CutsceneLevelEndingEvilShot3 */
-    { (s32)&DatIndex[2 * 63], (s32)&DatIndex[2 * 62] }, /* DB_CutsceneLevelEndingEvilShot2 */
-    { (s32)&DatIndex[2 * 27], (s32)&DatIndex[2 * 26] }, /* DB_CutsceneTextGoodwins */
-    { (s32)&DatIndex[2 * 29], (s32)&DatIndex[2 * 28] }, /* DB_CutsceneTextEvilwins */
-    { (s32)&DatIndex[2 * 25], (s32)&DatIndex[2 * 24] }, /* DB_CutsceneTextMixteamwins */
-    { (s32)&DatIndex[2 * 23], (s32)&DatIndex[2 * 22] }, /* DB_CutsceneTextCredits */
-    { (s32)&DatIndex[2 * 21], (s32)&DatIndex[2 * 20] }, /* DB_CutsceneTextIntromovie */
-    { (s32)&DatIndex[2 * 7], (s32)&DatIndex[2 * 6] }, /* DB_CutsceneUkaData4 */
-    { (s32)&DatIndex[2 * 5], (s32)&DatIndex[2 * 4] }, /* DB_CutsceneUkaData3 */
-    { (s32)&DatIndex[2 * 3], (s32)&DatIndex[2 * 2] }, /* DB_CutsceneUkaData2 */
-    { (s32)&DatIndex[2 * 1], (s32)&DatIndex[2 * 0] }, /* DB_CutsceneUkaData */
-    { (s32)&DatIndex[2 * 15], (s32)&DatIndex[2 * 14] }, /* DB_CutsceneAkuData4 */
-    { (s32)&DatIndex[2 * 13], (s32)&DatIndex[2 * 12] }, /* DB_CutsceneAkuData3 */
-    { (s32)&DatIndex[2 * 11], (s32)&DatIndex[2 * 10] }, /* DB_CutsceneAkuData2 */
-    { (s32)&DatIndex[2 * 9], (s32)&DatIndex[2 * 8] }, /* DB_CutsceneAkuData */
-    { (s32)&DatIndex[2 * 19], (s32)&DatIndex[2 * 18] }, /* DB_CutsceneAkuUkaData2 */
-    { (s32)&DatIndex[2 * 17], (s32)&DatIndex[2 * 16] }, /* DB_CutsceneAkuUkaData */
+    { &DatIndex[990], &DatIndex[989] }, /* DB_CharsCrateCrash */
+    { &DatIndex[988], &DatIndex[987] }, /* DB_CharsCrateCoco */
+    { &DatIndex[986], &DatIndex[985] }, /* DB_CharsCrateCortex */
+    { &DatIndex[984], &DatIndex[983] }, /* DB_CharsCrateBrio */
+    { &DatIndex[982], &DatIndex[981] }, /* DB_CharsCrateTiny */
+    { &DatIndex[976], &DatIndex[975] }, /* DB_CharsCrateKong */
+    { &DatIndex[980], &DatIndex[979] }, /* DB_CharsCrateDingo */
+    { &DatIndex[978], &DatIndex[977] }, /* DB_CharsCrateRilla */
+    { &DatIndex[974], &DatIndex[973] }, /* DB_CharsPogoCrash */
+    { &DatIndex[972], &DatIndex[971] }, /* DB_CharsPogoCoco */
+    { &DatIndex[970], &DatIndex[969] }, /* DB_CharsPogoCortex */
+    { &DatIndex[968], &DatIndex[967] }, /* DB_CharsPogoBrio */
+    { &DatIndex[966], &DatIndex[965] }, /* DB_CharsPogoTiny */
+    { &DatIndex[962], &DatIndex[961] }, /* DB_CharsPogoDingo */
+    { &DatIndex[964], &DatIndex[963] }, /* DB_CharsPogoKong */
+    { &DatIndex[960], &DatIndex[959] }, /* DB_CharsPogoRilla */
+    { &DatIndex[958], &DatIndex[957] }, /* DB_CharsPolar2Crash */
+    { &DatIndex[956], &DatIndex[955] }, /* DB_CharsPolar2Coco */
+    { &DatIndex[954], &DatIndex[953] }, /* DB_CharsPolar2Cortex */
+    { &DatIndex[952], &DatIndex[951] }, /* DB_CharsPolar2Tiny */
+    { &DatIndex[950], &DatIndex[949] }, /* DB_CharsPolar2Dingo */
+    { &DatIndex[948], &DatIndex[947] }, /* DB_CharsPolar2Brio */
+    { &DatIndex[736], &DatIndex[735] }, /* DB_Powerups */
+    { &DatIndex[796], &DatIndex[795] }, /* DB_CrateObjects */
+    { &DatIndex[794], &DatIndex[793] }, /* DB_RingObjects */
+    { &DatIndex[792], &DatIndex[791] }, /* DB_Angel */
+    { &DatIndex[798], &DatIndex[797] }, /* DB_Penguin */
+    { &DatIndex[732], &DatIndex[731] }, /* DB_Interface */
+    { &DatIndex[732], &DatIndex[731] }, /* DB_InterfaceInterface22 */
+    { &DatIndex[732], &DatIndex[731] }, /* DB_InterfaceInterface22_2 */
+    { &DatIndex[732], &DatIndex[731] }, /* DB_InterfaceInterface22_3 */
+    { &DatIndex[732], &DatIndex[731] }, /* DB_InterfaceInterface22_4 */
+    { &DatIndex[732], &DatIndex[731] }, /* DB_InterfaceInterface22_5 */
+    { &DatIndex[711], &DatIndex[710] }, /* DB_ArenaCrateSpaceArena */
+    { &DatIndex[709], &DatIndex[708] }, /* DB_ArenaCrateSpaceCrystalarena */
+    { &DatIndex[715], &DatIndex[714] }, /* DB_ArenaCrateJungleArena */
+    { &DatIndex[713], &DatIndex[712] }, /* DB_ArenaCrateJungleCrystalarena */
+    { &DatIndex[707], &DatIndex[706] }, /* DB_ArenaCrateSnowArena */
+    { &DatIndex[705], &DatIndex[704] }, /* DB_ArenaCrateSnowCrystalarena */
+    { &DatIndex[703], &DatIndex[702] }, /* DB_ArenaCrateDrainArena */
+    { &DatIndex[701], &DatIndex[700] }, /* DB_ArenaCrateDrainCrystalarena */
+    { &DatIndex[699], &DatIndex[698] }, /* DB_ArenaCrateTiebreakerArena */
+    { &DatIndex[697], &DatIndex[696] }, /* DB_ArenaBossPapuArena */
+    { &DatIndex[790], &DatIndex[789] }, /* DB_Papu */
+    { &DatIndex[788], &DatIndex[787] }, /* DB_Minion */
+    { &DatIndex[695], &DatIndex[694] }, /* DB_ArenaTankSwampArena */
+    { &DatIndex[693], &DatIndex[692] }, /* DB_ArenaTankDesertArena */
+    { &DatIndex[691], &DatIndex[690] }, /* DB_ArenaTankJungleArena */
+    { &DatIndex[689], &DatIndex[688] }, /* DB_ArenaTankMetalArena */
+    { &DatIndex[687], &DatIndex[686] }, /* DB_ArenaBossKomodoArena */
+    { &DatIndex[685], &DatIndex[684] }, /* DB_ArenaTankSwampCrystalarena */
+    { &DatIndex[683], &DatIndex[682] }, /* DB_ArenaTankDesertCrystalarena */
+    { &DatIndex[681], &DatIndex[680] }, /* DB_ArenaTankJungleCrystalarena */
+    { &DatIndex[679], &DatIndex[678] }, /* DB_ArenaTankMetalCrystalarena */
+    { &DatIndex[786], &DatIndex[785] }, /* DB_TankObjects */
+    { &DatIndex[784], &DatIndex[783] }, /* DB_TankObjects2 */
+    { &DatIndex[782], &DatIndex[781] }, /* DB_ArenaBossKomodoArenaobjects */
+    { &DatIndex[780], &DatIndex[779] }, /* DB_ArenaBossKomodoKomodo */
+    { &DatIndex[778], &DatIndex[777] }, /* DB_ArenaBossKomodoKomodotank */
+    { &DatIndex[774], &DatIndex[773] }, /* DB_TankVehicle */
+    { &DatIndex[776], &DatIndex[775] }, /* DB_ArenaTankJungleObjects */
+    { &DatIndex[894], &DatIndex[893] }, /* DB_CharsTankCrash */
+    { &DatIndex[892], &DatIndex[891] }, /* DB_CharsTankCoco */
+    { &DatIndex[890], &DatIndex[889] }, /* DB_CharsTankCortex */
+    { &DatIndex[888], &DatIndex[887] }, /* DB_CharsTankTiny */
+    { &DatIndex[886], &DatIndex[885] }, /* DB_CharsTankBrio */
+    { &DatIndex[884], &DatIndex[883] }, /* DB_CharsTankDingo */
+    { &DatIndex[882], &DatIndex[881] }, /* DB_CharsTankKong */
+    { &DatIndex[880], &DatIndex[879] }, /* DB_CharsTankRilla */
+    { &DatIndex[772], &DatIndex[771] }, /* DB_ArenaMedievalChickenChicken */
+    { &DatIndex[675], &DatIndex[674] }, /* DB_ArenaPogoPainterArena */
+    { &DatIndex[671], &DatIndex[670] }, /* DB_ArenaPogoGogoArena */
+    { &DatIndex[667], &DatIndex[666] }, /* DB_ArenaPogoEplArena */
+    { &DatIndex[663], &DatIndex[662] }, /* DB_ArenaPogoPadlockArena */
+    { &DatIndex[673], &DatIndex[672] }, /* DB_ArenaPogoPainterCrystalarena */
+    { &DatIndex[669], &DatIndex[668] }, /* DB_ArenaPogoGogoCrystalarena */
+    { &DatIndex[665], &DatIndex[664] }, /* DB_ArenaPogoEplCrystalarena */
+    { &DatIndex[661], &DatIndex[660] }, /* DB_ArenaPogoPadlockCrystalarena */
+    { &DatIndex[770], &DatIndex[769] }, /* DB_PogoObjects */
+    { &DatIndex[768], &DatIndex[767] }, /* DB_Roo */
+    { &DatIndex[617], &DatIndex[616] }, /* DB_ArenaMedievalMalletArena */
+    { &DatIndex[615], &DatIndex[614] }, /* DB_ArenaMedievalMalletCrystalarena */
+    { &DatIndex[343], &DatIndex[342] }, /* DB_MalletObjects */
+    { &DatIndex[862], &DatIndex[861] }, /* DB_CharsMalletCrash */
+    { &DatIndex[860], &DatIndex[859] }, /* DB_CharsMalletCoco */
+    { &DatIndex[858], &DatIndex[857] }, /* DB_CharsMalletCortex */
+    { &DatIndex[856], &DatIndex[855] }, /* DB_CharsMalletBrio */
+    { &DatIndex[854], &DatIndex[853] }, /* DB_CharsMalletDingo */
+    { &DatIndex[852], &DatIndex[851] }, /* DB_CharsMalletRilla */
+    { &DatIndex[850], &DatIndex[849] }, /* DB_CharsMalletTiny */
+    { &DatIndex[848], &DatIndex[847] }, /* DB_CharsMalletKong */
+    { &DatIndex[613], &DatIndex[612] }, /* DB_ArenaBossOxideArena */
+    { &DatIndex[742], &DatIndex[741] }, /* DB_Oxide */
+    { &DatIndex[740], &DatIndex[739] }, /* DB_PlayerVehicle */
+    { &DatIndex[609], &DatIndex[608] }, /* DB_ArenaMedievalKegArena */
+    { &DatIndex[607], &DatIndex[606] }, /* DB_ArenaMedievalKegCrystalarena */
+    { &DatIndex[738], &DatIndex[737] }, /* DB_KegObjects */
+    { &DatIndex[878], &DatIndex[877] }, /* DB_CharsKegsCrash */
+    { &DatIndex[876], &DatIndex[875] }, /* DB_CharsKegsCoco */
+    { &DatIndex[874], &DatIndex[873] }, /* DB_CharsKegsCortex */
+    { &DatIndex[872], &DatIndex[871] }, /* DB_CharsKegsTiny */
+    { &DatIndex[870], &DatIndex[869] }, /* DB_CharsKegsBrio */
+    { &DatIndex[868], &DatIndex[867] }, /* DB_CharsKegsDingo */
+    { &DatIndex[866], &DatIndex[865] }, /* DB_CharsKegsKong */
+    { &DatIndex[864], &DatIndex[863] }, /* DB_CharsKegsRilla */
+    { &DatIndex[659], &DatIndex[658] }, /* DB_ArenaBallsCrashArena */
+    { &DatIndex[657], &DatIndex[656] }, /* DB_ArenaBallsCrashCrystalarena */
+    { &DatIndex[655], &DatIndex[654] }, /* DB_ArenaBallsBeachArena */
+    { &DatIndex[653], &DatIndex[652] }, /* DB_ArenaBallsBeachCrystalarena */
+    { &DatIndex[651], &DatIndex[650] }, /* DB_ArenaBallsNginArena */
+    { &DatIndex[649], &DatIndex[648] }, /* DB_ArenaBallsNginCrystalarena */
+    { &DatIndex[647], &DatIndex[646] }, /* DB_ArenaBallsSkyArena */
+    { &DatIndex[645], &DatIndex[644] }, /* DB_ArenaBallsSkyCrystalarena */
+    { &DatIndex[910], &DatIndex[909] }, /* DB_CharsBallCrash */
+    { &DatIndex[908], &DatIndex[907] }, /* DB_CharsBallCoco */
+    { &DatIndex[906], &DatIndex[905] }, /* DB_CharsBallCortex */
+    { &DatIndex[904], &DatIndex[903] }, /* DB_CharsBallBrio */
+    { &DatIndex[902], &DatIndex[901] }, /* DB_CharsBallDingo */
+    { &DatIndex[900], &DatIndex[899] }, /* DB_CharsBallRilla */
+    { &DatIndex[898], &DatIndex[897] }, /* DB_CharsBallTiny */
+    { &DatIndex[896], &DatIndex[895] }, /* DB_CharsBallKong */
+    { &DatIndex[762], &DatIndex[761] }, /* DB_BallsEffects */
+    { &DatIndex[766], &DatIndex[765] }, /* DB_BallsVehicle */
+    { &DatIndex[764], &DatIndex[763] }, /* DB_Ngin */
+    { &DatIndex[627], &DatIndex[626] }, /* DB_ArenaMedievalRingArena */
+    { &DatIndex[625], &DatIndex[624] }, /* DB_ArenaMedievalRingCrystalarena */
+    { &DatIndex[486], &DatIndex[485] }, /* DB_Unkscenery */
+    { &DatIndex[484], &DatIndex[483] }, /* DB_Polar */
+    { &DatIndex[482], &DatIndex[481] }, /* DB_Masks */
+    { &DatIndex[480], &DatIndex[479] }, /* DB_PolarObjects */
+    { &DatIndex[478], &DatIndex[477] }, /* DB_ArenaPolarPolarArena */
+    { &DatIndex[474], &DatIndex[473] }, /* DB_ArenaPolarMeltArena */
+    { &DatIndex[468], &DatIndex[467] }, /* DB_ArenaPolarTiltSeal */
+    { &DatIndex[466], &DatIndex[465] }, /* DB_ArenaPolarManicArena */
+    { &DatIndex[942], &DatIndex[941] }, /* DB_CharsCrate2Crash */
+    { &DatIndex[940], &DatIndex[939] }, /* DB_CharsCrate2Coco */
+    { &DatIndex[938], &DatIndex[937] }, /* DB_CharsCrate2Cortex */
+    { &DatIndex[936], &DatIndex[935] }, /* DB_CharsCrate2Tiny */
+    { &DatIndex[934], &DatIndex[933] }, /* DB_CharsCrate2Dingo */
+    { &DatIndex[932], &DatIndex[931] }, /* DB_CharsCrate2Brio */
+    { &DatIndex[472], &DatIndex[471] }, /* DB_ArenaBossBearArena */
+    { &DatIndex[464], &DatIndex[463] }, /* DB_ArenaBossBearBigbear */
+    { &DatIndex[470], &DatIndex[469] }, /* DB_Modelmix */
+    { &DatIndex[946], &DatIndex[945] }, /* DB_CharsPolar2Kong */
+    { &DatIndex[462], &DatIndex[461] }, /* DB_RoboPolar */
+    { &DatIndex[944], &DatIndex[943] }, /* DB_CharsPolar2Rilla */
+    { &DatIndex[476], &DatIndex[475] }, /* DB_ArenaPolarTiltCrystalarena */
+    { &DatIndex[928], &DatIndex[927] }, /* DB_CharsCrate2Rilla */
+    { &DatIndex[930], &DatIndex[929] }, /* DB_CharsCrate2Kong */
+    { &DatIndex[460], &DatIndex[459] }, /* DB_ArenaPolarManicCrystalarena */
+    { &DatIndex[458], &DatIndex[457] }, /* DB_ArenaPolarMeltCrystalarena */
+    { &DatIndex[456], &DatIndex[455] }, /* DB_ArenaPolarPolarCrystalarena */
+    { &DatIndex[926], &DatIndex[925] }, /* DB_CharsPolarCrash */
+    { &DatIndex[924], &DatIndex[923] }, /* DB_CharsPolarCoco */
+    { &DatIndex[922], &DatIndex[921] }, /* DB_CharsPolarCortex */
+    { &DatIndex[920], &DatIndex[919] }, /* DB_CharsPolarTiny */
+    { &DatIndex[918], &DatIndex[917] }, /* DB_CharsPolarDingo */
+    { &DatIndex[916], &DatIndex[915] }, /* DB_CharsPolarBrio */
+    { &DatIndex[914], &DatIndex[913] }, /* DB_CharsPolarRilla */
+    { &DatIndex[912], &DatIndex[911] }, /* DB_CharsPolarKong */
+    { &DatIndex[643], &DatIndex[642] }, /* DB_ArenaDashDotArena */
+    { &DatIndex[830], &DatIndex[829] }, /* DB_CharsRaceCrash */
+    { &DatIndex[828], &DatIndex[827] }, /* DB_CharsRaceCortex */
+    { &DatIndex[826], &DatIndex[825] }, /* DB_CharsRaceTiny */
+    { &DatIndex[824], &DatIndex[823] }, /* DB_CharsRaceDingo */
+    { &DatIndex[822], &DatIndex[821] }, /* DB_CharsRaceBrio */
+    { &DatIndex[639], &DatIndex[638] }, /* DB_ArenaDashToxicArena */
+    { &DatIndex[641], &DatIndex[640] }, /* DB_ArenaDashSplashArena */
+    { &DatIndex[637], &DatIndex[636] }, /* DB_ArenaDashDanteArena */
+    { &DatIndex[760], &DatIndex[759] }, /* DB_CrateEffects */
+    { &DatIndex[818], &DatIndex[817] }, /* DB_CharsRaceCoco */
+    { &DatIndex[816], &DatIndex[815] }, /* DB_CharsRaceRilla */
+    { &DatIndex[820], &DatIndex[819] }, /* DB_CharsRaceKong */
+    { &DatIndex[814], &DatIndex[813] }, /* DB_CharsSplashCrash */
+    { &DatIndex[812], &DatIndex[811] }, /* DB_CharsSplashCortex */
+    { &DatIndex[810], &DatIndex[809] }, /* DB_CharsSplashTiny */
+    { &DatIndex[808], &DatIndex[807] }, /* DB_CharsSplashDingo */
+    { &DatIndex[806], &DatIndex[805] }, /* DB_CharsSplashKong */
+    { &DatIndex[800], &DatIndex[799] }, /* DB_CharsSplashBrio */
+    { &DatIndex[804], &DatIndex[803] }, /* DB_CharsSplashCoco */
+    { &DatIndex[802], &DatIndex[801] }, /* DB_CharsSplashRilla */
+    { &DatIndex[635], &DatIndex[634] }, /* DB_ArenaDashToxicCrystalarena */
+    { &DatIndex[633], &DatIndex[632] }, /* DB_ArenaDashDanteCrystalarena */
+    { &DatIndex[631], &DatIndex[630] }, /* DB_ArenaDashDotCrystalarena */
+    { &DatIndex[629], &DatIndex[628] }, /* DB_ArenaDashSplashCrystalarena */
+    { &DatIndex[623], &DatIndex[622] }, /* DB_ArenaMedievalDragonCrystalarena */
+    { &DatIndex[846], &DatIndex[845] }, /* DB_CharsDinoCrash */
+    { &DatIndex[844], &DatIndex[843] }, /* DB_CharsDinoCortex */
+    { &DatIndex[842], &DatIndex[841] }, /* DB_CharsDinoTiny */
+    { &DatIndex[840], &DatIndex[839] }, /* DB_CharsDinoDingo */
+    { &DatIndex[838], &DatIndex[837] }, /* DB_CharsDinoCoco */
+    { &DatIndex[834], &DatIndex[833] }, /* DB_CharsDinoRilla */
+    { &DatIndex[836], &DatIndex[835] }, /* DB_CharsDinoBrio */
+    { &DatIndex[832], &DatIndex[831] }, /* DB_CharsDinoKong */
+    { &DatIndex[621], &DatIndex[620] }, /* DB_ArenaMedievalDragonArena */
+    { &DatIndex[619], &DatIndex[618] }, /* DB_DragonObjects */
+    { &DatIndex[135], &DatIndex[134] }, /* DB_ArenaTestObjects */
+    { &DatIndex[730], &DatIndex[729] }, /* DB_Loading */
+    { &DatIndex[131], &DatIndex[130] }, /* DB_MainmenuModels */
+    { &DatIndex[129], &DatIndex[128] }, /* DB_MainmenuArenaModels2 */
+    { &DatIndex[127], &DatIndex[126] }, /* DB_MainmenuArenaModels1 */
+    { &DatIndex[734], &DatIndex[733] }, /* DB_Font */
+    { &DatIndex[125], &DatIndex[124] }, /* DB_CutsceneIntroEurocom */
+    { &DatIndex[123], &DatIndex[122] }, /* DB_CutsceneIntroLogo2 */
+    { &DatIndex[379], &DatIndex[378] }, /* DB_MainmenuModels2 */
+    { &DatIndex[393], &DatIndex[392] }, /* DB_WarpRoom1Level */
+    { &DatIndex[391], &DatIndex[390] }, /* DB_WarpRoom2Level */
+    { &DatIndex[389], &DatIndex[388] }, /* DB_WarpRoom3Level */
+    { &DatIndex[387], &DatIndex[386] }, /* DB_WarpRoom4Level */
+    { &DatIndex[385], &DatIndex[384] }, /* DB_WarpRoom5Level */
+    { &DatIndex[383], &DatIndex[382] }, /* DB_DemoHub2Level */
+    { &DatIndex[381], &DatIndex[380] }, /* DB_DemoHub1Level */
+    { &DatIndex[377], &DatIndex[376] }, /* DB_AdventureItems */
+    { &DatIndex[758], &DatIndex[757] }, /* DB_CharsWarpCrash */
+    { &DatIndex[756], &DatIndex[755] }, /* DB_CharsWarpCoco */
+    { &DatIndex[754], &DatIndex[753] }, /* DB_CharsWarpCortex */
+    { &DatIndex[752], &DatIndex[751] }, /* DB_CharsWarpBrio */
+    { &DatIndex[750], &DatIndex[749] }, /* DB_CharsWarpTiny */
+    { &DatIndex[748], &DatIndex[747] }, /* DB_CharsWarpKong */
+    { &DatIndex[746], &DatIndex[745] }, /* DB_CharsWarpDingo */
+    { &DatIndex[744], &DatIndex[743] }, /* DB_CharsWarpRilla */
+    { &DatIndex[121], &DatIndex[120] }, /* DB_CutsceneIntroLogo */
+    { &DatIndex[119], &DatIndex[118] }, /* DB_CutsceneLevelShot19 */
+    { &DatIndex[117], &DatIndex[116] }, /* DB_CutsceneLevelShot18 */
+    { &DatIndex[115], &DatIndex[114] }, /* DB_CutsceneLevelShot17 */
+    { &DatIndex[113], &DatIndex[112] }, /* DB_CutsceneLevelShot16 */
+    { &DatIndex[111], &DatIndex[110] }, /* DB_CutsceneLevelShot15 */
+    { &DatIndex[109], &DatIndex[108] }, /* DB_CutsceneLevelShot14 */
+    { &DatIndex[107], &DatIndex[106] }, /* DB_CutsceneLevelIntroCrashplain */
+    { &DatIndex[105], &DatIndex[104] }, /* DB_CutsceneLevelIntroCortexlab */
+    { &DatIndex[103], &DatIndex[102] }, /* DB_CutsceneLevelIntroShotGroupTeamgood2 */
+    { &DatIndex[101], &DatIndex[100] }, /* DB_CutsceneLevelIntroShotWelcome3 */
+    { &DatIndex[99], &DatIndex[98] }, /* DB_CutsceneLevelIntroShotWelcome2 */
+    { &DatIndex[97], &DatIndex[96] }, /* DB_CutsceneLevelIntroShotWelcome */
+    { &DatIndex[95], &DatIndex[94] }, /* DB_CutsceneLevelIntroShotGroupTeamevil4 */
+    { &DatIndex[93], &DatIndex[92] }, /* DB_CutsceneLevelIntroShotGroupTeamevil3 */
+    { &DatIndex[91], &DatIndex[90] }, /* DB_CutsceneLevelShot13 */
+    { &DatIndex[89], &DatIndex[88] }, /* DB_CutsceneLevelIntroShotGroupTeamevil2 */
+    { &DatIndex[87], &DatIndex[86] }, /* DB_CutsceneLevelShot12 */
+    { &DatIndex[85], &DatIndex[84] }, /* DB_CutsceneLevelIntroShotGroupTeamevil */
+    { &DatIndex[83], &DatIndex[82] }, /* DB_CutsceneLevelIntroShotGroupTeamgood */
+    { &DatIndex[37], &DatIndex[36] }, /* DB_CutsceneLevel4 */
+    { &DatIndex[35], &DatIndex[34] }, /* DB_CutsceneLevel3 */
+    { &DatIndex[33], &DatIndex[32] }, /* DB_CutsceneLevel2 */
+    { &DatIndex[31], &DatIndex[30] }, /* DB_CutsceneLevel */
+    { &DatIndex[61], &DatIndex[60] }, /* DB_CutsceneLevelEndingGoodShot3 */
+    { &DatIndex[59], &DatIndex[58] }, /* DB_CutsceneLevelShot8 */
+    { &DatIndex[57], &DatIndex[56] }, /* DB_CutsceneLevelShot7 */
+    { &DatIndex[55], &DatIndex[54] }, /* DB_CutsceneLevelShot6 */
+    { &DatIndex[53], &DatIndex[52] }, /* DB_CutsceneLevelEndingGoodShot2 */
+    { &DatIndex[51], &DatIndex[50] }, /* DB_CutsceneLevelShot5 */
+    { &DatIndex[49], &DatIndex[48] }, /* DB_CutsceneLevelShot4 */
+    { &DatIndex[47], &DatIndex[46] }, /* DB_CutsceneLevelShot3 */
+    { &DatIndex[45], &DatIndex[44] }, /* DB_CutsceneLevelShot2 */
+    { &DatIndex[43], &DatIndex[42] }, /* DB_CutsceneLevelEndingEvilShot1 */
+    { &DatIndex[41], &DatIndex[40] }, /* DB_CutsceneLevelEndingGoodShot1 */
+    { &DatIndex[39], &DatIndex[38] }, /* DB_CutsceneLevelIntro */
+    { &DatIndex[81], &DatIndex[80] }, /* DB_CutsceneLevelEndingEvilShot8 */
+    { &DatIndex[79], &DatIndex[78] }, /* DB_CutsceneLevelShot11 */
+    { &DatIndex[77], &DatIndex[76] }, /* DB_CutsceneLevelShot10 */
+    { &DatIndex[75], &DatIndex[74] }, /* DB_CutsceneLevelEndingEvilShot7 */
+    { &DatIndex[73], &DatIndex[72] }, /* DB_CutsceneLevelEndingEvilShot6 */
+    { &DatIndex[71], &DatIndex[70] }, /* DB_CutsceneLevelShot9 */
+    { &DatIndex[69], &DatIndex[68] }, /* DB_CutsceneLevelEndingEvilShot5 */
+    { &DatIndex[67], &DatIndex[66] }, /* DB_CutsceneLevelEndingEvilShot4 */
+    { &DatIndex[65], &DatIndex[64] }, /* DB_CutsceneLevelEndingEvilShot3 */
+    { &DatIndex[63], &DatIndex[62] }, /* DB_CutsceneLevelEndingEvilShot2 */
+    { &DatIndex[27], &DatIndex[26] }, /* DB_CutsceneTextGoodwins */
+    { &DatIndex[29], &DatIndex[28] }, /* DB_CutsceneTextEvilwins */
+    { &DatIndex[25], &DatIndex[24] }, /* DB_CutsceneTextMixteamwins */
+    { &DatIndex[23], &DatIndex[22] }, /* DB_CutsceneTextCredits */
+    { &DatIndex[21], &DatIndex[20] }, /* DB_CutsceneTextIntromovie */
+    { &DatIndex[7], &DatIndex[6] }, /* DB_CutsceneUkaData4 */
+    { &DatIndex[5], &DatIndex[4] }, /* DB_CutsceneUkaData3 */
+    { &DatIndex[3], &DatIndex[2] }, /* DB_CutsceneUkaData2 */
+    { &DatIndex[1], &DatIndex[0] }, /* DB_CutsceneUkaData */
+    { &DatIndex[15], &DatIndex[14] }, /* DB_CutsceneAkuData4 */
+    { &DatIndex[13], &DatIndex[12] }, /* DB_CutsceneAkuData3 */
+    { &DatIndex[11], &DatIndex[10] }, /* DB_CutsceneAkuData2 */
+    { &DatIndex[9], &DatIndex[8] }, /* DB_CutsceneAkuData */
+    { &DatIndex[19], &DatIndex[18] }, /* DB_CutsceneAkuUkaData2 */
+    { &DatIndex[17], &DatIndex[16] }, /* DB_CutsceneAkuUkaData */
 };

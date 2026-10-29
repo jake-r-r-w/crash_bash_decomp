@@ -289,7 +289,7 @@ void ArenaRequirementMet(s32 arg0);
 
 /* An entry of the list SceneVabCue walks (UpdateSceneVabCues), 12 bytes. */
 typedef struct {
-    s32 vab;   /* machine_load_sfx's first argument; 0 ends the list */
+    file *vab;   /* machine_load_sfx's first argument; NULL ends the list */
     s32 sfx;   /* PlaySfx id */
     s32 timer;  /* VabCueTimer */
 } EngineVabCue;

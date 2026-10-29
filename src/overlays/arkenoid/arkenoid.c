@@ -34,19 +34,19 @@ WWInf ArkWorldInfo[8] = {
     { 0x6F, ArkAnims, ArkLevelDB1, 7 },
     { 0x71, ArkAnims, ArkLevelDB0, 7 },
 };
-s32 ArkFiles[24] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 517], (s32)&DatIndex[2 * 516], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 513],
-    (s32)&DatIndex[2 * 512], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 515], (s32)&DatIndex[2 * 514], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 511], (s32)&DatIndex[2 * 510], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 509], (s32)&DatIndex[2 * 508],
-    (s32)&HeroModelBank[DB_BallsVehicle], (s32)&DatIndex[2 * 505], (s32)&DatIndex[2 * 504], (s32)&HeroModelBank[DB_BallsEffects], (s32)&DatIndex[2 * 507],
-    (s32)&DatIndex[2 * 506], 0, 0, 0,
+GroupFile ArkFiles[8] = {
+    &HeroModelBank[DB_Font], &DatIndex[517], &DatIndex[516], &HeroModelBank[DB_Loading], &DatIndex[513],
+    &DatIndex[512], &HeroModelBank[DB_Interface], &DatIndex[515], &DatIndex[514], &HeroModelBank[DB_Powerups],
+    &DatIndex[511], &DatIndex[510], &HeroModelBank[DB_Angel], &DatIndex[509], &DatIndex[508],
+    &HeroModelBank[DB_BallsVehicle], &DatIndex[505], &DatIndex[504], &HeroModelBank[DB_BallsEffects], &DatIndex[507],
+    &DatIndex[506], 0, 0, 0,
 };
-s32 ArkNginFiles[27] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 503], (s32)&DatIndex[2 * 502], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 499],
-    (s32)&DatIndex[2 * 498], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 501], (s32)&DatIndex[2 * 500], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 497], (s32)&DatIndex[2 * 496], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 495], (s32)&DatIndex[2 * 494],
-    (s32)&HeroModelBank[DB_BallsVehicle], (s32)&DatIndex[2 * 493], (s32)&DatIndex[2 * 492], (s32)&HeroModelBank[DB_BallsEffects], (s32)&DatIndex[2 * 491],
-    (s32)&DatIndex[2 * 490], (s32)&HeroModelBank[DB_Ngin], (s32)&DatIndex[2 * 489], (s32)&DatIndex[2 * 488], 0, 0,
+GroupFile ArkNginFiles[9] = {
+    &HeroModelBank[DB_Font], &DatIndex[503], &DatIndex[502], &HeroModelBank[DB_Loading], &DatIndex[499],
+    &DatIndex[498], &HeroModelBank[DB_Interface], &DatIndex[501], &DatIndex[500], &HeroModelBank[DB_Powerups],
+    &DatIndex[497], &DatIndex[496], &HeroModelBank[DB_Angel], &DatIndex[495], &DatIndex[494],
+    &HeroModelBank[DB_BallsVehicle], &DatIndex[493], &DatIndex[492], &HeroModelBank[DB_BallsEffects], &DatIndex[491],
+    &DatIndex[490], &HeroModelBank[DB_Ngin], &DatIndex[489], &DatIndex[488], 0, 0,
 };
 /* the four levels' files (modes 14..17; the engine's table at 0x800A0030): the exe's file group
  * and the model list; N. Gin's has more models */

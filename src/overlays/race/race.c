@@ -347,12 +347,12 @@ WWInf RaceWorldInfo[8] = {
     { 0xB8, RaceAnims, RaceLevelDB, 1 },
     { 0xB9, RaceAnimsB, RaceLevelDB, 1 },
 };
-s32 RaceFiles[27] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 413], (s32)&DatIndex[2 * 412], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 409],
-    (s32)&DatIndex[2 * 408], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 411], (s32)&DatIndex[2 * 410], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 407], (s32)&DatIndex[2 * 406], (s32)&HeroModelBank[DB_PolarObjects], (s32)&DatIndex[2 * 403], (s32)&DatIndex[2 * 402],
-    (s32)&HeroModelBank[DB_CrateEffects], (s32)&DatIndex[2 * 405], (s32)&DatIndex[2 * 404], (s32)&HeroModelBank[DB_CrateObjects], (s32)&DatIndex[2 * 401],
-    (s32)&DatIndex[2 * 400], (s32)&HeroModelBank[DB_Masks], (s32)&DatIndex[2 * 399], (s32)&DatIndex[2 * 398], 0, 0,
+GroupFile RaceFiles[9] = {
+    &HeroModelBank[DB_Font], &DatIndex[413], &DatIndex[412], &HeroModelBank[DB_Loading], &DatIndex[409],
+    &DatIndex[408], &HeroModelBank[DB_Interface], &DatIndex[411], &DatIndex[410], &HeroModelBank[DB_Powerups],
+    &DatIndex[407], &DatIndex[406], &HeroModelBank[DB_PolarObjects], &DatIndex[403], &DatIndex[402],
+    &HeroModelBank[DB_CrateEffects], &DatIndex[405], &DatIndex[404], &HeroModelBank[DB_CrateObjects], &DatIndex[401],
+    &DatIndex[400], &HeroModelBank[DB_Masks], &DatIndex[399], &DatIndex[398], 0, 0,
 };
 /* the levels' files (the engine's per-mode table points at modes 0x17..0x1A's) */
 file_group_load_info file_group_DASH = { &FileGroups[15], RaceFiles };

@@ -75,7 +75,7 @@ void ShowScreenLabels(void);
 
 void ResetScreenLabels(void);
 
-void camera_count_bottom(s32 arg0, s32 arg1);
+void camera_count_bottom(s32 arg0, s32 arg1, SLONG_XYZ *pos);
 
 void CamBoundBottomPoint(s32 arg0, s32 arg1);
 

@@ -23,7 +23,7 @@ typedef struct DbaseAnim {
 } DbaseAnim;
 
 void dbase_anim_load(obj_dbase *db, s32 i);
-BlockRef *dbase_mesh_anim_rec_load(s32 *file, FileEntry *e);
+BlockRef *dbase_mesh_anim_rec_load(file **f, FileEntry *e);
 void dbase_load_textures(obj_dbase *db);
 void dbase_set_textures(obj_dbase *db, u8 *base);
 void load_font(void);

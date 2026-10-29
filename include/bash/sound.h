@@ -9,7 +9,7 @@
 #include "bash/main.h"
 
 void vab_transfer_check(void);
-void machine_load_sfx(s32 arg0, sfx_machine_bank_info *slot);
+void machine_load_sfx(file *arg0, sfx_machine_bank_info *slot);
 void vab_loaded(void *data, sfx_machine_bank_info *slot);
 void sound_reset_counter(void);
 void sound_critical(void);
@@ -29,7 +29,7 @@ void sfx_key_off(s32 *voice);
 void vab_map_sfx(s32 id, s32 arg1);
 void vab_transfer_poll(void);
 void machine_init_sound(void);
-void sfx_bank_load(s32 arg0);
+void sfx_bank_load(file *arg0);
 void sfx_table_reset(void);
 void sfx_table_clear(void);
 void sfx_table_init(void);

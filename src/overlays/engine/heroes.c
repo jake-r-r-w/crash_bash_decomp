@@ -1411,7 +1411,7 @@ s32 DefHeroGrabObject(void) {
     return 0;
 }
 
-s32 DefHero2ObjectCollision(void) {
+s32 DefHero2ObjectCollision(u32 player, u16 a, u16 b, u16 c) {
     return 0;
 }
 
@@ -2685,7 +2685,7 @@ void HeroBecomeAngel(s32 arg0) {
 }
 
 void HeroGhost(arg0)
-s32 arg0;
+u32 arg0;
 {
     s32 y;
     EXTengine *e;
@@ -3072,7 +3072,7 @@ void DefHeroSetIdle(s32 arg0) {
     Heroes[arg0].hero_idle_count = Random(0x96) + 0x5A;
 }
 
-void HeroQuiet(void) {
+void HeroQuiet(u32 player) {
     ProcessHeroAnim();
 }
 

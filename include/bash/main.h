@@ -14,8 +14,8 @@
 typedef struct ModeDbase {
     FileGroup *group;
     obj_dbase *dbase;
-    s32 *file;
-    s32 *textureFile;
+    file *file;
+    file *textureFile;
 } ModeDbase;
 
 typedef struct AnimData {
@@ -532,11 +532,11 @@ typedef struct {
 
 /* MusicTable: what music_load_track passes to music_load for an index. */
 typedef struct MusicEntry {
-    /* 0x00 */ s32 file;
+    /* 0x00 */ file *file;
     /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
     /* 0x06 */ u8 pad6[2];
-    /* 0x08 */ s32 file2;  /* its music file (music_play_level) */
-    /* 0x0C */ s32 altFile;  /* the alternative music file (flag 0x80) */
+    /* 0x08 */ file *file2;  /* its music file (music_play_level) */
+    /* 0x0C */ file *altFile;  /* the alternative music file (flag 0x80) */
     /* 0x10 */ s16 tempo;
     /* 0x12 */ u8 pad12[0x14 - 0x12];
 } MusicEntry;
@@ -585,7 +585,7 @@ typedef struct fade_info {
 BASH_SIZE_CHECK(fade_info, 0x10);
 
 typedef struct LoadNode {
-    /* 0x00 */ s32 *file;                /* archive entry {sector, size}; NULL once cancelled mid-load (loader_cancel) */
+    /* 0x00 */ file *file;                /* archive entry {sector, size}; NULL once cancelled mid-load (loader_cancel) */
     /* 0x04 */ s32 offset;               /* bytes into the file */
     /* 0x08 */ s32 size;                 /* bytes */
     /* 0x0C */ s32 mode;                 /* 1: mal_set_owner after the load */
@@ -675,13 +675,13 @@ void loader_unused_a(void);
 void smallnode_free(BlockRef *node);
 void loader_cancel(LoadNode *arg0);
 s32 string_hash(u8 *s);
-s32 load_file_cb(s32 arg0, void (*done)(), void *ctx);
+s32 load_file_cb(file *arg0, void (*done)(), void *ctx);
 s32 loader_pending(void);
 s32 loader_update(void);
 void mal_compact(_mal_area *arg0);
 mal *mal_first_free(u32 words, mal *blk);
-s32 loader_queue(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
-s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx);
+s32 loader_queue(file *arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
+s32 asload_permanent_callback(file *arg0, void (*done)(), void *ctx);
 void loader_unused_b(void);
 void loadnode_free(LoadNode *node);
 struct LoadNode *loadlist_push(LoaderState *ls);
@@ -754,7 +754,7 @@ void mal_update(_mal_area *heap);
 extern u8 HeapStart[];
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);
 extern ModuleEntry ShellModules;
-s32 load_file_direct(s32 *file, u8 *buf);
+s32 load_file_direct(file *file, u8 *buf);
 void init_file(void);
 extern s32 DcacheReady;
 extern void *LoadNodeFree;
@@ -885,7 +885,7 @@ extern FreeNode *ClutUsedSmall;
 extern FreeNode *ClutLargeList;    /* the large cluts' free list (clut_alloc_large) */
 extern s32 MalFreeBytes;            /* mal_count_free: free bytes */
 extern s32 MalFreeBlocks;            /* mal_count_free: free blocks */
-extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N at [2 * N] */
+extern file DatIndex[];        /* the archive's entries, file N at [N] */
 extern s32 MalLargestFree;            /* mal_count_free: largest free block, bytes */
 extern s32 SfxBankCount;            /* slots of SfxBanks in use */
 extern char SsTable[];
@@ -949,7 +949,7 @@ extern s32 NasHeapSize;
 extern s32 SubPoolCount;
 extern s32 LevelConfig;
 extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
-extern s32 LevelSfxBanks[][8];       /* music_play_level */
+extern file *LevelSfxBanks[][8];       /* music_play_level */
 extern GameOptionSet GameOptions;
 extern s32 card_command_delay;
 extern s32 GameFrames;
@@ -1424,16 +1424,16 @@ void *mal_split_ptr(void *ptr, s32 bytes);
 
 void pads_update(void);
 
-s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u32 **arg2, s32 arg3);
+s32 asload_chunk_relocatable(file *arg0, s32 arg1, u32 **arg2, s32 arg3);
 
 
 LoadNode *loadlist_pop(LoaderState *ls);
 
-s32 load_file_to(s32 *arg0, u8 *arg1);
+s32 load_file_to(file *arg0, u8 *arg1);
 
 mal *mal_next_free_block(mal *blk);
 
-s32 load_file(s32 *arg0, u8 *arg1);
+s32 load_file(file *arg0, u8 *arg1);
 
 mal *mal_split(mal *blk, s32 words);
 
@@ -1530,13 +1530,13 @@ mal *mal_next_movable_now(_mal_area *heap);
 
 void group_split_buffer(void *arg0, s32 *arg1);
 
-s32 group_file_offset(s32 *arg0, s32 *arg1);
+s32 group_file_offset(file *arg0, s32 *arg1);
 
 void loadnode_unlink(LoadNode *arg0);
 
-s32 load_file_permanent(s32 *arg0);
+s32 load_file_permanent(file *arg0);
 
-s32 load_file_to_wait(s32 arg0, s32 arg1, s32 arg2);
+s32 load_file_to_wait(file *arg0, s32 arg1, s32 arg2);
 
 void itoa_div(char *dst, s32 val, s32 div);
 
@@ -1641,9 +1641,9 @@ LoadNode *loadlist_sort_by_sector(LoaderState *ls);
 
 s32 mal_can_alloc(s32 arg0);
 
-s32 load_file_wait(s32 *arg0, u8 * *arg1);
+s32 load_file_wait(file *arg0, u8 * *arg1);
 
-s32 load_file_part_wait(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
+s32 load_file_part_wait(file *arg0, s32 arg1, u8 * *arg2, s32 arg3);
 
 s32 get_dist_angles(s32 *a, s32 *b, s16 *out);
 
@@ -1733,7 +1733,7 @@ u8 *queue_dbase_load(ModeDbase *arg0, s32 arg1);
 
 u8 *queue_group_load(file_group_load_info *arg0);
 
-void dbase_files_loaded(s32 * *arg0, s32 *arg1, u8 *arg2);
+void dbase_files_loaded(GroupFile *arg0, s32 *arg1, u8 *arg2);
 
 void combo_check(ComboSeq *c);
 

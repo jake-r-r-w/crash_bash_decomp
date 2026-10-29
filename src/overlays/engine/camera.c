@@ -438,7 +438,7 @@ void CamFromPath9(camera_info_tag *cam) {
     GameViewport.ofy = 0x15E;
 }
 
-void camera_count_bottom(s32 arg0, s32 arg1) {
+void camera_count_bottom(s32 arg0, s32 arg1, SLONG_XYZ *pos) {
     s32 temp = arg0 - ((arg1 + 0x3000) * 0xF0) / MainCamera.dist;
 
     if (CamBoundTop < temp) {

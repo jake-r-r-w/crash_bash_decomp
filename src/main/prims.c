@@ -2906,7 +2906,7 @@ s32 rel_ptr(s32 *arg0) {
 
 
 extern void draw_map_object(void *a, void *b, s32 c, s32 d);
-void draw_map_sub(subengine *sub, void *arg1) {
+void draw_map_sub(subengine *sub, MATRIX *arg1, s32 arg2) {
     s32 flags;
     s32 x;
 
@@ -2918,8 +2918,8 @@ void draw_map_sub(subengine *sub, void *arg1) {
     }
 }
 
-void map_update(s32 *arg0) {
-    texture_update_anims(*arg0 + 0x10);
+void map_update(map_enviroment *env, SLONG_XYZ *at) {
+    texture_update_anims(&env->dbase->textures);
 }
 
 void mapscene_release(map_enviroment *env) {
@@ -2976,7 +2976,7 @@ void mapscene_init(s32 *arg0, s32 *arg1) {
     }
     arg0[1] = 3;
     textureset_clear((obj_textureset *)p);
-    load_file_cb(arg1[1], map_loaded_textureset, arg0);
+    load_file_cb((file *)arg1[1], map_loaded_textureset, arg0);
 }
 
 void map_loaded_textureset(u8 *arg0, u8 **arg1) {

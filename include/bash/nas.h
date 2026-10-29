@@ -691,9 +691,17 @@ typedef struct FileGroup {
 } FileGroup;
 extern FileGroup FileGroups[];
 
+/* A model a file group loads (the games' XxxFiles lists, a NULL dbase ends one): its bank
+ * record and its model's and textures' archive entries. */
+typedef struct GroupFile {
+    /* 0x00 */ struct obj_dbase *dbase;
+    /* 0x04 */ file *file;
+    /* 0x08 */ file *textureFile;
+} GroupFile;
+
 typedef struct file_group_load_info {
     /* 0x00 */ FileGroup *group;
-    /* 0x04 */ void *files;
+    /* 0x04 */ GroupFile *files;
 } file_group_load_info;
 BASH_SIZE_CHECK(file_group_load_info, 0x8);
 

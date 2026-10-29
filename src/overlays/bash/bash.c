@@ -240,18 +240,18 @@ WWInf BashWorldInfo[9] = {
     { 0x29, BashAnims, BashLevelDB0, 1 },
     { 0x2A, BashAnims, BashLevelDB0, 1 },
 };
-s32 BashFiles[21] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 605], (s32)&DatIndex[2 * 604], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 601],
-    (s32)&DatIndex[2 * 600], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 603], (s32)&DatIndex[2 * 602], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 599], (s32)&DatIndex[2 * 598], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 597], (s32)&DatIndex[2 * 596],
-    (s32)&HeroModelBank[DB_CrateObjects], (s32)&DatIndex[2 * 595], (s32)&DatIndex[2 * 594], 0, 0, 0,
+GroupFile BashFiles[7] = {
+    &HeroModelBank[DB_Font], &DatIndex[605], &DatIndex[604], &HeroModelBank[DB_Loading], &DatIndex[601],
+    &DatIndex[600], &HeroModelBank[DB_Interface], &DatIndex[603], &DatIndex[602], &HeroModelBank[DB_Powerups],
+    &DatIndex[599], &DatIndex[598], &HeroModelBank[DB_Angel], &DatIndex[597], &DatIndex[596],
+    &HeroModelBank[DB_CrateObjects], &DatIndex[595], &DatIndex[594], 0, 0, 0,
 };
-s32 BashSnowFiles[24] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 593], (s32)&DatIndex[2 * 592], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 589],
-    (s32)&DatIndex[2 * 588], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 591], (s32)&DatIndex[2 * 590], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 587], (s32)&DatIndex[2 * 586], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 585], (s32)&DatIndex[2 * 584],
-    (s32)&HeroModelBank[DB_CrateObjects], (s32)&DatIndex[2 * 583], (s32)&DatIndex[2 * 582], (s32)&HeroModelBank[DB_Penguin], (s32)&DatIndex[2 * 581],
-    (s32)&DatIndex[2 * 580], 0, 0,
+GroupFile BashSnowFiles[8] = {
+    &HeroModelBank[DB_Font], &DatIndex[593], &DatIndex[592], &HeroModelBank[DB_Loading], &DatIndex[589],
+    &DatIndex[588], &HeroModelBank[DB_Interface], &DatIndex[591], &DatIndex[590], &HeroModelBank[DB_Powerups],
+    &DatIndex[587], &DatIndex[586], &HeroModelBank[DB_Angel], &DatIndex[585], &DatIndex[584],
+    &HeroModelBank[DB_CrateObjects], &DatIndex[583], &DatIndex[582], &HeroModelBank[DB_Penguin], &DatIndex[581],
+    &DatIndex[580], 0, 0,
 };
 /* the levels' files: the exe's file group and the model list (the engine's table at 0x800A001C
  * points at modes 0..3's and 0x20's) */

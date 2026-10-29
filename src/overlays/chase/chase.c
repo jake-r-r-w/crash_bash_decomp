@@ -33,11 +33,11 @@ WWInf ChaseWorldInfo[2] = {
     { 0x5F, ChaseAnims, ChaseLevelDB, 0 },
     { 0x60, ChaseAnims, ChaseLevelDB, 0 },
 };
-s32 ChaseFiles[21] = {
-    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 315], (s32)&DatIndex[2 * 314], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 311],
-    (s32)&DatIndex[2 * 310], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 313], (s32)&DatIndex[2 * 312], (s32)&HeroModelBank[DB_Powerups],
-    (s32)&DatIndex[2 * 309], (s32)&DatIndex[2 * 308], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 307], (s32)&DatIndex[2 * 306],
-    (s32)&HeroModelBank[DB_KegObjects], (s32)&DatIndex[2 * 305], (s32)&DatIndex[2 * 304], 0, 0,
+GroupFile ChaseFiles[7] = {
+    &HeroModelBank[DB_Font], &DatIndex[315], &DatIndex[314], &HeroModelBank[DB_Loading], &DatIndex[311],
+    &DatIndex[310], &HeroModelBank[DB_Interface], &DatIndex[313], &DatIndex[312], &HeroModelBank[DB_Powerups],
+    &DatIndex[309], &DatIndex[308], &HeroModelBank[DB_Angel], &DatIndex[307], &DatIndex[306],
+    &HeroModelBank[DB_KegObjects], &DatIndex[305], &DatIndex[304], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1E's) */
 file_group_load_info file_group_CHASE = { &FileGroups[5], ChaseFiles };

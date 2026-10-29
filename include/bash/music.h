@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/main.h"
 
-void music_dload_midi(s32 arg0, music_midi *slot, s32 type);
+void music_dload_midi(file *arg0, music_midi *slot, s32 type);
 void music_request(s32 arg0);
 void music_duck_off(void);
 void music_flag_restart(void);
@@ -17,7 +17,7 @@ void music_set_data(s32 arg0, s32 *arg1);
 void music_stop(void);
 void music_update(void);
 void music_free(void);
-void music_load(s32 arg0, s32 type);
+void music_load(file *arg0, s32 type);
 void music_replay(music_midi *arg0);
 void music_pause_slot(music_midi *arg0);
 void continue_music(void);
