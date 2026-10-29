@@ -9,11 +9,11 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 
 ## Part 4 - The final test
 
-The decomp is done when all four pass. The modern-compiler test moved to the PC port (6.1).
+The decomp is done when all four pass (4.1 passed 2026-10-29: ROADMAP-A, Part 4). The
+modern-compiler test moved to the PC port (6.1).
 
 | # | Test | Proves | Status | Done |
 |---|------|--------|--------|------|
-| 4.1 | Clean rebuild: a fresh clone, the user's disc and `make check` match every binary; the packed disc matches retail | Nothing outside the repo is needed | Passed 2026-10-29 from a fresh GitHub clone (ROADMAP-A, The final test) | [x] |
 | 4.2 | Nothing hidden: no asm, `INCLUDE_RODATA`, `.incbin`, parked function or `func_`/`D_` name | Everything is source | Source side clean (2026-10-29): no asm include, parked function or `func_`/`D_` name in `src/`; the exe header, `2MBYTE.OBJ` and the two memory images still come from the disc | [ ] |
 | 4.3 | The fully shifted build plays every minigame through to a win | No address is hard-coded | `make shift-all` plays (2026-10-29); not every minigame to a win yet | [ ] |
 | 4.4 | Same game: the shifted build, side by side with retail over the same route, behaves the same | It behaves like the original | Not run | [ ] |
@@ -34,9 +34,11 @@ Before making the repo public.
 | 5.8 | Commit the progress history | `.decomp/history.json` | With each docs update, so it stops showing as modified. | [ ] |
 | 5.9 | Re-read the leak and prototype docs | `docs/PROTOTYPES.md`, `docs/ARCHITECTURE.md` | Describing the sources is fine; nothing may quote the leaked files at length. | [ ] |
 | 5.10 | Decide on `tools/reference/` (26 MB GCC source) | `tools/reference/` | Keep it (GPL, COPYING present) or replace it with a fetch script. | [ ] |
-| 5.11 | Final check | repo root | `git status` clean; `.gitignore` lists `disc/`, `protos/`, `asm/`, `assets/`, `ext/`, `build/`, `linkers/`; no binaries in the history. | [ ] |
-| 5.12 | Switch the GitHub repo to public | GitHub settings | After 5.1 to 5.11. | [ ] |
-| 5.13 | List the project on recomp.fyi | `.recomp.json` | At least `"game": "Crash Bash"`, `"system": "PS1"`, `"type": "decomp"`. Under 8 KB; never mention a ROM, an ISO or where to get one. Listed daily, or at once through https://recomp.fyi/add. | [ ] |
+| 5.11 | The toolchain image builds from scratch | `tools/docker/Dockerfile` | 4.1 reused the existing image. Build it with `--no-cache` on a machine without it, then `make check`. | [ ] |
+| 5.12 | Quiet `make split`'s three splat notices | `configs/USA/sym.main.txt` | "Unable to determine a segment" for `funcEvSpError`, `funcEvSpErrorx`, `MsgFatalMetricsError` (seen in 4.1): give them a `segment:` or `absolute:True`, so a new user's first split prints no error. | [ ] |
+| 5.13 | Final check | repo root | `git status` clean; `.gitignore` lists `disc/`, `protos/`, `asm/`, `assets/`, `ext/`, `build/`, `linkers/`; no binaries in the history. | [ ] |
+| 5.14 | Switch the GitHub repo to public | GitHub settings | After 5.1 to 5.13. | [ ] |
+| 5.15 | List the project on recomp.fyi | `.recomp.json` | At least `"game": "Crash Bash"`, `"system": "PS1"`, `"type": "decomp"`. Under 8 KB; never mention a ROM, an ISO or where to get one. Listed daily, or at once through https://recomp.fyi/add. | [ ] |
 
 ## Part 6 - The PC port
 

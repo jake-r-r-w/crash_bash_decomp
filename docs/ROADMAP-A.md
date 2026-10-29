@@ -606,9 +606,9 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
       read is the overlay's `file.size`.
     - The BIOS region byte is `BiosRegion`, the last `D_` name in `src/`.
 
-## The final test (ROADMAP-B Part 4)
+## Part 4 - The final test (done so far; the rest is in ROADMAP-B)
 
-- [x] 4.1, the clean rebuild (2026-10-29). The repo was cloned fresh from GitHub at `ec9a1cdc`
+- [x] 4.1 The clean rebuild (2026-10-29). The repo was cloned fresh from GitHub at `ec9a1cdc`
   into a separate folder and run through the README's Quick Start exactly:
   - the disc and its `.cue` went in `disc/`;
   - PsyQ 4.7 went in `ext/psyq47/` (copied from an unpacked archive, every file checked against
@@ -621,7 +621,7 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
 
   Two limits:
   - The Docker image was the existing one, built from the same Dockerfile (its tag is the
-    Dockerfile's hash), so the image build itself wasn't rerun.
+    Dockerfile's hash), so the image build itself wasn't rerun (ROADMAP-B 5.11).
   - `make split` prints three splat "Unable to determine a segment" notices, for
     `funcEvSpError`, `funcEvSpErrorx` and `MsgFatalMetricsError`. They are harmless: the split
-    and the build are unaffected.
+    and the build are unaffected (ROADMAP-B 5.12).
