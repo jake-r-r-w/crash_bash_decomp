@@ -607,7 +607,7 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
         rotscale_update(&me->xform);
     }
     gfx_load_xform(me->sub, &me->xform.mtx, &me->XYZ);
-    bot = me->XYZ.y + rec->unk2;
+    bot = me->XYZ.y + rec->dy;
     top = me->XYZ.y + rec->height;
     rad = rec->radius;
     gte_rotate_point((SVECTOR *)rec, &pos);
@@ -628,7 +628,7 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
         if (rec2 == NULL) {
             continue;
         }
-        lo = eng->XYZ.y + rec2->unk2;
+        lo = eng->XYZ.y + rec2->dy;
         hi = eng->XYZ.y + rec2->height;
         if (top < lo && hi < bot) {
             dx = eng->XYZ.x - pos.vx;
@@ -784,7 +784,7 @@ s32 BashHeroKickCollision(s32 arg0) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
-            hi = eng->XYZ.y + box->unk2;
+            hi = eng->XYZ.y + box->dy;
             lo = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
@@ -792,7 +792,7 @@ s32 BashHeroKickCollision(s32 arg0) {
                     rotscale_update(&eng->xform);
                 }
                 gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
-                lo2 = eng->XYZ.y + box->unk2;
+                lo2 = eng->XYZ.y + box->dy;
                 hi2 = eng->XYZ.y + box->height;
                 if (lo2 < hi2) {
                     tmp = hi2;
@@ -841,7 +841,7 @@ s32 BashHeroKickCollision(s32 arg0) {
                 if (rec == NULL) {
                     continue;
                 }
-                bot = e->XYZ.y + rec->unk2;
+                bot = e->XYZ.y + rec->dy;
                 top = e->XYZ.y + rec->height;
                 if (push != 0) {
                     r = rec->radius;
@@ -951,7 +951,7 @@ s32 BashHeroKickCollision(s32 arg0) {
                 if (e == eng) continue;
                 rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
-                bot = e->XYZ.y + rec->unk2;
+                bot = e->XYZ.y + rec->dy;
                 top = e->XYZ.y + rec->height;
                 if (lo < bot && top < hi) {
                     dx = e->XYZ.x - eng->XYZ.x;
@@ -1014,7 +1014,7 @@ s32 BashHeroCarryCollision(s32 idx) {
     if (eng != NULL) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
-            bot = eng->XYZ.y + box->unk2;
+            bot = eng->XYZ.y + box->dy;
             top = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
@@ -1044,7 +1044,7 @@ s32 BashHeroCarryCollision(s32 idx) {
                             if (ext != NULL && (ext->status == 1 || ext->status == 0xB)) {
                                 rec = FindCollisionBox(other, 0x40);
                                 if (rec != NULL) {
-                                    lo = other->XYZ.y + rec->unk2;
+                                    lo = other->XYZ.y + rec->dy;
                                     hi = other->XYZ.y + rec->height;
                                     if (top < lo && hi < bot) {
                                         dx = other->XYZ.x - eng->XYZ.x;

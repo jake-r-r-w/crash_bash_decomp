@@ -456,11 +456,14 @@ void InitGraphics(void);
 
 void UpdateGame(void);
 
+/* What a game hooks into the hit code (HitHooks): its hit shape and stat tables (Bash's and Papu's
+ * crates; Bash's snow arena puts its kick speeds in hit_shapes2), a tile breaker and an
+ * explosion's reach. */
 typedef struct {
-    void *unk0;
-    void *unk4;
-    void (*unk8)(s32, s32, s32, s32, s32, s32);
-    void (*unkC)(s32, s32, s32, s32);   /* Papu: PapuExploRange */
+    void *hit_shapes2;
+    void *hit_shapes;
+    void (*break_tile)(s32, s32, s32, s32, s32, s32);   /* Bash's space arena: BashSpaceBreakTile */
+    void (*explo_range)(s32, s32, s32, s32);           /* Papu: PapuExploRange */
 } HitCallbacks;
 extern HitCallbacks HitHooks;
 

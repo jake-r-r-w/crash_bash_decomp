@@ -421,7 +421,7 @@ void mal_compact_high(_mal_area *heap) {
     s32 n;
 
     while (1) {
-        cur = *(mal **)&heap->unk0[4];
+        cur = heap->end;
         for (;;) {
             cur = cur->prev;
             if (cur == NULL) break;
@@ -1304,10 +1304,10 @@ mal *mal_init(_mal_area *heap, u8 *start, s32 size) {
     end->owner = (void **)-1;
     end->unk0 = 0;
     end->prev = blk;
-    *(mal **)&heap->unk0[0] = blk;
+    heap->first = blk;
     heap->free = blk;
     heap->lowest = blk;
-    *(mal **)&heap->unk0[4] = end;
+    heap->end = end;
     heap->deferred = NULL;
     return blk;
 }

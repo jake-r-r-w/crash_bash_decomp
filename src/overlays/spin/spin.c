@@ -1730,7 +1730,7 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
     box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         i = 0;
-        top = eng->XYZ.y + box->unk2;
+        top = eng->XYZ.y + box->dy;
         bot = eng->XYZ.y + box->height;
         do {
             h = &Heroes[i];
@@ -1844,7 +1844,7 @@ s32 SpinHitTest(x, y, z, size, skip, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->XYZ.y + rec->unk2 + size;
+        top = eng->XYZ.y + rec->dy + size;
         bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
             dx = eng->XYZ.x - x;
@@ -1870,7 +1870,7 @@ s32 SpinHitTest(x, y, z, size, skip, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->XYZ.y + rec->unk2 + size;
+        top = eng->XYZ.y + rec->dy + size;
         bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
             dx = eng->XYZ.x - x;
@@ -2636,8 +2636,8 @@ void SpinInitASTIndices(void) {
     r = 0;
 found:
     SpinASTBase = r;
-    HitHooks.unk8 = 0;
-    HitHooks.unkC = 0;
+    HitHooks.break_tile = 0;
+    HitHooks.explo_range = 0;
 }
 
 s32 SPIN_KeepInBounds(EXTengine *eng) {
@@ -3143,7 +3143,7 @@ NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
         rotscale_update(&me->xform);
     }
     gfx_load_xform(me->sub, &me->xform.mtx, &me->XYZ);
-    bot = me->XYZ.y + rec->unk2;
+    bot = me->XYZ.y + rec->dy;
     top = me->XYZ.y + rec->height;
     rad = rec->radius;
     gte_rotate_point((SVECTOR *)rec, &pos);
@@ -3164,7 +3164,7 @@ NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
         if (rec2 == NULL) {
             continue;
         }
-        lo = eng->XYZ.y + rec2->unk2;
+        lo = eng->XYZ.y + rec2->dy;
         hi = eng->XYZ.y + rec2->height;
         if (top < lo && hi < bot) {
             dx = eng->XYZ.x - pos.vx;
@@ -3284,7 +3284,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
-            hi = eng->XYZ.y + box->unk2;
+            hi = eng->XYZ.y + box->dy;
             lo = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
@@ -3292,7 +3292,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                     rotscale_update(&eng->xform);
                 }
                 gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
-                lo2 = eng->XYZ.y + box->unk2;
+                lo2 = eng->XYZ.y + box->dy;
                 hi2 = eng->XYZ.y + box->height;
                 if (lo2 < hi2) {
                     tmp = hi2;
@@ -3331,7 +3331,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                     if (e != NULL) {
                         rec = FindCollisionBox(e, 0x40);
                         if (rec != NULL) {
-                            bot = e->XYZ.y + rec->unk2;
+                            bot = e->XYZ.y + rec->dy;
                             top = e->XYZ.y + rec->height;
                             if (push != 0) {
                                 r = rec->radius;
@@ -3430,7 +3430,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                 if (e == eng) continue;
                 rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
-                bot = e->XYZ.y + rec->unk2;
+                bot = e->XYZ.y + rec->dy;
                 top = e->XYZ.y + rec->height;
                 if (lo < bot && top < hi) {
                     dx = e->XYZ.x - eng->XYZ.x;
@@ -3493,7 +3493,7 @@ s32 SpinHeroCarryCollision(s32 idx) {
     if (eng != NULL) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
-            bot = eng->XYZ.y + box->unk2;
+            bot = eng->XYZ.y + box->dy;
             top = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
@@ -3523,7 +3523,7 @@ s32 SpinHeroCarryCollision(s32 idx) {
                             if (ext != NULL && (ext->unk1A == 1 || ext->unk1A == 0xB)) {
                                 rec = FindCollisionBox(other, 0x40);
                                 if (rec != NULL) {
-                                    lo = other->XYZ.y + rec->unk2;
+                                    lo = other->XYZ.y + rec->dy;
                                     hi = other->XYZ.y + rec->height;
                                     if (top < lo && hi < bot) {
                                         dx = other->XYZ.x - eng->XYZ.x;
@@ -3605,7 +3605,7 @@ void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero) {
 
     r = FindCollisionBox(eng, 0x40);
     if (r != NULL) {
-        top = eng->XYZ.y + r->unk2;
+        top = eng->XYZ.y + r->dy;
         rad = r->radius;
         h = &Heroes[hero];
         bot = eng->XYZ.y + r->height;
@@ -3614,7 +3614,7 @@ void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero) {
             if (e2 != NULL) {
                 r2 = FindCollisionBox(e2, 0x40);
                 if (r2 != NULL) {
-                    lo = e2->XYZ.y + r2->unk2;
+                    lo = e2->XYZ.y + r2->dy;
                     hi = e2->XYZ.y + r2->height;
                     if (bot < lo && hi < top) {
                         dx = e2->XYZ.x - eng->XYZ.x;

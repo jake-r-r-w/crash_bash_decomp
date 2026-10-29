@@ -38,8 +38,8 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
         HurtHeroesInRadius(obj, 0x280, id, 0x205, 0xA0);
         break;
     }
-    if (HitHooks.unk8 != NULL) {
-        HitHooks.unk8(arg0[0], arg0[1], arg0[2], 0, id, arg1->unk14);
+    if (HitHooks.break_tile != NULL) {
+        HitHooks.break_tile(arg0[0], arg0[1], arg0[2], 0, id, arg1->unk14);
     }
 }
 

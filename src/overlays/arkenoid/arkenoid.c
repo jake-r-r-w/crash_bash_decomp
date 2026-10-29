@@ -479,7 +479,7 @@ void ArkHeroEngineUpdate(s32 arg0) {
         b = (ArkenoidHeroBox *)((s32)b + arg0);
         b = (ArkenoidHeroBox *)((s32)b << 3);
         b = (ArkenoidHeroBox *)((s32)base + (s32)b);
-        t = r->unk2;
+        t = r->dy;
         b->a = t;
         b->b = r->height;
         b->c = r->radius;
@@ -5393,7 +5393,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
         if (rec == NULL) {
             continue;
         }
-        dz = rec->unk2;
+        dz = rec->dy;
         y = eng->XYZ.y;
         x1 = rec->height;
         if (!(top < y + dz)) {
@@ -5794,7 +5794,7 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
     hit = 0;
     box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
-        top = eng->XYZ.y + box->unk2;
+        top = eng->XYZ.y + box->dy;
         bot = eng->XYZ.y + box->height;
         rad = box->radius;
         mine = FindExtension(((NAS **)eng)[-1], 0x800);
@@ -5806,7 +5806,7 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                     if (other != NULL && other != eng) {
                         rec = FindCollisionBox(other, 0x40);
                         if (rec != NULL) {
-                            lo = other->XYZ.y + rec->unk2;
+                            lo = other->XYZ.y + rec->dy;
                             hi = other->XYZ.y + rec->height;
                             if (bot < lo && hi < top) {
                                 dx = other->XYZ.x - eng->XYZ.x;

@@ -653,9 +653,9 @@ void SetNasDefaults(void) {
     EngineTemplate.OldXYZ.x = 0;
     EngineTemplate.Engine = NULL;
     EngineTemplate.platform = NULL;
-    EngineTemplate.collision_box.unk4 = 0;
-    EngineTemplate.collision_box.unk2 = 0;
-    EngineTemplate.collision_box.unk0 = 0;
+    EngineTemplate.collision_box.dz = 0;
+    EngineTemplate.collision_box.dy = 0;
+    EngineTemplate.collision_box.dx = 0;
     EngineTemplate.collision_box.radius = 0;
     *(s32 *)&EngineTemplate.collision_box.height = 0;
     EngineTemplate.collision_box.flags = 0;
@@ -1603,7 +1603,7 @@ s32 CheckSolidCollision(NAS *nas) {
     it = HeadOfSolids;
     hit = 0;
     if (eng != NULL && (box = FindCollisionBoxIn(eng, 0x50)) != NULL) {
-        top = eng->XYZ.y + box->unk2;
+        top = eng->XYZ.y + box->dy;
         bot = eng->XYZ.y + box->height;
         do {
             FlagRecord *rec;
@@ -1616,7 +1616,7 @@ s32 CheckSolidCollision(NAS *nas) {
                 if (other != NULL && other != eng) {
                     rec = FindCollisionBoxIn(other, 0x50);
                     if (rec != NULL) {
-                        lo = other->XYZ.y + rec->unk2;
+                        lo = other->XYZ.y + rec->dy;
                         hi = other->XYZ.y + rec->height;
                         if (bot < lo && hi < top) {
                             dx = other->XYZ.x - eng->XYZ.x;
@@ -1663,9 +1663,9 @@ FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag) {
 }
 
 void SetEngineColBox(EXTengine *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    arg0->collision_box.unk0 = arg1;
-    arg0->collision_box.unk2 = arg2;
-    arg0->collision_box.unk4 = arg3;
+    arg0->collision_box.dx = arg1;
+    arg0->collision_box.dy = arg2;
+    arg0->collision_box.dz = arg3;
     arg0->collision_box.unkA = 0;
     arg0->collision_box.radius = arg4;
     arg0->collision_box.height = arg5;

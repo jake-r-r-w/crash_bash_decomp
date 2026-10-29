@@ -1350,7 +1350,7 @@ s32 HeroTestBox(s32 id, u32 flag) {
     me = h;
     h = base;
     r = box->radius;
-    top = eng->XYZ.y + box->unk2;
+    top = eng->XYZ.y + box->dy;
     bot = eng->XYZ.y + box->height;
     gte_rotate_point((SVECTOR *)box, &pos);
     for (; i < 4; i++) {
@@ -1368,7 +1368,7 @@ s32 HeroTestBox(s32 id, u32 flag) {
         if (rec == NULL) {
             continue;
         }
-        lo = eng->XYZ.y + rec->unk2;
+        lo = eng->XYZ.y + rec->dy;
         hi = eng->XYZ.y + rec->height;
         if (bot < lo && hi < top) {
             dx = eng->XYZ.x - pos.vx;
@@ -4675,8 +4675,8 @@ void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             }
         }
     } while (++i < 4);
-    if (HitHooks.unkC != NULL) {
-        HitHooks.unkC(arg0, arg1, arg2, arg3);
+    if (HitHooks.explo_range != NULL) {
+        HitHooks.explo_range(arg0, arg1, arg2, arg3);
     }
     if (abs(eng->XYZ.y - World_floor_level) < 0x80) {
         arg1 = arg1 * arg1;

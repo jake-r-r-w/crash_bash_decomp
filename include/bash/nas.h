@@ -255,9 +255,9 @@ BASH_SIZE_CHECK(ASTEntry, 0xC);
  * of its own (EXTengine.collision_box), and a PointList carries more after its
  * points. The prototype's type for it is anonymous and not in the fragment. */
 typedef struct {
-    /* 0x00 */ s16 unk0;                 /* x offset (SetEngineColBox) */
-    /* 0x02 */ s16 unk2;                 /* bottom (y offset) for CheckSolidCollision */
-    /* 0x04 */ s16 unk4;                 /* z offset */
+    /* 0x00 */ s16 dx;                   /* x offset from the engine's XYZ (SetEngineColBox) */
+    /* 0x02 */ s16 dy;                   /* its bottom, as a y offset (CheckSolidCollision) */
+    /* 0x04 */ s16 dz;                   /* z offset */
     /* 0x06 */ s16 radius;
     /* 0x08 */ s16 height;
     /* 0x0A */ s16 unkA;

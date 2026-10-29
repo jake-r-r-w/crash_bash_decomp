@@ -481,7 +481,7 @@ void InitialiseBASH(void) {
         World_floor_level = -0x10;
         BashSpaceInitTiles();
         BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
-        HitHooks.unk8 = BashSpaceBreakTile;
+        HitHooks.break_tile = BashSpaceBreakTile;
         if (GameLevelFlags & 0x80) {
             BashSetCrateMix(6, 7, 8, 8, 0, 0xE, 2, 0, 0);
         } else {
@@ -491,7 +491,7 @@ void InitialiseBASH(void) {
         break;
     case 2:
         World_floor_level = -0x10;
-        HitHooks.unk0 = BashSnowKickVels;
+        HitHooks.hit_shapes2 = BashSnowKickVels;
         HeroHooks.RunSpeeds = BashSnowRunSpeeds;
         BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
@@ -2610,7 +2610,7 @@ void BashPenguinPush(EXTengine *self) {
         return;
     }
     radius = rec->radius;
-    top = self->XYZ.y + rec->unk2;
+    top = self->XYZ.y + rec->dy;
     bot = self->XYZ.y + rec->height;
     for (; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xF800)) {
@@ -2620,7 +2620,7 @@ void BashPenguinPush(EXTengine *self) {
                 if (r == NULL) {
                     continue;
                 }
-                etop = eng->XYZ.y + r->unk2;
+                etop = eng->XYZ.y + r->dy;
                 ebot = eng->XYZ.y + r->height;
                 if (bot < etop && ebot < top) {
                     dx = eng->XYZ.x - self->XYZ.x;
@@ -2650,7 +2650,7 @@ void BashPenguinPush(EXTengine *self) {
         if (r == NULL) {
             continue;
         }
-        etop = eng->XYZ.y + r->unk2;
+        etop = eng->XYZ.y + r->dy;
         ebot = eng->XYZ.y + r->height;
         if (bot < etop && ebot < top) {
             dx = eng->XYZ.x - self->XYZ.x;
@@ -2958,7 +2958,7 @@ s32 BashMissileHitTest(x, y, z, size, skip, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->XYZ.y + rec->unk2 + size;
+        top = eng->XYZ.y + rec->dy + size;
         bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
             dx = eng->XYZ.x - x;
@@ -2984,7 +2984,7 @@ s32 BashMissileHitTest(x, y, z, size, skip, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->XYZ.y + rec->unk2 + size;
+        top = eng->XYZ.y + rec->dy + size;
         bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
             dx = eng->XYZ.x - x;
@@ -3786,10 +3786,10 @@ void BASHSetUp(void) {
 void BashInitCrateHooks(void) {
     CrateAstType = BashASTIndex(0x201);
     CrateAstType2 = BashASTIndex(0x202);
-    HitHooks.unk4 = CrateHitShapes;
-    HitHooks.unk8 = NULL;
-    HitHooks.unkC = 0;
-    HitHooks.unk0 = CrateHitShapes2;
+    HitHooks.hit_shapes = CrateHitShapes;
+    HitHooks.break_tile = NULL;
+    HitHooks.explo_range = 0;
+    HitHooks.hit_shapes2 = CrateHitShapes2;
 }
 
 void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2) {

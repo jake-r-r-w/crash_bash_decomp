@@ -128,15 +128,15 @@ void PlotPACrate(NAS *nas) {
                 eng->xform.rot.vy = Heroes[obj->player].hero_move->facing_angle;
                 eng->xform.rot.vx = 0;
                 eng->xform.rot.vz = 0;
-                slide->unkE = PAPU_STATS(unk4, Heroes[obj->player].hero_name)->a;
-                slide->unk14 = PAPU_STATS(unk4, Heroes[obj->player].hero_name)->b;
-                slide->unk10 = PAPU_STATS(unk4, Heroes[obj->player].hero_name)->c;
-                slide->unk12 = PAPU_STATS(unk4, Heroes[obj->player].hero_name)->d;
-                slide->unk18 = PAPU_STATS(unk4, Heroes[obj->player].hero_name)->e;
-                slide->unk1E = PAPU_STATS(unk4, Heroes[obj->player].hero_name)->f;
-                slide->unk1A = PAPU_STATS(unk4, Heroes[obj->player].hero_name)->g;
-                slide->unk1C = PAPU_STATS(unk4, Heroes[obj->player].hero_name)->h;
-                slide->unkC = PAPU_STATS(unk4, Heroes[obj->player].hero_name)->i;
+                slide->unkE = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->a;
+                slide->unk14 = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->b;
+                slide->unk10 = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->c;
+                slide->unk12 = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->d;
+                slide->unk18 = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->e;
+                slide->unk1E = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->f;
+                slide->unk1A = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->g;
+                slide->unk1C = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->h;
+                slide->unkC = PAPU_STATS(hit_shapes, Heroes[obj->player].hero_name)->i;
                 obj->status = 8;
             }
         } else {
@@ -182,15 +182,15 @@ void PlotPACrate(NAS *nas) {
                 eng->xform.rot.vy = other->xform.rot.vy;
                 eng->xform.rot.vx = 0;
                 eng->xform.rot.vz = 0;
-                slide->unkE = PAPU_STATS(unk4, 1)->a;
-                slide->unk14 = PAPU_STATS(unk4, 1)->b;
-                slide->unk10 = PAPU_STATS(unk4, 1)->c;
-                slide->unk12 = PAPU_STATS(unk4, 1)->d;
-                slide->unk18 = PAPU_STATS(unk4, 1)->e;
-                slide->unk1E = PAPU_STATS(unk4, 1)->f;
-                slide->unk1A = PAPU_STATS(unk4, 1)->g;
-                slide->unk1C = PAPU_STATS(unk4, 1)->h;
-                slide->unkC = PAPU_STATS(unk4, 1)->i;
+                slide->unkE = PAPU_STATS(hit_shapes, 1)->a;
+                slide->unk14 = PAPU_STATS(hit_shapes, 1)->b;
+                slide->unk10 = PAPU_STATS(hit_shapes, 1)->c;
+                slide->unk12 = PAPU_STATS(hit_shapes, 1)->d;
+                slide->unk18 = PAPU_STATS(hit_shapes, 1)->e;
+                slide->unk1E = PAPU_STATS(hit_shapes, 1)->f;
+                slide->unk1A = PAPU_STATS(hit_shapes, 1)->g;
+                slide->unk1C = PAPU_STATS(hit_shapes, 1)->h;
+                slide->unkC = PAPU_STATS(hit_shapes, 1)->i;
                 obj->status = 8;
             }
         } else {
@@ -296,10 +296,10 @@ void PlotPACrate(NAS *nas) {
             if ((u32)c >= 5) {
                 c = 0;
             }
-            slide->unkE = PAPU_STATS(unk0, Heroes[c].hero_name)->a;
-            slide->unk14 = PAPU_STATS(unk0, Heroes[c].hero_name)->b;
-            slide->unk10 = PAPU_STATS(unk0, Heroes[c].hero_name)->c;
-            slide->unk12 = PAPU_STATS(unk0, Heroes[c].hero_name)->d;
+            slide->unkE = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->a;
+            slide->unk14 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->b;
+            slide->unk10 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->c;
+            slide->unk12 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->d;
             PapuGridKey((T_B8080 *)eng);
             PACrateAimAtGrid((T_B7F14_A *)eng, (T_B7F14_B *)slide);
             break;
@@ -312,10 +312,10 @@ void PlotPACrate(NAS *nas) {
             if ((u32)c >= 5) {
                 c = 0;
             }
-            slide->unkE = PAPU_STATS(unk0, Heroes[c].hero_name)->a;
-            slide->unk14 = PAPU_STATS(unk0, Heroes[c].hero_name)->b;
-            slide->unk10 = PAPU_STATS(unk0, Heroes[c].hero_name)->c;
-            slide->unk12 = PAPU_STATS(unk0, Heroes[c].hero_name)->d;
+            slide->unkE = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->a;
+            slide->unk14 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->b;
+            slide->unk10 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->c;
+            slide->unk12 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->d;
             PapuGridKey((T_B8080 *)eng);
             PACrateAimAtGrid((T_B7F14_A *)eng, (T_B7F14_B *)slide);
             break;
@@ -546,7 +546,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
         return NULL;
     }
     r = rec->radius;
-    bottom = eng->XYZ.y + rec->unk2;
+    bottom = eng->XYZ.y + rec->dy;
     top = eng->XYZ.y + rec->height;
     if (checkHeroes != 0) {
         for (i = 0; i < 4; i++) {
@@ -565,7 +565,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
             if (rec2 == NULL) {
                 continue;
             }
-            lo = other->XYZ.y + rec2->unk2;
+            lo = other->XYZ.y + rec2->dy;
             hi = other->XYZ.y + rec2->height;
             if (top < lo && hi < bottom) {
                 dx = other->XYZ.x;
@@ -584,7 +584,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
     if (other != NULL) {
         rec2 = FindCollisionBox(other, 0x40);
         if (rec2 != NULL) {
-            lo = other->XYZ.y + rec2->unk2;
+            lo = other->XYZ.y + rec2->dy;
             hi = other->XYZ.y + rec2->height;
             if (top < lo && hi < bottom) {
                 lo = rec2->radius;
@@ -614,7 +614,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
         if (rec2 == NULL) {
             continue;
         }
-        lo = other->XYZ.y + rec2->unk2;
+        lo = other->XYZ.y + rec2->dy;
         hi = other->XYZ.y + rec2->height;
         if (top < lo && hi < bottom) {
             dx = other->XYZ.x;
@@ -667,7 +667,7 @@ s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask) {
     i = 0;
     if (rec != NULL) {
         r = rec->radius;
-        bottom = eng->XYZ.y + rec->unk2;
+        bottom = eng->XYZ.y + rec->dy;
         top = eng->XYZ.y + rec->height;
         for (; i < 4; i++) {
             h = &Heroes[i];
@@ -682,7 +682,7 @@ s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask) {
             if (rec2 == NULL) {
                 continue;
             }
-            lo = other->XYZ.y + rec2->unk2;
+            lo = other->XYZ.y + rec2->dy;
             hi = other->XYZ.y + rec2->height;
             if (top < lo && hi < bottom) {
                 dx = other->XYZ.x - eng->XYZ.x;
@@ -1159,7 +1159,7 @@ NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
         rotscale_update(&me->xform);
     }
     gfx_load_xform(me->sub, &me->xform.mtx, &me->XYZ);
-    bot = me->XYZ.y + rec->unk2;
+    bot = me->XYZ.y + rec->dy;
     top = me->XYZ.y + rec->height;
     rad = rec->radius;
     gte_rotate_point((SVECTOR *)rec, &pos);
@@ -1180,7 +1180,7 @@ NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
         if (rec2 == NULL) {
             continue;
         }
-        lo = eng->XYZ.y + rec2->unk2;
+        lo = eng->XYZ.y + rec2->dy;
         hi = eng->XYZ.y + rec2->height;
         if (top < lo && hi < bot) {
             dx = eng->XYZ.x - pos.vx;
@@ -1300,7 +1300,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
-            hi = eng->XYZ.y + box->unk2;
+            hi = eng->XYZ.y + box->dy;
             lo = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
@@ -1308,7 +1308,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                     rotscale_update(&eng->xform);
                 }
                 gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
-                lo2 = eng->XYZ.y + box->unk2;
+                lo2 = eng->XYZ.y + box->dy;
                 hi2 = eng->XYZ.y + box->height;
                 if (lo2 < hi2) {
                     tmp = hi2;
@@ -1347,7 +1347,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                     if (e != NULL) {
                         rec = FindCollisionBox(e, 0x40);
                         if (rec != NULL) {
-                            bot = e->XYZ.y + rec->unk2;
+                            bot = e->XYZ.y + rec->dy;
                             top = e->XYZ.y + rec->height;
                             if (push != 0) {
                                 r = rec->radius;
@@ -1446,7 +1446,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                 if (e == eng) continue;
                 rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
-                bot = e->XYZ.y + rec->unk2;
+                bot = e->XYZ.y + rec->dy;
                 top = e->XYZ.y + rec->height;
                 if (lo < bot && top < hi) {
                     dx = e->XYZ.x - eng->XYZ.x;
@@ -1509,7 +1509,7 @@ s32 PapuHeroCarryCollision(s32 idx) {
     if (eng != NULL) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
-            bot = eng->XYZ.y + box->unk2;
+            bot = eng->XYZ.y + box->dy;
             top = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
@@ -1539,7 +1539,7 @@ s32 PapuHeroCarryCollision(s32 idx) {
                             if (ext != NULL && (ext->unk1A == 1 || ext->unk1A == 0xB)) {
                                 rec = FindCollisionBox(other, 0x40);
                                 if (rec != NULL) {
-                                    lo = other->XYZ.y + rec->unk2;
+                                    lo = other->XYZ.y + rec->dy;
                                     hi = other->XYZ.y + rec->height;
                                     if (top < lo && hi < bot) {
                                         dx = other->XYZ.x - eng->XYZ.x;

@@ -616,9 +616,10 @@ typedef struct LoadNode {
     /* 0x20 */ struct LoadNode *prev;
 } LoadNode;
 
-/* A heap (MainHeap is the main one). Only these fields are known. */
+/* A heap (MainHeap is the main one). */
 typedef struct _mal_area {
-    /* 0x00 */ u8 unk0[8];
+    /* 0x00 */ mal *first;          /* its first block (mal_init) */
+    /* 0x04 */ mal *end;            /* the zero-size block that ends it */
     /* 0x08 */ mal *free;           /* free list, smallest first */
     /* 0x0C */ mal *lowest;         /* lowest free block, or NULL */
     /* 0x10 */ mal *deferred;       /* freed once unk2 ticks run out (mal_free_later, mal_update_deferred) */

@@ -434,7 +434,7 @@ void InitialisePAPU(void) {
                  0x1201, 0x11);
     PapuSetCrateMix(0, 0, 0, 0, 0xC, 4, 0, 0, 0);
     PapuDropFirstCrates();
-    HitHooks.unkC = (void (*)(s32, s32, s32, s32))PapuExploRange;
+    HitHooks.explo_range = (void (*)(s32, s32, s32, s32))PapuExploRange;
     PapuAttackPos = 0;
     PapuAttackDelay = 0;
 }
@@ -1705,7 +1705,7 @@ s32 PapuHitHeroes(EXTengine *eng) {
         }
         gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
         r = box->radius;
-        top = eng->XYZ.y + box->unk2;
+        top = eng->XYZ.y + box->dy;
         bot = eng->XYZ.y + box->height;
         gte_rotate_point((SVECTOR *)box, &pos);
         for (i = 0; i < 4; i++) {
@@ -1720,7 +1720,7 @@ s32 PapuHitHeroes(EXTengine *eng) {
             if (rec == NULL) {
                 continue;
             }
-            lo = eng->XYZ.y + rec->unk2;
+            lo = eng->XYZ.y + rec->dy;
             hi = eng->XYZ.y + rec->height;
             if (bot < lo && hi < top) {
                 dx = eng->XYZ.x - pos.vx;
@@ -1758,7 +1758,7 @@ s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
     }
     gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
     r = box->radius;
-    top = eng->XYZ.y + box->unk2;
+    top = eng->XYZ.y + box->dy;
     bot = eng->XYZ.y + box->height;
     gte_rotate_point((SVECTOR *)box, &pos);
     for (i = 0; i < 4; i++) {
@@ -1773,7 +1773,7 @@ s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
         if (rec == NULL) {
             continue;
         }
-        lo = eng->XYZ.y + rec->unk2;
+        lo = eng->XYZ.y + rec->dy;
         hi = eng->XYZ.y + rec->height;
         if (bot < lo && hi < top) {
             dx = eng->XYZ.x - pos.vx;
@@ -1810,7 +1810,7 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
         gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
         r = box->radius;
         new_var = box;
-        top = eng->XYZ.y + new_var->unk2;
+        top = eng->XYZ.y + new_var->dy;
         bot = eng->XYZ.y + new_var->height;
         gte_rotate_point((SVECTOR *)new_var, &pos);
         for (n = HeadOfSolids; n != NULL; n = n->Solid.Child) {
@@ -1825,7 +1825,7 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
             if (rec == NULL) {
                 continue;
             }
-            lo = o->XYZ.y + rec->unk2;
+            lo = o->XYZ.y + rec->dy;
             hi = o->XYZ.y + rec->height;
             if (bot < lo && hi < top) {
                 dx = o->XYZ.x - pos.vx;
@@ -1867,7 +1867,7 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
     }
     gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
     r = box->radius;
-    top = eng->XYZ.y + box->unk2;
+    top = eng->XYZ.y + box->dy;
     bot = eng->XYZ.y + box->height;
     gte_rotate_point((SVECTOR *)box, &pos);
     for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
@@ -1876,7 +1876,7 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
             if (e != NULL && e != eng) {
                 rec = FindCollisionBox(e, 0x40);
                 if (rec != NULL) {
-                    lo = e->XYZ.y + rec->unk2;
+                    lo = e->XYZ.y + rec->dy;
                     hi = e->XYZ.y + rec->height;
                     if (bot < lo && hi < top) {
                         dx = e->XYZ.x - pos.vx;
@@ -1933,7 +1933,7 @@ s32 PapuMinionKick(u32 idx) {
     eng = (EXTengine *)PapuMinionSlots[idx].pad4[0];
     if (eng != NULL && (box = FindCollisionBox(eng, 0x40)) != NULL) {
     r = box->radius;
-    top = eng->XYZ.y + box->unk2;
+    top = eng->XYZ.y + box->dy;
     bot = eng->XYZ.y + box->height;
     for (i = 0; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xF800)) {
@@ -1946,7 +1946,7 @@ s32 PapuMinionKick(u32 idx) {
             if (e != NULL) {
                 rec = FindCollisionBox(e, 0x40);
                 if (rec != NULL) {
-                    lo = e->XYZ.y + rec->unk2;
+                    lo = e->XYZ.y + rec->dy;
                     hi = e->XYZ.y + rec->height;
                     if (can) {
                         rr = rec->radius;
@@ -1987,7 +1987,7 @@ s32 PapuMinionKick(u32 idx) {
             if (e != NULL && e != eng) {
                 rec = FindCollisionBox(e, 0x40);
                 if (rec != NULL) {
-                    lo = e->XYZ.y + rec->unk2;
+                    lo = e->XYZ.y + rec->dy;
                     hi = e->XYZ.y + rec->height;
                     if (bot < lo && hi < top) {
                         dx = e->XYZ.x - eng->XYZ.x;
@@ -2560,10 +2560,10 @@ void PAPUSetUp(void) {
 void PapuInitCrateHooks(void) {
     CrateAstType = PapuASTIndex(0x203);
     CrateAstType2 = PapuASTIndex(0x204);
-    HitHooks.unk4 = CrateHitShapes;
-    HitHooks.unk8 = NULL;
-    HitHooks.unkC = 0;
-    HitHooks.unk0 = CrateHitShapes2;
+    HitHooks.hit_shapes = CrateHitShapes;
+    HitHooks.break_tile = NULL;
+    HitHooks.explo_range = 0;
+    HitHooks.hit_shapes2 = CrateHitShapes2;
 }
 
 void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {

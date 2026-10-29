@@ -671,7 +671,7 @@ void N2OHeroEngineUpdate(s32 arg0) {
         b = (N2OHeroBox *)((s32)b + arg0);
         b = (N2OHeroBox *)((s32)b << 3);
         b = (N2OHeroBox *)((s32)base + (s32)b);
-        t = r->unk2;
+        t = r->dy;
         b->a = t;
         b->b = r->height;
         b->c = r->radius;
@@ -3440,7 +3440,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         if (rec == NULL) {
             continue;
         }
-        dz = rec->unk2;
+        dz = rec->dy;
         y = eng->XYZ.y;
         x1 = rec->height;
         if (!(top < y + dz)) {
@@ -3636,7 +3636,7 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
     hit = 0;
     box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
-        top = eng->XYZ.y + box->unk2;
+        top = eng->XYZ.y + box->dy;
         bot = eng->XYZ.y + box->height;
         rad = box->radius;
         mine = FindExtension(((NAS **)eng)[-1], 0x800);
@@ -3648,7 +3648,7 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                     if (other != NULL && other != eng) {
                         rec = FindCollisionBox(other, 0x40);
                         if (rec != NULL) {
-                            lo = other->XYZ.y + rec->unk2;
+                            lo = other->XYZ.y + rec->dy;
                             hi = other->XYZ.y + rec->height;
                             if (bot < lo && hi < top) {
                                 dx = other->XYZ.x - eng->XYZ.x;
@@ -3797,7 +3797,7 @@ s32 N2OMissileHitTest(x, y, z, size, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->XYZ.y + rec->unk2 + size;
+        top = eng->XYZ.y + rec->dy + size;
         bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
             dx = eng->XYZ.x - x;
@@ -3823,7 +3823,7 @@ s32 N2OMissileHitTest(x, y, z, size, mask)
         if (rec == NULL) {
             continue;
         }
-        top = eng->XYZ.y + rec->unk2 + size;
+        top = eng->XYZ.y + rec->dy + size;
         bot = eng->XYZ.y + rec->height - size;
         if (y < top && bot < y) {
             dx = eng->XYZ.x - x;

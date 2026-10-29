@@ -1242,7 +1242,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
         box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
-            hi = eng->XYZ.y + box->unk2;
+            hi = eng->XYZ.y + box->dy;
             lo = eng->XYZ.y + box->height;
             box = FindCollisionBox(eng, 1);
             if (box != NULL) {
@@ -1250,7 +1250,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                     rotscale_update(&eng->xform);
                 }
                 gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
-                lo2 = eng->XYZ.y + box->unk2;
+                lo2 = eng->XYZ.y + box->dy;
                 hi2 = eng->XYZ.y + box->height;
                 if (lo2 < hi2) {
                     tmp = hi2;
@@ -1289,7 +1289,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                     if (e != NULL) {
                         rec = FindCollisionBox(e, 0x40);
                         if (rec != NULL) {
-                            bot = e->XYZ.y + rec->unk2;
+                            bot = e->XYZ.y + rec->dy;
                             top = e->XYZ.y + rec->height;
                             if (push != 0) {
                                 r = rec->radius;
@@ -1388,7 +1388,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                 if (e == eng) continue;
                 rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
-                bot = e->XYZ.y + rec->unk2;
+                bot = e->XYZ.y + rec->dy;
                 top = e->XYZ.y + rec->height;
                 if (lo < bot && top < hi) {
                     dx = e->XYZ.x - eng->XYZ.x;

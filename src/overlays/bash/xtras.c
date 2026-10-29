@@ -468,15 +468,15 @@ void PlotCrate(NAS *arg0) {
             eng->xform.rot.vy = hb[fux->who].hero_move->facing_angle;
             eng->xform.rot.vx = 0;
             eng->xform.rot.vz = 0;
-            ext->speed = BC038_STATB(hb, unk4, fux->who)->speed;
-            ext->max = BC038_STATB(hb, unk4, fux->who)->max;
-            ext->accel = BC038_STATB(hb, unk4, fux->who)->accel;
-            ext->decel = BC038_STATB(hb, unk4, fux->who)->decel;
-            ext->unk18 = BC038_STATB(hb, unk4, fux->who)->unk8;
-            ext->unk1E = BC038_STATB(hb, unk4, fux->who)->unkA;
-            ext->unk1A = BC038_STATB(hb, unk4, fux->who)->unkC;
-            ext->unk1C = BC038_STATB(hb, unk4, fux->who)->unkE;
-            ext->unkC = BC038_STATB(hb, unk4, fux->who)->unk10;
+            ext->speed = BC038_STATB(hb, hit_shapes, fux->who)->speed;
+            ext->max = BC038_STATB(hb, hit_shapes, fux->who)->max;
+            ext->accel = BC038_STATB(hb, hit_shapes, fux->who)->accel;
+            ext->decel = BC038_STATB(hb, hit_shapes, fux->who)->decel;
+            ext->unk18 = BC038_STATB(hb, hit_shapes, fux->who)->unk8;
+            ext->unk1E = BC038_STATB(hb, hit_shapes, fux->who)->unkA;
+            ext->unk1A = BC038_STATB(hb, hit_shapes, fux->who)->unkC;
+            ext->unk1C = BC038_STATB(hb, hit_shapes, fux->who)->unkE;
+            ext->unkC = BC038_STATB(hb, hit_shapes, fux->who)->unk10;
             fux->state = 8;
         }
         } else {
@@ -659,10 +659,10 @@ void PlotCrate(NAS *arg0) {
             if ((u32)v >= 5) {
                 v = 0;
             }
-            ext->speed = BC038_STAT(unk0, v)->speed;
-            ext->max = BC038_STAT(unk0, v)->max;
-            ext->accel = BC038_STAT(unk0, v)->accel;
-            ext->decel = BC038_STAT(unk0, v)->decel;
+            ext->speed = BC038_STAT(hit_shapes2, v)->speed;
+            ext->max = BC038_STAT(hit_shapes2, v)->max;
+            ext->accel = BC038_STAT(hit_shapes2, v)->accel;
+            ext->decel = BC038_STAT(hit_shapes2, v)->decel;
             BashGridKey((T_BB7B8 *)eng);
             CrateAimAtGrid((T_BB64C_A *)eng, (T_BB64C_B *)ext);
             break;
@@ -676,10 +676,10 @@ void PlotCrate(NAS *arg0) {
             if ((u32)v >= 5) {
                 v = 0;
             }
-            ext->speed = BC038_STAT(unk0, v)->speed;
-            ext->max = BC038_STAT(unk0, v)->max;
-            ext->accel = BC038_STAT(unk0, v)->accel;
-            ext->decel = BC038_STAT(unk0, v)->decel;
+            ext->speed = BC038_STAT(hit_shapes2, v)->speed;
+            ext->max = BC038_STAT(hit_shapes2, v)->max;
+            ext->accel = BC038_STAT(hit_shapes2, v)->accel;
+            ext->decel = BC038_STAT(hit_shapes2, v)->decel;
             BashGridKey((T_BB7B8 *)eng);
             CrateAimAtGrid((T_BB64C_A *)eng, (T_BB64C_B *)ext);
             break;
@@ -1650,7 +1650,7 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
     box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         r = box->radius;
-        top = eng->XYZ.y + box->unk2;
+        top = eng->XYZ.y + box->dy;
         bot = eng->XYZ.y + box->height;
         if (heroes != 0) {
             for (i = 0; i < 4; i++) {
@@ -1668,7 +1668,7 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
                 if (rec == NULL) {
                     continue;
                 }
-                lo = e->XYZ.y + rec->unk2;
+                lo = e->XYZ.y + rec->dy;
                 hi = e->XYZ.y + rec->height;
                 if (bot < lo && hi < top) {
                     dx = e->XYZ.x - eng->XYZ.x;
@@ -1689,7 +1689,7 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
                 if (e != NULL && e != eng) {
                     rec = FindCollisionBox(e, 0x40);
                     if (rec != NULL) {
-                        lo = e->XYZ.y + rec->unk2;
+                        lo = e->XYZ.y + rec->dy;
                         hi = e->XYZ.y + rec->height;
                         if (bot < lo && hi < top) {
                             dx = e->XYZ.x - eng->XYZ.x;
@@ -1744,7 +1744,7 @@ NAS *CrateHitSolids(EXTengine *eng, s32 who) {
     box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         r = box->radius;
-        top = eng->XYZ.y + box->unk2;
+        top = eng->XYZ.y + box->dy;
         bot = eng->XYZ.y + box->height;
         for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
             if (nas->Class & 0x200) {
@@ -1752,7 +1752,7 @@ NAS *CrateHitSolids(EXTengine *eng, s32 who) {
                 if (e != NULL && e != eng) {
                     rec = FindCollisionBox(e, 0x40);
                     if (rec != NULL) {
-                        lo = e->XYZ.y + rec->unk2;
+                        lo = e->XYZ.y + rec->dy;
                         hi = e->XYZ.y + rec->height;
                         if (bot < lo && hi < top) {
                             dx = e->XYZ.x - eng->XYZ.x;
@@ -1806,7 +1806,7 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
     i = 0;
     if (rec != NULL) {
         r = rec->radius;
-        bottom = eng->XYZ.y + rec->unk2;
+        bottom = eng->XYZ.y + rec->dy;
         top = eng->XYZ.y + rec->height;
         for (; i < 4; i++) {
             h = &Heroes[i];
@@ -1821,7 +1821,7 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
             if (rec2 == NULL) {
                 continue;
             }
-            lo = other->XYZ.y + rec2->unk2;
+            lo = other->XYZ.y + rec2->dy;
             hi = other->XYZ.y + rec2->height;
             if (top < lo && hi < bottom) {
                 dx = other->XYZ.x - eng->XYZ.x;
