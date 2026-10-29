@@ -73,8 +73,9 @@ def rewrite(body, var, ty, lv, prefer=None, log=print, ptrs=None):
     body = re.sub(r"\b%s\[(0x[0-9A-Fa-f]+) / 4\]" % var,
                   lambda q: "%s->%s" % (var, pick(lv.get(int(q.group(1), 0)), 4, prefer)) if pick(lv.get(int(q.group(1), 0)), 4, prefer) else q.group(0), body)
     body = re.sub(r"\b((?:%s) \*)%s\b(?=[;,)= ])" % (DECL_TYPES, var), "%s *%s" % (ty, var), body, count=1)
-    body = re.sub(r"(\b%s = )(?!NULL|\(%s \*\))([^;]*[+][^;]*);" % (var, re.escape(ty)),
-                  lambda q: "%s(%s *)(%s);" % (q.group(1), ty, q.group(2)), body)
+    # only a whole one-line statement `VAR = ... + ...;`, not an assignment inside an expression
+    body = re.sub(r"^(\s*%s = )(?!NULL|\(%s \*\))([^;\n]*[+][^;\n]*);" % (var, re.escape(ty)),
+                  lambda q: "%s(%s *)(%s);" % (q.group(1), ty, q.group(2)), body, flags=re.M)
     return body
 
 

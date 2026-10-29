@@ -4788,7 +4788,7 @@ void PogoAI_Poll(u32 arg0) {
 }
 
 bool PogoAI_CanPlayerShootAnyone(u32 hero) {
-    u8 *g;
+    GameState *g;
     HeroInfo *p;
     EXTengine *eng;
     s32 mate;
@@ -4840,7 +4840,7 @@ loop:
             break;
         }
         if (hit) {
-            if ((*(u16 *)(g + 0x32) & 0x20) && g[i + 0x5C] != 0) {
+            if ((g->levelFlags & 0x20) && ((u8 *)g)[i + 0x5C] != 0) {  /* matching: g + i first; heroOut[i] adds the other way round */
                 return 0;
             }
             return 1;
@@ -4856,7 +4856,7 @@ next:
 }
 
 bool PogoAI_CanPlayerShootAnyoneFourWays(u32 hero) {
-    u8 *g;
+    GameState *g;
     HeroInfo *p;
     EXTengine *eng;
     s32 mate;
@@ -4893,9 +4893,9 @@ loop:
             }
         } while (0);
     }
-    if (*(u16 *)(g + 0x32) & 0x20) {
+    if (g->levelFlags & 0x20) {
         do {
-            if (g[i + 0x5C] != 0) {
+            if (((u8 *)g)[i + 0x5C] != 0) {  /* matching: g + i first; heroOut[i] adds the other way round */
                 return 0;
             }
         } while (0);
@@ -4911,7 +4911,7 @@ next:
 }
 
 bool PogoAI_CanPlayerShockAnyone(u32 hero) {
-    u8 *g;
+    GameState *g;
     HeroInfo *p;
     EXTengine *eng;
     s32 mate;
@@ -4936,7 +4936,7 @@ bool PogoAI_CanPlayerShockAnyone(u32 hero) {
         }
         if (i != hero && i != mate) {
             if ((u32)(csqrt(PogoSquaredDistanceToDestination(x, z, p->hero_eng->XYZ.x, p->hero_eng->XYZ.z)) >> 6) < 0x381) {
-                if ((*(u16 *)(g + 0x32) & 0x20) && g[i + 0x5C] != 0) {
+                if ((g->levelFlags & 0x20) && ((u8 *)g)[i + 0x5C] != 0) {  /* matching: g + i first; heroOut[i] adds the other way round */
                     return 0;
                 }
                 return 1;
@@ -5635,7 +5635,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
     EXTanimator *anim;
     EXTengine *e2;
     subengine *sub;
-    u8 *g;
+    GameState *g;
     s32 x;
     s32 z;
     s32 tx;
@@ -5712,7 +5712,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
             break;
         }
         g = GameInfo;
-        if ((*(s32 *)(g + 0x30) & 0x800801) == 0x800000) {
+        if ((*(s32 *)&g->exitFlags & 0x800801) == 0x800000) {
             for (i = 0; i < 4; i++) {
                 near = 0;
                 if (GAME->heroOut[i] == 0) {

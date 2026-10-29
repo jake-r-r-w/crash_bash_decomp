@@ -821,7 +821,6 @@ void UpdateCHASE(void) {
     s32 i;
     s16 c;
     s32 n;
-    u8 *g;
     u8 *h;
     NAS **p;
 
@@ -837,9 +836,8 @@ loop:
         i++;
         goto loop;
     }
-    g = (u8 *)HeroModelBank;
-    if (*(s32 *)(g + 0x1544) != 0) {
-        texture_update_anims(g + 0x1548);
+    if (HeroModelBank[DB_KegObjects].data != 0) {
+        texture_update_anims(&HeroModelBank[DB_KegObjects].textures);
     }
     n = 3;
     do {
@@ -1756,10 +1754,10 @@ void SetChaseHeroHit(s32 arg0) {
 }
 
 void ChaseHeroHit(s32 arg0) {
-    u8 *g;
+    GameState *g;
 
-    if (ProcessHeroAnim() == 8 && ((g = GameInfo), (*(u16 *)(g + 0x32) & 0x80)) && g[arg0 + 0x5C] == 0 &&
-        !(*(s32 *)(g + 4) & 2)) {
+    if (ProcessHeroAnim() == 8 && ((g = (GameState *)GameInfo), (g->levelFlags & 0x80)) && g->heroOut[arg0] == 0 &&
+        !(g->cheats & 2)) {
         HeroInfo *base = Heroes;
         HeroInfo *h = &base[arg0];
 

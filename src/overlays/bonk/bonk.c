@@ -1652,18 +1652,18 @@ void BonkSetClockB(void) {
 void BonkInitScores(void) {
     s32 i;
     s16 v;
-    u8 *g = GameInfo;
+    GameState *g = GameInfo;
 
-    u8 *h;
+    GameState *h;
 
-    if (*(u16 *)(g + 0x32) & 0x40) {
+    if (g->levelFlags & 0x40) {
         i = 0;
         h = g;
         for (; i < 4; i++) {
             v = 0x3C;
-            if (h[i + 0x5C] == 0) {
+            if (((u8 *)h)[i + 0x5C] == 0) {  /* matching: h + i first; heroOut[i] adds the other way round */
                 v = 0x50;
-                if (*(s32 *)(h + 0x6C) != 0) {
+                if (h->teams != 0) {
                     v = 0x5A;
                 }
             }

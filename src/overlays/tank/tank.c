@@ -1249,10 +1249,10 @@ void TA_HeroBot(u32 player) {
     s32 d;
     s32 ex;
     s32 ez;
-    u8 *g;
+    GameState *g;
 
     g = GameInfo;
-    if (*(s32 *)(g + 0x10) & 0x04000000) {
+    if (g->pause & 0x04000000) {
         return;
     }
     if (((GameState *)g)->mode == 5) {

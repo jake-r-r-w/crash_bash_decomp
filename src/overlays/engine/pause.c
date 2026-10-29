@@ -1452,19 +1452,19 @@ void RecordWin(void) {
 
     WinCounterSize = 0x1E;
     g = GameInfo;
-    if (*(u16 *)(g + 0x32) & 0x100) {
-        (g + *(s16 *)(g + 0x34))[0xAB] += 2;
-        p = g + *(s16 *)(g + 0x34);  /* as UpdatePause: the mode's bytes */
+    if (((GameState *)g)->levelFlags & 0x100) {
+        (g + ((GameState *)g)->mode)[0xAB] += 2;  /* matching: the mode's modeSkill byte, through g + mode (as UpdatePause) */
+        p = g + ((GameState *)g)->mode;  /* matching: as above */
         if (p[0xAB] >= 0x20) {
             p[0xAB] = 0x1F;
         }
     }
     q = GameInfo;
-    if (*(u16 *)(q + 0x32) & 0x1E0) {
+    if (((GameState *)q)->levelFlags & 0x1E0) {
         i = 3;
         r = q + i;
         for (; i >= 0; i--) {
-            r[0xCC] = 0;
+            r[0xCC] = 0;  /* matching: roundPoints[i] through a stepped pointer */
             r--;
         }
         if ((GameLevelFlags & 0x40) && (PanelCtrl & 1) && Clock_Time == 0) {

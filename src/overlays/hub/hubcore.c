@@ -2031,7 +2031,7 @@ void HubInitSparks(HubSparks *arg0) {
     s32 ang;
     s32 k;
     HubSparkSet *set;
-    u8 *g;
+    obj_dbase *g;
     s32 sel;
 
     set = &arg0->set;
@@ -2043,22 +2043,22 @@ void HubInitSparks(HubSparks *arg0) {
     g = &HeroModelBank[DB_AdventureItems];
     sel = PodiumCheerKind;
     if (sel == 0) {
-        tex = (HubTex *)(*(u8 **)(g + 0x18) + 0x188);
+        tex = (HubTex *)&g->textures.tex[7];
     }
     if (sel == 1) {
-        tex = (HubTex *)(*(u8 **)(g + 0x18) + 0x268);
+        tex = (HubTex *)&g->textures.tex[11];
     }
     if (sel == 2) {
-        tex = (HubTex *)(*(u8 **)(g + 0x18) + 0x1C0);
+        tex = (HubTex *)&g->textures.tex[8];
     }
     if (sel == 3) {
-        tex = (HubTex *)(*(u8 **)(g + 0x18) + 0x230);
+        tex = (HubTex *)&g->textures.tex[10];
     }
     if (sel == 4) {
-        tex = (HubTex *)(*(u8 **)(g + 0x18) + 0x1F8);
+        tex = (HubTex *)&g->textures.tex[9];
     }
     if (sel == 5) {
-        tex = (HubTex *)(*(u8 **)(g + 0x18) + 0x2A0);
+        tex = (HubTex *)&g->textures.tex[12];
     }
     k = 4;
     for (;;) {
