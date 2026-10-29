@@ -65,7 +65,9 @@ Phase 6 (ROADMAP.md). In rough order:
    engine globals (`decl_dups.py --views`: fold each into the one type), the exe's 69 raw-offset
    functions (mostly the heap's block arithmetic and `export_exe_functions`' slot offsets), and the
    `unkXX` fields (ASSETS.md, What isn't decoded, lists the file formats' ones).
-3. **A `NON_MATCHING` build with a current GCC for MIPS** (the final test's test 5).
+3. Shelved 2026-10-29 by decision: **a `NON_MATCHING` build with a current GCC for MIPS** (the
+   final test's test 5). A PC port would replace the PsyQ libraries anyway, so the PS1 link work
+   doesn't carry over. Where it stopped is in the Open leads.
 4. **ARCHITECTURE.md** as a description of the game's systems.
 
 Needing the user: the memory-image question (ROADMAP Phase 6: may a source build write zeros
@@ -73,6 +75,20 @@ where the slot's and the engine's .bss hold build-machine leftovers?).
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
+
+- **The GCC 12 PS1 build (shelved).** Every game file compiles with mipsel GCC 12
+  (`-march=r3000 -msoft-float -mno-abicalls -fno-pic -G0 -O2 -fno-builtin -ffreestanding
+  -fno-strict-aliasing -fno-common -fno-toplevel-reorder -fno-zero-initialized-in-bss -std=gnu89
+  -DNON_MATCHING`). The linker is `scratch/modern/modern.py`, a `shift_all.Build` subclass. It
+  needs `provide()` to drop a line when an override is `None`; that change isn't committed. The
+  linker flows each binary from the one before it and keeps the PsyQ .bss block at retail's
+  offsets, because its gaps hold libsnd's `_svm_*` variables. The full build boots to a black
+  screen. Even with every unit on the matching objects it doesn't boot: Sony's `ssinit.o`
+  `.bss` lays out its variables differently from retail. For example, `VBLANK_MINUS` is at
+  `0x80077330`, not `0x80077334`, and `_snd_ev_flag` is at `0x80077340`, not `0x80076b30`. So in
+  retail those variables were commons that psylink placed, and the object's own order is wrong.
+  Next, if it's picked up again: place libsnd's .bss names by retail's list (as the matching link
+  does), then bisect main, engine and slot with `scratch/boottest.ps1`.
 
 - **`draw_verts` (`func_800193A8`) needs its register pins** (proved
   2026-10-26; kept as a recorded exception to only-C, CONVENTIONS.md). The target is a leaf that saves only s2-s4 (frame 24: two
@@ -469,6 +485,14 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-29 (GCC 12 build, shelved):** every game file builds with GCC 12, and
+  `scratch/modern/modern.py` links them. It boots to a black screen: libsnd's `ssinit.o` .bss
+  order differs from retail's (Open leads). Shelved by the user's decision: a PC port replaces
+  PsyQ, so the PS1 layout work wouldn't carry over. Fixed on the way and committed (8cd0ae1d):
+  `LoadScreenImage` takes the file it loads, and `VictorySeq` is defined before engine.h's array
+  of it. Gotcha: in a linker script, a `PROVIDE` of a name beats the script's own assignment to
+  it.
 
 - **2026-10-29 (Phase 6: everything shifted at once):** `shift_all.py` (`make shift-all`) pads the
   exe, the engine and all 14 overlays and relinks them against each other until the addresses
