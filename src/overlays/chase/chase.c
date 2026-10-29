@@ -2878,7 +2878,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
     s32 k;
     s32 free;
     s32 m;
-    u8 *g;
+    GameState *g;
 
     free = -1;
     for (i = 0; i < 4; i++) {
@@ -2913,13 +2913,13 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
             taken |= 1 << best;
         }
         g = GameInfo;
-        if (*(s32 *)(g + 0x6C) == 0) {
+        if (g->teams == 0) {
             HeroInfo *hb;
             HeroInfo *a;
             s32 n;
 
-            if (g[g[0xA7] + 0x5C] != 0
-                || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
+            if (g->heroOut[g->adventure.rank[0]] != 0
+                || (hb = Heroes, a = &hb[g->adventure.rank[0]], a->hero_score == hb[g->adventure.rank[1]].hero_score)) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
@@ -2952,8 +2952,8 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
 
             InitBigScore();
             hb = Heroes;
-            a = &hb[*(s16 *)(g + 0x48)];
-            b = &hb[*(s16 *)(g + 0x4A)];
+            a = &hb[g->teamLeader[0]];
+            b = &hb[g->teamLeader[1]];
             ta = &hb[a->hero_teammate];
             tb = &hb[b->hero_teammate];
             sa = a->hero_score + ta->hero_score;
@@ -2970,17 +2970,17 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             } else if (sb < sa) {
-                *(u16 *)(g + 0x30) |= 0x800;
-                if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
-                    g[0x60] = a->hero_name;
-                    g[0x61] = ta->hero_name;
+                g->exitFlags |= 0x800;
+                if (g->heroOut[g->teamLeader[0]] == 0) {
+                    g->winner[0] = a->hero_name;
+                    g->winner[1] = ta->hero_name;
                     a->hero_status |= 0x200;
                     ta->hero_status |= 0x200;
                     b->hero_status |= 0x400;
                     tb->hero_status |= 0x400;
                 } else {
-                    g[0x60] = b->hero_name;
-                    g[0x61] = tb->hero_name;
+                    g->winner[0] = b->hero_name;
+                    g->winner[1] = tb->hero_name;
                     b->hero_status |= 0x200;
                     tb->hero_status |= 0x200;
                     a->hero_status |= 0x400;
@@ -3008,7 +3008,7 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
     s32 i;
     s32 best;
     s32 k;
-    u8 *g;
+    GameState *g;
 
     if (arg0 == -1) {
         taken = 0;
@@ -3025,13 +3025,13 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
             taken |= 1 << best;
         }
         g = GameInfo;
-        if (*(s32 *)(g + 0x6C) == 0) {
+        if (g->teams == 0) {
             HeroInfo *hb;
             HeroInfo *a;
             s32 n;
 
-            if (g[g[0xA7] + 0x5C] != 0
-                || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
+            if (g->heroOut[g->adventure.rank[0]] != 0
+                || (hb = Heroes, a = &hb[g->adventure.rank[0]], a->hero_score == hb[g->adventure.rank[1]].hero_score)) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
@@ -3064,8 +3064,8 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
 
             InitBigScore();
             hb = Heroes;
-            a = &hb[*(s16 *)(g + 0x48)];
-            b = &hb[*(s16 *)(g + 0x4A)];
+            a = &hb[g->teamLeader[0]];
+            b = &hb[g->teamLeader[1]];
             ta = &hb[a->hero_teammate];
             tb = &hb[b->hero_teammate];
             sa = a->hero_score + ta->hero_score;
@@ -3082,17 +3082,17 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     }
                 }
             } else if (sb < sa) {
-                *(u16 *)(g + 0x30) |= 0x800;
-                if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
-                    g[0x60] = a->hero_name;
-                    g[0x61] = ta->hero_name;
+                g->exitFlags |= 0x800;
+                if (g->heroOut[g->teamLeader[0]] == 0) {
+                    g->winner[0] = a->hero_name;
+                    g->winner[1] = ta->hero_name;
                     a->hero_status |= 0x200;
                     ta->hero_status |= 0x200;
                     b->hero_status |= 0x400;
                     tb->hero_status |= 0x400;
                 } else {
-                    g[0x60] = b->hero_name;
-                    g[0x61] = tb->hero_name;
+                    g->winner[0] = b->hero_name;
+                    g->winner[1] = tb->hero_name;
                     b->hero_status |= 0x200;
                     tb->hero_status |= 0x200;
                     a->hero_status |= 0x400;
@@ -3117,13 +3117,13 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
 void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
     s32 found;
     s32 fail;
-    u8 *g;
+    GameState *g;
     s32 i;
 
     found = -1;
     fail = 0;
     g = GameInfo;
-    if (*(s32 *)(g + 0x6C) != 0) {
+    if (g->teams != 0) {
         HeroInfo *hb = Heroes;
         HeroInfo *a;
         HeroInfo *ta;
@@ -3131,13 +3131,13 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
         s32 sa;
         s32 sb;
 
-        a = &hb[*(s16 *)(g + 0x48)];
+        a = &hb[g->teamLeader[0]];
         ta = &hb[a->hero_teammate];
-        b = &hb[*(s16 *)(g + 0x4A)];
+        b = &hb[g->teamLeader[1]];
         sa = a->hero_score + ta->hero_score;
         sb = b->hero_score + hb[b->hero_teammate].hero_score;
         if (sa == 0) {
-            if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
+            if (g->heroOut[g->teamLeader[0]] == 0) {
                 GAME->winner[0] = a->hero_name;
                 GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
@@ -3152,7 +3152,7 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
                 fail = 1;
             }
         } else if (sb == 0) {
-            if (g[*(s16 *)(g + 0x4A) + 0x5C] == 0) {
+            if (g->heroOut[g->teamLeader[1]] == 0) {
                 GAME->winner[0] = b->hero_name;
                 GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;

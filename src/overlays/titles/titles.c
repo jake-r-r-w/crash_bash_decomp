@@ -610,7 +610,7 @@ void AnimateTitlesBackdrop(void) {
 
 void MainMenuUpdate(void) {
     subengine *s;
-    u8 *g;
+    GameState *g;
 
     AnimateTitlesBackdrop();
     TitlesCheckIdle();
@@ -634,34 +634,34 @@ void MainMenuUpdate(void) {
         ((u16 *)g)[0x19] &= 0xFF00;
         switch (MainMenuCursor) {
         case 0:
-            g[0x27] = 2;
-            *(s32 *)(g + 0x6C) = 1;
-            *(s16 *)(g + 0x48) = 0;
-            *(s16 *)(g + 0x4A) = 2;
-            g[0x54] = 1;
-            g[0x55] = 0;
-            g[0x56] = 3;
-            g[0x57] = 2;
-            *(u16 *)(g + 0x32) |= 4;
+            g->maxPlayers = 2;
+            g->teams = 1;
+            g->teamLeader[0] = 0;
+            g->teamLeader[1] = 2;
+            g->teammateChoice[0] = 1;
+            g->teammateChoice[1] = 0;
+            g->teammateChoice[2] = 3;
+            g->teammateChoice[3] = 2;
+            g->levelFlags |= 4;
             MenuChainStart(&AdventureChain[1]);
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 1:
-            g[0x27] = 4;
-            *(s16 *)(g + 0x4A) = 2;
+            g->maxPlayers = 4;
+            g->teamLeader[1] = 2;
             ((s8 *)g)[0x54] = -1;
             ((s8 *)g)[0x55] = -1;
             ((s8 *)g)[0x56] = -1;
             ((s8 *)g)[0x57] = -1;
-            *(s32 *)(g + 0x6C) = 0;
-            *(s16 *)(g + 0x48) = 0;
-            *(u16 *)(g + 0x32) |= 1;
+            g->teams = 0;
+            g->teamLeader[0] = 0;
+            g->levelFlags |= 1;
             MenuChainStart(&BattleChain[1]);
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 2:
-            g[0x27] = 4;
-            *(u16 *)(g + 0x32) |= 2;
+            g->maxPlayers = 4;
+            g->levelFlags |= 2;
             MenuChainStart(TournamentChain);
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             break;

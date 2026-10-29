@@ -1060,7 +1060,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
     s32 i;
     s32 best;
     s32 k;
-    u8 *g;
+    GameState *g;
 
     if (arg0 == -1) {
         taken = 0;
@@ -1077,13 +1077,13 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
             taken |= 1 << best;
         }
         g = GameInfo;
-        if (*(s32 *)(g + 0x6C) == 0) {
+        if (g->teams == 0) {
             HeroInfo *hb;
             HeroInfo *a;
             s32 n;
 
-            if (g[g[0xA7] + 0x5C] != 0
-                || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
+            if (g->heroOut[g->adventure.rank[0]] != 0
+                || (hb = Heroes, a = &hb[g->adventure.rank[0]], a->hero_score == hb[g->adventure.rank[1]].hero_score)) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
@@ -1116,8 +1116,8 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
 
             InitBigScore();
             CameraMode = 1;
-            ia = *(s16 *)(g + 0x48);
-            ib = *(s16 *)(g + 0x4A);
+            ia = g->teamLeader[0];
+            ib = g->teamLeader[1];
             ita = Heroes[ia].hero_teammate;
             itb = Heroes[ib].hero_teammate;
             sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
@@ -1133,7 +1133,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                         Heroes[k].hero_status |= 0x100;
                     }
                 }
-            } else if ((sb < sa && g[ia + 0x5C] == 0) || (sa < sb && g[ib + 0x5C] == 0)) {
+            } else if ((sb < sa && g->heroOut[ia] == 0) || (sa < sb && g->heroOut[ib] == 0)) {
                 GameState *w = GAME;
 
                 w->exitFlags |= 0x800;
@@ -1237,7 +1237,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
     s32 i;
     s32 best;
     s32 k;
-    u8 *g;
+    GameState *g;
 
     if (arg0 == -1) {
         taken = 0;
@@ -1254,13 +1254,13 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
             taken |= 1 << best;
         }
         g = GameInfo;
-        if (*(s32 *)(g + 0x6C) == 0) {
+        if (g->teams == 0) {
             HeroInfo *hb;
             HeroInfo *a;
             s32 n;
 
-            if (g[g[0xA7] + 0x5C] != 0
-                || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
+            if (g->heroOut[g->adventure.rank[0]] != 0
+                || (hb = Heroes, a = &hb[g->adventure.rank[0]], a->hero_score == hb[g->adventure.rank[1]].hero_score)) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
@@ -1293,8 +1293,8 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
 
             InitBigScore();
             CameraMode = 1;
-            ia = *(s16 *)(g + 0x48);
-            ib = *(s16 *)(g + 0x4A);
+            ia = g->teamLeader[0];
+            ib = g->teamLeader[1];
             ita = Heroes[ia].hero_teammate;
             itb = Heroes[ib].hero_teammate;
             sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
@@ -1310,7 +1310,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                         Heroes[k].hero_status |= 0x100;
                     }
                 }
-            } else if ((sb < sa && g[ia + 0x5C] == 0) || (sa < sb && g[ib + 0x5C] == 0)) {
+            } else if ((sb < sa && g->heroOut[ia] == 0) || (sa < sb && g->heroOut[ib] == 0)) {
                 GameState *w = GAME;
 
                 w->exitFlags |= 0x800;

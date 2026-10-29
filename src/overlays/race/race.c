@@ -4092,7 +4092,7 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
     s32 i;
     s32 best;
     s32 k;
-    u8 *g;
+    GameState *g;
 
     if (!(GameExitFlags & 0x801) && arg0 == -1) {
         taken = 0;
@@ -4109,13 +4109,13 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
             taken |= 1 << best;
         }
         g = GameInfo;
-        if (*(s32 *)(g + 0x6C) == 0) {
+        if (g->teams == 0) {
             HeroInfo *hb;
             HeroInfo *a;
             s32 n;
 
-            if (g[g[0xA7] + 0x5C] != 0
-                || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
+            if (g->heroOut[g->adventure.rank[0]] != 0
+                || (hb = Heroes, a = &hb[g->adventure.rank[0]], a->hero_score == hb[g->adventure.rank[1]].hero_score)) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
@@ -4145,8 +4145,8 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
             s32 sb;
             s32 p;
 
-            ia = *(s16 *)(g + 0x48);
-            ib = *(s16 *)(g + 0x4A);
+            ia = g->teamLeader[0];
+            ib = g->teamLeader[1];
             ita = Heroes[ia].hero_teammate;
             itb = Heroes[ib].hero_teammate;
             if (Heroes[ia].hero_score == 0 && GAME->heroOut[ia] == 0) {
