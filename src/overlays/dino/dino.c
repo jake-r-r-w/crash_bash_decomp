@@ -3238,8 +3238,8 @@ void DinoGemPhysics(NAS *arg0) {
     DinoExt *o;
     EXTengine *a;
     EXTengine *b;
-    DinoPhys *pa;
-    DinoPhys *pb;
+    EXTheromove *pa;
+    EXTheromove *pb;
     s32 i;
     s32 dx;
     s32 dz;
@@ -3297,19 +3297,19 @@ void DinoGemPhysics(NAS *arg0) {
             }
             pa = &e->phys;
             pb = &o->phys;
-            ma = pa->unk4E;
-            mb = pb->unk4E;
+            ma = pa->mass;
+            mb = pb->mass;
             if (ma > 0 && mb > 0) {
-                diff = -((pa->unk20 - pb->unk20) << 8);
-                q = (diff * mb + ((ma * pa->unk20 + mb * pb->unk20) << 8)) / (mb + ma);
+                diff = -((pa->x_vel - pb->x_vel) << 8);
+                q = (diff * mb + ((ma * pa->x_vel + mb * pb->x_vel) << 8)) / (mb + ma);
                 sum = q - diff;
-                pa->unk20 = q >> 8;
-                pb->unk20 = sum >> 8;
-                diff = -((pa->unk40 - pb->unk40) << 8);
-                q = (diff * mb + ((ma * pa->unk40 + mb * pb->unk40) << 8)) / (mb + ma);
+                pa->x_vel = q >> 8;
+                pb->x_vel = sum >> 8;
+                diff = -((pa->z_vel - pb->z_vel) << 8);
+                q = (diff * mb + ((ma * pa->z_vel + mb * pb->z_vel) << 8)) / (mb + ma);
                 sum = q - diff;
-                pa->unk40 = q >> 8;
-                pb->unk40 = sum >> 8;
+                pa->z_vel = q >> 8;
+                pb->z_vel = sum >> 8;
             }
         next:
             i++;

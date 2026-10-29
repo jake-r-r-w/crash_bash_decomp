@@ -706,17 +706,6 @@ extern s32 WalrusSteps1[];
 extern s32 WalrusSteps2[];
 extern s32 WalrusSteps3[];
 
-/* Polar walrus second extension (0x54 bytes, id 0x20000000). */
-typedef struct PolarWalrusExt2 {
-    /* 0x00 */ u8 pad0[0x20];
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ u8 pad24[0x40 - 0x24];
-    /* 0x40 */ s32 unk40;
-    /* 0x44 */ u8 pad44[0x4C - 0x44];
-    /* 0x4C */ s16 unk4C;
-    /* 0x4E */ s16 unk4E;
-    /* 0x50 */ u8 pad50[4];
-} PolarWalrusExt2;
 
 extern ScriptInit WalrusScriptInit;
 extern ScriptInit WalrusFishScriptInit;
@@ -1130,22 +1119,6 @@ void SetPolarHeroSnowball(s32 player);
 
 void SetPolarHeroFootIdle(s32 player);
 
-/* InitBearminator's second extension (0x54 bytes, id 0x20000000). */
-typedef struct BearminatorExt2 {
-    /* 0x00 */ u8 pad0[0x20];
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ u8 pad24[0x28 - 0x24];
-    /* 0x28 */ s16 unk28;
-    /* 0x2A */ s16 unk2A;
-    /* 0x2C */ u8 pad2C[0x40 - 0x2C];
-    /* 0x40 */ s32 unk40;
-    /* 0x44 */ u8 pad44[0x48 - 0x44];
-    /* 0x48 */ s16 unk48;
-    /* 0x4A */ s16 unk4A;
-    /* 0x4C */ s16 pad4C;
-    /* 0x4E */ s16 unk4E;
-    /* 0x50 */ u8 pad50[4];
-} BearminatorExt2;
 
 /* InitBearminator's extension (0xB8 bytes, id 0x10000000). */
 typedef struct BearminatorExt {
@@ -1173,7 +1146,7 @@ typedef struct BearminatorExt {
     /* 0xA0 */ s32 target;  /* the hero it goes for */
     /* 0xA4 */ s32 timer3;  /* counted down */
     /* 0xA8 */ s32 count;  /* counted up */
-    /* 0xAC */ BearminatorExt2 *easeCam;
+    /* 0xAC */ EXTheromove *easeCam;
     /* 0xB0 */ s32 timer22;  /* counted down */
     /* 0xB4 */ s32 flag;  /* tested for zero */
 } BearminatorExt;

@@ -7256,7 +7256,7 @@ s32 PolarBoxOverlap(EXTengine *a, s32 b, EXTengine *c, s32 d)
 
 void InitPolarWalrus(NAS *m) {
     PolarWalrusExt *ext;
-    PolarWalrusExt2 *e2;
+    EXTheromove *e2;
 
     PolarProximity = (PolarProx *)m;
     m->Engine->flags |= 0x200000;
@@ -7296,16 +7296,16 @@ void InitPolarWalrus(NAS *m) {
     }
     e2 = AddExt(m, 0x54, 0x20000000);
     if (e2 != NULL) {
-        e2->unk4E = 0x400;
-        e2->unk20 = 0;
-        e2->unk40 = 0;
-        e2->unk4C = 0;
+        e2->mass = 0x400;
+        e2->x_vel = 0;
+        e2->z_vel = 0;
+        e2->z_dir = 0;
     }
 }
 
 void PlotPolarWalrus(NAS *m) {
     PolarWalrusExt *ext;
-    PolarWalrusExt2 *e2;
+    EXTheromove *e2;
     s32 *gx;
     s32 v;
     s32 r;
@@ -7324,8 +7324,8 @@ void PlotPolarWalrus(NAS *m) {
     if (e2 == NULL) {
         return;
     }
-    e2->unk20 = ext->unk48;
-    e2->unk40 = ext->unk4C;
+    e2->x_vel = ext->unk48;
+    e2->z_vel = ext->unk4C;
     switch (ext->state) {
     case 0:
         if (ext->timer-- < 0 && PolarBeamOwner != NULL) {
@@ -7358,8 +7358,8 @@ void PlotPolarWalrus(NAS *m) {
         }
         RunNasAnim(m);
         ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->XYZ.x);
-        e2->unk20 = ext->unk48;
-        e2->unk40 = ext->unk4C;
+        e2->x_vel = ext->unk48;
+        e2->z_vel = ext->unk4C;
         if (ext->cursor->unk1E == 0x18) {
             ext->state = 4;
             ext->cursor->unk1E = 0;
@@ -7369,8 +7369,8 @@ void PlotPolarWalrus(NAS *m) {
         break;
     case 4:
         m->Engine->sub->unk68 = 0;
-        e2->unk20 = ext->unk48;
-        e2->unk40 = ext->unk4C;
+        e2->x_vel = ext->unk48;
+        e2->z_vel = ext->unk4C;
         RunNasAnim(m);
         if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->XYZ.x) != 0) {
             r = Random(4);
@@ -7440,8 +7440,8 @@ void PlotPolarWalrus(NAS *m) {
         m->Engine->XYZ.z -= (ext->speed * rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
         pos.x = m->Engine->XYZ.x + ((rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x80) >> 12);
         pos.z = m->Engine->XYZ.z + ((rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2 * 0x80) >> 12);
-        e2->unk20 = 0;
-        e2->unk40 = 0;
+        e2->x_vel = 0;
+        e2->z_vel = 0;
         if ((CheckMelted(&pos, 0) ^ 1) != 0) {
             ext->state = 7;
             ext->cursor->unk1E = 0;
@@ -8250,7 +8250,7 @@ void BearminatorEaseCam(PolarEaseCam *c, s32 *pos) {
 
 void InitBearminator(NAS *m) {
     BearminatorExt *ext;
-    BearminatorExt2 *e2;
+    EXTheromove *e2;
     NAS *n;
     EXTengine *e;
     EXTengine *f;
@@ -8286,16 +8286,16 @@ void InitBearminator(NAS *m) {
             AddToGroup((NAS **)&PolarBears, (NAS *)m);
             ext->cursor = ScriptCursorFirst(m, &BearminatorScriptInit);
             ext->state = 3;
-            e2->unk20 = 0;
-            e2->unk4E = v = ((u16)AiPlayerSkill[0].level * 8) - 0x30;
+            e2->x_vel = 0;
+            e2->mass = v = ((u16)AiPlayerSkill[0].level * 8) - 0x30;
             if (v < 0x10) {
-                e2->unk4E = 0x10;
+                e2->mass = 0x10;
             }
-            e2->unk40 = 0;
-            e2->unk28 = 4;
-            e2->unk2A = 1;
-            e2->unk48 = 4;
-            e2->unk4A = 1;
+            e2->z_vel = 0;
+            e2->x_acc = 4;
+            e2->x_dec = 1;
+            e2->z_acc = 4;
+            e2->z_dec = 1;
             ext->target = 0;
             ext->timer = 0;
             ext->timer3 = 0;
