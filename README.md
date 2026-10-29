@@ -183,11 +183,13 @@ cp "/path/to/Crash Bash.bin" disc/CrashBash.bin     # and a .cue naming CrashBas
 tar -xf psyq-4.7-converted-full.7z -C ext/psyq47        # or: tools/get_psyq.sh (downloads and checks it)
 
 git config core.hooksPath tools/hooks                 # data guard + match gate
-tools/dk python3 tools/scripts/decomp.py extract disc/CrashBash.cue   # and the game data to assets/
-tools/dk make split
 tools/dk make check                                   # build and compare with retail
 tools/dk make disc-check                              # a disc image, the same as retail
 ```
+
+The first build unpacks your disc (`decomp.py extract`: the exe, the code overlays, and the game
+data into `assets/`, about 6 minutes) and splits it (`make split`) by itself; a missing disc or SDK
+stops with what to do.
 
 Matching one function (every game function is matched; this is the route for reworking one):
 
