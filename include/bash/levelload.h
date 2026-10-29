@@ -63,9 +63,9 @@ typedef struct PlaceSub {
     /* 0x04 */ s32 x;
     /* 0x08 */ s32 y;
     /* 0x0C */ s32 z;
-    /* 0x10 */ s16 unk10;
-    /* 0x12 */ s16 unk12;
-    /* 0x14 */ s16 unk14;
+    /* 0x10 */ s16 rx;  /* the placement's rotation */
+    /* 0x12 */ s16 ry;
+    /* 0x14 */ s16 rz;
     /* 0x16 */ u8 pad16[0x20 - 0x16];
     /* 0x20 */ s32 sx;
     /* 0x24 */ s32 sy;
@@ -90,8 +90,8 @@ typedef struct PlaceSub {
     /* 0x7A */ u8 pad7A[2];
     /* 0x7C */ s32 unk7C;
     /* 0x80 */ s32 unk80;
-    /* 0x84 */ u16 unk84;
-    /* 0x86 */ u16 unk86;
+    /* 0x84 */ u16 w;  /* scaled by 8 */
+    /* 0x86 */ u16 h;
     /* 0x88 */ s32 unk88;
 } PlaceSub;
 
@@ -123,8 +123,8 @@ static inline void PlaceTmpl(PlaceSub *s, s32 x, s32 y, s32 z, s32 scale, s32 id
         s->unk72 = z;
         s->unk78 = scale;
         s->unk7C = t->f4;
-        s->unk84 = t->f10;
-        s->unk86 = t->f14;
+        s->w = t->f10;
+        s->h = t->f14;
         s->unk80 = t->fC;
         s->unk88 = t->f8;
         s->unk68 = t->f18;
@@ -209,8 +209,8 @@ typedef struct MarkObj {
 typedef struct MarkCtx {
     /* 0x0 */ s32 pad0;
     /* 0x4 */ MarkObj *obj;
-    /* 0x8 */ s32 unk8;
-    /* 0xC */ u8 unkC;
+    /* 0x8 */ s32 script;  /* play_script's script */
+    /* 0xC */ u8 isbg;  /* the viewport's isbg */
 } MarkCtx;
 extern Blk32 SceneScriptRot;
 extern CamVec3 SceneScriptPos;

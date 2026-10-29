@@ -19,7 +19,7 @@ s32 DinoGetLevelPoint(s32 *arg0, s32 arg1);
 /* Extension 0x10000000 (FindExtension): a gem's or hero's physics record sits at +0x94. */
 typedef struct DinoExt {
     u8 pad[0xC];
-    s32 unkC;
+    s32 state;
     s32 timer;  /* counted down */
     s32 flag;  /* tested for zero */
     u8 pad18[0x94 - 0x18];
@@ -31,7 +31,7 @@ typedef struct DinoChase {
     void (*fn)(); /* 0xC */
     SLONG_XYZ pos;    /* 0x10 */
     SLONG_XYZ tgt;    /* 0x1C */
-    s32 unk28;
+    s32 gem;  /* its DinoGems index */
     u8 pad2[4];
     s32 timer2;  /* counted down */
     u8 pad2b[4];
@@ -44,13 +44,13 @@ typedef struct DinoGem {
     u8 pad0[0xC];
     s32 state;  /* switched on */
     s32 player;  /* a hero's index */
-    s32 unk14;
+    s32 yvel;
     u8 pad18[0x10];
     s32 y;
     s32 y2;
     u8 pad30[0x18];
-    s32 unk48;
-    s32 unk4C;
+    s32 xvel0;  /* the starting xvel */
+    s32 zvel0;  /* the starting zvel */
     u8 pad50[0x18];
     SLONG_XYZ pos;
     u8 pad74[0xC];
@@ -58,11 +58,11 @@ typedef struct DinoGem {
     EXTengine *eng;
     s32 timer;  /* counted down */
     s32 timer2;  /* counted down */
-    s32 unk90;
+    s32 value;  /* the score it gives */
     u8 pad94[0x20];
-    s32 unkB4;
+    s32 xvel;
     u8 padB8[0x1C];
-    s32 unkD4;
+    s32 zvel;
     u8 padD8[0xA];
     s16 unkE2;
 } DinoGem;
@@ -103,7 +103,7 @@ s32 DinoHeroTestIdle(s32 hero);
 typedef struct DinoExtB {
     u8 pad[0xC];
     s32 flag;  /* tested for zero */
-    s32 unk10;
+    s32 player;
     s32 flag2;  /* tested for zero */
     NAS *nas;
 } DinoExtB;

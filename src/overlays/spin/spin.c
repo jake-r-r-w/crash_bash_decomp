@@ -1144,7 +1144,7 @@ void PlotHazardType(NAS *nas) {
         eng->xform.scale.vx = v;
         eng->xform.scale.vy = v;
         eng->xform.scale.vz = v;
-        eng->sub->unk76 = v;
+        eng->sub->scale = v;
         eng->xform.dirty = 1;
         break;
     case 9:
@@ -1384,7 +1384,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                 shadow->sub->entity = 0x2001;
                 shadow->XYZ = eng->XYZ;
                 shadow->flags |= 0x41;
-                shadow->sub->unk76 = 0x800;
+                shadow->sub->scale = 0x800;
                 shadow->sub->flags |= 0x40000000;
             }
         }
@@ -1517,7 +1517,7 @@ void PlotBalloon(NAS *nas) {
                 eng->xform.scale.vx = s;
                 eng->xform.scale.vy = s;
                 eng->xform.scale.vz = s;
-                eng->sub->unk76 = s;
+                eng->sub->scale = s;
                 eng->xform.dirty = 1;
                 break;
             default:
@@ -3651,7 +3651,7 @@ void SpinCreateShadow(s32 arg0) {
     eng = h->hero_eng;
     shadow->XYZ = eng->XYZ;
     shadow->flags |= 0x8021;
-    shadow->sub->unk76 = 0xE00;
+    shadow->sub->scale = 0xE00;
 }
 
 s32 SpinHeroTestFlip(s32 arg0) {

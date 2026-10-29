@@ -275,15 +275,15 @@ loop:
                 a->ang = Random(0x1000);
                 a->pos = o->pos;
                 a->timer = 3;
-                a->unk10 = 0;
+                a->state = 0;
                 a->unk14 = 0;
                 a->unk20 = 0x800;
-                a->unk1C = 0;
-                a->unk24 = 0xE4C40;
+                a->state2 = 0;
+                a->radius = 0xE4C40;
                 id = o->id;
                 if (id == 0x5002) {
-                    a->unk1C = 1;
-                    a->unk24 = 0x49DA40;
+                    a->state2 = 1;
+                    a->radius = 0x49DA40;
                     o->rx = Random(0x1000);
                     a->unk20 = 0x2AA;
                     nBig++;
@@ -386,9 +386,9 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
         d = AstDist(arg0, h->hero_eng);
         tb = NoxAsteroids;
         a = &tb[arg1];
-        if (d < a->unk24 && d > 0) {
-            if (a->unk1C != 1) {
-                a->unk10 = 1;
+        if (d < a->radius && d > 0) {
+            if (a->state2 != 1) {
+                a->state = 1;
                 AstBurst(arg0, 0);
                 AstSfx();
                 if ((BGV->cheats & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
@@ -397,7 +397,7 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
                 }
             } else if ((BGV->cheats & 0x80000001) != 0x80000001) {
                 AstSfx();
-                a->unk10 = 1;
+                a->state = 1;
                 AstBurst(arg0, 4);
                 if (Heroes[0].hero_mode != 0x31) {
                     Heroes[0].hero_health -= MineDamage(BGV);
@@ -411,9 +411,9 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
         d = AstDist(arg0, h[1].hero_eng);
         tb1 = NoxAsteroids;
         b = &tb1[arg1];
-        if (d < b->unk24 && d > 0) {
-            if (b->unk1C != 1) {
-                b->unk10 = 1;
+        if (d < b->radius && d > 0) {
+            if (b->state2 != 1) {
+                b->state = 1;
                 AstBurst(arg0, 0);
                 AstSfx();
                 if ((BGV->cheats & 0x80000001) != 0x80000001 && Heroes[1].hero_mode != 0x31) {
@@ -421,7 +421,7 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
                     SetHeroAction(1, 0x31);
                 }
             } else if ((g->cheats & 0x80000001) != 0x80000001) {
-                b->unk10 = 1;
+                b->state = 1;
                 AstBurst(arg0, 4);
                 AstSfx();
                 if (Heroes[1].hero_mode != 0x31) {
@@ -432,15 +432,15 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
         }
     }
     r = 0x90000;
-    if (NoxAsteroids[arg1].unk1C == 1) {
+    if (NoxAsteroids[arg1].state2 == 1) {
         r = 0x57E400;
     }
     if (MineHitLaser(*(LaserPos *)(arg0 + 1), r)) {
         AstSlot *tb2 = NoxAsteroids;
         AstSlot *s = &tb2[arg1];
-        if (s->unk1C != 1) {
+        if (s->state2 != 1) {
             if (s->timer-- < 0) {
-                s->unk10 = 1;
+                s->state = 1;
                 AstBurst(arg0, 0);
                 AstSfx();
             }
@@ -615,10 +615,10 @@ void NoxUpdateAsteroids(void) {
             if (o->k.kind == 7 && (o->flags & 0x8000)) {
                 o->unk51 = 0;
                 o->unk50 = 1;
-                if (o->unk20 < 0x7C18) {
-                    o->unk20 += 0x80;
-                    o->unk24 += 0x80;
-                    o->unk28 += 0x80;
+                if (o->fade < 0x7C18) {
+                    o->fade += 0x80;
+                    o->fade2 += 0x80;
+                    o->fade3 += 0x80;
                 }
                 if (Heroes[0].hero_eng->xform.scale.vx > 0) {
                     Heroes[0].hero_eng->xform.scale.vx -= 0x30;
@@ -647,7 +647,7 @@ void NoxUpdateAsteroids(void) {
                     NoxHeroesAlive = 0;
                 }
                 o->unk52 = 1;
-                NoxSparkAlpha = 0x100 - (o->unk20 >> 7);
+                NoxSparkAlpha = 0x100 - (o->fade >> 7);
             }
             if (k->kind == 6 || k->kind == 10 || k->kind == 9) {
                 if (o->flags & 0x8000) {
@@ -666,7 +666,7 @@ void NoxUpdateAsteroids(void) {
             if ((k->kind == 5 || k->kind == 8) && (o->flags & 0x8000)) {
                 o->unk51 = 0;
                 o->ry += 0x20;
-                if (NoxAsteroids[nAst].unk1C != 1) {
+                if (NoxAsteroids[nAst].state2 != 1) {
                     o->pos.y = NoxAsteroids[nAst].pos.y;
                     o->pos.x = NoxAsteroids[nAst].pos.x;
                 } else {
@@ -693,7 +693,7 @@ void NoxUpdateAsteroids(void) {
                     })
             } else if ((u8)(kind - 5) < 6) {
                 if (kind == 5 || kind == 8) {
-                    if (NoxAsteroids[nAst].unk10 == 1) {
+                    if (NoxAsteroids[nAst].state == 1) {
                         o->flags &= ~0x8000;
                     } else {
                         o->flags |= 0x8000;
@@ -1144,7 +1144,7 @@ void SetNoxHeroDead(s32 arg0) {
         if (s != NULL) {
             do {
                 s->flags = 0x02000000;
-                s->unk68 = -0x200;
+                s->otz = -0x200;
                 s = s->next;
             } while (s != NULL);
         }
@@ -1181,7 +1181,7 @@ void InitAsteroidRoll(NAS *m) {
             e->xform.hasScale = 1;
             e->xform.order = 0;
             e->XYZ = m->Engine->XYZ;
-            e->sub->unk76 = 0x800;
+            e->sub->scale = 0x800;
             e->sub->flags |= 0x40008041;
             e->xform.scale.vz = 0x4000;
             e->xform.scale.vy = 0x4000;
@@ -1479,11 +1479,11 @@ void InitNitroBoss(NAS *nas) {
         nas->Engine->xform.hasScale = 1;
         RunNasAnim(nas);
         nas->UserInfo.user1 = 0;
-        ext->unk14 = 0x3200;
+        ext->frame = 0x3200;
         scene = MapScene;
-        p = scene->unk2C;
+        p = scene->data;
         ext->keys = (KeyBlock *)(p + (*(s32 *)(p + 4) + 4));
-        key_interp_pos(ext->keys, ext->unk14, &nas->Engine->XYZ);
+        key_interp_pos(ext->keys, ext->frame, &nas->Engine->XYZ);
         ext->state = 0;
         ext->timer = 0;
         ext->timer2 = 0;
@@ -1536,7 +1536,7 @@ void PlotNitroBoss(NAS *nas) {
     switch (ext->state) {
     case 0:
         NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
-        k = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
+        k = ((u16 *)key_find(ext->keys, ext->frame))[0xB];
         if (k == 2) {
             ext->state = 1;
         }
@@ -1602,7 +1602,7 @@ void PlotNitroBoss(NAS *nas) {
             }
             ext->timer = 0x1E;
         }
-        k2 = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
+        k2 = ((u16 *)key_find(ext->keys, ext->frame))[0xB];
         if (k2 == 3) {
             ext->state = 0;
         }
@@ -1618,7 +1618,7 @@ void PlotNitroBoss(NAS *nas) {
             CreateNAS(e2->XYZ.x, e2->XYZ.y, e2->XYZ.z, 0x1C05, 0x11);
             ext->timer2 = 3;
         }
-        k3 = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
+        k3 = ((u16 *)key_find(ext->keys, ext->frame))[0xB];
         if (k3 == 3) {
             ext->state = 0;
         }

@@ -539,7 +539,7 @@ void HubOpenDoorMenu(s32 arg0) {
     }
     p = e->sub;
     w = (((HubDoorChoices << n) + HubDoorChoices) * 15) << n;
-    p[1].unk76 = w;
+    p[1].scale = w;
     e->XYZ.x = 320 - (w >> n);
     sub = GetEngineSlot(n)->sub;
     p = &sub[5];
@@ -592,7 +592,7 @@ void HubDoorMenuUpdate(void) {
         }
         v = lerp_fix12(*(s16 *)&sub->u70.w, HubDoorAngles[HubDoorChoice], 2000);
         *(s16 *)&sub->u70.w = v;
-        sub->unk76 = v + 90;
+        sub->scale = v + 90;
     }
     if (HubDoorFade != 0) {
         switch (((s32(*)(void))HubGatewayKind)()) {
@@ -948,7 +948,7 @@ void PlotPathEffect(NAS *nas) {
                         ext->fx->UserInfo.user1 = 0;
                         ext->fx->Engine->sub->xform.dirty = 1;
                     }
-                    ext->fx->Engine->sub->unk76 = abs(0x180 - abs(angle)) << 5;
+                    ext->fx->Engine->sub->scale = abs(0x180 - abs(angle)) << 5;
                     ext->fx->Engine->sub->flags |= 0x8000;
                 } else {
                     ext->fx->Engine->sub->flags &= 0xFFFF7FFF;
@@ -968,7 +968,7 @@ void PlotPathEffect(NAS *nas) {
                         ext->fx->UserInfo.user1 = 0;
                         ext->fx->Engine->sub->xform.dirty = 1;
                     }
-                    ext->fx->Engine->sub->unk76 = abs(0x180 - abs(angle)) << 5;
+                    ext->fx->Engine->sub->scale = abs(0x180 - abs(angle)) << 5;
                     ext->fx->Engine->sub->flags |= 0x8000;
                 } else {
                 off:
@@ -1347,7 +1347,7 @@ void HubCreateShadow(s32 arg0) {
         s->sub->entity = 0x2020;
         s->XYZ = h->hero_eng->XYZ;
         s->flags |= 0x8041;
-        s->sub->unk76 = 0x800;
+        s->sub->scale = 0x800;
         s->sub->flags |= 0x40000000;
     }
 }
@@ -2014,7 +2014,7 @@ void InitSparkGFX(NAS *arg0) {
             s->xform.scale.vy = 0x1000;
             s->xform.scale.vz = 0x1000;
             s->flags = fl;
-            s->unk76 = 0;
+            s->scale = 0;
             s = s->next;
         } while (s != NULL);
     }

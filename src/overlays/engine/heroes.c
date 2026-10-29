@@ -155,7 +155,7 @@ void InitialiseHeroes(void) {
                 e->sub->entity = 0x2001;
                 e->XYZ = eng->XYZ;
                 e->flags |= 0x8041;
-                e->sub->unk76 = 0x800;
+                e->sub->scale = 0x800;
                 e->sub->flags |= 0x40000000;
             }
         }
@@ -2735,7 +2735,7 @@ s32 arg0;
             AngelSparkles[i][arg0].unk8 = y;
             s->XYZ.y += y;
             s->flags |= 0x8000;
-            s->unk76 = AngelSparkles[i][arg0].unkC += 0x60;
+            s->scale = AngelSparkles[i][arg0].unkC += 0x60;
             if (World_floor_level < s->XYZ.y || AngelSparkles[i][arg0].unkC >= 0x1000) {
                 AngelSparkles[i][arg0].flag = 0;
                 AngelSparkles[i][arg0].timer = Random(10) + 2;
@@ -3226,7 +3226,7 @@ s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg
                 }
                 if (def->fadeinend != 0) {
                     st[0] = 0x1000 / def->fadeinend;
-                    *(s16 *)&obj->unk76 = 0x1000;
+                    *(s16 *)&obj->scale = 0x1000;
                 }
                 if (def->fadeoutstart != 0) {
                     st[1] = 0x1000 / (life - def->fadeoutstart);
@@ -3262,14 +3262,14 @@ s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg
             }
             t = def->fadeinend;
             if (t != 0 && part->age < t) {
-                if ((*(s16 *)&obj->unk76 -= st[0]) < 0) {
-                    *(s16 *)&obj->unk76 = 0;
+                if ((*(s16 *)&obj->scale -= st[0]) < 0) {
+                    *(s16 *)&obj->scale = 0;
                 }
             }
             t = def->fadeoutstart;
             if (t != 0 && t < part->age) {
-                if ((*(s16 *)&obj->unk76 += st[1]) > 0x1000) {
-                    *(s16 *)&obj->unk76 = 0x1000;
+                if ((*(s16 *)&obj->scale += st[1]) > 0x1000) {
+                    *(s16 *)&obj->scale = 0x1000;
                 }
             }
             t = def->scaleinend;
@@ -3305,7 +3305,7 @@ s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg
             obj->xform.scale.vx = 0x1000;
             obj->xform.scale.vz = 0x1000;
             obj->xform.scale.vy = 0x1000;
-            *(s16 *)&obj->unk76 = 0;
+            *(s16 *)&obj->scale = 0;
             t = def->particlesperframe;
             obj = obj->next;
             td->particlesactive = t;
@@ -3337,7 +3337,7 @@ void ModelCreateShadow(s32 idx) {
         e = Heroes[idx].hero_eng;
         s->XYZ = e->XYZ;
         s->flags |= 0x8041;
-        s->sub->unk76 = 0x400;
+        s->sub->scale = 0x400;
         s->sub->flags |= 0x40000000;
         if (((GameState *)GameInfo)->mode == 0x17) {
             s->xform.scale.vx = s->xform.scale.vy = s->xform.scale.vz = 0x2000;
@@ -3570,7 +3570,7 @@ void InitScriptFX(NAS *nas)
         break;
       }
         sub->u6C.dbase = dbase;
-        sub->unk68 = id;
+        sub->otz = id;
         sub->flags = 0x42000000;
         sub->flags = (((u32) th->type.entity[1]) | 0x42000000) & (~0x8000);
         if (sd->flags & 8)
@@ -3642,7 +3642,7 @@ void InitScriptFX(NAS *nas)
               sub->flags = 0x62000000;
             }
             sub->u6C.dbase = dbase;
-            sub->unk68 = id;
+            sub->otz = id;
             sub->flags &= ~0x8000;
             if (sd->flags & 8)
             {
@@ -3660,7 +3660,7 @@ void InitScriptFX(NAS *nas)
             sub->xform.scale.vx = 0x1000;
             sub->xform.scale.vz = 0x1000;
             sub->xform.scale.vy = 0x1000;
-            sub->unk76 = 0;
+            sub->scale = 0;
           }
           sub = sub->next;
         }
@@ -3795,7 +3795,7 @@ void PlotScriptFX(NAS *nas) {
                         fl = sub->flags & ~0x40000000;
                         sub->flags = fl;
                         alpha = cur->fade + (next->fade - cur->fade) * f / (d << 8);
-                        sub->unk76 = 0x1000 - alpha;
+                        sub->scale = 0x1000 - alpha;
                         sub->flags = fl | 0x40000000;
                     }
                     p = NULL;
@@ -3827,7 +3827,7 @@ void PlotScriptFX(NAS *nas) {
                         sub->xform.scale.vx = 0x1000;
                         sub->xform.scale.vz = 0x1000;
                         sub->xform.scale.vy = 0x1000;
-                        sub->unk76 = 0;
+                        sub->scale = 0;
                         sub->xform.dirty = 1;
                         if (((GameState *)GameInfo)->mode == 0x2C) {
                             sub->flags &= ~0x8000;
@@ -4204,7 +4204,7 @@ void emit_script_particle(subengine *arg0, partdata *arg1, EmitPart *arg2, s32 *
     t = arg1->fadeinend;
     if (t != 0) {
         arg3[0] = 0x1000 / t;
-        *(s16 *)&arg0->unk76 = 0x1000;
+        *(s16 *)&arg0->scale = 0x1000;
     }
     u = arg1->fadeoutstart;
     if (u != 0) {
@@ -4468,7 +4468,7 @@ void Init_HealthPU(NAS *nas) {
                 e2->sub->entity = 0x2001;
                 e2->XYZ = nas->Engine->XYZ;
                 e2->flags |= 0x8041;
-                e2->sub->unk76 = 0x800;
+                e2->sub->scale = 0x800;
                 e2->sub->flags |= 0x40000000;
             }
             PlaySfx(0x3FA, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -4592,7 +4592,7 @@ void AddPowerupFloat(NAS *nas) {
         src = nas->Engine;
         eng->XYZ = src->XYZ;
         eng->flags |= 0x8041;
-        eng->sub->unk76 = 0x800;
+        eng->sub->scale = 0x800;
         eng->sub->flags |= 0x40000000;
     }
 }

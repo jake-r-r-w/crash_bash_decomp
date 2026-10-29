@@ -269,40 +269,40 @@ void CalcCameraFrame(void) {
         if (--n == -1) {
             break;
         }
-        in.vx = ((s32 *)e->unk0)[0] - cam->at.x;
-        in.vy = ((s32 *)e->unk0)[1] - cam->at.y;
-        in.vz = ((s32 *)e->unk0)[2] - cam->at.z;
+        in.vx = ((s32 *)e->target)[0] - cam->at.x;
+        in.vy = ((s32 *)e->target)[1] - cam->at.y;
+        in.vz = ((s32 *)e->target)[2] - cam->at.z;
         ApplyMatrixLV(&m, &in, &out);
         out.vx += cam->at.x;
         out.vy += cam->at.y;
         out.vz += cam->at.z;
 
-        z0 = out.vz - e->unk8;
-        x = out.vx - e->unk4;
+        z0 = out.vz - e->near;
+        x = out.vx - e->left;
         v = x + (z0 + 0x3000) * 320 / MainCamera.dist;
         if (v < CamBoundLeft) {
             CamBoundLeft = v;
             camera_frame_left.x = x;
             camera_frame_left.z = z0;
         }
-        z = out.vz - e->unk8;
-        xr =out.vx + e->unk6;
+        z = out.vz - e->near;
+        xr =out.vx + e->right;
         v = xr - (z + 0x3000) * 320 / MainCamera.dist;
         if (v > CamBoundRight) {
             CamBoundRight = v;
             camera_frame_right.x = xr;
             camera_frame_right.z = z;
         }
-        z = out.vz - e->unk8;
-        xr = out.vy - e->unkC;
+        z = out.vz - e->near;
+        xr = out.vy - e->height;
         v = xr + (z + 0x3000) * 240 / MainCamera.dist;
         if (v < CamBoundBottom) {
             CamBoundBottom = v;
             camera_frame_bottom.y = xr;
             camera_frame_bottom.z = z;
         }
-        z = out.vz - e->unk8;
-        w = out.vy + e->unkC;
+        z = out.vz - e->near;
+        w = out.vy + e->height;
         v = w - (z + 0x3000) * 240 / MainCamera.dist;
         if (v > CamBoundTop) {
             CamBoundTop = v;
@@ -310,32 +310,32 @@ void CalcCameraFrame(void) {
             camera_frame_top.z = z;
         }
 
-        z = out.vz + e->unkA;
-        xr = out.vx - e->unk4;
+        z = out.vz + e->far;
+        xr = out.vx - e->left;
         v = xr + (z + 0x3000) * 320 / MainCamera.dist;
         if (v < CamBoundLeft) {
             CamBoundLeft = v;
             camera_frame_left.x = xr;
             camera_frame_left.z = z;
         }
-        z = out.vz + e->unkA;
-        w = out.vx + e->unk6;
+        z = out.vz + e->far;
+        w = out.vx + e->right;
         v = w - (z + 0x3000) * 320 / MainCamera.dist;
         if (v > CamBoundRight) {
             CamBoundRight = v;
             camera_frame_right.x = w;
             camera_frame_right.z = z;
         }
-        z = out.vz + e->unkA;
-        w = out.vy - e->unkC;
+        z = out.vz + e->far;
+        w = out.vy - e->height;
         v = w + (z + 0x3000) * 240 / MainCamera.dist;
         if (v < CamBoundBottom) {
             CamBoundBottom = v;
             camera_frame_bottom.y = w;
             camera_frame_bottom.z = z;
         }
-        w = out.vy + e->unkC;
-        z = out.vz + e->unkA;
+        w = out.vy + e->height;
+        z = out.vz + e->far;
         v = w - (z + 0x3000) * 240 / MainCamera.dist;
         if (v > CamBoundTop) {
             CamBoundTop = v;
@@ -483,12 +483,12 @@ void camera_add_frame_list(SLONG_XYZ *arg0, s16 arg1, s16 arg2, s16 arg3, s16 ar
 
     if (camera_frame_list_size < 0x10) {
         e = &CameraFrameList[camera_frame_list_size];
-        e->unk0 = arg0;
-        e->unk4 = arg1;
-        e->unk6 = arg2;
-        e->unk8 = arg3;
-        e->unkA = arg4;
-        e->unkC = arg5;
+        e->target = arg0;
+        e->left = arg1;
+        e->right = arg2;
+        e->near = arg3;
+        e->far = arg4;
+        e->height = arg5;
         camera_frame_list_size += 1;
     }
 }

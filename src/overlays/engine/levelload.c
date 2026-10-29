@@ -527,15 +527,15 @@ void DrawSceneMarks(void) {
         m = &SceneMarks[i];
         p = &SceneMarkPos[m->idx];
         *e = SubEngineTemplate;
-        e->entity = m->unk0;
-        e->u6C.dbase = m->unk8;
+        e->entity = m->entity;
+        e->u6C.dbase = m->dbase;
         e->xform.order = 0;
         s = GameFrameCount;
         e->xform.rot.vx = (s * p->x) >> 12;
         e->xform.rot.vy = (s * p->y) >> 12;
         e->xform.rot.vz = (s * p->z) >> 12;
         e->flags = 0x03008000;
-        e->unk68 = p->unkC;
+        e->otz = p->otz;
         gte_SetGeomScreen(h);
         draw_object((u8 *)e, (u8 *)&RenderState.cam->view, 0x03008000);
         gte_SetGeomScreen(RenderState.cam->dist);
@@ -621,7 +621,7 @@ void UpdateSceneVabCues(void) {
             VabCuePending -= 1;
             n = (SceneVabSlot[0] + 1) & 1;
             SceneVabSlot[0] = n;
-            VabCueTimer = SceneVabCue->unk8;
+            VabCueTimer = SceneVabCue->timer;
             if (SfxBanks[n].id != -1) {
                 sfx_bank_close((s32 *)&SfxBanks[n]);
             }
@@ -648,7 +648,7 @@ void StartSceneScript(void) {
     s32 t;
     MarkSrcEnt *e;
 
-    play_script((obj_dbase *)SceneMark->obj, SceneMark->unk8, &SceneScriptRot, &SceneScriptPos, 4, &SceneScript);
+    play_script((obj_dbase *)SceneMark->obj, SceneMark->script, &SceneScriptRot, &SceneScriptPos, 4, &SceneScript);
     SceneMarkCount = 0;
     t = (s32)SceneMark->obj;
     SceneOldDbase = t;
@@ -664,7 +664,7 @@ void StartSceneScript(void) {
                         b = SceneMarks;
                         n = SceneMarkCount;
                         m = &b[n];
-                        m->unk8 = o;
+                        m->dbase = o;
                         *(s32 *)m = i + 0x2001;
                         v = e[i].val;
                         SceneMarkCount = n + 1;
@@ -674,7 +674,7 @@ void StartSceneScript(void) {
             }
         }
     }
-    SceneViewport.isbg = SceneMark->unkC;
+    SceneViewport.isbg = SceneMark->isbg;
 }
 
 void UpdateScriptScene(void) {
@@ -902,7 +902,7 @@ void SetupSceneMarks(u8 *arg0) {
                         b = SceneMarks;
                         n = SceneMarkCount;
                         m = &b[n];
-                        m->unk8 = o;
+                        m->dbase = o;
                         *(s32 *)m = i + 0x2001;
                         v = e[i].val;
                         SceneMarkCount = n + 1;
@@ -999,8 +999,8 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 }
                 if (rec->type == 12) {
                     s->flags &= 0xEFFFFFFF;
-                    s->unk84 *= 8;
-                    s->unk86 *= 8;
+                    s->w *= 8;
+                    s->h *= 8;
                     s->z = rec->ry;
                 }
                 if (rec->type == 16) {
@@ -1074,9 +1074,9 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->unk51 = 0;
                 s->unk50 = 1;
                 s->sx = s->sy = s->sz = rec->scale;
-                s->unk10 = rec->rx;
-                s->unk12 = rec->ry;
-                s->unk14 = rec->rz;
+                s->rx = rec->rx;
+                s->ry = rec->ry;
+                s->rz = rec->rz;
                 s->unk6C = (s32)(&HeroModelBank[rec->model]);
                 s->unk74 = rec->player;
             }
@@ -1197,13 +1197,13 @@ void draw_animated_sub(PlaceSub *arg0, u8 *arg1, s32 arg2) {
     p = arg0->rec;
     flags = p->flags;
     if (flags & 1) {
-        arg0->unk10 += p->rx;
+        arg0->rx += p->rx;
     }
     if (flags & 2) {
-        arg0->unk12 += p->ry;
+        arg0->ry += p->ry;
     }
     if (flags & 4) {
-        arg0->unk14 += p->rz;
+        arg0->rz += p->rz;
     }
     if (flags & 8) {
         n = p->frame;
@@ -1246,8 +1246,8 @@ s32 PlaceTextSub(PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
     p->unk72 = a3;
     p->unk78 = a4;
     p->unk7C = t->f4;
-    p->unk84 = t->f10;
-    p->unk86 = t->f14;
+    p->w = t->f10;
+    p->h = t->f14;
     p->unk80 = t->fC;
     p->unk88 = t->f8;
     p->unk68 = t->f18;

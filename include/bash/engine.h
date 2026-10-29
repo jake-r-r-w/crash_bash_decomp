@@ -18,12 +18,12 @@ extern s32 CamBoundTop;
 
 extern s32 CamBoundRight;
 typedef struct {
-    s32 unk0;
-    s16 unk4;
-    s16 unk6;
-    s16 unk8;
-    s16 unkA;
-    s16 unkC;
+    s32 target;  /* the XYZ it frames */
+    s16 left;  /* the box around it, from the target */
+    s16 right;
+    s16 near;
+    s16 far;
+    s16 height;
     s16 padE;
 } CamFrameEntry;  /* CameraFrameList: a thing the camera keeps in frame */
 extern s32 camera_frame_list_size;
@@ -178,13 +178,13 @@ extern s32 SceneOldDbase;
 extern s32 SceneMarkCount;
 /* DrawSceneMarks's entries (SceneMarks, 0xC bytes) and the table they index (0x14 bytes). */
 typedef struct EngineMarker {
-    /* 0x0 */ u16 unk0;
+    /* 0x0 */ u16 entity;
     /* 0x4 */ s32 idx;
-    /* 0x8 */ void *unk8;
+    /* 0x8 */ void *dbase;
 } EngineMarker;
 typedef struct EngineMarkerPos {
     /* 0x00 */ s32 x, y, z;
-    /* 0x0C */ s16 unkC;
+    /* 0x0C */ s16 otz;  /* the sub's depth offset (unk68) */
     /* 0x0E */ u8 padE[6];
 } EngineMarkerPos;
 extern EngineMarker SceneMarks[];
@@ -273,7 +273,7 @@ void ArenaRequirementMet(s32 arg0);
 typedef struct {
     s32 vab;   /* machine_load_sfx's first argument; 0 ends the list */
     s32 sfx;   /* PlaySfx id */
-    s32 unk8;  /* -> VabCueTimer */
+    s32 timer;  /* VabCueTimer */
 } EngineVabCue;
 extern EngineVabCue *SceneVabCue;
 

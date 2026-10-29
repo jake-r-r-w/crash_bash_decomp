@@ -3456,7 +3456,7 @@ void SetRaceHeroOffTrack(s32 player) {
             SetHeroSeq(player, 0x54);
         }
         h->hero_shadow->sub->flags &= ~0x8000;
-        h->hero_eng->sub->unk68 = 0x200;
+        h->hero_eng->sub->otz = 0x200;
         h->hero_eng->sub->flags |= 0x02000000;
         if (G63->mode == 0x18 && (G63->levelFlags & 0x80)) {
             f->timer4 = 150;
@@ -3512,7 +3512,7 @@ void RaceHeroOffTrack(s32 player) {
     }
     if (f->flag3 != 0) {
         h->hero_shadow->sub->flags |= 0x8000;
-        h->hero_eng->sub->unk68 = 0;
+        h->hero_eng->sub->otz = 0;
         ProcessHeroAnim(player);
         h->hero_move->forward_angle = ((f->angle - 0x200) << 20) >> 20;
         h->hero_eng->xform.rot.vy = ((f->angle - 0x200) << 20) >> 20;
@@ -4677,7 +4677,7 @@ void InitRaceMissile(NAS *m) {
             e->xform.hasScale = 1;
             e->xform.order = 0;
             e->XYZ = m->Engine->XYZ;
-            e->sub->unk76 = 0x800;
+            e->sub->scale = 0x800;
             e->sub->flags |= 0x40008041;
         }
         PlaySfx(0x522, &m->Engine->sfx, &m->Engine->XYZ, 0x1000, 0x1E00, 0);
@@ -4814,7 +4814,7 @@ void InitRacePickUp(NAS *m) {
             e->xform.hasScale = 1;
             e->xform.order = 0;
             e->XYZ = m->Engine->XYZ;
-            e->sub->unk76 = 0x800;
+            e->sub->scale = 0x800;
             e->sub->flags |= 0x40008041;
         }
     }
@@ -5481,7 +5481,7 @@ void InitDinoEgg(NAS *m) {
             e->xform.hasScale = 1;
             e->xform.order = 0;
             e->XYZ = m->Engine->XYZ;
-            e->sub->unk76 = 0x800;
+            e->sub->scale = 0x800;
             e->sub->flags |= 0x40008041;
         }
         RaceEggCount++;
@@ -5854,10 +5854,10 @@ void PlotRaceVolcano(NAS *nas) {
                 if (fx != NULL) {
                     if (z < 0) {
                         fx->Engine->sub->flags |= 0x02000000;
-                        ext->nas[rock]->Engine->sub->unk68 = -0x400;
+                        ext->nas[rock]->Engine->sub->otz = -0x400;
                     } else {
                         fx->Engine->sub->flags |= 0x02000000;
-                        ext->nas[rock]->Engine->sub->unk68 = 0x200;
+                        ext->nas[rock]->Engine->sub->otz = 0x200;
                     }
                 }
             }
@@ -6132,7 +6132,7 @@ void InitBarrelRoll(NAS *m) {
             e->xform.hasScale = 1;
             e->xform.order = 0;
             e->XYZ = m->Engine->XYZ;
-            e->sub->unk76 = 0x800;
+            e->sub->scale = 0x800;
             e->sub->flags |= 0x40008041;
             e->xform.scale.vz = 0x4000;
             e->xform.scale.vy = 0x4000;
@@ -6213,7 +6213,7 @@ void InitTrackGlob(NAS *m) {
             e->xform.hasScale = 1;
             e->xform.order = 0;
             e->XYZ = m->Engine->XYZ;
-            e->sub->unk76 = 0x800;
+            e->sub->scale = 0x800;
             e->sub->flags |= 0x40008041;
             ext->eng->xform.dirty = 1;
         }
@@ -6336,7 +6336,7 @@ void InitDac(NAS *m) {
         m->Engine->xform.scale.vz = 0x2000;
         m->Engine->XYZ.x = (rcossin_tbl[0x800].unk2 * 7) >> 4;
         m->Engine->XYZ.z = (rcossin_tbl[0xC00].unk2 * 7) >> 4;
-        m->Engine->sub->unk68 = -0x300;
+        m->Engine->sub->otz = -0x300;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk10 = (s32)ScriptCursorFirst(m, &DacScriptInit);
         RunNasAnim(m);
@@ -6357,11 +6357,11 @@ void InitDac(NAS *m) {
             e->xform.scale.vx = 0x2000;
             e->xform.scale.vy = 0x2000;
             e->xform.scale.vz = 0x2000;
-            e->sub->unk68 = -0x300;
+            e->sub->otz = -0x300;
             e->sub->flags |= 0x02000000;
             e->xform.order = 0;
             e->XYZ = m->Engine->XYZ;
-            e->sub->unk76 = 0x800;
+            e->sub->scale = 0x800;
             e->sub->flags |= 0x40008041;
             ext->shadow->xform.dirty = 1;
         }
@@ -6548,11 +6548,11 @@ void PlotInnerRipple(NAS *m) {
         m->Engine->xform.scale.vz = ext->scale + 0x400;
         m->Engine->xform.dirty = 1;
         sub = m->Engine->sub;
-        if ((s16)sub->unk76 >= 0xFFF) {
+        if ((s16)sub->scale >= 0xFFF) {
             KillTriggerNas(m);
             return;
         }
-        sub->unk76 += ext->spin;
+        sub->scale += ext->spin;
     }
 }
 
@@ -6570,7 +6570,7 @@ void InitInnerRipple(NAS *m) {
         m->Engine->sub->flags |= 0x40000000;
         m->Engine->xform.hasScale = 1;
         m->Engine->xform.order = 0;
-        m->Engine->sub->unk76 = 0;
+        m->Engine->sub->scale = 0;
         m->Engine->xform.scale.vx = 0x400;
         m->Engine->xform.scale.vy = 0x400;
         m->Engine->xform.scale.vz = 0x400;
@@ -6590,9 +6590,9 @@ void PlotRippled(NAS *m) {
         m->Engine->xform.scale.vx = ext->scale + 0x400;
         m->Engine->xform.scale.vy = ext->scale + 0x400;
         m->Engine->xform.scale.vz = ext->scale + 0x400;
-        m->Engine->sub->unk76 += ext->fade;
+        m->Engine->sub->scale += ext->fade;
         m->Engine->xform.dirty = 1;
-        if ((s16)m->Engine->sub->unk76 >= 0xFFF) {
+        if ((s16)m->Engine->sub->scale >= 0xFFF) {
             KillTriggerNas(m);
         }
     }
@@ -6617,7 +6617,7 @@ void InitRippled(NAS *m) {
         m->Engine->xform.order = 0;
         m->Engine->xform.hasScale = 1;
         m->Engine->xform.dirty = 1;
-        m->Engine->sub->unk76 = 0;
+        m->Engine->sub->scale = 0;
     }
 }
 

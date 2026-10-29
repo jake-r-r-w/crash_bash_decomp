@@ -1272,7 +1272,7 @@ void AR_InitHero(u32 arg0) {
         case 5:
         case 6:
         case 8:
-            s->unk68 = -0x10;
+            s->otz = -0x10;
             s->flags |= 0x02000000;
             break;
         }
@@ -2252,7 +2252,7 @@ void ArkHeroKick(u32 arg0) {
             s->xform.scale.vx = scale & 0xFFFF;
             s->xform.scale.vy = scale & 0xFFFF;
             s->xform.scale.vz = scale & 0xFFFF;
-            s->unk76 = ang;
+            s->scale = ang;
             s->xform.dirty = 1;
             s->flags |= 0x40008021;
         }
@@ -2297,7 +2297,7 @@ void ArkHeroRedKick(u32 arg0) {
             s->xform.scale.vx = v & 0xFFFF;
             s->xform.scale.vy = v & 0xFFFF;
             s->xform.scale.vz = v & 0xFFFF;
-            s->unk76 = r;
+            s->scale = r;
             s->xform.dirty = 1;
             s->flags |= 0x40008021;
         }
@@ -2342,7 +2342,7 @@ void ArkHeroGrab(u32 arg0) {
             s->xform.scale.vx = t + 0x1000;
             s->xform.scale.vy = t + 0x1000;
             s->xform.scale.vz = t + 0x1000;
-            s->unk76 = 0xA00 - t;
+            s->scale = 0xA00 - t;
         }
     }
     b = Heroes;
@@ -3351,7 +3351,7 @@ void InitBall(NAS *nas) {
         sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
         if (GameMode == 0xE) {
             sub->entity = 0x200C;
-            sub->unk76 = 0xB00;
+            sub->scale = 0xB00;
             sub->flags |= 0x42000021;
             ext = AddExt(nas, 0x74, 0x10000000);
             if (ext != NULL) {
@@ -3369,7 +3369,7 @@ void InitBall(NAS *nas) {
                     sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
                     sub->entity = 0x200D;
                     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x42000021;
-                    sub->unk76 = 0xC00;
+                    sub->scale = 0xC00;
                 }
             }
         } else {
@@ -3704,22 +3704,22 @@ void PlotBall(NAS *nas) {
                 if (--obj->countdown == 0) {
                     eng->flags |= 0x40000021;
                     eng->sub->flags |= 0x40000021;
-                    eng->sub->unk76 = 0x400;
+                    eng->sub->scale = 0x400;
                     e2 = eng->Engine;
                     if (e2 != NULL) {
                         e2->flags |= 0x40000000;
                         e2->sub->flags |= 0x40000000;
-                        e2->sub->unk76 = 0x400;
+                        e2->sub->scale = 0x400;
                     }
                 }
             } else {
-                eng->sub->unk76 += 0x200;
+                eng->sub->scale += 0x200;
                 e2 = eng->Engine;
                 hide = 1;
                 if (e2 != NULL) {
-                    e2->sub->unk76 += 0x200;
-                    if ((s16)e2->sub->unk76 >= 0x1000) {
-                        e2->sub->unk76 = 0xFFF;
+                    e2->sub->scale += 0x200;
+                    if ((s16)e2->sub->scale >= 0x1000) {
+                        e2->sub->scale = 0xFFF;
                         done = hide;
                     }
                 }
@@ -3734,23 +3734,23 @@ void PlotBall(NAS *nas) {
                 if (--obj->countdown == 0) {
                     eng->flags |= 0x40000021;
                     eng->sub->flags |= 0x40000021;
-                    eng->sub->unk76 = 0x400;
-                    eng->sub->unk68 = 0x100;
+                    eng->sub->scale = 0x400;
+                    eng->sub->otz = 0x100;
                     e2 = eng->Engine;
                     if (e2 != NULL) {
                         e2->flags |= 0x40000000;
                         e2->sub->flags |= 0x40000000;
-                        e2->sub->unk76 = 0x400;
+                        e2->sub->scale = 0x400;
                     }
                 }
             } else {
-                eng->sub->unk76 += 0x200;
+                eng->sub->scale += 0x200;
                 e2 = eng->Engine;
                 hide = 1;
                 if (e2 != NULL) {
-                    e2->sub->unk76 += 0x200;
-                    if ((s16)e2->sub->unk76 >= 0x1000) {
-                        e2->sub->unk76 = 0xFFF;
+                    e2->sub->scale += 0x200;
+                    if ((s16)e2->sub->scale >= 0x1000) {
+                        e2->sub->scale = 0xFFF;
                         done = hide;
                     }
                 }
@@ -3864,13 +3864,13 @@ void PlotBall(NAS *nas) {
         TestArkObjectObstacles(eng, obj);
         break;
     }
-    eng->sub->unk68 = shade;
+    eng->sub->otz = shade;
     e2 = eng->Engine;
     if (e2 == NULL) {
         return;
     }
     e2->XYZ = eng->XYZ;
-    e2->sub->unk68 = shade;
+    e2->sub->otz = shade;
     /* the level's GetContour hook */
     y = eng->XYZ.y - LevelSpecs.GetContour(eng);
     e2 = e2->Engine;
@@ -3879,7 +3879,7 @@ void PlotBall(NAS *nas) {
     }
     e2->XYZ = eng->XYZ;
     e2->XYZ.y = y;
-    e2->sub->unk68 = shade;
+    e2->sub->otz = shade;
     sub = e2->sub;
     if (hide != 0) {
         e2->flags &= ~0x8000;
@@ -3910,7 +3910,7 @@ void PlotBall(NAS *nas) {
         if (sc < 0x100) {
             sc = 0x100;
         }
-        sub->unk76 = 0x1000 - (sc >> 1);
+        sub->scale = 0x1000 - (sc >> 1);
         sub = sub->next;
         k++;
     }
@@ -5153,7 +5153,7 @@ void Plot_RepulseRing(NAS *arg0) {
     s->xform.scale.vx = t + 0x1200;
     s->xform.scale.vy = t + 0x1200;
     s->xform.scale.vz = t + 0x1200;
-    s->unk76 = t + 0x600;
+    s->scale = t + 0x600;
     e->xform.dirty = 1;
     ArkHeroRad2ObjectRepel(arg0->UserInfo.user1, 0x800);
     PickupCounts[0] += 1;
@@ -6069,7 +6069,7 @@ void Init_seaweed(NAS *arg0) {
                     *(u16 *)&cur->frame += Random(8);
                 }
                 eng->sub->flags |= 0x02000000;
-                eng->sub->unk68 = *(u16*)(info + 8);
+                eng->sub->otz = *(u16*)(info + 8);
             }
         }
     }
@@ -6279,9 +6279,9 @@ void AR_InitShadow(u32 arg0) {
     s->XYZ = h->hero_eng->XYZ;
     s->xform.order = 0;
     s->flags |= 0x8041;
-    s->sub->unk76 = 0x200;
+    s->sub->scale = 0x200;
     s->sub->flags |= 0x42000000;
-    s->sub->unk68 = -0x10;
+    s->sub->otz = -0x10;
 }
 
 s32 ArkAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {

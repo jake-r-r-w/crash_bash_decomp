@@ -2582,9 +2582,9 @@ void PlotEgg(NAS *nas) {
         eng->xform.rot.vy = (nas->UserInfo.status + 0x400) & 0xFFF;
         eng->xform.dirty = 1;
         if (eng->XYZ.z > 0) {
-            sub->unk68 = 0x100;
+            sub->otz = 0x100;
         } else {
-            sub->unk68 = -0x100;
+            sub->otz = -0x100;
         }
         if (++sub->entity == 0x4006) {
             PlaySfx(0x757, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
@@ -2771,7 +2771,7 @@ void InitPickupCH(NAS *nas) {
         e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         e->sub->entity = 0x2001;
         e->sub->flags |= 0x40000041;
-        e->sub->unk76 = 0x800;
+        e->sub->scale = 0x800;
         e->sub->xform.hasScale = 1;
         e->sub->xform.dirty = 1;
     }
@@ -3407,7 +3407,7 @@ void InitEgg(NAS *nas) {
     eng->xform.dirty = 1;
     scene = (s32)MapScene->dbase;
     sub->entity = 0x4080;
-    sub->unk68 = 0x3E7;
+    sub->otz = 0x3E7;
     sub->u6C.dbase = (void *)scene;
     sub->flags |= 0x2000000;
     if (nas->Failure != 0) {

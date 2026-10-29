@@ -3693,7 +3693,7 @@ void Plot_PogoPickup(NAS *nas) {
         eng->xform.scale.vy = 0x100;
         eng->xform.scale.vz = 0x100;
         eng->flags |= 0x21;
-        eng->sub->unk76 = 0x100;
+        eng->sub->scale = 0x100;
         nas->UserInfo.status = 2;
         eng->xform.rot.vy = dir << 10;
         eng->xform.dirty = 1;
@@ -3710,7 +3710,7 @@ void Plot_PogoPickup(NAS *nas) {
         eng->xform.scale.vx = scale;
         eng->xform.scale.vy = scale;
         eng->xform.scale.vz = scale;
-        eng->sub->unk76 = scale;
+        eng->sub->scale = scale;
         eng->xform.dirty = 1;
         break;
     case 3:
@@ -3741,7 +3741,7 @@ void Init_PogoPowerup(NAS *nas) {
     if (e != NULL) {
         e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
         e->sub->entity = 0x200B;
-        e->sub->unk68 = -0x10;
+        e->sub->otz = -0x10;
         e->sub->flags |= 0x02000000;
         e->XYZ.y -= 0x1000;
         m = AddMotion(nas);
@@ -3765,7 +3765,7 @@ void Init_PogoPowerup(NAS *nas) {
                 sub->entity = 0x2029;
                 sub->xform.order = 2;
                 sub->xform.hasScale = 1;
-                sub->unk76 = 0x800;
+                sub->scale = 0x800;
                 sub->flags |= 0x40008041;
             }
         }
@@ -5616,7 +5616,7 @@ void Init_PogoRipperRoo(NAS *nas) {
                 sub->entity = 0x2029;
                 sub->xform.order = 2;
                 sub->xform.hasScale = 1;
-                sub->unk76 = 0x800;
+                sub->scale = 0x800;
                 sub->flags |= 0x40000041;
             }
         }
@@ -6251,7 +6251,7 @@ void Init_PogoPadlock(NAS *nas) {
                 sub->xform.order = 2;
                 sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                 sub->xform.hasScale = 1;
-                sub->unk76 = 0x800;
+                sub->scale = 0x800;
                 sub->flags |= 0x40008041;
             }
         }
@@ -6897,7 +6897,7 @@ void Init_PogoPickup(NAS *nas) {
     if (e != NULL) {
         e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
         e->sub->entity = 0x200B;
-        e->sub->unk68 = -0x10;
+        e->sub->otz = -0x10;
         e->sub->flags |= 0x02000000;
     }
     nas->UserInfo.flags = 0;
@@ -7565,7 +7565,7 @@ void PogoCreateShadow(u32 arg0) {
         s->sub->entity = 0x2029;
         s->XYZ = h->hero_eng->XYZ;
         s->flags |= 0x8041;
-        s->sub->unk76 = 0x800;
+        s->sub->scale = 0x800;
         s->sub->flags |= 0x40000000;
     }
 }

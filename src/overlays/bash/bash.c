@@ -2703,7 +2703,7 @@ void InitTumbler(NAS *nas) {
             sub->entity = 0x2001;
             sub->flags |= 0x40008041;
             sub->xform.hasScale = 1;
-            sub->unk76 = 0xB00;
+            sub->scale = 0xB00;
         }
         puff = BashSpawnPuff(&MapPoints[8].pos);
         if (puff != NULL) {
@@ -3322,7 +3322,7 @@ void PlotBashShox(NAS *nas) {
                         x->c[i] += 0x500;
                         sub->xform.scale.vx = x->c[i];
                         sub->xform.scale.vz = x->c[i];
-                        sub->unk76 += 0x100;
+                        sub->scale += 0x100;
                         r = x->c[i] * 128 >> 12;
                         if (size < r) {
                             size = r;

@@ -317,8 +317,8 @@ struct subengine {
     /* 0x58 */ void (*release)(subengine *); /* called when the node is freed */
     /* 0x5C */ subengine *next;
     /* 0x60 */ subengine *prev;
-    /* 0x64 */ u8 unk64[0x68 - 0x64];
-    /* 0x68 */ s16 unk68;
+    /* 0x64 */ u8 ids[0x68 - 0x64];  /* per-object bytes (mapscene_find_sub) */
+    /* 0x68 */ s16 otz;  /* its depth offset */
     /* 0x6A */ u8 pad6A[2];
     /* 0x6C */ union {
         struct obj_dbase *dbase;     /* a model's: the record its entity is in */
@@ -333,12 +333,12 @@ struct subengine {
         } h;
     } u70;
     /* 0x74 */ u16 entity;           /* the entity in the dbase (entity_address) */
-    /* 0x76 */ u16 unk76;
-    /* 0x78 */ s32 unk78;
+    /* 0x76 */ u16 scale;  /* a signed scale or size */
+    /* 0x78 */ s32 color;  /* the far colour (RenderState.farColor) */
     /* 0x7C */ s32 unk7C;
     /* 0x80 */ s32 unk80;
     /* 0x84 */ u8 pad84[0x8A - 0x84];
-    /* 0x8A */ s16 unk8A;
+    /* 0x8A */ s16 depth;
     /* 0x8C */ u8 pad8C[0x8E - 0x8C];
     /* 0x8E */ u16 flags2;
     /* 0x90 */ s32 unk90;

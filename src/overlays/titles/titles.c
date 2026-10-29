@@ -604,7 +604,7 @@ void AnimateTitlesBackdrop(void) {
     p2->xform.rot.vy = -0x155;
     p2->xform.rot.vz = ang;
     p2->flags |= 0x02000000;
-    p2->unk68 = 0x80;
+    p2->otz = 0x80;
     p2->xform.dirty = 1;
 }
 
@@ -1270,8 +1270,8 @@ void RenderTitlesMenu(void) {
 void SetupTitlesBackdrop(void) {
     PlaceSub *s = (PlaceSub *)GetEngineSlot(1)->sub;
 
-    s->unk14 = FrameCount * 20;
-    s->unk12 = 0x293;
+    s->rz = FrameCount * 20;
+    s->ry = 0x293;
     s->unk50 = 1;
     s->sz = 0x2800;
     s->sx = 0x2800;
@@ -1372,7 +1372,7 @@ void InitCharSelector(s32 arg0) {
     o->value = Random(0x200) - 0x100;
     o->value2 = Random(0x200) - 0x100;
     s->xform.hasScale = 1;
-    s->unk68 = -0x64;
+    s->otz = -0x64;
     s->xform.order = 0;
     s->xform.scale.vx = 0;
     s->xform.scale.vy = 0;

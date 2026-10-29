@@ -503,7 +503,7 @@ void UpdateCupMenu(void) {
     GetEngineSlot(0)->sub[3].flags |= 0x8000;
     sub = &GetEngineSlot(0)->sub[4];
     sub->flags |= 0x02008000;
-    sub->unk68 = -0x80;
+    sub->otz = -0x80;
     sub->u6C.dbase = &HeroModelBank[DB_MainmenuModels];
     sub->entity = 0x2006;
     sub->xform.rot.vy = FrameCount * 50;

@@ -4901,7 +4901,7 @@ void InitHelicopterTA(NAS *nas) {
             e->sub->u6C.dbase = p;
             e->sub->entity = 0x200F;
             e->sub->flags |= 0x40000041;
-            e->sub->unk76 = 0x800;
+            e->sub->scale = 0x800;
             e->sub->xform.hasScale = 1;
         }
         if (nas->Failure == 0) {
@@ -5096,7 +5096,7 @@ void InitPickupTA(NAS *nas) {
             e->sub->u6C.dbase = p;
             e->sub->entity = 0x202A;
             e->sub->flags |= 0x40000041;
-            e->sub->unk76 = 0x800;
+            e->sub->scale = 0x800;
             e->sub->xform.hasScale = 1;
             y = eng->XYZ.y + 0x1000;
             e->sub->xform.scale.vx = y;
@@ -5813,7 +5813,7 @@ void PlotPillar(NAS *nas) {
                 TankLevelsGridMapMiss[(z * TankMapWidth) + x] = v;
                 TankLevelsGridMapTank[(z * TankMapWidth) + x] = v;
             }
-            eng->sub->unk68 = 0;
+            eng->sub->otz = 0;
             eng->sub->flags &= ~0x02000000;
             MissileCollideWithPickup(eng);
             return;
@@ -5835,7 +5835,7 @@ void PlotPillar(NAS *nas) {
     default:
         if (TankLevelOver == 0 && --nas->UserInfo.user2 <= 0) {
             nas->UserInfo.user1 = 5;
-            eng->sub->unk68 = 0x20;
+            eng->sub->otz = 0x20;
             TankPillarSfxDelay = 2;
             eng->sub->flags |= 0x02000000;
         }
@@ -6408,7 +6408,7 @@ void InitTankBoss(NAS *nas) {
     sub = eng->sub;
     sub->u6C.dbase = model;
     sub->entity = 0x2002;
-    sub->unk68 = 0x100;
+    sub->otz = 0x100;
     sub->flags |= 0x02000000;
     eng->xform.order = 0;
     eng->XYZ.y = 0x7D0;
@@ -7249,7 +7249,7 @@ void InitMoeJoe(NAS *nas, s32 id) {
     } else {
         sub->entity = 0x4080;
     }
-    sub->unk68 = 0x100;
+    sub->otz = 0x100;
     sub->flags |= 0x02000000;
     ext = AddExt(nas, 0x38, 0x10000000);
     nas->FUX = (EXT *)ext;
@@ -7262,12 +7262,12 @@ void InitMoeJoe(NAS *nas, s32 id) {
     s->xform.order = 1;
     s->u6C.dbase = &HeroModelBank[DB_TankObjects2];
     s->entity = 0x2011;
-    s->unk68 = 0x100;
+    s->otz = 0x100;
     s->flags = (s->flags & 0xFFFF7FFF) | 0x02000000;
     s2->xform.order = 1;
     s2->u6C.dbase = &HeroModelBank[DB_TankObjects2];
     s2->entity = 0x4300;
-    s2->unk68 = 0x100;
+    s2->otz = 0x100;
     s2->flags = (s2->flags & 0xFFFF7FFF) | 0x02000000;
     switch (TankBossStartStatus) {
     case 1:
@@ -7276,7 +7276,7 @@ void InitMoeJoe(NAS *nas, s32 id) {
     case 0x2C:
         eng->XYZ.y = 0x1001;
         eng->XYZ.z = 0x1001;
-        sub->unk68 = 0x100;
+        sub->otz = 0x100;
         sub->flags |= 0x02000000;
         ext->Status = 5;
         break;
@@ -7284,7 +7284,7 @@ void InitMoeJoe(NAS *nas, s32 id) {
         ext->Status = TankBossStartStatus;
         eng->XYZ.y = 0x480;
         eng->XYZ.z = 0x1001;
-        sub->unk68 = 0x100;
+        sub->otz = 0x100;
         sub->flags |= 0x02000000;
         break;
     }
@@ -7917,13 +7917,13 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     Heroes[p].hero_last_mode = mode;
     SetMoeJoeMove(p);
     sub = eng->sub;
-    sub->unk68 = 0;
+    sub->otz = 0;
     sub = sub->next;
     sub->xform.order = 1;
-    sub->unk68 = 0;
+    sub->otz = 0;
     sub = sub->next;
     sub->xform.order = 1;
-    sub->unk68 = 0;
+    sub->otz = 0;
     SetMoeJoeIdle(p);
     tb = TA_players;
     ta = &tb[p];
@@ -8201,7 +8201,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         if (eng->XYZ.z > 0x1100) {
             fux->Status = 5;
             fux->SpeedY = -0x46;
-            sub->unk68 = 0x100;
+            sub->otz = 0x100;
             sub->flags |= 0x02000000;
         }
         break;
@@ -8443,7 +8443,7 @@ void InitTankBossRocketTurret(NAS *nas) {
     } else {
         sub->entity = 0x2025;
     }
-    sub->unk68 = 0x100;
+    sub->otz = 0x100;
     sub->flags |= 0x02000000;
     nas->UserInfo.status = 0x11;
     eng->flags = 0;
@@ -8458,7 +8458,7 @@ void InitTankBossCortexTurret(NAS *nas) {
     sub = eng->sub;
     sub->u6C.dbase = &HeroModelBank[DB_ArenaBossKomodoArenaobjects];
     sub->entity = 0x2004;
-    sub->unk68 = 0x100;
+    sub->otz = 0x100;
     sub->flags |= 0x02000000;
     nas->UserInfo.status = 0x11;
 }
@@ -8477,7 +8477,7 @@ void InitTankBossCrashTurret(NAS *nas) {
     nas->UserInfo.status = 4;
     sub->u6C.dbase = &HeroModelBank[DB_ArenaBossKomodoArenaobjects];
     sub->entity = 0x2003;
-    sub->unk68 = v;
+    sub->otz = v;
     sub->xform.order = 0;
     sub->flags |= 0x02000000;
 }
@@ -8611,7 +8611,7 @@ void InitPillar(NAS *nas) {
     e->XYZ.y = 0xB8;
     s = e->sub;
     s->u6C.dbase = MapScene->dbase;
-    s->unk68 = 0x20;
+    s->otz = 0x20;
     s->flags |= 0x02000000;
 }
 
@@ -8904,7 +8904,7 @@ void InitLobber_TA(NAS *nas) {
         e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
         e2->sub->entity = 0x2001;
         e2->sub->flags |= 0x40000041;
-        e2->sub->unk76 = 0x800;
+        e2->sub->scale = 0x800;
     }
 }
 
@@ -8928,7 +8928,7 @@ void InitShell(NAS *nas) {
         e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
         e2->sub->entity = 0x2001;
         e2->sub->flags |= 0x40000041;
-        e2->sub->unk76 = 0x800;
+        e2->sub->scale = 0x800;
     }
 }
 
@@ -8992,7 +8992,7 @@ void InitFlubberTA(NAS *nas) {
             e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
             e2->sub->entity = 0x2001;
             e2->sub->flags |= 0x40000041;
-            e2->sub->unk76 = 0x800;
+            e2->sub->scale = 0x800;
             e2->sub->xform.hasScale = 1;
         }
         if (nas->Failure == 0) {

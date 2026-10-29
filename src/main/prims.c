@@ -1237,15 +1237,15 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
     s32 otz;
     u32 fog = 0x40000000;
 
-    depth = d->unk8A;
+    depth = d->depth;
     {
         /* d->flags read as a plain word: as a field (in-struct) sched1 moves it past the
          * PrimDepthLimit store */
         s32 on = (*(u32 *)d | c) & fog;
         PrimDepthLimit = depth;
         if (on) {
-            s32 dp = (s16)d->unk76;
-            RenderState.farColor = &d->unk78;
+            s32 dp = (s16)d->scale;
+            RenderState.farColor = &d->color;
             RenderState.dp = dp;
         }
     }
@@ -1355,7 +1355,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         e = (u8 *)(x & 0xFFFF);
         e = (u8 *)((s32)e | ((u16)q[1] << 17));
         if (flags & fog) {
-            idx = d->unk76 >> 4;
+            idx = d->scale >> 4;
             idx &= 0xFF;
             col = idx | (idx << 8) | (idx << 16);
         } else {
@@ -1364,7 +1364,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         g |= col;
         otz = 1;
         if (c & 0x2000000) {
-            otz = d->unk68;
+            otz = d->otz;
         }
         if ((u32)otz < (u32)RenderState.otLen) {
             texture_draw(&RenderState.dbase->textures.tex[a & 0xFFF],
@@ -1388,7 +1388,7 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
     n = arg0->entity;
     if (arg0->flags & 0x02000000) {
         GfxState *g1 = &RenderState;
-        g1->otzAdd = ((GfxScreen *)g1->screen)->otz + arg0->unk68;
+        g1->otzAdd = ((GfxScreen *)g1->screen)->otz + arg0->otz;
     } else {
         g = &RenderState;
         g->otzAdd = ((GfxScreen *)g->screen)->otz;
@@ -2806,12 +2806,12 @@ void mapenv_place_subs(map_enviroment *env) {
         sub->hook = (void *)draw_map_sub;
         sub->u6C.dbase = env->dbase;
         sub->entity = p->entity;
-        sub->unk8A = p->unk9E;
-        sub->unk68 = p->unk9C;
-        sub->unk64[0] = p->unk74[0];
-        sub->unk64[1] = p->unk74[1];
-        sub->unk64[2] = p->unk74[2];
-        sub->unk64[3] = p->unk74[3];
+        sub->depth = p->unk9E;
+        sub->otz = p->unk9C;
+        sub->ids[0] = p->unk74[0];
+        sub->ids[1] = p->unk74[1];
+        sub->ids[2] = p->unk74[2];
+        sub->ids[3] = p->unk74[3];
         if (n > 0) {
             sub->next = sub + 1;
         } else {
@@ -2853,7 +2853,7 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
         gte_SetRotMatrix(mp);
     }
     gte_SetTransMatrix(mp);
-    RenderState.otzAdd = *(u16 *)(RenderState.screen + 8) + ((subengine *)sub)->unk68;
+    RenderState.otzAdd = *(u16 *)(RenderState.screen + 8) + ((subengine *)sub)->otz;
     gte_SetGeomOffset(RenderState.ofx * ScreenRect->w / 640, RenderState.ofy / 2);
 }
 
@@ -2887,7 +2887,7 @@ subengine *mapscene_find_sub(s32 i, s32 val) {
     subengine *sub;
 
     for (sub = MapScene->subs; sub != NULL; sub = sub->next) {
-        if (sub->unk64[i] == val) {
+        if (sub->ids[i] == val) {
             return sub;
         }
     }
@@ -3036,12 +3036,12 @@ void mapscene_place_subs(map_enviroment *env) {
         dst->hook = (void (*)(subengine *, s32, u32))draw_map_sub;
         dst->u6C.dbase = env->dbase;
         dst->entity = src->entity;
-        dst->unk8A = src->unk9E;
-        dst->unk68 = src->unk9C;
-        dst->unk64[0] = src->unk74[0];
-        dst->unk64[1] = src->unk74[1];
-        dst->unk64[2] = src->unk74[2];
-        dst->unk64[3] = src->unk74[3];
+        dst->depth = src->unk9E;
+        dst->otz = src->unk9C;
+        dst->ids[0] = src->unk74[0];
+        dst->ids[1] = src->unk74[1];
+        dst->ids[2] = src->unk74[2];
+        dst->ids[3] = src->unk74[3];
         if (n > 0) {
             dst->next = dst + 1;
         } else {

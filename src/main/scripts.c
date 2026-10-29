@@ -109,7 +109,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
         w = 0x1000 - w;
         d->flags |= track->type.entity[1] | 0x8000;
         if (w != 0) {
-            d->unk76 = w;
+            d->scale = w;
             d->flags |= 0x40000000;
         }
         d->xform.hasScale = 1;
@@ -459,7 +459,7 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
                 } else {
                     obj->flags &= ~0x40000000;
                 }
-                obj->unk76 = a;
+                obj->scale = a;
                 in = def->scaleinend;
                 scale = 0x1000;
                 if (in != 0 || def->scaleoutstart != 0) {
@@ -531,7 +531,7 @@ void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
         d->xform.order = 0;
         t = *(u16 *)&res->type.subscript.sort_priority;
         d->xform.dirty = 1;
-        d->unk68 = t;
+        d->otz = t;
         sub_play_script(ci->dbase, res->type.subscript.script_num, d, 0);
         th->type.subscript.sub.flags |= 0x8000;
     }
@@ -1261,7 +1261,7 @@ void init_entity_thread(script_thread *def, script_control_info *ci, s32 num) {
         sub->flags = 0;
         sub->u6C.dbase = v;
         w = *(u16 *)&def->type.entity[5];
-        sub->unk68 = w;
+        sub->otz = w;
         if ((w << 16) != 0) {
             sub->flags |= 0x2000000;
         }
@@ -1343,7 +1343,7 @@ void init_model_thread(script_thread *def, script_control_info *ci, s32 num) {
         sub->flags = 0;
         sub->u6C.dbase = v;
         w = *(u16 *)&def->type.entity[2];
-        sub->unk68 = w;
+        sub->otz = w;
         if ((w << 16) != 0) {
             sub->flags |= 0x2000000;
         }

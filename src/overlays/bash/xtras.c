@@ -520,7 +520,7 @@ void PlotCrate(NAS *arg0) {
         eng->xform.scale.vx = v;
         eng->xform.scale.vy = v;
         eng->xform.scale.vz = v;
-        eng->sub->unk76 = v;
+        eng->sub->scale = v;
         eng->xform.dirty = 1;
         eng->flags |= 0x8000;
         break;
@@ -548,9 +548,9 @@ void PlotCrate(NAS *arg0) {
     case 8:
         if (eng->XYZ.y > World_floor_level) {
             eng->flags |= 0x02000000;
-            eng->sub->unk68 = 0x190;
+            eng->sub->otz = 0x190;
             eng->sub->flags |= 0x02000000;
-            eng->sub->unk68 = 0x190;
+            eng->sub->otz = 0x190;
         }
         if (GravitateNas(arg0) != 0) {
             eng->XYZ.y += 0x20;
@@ -1019,7 +1019,7 @@ void PlotCrate(NAS *arg0) {
         eng->xform.scale.vx = v;
         eng->xform.scale.vy = v;
         eng->xform.scale.vz = v;
-        eng->sub->unk76 = v;
+        eng->sub->scale = v;
         eng->xform.dirty = 1;
         break;
     default:

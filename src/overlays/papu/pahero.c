@@ -209,7 +209,7 @@ void PlotPACrate(NAS *nas) {
         eng->xform.scale.vx = s;
         eng->xform.scale.vy = s;
         eng->xform.scale.vz = s;
-        eng->sub->unk76 = s;
+        eng->sub->scale = s;
         eng->xform.dirty = 1;
         break;
     case 4:
@@ -237,9 +237,9 @@ void PlotPACrate(NAS *nas) {
     case 8:
         if (eng->XYZ.y > World_floor_level) {
             eng->flags |= 0x02000000;
-            eng->sub->unk68 = 0x190;
+            eng->sub->otz = 0x190;
             eng->sub->flags |= 0x02000000;
-            eng->sub->unk68 = 0x190;
+            eng->sub->otz = 0x190;
         }
         if (GravitateNas(nas) != 0) {
             eng->XYZ.y += 0x20;
@@ -421,7 +421,7 @@ void PlotPACrate(NAS *nas) {
                 eng->xform.scale.vx = s;
                 eng->xform.scale.vy = s;
                 eng->xform.scale.vz = s;
-                eng->sub->unk76 = s;
+                eng->sub->scale = s;
                 eng->xform.dirty = 1;
                 break;
             }

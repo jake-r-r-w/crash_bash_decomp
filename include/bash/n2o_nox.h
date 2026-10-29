@@ -463,14 +463,14 @@ static inline s32 LaserInBox(s32 *arg0, s32 *arg1) {
 typedef struct BossScene {
     /* 0x00 */ s32 pad0;
     /* 0x04 */ u8 pad04[0x28];
-    /* 0x2C */ u8 *unk2C;
+    /* 0x2C */ u8 *data;
 } BossScene;
 
 typedef struct BossExt {
     /* 0x00 */ u8 pad00[0xC];
     /* 0x0C */ ScriptCursor *cursor;
     /* 0x10 */ KeyBlock *keys;
-    /* 0x14 */ s32 unk14;
+    /* 0x14 */ s32 frame;  /* its key */
     /* 0x18 */ s32 state;  /* switched on */
     /* 0x1C */ s32 timer;  /* counted down */
     /* 0x20 */ s32 timer2;  /* counted down */
@@ -599,9 +599,9 @@ typedef struct AstSceneObj {
     /* 0x12 */ s16 ry;
     /* 0x14 */ s16 rz;
     /* 0x16 */ u8 pad16[0x20 - 0x16];
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
-    /* 0x28 */ s32 unk28;
+    /* 0x20 */ s32 fade;  /* counts up 0x80 a frame; the sparks' alpha */
+    /* 0x24 */ s32 fade2;
+    /* 0x28 */ s32 fade3;
     /* 0x2C */ u8 pad2C[0x50 - 0x2C];
     /* 0x50 */ u8 unk50;
     /* 0x51 */ u8 unk51;
@@ -617,12 +617,12 @@ typedef struct AstSceneObj {
 typedef struct AstSlot {
     /* 0x00 */ SLONG_XYZ pos;
     /* 0x0C */ s32 ang;
-    /* 0x10 */ s32 unk10;
+    /* 0x10 */ s32 state;
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 timer;  /* counted down */
-    /* 0x1C */ s32 unk1C;
+    /* 0x1C */ s32 state2;
     /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
+    /* 0x24 */ s32 radius;
 } AstSlot;
 typedef struct AstMineSlot {
     /* 0x00 */ s32 unk0;

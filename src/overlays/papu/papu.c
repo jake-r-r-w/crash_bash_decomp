@@ -708,11 +708,11 @@ void PapuSetColumns(u16 arg0) {
         p = &PapuColumns[i];
         if (p->flag != 0) {
             s16 v = PapuColumnHeights[arg0][i];
-            p->unkE = 4;
-            p->unkA = v;
-            p->unkC = 0x60;
-            if (abs(p->unkA) >= p->unkC) {
-                p->unkE = 0;
+            p->accel = 4;
+            p->vel = v;
+            p->limit = 0x60;
+            if (abs(p->vel) >= p->limit) {
+                p->accel = 0;
             }
         }
     }
@@ -732,26 +732,26 @@ void PapuMoveColumns(void) {
         e = &PapuColumns[i];
         if ((u16)e->flag2 != 0) {
             t = (PapuTile *)e->flag;
-            v = e->unkA;
-            c = e->unkC;
-            v += e->unkE;
+            v = e->vel;
+            c = e->limit;
+            v += e->accel;
             if (c < v) {
                 v = c;
             }
-            e->unkA = v;
-            a = t->unk8 + v;
+            e->vel = v;
+            a = t->y + v;
             if (a < -0xE00) {
                 e->flag2 = 0;
                 t->flags &= 0xFFFF7FFF;
             }
-            if (e->unk8 < a) {
-                a = e->unk8;
-                e->unkA = 0;
-                e->unkC = 0;
-                e->unkE = 0;
+            if (e->y < a) {
+                a = e->y;
+                e->vel = 0;
+                e->limit = 0;
+                e->accel = 0;
                 e->flag2 = 0;
             }
-            t->unk8 = a;
+            t->y = a;
         }
         i++;
     } while (i < 20);
@@ -772,7 +772,7 @@ void PapuInitMinionSlots(void) {
         p->pad4[5] = 0;
         p->pad4[6] = 0;
         p->unk20 = 0;
-        p->unk22 = i + 0x14;
+        p->whatami = i + 0x14;
         p->unk24 = 0;
         p->flag2 = 0x14;
         p->unk28 = 0;
@@ -781,9 +781,9 @@ void PapuInitMinionSlots(void) {
         p->unk2E = 0;
         p->unk30 = 0;
         p->unk32 = 0;
-        p->unk34[0] = 0;
-        p->unk34[1] = 0;
-        p->unk34[2] = 0;
+        p->pos[0] = 0;
+        p->pos[1] = 0;
+        p->pos[2] = 0;
     }
 }
 
@@ -1079,7 +1079,7 @@ NAS *PapuMinionFindCrate(s32 arg0) {
     bestScore = 0x7FFFFF;
     n = HeadOfObjects;
     h = AiPlayerSkill[3].level;
-    px = PapuMinionSlots[arg0].unk34[0];
+    px = PapuMinionSlots[arg0].pos[0];
     pz = px;
     if (n != NULL) {
         r = (0x20 - h) * 16;
@@ -1191,7 +1191,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
         s->pad4[0] = (s32) eng;
         s->pad4[1] = (s32) eng->sub;
         s->pad4[4] = (s32) AddMotion(nas);
-        *((SLONG_XYZ *) s->unk34) = eng->XYZ;
+        *((SLONG_XYZ *) s->pos) = eng->XYZ;
         s->flag2 = 0xA;
         obj = (EXTobject *) AddObject(nas);
         if (obj != 0)
@@ -1199,7 +1199,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
           nas->FUX = (EXT *) obj;
           obj->status = 1;
           obj->countdown = d;
-          obj->whatami = s->unk22;
+          obj->whatami = s->whatami;
           LinkObject(nas);
           AddSolid(nas, 0x200);
         }
@@ -1394,7 +1394,7 @@ void PlotPapuMinion(NAS *nas)
           other = (EXTobject *)((NAS *)hit)->FUX;
           if (other != NULL) {
             other->will_do |= 1;
-            other->player = PapuMinionSlots[slot].unk22;
+            other->player = PapuMinionSlots[slot].whatami;
             fux->target = NULL;
             fux->status = 8;
             GotoLinkAnim(anim, 7);
@@ -2044,10 +2044,10 @@ void PapuInitTiles(void) {
     for (j = 0; j < 6; j++) {
         PapuColumns[j].flag = 0;
         PapuColumns[j].flag2 = 0;
-        PapuColumns[j].unkA = 0;
-        PapuColumns[j].unkC = 0;
-        PapuColumns[j].unkE = 0;
-        PapuColumns[j].unk8 = 0;
+        PapuColumns[j].vel = 0;
+        PapuColumns[j].limit = 0;
+        PapuColumns[j].accel = 0;
+        PapuColumns[j].y = 0;
     }
     PapuFloorObj = NULL;
     while (obj != NULL) {
@@ -2063,7 +2063,7 @@ void PapuInitTiles(void) {
         if ((u32)j < 20) {
             p = &PapuColumns[j];
             p->flag = (s32)obj;
-            p->unk8 = obj->unk8;
+            p->y = obj->yoffset;
         }
         if (j == 50) {
             PapuFloorObj = obj;
@@ -2086,7 +2086,7 @@ void PapuInitTiles(void) {
                 PapuTiles[j][i].status = 0;
                 PapuTiles[j][i].frame = obj->index;
                 PapuTiles[j][i].flags = 0;
-                PapuTiles[j][i].yoffset = obj->unk8;
+                PapuTiles[j][i].yoffset = obj->yoffset;
                 PapuTiles[j][i].anim = 0;
                 dx = obj->x;
                 dz = obj->z - 0x600;
@@ -2196,9 +2196,9 @@ void PapuUpdateFloor(void) {
                     u = PapuFloorDepth + a;
                     a >>= 7;
                     w = PapuFloorState[a];
-                    tile->unk8 = PapuTiles[j][i].yoffset;
+                    tile->y = PapuTiles[j][i].yoffset;
                     k = ((u & 0xFFF) - 0x400) & 0xFFF;
-                    tile->unk8 += (w * rcossin_tbl[k].unk2) >> 12;
+                    tile->y += (w * rcossin_tbl[k].unk2) >> 12;
                     if (PapuTiles[j][i].anim != 0) {
                         PapuTiles[j][i].status |= 0x100;
                         tile->unk74 = PapuTileModels[PapuTiles[j][i].anim];
@@ -2230,7 +2230,7 @@ s32 PapuHeroOverPit(s32 arg0) {
         y = eng->XYZ.y - World_floor_level;
         t = PapuTiles[ix][iz].sub;
         if (t != NULL) {
-            y -= t->unk8;
+            y -= t->y;
         }
         if (abs(y) < 0x20 && (PapuTiles[ix][iz + 1].status & 0x100)) {
             return 1;
@@ -2253,7 +2253,7 @@ s32 GetPapuContour(EXTengine *eng) {
     }
     t = PapuTiles[ix][iz].sub;
     if (t != NULL) {
-        y -= t->unk8;
+        y -= t->y;
     }
     return AddPlatformContour(eng, y);
 }
@@ -2520,8 +2520,8 @@ void PapuDropCrates(u16 arg0) {
         }
         m = PapuFindDropPoint(&PapuDropPos);
         if (m != NULL) {
-            a = m->unk0;
-            b = m->unk4;
+            a = m->a;
+            b = m->b;
             t = PapuCrateMix[PapuCrateMixPos];
             PapuCrateMixPos = (PapuCrateMixPos + 1) & 0x3F;
             v = t;

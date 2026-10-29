@@ -1460,7 +1460,7 @@ void N2OHeroKick(s32 arg0) {
             s->xform.scale.vx = scale & 0xFFFF;
             s->xform.scale.vy = scale & 0xFFFF;
             s->xform.scale.vz = scale & 0xFFFF;
-            s->unk76 = ang;
+            s->scale = ang;
             s->xform.dirty = 1;
             s->flags |= 0x40008021;
         }
@@ -1835,21 +1835,21 @@ void PlotN2OBall(NAS *nas) {
                 if (--obj->countdown == 0) {
                     eng->flags |= 0x40000021;
                     eng->sub->flags |= 0x40000021;
-                    eng->sub->unk76 = 0x400;
+                    eng->sub->scale = 0x400;
                     e2 = eng->Engine;
                     if (e2 != NULL) {
                         e2->flags |= 0x40000000;
                         e2->sub->flags |= 0x40000000;
-                        e2->sub->unk76 = 0x400;
+                        e2->sub->scale = 0x400;
                     }
                 }
             } else {
-                eng->sub->unk76 += 0x200;
+                eng->sub->scale += 0x200;
                 e2 = eng->Engine;
                 if (e2 != NULL) {
-                    e2->sub->unk76 += 0x200;
-                    if ((s16)e2->sub->unk76 >= 0x1000) {
-                        e2->sub->unk76 = 0xFFF;
+                    e2->sub->scale += 0x200;
+                    if ((s16)e2->sub->scale >= 0x1000) {
+                        e2->sub->scale = 0xFFF;
                         done = 1;
                     }
                 }
@@ -1864,22 +1864,22 @@ void PlotN2OBall(NAS *nas) {
                 if (--obj->countdown == 0) {
                     eng->flags |= 0x40000021;
                     eng->sub->flags |= 0x40000021;
-                    eng->sub->unk76 = 0x400;
-                    eng->sub->unk68 = 0x100;
+                    eng->sub->scale = 0x400;
+                    eng->sub->otz = 0x100;
                     e2 = eng->Engine;
                     if (e2 != NULL) {
                         e2->flags |= 0x40000000;
                         e2->sub->flags |= 0x40000000;
-                        e2->sub->unk76 = 0x400;
+                        e2->sub->scale = 0x400;
                     }
                 }
             } else {
-                eng->sub->unk76 += 0x200;
+                eng->sub->scale += 0x200;
                 e2 = eng->Engine;
                 if (e2 != NULL) {
-                    e2->sub->unk76 += 0x200;
-                    if ((s16)e2->sub->unk76 >= 0x1000) {
-                        e2->sub->unk76 = 0xFFF;
+                    e2->sub->scale += 0x200;
+                    if ((s16)e2->sub->scale >= 0x1000) {
+                        e2->sub->scale = 0xFFF;
                         done = 1;
                     }
                 }
@@ -2253,7 +2253,7 @@ void N2OUpdateBoss(void) {
                     sub->xform.scale.vx = sc & 0xFFFF;
                     sub->xform.scale.vy = sc & 0xFFFF;
                     sub->xform.scale.vz = sc & 0xFFFF;
-                    sub->unk76 = ang;
+                    sub->scale = ang;
                     sub->xform.dirty = 1;
                     sub->flags |= 0x40008021;
                 }
@@ -2867,7 +2867,7 @@ void PlotN2Omissile(NAS *nas) {
             eng->XYZ.y = top;
         }
     } else {
-        sub->unk68 = 0;
+        sub->otz = 0;
         mot->Xvel += mot->Xacc;
         if (mot->Xvel > mot->Xmax) {
             mot->Xvel = mot->Xmax;
@@ -2954,7 +2954,7 @@ void PlotN2Ofirstmissile(NAS *nas) {
     if (nas->UserInfo.flags == 0) {
         eng->XYZ.y = N2OSlots[nas->UserInfo.user1].src->XYZ.y - 0x80;
     } else {
-        sub->unk68 = 0;
+        sub->otz = 0;
         mot->Xvel += mot->Xacc;
         if (mot->Xvel > mot->Xmax) {
             mot->Xvel = mot->Xmax;
@@ -4039,7 +4039,7 @@ void InitN2Ofirstmissile(NAS *nas) {
         sub->u6C.dbase = &HeroModelBank[DB_Oxide];
         sub->entity = 0x2004;
         sub->xform.order = 0;
-        sub->unk68 = 0x100;
+        sub->otz = 0x100;
         sub->flags |= 0x02000000;
         mot = AddMotion(nas);
         if (mot != NULL) {
@@ -4234,9 +4234,9 @@ void N2OInitShadow(s32 arg0) {
     s->XYZ = h->hero_eng->XYZ;
     s->xform.order = 0;
     s->flags |= 0x8041;
-    s->sub->unk76 = 0x200;
+    s->sub->scale = 0x200;
     s->sub->flags |= 0x42000000;
-    s->sub->unk68 = -0x10;
+    s->sub->otz = -0x10;
 }
 
 s32 N2OAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
