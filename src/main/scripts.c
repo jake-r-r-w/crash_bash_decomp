@@ -49,7 +49,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
     s32 idx;
     s32 v;
     u8 *e;
-    u8 *track;
+    script_thread *track;
     ObjKey *key;
     ObjKey *k;
     subengine *d;
@@ -84,7 +84,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
     }
     track = res;
     if (track != NULL) {
-        k = ObjTrack_FindKey((ObjKey *)(track + 0x24), ci->time.h.frame);
+        k = ObjTrack_FindKey((ObjKey *)&track->type.entity[4], ci->time.h.frame);
         key = k;
         d = &th->type.anim.sub;
         f = key->len;
@@ -107,7 +107,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
             w = key->unk4C;
         }
         w = 0x1000 - w;
-        d->flags |= *(s32 *)(track + 0x18) | 0x8000;
+        d->flags |= track->type.entity[1] | 0x8000;
         if (w != 0) {
             d->unk76 = w;
             d->flags |= 0x40000000;
@@ -134,7 +134,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     s32 t;
     CamVec3 eye;
     CamVec3 at;
-    u8 *track;
+    script_thread *track;
 
     e = ci->dbase;
     lo = ci->script;
@@ -168,7 +168,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
         cam->eye.x = 0;
         cam->eye.y = 0;
         cam->at = *(CamXYZ *)&key->at;
-        cam->dist = *(s32 *)(track + 0x18);
+        cam->dist = track->type.camera[1];
         if (key->len != 0) {
             len = key->len << 8;
             t = (ci->time.w >> 8) - (key->start << 8);

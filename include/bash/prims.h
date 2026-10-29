@@ -96,7 +96,16 @@ void draw_flat_rect(u16 *arg0, s32 arg1, u32 arg2);
 void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3);
 MATRIX *gfx_object_matrix(GfxXform *obj);
 s32 subs_alloc_list(subengine * *out_first, subengine * *last, s32 n);
-u8 *tga_convert(u8 *arg0, s32 w, s32 h);
+/* A TGA file's header (the title screens; the Oct 9 prototype's class tga_header), 0x12 bytes,
+ * then the 16-bit pixels, bottom row first. */
+typedef struct tga_header {
+    /* 0x00 */ u8 id_len, cmap_type, image_type;
+    /* 0x03 */ u8 cmap[5];
+    /* 0x08 */ s16 x_org, y_org;
+    /* 0x0C */ s16 width, height;
+    /* 0x10 */ u8 bpp, desc;
+} tga_header;
+u8 *tga_convert(tga_header *arg0, s32 w, s32 h);
 void prims_empty_back(void);
 void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode);
 void faces_write_colors(MeshHeader *faces, FacePrim *prim);

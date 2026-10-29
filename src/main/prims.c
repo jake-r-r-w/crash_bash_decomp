@@ -860,7 +860,7 @@ void primlist_clear(PrimList *l) {
     l->f10 = NULL;
 }
 
-u8 *tga_convert(u8 *arg0, s32 w, s32 h) {
+u8 *tga_convert(tga_header *arg0, s32 w, s32 h) {
     s32 pw;
     s32 x;
     u16 *src;
@@ -868,22 +868,22 @@ u8 *tga_convert(u8 *arg0, s32 w, s32 h) {
     u16 c;
     u8 *res;
 
-    pw = *(s16 *)(arg0 + 0xC);
+    pw = arg0->width;
     if (pw < w) {
         w = pw;
     }
-    if (*(s16 *)(arg0 + 0xE) < h) {
+    if (arg0->height < h) {
         h = pw;
     }
     res = mal_alloc(w * h * 2, &MainHeap);
-    src = (u16 *)(arg0 + (*(s16 *)(arg0 + 0xC) * (*(s16 *)(arg0 + 0xE) - 9) * 2 + 0x12));
+    src = (u16 *)FILE_AT(arg0, arg0->width * (arg0->height - 9) * 2 + 0x12);
     dst = (u16 *)res;
     for (h--; h != -1; h--) {
         for (x = w - 1; x != -1; x--) {
             c = *src++;
             *dst++ = ((c >> 10) & 0x1F) | ((c & 0x1F) << 10) | (c & 0x3E0);
         }
-        src -= w + *(s16 *)(arg0 + 0xC);
+        src -= w + arg0->width;
     }
     return res;
 }
