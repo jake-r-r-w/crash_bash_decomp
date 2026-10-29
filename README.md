@@ -31,6 +31,37 @@ on its own terms.
   Interactive Entertainment or Activision. Crash Bash and Crash Bandicoot are trademarks of their
   respective owners.
 
+## Getting started
+
+You need [Docker](https://www.docker.com/) (running) and git.
+
+1. **Get the code**
+
+   ```sh
+   git clone https://github.com/jake-r-r-w/crash_bash_decomp.git
+   cd crash_bash_decomp
+   ```
+
+2. **Add your game.** Make a `disc` folder here and put your Crash Bash (USA) `.bin` and `.cue` in it.
+
+3. **Add PsyQ** (Sony's SDK; downloads and checks it):
+
+   ```sh
+   tools/get_psyq.sh
+   ```
+
+4. **Build your disc**
+
+   ```sh
+   tools/dk make disc
+   ```
+
+That's it: `build/CrashBash.cue` is your rebuilt game. Play it in any PlayStation emulator
+([docs/PLAYING.md](docs/PLAYING.md)). The first build takes about 10 minutes, because it unpacks
+your disc first. On Windows, run the commands in Git Bash, or use `tools\dk.ps1` in PowerShell.
+
+To check the build is byte for byte the retail game: `tools/dk make check`.
+
 ## Target
 
 | Field | Value |
@@ -165,7 +196,7 @@ Ignored, never committed:
 - `scratch/` - your notes and drafts.
 
 All of it but your edits and notes comes back from your disc image (and the PsyQ download): the
-Quick Start below.
+see Getting started, above.
 
 ## Toolchain
 
@@ -192,23 +223,24 @@ of the compiler) did to the code. The source of GCC 2.8.1 and 2.7.2.3 is kept in
 goes in the ignored `ext/psyq47/` (`psyq-4.7-converted-full.7z` from
 [psx.arthus.net](http://psx.arthus.net/sdk/Psy-Q/)).
 
-## Quick Start
+## More commands
 
-```sh
-mkdir -p disc ext/psyq47
-cp "/path/to/Crash Bash.bin" disc/CrashBash.bin     # and a .cue naming CrashBash.bin
-tar -xf psyq-4.7-converted-full.7z -C ext/psyq47        # or: tools/get_psyq.sh (downloads and checks it)
+Everything runs through `tools/dk` (Docker):
 
-git config core.hooksPath tools/hooks                 # data guard + match gate
-tools/dk make check                                   # build and compare with retail
-tools/dk make disc-check                              # a disc image, the same as retail
-```
+| Command | What it does |
+|---|---|
+| `make check` | Build, and compare every binary with retail |
+| `make disc-check` | Build the disc, and check it equals the retail disc |
+| `make verify` | Clean rebuild, then check |
+| `make progress` | Regenerate the dashboard (`docs/index.html`) |
+| `make test-tools` | Run the Python tools' tests |
+| `make hidden` | Check that everything built comes from `src/` (the final test's scan) |
+| `make objdiff-config` | Set up [objdiff](https://github.com/encounter/objdiff) |
 
-The first build unpacks your disc (`decomp.py extract`: the exe, the code overlays, and the game
-data into `assets/`, about 6 minutes) and splits it (`make split`) by itself; a missing disc or SDK
-stops with what to do.
+Turn on the repository's commit checks (they keep game files out of git) with
+`git config core.hooksPath tools/hooks`.
 
-Matching one function (every game function is matched; this is the route for reworking one):
+Reworking a function (every game function is matched already):
 
 ```sh
 tools/dk python3 tools/scripts/decomp.py next            # pick a function: asm + draft
@@ -216,12 +248,6 @@ tools/dk make diff FUNC=NAME                             # after writing its C
 tools/dk make permute FUNC=NAME                          # if stuck at the registers stage
 tools/dk python3 tools/scripts/decomp.py done NAME --commit --note "what made it match"
 ```
-
-Other targets: `make verify` (clean rebuild + check), `make progress`,
-`make disc` / `make disc-check` (a bootable image, and that it equals retail;
-how to play it and edit the game data: [docs/PLAYING.md](docs/PLAYING.md)),
-`make test-tools` (the Python tools' tests), `make hidden` (the final test's nothing-hidden scan), `make objdiff-config` (for
-[objdiff](https://github.com/encounter/objdiff)).
 
 ## License
 

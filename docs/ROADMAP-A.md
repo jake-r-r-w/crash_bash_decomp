@@ -687,3 +687,6 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
   - you need your own retail copy, whose executable the split checks against retail's SHA-1;
   - game files aren't accepted in issues or pull requests;
   - no affiliation with Eurocom, Sony or Activision.
+- [x] 5.4 The README's Getting started (2026-10-29), near the top: Docker and git, clone, your disc in
+  `disc/`, `tools/get_psyq.sh`, `tools/dk make disc`, then play `build/CrashBash.cue`. The rest of the
+  commands are in a More commands table.

@@ -89,7 +89,7 @@ def unpacked(src):
     extract writes both; run it again if one is missing)."""
     layout = f"{SRC}/layout.xml"
     if not os.path.exists(layout):
-        die(f"no {layout}: run decomp.py extract on your cue first (README, Quick Start)")
+        die(f"no {layout}: run decomp.py extract on your cue first (README, Getting started)")
     tree = ET.parse(layout).getroot().find(".//directory_tree")
 
     def files(node, rel):
