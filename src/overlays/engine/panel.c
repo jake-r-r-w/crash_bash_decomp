@@ -1666,7 +1666,7 @@ found:
                 CupWinner = FindTeamLeader();
                 slot = GAME->mode;
                 if (CupWinner != -1) {
-                    GAME->adventure.unkE4[4][slot] = 1;
+                    GAME->adventure.won[4][slot] = 1;
                     SetReturnGateway();
                 }
                 CupMode = 0x10;
@@ -1675,17 +1675,17 @@ found:
                 if (GAME->mode == 0x20) {
                     CupWinner = FindTeamLeader();
                     if (CupWinner != -1) {
-                        GAME->adventure.unkCC[CupWinner]++;
+                        GAME->adventure.roundPoints[CupWinner]++;
                         ScreenLabelsStart();
                     }
                 } else {
                     CupWinner = FindTeamLeader();
                     if (CupWinner != -1) {
-                        GAME->adventure.unkCC[CupWinner]++;
+                        GAME->adventure.roundPoints[CupWinner]++;
                         r = CupWinner;
                         t = Heroes[r].hero_teammate;
                         if (t != -1) {
-                            GAME->adventure.unkCC[t] = GAME->adventure.unkCC[r];
+                            GAME->adventure.roundPoints[t] = GAME->adventure.roundPoints[r];
                         }
                         ScreenLabelsStart();
                     }
@@ -1709,28 +1709,28 @@ found:
         CupTimer = 0x1E;
         if (GAME->cupLeader == -1) {
             GAME->cupLeader = CupWinner;
-        } else if (GAME->adventure.unkCC[CupWinner] > GAME->adventure.unkCC[GAME->cupLeader]) {
+        } else if (GAME->adventure.roundPoints[CupWinner] > GAME->adventure.roundPoints[GAME->cupLeader]) {
             GAME->cupLeader = CupWinner;
         }
         printf("mode%x\n", mode);
         switch (mode) {
         case 2:
-            if (GAME->adventure.unkCC[CupWinner] < Trophy_Cups) {
+            if (GAME->adventure.roundPoints[CupWinner] < Trophy_Cups) {
                 break;
             }
             if ((GAME->cheats & 0x800) || (GAME->exitFlags & 0x200)) {
-                GAME->adventure.unkCC[CupWinner] = Trophy_Cups;
+                GAME->adventure.roundPoints[CupWinner] = Trophy_Cups;
                 t = Heroes[CupWinner].hero_teammate;
                 if (t != -1) {
-                    GAME->adventure.unkCC[t] = GAME->adventure.unkCC[CupWinner];
+                    GAME->adventure.roundPoints[t] = GAME->adventure.roundPoints[CupWinner];
                 }
                 break;
             }
             if (GAME->teams != 0) {
-                GAME->adventure.unkA7[2] = (CupWinner & 2) ? 0 : 2;
-                GAME->adventure.unkA7[0] = CupWinner & 2;
-                GAME->adventure.unkA7[1] = CupWinner ^ 1;
-                GAME->adventure.unkA7[3] = (CupWinner & 2) ? 1 : 3;
+                GAME->adventure.rank[2] = (CupWinner & 2) ? 0 : 2;
+                GAME->adventure.rank[0] = CupWinner & 2;
+                GAME->adventure.rank[1] = CupWinner ^ 1;
+                GAME->adventure.rank[3] = (CupWinner & 2) ? 1 : 3;
             } else {
                 n = 0;
                 num = 3;
@@ -1744,8 +1744,8 @@ found:
                         if (i >= 4) {
                             break;
                         }
-                        if (GAME->adventure.unkCC[i] == num && !((used >> i) & 1)) {
-                            GAME->adventure.unkA7[n] = i;
+                        if (GAME->adventure.roundPoints[i] == num && !((used >> i) & 1)) {
+                            GAME->adventure.rank[n] = i;
                             used |= 1 << i;
                             n++;
                         }
@@ -1757,75 +1757,75 @@ found:
             CupMode = 5;
             slot = GAME->mode;
             if (GAME->heroOut[CupWinner] == 0) {
-                GAME->adventure.unkE4[0][slot] = 1;
+                GAME->adventure.won[0][slot] = 1;
             }
-            if (GAME->adventure.unkE4[0][slot] != 0) {
-                GAME->adventure.unkAB[slot] = 0;
+            if (GAME->adventure.won[0][slot] != 0) {
+                GAME->adventure.modeSkill[slot] = 0;
             } else {
-                v = ++GAME->adventure.unkAB[slot];
+                v = ++GAME->adventure.modeSkill[slot];
                 if (v >= 4) {
-                    GAME->adventure.unkAB[slot] = 3;
+                    GAME->adventure.modeSkill[slot] = 3;
                 }
             }
             break;
         case 3:
-            if (GAME->adventure.unkCC[0] < Trophy_Cups) {
+            if (GAME->adventure.roundPoints[0] < Trophy_Cups) {
                 break;
             }
             slot = GAME->mode;
             if (GAME->heroOut[CupWinner] == 0) {
-                GAME->adventure.unkE4[1][slot] = 1;
+                GAME->adventure.won[1][slot] = 1;
             }
             CupMode = 6;
             break;
         case 4:
-            if (GAME->adventure.unkCC[0] < Trophy_Cups) {
+            if (GAME->adventure.roundPoints[0] < Trophy_Cups) {
                 break;
             }
             slot = GAME->mode;
             if (GAME->heroOut[CupWinner] == 0) {
-                GAME->adventure.unkE4[1][slot] = 2;
+                GAME->adventure.won[1][slot] = 2;
             }
             CupMode = 6;
             break;
         case 5:
-            if (GAME->adventure.unkCC[0] == 0) {
+            if (GAME->adventure.roundPoints[0] == 0) {
                 break;
             }
             slot = GAME->mode;
             if (GAME->heroOut[CupWinner] == 0) {
-                GAME->adventure.unkE4[2][slot] = 1;
+                GAME->adventure.won[2][slot] = 1;
             }
             CupMode = 7;
             break;
         case 6:
-            if (GAME->adventure.unkCC[0] == 0) {
+            if (GAME->adventure.roundPoints[0] == 0) {
                 break;
             }
             slot = GAME->mode;
             if (GAME->heroOut[CupWinner] == 0) {
-                GAME->adventure.unkE4[3][slot] = 1;
+                GAME->adventure.won[3][slot] = 1;
             }
             CupMode = 8;
             break;
         case 0:
         case 1:
-            if (GAME->adventure.unkCC[CupWinner] < Trophy_Cups) {
+            if (GAME->adventure.roundPoints[CupWinner] < Trophy_Cups) {
                 break;
             }
             if ((GAME->cheats & 0x800) || (GAME->exitFlags & 0x200)) {
-                GAME->adventure.unkCC[CupWinner] = Trophy_Cups;
+                GAME->adventure.roundPoints[CupWinner] = Trophy_Cups;
                 t = Heroes[CupWinner].hero_teammate;
                 if (t != -1) {
-                    GAME->adventure.unkCC[t] = GAME->adventure.unkCC[CupWinner];
+                    GAME->adventure.roundPoints[t] = GAME->adventure.roundPoints[CupWinner];
                 }
                 break;
             }
             if (GAME->teams != 0) {
-                GAME->adventure.unkA7[2] = (CupWinner & 2) ? 0 : 2;
-                GAME->adventure.unkA7[0] = CupWinner & 2;
-                GAME->adventure.unkA7[1] = CupWinner ^ 1;
-                GAME->adventure.unkA7[3] = (CupWinner & 2) ? 1 : 3;
+                GAME->adventure.rank[2] = (CupWinner & 2) ? 0 : 2;
+                GAME->adventure.rank[0] = CupWinner & 2;
+                GAME->adventure.rank[1] = CupWinner ^ 1;
+                GAME->adventure.rank[3] = (CupWinner & 2) ? 1 : 3;
             } else {
                 n = 0;
                 num = 3;
@@ -1839,8 +1839,8 @@ found:
                         if (i >= 4) {
                             break;
                         }
-                        if (GAME->adventure.unkCC[i] == num && !((used >> i) & 1)) {
-                            GAME->adventure.unkA7[n] = i;
+                        if (GAME->adventure.roundPoints[i] == num && !((used >> i) & 1)) {
+                            GAME->adventure.rank[n] = i;
                             used |= 1 << i;
                             n++;
                         }
@@ -1853,10 +1853,10 @@ found:
                 CupMode = 4;
             } else {
                 CupMode = 0xB;
-                GAME->adventure.unk9F[0] += GAME->adventure.unkCC[0];
-                GAME->adventure.unk9F[1] += GAME->adventure.unkCC[1];
-                GAME->adventure.unk9F[2] += GAME->adventure.unkCC[2];
-                GAME->adventure.unk9F[3] += GAME->adventure.unkCC[3];
+                GAME->adventure.points[0] += GAME->adventure.roundPoints[0];
+                GAME->adventure.points[1] += GAME->adventure.roundPoints[1];
+                GAME->adventure.points[2] += GAME->adventure.roundPoints[2];
+                GAME->adventure.points[3] += GAME->adventure.roundPoints[3];
             }
             break;
         }
@@ -1922,10 +1922,10 @@ found:
         if (CupTimer == 0) {
             if (PauseChoice == 0) {
                 GAME->cupLeader = -1;
-                GAME->adventure.unkCC[0] = 0;
-                GAME->adventure.unkCC[1] = 0;
-                GAME->adventure.unkCC[2] = 0;
-                GAME->adventure.unkCC[3] = 0;
+                GAME->adventure.roundPoints[0] = 0;
+                GAME->adventure.roundPoints[1] = 0;
+                GAME->adventure.roundPoints[2] = 0;
+                GAME->adventure.roundPoints[3] = 0;
                 CupMode = 0xD;
             } else {
                 ScreenLabelsOff();
@@ -1954,10 +1954,10 @@ found:
             switch (PauseChoice) {
             case 0:
                 GAME->cupLeader = -1;
-                GAME->adventure.unkCC[0] = 0;
-                GAME->adventure.unkCC[1] = 0;
-                GAME->adventure.unkCC[2] = 0;
-                GAME->adventure.unkCC[3] = 0;
+                GAME->adventure.roundPoints[0] = 0;
+                GAME->adventure.roundPoints[1] = 0;
+                GAME->adventure.roundPoints[2] = 0;
+                GAME->adventure.roundPoints[3] = 0;
                 CupMode = 0xD;
                 GAME->pause &= ~1;
                 break;
@@ -2015,10 +2015,10 @@ found:
         if (CupTimer == 0) {
             if (PauseChoice == 0) {
                 GAME->cupLeader = -1;
-                GAME->adventure.unkCC[0] = 0;
-                GAME->adventure.unkCC[1] = 0;
-                GAME->adventure.unkCC[2] = 0;
-                GAME->adventure.unkCC[3] = 0;
+                GAME->adventure.roundPoints[0] = 0;
+                GAME->adventure.roundPoints[1] = 0;
+                GAME->adventure.roundPoints[2] = 0;
+                GAME->adventure.roundPoints[3] = 0;
                 CupMode = 0xD;
             } else {
                 ScreenLabelsOff();

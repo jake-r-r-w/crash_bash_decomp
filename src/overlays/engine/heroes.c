@@ -1460,7 +1460,7 @@ void ResetHeroGlobals(void) {
 }
 
 void SetLevelCameraMode(void) {
-    CameraMode = LevelRecs[LevelRecIndex].unkC;
+    CameraMode = LevelRecs[LevelRecIndex].cameraMode;
 }
 
 void SetHeroAction(s32 player, s32 action) {
@@ -1489,7 +1489,7 @@ void SetTweakAi(void) {
         flags = g->levelFlags;
         if (flags & 0x100) {
             c = ((u8 *)g)[g->mode + 0xAB];  /* bytes from the state: unkAB[mode] adds the other way round */
-            g->adventure.unk9B[i] = c;
+            g->adventure.aiSkill[i] = c;
             t[i].level = ((u16 *)AiSkillTable)[c];
             t[i].quality = 0x10;
         } else if (flags & 1) {
@@ -1531,7 +1531,7 @@ void SetTweakAi(void) {
         } else if (flags & 0x10) {
             if (g->adventure.unk70 != 0) {
                 c = ((u8 *)g)[g->mode + 0xAB];
-                g->adventure.unk9B[i] = c;
+                g->adventure.aiSkill[i] = c;
                 t[i].level = ((u16 *)AiSkillTable)[3];
                 if (g->heroOut[i] != 0) {
                     ret = t[i].quality = ((u16 *)AiBotTweakTable)[3];
@@ -1540,12 +1540,12 @@ void SetTweakAi(void) {
                 }
             } else {
                 c = ((u8 *)g)[g->mode + 0xAB];
-                g->adventure.unk9B[i] = c;
+                g->adventure.aiSkill[i] = c;
                 t[i].level = ((u16 *)AiSkillTable)[c];
                 if (g->heroOut[i] != 0) {
-                    ret = t[i].quality = ((u16 *)AiBotTweakTable)[g->adventure.unk9B[0]];
+                    ret = t[i].quality = ((u16 *)AiBotTweakTable)[g->adventure.aiSkill[0]];
                 } else {
-                    n = g->adventure.unkCC[i];
+                    n = g->adventure.roundPoints[i];
                     if (n >= 3) {
                         n = 2;
                     }
@@ -1576,7 +1576,7 @@ s32 AdjustAiSkill(s32 arg0) {
         return -1;
     }
     {
-        u8 t = g->adventure.unkAB[g->mode];
+        u8 t = g->adventure.modeSkill[g->mode];
 
         if (t == 0) {
             arg0 = arg0 / 2;
@@ -1585,7 +1585,7 @@ s32 AdjustAiSkill(s32 arg0) {
             v = arg0 * 3;
             arg0 = v / 4;
         }
-        if (GAME->adventure.unkAB[GAME->mode] == 3) {
+        if (GAME->adventure.modeSkill[GAME->mode] == 3) {
             arg0 *= 2;
         }
         idx = GAME->cupLeader;
@@ -4537,7 +4537,7 @@ plot:
         p = obj->player;
         if (p != -1 && p < 5 && !(Heroes[p].hero_status & 0xFA00)) {
             if (GAME->heroOut[p] != 0) {
-                n = 3 - GAME->adventure.unk9B[0];
+                n = 3 - GAME->adventure.aiSkill[0];
             } else {
                 n = 0;
             }

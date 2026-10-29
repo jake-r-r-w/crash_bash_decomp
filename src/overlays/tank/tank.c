@@ -4225,7 +4225,7 @@ void PlotRocketTA(NAS *nas)
     if (((GameState *) GameInfo)->mode != 9 || fux->Owner == -1) {
         dmg = 0x3C;
     } else {
-        dmg = (((GAME->adventure.unkAB[9] * 190) / 32 + 10) * 60) / 100;
+        dmg = (((GAME->adventure.modeSkill[9] * 190) / 32 + 10) * 60) / 100;
     }
     DamageTankHero(hit, dmg);
 boom:
@@ -4802,7 +4802,7 @@ void PlotPickupGenerator_TA(NAS *nas)
           return;
         }
         PU_TA_list[i] = p;
-        nas->UserInfo.flags = ((AiPlayerSkill[3].level * 2) - GAME->adventure.unkAB[9]) * 30;
+        nas->UserInfo.flags = ((AiPlayerSkill[3].level * 2) - GAME->adventure.modeSkill[9]) * 30;
         if (((u16) (nas->UserInfo.flags & 0xFFFE)) < 60)
         {
           nas->UserInfo.flags = 60;
@@ -4811,7 +4811,7 @@ void PlotPickupGenerator_TA(NAS *nas)
         {
           nas->UserInfo.flags = 1200;
         }
-        if (GAME->adventure.unkAB[9] > 10)
+        if (GAME->adventure.modeSkill[9] > 10)
         {
           nas->UserInfo.flags >>= 1;
         }
@@ -6600,7 +6600,7 @@ void PlotTankBoss(NAS *nas) {
             KillNAS(TankBossRocketTurrets[0]);
             KillNAS(TankBossRocketTurrets[1]);
             TankBossStartStatus = 0x3A;
-            GameAdventure.unkAB[9] = 0;
+            GameAdventure.modeSkill[9] = 0;
             fux->Counter = 0x5A;
             fux->Status = 0x3A;
             PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);

@@ -1283,7 +1283,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GAME->adventure.unkA7[j] = best;
+            GAME->adventure.rank[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -1312,7 +1312,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     if (n >= 4) {
                         break;
                     }
-                    if (GAME->adventure.unkA7[0] == n) {
+                    if (GAME->adventure.rank[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x8400;
@@ -1407,7 +1407,7 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GAME->adventure.unkA7[j] = best;
+            GAME->adventure.rank[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -1431,7 +1431,7 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
                 GAME->winner[0] = a->hero_name;
                 GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GAME->adventure.unkA7[0] == n) {
+                    if (GAME->adventure.rank[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1551,7 +1551,7 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
           {
             break;
           }
-          if (GAME->adventure.unkA7[0] == n)
+          if (GAME->adventure.rank[0] == n)
           {
             hb[n].hero_status |= 0x200;
           }

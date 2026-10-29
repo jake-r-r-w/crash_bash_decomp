@@ -548,13 +548,13 @@ void SetupLevelSpecs(ArenaDef *arg0) {
         e = ArenaDefFind(arg0, ModeTypes[GameMode * 3]);
     }
     if (e != NULL) {
-        FirstNas = e->unk4 + 4;
-        NasPoolSlots = NasPoolUsed = e->unk2 + 4;
-        NasHeapSize = e->unk6 << 10;
-        SubPoolCount = e->unk8;
-        LevelConfig = e->unk10;
-        ((GameState *)GameInfo)->boot = e->unk14;
-        LevelTriggerData = (LevelTriggerHead *)e->unkC;
+        FirstNas = e->firstNas + 4;
+        NasPoolSlots = NasPoolUsed = e->nasSlots + 4;
+        NasHeapSize = e->nasHeapKB << 10;
+        SubPoolCount = e->subPool;
+        LevelConfig = e->config;
+        ((GameState *)GameInfo)->boot = e->boot;
+        LevelTriggerData = (LevelTriggerHead *)e->triggers;
         if (((GameState *)GameInfo)->levelFlags & 0x80) {
             ((GameState *)GameInfo)->levelRecIndex = ((LevelInfo *)ModeTypes)[((GameState *)GameInfo)->mode].unk4;
         } else {

@@ -171,7 +171,7 @@ void QueueHeroModels(void) {
     GameState *a = (GameState *)GameInfo;
 
     i = 0;
-    arg = LevelRecs[a->levelRecIndex].unk4;
+    arg = LevelRecs[a->levelRecIndex].heroLoadArg;
     {
         s32 n = LangPanelModels[a->language];
         obj_dbase *b = HeroModelBank;
@@ -312,10 +312,10 @@ void UpdateLevelLoad(void) {
         LoadModeFiles();
         g0 = (GameState *)GameInfo;
         g0->cupLeader = -1;
-        g0->adventure.unkCC[0] = 0;
-        g0->adventure.unkCC[1] = 0;
-        g0->adventure.unkCC[2] = 0;
-        g0->adventure.unkCC[3] = 0;
+        g0->adventure.roundPoints[0] = 0;
+        g0->adventure.roundPoints[1] = 0;
+        g0->adventure.roundPoints[2] = 0;
+        g0->adventure.roundPoints[3] = 0;
         LevelLoadStage = 1;
         g0->exitFlags &= ~0x200;
         break;

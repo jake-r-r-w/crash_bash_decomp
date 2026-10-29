@@ -559,7 +559,7 @@ void NoxStartPhase1(void)
   unsigned char one = 1;
   void (*new_var)(s32 arg0);
   N2OBallPhase = one;
-  GameAdventure.unkAB[0x1F] = 0;
+  GameAdventure.modeSkill[0x1F] = 0;
   N2OShowPhaseObjects(one);
   Heroes[0].hero_eng->xform.scale.vx = 0x1000;
   Heroes[0].hero_eng->xform.scale.vy = 0x1000;
@@ -762,8 +762,8 @@ void NoxUpdate(void) {
     NAS *first;
     NAS *nas;
 
-    if (((GameState *)GameInfo)->adventure.unk75 != 0 && (((GameState *)GameInfo)->exitFlags & 1)) {
-        ((GameState *)GameInfo)->adventure.unk75 = 0;
+    if (((GameState *)GameInfo)->adventure.creditsDone != 0 && (((GameState *)GameInfo)->exitFlags & 1)) {
+        ((GameState *)GameInfo)->adventure.creditsDone = 0;
     }
     if (((GameState *)GameInfo)->cheats & 8) {
         BossState.flags |= 0x8000;
@@ -2462,10 +2462,10 @@ s32 NoxFadeLevel(void) {
 
     s32 r;
 
-    if (g->adventure.unkAB[31] < 10) {
+    if (g->adventure.modeSkill[31] < 10) {
         r = 230;
-    } else if (g->adventure.unkAB[31] < 30) {
-        return 230 - (g->adventure.unkAB[31] - 10) * 179 / 20;
+    } else if (g->adventure.modeSkill[31] < 30) {
+        return 230 - (g->adventure.modeSkill[31] - 10) * 179 / 20;
     } else {
         r = 51;
     }

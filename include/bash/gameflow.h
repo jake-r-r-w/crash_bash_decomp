@@ -205,7 +205,7 @@ static inline s32 EngineSum147(GameState *arg0) {
     n = 0;
     i = 0;
     do {
-        n += arg0->adventure.unkE4[3][i];
+        n += arg0->adventure.won[3][i];
         i++;
     } while (i < 0x21);
     return n;
@@ -219,7 +219,7 @@ static inline s32 EngineSum126(GameState *arg0) {
     n = 0;
     i = 0;
     do {
-        n += arg0->adventure.unkE4[2][i];
+        n += arg0->adventure.won[2][i];
         i++;
     } while (i < 0x21);
     return n;
@@ -233,7 +233,7 @@ static inline s32 EngineCount105(GameState *arg0) {
     n = 0;
     i = 0;
     do {
-        if (arg0->adventure.unkE4[1][i] != 0) {
+        if (arg0->adventure.won[1][i] != 0) {
             n++;
         }
         i++;

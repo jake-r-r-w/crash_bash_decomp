@@ -124,7 +124,7 @@ s32 UpdatePause(void) {
     ret1:
         return 1;
     }
-    if (GAME->adventure.unk74 != 0) {
+    if (GAME->adventure.active != 0) {
         goto ret1;
     }
     if (GAME->demo != 0) {
@@ -292,8 +292,8 @@ found:
                     hi = 0;
                     if (GAME->levelFlags & 0x10) {
                         for (i = 0; i < 4; i++) {
-                            if (hi < GAME->adventure.unkCC[i]) {
-                                hi = GAME->adventure.unkCC[i];
+                            if (hi < GAME->adventure.roundPoints[i]) {
+                                hi = GAME->adventure.roundPoints[i];
                             }
                         }
                         if (hi >= 2) {
@@ -934,26 +934,26 @@ void DrawAdventureStats(s32 arg0) {
     c1 = 0;
     c0 = 0;
     for (i = 0; i < 0x21; i++) {
-        if (GAME->adventure.unkE4[0][i] != 0) {
+        if (GAME->adventure.won[0][i] != 0) {
             c0++;
         }
-        if (GAME->adventure.unkE4[2][i] != 0) {
+        if (GAME->adventure.won[2][i] != 0) {
             c1++;
         }
-        if (GAME->adventure.unkE4[1][i] != 0) {
+        if (GAME->adventure.won[1][i] != 0) {
             c2++;
         }
-        if (GAME->adventure.unkE4[1][i] == 2) {
+        if (GAME->adventure.won[1][i] == 2) {
             c4++;
         }
-        if (GAME->adventure.unkE4[3][i] != 0) {
+        if (GAME->adventure.won[3][i] != 0) {
             c3++;
         }
     }
     for (i = 0; i < 4; i++) {
-        n[i] = GAME->adventure.unkCC[i];
+        n[i] = GAME->adventure.roundPoints[i];
         if (mode == 5 && (GAME->levelFlags & 2)) {
-            n[i] += GAME->adventure.unk9F[i];
+            n[i] += GAME->adventure.points[i];
         }
     }
     if (GameLevelFlags & 0xC0) {
@@ -1019,7 +1019,7 @@ void DrawAdventureStats(s32 arg0) {
                 PlaceEngineSlot(4, AdvStatsPanel4);
             }
         } else {
-            switch (GAME->adventure.unkE0) {
+            switch (GAME->adventure.stage) {
             case 1:
                 if (GAME->pause & 8) {
                     PlaceEngineSlot(4, AdvStatsPanel3);
@@ -1354,7 +1354,7 @@ void StartWinSequence(s32 arg0) {
     }
     switch (g->levelFlags & 0xE0) {
     case 0x80:
-        if (g->adventure.unk76[g->mode] & 0x80) {
+        if (g->adventure.modeFlags[g->mode] & 0x80) {
             return;
         }
         set = PauseMenuSets[g->mode][2];
@@ -1365,14 +1365,14 @@ void StartWinSequence(s32 arg0) {
             PauseRec = rec;
             PlaceEngineSlot(0, rec);
         }
-        g->adventure.unk76[g->mode] |= 0x80;
+        g->adventure.modeFlags[g->mode] |= 0x80;
         PausePad = 0;
         g->pause |= 0x41;
         WinCounterSize >>= 1;
         return;
     case 0x20:
         if (g->levelFlags & 8) {
-            if (g->adventure.unk76[g->mode] & 8) {
+            if (g->adventure.modeFlags[g->mode] & 8) {
                 return;
             }
             set = PauseMenuSets[g->mode][8];
@@ -1383,12 +1383,12 @@ void StartWinSequence(s32 arg0) {
                 PauseRec = rec;
                 PlaceEngineSlot(0, rec);
             }
-            g->adventure.unk76[g->mode] |= 8;
+            g->adventure.modeFlags[g->mode] |= 8;
             PausePad = 0;
             g->pause |= 0x41;
             WinCounterSize >>= 1;
         } else {
-            if (g->adventure.unk76[g->mode] & 0x20) {
+            if (g->adventure.modeFlags[g->mode] & 0x20) {
                 return;
             }
             set = PauseMenuSets[g->mode][6];
@@ -1399,14 +1399,14 @@ void StartWinSequence(s32 arg0) {
                 PauseRec = rec;
                 PlaceEngineSlot(0, rec);
             }
-            g->adventure.unk76[g->mode] |= 0x20;
+            g->adventure.modeFlags[g->mode] |= 0x20;
             PausePad = 0;
             g->pause |= 0x41;
             WinCounterSize >>= 1;
         }
         return;
     case 0x40:
-        if (g->adventure.unk76[g->mode] & 0x40) {
+        if (g->adventure.modeFlags[g->mode] & 0x40) {
             return;
         }
         set = PauseMenuSets[g->mode][4];
@@ -1417,14 +1417,14 @@ void StartWinSequence(s32 arg0) {
             PauseRec = rec;
             PlaceEngineSlot(0, rec);
         }
-        g->adventure.unk76[g->mode] |= 0x40;
+        g->adventure.modeFlags[g->mode] |= 0x40;
         PausePad = 0;
         g->pause |= 0x41;
         WinCounterSize >>= 1;
         return;
     default:
         g2 = (GameState *)GameInfo;
-        if (g2->adventure.unk76[g2->mode] & 0x10) {
+        if (g2->adventure.modeFlags[g2->mode] & 0x10) {
             return;
         }
         set = PauseMenuSets[g2->mode][0];
@@ -1435,7 +1435,7 @@ void StartWinSequence(s32 arg0) {
             PauseRec = rec;
             PlaceEngineSlot(0, rec);
         }
-        g2->adventure.unk76[g2->mode] |= 0x10;
+        g2->adventure.modeFlags[g2->mode] |= 0x10;
         PausePad = 0;
         g2->pause |= 0x41;
         WinCounterSize >>= 1;

@@ -42,7 +42,7 @@ void InitialiseHUB(void) {
     SetupSceneMarks(((u8 *)MapScene->dbase));
     HubInitLevelSelect();
     HubDoorFade = 0;
-    if (G6A->mode == 0x25 && G6A->adventure.unk75 == 0) {
+    if (G6A->mode == 0x25 && G6A->adventure.creditsDone == 0) {
         CAM6A->angle = 0xEBC;
         G6A->gateway = -1;
         CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
@@ -276,7 +276,7 @@ void HubPreMoveHero(s32 arg0) {
     }
     stop = 0;
     ang = eng->xform.rot.vy;
-    if (((GameState *)GameInfo)->adventure.unk74 != 0) {
+    if (((GameState *)GameInfo)->adventure.active != 0) {
         eng->flags &= ~0x8000;
         if (Heroes[0].hero_shadow != NULL) {
             Heroes[0].hero_shadow->flags &= ~0x8000;
@@ -423,9 +423,9 @@ void HubPreMoveHero(s32 arg0) {
             break;
         case 2:
             sel = p[g->gateway].table->level;
-            if ((g->cheats & 0x2000) || ((g->adventure.unkE4[0][sel] != 0 || HubDoorChoice <= 0) && ModeRequirementMet(sel) == 1)) {
+            if ((g->cheats & 0x2000) || ((g->adventure.won[0][sel] != 0 || HubDoorChoice <= 0) && ModeRequirementMet(sel) == 1)) {
             mode = HubDoorChoice;
-            if (mode != 4 || ((GameState *)GameInfo)->adventure.unkE4[1][sel] != 0) {
+            if (mode != 4 || ((GameState *)GameInfo)->adventure.won[1][sel] != 0) {
             gv = (GameState *)GameInfo;
             v = gv->levelFlags & 0xFF07;
             gv->levelFlags = v;
@@ -499,39 +499,39 @@ void HubOpenDoorMenu(s32 arg0) {
 
     HubDoorMenuRecs[5].unk1E = 4;
     HubDoorMenuRecs[6].unk1E = 4;
-    if (((GameState *)GameInfo)->adventure.unkE4[1][arg0] != 0) {
+    if (((GameState *)GameInfo)->adventure.won[1][arg0] != 0) {
         HubDoorMenuRecs[5].unk1E = 3;
-        if (((GameState *)GameInfo)->adventure.unkE4[1][arg0] >= 2) {
+        if (((GameState *)GameInfo)->adventure.won[1][arg0] >= 2) {
             HubDoorMenuRecs[6].unk1E = 2;
         }
     }
-    n = ((GameState *)GameInfo)->adventure.unkE0;
-    if (n >= 2 && ((GameState *)GameInfo)->adventure.unkE4[1][arg0] == 0) {
+    n = ((GameState *)GameInfo)->adventure.stage;
+    if (n >= 2 && ((GameState *)GameInfo)->adventure.won[1][arg0] == 0) {
         HubDoorChoices = 4;
     } else {
         HubDoorChoices = n + 3;
     }
     if (((GameState *)GameInfo)->cheats & 0x2000) {
-        HubDoorChoices = ((GameState *)GameInfo)->adventure.unkE0 + 3;
+        HubDoorChoices = ((GameState *)GameInfo)->adventure.stage + 3;
     }
-    HubDoorMenuRecs[4].unk1E = ((GameState *)GameInfo)->adventure.unkE4[3][arg0] ? 7 : 8;
-    HubDoorMenuRecs[3].unk1E = ((GameState *)GameInfo)->adventure.unkE4[2][arg0] ? 5 : 6;
+    HubDoorMenuRecs[4].unk1E = ((GameState *)GameInfo)->adventure.won[3][arg0] ? 7 : 8;
+    HubDoorMenuRecs[3].unk1E = ((GameState *)GameInfo)->adventure.won[2][arg0] ? 5 : 6;
     e = GetEngineSlot(1);
     PlaceEngineSlot(1, (PlaceRec *)HubDoorMenuRecs);
     e->XYZ.y = 200;
     e->XYZ.x = 0;
     HubDoorChoice = 0;
     e->flags = (e->flags & ~0x8000) | 0x10000000;
-    if (((GameState *)GameInfo)->adventure.unkE4[0][arg0] != 0) {
+    if (((GameState *)GameInfo)->adventure.won[0][arg0] != 0) {
         HubDoorChoice = 1;
     }
-    if (((GameState *)GameInfo)->adventure.unkE4[2][arg0] != 0) {
+    if (((GameState *)GameInfo)->adventure.won[2][arg0] != 0) {
         HubDoorChoice = 2;
     }
-    if (((GameState *)GameInfo)->adventure.unkE4[3][arg0] != 0 && ((GameState *)GameInfo)->adventure.unkE0 > 0) {
+    if (((GameState *)GameInfo)->adventure.won[3][arg0] != 0 && ((GameState *)GameInfo)->adventure.stage > 0) {
         HubDoorChoice = 3;
     }
-    if (((GameState *)GameInfo)->adventure.unkE4[1][arg0] != 0 && ((GameState *)GameInfo)->adventure.unkE0 >= 2) {
+    if (((GameState *)GameInfo)->adventure.won[1][arg0] != 0 && ((GameState *)GameInfo)->adventure.stage >= 2) {
         HubDoorChoice = 4;
         n = 1;
     } else {
@@ -571,7 +571,7 @@ void HubDoorMenuUpdate(void) {
 
     if (g->gateway < 0 || HubDoorFade <= 0
         || (rec = HubGateways[g->gateway].table, rec->gate_type != 2)
-        || (!(g->cheats & 0x2000) && g->adventure.unkE4[0][rec->level] == 0)) {
+        || (!(g->cheats & 0x2000) && g->adventure.won[0][rec->level] == 0)) {
         if (HubDoorChoice >= 0) {
             HubDoorChoice = -1;
             KillEngineSlot(1);
@@ -601,7 +601,7 @@ void HubDoorMenuUpdate(void) {
                 n = HubGateways[((GameState *)GameInfo)->gateway].table->level;
                 g2 = (GameState *)GameInfo;
                 if (ModeRequirementMet(n) == 1) {
-                    if (g2->adventure.unkE4[0][n] != 0) {
+                    if (g2->adventure.won[0][n] != 0) {
                         PlaceEngineSlot(2, HubChallengePanels[g2->language]);
                     } else {
                         PlaceEngineSlot(2, HubStartPanels[g2->language]);
@@ -1261,7 +1261,7 @@ void HubHeroSetIdle(s32 arg0) {
 }
 
 s32 HubHeroTestButton(s32 arg0) {
-    if (GameAdventure.unk74 != 0) {
+    if (GameAdventure.active != 0) {
         return 1;
     }
     if (((PadState *)Pads)[arg0].dirPressed & 0x8000) {
@@ -1393,7 +1393,7 @@ void HubRenderScene(void) {
 }
 
 void HubUpdateRoom(void) {
-    if (GameAdventure.unk74 == 0) {
+    if (GameAdventure.active == 0) {
         HubUpdateGateways();
         HubLevelSelect();
         combo_check_all();
@@ -1497,7 +1497,7 @@ void InitialisePodium(void) {
     PodiumReady = 0;
     PodiumCheerTimer = 0x5A;
     for (i = 0; i < 4; i++) {
-        h = GAME->adventure.unkA7[i];
+        h = GAME->adventure.rank[i];
         name = GAME->heroChoice[h];
         Heroes[h].hero_name = name;
         switch (name) {
@@ -1648,7 +1648,7 @@ void PodiumCheer(void) {
     s32 r;
     s32 x;
 
-    switch (GameInfo[GAME->adventure.unkA7[0] + 0x4C]) {
+    switch (GameInfo[GAME->adventure.rank[0] + 0x4C]) {
     case 3:
     case 4:
     case 6:
@@ -1843,7 +1843,7 @@ void PodiumCamera(CamView *out, s32 arg1) {
 
     if (arg1 != 0) {
         PodiumState = 0;
-        switch (GameInfo[GAME->adventure.unkA7[0] + 0x4C]) {
+        switch (GameInfo[GAME->adventure.rank[0] + 0x4C]) {
         case 1:
         case 2:
             PlaySfx(0x352, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1951,16 +1951,16 @@ void PodiumShowScores(void) {
 
     e = GetEngineSlot(6);
     if (e != NULL) {
-        n = GAME->adventure.unk9F[0];
+        n = GAME->adventure.points[0];
         PodiumScore1[1] = n % 10 + 0x30;
         PodiumScore1[0] = n / 10 % 10 + 0x30;
-        n = GAME->adventure.unk9F[1];
+        n = GAME->adventure.points[1];
         PodiumScore2[1] = n % 10 + 0x30;
         PodiumScore2[0] = n / 10 % 10 + 0x30;
-        n = GAME->adventure.unk9F[2];
+        n = GAME->adventure.points[2];
         PodiumScore3[1] = n % 10 + 0x30;
         PodiumScore3[0] = n / 10 % 10 + 0x30;
-        n = GAME->adventure.unk9F[3];
+        n = GAME->adventure.points[3];
         PodiumScore4[1] = n % 10 + 0x30;
         PodiumScore4[0] = n / 10 % 10 + 0x30;
         PlaceEngineSlot(6, &PodiumScoreCount);

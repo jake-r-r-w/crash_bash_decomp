@@ -9622,14 +9622,14 @@ s32 PolarBossSpeedUp(void) {
     GameState *g = GAME;
     s32 k;
 
-    if (g->adventure.unkAB[22] < 10) {
+    if (g->adventure.modeSkill[22] < 10) {
         return 0;
     }
     k = 0xB8;
-    if (g->adventure.unkAB[22] >= 30) {
+    if (g->adventure.modeSkill[22] >= 30) {
         return 0xE66;
     }
-    return (g->adventure.unkAB[22] - 9) * k;
+    return (g->adventure.modeSkill[22] - 9) * k;
 }
 
 void PlotBearBoss(NAS *m) {

@@ -24,7 +24,7 @@ void HubRender(void) {
     } else {
         HubRenderScene();
     }
-    if (GameAdventure.unk74 != 0) {
+    if (GameAdventure.active != 0) {
         gfx_set_viewport(&MainViewport, &MainGfxCamera);
         eng_render_subs(GetEngineSlot(0));
     }
@@ -42,9 +42,9 @@ void HubStartCredits(void) {
     HubSavedCamX = MainCamera.at.x;
     HubSavedCamY = MainCamera.at.y;
     HubSavedCamZ = MainCamera.at.z;
-    if (*(u16 *)&((GameState *)GameInfo)->adventure.unk74 == 0) {
+    if (*(u16 *)&((GameState *)GameInfo)->adventure.active == 0) {
         music_request(2);
-        ((GameState *)GameInfo)->adventure.unk74 = 1;
+        ((GameState *)GameInfo)->adventure.active = 1;
         one = 1;
         CreditsStep = one;
         CreditsTimer = 0;
@@ -203,12 +203,12 @@ void HubEndCredits(void)
   s32 i;
   music_request(1);
   g = GameInfo;
-  ((GameState *) g)->adventure.unk74 = 0;
+  ((GameState *) g)->adventure.active = 0;
   HubShowShadow(0);
   CreditsActive = 0;
   set_fade(&ScreenFade, -0x200, 0);
   new_var = 0x1628;
-  ((GameState *) g)->adventure.unk75 = 1;
+  ((GameState *) g)->adventure.creditsDone = 1;
   for (i = 0; i < ASTCount; i++)
   {
     if (ASTTable[i].id == new_var)
@@ -256,7 +256,7 @@ int HubCountLines(unsigned char *s) {
 }
 
 void UpdateHUB(void) {
-    if (GameAdventure.unk74 != 0) {
+    if (GameAdventure.active != 0) {
         HubCreditsScroll();
     }
     HubUpdateRoom();

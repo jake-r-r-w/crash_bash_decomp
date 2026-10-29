@@ -872,14 +872,14 @@ static inline s32 PolarRandSpread(s32 n) {
 static inline s32 PolarShardChance(void) {
     s32 k;
 
-    if (((GameState *)GameInfo)->adventure.unkAB[22] < 10) {
+    if (((GameState *)GameInfo)->adventure.modeSkill[22] < 10) {
         return 0;
     }
-    if (((GameState *)GameInfo)->adventure.unkAB[22] >= 30) {
+    if (((GameState *)GameInfo)->adventure.modeSkill[22] >= 30) {
         return 0xE66;
     }
     k = 0xB8;
-    return (((GameState *)GameInfo)->adventure.unkAB[22] - 9) * k;
+    return (((GameState *)GameInfo)->adventure.modeSkill[22] - 9) * k;
 }
 
 s32 PolarAI_PickVictim(s32 arg0);

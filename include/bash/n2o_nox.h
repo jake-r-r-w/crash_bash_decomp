@@ -196,12 +196,12 @@ s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *d);
 static inline s32 MineDamage(GameState *g) {
     s32 r;
 
-    if (g->adventure.unkAB[31] < 10) {
+    if (g->adventure.modeSkill[31] < 10) {
         r = 230;
-    } else if (g->adventure.unkAB[31] >= 30) {
+    } else if (g->adventure.modeSkill[31] >= 30) {
         r = 51;
     } else {
-        r = 230 - (g->adventure.unkAB[31] - 10) * 179 / 20;
+        r = 230 - (g->adventure.modeSkill[31] - 10) * 179 / 20;
     }
     return r;
 }

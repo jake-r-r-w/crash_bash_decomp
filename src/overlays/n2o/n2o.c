@@ -1352,7 +1352,7 @@ void SetN2OHeroWinner(s32 arg0) {
     h->hero_pu_timer = 0;
     RequestHeroAnim(arg0, 0);
     StartHeroVictory(arg0);
-    GameAdventure.unk75 = 0;
+    GameAdventure.creditsDone = 0;
 }
 
 void N2OHeroWinner(s32 arg0) {
@@ -2041,8 +2041,8 @@ void N2OInitBoss(void) {
     AiSkillTable = GameTeams[0] != 0 ? N2OBossAiSkillAlt : N2OBossAiSkill;
     for (i = 0; i < 4; i++) {
         if (OVT->levelFlags & 0x100) {
-            t = OVT->adventure.unkAB[OVT->mode];
-            OVT->adventure.unk9B[i] = t;
+            t = OVT->adventure.modeSkill[OVT->mode];
+            OVT->adventure.aiSkill[i] = t;
             AiPlayerSkill[i].level = ((u16 *)AiSkillTable)[t];
             AiPlayerSkill[i].quality = 0x10;
         }

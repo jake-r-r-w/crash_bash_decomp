@@ -955,14 +955,14 @@ typedef struct LevelInfo {
 /* An arena definition (SetupLevelSpecs): 0x18 bytes, a table ends at id 999. */
 typedef struct ArenaDef {
     /* 0x00 */ u16 id;
-    /* 0x02 */ u16 unk2;
-    /* 0x04 */ u16 unk4;
-    /* 0x06 */ u16 unk6;
-    /* 0x08 */ u16 unk8;
+    /* 0x02 */ u16 nasSlots;       /* NasPoolSlots, less the 4 heroes */
+    /* 0x04 */ u16 firstNas;       /* FirstNas, less 4 */
+    /* 0x06 */ u16 nasHeapKB;      /* NasHeapSize in KB */
+    /* 0x08 */ u16 subPool;        /* SubPoolCount */
     /* 0x0A */ u8 unkA[2];
-    /* 0x0C */ void *unkC;
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 unk14;
+    /* 0x0C */ void *triggers;     /* LevelTriggerData */
+    /* 0x10 */ s32 config;         /* LevelConfig */
+    /* 0x14 */ s32 boot;           /* GameState.boot */
 } ArenaDef;
 extern LevSpec LevelSpecs; /* the level's hooks */
 extern s32 NasHeapSize;
@@ -1014,9 +1014,9 @@ extern s32 CdReadStatus;
 /* 32-byte records of LevelRecs, indexed by LevelRecIndex (SetLevelCameraMode). */
 typedef struct {
     /* 0x00 */ u8 unk0[4];
-    /* 0x04 */ s32 unk4; /* passed to queue_dbase_load by QueueHeroModels */
+    /* 0x04 */ s32 heroLoadArg;  /* passed to queue_dbase_load by QueueHeroModels */
     /* 0x08 */ u8 unk8[4];
-    /* 0x0C */ u16 unkC;
+    /* 0x0C */ u16 cameraMode;  /* CameraMode for the level (SetLevelCameraMode) */
     /* 0x0E */ u8 unkE[0x12];
 } EngineRec32;
 extern EngineRec32 *LevelRecs;

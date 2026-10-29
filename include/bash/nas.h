@@ -585,19 +585,19 @@ typedef struct GameOptionSet {
  * tables of 0x21 bytes. Field names are GameInfo offsets, as gameflow.h's GameStateView. */
 typedef struct AdventureState {
     /* 0x070 */ s32 unk70;
-    /* 0x074 */ u8 unk74;
-    /* 0x075 */ u8 unk75;
-    /* 0x076 */ u8 unk76[0x21];
+    /* 0x074 */ u8 active;          /* in the adventure (not a battle or the demo) */
+    /* 0x075 */ u8 creditsDone;     /* set when the end credits finish (HubEndCredits) */
+    /* 0x076 */ u8 modeFlags[0x21]; /* per mode: 0x10, 0x80 flags */
     /* 0x097 */ u8 pad97[4];
-    /* 0x09B */ u8 unk9B[4];
-    /* 0x09F */ u8 unk9F[4];
+    /* 0x09B */ u8 aiSkill[4];      /* each player's AI skill, from modeSkill */
+    /* 0x09F */ u8 points[4];       /* each player's total; roundPoints is added in */
     /* 0x0A3 */ u8 padA3[4];
-    /* 0x0A7 */ u8 unkA7[4];
-    /* 0x0AB */ u8 unkAB[0x21];
-    /* 0x0CC */ u8 unkCC[4];
+    /* 0x0A7 */ u8 rank[4];         /* the players by standing, best first */
+    /* 0x0AB */ u8 modeSkill[0x21]; /* per mode: the AI skill level it has reached */
+    /* 0x0CC */ u8 roundPoints[4];
     /* 0x0D0 */ GameOptionSet options; /* GameOptions when the game was saved */
-    /* 0x0E0 */ s32 unkE0;
-    /* 0x0E4 */ u8 unkE4[5][0x21];
+    /* 0x0E0 */ s32 stage;           /* how far the adventure is (2 at 25 trophies) */
+    /* 0x0E4 */ u8 won[5][0x21];    /* per mode, by award: [0] trophies (CountTrophies); the other four kinds aren't settled */
 } AdventureState;
 BASH_SIZE_CHECK(AdventureState, 0x11C);
 

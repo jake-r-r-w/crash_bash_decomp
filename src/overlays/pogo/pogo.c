@@ -1073,7 +1073,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GAME->adventure.unkA7[j] = best;
+            GAME->adventure.rank[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -1099,7 +1099,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                 GAME->winner[0] = a->hero_name;
                 GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GAME->adventure.unkA7[0] == n) {
+                    if (GAME->adventure.rank[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1250,7 +1250,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GAME->adventure.unkA7[j] = best;
+            GAME->adventure.rank[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -1276,7 +1276,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                 GAME->winner[0] = a->hero_name;
                 GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GAME->adventure.unkA7[0] == n) {
+                    if (GAME->adventure.rank[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1375,14 +1375,14 @@ void PogoWinner_Normal(s32 arg0, u16 arg1) {
                 best = j;
             }
         }
-        RANK60V->adventure.unkA7[i] = best;
+        RANK60V->adventure.rank[i] = best;
         used |= 1 << best;
     }
     g = RANK60V;
     if (g->teams == 0) {
         h = Heroes;
-        top = &h[g->adventure.unkA7[0]];
-        if (top->hero_score == h[g->adventure.unkA7[1]].hero_score) {
+        top = &h[g->adventure.rank[0]];
+        if (top->hero_score == h[g->adventure.rank[1]].hero_score) {
             g->winner[0] = 0;
             g->exitFlags |= arg1;
             for (k = 0; k < 4; k++) {
@@ -1394,7 +1394,7 @@ void PogoWinner_Normal(s32 arg0, u16 arg1) {
         p->winner[0] = top->hero_name;
         p->exitFlags |= 0x800;
         for (n = 0; n < 4; n++) {
-            if (p->adventure.unkA7[0] == n) {
+            if (p->adventure.rank[0] == n) {
                 h[n].hero_status |= 0x200;
             } else {
                 h[n].hero_status |= 0x400;

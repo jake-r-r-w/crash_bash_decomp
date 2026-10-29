@@ -260,7 +260,7 @@ void HandleLevelExit(void) {
     }
     switch (g->mode) {
     case 0x1F:
-        if (g->adventure.unkE4[4][31] != 0 && (flags & 1)) {
+        if (g->adventure.won[4][31] != 0 && (flags & 1)) {
             if (g->teamSide[0] == 3) {
                 g->mode = 0x20;
                 GotoScriptScene(LevelExitMsgsC, &LevelLoadProcess);
@@ -578,7 +578,7 @@ void AwardCupTrophies(CupDef *cup) {
 
     for (i = 0; i < n; i++) {
         CupRound *e = cup->rounds;
-        GAME->adventure.unkE4[0][e[i].mode] = 1;
+        GAME->adventure.won[0][e[i].mode] = 1;
         n = cup->roundCount;
     }
 }
@@ -819,7 +819,7 @@ void ShowCardSlotStats(GameState *arg0, s32 arg1) {
     e->sub[8].u6C.text = CardStatsText + 9;
     itoa_div_end(CardStatsText + 12, EngineExtra105(arg0), 10);
     e->sub[10].u6C.text = CardStatsText + 12;
-    switch (arg0->adventure.unkE0) {
+    switch (arg0->adventure.stage) {
     case 1:
         EngineSetSlot3Digits(3, 1);
         break;
@@ -1590,7 +1590,7 @@ void InitGameState(GameState *arg0) {
     arg0->levelFlags = 0x14;
     arg0->unk3E = 0x200;
     arg0->unk20 = 0;
-    arg0->adventure.unkE0 = 0;
+    arg0->adventure.stage = 0;
     arg0->levelRecIndex = 0;
     arg0->frames = 0;
     arg0->aiLevel = j;
@@ -1628,36 +1628,36 @@ void InitGameState(GameState *arg0) {
     arg0->heroes[3] = arg0->heroChoice[3];
     arg0->teammates[0] = arg0->teammateChoice[0];
     arg0->teammates[1] = arg0->teammateChoice[1];
-    arg0->adventure.unk74 = 0;
-    arg0->adventure.unk75 = 0;
+    arg0->adventure.active = 0;
+    arg0->adventure.creditsDone = 0;
     arg0->teammates[2] = arg0->teammateChoice[2];
     arg0->teammates[3] = arg0->teammateChoice[3];
     for (i = 0; i < 0x21; i++) {
-        arg0->adventure.unkAB[i] = 0;
-        arg0->adventure.unk76[i] = 0;
-        arg0->adventure.unkE4[0][i] = 0;
-        arg0->adventure.unkE4[2][i] = 0;
-        arg0->adventure.unkE4[1][i] = 0;
-        arg0->adventure.unkE4[3][i] = 0;
-        arg0->adventure.unkE4[4][i] = 0;
+        arg0->adventure.modeSkill[i] = 0;
+        arg0->adventure.modeFlags[i] = 0;
+        arg0->adventure.won[0][i] = 0;
+        arg0->adventure.won[2][i] = 0;
+        arg0->adventure.won[1][i] = 0;
+        arg0->adventure.won[3][i] = 0;
+        arg0->adventure.won[4][i] = 0;
     }
     t = 1;
-    arg0->adventure.unkA7[2] = 2;
-    arg0->adventure.unkA7[3] = 3;
-    arg0->adventure.unk9B[0] = 0;
-    arg0->adventure.unk9B[1] = 0;
-    arg0->adventure.unk9B[2] = 0;
-    arg0->adventure.unk9B[3] = 0;
-    arg0->adventure.unkCC[0] = 0;
-    arg0->adventure.unkCC[1] = 0;
-    arg0->adventure.unkCC[2] = 0;
-    arg0->adventure.unkCC[3] = 0;
-    arg0->adventure.unk9F[0] = 0;
-    arg0->adventure.unk9F[1] = 0;
-    arg0->adventure.unk9F[2] = 0;
-    arg0->adventure.unk9F[3] = 0;
-    arg0->adventure.unkA7[0] = 0;
-    arg0->adventure.unkA7[1] = t;
+    arg0->adventure.rank[2] = 2;
+    arg0->adventure.rank[3] = 3;
+    arg0->adventure.aiSkill[0] = 0;
+    arg0->adventure.aiSkill[1] = 0;
+    arg0->adventure.aiSkill[2] = 0;
+    arg0->adventure.aiSkill[3] = 0;
+    arg0->adventure.roundPoints[0] = 0;
+    arg0->adventure.roundPoints[1] = 0;
+    arg0->adventure.roundPoints[2] = 0;
+    arg0->adventure.roundPoints[3] = 0;
+    arg0->adventure.points[0] = 0;
+    arg0->adventure.points[1] = 0;
+    arg0->adventure.points[2] = 0;
+    arg0->adventure.points[3] = 0;
+    arg0->adventure.rank[0] = 0;
+    arg0->adventure.rank[1] = t;
     arg0->players = t;
     arg0->maxPlayers = 0;
     arg0->cupLeader = -1;
@@ -1781,12 +1781,12 @@ void InitRetry(void) {
     g->exitFlags &= 0x7FF8;
     set_fade(&ScreenFade, -0x300, 0);
     GameSceneFade = 0;
-    if (g->mode == 0x24 && g->adventure.unkE0 <= 0) {
-        g->adventure.unkE0 = 1;
+    if (g->mode == 0x24 && g->adventure.stage <= 0) {
+        g->adventure.stage = 1;
     }
     g = (GameState *)GameInfo;
-    if (CountTrophies(g) >= 0x19 && g->adventure.unkE0 < 2) {
-        g->adventure.unkE0 = 2;
+    if (CountTrophies(g) >= 0x19 && g->adventure.stage < 2) {
+        g->adventure.stage = 2;
     }
     prims_empty_back();
     mal_compact(&MainHeap);
@@ -1846,12 +1846,12 @@ void UpdateSecretLevel(void) {
     GameState *a = (GameState *)GameInfo;
     GameState *g;
 
-    if (a->mode == 0x24 && a->adventure.unkE0 <= 0) {
-        a->adventure.unkE0 = 1;
+    if (a->mode == 0x24 && a->adventure.stage <= 0) {
+        a->adventure.stage = 1;
     }
     g = (GameState *)GameInfo;
-    if (CountTrophies(g) >= 0x19 && g->adventure.unkE0 < 2) {
-        g->adventure.unkE0 = 2;
+    if (CountTrophies(g) >= 0x19 && g->adventure.stage < 2) {
+        g->adventure.stage = 2;
     }
 }
 

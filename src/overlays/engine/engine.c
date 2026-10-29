@@ -284,7 +284,7 @@ void CheckControllers(void) {
     s32 i;
     s16 y;
 
-    if (g->adventure.unk74 != 0 || g->demo != 0) {
+    if (g->adventure.active != 0 || g->demo != 0) {
         return;
     }
     levels = ModeTypes;
@@ -560,10 +560,10 @@ GameState *arg1;
     sa = 0;
     i = 0;
     do {
-        sa += arg1->adventure.unkE4[0][i];
-        sc += arg1->adventure.unkE4[2][i];
-        sb += arg1->adventure.unkE4[1][i];
-        sd += arg1->adventure.unkE4[3][i];
+        sa += arg1->adventure.won[0][i];
+        sc += arg1->adventure.won[2][i];
+        sb += arg1->adventure.won[1][i];
+        sd += arg1->adventure.won[3][i];
         i++;
     } while (i < 0x21);
     tab = LevelRequirements;
@@ -571,7 +571,7 @@ GameState *arg1;
     if (sa < r->min0 || sc < r->min4 || sb < r->min2 || sd < r->min6) {
         return 0;
     }
-    if (r->off != 0 && arg1->adventure.unkE4[4][r->off] == 0) {
+    if (r->off != 0 && arg1->adventure.won[4][r->off] == 0) {
         return 0;
     }
     return 1;
@@ -684,7 +684,7 @@ s32 CountTrophies(GameState *arg0) {
     s32 sum = 0;
     s32 i = 0;
     do {
-        sum += arg0->adventure.unkE4[0][i];
+        sum += arg0->adventure.won[0][i];
         i++;
     } while (i < 0x21);
     return sum;

@@ -522,16 +522,16 @@ s32 SpinRankHeroes(void) {
         while (1) {
             if (!(j < 3)) break;
             if (g->levelFlags & 0x40) {
-                if (h[g->adventure.unkA7[j]].hero_score > h[((u8 *)((k = j + 1) + (s32)g))[0xA7]].hero_score) {
-                    a = g->adventure.unkA7[j];
-                    g->adventure.unkA7[j] = g->adventure.unkA7[k];
-                    g->adventure.unkA7[k] = a;
+                if (h[g->adventure.rank[j]].hero_score > h[((u8 *)((k = j + 1) + (s32)g))[0xA7]].hero_score) {
+                    a = g->adventure.rank[j];
+                    g->adventure.rank[j] = g->adventure.rank[k];
+                    g->adventure.rank[k] = a;
                 }
             } else {
-                if (h[g->adventure.unkA7[j]].hero_score < h[((u8 *)((m = j + 1) + (s32)g))[0xA7]].hero_score) {
-                    a = g->adventure.unkA7[j];
-                    g->adventure.unkA7[j] = g->adventure.unkA7[m];
-                    g->adventure.unkA7[m] = a;
+                if (h[g->adventure.rank[j]].hero_score < h[((u8 *)((m = j + 1) + (s32)g))[0xA7]].hero_score) {
+                    a = g->adventure.rank[j];
+                    g->adventure.rank[j] = g->adventure.rank[m];
+                    g->adventure.rank[m] = a;
                 }
             }
             j++;
@@ -567,7 +567,7 @@ s32 SpinRankHeroes(void) {
         }
         goto rb;
     }
-    return gt->adventure.unkA7[0];
+    return gt->adventure.rank[0];
 }
 
 void SpinChooseWinner(s32 arg0, u16 arg1) {
@@ -700,8 +700,8 @@ decide:
         }
     } else {
         heroes = Heroes;
-        h = &heroes[game->adventure.unkA7[0]];
-        if (h->hero_score == heroes[game->adventure.unkA7[1]].hero_score) {
+        h = &heroes[game->adventure.rank[0]];
+        if (h->hero_score == heroes[game->adventure.rank[1]].hero_score) {
             game->winner[0] = 0;
             game->exitFlags |= arg1;
             for (i = 0; i < 4; i++) {
@@ -713,7 +713,7 @@ decide:
         p->winner[0] = h->hero_name;
         p->exitFlags |= 0x800;
         for (i = 0; i < 4; i++) {
-            if (p->adventure.unkA7[0] == i) {
+            if (p->adventure.rank[0] == i) {
                 heroes[i].hero_status |= 0x200;
             } else {
                 heroes[i].hero_status |= 0x400;

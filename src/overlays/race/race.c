@@ -4105,7 +4105,7 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
                     }
                 }
             }
-            GAME->adventure.unkA7[j] = best;
+            GAME->adventure.rank[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -4128,7 +4128,7 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
                 GAME->winner[0] = a->hero_name;
                 GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GAME->adventure.unkA7[0] == n) {
+                    if (GAME->adventure.rank[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x8400;
@@ -4206,7 +4206,7 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
             if (i >= 4) {
                 break;
             }
-            RV->adventure.unkA7[i] = i;
+            RV->adventure.rank[i] = i;
             f = (RaceResultFux *)Heroes[i].hero->FUX;
             if (f != NULL) {
                 if (f->unk128 != NULL) {
@@ -4235,11 +4235,11 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
                 if (j >= 4) {
                     break;
                 }
-                a = RV->adventure.unkA7[j - 1];
-                b = RV->adventure.unkA7[j];
+                a = RV->adventure.rank[j - 1];
+                b = RV->adventure.rank[j];
                 if (hp[a].hero_score > hp[b].hero_score) {
-                    RV->adventure.unkA7[j - 1] = b;
-                    RV->adventure.unkA7[j] = a;
+                    RV->adventure.rank[j - 1] = b;
+                    RV->adventure.rank[j] = a;
                 }
             }
         }
@@ -4249,14 +4249,14 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
             HeroInfo *a;
 
             hb = Heroes;
-            a = &hb[g->adventure.unkA7[0]];
-            if (a->hero_score == hb[g->adventure.unkA7[1]].hero_score) {
+            a = &hb[g->adventure.rank[0]];
+            if (a->hero_score == hb[g->adventure.rank[1]].hero_score) {
                 RACE_DRAW_I(g, i, arg1);
             } else {
                 RV->winner[0] = a->hero_name;
                 RV->exitFlags |= 0x800;
                 for (i = 0; i < 4; i++) {
-                    if (RV->adventure.unkA7[0] == i) {
+                    if (RV->adventure.rank[0] == i) {
                         hb[i].hero_status |= 0x200;
                     } else {
                         hb[i].hero_status |= 0x8400;
