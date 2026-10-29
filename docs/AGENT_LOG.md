@@ -482,6 +482,17 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 1.4 started, field names):** the prototype's `xyzrf` (struct ._319,
+  0x54 bytes) is flags, a position and a `RotScale` (rotation, pad, scale, matrix, has-scale,
+  order, dirty: what `rotscale_update` takes). It begins `subengine`, sits at +0xC of
+  `EXTengine`, and is `GfxXform`. All three now read `XYZ` and `xform.*`, and `RotScale` moved to
+  nas.h with a `u16` dirty (it's only ever stored). `field_rename.py` did most of the uses
+  (`unkXX` uses 12,440 -> 5,066). Gotchas:
+  - A line where two structs' same-named fields meet gets both renamed (`fux->XYZ`,
+    `GfxScreen->XYZ.x`): grep the diff for the new name on other structs and put those back.
+  - Uses inside a header macro or a macro argument aren't seen ("no `.unk10` on the line"):
+    rename those by hand.
+
 - **2026-10-29 (ROADMAP-B 1.3, exe raw offsets):** `raw_offsets.py` (new) finds the reads the
   progress check's regex misses (`*(T *)(p + N)` on a `u8 *`): 32 exe functions became 12, each
   left for a reason (ROADMAP-A). Gotcha: `retype.py` only finds an ANSI definition. A K&R one
