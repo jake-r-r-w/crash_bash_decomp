@@ -3756,7 +3756,7 @@ void DoChooseNewAction(u32 player) {
         one = 1;
         for (;; i++) {
             NAS *nas;
-            BombMakerExt *b;
+            EXTbombmaker *b;
 
             if (i >= 4) {
                 break;
@@ -3794,7 +3794,7 @@ void DoChooseNewAction(u32 player) {
             loop:
                 if (nas != NULL) {
                     b = FindExtension(nas, 0x10000000);
-                    if (b != NULL && b->unkC == one && b->unk14 == i) {
+                    if (b != NULL && b->NasStatus == one && b->owner_id == i) {
                         found = 1;
                         goto done;
                     }
@@ -4930,7 +4930,7 @@ void PolarBeamRelease(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void InitTransmuterBeam(NAS *m) {
-    TransBeamExt *ext;
+    EXTtransmuter *ext;
     UkaBitExt *bx;
     EXTengine *e;
     subengine *sub;
@@ -4947,33 +4947,33 @@ void InitTransmuterBeam(NAS *m) {
     BeamState = 0;
     BeamTarget = 0;
     BeamTimer = 0;
-    ext->unkC = 5;
+    ext->beamtype = 5;
     PolarBeamOwner = (PolarOwner *)m;
     m->FUX = (EXT *)ext;
     for (i = 0; i < 4; i++) {
-        ext->unk18[i] = -1;
-        ext->unk28[i] = -1;
-        ext->unk38[i] = 0;
-        ext->unk48[i] = 0;
-        ext->engs[i] = 0;
+        ext->hero_action[i] = -1;
+        ext->hero_last_action[i] = -1;
+        ext->hero_action_timer[i] = 0;
+        ext->hero_immune_timer[i] = 0;
+        ext->light_eng[i] = 0;
     }
-    ext->unk10 = -1;
-    ext->unk6C = 5;
-    ext->unk58 = 0;
-    ext->unk5C = 0;
-    ext->unk60 = 0x78;
-    ext->unk64 = Random(0x5A) + 0xD2;
-    ext->unk14 = 1;
-    ext->unk68 = -1;
-    ext->pos = *(SLONG_XYZ *)&m->Engine->unk10;
-    ext->unk98 = 0x5DC;
-    ext->unk94 = 0;
-    ext->unkA0 = 8;
-    ext->unk9C = 0;
-    ext->unk94 = Random(0x3C);
+    ext->effect_player = -1;
+    ext->itplayer = 5;
+    ext->onoff_timer = 0;
+    ext->beamindex = 0;
+    ext->ontime = 0x78;
+    ext->offtime = Random(0x5A) + 0xD2;
+    ext->NasStatus = 1;
+    ext->ittimer = -1;
+    ext->aimpoint = *(SLONG_XYZ *)&m->Engine->unk10;
+    ext->rad = 0x5DC;
+    ext->pause = 0;
+    ext->addang = 8;
+    ext->yang = 0;
+    ext->pause = Random(0x3C);
     m->UserInfo.user1 = 0;
-    ext->unk1DC = 0x1E0;
-    ext->bit1 = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    ext->chasetimer = 0x1E0;
+    ext->glow = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
     if (n != NULL) {
         bx = FindExtension(n, 0x10000000);
         if (bx != NULL) {
@@ -4993,18 +4993,18 @@ void InitTransmuterBeam(NAS *m) {
             bx->unk20 = 4;
             bx->unkC = 4;
         tex1:
-            ext->bit1->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
+            ext->glow->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         skip1:
             bx->unk18 = 0x100;
             bx->unk20 |= 8;
-            ext->bit1->Engine->flags |= 0x200000;
-            ext->bit1->InitDelete(ext->bit1);
+            ext->glow->Engine->flags |= 0x200000;
+            ext->glow->InitDelete(ext->glow);
         }
     }
-    ext->bit2 = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    ext->shadow = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
     if (n != NULL) {
         n->Engine->flags |= 0x200000;
-        bx = FindExtension(ext->bit2, 0x10000000);
+        bx = FindExtension(ext->shadow, 0x10000000);
         if (bx != NULL) {
             if (((GameState *)GameInfo)->mode == 0x12) {
                 bx->unkC = 2;
@@ -5022,21 +5022,21 @@ void InitTransmuterBeam(NAS *m) {
             bx->unk20 = 4;
             bx->unkC = 3;
         tex2:
-            ext->bit2->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
+            ext->shadow->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         skip2:
             bx->unk18 = 0x100;
-            ext->bit2->InitDelete(ext->bit2);
-            ext->unkAC = 0;
+            ext->shadow->InitDelete(ext->shadow);
+            ext->beam = 0;
         }
     }
     m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
     m->Engine->sub->entity = 0x2013;
     m->Engine->unk5D = 2;
     m->Engine->flags |= 0x200000;
-    ext->eng = NULL;
+    ext->it_eng = NULL;
     e = AddExtEngine(m, 2);
     if (e != NULL) {
-        ext->eng = e;
+        ext->it_eng = e;
         e->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         e->sub->entity = 0x2003;
         e->sub->unk51 = 0;
@@ -5055,7 +5055,7 @@ void InitTransmuterBeam(NAS *m) {
     for (i = 0; i < 4; i++) {
         e = AddExtEngine(m, i + 3);
         if (e != NULL) {
-            ext->engs[i] = e;
+            ext->light_eng[i] = e;
             e->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
             e->sub->entity = 0x2019;
             e->sub->unk51 = 0;
@@ -5078,10 +5078,10 @@ void InitTransmuterBeam(NAS *m) {
    effect kind in both slots. As an inline call, case 1's kind 1 gets its own
    argument pseudo (copy_to_mode_reg), which loop.c needs (MATCHING.md, Diff
    patterns). */
-static inline void TBSetHeroEffect(TransBeamExt *e, s32 i, s32 k) {
-    e->unk38[i] = 0xB4;
-    e->unk18[i] = k;
-    e->unk28[i] = k;
+static inline void TBSetHeroEffect(EXTtransmuter *e, s32 i, s32 k) {
+    e->hero_action_timer[i] = 0xB4;
+    e->hero_action[i] = k;
+    e->hero_last_action[i] = k;
 }
 
 /* The spawn's `if (TB_MODE13()) c++;` is dead (c is never read): flow empties
@@ -5089,7 +5089,7 @@ static inline void TBSetHeroEffect(TransBeamExt *e, s32 i, s32 k) {
    view base live, which is why retail holds that base in a1 for a single lh
    (MATCHING.md, Diff patterns). */
 void PlotTransmuterBeam(NAS *m) {
-    TransBeamExt *ext;
+    EXTtransmuter *ext;
     HeroInfo *h;
     HeroInfo *h3;
     HeroInfo *h5;
@@ -5141,30 +5141,30 @@ void PlotTransmuterBeam(NAS *m) {
     closest = 0;
     if (PolarClock != 0) {
         PolarBeamTimer = 1;
-        if (ext->unkAC != NULL) {
-            KillNAS(ext->unkAC);
-            ext->unkAC = NULL;
+        if (ext->beam != NULL) {
+            KillNAS(ext->beam);
+            ext->beam = NULL;
         }
-        ext->bit2->Engine->flags &= ~0x8000;
+        ext->shadow->Engine->flags &= ~0x8000;
     }
     if (TB_MODE13()) {
-        if (TBV->teams != 0 && ext->unk1DC == 0) {
+        if (TBV->teams != 0 && ext->chasetimer == 0) {
             t = BeamTarget;
             BeamTarget = t ^ 1;
             if (Heroes[t ^ 1].hero_status & 0x2000) {
                 BeamTarget = t;
             }
         }
-        if (ext->unk1DC < 0) {
+        if (ext->chasetimer < 0) {
             mode = Heroes[BeamTarget].hero_mode;
             if (mode != 0x4B && mode != 0x5A) {
                 BeamCount = 1;
             }
         } else {
-            ext->unk1DC--;
+            ext->chasetimer--;
         }
     }
-    if (TB_MODE13() && TBV->pause == 0 && PolarClock == 0 && ext->unk14 == 1) {
+    if (TB_MODE13() && TBV->pause == 0 && PolarClock == 0 && ext->NasStatus == 1) {
         if (++m->UserInfo.user1 == 0x3C) {
             e1 = m->Engine;
             n = CreateNAS(e1->unk10.x, 0x80, e1->unk10.z, 0x1605, 0x11);
@@ -5190,11 +5190,11 @@ void PlotTransmuterBeam(NAS *m) {
         }
         if (m->UserInfo.user1 < 0x20 && m->UserInfo.user2 != 0) {
             if (TB_MODE13()) {
-                if (ext->bit1 != NULL) {
-                    ext->bit1->Engine->sub->flags |= 0x8000;
+                if (ext->glow != NULL) {
+                    ext->glow->Engine->sub->flags |= 0x8000;
                 }
-                if (ext->bit2 != NULL) {
-                    ext->bit2->Engine->sub->flags |= 0x8000;
+                if (ext->shadow != NULL) {
+                    ext->shadow->Engine->sub->flags |= 0x8000;
                 }
             }
             for (i = 0;; i++) {
@@ -5264,12 +5264,12 @@ void PlotTransmuterBeam(NAS *m) {
                 closest = i;
                 best = ld;
             }
-            if (ext->unk48[i] > 0) {
-                ext->unk48[i]--;
+            if (ext->hero_immune_timer[i] > 0) {
+                ext->hero_immune_timer[i]--;
             }
         }
     }
-    if (ext->unk14 == 1) {
+    if (ext->NasStatus == 1) {
         if (BeamCount != 0) {
             h3 = Heroes;
             h3 = &h3[BeamTarget];
@@ -5287,16 +5287,16 @@ void PlotTransmuterBeam(NAS *m) {
                 tr = rcossin_tbl;
                 a = BeamState >> 1;
                 me = m->Engine;
-                ox = me->unk10.x - (ext->pos.x + (((ext->unk98 << 8) >> 8) * tr[(tr[(a - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12));
+                ox = me->unk10.x - (ext->aimpoint.x + (((ext->rad << 8) >> 8) * tr[(tr[(a - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12));
                 sa = tr[a & 0xFFF].unk2;
-                oz = me->unk10.z - (ext->pos.z + (ext->unk98 * tr[sa & 0xFFF].unk2 >> 12));
+                oz = me->unk10.z - (ext->aimpoint.z + (ext->rad * tr[sa & 0xFFF].unk2 >> 12));
                 me->unk10.x -= ox >> 4;
                 m->Engine->unk10.z -= oz >> 4;
                 if (ox * ox + oz * oz < 0x1000) {
                     BeamCount = 0;
                     BeamDelay = 0;
                     BeamTimer = 0;
-                    ext->unk1DC = (Random(4) + 0x12) * 0x1E;
+                    ext->chasetimer = (Random(4) + 0x12) * 0x1E;
                 }
             } else {
                 EXTengine *me;
@@ -5317,35 +5317,35 @@ void PlotTransmuterBeam(NAS *m) {
 
             tr = rcossin_tbl;
             t2 = BeamState >> 1;
-            m->Engine->unk10.x = ext->pos.x + (((ext->unk98 << 8) >> 8) * tr[(tr[(t2 - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12);
+            m->Engine->unk10.x = ext->aimpoint.x + (((ext->rad << 8) >> 8) * tr[(tr[(t2 - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12);
             BeamTimer = 0;
             t5 = tr[t2 & 0xFFF].unk2;
-            m->Engine->unk10.z = ext->pos.z + (ext->unk98 * tr[t5 & 0xFFF].unk2 >> 12);
+            m->Engine->unk10.z = ext->aimpoint.z + (ext->rad * tr[t5 & 0xFFF].unk2 >> 12);
         }
         if (PolarClock == 0) {
-            m->Engine->unk10.y = ext->pos.y + (rcossin_tbl[((ext->unk9C << 4) - 0x400) & 0xFFF].unk2 * 64 >> 12);
+            m->Engine->unk10.y = ext->aimpoint.y + (rcossin_tbl[((ext->yang << 4) - 0x400) & 0xFFF].unk2 * 64 >> 12);
         } else {
             m->Engine->unk10.y -= 0x10;
         }
-        ext->unk9C += ext->unkA0;
+        ext->yang += ext->addang;
         if (BeamCount == 0) {
-            BeamState += ext->unkA0;
+            BeamState += ext->addang;
         }
-        if (ext->bit1 != NULL) {
-            ext->bit1->Engine->unk10 = m->Engine->unk10;
-            ext->bit1->Engine->sub->unk68 = 0x200;
+        if (ext->glow != NULL) {
+            ext->glow->Engine->unk10 = m->Engine->unk10;
+            ext->glow->Engine->sub->unk68 = 0x200;
             if (GameMode == 0x12) {
-                ext->bit1->Engine->unk10.y -= 0x40;
+                ext->glow->Engine->unk10.y -= 0x40;
             } else {
-                ext->bit1->Engine->unk10.y -= 0x60;
+                ext->glow->Engine->unk10.y -= 0x60;
             }
         }
     }
     m->Engine->unk5E = 1;
-    if (ext->bit2 != NULL) {
-        ext->bit2->Engine->unk10 = m->Engine->unk10;
-        ext->bit2->Engine->sub->unk68 = 0x100;
-        ext->bit2->Engine->unk10.y = 0x5E;
+    if (ext->shadow != NULL) {
+        ext->shadow->Engine->unk10 = m->Engine->unk10;
+        ext->shadow->Engine->sub->unk68 = 0x100;
+        ext->shadow->Engine->unk10.y = 0x5E;
     }
     me = m->Engine;
     ce = Heroes[closest].hero_eng;
@@ -5355,28 +5355,28 @@ void PlotTransmuterBeam(NAS *m) {
     d = csqrt(dx * dx + dz * dz) >> 6;
     yaw = get_angle(dx, dz) & 0xFFF;
     pitch = get_angle(-dy, d);
-    if (ext->unk14 == 1 && BeamCount == 0 && PolarBeamTimer == 0) {
-        ext->unk58++;
+    if (ext->NasStatus == 1 && BeamCount == 0 && PolarBeamTimer == 0) {
+        ext->onoff_timer++;
         if (!TB_MODE13() || m->UserInfo.user1 >= 0x1F) {
-            if (abs(ext->unk58 - ext->unk64) == 0xF) {
+            if (abs(ext->onoff_timer - ext->offtime) == 0xF) {
                 PlaySfx(0x463, NULL, NULL, 0x1000, 0x1E00, 0);
             }
-            if (ext->unk58 >= ext->unk64) {
-                ext->unk5C = Random(4);
-                ext->unk58 = 0;
-                ext->unkC = BeamFrames[ext->unk5C];
+            if (ext->onoff_timer >= ext->offtime) {
+                ext->beamindex = Random(4);
+                ext->onoff_timer = 0;
+                ext->beamtype = BeamFrames[ext->beamindex];
                 if (HeroesAllOut != 0) {
-                    if (ext->unkC == 0) {
-                        ext->unkC = 6;
+                    if (ext->beamtype == 0) {
+                        ext->beamtype = 6;
                     }
-                    if (ext->unkC == 1) {
-                        ext->unkC = 5;
+                    if (ext->beamtype == 1) {
+                        ext->beamtype = 5;
                     }
                 }
                 e2 = m->Engine;
                 n = CreateNAS(e2->unk10.x, 0x5E, e2->unk10.z, 0x1605, 0x11);
                 if (n != NULL) {
-                    ext->unkAC = n;
+                    ext->beam = n;
                     n->Engine->flags |= 0x200000;
                     bx = FindExtension(n, 0x10000000);
                     if (bx != NULL) {
@@ -5397,25 +5397,25 @@ void PlotTransmuterBeam(NAS *m) {
                         n->InitDelete(n);
                     }
                 }
-                ext->unk14 = 2;
+                ext->NasStatus = 2;
                 PlaySfx(0x44C, &m->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
             }
         }
     }
-    if (ext->unk14 == 2) {
+    if (ext->NasStatus == 2) {
         if (PolarClock != 0) {
-            ext->unk14 = 1;
+            ext->NasStatus = 1;
             if (m->Engine->sfx != NULL) {
                 StopSfx(m->Engine->sfx);
             }
         }
-        if (++ext->unk58 >= ext->unk60) {
-            ext->unk14 = 1;
+        if (++ext->onoff_timer >= ext->ontime) {
+            ext->NasStatus = 1;
             PlaySfx(0x44D, NULL, NULL, 0x1000, 0x1E00, 0);
             if (m->Engine->sfx != NULL) {
                 StopSfx(m->Engine->sfx);
             }
-            ext->unk58 = 0;
+            ext->onoff_timer = 0;
         }
         pitch = 0x400;
     }
@@ -5423,20 +5423,20 @@ void PlotTransmuterBeam(NAS *m) {
     m->Engine->unk1E -= ((m->Engine->unk1E - yaw) << 20) >> 22;
     m->Engine->unk20 = 0;
     if (TB_MODE13()) {
-        if (ext->bit1 != NULL) {
-            ext->bit1->Engine->sub->entity = 0x2008;
+        if (ext->glow != NULL) {
+            ext->glow->Engine->sub->entity = 0x2008;
         }
-        if (ext->bit2 != NULL) {
-            ext->bit2->Engine->sub->entity = 0x2008;
+        if (ext->shadow != NULL) {
+            ext->shadow->Engine->sub->entity = 0x2008;
         }
     }
-    if (ext->unk14 & 2) {
+    if (ext->NasStatus & 2) {
         if (TB_MODE13()) {
-            if (ext->bit1 != NULL) {
-                ext->bit1->Engine->sub->entity = 0x200C;
+            if (ext->glow != NULL) {
+                ext->glow->Engine->sub->entity = 0x200C;
             }
-            if (ext->bit2 != NULL) {
-                ext->bit2->Engine->sub->entity = 0x200C;
+            if (ext->shadow != NULL) {
+                ext->shadow->Engine->sub->entity = 0x200C;
             }
         }
         for (i = 0;; i++) {
@@ -5450,18 +5450,18 @@ void PlotTransmuterBeam(NAS *m) {
             lx = Heroes[i].hero_eng->unk10.x - m->Engine->unk10.x;
             lz = Heroes[i].hero_eng->unk10.z - m->Engine->unk10.z;
             ld = lx * lx + lz * lz;
-            if (Heroes[i].hero_status & 0x2000 || ext->unk10 != -1 || ld > 0x18FFF) {
+            if (Heroes[i].hero_status & 0x2000 || ext->effect_player != -1 || ld > 0x18FFF) {
                 continue;
             }
-            ext->unk10 = i;
-            ext->unk14 = 1;
-            ext->unk58 = 0;
+            ext->effect_player = i;
+            ext->NasStatus = 1;
+            ext->onoff_timer = 0;
             if (m->Engine->sfx != NULL) {
                 StopSfx(m->Engine->sfx);
             }
-            if (ext->unkAC != NULL) {
-                KillNAS(ext->unkAC);
-                ext->unkAC = NULL;
+            if (ext->beam != NULL) {
+                KillNAS(ext->beam);
+                ext->beam = NULL;
             }
             e3 = m->Engine;
             n = CreateNAS(e3->unk10.x, 0x5E, e3->unk10.z, 0x1605, 0x11);
@@ -5485,68 +5485,68 @@ void PlotTransmuterBeam(NAS *m) {
                 }
                 n->InitDelete(n);
             }
-            switch (ext->unkC) {
+            switch (ext->beamtype) {
             case 0:
-                PolarBeamRelease(i, ext->unk28[i], 0);
-                ext->unk60 = 0x78;
-                ext->unk64 = Random(0x3C) + 0xD2;
+                PolarBeamRelease(i, ext->hero_last_action[i], 0);
+                ext->ontime = 0x78;
+                ext->offtime = Random(0x3C) + 0xD2;
                 TBSetHeroEffect(ext, i, 0);
                 Heroes[i].hero_move->mass = 0x50;
                 PolarHeroMass[i] = 0x40;
-                ext->unk70 = 0;
+                ext->hero_in_beam_timer = 0;
                 PlaySfx(0x44E, NULL, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i, 0x4F);
                 break;
             case 1:
-                PolarBeamRelease(i, ext->unk28[i], 1);
-                ext->unk60 = 0x78;
-                ext->unk64 = Random(0x3C) + 0xD2;
+                PolarBeamRelease(i, ext->hero_last_action[i], 1);
+                ext->ontime = 0x78;
+                ext->offtime = Random(0x3C) + 0xD2;
                 TBSetHeroEffect(ext, i, 1);
                 Heroes[i].hero_move->mass = 0x258;
                 PolarHeroMass[i] = 0x20;
-                ext->unk70 = 0;
+                ext->hero_in_beam_timer = 0;
                 PlaySfx(0x44F, NULL, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i, 0x4F);
                 break;
             case 2:
-                PolarBeamRelease(i, ext->unk28[i], 2);
-                ext->unk60 = 0x78;
-                ext->unk64 = Random(0x3C) + 0xD2;
+                PolarBeamRelease(i, ext->hero_last_action[i], 2);
+                ext->ontime = 0x78;
+                ext->offtime = Random(0x3C) + 0xD2;
                 TBSetHeroEffect(ext, i, 2);
-                ext->unk70 = 0xF;
+                ext->hero_in_beam_timer = 0xF;
                 PlaySfx(0x450, NULL, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i, 0x4F);
                 break;
             case 5:
-                PolarBeamRelease(i, ext->unk28[i], 5);
-                ext->unk60 = 0x78;
-                ext->unk64 = 0x168;
-                ext->unk38[i] = 0;
-                ext->unk18[i] = 5;
-                ext->unk70 = 0xF;
-                ext->unk28[i] = 5;
+                PolarBeamRelease(i, ext->hero_last_action[i], 5);
+                ext->ontime = 0x78;
+                ext->offtime = 0x168;
+                ext->hero_action_timer[i] = 0;
+                ext->hero_action[i] = 5;
+                ext->hero_in_beam_timer = 0xF;
+                ext->hero_last_action[i] = 5;
                 PlaySfx(0x451, NULL, NULL, 0x1000, 0x1E00, 0);
-                PlaySfx(0x452, &ext->eng->sfx, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(0x452, &ext->it_eng->sfx, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i, 0x4F);
-                a1x = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                a1x = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
                 if (a1x != NULL) {
                     a1x->unk28 = 0;
                 }
                 break;
             case 6:
-                ext->unk60 = 0x78;
-                ext->unk64 = 0x168;
-                ext->unk38[i] = 0;
-                ext->unk18[i] = 6;
-                ext->unk70 = 0xF;
-                ext->unk28[i] = 6;
+                ext->ontime = 0x78;
+                ext->offtime = 0x168;
+                ext->hero_action_timer[i] = 0;
+                ext->hero_action[i] = 6;
+                ext->hero_in_beam_timer = 0xF;
+                ext->hero_last_action[i] = 6;
                 PlaySfx(0x464, NULL, NULL, 0x1000, 0x1E00, 0);
                 e = m->Engine;
                 PlaySfx(0x465, &e->sfx, &e->unk10, 0x1000, 0x1E00, 0);
-                e = ext->eng;
+                e = ext->it_eng;
                 PlaySfx(0x452, &e->sfx, &e->unk10, 0x1000, 0x1E00, 0);
                 SetHeroAction(i, 0x4F);
-                a1x = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                a1x = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
                 if (a1x != NULL) {
                     a1x->unk28 = 0;
                 }
@@ -5554,32 +5554,32 @@ void PlotTransmuterBeam(NAS *m) {
             }
         }
     }
-    if (ext->unk10 != -1) {
+    if (ext->effect_player != -1) {
         hb1 = Heroes;
-        h5 = &hb1[ext->unk10];
+        h5 = &hb1[ext->effect_player];
         he = h5->hero_eng;
         hs = h5->hero_shadow;
         if (PolarRoundState != 0) {
             if (m->Engine->sfx != NULL) {
                 StopSfx(m->Engine->sfx);
             }
-            if (ext->eng->sfx != NULL) {
-                StopSfx(ext->eng->sfx);
+            if (ext->it_eng->sfx != NULL) {
+                StopSfx(ext->it_eng->sfx);
             }
-            if (Heroes[ext->unk10].hero_status & 0x2000) {
+            if (Heroes[ext->effect_player].hero_status & 0x2000) {
                 return;
             }
         }
-        if (ext->unk38[ext->unk10] > 0) {
-            ext->unk38[ext->unk10]--;
+        if (ext->hero_action_timer[ext->effect_player] > 0) {
+            ext->hero_action_timer[ext->effect_player]--;
         }
         hs->unk5C = 1;
-        if (ext->unk70 > 0) {
-            ext->unk70--;
+        if (ext->hero_in_beam_timer > 0) {
+            ext->hero_in_beam_timer--;
         }
-        switch (ext->unk18[ext->unk10]) {
+        switch (ext->hero_action[ext->effect_player]) {
         case 0:
-            if (ext->unk70 <= 0) {
+            if (ext->hero_in_beam_timer <= 0) {
                 if (he->unk2C.x > 0xA00) {
                     he->unk2C.x -= 0x100;
                     he->unk2C.y -= 0x100;
@@ -5588,21 +5588,21 @@ void PlotTransmuterBeam(NAS *m) {
                     hs->unk2C.y -= 0x100;
                     hs->unk2C.z -= 0x100;
                 } else {
-                    ai = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                    ai = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
                     if (ai != NULL) {
                         if (ai->unk24 == 0) {
-                            SetHeroAction(ext->unk10, 0x49);
+                            SetHeroAction(ext->effect_player, 0x49);
                         }
                         if (ai->unk24 == 1) {
-                            SetHeroAction(ext->unk10, 0x54);
+                            SetHeroAction(ext->effect_player, 0x54);
                         }
                     }
-                    ext->unk18[ext->unk10] = -1;
+                    ext->hero_action[ext->effect_player] = -1;
                 }
             }
             break;
         case 1:
-            if (ext->unk70 <= 0) {
+            if (ext->hero_in_beam_timer <= 0) {
                 if (he->unk2C.x < 0x1771) {
                     he->unk2C.x += 0x100;
                     he->unk2C.y += 0x100;
@@ -5611,79 +5611,79 @@ void PlotTransmuterBeam(NAS *m) {
                     hs->unk2C.y += 0x100;
                     hs->unk2C.z += 0x100;
                 } else {
-                    ext->unk18[ext->unk10] = -1;
-                    ai = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                    ext->hero_action[ext->effect_player] = -1;
+                    ai = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
                     if (ai != NULL) {
                         if (ai->unk24 == 0) {
-                            SetHeroAction(ext->unk10, 0x49);
+                            SetHeroAction(ext->effect_player, 0x49);
                         }
                         if (ai->unk24 == 1) {
-                            SetHeroAction(ext->unk10, 0x54);
+                            SetHeroAction(ext->effect_player, 0x54);
                         }
                     }
                 }
             }
             break;
         case 2:
-            if (ext->unk70 <= 0 && Heroes[ext->unk10].hero_mode != 0x4C) {
-                SetHeroAction(ext->unk10, 0x4C);
-                mv = Heroes[ext->unk10].hero_move;
+            if (ext->hero_in_beam_timer <= 0 && Heroes[ext->effect_player].hero_mode != 0x4C) {
+                SetHeroAction(ext->effect_player, 0x4C);
+                mv = Heroes[ext->effect_player].hero_move;
                 if (mv != NULL) {
                     mv->x_max = 0;
                     mv->z_max = 0;
                     mv->x_vel = 0;
                     mv->z_vel = 0;
                 }
-                ext->unk18[ext->unk10] = -1;
+                ext->hero_action[ext->effect_player] = -1;
             }
             break;
         case 5:
-            if (ext->unk70 <= 0) {
-                ext->unk6C = ext->unk10;
-                if (ext->eng != NULL) {
-                    ext->eng->unk10 = Heroes[ext->unk6C].hero_eng->unk10;
-                    ext->eng->sub->flags |= 0x8000;
+            if (ext->hero_in_beam_timer <= 0) {
+                ext->itplayer = ext->effect_player;
+                if (ext->it_eng != NULL) {
+                    ext->it_eng->unk10 = Heroes[ext->itplayer].hero_eng->unk10;
+                    ext->it_eng->sub->flags |= 0x8000;
                 }
-                ext->unk68 = 0x12C;
-                ext->unk18[ext->unk10] = -1;
-                ai = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                ext->ittimer = 0x12C;
+                ext->hero_action[ext->effect_player] = -1;
+                ai = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
                 if (ai != NULL) {
                     if (ai->unk24 == 0) {
-                        SetHeroAction(ext->unk10, 0x49);
+                        SetHeroAction(ext->effect_player, 0x49);
                     }
                     if (ai->unk24 == 1) {
-                        SetHeroAction(ext->unk10, 0x54);
+                        SetHeroAction(ext->effect_player, 0x54);
                     }
                 }
             }
             break;
         case 6:
             k2 = 0;
-            if (ext->unk70 <= 0) {
-                ext->unk6C = ext->unk10;
+            if (ext->hero_in_beam_timer <= 0) {
+                ext->itplayer = ext->effect_player;
                 do {
-                    if (k2 == ext->unk6C && !(Heroes[k2].hero_status & 0x2000) && ext->engs[k2] != NULL) {
-                        ext->engs[k2]->unk10 = Heroes[k2].hero_eng->unk10;
-                        ext->engs[k2]->sub->flags |= 0x8000;
+                    if (k2 == ext->itplayer && !(Heroes[k2].hero_status & 0x2000) && ext->light_eng[k2] != NULL) {
+                        ext->light_eng[k2]->unk10 = Heroes[k2].hero_eng->unk10;
+                        ext->light_eng[k2]->sub->flags |= 0x8000;
                     }
                     k2++;
                 } while (k2 < 4);
-                ext->unk68 = 0x12C;
-                ext->unk18[ext->unk10] = -1;
-                ai = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                ext->ittimer = 0x12C;
+                ext->hero_action[ext->effect_player] = -1;
+                ai = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
                 if (ai != NULL) {
                     if (ai->unk24 == 0) {
-                        SetHeroAction(ext->unk10, 0x49);
+                        SetHeroAction(ext->effect_player, 0x49);
                     }
                     if (ai->unk24 == 1) {
-                        SetHeroAction(ext->unk10, 0x54);
+                        SetHeroAction(ext->effect_player, 0x54);
                     }
                 }
             }
             break;
         }
-        if (ext->unk38[ext->unk10] == 0) {
-            switch (ext->unk28[ext->unk10]) {
+        if (ext->hero_action_timer[ext->effect_player] == 0) {
+            switch (ext->hero_last_action[ext->effect_player]) {
             case 0:
                 if (he->unk2C.x < 0x1000) {
                     he->unk2C.x += 0x100;
@@ -5693,11 +5693,11 @@ void PlotTransmuterBeam(NAS *m) {
                     hs->unk2C.y += 0x100;
                     hs->unk2C.z += 0x100;
                 } else {
-                    ext->unk28[ext->unk10] = -1;
-                    PolarHeroMass[ext->unk10] = HeroHooks.RunSpeeds[Heroes[ext->unk10].hero_name * 3];
-                    ext->unk58 = 0;
-                    ResetMass(ext->unk10);
-                    ext->unk10 = -1;
+                    ext->hero_last_action[ext->effect_player] = -1;
+                    PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[Heroes[ext->effect_player].hero_name * 3];
+                    ext->onoff_timer = 0;
+                    ResetMass(ext->effect_player);
+                    ext->effect_player = -1;
                     he->unk2C.x = 0x1000;
                 }
                 break;
@@ -5710,90 +5710,90 @@ void PlotTransmuterBeam(NAS *m) {
                     hs->unk2C.y -= 0x100;
                     hs->unk2C.z -= 0x100;
                 } else {
-                    ext->unk28[ext->unk10] = -1;
-                    ResetMass(ext->unk10);
-                    PolarHeroMass[ext->unk10] = HeroHooks.RunSpeeds[Heroes[ext->unk10].hero_name * 3];
-                    ext->unk58 = 0;
-                    ext->unk10 = -1;
+                    ext->hero_last_action[ext->effect_player] = -1;
+                    ResetMass(ext->effect_player);
+                    PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[Heroes[ext->effect_player].hero_name * 3];
+                    ext->onoff_timer = 0;
+                    ext->effect_player = -1;
                     he->unk2C.x = 0x1000;
                 }
                 break;
             case 2:
-                a1x = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                a1x = FindExtension(Heroes[ext->effect_player].hero, 0x20000000);
                 if (a1x != NULL) {
                     if (a1x->unk24 == 0) {
-                        if (Heroes[ext->unk10].hero_mode != 0x49) {
-                            SetHeroAction(ext->unk10, 0x49);
-                            ext->unk64 = 0xD2;
+                        if (Heroes[ext->effect_player].hero_mode != 0x49) {
+                            SetHeroAction(ext->effect_player, 0x49);
+                            ext->offtime = 0xD2;
                         } else {
-                            ext->unk28[ext->unk10] = -1;
-                            ext->unk58 = 0;
+                            ext->hero_last_action[ext->effect_player] = -1;
+                            ext->onoff_timer = 0;
                         }
                     } else {
-                        if (Heroes[ext->unk10].hero_mode != 0x54) {
-                            SetHeroAction(ext->unk10, 0x54);
-                            ext->unk64 = 0xD2;
+                        if (Heroes[ext->effect_player].hero_mode != 0x54) {
+                            SetHeroAction(ext->effect_player, 0x54);
+                            ext->offtime = 0xD2;
                         } else {
-                            ext->unk28[ext->unk10] = -1;
-                            ext->unk58 = 0;
+                            ext->hero_last_action[ext->effect_player] = -1;
+                            ext->onoff_timer = 0;
                         }
                     }
-                    ext->unk10 = -1;
+                    ext->effect_player = -1;
                 }
                 break;
             case 5:
-                if (ext->unk6C != 5) {
-                    if (ext->unk68 > 0) {
-                        t3 = --ext->unk68;
-                        if (ext->eng->sfx != NULL) {
-                            sfx_set_pitch(ext->eng->sfx, (0x12C - t3) * 0xF00 / 300 + 0x1E00);
+                if (ext->itplayer != 5) {
+                    if (ext->ittimer > 0) {
+                        t3 = --ext->ittimer;
+                        if (ext->it_eng->sfx != NULL) {
+                            sfx_set_pitch(ext->it_eng->sfx, (0x12C - t3) * 0xF00 / 300 + 0x1E00);
                         }
-                        if (ext->eng != NULL) {
-                            ext->eng->unk10 = Heroes[ext->unk6C].hero_eng->unk10;
+                        if (ext->it_eng != NULL) {
+                            ext->it_eng->unk10 = Heroes[ext->itplayer].hero_eng->unk10;
                             if (PolarRoundState == 0) {
-                                ext->eng->sub->flags |= 0x8000;
+                                ext->it_eng->sub->flags |= 0x8000;
                             } else {
-                                ext->eng->sub->flags &= ~0x8000;
+                                ext->it_eng->sub->flags &= ~0x8000;
                             }
-                            ext->eng->unk1E += 0x80;
-                            ext->eng->unk5E = 1;
-                            switch (Heroes[ext->unk6C].hero_name) {
+                            ext->it_eng->unk1E += 0x80;
+                            ext->it_eng->unk5E = 1;
+                            switch (Heroes[ext->itplayer].hero_name) {
                             case 1:
-                                ext->eng->unk10.y -= 0x258;
+                                ext->it_eng->unk10.y -= 0x258;
                                 break;
                             case 2:
-                                ext->eng->unk10.y -= 0x300;
+                                ext->it_eng->unk10.y -= 0x300;
                                 break;
                             case 3:
-                                ext->eng->unk10.y -= 0x300;
+                                ext->it_eng->unk10.y -= 0x300;
                                 break;
                             case 4:
-                                ext->eng->unk10.y -= 0x300;
+                                ext->it_eng->unk10.y -= 0x300;
                                 break;
                             case 5:
-                                ext->eng->unk10.y -= 0x300;
+                                ext->it_eng->unk10.y -= 0x300;
                                 break;
                             case 6:
-                                ext->eng->unk10.y -= 0x300;
+                                ext->it_eng->unk10.y -= 0x300;
                                 break;
                             case 7:
-                                ext->eng->unk10.y -= 0x364;
+                                ext->it_eng->unk10.y -= 0x364;
                                 break;
                             case 8:
-                                ext->eng->unk10.y -= 0x364;
+                                ext->it_eng->unk10.y -= 0x364;
                                 break;
                             default:
-                                ext->eng->unk10.y -= 0x300;
+                                ext->it_eng->unk10.y -= 0x300;
                                 break;
                             }
                         }
                     }
-                    if (ext->unk68 == 0) {
+                    if (ext->ittimer == 0) {
                         hb2 = Heroes;
-                        h = &hb2[ext->unk6C];
+                        h = &hb2[ext->itplayer];
                         if (h->hero_mode != 0x4D) {
                             h->hero_status |= 0x2000;
-                            hq = Heroes[ext->unk6C].hero_eng;
+                            hq = Heroes[ext->itplayer].hero_eng;
                             if (hq != NULL) {
                                 NAS *dn;
 
@@ -5802,85 +5802,85 @@ void PlotTransmuterBeam(NAS *m) {
                                     wx = FindExtension(dn, 0x10000000);
                                     if (wx != NULL) {
                                         wx->unkC = hq->unk10.y;
-                                        wx->unk1C = ext->unk6C;
+                                        wx->unk1C = ext->itplayer;
                                     }
                                 }
                             }
-                            SetHeroAction(ext->unk6C, 0x4D);
-                            ext->eng->sub->flags &= ~0x8000;
-                            ext->unk64 = 0xD2;
-                            if (ext->eng->sfx != NULL) {
-                                StopSfx(ext->eng->sfx);
+                            SetHeroAction(ext->itplayer, 0x4D);
+                            ext->it_eng->sub->flags &= ~0x8000;
+                            ext->offtime = 0xD2;
+                            if (ext->it_eng->sfx != NULL) {
+                                StopSfx(ext->it_eng->sfx);
                             }
-                            ext->unk28[ext->unk10] = -1;
-                            ext->unk58 = 0;
-                            ext->unk10 = -1;
-                            ext->unk6C = 5;
+                            ext->hero_last_action[ext->effect_player] = -1;
+                            ext->onoff_timer = 0;
+                            ext->effect_player = -1;
+                            ext->itplayer = 5;
                         }
                     }
-                    if (PolarClock != 0 || (hb3 = Heroes, h = &hb3[ext->unk6C], h->hero_mode == 0x50) || (h->hero_status & 0x2000)) {
-                        if (ext->eng->sfx != NULL) {
-                            StopSfx(ext->eng->sfx);
+                    if (PolarClock != 0 || (hb3 = Heroes, h = &hb3[ext->itplayer], h->hero_mode == 0x50) || (h->hero_status & 0x2000)) {
+                        if (ext->it_eng->sfx != NULL) {
+                            StopSfx(ext->it_eng->sfx);
                         }
-                        ext->eng->sub->flags &= ~0x8000;
-                        ext->unk64 = 0xD2;
-                        if (ext->unk10 != -1) {
-                            ext->unk28[ext->unk10] = -1;
+                        ext->it_eng->sub->flags &= ~0x8000;
+                        ext->offtime = 0xD2;
+                        if (ext->effect_player != -1) {
+                            ext->hero_last_action[ext->effect_player] = -1;
                         }
-                        ext->unk58 = 0;
-                        ext->unk10 = -1;
-                        ext->unk6C = 5;
+                        ext->onoff_timer = 0;
+                        ext->effect_player = -1;
+                        ext->itplayer = 5;
                     }
                 }
                 break;
             case 6:
-                if (ext->unk6C != 5) {
-                    if (ext->unk68 > 0) {
-                        t4 = --ext->unk68;
-                        if (ext->eng->sfx != NULL) {
-                            sfx_set_pitch(ext->eng->sfx, (0x12C - t4) * 0xF00 / 300 + 0x1E00);
+                if (ext->itplayer != 5) {
+                    if (ext->ittimer > 0) {
+                        t4 = --ext->ittimer;
+                        if (ext->it_eng->sfx != NULL) {
+                            sfx_set_pitch(ext->it_eng->sfx, (0x12C - t4) * 0xF00 / 300 + 0x1E00);
                         }
-                        if (ext->eng != NULL) {
+                        if (ext->it_eng != NULL) {
                             k = 0;
                             do {
-                                if (k != ext->unk6C || (Heroes[k].hero_status & 0x2000)) {
-                                    ext->engs[k]->sub->flags &= ~0x8000;
-                                } else if (ext->engs[k] != NULL) {
-                                    ext->engs[k]->unk10 = Heroes[k].hero_eng->unk10;
+                                if (k != ext->itplayer || (Heroes[k].hero_status & 0x2000)) {
+                                    ext->light_eng[k]->sub->flags &= ~0x8000;
+                                } else if (ext->light_eng[k] != NULL) {
+                                    ext->light_eng[k]->unk10 = Heroes[k].hero_eng->unk10;
                                     if (PolarRoundState == 0) {
-                                        ext->engs[k]->sub->flags |= 0x8000;
+                                        ext->light_eng[k]->sub->flags |= 0x8000;
                                     } else {
-                                        ext->engs[k]->sub->flags &= ~0x8000;
+                                        ext->light_eng[k]->sub->flags &= ~0x8000;
                                     }
-                                    ext->engs[k]->unk1E += 0x80;
-                                    ext->engs[k]->unk5E = 1;
+                                    ext->light_eng[k]->unk1E += 0x80;
+                                    ext->light_eng[k]->unk5E = 1;
                                     switch (Heroes[k].hero_name) {
                                     case 1:
-                                        ext->engs[k]->unk10.y -= 0x258;
+                                        ext->light_eng[k]->unk10.y -= 0x258;
                                         break;
                                     case 2:
-                                        ext->engs[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->unk10.y -= 0x300;
                                         break;
                                     case 3:
-                                        ext->engs[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->unk10.y -= 0x300;
                                         break;
                                     case 4:
-                                        ext->engs[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->unk10.y -= 0x300;
                                         break;
                                     case 5:
-                                        ext->engs[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->unk10.y -= 0x300;
                                         break;
                                     case 6:
-                                        ext->engs[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->unk10.y -= 0x300;
                                         break;
                                     case 7:
-                                        ext->engs[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->unk10.y -= 0x300;
                                         break;
                                     case 8:
-                                        ext->engs[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->unk10.y -= 0x300;
                                         break;
                                     default:
-                                        ext->engs[k]->unk10.y -= 0x300;
+                                        ext->light_eng[k]->unk10.y -= 0x300;
                                         break;
                                     }
                                 }
@@ -5888,52 +5888,52 @@ void PlotTransmuterBeam(NAS *m) {
                             } while (k < 4);
                         }
                     }
-                    if (ext->unk68 == 0) {
+                    if (ext->ittimer == 0) {
                         for (j = 0; j < 4; j++) {
                             h = &Heroes[j];
-                            if (j != ext->unk6C && !(h->hero_status & 0x2000) && h->hero_mode != 0x50) {
-                                if (TBV->teams == 0 || TestForTeamMate(ext->unk6C, j) == 0) {
+                            if (j != ext->itplayer && !(h->hero_status & 0x2000) && h->hero_mode != 0x50) {
+                                if (TBV->teams == 0 || TestForTeamMate(ext->itplayer, j) == 0) {
                                     if (h->hero_mode != 0x4B) {
                                         SetHeroAction(j, 0x4B);
-                                        ext->engs[ext->unk6C]->sub->flags &= ~0x8000;
+                                        ext->light_eng[ext->itplayer]->sub->flags &= ~0x8000;
                                     }
                                 }
                             }
                         }
-                        ext->unk64 = 0x14A;
-                        ext->unk28[ext->unk10] = -1;
+                        ext->offtime = 0x14A;
+                        ext->hero_last_action[ext->effect_player] = -1;
                         if (m->Engine->sfx != NULL) {
                             StopSfx(m->Engine->sfx);
                         }
                         PlaySfx(0x466, NULL, NULL, 0x1000, 0x1E00, 0);
-                        if (ext->eng->sfx != NULL) {
-                            StopSfx(ext->eng->sfx);
+                        if (ext->it_eng->sfx != NULL) {
+                            StopSfx(ext->it_eng->sfx);
                         }
-                        ext->unk58 = 0;
-                        ext->unk10 = -1;
-                        ext->unk6C = 5;
+                        ext->onoff_timer = 0;
+                        ext->effect_player = -1;
+                        ext->itplayer = 5;
                     }
                     hb4 = Heroes;
-                    h = &hb4[ext->unk6C];
+                    h = &hb4[ext->itplayer];
                     mode = h->hero_mode;
                     if (mode == 0x56 || mode == 0x50 || (h->hero_status & 0x2000) || PolarClock != 0) {
                         k3 = 0;
                         do {
-                            if (k3 == ext->unk6C) {
-                                ext->engs[k3]->sub->flags &= ~0x8000;
+                            if (k3 == ext->itplayer) {
+                                ext->light_eng[k3]->sub->flags &= ~0x8000;
                             }
                             k3++;
                         } while (k3 < 4);
-                        ext->unk64 = 0xD2;
-                        ext->unk28[ext->unk10] = -1;
-                        ext->unk58 = 0;
-                        ext->unk10 = -1;
-                        ext->unk6C = 5;
+                        ext->offtime = 0xD2;
+                        ext->hero_last_action[ext->effect_player] = -1;
+                        ext->onoff_timer = 0;
+                        ext->effect_player = -1;
+                        ext->itplayer = 5;
                         if (m->Engine->sfx != NULL) {
                             StopSfx(m->Engine->sfx);
                         }
-                        if (ext->eng->sfx != NULL) {
-                            StopSfx(ext->eng->sfx);
+                        if (ext->it_eng->sfx != NULL) {
+                            StopSfx(ext->it_eng->sfx);
                         }
                     }
                 }
@@ -5945,9 +5945,9 @@ void PlotTransmuterBeam(NAS *m) {
         s32 n2;
 
         for (n2 = 0; n2 < 4; n2++) {
-            ext->engs[n2]->flags &= ~0x8000;
+            ext->light_eng[n2]->flags &= ~0x8000;
         }
-        ext->eng->flags &= ~0x8000;
+        ext->it_eng->flags &= ~0x8000;
     }
 }
 
@@ -10295,7 +10295,7 @@ void PolarAI_Timer2(s32 player) {
 
 bool DoesPlayerHaveBomb(u32 arg0) {
     NAS *nas;
-    BombMakerExt *ext;
+    EXTbombmaker *ext;
     s32 one;
 
     nas = PolarBomb;
@@ -10303,7 +10303,7 @@ bool DoesPlayerHaveBomb(u32 arg0) {
 loop:
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
-        if (ext != NULL && ext->unkC == one && ext->unk14 == arg0) {
+        if (ext != NULL && ext->NasStatus == one && ext->owner_id == arg0) {
             return 1;
         }
         nas = nas->Group.Child;
@@ -10426,22 +10426,22 @@ void InitBombGFX(NAS *m) {
 }
 
 void PlotBombMaker(NAS *m) {
-    BombMakerExt *ext;
+    EXTbombmaker *ext;
     s32 x;
     s32 z;
 
     ext = FindExtension(m, 0x10000000);
     if (ext != NULL) {
-        if (ext->unk18 < 0) {
-            ext->unk18 = 0;
+        if (ext->count < 0) {
+            ext->count = 0;
         }
-        switch (ext->unkC) {
+        switch (ext->NasStatus) {
         case 0:
-            if (ext->unk18 <= 0) {
+            if (ext->count <= 0) {
                 if (ext->timer-- < 0 && PolarClock == 0) {
-                    ext->unkC = 2;
+                    ext->NasStatus = 2;
                     ext->timer = 0x5A;
-                    ext->unk18++;
+                    ext->count++;
                 }
             }
             break;
@@ -10450,20 +10450,20 @@ void PlotBombMaker(NAS *m) {
             z = Random(0x800);
             CreateNAS(x, 0, z - Random(0x800), 0x160F, 0x11);
             PlaySfx(0x3FA, NULL, NULL, 0x1000, 0x1E00, 0);
-            ext->unkC = 0;
+            ext->NasStatus = 0;
             break;
         }
     }
 }
 
 void InitBombMaker(NAS *m) {
-    BombMakerExt *ext;
+    EXTbombmaker *ext;
 
     ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         ext->timer = 0xB4;
-        ext->unkC = 0;
-        ext->unk18 = 0;
+        ext->NasStatus = 0;
+        ext->count = 0;
         BombMaster = m;
     }
 }

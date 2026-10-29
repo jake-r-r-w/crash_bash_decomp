@@ -356,21 +356,13 @@ void PolarHeroThrowBomb(s32 player);
 
 void PolarHeroAddWeight(s32 arg0);
 
-/* Bomb maker extension (0x1C bytes, id 0x10000000). */
-typedef struct BombMakerExt {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 timer;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-} BombMakerExt;
 
 extern s32 PolarClock;
 extern VECTOR PolarCentre;
 /* DoesPlayerHaveBomb, inlined into PolarAI_DoBeam. */
 static inline s32 PolarHasBomb(s32 player) {
     NAS *nas;
-    BombMakerExt *ext;
+    EXTbombmaker *ext;
     s32 one;
     s32 found;
 
@@ -381,7 +373,7 @@ loop:
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         do {
-            if (ext != NULL && ext->unkC == one && ext->unk14 == player) {
+            if (ext != NULL && ext->NasStatus == one && ext->owner_id == player) {
                 goto done;
             }
         } while (0);
@@ -434,7 +426,7 @@ loop:
 /* DoesPlayerHaveBomb as inlined into DoGetBomb. */
 static inline s32 PolarHasBomb2(s32 player) {
     NAS *nas;
-    BombMakerExt *ext;
+    EXTbombmaker *ext;
     s32 one;
 
     nas = PolarBomb;
@@ -442,7 +434,7 @@ static inline s32 PolarHasBomb2(s32 player) {
 loop:
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
-        if (ext != NULL && ext->unkC == one && ext->unk14 == player) {
+        if (ext != NULL && ext->NasStatus == one && ext->owner_id == player) {
             return 1;
         }
         nas = nas->Group.Child;
@@ -454,13 +446,13 @@ loop:
 /* IsBombAvailable, inlined into DoGetBomb. */
 static inline NAS *PolarFreeBomb(void) {
     NAS *nas;
-    BombMakerExt *ext;
+    EXTbombmaker *ext;
 
     nas = PolarBomb;
 loop:
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
-        if (ext != NULL && ext->unkC == 0) {
+        if (ext != NULL && ext->NasStatus == 0) {
             return nas;
         }
         nas = nas->Group.Child;
@@ -715,36 +707,7 @@ typedef struct UkaBitExt {
     /* 0x28 */ s32 unk28;
 } UkaBitExt;
 
-/* InitTransmuterBeam's extension (id 0x40000000, 0x1E0 bytes). */
-typedef struct TransBeamExt {
-    /* 0x000 */ u8 pad0[0xC];
-    /* 0x00C */ s32 unkC;
-    /* 0x010 */ s32 unk10;
-    /* 0x014 */ s32 unk14;
-    /* 0x018 */ s32 unk18[4];
-    /* 0x028 */ s32 unk28[4];
-    /* 0x038 */ s32 unk38[4];
-    /* 0x048 */ s32 unk48[4];
-    /* 0x058 */ s32 unk58;
-    /* 0x05C */ s32 unk5C;
-    /* 0x060 */ s32 unk60;
-    /* 0x064 */ s32 unk64;
-    /* 0x068 */ s32 unk68;
-    /* 0x06C */ s32 unk6C;
-    /* 0x070 */ s32 unk70;
-    /* 0x074 */ EXTengine *eng;
-    /* 0x078 */ EXTengine *engs[4];
-    /* 0x088 */ SLONG_XYZ pos;
-    /* 0x094 */ s32 unk94;
-    /* 0x098 */ s32 unk98;
-    /* 0x09C */ s32 unk9C;
-    /* 0x0A0 */ s32 unkA0;
-    /* 0x0A4 */ NAS *bit1;
-    /* 0x0A8 */ NAS *bit2;
-    /* 0x0AC */ NAS *unkAC;
-    /* 0x0B0 */ u8 padB0[0x1DC - 0xB0];
-    /* 0x1DC */ s32 unk1DC;
-} TransBeamExt;
+/* InitTransmuterBeam's extension (id 0x40000000, 0x1E0 bytes) is the leak's EXTtransmuter. */
 
 
 #define TBV ((GameState *)GameInfo)
