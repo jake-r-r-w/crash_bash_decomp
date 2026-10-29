@@ -2052,7 +2052,7 @@ void N2OInitBoss(void) {
     pos = &eng->unk10.x;
     *pos = N2OHeroStarts[3][0];
     eng->unk10.y = World_floor_level;
-    eng->unk10.z = *(s32 *)((u8 *)N2OHeroStarts + 0x2C);
+    eng->unk10.z = *(s32 *)((u8 *)N2OHeroStarts + 0x2C);  /* matching: N2OHeroStarts[3][2], an array read, can't be scheduled above the store before it */
     ang = get_angle(Heroes[3].hero_eng->unk10.x, Heroes[3].hero_eng->unk10.z) + 0x7F;
     ang &= 0xC00;
     mv = Heroes[3].hero_move;

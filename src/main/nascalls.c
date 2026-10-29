@@ -3982,13 +3982,13 @@ void texture_scroll_step(TexFrameAnim *arg0, obj_textureset *arg1) {
     }
 }
 
-void clut_release(u8 *arg0) {
+void clut_release(TexClut *arg0) {
     s32 temp_a0;
 
-    temp_a0 = (*(s32*)((u8*)(arg0) + 4));
+    temp_a0 = (arg0->pos);
     if (temp_a0 != 0) {
         vram_release(temp_a0);
-        (*(s32*)((u8*)(arg0) + 4)) = 0;
+        (arg0->pos) = 0;
     }
 }
 

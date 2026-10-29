@@ -51,7 +51,7 @@ void InitialiseHeroes(void) {
         if (i >= 4) {
             break;
         }
-        nas = (NAS *)((u8 *)NasPool + m * 16);  /* &NasPool[i] drops the m counter (+7 a hero) */
+        nas = (NAS *)((u8 *)NasPool + m * 16);  /* matching: &NasPool[i] drops the m counter (+7 a hero) */
         h = &hb[i];
         h->hero = nas;
         *nas = NASTemplate;
@@ -79,7 +79,7 @@ void InitialiseHeroes(void) {
         h->hero_health = 0x14;
         g = GAME;
         g->pause = 0;
-        g = (GameState *)((u8 *)g + i);  /* indexing unk50/unk58 by i adds two insns */
+        g = (GameState *)((u8 *)g + i);  /* matching: indexing unk50/unk58 by i adds two insns */
         h->hero_status = 0;
         h->hero_strength = 0x14;
         h->hero_immunity = 0;

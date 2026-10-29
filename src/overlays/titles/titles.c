@@ -1731,7 +1731,7 @@ outer:
                 s32 idx = q[0];
                 u8 *gg;
                 do { do { do { do {
-                    gg = (u8 *)(idx + (s32)g);
+                    gg = (u8 *)(idx + (s32)g);  /* matching: an int sum, like PickCpuHeroes' */
                 } while (0); } while (0); } while (0); } while (0);
                 if (gg[0xE4] == 0) {
                     s32 k;

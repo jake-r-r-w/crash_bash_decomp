@@ -633,7 +633,7 @@ void primpool_init(s32 count) {
     p = PrimPool.mem;
     last = count - 1;
     for (i = 0; i < last; i++) {
-        n = (PoolNode *)((u8 *)p + 0x64);
+        n = (PoolNode *)FILE_AT(p, 0x64);  /* the pool's 0x64-byte entries */
         p->next = n;
         p = n;
     }
@@ -2849,7 +2849,7 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
         if (*(u16 *)&((subengine *)sub)->unk52 != 0) {
             rotscale_update(&((subengine *)sub)->unk10);
         }
-        MulMatrix0(rot, (MATRIX *)((u8 *)sub + 0x30), mp);
+        MulMatrix0(rot, (MATRIX *)&((subengine *)sub)->unk2C[4], mp);
         gte_SetRotMatrix(mp);
     }
     gte_SetTransMatrix(mp);
@@ -2887,7 +2887,7 @@ subengine *mapscene_find_sub(s32 i, s32 val) {
     subengine *sub;
 
     for (sub = MapScene->subs; sub != NULL; sub = sub->next) {
-        if (((u8 *)sub + i)[0x64] == val) {
+        if (sub->unk64[i] == val) {
             return sub;
         }
     }

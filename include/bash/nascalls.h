@@ -56,7 +56,7 @@ void texture_unused_c(void);
 void texture_release_loading_mem(obj_textureset *set);
 void texture_unused_d(void);
 void texture_unused_e(void);
-void clut_release(u8 *arg0);
+void clut_release(TexClut *arg0);
 void texture_release_vram(obj_texture *tex);
 void textureset_clear(obj_textureset *ts);
 void RunModules(ModuleEntry *p);

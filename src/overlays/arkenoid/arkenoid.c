@@ -6065,7 +6065,7 @@ void Init_seaweed(NAS *arg0) {
                 ((void (*)(EXTanimator*, s32))GotoLinkAnim)((EXTanimator*)cur, n);
                 if (n < 2) {
                     RunNasAnim(arg0);
-                    *(u16*)((u8*)cur + 30) += Random(8);
+                    *(u16 *)&cur->unk1E += Random(8);
                 }
                 eng->sub->flags |= 0x02000000;
                 eng->sub->unk68 = *(u16*)(info + 8);

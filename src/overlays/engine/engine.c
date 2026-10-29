@@ -257,7 +257,7 @@ void PickCpuHeroes(void) {
         if (i != 0 && (g->teams == 0 || i != 1)) {
             found = 1;
             while (n < 6) {
-                p = (u8 *)(i + (s32)g);  /* as an int sum: g + i swaps two registers */
+                p = (u8 *)(i + (s32)g);  /* matching: as an int sum: g + i swaps two registers */
                 if (found == 0) {
                     break;
                 }

@@ -1580,7 +1580,7 @@ void InitGameState(GameState *arg0) {
     arg0->arena = 0;
     arg0->arenaLevel = 0;
     k = ' ';
-    for (i = 7, p = (u8 *)arg0 + i; i >= 0; i--, p--) {  /* unk18[i] loses the stepped pointer p */
+    for (i = 7, p = (u8 *)arg0 + i; i >= 0; i--, p--) {  /* matching: unk18[i] loses the stepped pointer p */
         p[0x18] = k;
     }
     t = 0x3C;

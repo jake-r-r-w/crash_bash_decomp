@@ -3564,7 +3564,7 @@ void BashSpaceDropTile(s32 arg0) {
     BashCell *base = BashSpaceTiles[0];
     s32 xi = (eng->unk10.x + 0x800) >> 9;
     s32 zi = (eng->unk10.z + 0x800) >> 9;
-    BashCell *cell = (BashCell *)((char *)base + (zi * 12 + xi * 0x60));
+    BashCell *cell = (BashCell *)((char *)base + (zi * 12 + xi * 0x60));  /* matching: base[xi * 8 + zi] is two insns longer */
     BashObj *obj = cell->obj;
 
     if (obj != NULL) {
@@ -3583,10 +3583,10 @@ void BashSpaceBreakTile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
         arg0 = (arg0 + 0x800) >> 9;
         arg2 = (arg2 + 0x800) >> 9;
         if ((u32)arg0 < 8 && (u32)arg2 < 8) {
-            if (((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->obj != NULL) {
-                *(s32 *)((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->obj &= 0xFFFF7FFF;
-                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->unkA = 0;
-                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->unk8 |= 0x100;
+            if (((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->obj != NULL) {  /* matching: &BashSpaceTiles[arg0][arg2] is CSE'd and allocated differently */
+                *(s32 *)((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->obj &= 0xFFFF7FFF;  /* matching: as above */
+                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->unkA = 0;  /* matching: as above */
+                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->unk8 |= 0x100;  /* matching: as above */
             }
         }
     }
