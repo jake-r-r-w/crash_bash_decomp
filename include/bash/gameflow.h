@@ -428,7 +428,7 @@ void UpdateSecretLevel(void);
 
 void InitCrateExplode(NAS *arg0);
 
-void LoadScreenImage(void);
+void LoadScreenImage(s32 *file);
 
 void UpdateExitDelay(void);
 

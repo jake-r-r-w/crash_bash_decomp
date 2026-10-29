@@ -183,12 +183,11 @@ void InitIntro(void) {
     FirstBootDone = 1;
 }
 
-void LoadScreenImage(void) {
+void LoadScreenImage(s32 *file) {
     u8 *a;
     u8 *b;
-    s32 load_file_permanent();
 
-    a = (u8 *)load_file_permanent();
+    a = (u8 *)load_file_permanent(file);
     b = tga_convert(a, ScreenRect->w, ScreenRect->h);
     mal_free(a, &MainHeap);
     LoadImage(ScreenRect, (u32 *)b);

@@ -21,12 +21,6 @@ typedef struct {
 /* Hero engine scale tables, 12 steps (HeroSpin). */
 extern u16 HeroSquashCycle[];
 extern u16 HeroSpinScale[];
-/* A victory sequence (HeroHooks.VictorySeqs, by hero): the animation's name, its sequence. */
-typedef struct VictorySeq {
-    s32 name;
-    u16 seq;
-    u16 pad;
-} VictorySeq;
 /* Per-hero run speed rows: 3 u16 per hero_name (DefPreMoveHero). */
 extern s16 HeroAnimHeroA;
 extern u16 HeroAnimSeqA;

@@ -345,6 +345,12 @@ typedef struct EngineHooks {
 } EngineHooks;
 extern EngineHooks HeroHooks;
 extern u8 DefaultHeroModels[];
+/* A victory sequence (HeroHooks.VictorySeqs, by hero): the animation's name, its sequence. */
+typedef struct VictorySeq {
+    s32 name;
+    u16 seq;
+    u16 pad;
+} VictorySeq;
 extern struct VictorySeq DefaultVictorySeqs[];   /* {name, id} pairs: the default victory sequences (HeroHooks.VictorySeqs) */
 extern u8 DefaultRunSpeeds[];
 extern u8 DefaultJumpEnts[];

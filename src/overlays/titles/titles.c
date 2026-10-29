@@ -1103,7 +1103,6 @@ void RunGameUpdate(void) {
 }
 
 void RunGameInit(void) {
-    void LoadScreenImage();
     init_scripts(0x20, 0x20);
     if (IntroProcess.init != NULL) {
         IntroProcess.init();
