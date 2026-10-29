@@ -10,14 +10,6 @@
 #include "bash/main.h"
 #include "bash/engine.h"
 
-typedef struct {
-    s32 pad0[4];
-    s32 x;
-    s32 pad14;
-    s32 y;
-    s16 pad1C;
-    s16 h;
-} T_BB7B8;
 
 
 typedef struct {
@@ -43,7 +35,7 @@ typedef struct {
     u16 type;
 } T_BB7E8Fux;
 
-s32 BashGridKey(T_BB7B8 *p);
+s32 BashGridKey(EXTengine *p);
 
 extern u16 BashPickupModels[];
 
@@ -72,14 +64,6 @@ s32 CrateHitHeroes(EXTengine *eng, EXTobject *flags, u32 mask);
 void SetBashHeroHit(s32 arg0);
 
 
-typedef struct {
-    u8 pad0[0x10];
-    s32 x;
-    s32 pad14;
-    s32 z;
-    s16 pad1C;
-    s16 ang;
-} T_BB64C_A;
 
 typedef struct {
     u8 pad0[0xD];
@@ -93,7 +77,7 @@ typedef struct {
     s16 unk2A;
 } T_BB64C_B;
 
-void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b);
+void CrateAimAtGrid(EXTengine *a, T_BB64C_B *b);
 
 NAS *CrateHitSolids(EXTengine *eng, s32 who);
 

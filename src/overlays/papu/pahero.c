@@ -300,8 +300,8 @@ void PlotPACrate(NAS *nas) {
             slide->unk14 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->b;
             slide->unk10 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->c;
             slide->unk12 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->d;
-            PapuGridKey((T_B8080 *)eng);
-            PACrateAimAtGrid((T_B7F14_A *)eng, (T_B7F14_B *)slide);
+            PapuGridKey((EXTengine *)eng);
+            PACrateAimAtGrid((EXTengine *)eng, (T_B7F14_B *)slide);
             break;
         case 4:
         case 7:
@@ -316,8 +316,8 @@ void PlotPACrate(NAS *nas) {
             slide->unk14 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->b;
             slide->unk10 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->c;
             slide->unk12 = PAPU_STATS(hit_shapes2, Heroes[c].hero_name)->d;
-            PapuGridKey((T_B8080 *)eng);
-            PACrateAimAtGrid((T_B7F14_A *)eng, (T_B7F14_B *)slide);
+            PapuGridKey((EXTengine *)eng);
+            PACrateAimAtGrid((EXTengine *)eng, (T_B7F14_B *)slide);
             break;
         default:
             obj->status = 0;

@@ -2566,7 +2566,7 @@ void PapuInitCrateHooks(void) {
     HitHooks.hit_shapes2 = CrateHitShapes2;
 }
 
-void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {
+void PACrateAimAtGrid(EXTengine *a, T_B7F14_B *b) {
     s32 z;
     s32 x;
     s32 sum = 0;
@@ -2583,10 +2583,10 @@ void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {
             sum += v;
         } while (v != 0);
     }
-    x = a->x;
-    mx = sum * rcossin_tbl[(a->ang - 0x400) & 0xFFF].unk2;
-    mz = sum * rcossin_tbl[(u16)a->ang & 0xFFF].unk2;
-    z = a->z;
+    x = a->XYZ.x;
+    mx = sum * rcossin_tbl[(a->xform.rot.vy - 0x400) & 0xFFF].unk2;
+    mz = sum * rcossin_tbl[(u16)a->xform.rot.vy & 0xFFF].unk2;
+    z = a->XYZ.z;
     x -= mx >> 12;
     z -= mz >> 12;
     x &= ~0xFF;
@@ -2595,9 +2595,9 @@ void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {
     z += 0x80;
     b->unk16 = x;
     b->unk2A = z;
-    b->dir = *(u8 *)FILE_AT(DirPadBits, ((u16)a->ang >> 7) & 0x1C);
-    x -= a->x;
-    z -= a->z;
+    b->dir = *(u8 *)FILE_AT(DirPadBits, ((u16)a->xform.rot.vy >> 7) & 0x1C);
+    x -= a->XYZ.x;
+    z -= a->XYZ.z;
     sum = csqrt(x * x + z * z) >> 6;
     if (sum > 0) {
         v -= d;
@@ -2611,13 +2611,13 @@ void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {
     b->unkE = v;
 }
 
-s32 PapuGridKey(T_B8080 *p) {
+s32 PapuGridKey(EXTengine *p) {
     s32 a, b, c, d;
-    b = (p->x >> 8) + 8;
-    a = 7 - (p->y >> 8);
-    c = (s8)(p->h >> 8);
+    b = (p->XYZ.x >> 8) + 8;
+    a = 7 - (p->XYZ.z >> 8);
+    c = (s8)(p->xform.rot.vy >> 8);
     d = c << 16;
-    if (!(((u16)p->h) >> 16)) {
+    if (!(((u16)p->xform.rot.vy) >> 16)) {
         return c;
     }
     return a + b + d;

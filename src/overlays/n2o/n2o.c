@@ -517,7 +517,7 @@ void InitialiseN2O(void) {
     N2OInitSlots();
 }
 
-s32 N2O_KeepInBounds(N2OObj *arg0) {
+s32 N2O_KeepInBounds(EXTengine *arg0) {
     s32 i;
     s32 dx;
     s32 dz;
@@ -526,22 +526,22 @@ s32 N2O_KeepInBounds(N2OObj *arg0) {
 
     for (i = 0; i < 4; i++) {
         c = (N2OCircle *)(i * 6 + (s32)N2OPillarList);
-        dx = arg0->x - c->x;
-        dz = arg0->z - c->z;
-        if (arg0->flags & 0x40) {
-            r = c->r + arg0->radius;
+        dx = arg0->XYZ.x - c->x;
+        dz = arg0->XYZ.z - c->z;
+        if (arg0->collision_box.flags & 0x40) {
+            r = c->r + arg0->collision_box.radius;
         } else {
             r = c->r + 0x80;
         }
         if (dx * dx + dz * dz < r * r) {
-            arg0->x = N2OPillarList[i].x - ((r * rcossin_tbl[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+            arg0->XYZ.x = N2OPillarList[i].x - ((r * rcossin_tbl[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
             return 1;
         }
     }
     return 0;
 }
 
-s32 N2O_BA_BounceOnBounds(N2OObj *arg0, s32 arg1) {
+s32 N2O_BA_BounceOnBounds(EXTengine *arg0, s32 arg1) {
     N2OCircle *base;
     SLONG_XYZ v;
     s32 i;
@@ -557,16 +557,16 @@ s32 N2O_BA_BounceOnBounds(N2OObj *arg0, s32 arg1) {
     base = N2OPillarList;
     ret = 0;
     for (i = 0; i < 4; i++) {
-        if (arg0->flags & 0x40) {
-            r = base[i].r + arg0->radius;
+        if (arg0->collision_box.flags & 0x40) {
+            r = base[i].r + arg0->collision_box.radius;
         } else {
             r = base[i].r + 0x80;
         }
         cx = N2OPillarList[i].x;
-        x = arg0->x;
+        x = arg0->XYZ.x;
         dx = x - cx;
         cz = N2OPillarList[i].z;
-        z = arg0->z;
+        z = arg0->XYZ.z;
         dz = z - cz;
         if (dx * dx + dz * dz < r * r) {
             goto found;
@@ -578,25 +578,25 @@ s32 N2O_BA_BounceOnBounds(N2OObj *arg0, s32 arg1) {
     }
     dx = x;
     dz = z;
-    if (arg0->flags & 0x40) {
-        r = 0x800 - arg0->radius;
+    if (arg0->collision_box.flags & 0x40) {
+        r = 0x800 - arg0->collision_box.radius;
     } else {
         r = 0x800;
     }
     if (dx > r && (N2OWallsHit & 0x88)) {
-        arg0->x = r;
+        arg0->XYZ.x = r;
         ret = 0x400;
     }
     if (dx < -r && (N2OWallsHit & 0x44)) {
-        arg0->x = -r;
+        arg0->XYZ.x = -r;
         do { ret = 0xC00; } while (0);
     }
     if (dz > r && (N2OWallsHit & 0x22)) {
-        arg0->z = r;
+        arg0->XYZ.z = r;
         ret = 0;
     }
     if (dz < -r && (N2OWallsHit & 0x11)) {
-        arg0->z = -r;
+        arg0->XYZ.z = -r;
         ret = 0x800;
     }
     if (ret != -1) {
@@ -607,13 +607,13 @@ found:
     v.x = cx;
     v.y = 0;
     v.z = N2OPillarList[i].z;
-    N2OLineToCircleTest((SLONG_XYZ *)&arg0->x, arg1, &v, r);
-    return get_angle(N2OPillarList[i].x - arg0->x, N2OPillarList[i].z - arg0->z);
+    N2OLineToCircleTest((SLONG_XYZ *)&arg0->XYZ.x, arg1, &v, r);
+    return get_angle(N2OPillarList[i].x - arg0->XYZ.x, N2OPillarList[i].z - arg0->XYZ.z);
 fail:
     return -1;
 }
 
-s32 N2O_BA_TestLaunchBounds(N2OObj *arg0) {
+s32 N2O_BA_TestLaunchBounds(EXTengine *arg0) {
     N2OCircle *base = N2OPillarList;
     N2OCircle *c;
     s32 i;
@@ -626,15 +626,15 @@ s32 N2O_BA_TestLaunchBounds(N2OObj *arg0) {
 
     for (i = 0; i < 4; i++) {
         c = &base[i];
-        if (arg0->flags & 0x40) {
-            r = c->r + arg0->radius;
+        if (arg0->collision_box.flags & 0x40) {
+            r = c->r + arg0->collision_box.radius;
         } else {
             r = c->r + 0x80;
         }
         dx = c->x;
-        x = arg0->x;
+        x = arg0->XYZ.x;
         dx = x - dx;
-        z = arg0->z;
+        z = arg0->XYZ.z;
         dz = z - c->z;
         if (dx * dx + dz * dz < r * r) {
             return 1;
@@ -1787,7 +1787,7 @@ void PlotN2OBall(NAS *nas) {
                 }
             }
             if (obj->can_do & 0x400) {
-                d = (s16)N2O_BA_BounceOnBounds((N2OObj *)eng, mot->Xa);
+                d = (s16)N2O_BA_BounceOnBounds((EXTengine *)eng, mot->Xa);
                 if (d != -1) {
                     a = mot->Xa;
                     if (angle_diff_abs(d, a) < 0x200) {
@@ -1809,7 +1809,7 @@ void PlotN2OBall(NAS *nas) {
             eng->XYZ.y -= 0x60;
             break;
         case 1:
-            d = (s16)N2O_BA_BounceOnBounds((N2OObj *)eng, mot->Xa);
+            d = (s16)N2O_BA_BounceOnBounds((EXTengine *)eng, mot->Xa);
             if (d != -1) {
                 a = mot->Xa;
                 if (angle_diff_abs(d, a) > 0x200) {
@@ -2269,7 +2269,7 @@ void N2OUpdateBoss(void) {
                 }
             }
         }
-        N2O_KeepInBounds((N2OObj *)eng);
+        N2O_KeepInBounds((EXTengine *)eng);
         tm = N2OBossClock;
         q = &World_floor_level;
         v = (rcossin_tbl[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;

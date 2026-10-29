@@ -131,16 +131,6 @@ typedef struct MineModel {
     /* 0x74 */ s16 unk74;
 } MineModel;
 
-typedef struct MineObj {
-    /* 0x00 */ u8 pad00[0x1C];
-    /* 0x1C */ s16 unk1C;
-    /* 0x1E */ s16 unk1E;
-    /* 0x20 */ s16 unk20;
-    /* 0x22 */ u8 pad22[0x3C];
-    /* 0x5E */ s16 unk5E;
-    /* 0x60 */ u8 pad60[0xC];
-    /* 0x6C */ MineModel *model;
-} MineObj;
 
 typedef struct MissileObj {
     /* 0x00 */ u8 pad00[0x5D];
@@ -164,7 +154,7 @@ typedef struct MissileExt {
 
 typedef struct MineHolder {
     /* 0x00 */ u8 pad00[0x54];
-    /* 0x54 */ MineObj *obj;
+    /* 0x54 */ EXTengine *obj;
 } MineHolder;
 extern s32 NoxBossHits;
 extern s32 NoxHeroesDown;

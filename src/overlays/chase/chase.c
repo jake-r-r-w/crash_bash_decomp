@@ -2278,7 +2278,7 @@ NAS *ChaseSpawnCoal(s32 arg0) {
     return nas;
 }
 
-void CoalFlameSpread(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
+void CoalFlameSpread(EXTengine *eng, CoalFlameFux *fux, s32 id) {
     s32 *grid;
     s32 cx;
     s32 cz;
@@ -2291,8 +2291,8 @@ void CoalFlameSpread(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
     i = 0;
     grid = ChaseGrid;
     ofs = CircleFireOffsets;
-    cx = eng->x;
-    cz = eng->z;
+    cx = eng->XYZ.x;
+    cz = eng->XYZ.z;
     for (;;) {
         CoalFlameCell *cell;
         CoalFlamePos *pos;
@@ -2325,10 +2325,10 @@ void CoalFlameSpread(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
                         } else if (s < 0x258) {
                             s = 0x258;
                         }
-                        eng->sx = s;
-                        eng->sy = s;
-                        eng->sz = s;
-                        eng->unk5E = 1;
+                        eng->xform.scale.vx = s;
+                        eng->xform.scale.vy = s;
+                        eng->xform.scale.vz = s;
+                        eng->xform.dirty = 1;
                         grid[CIRCLEFIRE_CELL(x, z)] = 0;
                         KillNAS((NAS *)cell);
                     } else {
@@ -2354,7 +2354,7 @@ void CoalFlameSpread(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
 
 s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
     CoalChainNAS *nas;
-    CoalEng *eng;
+    EXTengine *eng;
     HeroInfo *h;
     s32 total;
     s32 i;
@@ -2369,25 +2369,25 @@ s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
             continue;
         }
         eng = nas->eng;
-        d = eng->x - x;
+        d = eng->XYZ.x - x;
         if (-range < d && d < range) {
-            d = eng->z - z;
+            d = eng->XYZ.z - z;
             if (-range < d && d < range && nas->fux->unk30 != 1) {
                 nas->unk5C = 1;
-                kind = eng->sub->unk74;
+                kind = eng->sub->entity;
                 total += 2;
                 if (kind == 0x2016) {
                     pts = 20;
-                    PlaySfx(0x755, NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x755, NULL, (SLONG_XYZ *)&eng->XYZ.x, 0x1000, 0x1E00, 0);
                 } else if (kind == 0x2017) {
                     pts = 10;
-                    PlaySfx(0x754, NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x754, NULL, (SLONG_XYZ *)&eng->XYZ.x, 0x1000, 0x1E00, 0);
                 } else {
                     pts = cur + total;
                     if (pts > 10) {
                         pts = 10;
                     }
-                    PlaySfx(ChaseChainSfx[id], NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
+                    PlaySfx(ChaseChainSfx[id], NULL, (SLONG_XYZ *)&eng->XYZ.x, 0x1000, 0x1E00, 0);
                 }
                 if (((GameState *)GameInfo)->levelFlags & 0x40) {
                     if (((GameState *)GameInfo)->teams != 0) {
@@ -2404,9 +2404,9 @@ s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
                 } else {
                     ChaseHeroes()[id].hero_score += pts;
                 }
-                CreateFloatyScore(eng->x, -300, eng->z, pts, delay);
+                CreateFloatyScore(eng->XYZ.x, -300, eng->XYZ.z, pts, delay);
                 delay += 10;
-                total += CoalChainHit(eng->x, eng->z, id, pts, 0x120, delay);
+                total += CoalChainHit(eng->XYZ.x, eng->XYZ.z, id, pts, 0x120, delay);
             }
         }
     }
@@ -2415,27 +2415,27 @@ s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
 
 void PlotCoalFlame(NAS *nas) {
     CoalFlameFux *fux;
-    CoalFlameEng *eng;
+    EXTengine *eng;
     s32 t;
 
     fux = (CoalFlameFux *)nas->FUX;
-    eng = (CoalFlameEng *)nas->Engine;
+    eng = (EXTengine *)nas->Engine;
     ((CoalPlayerRec *)ChaseHeroSlots)[fux->unk2C].unk20 = 2;
     if (fux->unk1C == 0) {
-        if (eng->x < fux->unk20) {
-            eng->x += 0x14;
-        } else if (eng->x > fux->unk20) {
-            eng->x -= 0x14;
+        if (eng->XYZ.x < fux->unk20) {
+            eng->XYZ.x += 0x14;
+        } else if (eng->XYZ.x > fux->unk20) {
+            eng->XYZ.x -= 0x14;
         }
-        if (eng->z < fux->unk24) {
-            eng->z += 0x14;
-        } else if (eng->z > fux->unk24) {
-            eng->z -= 0x14;
+        if (eng->XYZ.z < fux->unk24) {
+            eng->XYZ.z += 0x14;
+        } else if (eng->XYZ.z > fux->unk24) {
+            eng->XYZ.z -= 0x14;
         }
-        if ((u32)(fux->unk20 - eng->x + 0x27) < 0x4F
-            && (u32)((t = fux->unk24) - eng->z + 0x27) < 0x4F) {
-            eng->x = fux->unk20;
-            eng->z = fux->unk24;
+        if ((u32)(fux->unk20 - eng->XYZ.x + 0x27) < 0x4F
+            && (u32)((t = fux->unk24) - eng->XYZ.z + 0x27) < 0x4F) {
+            eng->XYZ.x = fux->unk20;
+            eng->XYZ.z = fux->unk24;
             fux->unk1C = -7;
         }
     } else if ((t = --nas->UserInfo.user2) <= 0) {
@@ -2448,13 +2448,13 @@ void PlotCoalFlame(NAS *nas) {
     if (fux->unk1C < 0) {
         CoalFlameSpread(eng, fux, fux->unk2C);
     }
-    ChaseFlameObj[fux->unk2C] += CoalChainHit(eng->x, eng->z, fux->unk2C,
+    ChaseFlameObj[fux->unk2C] += CoalChainHit(eng->XYZ.x, eng->XYZ.z, fux->unk2C,
                                             ChaseFlameObj[fux->unk2C], 0x12C, 0);
     if (ChaseFlameObj[fux->unk2C] > 10) {
         ChaseFlameObj[fux->unk2C] = 10;
     }
-    ((CoalFlameEng *)ChaseFlameTimer[fux->unk2C])->x = eng->x;
-    ((CoalFlameEng *)ChaseFlameTimer[fux->unk2C])->z = eng->z;
+    ((EXTengine *)ChaseFlameTimer[fux->unk2C])->XYZ.x = eng->XYZ.x;
+    ((EXTengine *)ChaseFlameTimer[fux->unk2C])->XYZ.z = eng->XYZ.z;
     ChaseFlameState[fux->unk2C] = 10;
 }
 
@@ -3462,25 +3462,25 @@ void InitCoalFlame(NAS *nas) {
 }
 
 void PlotCoal(CoalNAS *nas) {
-    CoalEng *eng = nas->eng;
+    EXTengine *eng = nas->eng;
 
     if (nas->unk5E == 5) {
-        eng->unk5E = 1;
-        eng->unk1C += 0x44;
+        eng->xform.dirty = 1;
+        eng->xform.rot.vx += 0x44;
         nas->unk60 += 0xC;
-        eng->y += nas->unk60;
-        if (eng->y > 0) {
-            eng->y = 0;
-            eng->sub->unk74 = 0x2002;
-            eng->unk1C = 0;
-            eng->unk5E = 1;
+        eng->XYZ.y += nas->unk60;
+        if (eng->XYZ.y > 0) {
+            eng->XYZ.y = 0;
+            eng->sub->entity = 0x2002;
+            eng->xform.rot.vx = 0;
+            eng->xform.dirty = 1;
             nas->unk5E = 0;
         }
     }
     nas->timer--;
     if (nas->timer == 0) {
-        s32 xi = (eng->x + 0xA00) >> 7;
-        s32 zi = (eng->z + 0xA00) >> 7;
+        s32 xi = (eng->XYZ.x + 0xA00) >> 7;
+        s32 zi = (eng->XYZ.z + 0xA00) >> 7;
         s32 idx = zi * 40 + xi;
         ChaseGrid[idx] = 0;
         KillNAS((NAS *)nas);

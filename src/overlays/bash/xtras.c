@@ -17,7 +17,7 @@ u16 BashDrainsEdgePos = 0;
 u16 BashPowerupTimer = 0;
 u8 *BashCrateList = 0;
 
-void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
+void CrateAimAtGrid(EXTengine *a, T_BB64C_B *b) {
     s32 z;
     s32 x;
     s32 sum = 0;
@@ -34,10 +34,10 @@ void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
             sum += v;
         } while (v != 0);
     }
-    x = a->x;
-    mx = sum * rcossin_tbl[(a->ang - 0x400) & 0xFFF].unk2;
-    mz = sum * rcossin_tbl[(u16)a->ang & 0xFFF].unk2;
-    z = a->z;
+    x = a->XYZ.x;
+    mx = sum * rcossin_tbl[(a->xform.rot.vy - 0x400) & 0xFFF].unk2;
+    mz = sum * rcossin_tbl[(u16)a->xform.rot.vy & 0xFFF].unk2;
+    z = a->XYZ.z;
     x -= mx >> 12;
     z -= mz >> 12;
     x &= ~0xFF;
@@ -46,9 +46,9 @@ void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
     z += 0x80;
     b->unk16 = x;
     b->unk2A = z;
-    b->dir = *(u8 *)FILE_AT(DirPadBits, ((u16)a->ang >> 7) & 0x1C);
-    x -= a->x;
-    z -= a->z;
+    b->dir = *(u8 *)FILE_AT(DirPadBits, ((u16)a->xform.rot.vy >> 7) & 0x1C);
+    x -= a->XYZ.x;
+    z -= a->XYZ.z;
     sum = csqrt(x * x + z * z) >> 6;
     if (sum > 0) {
         v -= d;
@@ -62,13 +62,13 @@ void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
     b->unkE = v;
 }
 
-s32 BashGridKey(T_BB7B8 *p) {
+s32 BashGridKey(EXTengine *p) {
     s32 a, b, c, d;
-    b = (p->x >> 8) + 8;
-    a = 7 - (p->y >> 8);
-    c = (s8)(p->h >> 8);
+    b = (p->XYZ.x >> 8) + 8;
+    a = 7 - (p->XYZ.z >> 8);
+    c = (s8)(p->xform.rot.vy >> 8);
     d = c << 16;
-    if (!(((u16)p->h) >> 16)) {
+    if (!(((u16)p->xform.rot.vy) >> 16)) {
         return c;
     }
     return a + b + d;
@@ -663,8 +663,8 @@ void PlotCrate(NAS *arg0) {
             ext->max = BC038_STAT(hit_shapes2, v)->max;
             ext->accel = BC038_STAT(hit_shapes2, v)->accel;
             ext->decel = BC038_STAT(hit_shapes2, v)->decel;
-            BashGridKey((T_BB7B8 *)eng);
-            CrateAimAtGrid((T_BB64C_A *)eng, (T_BB64C_B *)ext);
+            BashGridKey((EXTengine *)eng);
+            CrateAimAtGrid((EXTengine *)eng, (T_BB64C_B *)ext);
             break;
         case 3:
         case 4:
@@ -680,8 +680,8 @@ void PlotCrate(NAS *arg0) {
             ext->max = BC038_STAT(hit_shapes2, v)->max;
             ext->accel = BC038_STAT(hit_shapes2, v)->accel;
             ext->decel = BC038_STAT(hit_shapes2, v)->decel;
-            BashGridKey((T_BB7B8 *)eng);
-            CrateAimAtGrid((T_BB64C_A *)eng, (T_BB64C_B *)ext);
+            BashGridKey((EXTengine *)eng);
+            CrateAimAtGrid((EXTengine *)eng, (T_BB64C_B *)ext);
             break;
         default:
             fux->status = 0;

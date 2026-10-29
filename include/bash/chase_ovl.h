@@ -112,21 +112,10 @@ typedef struct CoalSub {
     u16 unk74;
 } CoalSub;
 
-typedef struct CoalEng {
-    u8 pad0[0x10];
-    s32 x;
-    s32 y;
-    s32 z;
-    u16 unk1C;
-    u8 pad1E[0x5E - 0x1E];
-    u16 unk5E;
-    u8 pad60[0x6C - 0x60];
-    CoalSub *sub;
-} CoalEng;
 
 typedef struct CoalNAS {
     u8 pad0[0x54];
-    CoalEng *eng;
+    EXTengine *eng;
     u8 pad58[4];
     u16 timer;  /* counted down */
     u16 unk5E;
@@ -356,16 +345,11 @@ typedef struct {
 typedef struct {
     u8 pad0[0x54]; CoalFlamePos *pos; CoalFlameFux *fux; u16 unk5C;
 } CoalFlameCell;
-typedef struct {
-    u8 pad0[0x10]; s32 x; s32 pad14; s32 z; u8 pad1C[0x10];
-    s32 sx; s32 sy; s32 sz; u8 pad38[0x26]; s16 unk5E;
-    u8 pad60[0x34]; _sfx_handler *sfx;
-} CoalFlameEng;
 s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 arg4, s32 arg5);
 /* CoalChainHit: the coal NASes in ChaseBarrels it ignites. */
 typedef struct { u8 pad0[0x30]; s32 unk30; } CoalChainFux;
 typedef struct {
-    u8 pad0[0x54]; CoalEng *eng; CoalChainFux *fux; u16 unk5C;
+    u8 pad0[0x54]; EXTengine *eng; CoalChainFux *fux; u16 unk5C;
 } CoalChainNAS;
 extern s32 ChaseChainSfx[];
 static inline HeroInfo *ChaseHeroes(void) {
@@ -385,7 +369,7 @@ void PlotBarrelGenerator(NAS *nas);
 
 NAS *ChaseSpawnCoal(s32 arg0);
 
-void CoalFlameSpread(CoalFlameEng *eng, CoalFlameFux *fux, s32 id);
+void CoalFlameSpread(EXTengine *eng, CoalFlameFux *fux, s32 id);
 
 void PlotCoalFlame(NAS *nas);
 

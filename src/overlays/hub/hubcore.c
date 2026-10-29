@@ -1795,7 +1795,7 @@ void PodiumInitScript(s32 arg0, s32 arg1) {
 }
 
 void PlotPodiumTrophy(PodiumTrophy *arg0) {
-    TrophyInner *in;
+    EXTengine *in;
     PodiumFx *fx;
     TrigEntry *tb;
     s32 t;
@@ -1806,17 +1806,17 @@ void PlotPodiumTrophy(PodiumTrophy *arg0) {
     if (in != NULL) {
         st = arg0->state;
         if (st == 1) {
-            in->unk2C += (0x1000 - in->unk2C) >> 5;
-            if (in->unk2C >= 0xF00) {
-                in->unk2C = 0x1000;
+            in->xform.scale.vx += (0x1000 - in->xform.scale.vx) >> 5;
+            if (in->xform.scale.vx >= 0xF00) {
+                in->xform.scale.vx = 0x1000;
                 arg0->state = 2;
             }
-            v = in->unk2C;
-            in->unk5E = st;
-            in->unk34 = v;
-            in->unk30 = v;
+            v = in->xform.scale.vx;
+            in->xform.dirty = st;
+            in->xform.scale.vz = v;
+            in->xform.scale.vy = v;
         }
-        fx = in->fx;
+        fx = in->sub;
         if (fx != NULL) {
             tb = rcossin_tbl;
             t = FrameCount;
@@ -1836,7 +1836,7 @@ void PodiumCamera(CamView *out, s32 arg1) {
     SLONG_XYZ key;
     CamXYZ d;
     u8 *o;
-    PodiumChild *c;
+    EXTengine *c;
     s32 id;
     s32 end;
     s32 t;
@@ -1902,11 +1902,11 @@ void PodiumCamera(CamView *out, s32 arg1) {
                 c = PodiumTrophyObj->child;
                 if (c != NULL && PodiumTrophyObj->f5C == 0) {
                     PodiumTrophyObj->f5C = 1;
-                    c->f5C = 1;
-                    c->f34 = 0;
-                    c->f30 = 0;
-                    c->f2C = 0;
-                    c->f5E = 1;
+                    c->xform.hasScale = 1;
+                    c->xform.scale.vz = 0;
+                    c->xform.scale.vy = 0;
+                    c->xform.scale.vx = 0;
+                    c->xform.dirty = 1;
                     c->flags |= 0x8000;
                 }
             }
@@ -2279,17 +2279,17 @@ void PodiumScoresDown(void) {
 }
 
 void PodiumReleaseTrophy(void) {
-    PodiumChild *c;
+    EXTengine *c;
 
     if (PodiumTrophyObj != NULL) {
         c = PodiumTrophyObj->child;
         if (c != NULL && PodiumTrophyObj->f5C == 0) {
             PodiumTrophyObj->f5C = 1;
-            c->f5C = 1;
-            c->f34 = 0;
-            c->f30 = 0;
-            c->f2C = 0;
-            c->f5E = 1;
+            c->xform.hasScale = 1;
+            c->xform.scale.vz = 0;
+            c->xform.scale.vy = 0;
+            c->xform.scale.vx = 0;
+            c->xform.dirty = 1;
             c->flags |= 0x8000;
         }
     }

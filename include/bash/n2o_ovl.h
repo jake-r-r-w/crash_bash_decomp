@@ -147,16 +147,6 @@ typedef struct {
     s16 r;
 } N2OCircle;
 
-typedef struct {
-    u8 pad0[0x10];
-    s32 x;
-    u8 pad14[4];
-    s32 z;
-    u8 pad1C[0x6E];
-    s16 radius;
-    u8 pad8C[4];
-    u32 flags;
-} N2OObj;
 
 extern N2OCircle *N2OPillarList;
 extern N2OCircle N2OPillars[];
@@ -288,7 +278,7 @@ typedef struct N2OPos {
     s32 z;
 } N2OPos;
 
-s32 N2O_BA_TestLaunchBounds(N2OObj *arg0);
+s32 N2O_BA_TestLaunchBounds(EXTengine *arg0);
 
 void SetN2OHeroHit(s32 arg0);
 
@@ -351,7 +341,7 @@ s32 N2OTestWalls(N2OVel *arg0, N2OOut *arg1, s32 arg2);
 s32 N2OHeroUpdateSpeed();
 extern u32 *N2OPhaseObject;
 
-s32 N2O_KeepInBounds(N2OObj *arg0);
+s32 N2O_KeepInBounds(EXTengine *arg0);
 
 void N2OHeroTaunt(s32 arg0);
 
@@ -389,7 +379,7 @@ extern u16 N2OHeroModels[];
 extern s32 N2OVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern u16 N2OAiSkill[];
 extern u16 N2OAiSkillAlt[];
-s32 N2O_BA_BounceOnBounds(N2OObj *arg0, s32 arg1);
+s32 N2O_BA_BounceOnBounds(EXTengine *arg0, s32 arg1);
 
 void N2OHeroEngineUpdate(s32 arg0);
 

@@ -2153,12 +2153,12 @@ void InitNitroMissile(MissileHolder *arg0) {
 }
 
 void InitNitroMine(MineHolder *arg0) {
-    arg0->obj->model->unk6C = ((s32)MapScene->dbase);
-    arg0->obj->model->unk74 = 0x2012;
-    arg0->obj->unk1C = Random(0x1000);
-    arg0->obj->unk1E = Random(0x1000);
-    arg0->obj->unk20 = Random(0x1000);
-    arg0->obj->unk5E = 1;
+    arg0->obj->sub->u6C.dbase = ((s32)MapScene->dbase);
+    arg0->obj->sub->entity = 0x2012;
+    arg0->obj->xform.rot.vx = Random(0x1000);
+    arg0->obj->xform.rot.vy = Random(0x1000);
+    arg0->obj->xform.rot.vz = Random(0x1000);
+    arg0->obj->xform.dirty = 1;
 }
 
 void NoxSpawnSmokeBoost(void) {

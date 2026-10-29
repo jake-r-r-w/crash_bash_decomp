@@ -86,14 +86,6 @@ extern u16 PapuPickupDelay;
 extern u16 PapuPickupTimer;
 extern u16 PapuCrateTimer;
 extern u16 PapuMaxCrates;
-typedef struct {
-    s32 pad0[4];
-    s32 x;
-    s32 pad14;
-    s32 y;
-    s16 pad1C;
-    s16 h;
-} T_B8080;
 
 typedef struct Slot40 {
     /* 0x00 */ s32 flag;  /* tested for zero */
@@ -267,7 +259,7 @@ void PapuMarkHoles(void);
 
 void PAPUSetUp(void);
 
-s32 PapuGridKey(T_B8080 *p);
+s32 PapuGridKey(EXTengine *p);
 
 
 void PapuSetColumns(u16 arg0);
@@ -313,14 +305,6 @@ extern u16 PapuAiSkillAlt[];
 
 s32 PapuPickSpawnPoint(PapuPos *arg0);
 
-typedef struct {
-    u8 pad0[0x10];
-    s32 x;
-    s32 pad14;
-    s32 z;
-    s16 pad1C;
-    s16 ang;
-} T_B7F14_A;
 
 typedef struct {
     u8 pad0[0xD];
@@ -358,7 +342,7 @@ void PapuInitTiles(void);
 
 void PapuFloorWave(void);
 
-void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b);
+void PACrateAimAtGrid(EXTengine *a, T_B7F14_B *b);
 
 void PapuCountObjects(void);
 

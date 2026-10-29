@@ -81,19 +81,9 @@ typedef struct PodiumFx {
     /* 0x16 */ u8 pad16[0x52 - 0x16];
     /* 0x52 */ s16 unk52;
 } PodiumFx;
-typedef struct TrophyInner {
-    /* 0x00 */ u8 pad0[0x2C];
-    /* 0x2C */ s32 unk2C;
-    /* 0x30 */ s32 unk30;
-    /* 0x34 */ s32 unk34;
-    /* 0x38 */ u8 pad38[0x5E - 0x38];
-    /* 0x5E */ u16 unk5E;
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
-    /* 0x6C */ PodiumFx *fx;
-} TrophyInner;
 typedef struct PodiumTrophy {
     /* 0x00 */ u8 pad0[0x54];
-    /* 0x54 */ TrophyInner *inner;
+    /* 0x54 */ EXTengine *inner;
     /* 0x58 */ u8 pad58[4];
     /* 0x5C */ u16 state;
 } PodiumTrophy;
@@ -204,22 +194,10 @@ extern s32 PodiumScoreCount;
 
 void HubOpenDoorMenu(s32 arg0);
 
-typedef struct PodiumChild {
-    u8 pad0[0xC];
-    s32 flags;
-    u8 pad10[0x1C];
-    s32 f2C;
-    s32 f30;
-    s32 f34;
-    u8 pad38[0x24];
-    u8 f5C;
-    u8 pad5D;
-    s16 f5E;
-} PodiumChild;
 
 typedef struct PodiumObj {
     u8 pad0[0x54];
-    PodiumChild *child;
+    EXTengine *child;
     u8 pad58[4];
     u16 f5C;
 } PodiumObj;
