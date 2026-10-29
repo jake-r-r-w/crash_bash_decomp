@@ -485,8 +485,8 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-29 (ROADMAP-B 1.1, typing):** every game function is typed (113 -> 0). `retype.py`
   did the m2c offsets: the KeepInBounds hooks, the AST Init/Plot functions, the object lists,
   and `FindExtension` results (0x1000 is `EXTobject`, 0x800 `EXTmotion`). The layout arithmetic
-  goes through macros: `FILE_AT`/`SELF_REL` in `common.h`, the heap's `MAL_*` in `main.h`. Ten
-  byte forms the matching needs are marked `/* matching:`, which `progress` counts as typed.
+  goes through macros: `FILE_AT`/`SELF_REL` in `common.h`, the heap's `MAL_*` in `main.h`. Seven
+  functions' byte forms the matching needs are marked `/* matching:`, which `progress` counts as typed.
   Gotchas:
   - `retype.py` scaled `nas->Engine + 0x94`; it now reports such lines.
   - A macro a unit's headers don't define compiles as an implicit function call with no error
