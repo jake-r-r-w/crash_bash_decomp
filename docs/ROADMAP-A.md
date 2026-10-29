@@ -543,3 +543,12 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
     the segment structs, and Nox's boss keys go through `SELF_REL`.
   - The 3 lines left are typed pointer arithmetic, not byte offsets.
   - The same scan over every overlay found more (ROADMAP-B 1.8).
+- [x] The prototype types' lost-page fields (2026-10-29; ROADMAP-B's 1.6). Earlier sessions had
+  retyped all but 7 of the 34. The rest are typed where the code shows them:
+  - `script_key_frame` (start, len);
+  - `script_key_subscript` (a `script_key_anim` without the fade);
+  - the entity thread's flags and first `ObjKey`, and the camera thread's `dist`;
+  - `AnimKey` folded into `script_key_anim`.
+
+  A quaternion and its slerp table stay word arrays, since that's their shape. Polar's
+  `ang[2]` stays too: nothing reads it.

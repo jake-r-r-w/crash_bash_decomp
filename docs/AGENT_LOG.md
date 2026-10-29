@@ -136,9 +136,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   (`func_80011578` pushes, `func_80011DB4` counts down); `mal.unk2` is the
   countdown. `func_800115D8`'s prototype still takes `void **`, not
   `_mal_area *`; retype it when its callers allow.
-- Prototype debug types (ARCHITECTURE.md, Prototype debug types): 34
-  fields of 15 types whose bodies were on lost pages are word or byte
-  arrays; retype them where code shows their fields.
+- Prototype debug types: the fragment's bodiless structs the code shows are typed (2026-10-29).
+  Left as word arrays: `script_key_anim.quat`/`quat_interp` (a quaternion and its slerp table:
+  arrays are their shape) and Polar's `ang[2]` (struct ._23; nothing reads it).
 - Sound voices: `func_80022504` is "stop all" (`StopSfx` inlined in a loop), `func_800228C4`
   unlinks without stopping, `func_80022924` allocates, `func_80022984` inits the pool.
 - Ambiguous naming leads are listed in ARCHITECTURE.md ("Functions reached
@@ -481,6 +481,11 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-29 (ROADMAP-B 1.6 done):** the fragment's bodiless structs the code reads have
+  bodies: `script_key_frame`, `script_key_subscript`, the entity and camera thread parts.
+  `AnimKey` is folded into `script_key_anim`. `CamVec3`, `ObjQuat` and `ObjKey` moved to core.h
+  for them. The roadmap's "34 fields" was stale: earlier sessions had retyped all but 7.
 
 - **2026-10-29 (ROADMAP-B 1.5 done):** Spin, Dino and N2O's last byte-pointer reads are typed
   (Dino's winner choice on `GameState`, its contours on `map_map.contour_grids`, Nox's boss keys
