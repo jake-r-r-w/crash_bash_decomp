@@ -208,7 +208,7 @@ void HubEndCredits(void)
   CreditsActive = 0;
   set_fade(&ScreenFade, -0x200, 0);
   new_var = 0x1628;
-  *((u8 *) (g + 0x75)) = 1;
+  ((GameState *) g)->adventure.unk75 = 1;
   for (i = 0; i < ASTCount; i++)
   {
     if (ASTTable[i].id == new_var)

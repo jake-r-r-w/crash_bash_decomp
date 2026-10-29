@@ -3250,7 +3250,7 @@ void ArkSpawnBall(void) {
     n = 0;
     if (nas != NULL) {
         do {
-            nas = *(NAS **)((u8 *)nas + 0x20);
+            nas = nas->Group.Child;
             n++;
         } while (nas != NULL);
     }
@@ -6028,16 +6028,16 @@ void Plot_ArkCameraFlash(NAS *arg0)
 }
 
 void Init_ArkCameraFlash(NAS *arg0) {
-    u8 *eng = (u8*)(arg0->Engine);
-    u8 *sub;
+    EXTengine *eng = arg0->Engine;
+    subengine *sub;
     if (eng != NULL) {
         s32 val;
-        sub = (u8*)(*(s32*)(eng + 108));
+        sub = eng->sub;
         val = ((s32)MapScene->dbase);
-        (*(u16*)(sub + 116)) = 0x2017;
-        (*(u8*)(sub + 80)) = 1;
-        (*(u8*)(sub + 81)) = 0;
-        (*(s32*)(sub + 108)) = val;
+        (sub->entity) = 0x2017;
+        (sub->unk50) = 1;
+        (sub->unk51) = 0;
+        (sub->u6C.dbase) = val;
         (arg0->UserInfo.user1) = 0;
     }
     if ((arg0->Failure) != 0) {
