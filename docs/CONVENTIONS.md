@@ -88,6 +88,13 @@ A file is finished when every function in it reaches level 4.
   types: `core.h`, `hero.h`, `shell.h`, `hub.h`, ...; see ARCHITECTURE.md)
   win: a name they declare is not repeated in an owned header. `decomp.py
   rename` drops the owned copy when a function takes such a name.
+- Every slot overlay file includes `bash/engine.h` first (it brings `main.h` and every
+  engine header), so an overlay uses the engine's and the exe's declarations as they are and
+  never redeclares one: no view of an engine global or function in an overlay header
+  (`decl_dups.py --views` lists any; its test keeps them at zero). Where an overlay needs the
+  original's different code from a declaration, the call or access says so with a
+  `/* matching:` cast (an unprototyped call, an `int` function's call, a pointer read through
+  a cast).
 - `bash/nas.h` holds the engine object model (`NAS`, the `EXT*` extensions) and
   the other shared engine types.
 - `decomp.py done` adds the matched function's prototype to its owned header.

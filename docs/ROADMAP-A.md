@@ -482,3 +482,15 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   layout's byte arithmetic through named macros (`FILE_AT`, `SELF_REL`, the heap's `MAL_*`).
   Seven keep a byte form the matching needs, each marked `/* matching:` with what the typed form
   changes (CONVENTIONS.md, Quality levels).
+- [x] Fold the overlays' views of engine globals into one type each (2026-10-29; ROADMAP-B's old
+  1.2). Every overlay file includes `engine.h` first. The overlay headers' 218 copies of engine
+  and exe declarations are gone, and the hook, pad, trig, arena-cell and jump-entry views are
+  folded into `EngineHooks`, `PadState`, `TrigEntry`, `ArenaCell` and `HeroJumpEnt`. Nox uses
+  pause.h's sparks (`SparkSet.prims[2]`). Names only the overlays declared moved to the defining
+  file's header, and four got their real types: `PickupCounts` is `u16[30]`, `RoundWinner` a
+  `u16`, `HeadOfBalls2` a `void *`, and `DirPadBits` an `s32[24]`. Three calls keep the
+  original's view with a `/* matching:` cast: Chase's unprototyped `pad_rumble_big` (0xF0 as an
+  int), Nox's `int`-typed `SetHeroAction` (jump2 doesn't merge it), and the `HeroesTouched` hook
+  read through a cast. `decl_dups.py --views` is at zero, and its test keeps it there. The
+  Makefile now deletes an object whose compile failed (`.DELETE_ON_ERROR`): before, a failed
+  cc1 still left the assembler's empty object behind.

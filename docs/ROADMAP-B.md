@@ -11,7 +11,7 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 1.2 | Fold the overlays' 136 views of engine globals into one type each | `decl_dups.py --views`, `fold_views.py`. Includes the `HeroHooks` and game-state views and Phase 4's stand-ins (`PogoCell`, `BashCell`, `RaceFux*`, ...). | [ ] |
+| 1.2 | The slot overlays' stand-in structs as the leaked headers' types | `PogoCell`, `BashCell`, `RaceFux*`, `SpinFux`, `DinoExt`, `BonkEntry`, `N2OSlot`, `CoalChainGame`, ... (the leak's `PogoSquare`, `CrateVelocity`, `RaceBarrel`, ... where one exists) | [ ] |
 | 1.3 | The exe's 69 raw-offset functions | Mostly heap and pool block arithmetic, and `export_exe_functions`' slot offsets | [ ] |
 | 1.4 | Name the `unkXX` fields | Including the file formats' (ASSETS.md, What isn't decoded) | [ ] |
 | 1.5 | Structs for Spin, Dino and N2O | Enums only so far; `field_survey.py` | [ ] |

@@ -7,7 +7,9 @@ A prototype or extern declared twice in one header, or repeated in an overlay's 
 (`<ovl>_ovl.h`) when the header recovered from the original source (`<ovl>.h`) already declares
 it (the leaked header wins). Exits 1 if there are any. --views also lists the names several units'
 headers declare, each with its own type: an overlay's view of an engine global, to fold into the
-one type (typing work, not an error).
+one type (typing work, not an error). Two kinds are not views and are left out: a name a leaked
+header (`pogo.h`, ...) declares, which is the original's own text, and a function several units
+define, each its own (they are in different binaries).
 """
 import collections
 import glob
@@ -44,13 +46,29 @@ def repeats(headers):
     return sorted(out)
 
 
-def views(headers):
-    """{name: [header]} for the names more than one header declares (the units' own views)."""
+def views(headers, skip=()):
+    """{name: [header]} for the names more than one header declares (the units' own views),
+    but the names in SKIP."""
     by = collections.defaultdict(set)
     for h, t in headers.items():
         for name, _ in declarations(t):
             by[name].add(os.path.basename(h))
-    return {n: sorted(hs) for n, hs in by.items() if len(hs) > 1}
+    return {n: sorted(hs) for n, hs in by.items() if len(hs) > 1 and n not in skip}
+
+
+DEF = re.compile(r"^(?!static\b|extern\b|typedef\b)[A-Za-z_][\w \t\*]*?\b(\w+)\s*\([^;{}]*\)\s*\{", re.M)
+
+
+def not_views(headers, src="src"):
+    """The names views() leaves out: those a leaked header declares, and functions more than
+    one C file defines."""
+    leaked = {n for h, t in headers.items() if os.path.basename(h) in LEAKED.values()
+              for n, _ in declarations(t)}
+    files = collections.Counter()
+    for c in glob.glob(os.path.join(src, "**", "*.c"), recursive=True):
+        for n in set(DEF.findall(open(c, encoding="utf-8", errors="replace").read())):
+            files[n] += 1
+    return leaked | {n for n, k in files.items() if k > 1}
 
 
 def load(root="include/bash"):
@@ -66,7 +84,7 @@ def main():
     for h, line, name, why in bad:
         print("%s:%d: %s: %s" % (h, line, name, why))
     if "--views" in sys.argv:
-        for n, where in sorted(views(hs).items()):
+        for n, where in sorted(views(hs, not_views(hs)).items()):
             print("view: %s in %s" % (n, ", ".join(where)))
     print("%d repeated declarations" % len(bad))
     return 1 if bad else 0

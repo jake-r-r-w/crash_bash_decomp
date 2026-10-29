@@ -27,6 +27,10 @@ class Repeats(unittest.TestCase):
         self.assertTrue(hs)
         self.assertEqual(decl_dups.repeats(hs), [])
 
+    def test_the_repo_has_no_views(self):
+        hs = decl_dups.load(os.path.join(ROOT, "include", "bash"))
+        self.assertEqual(decl_dups.views(hs, decl_dups.not_views(hs, os.path.join(ROOT, "src"))), {})
+
 
 if __name__ == "__main__":
     unittest.main()

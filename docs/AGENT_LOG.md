@@ -61,7 +61,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ROADMAP-B.md, Part 1 onwards. In rough order:
 
 1. Done 2026-10-29: **everything shifted at once** (`make shift-all`; it boots and plays).
-2. **Quality level 4** (ROADMAP-B Part 1; every function typed since 2026-10-29): the overlays' 136 views of
+2. **Quality level 4** (ROADMAP-B Part 1; every function typed and the overlays' views folded since 2026-10-29): the overlays' 136 views of
    engine globals (`decl_dups.py --views`: fold each into the one type), the exe's 69 raw-offset
    functions (mostly the heap's block arithmetic and `export_exe_functions`' slot offsets), and the
    `unkXX` fields (ASSETS.md, What isn't decoded, lists the file formats' ones).
@@ -481,6 +481,21 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-29 (ROADMAP-B 1.2, views):** the overlays' views of engine globals are folded
+  (ROADMAP-A has the list). Gotchas:
+  - A failed compile left an object behind: the pipeline's `as -o` creates it before
+    `pipefail` fails the recipe. `.DELETE_ON_ERROR` in the Makefile fixes that. Before, one
+    build printed the errors and the next looked clean.
+  - Folding a declaration can change code three ways:
+    - an implicit (unprototyped) call passes a constant as an int where the prototype narrows
+      it (`pad_rumble_big`'s s8);
+    - a call through an `int ()` declaration is `call_value`, which jump2 won't cross-jump
+      with the `void` calls;
+    - a field read is MEM_IN_STRUCT where a cast pointer read isn't, so it schedules
+      differently.
+
+  Each is kept as a `/* matching:` cast. ROADMAP-B's 1.2 is now the stand-in structs.
 
 - **2026-10-29 (ROADMAP-B 1.1, typing):** every game function is typed (113 -> 0). `retype.py`
   did the m2c offsets: the KeepInBounds hooks, the AST Init/Plot functions, the object lists,
