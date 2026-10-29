@@ -2576,7 +2576,7 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
             if (t != NULL) {
                 dx = h->hero_eng->XYZ.x - t->x;
                 dz = h->hero_eng->XYZ.z - t->z;
-                if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->unk14 != 2) {
+                if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->whatami != 2) {
                     a = get_angle(dx, dz);
                     d = angle_diff(a, h->hero_move->forward_angle);
                     if (arg1 == -1) {
@@ -2680,7 +2680,7 @@ void N2O_HeroBot(u16 *arg0) {
         d = (s32)n + (s32)t;
         d -= (s32)t;
         t = ((N2ONode *)d)->target;
-        if (t != NULL && n->unk58 != NULL && n->unk58->unk1A == 1) {
+        if (t != NULL && n->unk58 != NULL && n->unk58->status == 1) {
             ext = FindExtension((NAS *)n, 0x800);
             if (ext != NULL && N2OBotAimA(3, (N2OPos *)&t->x, &pos, (u16)((EXTmotion *)ext)->Xa) != 0) {
                 dx = t->x - pos.x;
@@ -3918,7 +3918,7 @@ void N2OShowPhaseObjects(u16 arg0) {
 
     if (arg0) {
         while (n != NULL) {
-            p = (s16 *)model_entry_data(n->unk6C, n->unk74);
+            p = (s16 *)model_entry_data(n->dbase, n->entity);
             if (p[1] == 0x63) {
                 if (p[0] != 0x62) {
                     n->flags |= 0x8000;
@@ -3932,7 +3932,7 @@ void N2OShowPhaseObjects(u16 arg0) {
         }
     } else {
         while (n != NULL) {
-            p = (s16 *)model_entry_data(n->unk6C, n->unk74);
+            p = (s16 *)model_entry_data(n->dbase, n->entity);
             if (p[1] == 0x63) {
                 n->flags &= ~0x8000;
             } else {

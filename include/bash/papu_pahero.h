@@ -77,16 +77,16 @@ typedef struct PapuSlide {
     /* 0x0C */ u8 unkC;
     /* 0x0D */ u8 dir;
     /* 0x0E */ s16 flag;  /* tested for zero */
-    /* 0x10 */ s16 unk10;
-    /* 0x12 */ s16 unk12;
-    /* 0x14 */ s16 unk14;
-    /* 0x16 */ s16 unk16;
+    /* 0x10 */ s16 accel;
+    /* 0x12 */ s16 decel;
+    /* 0x14 */ s16 max;
+    /* 0x16 */ s16 xlimit;
     /* 0x18 */ u16 unk18;
     /* 0x1A */ u16 unk1A;
     /* 0x1C */ u16 unk1C;
     /* 0x1E */ u16 unk1E;
     /* 0x20 */ u8 pad20[0xA];
-    /* 0x2A */ s16 unk2A;
+    /* 0x2A */ s16 zlimit;
 } PapuSlide;
 
 /* PapuMinionSlots entries: pad4[0] engine, pad4[4] motion, pad4[6] held object. */

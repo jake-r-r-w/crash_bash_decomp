@@ -66,11 +66,11 @@ typedef struct {
     /* 0x02 */ s16 max;
     /* 0x04 */ s16 accel;
     /* 0x06 */ s16 decel;
-    /* 0x08 */ s16 unk8;
-    /* 0x0A */ s16 unkA;
-    /* 0x0C */ s16 unkC;
-    /* 0x0E */ s16 unkE;
-    /* 0x10 */ s16 unk10;
+    /* 0x08 */ s16 yvel;  /* the crate move's Yvel */
+    /* 0x0A */ s16 ymax;
+    /* 0x0C */ s16 yacc;
+    /* 0x0E */ s16 ydec;
+    /* 0x10 */ s16 ydir;
 } T_BC038Stats;
 
 /* PlotCrate: frees the carrying hero's hold on the crate (cf. papu's PapuReleaseObj). */

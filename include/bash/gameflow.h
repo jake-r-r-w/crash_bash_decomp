@@ -470,15 +470,15 @@ extern HitCallbacks HitHooks;
 typedef struct {
     u8 pad0[0x14];
     u16 state;  /* switched on */
-    s16 unk16;
+    s16 player;  /* the hitter, -1 for none */
 } HitInfo;
 /* Intro/cutscene step script run by UpdateIntro. */
 typedef struct {
     /* 0x00 */ s32 type;   /* 1: picture, 2: model */
     /* 0x04 */ s32 *pic;
     /* 0x08 */ u8 *model;
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
+    /* 0x0C */ s32 script;  /* play_script's script */
+    /* 0x10 */ s32 music;  /* music_request's track, -1 for none */
     /* 0x14 */ s32 sfx[3];
     /* 0x20 */ s32 sfxNext;
     /* 0x24 */ s32 delay;

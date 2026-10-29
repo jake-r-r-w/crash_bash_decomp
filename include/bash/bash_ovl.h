@@ -70,8 +70,8 @@ void BashSnowMarkPenguin(void);
 void BashDropCrates(u16 arg0);
 
 typedef struct {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
+    /* 0x00 */ s32 a;
+    /* 0x04 */ s32 b;
 } BashPair;
 
 extern u8 BashCrateMix[];
@@ -295,7 +295,7 @@ typedef struct {
 } BashEdgeSub;
 typedef struct {
     /* 0x00 */ u8 pad0[0x58];
-    /* 0x58 */ BashEdgeSub *unk58;
+    /* 0x58 */ BashEdgeSub *edge;
 } BashEdgeObj;
 
 /* BashCrateMaster: from (x, z), walk the board along x (dx) or z (dz),

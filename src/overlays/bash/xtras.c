@@ -472,11 +472,11 @@ void PlotCrate(NAS *arg0) {
             ext->Xmax = BC038_STATB(hb, hit_shapes, fux->player)->max;
             ext->Xacc = BC038_STATB(hb, hit_shapes, fux->player)->accel;
             ext->Xdec = BC038_STATB(hb, hit_shapes, fux->player)->decel;
-            ext->Yvel = BC038_STATB(hb, hit_shapes, fux->player)->unk8;
-            ext->Ymax = BC038_STATB(hb, hit_shapes, fux->player)->unkA;
-            ext->Yacc = BC038_STATB(hb, hit_shapes, fux->player)->unkC;
-            ext->Ydec = BC038_STATB(hb, hit_shapes, fux->player)->unkE;
-            ext->Ydir = BC038_STATB(hb, hit_shapes, fux->player)->unk10;
+            ext->Yvel = BC038_STATB(hb, hit_shapes, fux->player)->yvel;
+            ext->Ymax = BC038_STATB(hb, hit_shapes, fux->player)->ymax;
+            ext->Yacc = BC038_STATB(hb, hit_shapes, fux->player)->yacc;
+            ext->Ydec = BC038_STATB(hb, hit_shapes, fux->player)->ydec;
+            ext->Ydir = BC038_STATB(hb, hit_shapes, fux->player)->ydir;
             fux->status = 8;
         }
         } else {

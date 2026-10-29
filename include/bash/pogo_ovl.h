@@ -314,8 +314,8 @@ typedef enum PogoMode {
 /* PogoQuality_Init: per-mode entries picked by teams, with two values at 0xE/0x10. */
 typedef struct PogoModeEntry {
     /* 0x00 */ u8 pad0[0xE];
-    /* 0x0E */ u16 unkE;
-    /* 0x10 */ u16 unk10;
+    /* 0x0E */ u16 quality;  /* the AI quality */
+    /* 0x10 */ u16 qualityAlt;  /* with levelFlags 2 */
     /* 0x12 */ u8 pad12[2];
 } PogoModeEntry;
 extern PogoModeEntry PogoPainterAiHuman;

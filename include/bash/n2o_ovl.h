@@ -113,9 +113,9 @@ typedef struct N2OFlagNode {
     u8 pad4[0x58];
     struct N2OFlagNode *next;
     u8 pad60[0xC];
-    u8 *unk6C;
+    u8 *dbase;
     u8 pad70[4];
-    u16 unk74;
+    u16 entity;
 } N2OFlagNode;
 
 extern N2ORound N2OBossRound;
@@ -234,9 +234,9 @@ typedef struct N2ONode {
     struct N2ONode *target;
     struct {
         u8 pad0[0x14];
-        u16 unk14;
+        u16 whatami;
         u8 pad16[4];
-        u16 unk1A;
+        u16 status;
     } *unk58;
 } N2ONode;
 

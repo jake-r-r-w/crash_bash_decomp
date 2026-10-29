@@ -948,20 +948,20 @@ void PogoQuality_Init(void) {
         g = (GameState *)GameInfo;
         switch (g->mode) {
         case 10:
-            e->unkE = PogoPainterAiQuality[g->aiLevel];
-            e->unk10 = PogoPainterAiQuality[g->aiLevel + 3];
+            e->quality = PogoPainterAiQuality[g->aiLevel];
+            e->qualityAlt = PogoPainterAiQuality[g->aiLevel + 3];
             break;
         case 11:
-            e->unkE = PogoAgogoAiQuality[g->aiLevel];
-            e->unk10 = PogoAgogoAiQuality[g->aiLevel + 3];
+            e->quality = PogoAgogoAiQuality[g->aiLevel];
+            e->qualityAlt = PogoAgogoAiQuality[g->aiLevel + 3];
             break;
         case 12:
-            e->unkE = PogoLocoAiQuality[g->aiLevel];
-            e->unk10 = PogoLocoAiQuality[g->aiLevel + 3];
+            e->quality = PogoLocoAiQuality[g->aiLevel];
+            e->qualityAlt = PogoLocoAiQuality[g->aiLevel + 3];
             break;
         case 13:
-            e->unkE = PogoBouncerAiQuality[g->aiLevel];
-            e->unk10 = PogoBouncerAiQuality[g->aiLevel + 3];
+            e->quality = PogoBouncerAiQuality[g->aiLevel];
+            e->qualityAlt = PogoBouncerAiQuality[g->aiLevel + 3];
             break;
         }
         g = (GameState *)GameInfo;
@@ -970,7 +970,7 @@ void PogoQuality_Init(void) {
             h = g;
             for (; i < 4; i++) {
                 if (((u8 *)h)[i + 0x5C] == 0) {
-                    AiPlayerSkill[i].quality = *((h->levelFlags & 2) ? &e->unk10 : &e->unkE);
+                    AiPlayerSkill[i].quality = *((h->levelFlags & 2) ? &e->qualityAlt : &e->quality);
                 }
             }
         }

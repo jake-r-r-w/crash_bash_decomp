@@ -197,10 +197,10 @@ typedef struct {
     u16 timer;  /* counted down */
     u16 flag;  /* tested for zero */
     u16 flags;
-    s16 unk6;
-    s16 unk8;
-    s16 unkA;
-    s16 unkC;
+    s16 speed;  /* outwards, less 3 a frame */
+    s16 y;
+    s16 yvel;
+    s16 scale;  /* grows 0x60 a frame to 0x1000 */
 } AngelSparkle;
 extern AngelSparkle AngelSparkles[3][4];
 
@@ -230,8 +230,8 @@ typedef struct {
 
 typedef struct EngineLevelInfo {
     /* 0x00 */ u8 pad0[0xBC];
-    /* 0xBC */ u8 *unkBC;
-    /* 0xC0 */ u8 *unkC0;
+    /* 0xBC */ u8 *musicText;  /* the options' music volume line */
+    /* 0xC0 */ u8 *sfxText;  /* the options' sound volume line */
 } EngineLevelInfo;
 extern EngineLevelInfo *LangMessages[];
 extern HudEntry PauseMenuExitArena[];

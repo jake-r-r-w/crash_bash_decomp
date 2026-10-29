@@ -29,12 +29,12 @@ typedef struct BonkPos {
 
 typedef struct BonkInner {
     /* 0x00 */ u8 pad0[0x54];
-    /* 0x54 */ BonkPos *unk54;
+    /* 0x54 */ BonkPos *pos;
 } BonkInner;
 
 typedef struct BonkTarget {
     /* 0x00 */ s32 pad0;
-    /* 0x04 */ BonkInner *unk4;
+    /* 0x04 */ BonkInner *inner;
 } BonkTarget;
 
 extern BonkSlot BonkSlots[];

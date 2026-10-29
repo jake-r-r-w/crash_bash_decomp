@@ -19,7 +19,7 @@ typedef struct CoalFlameInner {
 
 typedef struct CoalFlameObj {
     u8 pad0[0x54];
-    CoalFlameInner *unk54;
+    CoalFlameInner *inner;
 } CoalFlameObj;
 
 typedef struct CoalFlameExt {
@@ -40,7 +40,7 @@ typedef struct CircleFireExt {
 typedef struct EggExt {
     EXT ext;
     u8 pad0C[4];
-    s32 unk10;
+    s32 xvel;
     s32 y;
     u8 pad18[4];
     s32 angle;
@@ -93,7 +93,7 @@ typedef struct CoalSfxInner {
 
 typedef struct CoalSfxObj {
     u8 pad0[0x54];
-    CoalSfxInner *unk54;
+    CoalSfxInner *inner;
     u8 pad58[0xC];
     s32 idx;
 } CoalSfxObj;
@@ -379,8 +379,8 @@ typedef struct ChaseAiState {
     /* 0x1C */ NAS *pickup;
     /* 0x20 */ s32 timer2;  /* counted down */
     /* 0x24 */ s32 flag;  /* tested for zero */
-    /* 0x28 */ s32 unk28;
-    /* 0x2C */ s32 unk2C;
+    /* 0x28 */ s32 reach;  /* 0x8000 at a reset */
+    /* 0x2C */ s32 reach2;
 } ChaseAiState;
 
 

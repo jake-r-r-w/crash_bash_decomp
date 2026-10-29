@@ -880,8 +880,8 @@ void DrawPauseMenu(void) {
             PauseToggles[1] = sel;
             PauseToggles[2] = sel;
             PauseToggles[0] = GameOptions.stereo != 0;
-            FormatPercent(LangMessages[GAME->language]->unkBC, GameOptions.music);
-            FormatPercent(LangMessages[GAME->language]->unkC0, GameOptions.sfx);
+            FormatPercent(LangMessages[GAME->language]->musicText, GameOptions.music);
+            FormatPercent(LangMessages[GAME->language]->sfxText, GameOptions.sfx);
             DrawHudEntries(PauseSoundMenu, PauseMenuY);
             break;
         case 2:

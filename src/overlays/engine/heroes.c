@@ -2671,10 +2671,10 @@ void HeroBecomeAngel(s32 arg0) {
         AngelSparkles[i][arg0].timer = Random(10) + i * 3;
         AngelSparkles[i][arg0].flag = 0;
         AngelSparkles[i][arg0].flags = 0;
-        AngelSparkles[i][arg0].unk6 = 0;
-        AngelSparkles[i][arg0].unk8 = 0;
-        AngelSparkles[i][arg0].unkA = 0;
-        AngelSparkles[i][arg0].unkC = 0;
+        AngelSparkles[i][arg0].speed = 0;
+        AngelSparkles[i][arg0].y = 0;
+        AngelSparkles[i][arg0].yvel = 0;
+        AngelSparkles[i][arg0].scale = 0;
     }
     if (Random(2) != 0) {
         PlaySfx(0x1C4, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
@@ -2721,22 +2721,22 @@ s32 arg0;
     ProcessHeroAnim(arg0, y);
     for (s = s->next, i = 0; s != NULL; s = s->next, i++) {
         if (AngelSparkles[i][arg0].flag != 0) {
-            AngelSparkles[i][arg0].unk6 -= 3;
-            if (AngelSparkles[i][arg0].unk6 < 0) {
-                AngelSparkles[i][arg0].unk6 = 0;
+            AngelSparkles[i][arg0].speed -= 3;
+            if (AngelSparkles[i][arg0].speed < 0) {
+                AngelSparkles[i][arg0].speed = 0;
             }
-            s->XYZ.x += AngelSparkles[i][arg0].unk6 * rcossin_tbl[(AngelSparkles[i][arg0].flags - 0x400) & 0xFFF].unk2 >> 12;
-            s->XYZ.z += AngelSparkles[i][arg0].unk6 * rcossin_tbl[AngelSparkles[i][arg0].flags & 0xFFF].unk2 >> 12;
-            y = AngelSparkles[i][arg0].unk8;
-            y += AngelSparkles[i][arg0].unkA;
+            s->XYZ.x += AngelSparkles[i][arg0].speed * rcossin_tbl[(AngelSparkles[i][arg0].flags - 0x400) & 0xFFF].unk2 >> 12;
+            s->XYZ.z += AngelSparkles[i][arg0].speed * rcossin_tbl[AngelSparkles[i][arg0].flags & 0xFFF].unk2 >> 12;
+            y = AngelSparkles[i][arg0].y;
+            y += AngelSparkles[i][arg0].yvel;
             if (y > 0x30) {
                 y = 0x30;
             }
-            AngelSparkles[i][arg0].unk8 = y;
+            AngelSparkles[i][arg0].y = y;
             s->XYZ.y += y;
             s->flags |= 0x8000;
-            s->scale = AngelSparkles[i][arg0].unkC += 0x60;
-            if (World_floor_level < s->XYZ.y || AngelSparkles[i][arg0].unkC >= 0x1000) {
+            s->scale = AngelSparkles[i][arg0].scale += 0x60;
+            if (World_floor_level < s->XYZ.y || AngelSparkles[i][arg0].scale >= 0x1000) {
                 AngelSparkles[i][arg0].flag = 0;
                 AngelSparkles[i][arg0].timer = Random(10) + 2;
                 s->flags &= ~0x8000;
@@ -2746,10 +2746,10 @@ s32 arg0;
         } else {
             AngelSparkles[i][arg0].flag = 1;
             AngelSparkles[i][arg0].flags = Random(0x800) + 0x400;
-            AngelSparkles[i][arg0].unk6 = 0x30;
-            AngelSparkles[i][arg0].unk8 = -0x40;
-            AngelSparkles[i][arg0].unkA = 4;
-            AngelSparkles[i][arg0].unkC = 0x100;
+            AngelSparkles[i][arg0].speed = 0x30;
+            AngelSparkles[i][arg0].y = -0x40;
+            AngelSparkles[i][arg0].yvel = 4;
+            AngelSparkles[i][arg0].scale = 0x100;
             *(SLONG_XYZ *)&s->XYZ.x = *(SLONG_XYZ *)&Heroes[arg0].hero_fx->sub->XYZ.x;
         }
     }

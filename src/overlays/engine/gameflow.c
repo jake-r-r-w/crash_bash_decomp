@@ -10,7 +10,7 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     s32 obj;
 
     obj = ((s32 *)arg1)[-1];
-    id = arg2 != 0 ? arg1->unk16 : -1;
+    id = arg2 != 0 ? arg1->player : -1;
     switch (arg1->state) {
     case 5:
     case 7:
@@ -122,7 +122,7 @@ void UpdateIntro(void) {
         SetupSceneMarks(e->model);
         ScriptTimeStep = 0x10000;
         VSyncRate = type;
-        IntroScript = play_script((obj_dbase *)IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
+        IntroScript = play_script((obj_dbase *)IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].script,
                                    &IntroScriptRot, &IntroScriptPos, 4, (script_handler **)&IntroScriptHandle);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
             PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
@@ -131,8 +131,8 @@ void UpdateIntro(void) {
             IntroSfxDelay = 0x16;
             IntroNextSfx = IntroSteps[IntroStepIndex].sfxNext;
         }
-        if (IntroSteps[IntroStepIndex].unk10 != -1) {
-            music_request(IntroSteps[IntroStepIndex].unk10);
+        if (IntroSteps[IntroStepIndex].music != -1) {
+            music_request(IntroSteps[IntroStepIndex].music);
         }
         if (IntroDbase != 0) {
             dbase_release((u8 *)IntroDbase);

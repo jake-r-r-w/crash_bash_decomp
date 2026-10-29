@@ -2103,7 +2103,7 @@ void BashCrateMaster(void) {
             pp = BashDrainsEdges;
             for (i = 0; i < 4; i++, pp++) {
                 if (*pp != NULL) {
-                    sub = ((BashEdgeObj *)*pp)->unk58;
+                    sub = ((BashEdgeObj *)*pp)->edge;
                     if (sub != NULL) {
                         if (i == s) {
                             sub->unk24 = BashDrainsEdgeCrates[BashDrainsEdgePos];
@@ -2143,8 +2143,8 @@ void BashDropCrates(u16 arg0) {
         }
         p = BashFindDropPoint(&BashDropPos);
         if (p != NULL) {
-            a = p->unk0;
-            b = p->unk4;
+            a = p->a;
+            b = p->b;
             c = BashCrateMix[BashCrateMixPos];
             BashCrateMixPos = (BashCrateMixPos + 1) & 0x3F;
             t = c;

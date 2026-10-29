@@ -2565,7 +2565,7 @@ void PlotEgg(NAS *nas) {
         if (nas->UserInfo.user2 == 0) {
             PlaySfx(0x756, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
-        eng->XYZ.x += fux->unk10;
+        eng->XYZ.x += fux->xvel;
         fux->y += 0xC;
         eng->XYZ.y += fux->y;
         if (++sub->entity == 0x4091) {
@@ -2681,7 +2681,7 @@ void PlotEgg(NAS *nas) {
 }
 
 void PlotCoalFlameSFX(CoalSfxObj *obj) {
-    CoalSfxInner *in = obj->unk54;
+    CoalSfxInner *in = obj->inner;
 
     if (ChaseFlameState[obj->idx] > 0) {
         if (ChaseFlameSfxHandle[obj->idx] == 0) {
@@ -3382,7 +3382,7 @@ void ChaseHeroHitFlash(s32 arg0, s32 arg1) {
 }
 
 void InitCoalFlameSFX(CoalFlameObj *arg0) {
-    arg0->unk54->unkC = 0;
+    arg0->inner->unkC = 0;
 }
 
 void InitEgg(NAS *nas) {
@@ -3394,7 +3394,7 @@ void InitEgg(NAS *nas) {
     ext = AddExt(nas, 0x44, 0x10000005);
     nas->FUX = &ext->ext;
     ext->state = 8;
-    ext->unk10 = -0x55;
+    ext->xvel = -0x55;
     ext->y = -0xA0;
     eng = nas->Engine;
     nas->UserInfo.user2 = 0x78;
@@ -3825,8 +3825,8 @@ void ChaseResetSlot(s32 arg0) {
     (temp_v0->pickup) = 0;
     (temp_v0->timer2) = 0;
     (temp_v0->flag) = 0;
-    (temp_v0->unk28) = 0x8000;
-    (temp_v0->unk2C) = 0x8000;
+    (temp_v0->reach) = 0x8000;
+    (temp_v0->reach2) = 0x8000;
 }
 
 NAS *ChaseFindPickupNear(s32 x, s32 z, s32 range) {
