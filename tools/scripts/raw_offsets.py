@@ -7,20 +7,45 @@
 only sees a cast at the addition (`(u8 *)p + N`). Lines marked `/* matching:` are left out. Prints
 each function with its lines, most first.
 """
-import re, sys
-sys.path.insert(0, "tools/scripts")
-import decomp as d
-PAT = re.compile(r"\*\s*\(\s*[\w ]+\*+\s*\)\s*\(\s*\w+\s*\+\s*(?:0x[0-9A-Fa-f]+|\d+)\s*\)|\b\w+\[(?:0x[0-9A-Fa-f]+|\d+) / 4\]|\(\s*[\w ]+\*+\s*\)\s*\(\s*\w+\s*\+\s*0x[0-9A-Fa-f]+\s*\)")
-funcs = d.need_funcs(); syms = d.sym_names(); proj = d.need_proj()
-out = []
-for k, e in funcs.items():
-    if not e.get("src", "").startswith("src/main/") or d.is_lib(e, proj): continue
-    n = d.cur_name(k, e, syms); b = d.extract_function(d.read(e["src"]), n)
-    if not b: continue
-    ls = [l.strip() for l in b.split("\n") if PAT.search(l) and "/* matching:" not in l]
-    if ls: out.append((len(ls), n, e["src"], ls))
-out.sort(reverse=True)
-print(len(out), "functions,", sum(x[0] for x in out), "lines")
-for c, n, s, ls in out:
-    print("== %s %s (%d)" % (n, s, c))
-    for l in ls[:4]: print("     ", l[:140])
+import os
+import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import decomp as d  # noqa: E402
+
+PAT = re.compile(r"\*\s*\(\s*[\w ]+\*+\s*\)\s*\(\s*\w+\s*\+\s*(?:0x[0-9A-Fa-f]+|\d+)\s*\)"
+                 r"|\b\w+\[(?:0x[0-9A-Fa-f]+|\d+) / 4\]"
+                 r"|\(\s*[\w ]+\*+\s*\)\s*\(\s*\w+\s*\+\s*0x[0-9A-Fa-f]+\s*\)")
+
+
+def raw_lines(body):
+    """The lines of BODY reading through a byte offset, but those kept for the matching."""
+    return [l.strip() for l in body.split("\n") if PAT.search(l) and "/* matching:" not in l]
+
+
+def main():
+    if any(a in ("-h", "--help") for a in sys.argv[1:]):
+        print(__doc__)
+        return 0
+    funcs, syms, proj = d.need_funcs(), d.sym_names(), d.need_proj()
+    out = []
+    for k, e in funcs.items():
+        if not e.get("src", "").startswith("src/main/") or d.is_lib(e, proj):
+            continue
+        n = d.cur_name(k, e, syms)
+        b = d.extract_function(d.read(e["src"]), n)
+        ls = raw_lines(b) if b else []
+        if ls:
+            out.append((len(ls), n, e["src"], ls))
+    out.sort(reverse=True)
+    print(len(out), "functions,", sum(x[0] for x in out), "lines")
+    for c, n, s, ls in out:
+        print("== %s %s (%d)" % (n, s, c))
+        for l in ls[:4]:
+            print("     ", l[:140])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
