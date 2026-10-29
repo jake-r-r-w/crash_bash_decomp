@@ -1692,9 +1692,11 @@ Every game function is C (2026-10-26). While one wasn't, it stayed in its C
 file as `INCLUDE_ASM(...)`, which pulls `asm/nonmatchings/<seg>/<func>.s`
 into the compiled object, so the build matched at every step. Rodata and data
 were pulled in the same way (`INCLUDE_RODATA`, splat's `asm/data/`) until they
-were C (2026-10-28, ROADMAP-A.md). What still comes from the disc is the
-exe's header (`asm/header.s`), the engine's two memory images (The engine's
-.bss, The engine's slot image) and the hand-written `2MBYTE.OBJ`. splat (`make split`) regenerates `asm/` and
+were C (2026-10-28, ROADMAP-A.md). The exe's PS-X EXE header is C too
+(`src/main/header.c`, its entry point a link-time symbol; 2026-10-29). What still
+comes from the disc is the engine's two memory images (The engine's .bss, The
+engine's slot image) and Sony's hand-written `2MBYTE.OBJ`; `make hidden`
+(`tools/scripts/hidden.py`) checks that nothing else does. splat (`make split`) regenerates `asm/` and
 `linkers/` from the retail executable; it never overwrites existing `src/` files.
 
 Overlays (registered with `decomp.py add-overlay`) get their own

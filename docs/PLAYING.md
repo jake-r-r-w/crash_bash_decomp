@@ -68,7 +68,8 @@ higher, and links them against each other's new addresses, repeating until nothi
   `SlotHeapStart` follow the exe's and the slot's ends; the slot's id word its base.
 - Sections the scripts pin at retail addresses (the exe's PsyQ .bss and `bios_1` .data, the
   engine's .bss image) move by position.
-- The exe header's initial PC is patched to `__SN_ENTRY_POINT`'s new address, and Sony's
+- The exe header (`src/main/header.c`) links its initial PC to `__SN_ENTRY_POINT`, so it follows
+  the move (`shift_all.py` checks it and pads after the header, not before). Sony's
   startup code (`2MBYTE.OBJ`, kept as raw words in `asm/main/psyq/2mbyte.s`, so without
   relocations: it clears the .bss, sets `$gp` and calls `InitHeap` and `machine_init` by
   number) is assembled from a copy that names what it uses, byte for byte the same code.

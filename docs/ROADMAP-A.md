@@ -625,3 +625,20 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   - `make split` prints three splat "Unable to determine a segment" notices, for
     `funcEvSpError`, `funcEvSpErrorx` and `MsgFatalMetricsError`. They are harmless: the split
     and the build are unaffected (ROADMAP-B 5.12).
+- [x] 4.2 Nothing hidden (2026-10-29). `make hidden` (`tools/scripts/hidden.py`, with a test) passes.
+  It checks three things:
+  - no asm include, `.incbin`, inline asm, `NON_MATCHING` block or `func_`/`D_` name in `src/`
+    or `include/`;
+  - no parked function;
+  - every object the 16 links load is built from `src/` or is one of Sony's PsyQ objects.
+
+  On the way:
+  - the exe's PS-X EXE header became C (`src/main/header.c`). Its entry point is a link-time
+    symbol, so `shift_all.py` no longer patches it and now pads after the header;
+  - `mal_update`'s old parked draft under `#else` was removed.
+
+  The scan allows these and prints each with its reason:
+  - Sony's `2MBYTE.OBJ`: SDK code the repo can't hold, cut from the user's disc;
+  - the engine's two memory images: build-machine leftovers, zeros in source builds;
+  - `draw_verts`' register pins: the recorded exception;
+  - three game-side `gte_*` macros in the SDK's own form.

@@ -20,8 +20,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - **The source is complete.** Every function, all rodata and all data are C. Every function is
   named, and all but one are typed (`progress`: 2536/2537). Nothing is parked, and no `func_`
   or `D_` name is left in `src/`.
-  - What still comes from the disc: the exe's header (`asm/header.s`), `2MBYTE.OBJ` and the
-    engine's two memory images (zeros in source builds).
+  - What still comes from the disc: Sony's `2MBYTE.OBJ` and the engine's two memory images
+    (zeros in source builds). The exe header is C (`src/main/header.c`). `make hidden` checks
+    that nothing else is (ROADMAP-B 4.2, passed 2026-10-29).
 - **The roadmap.** [ROADMAP-A.md](ROADMAP-A.md) holds the done work: the old Phases 1-5 and
   ROADMAP-B Parts 1-3 (typing, names and loose ends, documentation; 2026-10-29).
   [ROADMAP-B.md](ROADMAP-B.md) has what is left: Part 4 (the final test), Part 5 (release),
@@ -60,7 +61,7 @@ ROADMAP-B.md, Part 4 onwards:
 
 1. **The final test** (Part 4):
    - a clean rebuild from a fresh clone (4.1; passed 2026-10-29);
-   - the "nothing hidden" scan (4.2), whose source side is now clean;
+   - the "nothing hidden" scan (4.2; passed 2026-10-29, `make hidden`);
    - every minigame to a win on the shifted build (4.3);
    - a side-by-side run against retail (4.4).
 2. **Release** (Part 5), then **the PC port** (Part 6).
@@ -443,6 +444,11 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 4.2 passes):**
+  - `make hidden` is the scan, and it passes.
+  - The exe header is C (`src/main/header.c`), and `mal_update`'s stale `#else` draft is gone.
+  - Gotcha: the header segment needs a vram that nothing points into (0x8000F800). At 0, splat
+    reads the startup code's zero constants as `D_00000000`.
 - **2026-10-29 (ROADMAP-B 4.1 passes):**
   - The fresh GitHub clone went through the Quick Start (extract, split, check, disc-check).
     All 16 binaries match, the disc is identical to retail, and the tree stays clean.

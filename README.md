@@ -75,9 +75,9 @@ target. How the game's systems work, and the layout in detail:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 From your disc image to a rebuilt disc. All of its code comes from this repository's build:
-our C (every function, all rodata and data), Sony's PsyQ objects, and what splat cuts from the
-disc: the exe's header, `2MBYTE.OBJ` and the engine's two memory images (build-machine
-leftovers). Its game data comes from `assets/`
+our C (every function, all rodata and data, the exe's header), Sony's PsyQ objects, and what
+splat cuts from the disc: Sony's `2MBYTE.OBJ` and the engine's two memory images (build-machine
+leftovers). `make hidden` checks that nothing else comes from anywhere but `src/`. Its game data comes from `assets/`
 ([docs/ASSETS.md](docs/ASSETS.md)), and `make disc-check` proves the result is the retail disc
 byte for byte ([docs/PLAYING.md](docs/PLAYING.md)).
 
@@ -85,7 +85,7 @@ byte for byte ([docs/PLAYING.md](docs/PLAYING.md)).
 flowchart TD
     src["src/ : our C"]
     disc[("Your disc image")]
-    disc -- "make split" --> asm["asm/ : the exe header, memory images, 2MBYTE.OBJ"]
+    disc -- "make split" --> asm["asm/ : memory images, 2MBYTE.OBJ"]
     disc -- "decomp.py extract" --> assets["assets/ : game data you edit"]
     disc -- "decomp.py extract" --> files["disc/files : other disc files"]
     src --> make["make"]
@@ -201,7 +201,7 @@ tools/dk python3 tools/scripts/decomp.py done NAME --commit --note "what made it
 Other targets: `make verify` (clean rebuild + check), `make progress`,
 `make disc` / `make disc-check` (a bootable image, and that it equals retail;
 how to play it and edit the game data: [docs/PLAYING.md](docs/PLAYING.md)),
-`make test-tools` (the Python tools' tests), `make objdiff-config` (for
+`make test-tools` (the Python tools' tests), `make hidden` (the final test's nothing-hidden scan), `make objdiff-config` (for
 [objdiff](https://github.com/encounter/objdiff)).
 
 ## License
