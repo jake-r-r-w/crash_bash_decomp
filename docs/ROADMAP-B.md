@@ -12,7 +12,8 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 After the final test. PsyQ stays linked from Sony's objects in the PS1 build (decided
 2026-10-29): much of it was hand-written asm, and the port replaces it. A PS1 build with a modern
 compiler is dropped (decided 2026-10-29): the port compiles the same C with one and finds the
-same bugs. The layout and the rules are in [PORT.md](PORT.md).
+same bugs. The layout and the rules are in [PORT.md](PORT.md). The port is 32-bit first (decided
+2026-10-30): pointers fit the game's `s32`s, so it can run before those change.
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
@@ -20,3 +21,4 @@ same bugs. The layout and the rules are in [PORT.md](PORT.md).
 | 6.2 | Replace the PS1 layers | PC versions of the CD, GPU and GTE, SPU and pads; assets from the extracted files | [ ] |
 | 6.3 | Libsnd's sequencer as C | Plain non-matching C (and any GTE maths needed bit for bit), checked against the linked originals | [ ] |
 | 6.4 | Same game | Played side by side with retail over 4.4's route, it behaves the same | [ ] |
+| 6.5 | A 64-bit build | The addresses kept in integers and the structs holding pointers, fixed in the shared C (each change passing `make check`), with a translation step for files laid over structs. Needed for Macs and ARM machines. The 32-bit build is the reference. | [ ] |

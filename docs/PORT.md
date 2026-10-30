@@ -56,9 +56,10 @@ the PS1 or in its executable's format:
   names have one clash: `XZBoxToSphere`, defined in Polar, Race and Dino (from the built ELFs,
   2026-10-30). So the PC build doesn't need to load overlays at runtime; `LoadModeOverlay` needs only
   the mode's text.
-- **Addresses kept in integers.** The shared C has about 430 casts of an address to an integer
-  (`(s32)&...`), and the data has more. Open decision for 6.1: a 32-bit build first keeps them all
-  working, and 64-bit follows as a later step.
+- **32-bit first (decided 2026-10-30).** The shared C has about 430 casts of an address to an integer
+  (`(s32)&...`), and the data has more. A 32-bit build keeps them working, along with the structs'
+  layouts and size checks, so the game can run before any of that changes. 64-bit is a later step
+  (ROADMAP-B 6.5), so write `port/` itself to work on either: no pointer kept in an `int`.
 - **Hardware addresses.** 11 lines name a scratchpad or BIOS address (`0x1F80....`, `0xBFC.....`) in
   the shared C and headers.
 - **GTE.** The shared C has about 270 `gte_*` calls, which `sdk/` gives as plain C.

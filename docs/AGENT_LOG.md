@@ -442,7 +442,8 @@ Newest first, a few lines each. Details are in the commits.
   - Layout in PORT.md: `src/` and `include/` shared, `src/ps1/` PS1 only, `port/` PC only.
   - Seg names changed: `main/modchip` is `ps1/modchip`, and `decomp.py protos` and `diff_funcs.py`
     count `ps1/` as main.exe.
-  - Open for 6.1: 32-bit first or 64-bit (PORT.md recommends 32-bit first).
+  - Decided: the port is 32-bit first, and 64-bit is ROADMAP-B 6.5. The image's GCC may need
+    32-bit support added for 6.1 (not checked yet).
 
 - **2026-10-29 (ROADMAP-B Part 5 done):**
   - The release checklist is done: the licence, the README (cut to the basics), the credits, and
