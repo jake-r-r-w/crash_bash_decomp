@@ -443,7 +443,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-31 (ROADMAP-B 6.1):** `port/` has the copy of the game's C, presets, SDL3, CTest and CI. The game's C
+- **2026-10-31 (ROADMAP-B 6.1):** `port/` has the copy of the game's C, presets, SDL3 and CTest. The game's C
   compiles as 64-bit apart from 164 data tables, and isn't in the default build until 6.3 fixes them.
 - **2026-10-30 (the port restarted):** the 32-bit port and its shared C changes are deleted, and ROADMAP-B
   Part 6 and PORT.md are a new native 64-bit plan for Windows and Linux, with no emulation and its own copy of

@@ -32,10 +32,10 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
 | Compilers | Clang on both systems, GCC as a second check on Linux |
 | Window, sound, input | SDL3 |
 | Drawing | SDL3's GPU API: Vulkan on Windows and Linux, Direct3D 12 on Windows |
-| Checking | CTest, ASan and UBSan builds, optimised release builds, CI on both systems |
+| Checking | CTest, ASan and UBSan builds, optimised release builds |
 
-CI can only compile: the game's data and Sony's libraries can't be on a public server. Playing the
-game in tests happens on a machine that has them.
+There are no GitHub workflows: all of this runs by hand, on a machine with the game's data. Playing the
+game in tests needs that data, which can't go on a public server.
 
 ## The design
 
