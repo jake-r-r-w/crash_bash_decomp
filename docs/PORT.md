@@ -1,11 +1,11 @@
 # The PC port
 
-A native 64-bit Crash Bash for Windows, Linux, macOS and Android, built from this source with modern
-tooling. Nothing is written yet: this file is the design, and the steps are in
+A native 64-bit PC port of Crash Bash for Windows and Linux, built from this source on a modern stack: no
+emulation and no hacks. Nothing is written yet: this file is the design, and the steps are in
 [ROADMAP-B.md](ROADMAP-B.md), Part 6.
 
-A first attempt ran the game as a 32-bit program on the PS1's memory layout. It was deleted on 2026-10-30
-because that layout can't reach the targets, and this plan starts again without it. Its code is in git
+A first attempt ran the game as a 32-bit program on the PS1's memory layout, with a software PS1 GPU. It was
+deleted on 2026-10-30, and this plan starts again without any of that. Its code is in git
 at `7115b3b8`, as a reference only. What it taught is at the end of this file.
 
 ## The rules
@@ -17,11 +17,11 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
    anything from `port/`.
 4. **`src/ps1/` is PS1 only**, and the PC build leaves it out: the exe header, `bios_1`'s data, the mod-chip
    check, the overlay id words.
-5. **The game's C keeps calling PsyQ by name.** The PC build finds its own headers where the PS1 build
-   finds `ext/psyq47/include`. No Sony code goes in `port/`.
-6. **No emulation tricks.** No fixed low addresses, no linker lists that recreate the PS1's layout, no crash
-   handlers that patch up bad accesses, no `-O0` to hide undefined behaviour. If the C relies on the PS1,
-   the C gets fixed, in a form that still matches.
+5. **No Sony code in `port/`.** Where game logic calls a PsyQ name for something ordinary (a pad, a file, a
+   sound), the PC build gives it a native function under that name.
+6. **No emulation and no hacks.** No PS1 GPU, VRAM or SPU model, no fixed low addresses, no linker lists that
+   recreate the PS1's layout, no crash handlers that patch up bad accesses, no `-O0` to hide undefined
+   behaviour. If the C relies on the PS1, the C gets fixed, in a form that still matches.
 7. **`#ifdef BASH_PC` is the last resort** in shared code. A type or macro that means the same thing on
    both builds comes first.
 
@@ -31,10 +31,10 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
 |---|---|
 | Language | C. The game's C has to stay C to match, and `port/` stays with it |
 | Build | CMake with presets, and Ninja |
-| Compilers | Clang everywhere (the NDK's on Android), GCC as a second check on Linux |
+| Compilers | Clang on both systems, GCC as a second check on Linux |
 | Window, sound, input | SDL3 |
-| Drawing | SDL3's GPU API: Vulkan on Windows, Linux and Android, Direct3D 12 on Windows, Metal on macOS |
-| Checking | CTest, ASan and UBSan builds, optimised release builds, CI on every system |
+| Drawing | SDL3's GPU API: Vulkan on Windows and Linux, Direct3D 12 on Windows |
+| Checking | CTest, ASan and UBSan builds, optimised release builds, CI on both systems |
 
 CI can only compile: the game's data and Sony's libraries can't be on a public server. Playing the
 game in tests happens on a machine that has them.
@@ -55,9 +55,10 @@ hold pointers change size on PC, so their size checks apply to the PS1 only.
 one. Those go in a side table or a translation step at load. Mode text holds absolute addresses, which
 are fixed up at load. The memory card keeps its format on disk, so saves stay compatible.
 
-**Primitives.** The game writes PS1 drawing packets, which it has to keep doing to match, linked by 24 bits
-of an address. On PC all ordering tables and primitives live in one block aligned to 16 MB, so 24 bits are
-enough and the top bits come from the block.
+**What touches the hardware is small.** Of about 116,000 lines of game C, the drawing commands, VRAM calls and sound
+calls come to a few hundred lines. 171 of the 269 GTE calls and most of the primitive code are in one file,
+`src/main/prims.c`. The game's logic never sees the hardware, so the port replaces that layer, and the game above
+it is unchanged.
 
 **Overlays.** They all link into the program. A loaded overlay's data has to go back to its starting values,
 so each overlay's data goes in a section of its own, saved at startup and restored on load. Their global
@@ -69,14 +70,22 @@ gets a real check, found by running under the sanitizers.
 **Calls that rely on the caller's registers.** On the PS1, `f()` can hand on the caller's own `a0` without
 saying so. These calls name the argument on PC only, with no byte changed on the PS1.
 
-**Drawing.** A real GPU renderer turns the game's packets into draw calls. It keeps the PS1's VRAM as a texture,
-so texture pages, palettes, animated textures and VRAM copies work, and draws at higher resolutions.
+**The game's maths.** The fixed-point maths in the game's logic stays, because it decides how the game plays:
+camera, collision and sound positions come out the same. It becomes plain C functions, with no GTE registers.
 
-**Sound.** libsnd and the SPU are rewritten in C, sequencer included. To check them, Sony's linked code runs in a
-small MIPS interpreter against the same inputs, and every voice change has to agree.
+**Drawing.** The PC build doesn't write PS1 drawing commands. The functions that do (`draw_object_model`, `draw_verts`
+and the `prim_*` writers, the map, sprite and text drawing) have native versions in `port/` that send vertices to the
+GPU with real 3D transforms, depth and perspective-correct textures. Textures go from the game's indexed files to
+GPU textures at load, and palettes and animated or scrolling textures use GPU resources, not a VRAM allocator. Blend
+modes, fades and draw order are kept, so it looks like the game, sharper. The few effects that draw into VRAM
+become render targets.
+
+**Sound.** The sound banks and music are game assets, so they're played directly: ADPCM samples decoded by a native
+mixer, and the SEQ music by a native sequencer. To check it, Sony's linked code runs in a small MIPS interpreter against
+the same inputs, and note timing, pitch and volume have to agree.
 
 **Keeping it the same game.** The same pad inputs go to retail in an emulator and to the PC build, and the game's
-state is compared frame by frame.
+state is compared frame by frame. The picture is meant to differ; how the game plays isn't.
 
 ## What the first attempt taught
 
