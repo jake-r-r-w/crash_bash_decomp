@@ -1,0 +1,62 @@
+# The native PC port of Crash Bash (docs/PORT.md): 64-bit Windows and Linux, on SDL3.
+#
+#   cmake --preset windows-clang       (or linux-clang, linux-gcc, linux-asan)
+#   cmake --build --preset windows-clang
+#   ctest --preset windows-clang
+cmake_minimum_required(VERSION 3.25)
+project(crash_bash_pc VERSION 0.1.0 LANGUAGES C)
+
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "The port is 64-bit: use a 64-bit compiler (docs/PORT.md, Building).")
+endif()
+
+option(BASH_FETCH_SDL3 "Download and build SDL3 if it isn't installed" OFF)
+
+find_package(SDL3 QUIET CONFIG)
+if(NOT SDL3_FOUND)
+  if(NOT BASH_FETCH_SDL3)
+    message(FATAL_ERROR "SDL3 not found: set CMAKE_PREFIX_PATH to it, or use -DBASH_FETCH_SDL3=ON (docs/PORT.md, Building).")
+  endif()
+  include(FetchContent)
+  FetchContent_Declare(SDL3
+    URL https://github.com/libsdl-org/SDL/releases/download/release-3.4.18/SDL3-3.4.18.tar.gz)
+  set(SDL_STATIC ON CACHE BOOL "" FORCE)
+  set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+  set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(SDL3)
+endif()
+
+# The game's C, as it stands: this target is what 6.3 to 6.5 clean up (docs/ROADMAP-B.md). It isn't in the
+# default build yet, because 164 data tables keep addresses in s32s, which can't compile as 64-bit. Build it with
+# --target game to get the list.
+file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS game/main/*.c game/overlays/*.c)
+add_library(game OBJECT EXCLUDE_FROM_ALL ${GAME_SOURCES})
+target_include_directories(game PUBLIC psyq/include game/include)
+target_compile_options(game PRIVATE
+  # The dialect it was written in, until every function has a prototype (6.3).
+  -std=gnu89
+  # What the PS1's compiler did with the rest: a signed char, and signed overflow that wraps.
+  -fsigned-char -fwrapv -fno-strict-aliasing -fno-builtin
+  # Old C, reviewed in 6.3 and 6.4; the warnings that matter for 64-bit stay on.
+  -Wno-deprecated-non-prototype -Wno-strict-prototypes -Wno-pointer-sign
+  -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-format-security
+  # Addresses kept in integers are the list for 6.3: warnings for now, errors once they reach zero.
+  -Wno-error=int-conversion $<$<C_COMPILER_ID:Clang>:-ferror-limit=0>)
+
+add_executable(crashbash main.c)
+if(TARGET SDL3::SDL3-static)
+  target_link_libraries(crashbash PRIVATE SDL3::SDL3-static)
+else()
+  target_link_libraries(crashbash PRIVATE SDL3::SDL3)
+  if(WIN32)
+    add_custom_command(TARGET crashbash POST_BUILD COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+      "$<TARGET_FILE:SDL3::SDL3>" "$<TARGET_FILE_DIR:crashbash>")
+  endif()
+endif()
+target_compile_options(crashbash PRIVATE -std=c17 -Wall -Wextra)
+target_compile_definitions(crashbash PRIVATE BASH_VERSION="${PROJECT_VERSION}")
+
+enable_testing()
+add_test(NAME version COMMAND crashbash --version)
+set_tests_properties(version PROPERTIES PASS_REGULAR_EXPRESSION "crashbash ${PROJECT_VERSION}")
+add_test(NAME sdl COMMAND crashbash --check-sdl)

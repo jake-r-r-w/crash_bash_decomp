@@ -1,0 +1,55 @@
+# Builds the PC port on Windows and Linux. CI can only compile and run the checks that need no game data
+# (docs/PORT.md). SDL3 is built from its release, so the first run of each cache takes a few minutes.
+name: PC port
+
+on:
+  push:
+    paths: ["port/**", ".github/workflows/port.yml"]
+  pull_request:
+    paths: ["port/**", ".github/workflows/port.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [linux-clang, linux-gcc, linux-asan]
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y clang ninja-build
+      - run: cmake --preset ${{ matrix.preset }} -S port -DBASH_FETCH_SDL3=ON -DSDL_UNIX_CONSOLE_BUILD=ON
+      - run: cmake --build build/port/${{ matrix.preset }}
+      - run: ctest --test-dir build/port/${{ matrix.preset }} --output-on-failure
+      - name: Compile the game's C (the list for ROADMAP-B 6.3)
+        if: matrix.preset != 'linux-asan'
+        continue-on-error: true
+        shell: bash
+        run: |
+          cmake --build build/port/${{ matrix.preset }} --target game -- -k 0 > game.log 2>&1 || true
+          echo "### ${{ matrix.preset }}: $(grep -c ' error: ' game.log) errors, $(grep -c ' warning: ' game.log) warnings in the game's C" >> "$GITHUB_STEP_SUMMARY"
+
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install llvm-mingw and Ninja
+        shell: pwsh
+        run: |
+          $v = "20260616"
+          Invoke-WebRequest "https://github.com/mstorsjo/llvm-mingw/releases/download/$v/llvm-mingw-$v-ucrt-x86_64.zip" -OutFile llvm-mingw.zip
+          Expand-Archive llvm-mingw.zip C:\
+          "C:\llvm-mingw-$v-ucrt-x86_64\bin" | Out-File -Append $env:GITHUB_PATH
+          choco install ninja --no-progress -y
+      - run: cmake --preset windows-clang -S port -DBASH_FETCH_SDL3=ON
+      - run: cmake --build build/port/windows-clang
+      - run: ctest --test-dir build/port/windows-clang --output-on-failure
+      - name: Compile the game's C (the list for ROADMAP-B 6.3)
+        continue-on-error: true
+        shell: bash
+        run: |
+          cmake --build build/port/windows-clang --target game -- -k 0 > game.log 2>&1 || true
+          echo "### windows-clang: $(grep -c ' error: ' game.log) errors, $(grep -c ' warning: ' game.log) warnings in the game's C" >> "$GITHUB_STEP_SUMMARY"

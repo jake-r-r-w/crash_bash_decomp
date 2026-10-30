@@ -1,7 +1,7 @@
 # The PC port
 
 A native 64-bit PC port of Crash Bash for Windows and Linux, built from this source on a modern stack: no
-emulation and no hacks. Nothing is written yet: this file is the design, and the steps are in
+emulation and no hacks. It builds but doesn't run the game yet: this file is the design, and the steps are in
 [ROADMAP-B.md](ROADMAP-B.md), Part 6.
 
 A first attempt ran the game as a 32-bit program on the PS1's memory layout, with a software PS1 GPU. It was
@@ -89,6 +89,26 @@ the same inputs, and note timing, pitch and volume have to agree.
 game's state is recorded frame by frame on the machine that has the disc. Once the port runs, it replays the same inputs
 and has to give the same state, and any refactoring that changes the game fails that test. The picture is meant to
 differ; how the game plays isn't.
+
+## Building
+
+It needs CMake, Ninja, a 64-bit Clang and SDL3. On Windows that's [llvm-mingw](https://github.com/mstorsjo/llvm-mingw).
+From `port/`, with `CMAKE_PREFIX_PATH` pointing at SDL3 (or `-DBASH_FETCH_SDL3=ON` to download and build it):
+
+```sh
+cmake --preset windows-clang
+cmake --build --preset windows-clang
+ctest --preset windows-clang
+```
+
+The presets are `windows-clang`, `linux-clang`, `linux-gcc` and `linux-asan`, and the output is under `build/port/`.
+`port/` holds `game/` (the copy of the game's C), `psyq/` (PsyQ's names, which go as they're replaced) and `main.c`.
+
+The game's C isn't in the default build until it compiles. To see what's left:
+
+```sh
+cmake --build --preset windows-clang --target game -- -k 0
+```
 
 ## What the first attempt taught
 

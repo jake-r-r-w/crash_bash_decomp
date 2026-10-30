@@ -1,0 +1,55 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/port/${presetName}",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo", "CMAKE_EXPORT_COMPILE_COMMANDS": "ON" }
+    },
+    {
+      "name": "windows-clang",
+      "displayName": "Windows x86-64, Clang (llvm-mingw)",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "cacheVariables": { "CMAKE_C_COMPILER": "x86_64-w64-mingw32-clang" }
+    },
+    {
+      "name": "linux-clang",
+      "displayName": "Linux x86-64, Clang",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
+      "cacheVariables": { "CMAKE_C_COMPILER": "clang" }
+    },
+    {
+      "name": "linux-gcc",
+      "displayName": "Linux x86-64, GCC (the second check)",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
+      "cacheVariables": { "CMAKE_C_COMPILER": "gcc" }
+    },
+    {
+      "name": "linux-asan",
+      "displayName": "Linux x86-64, Clang with ASan and UBSan",
+      "inherits": "linux-clang",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "windows-clang", "configurePreset": "windows-clang" },
+    { "name": "linux-clang", "configurePreset": "linux-clang" },
+    { "name": "linux-gcc", "configurePreset": "linux-gcc" },
+    { "name": "linux-asan", "configurePreset": "linux-asan" }
+  ],
+  "testPresets": [
+    { "name": "windows-clang", "configurePreset": "windows-clang", "output": { "outputOnFailure": true } },
+    { "name": "linux-clang", "configurePreset": "linux-clang", "output": { "outputOnFailure": true } },
+    { "name": "linux-gcc", "configurePreset": "linux-gcc", "output": { "outputOnFailure": true } },
+    { "name": "linux-asan", "configurePreset": "linux-asan", "output": { "outputOnFailure": true } }
+  ]
+}
