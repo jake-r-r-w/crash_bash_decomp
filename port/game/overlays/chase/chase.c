@@ -379,6 +379,7 @@ CircleFireOfs CircleFireOffsets[8] = {
 s32 ChaseUnused0[8] = { -0x100, 0, 0x100, 0, 0, 0x100, 0, -0x100 };
 u8 ChaseHeroSlots[48] = {0};
 s32 ChaseUpdateState[36] = {0};
+NAS *ChaseHeroCoal[4] = {0};
 s32 ChaseHeroState[4][21] = {0};
 NAS *ChasePickup[1] = {0};
 NAS *ChaseBarrels[8] = {0};
@@ -924,7 +925,7 @@ void ChaseInitHero(s32 arg0) {
     h->hero_score = 0;
     st[0] = 1;
     st[2] = 0xB4;
-    st[0x12] = 0;
+    ChaseHeroCoal[arg0] = NULL;
     ChaseFlameState[arg0] = 0;
     ChaseFlameSfxHandle[arg0] = 0;
     nas = CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1D09, 0x11);
@@ -1023,7 +1024,7 @@ void ChaseMoveHero(s32 arg0) {
     SLONG_XYZ *v;
     u8 *anim;
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
 
     base = Heroes;
     h = base + arg0;
@@ -1126,13 +1127,13 @@ void ChaseMoveHero(s32 arg0) {
         e0 = Heroes[arg0].hero_eng;
         st = ChaseHeroState[arg0];
         t = NULL;
-        if ((NAS *)st[0x12] == NULL
-            || (ne = ((NAS *)st[0x12])->Engine, dx = e0->XYZ.x - ne->XYZ.x, dx = dx * dx,
+        if (ChaseHeroCoal[arg0] == NULL
+            || (ne = ChaseHeroCoal[arg0]->Engine, dx = e0->XYZ.x - ne->XYZ.x, dx = dx * dx,
                 dz = e0->XYZ.z - ne->XYZ.z, dz = dz * dz, dx + dz >= 0x400)) {
             t = ChaseSpawnCoal(arg0);
         }
         if (t != NULL) {
-            st[0x12] = (s32)t;
+            ChaseHeroCoal[arg0] = t;
         }
     } else {
         if (--ChaseHeroSpeed[arg0] <= 0) {
@@ -1150,15 +1151,15 @@ void ChaseMoveHero(s32 arg0) {
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
-                ext[3] = 3;
-                ext[6] = 0x100;
+                ext->scriptnumber = 3;
+                ext->speed = 0x100;
                 if (anim != NULL) {
-                    ext[8] = 5;
+                    ext->flags = 5;
                     nas->Engine->sub->u6C.dbase = anim;
                 } else {
-                    ext[8] = 1;
+                    ext->flags = 1;
                 }
-                ext[10] = 0;
+                ext->maxloops = 0;
                 nas->InitDelete(nas);
             }
         }
@@ -1960,7 +1961,7 @@ void SetChaseHeroLose(s32 arg0) {
         SLONG_XYZ *v;
         void *anim;
         NAS *nas;
-        s32 *ext;
+        EXTscriptdata *ext;
 
         g->hero_sub->XYZ.y = 0;
         g->hero_pu = 0;
@@ -1972,15 +1973,15 @@ void SetChaseHeroLose(s32 arg0) {
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
-                ext[3] = 0;
-                ext[6] = 0x100;
+                ext->scriptnumber = 0;
+                ext->speed = 0x100;
                 if (anim != NULL) {
-                    ext[8] = 5;
+                    ext->flags = 5;
                     nas->Engine->sub->u6C.dbase = anim;
                 } else {
-                    ext[8] = 1;
+                    ext->flags = 1;
                 }
-                ext[10] = 0;
+                ext->maxloops = 0;
                 nas->InitDelete(nas);
             }
         }
@@ -2154,7 +2155,7 @@ void PlotBarrelCH(NAS *nas) {
     SLONG_XYZ *v;
     void *anim;
     NAS *n;
-    s32 *ext;
+    EXTscriptdata *ext;
 
     i = 0;
     eng = nas->Engine;
@@ -2195,15 +2196,15 @@ void PlotBarrelCH(NAS *nas) {
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
             if (ext != NULL) {
-                ext[3] = 0;
-                ext[6] = 0x100;
+                ext->scriptnumber = 0;
+                ext->speed = 0x100;
                 if (anim != NULL) {
-                    ext[8] = 5;
+                    ext->flags = 5;
                     n->Engine->sub->u6C.dbase = anim;
                 } else {
-                    ext[8] = 1;
+                    ext->flags = 1;
                 }
-                ext[10] = 0;
+                ext->maxloops = 0;
                 n->InitDelete(n);
             }
         }

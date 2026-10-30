@@ -1917,7 +1917,7 @@ void HeroPogoWinner(u32 arg0) {
 void SetHeroPogoLoser(u32 arg0) {
     s32 *pos;
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
     u8 *p;
 
     Player_RemoveReserve(arg0);
@@ -1936,15 +1936,15 @@ void SetHeroPogoLoser(u32 arg0) {
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = 0;
-            ext[6] = 0x100;
+            ext->scriptnumber = 0;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext[8] = 5;
+                ext->flags = 5;
                 nas->Engine->sub->u6C.ptr = p;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
     }
@@ -1958,7 +1958,7 @@ void HeroPogoLoser(u32 arg0) {
     EXTengine *eng;
     s32 *pos;
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
     u8 *p;
 
     Pickup_Lose(arg0);
@@ -1976,15 +1976,15 @@ void HeroPogoLoser(u32 arg0) {
             if (nas != NULL) {
                 ext = FindExtension(nas, 0x10000000);
                 if (ext != NULL) {
-                    ext[3] = 2;
-                    ext[6] = 0x100;
+                    ext->scriptnumber = 2;
+                    ext->speed = 0x100;
                     if (p != NULL) {
-                        ext[8] = 5;
+                        ext->flags = 5;
                         nas->Engine->sub->u6C.ptr = p;
                     } else {
-                        ext[8] = 1;
+                        ext->flags = 1;
                     }
-                    ext[10] = 0;
+                    ext->maxloops = 0;
                     nas->InitDelete(nas);
                 }
             }
@@ -2142,7 +2142,7 @@ void AddDingoSmoke(u32 arg0) {
     s32 *pos;
     NAS *nas;
     NAS *r;
-    s32 *ext;
+    EXTscriptdata *ext;
     EXTengine *eng;
     subengine *s;
     u8 *p;
@@ -2153,15 +2153,15 @@ void AddDingoSmoke(u32 arg0) {
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = 6;
-            ext[6] = 0x100;
+            ext->scriptnumber = 6;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext[8] = 5;
+                ext->flags = 5;
                 nas->Engine->sub->u6C.ptr = p;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         r = nas;
@@ -2187,7 +2187,7 @@ void AddSomeDust(u32 arg0) {
     s32 *pos;
     NAS *nas;
     NAS *r;
-    s32 *ext;
+    EXTscriptdata *ext;
     EXTengine *eng;
     subengine *s;
     u8 *p;
@@ -2198,15 +2198,15 @@ void AddSomeDust(u32 arg0) {
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = 4;
-            ext[6] = 0x100;
+            ext->scriptnumber = 4;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext[8] = 5;
+                ext->flags = 5;
                 nas->Engine->sub->u6C.ptr = p;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         r = nas;
@@ -2230,7 +2230,7 @@ void AddBrioSmoke(u32 arg0) {
     s32 *pos;
     NAS *nas;
     NAS *r;
-    s32 *ext;
+    EXTscriptdata *ext;
     EXTengine *eng;
     subengine *s;
     u8 *p;
@@ -2241,15 +2241,15 @@ void AddBrioSmoke(u32 arg0) {
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = 4;
-            ext[6] = 0x100;
+            ext->scriptnumber = 4;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext[8] = 5;
+                ext->flags = 5;
                 nas->Engine->sub->u6C.ptr = p;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         r = nas;
@@ -2515,7 +2515,7 @@ void Tile_FireTnt(s32 arg0, s32 arg1) {
     PogoSquare *base;
     s32 *pos;
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
     s32 i;
     s32 near;
     s32 one;
@@ -2541,10 +2541,10 @@ void Tile_FireTnt(s32 arg0, s32 arg1) {
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = one;
-            ext[6] = 0x100;
-            ext[8] = one;
-            ext[10] = 0;
+            ext->scriptnumber = one;
+            ext->speed = 0x100;
+            ext->flags = one;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
     }
@@ -2570,7 +2570,7 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
     PogoSquare *base;
     s32 *pos;
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
     s32 i;
     s32 near;
 
@@ -2602,10 +2602,10 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = 2;
-            ext[6] = 0x100;
-            ext[8] = 1;
-            ext[10] = 0;
+            ext->scriptnumber = 2;
+            ext->speed = 0x100;
+            ext->flags = 1;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
     }
@@ -4398,7 +4398,7 @@ void Plot_PogoProjectile(NAS *arg0) {
     EXTengine *he;
     NAS *cell;
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
     u8 *p;
     s32 *pos;
     s32 i;
@@ -4555,15 +4555,15 @@ void Plot_PogoProjectile(NAS *arg0) {
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
-                ext[3] = 0;
-                ext[6] = 0x100;
+                ext->scriptnumber = 0;
+                ext->speed = 0x100;
                 if (p != NULL) {
-                    ext[8] = 5;
+                    ext->flags = 5;
                     nas->Engine->sub->u6C.ptr = p;
                 } else {
-                    ext[8] = 1;
+                    ext->flags = 1;
                 }
-                ext[10] = 0;
+                ext->maxloops = 0;
                 nas->InitDelete(nas);
             }
         }
@@ -7196,7 +7196,7 @@ void AddTazerRing(u32 arg0) {
     s32 *pos;
     NAS *nas;
     NAS *r;
-    s32 *ext;
+    EXTscriptdata *ext;
     u8 *p;
 
     pos = (s32 *)&Heroes[arg0].hero_eng->XYZ;
@@ -7205,15 +7205,15 @@ void AddTazerRing(u32 arg0) {
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = 7;
-            ext[6] = 0x100;
+            ext->scriptnumber = 7;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext[8] = 5;
+                ext->flags = 5;
                 nas->Engine->sub->u6C.ptr = p;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         r = nas;

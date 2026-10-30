@@ -103,21 +103,21 @@ void BonkBounceAll(void);
 /* Spawns the 0x1605 puff at v. */
 static inline void BonkSpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
 
     nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = kind;
-            ext[6] = 0x100;
+            ext->scriptnumber = kind;
+            ext->speed = 0x100;
             if (anim != NULL) {
-                ext[8] = 5;
+                ext->flags = 5;
                 nas->Engine->sub->u6C.dbase = anim;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
     }

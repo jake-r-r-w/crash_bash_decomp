@@ -1152,7 +1152,7 @@ void InitGatewayTrophy(void) {
 void HubSpawnFlash(s32 *arg0, s32 arg1) {
     NAS *nas;
     NAS *r;
-    s32 *ext;
+    EXTscriptdata *ext;
     EXTengine *eng;
     u8 *p;
 
@@ -1161,15 +1161,15 @@ void HubSpawnFlash(s32 *arg0, s32 arg1) {
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = arg1;
-            ext[6] = 0x100;
+            ext->scriptnumber = arg1;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext[8] = 5;
+                ext->flags = 5;
                 nas->Engine->sub->u6C.ptr = p;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         r = nas;

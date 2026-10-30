@@ -632,21 +632,21 @@ s32 GravitateNas(NAS *nas) {
 
 NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, void *arg2) {
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
 
     nas = CreateNAS(arg1[0], arg1[1], arg1[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = arg0;
-            ext[6] = 0x100;
+            ext->scriptnumber = arg0;
+            ext->speed = 0x100;
             if (arg2 != 0) {
-                ext[8] = 4;
+                ext->flags = 4;
                 ((s32 *)nas->Engine->sub)[0x6C / 4] = arg2;
             } else {
-                ext[8] = 0;
+                ext->flags = 0;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         return nas;
@@ -656,21 +656,21 @@ NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, void *arg2) {
 
 NAS *SpawnModelFx(s32 arg0, s32 *arg1, void *arg2) {
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
 
     nas = CreateNAS(arg1[0], arg1[1], arg1[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = arg0;
-            ext[6] = 0x100;
+            ext->scriptnumber = arg0;
+            ext->speed = 0x100;
             if (arg2 != 0) {
-                ext[8] = 5;
+                ext->flags = 5;
                 ((s32 *)nas->Engine->sub)[0x6C / 4] = arg2;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         return nas;

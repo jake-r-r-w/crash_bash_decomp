@@ -215,16 +215,16 @@ void *CrateCollide(EXTengine *eng, void *arg1, s32 arg2, s32 arg3);
 /* Spawns the 0x1605 puff at v and returns it (InitTumbler). */
 static inline NAS *BashSpawnPuff(SLONG_XYZ *v) {
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
 
     nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[6] = 0x100;
-            ext[3] = 0;
-            ext[8] = 9;
-            ext[10] = 0;
+            ext->speed = 0x100;
+            ext->scriptnumber = 0;
+            ext->flags = 9;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         return nas;

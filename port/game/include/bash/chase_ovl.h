@@ -152,6 +152,7 @@ typedef struct PickupCHExt {
 
 extern u8 ChaseHeroSlots[];
 extern s32 ChaseHeroState[][21];
+extern NAS *ChaseHeroCoal[4];
 extern NAS *ChaseGrid[];
 
 /* Per-level spawn offsets read by ChaseSpawnCoal: radius, angle, height. */

@@ -3347,12 +3347,12 @@ void InitBall(NAS *nas) {
             sub->entity = 0x200C;
             sub->scale = 0xB00;
             sub->flags |= 0x42000021;
-            ext = AddExt(nas, 0x74, 0x10000000);
+            ext = AddExt(nas, sizeof(EXT) + 0x68, 0x10000000);
             if (ext != NULL) {
                 i = 7;
                 ext += i;
                 do {
-                    ext[0x6C] = 0;
+                    ext[sizeof(EXT) + 0x60] = 0;
                     i--;
                     ext--;
                 } while (i >= 0);

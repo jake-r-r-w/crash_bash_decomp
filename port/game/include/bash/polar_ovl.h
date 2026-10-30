@@ -1232,7 +1232,7 @@ typedef struct PolarAi {
     /* 0x2C */ u8 pad2C[0x6C];
     /* 0x98 */ s32 unk98;
     /* 0x9C */ s32 deadTimer;     /* counts up in the dead state */
-    /* 0xA0 */ s32 unkA0;
+    /* 0xA0 */ NAS *unkA0;
     /* 0xA4 */ s32 unkA4;
     /* 0xA8 */ s32 unkA8;
     /* 0xAC */ s32 unkAC;
@@ -1242,7 +1242,11 @@ typedef struct PolarAi {
 
 /* PolarBeamOwner's 0x40000000 extension as PolarHeroCollisions reads it. */
 typedef struct PolarGame {
-    /* 0x00 */ u8 pad0[sizeof(EXT) + 0x3C];
+    /* 0x00 */ u8 pad0[sizeof(EXT)];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 pad18[0x30];
     /* 0x48 */ s32 out[8];  /* per player, zero while in play */
     /* 0x68 */ s32 itTime;  /* the it player's time left */
     /* 0x6C */ s32 itPlayer;

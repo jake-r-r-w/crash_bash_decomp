@@ -627,6 +627,10 @@ typedef struct GameState {
     /* 0x06C */ s32 teams;
     /* 0x070 */ AdventureState adventure;
 } GameState;
+/* Word i of an extension whose fields after the header are all words (the PS1's word index, 3 being the first), and one
+ * that holds a pointer as its first field. */
+#define EXT_W(e, i) (((s32 *)((u8 *)(e) + sizeof(EXT)))[(i) - 3])
+#define EXT_P(e, i) (*(void **)((u8 *)(e) + sizeof(EXT)))
 BASH_SIZE_CHECK(GameState, 0x18C);
 extern GameState GameInfoState;
 extern void (*GameBoot)(void *);

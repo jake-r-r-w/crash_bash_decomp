@@ -50,21 +50,21 @@ extern s32 BonkStoolSfx[];
 /* PlotBonkCrate's puff of smoke at pos (type 0x1605, flags 0x11). */
 static inline void Bonk_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
     NAS *obj;
-    s32 *ext;
+    EXTscriptdata *ext;
 
     obj = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (obj != NULL) {
         ext = FindExtension(obj, 0x10000000);
         if (ext != NULL) {
-            ext[3] = mode;
-            ext[6] = 0x100;
+            ext->scriptnumber = mode;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext[8] = 5;
+                ext->flags = 5;
                 obj->Engine->sub->u6C.ptr = p;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             obj->InitDelete(obj);
         }
     }

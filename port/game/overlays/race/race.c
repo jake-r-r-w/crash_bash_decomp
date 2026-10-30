@@ -1263,7 +1263,7 @@ u32 RaceAI_FollowTrack(s32 player) {
                     Heroes[player].hero_ai->AIpad &= ~0x8000;
                 }
             }
-            ext[7] = 0x20 - AiPlayerSkill[player].level;
+            EXT_W(ext, 7) = 0x20 - AiPlayerSkill[player].level;
         }
     }
     return 0x8000;
@@ -1333,7 +1333,7 @@ static inline NAS *RacePickupAheadInline(s32 arg0) {
 }
 
 void RaceAI_ChasePickup(s32 arg0) {
-    s32 *ext;
+    RaceAiExt *ext;
     NAS *nas;
 
     ext = FindExtension(Heroes[arg0].hero, 0x20000000);
@@ -1343,7 +1343,7 @@ void RaceAI_ChasePickup(s32 arg0) {
             RaceAI_SteerTo(arg0, &nas->Engine->XYZ);
             return;
         }
-        ext[6] = (s32)RaceAI_SteerAhead;
+        ext->unk18 = RaceAI_SteerAhead;
     }
 }
 
@@ -5358,7 +5358,7 @@ void PlotTNTCrate(NAS *nas) {
     s32 *pos;
     u8 *p;
     NAS *spawned;
-    s32 *ext;
+    EXTscriptdata *ext;
     HeroInfo *h;
     subengine *sub;
 
@@ -5412,15 +5412,15 @@ void PlotTNTCrate(NAS *nas) {
                 if (spawned != NULL) {
                     ext = FindExtension(spawned, 0x10000000);
                     if (ext != NULL) {
-                        ext[3] = status;
-                        ext[6] = 0x100;
+                        ext->scriptnumber = status;
+                        ext->speed = 0x100;
                         if (p != NULL) {
-                            ext[8] = 5;
+                            ext->flags = 5;
                             spawned->Engine->sub->u6C.dbase = p;
                         } else {
-                            ext[8] = status;
+                            ext->flags = status;
                         }
-                        ext[10] = 0;
+                        ext->maxloops = 0;
                         spawned->InitDelete(spawned);
                     }
                 }

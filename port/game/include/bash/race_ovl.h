@@ -231,7 +231,7 @@ typedef struct RaceFux {
 
 /* Extension 0x20000000 as InitialiseRACE sets it up. */
 typedef struct RaceAiExt {
-    /* 0x00 */ s32 pad0[3];
+    /* 0x00 */ u8 pad0[sizeof(EXT)];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 angle;  /* the hero's forward_angle when it started */
     /* 0x14 */ s32 speed;  /* RaceAISpeeds for the hero */
@@ -502,16 +502,16 @@ static inline s32 RaceDistSq(SLONG_XYZ *a, SLONG_XYZ *b) {
 /* Spawns the 0x1605 puff at v and returns it (PlotRaceVolcano). */
 static inline NAS *RaceSpawnPuffRet(SLONG_XYZ *v, s32 kind, s32 mode) {
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
 
     nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = kind;
-            ext[6] = 0x100;
-            ext[8] = mode;
-            ext[10] = 0;
+            ext->scriptnumber = kind;
+            ext->speed = 0x100;
+            ext->flags = mode;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         return nas;
@@ -819,21 +819,21 @@ s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
 /* Spawns the 0x1605 puff at v (RaceUpdateBarrels). */
 static inline void RaceSpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
     NAS *nas;
-    s32 *ext;
+    EXTscriptdata *ext;
 
     nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = kind;
-            ext[6] = 0x100;
+            ext->scriptnumber = kind;
+            ext->speed = 0x100;
             if (anim != NULL) {
-                ext[8] = 5;
+                ext->flags = 5;
                 nas->Engine->sub->u6C.dbase = anim;
             } else {
-                ext[8] = 1;
+                ext->flags = 1;
             }
-            ext[10] = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
     }
