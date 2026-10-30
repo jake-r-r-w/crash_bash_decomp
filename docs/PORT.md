@@ -108,6 +108,18 @@ The game's C isn't in the default build until it compiles. To see what's left:
 cmake --build --preset windows-clang --target game -- -k 0
 ```
 
+## What a pointer's size breaks
+
+Giving a struct a real pointer makes it bigger, so anything that assumed the old size is now wrong, and the compiler can't
+always see it. 6.2 fixed the ones it met; 6.3 looks for the rest:
+
+- Byte strides: `* 0x38` for a model bank entry, `<< 4` for a `BattleLevel`, offsets like `[0x6C / 4]`. Use the array or field.
+- Word views of a struct, such as `st[0x12]` and `hero[40]`. These hold pointers in places a 64-bit layout has moved.
+- Fixed sizes: `AllocExtension` now takes `sizeof`, and its heap aligns to 8 and has a header of `EXT_HEADER` bytes. The
+  sizes the game asks for its heaps are still the PS1's, so 6.4 has to scale them.
+- A slot that holds a number in some uses and an address in others is an `iptr` (`NAS.UserInfo`). Otherwise it gets its
+  real pointer type.
+
 ## What the first attempt taught
 
 Each of these cost time to find, and they all still apply:

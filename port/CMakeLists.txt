@@ -26,19 +26,19 @@ if(NOT SDL3_FOUND)
   FetchContent_MakeAvailable(SDL3)
 endif()
 
-# The game's C, as it stands: this target is what 6.2 to 6.4 clean up (docs/ROADMAP-B.md).
+# The game's C, as it stands: this target is what 6.3 and 6.4 clean up (docs/ROADMAP-B.md).
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS game/main/*.c game/overlays/*.c)
 add_library(game OBJECT ${GAME_SOURCES})
 target_include_directories(game PUBLIC psyq/include game/include)
 target_compile_options(game PRIVATE
-  # GNU C for the empty-parens hooks, until they have prototypes (6.2); C23 would read them as (void).
+  # GNU C for the empty-parens hooks, until they have prototypes (6.3); C23 would read them as (void).
   -std=gnu17
   # What the PS1's compiler did with the rest: a signed char, and signed overflow that wraps.
   -fsigned-char -fwrapv -fno-strict-aliasing -fno-builtin
-  # Old C, reviewed in 6.2 and 6.3; the warnings that matter for 64-bit stay on.
-  -Wimplicit-function-declaration -Wimplicit-int -Wdeprecated-non-prototype -Wstrict-prototypes -Wno-pointer-sign
+  # Old C, reviewed in 6.3; the warnings that matter for 64-bit stay on.
+  -Wno-strict-prototypes -Wno-pointer-sign
   -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-format-security
-  # Addresses kept in integers are the list for 6.2: warnings for now, errors once they reach zero.
+  # Addresses kept in integers are the list for 6.3 and 6.4: warnings for now, errors once they reach zero.
   -Wno-error=int-conversion $<$<C_COMPILER_ID:Clang>:-ferror-limit=0>)
 
 add_executable(crashbash main.c)

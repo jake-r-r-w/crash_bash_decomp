@@ -66,8 +66,8 @@ ROADMAP-B.md, Part 6:
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. **The PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
-   `port/game/`. 6.1 is done. Next is 6.2, addresses and calls, which starts with the 164 data
-   tables that can't compile. Whether it plays the same as retail is checked by the user playing it.
+   `port/game/`. 6.1 and 6.2 are done, and the game's C compiles but isn't linked or run. Next is 6.3, real structs (PORT.md,
+   What a pointer's size breaks). Whether it plays the same as retail is checked by the user playing it.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -443,6 +443,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-31 (ROADMAP-B 6.2):** the game's C compiles as 64-bit in the default build, gnu17, with real pointers in its
+  tables, prototypes on its functions, and pass-through calls passing their arguments (from the first port's `PASSED` list
+  at `7115b3b8`). 236 lines of address casts are left: about 95 in prims and sound (replaced in 6.6 and 6.7), the rest
+  word views and file pointers for 6.3 and 6.4. 80 hook fields still have empty parens (6.3).
 - **2026-10-31 (retail recordings dropped):** the user will test the port by playing it, so there's no recorder and no
   GitHub workflow, and the steps are renumbered. Seen while trying it: Cross on the network RetroPad never showed in
   `Pads` over 31 taps on PCSX ReARMed, and a level's opening wait ended by itself, so playtest.mjs's taps may do nothing.

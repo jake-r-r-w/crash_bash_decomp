@@ -782,6 +782,9 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 6.1 Foundations (2026-10-31): `port/game/` is the port's copy of the game's C, with CMake presets, Clang and GCC,
   SDL3 and CTest on Windows and Linux. The port's own program builds and passes its tests. The game's C compiles
   as 64-bit except for 164 data tables that keep addresses in `s32`s, the first job of 6.2.
+- [x] 6.2 Addresses and calls (2026-10-31): the game's C compiles as 64-bit with Clang and GCC and is in the default build.
+  Its data tables hold real pointers, functions have prototypes, and calls that relied on the caller's registers pass
+  their arguments. It isn't linked or run yet. The address casts left are in code later steps replace or redesign.
 - A 32-bit port ran the game on the PS1's memory layout, with all 33 modes playing to the end, then was
   deleted (2026-10-30). The layout couldn't reach 64-bit, so the port starts again (ROADMAP-B, PORT.md). Its
   code is in git at `7115b3b8`, and PORT.md has what it taught.
