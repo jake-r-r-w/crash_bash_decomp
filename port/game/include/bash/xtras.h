@@ -88,7 +88,6 @@ struct CrateHookInf {
     /* 0x08 */ void (*OnExplode)();
     /* 0x0C */ void (*ExploRange)();
 };
-BASH_SIZE_CHECK(CrateHookInf, 0x10);
 
 struct xzxz {
     /* 0x00 */ s16 x2;

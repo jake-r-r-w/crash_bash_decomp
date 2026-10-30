@@ -52,7 +52,6 @@ struct WinInf {
     /* 0x00 */ s8 *name;
     /* 0x04 */ u16 seq;
 };
-BASH_SIZE_CHECK(WinInf, 0x8);
 
 struct HookInf {
     /* 0x00 */ void (*InitHero)();
@@ -83,7 +82,6 @@ struct HookInf {
     /* 0x64 */ void (*ChooseWinner)();
     /* 0x68 */ s32 (*CheckBounds)();
 };
-BASH_SIZE_CHECK(HookInf, 0x6C);
 
 struct BossInfo {
     /* 0x00 */ NAS *boss;
@@ -106,7 +104,6 @@ struct BossInfo {
     /* 0x32 */ u16 boss_attack_delay;
     /* 0x34 */ SLONG_XYZ boss_origin;
 };
-BASH_SIZE_CHECK(BossInfo, 0x40);
 
 struct BossMasterInfo {
     /* 0x00 */ u16 boss_mode;
@@ -177,7 +174,6 @@ struct HEROFunc {
     /* 0x00 */ void (*SetMode)();
     /* 0x04 */ void (*Action)();
 };
-BASH_SIZE_CHECK(HEROFunc, 0x8);
 
 struct TweakInfo {
     /* 0x00 */ s16 Quality;

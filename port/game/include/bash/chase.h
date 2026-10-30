@@ -53,7 +53,6 @@ struct CH_player {
     /* 0x4C */ NAS *pProtectingNas;
     /* 0x50 */ s32 powerup;
 };
-BASH_SIZE_CHECK(CH_player, 0x54);
 
 struct CH_Bot {
     /* 0x00 */ s32 Doing;
@@ -69,7 +68,6 @@ struct CH_Bot {
     /* 0x28 */ s32 RecentX;
     /* 0x2C */ s32 RecentZ;
 };
-BASH_SIZE_CHECK(CH_Bot, 0x30);
 
 struct EXTobject_CH {
     /* 0x00 */ s32 EXTid;
@@ -89,6 +87,5 @@ struct EXTobject_CH {
     /* 0x3C */ NAS *AddrNextNas;
     /* 0x40 */ s32 Earmarked;
 };
-BASH_SIZE_CHECK(EXTobject_CH, 0x44);
 
 #endif /* BASH_CHASE_H */

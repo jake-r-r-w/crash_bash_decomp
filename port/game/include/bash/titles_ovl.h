@@ -307,7 +307,6 @@ s32 LevelListModel(s32 arg0, s32 arg1);
 
 
 
-extern s8 GameArenaLevel;
 
 void NewLoadMenuUpdate(void);
 
@@ -394,7 +393,6 @@ void BattleOptionsUpdate(void);
 
 #define O69CV ((GameState *)GameInfo)
 #define O69PAD ((PadState *)Pads)
-extern u8 GameMaxPlayers;
 void PlayersMenuUpdate(void);
 
 void OptionsUpdate(void);

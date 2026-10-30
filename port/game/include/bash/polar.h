@@ -23,7 +23,6 @@ typedef struct {
     s32 ampdec;
     s32 angle;
 } EXTsmoketrail;
-BASH_SIZE_CHECK(EXTsmoketrail, 0x30); /* InitSmokeTrail allocates 0x30 */
 
 typedef struct {
     s32 EXTid;
@@ -33,7 +32,6 @@ typedef struct {
     s32 owner_id;
     s32 count;
 } EXTbombmaker;
-BASH_SIZE_CHECK(EXTbombmaker, 0x1C); /* InitBombMaker allocates 0x1C */
 #endif /* BASH_HAVE_EXTNODE */
 
 extern NAS *BombMaster;
@@ -84,7 +82,6 @@ typedef struct {
     SLONG_XYZ target_pos;
     s32 chasetimer;
 } EXTtransmuter;
-BASH_SIZE_CHECK(EXTtransmuter, 0x1E0); /* InitTransmuterBeam allocates 0x1E0 */
 #endif /* BASH_HAVE_EXTNODE */
 
 enum POLAR_AST_types {
@@ -415,7 +412,6 @@ struct EXTpolarAI {
     /* 0x58 */ s32 weightflag;
     /* 0x5C */ s32 attack_delay;
 };
-BASH_SIZE_CHECK(EXTpolarAI, 0x60);
 
 struct EXTGravMotion {
     /* 0x00 */ s32 gravity;
@@ -451,7 +447,6 @@ struct EXTpolarbomb {
     /* 0x24 */ SLONG_XYZ startpoint;
     /* 0x30 */ EXTGravMotion grav;
 };
-BASH_SIZE_CHECK(EXTpolarbomb, 0x84);
 
 struct EXTwalrus {
     /* 0x00 */ s32 EXTid;
@@ -467,7 +462,6 @@ struct EXTwalrus {
     /* 0x8C */ s32 maxvel;
     /* 0x90 */ s32 yang;
 };
-BASH_SIZE_CHECK(EXTwalrus, 0x94);
 
 struct EXTbeardeath {
     /* 0x00 */ s32 EXTid;
@@ -480,7 +474,6 @@ struct EXTbeardeath {
     /* 0x80 */ s32 timer;
     /* 0x84 */ s32 trailtimer;
 };
-BASH_SIZE_CHECK(EXTbeardeath, 0x88);
 
 struct EXTpolardata {
     /* 0x00 */ s32 EXTid;
@@ -505,7 +498,6 @@ struct EXTpolardata {
     /* 0xB0 */ EXTengine *hiteng;
     /* 0xB4 */ s32 winanim;
 };
-BASH_SIZE_CHECK(EXTpolardata, 0xB8);
 
 struct Grav {
     /* 0x00 */ SLONG_XYZ vel;

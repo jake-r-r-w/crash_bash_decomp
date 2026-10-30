@@ -110,7 +110,6 @@ typedef struct TA_player {
     /* 0x9C */ s32 ForceFieldDelay;
     /* 0xA0 */ s32 RequestQuickFinish;
 } TA_player;
-BASH_SIZE_CHECK(TA_player, 0xA4);
 
 /* A computer-controlled Tank player's state. */
 typedef struct TA_Bot {
@@ -127,7 +126,6 @@ typedef struct TA_Bot {
     /* 0x28 */ u16 FirePercentChance;
     /* 0x2A */ u16 pad;
 } TA_Bot;
-BASH_SIZE_CHECK(TA_Bot, 0x2C);
 
 /* The extension of a Tank object (shells, mines, pickups, ...). */
 typedef struct EXTobject_TA {
@@ -145,7 +143,6 @@ typedef struct EXTobject_TA {
     /* 0x30 */ s32 Status;
     /* 0x34 */ s32 *pAnimList;
 } EXTobject_TA;
-BASH_SIZE_CHECK(EXTobject_TA, 0x38);
 
 void TA_Triggers(NASTrigger *, s32);
 void TA_EarliestTriggers(void);

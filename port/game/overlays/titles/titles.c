@@ -4,7 +4,6 @@
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
 
-extern u8 GamePlayers;
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern s32 VramNodePool[];

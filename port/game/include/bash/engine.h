@@ -67,7 +67,6 @@ extern EngObj **NasUpdateList;
 typedef struct IconSet { s32 *c; u8 pad[4]; s32 *a; s32 *b; } IconSet;
 extern IconSet Icon;
 extern s16 IconPos[];
-extern s32 GameTeams[];
 extern u32 Clock_Time;
 extern u16 Clock_flags;
 extern U16Pair Clock_offsets[];
@@ -145,7 +144,6 @@ extern ASTEntry EngineASTTable[];
 extern fade_info ScreenFade;
 extern s32 ScreenLabelShown;
 extern process_info LevelLoadProcess;
-extern s32 GamePause;
 extern struct HudBox PauseMenuPanel;
 extern ScriptInit BigPoofInit;
 extern ScriptInit SmokePoofInit;
@@ -248,11 +246,9 @@ extern s32 CupMenuCompact;
 typedef struct { u16 unk0; s32 angle; s32 radius; s32 radiusMin; s32 radiusMax; } HubRing;
 extern HubRing HubHeroRing;
 extern s32 NextGameMode;
-extern u8 GameWarpRoom;
 extern u16 ArenaRequirements[];
 extern u16 CpuHeroChoices[];
 extern hub_info WarpRooms[];          /* by GameWarpRoom (hub.h: the prototype's types) */
-extern s8 GameGateway;
 extern HubGateway HubGateways[];       /* by HubTableEntry.gateway - 1 */
 
 void ArenaRequirementMetAny(s32 arg0, void *arg1);
@@ -318,7 +314,6 @@ extern NAS *NasPoolLast;
 extern u8 *HeroNasList;
 extern PlaceRec ****PauseMenuSets;
 extern PlaceRec ****PauseMenuSetsByLang[];
-extern s32 LevelRecIndex;
 extern u16 CameraMode;
 
 extern PlaceRec *PauseRec;
@@ -394,7 +389,6 @@ void QuitLevel(void);
 
 
 extern SWORD_XY ScoreIcon1Pos[4];
-extern s16 LevelLoadModel;
 extern s32 map[];
 
 void PreInitLevel(void);

@@ -52,7 +52,6 @@ typedef union {
     struct { u16 u : 8; u16 v : 8; } f;
 } TexUV;
 
-extern s32 GameLanguage;
 
 /* A viewpoint: its position (+0xC) is subtracted from world positions before
  * they go through the GTE (view_project_volume, view_project). */
@@ -332,7 +331,6 @@ struct _sfx_handler {
     s32 pad30;
     s32 id;                  /* 0x34: the SfxTable id */
 };
-BASH_SIZE_CHECK(_sfx_handler, 0x38);
 
 /* 24 voices (sfx_voices_init links them into the free list). */
 typedef struct {
@@ -554,7 +552,6 @@ typedef struct process_info {
     /* 0x0C */ void (*quit)(void);
     /* 0x10 */ u32 *heap;
 } process_info;
-BASH_SIZE_CHECK(process_info, 0x14);
 
 /* process_control_update switches to next_process once the fade is done. */
 typedef struct process_control_info {
@@ -563,7 +560,6 @@ typedef struct process_control_info {
     /* 0x08 */ process_info *last_process;
     /* 0x0C */ s32 flags;   /* 1: skip quit, 2: skip init, 4: skip render, 8: skip update, 0x10: clear after a switch */
 } process_control_info;
-BASH_SIZE_CHECK(process_control_info, 0x10);
 
 /* amount steps by speed towards 0x1000 or 0; maxed counts the frames at the
  * end (fade_update). */
@@ -906,13 +902,6 @@ typedef struct PlaceRec {
     /* 0x1E */ s16 player;  /* a hero's index */
     /* 0x20 */ s32 flags;
 } PlaceRec;
-extern u8 GameInfo[];
-extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
-extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (GameState.players) */
-extern s8 GameArena;             /* GameInfo + 0x36: the BattleArenas entry */
-extern s16 GameTeamLeader[2];    /* GameInfo + 0x48: each team's leading hero */
-extern u8 GameHeroCpu[4];        /* GameInfo + 0x5C: each hero a computer player (its bot hook runs) */
-extern u8 GameWinner[2];         /* GameInfo + 0x60: the winners' hero names */
 
 extern s32 DirPadBits[24];         /* pad direction bits by angle octant */
 extern void *HeadOfBalls2;       /* reset with HeadOfBalls (Arkenoid, N2O) */
@@ -943,11 +932,8 @@ extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." *
 extern file *LevelSfxBanks[][8];       /* music_play_level */
 extern GameOptionSet GameOptions;
 extern s32 card_command_delay;
-extern s32 GameFrames;
 extern s32 GlobalNAStatus;
 extern camera_info_tag MainCamera;
-extern s16 GameMode;
-extern u16 GameLevelFlags;
 extern s32 FontPage;
 extern s8 SysFontWidth[];
 extern u8 SysFontFlags[];
@@ -1245,7 +1231,6 @@ extern s32 ScriptFade;
 extern s32 ScriptTimeStep;
 extern void *ScriptThreadPool;
 extern void *ScriptPool;
-extern u8 GameCup;
 extern void *HeadOfBalls;
 /* An ordering table and the primitive area drawn through it (0x400C bytes;
  * DrawBuffers holds two). */
@@ -1279,7 +1264,6 @@ extern NAS *NasPool;           /* NAS pool */
 extern NAS NASTemplate;            /* copied over each spawned NAS */
 extern EXTengine EngineTemplate;   /* copied over each new engine */
 extern s16 AtanTable[];            /* get_angle */
-extern u16 GameExitFlags;
 extern s32 WideScreen;
 extern s32 screen_aspect[2];
 

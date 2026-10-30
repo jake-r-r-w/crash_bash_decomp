@@ -98,7 +98,6 @@ BASH_SIZE_CHECK(Pause_text_info, 0x1C);
 struct process_seq_step {
     /* 0x00 */ void *process;
 };
-BASH_SIZE_CHECK(process_seq_step, 0x4);
 
 struct level_list_info {
     /* 0x00 */ s32 flags;
@@ -106,13 +105,11 @@ struct level_list_info {
     /* 0x08 */ obj_dbase *db;
     /* 0x0C */ s32 framenum;
 };
-BASH_SIZE_CHECK(level_list_info, 0x10);
 
 struct arena_info {
     /* 0x00 */ level_list_info *level;
     /* 0x04 */ s32 num_levels;
 };
-BASH_SIZE_CHECK(arena_info, 0x8);
 
 enum {
     PPM_INIT,
@@ -151,21 +148,18 @@ struct movie_script_info {
     /* 0x08 */ s32 script_num;
     /* 0x0C */ s32 clear_flag;
 };
-BASH_SIZE_CHECK(movie_script_info, 0x10);
 
 struct movie_sound_info {
     /* 0x00 */ void *sfx_file;
     /* 0x04 */ s32 fxnum;
     /* 0x08 */ s32 time;
 };
-BASH_SIZE_CHECK(movie_sound_info, 0xC);
 
 struct movie_info {
     /* 0x00 */ movie_script_info *scripts;
     /* 0x04 */ movie_sound_info *sounds;
     /* 0x08 */ s32 speed_adjust;
 };
-BASH_SIZE_CHECK(movie_info, 0xC);
 
 enum {
     TXTBOX_DEFAULT,
@@ -232,7 +226,6 @@ struct PanelCup {
     /* 0x18 */ u32 flags;
     /* 0x1C */ s32 yvelocity;
 };
-BASH_SIZE_CHECK(PanelCup, 0x20);
 
 struct ClockInfo {
     /* 0x00 */ u16 frame;
@@ -256,7 +249,6 @@ struct cheat_menu_struct {
     /* 0x0C */ s32 min;
     /* 0x10 */ s32 max;
 };
-BASH_SIZE_CHECK(cheat_menu_struct, 0x14);
 
 enum gd {
     GMode_battle,

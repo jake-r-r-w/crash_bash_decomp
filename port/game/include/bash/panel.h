@@ -97,7 +97,6 @@ void UpdatePowerIcons(void);
 void UpdateTankWeaponIcons(void);
 void UpdateScoreIcons(void);
 void Cups_Update(void);
-extern s32 GameCheats;
 s32 FntPrint();
 
 void InitHealthIcons(void);

@@ -69,7 +69,6 @@ struct hub_info {
     /* 0x0C */ hub_warp_info *warp;
     /* 0x10 */ s32 blank_frame;
 };
-BASH_SIZE_CHECK(hub_info, 0x14);
 
 enum {
     hub0,
@@ -97,7 +96,6 @@ struct HubGateway {
     /* 0x20 */ u32 on_pad;
     /* 0x24 */ u32 group;
 };
-BASH_SIZE_CHECK(HubGateway, 0x28);
 
 enum {
     RELICS_OFF,

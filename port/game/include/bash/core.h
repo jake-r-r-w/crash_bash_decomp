@@ -300,7 +300,6 @@ struct script_thread_handler {
     } type;
     /* 0xB4 */ script_thread_handler *next;
 };
-BASH_SIZE_CHECK(script_thread_handler, 0xB8);
 
 /* A playing script (0x1C bytes; the fragment records the size, the fields
  * are from sub_play_script, which sets one up at subengine +0x6C, and the
@@ -320,7 +319,6 @@ struct script_control_info {
     /* 0x14 */ s32 flags;              /* 2: loop, 4: kill at the end, 8: hold the last frame, 0x10: ended */
     /* 0x18 */ s32 *handle;            /* the owner's word, zeroed when the threads go */
 };
-BASH_SIZE_CHECK(script_control_info, 0x1C);
 
 /* The prototype's xyzrf (struct ._319, 0x54 bytes): flags, a position and a RotScale. It begins a
  * subengine and sits at +0xC of an EXTengine, which spell it out; gfx_object_matrix reads it. */
@@ -337,7 +335,6 @@ struct script_handler {
     /* 0x74 */ script_handler *next;
     /* 0x78 */ script_handler **owner;
 };
-BASH_SIZE_CHECK(script_handler, 0x7C);
 
 struct level_music_info {
     /* 0x00 */ void *music;
@@ -346,7 +343,6 @@ struct level_music_info {
     /* 0x0C */ void *sfx2;
     /* 0x10 */ s16 tempo;
 };
-BASH_SIZE_CHECK(level_music_info, 0x14);
 
 struct map_tree {
     /* 0x00 */ u32 flagsplit;
@@ -401,7 +397,6 @@ struct map_enviroment {
     /* 0x2C */ u32 *path;
     /* 0x30 */ trigger_list *triggers;
 };
-BASH_SIZE_CHECK(map_enviroment, 0x34);
 
 enum UserStatus {
     StatusOff,
@@ -419,7 +414,6 @@ struct FillNAS {
     /* 0x04 */ void (*InitDelete)();
     /* 0x08 */ void (*Handler)();
 };
-BASH_SIZE_CHECK(FillNAS, 0xC);
 
 struct EXTmemory {
     /* 0x00 */ s32 EXTid;
@@ -427,7 +421,6 @@ struct EXTmemory {
     /* 0x0C */ void *MemStart;
     /* 0x10 */ s32 FirstByte;
 };
-BASH_SIZE_CHECK(EXTmemory, 0x14);
 
 struct EXTscratchpad {
     /* 0x00 */ s32 EXTid;
@@ -441,7 +434,6 @@ struct EXTscratchpad {
     /* 0x24 */ s32 var7;
     /* 0x28 */ s32 var8;
 };
-BASH_SIZE_CHECK(EXTscratchpad, 0x2C);
 
 struct MEXTtype {
     /* 0x00 */ MEXTtype *slotP;
@@ -451,7 +443,6 @@ struct MEXTtype {
     /* 0x10 */ u32 length;
     /* 0x14 */ NAS *Head;
 };
-BASH_SIZE_CHECK(MEXTtype, 0x18);
 
 struct MALEXTStruct {
     /* 0x00 */ MEXTtype *slotP;
@@ -463,14 +454,12 @@ struct MALEXTStruct {
     /* 0x18 */ u32 *Heapbase;
     /* 0x1C */ u32 *Heapend;
 };
-BASH_SIZE_CHECK(MALEXTStruct, 0x20);
 
 struct ANIMtab {
     /* 0x00 */ void *Atable;
     /* 0x04 */ void *Alist;
     /* 0x08 */ u32 type;
 };
-BASH_SIZE_CHECK(ANIMtab, 0xC);
 
 struct AnimTn {
     /* 0x00 */ u16 frame;
@@ -507,7 +496,6 @@ struct NasMetrics {
     /* 0x10 */ void *ShellSetup;
     /* 0x14 */ void (*LevelSetup)();
 };
-BASH_SIZE_CHECK(NasMetrics, 0x18);
 
 struct rules_info {
     /* 0x00 */ void **trophy_first;
@@ -523,21 +511,18 @@ struct rules_info {
     /* 0x28 */ void **battle_first;
     /* 0x2C */ void **battle_ingame;
 };
-BASH_SIZE_CHECK(rules_info, 0x30);
 
 struct scrolling_credits {
     /* 0x00 */ s32 type;
     /* 0x04 */ s8 *str;
     /* 0x08 */ s32 value;
 };
-BASH_SIZE_CHECK(scrolling_credits, 0xC);
 
 struct geom_info {
     /* 0x00 */ void *rot;
     /* 0x04 */ void *trans;
     /* 0x08 */ SWORD_XY origin;
 };
-BASH_SIZE_CHECK(geom_info, 0xC);
 
 struct draw_window {
     /* 0x00 */ RECT clip;
@@ -555,7 +540,6 @@ struct matrix_stack {
     /* 0x00 */ MATRIX m;
     /* 0x20 */ void *faces;
 };
-BASH_SIZE_CHECK(matrix_stack, 0x24);
 
 struct obj_globals {
     /* 0x00 */ obj_dbase *dbase;
@@ -585,7 +569,6 @@ struct obj_globals {
     /* 0xCC */ MATRIX rot_matrix_stack[2];
     /* 0x10C */ VECTOR trans_vector_stack[2];
 };
-BASH_SIZE_CHECK(obj_globals, 0x12C);
 
 struct MapTrigger4Longs {
     /* 0x00 */ u16 type;
@@ -663,7 +646,6 @@ struct AcmdFX {
     /* 0x00 */ void (*AnimTs)();
     /* 0x04 */ void (*AnimTn)();
 };
-BASH_SIZE_CHECK(AcmdFX, 0x8);
 
 enum {
     DBASE_NULL,
@@ -1265,7 +1247,6 @@ struct EXTparticlemaster {
     /* 0x44 */ s32 frame;
     /* 0x48 */ particledata pdata[16];
 };
-BASH_SIZE_CHECK(EXTparticlemaster, 0x208);
 
 struct box {
     /* 0x00 */ SLONG_XYZ min;
@@ -1277,7 +1258,6 @@ struct sphere {
     /* 0x00 */ s32 radius;
     /* 0x04 */ SLONG_XYZ *centre;
 };
-BASH_SIZE_CHECK(sphere, 0x8);
 
 struct pcontrol {
     /* 0x00 */ s32 fadeinrate;
@@ -1288,7 +1268,6 @@ struct pcontrol {
     /* 0x14 */ VECTOR emitterang;
     /* 0x24 */ subengine *lastsub;
 };
-BASH_SIZE_CHECK(pcontrol, 0x28);
 
 struct threaddata {
     /* 0x00 */ s32 threadtype;
@@ -1304,7 +1283,6 @@ struct threaddata {
     /* 0x30 */ void *threadinfo;
     /* 0x34 */ void *threadcontrol;
 };
-BASH_SIZE_CHECK(threaddata, 0x38);
 
 struct EXTscriptdata {
     /* 0x00 */ s32 EXTid;
@@ -1323,6 +1301,5 @@ struct EXTscriptdata {
     /* 0x3B4 */ s32 entityframe;
     /* 0x3B8 */ obj_dbase *dbase;
 };
-BASH_SIZE_CHECK(EXTscriptdata, 0x3BC);
 
 #endif /* BASH_CORE_H */

@@ -46,7 +46,6 @@ struct EXTdinoegg {
     /* 0x2C */ s32 timer;
     /* 0x30 */ EXTanimator *anim;
 };
-BASH_SIZE_CHECK(EXTdinoegg, 0x34);
 
 struct RaceBarrel {
     /* 0x00 */ EXTheromove move;
@@ -55,6 +54,5 @@ struct RaceBarrel {
     /* 0x5C */ SLONG_XYZ startpos;
     /* 0x68 */ s32 waittime;
 };
-BASH_SIZE_CHECK(RaceBarrel, 0x6C);
 
 #endif /* BASH_RACE_H */

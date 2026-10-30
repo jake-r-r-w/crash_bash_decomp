@@ -51,6 +51,5 @@ struct PapuSquare {
     /* 0x10 */ u16 frame;
     /* 0x12 */ s16 yoffset;
 };
-BASH_SIZE_CHECK(PapuSquare, 0x14);
 
 #endif /* BASH_PAPU_H */

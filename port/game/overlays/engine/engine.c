@@ -16,8 +16,8 @@ void InitialiseNasSystem(void) {
         w->levelLoadModel = *(u16 *)&rec[w->levelRecIndex];
     }
     v = (GameState *)GameInfo;
-    if (v->boot != NULL) {
-        v->boot(rec);
+    if (GameBoot != NULL) {
+        GameBoot(rec);
     }
     SetNasDefaults();
     Init_Panel();

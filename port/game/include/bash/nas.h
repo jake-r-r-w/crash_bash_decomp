@@ -22,7 +22,7 @@
 typedef s32 bool;
 
 /* Compile-time size check (C89): fails to compile if the size is wrong. */
-#define BASH_SIZE_CHECK(type, size) /* PS1 sizes: structs with pointers are bigger here */
+#define BASH_SIZE_CHECK(type, size) _Static_assert(sizeof(type) == (size), #type " is the PS1 size")
 
 typedef struct NAStype NAS;
 typedef struct EXTtype EXT;
@@ -99,7 +99,6 @@ typedef struct EXTnode {
     EXT *Parent;
     EXT *Child;
 } EXTnode;
-BASH_SIZE_CHECK(EXTnode, 0x8);
 #define BASH_HAVE_EXTNODE
 
 /* The prefix every extension shares, for code that walks a chain of mixed
@@ -108,27 +107,23 @@ struct EXTtype {
     s32 EXTid;
     EXTnode Extend;
 };
-BASH_SIZE_CHECK(EXT, 0xC);
 
 /* The NAS lists: Parent is the previous object, Child the next. */
 typedef struct NASnode {
     NAS *Parent;
     NAS *Child;
 } NASnode;
-BASH_SIZE_CHECK(NASnode, 0x8);
 
 typedef struct GRPnode {
     NAS *Parent;
     NAS *Child;
     NAS **Head;
 } GRPnode;
-BASH_SIZE_CHECK(GRPnode, 0xC);
 
 typedef struct OBJnode {
     NAS *Parent;
     NAS *Child;
 } OBJnode;
-BASH_SIZE_CHECK(OBJnode, 0x8);
 
 typedef struct CAMnode {
     NAS *Parent;
@@ -138,7 +133,6 @@ typedef struct CAMnode {
     u16 height;
     u16 look_ahead;
 } CAMnode;
-BASH_SIZE_CHECK(CAMnode, 0x10);
 
 typedef struct NasUser {
     /* 0x00 */ u16 status;
@@ -146,7 +140,6 @@ typedef struct NasUser {
     /* 0x04 */ iptr user1;
     /* 0x08 */ iptr user2;
 } NasUser;
-BASH_SIZE_CHECK(NasUser, 0xC);
 
 /* A map trigger's placement data (the anonymous trigtype members). */
 typedef struct {
@@ -194,7 +187,6 @@ typedef struct trig_path {
         trigger *trig_placement;
     } tp_type;
 } trig_path;
-BASH_SIZE_CHECK(trig_path, 0x4);
 
 typedef struct MapTriggerInfo {
     /* 0x00 */ u16 type;
@@ -216,7 +208,6 @@ struct NASTrigger {
     /* 0x18 */ u16 Type;                /* AST id */
     /* 0x1A */ u16 Status;              /* bit 0: spawned; 0x10: KillNAS leaves the NAS alive */
 };
-BASH_SIZE_CHECK(NASTrigger, 0x1C);
 
 /* An engine object instance: an entry of the AST table ({id, Init, Plot}),
  * spawned by TriggerNas from a pool of copies of a template. */
@@ -240,7 +231,6 @@ struct NAStype {
     /* 0x6C */ u16 Type;                /* index into the AST table */
     /* 0x6E */ u8 pad6E[2];
 };
-BASH_SIZE_CHECK(NAS, 0x70);
 
 /* An AST table entry: an object type's id and its Init/Plot. The engine's
  * table is EngineASTTable; ASTTable points at the one in use. */
@@ -249,7 +239,6 @@ typedef struct ASTEntry {
     void (*Init)(NAS *);
     void (*Plot)(NAS *);
 } ASTEntry;
-BASH_SIZE_CHECK(ASTEntry, 0xC);
 
 /* A 16-byte record with flag bits, found by FindCollisionBox: an engine has one
  * of its own (EXTengine.collision_box), and a PointList carries more after its
@@ -301,7 +290,6 @@ struct EXTengtype {
     /* 0x99 */ u8 direction;
     /* 0x9A */ s16 num_subs;             /* number of subengines */
 };
-BASH_SIZE_CHECK(EXTengine, 0x9C);
 
 /* A node of an engine's subengine chain (EXTengine.sub .. last, linked
  * through next/prev). They come from one pool: eng_add_subs moves n of them
@@ -348,7 +336,6 @@ struct subengine {
     /* 0xA0 */ s16 unkA0;
     /* 0xA2 */ u8 padA2[0xA8 - 0xA2];
 };
-BASH_SIZE_CHECK(subengine, 0xA8);
 
 /* Extension id 0x800, 0x34 bytes, made by AddMotion(nas) from the template
  * ExtMotionTemplate (it also sets 0x800 in NAS.NASid). The leak's
@@ -378,7 +365,6 @@ typedef struct EXTmotion {
     /* 0x30 */ u16 Fdist;
     /* 0x32 */ u16 Ftime;
 } EXTmotion;
-BASH_SIZE_CHECK(EXTmotion, 0x34);
 
 /* Extension id 0x400 | kind, 0x2C bytes, made by AllocExt400 (which also
  * sets 0x400 in NAS.NASid). It plays a hero_seq (Atable, set by SetHeroSeq);
@@ -400,7 +386,6 @@ typedef struct EXTanimator {
     /* 0x28 */ s16 Seq_count;
     /* 0x2A */ s16 Seq_count_down;
 } EXTanimator;
-BASH_SIZE_CHECK(EXTanimator, 0x2C);
 
 typedef struct PCoord {
     s16 angle;
@@ -429,7 +414,6 @@ typedef struct EXTobject {
     /* 0x26 */ PCoord coord;
     /* 0x2A */ u8 pad2A[2];
 } EXTobject;
-BASH_SIZE_CHECK(EXTobject, 0x2C);
 
 /* The hero's movement extension (HeroInfo.hero_move, 0x54 bytes). */
 typedef struct EXTheromove {
@@ -462,7 +446,6 @@ typedef struct EXTheromove {
     /* 0x4E */ s16 mass;
     /* 0x50 */ s16 HitBy;
 } EXTheromove;
-BASH_SIZE_CHECK(EXTheromove, 0x54);
 
 /* The AI extension of a computer-controlled hero (HeroInfo.hero_ai, 0x44
  * bytes). */
@@ -484,7 +467,6 @@ typedef struct _EXTbotai {
     /* 0x34 */ u8 AIforward_left[8];
     /* 0x3C */ u8 AIforward_right[8];
 } EXTbotai;
-BASH_SIZE_CHECK(EXTbotai, 0x44);
 
 /* A hero animation sequence is a stream of halfwords: the interpreter
  * (ProcessHeroAnim) reads seq[pos] and treats 0x8000 | n as command n (27 of
@@ -541,7 +523,6 @@ typedef struct HeroInfo {
     /* 0x68 */ u16 hero_attack_delay;
     /* 0x6A */ u16 hero_attack_counter;
 } HeroInfo;
-BASH_SIZE_CHECK(HeroInfo, 0x6C);
 
 /* A level's world data (PreMap.WorldInfo). */
 typedef struct WWInf {
@@ -554,13 +535,11 @@ typedef struct WWInf {
     /* 0x18 */ void *Spare3;
     /* 0x1C */ void *Spare4;
 } WWInf;
-BASH_SIZE_CHECK(WWInf, 0x20);
 
 typedef struct TrigLookUp {
     /* 0x00 */ u16 *LUPtab;
     /* 0x04 */ u16 LUPsize;
 } TrigLookUp;
-BASH_SIZE_CHECK(TrigLookUp, 0x8);
 
 /* Each minigame's map data (TANK_PREMAP, POGO_PREMAP, ...). */
 typedef struct PreMap {
@@ -572,7 +551,6 @@ typedef struct PreMap {
     /* 0x14 */ void *Do_Not_Use3;
     /* 0x18 */ void *Do_Not_Use4;
 } PreMap;
-BASH_SIZE_CHECK(PreMap, 0x1C);
 
 /* The player's options, saved with the game: volumes in percent, stereo, a pad's vibration. */
 typedef struct GameOptionSet {
@@ -605,7 +583,7 @@ BASH_SIZE_CHECK(AdventureState, 0x11C);
  * name at that address (GameMode is .mode, GameHeroes .heroes, ...). The code reads it both ways:
  * by the globals and through a GameState * at GameInfo (or a card's saved copy of it). */
 typedef struct GameState {
-    /* 0x000 */ void (*boot)(void *);   /* InitialiseNasSystem calls it with the level's records */
+    /* 0x000 */ s32 bootSlot;  /* retail's boot pointer here, kept for the layout (GameBoot) */
     /* 0x004 */ s32 cheats;
     /* 0x008 */ s32 levelRecIndex;
     /* 0x00C */ s32 frames;
@@ -649,7 +627,46 @@ typedef struct GameState {
     /* 0x06C */ s32 teams;
     /* 0x070 */ AdventureState adventure;
 } GameState;
-#define GAME ((GameState *)GameInfo)
+BASH_SIZE_CHECK(GameState, 0x18C);
+extern GameState GameInfoState;
+extern void (*GameBoot)(void *);
+/* GameState has no pointers, so it keeps the PS1 layout: the byte offsets into it and the card's saved copies still hold. */
+#define GameInfo ((u8 *)&GameInfoState)
+#define GAME (&GameInfoState)
+#define GamePause (*(s32 *)&GameInfoState.pause)
+#define GameBattleWins (*(s16 *)&GameInfoState.battleWins)
+#define GameTeams (&GameInfoState.teams)
+#define GameCheats (GameInfoState.cheats)
+#define LevelRecIndex (GameInfoState.levelRecIndex)
+#define GameFrames (GameInfoState.frames)
+#define GameDemoTimer (GameInfoState.demoTimer)
+#define GameExitDelay (GameInfoState.exitDelay)
+#define GamePlayers (GameInfoState.players)
+#define GameMaxPlayers (GameInfoState.maxPlayers)
+#define GameCup (GameInfoState.cup)
+#define GameCupRound (GameInfoState.cupRound)
+#define GameLanguage (GameInfoState.language)
+#define GameExitFlags (GameInfoState.exitFlags)
+#define GameLevelFlags (GameInfoState.levelFlags)
+#define GameMode (GameInfoState.mode)
+#define GameArena (GameInfoState.arena)
+#define GameArenaLevel (GameInfoState.arenaLevel)
+#define GameAiLevel (GameInfoState.aiLevel)
+#define LevelLoadModel (GameInfoState.levelLoadModel)
+#define GameCupLeader (GameInfoState.cupLeader)
+#define GameTeamSide (GameInfoState.teamSide)
+#define GameTeamLeader (GameInfoState.teamLeader)
+#define GameHeroChoice (GameInfoState.heroChoice)
+#define GameHeroes (GameInfoState.heroes)
+#define GameTeammateChoice (GameInfoState.teammateChoice)
+#define GameTeammates (GameInfoState.teammates)
+#define GameHeroCpu (GameInfoState.heroCpu)
+#define GameWinner (GameInfoState.winner)
+#define GameWarpRoom (GameInfoState.warpRoom)
+#define GameGateway (GameInfoState.gateway)
+#define GameReturnToHub (GameInfoState.returnToHub)
+#define GameDemo (GameInfoState.demo)
+#define GameAdventure (GameInfoState.adventure)
 
 /* Each minigame's level hooks (TANKSpecifics, POGOSpecifics, ...). */
 typedef struct LevSpec {
@@ -665,7 +682,6 @@ typedef struct LevSpec {
     /* 0x24 */ s32 (*GetContour)();
     /* 0x28 */ void (*FinishQuick)();
 } LevSpec;
-BASH_SIZE_CHECK(LevSpec, 0x2C);
 
 /* Each minigame's shell settings (tank_shell_info, POGO_shell_info, ...): the
  * second pointer of the engine's per-world record, after the PreMap. Its size
@@ -678,7 +694,6 @@ typedef struct shell_setup {
     /* 0x20 */ s32 pad20;
     /* 0x24 */ s32 pad24;
 } shell_setup;
-BASH_SIZE_CHECK(shell_setup, 0x28);
 
 /* A level's files (file_group_TANKDESERT, ...): the engine's table at
  * 0x800A0030 points at one per mode. group is an entry of the exe's file
@@ -703,7 +718,6 @@ typedef struct file_group_load_info {
     /* 0x00 */ FileGroup *group;
     /* 0x04 */ GroupFile *files;
 } file_group_load_info;
-BASH_SIZE_CHECK(file_group_load_info, 0x8);
 
 /* HitSfx: the hit sounds by kind, four of each (PlaySfx of one at random). */
 typedef struct {

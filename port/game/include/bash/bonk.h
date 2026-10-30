@@ -49,7 +49,6 @@ struct BonkCollectable {
     /* 0x04 */ NAS *nas;
     /* 0x08 */ s32 visible_timer;
 };
-BASH_SIZE_CHECK(BonkCollectable, 0xC);
 
 struct BonkHero {
     /* 0x00 */ BonkCollectable *target;
@@ -57,6 +56,5 @@ struct BonkHero {
     /* 0x08 */ s32 powerup;
     /* 0x0C */ s32 powerup_timer;
 };
-BASH_SIZE_CHECK(BonkHero, 0x10);
 
 #endif /* BASH_BONK_H */

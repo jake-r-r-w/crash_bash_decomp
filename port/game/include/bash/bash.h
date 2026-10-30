@@ -35,6 +35,5 @@ struct BashSquare {
     /* 0x08 */ u16 flags;
     /* 0x0A */ u16 status;
 };
-BASH_SIZE_CHECK(BashSquare, 0xC);
 
 #endif /* BASH_BASH_H */

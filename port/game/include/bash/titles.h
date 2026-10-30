@@ -50,7 +50,6 @@ struct Char_Selector {
     /* 0x08 */ s32 dbase;
     /* 0x0C */ ANIMtab *animation;
 };
-BASH_SIZE_CHECK(Char_Selector, 0x10);
 
 struct Titles_Texture {
     /* 0x00 */ s32 frame;
