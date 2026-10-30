@@ -6565,8 +6565,7 @@ bool PogoAI_GoForMyOwn(u32 arg0, EXTbotai *ai)
     return 0;
 }
 
-void PogoAI_HeroClaimedPickup(u32 i)
-{
+void PogoAI_HeroClaimedPickup(u32 i) {
     EXTbotai *ai;
 
     ai = Heroes[i].hero_ai;
@@ -6575,8 +6574,7 @@ void PogoAI_HeroClaimedPickup(u32 i)
     }
 }
 
-void PogoAI_InitHero(u32 i)
-{
+void PogoAI_InitHero(u32 i) {
     EXTbotai *ai;
 
     ai = Heroes[i].hero_ai;
@@ -6704,8 +6702,7 @@ s32 Player_CountTiles(u32 arg0) {
     return count;
 }
 
-s32 Player_CalcForwardSpeed(u32 arg0, s32 arg1)
-{
+s32 Player_CalcForwardSpeed(u32 arg0, s32 arg1) {
     s32 h;
     s32 n;
     s32 r;
@@ -6760,12 +6757,7 @@ bool FindFreeSquare(s32 *px, s32 *pz) {
     return 1;
 }
 
-u32 PogoSquaredDistanceToDestination(x0, y0, x1, y1)
-s32 x0;
-s32 y0;
-s32 x1;
-s32 y1;
-{
+u32 PogoSquaredDistanceToDestination(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 dx;
     s32 dy;
     s32 a;
@@ -6922,9 +6914,7 @@ void Init_PogoTazer(NAS *nas) {
     }
 }
 
-void Pickup_Lose(arg0)
-s32 arg0;
-{
+void Pickup_Lose(s32 arg0) {
     PogoPlayer *base;
     PogoPlayer *slot;
 

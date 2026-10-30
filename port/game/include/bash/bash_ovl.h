@@ -251,8 +251,8 @@ void PlotBashPenguin(NAS *nas);
 
 /* InitialiseBASHFirst: the overlay's init hook. */
 void Bash_HeroBot(s32 arg0);
-void BashHero_ExtraEffects();
-NAS *BashHeroGrabObject();
+void BashHero_ExtraEffects(s32 arg0);
+NAS *BashHeroGrabObject(s32 idx, u16 cone);
 s32 BashHeroKickCollision(s32 arg0);
 s32 BashHeroCarryCollision(s32 idx);
 extern u16 BashJungleAiSkill[];

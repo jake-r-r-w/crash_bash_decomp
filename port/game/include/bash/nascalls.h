@@ -41,7 +41,7 @@ void KillTriggerNas(NAS *nas);
 s32 machine_init(void);
 void ClearVram(void);
 void ClearScreens(void);
-void ResetScreen(void);
+void ResetScreen(RECT *arg0);
 void cd_seek(file *arg0, s32 arg1);
 void cd_read_wait(void);
 void loader_pending_stub(void);

@@ -1757,7 +1757,7 @@ void SetChaseHeroHit(s32 arg0) {
 void ChaseHeroHit(s32 arg0) {
     GameState *g;
 
-    if (ProcessHeroAnim() == 8 && ((g = (GameState *)GameInfo), (g->levelFlags & 0x80)) && g->heroCpu[arg0] == 0 &&
+    if (ProcessHeroAnim(arg0) == 8 && ((g = (GameState *)GameInfo), (g->levelFlags & 0x80)) && g->heroCpu[arg0] == 0 &&
         !(g->cheats & 2)) {
         HeroInfo *base = Heroes;
         HeroInfo *h = &base[arg0];
@@ -3614,8 +3614,7 @@ s32 ChaseHeroToIdle(s32 arg0) {
     return 0;
 }
 
-s32 ChaseHeroTestRun(s32 arg0)
-{
+s32 ChaseHeroTestRun(s32 arg0) {
   if (Heroes[arg0].hero_move->forward_speed != 0)
   {
     SetHeroAction(arg0, 0x72);
@@ -3658,8 +3657,7 @@ loop:
     }
 }
 
-void ChaseHitHero(s32 arg0)
-{
+void ChaseHitHero(s32 arg0) {
   HeroInfo *h;
   HeroInfo *new_var;
   if (ChaseRoundOver == 0)

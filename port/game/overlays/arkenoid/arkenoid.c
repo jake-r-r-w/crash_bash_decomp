@@ -1719,9 +1719,7 @@ call:
     }
 }
 
-void ArkHeroSetSpeed(arg0)
-s32 arg0;
-{
+void ArkHeroSetSpeed(s32 arg0) {
     u16 *p;
     u16 *b;
     s32 v;
@@ -1746,9 +1744,7 @@ s32 arg0;
     }
 }
 
-s32 ArkHeroUpdateSpeed(arg0)
-s32 arg0;
-{
+s32 ArkHeroUpdateSpeed(s32 arg0) {
   s32 v;
   s32 t;
   u32 u;
@@ -2211,7 +2207,7 @@ void SetArkHeroKick(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    ArkHeroSetSpeed();
+    ArkHeroSetSpeed(arg0);
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
@@ -6160,7 +6156,7 @@ void SetArkHeroGrab(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    ArkHeroSetSpeed();
+    ArkHeroSetSpeed(arg0);
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
@@ -6174,7 +6170,7 @@ void SetArkHeroRedKick(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    ArkHeroSetSpeed();
+    ArkHeroSetSpeed(arg0);
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
@@ -6199,11 +6195,11 @@ void ArkHeroDie(u32 arg0) {
 
 void ArkHeroLose(u32 arg0) {
     Heroes[arg0].hero_frozen = 5;
-    ProcessHeroAnim();
+    ProcessHeroAnim(arg0);
 }
 
 void SetArkHeroMove(u32 arg0) {
-    ArkHeroSetSpeed();
+    ArkHeroSetSpeed(arg0);
     SetHeroSeq(arg0, 0x1A);
 }
 

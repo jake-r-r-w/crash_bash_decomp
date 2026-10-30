@@ -77,9 +77,7 @@ void UpdateIntro(void) {
         dbase_release((u8 *)IntroDbase);
         IntroDbase = 0;
     }
-    if (IntroStepIndex == 1 && IntroStepTimer == IntroSteps[0].delay) {
-        modchip_step(0);
-    }
+
     if (IntroStepTimer < 0) {
         return;
     }

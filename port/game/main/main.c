@@ -465,10 +465,7 @@ static inline mal *Heap_FindFree(u32 words, mal *blk) {
     return blk;
 }
 
-mal *mal_take_high(bytes, heap)
-    s32 bytes;
-    _mal_area *heap;
-{
+mal *mal_take_high(s32 bytes, _mal_area *heap) {
     u32 words;
     mal *blk;
     mal *ret;
@@ -575,10 +572,7 @@ static inline mal *Heap_FindFree2(u32 words, mal *blk) {
     return blk;
 }
 
-void *mal_take_low(bytes, heap)
-    s32 bytes;
-    _mal_area *heap;
-{
+void *mal_take_low(s32 bytes, _mal_area *heap) {
     u32 words;
     mal *blk;
     mal *ret;
@@ -955,7 +949,7 @@ u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1) {
     mal *b;
     u8 *data;
 
-    b = mal_take_high(); /* arg0 and arg1 pass through */
+    b = mal_take_high(arg0, arg1); /* arg0 and arg1 pass through */
     data = (u8 *)MAL_DATA(b);
     if (b == NULL) {
         low = arg1->lowest;
@@ -2954,8 +2948,6 @@ void export_exe_functions(void) {
     t[0x268 / 4] = dbase_texture_entry;
     t[0x26C / 4] = card_format;
     t[0x270 / 4] = pads_reset_rumble;
-    t[0x274 / 4] = modchip_check_region;
-    t[0x278 / 4] = modchip_step;
     t[0x27C / 4] = queue_group_load;
     t[0x280 / 4] = FileGroups;
     t[0x284 / 4] = subpool_free;

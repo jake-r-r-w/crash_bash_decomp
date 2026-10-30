@@ -54,7 +54,7 @@ void *model_prims_begin(void *arg0, s32 arg1);
 s32 bbox_visible(void *arg0);
 void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
 void prims_init(s32 *cfg);
-void map_loaded_geo();
+void map_loaded_geo(s32 arg0, map_enviroment *env);
 void subs_init_array(EXTengine *eng, s32 n, subengine *sub);
 void project_quad(SVECTOR *v, POLY_GT4 *poly);
 u32 draw_nas_model_ret(NAS *nas, MATRIX *arg1, u32 flags);

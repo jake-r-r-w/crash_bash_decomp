@@ -296,7 +296,7 @@ extern u16 LevelKindKeys[7];
 #define HUDBOX (&PauseMenuPanel)
 extern s32 PauseTextHold;
 extern s16 LangHudRows[][8];
-void DrawSpriteTriple();
+void DrawSpriteTriple(s16 x, s16 y, s32 c0, s32 c1, s32 n);
 void DrawHudEntries(HudEntry *e, s32 arg1);
 
 void DrawPauseMenu(void);

@@ -82,7 +82,7 @@ void BashHeroPickup(s32 arg0) {
     HeroInfo *b;
     s16 t;
 
-    ProcessHeroAnim();
+    ProcessHeroAnim(arg0);
     b = Heroes;
     h = &b[arg0];
     s = h->hero_fx->sub;
@@ -256,7 +256,7 @@ void BashHeroThrow(s32 arg0) {
     s16 (*tbl)[3];
     s16 t;
 
-    if (ProcessHeroAnim() == 0x13) {
+    if (ProcessHeroAnim(arg0) == 0x13) {
         b0 = Heroes;
         h0 = &b0[arg0];
         if (h0->hero_object != NULL) {
@@ -568,12 +568,7 @@ void BashHeroLoser(s32 arg0) {
     ProcessHeroAnim(arg0);
 }
 
-NAS *BashHero2ObjectCollision(player, mask, unused, cone)
-    s32 player;
-    s32 mask;
-    s32 unused;
-    u16 cone;
-{
+NAS *BashHero2ObjectCollision(s32 player, s32 mask, s32 unused, u16 cone) {
     VECTOR pos;
     s32 top;
     s32 bot;
@@ -658,10 +653,7 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
     return NULL;
 }
 
-NAS *BashHeroGrabObject(idx, cone)
-    s32 idx;
-    u16 cone;
-{
+NAS *BashHeroGrabObject(s32 idx, u16 cone) {
     NAS *n;
     HeroInfo *heroes;
     HeroInfo *h;

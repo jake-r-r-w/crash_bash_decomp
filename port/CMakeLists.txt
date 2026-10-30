@@ -31,12 +31,12 @@ file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS game/main/*.c game/overlays/*.c
 add_library(game OBJECT ${GAME_SOURCES})
 target_include_directories(game PUBLIC psyq/include game/include)
 target_compile_options(game PRIVATE
-  # The dialect it was written in, until every function has a prototype (6.2).
-  -std=gnu89
+  # GNU C for the empty-parens hooks, until they have prototypes (6.2); C23 would read them as (void).
+  -std=gnu17
   # What the PS1's compiler did with the rest: a signed char, and signed overflow that wraps.
   -fsigned-char -fwrapv -fno-strict-aliasing -fno-builtin
   # Old C, reviewed in 6.2 and 6.3; the warnings that matter for 64-bit stay on.
-  -Wno-deprecated-non-prototype -Wno-strict-prototypes -Wno-pointer-sign
+  -Wimplicit-function-declaration -Wimplicit-int -Wdeprecated-non-prototype -Wstrict-prototypes -Wno-pointer-sign
   -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-format-security
   # Addresses kept in integers are the list for 6.2: warnings for now, errors once they reach zero.
   -Wno-error=int-conversion $<$<C_COMPILER_ID:Clang>:-ferror-limit=0>)

@@ -2042,9 +2042,7 @@ void InitialisePOLARFirst(void) {
     }
 }
 
-void PolarAI_SteerToTarget(player)
-s32 player;
-{
+void PolarAI_SteerToTarget(s32 player) {
     HeroInfo *h;
     HeroInfo *h2;
     PolarWanderFux *fux;
@@ -2645,7 +2643,7 @@ void PolarAI_DoChase(s32 player) {
     }
     fux->vel = h->hero_eng->XYZ;
     fux->pos = Heroes[player].hero_eng->XYZ;
-    PolarAI_SteerToTarget();
+    PolarAI_SteerToTarget(player);
 }
 
 void PolarAI_DoBeam(s32 player) {
@@ -2849,8 +2847,7 @@ ret0:
     return 0;
 }
 
-void PolarAI_AvoidMelt(s32 player)
-{
+void PolarAI_AvoidMelt(s32 player) {
   VECTOR v1;
   VECTOR out;
   VECTOR v2;
@@ -3410,9 +3407,7 @@ end:
     }
 }
 
-void PolarAI_DoChaseBomber(player)
-s32 player;
-{
+void PolarAI_DoChaseBomber(s32 player) {
     s32 dist;
     HeroInfo *base;
     HeroInfo *h;
@@ -11322,7 +11317,7 @@ void SetPolarHeroDazed(s32 player) {
     EXTheromove *move;
     s32 sfx;
 
-    if (TestPolarHeroWon() == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         PlaySfx(0x467, NULL, NULL, 0x1000, 0x1E00, 0);
         switch (Heroes[player].hero_name) {
         case 1:
@@ -11486,7 +11481,7 @@ void PolarHeroDazed(s32 player) {
     s32 y;
     s32 z;
 
-    if (TestPolarHeroWon() == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         move = Heroes[player].hero_move;
         ext = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext != NULL) {
@@ -11610,7 +11605,7 @@ void SetPolarHeroChallenge(s32 player) {
     PolarAi *ext;
     s32 sfx;
 
-    if (TestPolarHeroWon() == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         PlaySfx(0x467, NULL, NULL, 0x1000, 0x1E00, 0);
         PolarShadowState[player] = 0x4000;
         switch (Heroes[player].hero_name) {
@@ -11759,7 +11754,7 @@ void PolarHeroChallenge(s32 player) {
     s32 y;
     s32 z;
 
-    if (TestPolarHeroWon() == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         move = Heroes[player].hero_move;
         ext = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext != NULL) {
@@ -11829,7 +11824,7 @@ void SetPolarHeroTransmute(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
 
-    if (TestPolarHeroWon() == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         base = Heroes;
         hero = base + player;
         if (hero->hero_move != NULL) {
@@ -11868,7 +11863,7 @@ void PolarHeroTransmute(s32 player) {
     HeroInfo *hero;
     EXTheromove *move;
 
-    if (TestPolarHeroWon() == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         base = Heroes;
         hero = &base[player];
         move = hero->hero_move;
@@ -11897,7 +11892,7 @@ void SetPolarHeroOffice(s32 player) {
     HeroInfo *base2;
     HeroInfo *h;
 
-    if (TestPolarHeroWon() == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         base = Heroes;
         hero = &base[player];
         ext = FindExtension(hero->hero, 0x20000000);
@@ -11985,7 +11980,7 @@ void PolarHeroOffice(s32 player) {
     s32 angle;
     u16 mode;
 
-    if (TestPolarHeroWon() != 0) {
+    if (TestPolarHeroWon(player) != 0) {
         return;
     }
     {
@@ -12566,7 +12561,7 @@ void PolarHeroSnowball(s32 player) {
     s32 speed;
 
     move = info->hero_move;
-    if (move != NULL && TestPolarHeroWon() == 0) {
+    if (move != NULL && TestPolarHeroWon(player) == 0) {
         speed = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
         ext = FindExtension(info->hero, 0x20000000);
         if (ext != NULL) {
@@ -12712,7 +12707,7 @@ void PolarHeroFootRun(s32 player) {
     Ext20 *ext;
     Ext20 *ext1;
 
-    if (TestPolarHeroWon() == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         ext1 = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext1 != NULL) {
             ext1->val += 4;
@@ -13094,9 +13089,7 @@ void SetPolarHeroSquashed(s32 arg0) {
     }
 }
 
-s32 TestPolarHeroWon(arg0)
-s32 arg0;
-{
+s32 TestPolarHeroWon(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = &base[arg0];
 
@@ -13177,7 +13170,7 @@ void PolarHeroPoll(s32 player) {
         move->z_vel = 0;
     }
     info->hero_frozen = 4;
-    TestPolarHeroWon();
+    TestPolarHeroWon(player);
 }
 
 void PolarHeroInBeam(s32 player) {
@@ -13214,9 +13207,9 @@ void PolarHeroWeight(s32 player) {
     }
 }
 
-void SetPolarHeroWeight(void) {
+void SetPolarHeroWeight(s32 player) {
     if (GameMode != 0x16) {
-        TestPolarHeroWon();
+        TestPolarHeroWon(player);
     }
 }
 
@@ -13224,7 +13217,7 @@ void SetPolarHeroRun(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
 
-    if (TestPolarHeroWon() == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         base = Heroes;
         hero = base + player;
         if (hero->hero_move != NULL) {

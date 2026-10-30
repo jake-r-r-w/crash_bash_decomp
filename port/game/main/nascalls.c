@@ -1095,13 +1095,7 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
     }
 }
 
-void DrawSpriteTriple(x, y, c0, c1, n)
-    s16 x;
-    s16 y;
-    s32 c0;
-    s32 c1;
-    s32 n;
-{
+void DrawSpriteTriple(s16 x, s16 y, s32 c0, s32 c1, s32 n) {
     u8 *base;
     u16 *ids;
     u16 (*tbl)[3];
@@ -2403,7 +2397,6 @@ void RunModules(ModuleEntry *p) {
 s32 machine_init(void) {
     ResetCallback();
     ResetGraph(0);
-    modchip_check_region();
     SetGraphDebug(0);
     InitGeom();
     SsInit();
@@ -2533,9 +2526,7 @@ void ClearScreens(void) {
     }
 }
 
-void SetScreen(arg0)
-RECT *arg0;
-{
+void SetScreen(RECT *arg0) {
     DrawSync(0);
     ScreenSetFlag = 0;
     if (arg0 != NULL) {
@@ -2556,8 +2547,8 @@ RECT *arg0;
     ScreenRect = arg0;
 }
 
-void ResetScreen(void) {
-    SetScreen();
+void ResetScreen(RECT *arg0) {
+    SetScreen(arg0);
 }
 
 void AllocPrimBuffers(s32 *arg0) {

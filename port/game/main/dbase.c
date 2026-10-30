@@ -396,9 +396,7 @@ void dbase_load_all_mesh_anims(obj_dbase *arg0) {
     }
 }
 
-void dbase_release_all_mesh_anims(a)
-obj_dbase *a;
-{
+void dbase_release_all_mesh_anims(obj_dbase *a) {
     FileEntry *slot;
     BlockRef *e;
     ModelFile *p;
@@ -628,7 +626,7 @@ void dbase_release(obj_dbase *arg0) {
     MeshHeader *q;
 
     if (arg0->data != NULL) {
-        dbase_release_all_mesh_anims();
+        dbase_release_all_mesh_anims(arg0);
         p = arg0->data;
         q = p->meshes;
         i = p->nMeshes;

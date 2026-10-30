@@ -322,9 +322,7 @@ s32 DinoAI_PickVictim(s32 arg0) {
     return neg;
 }
 
-void DinoAI_SteerToTarget(id)
-s32 id;
-{
+void DinoAI_SteerToTarget(s32 id) {
     HeroInfo *h;
     HeroInfo *h2;
     DinoChase *c;
@@ -584,7 +582,7 @@ void DinoAI_GuardGem(s32 id) {
     }
 }
 
-s32 DinoRayHit();
+s32 DinoRayHit(s32 *a, s32 *b, s16 *c, void *unused);
 
 void DinoAI_ShootGem(s32 id) {
     DinoChase *c;
@@ -630,7 +628,7 @@ void DinoAI_ShootGem(s32 id) {
         d[2] = p->z - ((DinoEngH *)Heroes[id].hero_eng)->z;
         d[1] = 0;
         d[3] = 0x300;
-        if (DinoRayHit(v2, v1, d) == 1) {
+        if (DinoRayHit(v2, v1, d, 0) == 1) {
             hit = 1;
         }
         if (hit != 0) {
@@ -696,7 +694,7 @@ void DinoAI_CarryGem(s32 id) {
         d[2] = p->z - ((DinoEngH *)Heroes[id].hero_eng)->z;
         d[1] = 0;
         d[3] = 0x300;
-        if (DinoRayHit(v2, v1, d) == r) {
+        if (DinoRayHit(v2, v1, d, 0) == r) {
             hit = 1;
         }
         if (hit != 0) {
@@ -711,12 +709,7 @@ void DinoAI_CarryGem(s32 id) {
 }
 
 
-s32 DinoRayHit(a, b, c, unused)
-    s32 *a;
-    s32 *b;
-    s16 *c;
-    void *unused;
-{
+s32 DinoRayHit(s32 *a, s32 *b, s16 *c, void *unused) {
     s32 q[3];
     s32 p[3];
     s32 *qp;
@@ -883,8 +876,7 @@ s32 DinoTestTeamMate(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 DinoAI_ShotBlocked(s32 id)
-{
+s32 DinoAI_ShotBlocked(s32 id) {
   Vec3W pos;
   s32 best;
   s32 bestd;
@@ -1202,9 +1194,7 @@ chase:
     ext->unk38 = 1;
 }
 
-void DinoAI_Think(id)
-s32 id;
-{
+void DinoAI_Think(s32 id) {
     DinoChase *c;
     DinoExt *e;
     s32 near;
@@ -1492,8 +1482,7 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
     }
 }
 
-void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
-{
+void DinoChooseWinnerPuffs(s32 arg0, u16 arg1) {
   s32 best;
   s32 i;
   s32 j;
@@ -3971,8 +3960,8 @@ s32 TestDinoHeroWon(s32 id) {
     return 0;
 }
 
-void Dino_HeroBot(void) {
-    DinoAI_Think();
+void Dino_HeroBot(s32 id) {
+    DinoAI_Think(id);
 }
 
 s32 DinoFindClosestPlayer(s32 self, s32 *dist) {

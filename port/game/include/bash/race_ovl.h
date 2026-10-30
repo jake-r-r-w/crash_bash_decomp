@@ -24,7 +24,7 @@ s32 RaceAlwaysZero(void);
 void FirstTriggersRACE(void);
 void RaceRestartLevel(void);
 s32 RacePadAngle(s32 arg0);
-void Race_HeroBot(void);
+void Race_HeroBot(s32 player);
 
 extern s32 RaceFloorLevel;
 extern s32 RaceTagTime;
@@ -48,16 +48,16 @@ typedef struct EXTraceai {
     /* 0x18 */ void (*unk18)(s32 player);
 } EXTraceai;
 extern s32 RaceAISpeeds[];
-void RaceAI_Think();
+void RaceAI_Think(s32 arg0);
 void RaceAI_AvoidBarrels(s32 arg0);
 void RaceAI_AvoidObjects(s32 arg0);
 s32 RaceAI_UseCloseWeapon(s32 arg0);
 s32 RaceAI_UseAimedWeapon(s32 arg0);
 s32 RaceAI_SteerAtVictim(s32 arg0);
 
-void InitialiseRACEFirst();
-void InitialiseRACE();
-void UpdateRACE();
+void InitialiseRACEFirst(void);
+void InitialiseRACE(void);
+void UpdateRACE(void);
 
 void PlotRaceFire(NAS *nas);
 
@@ -276,7 +276,9 @@ typedef struct RaceSpinObj {
 extern RaceSpinObj *RaceSpinner;
 extern s32 RaceSpinDelay;
 extern s32 RacePatternIdx;
-s32 RacePistonPattern();
+typedef struct RacePattern RacePattern;
+s32 RacePistonPattern(RacePattern *pats, s32 idx);
+s32 RaceRayHit(s32 *a, s32 *b, s16 *c, void *unused);
 
 /* A step of a RacePistonPattern pattern (0xC bytes). */
 typedef struct RacePatStep {
@@ -286,10 +288,10 @@ typedef struct RacePatStep {
 } RacePatStep;
 
 /* A RacePistonPattern pattern: its steps and its length. */
-typedef struct RacePattern {
+struct RacePattern {
     /* 0x00 */ RacePatStep *steps;
     /* 0x04 */ s32 length;
-} RacePattern;
+};
 extern RacePattern RacePistonPatterns[];
 
 /* One of the six pistons RacePistonPattern moves (0x1C bytes). */
@@ -897,14 +899,14 @@ void PlotRaceShield(NAS *nas);
 extern VictorySeq RaceVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1);
 
-void RacePreMoveHero();
+void RacePreMoveHero(s32 player);
 void RaceMoveHero(s32 player);
 void RaceHeroOffTrack(s32 player);
 
 void SetRaceHeroDazed(s32 player);
 
 void RaceChooseWinner(s32 arg0, u16 arg1);
-void RaceChooseWinnerTeam();
+void RaceChooseWinnerTeam(s32 arg0, s32 arg1);
 
 
 #define RV ((GameState *)GameInfo)

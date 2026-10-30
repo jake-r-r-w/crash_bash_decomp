@@ -14,7 +14,7 @@ extern u8 PogoHookTableC[];
 
 extern process_info PogoProcess;
 
-void psxpogo_render_tile();
+void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags);
 
 
 /* What a board cell's unk4 points to (Plot_PogoBanker reads its x and z). */

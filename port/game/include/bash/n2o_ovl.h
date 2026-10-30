@@ -306,7 +306,9 @@ void N2OInitShadow(s32 arg0);
 s32 N2OTestWalls(N2OVel *arg0, N2OOut *arg1, s32 arg2);
 
 
-s32 N2OHeroUpdateSpeed();
+void N2OHeroSetSpeed(s32 arg0);
+s32 N2OMissileHitTest(s32 x, s32 y, s32 z, u16 size, u16 mask);
+s32 N2OHeroUpdateSpeed(s32 arg0);
 extern u32 *N2OPhaseObject;
 
 s32 N2O_KeepInBounds(EXTengine *arg0);

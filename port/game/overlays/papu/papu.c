@@ -1153,8 +1153,7 @@ s32 PapuPickSpawnPoint(PapuPos *arg0) {
     return best;
 }
 
-NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
-{
+NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d) {
   NAS *nas;
   u8 *new_var;
   EXTengine *eng;

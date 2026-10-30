@@ -285,8 +285,8 @@ void PapuDropFirstCrates(void);
 
 void InitPACrate(NAS *arg0);
 
-NAS *PapuHero2ObjectCollision(s32 player, s32 mask, s32 unused, s32 cone);
-NAS *PapuHeroGrabObject(s32 idx, s32 arg1);
+NAS *PapuHero2ObjectCollision(s32 player, s32 mask, s32 unused, u16 cone);
+NAS *PapuHeroGrabObject(s32 idx, u16 arg1);
 s32 PapuHeroKickCollision(s32 arg0);
 s32 PapuHeroCarryCollision(s32 idx);
 extern u16 PapuAiSkill[];

@@ -656,7 +656,7 @@ loop:
         c[0] = best->sub->XYZ.x - h->hero_eng->XYZ.x;
         c[2] = best->sub->XYZ.z - h->hero_eng->XYZ.z;
         c[3] = 0x180;
-        if (RaceRayHit(a, b, c) != 0) {
+        if (RaceRayHit(a, b, c, 0) != 0) {
             x = best->sub->XYZ.x;
             z = best->sub->XYZ.z;
             d = x * x + z * z;
@@ -721,7 +721,7 @@ void RaceAI_AvoidObjects(s32 player) {
         c[0] = best->Engine->XYZ.x - h->hero_eng->XYZ.x;
         c[2] = best->Engine->XYZ.z - h->hero_eng->XYZ.z;
         c[3] = 0x180;
-        if (RaceRayHit(a, b, c) != 0) {
+        if (RaceRayHit(a, b, c, 0) != 0) {
             d = best->Engine->XYZ.x;
             z = best->Engine->XYZ.z;
             x = d * d + z * z;
@@ -741,12 +741,7 @@ void RaceAI_AvoidObjects(s32 player) {
 }
 
 
-s32 RaceRayHit(a, b, c, unused)
-    s32 *a;
-    s32 *b;
-    s16 *c;
-    void *unused;
-{
+s32 RaceRayHit(s32 *a, s32 *b, s16 *c, void *unused) {
     s32 q[3];
     s32 p[3];
     s32 *qp;
@@ -812,8 +807,7 @@ one:
     return 1;
 }
 
-s32 RaceAI_UseCloseWeapon(s32 player)
-{
+s32 RaceAI_UseCloseWeapon(s32 player) {
   HeroInfo *h;
   HeroInfo *o;
   int new_var;
@@ -870,8 +864,7 @@ s32 RaceAI_UseCloseWeapon(s32 player)
   return 0;
 }
 
-s32 RaceAI_UseAimedWeapon(s32 player)
-{
+s32 RaceAI_UseAimedWeapon(s32 player) {
     TrigEntry *trig;
     PadState *pad;
     HeroInfo *o;
@@ -918,7 +911,7 @@ loop:
         rel[0] = o->hero_eng->XYZ.x - h->hero_eng->XYZ.x;
         rel[2] = o->hero_eng->XYZ.z - h->hero_eng->XYZ.z;
         rel[3] = 0x180;
-        if (RaceRayHit(from, to, rel) != 0) {
+        if (RaceRayHit(from, to, rel, 0) != 0) {
             h->hero_ai->AIpad |= 0x2000;
             pad[player].dir = h->hero_ai->AIpad;
             return 1;
@@ -930,8 +923,7 @@ loop:
     return 0;
 }
 
-s32 RaceAI_SteerAtVictim(s32 player)
-{
+s32 RaceAI_SteerAtVictim(s32 player) {
     s32 i;
     s32 b[4];
     s32 a[4];
@@ -975,7 +967,7 @@ s32 RaceAI_SteerAtVictim(s32 player)
             c[0] = o->hero_eng->XYZ.x - h->hero_eng->XYZ.x;
             c[2] = o->hero_eng->XYZ.z - h->hero_eng->XYZ.z;
             c[3] = 0x180;
-            if (RaceRayHit(a, b, c) != 0 && o->hero->FUX != NULL) {
+            if (RaceRayHit(a, b, c, 0) != 0 && o->hero->FUX != NULL) {
                 x = o->hero_eng->XYZ.x;
                 z = o->hero_eng->XYZ.z;
                 if (x * x + z * z > 0x310000) {
@@ -1000,9 +992,7 @@ s32 RaceAI_SteerAtVictim(s32 player)
     return 0;
 }
 
-void RaceAI_Think(arg0)
-s32 arg0;
-{
+void RaceAI_Think(s32 arg0) {
     HeroInfo *hero;
     EXTraceai *ext;
     NAS *nas;
@@ -3824,7 +3814,7 @@ void RaceHeroJump(s32 player) {
     RaceFux *fux;
     EXTheromove *move;
 
-    ProcessHeroAnim();
+    ProcessHeroAnim(player);
     move = Heroes[player].hero_move;
     if (move == NULL) {
         return;
@@ -3855,7 +3845,7 @@ void RaceHeroOiled(s32 arg0) {
     if (fux == NULL) {
         return;
     }
-    ProcessHeroAnim();
+    ProcessHeroAnim(arg0);
     RaceHeroUsePickup(arg0);
     move = hero->hero_move;
     if (move == NULL) {
@@ -4446,8 +4436,7 @@ void RaceHeroesBump(s32 pa, s32 pb) {
     c += t;
 }
 
-s32 RaceHeroCollide(s32 player)
-{
+s32 RaceHeroCollide(s32 player) {
   s32 other;
   EXTengine *eng;
   RaceFux *a;
@@ -7152,8 +7141,8 @@ s32 RacePadAngle(s32 arg0) {
     return var_a1;
 }
 
-void Race_HeroBot(void) {
-    RaceAI_Think();
+void Race_HeroBot(s32 player) {
+    RaceAI_Think(player);
 }
 
 NAS *RacePickupAhead(s32 arg0) {

@@ -193,7 +193,7 @@ void Chase_HeroBot(s32 arg0);
 void ChaseInitHero(s32 arg0);
 void ChasePreMoveHero(s32 arg0);
 void ChaseMoveHero(s32 arg0);
-s32 ChaseHeroKickCollision();
+s32 ChaseHeroKickCollision(s32 arg0);
 
 
 void ChaseHeroWinner(s32 arg0);

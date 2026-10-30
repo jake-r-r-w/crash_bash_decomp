@@ -141,16 +141,16 @@ extern s32 NasCheckZoneBoundries(EXTengine *eng, SLONG_XYZ *pos, SLONG_XYZ *clos
 extern bdata barrierdata[];
 extern subengine *bossmapsub;
 s32 CalcCurrentSector(SLONG_XYZ *pt); /* inline in the original */
-void InitialisePOLARFirst();
-void InitialisePOLAR();
-void UpdatePOLAR();
+void InitialisePOLARFirst(void);
+void InitialisePOLAR(void);
+void UpdatePOLAR(void);
 void POLARtriggers(NASTrigger *, s32);
-void FirstTriggersPOLAR();
-s32 CountBears();
+void FirstTriggersPOLAR(void);
+s32 CountBears(void);
 bool DoNowt(EXTengine *eng);
 void Polar_HeroBot(u32 player);
 bool IsRayEndInZone(SLONG_XYZ *pos, s32 zoneid);
-NAS *IsBombAvailable();
+NAS *IsBombAvailable(void);
 bool DoesPlayerHaveBomb(u32 player);
 bool IsPlayerInRange(u32 player, u32 player2);
 bool Player2PlayerRayTest(u32 player, u32 danger_player);

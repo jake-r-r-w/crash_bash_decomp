@@ -543,10 +543,7 @@ void DrawLevelHud(void) {
     }
 }
 
-s32 LevelRequirementMet(arg0, arg1)
-s32 arg0;
-GameState *arg1;
-{
+s32 LevelRequirementMet(s32 arg0, GameState *arg1) {
     s32 sa, sb, sc, sd;
     s32 i;
     EngineReq *r;
@@ -696,16 +693,16 @@ void ArenaRequirementMet(s32 arg0) {
     LevelRequirementMet(ArenaRequirements[arg0 & 0xFFFF], p);
 }
 
-void ArenaRequirementMetAny(s32 arg0) {
-    LevelRequirementMet(ArenaRequirements[arg0 & 0xFFFF]);
+void ArenaRequirementMetAny(s32 arg0, void *arg1) {
+    LevelRequirementMet(ArenaRequirements[arg0 & 0xFFFF], arg1);
 }
 
 void RequirementMet(s32 arg0) {
     LevelRequirementMet(arg0 & 0xFFFF, GameInfo);
 }
 
-void RequirementMetAny(s32 arg0) {
-    LevelRequirementMet(arg0 & 0xFFFF);
+void RequirementMetAny(s32 arg0, void *arg1) {
+    LevelRequirementMet(arg0 & 0xFFFF, arg1);
 }
 
 s32 ModeRequirementMet(u16 mode) {

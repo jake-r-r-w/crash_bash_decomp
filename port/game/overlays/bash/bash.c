@@ -2862,8 +2862,7 @@ void BashGivePowerup(s32 arg0, u16 arg1) {
     }
 }
 
-s32 BashFirePowerup(s32 arg0)
-{
+s32 BashFirePowerup(s32 arg0) {
     HeroInfo *h;
     PadState *p;
     NAS *n;
@@ -2921,14 +2920,7 @@ s32 BashFirePowerup(s32 arg0)
     return 0;
 }
 
-s32 BashMissileHitTest(x, y, z, size, skip, mask)
-    s32 x;
-    s32 y;
-    s32 z;
-    u16 size;
-    s32 skip;
-    u16 mask;
-{
+s32 BashMissileHitTest(s32 x, s32 y, s32 z, u16 size, s32 skip, u16 mask) {
     s32 ret;
     u32 i;
     EXTengine *eng;

@@ -25,7 +25,7 @@ void SetBashHeroLoser(s32 arg0);
 
 void BashHeroLoser(s32 arg0);
 
-NAS *BashHero2ObjectCollision(s32 player, s32 mask, s32 unused, s32 cone);
+NAS *BashHero2ObjectCollision(s32 player, s32 mask, s32 unused, u16 cone);
 
 void *BashHeroObjectAhead(s32 idx, s32 mask);
 

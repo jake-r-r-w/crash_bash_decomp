@@ -1028,9 +1028,7 @@ void N2OMoveHero(s32 arg0) {
     }
 }
 
-void N2OHeroSetSpeed(arg0)
-s32 arg0;
-{
+void N2OHeroSetSpeed(s32 arg0) {
     u16 *p;
     u16 *b;
     u16 t;
@@ -1059,9 +1057,7 @@ done:
     }
 }
 
-s32 N2OHeroUpdateSpeed(arg0)
-s32 arg0;
-{
+s32 N2OHeroUpdateSpeed(s32 arg0) {
     s32 v;
     s32 t;
     u32 u;
@@ -1120,7 +1116,7 @@ void N2OHeroEnter(s32 arg0) {
     s32 s;
     s32 n;
 
-    if (N2OHeroUpdateSpeed() != 0) {
+    if (N2OHeroUpdateSpeed(arg0) != 0) {
         ProcessHeroAnim(arg0);
     }
     base = Heroes;
@@ -1165,7 +1161,7 @@ void N2OHeroIdle(s32 arg0) {
     HeroInfo *hb;
     s32 mode;
 
-    if (N2OHeroUpdateSpeed() != 0) {
+    if (N2OHeroUpdateSpeed(arg0) != 0) {
         ProcessHeroAnim(arg0);
     }
     st = Heroes[arg0].hero_status;
@@ -1382,7 +1378,7 @@ void N2OHeroWinner(s32 arg0) {
     if (flag != 0) {
         CameraMode = 1;
     }
-    CheckHeroAnim(arg0, flag);
+    CheckHeroAnim(arg0);
     if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
@@ -1417,7 +1413,7 @@ void SetN2OHeroKick(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    N2OHeroSetSpeed();
+    N2OHeroSetSpeed(arg0);
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
@@ -3758,13 +3754,7 @@ NAS *N2OBossPushObjects(void) {
     return NULL;
 }
 
-s32 N2OMissileHitTest(x, y, z, size, mask)
-    s32 x;
-    s32 y;
-    s32 z;
-    u16 size;
-    u16 mask;
-{
+s32 N2OMissileHitTest(s32 x, s32 y, s32 z, u16 size, u16 mask) {
     s32 ret;
     u32 i;
     EXTengine *eng;
@@ -4133,7 +4123,7 @@ void N2OHeroDie(s32 arg0) {
 
 void SetN2OHeroMove(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
-    N2OHeroSetSpeed();
+    N2OHeroSetSpeed(arg0);
     SetHeroSeq(arg0, 0x22);
 }
 

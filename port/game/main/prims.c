@@ -417,10 +417,7 @@ void faces_write_colors(MeshHeader *faces, FacePrim *prim) {
 done:;
 }
 
-void prim_write_uvs(faces, prim)
-    MeshHeader *faces;
-    FacePrim *prim;
-{
+void prim_write_uvs(MeshHeader *faces, FacePrim *prim) {
     u8 *p;
     s32 n;
     obj_textureset *ts;
@@ -761,7 +758,7 @@ PrimSet *primset_alloc(PrimSet **out, s32 mode) {
 }
 
 void faces_write_uvs_colors(s32 arg0, s32 arg1) {
-    prim_write_uvs();
+    prim_write_uvs(arg0, arg1);
     faces_write_colors(arg0, arg1);
 }
 
@@ -2928,9 +2925,7 @@ void mapscene_release(map_enviroment *env) {
     env->subs = NULL;
 }
 
-void mapscene_setup_tables(env)
-    map_enviroment *env;
-{
+void mapscene_setup_tables(map_enviroment *env) {
     obj_dbase *outer;
     ModelFile *p;
     map_list *maps;
@@ -3011,7 +3006,7 @@ void mapscene_load(map_enviroment *env, s32 db) {
     env->dbase = (obj_dbase *)db;
     env->map_num = 0;
     MapScene = env;
-    mapscene_setup_tables();
+    mapscene_setup_tables(env);
     env->subs = NULL;
     mapenv_place_subs(env);
     dbase_load_all_mesh_anims(db);

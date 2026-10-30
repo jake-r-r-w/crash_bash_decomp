@@ -169,16 +169,16 @@ extern subengine *DinoTargetC;
 extern subengine *DinoTargetObjs[3];
 extern subengine *DinoTargetObjsB[3];
 
-void DinoAI_Think();
-void InitialiseDINOFirst();
-void InitialiseDINO();
-void UpdateDINO();
+void DinoAI_Think(s32 id);
+void InitialiseDINOFirst(void);
+void InitialiseDINO(void);
+void UpdateDINO(void);
 
 void DinoRestartLevel(void);
 
 void DinoHeroWinner(s32 arg0);
 
-void Dino_HeroBot(void);
+void Dino_HeroBot(s32 id);
 
 s32 DinoAI_SetNearestGem(s32 *arg0, s32 arg1);
 
@@ -349,8 +349,8 @@ extern VictorySeq DinoVictorySeqs[]; /* {name, id} pairs: the victory sequences 
 extern subengine *DinoTargetD, *DinoTargetE;
 extern s32 DinoTargetTimer, DinoTargetDelay, DinoTargetStep, DinoScoreTimer, DinoTargetFlag;
 void DinoChooseWinnerTeam(s32 arg0, u16 arg1);
-void DinoPreMoveHero();
-void DinoMoveHero();
+void DinoPreMoveHero(s32 id);
+void DinoMoveHero(s32 arg0);
 
 typedef struct DinoVec {
     s32 vx, vy, vz;

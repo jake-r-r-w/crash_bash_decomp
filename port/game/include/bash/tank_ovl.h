@@ -35,7 +35,7 @@ extern u16 TankMetalAiTeamSkill[];
 void InitTotemBit(NAS *nas, s32 id);
 void PlotTotemBit(NAS *nas, s32 id);
 
-void MoeJoeDead(void);
+void MoeJoeDead(s32 player);
 void MoeJoeMinelay(void);
 void TankEmptyStub(void);
 void TA_RestartLevel(void);
@@ -211,7 +211,7 @@ NAS *GetTankMapCell(s32 arg0, s32 arg1);
 
 void SetTankMapCellNas(NAS *nas);
 
-void TankBotChooseTarget(void);
+void TankBotChooseTarget(s32 player);
 
 extern u16 TankJungleAiBotTweak[];
 extern u16 TankJungleAiHumanTweak[];
@@ -337,7 +337,7 @@ void KillTankMapCell(s32 arg0, s32 arg1);
 
 void TankBotAimTurret(s32 player, EXTengine *eng, s32 *arg2);
 
-s32 TankBotPickTarget();
+s32 TankBotPickTarget(s32 arg0);
 
 /* AI target state TankBotAvoidMines fills (target NAS, scan cursor). */
 extern s32 TankBotForceField[];

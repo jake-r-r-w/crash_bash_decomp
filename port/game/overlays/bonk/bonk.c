@@ -1281,8 +1281,7 @@ void BonkChooseWinnerRank(s32 arg0, u16 arg1) {
     }
 }
 
-void Bonk_HeroBot(s32 arg0)
-{
+void Bonk_HeroBot(s32 arg0) {
     GameState *g = GAME;
     HeroInfo *h;
     HeroInfo *heroes;
@@ -1397,8 +1396,7 @@ void Bonk_HeroBot(s32 arg0)
     set_joypad((u8 *)&Pads[arg0], ai->AIpad);
 }
 
-s32 BonkAI_NearestEnemy(s32 arg0)
-{
+s32 BonkAI_NearestEnemy(s32 arg0) {
   s32 new_var2;
   EXTengine *b;
   EXTengine *a;

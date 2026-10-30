@@ -27,8 +27,8 @@ s32 PolarPadAngle(s32 arg0);
 s32 PolarCompareXZ(SLONG_XYZ *arg0, SLONG_XYZ *arg1);
 u32 PolarAngleOf(SLONG_XYZ *arg0);
 void SetPolarHeroTransmute(s32 player);
-s32 TestPolarHeroWon();
-void SetPolarHeroWeight(void);
+s32 TestPolarHeroWon(s32 arg0);
+void SetPolarHeroWeight(s32 player);
 void PolarInitHero(void);
 void PolarEmptyStub0(void);
 void PolarEmptyStub1(void);
@@ -231,7 +231,7 @@ typedef struct PolarBox {
 
 s32 PolarBoxOverlap(EXTengine *a, s32 b, EXTengine *c, s32 d);
 
-void GravityMotionUpdate();
+void GravityMotionUpdate(NAS *nas, EXTmotion *m);
 
 
 typedef struct GravityObject {
@@ -264,10 +264,10 @@ typedef struct PolarWanderFux {
 
 extern s32 PolarAIChances[];
 extern s32 PolarAnimFlag;
-void PolarAI_DoWander();
-void PolarAI_AvoidMelt();
+void PolarAI_DoWander(s32 player);
+void PolarAI_AvoidMelt(s32 player);
 void DoGetBomb(u32 player);
-void PolarAI_DoHunt();
+void PolarAI_DoHunt(s32 player);
 
 /* Inlined into TestChaseChance. */
 static inline void PolarStartChase(s32 player) {
@@ -565,8 +565,8 @@ void PolarCamReset(void);
 void PolarBeamLinkState(void);
 
 void PolarAI_ClearState(s32 player);
-void PolarAI_AvoidBomber();
-void PolarAI_DoChaseBomber();
+void PolarAI_AvoidBomber(s32 player);
+void PolarAI_DoChaseBomber(s32 player);
 
 s32 PolarAI_AnyBusy(void);
 

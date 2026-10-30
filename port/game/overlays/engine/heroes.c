@@ -803,9 +803,7 @@ void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     }
 }
 
-s32 ProcessHeroAnim(player)
-s32 player;
-{
+s32 ProcessHeroAnim(s32 player) {
     HeroInfo *h;
     EXTanimator *anim = Heroes[player].hero_anim;
     subengine *sub;
@@ -914,7 +912,7 @@ s32 SetHeroSeq(s32 player, s32 seq) {
         h->hero_anim->Aindex = 0;
         h->hero_anim->Masterspeed = *(u16 *)h->hero_anim->Atable;
         h->hero_anim->Seq_count = 0;
-        return ProcessHeroAnim(player, seq);
+        return ProcessHeroAnim(player);
     }
     return 0;
 }
@@ -2678,9 +2676,7 @@ void HeroBecomeAngel(s32 arg0) {
     SetHeroAseq(arg0, 1, 0xB);
 }
 
-void HeroGhost(arg0)
-u32 arg0;
-{
+void HeroGhost(u32 arg0) {
     s32 y;
     EXTengine *e;
     subengine *sub;
@@ -2712,7 +2708,7 @@ u32 arg0;
     e->XYZ = Heroes[arg0].hero_eng->XYZ;
     *(SLONG_XYZ *)&s->XYZ.x = *(SLONG_XYZ *)&Heroes[arg0].hero_sub->XYZ.x;
     s->flags |= 0x8000;
-    ProcessHeroAnim(arg0, y);
+    ProcessHeroAnim(arg0);
     for (s = s->next, i = 0; s != NULL; s = s->next, i++) {
         if (AngelSparkles[i][arg0].flag != 0) {
             AngelSparkles[i][arg0].speed -= 3;
@@ -3067,7 +3063,7 @@ void DefHeroSetIdle(s32 arg0) {
 }
 
 void HeroQuiet(u32 player) {
-    ProcessHeroAnim();
+    ProcessHeroAnim(player);
 }
 
 void SetHeroQuiet(s32 arg0) {

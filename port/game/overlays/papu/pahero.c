@@ -816,7 +816,7 @@ void PAHeroPickup(s32 arg0) {
     s16 t;
     PapuWeaponVec *tbl;
 
-    ProcessHeroAnim();
+    ProcessHeroAnim(arg0);
     b = Heroes;
     h = &b[arg0];
     s = h->hero_fx->sub;
@@ -974,7 +974,7 @@ void PAHeroThrow(s32 arg0) {
     s16 (*tbl)[3];
     s16 t;
 
-    if (ProcessHeroAnim() == 0x13) {
+    if (ProcessHeroAnim(arg0) == 0x13) {
         b0 = Heroes;
         h0 = &b0[arg0];
         if (h0->hero_object != NULL) {
@@ -1120,12 +1120,7 @@ void PAHeroWinner(s32 arg0) {
 /* The HeroHooks.Hero2ObjectCollision hook: claim the first object in reach of player's
  * cylinder that can take mask (within cone of the hero's heading, 0: any).
  * Each arm claims in its own do-while (0); jump2 merges the copies. */
-NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
-    s32 player;
-    s32 mask;
-    s32 unused;
-    u16 cone;
-{
+NAS *PapuHero2ObjectCollision(s32 player, s32 mask, s32 unused, u16 cone) {
     VECTOR pos;
     s32 top;
     s32 bot;
@@ -1210,10 +1205,7 @@ NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
     return NULL;
 }
 
-NAS *PapuHeroGrabObject(idx, arg1)
-    s32 idx;
-    u16 arg1;
-{
+NAS *PapuHeroGrabObject(s32 idx, u16 arg1) {
     NAS *n;
     s32 idx2 = idx;
     s32 lim = 0x10000;

@@ -962,8 +962,7 @@ SpinPair *SpinFindDropPoint(u16 *head) {
     return (SpinPair *)bestp;
 }
 
-NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
-{
+NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d) {
   NAS *nas;
   EXTengine *eng;
   EXTobject *fux;
@@ -1807,14 +1806,7 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, EXTobject *fux) {
     return hit;
 }
 
-s32 SpinHitTest(x, y, z, size, skip, mask)
-    s32 x;
-    s32 y;
-    s32 z;
-    u16 size;
-    s32 skip;
-    u16 mask;
-{
+s32 SpinHitTest(s32 x, s32 y, s32 z, u16 size, s32 skip, u16 mask) {
     s32 ret;
     u32 i;
     EXTengine *eng;
@@ -3104,12 +3096,7 @@ void SpinHeroLose(s32 arg0) {
 /* The HeroHooks.Hero2ObjectCollision hook: claim the first object in reach of player's
  * cylinder that can take mask (within cone of the hero's heading, 0: any).
  * Each arm claims in its own do-while (0); jump2 merges the copies. */
-NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
-    s32 player;
-    s32 mask;
-    s32 unused;
-    u16 cone;
-{
+NAS *SpinHero2ObjectCollision(s32 player, s32 mask, s32 unused, u16 cone) {
     VECTOR pos;
     s32 top;
     s32 bot;

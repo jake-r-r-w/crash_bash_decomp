@@ -148,7 +148,7 @@ typedef struct EXTobject_TA {
 BASH_SIZE_CHECK(EXTobject_TA, 0x38);
 
 void TA_Triggers(NASTrigger *, s32);
-void TA_EarliestTriggers();
+void TA_EarliestTriggers(void);
 void TA_InitHero(u32 player);
 void TA_MoveHero(u32 player);
 void TA_PreMoveHero(u32 player);
