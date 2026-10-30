@@ -2,7 +2,7 @@
 # compiled from ../src and ../include, and src/ps1/ (the PS1-only files) is left out.
 #
 #   cmake -S port -B build/pc -G Ninja -DCMAKE_C_COMPILER=i686-w64-mingw32-clang && cmake --build build/pc
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 project(crash_bash_pc C)
 
 # The game's C assumes 32-bit pointers for now (docs/PORT.md).
@@ -33,22 +33,23 @@ endforeach()
 
 set(SDK_SOURCES sdk/cd.c sdk/etc.c sdk/gpu.c sdk/gpu_raster.c sdk/gte.c sdk/mcrd.c sdk/pad.c sdk/snd.c)
 
-# SDL2 from the system, or unpacked in ext/sdl2 (docs/PORT.md, Building).
-file(GLOB SDL2_HINTS "${REPO}/ext/sdl2/SDL2-*/i686-w64-mingw32/lib/cmake/SDL2")
-find_package(SDL2 QUIET CONFIG HINTS ${SDL2_HINTS})
-if(SDL2_FOUND)
+# SDL3 unpacked in ext/sdl3, or from the system (docs/PORT.md, Building).
+file(GLOB SDL3_HINTS "${REPO}/ext/sdl3/SDL3-*/i686-w64-mingw32/lib/cmake/SDL3")
+find_package(SDL3 QUIET CONFIG HINTS ${SDL3_HINTS})
+if(SDL3_FOUND)
   set(HOST_SOURCE platform/sdl.c)
 else()
-  message(STATUS "No SDL2: building without a window (docs/PORT.md, Building).")
+  message(STATUS "No SDL3: building without a window (docs/PORT.md, Building).")
   set(HOST_SOURCE platform/no_host.c)
 endif()
 
 add_executable(crashbash main.c overlays.c playtest.c link_names.c ${HOST_SOURCE} ${SDK_SOURCES} ${GAME_SOURCES})
-if(SDL2_FOUND)
-  if(TARGET SDL2::SDL2-static)
-    target_link_libraries(crashbash PRIVATE SDL2::SDL2-static)
-  else()
-    target_link_libraries(crashbash PRIVATE SDL2::SDL2)
+if(SDL3_FOUND)
+  target_link_libraries(crashbash PRIVATE SDL3::SDL3)
+  if(WIN32)
+    # SDL3.dll beside the exe
+    add_custom_command(TARGET crashbash POST_BUILD COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+      "$<TARGET_FILE:SDL3::SDL3>" "$<TARGET_FILE_DIR:crashbash>")
   endif()
 endif()
 # INCLUDE_ASM_H keeps out include_asm.h, the PS1 assembler's macros (splat rewrites that file).

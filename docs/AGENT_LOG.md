@@ -66,8 +66,8 @@ ROADMAP-B.md, Part 6:
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. **The PC port** (Part 6). 6.1 and 6.2 are done: the game runs on 32-bit Windows (PORT.md). The port
-   uses modern tooling (decided 2026-10-30; ROADMAP-B). Next is 6.3, SDL3, then 6.4: libsnd's sequencer
-   as C, for music, with libsnd's own volumes and pitches and the SPU's reverb.
+   uses modern tooling (decided 2026-10-30; ROADMAP-B), and 6.3 moved it to SDL3. Next is 6.4: libsnd's
+   sequencer as C, for music, with libsnd's own volumes and pitches and the SPU's reverb.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -443,6 +443,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-30 (ROADMAP-B 6.3):** the host is on SDL3. The window, pacing and playtest are checked, but the
+  sound and controllers need a person to try them.
 - **2026-10-30 (the roadmap):** the port moves to modern tooling: SDL3, then after the same-game test a
   64-bit build with no PS1 layout, tests and CI, and a real GPU renderer (Vulkan, Direct3D 12, Metal). The
   steps after 6.2 are renumbered (ROADMAP-B).

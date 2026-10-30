@@ -23,7 +23,6 @@ C, and `src/` and `include/` still have to pass `make check`.
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 6.3 | SDL3 | `port/platform` moves from SDL2 to SDL3: the window, sound and input | [ ] |
 | 6.4 | Libsnd's sequencer as C | Plain non-matching C, checked against the linked originals: music, with libsnd's own volumes and pitches, and the SPU's reverb | [ ] |
 | 6.5 | Same game | Played side by side with retail over 4.4's route, it behaves the same | [ ] |
 | 6.6 | A 64-bit build, with no PS1 layout | The addresses kept in integers and the structs holding pointers, fixed in the shared C (each change passing `make check`), with a translation step for files laid over structs. Real structs replace reads past a global's size, so `data_order.txt`, the 16 MB limit and the null-page handler go. Then the game's C can be optimised instead of `-O0`, with ASan and UBSan builds. Required for macOS and Android. | [ ] |

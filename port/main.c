@@ -30,8 +30,9 @@ static LONG WINAPI null_page(EXCEPTION_POINTERS *e) {
     DWORD *regs[8];
     int rm, mod, base;
 
+    /* only the game's own code, in the exe: DLLs and drivers may probe memory on purpose */
     if (e->ExceptionRecord->ExceptionCode != EXCEPTION_ACCESS_VIOLATION ||
-        e->ExceptionRecord->ExceptionInformation[1] >= 0x10000) {
+        e->ExceptionRecord->ExceptionInformation[1] >= 0x10000 || c->Eip >= 0x1000000) {
         return EXCEPTION_CONTINUE_SEARCH;
     }
     regs[0] = &c->Eax;

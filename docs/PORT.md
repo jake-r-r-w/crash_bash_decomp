@@ -28,7 +28,7 @@ Makefile  configs/  tools/  .decomp/    the PS1 decomp only
 docs/                 both
 ```
 
-Git-ignored, as for the decomp: `build/pc/` (its output) and `ext/sdl2/` (SDL2, if the system has none).
+Git-ignored, as for the decomp: `build/pc/` (its output) and `ext/sdl3/` (SDL3, if the system has none).
 
 ## The rules
 
@@ -72,7 +72,7 @@ Windows, Linux, macOS and Android (decided 2026-10-30).
   particular a plain `char` is unsigned on ARM Android and Linux, and signed on x86 and Apple's ARM.
 - **Clang builds for all four** (with the NDK on Android), so it's the port's main compiler, with GCC
   as a second check.
-- **`platform/` moves to SDL3 (6.3)**, which covers all four. Its GPU API (6.8) gives the renderer Vulkan on
+- **`platform/` uses SDL3**, which covers all four. Its GPU API (6.8) gives the renderer Vulkan on
   Windows, Linux and Android, Direct3D 12 on Windows, and Metal on macOS.
 - **Android also needs** touch controls, its own packaging, and a way to get the game's data from the
   user's own disc onto the device.
@@ -150,16 +150,17 @@ The game's C assumes a lot about its machine. On PC:
 ## Building
 
 It needs a 32-bit C compiler on the host, not the Docker image; CMake stops if the compiler is 64-bit.
-On Windows, with [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) and Ninja, and SDL2's
-`SDL2-devel-*-mingw.tar.gz` from [its releases](https://github.com/libsdl-org/SDL/releases) unpacked in
-`ext/sdl2/`:
+On Windows, with [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) and Ninja, and SDL3's
+`SDL3-devel-*-mingw.tar.gz` from [its releases](https://github.com/libsdl-org/SDL/releases) unpacked in
+`ext/sdl3/`:
 
 ```sh
 cmake -S port -B build/pc -G Ninja -DCMAKE_C_COMPILER=i686-w64-mingw32-clang
 cmake --build build/pc
 ```
 
-The result is `build/pc/crashbash.exe`. Without SDL2 it still builds, with no window.
+The result is `build/pc/crashbash.exe`, with `SDL3.dll` beside it. Without SDL3 it still builds, with no
+window.
 
 ## Running it
 
