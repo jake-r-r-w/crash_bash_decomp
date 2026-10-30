@@ -64,9 +64,9 @@ typedef struct LaserObj {
 } LaserObj;
 
 typedef struct LaserShoot {
-    /* 0x00 */ u8 pad00[0x54];
+    /* 0x00 */ u8 pad00[offsetof(NAS, Engine)];
     /* 0x54 */ LaserObj *obj;
-    /* 0x58 */ u8 pad58[8];
+    /* 0x58 */ u8 pad58[offsetof(NAS, UserInfo.user1) - (offsetof(NAS, Engine) + sizeof(void *))];
     /* 0x60 */ s32 unk60;
 } LaserShoot;
 typedef struct LaserPos {
@@ -81,9 +81,9 @@ typedef struct LaserTgt {
 } LaserTgt;
 
 typedef struct LaserNode {
-    /* 0x00 */ u8 pad00[0x20];
+    /* 0x00 */ u8 pad00[offsetof(NAS, Group.Child)];
     /* 0x20 */ struct LaserNode *next;
-    /* 0x24 */ u8 pad24[0x30];
+    /* 0x24 */ u8 pad24[offsetof(NAS, Engine) - (offsetof(NAS, Group.Child) + sizeof(void *))];
     /* 0x54 */ LaserTgt *tgt;
 } LaserNode;
 
@@ -131,7 +131,7 @@ typedef struct MissileObj {
 } MissileObj;
 
 typedef struct MissileHolder {
-    /* 0x00 */ u8 pad00[0x54];
+    /* 0x00 */ u8 pad00[offsetof(NAS, Engine)];
     /* 0x54 */ MissileObj *obj;
 } MissileHolder;
 
@@ -159,14 +159,27 @@ extern s32 NoxHeroSteer[];
 extern ScriptInit NoxSmokeScriptInit;
 
 /* Path follower of NoxBossFollowPath: a key table and a position along it. */
+typedef struct BossExt {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ ScriptCursor *cursor;
+    /* 0x10 */ KeyBlock *keys;
+    /* 0x14 */ s32 frame;  /* its key */
+    /* 0x18 */ s32 state;  /* switched on */
+    /* 0x1C */ s32 timer;  /* counted down */
+    /* 0x20 */ s32 timer2;  /* counted down */
+    /* 0x24 */ u8 pad24[0xC];
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 unk38;
+} BossExt;
 typedef struct BossPath {
-    /* 0x00 */ u8 pad00[0x10];
+    /* 0x00 */ u8 pad00[offsetof(BossExt, keys)];
     /* 0x10 */ KeyBlock *keys;
     /* 0x14 */ s32 pos;
 } BossPath;
 
 typedef struct BossObj {
-    /* 0x00 */ u8 pad00[0x54];
+    /* 0x00 */ u8 pad00[offsetof(NAS, Engine)];
     /* 0x54 */ EXTengine *eng;
 } BossObj;
 
@@ -466,19 +479,6 @@ typedef struct BossScene {
     /* 0x2C */ u8 *data;
 } BossScene;
 
-typedef struct BossExt {
-    /* 0x00 */ u8 pad00[0xC];
-    /* 0x0C */ ScriptCursor *cursor;
-    /* 0x10 */ KeyBlock *keys;
-    /* 0x14 */ s32 frame;  /* its key */
-    /* 0x18 */ s32 state;  /* switched on */
-    /* 0x1C */ s32 timer;  /* counted down */
-    /* 0x20 */ s32 timer2;  /* counted down */
-    /* 0x24 */ u8 pad24[0xC];
-    /* 0x30 */ s32 unk30;
-    /* 0x34 */ s32 unk34;
-    /* 0x38 */ s32 unk38;
-} BossExt;
 
 extern ScriptInit NoxBossScriptInit;
 extern s32 NoxBossPathPos;

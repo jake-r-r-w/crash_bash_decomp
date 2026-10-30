@@ -2675,7 +2675,7 @@ s32 PickArkPlayer(u32 arg0) {
 s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
     ArkenoidPos buf;
     ArkenoidNode *n;
-    ArkenoidNode *t;
+    EXTengine *t;
     ArkenoidNode *best;
     HeroInfo *h;
     HeroInfo *h1;
@@ -2703,8 +2703,8 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
                 do {
                     t = n->target;
                     if (t != NULL) {
-                        dx = h1->hero_eng->XYZ.x - t->x;
-                        dz = h1->hero_eng->XYZ.z - t->z;
+                        dx = h1->hero_eng->XYZ.x - t->XYZ.x;
+                        dz = h1->hero_eng->XYZ.z - t->XYZ.z;
                         if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->status == 2) {
                             goto set_ai;
                         }
@@ -2727,8 +2727,8 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         do {
             t = n->target;
             if (t != NULL) {
-                dx = h->hero_eng->XYZ.x - t->x;
-                dz = h->hero_eng->XYZ.z - t->z;
+                dx = h->hero_eng->XYZ.x - t->XYZ.x;
+                dz = h->hero_eng->XYZ.z - t->XYZ.z;
                 if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->status != 2) {
                     a = get_angle(dx, dz);
                     d = angle_diff(a, h->hero_move->forward_angle);
@@ -2739,7 +2739,7 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
                             }
                         }
                     } else if (FindExtension((NAS *)n, 0x800) != NULL) {
-                        r = ArkBotAimB(arg1, (ArkenoidPos *)&t->x, &buf, (u16)a);
+                        r = ArkBotAimB(arg1, (ArkenoidPos *)&t->XYZ.x, &buf, (u16)a);
                         best = n;
                         if (r != 0) {
                             goto found;
@@ -2765,11 +2765,11 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         h2 = &base[arg0];
         arg1 = h2->hero_teammate;
         t = best->target;
-        a = get_angle(h2->hero_eng->XYZ.x - t->x, h2->hero_eng->XYZ.z - t->z);
+        a = get_angle(h2->hero_eng->XYZ.x - t->XYZ.x, h2->hero_eng->XYZ.z - t->XYZ.z);
         if (FindExtension((NAS *)best, 0x800) == NULL) {
             goto ret0;
         }
-        if ((ArkBotAimB(arg1, (ArkenoidPos *)&t->x, &buf, (u16)a) ^ 1) == 0) {
+        if ((ArkBotAimB(arg1, (ArkenoidPos *)&t->XYZ.x, &buf, (u16)a) ^ 1) == 0) {
             goto ret0;
         }
     }
@@ -2784,8 +2784,8 @@ ret0:
 
 s32 ArkBallComingAtHero(s32 arg0) {
     ArkenoidNode *n;
-    ArkenoidNode *t;
-    ArkenoidNode *e;
+    EXTengine *t;
+    EXTengine *e;
     HeroInfo *h;
     s32 dx;
     s32 dz;
@@ -2801,9 +2801,9 @@ s32 ArkBallComingAtHero(s32 arg0) {
             do {
                 t = n->target;
                 if (t != NULL) {
-                    e = (ArkenoidNode *)h->hero_eng;
-                    dx = e->x - t->x;
-                    dz = e->z - t->z;
+                    e = h->hero_eng;
+                    dx = e->XYZ.x - t->XYZ.x;
+                    dz = e->XYZ.z - t->XYZ.z;
                     if (dx * dx + dz * dz < lim) {
                         if (angle_diff_abs(get_angle(dx, dz), h->hero_move->forward_angle) < 0x2AA) {
                             return 1;

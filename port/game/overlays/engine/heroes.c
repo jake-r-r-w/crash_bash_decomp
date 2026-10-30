@@ -198,7 +198,7 @@ void InitialiseHeroes(void) {
             }
         }
         if (h->hero_move == NULL) {
-            mv = AddExt(h->hero, 0x54, 0x400000F0);
+            mv = AddExt(h->hero, sizeof(EXTheromove), 0x400000F0);
             if (mv != NULL) {
                 h->hero_move = mv;
                 mv->forward_speed = 0;
@@ -233,7 +233,7 @@ void InitialiseHeroes(void) {
             }
         }
         if (h->hero_ai == NULL) {
-            ai = AddExt(h->hero, 0x44, 0x400000F4);
+            ai = AddExt(h->hero, sizeof(EXTbotai), 0x400000F4);
             if (ai != NULL) {
                 h->hero_ai = ai;
                 ai->AImode = 0;
@@ -3416,7 +3416,7 @@ void InitScriptFX(NAS *nas)
   fux = new_var->FUX;
   if (fux == 0)
   {
-    sd = AddExt(new_var, 0x3BC, 0x10000000);
+    sd = AddExt(new_var, sizeof(EXTscriptdata), 0x10000000);
     new_var->FUX = (EXT *) sd;
     if (sd == 0)
     {

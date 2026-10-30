@@ -58,7 +58,7 @@ extern u16 N2OExplosionSfx[];
 s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
 
 typedef struct N2OVel {
-    u8 pad0[0x10];
+    u8 pad0[offsetof(EXTengine, XYZ.x)];
     s32 x;
     u8 pad14[4];
     s32 z;
@@ -110,11 +110,11 @@ typedef struct N2ORound {
 
 typedef struct N2OFlagNode {
     u32 flags;
-    u8 pad4[0x58];
+    u8 pad4[offsetof(subengine, next) - (offsetof(subengine, flags) + 4)];
     struct N2OFlagNode *next;
-    u8 pad60[0xC];
+    u8 pad60[offsetof(subengine, u6C.ptr) - (offsetof(subengine, next) + sizeof(void *))];
     u8 *dbase;
-    u8 pad70[4];
+    u8 pad70[offsetof(subengine, entity) - (offsetof(subengine, u6C.ptr) + sizeof(void *))];
     u16 entity;
 } N2OFlagNode;
 
@@ -207,7 +207,7 @@ typedef struct N2OPanRef {
 } N2OPanRef;
 extern u16 N2OBossShotSfx;
 typedef struct N2OPan {
-    u8 pad0[0xC];
+    u8 pad0[offsetof(EXTheromove, forward_speed)];
     s32 flag;  /* tested for zero */
 } N2OPan;
 extern u16 N2OHeroPushTimer;
@@ -224,14 +224,10 @@ s32 N2OHeroTestIdle(s32 arg0);
 void N2OSetUp(void);
 /* A ball in the HeadOfBalls list (N2OBotCanHit), as in arkenoid's ArkenoidNode. */
 typedef struct N2ONode {
-    u8 pad0[0x10];
-    s32 x;
-    u8 pad14[4];
-    s32 z;
-    u8 pad1C[4];
+    u8 pad0[offsetof(NAS, Group.Child)];
     struct N2ONode *next;
-    u8 pad24[0x30];
-    struct N2ONode *target;
+    u8 pad24[offsetof(NAS, Engine) - (offsetof(NAS, Group.Child) + sizeof(void *))];
+    EXTengine *target;
     struct {
         u8 pad0[0x14];
         u16 whatami;
@@ -374,7 +370,7 @@ extern N2OEdge N2OAimEdgesB[];
 
 /* A FUX viewed for its flags word (0x80 tested by TestN2OObjectObstacles). */
 typedef struct N2OFuxF {
-    u8 pad0[0x1C];
+    u8 pad0[offsetof(EXTobject, can_do)];
     u16 flags;
 } N2OFuxF;
 

@@ -2544,7 +2544,7 @@ s32 PickN2OPlayer(s32 arg0) {
 s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
     N2OPos buf;
     s32 a;
-    N2ONode *t;
+    EXTengine *t;
     N2ONode *n;
     N2ONode *best;
     HeroInfo *h;
@@ -2566,8 +2566,8 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         do {
             t = n->target;
             if (t != NULL) {
-                dx = h->hero_eng->XYZ.x - t->x;
-                dz = h->hero_eng->XYZ.z - t->z;
+                dx = h->hero_eng->XYZ.x - t->XYZ.x;
+                dz = h->hero_eng->XYZ.z - t->XYZ.z;
                 if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->whatami != 2) {
                     a = get_angle(dx, dz);
                     d = angle_diff(a, h->hero_move->forward_angle);
@@ -2576,7 +2576,7 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
                             best = n;
                         }
                     } else if (FindExtension((NAS *)n, 0x800) != NULL) {
-                        r = N2OBotAimB(arg1, (N2OPos *)&t->x, &buf, (u16)a);
+                        r = N2OBotAimB(arg1, (N2OPos *)&t->XYZ.x, &buf, (u16)a);
                         best = n;
                         if (r != 0) {
                             goto found;
@@ -2604,11 +2604,11 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         h2 = &base[arg0];
         arg1 = h2->hero_teammate;
         t = best->target;
-        a = get_angle(h2->hero_eng->XYZ.x - t->x, h2->hero_eng->XYZ.z - t->z);
+        a = get_angle(h2->hero_eng->XYZ.x - t->XYZ.x, h2->hero_eng->XYZ.z - t->XYZ.z);
         if (FindExtension((NAS *)best, 0x800) == NULL) {
             goto ret0;
         }
-        if ((N2OBotAimB(arg1, (N2OPos *)&t->x, &buf, (u16)a) ^ 1) == 0) {
+        if ((N2OBotAimB(arg1, (N2OPos *)&t->XYZ.x, &buf, (u16)a) ^ 1) == 0) {
             goto ret0;
         }
     }
@@ -2623,7 +2623,7 @@ void N2O_HeroBot(u16 *arg0) {
     N2OPos pos;
     EXTbotai *ai;
     N2ONode *n;
-    N2ONode *t;
+    EXTengine *t;
     void *ext;
     s32 skill;
     s32 dist;
@@ -2672,9 +2672,9 @@ void N2O_HeroBot(u16 *arg0) {
         t = n->target;
         if (t != NULL && n->unk58 != NULL && n->unk58->status == 1) {
             ext = FindExtension((NAS *)n, 0x800);
-            if (ext != NULL && N2OBotAimA(3, (N2OPos *)&t->x, &pos, (u16)((EXTmotion *)ext)->Xa) != 0) {
-                dx = t->x - pos.x;
-                dz = t->z - pos.z;
+            if (ext != NULL && N2OBotAimA(3, (N2OPos *)&t->XYZ.x, &pos, (u16)((EXTmotion *)ext)->Xa) != 0) {
+                dx = t->XYZ.x - pos.x;
+                dz = t->XYZ.z - pos.z;
                 d = dx * dx + dz * dz;
                 if (d < dist) {
                     dist = d;

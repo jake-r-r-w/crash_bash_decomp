@@ -340,7 +340,7 @@ typedef struct {
 
 /* The texture PlotSparks puts on its polys. */
 typedef struct {
-    u8 pad[0x24];
+    u8 pad[offsetof(obj_texture, info.tpage)];
     u16 tpage, clut, uv0, uv1, uv2, uv3;
 } SparkTex;
 

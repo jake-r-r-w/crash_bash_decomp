@@ -247,7 +247,7 @@ static inline subengine *MapEnv_GetSubs(map_enviroment *env) {
         sub = t;
         kill_subs(sub);
     } else {
-        sub = (subengine *)mal_alloc(env->num_placements * 0xA8, &MainHeap);
+        sub = (subengine *)mal_alloc(env->num_placements * sizeof(subengine), &MainHeap);
     }
     return sub;
 }

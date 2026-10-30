@@ -21,11 +21,11 @@ typedef struct ArkenoidHeroBox {
 extern ArkenoidHeroBox ArkHeroBoxes[];
 
 typedef struct ArkenoidSpawn {
-    u8 pad0[0x10];
+    u8 pad0[offsetof(EXTengine, XYZ.x)];
     s32 x;
     s32 y;
     s32 z;
-    u8 pad1C[2];
+    u8 pad1C[offsetof(EXTengine, xform.rot.vy) - (offsetof(EXTengine, XYZ.z) + 4)];
     s16 dir;
 } ArkenoidSpawn;
 
@@ -52,7 +52,7 @@ extern s32 ArkHeroStarts[4][3];
 extern s32 ArkBallTimer;
 
 typedef struct ArkenoidFuxType {
-    u8 pad0[0x14];
+    u8 pad0[sizeof(EXT) + 8];
     u16 type;
 } ArkenoidFuxType;
 
@@ -70,14 +70,10 @@ extern ScriptInit NGinScriptInit;
 extern EXTengine *ArkBallSpawner;
 extern EXTobject *ArkNGin;
 typedef struct ArkenoidNode {
-    u8 pad0[0x10];
-    s32 x;
-    u8 pad14[4];
-    s32 z;
-    u8 pad1C[4];
+    u8 pad0[offsetof(NAS, Group.Child)];
     struct ArkenoidNode *next;
-    u8 pad24[0x30];
-    struct ArkenoidNode *target;
+    u8 pad24[offsetof(NAS, Engine) - (offsetof(NAS, Group.Child) + sizeof(void *))];
+    EXTengine *target;
     struct {
         u8 pad0[0x14];
         u16 status;
@@ -89,7 +85,17 @@ extern ArkenoidCircle CameraFlashCircles[];
 extern ScriptInit SeaweedScriptInit;
 
 typedef struct {
-    u8 pad0[0x10];
+    struct ArkenoidScnObj *a;
+    struct ArkenoidScnObj *b;
+    u16 entityA;  /* entities its subs take */
+    u16 entityB;
+    u16 entityC;
+    u16 entityD;
+    u16 timer;  /* counted down */
+    u16 timer2;  /* counted down */
+} ArkenoidLink;
+typedef struct {
+    u8 pad0[offsetof(ArkenoidLink, timer)];
     s16 unk10;
     s16 state;
 } ArkenoidSlot;
@@ -176,15 +182,15 @@ typedef struct {
 extern ArkenoidWall ArkWalls[];
 
 typedef struct {
-    u8 pad0[0x74];
+    u8 pad0[offsetof(subengine, entity)];
     u16 unk74;
 } ArkenoidWallSub;
 
 typedef struct {
     ArkenoidWallSub *sub;
-    u8 pad4[0xA - 0x4];
+    u8 pad4[offsetof(ArkenoidLink, entityB) - (offsetof(ArkenoidLink, a) + sizeof(void *))];
     u16 entity;  /* its sub's entity */
-    u8 padC[0xE - 0xC];
+    u8 padC[offsetof(ArkenoidLink, entityD) - (offsetof(ArkenoidLink, entityB) + 2)];
     u16 entityBase;  /* plus the phase */
     u8 pad10[0x14 - 0x10];
 } ArkenoidWallObj;
@@ -254,24 +260,24 @@ typedef struct {
 extern ArkenoidRiseCfg FloorRiseCfg[];
 
 typedef struct ArkenoidEng {
-    u8 pad0[0xC];
+    u8 pad0[offsetof(EXTengine, flags)];
     u32 flags;
     s32 x;
-    s32 pad14;
+    u8 pad14[offsetof(EXTengine, XYZ.z) - (offsetof(EXTengine, XYZ.x) + 4)];
     s32 z;
-    u8 pad1C[0x7C - 0x1C];
+    u8 pad1C[offsetof(EXTengine, Engine) - (offsetof(EXTengine, XYZ.z) + 4)];
     struct ArkenoidEng *sub;
 } ArkenoidEng;
 
 typedef struct ArkenoidFux {
-    u8 pad0[0x1A];
+    u8 pad0[sizeof(EXT) + 0xE];
     s16 flag;
 } ArkenoidFux;
 
 
 /* A FUX viewed for its flags word (0x80 tested by TestArkObjectObstacles). */
 typedef struct ArkenoidFuxF {
-    u8 pad0[0x1C];
+    u8 pad0[sizeof(EXT) + 0x10];
     u16 flags;
 } ArkenoidFuxF;
 
@@ -343,27 +349,17 @@ extern ArkenoidEdge ArkBotEdgesB[4];
 /* A scene object as InitARKfloor sorts it (list at MapScene->subs). */
 typedef struct ArkenoidScnObj {
     u32 flags;
-    u8 pad4[0x5C - 0x4];
+    u8 pad4[offsetof(subengine, next) - (offsetof(subengine, flags) + 4)];
     struct ArkenoidScnObj *next; /* 0x5C */
-    u8 pad60[0x68 - 0x60];
+    u8 pad60[offsetof(subengine, otz) - (offsetof(subengine, next) + sizeof(void *))];
     s16 unk68;
-    u8 pad6A[2];
+    u8 pad6A[offsetof(subengine, u6C.ptr) - (offsetof(subengine, otz) + 2)];
     u8 *dbase;
-    u8 pad70[4];
+    u8 pad70[offsetof(subengine, entity) - (offsetof(subengine, u6C.ptr) + sizeof(void *))];
     u16 entity;
 } ArkenoidScnObj;
 
 /* The 0x14-byte link slots InitARKfloor fills (FloorLinks, ArkDoorsA...). */
-typedef struct {
-    ArkenoidScnObj *a;
-    ArkenoidScnObj *b;
-    u16 entityA;  /* entities its subs take */
-    u16 entityB;
-    u16 entityC;
-    u16 entityD;
-    u16 timer;  /* counted down */
-    u16 timer2;  /* counted down */
-} ArkenoidLink;
 
 extern ArkenoidScnObj *FloorObjectsA[10];
 extern ArkenoidScnObj *FloorObjectsB[10];
@@ -406,14 +402,14 @@ extern u16 ArkGrabFrames[];
 typedef struct ArkenoidAiFux {
     u8 pad0[0x1A];
     u16 pad1A;
-    u8 pad1C[0x24 - 0x1C];
+    u8 pad1C[sizeof(EXT) + 0x18];
     s16 mode;
 } ArkenoidAiFux;
 
 typedef struct ArkenoidAiExt {
-    u8 pad0[0x16];
+    u8 pad0[sizeof(EXT) + 0xA];
     u16 player;
-    u16 pad18;
+    u8 pad18[2];
     u16 status;
 } ArkenoidAiExt;
 

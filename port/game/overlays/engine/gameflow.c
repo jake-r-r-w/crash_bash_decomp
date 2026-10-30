@@ -1542,15 +1542,15 @@ void GameSetSlot3Digits(s32 arg0) {
 
     src = (s32 *)((u8 *)Slot3DigitSrc + arg0 * 20);
     base = (s32 *)GetEngineSlot(3)->sub;
-    p = base + 0xA8 / 4;
+    p = base + sizeof(subengine) / 4;
     i = 0;
     do {
         if (*src == -1) {
             p[0] &= ~0x8000;
-            p[0x2A] &= ~0x8000;
+            p[sizeof(subengine) / 4] &= ~0x8000;
         } else {
             p[0] |= 0x8000;
-            p[0x2A] |= 0x8000;
+            p[sizeof(subengine) / 4] |= 0x8000;
             p[1] = *src;
             p[0x2B] = *src;
         }

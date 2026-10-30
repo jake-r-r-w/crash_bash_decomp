@@ -39,7 +39,7 @@ typedef struct CircleFireExt {
 
 typedef struct EggExt {
     EXT ext;
-    u8 pad0C[4];
+    u8 pad0C[sizeof(EXT) + 4 - (offsetof(EXT, EXTid) + sizeof(EXT))];
     s32 xvel;
     s32 y;
     u8 pad18[4];
@@ -74,7 +74,7 @@ typedef struct CoalPosInner {
 } CoalPosInner;
 
 typedef struct CoalGridObj {
-    u8 pad0[0x54];
+    u8 pad0[offsetof(NAS, Engine)];
     CoalPosInner *pos;
 } CoalGridObj;
 
@@ -145,7 +145,7 @@ void UpdateCHASE(void);
 
 /* InitPickupCH's extension 0x10000006 (0x44 bytes), its NAS.FUX. */
 typedef struct PickupCHExt {
-    /* 0x00 */ u8 pad0[0x14];
+    /* 0x00 */ u8 pad0[sizeof(EXT) + 8];
     /* 0x14 */ s32 y;
     /* 0x18 */ u8 pad18[0x44 - 0x18];
 } PickupCHExt;
@@ -233,7 +233,7 @@ void InitBarrelCH(NAS *nas);
 
 /* InitBarrelCH's extension 0x10000001 (0x44 bytes), its NAS.FUX. */
 typedef struct BarrelCHExt {
-    /* 0x00 */ u8 pad0[0x1C];
+    /* 0x00 */ u8 pad0[sizeof(EXT) + 0x10];
     /* 0x1C */ s32 scale;
     /* 0x20 */ u8 pad20[0x10];
     /* 0x30 */ s32 growing;
@@ -302,7 +302,7 @@ s32 ChaseFindHeroAt(s32 x, s32 z, s32 range);
  * 40x40 grid of fire NASes (128 units a cell, centred on 0). */
 typedef struct { s32 x; s32 z; } CircleFireOfs;
 extern CircleFireOfs CircleFireOffsets[8];
-typedef struct { u8 pad0[0x2C]; s32 unk2C; } CircleFireFux;
+typedef struct { u8 pad0[sizeof(EXT) + 0x20]; s32 unk2C; } CircleFireFux;
 void PlotCircleFire(NAS *nas);
 
 static inline s32 CircleFireIndex(s32 x, s32 z) {
@@ -332,11 +332,11 @@ void SetChaseHeroDrop(s32 arg0);
 /* CoalFlameSpread: coal flame spreading over the circle-fire grid. */
 typedef struct { u8 pad0[0x10]; s32 x; s32 pad14; s32 z; } CoalFlamePos;
 typedef struct {
-    u8 pad0[0x1C]; s32 unk1C; s32 unk20; s32 unk24; s32 unk28; s32 unk2C;
+    u8 pad0[sizeof(EXT) + 0x10]; s32 unk1C; s32 unk20; s32 unk24; s32 unk28; s32 unk2C;
 } CoalFlameFux;
 s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 arg4, s32 arg5);
 /* CoalChainHit: the coal NASes in ChaseBarrels it ignites. */
-typedef struct { u8 pad0[0x30]; s32 unk30; } CoalChainFux;
+typedef struct { u8 pad0[sizeof(EXT) + 0x24]; s32 unk30; } CoalChainFux;
 extern s32 ChaseChainSfx[];
 static inline HeroInfo *ChaseHeroes(void) {
     return Heroes;
@@ -395,7 +395,7 @@ static inline s32 ChaseASTIndex(s32 id) {
     }
     return 0;
 }
-typedef struct { u8 pad0[0x40]; s32 owner; } ChaseCoalFux;
+typedef struct { u8 pad0[sizeof(EXT) + 0x34]; s32 owner; } ChaseCoalFux;
 void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2);
 
 /* ChaseAI_ChooseTarget: the first pickup in ChasePickup near (x, z), or NULL. */

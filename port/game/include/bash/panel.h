@@ -77,7 +77,7 @@ extern EngXY PanelIconOffset[4];
 
 void InitIcons4(void);
 
-extern subengine *countdown_eng;
+extern EXTengine *countdown_eng;
 extern subengine counter_sub;
 extern subengine PauseVolSubA;
 extern subengine PauseVolSubB;

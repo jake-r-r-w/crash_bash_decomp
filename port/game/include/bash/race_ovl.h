@@ -79,7 +79,7 @@ typedef struct RaceEaseCam {
 
 /* Shield extension, AddExt(nas, 0x20, 0x10000000). */
 typedef struct EXTraceshield {
-    /* 0x00 */ s32 pad0[3];
+    /* 0x00 */ u8 pad0[sizeof(EXT)];
     /* 0x0C */ s32 state;  /* switched on */
     /* 0x10 */ s32 timer;  /* counted down */
     /* 0x14 */ s32 players[2];  /* who it protects */
@@ -97,9 +97,9 @@ typedef struct EXTraceshield {
 
 /* Extension 0x10000000 of the NAS spawned by RaceHeroUsePickup. */
 typedef struct RaceSpawnExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ u8 pad0[sizeof(EXT)];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 pad10;
+    /* 0x10 */ u8 pad10[4];
     /* 0x14 */ s32 unk14;
 } RaceSpawnExt;
 
@@ -144,7 +144,7 @@ typedef struct RaceBouncer {
 } RaceBouncer;
 
 typedef struct RaceBounceObj {
-    s32 pad0[5];
+    u8 pad0[offsetof(EXTengine, XYZ.y)];
     s32 pos;      /* 0x14 */
 } RaceBounceObj;
 
@@ -180,9 +180,9 @@ extern s32 RaceUnused1;
 
 /* A hero's race FUX, AddExt(nas, 0x174, 0x10000000) in InitialiseRACE. */
 typedef struct RaceFux {
-    /* 0x000 */ s32 pad0[3];
+    /* 0x000 */ u8 pad0[sizeof(EXT)];
     /* 0x00C */ s32 unkC;
-    /* 0x010 */ s32 pad10;
+    /* 0x010 */ u8 pad10[4];
     /* 0x014 */ s32 unk14;
     /* 0x018 */ s32 mode;           /* flags: 0x10 diving, 0x20 bumped, 2, 4 (the Fux views' item/mode) */
     /* 0x01C */ EXTengine *eng;
@@ -205,11 +205,11 @@ typedef struct RaceFux {
     /* 0x088 */ s32 bounces;        /* bounces so far (RaceBounceObject) */
     /* 0x08C */ s32 flag;  /* tested for zero */
     /* 0x090 */ s32 flag2;  /* tested for zero */
-    /* 0x094 */ u8 pad94[0xA4 - 0x94];
+    /* 0x094 */ u8 pad94[0x10];
     /* 0x0A4 */ SLONG_XYZ sfxPos;   /* where its sounds play from */
-    /* 0x0B0 */ u8 padB0[0x128 - 0xB0];
+    /* 0x0B0 */ u8 padB0[sizeof(EXT) + 0x11C - (sizeof(EXT) + 0x98 + sizeof(SLONG_XYZ))];
     /* 0x128 */ _sfx_handler *sfx;
-    /* 0x12C */ u8 pad12C[4];
+    /* 0x12C */ u8 pad12C[sizeof(EXT) + 0x124 - (sizeof(EXT) + 0x11C + sizeof(void *))];
     /* 0x130 */ s32 flags;
     /* 0x134 */ NAS *shield;
     /* 0x138 */ s32 phase;
@@ -258,7 +258,7 @@ typedef struct EXTracedac {
 } EXTracedac;
 
 typedef struct RaceObj74 {
-    /* 0x00 */ u8 pad0[0x74];
+    /* 0x00 */ u8 pad0[offsetof(subengine, entity)];
     /* 0x74 */ s16 unk74;
 } RaceObj74;
 extern RaceObj74 *RaceGlowObj;

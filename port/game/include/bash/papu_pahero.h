@@ -73,7 +73,7 @@ typedef struct PapuStats {
 
 /* Extension 0x800 of the carried objects (PlotPACrate). */
 typedef struct PapuSlide {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ u8 pad0[offsetof(EXTmotion, Ydir)];
     /* 0x0C */ u8 unkC;
     /* 0x0D */ u8 dir;
     /* 0x0E */ s16 flag;  /* tested for zero */
@@ -85,7 +85,7 @@ typedef struct PapuSlide {
     /* 0x1A */ u16 unk1A;
     /* 0x1C */ u16 unk1C;
     /* 0x1E */ u16 unk1E;
-    /* 0x20 */ u8 pad20[0xA];
+    /* 0x20 */ u8 pad20[offsetof(EXTmotion, Za) - (offsetof(EXTmotion, Ymax) + 2)];
     /* 0x2A */ s16 zlimit;
 } PapuSlide;
 

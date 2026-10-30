@@ -268,15 +268,15 @@ static inline void EngineSetSlot3Digits(s32 slot, s32 arg0) {
     tbl = (s32 *)Slot3DigitSrc + arg0 * 5;
     base = (s32 *)GetEngineSlot(slot)->sub;
     src = tbl;
-    p = base + 0xA8 / 4;
+    p = base + sizeof(subengine) / 4;
     i = 0;
     do {
         if (*src == -1) {
             p[0] &= ~0x8000;
-            p[0x2A] &= ~0x8000;
+            p[sizeof(subengine) / 4] &= ~0x8000;
         } else {
             p[0] |= 0x8000;
-            p[0x2A] |= 0x8000;
+            p[sizeof(subengine) / 4] |= 0x8000;
             p[1] = *src;
             p[0x2B] = *src;
         }
@@ -468,7 +468,7 @@ typedef struct {
 extern HitCallbacks HitHooks;
 
 typedef struct {
-    u8 pad0[0x14];
+    u8 pad0[offsetof(EXTobject, whatami)];
     u16 state;  /* switched on */
     s16 player;  /* the hitter, -1 for none */
 } HitInfo;

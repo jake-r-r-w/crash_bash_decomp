@@ -34,11 +34,11 @@ extern PogoSquare PogoGrid[8][8];
 /* A scene object in the list at MapScene->subs (InitPogo_Tiles). */
 typedef struct PogoObj {
     /* 0x00 */ u32 flags;
-    /* 0x04 */ u8 pad4[0x5C - 0x4];
+    /* 0x04 */ u8 pad4[offsetof(subengine, next) - (offsetof(subengine, flags) + 4)];
     /* 0x5C */ struct PogoObj *next;
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x60 */ u8 pad60[offsetof(subengine, u6C.ptr) - (offsetof(subengine, next) + sizeof(void *))];
     /* 0x6C */ u8 *model;
-    /* 0x70 */ u8 pad70[0x74 - 0x70];
+    /* 0x70 */ u8 pad70[offsetof(subengine, entity) - (offsetof(subengine, u6C.ptr) + sizeof(void *))];
     /* 0x74 */ u16 index;
 } PogoObj;
 extern PogoObj *PogoKerbObj;
@@ -475,9 +475,9 @@ typedef struct {
 
 /* The object a board cell's unk4 points to, as Tile_Update sets it. */
 typedef struct {
-    /* 0x00 */ u8 pad0[0x6C];
+    /* 0x00 */ u8 pad0[offsetof(subengine, u6C.ptr)];
     /* 0x6C */ PogoModel *model;
-    /* 0x70 */ u8 pad70[0x8C - 0x70];
+    /* 0x70 */ u8 pad70[offsetof(subengine, pad8C) - (offsetof(subengine, u6C.ptr) + sizeof(void *))];
     /* 0x8C */ u16 frame;
     /* 0x8E */ s16 anim;
 } PogoCellObj;

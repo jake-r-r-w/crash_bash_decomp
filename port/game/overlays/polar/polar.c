@@ -1499,7 +1499,7 @@ void InitPolarBomb(NAS *m) {
     EXTpolarbomb *ext;
     EXTengine *e;
 
-    ext = AddExt(m, 0x84, 0x10000000);
+    ext = AddExt(m, sizeof(EXTpolarbomb), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->entity = 0x201A;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
@@ -4228,7 +4228,7 @@ loop:
             h->hero_ai->AItimer1 = 0;
             fux = (EXTpolarAI *)h->hero->FUX;
             if (fux == NULL) {
-                fux = AddExt(h->hero, 0x60, 0x10000000);
+                fux = AddExt(h->hero, sizeof(EXTpolarAI), 0x10000000);
                 if (fux != NULL) {
                     h->hero->FUX = (EXT *)fux;
                     fux->choice_timer = 0;
@@ -4246,7 +4246,7 @@ loop:
                     sub->flags |= 0x2000000;
                     h->hero_eng->sub->otz = 0;
                 }
-                ai = AddExt(h->hero, 0xB8, 0x20000000);
+                ai = AddExt(h->hero, sizeof(PolarAi), 0x20000000);
             } else {
                 fux->choice_timer = 0;
                 fux->beamflag = 0;
@@ -4935,7 +4935,7 @@ void InitTransmuterBeam(NAS *m) {
     NAS *n;
     s32 i;
 
-    ext = AddExt(m, 0x1E0, 0x40000000);
+    ext = AddExt(m, sizeof(EXTtransmuter), 0x40000000);
     if (ext == NULL) {
         return;
     }
@@ -6462,7 +6462,7 @@ void InitUkaPolarMask(NAS *m) {
     s32 r;
     s32 i;
 
-    ext = AddExt(m, 0x1E0, 0x40000000);
+    ext = AddExt(m, sizeof(EXTtransmuter), 0x40000000);
     if (ext == NULL) {
         return;
     }
@@ -7257,7 +7257,7 @@ void InitPolarWalrus(NAS *m) {
 
     PolarProximity = (PolarProx *)m;
     m->Engine->flags |= 0x200000;
-    ext = AddExt(m, 0x94, 0x10000000);
+    ext = AddExt(m, sizeof(PolarWalrusExt), 0x10000000);
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &WalrusScriptInit);
         m->FUX = (EXT *)ext;
@@ -7291,7 +7291,7 @@ void InitPolarWalrus(NAS *m) {
         ext->angle = 0;
         m->UserInfo.user1 = 0;
     }
-    e2 = AddExt(m, 0x54, 0x20000000);
+    e2 = AddExt(m, sizeof(EXTheromove), 0x20000000);
     if (e2 != NULL) {
         e2->mass = 0x400;
         e2->x_vel = 0;
@@ -7484,7 +7484,7 @@ void PlotPolarWalrus(NAS *m) {
 void InitWalrusFish(NAS *m) {
     WalrusFishExt *ext;
 
-    ext = AddExt(m, 0x88, 0x10000000);
+    ext = AddExt(m, sizeof(WalrusFishExt), 0x10000000);
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &WalrusFishScriptInit);
         m->Engine->flags |= 0x200000;
@@ -7614,7 +7614,7 @@ void InitSimpleExplosion(NAS *m) {
     subengine *sub;
     s32 i;
 
-    ext = AddExt(m, 0x108, 0x10000000);
+    ext = AddExt(m, sizeof(ExtSimpleExplosion), 0x10000000);
     if (ext != NULL) {
         sub = m->Engine->sub;
         eng_add_subs(m->Engine, 0x10);
@@ -7710,7 +7710,7 @@ void InitPackEffect(NAS *m) {
     subengine *sub;
     s32 i;
 
-    ext = AddExt(m, 0x108, 0x10000000);
+    ext = AddExt(m, sizeof(ExtSimpleExplosion), 0x10000000);
     if (ext != NULL) {
         sub = m->Engine->sub;
         eng_add_subs(m->Engine, 0xC);
@@ -7738,7 +7738,7 @@ void InitPackEffect(NAS *m) {
 }
 
 void InitPolarBoss(NAS *nas) {
-    PolarBossExt *ext = AddExt(nas, 0x94, 0x10000000);
+    PolarBossExt *ext = AddExt(nas, sizeof(PolarBossExt), 0x10000000);
     NAS *s;
     Ext20 *e;
 
@@ -8254,7 +8254,7 @@ void InitBearminator(NAS *m) {
     s32 r;
     s16 v;
 
-    ext = AddExt(m, 0xB8, 0x10000000);
+    ext = AddExt(m, sizeof(BearminatorExt), 0x10000000);
     if (ext != NULL) {
         r = Random(2);
         if (r == 0) {
@@ -8264,7 +8264,7 @@ void InitBearminator(NAS *m) {
             PlaySfx(0x22C, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         PlaySfx(0x22E, NULL, NULL, 0x1000, 0x1E00, 0);
-        e2 = AddExt(m, 0x54, 0x20000000);
+        e2 = AddExt(m, sizeof(EXTheromove), 0x20000000);
         if (e2 != NULL) {
             m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
             n = CreateNAS(m->Engine->XYZ.x, 0, m->Engine->XYZ.z, 0x1620, 0x11);
@@ -8902,7 +8902,7 @@ void InitSniper(NAS *m) {
     EXTengine *e;
     EXTengine *f;
 
-    ext = AddExt(m, 0x9C, 0x10000000);
+    ext = AddExt(m, sizeof(SniperExt), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->entity = 0x2006;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
@@ -9442,7 +9442,7 @@ s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
 void InitSniperMissile(NAS *m) {
     SniperMissileExt *ext;
 
-    ext = AddExt(m, 0x38, 0x10000000);
+    ext = AddExt(m, sizeof(SniperMissileExt), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->entity = 0x2006;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
@@ -9461,7 +9461,7 @@ void InitSniperMissile(NAS *m) {
 void InitBigMissile(NAS *m) {
     BigMissileExt *ext;
 
-    ext = AddExt(m, 0x7C, 0x10000000);
+    ext = AddExt(m, sizeof(BigMissileExt), 0x10000000);
     if (ext != NULL) {
         m->Engine->xform.order = 2;
         m->Engine->xform.hasScale = 1;
@@ -9502,7 +9502,7 @@ s32 CountBears(void) {
 void InitPolarMissile(NAS *m) {
     PolarMissileExt *ext;
 
-    ext = AddExt(m, 0x70, 0x10000000);
+    ext = AddExt(m, sizeof(PolarMissileExt), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->entity = 0x2006;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
@@ -9639,7 +9639,7 @@ void PlotBearBoss(NAS *m) {
 void InitBearBoss(NAS *m) {
     Ext10000000 *ext;
 
-    ext = AddExt(m, 0x10, 0x10000000);
+    ext = AddExt(m, sizeof(Ext10000000), 0x10000000);
     if (ext != NULL) {
         m->Engine->xform.order = 0;
         m->Engine->sub->otz = 0x300;
@@ -9747,7 +9747,7 @@ void PlotSimpleExplosion(NAS *m) {
 void InitSmokeTrail(NAS *m) {
     EXTsmoketrail *ext;
 
-    ext = AddExt(m, 0x30, 0x10000000);
+    ext = AddExt(m, sizeof(EXTsmoketrail), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         m->Engine->sub->entity = 0x2020;
@@ -9792,7 +9792,7 @@ void PlotBearDeath(NAS *m) {
 void InitBearDeath(NAS *m) {
     BearDeathExt *ext;
 
-    ext = AddExt(m, 0x88, 0x10000000);
+    ext = AddExt(m, sizeof(BearDeathExt), 0x10000000);
     if (ext != NULL) {
         ScriptCursorFirst(m, &BearDeathScriptInit);
         m->Engine->sub->u6C.dbase = MapScene->dbase;
@@ -9932,7 +9932,7 @@ void InitGravityObject(NAS *m) {
     EXTmotion *g;
     s32 t;
 
-    g = AddExt(m, 0x34, 0x10000000);
+    g = AddExt(m, sizeof(EXTmotion), 0x10000000);
     if (g != NULL) {
         m->Engine->sub->entity = 0x200C;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
@@ -9953,7 +9953,7 @@ void InitGravityObject(NAS *m) {
 void InitWeightDeath(NAS *m) {
     EXTbeardeath *ext;
 
-    ext = AddExt(m, 0x28, 0x10000000);
+    ext = AddExt(m, sizeof(EXTbeardeath), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         m->Engine->sub->entity = 0x2003;
@@ -10400,7 +10400,7 @@ void InitBombGFX(NAS *m) {
     BombGFXExt *ext;
     EXTengine *e;
 
-    ext = AddExt(m, 0x1C, 0x10000000);
+    ext = AddExt(m, sizeof(BombGFXExt), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->entity = 0x2018;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
@@ -10456,7 +10456,7 @@ void PlotBombMaker(NAS *m) {
 void InitBombMaker(NAS *m) {
     EXTbombmaker *ext;
 
-    ext = AddExt(m, 0x1C, 0x10000000);
+    ext = AddExt(m, sizeof(EXTbombmaker), 0x10000000);
     if (ext != NULL) {
         ext->timer = 0xB4;
         ext->NasStatus = 0;

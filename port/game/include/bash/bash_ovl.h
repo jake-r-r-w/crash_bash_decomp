@@ -42,11 +42,11 @@ static inline s32 BashASTIndex(s32 id) {
 
 /* The AI state BashAI_CheckShot writes its chosen target into. */
 typedef struct {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ u8 pad0[offsetof(EXTbotai, TargetPlayer)];
     /* 0x10 */ s32 target;
-    /* 0x14 */ u8 pad14[0x20 - 0x14];
+    /* 0x14 */ u8 pad14[offsetof(EXTbotai, AImode) - (offsetof(EXTbotai, TargetPlayer) + 4)];
     /* 0x20 */ s16 unk20;
-    /* 0x22 */ u8 pad22[0x2C - 0x22];
+    /* 0x22 */ u8 pad22[offsetof(EXTbotai, AIpad) - (offsetof(EXTbotai, AImode) + 2)];
     /* 0x2C */ s32 flags;
 } BashAiState;
 
@@ -83,11 +83,11 @@ BashPair *BashFindDropPoint(u16 *arg0);
 
 
 typedef struct BashTumbler {
-    /* 0x00 */ u8 pad00[0x10];
+    /* 0x00 */ u8 pad00[offsetof(EXTengine, XYZ.x)];
     /* 0x10 */ s32 x;
     /* 0x14 */ s32 y;
     /* 0x18 */ s32 z;
-    /* 0x1C */ u8 pad1C[2];
+    /* 0x1C */ u8 pad1C[offsetof(EXTengine, xform.rot.vy) - (offsetof(EXTengine, XYZ.z) + 4)];
     /* 0x1E */ s16 angle;
 } BashTumbler;
 

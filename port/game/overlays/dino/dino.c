@@ -2117,14 +2117,14 @@ void InitialiseDINO(void) {
             break;
         }
         h = &Heroes[i];
-        c = AddExt(h->hero, 0x44, 0x20000000);
+        c = AddExt(h->hero, sizeof(DinoChase), 0x20000000);
         if (c != NULL) {
             c->gem = -1;
             c->fn = DinoUnusedStub;
             c->timer2 = 8;
             c->state = 0;
         }
-        x = AddExt(h->hero, 0x20, 0x10000000);
+        x = AddExt(h->hero, sizeof(DinoHeroExt), 0x10000000);
         if (x != NULL) {
             acc = 6;
             mv = h->hero_move;
@@ -3310,7 +3310,7 @@ void InitDinoGem(NAS *m) {
     DinoGem *ext;
     EXTengine *e;
 
-    ext = AddExt(m, 0xE8, 0x10000000);
+    ext = AddExt(m, sizeof(DinoGem), 0x10000000);
     if (ext != NULL) {
         do {
             m->Engine->sub->entity = 0x2001;

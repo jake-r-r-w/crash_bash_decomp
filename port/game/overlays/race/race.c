@@ -2656,7 +2656,7 @@ void InitialiseRACE(void) {
         printf("hero status %d\n", Heroes[i].hero_status);
         RaceInitHeroMove(i);
         Heroes[i].hero_eng->xform.order = 1;
-        fux = AddExt(Heroes[i].hero, 0x174, 0x10000000);
+        fux = AddExt(Heroes[i].hero, sizeof(RaceFux), 0x10000000);
         if (fux == NULL) {
             continue;
         }
@@ -2667,7 +2667,7 @@ void InitialiseRACE(void) {
         Heroes[i].hero_eng->xform.dirty = 1;
         sub = Heroes[i].hero_eng->sub;
         sub->flags |= 0x8000;
-        ai = AddExt(Heroes[i].hero, 0x20, 0x20000000);
+        ai = AddExt(Heroes[i].hero, sizeof(RaceAiExt), 0x20000000);
         if (ai != NULL) {
             ai->unkC = 0;
             ai->angle = Heroes[i].hero_move->forward_angle;
@@ -4639,10 +4639,10 @@ void InitRaceMissile(NAS *m) {
     RaceMissileExt *ext;
     EXTengine *e;
 
-    ext = AddExt(m, 0x78, 0x10000000);
+    ext = AddExt(m, sizeof(RaceMissileExt), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->entity = 0x2011;
-        m->Engine->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_Powerups]) + 0x2028;
+        m->Engine->sub->u6C.dbase = &HeroModelBank[DB_Powerups + 0x2028 / 0x38];
         m->Engine->xform.order = 2;
         m->Engine->xform.hasScale = 1;
         m->Engine->sub->xform.order = 2;
@@ -4780,7 +4780,7 @@ void InitRacePickUp(NAS *m) {
     RacePickUpExt *ext;
     EXTengine *e;
 
-    ext = AddExt(m, 0x50, 0x10000000);
+    ext = AddExt(m, sizeof(RacePickUpExt), 0x10000000);
     if (ext != NULL) {
         AddToGroup((NAS **)&RacePickups, m);
         m->Engine->sub->entity = 0x2006;
@@ -4799,7 +4799,7 @@ void InitRacePickUp(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
-            e->sub->u6C.dbase = (u8 *)&HeroModelBank[DB_CrateEffects] - 0x2028;
+            e->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects - 0x2028 / 0x38];
             e->sub->entity = 0x2001;
             e->xform.hasScale = 1;
             e->xform.order = 0;
@@ -5452,7 +5452,7 @@ void InitDinoEgg(NAS *m) {
     EXTdinoegg *ext;
     EXTengine *e;
 
-    ext = AddExt(m, 0x34, 0x10000000);
+    ext = AddExt(m, sizeof(EXTdinoegg), 0x10000000);
     if (ext != NULL) {
         ext->anim = (EXTanimator *)ScriptCursorFirst(m, &DinoEggScriptInit);
         m->Engine->xform.order = 0;
@@ -5749,7 +5749,7 @@ void InitRaceVolcano(NAS *nas) {
     RaceVolcanoExt *ext;
     EXTengine *eng;
 
-    v = AddExt(nas, 0x15C, 0x10000000);
+    v = AddExt(nas, sizeof(RaceVolcanoExt), 0x10000000);
     i = 0;
     if (v != NULL) {
         ext = v;
@@ -6093,7 +6093,7 @@ void InitBarrelRoll(NAS *m) {
     EXTengine *e;
     s32 r;
 
-    ext = AddExt(m, 0x80, 0x10000000);
+    ext = AddExt(m, sizeof(BarrelRollExt), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->u6C.dbase = MapScene->dbase;
         m->Engine->sub->entity = 0x2037;
@@ -6172,7 +6172,7 @@ void InitTrackGlob(NAS *m) {
     EXTengine *e;
     s32 angle;
 
-    ext = AddExt(m, 0x8C, 0x10000000);
+    ext = AddExt(m, sizeof(EXTtrackglob), 0x10000000);
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &TrackGlobScriptInit);
         AddToGroup((NAS **)&RaceObjects, (NAS *)m);
@@ -6316,7 +6316,7 @@ void InitDac(NAS *m) {
     DacExt *ext;
     EXTengine *e;
 
-    ext = AddExt(m, 0x28, 0x10000000);
+    ext = AddExt(m, sizeof(DacExt), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->u6C.dbase = MapScene->dbase;
         m->Engine->xform.hasScale = 1;
@@ -6511,7 +6511,7 @@ s32 RaceBounceObject(RaceBounceObj *obj, RaceBouncer *b) {
 void InitGlob(NAS *m) {
     EXTglob *ext;
 
-    ext = AddExt(m, 0x1C, 0x10000000);
+    ext = AddExt(m, sizeof(EXTglob), 0x10000000);
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &GlobScriptInit);
         m->Engine->sub->u6C.dbase = MapScene->dbase;
@@ -6549,7 +6549,7 @@ void PlotInnerRipple(NAS *m) {
 void InitInnerRipple(NAS *m) {
     EXTinnerripple *ext;
 
-    ext = AddExt(m, 0x1C, 0x10000000);
+    ext = AddExt(m, sizeof(EXTinnerripple), 0x10000000);
     if (ext != NULL) {
         ext->speed = 0x240;
         ext->max = 0x4000;
@@ -6591,7 +6591,7 @@ void PlotRippled(NAS *m) {
 void InitRippled(NAS *m) {
     EXTrippled *ext;
 
-    ext = AddExt(m, 0x1C, 0x10000000);
+    ext = AddExt(m, sizeof(EXTrippled), 0x10000000);
     if (ext != NULL) {
         ext->speed = 0x480;
         ext->max = 0x4000;
@@ -6662,7 +6662,7 @@ void InitRaceTag(NAS *arg0) {
 void InitRaceShield(NAS *nas) {
     EXTraceshield *ext;
 
-    ext = AddExt(nas, 0x20, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTraceshield), 0x10000000);
     if (ext != NULL) {
         ext->timer = 0xE;
         ext->state = 0;
@@ -6677,7 +6677,7 @@ void PlotRaceFire(NAS *nas) {
 void InitRaceFire(NAS *nas) {
     EXTracefire *ext;
 
-    ext = AddExt(nas, 0x20, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTracefire), 0x10000000);
     if (ext != NULL) {
         ext->unk10 = 0;
         ext->unk18 = 0;

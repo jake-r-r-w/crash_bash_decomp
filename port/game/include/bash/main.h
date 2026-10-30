@@ -101,11 +101,11 @@ typedef struct {
     /* 0x04 */ CamVec3 pos;
     /* 0x10 */ s32 rot[4];
     /* 0x20 */ CamVec3 scale;
-    /* 0x2C */ u8 pad2C[0x24];
+    /* 0x2C */ u8 pad2C[offsetof(subengine, xform.hasScale) - (offsetof(subengine, xform.scale.vx) + sizeof(CamVec3))];
     /* 0x50 */ u8 unk50;
     /* 0x51 */ u8 unk51;
     /* 0x52 */ s16 unk52;
-    /* 0x54 */ u8 pad54[0x1C];
+    /* 0x54 */ u8 pad54[offsetof(subengine, u70.h.lo) - (offsetof(subengine, xform.dirty) + 2)];
     /* 0x70 */ s32 frame;
     /* 0x74 */ s16 unk74;
     /* 0x76 */ s16 unk76;

@@ -1155,7 +1155,7 @@ void InitAsteroidRoll(NAS *m) {
     AsteroidExt *ext;
     EXTengine *e;
 
-    ext = AddExt(m, 0x80, 0x10000000);
+    ext = AddExt(m, sizeof(AsteroidExt), 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->u6C.dbase = MapScene->dbase;
         m->Engine->xform.order = 1;
@@ -1462,7 +1462,7 @@ void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
 }
 
 void InitNitroBoss(NAS *nas) {
-    BossExt *ext = AddExt(nas, 0x3C, 0x10000000);
+    BossExt *ext = AddExt(nas, sizeof(BossExt), 0x10000000);
     BossScene *scene;
     u8 *p;
 
@@ -1635,7 +1635,7 @@ void PlotNitroBoss(NAS *nas) {
 }
 
 void InitSpiralSat(NAS *nas) {
-    SpiralExt *ext = AddExt(nas, 0x54, 0x10000000);
+    SpiralExt *ext = AddExt(nas, sizeof(SpiralExt), 0x10000000);
     EXTengine *e;
     NAS *s;
     LaserExt *le;
@@ -2125,7 +2125,7 @@ void NoxPathAngles(s32 *arg0, s32 flag, s32 *out) {
 }
 
 void InitNitroMissile(MissileHolder *arg0) {
-    MissileExt *ext = AddExt((NAS *)arg0, 0x1C, 0x10000000);
+    MissileExt *ext = AddExt((NAS *)arg0, sizeof(MissileExt), 0x10000000);
     s32 r;
 
     if (ext != NULL) {

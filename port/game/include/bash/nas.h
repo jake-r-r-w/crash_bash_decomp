@@ -305,7 +305,7 @@ struct subengine {
     /* 0x58 */ void (*release)(subengine *); /* called when the node is freed */
     /* 0x5C */ subengine *next;
     /* 0x60 */ subengine *prev;
-    /* 0x64 */ u8 ids[0x68 - 0x64];  /* per-object bytes (mapscene_find_sub) */
+    /* 0x64 */ union { u8 ids[4]; void *rec; };  /* per-object bytes (mapscene_find_sub) */
     /* 0x68 */ s16 otz;  /* its depth offset */
     /* 0x6A */ u8 pad6A[2];
     /* 0x6C */ union {

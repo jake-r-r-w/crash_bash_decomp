@@ -2770,7 +2770,7 @@ void subpool_init(s32 n) {
     s32 i;
     u8 *p;
 
-    p = mal_alloc(n * 0xA8, &MainHeap);
+    p = mal_alloc(n * sizeof(subengine), &MainHeap);
     i = n - 1;
     sub = (subengine *)p;
     SubPool = sub;

@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #include "psyq.h"
+#include <stddef.h>
 #include <stdint.h>
 
 /* A slot that holds a number in some uses and an address in others. */

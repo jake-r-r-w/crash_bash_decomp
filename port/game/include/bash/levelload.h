@@ -203,7 +203,7 @@ typedef struct MarkSrc {
     /* 0x66 */ MarkSrcEnt ent[1];
 } MarkSrc;
 typedef struct MarkObj {
-    /* 0x0 */ u8 pad0[0xC];
+    /* 0x0 */ u8 pad0[offsetof(obj_dbase, data)];
     /* 0xC */ MarkSrc *src;
 } MarkObj;
 typedef struct MarkCtx {

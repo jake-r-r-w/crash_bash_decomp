@@ -80,9 +80,9 @@ typedef struct DinoPosH {
 } DinoPosH;
 
 typedef struct DinoEngH {
-    u8 pad[0x10];
+    u8 pad[offsetof(EXTengine, XYZ.x)];
     u16 x;
-    u8 pad2[6];
+    u8 pad2[offsetof(EXTengine, XYZ.z) - (offsetof(EXTengine, XYZ.x) + 2)];
     u16 z;
 } DinoEngH;
 

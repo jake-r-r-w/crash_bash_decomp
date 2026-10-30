@@ -1123,7 +1123,7 @@ void UpdateHealthIcons(void) {
         if (BarLength >= 0x20) {
             BarLength = 0x1F;
         }
-        sub = (PanelPrim *)(((u8 *)&IconParts[0][3]) + i * 0x498);
+        sub = (PanelPrim *)(((u8 *)&IconParts[0][3]) + i * sizeof(IconParts[0]));
         len = BarLength * 2 + sub->u6C.s.x0;  /* the bar's quad in the subengine's tail (the prototype's prim_ union, not in the fragment) */
         sub->x1 = len;
         sub->x3 = len;
@@ -1132,7 +1132,7 @@ void UpdateHealthIcons(void) {
         } else {
             sub->flags &= 0xFFFF7FFF;
         }
-        sub = (PanelPrim *)(((u8 *)&IconParts[0][4]) + i * 0x498);
+        sub = (PanelPrim *)(((u8 *)&IconParts[0][4]) + i * sizeof(IconParts[0]));
         sub->u6C.s.x0 = len;
         sub->x2 = len;
         if (BarLength < 0x1F) {
@@ -1297,7 +1297,7 @@ loop:
                 sub->flags &= 0xFFFF7FFF;
             }
         }
-        off += 0x498;
+        off += sizeof(IconParts[0]);
         h++;
         i++;
         goto loop;
@@ -2181,15 +2181,15 @@ void Init_Clock(s32 arg0, s32 arg1, s32 arg2) {
 
 void InitCountdown(void) {
     subengine *sub;
-    subengine *counter;
+    EXTengine *counter;
 
-    counter = (subengine *)&PanelTab[4];
+    counter = &PanelTab[4];
     countdown_eng = counter;
-    counter->XYZ.z = 0x8000;
-    *(s32 *)&counter->xform.rot.vx = 0;
-    *(s32 *)&counter->xform.rot.vz = 0;
-    counter->xform.unk8 = 0;
-    counter->u6C.dbase = &counter_sub;
+    counter->flags = 0x8000;
+    counter->XYZ.x = 0;
+    counter->XYZ.y = 0;
+    counter->XYZ.z = 0;
+    counter->sub = &counter_sub;
     sub = &counter_sub;
     if (sub != NULL) {
         *sub = SubEngineTemplate;
@@ -2255,7 +2255,7 @@ void InitBossHealthBar(void) {
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-subengine *countdown_eng = 0;
+EXTengine *countdown_eng = 0;
 s32 PanelCtrl = 0;
 u32 Clock_Time = 0;
 u16 Clock_flags = 0;

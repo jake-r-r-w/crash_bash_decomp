@@ -983,7 +983,7 @@ void PlotPathEffect(NAS *nas) {
 }
 
 void InitPathEffect(NAS *nas) {
-    ScriptExt40 *ext = AddExt(nas, 0x40, 0x10000000);
+    ScriptExt40 *ext = AddExt(nas, sizeof(ScriptExt40), 0x10000000);
 
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(nas, &HubPathScriptInit);
@@ -2576,7 +2576,7 @@ void HubSaveMenuRender(void) {
     e = GetEngineSlot(0);
     i = 0;
     g = GameInfo;
-    p = (s32 *)((u8 *)e->sub + 0x540);
+    p = (s32 *)&e->sub[8];
     do {
         HubNameCursor[i * 2] = g[i + 0x18];
         if (HubNameCursor[i * 2] == 0x20) {

@@ -2107,7 +2107,7 @@ void InitBarrelCH(NAS *nas) {
     s32 i;
     s32 n;
 
-    ext = AddExt(nas, 0x44, 0x10000001);
+    ext = AddExt(nas, sizeof(CoalFlameExt), 0x10000001);
     nas->FUX = &ext->ext;
     ((s32 *)ext)[0x30 / 4] = 1;
     ((s32 *)ext)[0x40 / 4] = -0x17;
@@ -2756,7 +2756,7 @@ void InitPickupCH(NAS *nas) {
     }
     nas->UserInfo.user2 = 0;
     nas->UserInfo.user1 = 5;
-    ext = AddExt(nas, 0x44, 0x10000006);
+    ext = AddExt(nas, sizeof(PickupCHExt), 0x10000006);
     ext->y = 0;
     eng = nas->Engine;
     nas->FUX = (EXT *)ext;
@@ -3390,7 +3390,7 @@ void InitEgg(NAS *nas) {
     subengine *sub;
     obj_dbase *scene;
 
-    ext = AddExt(nas, 0x44, 0x10000005);
+    ext = AddExt(nas, sizeof(EggExt), 0x10000005);
     nas->FUX = &ext->ext;
     ext->state = 8;
     ext->xvel = -0x55;
@@ -3419,7 +3419,7 @@ void InitCircleFire(NAS *nas) {
     subengine *sub;
     CircleFireExt *ext;
 
-    ext = AddExt(nas, 0x44, 0x10000004);
+    ext = AddExt(nas, sizeof(CircleFireExt), 0x10000004);
     nas->FUX = &ext->ext;
     ext->unk30 = 1;
     eng = nas->Engine;
@@ -3444,7 +3444,7 @@ void InitCoalFlame(NAS *nas) {
 
     eng = nas->Engine;
     nas->UserInfo.user2 = 0xF;
-    ext = AddExt(nas, 0x44, 0x10000003);
+    ext = AddExt(nas, sizeof(CoalFlameExt), 0x10000003);
     nas->FUX = &ext->ext;
     ext->unk1C = -0xD;
     sub = eng->sub;
@@ -3490,7 +3490,7 @@ void InitCoal(NAS *nas) {
     EXTengine *eng;
     subengine *sub;
 
-    nas->FUX = AddExt(nas, 0x44, 0x10000002);
+    nas->FUX = AddExt(nas, sizeof(EXT), 0x10000002);
     eng = nas->Engine;
     eng->xform.order = 1;
     nas->UserInfo.flags = 5;

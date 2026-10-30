@@ -14,7 +14,7 @@
 
 
 typedef struct {
-    u8 pad0[0x14];
+    u8 pad0[sizeof(EXT) + 8];
     u16 type;
 } T_BB7E8Fux;
 

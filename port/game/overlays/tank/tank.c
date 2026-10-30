@@ -1640,13 +1640,13 @@ void TA_UpdateLevel(void) {
     }
     base = (u8 *)HeroModelBank;
     if (TANK_MODEL_ON(base, 56)) {
-        texture_update_anims((obj_textureset *)(TANK_MODEL(56) + 0x10));
+        texture_update_anims(&HeroModelBank[56].textures);
     }
     if (GameMode == 5 && TANK_MODEL_ON(base, 60)) {
-        texture_update_anims((obj_textureset *)(TANK_MODEL(60) + 0x10));
+        texture_update_anims(&HeroModelBank[60].textures);
     }
     if (GameMode == 9 && TANK_MODEL_ON(b2 = (u8 *)HeroModelBank, 57)) {
-        texture_update_anims((obj_textureset *)(b2 + 57 * 0x38 + 0x10));
+        texture_update_anims(&HeroModelBank[57].textures);
     }
     if (HeroesAllOut == 0) {
         HeroesAllOut = 1;
@@ -2170,7 +2170,7 @@ void AnimateTankTurret(s32 player) {
             if (ta2->MainWeaponType == 3) {
                 n = CreateNAS(e->XYZ.x, e->XYZ.y - 0x12C, e->XYZ.z, 0x130B, 0x11);
                 if (n != NULL) {
-                    fux = AddExt(n, 0x38, 0x10000000);
+                    fux = AddExt(n, sizeof(EXTobject_TA), 0x10000000);
                     if (fux == NULL) {
                         KillNAS(n);
                         return;
@@ -4849,7 +4849,7 @@ void InitHelicopterTA(NAS *nas) {
     subengine *sub;
     u8 *p;
 
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
         ext->Status = 3;
@@ -5075,7 +5075,7 @@ void InitPickupTA(NAS *nas) {
     }
     nas->UserInfo.user2 = 0;
     nas->UserInfo.user1 = 5;
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     if (ext != NULL) {
         ext->SpeedY = 0;
         nas->FUX = ext;
@@ -5239,7 +5239,7 @@ void PlotPickupTA(NAS *nas) {
         default:
             eng->sub->u6C.dbase = &HeroModelBank[DB_TankObjects2];
             eng->sub->entity = 0x2013;
-            eng->Engine->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects2]) - 0x738;
+            eng->Engine->sub->u6C.dbase = &HeroModelBank[DB_TankObjects2 - 0x738 / 0x38];
             eng->Engine->sub->entity = 0x2001;
             break;
         case 3:
@@ -5646,7 +5646,7 @@ void PlotPeriscopeGun(NAS *nas) {
             return;
         }
         PlaySfx(0x4F3, &shell->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
-        ext = AddExt(shell, 0x38, 0x10000000);
+        ext = AddExt(shell, sizeof(EXTobject_TA), 0x10000000);
         if (ext == NULL) {
             KillNAS(shell);
             return;
@@ -5977,7 +5977,7 @@ void InitTotemBit(NAS *nas, s32 id) {
     NAS **p;
 
     nas->UserInfo.user1 = 1;
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     if (ext == NULL) {
         goto kill;
     }
@@ -6396,7 +6396,7 @@ void InitTankBoss(NAS *nas) {
     TankBossNas = nas;
     eng = nas->Engine;
     TankBossEng = eng;
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     if (ext == NULL) {
         KillNAS(nas);
         return;
@@ -7247,7 +7247,7 @@ void InitMoeJoe(NAS *nas, s32 id) {
     }
     sub->otz = 0x100;
     sub->flags |= 0x02000000;
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     nas->FUX = (EXT *)ext;
     ext->Counter = 3;
     eng_add_subs(eng, 2);
@@ -7365,7 +7365,7 @@ void AnimateMoeJoeTurret(s32 player) {
                 n = CreateNAS(e->XYZ.x, e->XYZ.y - 0x12C, e->XYZ.z, 0x130B, 0x11);
                 if (n != NULL) {
                     PlaySfx(0x4F3, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
-                    fux = AddExt(n, 0x38, 0x10000000);
+                    fux = AddExt(n, sizeof(EXTobject_TA), 0x10000000);
                     n->FUX = fux;
                     se = n->Engine;
                     dx = -(rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 250);
@@ -7885,7 +7885,7 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     AiPlayerSkill[p].unk2 = 0x10;
     AiPlayerSkill[p].quality = 0x10;
     if (h->hero_ai == NULL) {
-        ai = AddExt(h->hero, 0x44, 0x400000F4);
+        ai = AddExt(h->hero, sizeof(EXTbotai), 0x400000F4);
         if (ai != NULL) {
             h->hero_ai = ai;
             ai->AImode = 0;
@@ -8553,7 +8553,7 @@ void InitTotemPole(NAS *nas) {
     EXTengine *e;
 
     TotemPole = nas;
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
         if (!(((u16 *)&GameExitFlags)[1] & 0x80)) {
@@ -8668,7 +8668,7 @@ void InitPeriscope(NAS *nas) {
     subengine *s;
     s32 one;
     void *p;
-    EXTobject_TA *ext = AddExt(nas, 0x38, 0x10000000);
+    EXTobject_TA *ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
         ext->Counter = 0x12C;
@@ -8704,7 +8704,7 @@ void InitRock_TA(NAS *nas) {
     val = info->val1;
     nas->UserInfo.status = 1;
     nas->UserInfo.user2 = val;
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXT), 0x10000000);
     if (ext == NULL) {
         KillNAS(nas);
         return;
@@ -8866,7 +8866,7 @@ void InitRocketTA(NAS *nas) {
     EXTobject_TA *ext;
     subengine *sub;
 
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     if (ext == NULL) {
         KillNAS(nas);
         return;
@@ -8897,7 +8897,7 @@ void InitLobber_TA(NAS *nas) {
         e2->XYZ.x = eng->XYZ.x;
         e2->XYZ.y = 0;
         e2->XYZ.z = eng->XYZ.z;
-        e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
+        e2->sub->u6C.dbase = &HeroModelBank[DB_TankObjects - 0x700 / 0x38];
         e2->sub->entity = 0x2001;
         e2->sub->flags |= 0x40000041;
         e2->sub->scale = 0x800;
@@ -8921,7 +8921,7 @@ void InitShell(NAS *nas) {
         e2->XYZ.x = eng->XYZ.x;
         e2->XYZ.y = 0;
         e2->XYZ.z = eng->XYZ.z;
-        e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
+        e2->sub->u6C.dbase = &HeroModelBank[DB_TankObjects - 0x700 / 0x38];
         e2->sub->entity = 0x2001;
         e2->sub->flags |= 0x40000041;
         e2->sub->scale = 0x800;
@@ -8934,7 +8934,7 @@ void InitSwirlyTA(NAS *nas) {
     subengine *sub;
     void *p;
 
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTscriptdata), 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
         p = &HeroModelBank[DB_TankObjects];
@@ -8968,7 +8968,7 @@ void InitFlubberTA(NAS *nas) {
     subengine *sub;
     void *p;
 
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTscriptdata), 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
         ext->maxloops = 0x4B;
@@ -8985,7 +8985,7 @@ void InitFlubberTA(NAS *nas) {
             e2->XYZ.y = 0;
             e2->XYZ.z = eng->XYZ.z;
             e2->sub->xform.order = 2;
-            e2->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
+            e2->sub->u6C.dbase = &HeroModelBank[DB_TankObjects - 0x700 / 0x38];
             e2->sub->entity = 0x2001;
             e2->sub->flags |= 0x40000041;
             e2->sub->scale = 0x800;
@@ -9003,7 +9003,7 @@ void InitFlamerBitTA(NAS *nas) {
     EXTengine *eng;
     subengine *sub;
 
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     if (ext == NULL) {
         KillNAS(nas);
         return;
@@ -9026,7 +9026,7 @@ void InitLaserBitTA(NAS *nas) {
     EXTengine *eng;
     subengine *sub;
 
-    ext = AddExt(nas, 0x38, 0x10000000);
+    ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
     if (ext == NULL) {
         KillNAS(nas);
         return;

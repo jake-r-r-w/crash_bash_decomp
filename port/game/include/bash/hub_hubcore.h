@@ -43,7 +43,7 @@ typedef struct HubTrailDst {
     /* 0x04 */ s32 x;
     /* 0x08 */ s32 y;
     /* 0x0C */ s32 z;
-    /* 0x10 */ u8 pad10[0x76 - 0x10];
+    /* 0x10 */ u8 pad10[offsetof(subengine, scale) - (offsetof(subengine, XYZ.z) + 4)];
     /* 0x76 */ u16 angle;  /* turned 0x200 a frame */
 } HubTrailDst;
 
@@ -143,15 +143,15 @@ typedef struct HubSparkSet {
 } HubSparkSet;
 
 typedef struct HubSparks {
-    /* 0x00 */ u8 pad0[0x5C];
+    /* 0x00 */ u8 pad0[offsetof(subengine, next)];
     /* 0x5C */ struct HubSparks *next;
-    /* 0x60 */ u8 pad60[0xC];
+    /* 0x60 */ u8 pad60[offsetof(subengine, u6C.ptr) - (offsetof(subengine, next) + sizeof(void *))];
     /* 0x6C */ HubSparkSet set;
 } HubSparks;
 
 /* A texture entry: the POLY_FT4 fields HubInitSparks copies. */
 typedef struct HubTex {
-    /* 0x00 */ u8 pad0[0x24];
+    /* 0x00 */ u8 pad0[offsetof(obj_texture, info.tpage)];
     /* 0x24 */ u16 tpage;
     /* 0x26 */ u16 clut;
     /* 0x28 */ u16 uv0;
@@ -185,9 +185,9 @@ void HubOpenDoorMenu(s32 arg0);
 
 
 typedef struct PodiumObj {
-    u8 pad0[0x54];
+    u8 pad0[offsetof(NAS, Engine)];
     EXTengine *child;
-    u8 pad58[4];
+    u8 pad58[offsetof(NAS, UserInfo.status) - (offsetof(NAS, Engine) + sizeof(void *))];
     u16 f5C;
 } PodiumObj;
 
@@ -217,7 +217,7 @@ typedef struct {
 
 /* HubGateways entries (0x28 bytes) as seen by InitialiseHUB. */
 typedef struct {
-    /* 0x00 */ u8 pad0[8];
+    /* 0x00 */ u8 pad0[offsetof(HubGateway, radius_inner)];
     /* 0x08 */ u32 radiusMin;  /* the camera's radius is between it and radiusMax */
     /* 0x0C */ u32 radiusMax;
     /* 0x10 */ s32 angle;  /* the camera's angle */
@@ -450,9 +450,9 @@ typedef struct PodiumMid {
 } PodiumMid;
 
 typedef struct PodiumScriptObj {
-    u8 pad0[0x54];
+    u8 pad0[offsetof(NAS, Engine)];
     PodiumMid *mid;
-    u8 pad58[0xC];
+    u8 pad58[offsetof(NAS, UserInfo.user2) - (offsetof(NAS, Engine) + sizeof(void *))];
     s32 unk64;
 } PodiumScriptObj;
 

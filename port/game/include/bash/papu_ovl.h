@@ -19,9 +19,9 @@ typedef struct PapuSpot {
 extern PapuSpot PapuSpawnPoints[];
 
 typedef struct PapuPos {
-    s32 pad0[4];
+    u8 pad0[offsetof(EXTengine, XYZ.x)];
     s32 x;
-    s32 pad14;
+    u8 pad14[offsetof(EXTengine, XYZ.z) - (offsetof(EXTengine, XYZ.x) + 4)];
     s32 z;
 } PapuPos;
 
@@ -41,9 +41,9 @@ extern PapuEntry PapuColumns[20];
 
 typedef struct PapuTile {
     s32 flags;
-    s32 pad4;
+    u8 pad4[offsetof(subengine, XYZ.y) - (offsetof(subengine, flags) + 4)];
     s32 y;  /* raised and lowered with the floor's wave */
-    u8 padC[0x74 - 0xC];
+    u8 padC[offsetof(subengine, entity) - (offsetof(subengine, XYZ.y) + 4)];
     u16 unk74;
 } PapuTile;
 
@@ -55,19 +55,19 @@ typedef struct PapuSceneObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ s32 x;
     /* 0x08 */ s16 yoffset;  /* the tile's yoffset */
-    /* 0x0A */ s16 padA;
+    /* 0x0A */ u8 padA[offsetof(subengine, XYZ.z) - (offsetof(subengine, XYZ.y) + 2)];
     /* 0x0C */ s32 z;
-    /* 0x10 */ u8 pad10[0x24 - 0x10];
+    /* 0x10 */ u8 pad10[offsetof(subengine, xform.scale.vy) - (offsetof(subengine, XYZ.z) + 4)];
     /* 0x24 */ s32 unk24;
-    /* 0x28 */ u8 pad28[0x50 - 0x28];
+    /* 0x28 */ u8 pad28[offsetof(subengine, xform.hasScale) - (offsetof(subengine, xform.scale.vy) + 4)];
     /* 0x50 */ u8 unk50;
     /* 0x51 */ u8 unk51;
     /* 0x52 */ s16 unk52;
-    /* 0x54 */ u8 pad54[0x5C - 0x54];
+    /* 0x54 */ u8 pad54[offsetof(subengine, next) - (offsetof(subengine, xform.dirty) + 2)];
     /* 0x5C */ struct PapuSceneObj *next;
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x60 */ u8 pad60[offsetof(subengine, u6C.ptr) - (offsetof(subengine, next) + sizeof(void *))];
     /* 0x6C */ u8 *model;
-    /* 0x70 */ u8 pad70[0x74 - 0x70];
+    /* 0x70 */ u8 pad70[offsetof(subengine, entity) - (offsetof(subengine, u6C.ptr) + sizeof(void *))];
     /* 0x74 */ u16 index;
 } PapuSceneObj;
 extern PapuSceneObj *PapuFloorObj;
@@ -138,7 +138,7 @@ typedef struct B5E44Owner {
 typedef struct B5E44Slot {
     /* 0x00 */ B5E44Obj *obj;
     /* 0x04 */ B5E44Pos *pos;
-    /* 0x08 */ s32 pad8[3];
+    /* 0x08 */ u8 pad8[offsetof(Slot40, pad4) + 0x10 - (offsetof(Slot40, pad4) + sizeof(void *))];
     /* 0x14 */ EXTmotion *dyn;
     /* 0x18 */ s32 pad18[10];
 } B5E44Slot;
@@ -263,14 +263,14 @@ void PlotPapuColumn(NAS *nas);
 
 void PapuInitCrateHooks(void);
 typedef struct {
-    u8 pad0[0x14];
+    u8 pad0[sizeof(EXT) + 8];
     u16 type;
 } T_B80B0Fux;
 
 typedef struct {
-    u8 pad0[0xC];
+    u8 pad0[sizeof(EXT)];
     NAS *owner;
-    u8 pad10[4];
+    u8 pad10[sizeof(EXT) + 8 - (sizeof(EXT) + sizeof(void *))];
     u16 type;
     u8 pad16[4];
     u16 status;

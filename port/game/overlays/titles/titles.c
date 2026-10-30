@@ -1526,13 +1526,13 @@ void CharSelectInit(void) {
     } while (i < 4);
     i = 0;
     rec = CharCards;
-    off = 0x7E0;
+    off = 12;
     do {
         i++;
-        rec->sub = (u8 *)eng->sub + off;
+        rec->sub = &eng->sub[off];
         rec->flags = 0;
         rec++;
-        off += 0xA8;
+        off++;
     } while (i < 8);
     ShuffleCharSelectors();
 }
@@ -1627,8 +1627,8 @@ void CharSelectUpdate(void) {
     s2->xform.dirty = 1;
     min = 0x7FFFFFFF;
     for (i = 0; i < ((GameState *)GameInfo)->players; i++) {
-        if (CharSelectors[i].pad10[5] < min) {
-            min = CharSelectors[i].pad10[5];
+        if (CharSelectors[i].pad14[4] < min) {
+            min = CharSelectors[i].pad14[4];
         }
     }
     if (min >= 0x10) {
@@ -1638,14 +1638,14 @@ void CharSelectUpdate(void) {
             if (i >= 4) {
                 break;
             }
-            w = CharSelectors[i].pad10[5];
+            w = CharSelectors[i].pad14[4];
             if (w > 0 && w < 15) {
                 min = 0;
                 break;
             }
             if (w == 0) {
                 CharSelectors[i].idx = CpuPickCharacter(i);
-                CharSelectors[i].pad10[7]++;
+                CharSelectors[i].pad14[6]++;
                 min = 0;
                 break;
             }
@@ -2039,8 +2039,8 @@ void LevelSelectQuit(void) {
 }
 
 void LevelSelectCursor(s32 arg0) {
-    u8 *p = (u8 *)GetEngineSlot(0)->sub + 0xA8;
-    s32 v = *(s16 *)((u8 *)GetEngineSlot(1)->sub + GameArenaLevel * 0xA8 + 0x312) + 0x32;
+    subengine *p = &GetEngineSlot(0)->sub[1];
+    s32 v = GetEngineSlot(1)->sub[GameArenaLevel + 4].u70.h.hi + 0x32;
 
     if (arg0 != 0) {
         ((subengine *)p)->XYZ.y = lerp_fix12(((subengine *)p)->XYZ.y, v, 0x800);
@@ -2208,14 +2208,13 @@ void team_mode_init(void) {
 
 void MoveTeamBar(s32 arg0, s32 arg1) {
     EXTengine *eng = GetEngineSlot(0);
-    s32 off = arg0 * 0xA8;
-    u8 *p = (u8 *)eng->sub + (off + 0x2A0);
+    subengine *p = &eng->sub[arg0 + 4];
     s16 v;
 
-    v = lerp_fix12(*(s16 *)&((subengine *)p)->u70.w, arg1, 0x800);
-    *(s16 *)&((subengine *)p)->u70.w = v;
-    ((subengine *)p)->scale = v + 0x78;
-    ((subengine *)((u8 *)eng->sub + off))->XYZ.x = *(s16 *)&((subengine *)p)->u70.w + 0x1A;
+    v = lerp_fix12(*(s16 *)&p->u70.w, arg1, 0x800);
+    *(s16 *)&p->u70.w = v;
+    p->scale = v + 0x78;
+    eng->sub[arg0].XYZ.x = *(s16 *)&p->u70.w + 0x1A;
 }
 
 void TitlesShellScreenRender(void) {

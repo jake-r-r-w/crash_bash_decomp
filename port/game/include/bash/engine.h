@@ -60,11 +60,11 @@ extern s32 ScreenLabelState;
 extern s32 PanelCtrl;
 typedef struct EngObj {
     s32 flags;
-    u8 pad[0x48];
+    u8 pad[offsetof(NAS, Handler) - (offsetof(NAS, NASid) + 4)];
     void (*update)(struct EngObj *);
 } EngObj;
 extern EngObj **NasUpdateList;
-typedef struct IconSet { s32 *c; u8 pad[4]; s32 *a; s32 *b; } IconSet;
+typedef struct IconSet { s32 *c; void *pad; s32 *a; s32 *b; } IconSet;
 extern IconSet Icon;
 extern s16 IconPos[];
 extern u32 Clock_Time;
@@ -81,11 +81,11 @@ extern s32 HeroesOutTimer;
 typedef struct PanelPrim {
     u32 flags;
     SLONG_XYZ XYZ;
-    u8 pad10[0x44];
+    u8 pad10[offsetof(subengine, hook) - (offsetof(subengine, XYZ.x) + sizeof(SLONG_XYZ))];
     void *hook;                     /* its draw function, or a texture */
-    u8 pad58[0x10];
+    u8 pad58[offsetof(subengine, otz) - (offsetof(subengine, hook) + sizeof(void *))];
     /* 0x68 */ s16 otz;  /* as subengine's */
-    /* 0x6A */ s16 pad6A;
+    /* 0x6A */ u8 pad6A[offsetof(subengine, u6C.ptr) - (offsetof(subengine, otz) + 2)];
     union {
         void *ptr;
         struct {
@@ -94,19 +94,19 @@ typedef struct PanelPrim {
         } s;
     } u6C;
     /* 0x70 */ s16 z0;
-    /* 0x72 */ s16 pad72;
+    /* 0x72 */ u8 pad72[offsetof(subengine, entity) - (offsetof(subengine, u70.h.lo) + 2)];
     /* 0x74 */ s16 x1;  /* a model prim's entity instead */
     /* 0x76 */ s16 y1;
     /* 0x78 */ s16 z1;
-    /* 0x7A */ s16 pad7A;
+    /* 0x7A */ u8 pad7A[offsetof(subengine, unk7C) - (offsetof(subengine, color) + 2)];
     /* 0x7C */ s16 x2;
     /* 0x7E */ s16 y2;
     /* 0x80 */ s16 z2;
-    /* 0x82 */ s16 pad82;
+    /* 0x82 */ u8 pad82[offsetof(subengine, pad84) - (offsetof(subengine, unk80) + 2)];
     /* 0x84 */ s16 x3;
     /* 0x86 */ s16 y3;
     /* 0x88 */ s16 z3;
-    /* 0x8A */ s16 pad8A;
+    /* 0x8A */ u8 pad8A[offsetof(subengine, pad8C) - (offsetof(subengine, pad84) + 4 + 2)];
     /* 0x8C */ s32 c0;  /* the corners' colours */
     /* 0x90 */ s32 c1;
     /* 0x94 */ s32 c2;

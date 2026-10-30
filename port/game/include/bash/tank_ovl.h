@@ -168,7 +168,7 @@ void TankBossCortexTurretFire(EXTengine *eng);
 void TankBossRocketTurretFire(NAS *nas, EXTengine *eng);
 /* Field 0xC of the 0x38-byte model record N at HeroModelBank (record 57 is DB_ArenaBossKomodoArenaobjects). */
 #define TANK_MODEL(n) ((u8 *)&HeroModelBank[n])
-#define TANK_MODEL_ON(b, n) (*(s32 *)((b) + (n) * 0x38 + 0xC))
+#define TANK_MODEL_ON(b, n) (((obj_dbase *)(b))[n].data != NULL)
 extern s32 TankBossBob[16]; /* PlotTankBoss: per-frame height wobble */
 
 
@@ -749,7 +749,7 @@ extern u8 TankSwampMap[];
 
 /* A 0x38-byte model record of HeroModelBank (see TANK_MODEL). */
 typedef struct ModelRec {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ u8 pad0[offsetof(obj_dbase, data)];
     /* 0x0C */ s32 on;
     /* 0x10 */ u8 pad10[0x38 - 0x10];
 } ModelRec;

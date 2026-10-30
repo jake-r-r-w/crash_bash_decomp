@@ -21,7 +21,7 @@ void InitialiseNasSystem(void) {
     }
     SetNasDefaults();
     Init_Panel();
-    NasPool = (NAS *)mal_alloc(NasPoolUsed * 0x70, &MainHeap);
+    NasPool = (NAS *)mal_alloc(NasPoolUsed * sizeof(NAS), &MainHeap);
     NasPoolLast = &NasPool[NasPoolUsed - 1];
     NasUpdateList = (EngObj **)mal_alloc(NasPoolUsed * 4, &MainHeap);
     *NasUpdateList = NULL;
@@ -471,7 +471,7 @@ void DrawLevelHud(void) {
         }
     }
     if (countdown_eng != NULL) {
-        eng_render((EXTengine *)countdown_eng);
+        eng_render(countdown_eng);
     }
     if (PanelCtrl & 0x1000) {
         eng_render(&BigScore1);

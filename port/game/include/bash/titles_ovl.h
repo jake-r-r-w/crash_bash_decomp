@@ -198,11 +198,13 @@ typedef struct {
     s32 unk8;
 } TitlesDst;
 typedef struct {
-    s32 pad0[3];
-    TitlesDst *dst;
-    s32 pad10[8];
-    s32 idx;
-    s32 pad34[11];
+    /* 0x00 */ s32 pad0[2];
+    /* 0x08 */ void *pad8;
+    /* 0x0C */ TitlesDst *dst;
+    /* 0x10 */ void *pad10;
+    /* 0x14 */ s32 pad14[7];
+    /* 0x30 */ s32 idx;
+    /* 0x34 */ Ext400 pad34;
 } TitlesSlot;
 typedef struct {
     s32 x;
@@ -372,11 +374,11 @@ extern TitlesPreset TeamModePresets[];
     {                                                                         \
         s32 v_ = (val);                                                       \
         EXTengine *e_ = GetEngineSlot(0);                                     \
-        u8 *q_ = (u8 *)e_->sub + ((i) * 0xA8 + 0x2A0);                        \
-        s16 r_ = lerp_fix12(*(s16 *)(q_ + 0x70), v_, 0x800);               \
-        *(s16 *)(q_ + 0x70) = r_;                                             \
-        *(s16 *)(q_ + 0x76) = r_ + 0x78;                                      \
-        *(s32 *)((u8 *)e_->sub + (i) * 0xA8 + 4) = *(s16 *)(q_ + 0x70) + 0x1A; \
+        subengine *q_ = &e_->sub[(i) + 4];                                    \
+        s16 r_ = lerp_fix12(q_->u70.h.lo, v_, 0x800);                         \
+        q_->u70.h.lo = r_;                                                    \
+        q_->scale = r_ + 0x78;                                                \
+        e_->sub[i].XYZ.x = (s16)q_->u70.h.lo + 0x1A;                          \
     }
 #define O69PV ((GameState *)GameInfo)
 extern u16 TeamModeHeroFrames[];

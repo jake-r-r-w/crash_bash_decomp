@@ -871,7 +871,7 @@ void RenderScreenLabels(void) {
     RenderState.modelDp = ScreenFade.amount;
     if (ScreenLabelShown != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;
-        s[new_var = 0xA8 / 4] &= 0xFFFF7FFF;  /* the next subengine's flags: as s[1].flags the branches change */
+        ((subengine *)s)[1].flags &= 0xFFFF7FFF; new_var = sizeof(subengine) / 4;  /* the next subengine's flags: as s[1].flags the branches change */
         if ((GamePause & 0x240) != 0x240) {
             ((subengine *)s)[1].flags |= 0x8000;
         }

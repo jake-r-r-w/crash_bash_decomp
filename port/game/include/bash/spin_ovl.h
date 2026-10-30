@@ -112,7 +112,7 @@ void UpdateSPIN(void);
 void SPINSetUp(void);
 
 typedef struct {
-    /* 0x00 */ u8 pad0[0x1C];
+    /* 0x00 */ u8 pad0[offsetof(EXTobject, can_do)];
     /* 0x1C */ u16 mask;
     /* 0x1E */ u16 hit;
 } SpinHitMask;
