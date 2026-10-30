@@ -14,7 +14,9 @@ functions).
 
 ## How the game works
 
-Crash Bash is three layers of code. Only one minigame is in memory at a time.
+Crash Bash is three layers of code. Only one minigame is in memory at a time. `src/ps1/` holds the
+files only the PS1 build compiles (the exe header, `bios_1`'s data, the mod-chip check, the overlay id
+words); PORT.md has the boundary with the PC port.
 
 | Layer | Where | Loaded | Holds |
 |---|---|---|---|
@@ -248,13 +250,13 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 | VRAM | File | Section | Owner |
 |---|---|---|---|
 | `0x80010000..0x8002D488` | `0x800` | `.text` | game code, nine files in `src/main/` (Files inside `main/main`) |
-| `0x8002D488..0x8002E0F0` | `0x1DC88` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/modchip.c` |
-| `0x8002E0F0..0x8002E7A8` | `0x1E8F0` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/modchip_msg.c` |
+| `0x8002D488..0x8002E0F0` | `0x1DC88` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/ps1/modchip.c` |
+| `0x8002E0F0..0x8002E7A8` | `0x1E8F0` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/ps1/modchip_msg.c` |
 | `0x8002E7A8..0x8004C56C` | `0x1EFA8` | `.text` | PsyQ 4.7: 281 Sony objects linked in place, plus `2MBYTE.OBJ` (asm) |
 | `0x8004C56C..0x8004CEFC` | `0x3CD6C` | `.rodata` | game (strings, jump tables) |
 | `0x8004CEFC..0x8004DCBC` | `0x3D6FC` | `.rodata` | PsyQ, per object (`.rdata` of the linked objects) |
 | `0x8004DCBC..0x800678E4` | `0x3E4BC` | `.data` | game data, C in each of the eleven files (main.c .. modchip_msg.c) |
-| `0x800678E4..0x8006E9EC` | `0x580E4` | `.data` | PsyQ: 39 Sony objects' `.data` linked from the objects; `bios_1.o`'s as C (`src/main/psyq/bios_1.c`) |
+| `0x800678E4..0x8006E9EC` | `0x580E4` | `.data` | PsyQ: 39 Sony objects' `.data` linked from the objects; `bios_1.o`'s as C (`src/ps1/bios_1.c`) |
 | `0x8006E9EC..0x80078C90` | `0x5F1EC` | `.bss` | written into the file as zeros (to `0x80079000`, the file's end): The exe's .bss |
 | `0x80078C90..0x801FF000` | | heap | `MainHeap`, from `HeapStart`; the engine loads at its start (How the game works) |
 
@@ -285,11 +287,11 @@ How the boundaries were found:
 - **`.rodata` start** `0x8004C56C`: the end of `.text`. **Game/library seam**
   `0x8004CEFC`: the unreferenced `$Id: sys.c` string of LIBGPU; the highest
   game reference is `0x8004CEEC`, the lowest library one `0x8004CF34`.
-- **`main/modchip`** (`0x8002D488..0x8002E0F0`, rodata `0x8004CE0C..0x8004CE5C`):
+- **`ps1/modchip`** (`0x8002D488..0x8002E0F0`, rodata `0x8004CE0C..0x8004CE5C`):
   every global store is `lui $at` + `sw`, and `j`/`jr` slots are filled by the
   assembler, which `main.c`'s gcc 2.8.1 never produces. gcc 2.7.2-psx through
   ASPSX does: `modchip_check_region` (the region byte at `0xBFC7FF52`) matches with it.
-- **`main/modchip_msg`** (`0x8002E0F0..0x8002E7A8`) is 2.7.2 + ASPSX too, not
+- **`ps1/modchip_msg`** (`0x8002E0F0..0x8002E7A8`) is 2.7.2 + ASPSX too, not
   2.8.1 as first thought: `modchip_show_warning` has a `lui $at` store and an
   indexed load expanded through its destination register, `msg_print`
   a `bne; nop` whose slot 2.8.1's reorg would fill, and `msg_draw_emblem`
@@ -1616,7 +1618,7 @@ matched C (`tools/scripts/aspsx_compare.py`; binaries in the ignored
   writing this epilogue in noreorder mode, which our FSF-based cc1 doesn't.
   `aspsx_fill.py --jumps-only` gives retail's bytes and stays; only its name
   for the cause was wrong.
-- **gcc 2.7.2 files (`main/modchip`, `main/modchip_msg`): ASPSX fills fewer
+- **gcc 2.7.2 files (`ps1/modchip`, `ps1/modchip_msg`): ASPSX fills fewer
   slots than retail** (32 and 16 bytes longer, every version). The fills
   `aspsx_fill.py` makes there, derived from retail, are likewise the game's
   gcc 2.7.2 build, not its assembler.
@@ -1647,7 +1649,7 @@ address the exe uses. `configs/USA/psyq/`:
 - `data_keep.txt` - objects whose `.data` still comes from the exe because the
   game's copy differs from 4.7: `bios_1.o` (libcd) has one static initialised
   to 0 at `0x8006DE5C` where 4.7 has 1, so the game's libcd is a slightly
-  different build; its bytes are C in `src/main/psyq/bios_1.c` (2026-10-28), pointing into
+  different build; its bytes are C in `src/ps1/bios_1.c` (2026-10-28), pointing into
   the object's `.rdata` and `.bss` by the addresses `undefined_syms_manual.txt` gives
   (`libcd_bios_1_rdata`, `libcd_bios_1_bss`). Every other object's `.data` is linked from the object
   (`decomp.py link-psyq --data` cut the data blob around them).
@@ -1674,7 +1676,7 @@ ld --> build/main.elf --objcopy--> build/main.exe   == configs/USA/checksum.sha
 
 A unit can override project.mk per object (`build/<src>.o: VAR = value` in
 the Makefile; `decomp.py`'s `unit_cfg` reads the same lines):
-`main/modchip` and `main/modchip_msg` use `CC_VER = 2.7.2-psx` and `ASPSX_FILL`
+`ps1/modchip` and `ps1/modchip_msg` use `CC_VER = 2.7.2-psx` and `ASPSX_FILL`
 (`tools/scripts/aspsx_fill.py`: ASPSX's delay-slot filling for `j`/`jr` and
 conditional branches, and its expansion of indexed symbol loads, plus one
 delay-slot fill that Sony's gcc 2.7.2 orders differently from FSF 2.7.2's;
@@ -1693,7 +1695,7 @@ file as `INCLUDE_ASM(...)`, which pulls `asm/nonmatchings/<seg>/<func>.s`
 into the compiled object, so the build matched at every step. Rodata and data
 were pulled in the same way (`INCLUDE_RODATA`, splat's `asm/data/`) until they
 were C (2026-10-28, ROADMAP-A.md). The exe's PS-X EXE header is C too
-(`src/main/header.c`, its entry point a link-time symbol; 2026-10-29). What still
+(`src/ps1/header.c`, its entry point a link-time symbol; 2026-10-29). What still
 comes from the disc is the engine's two memory images (The engine's .bss, The
 engine's slot image) and Sony's hand-written `2MBYTE.OBJ`; `make hidden`
 (`tools/scripts/hidden.py`) checks that nothing else does. splat (`make split`) regenerates `asm/` and

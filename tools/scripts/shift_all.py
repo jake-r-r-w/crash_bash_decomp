@@ -210,7 +210,7 @@ class Build:
 
     def main_script(self):
         t = open("build/main.full.ld", encoding="utf-8").read()
-        t = pad_first(t, r"build/src/main/(?!header\.)\w+\.c\.o", self.pad("main"))
+        t = pad_first(t, r"build/src/main/\w+\.c\.o", self.pad("main"))
         t = self.move_sections(t, "main", ".main", ".header")
         startup = f"{OUT}/2mbyte.s.o"
         run(["mipsel-linux-gnu-as", "-march=r3000", "-mtune=r3000", "-no-pad-sections", "-O0", "-G0", "-EL",
@@ -248,12 +248,12 @@ class Build:
         t = open(f"linkers/{ovl}.ld", encoding="utf-8").read()
         t = t.replace(f".{ovl} 0x{SLOT_BASE:08X} :", f".{ovl} 0x{self.slot_base:08X} :", 1)
         t = self.move_sections(t, ovl, f".{ovl}")
-        t = pad_first(t, rf"build/src/overlays/{ovl}/(?!{ovl}_id\.)\w+\.c\.o", self.pad(ovl))
+        t = pad_first(t, rf"build/src/overlays/{ovl}/\w+\.c\.o", self.pad(ovl))
         return write(f"{OUT}/{ovl}.ld", t)
 
     # ---- linking until the addresses settle
 
-    PADDED = {"main": r"build/src/main/(?!header\.)\w+\.c\.o", "engine": r"build/src/overlays/engine/(?!entry\.)\w+\.c\.o"}
+    PADDED = {"main": r"build/src/main/\w+\.c\.o", "engine": r"build/src/overlays/engine/(?!entry\.)\w+\.c\.o"}
 
     def points(self, b):
         """The retail addresses where binary b's pads go: its first padded C input of each section
@@ -261,7 +261,7 @@ class Build:
         if not hasattr(self, "_points"):
             self._points = {}
         if b not in self._points:
-            pat = self.PADDED.get(b, rf"build/src/overlays/{b}/(?!{b}_id\.)\w+\.c\.o")
+            pat = self.PADDED.get(b, rf"build/src/overlays/{b}/\w+\.c\.o")
             mp = open("build/main.map" if b == "main" else f"build/{b}.map", encoding="utf-8").read()
             pts = []
             for sect in SECTIONS:
@@ -375,7 +375,7 @@ class Build:
     def stale(self):
         """Names a binary uses that link by a retail address inside a range that moved."""
         moved = [(EXE_BASE, ENGINE_BASE), (ENGINE_BASE, SLOT_BASE), (SLOT_BASE, SLOT_HEAP + 4)]
-        objs = {"main": [l.strip().rsplit("(", 1)[0] for l in open("build/main.full.ld") if re.match(r"\s+build/src/main/\w+\.c\.o\(\.text\)", l)],
+        objs = {"main": [l.strip().rsplit("(", 1)[0] for l in open("build/main.full.ld") if re.match(r"\s+build/src/(?:main|ps1)/\w+\.c\.o\(\.text\)", l)],
                 "engine": [f"build/src/overlays/engine/{f}" for f in os.listdir("build/src/overlays/engine") if f.endswith(".c.o")]}
         for o in self.slots:
             objs[o] = [f"build/src/overlays/{o}/{f}" for f in os.listdir(f"build/src/overlays/{o}") if f.endswith(".c.o")]
@@ -399,7 +399,7 @@ class Build:
             sys.exit(f"shift_all: the exe is {size:#x} bytes, more than its {EXE_FILE_SIZE:#x} on the disc")
         with open(exe, "ab") as f:
             f.write(bytes(EXE_FILE_SIZE - size))
-        # the header's initial PC (src/main/header.c) links to the entry point, wherever it moved
+        # the header's initial PC (src/ps1/header.c) links to the entry point, wherever it moved
         with open(exe, "rb") as f:
             f.seek(0x10)
             pc0 = int.from_bytes(f.read(4), "little")

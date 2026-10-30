@@ -25,8 +25,8 @@ class UnitPipeline(unittest.TestCase):
 
     @unittest.skipUnless(os.path.exists("Makefile"), "needs the repo's Makefile (run from the root)")
     def test_the_units_overrides_apply(self):
-        """main/modchip is a gcc 2.7.2 unit (Makefile): its settings follow the test file."""
-        cmd = decomp.unit_pipeline("src/main/modchip.c", "build/t.o", dict(CFG), c_path="t.c")
+        """ps1/modchip is a gcc 2.7.2 unit (Makefile): its settings follow the test file."""
+        cmd = decomp.unit_pipeline("src/ps1/modchip.c", "build/t.o", dict(CFG), c_path="t.c")
         self.assertIn("2.7.2-psx/cc1", cmd)
         self.assertIn("-fno-rerun-cse-after-loop", cmd)
 

@@ -41,9 +41,9 @@ class PadScript(unittest.TestCase):
 
     def test_the_id_unit_in_c_stays_first(self):
         t = shift.pad_script(LD.replace("build/asm/data/overlays/tank/tank_id.rodata.s.o",
-                                        "build/src/overlays/tank/tank_id.c.o"), "tank", 0x40)
+                                        "build/src/ps1/tank_id.c.o"), "tank", 0x40)
         lines = [l.strip() for l in t.splitlines()]
-        i = lines.index("build/src/overlays/tank/tank_id.c.o(.rodata);")
+        i = lines.index("build/src/ps1/tank_id.c.o(.rodata);")
         self.assertFalse(lines[i - 1].startswith(". +="))
         self.assertTrue(lines[i + 1].startswith(". += 0x40;"))
 

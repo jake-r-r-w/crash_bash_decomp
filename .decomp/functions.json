@@ -8471,7 +8471,7 @@
   "src": "src/main/card.c"
  },
  "8002D488": {
-  "asm": "asm/nonmatchings/main/modchip/func_8002D488.s",
+  "asm": "asm/nonmatchings/ps1/modchip/func_8002D488.s",
   "calls": [],
   "fp": "ef9583463cf7a3d7",
   "fpn": "713d31a635676c45",
@@ -8479,12 +8479,12 @@
   "name": "modchip_check_region",
   "orig": "func_8002D488",
   "rom": 121992,
-  "seg": "main/modchip",
+  "seg": "ps1/modchip",
   "size": 108,
-  "src": "src/main/modchip.c"
+  "src": "src/ps1/modchip.c"
  },
  "8002D4F4": {
-  "asm": "asm/nonmatchings/main/modchip/modchip_step.s",
+  "asm": "asm/nonmatchings/ps1/modchip/modchip_step.s",
   "calls": [
    "8002DE2C",
    "8002E000",
@@ -8497,12 +8497,12 @@
   "name": "modchip_step",
   "orig": "func_8002D4F4",
   "rom": 122100,
-  "seg": "main/modchip",
+  "seg": "ps1/modchip",
   "size": 2360,
-  "src": "src/main/modchip.c"
+  "src": "src/ps1/modchip.c"
  },
  "8002DE2C": {
-  "asm": "asm/nonmatchings/main/modchip/func_8002DE2C.s",
+  "asm": "asm/nonmatchings/ps1/modchip/func_8002DE2C.s",
   "calls": [],
   "fp": "72708dd67338edcd",
   "fpn": "e18c08ac5ec1fc97",
@@ -8510,12 +8510,12 @@
   "name": "modchip_cd_wait",
   "orig": "func_8002DE2C",
   "rom": 124460,
-  "seg": "main/modchip",
+  "seg": "ps1/modchip",
   "size": 468,
-  "src": "src/main/modchip.c"
+  "src": "src/ps1/modchip.c"
  },
  "8002E000": {
-  "asm": "asm/nonmatchings/main/modchip/func_8002E000.s",
+  "asm": "asm/nonmatchings/ps1/modchip/func_8002E000.s",
   "calls": [],
   "fp": "a75a41b6d2afb9ac",
   "fpn": "1ac090aa3be81150",
@@ -8523,12 +8523,12 @@
   "name": "modchip_cd_reset",
   "orig": "func_8002E000",
   "rom": 124928,
-  "seg": "main/modchip",
+  "seg": "ps1/modchip",
   "size": 240,
-  "src": "src/main/modchip.c"
+  "src": "src/ps1/modchip.c"
  },
  "8002E0F0": {
-  "asm": "asm/nonmatchings/main/modchip_msg/func_8002E0F0.s",
+  "asm": "asm/nonmatchings/ps1/modchip_msg/func_8002E0F0.s",
   "calls": [
    "8002E25C",
    "8002E618",
@@ -8548,12 +8548,12 @@
   "name": "modchip_show_warning",
   "orig": "func_8002E0F0",
   "rom": 125168,
-  "seg": "main/modchip_msg",
+  "seg": "ps1/modchip_msg",
   "size": 364,
-  "src": "src/main/modchip_msg.c"
+  "src": "src/ps1/modchip_msg.c"
  },
  "8002E25C": {
-  "asm": "asm/nonmatchings/main/modchip_msg/msg_print.s",
+  "asm": "asm/nonmatchings/ps1/modchip_msg/msg_print.s",
   "calls": [
    "8002E3D0",
    "8002E584",
@@ -8566,12 +8566,12 @@
   "name": "msg_print",
   "orig": "func_8002E25C",
   "rom": 125532,
-  "seg": "main/modchip_msg",
+  "seg": "ps1/modchip_msg",
   "size": 372,
-  "src": "src/main/modchip_msg.c"
+  "src": "src/ps1/modchip_msg.c"
  },
  "8002E3D0": {
-  "asm": "asm/nonmatchings/main/modchip_msg/func_8002E3D0.s",
+  "asm": "asm/nonmatchings/ps1/modchip_msg/func_8002E3D0.s",
   "calls": [
    "8002F300"
   ],
@@ -8581,12 +8581,12 @@
   "name": "msg_draw_glyph",
   "orig": "func_8002E3D0",
   "rom": 125904,
-  "seg": "main/modchip_msg",
+  "seg": "ps1/modchip_msg",
   "size": 436,
-  "src": "src/main/modchip_msg.c"
+  "src": "src/ps1/modchip_msg.c"
  },
  "8002E584": {
-  "asm": "asm/nonmatchings/main/modchip_msg/func_8002E584.s",
+  "asm": "asm/nonmatchings/ps1/modchip_msg/func_8002E584.s",
   "calls": [],
   "fp": "5b8535e3889cc35f",
   "fpn": "7ccbd2482734a619",
@@ -8594,12 +8594,12 @@
   "name": "msg_glyph_width",
   "orig": "func_8002E584",
   "rom": 126340,
-  "seg": "main/modchip_msg",
+  "seg": "ps1/modchip_msg",
   "size": 148,
-  "src": "src/main/modchip_msg.c"
+  "src": "src/ps1/modchip_msg.c"
  },
  "8002E618": {
-  "asm": "asm/nonmatchings/main/modchip_msg/func_8002E618.s",
+  "asm": "asm/nonmatchings/ps1/modchip_msg/func_8002E618.s",
   "calls": [
    "8002F300"
   ],
@@ -8609,9 +8609,9 @@
   "name": "msg_draw_emblem",
   "orig": "func_8002E618",
   "rom": 126488,
-  "seg": "main/modchip_msg",
+  "seg": "ps1/modchip_msg",
   "size": 400,
-  "src": "src/main/modchip_msg.c"
+  "src": "src/ps1/modchip_msg.c"
  },
  "8002E7A8": {
   "asm": "asm/main/psyq/2mbyte.s",

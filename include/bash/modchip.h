@@ -1,9 +1,9 @@
 #ifndef BASH_MODCHIP_H
 #define BASH_MODCHIP_H
 
-/* Functions and data defined in src/main/modchip.c. Anything the original headers
+/* Functions and data defined in src/ps1/modchip.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/main/modchip.c */
+ * owner: src/ps1/modchip.c */
 
 #include "common.h"
 #include "bash/nas.h"

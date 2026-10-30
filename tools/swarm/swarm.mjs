@@ -86,7 +86,7 @@ CONVENTIONS.md and SKILL.md):
    relatives (identical or near copies, callers). Read the asm, not just the draft: m2c misses
    pass-through arguments, signedness and struct offsets.${f.twin ? `
    It also prints the C of a matched function with the same code (${f.twin === 'template'
-     ? 'a look-alike' : `an ${f.twin} twin`}): adapt that rather than the m2c draft.` : ''}${/^main\//.test(f.seg || '') ? `
+     ? 'a look-alike' : `an ${f.twin} twin`}): adapt that rather than the m2c draft.` : ''}${/^(main|ps1)\//.test(f.seg || '') ? `
    If every global store is \`lui $at\` + \`sw\`, or jump delay slots are filled from a store, the code
    is gcc 2.7.2 + ASPSX: in a 2.8.1 file it can't match; say so in "note" and stop.` : ''}
 2. Evidence before writing: \`decomp.py similar ${r}\` (matched functions with the same code, and

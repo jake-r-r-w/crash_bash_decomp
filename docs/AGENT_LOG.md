@@ -21,7 +21,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   named, and all but one are typed (`progress`: 2536/2537). Nothing is parked, and no `func_`
   or `D_` name is left in `src/`.
   - What still comes from the disc: Sony's `2MBYTE.OBJ` and the engine's two memory images
-    (zeros in source builds). The exe header is C (`src/main/header.c`). `make hidden` checks
+    (zeros in source builds). The exe header is C (`src/ps1/header.c`). `make hidden` checks
     that nothing else is (ROADMAP-B 4.2, passed 2026-10-29).
 - **The roadmap.** [ROADMAP-A.md](ROADMAP-A.md) holds the done work: the old Phases 1-5 and
   ROADMAP-B Parts 1-3 (typing, names and loose ends, documentation; 2026-10-29).
@@ -35,8 +35,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
     (ROADMAP-A, Names and loose ends).
 - **Files.**
   - `main/main` is nine files: `main`, `dbase`, `prims`, `scripts`, `sfx`, `nascalls`,
-    `sound`, `music`, `card`. Then come `modchip` and `modchip_msg` (gcc 2.7.2) and
-    `psyq/bios_1`.
+    `sound`, `music`, `card`.
+  - `src/ps1/` holds what only the PS1 build compiles (PORT.md): `header`, `bios_1`, `modchip` and
+    `modchip_msg` (gcc 2.7.2), and the 14 `<game>_id` words.
   - The engine is nine files: `engine`, `panel`, `pause`, `heroes`, `gameflow`,
     `levelload`, `camera`, `asttable`, `entry`.
   - `bash` is three files, and `papu`, `bonk`, `n2o`, `hub` two each. Every slot overlay's id
@@ -332,7 +333,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - A unit whose last function ends in padding `nop`s (and rodata ending in
   zero padding) comes out short once that function is C: add a splat
   `[offset, pad]` subsegment after it (`configs/USA/main.yaml` has the two
-  for `main/modchip_msg`).
+  for `ps1/modchip_msg`).
 - The swarm refuses any patch that adds inline asm, even a GTE macro, and a
   big-mode function then parks as "no progress" though its sessions said
   MATCH. Read the parks' `result.json` notes after a run: `func_8001AA48`
@@ -437,6 +438,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-30 (the decomp/port boundary):**
+  - Layout in PORT.md: `src/` and `include/` shared, `src/ps1/` PS1 only, `port/` PC only.
+  - Seg names changed: `main/modchip` is `ps1/modchip`, and `decomp.py protos` and `diff_funcs.py`
+    count `ps1/` as main.exe.
+  - Open for 6.1: 32-bit first or 64-bit (PORT.md recommends 32-bit first).
+
 - **2026-10-29 (ROADMAP-B Part 5 done):**
   - The release checklist is done: the licence, the README (cut to the basics), the credits, and
     the docs and history checks.
@@ -456,7 +463,7 @@ Newest first, a few lines each. Details are in the commits.
     - `GameState.heroOut` meant "is a computer player": renamed `heroCpu` (with `GameHeroCpu`).
 - **2026-10-29 (ROADMAP-B 4.2 passes):**
   - `make hidden` is the scan, and it passes.
-  - The exe header is C (`src/main/header.c`), and `mal_update`'s stale `#else` draft is gone.
+  - The exe header is C (`src/ps1/header.c`), and `mal_update`'s stale `#else` draft is gone.
   - Gotcha: the header segment needs a vram that nothing points into (0x8000F800). At 0, splat
     reads the startup code's zero constants as `D_00000000`.
 - **2026-10-29 (ROADMAP-B 4.1 passes):**

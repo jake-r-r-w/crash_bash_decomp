@@ -144,7 +144,7 @@ retail does. The recipe is written up for Phase 4.
 - [x] Tank's rodata as C: the id word (`tank_id`) and the `INCLUDE_RODATA`
   of `D_800B32B8` (the animation name strings). Done 2026-10-26: the
   strings are `const char` arrays in `tank.c`, and the id word is
-  `src/overlays/tank/tank_id.c` (`TankOverlayId`, a rodata-only unit:
+  `src/ps1/tank_id.c` (`TankOverlayId`, a rodata-only unit:
   splat takes a `.rodata` subsegment with no `c` one). No asm is left in
   Tank.
 - [x] Tank's data and bss as C (`asm/data/overlays/tank/`): every pointer
@@ -400,7 +400,7 @@ load extract and are documented.
 - [x] `main.exe`'s rodata as C: its six INCLUDE_RODATA blocks (`data2c.py main
   --strings-only`, 2026-10-26); no INCLUDE_RODATA is left in `src/`.
 - [x] `main.exe`'s data and bss as C (2026-10-28): the game's .data cut by file in link
-  order, the data-only Sony objects linked, `bios_1.o`'s .data as C (`src/main/psyq/bios_1.c`,
+  order, the data-only Sony objects linked, `bios_1.o`'s .data as C (`src/ps1/bios_1.c`,
   the game's copy differs from 4.7), the word at `$gp` and the game's .bss in their files,
   and the file padded to its size (ARCHITECTURE.md, The exe's .bss). No data asm is left in
   the exe; the dashboard's data figure is 100%.
@@ -633,7 +633,7 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   - every object the 16 links load is built from `src/` or is one of Sony's PsyQ objects.
 
   On the way:
-  - the exe's PS-X EXE header became C (`src/main/header.c`). Its entry point is a link-time
+  - the exe's PS-X EXE header became C (`src/ps1/header.c`). Its entry point is a link-time
     symbol, so `shift_all.py` no longer patches it and now pads after the header;
   - `mal_update`'s old parked draft under `#else` was removed.
 
@@ -769,3 +769,14 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
   through https://recomp.fyi/add.
 
 The release is done: 5.1 to 5.15 (2026-10-29).
+
+## Part 6 - The PC port (done so far; the rest is in ROADMAP-B)
+
+- [x] The boundary between the decomp and the port (2026-10-30; PORT.md).
+  - `src/` and `include/` are shared and must always match.
+  - The 18 PS1-only files moved to `src/ps1/` with no byte changed: `header.c`, `bios_1.c`, the two
+    mod-chip files and the 14 overlay id words.
+  - `port/` is new and PC-only: a CMake build, the entry point, and `sdk/` and `platform/` waiting for
+    6.2. It builds with the image's GCC 13; `-DBASH_BUILD_GAME=ON` picks up the 38 shared files.
+  - Checked from the built ELFs: the 14 overlays' 4,368 global names have one clash,
+    `XZBoxToSphere`, so they can link into one PC program.

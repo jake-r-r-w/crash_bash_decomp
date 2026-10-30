@@ -25,8 +25,9 @@ SOFTWARE.
 What this licence covers
 
 The licence above covers this project's own work: the tools (tools/, except as
-listed below), the build files (Makefile, configs/), the tests and the
-documentation (README.md, CONTRIBUTING.md, CLAUDE.md, docs/).
+listed below), the PC port's own code (port/), the build files (Makefile,
+configs/), the tests and the documentation (README.md, CONTRIBUTING.md,
+CLAUDE.md, docs/).
 
 It does not cover:
 

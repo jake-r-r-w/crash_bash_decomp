@@ -12,7 +12,7 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 After the final test. PsyQ stays linked from Sony's objects in the PS1 build (decided
 2026-10-29): much of it was hand-written asm, and the port replaces it. A PS1 build with a modern
 compiler is dropped (decided 2026-10-29): the port compiles the same C with one and finds the
-same bugs.
+same bugs. The layout and the rules are in [PORT.md](PORT.md).
 
 | # | Task | Notes | Done |
 |---|------|-------|------|

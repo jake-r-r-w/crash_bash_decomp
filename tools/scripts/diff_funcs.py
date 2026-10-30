@@ -18,7 +18,7 @@ MAIN = "disc/SCUS_945.70"
 
 
 def bin_of(e):
-    return e.get("bin") or (MAIN if e.get("seg", "").startswith("main/") else None)
+    return e.get("bin") or (MAIN if e.get("seg", "").startswith(("main/", "ps1/")) else None)
 
 
 def differing(funcs, built, target, key):

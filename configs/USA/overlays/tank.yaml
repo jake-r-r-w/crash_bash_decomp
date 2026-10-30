@@ -52,7 +52,7 @@ segments:
     subsegments:
       # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
-      - [0x0, .rodata, overlays/tank/tank_id]   # src/overlays/tank/tank_id.c
+      - [0x0, .rodata, ps1/tank_id]   # src/ps1/tank_id.c
       - [0x4, .rodata, overlays/tank/tank]
       - [0x870, c, overlays/tank/tank]
       - [0x15958, .data, overlays/tank/tank]   # tank.c's data (tools/scripts/data2c.py)

@@ -113,19 +113,19 @@ build/%.c.o: %.c $(shell find include -name '*.h' 2>/dev/null) $(PIPELINE_DEPS)
 	$(CPP) $(CPPFLAGS) $< | tee $(@:.o=.i) | $(CC1) $(CC1FLAGS) | $(DMPSX) | $(MASPSX) $(MASPSX_ARGS) $(ASPSX_FILL) | $(AS) $(ASFLAGS) -o $@
 
 # Units built with other settings than project.mk's (decomp.py reads these lines too, see unit_cfg).
-# main/modchip has every global store as `lui $at` + `sw` and ASPSX-filled jump slots: gcc 2.7.2,
+# ps1/modchip has every global store as `lui $at` + `sw` and ASPSX-filled jump slots: gcc 2.7.2,
 # with Sony's assembler, whose delay-slot filling tools/scripts/aspsx_fill.py does.
-build/src/main/modchip.c.o: CC_VER = 2.7.2-psx
-build/src/main/modchip.c.o: ASPSX_FILL = | $(PYTHON) tools/scripts/aspsx_fill.py
+build/src/ps1/modchip.c.o: CC_VER = 2.7.2-psx
+build/src/ps1/modchip.c.o: ASPSX_FILL = | $(PYTHON) tools/scripts/aspsx_fill.py
 # No second cse pass: with it, `D_8006788C[1]` folds to a direct `sym+1` access; retail keeps `la` +
 # offsets (modchip_cd_wait, modchip_step).
-build/src/main/modchip.c.o: EXTRA_CC1FLAGS = -fno-builtin -fno-rerun-cse-after-loop
-# main/modchip_msg is the same (lui $at stores, addu moves, ASPSX-filled slots; msg_draw_emblem matches
+build/src/ps1/modchip.c.o: EXTRA_CC1FLAGS = -fno-builtin -fno-rerun-cse-after-loop
+# ps1/modchip_msg is the same (lui $at stores, addu moves, ASPSX-filled slots; msg_draw_emblem matches
 # only with these), so 2.7.2 runs from 0x8002D488 to 0x8002E7A8. It takes the same flags too: every
 # function matches with them, msg_print in its plainest form (ROADMAP-B 2.4).
-build/src/main/modchip_msg.c.o: CC_VER = 2.7.2-psx
-build/src/main/modchip_msg.c.o: ASPSX_FILL = | $(PYTHON) tools/scripts/aspsx_fill.py
-build/src/main/modchip_msg.c.o: EXTRA_CC1FLAGS = -fno-builtin -fno-rerun-cse-after-loop
+build/src/ps1/modchip_msg.c.o: CC_VER = 2.7.2-psx
+build/src/ps1/modchip_msg.c.o: ASPSX_FILL = | $(PYTHON) tools/scripts/aspsx_fill.py
+build/src/ps1/modchip_msg.c.o: EXTRA_CC1FLAGS = -fno-builtin -fno-rerun-cse-after-loop
 
 build/%.s.o: %.s
 	@mkdir -p $(@D)

@@ -58,11 +58,11 @@ SECTIONS = (".rodata", ".text", ".data")
 
 def pad_script(t, ovl, pad, sections=SECTIONS):
     """A linker script with pad bytes before the overlay's first C .rodata, .text and .data input
-    (not its id unit, <ovl>_id, which has to stay the slot's first word); `sections` pads only
+    (its id unit, src/ps1/<ovl>_id.c, isn't under the overlay's folder: it stays the slot's first word); `sections` pads only
     those (to bisect a crash: which section's move breaks the game)."""
     n = 0
     for sect in sections:
-        m = re.search(r"^(\s*)(build/src/overlays/" + ovl + r"/(?!" + ovl + r"_id\.)\w+\.c\.o\("
+        m = re.search(r"^(\s*)(build/src/overlays/" + ovl + r"/\w+\.c\.o\("
                       + re.escape(sect) + r"\);)", t, re.M)
         if m:
             t = t[:m.start()] + f"{m.group(1)}. += 0x{pad:X};   /* shift.py */\n" + t[m.start():]

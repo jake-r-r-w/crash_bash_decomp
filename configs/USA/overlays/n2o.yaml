@@ -52,7 +52,7 @@ segments:
     subsegments:
       # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
-      - [0x0, .rodata, overlays/n2o/n2o_id]   # src/overlays/n2o/n2o_id.c
+      - [0x0, .rodata, ps1/n2o_id]   # src/ps1/n2o_id.c
       - [0x4, .rodata, overlays/n2o/n2o]
       - [0xB8, .rodata, overlays/n2o/nox]
       - [0x1F0, c, overlays/n2o/n2o]

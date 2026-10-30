@@ -505,7 +505,7 @@ PROVIDE(D_80074580 = 0x80074580);
 PROVIDE(SlotOverlayId = 0x800B32B4);
 PROVIDE(vmode_512_ntsc = 0x8005B72C);
 
-/* libcd bios_1.o's .rdata and .bss, which src/main/psyq/bios_1.c's copy of its .data points
+/* libcd bios_1.o's .rdata and .bss, which src/ps1/bios_1.c's copy of its .data points
  * into (the object's own sections have no global symbols there). */
 PROVIDE(libcd_bios_1_rdata = 0x8004D95C);
 PROVIDE(libcd_bios_1_bss = 0x80077614);

@@ -56,7 +56,7 @@ segments:
     start: 0x0
     vram: 0x8000F800                  # where it would sit, just before the body; nothing reads it there
     subsegments:
-      - [0x0, .data, main/header]   # the PS-X EXE header as C (not loaded)
+      - [0x0, .data, ps1/header]   # the PS-X EXE header as C (not loaded)
 
   - name: main
     type: code
@@ -73,8 +73,8 @@ segments:
       - [0x1B2A0, c, main/sound]
       - [0x1C598, c, main/music]
       - [0x1CCB0, c, main/card]
-      - [0x1DC88, c, main/modchip]          # gcc 2.7.2 + ASPSX (lui $at stores)
-      - [0x1E8F0, c, main/modchip_msg]
+      - [0x1DC88, c, ps1/modchip]          # gcc 2.7.2 + ASPSX (lui $at stores)
+      - [0x1E8F0, c, ps1/modchip_msg]
       - [0x1EFA0, pad]                       # 8 zero bytes after the unit (the asm had them as nops)
       - [0x1EFA8, asm, main/psyq/2mbyte]
       - [0x1F06C, lib, libapi, c81, .text]
@@ -362,8 +362,8 @@ segments:
       - [0x3D0A8, .rodata, main/prims]
       - [0x3D0D0, .rodata, main/nascalls]
       - [0x3D510, .rodata, main/card]
-      - [0x3D60C, .rodata, main/modchip]
-      - [0x3D65C, .rodata, main/modchip_msg]
+      - [0x3D60C, .rodata, ps1/modchip]
+      - [0x3D65C, .rodata, ps1/modchip_msg]
       - [0x3D6F4, pad]                       # 8 zero bytes after the unit's rodata
       - [0x3D6FC, lib, libgpu, sys, .rdata]
       - [0x3D91C, lib, libetc, intr, .rdata]
@@ -394,8 +394,8 @@ segments:
       - [0x54C14, .data, main/sound]
       - [0x55D9C, .data, main/music]
       - [0x55DB8, .data, main/card]
-      - [0x5803C, .data, main/modchip]
-      - [0x5809C, .data, main/modchip_msg]
+      - [0x5803C, .data, ps1/modchip]
+      - [0x5809C, .data, ps1/modchip_msg]
       - [0x580E4, lib, libapi, counter, .data]
       - [0x58104, lib, libgpu, sys, .data]
       - [0x582A4, lib, libetc, intr, .data]
@@ -419,7 +419,7 @@ segments:
       - [0x5E1CC, lib, libc2, puts, .data]
       - [0x5E1DC, lib, libgte, msc02, .data]
       - [0x5E37C, lib, libsnd, ssinit, .data]
-      - [0x5E3AC, .data, main/psyq/bios_1]   # libcd bios_1.o's .data, the game's copy
+      - [0x5E3AC, .data, ps1/bios_1]   # libcd bios_1.o's .data, the game's copy
       - [0x5E6BC, lib, libspu, spu, .data]
       - [0x5E71C, lib, libpad, pdtapres, .data]
       - [0x5E72C, lib, libspu, s_ini, .data]

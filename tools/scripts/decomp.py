@@ -2520,7 +2520,7 @@ def cmd_protos(a):
     proj, funcs = need_proj(), need_funcs()
     key, e = find_func(funcs, a.func)
     seg = e["seg"].split("/")
-    kind = "main" if seg[0] == "main" else "engine" if seg[1] == "engine" else "slot"
+    kind = "main" if seg[0] in ("main", "ps1") else "engine" if seg[1] == "engine" else "slot"
     tw = target_words(e, proj)
     if a.diff:
         found = proto_find.copy_in(tw, kind, a.diff)
