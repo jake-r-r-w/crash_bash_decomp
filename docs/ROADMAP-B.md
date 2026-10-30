@@ -15,11 +15,10 @@ play the same. The decomp stays as it is. The design and the rules are in [PORT.
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 6.2 | Retail recordings | Scripted inputs played on retail in an emulator, with the game's state recorded frame by frame over every mode. Kept on the machine with the disc, never in git. This is the port's safety net, so it comes before any refactoring | [ ] |
-| 6.3 | Addresses and calls | Addresses kept in integers become real pointers, starting with the 164 data tables that can't compile until they do, such as animation programs with addresses among their words. The game's C then joins the default build, with about 2,000 warnings left to clear. Also: every function gets a prototype, and calls that relied on the caller's registers pass their arguments. The truncation warnings reach zero and become errors | [ ] |
-| 6.4 | Real structs | Reads through other globals, past an object's end and by byte offset become real structs, arrays and fields. Code written only to steer the old compiler goes back to natural C | [ ] |
-| 6.5 | Files and memory | The pointer slots in loaded files, the mode text's addresses, the heap and pools, and the save format on disk | [ ] |
-| 6.6 | It runs, headless | Files from the user's own data, the game's maths, pads, saves and overlays, with no window. All 33 modes play to the end, optimised, clean under ASan and UBSan, and matching the retail recordings | [ ] |
-| 6.7 | A native renderer | Models, maps, sprites and text drawn directly through SDL3's GPU API, replacing the PS1 drawing code: real 3D, real textures and any resolution, with no PS1 drawing commands or VRAM | [ ] |
-| 6.8 | Native sound | The game's sound banks and music played by its own mixer and sequencer on SDL3, with reverb. Note timing, pitch and volume checked against Sony's linked code | [ ] |
-| 6.9 | Playing it | The window, keyboard, controllers with analog sticks and rumble, and saving. Played side by side with retail over 4.4's route, then a first release for Windows and Linux | [ ] |
+| 6.2 | Addresses and calls | Addresses kept in integers become real pointers, starting with the 164 data tables that can't compile until they do, such as animation programs with addresses among their words. The game's C then joins the default build, with about 2,000 warnings left to clear. Also: every function gets a prototype, and calls that relied on the caller's registers pass their arguments. The truncation warnings reach zero and become errors | [ ] |
+| 6.3 | Real structs | Reads through other globals, past an object's end and by byte offset become real structs, arrays and fields. Code written only to steer the old compiler goes back to natural C | [ ] |
+| 6.4 | Files and memory | The pointer slots in loaded files, the mode text's addresses, the heap and pools, and the save format on disk | [ ] |
+| 6.5 | It runs, headless | Files from the user's own data, the game's maths, pads, saves and overlays, with no window. All 33 modes play to the end, optimised and clean under ASan and UBSan | [ ] |
+| 6.6 | A native renderer | Models, maps, sprites and text drawn directly through SDL3's GPU API, replacing the PS1 drawing code: real 3D, real textures and any resolution, with no PS1 drawing commands or VRAM | [ ] |
+| 6.7 | Native sound | The game's sound banks and music played by its own mixer and sequencer on SDL3, with reverb. Note timing, pitch and volume checked against Sony's linked code | [ ] |
+| 6.8 | Playing it | The window, keyboard, controllers with analog sticks and rumble, and saving. Played side by side with retail over 4.4's route, then a first release for Windows and Linux | [ ] |

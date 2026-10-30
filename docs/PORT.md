@@ -16,8 +16,7 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
    stays the proof that the source is the game. The Makefile never sees `port/`.
 3. **Everything PC-only goes in `port/`**, and the port never builds from `src/` or `include/`. A fix found in one
    copy goes to the other by hand, if it applies.
-4. **The port plays the same as retail.** With no `make check` to protect it, the comparison with retail is the
-   safety net: the same inputs have to give the same game state.
+4. **The port plays the same as retail.** With no `make check` to protect it, the check is playing it next to retail.
 5. **No Sony code in `port/`.** PsyQ's names go as the code is cleaned up, in favour of plain functions.
 6. **No emulation and no hacks.** No PS1 GPU, VRAM or SPU model, no fixed low addresses, no linker lists that
    recreate the PS1's layout, no crash handlers that patch up bad accesses, no `-O0` to hide undefined
@@ -85,10 +84,9 @@ become render targets.
 mixer, and the SEQ music by a native sequencer. To check it, Sony's linked code runs in a small MIPS interpreter against
 the same inputs, and note timing, pitch and volume have to agree.
 
-**Keeping it the same game.** The retail half comes first: scripted pad inputs go to retail in an emulator, and the
-game's state is recorded frame by frame on the machine that has the disc. Once the port runs, it replays the same inputs
-and has to give the same state, and any refactoring that changes the game fails that test. The picture is meant to
-differ; how the game plays isn't.
+**Keeping it the same game.** The user plays each stage next to retail and says what's wrong. All 33 modes also play to the
+end by themselves on every build, optimised and under ASan and UBSan, which catches crashes and bad memory but not a
+game that plays differently.
 
 ## Building
 

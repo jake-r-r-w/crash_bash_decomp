@@ -26,21 +26,21 @@ if(NOT SDL3_FOUND)
   FetchContent_MakeAvailable(SDL3)
 endif()
 
-# The game's C, as it stands: this target is what 6.3 to 6.5 clean up (docs/ROADMAP-B.md). It isn't in the
+# The game's C, as it stands: this target is what 6.2 to 6.4 clean up (docs/ROADMAP-B.md). It isn't in the
 # default build yet, because 164 data tables keep addresses in s32s, which can't compile as 64-bit. Build it with
 # --target game to get the list.
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS game/main/*.c game/overlays/*.c)
 add_library(game OBJECT EXCLUDE_FROM_ALL ${GAME_SOURCES})
 target_include_directories(game PUBLIC psyq/include game/include)
 target_compile_options(game PRIVATE
-  # The dialect it was written in, until every function has a prototype (6.3).
+  # The dialect it was written in, until every function has a prototype (6.2).
   -std=gnu89
   # What the PS1's compiler did with the rest: a signed char, and signed overflow that wraps.
   -fsigned-char -fwrapv -fno-strict-aliasing -fno-builtin
-  # Old C, reviewed in 6.3 and 6.4; the warnings that matter for 64-bit stay on.
+  # Old C, reviewed in 6.2 and 6.3; the warnings that matter for 64-bit stay on.
   -Wno-deprecated-non-prototype -Wno-strict-prototypes -Wno-pointer-sign
   -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-format-security
-  # Addresses kept in integers are the list for 6.3: warnings for now, errors once they reach zero.
+  # Addresses kept in integers are the list for 6.2: warnings for now, errors once they reach zero.
   -Wno-error=int-conversion $<$<C_COMPILER_ID:Clang>:-ferror-limit=0>)
 
 add_executable(crashbash main.c)

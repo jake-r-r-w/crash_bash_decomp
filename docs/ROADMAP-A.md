@@ -781,7 +781,7 @@ The release is done: 5.1 to 5.15 (2026-10-29).
     `XZBoxToSphere`, so they can link into one PC program.
 - [x] 6.1 Foundations (2026-10-31): `port/game/` is the port's copy of the game's C, with CMake presets, Clang and GCC,
   SDL3 and CTest on Windows and Linux. The port's own program builds and passes its tests. The game's C compiles
-  as 64-bit except for 164 data tables that keep addresses in `s32`s, the first job of 6.3.
+  as 64-bit except for 164 data tables that keep addresses in `s32`s, the first job of 6.2.
 - A 32-bit port ran the game on the PS1's memory layout, with all 33 modes playing to the end, then was
   deleted (2026-10-30). The layout couldn't reach 64-bit, so the port starts again (ROADMAP-B, PORT.md). Its
   code is in git at `7115b3b8`, and PORT.md has what it taught.

@@ -66,8 +66,8 @@ ROADMAP-B.md, Part 6:
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. **The PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
-   `port/game/`. 6.1 is done. Next is 6.2, the retail recordings: one mode first to prove the comparison works, then
-   one short recording per minigame just before 6.6.
+   `port/game/`. 6.1 is done. Next is 6.2, addresses and calls, which starts with the 164 data
+   tables that can't compile. Whether it plays the same as retail is checked by the user playing it.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -443,8 +443,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-31 (retail recordings dropped):** the user will test the port by playing it, so there's no recorder and no
+  GitHub workflow, and the steps are renumbered. Seen while trying it: Cross on the network RetroPad never showed in
+  `Pads` over 31 taps on PCSX ReARMed, and a level's opening wait ended by itself, so playtest.mjs's taps may do nothing.
 - **2026-10-31 (ROADMAP-B 6.1):** `port/` has the copy of the game's C, presets, SDL3 and CTest. The game's C
-  compiles as 64-bit apart from 164 data tables, and isn't in the default build until 6.3 fixes them.
+  compiles as 64-bit apart from 164 data tables, and isn't in the default build until 6.2 fixes them.
 - **2026-10-30 (the port restarted):** the 32-bit port and its shared C changes are deleted, and ROADMAP-B
   Part 6 and PORT.md are a new native 64-bit plan for Windows and Linux, with no emulation and its own copy of
   the game's C. The old code is at `7115b3b8`.
