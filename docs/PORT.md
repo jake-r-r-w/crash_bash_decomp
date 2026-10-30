@@ -50,6 +50,20 @@ the PS1 or in its executable's format:
 | `modchip.c`, `modchip_msg.c` | Reads the BIOS's region byte, draws the warning from its font | Stub `modchip_check_region` |
 | `<game>_id.c` (14) | The first word of each overlay's file | Not needed: the overlays link into the program |
 
+## Targets
+
+Windows, Linux, macOS and Android (decided 2026-10-30).
+
+- **macOS and Android need 64-bit**, so 6.5 is required for them. The 32-bit build is the stage that
+  gets the game running on Windows and Linux, and then the reference for 64-bit.
+- **They're also ARM**, as are many Windows and Linux machines, so the shared C can't assume x86. In
+  particular a plain `char` is unsigned on ARM Android and Linux, and signed on x86 and Apple's ARM.
+- **Clang builds for all four** (with the NDK on Android), so it's the port's main compiler, with GCC
+  as a second check.
+- **`platform/` uses SDL2**, which covers all four, and a renderer that does too.
+- **Android also needs** touch controls, its own packaging, and a way to get the game's data from the
+  user's own disc onto the device.
+
 ## What's known so far
 
 - **The overlays can link into one program.** On the PS1 they share addresses, but their 4,368 global
