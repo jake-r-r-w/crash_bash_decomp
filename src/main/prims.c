@@ -3236,7 +3236,7 @@ void process_control_update(process_control_info *pc, fade_info *fade) {
                 mal_compact(&MainHeap);
                 vab_transfer_check();
             }
-            mal_init(&MainHeap, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
+            mal_init(&MainHeap, (u8 *)pc->process->heap, RAM_TOP - (s32)pc->process->heap);
             smallnode_init();
         }
         ((GameState *)GameInfo)->exitFlags &= ~1;

@@ -1421,7 +1421,7 @@ void UpdateHeroShadow(s32 idx) {
     EXTengine *e;
 
     if (HeroHooks.UpdateShadow != NULL) {
-        HeroHooks.UpdateShadow();
+        HeroHooks.UpdateShadow(PASSED(idx));
     } else {
         HeroInfo *base = Heroes;
         h = base + idx;
@@ -1470,7 +1470,7 @@ void SetHeroAction(s32 player, s32 action) {
 
     h->hero_mode = action;
     h->hero_last_mode = old;
-    HeroActionTable[action].fn();
+    HeroActionTable[action].fn(PASSED(player));
 }
 
 void SetTweakAi(void) {
@@ -1843,9 +1843,9 @@ void SetHeroIdle(s32 arg0) {
 
     h = base + arg0;
 
-    h->hero_move->jump_max = 0;
-    h->hero_move->velocity_enable = 1;
-    HeroHooks.HeroSetIdle();
+    LOW_RAM(h->hero_move)->jump_max = 0;
+    LOW_RAM(h->hero_move)->velocity_enable = 1;
+    HeroHooks.HeroSetIdle(PASSED(arg0));
     SetHeroSeq(arg0, 1);
     h->hero->Camera.look_ahead = 0x400;
     if (h->hero_ctrl & 4) {

@@ -757,7 +757,7 @@ void PAHeroHit(u32 arg0) {
     s32 sfx;
 
     if (h->hero_move->reactive_speed != 0) {
-        HeroHooks.HeroKickCollision();
+        HeroHooks.HeroKickCollision(PASSED(arg0));
     }
     switch (ProcessHeroAnim(arg0)) {
     case 8:

@@ -3172,7 +3172,7 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     }
     FntLoadPatch = 0x2626001F;
     FntLoad(0x380, 0x100);
-    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
+    DebugFontStream = FntOpen(0x10, 0x10, LOW_RAM(ScreenRect)->w - 8, 0xE0, 0, 0x800);
     DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
@@ -3293,7 +3293,7 @@ s32 list_count(u8 **arg0) {
 void debug_font_init(void) {
     FntLoadPatch = 0x2626001F;
     FntLoad(0x380, 0x100);
-    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
+    DebugFontStream = FntOpen(0x10, 0x10, LOW_RAM(ScreenRect)->w - 8, 0xE0, 0, 0x800);
     DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
@@ -3301,7 +3301,7 @@ void debug_font_init(void) {
 void debug_font_init2(void) {
     FntLoadPatch = 0x2626001F;
     FntLoad(0x380, 0x100);
-    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
+    DebugFontStream = FntOpen(0x10, 0x10, LOW_RAM(ScreenRect)->w - 8, 0xE0, 0, 0x800);
     DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }

@@ -758,6 +758,17 @@ extern s32 VSyncRate;
 extern s32 LastFlipVSync;
 void mal_update(_mal_area *heap);
 extern u8 HeapStart[];
+/* The heap's end. On PC HeapStart is a block as big as the part of RAM the heap has once the engine is
+ * loaded, with the slot at its start (port/link_names.c). */
+#ifdef BASH_PC
+#define RAM_TOP ((s32)HeapStart + 0x14BD4C)
+#define SlotOverlayId HeapStart
+extern ModuleEntry EngineEntry;
+void pc_mode_text_loaded(const void *f);
+void pc_overlay_loaded(const void *f);
+#else
+#define RAM_TOP 0x801FF000
+#endif
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);
 extern ModuleEntry ShellModules;
 s32 load_file_direct(file *file, u8 *buf);

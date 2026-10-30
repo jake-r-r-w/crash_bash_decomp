@@ -3807,7 +3807,7 @@ void DinoHeroIdle(s32 arg0) {
 void SetDinoHeroIdle(s32 arg0) {
     EXTheromove *mv;
 
-    mv = Heroes[arg0].hero_move;
+    mv = LOW_RAM(Heroes[arg0].hero_move);
     SetHeroSeq(arg0, 0x4D);
     if (Heroes[arg0].hero_eng->sfx != NULL) {
         StopSfx(Heroes[arg0].hero_eng->sfx);

@@ -266,7 +266,7 @@ void HubPreMoveHero(s32 arg0) {
     u16 v;
 
     eng = Heroes[arg0].hero_eng;
-    mv = Heroes[arg0].hero_move;
+    mv = LOW_RAM(Heroes[arg0].hero_move);
     speed = HeroHooks.RunSpeeds[Heroes[arg0].hero_name * 3 + 1];
     rate = (u32)(HubHeroRing.radius * 0x648) >> 8;
     if (rate != 0) {

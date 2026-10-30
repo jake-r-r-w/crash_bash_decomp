@@ -47,12 +47,16 @@ s32 count_completion(u8 *arg0) {
 
 void shell_init(void) {
     VSyncRate = 2;
-    mal_init(&MainHeap, HeapStart, 0x801FF000 - (s32)HeapStart);
+    mal_init(&MainHeap, HeapStart, RAM_TOP - (s32)HeapStart);
     init_file();
     pads_init();
     pads_update();
+#ifdef BASH_PC
+    EngineModule = &EngineEntry; /* linked in, not loaded */
+#else
     load_file_direct(&DatIndex[991], HeapStart);
     EngineModule = (ModuleEntry *)HeapStart;
+#endif
     RunModules(&ShellModules);
 }
 
@@ -139,7 +143,7 @@ void shell_render_dcache(void) {
 
 void shell_init_heap(void) {
     VSyncRate = 2;
-    mal_init(&MainHeap, HeapStart, 0x801FF000 - (s32)HeapStart);
+    mal_init(&MainHeap, HeapStart, RAM_TOP - (s32)HeapStart);
     init_file();
     pads_init();
     pads_update();
@@ -166,7 +170,7 @@ void shell_start_engine(void) {
     u8 *p = EngineModule->heap;
 
     if (p != NULL) {
-        mal_init(&MainHeap, p, 0x801FF000 - (s32)p);
+        mal_init(&MainHeap, p, RAM_TOP - (s32)p);
         smallnode_init();
     }
     sound_init();

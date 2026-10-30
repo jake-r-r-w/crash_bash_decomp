@@ -30,8 +30,13 @@ typedef float f32;
  * caller's own, untouched. `f(PASSED(arg0))`. Only a PC build's calling convention needs them said. */
 #ifdef BASH_PC
 #define PASSED(args...) args
+/* Where the game uses a null pointer. The PS1 has RAM at address 0, so it reads and writes the kernel's
+ * low memory and carries on. A PC can't, so those few places say it, and get a block of their own. */
+extern unsigned char PcLowRam[];
+#define LOW_RAM(p) ((p) != NULL ? (p) : (__typeof__(p))PcLowRam)
 #else
 #define PASSED(args...)
+#define LOW_RAM(p) (p)
 #endif
 
 /* Game-specific structs, globals and prototypes go in their own headers under include/,

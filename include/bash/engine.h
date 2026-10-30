@@ -124,7 +124,7 @@ extern EXTengine EnginePool[];
 extern HeroInfo Heroes[4];
 /* A hero action (SetHeroAction): what starts it and what runs it each frame. */
 typedef struct HeroActionEntry {
-    void (*fn)(void);
+    void (*fn)();
     void (*update)(s32);
 } HeroActionEntry;
 extern HeroActionEntry HeroActionTable[];
@@ -179,7 +179,11 @@ extern s32 IdleFrames;
 extern s16 core_process;
 extern u8 *SlotBase;
 extern s32 ModeOverlayLoaded;
+#ifdef BASH_PC
+#define SlotHeapStart (HeapStart + 0x23E90) /* as far past the slot as on the PS1 */
+#else
 extern u8 SlotHeapStart[];
+#endif
 extern ArenaDef DefaultArenaDef;
 extern process_info RunGame;
 extern ScreenMode vmode_512_ntsc;
@@ -339,11 +343,11 @@ typedef struct EngineHooks {
     /* 0x10 */ HeroJumpEnt *JumpEnts;
     /* 0x14 */ void *VictorySeqs;     /* the victory sequences (VictorySeq, pause.h) */
     /* 0x18 */ void *CreateShadow;
-    /* 0x1C */ void (*UpdateShadow)(void);
+    /* 0x1C */ void (*UpdateShadow)();
     /* 0x20 */ void *PreMoveHero;
     /* 0x24 */ void *MoveHero;
     /* 0x28 */ void *PostMoveHero;
-    /* 0x2C */ void (*HeroFacing)(void);
+    /* 0x2C */ void (*HeroFacing)();
     /* 0x30 */ void (*HeroSetIdle)();
     /* 0x34 */ void (*HeroTouched)(s32);
     /* 0x38 */ void *HeroBot;

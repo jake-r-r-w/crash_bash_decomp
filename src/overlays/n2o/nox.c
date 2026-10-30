@@ -2230,7 +2230,7 @@ void NoxHeroDead(void) {
 void SetNoxHeroFly(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
-    EXTheromove *m = h->hero_move;
+    EXTheromove *m = LOW_RAM(h->hero_move);
 
     SetHeroSeq(arg0, 0x22);
     N2OHeroSetSpeed(arg0);

@@ -1512,11 +1512,11 @@ void InitPolarBomb(NAS *m) {
         if (e != NULL) {
             e->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
             e->sub->entity = 0x202F;
-            e->Engine->xform.hasScale = 1;
-            e->Engine->xform.order = 0;
-            e->Engine->xform.scale.vx = 0xC00;
-            e->Engine->xform.scale.vy = 0xC00;
-            e->Engine->xform.scale.vz = 0xC00;
+            LOW_RAM(e->Engine)->xform.hasScale = 1;
+            LOW_RAM(e->Engine)->xform.order = 0;
+            LOW_RAM(e->Engine)->xform.scale.vx = 0xC00;
+            LOW_RAM(e->Engine)->xform.scale.vy = 0xC00;
+            LOW_RAM(e->Engine)->xform.scale.vz = 0xC00;
             e->XYZ = m->Engine->XYZ;
             e->flags |= 0x8041;
             e->sub->scale = 0x200;
@@ -1800,7 +1800,7 @@ void PolarInitHeroEngine(s32 arg0) {
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
 
-    HeroHooks.HeroFacing();
+    HeroHooks.HeroFacing(PASSED(arg0));
     HeroApplyJump(arg0);
     if (m->velocity_calc == 3) {
         if (m->x_vel != m->x_max) {

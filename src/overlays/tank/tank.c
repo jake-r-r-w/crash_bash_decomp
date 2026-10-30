@@ -2596,8 +2596,8 @@ void SetTankHeroIdle(u32 player) {
     if (done == 0) {
         EXTengine *eng;
 
-        Heroes[player].hero_move->jump_max = 0;
-        Heroes[player].hero_move->velocity_enable = 1;
+        LOW_RAM(Heroes[player].hero_move)->jump_max = 0;
+        LOW_RAM(Heroes[player].hero_move)->velocity_enable = 1;
         Heroes[player].hero_idle_count = Random(0x96) + 0x5A;
         SetHeroSeq(player, 0x59);
         eng = Heroes[player].hero_eng;
@@ -8379,13 +8379,13 @@ void SetMoeJoeMode(s32 hero, s32 mode) {
     Heroes[hero].hero_last_mode = last;
     switch (mode) {
     case 0x6C:
-        ((void (*)())SetMoeJoeIdle)();
+        ((void (*)())SetMoeJoeIdle)(PASSED(hero));
         break;
     case 0x6E:
-        ((void (*)())SetMoeJoeMove)();
+        ((void (*)())SetMoeJoeMove)(PASSED(hero));
         break;
     case 0x69:
-        ((void (*)())SetMoeJoeRecoil)();
+        ((void (*)())SetMoeJoeRecoil)(PASSED(hero));
         break;
     case 0x6B:
         SetMoeJoeDead(hero, mode);

@@ -577,7 +577,7 @@ void BashSnowMoveHero(s32 arg0) {
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
 
-    HeroHooks.HeroFacing();
+    HeroHooks.HeroFacing(PASSED(arg0));
     HeroApplyJump(arg0);
     if (m->velocity_calc == 3) {
         if (m->x_vel != m->x_max) {
@@ -3134,7 +3134,7 @@ void InitBashHomer(NAS *nas) {
             sub->entity = 0x2010;
             sub->flags |= 0x21;
             sub = sub->next;
-            sub->xform.dirty = 1;
+            LOW_RAM(sub)->xform.dirty = 1;
         }
         mot = AddMotion(nas);
         if (mot != NULL) {

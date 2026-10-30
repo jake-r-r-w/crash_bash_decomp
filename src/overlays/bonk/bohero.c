@@ -654,7 +654,7 @@ void SetBonkHeroBackswing(s32 arg0) {
 
 void BonkHeroHit(s32 arg0) {
     if (Heroes[arg0].hero_move->reactive_speed != 0) {
-        HeroHooks.HeroKickCollision();
+        HeroHooks.HeroKickCollision(PASSED(arg0));
     }
     ProcessHeroAnim(arg0);
     HeroTestFall(arg0);
