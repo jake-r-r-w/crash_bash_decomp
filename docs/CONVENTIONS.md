@@ -137,7 +137,8 @@ A file is finished when every function in it reaches level 4.
   reordered statement) is fine when no natural form matches; say which and
   the gcc rule it works around in the match note.
 - A call that hands on the caller's own registers without naming them (`f()` with `f`'s `a0` still
-  the caller's) is written `f(PASSED(arg0))`: nothing on the PS1, the argument on PC (PORT.md).
+  the caller's) is written `f(PASSED(arg0))`: nothing on the PS1, the argument on PC (PORT.md). A read
+  or write through a null pointer, which the PS1 lets through, is written `LOW_RAM(p)->x`.
 - One function per match commit, through `decomp.py done NAME --commit`
   ([MATCHING.md](MATCHING.md)).
 - A function that will not match after a bounded effort is parked

@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include "platform.h"
 
-#define MAX_PADS 2
+#define MAX_PADS 4
 #define VBLANK_HZ 59.94
 #define OUT_RATE 44100
 /* how much sound may wait in the device's queue before more is dropped: 100 ms */
@@ -214,7 +214,7 @@ static int keyboard_buttons(void) {
     return b;
 }
 
-/* Port 1 has the keyboard and the first controller, port 2 the second controller. */
+/* The first pad is the keyboard and the first controller; then a controller each. */
 int host_pad(int port) {
     int b = -1;
 

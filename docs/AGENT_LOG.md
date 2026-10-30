@@ -55,6 +55,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   playtested.
 - **Shifted builds.** `make shift-all` (every binary moved, the memory images zeroed) boots and
   plays, playtested by hand on 2026-10-29.
+- **The PC port runs (ROADMAP-B 6.2, 2026-10-30).** `build/pc/crashbash.exe` plays in a window with sound
+  effects, keyboard and controllers, and `--playtest 0-32` plays all 33 modes to the end. Sound effects
+  only: music and reverb are 6.3. PORT.md has how it's kept working, and what's not checked yet.
 
 ## Next
 
@@ -62,8 +65,8 @@ ROADMAP-B.md, Part 6:
 
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
-3. **The PC port** (Part 6). 6.1 is done: the game's C builds and links for 32-bit Windows, against
-   stubs (PORT.md). Next is 6.2, the PS1 layers; PORT.md, What's known, lists what it has to change.
+3. **The PC port** (Part 6). 6.1 and 6.2 are done: the game runs on 32-bit Windows (PORT.md). Next is
+   6.3: libsnd's sequencer as C, for music, with libsnd's own volumes and pitches and the SPU's reverb.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -439,6 +442,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-30 (ROADMAP-B 6.2):**
+  - The game runs on PC: `port/sdk` has a software GPU, the GTE, CD, pads, card and sound effects, and
+    `port/platform/sdl.c` the window. `--playtest 0-32` plays all 33 modes to the end (31 to 33 wins,
+    the rest draws by the clock), and it looks right by eye. Music and reverb moved to 6.3.
+  - What the game's C assumes, and how the port keeps it, is in PORT.md. The two to know: its data needs
+    the PS1's layout (`port/data_order.txt`), and it can't be optimised (`-O0`).
+  - Not played by hand yet, and not compared with retail frame by frame (6.4).
 - **2026-10-30 (ROADMAP-B 6.1):**
   - The game's C compiles with Clang 22 and GCC 13, and links into a 32-bit Windows exe against stub
     PsyQ functions. It doesn't start the game yet (6.2).

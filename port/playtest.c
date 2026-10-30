@@ -99,7 +99,7 @@ static void result(const char *what) {
 
 static void start_next(void) {
     if (Next >= NumModes) {
-        printf("%d of %d modes won\n", NumModes - Bad, NumModes);
+        printf("%d of %d modes played to the end\n", NumModes - Bad, NumModes);
         fflush(stdout);
         platform_finish(Bad != 0);
     }

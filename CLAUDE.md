@@ -23,7 +23,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `decomp.py done NAME --commit` ([docs/MATCHING.md](docs/MATCHING.md); skill
   `/match-function`). The bulk matcher (`decomp.py auto`) is removed.
 - The boundary with the PC port ([docs/PORT.md](docs/PORT.md)): `src/` and `include/` are shared and
-  must always match, `src/ps1/` is PS1 only, and everything PC-only goes in `port/`.
+  must always match, `src/ps1/` is PS1 only, and everything PC-only goes in `port/`. The PC build runs
+  the game (PORT.md, Building and Running it); `crashbash.exe --no-host --no-pace --playtest 0-32` plays
+  every minigame to the end.
 - Parallel matching: `node tools/swarm/swarm.mjs` (host Node; see
   [tools/swarm/README.md](tools/swarm/README.md)). Stop it with
   `node tools/swarm/swarm.mjs stop` (`--now` to kill). It commits only through
@@ -92,7 +94,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `tools/scripts/rename_unit.py OLD NEW PREFIX` renames an overlay unit everywhere and
   `rename_file.py SEG NEW` one of its files (no byte
   changes); `field_uses.py STRUCT` every use of a struct's fields (by cc1, for naming them), `unk_fields.py` every struct's unk fields sorted unused / stored only / read, `field_rename.py OLD NEW` a struct field's uses after its struct (by cc1's
-  missing-member errors, so shared names like `unk6C` are safe); `bytes_ptrs.py` data arrays of
+  missing-member errors, so shared names like `unk6C` are safe); `pc_data_order.py` the PC build's data order (port/data_order.txt, from the PS1's link); `bytes_ptrs.py` data arrays of
   plain numbers holding an address, a symbol's or one inside a data object (pointers a shift would leave behind). `struct_layout.py TYPE` a
   struct's members by cc1's own layout, `retype.py FILE FUNC VAR TYPE` a byte pointer's offsets as fields,
   `fold_views.py CANON VIEW...` view structs folded into one, `diff_funcs.py` every function that differs,

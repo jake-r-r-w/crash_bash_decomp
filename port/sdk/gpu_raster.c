@@ -129,10 +129,10 @@ static inline uint16_t flat(int r, int g, int b, int x, int y, int dither) {
         r += d;
         g += d;
         b += d;
-        r = r < 0 ? 0 : r > 255 ? 255 : r;
-        g = g < 0 ? 0 : g > 255 ? 255 : g;
-        b = b < 0 ? 0 : b > 255 ? 255 : b;
     }
+    r = r < 0 ? 0 : r > 255 ? 255 : r;
+    g = g < 0 ? 0 : g > 255 ? 255 : g;
+    b = b < 0 ? 0 : b > 255 ? 255 : b;
     return (r >> 3) | ((g >> 3) << 5) | ((b >> 3) << 10);
 }
 
@@ -278,12 +278,6 @@ static void polygon(const uint32_t *p, uint32_t code) {
             }
             p++;
         }
-    }
-    if (!gouraud && !textured) {
-        /* flat: no gradients needed, the colour goes through START's base */
-    }
-    if (!gouraud) {
-        /* the same colour everywhere: the gradients stay 0 */
     }
     triangle(&v[0], &v[1], &v[2], textured, gouraud, semi, raw, clut_x, clut_y);
     if (quad) {

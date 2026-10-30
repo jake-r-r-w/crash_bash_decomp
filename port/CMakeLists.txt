@@ -33,7 +33,9 @@ endforeach()
 
 set(SDK_SOURCES sdk/cd.c sdk/etc.c sdk/gpu.c sdk/gpu_raster.c sdk/gte.c sdk/mcrd.c sdk/pad.c sdk/snd.c)
 
-find_package(SDL2 QUIET CONFIG)
+# SDL2 from the system, or unpacked in ext/sdl2 (docs/PORT.md, Building).
+file(GLOB SDL2_HINTS "${REPO}/ext/sdl2/SDL2-*/i686-w64-mingw32/lib/cmake/SDL2")
+find_package(SDL2 QUIET CONFIG HINTS ${SDL2_HINTS})
 if(SDL2_FOUND)
   set(HOST_SOURCE platform/sdl.c)
 else()
@@ -43,7 +45,11 @@ endif()
 
 add_executable(crashbash main.c overlays.c playtest.c link_names.c ${HOST_SOURCE} ${SDK_SOURCES} ${GAME_SOURCES})
 if(SDL2_FOUND)
-  target_link_libraries(crashbash PRIVATE SDL2::SDL2-static)
+  if(TARGET SDL2::SDL2-static)
+    target_link_libraries(crashbash PRIVATE SDL2::SDL2-static)
+  else()
+    target_link_libraries(crashbash PRIVATE SDL2::SDL2)
+  endif()
 endif()
 # INCLUDE_ASM_H keeps out include_asm.h, the PS1 assembler's macros (splat rewrites that file).
 target_compile_definitions(crashbash PRIVATE BASH_PC INCLUDE_ASM_H)
@@ -61,13 +67,14 @@ target_compile_options(crashbash PRIVATE
 # A primitive's link keeps 24 bits of its address, so the program has to load below 16 MB, at a fixed
 # place (docs/PORT.md).
 #
-# And the game reads some globals through others, so its data has to keep the PS1's layout: each object is
-# in a section of its own (above), which the linker lays out from a list (tools/scripts/pc_data_order.py).
+# The game reads some globals through others, so its data has to keep the PS1's layout: each object is in
+# a section of its own (above), which the linker lays out from a list (tools/scripts/pc_data_order.py).
+# Nothing unused may go, and it writes to a const string, so constants are writable, as on the PS1.
 set(DATA_ORDER "${CMAKE_CURRENT_SOURCE_DIR}/data_order.txt")
 set_property(TARGET crashbash APPEND PROPERTY LINK_DEPENDS "${DATA_ORDER}")
 if(WIN32)
   target_link_options(crashbash PRIVATE -Wl,--image-base=0x400000 -Wl,--disable-dynamicbase -Wl,--no-gc-sections
-    "-Wl,-Xlink=-order:@${DATA_ORDER}" -Wl,-Xlink=-ignore:4037)
+    "-Wl,-Xlink=-order:@${DATA_ORDER}" -Wl,-Xlink=-ignore:4037 "SHELL:-Xlinker --Xlink=-section:.rdata,rw")
 else()
   target_link_options(crashbash PRIVATE -no-pie -Wl,-Ttext-segment=0x400000
     "-Wl,--symbol-ordering-file=${DATA_ORDER}" -Wl,--no-warn-symbol-ordering)

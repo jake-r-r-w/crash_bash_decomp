@@ -780,6 +780,12 @@ The release is done: 5.1 to 5.15 (2026-10-29).
     6.2. It builds with the image's GCC 13; `-DBASH_BUILD_GAME=ON` picks up the 38 shared files.
   - Checked from the built ELFs: the 14 overlays' 4,368 global names have one clash,
     `XZBoxToSphere`, so they can link into one PC program.
+- [x] 6.2 The PS1 layers replaced, and the game runs on PC (2026-10-30; PORT.md). A software GPU, the
+  GTE and libgte as C, libcd on `CRASHBSH.DAT`, pads, a memory card file and SDL2. All 33 minigame modes
+  play to the end with computer players (`--playtest 0-32`), in about two minutes. What it showed about
+  the shared C: more calls relying on the caller's registers, through function pointers; null pointers
+  (`LOW_RAM`); the data's layout (`data_order.txt`), and why the game's C can't be optimised. Music and
+  reverb moved to 6.3.
 - [x] 6.1 The game's C builds for PC with current compilers (2026-10-30; PORT.md, What's known).
   - All 38 files compile with Clang 22 and GCC 13, and link into a 32-bit Windows exe against stub PsyQ
     functions. `port/sdk/include` has the PC headers; their layouts and macros were compared with Sony's.

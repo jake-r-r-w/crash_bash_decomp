@@ -18,8 +18,7 @@ Windows, Linux, macOS and Android.
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 6.2 | Replace the PS1 layers | PC versions of the CD, GPU and GTE, SPU and pads; assets from the extracted files | [ ] |
-| 6.3 | Libsnd's sequencer as C | Plain non-matching C (and any GTE maths needed bit for bit), checked against the linked originals | [ ] |
+| 6.3 | Libsnd's sequencer as C | Plain non-matching C, checked against the linked originals: music, with libsnd's own volumes and pitches, and the SPU's reverb | [ ] |
 | 6.4 | Same game | Played side by side with retail over 4.4's route, it behaves the same | [ ] |
 | 6.5 | A 64-bit build | The addresses kept in integers and the structs holding pointers, fixed in the shared C (each change passing `make check`), with a translation step for files laid over structs. Required for macOS and Android. The 32-bit build is the reference. | [ ] |
 | 6.6 | macOS and Android | Builds for both, ARM included. Android also needs touch controls, packaging, and the game's data from the user's own disc. | [ ] |
