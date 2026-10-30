@@ -429,7 +429,7 @@ void InitialiseN2OFirst(void) {
         HeroHooks.UpdateShadow = (void *)NoxUpdateShadow;
         NoxBossDead = 0;
     }
-    HeroHooks.InitHero = (s32)N2OInitHero;
+    HeroHooks.InitHero = N2OInitHero;
     HeroHooks.HeroModels = N2OHeroModels;
     HeroHooks.VictorySeqs = N2OVictorySeqs;
     HeroActHit = 0x2A;
@@ -527,7 +527,7 @@ s32 N2O_KeepInBounds(EXTengine *arg0) {
     N2OCircle *c;
 
     for (i = 0; i < 4; i++) {
-        c = (N2OCircle *)(i * 6 + (s32)N2OPillarList);
+        c = (N2OCircle *)((u8 *)N2OPillarList + i * 6);
         dx = arg0->XYZ.x - c->x;
         dz = arg0->XYZ.z - c->z;
         if (arg0->collision_box.flags & 0x40) {
@@ -669,10 +669,7 @@ void N2OHeroEngineUpdate(s32 arg0) {
     if (r == NULL) goto next;
     {
         base = N2OHeroBoxes;
-        b = (N2OHeroBox *)(arg0 << 2);
-        b = (N2OHeroBox *)((s32)b + arg0);
-        b = (N2OHeroBox *)((s32)b << 3);
-        b = (N2OHeroBox *)((s32)base + (s32)b);
+        b = (N2OHeroBox *)((u8 *)base + arg0 * 40);
         t = r->dy;
         b->a = t;
         b->b = r->height;
@@ -687,11 +684,8 @@ next:
     v = &sp10;
     if (r != NULL) {
         base = N2OHeroBoxes;
-        b = (N2OHeroBox *)(arg0 << 2);
-        b = (N2OHeroBox *)((s32)b + arg0);
-        b = (N2OHeroBox *)((s32)b << 3);
         t = r->radius;
-        b = (N2OHeroBox *)((s32)base + (s32)b);
+        b = (N2OHeroBox *)((u8 *)base + arg0 * 40);
         b->d = t;
         gte_rotate_point((SVECTOR *)r, v);
         b->x1 = sp10.vx - (&Heroes[arg0])->hero_eng->XYZ.x;
@@ -1524,7 +1518,7 @@ void SetN2OHeroDead(s32 arg0) {
     temp_s0_2 = &base2[arg0];
     temp_v0 = temp_s0_2->hero_eng;
     sp18 = temp_v0->XYZ;
-    SpawnModelFx(0, (s32 *)&sp18, (s32) &HeroModelBank[DB_PlayerVehicle]);
+    SpawnModelFx(0, (s32 *)&sp18, &HeroModelBank[DB_PlayerVehicle]);
     PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->XYZ, 0x1000, 0x1E00, 0);
     HeroBecomeAngel(arg0);
 }
@@ -2179,7 +2173,7 @@ void N2OUpdateBoss(void) {
         if (Heroes[3].hero_attack_timer == 0) {
             Heroes[3].hero_eng->flags = 0;
             PlaySfx(0x586, NULL, &Heroes[3].hero_eng->XYZ, 0x1000, 0x1E00, 0);
-            SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_BallsEffects]);
+            SpawnModelFx(0, &eng->XYZ.x, &HeroModelBank[DB_BallsEffects]);
             BossState.flags |= 0x8000;
         }
     } else {

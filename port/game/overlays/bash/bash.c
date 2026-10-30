@@ -1907,7 +1907,7 @@ s32 BashAI_NearestEnemy(s32 arg0) {
     h = &Heroes[arg0];
     for (i = 0; (u16)i < 4; i++) {
         if ((u16)i != arg0 && (g->teams == 0 || (u16)i != mate)) {
-            o = (HeroInfo *)((u16)i * sizeof(HeroInfo) + (u32)base);
+            o = (HeroInfo *)((u8 *)base + (u16)i * sizeof(HeroInfo));
             if (!(o->hero_status & 0xFA00)) {
                 a = h->hero_eng;
                 b = o->hero_eng;
@@ -2341,7 +2341,7 @@ void BashSpaceInitTiles(void) {
                 v = *id;
                 i = 7 - (s16)(v % 10);
                 j = (s16)(v / 10) - 1;
-                p = (BashCell *)(i * sizeof(BashCell) + j * sizeof(BashSpaceTiles[0]) + (u32)base);
+                p = (BashCell *)((u8 *)base + i * sizeof(BashCell) + j * sizeof(BashSpaceTiles[0]));
                 p->obj = obj;
                 sub_use_quad_model((u8 *)obj);
                 obj->flags |= 0x1000000;
@@ -2373,7 +2373,7 @@ void BashSpaceInitTiles(void) {
     base2 = BashSpaceTiles[0];
     for (colOff = 0; i < 8; i++, colOff += sizeof(BashCell)) {
         for (j = 0, off = colOff; j < 8; j++, off += sizeof(BashSpaceTiles[0])) {
-            p = (BashCell *)(off + (u32)base2);
+            p = (BashCell *)((u8 *)base2 + off);
             obj = p->obj;
             if (obj != NULL) {
                 p->flag = obj->entity;
@@ -3461,7 +3461,7 @@ void InitBashPenguin(NAS *nas) {
     if (eng != NULL) {
         BashPenguinEng = eng;
         ScriptCursorFirst(nas, &PenguinScriptInit);
-        eng->sub->u6C.dbase = (s32)&HeroModelBank[DB_Penguin];
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Penguin];
         eng->sub->entity = 0x2001;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
@@ -3489,14 +3489,14 @@ void InitSnowGlint(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        eng->sub->u6C.dbase = ((s32)MapScene->dbase);
+        eng->sub->u6C.dbase = MapScene->dbase;
         eng_add_subs_n(eng, 9);
         sub = nas->Engine->sub;
         g = AddExt(nas, 0x34, 0x20000002);
         if (g != NULL && sub != NULL) {
             i = 0;
             do {
-                s32 v = ((s32)MapScene->dbase);
+                s32 v = MapScene->dbase;
                 sub->entity = 0x2001;
                 sub->flags = (sub->flags | 0x21) & 0xFFFF7FFF;
                 sub->u6C.dbase = v;

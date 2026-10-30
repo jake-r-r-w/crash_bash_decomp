@@ -1605,7 +1605,7 @@ void BonkSpawnCrate(void) {
         if (n != NULL) {
             n->UserInfo.user1 = Random(10) + BonkEntryCur * 5;
             n->UserInfo.user2 = BonkEntryCur;
-            BonkEntries[BonkEntryCur].flag = (s32)n;
+            BonkEntries[BonkEntryCur].flag = n;
             BonkEntryCur += 1;
         }
     }

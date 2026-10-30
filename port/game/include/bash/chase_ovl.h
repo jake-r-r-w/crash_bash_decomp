@@ -64,7 +64,7 @@ typedef struct EggPuffExt {
 
 extern u16 ChaseHeroShadowModels[];
 extern u16 ChaseHeroShadowSizes[];
-extern s32 ChaseFlameTimer[];
+extern EXTengine *ChaseFlameTimer[];
 
 typedef struct CoalPosInner {
     s32 pad0[4];
@@ -152,7 +152,7 @@ typedef struct PickupCHExt {
 
 extern u8 ChaseHeroSlots[];
 extern s32 ChaseHeroState[][21];
-extern s32 ChaseGrid[];
+extern NAS *ChaseGrid[];
 
 /* Per-level spawn offsets read by ChaseSpawnCoal: radius, angle, height. */
 typedef struct ChaseSpawnOfs {

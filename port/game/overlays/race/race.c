@@ -474,7 +474,7 @@ void *RaceSmokeBoostWaterAnimList[3] = { &RaceSmokeBoostWaterSteps, 0, 0 };
 ScriptInit RaceSmokeBoostWaterScriptInit = { 0, (void *)&RaceSmokeBoostWaterAnimList, 0x402 };
 RaceBarrel RaceBarrels[128] = {0};
 s32 RaceSteer[4] = {0};
-s32 RaceSpinnerBoxes[6] = {0};
+void *RaceSpinnerBoxes[6] = {0};
 RacePiston RacePistons[6] = {0};
 s32 RaceSpinTimer = 0;
 s32 RaceSpinDelay = 0;
@@ -899,7 +899,7 @@ loop:
         if (i == player) {
             goto next;
         }
-        h = (HeroInfo *)(player * sizeof(HeroInfo) + (u32)base);
+        h = (HeroInfo *)((u8 *)base + player * sizeof(HeroInfo));
         if (i == h->hero_teammate) {
             goto next;
         }
@@ -961,7 +961,7 @@ s32 RaceAI_SteerAtVictim(s32 player)
                 }
             } while (0);
             ang = get_angle(o->hero_eng->XYZ.x, o->hero_eng->XYZ.z) & 0xFFF;
-            h = (HeroInfo *)(player * (s32)sizeof(HeroInfo) + (s32)base);
+            h = (HeroInfo *)((u8 *)base + player * (s32)sizeof(HeroInfo));
             if ((((ang - (get_angle(h->hero_eng->XYZ.x, h->hero_eng->XYZ.z) & 0xFFF)) << 20) >> 20) < 100) {
                 goto next;
             }
@@ -1088,7 +1088,7 @@ void InitialiseRACEFirst(void) {
     if (g->mode == 0x19) {
         h->HeroModels = RaceHeroModelsWater;
     }
-    h->InitHero = (s32)RaceInitHero;
+    h->InitHero = RaceInitHero;
     h->PreMoveHero = RacePreMoveHero;
     h->MoveHero = RaceMoveHero;
     h->RunSpeeds = RaceJumpTable;
@@ -1185,7 +1185,7 @@ s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
   s32 r;
   s32 c;
   found = -1;
-  if (((s32)MapScene->dbase) != 0)
+  if (MapScene->dbase != 0)
   {
     u8 *q = ((u8 *)MapScene->map);
     c = arg1 >= (*((s32 *) (((*(s32 *)&((map_map *)q)->contour_grids) + 0x14) + q)));  /* the contours' count */
@@ -1424,8 +1424,8 @@ void RaceInitSpinners(void) {
                 RaceSpinner = (RaceSpinObj *)obj;
             }
             if (obj->entity == 0x4000) {
-                RaceSpinnerBoxes[i] = (s32)obj;
-                RacePistons[i].unkC = (s32)obj;
+                RaceSpinnerBoxes[i] = obj;
+                RacePistons[i].unkC = obj;
                 obj->xform.rot.vy = i * 0x2AA;
                 i++;
             }
@@ -1449,7 +1449,7 @@ s32 RacePistonPattern(RacePattern *pats, s32 idx) {
     s32 v;
 
     speed = 2;
-    pat = (RacePattern *)(idx * 8 + (s32)pats);
+    pat = (RacePattern *)((u8 *)pats + idx * 8);
     step = pat->steps;
     base = 0x4000;
     if (GameLevelFlags & 0x80) {
@@ -2050,7 +2050,7 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
     found = 0;
     rad = radius;
     shift = 12;
-    bad = idx >= (((s32)MapScene->dbase) ?
+    bad = idx >= (MapScene->dbase ?
                   *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
                            (s32)((u8 *)MapScene->map) + 0x14) :
                   0);
@@ -2187,7 +2187,7 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     found = 0;
     rad = radius;
     one = 0x1000;
-    bad = idx > (((s32)MapScene->dbase) ?
+    bad = idx > (MapScene->dbase ?
                  *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
                           (s32)((u8 *)MapScene->map) + 0x14) :
                  0);
@@ -2346,7 +2346,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     found = 0;
     rad = radius;
     one = 0x1000;
-    bad = idx > (((s32)MapScene->dbase) ?
+    bad = idx > (MapScene->dbase ?
                  *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
                           (s32)((u8 *)MapScene->map) + 0x14) :
                  0);
@@ -5472,7 +5472,7 @@ void InitDinoEgg(NAS *m) {
         m->Engine->xform.order = 0;
         m->Engine->xform.hasScale = 1;
         m->Engine->sub->entity = 0x2005;
-        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
+        m->Engine->sub->u6C.dbase = MapScene->dbase;
         ext->NasStatus = 0;
         ext->angcounter = 0;
         ext->yang = 0;
@@ -6109,7 +6109,7 @@ void InitBarrelRoll(NAS *m) {
 
     ext = AddExt(m, 0x80, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
+        m->Engine->sub->u6C.dbase = MapScene->dbase;
         m->Engine->sub->entity = 0x2037;
         m->Engine->xform.order = 1;
         ext->arc = 0xC;
@@ -6190,7 +6190,7 @@ void InitTrackGlob(NAS *m) {
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &TrackGlobScriptInit);
         AddToGroup((NAS **)&RaceObjects, (NAS *)m);
-        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
+        m->Engine->sub->u6C.dbase = MapScene->dbase;
         m->Engine->sub->entity = 0x4100;
         m->Engine->xform.order = 1;
         ext->arc = 0x10;
@@ -6332,7 +6332,7 @@ void InitDac(NAS *m) {
 
     ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
+        m->Engine->sub->u6C.dbase = MapScene->dbase;
         m->Engine->xform.hasScale = 1;
         m->Engine->xform.order = 2;
         m->Engine->xform.scale.vx = 0x2000;
@@ -6528,7 +6528,7 @@ void InitGlob(NAS *m) {
     ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &GlobScriptInit);
-        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
+        m->Engine->sub->u6C.dbase = MapScene->dbase;
         GotoLinkAnim((EXTanimator *)ext->cursor, 2);
         RunNasAnim(m);
         ext->state = 3;
@@ -6745,7 +6745,7 @@ void InitTNTCrate(NAS *m) {
     m->Engine->xform.order = 2;
     m->Engine->xform.hasScale = 1;
     m->Engine->sub->entity = 0x2009;
-    m->Engine->sub->u6C.dbase = (s32)&HeroModelBank[DB_CrateObjects];
+    m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
     m->UserInfo.status = 0;
     m->UserInfo.user1 = 0;
     m->UserInfo.user2 = 0;

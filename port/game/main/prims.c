@@ -2776,7 +2776,7 @@ void subpool_init(s32 n) {
     p = mal_alloc(n * 0xA8, &MainHeap);
     i = n - 1;
     sub = (subengine *)p;
-    SubPool = (s32)sub;
+    SubPool = sub;
     next_sub = sub;
     if (i > 0) {
         do {
@@ -3350,7 +3350,7 @@ PosEntry PosFlashes[9] = {
 GfxState RenderState = {0};
 s32 PrimDepthLimit = 0;
 SVECTOR MorphVerts[1024] = {0};
-s32 SubPool = 0;
+void *SubPool = 0;
 subengine *next_sub = 0;
 map_enviroment *MapScene = 0;
 MATRIX MapSceneMatrix = {0};

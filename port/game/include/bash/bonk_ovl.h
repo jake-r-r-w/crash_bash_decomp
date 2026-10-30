@@ -60,7 +60,7 @@ static inline void Bonk_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
             ext[6] = 0x100;
             if (p != NULL) {
                 ext[8] = 5;
-                ((s32 *)obj->Engine->sub)[0x6C / 4] = (s32)p;
+                obj->Engine->sub->u6C.ptr = p;
             } else {
                 ext[8] = 1;
             }
@@ -85,7 +85,7 @@ void InitialiseBONKFirst();
 
 typedef struct BonkEntry {
     s32 unk0;
-    s32 flag;  /* tested for zero */
+    void *flag;  /* tested for zero */
     s32 timer;  /* counted down */
 } BonkEntry;
 extern s32 BonkEntryCount;

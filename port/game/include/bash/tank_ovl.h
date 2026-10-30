@@ -81,7 +81,7 @@ extern s32 TotemAnim26[];
 
 
 extern s32 TankBotTargetOrder[];
-extern s32 TankMapNas[];
+extern NAS *TankMapNas[];
 extern RockTblEnt ShrapnelFrames[];
 extern s32 TankMapWidth;
 extern TA_Bot TankBotAI[4];

@@ -234,82 +234,40 @@ freed:
     return 1;
 }
 
+/* The heap is one free block, with its head in ExtHeap. */
+static void NasHeapSetUp(u8 *mem, u32 size) {
+    ExtBlk *first = (ExtBlk *)mem;
+
+    ExtHeap.prev = NULL;
+    ExtHeap.next = first;
+    ExtHeap.fprev = NULL;
+    ExtHeap.fnext = first;
+    ExtHeap.size = size | 2;
+    ExtHeap.owner = NULL;
+    ExtHeapLow = mem;
+    ExtHeapHigh = mem + size;
+    first->prev = &ExtHeap;
+    first->next = NULL;
+    first->fprev = &ExtHeap;
+    first->fnext = NULL;
+    first->size = (size - EXT_HEADER) | 1;
+    first->owner = NULL;
+    memset(mem + EXT_HEADER, 0, size - EXT_HEADER * 2);
+}
+
 void InitNasHeap(s32 arg0) {
-    s32 *base;
-    s32 *hd;
-    u32 size;
-    u32 words;
+    u32 size = (arg0 + 7) & ~7;
 
-    s32 *pb = &NasHeapMem;
-    u8 *res;
-
-    size = (arg0 + 3) & ~3;
     NasHeapBytes = size;
-    res = mal_alloc(size, &MainHeap);
-    *pb = (s32)res;
-    if (res != NULL) {
-        base = (s32 *)res;
-        hd = ExtHeap;
-        hd[0] = 0;
-        hd[1] = (s32)base;
-        hd[2] = 0;
-        hd[3] = (s32)base;
-        hd[4] = size | 2;
-        hd[5] = 0;
-        hd[6] = (s32)base;
-        hd[7] = (s32)base + size;
-        size -= 0x18;
-        base[0] = (s32)hd;
-        base[1] = 0;
-        base[2] = (s32)hd;
-        base[3] = 0;
-        base[4] = size | 1;
-        base[5] = 0;
-        size = (size - 0x18) >> 2;
-        base += 6;
-        do {
-            *base = 0;
-            size--;
-            base++;
-        } while (size != 0);
+    NasHeapMem = mal_alloc(size, &MainHeap);
+    if (NasHeapMem != NULL) {
+        NasHeapSetUp(NasHeapMem, size);
     }
 }
 
 void ResetNasHeap(void) {
-    s32 *base;
-    s32 *hd;
-    u32 size;
-    u32 flag;
-    u32 words;
-
-    size = NasHeapBytes;
-    if (NasHeapMem != 0) {
-        base = (s32 *)NasHeapMem;
-        flag = size | 2;
-        words = size >> 2;
-        size -= 0x18;
-        hd = ExtHeap;
-        hd[0] = 0;
-        hd[1] = (s32)base;
-        hd[2] = 0;
-        hd[3] = (s32)base;
-        hd[4] = flag;
-        hd[5] = 0;
-        hd[6] = (s32)base;
-        hd[7] = (s32)base + words * 4;
-        base[0] = (s32)hd;
-        base[1] = 0;
-        base[2] = (s32)hd;
-        base[3] = 0;
-        base[4] = size | 1;
-        base[5] = 0;
-        size = (size - 0x18) >> 2;
-        base += 6;
-        do {
-            *base = 0;
-            size--;
-            base++;
-        } while (size != 0);
+    if (NasHeapMem != NULL) {
+        NasHeapSetUp(NasHeapMem, NasHeapBytes);
     }
 }
 
@@ -325,9 +283,9 @@ void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl) {
     s32 total;
     u32 have;
 
-    want = (size + 3) & ~3;
-    total = (size + 0x1B) & ~3;
-    n = ExtFreeList;
+    want = (size + 7) & ~7;
+    total = want + EXT_HEADER;
+    n = ExtHeap.fnext;
     for (;;) {
         if (n == NULL) {
             goto fail;
@@ -406,8 +364,8 @@ void FreeExtension(void *ext) {
     u32 size;
 
     e = ext;
-    if ((u32)ExtHeap[6] < (u32)ext && (u32)ext < (u32)ExtHeap[7]) {
-        b = (ExtBlk *)((u8 *)ext - 0x18);
+    if (ExtHeapLow < (u8 *)ext && (u8 *)ext < ExtHeapHigh) {
+        b = (ExtBlk *)((u8 *)ext - EXT_HEADER);
         f = (ExtBlk *)b->owner;
         size = b->size;
         if (f != NULL) {
@@ -421,9 +379,9 @@ void FreeExtension(void *ext) {
         }
         f = b;
         n = f->next;
-        m = (ExtBlk *)ExtHeap;
+        m = &ExtHeap;
         if (n != NULL && (n->size & 1)) {
-            size += 0x18 + (n->size & ~3);
+            size += EXT_HEADER + (n->size & ~3);
             if ((n->fprev->fnext = n->fnext) != NULL) {
                 n->fnext->fprev = n->fprev;
             }
@@ -433,7 +391,7 @@ void FreeExtension(void *ext) {
         b = f->prev;
         if (b != NULL && (b->size & 1)) {
             f = b;
-            size += 0x18 + (f->size & ~3);
+            size += EXT_HEADER + (f->size & ~3);
             if ((f->fprev->fnext = f->fnext) != NULL) {
                 f->fnext->fprev = f->fprev;
             }
@@ -1181,7 +1139,7 @@ void InitTriggers(void) {
     tbl = LevelTriggerData->tbl;
     types = tbl->data;
     ntypes = tbl->count;
-    if ((TriggerCount = (((s32)MapScene->dbase) != 0) ? *((s32 *)MapScene->triggers) : 0) == 0) {
+    if ((TriggerCount = (MapScene->dbase != 0) ? *((s32 *)MapScene->triggers) : 0) == 0) {
         return;
     }
     if (HeadOfTriggers == NULL) {
@@ -1255,7 +1213,7 @@ ScriptCursor *ScriptCursorFirst(NAS *nas, ScriptInit *init) {
     c = NULL;
 done:
     if (c == NULL) {
-        ext = AllocExtension(nas, 0x2C, 0x400, &ExtTemplate400);
+        ext = AllocExtension(nas, sizeof(ExtTemplate400), 0x400, &ExtTemplate400);
         if (ext != NULL) {
             nas->NASid |= 0x400;
             *ext = ExtTemplate400;
@@ -1857,7 +1815,7 @@ ScriptCursor *CreateScriptCursor(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init)
 
     flags = init->flags;
     if (flags & 0x400) {
-        ext = AllocExtension(nas, 0x2C, 0x400, &ExtTemplate400);
+        ext = AllocExtension(nas, sizeof(ExtTemplate400), 0x400, &ExtTemplate400);
         if (ext != NULL) {
             nas->NASid |= 0x400;
             *ext = ExtTemplate400;
@@ -2030,7 +1988,7 @@ void *FindExtension(NAS *nas, s32 id) {
 EXTmotion *AddMotion(NAS *nas) {
     EXTmotion *mot;
 
-    mot = AllocExtension(nas, 0x34, 0x800, &ExtMotionTemplate);
+    mot = AllocExtension(nas, sizeof(ExtMotionTemplate), 0x800, &ExtMotionTemplate);
     if (mot != NULL) {
         nas->NASid |= 0x800;
         *mot = ExtMotionTemplate;
@@ -2041,7 +1999,7 @@ EXTmotion *AddMotion(NAS *nas) {
 Ext400 *AllocExt400(NAS *nas) {
     Ext400 *ext;
 
-    ext = AllocExtension(nas, 0x2C, 0x400, &ExtTemplate400);
+    ext = AllocExtension(nas, sizeof(ExtTemplate400), 0x400, &ExtTemplate400);
     if (ext != NULL) {
         nas->NASid |= 0x400;
         *ext = ExtTemplate400;
@@ -2052,7 +2010,7 @@ Ext400 *AllocExt400(NAS *nas) {
 Ext1000 *AddObject(NAS *nas) {
     Ext1000 *ext;
 
-    ext = AllocExtension(nas, 0x2C, 0x1000, &ExtTemplate1000);
+    ext = AllocExtension(nas, sizeof(ExtTemplate1000), 0x1000, &ExtTemplate1000);
     if (ext != NULL) {
         nas->NASid |= 0x1000;
         *ext = ExtTemplate1000;
@@ -2065,7 +2023,7 @@ EXTengine *AddExtEngine(NAS *nas, s32 id) {
     EXTengine *prev;
     EXTengine *ext;
 
-    eng = AllocExtension(nas, 0x9C, id | 0x100, &EngineTemplate);
+    eng = AllocExtension(nas, sizeof(EngineTemplate), id | 0x100, &EngineTemplate);
     if (eng != NULL) {
         nas->NASid |= 0x100;
         *eng = EngineTemplate;
@@ -4091,7 +4049,7 @@ u16 SpriteTripleUVs[4][3] = {
 s32 World_floor_level = 0;
 s32 VelocityCalc = 0;
 LevelTriggerHead *LevelTriggerData = 0;
-s32 LevelConfig = 0;
+void *LevelConfig = 0;
 EngineRec32 *LevelRecs = 0;
 s32 LevelUnused[6] = {0};
 GameOptionSet GameOptions = {0};
@@ -4135,9 +4093,9 @@ s32 GameReturnToHub = 0;  /* +0x64: SetReturnGateway */
 s32 GameDemo = 0;         /* +0x68: a demo is running */
 s32 GameTeams[1] = {0};
 AdventureState GameAdventure = {0};
-s32 ExtHeap[3] = {0};
-ExtBlk *ExtFreeList = 0;
-s32 ExtHeapInfo[4] = {0};  /* the NAS heap's size and bounds (InitNasHeap) */
+ExtBlk ExtHeap = {0};
+u8 *ExtHeapLow = 0;
+u8 *ExtHeapHigh = 0;  /* the NAS heap's size and bounds (InitNasHeap) */
 NAS NASTemplate = {0};
 subengine SubEngineTemplate = {0};
 EXTengine EngineTemplate = {0};
@@ -4267,7 +4225,7 @@ void (*SsTickSaved)() = 0x4D2;
 s32 SoundUnused[6] = {0};
 
 /* the .bss (main.c's comes first) */
-s32 NasHeapMem __attribute__((section(".bss")));
+u8 *NasHeapMem __attribute__((section(".bss")));
 u32 NasHeapBytes __attribute__((section(".bss")));
 u8 CdControlResult[8] __attribute__((section(".bss")));   /* CdControl's result */
 CdlLOC CdReadLoc __attribute__((section(".bss")));

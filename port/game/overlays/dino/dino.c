@@ -392,7 +392,7 @@ s32 id;
             if ((pad & 0x60) == 0x60) {
                 ang = 0x600;
             }
-            h2 = (HeroInfo *)(off + (s32)base);
+            h2 = (HeroInfo *)((u8 *)base + off);
             h2->hero_ai->AIang = ang;
             h2->hero_ai->AItimer1 = 0;
         }
@@ -2648,7 +2648,7 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
     found = 0;
     rad = radius;
     shift = 12;
-    bad = idx >= (((s32)MapScene->dbase) ?
+    bad = idx >= (MapScene->dbase ?
                   *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
                            (s32)((u8 *)MapScene->map) + 0x14) :
                   0);

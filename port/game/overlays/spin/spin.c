@@ -331,7 +331,7 @@ void SpinShuffleDropPoints(void) {
         d = i << 7;
         for (; j < 16; j++) {
             t0 = j << 8;
-            p = (SpinCell *)(d + (s32)base);
+            p = (SpinCell *)((u8 *)base + d);
             p->x = t0;
             p->y = y;
             d += 8;
@@ -522,13 +522,13 @@ s32 SpinRankHeroes(void) {
         while (1) {
             if (!(j < 3)) break;
             if (g->levelFlags & 0x40) {
-                if (h[g->adventure.rank[j]].hero_score > h[((u8 *)((k = j + 1) + (s32)g))[0xA7]].hero_score) {
+                if (h[g->adventure.rank[j]].hero_score > h[((u8 *)((u8 *)g + (k = j + 1)))[0xA7]].hero_score) {
                     a = g->adventure.rank[j];
                     g->adventure.rank[j] = g->adventure.rank[k];
                     g->adventure.rank[k] = a;
                 }
             } else {
-                if (h[g->adventure.rank[j]].hero_score < h[((u8 *)((m = j + 1) + (s32)g))[0xA7]].hero_score) {
+                if (h[g->adventure.rank[j]].hero_score < h[((u8 *)((u8 *)g + (m = j + 1)))[0xA7]].hero_score) {
                     a = g->adventure.rank[j];
                     g->adventure.rank[j] = g->adventure.rank[m];
                     g->adventure.rank[m] = a;
@@ -1457,7 +1457,7 @@ void PlotBalloon(NAS *nas) {
                                     }
                                 }
                             }
-                            SpawnModelFx(SpinBalloonAnims[SpinBalloonOwner], &eng->XYZ.x, (s32)&HeroModelBank[DB_RingObjects]);
+                            SpawnModelFx(SpinBalloonAnims[SpinBalloonOwner], &eng->XYZ.x, &HeroModelBank[DB_RingObjects]);
                             goto sfx;
                         }
                         if (fux->contains == owner) {
@@ -1477,7 +1477,7 @@ void PlotBalloon(NAS *nas) {
                             }
                         }
                     }
-                    SpawnModelFx(SpinBalloonAnims[fux->contains], &eng->XYZ.x, (s32)&HeroModelBank[DB_RingObjects]);
+                    SpawnModelFx(SpinBalloonAnims[fux->contains], &eng->XYZ.x, &HeroModelBank[DB_RingObjects]);
                 sfx:
                     PlaySfx(SpinBalloonSfx[kind - 8][Random(4)], NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                     o = fux->player;
@@ -1497,7 +1497,7 @@ void PlotBalloon(NAS *nas) {
                             StopSfx(Heroes[fux->player].hero_eng->sfx);
                         }
                     }
-                    SpawnModelFx(4, &eng->XYZ.x, (s32)&HeroModelBank[DB_RingObjects]);
+                    SpawnModelFx(4, &eng->XYZ.x, &HeroModelBank[DB_RingObjects]);
                     goto kill;
                 }
             case 3:
@@ -2545,7 +2545,7 @@ s32 SpinAI_NearestEnemy(s32 arg0) {
         if (*(volatile s32 *)(g + 0x6C) != 0 && i == flip) {
             continue;
         }
-        h = (HeroInfo *)(i * sizeof(HeroInfo) + (s32)base);
+        h = (HeroInfo *)((u8 *)base + i * sizeof(HeroInfo));
         if (h->hero_status & 0xFA00) {
             continue;
         }
@@ -3095,7 +3095,7 @@ void SpinHeroLose(s32 arg0) {
             h->hero_eng->xform.scale.vy = v;
             h->hero_eng->xform.scale.vz = v;
         } else {
-            SpawnModelFx(SpinBalloonAnims[arg0], &e->XYZ.x, (s32)&HeroModelBank[DB_RingObjects]);
+            SpawnModelFx(SpinBalloonAnims[arg0], &e->XYZ.x, &HeroModelBank[DB_RingObjects]);
             h->hero_status |= 0x8000;
         }
     }

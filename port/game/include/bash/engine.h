@@ -178,7 +178,7 @@ extern s32 GraphicsMode;
 extern s32 IdleFrames;
 extern s16 core_process;
 extern u8 *SlotBase;
-extern s32 ModeOverlayLoaded;
+extern file *ModeOverlayLoaded;
 extern u8 SlotHeapStart[];
 extern ArenaDef DefaultArenaDef;
 extern process_info RunGame;
@@ -192,7 +192,7 @@ extern struct Ambient_data *AmbienceDef; /* the level's (InitAmbience) */
 extern u16 AmbienceTimer;
 extern process_info ScriptSceneProcess;
 extern struct ScriptScene *SceneArgs;
-extern s32 SceneOldDbase;
+extern obj_dbase *SceneOldDbase;
 extern s32 SceneMarkCount;
 /* DrawSceneMarks's entries (SceneMarks, 0xC bytes) and the table they index (0x14 bytes). */
 typedef struct EngineMarker {
@@ -226,7 +226,7 @@ void InitialiseLevel(void);
 s32 CountTrophies(GameState *arg0);
 void HubStartCredits(void);
 
-extern s32 IntroDbase;
+extern obj_dbase *IntroDbase;
 extern char *HeroAnimNameA;
 extern obj_dbase *HeroAnimDbaseA;
 extern char *HeroAnimNameB;
@@ -332,7 +332,7 @@ typedef struct HeroJumpEnt {
 
 /* Engine callback table filled by SetDefaultHeroHooks (0x54 is HeroHooks.HeroKickCollision). */
 typedef struct EngineHooks {
-    /* 0x00 */ s32 InitHero;
+    /* 0x00 */ void (*InitHero)();
     /* 0x04 */ u16 *HeroModels;
     /* 0x08 */ void *flag;  /* tested for zero */
     /* 0x0C */ u16 *RunSpeeds;

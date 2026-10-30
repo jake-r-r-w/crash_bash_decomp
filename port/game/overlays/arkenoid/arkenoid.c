@@ -481,10 +481,7 @@ void ArkHeroEngineUpdate(s32 arg0) {
     if (r == NULL) goto next;
     {
         base = ArkHeroBoxes;
-        b = (ArkenoidHeroBox *)(arg0 << 2);
-        b = (ArkenoidHeroBox *)((s32)b + arg0);
-        b = (ArkenoidHeroBox *)((s32)b << 3);
-        b = (ArkenoidHeroBox *)((s32)base + (s32)b);
+        b = (ArkenoidHeroBox *)((u8 *)base + arg0 * 40);
         t = r->dy;
         b->a = t;
         b->b = r->height;
@@ -499,11 +496,8 @@ next:
     v = &sp10;
     if (r != NULL) {
         base = ArkHeroBoxes;
-        b = (ArkenoidHeroBox *)(arg0 << 2);
-        b = (ArkenoidHeroBox *)((s32)b + arg0);
-        b = (ArkenoidHeroBox *)((s32)b << 3);
         t = r->radius;
-        b = (ArkenoidHeroBox *)((s32)base + (s32)b);
+        b = (ArkenoidHeroBox *)((u8 *)base + arg0 * 40);
         b->d = t;
         gte_rotate_point((SVECTOR *)r, v);
         b->x1 = sp10.vx - (&Heroes[arg0])->hero_eng->XYZ.x;
@@ -521,7 +515,7 @@ void AR_PreInitLevel(void) {
     void *t;
 
     HeroHooks.HeroModels = ArkHeroModels;
-    HeroHooks.InitHero = (s32)AR_InitHero;
+    HeroHooks.InitHero = AR_InitHero;
     HeroHooks.CreateShadow = AR_InitShadow;
     HeroHooks.UpdateShadow = AR_UpdateShadow;
     HeroHooks.HeroBot = Ark_HeroBot;
@@ -2425,7 +2419,7 @@ void SetArkHeroDead(u32 arg0) {
     temp_s0_2 = &base2[arg0];
     temp_v0 = temp_s0_2->hero_eng;
     sp18 = temp_v0->XYZ;
-    SpawnModelFx(0, (s32 *)&sp18, (s32) &HeroModelBank[DB_BallsEffects]);
+    SpawnModelFx(0, (s32 *)&sp18, &HeroModelBank[DB_BallsEffects]);
     PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->XYZ, 0x1000, 0x1E00, 0);
     HeroBecomeAngel(arg0);
 }
@@ -4151,7 +4145,7 @@ void Plot_N_Gin(NAS *arg0) {
             gin->countdown = 0xA;
             gin->can_do |= 0x90;
             PlaySfx(0x5BE, NULL, NULL, 0x1000, 0x1E00, 0);
-            SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Ngin]);
+            SpawnModelFx(0, &eng->XYZ.x, &HeroModelBank[DB_Ngin]);
             eng->sub->entity = 0x2001;
             break;
         case 2:
@@ -4225,7 +4219,7 @@ void Plot_N_Gin(NAS *arg0) {
                 StopSfx(eng->sfx);
             }
             PlaySfx(0x5C0, NULL, NULL, 0x1000, 0x1E00, 0);
-            SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Ngin]);
+            SpawnModelFx(0, &eng->XYZ.x, &HeroModelBank[DB_Ngin]);
             gin->can_do = 0;
             eng->XYZ.y = -0x1000;
             eng->flags &= 0xFFFF7FFF;
@@ -5038,7 +5032,7 @@ void Create_ArkPickup(void)
 
   pos = MapPoints[s + 4].pos;
   ArkGoals[nas->UserInfo.user1].unk10 = 1;
-  tgt = SpawnModelFxOnce(1, (s32 *) (&pos), ((s32)MapScene->dbase));
+  tgt = SpawnModelFxOnce(1, (s32 *) (&pos), MapScene->dbase);
   if (tgt != 0)
   {
     AppendExtension((NAS *)nas, (NAS *)tgt);
@@ -5227,7 +5221,7 @@ void Init_ArkLaserWall(NAS *nas)
         off = 0;
         if (sub != 0) {
             do {
-                sub->u6C.dbase = ((s32)MapScene->dbase);
+                sub->u6C.dbase = MapScene->dbase;
                 sub->flags |= 0x21;
                 sub->entity = 0x2019;
                 sub->XYZ.x = off;
@@ -6040,7 +6034,7 @@ void Init_ArkCameraFlash(NAS *arg0) {
     if (eng != NULL) {
         s32 val;
         sub = eng->sub;
-        val = ((s32)MapScene->dbase);
+        val = MapScene->dbase;
         (sub->entity) = 0x2017;
         (sub->xform.hasScale) = 1;
         (sub->xform.order) = 0;
@@ -6062,7 +6056,7 @@ void Init_seaweed(NAS *arg0) {
     EXTengine *eng = arg0->Engine;
     if (eng != NULL) {
         ScriptCursor *cur;
-        eng->sub->u6C.dbase = ((s32)MapScene->dbase);
+        eng->sub->u6C.dbase = MapScene->dbase;
         cur = ScriptCursorFirst(arg0, &SeaweedScriptInit);
         if (cur != NULL) {
             u8 *trig = (u8*)arg0->trigger;

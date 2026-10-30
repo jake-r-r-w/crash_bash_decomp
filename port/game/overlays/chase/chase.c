@@ -388,13 +388,13 @@ s32 ChaseArenaShrink = 0;
 s32 ChaseBarrelCount = 0;
 NAS *ChaseGenerator = 0;
 NAS *ChaseGeneratorB = 0;
-s32 ChaseFlameTimer[4] = {0};
+EXTengine *ChaseFlameTimer[4] = {0};
 s32 ChaseFlameState[4] = {0};
 s32 ChaseFlameSfxHandle[4] = {0};
 s32 ChaseFlameObj[4] = {0};
 s32 ChaseHeroSpeed[4] = {0};
 u16 ChaseRunSpeeds[30] = {0};
-s32 ChaseGrid[1600] = {0};
+NAS *ChaseGrid[1600] = {0};
 
 void ChaseUpdateStub(s32 *arg0) {
 }
@@ -930,7 +930,7 @@ void ChaseInitHero(s32 arg0) {
     ChaseFlameSfxHandle[arg0] = 0;
     nas = CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1D09, 0x11);
     nas->UserInfo.user2 = arg0;
-    ChaseFlameTimer[arg0] = (s32)nas->Engine;
+    ChaseFlameTimer[arg0] = nas->Engine;
     ChaseFlameObj[arg0] = 0;
     if (g[0x5C] != 0) {
         p = (ChaseAiState *)((arg0 * 0x30) + ChaseHeroSlots);
@@ -2261,7 +2261,7 @@ NAS *ChaseSpawnCoal(s32 arg0) {
             gz >>= 7;
             idx = gz * 40 + gx;
             old = ChaseGrid[idx];
-            ChaseGrid[idx] = (s32)nas;
+            ChaseGrid[idx] = nas;
             if (old != 0) {
                 KillNAS((NAS *)old);
             }

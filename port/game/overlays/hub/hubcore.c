@@ -759,7 +759,7 @@ void HubSpawnEffects(void) {
     HubSpawnExt *ext;
 
     tbl = NULL;
-    if (((s32)MapScene->dbase) != 0) {
+    if (MapScene->dbase != 0) {
         tbl = ((s32 *)MapScene->path_list);
     }
     i = 0;
@@ -1003,7 +1003,7 @@ void PlotCrystalFlash(void) {
 }
 
 void InitCrystalFlash(FxObj *arg0) {
-    arg0->mid->inner->u6C.dbase = ((s32)MapScene->dbase);
+    arg0->mid->inner->u6C.dbase = MapScene->dbase;
     arg0->mid->inner->entity = 0x200E;
     arg0->mid->inner->xform.order = 0;
     arg0->mid->inner->xform.hasScale = 1;
@@ -1165,7 +1165,7 @@ void HubSpawnFlash(s32 *arg0, s32 arg1) {
             ext[6] = 0x100;
             if (p != NULL) {
                 ext[8] = 5;
-                ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+                nas->Engine->sub->u6C.ptr = p;
             } else {
                 ext[8] = 1;
             }
@@ -1429,7 +1429,7 @@ void InitialiseHUBFirst(void) {
     ((GameState *)GameInfo)->heroes[1] = 9;
     ((GameState *)GameInfo)->heroes[2] = 9;
     ((GameState *)GameInfo)->heroes[3] = 9;
-    HeroHooks.InitHero = (s32)HubInitHero;
+    HeroHooks.InitHero = HubInitHero;
     HeroHooks.PreMoveHero = (void *)HubPreMoveHero;
     HeroHooks.HeroTouched = (void *)HubHeroTouched;
     ((GameState *)GameInfo)->heroes[0] = ((GameState *)GameInfo)->heroChoice[0];
@@ -2736,7 +2736,7 @@ void HubSetDrawArea(s16 *a, void *b, s32 c, s32 d) {
     SetDrawArea((DRAWENV *)FILE_AT(b, (FrameCount & 1) * 12 + 0x18), rc);
     off = (FrameCount & 1) * 12;
     off2 = off + 0x18;
-    p = (u32 *)(off + (s32)b);
+    p = (u32 *)((u8 *)b + off);
     ((HubPTag *)&p[6])->addr = ((HubPTag *)&RenderState.ot[0x136])->addr;
     ((HubPTag *)&RenderState.ot[0x136])->addr = (u32)FILE_AT(b, off2);
     ((HubPTag *)&p[0])->addr = ((HubPTag *)&RenderState.ot[2])->addr;

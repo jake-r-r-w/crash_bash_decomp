@@ -27,9 +27,9 @@ typedef struct {
 
 extern PogoSquare PogoGrid[8][8];
 /* The board cell at byte offset off from base (PogoGrid). */
-#define CELL_AT(off) ((PogoSquare *)((off) + (u32)base))
+#define CELL_AT(off) ((PogoSquare *)((u8 *)base + (off)))
 /* The position a board cell's unk4 points to, as PlaySfx takes it. */
-#define CELL_POS(cx, cz) (&((PogoSquare *)((cx) * sizeof(PogoGrid[0]) + (cz) * sizeof(PogoSquare) + (u32)PogoGrid))->sub->XYZ)
+#define CELL_POS(cx, cz) (&((PogoSquare *)((u8 *)PogoGrid + (cx) * sizeof(PogoGrid[0]) + (cz) * sizeof(PogoSquare)))->sub->XYZ)
 
 /* A scene object in the list at MapScene->subs (InitPogo_Tiles). */
 typedef struct PogoObj {
@@ -62,7 +62,7 @@ static inline void Pogo_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
             ext[6] = 0x100;
             if (p != NULL) {
                 ext[8] = 5;
-                ((s32 *)obj->Engine->sub)[0x6C / 4] = (s32)p;
+                obj->Engine->sub->u6C.ptr = p;
             } else {
                 ext[8] = 1;
             }
@@ -172,7 +172,7 @@ extern s32 PowerupsMax[];
 extern s32 PogoUnused0;
 extern s32 PogoUnused1;
 extern s32 RooBounce;
-extern s32 PogoRooNas;
+extern NAS *PogoRooNas;
 extern s32 PogoLevelIndex;
 extern u16 TileLockTimes[][2];
 extern s32 PogoAiQualityIndex;
@@ -490,7 +490,7 @@ extern u16 TileFramesAlt[][4];
 #define CELL_SET_T(o, a, f) \
     ((o)->anim = (a), (o)->frame = CELL_FRAME(o, (f) & 0xFFF)->frame)
 /* &(o)->model->frames[i], as (i * 7) << 3 bytes (sizeof(PogoFrame) is 0x38) */
-#define CELL_FRAME(o, i) ((PogoFrame *)((u32)(o)->model->frames + (((i) * 7) << 3)))
+#define CELL_FRAME(o, i) ((PogoFrame *)((u8 *)(o)->model->frames + (((i) * 7) << 3)))
 
 extern s32 PadlockTimes[];
 

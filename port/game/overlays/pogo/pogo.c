@@ -545,7 +545,7 @@ s32 TileScan0[8] = {0};
 s32 TileScan1[8] = {0};
 s32 TileScan2[8] = {0};
 s32 TileScan3[8] = {0};
-s32 PogoRooNas = 0;
+NAS *PogoRooNas = 0;
 NAS *PogoPadlockNas = 0;
 PogoObj *PogoKerbObj = 0;
 s32 PogoLevelIndex = 0;
@@ -799,7 +799,7 @@ void InitPogo_Tiles(void) {
             PogoSquare *c;
 
             Tile_Clear(i, j);
-            c = (PogoSquare *)(off + (u32)base);
+            c = (PogoSquare *)((u8 *)base + off);
             c->sub = NULL;
             c->frame = 0;
             c->flags = 0;
@@ -822,7 +822,7 @@ void InitPogo_Tiles(void) {
             v = *id;
             j = 7 - (s16)(v % 10);
             i = (s16)(v / 10) - 1;
-            p = (PogoSquare *)(j * sizeof(PogoSquare) + i * sizeof(PogoGrid[0]) + (u32)base2);
+            p = (PogoSquare *)((u8 *)base2 + j * sizeof(PogoSquare) + i * sizeof(PogoGrid[0]));
             p->sub = (PogoCellPos *)obj;
             obj->flags |= 0x20000;
             psxpogo_init_tile((subengine *)obj);
@@ -1001,7 +1001,7 @@ void Update_Occupancy(void) {
         }
     }
     if (PogoRooNas != 0) {
-        eng = ((NAS *)PogoRooNas)->Engine;
+        eng = PogoRooNas->Engine;
         if (eng != NULL) {
             x = (eng->XYZ.x + 0x800) >> 9;
             z = (eng->XYZ.z + 0x800) >> 9;
@@ -1940,7 +1940,7 @@ void SetHeroPogoLoser(u32 arg0) {
             ext[6] = 0x100;
             if (p != NULL) {
                 ext[8] = 5;
-                ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+                nas->Engine->sub->u6C.ptr = p;
             } else {
                 ext[8] = 1;
             }
@@ -1980,7 +1980,7 @@ void HeroPogoLoser(u32 arg0) {
                     ext[6] = 0x100;
                     if (p != NULL) {
                         ext[8] = 5;
-                        ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+                        nas->Engine->sub->u6C.ptr = p;
                     } else {
                         ext[8] = 1;
                     }
@@ -1999,7 +1999,7 @@ bool TestHeroPogoDazed(u32 arg0) {
     PogoSquare *c;
     HeroInfo *base = Heroes;
 
-    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    h = (HeroInfo *)((u8 *)base + arg0 * sizeof(HeroInfo));
     if (!(h->hero_status & 0x800) && !(PogoPlay[arg0].flags & 1)) {
         return 0;
     }
@@ -2036,7 +2036,7 @@ bool TestHeroPogoDazed(u32 arg0) {
     SetHeroAction(arg0, 0x3B);
     if ((u32)x < 8 && z >= 0 && z < 8) {
         PogoSquare *cb = PogoGrid[0];
-        c = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)cb);
+        c = (PogoSquare *)((u8 *)cb + z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]));
         c->occupied = arg0 + 1;
         c->reserved = arg0 + 1;
     }
@@ -2061,12 +2061,12 @@ void SetHeroPogoDazed(u32 arg0) {
     z = (Heroes[arg0].hero_eng->XYZ.z + 0x800) >> 9;
     if ((u32)x < 8 && z >= 0 && z < 8) {
         PogoSquare *cb = PogoGrid[0];
-        c = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)cb);
+        c = (PogoSquare *)((u8 *)cb + z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]));
         c->occupied = arg0 + 1;
         c->reserved = arg0 + 1;
     }
     base = Heroes;
-    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    h = (HeroInfo *)((u8 *)base + arg0 * sizeof(HeroInfo));
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 10;
     PogoPlay[arg0].spin = 0;
@@ -2086,7 +2086,7 @@ void HeroPogoDazed(u32 arg0) {
     z = (Heroes[arg0].hero_eng->XYZ.z + 0x800) >> 9;
     if ((u32)x < 8 && z >= 0 && z < 8) {
         PogoSquare *cb = PogoGrid[0];
-        c = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)cb);
+        c = (PogoSquare *)((u8 *)cb + z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]));
         c->occupied = arg0 + 1;
         c->reserved = arg0 + 1;
     }
@@ -2157,7 +2157,7 @@ void AddDingoSmoke(u32 arg0) {
             ext[6] = 0x100;
             if (p != NULL) {
                 ext[8] = 5;
-                ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+                nas->Engine->sub->u6C.ptr = p;
             } else {
                 ext[8] = 1;
             }
@@ -2202,7 +2202,7 @@ void AddSomeDust(u32 arg0) {
             ext[6] = 0x100;
             if (p != NULL) {
                 ext[8] = 5;
-                ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+                nas->Engine->sub->u6C.ptr = p;
             } else {
                 ext[8] = 1;
             }
@@ -2245,7 +2245,7 @@ void AddBrioSmoke(u32 arg0) {
             ext[6] = 0x100;
             if (p != NULL) {
                 ext[8] = 5;
-                ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+                nas->Engine->sub->u6C.ptr = p;
             } else {
                 ext[8] = 1;
             }
@@ -2278,7 +2278,7 @@ void PogoHero_ExtraEffects(s32 arg0) {
     s32 dy;
     HeroInfo *base = Heroes;
 
-    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    h = (HeroInfo *)((u8 *)base + arg0 * sizeof(HeroInfo));
     pu = h->hero_powerup;
     if (pu != NULL) {
         sub = pu->sub;
@@ -2369,7 +2369,7 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2) {
 
     if (PogoPlay[arg2].status == 6) {
         base = PogoGrid[0];
-        p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+        p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
         p->mode = 10;
         p->player = arg2;
         p->timer = 0xF0;
@@ -2377,7 +2377,7 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2) {
     }
     {
         PogoSquare *b2 = PogoGrid[0];
-        p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)b2);
+        p = (PogoSquare *)((u8 *)b2 + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
     }
     p->mode = 1;
     p->player = arg2;
@@ -2431,7 +2431,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             tbl = TileFrames[row];
         }
         base = PogoGrid[0];
-        c0 = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+        c0 = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
         o = (PogoCellObj *)c0->sub;
         if (o == NULL) {
             return;
@@ -2439,7 +2439,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
         switch ((u16)c0->mode) {
         case 0:
             base0 = PogoGrid[0];
-            c = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base0);
+            c = (PogoSquare *)((u8 *)base0 + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
             if (c->old_player == -1) {
                 if (GameFrameCount & 1) {
                     CELL_SET_T(o, rnd, rnd);
@@ -2459,7 +2459,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             break;
         case 1:
             base1 = PogoGrid[0];
-            c = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base1);
+            c = (PogoSquare *)((u8 *)base1 + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
             if (c->player == -1) {
                 CELL_SET_T(o, rnd, rnd);
             } else {
@@ -2468,20 +2468,20 @@ void Tile_Update(s32 arg0, s32 arg1) {
             break;
         case 10:
             base10 = PogoGrid[0];
-            cell = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base10);
+            cell = (PogoSquare *)((u8 *)base10 + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
             if (cell->player != -1) {
                 CELL_SET_T(o, (MV->levelFlags & 0x80) ? 0x3045 : 0x3031, tbl[cell->player]);
             }
             break;
         case 2:
             base2 = PogoGrid[0];
-            cell2 = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base2);
+            cell2 = (PogoSquare *)((u8 *)base2 + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
             CELL_SET_T(o, anim, tbl[cell2->old_player]);
             break;
         case 3:
             if (GameFrameCount & 1) {
                 base3 = PogoGrid[0];
-            cell3 = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base3);
+            cell3 = (PogoSquare *)((u8 *)base3 + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
                 CELL_SET_T(o, anim, tbl[cell3->old_player]);
             } else {
                 CELL_SET_T(o, rnd, rnd);
@@ -2489,7 +2489,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             break;
         case 5:
             base5 = PogoGrid[0];
-            cell5 = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base5);
+            cell5 = (PogoSquare *)((u8 *)base5 + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
             n = (s16)(cell5->timer / 30);
             if (n >= 4) {
                 n = 3;
@@ -2531,7 +2531,7 @@ void Tile_FireTnt(s32 arg0, s32 arg1) {
         }
     }
     base = PogoGrid[0];
-    c = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    c = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
     c->mode = 1;
     c->player = -1;
     c->timer = 0;
@@ -2592,7 +2592,7 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
         }
     }
     base = PogoGrid[0];
-    c = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    c = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
     c->mode = 1;
     c->player = -1;
     c->timer = 0;
@@ -2642,7 +2642,7 @@ void ZapInDir(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
         if ((u32)x >= 8 || (u32)z >= 8) {
             goto end;
         }
-        c = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)PogoGrid);
+        c = (PogoSquare *)((u8 *)PogoGrid + z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]));
         if ((u16)c->mode - 5 >= 3u) {
             old = c->player;
             c->timer = t;
@@ -2664,7 +2664,7 @@ void ZapInDir(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
                     Tile_Update(x, z + 1);
                 }
             }
-            ((PogoSquare *)(x * sizeof(PogoGrid[0]) + z * sizeof(PogoSquare) + (u32)PogoGrid))->sfx = n;
+            ((PogoSquare *)((u8 *)PogoGrid + x * sizeof(PogoGrid[0]) + z * sizeof(PogoSquare)))->sfx = n;
             n++;
             t += 4;
         }
@@ -2850,7 +2850,7 @@ void Set_Tile_Under_Player(u32 arg0, bool arg1) {
     }
     {
         PogoSquare *cb = PogoGrid[0];
-        c = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)cb);
+        c = (PogoSquare *)((u8 *)cb + z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]));
     }
     c->reserved = 0;
     if (arg1 != 0) {
@@ -2870,7 +2870,7 @@ void Set_Tile_Under_Player(u32 arg0, bool arg1) {
     }
     {
         PogoSquare *cb = PogoGrid[0];
-        p = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)cb);
+        p = (PogoSquare *)((u8 *)cb + z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]));
     }
     owner = p->player;
     if (owner == -1) {
@@ -2945,7 +2945,7 @@ void PogoFour_PlayerHasStoodOnOwnTile(s32 arg0) {
         if (i >= 8) goto done;
         for (j = 0;; j++) {
             if (j >= 8) goto next;
-            c = (PogoSquare *)(i * sizeof(PogoGrid[0]) + j * sizeof(PogoSquare) + (u32)PogoGrid);
+            c = (PogoSquare *)((u8 *)PogoGrid + i * sizeof(PogoGrid[0]) + j * sizeof(PogoSquare));
             if (c->player == arg0) {
                 c->mode = 1;
                 c->player = -1;
@@ -2989,7 +2989,7 @@ void PogoFour_FreezeMyTiles(s32 arg0) {
             if (j >= 8) {
                 goto next;
             }
-            c = (PogoSquare *)(j * sizeof(PogoSquare) + i * sizeof(PogoGrid[0]) + (u32)PogoGrid);
+            c = (PogoSquare *)((u8 *)PogoGrid + j * sizeof(PogoSquare) + i * sizeof(PogoGrid[0]));
             st = c->mode;
             if (st == 1 && c->player == arg0) {
                 c->mode = 10;
@@ -3031,7 +3031,7 @@ void PogoFour_UnfreezeMyTiles(s32 arg0) {
             if (j >= 8) {
                 goto next;
             }
-            c = (PogoSquare *)(j * sizeof(PogoSquare) + i * sizeof(PogoGrid[0]) + (u32)PogoGrid);
+            c = (PogoSquare *)((u8 *)PogoGrid + j * sizeof(PogoSquare) + i * sizeof(PogoGrid[0]));
             if ((u16)c->mode == 10 && c->player == arg0) {
                 c->mode = 1;
                 c->player = arg0;
@@ -3298,7 +3298,7 @@ bool Pickup_IsClaimable(s32 arg0, s32 arg1, s32 arg2) {
             return 1;
         }
         base = PogoGrid[0];
-        c = (PogoSquare *)(arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]) + (u32)base);
+        c = (PogoSquare *)((u8 *)base + arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]));
         h = c->pickup;
         if (h == NULL) {
             return 0;
@@ -3335,7 +3335,7 @@ bool Pickup_IsClaimableByAI(s32 arg0, s32 arg1, s32 arg2) {
         return 1;
     }
     base = PogoGrid[0];
-    c = (PogoSquare *)(arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]) + (u32)base);
+    c = (PogoSquare *)((u8 *)base + arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]));
     if (c->occupied != 0) {
         return 0;
     }
@@ -3344,7 +3344,7 @@ bool Pickup_IsClaimableByAI(s32 arg0, s32 arg1, s32 arg2) {
     }
     {
         PogoSquare *b2 = PogoGrid[0];
-        c = (PogoSquare *)(arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]) + (u32)b2);
+        c = (PogoSquare *)((u8 *)b2 + arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]));
     }
     h = c->pickup;
     if (h != NULL) {
@@ -3377,7 +3377,7 @@ void CreatePowerupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     PogoSquare *base;
 
     base = PogoGrid[0];
-    c = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    c = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
     if (c->pickup != NULL || PogoPadlock_IsHere(arg0, arg1) != 0) {
         return;
     }
@@ -3427,7 +3427,7 @@ void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     PogoSquare *base;
 
     base = PogoGrid[0];
-    c = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    c = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
     if (c->pickup != NULL || PogoPadlock_IsHere(arg0, arg1) != 0) {
         return;
     }
@@ -3879,7 +3879,7 @@ void Plot_PogoBanker(NAS *nas) {
     case 1:
         if (FindFreeSquare(&x, &z) != 0) {
             PogoSquare *cb = PogoGrid[0];
-            c = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)cb);
+            c = (PogoSquare *)((u8 *)cb + z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]));
             pos = c->sub;
             c->pickup = (HeroInfo *)nas;
             if (pos != NULL) {
@@ -3971,7 +3971,7 @@ void Plot_PogoMushroom(NAS *nas) {
         nas->UserInfo.status = 0;
         if (SquareIsFreeForMushroom(cx, cz) != 0) {
             PogoSquare *cb = PogoGrid[0];
-            c = (PogoSquare *)(cz * sizeof(PogoSquare) + cx * sizeof(PogoGrid[0]) + (u32)cb);
+            c = (PogoSquare *)((u8 *)cb + cz * sizeof(PogoSquare) + cx * sizeof(PogoGrid[0]));
             c->pickup = (HeroInfo *)nas;
             if (c->sub != NULL) {
                 eng->xform.scale.vx = 0x1000;
@@ -4027,7 +4027,7 @@ void Tiles_PlayerIsStealing(s32 arg0, s32 arg1) {
         if (i >= 8) goto done;
         for (j = 0, k = 10;; j++) {
             if (j >= 8) goto next;
-            c = (PogoSquare *)(i * sizeof(PogoGrid[0]) + j * sizeof(PogoSquare) + (u32)PogoGrid);
+            c = (PogoSquare *)((u8 *)PogoGrid + i * sizeof(PogoGrid[0]) + j * sizeof(PogoSquare));
             if (c->player == arg1) {
                 old = c->player;
                 c->old_player = old;
@@ -4128,7 +4128,7 @@ s32 Tiles_CountUnflagged(s32 *arg0, const s32 arg1, s32 arg2) {
             k = 10;
             if (i >= 8) goto next;
             if (arg0[r + i] != 0) continue;
-            c = (PogoSquare *)(i * sizeof(PogoGrid[0]) + j * sizeof(PogoSquare) + (u32)PogoGrid);
+            c = (PogoSquare *)((u8 *)PogoGrid + i * sizeof(PogoGrid[0]) + j * sizeof(PogoSquare));
             if (c->occupied != 0) continue;
             t = c->mode;
             if (t == 6) continue;
@@ -4252,7 +4252,7 @@ bool FindFreeSquareForMushroom(s32 *arg0, s32 *arg1) {
 
 bool SquareIsFreeForMushroom(s32 arg0, s32 arg1) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
     s32 s;
 
     if (p->occupied != 0 || p->reserved != 0 || p->pickup != NULL) {
@@ -4503,7 +4503,7 @@ void Plot_PogoProjectile(NAS *arg0) {
                             }
                             do {
                                 do {
-                                    if (((PogoPlayer *)(off + (u32)base))->status == 5 && h->hero_aseq == 0x2F) {
+                                    if (((PogoPlayer *)((u8 *)base + off))->status == 5 && h->hero_aseq == 0x2F) {
                                         SetHeroAction(i, 0x39);
                                     }
                                 } while (0);
@@ -4559,7 +4559,7 @@ void Plot_PogoProjectile(NAS *arg0) {
                 ext[6] = 0x100;
                 if (p != NULL) {
                     ext[8] = 5;
-                    ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+                    nas->Engine->sub->u6C.ptr = p;
                 } else {
                     ext[8] = 1;
                 }
@@ -5214,7 +5214,7 @@ void PogoAI_ScanForClosestPickup(u32 arg0, s32 *arg1, s32 *arg2) {
             }
             if (Pickup_IsClaimableByAI(arg0, i, j) != 0) {
                 HeroInfo *h;
-                c = (PogoSquare *)(j * sizeof(PogoSquare) + i * sizeof(PogoGrid[0]) + (u32)PogoGrid);
+                c = (PogoSquare *)((u8 *)PogoGrid + j * sizeof(PogoSquare) + i * sizeof(PogoGrid[0]));
                 h = c->pickup;
                 ok = 0;
                 if (h != NULL) {
@@ -5406,7 +5406,7 @@ bool PogoAI_StartEnclosing(u32 arg0, EXTbotai *ai) {
         eng = Heroes[arg0].hero_eng;
         if (eng != NULL) {
             base = PogoAIPlay;
-            m = (PogoAIPlayer *)(arg0 * sizeof(PogoAIPlayer) + (u32)base);
+            m = (PogoAIPlayer *)((u8 *)base + arg0 * sizeof(PogoAIPlayer));
             x = (eng->XYZ.x + 0x800) >> 9;
             z = (eng->XYZ.z + 0x800) >> 9;
             odd = GameFrameCount & 1;
@@ -5430,7 +5430,7 @@ bool PogoAI_StartEnclosing(u32 arg0, EXTbotai *ai) {
             }
             m->offset = dir;
             base2 = PogoAIPlay;
-            m2 = (PogoAIPlayer *)(arg0 * sizeof(PogoAIPlayer) + (u32)base2);
+            m2 = (PogoAIPlayer *)((u8 *)base2 + arg0 * sizeof(PogoAIPlayer));
             if (m2->going_clockwise != 0) {
                 ai->TargetXYZ.x = x + EncloseStepsOdd[m2->offset].x;
                 ai->TargetXYZ.z = z + EncloseStepsOdd[m2->offset].z;
@@ -5525,7 +5525,7 @@ bool PogoAI_ClaimingThisTileWillEncircle(s32 x, s32 z, s32 hero) {
         return 0;
     }
     base = PogoGrid[0];
-    c = (PogoSquare *)(z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]) + (u32)base);
+    c = (PogoSquare *)((u8 *)base + z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]));
     if (c->occupied != 0) {
         return 0;
     }
@@ -5535,7 +5535,7 @@ bool PogoAI_ClaimingThisTileWillEncircle(s32 x, s32 z, s32 hero) {
     g = grid;
     for (j = 0; j < 8; j++) {
         for (i = 0; i < 8; i++) {
-            s32 *p = (s32 *)((j * 8 + i) * 4 + (u32)g);
+            s32 *p = (s32 *)((u8 *)g + (j * 8 + i) * 4);
             *p = 0;
             if (PogoGrid[i][j].player == hero) {
                 *p = 1;
@@ -5626,7 +5626,7 @@ void Init_PogoRipperRoo(NAS *nas) {
         KillNAS(nas);
         PogoRooNas = 0;
     } else {
-        PogoRooNas = (s32)nas;
+        PogoRooNas = nas;
     }
 }
 
@@ -6731,7 +6731,7 @@ void Player_SnapToTile(u32 arg0) {
 
 bool SquareContainsMushroom(s32 arg0, s32 arg1) {
     PogoSquare *base = PogoGrid[0];
-    HeroInfo *hero = ((PogoSquare *)(arg0 * sizeof(PogoGrid[0]) + arg1 * sizeof(PogoSquare) + (u32)base))->pickup;
+    HeroInfo *hero = ((PogoSquare *)((u8 *)base + arg0 * sizeof(PogoGrid[0]) + arg1 * sizeof(PogoSquare)))->pickup;
 
     if (hero != NULL && hero->hero_pu_action == 0xB) {
         return 1;
@@ -6832,7 +6832,7 @@ void Tiles_MakeUpIslandMap(s32 *arg0, s32 arg1) {
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            p = (s32 *)((i * 8 + j) * sizeof(s32) + (u32)arg0);
+            p = (s32 *)((u8 *)arg0 + (i * 8 + j) * sizeof(s32));
             *p = 0;
             if (PogoGrid[j][i].player == arg1) {
                 *p = 1;
@@ -6951,7 +6951,7 @@ bool SetTile_PogoFour(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
         return 1;
     }
     base = PogoGrid[0];
-    p = (PogoSquare *)(arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]) + (u32)base);
+    p = (PogoSquare *)((u8 *)base + arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]));
     if ((u16)p->mode == 10) {
         if (arg3 != 0) {
             PlaySquareLockedNoise(arg0);
@@ -6975,7 +6975,7 @@ bool SetTile_PogoThree(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
 
     if (GameMode == 0xC) {
         base = PogoGrid[0];
-        c = (PogoSquare *)(arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]) + (u32)base);
+        c = (PogoSquare *)((u8 *)base + arg2 * sizeof(PogoSquare) + arg1 * sizeof(PogoGrid[0]));
         if ((u16)c->mode == 7) {
             Tile_Claim(arg1, arg2, arg0);
             if (arg1 > 0) {
@@ -7072,7 +7072,7 @@ void Tile_FireAllNitros(void) {
 
 void Tile_OnFire(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
 
     p->mode = 1;
     p->player = -1;
@@ -7085,7 +7085,7 @@ void Tile_OnFire(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void Tile_DelayedFizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
 
     p->mode = 1;
     p->player = -1;
@@ -7097,7 +7097,7 @@ void Tile_DelayedFizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void Tile_FizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
 
     p->mode = 1;
     p->player = -1;
@@ -7109,7 +7109,7 @@ void Tile_FizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void Tile_DelayedSet(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
     s16 old = p->player;
 
     p->player = arg2;
@@ -7134,7 +7134,7 @@ void Tile_DelayedSet(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void Tile_SetFourWay(s32 arg0, s32 arg1) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
 
     p->player = 5;
     p->mode = 7;
@@ -7142,7 +7142,7 @@ void Tile_SetFourWay(s32 arg0, s32 arg1) {
 
 void Tile_SetNitro(s32 arg0, s32 arg1) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
 
     p->player = 5;
     p->mode = 6;
@@ -7151,7 +7151,7 @@ void Tile_SetNitro(s32 arg0, s32 arg1) {
 
 void Tile_SetTnt(s32 arg0, s32 arg1) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
 
     p->player = 5;
     p->mode = 5;
@@ -7160,7 +7160,7 @@ void Tile_SetTnt(s32 arg0, s32 arg1) {
 
 void Tile_SetLocked(s32 arg0, s32 arg1, s32 arg2) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
 
     p->mode = 10;
     p->player = arg2;
@@ -7169,7 +7169,7 @@ void Tile_SetLocked(s32 arg0, s32 arg1, s32 arg2) {
 
 void Tile_Set(s32 arg0, s32 arg1, s32 arg2) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
 
     p->mode = 1;
     p->player = arg2;
@@ -7191,7 +7191,7 @@ void Tile_Set(s32 arg0, s32 arg1, s32 arg2) {
 
 void Tile_Clear(s32 arg0, s32 arg1) {
     PogoSquare *base = PogoGrid[0];
-    PogoSquare *p = (PogoSquare *)(arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
+    PogoSquare *p = (PogoSquare *)((u8 *)base + arg1 * sizeof(PogoSquare) + arg0 * sizeof(PogoGrid[0]));
 
     p->mode = 1;
     p->player = -1;
@@ -7219,7 +7219,7 @@ void AddTazerRing(u32 arg0) {
             ext[6] = 0x100;
             if (p != NULL) {
                 ext[8] = 5;
-                ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+                nas->Engine->sub->u6C.ptr = p;
             } else {
                 ext[8] = 1;
             }
@@ -7267,7 +7267,7 @@ void HeroPogoTied(u32 arg0) {
     HeroInfo *h;
     EXTengine *eng;
 
-    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    h = (HeroInfo *)((u8 *)base + arg0 * sizeof(HeroInfo));
     h->hero_frozen = 2;
     Pickup_Lose(arg0);
     eng = h->hero_eng;
@@ -7286,7 +7286,7 @@ void SetHeroPogoTied(u32 arg0) {
     Player_RemoveReserve(arg0);
     Pickup_Lose(arg0);
     base = Heroes;
-    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    h = (HeroInfo *)((u8 *)base + arg0 * sizeof(HeroInfo));
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 2;
 }
@@ -7323,7 +7323,7 @@ void SetHeroPogoWinner(u32 arg0) {
     StartHeroVictory(arg0);
     Pickup_Lose(arg0);
     base = Heroes;
-    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    h = (HeroInfo *)((u8 *)base + arg0 * sizeof(HeroInfo));
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 2;
     CameraMode = 1;
@@ -7343,7 +7343,7 @@ bool TestHeroPogoWinner(u32 arg0) {
 
 void HeroPogoTazingCancel(u32 arg0) {
     PogoPlayer *base = PogoPlay;
-    PogoPlayer *slot = (PogoPlayer *)(arg0 * sizeof(PogoPlayer) + (u32)base);
+    PogoPlayer *slot = (PogoPlayer *)((u8 *)base + arg0 * sizeof(PogoPlayer));
 
     if (slot->tazer != NULL) {
         KillNAS(slot->tazer);
@@ -7359,7 +7359,7 @@ void SetHeroPogoTazing(u32 arg0) {
     Player_RemoveReserve(arg0);
     SetHeroSeq(arg0, 0x30);
     base = Heroes;
-    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    h = (HeroInfo *)((u8 *)base + arg0 * sizeof(HeroInfo));
     move = h->hero_move;
     if (move != NULL) {
         move->velocity_enable = 0;
@@ -7371,7 +7371,7 @@ void SetHeroPogoTazing(u32 arg0) {
 
 bool TestHeroPogoShootCancel(u32 arg0) {
     PogoPlayer *base = PogoPlay;
-    PogoPlayer *slot = (PogoPlayer *)(arg0 * sizeof(PogoPlayer) + (u32)base);
+    PogoPlayer *slot = (PogoPlayer *)((u8 *)base + arg0 * sizeof(PogoPlayer));
 
     if (slot->tazer != NULL) {
         HeroPogoTazingCancel(arg0);
@@ -7545,7 +7545,7 @@ void InitialisePOGO(void) {
 
 void POGO_InitHero(u32 arg0) {
     PogoPlayer *base = PogoPlay;
-    PogoPlayer *p = (PogoPlayer *)(arg0 * sizeof(PogoPlayer) + (u32)base);
+    PogoPlayer *p = (PogoPlayer *)((u8 *)base + arg0 * sizeof(PogoPlayer));
 
     p->flags = 0;
     p->status = 0;
@@ -7577,7 +7577,7 @@ void POGOriggers(NASTrigger *trig, s32 arg1) {
 }
 
 void InitialisePOGOFirst(void) {
-    HeroHooks.InitHero = (s32)POGO_InitHero;
+    HeroHooks.InitHero = POGO_InitHero;
     HeroHooks.TestJump = &HeroNoJump;
     HeroHooks.HeroModels = &PogoHeroModels;
     HeroHooks.RunSpeeds = &PogoHookTableC;

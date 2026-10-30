@@ -15,26 +15,26 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     case 5:
     case 7:
         PlaySfx(HitSfx.hit[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(1, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
+        SpawnModelFx(1, arg0, &HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x208, 0xA0);
         break;
     case 6:
         PlaySfx(HitSfx.hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(0, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
+        SpawnModelFx(0, arg0, &HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x208, 0);
         break;
     case 2:
         PlaySfx(HitSfx.crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(2, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
+        SpawnModelFx(2, arg0, &HeroModelBank[DB_CrateObjects]);
         break;
     case 3:
         PlaySfx(HitSfx.crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(4, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
+        SpawnModelFx(4, arg0, &HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x203, 0xA0);
         break;
     default:
         PlaySfx(HitSfx.other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(3, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
+        SpawnModelFx(3, arg0, &HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x205, 0xA0);
         break;
     }
@@ -137,7 +137,7 @@ void UpdateIntro(void) {
         if (IntroDbase != 0) {
             dbase_release((u8 *)IntroDbase);
         }
-        IntroDbase = (s32)IntroSteps[IntroStepIndex].model;
+        IntroDbase = IntroSteps[IntroStepIndex].model;
         break;
     }
     IntroStepIndex++;
@@ -1542,10 +1542,7 @@ void GameSetSlot3Digits(s32 arg0) {
     s32 i;
     s32 *base;
 
-    src = (s32 *)(arg0 * 4);
-    src = (s32 *)((s32)src + arg0);
-    src = (s32 *)((s32)src * 4);
-    src = (s32 *)((s32)src + (s32)Slot3DigitSrc);
+    src = (s32 *)((u8 *)Slot3DigitSrc + arg0 * 20);
     base = (s32 *)GetEngineSlot(3)->sub;
     p = base + 0xA8 / 4;
     i = 0;

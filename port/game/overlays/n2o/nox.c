@@ -825,7 +825,7 @@ void NoxHeroCollide(s32 arg0) {
         }
         h = &base[i];
         if (i != arg0 && !(h->hero_status & 0xFA00)) {
-            me = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+            me = (HeroInfo *)((u8 *)base + arg0 * sizeof(HeroInfo));
             dx = h->hero_eng->XYZ.x - me->hero_eng->XYZ.x;
             dz = h->hero_eng->XYZ.y - me->hero_eng->XYZ.y;
             dy = h->hero_eng->XYZ.z - me->hero_eng->XYZ.z;
@@ -1661,7 +1661,7 @@ void InitSpiralSat(NAS *nas) {
                 e->XYZ.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
                 e->XYZ.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
                 e->XYZ.z = ext->c.z;
-                e->sub->u6C.dbase = ((s32)MapScene->dbase);
+                e->sub->u6C.dbase = MapScene->dbase;
                 e->sub->entity = 0x201A;
                 e->sub->flags = 0x8000;
                 q =&e->XYZ;
@@ -2086,7 +2086,7 @@ void NoxCameraFollow(void) {
 }
 
 void InitLaserShoot(LaserShoot *arg0) {
-    arg0->obj->sub->unk6C = ((s32)MapScene->dbase);
+    arg0->obj->sub->unk6C = MapScene->dbase;
     arg0->obj->sub->unk74 = 0x201D;
     arg0->obj->unk1E = 0;
     arg0->obj->unk5D = 2;
@@ -2129,7 +2129,7 @@ void InitNitroMissile(MissileHolder *arg0) {
     s32 r;
 
     if (ext != NULL) {
-        arg0->obj->model->unk6C = ((s32)MapScene->dbase);
+        arg0->obj->model->unk6C = MapScene->dbase;
         arg0->obj->model->unk74 = 0x2019;
         arg0->obj->unk5D = 2;
         ext->unk10 = 0;
@@ -2153,7 +2153,7 @@ void InitNitroMissile(MissileHolder *arg0) {
 }
 
 void InitNitroMine(MineHolder *arg0) {
-    arg0->obj->sub->u6C.dbase = ((s32)MapScene->dbase);
+    arg0->obj->sub->u6C.dbase = MapScene->dbase;
     arg0->obj->sub->entity = 0x2012;
     arg0->obj->xform.rot.vx = Random(0x1000);
     arg0->obj->xform.rot.vy = Random(0x1000);

@@ -1952,7 +1952,7 @@ void InitialisePOLARFirst(void) {
         HeroHooks.HeroModels = PolarHeroModelsCut;
     }
     HeroHooks.KeepInBounds = DoNowt;
-    HeroHooks.InitHero = (s32)PolarInitHero;
+    HeroHooks.InitHero = PolarInitHero;
     HeroHooks.PreMoveHero = PolarPreMoveHero;
     HeroHooks.MoveHero = PolarInitHeroEngine;
     HeroHooks.HeroBot = Polar_HeroBot;
@@ -2096,7 +2096,7 @@ s32 player;
         if ((pad & 0x60) == 0x60) {
             ang = 0x600;
         }
-        h2 = (HeroInfo *)(off + (s32)base);
+        h2 = (HeroInfo *)((u8 *)base + off);
         h2->hero_ai->AIang = ang;
         h2->hero_ai->AItimer1 = fux->aiDelay;
     }
@@ -5183,7 +5183,7 @@ void PlotTransmuterBeam(NAS *m) {
                     bx->unk28 = 6;
                 }
                 n->InitDelete(n);
-                m->UserInfo.user2 = (s32)n;
+                m->UserInfo.user2 = (iptr)n;
                 m->UserInfo.user1 = 0;
                 PlaySfx(0x46D, NULL, NULL, 0x1000, 0x1E00, 0);
             } else {
@@ -7693,7 +7693,7 @@ void PlotBrioPack(NAS *m) {
                                owner->engine->XYZ.y - ((owner->engine->xform.scale.vx * 0x1A4) >> 12),
                                owner->engine->XYZ.z + 0x40, 0x1613, 0x11);
             if (nas != NULL) {
-                nas->UserInfo.user1 = (s32)owner;
+                nas->UserInfo.user1 = (iptr)owner;
             }
         }
         if (owner->anim->frame >= 0xA) {
@@ -9651,7 +9651,7 @@ void InitBearBoss(NAS *m) {
         m->Engine->sub->otz = 0x300;
         m->Engine->sub->flags |= 0x02000000;
         m->Engine->sub->u6C.dbase = MapScene->dbase;
-        ext->flag = (s32)ScriptCursorFirst(m, &BearBossScriptInit);
+        ext->flag = (iptr)ScriptCursorFirst(m, &BearBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->flag, 0);
         RunNasAnim(m);
     }
@@ -9713,7 +9713,7 @@ void InitBrioPack(NAS *m) {
 
 void InitDingoTail(NAS *m) {
     m->Engine->flags |= 0x200000;
-    m->Engine->sub->u6C.dbase = (s32)&HeroModelBank[DB_CharsPolar2Dingo];
+    m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CharsPolar2Dingo];
     m->Engine->sub->entity = 0x2003;
     m->Engine->xform.order = 2;
     m->Engine->xform.hasScale = 1;
@@ -9801,7 +9801,7 @@ void InitBearDeath(NAS *m) {
     ext = AddExt(m, 0x88, 0x10000000);
     if (ext != NULL) {
         ScriptCursorFirst(m, &BearDeathScriptInit);
-        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
+        m->Engine->sub->u6C.dbase = MapScene->dbase;
         m->Engine->xform.order = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->arc = 2;
@@ -12316,7 +12316,7 @@ void PolarHeroAttackThrow(s32 player) {
                 }
                 ext->nas = nas;
                 if (nas != NULL) {
-                    nas->UserInfo.user1 = (s32)hero;
+                    nas->UserInfo.user1 = (iptr)hero;
                 }
             }
             return;
@@ -12335,7 +12335,7 @@ void PolarHeroAttackThrow(s32 player) {
                 }
                 ext->nas = nas;
                 if (nas != NULL) {
-                    nas->UserInfo.user1 = (s32)hero;
+                    nas->UserInfo.user1 = (iptr)hero;
                     if (GameMode == 0x14) {
                         ext->nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_CharsPolarDingo];
                         ext->nas->Engine->sub->entity = 0x2002;
@@ -12358,7 +12358,7 @@ void PolarHeroAttackThrow(s32 player) {
                 }
                 ext->nas = nas;
                 if (nas != NULL) {
-                    nas->UserInfo.user1 = (s32)hero;
+                    nas->UserInfo.user1 = (iptr)hero;
                     if (GameMode == 0x14) {
                         ext->nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_CharsPolarRilla];
                     } else {

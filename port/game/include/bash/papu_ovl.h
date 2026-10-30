@@ -88,8 +88,8 @@ extern u16 PapuCrateTimer;
 extern u16 PapuMaxCrates;
 
 typedef struct Slot40 {
-    /* 0x00 */ s32 flag;  /* tested for zero */
-    /* 0x04 */ s32 pad4[7];
+    /* 0x00 */ void *flag;  /* tested for zero */
+    /* 0x04 */ void *pad4[7];  /* [0] engine, [1] sub, [4] motion, [5] cursor, [6] target */
     /* 0x20 */ s16 unk20;
     /* 0x22 */ s16 whatami;  /* its object's whatami */
     /* 0x24 */ s16 unk24;

@@ -14,7 +14,7 @@ void dbase_setup_blocks(ModelFile *arg0, s32 *arg1) {
 
     i = arg0->nMeshAnims - 1;
     tbl = (FileEntry *)((u8 *)&arg0->meshAnims + arg0->meshAnims);
-    next = (FileEntry *)(i * sizeof(FileEntry) + (u32)tbl);
+    next = (FileEntry *)((u8 *)tbl + i * sizeof(FileEntry));
     for (;;) {
         if (i < 0) {
             goto second;

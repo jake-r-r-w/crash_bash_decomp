@@ -22,7 +22,7 @@ s32 LoadModeOverlay(void) {
     p = ModeOverlayFiles[ModeTypes[g->mode * 3] - 0x101];
     if ((s32)p != ModeOverlayLoaded) {
         load_file_direct(p, SlotBase);
-        ModeOverlayLoaded = (s32)p;
+        ModeOverlayLoaded = p;
     }
     return (s32)(SlotBase + p->size);
 }
@@ -1057,7 +1057,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                s->unk6C = (s32)&HeroModelBank[DB_Interface];
+                s->unk6C = &HeroModelBank[DB_Interface];
                 {
                     u16 *tbl = IconImage;
                     s32 name = Heroes[rec->player].hero_name;
@@ -1218,7 +1218,7 @@ void draw_animated_sub(PlaceSub *arg0, u8 *arg1, s32 arg2) {
     draw_object((u8 *)arg0, arg1, arg2);
 }
 
-s32 PlaceFlashSub(PlaceSub *p, s32 a1, s32 a2, s32 a3, s32 a4) {
+s32 PlaceFlashSub(PlaceSub *p, s32 a1, s32 a2, void *a3, s32 a4) {
     if (p == NULL) {
         return 0;
     }
@@ -1312,7 +1312,7 @@ s32 *ModeTextTables[5] = {
     (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang,
     (void *)&ModeTextFilesLang,
 };
-s32 ModeOverlayLoaded = 0;
+file *ModeOverlayLoaded = 0;
 EngineCfg DefaultLevelConfig = {
     { 0, 0x20, 0, 0, 0x10, 0, 0, 0, 0, 1, 0, 0 }, { 0x80, 0x200, 0x20 }, (void *)&VramAreas,
     (void *)&VramNodePool, 0x20, 0x400,
@@ -1706,7 +1706,7 @@ s32 SceneVabSlot[1] = {0};
 s32 SceneSoundHandle[1] = {0};
 s32 SceneStarted = 0;
 MarkCtx *SceneMark = 0;
-s32 SceneOldDbase = 0;
+obj_dbase *SceneOldDbase = 0;
 script_handler *SceneScript = 0;
 s32 SceneStarting = 0;
 s32 SceneStep = 0;

@@ -14,7 +14,7 @@ extern s32 BonkSteerA[];
 
 void BonkHeroSwingRecoil(s32 arg0);
 typedef struct BonkSlot {
-    /* 0x0 */ s32 f0;
+    /* 0x0 */ void *f0;
     /* 0x4 */ s32 f4;
     /* 0x8 */ s32 f8;
     /* 0xC */ s32 fC;

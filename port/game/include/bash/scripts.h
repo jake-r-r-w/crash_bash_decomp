@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/prims.h"
 
-void quat_slerp_ex_frac(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
+void quat_slerp_ex_frac(void *a0, void *a1, void *a2, s32 a3, s32 a4, void *a5);
 void kill_emitter_thread(script_thread_handler *th);
 void render_entity_thread(script_thread_handler *th, geom_info *gi);
 void render_model_thread(script_thread_handler *th, s32 *arg1);

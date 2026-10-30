@@ -166,7 +166,7 @@ void DrawSceneMarks(void);
 
 void draw_animated_sub(struct PlaceSub *arg0, u8 *arg1, s32 arg2);
 
-s32 PlaceFlashSub(struct PlaceSub *p, s32 a1, s32 a2, s32 a3, s32 a4);
+s32 PlaceFlashSub(struct PlaceSub *p, s32 a1, s32 a2, void *a3, s32 a4);
 
 void QuitScriptScene(void);
 

@@ -10,7 +10,7 @@ void init_scripts(s32 arg0, s32 arg1) {
     script_thread_handler *nq;
 
     if (arg0 != 0) {
-        ScriptPool = (s32)mal_alloc(arg0 * sizeof(script_handler), &MainHeap);
+        ScriptPool = mal_alloc(arg0 * sizeof(script_handler), &MainHeap);
         p = (script_handler *)ScriptPool;
         for (; arg0 >= 2; arg0--) {
             next = p + 1;
@@ -24,7 +24,7 @@ void init_scripts(s32 arg0, s32 arg1) {
     active_scripts = NULL;
     free_scripts = (void *)ScriptPool;
     if (arg1 != 0) {
-        ScriptThreadPool = (s32)mal_alloc(arg1 * sizeof(script_thread_handler), &MainHeap);
+        ScriptThreadPool = mal_alloc(arg1 * sizeof(script_thread_handler), &MainHeap);
         q = (script_thread_handler *)ScriptThreadPool;
         for (; arg1 >= 2; arg1--) {
             nq = q + 1;
@@ -93,7 +93,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
             len = f << 8;
             t = (ci->time.w >> 8) - (key->start << 8);
             CamVec3_Lerp((CamVec3 *)&d->XYZ.x, &key->pos, &key[1].pos, len, t);
-            quat_slerp_ex_frac((s32)&key->rot, (s32)&key[1].rot, (s32)&d->xform.rot.vx, len, t, (s32)key->frac);
+            quat_slerp_ex_frac(&key->rot, &key[1].rot, &d->xform.rot.vx, len, t, key->frac);
             d->xform.dirty = 1;
             CamVec3_Lerp((CamVec3 *)&d->xform.scale, &key->scale, &key[1].scale, len, t);
             w = interp(key->weight, key[1].weight, len, t);
@@ -242,7 +242,7 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
         if (len != 0) {
             len <<= 8;
             t = (ci->time.w >> 8) - (key->frame.start << 8);
-            quat_slerp_ex_frac((s32)key->quat, (s32)key[1].quat, (s32)pose->rot, len, t, (s32)key->quat_interp);
+            quat_slerp_ex_frac(key->quat, key[1].quat, pose->rot, len, t, key->quat_interp);
             CamVec3_Lerp(&pose->pos, (CamVec3 *)&key->pos, (CamVec3 *)&key[1].pos, len, t);
             CamVec3_Lerp(&pose->scale, (CamVec3 *)&key->scale, (CamVec3 *)&key[1].scale, len, t);
             a = interp(key->fade, key[1].fade, len << 8, t);
@@ -808,7 +808,7 @@ void quat_slerp_ex(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
     out->v[3] = (((pb >= 0 ? pb + 0x800 : pb - 0x800) >> 12) + ((ia * q.v[3] >= 0 ? kb + 0x800 : kb - 0x800) >> 12)) >> 7;
 }
 
-void quat_slerp_ex_frac(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+void quat_slerp_ex_frac(void *a0, void *a1, void *a2, s32 a3, s32 a4, void *a5) {
     quat_slerp_ex(a0, a1, (a4 << 12) / a3, a2, a5);
 }
 
@@ -1608,8 +1608,8 @@ ScriptCommand ScriptCommands[6] = {
 };
 s32 ScriptFade = 0;
 s32 ScriptTimeStep = 0;
-s32 ScriptThreadPool = 0;
-s32 ScriptPool = 0;
+void *ScriptThreadPool = 0;
+void *ScriptPool = 0;
 script_thread_handler *ScriptList = 0;
 script_handler *free_scripts = 0;
 script_handler *active_scripts = 0;

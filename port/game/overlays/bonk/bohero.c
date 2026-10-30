@@ -197,7 +197,7 @@ void BonkHeroBackswing(s32 arg0) {
         h->hero_frozen = 10;
         if (BonkAI_FindClosest(arg0, &t, 0x306) != 0) {
             BonkPos *p;
-            BonkSlots[arg0].f0 = (s32)t;
+            BonkSlots[arg0].f0 = t;
             p = t->inner->pos;
             h->hero_move->forward_angle =
                 get_angle(h->hero_eng->XYZ.x - p->x, h->hero_eng->XYZ.z - p->z);

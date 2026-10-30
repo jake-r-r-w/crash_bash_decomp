@@ -143,8 +143,8 @@ BASH_SIZE_CHECK(CAMnode, 0x10);
 typedef struct NasUser {
     /* 0x00 */ u16 status;
     /* 0x02 */ u16 flags;
-    /* 0x04 */ s32 user1;
-    /* 0x08 */ s32 user2;
+    /* 0x04 */ iptr user1;
+    /* 0x08 */ iptr user2;
 } NasUser;
 BASH_SIZE_CHECK(NasUser, 0xC);
 

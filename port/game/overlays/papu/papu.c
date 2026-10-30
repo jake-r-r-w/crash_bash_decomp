@@ -1187,10 +1187,10 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
         nas->UserInfo.user1 = i;
         new_var = (u8 *) PapuMinionSlots;
         s = (Slot40 *) (new_var + (i << 6));
-        s->flag = (s32) nas;
-        s->pad4[0] = (s32) eng;
-        s->pad4[1] = (s32) eng->sub;
-        s->pad4[4] = (s32) AddMotion(nas);
+        s->flag = nas;
+        s->pad4[0] = eng;
+        s->pad4[1] = eng->sub;
+        s->pad4[4] = AddMotion(nas);
         *((SLONG_XYZ *) s->pos) = eng->XYZ;
         s->flag2 = 0xA;
         obj = (EXTobject *) AddObject(nas);
@@ -1203,7 +1203,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
           LinkObject(nas);
           AddSolid(nas, 0x200);
         }
-        s->pad4[5] = (s32) ScriptCursorFirst(nas, &PapuMinionScriptInit);
+        s->pad4[5] = ScriptCursorFirst(nas, &PapuMinionScriptInit);
       }
       else
       {
@@ -1306,7 +1306,7 @@ void PlotPapuMinion(NAS *nas)
     move->Xvel = 0;
     if (fux->countdown == 0) {
       PlaySfx(0x1FA, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
-      SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Minion]);
+      SpawnModelFx(0, &eng->XYZ.x, &HeroModelBank[DB_Minion]);
       fux->countdown = 5;
       fux->status = 2;
     } else {
@@ -1529,7 +1529,7 @@ void PlotPapuMinion(NAS *nas)
     }
     PapuMinionSlots[slot].flag = 0;
     PlaySfx(0x1FB, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
-    SpawnModelFx(0, &eng->XYZ.x, (s32)&HeroModelBank[DB_Minion]);
+    SpawnModelFx(0, &eng->XYZ.x, &HeroModelBank[DB_Minion]);
     KillNAS(nas);
     return;
   default:
@@ -2062,7 +2062,7 @@ void PapuInitTiles(void) {
         j = *(s16 *)id - 100;
         if ((u32)j < 20) {
             p = &PapuColumns[j];
-            p->flag = (s32)obj;
+            p->flag = obj;
             p->y = obj->yoffset;
         }
         if (j == 50) {

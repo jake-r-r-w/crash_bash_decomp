@@ -435,7 +435,7 @@ u8 TankMetalMap[64] = {
 };
 u8 TankBossMap[72] = {0};
 u8 TankSwampMap[64] = {0};
-s32 TankMapNas[64] = {0};
+NAS *TankMapNas[64] = {0};
 s32 TankWaterBob[16] = { -3, -2, -1, 0, 0, 1, 2, 3, 3, 2, 1, 0, 0, -1, -2, -3 };
 u32 MineBallFrames[8] = { 0x201A, 0x201B, 0x201C, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021 };
 RockTblEnt ShrapnelFrames[3] = { { 0x2001, 0 }, { 0x2002, 0 }, { 0x2003, 0 } };
@@ -1320,7 +1320,7 @@ void TA_PreInitLevel(void) {
 
     HeroHooks.HeroModels = TankHeroModels;
     HeroHooks.HeroBot = TA_HeroBot;
-    HeroHooks.InitHero = (s32)TA_InitHero;
+    HeroHooks.InitHero = TA_InitHero;
     HeroHooks.KeepInBounds = TA_KeepInBounds;
     HeroHooks.VictorySeqs = TankVictorySeqs;
     HeroHooks.CreateShadow = TA_CreateShadow;
@@ -1621,8 +1621,8 @@ void TA_UpdateLevel(void) {
         ta->PosZ = eng->XYZ.z;
         if (e <= 0) {
             SetHullSFX(i, eng, 0);
-            SetTurretSFX(i, (s32)eng, 0);
-            SetFireBreatherSFX(i, (s32)eng, 0);
+            SetTurretSFX(i, eng, 0);
+            SetFireBreatherSFX(i, eng, 0);
         }
     }
     if (TankCountdown <= 0) {
@@ -1751,8 +1751,8 @@ void DamageTankHero(s32 player, s32 damage) {
     }
     if (ta->Energy <= 0) {
         SetHullSFX(player, eng, 0);
-        SetTurretSFX(player, (s32)eng, 0);
-        SetFireBreatherSFX(player, (s32)eng, 0);
+        SetTurretSFX(player, eng, 0);
+        SetFireBreatherSFX(player, eng, 0);
         ta->Energy = 0;
         if ((((GameState *)GameInfo)->cheats & 0x80000002) == 0x80000002) {
             ta->Energy = 2;
@@ -1960,9 +1960,9 @@ void TA_MoveHero(u32 player) {
         }
         if (ta->TurretSFXDuration != 0) {
             if (--ta->TurretSFXDuration == 0) {
-                SetTurretSFX(player, (s32)eng, 0);
+                SetTurretSFX(player, eng, 0);
             } else {
-                SetTurretSFX(player, (s32)eng, TankTurretSfx[player]);
+                SetTurretSFX(player, eng, TankTurretSfx[player]);
             }
         }
     } else {
@@ -5469,7 +5469,7 @@ void PlotRock_TA(NAS *nas) {
             s32 i = (z * TankMapWidth) + x;
             TankLevelsGridMapMiss[i] = v;
             TankLevelsGridMapTank[i] = v;
-            TankMapNas[i] = (s32)nas;
+            TankMapNas[i] = nas;
         }
     }
 }
@@ -7964,7 +7964,7 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     t->FirePercentChance = 0;
     if (MoeState == 0x3B && JoeState == MoeState) {
         SetPanelHeroIconA(0x3B, 0x300E, 0x300F);
-        InitPowerupIcons((s32)&Heroes[2].hero_health, (s32)&Heroes[3].hero_health);
+        InitPowerupIcons(&Heroes[2].hero_health, &Heroes[3].hero_health);
     }
 }
 
@@ -9478,7 +9478,7 @@ void SetTankMapCellNas(NAS *nas) {
     idx = (temp_a1 * TankMapWidth) + temp_a0;
     TankLevelsGridMapMiss[idx] = temp_a2;
     TankLevelsGridMapTank[idx] = temp_a2;
-    TankMapNas[idx] = (s32)nas;
+    TankMapNas[idx] = nas;
 }
 
 u32 GetSandbagValueTank(s32 arg0, s32 arg1) {

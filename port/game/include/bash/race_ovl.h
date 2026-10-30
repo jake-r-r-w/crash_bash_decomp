@@ -297,7 +297,7 @@ typedef struct RacePiston {
     /* 0x00 */ s32 pos;
     /* 0x04 */ s32 state;
     /* 0x08 */ s32 unk8;
-    /* 0x0C */ s32 unkC;
+    /* 0x0C */ void *unkC;
     /* 0x10 */ s32 timer;
     /* 0x14 */ s32 hold;
     /* 0x18 */ s32 active;
@@ -695,7 +695,7 @@ void RaceAI_SteerTo(s32 player, SLONG_XYZ *pos);
 
 void RaceAI_ChasePickup(s32 arg0);
 /* Six object pointers walked by RaceAI_SpinnerBrake and others. */
-extern s32 RaceSpinnerBoxes[];
+extern void *RaceSpinnerBoxes[];
 
 
 void RaceEaseCamStep(RaceEaseCam *c, s32 *pos);

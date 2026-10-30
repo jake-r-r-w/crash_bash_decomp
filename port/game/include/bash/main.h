@@ -752,7 +752,7 @@ extern void *LoadNodeFree;
 extern BlockRef SmallNodePool[]; /* 63 of them, free list in SmallNodeFree */
 extern u8 LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
 extern s32 cam_ramp_overide_count;
-extern s32 CamEaseOverride;
+extern void *CamEaseOverride;
 extern s32 RandomSeedA;
 extern s32 RandomSeedB;
 extern script_thread_handler *ScriptList;
@@ -938,7 +938,7 @@ typedef struct ArenaDef {
 extern LevSpec LevelSpecs; /* the level's hooks */
 extern s32 NasHeapSize;
 extern s32 SubPoolCount;
-extern s32 LevelConfig;
+extern void *LevelConfig;
 extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
 extern file *LevelSfxBanks[][8];       /* music_play_level */
 extern GameOptionSet GameOptions;
@@ -953,9 +953,8 @@ extern s8 SysFontWidth[];
 extern u8 SysFontFlags[];
 extern obj_dbase *sysfont_dbase;
 extern s16 SysFontLookUp[];
-extern s32 NasHeapMem;
+extern u8 *NasHeapMem;
 extern u32 NasHeapBytes;
-extern s32 ExtHeap[];
 typedef struct ExtBlk ExtBlk;
 struct ExtBlk {
     ExtBlk *prev;
@@ -966,7 +965,10 @@ struct ExtBlk {
     EXT *owner;
     EXT ext;
 };
-extern ExtBlk *ExtFreeList;
+#define EXT_HEADER (sizeof(ExtBlk) - sizeof(EXT))
+extern ExtBlk ExtHeap;  /* the head of the block and free lists */
+extern u8 *ExtHeapLow;
+extern u8 *ExtHeapHigh;
 extern VabFile *VabLoading;  /* VAB being transferred to the SPU, or NULL */
 extern sfx_machine_bank_info *SfxBankLoading;  /* where its id goes */
 extern s32 VabHeadId;       /* the id from SsVabOpenHead */
@@ -977,7 +979,7 @@ extern s32 SfxVoiceBits[];       /* voice bit masks, by voice */
 extern s32 MusicDuckCur;
 extern s32 ASTCount;            /* entries in ASTTable */
 extern ASTEntry *ASTTable;      /* the AST table in use */
-extern s32 SubPool;
+extern void *SubPool;
 extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2];
 extern s32 CdReadStatus;
@@ -1242,8 +1244,8 @@ extern s32 FirstBootDone;
 extern subengine *next_sub;
 extern s32 ScriptFade;
 extern s32 ScriptTimeStep;
-extern s32 ScriptThreadPool;
-extern s32 ScriptPool;
+extern void *ScriptThreadPool;
+extern void *ScriptPool;
 extern u8 GameCup;
 extern void *HeadOfBalls;
 /* An ordering table and the primitive area drawn through it (0x400C bytes;
