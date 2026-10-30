@@ -1917,46 +1917,46 @@ _sfx_handler *IntroSfxHandle = 0;
 process_info WarpReturnProcess = { ReturnToWarpRoom, NULL, NULL, NULL, NULL };
 s32 NextGameMode = 0;
 CupRound Cup0Arenas[4] = {
-    { 1, 0, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2005 },
-    { 1, 1, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2006 },
-    { 1, 2, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2007 },
-    { 1, 3, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2008 },
+    { 1, 0, &HeroModelBank[DB_MainmenuArenaModels2], 0x2005 },
+    { 1, 1, &HeroModelBank[DB_MainmenuArenaModels2], 0x2006 },
+    { 1, 2, &HeroModelBank[DB_MainmenuArenaModels2], 0x2007 },
+    { 1, 3, &HeroModelBank[DB_MainmenuArenaModels2], 0x2008 },
 };
 CupRound Cup1Arenas[4] = {
-    { 1, 0x13, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2005 },
-    { 1, 0x12, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2006 },
-    { 1, 0x14, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2007 },
-    { 1, 0x15, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2008 },
+    { 1, 0x13, &HeroModelBank[DB_MainmenuArenaModels1], 0x2005 },
+    { 1, 0x12, &HeroModelBank[DB_MainmenuArenaModels1], 0x2006 },
+    { 1, 0x14, &HeroModelBank[DB_MainmenuArenaModels1], 0x2007 },
+    { 1, 0x15, &HeroModelBank[DB_MainmenuArenaModels1], 0x2008 },
 };
 CupRound Cup2Arenas[4] = {
-    { 1, 0xA, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001 },
-    { 1, 0xB, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2002 },
-    { 1, 0xC, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2003 },
-    { 1, 0xD, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001 },
+    { 1, 0xA, &HeroModelBank[DB_MainmenuArenaModels1], 0x2001 },
+    { 1, 0xB, &HeroModelBank[DB_MainmenuArenaModels1], 0x2002 },
+    { 1, 0xC, &HeroModelBank[DB_MainmenuArenaModels1], 0x2003 },
+    { 1, 0xD, &HeroModelBank[DB_MainmenuArenaModels1], 0x2001 },
 };
 CupRound Cup3Arenas[4] = {
-    { 1, 0xE, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2001 },
-    { 1, 0xF, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2002 },
-    { 1, 0x10, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2003 },
-    { 1, 0x11, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2004 },
+    { 1, 0xE, &HeroModelBank[DB_MainmenuArenaModels2], 0x2001 },
+    { 1, 0xF, &HeroModelBank[DB_MainmenuArenaModels2], 0x2002 },
+    { 1, 0x10, &HeroModelBank[DB_MainmenuArenaModels2], 0x2003 },
+    { 1, 0x11, &HeroModelBank[DB_MainmenuArenaModels2], 0x2004 },
 };
 CupRound Cup4Arenas[4] = {
-    { 2, 6, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2009 },
-    { 2, 8, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200A },
-    { 2, 7, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200B },
-    { 2, 5, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200C },
+    { 2, 6, &HeroModelBank[DB_MainmenuArenaModels1], 0x2009 },
+    { 2, 8, &HeroModelBank[DB_MainmenuArenaModels1], 0x200A },
+    { 2, 7, &HeroModelBank[DB_MainmenuArenaModels1], 0x200B },
+    { 2, 5, &HeroModelBank[DB_MainmenuArenaModels1], 0x200C },
 };
 CupRound Cup5Arenas[4] = {
-    { 2, 0x17, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2009 },
-    { 2, 0x18, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200A },
-    { 2, 0x1A, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200B },
-    { 2, 0x19, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200C },
+    { 2, 0x17, &HeroModelBank[DB_MainmenuArenaModels2], 0x2009 },
+    { 2, 0x18, &HeroModelBank[DB_MainmenuArenaModels2], 0x200A },
+    { 2, 0x1A, &HeroModelBank[DB_MainmenuArenaModels2], 0x200B },
+    { 2, 0x19, &HeroModelBank[DB_MainmenuArenaModels2], 0x200C },
 };
 CupRound Cup6Arenas[4] = {
-    { 2, 0x1B, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200D },
-    { 2, 0x1C, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200E },
-    { 2, 0x1D, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200F },
-    { 2, 0x1E, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2010 },
+    { 2, 0x1B, &HeroModelBank[DB_MainmenuArenaModels2], 0x200D },
+    { 2, 0x1C, &HeroModelBank[DB_MainmenuArenaModels2], 0x200E },
+    { 2, 0x1D, &HeroModelBank[DB_MainmenuArenaModels2], 0x200F },
+    { 2, 0x1E, &HeroModelBank[DB_MainmenuArenaModels2], 0x2010 },
 };
 CupDef CupTable[7] = {
     { 1, Cup0Arenas, 4 }, { 1, Cup1Arenas, 4 },

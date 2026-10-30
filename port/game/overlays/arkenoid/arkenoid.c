@@ -85,9 +85,15 @@ u16 ArkSkyAiTeamSkill[6] = { 6, 0xE, 0x14, 6, 0xE, 0x14 };
 u16 ArkSkyAiHumanRoundTweak[12] = { 0x14, 0x16, 0x20, 0x12, 0x15, 0x1C, 0x10, 0x14, 0x18, 0xC, 0x12, 0x14 };
 u16 ArkSkyAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
 u16 ArkSkyAiHumanTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
-s32 ArkVictorySeqs[16] = {
-    (s32)&ArkAnimWin, 0x1F, (s32)&ArkAnimWin, 0x1F, (s32)&ArkAnimWin, 0x1F, (s32)&ArkAnimWin,
-    0x1F, 0x20001, 0x10002, 0x10002, 0x20001, 0x20001, 0x10002, 0x10002, 0x20001,
+VictorySeq ArkVictorySeqs[8] = {
+    { &ArkAnimWin, 0x1F },
+    { &ArkAnimWin, 0x1F },
+    { &ArkAnimWin, 0x1F },
+    { &ArkAnimWin, 0x1F },
+    { 0x20001, 0x10002 },
+    { 0x10002, 0x20001 },
+    { 0x20001, 0x10002 },
+    { 0x10002, 0x20001 },
 };
 ArkenoidCircle ArkBallsPosts[4] = {
     { 0x800, 0x800, 0x200 }, { 0x800, -0x800, 0x200 }, { -0x800, 0x800, 0x200 },
@@ -167,7 +173,7 @@ u16 FloorLayout[6][3] = {
     { 0x2021, 0x2022, 0x2023 }, { 0, 0x8011, 0x14 }, { 0x4000, 0x8001, 0 },
 };
 s32 NGinSteps[4] = { (s32)0x80110000, 0x4080003C, 0x88005, 0x8001 };
-s32 NGinAnimList[4] = { (s32)&NGinSteps, (s32)&NGinSteps, 0, 0 };
+void *NGinAnimList[4] = { &NGinSteps, &NGinSteps, 0, 0 };
 ScriptInit NGinScriptInit = { 0, (void *)&NGinAnimList, 0x401 };
 s32 SeaweedSteps0[7] = { 0x41000000, 0x41024101, 0x41044103, 0x41064105, 0x41084107, 0x458011, (s32)0x80004109 };
 s32 SeaweedSteps1[7] = { 0x41800000, 0x41824181, 0x41844183, 0x41864185, 0x41884187, 0x458011, (s32)0x80004189 };
@@ -176,9 +182,9 @@ s32 SeaweedSteps3[3] = { (s32)0x80110000, 0x4200004F, 0x8000 };
 s32 SeaweedSteps4[3] = { (s32)0x80110000, 0x4300004F, 0x8000 };
 s32 SeaweedSteps5[3] = { (s32)0x80110000, 0x40800020, 0x8000 };
 s32 SeaweedSteps6[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
-s32 SeaweedAnimList[7] = {
-    (s32)&SeaweedSteps0, (s32)&SeaweedSteps1, (s32)&SeaweedSteps2, (s32)&SeaweedSteps3, (s32)&SeaweedSteps4,
-    (s32)&SeaweedSteps5, (s32)&SeaweedSteps6,
+void *SeaweedAnimList[7] = {
+    &SeaweedSteps0, &SeaweedSteps1, &SeaweedSteps2, &SeaweedSteps3, &SeaweedSteps4,
+    &SeaweedSteps5, &SeaweedSteps6,
 };
 ScriptInit SeaweedScriptInit = { 0, (void *)&SeaweedAnimList, 0x401 };
 hero_seq CRA_seq_arkbreathe[6] = {

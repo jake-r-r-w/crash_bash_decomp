@@ -26,11 +26,9 @@ if(NOT SDL3_FOUND)
   FetchContent_MakeAvailable(SDL3)
 endif()
 
-# The game's C, as it stands: this target is what 6.2 to 6.4 clean up (docs/ROADMAP-B.md). It isn't in the
-# default build yet, because 164 data tables keep addresses in s32s, which can't compile as 64-bit. Build it with
-# --target game to get the list.
+# The game's C, as it stands: this target is what 6.2 to 6.4 clean up (docs/ROADMAP-B.md).
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS game/main/*.c game/overlays/*.c)
-add_library(game OBJECT EXCLUDE_FROM_ALL ${GAME_SOURCES})
+add_library(game OBJECT ${GAME_SOURCES})
 target_include_directories(game PUBLIC psyq/include game/include)
 target_compile_options(game PRIVATE
   # The dialect it was written in, until every function has a prototype (6.2).

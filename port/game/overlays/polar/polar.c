@@ -623,9 +623,12 @@ s32 PolarSceneWord1 = 0;
 s32 PolarSceneWord2 = 0x100;
 s32 PolarSceneWord3 = 0x10;
 NAS *BombMaster = 0;
-s32 PolarVictorySeqs[10] = {
-    (s32)&PolarAnimWin, 0x46, (s32)&PolarAnimWin, 0x47,
-    (s32)&PolarAnimWin, 0xD, (s32)&PolarAnimWin, 0xD, 1, 2,
+VictorySeq PolarVictorySeqs[5] = {
+    { &PolarAnimWin, 0x46 },
+    { &PolarAnimWin, 0x47 },
+    { &PolarAnimWin, 0xD },
+    { &PolarAnimWin, 0xD },
+    { 1, 2 },
 };
 s32 PolarAttackOdds[33] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 0xC, 0x10, 0x14, 0x18, 0x1C, 0x20, 0x24, 0x28, 0x2C, 0x30,
@@ -672,18 +675,18 @@ s32 WalrusSteps3[40] = {
     0x4116, 0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x411C, 0x411D, 0x411E, 0x411F, 0x4120,
     0x4121, 0x4122, 0x4123, 0x4124, 0x4125, 0x18005, 0x4126,
 };
-s32 WalrusAnimList[3] = { (s32)&WalrusFrames, 0, 0 };
+void *WalrusAnimList[3] = { &WalrusFrames, 0, 0 };
 ScriptInit WalrusScriptInit = { 0, (void *)&WalrusAnimList, 0x402 };
 s32 WalrusState = 0x240;
 s32 WalrusFishSteps[17] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A,
     0x418B, 0x418C, 0x418D, 0x418E, 0x418F, 0x8001,
 };
-s32 WalrusFishAnimList[3] = { (s32)&WalrusFishSteps, 0, 0 };
+void *WalrusFishAnimList[3] = { &WalrusFishSteps, 0, 0 };
 ScriptInit WalrusFishScriptInit = { 0, (void *)&WalrusFishAnimList, 0x402 };
 s32 BearDeathSteps0[8] = { 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x8001 };
 s32 BearDeathSteps1[2] = { 0x4006, 0x8000 };
-s32 BearDeathAnimList[4] = { (s32)&BearDeathSteps0, (s32)&BearDeathSteps1, 0, 0 };
+void *BearDeathAnimList[4] = { &BearDeathSteps0, &BearDeathSteps1, 0, 0 };
 ScriptInit BearDeathScriptInit = { 0, (void *)&BearDeathAnimList, 0x402 };
 s32 PolarBossSteps0[7] = { 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x8000 };
 s32 PolarBossSteps1[43] = {
@@ -714,10 +717,10 @@ s32 PolarBossSteps5[42] = {
     0x4216, 0x4217, 0x4218, 0x4219, 0x421A, 0x421B, 0x421C, 0x421D, 0x421E, 0x421F, 0x4220,
     0x4221, 0x4222, 0x4223, 0x4224, 0x4225, 0x4226, 0x4227, 0x4228, 0x8001,
 };
-s32 PolarBossAnimList[13] = {
-    (s32)&PolarBossSteps0, (s32)&PolarBossSteps1, (s32)&PolarBossSteps0, (s32)&PolarBossSteps3, (s32)&PolarBossSteps0,
-    (s32)&PolarBossSteps4, (s32)&PolarBossSteps0, (s32)&PolarBossSteps5, (s32)&PolarBossSteps0, (s32)&PolarBossSteps2,
-    (s32)&PolarBossSteps0, 0, 0,
+void *PolarBossAnimList[13] = {
+    &PolarBossSteps0, &PolarBossSteps1, &PolarBossSteps0, &PolarBossSteps3, &PolarBossSteps0,
+    &PolarBossSteps4, &PolarBossSteps0, &PolarBossSteps5, &PolarBossSteps0, &PolarBossSteps2,
+    &PolarBossSteps0, 0, 0,
 };
 ScriptInit PolarBossScriptInit = { 0, (void *)&PolarBossAnimList, 0x402 };
 s32 BearBossSteps0[21] = {
@@ -754,9 +757,9 @@ s32 BearBossSteps6[46] = {
     0x4521, 0x4522, 0x4523, 0x4524, 0x4525, 0x4526, 0x4527, 0x4528, 0x4529, 0x452A, 0x452B,
     0x452C, 0x8001,
 };
-s32 BearBossAnimList[12] = {
-    (s32)&BearBossSteps0, (s32)&BearBossSteps1, (s32)&BearBossSteps0, (s32)&BearBossSteps2, (s32)&BearBossSteps0,
-    (s32)&BearBossSteps3, (s32)&BearBossSteps4, (s32)&BearBossSteps5, (s32)&BearBossSteps6, (s32)&BearBossSteps0,
+void *BearBossAnimList[12] = {
+    &BearBossSteps0, &BearBossSteps1, &BearBossSteps0, &BearBossSteps2, &BearBossSteps0,
+    &BearBossSteps3, &BearBossSteps4, &BearBossSteps5, &BearBossSteps6, &BearBossSteps0,
     0, 0,
 };
 ScriptInit BearBossScriptInit = { 0, (void *)&BearBossAnimList, 0x402 };
@@ -784,8 +787,8 @@ s32 BearminatorSteps4[17] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A,
     0x418B, 0x418C, 0x418D, 0x418E, 0x418F, 0x8001,
 };
-s32 BearminatorAnimList[7] = {
-    (s32)&BearminatorSteps0, (s32)&BearminatorSteps1, (s32)&BearminatorSteps4, (s32)&BearminatorSteps3, (s32)&BearminatorSteps2,
+void *BearminatorAnimList[7] = {
+    &BearminatorSteps0, &BearminatorSteps1, &BearminatorSteps4, &BearminatorSteps3, &BearminatorSteps2,
     0, 0,
 };
 ScriptInit BearminatorScriptInit = { 0, (void *)&BearminatorAnimList, 0x402 };
@@ -7364,7 +7367,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->state = 4;
             ext->cursor->frame = 0;
             ext->cursor->unk1C = 0;
-            ext->cursor->cur = (s32)WalrusSteps0;
+            ext->cursor->cur = WalrusSteps0;
         }
         break;
     case 4:
@@ -7378,7 +7381,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->timer = 0x96;
             ext->cursor->frame = 0;
             ext->cursor->unk1C = 0;
-            ext->cursor->cur = (s32)WalrusSteps1;
+            ext->cursor->cur = WalrusSteps1;
             PlaySfx(0x475, NULL, NULL, 0x1000, 0x1E00, 0);
             if (r == 0) {
                 PlaySfx(0x46F, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -7401,7 +7404,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->state = 5;
             ext->cursor->frame = 0;
             ext->cursor->unk1C = 0;
-            ext->cursor->cur = (s32)WalrusSteps2;
+            ext->cursor->cur = WalrusSteps2;
             ext->timer = 0;
             ext->maxSpeed = 0x10;
             ext->speed = 0;
@@ -7446,7 +7449,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->state = 7;
             ext->cursor->frame = 0;
             ext->cursor->unk1C = 0;
-            ext->cursor->cur = (s32)WalrusSteps3;
+            ext->cursor->cur = WalrusSteps3;
             m->Engine->sub->otz = 0x19C;
             PlaySfx(0x474, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -7475,7 +7478,7 @@ void PlotPolarWalrus(NAS *m) {
         m->Engine->xform.rot.vy = get_angle(m->Engine->XYZ.x, m->Engine->XYZ.z) & 0xFFF;
         ext->cursor->frame = 0;
         ext->cursor->unk1C = 0;
-        ext->cursor->cur = (s32)WalrusFrames;
+        ext->cursor->cur = WalrusFrames;
         ext->arc[0] = 0x10;
         ext->unk58 = 0x28;
         ext->arc[1] = 0;

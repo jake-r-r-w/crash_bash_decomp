@@ -378,7 +378,12 @@ shell_setup race_shell_info = {
     0x2000, 0x10, 0x2000, 0xC8, 0x100, 0x200, VramAreas, VramNodePool, 0x20, 0x708,
 };
 s32 RaceOver = 0;
-s32 RaceVictorySeqs[8] = { (s32)&RaceAnimWin, 0x4C, (s32)&RaceAnimWin, 0x55, (s32)&RaceAnimWin, 0xD, (s32)&RaceAnimWin, 0xD };
+VictorySeq RaceVictorySeqs[4] = {
+    { &RaceAnimWin, 0x4C },
+    { &RaceAnimWin, 0x55 },
+    { &RaceAnimWin, 0xD },
+    { &RaceAnimWin, 0xD },
+};
 s32 RaceAISpeeds[9] = { 0, 5, 5, 0, 0xA, 0x1E, 0x1E, 0xA, 0xA };
 RaceSpinObj *RaceSpinner = 0;
 s32 RacePatternTime = 0;
@@ -418,7 +423,7 @@ s32 RaceSmokeBoostSteps[17] = {
     0x2029, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x202F, 0x2030, 0x2031, 0x2032, 0x2033,
     0x2034, 0x2035, 0x2036, 0x2037, 0x2038, 0x8003,
 };
-s32 RaceSmokeBoostAnimList[3] = { (s32)&RaceSmokeBoostSteps, 0, 0 };
+void *RaceSmokeBoostAnimList[3] = { &RaceSmokeBoostSteps, 0, 0 };
 ScriptInit RaceSmokeBoostScriptInit = { 0, (void *)&RaceSmokeBoostAnimList, 0x402 };
 s32 RacePickupTypes[6] = { 1, 2, 0, 0, 4, 5 };
 s32 RacePickupCount = 0;
@@ -427,45 +432,45 @@ s32 DinoEggSteps[20] = {
     0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x4007, 0x4008, 0x4009, 0x400A,
     0x400B, 0x400C, 0x400D, 0x400E, 0x400F, 0x4010, 0x4011, 0x4012, 0x8000,
 };
-s32 DinoEggAnimList[3] = { (s32)&DinoEggSteps, 0, 0 };
+void *DinoEggAnimList[3] = { &DinoEggSteps, 0, 0 };
 ScriptInit DinoEggScriptInit = { 0, (void *)&DinoEggAnimList, 0x402 };
 s32 RaceTagTime = 0x12C;
 s32 RaceSmokePoofSteps[17] = {
     0x201B, 0x1201B, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021, 0x2022, 0x2023, 0x2024, 0x2025,
     0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x8003,
 };
-s32 RaceSmokePoofAnimList[3] = { (s32)&RaceSmokePoofSteps, 0, 0 };
+void *RaceSmokePoofAnimList[3] = { &RaceSmokePoofSteps, 0, 0 };
 ScriptInit RaceSmokePoofScriptInit = { 0, (void *)&RaceSmokePoofAnimList, 0x402 };
 s32 RaceGreenSmokePoofSteps[17] = {
     0x2019, 0x12019, 0x201B, 0x201C, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021, 0x2022, 0x2023,
     0x2024, 0x2025, 0x2026, 0x2027, 0x2028, 0x8003,
 };
-s32 RaceGreenSmokePoofAnimList[3] = { (s32)&RaceGreenSmokePoofSteps, 0, 0 };
+void *RaceGreenSmokePoofAnimList[3] = { &RaceGreenSmokePoofSteps, 0, 0 };
 ScriptInit RaceGreenSmokePoofScriptInit = { 0, (void *)&RaceGreenSmokePoofAnimList, 0x402 };
 s32 RaceGreenSmokeBoostSteps[17] = {
     0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200A, 0x200B,
     0x200C, 0x200D, 0x200E, 0x200F, 0x2010, 0x8003,
 };
-s32 RaceGreenSmokeBoostAnimList[3] = { (s32)&RaceGreenSmokeBoostSteps, 0, 0 };
+void *RaceGreenSmokeBoostAnimList[3] = { &RaceGreenSmokeBoostSteps, 0, 0 };
 ScriptInit RaceGreenSmokeBoostScriptInit = { 0, (void *)&RaceGreenSmokeBoostAnimList, 0x402 };
 s32 GlobSteps0[3] = { (s32)0x80110000, 0x4007006F, 0x18005 };
 s32 GlobSteps1[3] = { (s32)0x80110000, 0x4080002B, 0x18005 };
 s32 GlobSteps2[3] = { (s32)0x80110000, 0x41800020, 0x18005 };
 s32 GlobSteps3[3] = { (s32)0x80110000, 0x42000001, 0x8000 };
-s32 GlobAnimList[6] = { (s32)&GlobSteps0, (s32)&GlobSteps1, (s32)&GlobSteps3, (s32)&GlobSteps2, 0, 0 };
+void *GlobAnimList[6] = { &GlobSteps0, &GlobSteps1, &GlobSteps3, &GlobSteps2, 0, 0 };
 ScriptInit GlobScriptInit = { 0, (void *)&GlobAnimList, 0x401 };
 s32 TrackGlobSteps[3] = { (s32)0x80110000, 0x4100001C, 0x8000 };
-s32 TrackGlobAnimList[3] = { (s32)&TrackGlobSteps, 0, 0 };
+void *TrackGlobAnimList[3] = { &TrackGlobSteps, 0, 0 };
 ScriptInit TrackGlobScriptInit = { 0, (void *)&TrackGlobAnimList, 0x401 };
 s32 RaceTrackGlobCount = 0;
 s32 DacSteps[3] = { (s32)0x80110000, 0x40800012, 0x8000 };
-s32 DacAnimList[3] = { (s32)&DacSteps, 0, 0 };
+void *DacAnimList[3] = { &DacSteps, 0, 0 };
 ScriptInit DacScriptInit = { 0, (void *)&DacAnimList, 0x401 };
 s32 RaceSmokeBoostWaterSteps[17] = {
     0x2039, 0x203A, 0x203B, 0x203C, 0x203D, 0x203E, 0x203F, 0x2040, 0x2041, 0x2042, 0x2043,
     0x2044, 0x2045, 0x2046, 0x2047, 0x2048, 0x8003,
 };
-s32 RaceSmokeBoostWaterAnimList[3] = { (s32)&RaceSmokeBoostWaterSteps, 0, 0 };
+void *RaceSmokeBoostWaterAnimList[3] = { &RaceSmokeBoostWaterSteps, 0, 0 };
 ScriptInit RaceSmokeBoostWaterScriptInit = { 0, (void *)&RaceSmokeBoostWaterAnimList, 0x402 };
 RaceBarrel RaceBarrels[128] = {0};
 s32 RaceSteer[4] = {0};
@@ -475,7 +480,7 @@ s32 RaceSpinTimer = 0;
 s32 RaceSpinDelay = 0;
 s32 RaceUnused2[16] = {0};
 RacePickUpSlot RacePickupSlots[16] = {0};
-s32 RaceJumpHooks[1] = { (s32)RaceResetJumps };
+void *RaceJumpHooks[1] = { RaceResetJumps };
 
 s32 RaceAI_DodgeSpinners(s32 player) {
     s32 i;

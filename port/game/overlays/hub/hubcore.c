@@ -3016,86 +3016,104 @@ const char HubCredit209[] = "KENNY MATHERS";
 const char HubCredit210[20] = "ISABELLE TOMATIS\000\000\004\225";
 
 /* data, in address order */
-s32 HubLockText00[1] = { (s32)&HubLockMsg00 };
-s32 HubLockText01[1] = { (s32)&HubLockMsg01 };
-s32 HubLockText02[1] = { (s32)&HubLockMsg02 };
-s32 HubLockText03[1] = { (s32)&HubLockMsg03 };
-s32 HubLockText04[1] = { (s32)&HubLockMsg04 };
-s32 HubLockText05[1] = { (s32)&HubLockMsg05 };
-s32 HubLockText06[1] = { (s32)&HubLockMsg06 };
-s32 HubLockText07[1] = { (s32)&HubLockMsg07 };
-s32 HubLockText08[1] = { (s32)&HubLockMsg08 };
-s32 HubLockText09[1] = { (s32)&HubLockMsg09 };
-s32 HubLockText10[1] = { (s32)&HubLockMsg10 };
-s32 HubLockPanel00[27] = {
-    4, 0x12C8000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText00, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+void *HubLockText00[1] = { &HubLockMsg00 };
+void *HubLockText01[1] = { &HubLockMsg01 };
+void *HubLockText02[1] = { &HubLockMsg02 };
+void *HubLockText03[1] = { &HubLockMsg03 };
+void *HubLockText04[1] = { &HubLockMsg04 };
+void *HubLockText05[1] = { &HubLockMsg05 };
+void *HubLockText06[1] = { &HubLockMsg06 };
+void *HubLockText07[1] = { &HubLockMsg07 };
+void *HubLockText08[1] = { &HubLockMsg08 };
+void *HubLockText09[1] = { &HubLockMsg09 };
+void *HubLockText10[1] = { &HubLockMsg10 };
+PlaceRec HubLockPanel00[3] = {
+    { 4, -0x8000, 0x12C, 0, 0x36, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 8, 0, 0, 0, 0, 0, 0, &HubLockText00, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel01[27] = {
-    4, 0x12C8000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText01, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel01[3] = {
+    { 4, -0x8000, 0x12C, 0, 0x36, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 8, 0, 0, 0, 0, 0, 0, &HubLockText01, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel02[27] = {
-    4, 0x1908000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText02, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel02[3] = {
+    { 4, -0x8000, 0x190, 0, 0x36, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 8, 0, 0, 0, 0, 0, 0, &HubLockText02, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel03[27] = {
-    4, 0x1868000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText03, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel03[3] = {
+    { 4, -0x8000, 0x186, 0, 0x36, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 8, 0, 0, 0, 0, 0, 0, &HubLockText03, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel04[27] = {
-    4, 0x1728000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText04, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel04[3] = {
+    { 4, -0x8000, 0x172, 0, 0x36, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 8, 0, 0, 0, 0, 0, 0, &HubLockText04, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel05[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText05, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel05[3] = {
+    { 4, -0x8000, 0xFA, 0, 0x2D, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 4, 0, 0, 0, 0, 0, 0, &HubLockText05, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel06[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText06, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel06[3] = {
+    { 4, -0x8000, 0xFA, 0, 0x2D, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 4, 0, 0, 0, 0, 0, 0, &HubLockText06, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel07[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText07, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel07[3] = {
+    { 4, -0x8000, 0xFA, 0, 0x2D, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 4, 0, 0, 0, 0, 0, 0, &HubLockText07, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel08[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText08, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel08[3] = {
+    { 4, -0x8000, 0xFA, 0, 0x2D, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 4, 0, 0, 0, 0, 0, 0, &HubLockText08, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel09[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText09, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel09[3] = {
+    { 4, -0x8000, 0xFA, 0, 0x2D, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 4, 0, 0, 0, 0, 0, 0, &HubLockText09, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubLockPanel10[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText10, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubLockPanel10[3] = {
+    { 4, -0x8000, 0xFA, 0, 0x2D, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 4, 0, 0, 0, 0, 0, 0, &HubLockText10, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubSaveText[1] = { (s32)&HubTextPressSave };
-s32 HubSavePanel[27] = {
-    4, 0x12C8000, 0x2C0000, 0, 0, 0, 0, 0, 0, 0xE, 0xE00AA, 0, 0, 0, (s32)&HubSaveText, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+void *HubSaveText[1] = { &HubTextPressSave };
+PlaceRec HubSavePanel[3] = {
+    { 4, -0x8000, 0x12C, 0, 0x2C, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, 0xAA, 0xE, 0, 0, 0, 0, 0, 0, &HubSaveText, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 s32 *HubSavePanels[1] = { (void *)&HubSavePanel };
-s32 HubStartText[1] = { (s32)&HubTextPressStart };
-s32 HubStartPanel[27] = {
-    4, 0x12C8000, 0x2C0000, 0, 0, 0, 0, 0, 0, 0xE, 0xE00AA, 0, 0, 0, (s32)&HubStartText, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+void *HubStartText[1] = { &HubTextPressStart };
+PlaceRec HubStartPanel[3] = {
+    { 4, -0x8000, 0x12C, 0, 0x2C, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xE, 0xAA, 0xE, 0, 0, 0, 0, 0, 0, &HubStartText, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 s32 *HubStartPanels[1] = { (void *)&HubStartPanel };
-s32 HubChallengePanel[36] = {
-    4, 0x1A48000, 0x370000, 0, 0, 0, 0, 0, 0, 3, 0x48000, 0, 0, 0, (s32)&HubTextSelectChallenge, 4, 0, 0,
-    3, 0x1E8000, 0, 0, 0, (s32)&HubTextPressStart, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubChallengePanel[4] = {
+    { 4, -0x8000, 0x1A4, 0, 0x37, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, -0x8000, 4, 0, 0, 0, 0, 0, 0, &HubTextSelectChallenge, 4, 0, 0, 0 },
+    { 3, -0x8000, 0x1E, 0, 0, 0, 0, 0, 0, &HubTextPressStart, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 s32 *HubChallengePanels[1] = { (void *)&HubChallengePanel };
-s32 HubWarpPanel[36] = {
-    4, 0x18B8000, 0x3C0000, 0, 0, 0, 0, 0, 0, 3, 0x68000, 0, 0, 0, (s32)&HubTextSelectWarpRoom, 4, 0, 0,
-    3, 0x268000, 0, 0, 0, (s32)&HubTextPressEnter, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubWarpPanel[4] = {
+    { 4, -0x8000, 0x18B, 0, 0x3C, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, -0x8000, 6, 0, 0, 0, 0, 0, 0, &HubTextSelectWarpRoom, 4, 0, 0, 0 },
+    { 3, -0x8000, 0x26, 0, 0, 0, 0, 0, 0, &HubTextPressEnter, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 s32 *HubWarpPanels[1] = { (void *)&HubWarpPanel };
-s32 HubPapuPanel[27] = {
-    4, 0x1908000, 0x3A0000, 0, 0, 0, 0, 0, 0, 3, 0xA8000, 0, 0, 0, (s32)&HubTextDefeatPapu, 4, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HubPapuPanel[3] = {
+    { 4, -0x8000, 0x190, 0, 0x3A, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, -0x8000, 0xA, 0, 0, 0, 0, 0, 0, &HubTextDefeatPapu, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 s32 *HubPapuPanels[1] = { (void *)&HubPapuPanel };
 PlaceRec HubDoorMenuRecs[8] = {
@@ -3110,11 +3128,11 @@ PlaceRec HubDoorMenuRecs[8] = {
 };
 s32 HubDoorAngles[5] = { 0, 0x5A, 0xB4, 0x10E, 0x168 };
 KeyedPair HubLockPanels[11] = {
-    { 0xB, { (s32)&HubLockPanel00 } }, { 4, { (s32)&HubLockPanel01 } }, { 0x16, { (s32)&HubLockPanel02 } },
-    { 9, { (s32)&HubLockPanel03 } }, { 0x1F, { (s32)&HubLockPanel04 } },
-    { 0x1C, { (s32)&HubLockPanel05 } }, { 0x1D, { (s32)&HubLockPanel06 } },
-    { 0x1E, { (s32)&HubLockPanel07 } }, { 0x1A, { (s32)&HubLockPanel08 } },
-    { 0x19, { (s32)&HubLockPanel09 } }, { 5, { (s32)&HubLockPanel10 } },
+    { 0xB, { &HubLockPanel00 } }, { 4, { &HubLockPanel01 } }, { 0x16, { &HubLockPanel02 } },
+    { 9, { &HubLockPanel03 } }, { 0x1F, { &HubLockPanel04 } },
+    { 0x1C, { &HubLockPanel05 } }, { 0x1D, { &HubLockPanel06 } },
+    { 0x1E, { &HubLockPanel07 } }, { 0x1A, { &HubLockPanel08 } },
+    { 0x19, { &HubLockPanel09 } }, { 5, { &HubLockPanel10 } },
 };
 CamEase HubCamEase = { { 4, 4, 4 }, { 0x10, 4, 1 }, { 1, 0x10, 0x10 } };
 s32 HubUnused0[3] = { 1, 1, 1 };
@@ -3131,9 +3149,9 @@ s32 HubPathSteps2[11] = { 0x201F, 0x2020, 0x2021, 0x2022, 0x2023, 0x2024, 0x2023
 s32 HubPathSteps3[2] = { 0x22019, 0x8000 };
 s32 HubPathSteps4[11] = { 0x2025, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x2029, 0x2028, 0x2027, 0x2026, 0x8000 };
 s32 HubPathSteps5[2] = { 0x22025, 0x8000 };
-s32 HubPathAnimList[8] = {
-    (s32)&HubPathSteps0, (s32)&HubPathSteps1, (s32)&HubPathSteps2, (s32)&HubPathSteps3, (s32)&HubPathSteps4,
-    (s32)&HubPathSteps5, 0, 0,
+void *HubPathAnimList[8] = {
+    &HubPathSteps0, &HubPathSteps1, &HubPathSteps2, &HubPathSteps3, &HubPathSteps4,
+    &HubPathSteps5, 0, 0,
 };
 ScriptInit HubPathScriptInit = { 0, (void *)&HubPathAnimList, 0x402 };
 HubGateway HubGateways[12] = {0};
@@ -3155,44 +3173,44 @@ s32 PodiumSteps0D[9] = {
     (s32)0x80120000, 0x40A5000B, 0xB8011, (s32)0x8011408E, 0x408E000B, 0xB8011,
     (s32)0x8011408E, 0x408E0017, 0x8001,
 };
-s32 PodiumAnimList0[8] = { (s32)&PodiumSteps0A, (s32)&PodiumSteps0B, 0, 0, (s32)&PodiumSteps0C, (s32)&PodiumSteps0D, 0, 4 };
+void *PodiumAnimList0[8] = { &PodiumSteps0A, &PodiumSteps0B, 0, 0, &PodiumSteps0C, &PodiumSteps0D, 0, (void *)4 };
 ScriptInit PodiumScript0 = { 0, (void *)&PodiumAnimList0, 0x401 };
 s32 PodiumSteps1A[3] = { (s32)0x80110000, 0x4000001C, 0x8000 };
 s32 PodiumSteps1B[3] = { (s32)0x80110000, 0x41000064, 0x8001 };
 s32 PodiumSteps1C[3] = { (s32)0x80110000, 0x40800038, 0x8001 };
-s32 PodiumAnimList1[8] = { (s32)&PodiumSteps1A, (s32)&PodiumSteps1B, 0, 0, (s32)&PodiumSteps1A, (s32)&PodiumSteps1C, 0, 4 };
+void *PodiumAnimList1[8] = { &PodiumSteps1A, &PodiumSteps1B, 0, 0, &PodiumSteps1A, &PodiumSteps1C, 0, (void *)4 };
 ScriptInit PodiumScript1 = { 0, (void *)&PodiumAnimList1, 0x401 };
 s32 PodiumSteps2A[3] = { (s32)0x80110000, 0x40000016, 0x8000 };
 s32 PodiumSteps2B[3] = { (s32)0x80110000, 0x40800022, 0x8001 };
 s32 PodiumSteps2C[3] = { (s32)0x80110000, 0x4100005A, 0x8001 };
-s32 PodiumAnimList2[8] = { (s32)&PodiumSteps2A, (s32)&PodiumSteps2B, 0, 0, (s32)&PodiumSteps2A, (s32)&PodiumSteps2C, 0, 4 };
+void *PodiumAnimList2[8] = { &PodiumSteps2A, &PodiumSteps2B, 0, 0, &PodiumSteps2A, &PodiumSteps2C, 0, (void *)4 };
 ScriptInit PodiumScript2 = { 0, (void *)&PodiumAnimList2, 0x401 };
 s32 PodiumSteps3A[3] = { (s32)0x80110000, 0x41000020, 0x8000 };
 s32 PodiumSteps3B[6] = { (s32)0x80110000, 0x40000020, 0x168011, (s32)0x80124009, 0x4009000A, 0x8001 };
 s32 PodiumSteps3C[6] = { (s32)0x80110000, 0x4080002F, 0x1F8011, (s32)0x8011408F, 0x40AF0007, 0x8001 };
-s32 PodiumAnimList3[8] = { (s32)&PodiumSteps3A, (s32)&PodiumSteps3B, 0, 0, (s32)&PodiumSteps3A, (s32)&PodiumSteps3C, 0, 4 };
+void *PodiumAnimList3[8] = { &PodiumSteps3A, &PodiumSteps3B, 0, 0, &PodiumSteps3A, &PodiumSteps3C, 0, (void *)4 };
 ScriptInit PodiumScript3 = { 0, (void *)&PodiumAnimList3, 0x401 };
 s32 PodiumSteps4A[3] = { (s32)0x80110000, 0x40000016, 0x8000 };
 s32 PodiumSteps4B[3] = { (s32)0x80110000, 0x40800060, 0x8001 };
 s32 PodiumSteps4C[3] = { (s32)0x80110000, 0x4180001E, 0x8000 };
 s32 PodiumSteps4D[6] = { (s32)0x80110000, 0x41000020, 0x148011, (s32)0x8011410B, 0x410B001C, 0x8001 };
-s32 PodiumAnimList4[8] = { (s32)&PodiumSteps4A, (s32)&PodiumSteps4B, 0, 0, (s32)&PodiumSteps4C, (s32)&PodiumSteps4D, 0, 4 };
+void *PodiumAnimList4[8] = { &PodiumSteps4A, &PodiumSteps4B, 0, 0, &PodiumSteps4C, &PodiumSteps4D, 0, (void *)4 };
 ScriptInit PodiumScript4 = { 0, (void *)&PodiumAnimList4, 0x401 };
 s32 PodiumSteps5A[3] = { (s32)0x80110000, 0x41000014, 0x8000 };
 s32 PodiumSteps5B[3] = { (s32)0x80110000, 0x4180000D, 0x8001 };
 s32 PodiumSteps5C[3] = { (s32)0x80110000, 0x40000014, 0x8000 };
 s32 PodiumSteps5D[3] = { (s32)0x80110000, 0x40800043, 0x8000 };
-s32 PodiumAnimList5[8] = { (s32)&PodiumSteps5A, (s32)&PodiumSteps5B, 0, 0, (s32)&PodiumSteps5C, (s32)&PodiumSteps5D, 0, 4 };
+void *PodiumAnimList5[8] = { &PodiumSteps5A, &PodiumSteps5B, 0, 0, &PodiumSteps5C, &PodiumSteps5D, 0, (void *)4 };
 ScriptInit PodiumScript5 = { 0, (void *)&PodiumAnimList5, 0x401 };
 s32 PodiumSteps6A[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
 s32 PodiumSteps6B[5] = { (s32)0x80110000, 0x4080004F, 0x218012, (s32)0x800140A1, 0 };
 s32 PodiumSteps6C[3] = { (s32)0x80110000, 0x4100003C, 0x8001 };
-s32 PodiumAnimList6[8] = { (s32)&PodiumSteps6A, (s32)&PodiumSteps6B, 0, 0, (s32)&PodiumSteps6A, (s32)&PodiumSteps6C, 0, 4 };
+void *PodiumAnimList6[8] = { &PodiumSteps6A, &PodiumSteps6B, 0, 0, &PodiumSteps6A, &PodiumSteps6C, 0, (void *)4 };
 ScriptInit PodiumScript6 = { 0, (void *)&PodiumAnimList6, 0x401 };
 s32 PodiumSteps7A[3] = { (s32)0x80110000, 0x41000020, 0x8000 };
 s32 PodiumSteps7B[3] = { (s32)0x80110000, 0x40800066, 0x8001 };
 s32 PodiumSteps7C[5] = { (s32)0x80110000, 0x40000040, 0x1E8012, (s32)0x8001401E, 0 };
-s32 PodiumAnimList7[8] = { (s32)&PodiumSteps7A, (s32)&PodiumSteps7B, 0, 0, (s32)&PodiumSteps7A, (s32)&PodiumSteps7C, 0, 4 };
+void *PodiumAnimList7[8] = { &PodiumSteps7A, &PodiumSteps7B, 0, 0, &PodiumSteps7A, &PodiumSteps7C, 0, (void *)4 };
 ScriptInit PodiumScript7 = { 0, (void *)&PodiumAnimList7, 0x401 };
 u16 PodiumHeroAnims[8] = { 0x200C, 0, 0x200C, 0, 0x200B, 0, 0x2009, 0 };
 s32 PodiumHeroX[4] = { 0, 0x140, 0x180, 0x200 };
@@ -3217,21 +3235,12 @@ u8 PodiumSpawns[384] = {
 s32 PodiumCheerTimer = 0;
 s32 PodiumCheerKind = 0;
 u8 *PodiumAnimName = (void *)&PodiumAnimWinBreathe;
-s32 PodiumAnims[4] = { (s32)&PodiumAnimWin, (s32)&PodiumAnimLoseBreathe, (s32)&PodiumAnimLose, 0 };
+void *PodiumAnims[4] = { &PodiumAnimWin, &PodiumAnimLoseBreathe, &PodiumAnimLose, 0 };
 u8 PodiumScore1[4] = { 0x31, 0x30, 0, 0 };
 u8 PodiumScore2[4] = { 0x32, 0x30, 0, 0 };
 u8 PodiumScore3[4] = { 0x33, 0x30, 0, 0 };
 u8 PodiumScore4[12] = { 0x34, 0x30, 0, 0, 0x35, 0x30, 0, 0, 0x36, 0x30, 0, 0 };
 s32 PodiumScoreCount = 4;
-s32 PodiumUnused[106] = {
-    0x2300000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x400118, 0x18000000, (s32)0xFF800100, 0, 0, 0,
-    0x2001001C, 2, 8, 0x100000, 0x7000000, 0, 0, 0, 0, 0, 0, 3, 0x40003D, 0, 0, 0,
-    (s32)&PodiumScore1, 4, 0, 0, 8, 0x100070, 0x7000000, 0, 0, 0, 0, 0x10000, 0, 3, 0x4000AD, 0,
-    0, 0, (s32)&PodiumScore2, 4, 0, 0, 8, 0x100150, 0x7000000, 0, 0, 0, 0, 0x20000, 0, 3,
-    0x40018D, 0, 0, 0, (s32)&PodiumScore3, 4, 0, 0, 8, 0x1001C0, 0x7000000, 0, 0, 0, 0, 0x30000,
-    0, 3, 0x4001FD, 0, 0, 0, (s32)&PodiumScore4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1000, 0,
-    0x1000, 0, 0x1000, 0, 0, 0,
-};
 FxDef HubSparkFxDef = { 0xC, 0xF00, 0xF00, HubInitSparks, HubDrawSparks };
 NAS *PodiumHeroNas[4] = {0};
 PodiumObj *PodiumTrophyObj = 0;
@@ -3243,47 +3252,71 @@ s32 PodiumReady = 0;
 u8 HubNameCursor[4] = { 0x20, 0, 0x20, 0 };
 s32 HubNameCursor2[1] = { 0x200020 };
 s32 HubNameCursor3[1] = { 0x200020 };
-s32 HubNameButtons[3] = { 0x200020, (s32)&HubTextDone, (s32)&HubTextCancel };
-s32 HubNameKeys[120] = {
-    0, (s32)&HubKeyA, 0x1060000, 0x715, 0x28, (s32)&HubKeyB, 0x1FF0000, 0x715, 0x50,
-    (s32)&HubKeyC, 0x1FF0000, 0x715, 0x78, (s32)&HubKeyD, 0x1FF0000, 0x715, 0xA0,
-    (s32)&HubKeyE, 0x1FF0000, 0x715, 0xC8, (s32)&HubKeyF, 0x1FF0000, 0x715, 0xF0,
-    (s32)&HubKeyG, (s32)0xFAFF0000, 0x715, 0x280000, (s32)&HubKeyH, 0x1060000, 0x7F9,
-    0x280028, (s32)&HubKeyI, 0x1FF0000, 0x7F9, 0x280050, (s32)&HubKeyJ, 0x1FF0000, 0x7F9,
-    0x280078, (s32)&HubKeyK, 0x1FF0000, 0x7F9, 0x2800A0, (s32)&HubKeyL, 0x1FF0000, 0x7F9,
-    0x2800C8, (s32)&HubKeyM, 0x1FF0000, 0x7F9, 0x2800F0, (s32)&HubKeyN, (s32)0xFAFF0000,
-    0x7F9, 0x500000, (s32)&HubKeyO, 0x1060000, 0x7F9, 0x500028, (s32)&HubKeyP, 0x1FF0000,
-    0x7F9, 0x500050, (s32)&HubKeyQ, 0x1FF0000, 0x7F9, 0x500078, (s32)&HubKeyR, 0x1FF0000,
-    0x7F9, 0x5000A0, (s32)&HubKeyS, 0x1FF0000, 0x7F9, 0x5000C8, (s32)&HubKeyT, 0x1FF0000,
-    0x7F9, 0x5000F0, (s32)&HubKeyU, (s32)0xFAFF0000, 0x7F9, 0x780000, (s32)&HubKeyV,
-    0x1060000, 0x7F9, 0x780028, (s32)&HubKeyW, 0x1FF0000, 0x6F9, 0x780050, (s32)&HubKeyX,
-    0x1FF0000, 0x5F9, 0x780078, (s32)&HubKeyY, 0x1FF0000, 0x4F9, 0x7800A0, (s32)&HubKeyZ,
-    0x1FF0000, 0x3F9, 0x7800C8, (s32)&HubKeyAt, 0x1FF0004, 0x2F9, 0x7800F0, (s32)&HubKeyBack,
-    (s32)0xFAFF0003, 0x1F9, 0xA0808C, (s32)&HubTextDone, 1, 0x1FB, 0xC8808C, (s32)&HubTextCancel,
-    2, 0xFF,
+s32 HubNameButtons[1] = { 0x200020 };
+HubKey HubNameKeys[30] = {
+    { 0, (u8 *)&HubKeyA, 0, 6, 1, 0x15, 7 },
+    { 0x28, (u8 *)&HubKeyB, 0, -0x1, 1, 0x15, 7 },
+    { 0x50, (u8 *)&HubKeyC, 0, -0x1, 1, 0x15, 7 },
+    { 0x78, (u8 *)&HubKeyD, 0, -0x1, 1, 0x15, 7 },
+    { 0xA0, (u8 *)&HubKeyE, 0, -0x1, 1, 0x15, 7 },
+    { 0xC8, (u8 *)&HubKeyF, 0, -0x1, 1, 0x15, 7 },
+    { 0xF0, (u8 *)&HubKeyG, 0, -0x1, -0x6, 0x15, 7 },
+    { 0x280000, (u8 *)&HubKeyH, 0, 6, 1, -0x7, 7 },
+    { 0x280028, (u8 *)&HubKeyI, 0, -0x1, 1, -0x7, 7 },
+    { 0x280050, (u8 *)&HubKeyJ, 0, -0x1, 1, -0x7, 7 },
+    { 0x280078, (u8 *)&HubKeyK, 0, -0x1, 1, -0x7, 7 },
+    { 0x2800A0, (u8 *)&HubKeyL, 0, -0x1, 1, -0x7, 7 },
+    { 0x2800C8, (u8 *)&HubKeyM, 0, -0x1, 1, -0x7, 7 },
+    { 0x2800F0, (u8 *)&HubKeyN, 0, -0x1, -0x6, -0x7, 7 },
+    { 0x500000, (u8 *)&HubKeyO, 0, 6, 1, -0x7, 7 },
+    { 0x500028, (u8 *)&HubKeyP, 0, -0x1, 1, -0x7, 7 },
+    { 0x500050, (u8 *)&HubKeyQ, 0, -0x1, 1, -0x7, 7 },
+    { 0x500078, (u8 *)&HubKeyR, 0, -0x1, 1, -0x7, 7 },
+    { 0x5000A0, (u8 *)&HubKeyS, 0, -0x1, 1, -0x7, 7 },
+    { 0x5000C8, (u8 *)&HubKeyT, 0, -0x1, 1, -0x7, 7 },
+    { 0x5000F0, (u8 *)&HubKeyU, 0, -0x1, -0x6, -0x7, 7 },
+    { 0x780000, (u8 *)&HubKeyV, 0, 6, 1, -0x7, 7 },
+    { 0x780028, (u8 *)&HubKeyW, 0, -0x1, 1, -0x7, 6 },
+    { 0x780050, (u8 *)&HubKeyX, 0, -0x1, 1, -0x7, 5 },
+    { 0x780078, (u8 *)&HubKeyY, 0, -0x1, 1, -0x7, 4 },
+    { 0x7800A0, (u8 *)&HubKeyZ, 0, -0x1, 1, -0x7, 3 },
+    { 0x7800C8, (u8 *)&HubKeyAt, 4, -0x1, 1, -0x7, 2 },
+    { 0x7800F0, (u8 *)&HubKeyBack, 3, -0x1, -0x6, -0x7, 1 },
+    { 0xA0808C, (u8 *)&HubTextDone, 1, 0, 0, -0x5, 1 },
+    { 0xC8808C, (u8 *)&HubTextCancel, 2, 0, 0, -0x1, 0 },
 };
-s32 HubNameKeys2[12] = {
-    0, (s32)&HubKeyA, 0x7F90000, 0x1FF, 0xC88000, (s32)&HubTextDone, 1, 0, 0xE68000,
-    (s32)&HubTextCancel, 2, 0,
+HubKey HubNameKeys2[3] = {
+    { 0, (u8 *)&HubKeyA, 0, -0x7, 7, -0x1, 1 },
+    { 0xC88000, (u8 *)&HubTextDone, 1, 0, 0, 0, 0 },
+    { 0xE68000, (u8 *)&HubTextCancel, 2, 0, 0, 0, 0 },
 };
-HubEntry12 HubNamePages[2] = { { (s32)&HubNameKeys, 0x1E, 0x1C }, { (s32)&HubNameKeys2, 3, 1 } };
-s32 HubEnterNameText[1] = { (s32)&HubTextEnterName };
-s32 HubNamePanel[45] = {
-    0xE, 0x2C8000, 0, 0, 0, (s32)&HubEnterNameText, 0, 0, 0, 4, 0x2808000, 0x500022, 0, 0, 0, 0, 0,
-    0, 4, 0x12C8000, 0x960064, 0, 0, 0, 0, 0, 0, 4, 0x12C8000, 0x1AE00AA, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
+HubEntry12 HubNamePages[2] = { { HubNameKeys, 0x1E, 0x1C }, { HubNameKeys2, 3, 1 } };
+void *HubEnterNameText[1] = { &HubTextEnterName };
+PlaceRec HubNamePanel[5] = {
+    { 0xE, -0x8000, 0x2C, 0, 0, 0, 0, 0, 0, &HubEnterNameText, 0, 0, 0, 0 },
+    { 4, -0x8000, 0x280, 0x22, 0x50, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 4, -0x8000, 0x12C, 0x64, 0x96, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 4, -0x8000, 0x12C, 0xAA, 0x1AE, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 HubNameLetters[153] = {
-    3, 0, 0, 0, 0, (s32)&HubNameCursor, 0, 0, 0, 3, 0x22, 0, 0, 0, (s32)(u8 *)&HubNameCursor + 0x2,
-    0, 0, 0, 3, 0x44, 0, 0, 0, (s32)&HubNameCursor2, 0, 0, 0, 3, 0x66, 0, 0, 0,
-    (s32)(u8 *)&HubNameCursor2 + 0x2, 0, 0, 0, 3, 0x88, 0, 0, 0, (s32)&HubNameCursor3, 0, 0, 0, 3,
-    0xAA, 0, 0, 0, (s32)(u8 *)&HubNameCursor3 + 0x2, 0, 0, 0, 3, 0xCC, 0, 0, 0, (s32)&HubNameButtons,
-    0, 0, 0, 3, 0xEE, 0, 0, 0, (s32)(u8 *)&HubNameButtons + 0x2, 0, 0, 0, 3, 0, 0, 0, 0,
-    (s32)&HubTextDot, 0, 0, 0, 3, 0x22, 0, 0, 0, (s32)&HubTextDot, 0, 0, 0, 3, 0x44, 0, 0, 0,
-    (s32)&HubTextDot, 0, 0, 0, 3, 0x66, 0, 0, 0, (s32)&HubTextDot, 0, 0, 0, 3, 0x88, 0, 0, 0,
-    (s32)&HubTextDot, 0, 0, 0, 3, 0xAA, 0, 0, 0, (s32)&HubTextDot, 0, 0, 0, 3, 0xCC, 0, 0, 0,
-    (s32)&HubTextDot, 0, 0, 0, 3, 0xEE, 0, 0, 0, (s32)&HubTextDot, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0,
+PlaceRec HubNameLetters[17] = {
+    { 3, 0, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor, 0, 0, 0, 0 },
+    { 3, 0x22, 0, 0, 0, 0, 0, 0, 0, (u8 *)&HubNameCursor + 0x2, 0, 0, 0, 0 },
+    { 3, 0x44, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor2, 0, 0, 0, 0 },
+    { 3, 0x66, 0, 0, 0, 0, 0, 0, 0, (u8 *)&HubNameCursor2 + 0x2, 0, 0, 0, 0 },
+    { 3, 0x88, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor3, 0, 0, 0, 0 },
+    { 3, 0xAA, 0, 0, 0, 0, 0, 0, 0, (u8 *)&HubNameCursor3 + 0x2, 0, 0, 0, 0 },
+    { 3, 0xCC, 0, 0, 0, 0, 0, 0, 0, &HubNameButtons, 0, 0, 0, 0 },
+    { 3, 0xEE, 0, 0, 0, 0, 0, 0, 0, (u8 *)&HubNameButtons + 0x2, 0, 0, 0, 0 },
+    { 3, 0, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
+    { 3, 0x22, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
+    { 3, 0x44, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
+    { 3, 0x66, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
+    { 3, 0x88, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
+    { 3, 0xAA, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
+    { 3, 0xCC, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
+    { 3, 0xEE, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 GfxViewport HubSaveViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xFF0, 0, 0, 0, 0, 1 };
 SaveMenuHooks HubSaveMenuHooks = { HubSaveMenuInit, HubSaveMenuUpdate, HubSaveMenuRender, HubSaveMenuQuit };

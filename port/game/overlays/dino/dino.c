@@ -216,9 +216,11 @@ char *DinoAnims[6] = {
     (char *)DinoAnimRun, (char *)DinoAnimBreathe, (char *)DinoAnimRecoil, (char *)DinoAnimBarge,
     (char *)DinoAnimWin, NULL,
 };
-s32 DinoVictorySeqs[8] = {
-    (s32)&DinoAnimWin, 0x56, (s32)&DinoAnimWin, 0x56, (s32)&DinoAnimWin, 0x56, (s32)&DinoAnimWin,
-    0x56,
+VictorySeq DinoVictorySeqs[4] = {
+    { &DinoAnimWin, 0x56 },
+    { &DinoAnimWin, 0x56 },
+    { &DinoAnimWin, 0x56 },
+    { &DinoAnimWin, 0x56 },
 };
 u16 DinoHeroModels[10] = {
     0, 0xBB, 0xBF, 0xBC, 0xC1, 0xBD, 0xC2, 0xBE, 0xC0, 0,
@@ -261,7 +263,7 @@ s32 DinoSmokeSteps[17] = {
     0x2004, 0x12004, 0x2006, 0x2007, 0x2008, 0x2009, 0x200A, 0x200B, 0x200C, 0x200D, 0x200E,
     0x200F, 0x2010, 0x2011, 0x2012, 0x2013, 0x8003,
 };
-s32 DinoSmokeAnimList[3] = { (s32)&DinoSmokeSteps, 0, 0 };
+void *DinoSmokeAnimList[3] = { &DinoSmokeSteps, 0, 0 };
 ScriptInit DinoSmokeScriptInit = { 0, (void *)&DinoSmokeAnimList, 0x402 };
 s32 DinoSteerMin = 0x54;
 s32 DinoSteerMax = 0x6A;
@@ -271,7 +273,7 @@ s32 DinoSteerTable[20] = {
 };
 subengine *DinoTargetObjs[3] = {0};
 subengine *DinoTargetObjsB[3] = {0};
-s32 DinoGemHooks[1] = { (s32)DinoInitGems };
+void *DinoGemHooks[1] = { DinoInitGems };
 
 s32 DinoAI_PickVictim(s32 arg0) {
     s32 start;

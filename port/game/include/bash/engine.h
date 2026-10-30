@@ -216,7 +216,7 @@ extern u8 IntroViewport[];
 extern GfxViewport GameViewport;
 extern s32 GameSceneFade;
 /* A round of a cup (CupDef.rounds): the arena's mode at 4. */
-typedef struct { s32 unk0; s32 mode; s32 unk8; s32 unkC; } CupRound;
+typedef struct { s32 unk0; s32 mode; void *unk8; s32 unkC; } CupRound;
 /* A cup (CupTable, by GameCup): its rounds. */
 typedef struct { s32 unk0; CupRound *rounds; s32 roundCount; } CupDef;
 extern CupDef CupTable[];
@@ -364,7 +364,7 @@ extern EngineHooks HeroHooks;
 extern u8 DefaultHeroModels[];
 /* A victory sequence (HeroHooks.VictorySeqs, by hero): the animation's name, its sequence. */
 typedef struct VictorySeq {
-    s32 name;
+    void *name;
     u16 seq;
     u16 pad;
 } VictorySeq;

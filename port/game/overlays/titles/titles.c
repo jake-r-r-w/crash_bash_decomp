@@ -83,58 +83,58 @@ const char TextTeamBattle[] = "TEAM BATTLE";
 const char TextSelectSlot[] = "SELECT SLOT";
 
 /* data, in address order */
-s32 MainMenuHints[4] = { (s32)&TextAdventureHint, (s32)&TextBattleHint, (s32)&TextTournamentHint, (s32)&TextOptionsHint };
+void *MainMenuHints[4] = { &TextAdventureHint, &TextBattleHint, &TextTournamentHint, &TextOptionsHint };
 PlaceRec MainMenuPlace[9] = {
     { 4, -0x20, 0x12C, -0x46, 0x72, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x2C, 0, 0, 0, 0, 0, 0, (s32)&TextAdventureMode, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0xA, 0, 0, 0, 0, 0, 0, (s32)&TextBattleMode, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0x18, 0, 0, 0, 0, 0, 0, (s32)&TextTournament, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0x3A, 0, 0, 0, 0, 0, 0, (s32)&TextOptions, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0x82, 0, 0, 0, 0, 0, 0, (s32)&TextEmpty, 4, 0, 0, 0 },
-    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&TextSelectGameType, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x2C, 0, 0, 0, 0, 0, 0, &TextAdventureMode, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0xA, 0, 0, 0, 0, 0, 0, &TextBattleMode, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x18, 0, 0, 0, 0, 0, 0, &TextTournament, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x3A, 0, 0, 0, 0, 0, 0, &TextOptions, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x82, 0, 0, 0, 0, 0, 0, &TextEmpty, 4, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &TextSelectGameType, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 PlaceRec PlayersMenuPlace[8] = {
     { 4, -0x20, 0x12C, -0x46, 0x50, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x42, 0, 0, 0, 0, 0, 0, (s32)&Text1Player, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x1C, 0, 0, 0, 0, 0, 0, (s32)&Text2Player, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 8, 0, 0, 0, 0, 0, 0, (s32)&Text3Player, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0x2C, 0, 0, 0, 0, 0, 0, (s32)&Text4Player, 0, 0, 0, 0 },
-    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&TextSelectNumberOfPlayers, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x42, 0, 0, 0, 0, 0, 0, &Text1Player, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x1C, 0, 0, 0, 0, 0, 0, &Text2Player, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 8, 0, 0, 0, 0, 0, 0, &Text3Player, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x2C, 0, 0, 0, 0, 0, 0, &Text4Player, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &TextSelectNumberOfPlayers, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 PlaceRec PlayersMenuAdventurePlace[8] = {
     { 4, -0x20, 0x12C, -0x46, 0x50, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, (s32)&Text1Player, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, (s32)&Text2Player, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, &Text1Player, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, &Text2Player, 0, 0, 0, 0 },
     { 3, 0x3A, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 3, 0x3A, 0x26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&TextSelectNumberOfPlayers, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &TextSelectNumberOfPlayers, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 PlaceRec NewLoadMenuPlace[6] = {
-    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&TextAdventureMode, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &TextAdventureMode, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0x20, 0x12C, -0x46, 0x50, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, (s32)&TextNewGame, 2, 0, 0, 0 },
-    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, (s32)&TextLoadGame, 3, 0, 0, 0 },
+    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, &TextNewGame, 2, 0, 0, 0 },
+    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, &TextLoadGame, 3, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 PlaceRec BattleOptionsPlace[12] = {
     { 4, -0x8000, 0x190, -0x68, -0xA, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0xA, 0xB4, -0x14, 0, 0xCCC, 0, 0x28, 0, 0, 0, 0, 0xC7, 0x2009, 2 },
-    { 3, 0x3C, -0x46, 0, 0, 0, 0, 0, 0, (s32)&TextCupsCount, 0, 0, 0, 0 },
-    { 3, -0xDC, -0x55, 0, 0, 0, 0, 0, 0, (s32)&TextSelectCups, 4, 0, 0, 0 },
+    { 3, 0x3C, -0x46, 0, 0, 0, 0, 0, 0, &TextCupsCount, 0, 0, 0, 0 },
+    { 3, -0xDC, -0x55, 0, 0, 0, 0, 0, 0, &TextSelectCups, 4, 0, 0, 0 },
     { 4, -0x8000, 0x190, 0x28, 0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, 0x46, 0x37, 0, 0, 0, 0, 0, 0, (s32)&TextEmpty, 0, 0, 0, 0 },
-    { 3, -0xDC, 0x32, 0, 0, 0, 0, 0, 0, (s32)&TextSelectDifficulty, 4, 0, 0, 0 },
+    { 3, 0x46, 0x37, 0, 0, 0, 0, 0, 0, &TextEmpty, 0, 0, 0, 0 },
+    { 3, -0xDC, 0x32, 0, 0, 0, 0, 0, 0, &TextSelectDifficulty, 4, 0, 0, 0 },
     { 4, -0x8000, 0x258, 0x9A, 0xC0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x8000, 0xA5, 0, 0, 0, 0, 0, 0, (s32)&TextBeginBattle, 4, 0, 0, 0 },
+    { 3, -0x8000, 0xA5, 0, 0, 0, 0, 0, 0, &TextBeginBattle, 4, 0, 0, 0 },
     { 4, -0x15E, 0x258, -0xD0, -0xA6, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x8000, -0xCA, 0, 0, 0, 0, 0, 0, (s32)&TextGameOptions, 0, 0, 0, 0 },
+    { 3, -0x8000, -0xCA, 0, 0, 0, 0, 0, 0, &TextGameOptions, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 GroupFile TitlesFiles[3] = {
@@ -166,9 +166,9 @@ Ext400 TitlesBackdropAtable = {
         (s32)0x80114000, 0x40800038, 0x168011, (s32)0x80114000, 0x40000016,
     },
 };
-s32 TitlesBackdropSteps[11] = {
+s32 TitlesBackdropSteps[9] = {
     0x388011, (s32)0x80114100, 0x41800054, 0x168011, (s32)0x80114000, 0x40000016, 0x388011,
-    (s32)0x80004100, 0, (s32)&TitlesAnimBreathe, 0,
+    (s32)0x80004100, 0,
 };
 PlaceRec TitlesBackdropPlace[9] = {
     { 6, -0x64, 0, 0x4C8, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x2007, 0 },
@@ -188,13 +188,13 @@ process_info MainMenu = { MainMenuInit, MainMenuUpdate, RenderTitlesMenu, 0, 0 }
 process_info PlayersMenu = { PlayersMenuInit, PlayersMenuUpdate, RenderTitlesMenu, 0, 0 };
 process_info NewLoadMenu = { NewLoadMenuInit, NewLoadMenuUpdate, RenderTitlesMenu, 0, 0 };
 process_info TitlesLeave = { TitlesLeaveInit, 0, TitlesLeaveRender, 0, 0 };
-s32 TextDifficulties[1][3] = {
+void *TextDifficulties[1][3] = {
     {
-        (s32)&TextEasy, (s32)&TextMedium,
-        (s32)&TextHard,
+        &TextEasy, &TextMedium,
+        &TextHard,
     },
 };
-s32 TextBattleKinds[1][2] = { { (s32)&TextPressButtonToStart, (s32)&TextPressButtonToStart } };
+void *TextBattleKinds[1][2] = { { &TextPressButtonToStart, &TextPressButtonToStart } };
 process_info BattleOptions = { BattleOptionsInit, BattleOptionsUpdate, BattleOptionsRender, BattleOptionsQuit, 0 };
 /* The menu chains MenuChainNext/Back walk (MenuChainPos): each starts at its second entry, so
  * backing out of the first screen reaches the main menu before it. A Resume pointer is where a
@@ -208,66 +208,66 @@ process_info *AdventureChain[6] = {
 };
 process_info *TournamentChain[4] = { &PlayersMenu, &CharSelect, &TournamentSelect, &BattleOptions };
 process_info **TournamentChainResume = &TournamentChain[2];
-s32 LangOptions[1] = { (s32)&TextOptions };
-s32 LangExit[1] = { (s32)&TextExit };
-s32 LangSound[1] = { (s32)&TextSound };
-s32 LangAudioMode[1] = { (s32)&TextAudioMode };
-s32 LangStereo[1] = { (s32)&TextStereo };
-s32 LangMono[1] = { (s32)&TextMono };
-s32 LangMusicVolume[1] = { (s32)&TextMusicVolume };
-s32 LangFxVolume[1] = { (s32)&TextFxVolume };
-s32 LangController[1] = { (s32)&TextController };
-s32 LangVibration[1] = { (s32)&TextVibration };
-s32 LangOn[1] = { (s32)&TextOn };
-s32 LangOff[1] = { (s32)&TextOff };
-s32 LangPressButtonToChange[1] = { (s32)&TextPressButtonToChange };
-s32 LangPressButtonToAccept[1] = { (s32)&TextPressButtonToAccept };
+void *LangOptions[1] = { &TextOptions };
+void *LangExit[1] = { &TextExit };
+void *LangSound[1] = { &TextSound };
+void *LangAudioMode[1] = { &TextAudioMode };
+void *LangStereo[1] = { &TextStereo };
+void *LangMono[1] = { &TextMono };
+void *LangMusicVolume[1] = { &TextMusicVolume };
+void *LangFxVolume[1] = { &TextFxVolume };
+void *LangController[1] = { &TextController };
+void *LangVibration[1] = { &TextVibration };
+void *LangOn[1] = { &TextOn };
+void *LangOff[1] = { &TextOff };
+void *LangPressButtonToChange[1] = { &TextPressButtonToChange };
+void *LangPressButtonToAccept[1] = { &TextPressButtonToAccept };
 PlaceRec OptionsPlace[7] = {
-    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&LangOptions, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &LangOptions, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0xBE, 0xBE, -0x4A, 0x5A, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0x8000, -0x32, 0, 0, 0, 0, 0, 0, (s32)&LangSound, 0, 0, 0, 0 },
-    { 0xE, -0x8000, -0xA, 0, 0, 0, 0, 0, 0, (s32)&LangController, 0, 0, 0, 0 },
-    { 0xE, -0x8000, 0x1E, 0, 0, 0, 0, 0, 0, (s32)&LangExit, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0x32, 0, 0, 0, 0, 0, 0, &LangSound, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0xA, 0, 0, 0, 0, 0, 0, &LangController, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x1E, 0, 0, 0, 0, 0, 0, &LangExit, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 PlaceRec OptionsSoundPlace[12] = {
-    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&LangSound, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &LangSound, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0xFA, 0xFA, -0x40, 0x8C, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0xD2, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&LangAudioMode, 0, 0, 0, 0 },
-    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&LangStereo, 0, 0, 0, 0 },
-    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&LangMono, 0, 0, 0, 0 },
-    { 0xE, -0xD2, 0xA, 0, 0, 0, 0, 0, 0, (s32)&LangMusicVolume, 0, 0, 0, 0 },
-    { 3, 0x46, 0xA, 0, 0, 0, 0, 0, 0, (s32)&TextPercent100, 0, 0, 0, 0 },
-    { 0xE, -0xD2, 0x32, 0, 0, 0, 0, 0, 0, (s32)&LangFxVolume, 0, 0, 0, 0 },
-    { 3, 0x46, 0x32, 0, 0, 0, 0, 0, 0, (s32)&TextPercent90, 0, 0, 0, 0 },
-    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, (s32)&LangPressButtonToAccept, 4, 0, 0, 0 },
+    { 0xE, -0xD2, -0x1E, 0, 0, 0, 0, 0, 0, &LangAudioMode, 0, 0, 0, 0 },
+    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, &LangStereo, 0, 0, 0, 0 },
+    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, &LangMono, 0, 0, 0, 0 },
+    { 0xE, -0xD2, 0xA, 0, 0, 0, 0, 0, 0, &LangMusicVolume, 0, 0, 0, 0 },
+    { 3, 0x46, 0xA, 0, 0, 0, 0, 0, 0, &TextPercent100, 0, 0, 0, 0 },
+    { 0xE, -0xD2, 0x32, 0, 0, 0, 0, 0, 0, &LangFxVolume, 0, 0, 0, 0 },
+    { 3, 0x46, 0x32, 0, 0, 0, 0, 0, 0, &TextPercent90, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, &LangPressButtonToAccept, 4, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 PlaceRec OptionsControllerPlace[23] = {
-    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&LangController, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &LangController, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0xBE, 0xBE, -0x4A, 0x82, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0x8000, -0x3C, 0, 0, 0, 0, 0, 0, (s32)&LangVibration, 0, 0, 0, 0 },
-    { 0xE, -0x8F, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOn, 7, 0, 0, 0 },
-    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 0, 0, 0, 0 },
-    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 1, 0, 0, 0 },
-    { 0xE, -0x35, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOn, 7, 0, 0, 0 },
-    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 0, 0, 0, 0 },
-    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 1, 0, 0, 0 },
-    { 0xE, 0x25, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOn, 7, 0, 0, 0 },
-    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 0, 0, 0, 0 },
-    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 1, 0, 0, 0 },
-    { 0xE, 0x75, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOn, 7, 0, 0, 0 },
-    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 0, 0, 0, 0 },
-    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 1, 0, 0, 0 },
-    { 3, -0x87, -0xF, 0, 0, 0, 0, 0, 0, (s32)&TextP1, 4, 0, 0, 0 },
-    { 3, -0x2D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&TextP2, 4, 0, 0, 0 },
-    { 3, 0x2D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&TextP3, 4, 0, 0, 0 },
-    { 3, 0x7D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&TextP4, 4, 0, 0, 0 },
-    { 0xE, -0x8000, 0x3C, 0, 0, 0, 0, 0, 0, (s32)&LangPressButtonToChange, 4, 0, 0, 0 },
-    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, (s32)&LangPressButtonToAccept, 4, 0, 0, 0 },
+    { 0xE, -0x8000, -0x3C, 0, 0, 0, 0, 0, 0, &LangVibration, 0, 0, 0, 0 },
+    { 0xE, -0x8F, 0, 0, 0, 0, 0, 0, 0, &LangOn, 7, 0, 0, 0 },
+    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, &LangOff, 0, 0, 0, 0 },
+    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, &LangOff, 1, 0, 0, 0 },
+    { 0xE, -0x35, 0, 0, 0, 0, 0, 0, 0, &LangOn, 7, 0, 0, 0 },
+    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, &LangOff, 0, 0, 0, 0 },
+    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, &LangOff, 1, 0, 0, 0 },
+    { 0xE, 0x25, 0, 0, 0, 0, 0, 0, 0, &LangOn, 7, 0, 0, 0 },
+    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, &LangOff, 0, 0, 0, 0 },
+    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, &LangOff, 1, 0, 0, 0 },
+    { 0xE, 0x75, 0, 0, 0, 0, 0, 0, 0, &LangOn, 7, 0, 0, 0 },
+    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, &LangOff, 0, 0, 0, 0 },
+    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, &LangOff, 1, 0, 0, 0 },
+    { 3, -0x87, -0xF, 0, 0, 0, 0, 0, 0, &TextP1, 4, 0, 0, 0 },
+    { 3, -0x2D, -0xF, 0, 0, 0, 0, 0, 0, &TextP2, 4, 0, 0, 0 },
+    { 3, 0x2D, -0xF, 0, 0, 0, 0, 0, 0, &TextP3, 4, 0, 0, 0 },
+    { 3, 0x7D, -0xF, 0, 0, 0, 0, 0, 0, &TextP4, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0x3C, 0, 0, 0, 0, 0, 0, &LangPressButtonToChange, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, &LangPressButtonToAccept, 4, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 s32 OptionsCursor = 0;
@@ -281,7 +281,7 @@ process_info **MenuChainPos = 0;
 s32 MainMenuHintTimer = 0;
 s32 NewLoadMenuCursor = 0;
 s32 BattleOptionsState = 0;
-s32 LangCharacterSelect[1] = { (s32)&TextCharacterSelect };
+void *LangCharacterSelect[1] = { &TextCharacterSelect };
 PlaceRec CharSelectPlace[27] = {
     { 0x11, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3075, 0 },
     { 0x11, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3077, 0 },
@@ -303,7 +303,7 @@ PlaceRec CharSelectPlace[27] = {
     { 0x10, 0xE8, 0x13E, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0x10, 0x142, 0x198, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0x10, 0x19C, 0x1F2, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0x8000, 0x116, 0, 0, 0, 0, 0, 0, (s32)&LangCharacterSelect, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x116, 0, 0, 0, 0, 0, 0, &LangCharacterSelect, 0, 0, 0, 0 },
     { 4, -0xA, 0x28A, 0x112, 0x136, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0, 0x2BC, 0x28, 0x6E, 7, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0, 0x2BC, 0x8C, 0xD2, 8, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -323,14 +323,14 @@ PlaceRec CharSelectModelsPlace[9] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 CharCard CharCards[8] = {
-    { 0, 1, { 0 }, 0x8E, 0x20, 0xCCCC, 0xC7, 0, (s32)&CharSelectSteps2, 0x38E, 0 },
-    { 0, 2, { 0 }, 0xE8, 0x20, 0xCCCC, 0xC7, 0, (s32)&CharSelectSteps1, 0x38F, 0 },
-    { 0, 5, { 0 }, 0x142, 0x20, 0x9999, 0xC7, 0, (s32)&CharSelectSteps6, 0x394, 0 },
-    { 0, 7, { 0 }, 0x19C, 0x20, 0x9999, 0xC7, 0, (s32)&CharSelectSteps4, 0x392, 0 },
-    { 0, 3, { 0 }, 0x8E, 0x84, 0xCCCC, 0xC7, 0, (s32)&CharSelectSteps3, 0x391, 0 },
-    { 0, 4, { 0 }, 0xE8, 0x84, 0x9999, 0xC7, 0, (s32)&CharSelectSteps0, 0x390, 0 },
-    { 0, 6, { 0 }, 0x142, 0x84, 0x9999, 0xC7, 0, (s32)&CharSelectAnim7, 0x395, 0 },
-    { 0, 8, { 0 }, 0x19C, 0x84, 0x9999, 0xC7, 0, (s32)&CharSelectSteps5, 0x393, 0 },
+    { 0, 1, { 0 }, 0x8E, 0x20, 0xCCCC, 0xC7, 0, &CharSelectSteps2, 0x38E, 0 },
+    { 0, 2, { 0 }, 0xE8, 0x20, 0xCCCC, 0xC7, 0, &CharSelectSteps1, 0x38F, 0 },
+    { 0, 5, { 0 }, 0x142, 0x20, 0x9999, 0xC7, 0, &CharSelectSteps6, 0x394, 0 },
+    { 0, 7, { 0 }, 0x19C, 0x20, 0x9999, 0xC7, 0, &CharSelectSteps4, 0x392, 0 },
+    { 0, 3, { 0 }, 0x8E, 0x84, 0xCCCC, 0xC7, 0, &CharSelectSteps3, 0x391, 0 },
+    { 0, 4, { 0 }, 0xE8, 0x84, 0x9999, 0xC7, 0, &CharSelectSteps0, 0x390, 0 },
+    { 0, 6, { 0 }, 0x142, 0x84, 0x9999, 0xC7, 0, CharSelectSteps7, 0x395, 0 },
+    { 0, 8, { 0 }, 0x19C, 0x84, 0x9999, 0xC7, 0, &CharSelectSteps5, 0x393, 0 },
 };
 TitlesOff CharSelectorOffsets[4] = { { 7, 4 }, { 0x2D, 4 }, { 7, 0x30 }, { 0x2D, 0x30 } };
 s32 CharPickSfx[4] = { 0x389, 0x38A, 0x38B, 0x38C };
@@ -352,58 +352,80 @@ s8 AdventureHeadsTeam[256] = {
 };
 process_info CharSelect = { CharSelectInit, CharSelectUpdate, CharSelectRender, 0, 0 };
 s32 CharSelectSteps0[3] = { (s32)0x80110000, 0x43800020, 0x8000 };
-s32 CharSelectAnim0[6] = { (s32)&CharSelectSteps0, 0, 0, 0, (s32)&CharSelectAnim0, 0x401 };
+void *CharSelectAnim0[3] = { CharSelectSteps0, 0, 0 };
+ScriptInit CharSelectInit0 = { 0, CharSelectAnim0, 0x401 };
 s32 CharSelectSteps1[3] = { (s32)0x80110000, 0x42000014, 0x8000 };
-s32 CharSelectAnim1[6] = { (s32)&CharSelectSteps1, 0, 0, 0, (s32)&CharSelectAnim1, 0x401 };
+void *CharSelectAnim1[3] = { CharSelectSteps1, 0, 0 };
+ScriptInit CharSelectInit1 = { 0, CharSelectAnim1, 0x401 };
 s32 CharSelectSteps2[3] = { (s32)0x80110000, 0x42800016, 0x8000 };
-s32 CharSelectAnim2[6] = { (s32)&CharSelectSteps2, 0, 0, 0, (s32)&CharSelectAnim2, 0x401 };
+void *CharSelectAnim2[3] = { CharSelectSteps2, 0, 0 };
+ScriptInit CharSelectInit2 = { 0, CharSelectAnim2, 0x401 };
 s32 CharSelectSteps3[3] = { (s32)0x80110000, 0x43000020, 0x8000 };
-s32 CharSelectAnim3[6] = { (s32)&CharSelectSteps3, 0, 0, 0, (s32)&CharSelectAnim3, 0x401 };
+void *CharSelectAnim3[3] = { CharSelectSteps3, 0, 0 };
+ScriptInit CharSelectInit3 = { 0, CharSelectAnim3, 0x401 };
 s32 CharSelectSteps4[3] = { (s32)0x80110000, 0x44000016, 0x8000 };
-s32 CharSelectAnim4[6] = { (s32)&CharSelectSteps4, 0, 0, 0, (s32)&CharSelectAnim4, 0x401 };
+void *CharSelectAnim4[3] = { CharSelectSteps4, 0, 0 };
+ScriptInit CharSelectInit4 = { 0, CharSelectAnim4, 0x401 };
 s32 CharSelectSteps5[3] = { (s32)0x80110000, 0x44800014, 0x8000 };
-s32 CharSelectAnim5[6] = { (s32)&CharSelectSteps5, 0, 0, 0, (s32)&CharSelectAnim5, 0x401 };
+void *CharSelectAnim5[3] = { CharSelectSteps5, 0, 0 };
+ScriptInit CharSelectInit5 = { 0, CharSelectAnim5, 0x401 };
 s32 CharSelectSteps6[3] = { (s32)0x80110000, 0x45000020, 0x8000 };
-s32 CharSelectAnim6[6] = { (s32)&CharSelectSteps6, 0, 0, 0, (s32)&CharSelectAnim6, 0x401 };
-s32 CharSelectAnim7[6] = { (s32)0x80110000, 0x45800020, 0x8000, (s32)&CharSelectAnim7, 0, 0 };
+void *CharSelectAnim6[3] = { CharSelectSteps6, 0, 0 };
+ScriptInit CharSelectInit6 = { 0, CharSelectAnim6, 0x401 };
+s32 CharSelectSteps7[3] = { (s32)0x80110000, 0x45800020, 0x8000 };
+void *CharSelectAnim7[3] = { CharSelectSteps7, 0, 0 };
 camera_info_tag CharSelectCamera = {0};
 TitlesSlot CharSelectors[4] = {0};
-s32 LangPressToUnlockLevels[1] = { (s32)&TextPressToUnlockLevels };
-s32 LangNoMoreUnlocked[1] = { (s32)&TextNoMoreUnlocked };
-s32 LangInsertCard[1] = { (s32)&TextInsertCard };
-s32 LangLocked[1] = { (s32)&TextLocked };
-s32 BattleLevelsBash[16] = {
-    1, 0, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2005, 1, 1, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2006, 1, 2, (s32)&HeroModelBank[DB_MainmenuArenaModels2],
-    0x2007, 1, 3, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2008,
+void *LangPressToUnlockLevels[1] = { &TextPressToUnlockLevels };
+void *LangNoMoreUnlocked[1] = { &TextNoMoreUnlocked };
+void *LangInsertCard[1] = { &TextInsertCard };
+void *LangLocked[1] = { &TextLocked };
+BattleLevel BattleLevelsBash[4] = {
+    { 1, 0, &HeroModelBank[DB_MainmenuArenaModels2], 0x2005 },
+    { 1, 1, &HeroModelBank[DB_MainmenuArenaModels2], 0x2006 },
+    { 1, 2, &HeroModelBank[DB_MainmenuArenaModels2], 0x2007 },
+    { 1, 3, &HeroModelBank[DB_MainmenuArenaModels2], 0x2008 },
 };
-s32 BattleLevelsPolar[16] = {
-    1, 0x13, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2005, 1, 0x12, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2006, 1, 0x14,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2007, 1, 0x15, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2008,
+BattleLevel BattleLevelsPolar[4] = {
+    { 1, 0x13, &HeroModelBank[DB_MainmenuArenaModels1], 0x2005 },
+    { 1, 0x12, &HeroModelBank[DB_MainmenuArenaModels1], 0x2006 },
+    { 1, 0x14, &HeroModelBank[DB_MainmenuArenaModels1], 0x2007 },
+    { 1, 0x15, &HeroModelBank[DB_MainmenuArenaModels1], 0x2008 },
 };
-s32 BattleLevelsPogo[16] = {
-    1, 0xA, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001, 1, 0xB, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2002, 1, 0xC,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2003, 1, 0xD, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2004,
+BattleLevel BattleLevelsPogo[4] = {
+    { 1, 0xA, &HeroModelBank[DB_MainmenuArenaModels1], 0x2001 },
+    { 1, 0xB, &HeroModelBank[DB_MainmenuArenaModels1], 0x2002 },
+    { 1, 0xC, &HeroModelBank[DB_MainmenuArenaModels1], 0x2003 },
+    { 1, 0xD, &HeroModelBank[DB_MainmenuArenaModels1], 0x2004 },
 };
-s32 BattleLevelsArkenoid[16] = {
-    1, 0xE, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2001, 1, 0xF, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2002, 1, 0x10,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2003, 1, 0x11, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2004,
+BattleLevel BattleLevelsArkenoid[4] = {
+    { 1, 0xE, &HeroModelBank[DB_MainmenuArenaModels2], 0x2001 },
+    { 1, 0xF, &HeroModelBank[DB_MainmenuArenaModels2], 0x2002 },
+    { 1, 0x10, &HeroModelBank[DB_MainmenuArenaModels2], 0x2003 },
+    { 1, 0x11, &HeroModelBank[DB_MainmenuArenaModels2], 0x2004 },
 };
-s32 BattleLevelsTank[16] = {
-    2, 6, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2009, 2, 8, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200A, 2, 7, (s32)&HeroModelBank[DB_MainmenuArenaModels1],
-    0x200B, 2, 5, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200C,
+BattleLevel BattleLevelsTank[4] = {
+    { 2, 6, &HeroModelBank[DB_MainmenuArenaModels1], 0x2009 },
+    { 2, 8, &HeroModelBank[DB_MainmenuArenaModels1], 0x200A },
+    { 2, 7, &HeroModelBank[DB_MainmenuArenaModels1], 0x200B },
+    { 2, 5, &HeroModelBank[DB_MainmenuArenaModels1], 0x200C },
 };
-s32 BattleLevelsRace[16] = {
-    2, 0x17, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2009, 2, 0x18, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200A, 2, 0x1A,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200B, 2, 0x19, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200C,
+BattleLevel BattleLevelsRace[4] = {
+    { 2, 0x17, &HeroModelBank[DB_MainmenuArenaModels2], 0x2009 },
+    { 2, 0x18, &HeroModelBank[DB_MainmenuArenaModels2], 0x200A },
+    { 2, 0x1A, &HeroModelBank[DB_MainmenuArenaModels2], 0x200B },
+    { 2, 0x19, &HeroModelBank[DB_MainmenuArenaModels2], 0x200C },
 };
-s32 BattleLevelsDino[16] = {
-    2, 0x1B, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200D, 2, 0x1C, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200E, 2, 0x1D,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200F, 2, 0x1E, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2010,
+BattleLevel BattleLevelsDino[4] = {
+    { 2, 0x1B, &HeroModelBank[DB_MainmenuArenaModels2], 0x200D },
+    { 2, 0x1C, &HeroModelBank[DB_MainmenuArenaModels2], 0x200E },
+    { 2, 0x1D, &HeroModelBank[DB_MainmenuArenaModels2], 0x200F },
+    { 2, 0x1E, &HeroModelBank[DB_MainmenuArenaModels2], 0x2010 },
 };
 BattleArena BattleArenas[7] = {
-    { (s32)&BattleLevelsBash, 4 }, { (s32)&BattleLevelsPolar, 4 }, { (s32)&BattleLevelsPogo, 4 },
-    { (s32)&BattleLevelsArkenoid, 4 }, { (s32)&BattleLevelsTank, 4 }, { (s32)&BattleLevelsRace, 4 },
-    { (s32)&BattleLevelsDino, 4 },
+    { &BattleLevelsBash, 4 }, { &BattleLevelsPolar, 4 }, { &BattleLevelsPogo, 4 },
+    { &BattleLevelsArkenoid, 4 }, { &BattleLevelsTank, 4 }, { &BattleLevelsRace, 4 },
+    { &BattleLevelsDino, 4 },
 };
 PlaceRec LevelSelectPlace0[2] = {
     { 7, 0, 0, 0, 0xB33, 0, 0, 0, 0, 0, 0, 0xC8, 0, 0 },
@@ -425,24 +447,24 @@ PlaceRec LevelSelectPlace4[2] = {
     { 7, 0, 0, 0, 0x666, 0, 0, 0, 0, 0, 0, 0xC8, 0x2008, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 LangChangeArena[1] = { (s32)&TextChangeArena };
-s32 LangChangeLevel[1] = { (s32)&TextChangeLevel };
-s32 LangPressButtonToSelect[1] = { (s32)&TextPressButtonToSelect };
-s32 LangChooseLevel[1] = { (s32)&TextChooseLevel };
+void *LangChangeArena[1] = { &TextChangeArena };
+void *LangChangeLevel[1] = { &TextChangeLevel };
+void *LangPressButtonToSelect[1] = { &TextPressButtonToSelect };
+void *LangChooseLevel[1] = { &TextChooseLevel };
 PlaceRec LevelSelectPlace[11] = {
     { 3, 0x7FA1, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 6, 0xD4, 0, 0, 0x266, 0, 0, 0, 0, 0, 0, 0xC7, 0x2008, 0 },
-    { 0xE, 0x7FA1, -0x96, 0, 0, 0, 0, 0, 0, (s32)&LangChangeArena, 4, 0, 0, 0 },
-    { 0xE, 0x7FA1, -0x42, 0, 0, 0, 0, 0, 0, (s32)&LangChangeLevel, 4, 0, 0, 0 },
-    { 0xE, 0x7FA1, -0x28, 0, 0, 0, 0, 0, 0, (s32)&LangPressButtonToSelect, 4, 0, 0, 0 },
-    { 0xE, 0x7FA1, -0xC8, 0, 0, 0, 0, 0, 0, (s32)&LangChooseLevel, 0, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0x96, 0, 0, 0, 0, 0, 0, &LangChangeArena, 4, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0x42, 0, 0, 0, 0, 0, 0, &LangChangeLevel, 4, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0x28, 0, 0, 0, 0, 0, 0, &LangPressButtonToSelect, 4, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0xC8, 0, 0, 0, 0, 0, 0, &LangChooseLevel, 0, 0, 0, 0 },
     { 3, 0x7FA1, -0x6E, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0x14A, 0x88, -0xCA, -0xA6, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0x120, 0x28A, -0xCC, -0xA6, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, 0x7FA1, 0x4E, 0, 0, 0, 0, 0, 0, (s32)&TextCheckCardForSave, 4, 0, 0, 0 },
+    { 3, 0x7FA1, 0x4E, 0, 0, 0, 0, 0, 0, &TextCheckCardForSave, 4, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 LangCheckingCard[1] = { (s32)&TextCheckingCard };
+void *LangCheckingCard[1] = { &TextCheckingCard };
 GfxViewport LevelSelectView0 = { 0x28, 0xEE, 0x19A, 0x1B0, 0, 0, 0x280, 0x1E0, 0xE1, 0x198, 0x200, 0x1FF, 0, 0, 0, 0, 0 };
 GfxViewport LevelSelectView1 = { 0x1CC, 0x24, 0x25C, 0x84, 0, 0, 0x280, 0x1E0, 0x214, 0x88, 0x400, 0xFF, 0, 0, 0, 0, 0 };
 GfxViewport LevelSelectView2 = { 0x1CC, 0x88, 0x25C, 0xE8, 0, 0, 0x280, 0x1E0, 0x214, 0xEC, 0x4CC, 0xFF, 0, 0, 0, 0, 0 };
@@ -451,9 +473,9 @@ GfxViewport LevelSelectView4 = { 0x1CC, 0x150, 0x25C, 0x1B0, 0, 0, 0x280, 0x1E0,
 process_info LevelSelect = { LevelSelectInit, LevelSelectUpdate, LevelSelectRender, LevelSelectQuit, 0 };
 s32 LevelSelectBusy = 0;
 s32 LevelSelectReload = 0;
-s32 LangSelectBattleType[1] = { (s32)&TextSelectBattleType };
-s32 LangChangeBattleType[1] = { (s32)&TextChangeBattleType };
-s32 LangStartBattle[1] = { (s32)&TextStartBattle };
+void *LangSelectBattleType[1] = { &TextSelectBattleType };
+void *LangChangeBattleType[1] = { &TextChangeBattleType };
+void *LangStartBattle[1] = { &TextStartBattle };
 PlaceRec TeamModePlace[19] = {
     { 6, -0xFA, -0x5A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
     { 6, -0x6A, -0x5A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
@@ -463,20 +485,20 @@ PlaceRec TeamModePlace[19] = {
     { 4, -0x88, -0x10, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0x10, 0x88, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0xAA, 0x122, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0xAA, -0x46, 0, 0, 0, 0, 0, 0, (s32)&TextVs, 0, 0, 0, 0 },
-    { 3, -0x8000, -0x46, 0, 0, 0, 0, 0, 0, (s32)&TextVs, 0, 0, 0, 0 },
-    { 3, 0x88, -0x46, 0, 0, 0, 0, 0, 0, (s32)&TextVs, 0, 0, 0, 0 },
-    { 0xE, -0x8000, -0xC8, 0, 0, 0, 0, 0, 0, (s32)&LangSelectBattleType, 0, 0, 0, 0 },
+    { 3, -0xAA, -0x46, 0, 0, 0, 0, 0, 0, &TextVs, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x46, 0, 0, 0, 0, 0, 0, &TextVs, 0, 0, 0, 0 },
+    { 3, 0x88, -0x46, 0, 0, 0, 0, 0, 0, &TextVs, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0xC8, 0, 0, 0, 0, 0, 0, &LangSelectBattleType, 0, 0, 0, 0 },
     { 4, -0x8000, 0x258, -0xCA, -0xA6, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x8000, 0x42, 0, 0, 0, 0, 0, 0, (s32)&TextVsBattle, 2, 0, 0, 0 },
+    { 3, -0x8000, 0x42, 0, 0, 0, 0, 0, 0, &TextVsBattle, 2, 0, 0, 0 },
     { 4, -0x78, 0x78, 0x3A, 0x6C, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0x8000, 0x8C, 0, 0, 0, 0, 0, 0, (s32)&LangChangeBattleType, 4, 0, 0, 0 },
-    { 0xE, -0x8000, 0xA6, 0, 0, 0, 0, 0, 0, (s32)&LangStartBattle, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0x8C, 0, 0, 0, 0, 0, 0, &LangChangeBattleType, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0xA6, 0, 0, 0, 0, 0, 0, &LangStartBattle, 4, 0, 0, 0 },
     { 4, -0x10E, 0x10E, 0x87, 0xBE, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 LangVsBattle[1] = { (s32)&TextVsBattle };
-s32 LangTeamBattle[1] = { (s32)&TextTeamBattle };
+void *LangVsBattle[1] = { &TextVsBattle };
+void *LangTeamBattle[1] = { &TextTeamBattle };
 TitlesPreset TeamModePresets[2] = {
     {
         { 0, 1, 2, 3 }, { 0x8000, 0x8000, 0x8000 }, { -0x122, -0x88, 0x10, 0xAA },
@@ -493,7 +515,7 @@ s32 TeamModeRow = 0;
 s32 TeamModePreset = 0;
 PlaceRec TitlesExtraPlace[3] = {
     { 4, 0, 0x64, 0, 0x64, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, 0, 0, 0, 0, 0, 0, 0, 0, (s32)&TextSelectSlot, 2, 0, 0, 0 },
+    { 3, 0, 0, 0, 0, 0, 0, 0, 0, &TextSelectSlot, 2, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 /* two screens nothing in the front end chains to (the engine's own menus may) */

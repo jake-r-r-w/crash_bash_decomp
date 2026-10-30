@@ -16,9 +16,11 @@ const char N2OAnimBank[] = "BANK";
 const char N2OAnimDie[] = "DIE";
 
 /* data, in address order */
-s32 N2OVictorySeqs[8] = {
-    (s32)&N2OAnimWin, 0x28, (s32)&N2OAnimWin, 0x28, (s32)&N2OAnimWin, 0x28, (s32)&N2OAnimWin,
-    0x28,
+VictorySeq N2OVictorySeqs[4] = {
+    { &N2OAnimWin, 0x28 },
+    { &N2OAnimWin, 0x28 },
+    { &N2OAnimWin, 0x28 },
+    { &N2OAnimWin, 0x28 },
 };
 SLONG_XYZ N2OBallStarts[6] = {
     { -0x800, -0x20, -0x800 }, { 0x800, -0x20, -0x800 }, { -0x800, -0x20, -0x800 },
@@ -66,7 +68,7 @@ u16 N2OUnusedRows[10][5] = {
     { 0x15, 7, 0xE, 0x1C, 0x41FF }, { 0x18, 0xA, 0xF, 0x1C, 0x407F }, { 0, 0, 0, 0, 0 },
 };
 s32 N2OUnusedSteps[2] = { 0x40000063, 0x8000 };
-s32 N2OUnusedAnimList[1] = { (s32)&N2OUnusedSteps };
+void *N2OUnusedAnimList[1] = { &N2OUnusedSteps };
 ScriptInit N2OUnusedScriptInit = { 0, (void *)&N2OUnusedAnimList, 0x401 };
 hero_seq CRA_seq_n2obreathe[6] = {
     0, 0x8007, 0x14, 0x4000, 0x8000, 0,

@@ -887,9 +887,9 @@ PlaceRec *** PauseMenuTexts[45] = {  /* the pause menu's texts in the mode text 
     (PlaceRec ***)(ModeTextBuffer + 0x213C), (PlaceRec ***)(ModeTextBuffer + 0x1850),
     (PlaceRec ***)(ModeTextBuffer + 0x1594), (PlaceRec ***)(ModeTextBuffer + 0x1828),
     (PlaceRec ***)(ModeTextBuffer + 0x17DC), (PlaceRec ***)(ModeTextBuffer + 0x544),
-    (PlaceRec ***)(ModeTextBuffer + 0x3E24), (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
-    (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
-    (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
+    (PlaceRec ***)(ModeTextBuffer + 0x3E24), &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty,
+    &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty,
+    &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty,
 };
 PlaceRec **** PauseMenuSetsByLang[6] = {
     PauseMenuTexts, PauseMenuTexts, PauseMenuTexts, PauseMenuTexts, PauseMenuTexts,

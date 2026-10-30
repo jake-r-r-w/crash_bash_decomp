@@ -894,7 +894,7 @@ void PlotRaceShield(NAS *nas);
 
 
 /* Tables InitialiseRACEFirst hooks into the engine. */
-extern s32 RaceVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
+extern VictorySeq RaceVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1);
 
 void RacePreMoveHero();

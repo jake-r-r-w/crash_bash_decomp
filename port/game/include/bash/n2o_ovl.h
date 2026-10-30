@@ -344,7 +344,7 @@ extern s32 N2OBossClock;
 extern s32 NoxBossDead;
 extern s32 NoxStarted;
 extern u16 N2OHeroModels[];
-extern s32 N2OVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
+extern VictorySeq N2OVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern u16 N2OAiSkill[];
 extern u16 N2OAiSkillAlt[];
 s32 N2O_BA_BounceOnBounds(EXTengine *arg0, s32 arg1);

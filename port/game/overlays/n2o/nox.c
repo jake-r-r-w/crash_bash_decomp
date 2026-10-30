@@ -12,7 +12,7 @@ const char NoxEmptyString[] = "";
 
 /* data, in address order */
 s32 NoxBossSteps[3] = { (s32)0x80110000, 0x20200001, 0x8000 };
-s32 NoxBossAnimList[3] = { (s32)&NoxBossSteps, 0, 0 };
+void *NoxBossAnimList[3] = { &NoxBossSteps, 0, 0 };
 ScriptInit NoxBossScriptInit = { 0, (void *)&NoxBossAnimList, 0x401 };
 s32 NoxSpeedScale = 0x100;
 s32 NoxSmokeTimer = 0x96;
@@ -28,7 +28,7 @@ s32 NoxSmokeSteps[17] = {
     0x2022, 0x2023, 0x2024, 0x2025, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x202B, 0x202C,
     0x202D, 0x202E, 0x202F, 0x2030, 0x2031, 0x8003,
 };
-s32 NoxSmokeAnimList[3] = { (s32)&NoxSmokeSteps, 0, 0 };
+void *NoxSmokeAnimList[3] = { &NoxSmokeSteps, 0, 0 };
 ScriptInit NoxSmokeScriptInit = { 0, (void *)&NoxSmokeAnimList, 0x402 };
 s32 NoxHeroTiltA = 0;
 s32 NoxHeroTiltB = 0;

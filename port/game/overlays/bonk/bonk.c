@@ -268,7 +268,7 @@ hero_seq KON_seq_bonk_swing[34] = {
     0x42A6, 0x42A7, 0x8003, 9, 0x42A7, 0x42A7, 0x8000, 0, 0,
 };
 s32 BonkFlagSteps[3] = { (s32)0x80110000, 0x40000010, 0x8001 };
-s32 BonkFlagAnimList[3] = { (s32)&BonkFlagSteps, 0, 0 };
+void *BonkFlagAnimList[3] = { &BonkFlagSteps, 0, 0 };
 ScriptInit BonkFlagScriptInit = { 0, (void *)&BonkFlagAnimList, 0x401 };
 s16 BonkPreLoadDB[4] = { 0x1C, 0x17, -1, 0 };
 char *BonkAnims[6] = {

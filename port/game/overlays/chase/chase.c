@@ -47,9 +47,11 @@ PreMap CHASE_PREMAP = { ChasePreLoadDB, ChaseWorldInfo, &ChaseLUP };
 u16 ChaseHeroModels[10] = {
     0, 0x62, 0x63, 0x64, 0x66, 0x65, 0x68, 0x67, 0x69, 0,
 };
-s32 ChaseVictorySeqs[8] = {
-    (s32)&ChaseAnimWin, 0x6A, (s32)&ChaseAnimWin, 0x6A, (s32)&ChaseAnimWin, 0x6A, (s32)&ChaseAnimWin,
-    0x6A,
+VictorySeq ChaseVictorySeqs[4] = {
+    { &ChaseAnimWin, 0x6A },
+    { &ChaseAnimWin, 0x6A },
+    { &ChaseAnimWin, 0x6A },
+    { &ChaseAnimWin, 0x6A },
 };
 s32 ChaseHitSfx[9][4] = {
     { 3, 4, 5, 6 }, { 0x35, 0x36, 0x37, 0x38 }, { 0x67, 0x68, 0x69, 0x6A },

@@ -54,7 +54,7 @@ extern s32 HubNameNext;
 extern s32 HubNamePage;
 extern s32 HubNameLen;
 typedef struct HubEntry12 {
-    s32 keys;  /* the page's keys */
+    struct HubKey *keys;  /* the page's keys */
     s32 pad4;
     s32 next;  /* the next name entry (HubNameNext) */
 } HubEntry12;
@@ -90,7 +90,7 @@ extern u8 HubSaveCamera[];
 
 typedef struct KeyedPair {
     s32 key;
-    s32 val[1];
+    void *val[1];
 } KeyedPair;
 extern KeyedPair HubLockPanels[];
 /* Per-mode record tables for PlaceEngineSlot, indexed by language/player. */
@@ -384,8 +384,8 @@ extern subengine HubNameSubs[];
 
 void HubSaveMenuSubs(SubInitList *list);
 
-extern s32 HubNameLetters[];
-extern s32 HubNamePanel[];
+extern PlaceRec HubNameLetters[];
+extern PlaceRec HubNamePanel[];
 
 void HubSaveMenuReset(void);
 

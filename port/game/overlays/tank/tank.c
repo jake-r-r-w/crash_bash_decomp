@@ -71,9 +71,11 @@ PreMap TANK_PREMAP = { TankPreLoadDB, TankWorldInfo, &TankLUP };
 u16 TankHeroModels[10] = {
     0, 0x3E, 0x3F, 0x40, 0x42, 0x41, 0x44, 0x43, 0x45, 0,
 };
-s32 TankVictorySeqs[8] = {
-    (s32)&TankAnimWin, 0x5C, (s32)&TankAnimWin, 0x5C, (s32)&TankAnimWin, 0x5C, (s32)&TankAnimWin,
-    0x5C,
+VictorySeq TankVictorySeqs[4] = {
+    { &TankAnimWin, 0x5C },
+    { &TankAnimWin, 0x5C },
+    { &TankAnimWin, 0x5C },
+    { &TankAnimWin, 0x5C },
 };
 Ambient_data TankJungleAmbience = { 2, 6, 0x3FC, 0, { 0x3FD, 0x3FE, 0x3FF, 0x400, 0x401, 0x402, 0x403, 0x3FD } };
 shell_setup tank_shell_info = {

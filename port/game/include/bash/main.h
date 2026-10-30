@@ -932,8 +932,8 @@ typedef struct ArenaDef {
     /* 0x08 */ u16 subPool;        /* SubPoolCount */
     /* 0x0A */ u8 padA[2];
     /* 0x0C */ void *triggers;     /* LevelTriggerData */
-    /* 0x10 */ s32 config;         /* LevelConfig */
-    /* 0x14 */ s32 boot;           /* GameState.boot */
+    /* 0x10 */ void *config;       /* LevelConfig */
+    /* 0x14 */ void *boot;          /* GameState.boot */
 } ArenaDef;
 extern LevSpec LevelSpecs; /* the level's hooks */
 extern s32 NasHeapSize;
@@ -1039,7 +1039,7 @@ typedef struct ComboSeq {
 
 extern MATRIX MapSceneMatrix;
 extern SVECTOR MapSceneRot;
-extern s32 ComboSeqs[]; /* ComboSeq table, 0x90 bytes per entry */
+extern ComboSeq ComboSeqs[];
 extern CdlLOC CdSeekLoc;
 extern RECT *ScreenRect;
 extern s32 ScreenSetFrame;
@@ -1739,8 +1739,8 @@ void combo_check(ComboSeq *c);
 typedef struct ScriptCursor {
     /* 0x00 */ u8 kind;
     /* 0x01 */ u8 pad1[0xB];
-    /* 0x0C */ s32 cur;
-    /* 0x10 */ s32 *tbl;
+    /* 0x0C */ s32 *cur;
+    /* 0x10 */ void **tbl;  /* step programs; a NULL is followed by the index to go to */
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
     /* 0x1C */ s16 unk1C;
@@ -1771,8 +1771,8 @@ s32 fx_alloc_buffers(FxDef *def, subengine *sub);
 
 
 typedef struct ScriptInit {
-    s32 cur;
-    s32 *tbl;
+    s32 *cur;
+    void **tbl;
     u32 flags;
 } ScriptInit;
 

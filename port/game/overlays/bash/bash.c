@@ -213,7 +213,7 @@ s32 PenguinSteps1[15] = {
     0x8000,
 };
 s32 PenguinSteps2[6] = { (s32)0x80110000, 0x4080000E, 0x425800B, 0x288011, (s32)0x8001408D, 0 };
-s32 PenguinAnimList[5] = { (s32)&PenguinSteps0, (s32)&PenguinSteps1, (s32)&PenguinSteps2, 0, 0 };
+void *PenguinAnimList[5] = { &PenguinSteps0, &PenguinSteps1, &PenguinSteps2, 0, 0 };
 ScriptInit PenguinScriptInit = { 0, (void *)&PenguinAnimList, 0x401 };
 s16 BashPreLoadDB[6] = { 0x1C, 0x17, 0x1A, 0x18, -1, 0 };
 char *BashAnims[12] = {
@@ -289,7 +289,7 @@ u16 BashAIHealthWeights[22] = {
     0xFFF6, 0,
 };
 s32 BoingSteps[3] = { (s32)0x80110000, 0x40000026, 0x8003 };
-ScriptInit BoingScriptInit = { (s32)&BoingSteps, 0, 0x401 };
+ScriptInit BoingScriptInit = { &BoingSteps, 0, 0x401 };
 s16 BashExplodeScales[7][3] = {
     { 0x5000, 0x5000, 0x5000 }, { 0x4000, 0x2000, 0x4000 }, { 0x1800, 0x1000, 0x1800 },
     { 0x800, 0xA00, 0x800 }, { 0x200, 0x200, 0x200 }, { 0, 0, 0 }, { 0, 0, 0 },

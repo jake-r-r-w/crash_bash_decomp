@@ -345,7 +345,7 @@ void PlotDinoGem(NAS *m);
 
 #endif /* BASH_DINO_OVL_H */
 
-extern s32 DinoVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
+extern VictorySeq DinoVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern subengine *DinoTargetD, *DinoTargetE;
 extern s32 DinoTargetTimer, DinoTargetDelay, DinoTargetStep, DinoScoreTimer, DinoTargetFlag;
 void DinoChooseWinnerTeam(s32 arg0, u16 arg1);

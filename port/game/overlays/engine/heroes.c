@@ -6118,7 +6118,7 @@ hero_seq **HeroSeqTables[18] = {
     (void *)&HeroNameKong, (void *)&HeroNameDingodile, (void *)&HeroNameKanga,
 };
 u8 DefaultHeroModels[20] = { 0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 0, 0 };
-VictorySeq DefaultVictorySeqs[4] = { { (s32)&HeroAnimWin, 0xD }, { (s32)&HeroAnimWin, 0xD }, { (s32)&HeroAnimWin, 0xD }, { (s32)&HeroAnimWin, 0xD } };
+VictorySeq DefaultVictorySeqs[4] = { { &HeroAnimWin, 0xD }, { &HeroAnimWin, 0xD }, { &HeroAnimWin, 0xD }, { &HeroAnimWin, 0xD } };
 u8 DefaultRunSpeeds[60] = {
     0, 0, 0, 0, 0, 0, 0x1E, 0, 0x2D, 0, 0x14, 0, 0x1E, 0, 0x2D, 0, 0x14, 0, 0x1E, 0, 0x2D, 0,
     0x14, 0, 0x1E, 0, 0x2D, 0, 0x14, 0, 0x28, 0, 0x2D, 0, 0x14, 0, 0x28, 0, 0x2D, 0, 0x14, 0,
@@ -6301,7 +6301,7 @@ u16 BigPoofScript[18] = {  /* frames, then the end (0x8000 | 4) */
     0, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x202F, 0x2030,
     0x2031, 0x2032, 0x2033, 0x2034, 0x2035, 0x8004,
 };
-ScriptInit BigPoofInit = { (s32)BigPoofScript, 0, 0x401 };
+ScriptInit BigPoofInit = { BigPoofScript, 0, 0x401 };
 u16 PickupCounts[30] = {0};  /* per-pickup counts (the overlays read halfwords) */
 s32 CratePickupAst = 0;
 s32 HealthAst = 0;

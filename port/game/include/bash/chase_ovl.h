@@ -182,7 +182,7 @@ void ChaseChooseWinnerRank(s32 arg0, u16 arg1);
 
 
 extern u16 ChaseHeroModels[];
-extern s32 ChaseVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
+extern VictorySeq ChaseVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern u16 ChaseAiSkill[];
 extern u16 ChaseAiSkillAlt[];
 extern u16 ChaseAiTeamSkill[];

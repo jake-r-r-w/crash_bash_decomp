@@ -239,13 +239,13 @@ s32 PapuBossSteps10[3] = { (s32)0x80110000, 0x4180001E, 0x8000 };
 s32 PapuBossSteps11[4] = { 0x43000000, 0x1FE800D, 0x268011, (s32)0x80014301 };
 s32 PapuBossSteps12[2] = { 0x42460064, 0x8000 };
 u16 PapuBossRandomAnims[8] = { 0xE, 0, 0xE, 0xE, 0, 0x13, 0, 0 };
-s32 PapuBossAnimList[42] = {
-    (s32)&PapuBossSteps0, 0, 0, (s32)&PapuBossSteps6, (s32)&PapuBossSteps4, 0, 0, (s32)&PapuBossSteps7, 0, 0,
-    (s32)&PapuBossSteps5, (s32)&PapuBossSteps5, 0, 0, (s32)&PapuBossSteps2, (s32)&PapuBossSteps2,
-    (s32)&PapuBossSteps2, 0, 0, (s32)&PapuBossSteps3, 0, 0, (s32)&PapuBossSteps8, 0, 0, (s32)&PapuBossSteps1,
-    0, 0x29, (s32)&PapuBossSteps9, (s32)&PapuBossSteps10, (s32)&PapuBossSteps11, 0, 0, (s32)&PapuBossSteps4,
-    (s32)&PapuBossSteps4, (s32)&PapuBossSteps2, (s32)&PapuBossSteps2, (s32)&PapuBossSteps3, (s32)&PapuBossSteps4,
-    0, 0x21, (s32)&PapuBossSteps12,
+void *PapuBossAnimList[42] = {
+    &PapuBossSteps0, 0, 0, &PapuBossSteps6, &PapuBossSteps4, 0, 0, &PapuBossSteps7,
+    0, 0, &PapuBossSteps5, &PapuBossSteps5, 0, 0, &PapuBossSteps2, &PapuBossSteps2,
+    &PapuBossSteps2, 0, 0, &PapuBossSteps3, 0, 0, &PapuBossSteps8, 0,
+    0, &PapuBossSteps1, 0, (void *)0x29, &PapuBossSteps9, &PapuBossSteps10, &PapuBossSteps11, 0,
+    0, &PapuBossSteps4, &PapuBossSteps4, &PapuBossSteps2, &PapuBossSteps2, &PapuBossSteps3, &PapuBossSteps4, 0,
+    (void *)0x21, &PapuBossSteps12,
 };
 ScriptInit PapuBossScriptInit = { 0, (void *)&PapuBossAnimList, 0x401 };
 s32 PapuMinionSteps0[4] = { (s32)0x80110000, 0x40000016, 0x88005, 0x8000 };
@@ -271,10 +271,10 @@ s32 PapuMinionSteps9[8] = {
     0x98005, 0x8001,
 };
 s32 PapuMinionSteps10[4] = { (s32)0x800C000E, 0x20060209, 0x88005, 0x8001 };
-s32 PapuMinionAnimList[19] = {
-    (s32)&PapuMinionSteps0, (s32)&PapuMinionSteps1, (s32)&PapuMinionSteps2, (s32)&PapuMinionSteps3, (s32)&PapuMinionSteps4,
-    0, 0, (s32)&PapuMinionSteps5, (s32)&PapuMinionSteps6, (s32)&PapuMinionSteps7, (s32)&PapuMinionSteps8, 0, 0,
-    (s32)&PapuMinionSteps9, 0, 0, (s32)&PapuMinionSteps10, 0, 0,
+void *PapuMinionAnimList[19] = {
+    &PapuMinionSteps0, &PapuMinionSteps1, &PapuMinionSteps2, &PapuMinionSteps3, &PapuMinionSteps4,
+    0, 0, &PapuMinionSteps5, &PapuMinionSteps6, &PapuMinionSteps7, &PapuMinionSteps8, 0, 0,
+    &PapuMinionSteps9, 0, 0, &PapuMinionSteps10, 0, 0,
 };
 ScriptInit PapuMinionScriptInit = { 0, (void *)&PapuMinionAnimList, 0x401 };
 PapuSpot PapuSpawnPoints[5] = {

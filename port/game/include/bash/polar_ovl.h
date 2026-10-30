@@ -1157,7 +1157,7 @@ extern ScriptInit BearminatorScriptInit;
 
 extern s32 PolarFirstFlag;
 extern s32 PolarArenaRadius2;
-extern s32 PolarVictorySeqs[]; /* {name, 0x5C} x4: the victory sequences (the engine's hook 0x14) */
+extern VictorySeq PolarVictorySeqs[]; /* {name, 0x5C} x4: the victory sequences (the engine's hook 0x14) */
 s32 PolarIceHit(SLONG_XYZ *pos, s32 player);
 
 void PolarHeroesCollide(s32 p1, s32 p2);

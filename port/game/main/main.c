@@ -3488,29 +3488,29 @@ fail:
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-s32 LevelNames[45] = {
-    (s32)&LevNameJungleBash, (s32)&LevNameSpaceBash, (s32)&LevNameSnowBash,
-    (s32)&LevNameDrainBash, (s32)&LevNamePapuPummel, (s32)&LevNameSwampFox,
-    (s32)&LevNameDesertFox, (s32)&LevNameJungleFox, (s32)&LevNameMetalFox,
-    (s32)&LevNameBigBadFox, (s32)&LevNamePogoPainter, (s32)&LevNamePogoAGogo,
-    (s32)&LevNameElPogoLoco, (s32)&LevNamePogoPadlock, (s32)&LevNameCrashball,
-    (s32)&LevNameBeachBall, (s32)&LevNameNBallism, (s32)&LevNameSkyBalls,
-    (s32)&LevNameTiltPanic, (s32)&LevNamePolarPanic, (s32)&LevNameMeltPanic,
-    (s32)&LevNameManicPanic, (s32)&LevNameBearminator, (s32)&LevNameDotDash,
-    (s32)&LevNameToxicDash, (s32)&LevNameSplashDash, (s32)&LevNameDantesDash,
-    (s32)&LevNameRingDing, (s32)&LevNameDragonDrop, (s32)&LevNameMalletMash,
-    (s32)&LevNameKegKaboom, (s32)&LevNameOxideRide, (s32)&LevNameTieBreaker,
-    (s32)&LevNameWarpRoom1, (s32)&LevNameWarpRoom2, (s32)&LevNameWarpRoom3,
-    (s32)&LevNameWarpRoom4, (s32)&LevNameSecretWarpRoom, (s32)&LevNameDemoHub,
-    (s32)&LevNameDemoHub, (s32)&LevNameTitles, (s32)&LevNameEmpty, (s32)&LevNameEmpty,
-    (s32)&LevNamePodium, (s32)&LevNameScriptStuff,
+void *LevelNames[45] = {
+    &LevNameJungleBash, &LevNameSpaceBash, &LevNameSnowBash,
+    &LevNameDrainBash, &LevNamePapuPummel, &LevNameSwampFox,
+    &LevNameDesertFox, &LevNameJungleFox, &LevNameMetalFox,
+    &LevNameBigBadFox, &LevNamePogoPainter, &LevNamePogoAGogo,
+    &LevNameElPogoLoco, &LevNamePogoPadlock, &LevNameCrashball,
+    &LevNameBeachBall, &LevNameNBallism, &LevNameSkyBalls,
+    &LevNameTiltPanic, &LevNamePolarPanic, &LevNameMeltPanic,
+    &LevNameManicPanic, &LevNameBearminator, &LevNameDotDash,
+    &LevNameToxicDash, &LevNameSplashDash, &LevNameDantesDash,
+    &LevNameRingDing, &LevNameDragonDrop, &LevNameMalletMash,
+    &LevNameKegKaboom, &LevNameOxideRide, &LevNameTieBreaker,
+    &LevNameWarpRoom1, &LevNameWarpRoom2, &LevNameWarpRoom3,
+    &LevNameWarpRoom4, &LevNameSecretWarpRoom, &LevNameDemoHub,
+    &LevNameDemoHub, &LevNameTitles, &LevNameEmpty, &LevNameEmpty,
+    &LevNamePodium, &LevNameScriptStuff,
 };
 s32 *LangLevelNames[5] = { LevelNames, LevelNames, LevelNames, LevelNames, LevelNames };
-s32 ModeTypeNames[14] = {
-    0, 0, (s32)&LevNameMedievalMayhem, (s32)&LevNameCrateCrush, 0, (s32)&LevNameTankWars,
-    (s32)&LevNamePogoPandemonium, (s32)&LevNameBallistix, (s32)&LevNamePolarPush,
-    (s32)&LevNameCrashDash, (s32)&LevNameMedievalMayhem, 0, (s32)&LevNameMedievalMayhem,
-    (s32)&LevNameMedievalMayhem,
+void *ModeTypeNames[14] = {
+    0, 0, &LevNameMedievalMayhem, &LevNameCrateCrush, 0, &LevNameTankWars,
+    &LevNamePogoPandemonium, &LevNameBallistix, &LevNamePolarPush,
+    &LevNameCrashDash, &LevNameMedievalMayhem, 0, &LevNameMedievalMayhem,
+    &LevNameMedievalMayhem,
 };
 s32 *LangModeTypeTexts[5] = { ModeTypeNames, ModeTypeNames, ModeTypeNames, ModeTypeNames, ModeTypeNames };
 u16 ModeTypes[136] = {
@@ -3860,13 +3860,10 @@ s32 DirPadBits[24] = {
     0xC00, 0xE00, 0, 0, 0xA00, 0, 0, 0,
 };
 s32 WideScreen = 0;
-s32 ComboSeqs[36] = {
-    (s32)&toggle_widescreen, 0x3C, 0, 0, 0x20, 0x80,
-    0x80, 0x20, 0x80, 0x80, 0x20, 0x80,
-    0x80, 0x20, 0x80, 0x80, 0x80, 0x20,
-    0x80, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0,
+ComboSeq ComboSeqs[1] = {
+    { toggle_widescreen, 0x3C, 0, 0, {
+        0x20, 0x80, 0x80, 0x20, 0x80, 0x80, 0x20, 0x80, 0x80, 0x20, 0x80, 0x80, 0x80, 0x20, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    } },
 };
 PadState Pads[8] = {0};
 s32 PadCount = 0;

@@ -121,7 +121,7 @@ NAS *ArkFreeBallSlot(void);
 
 
 extern u16 ArkHeroModels[];
-extern s32 ArkVictorySeqs[];
+extern VictorySeq ArkVictorySeqs[];
 extern void *ArkBounceOnBounds;
 extern void *ArkTestOutOfBounds;
 extern void *ArkTestLaunchBounds;

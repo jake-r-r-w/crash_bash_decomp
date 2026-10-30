@@ -50,7 +50,7 @@ extern s32 JoeState;
 extern s16 TankJoeTeammate;
 extern s16 TankMoeTeammate;
 extern u16 TankHeroModels[];
-extern s32 TankVictorySeqs[];   /* {name, 0x5C} pairs: four "WIN" entries */
+extern VictorySeq TankVictorySeqs[];   /* {name, 0x5C} pairs: four "WIN" entries */
 extern u16 TankDesertAiBotTweak[];
 extern u16 TankDesertAiHumanTweak[];
 extern u16 TankDesertAiHumanRoundTweak[];

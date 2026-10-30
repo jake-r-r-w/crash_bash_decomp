@@ -85,18 +85,18 @@ typedef struct {
 /* One battle arena of the level select (BattleArenas, by GameInfo[0x36]): unk0 its
  * BattleLevel list, unk4 how many. */
 typedef struct {
-    s32 levels;  /* its BattleLevel records, 16 bytes each */
+    BattleLevel *levels;
     s32 count;  /* counted up */
 } BattleArena;
 
 void LevelSelectInput(void);
 
 extern BattleArena BattleArenas[];
-extern s32 LangPressToUnlockLevels[];
-extern s32 LangNoMoreUnlocked[];
-extern s32 LangInsertCard[];
-extern s32 LangLocked[];
-extern s32 LangCheckingCard[];
+extern void *LangPressToUnlockLevels[];
+extern void *LangNoMoreUnlocked[];
+extern void *LangInsertCard[];
+extern void *LangLocked[];
+extern void *LangCheckingCard[];
 
 /* Inline forms of the slot getters LevelListModel / LevelListAnim / LevelListText. */
 static inline s32 TitlesSlotModelI(s32 a, s32 b) {
@@ -135,7 +135,7 @@ static inline s32 TitlesSlotOn(void) {
 
 void TitlesCheckIdle(void);
 
-extern s32 MainMenuHints[];
+extern void *MainMenuHints[];
 extern process_info OptionsScreen;
 
 extern PlaceRec TitlesBackdropPlace[];
@@ -155,14 +155,14 @@ typedef struct CharCard {
     /* 0x10 */ s32 target;
     /* 0x14 */ s32 model;     /* index into HeroModelBank */
     /* 0x18 */ s32 pad18;
-    /* 0x1C */ s32 anim;      /* the selector's Atable when picked: one of the CharSelectSteps tables */
+    /* 0x1C */ void *anim;     /* the selector's Atable when picked: one of the CharSelectSteps tables */
     /* 0x20 */ s32 sfx;
     /* 0x24 */ u8 *sub;       /* set by CharSelectInit */
 } CharCard;
 
 /* the selectors' animations, by hero: a step list and a record pointing at it */
 extern s32 CharSelectSteps0[], CharSelectSteps1[], CharSelectSteps2[], CharSelectSteps3[];
-extern s32 CharSelectSteps4[], CharSelectSteps5[], CharSelectSteps6[], CharSelectAnim7[];
+extern s32 CharSelectSteps4[], CharSelectSteps5[], CharSelectSteps6[], CharSelectSteps7[];
 extern CharCard CharCards[];
 extern PlaceRec CharSelectPlace[];
 extern PlaceRec CharSelectModelsPlace[];
@@ -386,8 +386,8 @@ extern u16 TeamModeHeroFrames[];
 void TeamModeShowPreset(void);
 
 #define O69OV ((GameState *)GameInfo)
-extern s32 TextDifficulties[][3];
-extern s32 TextBattleKinds[][2];
+extern void *TextDifficulties[][3];
+extern void *TextBattleKinds[][2];
 
 void MainMenuUpdate(void);
 
