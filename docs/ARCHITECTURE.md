@@ -16,7 +16,7 @@ functions).
 
 Crash Bash is three layers of code. Only one minigame is in memory at a time. `src/ps1/` holds the
 files only the PS1 build compiles (the exe header, `bios_1`'s data, the mod-chip check, the overlay id
-words); PORT.md has the boundary with the PC port.
+words); PORT.md has the rules for the PC port.
 
 | Layer | Where | Loaded | Holds |
 |---|---|---|---|

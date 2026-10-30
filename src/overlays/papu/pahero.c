@@ -757,7 +757,7 @@ void PAHeroHit(u32 arg0) {
     s32 sfx;
 
     if (h->hero_move->reactive_speed != 0) {
-        HeroHooks.HeroKickCollision(PASSED(arg0));
+        HeroHooks.HeroKickCollision();
     }
     switch (ProcessHeroAnim(arg0)) {
     case 8:
@@ -816,7 +816,7 @@ void PAHeroPickup(s32 arg0) {
     s16 t;
     PapuWeaponVec *tbl;
 
-    ProcessHeroAnim(PASSED(arg0));
+    ProcessHeroAnim();
     b = Heroes;
     h = &b[arg0];
     s = h->hero_fx->sub;
@@ -974,7 +974,7 @@ void PAHeroThrow(s32 arg0) {
     s16 (*tbl)[3];
     s16 t;
 
-    if (ProcessHeroAnim(PASSED(arg0)) == 0x13) {
+    if (ProcessHeroAnim() == 0x13) {
         b0 = Heroes;
         h0 = &b0[arg0];
         if (h0->hero_object != NULL) {

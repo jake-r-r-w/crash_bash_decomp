@@ -1752,10 +1752,10 @@ void SetHeroPogoIdle(u32 arg0) {
     s32 seq;
 
     Player_RemoveReserve(arg0);
-    LOW_RAM(Heroes[arg0].hero_move)->jump_max = 0;
-    LOW_RAM(Heroes[arg0].hero_move)->velocity_enable = 1;
-    LOW_RAM(Heroes[arg0].hero_move)->jump_ctrl |= 0x22;
-    LOW_RAM(Heroes[arg0].hero_move)->jump_ctrl &= 0xEF;
+    Heroes[arg0].hero_move->jump_max = 0;
+    Heroes[arg0].hero_move->velocity_enable = 1;
+    Heroes[arg0].hero_move->jump_ctrl |= 0x22;
+    Heroes[arg0].hero_move->jump_ctrl &= 0xEF;
     Player_SnapToTile(arg0);
     if (PogoPlay[arg0].status == 5) {
         SetHeroSeq(arg0, 0x2F);

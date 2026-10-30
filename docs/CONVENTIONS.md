@@ -70,7 +70,7 @@ A file is finished when every function in it reaches level 4.
   (`CC_VER`, `ASPSX_FILL`); `decomp.py` reads the same lines.
 - Overlays go in `src/overlays/<overlay>/`.
 - `src/ps1/` holds what only the PS1 build compiles (the exe header, `bios_1`'s data, the mod-chip
-  check, the overlay id words), and `port/` what only the PC build compiles (PORT.md).
+  check, the overlay id words), and `port/` what only the PC build will compile (PORT.md).
 - PsyQ library code is Sony's objects, linked in place (`decomp.py
   link-psyq`); it is never decompiled.
 
@@ -136,9 +136,6 @@ A file is finished when every function in it reaches level 4.
   compiler (a `do { } while (0)` wrapper, an extra temporary or store, a
   reordered statement) is fine when no natural form matches; say which and
   the gcc rule it works around in the match note.
-- A call that hands on the caller's own registers without naming them (`f()` with `f`'s `a0` still
-  the caller's) is written `f(PASSED(arg0))`: nothing on the PS1, the argument on PC (PORT.md). A read
-  or write through a null pointer, which the PS1 lets through, is written `LOW_RAM(p)->x`.
 - One function per match commit, through `decomp.py done NAME --commit`
   ([MATCHING.md](MATCHING.md)).
 - A function that will not match after a bounded effort is parked

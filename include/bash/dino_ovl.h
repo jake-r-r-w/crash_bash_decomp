@@ -178,7 +178,7 @@ void DinoRestartLevel(void);
 
 void DinoHeroWinner(s32 arg0);
 
-void Dino_HeroBot(s32 id);
+void Dino_HeroBot(void);
 
 s32 DinoAI_SetNearestGem(s32 *arg0, s32 arg1);
 

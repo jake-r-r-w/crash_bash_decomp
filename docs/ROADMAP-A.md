@@ -776,24 +776,9 @@ The release is done: 5.1 to 5.15 (2026-10-29).
   - `src/` and `include/` are shared and must always match.
   - The 18 PS1-only files moved to `src/ps1/` with no byte changed: `header.c`, `bios_1.c`, the two
     mod-chip files and the 14 overlay id words.
-  - `port/` is new and PC-only: a CMake build, the entry point, and `sdk/` and `platform/` waiting for
-    6.2. It builds with the image's GCC 13; `-DBASH_BUILD_GAME=ON` picks up the 38 shared files.
+  - `port/` is PC-only, and nothing is in it yet.
   - Checked from the built ELFs: the 14 overlays' 4,368 global names have one clash,
     `XZBoxToSphere`, so they can link into one PC program.
-- [x] 6.3 SDL3 (2026-10-30): `port/platform/sdl.c` moves from SDL2 to SDL3 for the window, sound and input,
-  the first step of the port's modern tooling (ROADMAP-B).
-- [x] 6.2 The PS1 layers replaced, and the game runs on PC (2026-10-30; PORT.md). A software GPU, the
-  GTE and libgte as C, libcd on `CRASHBSH.DAT`, pads, a memory card file and SDL2. All 33 minigame modes
-  play to the end with computer players (`--playtest 0-32`), in about two minutes. What it showed about
-  the shared C: more calls relying on the caller's registers, through function pointers; null pointers
-  (`LOW_RAM`); the data's layout (`data_order.txt`), and why the game's C can't be optimised. Music and
-  reverb moved to 6.4.
-- [x] 6.1 The game's C builds for PC with current compilers (2026-10-30; PORT.md, What's known).
-  - All 38 files compile with Clang 22 and GCC 13, and link into a 32-bit Windows exe against stub PsyQ
-    functions. `port/sdk/include` has the PC headers; their layouts and macros were compared with Sony's.
-  - What it exposed in the shared C, each fix with `make check` still `OK`:
-    - 44 calls that relied on the caller's registers, now `PASSED`;
-    - `PolarAIFlags[6]`, read past a 4-word array, so the array is now 7 words;
-    - a parameter redeclared in `N2OCameraFollow`;
-    - `LevelUnused`, defined in both the exe and the engine;
-    - `VramAreas` and `HeroSide`, labels inside larger arrays, now arrays of their own.
+- A 32-bit port ran the game on the PS1's memory layout, with all 33 modes playing to the end, then was
+  deleted (2026-10-30). The layout couldn't reach 64-bit, so the port starts again (ROADMAP-B, PORT.md). Its
+  code is in git at `7115b3b8`, and PORT.md has what it taught.

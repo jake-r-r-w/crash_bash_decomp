@@ -2596,8 +2596,8 @@ void SetTankHeroIdle(u32 player) {
     if (done == 0) {
         EXTengine *eng;
 
-        LOW_RAM(Heroes[player].hero_move)->jump_max = 0;
-        LOW_RAM(Heroes[player].hero_move)->velocity_enable = 1;
+        Heroes[player].hero_move->jump_max = 0;
+        Heroes[player].hero_move->velocity_enable = 1;
         Heroes[player].hero_idle_count = Random(0x96) + 0x5A;
         SetHeroSeq(player, 0x59);
         eng = Heroes[player].hero_eng;
@@ -8361,8 +8361,8 @@ void InitMoe(NAS *nas) {
     InitMoeJoe(nas, 0x131E);
 }
 
-void MoeJoeDead(s32 player) {
-    HeroGhost(PASSED(player));
+void MoeJoeDead(void) {
+    HeroGhost();
 }
 
 void MoeJoeIdle(s32 arg0) {
@@ -8379,13 +8379,13 @@ void SetMoeJoeMode(s32 hero, s32 mode) {
     Heroes[hero].hero_last_mode = last;
     switch (mode) {
     case 0x6C:
-        ((void (*)())SetMoeJoeIdle)(PASSED(hero));
+        ((void (*)())SetMoeJoeIdle)();
         break;
     case 0x6E:
-        ((void (*)())SetMoeJoeMove)(PASSED(hero));
+        ((void (*)())SetMoeJoeMove)();
         break;
     case 0x69:
-        ((void (*)())SetMoeJoeRecoil)(PASSED(hero));
+        ((void (*)())SetMoeJoeRecoil)();
         break;
     case 0x6B:
         SetMoeJoeDead(hero, mode);
@@ -9558,17 +9558,17 @@ void TankBotAimTurret(s32 player, EXTengine *eng, s32 *arg2) {
     }
 }
 
-void TankBotChooseTarget(s32 player) {
+void TankBotChooseTarget(void) {
     switch ((s16)(GameMode - 5)) {
     case 1:
     case 3:
-        TankBotPickLinedUpTarget(PASSED(player));
+        TankBotPickLinedUpTarget();
         break;
     case 0:
     case 2:
     case 4:
     default:
-        TankBotPickTarget(PASSED(player));
+        TankBotPickTarget();
         break;
     }
 }

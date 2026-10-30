@@ -47,16 +47,12 @@ s32 count_completion(u8 *arg0) {
 
 void shell_init(void) {
     VSyncRate = 2;
-    mal_init(&MainHeap, HeapStart, RAM_TOP - (s32)HeapStart);
+    mal_init(&MainHeap, HeapStart, 0x801FF000 - (s32)HeapStart);
     init_file();
     pads_init();
     pads_update();
-#ifdef BASH_PC
-    EngineModule = &EngineEntry; /* linked in, not loaded */
-#else
     load_file_direct(&DatIndex[991], HeapStart);
     EngineModule = (ModuleEntry *)HeapStart;
-#endif
     RunModules(&ShellModules);
 }
 
@@ -143,7 +139,7 @@ void shell_render_dcache(void) {
 
 void shell_init_heap(void) {
     VSyncRate = 2;
-    mal_init(&MainHeap, HeapStart, RAM_TOP - (s32)HeapStart);
+    mal_init(&MainHeap, HeapStart, 0x801FF000 - (s32)HeapStart);
     init_file();
     pads_init();
     pads_update();
@@ -170,7 +166,7 @@ void shell_start_engine(void) {
     u8 *p = EngineModule->heap;
 
     if (p != NULL) {
-        mal_init(&MainHeap, p, RAM_TOP - (s32)p);
+        mal_init(&MainHeap, p, 0x801FF000 - (s32)p);
         smallnode_init();
     }
     sound_init();
@@ -959,7 +955,7 @@ u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1) {
     mal *b;
     u8 *data;
 
-    b = mal_take_high(PASSED(arg0, arg1));
+    b = mal_take_high(); /* arg0 and arg1 pass through */
     data = (u8 *)MAL_DATA(b);
     if (b == NULL) {
         low = arg1->lowest;
@@ -3526,7 +3522,7 @@ u16 ModeTypes[136] = {
     0x102, 2, 2, 0x102, 3, 3, 0x102, 4, 4, 0x102, 0xD, 0xD, 0x102, 0xE, 0xE, 0x101, 0, 0, 0x101, 0, 0,
     0x101, 0, 0, 0x102, 3, 3, 0x109, 5, 5, 0,
 };
-u16 LevelRequirements[226] = {
+u16 LevelRequirements[234] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     4, 0, 0, 0, 0, 0, 0, 0, 0x17, 0x1F, 0, 0, 0, 0, 4, 0, 0, 0, 0, 4,
     0, 0, 0, 0, 4, 0xF, 0, 0xA, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -3538,9 +3534,8 @@ u16 LevelRequirements[226] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0x16,
     0, 0, 0, 0, 9, 0, 0, 0, 0, 0x1F, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0x1FF, 0x201, 0x102, 0x102, 2, 0, 0, 0,
 };
-s8 HeroSide[16] = { -1, 1, 1, 2, 2, 1, 2, 1, 2 };
 s32 DcacheReady = 0;
 ModuleEntry ShellModules = { shell_start_engine, shell_update, shell_render_dcache, NULL, NULL };
 s16 core_process = 0;

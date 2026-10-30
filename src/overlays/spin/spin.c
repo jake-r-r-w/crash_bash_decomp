@@ -2773,7 +2773,7 @@ void SpinHeroHit(s32 arg0) {
 
     h = base + arg0;
     if (h->hero_move->reactive_speed != 0) {
-        HeroHooks.HeroKickCollision(PASSED(arg0));
+        HeroHooks.HeroKickCollision();
     }
     r = ProcessHeroAnim(arg0);
     if (r != 8) {

@@ -26,19 +26,6 @@ typedef float f32;
 #define FILE_AT(base, off) ((u8 *)(base) + (off))
 #define SELF_REL(p) FILE_AT(p, *(p))
 
-/* Arguments the original's call doesn't pass, because they're already in the callee's registers: the
- * caller's own, untouched. `f(PASSED(arg0))`. Only a PC build's calling convention needs them said. */
-#ifdef BASH_PC
-#define PASSED(args...) args
-/* Where the game uses a null pointer. The PS1 has RAM at address 0, so it reads and writes the kernel's
- * low memory and carries on. A PC can't, so those few places say it, and get a block of their own. */
-extern unsigned char PcLowRam[];
-#define LOW_RAM(p) ((p) != NULL ? (p) : (__typeof__(p))PcLowRam)
-#else
-#define PASSED(args...)
-#define LOW_RAM(p) (p)
-#endif
-
 /* Game-specific structs, globals and prototypes go in their own headers under include/,
  * included from here or from the .c files that need them. */
 

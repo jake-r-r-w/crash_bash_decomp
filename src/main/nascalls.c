@@ -2599,8 +2599,8 @@ RECT *arg0;
     ScreenRect = arg0;
 }
 
-void ResetScreen(RECT *arg0) {
-    SetScreen(PASSED(arg0));
+void ResetScreen(void) {
+    SetScreen();
 }
 
 void AllocPrimBuffers(s32 *arg0) {
@@ -3172,7 +3172,7 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     }
     FntLoadPatch = 0x2626001F;
     FntLoad(0x380, 0x100);
-    DebugFontStream = FntOpen(0x10, 0x10, LOW_RAM(ScreenRect)->w - 8, 0xE0, 0, 0x800);
+    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
@@ -3293,7 +3293,7 @@ s32 list_count(u8 **arg0) {
 void debug_font_init(void) {
     FntLoadPatch = 0x2626001F;
     FntLoad(0x380, 0x100);
-    DebugFontStream = FntOpen(0x10, 0x10, LOW_RAM(ScreenRect)->w - 8, 0xE0, 0, 0x800);
+    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
@@ -3301,7 +3301,7 @@ void debug_font_init(void) {
 void debug_font_init2(void) {
     FntLoadPatch = 0x2626001F;
     FntLoad(0x380, 0x100);
-    DebugFontStream = FntOpen(0x10, 0x10, LOW_RAM(ScreenRect)->w - 8, 0xE0, 0, 0x800);
+    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
@@ -4094,7 +4094,7 @@ s32 VelocityCalc = 0;
 LevelTriggerHead *LevelTriggerData = 0;
 s32 LevelConfig = 0;
 EngineRec32 *LevelRecs = 0;
-s32 NasUnused2[6] = {0};
+s32 LevelUnused[6] = {0};
 GameOptionSet GameOptions = {0};
 u8 GameInfo[4] = {0};
 s32 GameCheats = 0;
@@ -4260,7 +4260,7 @@ u8 VramReqEnd[12] = { 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0xFF, 0xFF, 0, 0 };
 FreeNode *ClutFreeSmall = 0;
 FreeNode *ClutUsedSmall = 0;
 FreeNode *ClutLargeList = 0;
-s32 VramNodePool[196] = {
+s32 VramNodePool[524] = {
     0x1600300, 0, 0, 0, 0, 0,
     0x1610300, 0, 0, 0, 0, 0,
     0x1620300, 0, 0, 0, 0, 0,
@@ -4293,10 +4293,7 @@ s32 VramNodePool[196] = {
     0x17D0300, 0, 0, 0, 0, 0,
     0x17E0300, 0, 0, 0, 0, 0,
     0x17F0300, 0, 0, 0, 0, 0,
-    (s32)&VramReqEnd, 0x180, (s32)&VramReqEnd, 0x1000180,
-};
-s32 VramAreas[328] = {
-    (s32)&VramReqEnd, 0x200,
+    (s32)&VramReqEnd, 0x180, (s32)&VramReqEnd, 0x1000180, (s32)&VramReqEnd, 0x200,
     (s32)&VramReqEnd, 0x1000200, (s32)&VramReqEnd, 0x280, (s32)&VramReqEnd, 0x1000280,
     (s32)&VramReqEnd, 0x300, (s32)&VramReqEnd, 0x380, (s32)&VramReq128, 0x1800300,
     (s32)&VramReq128, 0x1800340, (s32)&VramReq128, 0x1800380, (s32)&VramReq128, 0x18003C0,

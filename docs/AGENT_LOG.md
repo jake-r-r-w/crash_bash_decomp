@@ -55,9 +55,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   playtested.
 - **Shifted builds.** `make shift-all` (every binary moved, the memory images zeroed) boots and
   plays, playtested by hand on 2026-10-29.
-- **The PC port runs (ROADMAP-B 6.2, 2026-10-30).** `build/pc/crashbash.exe` plays in a window with sound
-  effects, keyboard and controllers, and `--playtest 0-32` plays all 33 modes to the end. Sound effects
-  only: music and reverb are 6.4. PORT.md has how it's kept working, and what's not checked yet.
+- **The PC port is starting again (2026-10-30).** A 32-bit port ran but was deleted, with its changes to the
+  shared C. The new one is 64-bit from the start: PORT.md has the design and what the first attempt taught.
 
 ## Next
 
@@ -65,9 +64,7 @@ ROADMAP-B.md, Part 6:
 
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
-3. **The PC port** (Part 6). 6.1 and 6.2 are done: the game runs on 32-bit Windows (PORT.md). The port
-   uses modern tooling (decided 2026-10-30; ROADMAP-B), and 6.3 moved it to SDL3. Next is 6.4: libsnd's
-   sequencer as C, for music, with libsnd's own volumes and pitches and the SPU's reverb.
+3. **The PC port** (Part 6), 64-bit from the start. Next is 6.1, the foundations.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -443,6 +440,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-30 (the port restarted):** the 32-bit port and its shared C changes are deleted, and ROADMAP-B
+  Part 6 and PORT.md are a new 64-bit plan with no emulation tricks. The old code is at `7115b3b8`.
 - **2026-10-30 (ROADMAP-B 6.3):** the host is on SDL3. The window, pacing and playtest are checked, but the
   sound and controllers need a person to try them.
 - **2026-10-30 (the roadmap):** the port moves to modern tooling: SDL3, then after the same-game test a

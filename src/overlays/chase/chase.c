@@ -1756,7 +1756,7 @@ void SetChaseHeroHit(s32 arg0) {
 void ChaseHeroHit(s32 arg0) {
     GameState *g;
 
-    if (ProcessHeroAnim(PASSED(arg0)) == 8 && ((g = (GameState *)GameInfo), (g->levelFlags & 0x80)) && g->heroCpu[arg0] == 0 &&
+    if (ProcessHeroAnim() == 8 && ((g = (GameState *)GameInfo), (g->levelFlags & 0x80)) && g->heroCpu[arg0] == 0 &&
         !(g->cheats & 2)) {
         HeroInfo *base = Heroes;
         HeroInfo *h = &base[arg0];
@@ -3569,8 +3569,8 @@ void ChaseUnusedStub1(void) {
 }
 
 void SetChaseHeroIdle(s32 arg0) {
-    LOW_RAM(Heroes[arg0].hero_move)->jump_max = 0;
-    LOW_RAM(Heroes[arg0].hero_move)->velocity_enable = 1;
+    Heroes[arg0].hero_move->jump_max = 0;
+    Heroes[arg0].hero_move->velocity_enable = 1;
     SetHeroSeq(arg0, 0x61);
 }
 

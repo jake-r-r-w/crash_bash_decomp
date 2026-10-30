@@ -761,7 +761,7 @@ PrimSet *primset_alloc(PrimSet **out, s32 mode) {
 }
 
 void faces_write_uvs_colors(s32 arg0, s32 arg1) {
-    prim_write_uvs(PASSED(arg0, arg1));
+    prim_write_uvs();
     faces_write_colors(arg0, arg1);
 }
 
@@ -1046,15 +1046,9 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     GfxState *gs;
     s32 n;
     s32 mode;
-#ifdef BASH_PC
-    s32 xy;
-    s32 z;
-    s32 flags;
-#else
     register s32 xy asm("$20");
     register s32 z asm("$19");
     register s32 flags asm("$18");
-#endif
 
     gs = &RenderState;
     xy = ((s32 *)v)[0];
@@ -3017,7 +3011,7 @@ void mapscene_load(map_enviroment *env, s32 db) {
     env->dbase = (obj_dbase *)db;
     env->map_num = 0;
     MapScene = env;
-    mapscene_setup_tables(PASSED(env));
+    mapscene_setup_tables();
     env->subs = NULL;
     mapenv_place_subs(env);
     dbase_load_all_mesh_anims(db);
@@ -3236,7 +3230,7 @@ void process_control_update(process_control_info *pc, fade_info *fade) {
                 mal_compact(&MainHeap);
                 vab_transfer_check();
             }
-            mal_init(&MainHeap, (u8 *)pc->process->heap, RAM_TOP - (s32)pc->process->heap);
+            mal_init(&MainHeap, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
             smallnode_init();
         }
         ((GameState *)GameInfo)->exitFlags &= ~1;

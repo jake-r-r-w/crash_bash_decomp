@@ -18,16 +18,10 @@ s32 LoadModeOverlay(void) {
     p = (file *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
     if (p != NULL) {
         load_file_direct(p, ModeTextLoadAddr);
-#ifdef BASH_PC
-        pc_mode_text_loaded(p);
-#endif
     }
     p = ModeOverlayFiles[ModeTypes[g->mode * 3] - 0x101];
     if ((s32)p != ModeOverlayLoaded) {
         load_file_direct(p, SlotBase);
-#ifdef BASH_PC
-        pc_overlay_loaded(p);
-#endif
         ModeOverlayLoaded = (s32)p;
     }
     return (s32)(SlotBase + p->size);
@@ -126,7 +120,7 @@ void LoadModeFiles(void) {
 static inline void InitHeapToRamTop(_mal_area *heap, s32 p) {
     s32 size;
 
-    size = RAM_TOP;
+    size = 0x801FF000;
     size -= p;
     mal_init(heap, (u8 *)p, size);
     smallnode_init();
@@ -498,7 +492,7 @@ void InitLoadingScreen(void) {
             sub->XYZ.z = 0;
             sub = sub->next;
             p++;
-            LOW_RAM(sub)->xform.order = 0;
+            sub->xform.order = 0;
         } while (sub != NULL);
     }
 }
@@ -594,7 +588,7 @@ void InitScriptScene(void) {
     SceneStep = 0;
     sound_reinit();
     ModeOverlayLoaded = 0;
-    mal_init(&MainHeap, SlotBase, RAM_TOP - (s32)SlotBase);
+    mal_init(&MainHeap, SlotBase, 0x801FF000 - (s32)SlotBase);
     smallnode_init();
     cfg = &SceneLevelConfig;
     AllocOtBuffers((s32 *)cfg);

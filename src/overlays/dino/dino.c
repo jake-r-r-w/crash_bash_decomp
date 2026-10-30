@@ -3807,7 +3807,7 @@ void DinoHeroIdle(s32 arg0) {
 void SetDinoHeroIdle(s32 arg0) {
     EXTheromove *mv;
 
-    mv = LOW_RAM(Heroes[arg0].hero_move);
+    mv = Heroes[arg0].hero_move;
     SetHeroSeq(arg0, 0x4D);
     if (Heroes[arg0].hero_eng->sfx != NULL) {
         StopSfx(Heroes[arg0].hero_eng->sfx);
@@ -3970,8 +3970,8 @@ s32 TestDinoHeroWon(s32 id) {
     return 0;
 }
 
-void Dino_HeroBot(s32 id) {
-    DinoAI_Think(PASSED(id));
+void Dino_HeroBot(void) {
+    DinoAI_Think();
 }
 
 s32 DinoFindClosestPlayer(s32 self, s32 *dist) {

@@ -69,7 +69,7 @@ To keep game files out of your commits: `git config core.hooksPath tools/hooks`.
 | [ASSETS.md](docs/ASSETS.md) | The game's file formats |
 | [MATCHING.md](docs/MATCHING.md) | How functions were matched, and how to rework one |
 | [PROTOTYPES.md](docs/PROTOTYPES.md) | What the prototype and demo discs gave |
-| [PORT.md](docs/PORT.md) | The PC port: its folder (`port/`) and the rules that keep it apart from the decomp |
+| [PORT.md](docs/PORT.md) | The plan for a 64-bit PC port, and the rules that keep it apart from the decomp |
 | [ROADMAP-B.md](docs/ROADMAP-B.md) | What's left ([ROADMAP-A.md](docs/ROADMAP-A.md): what's done) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | The rules for changes |
 

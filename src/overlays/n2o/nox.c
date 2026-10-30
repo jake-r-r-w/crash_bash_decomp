@@ -1039,7 +1039,7 @@ void NoxHeroFly(s32 arg0) {
     hb = Heroes;
     h = &hb[arg0];
     h->hero_eng->xform.dirty = 1;
-    if (N2OHeroUpdateSpeed(PASSED(arg0)) != 0) {
+    if (N2OHeroUpdateSpeed() != 0) {
         ProcessHeroAnim(arg0);
     }
     ang = h->hero_eng->xform.rot.vy;
@@ -2230,7 +2230,7 @@ void NoxHeroDead(void) {
 void SetNoxHeroFly(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
-    EXTheromove *m = LOW_RAM(h->hero_move);
+    EXTheromove *m = h->hero_move;
 
     SetHeroSeq(arg0, 0x22);
     N2OHeroSetSpeed(arg0);
