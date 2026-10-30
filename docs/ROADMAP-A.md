@@ -780,3 +780,12 @@ The release is done: 5.1 to 5.15 (2026-10-29).
     6.2. It builds with the image's GCC 13; `-DBASH_BUILD_GAME=ON` picks up the 38 shared files.
   - Checked from the built ELFs: the 14 overlays' 4,368 global names have one clash,
     `XZBoxToSphere`, so they can link into one PC program.
+- [x] 6.1 The game's C builds for PC with current compilers (2026-10-30; PORT.md, What's known).
+  - All 38 files compile with Clang 22 and GCC 13, and link into a 32-bit Windows exe against stub PsyQ
+    functions. `port/sdk/include` has the PC headers; their layouts and macros were compared with Sony's.
+  - What it exposed in the shared C, each fix with `make check` still `OK`:
+    - 44 calls that relied on the caller's registers, now `PASSED`;
+    - `PolarAIFlags[6]`, read past a 4-word array, so the array is now 7 words;
+    - a parameter redeclared in `N2OCameraFollow`;
+    - `LevelUnused`, defined in both the exe and the engine;
+    - `VramAreas` and `HeroSide`, labels inside larger arrays, now arrays of their own.

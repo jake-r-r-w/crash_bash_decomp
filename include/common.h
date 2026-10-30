@@ -26,6 +26,14 @@ typedef float f32;
 #define FILE_AT(base, off) ((u8 *)(base) + (off))
 #define SELF_REL(p) FILE_AT(p, *(p))
 
+/* Arguments the original's call doesn't pass, because they're already in the callee's registers: the
+ * caller's own, untouched. `f(PASSED(arg0))`. Only a PC build's calling convention needs them said. */
+#ifdef BASH_PC
+#define PASSED(args...) args
+#else
+#define PASSED(args...)
+#endif
+
 /* Game-specific structs, globals and prototypes go in their own headers under include/,
  * included from here or from the .c files that need them. */
 

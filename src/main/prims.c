@@ -761,7 +761,7 @@ PrimSet *primset_alloc(PrimSet **out, s32 mode) {
 }
 
 void faces_write_uvs_colors(s32 arg0, s32 arg1) {
-    prim_write_uvs();
+    prim_write_uvs(PASSED(arg0, arg1));
     faces_write_colors(arg0, arg1);
 }
 
@@ -1046,9 +1046,15 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     GfxState *gs;
     s32 n;
     s32 mode;
+#ifdef BASH_PC
+    s32 xy;
+    s32 z;
+    s32 flags;
+#else
     register s32 xy asm("$20");
     register s32 z asm("$19");
     register s32 flags asm("$18");
+#endif
 
     gs = &RenderState;
     xy = ((s32 *)v)[0];
@@ -3011,7 +3017,7 @@ void mapscene_load(map_enviroment *env, s32 db) {
     env->dbase = (obj_dbase *)db;
     env->map_num = 0;
     MapScene = env;
-    mapscene_setup_tables();
+    mapscene_setup_tables(PASSED(env));
     env->subs = NULL;
     mapenv_place_subs(env);
     dbase_load_all_mesh_anims(db);

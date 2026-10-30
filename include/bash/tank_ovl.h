@@ -35,7 +35,7 @@ extern u16 TankMetalAiTeamSkill[];
 void InitTotemBit(NAS *nas, s32 id);
 void PlotTotemBit(NAS *nas, s32 id);
 
-void MoeJoeDead(void);
+void MoeJoeDead(s32 player);
 void MoeJoeMinelay(void);
 void TankEmptyStub(void);
 void TA_RestartLevel(void);
@@ -47,8 +47,13 @@ extern s32 TankSwampFlubberTurret[];
 extern s32 TankSwampFlamerTurret[];
 extern s32 MoeState;
 extern s32 JoeState;
+#ifdef BASH_PC
+#define TankJoeTeammate Heroes[2].hero_teammate
+#define TankMoeTeammate Heroes[3].hero_teammate
+#else
 extern s16 TankJoeTeammate;
 extern s16 TankMoeTeammate;
+#endif
 extern u16 TankHeroModels[];
 extern s32 TankVictorySeqs[];   /* {name, 0x5C} pairs: four "WIN" entries */
 extern u16 TankDesertAiBotTweak[];
@@ -86,8 +91,13 @@ extern RockTblEnt ShrapnelFrames[];
 extern s32 TankMapWidth;
 extern TA_Bot TankBotAI[4];
 
+#ifdef BASH_PC
+#define TankJoeSub Heroes[2].hero_sub
+#define TankMoeSub Heroes[3].hero_sub
+#else
 extern subengine *TankJoeSub;  /* Heroes[2].hero_sub, by a label of its own: Heroes[2].hero_sub as a field shares a lui with Heroes[3] and does not match */
 extern subengine *TankMoeSub;  /* Heroes[3].hero_sub */
+#endif
 
 typedef struct MineOffset {
     /* 0x00 */ s32 x;
@@ -211,7 +221,7 @@ s32 GetTankMapCell(s32 arg0, s32 arg1);
 
 void SetTankMapCellNas(NAS *nas);
 
-void TankBotChooseTarget(void);
+void TankBotChooseTarget(s32 player);
 
 extern u16 TankJungleAiBotTweak[];
 extern u16 TankJungleAiHumanTweak[];

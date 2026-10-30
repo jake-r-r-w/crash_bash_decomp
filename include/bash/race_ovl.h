@@ -24,7 +24,7 @@ s32 RaceAlwaysZero(void);
 void FirstTriggersRACE(void);
 void RaceRestartLevel(void);
 s32 RacePadAngle(s32 arg0);
-void Race_HeroBot(void);
+void Race_HeroBot(s32 player);
 
 extern s32 RaceFloorLevel;
 extern s32 RaceTagTime;

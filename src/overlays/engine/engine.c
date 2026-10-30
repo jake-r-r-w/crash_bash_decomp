@@ -695,16 +695,16 @@ void ArenaRequirementMet(s32 arg0) {
     LevelRequirementMet(ArenaRequirements[arg0 & 0xFFFF], p);
 }
 
-void ArenaRequirementMetAny(s32 arg0) {
-    LevelRequirementMet(ArenaRequirements[arg0 & 0xFFFF]);
+void ArenaRequirementMetAny(s32 arg0, void *arg1) {
+    LevelRequirementMet(ArenaRequirements[arg0 & 0xFFFF] PASSED(, arg1));
 }
 
 void RequirementMet(s32 arg0) {
     LevelRequirementMet(arg0 & 0xFFFF, GameInfo);
 }
 
-void RequirementMetAny(s32 arg0) {
-    LevelRequirementMet(arg0 & 0xFFFF);
+void RequirementMetAny(s32 arg0, void *arg1) {
+    LevelRequirementMet(arg0 & 0xFFFF PASSED(, arg1));
 }
 
 s32 ModeRequirementMet(u16 mode) {

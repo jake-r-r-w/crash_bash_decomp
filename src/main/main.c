@@ -955,7 +955,7 @@ u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1) {
     mal *b;
     u8 *data;
 
-    b = mal_take_high(); /* arg0 and arg1 pass through */
+    b = mal_take_high(PASSED(arg0, arg1));
     data = (u8 *)MAL_DATA(b);
     if (b == NULL) {
         low = arg1->lowest;
@@ -3522,7 +3522,7 @@ u16 ModeTypes[136] = {
     0x102, 2, 2, 0x102, 3, 3, 0x102, 4, 4, 0x102, 0xD, 0xD, 0x102, 0xE, 0xE, 0x101, 0, 0, 0x101, 0, 0,
     0x101, 0, 0, 0x102, 3, 3, 0x109, 5, 5, 0,
 };
-u16 LevelRequirements[234] = {
+u16 LevelRequirements[226] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     4, 0, 0, 0, 0, 0, 0, 0, 0x17, 0x1F, 0, 0, 0, 0, 4, 0, 0, 0, 0, 4,
     0, 0, 0, 0, 4, 0xF, 0, 0xA, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -3534,8 +3534,9 @@ u16 LevelRequirements[234] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0x16,
     0, 0, 0, 0, 9, 0, 0, 0, 0, 0x1F, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0x1FF, 0x201, 0x102, 0x102, 2, 0, 0, 0,
+    0, 0, 0, 0, 0, 0,
 };
+s8 HeroSide[16] = { -1, 1, 1, 2, 2, 1, 2, 1, 2 };
 s32 DcacheReady = 0;
 ModuleEntry ShellModules = { shell_start_engine, shell_update, shell_render_dcache, NULL, NULL };
 s16 core_process = 0;

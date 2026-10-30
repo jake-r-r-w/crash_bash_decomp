@@ -628,7 +628,7 @@ void dbase_release(obj_dbase *arg0) {
     MeshHeader *q;
 
     if (arg0->data != NULL) {
-        dbase_release_all_mesh_anims();
+        dbase_release_all_mesh_anims(PASSED(arg0));
         p = arg0->data;
         q = p->meshes;
         i = p->nMeshes;

@@ -3,6 +3,6 @@
 #include <stdio.h>
 
 int main(void) {
-    puts("crash_bash_pc: the game isn't built yet (ROADMAP-B 6.1)");
+    puts("crash_bash_pc: the game links, but doesn't run yet (ROADMAP-B 6.2)");
     return 0;
 }

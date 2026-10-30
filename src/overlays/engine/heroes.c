@@ -3073,7 +3073,7 @@ void DefHeroSetIdle(s32 arg0) {
 }
 
 void HeroQuiet(u32 player) {
-    ProcessHeroAnim();
+    ProcessHeroAnim(PASSED(player));
 }
 
 void SetHeroQuiet(s32 arg0) {

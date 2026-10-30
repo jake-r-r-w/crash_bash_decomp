@@ -8361,8 +8361,8 @@ void InitMoe(NAS *nas) {
     InitMoeJoe(nas, 0x131E);
 }
 
-void MoeJoeDead(void) {
-    HeroGhost();
+void MoeJoeDead(s32 player) {
+    HeroGhost(PASSED(player));
 }
 
 void MoeJoeIdle(s32 arg0) {
@@ -9558,17 +9558,17 @@ void TankBotAimTurret(s32 player, EXTengine *eng, s32 *arg2) {
     }
 }
 
-void TankBotChooseTarget(void) {
+void TankBotChooseTarget(s32 player) {
     switch ((s16)(GameMode - 5)) {
     case 1:
     case 3:
-        TankBotPickLinedUpTarget();
+        TankBotPickLinedUpTarget(PASSED(player));
         break;
     case 0:
     case 2:
     case 4:
     default:
-        TankBotPickTarget();
+        TankBotPickTarget(PASSED(player));
         break;
     }
 }

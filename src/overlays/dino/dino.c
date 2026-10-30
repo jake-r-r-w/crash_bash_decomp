@@ -3970,8 +3970,8 @@ s32 TestDinoHeroWon(s32 id) {
     return 0;
 }
 
-void Dino_HeroBot(void) {
-    DinoAI_Think();
+void Dino_HeroBot(s32 id) {
+    DinoAI_Think(PASSED(id));
 }
 
 s32 DinoFindClosestPlayer(s32 self, s32 *dist) {

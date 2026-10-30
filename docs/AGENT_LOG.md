@@ -62,7 +62,8 @@ ROADMAP-B.md, Part 6:
 
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
-3. **The PC port** (Part 6).
+3. **The PC port** (Part 6). 6.1 is done: the game's C builds and links for 32-bit Windows, against
+   stubs (PORT.md). Next is 6.2, the PS1 layers; PORT.md, What's known, lists what it has to change.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -437,6 +438,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-30 (ROADMAP-B 6.1):**
+  - The game's C compiles with Clang 22 and GCC 13, and links into a 32-bit Windows exe against stub
+    PsyQ functions. It doesn't start the game yet (6.2).
+  - `port/sdk/include` holds the PC headers, compared with Sony's by `scratch/layout.py`.
+  - Shared C fixes are in ROADMAP-A 6.1. The one to know is `PASSED`, for calls that relied on the
+    caller's registers (PORT.md).
+  - Gotcha: splat rewrites `include/include_asm.h` on every build, so the PC build sets
+    `INCLUDE_ASM_H` rather than editing it.
+  - Gotcha: a new global in a slot overlay can change the engine's bytes too (`slot_syms.py`).
 
 - **2026-10-30 (the decomp/port boundary):**
   - Layout in PORT.md: `src/` and `include/` shared, `src/ps1/` PS1 only, `port/` PC only.

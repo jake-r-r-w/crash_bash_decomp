@@ -18,7 +18,6 @@ Windows, Linux, macOS and Android.
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 6.1 | Build the game's C for PC with a current GCC or Clang | Proves the C is correct C, not C that only works with the old compiler. Fix what it exposes in the shared C (uninitialised reads, out-of-bounds reads, pointers kept in 32-bit numbers); the matching build must stay `OK`. | [ ] |
 | 6.2 | Replace the PS1 layers | PC versions of the CD, GPU and GTE, SPU and pads; assets from the extracted files | [ ] |
 | 6.3 | Libsnd's sequencer as C | Plain non-matching C (and any GTE maths needed bit for bit), checked against the linked originals | [ ] |
 | 6.4 | Same game | Played side by side with retail over 4.4's route, it behaves the same | [ ] |

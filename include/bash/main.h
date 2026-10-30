@@ -311,6 +311,11 @@ typedef struct {
     KeyEntry entries[1]; /* 0x4C */
 } KeyBlock;
 
+#ifdef BASH_PC
+#define gte_ldv0_w(xy, z) pc_gte_ldv0_words((xy), (z))
+#define gte_ldv0_t(r0) pc_gte_ldv0((const void *)(r0))
+#define gte_stsxy3_10(r0) pc_gte_stsxy3((u8 *)(r0) + 0x10, (u8 *)(r0) + 0x18, (u8 *)(r0) + 0x20)
+#else
 /* Loads GTE vector 0 from two words (vx|vy, vz) in general registers
  * (lw + mtc2), where Sony's gte_ldv0 loads straight from memory (lwc2). */
 #define gte_ldv0_w(xy, z) __asm__ volatile (				"mtc2	%0, $0;"						"mtc2	%1, $1"							:								: "r"(xy), "r"(z) )
@@ -323,6 +328,7 @@ typedef struct {
  * gte_stsxy3_* macros uses these offsets; draw_verts and draw_gouraud_quad
  * store them straight off the primitive pointer. */
 #define gte_stsxy3_10(r0) __asm__ volatile (				"swc2	$12, 16( %0 );"					"swc2	$13, 24( %0 );"					"swc2	$14, 32( %0 )"					:								: "r"(r0)							: "memory" )
+#endif
 
 /* A playing sound (PlaySfx), linked into SfxVoicePool's active or free list.
  * The type name is the prototype's (EXTengine.sfx, TA_player's handlers);

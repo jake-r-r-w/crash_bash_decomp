@@ -1124,7 +1124,7 @@ void N2OHeroEnter(s32 arg0) {
     s32 s;
     s32 n;
 
-    if (N2OHeroUpdateSpeed() != 0) {
+    if (N2OHeroUpdateSpeed(PASSED(arg0)) != 0) {
         ProcessHeroAnim(arg0);
     }
     base = Heroes;
@@ -1169,7 +1169,7 @@ void N2OHeroIdle(s32 arg0) {
     HeroInfo *hb;
     s32 mode;
 
-    if (N2OHeroUpdateSpeed() != 0) {
+    if (N2OHeroUpdateSpeed(PASSED(arg0)) != 0) {
         ProcessHeroAnim(arg0);
     }
     st = Heroes[arg0].hero_status;
@@ -1421,7 +1421,7 @@ void SetN2OHeroKick(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    N2OHeroSetSpeed();
+    N2OHeroSetSpeed(PASSED(arg0));
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
@@ -3943,7 +3943,7 @@ void N2OShowPhaseObjects(u16 arg0) {
     }
 }
 
-void N2OCameraFollow(camera_info_tag *cam) {
+void N2OCameraFollow(camera_info_tag *unused) {
     s32 *t;
     s32 z;
     camera_info_tag *cam;
@@ -4094,6 +4094,9 @@ void InitN2Omissile(NAS *nas) {
 
 void N2OSpawnFirstMissile(void) {
     volatile s32 x, y, z;
+#ifdef BASH_PC
+    x = y = z = 0; /* retail spawns it at whatever's on the stack */
+#endif
     CreateNAS(x, y, z, 0x1B01, 0x11);
 }
 
@@ -4139,7 +4142,7 @@ void N2OHeroDie(s32 arg0) {
 
 void SetN2OHeroMove(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
-    N2OHeroSetSpeed();
+    N2OHeroSetSpeed(PASSED(arg0));
     SetHeroSeq(arg0, 0x22);
 }
 

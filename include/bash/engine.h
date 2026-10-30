@@ -32,7 +32,7 @@ extern s32 HealthAst;
 extern s32 CratePickupAst;
 
 void RequirementMet(s32 arg0);
-void RequirementMetAny(s32 arg0);
+void RequirementMetAny(s32 arg0, void *arg1);
 s32 ModeRequirementMet(u16 mode);
 void RunLevelTriggers(void);
 void RenderLevel(void);
@@ -255,7 +255,7 @@ extern hub_info WarpRooms[];          /* by GameWarpRoom (hub.h: the prototype's
 extern s8 GameGateway;
 extern HubGateway HubGateways[];       /* by HubTableEntry.gateway - 1 */
 
-void ArenaRequirementMetAny(s32 arg0);
+void ArenaRequirementMetAny(s32 arg0, void *arg1);
 
 /* A cell of the arena's 20 x 20 grid (ArenaGrid, by z * 20 + x): what stands on it. */
 typedef struct {

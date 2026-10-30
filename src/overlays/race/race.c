@@ -3822,7 +3822,7 @@ void RaceHeroJump(s32 player) {
     RaceFux *fux;
     EXTheromove *move;
 
-    ProcessHeroAnim();
+    ProcessHeroAnim(PASSED(player));
     move = Heroes[player].hero_move;
     if (move == NULL) {
         return;
@@ -3853,7 +3853,7 @@ void RaceHeroOiled(s32 arg0) {
     if (fux == NULL) {
         return;
     }
-    ProcessHeroAnim();
+    ProcessHeroAnim(PASSED(arg0));
     RaceHeroUsePickup(arg0);
     move = hero->hero_move;
     if (move == NULL) {
@@ -7150,8 +7150,8 @@ s32 RacePadAngle(s32 arg0) {
     return var_a1;
 }
 
-void Race_HeroBot(void) {
-    RaceAI_Think();
+void Race_HeroBot(s32 player) {
+    RaceAI_Think(PASSED(player));
 }
 
 NAS *RacePickupAhead(s32 arg0) {

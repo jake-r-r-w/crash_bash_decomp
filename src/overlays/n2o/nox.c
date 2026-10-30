@@ -1039,7 +1039,7 @@ void NoxHeroFly(s32 arg0) {
     hb = Heroes;
     h = &hb[arg0];
     h->hero_eng->xform.dirty = 1;
-    if (N2OHeroUpdateSpeed() != 0) {
+    if (N2OHeroUpdateSpeed(PASSED(arg0)) != 0) {
         ProcessHeroAnim(arg0);
     }
     ang = h->hero_eng->xform.rot.vy;
