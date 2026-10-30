@@ -577,7 +577,7 @@ void BashSnowMoveHero(s32 arg0) {
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
 
-    HeroHooks.HeroFacing();
+    HeroHooks.HeroFacing(arg0);
     HeroApplyJump(arg0);
     if (m->velocity_calc == 3) {
         if (m->x_vel != m->x_max) {

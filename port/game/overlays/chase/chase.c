@@ -2110,8 +2110,8 @@ void InitBarrelCH(NAS *nas) {
 
     ext = AddExt(nas, sizeof(CoalFlameExt), 0x10000001);
     nas->FUX = &ext->ext;
-    ((s32 *)ext)[0x30 / 4] = 1;
-    ((s32 *)ext)[0x40 / 4] = -0x17;
+    EXT_W(ext, 0x30 / 4) = 1;
+    EXT_W(ext, 0x40 / 4) = -0x17;
     ext->unk1C = 0x3E8;
     eng = nas->Engine;
     sub = eng->sub;
@@ -2273,7 +2273,7 @@ NAS *ChaseSpawnCoal(s32 arg0) {
         e->xform.rot.vy = he->xform.rot.vy;
         e->xform.rot.vx = 0x400;
         e->xform.dirty = 1;
-        ((s32 *)nas->FUX)[0x2C / 4] = arg0;
+        EXT_W(nas->FUX, 0x2C / 4) = arg0;
     }
     return nas;
 }

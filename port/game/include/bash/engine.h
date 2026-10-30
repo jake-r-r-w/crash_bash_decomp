@@ -123,7 +123,7 @@ extern EXTengine EnginePool[];
 extern HeroInfo Heroes[4];
 /* A hero action (SetHeroAction): what starts it and what runs it each frame. */
 typedef struct HeroActionEntry {
-    void (*fn)(void);
+    void (*fn)(s32);
     void (*update)(s32);
 } HeroActionEntry;
 extern HeroActionEntry HeroActionTable[];
@@ -327,19 +327,19 @@ typedef struct HeroJumpEnt {
 
 /* Engine callback table filled by SetDefaultHeroHooks (0x54 is HeroHooks.HeroKickCollision). */
 typedef struct EngineHooks {
-    /* 0x00 */ void (*InitHero)();
+    /* 0x00 */ void (*InitHero)(s32);
     /* 0x04 */ u16 *HeroModels;
     /* 0x08 */ void *flag;  /* tested for zero */
     /* 0x0C */ u16 *RunSpeeds;
     /* 0x10 */ HeroJumpEnt *JumpEnts;
     /* 0x14 */ void *VictorySeqs;     /* the victory sequences (VictorySeq, pause.h) */
     /* 0x18 */ void *CreateShadow;
-    /* 0x1C */ void (*UpdateShadow)(void);
+    /* 0x1C */ void (*UpdateShadow)(s32);
     /* 0x20 */ void *PreMoveHero;
     /* 0x24 */ void *MoveHero;
     /* 0x28 */ void *PostMoveHero;
-    /* 0x2C */ void (*HeroFacing)(void);
-    /* 0x30 */ void (*HeroSetIdle)();
+    /* 0x2C */ void (*HeroFacing)(s32);
+    /* 0x30 */ void (*HeroSetIdle)(s32);
     /* 0x34 */ void (*HeroTouched)(s32);
     /* 0x38 */ void *HeroBot;
     /* 0x3C */ s32 (*TestAttack)(s32);
@@ -348,7 +348,7 @@ typedef struct EngineHooks {
     /* 0x48 */ s32 (*TestKick)(s32);
     /* 0x4C */ void *Hero2ObjectCollision;
     /* 0x50 */ s32 (*HeroGrabObject)(s32, s32);
-    /* 0x54 */ void (*HeroKickCollision)();
+    /* 0x54 */ void (*HeroKickCollision)(s32);
     /* 0x58 */ void (*HeroCarryCollision)(s32);
     /* 0x5C */ void *HeroExtraEffects;
     /* 0x60 */ void *HeroesTouched;

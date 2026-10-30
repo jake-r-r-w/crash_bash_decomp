@@ -642,7 +642,7 @@ NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, void *arg2) {
             ext->speed = 0x100;
             if (arg2 != 0) {
                 ext->flags = 4;
-                ((s32 *)nas->Engine->sub)[0x6C / 4] = arg2;
+                nas->Engine->sub->u6C.ptr = arg2;
             } else {
                 ext->flags = 0;
             }
@@ -666,7 +666,7 @@ NAS *SpawnModelFx(s32 arg0, s32 *arg1, void *arg2) {
             ext->speed = 0x100;
             if (arg2 != 0) {
                 ext->flags = 5;
-                ((s32 *)nas->Engine->sub)[0x6C / 4] = arg2;
+                nas->Engine->sub->u6C.ptr = arg2;
             } else {
                 ext->flags = 1;
             }

@@ -1804,7 +1804,7 @@ void PolarInitHeroEngine(s32 arg0) {
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
 
-    HeroHooks.HeroFacing();
+    HeroHooks.HeroFacing(arg0);
     HeroApplyJump(arg0);
     if (m->velocity_calc == 3) {
         if (m->x_vel != m->x_max) {
@@ -4284,7 +4284,7 @@ loop:
                 ai->flag2 = 0;
             }
             PolarAIFlags[i] = 0;
-            PolarAIFlags[6] = 0;
+            PolarAIPace[2] = 0;
         }
         h++;
         g++;
@@ -4403,11 +4403,11 @@ void UpdatePOLAR(void) {
     if (PolarBeamOwner != NULL) {
         l = PolarBeamOwner->link;
         if (l != NULL) {
-            if (PolarAIFlags[6] == 0 && l->player != -1) {
-                PolarAIFlags[6] = 1;
+            if (PolarAIPace[2] == 0 && l->player != -1) {
+                PolarAIPace[2] = 1;
             }
-            if (PolarAIFlags[6] == -1 && l->player == PolarAIFlags[6]) {
-                PolarAIFlags[6] = 0;
+            if (PolarAIPace[2] == -1 && l->player == PolarAIPace[2]) {
+                PolarAIPace[2] = 0;
             }
         }
     }
@@ -10134,11 +10134,11 @@ void PolarBeamLinkState(void) {
     if (PolarBeamOwner != NULL) {
         l = PolarBeamOwner->link;
         if (l != NULL) {
-            if (PolarAIFlags[6] == 0 && l->player != -1) {
-                PolarAIFlags[6] = 1;
+            if (PolarAIPace[2] == 0 && l->player != -1) {
+                PolarAIPace[2] = 1;
             }
-            if (PolarAIFlags[6] == -1 && l->player == PolarAIFlags[6]) {
-                PolarAIFlags[6] = 0;
+            if (PolarAIPace[2] == -1 && l->player == PolarAIPace[2]) {
+                PolarAIPace[2] = 0;
             }
         }
     }

@@ -111,11 +111,13 @@ cmake --build --preset windows-clang --target game -- -k 0
 ## What a pointer's size breaks
 
 Giving a struct a real pointer makes it bigger, so anything that assumed the old size is now wrong, and the compiler can't
-always see it. 6.2 fixed the ones it met; 6.3 looks for the rest:
+always see it. `node tools/port/views.mjs` finds every struct read as another by Clang's AST and checks it against the layouts
+at 32 and 64 bits. Most of what it still reports is casts back to the real type, mistyped locals, or code that 6.4 and 6.6 replace. Two aren't proven: `script_control_info` and `HubSparkSet` lie over the end of a `subengine`, so check them when they first run.
 
 - Byte strides: `* 0x38` for a model bank entry, `<< 4` for a `BattleLevel`, offsets like `[0x6C / 4]`. Use the array or field.
-- Word views of a struct, such as `st[0x12]` and `hero[40]`. These hold pointers in places a 64-bit layout has moved.
-- Fixed sizes: `AllocExtension` now takes `sizeof`, and its heap aligns to 8 and has a header of `EXT_HEADER` bytes. The
+- Views: a pad written `u8 pad0[0x74]` is the PS1's. Write it `u8 pad0[offsetof(subengine, entity)]`, which holds at any size.
+- Word views of a struct, such as `st[0x12]` and `hero[40]`. Use the field, or `EXT_W(ext, i)` for an extension of plain words.
+- Fixed sizes: `AllocExtension` and `AddExt` now take `sizeof`, and its heap aligns to 8 and has a header of `EXT_HEADER` bytes. The
   sizes the game asks for its heaps are still the PS1's, so 6.4 has to scale them.
 - A slot that holds a number in some uses and an address in others is an `iptr` (`NAS.UserInfo`). Otherwise it gets its
   real pointer type.

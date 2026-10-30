@@ -785,6 +785,9 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 6.2 Addresses and calls (2026-10-31): the game's C compiles as 64-bit with Clang and GCC and is in the default build.
   Its data tables hold real pointers, functions have prototypes, and calls that relied on the caller's registers pass
   their arguments. It isn't linked or run yet. The address casts left are in code later steps replace or redesign.
+- [x] 6.3 Real structs (2026-10-31): `GameInfo` is one `GameState`, which has no pointers and keeps the PS1 layout. Views of
+  structs reach their fields through `offsetof` on the real struct, extensions are read by field or `EXT_W`, and sizes and
+  strides come from the types. Size checks hold every struct that keeps its PS1 size. Still unproven: nothing runs yet.
 - A 32-bit port ran the game on the PS1's memory layout, with all 33 modes playing to the end, then was
   deleted (2026-10-30). The layout couldn't reach 64-bit, so the port starts again (ROADMAP-B, PORT.md). Its
   code is in git at `7115b3b8`, and PORT.md has what it taught.

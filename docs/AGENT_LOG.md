@@ -66,8 +66,8 @@ ROADMAP-B.md, Part 6:
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. **The PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
-   `port/game/`. 6.1 and 6.2 are done, and the game's C compiles but isn't linked or run. Next is 6.3, real structs (PORT.md,
-   What a pointer's size breaks). Whether it plays the same as retail is checked by the user playing it.
+   `port/game/`. 6.1 to 6.3 are done, and the game's C compiles but isn't linked or run. Windows only for now, at the user's request: Linux
+   stays in the plan, but isn't built. Next is 6.4, files and memory. Whether it plays the same as retail is checked by the user playing it.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -443,6 +443,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-31 (ROADMAP-B 6.3):** `GameInfo` is one struct, views use `offsetof`, and `tools/port/views.mjs` checks them. Of
+  138 views it reports 33: casts back to the real type or mistyped locals, code 6.4 and 6.6 replace, and two not proven right (`script_control_info` and `HubSparkSet`, laid over the end of a `subengine`). 226 lines of address casts are left, and about
+  30 hook fields with empty parens that gnu17 allows. Steering C isn't cleaned up in bulk; 6.5 does it where it gets in the way.
 - **2026-10-31 (ROADMAP-B 6.2):** the game's C compiles as 64-bit in the default build, gnu17, with real pointers in its
   tables, prototypes on its functions, and pass-through calls passing their arguments (from the first port's `PASSED` list
   at `7115b3b8`). 236 lines of address casts are left: about 95 in prims and sound (replaced in 6.6 and 6.7), the rest

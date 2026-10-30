@@ -280,8 +280,8 @@ struct EXTengtype {
     /* 0x60 */ SLONG_XYZ OldXYZ;
     /* 0x6C */ subengine *sub;           /* first of the engine's subengines */
     /* 0x70 */ subengine *last;          /* last of them */
-    /* 0x74 */ void (*render)();
-    /* 0x78 */ void (*kill)();
+    /* 0x74 */ void (*render)(EXTengine *);
+    /* 0x78 */ void (*kill)(EXTengine *);
     /* 0x7C */ EXTengine *Engine;        /* next engine extension of the same NAS */
     /* 0x80 */ EXTengine *platform;      /* paired engine (its platform points back); cleared both ways by KillNAS */
     /* 0x84 */ FlagRecord collision_box; /* checked first by FindCollisionBox */
@@ -674,17 +674,17 @@ extern void (*GameBoot)(void *);
 
 /* Each minigame's level hooks (TANKSpecifics, POGOSpecifics, ...). */
 typedef struct LevSpec {
-    /* 0x00 */ void (*LevelPreInit)();
-    /* 0x04 */ void (*LevelInit)();
-    /* 0x08 */ void (*LevelRestartInit)();
-    /* 0x0C */ void (*LevelRoutine)();
-    /* 0x10 */ void (*LevelExit)();
-    /* 0x14 */ void (*EarliestTriggers)();
+    /* 0x00 */ void (*LevelPreInit)(void);
+    /* 0x04 */ void (*LevelInit)(void);
+    /* 0x08 */ void (*LevelRestartInit)(void);
+    /* 0x0C */ void (*LevelRoutine)(void);
+    /* 0x10 */ void (*LevelExit)(void);
+    /* 0x14 */ void (*EarliestTriggers)(void);
     /* 0x18 */ void (*PostTriggers)();
     /* 0x1C */ void (*SpecTriggerFunc)();
     /* 0x20 */ s32 (*OnOffWindowTest)(); /* the return type is not recorded */
-    /* 0x24 */ s32 (*GetContour)();
-    /* 0x28 */ void (*FinishQuick)();
+    /* 0x24 */ s32 (*GetContour)(EXTengine *);
+    /* 0x28 */ void (*FinishQuick)(void);
 } LevSpec;
 
 /* Each minigame's shell settings (tank_shell_info, POGO_shell_info, ...): the

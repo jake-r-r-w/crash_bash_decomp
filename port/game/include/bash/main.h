@@ -758,8 +758,8 @@ extern script_thread_handler *ScriptList;
 typedef struct ScriptCommand {
     void (*init)();
     void (*update)(script_thread_handler *, script_control_info *);
-    void (*render)();
-    void (*kill)();
+    void (*render)(EXTengine *);
+    void (*kill)(EXTengine *);
 } ScriptCommand;
 extern ScriptCommand ScriptCommands[];
 extern s32 World_floor_level;

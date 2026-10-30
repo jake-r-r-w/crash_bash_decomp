@@ -54,24 +54,24 @@ struct WinInf {
 };
 
 struct HookInf {
-    /* 0x00 */ void (*InitHero)();
+    /* 0x00 */ void (*InitHero)(s32);
     /* 0x04 */ u16 *DataBase;
     /* 0x08 */ u16 *AuxDataBase;
     /* 0x0C */ u16 (*HeroSpeed)[3];
     /* 0x10 */ HEROjumpvel *HeroJumpVels;
     /* 0x14 */ WinInf *WinAnim;
-    /* 0x18 */ void (*CreateShadow)();
-    /* 0x1C */ void (*UpdateShadow)();
-    /* 0x20 */ void (*PreMoveHero)();
-    /* 0x24 */ void (*MoveHero)();
-    /* 0x28 */ void (*PostMoveHero)();
+    /* 0x18 */ void (*CreateShadow)(s32);
+    /* 0x1C */ void (*UpdateShadow)(s32);
+    /* 0x20 */ void (*PreMoveHero)(s32);
+    /* 0x24 */ void (*MoveHero)(s32);
+    /* 0x28 */ void (*PostMoveHero)(s32);
     /* 0x2C */ void (*RampHero)();
     /* 0x30 */ void (*InitIdleMode)();
     /* 0x34 */ void (*SetIdleMode)();
-    /* 0x38 */ void (*HeroBot)();
+    /* 0x38 */ void (*HeroBot)(s32);
     /* 0x3C */ s32 (*TestActions)();
-    /* 0x40 */ s32 (*TestRun)();
-    /* 0x44 */ s32 (*TestJump)();
+    /* 0x40 */ s32 (*TestRun)(void);
+    /* 0x44 */ s32 (*TestJump)(s32);
     /* 0x48 */ s32 (*TestTaunt)();
     /* 0x4C */ NAS *(*TestHero2ObjectCollision)();
     /* 0x50 */ NAS *(*TestHero2PickupObject)();

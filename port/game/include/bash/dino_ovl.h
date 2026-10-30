@@ -28,7 +28,7 @@ typedef struct DinoExt {
 
 typedef struct DinoChase {
     u8 pad[0xC];
-    void (*fn)(); /* 0xC */
+    void (*fn)(s32); /* 0xC */
     SLONG_XYZ pos;    /* 0x10 */
     SLONG_XYZ tgt;    /* 0x1C */
     s32 gem;  /* its DinoGems index */
@@ -301,7 +301,7 @@ static inline s32 DinoBoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
 /* Hero NAS extension 0x20000000: the AI chase state DinoAI_Wander runs. */
 typedef struct DinoAiExt {
     u8 pad[0xC];
-    void (*func)(); /* 0x0C */
+    void (*func)(s32); /* 0x0C */
     SLONG_XYZ pos;    /* 0x10 */
     SLONG_XYZ target; /* 0x1C */
     s32 unk28;        /* 0x28 */
