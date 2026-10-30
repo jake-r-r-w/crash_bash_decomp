@@ -10,20 +10,18 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
 
 ## The rules
 
-1. **`src/` and `include/` always match retail.** Any change there has to pass `tools/dk make check`.
-2. **Everything PC-only goes in `port/`.** The Makefile compiles only what's in `src/` and `asm/`, so
-   nothing in `port/` reaches the matching build.
-3. **Dependencies go one way.** `port/` can include the game's headers. The game's code never includes
-   anything from `port/`.
-4. **`src/ps1/` is PS1 only**, and the PC build leaves it out: the exe header, `bios_1`'s data, the mod-chip
-   check, the overlay id words.
-5. **No Sony code in `port/`.** Where game logic calls a PsyQ name for something ordinary (a pad, a file, a
-   sound), the PC build gives it a native function under that name.
+1. **The port has its own copy of the game's C** (decided 2026-10-30): `port/game/`, taken once from `src/main/`,
+   `src/overlays/` and `include/`. It doesn't have to match anything, so it can be refactored freely.
+2. **The decomp is left alone.** `src/`, `include/` and the Makefile don't change for the port, and `make check`
+   stays the proof that the source is the game. The Makefile never sees `port/`.
+3. **Everything PC-only goes in `port/`**, and the port never builds from `src/` or `include/`. A fix found in one
+   copy goes to the other by hand, if it applies.
+4. **The port plays the same as retail.** With no `make check` to protect it, the comparison with retail is the
+   safety net: the same inputs have to give the same game state.
+5. **No Sony code in `port/`.** PsyQ's names go as the code is cleaned up, in favour of plain functions.
 6. **No emulation and no hacks.** No PS1 GPU, VRAM or SPU model, no fixed low addresses, no linker lists that
    recreate the PS1's layout, no crash handlers that patch up bad accesses, no `-O0` to hide undefined
-   behaviour. If the C relies on the PS1, the C gets fixed, in a form that still matches.
-7. **`#ifdef BASH_PC` is the last resort** in shared code. A type or macro that means the same thing on
-   both builds comes first.
+   behaviour. If the C relies on the PS1, the C gets fixed.
 
 ## Tooling
 
@@ -41,14 +39,16 @@ game in tests happens on a machine that has them.
 
 ## The design
 
-**Addresses in integers.** The game keeps addresses in `s32`s (about 430 casts, and more in data tables).
-They get a type of their own that is `s32` on the PS1 and pointer-sized on PC. The compiler's truncation
-warnings are the to-do list, and they end up as errors.
+**The copy.** `port/game/` starts as the decomp's C and gets cleaned up: code written only to steer the old compiler goes
+back to natural C, K&R calls get prototypes, and `src/ps1/` stays out. The names and types recovered in the decomp
+stay.
+
+**Addresses in integers.** The game keeps addresses in `s32`s (about 430 casts, and more in data tables). They become
+real pointers. The compiler's truncation warnings are the to-do list, and they end up as errors.
 
 **Real structs.** The game reads some globals through others: `GameState` over `GameInfo` and the names after
-it, arrays that run on into the next object, byte offsets into structs. These only work on the PS1's
-layout, and they stop an optimiser being safe, so each becomes a real struct, array or field. Structs that
-hold pointers change size on PC, so their size checks apply to the PS1 only.
+it, arrays that run on into the next object, about 400 casts to byte pointers. These only work on the PS1's
+layout, and they stop an optimiser being safe, so each becomes a real struct, array or field.
 
 **Files aren't memory.** The game lays structs straight over the files it loads. Self-relative offsets
 (`SELF_REL`, `FILE_AT`) work anywhere, but the 32-bit slots the game fills with pointers can't hold a 64-bit
@@ -68,13 +68,14 @@ names have one clash, `XZBoxToSphere`.
 gets a real check, found by running under the sanitizers.
 
 **Calls that rely on the caller's registers.** On the PS1, `f()` can hand on the caller's own `a0` without
-saying so. These calls name the argument on PC only, with no byte changed on the PS1.
+saying so. With real prototypes, these calls just pass the argument.
 
 **The game's maths.** The fixed-point maths in the game's logic stays, because it decides how the game plays:
-camera, collision and sound positions come out the same. It becomes plain C functions, with no GTE registers.
+camera, collision and sound positions come out the same. It becomes plain C functions, with no GTE registers,
+and uses the same integer rules as the PS1.
 
-**Drawing.** The PC build doesn't write PS1 drawing commands. The functions that do (`draw_object_model`, `draw_verts`
-and the `prim_*` writers, the map, sprite and text drawing) have native versions in `port/` that send vertices to the
+**Drawing.** The port doesn't write PS1 drawing commands. The functions that do (`draw_object_model`, `draw_verts`
+and the `prim_*` writers, the map, sprite and text drawing) are rewritten to send vertices to the
 GPU with real 3D transforms, depth and perspective-correct textures. Textures go from the game's indexed files to
 GPU textures at load, and palettes and animated or scrolling textures use GPU resources, not a VRAM allocator. Blend
 modes, fades and draw order are kept, so it looks like the game, sharper. The few effects that draw into VRAM
@@ -84,8 +85,10 @@ become render targets.
 mixer, and the SEQ music by a native sequencer. To check it, Sony's linked code runs in a small MIPS interpreter against
 the same inputs, and note timing, pitch and volume have to agree.
 
-**Keeping it the same game.** The same pad inputs go to retail in an emulator and to the PC build, and the game's
-state is compared frame by frame. The picture is meant to differ; how the game plays isn't.
+**Keeping it the same game.** The retail half comes first: scripted pad inputs go to retail in an emulator, and the
+game's state is recorded frame by frame on the machine that has the disc. Once the port runs, it replays the same inputs
+and has to give the same state, and any refactoring that changes the game fails that test. The picture is meant to
+differ; how the game plays isn't.
 
 ## What the first attempt taught
 
