@@ -6824,9 +6824,7 @@ void PlotTankBossCrashTurret(NAS *nas) {
         } else {
             tbl = CrashTurretFrames;
         }
-        u *= 2;
-        u += (s32)tbl;
-        v = *(u16 *)u;
+    v = ((u16 *)tbl)[u];
         nas->UserInfo.user2 = k + 2;
         if (v == 0) {
             if (nas->UserInfo.flags != 0) {
@@ -9462,7 +9460,7 @@ void KillTankMapCell(s32 arg0, s32 arg1) {
     KillNAS(nas);
 }
 
-s32 GetTankMapCell(s32 arg0, s32 arg1) {
+NAS *GetTankMapCell(s32 arg0, s32 arg1) {
     return TankMapNas[((arg1 >> 9) * TankMapWidth) + (arg0 >> 9)];
 }
 

@@ -110,8 +110,7 @@ static inline s32 TitlesSlotCI(s32 a, s32 b) {
 extern s32 *LangLevelNames[];
 
 static inline s32 TitlesSlotRowI(s32 a, s32 b) {
-    s32 base = BattleArenas[a].levels;
-    s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
+    s32 idx = BattleArenas[a].levels[b].idx;
     s32 *row = LangLevelNames[*(s32 *)(GameInfo + 0x2C)];
     return row[idx];
 }

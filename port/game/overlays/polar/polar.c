@@ -623,12 +623,11 @@ s32 PolarSceneWord1 = 0;
 s32 PolarSceneWord2 = 0x100;
 s32 PolarSceneWord3 = 0x10;
 NAS *BombMaster = 0;
-VictorySeq PolarVictorySeqs[5] = {
+VictorySeq PolarVictorySeqs[4] = {
     { &PolarAnimWin, 0x46 },
     { &PolarAnimWin, 0x47 },
     { &PolarAnimWin, 0xD },
     { &PolarAnimWin, 0xD },
-    { 1, 2 },
 };
 s32 PolarAttackOdds[33] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 0xC, 0x10, 0x14, 0x18, 0x1C, 0x20, 0x24, 0x28, 0x2C, 0x30,
@@ -7653,7 +7652,7 @@ void PlotDingoTail(NAS *m) {
 
     user = m->UserInfo.user1;
     if (user != 0) {
-        owner = (BrioOwner *)user;
+        owner = (BrioOwner *)m->UserInfo.user1;
         if (owner->type != 0x51) {
             KillNAS(m);
             return;
@@ -7683,7 +7682,7 @@ void PlotBrioPack(NAS *m) {
 
     user = m->UserInfo.user1;
     if (user != 0) {
-        owner = (BrioOwner *)user;
+        owner = (BrioOwner *)nas->UserInfo.user1;
         if (owner->type != 0x51) {
             KillNAS(m);
             return;
@@ -10014,7 +10013,7 @@ void POLARtriggers(NASTrigger *arg0, s32 arg1) {
 void FirstTriggersPOLAR(void) {
     subengine *var_v1;
 
-    var_v1 = ((s32)MapScene->subs);
+    var_v1 = MapScene->subs;
     if (var_v1 != NULL) {
         do {
             (var_v1->flags) = (s32) ((var_v1->flags) | 0x01000000);

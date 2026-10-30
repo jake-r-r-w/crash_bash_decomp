@@ -310,7 +310,7 @@ void HubUpdateRoom(void);
 
 void HubCullObjects(void);
 
-s32 HubLookup(s32 arg0);
+void *HubLookup(s32 arg0);
 
 void HubCreditsEffects(void);
 

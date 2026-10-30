@@ -1507,7 +1507,7 @@ void UpdateScoreIcons(void) {
         }
         q++;
         i++;
-    } while ((s32)q < (s32)end + 0x20);
+    } while ((u8 *)q < (u8 *)end + 0x20);
 }
 
 void CheckHeroesAllOut(void) {

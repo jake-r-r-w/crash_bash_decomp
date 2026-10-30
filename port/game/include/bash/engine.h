@@ -18,7 +18,7 @@ extern s32 CamBoundTop;
 
 extern s32 CamBoundRight;
 typedef struct {
-    s32 target;  /* the XYZ it frames */
+    s32 *target;  /* the XYZ it frames */
     s16 left;  /* the box around it, from the target */
     s16 right;
     s16 near;
@@ -408,12 +408,12 @@ extern HitSfxTable HitSfx;
 extern s32 CrateAstType;
 extern s32 CrateAstType2;
 extern u16 CrateCounts[];
-NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2);
+NAS *SpawnModelFx(s32 arg0, s32 *arg1, void *arg2);
 
 void RenderAllNas(void);
 
 
-NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, s32 arg2);
+NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, void *arg2);
 
 void DoAmbience(void);
 

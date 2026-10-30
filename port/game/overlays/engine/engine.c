@@ -155,6 +155,7 @@ void InitialiseLevel(void) {
     GameState *g = (GameState *)GameInfo;
     s32 r;
     s32 i;
+    ASTEntry *e;
     s32 want;
     s32 n;
 
@@ -190,9 +191,9 @@ found1:
     i = 0;
     if (ASTCount > 0) {
         n = ASTCount;
-        r = (s32)ASTTable;
+        e = ASTTable;
         for (;;) {
-            if (((ASTEntry *)r)->id == want) {
+            if (e->id == want) {
                 r = i;
                 goto found2;
             }
@@ -200,7 +201,7 @@ found1:
             if (i >= n) {
                 break;
             }
-            r += sizeof(ASTEntry);
+            e++;
         }
     }
     r = 0;
@@ -632,7 +633,7 @@ s32 GravitateNas(NAS *nas) {
     return 1;
 }
 
-NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, s32 arg2) {
+NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, void *arg2) {
     NAS *nas;
     s32 *ext;
 
@@ -656,7 +657,7 @@ NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, s32 arg2) {
     return NULL;
 }
 
-NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2) {
+NAS *SpawnModelFx(s32 arg0, s32 *arg1, void *arg2) {
     NAS *nas;
     s32 *ext;
 

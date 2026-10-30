@@ -503,7 +503,7 @@ fillit:
             *arg1 = fill;
         }
         arg1++;
-    } while ((s32)arg1 < (s32)end);
+    } while ((u8 *)arg1 < (u8 *)end);
 }
 
 /* data, in address order (tools/scripts/data2c.py) */

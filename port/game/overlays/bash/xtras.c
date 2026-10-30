@@ -554,7 +554,7 @@ void PlotCrate(NAS *arg0) {
         }
         if (GravitateNas(arg0) != 0) {
             eng->XYZ.y += 0x20;
-            CrateCollide(eng, (s32)fux, fux->player, 0);
+            CrateCollide(eng, fux, fux->player, 0);
             eng->XYZ.y -= 0x20;
             switch (type) {
             case 3:
@@ -1630,7 +1630,7 @@ void BashHero_ExtraEffects(s32 arg0) {
     }
 }
 
-s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
+void *CrateCollide(EXTengine *eng, void *arg1, s32 who, s32 heroes) {
     s32 d;
     FlagRecord *box;
     FlagRecord *rec;
@@ -1678,7 +1678,7 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
                     rr = rec->radius + r;
                     rr = rr * rr;
                     if (d < rr) {
-                        return (s32)Heroes[i].hero;
+                        return Heroes[i].hero;
                     }
                 }
             }
@@ -1714,7 +1714,7 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
                                     if (obj->can_do & 0x10) {
                                         return 0;
                                     }
-                                    return (s32)nas;
+                                    return nas;
                                 }
                             }
                         }

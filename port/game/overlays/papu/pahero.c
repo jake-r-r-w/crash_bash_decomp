@@ -43,7 +43,7 @@ static inline void PapuReleaseObj(EXTobject *obj, u16 p) {
     } else {
         i -= 0x14;
         if ((s16)p < 6) {
-            if (PAPU_SLOT_OBJ(i) == (s32)obj) {
+            if (PAPU_SLOT_OBJ(i) == obj) {
                 PAPU_SLOT_OBJ(i) = 0;
             }
         }
@@ -146,7 +146,7 @@ void PlotPACrate(NAS *nas) {
         break;
     case 0x13:
         if ((u32)((u16)obj->player - 0x14) < 6) {
-            if (PAPU_SLOT_OBJ(obj->player - 0x14) != (s32)obj && !(obj->will_do & 4)) {
+            if (PAPU_SLOT_OBJ(obj->player - 0x14) != obj && !(obj->will_do & 4)) {
                 obj->status = 4;
                 break;
             }
@@ -457,7 +457,7 @@ void PlotPACrate(NAS *nas) {
                     obj->whatami = 7;
                     PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->XYZ, 0x1000, 0x1E00, 0);
                 }
-                PAPU_SLOT_OBJ(obj->player - 0x14) = (s32)obj;
+                PAPU_SLOT_OBJ(obj->player - 0x14) = obj;
                 eng->xform.rot.vy = PAPU_SLOT_DYN(obj->player - 0x14)->Xa;
                 obj->will_do &= 0xFFFC;
                 obj->can_do = (obj->can_do & 0xFFFC) | 4;

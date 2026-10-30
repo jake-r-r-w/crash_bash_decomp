@@ -150,7 +150,7 @@ static inline s32 EngineTable_Unlocked(s32 arg0) {
 }
 
 /* CupCurrentModeType's body, inlined by UpdateCupMenu. */
-static inline s32 EngineCurWorldName(void) {
+static inline void *EngineCurWorldName(void) {
     u16 *wt = ModeTypes;
     CupDef *tab = CupTable;
     u8 *g = GameInfo;
@@ -490,7 +490,7 @@ extern script_handler *IntroScript;
 extern _sfx_handler *IntroSfx[3];
 extern _sfx_handler *IntroSfxHandle;
 void UpdateIntro(void);
-void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void HurtHeroesInRadius(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2);
 
 void UpdateCupMenu(void);

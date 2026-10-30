@@ -600,7 +600,7 @@ void InitBonkCrate(NAS *nas) {
         KillNAS(nas);
     } else {
         nas->UserInfo.user2 = BonkEntCur;
-        BonkEnts[BonkEntCur].b = (s32)nas;
+        BonkEnts[BonkEntCur].b = nas;
         BonkEntCur += 1;
     }
 }

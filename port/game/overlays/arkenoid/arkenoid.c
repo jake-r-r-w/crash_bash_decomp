@@ -85,15 +85,13 @@ u16 ArkSkyAiTeamSkill[6] = { 6, 0xE, 0x14, 6, 0xE, 0x14 };
 u16 ArkSkyAiHumanRoundTweak[12] = { 0x14, 0x16, 0x20, 0x12, 0x15, 0x1C, 0x10, 0x14, 0x18, 0xC, 0x12, 0x14 };
 u16 ArkSkyAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
 u16 ArkSkyAiHumanTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
-VictorySeq ArkVictorySeqs[8] = {
+VictorySeq ArkVictorySeqs[4] = {
     { &ArkAnimWin, 0x1F },
     { &ArkAnimWin, 0x1F },
     { &ArkAnimWin, 0x1F },
     { &ArkAnimWin, 0x1F },
-    { 0x20001, 0x10002 },
-    { 0x10002, 0x20001 },
-    { 0x20001, 0x10002 },
-    { 0x10002, 0x20001 },
+
+
 };
 ArkenoidCircle ArkBallsPosts[4] = {
     { 0x800, 0x800, 0x200 }, { 0x800, -0x800, 0x200 }, { -0x800, 0x800, 0x200 },
@@ -4911,7 +4909,7 @@ loop:
         o++;
     }
     do {
-        if ((s32)w < (s32)(base + 4)) {
+        if ((u8 *)w < (u8 *)(base + 4)) {
             goto loop;
         }
     } while (0);
@@ -6032,7 +6030,7 @@ void Init_ArkCameraFlash(NAS *arg0) {
     EXTengine *eng = arg0->Engine;
     subengine *sub;
     if (eng != NULL) {
-        s32 val;
+        obj_dbase *val;
         sub = eng->sub;
         val = MapScene->dbase;
         (sub->entity) = 0x2017;

@@ -269,9 +269,9 @@ void CalcCameraFrame(void) {
         if (--n == -1) {
             break;
         }
-        in.vx = ((s32 *)e->target)[0] - cam->at.x;
-        in.vy = ((s32 *)e->target)[1] - cam->at.y;
-        in.vz = ((s32 *)e->target)[2] - cam->at.z;
+        in.vx = e->target[0] - cam->at.x;
+        in.vy = e->target[1] - cam->at.y;
+        in.vz = e->target[2] - cam->at.z;
         ApplyMatrixLV(&m, &in, &out);
         out.vx += cam->at.x;
         out.vy += cam->at.y;
@@ -478,7 +478,7 @@ void CamBoundLeftPoint(s32 arg0, s32 arg1) {
     }
 }
 
-void camera_add_frame_list(SLONG_XYZ *arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5) {
+void camera_add_frame_list(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     CamFrameEntry *e;
 
     if (camera_frame_list_size < 0x10) {

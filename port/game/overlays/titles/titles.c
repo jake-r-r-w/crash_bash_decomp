@@ -1862,9 +1862,9 @@ void LevelSelectInput(void) {
         }
     }
     if (TitlesSlotOn()) {
-        GetEngineSlot(0)->sub->u6C.dbase = (void *)TitlesSlotRowI((s8)GAME->arena, (s8)GAME->arenaLevel);
+        GetEngineSlot(0)->sub->u6C.dbase = TitlesSlotRowI((s8)GAME->arena, (s8)GAME->arenaLevel);
         GetEngineSlot(0)->sub->XYZ.y = 8;
-        GetEngineSlot(2)->sub->u6C.dbase = (void *)TitlesSlotModelI((s8)GAME->arena, (s8)GAME->arenaLevel);
+        GetEngineSlot(2)->sub->u6C.dbase = TitlesSlotModelI((s8)GAME->arena, (s8)GAME->arenaLevel);
         GetEngineSlot(2)->sub->entity = TitlesSlotCI((s8)GAME->arena, (s8)GAME->arenaLevel);
         GetEngineSlot(0)->sub[4].flags |= 0x8000;
         GetEngineSlot(0)->sub[9].flags &= ~0x8000;

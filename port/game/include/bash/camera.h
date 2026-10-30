@@ -87,7 +87,7 @@ void CamBoundRightPoint(s32 arg0, s32 arg1);
 
 void CamBoundLeftPoint(s32 arg0, s32 arg1);
 
-void camera_add_frame_list(SLONG_XYZ *arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);
+void camera_add_frame_list(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 
 void ScreenLabelsStart(void);
 

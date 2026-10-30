@@ -3038,7 +3038,7 @@ void SetSpinHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->u6C.dbase = (s32)HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
+    h->hero_sub->u6C.dbase = &((obj_dbase *)HeroModelBank)[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {

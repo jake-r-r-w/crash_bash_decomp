@@ -6339,7 +6339,7 @@ void InitDac(NAS *m) {
         m->Engine->XYZ.z = (rcossin_tbl[0xC00].unk2 * 7) >> 4;
         m->Engine->sub->otz = -0x300;
         m->Engine->sub->flags |= 0x02000000;
-        ext->unk10 = (s32)ScriptCursorFirst(m, &DacScriptInit);
+        ext->unk10 = ScriptCursorFirst(m, &DacScriptInit);
         RunNasAnim(m);
         m->Engine->xform.rot.vy = 0x800;
         m->Engine->xform.dirty = 1;

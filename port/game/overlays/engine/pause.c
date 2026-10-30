@@ -678,7 +678,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             break;
         case 3:
             if (PauseTextHold == 0) {
-                DrawSysText(e->x, (s16)(e->y + arg1), (u8 *)e->idx, e->a, e->b, 0);
+                DrawSysText(e->x, (s16)(e->y + arg1), (u8 *)(iptr)e->idx, e->a, e->b, 0);
             }
             break;
         case 4:
@@ -1830,11 +1830,10 @@ s32 PausePad = 0;
 s32 PauseFlashItem = -1;
 s32 PauseUnused[2] = { 5, 0 };
 s32 PauseTextHold = 0;  /* frames the pause texts stay hidden after a choice */
-const char * ModeNames[13] = {
+const char * ModeNames[9] = {
     NULL, ModeNameBattleMode, ModeNameTournamentMode, ModeNameAdventureTrophy,
     ModeNameAdventureGoldRelic, ModeNameAdventurePlatRelic,
     ModeNameAdventureGem, ModeNameAdventureChallenge, ModeNameAdventureBoss,
-    0x80007, 0x50000, 0x40009, 6,
 };
 u16 LevelKindKeys[7] =  /* GameLevelFlags & 0xFF per level kind (Cups_Update, UpdatePause) */ { 1, 2, 0x14, 0x24, 0x2C, 0x44, 0x84 };
 s16 PauseUnused2 = 0x14;

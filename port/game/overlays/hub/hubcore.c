@@ -1436,7 +1436,7 @@ void InitialiseHUBFirst(void) {
     ((GameState *)GameInfo)->levelFlags |= 0x200;
 }
 
-s32 HubLookup(s32 arg0) {
+void *HubLookup(s32 arg0) {
     KeyedPair *p = HubLockPanels;
     s32 i = 10;
     GameState *g = GAME;

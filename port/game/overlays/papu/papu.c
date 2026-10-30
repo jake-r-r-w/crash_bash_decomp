@@ -1235,10 +1235,11 @@ void PlotPapuMinion(NAS *nas)
   s32 dx;
   s32 dz;
   s32 i;
-  s32 hit;
+  NAS *hit;
   s32 dist;
   s32 angle;
   s32 pick;
+  EXTobject *tobj;
   s32 who;
   s32 frame;
   s32 step;
@@ -1277,8 +1278,8 @@ void PlotPapuMinion(NAS *nas)
       }
     }
     if (i == 4) {
-      pick = (s32)target->FUX;
-      if (pick != 0 && ((EXTobject *)pick)->status == 1) {
+      tobj = target->FUX;
+      if (tobj != NULL && tobj->status == 1) {
         hit = 1;
       }
       if (target->Engine->platform != NULL) {
@@ -1378,7 +1379,7 @@ void PlotPapuMinion(NAS *nas)
     break;
   case 7:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
-    hit = (s32)PapuMinionObjectAhead(slot, 0x180);
+    hit = PapuMinionObjectAhead(slot, 0x180);
     if (hit != 0) {
       for (i = 0; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xFA00) &&
@@ -1391,7 +1392,7 @@ void PlotPapuMinion(NAS *nas)
       }
       do {
         if (fux->status != 6) {
-          other = (EXTobject *)((NAS *)hit)->FUX;
+          other = (EXTobject *)hit->FUX;
           if (other != NULL) {
             other->will_do |= 1;
             other->player = PapuMinionSlots[slot].whatami;
@@ -1451,8 +1452,8 @@ void PlotPapuMinion(NAS *nas)
       fux->will_do |= 2;
       break;
     }
-    hit = (s32)((NAS **)PapuMinionSlots[slot].pad4[6])[-1];
-    if (hit == 0 || ((NAS *)hit)->Engine->platform != NULL) {
+    hit = ((NAS **)PapuMinionSlots[slot].pad4[6])[-1];
+    if (hit == NULL || hit->Engine->platform != NULL) {
       fux->target = NULL;
       fux->status = 0xA;
       GotoLinkAnim(anim, 0xA);
@@ -1506,9 +1507,9 @@ void PlotPapuMinion(NAS *nas)
   case 12:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->Xvel = 0;
-    pick = (s32)PapuMinionSlots[slot].pad4[6];
-    if (pick != 0) {
-      ((EXTobject *)pick)->player = fux->player;
+    tobj = PapuMinionSlots[slot].pad4[6];
+    if (tobj != 0) {
+      tobj->player = fux->player;
     }
     PapuMinionSlots[slot].pad4[6] = 0;
     fux->status = 0xB;
@@ -1977,7 +1978,7 @@ s32 PapuMinionKick(u32 idx) {
     slot = &PapuMinionSlots[idx];
     self = NULL;
     if (p != NULL) {
-        self = (NAS *)p[-1];
+        self = ((NAS **)p)[-1];
     }
     can = ((s16 *)slot->pad4[4])[7] != 0;
     r = 0x78;

@@ -43,7 +43,7 @@ void BonkRestartLevel(void);
 void FirstTriggersBONK(void);
 
 extern s32 BonkSkill;
-typedef struct { s32 a, b, c; } BonkEnt;
+typedef struct { s32 a; void *b; s32 c; } BonkEnt;
 extern BonkEnt BonkEnts[];
 extern s32 BonkCrateFrames[];
 extern s32 BonkStoolSfx[];

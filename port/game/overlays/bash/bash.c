@@ -3385,7 +3385,7 @@ void PlotMissileExplode(NAS *nas) {
             sub->xform.scale.vx = z;
             nas->UserInfo.flags++;
             if (idx == 1) {
-                HurtHeroesInRadius((s32)nas, 0x280, nas->UserInfo.user1, nas->UserInfo.user2, 0);
+                HurtHeroesInRadius(nas, 0x280, nas->UserInfo.user1, nas->UserInfo.user2, 0);
             }
         } else {
             KillNAS(nas);
@@ -3496,7 +3496,7 @@ void InitSnowGlint(NAS *nas) {
         if (g != NULL && sub != NULL) {
             i = 0;
             do {
-                s32 v = MapScene->dbase;
+                obj_dbase *v = MapScene->dbase;
                 sub->entity = 0x2001;
                 sub->flags = (sub->flags | 0x21) & 0xFFFF7FFF;
                 sub->u6C.dbase = v;

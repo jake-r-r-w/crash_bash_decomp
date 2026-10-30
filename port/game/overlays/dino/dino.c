@@ -2438,7 +2438,7 @@ void PlotDinoSmoke(NAS *m) {
     s32 z;
 
     if (w != 0) {
-        u = (EXTengine **)w;
+        u = (EXTengine **)(iptr)w;
         if (GameMode != 0x1C) {
             m->Engine->XYZ.x += (u[1]->XYZ.x - m->Engine->XYZ.x) >> 4;
             z = (u[1]->XYZ.z - (e = m->Engine)->XYZ.z) >> 4;

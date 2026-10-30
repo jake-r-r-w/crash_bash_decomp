@@ -207,7 +207,7 @@ void AddTankObject(NAS *nas);
 
 void ClearTankObjects(void);
 
-s32 GetTankMapCell(s32 arg0, s32 arg1);
+NAS *GetTankMapCell(s32 arg0, s32 arg1);
 
 void SetTankMapCellNas(NAS *nas);
 

@@ -102,7 +102,7 @@ void UpdateIntro(void) {
     switch (type) {
     case 1:
         IntroStepTimer = e->delay;
-        a = (u8 *)load_file_permanent(e->pic);
+        a = load_file_permanent(e->pic);
         b = tga_convert(a, ScreenRect->w, ScreenRect->h);
         mal_free(a, &MainHeap);
         LoadImage(ScreenRect, (u32 *)b);
@@ -187,7 +187,7 @@ void LoadScreenImage(file *file) {
     u8 *a;
     u8 *b;
 
-    a = (u8 *)load_file_permanent(file);
+    a = load_file_permanent(file);
     b = tga_convert(a, ScreenRect->w, ScreenRect->h);
     mal_free(a, &MainHeap);
     LoadImage(ScreenRect, (u32 *)b);
@@ -440,7 +440,7 @@ void UpdateCardMessage(void) {
 def:
         tab = LangInsertCardForUnlocked;
     }
-    s1->u6C.text = (char *)tab[GameLanguage];
+    s1->u6C.text = tab[GameLanguage];
     s0[6].flags |= 0x8000;
 }
 
@@ -480,7 +480,7 @@ void UpdateCupMenu(void) {
             p[i + 0xA3] = 0;
         }
     }
-    GetEngineSlot(0)->sub->u6C.dbase = (void *)EngineCurWorldName();
+    GetEngineSlot(0)->sub->u6C.dbase = EngineCurWorldName();
     if (GAME->cup != 0) {
         GetEngineSlot(0)->sub[8].flags |= 0x8000;
     } else {

@@ -3854,7 +3854,7 @@ void PlotSmokePoof(NAS *m) {
     s32 z;
 
     if (w != 0) {
-        u = (EXTengine **)w;
+        u = (EXTengine **)(iptr)w;
         if (GameMode != 0x1C) {
             m->Engine->XYZ.x += (u[1]->XYZ.x - m->Engine->XYZ.x) >> 4;
             z = (u[1]->XYZ.z - (e = m->Engine)->XYZ.z) >> 4;
@@ -4599,7 +4599,7 @@ s32 HeroIsActive(s32 arg0) {
     return (Heroes[arg0].hero_status & 0xFA00) == 0;
 }
 
-void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void HurtHeroesInRadius(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     EXTengine *eng;
     HeroInfo *hero;
     NAS *nas;

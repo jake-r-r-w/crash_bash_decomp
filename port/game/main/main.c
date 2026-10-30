@@ -2239,7 +2239,7 @@ s32 asload_chunk_relocatable(file *arg0, s32 arg1, u32 **arg2, s32 arg3) {
     return loader_queue(arg0, arg1, arg3, NULL, arg2, 1, 0);
 }
 
-s32 load_file_permanent(file *arg0) {
+u8 *load_file_permanent(file *arg0) {
     s32 a2 = arg0->size;
 
     if (a2 == -1) {

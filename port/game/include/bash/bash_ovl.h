@@ -210,7 +210,7 @@ void InitBashHomer(NAS *nas);
 u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag);
 
 
-s32 CrateCollide(EXTengine *eng, s32 arg1, s32 arg2, s32 arg3);
+void *CrateCollide(EXTengine *eng, void *arg1, s32 arg2, s32 arg3);
 
 /* Spawns the 0x1605 puff at v and returns it (InitTumbler). */
 static inline NAS *BashSpawnPuff(SLONG_XYZ *v) {

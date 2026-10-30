@@ -1526,7 +1526,7 @@ s32 group_file_offset(file *arg0, s32 *arg1);
 
 void loadnode_unlink(LoadNode *arg0);
 
-s32 load_file_permanent(file *arg0);
+u8 *load_file_permanent(file *arg0);
 
 s32 load_file_to_wait(file *arg0, s32 arg1, s32 arg2);
 

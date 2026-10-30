@@ -2671,11 +2671,9 @@ void N2O_HeroBot(u16 *arg0) {
     if (ai->TargetPlayer == -1) {
         ai->TargetPlayer = PickN2OPlayer(3);
     }
-    t = (N2ONode *)((0x20 - skill) << 4);
+
     for (; n != NULL; n = n->next) {
-        d = (s32)n + (s32)t;
-        d -= (s32)t;
-        t = ((N2ONode *)d)->target;
+        t = n->target;
         if (t != NULL && n->unk58 != NULL && n->unk58->status == 1) {
             ext = FindExtension((NAS *)n, 0x800);
             if (ext != NULL && N2OBotAimA(3, (N2OPos *)&t->x, &pos, (u16)((EXTmotion *)ext)->Xa) != 0) {
