@@ -22,8 +22,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 - Matching is by hand, one function per commit, through the validation gate
   `decomp.py done NAME --commit` ([docs/MATCHING.md](docs/MATCHING.md); skill
   `/match-function`). The bulk matcher (`decomp.py auto`) is removed.
-- The boundary with the PC port ([docs/PORT.md](docs/PORT.md)): `src/` and `include/` are shared and
-  must always match, `src/ps1/` is PS1 only, and everything PC-only goes in `port/`.
+- The boundary with the PC port ([docs/PORT.md](docs/PORT.md)): `src/` and `include/` are the decomp and
+  must always match, `src/ps1/` is PS1 only, and the port has its own copy of the game's C in `port/game/`,
+  which doesn't have to match. Nothing in `port/` reaches the matching build.
 - Parallel matching: `node tools/swarm/swarm.mjs` (host Node; see
   [tools/swarm/README.md](tools/swarm/README.md)). Stop it with
   `node tools/swarm/swarm.mjs stop` (`--now` to kill). It commits only through

@@ -25,13 +25,15 @@ SOFTWARE.
 What this licence covers
 
 The licence above covers this project's own work: the tools (tools/, except as
-listed below), the PC port's own code (port/), the build files (Makefile,
+listed below), the PC port's own code (port/, except port/game/), the build
+files (Makefile,
 configs/), the tests and the documentation (README.md, CONTRIBUTING.md,
 CLAUDE.md, docs/).
 
 It does not cover:
 
-- src/ and include/: the decompiled C and headers reconstruct Crash Bash, a
+- src/, include/ and port/game/: the decompiled C and headers, and the PC port's
+  copy of them, reconstruct Crash Bash, a
   game whose code and data belong to their respective owners (developed by
   Eurocom, published by Sony Computer Entertainment). That includes the
   original game headers recovered from the game's own archive

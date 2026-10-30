@@ -70,7 +70,7 @@ A file is finished when every function in it reaches level 4.
   (`CC_VER`, `ASPSX_FILL`); `decomp.py` reads the same lines.
 - Overlays go in `src/overlays/<overlay>/`.
 - `src/ps1/` holds what only the PS1 build compiles (the exe header, `bios_1`'s data, the mod-chip
-  check, the overlay id words), and `port/` what only the PC build will compile (PORT.md).
+  check, the overlay id words), and `port/` is the PC port, with its own copy of the game's C (PORT.md).
 - PsyQ library code is Sony's objects, linked in place (`decomp.py
   link-psyq`); it is never decompiled.
 

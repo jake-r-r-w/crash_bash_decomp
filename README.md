@@ -85,6 +85,6 @@ GCC and binutils, the converted PsyQ 4.7 libraries
 
 ## License
 
-The project's own tooling, PC port code, build files and docs are MIT ([LICENSE](LICENSE)). `src/` and `include/`
-reconstruct the game and belong to its owners: nothing here grants any right to the game.
+The project's own tooling, PC port code, build files and docs are MIT ([LICENSE](LICENSE)). `src/`, `include/` and
+`port/game/` reconstruct the game and belong to its owners: nothing here grants any right to the game.
 `tools/reference/` (GCC's source) and `tools/cc1/patches/` are GPL.
