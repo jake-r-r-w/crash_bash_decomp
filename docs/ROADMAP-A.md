@@ -785,7 +785,7 @@ The release is done: 5.1 to 5.15 (2026-10-29).
   play to the end with computer players (`--playtest 0-32`), in about two minutes. What it showed about
   the shared C: more calls relying on the caller's registers, through function pointers; null pointers
   (`LOW_RAM`); the data's layout (`data_order.txt`), and why the game's C can't be optimised. Music and
-  reverb moved to 6.3.
+  reverb moved to 6.4.
 - [x] 6.1 The game's C builds for PC with current compilers (2026-10-30; PORT.md, What's known).
   - All 38 files compile with Clang 22 and GCC 13, and link into a 32-bit Windows exe against stub PsyQ
     functions. `port/sdk/include` has the PC headers; their layouts and macros were compared with Sony's.

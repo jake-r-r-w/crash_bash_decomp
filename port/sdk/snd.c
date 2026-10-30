@@ -1,6 +1,6 @@
 /* libsnd's voice side and the SPU on PC (ROADMAP-B 6.2): sound banks, sound effects and a 24-voice
  * ADPCM mixer. The volume and pitch curves are the documented formulas, close to but not exactly
- * libsnd's. Not yet: the sequencer (6.3, the SsSeq functions below do nothing) and reverb. */
+ * libsnd's. Not yet: the sequencer (6.4, the SsSeq functions below do nothing) and reverb. */
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -533,7 +533,7 @@ short SsUtSetReverbType(short type) {
 void SsUtSetReverbDepth(short left, short right) {
 }
 
-/* The sequencer: music (ROADMAP-B 6.3). */
+/* The sequencer: music (ROADMAP-B 6.4). */
 void SsSeqCalledTbyT(void) {
 }
 short SsSeqOpen(unsigned long *addr, short vab) {

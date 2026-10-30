@@ -57,7 +57,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   plays, playtested by hand on 2026-10-29.
 - **The PC port runs (ROADMAP-B 6.2, 2026-10-30).** `build/pc/crashbash.exe` plays in a window with sound
   effects, keyboard and controllers, and `--playtest 0-32` plays all 33 modes to the end. Sound effects
-  only: music and reverb are 6.3. PORT.md has how it's kept working, and what's not checked yet.
+  only: music and reverb are 6.4. PORT.md has how it's kept working, and what's not checked yet.
 
 ## Next
 
@@ -65,8 +65,9 @@ ROADMAP-B.md, Part 6:
 
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
-3. **The PC port** (Part 6). 6.1 and 6.2 are done: the game runs on 32-bit Windows (PORT.md). Next is
-   6.3: libsnd's sequencer as C, for music, with libsnd's own volumes and pitches and the SPU's reverb.
+3. **The PC port** (Part 6). 6.1 and 6.2 are done: the game runs on 32-bit Windows (PORT.md). The port
+   uses modern tooling (decided 2026-10-30; ROADMAP-B). Next is 6.3, SDL3, then 6.4: libsnd's sequencer
+   as C, for music, with libsnd's own volumes and pitches and the SPU's reverb.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -442,13 +443,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-30 (the roadmap):** the port moves to modern tooling: SDL3, then after the same-game test a
+  64-bit build with no PS1 layout, tests and CI, and a real GPU renderer (Vulkan, Direct3D 12, Metal). The
+  steps after 6.2 are renumbered (ROADMAP-B).
 - **2026-10-30 (ROADMAP-B 6.2):**
   - The game runs on PC: `port/sdk` has a software GPU, the GTE, CD, pads, card and sound effects, and
     `port/platform/sdl.c` the window. `--playtest 0-32` plays all 33 modes to the end (31 to 33 wins,
-    the rest draws by the clock), and it looks right by eye. Music and reverb moved to 6.3.
+    the rest draws by the clock), and it looks right by eye. Music and reverb moved to 6.4.
   - What the game's C assumes, and how the port keeps it, is in PORT.md. The two to know: its data needs
     the PS1's layout (`port/data_order.txt`), and it can't be optimised (`-O0`).
-  - Not played by hand yet, and not compared with retail frame by frame (6.4).
+  - Not played by hand yet, and not compared with retail frame by frame (6.5).
 - **2026-10-30 (ROADMAP-B 6.1):**
   - The game's C compiles with Clang 22 and GCC 13, and links into a 32-bit Windows exe against stub
     PsyQ functions. It doesn't start the game yet (6.2).
@@ -463,7 +467,7 @@ Newest first, a few lines each. Details are in the commits.
   - Layout in PORT.md: `src/` and `include/` shared, `src/ps1/` PS1 only, `port/` PC only.
   - Seg names changed: `main/modchip` is `ps1/modchip`, and `decomp.py protos` and `diff_funcs.py`
     count `ps1/` as main.exe.
-  - Decided: the port is 32-bit first, and 64-bit is ROADMAP-B 6.5. The image's GCC may need
+  - Decided: the port is 32-bit first, and 64-bit is ROADMAP-B 6.6. The image's GCC may need
     32-bit support added for 6.1 (not checked yet).
 
 - **2026-10-29 (ROADMAP-B Part 5 done):**

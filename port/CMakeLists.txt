@@ -57,7 +57,7 @@ target_compile_definitions(crashbash PRIVATE BASH_PC INCLUDE_ASM_H)
 target_include_directories(crashbash PRIVATE sdk/include "${REPO}/include")
 # The dialect the game was written in, and what its compiler did with the rest: PS1 GCC's char is
 # signed (ARM's isn't), and signed overflow wraps. The rest allow its loose pointers, which work when
-# pointers and ints are the same size; a 64-bit build needs -Wint-conversion back (ROADMAP-B 6.5).
+# pointers and ints are the same size; a 64-bit build needs -Wint-conversion back (ROADMAP-B 6.6).
 target_compile_options(crashbash PRIVATE
   -std=gnu89 -fno-builtin -fno-strict-aliasing -fwrapv -fsigned-char -fno-omit-frame-pointer
   -fdata-sections -fno-zero-initialized-in-bss

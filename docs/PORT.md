@@ -66,13 +66,14 @@ the PS1 or in its executable's format:
 
 Windows, Linux, macOS and Android (decided 2026-10-30).
 
-- **macOS and Android need 64-bit**, so 6.5 is required for them. The 32-bit build is the stage that
+- **macOS and Android need 64-bit**, so 6.6 is required for them. The 32-bit build is the stage that
   gets the game running on Windows and Linux, and then the reference for 64-bit.
 - **They're also ARM**, as are many Windows and Linux machines, so the shared C can't assume x86. In
   particular a plain `char` is unsigned on ARM Android and Linux, and signed on x86 and Apple's ARM.
 - **Clang builds for all four** (with the NDK on Android), so it's the port's main compiler, with GCC
   as a second check.
-- **`platform/` uses SDL2**, which covers all four, and a renderer that does too.
+- **`platform/` moves to SDL3 (6.3)**, which covers all four. Its GPU API (6.8) gives the renderer Vulkan on
+  Windows, Linux and Android, Direct3D 12 on Windows, and Metal on macOS.
 - **Android also needs** touch controls, its own packaging, and a way to get the game's data from the
   user's own disc onto the device.
 
@@ -114,8 +115,8 @@ The game's C assumes a lot about its machine. On PC:
   it with `PASSED`: `f(PASSED(arg0))` is `f(arg0)` on PC and `f()` on the PS1. Each direct one was checked
   against the retail code, and each call through a function pointer against what's assigned to it.
 - **Drawing.** `gpu_raster.c` is the PS1's GPU in software: 1 MB of VRAM and the GP0 commands, so texture
-  tricks, VRAM copies and semi-transparency work as they do on the console. A faster or sharper renderer
-  can come later.
+  tricks, VRAM copies and semi-transparency work as they do on the console. It's the reference until a
+  real GPU renderer replaces it (6.8).
 - **Timing.** `VSync` is the one clock: each vblank runs the sound tick, the pads and a vblank's worth of
   audio. `VSync(1)` always says 0, so the heap compacts at its full rate. CD reads finish at once.
 - **The GTE.** `gte.c` has the hardware's fixed-point rules, and libgte's functions keep their original
@@ -127,22 +128,22 @@ The game's C assumes a lot about its machine. On PC:
 - **It plays (6.2).** `--playtest 0-32` plays every minigame to the end with computer players, as
   `tools/playtest/playtest.mjs` does on the PS1 build. In a window it runs at the game's speed, with
   sound effects, keyboard and controllers, and saves to `memcard1.mcr`.
-- **Not yet: music and reverb** (6.3), so sound effects only. Their volumes and pitches use the documented
+- **Not yet: music and reverb** (6.4), so sound effects only. Their volumes and pitches use the documented
   formulas, not libsnd's own tables yet. The SPU's interpolation is four-point, not the hardware's table.
 - **Not yet: analog sticks and rumble.** Pads are digital, and a controller's left stick works as the d-pad.
-- **Not checked against the PS1 yet (6.4).** The minigames finish and look right, but no one has compared
+- **Not checked against the PS1 yet (6.5).** The minigames finish and look right, but no one has compared
   them frame by frame. The drawing's rounding and each uninitialised stack read can differ.
 - **The other compilers.** GCC 13 compiles everything but `sdl.c` with 0 failures. Linux isn't linked yet,
   because the Docker image has no 32-bit libc, and its link options are untested.
 - **The loose C is switched off in CMake, not fixed.** About 1,650 pointer type mismatches and integer
   and pointer mixes are legal old C and work while pointers and ints are the same size. A 64-bit build
-  needs `-Wint-conversion` back on (6.5).
+  needs `-Wint-conversion` back on (6.6).
 - **Clang's other warnings have been read.** `-Wuninitialized` and friends find 21 reads, and only
   `N2OSpawnFirstMissile` really uses a junk value. `memset(RaceBarrels, 0x3600, 0)` is the original's
   bug and clears nothing, so the port keeps it.
 - **32-bit first (decided 2026-10-30).** The shared C has about 430 casts of an address to an integer
   (`(s32)&...`), and the data has more. A 32-bit build keeps them working, along with the structs'
-  layouts and size checks. 64-bit is a later step (ROADMAP-B 6.5), which also has to replace the fixed low
+  layouts and size checks. 64-bit is a later step (ROADMAP-B 6.6), which also has to replace the fixed low
   address, the data's layout and the null-page net, so write `port/` itself to work on either: no pointer
   kept in an `int`.
 
