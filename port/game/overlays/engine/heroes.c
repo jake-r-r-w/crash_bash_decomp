@@ -944,7 +944,7 @@ void ClearHeroAnimSlots(void) {
     s32 j;
     s32 off;
     s32 k;
-    s32 tab;
+    u8 *tab;
     s32 m;
     s32 base;
     s32 *p;
@@ -953,13 +953,13 @@ void ClearHeroAnimSlots(void) {
     s32 r;
 
     i = 0;
-    tab = (s32)HeroOrders;
+    tab = (u8 *)HeroOrders;
     off = 0;
     do {
         j = 0;
         m = off;
         do {
-            *(s32 *)(m + tab) = j;
+            *(s32 *)(tab + m) = j;
             j++;
             m += 4;
         } while (j < 4);
@@ -967,8 +967,8 @@ void ClearHeroAnimSlots(void) {
         base = off;
         k = off;
         do {
-            q = (s32 *)((Random(4) * 4 + base) + tab);
-            p = (s32 *)(k + tab);
+            q = (s32 *)(tab + Random(4) * 4 + base);
+            p = (s32 *)(tab + k);
             t = *p;
             *p = *q;
             *q = t;
@@ -979,33 +979,27 @@ void ClearHeroAnimSlots(void) {
     } while (i < 16);
 }
 
-static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, volatile s32 *p, volatile s32 *p2, s32 hero, u16 n) {
+static inline void HeroAnimSlotSet(s16 *id, u16 *seq, char **a, obj_dbase **p, s32 hero, u16 n) {
     subengine *s;
-    volatile VictorySeq *t;
-    s32 q;
-    s32 v;
+    VictorySeq *t;
 
     s = Heroes[hero].hero_anim->sub;
     if (s == NULL) {
         s = Heroes[hero].hero_sub;
     }
-    *p = (s32)s->u6C.dbase;
-    do {
-    } while (0);
-    q = *p2;
+    *p = s->u6C.dbase;
     *id = hero;
-    t = (volatile VictorySeq *)(n * sizeof(VictorySeq) + (u32)*(VictorySeq * volatile *)&HeroHooks.VictorySeqs);
-    v = ((VictorySeq *)t)->name;
-    *a = v;
+    t = &((VictorySeq *)HeroHooks.VictorySeqs)[n];
+    *a = t->name;
     *seq = t->seq;
-    dbase_mesh_anim_name_load((u8 *)q, (u8 *)((VictorySeq *)t)->name);
+    dbase_mesh_anim_name_load((u8 *)*p, (u8 *)t->name);
 }
 
 void RequestHeroAnim(s32 arg0, u16 arg1) {
     if (HeroAnimDbaseA == 0) {
-        HeroAnimSlotSet(&HeroAnimHeroA, &HeroAnimSeqA, (volatile s32 *)&HeroAnimNameA, (volatile s32 *)&HeroAnimDbaseA, (volatile s32 *)((u8 *)&HeroAnimDbaseB - 12), arg0, arg1);
+        HeroAnimSlotSet(&HeroAnimHeroA, &HeroAnimSeqA, &HeroAnimNameA, &HeroAnimDbaseA, arg0, arg1);
     } else if (ModeTypes[GameMode * 3] != 0x104) {
-        HeroAnimSlotSet(&HeroAnimHeroB, &HeroAnimSeqB, (volatile s32 *)&HeroAnimNameB, (volatile s32 *)&HeroAnimDbaseB, (volatile s32 *)((u8 *)&HeroAnimNameA + 16), arg0, arg1);
+        HeroAnimSlotSet(&HeroAnimHeroB, &HeroAnimSeqB, &HeroAnimNameB, &HeroAnimDbaseB, arg0, arg1);
     }
 }
 
@@ -4622,7 +4616,7 @@ void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (GameExitFlags & 0x801) {
         return;
     }
-    eng = ((NAS *)arg0)->Engine;
+    eng = ((NAS *)(iptr)arg0)->Engine;
     i = 0;
     if (eng == NULL) {
         return;

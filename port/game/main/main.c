@@ -856,7 +856,7 @@ u8 *mal_trim(u8 *arg0, s32 arg1, _mal_area *arg2) {
 }
 
 s32 mal_is_unowned(void *p) {
-    return ~(s32)((mal *)p - 1)->owner == 0;
+    return ((mal *)p - 1)->owner == (void **)-1;
 }
 
 void mal_disown(void *p) {
@@ -1253,7 +1253,7 @@ mal *mal_prev_movable(mal *arg0) {
 }
 
 void mal_compact_ptr(s32 arg0) {
-    mal_compact_from(arg0 - 0x18, &MainHeap);
+    mal_compact_from((u8 *)((mal *)arg0 - 1), &MainHeap);
 }
 
 void mal_compact_step(_mal_area *heap) {
@@ -1527,7 +1527,7 @@ s32 loader_update(void) {
     }
     node = (LoadNode *)head;
     data = loader_alloc(head);
-    ls->flag = (s32)data;
+    ls->flag = data;
     if (data == NULL) {
         return 0;
     }

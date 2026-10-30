@@ -35,7 +35,7 @@ typedef struct obj_textureset {
 struct obj_dbase {
     /* 0x00 */ file *file;            /* &DatIndex[N]: loaded into data once the textures are in */
     /* 0x04 */ file *textureFile;     /* &DatIndex[N]: loaded first, into textures */
-    /* 0x08 */ s32 load;              /* the load in flight, or 0 */
+    /* 0x08 */ void *load;             /* the load in flight, or 0 */
     /* 0x0C */ struct ModelFile *data;
     /* 0x10 */ obj_textureset textures;
     /* 0x34 */ s32 *keep;             /* name hashes of the blocks to keep (dbase_setup_blocks) */

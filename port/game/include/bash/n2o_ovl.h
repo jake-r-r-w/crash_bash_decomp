@@ -85,9 +85,9 @@ void SetN2OHeroMove(s32 arg0);
 void SetN2OHeroTaunt(s32 arg0);
 /* Round state cleared by InitialiseN2O. */
 typedef struct N2ORound {
-    /* 0x00 */ s32 unk0;
+    /* 0x00 */ void *unk0;
     /* 0x04 */ EXTengine *eng;
-    /* 0x08 */ s32 unk8;
+    /* 0x08 */ void *unk8;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;

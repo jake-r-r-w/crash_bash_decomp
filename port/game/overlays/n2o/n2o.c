@@ -2082,8 +2082,8 @@ void N2OInitBoss(void) {
     N2OBossClock = 0;
     N2OBossStepTimer = 0;
     N2OBossRound.eng = eng;
-    N2OBossRound.unk8 = (s32)sub;
-    N2OBossRound.unk0 = (s32)Heroes[3].hero;
+    N2OBossRound.unk8 = sub;
+    N2OBossRound.unk0 = Heroes[3].hero;
     sub = sub->next;
     N2OBossStep = -1;
     if (sub != NULL) {

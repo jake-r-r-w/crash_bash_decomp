@@ -7,7 +7,7 @@
 
 /* Loads the mode's text (into ModeTextBuffer) and its minigame overlay (into the slot, unless it
  * is there already); returns where the overlay ends, the heap's new start. */
-s32 LoadModeOverlay(void) {
+u8 *LoadModeOverlay(void) {
     GameState *g;
     file *p;
     s32 **tab = ModeTextTables;
@@ -20,11 +20,11 @@ s32 LoadModeOverlay(void) {
         load_file_direct(p, ModeTextLoadAddr);
     }
     p = ModeOverlayFiles[ModeTypes[g->mode * 3] - 0x101];
-    if ((s32)p != ModeOverlayLoaded) {
+    if (p != ModeOverlayLoaded) {
         load_file_direct(p, SlotBase);
         ModeOverlayLoaded = p;
     }
-    return (s32)(SlotBase + p->size);
+    return SlotBase + p->size;
 }
 
 void AnimateLoadingIcon(void) {
@@ -169,7 +169,7 @@ void QueueHeroModels(void) {
     s32 c;
     u8 *base;
     s32 j;
-    s32 e;
+    obj_dbase *e;
     GameState *a = (GameState *)GameInfo;
 
     i = 0;
@@ -191,9 +191,9 @@ loop:
             if ((u32)(c - 1) < 8) {
                 {
                     ModeDbase *p = ModeDbaseLists;
-                    e = ((u16 *)tbl->HeroModels)[c] * 0x38 + (s32)base;
+                    e = &((obj_dbase *)base)[((u16 *)tbl->HeroModels)[c]];
                     for (j = 0; j < 0x60; j++) {
-                        if (e == (s32)p->dbase) {
+                        if (e == p->dbase) {
                             queue_dbase_load((u8 *)p, arg);
                         }
                         p++;
@@ -201,9 +201,9 @@ loop:
                 }
                 if (tbl->flag != NULL) {
                     ModeDbase *p = ModeDbaseLists;
-                    e = ((u16 *)tbl->flag)[c] * 0x38 + (s32)base;
+                    e = &((obj_dbase *)base)[((u16 *)tbl->flag)[c]];
                     for (j = 0; j < 0x60; j++) {
-                        if (e == (s32)p->dbase) {
+                        if (e == p->dbase) {
                             queue_dbase_load((u8 *)p, arg);
                         }
                         p++;
@@ -242,18 +242,18 @@ void load_initial_dbases(void)
   t = (u8 *)HeroModelBank;
   h = &HeroHooks;
   src = (s32 *) (&((obj_dbase *) t)[new_var[g->language]]);
-  ((obj_dbase *) t)[DB_Interface].file = (file *) src[0];
+  ((obj_dbase *) t)[DB_Interface].file = ((obj_dbase *) src)->file;
   b = t;
-  ((obj_dbase *) b)[DB_Interface].textureFile = (file *) src[1];
+  ((obj_dbase *) b)[DB_Interface].textureFile = ((obj_dbase *) src)->textureFile;
   do
   {
     k = ((u8 *) g)[i + 0x50];
     if ((k - 1) < 8)
     {
-      dbase_asload_with_anims((obj_dbase *) ((((u16 *) h->HeroModels)[k] * 0x38) + ((s32) b)), arg);
+      dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]], arg);
       if (h->flag != 0)
       {
-        dbase_asload_with_anims((obj_dbase *) ((((u16 *) h->flag)[k] * 0x38) + ((s32) b)), arg);
+        dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->flag)[k]], arg);
       }
     }
     i++;
@@ -422,12 +422,12 @@ void RenderLevelLoad(void) {
     }
 }
 
-void LoadModeDbases(s32 arg0, s32 arg1) {
+void LoadModeDbases(obj_dbase *arg0, s32 arg1) {
     s32 i;
     ModeDbase *p = ModeDbaseLists;
 
     for (i = 0; i < 0x60; i++) {
-        if (arg0 == (s32)p->dbase) {
+        if (arg0 == p->dbase) {
             queue_dbase_load((u8 *)p, arg1);
         }
         p++;
@@ -652,9 +652,8 @@ void StartSceneScript(void) {
 
     play_script((obj_dbase *)SceneMark->obj, SceneMark->script, &SceneScriptRot, &SceneScriptPos, 4, &SceneScript);
     SceneMarkCount = 0;
-    t = (s32)SceneMark->obj;
-    SceneOldDbase = t;
-    o = (MarkObj *)t;
+    SceneOldDbase = (obj_dbase *)SceneMark->obj;
+    o = SceneMark->obj;
     if (o != NULL) {
         s = o->src;
         if (s != NULL) {
@@ -688,7 +687,7 @@ void UpdateScriptScene(void) {
     scripts_update();
     if (SceneMark != NULL) {
         if (SceneScript == NULL) {
-            if ((s32)SceneMark->obj != SceneOldDbase && SceneOldDbase != 0) {
+            if ((obj_dbase *)SceneMark->obj != SceneOldDbase && SceneOldDbase != 0) {
                 dbase_release((u8 *)SceneOldDbase);
             }
             if (SceneMark->obj == NULL && SceneStep == 0) {
@@ -791,15 +790,15 @@ s32 SceneModelLoaded(void) {
 }
 
 void ReleaseOldSceneModel(void) {
-    if ((((s32)SceneMark->obj) != SceneOldDbase) && (SceneOldDbase != 0)) {
+    if (((obj_dbase *)SceneMark->obj != SceneOldDbase) && (SceneOldDbase != 0)) {
         dbase_release(SceneOldDbase);
     }
 }
 
 void LoadSceneModel(void) {
-    s32 temp_a0;
+    obj_dbase *temp_a0;
 
-    temp_a0 = ((s32)SceneMark->obj);
+    temp_a0 = (obj_dbase *)SceneMark->obj;
     if (temp_a0 != 0) {
         dbase_asload_with_anims(temp_a0, 0);
     }
@@ -1037,7 +1036,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                s->unk6C = (s32)(&HeroModelBank[rec->model]);
+                s->unk6C = &HeroModelBank[rec->model];
                 s->unk74 = rec->player;
             }
             break;
@@ -1079,7 +1078,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->rx = rec->rx;
                 s->ry = rec->ry;
                 s->rz = rec->rz;
-                s->unk6C = (s32)(&HeroModelBank[rec->model]);
+                s->unk6C = &HeroModelBank[rec->model];
                 s->unk74 = rec->player;
             }
             break;
@@ -1218,7 +1217,7 @@ void draw_animated_sub(PlaceSub *arg0, u8 *arg1, s32 arg2) {
     draw_object((u8 *)arg0, arg1, arg2);
 }
 
-s32 PlaceFlashSub(PlaceSub *p, s32 a1, s32 a2, void *a3, s32 a4) {
+void *PlaceFlashSub(PlaceSub *p, s32 a1, s32 a2, void *a3, s32 a4) {
     if (p == NULL) {
         return 0;
     }
@@ -1228,10 +1227,10 @@ s32 PlaceFlashSub(PlaceSub *p, s32 a1, s32 a2, void *a3, s32 a4) {
     p->y = a2;
     p->unk6C = a3;
     p->unk7C = a4;
-    return (s32)p->next;
+    return p->next;
 }
 
-s32 PlaceTextSub(PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
+void *PlaceTextSub(PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
     sub_string_info *t;
     if (p == NULL) {
         return 0;
@@ -1253,7 +1252,7 @@ s32 PlaceTextSub(PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
     p->unk80 = t->fC;
     p->unk88 = t->f8;
     p->unk68 = t->f18;
-    return (s32)p->next;
+    return p->next;
 }
 
 /* data, in address order (tools/scripts/data2c.py) */

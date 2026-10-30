@@ -563,7 +563,7 @@ void TitlesInitLevel(void) {
         break;
     }
     TitlesBackdropAnimator = ExtTemplate400;
-    TitlesBackdropAnimator.w[3] = (s32)&TitlesBackdropAtable;
+    TitlesBackdropAnimator.Atable = &TitlesBackdropAtable;
 }
 
 void TitlesCheckIdle(void) {
@@ -1501,9 +1501,9 @@ void UpdateCharSelector(TitlesSlot *slot) {
         PlaySfx(CharPickSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
         o->ext = ExtTemplate400;
         {
-            s32 w = CharCards[o->card].anim;
+            s32 *w = CharCards[o->card].anim;
             o->count++;
-            o->ext.w[3] = w;
+            o->ext.Atable = w;
         }
     }
 }
@@ -1878,13 +1878,13 @@ void LevelSelectInput(void) {
     GetEngineSlot(0)->sub[4].flags &= ~0x8000;
     GetEngineSlot(0)->sub->XYZ.y = 0x1C;
     GetEngineSlot(0)->sub[9].flags |= 0x8000;
-    if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].levels + ((s8)GAME->arenaLevel << 4)))->type == 2)) {
+    if ((c = BattleArenas[(s8)GAME->arena].levels[(s8)GAME->arenaLevel].type == 2)) {
         if (CardStatus & 2) {
             if (CardStatus & 0x40) {
                 GetEngineSlot(0)->sub[9].u6C.text = (void *)LangCheckingCard[GAME->language];
             } else if (CardStatus & 0x10) {
                 if (UnlockCardLevels(0) != 0) {
-                    *(s32 *)&GetEngineSlot(0)->sub[9].u6C.text = LangPressToUnlockLevels[GAME->language];
+                    GetEngineSlot(0)->sub[9].u6C.text = LangPressToUnlockLevels[GAME->language];
                     if (Pads[0].pressed & 0x2000) {
                         PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
                         UnlockCardLevels(1);
@@ -1935,10 +1935,9 @@ void LevelSelectUpdate(void) {
         LevelSelectInput();
     }
     e0 = GetEngineSlot(0);
-    boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].levels + ((s8)GAME->arenaLevel << 4)))->idx;
+    boff = BattleArenas[(s8)GAME->arena].levels[(s8)GAME->arenaLevel].idx;
     w = ModeTypes[boff * 3] - 0x101;
-    off = ((s32 **)LangModeTypeTexts)[GAME->language][w];
-    e0->sub[6].u6C.dbase = (void *)off;
+    e0->sub[6].u6C.dbase = ((void ***)LangModeTypeTexts)[GAME->language][w];
     t = &GetEngineSlot(0)->sub[1];
     t->XYZ.y = lerp_fix12(t->XYZ.y,
         *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)GAME->arenaLevel + 4] + 0x72) + 0x32, 0x800);
@@ -1957,7 +1956,7 @@ void LevelSelectUpdate(void) {
         GetEngineSlot(1)->sub[off + 4].flags |= 0x8000;
         e = GetEngineSlot(i + 3);
         fl = GAME->cheats & 0x2000;
-        slot = &((BattleLevel *)BattleArenas[(s8)GAME->arena].levels)[off];
+        slot = &BattleArenas[(s8)GAME->arena].levels[off];
         idx = slot->idx;
         type = slot->type;
         s = e->sub;
@@ -1968,8 +1967,8 @@ void LevelSelectUpdate(void) {
             on = 0;
         }
         if (on) {
-            s->u6C.dbase = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].levels + (off << 4)))->model;
-            c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].levels + (off << 4)))->anim;
+            s->u6C.dbase = BattleArenas[(s8)GAME->arena].levels[off].model;
+            c = BattleArenas[(s8)GAME->arena].levels[off].anim;
             s->entity = c;
             s->xform.rot.vx = 0x7D;
             s->xform.rot.vy = 0;
@@ -1996,7 +1995,7 @@ void LevelSelectUpdate(void) {
         GetEngineSlot(i + 3)->sub->entity = 0;
     }
     h = GAME;
-    NextGameMode = ((BattleLevel *)((u8 *)BattleArenas[(s8)h->arena].levels + ((s8)h->arenaLevel << 4)))->idx;
+    NextGameMode = BattleArenas[(s8)h->arena].levels[(s8)h->arenaLevel].idx;
     q = GetEngineSlot(2)->sub;
     q->xform.rot.vx = 0x7D;
     q->xform.order = 0;
@@ -2095,8 +2094,7 @@ s32 LevelListCount(s32 arg0) {
 }
 
 s32 LevelListText(s32 a, s32 b) {
-    s32 base = BattleArenas[a].levels;
-    s32 idx = *(s32 *)(FILE_AT(base, b << 4) + 4);
+    s32 idx = BattleArenas[a].levels[b].idx;
     s32 *row = LangLevelNames[GameLanguage];
     return row[idx];
 }

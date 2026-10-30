@@ -131,7 +131,7 @@ extern u16 BigScore_Bdelay;
 
 void InitBigScore(void);
 
-void InitPowerupIcons(s32 arg0, s32 arg1);
+void InitPowerupIcons(s16 *arg0, s16 *arg1);
 
 
 void Setup_panel(void);

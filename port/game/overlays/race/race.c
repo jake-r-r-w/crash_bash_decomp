@@ -1944,7 +1944,7 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
             if (r != NULL && ((MeshHeader *)r)->normals != 0) {
                 pos = *arg0;
                 grp = r + (((MeshHeader *)r)->runs + 0x14);  /* its runs' self offset */
-                tri = (s16 *)(((MeshHeader *)r)->verts + (s32)r + 0x24);
+                tri = (s16 *)(r + ((MeshHeader *)r)->verts + 0x24);
                 nrm = (RaceNorm *)(r + (((MeshHeader *)r)->normals + 0x28));  /* its normals' self offset */
                 for (;;) {
                     s32 count;
@@ -2051,8 +2051,7 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
     rad = radius;
     shift = 12;
     bad = idx >= (MapScene->dbase ?
-                  *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
-                           (s32)((u8 *)MapScene->map) + 0x14) :
+                *(s32 *)(((u8 *)MapScene->map) + 0x14 + *(s32 *)(((u8 *)MapScene->map) + 0x14)) :
                   0);
     if (bad) {
         return 0;
@@ -2188,8 +2187,7 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     rad = radius;
     one = 0x1000;
     bad = idx > (MapScene->dbase ?
-                 *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
-                          (s32)((u8 *)MapScene->map) + 0x14) :
+                *(s32 *)(((u8 *)MapScene->map) + 0x14 + *(s32 *)(((u8 *)MapScene->map) + 0x14)) :
                  0);
     if (bad) {
         return 0;
@@ -2197,7 +2195,7 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     data = ((u8 *)MapScene->map);
     tbl = (RaceSegTable *)(data + (*(s32 *)&((map_map *)data)->contour_grids + 0x14));
     w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
-                        (tbl2 = (RaceSegTable *)(*(s32 *)&((map_map *)data)->contour_grids + (s32)data + 0x14))->offs[idx]);
+                        (tbl2 = (RaceSegTable *)((u8 *)data + *(s32 *)&((map_map *)data)->contour_grids + 0x14))->offs[idx]);
     if (w != NULL) {
         dist = 0;
         t = 0;
@@ -2347,8 +2345,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     rad = radius;
     one = 0x1000;
     bad = idx > (MapScene->dbase ?
-                 *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
-                          (s32)((u8 *)MapScene->map) + 0x14) :
+                *(s32 *)(((u8 *)MapScene->map) + 0x14 + *(s32 *)(((u8 *)MapScene->map) + 0x14)) :
                  0);
     if (bad) {
         return 0;
@@ -2356,7 +2353,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     data = ((u8 *)MapScene->map);
     tbl = (RaceSegTable *)(data + (*(s32 *)&((map_map *)data)->contour_grids + 0x14));
     w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
-                        ((RaceSegTable *)(*(s32 *)&((map_map *)data)->contour_grids + (s32)data + 0x14))->offs[idx]);
+                        ((RaceSegTable *)((u8 *)data + *(s32 *)&((map_map *)data)->contour_grids + 0x14))->offs[idx]);
     if (w != NULL) {
         i = 0;
         dist = 0;

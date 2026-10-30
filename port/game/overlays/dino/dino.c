@@ -203,7 +203,7 @@ u16 DinoAiHumanTweak[42] = {
     0xE, 0x13, 0x18, 0xC, 0x10, 0x14, 0x10, 0x10, 0x10, 0x10, 8, 7, 8, 0x10, 0x10, 2, 0x20, 0x20,
     0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
 };
-s32 DinoGem0 = 0;
+NAS *DinoGem0 = 0;
 NAS *DinoGem1 = 0;
 NAS *DinoGem2 = 0;
 NAS *DinoGems[3] = { NULL, NULL, NULL };
@@ -2167,7 +2167,7 @@ void InitialiseDINO(void) {
         i++;
     }
     nas = CreateNAS(0x400, -0x40, 0, 0x1901, 0x11);
-    DinoGem0 = (s32)nas;
+    DinoGem0 = nas;
     e = FindExtension(nas, 0x10000000);
     if (e != NULL) {
         e->state = 7;
@@ -2188,7 +2188,7 @@ void InitialiseDINO(void) {
     if (((GameState *)GameInfo)->levelFlags & 0x80) {
         o->Engine->sub->entity = 0x2003;
     }
-    DinoGems[0] = (NAS *)DinoGem0;
+    DinoGems[0] = DinoGem0;
     DinoGems[1] = DinoGem1;
     DinoGems[2] = DinoGem2;
 }
@@ -2241,7 +2241,7 @@ void DinoScoreGems(void) {
         }
         nas = NULL;
         if (i == 0) {
-            nas = (NAS *)DinoGem0;
+            nas = DinoGem0;
         }
         if (i == 1) {
             nas = DinoGem1;
@@ -2649,8 +2649,7 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
     rad = radius;
     shift = 12;
     bad = idx >= (MapScene->dbase ?
-                  *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
-                           (s32)((u8 *)MapScene->map) + 0x14) :
+                *(s32 *)(((u8 *)MapScene->map) + 0x14 + *(s32 *)(((u8 *)MapScene->map) + 0x14)) :
                   0);
     if (bad) {
         return 0;
@@ -3052,7 +3051,7 @@ void DinoHeroSlide(s32 id) {
     if (Heroes[id].hero_anim->Aindex == 2) {
         nas = CreateNAS(Heroes[id].hero_eng->XYZ.x, Heroes[id].hero_eng->XYZ.y, Heroes[id].hero_eng->XYZ.z, 0x1903, 0x11);
         if (nas != NULL) {
-            nas->UserInfo.user1 = (s32)&Heroes[id];
+            nas->UserInfo.user1 = (iptr)&Heroes[id];
         }
     }
     DinoHeroCollide(id);

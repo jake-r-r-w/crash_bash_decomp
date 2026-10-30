@@ -718,9 +718,9 @@ void InitHealthIcons(void) {
             break;
         }
         col = 0;
-        pHeroHealth[i] = col;
+        pHeroHealth[i] = NULL;
         if (Heroes[i].hero_name != 9) {
-            pHeroHealth[i] = (s32)&Heroes[i].hero_health;
+            pHeroHealth[i] = (u16 *)&Heroes[i].hero_health;
             p = ((PanelPrim (*)[7])&IconParts[0][2])[i];
             p->u6C.ptr = tim;
             p->flags = 0x10008000;
@@ -814,9 +814,9 @@ void ClearHealthIcons(void) {
             break;
         }
         col = 0;
-        pHeroHealth[i] = col;
+        pHeroHealth[i] = NULL;
         if (Heroes[i].hero_name != 9) {
-            pHeroHealth[i] = (s32)&Heroes[i].hero_health;
+            pHeroHealth[i] = (u16 *)&Heroes[i].hero_health;
             p = ((PanelPrim (*)[7])&IconParts[0][2])[i];
             p->u6C.ptr = tim;
             p->flags = 0x10008000;
@@ -893,7 +893,7 @@ void InitBossHealthIcons(void) {
     u8 i;
 
     i = 3;
-    pHeroHealth[3] = (s32)&BossState.health;
+    pHeroHealth[3] = (u16 *)&BossState.health;
     sub = ((PanelPrim (*)[7])&IconParts[0][2])[3];
     b = sub + 1;
     sub->u6C.ptr = &HeroModelBank[DB_Powerups];
@@ -953,7 +953,7 @@ void InitBossHealthIcons(void) {
     PanelCtrl |= 8;
 }
 
-void InitPowerupIcons(s32 arg0, s32 arg1) {
+void InitPowerupIcons(s16 *arg0, s16 *arg1) {
     s16 x0;
     s16 x1;
     s32 yb;
@@ -969,7 +969,7 @@ void InitPowerupIcons(s32 arg0, s32 arg1) {
 
     tim = &HeroModelBank[DB_Powerups];
 
-    pHeroHealth[2] = arg0;
+    pHeroHealth[2] = (u16 *)arg0;
     p = ((PanelPrim (*)[7])&IconParts[0][2])[2];
     p->u6C.ptr = tim;
     p->flags = 0x10008000;
@@ -1026,7 +1026,7 @@ void InitPowerupIcons(s32 arg0, s32 arg1) {
     p[2].flags = code;
     q->otz = n;
 
-    pHeroHealth[3] = arg1;
+    pHeroHealth[3] = (u16 *)arg1;
     p = p + 7;
     p->u6C.ptr = tim;
     p->flags = 0x10008000;
@@ -1176,7 +1176,7 @@ void InitPowerIcons(void) {
             break;
         }
         col = 0;
-        pHeroHealth[i] = col;
+        pHeroHealth[i] = NULL;
         if (Heroes[i].hero_name != 9) {
             p = ((PanelPrim (*)[7])&IconParts[0][2])[i];
             p->u6C.ptr = tim;

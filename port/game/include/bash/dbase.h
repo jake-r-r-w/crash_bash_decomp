@@ -19,7 +19,7 @@ typedef struct DbaseAnim {
     /* 0x00 */ s32 start;
     /* 0x04 */ s32 end;
     /* 0x08 */ u32 *data;
-    /* 0x0C */ s32 load;
+    /* 0x0C */ void *load;
 } DbaseAnim;
 
 void dbase_anim_load(obj_dbase *db, s32 i);

@@ -293,7 +293,7 @@ void CHASESetUp(void);
 
 void ChaseGridClear(s32 x, s32 y);
 
-s32 ChaseGridAt(s32 x, s32 z);
+NAS *ChaseGridAt(s32 x, s32 z);
 
 s32 ChaseFindHeroNear(s32 x, s32 z, s32 range, s32 skip);
 

@@ -190,7 +190,7 @@ s32 DinoPadAngle(s32 arg0);
 
 s32 DinoCompareXZ(SLONG_XYZ *arg0, SLONG_XYZ *arg1);
 
-extern s32 DinoGem0;
+extern NAS *DinoGem0;
 extern NAS *DinoGem1;
 extern NAS *DinoGem2;
 extern s32 DinoGemTimer;

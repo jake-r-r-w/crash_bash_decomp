@@ -81,7 +81,7 @@ typedef struct PlaceSub {
     /* 0x64 */ PlaceRec *rec;
     /* 0x68 */ s16 unk68;
     /* 0x6A */ u8 pad6A[2];
-    /* 0x6C */ s32 unk6C;
+    /* 0x6C */ void *unk6C;
     /* 0x70 */ s16 unk70;
     /* 0x72 */ s16 unk72;
     /* 0x74 */ u16 unk74;
@@ -139,14 +139,14 @@ EXTengine *GetEngineSlot(s32 arg0);
 
 void SetupSceneMarks(u8 *arg0);
 
-s32 LoadModeOverlay(void);
+u8 *LoadModeOverlay(void);
 extern s32 *ModeTextTables[];
 extern file *ModeOverlayFiles[];
 extern u8 *ModeTextLoadAddr;
 
 void LoadModeFiles(void);
 
-void LoadModeDbases(s32 arg0, s32 arg1);
+void LoadModeDbases(obj_dbase *arg0, s32 arg1);
 
 void RenderLoadingScreen(void);
 
@@ -166,7 +166,7 @@ void DrawSceneMarks(void);
 
 void draw_animated_sub(struct PlaceSub *arg0, u8 *arg1, s32 arg2);
 
-s32 PlaceFlashSub(struct PlaceSub *p, s32 a1, s32 a2, void *a3, s32 a4);
+void *PlaceFlashSub(struct PlaceSub *p, s32 a1, s32 a2, void *a3, s32 a4);
 
 void QuitScriptScene(void);
 
@@ -190,7 +190,7 @@ void UpdateSceneVabCues(void);
 
 ScriptScene *PickModeVariant(s32 arg0);
 
-s32 PlaceTextSub(struct PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
+void *PlaceTextSub(struct PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
 
 typedef struct MarkSrcEnt {
     /* 0x00 */ s16 val;

@@ -143,7 +143,7 @@ void texture_update_anims(obj_textureset *arg0);
 void texture_upload_list(TexUploadList *arg0, obj_textureset *arg1);
 ScriptCursor *ScriptCursorFirst(NAS *nas, ScriptInit *init);
 void ScriptCursorNext(ScriptCursor *c);
-ScriptCursor *CreateScriptCursor(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init);
+ScriptCursor *CreateScriptCursor(NAS *nas, EXTengine *arg1, subengine *arg2, ScriptInit *init);
 NAS *CreateASTNas(s32 x, s32 y, s32 z, u16 id, s32 slot);
 s16 TextAlignX(s16 x, u8 *s);
 void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3);

@@ -629,7 +629,7 @@ static inline mal *Heap_NextToMove(_mal_area *heap) {
  * it): the heap block it owns and the load filling it. */
 typedef struct BlockRef {
     /* 0x00 */ u8 *ptr;
-    /* 0x04 */ s32 load;
+    /* 0x04 */ void *load;
     /* 0x08 */ struct BlockRef *next;   /* on the free list */
 } BlockRef;
 
@@ -1186,13 +1186,12 @@ typedef struct SortList {
 } SortList;
 
 extern EXTmotion ExtMotionTemplate;
-typedef struct Ext400 {
-    s32 w[11];
-} Ext400;
+typedef EXTanimator Ext400;
 extern Ext400 ExtTemplate400;
-typedef struct Ext1000 {
+typedef EXTobject Ext1000;
+#if 0
     s32 w[11];
-} Ext1000;
+#endif
 extern Ext1000 ExtTemplate1000;
 extern subengine SubEngineTemplate;
 typedef struct Words4 {
@@ -1739,16 +1738,16 @@ void combo_check(ComboSeq *c);
 /* A script cursor: kind 1 or 2 steps idx through a table of entries (0 entries
  * jump to the index in their low half) and stores the entry in cur. */
 typedef struct ScriptCursor {
-    /* 0x00 */ u8 kind;
-    /* 0x01 */ u8 pad1[0xB];
+    /* 0x00 */ union { s32 EXTid; u8 kind; };
+    /* 0x04 */ EXTnode Extend;
     /* 0x0C */ s32 *cur;
     /* 0x10 */ void **tbl;  /* step programs; a NULL is followed by the index to go to */
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
+    /* 0x14 */ EXTengine *unk14;
+    /* 0x18 */ subengine *unk18;
     /* 0x1C */ s16 unk1C;
     /* 0x1E */ s16 frame;  /* the animation's frame */
     /* 0x20 */ s16 idx;
-    /* 0x22 */ u8 pad22[6];
+    /* 0x22 */ s16 pad22[3];
     /* 0x28 */ s16 unk28;
     /* 0x2A */ s16 unk2A;
 } ScriptCursor;

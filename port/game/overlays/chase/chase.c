@@ -803,10 +803,9 @@ void InitialiseCHASE(void) {
     v = t & 0xFFFE;
     x = v * 35 / 100;
     t = v;
-    v = (s32)Heroes;
     HeroHooks.RunSpeeds = ChaseRunSpeeds;
     for (i = 0; i < 4; i++) {
-        h = &((HeroInfo *)v)[i];
+        h = &Heroes[i];
         y = t * 60 / 100 + ((t * 60) & 3);
         q = GAME;
         if (q->heroCpu[i] == 0) {
@@ -1842,7 +1841,7 @@ void ChaseHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->u6C.dbase = (s32)(&HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]]);
+            h->hero_sub->u6C.dbase = (&HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]]);
         } else {
             h->hero_sub->u6C.dbase = 0;
         }
@@ -2230,7 +2229,7 @@ NAS *ChaseSpawnCoal(s32 arg0) {
     s32 x = he->XYZ.x + dx;
     s32 y = -o->y;
     s32 z;
-    s32 old;
+    NAS *old;
     NAS *nas;
     EXTengine *e;
 
@@ -2263,7 +2262,7 @@ NAS *ChaseSpawnCoal(s32 arg0) {
             old = ChaseGrid[idx];
             ChaseGrid[idx] = nas;
             if (old != 0) {
-                KillNAS((NAS *)old);
+                KillNAS(old);
             }
         }
         if (g[0x5C] != 0) {
@@ -2522,7 +2521,7 @@ void PlotEgg(NAS *nas) {
     SLONG_XYZ *at;
     NAS *n;
     EggPuffExt *ext;
-    s32 p;
+    obj_dbase *p;
     s32 i;
     s32 skip;
     s32 lim;
@@ -2536,7 +2535,7 @@ void PlotEgg(NAS *nas) {
     if (Clock_Time == 0 || (GameExitFlags & 0x801)) {
         PlaySfx(0x75A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         pos = &eng->XYZ;
-        p = (s32)MapScene->dbase;
+        p = MapScene->dbase;
         n = CreateNAS(eng->XYZ.x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
@@ -2545,7 +2544,7 @@ void PlotEgg(NAS *nas) {
                 ext->unk18 = 0x100;
                 if (p != 0) {
                     ext->unk20 = 5;
-                    n->Engine->sub->u6C.dbase = (void *)p;
+                    n->Engine->sub->u6C.dbase = p;
                 } else {
                     ext->unk20 = 1;
                 }
@@ -2656,7 +2655,7 @@ void PlotEgg(NAS *nas) {
                 i++;
             }
             at = &eng->XYZ;
-            p = (s32)MapScene->dbase;
+            p = MapScene->dbase;
             n = CreateNAS(eng->XYZ.x, at->y, at->z, 0x1605, 0x11);
             if (n != NULL) {
                 ext = FindExtension(n, 0x10000000);
@@ -2665,7 +2664,7 @@ void PlotEgg(NAS *nas) {
                     ext->unk18 = 0x100;
                     if (p != 0) {
                         ext->unk20 = 5;
-                        n->Engine->sub->u6C.dbase = (void *)p;
+                        n->Engine->sub->u6C.dbase = p;
                     } else {
                         ext->unk20 = 1;
                     }
@@ -3389,7 +3388,7 @@ void InitEgg(NAS *nas) {
     EggExt *ext;
     EXTengine *eng;
     subengine *sub;
-    s32 scene;
+    obj_dbase *scene;
 
     ext = AddExt(nas, 0x44, 0x10000005);
     nas->FUX = &ext->ext;
@@ -3405,10 +3404,10 @@ void InitEgg(NAS *nas) {
     eng->XYZ.z = 0xA60;
     eng->xform.rot.vy = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->xform.dirty = 1;
-    scene = (s32)MapScene->dbase;
+    scene = MapScene->dbase;
     sub->entity = 0x4080;
     sub->otz = 0x3E7;
-    sub->u6C.dbase = (void *)scene;
+    sub->u6C.dbase = scene;
     sub->flags |= 0x2000000;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -3737,7 +3736,7 @@ void ChaseGridClear(s32 x, s32 y) {
     ChaseGrid[idx] = 0;
 }
 
-s32 ChaseGridAt(s32 x, s32 z) {
+NAS *ChaseGridAt(s32 x, s32 z) {
     s32 xi;
     s32 zi;
     s32 idx;

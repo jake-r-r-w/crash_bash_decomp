@@ -1808,7 +1808,7 @@ void GotoLinkAnim(EXTanimator *anim, s32 n) {
     anim->Seq_count_down = 0;
 }
 
-ScriptCursor *CreateScriptCursor(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init) {
+ScriptCursor *CreateScriptCursor(NAS *nas, EXTengine *arg1, subengine *arg2, ScriptInit *init) {
     ScriptCursor *c;
     Ext400 *ext;
     u32 flags;

@@ -83,11 +83,11 @@ void BuildCameraFrameList(void) {
                         }
                         dx = w;
                     }
-                    camera_add_frame_list((s32)&eng->XYZ, l, r, dx >> 1, t >> 1, nas->Camera.height);
+                    camera_add_frame_list(&eng->XYZ, l, r, dx >> 1, t >> 1, nas->Camera.height);
                 } else {
                     dx = nas->Camera.height;
                     dx -= (u32)dx >> 2;
-                    camera_add_frame_list((s32)&eng->XYZ, w >> 1, w >> 1, 0, 0, dx);
+                    camera_add_frame_list(&eng->XYZ, w >> 1, w >> 1, 0, 0, dx);
                 }
             }
             nas = nas->Camera.Child;
@@ -96,16 +96,16 @@ void BuildCameraFrameList(void) {
     {
         GameState *g1 = (GameState *)GameInfo;
         if ((g1->cheats & 0x200) && !(g1->exitFlags & 0x801)) {
-            camera_add_frame_list((s32)&MapPoints[10], 0x80, 0x80, 0, 0, 0x80);
-            camera_add_frame_list((s32)&MapPoints[11], 0x80, 0x80, 0, 0, 0x80);
+            camera_add_frame_list(&MapPoints[10], 0x80, 0x80, 0, 0, 0x80);
+            camera_add_frame_list(&MapPoints[11], 0x80, 0x80, 0, 0, 0x80);
         }
     }
     {
         GameState *g2 = (GameState *)GameInfo;
         if (g2->levelFlags & 0x800) {
             if (!(g2->exitFlags & 0x800)) {
-                camera_add_frame_list((s32)&MapPoints[12], 0x80, 0x80, 0, 0, 0x80);
-                camera_add_frame_list((s32)&MapPoints[13], 0x80, 0x80, 0, 0, 0x80);
+                camera_add_frame_list(&MapPoints[12], 0x80, 0x80, 0, 0, 0x80);
+                camera_add_frame_list(&MapPoints[13], 0x80, 0x80, 0, 0, 0x80);
             }
         }
     }
