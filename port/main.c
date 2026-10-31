@@ -11,6 +11,8 @@
 #include <SDL3/SDL.h>
 #include "platform/platform.h"
 #include "platform/gfx.h"
+#include "platform/launcher.h"
+#include "platform/settings.h"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -153,6 +155,8 @@ void platform_audio(const int16_t *stereo, int frames) {
 
 int main(int argc, char **argv) {
     int i;
+    int launcher_wanted = 0, skip_intro = 0, testing = 0;
+    const char *launcher_shot = NULL, *launcher_keys = NULL;
 
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--version") == 0) {
@@ -167,6 +171,7 @@ int main(int argc, char **argv) {
             CardPath = argv[++i];
         } else if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
             StopAt = atoi(argv[++i]);
+            testing = 1;
         } else if (strcmp(argv[i], "--shot") == 0 && i + 2 < argc && NumShots < MAX_SHOTS) {
             Shots[NumShots].frame = atoi(argv[++i]);
             Shots[NumShots++].path = argv[++i];
@@ -175,6 +180,15 @@ int main(int argc, char **argv) {
             Presses[NumPresses++].buttons = (int)strtol(argv[++i], NULL, 16);
         } else if (strcmp(argv[i], "--no-window") == 0) {
             NoWindow = 1;
+            testing = 1;
+        } else if (strcmp(argv[i], "--launcher") == 0) {
+            launcher_wanted = 1;
+        } else if (strcmp(argv[i], "--launcher-shot") == 0 && i + 1 < argc) {
+            launcher_shot = argv[++i];
+        } else if (strcmp(argv[i], "--launcher-keys") == 0 && i + 1 < argc) {
+            launcher_keys = argv[++i];
+        } else if (strcmp(argv[i], "--skip-intro") == 0) {
+            skip_intro = 1;
         } else {
             fprintf(stderr, "unknown option %s\n", argv[i]);
             return 2;
@@ -183,6 +197,25 @@ int main(int argc, char **argv) {
 #ifdef _WIN32
     SetUnhandledExceptionFilter(crash_report);
 #endif
+    /* a test run doesn't depend on what the player has chosen */
+    if (testing) {
+        settings_defaults();
+    } else {
+        settings_load();
+    }
+    if (launcher_shot != NULL) {
+        return launcher_screenshot(host_window(), launcher_shot) ? 0 : 1;
+    }
+    if (launcher_keys != NULL) {
+        if (!launcher_run_keys(host_window(), launcher_keys)) {
+            return 0;
+        }
+    } else if (!testing && (settings()->show_launcher || launcher_wanted) && !launcher_run(host_window())) {
+        return 0;
+    }
+    if (skip_intro) {
+        settings()->skip_intro = 1;
+    }
     if (!NoWindow && !host_init()) {
         fprintf(stderr, "No window; running without one.\n");
         NoWindow = 1;

@@ -1,3 +1,7 @@
+#include "../../../platform/settings.h"
+
+#define NUM_INTRO_STEPS 4
+
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
@@ -88,7 +92,7 @@ void UpdateIntro(void) {
         IntroStepTimer = 1;
         return;
     }
-    if ((u32)IntroStepIndex >= 4) {
+    if ((u32)IntroStepIndex >= NUM_INTRO_STEPS) {
         ProcessControl.flags = 0x12;
         ProcessControl.next_process = &LevelLoadProcess;
         IntroStepTimer = -1;
@@ -169,7 +173,8 @@ void RenderIntro(void) {
 }
 
 void InitIntro(void) {
-    IntroStepIndex = 0;
+    /* past the last step: UpdateIntro goes straight on */
+    IntroStepIndex = settings()->skip_intro ? NUM_INTRO_STEPS : 0;
     IntroStepTimer = 0;
     IntroScriptHandle = 0;
     IntroDbase = 0;
@@ -1893,7 +1898,7 @@ u8 IntroViewport[40] = {
     0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0x40, 1, 0, 0, 0xF0, 0, 0, 0,
     0, 2, 0, 0, 0xFF, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-IntroStep IntroSteps[4] = {
+IntroStep IntroSteps[NUM_INTRO_STEPS] = {
     { 1, &DatIndex[139], 0, 0, -1, { 0x3B6, 0x3B7, 0x3B8 }, 0x3B9, 0x5A },
     { 1, &DatIndex[138], 0, 0, -1, { 0x3BB, 0x3BC, 0x3BD }, 0x3BE, 0x8C },
     { 2, 0, (void *)&HeroModelBank[DB_CutsceneIntroEurocom], 0, -1, { 0x3C0, 0x3C1, 0x3C2 }, 0x3C3, 0x14 },

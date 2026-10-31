@@ -31,6 +31,8 @@ void platform_shot(const char *path);
 void platform_finish(int code);
 
 /* The window, sound and input: sdl.c, or nothing in a build without SDL. */
+/* The window, opened once and used by the launcher and then the game. Returns NULL if there's none. */
+void *host_window(void);
 int host_init(void);
 void host_present(const uint32_t *pixels, int w, int h);
 void host_wait_vblank(void);

@@ -4,6 +4,7 @@
 #include <SDL3/SDL_main.h>
 #include "platform.h"
 #include "gfx.h"
+#include "settings.h"
 
 #define MAX_PADS 4
 #define VBLANK_HZ 59.94
@@ -17,22 +18,44 @@ static SDL_Gamepad *Pads[MAX_PADS];
 static Uint64 NextVblank;
 static bool Fullscreen;
 
-int host_init(void) {
-    SDL_AudioSpec spec;
+static void open_pads(void);
 
+void *host_window(void) {
+    const Settings *s = settings();
+
+    if (Window != NULL) {
+        return Window;
+    }
     SDL_SetMainReady();
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) {
         SDL_Log("SDL_Init: %s", SDL_GetError());
-        return 0;
+        return NULL;
     }
-    Window = SDL_CreateWindow("Crash Bash", 1280, 960, SDL_WINDOW_RESIZABLE);
+    Window = SDL_CreateWindow("Crash Bash", s->window_w, s->window_h, SDL_WINDOW_RESIZABLE | (s->fullscreen ? SDL_WINDOW_FULLSCREEN : 0));
     if (Window == NULL) {
         SDL_Log("SDL_CreateWindow: %s", SDL_GetError());
+    }
+    return Window;
+}
+
+int host_init(void) {
+    const Settings *s = settings();
+    SDL_AudioSpec spec;
+
+    if (host_window() == NULL) {
         return 0;
     }
-    if (!gfx_init(Window, 1280, 960)) {
+    /* what the launcher may have changed */
+    Fullscreen = s->fullscreen;
+    SDL_SetWindowFullscreen(Window, Fullscreen);
+    if (!Fullscreen) {
+        SDL_SetWindowSize(Window, s->window_w, s->window_h);
+    }
+    SDL_SyncWindow(Window);
+    if (!gfx_init(Window, s->render_w, s->render_h, s->vsync)) {
         return 0;
     }
+    open_pads();
     spec.format = SDL_AUDIO_S16;
     spec.channels = 2;
     spec.freq = OUT_RATE;

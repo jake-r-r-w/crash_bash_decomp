@@ -21,7 +21,7 @@ typedef struct GfxTex {
     float u0, v0, us, vs; /* where it is in the atlas: origin and scale per texel */
 } GfxTex;
 
-int gfx_init(void *window, int width, int height);
+int gfx_init(void *window, int width, int height, int vsync);
 void gfx_quit(void);
 
 void gfx_begin_frame(void);

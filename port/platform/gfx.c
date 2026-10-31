@@ -185,7 +185,7 @@ static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *
     return SDL_CreateGPUGraphicsPipeline(Device, &p);
 }
 
-int gfx_init(void *window, int width, int height) {
+int gfx_init(void *window, int width, int height, int vsync) {
     SDL_GPUShader *vs, *fs;
     SDL_GPUTextureCreateInfo t;
     SDL_GPUSamplerCreateInfo sc;
@@ -203,6 +203,9 @@ int gfx_init(void *window, int width, int height) {
     if (!SDL_ClaimWindowForGPUDevice(Device, Window)) {
         fprintf(stderr, "SDL_ClaimWindowForGPUDevice: %s\n", SDL_GetError());
         return 0;
+    }
+    if (!vsync && SDL_WindowSupportsGPUPresentMode(Device, Window, SDL_GPU_PRESENTMODE_IMMEDIATE)) {
+        SDL_SetGPUSwapchainParameters(Device, Window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_IMMEDIATE);
     }
     vs = make_shader(VS_SRC, "vs_5_1", SDL_GPU_SHADERSTAGE_VERTEX, 0, 0);
     fs = make_shader(FS_SRC, "ps_5_1", SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1);
@@ -554,6 +557,21 @@ typedef struct {
     short blend, textured, clip;
 } Run;
 
+/* The largest part of a window with the picture's shape, centred. */
+static void fit_picture(Uint32 sw, Uint32 sh, SDL_GPUBlitRegion *r) {
+    Uint32 w = sw, h = sh;
+
+    if ((Uint64)sw * TargetH > (Uint64)sh * TargetW) {
+        w = (Uint32)((Uint64)sh * TargetW / TargetH);
+    } else {
+        h = (Uint32)((Uint64)sw * TargetH / TargetW);
+    }
+    r->x = (sw - w) / 2;
+    r->y = (sh - h) / 2;
+    r->w = w;
+    r->h = h;
+}
+
 void gfx_end_frame(void) {
     static Run runs[MAX_TRIS];
     int numRuns = 0;
@@ -741,9 +759,8 @@ void gfx_end_frame(void) {
         b.source.w = TargetW;
         b.source.h = TargetH;
         b.destination.texture = swap;
-        b.destination.w = sw;
-        b.destination.h = sh;
-        b.load_op = SDL_GPU_LOADOP_DONT_CARE;
+        fit_picture(sw, sh, &b.destination);
+        b.load_op = SDL_GPU_LOADOP_CLEAR;
         b.filter = SDL_GPU_FILTER_LINEAR;
         SDL_BlitGPUTexture(cmd, &b);
     }
