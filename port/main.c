@@ -102,6 +102,14 @@ static struct {
 } Shots[MAX_SHOTS];
 static int NumShots;
 
+/* --press: buttons held on pad 1 for a few vblanks */
+#define MAX_PRESSES 256
+#define PRESS_VBLANKS 6
+static struct {
+    int frame, buttons;
+} Presses[MAX_PRESSES];
+static int NumPresses;
+
 void platform_vblank(void) {
     int i;
 
@@ -124,7 +132,17 @@ void platform_vblank(void) {
 }
 
 int platform_pad(int port) {
-    return NoWindow ? (port == 0 ? 0 : -1) : host_pad(port);
+    int b = NoWindow ? (port == 0 ? 0 : -1) : host_pad(port);
+    int i;
+
+    if (port == 0) {
+        for (i = 0; i < NumPresses; i++) {
+            if (Vblanks >= Presses[i].frame && Vblanks < Presses[i].frame + PRESS_VBLANKS) {
+                b = (b < 0 ? 0 : b) | Presses[i].buttons;
+            }
+        }
+    }
+    return b;
 }
 
 void platform_audio(const int16_t *stereo, int frames) {
@@ -152,6 +170,9 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--shot") == 0 && i + 2 < argc && NumShots < MAX_SHOTS) {
             Shots[NumShots].frame = atoi(argv[++i]);
             Shots[NumShots++].path = argv[++i];
+        } else if (strcmp(argv[i], "--press") == 0 && i + 2 < argc && NumPresses < MAX_PRESSES) {
+            Presses[NumPresses].frame = atoi(argv[++i]);
+            Presses[NumPresses++].buttons = (int)strtol(argv[++i], NULL, 16);
         } else if (strcmp(argv[i], "--no-window") == 0) {
             NoWindow = 1;
         } else {

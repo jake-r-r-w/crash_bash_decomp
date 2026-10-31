@@ -107,151 +107,200 @@ static u32 colour_of(u32 word) {
     return (word & 0xFFFFFF) | 0xFF000000;
 }
 
-/* Reads one of the PS1's drawing prims. */
-void prim_submit(void *ot, void *prim) {
-    s32 key = key_of(ot);
-    u32 *w = prim;
-    u32 code;
+/* The GPU commands the game builds, by their first byte. */
+#define CMD_NOP 0x00
+#define CMD_DRAW_MODE 0xE1
+#define CMD_VIEWPORT 0xFF /* not the PS1's: what SetDrawEnv leaves for prim_submit */
 
-    if (key < 0) {
-        return;
+/* A DR_ENV, as SetDrawEnv fills it in. */
+typedef struct {
+    u32 tag;
+    u32 cmd;
+    RECT clip;
+    s16 ofs[2];
+    u32 bg; /* r, g, b, and in the top byte whether to fill */
+} ViewportCmd;
+_Static_assert(sizeof(ViewportCmd) <= sizeof(DR_ENV), "kept inside the game's DR_ENV");
+
+/* A word holding two s16s: a position, or a width and height. */
+#define WORD_X(w) ((s16)((w) & 0xFFFF))
+#define WORD_Y(w) ((s16)((w) >> 16))
+
+/* The blend of an untextured semi-transparent command: the packet's own draw mode, or else the last DR_TPAGE in draw order. */
+static s32 untextured_blend(u32 cmd, s32 packet_blend) {
+    if (!(cmd & 0x02000000)) {
+        return GFX_OPAQUE;
     }
-    code = ((u8 *)prim)[7];
-    if ((code & 0xE0) == 0x20) {
-        s32 gouraud = code & 0x10, quad = code & 8, textured = code & 4, semi = code & 2, raw = code & 1;
-        s32 n = quad ? 4 : 3;
-        s32 i;
-        u32 *p = w + 1;
-        u32 c = colour_of(*p++);
-        u16 clut = 0, tpage = 0;
-        GfxVert v[4];
+    return packet_blend != GFX_OPAQUE ? packet_blend : GFX_STATE_BLEND;
+}
 
-        if (raw) {
-            c = 0xFF808080;
+/* Polygons, 0x20-0x3F: flat or gouraud, 3 or 4 corners, plain or textured. Returns its length in words. */
+static s32 draw_poly(s32 key, const u32 *p, s32 packet_blend) {
+    u32 cmd = p[0];
+    s32 gouraud = cmd & 0x10000000, quad = cmd & 0x08000000, textured = cmd & 0x04000000;
+    s32 raw = cmd & 0x01000000;
+    s32 corners = quad ? 4 : 3;
+    const u32 *w = p;
+    u32 colour = colour_of(raw ? 0x808080 : *w);
+    u16 clut = 0, tpage = 0;
+    GfxVert v[4];
+    s32 i;
+
+    w++;
+    for (i = 0; i < corners; i++) {
+        if (gouraud && i > 0) {
+            colour = colour_of(*w++);
         }
-        for (i = 0; i < n; i++) {
-            if (gouraud && i > 0) {
-                c = colour_of(*p++);
-            }
-            v[i].x = (s16)(*p & 0xFFFF);
-            v[i].y = (s16)(*p >> 16);
-            p++;
-            v[i].w = 1;
-            v[i].rgba = c;
-            v[i].u = 0;
-            v[i].v = 0;
-            if (textured) {
-                v[i].u = (float)(*p & 0xFF);
-                v[i].v = (float)((*p >> 8) & 0xFF);
-                if (i == 0) {
-                    clut = (u16)(*p >> 16);
-                } else if (i == 1) {
-                    tpage = (u16)(*p >> 16);
-                }
-                p++;
-            }
-        }
+        v[i].x = WORD_X(*w);
+        v[i].y = WORD_Y(*w);
+        w++;
+        v[i].w = 1;
+        v[i].rgba = colour;
+        v[i].u = 0;
+        v[i].v = 0;
         if (textured) {
-            const GfxTex *t = tex_of(tpage, clut);
-            s32 blend = semi ? (tpage >> 5) & 3 : GFX_OPAQUE;
-            if (t == NULL) {
-                return;
+            v[i].u = (float)(*w & 0xFF);
+            v[i].v = (float)((*w >> 8) & 0xFF);
+            if (i == 0) {
+                clut = (u16)(*w >> 16);
+            } else if (i == 1) {
+                tpage = (u16)(*w >> 16);
             }
+            w++;
+        }
+    }
+    if (textured) {
+        const GfxTex *t = tex_of(tpage, clut);
+        s32 blend = (cmd & 0x02000000) ? (tpage >> 5) & 3 : GFX_OPAQUE;
+
+        if (t != NULL) {
             if (quad) {
                 gfx_quad(key, v, t, blend);
             } else {
                 gfx_tri(key, v, t, blend);
             }
-        } else {
-            s32 blend = semi ? GFX_STATE_BLEND : GFX_OPAQUE;
-            if (quad) {
-                gfx_quad(key, v, NULL, blend);
-            } else {
-                gfx_tri(key, v, NULL, blend);
-            }
         }
-    } else if ((code & 0xE0) == 0x60) {
-        /* rectangles: TILE and SPRT */
-        s32 semi = code & 2, textured = code & 4;
-        s32 size = (code >> 3) & 3;
-        u32 *p = w + 1;
-        u32 c = colour_of(*p++);
-        s32 x, y, wd, ht;
-        GfxVert v[4];
-        s32 i;
-        u32 uvw = 0;
-
-        x = (s16)(*p & 0xFFFF);
-        y = (s16)(*p >> 16);
-        p++;
-        if (textured) {
-            uvw = *p++;
-        }
-        if (size == 0) {
-            wd = (s16)(*p & 0xFFFF);
-            ht = (s16)(*p >> 16);
-        } else {
-            wd = ht = size == 1 ? 1 : size == 2 ? 8 : 16;
-        }
-        for (i = 0; i < 4; i++) {
-            v[i].x = (float)(x + ((i & 1) ? wd : 0));
-            v[i].y = (float)(y + ((i & 2) ? ht : 0));
-            v[i].w = 1;
-            v[i].rgba = c;
-            v[i].u = (float)((uvw & 0xFF) + ((i & 1) ? wd : 0));
-            v[i].v = (float)(((uvw >> 8) & 0xFF) + ((i & 2) ? ht : 0));
-        }
-        if (textured) {
-            return;  /* SPRT's texture comes from a DR_TPAGE the game doesn't use for it yet */
-        }
-        gfx_quad(key, v, NULL, semi ? GFX_STATE_BLEND : GFX_OPAQUE);
-    } else if ((code & 0xE0) == 0x40) {
-        /* lines, as thin quads */
-        s32 gouraud = code & 0x10, semi = code & 2;
-        u32 *p = w + 1;
-        u32 c0 = colour_of(*p++), c1;
-        s32 x0, y0, x1, y1;
-        GfxVert v[4];
-
-        x0 = (s16)(*p & 0xFFFF);
-        y0 = (s16)(*p >> 16);
-        p++;
-        c1 = gouraud ? colour_of(*p++) : c0;
-        x1 = (s16)(*p & 0xFFFF);
-        y1 = (s16)(*p >> 16);
-        v[0].x = (float)x0; v[0].y = (float)y0; v[0].rgba = c0;
-        v[1].x = (float)x1; v[1].y = (float)y1; v[1].rgba = c1;
-        v[2].x = (float)x0; v[2].y = (float)y0 + 1; v[2].rgba = c0;
-        v[3].x = (float)x1; v[3].y = (float)y1 + 1; v[3].rgba = c1;
-        v[0].w = v[1].w = v[2].w = v[3].w = 1;
-        v[0].u = v[0].v = v[1].u = v[1].v = v[2].u = v[2].v = v[3].u = v[3].v = 0;
-        gfx_quad(key, v, NULL, semi ? GFX_STATE_BLEND : GFX_OPAQUE);
-    } else if (code == 0xE1) {
-        /* DR_TPAGE: the blend for untextured semi-transparent prims */
-        gfx_state_blend(key, (w[1] >> 5) & 3);
-    } else if (code == 0xE3) {
-        /* SetDrawEnv's: a viewport's clip, and maybe its background */
-        s32 cx = (s16)(w[2] & 0xFFFF), cy = (s16)(w[2] >> 16);
-        s32 cw = (s16)(w[3] & 0xFFFF), ch = (s16)(w[3] >> 16);
-        s32 ox = (s16)(w[4] & 0xFFFF), oy = (s16)(w[4] >> 16);
-
-        gfx_set_clip(cx - ox, cy - oy, cw, ch);
-        if (w[5] & 0x01000000) {
-            GfxVert v[4];
-
-            BackPixels = NULL;
-            s32 i;
-
-            for (i = 0; i < 4; i++) {
-                v[i].x = (float)(cx - ox + ((i & 1) ? cw : 0));
-                v[i].y = (float)(cy - oy + ((i & 2) ? ch : 0));
-                v[i].w = 1;
-                v[i].u = v[i].v = 0;
-                v[i].rgba = colour_of(w[5]);
-            }
-            gfx_quad(key + 1, v, NULL, GFX_OPAQUE);
-        }
+    } else if (quad) {
+        gfx_quad(key, v, NULL, untextured_blend(cmd, packet_blend));
+    } else {
+        gfx_tri(key, v, NULL, untextured_blend(cmd, packet_blend));
     }
+    return (s32)(w - p);
+}
+
+/* Lines, 0x40-0x5F, as thin quads. Returns its length in words. */
+static s32 draw_line(s32 key, const u32 *p, s32 packet_blend) {
+    u32 cmd = p[0];
+    s32 gouraud = cmd & 0x10000000;
+    const u32 *w = p + 1;
+    u32 c0 = colour_of(cmd), c1 = c0;
+    s32 x0 = WORD_X(*w), y0 = WORD_Y(*w);
+    s32 x1, y1, i;
+    GfxVert v[4];
+
+    w++;
+    if (gouraud) {
+        c1 = colour_of(*w++);
+    }
+    x1 = WORD_X(*w);
+    y1 = WORD_Y(*w);
+    w++;
+    for (i = 0; i < 4; i++) {
+        v[i].x = (float)((i & 1) ? x1 : x0);
+        v[i].y = (float)((i & 1) ? y1 : y0) + ((i & 2) ? 1 : 0);
+        v[i].w = 1;
+        v[i].u = 0;
+        v[i].v = 0;
+        v[i].rgba = (i & 1) ? c1 : c0;
+    }
+    gfx_quad(key, v, NULL, untextured_blend(cmd, packet_blend));
+    return (s32)(w - p);
+}
+
+/* Plain rectangles, 0x60-0x7F. Returns its length in words. */
+static s32 draw_rect(s32 key, const u32 *p, s32 packet_blend) {
+    static const s16 Sizes[4] = { 0, 1, 8, 16 };
+    u32 cmd = p[0];
+    s32 size = Sizes[(cmd >> 27) & 3];
+    s32 x = WORD_X(p[1]), y = WORD_Y(p[1]);
+    s32 wd = size != 0 ? size : WORD_X(p[2]);
+    s32 ht = size != 0 ? size : WORD_Y(p[2]);
+    GfxVert v[4];
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        v[i].x = (float)(x + ((i & 1) ? wd : 0));
+        v[i].y = (float)(y + ((i & 2) ? ht : 0));
+        v[i].w = 1;
+        v[i].u = 0;
+        v[i].v = 0;
+        v[i].rgba = colour_of(cmd);
+    }
+    gfx_quad(key, v, NULL, untextured_blend(cmd, packet_blend));
+    return size != 0 ? 2 : 3;
+}
+
+/* A viewport: its clip, and its background if it has one, under everything else in its part of the table. */
+static void set_viewport(s32 key, const ViewportCmd *c) {
+    s32 x = c->clip.x - c->ofs[0], y = c->clip.y - c->ofs[1];
+    s32 i;
+
+    gfx_set_clip(x, y, c->clip.w, c->clip.h);
+    if (c->bg >> 24) {
+        GfxVert v[4];
+
+        BackPixels = NULL;
+        for (i = 0; i < 4; i++) {
+            v[i].x = (float)(x + ((i & 1) ? c->clip.w : 0));
+            v[i].y = (float)(y + ((i & 2) ? c->clip.h : 0));
+            v[i].w = 1;
+            v[i].u = 0;
+            v[i].v = 0;
+            v[i].rgba = colour_of(c->bg);
+        }
+        gfx_quad(key + 1, v, NULL, GFX_OPAQUE);
+    }
+}
+
+/* Reads a packet the game built, a tag then the GPU commands its length counts, as the PS1's GPU would. */
+void prim_submit(void *ot, void *prim) {
+    s32 key = key_of(ot);
+    const u32 *p = (const u32 *)prim + 1;
+    s32 left = ((const u8 *)prim)[3];
+    s32 packet_blend = GFX_OPAQUE;
+
+    if (key < 0) {
+        return;
+    }
+    if ((p[0] >> 24) == CMD_VIEWPORT) {
+        set_viewport(key, prim);
+        return;
+    }
+    do {
+        u32 cmd = p[0] >> 24;
+        s32 words = 1;
+
+        if (cmd >= 0x20 && cmd < 0x40) {
+            words = draw_poly(key, p, packet_blend);
+        } else if (cmd >= 0x40 && cmd < 0x60) {
+            words = draw_line(key, p, packet_blend);
+        } else if (cmd >= 0x60 && cmd < 0x80) {
+            words = draw_rect(key, p, packet_blend);
+        } else if (cmd == CMD_DRAW_MODE) {
+            if (left <= 1) {
+                gfx_state_blend(key, (p[0] >> 5) & 3); /* a DR_TPAGE alone sets it for what draws after */
+            } else {
+                packet_blend = (p[0] >> 5) & 3;
+            }
+        }
+        p += words;
+        left -= words;
+    } while (left > 0);
+}
+
+void SetTile1(TILE_1 *p) {
+    setlen(p, 2);
+    setcode(p, 0x68);
 }
 
 /* A textured mesh triangle, at the last three positions the GTE projected. */
@@ -377,13 +426,13 @@ DRAWENV *SetDefDrawEnv(DRAWENV *env, s32 x, s32 y, s32 w, s32 h) {
 
 /* Keeps what prim_submit needs in the DR_ENV. */
 void SetDrawEnv(DR_ENV *dr, DRAWENV *env) {
-    u32 *w = (u32 *)dr;
+    ViewportCmd *c = (ViewportCmd *)dr;
 
-    w[1] = 0xE3000000;
-    w[2] = (env->clip.x & 0xFFFF) | ((u32)env->clip.y << 16);
-    w[3] = (env->clip.w & 0xFFFF) | ((u32)env->clip.h << 16);
-    w[4] = (env->ofs[0] & 0xFFFF) | ((u32)env->ofs[1] << 16);
-    w[5] = env->r0 | (env->g0 << 8) | (env->b0 << 16) | ((env->isbg ? 1u : 0u) << 24);
+    c->cmd = (u32)CMD_VIEWPORT << 24;
+    c->clip = env->clip;
+    c->ofs[0] = env->ofs[0];
+    c->ofs[1] = env->ofs[1];
+    c->bg = env->r0 | (env->g0 << 8) | (env->b0 << 16) | ((env->isbg ? 1u : 0u) << 24);
 }
 
 DRAWENV *PutDrawEnv(DRAWENV *env) {

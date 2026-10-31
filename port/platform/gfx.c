@@ -416,7 +416,7 @@ const GfxTex *gfx_texture(const void *pixels, int w, int h, int bpp, const void 
     }
     if (ShelfX + w + 2 > ATLAS_SIZE) {
         ShelfX = 0;
-        ShelfY += ShelfH + 2;
+        ShelfY += ShelfH;
         ShelfH = 0;
     }
     if (ShelfY + h + 2 > ATLAS_SIZE) {
@@ -430,12 +430,13 @@ const GfxTex *gfx_texture(const void *pixels, int w, int h, int bpp, const void 
     c->w = w;
     c->h = h;
     c->bpp = bpp;
-    c->t.u0 = (float)ShelfX / ATLAS_SIZE;
-    c->t.v0 = (float)ShelfY / ATLAS_SIZE;
+    /* one texel of border all round, copied from the edges below */
+    c->t.u0 = (float)(ShelfX + 1) / ATLAS_SIZE;
+    c->t.v0 = (float)(ShelfY + 1) / ATLAS_SIZE;
     c->t.us = 1.0f / ATLAS_SIZE;
     c->t.vs = 1.0f / ATLAS_SIZE;
     for (y = 0; y < h; y++) {
-        out = (uint32_t *)AtlasPixels + (ShelfY + y) * ATLAS_SIZE + ShelfX;
+        out = (uint32_t *)AtlasPixels + (ShelfY + 1 + y) * ATLAS_SIZE + ShelfX + 1;
         if (bpp == 16) {
             const uint16_t *row = (const uint16_t *)pixels + y * w;
             for (x = 0; x < w; x++) {
@@ -456,15 +457,26 @@ const GfxTex *gfx_texture(const void *pixels, int w, int h, int bpp, const void 
             }
         }
     }
+    {
+        uint32_t *px = (uint32_t *)AtlasPixels;
+
+        for (y = 1; y <= h; y++) {
+            out = px + (ShelfY + y) * ATLAS_SIZE + ShelfX;
+            out[0] = out[1];
+            out[w + 1] = out[w];
+        }
+        memcpy(px + ShelfY * ATLAS_SIZE + ShelfX, px + (ShelfY + 1) * ATLAS_SIZE + ShelfX, (size_t)(w + 2) * 4);
+        memcpy(px + (ShelfY + h + 1) * ATLAS_SIZE + ShelfX, px + (ShelfY + h) * ATLAS_SIZE + ShelfX, (size_t)(w + 2) * 4);
+    }
     if (ShelfY < AtlasDirtyTop) {
         AtlasDirtyTop = ShelfY;
     }
-    if (ShelfY + h > AtlasDirtyBottom) {
-        AtlasDirtyBottom = ShelfY + h;
+    if (ShelfY + h + 2 > AtlasDirtyBottom) {
+        AtlasDirtyBottom = ShelfY + h + 2;
     }
     ShelfX += w + 2;
-    if (h > ShelfH) {
-        ShelfH = h;
+    if (h + 2 > ShelfH) {
+        ShelfH = h + 2;
     }
     return &c->t;
 }
@@ -527,8 +539,8 @@ static void put_vert(GpuVert *o, const GfxVert *v, const GfxTex *tex) {
     o->z = 0.5f * w;
     o->w = w;
     if (tex != NULL) {
-        o->u = tex->u0 + (v->u + 0.5f) * tex->us;
-        o->v = tex->v0 + (v->v + 0.5f) * tex->vs;
+        o->u = tex->u0 + v->u * tex->us;
+        o->v = tex->v0 + v->v * tex->vs;
     } else {
         o->u = 0;
         o->v = 0;
@@ -628,7 +640,7 @@ void gfx_end_frame(void) {
         dst.w = ATLAS_SIZE;
         dst.h = rows;
         dst.d = 1;
-        SDL_UploadToGPUTexture(copy, &src, &dst, true);
+        SDL_UploadToGPUTexture(copy, &src, &dst, false); /* no cycling: the rest of the atlas has to stay */
         AtlasDirtyTop = ATLAS_SIZE;
         AtlasDirtyBottom = 0;
     }

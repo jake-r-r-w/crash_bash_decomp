@@ -798,7 +798,7 @@ typedef struct {
 } McHeader;
 extern char *CardSaveTitle;
 extern u8 CardIconFrames[]; /* the header's icon frames (CardBuffer + 0x80) */
-extern const char CardSaveTitleFormat[];
+extern char CardSaveTitleFormat[];
 s32 count_completion(u8 *arg0);
 
 /* Writes up to 32 Shift-JIS characters of src (ASCII) to dst, padding with

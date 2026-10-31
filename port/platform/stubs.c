@@ -25,7 +25,6 @@ void SetDispMask(int mask) {}
 void SetDrawArea(DR_AREA *p, RECT *r) {}
 void SetDrawMove(DR_MOVE *p, RECT *r, int x, int y) {}
 int SetGraphDebug(int level) { return 0; }
-void SetTile1(TILE_1 *p) {}
 void SpuGetAllKeysStatus(char *status) {}
 int32_t SpuIsTransferCompleted(int32_t flag) { return 0; }
 int32_t SpuReserveReverbWorkArea(int32_t on_off) { return 0; }

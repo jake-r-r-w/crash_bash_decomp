@@ -150,7 +150,7 @@ void card_init(void) {
     CardSaveSum = sum;
 }
 
-const char CardSaveTitleFormat[] = "CRASH BASH %000 %000 %000 %000";
+char CardSaveTitleFormat[] = "CRASH BASH %000 %000 %000 %000";
 
 const char CardFileName[] = "BASCUS-94570";
 

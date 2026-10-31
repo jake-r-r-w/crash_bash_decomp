@@ -142,7 +142,7 @@ extern process_info MainMenu;
 extern process_info **BattleChainResume;
 extern process_info **TournamentChainResume;
 extern Ext400 TitlesBackdropAnimator;
-extern Ext400 TitlesBackdropAtable;
+extern s32 TitlesBackdropAtable[];
 
 /* A character select card (CharCards, one per hero, 0x28 bytes). */
 typedef struct CharCard {

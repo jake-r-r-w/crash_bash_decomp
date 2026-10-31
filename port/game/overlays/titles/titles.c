@@ -27,7 +27,7 @@ const char Text4Player[] = "4 PLAYER";
 const char TextSelectNumberOfPlayers[] = "SELECT NUMBER OF PLAYERS";
 const char TextNewGame[] = "NEW GAME";
 const char TextLoadGame[] = "LOAD GAME";
-const char TextCupsCount[] = "5  X";
+char TextCupsCount[] = "5  X";
 const char TextSelectCups[] = "PRESS LEFT - RIGHT TO\nSELECT CUPS NEEDED\nTO WIN ROUND";
 const char TextSelectDifficulty[] = "PRESS UP - DOWN TO\nSELECT DIFFICULTY";
 const char TextBeginBattle[] = "BEGIN BATTLE";
@@ -159,13 +159,9 @@ shell_setup titles_shell_info = {
 u16 TitlesLUPtab[4] = { 3, 0x20D, 0x1001, 0x1002 };
 TrigLookUp TitlesLUP = { TitlesLUPtab, 4 };
 PreMap TITLES_PREMAP = { TitlesPreLoadDB, TitlesWorldInfo, &TitlesLUP };
-Ext400 TitlesBackdropAtable = {
-    {
-        (s32)0x80110000, 0x40000016, 0x168011, (s32)0x80114000, 0x40000016, 0x168011,
-        (s32)0x80114000, 0x40800038, 0x168011, (s32)0x80114000, 0x40000016,
-    },
-};
-s32 TitlesBackdropSteps[9] = {
+s32 TitlesBackdropAtable[20] = {
+    (s32)0x80110000, 0x40000016, 0x168011, (s32)0x80114000, 0x40000016, 0x168011,
+    (s32)0x80114000, 0x40800038, 0x168011, (s32)0x80114000, 0x40000016,
     0x388011, (s32)0x80114100, 0x41800054, 0x168011, (s32)0x80114000, 0x40000016, 0x388011,
     (s32)0x80004100, 0,
 };
@@ -562,7 +558,7 @@ void TitlesInitLevel(void) {
         break;
     }
     TitlesBackdropAnimator = ExtTemplate400;
-    TitlesBackdropAnimator.Atable = &TitlesBackdropAtable;
+    TitlesBackdropAnimator.Atable = TitlesBackdropAtable;
 }
 
 void TitlesCheckIdle(void) {
@@ -863,7 +859,7 @@ void BattleOptionsUpdate(void) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         O69OV->aiLevel++;
     }
-    *(u8 *)GetEngineSlot(0)->sub[2].u6C.dbase = O69OV->battleWins + '0';
+    *(u8 *)GetEngineSlot(0)->sub[2].u6C.text = O69OV->battleWins + '0';
     GetEngineSlot(0)->sub[5].u6C.text = (void *)TextDifficulties[O69OV->language][O69OV->aiLevel];
     p = &GetEngineSlot(0)->sub[8];
     if (O69OV->levelFlags & 1) {
