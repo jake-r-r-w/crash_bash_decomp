@@ -1013,49 +1013,22 @@ const char MenuCardCorrupt[] = "WARNING\nTHE MEMORY CARD IN\nMEMORY CARD SLOT 1\
 const char MenuEmpty2[] = "";
 
 void UpdateSaveMenu(void) {
-    s32 f;
-
     RenderState.modelDp = ScreenFade.amount;
     switch (SaveMenuState) {
     case 0:
-        f = CardStatus;
-        if (f & 2) {
-            if (f & 0xC) {
-                if (f & 4) {
-                    SAVEMENU_SET_ANIM(LangFormatCard);
-                    if (Pads[0].pressed & 0x8000) {
-                        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                        card_format();
-                        SaveMenuState = 6;
-                    }
-                } else {
-                    SaveMenuState = 8;
+        UpdateCardSlots();
+        if (Pads[0].pressed & 0x4000) {
+            s32 idx = CardSlotIndex * 0x194;
+            u8 *p = (u8 *)CardSlots;
+            if (*(s32 *)(idx + p) == 0) {
+                PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                if (HubSaveMenuHooks.unk0 != NULL) {
+                    HubSaveMenuHooks.unk0();
                 }
-            } else if (f & 0x40) {
-                SAVEMENU_SET_ANIM(LangMenuCheckingCard);
-            } else if (f & 0x30) {
-                if (!(f & 0x10)) {
-                    card_clear_slots();
-                }
-                UpdateCardSlots();
-                if (Pads[0].pressed & 0x4000) {
-                    s32 idx = CardSlotIndex * 0x194;
-                    u8 *p = (u8 *)CardSlots;
-                    if (*(s32 *)(idx + p) == 0) {
-                        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                        if (HubSaveMenuHooks.unk0 != NULL) {
-                            HubSaveMenuHooks.unk0();
-                        }
-                        SaveMenuState = 3;
-                    } else {
-                        SaveMenuState = 7;
-                    }
-                }
+                SaveMenuState = 3;
             } else {
-                SAVEMENU_SET_ANIM(LangCardFull);
+                SaveMenuState = 7;
             }
-        } else {
-            SAVEMENU_SET_ANIM(LangNoCard2);
         }
         if (Pads[0].pressed & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1068,29 +1041,19 @@ void UpdateSaveMenu(void) {
         }
         break;
     case 7:
-        if (CardStatus & 2) {
-            SAVEMENU_SET_ANIM(LangConfirmOverwrite);
-            f = Pads[0].pressed;
-            if (f & 0x8000) {
-                PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                if (HubSaveMenuHooks.unk0 != NULL) {
-                    HubSaveMenuHooks.unk0();
-                }
-                SaveMenuState = 3;
-            } else if (f & 0x1000) {
-                SaveMenuState = 0;
+        SAVEMENU_SET_ANIM(LangConfirmOverwrite);
+        if (Pads[0].pressed & 0x8000) {
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (HubSaveMenuHooks.unk0 != NULL) {
+                HubSaveMenuHooks.unk0();
             }
-            break;
+            SaveMenuState = 3;
+        } else if (Pads[0].pressed & 0x1000) {
+            SaveMenuState = 0;
         }
-        SaveMenuState = 0;
         break;
     case 1:
-        f = CardStatus;
-        if (f & 0x100) {
-            SaveMenuState = 2;
-        } else if (!(f & 0x80)) {
-            SaveMenuState = 5;
-        }
+        SaveMenuState = (CardStatus & CARD_FAILED) ? 2 : 5;
         SAVEMENU_SET_ANIM(LangSaving);
         break;
     case 5:
@@ -1112,14 +1075,7 @@ void UpdateSaveMenu(void) {
         }
         break;
     case 3:
-        f = CardStatus;
-        if (!(f & 2) || !(f & 0x30)) {
-            SaveMenuState = 0;
-            if (HubSaveMenuHooks.unkC != NULL) {
-                HubSaveMenuHooks.unkC();
-            }
-            PlaceEngineSlot(1, CardPromptPanel);
-        } else {
+        {
             if (HubSaveMenuHooks.unk4 != NULL) {
                 HubSaveMenuHooks.unk4();
             }
@@ -1163,28 +1119,10 @@ void UpdateSaveMenu(void) {
             }
             break;
         }
-    case 6:
-        f = CardStatus;
-        if (f & 0x100) {
-            SaveMenuState = 2;
-        } else if (f & 0x80) {
-            SAVEMENU_SET_ANIM(LangFormatting);
-        } else {
-            SaveMenuState = 0;
-        }
-        break;
-    case 8:
-        if (!(CardStatus & 0xE)) {
-            SaveMenuState = 0;
-        }
-        SAVEMENU_SET_ANIM(SaveMenuAnims);
-        break;
     }
-    if ((SaveMenuState == 2 || SaveMenuState == 8) && (Pads[0].pressed & 0x1000)) {
+    if (SaveMenuState == 2 && (Pads[0].pressed & 0x1000)) {
         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
-        if (SaveMenuState == 2) {
-            card_reset();
-        }
+        card_reset();
         GotoProcess(&RetryProcess, 0x200);
         SaveMenuState = 4;
         {
@@ -1247,12 +1185,9 @@ void UpdateCardSlots(void) {
     EXTengine *e;
     EXTengine *e2;
 
-    if (CardStatus & 2) {
-        u8 *c = CardBuffer;  /* the image's sum (CardSaveSum) by the buffer: one instruction less */
-        if (*(s32 *)FILE_AT(c, CARD_SUM) != CardBufferStamp) {
-            RefreshCardSlots();
-            CardBufferStamp = *(s32 *)FILE_AT(c, CARD_SUM);
-        }
+    if (CardSaveSum != CardBufferStamp) {
+        RefreshCardSlots();
+        CardBufferStamp = CardSaveSum;
     }
     pad = Pads;
     if (pad->pressed & 0x10) {
@@ -1542,25 +1477,25 @@ s32 GameSum147(u8 *arg0) {
 
 void GameSetSlot3Digits(s32 arg0) {
     s32 *src;
-    s32 *p;
+    subengine *p;
     s32 i;
-    s32 *base;
+    subengine *base;
 
     src = (s32 *)((u8 *)Slot3DigitSrc + arg0 * 20);
-    base = (s32 *)GetEngineSlot(3)->sub;
-    p = base + sizeof(subengine) / 4;
+    base = GetEngineSlot(3)->sub;
+    p = base + 1;
     i = 0;
     do {
         if (*src == -1) {
-            p[0] &= ~0x8000;
-            p[sizeof(subengine) / 4] &= ~0x8000;
+            p[0].flags &= ~0x8000;
+            p[1].flags &= ~0x8000;
         } else {
-            p[0] |= 0x8000;
-            p[sizeof(subengine) / 4] |= 0x8000;
-            p[1] = *src;
-            p[0x2B] = *src;
+            p[0].flags |= 0x8000;
+            p[1].flags |= 0x8000;
+            p[0].XYZ.x = *src;
+            p[1].XYZ.x = *src;
         }
-        p += 0x54;
+        p += 2;
         i++;
         src++;
     } while (i < 5);

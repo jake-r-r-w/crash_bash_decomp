@@ -790,46 +790,11 @@ typedef struct ScriptCommand {
 extern ScriptCommand ScriptCommands[];
 extern s32 World_floor_level;
 extern s32 MusicRestart;
-extern s32 CardChannel;
+/* The save screens' view of the saves (main/card.c). */
+#define CARD_READY 0x12
+#define CARD_FAILED 0x100
 extern s32 CardStatus;
-/* The memory card save file header at CardBuffer (PsyQ _CARD layout). */
-typedef struct {
-    u32 magic : 16;  /* 0x00 "SC" */
-    u32 frames : 4;  /* 0x02 icon frames */
-    u32 type : 4;
-    u32 blocks : 8;  /* 0x03 */
-    s16 title[32];   /* 0x04 Shift-JIS */
-} McHeader;
-extern char *CardSaveTitle;
-extern char CardSaveTitleFormat[];
 s32 count_completion(u8 *arg0);
-
-/* Writes up to 32 Shift-JIS characters of src (ASCII) to dst, padding with
- * full-width spaces (card_make_header). */
-extern s32 CardRequest;
-extern s32 CardCommand;
-extern s32 CardDirCount;
-
-/* 0x28-byte entries starting at 0x800675D4; CardDirCount is the count. */
-typedef struct {
-    u8 pad0[0x18];
-    s32 size; /* 0x18 */
-    u8 pad1C[0xC];
-} SizeEntry;
-extern SizeEntry CardDir[];
-extern const char CardFileName[];
-extern s32 CardSyncCmd;
-extern s32 CardSyncResult;
-
-/* The directory entry named CardFileName, or NULL (card_find_file). */
-
-/* Clears the save's slots and flags and re-sums it (card_clear_slots). */
-
-/* McResetSave with the checksum in its own variable (allocates it apart from i). */
-
-/* Zeroes the 0x2000-byte save buffer. */
-
-/* Free bytes on the card (card_count_files). */
 extern _mal_area MainHeap;
 extern s32 LoadDirectBusy;
 extern u8 *LoadWaitBuf;
@@ -906,25 +871,10 @@ typedef struct CardSlot {
     GameState state;
 } CardSlot;
 
-/* The save, as the card holds it (docs/ASSETS.md, The memory card). */
-typedef struct CardSave {
-    u8 header[128];
-    u8 iconFrames[384];
-    CardSlot slots[4];
-    s32 flags[3];
-    s32 sum;
-    s32 rest[1512];
-} CardSave;
-_Static_assert(sizeof(CardSave) == 0x2000, "the card's block");
-extern CardSave CardSaveBlock;
+extern CardSlot CardSlots[4];
+extern s32 CardSaveSum;
 extern void *PauseTexts[];
 #define PAUSE_TEXT_DEMO 35
-#define CardBuffer ((u8 *)&CardSaveBlock)
-#define CardIconFrames (CardSaveBlock.iconFrames)
-#define CardSlots (CardSaveBlock.slots)
-#define CardSaveFlags (CardSaveBlock.flags)
-#define CardSaveSum (CardSaveBlock.sum)
-#define CardSaveRest (CardSaveBlock.rest)
 /* A panel's record (0x24 bytes; PlaceEngineSlot's lists, ending at a type below 2), read by
  * ApplyPlaceRecs: what to place (type), where, and its text table or image (data). The pause
  * screens' records and the text panels' items are the same record. */
@@ -973,7 +923,6 @@ extern void *LevelConfig;
 extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
 extern file *LevelSfxBanks[][8];       /* music_play_level */
 extern GameOptionSet GameOptions;
-extern s32 card_command_delay;
 extern s32 GlobalNAStatus;
 extern camera_info_tag MainCamera;
 extern s32 FontPage;

@@ -22,7 +22,6 @@
 
 /* main.c */
 const char *platform_data_path(void);
-const char *platform_card_path(void);
 /* A pad, as the game's libpad reads it: its buttons, or -1 when there's none. */
 int platform_pad(int port);
 int platform_pad_sticks(int port, unsigned char sticks[4]);

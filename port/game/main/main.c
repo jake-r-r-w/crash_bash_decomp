@@ -157,9 +157,6 @@ void shell_update(void) {
     rand_step();
     sfx_update_all();
     music_update();
-    if (!(FrameCount & 1)) {
-        card_poll();
-    }
     EngineModule->update();
 }
 
@@ -2914,7 +2911,6 @@ void export_exe_functions(void) {
     t[0x1BC / 4] = process_control_back;
     t[0x1C0 / 4] = texture_draw_quad;
     t[0x1C4 / 4] = texture_release_loading_mem;
-    t[0x1C8 / 4] = card_poll;
     t[0x1CC / 4] = music_load_track;
     t[0x1D0 / 4] = texture_draw_3d;
     t[0x1D4 / 4] = SysPrintAt3d;
@@ -2941,7 +2937,6 @@ void export_exe_functions(void) {
     t[0x228 / 4] = posdst_flash;
     t[0x22C / 4] = CurrentModule;
     t[0x230 / 4] = LangModeTypeTexts;
-    t[0x234 / 4] = card_clear_slots;
     t[0x238 / 4] = music_set_tempo;
     t[0x23C / 4] = music_restart;
     t[0x240 / 4] = music_flag_restart;
@@ -2955,7 +2950,6 @@ void export_exe_functions(void) {
     t[0x260 / 4] = shell_run_spyro_demo;
     t[0x264 / 4] = dbase_texture_ptr;
     t[0x268 / 4] = dbase_texture_entry;
-    t[0x26C / 4] = card_format;
     t[0x270 / 4] = pads_reset_rumble;
     t[0x27C / 4] = queue_group_load;
     t[0x280 / 4] = FileGroups;

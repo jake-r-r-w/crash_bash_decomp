@@ -6,6 +6,20 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
+/* A warp room's pause menu can save, as its computer can: the game's state is only ever saved between its games. */
+static s32 pause_can_save(void) {
+    return WarpRoomIndex(GAME->mode) >= 0;
+}
+
+static void pause_go_save(void) {
+    PausePad = 0;
+    PauseChoice = 0;
+    GAME->pause &= 0x04000010;
+    sound_resume();
+    GAME->exitFlags |= 0x200;
+    GotoProcess(&SaveScreenProcess, 0x200);
+}
+
 s32 PauseChooseYesNo(s32 pad) {
     if ((((PadState *)Pads)[pad].pressed & 0x80) && PauseChoice != 0) {
         PauseChoice = 0;
@@ -260,8 +274,18 @@ found:
             ret = 0;
             break;
         case 8:
-            if (PauseChooseUpDown(PausePad, max - 1) != 0) {
-                switch (PauseChoice) {
+            if (PauseChooseUpDown(PausePad, max - 1 + (pause_can_save() ? 1 : 0)) != 0) {
+                s32 choice = PauseChoice;
+
+                if (pause_can_save()) {
+                    if (choice == 2) {
+                        pause_go_save();
+                        choice = -1;
+                    } else if (choice > 2) {
+                        choice--;
+                    }
+                }
+                switch (choice) {
                 case 0:
                     PausePad = 0;
                     PauseChoice = 0;
@@ -665,6 +689,12 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             }
             n++;
             break;
+        case 8:
+            if (PauseTextHold == 0) {
+                DrawSysText(e->x, (s16)(e->y + arg1), (u8 *)"SAVE GAME", e->a, e->b, PauseChoice == n);
+            }
+            n++;
+            break;
         case 2:
             HUDBOX->colour = e->a;
             HUDBOX->unk14 = e->c;
@@ -854,7 +884,7 @@ void DrawPauseMenu(void) {
         PauseStatsAllowed = 1;
         break;
     case 8:
-        DrawHudEntries(PauseMenuShort, PauseMenuY);
+        DrawHudEntries(pause_can_save() ? PauseMenuSave : PauseMenuShort, PauseMenuY);
         PauseStatsAllowed = 1;
         break;
     case 0x8000:

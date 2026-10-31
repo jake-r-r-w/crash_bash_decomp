@@ -1,6 +1,6 @@
 /* The PC port's entry point (docs/PORT.md).
  *
- *   crashbash [--data CRASHBSH.DAT] [--card FILE] [--no-window] [--frames N]
+ *   crashbash [--data CRASHBSH.DAT] [--saves FOLDER] [--no-window] [--frames N]
  *
  * --frames stops after N vblanks. */
 #include <stdint.h>
@@ -12,6 +12,7 @@
 #include "platform/platform.h"
 #include "platform/gfx.h"
 #include "platform/settings.h"
+#include "platform/saves.h"
 
 static int Vblanks;
 
@@ -82,7 +83,7 @@ int machine_init(void);
 void overlays_init(void);
 
 static const char *DataPath;
-static const char *CardPath = "memcard1.mcr";
+static const char *SavesFolder;
 static int NoWindow;
 static int Turbo;
 static int StopAt = -1;
@@ -109,10 +110,6 @@ const char *platform_data_path(void) {
         }
     }
     return places[0];
-}
-
-const char *platform_card_path(void) {
-    return CardPath;
 }
 
 void platform_finish(int code) {
@@ -234,8 +231,8 @@ int main(int argc, char **argv) {
             Sticks[NumSticks].frame = atoi(argv[++i]);
             Sticks[NumSticks].x = (unsigned char)strtol(argv[++i], NULL, 16);
             Sticks[NumSticks++].y = (unsigned char)strtol(argv[++i], NULL, 16);
-        } else if (strcmp(argv[i], "--card") == 0 && i + 1 < argc) {
-            CardPath = argv[++i];
+        } else if (strcmp(argv[i], "--saves") == 0 && i + 1 < argc) {
+            SavesFolder = argv[++i];
         } else if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
             StopAt = atoi(argv[++i]);
             testing = 1;
@@ -286,6 +283,11 @@ int main(int argc, char **argv) {
     }
     settings()->launcher = launcher || (!testing && !no_launcher);
     settings()->no_save = testing;
+    if (SavesFolder != NULL) {
+        saves_set_folder(SavesFolder);
+    } else if (!testing) {
+        saves_use_default_folder();
+    }
     settings()->test_mode = test_mode;
     settings()->testing = test_mode >= 0;
     settings()->tile = tile;

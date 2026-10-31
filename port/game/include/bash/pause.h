@@ -236,6 +236,7 @@ typedef struct EngineLevelInfo {
 extern EngineLevelInfo *LangMessages[];
 extern HudEntry PauseMenuExitArena[];
 extern HudEntry PauseMenuQuit[];
+extern HudEntry PauseMenuSave[];
 extern HudEntry PauseMenuChangeArena[];
 extern HudEntry PauseMenuShort[];
 extern HudEntry PauseRules1[];

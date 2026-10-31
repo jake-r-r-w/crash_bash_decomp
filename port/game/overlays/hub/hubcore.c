@@ -3213,10 +3213,8 @@ s32 PodiumTies = 0;
 s32 PodiumCamState = 0;
 u32 PodiumState = 0;
 s32 PodiumReady = 0;
-u8 HubNameCursor[4] = { 0x20, 0, 0x20, 0 };
-s32 HubNameCursor2[1] = { 0x200020 };
-s32 HubNameCursor3[1] = { 0x200020 };
-s32 HubNameButtons[1] = { 0x200020 };
+/* The name's eight letters, each its own string. */
+u8 HubNameCursor[16] = { 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
 HubKey HubNameKeys[30] = {
     { 0, (u8 *)&HubKeyA, 0, 6, 1, 0x15, 7 },
     { 0x28, (u8 *)&HubKeyB, 0, -0x1, 1, 0x15, 7 },
@@ -3264,14 +3262,14 @@ PlaceRec HubNamePanel[5] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 PlaceRec HubNameLetters[17] = {
-    { 3, 0, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor, 0, 0, 0, 0 },
-    { 3, 0x22, 0, 0, 0, 0, 0, 0, 0, (u8 *)&HubNameCursor + 0x2, 0, 0, 0, 0 },
-    { 3, 0x44, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor2, 0, 0, 0, 0 },
-    { 3, 0x66, 0, 0, 0, 0, 0, 0, 0, (u8 *)&HubNameCursor2 + 0x2, 0, 0, 0, 0 },
-    { 3, 0x88, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor3, 0, 0, 0, 0 },
-    { 3, 0xAA, 0, 0, 0, 0, 0, 0, 0, (u8 *)&HubNameCursor3 + 0x2, 0, 0, 0, 0 },
-    { 3, 0xCC, 0, 0, 0, 0, 0, 0, 0, &HubNameButtons, 0, 0, 0, 0 },
-    { 3, 0xEE, 0, 0, 0, 0, 0, 0, 0, (u8 *)&HubNameButtons + 0x2, 0, 0, 0, 0 },
+    { 3, 0, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor[0], 0, 0, 0, 0 },
+    { 3, 0x22, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor[2], 0, 0, 0, 0 },
+    { 3, 0x44, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor[4], 0, 0, 0, 0 },
+    { 3, 0x66, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor[6], 0, 0, 0, 0 },
+    { 3, 0x88, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor[8], 0, 0, 0, 0 },
+    { 3, 0xAA, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor[10], 0, 0, 0, 0 },
+    { 3, 0xCC, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor[12], 0, 0, 0, 0 },
+    { 3, 0xEE, 0, 0, 0, 0, 0, 0, 0, &HubNameCursor[14], 0, 0, 0, 0 },
     { 3, 0, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
     { 3, 0x22, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },
     { 3, 0x44, 0, 0, 0, 0, 0, 0, 0, &HubTextDot, 0, 0, 0, 0 },

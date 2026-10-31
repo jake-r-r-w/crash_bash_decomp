@@ -75,7 +75,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Open leads
 
 - **Port, not yet checked by hand or unwritten:** Adventure after a game's first win (back to the hub from a game is untested), level unlocks and
-  the memory card (6.7), Mono. 2D prims have no owners, so they step at 30 fps at higher rates. Scrolling past 10 rows in the launcher
+  Mono. 2D prims have no owners, so they step at 30 fps at higher rates. Scrolling past 10 rows in the launcher
   and fullscreen haven't been seen to work.
 - **Port, reads off the end of a table, harmless so far (ASan):** Tank's map at negative cells at the arena's edges, `PolarShadowFrames`
   past a table's end (retail reads the next table; here there can be padding), `AiSkillTable` from a hub mode's byte. A table read across labels
@@ -84,6 +84,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   behind are dropped (`mesh_submit_*`), and these haven't been seen to flash, but real near clipping would need the GTE's camera-space positions.
 - **Port, seen once:** a run with no presses showed the launcher well after PLAY; three more didn't, and the likely cause is real keys reaching a
   test window.
+- **Port's saves, tidying:** the save screens still test `CardStatus` for a card that's missing, unformatted or being checked, which can't happen now; those branches
+  and their texts can go.
 - **Port's sound:** `FX_LEVEL` (25% under the original's sums), `MIX_LEVEL` and the limiter are by ear, and the user never compared it with
   the original in RetroArch. Vibrato (a tone's `vibW`, `vibT`) and portamento aren't played.
 
@@ -457,6 +459,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: Saving, on the user's call not to emulate the card: each slot is a checksummed file written safely (`platform/saves.c`, in the settings' folder), and
+  `mcrd.c` and the card's icon and title code are gone. A warp room's pause menu saves too. The save screen's counters on an empty slot, which the user read as won
+  items, were the panel's placeholders left showing by a PS1-sized stride (`EngineSetSlot3Digits`). ASan found the name's letters were a table split across labels.
 - 2026-10-31: 6.7 begun, at the user's asking, with the controller: a pad is an analog one with motors (`pad.c`), so the game's own stick and rumble code runs. No
   controller here, so `--stick` stands in; the user has yet to feel it. It found a heap bug: `mal_set_owner` wrote a raw pointer over a 4-byte file slot, which broke
   on-demand animation blocks (a hub door). Saving and any resolution are next.

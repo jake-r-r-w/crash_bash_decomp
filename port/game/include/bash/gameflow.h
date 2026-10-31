@@ -260,27 +260,27 @@ static inline s32 EngineExtra105(GameState *arg0) {
 /* GameSetSlot3Digits's body, inlined by ShowCardSlotStats. */
 static inline void EngineSetSlot3Digits(s32 slot, s32 arg0) {
     s32 *src;
-    s32 *p;
+    subengine *p;
     s32 i;
-    s32 *base;
+    subengine *base;
     s32 *tbl;
 
     tbl = (s32 *)Slot3DigitSrc + arg0 * 5;
-    base = (s32 *)GetEngineSlot(slot)->sub;
+    base = GetEngineSlot(slot)->sub;
     src = tbl;
-    p = base + sizeof(subengine) / 4;
+    p = base + 1;
     i = 0;
     do {
         if (*src == -1) {
-            p[0] &= ~0x8000;
-            p[sizeof(subengine) / 4] &= ~0x8000;
+            p[0].flags &= ~0x8000;
+            p[1].flags &= ~0x8000;
         } else {
-            p[0] |= 0x8000;
-            p[sizeof(subengine) / 4] |= 0x8000;
-            p[1] = *src;
-            p[0x2B] = *src;
+            p[0].flags |= 0x8000;
+            p[1].flags |= 0x8000;
+            p[0].XYZ.x = *src;
+            p[1].XYZ.x = *src;
         }
-        p += 0x54;
+        p += 2;
         i++;
         src++;
     } while (i < 5);
