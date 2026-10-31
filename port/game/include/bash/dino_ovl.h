@@ -18,7 +18,7 @@ s32 DinoGetLevelPoint(s32 *arg0, s32 arg1);
 
 /* Extension 0x10000000 (FindExtension): a gem's or hero's physics record sits at +0x94. */
 typedef struct DinoExt {
-    u8 pad[0xC];
+    EXT base;
     s32 state;
     s32 timer;  /* counted down */
     s32 flag;  /* tested for zero */
@@ -27,7 +27,7 @@ typedef struct DinoExt {
 } DinoExt;
 
 typedef struct DinoChase {
-    u8 pad[0xC];
+    EXT base;
     void (*fn)(s32); /* 0xC */
     SLONG_XYZ pos;    /* 0x10 */
     SLONG_XYZ tgt;    /* 0x1C */
@@ -41,7 +41,7 @@ typedef struct DinoChase {
 } DinoChase;
 
 typedef struct DinoGem {
-    u8 pad0[0xC];
+    EXT base;
     s32 state;  /* switched on */
     s32 player;  /* a hero's index */
     s32 yvel;
@@ -91,7 +91,7 @@ void DinoAI_SteerToTarget(s32 id);
 
 /* Hero NAS extension 0x10000000 DinoHeroRun ticks: a 26-frame timer. */
 typedef struct DinoHeroExt {
-    u8 pad[0xC];
+    EXT base;
     s32 unkC;  /* 0x0C */
     u8 pad10[0xC];
     s32 timer; /* 0x1C */
@@ -101,7 +101,7 @@ s32 DinoHeroTestShoot(s32 hero);
 s32 DinoHeroCollide(s32 hero);
 s32 DinoHeroTestIdle(s32 hero);
 typedef struct DinoExtB {
-    u8 pad[0xC];
+    EXT base;
     s32 flag;  /* tested for zero */
     s32 player;
     s32 flag2;  /* tested for zero */
@@ -131,7 +131,7 @@ void FirstTriggersDINO(void);
 
 /* DinoChooseWinnerTeam: the 0x10000000 extension of the spawned 0x1605 effect. */
 typedef struct DinoPuff {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ u8 pad10[0x18 - 0x10];
     /* 0x18 */ s32 unk18;
@@ -300,7 +300,7 @@ static inline s32 DinoBoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
 
 /* Hero NAS extension 0x20000000: the AI chase state DinoAI_Wander runs. */
 typedef struct DinoAiExt {
-    u8 pad[0xC];
+    EXT base;
     void (*func)(s32); /* 0x0C */
     SLONG_XYZ pos;    /* 0x10 */
     SLONG_XYZ target; /* 0x1C */

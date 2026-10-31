@@ -75,7 +75,7 @@ typedef struct ArkenoidNode {
     u8 pad24[offsetof(NAS, Engine) - (offsetof(NAS, Group.Child) + sizeof(void *))];
     EXTengine *target;
     struct {
-        u8 pad0[0x14];
+        u8 pad0[offsetof(EXTobject, whatami)];
         u16 status;
     } *unk58;
 } ArkenoidNode;

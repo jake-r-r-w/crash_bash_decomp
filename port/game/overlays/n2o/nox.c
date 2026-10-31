@@ -1816,22 +1816,18 @@ void PlotSpiralSat(NAS *nas) {
     z = nas->Engine->XYZ.z;
     j = 0;
     if (z < Heroes[0].hero_eng->XYZ.z - 0x800) {
-        p = ext;
         for (; j < 4; j++) {
-            if (p->sat[0] != NULL) {
-                KillNAS(p->sat[0]);
+            if (ext->sat[j] != NULL) {
+                KillNAS(ext->sat[j]);
             }
-            p = (SpiralExt *)((s32 *)p + 1);
         }
         goto kill;
     }
     if (*GameTeams != 0 && z < Heroes[1].hero_eng->XYZ.z - 0x800) {
-        p = ext;
         for (mode = 0; mode < 4; mode++) {
-            if (p->sat[0] != NULL) {
-                KillNAS(p->sat[0]);
+            if (ext->sat[mode] != NULL) {
+                KillNAS(ext->sat[mode]);
             }
-            p = (SpiralExt *)((s32 *)p + 1);
         }
     kill:
         KillNAS(nas);

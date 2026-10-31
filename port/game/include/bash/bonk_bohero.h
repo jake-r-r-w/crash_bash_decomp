@@ -21,14 +21,14 @@ typedef struct BonkSlot {
 } BonkSlot;
 
 typedef struct BonkPos {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ u8 pad0[offsetof(EXTengine, XYZ)];
     /* 0x10 */ s32 x;
     /* 0x14 */ s32 y;
     /* 0x18 */ s32 z;
 } BonkPos;
 
 typedef struct BonkInner {
-    /* 0x00 */ u8 pad0[0x54];
+    /* 0x00 */ u8 pad0[offsetof(NAS, Engine)];
     /* 0x54 */ BonkPos *pos;
 } BonkInner;
 

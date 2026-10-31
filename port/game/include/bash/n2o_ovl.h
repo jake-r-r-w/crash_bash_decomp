@@ -229,7 +229,7 @@ typedef struct N2ONode {
     u8 pad24[offsetof(NAS, Engine) - (offsetof(NAS, Group.Child) + sizeof(void *))];
     EXTengine *target;
     struct {
-        u8 pad0[0x14];
+        u8 pad0[offsetof(EXTobject, whatami)];
         u16 whatami;
         u8 pad16[4];
         u16 status;

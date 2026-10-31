@@ -114,7 +114,6 @@ void HubInitGateways(void) {
     o = ((u8 *)MapScene->subs);
     for (;;) {
         s32 k;
-        void *g;
         HubGateway *q;
 
         if (o == NULL) {
@@ -137,10 +136,9 @@ void HubInitGateways(void) {
                 q = &HubGateways[i];
                 q->colour_map = o;
                 k = o->flags;
-                g = MapScene;
                 o->hook = HubDrawObj;
                 o->flags = k & ~0x8000;
-                q->group = entry_block_value(o->entity, *(ModelFile **)(*(u8 **)g + 0xC));
+                q->group = entry_block_value(o->entity, (ModelFile *)MapScene->dbase->data);
                 break;
             }
         }

@@ -367,7 +367,7 @@ typedef struct {
 } PointSpriteSet;
 
 typedef struct {
-    u8 pad0[0x6C];
+    u8 pad0[offsetof(subengine, u6C)];
     PointSpriteSet set; /* 0x6C */
 } PointSprites;
 

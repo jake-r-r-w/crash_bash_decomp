@@ -9645,8 +9645,8 @@ void InitBearBoss(NAS *m) {
         m->Engine->sub->otz = 0x300;
         m->Engine->sub->flags |= 0x02000000;
         m->Engine->sub->u6C.dbase = MapScene->dbase;
-        ext->flag = (iptr)ScriptCursorFirst(m, &BearBossScriptInit);
-        GotoLinkAnim((EXTanimator *)(iptr)ext->flag, 0);
+        ext->flag = ScriptCursorFirst(m, &BearBossScriptInit);
+        GotoLinkAnim(ext->flag, 0);
         RunNasAnim(m);
     }
 }

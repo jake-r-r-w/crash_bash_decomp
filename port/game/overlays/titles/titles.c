@@ -800,14 +800,14 @@ void PlayersMenuUpdate(void) {
 }
 
 void NewLoadMenuUpdate(void) {
-    TitlesSub *s;
+    subengine *s;
     s32 *g;
 
     AnimateTitlesBackdrop();
     do {
-        s = (TitlesSub *)GetEngineSlot(0)->sub;
-        s->a = (NewLoadMenuCursor == 0) * 2;
-        s->b = (NewLoadMenuCursor == 1) * 2;
+        s = GetEngineSlot(0)->sub;
+        s[3].unk7C = (NewLoadMenuCursor == 0) * 2;
+        s[4].unk7C = (NewLoadMenuCursor == 1) * 2;
         g = &Pads[0].pressed;
     } while (0);
     if ((*g & 0x10) && (NewLoadMenuCursor > 0)) {

@@ -13,12 +13,12 @@
 
 
 typedef struct CoalFlameInner {
-    s32 pad0[3];
+    u8 pad0[offsetof(EXTengine, flags)];
     s32 unkC;
 } CoalFlameInner;
 
 typedef struct CoalFlameObj {
-    u8 pad0[0x54];
+    u8 pad0[offsetof(NAS, Engine)];
     CoalFlameInner *inner;
 } CoalFlameObj;
 
@@ -52,7 +52,7 @@ typedef struct EggExt {
 
 /* Extension 0x10000000 of the NAS 0x1605 puff PlotEgg spawns. */
 typedef struct EggPuffExt {
-    /* 0x00 */ u8 pad[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ u8 pad10[0x18 - 0x10];
     /* 0x18 */ s32 unk18;
@@ -67,7 +67,7 @@ extern u16 ChaseHeroShadowSizes[];
 extern EXTengine *ChaseFlameTimer[];
 
 typedef struct CoalPosInner {
-    s32 pad0[4];
+    u8 pad0[offsetof(EXTengine, XYZ)];
     s32 x;
     s32 pad14;
     s32 z;
@@ -85,16 +85,16 @@ typedef struct ChaseOut {
     s32 unk8;
 } ChaseOut;
 typedef struct CoalSfxInner {
-    u8 pad0[0x10];
+    u8 pad0[offsetof(EXTengine, XYZ)];
     SLONG_XYZ pos;
-    u8 pad1C[0x94 - 0x10 - sizeof(SLONG_XYZ)];
+    u8 pad1C[offsetof(EXTengine, sfx) - (offsetof(EXTengine, XYZ) + sizeof(SLONG_XYZ))];
     _sfx_handler *voice;
 } CoalSfxInner;
 
 typedef struct CoalSfxObj {
-    u8 pad0[0x54];
+    u8 pad0[offsetof(NAS, Engine)];
     CoalSfxInner *inner;
-    u8 pad58[0xC];
+    u8 pad58[offsetof(NAS, UserInfo.user2) - (offsetof(NAS, Engine) + sizeof(void *))];
     s32 idx;
 } CoalSfxObj;
 
@@ -108,7 +108,7 @@ void PlotCoalFlameSFX(CoalSfxObj *obj);
 void ChaseAimAt(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4);
 
 typedef struct CoalSub {
-    u8 pad0[0x74];
+    u8 pad0[offsetof(subengine, entity)];
     u16 pad74;
 } CoalSub;
 
@@ -117,14 +117,14 @@ typedef struct CoalSub {
 void PlotCoal(NAS *nas);
 void ChaseKillGridObj(CoalGridObj *obj);
 typedef struct ChasePos {
-    u8 pad0[0x10];
+    u8 pad0[offsetof(EXTengine, XYZ)];
     s32 x;
     u8 pad14[4];
     s32 z;
 } ChasePos;
 
 typedef struct ChaseObj {
-    u8 pad0[0x54];
+    u8 pad0[offsetof(NAS, Engine)];
     ChasePos *pos;
 } ChaseObj;
 
@@ -331,7 +331,7 @@ static inline NAS *CircleFireGridCell(NAS **grid, s32 x, s32 z) {
 void SetChaseHeroDrop(s32 arg0);
 
 /* CoalFlameSpread: coal flame spreading over the circle-fire grid. */
-typedef struct { u8 pad0[0x10]; s32 x; s32 pad14; s32 z; } CoalFlamePos;
+typedef struct { u8 pad0[offsetof(EXTengine, XYZ)]; s32 x; s32 pad14; s32 z; } CoalFlamePos;
 typedef struct {
     u8 pad0[sizeof(EXT) + 0x10]; s32 unk1C; s32 unk20; s32 unk24; s32 unk28; s32 unk2C;
 } CoalFlameFux;

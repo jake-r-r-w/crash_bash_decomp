@@ -4832,7 +4832,7 @@ void PlotRacePickUp(NAS *m) {
         return;
     }
     if (GameMode != 0x19) {
-        RaceBounceObject((RaceBounceObj *)m->Engine, (RaceBouncer *)&ext->pad0[0xC]);
+        RaceBounceObject((RaceBounceObj *)m->Engine, (RaceBouncer *)ext->padC);
     }
     m->Engine->xform.rot.vy += 0x80;
     m->Engine->xform.dirty = 1;
@@ -5759,18 +5759,17 @@ void InitRaceVolcano(NAS *nas) {
         if (i < 3) {
             eng = AddExtEngine(nas, i + 2);
             if (eng != NULL) {
-                ext->eng[0] = eng;
+                ext->eng[i] = eng;
                 eng->sub->flags &= ~0x8000;
                 eng->xform.hasScale = 1;
                 eng->xform.order = 2;
                 eng->sub->entity = 0x2019;
                 eng->sub->u6C.dbase = MapScene->dbase;
-                ext->eng[0]->xform.rot.vy = Random(0x1000);
-                ext->eng[0]->xform.rot.vz = 0;
-                ext->nas[0] = 0;
-                ext->delay[0] = 0;
+                ext->eng[i]->xform.rot.vy = Random(0x1000);
+                ext->eng[i]->xform.rot.vz = 0;
+                ext->nas[i] = 0;
+                ext->delay[i] = 0;
             }
-            ext = (RaceVolcanoExt *)((s32 *)ext + 1);
             i++;
             goto loop;
         }

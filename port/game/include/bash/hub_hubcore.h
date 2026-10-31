@@ -9,7 +9,7 @@
 #include "bash/hub_ovl.h"
 
 typedef struct HubSpawnExt {
-    u8 pad0[0xC];
+    EXT base;
     s32 *unkC;
     u8 pad10[0x34 - 0x10];
     s32 unk34;
@@ -71,9 +71,9 @@ typedef struct HubKey {
     /* 0xE */ s16 padE;
 } HubKey;
 typedef struct PodiumTrophy {
-    /* 0x00 */ u8 pad0[0x54];
+    /* 0x00 */ u8 pad0[offsetof(NAS, Engine)];
     /* 0x54 */ EXTengine *inner;
-    /* 0x58 */ u8 pad58[4];
+    /* 0x58 */ u8 pad58[offsetof(NAS, UserInfo) - (offsetof(NAS, Engine) + sizeof(void *))];
     /* 0x5C */ u16 state;
 } PodiumTrophy;
 #define PODIUM_SIN(k) rcossin_tbl[((((FrameCount * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
@@ -168,7 +168,7 @@ extern s32 HubHeroTouchCount;
 extern CamEase HubCamEase;
 
 typedef struct DistPos {
-    u8 pad0[0x10];
+    u8 pad0[offsetof(EXTengine, XYZ)];
     s32 x;
     u8 pad14[4];
     s32 z;
@@ -236,14 +236,14 @@ void PlotCrystalFlash(void);
 
 
 typedef struct FxMid {
-    u8 pad0[0x6C];
+    u8 pad0[offsetof(EXTengine, sub)];
     subengine *inner;
 } FxMid;
 
 typedef struct FxObj {
-    u8 pad0[0x54];
+    u8 pad0[offsetof(NAS, Engine)];
     FxMid *mid;
-    u8 pad58[8];
+    u8 pad58[offsetof(NAS, UserInfo.user1) - (offsetof(NAS, Engine) + sizeof(void *))];
     s32 unk60;
 } FxObj;
 
@@ -331,7 +331,7 @@ void InitPodiumTrophy(NAS *arg0);
 void InitPodiumOdo(NAS *arg0);
 
 typedef struct ScriptExt40 {
-    /* 0x00 */ u8 pad00[0x14];
+    /* 0x00 */ EXT base; u8 padC[8];
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
     /* 0x1C */ u8 pad1C[8];
@@ -438,14 +438,14 @@ void HubDrawObj(HubRenderObj *obj, void *arg1);
 void HubProject(SVECTOR *v, s16 *b);
 
 typedef struct PodiumInner {
-    u8 pad0[0x6C];
+    u8 pad0[offsetof(subengine, u6C)];
     u8 *script;
 } PodiumInner;
 
 typedef struct PodiumMid {
-    u8 pad0[0xC];
+    u8 pad0[offsetof(EXTengine, flags)];
     u32 flags;
-    u8 pad10[0x5C];
+    u8 pad10[offsetof(EXTengine, sub) - (offsetof(EXTengine, flags) + 4)];
     PodiumInner *inner;
 } PodiumMid;
 
@@ -499,7 +499,7 @@ void HubSaveMenuInit(void);
 /* Extension 0x10000000 of the path-following objects HubSpawnEffects spawns
  * (0x1626); PlotPathEffect is their Plot. */
 typedef struct PathExt {
-    /* 0x00 */ u8 pad00[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ KeyBlock *path;
     /* 0x10 */ u8 pad10[4];
     /* 0x14 */ s32 state;

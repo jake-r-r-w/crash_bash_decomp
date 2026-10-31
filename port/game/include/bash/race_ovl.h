@@ -43,7 +43,7 @@ void RaceHeroesBump(s32 a, s32 b);
 
 /* Extension 0x20000000 as RaceAI_Think drives it. */
 typedef struct EXTraceai {
-    /* 0x00 */ s32 pad0[5];
+    /* 0x00 */ EXT base; u8 padC[8];
     /* 0x14 */ s32 unk14;
     /* 0x18 */ void (*unk18)(s32 player);
 } EXTraceai;
@@ -107,7 +107,7 @@ s32 RaceHeroUsePickup(s32 player);
 
 void InitRaceShield(NAS *nas);
 typedef struct EXTracefire {
-    /* 0x00 */ s32 pad0[4];
+    /* 0x00 */ EXT base; u8 padC[4];
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
@@ -115,7 +115,7 @@ typedef struct EXTracefire {
 } EXTracefire;
 /* Inner ripple extension (id 0x10000000). */
 typedef struct EXTinnerripple {
-    /* 0x00 */ s32 pad0[3];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 scale;
     /* 0x10 */ s32 speed;
     /* 0x14 */ s32 max;
@@ -123,7 +123,7 @@ typedef struct EXTinnerripple {
 } EXTinnerripple;
 /* Rippled extension, AddExt(nas, 0x1C, 0x10000000). */
 typedef struct EXTrippled {
-    /* 0x00 */ s32 pad0[3];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 scale;
     /* 0x10 */ s32 speed;
     /* 0x14 */ s32 max;
@@ -247,7 +247,7 @@ extern s32 RaceOver;
 
 /* Extension 0x10000000 as PlotDac drives it. */
 typedef struct EXTracedac {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;
     /* 0x10 */ s32 pad10;
     /* 0x14 */ s32 angle;
@@ -314,7 +314,7 @@ void RacePickupMaster(void);
 void RacePickupRespawn(void);
 /* Race missile extension (0x78 bytes, id 0x10000000). */
 typedef struct RaceMissileExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 owner;  /* the hero who fired it */
     /* 0x10 */ s32 state;  /* switched on */
     /* 0x14 */ s32 radius;  /* with angle, its polar position (RaceToPolar) */
@@ -432,7 +432,7 @@ static inline void RaceToPolar(SLONG_XYZ *v, s32 *out) {
 
 /* Race pick-up extension (0x50 bytes, id 0x10000000). */
 typedef struct RacePickUpExt {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ EXT base; u8 padC[4];
     /* 0x10 */ s32 unk10;
     /* 0x14 */ u8 pad14[0x1C - 0x14];
     /* 0x1C */ s32 unk1C;
@@ -476,7 +476,7 @@ typedef struct RaceVolcArc {
 
 /* Race volcano extension (0x15C bytes, id 0x10000000). */
 typedef struct RaceVolcanoExt {
-    /* 0x000 */ u8 pad0[0xC];
+    /* 0x000 */ EXT base;
     /* 0x00C */ s32 state;  /* switched on */
     /* 0x010 */ s32 timer;  /* counted down */
     /* 0x014 */ s32 y;
@@ -523,7 +523,7 @@ static inline NAS *RaceSpawnPuffRet(SLONG_XYZ *v, s32 kind, s32 mode) {
 
 /* Barrel roll extension (0x80 bytes, id 0x10000000). */
 typedef struct BarrelRollExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 arc;  /* ArcUpdate's state */
     /* 0x10 */ s32 unk10;
     /* 0x14 */ u8 pad14[0x20 - 0x14];
@@ -553,7 +553,7 @@ extern s32 RaceEggCount;
 
 /* Dac extension (0x28 bytes, id 0x10000000). */
 typedef struct DacExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ ScriptCursor *unk10;
     /* 0x14 */ u8 pad14[0x18 - 0x14];
@@ -605,7 +605,7 @@ s32 RaceOtherHeroNear(u8 *arg0, u32 arg1, s32 arg2);
 s32 RaceAI_TargetShare(s32 arg0, s32 arg1);
 /* Glob extension, AddExt(nas, 0x1C, 0x10000000). */
 typedef struct EXTglob {
-    /* 0x00 */ s32 pad0[3];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;
     /* 0x10 */ ScriptCursor *cursor;  /* its animation */
     /* 0x14 */ s32 timer;  /* counted down */
@@ -686,7 +686,7 @@ s32 RaceFallToFloor(s32 player);
 
 /* Ripple extension (id 0x10000000) as PlotRippled reads it. */
 typedef struct EXTripple {
-    /* 0x00 */ s32 pad0[3];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 scale;
     /* 0x10 */ s32 step;
     /* 0x14 */ s32 max;
@@ -718,7 +718,7 @@ void SetRaceHeroOiled(s32 player);
 
 /* Track glob extension, AddExt(nas, 0x8C, 0x10000000). */
 typedef struct EXTtrackglob {
-    /* 0x00 */ s32 pad0[3];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;  /* switched on */
     /* 0x10 */ s32 arc;  /* ArcUpdate's state */
     /* 0x14 */ s32 unk14;
@@ -846,7 +846,7 @@ void SetRaceHeroOffTrack(s32 player);
 
 /* The 0x10000000 extension of the 0x1605 tag spawned by PlotRaceTag. */
 typedef struct RaceTagExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ u8 pad10[0x8];
     /* 0x18 */ s32 unk18;
@@ -881,7 +881,7 @@ void PlotGlob(NAS *m);
 
 /* Extension 0x10000000 of the effect NAS PlotRaceShield spawns. */
 typedef struct RaceShieldFxExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 pad10;
     /* 0x14 */ s32 pad14;

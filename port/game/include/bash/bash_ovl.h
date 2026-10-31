@@ -98,14 +98,14 @@ s32 BASH_KeepInBounds(EXTengine *arg0);
 
 /* Extension 0x20000002: one entry every 2 bytes, one per subengine. */
 typedef struct SnowGlint {
-    /* 0x00 */ u8 pad00[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ u16 on[10];
     /* 0x20 */ u16 timer[10];
 } SnowGlint;
 
 /* Extension 0x20000000 (BashShox): u16 per subengine. */
 typedef struct BashShoxExt {
-    /* 0x00 */ u8 pad00[0x18];
+    /* 0x00 */ EXT base; u8 padC[12];
     /* 0x18 */ u16 a[8];
     /* 0x28 */ u16 b[16];
     /* 0x48 */ s16 c[16];
@@ -290,11 +290,11 @@ extern u8 *BashDrainsEdges[4];
 
 /* The object CreateCrate returns, as BashCrateMaster sees it. */
 typedef struct {
-    /* 0x00 */ u8 pad0[0x24];
+    /* 0x00 */ u8 pad0[offsetof(EXTobject, contains)];
     /* 0x24 */ u16 unk24;
 } BashEdgeSub;
 typedef struct {
-    /* 0x00 */ u8 pad0[0x58];
+    /* 0x00 */ u8 pad0[offsetof(NAS, FUX)];
     /* 0x58 */ BashEdgeSub *edge;
 } BashEdgeObj;
 

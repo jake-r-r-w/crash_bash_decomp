@@ -351,7 +351,7 @@ typedef struct {
 } SparkSet;
 
 typedef struct {
-    u8 pad[0x6C];
+    u8 pad[offsetof(subengine, u6C)];
     SparkSet set;
 } SparkObj;
 

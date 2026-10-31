@@ -38,7 +38,7 @@ extern NAS *PolarBomb;
 
 /* InitBombGFX's extension (0x1C bytes). */
 typedef struct BombGFXExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ u8 pad10[0x1C - 0x10];
 } BombGFXExt;
@@ -75,13 +75,13 @@ typedef struct PolarEaseCam {
 } PolarEaseCam;
 
 typedef struct Ext10000000 {
-    /* 0x00 */ u8 pad[0xC];
-    /* 0x0C */ s32 flag;  /* tested for zero */
+    /* 0x00 */ EXT base;
+    /* 0x0C */ void *flag;  /* tested for zero */
 } Ext10000000;
 
 /* The 0x10000000 extension of the object PolarBombHitHeroes spawns (0x1611). */
 typedef struct PolarBombHit {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ EXT base; u8 padC[4];
     /* 0x10 */ s32 angle;
     /* 0x14 */ SLONG_XYZ pos;
     /* 0x20 */ SLONG_XYZ start;
@@ -89,7 +89,7 @@ typedef struct PolarBombHit {
 
 /* The 0x10000000 extension of the object SetPolarHeroThrowBomb spawns (0x160D). */
 typedef struct PolarThrown {
-    /* 0x00 */ u8 pad0[0x14];
+    /* 0x00 */ EXT base; u8 padC[8];
     /* 0x14 */ s32 owner;
     /* 0x18 */ SLONG_XYZ pos;
     /* 0x24 */ SLONG_XYZ start;
@@ -115,7 +115,7 @@ extern s32 PolarRoundState;
 /* PolarBeamOwner's 0x40000000 extension as SetPolarHeroWinner uses it: engines at
  * 0x74 and four at 0x78. */
 typedef struct PolarGameExt {
-    /* 0x00 */ u8 pad[0x74];
+    /* 0x00 */ u8 pad[offsetof(EXTtransmuter, it_eng)];
     /* 0x74 */ EXTengine *eng;
     /* 0x78 */ EXTengine *eng2[4];
 } PolarGameExt;
@@ -140,7 +140,7 @@ typedef struct PolarGameExt {
     }
 
 typedef struct Ext20 {
-    /* 0x00 */ u8 pad[0x14];
+    /* 0x00 */ EXT base; u8 padC[8];
     /* 0x14 */ s32 count;  /* counted up */
     /* 0x18 */ s32 flag;  /* tested for zero */
     /* 0x1C */ u8 pad1C[0x4];
@@ -184,7 +184,7 @@ static inline u32 PolarPadToward(SLONG_XYZ *p, SLONG_XYZ *v) {
 
 /* Extension 0x10000000 made by InitSimpleExplosion: a velocity per sub-engine. */
 typedef struct ExtSimpleExplosion {
-    /* 0x000 */ u8 pad0[0x14];
+    /* 0x000 */ EXT base; u8 padC[8];
     /* 0x014 */ SLONG_XYZ vel[20];
     /* 0x104 */ s32 count;  /* counted up */
 } ExtSimpleExplosion;
@@ -192,16 +192,16 @@ typedef struct ExtSimpleExplosion {
 
 /* The object PlotBrioPack follows (its NAS.UserInfo.user1). */
 typedef struct BrioAnim {
-    /* 0x00 */ u8 pad0[0x1E];
+    /* 0x00 */ u8 pad0[offsetof(EXTanimator, Aindex)];
     /* 0x1E */ s16 frame;
 } BrioAnim;
 
 typedef struct BrioOwner {
-    /* 0x00 */ u8 pad0[0x4];
+    /* 0x00 */ u8 pad0[offsetof(HeroInfo, hero_eng)];
     /* 0x04 */ EXTengine *engine;
-    /* 0x08 */ u8 pad8[0x1C - 0x8];
+    /* 0x08 */ u8 pad8[offsetof(HeroInfo, hero_anim) - (offsetof(HeroInfo, hero_eng) + sizeof(void *))];
     /* 0x1C */ BrioAnim *anim;
-    /* 0x20 */ u8 pad20[0x2C - 0x20];
+    /* 0x20 */ u8 pad20[offsetof(HeroInfo, hero_mode) - (offsetof(HeroInfo, hero_anim) + sizeof(void *))];
     /* 0x2C */ u16 type;
     /* 0x2E */ u16 subtype;
 } BrioOwner;
@@ -235,7 +235,7 @@ void GravityMotionUpdate(NAS *nas, EXTmotion *m);
 
 
 typedef struct GravityObject {
-    /* 0x00 */ u8 pad0[0x58];
+    /* 0x00 */ u8 pad0[offsetof(NAS, FUX)];
     /* 0x58 */ EXTmotion *target;
 } GravityObject;
 
@@ -479,14 +479,14 @@ void PolarSpawnObjects(void);
 
 /* Read by PolarBeamLinkState and CheckMelted. */
 typedef struct PolarLink {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;
     /* 0x10 */ s32 player;  /* its index in PolarAIFlags, -1 for none */
     /* 0x14 */ s32 beamMode;  /* copied to PolarBeamMode */
     /* 0x18 */ u8 pad18[0x28 - 0x18];
     /* 0x28 */ s32 modes[(0x6C - 0x28) / 4];  /* per player */
     /* 0x6C */ s32 aiFlag;  /* its index in PolarAIFlags */
-    /* 0x70 */ u8 pad70[0xBC - 0x70];
+    /* 0x70 */ u8 pad70[offsetof(EXTtransmuter, sectordata) - offsetof(EXTtransmuter, itplayer)];
     /* 0xBC */ psector sectors[16];
 } PolarLink;
 
@@ -501,7 +501,7 @@ extern s32 PolarBeamMode;
 
 /* Read by PolarAI_Proximity. */
 typedef struct PolarMode {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 mode;
 } PolarMode;
 
@@ -606,7 +606,7 @@ typedef struct PolarRiser {
 } PolarRiser;
 
 typedef struct PolarRiserSet {
-    /* 0x00 */ u8 pad0[0xB8];
+    /* 0x00 */ u8 pad0[offsetof(EXTtransmuter, sectordata)];
     /* 0xB8 */ PolarRiser slot[16];
 } PolarRiserSet;
 
@@ -621,7 +621,7 @@ void UkaMaskSetSegments(s32 i, UkaMaskSet *m);
 
 /* The 0x1605 bit's extension (id 0x10000000) InitUkaPolarMask sets up. */
 typedef struct UkaBitExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ u8 pad10[8];
     /* 0x18 */ s32 unk18;
@@ -663,7 +663,7 @@ void RiserSetReset(PolarRiserSet *arg0);
 /* Walrus fish extension (id 0x10000000): a ballistic arc (ArcUpdate's
  * Arc, declared in bash/pause.h) at 0x10. */
 typedef struct WalrusFishExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;
     /* 0x10 */ s32 arc[0xD];
     /* 0x44 */ s32 vx; /* arc vx */
@@ -681,7 +681,7 @@ typedef struct WalrusFishExt {
 /* Polar walrus extension (0x94 bytes, id 0x10000000): arc at 0x14 like
  * WalrusFishExt's at 0x10. */
 typedef struct PolarWalrusExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;
     /* 0x10 */ s32 timer;
     /* 0x14 */ s32 arc[0xD];
@@ -715,7 +715,7 @@ extern s32 WalrusState;
 /* Big missile extension (id 0x10000000) as PlotBigMissile reads it: a ballistic
  * arc at 0xC (the same block as BigMissileExt, InitBigMissile's view). */
 typedef struct BigMissileArcExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 arc[0x15];
     /* 0x60 */ SLONG_XYZ from;
     /* 0x6C */ SLONG_XYZ to;
@@ -724,7 +724,7 @@ typedef struct BigMissileArcExt {
 
 /* Polar boss extension (0x94 bytes, id 0x10000000; InitPolarBoss, PlotBigMissile). */
 typedef struct PolarBossExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;
     /* 0x10 */ ScriptCursor *cursor;
     /* 0x14 */ u8 pad14[0x34 - 0x14];
@@ -759,7 +759,7 @@ extern NAS *polarbossnas;
 
 /* The 0x10000000 extension of the boss's partner (PlotPolarBoss). */
 typedef struct PolarBossAnimExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ EXTanimator *anim;
 } PolarBossAnimExt;
 
@@ -800,7 +800,7 @@ s32 PolarAI_PickVictim(s32 arg0);
 
 /* Sniper missile extension (0x38 bytes, id 0x10000000). */
 typedef struct SniperMissileExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;  /* switched on */
     /* 0x10 */ SLONG_XYZ from;
     /* 0x1C */ SLONG_XYZ to;
@@ -824,7 +824,7 @@ s32 PolarXZBoxToSphere(EXTengine *a, EXTengine *b, s32 c);
 
 /* Polar missile extension (0x70 bytes, id 0x10000000). */
 typedef struct PolarMissileExt {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ EXT base; u8 padC[4];
     /* 0x10 */ s32 state;
     /* 0x14 */ u8 pad14[4];
     /* 0x18 */ s32 unk18;
@@ -907,7 +907,7 @@ s32 PolarBombHitHeroes(NAS *nas, s32 dist);
 
 /* Big missile extension (0x7C bytes, id 0x10000000). */
 typedef struct BigMissileExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
     /* 0x14 */ u8 pad14[0x24 - 0x14];
@@ -938,7 +938,7 @@ typedef struct SniperAim {
 
 /* Sniper extension (0x9C bytes, id 0x10000000; InitSniper). */
 typedef struct SniperExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;
     /* 0x10 */ EXTengine *aimEng;
     /* 0x14 */ s32 savedEyeZ;  /* the camera's eye.z, put back at the end */
@@ -972,7 +972,7 @@ typedef struct SniperExt {
 
 /* Bear death extension (0x88 bytes, id 0x10000000). */
 typedef struct BearDeathExt {
-    /* 0x00 */ u8 pad0[0x14];
+    /* 0x00 */ EXT base; u8 padC[8];
     /* 0x14 */ SLONG_XYZ to;
     /* 0x20 */ SLONG_XYZ from;
     /* 0x2C */ s32 arc;  /* ArcUpdate's state */
@@ -1098,7 +1098,7 @@ s32 TestPolarHeroRun(s32 player);
 
 /* A hero's 0x20000000 extension as SetPolarHeroOffice uses it. */
 typedef struct PolarHitExt {
-    /* 0x00 */ u8 pad0[0x18];
+    /* 0x00 */ EXT base; u8 padC[12];
     /* 0x18 */ s32 speed;
     /* 0x1C */ u8 pad1C[0x24 - 0x1C];
     /* 0x24 */ s32 flag;  /* tested for zero */
@@ -1122,7 +1122,7 @@ void SetPolarHeroFootIdle(s32 player);
 
 /* InitBearminator's extension (0xB8 bytes, id 0x10000000). */
 typedef struct BearminatorExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;
     /* 0x10 */ ScriptCursor *cursor;
     /* 0x14 */ s32 timer;
@@ -1182,7 +1182,7 @@ void SetPolarHeroWinner(s32 player);
 
 /* Extension of the 0x1605 objects UpdatePOLAR drops (id 0x10000000). */
 typedef struct PolarDropExt {
-    /* 0x00 */ u8 pad0[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 kind;
     /* 0x10 */ u8 pad10[0x8];
     /* 0x18 */ s32 unk18;

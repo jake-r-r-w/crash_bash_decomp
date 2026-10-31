@@ -9,9 +9,9 @@
 #include "bash/nas.h"
 
 typedef struct BonkPad {
-    /* 0x00 */ u8 pad0[0x54];
+    /* 0x00 */ u8 pad0[offsetof(NAS, Engine)];
     /* 0x54 */ EXTengine *eng;
-    /* 0x58 */ u8 pad58[4];
+    /* 0x58 */ u8 pad58[offsetof(NAS, UserInfo) - (offsetof(NAS, Engine) + sizeof(void *))];
     /* 0x5C */ u16 mode;
 } BonkPad;
 

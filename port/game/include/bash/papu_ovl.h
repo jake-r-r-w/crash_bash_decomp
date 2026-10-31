@@ -106,24 +106,19 @@ typedef struct Slot40 {
 extern Slot40 PapuMinionSlots[6];
 
 typedef struct B5E44Flag {
-    /* 0x00 */ s32 pad0[6];
+    /* 0x00 */ u8 pad0[offsetof(EXTobject, owner)];
     /* 0x18 */ s16 pad18;
     /* 0x1A */ s16 unk1A;
     /* 0x1C */ u16 flags;
 } B5E44Flag;
 
 typedef struct B5E44Obj {
-    /* 0x00 */ s32 pad0[4];
-    /* 0x10 */ s32 x;
-    /* 0x14 */ s32 pad14;
-    /* 0x18 */ s32 z;
-    /* 0x1C */ s32 pad1C[10];
-    /* 0x44 */ s32 pad44[5];
-    /* 0x58 */ B5E44Flag *flag;
+    /* 0x00 */ u8 pad0[offsetof(NAS, FUX)];
+    B5E44Flag *flag;
 } B5E44Obj;
 
 typedef struct B5E44Pos {
-    /* 0x00 */ s32 pad0[4];
+    /* 0x00 */ u8 pad0[offsetof(EXTengine, XYZ)];
     /* 0x10 */ s32 x;
     /* 0x14 */ s32 pad14;
     /* 0x18 */ s32 z;
@@ -131,7 +126,7 @@ typedef struct B5E44Pos {
 
 
 typedef struct B5E44Owner {
-    /* 0x00 */ s32 pad0[21];
+    /* 0x00 */ u8 pad0[offsetof(NAS, Engine)];
     /* 0x54 */ B5E44Pos *pos;
 } B5E44Owner;
 

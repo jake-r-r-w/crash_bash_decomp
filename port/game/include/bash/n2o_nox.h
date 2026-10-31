@@ -32,7 +32,7 @@ typedef struct SetupCam {
 } SetupCam;
 
 typedef struct MixObj {
-    /* 0x00 */ u8 pad00[0x20];
+    /* 0x00 */ u8 pad00[offsetof(EXTheromove, x_vel)];
     /* 0x20 */ s32 a;
     /* 0x24 */ u8 pad24[0xC];
     /* 0x30 */ s32 b;
@@ -48,18 +48,18 @@ typedef struct MineSrc {
 } MineSrc;
 
 typedef struct LaserSub {
-    /* 0x00 */ u8 pad00[0x6C];
+    /* 0x00 */ u8 pad00[offsetof(subengine, u6C)];
     /* 0x6C */ void *unk6C;
-    /* 0x70 */ u8 pad70[4];
+    /* 0x70 */ u8 pad70[offsetof(subengine, entity) - (offsetof(subengine, u6C) + sizeof(void *))];
     /* 0x74 */ s16 unk74;
 } LaserSub;
 
 typedef struct LaserObj {
-    /* 0x00 */ u8 pad00[0x1E];
+    /* 0x00 */ u8 pad00[offsetof(EXTengine, xform.rot.vy)];
     /* 0x1E */ s16 unk1E;
-    /* 0x20 */ u8 pad20[0x3D];
+    /* 0x20 */ u8 pad20[offsetof(EXTengine, xform.order) - (offsetof(EXTengine, xform.rot.vy) + 2)];
     /* 0x5D */ u8 unk5D;
-    /* 0x5E */ u8 pad5E[0x0E];
+    /* 0x5E */ u8 pad5E[offsetof(EXTengine, sub) - (offsetof(EXTengine, xform.order) + 1)];
     /* 0x6C */ LaserSub *sub;
 } LaserObj;
 
@@ -76,7 +76,7 @@ typedef struct LaserPos {
 } LaserPos;
 
 typedef struct LaserTgt {
-    /* 0x00 */ u8 pad00[0x10];
+    /* 0x00 */ u8 pad00[offsetof(EXTengine, XYZ)];
     /* 0x10 */ LaserPos pos;
 } LaserTgt;
 
@@ -88,7 +88,7 @@ typedef struct LaserNode {
 } LaserNode;
 
 typedef struct LaserExt {
-    /* 0x00 */ u8 pad00[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ u8 pad10[8];
     /* 0x18 */ s32 unk18;
@@ -99,7 +99,7 @@ typedef struct LaserExt {
 } LaserExt;
 
 typedef struct SpiralExt {
-    /* 0x00 */ u8 pad00[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ EXTengine *eng[4];
     /* 0x1C */ s32 radius;
     /* 0x20 */ s32 ang[4];
@@ -116,17 +116,17 @@ extern s32 NoxSpeedScale;
 extern void (*RenderHook)(void);
 
 typedef struct MineModel {
-    /* 0x00 */ u8 pad00[0x6C];
+    /* 0x00 */ u8 pad00[offsetof(subengine, u6C)];
     /* 0x6C */ void *unk6C;
-    /* 0x70 */ u8 pad70[4];
+    /* 0x70 */ u8 pad70[offsetof(subengine, entity) - (offsetof(subengine, u6C) + sizeof(void *))];
     /* 0x74 */ s16 unk74;
 } MineModel;
 
 
 typedef struct MissileObj {
-    /* 0x00 */ u8 pad00[0x5D];
+    /* 0x00 */ u8 pad00[offsetof(EXTengine, xform.order)];
     /* 0x5D */ u8 unk5D;
-    /* 0x5E */ u8 pad5E[0xE];
+    /* 0x5E */ u8 pad5E[offsetof(EXTengine, sub) - (offsetof(EXTengine, xform.order) + 1)];
     /* 0x6C */ MineModel *model;
 } MissileObj;
 
@@ -136,7 +136,7 @@ typedef struct MissileHolder {
 } MissileHolder;
 
 typedef struct MissileExt {
-    /* 0x00 */ u8 pad00[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
@@ -144,7 +144,7 @@ typedef struct MissileExt {
 } MissileExt;
 
 typedef struct MineHolder {
-    /* 0x00 */ u8 pad00[0x54];
+    /* 0x00 */ u8 pad00[offsetof(NAS, Engine)];
     /* 0x54 */ EXTengine *obj;
 } MineHolder;
 extern s32 NoxBossHits;
@@ -160,7 +160,7 @@ extern ScriptInit NoxSmokeScriptInit;
 
 /* Path follower of NoxBossFollowPath: a key table and a position along it. */
 typedef struct BossExt {
-    /* 0x00 */ u8 pad00[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ ScriptCursor *cursor;
     /* 0x10 */ KeyBlock *keys;
     /* 0x14 */ s32 frame;  /* its key */
@@ -496,7 +496,7 @@ void InitNitroBoss(NAS *nas);
 
 /* Extension of the objects PlotNitroBoss spawns. */
 typedef struct NitroShotExt {
-    /* 0x00 */ u8 pad00[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;  /* switched on */
     /* 0x10 */ u8 pad10[4];
     /* 0x14 */ s32 player;  /* a hero's index */
@@ -559,7 +559,7 @@ void NoxDrawSparks(SparkObj *arg0);
 /* Asteroid roll extension (id 0x10000000): a ballistic arc (ArcUpdate's
  * Arc, declared in bash/pause.h) at 0x0C. */
 typedef struct AsteroidExt {
-    /* 0x00 */ u8 pad00[0xC];
+    /* 0x00 */ EXT base;
     /* 0x0C */ s32 arc[5];
     /* 0x20 */ s32 vy;    /* arc vy */
     /* 0x24 */ s32 floor; /* arc floor */
