@@ -52,7 +52,7 @@ int host_init(void) {
         SDL_SetWindowSize(Window, s->window_w, s->window_h);
     }
     SDL_SyncWindow(Window);
-    if (!gfx_init(Window, s->render_w, s->render_h, s->vsync)) {
+    if (!gfx_init(Window, s->render_w, s->render_h, s->vsync, s->fps)) {
         return 0;
     }
     open_pads();
@@ -70,23 +70,35 @@ int host_init(void) {
 }
 
 
-void host_wait_vblank(void) {
+static void wait_until(Uint64 when) {
     Uint64 freq = SDL_GetPerformanceFrequency();
-    Uint64 step = (Uint64)(freq / VBLANK_HZ);
-    Uint64 now = SDL_GetPerformanceCounter();
+    Uint64 now;
 
-    NextVblank += step;
-    /* far behind (a window drag, a breakpoint): start again from now */
-    if (now > NextVblank + freq / 4) {
-        NextVblank = now;
-    }
-    while ((now = SDL_GetPerformanceCounter()) < NextVblank) {
-        Uint64 left = (NextVblank - now) * 1000 / freq;
+    while ((now = SDL_GetPerformanceCounter()) < when) {
+        Uint64 left = (when - now) * 1000 / freq;
 
         if (left > 1) {
             SDL_Delay((Uint32)(left - 1));
         }
     }
+}
+
+void host_wait_vblank(void) {
+    Uint64 freq = SDL_GetPerformanceFrequency();
+    Uint64 step = (Uint64)(freq / VBLANK_HZ);
+    Uint64 now = SDL_GetPerformanceCounter();
+    int pictures = settings()->fps > 60 ? settings()->fps / 60 : 1;
+    int i;
+
+    /* far behind (a window drag, a breakpoint): start again from now */
+    if (now > NextVblank + step + freq / 4) {
+        NextVblank = now;
+    }
+    for (i = 1; i <= pictures; i++) {
+        wait_until(NextVblank + step * i / pictures);
+        gfx_present();
+    }
+    NextVblank += step;
 }
 
 static void open_pads(void) {

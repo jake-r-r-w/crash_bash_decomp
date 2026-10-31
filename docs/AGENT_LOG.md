@@ -444,6 +444,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: 6.5, frame rates of 30, 60 and 120 by drawing between the game's frames, depth for moving models, and opaque
+  full-screen pictures (PORT.md, Running it).
 - 2026-10-31: 6.5, from the user's first play: skip loading in the launcher, no black flash between logos (the picture stays
   until the game clears it), team and level menus and lock icons draw, the crate limit works so TNT explodes. First-effect lag was
   whole-row uploads through a 64 MB buffer; now each new texture uploads alone, and a battle shows 3 slow frames in 40 s, all loads.

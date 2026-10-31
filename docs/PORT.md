@@ -122,12 +122,17 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 |---|---|
 | `--frames N` | stop after N vblanks |
 | `--skip-intro`, `--skip-loading` | the launcher's two skips, for this run |
+| `--fps 30\|60\|120` | the frame rate, for this run |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
 | `--no-launcher` | start with the saved settings, without the menu |
 | `--launcher-keys KEYS` | drive the menu from inside the program: u, d, l, r, e for enter |
 | `--launcher-shot FILE` | save a picture of the menu and exit |
 | `--no-window`, `--data`, `--card` | no window, and where the game's data and memory card are |
+
+**Frame rates.** The game's logic runs at about 30 frames a second (2 vblanks a frame) and stays there, because its movement is per frame. At 60 and 120 the renderer keeps the game's last two frames and draws steps between them, so what's shown is one game frame behind. Triangles are matched by name: `draw_owner` says which object is drawing, and a face number or the order within that object does the rest (`gfx_mark`). What has no owner, like some 2D, just appears. A triangle that jumps more than a quarter of the screen isn't moved.
+
+**Depth.** The game sorts by bucket, as a PS1 must. Solid parts of `draw_object`'s models also test real depth against each other, so a moving model's faces don't swap. The map, effects and anything semi-transparent or with a layer of its own stay in the game's order alone.
 
 ## What a pointer's size breaks
 

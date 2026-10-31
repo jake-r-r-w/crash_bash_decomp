@@ -21,17 +21,25 @@ typedef struct GfxTex {
     float u0, v0, us, vs; /* where it is in the atlas: origin and scale per texel */
 } GfxTex;
 
-int gfx_init(void *window, int width, int height, int vsync);
+/* fps: 30 draws once for each of the game's frames; higher draws between them too, through gfx_present. */
+int gfx_init(void *window, int width, int height, int vsync, int fps);
 void gfx_quit(void);
 
 void gfx_begin_frame(void);
-void gfx_end_frame(void); /* draws what was added, and shows it */
+void gfx_end_frame(void); /* what was added is the game's new frame */
+void gfx_present(void);   /* draws and shows the next step towards it, at frame rates above the game's */
 /* The picture stays from frame to frame, as a PS1's screen does, until the game clears it. */
 void gfx_clear(uint8_t r, uint8_t g, uint8_t b);
 
 /* The screen units vertices arrive in, and a clip rect in those units for what follows. */
 void gfx_set_screen(int width, int height);
 void gfx_set_clip(int x, int y, int w, int h);
+
+/* Whether the next opaque triangles test and write real depth, between themselves, on top of the order by key. */
+void gfx_set_depth(int on);
+/* Names the next triangles, counting up from face, so the same ones can be found in the game's next frame and drawn moving
+ * between the two. An object of 0 has no name, and just appears. */
+void gfx_mark(uint64_t object, int face);
 
 /* A triangle, with key the sort order: higher draws first. tex NULL is untextured. */
 void gfx_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend);

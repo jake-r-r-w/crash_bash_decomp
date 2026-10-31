@@ -155,7 +155,7 @@ void platform_audio(const int16_t *stereo, int frames) {
 
 int main(int argc, char **argv) {
     int i;
-    int no_launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0;
+    int no_launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0;
     const char *launcher_shot = NULL, *launcher_keys = NULL;
 
     for (i = 1; i < argc; i++) {
@@ -187,6 +187,8 @@ int main(int argc, char **argv) {
             launcher_shot = argv[++i];
         } else if (strcmp(argv[i], "--launcher-keys") == 0 && i + 1 < argc) {
             launcher_keys = argv[++i];
+        } else if (strcmp(argv[i], "--fps") == 0 && i + 1 < argc) {
+            fps = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--skip-intro") == 0) {
             skip_intro = 1;
         } else if (strcmp(argv[i], "--skip-loading") == 0) {
@@ -220,6 +222,9 @@ int main(int argc, char **argv) {
     }
     if (skip_loading) {
         settings()->skip_loading = 1;
+    }
+    if (fps == 30 || fps == 60 || fps == 120) {
+        settings()->fps = fps;
     }
     if (!NoWindow && !host_init()) {
         fprintf(stderr, "No window; running without one.\n");

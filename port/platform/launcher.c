@@ -6,8 +6,8 @@
 #define HEIGHT 480
 #define ROW_X 60
 #define ROW_W (WIDTH - ROW_X * 2)
-#define ROW_H 34
-#define ROWS_Y 110
+#define ROW_H 32
+#define ROWS_Y 96
 #define VALUE_X 410
 
 typedef struct {
@@ -23,6 +23,7 @@ enum {
     ROW_FULLSCREEN,
     ROW_WINDOW,
     ROW_RENDER,
+    ROW_FPS,
     ROW_VSYNC,
     ROW_PLAY,
     ROW_QUIT,
@@ -30,7 +31,7 @@ enum {
 };
 
 static const char *const RowNames[NUM_ROWS] = {
-    "Skip intro screens", "Skip loading screens", "Display", "Window size", "Render resolution", "VSync", "PLAY", "QUIT",
+    "Skip intro screens", "Skip loading screens", "Display", "Window size", "Render resolution", "Frame rate", "VSync", "PLAY", "QUIT",
 };
 
 static SDL_Renderer *Renderer;
@@ -71,6 +72,9 @@ static void change_row(int row, int dir) {
     case ROW_RENDER:
         step_size(RenderSizes, SDL_arraysize(RenderSizes), &s->render_w, &s->render_h, dir);
         break;
+    case ROW_FPS:
+        s->fps = dir > 0 ? (s->fps == 30 ? 60 : s->fps == 60 ? 120 : 30) : (s->fps == 30 ? 120 : s->fps == 60 ? 30 : 60);
+        break;
     case ROW_VSYNC:
         s->vsync = !s->vsync;
         break;
@@ -96,6 +100,13 @@ static void row_value(int row, char *text, size_t size) {
         break;
     case ROW_RENDER:
         SDL_snprintf(text, size, "%d x %d", s->render_w, s->render_h);
+        break;
+    case ROW_FPS:
+        if (s->fps == 30) {
+            SDL_strlcpy(text, "30 (original)", size);
+        } else {
+            SDL_snprintf(text, size, "%d", s->fps);
+        }
         break;
     case ROW_VSYNC:
         SDL_strlcpy(text, s->vsync ? "On" : "Off", size);

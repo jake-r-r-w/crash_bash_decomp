@@ -1063,7 +1063,9 @@ void render_sub_thread(script_thread_handler *th, s32 *arg1) {
     val = ((GteSetup *)arg1)->rot;
     saved = ScriptFade;
     if (flags & 0x8000) {
+        draw_owner(sub);
         sub->hook(sub, val, flags);
+        draw_owner(NULL);
     }
     ScriptFade = saved;
 }
@@ -1121,7 +1123,9 @@ void render_emitter_thread(script_thread_handler *th, s32 *arg1) {
                 return;
             }
             if (sub->hook != NULL) {
+                draw_owner(sub);
                 sub->hook(sub, val, flags);
+                draw_owner(NULL);
             }
             sub = sub->next;
         }

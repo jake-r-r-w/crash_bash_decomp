@@ -1017,6 +1017,7 @@ void *model_prims_begin(void *arg0, s32 arg1) {
  * preset; otherwise each is a POLY_GT3. The three register variables are
  * the original's: only they give s4/s3/s2 with s0/s1 unused. */
 void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
+    POLY_GT3 *first = poly;
     u32 otz;
     s32 opz;
     GfxState *gs;
@@ -1027,6 +1028,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     s32 flags;
 
     gs = &RenderState;
+    draw_owner_part();
     xy = ((s32 *)v)[0];
     z = ((s32 *)v)[1];
     for (;;) {
@@ -1072,7 +1074,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
                                 goto skip;
                             }
                         }
-                    mesh_submit_g3(gs->ot + otz, (u8 *)poly);
+                    mesh_submit_g3(gs->ot + otz, (u8 *)poly, (s32)(poly - first));
                     }
                 }
             skip:
@@ -1103,7 +1105,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
                             continue;
                         }
                     }
-                    mesh_submit_gt3(gs->ot + otz, poly);
+                    mesh_submit_gt3(gs->ot + otz, poly, (s32)(poly - first));
                 }
                 poly++;
             }
@@ -1379,7 +1381,12 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
                     gte_SetTransVector(s.trans);
                 }
                 gte_SetRotMatrix(s.rot);
+                /* an object with a layer of its own stays in the game's order; the rest are real solid things */
+                draw_owner(arg0);
+                gfx_set_depth(!(arg0->flags & 0x02000000));
                 draw_object_model(n, (u8 *)colors, arg0->flags | arg2, arg0);
+                gfx_set_depth(0);
+                draw_owner(NULL);
             }
         }
     }
@@ -2184,7 +2191,9 @@ loop_3:
             if (sub != NULL) {
                 hook = sub->hook;
                 if (hook != NULL) {
+                    draw_owner(sub);
                     hook(sub, m, flags);
+                    draw_owner(NULL);
                 }
                 sub = sub->next;
                 goto loop_3;
@@ -2830,7 +2839,9 @@ void draw_map_scene(map_enviroment *scene) {
         }
         fn = sub->hook;
         if (fn != NULL) {
+            draw_owner(sub);
             fn(sub, pv, 0);
+            draw_owner(NULL);
         }
         sub = sub->next;
     }

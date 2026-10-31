@@ -12,7 +12,7 @@
 #include <windows.h>
 #endif
 
-#define MAX_TRIS 400000
+#define MAX_TRIS 100000
 #define ATLAS_SIZE 4096
 #define MAX_TEXTURES 16384
 #define MAX_CLIPS 64
@@ -26,11 +26,20 @@ typedef struct {
 } GpuVert;
 
 typedef struct {
+    float x, y, w;
+} GfxPos;
+
+typedef struct {
     GfxVert v[3];
+    GfxPos from[3]; /* where it was in the game's last frame, if moving */
     const GfxTex *tex;
+    uint64_t object;
+    int face;
     int key;
     short blend;
     short clip;
+    char depth;
+    char moving;
 } Tri;
 
 typedef struct {
@@ -42,22 +51,33 @@ typedef struct {
 
 static SDL_Window *Window;
 static SDL_GPUDevice *Device;
-static SDL_GPUTexture *Target, *Atlas;
+static SDL_GPUTexture *Target, *Base, *Depth, *Atlas;
 static SDL_GPUSampler *Sampler;
 static SDL_GPUBuffer *VertexBuf;
 static SDL_GPUTransferBuffer *VertexXfer, *AtlasXfer, *ShotXfer;
 /* solid or textured for each blend, by how the fragment shader is told to treat alpha */
-static SDL_GPUGraphicsPipeline *PipeOpaque, *PipeHalf, *PipeAdd, *PipeSub, *PipeQuarter;
+static SDL_GPUGraphicsPipeline *PipeOpaque, *PipeDepth, *PipeHalf, *PipeAdd, *PipeSub, *PipeQuarter;
 static int TargetW, TargetH;
 static int ScreenW = 640, ScreenH = 480;
 static uint8_t ClearRGB[3];
 static int ClearPending = 1;
 
-static Tri *Tris;
+/* The game's frame being added to, and the one being shown. */
+static Tri *Tris, *Shown;
 static int *Order;
-static int NumTris;
-static SDL_Rect Clips[MAX_CLIPS];
+static int NumTris, NumShown;
+static SDL_Rect Clips[MAX_CLIPS], ShownClips[MAX_CLIPS];
 static int NumClips, CurClip;
+static int ShownClear; /* the shown frame starts from a cleared picture */
+
+static int DepthOn;
+static uint64_t MarkObject;
+static int MarkFace;
+
+/* Above the game's own rate: how far through the step to the shown frame the next picture is. */
+static int Stepping;
+static int StepsDone, StepsPerFrame;
+static int BaseStale;
 
 static uint8_t *AtlasPixels;
 static Cached *Textures;
@@ -143,7 +163,7 @@ static SDL_GPUShader *make_shader(const char *src, const char *profile, SDL_GPUS
 }
 #endif
 
-static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *fs, SDL_GPUBlendFactor src, SDL_GPUBlendFactor dst, SDL_GPUBlendOp op, int blend) {
+static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *fs, SDL_GPUBlendFactor src, SDL_GPUBlendFactor dst, SDL_GPUBlendOp op, int blend, int depth) {
     SDL_GPUGraphicsPipelineCreateInfo p;
     SDL_GPUVertexBufferDescription vb;
     SDL_GPUVertexAttribute a[3];
@@ -186,10 +206,15 @@ static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *
     p.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
     p.target_info.color_target_descriptions = &c;
     p.target_info.num_color_targets = 1;
+    p.target_info.has_depth_stencil_target = true;
+    p.target_info.depth_stencil_format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT;
+    p.depth_stencil_state.enable_depth_test = depth != 0;
+    p.depth_stencil_state.enable_depth_write = depth != 0;
+    p.depth_stencil_state.compare_op = SDL_GPU_COMPAREOP_LESS_OR_EQUAL;
     return SDL_CreateGPUGraphicsPipeline(Device, &p);
 }
 
-int gfx_init(void *window, int width, int height, int vsync) {
+int gfx_init(void *window, int width, int height, int vsync, int fps) {
     SDL_GPUShader *vs, *fs;
     SDL_GPUTextureCreateInfo t;
     SDL_GPUSamplerCreateInfo sc;
@@ -216,14 +241,15 @@ int gfx_init(void *window, int width, int height, int vsync) {
     if (vs == NULL || fs == NULL) {
         return 0;
     }
-    PipeOpaque = make_pipeline(vs, fs, 0, 0, 0, 0);
-    PipeHalf = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA, SDL_GPU_BLENDOP_ADD, 1);
-    PipeAdd = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1);
-    PipeSub = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_REVERSE_SUBTRACT, 1);
-    PipeQuarter = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1);
+    PipeOpaque = make_pipeline(vs, fs, 0, 0, 0, 0, 0);
+    PipeDepth = make_pipeline(vs, fs, 0, 0, 0, 0, 1);
+    PipeHalf = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA, SDL_GPU_BLENDOP_ADD, 1, 0);
+    PipeAdd = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1, 0);
+    PipeSub = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_REVERSE_SUBTRACT, 1, 0);
+    PipeQuarter = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1, 0);
     SDL_ReleaseGPUShader(Device, vs);
     SDL_ReleaseGPUShader(Device, fs);
-    if (!PipeOpaque || !PipeHalf || !PipeAdd || !PipeSub || !PipeQuarter) {
+    if (!PipeOpaque || !PipeDepth || !PipeHalf || !PipeAdd || !PipeSub || !PipeQuarter) {
         fprintf(stderr, "Pipeline: %s\n", SDL_GetError());
         return 0;
     }
@@ -237,6 +263,12 @@ int gfx_init(void *window, int width, int height, int vsync) {
     t.height = height;
     t.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
     Target = SDL_CreateGPUTexture(Device, &t);
+    t.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
+    Base = SDL_CreateGPUTexture(Device, &t);
+    t.format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT;
+    t.usage = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET;
+    Depth = SDL_CreateGPUTexture(Device, &t);
+    t.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
     t.width = ATLAS_SIZE;
     t.height = ATLAS_SIZE;
     t.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
@@ -262,11 +294,14 @@ int gfx_init(void *window, int width, int height, int vsync) {
     tc.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
     tc.size = width * height * 4;
     ShotXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
-    if (!Target || !Atlas || !Sampler || !VertexBuf || !VertexXfer || !AtlasXfer || !ShotXfer) {
+    if (!Target || !Base || !Depth || !Atlas || !Sampler || !VertexBuf || !VertexXfer || !AtlasXfer || !ShotXfer) {
         fprintf(stderr, "GPU resources: %s\n", SDL_GetError());
         return 0;
     }
+    Stepping = fps > 30;
+    StepsPerFrame = 2 * fps / 60;
     Tris = malloc(sizeof(Tri) * MAX_TRIS);
+    Shown = malloc(sizeof(Tri) * MAX_TRIS);
     Order = malloc(sizeof(int) * MAX_TRIS);
     AtlasPixels = calloc(ATLAS_SIZE * ATLAS_SIZE, 4);
     Textures = malloc(sizeof(Cached) * MAX_TEXTURES);
@@ -309,6 +344,15 @@ void gfx_set_clip(int x, int y, int w, int h) {
     }
 }
 
+void gfx_set_depth(int on) {
+    DepthOn = on;
+}
+
+void gfx_mark(uint64_t object, int face) {
+    MarkObject = object;
+    MarkFace = face;
+}
+
 void gfx_begin_frame(void) {
     NumTris = 0;
     NumClips = 0;
@@ -328,6 +372,10 @@ void gfx_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend) {
     t->key = key;
     t->blend = (short)blend;
     t->clip = (short)CurClip;
+    t->depth = (char)DepthOn;
+    t->moving = 0;
+    t->object = MarkObject;
+    t->face = MarkFace++;
 }
 
 void gfx_state_blend(int key, int blend) {
@@ -459,7 +507,7 @@ const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp
         if (bpp == 16) {
             const uint16_t *row = (const uint16_t *)pixels + y * w;
             for (x = 0; x < w; x++) {
-                out[x] = decode_colour(row[x]);
+                out[x] = decode_colour(row[x]) | 0xFF000000u; /* a full-screen picture: black is black here */
             }
         } else if (bpp == 8) {
             const uint8_t *row = (const uint8_t *)pixels + y * ((w + 1) & ~1);
@@ -510,11 +558,11 @@ static void sort_tris(void) {
     static int countsSize;
     int range, pos;
 
-    for (i = 0; i < NumTris; i++) {
-        if (Tris[i].key < minK) minK = Tris[i].key;
-        if (Tris[i].key > maxK) maxK = Tris[i].key;
+    for (i = 0; i < NumShown; i++) {
+        if (Shown[i].key < minK) minK = Shown[i].key;
+        if (Shown[i].key > maxK) maxK = Shown[i].key;
     }
-    if (NumTris == 0) {
+    if (NumShown == 0) {
         return;
     }
     range = maxK - minK + 1;
@@ -524,8 +572,8 @@ static void sort_tris(void) {
         countsSize = range;
     }
     memset(counts, 0, sizeof(int) * range);
-    for (i = 0; i < NumTris; i++) {
-        counts[maxK - Tris[i].key]++;
+    for (i = 0; i < NumShown; i++) {
+        counts[maxK - Shown[i].key]++;
     }
     pos = 0;
     for (i = 0; i < range; i++) {
@@ -534,17 +582,29 @@ static void sort_tris(void) {
         pos += n;
     }
     /* within a bucket the last added draws first, as addPrim's list has it */
-    for (i = NumTris - 1; i >= 0; i--) {
-        Order[counts[maxK - Tris[i].key]++] = i;
+    for (i = NumShown - 1; i >= 0; i--) {
+        Order[counts[maxK - Shown[i].key]++] = i;
     }
 }
 
-static void put_vert(GpuVert *o, const GfxVert *v, const GfxTex *tex) {
-    float w = v->w < 0.001f ? 0.001f : v->w;
+/* Depth for the triangles that test it, from 1 to the GTE's furthest. */
+#define DEPTH_NEAR 1.0f
+#define DEPTH_FAR 65536.0f
 
-    o->x = (v->x / ScreenW * 2.0f - 1.0f) * w;
-    o->y = (1.0f - v->y / ScreenH * 2.0f) * w;
-    o->z = 0.5f * w;
+static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float step, const GfxTex *tex, int depth) {
+    float x = v->x, y = v->y, w = v->w;
+
+    if (from != NULL) {
+        x = from->x + (x - from->x) * step;
+        y = from->y + (y - from->y) * step;
+        w = from->w + (w - from->w) * step;
+    }
+    if (w < 0.001f) {
+        w = 0.001f;
+    }
+    o->x = (x / ScreenW * 2.0f - 1.0f) * w;
+    o->y = (1.0f - y / ScreenH * 2.0f) * w;
+    o->z = depth ? (w - DEPTH_NEAR) * DEPTH_FAR / (DEPTH_FAR - DEPTH_NEAR) : 0.5f * w;
     o->w = w;
     if (tex != NULL) {
         o->u = tex->u0 + v->u * tex->us;
@@ -577,7 +637,11 @@ static void fit_picture(Uint32 sw, Uint32 sh, SDL_GPUBlitRegion *r) {
     r->h = h;
 }
 
-void gfx_end_frame(void) {
+/* A blend for a depth-tested opaque triangle, past the others in Run.blend. */
+#define BLEND_DEPTH (-3)
+
+/* Draws the shown frame, step of the way from where it was, and shows it. */
+static void draw_shown(float step) {
     static Run runs[MAX_TRIS];
     int numRuns = 0;
     SDL_GPUCommandBuffer *cmd = SDL_AcquireGPUCommandBuffer(Device);
@@ -587,22 +651,21 @@ void gfx_end_frame(void) {
     SDL_GPUCopyPass *copy;
     SDL_GPURenderPass *pass;
     SDL_GPUColorTargetInfo ct;
+    SDL_GPUDepthStencilTargetInfo dt;
     int i;
     Uint32 used;
 
     if (cmd == NULL) {
-        gfx_begin_frame();
         return;
     }
-    sort_tris();
 
     /* Each semi-transparent textured triangle draws twice: its opaque texels, then its semi-transparent ones. */
     gv = SDL_MapGPUTransferBuffer(Device, VertexXfer, true);
     used = 0;
     {
     int stateBlend = GFX_HALF;
-    for (i = 0; i < NumTris; i++) {
-        const Tri *t = &Tris[Order[i]];
+    for (i = 0; i < NumShown; i++) {
+        const Tri *t = &Shown[Order[i]];
         int textured = t->tex != NULL;
         int passes = (t->blend != GFX_OPAQUE && textured) ? 2 : 1;
         int p;
@@ -614,8 +677,12 @@ void gfx_end_frame(void) {
 
         for (p = 0; p < passes && used + 3 <= MAX_TRIS * 3; p++) {
             int b = (passes == 2 && p == 0) ? -2 : t->blend == GFX_STATE_BLEND ? stateBlend : t->blend; /* -2: the opaque texels of a semi-transparent triangle */
+            int depth = t->depth && b == GFX_OPAQUE;
             Run *r = numRuns ? &runs[numRuns - 1] : NULL;
 
+            if (depth) {
+                b = BLEND_DEPTH;
+            }
             if (r == NULL || r->blend != b || r->textured != textured || r->clip != t->clip) {
                 r = &runs[numRuns++];
                 r->first = used;
@@ -624,9 +691,9 @@ void gfx_end_frame(void) {
                 r->textured = (short)textured;
                 r->clip = t->clip;
             }
-            put_vert(&gv[used++], &t->v[0], t->tex);
-            put_vert(&gv[used++], &t->v[1], t->tex);
-            put_vert(&gv[used++], &t->v[2], t->tex);
+            put_vert(&gv[used++], &t->v[0], t->moving ? &t->from[0] : NULL, step, t->tex, depth);
+            put_vert(&gv[used++], &t->v[1], t->moving ? &t->from[1] : NULL, step, t->tex, depth);
+            put_vert(&gv[used++], &t->v[2], t->moving ? &t->from[2] : NULL, step, t->tex, depth);
             r->count += 3;
         }
     }
@@ -684,6 +751,20 @@ void gfx_end_frame(void) {
         NumDirty -= done;
         memmove(Dirty, Dirty + done, sizeof(Dirty[0]) * NumDirty);
     }
+    if (Stepping && !ShownClear) {
+        /* each step starts from the same picture, so what blends over it doesn't build up */
+        SDL_GPUTextureLocation a, b;
+
+        SDL_zero(a);
+        SDL_zero(b);
+        a.texture = Target;
+        b.texture = Base;
+        if (BaseStale) {
+            SDL_CopyGPUTextureToTexture(copy, &a, &b, TargetW, TargetH, 1, false);
+            BaseStale = 0;
+        }
+        SDL_CopyGPUTextureToTexture(copy, &b, &a, TargetW, TargetH, 1, false);
+    }
     SDL_EndGPUCopyPass(copy);
 
     SDL_zero(ct);
@@ -692,10 +773,16 @@ void gfx_end_frame(void) {
     ct.clear_color.g = ClearRGB[1] / 255.0f;
     ct.clear_color.b = ClearRGB[2] / 255.0f;
     ct.clear_color.a = 1;
-    ct.load_op = ClearPending ? SDL_GPU_LOADOP_CLEAR : SDL_GPU_LOADOP_LOAD;
-    ClearPending = 0;
+    ct.load_op = ShownClear ? SDL_GPU_LOADOP_CLEAR : SDL_GPU_LOADOP_LOAD;
     ct.store_op = SDL_GPU_STOREOP_STORE;
-    pass = SDL_BeginGPURenderPass(cmd, &ct, 1, NULL);
+    SDL_zero(dt);
+    dt.texture = Depth;
+    dt.clear_depth = 1;
+    dt.load_op = SDL_GPU_LOADOP_CLEAR;
+    dt.store_op = SDL_GPU_STOREOP_DONT_CARE;
+    dt.stencil_load_op = SDL_GPU_LOADOP_DONT_CARE;
+    dt.stencil_store_op = SDL_GPU_STOREOP_DONT_CARE;
+    pass = SDL_BeginGPURenderPass(cmd, &ct, 1, &dt);
     if (numRuns != 0) {
         SDL_GPUBufferBinding vb;
         SDL_GPUTextureSamplerBinding tb;
@@ -738,6 +825,11 @@ void gfx_end_frame(void) {
                 mode[0] = 1;
                 mode[1] = 2;
                 break;
+            case BLEND_DEPTH:
+                pipe = PipeDepth;
+                mode[0] = 1;
+                mode[1] = 1;
+                break;
             default:
                 pipe = PipeOpaque;
                 mode[0] = 1;
@@ -748,7 +840,7 @@ void gfx_end_frame(void) {
                 mode[1] = 0;
             }
             SDL_BindGPUGraphicsPipeline(pass, pipe);
-            SDL_SetGPUScissor(pass, &Clips[r->clip]);
+            SDL_SetGPUScissor(pass, &ShownClips[r->clip]);
             SDL_BindGPUFragmentSamplers(pass, 0, &tb, 1);
             SDL_PushGPUFragmentUniformData(cmd, 0, mode, sizeof(mode));
             SDL_DrawGPUPrimitives(pass, r->count, 1, r->first, 0);
@@ -774,7 +866,9 @@ void gfx_end_frame(void) {
         SDL_EndGPUCopyPass(c2);
     }
 
-    if (SDL_WaitAndAcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh) && swap != NULL) {
+    /* above the display's rate a picture that doesn't fit is dropped, and the game's clock doesn't wait */
+    if ((Stepping ? SDL_AcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh)
+                  : SDL_WaitAndAcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh)) && swap != NULL) {
         SDL_GPUBlitInfo b;
 
         SDL_zero(b);
@@ -805,5 +899,100 @@ void gfx_end_frame(void) {
     } else {
         SDL_SubmitGPUCommandBuffer(cmd);
     }
+}
+
+/* Finds each named triangle of the new frame in the one shown, to move it from there. */
+#define FIND_SLOTS (1 << 18)
+#define MOVE_LIMIT 0.25f /* of the screen: further than this is a jump, not movement */
+
+typedef struct {
+    uint64_t object;
+    int face, index, gen;
+} FindSlot;
+
+static uint32_t find_hash(uint64_t object, int face) {
+    uint64_t h = (object ^ ((uint64_t)face * 0x9E3779B1u)) * 0x9E3779B97F4A7C15ULL;
+
+    return (uint32_t)(h >> 46);
+}
+
+static void find_movement(void) {
+    static FindSlot slots[FIND_SLOTS];
+    static int gen;
+    float limit_x = ScreenW * MOVE_LIMIT, limit_y = ScreenH * MOVE_LIMIT;
+    int i, j;
+
+    gen++;
+    for (i = 0; i < NumShown; i++) {
+        const Tri *t = &Shown[i];
+
+        if (t->object != 0) {
+            uint32_t h = find_hash(t->object, t->face);
+
+            while (slots[h].gen == gen) {
+                h = (h + 1) & (FIND_SLOTS - 1);
+            }
+            slots[h].gen = gen;
+            slots[h].object = t->object;
+            slots[h].face = t->face;
+            slots[h].index = i;
+        }
+    }
+    for (i = 0; i < NumTris; i++) {
+        Tri *t = &Tris[i];
+
+        if (t->object != 0) {
+            uint32_t h = find_hash(t->object, t->face);
+
+            while (slots[h].gen == gen) {
+                if (slots[h].object == t->object && slots[h].face == t->face) {
+                    const Tri *old = &Shown[slots[h].index];
+
+                    t->moving = 1;
+                    for (j = 0; j < 3; j++) {
+                        t->from[j].x = old->v[j].x;
+                        t->from[j].y = old->v[j].y;
+                        t->from[j].w = old->v[j].w;
+                        if (SDL_fabsf(t->from[j].x - t->v[j].x) > limit_x || SDL_fabsf(t->from[j].y - t->v[j].y) > limit_y) {
+                            t->moving = 0;
+                        }
+                    }
+                    break;
+                }
+                h = (h + 1) & (FIND_SLOTS - 1);
+            }
+        }
+    }
+}
+
+void gfx_end_frame(void) {
+    Tri *swap = Tris;
+
+    if (Stepping) {
+        find_movement();
+        /* as many steps as this frame took to come round */
+        if (StepsDone > 0) {
+            StepsPerFrame = StepsDone;
+        }
+        StepsDone = 0;
+        BaseStale = 1;
+    }
+    Tris = Shown;
+    Shown = swap;
+    NumShown = NumTris;
+    memcpy(ShownClips, Clips, sizeof(ShownClips));
+    ShownClear = ClearPending;
+    ClearPending = 0;
+    sort_tris();
+    if (!Stepping) {
+        draw_shown(1);
+    }
     gfx_begin_frame();
+}
+
+void gfx_present(void) {
+    if (Stepping) {
+        StepsDone++;
+        draw_shown(StepsDone >= StepsPerFrame ? 1.0f : (float)StepsDone / StepsPerFrame);
+    }
 }

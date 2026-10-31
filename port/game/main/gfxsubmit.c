@@ -266,6 +266,22 @@ static void set_viewport(s32 key, const ViewportCmd *c) {
     }
 }
 
+/* What's drawing, to name its triangles (gfx_mark). */
+static uint64_t OwnerId;
+static s32 OwnerPart;
+
+#define PART_ID(owner, part) (((owner) * 31) + (uint64_t)(part) + 1)
+
+void draw_owner(const void *owner) {
+    OwnerId = (uint64_t)(uintptr_t)owner;
+    OwnerPart = 0;
+}
+
+/* A model draws its faces as one part. */
+void draw_owner_part(void) {
+    OwnerPart++;
+}
+
 /* Reads a packet the game built, a tag then the GPU commands its length counts, as the PS1's GPU would. */
 void prim_submit(void *ot, void *prim) {
     s32 key = key_of(ot);
@@ -277,9 +293,12 @@ void prim_submit(void *ot, void *prim) {
         return;
     }
     if ((p[0] >> 24) == CMD_VIEWPORT) {
+        gfx_mark(0, 0);
         set_viewport(key, prim);
         return;
     }
+    OwnerPart++;
+    gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, 0);
     do {
         u32 cmd = p[0] >> 24;
         s32 words = 1;
@@ -308,7 +327,7 @@ void SetTile1(TILE_1 *p) {
 }
 
 /* A textured mesh triangle, at the last three positions the GTE projected. */
-void mesh_submit_gt3(void *ot, void *poly) {
+void mesh_submit_gt3(void *ot, void *poly, s32 face) {
     POLY_GT3 *p = poly;
     s32 key = key_of(ot);
     const GfxTex *t;
@@ -329,11 +348,12 @@ void mesh_submit_gt3(void *ot, void *poly) {
     v[1].x = q[3]; v[1].y = q[4]; v[1].w = q[5]; v[1].u = p->u1; v[1].v = p->v1; v[1].rgba = colour_of(*(u32 *)&p->r1);
     v[2].x = q[6]; v[2].y = q[7]; v[2].w = q[8]; v[2].u = p->u2; v[2].v = p->v2; v[2].rgba = colour_of(*(u32 *)&p->r2);
     blend = (((u8 *)p)[7] & 2) ? (p->tpage >> 5) & 3 : GFX_OPAQUE;
+    gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, face);
     gfx_tri(key, v, t, blend);
 }
 
 /* An untextured mesh triangle: its blend word at +4, then a POLY_G3 at +8. */
-void mesh_submit_g3(void *ot, u8 *p) {
+void mesh_submit_g3(void *ot, u8 *p, s32 face) {
     s32 key = key_of(ot);
     float q[9];
     GfxVert v[3];
@@ -348,6 +368,7 @@ void mesh_submit_g3(void *ot, u8 *p) {
     v[1].x = q[3]; v[1].y = q[4]; v[1].w = q[5]; v[1].u = v[1].v = 0; v[1].rgba = colour_of(*(u32 *)(p + 20));
     v[2].x = q[6]; v[2].y = q[7]; v[2].w = q[8]; v[2].u = v[2].v = 0; v[2].rgba = colour_of(*(u32 *)(p + 28));
     blend = (p[15] & 2) ? (*(u32 *)(p + 4) >> 5) & 3 : GFX_OPAQUE;
+    gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, face);
     gfx_tri(key, v, NULL, blend);
 }
 

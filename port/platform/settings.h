@@ -9,6 +9,7 @@ typedef struct Settings {
     int window_w, window_h;
     int render_w, render_h; /* what the game draws at, whatever the window's size */
     int vsync;
+    int fps;           /* 30 is the game's own rate; 60 and 120 draw between its frames */
 } Settings;
 
 /* The settings in use. */

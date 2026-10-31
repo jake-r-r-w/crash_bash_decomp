@@ -19,6 +19,7 @@ void settings_defaults(void) {
     Current.render_w = 1280;
     Current.render_h = 960;
     Current.vsync = 1;
+    Current.fps = 30;
 }
 
 /* Fills path with where the settings file goes. Returns 0 if there's no such place. */
@@ -58,6 +59,8 @@ void settings_load(void) {
             Current.render_h = b;
         } else if (sscanf(line, "vsync=%d", &a) == 1) {
             Current.vsync = a != 0;
+        } else if (sscanf(line, "fps=%d", &a) == 1 && (a == 30 || a == 60 || a == 120)) {
+            Current.fps = a;
         }
     }
     fclose(f);
@@ -76,5 +79,6 @@ void settings_save(void) {
     fprintf(f, "window=%dx%d\n", Current.window_w, Current.window_h);
     fprintf(f, "render=%dx%d\n", Current.render_w, Current.render_h);
     fprintf(f, "vsync=%d\n", Current.vsync);
+    fprintf(f, "fps=%d\n", Current.fps);
     fclose(f);
 }
