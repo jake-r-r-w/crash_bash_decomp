@@ -256,19 +256,6 @@ static int pad_buttons(SDL_Gamepad *c) {
     if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) > 16000) {
         b |= PAD_R2;
     }
-    /* the left stick works as the d-pad */
-    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTX) < -16000) {
-        b |= PAD_LEFT;
-    }
-    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTX) > 16000) {
-        b |= PAD_RIGHT;
-    }
-    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTY) < -16000) {
-        b |= PAD_UP;
-    }
-    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTY) > 16000) {
-        b |= PAD_DOWN;
-    }
     return b;
 }
 
@@ -318,6 +305,38 @@ int host_pad(int port) {
         b = (b < 0 ? 0 : b) | pad_buttons(Pads[port]);
     }
     return b;
+}
+
+static unsigned char stick_of(SDL_Gamepad *c, SDL_GamepadAxis axis) {
+    return (unsigned char)((SDL_GetGamepadAxis(c, axis) + 32768) >> 8);
+}
+
+int host_pad_sticks(int port, unsigned char sticks[4]) {
+    SDL_Gamepad *c = port < MAX_PADS ? Pads[port] : NULL;
+
+    if (c == NULL) {
+        return 0;
+    }
+    sticks[0] = stick_of(c, SDL_GAMEPAD_AXIS_RIGHTX);
+    sticks[1] = stick_of(c, SDL_GAMEPAD_AXIS_RIGHTY);
+    sticks[2] = stick_of(c, SDL_GAMEPAD_AXIS_LEFTX);
+    sticks[3] = stick_of(c, SDL_GAMEPAD_AXIS_LEFTY);
+    return 1;
+}
+
+int host_pad_rumbles(int port) {
+    SDL_Gamepad *c = port < MAX_PADS ? Pads[port] : NULL;
+
+    return c != NULL && SDL_GetBooleanProperty(SDL_GetGamepadProperties(c), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, false);
+}
+
+/* The big motor is the low rumble, in strengths, and the small one the high, on or off. */
+void host_rumble(int port, int small_on, int big) {
+    SDL_Gamepad *c = port < MAX_PADS ? Pads[port] : NULL;
+
+    if (c != NULL) {
+        SDL_RumbleGamepad(c, (Uint16)(big * 0x101), small_on ? 0xFFFF : 0, 1000);
+    }
 }
 
 void host_quit(void) {

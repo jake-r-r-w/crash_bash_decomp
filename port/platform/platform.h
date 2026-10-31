@@ -23,6 +23,11 @@
 /* main.c */
 const char *platform_data_path(void);
 const char *platform_card_path(void);
+/* A pad, as the game's libpad reads it: its buttons, or -1 when there's none. */
+int platform_pad(int port);
+int platform_pad_sticks(int port, unsigned char sticks[4]);
+int platform_pad_rumbles(int port);
+void platform_rumble(int port, int small_on, int big);
 void platform_present(const uint32_t *pixels, int w, int h);
 void platform_vblank(void);
 int platform_pad(int port); /* the buttons held, or -1 with no pad */
@@ -37,6 +42,9 @@ void host_present(const uint32_t *pixels, int w, int h);
 void host_wait_vblank(void);
 int host_poll(void); /* 0: the window was closed */
 int host_pad(int port);
+int host_pad_sticks(int port, unsigned char sticks[4]); /* 0: no sticks. Else right x, y, left x, y, 0 to 0xFF, centred at 0x80. */
+int host_pad_rumbles(int port);
+void host_rumble(int port, int small_on, int big);
 /* Held while anything changes what the sound device's thread is playing. */
 void host_audio_lock(void);
 void host_audio_unlock(void);

@@ -163,6 +163,46 @@ void platform_vblank(void) {
     }
 }
 
+/* --stick: a test's analog pad, with motors, on pad 1: its sticks at these for a few vblanks */
+#define MAX_STICKS 256
+static struct {
+    int frame;
+    unsigned char x, y;
+} Sticks[MAX_STICKS];
+static int NumSticks;
+
+int platform_pad_sticks(int port, unsigned char sticks[4]) {
+    int i;
+
+    if (port == 0 && NumSticks > 0) {
+        memset(sticks, 0x80, 4);
+        for (i = 0; i < NumSticks; i++) {
+            if (Vblanks >= Sticks[i].frame && Vblanks < Sticks[i].frame + PRESS_VBLANKS) {
+                sticks[2] = Sticks[i].x;
+                sticks[3] = Sticks[i].y;
+            }
+        }
+        return 1;
+    }
+    return NoWindow ? 0 : host_pad_sticks(port, sticks);
+}
+
+int platform_pad_rumbles(int port) {
+    if (port == 0 && NumSticks > 0) {
+        return 1;
+    }
+    return NoWindow ? 0 : host_pad_rumbles(port);
+}
+
+/* A test run doesn't shake a controller left on the desk, and says what it would have done. */
+void platform_rumble(int port, int small_on, int big) {
+    if (StopAt >= 0 || NoWindow) {
+        printf("rumble: pad %d small %d big %d at vblank %d\n", port, small_on, big, Vblanks);
+    } else {
+        host_rumble(port, small_on, big);
+    }
+}
+
 int platform_pad(int port) {
     int b = NoWindow ? (port == 0 ? 0 : -1) : host_pad(port);
     int i;
@@ -190,6 +230,10 @@ int main(int argc, char **argv) {
             return 0;
         } else if (strcmp(argv[i], "--data") == 0 && i + 1 < argc) {
             DataPath = argv[++i];
+        } else if (strcmp(argv[i], "--stick") == 0 && i + 3 < argc && NumSticks < MAX_STICKS) {
+            Sticks[NumSticks].frame = atoi(argv[++i]);
+            Sticks[NumSticks].x = (unsigned char)strtol(argv[++i], NULL, 16);
+            Sticks[NumSticks++].y = (unsigned char)strtol(argv[++i], NULL, 16);
         } else if (strcmp(argv[i], "--card") == 0 && i + 1 < argc) {
             CardPath = argv[++i];
         } else if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {

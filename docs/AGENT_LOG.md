@@ -457,6 +457,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: 6.7 begun, at the user's asking, with the controller: a pad is an analog one with motors (`pad.c`), so the game's own stick and rumble code runs. No
+  controller here, so `--stick` stands in; the user has yet to feel it. It found a heap bug: `mal_set_owner` wrote a raw pointer over a 4-byte file slot, which broke
+  on-demand animation blocks (a hub door). Saving and any resolution are next.
 - 2026-10-31: Notes that rang on through a pause: the envelope's exponential step was a division, which rounds to 0 at low levels, so a released voice stuck at
   `env 4095` and droned for good, in play too (likely the user's metallic undertone; all 24 music voices were usually taken). It's the hardware's `>> 15` now. `FX_LEVEL`,
   `MIX_LEVEL` and the limiter were set by ear with those drones in the mix, so they may want another listen.
