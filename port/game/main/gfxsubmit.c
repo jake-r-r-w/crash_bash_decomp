@@ -293,17 +293,22 @@ static void set_viewport(s32 key, const ViewportCmd *c) {
 static uint64_t OwnerId;
 static s32 OwnerPart;
 
-#define PART_ID(owner, part) (((owner) * 31) + (uint64_t)(part) + 1)
+static uint64_t OwnerMesh;
+
+#define PART_ID(owner, part) (((owner) * 31) + (uint64_t)(part) + 1 + OwnerMesh * 0xC2B2AE3D27D4EB4FULL)
 
 /* Named by what it shows too: a subengine given another model or text is a new thing, not this one moved. */
 void draw_owner(const struct subengine *sub) {
     OwnerId = sub != NULL ? (uint64_t)(uintptr_t)sub ^ ((uint64_t)(uintptr_t)sub->u6C.ptr * 0x9E3779B97F4A7C15ULL) : 0;
     OwnerPart = 0;
+    OwnerMesh = 0;
 }
 
-/* A model draws its faces as one part. */
-void draw_owner_part(void) {
+/* A model draws its faces as one part, named by its mesh: frames of an animation share one, and move;
+   another mesh of the same file is another thing. */
+void draw_owner_part(const void *mesh) {
     OwnerPart++;
+    OwnerMesh = (uint64_t)(uintptr_t)mesh;
 }
 
 /* Real depth for what's drawn next, in the current view's own range: views draw in the order of their place in the table. */

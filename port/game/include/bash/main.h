@@ -758,7 +758,7 @@ void tex_release_ids(struct obj_textureset *set);
 void mesh_submit_gt3(void *ot, void *poly, s32 face);
 void mesh_submit_g3(void *ot, unsigned char *poly, s32 face);
 void draw_owner(const struct subengine *sub);
-void draw_owner_part(void);
+void draw_owner_part(const void *mesh);
 void draw_depth(s32 on);
 void pc_gte_precise(float out[9]);
 void overlay_load(const void *f);

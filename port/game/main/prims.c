@@ -1028,7 +1028,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     s32 flags;
 
     gs = &RenderState;
-    draw_owner_part();
+    draw_owner_part(runs);
     xy = ((s32 *)v)[0];
     z = ((s32 *)v)[1];
     for (;;) {
