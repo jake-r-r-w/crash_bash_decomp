@@ -40,6 +40,8 @@ typedef struct {
     short clip;
     char depth;
     char moving;
+    signed char wind;
+    char hidden;
 } Tri;
 
 typedef struct {
@@ -414,8 +416,24 @@ void gfx_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend) {
     t->clip = (short)CurClip;
     t->depth = (char)DepthOn;
     t->moving = 0;
+    t->wind = 0;
+    t->hidden = 0;
     t->object = MarkObject;
     t->face = MarkFace++;
+}
+
+void gfx_face_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend, int wind, int hidden) {
+    int before = NumTris;
+
+    gfx_tri(key, v, tex, blend);
+    if (NumTris != before) {
+        Tris[before].wind = (signed char)wind;
+        Tris[before].hidden = (char)hidden;
+    }
+}
+
+int gfx_stepping(void) {
+    return Stepping;
 }
 
 void gfx_state_blend(int key, int blend) {
@@ -631,6 +649,25 @@ static void sort_tris(void) {
 #define DEPTH_NEAR 1.0f
 #define DEPTH_FAR 65536.0f
 
+/* Whether a face shows at this point between two frames, by the same sum as pc_gte_nclip's at the positions it's drawn at. */
+static int tri_shows(const Tri *t, float step) {
+    float x[3], y[3], area;
+    int i;
+
+    if (t->wind == 0) {
+        return 1;
+    }
+    if (!t->moving || step >= 1.0f) {
+        return !t->hidden;
+    }
+    for (i = 0; i < 3; i++) {
+        x[i] = t->from[i].x + (t->v[i].x - t->from[i].x) * step;
+        y[i] = t->from[i].y + (t->v[i].y - t->from[i].y) * step;
+    }
+    area = (x[1] - x[0]) * (y[2] - y[0]) - (x[2] - x[0]) * (y[1] - y[0]);
+    return t->wind > 0 ? area > 0 : area <= 0;
+}
+
 static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float step, const GfxTex *tex, int depth) {
     float x = v->x, y = v->y, w = v->w;
 
@@ -713,6 +750,9 @@ static void draw_shown(float step) {
 
         if (t->blend >= 100) {
             stateBlend = t->blend - 100;
+            continue;
+        }
+        if (!tri_shows(t, step)) {
             continue;
         }
 

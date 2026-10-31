@@ -45,6 +45,12 @@ void gfx_mark(uint64_t object, int face);
 
 /* A triangle, with key the sort order: higher draws first. tex NULL is untextured. */
 void gfx_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend);
+/* A model's face, which shows only one way round: wind 1 when its area is positive, -1 when it isn't, 0 either way.
+ * hidden says it faces away in this frame. It still comes, because the pictures between two frames decide for
+ * themselves: a face dropped at once would leave a hole where its neighbours haven't arrived yet. */
+void gfx_face_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend, int wind, int hidden);
+/* Whether pictures are drawn between the game's frames. */
+int gfx_stepping(void);
 /* v[0] v[1] v[2] v[3] in PS1 quad order (Z), as two triangles. */
 void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend);
 

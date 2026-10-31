@@ -360,8 +360,9 @@ void SetTile1(TILE_1 *p) {
     setcode(p, 0x68);
 }
 
-/* A textured mesh triangle, at the last three positions the GTE projected. */
-void mesh_submit_gt3(void *ot, void *poly, s32 face) {
+/* A textured mesh triangle, at the last three positions the GTE projected. wind says which way it shows (gfx_face_tri),
+   and hidden that it faces away this frame: it's only of use to the pictures between frames. */
+void mesh_submit_gt3(void *ot, void *poly, s32 face, s32 wind, s32 hidden) {
     POLY_GT3 *p = poly;
     s32 key = key_of(ot);
     const GfxTex *t;
@@ -369,7 +370,7 @@ void mesh_submit_gt3(void *ot, void *poly, s32 face) {
     GfxVert v[3];
     s32 blend;
 
-    if (key < 0) {
+    if (key < 0 || (hidden && !gfx_stepping())) {
         return;
     }
     t = tex_of(p->tpage, p->clut);
@@ -383,17 +384,17 @@ void mesh_submit_gt3(void *ot, void *poly, s32 face) {
     v[2].x = q[6]; v[2].y = q[7]; v[2].w = q[8]; v[2].u = p->u2; v[2].v = p->v2; v[2].rgba = colour_of(*(u32 *)&p->r2);
     blend = (((u8 *)p)[7] & 2) ? (p->tpage >> 5) & 3 : GFX_OPAQUE;
     gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, face);
-    gfx_tri(key, v, t, blend);
+    gfx_face_tri(key, v, t, blend, wind, hidden);
 }
 
 /* An untextured mesh triangle: its blend word at +4, then a POLY_G3 at +8. */
-void mesh_submit_g3(void *ot, u8 *p, s32 face) {
+void mesh_submit_g3(void *ot, u8 *p, s32 face, s32 wind, s32 hidden) {
     s32 key = key_of(ot);
     float q[9];
     GfxVert v[3];
     s32 blend;
 
-    if (key < 0) {
+    if (key < 0 || (hidden && !gfx_stepping())) {
         return;
     }
     BackPixels = NULL;
@@ -403,7 +404,7 @@ void mesh_submit_g3(void *ot, u8 *p, s32 face) {
     v[2].x = q[6]; v[2].y = q[7]; v[2].w = q[8]; v[2].u = v[2].v = 0; v[2].rgba = colour_of(*(u32 *)(p + 28));
     blend = (p[15] & 2) ? (*(u32 *)(p + 4) >> 5) & 3 : GFX_OPAQUE;
     gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, face);
-    gfx_tri(key, v, NULL, blend);
+    gfx_face_tri(key, v, NULL, blend, wind, hidden);
 }
 
 /* A full-screen picture, for the logos: LoadImage to a screen. */

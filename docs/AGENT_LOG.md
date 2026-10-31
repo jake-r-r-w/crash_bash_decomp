@@ -455,6 +455,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: From the same testing: a tone's fine-tune was subtracted, not added (Sony's `SsPitchFromNote` read in the linked ELF), so everything with one
+  played flat, the scene's clips by 2 semitones. `scratch`'s check: correlate a recording with the bank's sample. Closing a bank now lets its effects play out.
+  Models send their faced-away faces when stepping, and each picture between frames decides which show, which ends the gaps in moving mouths.
 - 2026-10-31: The user's bug testing: a new adventure's story stopped after its first part, because a script's `handle` was typed `s32 *` over an
   owner's pointer, so its end cleared half the pointer and the scene waited for ever. All 19 parts now play into the hub.
 - 2026-10-31: 6.6 done, the user listening: `platform/audio.c` mixes on the device's thread. Their ears beat an old note: the real game's RAM

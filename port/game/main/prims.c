@@ -1026,6 +1026,8 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     s32 xy;
     s32 z;
     s32 flags;
+    s32 wind;
+    s32 hidden;
 
     gs = &RenderState;
     draw_owner_part(runs);
@@ -1063,21 +1065,17 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
                 if (otz != 0) {
                     otz = (otz + gs->otzAdd) >> 1;
                     if (otz < gs->otLen) {
+                        wind = 0;
+                        hidden = 0;
                         if (!(flags & 0x20000)) {
                             gte_nclip_b();
                             gte_stopz(&opz);
-                            if (flags & 0x10000) {
-                                if (opz > 0) {
-                                    goto skip;
-                                }
-                            } else if (opz <= 0) {
-                                goto skip;
-                            }
+                            wind = (flags & 0x10000) ? -1 : 1;
+                            hidden = (flags & 0x10000) ? opz > 0 : opz <= 0;
                         }
-                    mesh_submit_g3(gs->ot + otz, (u8 *)poly, (s32)(poly - first));
+                        mesh_submit_g3(gs->ot + otz, (u8 *)poly, (s32)(poly - first), wind, hidden);
                     }
                 }
-            skip:
                 poly++;
             }
         } else {
@@ -1092,20 +1090,15 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
                 gte_stotz(&otz);
                 otz = (otz + gs->otzAdd) >> 1;
                 if (otz < gs->otLen) {
+                    wind = 0;
+                    hidden = 0;
                     if (!(flags & 0x20000)) {
                         gte_nclip_b();
                         gte_stopz(&opz);
-                        if (flags & 0x10000) {
-                            if (opz > 0) {
-                                poly++;
-                                continue;
-                            }
-                        } else if (opz <= 0) {
-                            poly++;
-                            continue;
-                        }
+                        wind = (flags & 0x10000) ? -1 : 1;
+                        hidden = (flags & 0x10000) ? opz > 0 : opz <= 0;
                     }
-                    mesh_submit_gt3(gs->ot + otz, poly, (s32)(poly - first));
+                    mesh_submit_gt3(gs->ot + otz, poly, (s32)(poly - first), wind, hidden);
                 }
                 poly++;
             }
