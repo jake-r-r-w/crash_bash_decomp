@@ -55,7 +55,6 @@ typedef struct {
     int adsr1, adsr2;
     /* what it's playing, for the sequencer's changes */
     int center, shift, bend_down, bend_up;
-    int tone_vol, tone_pan;
     int level, pan1, pan2; /* for a note: the bank's, program's and tone's volumes together, and the tone's and program's pans */
     int seq, channel, note, velocity;
     int reverb; /* the tone asks for it */
@@ -258,24 +257,23 @@ static void decode_block(Voice *v) {
     }
 }
 
-/* The envelope, a step a sample at most. */
+/* The envelope, as the hardware steps it, once a sample. */
 static void env_step(Voice *v) {
-    int exponential, decrease, shift, step, target;
-    int cycles, delta;
+    int exponential, decrease, shift, step_value, target, step, increment;
 
     switch (v->state) {
     case ENV_ATTACK:
         exponential = (v->adsr1 >> 15) & 1;
         decrease = 0;
         shift = (v->adsr1 >> 10) & 31;
-        step = 7 - ((v->adsr1 >> 8) & 3);
+        step_value = (v->adsr1 >> 8) & 3;
         target = 0x7FFF;
         break;
     case ENV_DECAY:
         exponential = 1;
         decrease = 1;
         shift = (v->adsr1 >> 4) & 15;
-        step = -8;
+        step_value = 0;
         target = ((v->adsr1 & 15) + 1) * 0x800;
         if (target > 0x7FFF) {
             target = 0x7FFF;
@@ -285,32 +283,46 @@ static void env_step(Voice *v) {
         exponential = (v->adsr2 >> 15) & 1;
         decrease = (v->adsr2 >> 14) & 1;
         shift = (v->adsr2 >> 8) & 31;
-        step = decrease ? -8 + ((v->adsr2 >> 6) & 3) : 7 - ((v->adsr2 >> 6) & 3);
+        step_value = (v->adsr2 >> 6) & 3;
         target = -1;
         break;
     case ENV_RELEASE:
         exponential = (v->adsr2 >> 5) & 1;
         decrease = 1;
         shift = v->adsr2 & 31;
-        step = -8;
+        step_value = 0;
         target = 0;
         break;
     default:
         return;
     }
-    if (--v->env_wait > 0) {
+    step = 7 - step_value;
+    if (decrease) {
+        step = ~step;
+    }
+    step *= 1 << (shift < 11 ? 11 - shift : 0);
+    increment = 0x8000 >> (shift > 11 ? shift - 11 : 0);
+    if (exponential && !decrease && v->env > 0x6000) {
+        if (shift < 10) {
+            step /= 4;
+        } else if (shift >= 11) {
+            increment /= 4;
+        } else {
+            step /= 2;
+            increment /= 2;
+        }
+    } else if (exponential && decrease) {
+        step = step * v->env / 0x8000;
+    }
+    if ((step_value | (shift << 2)) != 0x7F && increment < 1) {
+        increment = 1;
+    }
+    v->env_wait += increment;
+    if (!(v->env_wait & 0x8000)) {
         return;
     }
-    cycles = 1 << (shift > 11 ? shift - 11 : 0);
-    delta = shift < 11 ? step * (1 << (11 - shift)) : step;
-    if (exponential && !decrease && v->env > 0x6000) {
-        cycles *= 4;
-    }
-    if (exponential && decrease) {
-        delta = (delta * v->env) / 0x8000;
-    }
-    v->env_wait = cycles;
-    v->env += delta;
+    v->env_wait = 0;
+    v->env += step;
     if (v->env > 0x7FFF) {
         v->env = 0x7FFF;
     }
@@ -326,12 +338,57 @@ static void env_step(Voice *v) {
     }
 }
 
+/* The hardware's interpolation, whose gentle roll-off of the highs is a good part of how the game sounds. */
+static const int16_t Gauss[512] = {
+    -0x0001, -0x0001, -0x0001, -0x0001, -0x0001, -0x0001, -0x0001, -0x0001, -0x0001, -0x0001, -0x0001, -0x0001,
+    -0x0001, -0x0001, -0x0001, -0x0001, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0001,
+    0x0001, 0x0001, 0x0001, 0x0002, 0x0002, 0x0002, 0x0003, 0x0003, 0x0003, 0x0004, 0x0004, 0x0005,
+    0x0005, 0x0006, 0x0007, 0x0007, 0x0008, 0x0009, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x000E,
+    0x000F, 0x0010, 0x0011, 0x0012, 0x0013, 0x0015, 0x0016, 0x0018, 0x0019, 0x001B, 0x001C, 0x001E,
+    0x0020, 0x0021, 0x0023, 0x0025, 0x0027, 0x0029, 0x002C, 0x002E, 0x0030, 0x0033, 0x0035, 0x0038,
+    0x003A, 0x003D, 0x0040, 0x0043, 0x0046, 0x0049, 0x004D, 0x0050, 0x0054, 0x0057, 0x005B, 0x005F,
+    0x0063, 0x0067, 0x006B, 0x006F, 0x0074, 0x0078, 0x007D, 0x0082, 0x0087, 0x008C, 0x0091, 0x0096,
+    0x009C, 0x00A1, 0x00A7, 0x00AD, 0x00B3, 0x00BA, 0x00C0, 0x00C7, 0x00CD, 0x00D4, 0x00DB, 0x00E3,
+    0x00EA, 0x00F2, 0x00FA, 0x0101, 0x010A, 0x0112, 0x011B, 0x0123, 0x012C, 0x0135, 0x013F, 0x0148,
+    0x0152, 0x015C, 0x0166, 0x0171, 0x017B, 0x0186, 0x0191, 0x019C, 0x01A8, 0x01B4, 0x01C0, 0x01CC,
+    0x01D9, 0x01E5, 0x01F2, 0x0200, 0x020D, 0x021B, 0x0229, 0x0237, 0x0246, 0x0255, 0x0264, 0x0273,
+    0x0283, 0x0293, 0x02A3, 0x02B4, 0x02C4, 0x02D6, 0x02E7, 0x02F9, 0x030B, 0x031D, 0x0330, 0x0343,
+    0x0356, 0x036A, 0x037E, 0x0392, 0x03A7, 0x03BC, 0x03D1, 0x03E7, 0x03FC, 0x0413, 0x042A, 0x0441,
+    0x0458, 0x0470, 0x0488, 0x04A0, 0x04B9, 0x04D2, 0x04EC, 0x0506, 0x0520, 0x053B, 0x0556, 0x0572,
+    0x058E, 0x05AA, 0x05C7, 0x05E4, 0x0601, 0x061F, 0x063E, 0x065C, 0x067C, 0x069B, 0x06BB, 0x06DC,
+    0x06FD, 0x071E, 0x0740, 0x0762, 0x0784, 0x07A7, 0x07CB, 0x07EF, 0x0813, 0x0838, 0x085D, 0x0883,
+    0x08A9, 0x08D0, 0x08F7, 0x091E, 0x0946, 0x096F, 0x0998, 0x09C1, 0x09EB, 0x0A16, 0x0A40, 0x0A6C,
+    0x0A98, 0x0AC4, 0x0AF1, 0x0B1E, 0x0B4C, 0x0B7A, 0x0BA9, 0x0BD8, 0x0C07, 0x0C38, 0x0C68, 0x0C99,
+    0x0CCB, 0x0CFD, 0x0D30, 0x0D63, 0x0D97, 0x0DCB, 0x0E00, 0x0E35, 0x0E6B, 0x0EA1, 0x0ED7, 0x0F0F,
+    0x0F46, 0x0F7F, 0x0FB7, 0x0FF1, 0x102A, 0x1065, 0x109F, 0x10DB, 0x1116, 0x1153, 0x118F, 0x11CD,
+    0x120B, 0x1249, 0x1288, 0x12C7, 0x1307, 0x1347, 0x1388, 0x13C9, 0x140B, 0x144D, 0x1490, 0x14D4,
+    0x1517, 0x155C, 0x15A0, 0x15E6, 0x162C, 0x1672, 0x16B9, 0x1700, 0x1747, 0x1790, 0x17D8, 0x1821,
+    0x186B, 0x18B5, 0x1900, 0x194B, 0x1996, 0x19E2, 0x1A2E, 0x1A7B, 0x1AC8, 0x1B16, 0x1B64, 0x1BB3,
+    0x1C02, 0x1C51, 0x1CA1, 0x1CF1, 0x1D42, 0x1D93, 0x1DE5, 0x1E37, 0x1E89, 0x1EDC, 0x1F2F, 0x1F82,
+    0x1FD6, 0x202A, 0x207F, 0x20D4, 0x2129, 0x217F, 0x21D5, 0x222C, 0x2282, 0x22DA, 0x2331, 0x2389,
+    0x23E1, 0x2439, 0x2492, 0x24EB, 0x2545, 0x259E, 0x25F8, 0x2653, 0x26AD, 0x2708, 0x2763, 0x27BE,
+    0x281A, 0x2876, 0x28D2, 0x292E, 0x298B, 0x29E7, 0x2A44, 0x2AA1, 0x2AFF, 0x2B5C, 0x2BBA, 0x2C18,
+    0x2C76, 0x2CD4, 0x2D33, 0x2D91, 0x2DF0, 0x2E4F, 0x2EAE, 0x2F0D, 0x2F6C, 0x2FCC, 0x302B, 0x308B,
+    0x30EA, 0x314A, 0x31AA, 0x3209, 0x3269, 0x32C9, 0x3329, 0x3389, 0x33E9, 0x3449, 0x34A9, 0x3509,
+    0x3569, 0x35C9, 0x3629, 0x3689, 0x36E8, 0x3748, 0x37A8, 0x3807, 0x3867, 0x38C6, 0x3926, 0x3985,
+    0x39E4, 0x3A43, 0x3AA2, 0x3B00, 0x3B5F, 0x3BBD, 0x3C1B, 0x3C79, 0x3CD7, 0x3D35, 0x3D92, 0x3DEF,
+    0x3E4C, 0x3EA9, 0x3F05, 0x3F62, 0x3FBD, 0x4019, 0x4074, 0x40D0, 0x412A, 0x4185, 0x41DF, 0x4239,
+    0x4292, 0x42EB, 0x4344, 0x439C, 0x43F4, 0x444C, 0x44A3, 0x44FA, 0x4550, 0x45A6, 0x45FC, 0x4651,
+    0x46A6, 0x46FA, 0x474E, 0x47A1, 0x47F4, 0x4846, 0x4898, 0x48E9, 0x493A, 0x498A, 0x49D9, 0x4A29,
+    0x4A77, 0x4AC5, 0x4B13, 0x4B5F, 0x4BAC, 0x4BF7, 0x4C42, 0x4C8D, 0x4CD7, 0x4D20, 0x4D68, 0x4DB0,
+    0x4DF7, 0x4E3E, 0x4E84, 0x4EC9, 0x4F0E, 0x4F52, 0x4F95, 0x4FD7, 0x5019, 0x505A, 0x509A, 0x50DA,
+    0x5118, 0x5156, 0x5194, 0x51D0, 0x520C, 0x5247, 0x5281, 0x52BA, 0x52F3, 0x532A, 0x5361, 0x5397,
+    0x53CC, 0x5401, 0x5434, 0x5467, 0x5499, 0x54CA, 0x54FA, 0x5529, 0x5558, 0x5585, 0x55B2, 0x55DE,
+    0x5609, 0x5632, 0x565B, 0x5684, 0x56AB, 0x56D1, 0x56F6, 0x571B, 0x573E, 0x5761, 0x5782, 0x57A3,
+    0x57C3, 0x57E2, 0x57FF, 0x581C, 0x5838, 0x5853, 0x586D, 0x5886, 0x589E, 0x58B5, 0x58CB, 0x58E0,
+    0x58F4, 0x5907, 0x5919, 0x592A, 0x593A, 0x5949, 0x5958, 0x5965, 0x5971, 0x597C, 0x5986, 0x598F,
+    0x5997, 0x599E, 0x59A4, 0x59A9, 0x59AD, 0x59B0, 0x59B2, 0x59B3,
+};
+
 static int next_sample(Voice *v) {
-    int a = v->history[0], b = v->history[1], c = v->history[2], d = v->history[3];
-    int t = (v->counter >> 3) & 0x1FF;
-    int tt = (t * t) >> 9;
-    int ttt = (tt * t) >> 9;
-    int s = (b * 512 + ((c - a) * t) / 2 + ((2 * a - 5 * b + 4 * c - d) * tt) / 2 + ((3 * (b - c) + d - a) * ttt) / 2) >> 9;
+    int i = (v->counter >> 4) & 0xFF;
+    int s = ((Gauss[0xFF - i] * v->history[0]) >> 15) + ((Gauss[0x1FF - i] * v->history[1]) >> 15)
+          + ((Gauss[0x100 + i] * v->history[2]) >> 15) + ((Gauss[i] * v->history[3]) >> 15);
 
     return s < -32768 ? -32768 : s > 32767 ? 32767 : s;
 }
@@ -358,6 +415,22 @@ static void advance(Voice *v) {
         v->history[2] = v->history[3];
         v->history[3] = v->decoded[v->index++];
     }
+}
+
+/* Room at the top of the mix, and loud moments rounded off rather than clipped, which sounds harsh. */
+#define MIX_LEVEL 0.7f
+#define LIMIT_KNEE 22000.0f
+
+static int limit(int sample) {
+    float x = sample * MIX_LEVEL;
+    float a = x < 0 ? -x : x;
+
+    if (a > LIMIT_KNEE) {
+        float room = 32767.0f - LIMIT_KNEE;
+
+        a = LIMIT_KNEE + room * (1.0f - room / (room + a - LIMIT_KNEE));
+    }
+    return (int)(x < 0 ? -a : a);
 }
 
 /* What the sound device, or a test's recording, plays next. Whoever calls it holds the lock. */
@@ -395,9 +468,8 @@ void audio_mix(int16_t *out, int frames) {
             }
         }
         reverb_mix(wet_l, wet_r, &l, &r);
-        /* the game's master volume */
-        l = (l * 0x37FF) >> 14;
-        r = (r * 0x37FF) >> 14;
+        l = limit(l);
+        r = limit(r);
         if (Mute) {
             l = r = 0;
         }
@@ -575,15 +647,13 @@ static uint32_t note_pitch(double note, int center, int shift) {
     return p > 0x3FFF ? 0x3FFF : (uint32_t)p;
 }
 
-/* A tone's volume and a volume of 0..127 a side, for the mixer's 0..0x3FFF. */
-static void set_volume(Voice *v, int pan, int left, int right) {
-    int pl, pr;
-
-    pan = pan < 0 ? 0 : pan > 127 ? 127 : pan;
-    pl = pan > 64 ? 127 - pan : 63;
-    pr = pan < 64 ? pan : 63;
-    v->vol_l = (left * v->tone_vol * pl / 63) * 0x3FFF / (127 * 127);
-    v->vol_r = (right * v->tone_vol * pr / 63) * 0x3FFF / (127 * 127);
+/* A pan takes from the side it's away from. */
+static void apply_pan(int pan, int *left, int *right) {
+    if (pan < 64) {
+        *right = *right * pan / 63;
+    } else {
+        *left = *left * (127 - pan) / 63;
+    }
 }
 
 /* Sets a voice going on a tone of a bank's program. */
@@ -605,9 +675,7 @@ static Voice *start_voice(Voice *v, const Bank *b, int prog, int tone) {
     v->bend_up = t->pbmax;
     v->adsr1 = t->adsr1;
     v->adsr2 = t->adsr2;
-    v->env_wait = 1;
-    v->tone_vol = (t->vol * b->prog[prog].mvol) / 127;
-    v->tone_pan = t->pan + b->prog[prog].mpan - 64;
+    v->env_wait = 0;
     v->level = (int)((int64_t)b->master * 0x3FFF / 127 * b->prog[prog].mvol / 127 * t->vol / 127);
     v->pan1 = t->pan;
     v->pan2 = b->prog[prog].mpan;
@@ -642,7 +710,18 @@ short SsUtKeyOn(short vab, short prog, short tone, short note, short fine, short
         return -1;
     }
     v->pitch = note_pitch(note + fine / 128.0, v->center, v->shift);
-    set_volume(v, v->tone_pan, left, right);
+    /* libsnd's sum: the louder side is the note's volume and the other a pan, and it isn't squared */
+    {
+        int vol = left > right ? left : right;
+        int pan = left == right ? 64 : right < left ? (right * 64) / left : 127 - (left * 64) / right;
+        int l = (int)((int64_t)v->level * vol / 127), r = l;
+
+        apply_pan(v->pan1, &l, &r);
+        apply_pan(v->pan2, &l, &r);
+        apply_pan(pan, &l, &r);
+        v->vol_l = l;
+        v->vol_r = r;
+    }
     host_audio_unlock();
     return (short)(v - Voices);
 }
@@ -654,7 +733,7 @@ short SsUtKeyOffV(short voice) {
     host_audio_lock();
     if (Voices[voice].state != ENV_OFF) {
         Voices[voice].state = ENV_RELEASE;
-        Voices[voice].env_wait = 1;
+        Voices[voice].env_wait = 0;
     }
     host_audio_unlock();
     return 0;
@@ -685,7 +764,8 @@ short SsUtSetVVol(short voice, short left, short right) {
         return -1;
     }
     host_audio_lock();
-    set_volume(&Voices[voice], Voices[voice].tone_pan, left, right);
+    Voices[voice].vol_l = left * 129;
+    Voices[voice].vol_r = right * 129;
     host_audio_unlock();
     return 0;
 }
@@ -713,15 +793,6 @@ static int read_var(const uint8_t **p) {
         v = (v << 7) | (c & 0x7F);
     } while (c & 0x80);
     return v;
-}
-
-/* A pan takes from the side it's away from. */
-static void apply_pan(int pan, int *left, int *right) {
-    if (pan < 64) {
-        *right = *right * pan / 63;
-    } else {
-        *left = *left * (127 - pan) / 63;
-    }
 }
 
 /* libsnd's sum for a sequence's note: everything multiplied, each pan in turn, and the result squared, so
@@ -806,7 +877,7 @@ static void note_off(int n, int channel, int note) {
 
         if (v->state != ENV_OFF && v->state != ENV_RELEASE && v->seq == n && v->channel == channel && v->note == note) {
             v->state = ENV_RELEASE;
-            v->env_wait = 1;
+            v->env_wait = 0;
         }
     }
 }
@@ -819,7 +890,7 @@ static void release_seq(int n) {
 
         if (v->state != ENV_OFF && v->seq == n) {
             v->state = ENV_RELEASE;
-            v->env_wait = 1;
+            v->env_wait = 0;
         }
     }
 }
