@@ -17,8 +17,9 @@ typedef struct {
     s32 w, h;
 } MenuSize;
 
-static const MenuSize WindowSizes[] = { { 640, 480 }, { 960, 720 }, { 1280, 960 }, { 1600, 1200 }, { 1920, 1440 } };
-static const MenuSize RenderSizes[] = { { 640, 480 }, { 1280, 960 }, { 1920, 1440 }, { 2560, 1920 }, { 3840, 2880 } };
+static const MenuSize WindowSizes[] = { { 640, 480 }, { 960, 720 }, { 1280, 720 }, { 1280, 960 }, { 1600, 1200 }, { 1920, 1080 },
+                                        { 1920, 1440 }, { 2560, 1440 }, { 3840, 2160 } };
+static const MenuSize RenderSizes[] = { { 0, 0 }, { 640, 480 }, { 1280, 960 }, { 1920, 1440 }, { 2560, 1920 }, { 3840, 2880 } };
 
 enum {
     SET_SKIP_INTRO,
@@ -186,7 +187,11 @@ static void show_value(char *text, size_t size, s32 id) {
         snprintf(text, size, "%d X %d", s->window_w, s->window_h);
         break;
     case SET_RENDER:
-        snprintf(text, size, "%d X %d", s->render_w, s->render_h);
+        if (s->render_w == 0) {
+            snprintf(text, size, "MATCH WINDOW");
+        } else {
+            snprintf(text, size, "%d X %d", s->render_w, s->render_h);
+        }
         break;
     case SET_FPS:
         snprintf(text, size, "%d", s->fps);

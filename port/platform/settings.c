@@ -16,8 +16,8 @@ void settings_defaults(void) {
     Current.fullscreen = 0;
     Current.window_w = 1280;
     Current.window_h = 960;
-    Current.render_w = 1280;
-    Current.render_h = 960;
+    Current.render_w = 0;
+    Current.render_h = 0;
     Current.vsync = 1;
     Current.fps = 30;
     Current.test_mode = -1;
@@ -55,7 +55,7 @@ void settings_load(void) {
         } else if (sscanf(line, "window=%dx%d", &a, &b) == 2 && a > 0 && b > 0) {
             Current.window_w = a;
             Current.window_h = b;
-        } else if (sscanf(line, "render=%dx%d", &a, &b) == 2 && a > 0 && b > 0) {
+        } else if (sscanf(line, "render=%dx%d", &a, &b) == 2 && a >= 0 && b >= 0) {
             Current.render_w = a;
             Current.render_h = b;
         } else if (sscanf(line, "vsync=%d", &a) == 1) {

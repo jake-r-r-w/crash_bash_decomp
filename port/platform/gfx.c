@@ -218,6 +218,10 @@ static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *
 }
 
 /* What's as big as the picture. */
+#define MIN_TARGET_W 320
+#define MIN_TARGET_H 240
+static int FollowsWindow;
+
 static void make_targets(int width, int height) {
     SDL_GPUTextureCreateInfo t;
     SDL_GPUTransferBufferCreateInfo tc;
@@ -253,8 +257,26 @@ static void set_vsync(int vsync) {
     SDL_SetGPUSwapchainParameters(Device, Window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, mode);
 }
 
-void gfx_configure(int width, int height, int vsync, int fps) {
-    SDL_WaitForGPUIdle(Device);
+/* A size of 0 x 0 asks for what the window can show of a 4:3 picture, pixel for pixel. */
+static void resolve_size(int *width, int *height) {
+    int w, h;
+
+    FollowsWindow = *width == 0 || *height == 0;
+    if (!FollowsWindow) {
+        return;
+    }
+    SDL_GetWindowSizeInPixels(Window, &w, &h);
+    if (w * 3 > h * 4) {
+        w = h * 4 / 3;
+    } else {
+        h = w * 3 / 4;
+    }
+    *width = w < MIN_TARGET_W ? MIN_TARGET_W : w;
+    *height = h < MIN_TARGET_H ? MIN_TARGET_H : h;
+}
+
+static void set_target_size(int width, int height) {
+    resolve_size(&width, &height);
     if (width != TargetW || height != TargetH) {
         SDL_ReleaseGPUTexture(Device, Target);
         SDL_ReleaseGPUTexture(Device, Base);
@@ -263,6 +285,19 @@ void gfx_configure(int width, int height, int vsync, int fps) {
         make_targets(width, height);
         gfx_clear(0, 0, 0);
     }
+}
+
+void gfx_window_resized(void) {
+    if (FollowsWindow && Device != NULL) {
+        SDL_WaitForGPUIdle(Device);
+        set_target_size(0, 0);
+        BaseStale = 1;
+    }
+}
+
+void gfx_configure(int width, int height, int vsync, int fps) {
+    SDL_WaitForGPUIdle(Device);
+    set_target_size(width, height);
     set_vsync(vsync);
     Stepping = fps > 30;
     StepsPerFrame = 2 * fps / 60;
@@ -308,6 +343,7 @@ int gfx_init(void *window, int width, int height, int vsync, int fps) {
         return 0;
     }
 
+    resolve_size(&width, &height);
     make_targets(width, height);
 
     SDL_zero(t);

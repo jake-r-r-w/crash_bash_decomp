@@ -7,7 +7,7 @@ typedef struct Settings {
     int skip_loading;  /* load in one go, without the loading screen */
     int fullscreen;
     int window_w, window_h;
-    int render_w, render_h; /* what the game draws at, whatever the window's size */
+    int render_w, render_h; /* 0 x 0: as sharp as the window can show. Else what the game draws at, whatever the window's size */
     int vsync;
     int fps;           /* 30 is the game's own rate; 60 and 120 draw between its frames */
     int test_mode;     /* a test run's game mode to go straight to, or -1 */

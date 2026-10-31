@@ -67,7 +67,7 @@ ROADMAP-B.md, Part 6:
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. **The PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
    `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only for now, at the user's request: Linux
-   stays in the plan, but isn't built. Next is 6.7, finishing it: saving, any resolution, analog sticks and rumble, then a first
+   stays in the plan, but isn't built. 6.7, finishing it, has saving, any resolution, analog sticks and rumble written; the user has yet to feel a real controller. What's left is a first
    release. Whether it plays the same as retail is checked by the user playing it.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
@@ -459,6 +459,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: Any resolution: `MATCH WINDOW` (render 0 x 0, the new default) draws a 4:3 picture pixel for pixel in whatever the window is and follows a resize, with
+  widescreen window sizes, and the window's size and fullscreen remembered. The game's picture stays 4:3; true widescreen isn't attempted. `--window` and `--render` test it.
 - 2026-10-31: Saving, on the user's call not to emulate the card: each slot is a checksummed file written safely (`platform/saves.c`, in the settings' folder), and
   `mcrd.c` and the card's icon and title code are gone. A warp room's pause menu saves too. The save screen's counters on an empty slot, which the user read as won
   items, were the panel's placeholders left showing by a PS1-sized stride (`EngineSetSlot3Digits`). ASan found the name's letters were a table split across labels.

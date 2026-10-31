@@ -216,6 +216,7 @@ int platform_pad(int port) {
 
 int main(int argc, char **argv) {
     int i;
+    int window_w = 0, window_h = 0, render_w = -1, render_h = -1;
     int no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
 
     for (i = 1; i < argc; i++) {
@@ -231,6 +232,12 @@ int main(int argc, char **argv) {
             Sticks[NumSticks].frame = atoi(argv[++i]);
             Sticks[NumSticks].x = (unsigned char)strtol(argv[++i], NULL, 16);
             Sticks[NumSticks++].y = (unsigned char)strtol(argv[++i], NULL, 16);
+        } else if (strcmp(argv[i], "--window") == 0 && i + 2 < argc) {
+            window_w = atoi(argv[++i]);
+            window_h = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--render") == 0 && i + 2 < argc) {
+            render_w = atoi(argv[++i]);
+            render_h = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--saves") == 0 && i + 1 < argc) {
             SavesFolder = argv[++i];
         } else if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -283,6 +290,14 @@ int main(int argc, char **argv) {
     }
     settings()->launcher = launcher || (!testing && !no_launcher);
     settings()->no_save = testing;
+    if (window_w > 0 && window_h > 0) {
+        settings()->window_w = window_w;
+        settings()->window_h = window_h;
+    }
+    if (render_w >= 0 && render_h >= 0) {
+        settings()->render_w = render_w;
+        settings()->render_h = render_h;
+    }
     if (SavesFolder != NULL) {
         saves_set_folder(SavesFolder);
     } else if (!testing) {

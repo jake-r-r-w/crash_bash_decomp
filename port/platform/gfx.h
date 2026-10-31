@@ -54,6 +54,8 @@ void gfx_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend);
 void gfx_face_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend, int wind, int hidden);
 /* Whether pictures are drawn between the game's frames. */
 int gfx_stepping(void);
+/* The window has a new size: the picture's redrawn at it, if that's what the settings ask. */
+void gfx_window_resized(void);
 /* v[0] v[1] v[2] v[3] in PS1 quad order (Z), as two triangles. */
 void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend);
 

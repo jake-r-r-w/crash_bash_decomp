@@ -203,10 +203,22 @@ int host_poll(void) {
         gfx_configure(s->render_w, s->render_h, s->vsync, s->fps);
     }
 
+    int resized = 0;
+
     while (SDL_PollEvent(&e)) {
         switch (e.type) {
         case SDL_EVENT_QUIT:
+            settings_save();
             return 0;
+        case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+            resized = 1;
+            break;
+        case SDL_EVENT_WINDOW_RESIZED:
+            if (!Fullscreen && settings()->tiles == 0) {
+                settings()->window_w = e.window.data1;
+                settings()->window_h = e.window.data2;
+            }
+            break;
         case SDL_EVENT_GAMEPAD_ADDED:
         case SDL_EVENT_GAMEPAD_REMOVED:
             open_pads();
@@ -214,12 +226,16 @@ int host_poll(void) {
         case SDL_EVENT_KEY_DOWN:
             if (e.key.key == SDLK_RETURN && (e.key.mod & SDL_KMOD_ALT) && !e.key.repeat) {
                 Fullscreen = !Fullscreen;
+                settings()->fullscreen = Fullscreen;
                 SDL_SetWindowFullscreen(Window, Fullscreen);
             }
             break;
         default:
             break;
         }
+    }
+    if (resized) {
+        gfx_window_resized();
     }
     return 1;
 }
