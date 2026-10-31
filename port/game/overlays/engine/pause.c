@@ -6,6 +6,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 #include "bash/videomenu.h"
+#include "bash/cheatmenu.h"
 #include <stdio.h>
 
 /* The rows that aren't the game's own (DrawHudEntries' type 8), by a HudEntry's idx. */
@@ -242,6 +243,10 @@ found:
                             PauseChoice = 1;
                         }
                         break;
+                    case 4:
+                        GAME->pause |= 0x10000;
+                        PauseChoice = 0;
+                        break;
                     }
                 } else {
                     switch (PauseChoice) {
@@ -267,6 +272,10 @@ found:
                     case 4:
                         GAME->pause |= 4;
                         PauseChoice = 1;
+                        break;
+                    case 5:
+                        GAME->pause |= 0x10000;
+                        PauseChoice = 0;
                         break;
                     }
                 }
@@ -546,26 +555,9 @@ found:
             }
             ret = 0;
             break;
-        case 0x20000:
-        case 0x20008:
-            if (ActivePad()->pressed & 8) {
-                PauseChoice = 0;
-                GAME->pause = (GAME->pause & ~0x20000) | 0x10000;
-            }
-            ret = 0;
-            break;
-        case 0x40000:
-        case 0x40008:
-            if (ActivePad()->pressed & 1) {
-                GAME->exitFlags = 0x8008;
-                PausePad = 2;
-                NextGameMode = GAME->mode;
-                GAME->pause &= 0xFFFBFFFE;
-            }
-            if (ActivePad()->pressed & 0x1008) {
-                GAME->pause = (GAME->pause & ~0x40000) | 0x10000;
-                PauseChoice = 2;
-            }
+        case 0x10000:
+        case 0x10008:
+            CheatMenuUpdate();
             ret = 0;
             break;
         case 0x200:
@@ -932,6 +924,10 @@ void DrawPauseMenu(void) {
         break;
     case 0x8000:
         DrawHudEntries(PauseConfirmExit, PauseMenuY);
+        break;
+    case 0x10000:
+    case 0x10008:
+        CheatMenuDraw(PauseMenuY);
         break;
     case 4:
     case 0xC:

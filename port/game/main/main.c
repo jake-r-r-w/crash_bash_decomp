@@ -1,3 +1,4 @@
+#include "../../platform/settings.h"
 #include "common.h"
 #include "bash/main.h"
 #include "bash/modchip.h"
@@ -152,6 +153,7 @@ void shell_render(void) {
 }
 
 void shell_update(void) {
+    GAME->cheats = settings()->cheat_menu ? GAME->cheats | 0x80010000 : 0x80000000;
     loader_update();
     pads_update();
     rand_step();

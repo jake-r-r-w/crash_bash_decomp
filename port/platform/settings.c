@@ -58,6 +58,8 @@ void settings_load(void) {
         } else if (sscanf(line, "render=%dx%d", &a, &b) == 2 && a >= 0 && b >= 0) {
             Current.render_w = a;
             Current.render_h = b;
+        } else if (sscanf(line, "cheat_menu=%d", &a) == 1) {
+            Current.cheat_menu = a != 0;
         } else if (sscanf(line, "vsync=%d", &a) == 1) {
             Current.vsync = a != 0;
         } else if (sscanf(line, "fps=%d", &a) == 1 && (a == 30 || a == 60 || a == 120)) {
@@ -82,6 +84,7 @@ void settings_save(void) {
     fprintf(f, "fullscreen=%d\n", Current.fullscreen);
     fprintf(f, "window=%dx%d\n", Current.window_w, Current.window_h);
     fprintf(f, "render=%dx%d\n", Current.render_w, Current.render_h);
+    fprintf(f, "cheat_menu=%d\n", Current.cheat_menu);
     fprintf(f, "vsync=%d\n", Current.vsync);
     fprintf(f, "fps=%d\n", Current.fps);
     fclose(f);

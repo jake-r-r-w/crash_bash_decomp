@@ -459,6 +459,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: The original's cheat menu, recovered at the user's asking (`overlays/engine/cheatmenu.c`, a launcher toggle, off by default): retail has its way in, flags and name; the
+  rest is from the demo disc's engine (`PAUSE.CPP`, the `{text, var, type, min, max}` table at `0x8008CED4`). TWEAK SETTINGS isn't back: its variables are gone. Not every flag has been played with.
 - 2026-10-31: A window coming out of fullscreen, or opening as big as the screen, had its title bar off the top, so it couldn't be dragged: `centre_window` keeps it on.
 - 2026-10-31: Video options in the game, at the user's asking: `main/videomenu.c` holds them for the launcher and the VIDEO pages of Options in the main menu and the
   pause menu; they apply at once and are kept. Changing to 60 or 120 fps in a `--turbo` run stops its shots, as stepping needs real time.

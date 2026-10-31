@@ -136,6 +136,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--no-launcher` | start with the saved settings, without the menu |
 | `--launcher` | open the menu in a test run too (drive it with `--press`) |
 | `--window W H`, `--render W H` | the window's size and what the game draws at, for this run (`--render 0 0`: match the window) |
+| `--cheat-menu` | the cheat menu on, for this run |
 | `--stick N LX LY` | a test's analog pad with motors on pad 1: its left stick at these (hex, centre 80) from vblank N for a few vblanks. A test run prints the rumble it asks for |
 | `--no-window`, `--data`, `--saves` | no window, and where the game's data and the saves are (a test run keeps no saves without `--saves`) |
 
