@@ -160,7 +160,7 @@ void BonkHeroRun(s32 arg0) {
                     }
                     PlaySfx(a0, NULL, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
                 } else {
-                    PlaySfx(a0, NULL, (SLONG_XYZ *)((u8 *)h->hero_eng + 0x10), 0x1000, 0x1E00, 0);
+                    PlaySfx(a0, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 break;
             case 9:

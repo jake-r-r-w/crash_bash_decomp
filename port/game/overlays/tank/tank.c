@@ -1479,7 +1479,7 @@ void TA_InitLevel(void) {
         dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_ArenaTankJungleObjects]);
     }
     dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_TankObjects]);
-    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_TankObjects]) - 0x658));
+    dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_Angel]);
     dbase_load_all_mesh_anims(((s32 *)MapScene->dbase));
     GameViewport.ofx = 0x140;
     GameViewport.ofy = 0x15E;

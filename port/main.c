@@ -14,19 +14,17 @@
 #include "platform/launcher.h"
 #include "platform/settings.h"
 
+static int Vblanks;
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-/* A crash prints where, and the return addresses up the stack, for llvm-symbolizer. */
-static LONG WINAPI crash_report(EXCEPTION_POINTERS *e) {
-    uintptr_t image = (uintptr_t)GetModuleHandleA(NULL);
-    CONTEXT c = *e->ContextRecord;
+/* The return addresses up the stack, for llvm-symbolizer. */
+static void print_stack(CONTEXT c) {
     int i;
 
-    fprintf(stderr, "crash: code %08lX, reading %llX, image %llX\n", e->ExceptionRecord->ExceptionCode,
-            (unsigned long long)e->ExceptionRecord->ExceptionInformation[1], (unsigned long long)image);
-    fprintf(stderr, "stack: %llX", (unsigned long long)c.Rip);
+                fprintf(stderr, "stack: %llX", (unsigned long long)c.Rip);
     for (i = 0; i < 32; i++) {
         DWORD64 base = 0, frame = 0;
         PVOID handler = NULL;
@@ -47,7 +45,37 @@ static LONG WINAPI crash_report(EXCEPTION_POINTERS *e) {
     }
     fprintf(stderr, "\n");
     fflush(stderr);
+}
+
+/* A crash says what and where. */
+static LONG WINAPI crash_report(EXCEPTION_POINTERS *e) {
+    uintptr_t image = (uintptr_t)GetModuleHandleA(NULL);
+
+    fprintf(stderr, "crash: code %08lX, reading %llX, image %llX\n", e->ExceptionRecord->ExceptionCode,
+            (unsigned long long)e->ExceptionRecord->ExceptionInformation[1], (unsigned long long)image);
+    print_stack(*e->ContextRecord);
     return EXCEPTION_EXECUTE_HANDLER;
+}
+
+/* A test run that stops reaching vblanks is stuck, which says where. */
+static DWORD WINAPI watchdog(LPVOID game_thread) {
+    int seen = -1;
+
+    for (;;) {
+        CONTEXT c;
+
+        Sleep(20000);
+        if (*(volatile int *)&Vblanks != seen) {
+            seen = Vblanks;
+            continue;
+        }
+        c.ContextFlags = CONTEXT_FULL;
+        SuspendThread(game_thread);
+        GetThreadContext(game_thread, &c);
+        fprintf(stderr, "crash: stuck at vblank %d, image %llX\n", seen, (unsigned long long)(uintptr_t)GetModuleHandleA(NULL));
+        print_stack(c);
+        ExitProcess(3);
+    }
 }
 #endif
 
@@ -59,7 +87,6 @@ static const char *CardPath = "memcard1.mcr";
 static int NoWindow;
 static int Turbo;
 static int StopAt = -1;
-static int Vblanks;
 
 /* The first of these that exists, unless --data says */
 const char *platform_data_path(void) {
@@ -207,6 +234,9 @@ int main(int argc, char **argv) {
     }
 #ifdef _WIN32
     SetUnhandledExceptionFilter(crash_report);
+    if (StopAt >= 0) {
+        CreateThread(NULL, 0, watchdog, OpenThread(THREAD_ALL_ACCESS, FALSE, GetCurrentThreadId()), 0, NULL);
+    }
 #endif
     /* a test run doesn't depend on what the player has chosen */
     if (testing) {

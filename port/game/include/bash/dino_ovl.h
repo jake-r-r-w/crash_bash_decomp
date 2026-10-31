@@ -93,7 +93,8 @@ void DinoAI_SteerToTarget(s32 id);
 typedef struct DinoHeroExt {
     EXT base;
     s32 unkC;  /* 0x0C */
-    u8 pad10[0xC];
+    u8 pad10[8];
+    NAS *nas;  /* DinoExtB's */
     s32 timer; /* 0x1C */
 } DinoHeroExt;
 

@@ -835,9 +835,7 @@ void AR_UpdateLevel(void) {
             }
         }
     }
-    ao = (u8 *)&HeroModelBank[DB_BallsEffects];
-    ao += 0x10;
-    texture_update_anims((obj_textureset *)ao);
+    texture_update_anims(&HeroModelBank[DB_BallsEffects].textures);
 }
 
 bool AR_KeepInBounds(EXTengine *arg0) {
@@ -5568,9 +5566,9 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
     EXTengine *hero;
     EXTengine *o;
     FlagRecord *rec;
-    u8 *n;
-    u8 *t;
-    u8 *e;
+    NAS *n;
+    EXTobject *t;
+    EXTmotion *e;
     s32 dx;
     s32 dz;
     s32 d;
@@ -5583,10 +5581,10 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
     hero = Heroes[arg0].hero_eng;
     hit = 0;
     if (hero != NULL) {
-        n = HeadOfBalls;
+        n = (NAS *)HeadOfBalls;
         if (n != NULL) {
             do {
-                o = *(EXTengine **)(n + 0x54);
+                o = n->Engine;
                 if (o != NULL && o != hero) {
                     rec = FindCollisionBox(o, 0x40);
                     if (rec != NULL) {
@@ -5598,40 +5596,40 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                         if (d < r * r) {
                             d = csqrt(d) >> 6;
                             if (d < r) {
-                                t = FindExtension((NAS *)n, 0x1000);
+                                t = FindExtension(n, 0x1000);
                                 if (t != NULL
-                                    && (*(u16 *)(t + 0x1A) == 1 || *(u16 *)(t + 0x1A) == 8)
-                                    && *(u16 *)(t + 0x14) == 1 && *(s16 *)(t + 0x20) == 0) {
+                                    && (t->status == 1 || t->status == 8)
+                                    && t->whatami == 1 && t->timer == 0) {
                                     ang = get_angle(-dx, -dz) & 0xFFF;
                                     d = r - d + 1;
                                     o->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
                                     o->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
-                                    *(u16 *)(t + 0x16) = arg0;
-                                    e = FindExtension((NAS *)n, 0x800);
+                                    t->player = arg0;
+                                    e = FindExtension(n, 0x800);
                                     if (e != NULL) {
                                         hit = 1;
                                         PlaySfx(0x585, NULL, NULL, 0x1000, 0x1E00, 0);
-                                        *(s16 *)(t + 0x20) = 4;
-                                        *(s16 *)(e + 0x16) = ang;
+                                        t->timer = 4;
+                                        e->Xa = ang;
                                         switch (GameMode) {
                                         case 0xF:
-                                            *(s16 *)(e + 0xE) = *(u16 *)(e + 0x14) + 0x40;
-                                            *(u16 *)(e + 0x14) = 0x40;
+                                            e->Xvel = e->Xmax + 0x40;
+                                            e->Xmax = 0x40;
                                             break;
                                         case 0x11:
                                             if (arg2) {
                                                 o->sub->entity = 0x2018;
-                                                *(u16 *)(t + 0x14) = 2;
-                                                *(s16 *)(e + 0xE) = *(u16 *)(e + 0x14) + 0x40;
-                                                *(u16 *)(e + 0x14) = 0x80;
+                                                t->whatami = 2;
+                                                e->Xvel = e->Xmax + 0x40;
+                                                e->Xmax = 0x80;
                                             } else {
-                                                *(s16 *)(e + 0xE) = *(u16 *)(e + 0x14) + 0x40;
-                                                *(u16 *)(e + 0x14) = 0x80;
+                                                e->Xvel = e->Xmax + 0x40;
+                                                e->Xmax = 0x80;
                                             }
                                             break;
                                         default:
-                                            *(s16 *)(e + 0xE) = *(u16 *)(e + 0x14) + 0x40;
-                                            *(u16 *)(e + 0x14) = 0x90;
+                                            e->Xvel = e->Xmax + 0x40;
+                                            e->Xmax = 0x90;
                                             break;
                                         }
                                     }
@@ -5640,7 +5638,7 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                         }
                     }
                 }
-                n = *(u8 **)(n + 0x34);
+                n = n->Solid.Child;
             } while (n != NULL);
         }
     }

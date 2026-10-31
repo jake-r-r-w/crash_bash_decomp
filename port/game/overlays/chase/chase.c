@@ -744,7 +744,7 @@ void InitialiseCHASE(void) {
     }
     Set_Clock(a, 0x81C0);
     dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_KegObjects]);
-    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_KegObjects]) - 0xF88));
+    dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_Angel]);
     dbase_load_all_mesh_anims((s32 *)MapScene->dbase);
     scr = (ChaseScreen *)&GameViewport;
     scr->unk10 = 0x140;
@@ -845,8 +845,7 @@ loop:
     do {
         n--;
     } while (n >= 0);
-    h = &HeroModelBank[DB_KegObjects];
-    texture_update_anims(h + 0x10);
+    texture_update_anims(&HeroModelBank[DB_KegObjects].textures);
     ChaseUpdateStub(ChaseUpdateState);
 }
 

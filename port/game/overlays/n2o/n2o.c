@@ -484,9 +484,9 @@ void InitialiseN2O(void) {
         N2OPillarList = N2OPillars;
     }
     dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_BallsEffects]);
-    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_BallsEffects]) - 0x1500));
-    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_BallsEffects]) - 0x658));
-    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_BallsEffects]) - 0x620));
+    dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_Angel]);
+    dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_Oxide]);
+    dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_PlayerVehicle]);
     SetPanelHeroIconB(0x5C, 0x3088);
     N2OBossRound.unk0 = 0;
     N2OBossRound.unk22 = i + 10;
@@ -3544,9 +3544,9 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
     EXTengine *hero;
     EXTengine *o;
     FlagRecord *rec;
-    u8 *n;
-    u8 *t;
-    u8 *e;
+    NAS *n;
+    EXTobject *t;
+    EXTmotion *e;
     s32 dx;
     s32 dz;
     s32 d;
@@ -3557,10 +3557,10 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
     hero = Heroes[arg0].hero_eng;
     hit = 0;
     if (hero != NULL) {
-        n = HeadOfBalls;
+        n = (NAS *)HeadOfBalls;
         if (n != NULL) {
             do {
-                o = *(EXTengine **)(n + 0x54);
+                o = n->Engine;
                 if (o != NULL && o != hero) {
                     rec = FindCollisionBox(o, 0x40);
                     if (rec != NULL) {
@@ -3572,31 +3572,31 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                         if (d < r * r) {
                             d = csqrt(d) >> 6;
                             if (d < r) {
-                                t = FindExtension((NAS *)n, 0x1000);
+                                t = FindExtension(n, 0x1000);
                                 if (t != NULL
-                                    && (*(u16 *)(t + 0x1A) == 1 || *(u16 *)(t + 0x1A) == 8)
-                                    && *(u16 *)(t + 0x14) == 1 && *(s16 *)(t + 0x20) == 0) {
-                                    *(u16 *)(t + 0x1C) |= 8;
+                                    && (t->status == 1 || t->status == 8)
+                                    && t->whatami == 1 && t->timer == 0) {
+                                    t->can_do |= 8;
                                     ang = get_angle(-dx, -dz) & 0xFFF;
                                     d = r - d + 1;
                                     o->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
                                     o->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
-                                    *(u16 *)(t + 0x16) = arg0;
-                                    e = FindExtension((NAS *)n, 0x800);
+                                    t->player = arg0;
+                                    e = FindExtension(n, 0x800);
                                     if (e != NULL) {
                                         hit = 1;
                                         PlaySfx(0x585, NULL, NULL, 0x1000, 0x1E00, 0);
-                                        *(s16 *)(t + 0x20) = 4;
-                                        *(s16 *)(e + 0x16) = ang;
-                                        *(s16 *)(e + 0xE) = *(u16 *)(e + 0x14) + 0x40;
-                                        *(u16 *)(e + 0x14) = 0x90;
+                                        t->timer = 4;
+                                        e->Xa = ang;
+                                        e->Xvel = e->Xmax + 0x40;
+                                        e->Xmax = 0x90;
                                     }
                                 }
                             }
                         }
                     }
                 }
-                n = *(u8 **)(n + 0x34);
+                n = n->Solid.Child;
             } while (n != NULL);
         }
     }

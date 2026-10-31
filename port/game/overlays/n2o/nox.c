@@ -1463,9 +1463,6 @@ void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
 
 void InitNitroBoss(NAS *nas) {
     BossExt *ext = AddExt(nas, sizeof(BossExt), 0x10000000);
-    BossScene *scene;
-    u8 *p;
-
     if (ext != NULL) {
         nas->Engine->sub->u6C.dbase = MapScene->dbase;
         nas->Engine->xform.scale.vx = 0x1830;
@@ -1480,9 +1477,7 @@ void InitNitroBoss(NAS *nas) {
         RunNasAnim(nas);
         nas->UserInfo.user1 = 0;
         ext->frame = 0x3200;
-        scene = MapScene;
-        p = scene->data;
-        ext->keys = (KeyBlock *)SELF_REL((s32 *)(p + 4));
+        ext->keys = (KeyBlock *)SELF_REL((s32 *)MapScene->path + 1);
         key_interp_pos(ext->keys, ext->frame, &nas->Engine->XYZ);
         ext->state = 0;
         ext->timer = 0;
@@ -2235,10 +2230,10 @@ void SetNoxHeroFly(s32 arg0) {
         m->z_acc = 0x10;
         m->jump_acc = 0x10;
         m->mass = 0x100;
+        m->z_dec = 1;
+        m->x_dec = 1;
+        m->jump_dec = 1;
     }
-    m->z_dec = 1;
-    m->x_dec = 1;
-    m->jump_dec = 1;
     h->hero->UserInfo.user1 = 0;
 }
 
@@ -2296,7 +2291,7 @@ void PlotDummyCamera(NAS *nas) {
 }
 
 void InitDummyCamera(NAS *nas) {
-    *(s32 *)((u8 *)nas->Engine + 0x14) = -0x480;
+    nas->Engine->XYZ.y = -0x480;
 }
 
 void NoxStubA(void) {

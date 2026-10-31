@@ -2420,7 +2420,7 @@ s32 DinoKeepInArena(s32 arg0) {
 }
 
 void PlotDinoSmoke(NAS *m) {
-    s32 w = m->UserInfo.user1;
+    iptr w = m->UserInfo.user1;
     EXTengine **u;
     EXTengine *e;
     s32 x;

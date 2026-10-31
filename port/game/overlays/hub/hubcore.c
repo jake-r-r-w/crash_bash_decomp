@@ -757,7 +757,7 @@ void HubSpawnEffects(void) {
     s32 *p;
     s32 *e;
     NAS *nas;
-    HubSpawnExt *ext;
+    PathExt *ext;
 
     tbl = NULL;
     if (MapScene->dbase != 0) {
@@ -777,22 +777,22 @@ void HubSpawnEffects(void) {
                 ext = FindExtension(nas, 0x10000000);
                 if (ext != NULL) {
                     s32 *q = (s32 *)(((u8 *)MapScene->path) + i * 4);
-                    ext->unkC = (s32 *)SELF_REL(q);
+                    ext->path = (KeyBlock *)SELF_REL(q);
                     if (e[3] == 0xC8) {
-                        ext->unk34 = 0;
+                        ext->kind = 0;
                     }
                     if (e[3] == 0xC9) {
-                        ext->unk34 = 1;
+                        ext->kind = 1;
                     }
                     if (e[3] == 0xCA) {
-                        ext->unk34 = 2;
+                        ext->kind = 2;
                     }
                     if (e[3] == 0xCB) {
-                        ext->unk34 = 3;
+                        ext->kind = 3;
                         nas->Engine->sub->flags &= 0xFFFF7FFF;
                     }
                     if (e[3] == 0xCC) {
-                        ext->unk34 = 4;
+                        ext->kind = 4;
                         nas->Engine->sub->flags &= 0xFFFF7FFF;
                     }
                 }
@@ -2158,8 +2158,7 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
 
     set = &arg0->set;
     row = set->rows;
-    set = (HubSparkSet *)FILE_AT(set, (FrameCount & 1) * 4);
-    prim = set->src;
+    prim = (FrameCount & 1) ? set->dst : set->src;
     gte_SetRotMatrix(m);
     gte_SetTransMatrix(m);
     arg0 = arg0->next;

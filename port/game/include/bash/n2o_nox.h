@@ -473,11 +473,6 @@ static inline s32 LaserInBox(s32 *arg0, s32 *arg1) {
     }
     return 0;
 }
-typedef struct BossScene {
-    /* 0x00 */ s32 pad0;
-    /* 0x04 */ u8 pad04[0x28];
-    /* 0x2C */ u8 *data;
-} BossScene;
 
 
 extern ScriptInit NoxBossScriptInit;
@@ -606,11 +601,11 @@ typedef struct AstSceneObj {
     /* 0x50 */ u8 unk50;
     /* 0x51 */ u8 unk51;
     /* 0x52 */ s16 unk52;
-    /* 0x54 */ u8 pad54[0x5C - 0x54];
+    /* 0x54 */ u8 pad54[offsetof(subengine, next) - 0x54];
     /* 0x5C */ struct AstSceneObj *next;
-    /* 0x60 */ u8 pad60[4];
+    /* 0x60 */ u8 pad60[offsetof(subengine, ids) - (offsetof(subengine, next) + sizeof(void *))];
     /* 0x64 */ AstKind k;
-    /* 0x66 */ u8 pad66[0x74 - 0x66];
+    /* 0x66 */ u8 pad66[offsetof(subengine, entity) - (offsetof(subengine, ids) + sizeof(AstKind))];
     /* 0x74 */ u16 id;
     /* 0x76 */ s16 unk76;
 } AstSceneObj;

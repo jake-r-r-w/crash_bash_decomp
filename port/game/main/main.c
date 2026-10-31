@@ -233,17 +233,10 @@ void mal_update(_mal_area *heap) {
     mal *prev;
     mal *q;
     mal *qprev;
-    s32 budget;
 
     p = Heap_NextToMove(heap);
-    budget = (0x1FE - VSync(1)) * 0x70;
     do {
-        s32 t;
-
         if (p == NULL) break;
-        budget -= p->size;
-        if (budget <= 0) break;
-        t = VSync(1);
         MalMoveWords += p->size;
         a = heap->lowest;
         mal_unlink(a, heap);
@@ -273,9 +266,7 @@ void mal_update(_mal_area *heap) {
             heap->lowest = mal_next_free_block(b);
         }
         mal_free(b + 1, heap);
-        t = VSync(1) - t;
         p = Heap_NextToMove(heap);
-        MalMoveVSyncs += t;
     } while (1);
     q = heap->deferred;
     qprev = NULL;

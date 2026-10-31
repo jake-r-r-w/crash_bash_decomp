@@ -154,11 +154,11 @@ typedef struct N2OEnt {
     s32 flags;
     u8 pad4[4];
     s32 y;
-    u8 pad0C[0x50];
+    u8 pad0C[offsetof(subengine, next) - 0xC];
     struct N2OEnt *next;
-    u8 pad60[0xC];
+    u8 pad60[offsetof(subengine, u6C.ptr) - (offsetof(subengine, next) + sizeof(void *))];
     u8 *key;
-    u8 pad70[4];
+    u8 pad70[offsetof(subengine, entity) - (offsetof(subengine, u6C.ptr) + sizeof(void *))];
     u16 id;
 } N2OEnt;
 

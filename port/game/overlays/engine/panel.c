@@ -5,6 +5,8 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 #include "bash/tank.h"   /* TA_players: the Tank HUD reads its weapon and rounds */
+#include "bash/polar_ovl.h"
+#include "bash/race_ovl.h"
 
 void Setup_panel(void) {
     GameState *v;
@@ -1262,7 +1264,7 @@ loop:
                     } else {
                         e = FindExtension(h->hero, 0x10000000);
                         if (e != NULL) {
-                            BarLength = *(s32 *)(e + 0x58) >> 10;  /* the game's own extension (Race's kart: its speed) */
+                            BarLength = ((RaceFux *)e)->steer >> 10;  /* the game's own extension (Race's kart: its speed) */
                         } else {
                             BarLength = 0;
                         }
@@ -1270,7 +1272,7 @@ loop:
                 } else {
                     e = FindExtension(h->hero, 0x20000000);
                     if (e != NULL) {
-                        BarLength = *(s32 *)(e + 0x20) >> 2;  /* the game's own extension */
+                        BarLength = ((PolarAi *)e)->unk20 >> 2;  /* the game's own extension */
                     } else {
                         BarLength = 0;
                     }

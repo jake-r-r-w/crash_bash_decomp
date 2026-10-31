@@ -1393,9 +1393,9 @@ u8 *script_track_at(u8 *arg0, s32 arg1) {
 
     u8 *e;
 
-    e = *(u8 **)(arg0 + 0);
-    lo = *(s32 *)(arg0 + 4);
-    v = *(s16 *)(arg0 + 0xE);
+    e = (u8 *)((script_control_info *)arg0)->dbase;
+    lo = ((script_control_info *)arg0)->script;
+    v = ((script_control_info *)arg0)->time.h.frame;
     ScriptTrackThread = arg1;
     ScriptTrackDbase = e;
     p = ((obj_dbase *)e)->data;

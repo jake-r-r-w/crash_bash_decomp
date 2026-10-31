@@ -1847,7 +1847,7 @@ void CrateBreak(EXTengine *eng, EXTobject *fux) {
     PlaySfx(HitSfx.crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
     SpawnModelFx(2, (s32 *)&eng->XYZ, &HeroModelBank[DB_CrateObjects]);
     if ((HeroHooks.KeepInBounds(eng) ^ 1) != 0) {
-        CreateNAS(((s32 *)eng)[4], ((s32 *)eng)[5], ((s32 *)eng)[6], 0x206, 0x11);
+        CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x206, 0x11);
     }
 }
 

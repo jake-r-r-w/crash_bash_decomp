@@ -6473,7 +6473,7 @@ void InitUkaPolarMask(NAS *m) {
     ext->angular_max = 0xC;
     m->FUX = (EXT *)ext;
     m->Engine->sub->u6C.dbase = MapScene->dbase;
-    *(u16 *)((u8 *)m->Engine->sub + 0x74) = 0x200C;
+    m->Engine->sub->entity = 0x200C;
     PolarBeamOwner = (PolarOwner *)m;
     if (GameLevelFlags & 0x80) {
         m->Engine->sub->entity = 0x200C;
@@ -9489,11 +9489,11 @@ void InitBossTransmuter(NAS *m) {
 }
 
 s32 CountBears(void) {
-    u8 *p;
+    NAS *p;
     s32 n;
 
     n = 0;
-    for (p = PolarBears; p != NULL; p = *(u8 **)(p + 0x20)) {
+    for (p = (NAS *)PolarBears; p != NULL; p = p->Group.Child) {
         n++;
     }
     return n;
@@ -12543,7 +12543,7 @@ void SetPolarHeroSnowball(s32 player) {
         SET_ENTITY(0x200B);
         break;
     default:
-        *(s16 *)((u8 *)h->hero_eng->sub + 0x74) = 0x2004;
+        h->hero_eng->sub->entity = 0x2004;
         if (GameLevelFlags & 0x80) {
             h->hero_eng->sub->entity = 0x2004;
         }

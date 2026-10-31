@@ -8,12 +8,6 @@
 #include "common.h"
 #include "bash/hub_ovl.h"
 
-typedef struct HubSpawnExt {
-    EXT base;
-    s32 *unkC;
-    u8 pad10[0x34 - 0x10];
-    s32 unk34;
-} HubSpawnExt;
 extern s32 PodiumTies;
 extern u8 *PodiumAnimName;
 extern u8 PodiumSpawns[];

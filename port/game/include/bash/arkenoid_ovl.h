@@ -95,7 +95,7 @@ typedef struct {
     u16 timer2;  /* counted down */
 } ArkenoidLink;
 typedef struct {
-    u8 pad0[offsetof(ArkenoidLink, timer)];
+    _Alignas(void *) u8 pad0[offsetof(ArkenoidLink, timer)]; /* the same size: the table's read as links too */
     s16 unk10;
     s16 state;
 } ArkenoidSlot;
