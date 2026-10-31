@@ -16,6 +16,8 @@
 #define ATLAS_SIZE 4096
 #define MAX_TEXTURES 16384
 #define MAX_CLIPS 64
+#define MAX_DIRTY 1024
+#define ATLAS_UPLOAD_BYTES (8 * 1024 * 1024)
 
 typedef struct {
     float x, y, z, w;
@@ -49,6 +51,7 @@ static SDL_GPUGraphicsPipeline *PipeOpaque, *PipeHalf, *PipeAdd, *PipeSub, *Pipe
 static int TargetW, TargetH;
 static int ScreenW = 640, ScreenH = 480;
 static uint8_t ClearRGB[3];
+static int ClearPending = 1;
 
 static Tri *Tris;
 static int *Order;
@@ -60,7 +63,8 @@ static uint8_t *AtlasPixels;
 static Cached *Textures;
 static int NumTextures;
 static int ShelfX, ShelfY, ShelfH;
-static int AtlasDirtyTop = ATLAS_SIZE, AtlasDirtyBottom = 0;
+static SDL_Rect Dirty[MAX_DIRTY];
+static int NumDirty;
 static const char *ShotPath;
 
 static const char *const VS_SRC =
@@ -253,7 +257,7 @@ int gfx_init(void *window, int width, int height, int vsync) {
     tc.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
     tc.size = bc.size;
     VertexXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
-    tc.size = ATLAS_SIZE * ATLAS_SIZE * 4;
+    tc.size = ATLAS_UPLOAD_BYTES;
     AtlasXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
     tc.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
     tc.size = width * height * 4;
@@ -276,7 +280,8 @@ void gfx_quit(void) {
     }
 }
 
-void gfx_set_clear(uint8_t r, uint8_t g, uint8_t b) {
+void gfx_clear(uint8_t r, uint8_t g, uint8_t b) {
+    ClearPending = 1;
     ClearRGB[0] = r;
     ClearRGB[1] = g;
     ClearRGB[2] = b;
@@ -344,9 +349,8 @@ void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend) {
 }
 
 /* the texture atlas */
-static int PtrGenBump(void);
 static void atlas_reset(void) {
-    PtrGenBump();
+    gfx_forget_textures();
     NumTextures = 0;
     ShelfX = ShelfY = ShelfH = 0;
 }
@@ -364,15 +368,14 @@ static uint32_t decode_colour(uint16_t c) {
     return r | (g << 8) | (b << 16) | (a << 24);
 }
 
-static int PtrGenBump(void);
-/* Two levels: pointers seen since the heap last moved anything, then the pixels' own content, which survives a move. */
-#define PTR_SLOTS 65536
+/* Two levels: ids seen since the last gfx_forget_textures, then the pixels' own content, for when the same pixels load again. */
+#define ID_SLOTS 65536
 typedef struct {
-    const void *pixels, *palette;
-    int w, h, gen, index;
-} PtrSlot;
-static PtrSlot PtrCache[PTR_SLOTS];
-static int PtrGen = 1;
+    uint64_t id;
+    int gen, index;
+} IdSlot;
+static IdSlot IdCache[ID_SLOTS];
+static int IdGen = 1;
 
 static uint64_t hash_bytes(const uint8_t *p, size_t n, uint64_t h) {
     size_t i;
@@ -383,18 +386,27 @@ static uint64_t hash_bytes(const uint8_t *p, size_t n, uint64_t h) {
     return h;
 }
 
-const GfxTex *gfx_texture(const void *pixels, int w, int h, int bpp, const void *palette) {
+/* Copies the rect of the atlas to the GPU with the frame. */
+static void mark_dirty(int x, int y, int w, int h) {
+    if (NumDirty < MAX_DIRTY) {
+        Dirty[NumDirty].x = x;
+        Dirty[NumDirty].y = y;
+        Dirty[NumDirty].w = w;
+        Dirty[NumDirty].h = h;
+        NumDirty++;
+    }
+}
+
+const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
     Cached *c;
     uint32_t *out;
     int i, x, y;
-    uint64_t key, hash;
+    uint64_t hash;
     size_t bytes;
-    PtrSlot *ps;
+    IdSlot *slot = &IdCache[(id * 0x9E3779B97F4A7C15ULL) >> 48];
 
-    key = ((uint64_t)(uintptr_t)pixels * 31 + (uint64_t)(uintptr_t)palette) * 0x9E3779B97F4A7C15ULL;
-    ps = &PtrCache[(key >> 40) & (PTR_SLOTS - 1)];
-    if (ps->gen == PtrGen && ps->pixels == pixels && ps->palette == palette && ps->w == w && ps->h == h) {
-        return &Textures[ps->index].t;
+    if (id != 0 && slot->gen == IdGen && slot->id == id) {
+        return &Textures[slot->index].t;
     }
     if (w <= 0 || h <= 0 || w > 1024 || h > 1024) {
         return NULL;
@@ -407,7 +419,9 @@ const GfxTex *gfx_texture(const void *pixels, int w, int h, int bpp, const void 
     for (i = NumTextures - 1; i >= 0; i--) {
         c = &Textures[i];
         if (c->hash == hash && c->w == w && c->h == h) {
-            ps->gen = PtrGen; ps->pixels = pixels; ps->palette = palette; ps->w = w; ps->h = h; ps->index = i;
+            slot->gen = IdGen;
+            slot->id = id;
+            slot->index = i;
             return &c->t;
         }
     }
@@ -425,7 +439,9 @@ const GfxTex *gfx_texture(const void *pixels, int w, int h, int bpp, const void 
     if (ShelfY + h + 2 > ATLAS_SIZE) {
         atlas_reset();
     }
-    ps->gen = PtrGen; ps->pixels = pixels; ps->palette = palette; ps->w = w; ps->h = h; ps->index = NumTextures;
+    slot->gen = IdGen;
+    slot->id = id;
+    slot->index = NumTextures;
     c = &Textures[NumTextures++];
     c->hash = hash;
     c->pixels = pixels;
@@ -471,12 +487,7 @@ const GfxTex *gfx_texture(const void *pixels, int w, int h, int bpp, const void 
         memcpy(px + ShelfY * ATLAS_SIZE + ShelfX, px + (ShelfY + 1) * ATLAS_SIZE + ShelfX, (size_t)(w + 2) * 4);
         memcpy(px + (ShelfY + h + 1) * ATLAS_SIZE + ShelfX, px + (ShelfY + h) * ATLAS_SIZE + ShelfX, (size_t)(w + 2) * 4);
     }
-    if (ShelfY < AtlasDirtyTop) {
-        AtlasDirtyTop = ShelfY;
-    }
-    if (ShelfY + h + 2 > AtlasDirtyBottom) {
-        AtlasDirtyBottom = ShelfY + h + 2;
-    }
+    mark_dirty(ShelfX, ShelfY, w + 2, h + 2);
     ShelfX += w + 2;
     if (h + 2 > ShelfH) {
         ShelfH = h + 2;
@@ -484,14 +495,8 @@ const GfxTex *gfx_texture(const void *pixels, int w, int h, int bpp, const void 
     return &c->t;
 }
 
-void gfx_forget_textures(const void *start, const void *end) {
-    (void)start;
-    (void)end;
-    PtrGen++;
-}
-
-static int PtrGenBump(void) {
-    return ++PtrGen;
+void gfx_forget_textures(void) {
+    IdGen++;
 }
 
 void gfx_screenshot(const char *path) {
@@ -640,27 +645,44 @@ void gfx_end_frame(void) {
         dst.size = used * sizeof(GpuVert);
         SDL_UploadToGPUBuffer(copy, &src, &dst, true);
     }
-    if (AtlasDirtyBottom > AtlasDirtyTop) {
+    if (NumDirty != 0) {
         uint8_t *a = SDL_MapGPUTransferBuffer(Device, AtlasXfer, true);
-        SDL_GPUTextureTransferInfo src;
-        SDL_GPUTextureRegion dst;
-        int rows = AtlasDirtyBottom - AtlasDirtyTop;
+        Uint32 offset = 0;
+        int done = 0;
 
-        memcpy(a, AtlasPixels + AtlasDirtyTop * ATLAS_SIZE * 4, rows * ATLAS_SIZE * 4);
+        /* what doesn't fit this frame goes in the next */
+        while (done < NumDirty) {
+            const SDL_Rect *r = &Dirty[done];
+            Uint32 size = (Uint32)r->w * r->h * 4;
+            SDL_GPUTextureTransferInfo src;
+            SDL_GPUTextureRegion dst;
+            int y;
+
+            if (offset + size > ATLAS_UPLOAD_BYTES) {
+                break;
+            }
+            for (y = 0; y < r->h; y++) {
+                memcpy(a + offset + (size_t)y * r->w * 4, AtlasPixels + ((size_t)(r->y + y) * ATLAS_SIZE + r->x) * 4, (size_t)r->w * 4);
+            }
+            SDL_zero(src);
+            SDL_zero(dst);
+            src.transfer_buffer = AtlasXfer;
+            src.offset = offset;
+            src.pixels_per_row = r->w;
+            src.rows_per_layer = r->h;
+            dst.texture = Atlas;
+            dst.x = r->x;
+            dst.y = r->y;
+            dst.w = r->w;
+            dst.h = r->h;
+            dst.d = 1;
+            SDL_UploadToGPUTexture(copy, &src, &dst, false); /* no cycling: the rest of the atlas has to stay */
+            offset += size;
+            done++;
+        }
         SDL_UnmapGPUTransferBuffer(Device, AtlasXfer);
-        SDL_zero(src);
-        SDL_zero(dst);
-        src.transfer_buffer = AtlasXfer;
-        src.pixels_per_row = ATLAS_SIZE;
-        src.rows_per_layer = rows;
-        dst.texture = Atlas;
-        dst.y = AtlasDirtyTop;
-        dst.w = ATLAS_SIZE;
-        dst.h = rows;
-        dst.d = 1;
-        SDL_UploadToGPUTexture(copy, &src, &dst, false); /* no cycling: the rest of the atlas has to stay */
-        AtlasDirtyTop = ATLAS_SIZE;
-        AtlasDirtyBottom = 0;
+        NumDirty -= done;
+        memmove(Dirty, Dirty + done, sizeof(Dirty[0]) * NumDirty);
     }
     SDL_EndGPUCopyPass(copy);
 
@@ -670,7 +692,8 @@ void gfx_end_frame(void) {
     ct.clear_color.g = ClearRGB[1] / 255.0f;
     ct.clear_color.b = ClearRGB[2] / 255.0f;
     ct.clear_color.a = 1;
-    ct.load_op = SDL_GPU_LOADOP_CLEAR;
+    ct.load_op = ClearPending ? SDL_GPU_LOADOP_CLEAR : SDL_GPU_LOADOP_LOAD;
+    ClearPending = 0;
     ct.store_op = SDL_GPU_STOREOP_STORE;
     pass = SDL_BeginGPURenderPass(cmd, &ct, 1, NULL);
     if (numRuns != 0) {

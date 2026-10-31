@@ -1,3 +1,4 @@
+#include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
@@ -283,21 +284,13 @@ void load_initial_dbases(void)
 }
 
 
-void UpdateLevelLoad(void) {
+static void LevelLoadStep(void) {
     GameState *g0;
     GameState *g;
     map_map *c;
     s32 *a;
     s32 *p;
 
-    if (LevelLoadStage >= 2) {
-        process_control_update(&LoadingControl, NULL);
-    }
-    vab_transfer_wait();
-    mal_count_free(&MainHeap);
-    if (loader_pending() != 0 || MainHeap.deferred != NULL) {
-        return;
-    }
     switch (LevelLoadStage) {
     case 0:
         if (GameMode == 0x28 && FirstBootDone == 0) {
@@ -397,6 +390,29 @@ void UpdateLevelLoad(void) {
     }
 }
 
+void UpdateLevelLoad(void) {
+    if (settings()->skip_loading) {
+        /* every stage now, with no frames in between to show a loading screen in */
+        while (LevelLoadStage != 9) {
+            while (loader_pending() != 0 || MainHeap.deferred != NULL) {
+                loader_update();
+                mal_update(&MainHeap);
+            }
+            LevelLoadStep();
+        }
+        return;
+    }
+    if (LevelLoadStage >= 2) {
+        process_control_update(&LoadingControl, NULL);
+    }
+    vab_transfer_wait();
+    mal_count_free(&MainHeap);
+    if (loader_pending() != 0 || MainHeap.deferred != NULL) {
+        return;
+    }
+    LevelLoadStep();
+}
+
 void realign_panel_dbase(void) {
     struct E { s32 a, b; u8 pad[0x30]; };
     struct G { struct E e[0x1C]; s32 x, y; } *g;
@@ -413,7 +429,7 @@ void QuitLevelLoad(void) {
 }
 
 void RenderLevelLoad(void) {
-    if (LevelLoadStage >= 2) {
+    if (LevelLoadStage >= 2 && !settings()->skip_loading) {
         process_control_render(&LoadingControl);
     }
 }

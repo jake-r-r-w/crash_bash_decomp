@@ -155,7 +155,7 @@ void platform_audio(const int16_t *stereo, int frames) {
 
 int main(int argc, char **argv) {
     int i;
-    int launcher_wanted = 0, skip_intro = 0, testing = 0;
+    int no_launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0;
     const char *launcher_shot = NULL, *launcher_keys = NULL;
 
     for (i = 1; i < argc; i++) {
@@ -181,14 +181,16 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--no-window") == 0) {
             NoWindow = 1;
             testing = 1;
-        } else if (strcmp(argv[i], "--launcher") == 0) {
-            launcher_wanted = 1;
+        } else if (strcmp(argv[i], "--no-launcher") == 0) {
+            no_launcher = 1;
         } else if (strcmp(argv[i], "--launcher-shot") == 0 && i + 1 < argc) {
             launcher_shot = argv[++i];
         } else if (strcmp(argv[i], "--launcher-keys") == 0 && i + 1 < argc) {
             launcher_keys = argv[++i];
         } else if (strcmp(argv[i], "--skip-intro") == 0) {
             skip_intro = 1;
+        } else if (strcmp(argv[i], "--skip-loading") == 0) {
+            skip_loading = 1;
         } else {
             fprintf(stderr, "unknown option %s\n", argv[i]);
             return 2;
@@ -210,11 +212,14 @@ int main(int argc, char **argv) {
         if (!launcher_run_keys(host_window(), launcher_keys)) {
             return 0;
         }
-    } else if (!testing && (settings()->show_launcher || launcher_wanted) && !launcher_run(host_window())) {
+    } else if (!testing && !no_launcher && !launcher_run(host_window())) {
         return 0;
     }
     if (skip_intro) {
         settings()->skip_intro = 1;
+    }
+    if (skip_loading) {
+        settings()->skip_loading = 1;
     }
     if (!NoWindow && !host_init()) {
         fprintf(stderr, "No window; running without one.\n");

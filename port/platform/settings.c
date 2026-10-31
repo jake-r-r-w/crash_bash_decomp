@@ -12,13 +12,13 @@ Settings *settings(void) {
 
 void settings_defaults(void) {
     Current.skip_intro = 0;
+    Current.skip_loading = 0;
     Current.fullscreen = 0;
     Current.window_w = 1280;
     Current.window_h = 960;
     Current.render_w = 1280;
     Current.render_h = 960;
     Current.vsync = 1;
-    Current.show_launcher = 1;
 }
 
 /* Fills path with where the settings file goes. Returns 0 if there's no such place. */
@@ -46,6 +46,8 @@ void settings_load(void) {
 
         if (sscanf(line, "skip_intro=%d", &a) == 1) {
             Current.skip_intro = a != 0;
+        } else if (sscanf(line, "skip_loading=%d", &a) == 1) {
+            Current.skip_loading = a != 0;
         } else if (sscanf(line, "fullscreen=%d", &a) == 1) {
             Current.fullscreen = a != 0;
         } else if (sscanf(line, "window=%dx%d", &a, &b) == 2 && a > 0 && b > 0) {
@@ -56,8 +58,6 @@ void settings_load(void) {
             Current.render_h = b;
         } else if (sscanf(line, "vsync=%d", &a) == 1) {
             Current.vsync = a != 0;
-        } else if (sscanf(line, "show_launcher=%d", &a) == 1) {
-            Current.show_launcher = a != 0;
         }
     }
     fclose(f);
@@ -71,10 +71,10 @@ void settings_save(void) {
         return;
     }
     fprintf(f, "skip_intro=%d\n", Current.skip_intro);
+    fprintf(f, "skip_loading=%d\n", Current.skip_loading);
     fprintf(f, "fullscreen=%d\n", Current.fullscreen);
     fprintf(f, "window=%dx%d\n", Current.window_w, Current.window_h);
     fprintf(f, "render=%dx%d\n", Current.render_w, Current.render_h);
     fprintf(f, "vsync=%d\n", Current.vsync);
-    fprintf(f, "show_launcher=%d\n", Current.show_launcher);
     fclose(f);
 }

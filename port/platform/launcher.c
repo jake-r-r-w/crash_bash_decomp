@@ -19,18 +19,18 @@ static const Size RenderSizes[] = { { 640, 480 }, { 1280, 960 }, { 1920, 1440 },
 
 enum {
     ROW_SKIP_INTRO,
+    ROW_SKIP_LOADING,
     ROW_FULLSCREEN,
     ROW_WINDOW,
     ROW_RENDER,
     ROW_VSYNC,
-    ROW_SHOW_LAUNCHER,
     ROW_PLAY,
     ROW_QUIT,
     NUM_ROWS
 };
 
 static const char *const RowNames[NUM_ROWS] = {
-    "Skip intro screens", "Display", "Window size", "Render resolution", "VSync", "Show menu at start", "PLAY", "QUIT",
+    "Skip intro screens", "Skip loading screens", "Display", "Window size", "Render resolution", "VSync", "PLAY", "QUIT",
 };
 
 static SDL_Renderer *Renderer;
@@ -59,6 +59,9 @@ static void change_row(int row, int dir) {
     case ROW_SKIP_INTRO:
         s->skip_intro = !s->skip_intro;
         break;
+    case ROW_SKIP_LOADING:
+        s->skip_loading = !s->skip_loading;
+        break;
     case ROW_FULLSCREEN:
         s->fullscreen = !s->fullscreen;
         break;
@@ -71,9 +74,6 @@ static void change_row(int row, int dir) {
     case ROW_VSYNC:
         s->vsync = !s->vsync;
         break;
-    case ROW_SHOW_LAUNCHER:
-        s->show_launcher = !s->show_launcher;
-        break;
     }
 }
 
@@ -84,6 +84,9 @@ static void row_value(int row, char *text, size_t size) {
     switch (row) {
     case ROW_SKIP_INTRO:
         SDL_strlcpy(text, s->skip_intro ? "On" : "Off", size);
+        break;
+    case ROW_SKIP_LOADING:
+        SDL_strlcpy(text, s->skip_loading ? "On" : "Off", size);
         break;
     case ROW_FULLSCREEN:
         SDL_strlcpy(text, s->fullscreen ? "Fullscreen" : "Windowed", size);
@@ -96,9 +99,6 @@ static void row_value(int row, char *text, size_t size) {
         break;
     case ROW_VSYNC:
         SDL_strlcpy(text, s->vsync ? "On" : "Off", size);
-        break;
-    case ROW_SHOW_LAUNCHER:
-        SDL_strlcpy(text, s->show_launcher ? "Yes" : "No", size);
         break;
     }
 }
@@ -146,7 +146,7 @@ static void draw(void) {
     }
     SDL_SetRenderDrawColor(Renderer, 170, 165, 190, 255);
     draw_text(ROW_X, HEIGHT - 44, 1, "Arrows or d-pad to choose, Enter or X to confirm, or the mouse.");
-    draw_text(ROW_X, HEIGHT - 30, 1, "Esc quits. Run with --launcher to bring this menu back.");
+    draw_text(ROW_X, HEIGHT - 30, 1, "Esc quits.");
     SDL_RenderPresent(Renderer);
 }
 

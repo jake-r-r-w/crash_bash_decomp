@@ -26,7 +26,8 @@ void gfx_quit(void);
 
 void gfx_begin_frame(void);
 void gfx_end_frame(void); /* draws what was added, and shows it */
-void gfx_set_clear(uint8_t r, uint8_t g, uint8_t b);
+/* The picture stays from frame to frame, as a PS1's screen does, until the game clears it. */
+void gfx_clear(uint8_t r, uint8_t g, uint8_t b);
 
 /* The screen units vertices arrive in, and a clip rect in those units for what follows. */
 void gfx_set_screen(int width, int height);
@@ -40,10 +41,11 @@ void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend);
 /* The blend for what draws after this at its place in the order and uses GFX_STATE_BLEND, as a DR_TPAGE sets it. */
 void gfx_state_blend(int key, int blend);
 
-/* A texture from the game's data: bpp 4 or 8 with a palette of u16 colours, or 16. Decoded on first use. */
-const GfxTex *gfx_texture(const void *pixels, int width_texels, int height, int bpp, const void *palette);
-/* The game freed or changed the memory in this range: forget anything decoded from it. */
-void gfx_forget_textures(const void *start, const void *end);
+/* A texture from the game's data: bpp 4 or 8 with a palette of u16 colours, or 16. Decoded on first use. id says which texture
+ * this is, to find it again without looking at its pixels, until gfx_forget_textures; 0 for one that has no lasting id. */
+const GfxTex *gfx_texture(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
+/* The ids are no longer good. What's decoded stays, for when the same pixels come back. */
+void gfx_forget_textures(void);
 
 /* Saves the next frame as a PNG. */
 void gfx_screenshot(const char *path);

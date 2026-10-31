@@ -71,7 +71,11 @@ void tex_release_ids(obj_textureset *set) {
             Palettes[i].set = NULL;
         }
     }
+    gfx_forget_textures();
 }
+
+/* What a texture is, whichever address its file has moved to: its image, palette and frame. */
+#define TEX_ID(image, palette, pix) (((unsigned long long)(image) << 48) | ((unsigned long long)(palette) << 32) | (u32)(pix))
 
 static const GfxTex *tex_of(u16 tpage, u16 clut) {
     ImageReg *im = &Images[ID_OF_TPAGE(tpage & ~0x60) & (MAX_IMAGES - 1)];
@@ -88,7 +92,7 @@ static const GfxTex *tex_of(u16 tpage, u16 clut) {
     if (clut != 0 && Palettes[clut].set != NULL && Palettes[clut].set->ent != NULL) {
         pal = (const u8 *)Palettes[clut].set->base + Palettes[clut].set->ent[Palettes[clut].index].off;
     }
-    return gfx_texture(base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
+    return gfx_texture(TEX_ID(ID_OF_TPAGE(tpage & ~0x60), clut, t->pix), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
 }
 
 /* The picture on the screen, until a scene or a viewport's background is drawn over it. */
@@ -352,7 +356,7 @@ static s32 BackW, BackH;
 
 static void draw_back(void) {
     if (BackPixels != NULL && ScreenRect != NULL) {
-        const GfxTex *t = gfx_texture(BackPixels, BackW, BackH, 16, NULL);
+        const GfxTex *t = gfx_texture(0, BackPixels, BackW, BackH, 16, NULL);
         GfxVert v[4];
         s32 i;
 
@@ -382,7 +386,6 @@ s32 LoadImage(RECT *r, u32 *pixels) {
             keepSize = size;
         }
         memcpy(keep, pixels, size);
-        gfx_forget_textures(NULL, NULL);
         BackPixels = keep;
         BackW = r->w;
         BackH = r->h;
@@ -392,7 +395,7 @@ s32 LoadImage(RECT *r, u32 *pixels) {
 
 s32 ClearImage(RECT *r, u8 red, u8 green, u8 blue) {
     BackPixels = NULL;
-    gfx_set_clear(red, green, blue);
+    gfx_clear(red, green, blue);
     return 0;
 }
 

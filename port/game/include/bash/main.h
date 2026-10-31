@@ -418,8 +418,7 @@ _Static_assert(sizeof(mal) == 0x18, "mal_split_ptr carves these out of a loaded 
 #define MAL_SET_NO_OWNER(b) ((b)->owner.off = MAL_NO_OWNER)
 /* Tells a block's owner where it is now. flags 8: the owner is a slot in a file, 4 bytes. */
 #define MAL_OWNER_IS_REF 8
-void gfx_forget_textures(const void *start, const void *end);
-#define MAL_STORE_OWNER(b, v) (gfx_forget_textures(0, 0), (b)->flags & MAL_OWNER_IS_REF ? (void)(*(ref32 *)MAL_OWNER(b) = ref_of(v)) : (void)(*MAL_OWNER(b) = (void *)(v)))
+#define MAL_STORE_OWNER(b, v) ((b)->flags & MAL_OWNER_IS_REF ? (void)(*(ref32 *)MAL_OWNER(b) = ref_of(v)) : (void)(*MAL_OWNER(b) = (void *)(v)))
 #define MAL_PREV(b) ((mal *)ref_get((b)->prev))
 #define MAL_PREV_FREE(b) ((mal *)ref_get((b)->prevFree))
 #define MAL_NEXT_FREE(b) ((mal *)ref_get((b)->nextFree))
