@@ -103,7 +103,7 @@ ctest --preset windows-clang
 ```
 
 The presets are `windows-clang`, `linux-clang`, `linux-gcc` and `linux-asan`, and the output is under `build/port/`.
-`port/` holds `game/` (the copy of the game's C), `psyq/` (PsyQ's names, which go as they're replaced) and `main.c`.
+`port/` holds `game/` (the copy of the game's C), `psyq/` (PsyQ's names, which go as they're replaced), `tests/` (the play tests) and `main.c`.
 
 The game's C isn't in the default build until it compiles. To see what's left:
 
@@ -140,11 +140,23 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--cheat-menu` | the cheat menu on, for this run |
 | `--macro N HEX:VBLANKS,...` | a repeating pattern of buttons on pad 1 from vblank N. A test run logs a boss fight's health |
 | `--stall N FILE` | stops a boss fight that's made no progress in N vblanks, with a shot in FILE; the log, written as it goes, says where it stuck |
-| `--aim` | a test run's player for the boss fights (`overlays/engine/bossbot.c`): it looks where things are and only presses the pad's buttons |
+| `--aim` | a test run's player for the boss fights (`port/tests/bossbot.c`): it looks where things are and only presses the pad's buttons |
 | `--bot`, `--cheats HEX` | the game's own AI plays pad 1 and its fight's state is logged; cheat flags kept on (`shell.h`, `cheatflags`: 2 is no death) |
 | `--boss-beat N` | marks the boss beaten at vblank N, to test what follows. A test run also prints each change of game mode |
 | `--stick N LX LY` | a test's analog pad with motors on pad 1: its left stick at these (hex, centre 80) from vblank N for a few vblanks. A test run prints the rumble it asks for |
 | `--no-window`, `--data`, `--saves` | no window, and where the game's data and the saves are (a test run keeps no saves without `--saves`) |
+
+**Play tests.** `port/tests/playtest.mjs` plays the real game through its pad, by Node on the host, with your own game data, and says what passed:
+
+```sh
+node port/tests/playtest.mjs bosses
+node port/tests/playtest.mjs modes
+node port/tests/playtest.mjs menu
+```
+
+`bosses` beats every boss from a real Adventure, by each fight's own rules, and back to the warp room; `--watch` shows them at normal speed with sound. `modes` runs every game mode, played by the
+computer, with `--asan` for the AddressSanitizer build. `menu` goes from the title screen into a game by the pad alone. `shots FROM STEP COUNT` makes a contact sheet of one run. What they leave is in
+`build/port/playtest/`.
 
 **Frame rates.** The game's logic runs at about 30 frames a second (2 vblanks a frame) and stays there, because its movement is per frame. At 60 and 120 the renderer keeps the game's last two frames and draws steps between them, so what's shown is one game frame behind. Triangles are matched by name: `draw_owner` says which object is drawing, and a face number or the order within that object does the rest (`gfx_mark`). What has no owner, like some 2D, just appears. A triangle that jumps more than a quarter of the screen isn't moved.
 

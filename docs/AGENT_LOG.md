@@ -80,7 +80,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   and fullscreen haven't been seen to work.
 - **Port, reads off the end of a table, harmless so far (ASan):** Tank's map at negative cells at the arena's edges, `PolarShadowFrames`
   past a table's end (retail reads the next table; here there can be padding), `AiSkillTable` from a hub mode's byte. A table read across labels
-  should be one array, as Fox's and Bonk's now are.
+  should be one array, as Fox's and Bonk's now are. These are why `playtest.mjs modes --asan` fails on modes 6, 8, 9, 18, 19, 20 and 37 for now.
 - **Port, a face partly behind the camera:** one corner gets a depth of 1 and a position that means nothing, as it isn't clipped at the near plane. Faces wholly
   behind are dropped (`mesh_submit_*`), and these haven't been seen to flash, but real near clipping would need the GTE's camera-space positions.
 - **Port, seen once:** a run with no presses showed the launcher well after PLAY; three more didn't, and the likely cause is real keys reaching a
@@ -460,9 +460,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: The port's play tests moved out of `scratch/` to `port/tests/`: `playtest.mjs bosses|modes|menu|shots`, with the boss player as `port/tests/bossbot.c` (PORT.md, Running it).
 - 2026-10-31: Oxide beaten by real play: `play_oxide` reads each ball's path, gets beside where it'll cross and kicks it to the side he isn't. The old button pattern never kicked, so the ball phase was won by
   bounces. His first phase has no bar and no damage in the matched code either (`InitBossHealthIcons` is only called from `N2OInitBoss`, and `PlotLaserShoot` never lowers his health): it ends when his path does.
-  `--sound` plays a test run's sound, for showing one; `scratch/showbosses.sh` isn't kept in the repo.
+  `--sound` plays a test run's sound, for showing one.
 - 2026-10-31: The Bearminator beaten by a test run, from a real Adventure: all three phases and back to the warp room. A real bug on the way, found by the user: the hero couldn't hit his robots, as
   PolarHeroCollisions read their flag through the wrong view. How the fight works (`--aim`, `play_bear`): each robot fires one missile a while after landing, and a stunned hero goes over with no recovery;
   a charge drives a robot about 1450 along the lunge, not along the line of contact, and the edge is about 2600 out; a sniper shot flies through the crosshair and only the bear's own box does damage, not

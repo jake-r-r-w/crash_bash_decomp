@@ -32,6 +32,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   the same gate. Functions >= `--big-bytes` (600) go to resumable big-mode
   workers; `swarm.mjs stats` shows match rates by size to tune that. `--seg`
   is a prefix (`main/` covers every main.exe unit).
+- The port's play tests: `node port/tests/playtest.mjs bosses|modes|menu|shots` (host Node; PORT.md, Running it).
 - Playing/testing a build: `tools/dk make disc` (bootable `build/CrashBash.cue`),
   `make disc-check` (byte-identical to retail), `make shift OVL=tank PAD=0x40`
   (a disc with that overlay's addresses all moved, `build/shift/CrashBash.cue`), `make shift-all PAD=0x40`
