@@ -8,7 +8,7 @@
 #define ROW_W (WIDTH - ROW_X * 2)
 #define ROW_H 34
 #define ROWS_Y 110
-#define VALUE_X 380
+#define VALUE_X 410
 
 typedef struct {
     int w, h;
