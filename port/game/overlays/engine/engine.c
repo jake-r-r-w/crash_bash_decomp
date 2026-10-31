@@ -23,9 +23,9 @@ void InitialiseNasSystem(void) {
     Init_Panel();
     NasPool = (NAS *)mal_alloc(NasPoolUsed * sizeof(NAS), &MainHeap);
     NasPoolLast = &NasPool[NasPoolUsed - 1];
-    NasUpdateList = (EngObj **)mal_alloc(NasPoolUsed * 4, &MainHeap);
+    NasUpdateList = (EngObj **)mal_alloc((NasPoolUsed + 1) * sizeof(EngObj *), &MainHeap);
     *NasUpdateList = NULL;
-    p = mal_alloc(NasPoolUsed * 4, &MainHeap);
+    p = mal_alloc((NasPoolUsed + 1) * sizeof(NAS *), &MainHeap);
     HeroNasList = p;
     *(s32 *)p = 0;
     InitSysFontModel();
