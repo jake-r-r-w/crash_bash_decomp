@@ -9,13 +9,12 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 
 ## Part 6 - The PC port
 
-A native 64-bit PC port for Windows and Linux: no emulation, no hacks, on a modern stack (decided
-2026-10-30). The port has its own copy of the game's C and doesn't have to match retail's bytes, but it has to
-play the same. The decomp stays as it is. The design and the rules are in [PORT.md](PORT.md).
+A native 64-bit PC port: no emulation, no hacks, on the best tech stack for a game that plays (decided 2026-10-30). The
+disc to disc work is byte matching; this isn't. The port has its own copy of the game's C and is tested by the user
+playing it. The decomp stays as it is. The design and the rules are in [PORT.md](PORT.md).
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 6.5 | It runs, headless | Files from the user's own data, the game's maths, pads, saves and overlays, with no window. All 33 modes play to the end, optimised and clean under ASan and UBSan. Code written only to steer the old compiler goes back to natural C where it gets in the way | [ ] |
-| 6.6 | A native renderer | Models, maps, sprites and text drawn directly through SDL3's GPU API, replacing the PS1 drawing code: real 3D, real textures and any resolution, with no PS1 drawing commands or VRAM | [ ] |
-| 6.7 | Native sound | The game's sound banks and music played by its own mixer and sequencer on SDL3, with reverb. Note timing, pitch and volume checked against Sony's linked code | [ ] |
-| 6.8 | Playing it | The window, keyboard, controllers with analog sticks and rumble, and saving. Played side by side with retail over 4.4's route, then a first release for Windows and Linux | [ ] |
+| 6.5 | It plays | The game linked and booting from the user's own data, drawn through SDL3's GPU API with no PS1 drawing commands or VRAM, on keyboard and controller. From here the user plays it and reports what's wrong, and the fixes follow | [ ] |
+| 6.6 | Native sound | The game's sound banks and music played by its own mixer and sequencer on SDL3, with reverb | [ ] |
+| 6.7 | Finishing it | Saving, any resolution, analog sticks and rumble, then a first release | [ ] |

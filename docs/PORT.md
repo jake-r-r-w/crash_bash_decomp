@@ -1,6 +1,6 @@
 # The PC port
 
-A native 64-bit PC port of Crash Bash for Windows and Linux, built from this source on a modern stack: no
+A native 64-bit PC port of Crash Bash, built from this source on the best tech stack for a game that plays: no
 emulation and no hacks. It builds but doesn't run the game yet: this file is the design, and the steps are in
 [ROADMAP-B.md](ROADMAP-B.md), Part 6.
 
@@ -16,7 +16,7 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
    stays the proof that the source is the game. The Makefile never sees `port/`.
 3. **Everything PC-only goes in `port/`**, and the port never builds from `src/` or `include/`. A fix found in one
    copy goes to the other by hand, if it applies.
-4. **The port plays the same as retail.** With no `make check` to protect it, the check is playing it next to retail.
+4. **The port is tested by playing it.** Disc to disc is byte matching; this isn't. The user plays it and says what's wrong.
 5. **No Sony code in `port/`.** PsyQ's names go as the code is cleaned up, in favour of plain functions.
 6. **No emulation and no hacks.** No PS1 GPU, VRAM or SPU model, no fixed low addresses, no linker lists that
    recreate the PS1's layout, no crash handlers that patch up bad accesses, no `-O0` to hide undefined

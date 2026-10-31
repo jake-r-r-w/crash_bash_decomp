@@ -67,7 +67,8 @@ ROADMAP-B.md, Part 6:
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. **The PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
    `port/game/`. 6.1 to 6.4 are done, and the game's C compiles but isn't linked or run. Windows only for now, at the user's request: Linux
-   stays in the plan, but isn't built. Next is 6.5, it runs, headless. Whether it plays the same as retail is checked by the user playing it.
+   stays in the plan, but isn't built. Next is 6.5, it plays: the plan is now playable first, tested by the user
+   playing it, with no headless step. Whether it plays the same as retail is checked by the user playing it.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
