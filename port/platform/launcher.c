@@ -103,7 +103,7 @@ static void row_value(int row, char *text, size_t size) {
         break;
     case ROW_FPS:
         if (s->fps == 30) {
-            SDL_strlcpy(text, "30 (original)", size);
+            SDL_strlcpy(text, "30 (PS1)", size);
         } else {
             SDL_snprintf(text, size, "%d", s->fps);
         }
