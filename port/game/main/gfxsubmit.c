@@ -383,6 +383,12 @@ void SetTile1(TILE_1 *p) {
     setcode(p, 0x68);
 }
 
+/* Whether the last three positions the GTE projected are all behind the camera, which gives them a depth of 1 and positions
+   that mean nothing: as the view turns, those can sweep across the screen as one huge triangle. */
+static s32 behind_camera(const float q[9]) {
+    return q[2] <= 1 && q[5] <= 1 && q[8] <= 1;
+}
+
 /* A textured mesh triangle, at the last three positions the GTE projected. wind says which way it shows (gfx_face_tri),
    and hidden that it faces away this frame: it's only of use to the pictures between frames. */
 void mesh_submit_gt3(void *ot, void *poly, s32 face, s32 wind, s32 hidden) {
@@ -402,6 +408,9 @@ void mesh_submit_gt3(void *ot, void *poly, s32 face, s32 wind, s32 hidden) {
     }
     BackPixels = NULL;
     pc_gte_precise(q);
+    if (behind_camera(q)) {
+        return;
+    }
     v[0].x = q[0]; v[0].y = q[1]; v[0].w = q[2]; v[0].u = p->u0; v[0].v = p->v0; v[0].rgba = colour_of(*(u32 *)&p->r0);
     v[1].x = q[3]; v[1].y = q[4]; v[1].w = q[5]; v[1].u = p->u1; v[1].v = p->v1; v[1].rgba = colour_of(*(u32 *)&p->r1);
     v[2].x = q[6]; v[2].y = q[7]; v[2].w = q[8]; v[2].u = p->u2; v[2].v = p->v2; v[2].rgba = colour_of(*(u32 *)&p->r2);
@@ -422,6 +431,9 @@ void mesh_submit_g3(void *ot, u8 *p, s32 face, s32 wind, s32 hidden) {
     }
     BackPixels = NULL;
     pc_gte_precise(q);
+    if (behind_camera(q)) {
+        return;
+    }
     v[0].x = q[0]; v[0].y = q[1]; v[0].w = q[2]; v[0].u = v[0].v = 0; v[0].rgba = colour_of(*(u32 *)(p + 12));
     v[1].x = q[3]; v[1].y = q[4]; v[1].w = q[5]; v[1].u = v[1].v = 0; v[1].rgba = colour_of(*(u32 *)(p + 20));
     v[2].x = q[6]; v[2].y = q[7]; v[2].w = q[8]; v[2].u = v[2].v = 0; v[2].rgba = colour_of(*(u32 *)(p + 28));

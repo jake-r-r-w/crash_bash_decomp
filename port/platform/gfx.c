@@ -40,8 +40,9 @@ typedef struct {
     short clip;
     char depth;
     char moving;
-    signed char wind;
+    signed char wind; /* a model's face: which way it shows, or 0 for either way */
     char hidden;
+    char mesh;
 } Tri;
 
 typedef struct {
@@ -426,6 +427,7 @@ void gfx_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend) {
     t->moving = 0;
     t->wind = 0;
     t->hidden = 0;
+    t->mesh = 0;
     t->object = MarkObject;
     t->face = MarkFace++;
 }
@@ -437,6 +439,7 @@ void gfx_face_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend, int
     if (NumTris != before) {
         Tris[before].wind = (signed char)wind;
         Tris[before].hidden = (char)hidden;
+        Tris[before].mesh = 1;
     }
 }
 
@@ -1009,6 +1012,11 @@ static int on_screen(float x, float y) {
     return x >= 0 && x <= ScreenW && y >= 0 && y <= ScreenH;
 }
 
+/* Near enough to the screen that its projection means something: right by the camera, a face's corners go anywhere. */
+static int near_screen(float x, float y, float w) {
+    return w > 1 && x >= -ScreenW && x <= ScreenW * 2.0f && y >= -ScreenH && y <= ScreenH * 2.0f;
+}
+
 static void find_movement(void) {
     static FindSlot slots[FIND_SLOTS];
     static int gen;
@@ -1041,8 +1049,8 @@ static void find_movement(void) {
                 if (slots[h].object == t->object && slots[h].face == t->face) {
                     const Tri *old = &Shown[slots[h].index];
 
-                    /* another texture is another thing here, however close */
-                    if (old->tex != t->tex) {
+                    /* another texture is another thing here, however close, unless it's a model's: its face has only moved on a frame */
+                    if (old->tex != t->tex && !t->mesh) {
                         break;
                     }
                     t->moving = 1;
@@ -1053,6 +1061,11 @@ static void find_movement(void) {
                         /* the far vertices of a huge model that's turning move this fast too, and stay off the screen */
                         if ((SDL_fabsf(t->from[j].x - t->v[j].x) > limit_x || SDL_fabsf(t->from[j].y - t->v[j].y) > limit_y)
                             && (on_screen(t->from[j].x, t->from[j].y) || on_screen(t->v[j].x, t->v[j].y))) {
+                            t->moving = 0;
+                        }
+                        /* a face turning away or back shows when its area says, which only means something for a sane shape */
+                        if ((t->hidden || old->hidden) && !(near_screen(t->from[j].x, t->from[j].y, t->from[j].w)
+                            && near_screen(t->v[j].x, t->v[j].y, t->v[j].w))) {
                             t->moving = 0;
                         }
                     }

@@ -80,6 +80,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - **Port, reads off the end of a table, harmless so far (ASan):** Tank's map at negative cells at the arena's edges, `PolarShadowFrames`
   past a table's end (retail reads the next table; here there can be padding), `AiSkillTable` from a hub mode's byte. A table read across labels
   should be one array, as Fox's and Bonk's now are.
+- **Port, a face partly behind the camera:** one corner gets a depth of 1 and a position that means nothing, as it isn't clipped at the near plane. Faces wholly
+  behind are dropped (`mesh_submit_*`), and these haven't been seen to flash, but real near clipping would need the GTE's camera-space positions.
 - **Port, seen once:** a run with no presses showed the launcher well after PLAY; three more didn't, and the likely cause is real keys reaching a
   test window.
 - **Port's sound:** `FX_LEVEL` (25% under the original's sums), `MIX_LEVEL` and the limiter are by ear, and the user never compared it with
@@ -455,6 +457,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: The hub's flicker while walking: a face wholly behind the camera could sweep the screen as one huge triangle (a full flat frame, found by scoring 60
+  real-time shots for cells unlike both neighbours), and a model's animated textures stopped gliding between frames, as "another texture" meant "another thing".
 - 2026-10-31: The hub, from the user walking it: a gateway's door crashed (a PS1 offset into `obj_dbase`, and a private ordering table with 32-bit links), now
   drawn natively by `draw_clipped_begin`; the ring's limits read a path through `subengine`'s fields, so the hero walked off the platform; `CAMTBL6A` and the
   save name screen stepped by PS1 sizes. The route to a real game (hub, door, rules, Crashball) runs clean under ASan.
