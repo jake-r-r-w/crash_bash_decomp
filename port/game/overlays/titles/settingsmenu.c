@@ -309,12 +309,10 @@ static void go_to_screen(s32 screen) {
 
 static void start_game(void) {
     settings_save();
-    /* the intro plays once, when the game starts */
-    if (!settings()->launcher || settings()->skip_intro) {
-        settings()->launcher = 0;
+    settings()->launcher = 0;
+    if (settings()->skip_intro) {
         process_control_goto(&MenuProcessControl, &MainMenu);
     } else {
-        settings()->launcher = 0;
         FirstBootDone = 1; /* what has the level load play the intro first, as at boot */
         ProcessControl.next_process = &LevelLoadProcess;
     }
