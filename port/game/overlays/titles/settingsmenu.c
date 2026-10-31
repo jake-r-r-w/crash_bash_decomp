@@ -178,10 +178,12 @@ static void SettingsMenuUpdate(void) {
         if (Cursor == ROW_QUIT) {
             platform_finish(0);
         }
-        settings()->launcher = 0;
-        if (settings()->skip_intro) {
+        /* the intro plays once, when the game starts */
+        if (!settings()->launcher || settings()->skip_intro) {
+            settings()->launcher = 0;
             process_control_goto(&MenuProcessControl, &MainMenu);
         } else {
+            settings()->launcher = 0;
             FirstBootDone = 1; /* what has the level load play the intro first, as at boot */
             ProcessControl.next_process = &LevelLoadProcess;
         }

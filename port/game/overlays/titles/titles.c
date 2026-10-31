@@ -15,6 +15,7 @@ const char TextAdventureHint[] = "complete each warp room to\nunlock further lev
 const char TextBattleHint[] = "select a battle\nfrom unlocked levels";
 const char TextTournamentHint[] = "play a tournament";
 const char TextOptionsHint[] = "change the options";
+const char TextExitHint[] = "back to the settings";
 const char TextAdventureMode[] = "ADVENTURE MODE";
 const char TextBattleMode[] = "BATTLE MODE";
 const char TextTournament[] = "TOURNAMENT";
@@ -83,14 +84,15 @@ const char TextTeamBattle[] = "TEAM BATTLE";
 const char TextSelectSlot[] = "SELECT SLOT";
 
 /* data, in address order */
-void *MainMenuHints[4] = { &TextAdventureHint, &TextBattleHint, &TextTournamentHint, &TextOptionsHint };
-PlaceRec MainMenuPlace[9] = {
-    { 4, -0x20, 0x12C, -0x46, 0x72, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+void *MainMenuHints[5] = { &TextAdventureHint, &TextBattleHint, &TextTournamentHint, &TextOptionsHint, &TextExitHint };
+PlaceRec MainMenuPlace[10] = {
+    { 4, -0x20, 0x12C, -0x46, 0x7E, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 3, -0x7F7A, -0x2C, 0, 0, 0, 0, 0, 0, &TextAdventureMode, 0, 0, 0, 0 },
     { 3, -0x7F7A, -0xA, 0, 0, 0, 0, 0, 0, &TextBattleMode, 0, 0, 0, 0 },
     { 3, -0x7F7A, 0x18, 0, 0, 0, 0, 0, 0, &TextTournament, 0, 0, 0, 0 },
     { 3, -0x7F7A, 0x3A, 0, 0, 0, 0, 0, 0, &TextOptions, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0x82, 0, 0, 0, 0, 0, 0, &TextEmpty, 4, 0, 0, 0 },
+    { 3, -0x7F7A, 0x5C, 0, 0, 0, 0, 0, 0, &TextExit, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x8A, 0, 0, 0, 0, 0, 0, &TextEmpty, 4, 0, 0, 0 },
     { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &TextSelectGameType, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -645,7 +647,7 @@ void MainMenuUpdate(void) {
     TitlesCheckIdle();
     s = GetEngineSlot(0)->sub;
     if (Pads[0].pressed & 0x40) {
-        if (MainMenuCursor < 3) {
+        if (MainMenuCursor < 4) {
             MainMenuCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -698,18 +700,23 @@ void MainMenuUpdate(void) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             process_interrupt(&MenuProcessControl, &OptionsScreen);
             break;
+        case 4:
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            process_control_goto(&MenuProcessControl, &SettingsMenu);
+            break;
         }
     }
+    s[5].unk7C = 0;
     s[1].unk7C = 0;
     s[2].unk7C = 0;
     s[4].unk7C = 0;
     s[3].unk7C = 0;
     if (MainMenuHintTimer != 0) {
-        s[5].flags |= 0x8000;
+        s[6].flags |= 0x8000;
         MainMenuHintTimer--;
-        s[5].u6C.text = (void *)MainMenuHints[MainMenuCursor];
+        s[6].u6C.text = (void *)MainMenuHints[MainMenuCursor];
     } else {
-        s[5].flags &= ~0x8000;
+        s[6].flags &= ~0x8000;
     }
     s[MainMenuCursor + 1].unk7C = 2;
 }
