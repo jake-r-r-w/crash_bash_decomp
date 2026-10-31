@@ -3539,6 +3539,7 @@ u16 LevelRequirements[234] = {
     0, 0, 0, 0, 0, 0, 0x1FF, 0x201, 0x102, 0x102, 2, 0, 0, 0,
 };
 s32 DcacheReady = 0;
+s8 HeroSide[16] = { -1, 1, 1, 2, 2, 1, 2, 1, 2 };
 ModuleEntry ShellModules = { shell_start_engine, shell_update, shell_render_dcache, NULL, NULL };
 s16 core_process = 0;
 s32 CompletionBcd = 0;

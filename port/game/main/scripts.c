@@ -916,6 +916,644 @@ void kill_nas_script(subengine *sub) {
 }
 
 void plot_script_nas(subengine *sub, MATRIX *arg1) {
+    struct { s32 a; s32 b; } saved;
+    GteSetup s;
+    script_control_info *ci;
+
+    if (sub->flags & 0x8000) {
+        ci = (script_control_info *)&sub->u6C;
+        if (update_script(ci) == 0) {
+            sub->flags &= ~0x8000;
+            return;
+        }
+        saved = *(typeof(saved) *)RenderState.screen;
+        gfx_setup_xform(sub, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
+        render_script(ci, &s);
+        *(typeof(saved) *)RenderState.screen = saved;
+    }
+}
+
+void kill_script(script_handler *s) {
+    s32 *p;
+    script_thread_handler *cur;
+    script_thread_handler *next;
+    void *head;
+    script_handler *prev;
+    script_handler *nxt;
+    script_handler *head2;
+    void (*fn)(script_thread_handler *, script_control_info *);
+
+    p = s->info.handle;
+    cur = s->info.threads;
+    if (p != NULL) {
+        *p = 0;
+    }
+    for (;;) {
+        if (cur == NULL) {
+            goto unlink;
+        }
+        fn = ScriptCommands[cur->thread_type].kill;
+        next = cur->next;
+        if (fn != NULL) {
+            fn(cur, &s->info);
+        }
+        head = ScriptList;
+        ScriptList = cur;
+        cur->next = head;
+        cur = next;
+    }
+unlink:
+    prev = s->last;
+    if (prev != NULL) {
+        prev->next = s->next;
+    } else {
+        active_scripts = s->next;
+    }
+    nxt = s->next;
+    if (nxt != NULL) {
+        nxt->last = s->last;
+    }
+    head2 = free_scripts;
+    free_scripts = s;
+    s->next = head2;
+}
+
+void kill_script_threads(script_control_info *ci) {
+    s32 *p;
+    script_thread_handler *cur;
+    script_thread_handler *next;
+    void *head;
+    void (*fn)(script_thread_handler *, script_control_info *);
+
+    p = ci->handle;
+    cur = ci->threads;
+    if (p != NULL) {
+        *p = 0;
+    }
+    for (;;) {
+        if (cur == NULL) {
+            return;
+        }
+        fn = ScriptCommands[cur->thread_type].kill;
+        next = cur->next;
+        if (fn != NULL) {
+            fn(cur, ci);
+        }
+        head = ScriptList;
+        ScriptList = cur;
+        cur->next = head;
+        cur = next;
+    }
+}
+
+void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg3,
+                   script_control_info **arg4) {
+    ModelFile *e;
+    script_header *hdr;
+    s32 *t;
+    s32 *q;
+    s32 i;
+    void (*fn)(s32 *, script_control_info *, s32);
+
+    e = arg0->data;
+    if (e != NULL) {
+        s32 *p = (s32 *)((u8 *)&e->scripts + e->scripts) + arg1;
+        hdr = (script_header *)SELF_REL(p);
+    } else {
+        hdr = NULL;
+    }
+    arg2->flags = arg3;
+    arg2->dbase = arg0;
+    arg2->script = arg1;
+    arg2->threads = NULL;
+    arg2->time.w = 0;
+    arg2->time.h.frame = *(s16 *)&hdr->start_frame;
+    arg2->unk10 = hdr->end_frame;
+    arg2->handle = (s32 *)arg4;
+    if (arg4 != NULL) {
+        *arg4 = arg2;
+    }
+    t = (s32 *)hdr->threaddata;
+    for (i = 0; i < hdr->threadcount; i++) {
+        q = (s32 *)SELF_REL(t);
+        fn = ScriptCommands[*q].init;
+        if (fn != NULL) {
+            fn(q, arg2, i);
+        }
+        t++;
+    }
+    update_script(arg2);
+}
+
+void kill_sub_thread(script_thread_handler *th) {
+    subengine *sub;
+
+    sub = &th->type.subscript.sub;
+    sub->release(sub);
+}
+
+void render_sub_thread(script_thread_handler *th, s32 *arg1) {
+    s32 saved;
+    u32 flags;
+    subengine *sub;
+    s32 val;
+
+    sub = &th->type.subscript.sub;
+    flags = th->type.subscript.sub.flags;
+    val = *arg1;
+    saved = ScriptFade;
+    if (flags & 0x8000) {
+        sub->hook(sub, val, flags);
+    }
+    ScriptFade = saved;
+}
+
+/* A thread from the free list (ScriptList), or NULL. */
+static inline script_thread_handler *ThreadPop(void) {
+    script_thread_handler *cur;
+
+    cur = ScriptList;
+    if (cur != NULL) {
+        ScriptList = cur->next;
+    }
+    return cur;
+}
+
+/* A thread from the free list, put first on a script's. */
+static inline script_thread_handler *ThreadPush(script_control_info *ci) {
+    script_thread_handler *p;
+
+    p = ThreadPop();
+    if (p != NULL) {
+        p->next = ci->threads;
+        ci->threads = p;
+    }
+    return p;
+}
+
+void init_sub_thread(u8 *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
+    subengine *sub;
+
+    p = ThreadPush(ci);
+    if (p != NULL) {
+        sub = &p->type.subscript.sub;
+        p->thread_type = 5;
+        p->thread_num = num;
+        *sub = SubEngineTemplate;
+        sub->flags = 0;
+    }
+}
+
+void render_emitter_thread(script_thread_handler *th, s32 *arg1) {
+    subengine *first;
+    subengine *sub;
+    s32 val;
+    u32 flags;
+
+    first = th->type.particle.subs;
+    val = *arg1;
+    if (first != NULL) {
+        sub = first;
+        flags = sub->flags;
+        for (;;) {
+            if (sub == NULL) {
+                return;
+            }
+            if (sub->hook != NULL) {
+                sub->hook(sub, val, flags);
+            }
+            sub = sub->next;
+        }
+    }
+}
+
+s32 interp_window(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    if (arg5 < 0) {
+        return arg0;
+    }
+    if (arg5 < arg2) {
+        return interp(arg0, arg1, arg2, arg5);
+    }
+    if (arg3 < arg5) {
+        if (arg4 < arg5) {
+            return arg0;
+        }
+        return interp(arg1, arg0, arg4 - arg3, arg5 - arg3);
+    }
+    return arg1;
+}
+
+void kill_emitter_thread(script_thread_handler *th) {
+    subengine *subs;
+    partmotdata *mdata;
+
+    subs = th->type.particle.subs;
+    if (subs != NULL) {
+        subs_release(subs, th->type.particle.last_sub);
+        th->type.particle.subs = NULL;
+    }
+    mdata = th->type.particle.mdata;
+    if (mdata != NULL) {
+        mal_free(mdata, &MainHeap);
+        th->type.particle.mdata = NULL;
+    }
+}
+
+void vel_update(VelObj *obj, VelParams *p, VelState *s) {
+    if (s->vx != 0) {
+        obj->x += s->vx >> 8;
+    }
+    if (s->vy != 0) {
+        obj->y += s->vy >> 8;
+    }
+    if (s->vz != 0) {
+        obj->z += s->vz >> 8;
+    }
+    if (p->addX != 0) {
+        s->vx += p->addX;
+    }
+    if (p->addY != 0) {
+        s->vy += p->addY;
+    }
+    if (p->addZ != 0) {
+        s->vz += p->addZ;
+    }
+    if (p->mulX != 0x100) {
+        s->vx = (s->vx * p->mulX) >> 8;
+    }
+    if (p->mulY != 0x100) {
+        s->vy = (s->vy * p->mulY) >> 8;
+    }
+    if (p->mulZ != 0x100) {
+        s->vz = (s->vz * p->mulZ) >> 8;
+    }
+    obj->angle += p->dAngle;
+    obj->dirty = 1;
+    if (p->limit < s->frame++) {
+        obj->flags &= ~0x8000;
+    }
+}
+
+void init_emitter_thread(script_thread *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
+    partdata *e;
+    subengine *q;
+    obj_dbase *v;
+    u16 w;
+
+    p = ThreadPush(ci);
+    if (p != NULL) {
+        e = &def->type.particle;
+        p->thread_type = 1;
+        p->thread_num = num;
+        p->type.particle.subs = NULL;
+        p->type.particle.last_sub = NULL;
+        p->type.particle.num_subs = subs_alloc_list(&p->type.particle.subs, &p->type.particle.last_sub,
+                                                    e->maxparticlecount);
+        q = p->type.particle.subs;
+        if (q != NULL) {
+            do {
+                q->flags = 0;
+                v = ci->dbase;
+                q->u6C.dbase = v;
+                w = *(u16 *)&def->type.particle.frame;
+                q->xform.order = 0;
+                q->xform.dirty = 1;
+                q->entity = w;
+                q = q->next;
+            } while (q != NULL);
+        }
+        p->type.particle.mdata = NULL;
+        mal_alloc_owned_low(e->maxparticlecount * 0x28, (void **)&p->type.particle.mdata, &MainHeap, 0);
+    }
+}
+
+void init_fade_thread(script_thread *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
+
+    p = ThreadPush(ci);
+    if (p != NULL) {
+        p->thread_type = 4;
+        p->thread_num = num;
+        p->type.fade.start = def->type.fade.start;
+        p->type.fade.end = def->type.fade.end;
+    }
+}
+
+void render_entity_thread(script_thread_handler *th, geom_info *gi) {
+    draw_object((u8 *)&th->type.entity.sub, gi->rot, th->type.entity.sub.flags);
+}
+
+void init_entity_thread(script_thread *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
+    subengine *sub;
+    obj_dbase *v;
+    u16 w;
+
+    p = ThreadPush(ci);
+    if (p != NULL) {
+        sub = &p->type.anim.sub;
+        p->thread_type = 3;
+        *sub = SubEngineTemplate;
+        v = ci->dbase;
+        sub->entity = 0;
+        sub->flags = 0;
+        sub->u6C.dbase = v;
+        w = *(u16 *)&def->type.entity.key.len;
+        sub->otz = w;
+        if ((w << 16) != 0) {
+            sub->flags |= 0x2000000;
+        }
+        p->thread_num = num;
+        p->type.anim.frame_count = -1;
+    }
+}
+
+s32 *find_range_30(u8 *arg0, s32 arg1) {
+    s32 *p;
+
+    p = (s32 *)(arg0 + 0x30);
+    if (p[1] != 0) {
+        do {
+            if (arg1 >= p[0] && arg1 < p[0] + p[1]) {
+                return p;
+            }
+            p += 19;
+        } while (p[1] != 0);
+    }
+    return p;
+}
+
+s32 *find_range_1c(u8 *arg0, s32 arg1) {
+    s32 *p;
+
+    p = (s32 *)(arg0 + 0x1C);
+    if (p[1] != 0) {
+        do {
+            if (arg1 >= p[0] && arg1 < p[0] + p[1]) {
+                return p;
+            }
+            p += 10;
+        } while (p[1] != 0);
+    }
+    return p;
+}
+
+void init_camera_thread(s32 def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
+
+    p = ThreadPush(ci);
+    if (p != NULL) {
+        p->thread_type = 2;
+        p->thread_num = num;
+    }
+}
+
+void render_model_thread(script_thread_handler *th, s32 *arg1) {
+    draw_object((u8 *)&th->type.anim.sub, *(MATRIX **)arg1, th->type.anim.sub.flags);
+}
+
+s32 *find_range_24(u8 *arg0, s32 arg1) {
+    s32 *p;
+
+    p = (s32 *)(arg0 + 0x24);
+    while (p[1] != 0) {
+        if (arg1 >= p[0] && arg1 < p[0] + p[1]) {
+            return p;
+        }
+        p += 20;
+    }
+    return p;
+}
+
+void init_model_thread(script_thread *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
+    subengine *sub;
+    obj_dbase *v;
+    u16 w;
+
+    p = ThreadPush(ci);
+    if (p != NULL) {
+        sub = &p->type.anim.sub;
+        p->thread_type = 0;
+        *sub = SubEngineTemplate;
+        v = ci->dbase;
+        sub->entity = 0;
+        sub->flags = 0;
+        sub->u6C.dbase = v;
+        w = *(u16 *)&def->type.entity.unk8;
+        sub->otz = w;
+        if ((w << 16) != 0) {
+            sub->flags |= 0x2000000;
+        }
+        p->thread_num = num;
+    }
+}
+
+void lerp_angles3(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
+    arg2[0] = lerp_angle(arg0[0], arg1[0], arg3, arg4);
+    arg2[1] = lerp_angle(arg0[1], arg1[1], arg3, arg4);
+    arg2[2] = lerp_angle(arg0[2], arg1[2], arg3, arg4);
+}
+
+void interp3_s16(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
+    arg2[0] = interp(arg0[0], arg1[0], arg3, arg4);
+    arg2[1] = interp(arg0[1], arg1[1], arg3, arg4);
+    arg2[2] = interp(arg0[2], arg1[2], arg3, arg4);
+}
+
+void interp3(s32 *arg0, s32 *arg1, s32 *arg2, s32 arg3, s32 arg4) {
+    arg2[0] = interp(arg0[0], arg1[0], arg3, arg4);
+    arg2[1] = interp(arg0[1], arg1[1], arg3, arg4);
+    arg2[2] = interp(arg0[2], arg1[2], arg3, arg4);
+}
+
+s32 *find_range(s32 *arg0, s32 arg1, s32 arg2) {
+    while (arg0[1] != 0) {
+        if (arg0[0] <= arg1 && arg1 < arg0[0] + arg0[1]) {
+            return arg0;
+        }
+        arg0 = (s32 *)FILE_AT(arg0, arg2);
+    }
+    return arg0;
+}
+
+u8 *script_track_at(u8 *arg0, s32 arg1) {
+    ModelFile *p;
+    script_header *r;
+    script_thread *res;
+    s32 *q;
+    s32 lo;
+    s32 v;
+
+    u8 *e;
+
+    e = *(u8 **)(arg0 + 0);
+    lo = *(s32 *)(arg0 + 4);
+    v = *(s16 *)(arg0 + 0xE);
+    ScriptTrackThread = arg1;
+    ScriptTrackDbase = e;
+    p = ((obj_dbase *)e)->data;
+    ScriptTrackIndex = lo;
+    if (p == NULL) {
+        r = NULL;
+    } else {
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
+        r = (script_header *)SELF_REL(q);
+    }
+    if (r == NULL) {
+        res = NULL;
+    } else {
+        res = (script_thread *)((u8 *)&r->threaddata[arg1] + r->threaddata[arg1]);
+    }
+    if (res != NULL) {
+        if (v < res->start_frame || res->end_frame < v) {
+            res = NULL;
+        }
+    }
+    return res;
+}
+
+u8 *get_script_track(u8 *arg0, s32 arg1, s32 arg2) {
+    ModelFile *p;
+    script_header *r;
+    s32 *q;
+
+    ScriptTrackDbase = arg0;
+    p = ((obj_dbase *)arg0)->data;
+    ScriptTrackIndex = arg1;
+    ScriptTrackThread = arg2;
+    if (p == NULL) {
+        r = NULL;
+    } else {
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + arg1;
+        r = (script_header *)SELF_REL(q);
+    }
+    if (r == NULL) {
+        return NULL;
+    }
+    return (u8 *)&r->threaddata[arg2] + r->threaddata[arg2];
+}
+
+u8 *offset_table_entry(OffsetTable *tbl, s32 i) {
+    return (u8 *)&tbl->offs[i] + tbl->offs[i];
+}
+
+u8 *get_script_header(obj_dbase *db, s32 arg1) {
+    ModelFile *p;
+    s32 *e;
+
+    p = db->data;
+    if (p != NULL) {
+        e = (s32 *)((u8 *)&p->scripts + p->scripts) + arg1;
+        return SELF_REL(e);
+    }
+    return NULL;
+}
+
+script_thread_handler *script_thread_alloc(script_control_info *ci) {
+    script_thread_handler *p;
+
+    p = ThreadPop();
+    if (p != NULL) {
+        p->next = ci->threads;
+        ci->threads = p;
+    }
+    return p;
+}
+
+void script_list_push(script_thread_handler *th) {
+    script_thread_handler *head;
+
+    head = ScriptList;
+    ScriptList = th;
+    th->next = head;
+}
+
+script_thread_handler *script_list_pop(void) {
+    script_thread_handler *cur;
+
+    cur = ScriptList;
+    if (cur != NULL) {
+        ScriptList = cur->next;
+    }
+    return cur;
+}
+
+void script_unlink(script_handler *s) {
+    script_handler *prev;
+    script_handler *next;
+    script_handler *head;
+
+    prev = s->last;
+    if (prev != NULL) {
+        prev->next = s->next;
+    } else {
+        active_scripts = s->next;
+    }
+    next = s->next;
+    if (next != NULL) {
+        next->last = s->last;
+    }
+    head = free_scripts;
+    free_scripts = s;
+    s->next = head;
+}
+
+script_handler *script_alloc(void) {
+    script_handler *s;
+    script_handler *head;
+
+    s = free_scripts;
+    if (s != NULL) {
+        free_scripts = s->next;
+        if (active_scripts != NULL) {
+            active_scripts->last = s;
+        }
+        head = active_scripts;
+        s->last = NULL;
+        active_scripts = s;
+        s->next = head;
+    }
+    return s;
+}
+
+void scripts_release(void) {
+    script_handler *next;
+    script_handler *s;
+
+    s = active_scripts;
+    if (s != NULL) {
+        do {
+            next = s->next;
+            kill_script(s);
+            s = next;
+        } while (s != NULL);
+    }
+    if (ScriptPool != 0) {
+        mal_free(ScriptPool, &MainHeap);
+    }
+    if (ScriptThreadPool != 0) {
+        mal_free(ScriptThreadPool, &MainHeap);
+    }
+}
+
+void scripts_kill_all(void) {
+    script_handler *next;
+    script_handler *s;
+
+    s = active_scripts;
+    if (s != NULL) {
+        do {
+            next = s->next;
+            kill_script(s);
+            s = next;
+        } while (s != NULL);
+    }
+}
+
+void scripts_render(void) {
     GteSetup s;
     script_handler *sc;
     GfxState *gs;

@@ -290,7 +290,7 @@ typedef struct DinoBox2 {
 } DinoBox2;
 
 
-/* XZBoxToSphere's push: sets up the object's rotation and passes v through. */
+/* DinoXZBoxToSphere's push: sets up the object's rotation and passes v through. */
 static inline s32 DinoBoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     ang->vx = a[8];
     ang->vy = a[9];
@@ -337,7 +337,7 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1);
 
 void DinoChooseWinnerScore(s32 arg0, u16 arg1);
 
-s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e);
+s32 DinoXZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e);
 
 void SetDinoHeroDazed(s32 id);
 

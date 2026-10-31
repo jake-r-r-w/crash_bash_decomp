@@ -806,7 +806,7 @@ typedef struct RaceBox {
     RaceBoxHalf hi;
 } RaceBox;
 
-/* Sets ang to a's rotation and passes v through (XZBoxToSphere). */
+/* Sets ang to a's rotation and passes v through (RaceXZBoxToSphere). */
 static inline s32 RaceBoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     ang->vx = a[8];
     ang->vy = a[9];
@@ -814,7 +814,7 @@ static inline s32 RaceBoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     return v;
 }
 
-s32 XZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
+s32 RaceXZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
 
 /* Spawns the 0x1605 puff at v (RaceUpdateBarrels). */
 static inline void RaceSpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {

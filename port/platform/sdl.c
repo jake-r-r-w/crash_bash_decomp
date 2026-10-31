@@ -1,0 +1,241 @@
+/* The host on SDL3: a window, sound, the keyboard and game controllers. */
+#define SDL_MAIN_HANDLED
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include "platform.h"
+
+#define MAX_PADS 4
+#define VBLANK_HZ 59.94
+#define OUT_RATE 44100
+/* how much sound may wait in the stream before more is dropped: 100 ms */
+#define MAX_QUEUED (OUT_RATE / 10 * 4)
+
+static SDL_Window *Window;
+static SDL_Renderer *Renderer;
+static SDL_Texture *Texture;
+static int TexW, TexH;
+static SDL_AudioStream *Audio;
+static SDL_Gamepad *Pads[MAX_PADS];
+static Uint64 NextVblank;
+static bool Fullscreen;
+
+int host_init(void) {
+    SDL_AudioSpec spec;
+
+    SDL_SetMainReady();
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) {
+        SDL_Log("SDL_Init: %s", SDL_GetError());
+        return 0;
+    }
+    Window = SDL_CreateWindow("Crash Bash", 960, 720, SDL_WINDOW_RESIZABLE);
+    if (Window == NULL) {
+        SDL_Log("SDL_CreateWindow: %s", SDL_GetError());
+        return 0;
+    }
+    Renderer = SDL_CreateRenderer(Window, NULL);
+    if (Renderer == NULL) {
+        SDL_Log("SDL_CreateRenderer: %s", SDL_GetError());
+        return 0;
+    }
+    /* the PS1 draws to a 4:3 TV whatever the mode's width in pixels */
+    SDL_SetRenderLogicalPresentation(Renderer, 960, 720, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    spec.format = SDL_AUDIO_S16;
+    spec.channels = 2;
+    spec.freq = OUT_RATE;
+    Audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
+    if (Audio != NULL) {
+        SDL_ResumeAudioStreamDevice(Audio);
+    } else {
+        SDL_Log("No sound: %s", SDL_GetError());
+    }
+    NextVblank = SDL_GetPerformanceCounter();
+    return 1;
+}
+
+void host_present(const uint32_t *pixels, int w, int h) {
+    if (Texture == NULL || w != TexW || h != TexH) {
+        if (Texture != NULL) {
+            SDL_DestroyTexture(Texture);
+        }
+        Texture = SDL_CreateTexture(Renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w, h);
+        TexW = w;
+        TexH = h;
+    }
+    SDL_UpdateTexture(Texture, NULL, pixels, w * 4);
+    SDL_RenderClear(Renderer);
+    SDL_RenderTexture(Renderer, Texture, NULL, NULL);
+    SDL_RenderPresent(Renderer);
+}
+
+void host_wait_vblank(void) {
+    Uint64 freq = SDL_GetPerformanceFrequency();
+    Uint64 step = (Uint64)(freq / VBLANK_HZ);
+    Uint64 now = SDL_GetPerformanceCounter();
+
+    NextVblank += step;
+    /* far behind (a window drag, a breakpoint): start again from now */
+    if (now > NextVblank + freq / 4) {
+        NextVblank = now;
+    }
+    while ((now = SDL_GetPerformanceCounter()) < NextVblank) {
+        Uint64 left = (NextVblank - now) * 1000 / freq;
+
+        if (left > 1) {
+            SDL_Delay((Uint32)(left - 1));
+        }
+    }
+}
+
+static void open_pads(void) {
+    SDL_JoystickID *ids;
+    int i, count = 0;
+
+    for (i = 0; i < MAX_PADS; i++) {
+        if (Pads[i] != NULL) {
+            SDL_CloseGamepad(Pads[i]);
+            Pads[i] = NULL;
+        }
+    }
+    ids = SDL_GetGamepads(&count);
+    if (ids != NULL) {
+        int n = 0;
+
+        for (i = 0; i < count && n < MAX_PADS; i++) {
+            Pads[n] = SDL_OpenGamepad(ids[i]);
+            if (Pads[n] != NULL) {
+                n++;
+            }
+        }
+        SDL_free(ids);
+    }
+}
+
+int host_poll(void) {
+    SDL_Event e;
+
+    while (SDL_PollEvent(&e)) {
+        switch (e.type) {
+        case SDL_EVENT_QUIT:
+            return 0;
+        case SDL_EVENT_GAMEPAD_ADDED:
+        case SDL_EVENT_GAMEPAD_REMOVED:
+            open_pads();
+            break;
+        case SDL_EVENT_KEY_DOWN:
+            if (e.key.key == SDLK_RETURN && (e.key.mod & SDL_KMOD_ALT) && !e.key.repeat) {
+                Fullscreen = !Fullscreen;
+                SDL_SetWindowFullscreen(Window, Fullscreen);
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    return 1;
+}
+
+static int pad_buttons(SDL_Gamepad *c) {
+    static const struct {
+        SDL_GamepadButton button;
+        int bit;
+    } map[] = {
+        { SDL_GAMEPAD_BUTTON_SOUTH, PAD_CROSS },
+        { SDL_GAMEPAD_BUTTON_EAST, PAD_CIRCLE },
+        { SDL_GAMEPAD_BUTTON_WEST, PAD_SQUARE },
+        { SDL_GAMEPAD_BUTTON_NORTH, PAD_TRIANGLE },
+        { SDL_GAMEPAD_BUTTON_START, PAD_START },
+        { SDL_GAMEPAD_BUTTON_BACK, PAD_SELECT },
+        { SDL_GAMEPAD_BUTTON_LEFT_SHOULDER, PAD_L1 },
+        { SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, PAD_R1 },
+        { SDL_GAMEPAD_BUTTON_DPAD_UP, PAD_UP },
+        { SDL_GAMEPAD_BUTTON_DPAD_DOWN, PAD_DOWN },
+        { SDL_GAMEPAD_BUTTON_DPAD_LEFT, PAD_LEFT },
+        { SDL_GAMEPAD_BUTTON_DPAD_RIGHT, PAD_RIGHT },
+    };
+    int b = 0;
+    size_t i;
+
+    for (i = 0; i < sizeof(map) / sizeof(map[0]); i++) {
+        if (SDL_GetGamepadButton(c, map[i].button)) {
+            b |= map[i].bit;
+        }
+    }
+    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFT_TRIGGER) > 16000) {
+        b |= PAD_L2;
+    }
+    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) > 16000) {
+        b |= PAD_R2;
+    }
+    /* the left stick works as the d-pad */
+    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTX) < -16000) {
+        b |= PAD_LEFT;
+    }
+    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTX) > 16000) {
+        b |= PAD_RIGHT;
+    }
+    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTY) < -16000) {
+        b |= PAD_UP;
+    }
+    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTY) > 16000) {
+        b |= PAD_DOWN;
+    }
+    return b;
+}
+
+static int keyboard_buttons(void) {
+    static const struct {
+        SDL_Scancode key;
+        int bit;
+    } map[] = {
+        { SDL_SCANCODE_Z, PAD_CROSS },
+        { SDL_SCANCODE_X, PAD_CIRCLE },
+        { SDL_SCANCODE_A, PAD_SQUARE },
+        { SDL_SCANCODE_S, PAD_TRIANGLE },
+        { SDL_SCANCODE_RETURN, PAD_START },
+        { SDL_SCANCODE_RSHIFT, PAD_SELECT },
+        { SDL_SCANCODE_Q, PAD_L1 },
+        { SDL_SCANCODE_W, PAD_R1 },
+        { SDL_SCANCODE_1, PAD_L2 },
+        { SDL_SCANCODE_2, PAD_R2 },
+        { SDL_SCANCODE_UP, PAD_UP },
+        { SDL_SCANCODE_DOWN, PAD_DOWN },
+        { SDL_SCANCODE_LEFT, PAD_LEFT },
+        { SDL_SCANCODE_RIGHT, PAD_RIGHT },
+    };
+    const bool *keys = SDL_GetKeyboardState(NULL);
+    int b = 0;
+    size_t i;
+
+    if (keys[SDL_SCANCODE_LALT] || keys[SDL_SCANCODE_RALT]) {
+        return 0;
+    }
+    for (i = 0; i < sizeof(map) / sizeof(map[0]); i++) {
+        if (keys[map[i].key]) {
+            b |= map[i].bit;
+        }
+    }
+    return b;
+}
+
+/* The first pad is the keyboard and the first controller; then a controller each. */
+int host_pad(int port) {
+    int b = -1;
+
+    if (port == 0) {
+        b = keyboard_buttons();
+    }
+    if (port < MAX_PADS && Pads[port] != NULL) {
+        b = (b < 0 ? 0 : b) | pad_buttons(Pads[port]);
+    }
+    return b;
+}
+
+void host_audio(const int16_t *stereo, int frames) {
+    if (Audio != NULL && SDL_GetAudioStreamQueued(Audio) < MAX_QUEUED) {
+        SDL_PutAudioStreamData(Audio, stereo, frames * 4);
+    }
+}
+
+void host_quit(void) {
+    SDL_Quit();
+}

@@ -496,7 +496,7 @@ s32 RaceAI_DodgeSpinners(s32 player) {
     pos.z = h->hero_eng->XYZ.z - (0x40 * rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
 loop:
     if (i < 6) {
-        if (XZBoxToSphere(*p, &pos, 1, &pos) != -1) {
+        if (RaceXZBoxToSphere(*p, &pos, 1, &pos) != -1) {
             h->hero_ai->AIpad &= ~0x20;
             h->hero_ai->AIpad |= 0x2000;
             h->hero_ai->AIpad |= 0x80;
@@ -579,7 +579,7 @@ void RaceAI_SpinnerBrake(s32 player) {
         p = RaceSpinnerBoxes;
     loop:
         if (i < 6) {
-            r = XZBoxToSphere(*p, &pos, 1, &pos);
+            r = RaceXZBoxToSphere(*p, &pos, 1, &pos);
             if (r != -1) {
                 p++;
                 if (!(r & 4)) {
@@ -2447,7 +2447,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
  * defined here */
 const char RaceMsgError[] = "error\n";
 
-s32 XZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
+s32 RaceXZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
     VECTOR d;
     VECTOR n;
     MATRIX m;
@@ -2467,7 +2467,7 @@ s32 XZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
     src = (RaceBox *)SubFindFlagPoint((subengine *)arg0, side, side);
     p = sv;
     if (src == NULL) {
-        printf("No Coll box on subengine in XZBoxToSphere\n");
+        printf("No Coll box on subengine in RaceXZBoxToSphere\n");
         return side;
     }
     p->pad = 0x100;
@@ -3026,7 +3026,7 @@ void RaceMoveHero(s32 player) {
                 if (i >= 6) {
                     break;
                 }
-                if (XZBoxToSphere(RaceSpinnerBoxes[i], &Heroes[player].hero_eng->XYZ, 0, &pos) == 4 &&
+                if (RaceXZBoxToSphere(RaceSpinnerBoxes[i], &Heroes[player].hero_eng->XYZ, 0, &pos) == 4 &&
                     RacePistons[i].state == 1) {
                     ga = get_angle(eng->OldXYZ.x - pos.x, eng->OldXYZ.z - pos.z) & 0xFFF;
                     vx = -(rcossin_tbl[(ga - 0x400) & 0xFFF].unk2 * 6);

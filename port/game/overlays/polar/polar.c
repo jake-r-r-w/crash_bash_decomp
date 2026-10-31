@@ -9217,7 +9217,7 @@ void PlotSniperMissile(NAS *m) {
             PolarMissileBlast(m, 0);
             ext->timer = 1;
         }
-        if (XZBoxToSphere(polarbossnas->Engine, m->Engine, 0) != 0 || ext->count == 0x3C) {
+        if (PolarXZBoxToSphere(polarbossnas->Engine, m->Engine, 0) != 0 || ext->count == 0x3C) {
             PolarMissileBlast(m, 1);
             PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
             boss->spin = 0xC;
@@ -9227,7 +9227,7 @@ void PlotSniperMissile(NAS *m) {
                 PlaySfx(0x23B, NULL, NULL, 0x1000, 0x1E00, 0);
             }
         } else {
-            if (XZBoxToSphere(boss->animNas->Engine, m->Engine, 1) == 0) {
+            if (PolarXZBoxToSphere(boss->animNas->Engine, m->Engine, 1) == 0) {
                 return;
             }
             PolarMissileBlast(m, 1);
@@ -9261,7 +9261,7 @@ void PlotSniperMissile(NAS *m) {
     }
 }
 
-s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
+s32 PolarXZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
     VECTOR d;
     VECTOR n;
     MATRIX m;
@@ -9278,7 +9278,7 @@ s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
     side = 0;
     src = (PolarCollBox *)SubFindFlagPoint(a->sub, c, side);
     if (src == NULL) {
-        printf("No Coll box on subengine in XZBoxToSphere\n");
+        printf("No Coll box on subengine in PolarXZBoxToSphere\n");
         return 0;
     }
     p = (SVECTOR *)SubFindFlagPoint(b->sub, c, 0x80000000);

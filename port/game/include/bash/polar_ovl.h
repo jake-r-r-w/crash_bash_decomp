@@ -810,7 +810,7 @@ typedef struct SniperMissileExt {
     /* 0x34 */ s32 count;  /* counted up */
 } SniperMissileExt;
 
-/* XZBoxToSphere's collision box (SubFindFlagPoint's FlagPoint data): two corners. */
+/* PolarXZBoxToSphere's collision box (SubFindFlagPoint's FlagPoint data): two corners. */
 typedef struct PolarBoxHalf {
     s16 v[3];
 } PolarBoxHalf;
@@ -820,7 +820,7 @@ typedef struct PolarCollBox {
     PolarBoxHalf hi;
 } PolarCollBox;
 
-s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c);
+s32 PolarXZBoxToSphere(EXTengine *a, EXTengine *b, s32 c);
 
 /* Polar missile extension (0x70 bytes, id 0x10000000). */
 typedef struct PolarMissileExt {

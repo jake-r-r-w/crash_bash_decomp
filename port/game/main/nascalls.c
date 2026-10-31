@@ -4043,7 +4043,6 @@ s32 VelocityCalc = 0;
 LevelTriggerHead *LevelTriggerData = 0;
 void *LevelConfig = 0;
 EngineRec32 *LevelRecs = 0;
-s32 LevelUnused[6] = {0};
 GameOptionSet GameOptions = {0};
 GameState GameInfoState = {0};
 void (*GameBoot)(void *) = 0;

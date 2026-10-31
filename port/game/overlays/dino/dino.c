@@ -2246,7 +2246,7 @@ void DinoScoreGems(void) {
         if (kind != 3 || ext->count >= 2 || ext->timer2 > 0) {
             continue;
         }
-        if (XZBoxToSphere((SLONG_XYZ *)DinoGoal, &nas->Engine->XYZ, 0, &nas->Engine->XYZ) == -1) {
+        if (DinoXZBoxToSphere((SLONG_XYZ *)DinoGoal, &nas->Engine->XYZ, 0, &nas->Engine->XYZ) == -1) {
             continue;
         }
         DinoScoreA++;
@@ -2447,7 +2447,7 @@ void PlotDinoSmoke(NAS *m) {
     RunNasAnim(m);
 }
 
-s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
+s32 DinoXZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     VECTOR d;
     VECTOR n;
     MATRIX m;
@@ -2467,7 +2467,7 @@ s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     src = (DinoBox2 *)SubFindFlagPoint((subengine *)a, side, side);
     p = sv;
     if (src == NULL) {
-        printf("No Coll box on subengine in XZBoxToSphere\n");
+        printf("No Coll box on subengine in DinoXZBoxToSphere\n");
         return side;
     }
     p->pad = 0x180;
