@@ -133,6 +133,15 @@ s32 UpdatePause(void) {
     u8 *g;
 
     ret = 1;
+    /* a boss test's player (--aim): the label a --mode test has, as this isn't a demo */
+    if (settings()->test_aim && (GAME->levelFlags & 0x100) && (GAME->frames & 0x10)) {
+        s32 page = FontPage;
+
+        PauseTexts[PAUSE_TEXT_DEMO] = "TESTING";
+        FontPage = 0;
+        DrawHudEntries(PauseDemoLabel, 0x70);
+        FontPage = page;
+    }
     if (GAME->pause & 0x10) {
         return 0;
     }
