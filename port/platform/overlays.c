@@ -29,6 +29,17 @@ static Overlay Overlays[] = {
 #undef OVL
 };
 
+/* A whole section, across every object in it: a sanitizer's check of one object would stop memcpy. */
+__attribute__((no_sanitize("address")))
+static void copy_section(void *to, const void *from, size_t n) {
+    volatile char *d = to;
+    const volatile char *s = from;
+
+    while (n-- != 0) {
+        *d++ = *s++;
+    }
+}
+
 void overlays_init(void) {
     size_t i;
 
@@ -37,7 +48,7 @@ void overlays_init(void) {
         size_t n = (size_t)(o->data_end - o->data);
 
         o->saved = malloc(n ? n : 1);
-        memcpy(o->saved, o->data, n);
+        copy_section(o->saved, o->data, n);
     }
 }
 
@@ -50,7 +61,7 @@ void overlay_load(const void *f) {
         Overlay *o = &Overlays[i];
 
         if (o->entry == entry) {
-            memcpy(o->data, o->saved, (size_t)(o->data_end - o->data));
+            copy_section(o->data, o->saved, (size_t)(o->data_end - o->data));
         }
     }
 }

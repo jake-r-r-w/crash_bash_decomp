@@ -769,7 +769,7 @@ void init_file(void);
 extern s32 DcacheReady;
 extern void *LoadNodeFree;
 extern BlockRef SmallNodePool[]; /* 63 of them, free list in SmallNodeFree */
-extern u8 LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
+extern struct LoadNode LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
 extern s32 cam_ramp_overide_count;
 extern void *CamEaseOverride;
 extern s32 RandomSeedA;
@@ -789,7 +789,6 @@ extern s32 World_floor_level;
 extern s32 MusicRestart;
 extern s32 CardChannel;
 extern s32 CardStatus;
-extern u8 CardBuffer[];
 /* The memory card save file header at CardBuffer (PsyQ _CARD layout). */
 typedef struct {
     u32 magic : 16;  /* 0x00 "SC" */
@@ -799,13 +798,11 @@ typedef struct {
     s16 title[32];   /* 0x04 Shift-JIS */
 } McHeader;
 extern char *CardSaveTitle;
-extern u8 CardIconFrames[]; /* the header's icon frames (CardBuffer + 0x80) */
 extern char CardSaveTitleFormat[];
 s32 count_completion(u8 *arg0);
 
 /* Writes up to 32 Shift-JIS characters of src (ASCII) to dst, padding with
  * full-width spaces (card_make_header). */
-extern s32 CardSaveSum;
 extern s32 CardRequest;
 extern s32 CardCommand;
 extern s32 CardDirCount;
@@ -905,7 +902,24 @@ typedef struct CardSlot {
     u8 summary[8];
     GameState state;
 } CardSlot;
-extern CardSlot CardSlots[];
+
+/* The save, as the card holds it (docs/ASSETS.md, The memory card). */
+typedef struct CardSave {
+    u8 header[128];
+    u8 iconFrames[384];
+    CardSlot slots[4];
+    s32 flags[3];
+    s32 sum;
+    s32 rest[1512];
+} CardSave;
+_Static_assert(sizeof(CardSave) == 0x2000, "the card's block");
+extern CardSave CardSaveBlock;
+#define CardBuffer ((u8 *)&CardSaveBlock)
+#define CardIconFrames (CardSaveBlock.iconFrames)
+#define CardSlots (CardSaveBlock.slots)
+#define CardSaveFlags (CardSaveBlock.flags)
+#define CardSaveSum (CardSaveBlock.sum)
+#define CardSaveRest (CardSaveBlock.rest)
 /* A panel's record (0x24 bytes; PlaceEngineSlot's lists, ending at a type below 2), read by
  * ApplyPlaceRecs: what to place (type), where, and its text table or image (data). The pause
  * screens' records and the text panels' items are the same record. */

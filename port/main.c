@@ -158,7 +158,7 @@ void platform_audio(const int16_t *stereo, int frames) {
 
 int main(int argc, char **argv) {
     int i;
-    int no_launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0;
+    int no_launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1;
     const char *launcher_shot = NULL, *launcher_keys = NULL;
 
     for (i = 1; i < argc; i++) {
@@ -192,6 +192,8 @@ int main(int argc, char **argv) {
             launcher_keys = argv[++i];
         } else if (strcmp(argv[i], "--fps") == 0 && i + 1 < argc) {
             fps = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
+            test_mode = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--turbo") == 0) {
             Turbo = 1;
         } else if (strcmp(argv[i], "--skip-intro") == 0) {
@@ -222,6 +224,7 @@ int main(int argc, char **argv) {
     } else if (!testing && !no_launcher && !launcher_run(host_window())) {
         return 0;
     }
+    settings()->test_mode = test_mode;
     if (skip_intro) {
         settings()->skip_intro = 1;
     }

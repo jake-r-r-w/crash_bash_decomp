@@ -2594,8 +2594,10 @@ void SetTankHeroIdle(u32 player) {
     if (done == 0) {
         EXTengine *eng;
 
-        Heroes[player].hero_move->jump_max = 0;
-        Heroes[player].hero_move->velocity_enable = 1;
+        if (Heroes[player].hero_move != NULL) {
+            Heroes[player].hero_move->jump_max = 0;
+            Heroes[player].hero_move->velocity_enable = 1;
+        }
         Heroes[player].hero_idle_count = Random(0x96) + 0x5A;
         SetHeroSeq(player, 0x59);
         eng = Heroes[player].hero_eng;

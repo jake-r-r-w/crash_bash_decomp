@@ -1392,7 +1392,7 @@ void PlotPapuMinion(NAS *nas)
       }
       do {
         if (fux->status != 6) {
-          other = (EXTobject *)hnas->FUX;
+          other = hnas != NULL ? (EXTobject *)hnas->FUX : NULL;
           if (other != NULL) {
             other->will_do |= 1;
             other->player = PapuMinionSlots[slot].whatami;

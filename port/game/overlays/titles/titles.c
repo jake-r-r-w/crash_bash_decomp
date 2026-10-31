@@ -1,3 +1,4 @@
+#include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/engine.h"
 #include "bash/main.h"
@@ -563,6 +564,16 @@ void TitlesInitLevel(void) {
 
 void TitlesCheckIdle(void) {
     s32 f;
+    if (settings()->test_mode >= 0) {
+        GameState *g = GAME;
+
+        g->demo = 1;
+        g->demoTimer = 0x7FFFFFFF;
+        g->mode = (u16)settings()->test_mode;
+        settings()->test_mode = -1;
+        ProcessControl.next_process = &LevelLoadProcess;
+        return;
+    }
     if (joypad_idle_count >= 0x385) {
         joypad_idle_count = 0;
         set_fade(&ScreenFade, 0x200, 0);

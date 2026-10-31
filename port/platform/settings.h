@@ -10,6 +10,7 @@ typedef struct Settings {
     int render_w, render_h; /* what the game draws at, whatever the window's size */
     int vsync;
     int fps;           /* 30 is the game's own rate; 60 and 120 draw between its frames */
+    int test_mode;     /* a test run's game mode to go straight to, or -1 */
 } Settings;
 
 /* The settings in use. */

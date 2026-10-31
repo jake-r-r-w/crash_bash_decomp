@@ -2213,16 +2213,10 @@ void Init_Panel(void) {
     s32 i;
 
     PanelCtrl = 0;
-    do {
-        for (i = 0; i < 7; i++) {
-            do {
-            } while (0);
-            PanelTab[i] = EngineTemplate;
-            PanelTab[i].flags = 0;
-        }
-        ((EXTengine **)&Icon)[i] = NULL;
-        i++;
-    } while (i < 4);
+    for (i = 0; i < 7; i++) {
+        PanelTab[i] = EngineTemplate;
+        PanelTab[i].flags = 0;
+    }
     InitBossHealthBar();
 }
 

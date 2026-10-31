@@ -3853,7 +3853,7 @@ FileGroup FileGroups[130] = {
     { 0x3DF, 1, 0x5E800 },  /* 129 */
 };
 LoaderState Loader = {0};
-u8 LoadNodePool[2304] = {0};
+LoadNode LoadNodePool[64] = {0};
 void *LoadNodeFree = 0;
 BlockRef SmallNodePool[64] = {0};
 BlockRef *SmallNodeFree = 0;

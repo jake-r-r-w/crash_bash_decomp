@@ -20,6 +20,7 @@ void settings_defaults(void) {
     Current.render_h = 960;
     Current.vsync = 1;
     Current.fps = 30;
+    Current.test_mode = -1;
 }
 
 /* Fills path with where the settings file goes. Returns 0 if there's no such place. */
