@@ -131,6 +131,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit |
 | `--tile I N` | put this window in slot I of a grid of N on the screen, to watch several test runs at once |
 | `--wav FILE` | record a test run's sound (test runs are silent otherwise) |
+| `--sound` | play a test run's sound, for one that's being watched |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
 | `--no-launcher` | start with the saved settings, without the menu |

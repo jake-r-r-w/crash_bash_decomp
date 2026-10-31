@@ -409,6 +409,69 @@ static s32 play_bear(void) {
     }
 }
 
+#define BALL_KICK_DZ 0x280
+#define BALL_KICK_DX 0x300
+#define BALL_LENGTH 0xF40
+#define BALL_MISS_X 0x500
+#define BALL_BRAKE 0x38
+#define BALL_NEAR 0x30
+#define BTN_FAST 0x800
+
+extern u16 N2OBallPhase;
+s32 N2ONextBall(s32 bomb, s32 *cross, s32 *bx, s32 *bz);
+
+/* Right or left along the line, for where he'll stop as well as where he is: he carries on a long way after a press. */
+static s32 slide_to(s32 err) {
+    s32 v = Heroes[0].hero_move->forward_speed;
+    s32 stop = v * abs(v) / (2 * BALL_BRAKE);
+
+    if (err > stop + BALL_NEAR) {
+        return BTN_RIGHT | BTN_FAST;
+    }
+    if (err < stop - BALL_NEAR) {
+        return BTN_LEFT | BTN_FAST;
+    }
+    return 0;
+}
+
+/* Oxide. The first phase is his run over the asteroids, and it ends when his path does: nothing the hero does counts, as his
+   health isn't touched till the ball game, so keep firing and swaying. In the ball game a ball that goes out past him costs him
+   health. A kick sends a ball straight out from the hero's middle: so stand beside where it'll cross by what puts it to the side
+   he isn't, and kick when it's in reach. */
+static s32 play_oxide(void) {
+    EXTengine *he = Heroes[0].hero_eng;
+    s32 cross, bx, bz;
+
+    if (he == NULL || Heroes[3].hero_eng == NULL) {
+        return 0;
+    }
+    if (N2OBallPhase != 1) {
+        static const u16 Sway[6] = { BTN_CROSS, 0, BTN_CROSS | BTN_RIGHT, 0, BTN_CROSS | BTN_LEFT, 0 };
+
+        return Sway[((BotTicks % 24) / 4)];
+    }
+    if (N2ONextBall(1, &cross, &bx, &bz) && bz - he->XYZ.z < BALL_LENGTH && abs(cross - he->XYZ.x) < 0x200) {
+        return slide_to(cross > he->XYZ.x || cross <= -0x600 ? cross + 0x400 - he->XYZ.x : cross - 0x400 - he->XYZ.x);
+    }
+    if (N2ONextBall(0, &cross, &bx, &bz)) {
+        s32 aim = Heroes[3].hero_eng->XYZ.x >= 0 ? -BALL_MISS_X : BALL_MISS_X;
+        s32 off = (cross - aim) * BALL_KICK_DZ / BALL_LENGTH;
+        s32 b;
+
+        if (off > 0x140) {
+            off = 0x140;
+        } else if (off < -0x140) {
+            off = -0x140;
+        }
+        b = slide_to(cross + off - he->XYZ.x);
+        if (bz - he->XYZ.z < BALL_KICK_DZ && abs(bx - he->XYZ.x) < BALL_KICK_DX) {
+            b |= BTN_SQUARE;
+        }
+        return b;
+    }
+    return slide_to(-he->XYZ.x);
+}
+
 #define FOX_RANGE 0x700 /* close up to the cannons, past the ice */
 #define FOX_SWEEP 40
 static s32 FoxSweep, FoxSweepDir = 1, FoxLastX, FoxLastZ;
@@ -525,6 +588,9 @@ void BossBotUpdate(void) {
         break;
     case 22:
         buttons = play_bear();
+        break;
+    case 31:
+        buttons = play_oxide();
         break;
     }
     platform_bot_buttons(buttons);

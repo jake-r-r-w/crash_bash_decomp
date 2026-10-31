@@ -982,7 +982,8 @@ signature alone is not enough.
   `file_group_N2O` (`N2OFiles` with the exe's file group 6: 16 DAT entries,
   all decoded). `N2OSetUp` fills Arkenoid's `LevSpec` slots (`GetN2OContour`
   is slot 9). The fight has two phases, switched by `N2OBallPhase` (1: the
-  ball game against N2O round four pillars, n2o.c, the engine hooks
+  ball game against N2O round four pillars, where a ball out past his end costs him 0x20 of his 0xFF and a kick
+  sends it straight out from the kicker's middle, n2o.c, the engine hooks
   `N2OPreMoveHero` ..; otherwise the space fight among asteroids and mines,
   nox.c, `NoxPreMoveHero` ..); `NoxStartPhase1` swaps the hooks over. The hero
   states are `HEROFunc` pairs 38..50 (`NOEnter` .. `NODead` in n2o.c, then

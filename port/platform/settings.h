@@ -20,6 +20,7 @@ typedef struct Settings {
     int test_cheats;   /* a test run: cheat flags kept on */
     int boss_beat_at;  /* a test run's vblank to mark the boss beaten at, or 0 */
     int no_save;       /* a test run leaves the player's file alone */
+    int test_sound;    /* a test run that's for watching: its sound plays (--sound) */
     int tile, tiles;   /* a test window's slot in a grid of them on the screen, if tiles isn't 0 */
 } Settings;
 

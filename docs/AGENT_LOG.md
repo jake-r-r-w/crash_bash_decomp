@@ -460,6 +460,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: Oxide beaten by real play: `play_oxide` reads each ball's path, gets beside where it'll cross and kicks it to the side he isn't. The old button pattern never kicked, so the ball phase was won by
+  bounces. His first phase has no bar and no damage in the matched code either (`InitBossHealthIcons` is only called from `N2OInitBoss`, and `PlotLaserShoot` never lowers his health): it ends when his path does.
+  `--sound` plays a test run's sound, for showing one; `scratch/showbosses.sh` isn't kept in the repo.
 - 2026-10-31: The Bearminator beaten by a test run, from a real Adventure: all three phases and back to the warp room. A real bug on the way, found by the user: the hero couldn't hit his robots, as
   PolarHeroCollisions read their flag through the wrong view. How the fight works (`--aim`, `play_bear`): each robot fires one missile a while after landing, and a stunned hero goes over with no recovery;
   a charge drives a robot about 1450 along the lunge, not along the line of contact, and the edge is about 2600 out; a sniper shot flies through the crosshair and only the bear's own box does damage, not

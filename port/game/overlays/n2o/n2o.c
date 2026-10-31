@@ -355,6 +355,7 @@ s16 N2OExplodeScales[7][3] = {
     { 0x800, 0xA00, 0x800 }, { 0x200, 0x200, 0x200 }, { 0, 0, 0 }, { 0, 0, 0 },
 };
 u16 N2OBallPhase = 0;
+#define N2O_BALL_WALL 0x800
 u16 N2OHeroPlaced[4] = {0};
 s16 N2OBossAnimTimer = 0;
 s16 N2OHeroSpeed[4] = {0};
@@ -2616,6 +2617,41 @@ found:
     return 1;
 ret0:
     return 0;
+}
+
+/* For a test run's player: the ball that reaches the hero's end first, or with bomb, the bomb that does. Fills where it'll
+   cross his line, with the walls folded in, and where it is now; 0 if nothing's on its way. */
+s32 N2ONextBall(s32 bomb, s32 *cross, s32 *bx, s32 *bz) {
+    N2ONode *n;
+    s32 soonest = 0x7FFFFFFF;
+    s32 hz = Heroes[0].hero_eng->XYZ.z;
+
+    for (n = HeadOfBalls; n != NULL; n = n->next) {
+        EXTmotion *mot = FindExtension((NAS *)n, 0x800);
+        EXTengine *t = n->target;
+
+        if (mot != NULL && t != NULL && n->unk58 != NULL && (n->unk58->status == 1 || n->unk58->status == 8)
+            && (n->unk58->whatami == 2) == (bomb != 0)) {
+            s32 vx = -rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2;
+            s32 vz = -rcossin_tbl[mot->Xa & 0xFFF].unk2;
+
+            if (vz < -0x40 && t->XYZ.z > hz) {
+                s32 run = ((hz - t->XYZ.z) << 8) / vz;
+                s32 x = t->XYZ.x + ((vx * run) >> 8);
+
+                while (x > N2O_BALL_WALL || x < -N2O_BALL_WALL) {
+                    x = x > 0 ? N2O_BALL_WALL * 2 - x : -N2O_BALL_WALL * 2 - x;
+                }
+                if (run < soonest) {
+                    soonest = run;
+                    *cross = x;
+                    *bx = t->XYZ.x;
+                    *bz = t->XYZ.z;
+                }
+            }
+        }
+    }
+    return soonest != 0x7FFFFFFF;
 }
 
 void N2O_HeroBot(u16 *arg0) {

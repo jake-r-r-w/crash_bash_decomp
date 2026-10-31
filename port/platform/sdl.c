@@ -143,8 +143,8 @@ int host_init(void) {
         return 0;
     }
     open_pads();
-    /* a test run is silent: it can record its sound instead (--wav) */
-    if (!s->no_save) {
+    /* a test run is silent, unless it's asked for (--sound): it can record its sound instead (--wav) */
+    if (!s->no_save || s->test_sound) {
         spec.format = SDL_AUDIO_S16;
         spec.channels = 2;
         spec.freq = OUT_RATE;
