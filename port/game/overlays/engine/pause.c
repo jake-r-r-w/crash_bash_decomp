@@ -5,6 +5,11 @@
 #include "bash/pause.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
+#include "bash/videomenu.h"
+#include <stdio.h>
+
+/* The rows that aren't the game's own (DrawHudEntries' type 8), by a HudEntry's idx. */
+static const char *const PauseOwnTexts[] = { "SAVE GAME", "VIDEO" };
 
 /* A warp room's pause menu can save, as its computer can: the game's state is only ever saved between its games. */
 static s32 pause_can_save(void) {
@@ -508,9 +513,20 @@ found:
                     PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
                 break;
+            case 3:
+                if (ActivePad()->pressed & 0xA0) {
+                    video_option_change(PauseChoice, (ActivePad()->pressed & 0x20) ? 1 : -1);
+                    PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (PauseChooseUpDown(PausePad, video_option_count() - 1) != 0 || (ActivePad()->pressed & 0x1000)) {
+                    PauseChoice = 2;
+                    PauseLastChoice = 0;
+                    PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                break;
             default:
-                if (PauseChooseUpDown(PausePad, 2) != 0) {
-                    if (PauseChoice == 2) {
+                if (PauseChooseUpDown(PausePad, 3) != 0) {
+                    if (PauseChoice == 3) {
                         PauseLastChoice = 0;
                         GAME->pause &= ~0x100;
                     } else {
@@ -691,7 +707,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             break;
         case 8:
             if (PauseTextHold == 0) {
-                DrawSysText(e->x, (s16)(e->y + arg1), (u8 *)"SAVE GAME", e->a, e->b, PauseChoice == n);
+                DrawSysText(e->x, (s16)(e->y + arg1), (u8 *)PauseOwnTexts[e->idx], e->a, e->b, PauseChoice == n);
             }
             n++;
             break;
@@ -835,6 +851,33 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
     eng[6].xform.rot.vy += 0x40;
 }
 
+#define VIDEO_ROW_Y 0x3C
+#define VIDEO_ROW_STEP 0x24
+#define VIDEO_LABEL_X 0x58
+#define VIDEO_VALUE_X 0x13C
+
+/* A page like the sound one, with its rows from the shared options, in the small font to fit their values. */
+static void DrawPauseVideo(void) {
+    char value[24];
+    s32 i;
+
+    DrawHudEntries(PauseVideoMenu, PauseMenuY);
+    if (PauseTextHold != 0) {
+        return;
+    }
+    DrawSysText(-0x8000, (s16)(0xA + PauseMenuY), (u8 *)"VIDEO", 0xD0FF, 0xFF, 0);
+    FontPage = 1;
+    for (i = 0; i < video_option_count(); i++) {
+        s32 y = VIDEO_ROW_Y + i * VIDEO_ROW_STEP + PauseMenuY;
+        s32 lit = PauseChoice == i;
+
+        video_option_value(i, value, sizeof(value));
+        DrawSysText(VIDEO_LABEL_X, (s16)y, (u8 *)video_option_label(i), 0xD0FF, 0xFF, lit);
+        DrawSysText(VIDEO_VALUE_X, (s16)y, (u8 *)value, 0xD0FF, 0xFF, lit);
+    }
+    DrawSysText(-0x8000, (s16)(0xE8 + PauseMenuY), (u8 *)video_option_help(PauseChoice), 0xD0FF, 0xFF, 0);
+}
+
 void DrawPauseMenu(void) {
     HudBox *e;
     s32 i;
@@ -927,6 +970,9 @@ void DrawPauseMenu(void) {
                 PauseToggles[i] = 9;
             }
             DrawHudEntries(PauseControllerMenu, PauseMenuY);
+            break;
+        case 3:
+            DrawPauseVideo();
             break;
         default:
             DrawHudEntries(PauseOptionsMenu, PauseMenuY);

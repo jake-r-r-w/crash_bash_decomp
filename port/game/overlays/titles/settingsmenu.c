@@ -2,7 +2,7 @@
  * backdrop, in its font and panels, under the 3D logo from the intro. PLAY, SETTINGS and QUIT, and
  * the settings a screen down: categories on the left, a scrolling list of options on the right.
  * Settings take effect as they change. To add one: a row in its category's table, a case in
- * change_setting and in show_value. */
+ * change_setting and in show_value; a video one goes in main/videomenu.c, as other menus show those too. */
 #include <stdio.h>
 #include "../../../platform/settings.h"
 #include "common.h"
@@ -10,25 +10,13 @@
 #include "bash/main.h"
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
+#include "bash/videomenu.h"
 
 void platform_finish(int code);
 
-typedef struct {
-    s32 w, h;
-} MenuSize;
-
-static const MenuSize WindowSizes[] = { { 640, 480 }, { 960, 720 }, { 1280, 720 }, { 1280, 960 }, { 1600, 1200 }, { 1920, 1080 },
-                                        { 1920, 1440 }, { 2560, 1440 }, { 3840, 2160 } };
-static const MenuSize RenderSizes[] = { { 0, 0 }, { 640, 480 }, { 1280, 960 }, { 1920, 1440 }, { 2560, 1920 }, { 3840, 2880 } };
-
 enum {
     SET_SKIP_INTRO,
-    SET_SKIP_LOADING,
-    SET_DISPLAY,
-    SET_WINDOW,
-    SET_RENDER,
-    SET_FPS,
-    SET_VSYNC
+    SET_SKIP_LOADING
 };
 
 typedef struct {
@@ -39,7 +27,7 @@ typedef struct {
 
 typedef struct {
     const char *label;
-    const MenuOption *options;
+    const MenuOption *options; /* NULL: the video options */
     s32 count;
 } MenuCategory;
 
@@ -47,19 +35,11 @@ static const MenuOption GameOptionsList[] = {
     { "SKIP INTRO", "START AT THE MAIN MENU, WITHOUT THE LOGOS", SET_SKIP_INTRO },
     { "SKIP LOADING", "LOAD IN ONE GO, WITHOUT THE LOADING SCREENS", SET_SKIP_LOADING },
 };
-static const MenuOption VideoOptionsList[] = {
-    { "DISPLAY", "PLAY IN A WINDOW OR FULLSCREEN", SET_DISPLAY },
-    { "WINDOW SIZE", "THE SIZE OF THE WINDOW ON YOUR SCREEN", SET_WINDOW },
-    { "RESOLUTION", "THE SIZE THE GAME DRAWS AT", SET_RENDER },
-    { "FRAME RATE", "30 IS THE ORIGINAL, 60 AND 120 ARE SMOOTHER", SET_FPS },
-    { "VSYNC", "MATCH YOUR SCREEN, TO STOP TEARING", SET_VSYNC },
-};
-
 #define NUM_OF(a) ((s32)(sizeof(a) / sizeof((a)[0])))
 
 static const MenuCategory Categories[] = {
     { "GAME", GameOptionsList, NUM_OF(GameOptionsList) },
-    { "VIDEO", VideoOptionsList, NUM_OF(VideoOptionsList) },
+    { "VIDEO", NULL, 5 },
 };
 #define NUM_CATEGORIES NUM_OF(Categories)
 #define MAX_CATEGORIES 4 /* and BACK */
@@ -127,77 +107,37 @@ static s32 Category;  /* NUM_CATEGORIES is BACK */
 static s32 Option;
 static s32 FirstShown;
 
-/* Moves through a list of sizes from the one in use, wrapping at the ends. */
-static void step_size(const MenuSize *sizes, s32 count, int *w, int *h, s32 dir) {
-    s32 i, at = 0;
-
-    for (i = 0; i < count; i++) {
-        if (sizes[i].w == *w && sizes[i].h == *h) {
-            at = i;
-        }
-    }
-    at = (at + dir + count) % count;
-    *w = sizes[at].w;
-    *h = sizes[at].h;
-}
-
-static void change_setting(s32 id, s32 dir) {
+static void change_setting(const MenuCategory *c, s32 n, s32 dir) {
     Settings *s = settings();
 
-    switch (id) {
+    if (c->options == NULL) {
+        video_option_change(n, dir);
+        return;
+    }
+    switch (c->options[n].id) {
     case SET_SKIP_INTRO:
         s->skip_intro = !s->skip_intro;
         break;
     case SET_SKIP_LOADING:
         s->skip_loading = !s->skip_loading;
         break;
-    case SET_DISPLAY:
-        s->fullscreen = !s->fullscreen;
-        break;
-    case SET_WINDOW:
-        step_size(WindowSizes, NUM_OF(WindowSizes), &s->window_w, &s->window_h, dir);
-        break;
-    case SET_RENDER:
-        step_size(RenderSizes, NUM_OF(RenderSizes), &s->render_w, &s->render_h, dir);
-        break;
-    case SET_FPS:
-        s->fps = dir > 0 ? (s->fps == 30 ? 60 : s->fps == 60 ? 120 : 30) : (s->fps == 30 ? 120 : s->fps == 120 ? 60 : 30);
-        break;
-    case SET_VSYNC:
-        s->vsync = !s->vsync;
-        break;
     }
     settings_apply();
 }
 
-static void show_value(char *text, size_t size, s32 id) {
+static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
     const Settings *s = settings();
 
-    switch (id) {
+    if (c->options == NULL) {
+        video_option_value(n, text, (s32)size);
+        return;
+    }
+    switch (c->options[n].id) {
     case SET_SKIP_INTRO:
         snprintf(text, size, "%s", s->skip_intro ? "ON" : "OFF");
         break;
     case SET_SKIP_LOADING:
         snprintf(text, size, "%s", s->skip_loading ? "ON" : "OFF");
-        break;
-    case SET_DISPLAY:
-        snprintf(text, size, "%s", s->fullscreen ? "FULLSCREEN" : "WINDOW");
-        break;
-    case SET_WINDOW:
-        snprintf(text, size, "%d X %d", s->window_w, s->window_h);
-        break;
-    case SET_RENDER:
-        if (s->render_w == 0) {
-            snprintf(text, size, "MATCH WINDOW");
-        } else {
-            snprintf(text, size, "%d X %d", s->render_w, s->render_h);
-        }
-        break;
-    case SET_FPS:
-        snprintf(text, size, "%d", s->fps);
-        break;
-    case SET_VSYNC:
-        snprintf(text, size, "%s", s->vsync ? "ON" : "OFF");
         break;
     }
 }
@@ -280,7 +220,7 @@ static void show_screen(void) {
     }
     set_row(&sub[SUB_NAV], Screen == SCREEN_OPTIONS ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
                                                     : "UP - DOWN TO CHOOSE, RIGHT OR \xFC BUTTON TO OPEN", TEXT_SMALL);
-    set_row(&sub[SUB_HELP], Screen == SCREEN_OPTIONS ? c->options[Option].help : "", TEXT_SMALL);
+    set_row(&sub[SUB_HELP], Screen == SCREEN_OPTIONS ? (c->options != NULL ? c->options[Option].help : video_option_help(Option)) : "", TEXT_SMALL);
     for (i = 0; i < VISIBLE_OPTIONS; i++) {
         s32 n = FirstShown + i;
 
@@ -289,9 +229,9 @@ static void show_screen(void) {
             s32 lit = Screen == SCREEN_OPTIONS && n == Option;
             char value[24];
 
-            set_row(&sub[SUB_LABEL(i)], c->options[n].label, lit ? TEXT_SMALL_LIT : TEXT_SMALL);
+            set_row(&sub[SUB_LABEL(i)], c->options != NULL ? c->options[n].label : video_option_label(n), lit ? TEXT_SMALL_LIT : TEXT_SMALL);
             value[0] = '\0';
-            show_value(value, sizeof(value), c->options[n].id);
+            show_value(value, sizeof(value), c, n);
             snprintf(Values[i], sizeof(Values[i]), lit ? "< %s >" : "%s", value);
             sub[SUB_VALUE(i)].unk7C = lit ? TEXT_SMALL_LIT : TEXT_SMALL;
         } else {
@@ -395,10 +335,10 @@ static void update_options(s32 pressed) {
         FirstShown = Option - VISIBLE_OPTIONS + 1;
     }
     if (pressed & (0x20 | 0x4000)) {
-        change_setting(c->options[Option].id, 1);
+        change_setting(c, Option, 1);
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     } else if (pressed & 0x80) {
-        change_setting(c->options[Option].id, -1);
+        change_setting(c, Option, -1);
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if (pressed & 0x1000) {

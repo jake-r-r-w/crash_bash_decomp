@@ -459,6 +459,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: Video options in the game, at the user's asking: `main/videomenu.c` holds them for the launcher and the VIDEO pages of Options in the main menu and the
+  pause menu; they apply at once and are kept. Changing to 60 or 120 fps in a `--turbo` run stops its shots, as stepping needs real time.
 - 2026-10-31: Any resolution: `MATCH WINDOW` (render 0 x 0, the new default) draws a 4:3 picture pixel for pixel in whatever the window is and follows a resize, with
   widescreen window sizes, and the window's size and fullscreen remembered. The game's picture stays 4:3; true widescreen isn't attempted. `--window` and `--render` test it.
 - 2026-10-31: Saving, on the user's call not to emulate the card: each slot is a checksummed file written safely (`platform/saves.c`, in the settings' folder), and

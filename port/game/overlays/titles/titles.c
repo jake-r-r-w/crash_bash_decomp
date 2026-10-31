@@ -4,6 +4,7 @@
 #include "bash/main.h"
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
+#include "bash/videomenu.h"
 
 
 /* the exe's data the tables point at, not declared in the headers yet */
@@ -220,14 +221,28 @@ void *LangOn[1] = { &TextOn };
 void *LangOff[1] = { &TextOff };
 void *LangPressButtonToChange[1] = { &TextPressButtonToChange };
 void *LangPressButtonToAccept[1] = { &TextPressButtonToAccept };
-PlaceRec OptionsPlace[7] = {
+const char TextVideo[] = "VIDEO";
+void *LangVideo[1] = { (void *)&TextVideo };
+PlaceRec OptionsPlace[8] = {
     { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &LangOptions, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 4, -0xBE, 0xBE, -0x4A, 0x5A, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, -0xBE, 0xBE, -0x4A, 0x6E, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0xE, -0x8000, -0x32, 0, 0, 0, 0, 0, 0, &LangSound, 0, 0, 0, 0 },
     { 0xE, -0x8000, -0xA, 0, 0, 0, 0, 0, 0, &LangController, 0, 0, 0, 0 },
-    { 0xE, -0x8000, 0x1E, 0, 0, 0, 0, 0, 0, &LangExit, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x1E, 0, 0, 0, 0, 0, 0, &LangVideo, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x46, 0, 0, 0, 0, 0, 0, &LangExit, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+/* The video page's records: its title and panels, then each option's label and value in the small font, and its help. */
+#define VIDEO_ROWS 5
+#define VIDEO_SUB_LABEL(i) (3 + (i) * 2)
+#define VIDEO_SUB_VALUE(i) (4 + (i) * 2)
+#define VIDEO_SUB_HELP VIDEO_SUB_LABEL(VIDEO_ROWS)
+static char VideoValues[VIDEO_ROWS][24];
+static PlaceRec OptionsVideoPlace[VIDEO_SUB_HELP + 2] = {
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &LangVideo, 0, 0, 0, 0 },
+    { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, -0xFA, 0xFA, -0x40, 0x8C, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 PlaceRec OptionsSoundPlace[12] = {
     { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &LangSound, 0, 0, 0, 0 },
@@ -926,6 +941,32 @@ void TitlesSetHeroMasks(void) {
     g->teamSide[0] = (s8)HeroSide[g->heroChoice[i]];
 }
 
+static void place_video_page(void) {
+    s32 i;
+
+    for (i = 0; i < VIDEO_ROWS; i++) {
+        PlaceRec *label = &OptionsVideoPlace[VIDEO_SUB_LABEL(i)];
+        PlaceRec *value = &OptionsVideoPlace[VIDEO_SUB_VALUE(i)];
+
+        label->type = 3;
+        label->x = -0xDC;
+        label->y = -0x2C + i * 0x20;
+        label->data = (void *)video_option_label(i);
+        label->frame = 4;
+        value->type = 3;
+        value->x = 0x14;
+        value->y = label->y;
+        value->data = VideoValues[i];
+        value->frame = 4;
+    }
+    OptionsVideoPlace[VIDEO_SUB_HELP].type = 3;
+    OptionsVideoPlace[VIDEO_SUB_HELP].x = -0x8000;
+    OptionsVideoPlace[VIDEO_SUB_HELP].y = 0x72;
+    OptionsVideoPlace[VIDEO_SUB_HELP].data = (void *)"";
+    OptionsVideoPlace[VIDEO_SUB_HELP].frame = 4;
+    PlaceEngineSlot(4, OptionsVideoPlace);
+}
+
 void OptionsUpdate(void) {
     subengine *sub;
     s32 v;
@@ -945,7 +986,7 @@ void OptionsUpdate(void) {
     switch (OptionsPage) {
     case 0:
         sub[OptionsCursor + 3].unk7C = 0;
-        if ((((PadState *)Pads)->pressed & 0x40) && OptionsCursor < 2) {
+        if ((((PadState *)Pads)->pressed & 0x40) && OptionsCursor < 3) {
             OptionsCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -966,6 +1007,10 @@ void OptionsUpdate(void) {
                 PlaceEngineSlot(4, (PlaceRec *)OptionsControllerPlace);
                 break;
             case 2:
+                OptionsPage = 3;
+                place_video_page();
+                break;
+            case 3:
                 process_control_back(&MenuProcessControl);
                 break;
             }
@@ -1050,6 +1095,20 @@ void OptionsUpdate(void) {
             }
         }
         break;
+    case 3:
+        if ((Pads[0].pressed & 0x40) && OptionsCursor < VIDEO_ROWS - 1) {
+            OptionsCursor++;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if ((Pads[0].pressed & 0x10) && OptionsCursor > 0) {
+            OptionsCursor--;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (Pads[0].pressed & 0xA0) {
+            video_option_change(OptionsCursor, (Pads[0].pressed & 0x20) ? 1 : -1);
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        break;
     default:
         return;
     }
@@ -1079,6 +1138,17 @@ void OptionsRender(void) {
             sub[4].flags &= ~0x8000;
         }
         FormatPercent(sub[9].u6C.dbase, GameOptions.sfx);
+        break;
+    case 3:
+        for (i = 0; i < VIDEO_ROWS; i++) {
+            s32 style = i == OptionsCursor ? 8 : 4; /* the small font, lit or not */
+
+            video_option_value(i, VideoValues[i], sizeof(VideoValues[i]));
+            sub[VIDEO_SUB_LABEL(i)].unk7C = style;
+            sub[VIDEO_SUB_VALUE(i)].unk7C = style;
+        }
+        sub[VIDEO_SUB_HELP].u6C.text = (char *)video_option_help(OptionsCursor);
+        sub[VIDEO_SUB_HELP].unk7C = 4;
         break;
     case 2:
         n = PadCount;
