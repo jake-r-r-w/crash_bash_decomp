@@ -129,7 +129,6 @@ typedef struct ChaseObj {
 } ChaseObj;
 
 void ChaseUpdateStub(s32 *arg0);
-extern s32 ChaseUpdateState[];
 void ChaseHeroJump(s32 arg0);
 void ChaseUnusedStub0(void);
 void ChaseUnusedStub1(void);
@@ -150,7 +149,6 @@ typedef struct PickupCHExt {
     /* 0x18 */ u8 pad18[0x44 - 0x18];
 } PickupCHExt;
 
-extern u8 ChaseHeroSlots[];
 extern s32 ChaseHeroState[][21];
 extern NAS *ChaseHeroCoal[4];
 extern NAS *ChaseGrid[];
@@ -342,8 +340,6 @@ extern s32 ChaseChainSfx[];
 static inline HeroInfo *ChaseHeroes(void) {
     return Heroes;
 }
-/* ChaseHeroSlots: one 0x30-byte record per player (id). */
-typedef struct { u8 pad0[0x20]; s32 unk20; u8 pad24[0xC]; } CoalPlayerRec;
 void ChaseHeroIdle(s32 arg0);
 
 void ChaseHeroRun(s32 arg0);
@@ -383,6 +379,7 @@ typedef struct ChaseAiState {
     /* 0x28 */ s32 reach;  /* 0x8000 at a reset */
     /* 0x2C */ s32 reach2;
 } ChaseAiState;
+extern ChaseAiState ChaseHeroSlots[4];  /* one per player */
 
 
 /* Index of the ASTTable entry with this id, or 0. */

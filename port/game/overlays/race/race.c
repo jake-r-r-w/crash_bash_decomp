@@ -1439,7 +1439,7 @@ s32 RacePistonPattern(RacePattern *pats, s32 idx) {
     s32 v;
 
     speed = 2;
-    pat = (RacePattern *)((u8 *)pats + idx * 8);
+    pat = &pats[idx];
     step = pat->steps;
     base = 0x4000;
     if (GameLevelFlags & 0x80) {

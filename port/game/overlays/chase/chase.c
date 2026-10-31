@@ -377,8 +377,7 @@ CircleFireOfs CircleFireOffsets[8] = {
     { 0x80, -0x80 }, { 0x80, 0 }, { 0x80, 0x80 },
 };
 s32 ChaseUnused0[8] = { -0x100, 0, 0x100, 0, 0, 0x100, 0, -0x100 };
-u8 ChaseHeroSlots[48] = {0};
-s32 ChaseUpdateState[36] = {0};
+ChaseAiState ChaseHeroSlots[4] = {0};
 NAS *ChaseHeroCoal[4] = {0};
 s32 ChaseHeroState[4][21] = {0};
 NAS *ChasePickup[1] = {0};
@@ -424,7 +423,7 @@ void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1) {
     dx = (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 256) >> 12;
     dz = (rcossin_tbl[a].unk2 * 256) >> 12;
     get_angle(arg1->XYZ.x + dx - hx, arg1->XYZ.z + dz - hz);
-    p = (ChaseAiState *)((arg0 * 0x30) + ChaseHeroSlots);
+    p = &ChaseHeroSlots[arg0];
     p->x = arg1->XYZ.x + dx;
     p->z = arg1->XYZ.z + dz;
     p->angle = get_angle(p->x - hx, p->z - hz);
@@ -536,7 +535,7 @@ void Chase_HeroBot(s32 arg0) {
         return;
     }
     eng = Heroes[arg0].hero->Engine;
-    ai = (ChaseAiState *)(ChaseHeroSlots + arg0 * 0x30);
+    ai = &ChaseHeroSlots[arg0];
     switch ((ai->timer >> 4) & 3) {
     case 1:
     default:
@@ -846,7 +845,7 @@ loop:
         n--;
     } while (n >= 0);
     texture_update_anims(&HeroModelBank[DB_KegObjects].textures);
-    ChaseUpdateStub(ChaseUpdateState);
+    ChaseUpdateStub(&ChaseHeroSlots[1]);
 }
 
 void FinishChaseLevel(void) {
@@ -932,7 +931,7 @@ void ChaseInitHero(s32 arg0) {
     ChaseFlameTimer[arg0] = nas->Engine;
     ChaseFlameObj[arg0] = 0;
     if (g[0x5C] != 0) {
-        p = (ChaseAiState *)((arg0 * 0x30) + ChaseHeroSlots);
+        p = &ChaseHeroSlots[arg0];
         p->state = 1;
         p->timer = 1;
         p->flags = 0;
@@ -2419,7 +2418,7 @@ void PlotCoalFlame(NAS *nas) {
 
     fux = (CoalFlameFux *)nas->FUX;
     eng = (EXTengine *)nas->Engine;
-    ((CoalPlayerRec *)ChaseHeroSlots)[fux->unk2C].unk20 = 2;
+    ChaseHeroSlots[fux->unk2C].timer2 = 2;
     if (fux->unk1C == 0) {
         if (eng->XYZ.x < fux->unk20) {
             eng->XYZ.x += 0x14;
@@ -3816,7 +3815,7 @@ s32 ChaseFindHeroAt(s32 x, s32 z, s32 range) {
 void ChaseResetSlot(s32 arg0) {
     ChaseAiState *temp_v0;
 
-    temp_v0 = (ChaseAiState *)((arg0 * 0x30) + ChaseHeroSlots);
+    temp_v0 = &ChaseHeroSlots[arg0];
     (temp_v0->state) = 1;
     (temp_v0->timer) = 1;
     (temp_v0->flags) = 0;
