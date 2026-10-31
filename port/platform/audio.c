@@ -3,8 +3,8 @@
  * the music's speed doesn't depend on the frame rate. The game's calls take the lock and change what the
  * mix will do next.
  *
- * Volumes and pitches are the documented formulas. Not here: reverb, which the game turns down to nothing
- * at every music load. */
+ * Volumes and pitches are the documented formulas. Reverb is the game's own presets in a delay network,
+ * with the depth each song asks for. */
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -56,6 +56,7 @@ typedef struct {
     int center, shift, bend_down, bend_up;
     int tone_vol, tone_pan;
     int seq, channel, note, velocity;
+    int reverb; /* the tone asks for it */
 } Voice;
 
 typedef struct {
@@ -87,6 +88,7 @@ typedef struct {
 static Bank Banks[NUM_BANKS];
 static Voice Voices[NUM_VOICES];
 static Seq Seqs[NUM_SEQS];
+static uint32_t VoiceMask; /* the voices the game's effects still hold: theirs until it lets them go, even once silent */
 static int Mute;
 static int Mono;
 static void (*TickCb)();
@@ -94,6 +96,119 @@ static int TickOn;
 static int ToNextStep;
 
 static void step_sequencers(void);
+
+/* Reverb. What a preset holds, in the order the game's table has them: delays and places are in 8-byte
+ * units of a 16-bit ring that moves on at half the sample rate, volumes are signed fractions. */
+enum {
+    R_DAPF1, R_DAPF2, R_VIIR, R_VCOMB1, R_VCOMB2, R_VCOMB3, R_VCOMB4, R_VWALL, R_VAPF1, R_VAPF2,
+    R_MLSAME, R_MRSAME, R_MLCOMB1, R_MRCOMB1, R_MLCOMB2, R_MRCOMB2, R_DLSAME, R_DRSAME, R_MLDIFF, R_MRDIFF,
+    R_MLCOMB3, R_MRCOMB3, R_MLCOMB4, R_MRCOMB4, R_DLDIFF, R_DRDIFF, R_MLAPF1, R_MRAPF1, R_MLAPF2, R_MRAPF2,
+    R_VLIN, R_VRIN, NUM_REVERB_VALUES
+};
+
+/* By the game's reverb types, from 1: room, three studios, hall, space echo, chaos echo, delay, half echo. */
+static const uint16_t ReverbPresets[9][NUM_REVERB_VALUES] = {
+    { 0x007D, 0x005B, 0x6D80, 0x54B8, 0xBED0, 0x0000, 0x0000, 0xBA80, 0x5800, 0x5300, 0x04D6, 0x0333, 0x03F0, 0x0227, 0x0374, 0x01EF,
+      0x0334, 0x01B5, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x01B4, 0x0136, 0x00B8, 0x005C, 0x8000, 0x8000 },
+    { 0x0033, 0x0025, 0x70F0, 0x4FA8, 0xBCE0, 0x4410, 0xC0F0, 0x9C00, 0x5280, 0x4EC0, 0x03E4, 0x031B, 0x03A4, 0x02AF, 0x0372, 0x0266,
+      0x031C, 0x025D, 0x025C, 0x018E, 0x022F, 0x0135, 0x01D2, 0x00B7, 0x018F, 0x00B5, 0x00B4, 0x0080, 0x004C, 0x0026, 0x8000, 0x8000 },
+    { 0x00B1, 0x007F, 0x70F0, 0x4FA8, 0xBCE0, 0x4510, 0xBEF0, 0xB4C0, 0x5280, 0x4EC0, 0x0904, 0x076B, 0x0824, 0x065F, 0x07A2, 0x0616,
+      0x076C, 0x05ED, 0x05EC, 0x042E, 0x050F, 0x0305, 0x0462, 0x02B7, 0x042F, 0x0265, 0x0264, 0x01B2, 0x0100, 0x0080, 0x8000, 0x8000 },
+    { 0x00E3, 0x00A9, 0x6F60, 0x4FA8, 0xBCE0, 0x4510, 0xBEF0, 0xA680, 0x5680, 0x52C0, 0x0DFB, 0x0B58, 0x0D09, 0x0A3C, 0x0BD9, 0x0973,
+      0x0B59, 0x08DA, 0x08D9, 0x05E9, 0x07EC, 0x04B0, 0x06EF, 0x03D2, 0x05EA, 0x031D, 0x031C, 0x0238, 0x0154, 0x00AA, 0x8000, 0x8000 },
+    { 0x01A5, 0x0139, 0x6000, 0x5000, 0x4C00, 0xB800, 0xBC00, 0xC000, 0x6000, 0x5C00, 0x15BA, 0x11BB, 0x14C2, 0x10BD, 0x11BC, 0x0DC1,
+      0x11C0, 0x0DC3, 0x0DC0, 0x09C1, 0x0BC4, 0x07C1, 0x0A00, 0x06CD, 0x09C2, 0x05C1, 0x05C0, 0x041A, 0x0274, 0x013A, 0x8000, 0x8000 },
+    { 0x033D, 0x0231, 0x7E00, 0x5000, 0xB400, 0xB000, 0x4C00, 0xB000, 0x6000, 0x5400, 0x1ED6, 0x1A31, 0x1D14, 0x183B, 0x1BC2, 0x16B2,
+      0x1A32, 0x15EF, 0x15EE, 0x1055, 0x1334, 0x0F2D, 0x11F6, 0x0C5D, 0x1056, 0x0AE1, 0x0AE0, 0x07A2, 0x0464, 0x0232, 0x8000, 0x8000 },
+    { 0x0001, 0x0001, 0x7FFF, 0x7FFF, 0x0000, 0x0000, 0x0000, 0x8100, 0x0000, 0x0000, 0x1FFF, 0x0FFF, 0x1005, 0x0005, 0x0000, 0x0000,
+      0x1005, 0x0005, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x1004, 0x1002, 0x0004, 0x0002, 0x8000, 0x8000 },
+    { 0x0001, 0x0001, 0x7FFF, 0x7FFF, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x1FFF, 0x0FFF, 0x1005, 0x0005, 0x0000, 0x0000,
+      0x1005, 0x0005, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x1004, 0x1002, 0x0004, 0x0002, 0x8000, 0x8000 },
+    { 0x0017, 0x0013, 0x70F0, 0x4FA8, 0xBCE0, 0x4510, 0xBEF0, 0x8500, 0x5F80, 0x54C0, 0x0371, 0x02AF, 0x02E5, 0x01DF, 0x02B0, 0x01D7,
+      0x0358, 0x026A, 0x01D6, 0x011E, 0x012D, 0x00B1, 0x011F, 0x0059, 0x01A0, 0x00E3, 0x0058, 0x0040, 0x0028, 0x0014, 0x8000, 0x8000 },
+};
+
+#define REVERB_RING 0x10000
+static float ReverbRing[REVERB_RING];
+static int ReverbPos;
+static const uint16_t *Reverb; /* NULL: off */
+static float ReverbDepthL, ReverbDepthR;
+/* It runs at half the rate: what's gone in since its last step, and what it last gave out and is giving out now. */
+static float ReverbInL, ReverbInR, ReverbOutL[2], ReverbOutR[2];
+static int ReverbHalf;
+
+static float reverb_value(int i) {
+    return (int16_t)Reverb[i] / 32768.0f;
+}
+
+static float *reverb_at(int place) {
+    return &ReverbRing[(ReverbPos + place) & (REVERB_RING - 1)];
+}
+
+/* A preset's place, in samples of the ring. */
+static int reverb_place(int i) {
+    return Reverb[i] * 4;
+}
+
+static void reverb_store(int place, float v) {
+    *reverb_at(place) = v < -32768.0f ? -32768.0f : v > 32767.0f ? 32767.0f : v;
+}
+
+/* One side's reflections: from itself through same, from the other side through diff. */
+static void reverb_reflect(float in, int same, int d_same, int diff, int d_other) {
+    float wall = reverb_value(R_VWALL), iir = reverb_value(R_VIIR);
+    float last = *reverb_at(same - 1);
+
+    reverb_store(same, (in + *reverb_at(d_same) * wall - last) * iir + last);
+    last = *reverb_at(diff - 1);
+    reverb_store(diff, (in + *reverb_at(d_other) * wall - last) * iir + last);
+}
+
+static float reverb_side(int comb1, int comb2, int comb3, int comb4, int apf1, int apf2) {
+    int d1 = reverb_place(R_DAPF1), d2 = reverb_place(R_DAPF2);
+    float a1 = reverb_value(R_VAPF1), a2 = reverb_value(R_VAPF2);
+    float out = reverb_value(R_VCOMB1) * *reverb_at(comb1) + reverb_value(R_VCOMB2) * *reverb_at(comb2)
+              + reverb_value(R_VCOMB3) * *reverb_at(comb3) + reverb_value(R_VCOMB4) * *reverb_at(comb4);
+    float t;
+
+    t = out - a1 * *reverb_at(apf1 - d1);
+    out = t * a1 + *reverb_at(apf1 - d1);
+    reverb_store(apf1, t);
+    t = out - a2 * *reverb_at(apf2 - d2);
+    out = t * a2 + *reverb_at(apf2 - d2);
+    reverb_store(apf2, t);
+    return out;
+}
+
+static void reverb_step(float in_l, float in_r, float *out_l, float *out_r) {
+    float l = in_l * reverb_value(R_VLIN), r = in_r * reverb_value(R_VRIN);
+
+    reverb_reflect(l, reverb_place(R_MLSAME), reverb_place(R_DLSAME), reverb_place(R_MLDIFF), reverb_place(R_DRDIFF));
+    reverb_reflect(r, reverb_place(R_MRSAME), reverb_place(R_DRSAME), reverb_place(R_MRDIFF), reverb_place(R_DLDIFF));
+    *out_l = reverb_side(reverb_place(R_MLCOMB1), reverb_place(R_MLCOMB2), reverb_place(R_MLCOMB3), reverb_place(R_MLCOMB4), reverb_place(R_MLAPF1), reverb_place(R_MLAPF2));
+    *out_r = reverb_side(reverb_place(R_MRCOMB1), reverb_place(R_MRCOMB2), reverb_place(R_MRCOMB3), reverb_place(R_MRCOMB4), reverb_place(R_MRAPF1), reverb_place(R_MRAPF2));
+    ReverbPos = (ReverbPos + 1) & (REVERB_RING - 1);
+}
+
+/* A sample of the voices that ask for reverb goes in, and a sample comes out. */
+static void reverb_mix(int in_l, int in_r, int *l, int *r) {
+    ReverbInL += in_l;
+    ReverbInR += in_r;
+    if (Reverb == NULL) {
+        return;
+    }
+    if ((ReverbHalf ^= 1) != 0) {
+        ReverbOutL[0] = ReverbOutL[1];
+        ReverbOutR[0] = ReverbOutR[1];
+        reverb_step(ReverbInL * 0.5f, ReverbInR * 0.5f, &ReverbOutL[1], &ReverbOutR[1]);
+        ReverbInL = ReverbInR = 0;
+        *l += (int)(ReverbOutL[0] * ReverbDepthL);
+        *r += (int)(ReverbOutR[0] * ReverbDepthR);
+    } else {
+        *l += (int)((ReverbOutL[0] + ReverbOutL[1]) * 0.5f * ReverbDepthL);
+        *r += (int)((ReverbOutR[0] + ReverbOutR[1]) * 0.5f * ReverbDepthR);
+    }
+}
 
 /* The samples */
 
@@ -248,7 +363,7 @@ void audio_mix(int16_t *out, int frames) {
     int i, j;
 
     for (i = 0; i < frames; i++) {
-        int l = 0, r = 0;
+        int l = 0, r = 0, wet_l = 0, wet_r = 0;
 
         if (--ToNextStep <= 0) {
             ToNextStep = SAMPLES_PER_STEP;
@@ -262,13 +377,22 @@ void audio_mix(int16_t *out, int frames) {
                 continue;
             }
             s = (next_sample(v) * v->env) >> 15;
-            l += (s * v->vol_l) >> 14;
-            r += (s * v->vol_r) >> 14;
+            {
+                int vl = (s * v->vol_l) >> 14, vr = (s * v->vol_r) >> 14;
+
+                l += vl;
+                r += vr;
+                if (v->reverb) {
+                    wet_l += vl;
+                    wet_r += vr;
+                }
+            }
             env_step(v);
             if (v->state != ENV_OFF) {
                 advance(v);
             }
         }
+        reverb_mix(wet_l, wet_r, &l, &r);
         /* the game's master volume */
         l = (l * 0x37FF) >> 14;
         r = (r * 0x37FF) >> 14;
@@ -482,6 +606,7 @@ static Voice *start_voice(Voice *v, const Bank *b, int prog, int tone) {
     v->tone_vol = (t->vol * b->prog[prog].mvol) / 127;
     v->tone_pan = t->pan + b->prog[prog].mpan - 64;
     v->seq = -1;
+    v->reverb = (t->mode & 4) != 0;
     v->state = ENV_ATTACK;
     return v;
 }
@@ -497,12 +622,12 @@ short SsUtKeyOn(short vab, short prog, short tone, short note, short fine, short
     host_audio_lock();
     b = &Banks[vab];
     for (i = 0; i < FX_VOICES && v == NULL; i++) {
-        if (Voices[i].state == ENV_OFF) {
+        if (Voices[i].state == ENV_OFF && !(VoiceMask & (1u << i))) {
             v = &Voices[i];
         }
     }
     for (i = 0; i < FX_VOICES && v == NULL; i++) {
-        if (Voices[i].state == ENV_RELEASE) {
+        if (Voices[i].state == ENV_RELEASE && !(VoiceMask & (1u << i))) {
             v = &Voices[i];
         }
     }
@@ -708,7 +833,8 @@ static void rewind_seq(Seq *s) {
     s->ticks = read_var(&s->pos);
 }
 
-/* A controller. 99 picks what 6 means: 20 starts a loop, its value the times round; 30 ends it. */
+/* A controller. 99 picks what 6 means: 16 is the reverb's depth, and 20 starts a loop, its value the times
+ * round (127: for ever). 99 being 30 ends the loop, with no value. */
 static void controller(Seq *s, int n, int channel, int number, int value) {
     Channel *c = &s->channel[channel];
 
@@ -723,16 +849,19 @@ static void controller(Seq *s, int n, int channel, int number, int value) {
         break;
     case 99:
         c->nrpn = value;
-        break;
-    case 6:
-        if (c->nrpn == 20) {
-            s->loop_at = s->pos;
-            s->loop_left = value;
-        } else if (c->nrpn == 30 && s->loop_at != NULL && (s->loop_left == 127 || s->loop_left > 0)) {
+        if (value == 30 && s->loop_at != NULL && s->loop_left > 0) {
             if (s->loop_left != 127) {
                 s->loop_left--;
             }
             s->pos = s->loop_at;
+        }
+        break;
+    case 6:
+        if (c->nrpn == 16) {
+            ReverbDepthL = ReverbDepthR = value / 127.0f;
+        } else if (c->nrpn == 20) {
+            s->loop_at = s->pos;
+            s->loop_left = value;
         }
         c->nrpn = -1;
         break;
@@ -1028,6 +1157,9 @@ void SsSetMute(char mode) {
 }
 
 void SsSetVoiceMask(uint32_t mask) {
+    host_audio_lock();
+    VoiceMask = mask;
+    host_audio_unlock();
 }
 
 void SsUtFlush(void) {
@@ -1037,8 +1169,17 @@ void SsUtReverbOn(void) {
 }
 
 short SsUtSetReverbType(short type) {
+    host_audio_lock();
+    Reverb = type >= 1 && type <= 9 ? ReverbPresets[type - 1] : NULL;
+    memset(ReverbRing, 0, sizeof(ReverbRing));
+    ReverbOutL[0] = ReverbOutL[1] = ReverbOutR[0] = ReverbOutR[1] = 0;
+    host_audio_unlock();
     return type;
 }
 
 void SsUtSetReverbDepth(short left, short right) {
+    host_audio_lock();
+    ReverbDepthL = left / 127.0f;
+    ReverbDepthR = right / 127.0f;
+    host_audio_unlock();
 }

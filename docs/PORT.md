@@ -84,8 +84,8 @@ become render targets.
 
 **Sound.** The sound banks and music are game assets, so they're played directly (`platform/audio.c`): ADPCM samples decoded by a
 native mixer, and the SEQ music by a native sequencer. The sound device asks for samples on its own thread and the music is timed by
-them, so its speed doesn't depend on the frame rate. Effects and music have 24 voices each. Not there yet: reverb, which the game turns
-down to nothing at every music load. Checked by ear and with `--wav`, not against Sony's code in an interpreter as first planned.
+them, so its speed doesn't depend on the frame rate. Effects and music have 24 voices each. Reverb is a delay network with the game's own presets, fed by the tones marked for it. Checked by
+ear and with `--wav`, not against Sony's code in an interpreter as first planned.
 
 **Keeping it the same game.** The user plays each stage next to retail and says what's wrong. All 33 modes also play to the
 end by themselves on every build, optimised and under ASan and UBSan, which catches crashes and bad memory but not a
@@ -188,7 +188,11 @@ Each of these cost time to find, and they all still apply:
 - **libsnd.** A tick's timing, volumes and voice allocation were read from the linked code and can be read again:
   `_SsSeqPlay`, `_SsGetSeqData`, `_SsVmKeyOn`, `_SsVmKeyOnNow`, `_SsVmSetVol`, `_SsVmAlloc`, `SsPitchFromNote`.
   The music uses notes, program changes, pitch bends, controllers 6, 7, 10, 98 and 99, and the end marker.
-  Reverb depth goes to 0 at every music load, so it's only heard until the first one.
+  99 picks what 6 means: 16 the reverb's depth, 20 a loop's start (127: for ever). 99 being 30 ends the loop, with no 6.
+- **Reverb is the song's.** The game sets the depth to 0 at every music load, and the song then sets it: read from the real game's RAM,
+  `_svm_rattr` holds mode 2 and depth 0x1428 (20 of 127) once a song plays.
+- **`SsSetVoiceMask` matters.** It's the voices the effects still hold: one whose sample ended stays theirs until they let it go. Giving it
+  out sooner means the old effect's clean-up stops the new one.
 - **The sound wandered between slow and fast** in a real window, in the first port, which mixed once a vblank. The mix now runs when the
   device asks for it.
 - **A tone's sample**: sample n is from the end of n - 1 to the end of n in the bank's size table; the first port played n - 1.
