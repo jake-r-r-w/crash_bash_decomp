@@ -957,6 +957,10 @@ static uint32_t find_hash(uint64_t object, int face) {
     return (uint32_t)(h >> 46);
 }
 
+static int on_screen(float x, float y) {
+    return x >= 0 && x <= ScreenW && y >= 0 && y <= ScreenH;
+}
+
 static void find_movement(void) {
     static FindSlot slots[FIND_SLOTS];
     static int gen;
@@ -998,7 +1002,9 @@ static void find_movement(void) {
                         t->from[j].x = old->v[j].x;
                         t->from[j].y = old->v[j].y;
                         t->from[j].w = old->v[j].w;
-                        if (SDL_fabsf(t->from[j].x - t->v[j].x) > limit_x || SDL_fabsf(t->from[j].y - t->v[j].y) > limit_y) {
+                        /* the far vertices of a huge model that's turning move this fast too, and stay off the screen */
+                        if ((SDL_fabsf(t->from[j].x - t->v[j].x) > limit_x || SDL_fabsf(t->from[j].y - t->v[j].y) > limit_y)
+                            && (on_screen(t->from[j].x, t->from[j].y) || on_screen(t->v[j].x, t->v[j].y))) {
                             t->moving = 0;
                         }
                     }
