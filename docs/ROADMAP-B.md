@@ -16,3 +16,4 @@ playing it. The decomp stays as it is. The design and the rules are in [PORT.md]
 | # | Task | Notes | Done |
 |---|------|-------|------|
 | 6.7 | Finishing it | Saving, any resolution, analog sticks and rumble, then a first release | [ ] |
+| 6.8 | Fully native | Take out the PS1-shaped layers: the game's C calls plain maths instead of GTE operations (`gte.c`), draws directly instead of building GPU packets (`gfxsubmit.c`), and uses the port's own input, sound and file APIs instead of Sony's library names. Saves move from the raw card format to the port's own, reading old cards. Sound keeps the hardware's interpolation and envelopes, as they're how the game sounds | [ ] |
