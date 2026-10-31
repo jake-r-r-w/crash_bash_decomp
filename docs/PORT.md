@@ -121,10 +121,10 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | Option | What it does |
 |---|---|
 | `--frames N` | stop after N vblanks |
-| `--skip-intro` | go straight to the main menu |
+| `--skip-intro`, `--skip-loading` | the launcher's two skips, for this run |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
-| `--launcher` | show the menu even if it's turned off |
+| `--no-launcher` | start with the saved settings, without the menu |
 | `--launcher-keys KEYS` | drive the menu from inside the program: u, d, l, r, e for enter |
 | `--launcher-shot FILE` | save a picture of the menu and exit |
 | `--no-window`, `--data`, `--card` | no window, and where the game's data and memory card are |
@@ -141,6 +141,8 @@ at 32 and 64 bits. Most of what it still reports is casts back to the real type,
 - Fixed sizes: `AllocExtension` and `AddExt` now take `sizeof`, and its heap aligns to 8 and has a header of `EXT_HEADER` bytes. The
   sizes the game asks for its heaps are still the PS1's, so 6.4 has to scale them.
 - Tables split across two labels: the PS1 read on from one to the next (`DefaultArenaDef`, `TitlesBackdropAtable`). Make them one array.
+- Words that were next to each other: `ScreenLabelState` and the four after it are one array now. `p[1]` from a single global reads whatever Clang put next.
+- Views over an `EXTobject` with `sizeof(EXT) + 8`: its two pointers count for more now. Name the field with `offsetof`.
 - Hooks: a function stored in `subengine.hook` takes a view of the subengine, which the view check can't see through the pointer (`PosDst`, `TextNAS`, `ModelObj`).
 - A view indexed as an array has to be the struct's size: `PanelPrim` has a size check now.
 - A slot that holds a number in some uses and an address in others is an `iptr` (`NAS.UserInfo`). Otherwise it gets its

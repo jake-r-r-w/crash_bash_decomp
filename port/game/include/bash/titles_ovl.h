@@ -122,7 +122,7 @@ static inline s32 TitlesSlotOn(void) {
     s32 type;
     s32 idx;
 
-    slot = (BattleLevel *)((u8 *)BattleArenas[(s8)g[0x36]].levels + ((s8)g[0x37] << 4));
+    slot = &BattleArenas[(s8)g[0x36]].levels[(s8)g[0x37]];
     idx = slot->idx;
     type = slot->type;
     if ((*(s32 *)(g + 4) & 0x2000) || type == 1
@@ -266,7 +266,7 @@ int ApproachSpeed(int a0, int a1, int a2, int a3, int a4);
 s32 LevelListCount(s32 arg0);
 
 
-s32 LevelListText(s32 a, s32 b);
+void *LevelListText(s32 a, s32 b);
 
 void MoveTeamBar(s32 arg0, s32 arg1);
 /* OptionsRender */
@@ -302,9 +302,9 @@ void CharSelectInit(void);
 
 s32 IsLevelUnlocked(s32 arg0);
 
-s32 LevelListName(s32 arg0, s32 arg1);
+void *LevelListName(s32 arg0, s32 arg1);
 
-s32 LevelListModel(s32 arg0, s32 arg1);
+void *LevelListModel(s32 arg0, s32 arg1);
 
 
 

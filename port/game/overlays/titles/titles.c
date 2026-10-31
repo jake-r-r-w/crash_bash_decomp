@@ -2048,59 +2048,53 @@ void LevelSelectCursor(s32 arg0) {
 
 s32 IsLevelUnlocked(s32 arg0) {
     u8 *g = GameInfo;
-    u8 *e = (u8 *)BattleArenas[(s8)g[0x36]].levels + (arg0 << 4);
-    s32 off = ((BattleLevel *)e)->idx;
-    s32 type = *(s32 *)e;
-    u8 *p;
+    BattleLevel *e = &BattleArenas[(s8)g[0x36]].levels[arg0];
+    s32 type = e->type;
+    u8 *p = g + e->idx;
 
     if ((((GameState *)g)->cheats & 0x2000) || type == 1
-        || ((p = g + off), type == 2)
-            && (p[0xE4] != 0 || p[0x168] != 0)) {
+        || (type == 2 && (p[0xE4] != 0 || p[0x168] != 0))) {
         return 1;
     }
     return 0;
 }
 
 s32 IsCardLevel(s32 arg0) {
-    s32 i = GameArena;
-    u8 *s = (u8 *)BattleArenas[i].levels;
-    return *(s32 *)(s + (arg0 << 4)) == 2;
+    return BattleArenas[GameArena].levels[arg0].type == 2;
 }
 
 void TitlesEmptyStub(void) {
 }
 
-s32 LevelListName(s32 arg0, s32 arg1) {
-    s32 idx = *(s32 *)(BattleArenas[arg0].levels + (arg1 << 4) + 4);
+void *LevelListName(s32 arg0, s32 arg1) {
+    s32 idx = BattleArenas[arg0].levels[arg1].idx;
     s32 w = ModeTypes[idx * 3] - 0x101;
-    s32 **tbl = (s32 **)LangModeTypeTexts;
-    return tbl[GameLanguage][w];
+
+    return ((void ***)LangModeTypeTexts)[GameLanguage][w];
 }
 
-s32 LevelListModel(s32 arg0, s32 arg1) {
-    return *(s32 *)(BattleArenas[arg0].levels + (arg1 << 4) + 8);
+void *LevelListModel(s32 arg0, s32 arg1) {
+    return BattleArenas[arg0].levels[arg1].model;
 }
 
 s32 LevelListAnim(s32 a, s32 b) {
-    return *(s32 *)(BattleArenas[a].levels + (b << 4) + 0xC);
+    return BattleArenas[a].levels[b].anim;
 }
 
 s32 LevelListCount(s32 arg0) {
     return BattleArenas[arg0].count;
 }
 
-s32 LevelListText(s32 a, s32 b) {
-    s32 idx = BattleArenas[a].levels[b].idx;
-    s32 *row = LangLevelNames[GameLanguage];
-    return row[idx];
+void *LevelListText(s32 a, s32 b) {
+    return LangLevelNames[GameLanguage][BattleArenas[a].levels[b].idx];
 }
 
 s32 LevelListType(s32 a, s32 b) {
-    return *(s32 *)((u8 *)BattleArenas[a].levels + (b << 4));
+    return BattleArenas[a].levels[b].type;
 }
 
 s32 LevelListLevel(s32 a, s32 b) {
-    return *(s32 *)((u8 *)BattleArenas[a].levels + (b << 4) + 4);
+    return BattleArenas[a].levels[b].idx;
 }
 
 s32 AnyCardHasLevel(s32 idx) {
