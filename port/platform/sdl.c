@@ -92,14 +92,35 @@ void settings_apply(void) {
     ApplyPending = 1;
 }
 
-/* The window as the settings have it. */
+/* In the middle of its screen, with its title bar on the screen to drag it by, however big it is. */
+static void centre_window(void) {
+    SDL_Rect usable;
+    int w, h, top = 0;
+
+    if (!SDL_GetDisplayUsableBounds(SDL_GetDisplayForWindow(Window), &usable)) {
+        return;
+    }
+    SDL_GetWindowSize(Window, &w, &h);
+    SDL_GetWindowBordersSize(Window, &top, NULL, NULL, NULL);
+    SDL_SetWindowPosition(Window, usable.x + (usable.w > w ? (usable.w - w) / 2 : 0),
+                          usable.y + (usable.h > h + top ? (usable.h - h - top) / 2 : 0) + top);
+}
+
+/* The window as the settings have it. Coming out of fullscreen or to another size it's centred; otherwise it stays where it was moved to. */
 static void place_window(void) {
     const Settings *s = settings();
+    int was_fullscreen = Fullscreen, w, h;
 
     Fullscreen = s->fullscreen;
     SDL_SetWindowFullscreen(Window, Fullscreen);
-    if (!Fullscreen) {
+    SDL_SyncWindow(Window);
+    SDL_GetWindowSize(Window, &w, &h);
+    if (!Fullscreen && (was_fullscreen || w != s->window_w || h != s->window_h)) {
         SDL_SetWindowSize(Window, s->window_w, s->window_h);
+        SDL_SyncWindow(Window);
+        if (s->tiles == 0) {
+            centre_window();
+        }
     }
     if (s->tiles > 0) {
         place_tile(s->tile, s->tiles);
@@ -115,6 +136,9 @@ int host_init(void) {
         return 0;
     }
     place_window();
+    if (!Fullscreen && s->tiles == 0) {
+        centre_window();
+    }
     if (!gfx_init(Window, s->render_w, s->render_h, s->vsync, s->fps)) {
         return 0;
     }
@@ -225,9 +249,8 @@ int host_poll(void) {
             break;
         case SDL_EVENT_KEY_DOWN:
             if (e.key.key == SDLK_RETURN && (e.key.mod & SDL_KMOD_ALT) && !e.key.repeat) {
-                Fullscreen = !Fullscreen;
-                settings()->fullscreen = Fullscreen;
-                SDL_SetWindowFullscreen(Window, Fullscreen);
+                settings()->fullscreen = !Fullscreen;
+                settings_apply();
             }
             break;
         default:
