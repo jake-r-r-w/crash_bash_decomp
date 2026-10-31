@@ -77,6 +77,22 @@ void tex_release_ids(obj_textureset *set) {
 /* What a texture is, whichever address its file has moved to: its image, palette and frame. */
 #define TEX_ID(image, palette, pix) (((unsigned long long)(image) << 48) | ((unsigned long long)(palette) << 32) | (u32)(pix))
 
+/* A scrolled texture: its rows rotated, with each position its own copy on the atlas. */
+static const GfxTex *scrolled_texture(const obj_texture *t, int tpage, int clut, const u8 *base, const u8 *pal) {
+    static u8 Rows[256 * 256];
+    int bpp = t->flag ? 8 : 4;
+    int row = t->w * bpp / 8;
+    int top = t->scrollRow % t->h;
+    const u8 *src = base + t->pix;
+
+    if (row * t->h > (int)sizeof(Rows)) {
+        return gfx_texture(TEX_ID(ID_OF_TPAGE(tpage & ~0x60), clut, t->pix), src, t->w, t->h, bpp, pal);
+    }
+    memcpy(Rows, src + top * row, (size_t)((t->h - top) * row));
+    memcpy(Rows + (t->h - top) * row, src, (size_t)(top * row));
+    return gfx_texture(TEX_ID(ID_OF_TPAGE(tpage & ~0x60), clut, t->pix + top * row), Rows, t->w, t->h, bpp, pal);
+}
+
 static const GfxTex *tex_of(u16 tpage, u16 clut) {
     ImageReg *im = &Images[ID_OF_TPAGE(tpage & ~0x60) & (MAX_IMAGES - 1)];
     obj_textureset *ts = im->set;
@@ -91,6 +107,9 @@ static const GfxTex *tex_of(u16 tpage, u16 clut) {
     base = (const u8 *)ts->base;
     if (clut != 0 && Palettes[clut].set != NULL && Palettes[clut].set->ent != NULL) {
         pal = (const u8 *)Palettes[clut].set->base + Palettes[clut].set->ent[Palettes[clut].index].off;
+    }
+    if (t->scrollRow != 0) {
+        return scrolled_texture(t, tpage, clut, base, pal);
     }
     return gfx_texture(TEX_ID(ID_OF_TPAGE(tpage & ~0x60), clut, t->pix), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
 }

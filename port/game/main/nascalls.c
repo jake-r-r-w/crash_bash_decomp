@@ -3016,7 +3016,20 @@ void texture_upload_anim(obj_texture *t, s32 base, obj_textureset *set) {
 }
 
 void texture_update_scroll(texture_scroll *s, obj_textureset *o) {
-    /* moves pixels within VRAM: to do on the atlas */
+    obj_texture *e;
+    s32 pos;
+
+    e = &o->tex[s->idx];
+    pos = s->pos + s->speed;
+    s->pos = pos;
+    if (s->speed > 0) {
+        if ((pos >> 8) >= e->h) {
+            s->pos = pos - (e->h << 8);
+        }
+    } else if (pos < 0) {
+        s->pos = pos + (e->h << 8);
+    }
+    e->scrollRow = s->pos >> 8;
 }
 
 void texture_update_anims(obj_textureset *arg0) {
@@ -3125,6 +3138,7 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         b = arg0->base;
         d->info.vram = NULL;
         d->time = -1;
+        d->scrollRow = 0;
         d->flag = s->eight;
         d->clut = s->clut;
         d->flags = s->flags;

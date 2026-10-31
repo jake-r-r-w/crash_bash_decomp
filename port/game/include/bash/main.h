@@ -40,7 +40,7 @@ typedef struct texture_scroll {
     s32 idx;        /* 0x00: entry in obj_textureset.tex */
     s32 speed;      /* 0x04 */
     s32 pos;        /* 0x08: 24.8 */
-    s16 *dst;       /* 0x0C: x, y */
+    s32 dst;        /* 0x0C: the VRAM node the PS1 gave it */
 } texture_scroll;
 
 
@@ -1126,6 +1126,7 @@ typedef struct obj_texture {
     /* 0x18 */ GfxTexInfo info;
     /* 0x30 */ s32 pix;      /* its pixels: an offset into the set's base */
     /* 0x34 */ s32 time;     /* FrameCount when last used, -1 when loaded (texanims_release) */
+    s32 scrollRow;           /* the row shown at the top (texture_update_scroll) */
 } obj_texture;
 
 /* A screen position as one word (x low, y high). */
