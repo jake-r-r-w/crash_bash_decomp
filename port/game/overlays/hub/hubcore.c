@@ -48,17 +48,17 @@ void InitialiseHUB(void) {
         CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
     } else if (G6A->returnToHub != 0) {
         G6A->returnToHub = 0;
-        CAM6A->angle = CAMTBL6A[G6A->gateway].angle;
-        CAM6A->radius = (CAMTBL6A[G6A->gateway].radiusMax + CAMTBL6A[G6A->gateway].radiusMin) >> 1;
+        CAM6A->angle = HubGateways[G6A->gateway].angle;
+        CAM6A->radius = (HubGateways[G6A->gateway].radius_outer + HubGateways[G6A->gateway].radius_inner) >> 1;
     } else {
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 5:
             G6A->gateway = -1;
             CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
-            CAM6A->angle = CAMTBL6A[0].angle;
+            CAM6A->angle = HubGateways[0].angle;
             break;
         case 2:
-            CAM6A->radius = (CAMTBL6A[G6A->gateway].radiusMax + CAMTBL6A[G6A->gateway].radiusMin) >> 1;
+            CAM6A->radius = (HubGateways[G6A->gateway].radius_outer + HubGateways[G6A->gateway].radius_inner) >> 1;
             break;
         default:
             G6A->gateway = -1;
@@ -1354,13 +1354,13 @@ void HubCreateShadow(s32 arg0) {
 }
 
 void HubInitHero(s32 arg0) {
-    subengine *o;
+    MapPath *o;
 
     HubCreateShadow(arg0);
-    o = (u8 *)path_get(2);
+    o = (MapPath *)path_get(2);
     if (o != NULL) {
-        HubHeroRing.radiusMin = (s32)(iptr)o->release;
-        HubHeroRing.radiusMax = *(s32 *)&o->entity;
+        HubHeroRing.radiusMin = o->keys[1].key;
+        HubHeroRing.radiusMax = o->keys[2].key;
     }
     HubPreMoveHero(arg0);
 }
@@ -1898,7 +1898,7 @@ void PodiumCamera(CamView *out, s32 arg1) {
     case 1:
         if (--PodiumCamState <= 0) {
             PodiumState = 2;
-            PodiumCamTimer = *(s32 *)((u8 *)path_get(2) + 0x58);
+            PodiumCamTimer = ((MapPath *)path_get(2))->keys[1].key;
             if (PodiumTrophyObj != NULL) {
                 c = PodiumTrophyObj->child;
                 if (c != NULL && PodiumTrophyObj->f5C == 0) {
@@ -2568,7 +2568,7 @@ void HubSaveMenuInit(void) {
 void HubSaveMenuRender(void) {
     s32 i;
     u8 *g;
-    s32 *p;
+    subengine *p;
     EXTengine *e;
 
     gfx_set_viewport(&HubSaveViewport, (camera_info_tag *)HubSaveCamera);
@@ -2576,15 +2576,15 @@ void HubSaveMenuRender(void) {
     e = GetEngineSlot(0);
     i = 0;
     g = GameInfo;
-    p = (s32 *)&e->sub[8];
+    p = &e->sub[8];
     do {
         HubNameCursor[i * 2] = g[i + 0x18];
         if (HubNameCursor[i * 2] == 0x20) {
-            *p |= 0x8000;
+            p->flags |= 0x8000;
         } else {
-            *p &= ~0x8000;
+            p->flags &= ~0x8000;
         }
-        p += 0x2A;
+        p++;
         i++;
     } while (i < 8);
     eng_render_subs(GetEngineSlot(0));
@@ -2661,7 +2661,7 @@ void HubProjectObj(HubRenderObj *obj, s16 *out) {
     s32 off;
     s16 *p;
 
-    m =(u8 *)map_entity_address(obj->entity, (u8 *)obj->sub->dbase);
+    m = (u8 *)map_entity_address(obj->entity, obj->sub->data);
     off = ((MeshHeader *)m)->verts;
     out[0] = 0x7FFF;
     out[1] = 0x7FFF;
@@ -2717,66 +2717,27 @@ void HubProjectObj(HubRenderObj *obj, s16 *out) {
     HUB_BOUND_XY(&v[7], out, p, xy);
 }
 
-void HubSetDrawArea(s16 *a, void *b, s32 c, s32 d) {
-    RECT *r;
-    RECT *rc;
-    u32 *p;
-    u32 *q;
-    s32 off2;
-    s32 off;
-
-    r = ScreenRect;
-    if (cdb == DrawBuffers) {
-        r += 1;
-    }
-    SetDrawArea((DRAWENV *)FILE_AT(b, (FrameCount & 1) * 12), r);
-    rc = (RECT *)a;
-    rc->x += r->x;
-    rc->y += r->y;
-    SetDrawArea((DRAWENV *)FILE_AT(b, (FrameCount & 1) * 12 + 0x18), rc);
-    off = (FrameCount & 1) * 12;
-    off2 = off + 0x18;
-    p = (u32 *)((u8 *)b + off);
-    ((HubPTag *)&p[6])->addr = ((HubPTag *)&RenderState.ot[0x136])->addr;
-    ((HubPTag *)&RenderState.ot[0x136])->addr = (u32)(iptr)FILE_AT(b, off2);
-    ((HubPTag *)&p[0])->addr = ((HubPTag *)&RenderState.ot[2])->addr;
-    ((HubPTag *)&RenderState.ot[2])->addr = (u32)(iptr)p;
-    q = ((u32 *)cdb) - (-c);
-    ((HubPTag *)&RenderState.ot[0])->addr = ((HubPTag *)q)->addr;
-    ((HubPTag *)q)->addr = (u32)(iptr)(RenderState.ot + 0x137);
-}
-
 void HubStub(void) {
 }
 
+/* A gateway's door, shown from the top of its model down as HubDoorFade grows. The PS1 draws it into an ordering table of its
+   own behind a draw area, and links that into the frame's at 0x400. */
 void HubDrawObj(HubRenderObj *obj, void *arg1) {
-    s16 sp10[4];
-    s16 sp18[4];
-    void *c;
-    s32 h;
-    s32 y;
-    s32 d;
-    u32 *saved;
+    s16 box[4];
+    s32 bottom;
+    ModelFile *c = obj->sub->data;
 
-    c = obj->sub->dbase;
-    if ((obj->flags & 0x8000) && c != 0) {
-        saved = RenderState.ot;
+    if ((obj->flags & 0x8000) && c != NULL) {
         draw_map_object(obj, arg1, obj->flags, c);
-        RenderState.ot = (u32 *)(HubOtBuffer + ((FrameCount & 1) << 14));
-        ClearOTagR(RenderState.ot, 0x138);
         obj->flags |= 0x2000000;
         obj->unk68 = -0x170;
-        draw_object_model(obj->entity, (u8 *)c, obj->flags, obj);
-        HubProjectObj(obj, sp10);
-        d = sp10[3];
-        y = sp10[1];
-        h = (HubDoorFade * (d - y)) / 4096;
-        sp18[2] = 0x200;
-        sp18[0] = 0;
-        sp18[1] = 0;
-        sp18[3] = h + y;
-        HubSetDrawArea(sp18, HubDrawEnv, 0x400, y);
-        RenderState.ot = saved;
+        HubProjectObj(obj, box);
+        bottom = box[1] + (HubDoorFade * (box[3] - box[1])) / 4096;
+        if (bottom > 0) {
+            draw_clipped_begin(0x400, 0x200, bottom);
+            draw_object_model(obj->entity, (u8 *)c, obj->flags, obj);
+            draw_clipped_end();
+        }
     }
 }
 
@@ -3330,8 +3291,6 @@ s32 HubNamePage = 0;
 s32 HubNameLen = 0;
 u8 HubSaveCamera[184] = {0};
 s32 HubDoorFade = 0;
-u8 HubOtBuffer[32768] = {0};
-u8 HubDrawEnv[48] = {0};
 OvlTextLine HubCreditsLines[264] = {
     { 3, 0, 0x1F4 }, { 0, (void *)&HubCredit000, 0 }, { 1, (void *)&HubCredit001, 0 },
     { 1, (void *)&HubCredit002, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit003, 0 },

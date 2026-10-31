@@ -117,10 +117,16 @@ static const GfxTex *tex_of(u16 tpage, u16 clut) {
 /* The picture on the screen, until a scene or a viewport's background is drawn over it. */
 static u8 *BackPixels;
 
+/* The one place everything goes for now, when it isn't -1 (draw_clipped_begin). */
+static s32 FixedKey = -1;
+
 static s32 key_of(void *ot) {
     u32 *o = ot;
     s32 i;
 
+    if (FixedKey >= 0) {
+        return FixedKey;
+    }
     /* either buffer: the pause text is added between the game's frames, to the table the PS1's GPU is still walking */
     for (i = 0; i < 2; i++) {
         if (o >= DrawBuffers[i].ot && o < DrawBuffers[i].ot + 0x1000) {
@@ -314,6 +320,23 @@ void draw_owner_part(const void *mesh) {
 /* Real depth for what's drawn next, in the current view's own range: views draw in the order of their place in the table. */
 void draw_depth(s32 on) {
     gfx_set_depth(on ? 1 + key_of(RenderState.ot) * GFX_DEPTH_LAYERS / 0x1000 : 0);
+}
+
+/* What's drawn next, sorted among itself by real depth, all at one place in the frame's order and cut to a rectangle from the top
+   left: as an ordering table of its own behind a draw area, on the PS1. */
+static int ClipBefore;
+
+void draw_clipped_begin(s32 key, s32 w, s32 h) {
+    ClipBefore = gfx_current_clip();
+    gfx_set_clip(0, 0, w, h);
+    FixedKey = key;
+    draw_depth(1);
+}
+
+void draw_clipped_end(void) {
+    draw_depth(0);
+    FixedKey = -1;
+    gfx_use_clip(ClipBefore);
 }
 
 /* Reads a packet the game built, a tag then the GPU commands its length counts, as the PS1's GPU would. */

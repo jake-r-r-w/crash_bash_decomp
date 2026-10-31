@@ -386,6 +386,14 @@ void gfx_set_clip(int x, int y, int w, int h) {
     }
 }
 
+int gfx_current_clip(void) {
+    return CurClip;
+}
+
+void gfx_use_clip(int clip) {
+    CurClip = clip;
+}
+
 void gfx_set_depth(int layer) {
     DepthOn = layer;
 }

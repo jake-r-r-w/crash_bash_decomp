@@ -74,8 +74,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
-- **Port, not yet checked by hand or unwritten:** Adventure from the hub on (a test only stands in it), level unlocks and the memory card (6.7),
-  the hub's render-to-texture, Mono. 2D prims have no owners, so they step at 30 fps at higher rates. Scrolling past 10 rows in the launcher
+- **Port, not yet checked by hand or unwritten:** Adventure after a game's first win (back to the hub from a game is untested), level unlocks and
+  the memory card (6.7), Mono. 2D prims have no owners, so they step at 30 fps at higher rates. Scrolling past 10 rows in the launcher
   and fullscreen haven't been seen to work.
 - **Port, reads off the end of a table, harmless so far (ASan):** Tank's map at negative cells at the arena's edges, `PolarShadowFrames`
   past a table's end (retail reads the next table; here there can be padding), `AiSkillTable` from a hub mode's byte. A table read across labels
@@ -455,6 +455,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: The hub, from the user walking it: a gateway's door crashed (a PS1 offset into `obj_dbase`, and a private ordering table with 32-bit links), now
+  drawn natively by `draw_clipped_begin`; the ring's limits read a path through `subengine`'s fields, so the hero walked off the platform; `CAMTBL6A` and the
+  save name screen stepped by PS1 sizes. The route to a real game (hub, door, rules, Crashball) runs clean under ASan.
 - 2026-10-31: From the same testing: a tone's fine-tune was subtracted, not added (Sony's `SsPitchFromNote` read in the linked ELF), so everything with one
   played flat, the scene's clips by 2 semitones. `scratch`'s check: correlate a recording with the bank's sample. Closing a bank now lets its effects play out.
   Models send their faced-away faces when stepping, and each picture between frames decides which show, which ends the gaps in moving mouths.

@@ -300,7 +300,7 @@ typedef struct MapPath {
     /* 0x08 */ s32 unk8;
     /* 0x0C */ s32 id;
     /* 0x10 */ s32 unk10[8];
-    /* 0x30 */ KeyEntry keys[2];
+    /* 0x30 */ KeyEntry keys[3];  /* or more, or fewer: nKeys says */
 } MapPath;
 
 typedef struct {
@@ -760,6 +760,8 @@ void mesh_submit_g3(void *ot, unsigned char *poly, s32 face, s32 wind, s32 hidde
 void draw_owner(const struct subengine *sub);
 void draw_owner_part(const void *mesh);
 void draw_depth(s32 on);
+void draw_clipped_begin(s32 key, s32 w, s32 h);
+void draw_clipped_end(void);
 void pc_gte_precise(float out[9]);
 void overlay_load(const void *f);
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);

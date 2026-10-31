@@ -34,6 +34,9 @@ void gfx_clear(uint8_t r, uint8_t g, uint8_t b);
 /* The screen units vertices arrive in, and a clip rect in those units for what follows. */
 void gfx_set_screen(int width, int height);
 void gfx_set_clip(int x, int y, int w, int h);
+/* The clip in use, to go back to it. */
+int gfx_current_clip(void);
+void gfx_use_clip(int clip);
 
 /* Whether the next opaque triangles test and write real depth, between themselves, on top of the order by key. 0 is no;
  * otherwise a layer from 1 to GFX_DEPTH_LAYERS: a lower layer is always in front of a higher one, whatever their depths. */

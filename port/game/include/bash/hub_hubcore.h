@@ -209,15 +209,6 @@ typedef struct {
 } HubCamState;
 #define CAM6A ((HubCamState *)&HubHeroRing)
 
-/* HubGateways entries (0x28 bytes) as seen by InitialiseHUB. */
-typedef struct {
-    /* 0x00 */ u8 pad0[offsetof(HubGateway, radius_inner)];
-    /* 0x08 */ u32 radiusMin;  /* the camera's radius is between it and radiusMax */
-    /* 0x0C */ u32 radiusMax;
-    /* 0x10 */ s32 angle;  /* the camera's angle */
-    /* 0x14 */ u8 pad14[0x14];
-} HubCamEntry;
-#define CAMTBL6A ((HubCamEntry *)HubGateways)
 
 extern s32 HubSetupFlag;
 extern _sfx_handler *HubSelectSfx;
@@ -385,23 +376,16 @@ void HubSaveMenuReset(void);
 
 void HubStub(void);
 
-typedef struct HubRenderSub {
-    u8 padC[0xC];
-    void *dbase;  /* its map's dbase */
-} HubRenderSub;
-
 typedef struct HubRenderObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ u8 pad4[offsetof(subengine, otz) - 0x4];
     /* 0x68 */ s16 unk68;
     /* 0x6A */ u8 pad6A[offsetof(subengine, u6C) - (offsetof(subengine, otz) + 2)];
-    /* 0x6C */ HubRenderSub *sub;
+    /* 0x6C */ obj_dbase *sub;
     /* 0x70 */ u8 pad70[offsetof(subengine, entity) - offsetof(subengine, u70)];
     /* 0x74 */ u16 entity;
 } HubRenderObj;
 
-extern u8 HubOtBuffer[];
-extern u8 HubDrawEnv[];
 void HubInitGateways(void);
 
 void HubProjectObj(HubRenderObj *obj, s16 *out);
@@ -426,7 +410,6 @@ void HubProjectObj(HubRenderObj *obj, s16 *out);
             (b)[3] = (xy)[1];           \
         }                               \
     }
-void HubSetDrawArea(s16 *a, void *b, s32 c, s32 d);
 void HubDrawObj(HubRenderObj *obj, void *arg1);
 
 void HubProject(SVECTOR *v, s16 *b);
