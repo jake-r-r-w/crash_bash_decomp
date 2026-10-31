@@ -3491,7 +3491,7 @@ void InitCoal(NAS *nas) {
     EXTengine *eng;
     subengine *sub;
 
-    nas->FUX = AddExt(nas, sizeof(EXT), 0x10000002);
+    nas->FUX = AddExt(nas, sizeof(EXT) + 0x38, 0x10000002);
     eng = nas->Engine;
     eng->xform.order = 1;
     nas->UserInfo.flags = 5;

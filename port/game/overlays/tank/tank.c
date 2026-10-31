@@ -8704,7 +8704,7 @@ void InitRock_TA(NAS *nas) {
     val = info->val1;
     nas->UserInfo.status = 1;
     nas->UserInfo.user2 = val;
-    ext = AddExt(nas, sizeof(EXT), 0x10000000);
+    ext = AddExt(nas, sizeof(EXT) + 0x2C, 0x10000000);
     if (ext == NULL) {
         KillNAS(nas);
         return;

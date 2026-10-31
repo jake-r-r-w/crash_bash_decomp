@@ -3310,7 +3310,7 @@ void InitDinoGem(NAS *m) {
     DinoGem *ext;
     EXTengine *e;
 
-    ext = AddExt(m, sizeof(DinoGem), 0x10000000);
+    ext = AddExt(m, sizeof(DinoGem) + 4, 0x10000000);
     if (ext != NULL) {
         do {
             m->Engine->sub->entity = 0x2001;
