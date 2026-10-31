@@ -425,6 +425,9 @@ static void SettingsMenuInit(void) {
     LogoCamera.eye.z = LOGO_EYE;
     LogoCamera.dist = LOGO_DIST;
     PlaceEngineSlot(LOGO_SLOT, LogoPlace);
+    /* its layers are almost in one plane: in the game's order, as the intro draws them, not by depth */
+    GetEngineSlot(LOGO_SLOT)->sub[0].flags |= 0x02000000;
+    GetEngineSlot(LOGO_SLOT)->sub[1].flags |= 0x02000000;
     Screen = SCREEN_TOP;
     TopCursor = 0;
     place_screen();

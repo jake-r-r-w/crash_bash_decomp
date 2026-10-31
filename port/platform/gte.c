@@ -259,11 +259,12 @@ void pc_gte_rtpt(void) {
 void pc_gte_rt(void) {
     mvmva(G.tr, G.v[0][0], G.v[0][1], G.v[0][2], 1);
 }
+/* Which way a triangle faces, from the unrounded positions it's drawn with: rounded to the PS1's
+   screen, a thin triangle of a small model has no area and would be dropped, leaving a hole. */
 void pc_gte_nclip(void) {
-    int64_t a = (int64_t)G.sx[0] * G.sy[1] + (int64_t)G.sx[1] * G.sy[2] + (int64_t)G.sx[2] * G.sy[0];
-    int64_t b = (int64_t)G.sx[0] * G.sy[2] + (int64_t)G.sx[1] * G.sy[0] + (int64_t)G.sx[2] * G.sy[1];
+    float area = (PreciseX[1] - PreciseX[0]) * (PreciseY[2] - PreciseY[0]) - (PreciseX[2] - PreciseX[0]) * (PreciseY[1] - PreciseY[0]);
 
-    G.mac0 = (int32_t)(a - b);
+    G.mac0 = area > 0 ? (area < 1 ? 1 : (int32_t)area) : area < 0 ? (area > -1 ? -1 : (int32_t)area) : 0;
 }
 void pc_gte_avsz3(void) {
     int32_t v;
