@@ -130,13 +130,6 @@ typedef struct B5E44Owner {
     /* 0x54 */ B5E44Pos *pos;
 } B5E44Owner;
 
-typedef struct B5E44Slot {
-    /* 0x00 */ B5E44Obj *obj;
-    /* 0x04 */ B5E44Pos *pos;
-    /* 0x08 */ u8 pad8[offsetof(Slot40, pad4) + 0x10 - (offsetof(Slot40, pad4) + sizeof(void *))];
-    /* 0x14 */ EXTmotion *dyn;
-    /* 0x18 */ s32 pad18[10];
-} B5E44Slot;
 
 extern u16 PapuMinionSfx[];
 

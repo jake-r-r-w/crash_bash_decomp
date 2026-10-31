@@ -1184,8 +1184,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d) {
       if (i != (-1))
       {
         nas->UserInfo.user1 = i;
-        new_var = (u8 *) PapuMinionSlots;
-        s = (Slot40 *) (new_var + (i << 6));
+        s = &PapuMinionSlots[i];
         s->flag = nas;
         s->pad4[0] = eng;
         s->pad4[1] = eng->sub;
@@ -1594,10 +1593,11 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
   s32 dx;
   s32 dz;
   s32 d;
-  B5E44Pos *new_var;
   s32 ang;
-  B5E44Slot *s;
+  Slot40 *s;
   B5E44Flag *f;
+  B5E44Pos *pos;
+  EXTmotion *dyn;
   arg2 -= 0x14;
   if (((u32) arg2) >= 7U)
   {
@@ -1610,30 +1610,31 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
     pz = me->z;
     for (i = 0; i < 4; i++)
     {
-      s = &((B5E44Slot *) PapuMinionSlots)[i];
-      if ((arg2 != i) && ((&((B5E44Slot *) PapuMinionSlots)[i])->obj != 0))
+      s = &PapuMinionSlots[i];
+      if ((arg2 != i) && (s->flag != 0))
       {
-        f = s->obj->flag;
+        f = ((B5E44Obj *) s->flag)->flag;
         if ((f != 0) && (f->flags & 2))
         {
-          dx = s->pos->x - px;
-          new_var = s->pos;
-          dz = new_var->z - pz;
+          pos = (B5E44Pos *) s->pad4[0];
+          dyn = (EXTmotion *) s->pad4[4];
+          dx = pos->x - px;
+          dz = pos->z - pz;
           d = csqrt((dx * dx) + (dz * dz)) >> 6;
           if (d < arg1)
           {
             if (d < 0x80)
             {
-              ang = s->dyn->Xa;
+              ang = dyn->Xa;
             }
             else
             {
               ang = get_angle(dx, dz);
             }
-            s->dyn->Za = ang ^ 0x800;
+            dyn->Za = ang ^ 0x800;
             d = (arg1 - d) >> 3;
-            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->Zvel = d;
-            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->Xa = (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->Za + 0x800;
+            dyn->Zvel = d;
+            dyn->Xa = dyn->Za + 0x800;
             PlaySfx(PapuMinionSfx[Random(4)], 0, (SLONG_XYZ *) (&me->x), 0x1000, 0x1E00, 0);
             f->unk1A = 0xC;
           }

@@ -2125,21 +2125,23 @@ void MakeSubBar(PanelPrim *p, s16 x, s16 y, u32 a, u32 b) {
     p->c3 = b;
 }
 
+static void move_icon(EXTengine *e, s32 x, s32 y) {
+    e->XYZ.x = x;
+    e->XYZ.y = y;
+    e->XYZ.z = 0;
+}
+
 void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2) {
     if (PanelCtrl & 2) {
         void *p = &HeroModelBank[arg0];
         subengine *s = IconParts[2];
         s->u6C.dbase = p;
         s->entity = arg1;
-        Icon.a[4] = IconPos[4];
-        Icon.a[5] = IconPos[5];
-        Icon.a[6] = 0;
+        move_icon(Icon.a, IconPos[4], IconPos[5]);
         s += 7;
         s->u6C.dbase = p;
         s->entity = arg2;
-        Icon.b[4] = IconPos[6];
-        Icon.b[5] = IconPos[7];
-        Icon.b[6] = 0;
+        move_icon(Icon.b, IconPos[6], IconPos[7]);
     }
 }
 
@@ -2148,13 +2150,9 @@ void SetPanelHeroIconB(u16 arg0, s16 arg1) {
         subengine *s = IconParts[3];
         s->u6C.dbase = &HeroModelBank[arg0];
         s->entity = arg1;
-        Icon.b[4] = IconPos[2];
-        Icon.b[5] = IconPos[3];
-        Icon.b[6] = 0;
+        move_icon(Icon.b, IconPos[2], IconPos[3]);
         if (GameTeams[0] == 0) {
-            Icon.c[4] = IconPos[0];
-            Icon.c[5] = IconPos[1];
-            Icon.c[6] = 0;
+            move_icon(Icon.c, IconPos[0], IconPos[1]);
         }
     }
 }

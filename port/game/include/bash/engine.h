@@ -66,7 +66,7 @@ typedef struct EngObj {
     void (*update)(struct EngObj *);
 } EngObj;
 extern EngObj **NasUpdateList;
-typedef struct IconSet { s32 *c; void *pad; s32 *a; s32 *b; } IconSet;
+typedef struct IconSet { EXTengine *c; EXTengine *pad; EXTengine *a; EXTengine *b; } IconSet;
 extern IconSet Icon;
 extern s16 IconPos[];
 extern u32 Clock_Time;
