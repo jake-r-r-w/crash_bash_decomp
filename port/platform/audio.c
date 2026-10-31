@@ -615,23 +615,61 @@ short SsVabTransBody(unsigned char *addr, short vab) {
     return vab;
 }
 
+/* Whether a voice still plays these samples. */
+static int samples_playing(const uint8_t *samples) {
+    int i;
+
+    for (i = 0; i < NUM_VOICES; i++) {
+        if (Voices[i].state != ENV_OFF && Voices[i].data == samples) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/* Closing a bank doesn't stop what it's playing on the PS1: a cutscene's clip overlaps the next, which closes it. So an
+   effect plays out, and its samples go when it has. The song's notes stop with it. */
 void SsVabClose(short vab) {
+    static uint8_t *closing[8];
+    uint8_t *samples;
     int i;
 
     if (vab < 0 || vab >= NUM_BANKS) {
         return;
     }
     host_audio_lock();
+    samples = Banks[vab].samples;
     for (i = 0; i < NUM_VOICES; i++) {
-        if (Voices[i].state != ENV_OFF && Voices[i].data == Banks[vab].samples) {
+        if (Voices[i].state != ENV_OFF && Voices[i].data == samples && Voices[i].seq >= 0) {
             Voices[i].state = ENV_OFF;
         }
     }
     Seqs[vab].open = 0;
     Seqs[vab].playing = 0;
     free(Banks[vab].tone);
-    free(Banks[vab].samples);
     memset(&Banks[vab], 0, sizeof(Banks[vab]));
+    for (i = 0; i < 8; i++) {
+        if (closing[i] != NULL && !samples_playing(closing[i])) {
+            free(closing[i]);
+            closing[i] = NULL;
+        }
+    }
+    if (samples != NULL && samples_playing(samples)) {
+        for (i = 0; i < 8 && closing[i] != NULL; i++) {
+        }
+        if (i < 8) {
+            closing[i] = samples;
+        } else {
+            for (i = 0; i < NUM_VOICES; i++) {
+                if (Voices[i].data == samples) {
+                    Voices[i].state = ENV_OFF;
+                }
+            }
+            free(samples);
+        }
+    } else {
+        free(samples);
+    }
     host_audio_unlock();
 }
 
@@ -653,8 +691,9 @@ short SsUtGetVagAtr(short vab, short prog, short tone, VagAtr *atr) {
 
 /* Voices */
 
+/* SsPitchFromNote: a tone's shift raises the note, in 128ths of a semitone. */
 static uint32_t note_pitch(double note, int center, int shift) {
-    double p = 4096.0 * pow(2.0, (note - (center + shift / 128.0)) / 12.0);
+    double p = 4096.0 * pow(2.0, (note + shift / 128.0 - center) / 12.0);
 
     return p > 0x3FFF ? 0x3FFF : (uint32_t)p;
 }
