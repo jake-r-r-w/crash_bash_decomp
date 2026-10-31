@@ -66,13 +66,24 @@ ROADMAP-B.md, Part 6:
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. **The PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
-   `port/game/`. 6.1 to 6.4 are done, and the game's C compiles but isn't linked or run. Windows only for now, at the user's request: Linux
-   stays in the plan, but isn't built. Next is 6.5, it plays: the plan is now playable first, tested by the user
-   playing it, with no headless step. Whether it plays the same as retail is checked by the user playing it.
+   `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only for now, at the user's request: Linux
+   stays in the plan, but isn't built. Next is 6.7, finishing it: saving, any resolution, analog sticks and rumble, then a first
+   release. Whether it plays the same as retail is checked by the user playing it.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
+
+- **Port, not yet checked by hand or unwritten:** Adventure from the hub on (a test only stands in it), level unlocks and the memory card (6.7),
+  the hub's render-to-texture, Mono. 2D prims have no owners, so they step at 30 fps at higher rates. Scrolling past 10 rows in the launcher
+  and fullscreen haven't been seen to work.
+- **Port, reads off the end of a table, harmless so far (ASan):** Tank's map at negative cells at the arena's edges, `PolarShadowFrames`
+  past a table's end (retail reads the next table; here there can be padding), `AiSkillTable` from a hub mode's byte. A table read across labels
+  should be one array, as Fox's and Bonk's now are.
+- **Port, seen once:** a run with no presses showed the launcher well after PLAY; three more didn't, and the likely cause is real keys reaching a
+  test window.
+- **Port's sound:** `FX_LEVEL` (25% under the original's sums), `MIX_LEVEL` and the limiter are by ear, and the user never compared it with
+  the original in RetroArch. Vibrato (a tone's `vibW`, `vibT`) and portamento aren't played.
 
 - **The GCC 12 PS1 build (dropped; for reference only).** Every game file compiles with mipsel GCC 12
   (`-march=r3000 -msoft-float -mno-abicalls -fno-pic -G0 -O2 -fno-builtin -ffreestanding
@@ -444,6 +455,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: 6.6 done, the user listening: `platform/audio.c` mixes on the device's thread. Their ears beat an old note: the real game's RAM
+  shows reverb on (each song sets the depth). Read from Sony's code in the linked ELF (`objdump` through `tools/dk`): a note's volume is squared, effects'
+  aren't, `SsSetVoiceMask` reserves voices. Gaussian table and envelope from psx-spx. Test runs are silent and, without `--wav`, their voices never
+  finish, so the effects' pool empties: record when testing sound. 6.5 and 6.6 moved to ROADMAP-A.
 - 2026-10-31: 6.5, the user testing by hand. Every game mode runs (`--mode N`, TESTING on screen, no time limit;
   `--tile I N` to watch several). Nearly all the crashes were one class: extension and object views with fixed PS1 pads, now by field
   (PORT.md, What a pointer's size breaks). The launcher is now a game menu, `overlays/titles/settingsmenu.c`: the intro's 3D logo,

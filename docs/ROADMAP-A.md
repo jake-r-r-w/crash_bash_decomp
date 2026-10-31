@@ -791,6 +791,12 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 6.4 Files and memory (2026-10-31): the heap is a static arena, and `ref32`, an offset from it, holds a pointer where a
   file's 4-byte slot or a heap block's 0x18-byte header leaves no room for more. Mode text is translated when it loads, checked
   by a test on the real files. Address warnings are errors, apart from the five files the renderer and sound replace.
+- [x] 6.5 It plays (2026-10-31): the game links and boots from the user's own data, drawn through SDL3's GPU API at 30, 60 or 120 fps with
+  no PS1 drawing commands or VRAM, on keyboard and controller. Every game mode runs. The launcher is one of the game's menus. Accepted by
+  the user playing it.
+- [x] 6.6 Native sound (2026-10-31): the game's sound banks and music played by its own mixer and sequencer on the sound device's thread,
+  with the hardware's interpolation and envelopes, libsnd's volume sums read from Sony's code, and reverb from the game's presets. Accepted
+  by the user's ear, with the effects 25% under the original's sums at their request.
 - A 32-bit port ran the game on the PS1's memory layout, with all 33 modes playing to the end, then was
   deleted (2026-10-30). The layout couldn't reach 64-bit, so the port starts again (ROADMAP-B, PORT.md). Its
   code is in git at `7115b3b8`, and PORT.md has what it taught.

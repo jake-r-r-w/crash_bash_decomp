@@ -15,6 +15,4 @@ playing it. The decomp stays as it is. The design and the rules are in [PORT.md]
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 6.5 | It plays | The game linked and booting from the user's own data, drawn through SDL3's GPU API with no PS1 drawing commands or VRAM, on keyboard and controller. From here the user plays it and reports what's wrong, and the fixes follow | [ ] |
-| 6.6 | Native sound | The game's sound banks and music played by its own mixer and sequencer on SDL3, with reverb | [ ] |
 | 6.7 | Finishing it | Saving, any resolution, analog sticks and rumble, then a first release | [ ] |
