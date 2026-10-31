@@ -344,8 +344,8 @@ void gfx_set_clip(int x, int y, int w, int h) {
     }
 }
 
-void gfx_set_depth(int on) {
-    DepthOn = on;
+void gfx_set_depth(int layer) {
+    DepthOn = layer;
 }
 
 void gfx_mark(uint64_t object, int face) {
@@ -604,7 +604,8 @@ static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float ste
     }
     o->x = (x / ScreenW * 2.0f - 1.0f) * w;
     o->y = (1.0f - y / ScreenH * 2.0f) * w;
-    o->z = depth ? (w - DEPTH_NEAR) * DEPTH_FAR / (DEPTH_FAR - DEPTH_NEAR) : 0.5f * w;
+    /* linear in w, so it interpolates across the triangle like 1/w's depth does */
+    o->z = depth ? ((depth - 1) * w + (w - DEPTH_NEAR) * DEPTH_FAR / (DEPTH_FAR - DEPTH_NEAR)) / GFX_DEPTH_LAYERS : 0.5f * w;
     o->w = w;
     if (tex != NULL) {
         o->u = tex->u0 + v->u * tex->us;
@@ -677,7 +678,7 @@ static void draw_shown(float step) {
 
         for (p = 0; p < passes && used + 3 <= MAX_TRIS * 3; p++) {
             int b = (passes == 2 && p == 0) ? -2 : t->blend == GFX_STATE_BLEND ? stateBlend : t->blend; /* -2: the opaque texels of a semi-transparent triangle */
-            int depth = t->depth && b == GFX_OPAQUE;
+            int depth = b == GFX_OPAQUE ? t->depth : 0;
             Run *r = numRuns ? &runs[numRuns - 1] : NULL;
 
             if (depth) {

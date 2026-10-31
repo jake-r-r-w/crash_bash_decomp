@@ -57,6 +57,7 @@ void overlays_init(void);
 static const char *DataPath;
 static const char *CardPath = "memcard1.mcr";
 static int NoWindow;
+static int Turbo;
 static int StopAt = -1;
 static int Vblanks;
 
@@ -125,7 +126,9 @@ void platform_vblank(void) {
         if (!host_poll()) {
             platform_finish(0);
         }
-        host_wait_vblank();
+        if (!Turbo) {
+            host_wait_vblank();
+        }
     }
     if (StopAt >= 0 && Vblanks >= StopAt) {
         printf("%d vblanks\n", Vblanks);
@@ -189,6 +192,8 @@ int main(int argc, char **argv) {
             launcher_keys = argv[++i];
         } else if (strcmp(argv[i], "--fps") == 0 && i + 1 < argc) {
             fps = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--turbo") == 0) {
+            Turbo = 1;
         } else if (strcmp(argv[i], "--skip-intro") == 0) {
             skip_intro = 1;
         } else if (strcmp(argv[i], "--skip-loading") == 0) {

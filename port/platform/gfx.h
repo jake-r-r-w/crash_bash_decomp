@@ -35,8 +35,10 @@ void gfx_clear(uint8_t r, uint8_t g, uint8_t b);
 void gfx_set_screen(int width, int height);
 void gfx_set_clip(int x, int y, int w, int h);
 
-/* Whether the next opaque triangles test and write real depth, between themselves, on top of the order by key. */
-void gfx_set_depth(int on);
+/* Whether the next opaque triangles test and write real depth, between themselves, on top of the order by key. 0 is no;
+ * otherwise a layer from 1 to GFX_DEPTH_LAYERS: a lower layer is always in front of a higher one, whatever their depths. */
+#define GFX_DEPTH_LAYERS 64
+void gfx_set_depth(int layer);
 /* Names the next triangles, counting up from face, so the same ones can be found in the game's next frame and drawn moving
  * between the two. An object of 0 has no name, and just appears. */
 void gfx_mark(uint64_t object, int face);

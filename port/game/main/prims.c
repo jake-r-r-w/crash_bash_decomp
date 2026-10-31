@@ -1383,9 +1383,9 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
                 gte_SetRotMatrix(s.rot);
                 /* an object with a layer of its own stays in the game's order; the rest are real solid things */
                 draw_owner(arg0);
-                gfx_set_depth(!(arg0->flags & 0x02000000));
+                draw_depth(!(arg0->flags & 0x02000000));
                 draw_object_model(n, (u8 *)colors, arg0->flags | arg2, arg0);
-                gfx_set_depth(0);
+                draw_depth(0);
                 draw_owner(NULL);
             }
         }

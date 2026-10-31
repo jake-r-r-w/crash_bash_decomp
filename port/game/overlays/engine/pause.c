@@ -1837,11 +1837,11 @@ const char * ModeNames[9] = {
 };
 u16 LevelKindKeys[7] =  /* GameLevelFlags & 0xFF per level kind (Cups_Update, UpdatePause) */ { 1, 2, 0x14, 0x24, 0x2C, 0x44, 0x84 };
 s16 PauseUnused2 = 0x14;
-char PauseDigits[2] = { 0x31, 0x30 };
-char PauseDigits2[2] = { 0x32, 0x30 };
-char PauseDigits3[2] = { 0x33, 0x30 };
-char PauseDigits4[2] = { 0x34, 0x30 };
-char PauseDigits5[2] = { 0x35, 0x30 };
+char PauseDigits[4] = { 0x31, 0x30 }; /* the PS1 had the zero after it as padding */
+char PauseDigits2[4] = { 0x32, 0x30 }; /* the PS1 had the zero after it as padding */
+char PauseDigits3[4] = { 0x33, 0x30 }; /* the PS1 had the zero after it as padding */
+char PauseDigits4[4] = { 0x34, 0x30 }; /* the PS1 had the zero after it as padding */
+char PauseDigits5[4] = { 0x35, 0x30 }; /* the PS1 had the zero after it as padding */
 u8 PauseDigits6[4] = { 0x36, 0x30, 0, 0 };
 PlaceRec AdvStatsPanel0[10] = {
     { 4, 0, 0x1C2, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },

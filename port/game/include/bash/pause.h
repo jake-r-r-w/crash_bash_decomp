@@ -262,11 +262,11 @@ extern s32 StatsHasPage3;
 extern s32 StatsHasBonus;
 void DrawAdventureStats(s32 arg0);
 /* Two-digit text fields (tens, units) of the score panel. */
-extern char PauseDigits[2];
-extern char PauseDigits2[2];
-extern char PauseDigits3[2];
-extern char PauseDigits4[2];
-extern char PauseDigits5[2];
+extern char PauseDigits[4];
+extern char PauseDigits2[4];
+extern char PauseDigits3[4];
+extern char PauseDigits4[4];
+extern char PauseDigits5[4];
 extern PlaceRec AdvStatsPanel0[];
 extern PlaceRec AdvStatsPanel1[];
 extern PlaceRec AdvStatsPanel2[];
