@@ -444,6 +444,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: 6.5, the game plays on the native renderer. It boots through the logos to the menu, and Battle mode's Crate Crush
+  plays from the menu with all four heroes; the other games are untested. Added the settings menu, in the game's window, with skip
+  intro (PORT.md, Running it). Not done: sound is silent until 6.6, texture scrolling and the hub's render-to-texture are unwritten
+  (`texture_update_scroll`, `key_of`), and the attract demo isn't a test path until the games play. Test with `--press` and
+  `--launcher-keys`, never with key presses sent to the desktop: they go to whichever window has focus.
+
 - **2026-10-31 (6.5 started):** the first link lists 180 missing names, nearly all PsyQ's. A loose edit in 6.4 had deleted 640 lines of
   `scripts.c`; they're back, and no other file lost code. `VramNodePool` and `VramAreas`, deleted in 6.2 as unused, are vram_init's setup
   data, used through the world configs: they're in git before `25763e02` if VRAM stays.

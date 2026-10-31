@@ -30,7 +30,7 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
 | Build | CMake with presets, and Ninja |
 | Compilers | Clang on both systems, GCC as a second check on Linux |
 | Window, sound, input | SDL3 |
-| Drawing | SDL3's GPU API: Vulkan on Windows and Linux, Direct3D 12 on Windows |
+| Drawing | SDL3's GPU API: Direct3D 12 on Windows, with Vulkan to come for Linux |
 | Checking | CTest, ASan and UBSan builds, optimised release builds |
 
 There are no GitHub workflows: all of this runs by hand, on a machine with the game's data. Playing the
@@ -110,6 +110,25 @@ The game's C isn't in the default build until it compiles. To see what's left:
 cmake --build --preset windows-clang --target game -- -k 0
 ```
 
+## Running it
+
+Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. A settings
+menu opens in the game's window first (`platform/launcher.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
+Keys: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Q and W = L1 and R1, 1 and 2 = L2 and R2.
+
+For testing, any run with `--frames N` ignores the saved settings and skips the menu:
+
+| Option | What it does |
+|---|---|
+| `--frames N` | stop after N vblanks |
+| `--skip-intro` | go straight to the main menu |
+| `--shot N FILE` | save vblank N as a PNG |
+| `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
+| `--launcher` | show the menu even if it's turned off |
+| `--launcher-keys KEYS` | drive the menu from inside the program: u, d, l, r, e for enter |
+| `--launcher-shot FILE` | save a picture of the menu and exit |
+| `--no-window`, `--data`, `--card` | no window, and where the game's data and memory card are |
+
 ## What a pointer's size breaks
 
 Giving a struct a real pointer makes it bigger, so anything that assumed the old size is now wrong, and the compiler can't
@@ -121,6 +140,9 @@ at 32 and 64 bits. Most of what it still reports is casts back to the real type,
 - Word views of a struct, such as `st[0x12]` and `hero[40]`. Use the field, or `EXT_W(ext, i)` for an extension of plain words.
 - Fixed sizes: `AllocExtension` and `AddExt` now take `sizeof`, and its heap aligns to 8 and has a header of `EXT_HEADER` bytes. The
   sizes the game asks for its heaps are still the PS1's, so 6.4 has to scale them.
+- Tables split across two labels: the PS1 read on from one to the next (`DefaultArenaDef`, `TitlesBackdropAtable`). Make them one array.
+- Hooks: a function stored in `subengine.hook` takes a view of the subengine, which the view check can't see through the pointer (`PosDst`, `TextNAS`, `ModelObj`).
+- A view indexed as an array has to be the struct's size: `PanelPrim` has a size check now.
 - A slot that holds a number in some uses and an address in others is an `iptr` (`NAS.UserInfo`). Otherwise it gets its
   real pointer type.
 
