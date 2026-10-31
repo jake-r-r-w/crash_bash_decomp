@@ -571,7 +571,7 @@ void SetNasDefaults(void) {
     SubEngineTemplate.xform.scale.vy = 0x1000;
     SubEngineTemplate.xform.scale.vx = 0x1000;
     SubEngineTemplate.xform.order = 4;
-    SubEngineTemplate.hook = (void (*)(subengine *, s32, u32)) draw_object;
+    SubEngineTemplate.hook = (void (*)(subengine *, void *, u32)) draw_object;
     SubEngineTemplate.release = (void (*)(subengine *)) sub_release_none;
     SubEngineTemplate.xform.hasScale = 0;
     SubEngineTemplate.entity = 0;
@@ -2408,7 +2408,7 @@ s32 machine_init(void) {
     ClearImage2(&VramRect, 0, 0, 0);
     DrawSync(0);
     machine_init_sound();
-    debug_font_init2();
+    /* no debug font on PC */
     shell_init();
     cd_read_wait();
     get_exe_exports();
@@ -2880,117 +2880,15 @@ void pad_input_reset(PadState *arg0) {
     arg0->rumble.reset = 0;
 }
 
+/* No VRAM on PC: textures are decoded from the game's own data (gfxsubmit.c). These stay until nothing calls them. */
 FreeHdr *vram_take(u8 *arg0) {
-#define pool ((FreePool *)arg0)
-    FreeNode *a2;
-    FreeNode *a3;
-    FreeNode *a1;
-    FreeNode *v1;
-    FreeNode *t;
-    FreeHdr *p;
-
-    t = pool->head;
-    if (t != NULL) {
-        a3 = t;
-        pool->head = a3->next;
-        if (a3->next != NULL) {
-            a3->next->f8 = 0;
-        }
-        if (a3->fC != NULL) {
-            a3->f10 = ((FreeNode *)a3->fC)->f10;
-        }
-        return &a3->hdr;
-    }
-    if ((u8 *)pool < VramReqEnd) {
-        p = vram_take((u8 *)&pool[1]);
-        a2 = FreeBufNodes;
-        FreeBufNodes = a2->next;
-        a3 = FreeBufNodes;
-        FreeBufNodes = a3->next;
-        a1 = FreeBufNodes;
-        a2->next = pool->head;
-        pool->head = a2;
-        v1 = a2->next;
-        a2->f8 = 0;
-        if (v1 != NULL) {
-            v1->f8 = (s32)a2;
-        }
-        a2->f10 = NULL;
-        a2->fC = a3;
-        a2->f14 = (s32)pool;
-        a2->hdr.f0 = p->f0 + pool->w;
-        a2->hdr.f2 = p->f2 + pool->h;
-        a3->f10 = p;
-        a3->fC = a2;
-        a3->hdr = *p;
-        a3->f14 = (s32)pool;
-        return &a3->hdr;
-    }
-    return NULL;
-#undef pool
+    static FreeHdr none;
+    return &none;
 }
 
 ClutPos *clut_alloc_small(void) {
-    s32 i;
-    FreeNode *a;
-    FreeNode *head;
-    FreeNode *prev;
-    FreeNode *n;
-    FreeNode *nx;
-    FreeNode *t;
-    FreeHdr *src;
-    FreeHdr h;
-    FreeNode *ret;
-    s32 cnt;
-    FreeNode *u;
-
-    a =ClutFreeSmall;
-    if (a == NULL) {
-        head = FreeBufNodes;
-        FreeBufNodes = head->next;
-        src = vram_take(VramSmallReq);
-        prev = NULL;
-        h = *src;
-        i = 0x1F;
-        do {
-            n = FreeBufNodes;
-            nx = n->next;
-            i--;
-            n->next = prev;
-            n->fC = head;
-            n->hdr = h;
-            prev = n;
-            FreeBufNodes = nx;
-            h.f2++;
-        } while (i != -1);
-        a = head;
-        a->f14 = 0x20;
-        a->f10 = n;
-        a->fC = src;
-        a->f8 = 0;
-        a->next = NULL;
-        ClutFreeSmall = a;
-    }
-    ret = a->f10;
-    cnt = a->f14;
-    u = ret->next;
-    cnt--;
-    a->f14 = cnt;
-    a->f10 = u;
-    if (cnt == 0) {
-        t = a->next;
-        ClutFreeSmall = t;
-        if (t != NULL) {
-            t->f8 = 0;
-        }
-        a->next = ClutUsedSmall;
-        if (ClutUsedSmall != NULL) {
-            ClutUsedSmall->f8 = (s32)a;
-        }
-        a->f8 = 0;
-        ClutUsedSmall = a;
-    }
-    return ret;
+    static ClutPos none;
+    return &none;
 }
 
 static inline void BufNode_Release(BufNode *arg0) {
@@ -3024,106 +2922,9 @@ static inline void BufNode_Release(BufNode *arg0) {
 }
 
 void vram_release(FreeNode *n) {
-    FreeNode *a;
-    FreeNode *p;
-
-    a = n->fC;
-    if (a == NULL) {
-        n->next = ClutLargeList;
-        ClutLargeList = n;
-        return;
-    }
-    n->next = a->f10;
-    a->f10 = n;
-    if (a->f14 == 0) {
-        if ((FreeNode *)a->f8 != NULL) {
-            ((FreeNode *)a->f8)->next = a->next;
-        } else {
-            ClutUsedSmall = a->next;
-        }
-        if (a->next != NULL) {
-            a->next->f8 = a->f8;
-        }
-        a->next = ClutFreeSmall;
-        if (ClutFreeSmall != NULL) {
-            ClutFreeSmall->f8 = (s32)a;
-        }
-        a->f8 = 0;
-        ClutFreeSmall = a;
-    }
-    a->f14++;
-    if (a->f14 == 0x20) {
-        p = a->f10;
-        while (p->next != NULL) {
-            p = p->next;
-        }
-        p->next = FreeBufNodes;
-        FreeBufNodes = a->f10;
-        if ((FreeNode *)a->f8 != NULL) {
-            ((FreeNode *)a->f8)->next = a->next;
-        } else {
-            ClutFreeSmall = a->next;
-        }
-        if (a->next != NULL) {
-            a->next->f8 = a->f8;
-        }
-        a->next = FreeBufNodes;
-        FreeBufNodes = a;
-        BufNode_Release((BufNode *)a->fC);
-    }
 }
 
 void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
-    FreeNode *n;
-    BufNode *b;
-    BufNode *first;
-    s32 i;
-
-    VramBufNodes = mal_alloc(nbuf * 0x18, &MainHeap);
-    ClutLargeList = pool;
-    n = pool;
-    i = npool - 2;
-    while (i != -1) {
-        i--;
-        n->next = n + 1;
-        n->fC = NULL;
-        n++;
-    }
-    n->next = NULL;
-    ClutFreeSmall = NULL;
-    ClutUsedSmall = NULL;
-    FreeBufNodes = (FreeNode *)(b = (BufNode *)VramBufNodes);
-    i = nbuf - 2;
-    while (i != -1) {
-        b->next = b + 1;
-        i--;
-        b++;
-    }
-    b->next = NULL;
-    for (i = 11; i >= 0; i--) {
-        *(s32 *)&VramSlots[i] = 0;
-    }
-    while ((s16)areas->hdr.f0 != -1) {
-        b = (BufNode *)FreeBufNodes;
-        b->parent = NULL;
-        b->child = NULL;
-        b->head = areas->head;
-        first = *areas->head;
-        FreeBufNodes = (FreeNode *)b->next;
-        b->next = first;
-        if (first != NULL) {
-            first->prev = b;
-        }
-        b->prev = NULL;
-        *areas->head = b;
-        *(FreeHdr *)b = areas->hdr;
-        areas++;
-    }
-    FntLoadPatch = 0x2626001F;
-    FntLoad(0x380, 0x100);
-    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
-    DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
-    DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
 
 s32 vram_slot_class(s32 a, s32 b, s32 c) {
@@ -3157,75 +2958,15 @@ dec:
 }
 
 ClutPos *clut_alloc_large(void) {
-    FreeNode *cur;
-
-    cur = ClutLargeList;
-    if (cur != NULL) {
-        ClutLargeList = cur->next;
-    }
-    return (ClutPos *)cur;
+    return clut_alloc_small();
 }
 
 FreeNode *vram_alloc_node(void) {
-    FreeNode *head;
-    FreeNode *prev;
-    FreeNode *n;
-    FreeNode *nx;
-    FreeHdr *src;
-    FreeHdr h;
-    s32 i;
-
-    head = FreeBufNodes;
-    FreeBufNodes = head->next;
-    src = vram_take(VramSmallReq);
-    prev = NULL;
-    h = *src;
-    i = 0x1F;
-    do {
-        n = FreeBufNodes;
-        nx = n->next;
-        i--;
-        n->next = prev;
-        n->fC = head;
-        n->hdr = h;
-        prev = n;
-        FreeBufNodes = nx;
-        h.f2++;
-    } while (i != -1);
-    head->f10 = n;
-    head->f14 = 0x20;
-    head->fC = src;
-    return head;
+    static FreeNode none;
+    return &none;
 }
 
 void vram_free_node(BufNode *arg0) {
-    BufNode *p;
-    BufNode *old;
-
-    p = arg0->parent;
-    if (p != NULL && p->child == NULL) {
-        if (p->prev != NULL) {
-            p->prev->next = p->next;
-        } else {
-            *p->head = p->next;
-        }
-        if (p->next != NULL) {
-            p->next->prev = p->prev;
-        }
-        vram_free_node(arg0->child);
-        old = (BufNode *)FreeBufNodes;
-        FreeBufNodes = (FreeNode *)arg0;
-        p->next = old;
-        arg0->next = p;
-        return;
-    }
-    arg0->child = NULL;
-    arg0->next = *arg0->head;
-    *arg0->head = arg0;
-    arg0->prev = NULL;
-    if (arg0->next != NULL) {
-        arg0->next->prev = arg0;
-    }
 }
 
 s32 list_count(u8 **arg0) {
@@ -3259,73 +3000,23 @@ void texture_unused_a(void) {
 }
 
 void texture_upload_anim(obj_texture *t, s32 base, obj_textureset *set) {
-    TexUV uv;
-    s16 y;
-    u8 *p;
-    TexClut *cl;
+    u16 uv0 = 0;
 
-    t->info.vram = vram_take((u8 *)t->slot);
-    if (t->info.vram != NULL) {
-        t->info.vramX = t->info.vram->f0;
-        t->info.vramY = y = t->info.vram->f2;
-        if (t->flag != 0) {
-            t->info.tpage = getTPage(1, 1, t->info.vramX >> 7 << 7, y);
-            uv.f.u = t->info.vramX << 1;
-        } else {
-            t->info.tpage = getTPage(0, 1, t->info.vramX, y);
-            uv.f.u = t->info.vramX << 2;
-        }
-        if ((t->flags & 2) && GameLanguage < t->frames) {
-            p = (u8 *)(t[GameLanguage].pix + base);
-        } else {
-            p = (u8 *)(t->pix + base);
-        }
-        LoadImage((RECT *)&t->info.vramX, (u32 *)p);
-        uv.h = uv.b[0] | (*(u8 *)&t->info.vramY << 8);
-        t->info.uv0 = uv.h;
-        ((u8 *)&uv)[0] += t->advance;
-        t->info.uv1 = uv.h;
-        ((u8 *)&uv)[1] += t->dv;
-        t->info.uv3 = uv.h;
-        uv.b[0] -= t->advance;
-        t->info.uv2 = uv.h;
-        if (t->clut != 0x7FFF) {
-            cl = &set->ent[t->clut];
-            t->info.clut = cl->clut;
-        }
+    if ((t->flags & 2) && GameLanguage < t->frames) {
+        t->pix = t[GameLanguage].pix;
     }
+    t->info.tpage = tex_image_id(set, (s32)(t - set->tex));
+    t->info.vramX = 0;
+    t->info.vramY = 0;
+    t->info.uv0 = uv0;
+    t->info.uv1 = t->advance;
+    t->info.uv2 = (u16)(t->dv << 8);
+    t->info.uv3 = (u16)((t->dv << 8) | t->advance);
+    t->info.clut = t->clut != 0x7FFF ? set->ent[t->clut].clut : 0;
 }
 
 void texture_update_scroll(texture_scroll *s, obj_textureset *o) {
-    obj_texture *e;
-    DR_MOVE *p;
-    RECT r;
-    s32 pos;
-    s32 y;
-
-    e = &o->tex[s->idx];
-    pos = s->pos + s->speed;
-    s->pos = pos;
-    if (s->speed > 0) {
-        if ((pos >> 8) >= e->info.vramH) {
-            s->pos = pos - (e->info.vramH << 8);
-        }
-    } else if (pos < 0) {
-        s->pos = pos + (e->info.vramH << 8);
-    }
-    y = s->pos >> 8;
-    r.x = s->dst[0];
-    r.y = s->dst[1] + y;
-    r.w = e->info.vramW;
-    r.h = e->info.vramH - y;
-    p = (*(DR_MOVE **)&cdb->prim)++;
-    SetDrawMove(p, &r, (s16)e->info.vram->f0, (s16)e->info.vram->f2);
-    addPrim(&cdb->ot[0xFFF], p);
-    r.y = s->dst[1];
-    r.h = y;
-    p = (*(DR_MOVE **)&cdb->prim)++;
-    SetDrawMove(p, &r, (s16)e->info.vram->f0, (s16)e->info.vram->f2 + e->info.vramH - y);
-    addPrim(&cdb->ot[0xFFF], p);
+    /* moves pixels within VRAM: to do on the atlas */
 }
 
 void texture_update_anims(obj_textureset *arg0) {
@@ -3342,6 +3033,7 @@ void texture_update_anims(obj_textureset *arg0) {
 
     d = arg0->anims;
     if (d != NULL) {
+        d = arg0->anims = (AnimData *)((u8 *)arg0->base + arg0->base->anims);
         if (d->tracksOff != 0) {
             p = (s32 *)(FILE_AT(d, d->tracksOff));
             n = *p;
@@ -3364,7 +3056,7 @@ void texture_update_anims(obj_textureset *arg0) {
                 }
                 if ((base->pos >> 8) != old) {
                     q = (s32 *)(FILE_AT(base, base->frames)) + (base->pos >> 8);
-                    LoadImage((RECT *)&dst->info.vramX, (u32 *)SELF_REL(q));
+                    dst->pix = (s32)((u8 *)SELF_REL(q) - (u8 *)arg0->base);
                 }
                 base++;
             }
@@ -3411,12 +3103,10 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
             break;
         }
         q = src;
-        len = (s32)arg0->base;
         id = *(u16 *)q;
-        q -= len - 4;
         e->w = id;
         e->pos = NULL;
-        e->off = (s32)q;
+        e->off = (s32)(q - (u8 *)arg0->base) + 4;
         e++;
         src += *(u16 *)src * 2 + 4;
     }
@@ -3442,20 +3132,17 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         d->h = s->h;
         if (d->flag == 0) {
             d->w = s->w << 2;
-            d->slot = &VramSlots[vram_slot_class(s->w << 2, s->h, 0x10)];
-            d->advance = ((u8)s->w << 2) - 1;
+                        d->advance = ((u8)s->w << 2) - 1;
         } else {
             d->w = s->w << 1;
-            d->slot = &VramSlots[vram_slot_class(s->w << 1, s->h, 0x100)];
-            d->advance = ((u8)s->w << 1) - 1;
+                        d->advance = ((u8)s->w << 1) - 1;
         }
         d->dv = (u8)s->h - 1;
         d->info.vramW = s->w;
         d->info.vramH = s->h;
-        u = (s32)b - 0x14;
         t = s->c;
         d->fC = t;
-        d->pix = (s32)s - u;
+        d->pix = (s32)((u8 *)s - (u8 *)b) + 0x14;
         d++;
         s = (TexImage *)FILE_AT(s, s->w * s->h * 2 + 0x14);
     }
@@ -3484,61 +3171,14 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
 }
 
 static inline void Tex_UploadCluts(obj_textureset *set) {
-    RECT rect;
-    TexClut *e;
-    u8 *base;
-    s32 n;
+    s32 i;
 
-    e = set->ent;
-    base = (u8 *)set->base;
-    n = set->nEnt;
-
-    for (;;) {
-        n--;
-        if (n == -1) {
-            return;
-        }
-        if (e->w < 0x11U) {
-            e->pos = clut_alloc_small();
-        } else {
-            e->pos = clut_alloc_large();
-        }
-        rect.x = e->pos->x;
-        rect.y = e->pos->y;
-        rect.w = e->w;
-        rect.h = 1;
-        LoadImage(&rect, (u32 *)(base + e->off));
-        e->clut = GetClut(rect.x, rect.y);
-        e++;
+    for (i = 0; i < set->nEnt; i++) {
+        set->ent[i].clut = tex_palette_id(set, i);
     }
 }
 
 static inline void Tex_UploadList(TexUploadList *arg0, obj_textureset *arg1) {
-    s32 n;
-    obj_texture *rec;
-    s32 *ip;
-    FreeHdr **pp;
-    s32 base;
-    RECT rect;
-
-    ip = &arg0->e[0].idx;
-    n = arg0->count;
-    pp = &arg0->e[0].pos;
-loop:
-    n--;
-    if (n != -1) {
-        rec = &arg1->tex[*ip];
-        ip += 4;
-        *pp = vram_take((u8 *)rec->slot);
-        rect.w = rec->info.vramW;
-        rect.h = rec->info.vramH;
-        rect.x = (*pp)->f0;
-        rect.y = (*pp)->f2;
-        pp += 4;
-        base = (s32)arg1->base;
-        LoadImage(&rect, (u32 *)(rec->pix + base));
-        goto loop;
-    }
 }
 
 void textureset_upload(obj_textureset *arg0) {
@@ -3552,7 +3192,7 @@ void textureset_upload(obj_textureset *arg0) {
     Tex_UploadCluts(arg0);
     n = arg0->nTex;
     while (n != 0) {
-        texture_upload_anim(t, (s32)base, arg0);
+        texture_upload_anim(t, 0, arg0);
         if (t->flags & 2) {
             n -= t->frames;
             t += t->frames;
@@ -3561,7 +3201,7 @@ void textureset_upload(obj_textureset *arg0) {
             n--;
         }
     }
-    p = arg0->anims;
+    p = arg0->anims != NULL ? (void *)((u8 *)arg0->base + arg0->base->anims) : NULL;
     if (p != NULL && p->subOff != 0) {
         Tex_UploadList((TexUploadList *)(FILE_AT(p, 4) + p->subOff), arg0);
     }
@@ -3625,24 +3265,8 @@ void textureset_release(obj_textureset *arg0) {
     TexClut *b;
 
     b = arg0->ent;
-    textureset_release_vram(arg0);
-    textureset_release_cluts(arg0, b);
-    d = arg0->anims;
-    if (d != NULL) {
-        if (d->subOff != 0) {
-            q = (s32 *)FILE_AT(d, d->subOff + 4);
-            r = q + 1;
-            n = *q;
-            if (--n != -1) {
-                do {
-                    vram_free_node(r[3]);
-                    r += 4;
-                } while (--n != -1);
-            }
-        }
-        mal_free(arg0->anims, &MainHeap);
-        arg0->anims = 0;
-    }
+    tex_release_ids(arg0);
+    arg0->anims = 0;
     if (arg0->tex != NULL) {
         mal_free(arg0->tex, &MainHeap);
     }
@@ -3805,85 +3429,24 @@ s32 calc_rgbcode(s32 r, s32 g, s32 b) {
 }
 
 void texture_release_loading_mem(obj_textureset *set) {
-    TexFile *base;
-    u8 *anims;
-
-    if (set->anims != NULL) {
-        base = set->base;
-        anims = mal_trim_front(base, base->anims, &MainHeap);
-        set->base = (TexFile *)anims;
-        mal_set_owner(anims, (u8 **)&set->anims);
-        set->base = NULL;
-        return;
-    }
-    mal_free_later(set->base, &MainHeap, 2);
-    set->base = NULL;
+    /* no VRAM to have copied it to: the file stays, and moves with the heap */
+    mal_set_owner(set->base, (void **)&set->base);
 }
 
 void textureset_upload_cluts(obj_textureset *arg0) {
-    RECT rect;
-    TexClut *e;
-    u8 *base;
-    s32 n;
-
-    e = arg0->ent;
-    base = (u8 *)arg0->base;
-    n = arg0->nEnt;
-    for (;;) {
-        n--;
-        if (n == -1) {
-            return;
-        }
-        if (e->w < 0x11U) {
-            e->pos = clut_alloc_small();
-        } else {
-            e->pos = clut_alloc_large();
-        }
-        rect.x = e->pos->x;
-        rect.y = e->pos->y;
-        rect.w = e->w;
-        rect.h = 1;
-        LoadImage(&rect, (u32 *)(base + e->off));
-        e->clut = GetClut(rect.x, rect.y);
-        e++;
-    }
+    Tex_UploadCluts(arg0);
 }
 
 void texture_unused_d(void) {
 }
 
 void texture_upload_list(TexUploadList *arg0, obj_textureset *arg1) {
-    s32 n;
-    obj_texture *rec;
-    s32 *ip;
-    FreeHdr **pp;
-    s32 base;
-    RECT rect;
-
-    ip = &arg0->e[0].idx;
-    pp = &arg0->e[0].pos;
-    n = arg0->count;
-loop:
-    n--;
-    if (n != -1) {
-        rec = &arg1->tex[*ip];
-        ip += 4;
-        *pp = vram_take(rec->slot);
-        rect.w = rec->info.vramW;
-        rect.h = rec->info.vramH;
-        rect.x = (*pp)->f0;
-        rect.y = (*pp)->f2;
-        pp += 4;
-        base = (s32)arg1->base;
-        LoadImage(&rect, (u32 *)(rec->pix + base));
-        goto loop;
-    }
 }
 
 void textureset_init(obj_textureset *set, u8 *file) {
     set->base = (TexFile *)file;
-    mal_alloc_owned_low(((TexFile *)file)->nTex * 0x38, (void **)&set->tex, &MainHeap, 0);
-    mal_alloc_owned_low(set->base->nClut * 0xC, (void **)&set->ent, &MainHeap, 0);
+    mal_alloc_owned_low(((TexFile *)file)->nTex * sizeof(obj_texture), (void **)&set->tex, &MainHeap, 0);
+    mal_alloc_owned_low(set->base->nClut * sizeof(TexClut), (void **)&set->ent, &MainHeap, 0);
     set->nTex = set->base->nTex;
     set->nEnt = set->base->nClut;
     set->f14 = set->base->f14;
@@ -3894,8 +3457,8 @@ void textureset_init(obj_textureset *set, u8 *file) {
 s32 textureset_mem_size(TexFile *arg0) {
     s32 size;
 
-    size = arg0->nTex * 0x38 + 0xB0;
-    size += arg0->nClut * 0xC;
+    size = arg0->nTex * sizeof(obj_texture) + 0xB0;
+    size += arg0->nClut * sizeof(TexClut);
     return size;
 }
 
@@ -3932,29 +3495,9 @@ void texture_scroll_step(TexFrameAnim *arg0, obj_textureset *arg1) {
 }
 
 void clut_release(TexClut *arg0) {
-    s32 temp_a0;
-
-    temp_a0 = (arg0->pos);
-    if (temp_a0 != 0) {
-        vram_release(temp_a0);
-        (arg0->pos) = 0;
-    }
 }
 
 void clut_upload(TexClut *arg0, s32 arg1) {
-    RECT rect;
-
-    if (arg0->w < 0x11U) {
-        arg0->pos = clut_alloc_small();
-    } else {
-        arg0->pos = clut_alloc_large();
-    }
-    rect.x = arg0->pos->x;
-    rect.y = arg0->pos->y;
-    rect.w = arg0->w;
-    rect.h = 1;
-    LoadImage(&rect, (u32 *)(arg1 + arg0->off));
-    arg0->clut = GetClut(rect.x, rect.y);
 }
 
 void texsrc_init(u8 *src, u8 *out, s32 len) {
@@ -3967,7 +3510,7 @@ void texsrc_init(u8 *src, u8 *out, s32 len) {
     *(u16 *)out = id;
 }
 
-void texture_init_entry(TexImage *s, obj_texture *d, s32 n) {
+void texture_init_entry(TexImage *s, obj_texture *d, void *n) {
     u32 t;
     s32 u;
 
@@ -3980,19 +3523,16 @@ void texture_init_entry(TexImage *s, obj_texture *d, s32 n) {
     d->h = s->h;
     if (d->flag == 0) {
         d->w = s->w << 2;
-        d->slot = &VramSlots[vram_slot_class(s->w << 2, s->h, 0x10)];
-        d->advance = ((u8)s->w << 2) - 1;
+                d->advance = ((u8)s->w << 2) - 1;
     } else {
         d->w = s->w << 1;
-        d->slot = &VramSlots[vram_slot_class(s->w << 1, s->h, 0x100)];
-        d->advance = ((u8)s->w << 1) - 1;
+                d->advance = ((u8)s->w << 1) - 1;
     }
     d->dv = (u8)s->h - 1;
     d->info.vramW = s->w;
     d->info.vramH = s->h;
-    u = n - 0x14;
     t = s->c;
-    d->pix = (s32)s - u;
+    d->pix = (s32)((u8 *)s - (u8 *)n) + 0x14;
     d->fC = t;
 }
 
@@ -4174,7 +3714,7 @@ s32 DebugFontStream = 0;
 s32 DebugFontTPage = 0;
 s32 DebugFontClut = 0;
 u8 *VramBufNodes = 0;
-void (*SsTickSaved)() = 0x4D2;
+void (*SsTickSaved)() = (void (*)())(iptr)0x4D2;
 s32 SoundUnused[6] = {0};
 
 /* the .bss (main.c's comes first) */

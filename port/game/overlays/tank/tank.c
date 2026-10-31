@@ -7415,8 +7415,10 @@ void SetMoeJoeIdle(s32 arg0) {
     EXTengine *eng;
     s32 pad[2];
 
-    Heroes[arg0].hero_move->jump_max = 0;
-    Heroes[arg0].hero_move->velocity_enable = 1;
+    if (Heroes[arg0].hero_move != NULL) {
+        Heroes[arg0].hero_move->jump_max = 0;
+        Heroes[arg0].hero_move->velocity_enable = 1;
+    }
     Heroes[arg0].hero_idle_count = Random(0x96) + 0x5A;
     eng = Heroes[arg0].hero_eng;
     if (TA_players[arg0].HullSFX != 0) {

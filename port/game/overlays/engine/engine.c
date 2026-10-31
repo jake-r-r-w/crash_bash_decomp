@@ -13,7 +13,7 @@ void InitialiseNasSystem(void) {
     LevelRecs = rec;
     if (rec != NULL) {
         GameState *w = (GameState *)GameInfo;
-        w->levelLoadModel = *(u16 *)&rec[w->levelRecIndex];
+        w->levelLoadModel = (u16)rec[w->levelRecIndex].MapDbase;
     }
     v = (GameState *)GameInfo;
     if (GameBoot != NULL) {

@@ -51,7 +51,7 @@ void InitialiseHeroes(void) {
         if (i >= 4) {
             break;
         }
-        nas = (NAS *)((u8 *)NasPool + m * 16);  /* matching: &NasPool[i] drops the m counter (+7 a hero) */
+        nas = &NasPool[i];
         h = &hb[i];
         h->hero = nas;
         *nas = NASTemplate;
@@ -1452,7 +1452,7 @@ void ResetHeroGlobals(void) {
 }
 
 void SetLevelCameraMode(void) {
-    CameraMode = LevelRecs[LevelRecIndex].cameraMode;
+    CameraMode = LevelRecs[LevelRecIndex].camera;
 }
 
 void SetHeroAction(s32 player, s32 action) {
@@ -1835,8 +1835,10 @@ void SetHeroIdle(s32 arg0) {
 
     h = base + arg0;
 
-    h->hero_move->jump_max = 0;
-    h->hero_move->velocity_enable = 1;
+    if (h->hero_move != NULL) {
+        h->hero_move->jump_max = 0;
+        h->hero_move->velocity_enable = 1;
+    }
     HeroHooks.HeroSetIdle(arg0);
     SetHeroSeq(arg0, 1);
     h->hero->Camera.look_ahead = 0x400;

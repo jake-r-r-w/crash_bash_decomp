@@ -129,41 +129,13 @@ void music_restart(void) {
 }
 
 void music_setup_slot(music_midi *slot) {
-    u8 *body;
-    int new_var;
-    u8 *head;
-
-    SeqHdr *h = (SeqHdr *)slot->data;
-
-    head = FILE_AT(h, h->head);
-    body = FILE_AT(h, h->body);
-    slot->songs[0] = (s32)h + h->o8;
-    slot->songs[1] = slot->data + ((SeqHdr *)slot->data)->oC;
-    slot->songs[2] = slot->data + ((SeqHdr *)slot->data)->o10;
-    slot->songs[3] = slot->data + ((SeqHdr *)slot->data)->o14;
-    new_var = slot->data + ((SeqHdr *)slot->data)->o18;
-    slot->handle = -1;
-    slot->songs[4] = new_var;
-    slot->seq = SsVabOpenHead(head, -1);
-    SsVabTransBody(body, (s16)slot->seq);
-    SpuIsTransferCompleted(1);
-    slot->data = (s32)mal_trim_front((void *)slot->data, ((s32 *)slot->data)[1], &MainHeap);
 }
 
 void music_dload_midi(file *arg0, music_midi *slot, s32 type) {
-    asload_permanent_callback(arg0, music_set_data, slot);
-    SpuReserveReverbWorkArea(1);
-    SsUtSetReverbType(type);
-    SsUtSetReverbDepth(0, 0);
-    SsUtReverbOn();
+    /* silent until the mixer */
 }
 
 void music_set_data(s32 arg0, s32 *arg1) {
-    *arg1 = arg0;
-    music_setup_slot(arg1);
-    MusicRestart = 0;
-    MusicDuck = 0;
-    MusicDuckCur = 0;
 }
 
 void music_stop(void) {

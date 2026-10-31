@@ -1767,7 +1767,7 @@ void load_dbase_done(u8 *arg0, ModeDbase *a1) {
     dbase_asload_with_anims_callback(arg0 + i, h);
 }
 
-u8 *queue_dbase_load(ModeDbase *arg0, s32 arg1) {
+u8 *queue_dbase_load(ModeDbase *arg0, void **arg1) {
     LoadNode *p;
     LoadNode *next;
     LoadNode *tail;
@@ -1778,7 +1778,7 @@ u8 *queue_dbase_load(ModeDbase *arg0, s32 arg1) {
     LoaderState *ls;
 
     a = &DatIndex[arg0->group->first];
-    arg0->dbase->keep = (void **)(iptr)arg1;
+    arg0->dbase->keep = arg1;
     fn = load_dbase_done;
     ls = &Loader;
     b = arg0->group->size;
@@ -3456,7 +3456,7 @@ s32 fx_alloc_buffers(FxDef *def, subengine *sub) {
     if (var_v0 != 0) {
         void (*hook)() = def->hook;
         sub->release = fx_free_buffers;
-        sub->hook = (void (*)(subengine *, s32, u32))hook;
+        sub->hook = (void (*)(subengine *, void *, u32))hook;
         def->init(sub);
     } else {
         sub->hook = NULL;

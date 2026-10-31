@@ -1056,11 +1056,11 @@ void render_sub_thread(script_thread_handler *th, s32 *arg1) {
     s32 saved;
     u32 flags;
     subengine *sub;
-    s32 val;
+    void *val;
 
     sub = &th->type.subscript.sub;
     flags = th->type.subscript.sub.flags;
-    val = *arg1;
+    val = ((GteSetup *)arg1)->rot;
     saved = ScriptFade;
     if (flags & 0x8000) {
         sub->hook(sub, val, flags);
@@ -1108,11 +1108,11 @@ void init_sub_thread(u8 *def, script_control_info *ci, s32 num) {
 void render_emitter_thread(script_thread_handler *th, s32 *arg1) {
     subengine *first;
     subengine *sub;
-    s32 val;
+    void *val;
     u32 flags;
 
     first = th->type.particle.subs;
-    val = *arg1;
+    val = ((GteSetup *)arg1)->rot;
     if (first != NULL) {
         sub = first;
         flags = sub->flags;

@@ -136,7 +136,7 @@ void InitLevelLoad(void) {
     InitHeapToRamTop(&MainHeap);
     LoadModeOverlay();
     InitHeapToRamTop(&MainHeap);
-    SetupLevelSpecs(&DefaultArenaDef);
+    SetupLevelSpecs(DefaultArenaDef);
     cfg = (EngineCfg *)LevelConfig;
     if (cfg == NULL) {
         cfg = &DefaultLevelConfig;
@@ -159,7 +159,7 @@ void InitLevelLoad(void) {
 
 void QueueHeroModels(void) {
     GameState *g;
-    s32 arg;
+    void **arg;
     s32 i;
     EngineHooks *tbl;
     s32 c;
@@ -169,7 +169,7 @@ void QueueHeroModels(void) {
     GameState *a = (GameState *)GameInfo;
 
     i = 0;
-    arg = LevelRecs[a->levelRecIndex].heroLoadArg;
+    arg = (void **)LevelRecs[a->levelRecIndex].Anims;
     {
         s32 n = LangPanelModels[a->language];
         obj_dbase *b = HeroModelBank;
@@ -216,7 +216,7 @@ void load_initial_dbases(void)
 {
   s32 i;
   GameState *g;
-  s32 arg;
+  char **arg;
   u8 *b;
   u8 *t;
   u8 *tg;
@@ -234,7 +234,7 @@ void load_initial_dbases(void)
   idx = ((GameState *) tg)->levelRecIndex;
   g = (GameState *) tg;
   tg = (u8 *) LevelRecs;
-  arg = *((s32 *) (((u8 *) (&((EngineRec32 *) tg)[idx])) + 4));
+  arg = ((EngineRec32 *) tg)[idx].Anims;
   t = (u8 *)HeroModelBank;
   h = &HeroHooks;
   src = (s32 *) (&((obj_dbase *) t)[new_var[g->language]]);
@@ -246,10 +246,10 @@ void load_initial_dbases(void)
     k = ((u8 *) g)[i + 0x50];
     if ((k - 1) < 8)
     {
-      dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]], (void **)(iptr)arg);
+      dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]], (void **)arg);
       if (h->flag != 0)
       {
-        dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->flag)[k]], (void **)(iptr)arg);
+        dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->flag)[k]], (void **)arg);
       }
     }
     i++;
@@ -268,7 +268,7 @@ void load_initial_dbases(void)
     }
     while (v >= 0);
   }
-  p = *((s16 **) (((u8 *) (&LevelRecs[LevelRecIndex])) + 8));
+  p = LevelRecs[LevelRecIndex].LevelDB;
   v = *p;
   if (v >= 0)
   {
@@ -418,7 +418,7 @@ void RenderLevelLoad(void) {
     }
 }
 
-void LoadModeDbases(obj_dbase *arg0, s32 arg1) {
+void LoadModeDbases(obj_dbase *arg0, void **arg1) {
     s32 i;
     ModeDbase *p = ModeDbaseLists;
 
@@ -488,7 +488,7 @@ void InitLoadingScreen(void) {
             sub->XYZ.z = 0;
             sub = sub->next;
             p++;
-            sub->xform.order = 0;
+            if (sub != NULL) sub->xform.order = 0;
         } while (sub != NULL);
     }
 }

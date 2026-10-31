@@ -10,6 +10,7 @@
 
 #include <SDL3/SDL.h>
 #include "platform/platform.h"
+#include "platform/gfx.h"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -17,16 +18,30 @@
 
 /* A crash prints where, and the return addresses up the stack, for llvm-symbolizer. */
 static LONG WINAPI crash_report(EXCEPTION_POINTERS *e) {
-    const uintptr_t *fp = (const uintptr_t *)e->ContextRecord->Rbp;
     uintptr_t image = (uintptr_t)GetModuleHandleA(NULL);
+    CONTEXT c = *e->ContextRecord;
     int i;
 
     fprintf(stderr, "crash: code %08lX, reading %llX, image %llX\n", e->ExceptionRecord->ExceptionCode,
             (unsigned long long)e->ExceptionRecord->ExceptionInformation[1], (unsigned long long)image);
-    fprintf(stderr, "stack: %llX", (unsigned long long)e->ContextRecord->Rip);
-    for (i = 0; i < 32 && fp != NULL && !IsBadReadPtr(fp, 16); i++) {
-        fprintf(stderr, " %llX", (unsigned long long)fp[1]);
-        fp = (const uintptr_t *)fp[0];
+    fprintf(stderr, "stack: %llX", (unsigned long long)c.Rip);
+    for (i = 0; i < 32; i++) {
+        DWORD64 base = 0, frame = 0;
+        PVOID handler = NULL;
+        PRUNTIME_FUNCTION fn = RtlLookupFunctionEntry(c.Rip, &base, NULL);
+
+        if (fn != NULL) {
+            RtlVirtualUnwind(UNW_FLAG_NHANDLER, base, c.Rip, fn, &c, &handler, &frame, NULL);
+        } else if (c.Rsp != 0 && !IsBadReadPtr((void *)c.Rsp, 8)) {
+            c.Rip = *(DWORD64 *)c.Rsp; /* a leaf function */
+            c.Rsp += 8;
+        } else {
+            break;
+        }
+        if (c.Rip == 0) {
+            break;
+        }
+        fprintf(stderr, " %llX", (unsigned long long)c.Rip);
     }
     fprintf(stderr, "\n");
     fflush(stderr);
@@ -80,8 +95,22 @@ void platform_finish(int code) {
 }
 
 /* Once a vblank: the window and the clock */
+#define MAX_SHOTS 64
+static struct {
+    int frame;
+    const char *path;
+} Shots[MAX_SHOTS];
+static int NumShots;
+
 void platform_vblank(void) {
+    int i;
+
     Vblanks++;
+    for (i = 0; i < NumShots; i++) {
+        if (Shots[i].frame == Vblanks) {
+            gfx_screenshot(Shots[i].path);
+        }
+    }
     if (!NoWindow) {
         if (!host_poll()) {
             platform_finish(0);
@@ -120,6 +149,9 @@ int main(int argc, char **argv) {
             CardPath = argv[++i];
         } else if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
             StopAt = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--shot") == 0 && i + 2 < argc && NumShots < MAX_SHOTS) {
+            Shots[NumShots].frame = atoi(argv[++i]);
+            Shots[NumShots++].path = argv[++i];
         } else if (strcmp(argv[i], "--no-window") == 0) {
             NoWindow = 1;
         } else {

@@ -385,12 +385,8 @@ extern u8 race_shell_info[];
 extern u8 spin_shell_info[];
 extern u8 titles_shell_info[];
 
-ArenaDef DefaultArenaDef = {
-    0x104, 0x1A, 0, 0x12, 0x69, { 0, 0 }, (void *)&BASH_PREMAP, &bash_shell_info,
-    &BASHSetUp,
-};
-/* the arenas after the default one (SetupLevelSpecs reads on to id 999) */
-ArenaDef ArenaDefs[22] = {
+ArenaDef DefaultArenaDef[23] = { /* SetupLevelSpecs reads on to id 999 */
+    { 0x104, 0x1A, 0, 0x12, 0x69, { 0, 0 }, (void *)&BASH_PREMAP, &bash_shell_info, &BASHSetUp },
     { 1, 0x1A, 0, 0x12, 0x69, { 0, 0 }, (void *)&BASH_PREMAP, &bash_shell_info, &BASHSetUp },
     { 2, 0x1A, 0, 0x12, 0x69, { 0, 0 }, (void *)&BASH_PREMAP, &bash_shell_info, &BASHSetUp },
     { 3, 0x1A, 0, 0x12, 0x69, { 0, 0 }, (void *)&BASH_PREMAP, &bash_shell_info, &BASHSetUp },

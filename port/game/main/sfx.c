@@ -9,7 +9,8 @@ void music_play_level(s32 arg0, s32 arg1) {
     u32 t;
     u32 v;
     s32 i;
-    s32 f;
+    file *f;
+    s32 m;
     u32 c;
     u16 *d;
 
@@ -17,27 +18,27 @@ void music_play_level(s32 arg0, s32 arg1) {
     if (p->mode != 0x28) {
         sfx_table_clear();
         if (p->levelFlags & 0x80) {
-            f = (s32)MusicTable[arg0].altFile;
+            f = MusicTable[arg0].altFile;
         } else {
-            f = (s32)MusicTable[arg0].file2;
+            f = MusicTable[arg0].file2;
         }
-        sfx_bank_load((file *)f);
+        sfx_bank_load(f);
     }
     do {
         q = &DatIndex[278];
-        t8 = (u32)(q - 8);
+        t8 = 0;
     } while (0);
     d = ModeTypes;
-    f = ((GameState *)GameInfo)->mode;
-    c = d[f * 3] - 0x101;
-    f = (s32)(q - 0x10);
+    m = ((GameState *)GameInfo)->mode;
+    c = d[m * 3] - 0x101;
+    f = (file *)(q - 0x10);
     if (c >= 2U) {
-        f = (s32)t8;
+        f = (file *)(q - 8);
         if (!(((GameState *)GameInfo)->levelFlags & 0x1E0)) {
-            f = (s32)q;
+            f = (file *)q;
         }
     }
-    sfx_bank_load((file *)f);
+    sfx_bank_load(f);
     t = arg1 - 0x101;
     if (t >= 2U) {
         arg1 = t;

@@ -3571,8 +3571,10 @@ void ChaseUnusedStub1(void) {
 }
 
 void SetChaseHeroIdle(s32 arg0) {
-    Heroes[arg0].hero_move->jump_max = 0;
-    Heroes[arg0].hero_move->velocity_enable = 1;
+    if (Heroes[arg0].hero_move != NULL) {
+        Heroes[arg0].hero_move->jump_max = 0;
+        Heroes[arg0].hero_move->velocity_enable = 1;
+    }
     SetHeroSeq(arg0, 0x61);
 }
 

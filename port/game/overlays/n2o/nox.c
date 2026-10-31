@@ -2234,10 +2234,12 @@ void SetNoxHeroFly(s32 arg0) {
 
     SetHeroSeq(arg0, 0x22);
     N2OHeroSetSpeed(arg0);
-    m->x_acc = 0x10;
-    m->z_acc = 0x10;
-    m->jump_acc = 0x10;
-    m->mass = 0x100;
+    if (m != NULL) {
+        m->x_acc = 0x10;
+        m->z_acc = 0x10;
+        m->jump_acc = 0x10;
+        m->mass = 0x100;
+    }
     m->z_dec = 1;
     m->x_dec = 1;
     m->jump_dec = 1;

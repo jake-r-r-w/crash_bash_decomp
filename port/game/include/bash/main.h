@@ -233,11 +233,11 @@ typedef struct {
 
 typedef struct {
     u32 flags;               /* 0x00: 0x8000 visible */
-    u8 pad4[0x68];
+    u8 pad4[offsetof(subengine, u6C) - 4];
     struct obj_dbase *model; /* 0x6C */
-    u8 pad70[4];
+    u8 pad70[offsetof(subengine, entity) - offsetof(subengine, u70)];
     u16 index;               /* 0x74: passed to entity_address */
-    u8 pad76[0x16];
+    u8 pad76[offsetof(subengine, pad8C) - offsetof(subengine, scale)];
     u16 flag;  /* tested for zero */
     u16 flags2;               /* 0x8E: texture index to set on the next draw */
     ModelObjSlot slots[2];  /* 0x90: indexed by FrameCount & 1 */
@@ -418,7 +418,8 @@ _Static_assert(sizeof(mal) == 0x18, "mal_split_ptr carves these out of a loaded 
 #define MAL_SET_NO_OWNER(b) ((b)->owner.off = MAL_NO_OWNER)
 /* Tells a block's owner where it is now. flags 8: the owner is a slot in a file, 4 bytes. */
 #define MAL_OWNER_IS_REF 8
-#define MAL_STORE_OWNER(b, v) ((b)->flags & MAL_OWNER_IS_REF ? (void)(*(ref32 *)MAL_OWNER(b) = ref_of(v)) : (void)(*MAL_OWNER(b) = (void *)(v)))
+void gfx_forget_textures(const void *start, const void *end);
+#define MAL_STORE_OWNER(b, v) (gfx_forget_textures(0, 0), (b)->flags & MAL_OWNER_IS_REF ? (void)(*(ref32 *)MAL_OWNER(b) = ref_of(v)) : (void)(*MAL_OWNER(b) = (void *)(v)))
 #define MAL_PREV(b) ((mal *)ref_get((b)->prev))
 #define MAL_PREV_FREE(b) ((mal *)ref_get((b)->prevFree))
 #define MAL_NEXT_FREE(b) ((mal *)ref_get((b)->nextFree))
@@ -751,6 +752,13 @@ extern s32 LastFlipVSync;
 void mal_update(_mal_area *heap);
 #define HeapStart HEAP_START
 extern struct ModuleEntry EngineEntry;
+struct obj_textureset;
+u16 tex_image_id(struct obj_textureset *set, s32 index);
+u16 tex_palette_id(struct obj_textureset *set, s32 index);
+void tex_release_ids(struct obj_textureset *set);
+void mesh_submit_gt3(void *ot, void *poly);
+void mesh_submit_g3(void *ot, unsigned char *poly);
+void pc_gte_precise(float out[9]);
 void overlay_load(const void *f);
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);
 extern ModuleEntry ShellModules;
@@ -983,14 +991,8 @@ extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2];
 extern s32 CdReadStatus;
 
-/* 32-byte records of LevelRecs, indexed by LevelRecIndex (SetLevelCameraMode). */
-typedef struct {
-    /* 0x00 */ u8 pad0[4];
-    /* 0x04 */ s32 heroLoadArg;  /* passed to queue_dbase_load by QueueHeroModels */
-    /* 0x08 */ u8 pad8[4];
-    /* 0x0C */ u16 cameraMode;  /* CameraMode for the level (SetLevelCameraMode) */
-    /* 0x0E */ u8 padE[0x12];
-} EngineRec32;
+/* LevelRecs, indexed by LevelRecIndex: a level's world data. */
+typedef WWInf EngineRec32;
 extern EngineRec32 *LevelRecs;
 extern s32 ArchiveSector;
 extern u8 CdControlResult[8];
@@ -1206,17 +1208,26 @@ typedef struct AnimStep {
 extern s32 ContourHeight;
 extern void (*SsTickSaved)();
 extern NAS *NASActiveTail;
-extern s32 *PrimNodeFree;
+/* A list node of a PrimList: either a heap block of prims (mode 1), or two prims in the node itself, from data on (PrimNode). */
+typedef struct PrimLink {
+    struct PrimLink *next;
+    void *data;
+} PrimLink;
+typedef struct PrimNode {
+    PrimLink *next;
+    u8 prims[0x50];
+} PrimNode;
+extern PrimLink *PrimNodeFree;
 extern s32 *PrimsConfig;            /* pool sizes (prims_init) */
 extern u8 *PrimSetPool;             /* 0x58-byte nodes (prims_init) */
 extern u8 *PrimNodePool;             /* 0x54-byte nodes, free list in PrimNodeFree */
 extern u8 *PrimLinkPool;             /* 8-byte nodes, free list in PrimLinkFree */
 typedef struct PrimList {
     s32 f0;
-    s32 f4;
-    s32 **f8;
-    s32 *fC;
-    s32 **f10;
+    PrimLink *f4;
+    PrimLink *f8;
+    PrimLink *fC;
+    PrimLink *f10;
 } PrimList;
 
 typedef struct {
@@ -1231,7 +1242,7 @@ typedef struct PrimSet {
 } PrimSet;
 extern PrimSet *PrimSetList;
 extern PrimSet *PrimSetFree;
-extern s32 *PrimLinkFree;
+extern PrimLink *PrimLinkFree;
 extern NAS *NASActiveHead;
 extern s32 num_sfx_banks;
 extern s32 VabCueTimer;
@@ -1482,7 +1493,7 @@ typedef struct {
     s32 b[3]; /* 0x10 */
 } PosEntry;
 typedef struct {
-    u8 pad0[0x70];
+    u8 pad0[offsetof(subengine, u70)];
     s32 y; /* 0x70 */
     s32 z; /* 0x74 */
     s32 x; /* 0x78 */
@@ -1495,7 +1506,7 @@ typedef struct {
     s32 x;       /* 0x04 */
     s32 y;       /* 0x08 */
     s32 z;       /* 0x0C */
-    u8 pad10[0x5C];
+    u8 pad10[offsetof(subengine, u6C) - 0x10];
     u8 *str;     /* 0x6C */
     u32 c0;      /* 0x70 */
     u32 c1;      /* 0x74 */
@@ -1719,7 +1730,7 @@ void mal_take_high_from(mal *arg0, s32 arg1, _mal_area *arg2);
 
 void mal_move_up(mal *arg0, _mal_area *arg1);
 
-u8 *queue_dbase_load(ModeDbase *arg0, s32 arg1);
+u8 *queue_dbase_load(ModeDbase *arg0, void **arg1);
 
 u8 *queue_group_load(file_group_load_info *arg0);
 

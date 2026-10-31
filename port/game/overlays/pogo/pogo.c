@@ -818,6 +818,10 @@ void InitPogo_Tiles(void) {
     g = GAME;
     do {
         id = (u16 *)model_entry_data(obj->model, obj->index);
+        if (id == NULL) {
+            obj = obj->next;
+            continue;
+        }
         if ((u16)(*id - 10) < 78) {
             v = *id;
             j = 7 - (s16)(v % 10);
@@ -1752,10 +1756,12 @@ void SetHeroPogoIdle(u32 arg0) {
     s32 seq;
 
     Player_RemoveReserve(arg0);
-    Heroes[arg0].hero_move->jump_max = 0;
-    Heroes[arg0].hero_move->velocity_enable = 1;
-    Heroes[arg0].hero_move->jump_ctrl |= 0x22;
-    Heroes[arg0].hero_move->jump_ctrl &= 0xEF;
+    if (Heroes[arg0].hero_move != NULL) {
+        Heroes[arg0].hero_move->jump_max = 0;
+        Heroes[arg0].hero_move->velocity_enable = 1;
+        Heroes[arg0].hero_move->jump_ctrl |= 0x22;
+        Heroes[arg0].hero_move->jump_ctrl &= 0xEF;
+    }
     Player_SnapToTile(arg0);
     if (PogoPlay[arg0].status == 5) {
         SetHeroSeq(arg0, 0x2F);

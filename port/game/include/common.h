@@ -15,8 +15,8 @@ typedef struct ref32 { int off; } ref32;
 extern unsigned char HeapArena[];
 #define HEAP_START (HeapArena + 8)
 #define HEAP_END (HeapArena + HEAP_ARENA_BYTES)
-static inline void *ref_get(ref32 r) { return r.off == 0 ? (void *)0 : (void *)(HeapArena + r.off); }
-static inline ref32 ref_of(const void *p) { ref32 r; r.off = p == (void *)0 ? 0 : (int)((const unsigned char *)p - HeapArena); return r; }
+static inline void *ref_get(ref32 r) { return r.off == 0 ? (void *)0 : r.off == -1 ? (void *)-1 : (void *)(HeapArena + r.off); }
+static inline ref32 ref_of(const void *p) { ref32 r; r.off = p == (void *)0 ? 0 : p == (void *)-1 ? -1 : (int)((const unsigned char *)p - HeapArena); return r; }
 
 typedef signed char s8;
 typedef unsigned char u8;

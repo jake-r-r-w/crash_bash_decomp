@@ -398,11 +398,11 @@ typedef struct HubRenderSub {
 
 typedef struct HubRenderObj {
     /* 0x00 */ u32 flags;
-    /* 0x04 */ u8 pad4[0x68 - 0x4];
+    /* 0x04 */ u8 pad4[offsetof(subengine, otz) - 0x4];
     /* 0x68 */ s16 unk68;
-    /* 0x6A */ u8 pad6A[2];
+    /* 0x6A */ u8 pad6A[offsetof(subengine, u6C) - (offsetof(subengine, otz) + 2)];
     /* 0x6C */ HubRenderSub *sub;
-    /* 0x70 */ u8 pad70[4];
+    /* 0x70 */ u8 pad70[offsetof(subengine, entity) - offsetof(subengine, u70)];
     /* 0x74 */ u16 entity;
 } HubRenderObj;
 

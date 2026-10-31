@@ -617,7 +617,7 @@ void dbase_set_textures(obj_dbase *db, u8 *base) {
 }
 
 void dbase_set_data(u8 *arg0, u8 *arg1) {
-    mal_set_owner(arg0, arg1 + 0xC);
+    mal_set_owner(arg0, (void **)&((obj_dbase *)arg1)->data);
 }
 
 void dbase_release(obj_dbase *arg0) {
@@ -688,23 +688,9 @@ void dbase_set(obj_dbase *db, u8 *data, u8 *base) {
 
 void dbase_init_all(void) {
     s32 i;
-    s32 end;
-    u8 *base;
-    u8 *p;
 
-    i = 0x11B;
-    end = -1;
-    base = (u8 *)HeroModelBank;
-    p = base + 0x10;
-loop:
-    i--;
-    if (i != end) {
-        *(s32 *)(p - 8) = 0;
-        *(s32 *)(p - 4) = 0;
-        *(s32 *)(p + 0x24) = 0;
-        textureset_clear((obj_textureset *)p);
-        p += 0x38;
-        goto loop;
+    for (i = 0; i < 0x11A; i++) {
+        dbase_init(&HeroModelBank[i]);
     }
 }
 

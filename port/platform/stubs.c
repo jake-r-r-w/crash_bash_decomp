@@ -7,11 +7,8 @@
 #include <libsnd.h>
 #include <libspu.h>
 
-int ClearImage(RECT *r, uint8_t red, uint8_t green, uint8_t blue) { return 0; }
-int ClearImage2(RECT *r, uint8_t red, uint8_t green, uint8_t blue) { return 0; }
 uint32_t *ClearOTag(uint32_t *ot, int n) { return 0; }
 uint32_t *ClearOTagR(uint32_t *ot, int n) { return 0; }
-void DrawOTag(uint32_t *ot) {}
 int DrawSync(int mode) { return 0; }
 uint32_t *FntFlush(int id) { return 0; }
 void FntLoad(int tx, int ty) {}
@@ -20,16 +17,12 @@ int FntPrint(void) { return 0; }
 uint16_t GetClut(int x, int y) { return 0; }
 uint16_t GetTPage(int tp, int abr, int x, int y) { return 0; }
 uint16_t LoadClut2(uint32_t *clut, int x, int y) { return 0; }
-int LoadImage(RECT *r, uint32_t *p) { return 0; }
 int MoveImage2(RECT *r, int x, int y) { return 0; }
 DISPENV *PutDispEnv(DISPENV *env) { return 0; }
-DRAWENV *PutDrawEnv(DRAWENV *env) { return 0; }
 int ResetGraph(int mode) { return 0; }
 DISPENV *SetDefDispEnv(DISPENV *env, int x, int y, int w, int h) { return 0; }
-DRAWENV *SetDefDrawEnv(DRAWENV *env, int x, int y, int w, int h) { return 0; }
 void SetDispMask(int mask) {}
 void SetDrawArea(DR_AREA *p, RECT *r) {}
-void SetDrawEnv(DR_ENV *dr, DRAWENV *env) {}
 void SetDrawMove(DR_MOVE *p, RECT *r, int x, int y) {}
 int SetGraphDebug(int level) { return 0; }
 void SetTile1(TILE_1 *p) {}
@@ -65,7 +58,7 @@ void SsUtFlush(void) {}
 short SsUtGetProgAtr(short vab, short prog, ProgAtr *atr) { return 0; }
 short SsUtGetVagAtr(short vab, short prog, short tone, VagAtr *atr) { return 0; }
 short SsUtKeyOffV(short voice) { return 0; }
-short SsUtKeyOn(short vab, short prog, short tone, short note, short fine, short left, short right) { return 0; }
+short SsUtKeyOn(short vab, short prog, short tone, short note, short fine, short left, short right) { return -1; }
 void SsUtReverbOn(void) {}
 void SsUtSetReverbDepth(short left, short right) {}
 short SsUtSetReverbType(short type) { return 0; }

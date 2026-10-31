@@ -233,6 +233,11 @@ s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s8 *sfx = SfxTable[arg1];
     s16 v;
 
+    if (sfx == NULL) {
+        arg0[0] = -1;
+        arg0[1] = 0;
+        return -1;
+    }
     v = SsUtKeyOn(sfx[0], (s32)(((u8 *)sfx)[1] << 24) >> 28, ((u8 *)sfx)[1] & 0xF, (s32)(arg2 << 9) >> 16,
                   arg2 & 0x7F, (arg3 * ((p->sfx << 7) - p->sfx)) / 409600, (arg4 * ((p->sfx << 7) - p->sfx)) / 409600);
     arg0[0] = v;
@@ -331,7 +336,7 @@ void sfx_table_init(void) {
 }
 
 void machine_load_sfx(file *arg0, sfx_machine_bank_info *slot) {
-    slot->handle = asload_permanent_callback(arg0, vab_loaded, slot);
+    /* silent until the mixer */
 }
 
 void vab_transfer_wait(void) {
@@ -417,10 +422,7 @@ void sfx_bank_close(s32 *arg0) {
 }
 
 void sfx_bank_load(file *arg0) {
-    if (SfxBankCount < 6) {
-        machine_load_sfx(arg0, &SfxBanks[SfxBankCount]);
-        SfxBankCount++;
-    }
+    /* silent until the mixer */
 }
 
 /* Clears SfxTable: no sound for any id. */

@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include "platform.h"
+#include "gfx.h"
 
 #define MAX_PADS 4
 #define VBLANK_HZ 59.94
@@ -11,9 +12,6 @@
 #define MAX_QUEUED (OUT_RATE / 10 * 4)
 
 static SDL_Window *Window;
-static SDL_Renderer *Renderer;
-static SDL_Texture *Texture;
-static int TexW, TexH;
 static SDL_AudioStream *Audio;
 static SDL_Gamepad *Pads[MAX_PADS];
 static Uint64 NextVblank;
@@ -27,18 +25,14 @@ int host_init(void) {
         SDL_Log("SDL_Init: %s", SDL_GetError());
         return 0;
     }
-    Window = SDL_CreateWindow("Crash Bash", 960, 720, SDL_WINDOW_RESIZABLE);
+    Window = SDL_CreateWindow("Crash Bash", 1280, 960, SDL_WINDOW_RESIZABLE);
     if (Window == NULL) {
         SDL_Log("SDL_CreateWindow: %s", SDL_GetError());
         return 0;
     }
-    Renderer = SDL_CreateRenderer(Window, NULL);
-    if (Renderer == NULL) {
-        SDL_Log("SDL_CreateRenderer: %s", SDL_GetError());
+    if (!gfx_init(Window, 1280, 960)) {
         return 0;
     }
-    /* the PS1 draws to a 4:3 TV whatever the mode's width in pixels */
-    SDL_SetRenderLogicalPresentation(Renderer, 960, 720, SDL_LOGICAL_PRESENTATION_LETTERBOX);
     spec.format = SDL_AUDIO_S16;
     spec.channels = 2;
     spec.freq = OUT_RATE;
@@ -52,20 +46,6 @@ int host_init(void) {
     return 1;
 }
 
-void host_present(const uint32_t *pixels, int w, int h) {
-    if (Texture == NULL || w != TexW || h != TexH) {
-        if (Texture != NULL) {
-            SDL_DestroyTexture(Texture);
-        }
-        Texture = SDL_CreateTexture(Renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w, h);
-        TexW = w;
-        TexH = h;
-    }
-    SDL_UpdateTexture(Texture, NULL, pixels, w * 4);
-    SDL_RenderClear(Renderer);
-    SDL_RenderTexture(Renderer, Texture, NULL, NULL);
-    SDL_RenderPresent(Renderer);
-}
 
 void host_wait_vblank(void) {
     Uint64 freq = SDL_GetPerformanceFrequency();

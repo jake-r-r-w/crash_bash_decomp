@@ -301,7 +301,7 @@ struct subengine {
     /* 0x00 */ u32 flags;
     /* 0x04 */ SLONG_XYZ XYZ;            /* as EXTengine's: 0x00..0x54 is the prototype's xyzrf */
     /* 0x10 */ RotScale xform;
-    /* 0x54 */ void (*hook)(subengine *, s32, u32); /* render_emitter_thread calls it on each node */
+    /* 0x54 */ void (*hook)(subengine *, void *, u32); /* render_emitter_thread calls it on each node */
     /* 0x58 */ void (*release)(subengine *); /* called when the node is freed */
     /* 0x5C */ subengine *next;
     /* 0x60 */ subengine *prev;
@@ -329,10 +329,10 @@ struct subengine {
     /* 0x8A */ s16 depth;
     /* 0x8C */ u8 pad8C[0x8E - 0x8C];
     /* 0x8E */ u16 flags2;
-    /* 0x90 */ s32 sprim;  /* a sprite prim kill_sprim_sub releases */
+    /* 0x90 */ void *sprim;  /* a sprite prim kill_sprim_sub releases */
     /* 0x94 */ s16 unk94;
     /* 0x96 */ u8 pad96[0x9C - 0x96];
-    /* 0x9C */ s32 sprim2;
+    /* 0x9C */ void *sprim2;
     /* 0xA0 */ s16 unkA0;
     /* 0xA2 */ u8 padA2[0xA8 - 0xA2];
 };

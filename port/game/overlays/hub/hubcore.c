@@ -275,6 +275,9 @@ void HubPreMoveHero(s32 arg0) {
         step = 0;
     }
     stop = 0;
+    if (mv == NULL) {
+        return;
+    }
     ang = eng->xform.rot.vy;
     if (((GameState *)GameInfo)->adventure.active != 0) {
         eng->flags &= ~0x8000;
@@ -738,7 +741,7 @@ void HubLevelSelect(void) {
         p = &ScreenFade;
         if (p->maxed >= 3) {
             mapscene_release(MapScene);
-            mapscene_load(MapScene, HubSelectTimer);
+            mapscene_load(MapScene, (obj_dbase *)(iptr)HubSelectTimer);
             g->warpRoom = HubSelectFlag;
             g->mode = base[g->warpRoom].levnum;
             InitialiseHUB();
@@ -1481,7 +1484,7 @@ void InitialisePodiumFirst(void) {
     ((GameState *)GameInfo)->levelFlags |= 0x200;
     PodiumRankPlayers();
     PodiumFindTies();
-    *(s32 *)&LevelRecs[((GameState *)GameInfo)->levelRecIndex] = 0xCD;
+    LevelRecs[((GameState *)GameInfo)->levelRecIndex].MapDbase = 0xCD;
     ((GameState *)GameInfo)->levelLoadModel = 0xCD;
 }
 

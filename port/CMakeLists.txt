@@ -44,7 +44,7 @@ target_compile_options(game PRIVATE
   -Werror=int-conversion -Werror=pointer-to-int-cast -Werror=int-to-pointer-cast
   -Werror=void-pointer-to-int-cast -Werror=int-to-void-pointer-cast
   $<$<C_COMPILER_ID:Clang>:-ferror-limit=0>)
-set_source_files_properties(game/main/prims.c game/main/nascalls.c game/main/music.c game/main/sfx.c game/main/sound.c
+set_source_files_properties(game/main/music.c game/main/sfx.c game/main/sound.c
   PROPERTIES COMPILE_OPTIONS "-Wno-error=int-conversion;-Wno-error=pointer-to-int-cast;-Wno-error=int-to-pointer-cast;-Wno-error=void-pointer-to-int-cast;-Wno-error=int-to-void-pointer-cast")
 
 # Each slot overlay's data goes in a section of its own (platform/overlays.c).
@@ -55,7 +55,7 @@ foreach(ovl arkenoid bash bonk chase dino hub n2o papu pogo polar race spin tank
 endforeach()
 
 add_executable(crashbash main.c platform/overlays.c platform/gte.c platform/cd.c platform/etc.c platform/pad.c platform/mcrd.c
-  platform/stubs.c platform/sdl.c $<TARGET_OBJECTS:game>)
+  platform/stubs.c platform/sdl.c platform/gfx.c $<TARGET_OBJECTS:game>)
 target_include_directories(crashbash PRIVATE psyq/include)
 if(TARGET SDL3::SDL3-static)
   target_link_libraries(crashbash PRIVATE SDL3::SDL3-static)

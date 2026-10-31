@@ -3802,11 +3802,13 @@ void SetDinoHeroIdle(s32 arg0) {
     if (Heroes[arg0].hero_eng->sfx != NULL) {
         StopSfx(Heroes[arg0].hero_eng->sfx);
     }
-    mv->x_acc = 9;
-    mv->z_acc = 9;
-    mv->z_dec = 9;
-    mv->x_dec = 9;
-    mv->mass = 0x100;
+    if (mv != NULL) {
+        mv->x_acc = 9;
+        mv->z_acc = 9;
+        mv->z_dec = 9;
+        mv->x_dec = 9;
+        mv->mass = 0x100;
+    }
 }
 
 void DinoInitHero(s32 arg0) {

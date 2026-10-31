@@ -3126,7 +3126,7 @@ void InitBashHomer(NAS *nas) {
             sub->entity = 0x2010;
             sub->flags |= 0x21;
             sub = sub->next;
-            sub->xform.dirty = 1;
+            if (sub != NULL) sub->xform.dirty = 1;
         }
         mot = AddMotion(nas);
         if (mot != NULL) {

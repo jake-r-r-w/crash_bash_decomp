@@ -82,6 +82,19 @@ static uint32_t rtp_divide(uint32_t h, uint32_t z) {
     return n > 0x1FFFF ? 0x1FFFF : n;
 }
 
+static float PreciseX[3], PreciseY[3], PreciseW[3];
+
+/* The last three positions projected, unrounded: x, y and depth each. */
+void pc_gte_precise(float out[9]) {
+    int i;
+
+    for (i = 0; i < 3; i++) {
+        out[i * 3] = PreciseX[i];
+        out[i * 3 + 1] = PreciseY[i];
+        out[i * 3 + 2] = PreciseW[i];
+    }
+}
+
 static void rtp(int i, int last) {
     int64_t sx, sy, sz;
     int32_t z;
@@ -97,6 +110,19 @@ static void rtp(int i, int last) {
     sx = (int64_t)n * G.ir[0] + G.ofx;
     sy = (int64_t)n * G.ir[1] + G.ofy;
     sz = (int64_t)n * G.dqa + G.dqb;
+    PreciseX[0] = PreciseX[1];
+    PreciseY[0] = PreciseY[1];
+    PreciseW[0] = PreciseW[1];
+    PreciseX[1] = PreciseX[2];
+    PreciseY[1] = PreciseY[2];
+    PreciseW[1] = PreciseW[2];
+    {
+        float d = z < 1 ? 1.0f : (float)z;
+
+        PreciseX[2] = (float)G.ofx / 65536.0f + (float)G.h * (float)G.ir[0] / d;
+        PreciseY[2] = (float)G.ofy / 65536.0f + (float)G.h * (float)G.ir[1] / d;
+        PreciseW[2] = d;
+    }
     G.sx[0] = G.sx[1];
     G.sy[0] = G.sy[1];
     G.sx[1] = G.sx[2];
@@ -562,9 +588,9 @@ static void vector_normal(int32_t *v) {
     }
     x = lz >= 24 ? (int32_t)((uint32_t)l << (lz - 24)) : l >> (24 - lz);
     h = InvSqrtTbl[x - 64];
-    v[0] = ((h * i0) >> 12) >> sh;
-    v[1] = ((h * i1) >> 12) >> sh;
-    v[2] = ((h * i2) >> 12) >> sh;
+    v[0] = (h * i0) >> sh;
+    v[1] = (h * i1) >> sh;
+    v[2] = (h * i2) >> sh;
 }
 
 void MatrixNormal_1(MATRIX *m, MATRIX *n) {

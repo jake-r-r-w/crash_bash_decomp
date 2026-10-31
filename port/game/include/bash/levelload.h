@@ -149,7 +149,7 @@ extern PlaceRec ***PauseMenuTexts[45];
 
 void LoadModeFiles(void);
 
-void LoadModeDbases(obj_dbase *arg0, s32 arg1);
+void LoadModeDbases(obj_dbase *arg0, void **arg1);
 
 void RenderLoadingScreen(void);
 

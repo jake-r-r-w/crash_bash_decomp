@@ -1,0 +1,757 @@
+/* The native renderer on SDL3's GPU API (gfx.h). On Windows it runs on Direct3D 12, with its shaders compiled from the HLSL here by
+ * d3dcompiler_47.dll, which comes with Windows. */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <SDL3/SDL.h>
+#include "gfx.h"
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
+#define MAX_TRIS 400000
+#define ATLAS_SIZE 4096
+#define MAX_TEXTURES 16384
+#define MAX_CLIPS 64
+
+typedef struct {
+    float x, y, z, w;
+    float u, v;
+    uint32_t rgba;
+} GpuVert;
+
+typedef struct {
+    GfxVert v[3];
+    const GfxTex *tex;
+    int key;
+    short blend;
+    short clip;
+} Tri;
+
+typedef struct {
+    const void *pixels, *palette;
+    int w, h, bpp;
+    uint64_t hash;
+    GfxTex t;
+} Cached;
+
+static SDL_Window *Window;
+static SDL_GPUDevice *Device;
+static SDL_GPUTexture *Target, *Atlas;
+static SDL_GPUSampler *Sampler;
+static SDL_GPUBuffer *VertexBuf;
+static SDL_GPUTransferBuffer *VertexXfer, *AtlasXfer, *ShotXfer;
+/* solid or textured for each blend, by how the fragment shader is told to treat alpha */
+static SDL_GPUGraphicsPipeline *PipeOpaque, *PipeHalf, *PipeAdd, *PipeSub, *PipeQuarter;
+static int TargetW, TargetH;
+static int ScreenW = 640, ScreenH = 480;
+static uint8_t ClearRGB[3];
+
+static Tri *Tris;
+static int *Order;
+static int NumTris;
+static SDL_Rect Clips[MAX_CLIPS];
+static int NumClips, CurClip;
+
+static uint8_t *AtlasPixels;
+static Cached *Textures;
+static int NumTextures;
+static int ShelfX, ShelfY, ShelfH;
+static int AtlasDirtyTop = ATLAS_SIZE, AtlasDirtyBottom = 0;
+static const char *ShotPath;
+
+static const char *const VS_SRC =
+    "struct In { float4 pos : TEXCOORD0; float2 uv : TEXCOORD1; float4 col : TEXCOORD2; };\n"
+    "struct Out { float2 uv : TEXCOORD0; float4 col : TEXCOORD1; float4 pos : SV_Position; };\n"
+    "Out main(In i) { Out o; o.pos = i.pos; o.uv = i.uv; o.col = i.col; return o; }\n";
+
+/* mode.x: the alpha written, for the blend. mode.y: 0 solid, 1 textured keeping all but clear texels, 2 textured keeping only
+ * opaque ones, 3 textured keeping only the semi-transparent ones (a texel's alpha: 0 clear, 0.5 semi, 1 opaque). */
+static const char *const FS_SRC =
+    "Texture2D<float4> tex : register(t0, space2);\n"
+    "SamplerState smp : register(s0, space2);\n"
+    "cbuffer U : register(b0, space3) { float4 mode; };\n"
+    "struct In { float2 uv : TEXCOORD0; float4 col : TEXCOORD1; };\n"
+    "float4 main(In i) : SV_Target0 {\n"
+    "  float3 c = i.col.rgb;\n"
+    "  if (mode.y > 0.5) {\n"
+    "    float4 t = tex.Sample(smp, i.uv);\n"
+    "    if (t.a < 0.25) discard;\n"
+    "    if (mode.y > 1.5 && mode.y < 2.5 && t.a < 0.75) discard;\n"
+    "    if (mode.y > 2.5 && t.a > 0.75) discard;\n"
+    "    c = saturate(c * t.rgb * 2.0);\n"
+    "  }\n"
+    "  return float4(c, mode.x);\n"
+    "}\n";
+
+#ifdef _WIN32
+typedef struct ID3DBlobVtbl {
+    long(__stdcall *QueryInterface)(void *, const void *, void **);
+    unsigned long(__stdcall *AddRef)(void *);
+    unsigned long(__stdcall *Release)(void *);
+    void *(__stdcall *GetBufferPointer)(void *);
+    size_t(__stdcall *GetBufferSize)(void *);
+} ID3DBlobVtbl;
+typedef struct { ID3DBlobVtbl *v; } ID3DBlob_;
+typedef long(__stdcall *D3DCompileFn)(const void *, size_t, const char *, const void *, void *, const char *, const char *, unsigned, unsigned,
+                                      ID3DBlob_ **, ID3DBlob_ **);
+
+static SDL_GPUShader *make_shader(const char *src, const char *profile, SDL_GPUShaderStage stage, int samplers, int uniforms) {
+    static D3DCompileFn compile;
+    ID3DBlob_ *code = NULL, *err = NULL;
+    SDL_GPUShaderCreateInfo info;
+    SDL_GPUShader *s;
+
+    if (compile == NULL) {
+        HMODULE dll = LoadLibraryA("d3dcompiler_47.dll");
+        compile = dll ? (D3DCompileFn)GetProcAddress(dll, "D3DCompile") : NULL;
+        if (compile == NULL) {
+            fprintf(stderr, "No d3dcompiler_47.dll\n");
+            return NULL;
+        }
+    }
+    if (compile(src, strlen(src), "gfx", NULL, NULL, "main", profile, 0, 0, &code, &err) < 0) {
+        fprintf(stderr, "Shader: %s\n", err ? (char *)err->v->GetBufferPointer(err) : "failed");
+        return NULL;
+    }
+    SDL_zero(info);
+    info.code = code->v->GetBufferPointer(code);
+    info.code_size = code->v->GetBufferSize(code);
+    info.entrypoint = "main";
+    info.format = SDL_GPU_SHADERFORMAT_DXBC;
+    info.stage = stage;
+    info.num_samplers = samplers;
+    info.num_uniform_buffers = uniforms;
+    s = SDL_CreateGPUShader(Device, &info);
+    if (s == NULL) {
+        fprintf(stderr, "SDL_CreateGPUShader: %s\n", SDL_GetError());
+    }
+    return s;
+}
+#else
+static SDL_GPUShader *make_shader(const char *src, const char *profile, SDL_GPUShaderStage stage, int samplers, int uniforms) {
+    (void)src; (void)profile; (void)stage; (void)samplers; (void)uniforms;
+    fprintf(stderr, "No shaders for this system yet\n");
+    return NULL;
+}
+#endif
+
+static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *fs, SDL_GPUBlendFactor src, SDL_GPUBlendFactor dst, SDL_GPUBlendOp op, int blend) {
+    SDL_GPUGraphicsPipelineCreateInfo p;
+    SDL_GPUVertexBufferDescription vb;
+    SDL_GPUVertexAttribute a[3];
+    SDL_GPUColorTargetDescription c;
+
+    SDL_zero(p);
+    SDL_zero(vb);
+    SDL_zero(a);
+    SDL_zero(c);
+    vb.slot = 0;
+    vb.pitch = sizeof(GpuVert);
+    vb.input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX;
+    a[0].location = 0;
+    a[0].format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4;
+    a[0].offset = 0;
+    a[1].location = 1;
+    a[1].format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2;
+    a[1].offset = 16;
+    a[2].location = 2;
+    a[2].format = SDL_GPU_VERTEXELEMENTFORMAT_UBYTE4_NORM;
+    a[2].offset = 24;
+    c.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
+    if (blend) {
+        c.blend_state.enable_blend = true;
+        c.blend_state.color_blend_op = op;
+        c.blend_state.alpha_blend_op = SDL_GPU_BLENDOP_ADD;
+        c.blend_state.src_color_blendfactor = src;
+        c.blend_state.dst_color_blendfactor = dst;
+        c.blend_state.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO;
+        c.blend_state.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
+    }
+    p.vertex_shader = vs;
+    p.fragment_shader = fs;
+    p.vertex_input_state.vertex_buffer_descriptions = &vb;
+    p.vertex_input_state.num_vertex_buffers = 1;
+    p.vertex_input_state.vertex_attributes = a;
+    p.vertex_input_state.num_vertex_attributes = 3;
+    p.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
+    p.rasterizer_state.cull_mode = SDL_GPU_CULLMODE_NONE;
+    p.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
+    p.target_info.color_target_descriptions = &c;
+    p.target_info.num_color_targets = 1;
+    return SDL_CreateGPUGraphicsPipeline(Device, &p);
+}
+
+int gfx_init(void *window, int width, int height) {
+    SDL_GPUShader *vs, *fs;
+    SDL_GPUTextureCreateInfo t;
+    SDL_GPUSamplerCreateInfo sc;
+    SDL_GPUBufferCreateInfo bc;
+    SDL_GPUTransferBufferCreateInfo tc;
+
+    Window = window;
+    TargetW = width;
+    TargetH = height;
+    Device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_DXBC, false, "direct3d12");
+    if (Device == NULL) {
+        fprintf(stderr, "SDL_CreateGPUDevice: %s\n", SDL_GetError());
+        return 0;
+    }
+    if (!SDL_ClaimWindowForGPUDevice(Device, Window)) {
+        fprintf(stderr, "SDL_ClaimWindowForGPUDevice: %s\n", SDL_GetError());
+        return 0;
+    }
+    vs = make_shader(VS_SRC, "vs_5_1", SDL_GPU_SHADERSTAGE_VERTEX, 0, 0);
+    fs = make_shader(FS_SRC, "ps_5_1", SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1);
+    if (vs == NULL || fs == NULL) {
+        return 0;
+    }
+    PipeOpaque = make_pipeline(vs, fs, 0, 0, 0, 0);
+    PipeHalf = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA, SDL_GPU_BLENDOP_ADD, 1);
+    PipeAdd = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1);
+    PipeSub = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_REVERSE_SUBTRACT, 1);
+    PipeQuarter = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1);
+    SDL_ReleaseGPUShader(Device, vs);
+    SDL_ReleaseGPUShader(Device, fs);
+    if (!PipeOpaque || !PipeHalf || !PipeAdd || !PipeSub || !PipeQuarter) {
+        fprintf(stderr, "Pipeline: %s\n", SDL_GetError());
+        return 0;
+    }
+
+    SDL_zero(t);
+    t.type = SDL_GPU_TEXTURETYPE_2D;
+    t.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
+    t.layer_count_or_depth = 1;
+    t.num_levels = 1;
+    t.width = width;
+    t.height = height;
+    t.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
+    Target = SDL_CreateGPUTexture(Device, &t);
+    t.width = ATLAS_SIZE;
+    t.height = ATLAS_SIZE;
+    t.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
+    Atlas = SDL_CreateGPUTexture(Device, &t);
+
+    SDL_zero(sc);
+    sc.min_filter = SDL_GPU_FILTER_NEAREST;
+    sc.mag_filter = SDL_GPU_FILTER_NEAREST;
+    sc.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    sc.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    Sampler = SDL_CreateGPUSampler(Device, &sc);
+
+    SDL_zero(bc);
+    bc.usage = SDL_GPU_BUFFERUSAGE_VERTEX;
+    bc.size = MAX_TRIS * 3 * sizeof(GpuVert);
+    VertexBuf = SDL_CreateGPUBuffer(Device, &bc);
+    SDL_zero(tc);
+    tc.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
+    tc.size = bc.size;
+    VertexXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
+    tc.size = ATLAS_SIZE * ATLAS_SIZE * 4;
+    AtlasXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
+    tc.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
+    tc.size = width * height * 4;
+    ShotXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
+    if (!Target || !Atlas || !Sampler || !VertexBuf || !VertexXfer || !AtlasXfer || !ShotXfer) {
+        fprintf(stderr, "GPU resources: %s\n", SDL_GetError());
+        return 0;
+    }
+    Tris = malloc(sizeof(Tri) * MAX_TRIS);
+    Order = malloc(sizeof(int) * MAX_TRIS);
+    AtlasPixels = calloc(ATLAS_SIZE * ATLAS_SIZE, 4);
+    Textures = malloc(sizeof(Cached) * MAX_TEXTURES);
+    gfx_begin_frame();
+    return 1;
+}
+
+void gfx_quit(void) {
+    if (Device != NULL) {
+        SDL_WaitForGPUIdle(Device);
+    }
+}
+
+void gfx_set_clear(uint8_t r, uint8_t g, uint8_t b) {
+    ClearRGB[0] = r;
+    ClearRGB[1] = g;
+    ClearRGB[2] = b;
+}
+
+void gfx_set_screen(int width, int height) {
+    ScreenW = width;
+    ScreenH = height;
+}
+
+void gfx_set_clip(int x, int y, int w, int h) {
+    float sx = (float)TargetW / ScreenW, sy = (float)TargetH / ScreenH;
+    SDL_Rect r;
+
+    r.x = (int)(x * sx);
+    r.y = (int)(y * sy);
+    r.w = (int)(w * sx);
+    r.h = (int)(h * sy);
+    if (NumClips > 0 && memcmp(&Clips[CurClip], &r, sizeof(r)) == 0) {
+        return;
+    }
+    if (NumClips < MAX_CLIPS) {
+        CurClip = NumClips++;
+        Clips[CurClip] = r;
+    }
+}
+
+void gfx_begin_frame(void) {
+    NumTris = 0;
+    NumClips = 0;
+    CurClip = 0;
+    gfx_set_clip(0, 0, ScreenW, ScreenH);
+}
+
+void gfx_tri(int key, const GfxVert v[3], const GfxTex *tex, int blend) {
+    Tri *t;
+
+    if (NumTris >= MAX_TRIS) {
+        return;
+    }
+    t = &Tris[NumTris++];
+    memcpy(t->v, v, sizeof(t->v));
+    t->tex = tex;
+    t->key = key;
+    t->blend = (short)blend;
+    t->clip = (short)CurClip;
+}
+
+void gfx_state_blend(int key, int blend) {
+    GfxVert none[3];
+
+    memset(none, 0, sizeof(none));
+    gfx_tri(key, none, NULL, 100 + blend);
+}
+
+void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend) {
+    GfxVert a[3];
+
+    /* the PS1 draws the first triangle first, and a later add in a bucket draws earlier */
+    a[0] = v[1];
+    a[1] = v[3];
+    a[2] = v[2];
+    gfx_tri(key, a, tex, blend);
+    gfx_tri(key, v, tex, blend);
+}
+
+/* the texture atlas */
+static int PtrGenBump(void);
+static void atlas_reset(void) {
+    PtrGenBump();
+    NumTextures = 0;
+    ShelfX = ShelfY = ShelfH = 0;
+}
+
+static uint32_t decode_colour(uint16_t c) {
+    uint32_t r, g, b, a;
+
+    if (c == 0) {
+        return 0;
+    }
+    r = (c & 0x1F) * 255 / 31;
+    g = ((c >> 5) & 0x1F) * 255 / 31;
+    b = ((c >> 10) & 0x1F) * 255 / 31;
+    a = (c & 0x8000) ? 128 : 255;
+    return r | (g << 8) | (b << 16) | (a << 24);
+}
+
+static int PtrGenBump(void);
+/* Two levels: pointers seen since the heap last moved anything, then the pixels' own content, which survives a move. */
+#define PTR_SLOTS 65536
+typedef struct {
+    const void *pixels, *palette;
+    int w, h, gen, index;
+} PtrSlot;
+static PtrSlot PtrCache[PTR_SLOTS];
+static int PtrGen = 1;
+
+static uint64_t hash_bytes(const uint8_t *p, size_t n, uint64_t h) {
+    size_t i;
+
+    for (i = 0; i < n; i++) {
+        h = (h ^ p[i]) * 0x100000001B3ULL;
+    }
+    return h;
+}
+
+const GfxTex *gfx_texture(const void *pixels, int w, int h, int bpp, const void *palette) {
+    Cached *c;
+    uint32_t *out;
+    int i, x, y;
+    uint64_t key, hash;
+    size_t bytes;
+    PtrSlot *ps;
+
+    key = ((uint64_t)(uintptr_t)pixels * 31 + (uint64_t)(uintptr_t)palette) * 0x9E3779B97F4A7C15ULL;
+    ps = &PtrCache[(key >> 40) & (PTR_SLOTS - 1)];
+    if (ps->gen == PtrGen && ps->pixels == pixels && ps->palette == palette && ps->w == w && ps->h == h) {
+        return &Textures[ps->index].t;
+    }
+    if (w <= 0 || h <= 0 || w > 1024 || h > 1024) {
+        return NULL;
+    }
+    bytes = bpp == 16 ? (size_t)w * h * 2 : bpp == 8 ? (size_t)((w + 1) & ~1) * h : (size_t)((w + 3) / 4 * 2) * h;
+    hash = hash_bytes(pixels, bytes, 0xCBF29CE484222325ULL);
+    if (palette != NULL) {
+        hash = hash_bytes(palette, bpp == 8 ? 512 : 32, hash);
+    }
+    for (i = NumTextures - 1; i >= 0; i--) {
+        c = &Textures[i];
+        if (c->hash == hash && c->w == w && c->h == h) {
+            ps->gen = PtrGen; ps->pixels = pixels; ps->palette = palette; ps->w = w; ps->h = h; ps->index = i;
+            return &c->t;
+        }
+    }
+    if (w <= 0 || h <= 0 || w > 1024 || h > 1024) {
+        return NULL;
+    }
+    if (NumTextures >= MAX_TEXTURES) {
+        atlas_reset();
+    }
+    if (ShelfX + w + 2 > ATLAS_SIZE) {
+        ShelfX = 0;
+        ShelfY += ShelfH + 2;
+        ShelfH = 0;
+    }
+    if (ShelfY + h + 2 > ATLAS_SIZE) {
+        atlas_reset();
+    }
+    ps->gen = PtrGen; ps->pixels = pixels; ps->palette = palette; ps->w = w; ps->h = h; ps->index = NumTextures;
+    c = &Textures[NumTextures++];
+    c->hash = hash;
+    c->pixels = pixels;
+    c->palette = palette;
+    c->w = w;
+    c->h = h;
+    c->bpp = bpp;
+    c->t.u0 = (float)ShelfX / ATLAS_SIZE;
+    c->t.v0 = (float)ShelfY / ATLAS_SIZE;
+    c->t.us = 1.0f / ATLAS_SIZE;
+    c->t.vs = 1.0f / ATLAS_SIZE;
+    for (y = 0; y < h; y++) {
+        out = (uint32_t *)AtlasPixels + (ShelfY + y) * ATLAS_SIZE + ShelfX;
+        if (bpp == 16) {
+            const uint16_t *row = (const uint16_t *)pixels + y * w;
+            for (x = 0; x < w; x++) {
+                out[x] = decode_colour(row[x]);
+            }
+        } else if (bpp == 8) {
+            const uint8_t *row = (const uint8_t *)pixels + y * ((w + 1) & ~1);
+            const uint16_t *pal = palette;
+            for (x = 0; x < w; x++) {
+                out[x] = decode_colour(pal ? pal[row[x]] : 0x7FFF);
+            }
+        } else {
+            const uint8_t *row = (const uint8_t *)pixels + y * ((w + 3) / 4 * 2);
+            const uint16_t *pal = palette;
+            for (x = 0; x < w; x++) {
+                int n = (row[x / 2] >> ((x & 1) * 4)) & 15;
+                out[x] = decode_colour(pal ? pal[n] : 0x7FFF);
+            }
+        }
+    }
+    if (ShelfY < AtlasDirtyTop) {
+        AtlasDirtyTop = ShelfY;
+    }
+    if (ShelfY + h > AtlasDirtyBottom) {
+        AtlasDirtyBottom = ShelfY + h;
+    }
+    ShelfX += w + 2;
+    if (h > ShelfH) {
+        ShelfH = h;
+    }
+    return &c->t;
+}
+
+void gfx_forget_textures(const void *start, const void *end) {
+    (void)start;
+    (void)end;
+    PtrGen++;
+}
+
+static int PtrGenBump(void) {
+    return ++PtrGen;
+}
+
+void gfx_screenshot(const char *path) {
+    ShotPath = path;
+}
+
+static void sort_tris(void) {
+    int i;
+    int minK = 0x7FFFFFFF, maxK = -0x7FFFFFFF;
+    static int *counts;
+    static int countsSize;
+    int range, pos;
+
+    for (i = 0; i < NumTris; i++) {
+        if (Tris[i].key < minK) minK = Tris[i].key;
+        if (Tris[i].key > maxK) maxK = Tris[i].key;
+    }
+    if (NumTris == 0) {
+        return;
+    }
+    range = maxK - minK + 1;
+    if (range > countsSize) {
+        free(counts);
+        counts = malloc(sizeof(int) * range);
+        countsSize = range;
+    }
+    memset(counts, 0, sizeof(int) * range);
+    for (i = 0; i < NumTris; i++) {
+        counts[maxK - Tris[i].key]++;
+    }
+    pos = 0;
+    for (i = 0; i < range; i++) {
+        int n = counts[i];
+        counts[i] = pos;
+        pos += n;
+    }
+    /* within a bucket the last added draws first, as addPrim's list has it */
+    for (i = NumTris - 1; i >= 0; i--) {
+        Order[counts[maxK - Tris[i].key]++] = i;
+    }
+}
+
+static void put_vert(GpuVert *o, const GfxVert *v, const GfxTex *tex) {
+    float w = v->w < 0.001f ? 0.001f : v->w;
+
+    o->x = (v->x / ScreenW * 2.0f - 1.0f) * w;
+    o->y = (1.0f - v->y / ScreenH * 2.0f) * w;
+    o->z = 0.5f * w;
+    o->w = w;
+    if (tex != NULL) {
+        o->u = tex->u0 + (v->u + 0.5f) * tex->us;
+        o->v = tex->v0 + (v->v + 0.5f) * tex->vs;
+    } else {
+        o->u = 0;
+        o->v = 0;
+    }
+    o->rgba = v->rgba;
+}
+
+/* One run of triangles with the same state, in draw order. */
+typedef struct {
+    int first, count;
+    short blend, textured, clip;
+} Run;
+
+void gfx_end_frame(void) {
+    static Run runs[MAX_TRIS];
+    int numRuns = 0;
+    SDL_GPUCommandBuffer *cmd = SDL_AcquireGPUCommandBuffer(Device);
+    SDL_GPUTexture *swap = NULL;
+    Uint32 sw = 0, sh = 0;
+    GpuVert *gv;
+    SDL_GPUCopyPass *copy;
+    SDL_GPURenderPass *pass;
+    SDL_GPUColorTargetInfo ct;
+    int i;
+    Uint32 used;
+
+    if (cmd == NULL) {
+        gfx_begin_frame();
+        return;
+    }
+    sort_tris();
+
+    /* Each semi-transparent textured triangle draws twice: its opaque texels, then its semi-transparent ones. */
+    gv = SDL_MapGPUTransferBuffer(Device, VertexXfer, true);
+    used = 0;
+    {
+    int stateBlend = GFX_HALF;
+    for (i = 0; i < NumTris; i++) {
+        const Tri *t = &Tris[Order[i]];
+        int textured = t->tex != NULL;
+        int passes = (t->blend != GFX_OPAQUE && textured) ? 2 : 1;
+        int p;
+
+        if (t->blend >= 100) {
+            stateBlend = t->blend - 100;
+            continue;
+        }
+
+        for (p = 0; p < passes && used + 3 <= MAX_TRIS * 3; p++) {
+            int b = (passes == 2 && p == 0) ? -2 : t->blend == GFX_STATE_BLEND ? stateBlend : t->blend; /* -2: the opaque texels of a semi-transparent triangle */
+            Run *r = numRuns ? &runs[numRuns - 1] : NULL;
+
+            if (r == NULL || r->blend != b || r->textured != textured || r->clip != t->clip) {
+                r = &runs[numRuns++];
+                r->first = used;
+                r->count = 0;
+                r->blend = (short)b;
+                r->textured = (short)textured;
+                r->clip = t->clip;
+            }
+            put_vert(&gv[used++], &t->v[0], t->tex);
+            put_vert(&gv[used++], &t->v[1], t->tex);
+            put_vert(&gv[used++], &t->v[2], t->tex);
+            r->count += 3;
+        }
+    }
+    }
+    SDL_UnmapGPUTransferBuffer(Device, VertexXfer);
+
+    copy = SDL_BeginGPUCopyPass(cmd);
+    if (used != 0) {
+        SDL_GPUTransferBufferLocation src;
+        SDL_GPUBufferRegion dst;
+
+        SDL_zero(src);
+        SDL_zero(dst);
+        src.transfer_buffer = VertexXfer;
+        dst.buffer = VertexBuf;
+        dst.size = used * sizeof(GpuVert);
+        SDL_UploadToGPUBuffer(copy, &src, &dst, true);
+    }
+    if (AtlasDirtyBottom > AtlasDirtyTop) {
+        uint8_t *a = SDL_MapGPUTransferBuffer(Device, AtlasXfer, true);
+        SDL_GPUTextureTransferInfo src;
+        SDL_GPUTextureRegion dst;
+        int rows = AtlasDirtyBottom - AtlasDirtyTop;
+
+        memcpy(a, AtlasPixels + AtlasDirtyTop * ATLAS_SIZE * 4, rows * ATLAS_SIZE * 4);
+        SDL_UnmapGPUTransferBuffer(Device, AtlasXfer);
+        SDL_zero(src);
+        SDL_zero(dst);
+        src.transfer_buffer = AtlasXfer;
+        src.pixels_per_row = ATLAS_SIZE;
+        src.rows_per_layer = rows;
+        dst.texture = Atlas;
+        dst.y = AtlasDirtyTop;
+        dst.w = ATLAS_SIZE;
+        dst.h = rows;
+        dst.d = 1;
+        SDL_UploadToGPUTexture(copy, &src, &dst, true);
+        AtlasDirtyTop = ATLAS_SIZE;
+        AtlasDirtyBottom = 0;
+    }
+    SDL_EndGPUCopyPass(copy);
+
+    SDL_zero(ct);
+    ct.texture = Target;
+    ct.clear_color.r = ClearRGB[0] / 255.0f;
+    ct.clear_color.g = ClearRGB[1] / 255.0f;
+    ct.clear_color.b = ClearRGB[2] / 255.0f;
+    ct.clear_color.a = 1;
+    ct.load_op = SDL_GPU_LOADOP_CLEAR;
+    ct.store_op = SDL_GPU_STOREOP_STORE;
+    pass = SDL_BeginGPURenderPass(cmd, &ct, 1, NULL);
+    if (numRuns != 0) {
+        SDL_GPUBufferBinding vb;
+        SDL_GPUTextureSamplerBinding tb;
+
+        vb.buffer = VertexBuf;
+        vb.offset = 0;
+        SDL_BindGPUVertexBuffers(pass, 0, &vb, 1);
+        tb.texture = Atlas;
+        tb.sampler = Sampler;
+        for (i = 0; i < numRuns; i++) {
+            const Run *r = &runs[i];
+            float mode[4];
+            SDL_GPUGraphicsPipeline *pipe;
+
+            mode[1] = 1;
+            mode[2] = mode[3] = 0;
+            switch (r->blend) {
+            case GFX_HALF:
+                pipe = PipeHalf;
+                mode[0] = 0.5f;
+                mode[1] = 3;
+                break;
+            case GFX_ADD:
+                pipe = PipeAdd;
+                mode[0] = 1;
+                mode[1] = 3;
+                break;
+            case GFX_SUB:
+                pipe = PipeSub;
+                mode[0] = 1;
+                mode[1] = 3;
+                break;
+            case GFX_ADD_QUARTER:
+                pipe = PipeQuarter;
+                mode[0] = 0.25f;
+                mode[1] = 3;
+                break;
+            case -2:
+                pipe = PipeOpaque;
+                mode[0] = 1;
+                mode[1] = 2;
+                break;
+            default:
+                pipe = PipeOpaque;
+                mode[0] = 1;
+                mode[1] = 1;
+                break;
+            }
+            if (!r->textured) {
+                mode[1] = 0;
+            }
+            SDL_BindGPUGraphicsPipeline(pass, pipe);
+            SDL_SetGPUScissor(pass, &Clips[r->clip]);
+            SDL_BindGPUFragmentSamplers(pass, 0, &tb, 1);
+            SDL_PushGPUFragmentUniformData(cmd, 0, mode, sizeof(mode));
+            SDL_DrawGPUPrimitives(pass, r->count, 1, r->first, 0);
+        }
+    }
+    SDL_EndGPURenderPass(pass);
+
+    if (ShotPath != NULL) {
+        SDL_GPUCopyPass *c2 = SDL_BeginGPUCopyPass(cmd);
+        SDL_GPUTextureRegion src;
+        SDL_GPUTextureTransferInfo dst;
+
+        SDL_zero(src);
+        SDL_zero(dst);
+        src.texture = Target;
+        src.w = TargetW;
+        src.h = TargetH;
+        src.d = 1;
+        dst.transfer_buffer = ShotXfer;
+        dst.pixels_per_row = TargetW;
+        dst.rows_per_layer = TargetH;
+        SDL_DownloadFromGPUTexture(c2, &src, &dst);
+        SDL_EndGPUCopyPass(c2);
+    }
+
+    if (SDL_WaitAndAcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh) && swap != NULL) {
+        SDL_GPUBlitInfo b;
+
+        SDL_zero(b);
+        b.source.texture = Target;
+        b.source.w = TargetW;
+        b.source.h = TargetH;
+        b.destination.texture = swap;
+        b.destination.w = sw;
+        b.destination.h = sh;
+        b.load_op = SDL_GPU_LOADOP_DONT_CARE;
+        b.filter = SDL_GPU_FILTER_LINEAR;
+        SDL_BlitGPUTexture(cmd, &b);
+    }
+    if (ShotPath != NULL) {
+        SDL_GPUFence *f = SDL_SubmitGPUCommandBufferAndAcquireFence(cmd);
+        SDL_Surface *s;
+        void *px;
+
+        SDL_WaitForGPUFences(Device, true, &f, 1);
+        SDL_ReleaseGPUFence(Device, f);
+        px = SDL_MapGPUTransferBuffer(Device, ShotXfer, false);
+        s = SDL_CreateSurfaceFrom(TargetW, TargetH, SDL_PIXELFORMAT_ABGR8888, px, TargetW * 4);
+        if (s != NULL) {
+            SDL_SavePNG(s, ShotPath);
+            SDL_DestroySurface(s);
+        }
+        SDL_UnmapGPUTransferBuffer(Device, ShotXfer);
+        ShotPath = NULL;
+    } else {
+        SDL_SubmitGPUCommandBuffer(cmd);
+    }
+    gfx_begin_frame();
+}

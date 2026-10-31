@@ -4136,7 +4136,9 @@ void SetN2OHeroIdle(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
-    h->hero_move->velocity_enable = 1;
+    if (h->hero_move != NULL) {
+        h->hero_move->velocity_enable = 1;
+    }
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/prims.h"
+#include "bash/engine.h"
 
 static inline void prims_pool_clear(PrimList *l) {
     l->f4 = 0;
@@ -21,38 +22,38 @@ void prims_init(s32 *cfg) {
 
     cnt = cfg[0];
     PrimsConfig = cfg;
-    PrimSetPool = mal_alloc((u32)(cnt * 0x2C0) >> 3, &MainHeap);
-    PrimNodePool = mal_alloc((u32)(cfg[2] * 0x2A0) >> 3, &MainHeap);
-    q = mal_alloc((u32)(cfg[1] << 6) >> 3, &MainHeap);
+    PrimSetPool = mal_alloc(cnt * sizeof(PrimSet), &MainHeap);
+    PrimNodePool = mal_alloc(cfg[2] * sizeof(PrimNode), &MainHeap);
+    q = mal_alloc(cfg[1] * sizeof(PrimLink), &MainHeap);
     PrimLinkPool = q;
     p = PrimSetPool;
     next = PrimNodePool;
-    PrimNodeFree = (s32 *)next;
+    PrimNodeFree = (PrimLink *)next;
     n = cfg[2] - 2;
     if (n != -1) {
         do {
-            *(u8 **)next = next + 0x54;
-            next += 0x54;
+            ((PrimNode *)next)->next = (PrimLink *)(next + sizeof(PrimNode));
+            next += sizeof(PrimNode);
             n--;
             end1 = -1;
         } while (n != end1);
     }
-    *(u8 **)next = NULL;
+    ((PrimNode *)next)->next = NULL;
     n = cfg[1] - 2;
     if (n != -1) {
         do {
-            *(s32 *)(q + 4) = 0;
-            *(u8 **)q = q + 8;
-            q += 8;
+            ((PrimLink *)q)->data = NULL;
+            ((PrimLink *)q)->next = (PrimLink *)(q + sizeof(PrimLink));
+            q += sizeof(PrimLink);
             n--;
             end2 = -1;
         } while (n != end2);
     }
-    *(s32 *)(q + 4) = 0;
-    *(u8 **)q = NULL;
+    ((PrimLink *)q)->data = NULL;
+    ((PrimLink *)q)->next = NULL;
     end = -1;
     n = cfg[0] + end;
-    PrimLinkFree = (s32 *)PrimLinkPool;
+    PrimLinkFree = (PrimLink *)PrimLinkPool;
     for (;;) {
         u8 *np;
 
@@ -83,17 +84,17 @@ static inline void PrimList_Flush(PrimList *arg0, s32 arg1) {
     if (arg1 == 1) {
         primnodes_free(arg0->fC);
     } else {
-        *arg0->f8 = PrimNodeFree;
+        arg0->f8->next = PrimNodeFree;
         PrimNodeFree = arg0->fC;
         if (arg0->f10 != NULL) {
-            *arg0->f10 = NULL;
+            arg0->f10->next = NULL;
         } else {
             arg0->f4 = 0;
         }
         arg0->f8 = arg0->f10;
     }
     if (arg0->f10 != NULL) {
-        *arg0->f10 = NULL;
+        arg0->f10->next = NULL;
     } else {
         arg0->f4 = 0;
     }
@@ -146,8 +147,8 @@ void prims_update(void) {
         q = (PrimSet *)FILE_AT(set, off);
         q->pairs[0].a.f10 = NULL;
         q->pairs[0].b.f10 = NULL;
-        q->pairs[0].a.fC = (s32 *) q->pairs[0].a.f4;
-        q->pairs[0].b.fC = (s32 *) q->pairs[0].b.f4;
+        q->pairs[0].a.fC = q->pairs[0].a.f4;
+        q->pairs[0].b.fC = q->pairs[0].b.f4;
         if (set->dead == 1 && set->pairs[0].a.f4 == 0 && set->pairs[1].a.f4 == 0
             && set->pairs[0].b.f4 == 0 && set->pairs[1].b.f4 == 0) {
             PrimSet_Free(prev, set);
@@ -166,9 +167,9 @@ void prims_update(void) {
 static inline void PrimList_Empty(PrimList *arg0, PrimSet *node) {
     s32 kind;
 
-    s32 *list;
+    PrimLink *list;
 
-    list = (s32 *) arg0->f4;
+    list = arg0->f4;
     kind = node->mode;
     arg0->f10 = NULL;
     arg0->fC = list;
@@ -496,35 +497,35 @@ void prim_write_uvs(MeshHeader *faces, FacePrim *prim) {
 }
 
 FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *faces, s32 arg4) {
-    s32 *node;
+    PrimLink *node;
     FacePrim *prim;
 
     node = PrimList_Take(pool);
     if (node != NULL) {
-        *node = list->f4;
-        list->f4 = (s32)node;
+        node->next = list->f4;
+        list->f4 = node;
         if (list->f8 == NULL) {
-            list->f8 = (s32 **)node;
+            list->f8 = node;
         }
         if (arg4 != 0) {
-            faces_write_colors(faces, (FacePrim *)node[1]);
+            faces_write_colors(faces, node->data);
         }
     } else {
         if (mal_first_free(faces->faces * 10, MainHeap.free) == NULL || (node = PrimLinkFree) == NULL) {
             return NULL;
         }
-        PrimLinkFree = (s32 *)*node;
-        if (list->f4 == 0) {
-            list->f8 = (s32 **)node;
+        PrimLinkFree = node->next;
+        if (list->f4 == NULL) {
+            list->f8 = node;
         }
-        *node = list->f4;
-        list->f4 = (s32)node;
-        mal_alloc_owned_low(faces->faces * 0x28, (void **)(node + 1), &MainHeap, ((FrameCount & 1)?3:2));
-        prim = (FacePrim *)node[1];
+        node->next = list->f4;
+        list->f4 = node;
+        mal_alloc_owned_low(faces->faces * sizeof(FacePrim), &node->data, &MainHeap, ((FrameCount & 1)?3:2));
+        prim = node->data;
         prim_write_uvs(faces, prim);
         faces_write_colors(faces, prim);
     }
-    return (FacePrim *)node[1];
+    return node->data;
 }
 
 void primpool_release_all(void) {
@@ -625,12 +626,12 @@ void primpool_init(s32 count) {
     s32 last;
 
     if (PrimPool.mem == NULL) {
-        PrimPool.mem = mal_alloc(count * 0x64, &MainHeap);
+        PrimPool.mem = mal_alloc(count * (sizeof(PoolNode) + 0x5C), &MainHeap);
     }
     p = PrimPool.mem;
     last = count - 1;
     for (i = 0; i < last; i++) {
-        n = (PoolNode *)FILE_AT(p, 0x64);  /* the pool's 0x64-byte entries */
+        n = (PoolNode *)FILE_AT(p, sizeof(PoolNode) + 0x5C);
         p->next = n;
         p = n;
     }
@@ -639,85 +640,63 @@ void primpool_init(s32 count) {
     PrimPool.free = PrimPool.mem;
 }
 
-void primset_invalidate(PrimSet **arg0) {
+void primset_invalidate(ref32 *arg0) {
     PrimSet *set;
 
-    set = *arg0;
+    set = ref_get(*arg0);
     if (set != NULL) {
         set->dead = 1;
     }
 }
 
-s32 *primnode_alloc(s32 arg0, s32 *arg1, s32 arg2, s32 arg3) {
-    s32 *node;
-    s32 *data;
+FacePrim *primnode_alloc(s32 arg0, PrimList *list, void *pool, MeshHeader *faces) {
+    PrimLink *node;
+    FacePrim *data;
 
     node = PrimNodeFree;
     if (node == NULL) {
         return NULL;
     }
-    PrimNodeFree = (s32 *) *node;
-    if (arg1[1] == 0) {
-        arg1[2] = (s32) node;
+    PrimNodeFree = node->next;
+    if (list->f4 == NULL) {
+        list->f8 = node;
     }
-    data = node + 1;
-    *node = arg1[1];
-    arg1[1] = (s32) node;
-    prim_write_uvs(arg3, data);
-    faces_write_colors(arg3, data);
+    data = (FacePrim *)&node->data;
+    node->next = list->f4;
+    list->f4 = node;
+    prim_write_uvs(faces, data);
+    faces_write_colors(faces, data);
     return data;
 }
 
-s32 *primlist_pop(PrimList *l) {
-    s32 **tail;
-    s32 *n;
+PrimLink *primlist_pop(PrimList *l) {
+    PrimLink *tail;
+    PrimLink *n;
 
     if (l == NULL || (n = l->fC) == NULL) {
         return NULL;
     }
     tail = l->f10;
-    l->fC = (s32 *)*n;
+    l->fC = n->next;
     if (tail != NULL) {
-        *tail = (s32 *)*n;
-        l->fC = (s32 *)*n;
-        if (*n == 0) {
+        tail->next = n->next;
+        l->fC = n->next;
+        if (n->next == NULL) {
             l->f8 = tail;
         }
     } else {
-        l->f4 = *n;
-        l->fC = (s32 *)*n;
-        *n = 0;
+        l->f4 = n->next;
+        l->fC = n->next;
+        n->next = NULL;
     }
     return n;
 }
 
-s32 *primlist_pop_b(PrimList *l) {
-    s32 **tail;
-    s32 *n;
-
-    if (l == NULL || (n = l->fC) == NULL) {
-        return NULL;
-    }
-    tail = l->f10;
-    l->fC = (s32 *)*n;
-    if (tail != NULL) {
-        *tail = (s32 *)*n;
-        l->fC = (s32 *)*n;
-        if (*n == 0) {
-            l->f8 = tail;
-        }
-    } else {
-        if (l->f8 == (s32 **)n) {
-            l->f8 = NULL;
-        }
-        l->f4 = *n;
-        l->fC = (s32 *)*n;
-        *n = 0;
-    }
-    return n;
+PrimLink *primlist_pop_b(PrimList *l) {
+    return PrimList_Take(l);
 }
 
-PrimSet *primset_alloc(PrimSet **out, s32 mode) {
+PrimSet *primset_alloc(ref32 *out, s32 mode) {
     PrimSet *p;
     PrimSet *next;
     PrimSet *prev;
@@ -726,7 +705,7 @@ PrimSet *primset_alloc(PrimSet **out, s32 mode) {
     if (p == NULL) {
         return NULL;
     }
-    *out = p;
+    *out = ref_of(p);
     next = p->next;
     prev = PrimSetList;
     PrimSetList = p;
@@ -757,49 +736,49 @@ PrimSet *primset_alloc(PrimSet **out, s32 mode) {
     return p;
 }
 
-void faces_write_uvs_colors(s32 arg0, s32 arg1) {
+void faces_write_uvs_colors(MeshHeader *arg0, FacePrim *arg1) {
     prim_write_uvs(arg0, arg1);
     faces_write_colors(arg0, arg1);
 }
 
-void primnodes_free(s32 *arg0) {
-    s32 *temp_v1;
-    s32 *var_a0;
-    s32 *var_s0;
+void primnodes_free(PrimLink *arg0) {
+    PrimLink *temp_v1;
+    PrimLink *var_a0;
+    PrimLink *var_s0;
 
     var_s0 = arg0;
     var_a0 = NULL;
     if (arg0 != NULL) {
         do {
-            mal_free((void *)var_s0[1], &MainHeap);
+            mal_free(var_s0->data, &MainHeap);
             var_a0 = var_s0;
-            var_s0 = (s32 *)var_a0[0];
+            var_s0 = var_a0->next;
         } while (var_s0 != NULL);
     }
     temp_v1 = PrimLinkFree;
     PrimLinkFree = arg0;
-    *var_a0 = temp_v1;
+    var_a0->next = temp_v1;
 }
 
 void primlist_reset(PrimList *arg0, s32 arg1) {
     arg0->f10 = NULL;
-    arg0->fC = (s32 *) arg0->f4;
+    arg0->fC = arg0->f4;
     if (arg0->fC != NULL) {
         arg0->f0 = 0;
         if (arg1 == 1) {
             primnodes_free(arg0->fC);
         } else {
-            *arg0->f8 = PrimNodeFree;
+            arg0->f8->next = PrimNodeFree;
             PrimNodeFree = arg0->fC;
             if (arg0->f10 != NULL) {
-                *arg0->f10 = NULL;
+                arg0->f10->next = NULL;
             } else {
                 arg0->f4 = 0;
             }
             arg0->f8 = arg0->f10;
         }
         if (arg0->f10 != NULL) {
-            *arg0->f10 = NULL;
+            arg0->f10->next = NULL;
         } else {
             arg0->f4 = 0;
         }
@@ -833,17 +812,17 @@ void primlist_release(PrimList *arg0, s32 arg1) {
     if (arg1 == 1) {
         primnodes_free(arg0->fC);
     } else {
-        *arg0->f8 = PrimNodeFree;
+        arg0->f8->next = PrimNodeFree;
         PrimNodeFree = arg0->fC;
         if (arg0->f10 != NULL) {
-            *arg0->f10 = NULL;
+            arg0->f10->next = NULL;
         } else {
             arg0->f4 = 0;
         }
         arg0->f8 = arg0->f10;
     }
     if (arg0->f10 != NULL) {
-        *arg0->f10 = NULL;
+        arg0->f10->next = NULL;
     } else {
         arg0->f4 = 0;
     }
@@ -983,12 +962,12 @@ void *model_prims_begin(void *arg0, s32 arg1) {
     s32 c[3];
 
     prim = NULL;
-    if ((arg1 & 0x40000001) | RenderState.modelDp | (PrimDepthTest != 0 && (u32)prim < PrimDepthLimit)) {
-        set = *(PrimSet **)arg0;
-        if (set != NULL || (set = primset_alloc((PrimSet **)arg0, ((MeshHeader *)arg0)->faces >= 3)) != NULL) {
+    if ((arg1 & 0x40000001) | RenderState.modelDp | (PrimDepthTest != 0 && 0 < PrimDepthLimit)) {
+        set = ref_get(((MeshHeader *)arg0)->set);
+        if (set != NULL || (set = primset_alloc(&((MeshHeader *)arg0)->set, ((MeshHeader *)arg0)->faces >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
-            p = (PrimSet *)(off + (s32)set);
-            prim = PrimSet_NextPrim(set, off + 4, 1, &p->pairs[0].b, arg0, 0);
+            p = (PrimSet *)((u8 *)set + off);
+            prim = PrimSet_NextPrim(set, off + offsetof(PrimSet, pairs), 1, &p->pairs[0].b, arg0, 0);
         }
         if (prim != NULL) {
             gs = &RenderState;
@@ -1012,17 +991,17 @@ void *model_prims_begin(void *arg0, s32 arg1) {
                     gs->farColor = FarColor;
                 }
             }
-            faces_write_colors_dq((MeshHeader *)arg0, prim, (s32)RenderState.farColor, arg1);
+            faces_write_colors_dq((MeshHeader *)arg0, prim, 0, arg1);
             RenderState.dp = dp;
         } else {
             return NULL;
         }
     } else {
-        set = *(PrimSet **)arg0;
-        if (set != NULL || (set = primset_alloc((PrimSet **)arg0, ((MeshHeader *)arg0)->faces >= 3)) != NULL) {
+        set = ref_get(((MeshHeader *)arg0)->set);
+        if (set != NULL || (set = primset_alloc(&((MeshHeader *)arg0)->set, ((MeshHeader *)arg0)->faces >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
-            p = (PrimSet *)(off + (s32)set);
-            prim = PrimSet_NextPrim(set, off + 4, 0, &p->pairs[0].a, arg0, set->mode);
+            p = (PrimSet *)((u8 *)set + off);
+            prim = PrimSet_NextPrim(set, off + offsetof(PrimSet, pairs), 0, &p->pairs[0].a, arg0, set->mode);
         }
         if (prim == NULL) {
             return NULL;
@@ -1093,8 +1072,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
                                 goto skip;
                             }
                         }
-                        addPrim(gs->ot + otz, poly);
-                        gte_stsxy3_10(poly);
+                    mesh_submit_g3(gs->ot + otz, (u8 *)poly);
                     }
                 }
             skip:
@@ -1125,9 +1103,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
                             continue;
                         }
                     }
-                    poly->tag = 0x09000000 | (gs->ot[otz] & 0xFFFFFF);
-                    setaddr(gs->ot + otz, poly);
-                    gte_stsxy3_gt3(poly);
+                    mesh_submit_gt3(gs->ot + otz, poly);
                 }
                 poly++;
             }
@@ -1257,7 +1233,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
             return;
         }
         e = (u8 *)((FileEntry *)((u8 *)&((ModelFile *)set)->meshAnims + ((ModelFile *)set)->meshAnims) + entry);
-        anim = dbase_anim_node((s32 *)a, (FileEntry *)e);
+        anim = dbase_anim_node((s32 *)(iptr)a, (FileEntry *)e);
         if (c < 0) {
             frame = d->u70.h.hi;
         } else {
@@ -1349,8 +1325,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         flags = d->flags;
         g = ((flags & 0x21) != 0) << 31;
         g |= (((s32)flags >> 5) & 3) << 24;
-        e = (u8 *)(x & 0xFFFF);
-        e = (u8 *)((s32)e | ((u16)q[1] << 17));
+        x = (x & 0xFFFF) | ((u16)q[1] << 17);
         if (flags & fog) {
             idx = d->scale >> 4;
             idx &= 0xFF;
@@ -1365,7 +1340,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         }
         if ((u32)otz < (u32)RenderState.otLen) {
             texture_draw(&RenderState.dbase->textures.tex[a & 0xFFF],
-                          (s32)e, otz, g);
+                          x, otz, g);
         }
         return;
     default:
@@ -1460,7 +1435,7 @@ s32 draw_gouraud_quad(void *arg0, u32 flags) {
     if (otz < RenderState.otLen) {
         addPrim(RenderState.ot + otz, p);
     }
-    return (s32)p;
+    return 1;
 #undef q
 }
 
@@ -1691,7 +1666,7 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     t = entity_address(obj->index, colors);
     RenderState.dp = RenderState.modelDp;
     RenderState.dbase = obj->model;
-    prim_colour_poly((MeshHeader *)t, prim, (s32)RenderState.farColor, flags);
+    prim_colour_poly((MeshHeader *)t, prim, (VECTOR *)RenderState.farColor, flags);
     colors = obj->model->data;
     t = draw_model_quad_setup(obj, arg1, flags, colors, entity_address(obj->index, colors));
     t = (u8 *)&((MeshHeader *)t)->verts + ((MeshHeader *)t)->verts;
@@ -1815,7 +1790,7 @@ s32 bbox_visible(void *arg0) {
     gte_stsz(&sz);
     if (sz >= 2) {
         r = box->center.pad;
-        gs = (GfxState *)((u8 *)in - 0x34);
+        gs = &RenderState;
         if (r < 0x400) {
             cam = gs->cam;
             d = sz * 3 << 10;
@@ -2122,7 +2097,7 @@ void morph_blend_verts(s32 p, MeshHeader *model, u16 *ia, u16 *ib, s16 (*verts)[
     gte_lddp(p);
     a = *ia;
     b = *ib;
-    run = (u8 *)(model->runs + (s32)model) + 0x15;
+    run = (u8 *)model + model->runs + 0x15;
     for (;;) {
         n = *run;
         if (n == 0xFF) {
@@ -2160,7 +2135,7 @@ void morph_copy_verts(MeshHeader *arg0, u16 *src, u8 *tab, u16 *dst) {
     u16 *e;
 
     s32 off = arg0->runs;
-    u8 *b = FILE_AT(off, (s32)arg0);
+    u8 *b = (u8 *)arg0 + off;
     p = b + 0x15;
     for (;;) {
         c = *p;
@@ -2194,9 +2169,9 @@ void eng_render(EXTengine *eng) {
 }
 
 void eng_render_subs(EXTengine *e) {
-    void (*hook)(subengine *, s32, u32);
+    void (*hook)(subengine *, void *, u32);
     s32 flags;
-    s32 m;
+    MATRIX *m;
     subengine *sub;
 
     sub = e->sub;
@@ -2204,7 +2179,7 @@ void eng_render_subs(EXTengine *e) {
     if (sub != NULL) {
         flags = e->flags;
         if (flags & 0x8000) {
-            m = (s32)gfx_object_matrix((GfxXform *)&e->flags);
+            m = gfx_object_matrix((GfxXform *)&e->flags);
 loop_3:
             if (sub != NULL) {
                 hook = sub->hook;
@@ -2228,18 +2203,13 @@ subengine *sub_nth(s32 n, subengine *sub) {
 
 
 void kill_sprim_sub(subengine *arg0) {
-    s32 p;
-    s32 q;
-
-    p = arg0->sprim;
-    if (p != 0) {
-        release_sprim((void *)p);
-        arg0->sprim = 0;
+    if (arg0->sprim != NULL) {
+        release_sprim(arg0->sprim);
+        arg0->sprim = NULL;
     }
-    q = arg0->sprim2;
-    if (q != 0) {
-        release_sprim((void *)q);
-        arg0->sprim2 = 0;
+    if (arg0->sprim2 != NULL) {
+        release_sprim(arg0->sprim2);
+        arg0->sprim2 = NULL;
     }
 }
 
@@ -2316,18 +2286,19 @@ void posdst_flash_at(PosDst *arg0, s32 arg1) {
     }
 }
 
-void draw_nas_model(NAS *nas, MATRIX *arg1) {
+void draw_nas_model(subengine *nas, MATRIX *arg1) {
     GteSetup s;
     u32 hidden;
+    u32 rec[9];
 
-    if (nas->NASid & 0x8000) {
-        hidden = nas->NASid & 0x10000000;
-        if (nas->NASid & 0x02000000) {
-            RenderState.otzAdd = nas->Class;
+    if (nas->flags & 0x8000) {
+        hidden = nas->flags & 0x10000000;
+        if (nas->flags & 0x02000000) {
+            RenderState.otzAdd = nas->otz;
         } else {
             RenderState.otzAdd = 0;
         }
-        if (!(nas->NASid & 0x10000000)) {
+        if (!(nas->flags & 0x10000000)) {
             RenderState.localMtx = RenderState.mtxBuf;
             RenderState.localPos = RenderState.posBuf;
             gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
@@ -2337,22 +2308,27 @@ void draw_nas_model(NAS *nas, MATRIX *arg1) {
             }
             gte_SetRotMatrix(s.rot);
         }
-        draw_panel_rect(&nas->Type, hidden);
+        /* the record it's kept as in the node, without the pointer's extra bytes */
+        rec[0] = (u32)(iptr)nas->u6C.ptr;
+        memcpy(&rec[1], &nas->u70, sizeof(rec) - 4);
+        draw_panel_rect(rec, hidden);
     }
 }
 
-void draw_nas_model_flags(NAS *nas, MATRIX *arg1, u32 flags) {
+void draw_nas_model_flags(subengine *nas, MATRIX *arg1, u32 flags) {
     GteSetup s;
     u32 f;
+    PanelPrim *pp = (PanelPrim *)nas;
+    u32 rec[12];
 
-    if (nas->NASid & 0x8000) {
-        f = flags | nas->NASid;
-        if (nas->NASid & 0x02000000) {
-            RenderState.otzAdd = nas->Class;
+    if (nas->flags & 0x8000) {
+        f = flags | nas->flags;
+        if (nas->flags & 0x02000000) {
+            RenderState.otzAdd = nas->otz;
         } else {
             RenderState.otzAdd = 0;
         }
-        if (!(nas->NASid & 0x10000000)) {
+        if (!(nas->flags & 0x10000000)) {
             RenderState.localMtx = RenderState.mtxBuf;
             RenderState.localPos = RenderState.posBuf;
             gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
@@ -2363,20 +2339,26 @@ void draw_nas_model_flags(NAS *nas, MATRIX *arg1, u32 flags) {
             gte_SetRotMatrix(s.rot);
         }
         f &= ~0x10000000;
-        draw_gouraud_quad(&nas->Type, f | nas->NASid);
+        /* the corners and colours the panels keep in the node, as a plain record */
+        rec[0] = *(u32 *)&pp->u6C.s;
+        memcpy(&rec[1], &pp->z0, 8 * 4);
+        rec[9] = pp->c1;
+        rec[10] = pp->c2;
+        rec[11] = pp->c3;
+        draw_gouraud_quad(rec, f | nas->flags);
     }
 }
 
-u32 draw_nas_model_ret(NAS *nas, MATRIX *arg1, u32 flags) {
+u32 draw_nas_model_ret(subengine *nas, MATRIX *arg1, u32 flags) {
     GteSetup s;
 
-    flags |= nas->NASid;
-    if (nas->NASid & 0x02000000) {
-        RenderState.otzAdd = nas->Class;
+    flags |= nas->flags;
+    if (nas->flags & 0x02000000) {
+        RenderState.otzAdd = nas->otz;
     } else {
         RenderState.otzAdd = 0;
     }
-    if (!(nas->NASid & 0x10000000)) {
+    if (!(nas->flags & 0x10000000)) {
         RenderState.localMtx = RenderState.mtxBuf;
         RenderState.localPos = RenderState.posBuf;
         gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
@@ -2387,7 +2369,7 @@ u32 draw_nas_model_ret(NAS *nas, MATRIX *arg1, u32 flags) {
         gte_SetRotMatrix(s.rot);
     }
     flags &= ~0x10000000;
-    return flags | nas->NASid;
+    return flags | nas->flags;
 }
 
 void draw_flat_rect(u16 *arg0, s32 arg1, u32 arg2) {
@@ -2432,31 +2414,6 @@ void calc_rgbcode_packed(u32 arg0) {
 void sub_release_none(void) {
 }
 
-s32 sub_alloc_prims(void *arg0, s32 arg1) {
-    Func8001CC10Slot *slot;
-    u16 want;
-
-    s32 off;
-
-    off = (FrameCount & 1) * 12 + 0x90;
-    slot = (Func8001CC10Slot *)(arg1 + off);
-    want = ((MeshHeader *)arg0)->faces;
-    if (want != slot->size) {
-        if (slot->size < want) {
-            if (slot->ptr != 0) {
-                mal_free(slot, &MainHeap);
-            }
-            mal_alloc_owned_low(((MeshHeader *)arg0)->faces * 0x28, slot, &MainHeap, ((FrameCount & 1)?3:2));
-            if (slot->ptr == 0) {
-                slot->size = 0;
-                return 0;
-            }
-            slot->size = ((MeshHeader *)arg0)->faces;
-        }
-        faces_write_uvs_colors((s32)arg0, (s32)slot->ptr);
-    }
-    return (s32)slot->ptr;
-}
 
 void gfx_load_xform(void *arg0, void *arg1, void *arg2) {
     GteSetup s;
@@ -2859,7 +2816,7 @@ void draw_map_scene(map_enviroment *scene) {
     MATRIX view;
     MATRIX *pv;
     subengine *sub;
-    void (*fn)(subengine *, s32, u32);
+    void (*fn)(subengine *, void *, u32);
 
     MapScene = scene;
     RotMatrix(&MapSceneRot, &m);
@@ -2873,7 +2830,7 @@ void draw_map_scene(map_enviroment *scene) {
         }
         fn = sub->hook;
         if (fn != NULL) {
-            fn(sub, (s32)pv, 0);
+            fn(sub, pv, 0);
         }
         sub = sub->next;
     }
@@ -2891,27 +2848,28 @@ subengine *mapscene_find_sub(s32 i, s32 val) {
     return NULL;
 }
 
+/* An entity's mesh: arg0[0] its offset in a block, and arg0[1] leads to the slot with the block in. */
 void *rel_ptr(s32 *arg0) {
-    s32 v;
+    ref32 v;
 
-    v = ((s32 *)(arg0[1] + (s32)arg0))[1];
-    if (v == 0) {
-        return 0;
+    v = ((ref32 *)((u8 *)arg0 + arg0[1]))[1];
+    if (v.off == 0) {
+        return NULL;
     }
-    return v + arg0[0];
+    return (u8 *)ref_get(v) + arg0[0];
 }
 
 
 extern void draw_map_object(void *sub, void *arg1, s32 flags, void *arg3);
 void draw_map_sub(subengine *sub, MATRIX *arg1, s32 arg2) {
     s32 flags;
-    s32 x;
+    u8 *x;
 
     flags = sub->flags;
-    x = (s32)sub->u6C.dbase->data;
-    if ((flags & 0x8000) && x != 0) {
+    x = (u8 *)sub->u6C.dbase->data;
+    if ((flags & 0x8000) && x != NULL) {
         draw_map_object(sub, arg1, flags, x);
-        draw_object_model(sub->entity, (u8 *)x, sub->flags, sub);
+        draw_object_model(sub->entity, x, sub->flags, sub);
     }
 }
 
@@ -2957,21 +2915,18 @@ void mapscene_setup_tables(map_enviroment *env) {
     ((DbaseAnim *)((u8 *)&u->anims + u->anims + 4))->data = ref_of(u);
 }
 
-void mapscene_init(s32 *arg0, s32 *arg1) {
-    u8 *p;
-
-    arg0[0] = (s32)arg1;
-    arg0[2] = 0;
-    p = (u8 *)arg0[0] + 0x10;
-    MapScene = arg0;
-    if (arg1 == NULL) {
-        arg0[12] = 0;
-        arg0[1] &= ~3;
+void mapscene_init(map_enviroment *env, obj_dbase *db) {
+    env->dbase = db;
+    env->map_num = 0;
+    MapScene = env;
+    if (db == NULL) {
+        env->triggers = NULL;
+        env->flags &= ~3;
         return;
     }
-    arg0[1] = 3;
-    textureset_clear((obj_textureset *)p);
-    load_file_cb((file *)arg1[1], map_loaded_textureset, arg0);
+    env->flags = 3;
+    textureset_clear(&db->textures);
+    load_file_cb(db->textureFile, map_loaded_textureset, env);
 }
 
 void map_loaded_textureset(u8 *arg0, u8 **arg1) {
@@ -2987,13 +2942,13 @@ void map_loaded_textureset(u8 *arg0, u8 **arg1) {
     db->load = loader_queue(db->file, 0, db->textures.f14, map_loaded_geo, (u8 *)arg1, 0, 0);
 }
 
-void map_loaded_geo(s32 arg0, map_enviroment *env) {
+void map_loaded_geo(u8 *arg0, map_enviroment *env) {
     obj_dbase *db;
     obj_dbase *t;
 
     t = env->dbase;
     MapScene = env;
-    t->data = (u8 *)arg0;
+    t->data = (ModelFile *)arg0;
     db = env->dbase;
     env->map_num = 0;
     mapscene_setup_tables(env);
@@ -3002,8 +2957,8 @@ void map_loaded_geo(s32 arg0, map_enviroment *env) {
     dbase_load_all_mesh_anims((s32 *)db);
 }
 
-void mapscene_load(map_enviroment *env, s32 db) {
-    env->dbase = (obj_dbase *)db;
+void mapscene_load(map_enviroment *env, obj_dbase *db) {
+    env->dbase = db;
     env->map_num = 0;
     MapScene = env;
     mapscene_setup_tables(env);
@@ -3028,7 +2983,7 @@ void mapscene_place_subs(map_enviroment *env) {
         *(Words3 *)&dst->XYZ.x = *(Words3 *)&src->pos;
         *(Words4 *)&dst->xform.mtx = *(Words4 *)&src->blk.w[0];
         *(Words4 *)&dst->xform.mtx.m[2][2] = *(Words4 *)&src->blk.w[4];
-        dst->hook = (void (*)(subengine *, s32, u32))draw_map_sub;
+        dst->hook = (void (*)(subengine *, void *, u32))draw_map_sub;
         dst->u6C.dbase = env->dbase;
         dst->entity = src->entity;
         dst->depth = src->depth;
@@ -3126,7 +3081,7 @@ s32 *path_get(u32 arg0) {
     s32 *q;
 
     p = NULL;
-    if (((s32)MapScene->dbase) != 0) {
+    if (MapScene->dbase != NULL) {
         p = ((s32 *)MapScene->path_list);
     }
     i = 0;
@@ -3155,7 +3110,7 @@ s32 path_find(u32 arg0) {
     s32 i;
 
     p = NULL;
-    if (((s32)MapScene->dbase) != 0) {
+    if (MapScene->dbase != NULL) {
         p = ((s32 *)MapScene->path_list);
     }
     i = 0;
@@ -3324,9 +3279,9 @@ void prims_empty_and_compact(void) {
 s32 *PrimsConfig = 0;
 u8 *PrimNodePool = 0;
 NodePool PrimPool = {0};
-s32 *PrimNodeFree = 0;
+PrimLink *PrimNodeFree = 0;
 u8 *PrimLinkPool = 0;
-s32 *PrimLinkFree = 0;
+PrimLink *PrimLinkFree = 0;
 u8 *PrimSetPool = 0;
 PrimSet *PrimSetFree = 0;
 PrimSet *PrimSetList = 0;

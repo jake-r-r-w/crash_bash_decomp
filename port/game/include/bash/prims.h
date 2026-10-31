@@ -9,11 +9,11 @@
 #include "bash/main.h"
 
 void primpool_release_all(void);
-void primset_invalidate(PrimSet **arg0);
-s32 *primlist_pop(PrimList *l);
-s32 *primlist_pop_b(PrimList *l);
-void faces_write_uvs_colors(s32 arg0, s32 arg1);
-void primnodes_free(s32 *arg0);
+void primset_invalidate(ref32 *arg0);
+PrimLink *primlist_pop(PrimList *l);
+PrimLink *primlist_pop_b(PrimList *l);
+void faces_write_uvs_colors(MeshHeader *arg0, FacePrim *arg1);
+void primnodes_free(PrimLink *arg0);
 void prims_empty(void);
 void primlist_clear(PrimList *l);
 void morph_light_colors(s32 p, MeshHeader *model, SVECTOR *src, SVECTOR *fc);
@@ -38,7 +38,7 @@ void subpool_free(void);
 void map_update(map_enviroment *env, SLONG_XYZ *at);
 void mapscene_release(map_enviroment *env);
 void map_loaded_textureset(u8 *arg0, u8 **arg1);
-void mapscene_load(map_enviroment *env, s32 db);
+void mapscene_load(map_enviroment *env, obj_dbase *db);
 void set_fade(fade_info *fade, s32 speed, s32 delay);
 void process_control_back(process_control_info *pc);
 void process_interrupt(process_control_info *pc, process_info *process);
@@ -54,11 +54,11 @@ void *model_prims_begin(void *arg0, s32 arg1);
 s32 bbox_visible(void *arg0);
 void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
 void prims_init(s32 *cfg);
-void map_loaded_geo(s32 arg0, map_enviroment *env);
+void map_loaded_geo(u8 *arg0, map_enviroment *env);
 void subs_init_array(EXTengine *eng, s32 n, subengine *sub);
 void project_quad(SVECTOR *v, POLY_GT4 *poly);
-u32 draw_nas_model_ret(NAS *nas, MATRIX *arg1, u32 flags);
-void draw_nas_model(NAS *nas, MATRIX *arg1);
+u32 draw_nas_model_ret(subengine *nas, MATRIX *arg1, u32 flags);
+void draw_nas_model(subengine *nas, MATRIX *arg1);
 void *draw_morph_model(MeshHeader *model, void *arg1, s32 arg2);
 void process_quit(process_control_info *pc);
 void process_init(process_control_info *pc);
@@ -75,18 +75,17 @@ void draw_model_set_entry(s32 arg0, ModelFile *set, s32 arg2);
 void draw_map_entity(u16 arg0, u8 *arg1, s32 arg2);
 void draw_text_nas(TextNAS *t, MATRIX *arg1, s32 arg2);
 void primpool_age(void);
-s32 *primnode_alloc(s32 arg0, s32 *arg1, s32 arg2, s32 arg3);
+FacePrim *primnode_alloc(s32 arg0, PrimList *list, void *pool, MeshHeader *faces);
 void sub_use_quad_model(subengine *arg0);
 void posdst_flash(PosDst *arg0, MATRIX *arg1, s32 arg2);
 void posdst_flash_at(PosDst *arg0, s32 arg1);
-s32 sub_alloc_prims(void *arg0, s32 arg1);
 void subpool_init(s32 n);
 void draw_map_sub(subengine *sub, MATRIX *arg1, s32 arg2);
-void mapscene_init(s32 *arg0, s32 *arg1);
+void mapscene_init(map_enviroment *env, obj_dbase *db);
 KeyEntry *key_find(KeyBlock *arg0, s32 arg1);
 s32 path_find(u32 arg0);
 void primpool_init(s32 count);
-PrimSet *primset_alloc(PrimSet **out, s32 mode);
+PrimSet *primset_alloc(ref32 *out, s32 mode);
 void primlist_reset(PrimList *arg0, s32 arg1);
 void primlist_release(PrimList *arg0, s32 arg1);
 void morph_copy_verts(MeshHeader *arg0, u16 *src, u8 *tab, u16 *dst);
@@ -117,7 +116,7 @@ void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam);
 void draw_map_scene(map_enviroment *scene);
 void mapenv_place_subs(map_enviroment *env);
 s32 tri_visible(SVECTOR *v);
-void draw_nas_model_flags(NAS *nas, MATRIX *arg1, u32 flags);
+void draw_nas_model_flags(subengine *nas, MATRIX *arg1, u32 flags);
 KeyEntry *key_interp_pos(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
 void process_control_update(process_control_info *pc, fade_info *fade);
 
@@ -179,28 +178,28 @@ static inline void ModelEntry_Draw(u8 *e, s32 c, SVECTOR *v) {
 }
 
 /* Takes the node at the cursor fC of a list (primlist_pop_b's code). */
-static inline s32 *PrimList_Take(PrimList *l) {
-    s32 *n;
-    s32 **tail;
+static inline PrimLink *PrimList_Take(PrimList *l) {
+    PrimLink *n;
+    PrimLink *tail;
 
     if (l == NULL || (n = l->fC) == NULL) {
         return NULL;
     }
     tail = l->f10;
-    l->fC = (s32 *)(iptr)*n;
+    l->fC = n->next;
     if (tail != NULL) {
-        *tail = (s32 *)(iptr)*n;
-        l->fC = (s32 *)(iptr)*n;
-        if (*n == 0) {
+        tail->next = n->next;
+        l->fC = n->next;
+        if (n->next == NULL) {
             l->f8 = tail;
         }
     } else {
-        if (l->f8 == (s32 **)n) {
+        if (l->f8 == n) {
             l->f8 = NULL;
         }
-        l->f4 = *n;
-        l->fC = (s32 *)(iptr)*n;
-        *n = 0;
+        l->f4 = n->next;
+        l->fC = n->next;
+        n->next = NULL;
     }
     return n;
 }
@@ -209,32 +208,24 @@ static inline s32 *PrimList_Take(PrimList *l) {
 /* model_prims_begin: the next free primitive slot of list (refilled from pool). */
 static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, PrimList *pool,
                                          void *faces, s32 flag) {
-    s32 *n;
-    s32 *next;
-    FacePrim *ret;
-    PrimList *list =(PrimList *)((u8 *)set + pairOff) + which;
+    PrimLink *n;
+    PrimList *list = (PrimList *)((u8 *)set + pairOff) + which;
 
+    n = list->fC;
     if (set->mode == 1) {
-        n = list->fC;
         if (n != NULL) {
-            next = (s32 *)(iptr)*n;
-            list->f10 = (s32 **)n;
-            list->fC = next;
-            set = (PrimSet *)(iptr)n[1];
-        } else {
-            set = (PrimSet *)face_prim_alloc((s32)(iptr)set, list, pool, (MeshHeader *)faces, flag);
+            list->f10 = n;
+            list->fC = n->next;
+            return n->data;
         }
-    } else {
-        n = list->fC;
-        if (n != NULL) {
-            list->fC = (s32 *)(iptr)*n;
-            list->f10 = (s32 **)n;
-            set = (PrimSet *)(n + 1);
-        } else {
-            set = (PrimSet *)primnode_alloc((s32)(iptr)set, (s32 *)list, (s32)(iptr)pool, (s32)(iptr)faces);
-        }
+        return face_prim_alloc(0, list, pool, (MeshHeader *)faces, flag);
     }
-    return (FacePrim *)set;
+    if (n != NULL) {
+        list->fC = n->next;
+        list->f10 = n;
+        return (FacePrim *)&n->data;
+    }
+    return primnode_alloc(0, list, pool, (MeshHeader *)faces);
 }
 
 /* mapenv_place_subs: reuse the map's subengine array or allocate it. */

@@ -100,7 +100,8 @@ typedef struct {
 #define setSemiTrans(p, on) ((on) ? setcode(p, getcode(p) | 2) : setcode(p, getcode(p) & ~2))
 #define setPolyFT4(p) setlen(p, 9), setcode(p, 0x2C)
 #define setPolyGT4(p) setlen(p, 12), setcode(p, 0x3C)
-#define addPrim(ot, p) setaddr(p, getaddr(ot)), setaddr(ot, p)
+void prim_submit(void *ot, void *prim);
+#define addPrim(ot, p) prim_submit((ot), (p))
 #define getTPage(tp, abr, x, y) \
     ((((tp) & 3) << 7) | (((abr) & 3) << 5) | (((y) & 0x100) >> 4) | (((x) & 0x3FF) >> 6) | \
      (((y) & 0x200) << 2))
