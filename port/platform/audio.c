@@ -3,7 +3,7 @@
  * the music's speed doesn't depend on the frame rate. The game's calls take the lock and change what the
  * mix will do next.
  *
- * Volumes and pitches are the documented formulas. Reverb is the game's own presets in a delay network,
+ * A note's volume is libsnd's own sum (seq_volume); pitches are the documented formula. Reverb is the game's own presets in a delay network,
  * with the depth each song asks for. */
 #include <math.h>
 #include <stdint.h>
@@ -31,6 +31,7 @@ typedef struct {
     ProgAtr prog[128];
     VagAtr *tone; /* 16 a program */
     int nprog, nsample;
+    int master; /* the bank's own volume */
     uint32_t sample_end[MAX_SAMPLE + 1];
     uint8_t *samples;
     uint32_t samples_size;
@@ -55,6 +56,7 @@ typedef struct {
     /* what it's playing, for the sequencer's changes */
     int center, shift, bend_down, bend_up;
     int tone_vol, tone_pan;
+    int level, pan1, pan2; /* for a note: the bank's, program's and tone's volumes together, and the tone's and program's pans */
     int seq, channel, note, velocity;
     int reverb; /* the tone asks for it */
 } Voice;
@@ -498,6 +500,7 @@ short SsVabOpenHead(unsigned char *addr, short vab) {
     memcpy(&nsample, addr + 0x16, 2);
     b->used = 1;
     b->nprog = nprog;
+    b->master = addr[0x18];
     b->nsample = nsample > MAX_SAMPLE ? MAX_SAMPLE : nsample;
     memcpy(b->prog, addr + VAB_PROGRAMS_AT, sizeof(b->prog));
     b->tone = realloc(b->tone, sizeof(VagAtr) * 16 * (nprog ? nprog : 1));
@@ -605,6 +608,9 @@ static Voice *start_voice(Voice *v, const Bank *b, int prog, int tone) {
     v->env_wait = 1;
     v->tone_vol = (t->vol * b->prog[prog].mvol) / 127;
     v->tone_pan = t->pan + b->prog[prog].mpan - 64;
+    v->level = (int)((int64_t)b->master * 0x3FFF / 127 * b->prog[prog].mvol / 127 * t->vol / 127);
+    v->pan1 = t->pan;
+    v->pan2 = b->prog[prog].mpan;
     v->seq = -1;
     v->reverb = (t->mode & 4) != 0;
     v->state = ENV_ATTACK;
@@ -709,11 +715,27 @@ static int read_var(const uint8_t **p) {
     return v;
 }
 
-static void update_voice_volume(Voice *v, const Seq *s, const Channel *c) {
-    int level = v->velocity * c->volume / 127;
-    double fade = s->fade_steps > 0 || s->fade > 0 ? s->fade : 1.0;
+/* A pan takes from the side it's away from. */
+static void apply_pan(int pan, int *left, int *right) {
+    if (pan < 64) {
+        *right = *right * pan / 63;
+    } else {
+        *left = *left * (127 - pan) / 63;
+    }
+}
 
-    set_volume(v, v->tone_pan + c->pan - 64, (int)(level * s->vol_l * fade / 127), (int)(level * s->vol_r * fade / 127));
+/* libsnd's sum for a sequence's note: everything multiplied, each pan in turn, and the result squared, so
+ * that a quiet part is much quieter than its figures look. A key-on from the game's effects isn't squared. */
+static void update_voice_volume(Voice *v, const Seq *s, const Channel *c) {
+    int level = (int)((int64_t)v->level * (v->velocity * c->volume / 127) / 127);
+    int left = (int)(level * s->vol_l * s->fade / 127);
+    int right = (int)(level * s->vol_r * s->fade / 127);
+
+    apply_pan(v->pan1, &left, &right);
+    apply_pan(v->pan2, &left, &right);
+    apply_pan(c->pan, &left, &right);
+    v->vol_l = (int)((int64_t)left * left / 0x3FFF);
+    v->vol_r = (int)((int64_t)right * right / 0x3FFF);
 }
 
 static void update_voice_pitch(Voice *v, const Channel *c) {
