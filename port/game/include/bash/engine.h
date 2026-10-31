@@ -111,8 +111,9 @@ typedef struct PanelPrim {
     /* 0x90 */ s32 c1;
     /* 0x94 */ s32 c2;
     /* 0x98 */ s32 c3;
-    u8 pad9C[0xC];
-} PanelPrim; /* 0xA8 */
+    u8 pad9C[sizeof(subengine) - (offsetof(subengine, pad8C) + 4 * sizeof(s32))];
+} PanelPrim;
+_Static_assert(sizeof(PanelPrim) == sizeof(subengine), "the panels index subengines as PanelPrims");
 extern u16 CupMode;
 extern s32 CupTimer;
 extern u16 Trophy_Cups;
