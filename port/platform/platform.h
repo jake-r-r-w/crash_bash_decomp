@@ -26,7 +26,6 @@ const char *platform_card_path(void);
 void platform_present(const uint32_t *pixels, int w, int h);
 void platform_vblank(void);
 int platform_pad(int port); /* the buttons held, or -1 with no pad */
-void platform_audio(const int16_t *stereo, int frames);
 void platform_shot(const char *path);
 void platform_finish(int code);
 
@@ -38,7 +37,14 @@ void host_present(const uint32_t *pixels, int w, int h);
 void host_wait_vblank(void);
 int host_poll(void); /* 0: the window was closed */
 int host_pad(int port);
-void host_audio(const int16_t *stereo, int frames);
+/* Held while anything changes what the sound device's thread is playing. */
+void host_audio_lock(void);
+void host_audio_unlock(void);
+
+/* The sound: audio.c. */
+void audio_mix(int16_t *out, int frames);
+void audio_record(const char *path); /* a test run's sound, to a .wav */
+void audio_finish(void);
 void host_quit(void);
 
 #endif

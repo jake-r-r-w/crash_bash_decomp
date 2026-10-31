@@ -328,7 +328,7 @@ struct _sfx_handler {
     s32 pitch;  /* PlaySfx's 5th argument (0x1E00) */
     s32 voice;  /* sfx_key_on's voice, -1 when not playing */
     s32 slot;  /* its SPU slot, -1 when allocated; sfx_key_off stops it */
-    s32 pad30;
+    void *info;  /* with slot, a PitchVoice: the SfxTable entry sfx_key_on played */
     s32 id;                  /* 0x34: the SfxTable id */
 };
 
@@ -351,7 +351,7 @@ typedef struct {
 typedef struct sfx_machine_bank_info {
     u8 *head;
     s32 id;   /* set once the transfer completes */
-    s32 handle; /* asload_permanent_callback's result (machine_load_sfx) */
+    void *handle; /* asload_permanent_callback's result (machine_load_sfx) */
 } sfx_machine_bank_info;
 
 /* Points drawn as one-pixel tiles by plot_point_sprites (an engine API entry). */
@@ -511,9 +511,9 @@ typedef struct PadState {
 /* Loaded sound data and the sequence opened from it (CurrentMusic); the name is
  * the C++ symbols' (music_dload_midi__FP4fileP10music_midil). */
 typedef struct music_midi {
-    /* 0x00 */ s32 data;                 /* heap block, freed by music_free */
+    /* 0x00 */ u8 *data;                 /* heap block, freed by music_free */
     /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
-    /* 0x08 */ s32 songs[5];             /* each song's SEQ data: data + its header offset (music_setup_slot) */
+    /* 0x08 */ u8 *songs[5];             /* each song's SEQ data: data + its header offset (music_setup_slot) */
     /* 0x1C */ s32 handle;  /* -1 when closed */
 } music_midi;
 

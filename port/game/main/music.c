@@ -129,13 +129,36 @@ void music_restart(void) {
 }
 
 void music_setup_slot(music_midi *slot) {
+    SeqHdr *h = (SeqHdr *)slot->data;
+    u8 *head = FILE_AT(h, h->head);
+    u8 *body = FILE_AT(h, h->body);
+
+    slot->songs[0] = slot->data + h->o8;
+    slot->songs[1] = slot->data + h->oC;
+    slot->songs[2] = slot->data + h->o10;
+    slot->songs[3] = slot->data + h->o14;
+    slot->songs[4] = slot->data + h->o18;
+    slot->handle = -1;
+    slot->seq = SsVabOpenHead(head, -1);
+    SsVabTransBody(body, (s16)slot->seq);
+    SpuIsTransferCompleted(1);
+    slot->data = mal_trim_front(slot->data, h->head, &MainHeap);
 }
 
 void music_dload_midi(file *arg0, music_midi *slot, s32 type) {
-    /* silent until the mixer */
+    asload_permanent_callback(arg0, music_set_data, slot);
+    SpuReserveReverbWorkArea(1);
+    SsUtSetReverbType(type);
+    SsUtSetReverbDepth(0, 0);
+    SsUtReverbOn();
 }
 
-void music_set_data(s32 arg0, s32 *arg1) {
+void music_set_data(u8 *data, music_midi *slot) {
+    slot->data = data;
+    music_setup_slot(slot);
+    MusicRestart = 0;
+    MusicDuck = 0;
+    MusicDuckCur = 0;
 }
 
 void music_stop(void) {

@@ -395,9 +395,11 @@ void UpdateLevelLoad(void) {
         /* every stage now, with no frames in between to show a loading screen in */
         while (LevelLoadStage != 9) {
             while (loader_pending() != 0 || MainHeap.deferred != NULL) {
+                vab_transfer_wait();
                 loader_update();
                 mal_update(&MainHeap);
             }
+            vab_transfer_wait();
             LevelLoadStep();
         }
         return;
@@ -637,7 +639,7 @@ void UpdateSceneVabCues(void) {
             SceneVabSlot[0] = n;
             VabCueTimer = SceneVabCue->timer;
             if (SfxBanks[n].id != -1) {
-                sfx_bank_close((s32 *)&SfxBanks[n]);
+                sfx_bank_close(&SfxBanks[n]);
             }
             SceneVabCue++;
         }
@@ -769,10 +771,10 @@ void QuitScriptScene(void) {
     vab_transfer_wait();
     sfx_all_off();
     if (SfxBanks[0].id != -1) {
-        sfx_bank_close((s32 *)&SfxBanks[0]);
+        sfx_bank_close(&SfxBanks[0]);
     }
     if (SfxBanks[1].id != -1) {
-        sfx_bank_close((s32 *)&SfxBanks[1]);
+        sfx_bank_close(&SfxBanks[1]);
     }
     sound_reinit();
     ClearVram();
@@ -835,10 +837,10 @@ void UnloadScene(void) {
     vab_transfer_wait();
     sfx_all_off();
     if (SfxBanks[0].id != -1) {
-        sfx_bank_close((s32 *)&SfxBanks[0]);
+        sfx_bank_close(&SfxBanks[0]);
     }
     if (SfxBanks[1].id != -1) {
-        sfx_bank_close((s32 *)&SfxBanks[1]);
+        sfx_bank_close(&SfxBanks[1]);
     }
     sound_reinit();
     ClearVram();

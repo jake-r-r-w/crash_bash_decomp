@@ -25,7 +25,7 @@ void SsEnd(void);
 void SsQuit(void);
 void SsSetTableSize(char *table, short s_max, short t_max);
 void SsSetTickMode(int32_t mode);
-int SsSetTickCallback(void (*cb)());
+void *SsSetTickCallback(void (*cb)());
 void SsSeqCalledTbyT(void);
 void SsSetMVol(short left, short right);
 void SsSetMono(void);

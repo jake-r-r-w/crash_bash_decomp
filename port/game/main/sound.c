@@ -233,15 +233,10 @@ s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s8 *sfx = SfxTable[arg1];
     s16 v;
 
-    if (sfx == NULL) {
-        arg0[0] = -1;
-        arg0[1] = 0;
-        return -1;
-    }
     v = SsUtKeyOn(sfx[0], (s32)(((u8 *)sfx)[1] << 24) >> 28, ((u8 *)sfx)[1] & 0xF, (s32)(arg2 << 9) >> 16,
                   arg2 & 0x7F, (arg3 * ((p->sfx << 7) - p->sfx)) / 409600, (arg4 * ((p->sfx << 7) - p->sfx)) / 409600);
     arg0[0] = v;
-    arg0[1] = (s32)sfx;
+    ((PitchVoice *)arg0)->info = (PitchInfo *)sfx;
     if (v != -1) {
         SfxVoiceMask |= SfxVoiceBits[v];
         SsSetVoiceMask(SfxVoiceMask);
@@ -336,7 +331,7 @@ void sfx_table_init(void) {
 }
 
 void machine_load_sfx(file *arg0, sfx_machine_bank_info *slot) {
-    /* silent until the mixer */
+    slot->handle = asload_permanent_callback(arg0, vab_loaded, slot);
 }
 
 void vab_transfer_wait(void) {
@@ -412,17 +407,20 @@ void sfx_banks_close(void) {
     }
 }
 
-void sfx_bank_close(s32 *arg0) {
+void sfx_bank_close(sfx_machine_bank_info *arg0) {
     SpuIsTransferCompleted(1);
-    vab_map_sfx(arg0[1], 1);
-    SsVabClose((s16)arg0[1]);
-    mal_free((void *)arg0[0], &MainHeap);
-    arg0[0] = 0;
-    arg0[1] = -1;
+    vab_map_sfx(arg0->id, 1);
+    SsVabClose((s16)arg0->id);
+    mal_free(arg0->head, &MainHeap);
+    arg0->head = NULL;
+    arg0->id = -1;
 }
 
 void sfx_bank_load(file *arg0) {
-    /* silent until the mixer */
+    if (SfxBankCount < 6) {
+        machine_load_sfx(arg0, &SfxBanks[SfxBankCount]);
+        SfxBankCount++;
+    }
 }
 
 /* Clears SfxTable: no sound for any id. */

@@ -116,6 +116,7 @@ const char *platform_card_path(void) {
 }
 
 void platform_finish(int code) {
+    audio_finish();
     if (!NoWindow) {
         host_quit();
     }
@@ -176,12 +177,6 @@ int platform_pad(int port) {
     return b;
 }
 
-void platform_audio(const int16_t *stereo, int frames) {
-    if (!NoWindow) {
-        host_audio(stereo, frames);
-    }
-}
-
 int main(int argc, char **argv) {
     int i;
     int no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
@@ -217,6 +212,8 @@ int main(int argc, char **argv) {
             fps = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
             test_mode = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--wav") == 0 && i + 1 < argc) {
+            audio_record(argv[++i]);
         } else if (strcmp(argv[i], "--tile") == 0 && i + 2 < argc) {
             tile = atoi(argv[++i]);
             tiles = atoi(argv[++i]);

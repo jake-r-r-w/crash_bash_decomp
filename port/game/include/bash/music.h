@@ -13,7 +13,7 @@ void music_request(s32 arg0);
 void music_duck_off(void);
 void music_flag_restart(void);
 void music_restart(void);
-void music_set_data(s32 arg0, s32 *arg1);
+void music_set_data(u8 *data, music_midi *slot);
 void music_stop(void);
 void music_update(void);
 void music_free(void);

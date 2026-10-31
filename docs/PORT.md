@@ -82,9 +82,10 @@ GPU textures at load, and palettes and animated or scrolling textures use GPU re
 modes, fades and draw order are kept, so it looks like the game, sharper. The few effects that draw into VRAM
 become render targets.
 
-**Sound.** The sound banks and music are game assets, so they're played directly: ADPCM samples decoded by a native
-mixer, and the SEQ music by a native sequencer. To check it, Sony's linked code runs in a small MIPS interpreter against
-the same inputs, and note timing, pitch and volume have to agree.
+**Sound.** The sound banks and music are game assets, so they're played directly (`platform/audio.c`): ADPCM samples decoded by a
+native mixer, and the SEQ music by a native sequencer. The sound device asks for samples on its own thread and the music is timed by
+them, so its speed doesn't depend on the frame rate. Effects and music have 24 voices each. Not there yet: reverb, which the game turns
+down to nothing at every music load. Checked by ear and with `--wav`, not against Sony's code in an interpreter as first planned.
 
 **Keeping it the same game.** The user plays each stage next to retail and says what's wrong. All 33 modes also play to the
 end by themselves on every build, optimised and under ASan and UBSan, which catches crashes and bad memory but not a
@@ -129,6 +130,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--turbo` | don't wait for the clock, to reach late moments quickly |
 | `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit |
 | `--tile I N` | put this window in slot I of a grid of N on the screen, to watch several test runs at once |
+| `--wav FILE` | record a test run's sound (test runs are silent otherwise) |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
 | `--no-launcher` | start with the saved settings, without the menu |
@@ -187,5 +189,6 @@ Each of these cost time to find, and they all still apply:
   `_SsSeqPlay`, `_SsGetSeqData`, `_SsVmKeyOn`, `_SsVmKeyOnNow`, `_SsVmSetVol`, `_SsVmAlloc`, `SsPitchFromNote`.
   The music uses notes, program changes, pitch bends, controllers 6, 7, 10, 98 and 99, and the end marker.
   Reverb depth goes to 0 at every music load, so it's only heard until the first one.
-- **Unsolved:** the sound wandered between slow and fast in a real window. The vblanks were steady and nothing was
-  dropped, so the cause wasn't found. The new sound step has to check for this.
+- **The sound wandered between slow and fast** in a real window, in the first port, which mixed once a vblank. The mix now runs when the
+  device asks for it.
+- **A tone's sample**: sample n is from the end of n - 1 to the end of n in the bank's size table; the first port played n - 1.

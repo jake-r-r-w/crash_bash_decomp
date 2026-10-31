@@ -36,7 +36,7 @@ void sfx_table_init(void);
 void sfx_change_pitch(PitchVoice *arg0, s32 arg1);
 void sfx_set_voice_volume(s16 *arg0, s32 arg1, s32 arg2);
 void vab_transfer_wait(void);
-void sfx_bank_close(s32 *arg0);
+void sfx_bank_close(sfx_machine_bank_info *arg0);
 void sfx_banks_close(void);
 s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 S16Pair sfx_pan(s32 x, s32 v);

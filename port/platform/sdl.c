@@ -9,8 +9,6 @@
 #define MAX_PADS 4
 #define VBLANK_HZ 59.94
 #define OUT_RATE 44100
-/* how much sound may wait in the stream before more is dropped: 100 ms */
-#define MAX_QUEUED (OUT_RATE / 10 * 4)
 
 static SDL_Window *Window;
 static SDL_AudioStream *Audio;
@@ -57,6 +55,37 @@ static void place_tile(int tile, int tiles) {
     SDL_SetWindowPosition(Window, area.x + (tile % cols) * w, area.y + (tile / cols) * h + 32);
 }
 
+/* The device asks for sound when it's ready for it, on its own thread, with the stream locked. */
+static void SDLCALL fill_audio(void *userdata, SDL_AudioStream *stream, int additional, int total) {
+    static int16_t buf[1024 * 2];
+
+    while (additional > 0) {
+        int frames = additional / 4;
+
+        if (frames > 1024) {
+            frames = 1024;
+        }
+        if (frames == 0) {
+            frames = 1;
+        }
+        audio_mix(buf, frames);
+        SDL_PutAudioStreamData(stream, buf, frames * 4);
+        additional -= frames * 4;
+    }
+}
+
+void host_audio_lock(void) {
+    if (Audio != NULL) {
+        SDL_LockAudioStream(Audio);
+    }
+}
+
+void host_audio_unlock(void) {
+    if (Audio != NULL) {
+        SDL_UnlockAudioStream(Audio);
+    }
+}
+
 static int ApplyPending;
 
 void settings_apply(void) {
@@ -90,14 +119,18 @@ int host_init(void) {
         return 0;
     }
     open_pads();
-    spec.format = SDL_AUDIO_S16;
-    spec.channels = 2;
-    spec.freq = OUT_RATE;
-    Audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
-    if (Audio != NULL) {
-        SDL_ResumeAudioStreamDevice(Audio);
-    } else {
-        SDL_Log("No sound: %s", SDL_GetError());
+    /* a test run is silent: it can record its sound instead (--wav) */
+    if (!s->no_save) {
+        spec.format = SDL_AUDIO_S16;
+        spec.channels = 2;
+        spec.freq = OUT_RATE;
+        SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "512");
+        Audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, fill_audio, NULL);
+        if (Audio != NULL) {
+            SDL_ResumeAudioStreamDevice(Audio);
+        } else {
+            SDL_Log("No sound: %s", SDL_GetError());
+        }
     }
     NextVblank = SDL_GetPerformanceCounter();
     return 1;
@@ -285,12 +318,6 @@ int host_pad(int port) {
         b = (b < 0 ? 0 : b) | pad_buttons(Pads[port]);
     }
     return b;
-}
-
-void host_audio(const int16_t *stereo, int frames) {
-    if (Audio != NULL && SDL_GetAudioStreamQueued(Audio) < MAX_QUEUED) {
-        SDL_PutAudioStreamData(Audio, stereo, frames * 4);
-    }
 }
 
 void host_quit(void) {
