@@ -949,6 +949,10 @@ static void find_movement(void) {
                 if (slots[h].object == t->object && slots[h].face == t->face) {
                     const Tri *old = &Shown[slots[h].index];
 
+                    /* another texture is another thing here, however close */
+                    if (old->tex != t->tex) {
+                        break;
+                    }
                     t->moving = 1;
                     for (j = 0; j < 3; j++) {
                         t->from[j].x = old->v[j].x;

@@ -295,8 +295,9 @@ static s32 OwnerPart;
 
 #define PART_ID(owner, part) (((owner) * 31) + (uint64_t)(part) + 1)
 
-void draw_owner(const void *owner) {
-    OwnerId = (uint64_t)(uintptr_t)owner;
+/* Named by what it shows too: a subengine given another model or text is a new thing, not this one moved. */
+void draw_owner(const struct subengine *sub) {
+    OwnerId = sub != NULL ? (uint64_t)(uintptr_t)sub ^ ((uint64_t)(uintptr_t)sub->u6C.ptr * 0x9E3779B97F4A7C15ULL) : 0;
     OwnerPart = 0;
 }
 
