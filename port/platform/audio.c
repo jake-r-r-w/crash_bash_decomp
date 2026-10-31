@@ -51,7 +51,8 @@ typedef struct {
     int index;
     int stop_after_block;
     int env, env_wait;
-    int vol_l, vol_r;
+    int vol_l, vol_r; /* where the volume is, on its way to... */
+    int to_l, to_r;   /* ...what's been asked for: the game changes it a frame at a time, and a jump would be heard */
     int adsr1, adsr2;
     /* what it's playing, for the sequencer's changes */
     int center, shift, bend_down, bend_up;
@@ -419,6 +420,8 @@ static void advance(Voice *v) {
 
 /* Room at the top of the mix, and loud moments rounded off rather than clipped, which sounds harsh. */
 #define MIX_LEVEL 0.7f
+#define FX_LEVEL 192 /* of 256: the effects a little under what the original's sums give, by ear */
+#define VOLUME_RAMP 6 /* the share of the way a sample goes, as a shift */
 #define LIMIT_KNEE 22000.0f
 
 static int limit(int sample) {
@@ -453,7 +456,16 @@ void audio_mix(int16_t *out, int frames) {
             }
             s = (next_sample(v) * v->env) >> 15;
             {
-                int vl = (s * v->vol_l) >> 14, vr = (s * v->vol_r) >> 14;
+                int vl, vr;
+
+                v->vol_l += (v->to_l - v->vol_l) >> VOLUME_RAMP;
+                v->vol_r += (v->to_r - v->vol_r) >> VOLUME_RAMP;
+                vl = (s * v->vol_l) >> 14;
+                vr = (s * v->vol_r) >> 14;
+                if (j < FX_VOICES) {
+                    vl = vl * FX_LEVEL >> 8;
+                    vr = vr * FX_LEVEL >> 8;
+                }
 
                 l += vl;
                 r += vr;
@@ -719,8 +731,8 @@ short SsUtKeyOn(short vab, short prog, short tone, short note, short fine, short
         apply_pan(v->pan1, &l, &r);
         apply_pan(v->pan2, &l, &r);
         apply_pan(pan, &l, &r);
-        v->vol_l = l;
-        v->vol_r = r;
+        v->vol_l = v->to_l = l;
+        v->vol_r = v->to_r = r;
     }
     host_audio_unlock();
     return (short)(v - Voices);
@@ -764,8 +776,8 @@ short SsUtSetVVol(short voice, short left, short right) {
         return -1;
     }
     host_audio_lock();
-    Voices[voice].vol_l = left * 129;
-    Voices[voice].vol_r = right * 129;
+    Voices[voice].to_l = left * 129;
+    Voices[voice].to_r = right * 129;
     host_audio_unlock();
     return 0;
 }
@@ -805,8 +817,8 @@ static void update_voice_volume(Voice *v, const Seq *s, const Channel *c) {
     apply_pan(v->pan1, &left, &right);
     apply_pan(v->pan2, &left, &right);
     apply_pan(c->pan, &left, &right);
-    v->vol_l = (int)((int64_t)left * left / 0x3FFF);
-    v->vol_r = (int)((int64_t)right * right / 0x3FFF);
+    v->to_l = (int)((int64_t)left * left / 0x3FFF);
+    v->to_r = (int)((int64_t)right * right / 0x3FFF);
 }
 
 static void update_voice_pitch(Voice *v, const Channel *c) {
@@ -864,6 +876,8 @@ static void note_on(Seq *s, int n, int channel, int note, int velocity) {
                 v->velocity = velocity;
                 update_voice_pitch(v, c);
                 update_voice_volume(v, s, c);
+                v->vol_l = v->to_l;
+                v->vol_r = v->to_r;
             }
         }
     }
