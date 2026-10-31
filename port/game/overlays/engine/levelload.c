@@ -117,12 +117,8 @@ void LoadModeFiles(void) {
 }
 
 /* the heap from p to the top of RAM below the stack (0x801FF000) */
-static inline void InitHeapToRamTop(_mal_area *heap, s32 p) {
-    s32 size;
-
-    size = 0x801FF000;
-    size -= p;
-    mal_init(heap, (u8 *)p, size);
+static inline void InitHeapToRamTop(_mal_area *heap) {
+    mal_init(heap, HEAP_START, HEAP_END - HEAP_START);
     smallnode_init();
 }
 
@@ -136,10 +132,10 @@ void InitLevelLoad(void) {
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    InitHeapToRamTop(&MainHeap, (s32)SlotHeapStart);
+    InitHeapToRamTop(&MainHeap);
     start = LoadModeOverlay() + 7;
     start &= ~7;
-    InitHeapToRamTop(&MainHeap, start);
+    InitHeapToRamTop(&MainHeap);
     SetupLevelSpecs(&DefaultArenaDef);
     cfg = (EngineCfg *)LevelConfig;
     if (cfg == NULL) {
@@ -588,7 +584,7 @@ void InitScriptScene(void) {
     SceneStep = 0;
     sound_reinit();
     ModeOverlayLoaded = 0;
-    mal_init(&MainHeap, SlotBase, 0x801FF000 - (s32)SlotBase);
+    mal_init(&MainHeap, HEAP_START, HEAP_END - HEAP_START);
     smallnode_init();
     cfg = &SceneLevelConfig;
     AllocOtBuffers((s32 *)cfg);

@@ -2954,7 +2954,7 @@ void mapscene_setup_tables(map_enviroment *env) {
     t = outer->data;
     env->map_animations = (u8 *)&t->mapAnims + t->mapAnims + 8;
     u = outer->data;
-    ((DbaseAnim *)((u8 *)&u->anims + u->anims + 4))->data = (u32 *)u;
+    ((DbaseAnim *)((u8 *)&u->anims + u->anims + 4))->data = ref_of(u);
 }
 
 void mapscene_init(s32 *arg0, s32 *arg1) {
@@ -3225,7 +3225,7 @@ void process_control_update(process_control_info *pc, fade_info *fade) {
                 mal_compact(&MainHeap);
                 vab_transfer_check();
             }
-            mal_init(&MainHeap, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
+            mal_init(&MainHeap, (u8 *)pc->process->heap, HEAP_END - (u8 *)pc->process->heap);
             smallnode_init();
         }
         ((GameState *)GameInfo)->exitFlags &= ~1;

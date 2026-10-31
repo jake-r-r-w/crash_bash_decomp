@@ -177,7 +177,7 @@ extern s32 IdleFrames;
 extern s16 core_process;
 extern u8 *SlotBase;
 extern file *ModeOverlayLoaded;
-extern u8 SlotHeapStart[];
+#define SlotHeapStart HEAP_START
 extern ArenaDef DefaultArenaDef;
 extern process_info RunGame;
 extern ScreenMode vmode_512_ntsc;

@@ -140,7 +140,7 @@ typedef union {
 /* A mesh's header in a model file (docs/ASSETS.md, Model files): the header table's 0x34-byte
  * records (ModelFile.meshes) and the entities'. Offsets are counted from their own field. */
 typedef struct MeshHeader {
-    /* 0x00 */ struct PrimSet *set; /* its prims while drawn (primset_alloc), marked dead on release */
+    /* 0x00 */ ref32 set;  /* a PrimSet *, in the file */ /* its prims while drawn (primset_alloc), marked dead on release */
     /* 0x04 */ s32 pad4;
     /* 0x08 */ u16 faces;
     /* 0x0A */ s16 padA;
@@ -405,12 +405,23 @@ typedef struct MeshVerts {
 typedef struct mal {
     /* 0x00 */ u16 flags;  /* 2 deferred, 1 the frame parity it was freed on */
     /* 0x02 */ s16 ticks;                /* frames left on the deferred list (mal_free_later) */
-    /* 0x04 */ void **owner;             /* cleared on free; (void **)-1 for none; NULL when free */
+    /* 0x04 */ ref32 owner;              /* a void **: cleared on free; MAL_NO_OWNER for none; NULL when free */
     /* 0x08 */ u32 size;                 /* in words, header not included */
-    /* 0x0C */ struct mal *prev;    /* the block before it in memory */
-    /* 0x10 */ struct mal *prevFree;
-    /* 0x14 */ struct mal *nextFree;
+    /* 0x0C */ ref32 prev;    /* a mal *: the block before it in memory */
+    /* 0x10 */ ref32 prevFree;  /* a mal * */
+    /* 0x14 */ ref32 nextFree;  /* a mal * */
 } mal;
+_Static_assert(sizeof(mal) == 0x18, "mal_split_ptr carves these out of a loaded file's bytes");
+#define MAL_NO_OWNER (-1)
+#define MAL_OWNER(b) ((void **)ref_get((b)->owner))
+#define MAL_HAS_NO_OWNER(b) ((b)->owner.off == MAL_NO_OWNER)
+#define MAL_SET_NO_OWNER(b) ((b)->owner.off = MAL_NO_OWNER)
+/* Tells a block's owner where it is now. flags 8: the owner is a slot in a file, 4 bytes. */
+#define MAL_OWNER_IS_REF 8
+#define MAL_STORE_OWNER(b, v) ((b)->flags & MAL_OWNER_IS_REF ? (void)(*(ref32 *)MAL_OWNER(b) = ref_of(v)) : (void)(*MAL_OWNER(b) = (void *)(v)))
+#define MAL_PREV(b) ((mal *)ref_get((b)->prev))
+#define MAL_PREV_FREE(b) ((mal *)ref_get((b)->prevFree))
+#define MAL_NEXT_FREE(b) ((mal *)ref_get((b)->nextFree))
 
 #define MEMBLOCK_NEXT(b) ((mal *)((u8 *)(b) + (b)->size * 4 + sizeof(mal)))
 /* The block after B if B held WORDS words, written as the allocator sums it (the words first). */
@@ -600,8 +611,8 @@ static inline mal *Heap_AfterLowest(_mal_area *heap) {
     if (lo == NULL) {
         return NULL;
     }
-    nx = (mal *)((u8 *)lo + (lo->size * 4 + 0x18));
-    if (nx->owner == (void **)-1 || nx->size == 0) {
+    nx = (mal *)((u8 *)lo + (lo->size * 4 + sizeof(mal)));
+    if (MAL_HAS_NO_OWNER(nx) || nx->size == 0) {
         return NULL;
     }
     return nx;
@@ -637,7 +648,7 @@ typedef struct FileEntry {
     /* 0x08 */ s32 frames;
     /* 0x0C */ s32 mesh;   /* from here to the MeshHeader it moves */
     /* 0x10 */ s32 hash;   /* string_hash of its name */
-    /* 0x14 */ BlockRef *block;
+    /* 0x14 */ ref32 block;  /* a BlockRef *, in the file */
 } FileEntry;
 
 /* A per-frame-buffer allocation slot used by sub_alloc_prims. */
@@ -738,7 +749,7 @@ extern ModuleEntry *CurrentModule;
 extern s32 VSyncRate;
 extern s32 LastFlipVSync;
 void mal_update(_mal_area *heap);
-extern u8 HeapStart[];
+#define HeapStart HEAP_START
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);
 extern ModuleEntry ShellModules;
 s32 load_file_direct(file *file, u8 *buf);
@@ -1401,6 +1412,7 @@ void *mal_split_ptr(void *ptr, s32 bytes);
 void pads_update(void);
 
 s32 asload_chunk_relocatable(file *arg0, s32 arg1, u32 **arg2, s32 arg3);
+void *asload_chunk_to_slot(file *arg0, s32 arg1, ref32 *arg2, s32 arg3);
 
 
 LoadNode *loadlist_pop(LoaderState *ls);

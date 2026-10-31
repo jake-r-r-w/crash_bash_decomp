@@ -18,8 +18,8 @@ void dbase_copy_block(FileEntry *e, s32 base);
 typedef struct DbaseAnim {
     /* 0x00 */ s32 start;
     /* 0x04 */ s32 end;
-    /* 0x08 */ u32 *data;
-    /* 0x0C */ void *load;
+    /* 0x08 */ ref32 data;  /* a u32 *, in the file */
+    /* 0x0C */ ref32 load;  /* a LoadNode *, in the file */
 } DbaseAnim;
 
 void dbase_anim_load(obj_dbase *db, s32 i);
@@ -38,7 +38,7 @@ s32 name_list_find(s32 *list, u8 *arg1);
 void dbase_load_all_mesh_anims(obj_dbase *arg0);
 void dbase_load_textures_wait(obj_dbase *rec);
 void dbase_anim_release(obj_dbase *db, s32 i);
-s32 dbase_anim_ptr(obj_dbase *arg0, s32 arg1);
+void *dbase_anim_ptr(obj_dbase *arg0, s32 arg1);
 void dbase_group_textures_loaded(u8 *arg0, obj_dbase *arg1);
 void slotlist_mark(SlotList *arg0);
 void dbase_release(obj_dbase *arg0);

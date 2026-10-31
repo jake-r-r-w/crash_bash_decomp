@@ -21,7 +21,7 @@ void dbase_setup_blocks(ModelFile *arg0, s32 *arg1) {
         }
         e = next;
         blk = smallnode_alloc();
-        e->block = blk;
+        e->block = ref_of(blk);
         blk->ptr = mal_split_ptr((u8 *)arg0, e->start);
         i--;
         mal_set_owner(blk->ptr, &blk->ptr);
@@ -52,9 +52,9 @@ none:
             found = 0;
 chk:
             if (found == 0) {
-                old = e->block;
+                old = ((BlockRef *)ref_get(e->block));
                 mal_free(old->ptr, &MainHeap);
-                e->block = NULL;
+                e->block = ref_of(NULL);
                 smallnode_free((u8 *)old);
             }
             e++;
@@ -139,7 +139,7 @@ void dbase_copy_block(FileEntry *e, s32 base) {
     s32 size;
 
     node = smallnode_alloc();
-    e->block = node;
+    e->block = ref_of(node);
     size = e->end - e->start;
     mal_can_alloc(size);
     mal_alloc_owned_low(size, (void **)node, &MainHeap, 0);
@@ -152,12 +152,12 @@ void dbase_anim_release(obj_dbase *db, s32 i) {
 
     d = db->data;
     a = (DbaseAnim *)((u8 *)&d->anims + d->anims + 4) + i;
-    if (a->data != NULL) {
-        mal_free(a->data, &MainHeap);
-        a->load = 0;
-    } else if (a->load != 0) {
-        loader_cancel((LoadNode *)a->load);
-        a->load = 0;
+    if (a->data.off != 0) {
+        mal_free(ref_get(a->data), &MainHeap);
+        a->load = ref_of(NULL);
+    } else if (a->load.off != 0) {
+        loader_cancel(ref_get(a->load));
+        a->load = ref_of(NULL);
     }
 }
 
@@ -169,19 +169,19 @@ void dbase_anim_load(obj_dbase *db, s32 i) {
 
     d = db->data;
     a = (DbaseAnim *)((u8 *)&d->anims + d->anims + 4) + i;
-    if (a->data == NULL && a->load == 0) {
+    if (a->data.off == 0 && a->load.off == 0) {
         start = a->start;
-        a->load = asload_chunk_relocatable(db->file, start, &a->data, a->end - start);
+        a->load = ref_of(asload_chunk_to_slot(db->file, start, &a->data, a->end - start));
     }
 }
 
-s32 dbase_anim_ptr(obj_dbase *arg0, s32 arg1) {
+void *dbase_anim_ptr(obj_dbase *arg0, s32 arg1) {
     DbaseAnim *a;
     ModelFile *d;
 
     d = arg0->data;
     a = (DbaseAnim *)((u8 *)&d->anims + d->anims + 4) + arg1;
-    return (s32)a->data;
+    return ref_get(a->data);
 }
 
 
@@ -211,7 +211,7 @@ u8 *dbase_mesh_anim_name_release(obj_dbase *arg0, u8 *arg1) {
     }
 found:
     if (res != NULL) {
-        blk = res->block;
+        blk = ((BlockRef *)ref_get(res->block));
         if (blk != NULL) {
             if (blk->ptr != NULL) {
                 mal_free(blk->ptr, &MainHeap);
@@ -219,7 +219,7 @@ found:
                 loader_cancel((LoadNode *)blk->load);
             }
             smallnode_free((u8 *)blk);
-            res->block = NULL;
+            res->block = ref_of(NULL);
             return (u8 *)res;
         }
     }
@@ -251,7 +251,7 @@ s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1) {
     }
 found:
     if (res != NULL) {
-        return (s32)res->block->ptr;
+        return (s32)((BlockRef *)ref_get(res->block))->ptr;
     }
     return 0;
 }
@@ -285,7 +285,7 @@ u8 *dbase_mesh_anim_name_load(obj_dbase *arg0, u8 *arg1) {
     }
 found:
     if (res != NULL) {
-        cur = res->block;
+        cur = ((BlockRef *)ref_get(res->block));
         if (cur != NULL) {
             return (u8 *)cur;
         }
@@ -293,7 +293,7 @@ found:
             node = smallnode_alloc();
             if (node != NULL) {
                 start = res->start;
-                res->block = node;
+                res->block = ref_of(node);
                 h = asload_chunk_relocatable(arg0->file, start, (u32 **)node, res->end - start);
                 node->load = h;
                 if (h == 0) {
@@ -379,11 +379,11 @@ void dbase_load_all_mesh_anims(obj_dbase *arg0) {
             if (t != NULL && i < t->nMeshAnims) {
                 rec = (FileEntry *)((u8 *)&t->meshAnims + t->meshAnims);
                 rec += i;
-                if (rec->block == NULL) {
+                if (((BlockRef *)ref_get(rec->block)) == NULL) {
                     node = smallnode_alloc();
                     if (node != NULL) {
                         start = rec->start;
-                        rec->block = node;
+                        rec->block = ref_of(node);
                         handle = asload_chunk_relocatable(arg0->file, start, (u32 **)node, rec->end - start);
                         node->load = handle;
                         if (handle == 0) {
@@ -416,7 +416,7 @@ void dbase_release_all_mesh_anims(obj_dbase *a) {
             if (p != NULL && i < p->nMeshAnims) {
                 slot = (FileEntry *)((u8 *)&p->meshAnims + p->meshAnims);
                 slot = (FileEntry *)FILE_AT(slot, off);
-                e = slot->block;
+                e = ((BlockRef *)ref_get(slot->block));
                 if (e != NULL) {
                     if (e->ptr != NULL) {
                         mal_free(e->ptr, &MainHeap);
@@ -424,7 +424,7 @@ void dbase_release_all_mesh_anims(obj_dbase *a) {
                         loader_cancel((void *)e->load);
                     }
                     smallnode_free((u8 *)e);
-                    slot->block = NULL;
+                    slot->block = ref_of(NULL);
                 }
             }
             off += 0x18;
@@ -444,7 +444,7 @@ u8 *dbase_mesh_anim_release(obj_dbase *arg0, s32 arg1) {
         if (arg1 < base->nMeshAnims) {
             e = (FileEntry *)((u8 *)&base->meshAnims + base->meshAnims);
             e += arg1;
-            item = e->block;
+            item = ((BlockRef *)ref_get(e->block));
             if (item != NULL) {
                 if (item->ptr != NULL) {
                     mal_free(item->ptr, &MainHeap);
@@ -452,7 +452,7 @@ u8 *dbase_mesh_anim_release(obj_dbase *arg0, s32 arg1) {
                     loader_cancel((void *)item->load);
                 }
                 smallnode_free((u8 *)item);
-                e->block = NULL;
+                e->block = ref_of(NULL);
                 return (u8 *)e;
             }
         }
@@ -465,7 +465,7 @@ u8 *dbase_mesh_anim_release(obj_dbase *arg0, s32 arg1) {
 FileEntry *dbase_mesh_anim_rec_release(s32 *arg0, FileEntry *rec) {
     BlockRef *node;
 
-    node = rec->block;
+    node = ((BlockRef *)ref_get(rec->block));
     if (node == NULL) {
         return NULL;
     }
@@ -475,7 +475,7 @@ FileEntry *dbase_mesh_anim_rec_release(s32 *arg0, FileEntry *rec) {
         loader_cancel((void *)node->load);
     }
     smallnode_free((u8 *)node);
-    rec->block = NULL;
+    rec->block = ref_of(NULL);
     return rec;
 }
 
@@ -487,12 +487,12 @@ static inline BlockRef *dbase_mesh_anim_load_one(obj_dbase *arg0, FileEntry *arg
     s32 start;
     s32 h;
 
-    cur = arg1->block;
+    cur = ((BlockRef *)ref_get(arg1->block));
     if (cur == NULL) {
         node = smallnode_alloc();
         if (node != NULL) {
             start = arg1->start;
-            arg1->block = node;
+            arg1->block = ref_of(node);
             h = asload_chunk_relocatable(arg0->file, start, (u32 **)node, arg1->end - start);
             node->load = h;
             if (h != 0) {
@@ -526,12 +526,12 @@ BlockRef *dbase_mesh_anim_rec_load(file **f, FileEntry *e) {
     BlockRef *node;
     BlockRef *ret;
 
-    ret = e->block;
+    ret = ((BlockRef *)ref_get(e->block));
     if (ret == NULL) {
         node = smallnode_alloc();
         if (node != NULL) {
             start = e->start;
-            e->block = node;
+            e->block = ref_of(node);
             load = asload_chunk_relocatable(*f, start, (u32 **)node, e->end - start);
             node->load = load;
             if (load != 0) {
@@ -633,7 +633,7 @@ void dbase_release(obj_dbase *arg0) {
         i--;
         if (i != -1) {
             do {
-                PrimSet *e = q->set;
+                PrimSet *e = ref_get(q->set);
                 if (e != NULL) {
                     e->dead = 1;
                 }
