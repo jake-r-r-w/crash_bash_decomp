@@ -53,8 +53,7 @@ void shell_init(void) {
     init_file();
     pads_init();
     pads_update();
-    load_file_direct(&DatIndex[991], HeapStart);
-    EngineModule = (ModuleEntry *)HeapStart;
+    EngineModule = &EngineEntry; /* linked in, not loaded */
     RunModules(&ShellModules);
 }
 

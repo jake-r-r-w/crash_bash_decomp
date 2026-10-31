@@ -863,7 +863,7 @@ int ASTTableCount(void) {
 /* what the data points at that this file's headers don't declare */
 extern u8 SlotOverlayId[];
 
-u8 *SlotBase = (void *)&SlotOverlayId;
+u8 *SlotBase = HEAP_START;
 u8 *ModeTextLoadAddr = (void *)&ModeTextBuffer;
 s32 ModeTextUnused[9] = {0};
 PlaceRec **** PauseMenuSetsByLang[6] = {

@@ -1,4 +1,6 @@
 /* libpad on PC (ROADMAP-B 6.2): each vblank writes the host's input into the game's receive buffers,
+#include <stdint.h>
+typedef unsigned int u32;
  * in the form the pads' hardware gives it: a status byte, a type byte, the buttons active low. With
  * more than two players, port 1 is a multitap, whose packet holds four pads' packets. Digital pads for
  * now, so the game asks for no rumble. */

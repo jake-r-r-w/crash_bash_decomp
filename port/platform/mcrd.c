@@ -1,5 +1,8 @@
 /* libmcrd on PC (ROADMAP-B 6.2): the memory card in slot 1 as a file holding a raw 128 KB card (the
+#include <stdint.h>
+typedef unsigned int u32;
  * form tools/scripts/card.py and emulators read), with every command finished at once. */
+#include <stdint.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +20,7 @@ static int Seen;
 static long LastCmd, LastResult;
 static int Pending;
 
-static void finish(long cmd, long result) {
+static void finish(int cmd, int result) {
     LastCmd = cmd;
     LastResult = result;
     Pending = 1;
@@ -103,14 +106,14 @@ static int find_file(const char *name) {
     return 0;
 }
 
-void MemCardInit(long val) {
+void MemCardInit(int val) {
 }
 void MemCardStart(void) {
 }
 void MemCardStop(void) {
 }
 
-long MemCardExist(long chan) {
+int MemCardExist(int chan) {
     load_card();
     if (chan != 0) {
         finish(0, 1);
@@ -121,20 +124,20 @@ long MemCardExist(long chan) {
     return 1;
 }
 
-long MemCardAccept(long chan) {
+int MemCardAccept(int chan) {
     load_card();
     finish(1, chan != 0 ? 1 : 0);
     return 1;
 }
 
-long MemCardFormat(long chan) {
+int MemCardFormat(int chan) {
     load_card();
     format_card();
     save_card();
     return 0;
 }
 
-long MemCardSync(long mode, long *cmds, long *rslt) {
+int MemCardSync(int mode, int *cmds, int *rslt) {
     if (!Pending) {
         return -1;
     }
@@ -148,7 +151,7 @@ long MemCardSync(long mode, long *cmds, long *rslt) {
     return 1;
 }
 
-long MemCardCreateFile(long chan, char *file, long blocks) {
+int MemCardCreateFile(int chan, char *file, int blocks) {
     int i;
 
     load_card();
@@ -175,7 +178,7 @@ long MemCardCreateFile(long chan, char *file, long blocks) {
     return 1;
 }
 
-long MemCardGetDirentry(long chan, char *name, struct DIRENTRY *dir, long *files, long ofs, long max) {
+int MemCardGetDirentry(int chan, char *name, struct DIRENTRY *dir, int *files, int ofs, int max) {
     int i, n = 0;
 
     load_card();
@@ -196,7 +199,7 @@ long MemCardGetDirentry(long chan, char *name, struct DIRENTRY *dir, long *files
     return 0;
 }
 
-long MemCardReadFile(long chan, char *file, unsigned long *adrs, long ofs, long bytes) {
+int MemCardReadFile(int chan, char *file, u32 *adrs, int ofs, int bytes) {
     int i;
 
     load_card();
@@ -210,7 +213,7 @@ long MemCardReadFile(long chan, char *file, unsigned long *adrs, long ofs, long 
     return 0;
 }
 
-long MemCardWriteFile(long chan, char *file, unsigned long *adrs, long ofs, long bytes) {
+int MemCardWriteFile(int chan, char *file, u32 *adrs, int ofs, int bytes) {
     int i;
 
     load_card();

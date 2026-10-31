@@ -750,6 +750,8 @@ extern s32 VSyncRate;
 extern s32 LastFlipVSync;
 void mal_update(_mal_area *heap);
 #define HeapStart HEAP_START
+extern struct ModuleEntry EngineEntry;
+void overlay_load(const void *f);
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);
 extern ModuleEntry ShellModules;
 s32 load_file_direct(file *file, u8 *buf);

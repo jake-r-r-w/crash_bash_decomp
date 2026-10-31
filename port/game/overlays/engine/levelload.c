@@ -22,10 +22,10 @@ u8 *LoadModeOverlay(void) {
     }
     p = ModeOverlayFiles[ModeTypes[g->mode * 3] - 0x101];
     if (p != ModeOverlayLoaded) {
-        load_file_direct(p, SlotBase);
+        overlay_load(p);
         ModeOverlayLoaded = p;
     }
-    return SlotBase + p->size;
+    return HEAP_START;
 }
 
 void AnimateLoadingIcon(void) {

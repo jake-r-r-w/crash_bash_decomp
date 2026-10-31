@@ -6,6 +6,6 @@
  * calls init, shell_update update, shell_render render). init is RestartGame, the first boot's
  * start; heap is where the heap starts with the engine and the slot loaded. In .text, ahead of
  * the engine's code, as the original link had it. */
-ModuleEntry EngineEntry __attribute__((section(".text"))) = {
+ModuleEntry EngineEntry = {
     RestartGame, UpdateProcess, RenderProcess, QuitProcess, SlotHeapStart,
 };

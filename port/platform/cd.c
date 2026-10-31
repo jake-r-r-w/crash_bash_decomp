@@ -1,10 +1,13 @@
 /* libcd on PC (ROADMAP-B 6.2): sectors come from a CRASHBSH.DAT file, a flat run of 2 KB sectors from
+#include <stdint.h>
+typedef unsigned int u32;
  * sector 0, and every read is finished by the time it returns. */
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <libcd.h>
-#include "../platform/platform.h"
+#include "platform.h"
 
 static FILE *Dat;
 static long DatSize;
@@ -39,18 +42,18 @@ int CdDiskReady(int mode) {
     return 2;
 }
 
-int CdSync(int mode, u_char *result) {
+int CdSync(int mode, unsigned char *result) {
     return 2;
 }
 
-int CdControl(u_char com, u_char *param, u_char *result) {
+int CdControl(unsigned char com, unsigned char *param, unsigned char *result) {
     if (com == CdlSetloc) {
         ReadPos = CdPosToInt((CdlLOC *)param);
     }
     return 1;
 }
 
-int CdControlF(u_char com, u_char *param) {
+int CdControlF(unsigned char com, unsigned char *param) {
     return CdControl(com, param, NULL);
 }
 
@@ -80,12 +83,12 @@ int CdPosToInt(CdlLOC *p) {
 CdlFILE *CdSearchFile(CdlFILE *fp, char *name) {
     open_dat();
     CdIntToPos(0, &fp->pos);
-    fp->size = (u_long)DatSize;
+    fp->size = (u32)DatSize;
     strncpy(fp->name, "CRASHBSH.DAT;1", sizeof(fp->name));
     return fp;
 }
 
-int CdRead(int sectors, u_long *buf, int mode) {
+int CdRead(int sectors, u32 *buf, int mode) {
     size_t got;
 
     open_dat();
@@ -98,6 +101,6 @@ int CdRead(int sectors, u_long *buf, int mode) {
     return 1;
 }
 
-int CdReadSync(int mode, u_char *result) {
+int CdReadSync(int mode, unsigned char *result) {
     return 0;
 }

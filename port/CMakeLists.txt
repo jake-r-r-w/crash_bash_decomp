@@ -10,6 +10,8 @@ if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
   message(FATAL_ERROR "The port is 64-bit: use a 64-bit compiler (docs/PORT.md, Building).")
 endif()
 
+add_compile_options(-g)
+add_link_options(-g)
 option(BASH_FETCH_SDL3 "Download and build SDL3 if it isn't installed" OFF)
 
 find_package(SDL3 QUIET CONFIG)
@@ -45,7 +47,16 @@ target_compile_options(game PRIVATE
 set_source_files_properties(game/main/prims.c game/main/nascalls.c game/main/music.c game/main/sfx.c game/main/sound.c
   PROPERTIES COMPILE_OPTIONS "-Wno-error=int-conversion;-Wno-error=pointer-to-int-cast;-Wno-error=int-to-pointer-cast;-Wno-error=void-pointer-to-int-cast;-Wno-error=int-to-void-pointer-cast")
 
-add_executable(crashbash main.c)
+# Each slot overlay's data goes in a section of its own (platform/overlays.c).
+foreach(ovl arkenoid bash bonk chase dino hub n2o papu pogo polar race spin tank titles)
+  file(GLOB ovl_sources CONFIGURE_DEPENDS game/overlays/${ovl}/*.c)
+  set_property(SOURCE ${ovl_sources} APPEND PROPERTY COMPILE_OPTIONS "-include;${CMAKE_CURRENT_SOURCE_DIR}/platform/ovlsection.h;-fno-zero-initialized-in-bss")
+  set_property(SOURCE ${ovl_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAME=${ovl}")
+endforeach()
+
+add_executable(crashbash main.c platform/overlays.c platform/gte.c platform/cd.c platform/etc.c platform/pad.c platform/mcrd.c
+  platform/stubs.c platform/sdl.c $<TARGET_OBJECTS:game>)
+target_include_directories(crashbash PRIVATE psyq/include)
 if(TARGET SDL3::SDL3-static)
   target_link_libraries(crashbash PRIVATE SDL3::SDL3-static)
 else()
@@ -55,7 +66,7 @@ else()
       "$<TARGET_FILE:SDL3::SDL3>" "$<TARGET_FILE_DIR:crashbash>")
   endif()
 endif()
-target_compile_options(crashbash PRIVATE -std=c17 -Wall -Wextra)
+target_compile_options(crashbash PRIVATE -std=gnu17 -fsigned-char -fwrapv -fno-strict-aliasing -w -Wno-error=int-conversion -Wno-incompatible-pointer-types)
 target_compile_definitions(crashbash PRIVATE BASH_VERSION="${PROJECT_VERSION}")
 
 enable_testing()
@@ -71,3 +82,4 @@ if(MODE_TEXT_FILES)
   target_compile_options(modetext_test PRIVATE -std=gnu17 -fsigned-char -fno-builtin -w -Wno-error=int-conversion -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types)
   add_test(NAME modetext COMMAND modetext_test ${MODE_TEXT_FILES})
 endif()
+set_source_files_properties(platform/cd.c platform/etc.c platform/mcrd.c platform/pad.c PROPERTIES COMPILE_DEFINITIONS "u32=uint32_t")

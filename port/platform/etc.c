@@ -1,10 +1,13 @@
 /* libetc and libapi on PC (ROADMAP-B 6.2): vsync is the one clock, and everything the PS1 does in
+#include <stdint.h>
+typedef unsigned int u32;
  * its interrupts happens here, once per vblank: the sound tick, the pads, the audio. */
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <libapi.h>
 #include <libetc.h>
-#include "../platform/platform.h"
+#include "platform.h"
 
 void gpu_present(void);
 void pad_vblank(void);
@@ -49,26 +52,26 @@ int ResetCallback(void) {
 int StopCallback(void) {
     return 0;
 }
-long SetVideoMode(long mode) {
+int SetVideoMode(int mode) {
     return 0;
 }
 
 /* The stack is the host's: the game's move of it into the scratchpad does nothing here. */
-unsigned long GetSp(void) {
+u32 GetSp(void) {
     return 0;
 }
-unsigned long SetSp(unsigned long sp) {
+u32 SetSp(u32 sp) {
     return 0;
 }
 
 /* The Spyro 3 demo, which is another game's exe. */
-long LoadExec(char *file, unsigned long sp, unsigned long size) {
+int LoadExec(char *file, u32 sp, u32 size) {
     fprintf(stderr, "The game asked to run %s, which the PC build can't.\n", file);
     exit(0);
     return 0;
 }
 
-long StopRCnt(unsigned long spec) {
+int StopRCnt(u32 spec) {
     return 1;
 }
 void _96_init(void) {
