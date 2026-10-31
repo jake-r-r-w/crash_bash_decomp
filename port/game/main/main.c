@@ -152,8 +152,42 @@ void shell_render(void) {
     FlipScreen(VSyncRate);
 }
 
+int platform_vblanks(void);
+int printf(const char *, ...);
+extern BossRecord BossState;
+s32 CheatHeroHealth(void);
+/* What a test run asks of the game (--boss-beat), and says of it. */
+static void test_run_update(void) {
+    static s32 lastMode = -1;
+    static s32 lastLog;
+
+    if (!settings()->no_save) {
+        return;
+    }
+    if (GameMode != lastMode) {
+        printf("mode %d at vblank %d\n", GameMode, platform_vblanks());
+        lastMode = GameMode;
+    }
+    if (settings()->test_bot) {
+        GAME->heroCpu[0] = 1;
+    }
+    GAME->cheats |= settings()->test_cheats;
+    if ((settings()->test_bot || (GAME->levelFlags & 0x100)) && platform_vblanks() / 300 != lastLog) {
+        lastLog = platform_vblanks() / 300;
+        printf("v%d mode %d boss health %d flags %X, hero health %d, exit %X\n", platform_vblanks(), GameMode, BossState.health, BossState.flags,
+               CheatHeroHealth(), GAME->exitFlags);
+    }
+    if (settings()->boss_beat_at != 0 && platform_vblanks() >= settings()->boss_beat_at) {
+        settings()->boss_beat_at = 0;
+        BossState.health = 0;
+        BossState.flags |= 0x8000;
+        printf("boss beaten at vblank %d, in mode %d\n", platform_vblanks(), GameMode);
+    }
+}
+
 void shell_update(void) {
     GAME->cheats = settings()->cheat_menu ? GAME->cheats | 0x80010000 : 0x80000000;
+    test_run_update();
     loader_update();
     pads_update();
     rand_step();

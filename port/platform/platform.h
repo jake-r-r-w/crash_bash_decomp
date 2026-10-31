@@ -24,6 +24,7 @@
 const char *platform_data_path(void);
 /* A pad, as the game's libpad reads it: its buttons, or -1 when there's none. */
 int platform_pad(int port);
+int platform_vblanks(void);
 int platform_pad_sticks(int port, unsigned char sticks[4]);
 int platform_pad_rumbles(int port);
 void platform_rumble(int port, int small_on, int big);

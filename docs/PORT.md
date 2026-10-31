@@ -137,6 +137,9 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--launcher` | open the menu in a test run too (drive it with `--press`) |
 | `--window W H`, `--render W H` | the window's size and what the game draws at, for this run (`--render 0 0`: match the window) |
 | `--cheat-menu` | the cheat menu on, for this run |
+| `--macro N HEX:VBLANKS,...` | a repeating pattern of buttons on pad 1 from vblank N. A test run logs a boss fight's health |
+| `--bot`, `--cheats HEX` | the game's own AI plays pad 1 and its fight's state is logged; cheat flags kept on (`shell.h`, `cheatflags`: 2 is no death) |
+| `--boss-beat N` | marks the boss beaten at vblank N, to test what follows. A test run also prints each change of game mode |
 | `--stick N LX LY` | a test's analog pad with motors on pad 1: its left stick at these (hex, centre 80) from vblank N for a few vblanks. A test run prints the rumble it asks for |
 | `--no-window`, `--data`, `--saves` | no window, and where the game's data and the saves are (a test run keeps no saves without `--saves`) |
 

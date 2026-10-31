@@ -262,3 +262,8 @@ void CheatMenuDraw(s32 top) {
     FontPage = 1;
     DrawSysText(-0x8000, (s16)(0xE8 + top), (u8 *)help, TEXT_ON, TEXT_OFF, 0);
 }
+
+/* A test run logs this. */
+s32 CheatHeroHealth(void) {
+    return Heroes[0].hero_health;
+}

@@ -130,7 +130,7 @@ static struct {
 static int NumShots;
 
 /* --press: buttons held on pad 1 for a few vblanks */
-#define MAX_PRESSES 256
+#define MAX_PRESSES 512
 #define PRESS_VBLANKS 6
 static struct {
     int frame, buttons;
@@ -200,11 +200,53 @@ void platform_rumble(int port, int small_on, int big) {
     }
 }
 
+/* --macro: a test's pattern of buttons on pad 1, over and over from a vblank on: "HEX:VBLANKS,HEX:VBLANKS,..." */
+#define MAX_MACRO 64
+static struct {
+    int buttons, vblanks;
+} Macro[MAX_MACRO];
+static int MacroSteps, MacroLength, MacroFrom;
+
+static int macro_buttons(void) {
+    int at, i;
+
+    if (MacroLength == 0 || Vblanks < MacroFrom) {
+        return 0;
+    }
+    at = (Vblanks - MacroFrom) % MacroLength;
+    for (i = 0; i < MacroSteps; i++) {
+        if (at < Macro[i].vblanks) {
+            return Macro[i].buttons;
+        }
+        at -= Macro[i].vblanks;
+    }
+    return 0;
+}
+
+static void read_macro(const char *text) {
+    while (*text != '\0' && MacroSteps < MAX_MACRO) {
+        char *end;
+
+        Macro[MacroSteps].buttons = (int)strtol(text, &end, 16);
+        text = *end == ':' ? end + 1 : end;
+        Macro[MacroSteps].vblanks = (int)strtol(text, &end, 10);
+        MacroLength += Macro[MacroSteps++].vblanks;
+        text = *end == ',' ? end + 1 : end;
+    }
+}
+
+int platform_vblanks(void) {
+    return Vblanks;
+}
+
 int platform_pad(int port) {
     int b = NoWindow ? (port == 0 ? 0 : -1) : host_pad(port);
     int i;
 
     if (port == 0) {
+        if (macro_buttons() != 0) {
+            b = (b < 0 ? 0 : b) | macro_buttons();
+        }
         for (i = 0; i < NumPresses; i++) {
             if (Vblanks >= Presses[i].frame && Vblanks < Presses[i].frame + PRESS_VBLANKS) {
                 b = (b < 0 ? 0 : b) | Presses[i].buttons;
@@ -216,7 +258,7 @@ int platform_pad(int port) {
 
 int main(int argc, char **argv) {
     int i;
-    int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0;
+    int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0;
     int no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
 
     for (i = 1; i < argc; i++) {
@@ -238,6 +280,15 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--render") == 0 && i + 2 < argc) {
             render_w = atoi(argv[++i]);
             render_h = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--macro") == 0 && i + 2 < argc) {
+            MacroFrom = atoi(argv[++i]);
+            read_macro(argv[++i]);
+        } else if (strcmp(argv[i], "--bot") == 0) {
+            bot = 1;
+        } else if (strcmp(argv[i], "--cheats") == 0 && i + 1 < argc) {
+            cheats = (int)strtol(argv[++i], NULL, 16);
+        } else if (strcmp(argv[i], "--boss-beat") == 0 && i + 1 < argc) {
+            boss_beat = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--cheat-menu") == 0) {
             cheat_menu = 1;
         } else if (strcmp(argv[i], "--saves") == 0 && i + 1 < argc) {
@@ -295,6 +346,9 @@ int main(int argc, char **argv) {
     if (cheat_menu) {
         settings()->cheat_menu = 1;
     }
+    settings()->boss_beat_at = boss_beat;
+    settings()->test_bot = bot;
+    settings()->test_cheats = cheats;
     if (window_w > 0 && window_h > 0) {
         settings()->window_w = window_w;
         settings()->window_h = window_h;
