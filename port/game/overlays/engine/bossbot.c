@@ -21,7 +21,6 @@ extern s32 PapuBossFlag;
 #define BTN_CROSS 0x4000
 
 static s32 BotTicks;
-static s32 BearFlip;
 
 static s32 step_towards(s32 dx, s32 dz, s32 near_enough) {
     s32 b = 0;
@@ -175,12 +174,120 @@ typedef struct BearSniper {
 extern NAS *PolarSniperNas;
 extern s32 PolarSniperSeen;
 extern NAS *polarbossnas;
+extern NAS *PolarMissiles[4];
 NAS *PolarFirstBear(void);
+s32 PolarBearState(NAS *bear);
+s32 PolarBearFireIn(NAS *bear);
+s32 BearminatorOffIce(s32 *pos);
+extern subengine *bossmapsub;
+s32 PolarHeroAttackPower(s32 player);
+void PolarBossBodyAim(s32 *x, s32 *y);
 s32 PolarHeroMeter(s32 player);
 s32 CountBears(void);
 
-#define BEAR_REACH 0x400
-#define BEAR_SAFE_R 0x900
+#define BEAR_REACH 0x300
+#define BEAR_CLOSE 0x280
+#define BEAR_STANDOFF 0x2C0
+#define BEAR_EDGE 0x280
+#define BEAR_STEP_OUT 0x500
+#define BEAR_FIRE_SOON 12
+#define BEAR_FAR 0xE00
+#define BEAR_DODGE 0x200
+#define BEAR_AIMING 5
+#define BEAR_FALLING 0x4E
+
+#define BEAR_AIM_X 0x60
+#define BEAR_AIM_Y 0x80
+#define BEAR_SHOT_TICKS 24
+
+static s32 BearSide;
+static s32 BearLastX;
+static s32 BearMapSeen = -1;
+static s32 BearMidX, BearMidZ;
+static const s16 BearDirs[8][2] = {
+    { 0x1000, 0 }, { 0xB50, 0xB50 }, { 0, 0x1000 }, { -0xB50, 0xB50 }, { -0x1000, 0 }, { -0xB50, -0xB50 }, { 0, -0x1000 }, { 0xB50, -0xB50 }
+};
+
+/* The nearest of the pad's eight ways to a direction: a lunge goes where the pad points. */
+static s32 aim_at(s32 dx, s32 dz) {
+    s32 big = abs(dx) > abs(dz) ? abs(dx) : abs(dz);
+
+    return step_towards(dx, dz, big * 5 / 12);
+}
+
+static s32 off_ice(s32 x, s32 z) {
+    s32 pos[3];
+
+    pos[0] = x;
+    pos[1] = 0;
+    pos[2] = z;
+    return BearminatorOffIce(pos);
+}
+
+/* The middle of what ice is left, worked out again when a chunk goes: the arena's own middle may be gone. */
+static void ice_middle(void) {
+    s32 x, z;
+    s32 n = 0, sx = 0, sz = 0;
+
+    if (BearMapSeen == bossmapsub->entity) {
+        return;
+    }
+    BearMapSeen = bossmapsub->entity;
+    for (z = -BEAR_FAR; z <= BEAR_FAR; z += 0x100) {
+        for (x = -BEAR_FAR; x <= BEAR_FAR; x += 0x100) {
+            if (!off_ice(x, z)) {
+                sx += x >> 4;
+                sz += z >> 4;
+                n++;
+            }
+        }
+    }
+    BearMidX = n != 0 ? sx / n * 16 : 0;
+    BearMidZ = n != 0 ? sz / n * 16 : 0;
+}
+
+static s32 dir_x(s32 i) {
+    return BearDirs[i][0];
+}
+
+static s32 dir_z(s32 i) {
+    return BearDirs[i][1];
+}
+
+/* Whether the hero's near an edge. */
+static s32 near_edge(s32 x, s32 z) {
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+        if (off_ice(x + ((dir_x(i) * BEAR_EDGE) >> 12), z + ((dir_z(i) * BEAR_EDGE) >> 12))) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/* Sidesteps a shot along the facing of e, a missile or a robot about to fire one: 0 if it isn't coming this way. The hero
+   holds to one side, one with ice on it, as a robot turns to follow him and swapping sides lets it catch up. */
+static s32 bear_dodge(EXTengine *he, EXTengine *e) {
+    s32 vy = e->xform.rot.vy;
+    s32 fx = -rcossin_tbl[(vy - 0x400) & 0xFFF].unk2;
+    s32 fz = -rcossin_tbl[vy & 0xFFF].unk2;
+    s32 rx = he->XYZ.x - e->XYZ.x;
+    s32 rz = he->XYZ.z - e->XYZ.z;
+    s32 along = (rx * fx + rz * fz) >> 12;
+    s32 across = (rx * fz - rz * fx) >> 12;
+
+    if (along < -0x100 || abs(across) > BEAR_DODGE) {
+        return 0;
+    }
+    if (BearSide == 0 || off_ice(he->XYZ.x + ((fz * BearSide * BEAR_EDGE) >> 12), he->XYZ.z - ((fx * BearSide * BEAR_EDGE) >> 12))) {
+        BearSide = ((he->XYZ.x - BearMidX) >> 4) * fz - ((he->XYZ.z - BearMidZ) >> 4) * fx > 0 ? -1 : 1;
+        if (off_ice(he->XYZ.x + ((fz * BearSide * BEAR_EDGE) >> 12), he->XYZ.z - ((fx * BearSide * BEAR_EDGE) >> 12))) {
+            BearSide = -BearSide;
+        }
+    }
+    return step_towards(fz * BearSide, -fx * BearSide, 0x600);
+}
 
 static s32 play_bear(void) {
     EXTengine *he = Heroes[0].hero_eng;
@@ -193,48 +300,113 @@ static s32 play_bear(void) {
         sn = FindExtension(PolarSniperNas, 0x10000000);
     }
     if (sn != NULL && sn->state == 1) {
-        s32 off = polarbossnas->Engine->XYZ.x - sn->aimEng2->sub->XYZ.x;
-        s32 up = polarbossnas->Engine->XYZ.y - sn->aimEng2->sub->XYZ.y;
+        s32 tx, ty, off, up;
         s32 b = 0;
 
-        if (off > 0x80) {
-            b |= BearFlip ? BTN_LEFT : BTN_RIGHT;
-        } else if (off < -0x80) {
-            b |= BearFlip ? BTN_RIGHT : BTN_LEFT;
+        /* the crosshair stands in the sub's plane and the shot flies through it, so it's the world's x and y; the sub moves on
+           meanwhile, for as long as the shot's flying */
+        PolarBossBodyAim(&tx, &ty);
+        tx += (polarbossnas->Engine->XYZ.x - BearLastX) * BEAR_SHOT_TICKS;
+        BearLastX = polarbossnas->Engine->XYZ.x;
+        off = tx - sn->aimEng2->sub->XYZ.x;
+        up = ty - sn->aimEng2->sub->XYZ.y;
+        if (off > BEAR_AIM_X) {
+            b |= BTN_RIGHT;
+        } else if (off < -BEAR_AIM_X) {
+            b |= BTN_LEFT;
         }
-        if (up > 0x180) {
+        if (up > BEAR_AIM_Y) {
             b |= BTN_DOWN;
-        } else if (up < -0x180) {
+        } else if (up < -BEAR_AIM_Y) {
             b |= BTN_UP;
         }
-        if (b == 0 && (BotTicks & 7) == 0) {
+        if (b == 0 && (BotTicks & 1) == 0) {
             b = BTN_SQUARE;
         }
         return b;
     }
-    /* a mechanical bear about: charge it off the ice, as the missile only comes when they're gone */
-    {
-        NAS *bear = PolarFirstBear();
-
-        if (bear != NULL && bear->Engine != NULL) {
-            s32 bx = bear->Engine->XYZ.x, bz = bear->Engine->XYZ.z;
-            s32 hr = csqrt(he->XYZ.x * he->XYZ.x + he->XYZ.z * he->XYZ.z) >> 6;
-            s32 br = csqrt(bx * bx + bz * bz) >> 6;
-            s32 dx = bx - he->XYZ.x, dz = bz - he->XYZ.z;
-            s32 d = csqrt(dx * dx + dz * dz) >> 6;
-
-            /* hold the middle while the bar fills. Full, go for a bear that's further out than the hero, so the hit drives it at the
-               edge, and charge in reach; never so far out that the hero goes over himself. */
-            if (PolarHeroMeter(0) >= 0x100 && hr < BEAR_SAFE_R && br > hr) {
-                if (d < BEAR_REACH) {
-                    return step_towards(dx, dz, 0x10) | (Heroes[0].hero_mode != 0x51 && (BotTicks & 7) == 0 ? BTN_SQUARE : 0);
-                }
-                return step_towards(dx, dz, 0x10);
-            }
-            return hr > 0x180 ? step_towards(-he->XYZ.x, -he->XYZ.z, 0x80) : 0;
-        }
+    BearLastX = polarbossnas->Engine->XYZ.x;
+    /* the missile the last robot left: go and get it before it goes off */
+    if (sn != NULL && sn->state == 0 && PolarSniperNas->Engine != NULL) {
+        return aim_at(PolarSniperNas->Engine->XYZ.x - he->XYZ.x, PolarSniperNas->Engine->XYZ.z - he->XYZ.z);
     }
-    return step_towards(-he->XYZ.x, -he->XYZ.z, 0x100);
+    ice_middle();
+    {
+        NAS *bear, *best = NULL;
+        s32 bestd = 0x7FFFFFFF;
+        s32 i, b;
+        s32 mx = BearMidX - he->XYZ.x, mz = BearMidZ - he->XYZ.z;
+
+        /* going over: push back into the arena and press repeatedly, as the rules say */
+        if (Heroes[0].hero_mode == BEAR_FALLING) {
+            return aim_at(mx, mz) | ((BotTicks & 1) != 0 ? BTN_SQUARE : 0);
+        }
+        /* a missile stuns, and a stunned hero gets shoved off: out of its way before anything else */
+        for (i = 0; i < 4; i++) {
+            if (PolarMissiles[i] != NULL && PolarMissiles[i]->Engine != NULL
+                && (b = bear_dodge(he, PolarMissiles[i]->Engine)) != 0) {
+                return b;
+            }
+        }
+        for (bear = PolarFirstBear(); bear != NULL; bear = bear->Group.Child) {
+            if (bear->Engine != NULL) {
+                s32 dx = bear->Engine->XYZ.x - he->XYZ.x, dz = bear->Engine->XYZ.z - he->XYZ.z;
+                s32 d = csqrt(dx * dx + dz * dz) >> 6;
+                s32 state = PolarBearState(bear);
+
+                /* each robot fires once, a while after it lands, along the way it faces: it follows the hero until then, so
+                   being on the move as it fires is what makes it miss */
+                if (state == BEAR_AIMING && PolarBearFireIn(bear) < BEAR_FIRE_SOON && (b = bear_dodge(he, bear->Engine)) != 0) {
+                    return b;
+                }
+                /* in the air, aiming, or going over already: nothing to hit */
+                if (state != 3 && state != 4 && state != BEAR_AIMING && state != 7 && state != 9 && d < bestd) {
+                    bestd = d;
+                    best = bear;
+                }
+            }
+        }
+        BearSide = 0;
+        if (Heroes[0].hero_mode == 0x51) {
+            return best != NULL ? aim_at(best->Engine->XYZ.x - he->XYZ.x, best->Engine->XYZ.z - he->XYZ.z) : 0;
+        }
+        /* never mind the robots when the edge is close */
+        if (near_edge(he->XYZ.x, he->XYZ.z)) {
+            return aim_at(mx, mz);
+        }
+        /* Near the middle a robot's shove hardly moves the hero, and it's the edge that kills. A charge drives one about 1450 along
+           the lunge, and the bounce brings the hero back: so stand a step out towards the nearest, a lunge from it, and hit it in
+           reach. From there one further out goes over, and one from the middle gets hit again as it walks back. */
+        if (best != NULL) {
+            s32 bx = best->Engine->XYZ.x, bz = best->Engine->XYZ.z;
+            s32 dx = bx - he->XYZ.x, dz = bz - he->XYZ.z;
+            s32 ox = bx - BearMidX, oz = bz - BearMidZ;
+            s32 br = csqrt(ox * ox + oz * oz) >> 6;
+            s32 tr = br - BEAR_STANDOFF;
+            s32 full = PolarHeroMeter(0) >= PolarHeroAttackPower(0);
+
+            if (full && bestd < BEAR_REACH) {
+                return aim_at(dx, dz) | ((BotTicks & 3) == 0 ? BTN_SQUARE : 0);
+            }
+            if (!full && bestd < BEAR_CLOSE) {
+                return aim_at(mx - dx, mz - dz);
+            }
+            if (tr > BEAR_STEP_OUT) {
+                tr = BEAR_STEP_OUT;
+            }
+            if (tr > 0 && br > 0) {
+                while (tr > 0 && near_edge(BearMidX + ox * tr / br, BearMidZ + oz * tr / br)) {
+                    tr -= 0x80;
+                }
+            }
+            if (tr > 0 && br > 0) {
+                s32 tx = BearMidX + ox * tr / br - he->XYZ.x, tz = BearMidZ + oz * tr / br - he->XYZ.z;
+
+                return abs(tx) + abs(tz) > 0x80 ? aim_at(tx, tz) : 0;
+            }
+        }
+        return abs(mx) + abs(mz) > 0x100 ? aim_at(mx, mz) : 0;
+    }
 }
 
 #define FOX_RANGE 0x700 /* close up to the cannons, past the ice */

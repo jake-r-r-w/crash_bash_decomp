@@ -643,6 +643,7 @@ u16 PolarHeroSfx[32] = {
     0x28, 0x20, 0x2C, 0x28, 0x20, 0x2C, 0x28, 0x20, 0x2C, 0x28, 0x20, 0x2C, 0, 0, 0, 0, 0,
 };
 NAS *polarbossnas = 0;
+NAS *PolarMissiles[4]; /* those in flight, for a test run's player */
 s32 PolarBeamTimer = 0;
 s32 PolarUpdateWord = 0;
 u8 *PolarBears = 0;
@@ -4170,6 +4171,7 @@ void InitialisePOLAR(void) {
     PolarTiltZ = 0;
     PolarTiltX = 0;
     polarbossnas = NULL;
+    PolarMissiles[0] = PolarMissiles[1] = PolarMissiles[2] = PolarMissiles[3] = NULL;
     PolarAnimFlag = 0;
     CameraMode = 1;
     do {
@@ -4749,8 +4751,9 @@ s32 PolarHeroCollisions(s32 player) {
             }
             e = p->Engine;
             if (e != NULL && e != eng) {
+                /* in the Bearminator's arena, this list's only his robot bears */
                 ai = FindExtension((NAS *)p, 0x10000000);
-                if (ai != NULL && ai->flag2 == 0 && abs(e->XYZ.y - eng->XYZ.y) <= range) {
+                if (ai != NULL && ((BearminatorExt *)ai)->flag == 0 && abs(e->XYZ.y - eng->XYZ.y) <= range) {
                     dx = e->XYZ.x - eng->XYZ.x;
                     dz = e->XYZ.z - eng->XYZ.z;
                     d = csqrt(dx * dx + dz * dz) >> 6;
@@ -8170,34 +8173,39 @@ s32 BearminatorFindPoint(s32 *arg0, s32 arg1) {
     return 1;
 }
 
-s32 BearminatorTarget(NAS *m) {
+/* Whether a spot's off the ice, as each chunk of the arena goes (the map's contours). */
+s32 BearminatorOffIce(s32 *pos) {
     if (bossmapsub->entity == 0x2008) {
-        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 1)) {
+        if (BearminatorFindPoint(pos, 1)) {
             return 1;
         }
-        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 0)) {
+        if (BearminatorFindPoint(pos, 0)) {
             return 0;
         }
     }
     if (bossmapsub->entity == 0x2009) {
-        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 2)) {
+        if (BearminatorFindPoint(pos, 2)) {
             return 1;
         }
-        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 0)) {
+        if (BearminatorFindPoint(pos, 0)) {
             return 0;
         }
     }
     if (bossmapsub->entity == 0x200A) {
-        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 3)) {
+        if (BearminatorFindPoint(pos, 3)) {
             return 0;
         }
     }
     if (bossmapsub->entity == 0x5003) {
-        if (BearminatorFindPoint((s32 *)&m->Engine->XYZ, 0)) {
+        if (BearminatorFindPoint(pos, 0)) {
             return 0;
         }
     }
     return 1;
+}
+
+s32 BearminatorTarget(NAS *m) {
+    return BearminatorOffIce((s32 *)&m->Engine->XYZ);
 }
 
 void BearminatorEaseCam(PolarEaseCam *c, s32 *pos) {
@@ -8785,6 +8793,15 @@ void PlotPolarMissile(NAS *m) {
         }
         PolarMissileBlast(m, 1);
     }
+    {
+        s32 i;
+
+        for (i = 0; i < 4; i++) {
+            if (PolarMissiles[i] == m) {
+                PolarMissiles[i] = NULL;
+            }
+        }
+    }
     KillNAS(m);
 }
 
@@ -9265,6 +9282,23 @@ void PlotSniperMissile(NAS *m) {
     }
 }
 
+/* Where a sniper shot has to cross to hit the Bearminator himself, not his submarine: the middle of his body's box. */
+void PolarBossBodyAim(s32 *x, s32 *y) {
+    PolarBossExt *boss = FindExtension(polarbossnas, 0x10000000);
+    EXTengine *e = boss->animNas->Engine;
+    PolarCollBox *box = (PolarCollBox *)SubFindFlagPoint(e->sub, 1, 0);
+    s32 mid = box != NULL ? (box->lo.v[1] + box->hi.v[1]) / 2 : 0;
+
+    if (e->xform.hasScale == 1) {
+        mid = (mid * e->xform.scale.vy) >> 12;
+    }
+    if (e->sub->xform.hasScale == 1) {
+        mid = (mid * e->sub->xform.scale.vy) >> 12;
+    }
+    *x = e->XYZ.x;
+    *y = e->XYZ.y + mid;
+}
+
 s32 PolarXZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
     VECTOR d;
     VECTOR n;
@@ -9499,6 +9533,19 @@ s32 PolarHeroMeter(s32 player) {
     return ext != NULL ? ext->val : 0;
 }
 
+/* How long until a robot that's aiming fires. */
+s32 PolarBearFireIn(NAS *bear) {
+    BearminatorExt *ext = FindExtension(bear, 0x10000000);
+
+    return ext != NULL ? ext->timer2 : 0;
+}
+
+s32 PolarBearState(NAS *bear) {
+    BearminatorExt *ext = FindExtension(bear, 0x10000000);
+
+    return ext != NULL ? ext->state : -1;
+}
+
 NAS *PolarFirstBear(void) {
     return (NAS *)PolarBears;
 }
@@ -9516,9 +9563,16 @@ s32 CountBears(void) {
 
 void InitPolarMissile(NAS *m) {
     PolarMissileExt *ext;
+    s32 i;
 
     ext = AddExt(m, sizeof(PolarMissileExt), 0x10000000);
     if (ext != NULL) {
+        for (i = 0; i < 4; i++) {
+            if (PolarMissiles[i] == NULL) {
+                PolarMissiles[i] = m;
+                break;
+            }
+        }
         m->Engine->sub->entity = 0x2006;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_RoboPolar];
         m->Engine->xform.order = 2;

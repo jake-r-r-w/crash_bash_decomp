@@ -74,8 +74,6 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
-- **Port, the Bearminator not yet beaten by a test run:** `--aim` (`overlays/engine/bossbot.c`) reaches the fight and survives it, but its charges don't knock a robot bear off the ice, so the
-  sniper missile stage (`play_bear`'s crosshair) is unproven. What flips a bear from a hit into its fall hasn't been read (`PlotBearminator`, `PolarHeroBounceOff`). The user says it takes a full green bar.
 
 - **Port, not yet checked by hand or unwritten:** Adventure after a game's first win (back to the hub from a game is untested), level unlocks and
   Mono. 2D prims have no owners, so they step at 30 fps at higher rates. Scrolling past 10 rows in the launcher
@@ -462,6 +460,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: The Bearminator beaten by a test run, from a real Adventure: all three phases and back to the warp room. A real bug on the way, found by the user: the hero couldn't hit his robots, as
+  PolarHeroCollisions read their flag through the wrong view. How the fight works (`--aim`, `play_bear`): each robot fires one missile a while after landing, and a stunned hero goes over with no recovery;
+  a charge drives a robot about 1450 along the lunge, not along the line of contact, and the edge is about 2600 out; a sniper shot flies through the crosshair and only the bear's own box does damage, not
+  the sub's; each hit takes a chunk of the ice and lands more robots. Holding the middle of what's left and charging what's in reach beat every cleverer plan.
 - 2026-10-31: Boss fights played through by the rules, from a real Adventure through the cheat menu's level selector: Papu, Big Bad Fox and Oxide beaten by real hits and back to the warp room,
   with `--aim`, the pad only, and the user's advice on each fight's order. NO DEATH keeps Moe and Joe alive too: use NO HARM HERO (`--cheats 1`). `csqrt` is fixed point: `>> 6`. `--stall` stops a run going nowhere.
 - 2026-10-31: Boss fights, from the user playing: the HUD was hidden as `SetPanelHeroIcon*` moved icons by word index, so "Z" landed on the engine's flags; Papu's minions crashed in
