@@ -66,19 +66,27 @@ static const MenuCategory Categories[] = {
 static const char *const TopRows[] = { "PLAY", "SETTINGS", "QUIT" };
 enum { TOP_PLAY, TOP_SETTINGS, TOP_QUIT, NUM_TOP };
 
-/* The logo: two meshes of the intro's model, drawn by PlaceRecs like any model on a menu. */
+/* The logo: two meshes of the intro's model at their full size, in a view of their own: small because
+ * its camera is far away, as the intro has it. A rotation matrix scaled this far down loses too much. */
 #define LOGO_MODEL DB_CutsceneIntroLogo2
-#define LOGO_TOP 0x2006
-#define LOGO_BOTTOM 0x2007
-#define LOGO_SCALE 0xA0
-#define LOGO_Y -0xC1
+#define LOGO_SLOT 2
+#define LOGO_EYE 0x1400
+#define LOGO_DIST 0x3A
+#define LOGO_CENTRE_Y 0x30
+
+static PlaceRec LogoPlace[3] = {
+    { 0xA, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, LOGO_MODEL, 0x2006, 0 },
+    { 0xA, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, LOGO_MODEL, 0x2007, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+static GfxViewport LogoView = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, LOGO_CENTRE_Y, 0x200, 0x5FF, 0, 0, 0, 0, 0 };
+static camera_info_tag LogoCamera;
 
 /* The subengines, in PlaceRec order: a slot has 32. */
-#define SUB_LOGO 0
-#define SUB_PANEL 2
-#define SUB_HELP 4
-#define SUB_NAV 5
-#define SUB_CATEGORY 6
+#define SUB_PANEL 0
+#define SUB_HELP 2
+#define SUB_NAV 3
+#define SUB_CATEGORY 4
 #define SUB_OPTION (SUB_CATEGORY + MAX_CATEGORIES + 1)
 #define VISIBLE_OPTIONS 10
 #define SUB_LABEL(n) (SUB_OPTION + (n) * 2)
@@ -197,14 +205,6 @@ static void place_text(PlaceRec *r, s32 x, s32 y, const char *text, s32 small) {
     r->frame = small ? 4 : 0;
 }
 
-static void place_logo(PlaceRec *r, s32 entity) {
-    r->type = 0xA;
-    r->y = LOGO_Y;
-    r->scale = LOGO_SCALE;
-    r->model = LOGO_MODEL;
-    r->player = entity;
-}
-
 /* A panel's records are its left, right, top and bottom. */
 static void place_panel(PlaceRec *r, s32 left, s32 right, s32 top, s32 bottom) {
     r->type = 4;
@@ -220,8 +220,6 @@ static void place_screen(void) {
     s32 i;
 
     memset(Place, 0, sizeof(Place));
-    place_logo(&Place[SUB_LOGO], LOGO_TOP);
-    place_logo(&Place[SUB_LOGO + 1], LOGO_BOTTOM);
     if (Screen == SCREEN_TOP) {
         place_panel(&Place[SUB_PANEL], -0xA0, 0xA0, TOP_Y - 0x10, TOP_Y + NUM_TOP * TOP_STEP + 0xA);
         place_panel(&Place[SUB_PANEL + 1], 0, 0, -0x400, -0x400);
@@ -406,11 +404,11 @@ static void update_options(s32 pressed) {
 
 /* The logo sways a little. */
 static void sway_logo(void) {
-    subengine *sub = GetEngineSlot(0)->sub;
-    s32 angle = (rcossin_tbl[(GameFrameCount * 24) & 0xFFF].unk2 * 0x60) >> 12;
+    subengine *sub = GetEngineSlot(LOGO_SLOT)->sub;
+    s32 angle = (rcossin_tbl[(GameFrameCount * 24) & 0xFFF].unk2 * 0x40) >> 12;
     s32 i;
 
-    for (i = SUB_LOGO; i < SUB_LOGO + 2; i++) {
+    for (i = 0; i < 2; i++) {
         sub[i].xform.rot.vy = angle;
         sub[i].xform.dirty = 1;
     }
@@ -423,6 +421,10 @@ static void SettingsMenuInit(void) {
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
+    cam_init(&LogoCamera);
+    LogoCamera.eye.z = LOGO_EYE;
+    LogoCamera.dist = LOGO_DIST;
+    PlaceEngineSlot(LOGO_SLOT, LogoPlace);
     Screen = SCREEN_TOP;
     TopCursor = 0;
     place_screen();
@@ -449,8 +451,15 @@ static void SettingsMenuUpdate(void) {
     show_screen();
 }
 
+static void SettingsMenuRender(void) {
+    RenderTitlesBackdropAndMenu();
+    gfx_set_viewport(&LogoView, &LogoCamera);
+    RenderState.modelDp = ScreenFade.amount;
+    eng_render_subs(GetEngineSlot(LOGO_SLOT));
+}
+
 static void SettingsMenuQuit(void) {
     dbase_release(&HeroModelBank[LOGO_MODEL]);
 }
 
-process_info SettingsMenu = { SettingsMenuInit, SettingsMenuUpdate, RenderTitlesBackdropAndMenu, SettingsMenuQuit, 0 };
+process_info SettingsMenu = { SettingsMenuInit, SettingsMenuUpdate, SettingsMenuRender, SettingsMenuQuit, 0 };
