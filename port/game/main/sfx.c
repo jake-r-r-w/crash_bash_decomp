@@ -350,8 +350,8 @@ static inline NAS *AllocNAS(void) {
 extern const char PauseText01[];
 extern const char PauseText02[];
 extern const char PauseText03[];
-extern const char PauseText090Percent[];
-extern const char PauseText100Percent[];
+extern char PauseText090Percent[];
+extern char PauseText100Percent[];
 extern const char PauseTextAdjustLevel[];
 extern const char PauseTextAudioMode[];
 extern const char PauseTextChangeArena[];

@@ -229,7 +229,7 @@ typedef struct {
 
 
 typedef struct EngineLevelInfo {
-    /* 0x00 */ u8 pad0[0xBC];
+    /* 0x00 */ void *pad0[47];
     /* 0xBC */ u8 *musicText;  /* the options' music volume line */
     /* 0xC0 */ u8 *sfxText;  /* the options' sound volume line */
 } EngineLevelInfo;
