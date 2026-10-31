@@ -138,6 +138,8 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--window W H`, `--render W H` | the window's size and what the game draws at, for this run (`--render 0 0`: match the window) |
 | `--cheat-menu` | the cheat menu on, for this run |
 | `--macro N HEX:VBLANKS,...` | a repeating pattern of buttons on pad 1 from vblank N. A test run logs a boss fight's health |
+| `--stall N FILE` | stops a boss fight that's made no progress in N vblanks, with a shot in FILE; the log, written as it goes, says where it stuck |
+| `--aim` | a test run's player for the boss fights (`overlays/engine/bossbot.c`): it looks where things are and only presses the pad's buttons |
 | `--bot`, `--cheats HEX` | the game's own AI plays pad 1 and its fight's state is logged; cheat flags kept on (`shell.h`, `cheatflags`: 2 is no death) |
 | `--boss-beat N` | marks the boss beaten at vblank N, to test what follows. A test run also prints each change of game mode |
 | `--stick N LX LY` | a test's analog pad with motors on pad 1: its left stick at these (hex, centre 80) from vblank N for a few vblanks. A test run prints the rumble it asks for |

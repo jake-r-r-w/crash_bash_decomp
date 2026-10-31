@@ -14,6 +14,8 @@ typedef struct Settings {
     int test_mode;     /* a test run's game mode to go straight to, or -1 */
     int testing;       /* went there with --mode: the computer plays, with no time limit */
     int launcher;      /* the settings menu comes first */
+    int test_stall;    /* a test run: stop a fight with no progress in this many vblanks */
+    int test_aim;      /* a test run: bossbot.c plays pad 1 in a boss fight */
     int test_bot;      /* a test run: the game's own AI plays pad 1 */
     int test_cheats;   /* a test run: cheat flags kept on */
     int boss_beat_at;  /* a test run's vblank to mark the boss beaten at, or 0 */

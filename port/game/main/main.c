@@ -156,23 +156,53 @@ int platform_vblanks(void);
 int printf(const char *, ...);
 extern BossRecord BossState;
 s32 CheatHeroHealth(void);
+void BossBotUpdate(void);
+void CheatFightLog(void);
+s32 CheatFightProgress(void);
+void platform_stalled(void);
 /* What a test run asks of the game (--boss-beat), and says of it. */
 static void test_run_update(void) {
     static s32 lastMode = -1;
     static s32 lastLog;
+    static s32 lastExit;
+    static s32 lastProgress;
+    static s32 lastProgressAt;
 
     if (!settings()->no_save) {
         return;
+    }
+    if (GameMode != lastMode || (GAME->exitFlags & 0x801) != lastExit) {
+        lastExit = GAME->exitFlags & 0x801;
+        printf("exit flags %X, boss health %d, at vblank %d\n", GAME->exitFlags, BossState.health, platform_vblanks());
     }
     if (GameMode != lastMode) {
         printf("mode %d at vblank %d\n", GameMode, platform_vblanks());
         lastMode = GameMode;
     }
+    /* the guard: a fight that's got no further in this long stops the run, and says where it stuck */
+    if (settings()->test_stall != 0 && (GAME->levelFlags & 0x100)) {
+        s32 now = GameMode * 0x1000000 + CheatFightProgress();
+
+        if (now != lastProgress) {
+            lastProgress = now;
+            lastProgressAt = platform_vblanks();
+            printf("progress at vblank %d: mode %d boss health %d flags %X, %X\n", platform_vblanks(), GameMode, BossState.health, BossState.flags, now);
+        } else if (platform_vblanks() - lastProgressAt > settings()->test_stall) {
+            printf("stalled: no progress since vblank %d, at %d: mode %d boss health %d flags %X, hero health %d, exit %X, pause %X\n", lastProgressAt,
+                   platform_vblanks(), GameMode, BossState.health, BossState.flags, CheatHeroHealth(), GAME->exitFlags, GAME->pause);
+            CheatFightLog();
+            platform_stalled();
+        }
+    }
     if (settings()->test_bot) {
         GAME->heroCpu[0] = 1;
     }
+    if (settings()->test_aim && (GAME->levelFlags & 0x100)) {
+        BossBotUpdate();
+    }
     GAME->cheats |= settings()->test_cheats;
     if ((settings()->test_bot || (GAME->levelFlags & 0x100)) && platform_vblanks() / 300 != lastLog) {
+        CheatFightLog();
         lastLog = platform_vblanks() / 300;
         printf("v%d mode %d boss health %d flags %X, hero health %d, exit %X\n", platform_vblanks(), GameMode, BossState.health, BossState.flags,
                CheatHeroHealth(), GAME->exitFlags);

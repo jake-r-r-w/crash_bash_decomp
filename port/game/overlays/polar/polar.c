@@ -8980,7 +8980,13 @@ void InitSniper(NAS *m) {
     }
 }
 
+/* The sniper missile that's up, for a test run's player (bossbot.c). */
+NAS *PolarSniperNas;
+s32 PolarSniperSeen;
+
 void PlotSniper(NAS *m) {
+    PolarSniperNas = m;
+    PolarSniperSeen = FrameCount;
     SniperExt *ext;
     PolarBossExt *boss;
     subengine *sub;
@@ -9484,6 +9490,17 @@ void PlotBossTransmuter(NAS *m) {
 }
 
 void InitBossTransmuter(NAS *m) {
+}
+
+/* For a test run's player (bossbot.c): the hero's charge meter, full at 0x100. */
+s32 PolarHeroMeter(s32 player) {
+    Ext20 *ext = FindExtension(Heroes[player].hero, 0x20000000);
+
+    return ext != NULL ? ext->val : 0;
+}
+
+NAS *PolarFirstBear(void) {
+    return (NAS *)PolarBears;
 }
 
 s32 CountBears(void) {
