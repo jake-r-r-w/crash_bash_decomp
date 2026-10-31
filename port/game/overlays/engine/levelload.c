@@ -391,7 +391,7 @@ static void LevelLoadStep(void) {
 }
 
 void UpdateLevelLoad(void) {
-    if (settings()->skip_loading) {
+    if (settings()->skip_loading || settings()->launcher) {
         /* every stage now, with no frames in between to show a loading screen in */
         while (LevelLoadStage != 9) {
             while (loader_pending() != 0 || MainHeap.deferred != NULL) {
@@ -429,7 +429,7 @@ void QuitLevelLoad(void) {
 }
 
 void RenderLevelLoad(void) {
-    if (LevelLoadStage >= 2 && !settings()->skip_loading) {
+    if (LevelLoadStage >= 2 && !settings()->skip_loading && !settings()->launcher) {
         process_control_render(&LoadingControl);
     }
 }

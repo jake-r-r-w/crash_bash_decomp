@@ -11,7 +11,6 @@
 #include <SDL3/SDL.h>
 #include "platform/platform.h"
 #include "platform/gfx.h"
-#include "platform/launcher.h"
 #include "platform/settings.h"
 
 static int Vblanks;
@@ -185,8 +184,7 @@ void platform_audio(const int16_t *stereo, int frames) {
 
 int main(int argc, char **argv) {
     int i;
-    int no_launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
-    const char *launcher_shot = NULL, *launcher_keys = NULL;
+    int no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
 
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--version") == 0) {
@@ -213,10 +211,8 @@ int main(int argc, char **argv) {
             testing = 1;
         } else if (strcmp(argv[i], "--no-launcher") == 0) {
             no_launcher = 1;
-        } else if (strcmp(argv[i], "--launcher-shot") == 0 && i + 1 < argc) {
-            launcher_shot = argv[++i];
-        } else if (strcmp(argv[i], "--launcher-keys") == 0 && i + 1 < argc) {
-            launcher_keys = argv[++i];
+        } else if (strcmp(argv[i], "--launcher") == 0) {
+            launcher = 1;
         } else if (strcmp(argv[i], "--fps") == 0 && i + 1 < argc) {
             fps = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
@@ -247,16 +243,8 @@ int main(int argc, char **argv) {
     } else {
         settings_load();
     }
-    if (launcher_shot != NULL) {
-        return launcher_screenshot(host_window(), launcher_shot) ? 0 : 1;
-    }
-    if (launcher_keys != NULL) {
-        if (!launcher_run_keys(host_window(), launcher_keys)) {
-            return 0;
-        }
-    } else if (!testing && !no_launcher && !launcher_run(host_window())) {
-        return 0;
-    }
+    settings()->launcher = launcher || (!testing && !no_launcher);
+    settings()->no_save = testing;
     settings()->test_mode = test_mode;
     settings()->testing = test_mode >= 0;
     settings()->tile = tile;

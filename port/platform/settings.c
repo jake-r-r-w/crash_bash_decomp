@@ -71,6 +71,9 @@ void settings_save(void) {
     char path[1024];
     FILE *f;
 
+    if (Current.no_save) {
+        return;
+    }
     if (!settings_path(path, sizeof(path)) || (f = fopen(path, "w")) == NULL) {
         return;
     }

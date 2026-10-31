@@ -1,4 +1,4 @@
-/* The player's settings: chosen in the launcher, kept in a file in the user's own folder. */
+/* The player's settings: chosen in the settings menu, kept in a file in the user's own folder. */
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
@@ -12,6 +12,8 @@ typedef struct Settings {
     int fps;           /* 30 is the game's own rate; 60 and 120 draw between its frames */
     int test_mode;     /* a test run's game mode to go straight to, or -1 */
     int testing;       /* went there with --mode: the computer plays, with no time limit */
+    int launcher;      /* the settings menu comes first */
+    int no_save;       /* a test run leaves the player's file alone */
     int tile, tiles;   /* a test window's slot in a grid of them on the screen, if tiles isn't 0 */
 } Settings;
 
@@ -21,5 +23,8 @@ Settings *settings(void);
 void settings_defaults(void);
 void settings_load(void);
 void settings_save(void);
+
+/* The window and renderer take up the settings as soon as they can. */
+void settings_apply(void);
 
 #endif

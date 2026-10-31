@@ -541,7 +541,7 @@ void TitlesInitLevel(void) {
         core_process = 0;
         ResetGameState();
         g->levelFlags |= 0x200;
-        process_control_init(&MenuProcessControl, &MainMenu);
+        process_control_init(&MenuProcessControl, settings()->launcher ? &SettingsMenu : &MainMenu);
         break;
     case 0x29:
         p = BattleChainResume;

@@ -10,6 +10,7 @@
 #include "bash/levelload.h" /* PlaceRec: the engine's screen placement records */
 
 extern process_info IntroProcess;
+extern process_info SettingsMenu;
 extern PlaceRec PlayersMenuPlace[];
 extern PlaceRec PlayersMenuAdventurePlace[];
 void OptionsQuit(void);

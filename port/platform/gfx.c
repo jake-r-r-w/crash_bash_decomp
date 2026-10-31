@@ -214,6 +214,59 @@ static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *
     return SDL_CreateGPUGraphicsPipeline(Device, &p);
 }
 
+/* What's as big as the picture. */
+static void make_targets(int width, int height) {
+    SDL_GPUTextureCreateInfo t;
+    SDL_GPUTransferBufferCreateInfo tc;
+
+    SDL_zero(t);
+    t.type = SDL_GPU_TEXTURETYPE_2D;
+    t.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
+    t.layer_count_or_depth = 1;
+    t.num_levels = 1;
+    t.width = width;
+    t.height = height;
+    t.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
+    Target = SDL_CreateGPUTexture(Device, &t);
+    t.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
+    Base = SDL_CreateGPUTexture(Device, &t);
+    t.format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT;
+    t.usage = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET;
+    Depth = SDL_CreateGPUTexture(Device, &t);
+    SDL_zero(tc);
+    tc.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
+    tc.size = width * height * 4;
+    ShotXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
+    TargetW = width;
+    TargetH = height;
+}
+
+static void set_vsync(int vsync) {
+    SDL_GPUPresentMode mode = SDL_GPU_PRESENTMODE_VSYNC;
+
+    if (!vsync && SDL_WindowSupportsGPUPresentMode(Device, Window, SDL_GPU_PRESENTMODE_IMMEDIATE)) {
+        mode = SDL_GPU_PRESENTMODE_IMMEDIATE;
+    }
+    SDL_SetGPUSwapchainParameters(Device, Window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, mode);
+}
+
+void gfx_configure(int width, int height, int vsync, int fps) {
+    SDL_WaitForGPUIdle(Device);
+    if (width != TargetW || height != TargetH) {
+        SDL_ReleaseGPUTexture(Device, Target);
+        SDL_ReleaseGPUTexture(Device, Base);
+        SDL_ReleaseGPUTexture(Device, Depth);
+        SDL_ReleaseGPUTransferBuffer(Device, ShotXfer);
+        make_targets(width, height);
+        gfx_clear(0, 0, 0);
+    }
+    set_vsync(vsync);
+    Stepping = fps > 30;
+    StepsPerFrame = 2 * fps / 60;
+    StepsDone = 0;
+    BaseStale = 1;
+}
+
 int gfx_init(void *window, int width, int height, int vsync, int fps) {
     SDL_GPUShader *vs, *fs;
     SDL_GPUTextureCreateInfo t;
@@ -222,8 +275,6 @@ int gfx_init(void *window, int width, int height, int vsync, int fps) {
     SDL_GPUTransferBufferCreateInfo tc;
 
     Window = window;
-    TargetW = width;
-    TargetH = height;
     Device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_DXBC, false, "direct3d12");
     if (Device == NULL) {
         fprintf(stderr, "SDL_CreateGPUDevice: %s\n", SDL_GetError());
@@ -233,8 +284,8 @@ int gfx_init(void *window, int width, int height, int vsync, int fps) {
         fprintf(stderr, "SDL_ClaimWindowForGPUDevice: %s\n", SDL_GetError());
         return 0;
     }
-    if (!vsync && SDL_WindowSupportsGPUPresentMode(Device, Window, SDL_GPU_PRESENTMODE_IMMEDIATE)) {
-        SDL_SetGPUSwapchainParameters(Device, Window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_IMMEDIATE);
+    if (!vsync) {
+        set_vsync(0);
     }
     vs = make_shader(VS_SRC, "vs_5_1", SDL_GPU_SHADERSTAGE_VERTEX, 0, 0);
     fs = make_shader(FS_SRC, "ps_5_1", SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1);
@@ -254,20 +305,12 @@ int gfx_init(void *window, int width, int height, int vsync, int fps) {
         return 0;
     }
 
+    make_targets(width, height);
+
     SDL_zero(t);
     t.type = SDL_GPU_TEXTURETYPE_2D;
-    t.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
     t.layer_count_or_depth = 1;
     t.num_levels = 1;
-    t.width = width;
-    t.height = height;
-    t.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
-    Target = SDL_CreateGPUTexture(Device, &t);
-    t.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
-    Base = SDL_CreateGPUTexture(Device, &t);
-    t.format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT;
-    t.usage = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET;
-    Depth = SDL_CreateGPUTexture(Device, &t);
     t.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
     t.width = ATLAS_SIZE;
     t.height = ATLAS_SIZE;
@@ -291,9 +334,6 @@ int gfx_init(void *window, int width, int height, int vsync, int fps) {
     VertexXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
     tc.size = ATLAS_UPLOAD_BYTES;
     AtlasXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
-    tc.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
-    tc.size = width * height * 4;
-    ShotXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
     if (!Target || !Base || !Depth || !Atlas || !Sampler || !VertexBuf || !VertexXfer || !AtlasXfer || !ShotXfer) {
         fprintf(stderr, "GPU resources: %s\n", SDL_GetError());
         return 0;

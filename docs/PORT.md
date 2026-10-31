@@ -113,7 +113,7 @@ cmake --build --preset windows-clang --target game -- -k 0
 ## Running it
 
 Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. A settings
-menu opens in the game's window first (`platform/launcher.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
+menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
 Keys: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Q and W = L1 and R1, 1 and 2 = L2 and R2.
 
 For testing, any run with `--frames N` ignores the saved settings and skips the menu:
@@ -121,7 +121,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | Option | What it does |
 |---|---|
 | `--frames N` | stop after N vblanks |
-| `--skip-intro`, `--skip-loading` | the launcher's two skips, for this run |
+| `--skip-intro`, `--skip-loading` | the menu's two skips, for this run |
 | `--fps 30\|60\|120` | the frame rate, for this run |
 | `--turbo` | don't wait for the clock, to reach late moments quickly |
 | `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit |
@@ -129,8 +129,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
 | `--no-launcher` | start with the saved settings, without the menu |
-| `--launcher-keys KEYS` | drive the menu from inside the program: u, d, l, r, e for enter |
-| `--launcher-shot FILE` | save a picture of the menu and exit |
+| `--launcher` | open the menu in a test run too (drive it with `--press`) |
 | `--no-window`, `--data`, `--card` | no window, and where the game's data and memory card are |
 
 **Frame rates.** The game's logic runs at about 30 frames a second (2 vblanks a frame) and stays there, because its movement is per frame. At 60 and 120 the renderer keeps the game's last two frames and draws steps between them, so what's shown is one game frame behind. Triangles are matched by name: `draw_owner` says which object is drawing, and a face number or the order within that object does the rest (`gfx_mark`). What has no owner, like some 2D, just appears. A triangle that jumps more than a quarter of the screen isn't moved.

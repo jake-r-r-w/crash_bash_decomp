@@ -174,7 +174,7 @@ void RenderIntro(void) {
 
 void InitIntro(void) {
     /* past the last step: UpdateIntro goes straight on */
-    IntroStepIndex = settings()->skip_intro ? NUM_INTRO_STEPS : 0;
+    IntroStepIndex = settings()->skip_intro || settings()->launcher ? NUM_INTRO_STEPS : 0;
     IntroStepTimer = 0;
     IntroScriptHandle = 0;
     IntroDbase = 0;

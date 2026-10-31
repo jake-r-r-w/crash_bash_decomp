@@ -57,14 +57,16 @@ static void place_tile(int tile, int tiles) {
     SDL_SetWindowPosition(Window, area.x + (tile % cols) * w, area.y + (tile / cols) * h + 32);
 }
 
-int host_init(void) {
-    const Settings *s = settings();
-    SDL_AudioSpec spec;
+static int ApplyPending;
 
-    if (host_window() == NULL) {
-        return 0;
-    }
-    /* what the launcher may have changed */
+void settings_apply(void) {
+    ApplyPending = 1;
+}
+
+/* The window as the settings have it. */
+static void place_window(void) {
+    const Settings *s = settings();
+
     Fullscreen = s->fullscreen;
     SDL_SetWindowFullscreen(Window, Fullscreen);
     if (!Fullscreen) {
@@ -74,6 +76,16 @@ int host_init(void) {
         place_tile(s->tile, s->tiles);
     }
     SDL_SyncWindow(Window);
+}
+
+int host_init(void) {
+    const Settings *s = settings();
+    SDL_AudioSpec spec;
+
+    if (host_window() == NULL) {
+        return 0;
+    }
+    place_window();
     if (!gfx_init(Window, s->render_w, s->render_h, s->vsync, s->fps)) {
         return 0;
     }
@@ -149,6 +161,14 @@ static void open_pads(void) {
 
 int host_poll(void) {
     SDL_Event e;
+
+    if (ApplyPending) {
+        const Settings *s = settings();
+
+        ApplyPending = 0;
+        place_window();
+        gfx_configure(s->render_w, s->render_h, s->vsync, s->fps);
+    }
 
     while (SDL_PollEvent(&e)) {
         switch (e.type) {
