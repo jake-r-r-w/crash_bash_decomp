@@ -5129,7 +5129,6 @@ void PlotTransmuterBeam(NAS *m) {
     s32 yaw;
     s32 pitch;
     u16 mode;
-    s16 c;
 
     ext = FindExtension(m, 0x40000000);
     if (ext == NULL) {
@@ -5382,9 +5381,6 @@ void PlotTransmuterBeam(NAS *m) {
                             bx->unkC = 1;
                         } else {
                             bx->unkC = 0;
-                            if (TB_MODE13()) {
-                                c++;
-                            }
                         }
                         if (GameMode == 0x15) {
                             bx->unkC = 0;
@@ -7678,7 +7674,7 @@ void PlotBrioPack(NAS *m) {
 
     user = m->UserInfo.user1;
     if (user != 0) {
-        owner = (BrioOwner *)nas->UserInfo.user1;
+        owner = (BrioOwner *)m->UserInfo.user1;
         if (owner->type != 0x51) {
             KillNAS(m);
             return;

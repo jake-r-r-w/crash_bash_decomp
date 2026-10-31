@@ -4360,11 +4360,6 @@ void RaceBarrelBump(s32 player, RaceBarrel *b) {
     }
 }
 
-/* Steering for the register copy the target makes before each >> 8 (move v0,X; sra Y,v0,8).
-   The first survives because pa is set again before its shift. The others read t, which the
-   dead c += t at the end makes cse's canonical register (mentioned after every source's last
-   use), and which each always-zero ((t << 8) & 0xFF) keeps live past its shift until combine
-   folds the term away, too late to fold the copy. */
 #define RACE_CLAMP_SPEED(v, lim)                                           \
     if ((v) < 0) {                                                          \
         if ((v) < ((lim) = -(RaceMoveTune5 << 8))) {                           \
@@ -4389,7 +4384,6 @@ void RaceHeroesBump(s32 pa, s32 pb) {
     s32 lim;
     s32 t;
     s32 k;
-    s16 c;
 
     ma = Heroes[pa].hero_move->mass;
     mb = Heroes[pb].hero_move->mass;
@@ -4433,7 +4427,6 @@ void RaceHeroesBump(s32 pa, s32 pb) {
             }
         }
     }
-    c += t;
 }
 
 s32 RaceHeroCollide(s32 player) {

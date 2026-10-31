@@ -4113,8 +4113,7 @@ void InitN2Omissile(NAS *nas) {
 }
 
 void N2OSpawnFirstMissile(void) {
-    volatile s32 x, y, z;
-    CreateNAS(x, y, z, 0x1B01, 0x11);
+    CreateNAS(0, 0, 0, 0x1B01, 0x11);
 }
 
 NAS *N2OFreeBallSlot(void) {

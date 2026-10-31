@@ -986,8 +986,7 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     s32 ny;
     s32 oy;
 
-    xy &= 0xFFFF;
-    xy |= arg1 << 16;
+    xy = arg1 << 16;
     x0 = TextAlignX(arg0, s);
     col = 0;
     if (arg5 != 0) {
