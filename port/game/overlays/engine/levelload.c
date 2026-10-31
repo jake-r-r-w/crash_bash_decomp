@@ -18,6 +18,7 @@ u8 *LoadModeOverlay(void) {
     p = (file *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
     if (p != NULL) {
         load_file_direct(p, ModeTextLoadAddr);
+        ModeTextTranslate(p->size);
     }
     p = ModeOverlayFiles[ModeTypes[g->mode * 3] - 0x101];
     if (p != ModeOverlayLoaded) {
@@ -971,7 +972,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
             if (skip == 0) {
                 if (rec->type == 14) {
                     PlaceSprite(s, rec->x, rec->y,
-                                ((s32 *)rec->data)[((GameState *)GameInfo)->language],
+                                ((void **)rec->data)[((GameState *)GameInfo)->language],
                                 rec->frame);
                 } else {
                     PlaceSprite(s, rec->x, rec->y, rec->data, rec->frame);

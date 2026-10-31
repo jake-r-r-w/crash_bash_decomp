@@ -861,34 +861,11 @@ int ASTTableCount(void) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 /* what the data points at that this file's headers don't declare */
-extern u8 ModeTextBuffer[];
 extern u8 SlotOverlayId[];
 
 u8 *SlotBase = (void *)&SlotOverlayId;
 u8 *ModeTextLoadAddr = (void *)&ModeTextBuffer;
 s32 ModeTextUnused[9] = {0};
-s32 ModeTextEmpty[12] = {0};
-PlaceRec *** PauseMenuTexts[45] = {  /* the pause menu's texts in the mode text buffer */
-    (PlaceRec ***)(ModeTextBuffer + 0x3B44), (PlaceRec ***)(ModeTextBuffer + 0x3C1C),
-    (PlaceRec ***)(ModeTextBuffer + 0x3CF4), (PlaceRec ***)(ModeTextBuffer + 0x3DCC),
-    (PlaceRec ***)(ModeTextBuffer + 0x7B4), (PlaceRec ***)(ModeTextBuffer + 0x2C58),
-    (PlaceRec ***)(ModeTextBuffer + 0x2A48), (PlaceRec ***)(ModeTextBuffer + 0x2BA8),
-    (PlaceRec ***)(ModeTextBuffer + 0x2AF8), (PlaceRec ***)(ModeTextBuffer + 0x2CA0),
-    (PlaceRec ***)(ModeTextBuffer + 0x3808), (PlaceRec ***)(ModeTextBuffer + 0x38B8),
-    (PlaceRec ***)(ModeTextBuffer + 0x397C), (PlaceRec ***)(ModeTextBuffer + 0x3A40),
-    (PlaceRec ***)(ModeTextBuffer + 0x2178), (PlaceRec ***)(ModeTextBuffer + 0x2228),
-    (PlaceRec ***)(ModeTextBuffer + 0x22D8), (PlaceRec ***)(ModeTextBuffer + 0x2374),
-    (PlaceRec ***)(ModeTextBuffer + 0x26B0), (PlaceRec ***)(ModeTextBuffer + 0x2600),
-    (PlaceRec ***)(ModeTextBuffer + 0x2760), (PlaceRec ***)(ModeTextBuffer + 0x2820),
-    (PlaceRec ***)(ModeTextBuffer + 0x2868), (PlaceRec ***)(ModeTextBuffer + 0x1FB4),
-    (PlaceRec ***)(ModeTextBuffer + 0x2078), (PlaceRec ***)(ModeTextBuffer + 0x2200),
-    (PlaceRec ***)(ModeTextBuffer + 0x213C), (PlaceRec ***)(ModeTextBuffer + 0x1850),
-    (PlaceRec ***)(ModeTextBuffer + 0x1594), (PlaceRec ***)(ModeTextBuffer + 0x1828),
-    (PlaceRec ***)(ModeTextBuffer + 0x17DC), (PlaceRec ***)(ModeTextBuffer + 0x544),
-    (PlaceRec ***)(ModeTextBuffer + 0x3E24), &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty,
-    &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty,
-    &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty, &ModeTextEmpty,
-};
 PlaceRec **** PauseMenuSetsByLang[6] = {
     PauseMenuTexts, PauseMenuTexts, PauseMenuTexts, PauseMenuTexts, PauseMenuTexts,
     PauseMenuTexts,

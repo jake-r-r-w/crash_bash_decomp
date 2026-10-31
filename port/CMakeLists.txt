@@ -58,3 +58,12 @@ enable_testing()
 add_test(NAME version COMMAND crashbash --version)
 set_tests_properties(version PROPERTIES PASS_REGULAR_EXPRESSION "crashbash ${PROJECT_VERSION}")
 add_test(NAME sdl COMMAND crashbash --check-sdl)
+
+# Checks that need the user's own game data, from assets/ (dat.py extract).
+file(GLOB MODE_TEXT_FILES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/../assets/CRASHBSH/*.txt/data.bin)
+if(MODE_TEXT_FILES)
+  add_executable(modetext_test tests/modetext_test.c game/overlays/engine/modetext.c)
+  target_include_directories(modetext_test PRIVATE psyq/include game/include)
+  target_compile_options(modetext_test PRIVATE -std=gnu17 -fsigned-char -fno-builtin -w -Wno-error=int-conversion -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types)
+  add_test(NAME modetext COMMAND modetext_test ${MODE_TEXT_FILES})
+endif()

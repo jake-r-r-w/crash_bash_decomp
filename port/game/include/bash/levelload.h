@@ -143,6 +143,9 @@ u8 *LoadModeOverlay(void);
 extern s32 *ModeTextTables[];
 extern file *ModeOverlayFiles[];
 extern u8 *ModeTextLoadAddr;
+extern u8 ModeTextBuffer[];
+s32 ModeTextTranslate(s32 len);
+extern PlaceRec ***PauseMenuTexts[45];
 
 void LoadModeFiles(void);
 
