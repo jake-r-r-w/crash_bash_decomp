@@ -116,6 +116,9 @@ Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it find
 menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
 Keys: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Q and W = L1 and R1, 1 and 2 = L2 and R2.
 
+The menu is PLAY, SETTINGS and QUIT, with the settings in categories; a new setting is a row in its category's table and a case in
+`change_setting` and `show_value`. The main menu's EXIT comes back to it.
+
 For testing, any run with `--frames N` ignores the saved settings and skips the menu:
 
 | Option | What it does |

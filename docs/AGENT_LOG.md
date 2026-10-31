@@ -444,6 +444,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: 6.5, the user testing by hand. Every game mode runs (`--mode N`, TESTING on screen, no time limit;
+  `--tile I N` to watch several). Nearly all the crashes were one class: extension and object views with fixed PS1 pads, now by field
+  (PORT.md, What a pointer's size breaks). The launcher is now a game menu, `overlays/titles/settingsmenu.c`: the intro's 3D logo,
+  categories and a scrolling option list, settings applied live (`gfx_configure`). The facing test uses unrounded positions, which
+  cleared holes in small models and most of the user's model complaints. Frame steps no longer blend between different meshes or texts,
+  or leave a huge turning model's far triangles behind. Scrolling textures are rotated copies on the atlas. The volume texts are written to,
+  so aren't const.
 - 2026-10-31: 6.5, frame rates of 30, 60 and 120 by drawing between the game's frames, depth for moving models, and opaque
   full-screen pictures (PORT.md, Running it).
 - 2026-10-31: 6.5, from the user's first play: skip loading in the launcher, no black flash between logos (the picture stays
