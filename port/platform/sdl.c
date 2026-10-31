@@ -38,6 +38,25 @@ void *host_window(void) {
     return Window;
 }
 
+/* A test window's slot in a grid on the screen */
+static void place_tile(int tile, int tiles) {
+    SDL_Rect area;
+    int cols = 1, rows, w, h;
+
+    if (!SDL_GetDisplayUsableBounds(SDL_GetDisplayForWindow(Window), &area)) {
+        return;
+    }
+    while (cols * cols < tiles) {
+        cols++;
+    }
+    rows = (tiles + cols - 1) / cols;
+    w = area.w / cols;
+    h = area.h / rows;
+    /* room for the title bar above each */
+    SDL_SetWindowSize(Window, w, h - 32);
+    SDL_SetWindowPosition(Window, area.x + (tile % cols) * w, area.y + (tile / cols) * h + 32);
+}
+
 int host_init(void) {
     const Settings *s = settings();
     SDL_AudioSpec spec;
@@ -50,6 +69,9 @@ int host_init(void) {
     SDL_SetWindowFullscreen(Window, Fullscreen);
     if (!Fullscreen) {
         SDL_SetWindowSize(Window, s->window_w, s->window_h);
+    }
+    if (s->tiles > 0) {
+        place_tile(s->tile, s->tiles);
     }
     SDL_SyncWindow(Window);
     if (!gfx_init(Window, s->render_w, s->render_h, s->vsync, s->fps)) {

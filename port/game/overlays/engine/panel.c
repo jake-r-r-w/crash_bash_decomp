@@ -1,3 +1,4 @@
+#include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
@@ -1655,7 +1656,7 @@ found:
     switch ((u16)CupMode) {
     case 0:
         if ((GAME->exitFlags & 1) && !(GAME->exitFlags & 0x8000)) {
-            GAME->demoTimer = 0;
+            if (!settings()->testing) { GAME->demoTimer = 0; }
             GAME->pause |= 0x4000000;
             if (GAME->winner[0] == 0) {
                 music_set_tempo(100, 5);

@@ -58,16 +58,13 @@ s32 BonkSteerB[40] = {
 };
 u16 BonkAIRange[10] = { 0x1000, 0x200, 0x200, 0x220, 0x220, 0x320, 0x320, 0x300, 0x300, 0 };
 u16 BonkPowerupTimes[10] = { 0x300, 0x240, 0x280, 0x200, 0x260, 0x280, 0x2C0, 0x340, 0x300, 0 };
-s32 BonkStoolCount = 6;
-s32 BonkUnused1[6] = { 5, 5, 4, 3, 2, 1 };
+s32 BonkStoolCount[7] = { 6, 5, 5, 4, 3, 2, 1 };
 s32 BonkStoolHeights[7] = { 0x50, 0x50, 0x46, 0x46, 0x3C, 0x32, 0x28 };
 s32 BonkStoolTable[21] = {
     0x3C, 0x32, 0x28, 0x2D, 0x28, 0x23, 0x1E, 0x5A, 0x5A, 0x5A, 0x5A, 0x3C, 0x3C, 0x3C, 0x1E,
     0x1E, 0x19, 0x19, 0x14, 0xF, 0xF,
 };
-s32 BonkEntryCount = 0xF;
-/* six words nothing points at, before the sequences */
-s32 BonkUnused0[6] = { 0xF, 0xD, 0xA, 0xA, 0x5A, 0x5A };
+s32 BonkEntryCount[7] = { 0xF, 0xF, 0xD, 0xA, 0xA, 0x5A, 0x5A };
 hero_seq CRA_seq_bonk_idle[6] = {
     0, 0x8007, 0x16, 0x4100, 0x8000, 0,
 };
@@ -346,7 +343,7 @@ void BonkInitEntries(void) {
         BonkEntries[i].timer = 0;
     }
     BonkCrateTimer = 0;
-    BonkCrateDelay = BonkEntryCount * 30;
+    BonkCrateDelay = BonkEntryCount[0] * 30;
 }
 
 void BonkCrateMaster(void) {
@@ -373,10 +370,10 @@ void BonkCrateMaster(void) {
             BonkCrateDelay--;
         } else {
             BonkCrateTimer++;
-            BonkCrateDelay = (&BonkEntryCount)[BonkCrateTimer] * 30;
+            BonkCrateDelay = BonkEntryCount[BonkCrateTimer] * 30;
         }
     }
-    if (BonkEntryCur < (new_var = &BonkStoolCount)[BonkCrateTimer] && BonkCrateCount == 0) {
+    if (BonkEntryCur < (new_var = BonkStoolCount)[BonkCrateTimer] && BonkCrateCount == 0) {
         BonkSpawnCrate();
         BonkCrateCount = 0x14;
     }
@@ -496,7 +493,7 @@ void PlotBonkStool(NAS *nas) {
         break;
     case 6:
         p = &BonkEntryCur;
-        q = &BonkStoolCount;
+        q = BonkStoolCount;
         if (*p > q[BonkCrateTimer]) {
             nas->UserInfo.status = 1;
             (*p)--;

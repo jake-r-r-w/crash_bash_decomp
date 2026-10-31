@@ -569,6 +569,7 @@ void TitlesCheckIdle(void) {
 
         g->demo = 1;
         g->demoTimer = 0x7FFFFFFF;
+        PauseTexts[PAUSE_TEXT_DEMO] = "TESTING";
         g->mode = (u16)settings()->test_mode;
         settings()->test_mode = -1;
         ProcessControl.next_process = &LevelLoadProcess;

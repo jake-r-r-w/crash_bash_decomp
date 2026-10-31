@@ -124,7 +124,8 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--skip-intro`, `--skip-loading` | the launcher's two skips, for this run |
 | `--fps 30\|60\|120` | the frame rate, for this run |
 | `--turbo` | don't wait for the clock, to reach late moments quickly |
-| `--mode N` | go from the main menu straight to game mode N, played by the computer |
+| `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit |
+| `--tile I N` | put this window in slot I of a grid of N on the screen, to watch several test runs at once |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
 | `--no-launcher` | start with the saved settings, without the menu |

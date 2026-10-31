@@ -914,6 +914,8 @@ typedef struct CardSave {
 } CardSave;
 _Static_assert(sizeof(CardSave) == 0x2000, "the card's block");
 extern CardSave CardSaveBlock;
+extern void *PauseTexts[];
+#define PAUSE_TEXT_DEMO 35
 #define CardBuffer ((u8 *)&CardSaveBlock)
 #define CardIconFrames (CardSaveBlock.iconFrames)
 #define CardSlots (CardSaveBlock.slots)

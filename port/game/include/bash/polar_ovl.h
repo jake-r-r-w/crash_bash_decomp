@@ -469,7 +469,7 @@ void PolarHeroAttack(s32 player);
 
 void PolarHeroPoll(s32 player);
 
-extern s32 PolarAIFlags[4];
+extern s32 PolarAIFlags[7];
 extern s32 PolarAIPace[4];
 
 s32 PolarBombOwnerEngine(NAS *nas);
@@ -497,7 +497,7 @@ typedef struct PolarOwner {
 } PolarOwner;
 
 extern PolarOwner *PolarBeamOwner;
-extern s32 PolarBeamMode;
+#define PolarBeamMode (PolarAIFlags[4])
 
 /* Read by PolarAI_Proximity. */
 typedef struct PolarMode {

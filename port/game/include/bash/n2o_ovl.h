@@ -119,7 +119,7 @@ typedef struct N2OFlagNode {
 } N2OFlagNode;
 
 extern N2ORound N2OBossRound;
-extern s32 N2OHeroList;
+extern NAS *N2OHeroList;
 extern NAS *N2OBossNas;
 typedef struct {
     s16 x;

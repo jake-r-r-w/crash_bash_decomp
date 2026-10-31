@@ -332,7 +332,7 @@ u16 N2OHeroModels[10] = {
     0, 0x72, 0x73, 0x74, 0x75, 0x78, 0x79, 0x76, 0x77, 0,
 };
 s32 N2OHeroStarts[4][3] = { { 0, 0x1C, -0xA00 }, { -0x300, 0x1C, -0xA00 }, { 0x300, 0x1C, -0xA00 }, { 0, 0x1C, 0xA00 } };
-s32 N2OHeroList = 0;
+NAS *N2OHeroList = NULL;
 NAS *N2OBossNas = 0;
 s32 N2OUnusedPair[2] = { 1, 2 };
 N2OEdge N2OAimEdgesA[4] = {
@@ -355,7 +355,7 @@ s16 N2OExplodeScales[7][3] = {
     { 0x800, 0xA00, 0x800 }, { 0x200, 0x200, 0x200 }, { 0, 0, 0 }, { 0, 0, 0 },
 };
 u16 N2OBallPhase = 0;
-u16 N2OHeroPlaced[3] = {0};
+u16 N2OHeroPlaced[4] = {0};
 s16 N2OBossAnimTimer = 0;
 s16 N2OHeroSpeed[4] = {0};
 N2OCircle *N2OPillarList = 0;
@@ -766,7 +766,7 @@ void N2OInitHero(s32 i) {
     FetchDefaultColBox(eng, 0x50);
     hb2 = Heroes;
     h2 = hb2 + i;
-    AddToGroup((NAS **)&N2OHeroList, h2->hero);
+    AddToGroup(&N2OHeroList, h2->hero);
     SetHeroAction(i, 0x2F);
     h2->hero_eng->XYZ.y = -0x480;
     h2->hero_weapon_count = one;

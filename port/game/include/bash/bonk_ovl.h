@@ -88,8 +88,8 @@ typedef struct BonkEntry {
     void *flag;  /* tested for zero */
     s32 timer;  /* counted down */
 } BonkEntry;
-extern s32 BonkEntryCount;
-extern s32 BonkStoolCount;
+extern s32 BonkEntryCount[7];
+extern s32 BonkStoolCount[7];
 extern s32 BonkRoundTime;
 extern BonkEntry BonkEntries[10];
 extern s32 BonkEntryCur;

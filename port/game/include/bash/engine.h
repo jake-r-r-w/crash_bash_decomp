@@ -123,7 +123,7 @@ extern process_control_info ProcessControl;
 extern ModeDbase ModeDbaseLists[];
 extern process_control_info LoadingControl;
 extern EXTengine EnginePool[];
-extern HeroInfo Heroes[4];
+extern HeroInfo Heroes[5];
 /* A hero action (SetHeroAction): what starts it and what runs it each frame. */
 typedef struct HeroActionEntry {
     void (*fn)(s32);

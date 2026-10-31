@@ -185,7 +185,7 @@ void platform_audio(const int16_t *stereo, int frames) {
 
 int main(int argc, char **argv) {
     int i;
-    int no_launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1;
+    int no_launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
     const char *launcher_shot = NULL, *launcher_keys = NULL;
 
     for (i = 1; i < argc; i++) {
@@ -221,6 +221,9 @@ int main(int argc, char **argv) {
             fps = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
             test_mode = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--tile") == 0 && i + 2 < argc) {
+            tile = atoi(argv[++i]);
+            tiles = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--turbo") == 0) {
             Turbo = 1;
         } else if (strcmp(argv[i], "--skip-intro") == 0) {
@@ -255,6 +258,9 @@ int main(int argc, char **argv) {
         return 0;
     }
     settings()->test_mode = test_mode;
+    settings()->testing = test_mode >= 0;
+    settings()->tile = tile;
+    settings()->tiles = tiles;
     if (skip_intro) {
         settings()->skip_intro = 1;
     }

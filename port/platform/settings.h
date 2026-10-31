@@ -11,6 +11,8 @@ typedef struct Settings {
     int vsync;
     int fps;           /* 30 is the game's own rate; 60 and 120 draw between its frames */
     int test_mode;     /* a test run's game mode to go straight to, or -1 */
+    int testing;       /* went there with --mode: the computer plays, with no time limit */
+    int tile, tiles;   /* a test window's slot in a grid of them on the screen, if tiles isn't 0 */
 } Settings;
 
 /* The settings in use. */

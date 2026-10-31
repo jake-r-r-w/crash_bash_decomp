@@ -1,3 +1,4 @@
+#include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
@@ -410,7 +411,7 @@ found:
             }
             break;
         case 0x02000000:
-            if (joypad_idle_count <= 0) {
+            if (joypad_idle_count <= 0 && !settings()->testing) {
                 GAME->demoTimer = 0;
             }
             ret = 1;
@@ -1345,7 +1346,7 @@ void StartWinSequence(s32 arg0) {
     g->pause |= 0x04000000;
     if (g->demo != 0) {
         g->pause |= 0x02000000;
-        g->demoTimer = 0x384;
+        g->demoTimer = settings()->testing ? 0x7FFFFFFF : 0x384;
         g->heroCpu[0] = 1;
         g->heroCpu[1] = 1;
         g->heroCpu[2] = 1;

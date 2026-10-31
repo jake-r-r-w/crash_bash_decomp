@@ -163,9 +163,8 @@ s32 TankTurnSfx[4] = { 0x4FD, 0x4FE, 0x4FF, 0x500 };
 hero_seq CRA_seq_tankidle[6] = { 0, 0x8007, 0x13, 0x4000, 0x8000, 0 };
 hero_seq CRA_seq_tankvictory[6] = { 0, 0x8007, 0x50, 0x4200, 0x8000, 0 };
 hero_seq CRA_seq_tankrecoil[6] = { 0, 0x8007, 0x1B, 0x4280, 0x8000, 0 };
-hero_seq CRA_seq_tankdie[6] = { 0, 0x8007, 0x28, 0x4180, 0x41A7, 0x41A7 };
-/* three sequences no table points at */
-hero_seq CRA_seq_tankunused[18] = {
+hero_seq CRA_seq_tankdie[24] = {
+    0, 0x8007, 0x28, 0x4180, 0x41A7, 0x41A7,
     0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7,
     0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x8000, 0,
 };
@@ -413,28 +412,28 @@ s32 TankBotWanderPoints[9][2] = {
     { 0x200, 0x200 }, { 0x800, 0x200 }, { 0xE00, 0x200 }, { 0x200, 0x800 }, { 0x800, 0x800 },
     { 0xE00, 0x800 }, { 0x200, 0xE00 }, { 0x800, 0xE00 }, { 0xE00, 0xE00 },
 };
-u8 TankDesertMap[64] = {
+u8 TankDesertMap[72] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0x33, 0, 0x73, 0x93, 0, 0xD3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0x37, 0, 0x77, 0x97, 0, 0xD7, 0, 0, 0x39, 0, 0x79, 0x99, 0, 0xD9, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0x3D, 0, 0x7D, 0x9D, 0, 0xDD, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u8 TankDesertMapAlt[64] = {
+u8 TankDesertMapAlt[72] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0x33, 0, 0x73, 0x93, 0, 0xD3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0x37, 0, 0, 0, 0, 0xD7, 0, 0, 0x39, 0, 0, 0, 0, 0xD9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x3D,
     0, 0x7D, 0x9D, 0, 0xDD, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u8 TankJungleMap[64] = {
+u8 TankJungleMap[72] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x77,
     0x97, 0, 0, 0, 0, 0, 0, 0x79, 0x99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u8 TankMetalMap[64] = {
+u8 TankMetalMap[72] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x33, 0, 0x73, 0, 0xB3, 0, 0xF3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0x37, 0, 0x77, 0, 0xB7, 0, 0xF7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x3B, 0, 0x7B, 0,
     0xBB, 0, 0xFB, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 u8 TankBossMap[72] = {0};
-u8 TankSwampMap[64] = {0};
+u8 TankSwampMap[72] = {0};
 NAS *TankMapNas[64] = {0};
 s32 TankWaterBob[16] = { -3, -2, -1, 0, 0, 1, 2, 3, 3, 2, 1, 0, 0, -1, -2, -3 };
 u32 MineBallFrames[8] = { 0x201A, 0x201B, 0x201C, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021 };

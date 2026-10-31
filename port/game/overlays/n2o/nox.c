@@ -50,7 +50,7 @@ s32 NoxHeroBoost[4] = {0};
 s32 NoxHeroSteer[4] = {0};
 AstSlot NoxAsteroids[256] = {0};
 AstMineSlot NoxMines[128] = {0};
-SetupCam NoxCamera = {0};
+camera_info_tag NoxCamera = {0};
 s32 NoxUnusedState[8] = {0};
 SLONG_XYZ NoxHeroStartA = {0};
 SLONG_XYZ NoxHeroStartB = {0};
@@ -2298,27 +2298,27 @@ void NoxStubA(void) {
 }
 
 void NoxInitCamera(s32 arg0) {
-    NoxCamera.sx = 0x1000;
-    NoxCamera.sy = 0x1000;
-    NoxCamera.sz = 0x1000;
-    NoxCamera.unk8 = 0x8000;
-    NoxCamera.unk18 = 0x140;
-    NoxCamera.unk54 = 0;
-    NoxCamera.unk56 = 0;
-    NoxCamera.unk58 = 0;
-    NoxCamera.x = 0;
-    NoxCamera.y = 0;
-    NoxCamera.z = 0;
+    NoxCamera.xform.scale.vx = 0x1000;
+    NoxCamera.xform.scale.vy = 0x1000;
+    NoxCamera.xform.scale.vz = 0x1000;
+    NoxCamera.eye.z = 0x8000;
+    NoxCamera.dist = 0x140;
+    NoxCamera.xform.angle.vx = 0;
+    NoxCamera.xform.angle.vy = 0;
+    NoxCamera.xform.angle.vz = 0;
+    NoxCamera.at.x = 0;
+    NoxCamera.at.y = 0;
+    NoxCamera.at.z = 0;
     NoxCamera.unk95 = 0;
-    NoxCamera.unk94 = 1;
-    NoxCamera.unk0 = 0;
-    NoxCamera.unk4 = 0;
-    NoxCamera.unk8 = 0;
-    NoxCamera.unk3C = 0;
-    NoxCamera.unk38 = 0;
-    NoxCamera.unk40 = 0;
+    NoxCamera.scaled = 1;
+    NoxCamera.eye.x = 0;
+    NoxCamera.eye.y = 0;
+    NoxCamera.eye.z = 0;
+    NoxCamera.shakeAmp = 0;
+    NoxCamera.shakeTime = 0;
+    NoxCamera.flipY = 0;
     RenderGameScene();
-    gfx_set_viewport(&GameViewport, (camera_info_tag *)&NoxCamera);
+    gfx_set_viewport(&GameViewport, &NoxCamera);
     RenderState.modelDp = ScreenFade.amount;
     DrawSceneMarks();
 }

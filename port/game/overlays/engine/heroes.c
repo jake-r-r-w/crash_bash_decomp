@@ -6146,7 +6146,7 @@ u16 HitScale[64] = {
     0, 0, 0, 0,
 };
 u16 HeroLastHarm[4] = {0};
-HeroInfo Heroes[4] = {0};
+HeroInfo Heroes[5] = {0}; /* the fifth stays empty: Polar's beam reads it when nobody is "it" */
 BossRecord BossState = {0};
 EngineHooks HeroHooks = {0};
 u16 RoundWinner = 0;  /* the round's winner (Arkenoid, Bash); a word in the image */
