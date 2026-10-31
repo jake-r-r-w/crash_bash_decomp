@@ -2456,9 +2456,9 @@ void Tile_Update(s32 arg0, s32 arg1) {
                 o->anim = anim;
                 if (c->old_player != c->player) {
                     if (GameFrameCount & 1) {
-                        o->frame = CELL_FRAME(o, tbl[c->old_player] & 0xFFF)->frame;
+                        o->frame = CELL_FRAME(o, tbl[c->old_player] & 0xFFF)->clut;
                     } else {
-                        o->frame = CELL_FRAME(o, tbl[c->player] & 0xFFF)->frame;
+                        o->frame = CELL_FRAME(o, tbl[c->player] & 0xFFF)->clut;
                     }
                 }
             }
@@ -2503,7 +2503,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             fr5 = (MV->levelFlags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
             o->anim = fr5;
             fr5 = (MV->levelFlags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
-            o->frame = CELL_FRAME(o, fr5 & 0xFFF)->frame;
+            o->frame = CELL_FRAME(o, fr5 & 0xFFF)->clut;
             break;
         case 7:
             CELL_SET(o, (MV->levelFlags & 0x80) ? 0x304A : 0x3040, (MV->levelFlags & 0x80) ? 0x304A : 0x3040);
