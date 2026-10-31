@@ -313,7 +313,7 @@ static void env_step(Voice *v) {
             increment /= 2;
         }
     } else if (exponential && decrease) {
-        step = step * v->env / 0x8000;
+        step = (step * v->env) >> 15; /* rounds down: a division would stop short of silence, with the step at 0 */
     }
     if ((step_value | (shift << 2)) != 0x7F && increment < 1) {
         increment = 1;

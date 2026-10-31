@@ -457,6 +457,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: Notes that rang on through a pause: the envelope's exponential step was a division, which rounds to 0 at low levels, so a released voice stuck at
+  `env 4095` and droned for good, in play too (likely the user's metallic undertone; all 24 music voices were usually taken). It's the hardware's `>> 15` now. `FX_LEVEL`,
+  `MIX_LEVEL` and the limiter were set by ear with those drones in the mix, so they may want another listen.
 - 2026-10-31: The hub's flicker while walking: a face wholly behind the camera could sweep the screen as one huge triangle (a full flat frame, found by scoring 60
   real-time shots for cells unlike both neighbours), and a model's animated textures stopped gliding between frames, as "another texture" meant "another thing".
 - 2026-10-31: The hub, from the user walking it: a gateway's door crashed (a PS1 offset into `obj_dbase`, and a private ordering table with 32-bit links), now
