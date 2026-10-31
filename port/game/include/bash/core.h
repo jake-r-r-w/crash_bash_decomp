@@ -317,7 +317,7 @@ struct script_control_info {
     } time;
     /* 0x10 */ s32 unk10;              /* the script header's +8 */
     /* 0x14 */ s32 flags;              /* 2: loop, 4: kill at the end, 8: hold the last frame, 0x10: ended */
-    /* 0x18 */ s32 *handle;            /* the owner's word, zeroed when the threads go */
+    /* 0x18 */ void **handle;          /* the owner's pointer, cleared when the threads go */
 };
 
 /* The prototype's xyzrf (struct ._319, 0x54 bytes): flags, a position and a RotScale. It begins a

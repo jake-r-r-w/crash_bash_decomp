@@ -455,6 +455,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-10-31: The user's bug testing: a new adventure's story stopped after its first part, because a script's `handle` was typed `s32 *` over an
+  owner's pointer, so its end cleared half the pointer and the scene waited for ever. All 19 parts now play into the hub.
 - 2026-10-31: 6.6 done, the user listening: `platform/audio.c` mixes on the device's thread. Their ears beat an old note: the real game's RAM
   shows reverb on (each song sets the depth). Read from Sony's code in the linked ELF (`objdump` through `tools/dk`): a note's volume is squared, effects'
   aren't, `SsSetVoiceMask` reserves voices. Gaussian table and envelope from psx-spx. Test runs are silent and, without `--wav`, their voices never

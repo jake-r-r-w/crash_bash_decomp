@@ -584,7 +584,7 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
         p->info.time.w = 0;
         p->info.time.h.frame = *(s16 *)&hdr->start_frame;
         p->info.unk10 = hdr->end_frame;
-        p->info.handle = (s32 *)arg5;
+        p->info.handle = (void **)arg5;
         if (arg5 != NULL) {
             *arg5 = p;
         }
@@ -887,7 +887,7 @@ void kill_nas_script(subengine *sub) {
     script_control_info *p;
     script_thread_handler *cur;
     script_thread_handler *next;
-    s32 *flag;
+    void **flag;
     script_thread_handler *old;
     ScriptCommand *tab;
     void (*fn)(script_thread_handler *, script_control_info *);
@@ -896,7 +896,7 @@ void kill_nas_script(subengine *sub) {
     flag = p->handle;
     cur = p->threads;
     if (flag != NULL) {
-        *flag = 0;
+        *flag = NULL;
     }
     tab = ScriptCommands;
     for (;;) {
@@ -934,7 +934,7 @@ void plot_script_nas(subengine *sub, MATRIX *arg1) {
 }
 
 void kill_script(script_handler *s) {
-    s32 *p;
+    void **p;
     script_thread_handler *cur;
     script_thread_handler *next;
     void *head;
@@ -946,7 +946,7 @@ void kill_script(script_handler *s) {
     p = s->info.handle;
     cur = s->info.threads;
     if (p != NULL) {
-        *p = 0;
+        *p = NULL;
     }
     for (;;) {
         if (cur == NULL) {
@@ -979,7 +979,7 @@ unlink:
 }
 
 void kill_script_threads(script_control_info *ci) {
-    s32 *p;
+    void **p;
     script_thread_handler *cur;
     script_thread_handler *next;
     void *head;
@@ -988,7 +988,7 @@ void kill_script_threads(script_control_info *ci) {
     p = ci->handle;
     cur = ci->threads;
     if (p != NULL) {
-        *p = 0;
+        *p = NULL;
     }
     for (;;) {
         if (cur == NULL) {
@@ -1029,7 +1029,7 @@ void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg
     arg2->time.w = 0;
     arg2->time.h.frame = *(s16 *)&hdr->start_frame;
     arg2->unk10 = hdr->end_frame;
-    arg2->handle = (s32 *)arg4;
+    arg2->handle = (void **)arg4;
     if (arg4 != NULL) {
         *arg4 = arg2;
     }
