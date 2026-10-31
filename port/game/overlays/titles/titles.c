@@ -1936,7 +1936,7 @@ void LevelSelectUpdate(void) {
     e0->sub[6].u6C.dbase = ((void ***)LangModeTypeTexts)[GAME->language][w];
     t = &GetEngineSlot(0)->sub[1];
     t->XYZ.y = lerp_fix12(t->XYZ.y,
-        *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)GAME->arenaLevel + 4] + 0x72) + 0x32, 0x800);
+        GetEngineSlot(1)->sub[(s8)GAME->arenaLevel + 4].u70.h.hi + 0x32, 0x800);
     i = 0;
     off = 0;
     for (;;) {

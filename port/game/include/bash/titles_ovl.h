@@ -375,7 +375,7 @@ extern TitlesPreset TeamModePresets[];
         s32 v_ = (val);                                                       \
         EXTengine *e_ = GetEngineSlot(0);                                     \
         subengine *q_ = &e_->sub[(i) + 4];                                    \
-        s16 r_ = lerp_fix12(q_->u70.h.lo, v_, 0x800);                         \
+        s16 r_ = lerp_fix12((s16)q_->u70.h.lo, v_, 0x800);                       \
         q_->u70.h.lo = r_;                                                    \
         q_->scale = r_ + 0x78;                                                \
         e_->sub[i].XYZ.x = (s16)q_->u70.h.lo + 0x1A;                          \

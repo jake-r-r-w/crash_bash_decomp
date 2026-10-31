@@ -1176,14 +1176,11 @@ void PlaceEngineSlot(s32 arg0, PlaceRec *recs) {
     }
 }
 
-/* Counts the 0x24-byte records before the first whose leading word is
- * below 2. */
-s32 CountPlaceRecs(s32 *rec) {
-    s32 n;
+/* Counts the records before the first whose type is below 2. */
+s32 CountPlaceRecs(PlaceRec *rec) {
+    s32 n = 0;
 
-    n = 0;
-    while (*rec >= 2) {
-        rec += 9;
+    while (rec[n].type >= 2) {
         n++;
     }
     return n;

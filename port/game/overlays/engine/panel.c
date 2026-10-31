@@ -2220,7 +2220,7 @@ void Init_Panel(void) {
             PanelTab[i] = EngineTemplate;
             PanelTab[i].flags = 0;
         }
-        ((s32 *)&Icon)[i] = 0;
+        ((EXTengine **)&Icon)[i] = NULL;
         i++;
     } while (i < 4);
     InitBossHealthBar();

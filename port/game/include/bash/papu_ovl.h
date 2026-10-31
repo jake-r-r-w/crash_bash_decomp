@@ -263,14 +263,14 @@ void PlotPapuColumn(NAS *nas);
 
 void PapuInitCrateHooks(void);
 typedef struct {
-    u8 pad0[sizeof(EXT) + 8];
+    u8 pad0[offsetof(EXTobject, whatami)];
     u16 type;
 } T_B80B0Fux;
 
 typedef struct {
-    u8 pad0[sizeof(EXT)];
+    u8 pad0[offsetof(EXTobject, target)];
     NAS *owner;
-    u8 pad10[sizeof(EXT) + 8 - (sizeof(EXT) + sizeof(void *))];
+    u8 pad10[offsetof(EXTobject, whatami) - (offsetof(EXTobject, target) + sizeof(void *))];
     u16 type;
     u8 pad16[4];
     u16 status;

@@ -140,7 +140,7 @@ void Draw_Clock(void);
 
 
 extern s16 CupWinner;
-extern s32 CupsDirty;
+#define CupsDirty ScreenLabelState[3]
 
 
 #endif /* BASH_PANEL_H */

@@ -52,7 +52,7 @@ extern s32 ArkHeroStarts[4][3];
 extern s32 ArkBallTimer;
 
 typedef struct ArkenoidFuxType {
-    u8 pad0[sizeof(EXT) + 8];
+    u8 pad0[offsetof(EXTobject, whatami)];
     u16 type;
 } ArkenoidFuxType;
 
@@ -270,14 +270,14 @@ typedef struct ArkenoidEng {
 } ArkenoidEng;
 
 typedef struct ArkenoidFux {
-    u8 pad0[sizeof(EXT) + 0xE];
+    u8 pad0[offsetof(EXTobject, status)];
     s16 flag;
 } ArkenoidFux;
 
 
 /* A FUX viewed for its flags word (0x80 tested by TestArkObjectObstacles). */
 typedef struct ArkenoidFuxF {
-    u8 pad0[sizeof(EXT) + 0x10];
+    u8 pad0[offsetof(EXTobject, can_do)];
     u16 flags;
 } ArkenoidFuxF;
 
@@ -407,7 +407,7 @@ typedef struct ArkenoidAiFux {
 } ArkenoidAiFux;
 
 typedef struct ArkenoidAiExt {
-    u8 pad0[sizeof(EXT) + 0xA];
+    u8 pad0[offsetof(EXTobject, player)];
     u16 player;
     u8 pad18[2];
     u16 status;

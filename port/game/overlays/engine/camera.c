@@ -657,7 +657,7 @@ void BobSub(subengine *s) {
 }
 
 void UpdateScreenLabels(void) {
-    s32 *p = &ScreenLabelState;
+    s32 *p = ScreenLabelState;
     EXTengine *eng;
     subengine *s;
     s32 *q;
@@ -705,7 +705,7 @@ void UpdateScreenLabels(void) {
                 e->flags &= ~0x8000;
             }
         }
-        q = &ScreenLabelState;
+        q = ScreenLabelState;
         if (++q[2] > 0x14) {
             q[2] = 0;
             q[1] = 1;
@@ -733,7 +733,7 @@ void UpdateScreenLabels(void) {
             }
         }
         if (!(GameLevelFlags & 0xC0)) {
-            q = &ScreenLabelState;
+            q = ScreenLabelState;
             if (q[3] != 0) {
                 q[1] = 2;
                 q[2] = 0;
@@ -779,7 +779,7 @@ void UpdateScreenLabels(void) {
             }
         }
         {
-            s32 *r = &ScreenLabelState;
+            s32 *r = ScreenLabelState;
             eng->xform.rot.vy = lerp_angle(0, 0x800, 0x14, ++r[2]);
             eng->xform.dirty = 1;
             if (r[2] >= 0x14) {
@@ -806,14 +806,14 @@ void UpdateScreenLabels(void) {
 }
 
 void ScreenLabelsOff(void) {
-    ScreenLabelState = 0;
+    ScreenLabelState[0] = 0;
 }
 
 void ScreenLabelsStart(void) {
     s32 *p;
-    if (ScreenLabelState == 0) {
-        ScreenLabelState = 1;
-        p = &ScreenLabelState;
+    if (ScreenLabelState[0] == 0) {
+        ScreenLabelState[0] = 1;
+        p = ScreenLabelState;
         p[1] = 0;
         p[2] = 0;
         InitScreenLabels();
@@ -882,8 +882,8 @@ void RenderScreenLabels(void) {
 
 void ResetScreenLabels(void) {
     s32 *p;
-    ScreenLabelState = 0;
-    p = &ScreenLabelState;
+    ScreenLabelState[0] = 0;
+    p = ScreenLabelState;
     p[1] = -1;
     p[3] = 0;
     p[4] = 1;
@@ -977,9 +977,5 @@ PlaceRec ScreenLabelsNotice[3] = {
     { 0xC, -0x330, 0x330, -0x2C0, 0x260, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 ScreenLabelState = 0;
-s32 ScreenLabelShown = 0;
-s32 ScreenLabelFrame[1] = {0};  /* ScreenLabelState's [1]: -1 when off */
-s32 CupsDirty = 0;
-s32 ScreenLabelStep[1] = {0};  /* ScreenLabelState's [3] */
+s32 ScreenLabelState[5] = {0};
 s32 ScreenCount = 0;

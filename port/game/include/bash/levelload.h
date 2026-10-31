@@ -153,7 +153,7 @@ void LoadModeDbases(obj_dbase *arg0, void **arg1);
 
 void RenderLoadingScreen(void);
 
-s32 CountPlaceRecs(s32 *rec);
+s32 CountPlaceRecs(PlaceRec *rec);
 
 void InitLevelLoad(void);
 

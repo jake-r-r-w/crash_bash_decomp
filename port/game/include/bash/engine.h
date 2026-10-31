@@ -56,7 +56,9 @@ extern ScoreInfo Score[4];
 extern SWORD_XY ScoreIcon3Pos[4];
 extern SWORD_XY ScoreIcon2Pos[4];
 
-extern s32 ScreenLabelState;
+/* The screen labels: running, their stage (-1 off), its frame, whether the cups changed, and a step. */
+extern s32 ScreenLabelState[5];
+#define ScreenLabelShown ScreenLabelState[1]
 extern s32 PanelCtrl;
 typedef struct EngObj {
     s32 flags;
@@ -143,7 +145,6 @@ extern Blk32 LoadingScriptRot;
 extern CamVec3 LoadingScriptPos;
 extern ASTEntry EngineASTTable[];
 extern fade_info ScreenFade;
-extern s32 ScreenLabelShown;
 extern process_info LevelLoadProcess;
 extern struct HudBox PauseMenuPanel;
 extern ScriptInit BigPoofInit;
