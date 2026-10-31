@@ -1824,7 +1824,8 @@ void LevelSelectInit(void) {
 }
 
 void LevelSelectInput(void) {
-    s32 *tbl;
+    void **undefined;
+    void **tbl;
     GameState *g;
     EXTengine *e;
     s32 c;

@@ -1249,7 +1249,7 @@ mal *mal_prev_movable(mal *arg0) {
 }
 
 void mal_compact_ptr(s32 arg0) {
-    mal_compact_from((u8 *)((mal *)arg0 - 1), &MainHeap);
+    mal_compact_from((u8 *)((mal *)(iptr)arg0 - 1), &MainHeap);
 }
 
 void mal_compact_step(_mal_area *heap) {
@@ -1779,7 +1779,7 @@ u8 *queue_dbase_load(ModeDbase *arg0, s32 arg1) {
     LoaderState *ls;
 
     a = &DatIndex[arg0->group->first];
-    *(s32 *)&arg0->dbase->keep = arg1;
+    arg0->dbase->keep = (void **)(iptr)arg1;
     fn = load_dbase_done;
     ls = &Loader;
     b = arg0->group->size;
@@ -1960,7 +1960,7 @@ loop:
 void sortlist_sort(s32 arg0) {
     do {
 
-    } while (sortlist_bubble(arg0) != 0);
+    } while (sortlist_bubble((SortList *)(iptr)arg0) != 0);
 }
 
 void loader_unused_a(void) {
@@ -2077,7 +2077,7 @@ void loadnode_unlink(LoadNode *arg0) {
 s32 loader_pending(void) {
     LoaderState *p = &Loader;
     s32 a = p->head != NULL;
-    s32 b = p->flag;
+    s32 b = p->flag != NULL;
     s32 s = p->state;
     int new_var;
     if (b == 0) {
@@ -2087,7 +2087,7 @@ s32 loader_pending(void) {
     return a + new_var;
 }
 
-s32 loader_queue(file *arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6) {
+void *loader_queue(file *arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6) {
     LoadNode *p;
     LoadNode *next;
     LoadNode *tail;
@@ -2118,8 +2118,8 @@ s32 loader_queue(file *arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *a
     p->size = arg2;
     p->fn = done;
     p->arg = arg4;
-    p->buf = (u8 *)arg6;
-    return (s32)q;
+    p->buf = (u8 *)(iptr)arg6;
+    return q;
 }
 
 LoadNode *loadlist_push(LoaderState *ls) {
@@ -2235,7 +2235,7 @@ s32 load_file_part_wait(file *arg0, s32 arg1, u8 **arg2, s32 arg3) {
     return 0;
 }
 
-s32 asload_chunk_relocatable(file *arg0, s32 arg1, u32 **arg2, s32 arg3) {
+void *asload_chunk_relocatable(file *arg0, s32 arg1, u32 **arg2, s32 arg3) {
     return loader_queue(arg0, arg1, arg3, NULL, arg2, 1, 0);
 }
 
@@ -2259,7 +2259,7 @@ u8 *load_file_permanent(file *arg0) {
     return LoadPermanentBuf;
 }
 
-s32 load_file_to_wait(file *arg0, s32 arg1, s32 arg2) {
+u8 *load_file_to_wait(file *arg0, s32 arg1, s32 arg2) {
     LoadPermanentBuf = 0;
     loader_queue(arg0, arg1, arg2, NULL, (u8 *)&LoadPermanentBuf, 0, 0);
     while (loader_pending() != 0) {
@@ -2298,19 +2298,19 @@ s32 load_file_direct(file *a, u8 *b) {
     return 0;
 }
 
-s32 load_file(file *arg0, u8 *arg1) {
+void *load_file(file *arg0, u8 *arg1) {
     return loader_queue(arg0, 0, arg0->size, NULL, arg1, 1, 0);
 }
 
-s32 load_file_to(file *arg0, u8 *arg1) {
+void *load_file_to(file *arg0, u8 *arg1) {
     return loader_queue(arg0, 0, arg0->size, NULL, arg1, 0, 0);
 }
 
-s32 load_file_cb(file *arg0, void (*done)(), void *ctx) {
+void *load_file_cb(file *arg0, void (*done)(), void *ctx) {
     return loader_queue(arg0, 0, arg0->size, done, ctx, 1, 0);
 }
 
-s32 asload_permanent_callback(file *arg0, void (*done)(), void *ctx) {
+void *asload_permanent_callback(file *arg0, void (*done)(), void *ctx) {
     return loader_queue(arg0, 0, arg0->size, done, ctx, 0, 0);
 }
 
@@ -2714,7 +2714,7 @@ void cam_set_projection(camera_info_tag *cam, RECT *rect) {
     }
 }
 
-void cam_ramp_override(s32 arg0, s32 arg1) {
+void cam_ramp_override(void *arg0, s32 arg1) {
     cam_ramp_overide_count = arg1;
     CamEaseOverride = arg0;
 }
@@ -2950,8 +2950,8 @@ void export_exe_functions(void) {
     t[0x248 / 4] = vab_loading;
     t[0x24C / 4] = vab_transfer_wait;
     t[0x250 / 4] = quat_slerp;
-    t[0x254 / 4] = (void *)VabCueTimer;
-    t[0x258 / 4] = (void *)VabCuePending;
+    t[0x254 / 4] = (void *)&VabCueTimer;
+    t[0x258 / 4] = (void *)&VabCuePending;
     t[0x25C / 4] = itoa_div;
     t[0x260 / 4] = shell_run_spyro_demo;
     t[0x264 / 4] = dbase_texture_ptr;
@@ -3316,7 +3316,7 @@ s32 entry_block_value(s32 i, ModelFile *blk) {
 MeshHeader *map_entity_address(u16 arg0, ModelFile *arg1) {
     EntityTable *base;
     s32 t;
-    s32 r;
+    void *r;
 
     arg0--;
     t = arg0 & 0xFFF;
@@ -3432,7 +3432,7 @@ void fx_free_buffers(subengine *sub) {
 s32 fx_alloc_buffers(FxDef *def, subengine *sub) {
     SubFx *fx;
     void **a;
-    s32 var_v0;
+    void *var_v0;
 
     a = (void **)&((SubFx *)&sub->u6C)->a;
     fx = (SubFx *)&sub->u6C;
@@ -3451,7 +3451,7 @@ s32 fx_alloc_buffers(FxDef *def, subengine *sub) {
         } else {
             mal_alloc_owned_low(def->bufSize, &fx->buf, &MainHeap, 3);
             fx->count = def->count;
-            var_v0 = (s32)sub->u6C.ptr;
+            var_v0 = sub->u6C.ptr;
         }
     }
     if (var_v0 != 0) {
@@ -3466,7 +3466,7 @@ s32 fx_alloc_buffers(FxDef *def, subengine *sub) {
     return ((SubFx *)&sub->u6C)->count;
 }
 
-s32 fx_alloc_buffers_b(FxDef *def, SubFx *fx) {
+void *fx_alloc_buffers_b(FxDef *def, SubFx *fx) {
     void **a;
 
     a = &fx->a;
@@ -3480,7 +3480,7 @@ s32 fx_alloc_buffers_b(FxDef *def, SubFx *fx) {
         if (fx->b != NULL) {
             mal_alloc_owned_low(def->bufSize, &fx->buf, &MainHeap, 3);
             fx->count = def->count;
-            return (s32)fx->buf;
+            return fx->buf;
         }
         mal_free(a, &MainHeap);
         goto fail;
@@ -3507,14 +3507,14 @@ void *LevelNames[45] = {
     &LevNameDemoHub, &LevNameTitles, &LevNameEmpty, &LevNameEmpty,
     &LevNamePodium, &LevNameScriptStuff,
 };
-s32 *LangLevelNames[5] = { LevelNames, LevelNames, LevelNames, LevelNames, LevelNames };
+void **LangLevelNames[5] = { LevelNames, LevelNames, LevelNames, LevelNames, LevelNames };
 void *ModeTypeNames[14] = {
     0, 0, &LevNameMedievalMayhem, &LevNameCrateCrush, 0, &LevNameTankWars,
     &LevNamePogoPandemonium, &LevNameBallistix, &LevNamePolarPush,
     &LevNameCrashDash, &LevNameMedievalMayhem, 0, &LevNameMedievalMayhem,
     &LevNameMedievalMayhem,
 };
-s32 *LangModeTypeTexts[5] = { ModeTypeNames, ModeTypeNames, ModeTypeNames, ModeTypeNames, ModeTypeNames };
+void **LangModeTypeTexts[5] = { ModeTypeNames, ModeTypeNames, ModeTypeNames, ModeTypeNames, ModeTypeNames };
 u16 ModeTypes[136] = {
     0x104, 0, 4, 0x104, 1, 5, 0x104, 2, 6, 0x104, 3, 7, 0x105, 0, 0, 0x106, 0, 5, 0x106, 1, 6,
     0x106, 2, 7, 0x106, 3, 8, 0x106, 4, 4, 0x107, 0, 4, 0x107, 1, 5, 0x107, 2, 6, 0x107, 3, 7,
@@ -4039,5 +4039,5 @@ void (*ExportsInit)(void) __attribute__((section(".sdata"))) = export_exe_functi
 /* the .bss, in link order: written into the file as zeros, as the original link did */
 s32 StartupRa __attribute__((section(".bss")));   /* where the startup code saves $ra */
 s32 SavedSp __attribute__((section(".bss")));
-s32 LoadPermanentBuf __attribute__((section(".bss")));
+u8 *LoadPermanentBuf __attribute__((section(".bss")));
 u8 *LoadWaitBuf __attribute__((section(".bss")));

@@ -38,7 +38,7 @@ struct obj_dbase {
     /* 0x08 */ void *load;             /* the load in flight, or 0 */
     /* 0x0C */ struct ModelFile *data;
     /* 0x10 */ obj_textureset textures;
-    /* 0x34 */ s32 *keep;             /* name hashes of the blocks to keep (dbase_setup_blocks) */
+    /* 0x34 */ void **keep;             /* name hashes of the blocks to keep (dbase_setup_blocks) */
 };
 
 /* The records, by index: the ones the code names by slot keep the slot's name, the rest

@@ -788,6 +788,9 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 6.3 Real structs (2026-10-31): `GameInfo` is one `GameState`, which has no pointers and keeps the PS1 layout. Views of
   structs reach their fields through `offsetof` on the real struct, extensions are read by field or `EXT_W`, and sizes and
   strides come from the types. Size checks hold every struct that keeps its PS1 size. Still unproven: nothing runs yet.
+- [x] 6.4 Files and memory (2026-10-31): the heap is a static arena, and `ref32`, an offset from it, holds a pointer where a
+  file's 4-byte slot or a heap block's 0x18-byte header leaves no room for more. Mode text is translated when it loads, checked
+  by a test on the real files. Address warnings are errors, apart from the five files the renderer and sound replace.
 - A 32-bit port ran the game on the PS1's memory layout, with all 33 modes playing to the end, then was
   deleted (2026-10-30). The layout couldn't reach 64-bit, so the port starts again (ROADMAP-B, PORT.md). Its
   code is in git at `7115b3b8`, and PORT.md has what it taught.

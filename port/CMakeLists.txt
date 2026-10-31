@@ -38,8 +38,12 @@ target_compile_options(game PRIVATE
   # Old C, reviewed in 6.3; the warnings that matter for 64-bit stay on.
   -Wno-strict-prototypes -Wno-pointer-sign
   -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-format-security
-  # Addresses kept in integers are the list for 6.3 and 6.4: warnings for now, errors once they reach zero.
-  -Wno-error=int-conversion $<$<C_COMPILER_ID:Clang>:-ferror-limit=0>)
+  # An address in an integer is an error, apart from the code the renderer and the sound replace (6.6, 6.7).
+  -Werror=int-conversion -Werror=pointer-to-int-cast -Werror=int-to-pointer-cast
+  -Werror=void-pointer-to-int-cast -Werror=int-to-void-pointer-cast
+  $<$<C_COMPILER_ID:Clang>:-ferror-limit=0>)
+set_source_files_properties(game/main/prims.c game/main/nascalls.c game/main/music.c game/main/sfx.c game/main/sound.c
+  PROPERTIES COMPILE_OPTIONS "-Wno-error=int-conversion;-Wno-error=pointer-to-int-cast;-Wno-error=int-to-pointer-cast;-Wno-error=void-pointer-to-int-cast;-Wno-error=int-to-void-pointer-cast")
 
 add_executable(crashbash main.c)
 if(TARGET SDL3::SDL3-static)

@@ -1234,7 +1234,8 @@ void PlotPapuMinion(NAS *nas)
   s32 dx;
   s32 dz;
   s32 i;
-  NAS *hit;
+  s32 hit;
+  NAS *hnas;
   s32 dist;
   s32 angle;
   s32 pick;
@@ -1378,7 +1379,7 @@ void PlotPapuMinion(NAS *nas)
     break;
   case 7:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
-    hit = PapuMinionObjectAhead(slot, 0x180);
+    hnas = PapuMinionObjectAhead(slot, 0x180);
     if (hit != 0) {
       for (i = 0; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xFA00) &&
@@ -1391,7 +1392,7 @@ void PlotPapuMinion(NAS *nas)
       }
       do {
         if (fux->status != 6) {
-          other = (EXTobject *)hit->FUX;
+          other = (EXTobject *)hnas->FUX;
           if (other != NULL) {
             other->will_do |= 1;
             other->player = PapuMinionSlots[slot].whatami;
@@ -1451,8 +1452,8 @@ void PlotPapuMinion(NAS *nas)
       fux->will_do |= 2;
       break;
     }
-    hit = ((NAS **)PapuMinionSlots[slot].pad4[6])[-1];
-    if (hit == NULL || hit->Engine->platform != NULL) {
+    hnas = ((NAS **)PapuMinionSlots[slot].pad4[6])[-1];
+    if (hnas == NULL || hnas->Engine->platform != NULL) {
       fux->target = NULL;
       fux->status = 0xA;
       GotoLinkAnim(anim, 0xA);

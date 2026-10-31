@@ -371,7 +371,7 @@ void HubNameEntryKey(s8 arg0);
 typedef struct SubInit {
     s16 a;
     s16 b;
-    s32 c;
+    void *c;
     s32 pad[2];
 } SubInit;
 
@@ -393,7 +393,7 @@ void HubStub(void);
 
 typedef struct HubRenderSub {
     u8 padC[0xC];
-    s32 dbase;  /* its map's dbase */
+    void *dbase;  /* its map's dbase */
 } HubRenderSub;
 
 typedef struct HubRenderObj {

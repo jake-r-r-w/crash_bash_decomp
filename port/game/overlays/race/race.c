@@ -485,7 +485,7 @@ void *RaceJumpHooks[1] = { RaceResetJumps };
 s32 RaceAI_DodgeSpinners(s32 player) {
     s32 i;
     HeroInfo *h;
-    s32 *p;
+    void **p;
     SLONG_XYZ pos;
 
     i = 0;
@@ -563,7 +563,7 @@ s32 RaceAI_PickVictim(s32 arg0) {
 
 void RaceAI_SpinnerBrake(s32 player) {
     SLONG_XYZ pos;
-    s32 *p;
+    void **p;
     s32 i;
     s32 r;
     HeroInfo *h;
@@ -2447,7 +2447,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
  * defined here */
 const char RaceMsgError[] = "error\n";
 
-s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
+s32 XZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
     VECTOR d;
     VECTOR n;
     MATRIX m;

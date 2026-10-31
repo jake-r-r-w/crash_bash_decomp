@@ -26,7 +26,7 @@ typedef struct PapuPos {
 } PapuPos;
 
 typedef struct PapuEntry {
-    /* 0x0 */ s32 flag;  /* tested for zero */
+    /* 0x0 */ void *flag;  /* tested for zero */
     /* 0x4 */ s16 pad4;
     /* 0x6 */ s16 flag2;  /* tested for zero */
     /* 0x8 */ s16 y;

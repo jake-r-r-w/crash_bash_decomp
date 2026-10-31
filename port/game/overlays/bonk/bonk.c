@@ -691,7 +691,7 @@ void PlotBonkCrate(NAS *nas) {
     }
 }
 
-s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
+s32 BonkAI_FindClosest(s32 arg0, void **arg1, s32 arg2) {
     BonkEntry *found;
     s32 x;
     s32 z;
@@ -768,7 +768,7 @@ s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
         }
     }
     if (found != 0) {
-        *arg1 = (s32)found;
+        *arg1 = found;
         return 1;
     }
     return 0;
@@ -1422,9 +1422,9 @@ s32 BonkAI_NearestEnemy(s32 arg0) {
   return r;
 }
 
-int BonkAI_Closest(int a0, int *out)
+int BonkAI_Closest(int a0, void **out)
 {
-    int v;
+    void *v;
 
     if (BonkAI_FindClosest(a0, &v, 0x301) != 0) {
         *out = v;

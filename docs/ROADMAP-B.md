@@ -15,7 +15,6 @@ play the same. The decomp stays as it is. The design and the rules are in [PORT.
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 6.4 | Files and memory | The pointer slots in loaded files, the mode text's addresses, the heap and pools, and the save format on disk. Address truncation warnings then reach zero and become errors, apart from the code 6.6 and 6.7 replace | [ ] |
 | 6.5 | It runs, headless | Files from the user's own data, the game's maths, pads, saves and overlays, with no window. All 33 modes play to the end, optimised and clean under ASan and UBSan. Code written only to steer the old compiler goes back to natural C where it gets in the way | [ ] |
 | 6.6 | A native renderer | Models, maps, sprites and text drawn directly through SDL3's GPU API, replacing the PS1 drawing code: real 3D, real textures and any resolution, with no PS1 drawing commands or VRAM | [ ] |
 | 6.7 | Native sound | The game's sound banks and music played by its own mixer and sequencer on SDL3, with reverb. Note timing, pitch and volume checked against Sony's linked code | [ ] |

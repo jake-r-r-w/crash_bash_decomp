@@ -2,12 +2,12 @@
 #include "bash/main.h"
 #include "bash/dbase.h"
 
-void dbase_setup_blocks(ModelFile *arg0, s32 *arg1) {
+void dbase_setup_blocks(ModelFile *arg0, void **arg1) {
     FileEntry *tbl;
     FileEntry *e;
     FileEntry *next;
-    s32 *p;
-    s32 found;
+    void **p;
+    void *found;
     BlockRef *blk;
     BlockRef *old;
     s32 i;
@@ -42,16 +42,16 @@ second:
                     if (*p == 0) {
                         goto none;
                     }
-                    if (string_hash((u8 *)*p) == e->hash) {
+                    if (string_hash(*p) == e->hash) {
                         found = *p;
                         goto chk;
                     }
                 }
             }
 none:
-            found = 0;
+            found = NULL;
 chk:
-            if (found == 0) {
+            if (found == NULL) {
                 old = ((BlockRef *)ref_get(e->block));
                 mal_free(old->ptr, &MainHeap);
                 e->block = ref_of(NULL);
@@ -88,7 +88,7 @@ obj_texture *dbase_texture_ptr(obj_dbase *db, s32 i) {
     return NULL;
 }
 
-void dbase_asload_with_anims(obj_dbase *db, s32 *keep) {
+void dbase_asload_with_anims(obj_dbase *db, void **keep) {
     if (db->load == 0 && db->data == NULL) {
         db->keep = keep;
         db->load = load_file_cb(db->textureFile, dbase_asload_with_anims_texture_callback, db);
@@ -120,13 +120,13 @@ void dbase_asload_with_anims_callback(u8 *data, obj_dbase *db) {
     dbase_setup_blocks((ModelFile *)data, db->keep);
 }
 
-s32 name_list_find(s32 *list, u8 *arg1) {
+void *name_list_find(void **list, u8 *arg1) {
     if (list != NULL) {
         for (;; list++) {
             if (*list == 0) {
                 return 0;
             }
-            if (string_hash((u8 *)*list) == *(s32 *)(arg1 + 0x10)) {
+            if (string_hash(*list) == ((FileEntry *)arg1)->hash) {
                 return *list;
             }
         }
@@ -134,7 +134,7 @@ s32 name_list_find(s32 *list, u8 *arg1) {
     return 0;
 }
 
-void dbase_copy_block(FileEntry *e, s32 base) {
+void dbase_copy_block(FileEntry *e, u8 *base) {
     BlockRef *node;
     s32 size;
 
@@ -226,7 +226,7 @@ found:
     return NULL;
 }
 
-s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1) {
+void *dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1) {
     ModelFile *tbl;
     FileEntry *p;
     s32 n;
@@ -251,7 +251,7 @@ s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1) {
     }
 found:
     if (res != NULL) {
-        return (s32)((BlockRef *)ref_get(res->block))->ptr;
+        return ((BlockRef *)ref_get(res->block))->ptr;
     }
     return 0;
 }
@@ -265,7 +265,7 @@ u8 *dbase_mesh_anim_name_load(obj_dbase *arg0, u8 *arg1) {
     BlockRef *node;
     BlockRef *cur;
     s32 start;
-    s32 h;
+    void *h;
 
     tbl = arg0->data;
     if (tbl == NULL) {
@@ -366,7 +366,7 @@ void dbase_load_all_mesh_anims(obj_dbase *arg0) {
     s32 n;
     s32 i;
     s32 start;
-    s32 handle;
+    void *handle;
 
     tbl = arg0->data;
     if (tbl != NULL) {
@@ -485,7 +485,7 @@ static inline BlockRef *dbase_mesh_anim_load_one(obj_dbase *arg0, FileEntry *arg
     BlockRef *cur;
     BlockRef *node;
     s32 start;
-    s32 h;
+    void *h;
 
     cur = ((BlockRef *)ref_get(arg1->block));
     if (cur == NULL) {
@@ -522,7 +522,7 @@ BlockRef *dbase_mesh_anim_load(obj_dbase *arg0, s32 arg1) {
 
 BlockRef *dbase_mesh_anim_rec_load(file **f, FileEntry *e) {
     s32 start;
-    s32 load;
+    void *load;
     BlockRef *node;
     BlockRef *ret;
 

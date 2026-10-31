@@ -126,7 +126,7 @@ s32 SysGetLen(char *s);
 Ext400 *AllocExt400(NAS *nas);
 Ext1000 *AddObject(NAS *nas);
 void ClearNasPool(void);
-s32 AllocOtBuffers(s32 *arg0);  /* AllocPrimBuffers, then ScreenRect = NULL; returns the second end */
+u8 *AllocOtBuffers(s32 *arg0);  /* AllocPrimBuffers, then ScreenRect = NULL; returns the second end */
 void AllocPrimBuffers(s32 *arg0);
 void cd_init(void);
 void pad_rumble_big(s32 pad, s32 arg1, s8 arg2);

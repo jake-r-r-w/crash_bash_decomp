@@ -2279,7 +2279,7 @@ NAS *ChaseSpawnCoal(s32 arg0) {
 }
 
 void CoalFlameSpread(EXTengine *eng, CoalFlameFux *fux, s32 id) {
-    s32 *grid;
+    NAS **grid;
     s32 cx;
     s32 cz;
     s32 i;
@@ -2464,7 +2464,7 @@ void PlotCircleFire(NAS *nas) {
     s32 cx;
     s32 cz;
     s32 i;
-    s32 *grid;
+    NAS **grid;
 
     eng = nas->Engine;
     sub = eng->sub;

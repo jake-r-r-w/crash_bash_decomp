@@ -9646,7 +9646,7 @@ void InitBearBoss(NAS *m) {
         m->Engine->sub->flags |= 0x02000000;
         m->Engine->sub->u6C.dbase = MapScene->dbase;
         ext->flag = (iptr)ScriptCursorFirst(m, &BearBossScriptInit);
-        GotoLinkAnim((EXTanimator *)ext->flag, 0);
+        GotoLinkAnim((EXTanimator *)(iptr)ext->flag, 0);
         RunNasAnim(m);
     }
 }
@@ -9921,7 +9921,7 @@ void PolarMovesSwap(EXTheromove *a, EXTheromove *b) {
 }
 
 void PlotGravityObject(GravityObject *obj) {
-    s32 target = obj->target;
+    EXTmotion *target = obj->target;
 
     if (target != 0) {
         GravityMotionUpdate(obj, target);

@@ -56,7 +56,7 @@ static inline s32 EngineTable_Reachable(void *arg0, u8 *tab) {
         if (i >= *(s32 *)((u8 *)arg0 + 8)) {
             goto done;
         }
-        obj = *(s32 *)((u8 *)(i * 16 + *(s32 *)((u8 *)arg0 + 4)) + 4);
+        obj = ((CupDef *)arg0)->rounds[i].mode;
         if (LevelUnlockedIn(obj, GameInfo) == 0) {
             cnt = 0;
             j = cnt;
@@ -156,12 +156,12 @@ static inline void *EngineCurWorldName(void) {
     u8 *g = GameInfo;
     CupRound *e = tab[g[0x28]].rounds;
     s32 idx = e[g[0x29]].mode;
-    s32 **tbl;
+    void ***tbl;
     s32 w = wt[idx * 3] - 0x101;
-    s32 *t;
-    tbl = (s32 **)LangModeTypeTexts;
+    void **t;
+    tbl = LangModeTypeTexts;
     t = tbl[*(s32 *)(g + 0x2C)];
-    return *(s32 *)((u8 *)t + w * 4);
+    return t[w];
 }
 
 void QuitCupMenu(void);
@@ -463,7 +463,7 @@ typedef struct {
     void *hit_shapes2;
     void *hit_shapes;
     void (*break_tile)(s32, s32, s32, s32, s32, s32);   /* Bash's space arena: BashSpaceBreakTile */
-    void (*explo_range)(s32, s32, s32, s32);           /* Papu: PapuExploRange */
+    void (*explo_range)(void *, s32, s32, s32);           /* Papu: PapuExploRange */
 } HitCallbacks;
 extern HitCallbacks HitHooks;
 

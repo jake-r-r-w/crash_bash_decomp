@@ -99,19 +99,19 @@ extern void *LangLocked[];
 extern void *LangCheckingCard[];
 
 /* Inline forms of the slot getters LevelListModel / LevelListAnim / LevelListText. */
-static inline s32 TitlesSlotModelI(s32 a, s32 b) {
-    return *(s32 *)(BattleArenas[a].levels + (b << 4) + 8);
+static inline void *TitlesSlotModelI(s32 a, s32 b) {
+    return BattleArenas[a].levels[b].model;
 }
 
 static inline s32 TitlesSlotCI(s32 a, s32 b) {
-    return *(s32 *)(BattleArenas[a].levels + (b << 4) + 0xC);
+    return BattleArenas[a].levels[b].anim;
 }
 
-extern s32 *LangLevelNames[];
+extern void **LangLevelNames[];
 
-static inline s32 TitlesSlotRowI(s32 a, s32 b) {
+static inline void *TitlesSlotRowI(s32 a, s32 b) {
     s32 idx = BattleArenas[a].levels[b].idx;
-    s32 *row = LangLevelNames[*(s32 *)(GameInfo + 0x2C)];
+    void **row = LangLevelNames[GameLanguage];
     return row[idx];
 }
 
@@ -359,7 +359,7 @@ typedef struct {
     s32 hero[4];   /* 0x00: indices into GameInfo (byte at +0x4C) */
     s32 flags[3];  /* 0x10: or-ed into sub[8/9/10].flags */
     s32 val[4];    /* 0x1C: targets for sub[4..7] */
-    s32 *tbl;      /* 0x2C: indexed by GameInfo+0x2C */
+    void **tbl;      /* 0x2C: indexed by GameInfo+0x2C */
     s32 flag;  /* tested for zero */
     s32 leader0;  /* GameState.teamLeader[0] */
     s32 leader1;

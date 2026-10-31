@@ -202,8 +202,8 @@ void HubUpdateGateways(void) {
 
     for (i = 0, one = 1, p = HubGateways; i < 12; i++, p++) {
         q = &p->group;
-        if (q[-4] != 0) {
-            o = (s32 *)q[-3];
+        if (p->table != NULL) {
+            o = (s32 *)p->colour_map;
             if (o != NULL) {
                 s32 v = rcossin_tbl[(((GameFrameCount * 0x50) & 0xFFF) - 0x400) & 0xFFF].unk2;
                 o[2] = v * 0x20 >> 12;
@@ -1358,7 +1358,7 @@ void HubInitHero(s32 arg0) {
     HubCreateShadow(arg0);
     o = (u8 *)path_get(2);
     if (o != NULL) {
-        HubHeroRing.radiusMin = o->release;
+        HubHeroRing.radiusMin = (s32)(iptr)o->release;
         HubHeroRing.radiusMax = *(s32 *)&o->entity;
     }
     HubPreMoveHero(arg0);
@@ -2234,7 +2234,7 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
             if (row->live[i] != 0) {
                 prim->tag = (prim->tag & 0xFF000000) | (RenderState.ot[700] & 0xFFFFFF);
                 p = (SVECTOR *)0xFF000000;
-                RenderState.ot[700] = (RenderState.ot[700] & (u32)p) | ((u32)prim & 0xFFFFFF);
+                RenderState.ot[700] = (RenderState.ot[700] & (u32)(iptr)p) | ((u32)(iptr)prim & 0xFFFFFF);
             }
             prim++;
             i++;
@@ -2738,12 +2738,12 @@ void HubSetDrawArea(s16 *a, void *b, s32 c, s32 d) {
     off2 = off + 0x18;
     p = (u32 *)((u8 *)b + off);
     ((HubPTag *)&p[6])->addr = ((HubPTag *)&RenderState.ot[0x136])->addr;
-    ((HubPTag *)&RenderState.ot[0x136])->addr = (u32)FILE_AT(b, off2);
+    ((HubPTag *)&RenderState.ot[0x136])->addr = (u32)(iptr)FILE_AT(b, off2);
     ((HubPTag *)&p[0])->addr = ((HubPTag *)&RenderState.ot[2])->addr;
-    ((HubPTag *)&RenderState.ot[2])->addr = (u32)p;
+    ((HubPTag *)&RenderState.ot[2])->addr = (u32)(iptr)p;
     q = ((u32 *)cdb) - (-c);
     ((HubPTag *)&RenderState.ot[0])->addr = ((HubPTag *)q)->addr;
-    ((HubPTag *)q)->addr = (u32)(RenderState.ot + 0x137);
+    ((HubPTag *)q)->addr = (u32)(iptr)(RenderState.ot + 0x137);
 }
 
 void HubStub(void) {
@@ -2752,7 +2752,7 @@ void HubStub(void) {
 void HubDrawObj(HubRenderObj *obj, void *arg1) {
     s16 sp10[4];
     s16 sp18[4];
-    s32 c;
+    void *c;
     s32 h;
     s32 y;
     s32 d;

@@ -49,10 +49,12 @@ real pointers. The compiler's truncation warnings are the to-do list, and they e
 it, arrays that run on into the next object, about 400 casts to byte pointers. These only work on the PS1's
 layout, and they stop an optimiser being safe, so each becomes a real struct, array or field.
 
-**Files aren't memory.** The game lays structs straight over the files it loads. Self-relative offsets
-(`SELF_REL`, `FILE_AT`) work anywhere, but the 32-bit slots the game fills with pointers can't hold a 64-bit
-one. Those go in a side table or a translation step at load. Mode text holds absolute addresses, which
-are fixed up at load. The memory card keeps its format on disk, so saves stay compatible.
+**Files aren't memory.** The game lays structs straight over the files it loads, and even carves heap block headers out of a
+loaded file's bytes, so those headers stay 0x18 bytes and a file's 4-byte pointer slots stay 4 bytes. Self-relative offsets
+(`SELF_REL`, `FILE_AT`) work anywhere. A slot that needs a pointer is a `ref32`, an offset from the heap arena: the arena is
+static, so every heap and static address the game holds is within 2 GB of it. Mode text's absolute addresses are translated
+when it loads (`modetext.c`), into real records and pointer tables. The memory card keeps its format on disk: `GameState` has no
+pointers, and a compile-time check holds it at the PS1's 0x18C bytes.
 
 **What touches the hardware is small.** Of about 116,000 lines of game C, the drawing commands, VRAM calls and sound
 calls come to a few hundred lines. 171 of the 269 GTE calls and most of the primitive code are in one file,

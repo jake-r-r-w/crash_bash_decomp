@@ -256,7 +256,8 @@ static void NasHeapSetUp(u8 *mem, u32 size) {
 }
 
 void InitNasHeap(s32 arg0) {
-    u32 size = (arg0 + 7) & ~7;
+    /* Twice the PS1's request: extensions hold 8-byte pointers here. */
+    u32 size = (arg0 * 2 + 7) & ~7;
 
     NasHeapBytes = size;
     NasHeapMem = mal_alloc(size, &MainHeap);
@@ -1083,9 +1084,9 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
     }
     c = *s++;
     if (c != 0) {
-        u32 tab = (u32)SysFontLookUp;
+        u8 *tab = (u8 *)SysFontLookUp;
         do {
-            s32 g = *(s16 *)(c * 2 + (FontPage << 9) + tab);
+            s32 g = *(s16 *)(tab + c * 2 + (FontPage << 9));
             if (g != -1) {
                 texture_draw_3d((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], &pos, 0, arg2, arg3);
             }
@@ -1446,7 +1447,7 @@ s16 DoAnimCommand2(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) 
     u32 i;
     const void *const *t;
     s32 vol;
-    s32 (*hooks)[2];
+    void *(*hooks)[2];
 
     ret = 0;
     if (--anim->Aspeed < 0) {
@@ -2501,7 +2502,7 @@ void InitDisplay(void) {
     }
 }
 
-s32 AllocOtBuffers(s32 *arg0) {
+u8 *AllocOtBuffers(s32 *arg0) {
     OtBuf *b;
     u8 *t;
 
@@ -2512,7 +2513,7 @@ s32 AllocOtBuffers(s32 *arg0) {
     b[1].prim = mal_alloc(*arg0 + 0x1800, &MainHeap);
     b[1].end = b[1].prim + *arg0 + 0x1800;
     ScreenRect = NULL;
-    return (s32)b[1].end;
+    return b[1].end;
 }
 
 void ClearScreens(void) {
@@ -4094,7 +4095,7 @@ u8 SysFontFlags[512] = {0};
 s32 FontPage = 0;
 MapPoint MapPoints[32] = {0};
 s32 ContourHeight = 0;
-s32 ACMD[16][2] = {0};
+void *ACMD[16][2] = {0};
 obj_dbase *sysfont_dbase = 0;
 RECT VramRect = { 0, 0, 0x1FF, 0x1FF };
 ModuleEntry *CurrentModule = 0;

@@ -119,7 +119,7 @@ void HeroBecomeAngel(s32 arg0);
 void ProcessHeroes(void);
 void HeroShoot(s32 arg0);
 s32 UpdateHeroVictory(s32 arg0);
-s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg3);
+subengine *UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg3);
 void InitScriptFX(NAS *nas);
 void PlotFallParticles(subengine *sub, MATRIX *m);
 void InitialiseHeroes(void);

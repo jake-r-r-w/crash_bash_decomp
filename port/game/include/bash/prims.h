@@ -70,7 +70,7 @@ void primpool_free(void);
 void eng_render(EXTengine *eng);
 subengine *sub_nth(s32 n, subengine *sub);
 void draw_init(void);
-s32 rel_ptr(s32 *arg0);
+void *rel_ptr(s32 *arg0);
 void draw_model_set_entry(s32 arg0, ModelFile *set, s32 arg2);
 void draw_map_entity(u16 arg0, u8 *arg1, s32 arg2);
 void draw_text_nas(TextNAS *t, MATRIX *arg1, s32 arg2);
@@ -93,7 +93,7 @@ void morph_copy_verts(MeshHeader *arg0, u16 *src, u8 *tab, u16 *dst);
 void *draw_model_entry(MeshHeader *e, s32 arg1);
 s32 *path_get(u32 arg0);
 void draw_flat_rect(u16 *arg0, s32 arg1, u32 arg2);
-void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3);
+void draw_map_object(void *sub, void *arg1, s32 flags, void *arg3);
 MATRIX *gfx_object_matrix(GfxXform *obj);
 s32 subs_alloc_list(subengine * *out_first, subengine * *last, s32 n);
 /* A TGA file's header (the title screens; the Oct 9 prototype's class tga_header), 0x12 bytes,
@@ -187,10 +187,10 @@ static inline s32 *PrimList_Take(PrimList *l) {
         return NULL;
     }
     tail = l->f10;
-    l->fC = (s32 *)*n;
+    l->fC = (s32 *)(iptr)*n;
     if (tail != NULL) {
-        *tail = (s32 *)*n;
-        l->fC = (s32 *)*n;
+        *tail = (s32 *)(iptr)*n;
+        l->fC = (s32 *)(iptr)*n;
         if (*n == 0) {
             l->f8 = tail;
         }
@@ -199,7 +199,7 @@ static inline s32 *PrimList_Take(PrimList *l) {
             l->f8 = NULL;
         }
         l->f4 = *n;
-        l->fC = (s32 *)*n;
+        l->fC = (s32 *)(iptr)*n;
         *n = 0;
     }
     return n;
@@ -217,21 +217,21 @@ static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, P
     if (set->mode == 1) {
         n = list->fC;
         if (n != NULL) {
-            next = (s32 *)*n;
+            next = (s32 *)(iptr)*n;
             list->f10 = (s32 **)n;
             list->fC = next;
-            set = (PrimSet *)n[1];
+            set = (PrimSet *)(iptr)n[1];
         } else {
-            set = (PrimSet *)face_prim_alloc((s32)set, list, pool, (MeshHeader *)faces, flag);
+            set = (PrimSet *)face_prim_alloc((s32)(iptr)set, list, pool, (MeshHeader *)faces, flag);
         }
     } else {
         n = list->fC;
         if (n != NULL) {
-            list->fC = (s32 *)*n;
+            list->fC = (s32 *)(iptr)*n;
             list->f10 = (s32 **)n;
             set = (PrimSet *)(n + 1);
         } else {
-            set = (PrimSet *)primnode_alloc((s32)set, (s32 *)list, (s32)pool, (s32)faces);
+            set = (PrimSet *)primnode_alloc((s32)(iptr)set, (s32 *)list, (s32)(iptr)pool, (s32)(iptr)faces);
         }
     }
     return (FacePrim *)set;

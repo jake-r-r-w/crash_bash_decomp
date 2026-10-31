@@ -525,7 +525,7 @@ s32 CamEdgeIntersectZY(VECTOR *arg0, VECTOR *arg1, s32 arg2) {
     sp18.vz = arg0->vz - 0x3000;
     sp28.vy = arg1->vy - d;
     sp28.vz = arg1->vz - 0x3000;
-    return line_intersect_zy(arg0, &sp18, arg1, &sp28, (VECTOR *)arg2) != 0;
+    return line_intersect_zy(arg0, &sp18, arg1, &sp28, (VECTOR *)(iptr)arg2) != 0;
 }
 
 s32 span_z(SLONG_XYZ *arg0, s32 arg1) {

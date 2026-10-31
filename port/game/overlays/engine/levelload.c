@@ -10,12 +10,12 @@
 u8 *LoadModeOverlay(void) {
     GameState *g;
     file *p;
-    s32 **tab = ModeTextTables;
-    s32 **rp;
+    file ***tab = ModeTextTables;
+    file ***rp;
 
     g = (GameState *)GameInfo;
     rp =&tab[GAME->language];
-    p = (file *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
+    p = (*rp)[ModeTypes[g->mode * 3] - 0x101];
     if (p != NULL) {
         load_file_direct(p, ModeTextLoadAddr);
         ModeTextTranslate(p->size);
@@ -134,8 +134,7 @@ void InitLevelLoad(void) {
         vab_transfer_check();
     }
     InitHeapToRamTop(&MainHeap);
-    start = LoadModeOverlay() + 7;
-    start &= ~7;
+    LoadModeOverlay();
     InitHeapToRamTop(&MainHeap);
     SetupLevelSpecs(&DefaultArenaDef);
     cfg = (EngineCfg *)LevelConfig;
@@ -247,10 +246,10 @@ void load_initial_dbases(void)
     k = ((u8 *) g)[i + 0x50];
     if ((k - 1) < 8)
     {
-      dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]], arg);
+      dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]], (void **)(iptr)arg);
       if (h->flag != 0)
       {
-        dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->flag)[k]], arg);
+        dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->flag)[k]], (void **)(iptr)arg);
       }
     }
     i++;
@@ -1238,7 +1237,7 @@ void *PlaceTextSub(PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
     if ((a1 & 0xC000) == 0x8000) {
         a2 = a2 * 0x280 / ScreenRect->w;
     }
-    p->unk6C = t->f0;
+    p->unk6C = (void *)(iptr)t->f0;
     p->unk70 = a1;
     p->unk76 = a2;
     p->unk72 = a3;
@@ -1304,7 +1303,7 @@ file *ModeTextFilesLang[14] = {  /* ModeTextTables' per-language file list */
     &DatIndex[145], &DatIndex[152], &DatIndex[144], &DatIndex[143], &DatIndex[148],
     &DatIndex[147], &DatIndex[149], &DatIndex[150],
 };
-s32 *ModeTextTables[5] = {
+file **ModeTextTables[5] = {
     (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang,
     (void *)&ModeTextFilesLang,
 };

@@ -3175,7 +3175,7 @@ s32 HeroTestMove(s32 arg0) {
 void DebugNasStatus(void) {
 }
 
-s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg3) {
+subengine *UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg3) {
     volatile s32 t0;
     volatile s32 t1;
     EmitPart *part;
@@ -3308,7 +3308,7 @@ s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg
     t1 = VSync(1);
     t1;
     t0;
-    return st[9];
+    return ((pcontrol *)st)->lastsub;
 }
 
 void ModelCreateShadow(s32 idx) {
@@ -3611,12 +3611,12 @@ void InitScriptFX(NAS *nas)
       {
         goto kill;
       }
-        mal_alloc_owned_low(k->maxparticlecount * 0x28, &t->threadinfo, &MainHeap, 0);
+        mal_alloc_owned_low(k->maxparticlecount * sizeof(EmitPart), &t->threadinfo, &MainHeap, 0);
         if (mal_first_free(0xA, MainHeap.free) == 0)
       {
         goto kill;
       }
-        mal_alloc_owned_low(0x28, &t->threadcontrol, &MainHeap, 0);
+        mal_alloc_owned_low(sizeof(pcontrol), &t->threadcontrol, &MainHeap, 0);
         t->particlesactive = k->particlesperframe;
         ((pcontrol *) t->threadcontrol)->freqcounter = 0;
         j = 1;
@@ -3712,7 +3712,7 @@ void PlotScriptFX(NAS *nas) {
                 if (sd->timer >= sd->totalframes << 8) {
                     state = 1;
                 }
-                sub = (subengine *)UpdateFxEmitter(sd, sub, t, &state);
+                sub = UpdateFxEmitter(sd, sub, t, &state);
                 if (nas->trigger == NULL && state == 2) {
                     j = 0;
                     while (1) {

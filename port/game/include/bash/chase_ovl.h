@@ -321,9 +321,9 @@ static inline NAS *CircleFireCell(s32 x, s32 z) {
     return NULL;
 }
 
-static inline NAS *CircleFireGridCell(s32 *grid, s32 x, s32 z) {
+static inline NAS *CircleFireGridCell(NAS **grid, s32 x, s32 z) {
     if (x >= -0x9FF && x < 0xA00 && z >= -0x9FF) {
-        return (NAS *)grid[CIRCLEFIRE_CELL(x, z)];
+        return grid[CIRCLEFIRE_CELL(x, z)];
     }
     return NULL;
 }

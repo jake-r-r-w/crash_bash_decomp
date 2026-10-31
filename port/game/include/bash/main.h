@@ -545,7 +545,7 @@ typedef struct MusicEntry {
  * (loadlist_push / loadlist_pop, nodes from LoadNodePool). */
 typedef struct LoaderState {
     /* 0x00 */ s32 state;                /* 3 after a reset */
-    /* 0x04 */ s32 flag;  /* tested for zero */
+    /* 0x04 */ void *flag;  /* the buffer being read, or NULL */
     /* 0x08 */ s32 flag2;  /* tested for zero */
     /* 0x0C */ struct LoadNode *head;
     /* 0x10 */ struct LoadNode *tail;
@@ -673,20 +673,20 @@ void loader_unused_a(void);
 void smallnode_free(BlockRef *node);
 void loader_cancel(LoadNode *arg0);
 s32 string_hash(u8 *s);
-s32 load_file_cb(file *arg0, void (*done)(), void *ctx);
+void *load_file_cb(file *arg0, void (*done)(), void *ctx);
 s32 loader_pending(void);
 s32 loader_update(void);
 void mal_compact(_mal_area *arg0);
 mal *mal_first_free(u32 words, mal *blk);
-s32 loader_queue(file *arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
-s32 asload_permanent_callback(file *arg0, void (*done)(), void *ctx);
+void *loader_queue(file *arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
+void *asload_permanent_callback(file *arg0, void (*done)(), void *ctx);
 void loader_unused_b(void);
 void loadnode_free(LoadNode *node);
 struct LoadNode *loadlist_push(LoaderState *ls);
 struct LoadNode *loadlist_head(LoaderState *ls);
 void set_joypad(PadState *pad, u32 buttons);
 void cam_init(camera_info_tag *cam);
-void cam_ramp_override(s32 arg0, s32 arg1);
+void cam_ramp_override(void *arg0, s32 arg1);
 s32 *get_exe_exports(void);
 s32 angle_diff_abs(s32 arg0, s32 arg1);
 s32 angle_diff(s32 arg0, s32 arg1);
@@ -711,7 +711,7 @@ typedef struct SubFx {
 } SubFx;
 
 void fx_free_buffers(subengine *sub);
-s32 fx_alloc_buffers_b(FxDef *def, SubFx *fx);
+void *fx_alloc_buffers_b(FxDef *def, SubFx *fx);
 void quat_to_matrix(SVECTOR *rot, MATRIX *m);
 void rotscale_update(void *arg0);
 PointList *sub_point_list(subengine *sub);
@@ -724,9 +724,9 @@ extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
 typedef struct { s32 v[4]; } Quat;
 extern s32 SfxDistanceCurve[];
 extern s32 SavedSp;
-extern s32 LoadPermanentBuf;
+extern u8 *LoadPermanentBuf;
 extern u8 ExportTable[];
-extern s32 *LangModeTypeTexts[];
+extern void **LangModeTypeTexts[];
 extern s32 SoundCritical;
 extern s32 MusicNext;
 extern s32 MusicCur;
@@ -836,7 +836,7 @@ extern NAS *ContourPlatform;
 extern void *HeadOfMissiles;            /* tail of the HeadOfObjects list */
 extern void *HeadOfUnused;            /* tail of the HeadOfSolids list */
 extern s32 VelocityCalc;
-extern s32 ACMD[16][2];       /* entries 1..15 cleared by ResetNasLists */
+extern void *ACMD[16][2];       /* entries 1..15 cleared by ResetNasLists */
 extern s32 PadCount;
 extern s32 first_joypad;            /* first pad with flag 1 set, or -1 */
 extern s32 PadRunEnd;            /* pads 0..n-1 all have flag 1 */
@@ -1411,17 +1411,17 @@ void *mal_split_ptr(void *ptr, s32 bytes);
 
 void pads_update(void);
 
-s32 asload_chunk_relocatable(file *arg0, s32 arg1, u32 **arg2, s32 arg3);
+void *asload_chunk_relocatable(file *arg0, s32 arg1, u32 **arg2, s32 arg3);
 void *asload_chunk_to_slot(file *arg0, s32 arg1, ref32 *arg2, s32 arg3);
 
 
 LoadNode *loadlist_pop(LoaderState *ls);
 
-s32 load_file_to(file *arg0, u8 *arg1);
+void *load_file_to(file *arg0, u8 *arg1);
 
 mal *mal_next_free_block(mal *blk);
 
-s32 load_file(file *arg0, u8 *arg1);
+void *load_file(file *arg0, u8 *arg1);
 
 mal *mal_split(mal *blk, s32 words);
 
@@ -1524,7 +1524,7 @@ void loadnode_unlink(LoadNode *arg0);
 
 u8 *load_file_permanent(file *arg0);
 
-s32 load_file_to_wait(file *arg0, s32 arg1, s32 arg2);
+u8 *load_file_to_wait(file *arg0, s32 arg1, s32 arg2);
 
 void itoa_div(char *dst, s32 val, s32 div);
 

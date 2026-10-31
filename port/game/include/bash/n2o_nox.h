@@ -49,7 +49,7 @@ typedef struct MineSrc {
 
 typedef struct LaserSub {
     /* 0x00 */ u8 pad00[0x6C];
-    /* 0x6C */ s32 unk6C;
+    /* 0x6C */ void *unk6C;
     /* 0x70 */ u8 pad70[4];
     /* 0x74 */ s16 unk74;
 } LaserSub;
@@ -117,7 +117,7 @@ extern void (*RenderHook)(void);
 
 typedef struct MineModel {
     /* 0x00 */ u8 pad00[0x6C];
-    /* 0x6C */ s32 unk6C;
+    /* 0x6C */ void *unk6C;
     /* 0x70 */ u8 pad70[4];
     /* 0x74 */ s16 unk74;
 } MineModel;

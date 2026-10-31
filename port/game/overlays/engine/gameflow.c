@@ -7,9 +7,9 @@
 
 void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     s32 id;
-    s32 obj;
+    NAS *obj;
 
-    obj = ((s32 *)arg1)[-1];
+    obj = ((NAS **)arg1)[-1];
     id = arg2 != 0 ? arg1->player : -1;
     switch (arg1->state) {
     case 5:
@@ -409,7 +409,8 @@ s32 CountSavedWins(s32 arg0) {
 void UpdateCardMessage(void) {
     subengine *s0;
     subengine *s1;
-    s32 *tab;
+    char **undefined;
+    const char **tab;
 
     s0 = GetEngineSlot(0)->sub;
     s1 = &s0[6];

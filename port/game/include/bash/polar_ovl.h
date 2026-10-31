@@ -236,7 +236,7 @@ void GravityMotionUpdate(NAS *nas, EXTmotion *m);
 
 typedef struct GravityObject {
     /* 0x00 */ u8 pad0[0x58];
-    /* 0x58 */ s32 target;
+    /* 0x58 */ EXTmotion *target;
 } GravityObject;
 
 void PlotGravityObject(GravityObject *obj);

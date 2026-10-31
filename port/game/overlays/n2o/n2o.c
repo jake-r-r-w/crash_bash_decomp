@@ -2541,7 +2541,7 @@ s32 PickN2OPlayer(s32 arg0) {
     return -1;
 }
 
-s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
+s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, void *arg5) {
     N2OPos buf;
     s32 a;
     EXTengine *t;
@@ -2720,7 +2720,7 @@ void N2O_HeroBot(u16 *arg0) {
             if (HeroesAllOut == 0) {
                 n = (N2ONode *)1;
             }
-            if (((s32 (*)(s32, s32, s32, s32, s32, s32))N2OBotCanHit)(3, tgt, r, -0x200, 0x200, (s32)n) != 0) {
+            if (N2OBotCanHit(3, tgt, r, -0x200, 0x200, n) != 0) {
                 ai->TargetPlayer = -1;
                 ai->AIpad |= 0x8000;
             } else if (ai->AItimer1 != 0) {

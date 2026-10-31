@@ -555,7 +555,7 @@ extern s32 RaceEggCount;
 typedef struct DacExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
+    /* 0x10 */ ScriptCursor *unk10;
     /* 0x14 */ u8 pad14[0x18 - 0x14];
     /* 0x18 */ s32 unk18;
     /* 0x1C */ s32 unk1C;
@@ -814,7 +814,7 @@ static inline s32 RaceBoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     return v;
 }
 
-s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
+s32 XZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
 
 /* Spawns the 0x1605 puff at v (RaceUpdateBarrels). */
 static inline void RaceSpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {

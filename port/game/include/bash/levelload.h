@@ -96,7 +96,7 @@ typedef struct PlaceSub {
 } PlaceSub;
 
 
-static inline void PlaceSprite(PlaceSub *s, s32 x, s32 y, s32 img, s32 clut) {
+static inline void PlaceSprite(PlaceSub *s, s32 x, s32 y, void *img, s32 clut) {
     if (s != NULL) {
         s->flags = 0x10008000;
         s->hook = posdst_flash;
@@ -117,7 +117,7 @@ static inline void PlaceTmpl(PlaceSub *s, s32 x, s32 y, s32 z, s32 scale, s32 id
         if ((x & 0xC000) == 0x8000) {
             y = y * 640 / ScreenRect->w;
         }
-        s->unk6C = t->f0;
+        s->unk6C = (void *)(iptr)t->f0;
         s->unk70 = x;
         s->unk76 = y;
         s->unk72 = z;
@@ -140,7 +140,7 @@ EXTengine *GetEngineSlot(s32 arg0);
 void SetupSceneMarks(u8 *arg0);
 
 u8 *LoadModeOverlay(void);
-extern s32 *ModeTextTables[];
+extern file **ModeTextTables[];
 extern file *ModeOverlayFiles[];
 extern u8 *ModeTextLoadAddr;
 extern u8 ModeTextBuffer[];

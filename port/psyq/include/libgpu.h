@@ -91,7 +91,8 @@ typedef struct {
     uint8_t u3, v3; uint16_t pad3;
 } POLY_GT4;
 
-#define setaddr(p, a) (((P_TAG *)(p))->addr = (uint32_t)(a))
+/* Scaffolding: a 64-bit address doesn't fit an ordering table entry. The renderer replaces all of this (ROADMAP-B 6.6). */
+#define setaddr(p, a) (((P_TAG *)(p))->addr = (uint32_t)(uintptr_t)(a))
 #define getaddr(p) ((uint32_t)((P_TAG *)(p))->addr)
 #define setlen(p, n) (((P_TAG *)(p))->len = (uint8_t)(n))
 #define setcode(p, c) (((P_TAG *)(p))->code = (uint8_t)(c))

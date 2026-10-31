@@ -263,7 +263,7 @@ typedef struct ArkenoidEng {
     u8 pad0[offsetof(EXTengine, flags)];
     u32 flags;
     s32 x;
-    u8 pad14[offsetof(EXTengine, XYZ.z) - (offsetof(EXTengine, XYZ.x) + 4)];
+    s32 pad14;
     s32 z;
     u8 pad1C[offsetof(EXTengine, Engine) - (offsetof(EXTengine, XYZ.z) + 4)];
     struct ArkenoidEng *sub;

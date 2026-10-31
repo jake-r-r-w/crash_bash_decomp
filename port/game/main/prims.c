@@ -1660,7 +1660,7 @@ void draw_text_nas(TextNAS *t, MATRIX *arg1, s32 arg2) {
 }
 
 static inline u8 *draw_model_quad_setup(ModelObj *obj, void *arg1, s32 flags, ModelFile *colors, u8 *t) {
-    draw_map_object(obj, arg1, flags, (s32)colors);
+    draw_map_object(obj, arg1, flags, colors);
     return t;
 }
 
@@ -2819,7 +2819,7 @@ void mapenv_place_subs(map_enviroment *env) {
     }
 }
 
-void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
+void draw_map_object(void *sub, void *arg1, s32 flags, void *arg3) {
     MATRIX m;
     VECTOR v;
     MATRIX *rot;
@@ -2891,7 +2891,7 @@ subengine *mapscene_find_sub(s32 i, s32 val) {
     return NULL;
 }
 
-s32 rel_ptr(s32 *arg0) {
+void *rel_ptr(s32 *arg0) {
     s32 v;
 
     v = ((s32 *)(arg0[1] + (s32)arg0))[1];
@@ -2902,7 +2902,7 @@ s32 rel_ptr(s32 *arg0) {
 }
 
 
-extern void draw_map_object(void *a, void *b, s32 c, s32 d);
+extern void draw_map_object(void *sub, void *arg1, s32 flags, void *arg3);
 void draw_map_sub(subengine *sub, MATRIX *arg1, s32 arg2) {
     s32 flags;
     s32 x;

@@ -274,7 +274,7 @@ s32 N2OBotAimA(s32 arg0, N2OPos *from, N2OPos *to, s32 angle);
 
 s32 N2OBotAimB(s32 arg0, N2OPos *from, N2OPos *to, s32 angle);
 
-s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
+s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, void *arg5);
 
 void N2OSpawnSlotMissile(s32 a);
 

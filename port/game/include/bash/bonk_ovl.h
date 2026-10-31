@@ -102,7 +102,7 @@ extern s32 BonkStoolFrames[];
 extern s32 BonkStoolHeights[];
 extern s32 BonkStoolTable[];
 
-int BonkAI_Closest(int a0, int *out);
+int BonkAI_Closest(int a0, void **out);
 extern u16 BonkHeroModels[];
 void BonkHeroFacing(s32 arg0);
 s32 BONK_KeepInBounds(EXTengine *eng);
@@ -168,7 +168,7 @@ void BonkKnockBack(s32 arg0, EXTengine *p, s32 arg2);
 
 void PlotBonkCrate(NAS *nas);
 
-s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2);
+s32 BonkAI_FindClosest(s32 arg0, void **arg1, s32 arg2);
 
 /* Target found by BonkAI_Closest (Bonk_HeroBot reads it). */
 typedef struct BonkHit {
