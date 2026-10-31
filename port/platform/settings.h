@@ -17,6 +17,7 @@ typedef struct Settings {
     int test_stall;    /* a test run: stop a fight with no progress in this many vblanks */
     int test_aim;      /* a test run: bossbot.c plays pad 1 in a boss fight */
     int test_bot;      /* a test run: the game's own AI plays pad 1 */
+    int test_adventure; /* a test run: adventureplayer.c plays the whole Adventure */
     int test_cheats;   /* a test run: cheat flags kept on */
     int boss_beat_at;  /* a test run's vblank to mark the boss beaten at, or 0 */
     int no_save;       /* a test run leaves the player's file alone */

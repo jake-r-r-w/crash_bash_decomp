@@ -1,3 +1,4 @@
+#include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
@@ -466,7 +467,8 @@ void ProcessHeroes(void) {
         if (sub != NULL) {
             sub->flags &= ~0x8000;
         }
-        if (!(GAME->cheats & 0x100) && GAME->heroCpu[id] != 0) {
+        /* an Adventure test's player (--adventure) has the computer's hands, and stays a player */
+        if (!(GAME->cheats & 0x100) && (GAME->heroCpu[id] != 0 || (id == 0 && settings()->test_adventure && GameMode < 0x21 && !(GAME->levelFlags & 0x100)))) {
             ((void (*)(s32))HeroHooks.HeroBot)(id);
         }
         h = &Heroes[id];

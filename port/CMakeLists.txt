@@ -30,7 +30,7 @@ endif()
 
 # The game's C, as it stands: this target is what 6.3 and 6.4 clean up (docs/ROADMAP-B.md).
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS game/main/*.c game/overlays/*.c)
-add_library(game OBJECT ${GAME_SOURCES} tests/bossbot.c)
+add_library(game OBJECT ${GAME_SOURCES} tests/bossbot.c tests/adventureplayer.c)
 target_include_directories(game PUBLIC psyq/include game/include)
 target_compile_options(game PRIVATE
   # GNU C for the empty-parens hooks, until they have prototypes (6.3); C23 would read them as (void).

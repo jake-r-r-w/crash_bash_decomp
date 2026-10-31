@@ -69,11 +69,19 @@ ROADMAP-B.md, Part 6:
    `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only for now, at the user's request: Linux
    stays in the plan, but isn't built. 6.7, finishing it, has saving, any resolution, analog sticks and rumble written; the user has yet to feel a real controller. What's left is a first
    release. Whether it plays the same as retail is checked by the user playing it.
+   Next on it: finish the Adventure test (Open leads), then the user's controller, then the first release, which needs the user's OK to publish.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
+- **Port, the Adventure test isn't finished:** `--adventure` (`port/tests/adventureplayer.c`) walks the warp room's ring and spokes and goes through the next door the game's rules open. Its first version, with
+  `heroCpu[0]` on until the win, won 2 trophies from a new game with no cheats and came back to the hub each time, then spent 110,000 vblanks in Pogo Painter without winning it. That version showed the "force
+  victory" bar, as the game then saw no human left. The current one keeps the hero a player and runs `HeroBot` for it from `heroes.c`; it builds and reaches Crashball, but no round has been seen to finish on it (its
+  run was stopped early), so check that first: `round:` lines in the log say who won each round. Still to do: a player strong enough to win (or a limit on tries), other rooms through the warp door, the other
+  awards (only trophies and bosses are picked so far), the save computer and a reload, the ending (`won[4][31]` and exit flag 1 on leaving Oxide), and a `playtest.mjs adventure` command.
+- **Port, the boss player needs NO HARM HERO:** with no cheats only the Bearminator wins in the time `playtest.mjs bosses` allows; Papu, Fox and Oxide (15 falls, in his asteroid phase) don't. It's the player's dodging, so
+  `bosses` keeps `--cheats 1`. The user would rather have all cheats off.
 
 - **Port, not yet checked by hand or unwritten:** Adventure after a game's first win (back to the hub from a game is untested), level unlocks and
   Mono. 2D prims have no owners, so they step at 30 fps at higher rates. Scrolling past 10 rows in the launcher
@@ -460,6 +468,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-01: The Adventure test started (Open leads). Found by the user watching: NO HARM HERO stops every player's score in the ball games, not just the hero's, so a match never ends; and Cortex's and Brio's charge left its
+  flames behind, as `PlotBrioPack` read its owner from an unset variable. The compiler's `-Wuninitialized -Wsometimes-uninitialized` now finds none in `port/game` (a one-shot scan; the build's own flags don't ask for them).
+  A trophy only counts if `heroCpu` of the winner is 0.
 - 2026-10-31: The port's play tests moved out of `scratch/` to `port/tests/`: `playtest.mjs bosses|modes|menu|shots`, with the boss player as `port/tests/bossbot.c` (PORT.md, Running it).
 - 2026-10-31: Oxide beaten by real play: `play_oxide` reads each ball's path, gets beside where it'll cross and kicks it to the side he isn't. The old button pattern never kicked, so the ball phase was won by
   bounces. His first phase has no bar and no damage in the matched code either (`InitBossHealthIcons` is only called from `N2OInitBoss`, and `PlotLaserShoot` never lowers his health): it ends when his path does.

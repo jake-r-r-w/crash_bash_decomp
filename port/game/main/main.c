@@ -157,6 +157,7 @@ int printf(const char *, ...);
 extern BossRecord BossState;
 s32 CheatHeroHealth(void);
 void BossBotUpdate(void);
+void AdventurePlayerUpdate(void);
 void CheatFightLog(void);
 s32 CheatFightProgress(void);
 void platform_stalled(void);
@@ -197,7 +198,9 @@ static void test_run_update(void) {
     if (settings()->test_bot) {
         GAME->heroCpu[0] = 1;
     }
-    if (settings()->test_aim && (GAME->levelFlags & 0x100)) {
+    if (settings()->test_adventure) {
+        AdventurePlayerUpdate();
+    } else if (settings()->test_aim && (GAME->levelFlags & 0x100)) {
         BossBotUpdate();
     }
     GAME->cheats |= settings()->test_cheats;
