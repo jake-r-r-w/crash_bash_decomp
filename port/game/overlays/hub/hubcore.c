@@ -2662,11 +2662,14 @@ void HubProjectObj(HubRenderObj *obj, s16 *out) {
     s16 *p;
 
     m = (u8 *)map_entity_address(obj->entity, obj->sub->data);
-    off = ((MeshHeader *)m)->verts;
     out[0] = 0x7FFF;
     out[1] = 0x7FFF;
     out[2] = -0x8000;
     out[3] = -0x8000;
+    if (m == NULL) {
+        return;
+    }
+    off = ((MeshHeader *)m)->verts;
     bb = (s16 *)(m + (off + 0x10));
     p = xy;
     v[0].vx = bb[0];
@@ -2733,7 +2736,7 @@ void HubDrawObj(HubRenderObj *obj, void *arg1) {
         obj->unk68 = -0x170;
         HubProjectObj(obj, box);
         bottom = box[1] + (HubDoorFade * (box[3] - box[1])) / 4096;
-        if (bottom > 0) {
+        if (box[1] <= box[3] && bottom > 0) {
             draw_clipped_begin(0x400, 0x200, bottom);
             draw_object_model(obj->entity, (u8 *)c, obj->flags, obj);
             draw_clipped_end();

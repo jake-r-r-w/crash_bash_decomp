@@ -754,7 +754,7 @@ void *mal_trim_front(void *base, s32 offset, _mal_area *arg2) {
     nb->ticks = blk->ticks;
     owner = MAL_OWNER(nb);
     if (owner != (void **)-1) {
-        *owner = nb + 1;
+        MAL_STORE_OWNER(nb, nb + 1);
     }
     sz = blk->size - 6;
     sz -= words;
@@ -855,13 +855,24 @@ void mal_set_owner(void *p, void **owner) {
     mal *b;
 
     b = (mal *)p - 1;
-    old = MAL_OWNER(b);
     if (!MAL_HAS_NO_OWNER(b)) {
-        *old = NULL;
+        MAL_STORE_OWNER(b, NULL);
     }
     ((mal *)p - 1)->flags = 0;
     b->owner = ref_of(owner);
     *owner = p;
+}
+
+/* The same for an owner that's a slot in a file, 4 bytes: a pointer stored there would run over what's next to it. */
+void mal_set_ref_owner(void *p, ref32 *owner) {
+    mal *b = (mal *)p - 1;
+
+    if (!MAL_HAS_NO_OWNER(b)) {
+        MAL_STORE_OWNER(b, NULL);
+    }
+    b->flags = MAL_OWNER_IS_REF;
+    b->owner = ref_of(owner);
+    *owner = ref_of(p);
 }
 
 s16 mal_get_flags(void *p) {
@@ -1493,9 +1504,7 @@ s32 loader_update(void) {
                 node->fn(buf, node->arg);
             } else {
                 if (node->mode == 3) {
-                    *(ref32 *)node->arg = ref_of(buf);
-                    mal_set_owner(buf, (void **)node->arg);
-                    ((mal *)buf - 1)->flags |= MAL_OWNER_IS_REF;
+                    mal_set_ref_owner(buf, (ref32 *)node->arg);
                 } else if (node->mode == 1) {
                     *(u8 **)node->arg = buf;
                     mal_set_owner(buf, (u8 **)node->arg);

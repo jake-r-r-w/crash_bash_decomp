@@ -661,6 +661,7 @@ void mal_print_free(void);
 s32 mal_is_unowned(void *p);
 void mal_disown(void *p);
 void mal_set_owner(void *p, void **owner);
+void mal_set_ref_owner(void *p, ref32 *owner);
 s16 mal_get_flags(void *p);
 u8 *mal_alloc(s32 arg0, _mal_area *arg1);
 u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1);
