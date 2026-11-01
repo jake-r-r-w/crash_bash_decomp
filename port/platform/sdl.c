@@ -37,11 +37,33 @@ void *host_window(void) {
 }
 
 /* A test window's slot in a grid on the screen */
+/* The monitor for the window: a test run's out of the way on a second one, if there is one. */
+static SDL_DisplayID window_display(void) {
+    if (settings()->no_save) {
+        SDL_DisplayID primary = SDL_GetPrimaryDisplay();
+        int count = 0, i;
+        SDL_DisplayID *ids = SDL_GetDisplays(&count);
+        SDL_DisplayID other = 0;
+
+        for (i = 0; ids != NULL && i < count; i++) {
+            if (ids[i] != primary) {
+                other = ids[i];
+                break;
+            }
+        }
+        SDL_free(ids);
+        if (other != 0) {
+            return other;
+        }
+    }
+    return SDL_GetDisplayForWindow(Window);
+}
+
 static void place_tile(int tile, int tiles) {
     SDL_Rect area;
     int cols = 1, rows, w, h;
 
-    if (!SDL_GetDisplayUsableBounds(SDL_GetDisplayForWindow(Window), &area)) {
+    if (!SDL_GetDisplayUsableBounds(window_display(), &area)) {
         return;
     }
     while (cols * cols < tiles) {
@@ -97,7 +119,7 @@ static void centre_window(void) {
     SDL_Rect usable;
     int w, h, top = 0;
 
-    if (!SDL_GetDisplayUsableBounds(SDL_GetDisplayForWindow(Window), &usable)) {
+    if (!SDL_GetDisplayUsableBounds(window_display(), &usable)) {
         return;
     }
     SDL_GetWindowSize(Window, &w, &h);

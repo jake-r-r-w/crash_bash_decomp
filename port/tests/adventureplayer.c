@@ -9,6 +9,7 @@
 #include "bash/hub.h"
 #include "bash/hub_ovl.h"
 #include "bash/aiskill.h"
+#include "bash/spin_ovl.h"
 
 void platform_bot_buttons(int buttons);
 void platform_finish(int code);
@@ -33,6 +34,9 @@ void BossBotUpdate(void);
 #define MAX_SKILL 0x20
 #define CHOICES 5
 #define GIVE_UP 3
+#define RING_DING 27
+#define POGO_PADLOCK 13
+#define BALLOON_BLACK 12
 
 static s32 Ticks;
 static s32 InRoom;
@@ -214,8 +218,8 @@ static void log_round(void) {
         if (GAME->winner[0] == 0 || GAME->adventure.roundPoints[1] >= 3 || GAME->adventure.roundPoints[2] >= 3 || GAME->adventure.roundPoints[3] >= 3) {
             Losses++;
         }
-        printf("round: vblank %d mode %d winner %d points %d %d %d %d\n", platform_vblanks(), GameMode, GAME->winner[0], GAME->adventure.roundPoints[0],
-               GAME->adventure.roundPoints[1], GAME->adventure.roundPoints[2], GAME->adventure.roundPoints[3]);
+        printf("round: vblank %d mode %d winner %d points %d %d %d %d scores %d %d %d %d\n", platform_vblanks(), GameMode, GAME->winner[0], GAME->adventure.roundPoints[0],
+               GAME->adventure.roundPoints[1], GAME->adventure.roundPoints[2], GAME->adventure.roundPoints[3], Heroes[0].hero_score, Heroes[1].hero_score, Heroes[2].hero_score, Heroes[3].hero_score);
     }
     last = now;
 }
@@ -242,14 +246,21 @@ void AdventurePlayerUpdate(void) {
         BossBotUpdate();
         return;
     }
-    /* a game: the computer has the pad (heroes.c). It, the titles, a story or a menu all wait for a button at the end */
-    GAME->heroCpu[0] = 0;
-    if (GameMode < ROOM_FIRST) {
+    /* a game: the computer has the pad (heroes.c). It, the titles, a story or a menu all wait for a button at the end. These two deal
+       out what's going by who's a player, and he can't win on the computer's hands against that: he counts as the computer's till the win
+       comes, when it has to be a player's to count. */
+    GAME->heroCpu[0] = (GameMode == RING_DING || GameMode == POGO_PADLOCK) && (GAME->exitFlags & 1) == 0;
+    if (GameMode < ROOM_FIRST && GameMode != RING_DING && GameMode != POGO_PADLOCK) {
         AiPlayerSkill[0].level = MAX_SKILL;
     }
     /* the fail screen: enough goes at this one, back to the warp room for something else */
     if ((GAME->exitFlags & 1) && Losses >= GIVE_UP && GameMode < ROOM_FIRST) {
         platform_bot_buttons((Ticks & 15) != 0 ? 0 : PauseChoice == 1 ? BTN_CROSS : BTN_DOWN);
+        return;
+    }
+    /* in play the computer has the pad, and Cross is a game's jump or flip: the taps are for the screens either side */
+    if (GameMode < ROOM_FIRST && GAME->exitFlags == 0 && !(GAME->pause & 0x04000000)) {
+        platform_bot_buttons(0);
         return;
     }
     platform_bot_buttons((Ticks & 31) < 3 ? BTN_CROSS : 0);

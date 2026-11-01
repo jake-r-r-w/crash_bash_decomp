@@ -1136,7 +1136,8 @@ s32 PapuPickSpawnPoint(PapuPos *arg0) {
         dz += Random(r);
         score = dx * dx + dz * dz;
         for (j = 0; j < 4; j++) {
-            if (!(Heroes[i].hero_status & 0xFA00)) {
+            /* the original's i reaches a fifth hero, past the array: the PS1 read on regardless */
+            if (i < 4 && !(Heroes[i].hero_status & 0xFA00)) {
                 EXTengine *e = Heroes[i].hero_eng;
                 dx = PapuSpawnPoints[i].x - e->XYZ.x;
                 dz = PapuSpawnPoints[i].x - e->XYZ.z;

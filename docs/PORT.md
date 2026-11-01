@@ -120,7 +120,7 @@ Keys: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Q 
 The menu is PLAY, SETTINGS and QUIT, with the settings in categories; a new setting is a row in its category's table and a case in
 `change_setting` and `show_value`. The main menu's EXIT comes back to it.
 
-For testing, any run with `--frames N` ignores the saved settings and skips the menu:
+For testing, any run with `--frames N` ignores the saved settings and skips the menu, and its window opens on a second monitor if there is one:
 
 | Option | What it does |
 |---|---|
