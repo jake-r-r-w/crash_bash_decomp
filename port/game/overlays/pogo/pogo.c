@@ -3296,7 +3296,7 @@ void PogoPowerups_Poll(void) {
 bool Pickup_IsClaimable(s32 arg0, s32 arg1, s32 arg2) {
     PogoSquare *c;
     PogoSquare *base;
-    HeroInfo *h;
+    NAS *h;
     s32 lock;
 
     if ((u32)arg1 < 8 && (u32)arg2 < 8) {
@@ -3309,8 +3309,8 @@ bool Pickup_IsClaimable(s32 arg0, s32 arg1, s32 arg2) {
         if (h == NULL) {
             return 0;
         }
-        lock = h->hero_pu_lock;
-        if (h->hero_pu_action == 10) {
+        lock = h->UserInfo.status;
+        if (h->UserInfo.flags == 10) {
             if (lock < 3) {
                 return 0;
             }
@@ -3329,7 +3329,7 @@ ok:
 bool Pickup_IsClaimableByAI(s32 arg0, s32 arg1, s32 arg2) {
     PogoSquare *c;
     PogoSquare *base;
-    HeroInfo *h;
+    NAS *h;
     s32 action;
     s32 lock;
     s32 t;
@@ -3354,9 +3354,9 @@ bool Pickup_IsClaimableByAI(s32 arg0, s32 arg1, s32 arg2) {
     }
     h = c->pickup;
     if (h != NULL) {
-        action = h->hero_pu_action;
-        lock = h->hero_pu_lock;
-        t = *(s32 *)&h->hero_weapon_timer;
+        action = h->UserInfo.flags;
+        lock = h->UserInfo.status;
+        t = h->UserInfo.user2;
         if (action == 11) {
             return 0;
         }
@@ -3395,7 +3395,7 @@ void CreatePowerupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     if (nas == NULL) {
         return;
     }
-    c->pickup = (HeroInfo *)nas;
+    c->pickup = nas;
     e = nas->Engine;
     if (e != NULL) {
         nas->UserInfo.flags = arg2;
@@ -3445,7 +3445,7 @@ void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     if (nas == NULL) {
         return;
     }
-    c->pickup = (HeroInfo *)nas;
+    c->pickup = nas;
     e = nas->Engine;
     nas->UserInfo.flags = arg2;
     if (e != NULL) {
@@ -3887,7 +3887,7 @@ void Plot_PogoBanker(NAS *nas) {
             PogoSquare *cb = PogoGrid[0];
             c = (PogoSquare *)((u8 *)cb + z * sizeof(PogoSquare) + x * sizeof(PogoGrid[0]));
             pos = c->sub;
-            c->pickup = (HeroInfo *)nas;
+            c->pickup = nas;
             if (pos != NULL) {
                 eng->XYZ.x = pos->x;
                 eng->XYZ.y = World_floor_level;
@@ -3978,7 +3978,7 @@ void Plot_PogoMushroom(NAS *nas) {
         if (SquareIsFreeForMushroom(cx, cz) != 0) {
             PogoSquare *cb = PogoGrid[0];
             c = (PogoSquare *)((u8 *)cb + cz * sizeof(PogoSquare) + cx * sizeof(PogoGrid[0]));
-            c->pickup = (HeroInfo *)nas;
+            c->pickup = nas;
             if (c->sub != NULL) {
                 eng->xform.scale.vx = 0x1000;
                 eng->xform.scale.vz = 0x1000;
@@ -4009,7 +4009,7 @@ void Plot_PogoMushroom(NAS *nas) {
     case 5:
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                if (PogoGrid[i][j].pickup == (HeroInfo *)nas) {
+                if (PogoGrid[i][j].pickup == nas) {
                     PogoGrid[i][j].pickup = NULL;
                 }
             }
@@ -5101,7 +5101,7 @@ void PogoAI_MoveTowardsTarget(u32 hero) {
 
 bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags) {
     PogoSquare *p;
-    HeroInfo *h;
+    NAS *h;
     GameState *g;
     u16 t;
     u16 a;
@@ -5134,7 +5134,7 @@ bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flag
     }
     h = p->pickup;
     if (h != NULL) {
-        a = h->hero_pu_action;
+        a = h->UserInfo.flags;
         if (a == 0xB) {
             return 0;
         }
@@ -5219,13 +5219,13 @@ void PogoAI_ScanForClosestPickup(u32 arg0, s32 *arg1, s32 *arg2) {
                 break;
             }
             if (Pickup_IsClaimableByAI(arg0, i, j) != 0) {
-                HeroInfo *h;
+                NAS *h;
                 c = (PogoSquare *)((u8 *)PogoGrid + j * sizeof(PogoSquare) + i * sizeof(PogoGrid[0]));
                 h = c->pickup;
                 ok = 0;
                 if (h != NULL) {
                     do {
-                        ok = PogoPlay[arg0].status < h->hero_pu_action;
+                        ok = PogoPlay[arg0].status < h->UserInfo.flags;
                     } while (0);
                 } else if ((u16)c->mode != 7 || PogoPlay[arg0].status < 9) {
                     ok = 1;
@@ -6734,9 +6734,9 @@ void Player_SnapToTile(u32 arg0) {
 
 bool SquareContainsMushroom(s32 arg0, s32 arg1) {
     PogoSquare *base = PogoGrid[0];
-    HeroInfo *hero = ((PogoSquare *)((u8 *)base + arg0 * sizeof(PogoGrid[0]) + arg1 * sizeof(PogoSquare)))->pickup;
+    NAS *hero = ((PogoSquare *)((u8 *)base + arg0 * sizeof(PogoGrid[0]) + arg1 * sizeof(PogoSquare)))->pickup;
 
-    if (hero != NULL && hero->hero_pu_action == 0xB) {
+    if (hero != NULL && hero->UserInfo.flags == 0xB) {
         return 1;
     }
     return 0;
