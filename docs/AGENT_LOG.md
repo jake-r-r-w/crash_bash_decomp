@@ -67,9 +67,9 @@ ROADMAP-B.md, Part 6:
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. **The PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
    `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only for now, at the user's request: Linux
-   stays in the plan, but isn't built. 6.7, finishing it, has saving, any resolution, analog sticks and rumble written; the user has yet to feel a real controller. What's left is a first
+   stays in the plan, but isn't built. 6.7, finishing it, has saving, any resolution, analog sticks and rumble written, and the user has tried a real controller and it was fine (2026-11-01). What's left is a first
    release. Whether it plays the same as retail is checked by the user playing it.
-   The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). Next on it: the user's controller, then the first release, which needs the user's OK to publish.
+   The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. Next on it: the first release, which needs the user's OK to publish.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -464,6 +464,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-01: Play testing is done, the user says, and the controller was fine when the user tried it.
 - 2026-11-01: The Adventure test goes to 200% (Open leads, for the handicap it takes). Wins now need a player for each game, and looking for why one lost found real port bugs, all pointer-size views: Pogo's pickups were read through HeroInfo, so a player's claim on a pickup or banker read the wrong bytes (`-Wincompatible-pointer-types`, which the build turns off, finds this kind: scan with it after a change like this); `CHASE_KeepInBounds` took an engine as `s32 *`, so Keg Kaboom's arena edge wrote over a hero's link, and only for some load addresses, so a crash that comes and goes between copies of an exe can be this; Dash's dive splash, Dante's Dac; `KillNAS` now lets go of what a hero's holding. A relic is three round wins in a row: a loss resets it. On Windows `_IOLBF` is really full buffering, so a crash's handler flushes stdout, or the log's end is lost.
 - 2026-11-01: The Adventure test passes, no cheats, all four bosses by real play. Oxide's asteroid run: each tick `play_nox` tries nine ways of steering by the flight's own rules against what's ahead and takes what costs least. Ring Ding: `ring_play` as a real player; the computer's hands pick balloons at random. Crashes it found, all null or stale accesses a PS1 shrugs off: Path objects overrunning on level close, Polar's force-victory lights and bomb, Race's missile owner, Papu's spawn point past its array, a hero left holding a destroyed crate (the original clears `player` before the release that needs it; found with a hardware watchpoint), and a retry from Oxide's ball game before `hero_move` exists. Also images leaking until the 16384 limit over a long game. `--draw-every N` runs about 260x normal speed.
 - 2026-11-01: The Adventure test started (Open leads). Found by the user watching: NO HARM HERO stops every player's score in the ball games, not just the hero's, so a match never ends; and Cortex's and Brio's charge left its
