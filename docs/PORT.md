@@ -76,7 +76,7 @@ and the same integer rules as the PS1.
 
 **Drawing.** The port doesn't write PS1 drawing commands. The game calls `bash/draw.h` directly (`main/draw.c`), which sends vertices to the
 GPU with real 3D transforms, depth and perspective-correct textures. A place in the frame's order is just a number (a layer), and a model keeps
-its faces' look as plain `DrawFace` records. Textures go from the game's indexed files to
+its faces' look as plain `DrawFace` records. Widescreen leaves the game's own 512-wide screen and logic alone: the renderer shows more past each side of it (`gfx_view_extra`), and the game's culling (`clipX0`, `clipX1`) and the player panel (`HudSpread`) know about it. Anti-aliasing, filtering and widescreen are settings, off by default, and with them off the frames are what they always were. Textures go from the game's indexed files to
 GPU textures at load, and palettes and animated or scrolling textures use GPU resources, not a VRAM allocator. Blend
 modes, fades and draw order are kept, so it looks like the game, sharper. The few effects that draw into VRAM
 become render targets.
@@ -131,6 +131,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | Option | What it does |
 |---|---|
 | `--image FILE` | copy the game's data from this disc image first, to `--data`'s path if it's given, and otherwise the user's folder |
+| `--antialias N`, `--smooth`, `--widescreen` | those settings, for this run |
 | `--frames N` | stop after N vblanks |
 | `--skip-intro`, `--skip-loading` | the menu's two skips, for this run |
 | `--fps 30\|60\|120` | the frame rate, for this run |

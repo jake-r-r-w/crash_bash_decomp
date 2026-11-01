@@ -1628,7 +1628,7 @@ s32 bbox_visible(void *arg0) {
             cam = gs->cam;
             d = sz * 3 << 10;
             e = r * cam->xform.scale.vx * cam->dist / d;
-            if (c.vx + e < 0 || gs->clipX1 < c.vx - e) {
+            if (c.vx + e < gs->clipX0 || gs->clipX1 < c.vx - e) {
             culled:
                 return 0;
             }
@@ -1644,7 +1644,7 @@ s32 bbox_visible(void *arg0) {
     project_xyz(in, &sxy[0], &sz);
     in->vx = box->max[0];
     if (sz > 0) {
-        if ((u16)sxy[0].vx < (u16)RenderState.clipX1 && (u16)sxy[0].vy < (u16)RenderState.clipY1) {
+        if (sxy[0].vx >= RenderState.clipX0 && sxy[0].vx < RenderState.clipX1 && (u16)sxy[0].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1654,7 +1654,7 @@ s32 bbox_visible(void *arg0) {
     in->vx = box->min[0];
     in->vy = box->max[1];
     if (sz > 0) {
-        if ((u16)sxy[1].vx < (u16)RenderState.clipX1 && (u16)sxy[1].vy < (u16)RenderState.clipY1) {
+        if (sxy[1].vx >= RenderState.clipX0 && sxy[1].vx < RenderState.clipX1 && (u16)sxy[1].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1663,7 +1663,7 @@ s32 bbox_visible(void *arg0) {
     project_xyz(in, &sxy[2], &sz);
     in->vx = box->max[0];
     if (sz > 0) {
-        if ((u16)sxy[2].vx < (u16)RenderState.clipX1 && (u16)sxy[2].vy < (u16)RenderState.clipY1) {
+        if (sxy[2].vx >= RenderState.clipX0 && sxy[2].vx < RenderState.clipX1 && (u16)sxy[2].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1674,7 +1674,7 @@ s32 bbox_visible(void *arg0) {
     in->vy = box->min[1];
     in->vz = box->max[2];
     if (sz > 0) {
-        if ((u16)sxy[3].vx < (u16)RenderState.clipX1 && (u16)sxy[3].vy < (u16)RenderState.clipY1) {
+        if (sxy[3].vx >= RenderState.clipX0 && sxy[3].vx < RenderState.clipX1 && (u16)sxy[3].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1683,7 +1683,7 @@ s32 bbox_visible(void *arg0) {
     project_xyz(in, &sxy[4], &sz);
     in->vx = box->max[0];
     if (sz > 0) {
-        if ((u16)sxy[4].vx < (u16)RenderState.clipX1 && (u16)sxy[4].vy < (u16)RenderState.clipY1) {
+        if (sxy[4].vx >= RenderState.clipX0 && sxy[4].vx < RenderState.clipX1 && (u16)sxy[4].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1693,7 +1693,7 @@ s32 bbox_visible(void *arg0) {
     in->vx = box->min[0];
     in->vy = box->max[1];
     if (sz > 0) {
-        if ((u16)sxy[5].vx < (u16)RenderState.clipX1 && (u16)sxy[5].vy < (u16)RenderState.clipY1) {
+        if (sxy[5].vx >= RenderState.clipX0 && sxy[5].vx < RenderState.clipX1 && (u16)sxy[5].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1702,7 +1702,7 @@ s32 bbox_visible(void *arg0) {
     project_xyz(in, &sxy[6], &sz);
     in->vx = box->max[0];
     if (sz > 0) {
-        if ((u16)sxy[6].vx < (u16)RenderState.clipX1 && (u16)sxy[6].vy < (u16)RenderState.clipY1) {
+        if (sxy[6].vx >= RenderState.clipX0 && sxy[6].vx < RenderState.clipX1 && (u16)sxy[6].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1710,7 +1710,7 @@ s32 bbox_visible(void *arg0) {
     }
     project_xyz(in, &sxy[7], &sz);
     if (sz > 0) {
-        if ((u16)sxy[7].vx < (u16)RenderState.clipX1 && (u16)sxy[7].vy < (u16)RenderState.clipY1) {
+        if (sxy[7].vx >= RenderState.clipX0 && sxy[7].vx < RenderState.clipX1 && (u16)sxy[7].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1725,8 +1725,8 @@ s32 bbox_visible(void *arg0) {
         sxy[6].vx > RenderState.clipX1 && sxy[7].vx > RenderState.clipX1) {
         goto culled;
     }
-    if (sxy[0].vx < 0 && sxy[1].vx < 0 && sxy[2].vx < 0 && sxy[3].vx < 0 &&
-        sxy[4].vx < 0 && sxy[5].vx < 0 && sxy[6].vx < 0 && sxy[7].vx < 0) {
+    if (sxy[0].vx < RenderState.clipX0 && sxy[1].vx < RenderState.clipX0 && sxy[2].vx < RenderState.clipX0 && sxy[3].vx < RenderState.clipX0 &&
+        sxy[4].vx < RenderState.clipX0 && sxy[5].vx < RenderState.clipX0 && sxy[6].vx < RenderState.clipX0 && sxy[7].vx < RenderState.clipX0) {
         goto culled;
     }
     if (sxy[0].vy > RenderState.clipY1 && sxy[1].vy > RenderState.clipY1 &&
@@ -1763,7 +1763,7 @@ s32 tri_visible(SVECTOR *v) {
     minY = sxy[0][1];
     maxY = minY;
     if (sz[0] != 0) {
-        if ((u16)sxy[0][0] < (u16)RenderState.clipX1 && (u16)sxy[0][1] < (u16)RenderState.clipY1) {
+        if (sxy[0][0] >= RenderState.clipX0 && sxy[0][0] < RenderState.clipX1 && (u16)sxy[0][1] < (u16)RenderState.clipY1) {
             if (behind) return 2;
             inside |= 1;
         }
@@ -1773,7 +1773,7 @@ s32 tri_visible(SVECTOR *v) {
         if (inside) return 2;
     }
     if (sz[1] != 0) {
-        if ((u16)sxy[1][0] < (u16)RenderState.clipX1 && (u16)sxy[1][1] < (u16)RenderState.clipY1) {
+        if (sxy[1][0] >= RenderState.clipX0 && sxy[1][0] < RenderState.clipX1 && (u16)sxy[1][1] < (u16)RenderState.clipY1) {
             if (behind) return 2;
             inside |= 2;
         }
@@ -1787,7 +1787,7 @@ s32 tri_visible(SVECTOR *v) {
     if (sxy[1][1] < minY) minY = sxy[1][1];
     if (maxY < sxy[1][1]) maxY = sxy[1][1];
     if (sz[2] != 0) {
-        if ((u16)sxy[2][0] < (u16)RenderState.clipX1 && (u16)sxy[2][1] < (u16)RenderState.clipY1) {
+        if (sxy[2][0] >= RenderState.clipX0 && sxy[2][0] < RenderState.clipX1 && (u16)sxy[2][1] < (u16)RenderState.clipY1) {
             if (behind) return 2;
             inside |= 4;
         }
@@ -1802,7 +1802,7 @@ s32 tri_visible(SVECTOR *v) {
     project_three(v, sxy[6], (u32 *)&sz[6]);
 #define POINT(i)                                                                                      \
     if (sz[i] != 0) {                                                                                 \
-        if ((u16)sxy[i][0] < (u16)RenderState.clipX1 && (u16)sxy[i][1] < (u16)RenderState.clipY1) {    \
+        if (sxy[i][0] >= RenderState.clipX0 && sxy[i][0] < RenderState.clipX1 && (u16)sxy[i][1] < (u16)RenderState.clipY1) {    \
             if (behind) return 2;                                                                     \
             inside |= 1 << i;                                                                         \
             if (farZ < sz[i]) far |= 1 << i;                                                          \
@@ -1827,8 +1827,8 @@ s32 tri_visible(SVECTOR *v) {
     } else if (inside == 0x7F) {
         return 1;
     }
-    if (sxy[0][0] < 0 && sxy[1][0] < 0 && sxy[2][0] < 0 && sxy[3][0] < 0 && sxy[4][0] < 0 &&
-        sxy[5][0] < 0 && sxy[6][0] < 0 && sxy[7][0] < 0) {
+    if (sxy[0][0] < RenderState.clipX0 && sxy[1][0] < RenderState.clipX0 && sxy[2][0] < RenderState.clipX0 && sxy[3][0] < RenderState.clipX0 && sxy[4][0] < RenderState.clipX0 &&
+        sxy[5][0] < RenderState.clipX0 && sxy[6][0] < RenderState.clipX0 && sxy[7][0] < RenderState.clipX0) {
         return 0;
     }
     clip = RenderState.clipX1;

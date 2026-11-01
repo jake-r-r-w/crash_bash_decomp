@@ -385,6 +385,13 @@ void UpdateLevel(void) {
     UpdateCamera(0);
 }
 
+/* A wider view: what's on each side of the 640-wide panel goes out towards that side's edge. */
+static s32 HudSpread(s32 x) {
+    s32 extra = gfx_view_extra() * 640 / ScreenRect->w;
+
+    return x < 320 ? -extra : extra;
+}
+
 void DrawLevelHud(void) {
     s32 show;
     s32 i;
@@ -470,12 +477,23 @@ void DrawLevelHud(void) {
         eng_render(countdown_eng);
     }
     if (PanelCtrl & 0x1000) {
+        s32 spread = HudSpread(BigScore1.XYZ.x), spread2 = HudSpread(BigScore2.XYZ.x);
+
+        BigScore1.XYZ.x += spread;
+        BigScore2.XYZ.x += spread2;
         eng_render(&BigScore1);
         eng_render(&BigScore2);
+        BigScore1.XYZ.x -= spread;
+        BigScore2.XYZ.x -= spread2;
     }
     i = 0;
     do {
         EXTengine *e = HUDPLAYERS[i];
+        s32 spread = e != NULL ? HudSpread(e->XYZ.x) : 0;
+
+        if (e != NULL) {
+            e->XYZ.x += spread; /* just for the drawing: it's back at the end of this */
+        }
         if (e != NULL) {
             subengine *s = (subengine *)((u8 *)&IconParts[0][1] + i * sizeof(IconParts[0]));
             u32 v = s->flags & ~0x8000;
@@ -530,6 +548,9 @@ void DrawLevelHud(void) {
             pos.f.y = HUDPLAYERS[i]->XYZ.y + Score[i].Yoffs;
             texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                           pos.w, 0, c0, c0, c1, c1);
+        }
+        if (e != NULL) {
+            e->XYZ.x -= spread;
         }
         i++;
     } while (i < 4);

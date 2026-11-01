@@ -13,6 +13,7 @@ typedef struct Settings {
     int fps;           /* 30 is the game's own rate; 60 and 120 draw between its frames */
     int antialias;     /* samples a pixel: 1 is off, or 2, 4 or 8 */
     int smooth;        /* textures filtered, rather than the original's square texels */
+    int widescreen;    /* a wider window shows more of the world */
     int test_mode;     /* a test run's game mode to go straight to, or -1 */
     int testing;       /* went there with --mode: the computer plays, with no time limit */
     int launcher;      /* the settings menu comes first */

@@ -245,6 +245,7 @@ typedef struct {
     void *viewport; /* 0x10: GfxViewport (gfx_set_viewport) */
     s32 modelDp;   /* 0x14: dp for ModelObj quads (draw_model_quad); the screen fade */
     u8 pad18[4];
+    s16 clipX0;    /* what's left of this is off the view: below 0 when it's wider than the game's screen */
     s16 clipX1;    /* 0x1C: viewport clip right/bottom on screen */
     s16 clipY1;
     s32 ofx;   /* 0x20: geometry offset x (scaled by the screen width / 640) */

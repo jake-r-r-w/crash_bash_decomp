@@ -75,6 +75,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
+- **Port, widescreen's level edges:** some levels were never modelled past what the 4:3 camera showed: black corners in Pogo Painter, Pogo-a-Gogo and Pogo Padlock, a white patch at the top of Sky Balls, magenta at the edge of mode 19. Harmless, but they show. Filling them would need per-level backdrops. Seen only in still frames from one moment of each mode's start, not played through.
+- **Port, the first-run dialog (7.1):** `disc_first_run` has been seen to start, but its buttons and file dialog need a person to click through, and that hasn't happened. `playtest.mjs image` covers everything after them.
 - **Port, the Adventure test (`playtest.mjs adventure`):** passes at 200% with no cheat flags, about 28 million vblanks: every award, all four bosses, the ending, a save and a new run that loads it. But the test's player isn't that good, so of the 140 challenges 70 were won at full strength, 44 against weakened computer heroes (after 6 tries, a little weaker each try) and 26 against ones standing still (after 24 tries). So a win there doesn't show that challenge can be beaten at full strength. Standing still: all of Dragon Drop, 3 of Mallet Mash, 6 of Bash, 6 of Pogo, 3 of Dash, 2 of Fox, 1 of Keg Kaboom. The bosses have no handicap. Real players are in `port/tests`: `ring_play`, `pogoplayer.c`, `bashplayer.c`, `play_nox`. Better ones for Dragon Drop, Mallet Mash and Dash would cut that most. `playtest.mjs challenges LEVEL.CHOICE` tries one in about a minute.
 - **Port, the boss player needs NO HARM HERO:** with no cheats only the Bearminator wins in the time `playtest.mjs bosses` allows; Papu, Fox and Oxide (15 falls, in his asteroid phase) don't. It's the player's dodging, so
   `bosses` keeps `--cheats 1`. The user would rather have all cheats off.
@@ -464,6 +466,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-01: 7.4 Widescreen: `gfx_view_extra`, `clipX0`, `HudSpread`. Every mode's been seen at 16:9 in still frames, and one at about 21:9, with no crash, but it hasn't been played.
 - 2026-11-01: 7.3 Texture filtering: `gfx.c`. Roadmap had said it needed gaps on the atlas: it already had them. What it needed was clear texels' colour.
 - 2026-11-01: 7.2 Anti-aliasing: `gfx.c`. Changing it live rebuilds the pipelines; stepped through every value in the launcher.
 - 2026-11-01: 7.1 Easier setup: `platform/discimage.c`, with `--image` and `playtest.mjs image`. The prompt and file dialog need a person to click through: they've been seen to start, not driven.

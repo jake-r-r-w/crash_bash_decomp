@@ -28,6 +28,7 @@ typedef struct GfxConfig {
     int fps;           /* 30 draws once for each of the game's frames; higher draws between them too, through gfx_present */
     int antialias;     /* samples a pixel: 1 is off */
     int smooth;        /* textures filtered, rather than their square texels */
+    int wide;          /* a wider window shows more of the world, rather than bars at the sides */
 } GfxConfig;
 
 int gfx_init(void *window, const GfxConfig *config);
@@ -72,6 +73,9 @@ void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend);
  * this is, to find it again without looking at its pixels, until gfx_forget_textures; 0 for one that has no lasting id. */
 /* Changed while running. */
 void gfx_configure(const GfxConfig *config);
+
+/* How far past each side of the game's screen the picture goes, in its units: 0 at 4:3. */
+int gfx_view_extra(void);
 
 const GfxTex *gfx_texture(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
 /* The ids are no longer good. What's decoded stays, for when the same pixels come back. */

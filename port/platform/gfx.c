@@ -1,5 +1,6 @@
 /* The native renderer on SDL3's GPU API (gfx.h). On Windows it runs on Direct3D 12, with its shaders compiled from the HLSL here by
  * d3dcompiler_47.dll, which comes with Windows. */
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -67,6 +68,8 @@ static SDL_GPUTransferBuffer *VertexXfer, *AtlasXfer, *ShotXfer;
 static SDL_GPUGraphicsPipeline *PipeOpaque, *PipeDepth, *PipeHalf, *PipeAdd, *PipeSub, *PipeQuarter;
 static int TargetW, TargetH;
 static int ScreenW = 640, ScreenH = 480;
+static int Wide;
+static float ViewExtra; /* how much past each side of the screen the picture goes, in the game's units */
 static uint8_t ClearRGB[3];
 static int ClearPending = 1;
 
@@ -311,13 +314,22 @@ static void set_vsync(int vsync) {
 /* A size of 0 x 0 asks for what the window can show of a 4:3 picture, pixel for pixel. */
 static void resolve_size(int *width, int *height) {
     int w, h;
+    int asked_h = *height;
 
-    FollowsWindow = *width == 0 || *height == 0;
+    FollowsWindow = *width == 0 || *height == 0 || Wide;
     if (!FollowsWindow) {
         return;
     }
     SDL_GetWindowSizeInPixels(Window, &w, &h);
-    if (w * 3 > h * 4) {
+    if (Wide && w * 3 > h * 4) {
+        /* the window's shape, at the height asked for */
+        if (asked_h != 0) {
+            w = (int)((long long)w * asked_h / h);
+            h = asked_h;
+        }
+    } else if (asked_h != 0) {
+        return;
+    } else if (w * 3 > h * 4) {
         w = h * 4 / 3;
     } else {
         h = w * 3 / 4;
@@ -326,7 +338,20 @@ static void resolve_size(int *width, int *height) {
     *height = h < MIN_TARGET_H ? MIN_TARGET_H : h;
 }
 
+static void update_view_extra(void) {
+    ViewExtra = Wide && TargetW * 3 > TargetH * 4 ? ScreenW * ((float)TargetW * 3 / ((float)TargetH * 4) - 1) / 2 : 0;
+}
+
+int gfx_view_extra(void) {
+    return (int)ceilf(ViewExtra);
+}
+
+static int RenderH; /* what's been asked for: a wide picture's width comes from the window */
+static int RenderW;
+
 static void set_target_size(int width, int height, int remake) {
+    RenderW = width;
+    RenderH = height;
     resolve_size(&width, &height);
     if (remake || width != TargetW || height != TargetH) {
         SDL_ReleaseGPUTexture(Device, Target);
@@ -339,12 +364,13 @@ static void set_target_size(int width, int height, int remake) {
         make_targets(width, height);
         gfx_clear(0, 0, 0);
     }
+    update_view_extra();
 }
 
 void gfx_window_resized(void) {
     if (FollowsWindow && Device != NULL) {
         SDL_WaitForGPUIdle(Device);
-        set_target_size(0, 0, 0);
+        set_target_size(RenderW, RenderH, 0);
         BaseStale = 1;
     }
 }
@@ -353,6 +379,7 @@ void gfx_configure(const GfxConfig *config) {
     SDL_GPUSampleCount samples;
 
     SDL_WaitForGPUIdle(Device);
+    Wide = config->wide;
     samples = sample_count(config->antialias);
     if (samples != Samples) {
         Samples = samples;
@@ -371,6 +398,9 @@ void gfx_configure(const GfxConfig *config) {
 
 int gfx_init(void *window, const GfxConfig *config) {
     int width = config->width, height = config->height;
+    Wide = config->wide;
+    RenderW = width;
+    RenderH = height;
     SDL_GPUTextureCreateInfo t;
     SDL_GPUSamplerCreateInfo sc;
     SDL_GPUBufferCreateInfo bc;
@@ -404,6 +434,7 @@ int gfx_init(void *window, const GfxConfig *config) {
 
     resolve_size(&width, &height);
     make_targets(width, height);
+    update_view_extra();
 
     SDL_zero(t);
     t.type = SDL_GPU_TEXTURETYPE_2D;
@@ -466,12 +497,29 @@ void gfx_clear(uint8_t r, uint8_t g, uint8_t b) {
 void gfx_set_screen(int width, int height) {
     ScreenW = width;
     ScreenH = height;
+    update_view_extra();
 }
 
 void gfx_set_clip(int x, int y, int w, int h) {
-    float sx = (float)TargetW / ScreenW, sy = (float)TargetH / ScreenH;
+    float sx = (float)TargetW / (ScreenW + ViewExtra * 2), sy = (float)TargetH / ScreenH;
     SDL_Rect r;
 
+    /* a view of the whole screen is a view of the whole picture */
+    if (ViewExtra != 0 && x <= 0 && x + w >= ScreenW) {
+        r.x = 0;
+        r.y = (int)(y * sy);
+        r.w = TargetW;
+        r.h = (int)(h * sy);
+        if (NumClips > 0 && memcmp(&Clips[CurClip], &r, sizeof(r)) == 0) {
+            return;
+        }
+        if (NumClips < MAX_CLIPS) {
+            CurClip = NumClips++;
+            Clips[CurClip] = r;
+        }
+        return;
+    }
+    x = (int)(x + ViewExtra);
     r.x = (int)(x * sx);
     r.y = (int)(y * sy);
     r.w = (int)(w * sx);
@@ -814,7 +862,7 @@ static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float ste
     if (w < 0.001f) {
         w = 0.001f;
     }
-    o->x = (x / ScreenW * 2.0f - 1.0f) * w;
+    o->x = ((x + ViewExtra) / (ScreenW + ViewExtra * 2) * 2.0f - 1.0f) * w;
     o->y = (1.0f - y / ScreenH * 2.0f) * w;
     /* linear in w, so it interpolates across the triangle like 1/w's depth does */
     o->z = depth ? ((depth - 1) * w + (w - DEPTH_NEAR) * DEPTH_FAR / (DEPTH_FAR - DEPTH_NEAR)) / GFX_DEPTH_LAYERS : 0.5f * w;
@@ -1165,12 +1213,12 @@ static uint32_t find_hash(uint64_t object, int face) {
 }
 
 static int on_screen(float x, float y) {
-    return x >= 0 && x <= ScreenW && y >= 0 && y <= ScreenH;
+    return x >= -ViewExtra && x <= ScreenW + ViewExtra && y >= 0 && y <= ScreenH;
 }
 
 /* Near enough to the screen that its projection means something: right by the camera, a face's corners go anywhere. */
 static int near_screen(float x, float y, float w) {
-    return w > 1 && x >= -ScreenW && x <= ScreenW * 2.0f && y >= -ScreenH && y <= ScreenH * 2.0f;
+    return w > 1 && x >= -ScreenW - ViewExtra && x <= ScreenW * 2.0f + ViewExtra && y >= -ScreenH && y <= ScreenH * 2.0f;
 }
 
 static void find_movement(void) {

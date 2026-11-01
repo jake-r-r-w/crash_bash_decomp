@@ -156,6 +156,10 @@ void draw_viewport(s32 layer, s32 x, s32 y, s32 w, s32 h, s32 fill, u32 colour) 
         GfxVert v[4];
 
         BackPixels = NULL;
+        if (x <= 0 && x + w >= ScreenRect->w) {
+            x -= gfx_view_extra();
+            w += gfx_view_extra() * 2;
+        }
         for (i = 0; i < 4; i++) {
             v[i].x = (float)(x + ((i & 1) ? w : 0));
             v[i].y = (float)(y + ((i & 2) ? h : 0));

@@ -22,6 +22,7 @@ void settings_defaults(void) {
     Current.fps = 30;
     Current.antialias = 1;
     Current.smooth = 0;
+    Current.widescreen = 0;
     Current.test_mode = -1;
 }
 
@@ -70,6 +71,8 @@ void settings_load(void) {
             Current.antialias = a;
         } else if (sscanf(line, "smooth=%d", &a) == 1) {
             Current.smooth = a != 0;
+        } else if (sscanf(line, "widescreen=%d", &a) == 1) {
+            Current.widescreen = a != 0;
         }
     }
     fclose(f);
@@ -95,5 +98,6 @@ void settings_save(void) {
     fprintf(f, "fps=%d\n", Current.fps);
     fprintf(f, "antialias=%d\n", Current.antialias);
     fprintf(f, "smooth=%d\n", Current.smooth);
+    fprintf(f, "widescreen=%d\n", Current.widescreen);
     fclose(f);
 }

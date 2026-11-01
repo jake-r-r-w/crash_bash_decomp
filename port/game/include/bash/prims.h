@@ -161,7 +161,12 @@ static inline void GfxSetClip(GfxState *gs, RECT *c, camera_info_tag *cam) {
     clip.y = c->y / 2;
     clip.w = (c->w - c->x) * ScreenRect->w / 640;
     clip.h = (c->h - c->y) / 2;
+    gs->clipX0 = 0;
     gs->clipX1 = c->w * ScreenRect->w / 640;
+    if (c->x <= 0 && c->w >= 640) {
+        gs->clipX0 = -gfx_view_extra();
+        gs->clipX1 += gfx_view_extra();
+    }
     gs->clipY1 = c->h / 2;
     gs->cam = cam;
     cam_build_view(cam, &clip);

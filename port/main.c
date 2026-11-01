@@ -306,7 +306,7 @@ int platform_pad(int port) {
 
 int main(int argc, char **argv) {
     const char *Image = NULL;
-    int antialias = 0, smooth = 0;
+    int antialias = 0, smooth = 0, widescreen = 0;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
@@ -382,6 +382,8 @@ int main(int argc, char **argv) {
             antialias = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--smooth") == 0) {
             smooth = 1;
+        } else if (strcmp(argv[i], "--widescreen") == 0) {
+            widescreen = 1;
         } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
             test_mode = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--wav") == 0 && i + 1 < argc) {
@@ -463,6 +465,9 @@ int main(int argc, char **argv) {
     }
     if (smooth) {
         settings()->smooth = 1;
+    }
+    if (widescreen) {
+        settings()->widescreen = 1;
     }
     /* the first time: the launcher's made of the game's own art, so this comes before it */
     if (Image != NULL) {

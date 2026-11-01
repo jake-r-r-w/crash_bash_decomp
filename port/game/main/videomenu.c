@@ -5,7 +5,7 @@
 #include "common.h"
 #include "bash/videomenu.h"
 
-enum { VIDEO_DISPLAY, VIDEO_WINDOW, VIDEO_RENDER, VIDEO_FPS, VIDEO_VSYNC, VIDEO_ANTIALIAS, VIDEO_TEXTURES, NUM_VIDEO };
+enum { VIDEO_DISPLAY, VIDEO_WINDOW, VIDEO_RENDER, VIDEO_FPS, VIDEO_VSYNC, VIDEO_ANTIALIAS, VIDEO_TEXTURES, VIDEO_WIDESCREEN, NUM_VIDEO };
 _Static_assert(NUM_VIDEO == NUM_VIDEO_OPTIONS, "the menus are laid out for this many");
 
 static const struct {
@@ -19,6 +19,7 @@ static const struct {
     { "VSYNC", "MATCH YOUR SCREEN, TO STOP TEARING" },
     { "ANTIALIAS", "SMOOTHS THE EDGES OF THINGS, HIGHER IS SLOWER" },
     { "TEXTURES", "SHARP IS THE ORIGINAL, SMOOTH BLENDS PIXELS" },
+    { "WIDESCREEN", "A WIDE WINDOW SHOWS MORE OF THE WORLD" },
 };
 
 typedef struct {
@@ -82,6 +83,9 @@ void video_option_change(s32 i, s32 dir) {
     case VIDEO_TEXTURES:
         s->smooth = !s->smooth;
         break;
+    case VIDEO_WIDESCREEN:
+        s->widescreen = !s->widescreen;
+        break;
     }
     settings_apply();
     settings_save();
@@ -119,6 +123,9 @@ void video_option_value(s32 i, char *text, s32 size) {
         break;
     case VIDEO_TEXTURES:
         snprintf(text, size, "%s", s->smooth ? "SMOOTH" : "SHARP");
+        break;
+    case VIDEO_WIDESCREEN:
+        snprintf(text, size, "%s", s->widescreen ? "ON" : "OFF");
         break;
     }
 }
