@@ -802,3 +802,6 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - A 32-bit port ran the game on the PS1's memory layout, with all 33 modes playing to the end, then was
   deleted (2026-10-30). The layout couldn't reach 64-bit, so the port starts again (ROADMAP-B, PORT.md). Its
   code is in git at `7115b3b8`, and PORT.md has what it taught.
+
+## Part 7 - More for the PC port (done so far; the rest is in ROADMAP-B)
+- [x] 7.1 Easier setup (2026-11-01): the first time it runs with no data, it asks for the player's own disc image (a .cue with its .bin, a raw .bin or an .iso) and copies `CRASHBSH.DAT` to the user's folder, reading it by the disc's own directories (`platform/discimage.c`). Other regions and other files are turned away. It comes before the launcher, which is made of the game's own art. `playtest.mjs image` checks it.

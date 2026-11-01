@@ -18,6 +18,7 @@
  *       Each Adventure challenge alone (the door's choice: 0 trophy, 1 and 2 the gem and crystal, 3 and 4 the relics) from everything else won,
  *       some at once, up to 60 seconds each. For working on the player: which it wins, and in how many goes.
  *   node port/tests/playtest.mjs same [--save] [--all]
+ *   node port/tests/playtest.mjs image
  *       Frames and sound of a few modes against a saved baseline (--save makes it), about a minute: whether a change that shouldn't alter
  *       anything didn't. Between big steps of cleaning up, in place of the long tests.
  *   node port/tests/playtest.mjs menu
@@ -445,9 +446,56 @@ async function shots(args) {
 }
 
 const [command, ...rest] = process.argv.slice(2);
-const commands = { bosses, modes, adventure, challenges, same, menu, shots };
+/* A disc image's data comes out the same as the disc's, from each kind of image, and a wrong image is turned away. Needs make disc's image. */
+async function image(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const dir = path.join(OUT, 'image');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const raw = path.join(ROOT, 'build/CrashBash.bin');
+    const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+    const want = sha(path.join(ROOT, 'build/disc/files/CRASHBSH/CRASHBSH.DAT'));
+    const results = [];
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    /* the same disc as an .iso: each raw sector's data */
+    const bin = fs.readFileSync(raw);
+    const iso = Buffer.alloc(bin.length / 2352 * 2048);
+    for (let i = 0; i < bin.length / 2352; i++) {
+        bin.copy(iso, i * 2048, i * 2352 + (bin[i * 2352 + 15] === 2 ? 24 : 16), i * 2352 + (bin[i * 2352 + 15] === 2 ? 24 : 16) + 2048);
+    }
+    fs.writeFileSync(path.join(dir, 'disc.iso'), iso);
+    /* the same image with another game's executable in it, as another region would be */
+    const other = Buffer.from(iso);
+    const at = other.indexOf('SCUS_945.70;1');
+    other.write('SCES_000.00;1', at);
+    fs.writeFileSync(path.join(dir, 'other.iso'), other);
+    fs.writeFileSync(path.join(dir, 'junk.bin'), Buffer.alloc(1 << 20, 0x55));
+    const run_image = async (name, img) => {
+        const out = `${name}.dat`;
+        const r = await run(exe, ['--image', img, '--data', rel(out), '--frames', '1', '--no-window'], path.join(dir, `${name}.txt`), { timeout: MODE_TIMEOUT });
+
+        return { code: r.code, text: r.text, out: path.join(dir, out) };
+    };
+    for (const [name, img] of [['cue', 'build/CrashBash.cue'], ['bin', 'build/CrashBash.bin'], ['iso', rel('disc.iso')]]) {
+        const r = await run_image(name, img);
+        const same_data = fs.existsSync(r.out) && sha(r.out) === want;
+
+        results.push([name, { pass: r.code === 0 && same_data, what: same_data ? 'the same as the disc\'s' : `exit ${r.code}: ${r.text.trim().split('\n').at(-1)}` }]);
+        fs.rmSync(r.out, { force: true });
+    }
+    for (const [name, img] of [['other', rel('other.iso')], ['junk', rel('junk.bin')], ['missing', rel('nothing.cue')]]) {
+        const r = await run_image(name, img);
+
+        results.push([name, { pass: r.code === 1 && !fs.existsSync(r.out) && !fs.existsSync(`${r.out}.part`), what: r.text.trim().split('\n').at(-1) }]);
+    }
+    fs.rmSync(dir, { recursive: true, force: true });
+    return report(results);
+}
+
+const commands = { bosses, modes, adventure, challenges, same, menu, shots, image };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|menu|shots: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|menu|shots|image: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

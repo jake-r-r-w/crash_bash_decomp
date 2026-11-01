@@ -20,7 +20,6 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 7.1 | Easier setup | Pull `CRASHBSH.DAT` from the player's own disc image in the launcher, as well as copying it by hand | [ ] |
 | 7.2 | Anti-aliasing | The game draws to its own picture with no multisampling today, so edges are as sharp as the resolution | [ ] |
 | 7.3 | Texture filtering | A choice of filtering. Textures are sampled nearest-pixel today, from one shared atlas, so filtering needs gaps around each texture or it picks up its neighbours. | [ ] |
 | 7.4 | Widescreen | Today a wide window shows the 4:3 picture, centred, with bars at the sides. A wide `--render` size only stretches that picture: it shows no more of the world. A real wider view needs the projection, the clipping and the off-screen culling widened (`ScreenRect`, `cam_set_projection`, `bbox_visible`), the HUD and menus laid out for it, as they place things in 640-wide units, and a look at what each level's edges show once you can see past them | [ ] |

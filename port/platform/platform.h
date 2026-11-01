@@ -26,6 +26,10 @@ void archive_open(void);
 void archive_read(int sector, int count, void *buf);
 void platform_wait_vblanks(int count);
 void platform_fatal(const char *message);
+/* The game's archive from a disc image: what went wrong, or NULL with it at out (discimage.c). */
+const char *disc_extract(const char *image, const char *out);
+/* Asks the player for their disc image. 0: they'd rather not. */
+int disc_first_run(const char *out);
 /* A pad, as the game's libpad reads it: its buttons, or -1 when there's none. */
 int platform_pad(int port);
 int platform_vblanks(void);

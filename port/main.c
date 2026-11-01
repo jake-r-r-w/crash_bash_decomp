@@ -98,12 +98,26 @@ void platform_fatal(const char *message) {
     exit(1);
 }
 
+/* Where a disc image's copy of the data goes: the user's own folder, as the program's may not be theirs to write to */
+static const char *own_data_path(void) {
+    static char path[1024];
+
+    if (path[0] == 0) {
+        char *dir = SDL_GetPrefPath("CrashBash", "CrashBash");
+
+        SDL_snprintf(path, sizeof(path), "%sCRASHBSH.DAT", dir != NULL ? dir : "");
+        SDL_free(dir);
+    }
+    return path;
+}
+
 /* The first of these that exists, unless --data says */
 const char *platform_data_path(void) {
     static char beside_exe[1024];
-    static const char *const places[] = {
+    const char *places[] = {
         "CRASHBSH.DAT",
         beside_exe,
+        own_data_path(),
         "build/disc/files/CRASHBSH/CRASHBSH.DAT",
         "../disc/files/CRASHBSH/CRASHBSH.DAT",
         "../../disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -116,14 +130,11 @@ const char *platform_data_path(void) {
     }
     SDL_snprintf(beside_exe, sizeof(beside_exe), "%sCRASHBSH.DAT", base != NULL ? base : "");
     for (i = 0; i < sizeof(places) / sizeof(places[0]); i++) {
-        FILE *f = fopen(places[i], "rb");
-
-        if (f != NULL) {
-            fclose(f);
+        if (SDL_GetPathInfo(places[i], NULL)) {
             return DataPath = places[i];
         }
     }
-    return places[0];
+    return NULL;
 }
 
 void platform_finish(int code) {
@@ -294,6 +305,7 @@ int platform_pad(int port) {
 }
 
 int main(int argc, char **argv) {
+    const char *Image = NULL;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
@@ -307,6 +319,8 @@ int main(int argc, char **argv) {
             return 0;
         } else if (strcmp(argv[i], "--data") == 0 && i + 1 < argc) {
             DataPath = argv[++i];
+        } else if (strcmp(argv[i], "--image") == 0 && i + 1 < argc) {
+            Image = argv[++i];
         } else if (strcmp(argv[i], "--stick") == 0 && i + 3 < argc && NumSticks < MAX_STICKS) {
             Sticks[NumSticks].frame = atoi(argv[++i]);
             Sticks[NumSticks].x = (unsigned char)strtol(argv[++i], NULL, 16);
@@ -438,6 +452,16 @@ int main(int argc, char **argv) {
     }
     if (fps == 30 || fps == 60 || fps == 120) {
         settings()->fps = fps;
+    }
+    /* the first time: the launcher's made of the game's own art, so this comes before it */
+    if (Image != NULL) {
+        const char *problem = disc_extract(Image, DataPath != NULL ? DataPath : own_data_path());
+
+        if (problem != NULL) {
+            platform_fatal(problem);
+        }
+    } else if (!testing && platform_data_path() == NULL && !disc_first_run(own_data_path())) {
+        return 0;
     }
     if (!NoWindow && !host_init()) {
         fprintf(stderr, "No window; running without one.\n");
