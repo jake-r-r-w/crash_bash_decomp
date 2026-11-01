@@ -20,6 +20,7 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
+| 7.12 | Polar Push's snowball | First, before the rest of Part 7. The beam turns you into a big snowball, and the snowball doesn't show correctly. Seen by the user, probably in the level where Uka melts the map (Melt Panic, going by the name). Not yet reproduced, and not known to be to do with widescreen | [ ] |
 | 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was, as Melt Panic is by the user's choice. The rows below are in the order to look at them. Black was measured in still frames at the start of each level, so they're where to look first, not a full list | [ ] |
 | 7.11.1 | Dante's Dash | The extra trees look doubled, and flat beside the real ones | [ ] |
 | 7.11.2 | Beach Ball | Recheck by playing: the new sand and wall | [ ] |
