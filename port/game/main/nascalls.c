@@ -2414,7 +2414,6 @@ s32 machine_init(void) {
     /* no debug font on PC */
     shell_init();
     machine_quit_sound();
-    PadStopCom();
     return 0;
 }
 
@@ -2538,34 +2537,29 @@ void xa_mute(void) {
     xa_setvol(0);
 }
 
-void pad_read_packet(PadPacket *p, PadState *in, s32 n) {
-    if (p->status == 0) {
+/* Pad n's state now, from the host: a controller has sticks, and the keyboard is a digital pad. */
+static void pad_poll(PadState *in, s32 n) {
+    s32 buttons = platform_pad(n);
+    u8 sticks[4];
+
+    if (buttons >= 0) {
         in->flags |= 1;
         in->flags |= PadRumble_update(&in->rumble, n);
-        if (FrameCount > PadLastRead + 10 &&(in->flags & 8) && in->flag != 0
-            && PadGetState(n) == 6 && PadSetMainMode(n, 1, 2) == 1) {
+        if (FrameCount > PadLastRead + 10 && (in->flags & 8) && in->flag != 0 && platform_pad_rumbles(n)) {
             in->flag = 0;
             PadLastRead = FrameCount;
         }
         in->flags &= ~6;
-        switch (*(u16 *)p >> 12) {
-        case 7:
+        if (platform_pad_sticks(n, sticks)) {
             in->flags |= 6;
-            in->rx += p->rx;
-            in->ry += p->ry;
-            in->lx += p->lx;
-            in->ly += p->ly;
-            in->rx >>= 1;
-            in->ry >>= 1;
-            in->lx >>= 1;
-            in->ly >>= 1;
-            in->buttons = ~p->buttons & 0xFFFF;
-            break;
-        case 4:
+            in->rx = (in->rx + sticks[0]) >> 1;
+            in->ry = (in->ry + sticks[1]) >> 1;
+            in->lx = (in->lx + sticks[2]) >> 1;
+            in->ly = (in->ly + sticks[3]) >> 1;
+        } else {
             in->flags |= 4;
-            in->buttons = ~p->buttons & 0xFFFF;
-            break;
         }
+        in->buttons = buttons & 0xFFFF;
     } else {
         in->buttons = 0;
         in->flags = 0;
@@ -2576,43 +2570,20 @@ void pad_read_packet(PadPacket *p, PadState *in, s32 n) {
     }
 }
 
-static inline s32 pads_read_port(u8 *src, u8 *dst, s32 n) {
-    s32 count;
-
-    if ((*(u16 *)src & 0xF000) == 0x8000) {
-        if (n == 0) {
-            pad_read_packet(src + 2, dst, 0);
-            pad_read_packet(src + 0xA, dst + 0x58, 1);
-            pad_read_packet(src + 0x12, dst + 0xB0, 2);
-            pad_read_packet(src + 0x1A, dst + 0x108, 3);
-            count = 4;
-        } else {
-            count = 0;
-        }
-    } else {
-        pad_read_packet(src, dst, n);
-        count = 1;
-    }
-    return count;
-}
-
 void pads_read(void) {
+    PadState *pad = Pads;
     s32 count;
-    PadState *pad;
 
-    pad = Pads;
-    PadCount = 0;
-    PadCount += pads_read_port(PadMtapBuf[0], (u8 *)pad, 0);
-    PadCount += pads_read_port(PadMtapBuf[1], (u8 *)&pad[PadCount], 0x10);
-    count = 8 - PadCount;
-    pad += PadCount;
-    if (count > 0) {
-        do {
-            pad->buttons = 0;
-            pad->flags = 0;
-            pad->flag = 1;
-            pad++;
-        } while (--count > 0);
+    /* a third or fourth pad is what makes it a multitap's four */
+    PadCount = platform_pad(2) >= 0 || platform_pad(3) >= 0 ? 4 : 2;
+    for (count = 0; count < PadCount; count++) {
+        pad_poll(pad++, count);
+    }
+    for (; count < 8; count++) {
+        pad->buttons = 0;
+        pad->flags = 0;
+        pad->flag = 1;
+        pad++;
     }
 }
 
@@ -2622,7 +2593,6 @@ void pads_init_mtap(void) {
     s32 on;
 
     PadCount = 0;
-    PadInitMtap(PadMtapBuf[0], PadMtapBuf[1]);
     i = 0;
     on = 1;
     pad = Pads;
@@ -2639,7 +2609,6 @@ loop:
         goto loop;
     }
     card_init();
-    PadStartCom();
 }
 
 void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
@@ -2664,26 +2633,6 @@ void pad_rumble_small(s32 pad, s32 arg1) {
         p->time0 = arg1 + 1;
         p->dirty |= 1;
     }
-}
-
-s32 pad_read_mtap(u8 *src, u8 *dst, s32 n) {
-    s32 count;
-
-    if ((*(u16 *)src & 0xF000) == 0x8000) {
-        if (n == 0) {
-            pad_read_packet(src + 2, dst, 0);
-            pad_read_packet(src + 0xA, dst + 0x58, 1);
-            pad_read_packet(src + 0x12, dst + 0xB0, 2);
-            pad_read_packet(src + 0x1A, dst + 0x108, 3);
-            count = 4;
-        } else {
-            count = 0;
-        }
-    } else {
-        pad_read_packet(src, dst, n);
-        count = 1;
-    }
-    return count;
 }
 
 void pads_reset_rumble(void) {
@@ -2732,14 +2681,12 @@ s32 pad_rumble_send(PadRumble *r, s32 port) {
             r->dirty |= 2;
         }
     }
-    if (PadGetState(port) != 6) {
+    if (!platform_pad_rumbles(port)) {
         return 0;
     }
     if (r->dirty != 0) {
-        PadSetAct(port, r->act, 2);
-        if (PadSetActAlign(port, PadActAlign) == 1) {
-            r->dirty = 0;
-        }
+        pad_set_motors(port, r->act[0], r->act[1]);
+        r->dirty = 0;
     }
     return 8;
 }
@@ -3561,9 +3508,7 @@ s32 UnusedPairs[176] = {  /* halfword pairs; read nowhere */
 };
 s32 xa_count = 0;
 s32 PadUnused[1] = {0};
-u8 PadActAlign[8] = { 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0 };
 s32 PadLastRead = 0;
-u8 PadMtapBuf[2][52] = {0};
 FreeNode *FreeBufNodes = 0;
 Slot12 VramSlots[3] = {
     { { 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 } }, { { 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0 } },

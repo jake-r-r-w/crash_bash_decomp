@@ -114,7 +114,6 @@ void shell_run_spyro_demo(void) {
     char unused[24]; /* never used, but the frame has room for it */
 
     machine_quit_sound();
-    PadStopCom();
     fprintf(stderr, "The game asked to run the Spyro 3 demo, which the PC build can't.\n");
     exit(0);
 }

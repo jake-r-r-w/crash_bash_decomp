@@ -10,7 +10,6 @@
 #include <libgpu.h>
 #include <libspu.h>
 #include <libsnd.h>
-#include <libpad.h>
 
 #include <inline_c.h>
 #include <gtemac.h>

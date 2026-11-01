@@ -88,7 +88,6 @@ FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
 s16 RunNasAnim(NAS *nas);
 void GotoLinkAnim(EXTanimator *anim, s32 n);
 s32 textureset_mem_size(TexFile *arg0);
-s32 pad_read_mtap(u8 *src, u8 *dst, s32 n);
 s32 CountObjects(void);
 void ReAdoptChild(NAS *list, NAS *nas);
 void texsrc_init(u8 *src, u8 *out, s32 len);
@@ -133,7 +132,6 @@ void textureset_upload_cluts(obj_textureset *arg0);
 void texture_scroll_step(TexFrameAnim *arg0, obj_textureset *arg1);
 void clut_upload(TexClut *arg0, s32 arg1);
 void texanims_release(obj_textureset *set, s32 arg1);
-void pad_read_packet(PadPacket *p, PadState *in, s32 n);
 s32 pad_rumble_send(PadRumble *r, s32 port);
 void texture_update_anims(obj_textureset *arg0);
 void texture_upload_list(TexUploadList *arg0, obj_textureset *arg1);
@@ -215,14 +213,12 @@ static inline s32 PadRumble_update(PadRumble *r, s32 port) {
             r->dirty |= 2;
         }
     }
-    if (PadGetState(port) != 6) {
+    if (!platform_pad_rumbles(port)) {
         return 0;
     }
     if (r->dirty != 0) {
-        PadSetAct(port, r->act, 2);
-        if (PadSetActAlign(port, PadActAlign) == 1) {
-            r->dirty = 0;
-        }
+        pad_set_motors(port, r->act[0], r->act[1]);
+        r->dirty = 0;
     }
     return 8;
 }

@@ -746,6 +746,10 @@ extern ModuleEntry *EngineModule;
 extern ModuleEntry *CurrentModule;
 extern s32 VSyncRate;
 void archive_open(void);
+int platform_pad(int port);
+int platform_pad_sticks(int port, unsigned char sticks[4]);
+int platform_pad_rumbles(int port);
+void pad_set_motors(int player, int small_on, int big);
 void archive_read(int sector, int count, void *buf);
 void platform_wait_vblanks(int count);
 void mal_update(_mal_area *heap);
@@ -817,7 +821,6 @@ extern s32 PadCount;
 extern s32 first_joypad;            /* first pad with flag 1 set, or -1 */
 extern s32 PadRunEnd;            /* pads 0..n-1 all have flag 1 */
 extern s32 joypad_idle_count;            /* frames with no button down */
-extern u8 PadMtapBuf[2][0x34];    /* PadInitMtap buffers */
 extern PadState Pads[8];
 typedef struct FreeHdr { u16 f0; u16 f2; } FreeHdr;
 typedef struct FreeNode {
@@ -1664,19 +1667,8 @@ void *mal_take_low(s32 bytes, _mal_area *heap);
 
 
 
-extern u8 PadActAlign[];
 
 
-/* Raw controller packet read by pad_read_packet (status byte, type in the top nibble). */
-typedef struct PadPacket {
-    /* 0x00 */ u8 status;
-    /* 0x01 */ u8 pad1;
-    /* 0x02 */ u16 buttons;
-    /* 0x04 */ u8 rx;
-    /* 0x05 */ u8 ry;
-    /* 0x06 */ u8 lx;
-    /* 0x07 */ u8 ly;
-} PadPacket;
 
 
 

@@ -69,7 +69,7 @@ ROADMAP-B.md, Part 6:
    `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only for now, at the user's request: Linux
    stays in the plan, but isn't built. 6.7, finishing it, has saving, any resolution, analog sticks and rumble written, and the user has tried a real controller and it was fine (2026-11-01). What's left is a first
    release. Whether it plays the same as retail is checked by the user playing it.
-   The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. Next on it: 6.8, fully native. `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
+   The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. Next on it: 6.8, fully native, under way: the no-op stubs, the disc, the clock and the pads are done; left are the sound's names (`libsnd`, `libspu`), reading old memory cards into saves, the GTE (`gte.c`, 171 of its uses in `prims.c`) and the drawing packets (`gfxsubmit.c`), roughly in that order. Between steps, `playtest.mjs same` shows in a minute that frames and sound haven't changed (its baseline is in `build/`: make it with `--save` before starting). `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -464,6 +464,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-01: 6.8 begun. `playtest.mjs same` compares frames and sound of 14 modes with a saved baseline, about a minute, for changes that shouldn't alter anything; runs are deterministic enough for it, sound included. Gone: the no-op stubs, the export table, libcd, libapi, libetc and libpad (`archive.c`, `clock.c`, and `pads_read` asks the host directly). Pads are read a vblank fresher, which `same` doesn't see, and sticks and rumble took no test here beyond the build: a person should try a controller.
 - 2026-11-01: Floor tiles (`draw_model_quad`: Space Bash, Papu, Pogo) now draw at the GTE's precise positions with perspective (`mesh_submit_gt4`), not as packets of whole PS1 pixels with no depth, which swam against the models on them. The user found it as "super floaty" in Space Bash, and watched the fix and passed it. It's not in v0.1.0.
 - 2026-11-01: The first release published, v0.1.0 (PORT.md, A release): the release build has no console or symbols, finds `CRASHBSH.DAT` next to itself and says so if it can't. On that build `modes`, `menu` and all four bosses with no cheats pass, and Battle and Tournament start with one player; several controllers are untested. The 200% Adventure was on the ordinary build, and needn't be re-run for each build, the user says.
 - 2026-11-01: Play testing is done, the user says, and the controller was fine when the user tried it.

@@ -102,7 +102,7 @@ ctest --preset windows-clang
 ```
 
 The presets are `windows-clang`, `linux-clang`, `linux-gcc` and `linux-asan`, and the output is under `build/port/`.
-`port/` holds `game/` (the copy of the game's C), `psyq/` (PsyQ's names, which go as they're replaced), `tests/` (the play tests) and `main.c`.
+`port/` holds `game/` (the copy of the game's C), `psyq/` (the PsyQ names still left: the GTE, the drawing packets and the sound, which go in 6.8), `tests/` (the play tests) and `main.c`.
 
 The game's C isn't in the default build until it compiles. To see what's left:
 
@@ -159,6 +159,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 node port/tests/playtest.mjs bosses
 node port/tests/playtest.mjs modes
 node port/tests/playtest.mjs adventure
+node port/tests/playtest.mjs same
 node port/tests/playtest.mjs menu
 ```
 
