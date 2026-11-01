@@ -9,6 +9,9 @@
  *   node port/tests/playtest.mjs modes [--vblanks N] [--slots N] [--from M] [--to M] [--asan]
  *       Every game mode, played by the computer, some at a time tiled on the screen, with three shots of each. --asan uses the
  *       AddressSanitizer build, and fails on anything it reports.
+ *   node port/tests/playtest.mjs adventure [--seconds N]
+ *       Plays a new Adventure with no cheats, by adventureplayer.c and bossbot.c: through every door the game's rules open, as far as it can
+ *       in the time (30 minutes by default), and passes if it runs out of doors. Its log says how far it's got, as it goes.
  *   node port/tests/playtest.mjs menu
  *       From the title screen through the menus, by the pad alone, into the first game of a new Adventure's first room.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
@@ -258,6 +261,23 @@ async function modes(args) {
     return report(results);
 }
 
+async function adventure(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const seconds = Number(option(args, '--seconds', 1800));
+    const dir = path.join(OUT, 'adventure');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    const r = await run(exe, ['--adventure', '--turbo', '--draw-every', '120', '--skip-intro', '--skip-loading', '--saves', rel('saves'), '--frames', '2000000000'],
+        path.join(dir, 'log.txt'), { timeout: seconds });
+    const crash = crash_where(exe, r.text);
+    const progress = [...r.text.matchAll(/^adventure: vblank.*$/gm)].at(-1)?.[0] ?? 'nothing';
+    const finished = /^adventure: no door left/m.test(r.text);
+
+    return report([['adventure', { pass: crash == null && finished, what: crash ?? `${finished ? 'no door left' : 'still going at the time limit'}; ${progress}` }]]);
+}
+
 async function menu(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const dir = path.join(OUT, 'menu');
@@ -308,9 +328,9 @@ async function shots(args) {
 }
 
 const [command, ...rest] = process.argv.slice(2);
-const commands = { bosses, modes, menu, shots };
+const commands = { bosses, modes, adventure, menu, shots };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|menu|shots: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|menu|shots: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

@@ -31,50 +31,111 @@ void BossBotUpdate(void);
 #define AWARD_BOSS 4
 #define NEAR_ANGLE 0x40
 #define MAX_SKILL 0x20
+#define CHOICES 5
 
 static s32 Ticks;
 static s32 InRoom;
+static u16 Tries[0x21][CHOICES];
+static s32 WantLevel, WantChoice;
 
 static s32 in_room(void) {
     return GameMode >= ROOM_FIRST && GameMode <= ROOM_LAST;
 }
 
-static s32 level_to_do(s32 level) {
-    return ModeRequirementMet(level) == 1 && GAME->adventure.won[AWARD_TROPHY][level] == 0 && GAME->adventure.won[AWARD_BOSS][level] == 0;
+static s32 is_boss(s32 level) {
+    return level == 4 || level == 9 || level == 0x16 || level == 0x1F;
 }
 
-/* The door in this room to go to next, and the entry on the warp door's list if it's another room's level. -1 if none's left. */
-static s32 next_door(s32 *entry) {
-    s32 i, r;
+/* Whether this door's menu offers this challenge now and it's still to win (HubOpenDoorMenu, HubPreMoveHero: choice 0 the trophy, 1 and 2
+   won[2] and won[3], 3 and 4 won[1]'s two levels). A boss's door only has the fight. */
+static s32 challenge_open(s32 level, s32 choice) {
+    AdventureState *a = &GAME->adventure;
+    s32 choices = a->stage >= 2 && a->won[1][level] == 0 ? 4 : a->stage + 3;
 
-    for (i = 0; i < GATEWAYS; i++) {
-        HubTableEntry *t = HubGateways[i].table;
+    if (ModeRequirementMet(level) != 1) {
+        return 0;
+    }
+    if (is_boss(level)) {
+        return choice == 0 && a->won[AWARD_BOSS][level] == 0;
+    }
+    if (choice == 0) {
+        return a->won[AWARD_TROPHY][level] == 0;
+    }
+    if (a->won[AWARD_TROPHY][level] == 0 || choice >= choices) {
+        return 0;
+    }
+    switch (choice) {
+    case 1:
+        return a->won[2][level] == 0;
+    case 2:
+        return a->won[3][level] == 0;
+    case 3:
+        return a->won[1][level] == 0;
+    default:
+        return a->won[1][level] == 1;
+    }
+}
 
-        if (t != NULL && t->gate_type == GATE_LEVEL && level_to_do(t->level)) {
+/* Where a room's warp list has that room, if the door's list can get to it: it stops at the first that's still shut. */
+static s32 warp_entry(s32 to) {
+    hub_info *room = &WarpRooms[GameWarpRoom];
+    s32 i;
+
+    if (ModeRequirementMet(to) != 1) {
+        return -1;
+    }
+    for (i = 0; i < room->num_warps; i++) {
+        if (room->warp[i].levnum == to) {
             return i;
         }
+        if (ModeRequirementMet(room->warp[i].levnum) != 1) {
+            return -1;
+        }
     }
+    return -1;
+}
+
+/* The door to go to next: whatever's open and been tried least, so one it can't win doesn't hold up the rest, and here before another room.
+   Fills which challenge, and the warp list's entry if it's another room's. -1 if there's nothing left. */
+static s32 next_door(s32 *entry, s32 *pick) {
+    s32 best = 0x7FFFFFFF, door = -1;
+    s32 r, c, i;
+
     for (r = 0; r < ROOMS; r++) {
         HubTableEntry *t;
+        s32 via = r == GameWarpRoom ? -1 : warp_entry(WarpRooms[r].levnum);
 
+        if (r != GameWarpRoom && via < 0) {
+            continue;
+        }
         for (t = WarpRooms[r].table; t->gateway != 0; t++) {
-            if (t->gate_type == GATE_LEVEL && level_to_do(t->level)) {
-                hub_info *room = &WarpRooms[GameWarpRoom];
+            if (t->gate_type != GATE_LEVEL) {
+                continue;
+            }
+            for (c = 0; c < CHOICES; c++) {
+                if (challenge_open(t->level, c)) {
+                    s32 score = Tries[t->level][c] * 2 + (via >= 0);
 
-                for (i = 0; i < room->num_warps; i++) {
-                    if (room->warp[i].levnum == WarpRooms[r].levnum) {
-                        *entry = i;
-                        for (i = 0; i < GATEWAYS; i++) {
-                            if (HubGateways[i].table != NULL && HubGateways[i].table->gate_type == GATE_WARP) {
-                                return i;
-                            }
-                        }
+                    if (score < best) {
+                        best = score;
+                        *pick = c;
+                        *entry = via;
+                        WantLevel = t->level;
+                        door = via >= 0 ? -2 : t->gateway - 1;
                     }
                 }
             }
         }
     }
-    return -1;
+    if (door == -2) {
+        for (i = 0; i < GATEWAYS; i++) {
+            if (HubGateways[i].table != NULL && HubGateways[i].table->gate_type == GATE_WARP) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    return door;
 }
 
 static s32 play_room(void) {
@@ -90,7 +151,7 @@ static s32 play_room(void) {
     if (i == GATEWAYS || (GAME->exitFlags & 0x8008) || Heroes[0].hero_frozen != 0) {
         return 0;
     }
-    door = next_door(&entry);
+    door = next_door(&entry, &WantChoice);
     if (door < 0) {
         printf("adventure: no door left to go through\n");
         platform_finish(0);
@@ -115,6 +176,15 @@ static s32 play_room(void) {
             return 0;
         }
         return HubSelectedEntry < entry ? BTN_RIGHT : BTN_LEFT;
+    }
+    /* a door whose trophy's won has a menu of its challenges */
+    if (entry < 0 && !is_boss(WantLevel) && GAME->adventure.won[AWARD_TROPHY][WantLevel] != 0) {
+        if (HubDoorChoice < 0) {
+            return 0;
+        }
+        if (HubDoorChoice != WantChoice) {
+            return (Ticks & 7) != 0 ? 0 : HubDoorChoice < WantChoice ? BTN_RIGHT : BTN_LEFT;
+        }
     }
     return (Ticks & 15) == 0 ? BTN_CROSS : 0;
 }
@@ -155,7 +225,11 @@ void AdventurePlayerUpdate(void) {
         platform_bot_buttons(play_room());
         return;
     }
-    InRoom = 0;
+    if (InRoom && GameMode < 0x21 && !(GAME->exitFlags & 0x8008)) {
+        Tries[GameMode][WantChoice]++;
+        printf("adventure: try %d of level %d challenge %d\n", Tries[GameMode][WantChoice], GameMode, WantChoice);
+        InRoom = 0;
+    }
     log_round();
     if (GAME->levelFlags & 0x100) {
         BossBotUpdate();
