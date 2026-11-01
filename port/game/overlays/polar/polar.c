@@ -1515,11 +1515,6 @@ void InitPolarBomb(NAS *m) {
         if (e != NULL) {
             e->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
             e->sub->entity = 0x202F;
-            e->Engine->xform.hasScale = 1;
-            e->Engine->xform.order = 0;
-            e->Engine->xform.scale.vx = 0xC00;
-            e->Engine->xform.scale.vy = 0xC00;
-            e->Engine->xform.scale.vz = 0xC00;
             e->XYZ = m->Engine->XYZ;
             e->flags |= 0x8041;
             e->sub->scale = 0x200;
