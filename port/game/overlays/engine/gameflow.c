@@ -109,7 +109,6 @@ void UpdateIntro(void) {
         mal_free(a, &MainHeap);
         LoadImage(ScreenRect, (u32 *)b);
         LoadImage(ScreenRect + 1, (u32 *)b);
-        DrawSync(0);
         mal_free(b, &MainHeap);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
             PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
@@ -158,10 +157,6 @@ void QuitIntro(void) {
     }
     scripts_release();
     subpool_free();
-    f = FrameCount;
-    a = &ScreenRect[f & 1];
-    r = &ScreenRect[(f + 1) & 1];
-    MoveImage2(a, r->x, r->y);
 }
 
 void RenderIntro(void) {
@@ -195,16 +190,7 @@ void LoadScreenImage(file *file) {
     mal_free(a, &MainHeap);
     LoadImage(ScreenRect, (u32 *)b);
     LoadImage(ScreenRect + 1, (u32 *)b);
-    DrawSync(0);
     mal_free(b, &MainHeap);
-}
-
-void CopyScreen(void) {
-    s32 f = FrameCount;
-    RECT *a = &ScreenRect[f & 1];
-    RECT *r = &ScreenRect[(f + 1) & 1];
-
-    MoveImage2(a, r->x, r->y);
 }
 
 void HandleLevelExit(void) {
@@ -1636,7 +1622,6 @@ void StartGame(void) {
     ScreenFade.amount = 0x1000;
     ScreenFade.maxed = 3;
     ScreenFade.speed = 0x100;
-    SetDispMask(1);
     FirstBootDone = 1;
     GotoProcess(&LevelLoadProcess, 0x200);
     fade_update(&ScreenFade);
@@ -1689,7 +1674,6 @@ void RestartGame(void) {
     ScreenFade.amount = 0x1000;
     ScreenFade.maxed = 3;
     ScreenFade.speed = 0x100;
-    SetDispMask(1);
     FirstBootDone = 1;
     GotoProcess(&LevelLoadProcess, 0x200);
 }

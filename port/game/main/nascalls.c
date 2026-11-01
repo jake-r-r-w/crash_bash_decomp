@@ -2406,109 +2406,41 @@ void RunModules(ModuleEntry *p) {
 
 s32 machine_init(void) {
     ResetCallback();
-    ResetGraph(0);
-    SetGraphDebug(0);
     InitGeom();
     SsInit();
     VideoMode = 0;
     pads_init_mtap();
     SetVideoMode(VideoMode);
-    DrawSync(0);
     ClearImage2(&VramRect, 0, 0, 0);
-    DrawSync(0);
     machine_init_sound();
     /* no debug font on PC */
     shell_init();
     cd_read_wait();
-    get_exe_exports();
     machine_quit_sound();
     StopCallback();
     PadStopCom();
-    SetDispMask(0);
-    ResetGraph(3);
     return 0;
 }
 
 void ClearVram(void) {
-    DrawSync(0);
     ClearImage2(&VramRect, 0, 0, 0);
-    DrawSync(0);
 }
 
 void FlipScreen(s32 arg0) {
-    DISPENV sp10;
-    RECT *r = ScreenRect;
-    RECT *src;
     DrawBuffer *buf;
 
-    FntFlush(DebugFontStream);
-    DrawSync(0);
     mal_update(&MainHeap);
-    if (r != NULL) {
-        if (DrawBuffers == cdb) {
-            if (DrawBuffers) {
-                src = r;
-            } else {
-                src = r;
-            }
-        } else {
-            src = r + 1;
-        }
-        sp10.disp = *src;
-        sp10.screen.x = 0;
-        sp10.screen.w = 0x100;
-        sp10.screen.y = (VideoMode == 0) ? 8 : 0x10;
-        sp10.screen.h = (VideoMode == 0) ? 0xF0 : 0x100;
-        sp10.isinter = ((u8 *)r)[0x14];
-        sp10.isrgb24 = ((u8 *)r)[0x10];
-        LastFlipVSync = VSync(1);
-        VSync(arg0);
-        PutDispEnv(&sp10);
-        DrawOTag((u32 *)&cdb->ot[0xFFF]);
-        buf = DrawBuffers;
-        if (cdb == buf) {
-            buf++;
-        }
-        cdb = buf;
-        FrameCount += 1;
-        ClearOTagR((u32 *)buf->ot, 0x1000);
-        buf->prim = buf->primStart;
+    LastFlipVSync = VSync(1);
+    VSync(arg0);
+    DrawOTag((u32 *)&cdb->ot[0xFFF]);
+    buf = DrawBuffers;
+    if (cdb == buf) {
+        buf++;
     }
+    cdb = buf;
+    FrameCount += 1;
+    buf->prim = buf->primStart;
     prims_update();
-}
-
-void InitDisplay(void) {
-    DISPENV disp;
-    DRAWENV draw;
-
-    DrawSync(0);
-    SetDefDispEnv(&disp, 0, 0, 0x200, 0xF0);
-    SetDispMask(1);
-    disp.disp.x = 0;
-    disp.disp.y = 0;
-    disp.disp.w = 0x200;
-    disp.disp.h = 0xF0;
-    disp.screen.x = 0;
-    disp.screen.y = 0;
-    disp.screen.w = 0x200;
-    disp.screen.h = 0xF0;
-    disp.isinter = 0;
-    disp.isrgb24 = 0;
-    PutDispEnv(&disp);
-    SetDefDrawEnv(&draw, 0, 0, 0x200, 0xF0);
-    draw.dfe = 1;
-    draw.isbg = 1;
-    draw.dtd = 0;
-    while (1) {
-        ClearOTag((u32 *)cdb, 0x10);
-        draw.r0 = Random(0xFF);
-        draw.g0 = Random(0xFF);
-        draw.b0 = Random(0xFF);
-        PutDrawEnv(&draw);
-        DrawOTag((u32 *)cdb);
-        DrawSync(0);
-        VSync(2);
-    }
 }
 
 u8 *AllocOtBuffers(s32 *arg0) {
@@ -2530,14 +2462,12 @@ void ClearScreens(void) {
 
     temp_s0 = ScreenRect;
     if (temp_s0 != 0) {
-        DrawSync(0);
         ClearImage(&temp_s0[1], 0, 0, 0);
         ClearImage(&temp_s0[0], 0, 0, 0);
     }
 }
 
 void SetScreen(RECT *arg0) {
-    DrawSync(0);
     ScreenSetFlag = 0;
     if (arg0 != NULL) {
         ScreenSetFrame = FrameCount + 1;
@@ -2545,14 +2475,11 @@ void SetScreen(RECT *arg0) {
             DrawBuffer *g = (DrawBuffer *)DrawBuffers;
             DrawBuffer *h;
 
-            ClearOTagR((u32 *)g, 0x1000);
             h = g + 1;
             g->prim = g->primStart;
-            ClearOTagR((u32 *)h, 0x1000);
             h->prim = h->primStart;
         }
     } else {
-        SetDispMask(0);
     }
     ScreenRect = arg0;
 }
@@ -2574,7 +2501,6 @@ void AllocPrimBuffers(s32 *arg0) {
 }
 
 void ClearOt(DrawBuffer *arg0) {
-    ClearOTagR((u32 *)arg0->ot, 0x1000);
     arg0->prim = arg0->primStart;
 }
 
@@ -2987,22 +2913,6 @@ s32 list_count(u8 **arg0) {
         n++;
     }
     return n;
-}
-
-void debug_font_init(void) {
-    FntLoadPatch = 0x2626001F;
-    FntLoad(0x380, 0x100);
-    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
-    DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
-    DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
-}
-
-void debug_font_init2(void) {
-    FntLoadPatch = 0x2626001F;
-    FntLoad(0x380, 0x100);
-    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
-    DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
-    DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
 
 void texture_unused_a(void) {
@@ -3718,10 +3628,6 @@ s32 PadUnused[1] = {0};
 u8 PadActAlign[8] = { 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0 };
 s32 PadLastRead = 0;
 u8 PadMtapBuf[2][52] = {0};
-u32 DebugFontClutData[8] = {
-    0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000,
-    0xFFFF0000,
-};
 FreeNode *FreeBufNodes = 0;
 Slot12 VramSlots[3] = {
     { { 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 } }, { { 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0 } },
@@ -3735,9 +3641,6 @@ u8 VramReqEnd[12] = { 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0xFF, 0xFF, 0, 0 };
 FreeNode *ClutFreeSmall = 0;
 FreeNode *ClutUsedSmall = 0;
 FreeNode *ClutLargeList = 0;
-s32 DebugFontStream = 0;
-s32 DebugFontTPage = 0;
-s32 DebugFontClut = 0;
 u8 *VramBufNodes = 0;
 void (*SsTickSaved)() = (void (*)())(iptr)0x4D2;
 s32 SoundUnused[6] = {0};

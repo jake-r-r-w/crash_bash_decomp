@@ -9,7 +9,6 @@ typedef unsigned int u32;
 #include <libetc.h>
 #include "platform.h"
 
-void gpu_present(void);
 void pad_vblank(void);
 void snd_vblank(void);
 
@@ -34,7 +33,6 @@ int VSync(int mode) {
     if (mode == 1) {
         return 0;
     }
-    gpu_present();
     target = LastVSync + (mode == 0 ? 1 : mode);
     if (target <= VBlanks) {
         target = VBlanks + 1;

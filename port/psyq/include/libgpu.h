@@ -106,32 +106,13 @@ void prim_submit(void *ot, void *prim);
     ((((tp) & 3) << 7) | (((abr) & 3) << 5) | (((y) & 0x100) >> 4) | (((x) & 0x3FF) >> 6) | \
      (((y) & 0x200) << 2))
 
-int ResetGraph(int mode);
-int SetGraphDebug(int level);
-void SetDispMask(int mask);
-int DrawSync(int mode);
-DISPENV *SetDefDispEnv(DISPENV *env, int x, int y, int w, int h);
 DRAWENV *SetDefDrawEnv(DRAWENV *env, int x, int y, int w, int h);
-DISPENV *PutDispEnv(DISPENV *env);
 DRAWENV *PutDrawEnv(DRAWENV *env);
-uint32_t *ClearOTag(uint32_t *ot, int n);
-uint32_t *ClearOTagR(uint32_t *ot, int n);
 void DrawOTag(uint32_t *ot);
 int ClearImage(RECT *r, uint8_t red, uint8_t green, uint8_t blue);
 int ClearImage2(RECT *r, uint8_t red, uint8_t green, uint8_t blue);
 int LoadImage(RECT *r, uint32_t *p);
-int StoreImage(RECT *r, uint32_t *p);
-int MoveImage2(RECT *r, int x, int y);
-uint16_t GetClut(int x, int y);
-uint16_t GetTPage(int tp, int abr, int x, int y);
-uint16_t LoadClut2(uint32_t *clut, int x, int y);
-void SetDrawArea(DR_AREA *p, RECT *r);
 void SetDrawEnv(DR_ENV *dr, DRAWENV *env);
-void SetDrawMove(DR_MOVE *p, RECT *r, int x, int y);
 void SetTile1(TILE_1 *p);
-void FntLoad(int tx, int ty);
-int FntOpen(int x, int y, int w, int h, int isbg, int n);
-int FntPrint();
-uint32_t *FntFlush(int id);
 
 #endif

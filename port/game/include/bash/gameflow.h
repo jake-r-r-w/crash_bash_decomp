@@ -369,7 +369,6 @@ void ExitToTitles(void);
 
 void SetReturnGateway(void);
 
-void CopyScreen(void);
 
 s32 GameCount105(u8 *arg0);
 

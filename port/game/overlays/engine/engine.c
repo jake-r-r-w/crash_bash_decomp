@@ -363,9 +363,6 @@ void UpdateLevel(void) {
 
     mal_count_free(&MainHeap);
     CheckControllers();
-    if (GameCheats & 0x10) {
-        FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", MalFreeBytes, MalLargestFree);
-    }
     UpdateAllNas();
     ProcessHeroes();
     GlobalNAStatus = 2;

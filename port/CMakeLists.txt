@@ -59,7 +59,7 @@ foreach(ovl arkenoid bash bonk chase dino hub n2o papu pogo polar race spin tank
 endforeach()
 
 add_executable(crashbash main.c platform/overlays.c platform/gte.c platform/cd.c platform/etc.c platform/pad.c platform/saves.c
-  platform/stubs.c platform/audio.c platform/sdl.c platform/gfx.c platform/settings.c $<TARGET_OBJECTS:game>)
+  platform/audio.c platform/sdl.c platform/gfx.c platform/settings.c $<TARGET_OBJECTS:game>)
 target_include_directories(crashbash PRIVATE psyq/include)
 if(TARGET SDL3::SDL3-static)
   target_link_libraries(crashbash PRIVATE SDL3::SDL3-static)

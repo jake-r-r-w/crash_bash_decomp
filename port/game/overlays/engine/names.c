@@ -6,6 +6,5 @@
 s32 IntroScriptHandle;
 obj_dbase *IntroDbase;
 void *PapuStraySfx;  /* a word past the end of every slot overlay, where Papu's hero code keeps a sound handle */
-int FntLoadPatch;    /* an instruction inside PsyQ's FntLoad, which nascalls.c patched */
 u8 VramAreas[16];
 s32 VramNodePool[16];

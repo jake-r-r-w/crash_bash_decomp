@@ -688,7 +688,6 @@ struct LoadNode *loadlist_head(LoaderState *ls);
 void set_joypad(PadState *pad, u32 buttons);
 void cam_init(camera_info_tag *cam);
 void cam_ramp_override(void *arg0, s32 arg1);
-s32 *get_exe_exports(void);
 s32 angle_diff_abs(s32 arg0, s32 arg1);
 s32 angle_diff(s32 arg0, s32 arg1);
 void SetRandomSeed(s32 arg0, s32 arg1);
@@ -726,7 +725,6 @@ typedef struct { s32 v[4]; } Quat;
 extern s32 SfxDistanceCurve[];
 extern s32 SavedSp;
 extern u8 *LoadPermanentBuf;
-extern u8 ExportTable[];
 extern void **LangModeTypeTexts[];
 extern s32 SoundCritical;
 extern s32 MusicNext;
@@ -1018,11 +1016,6 @@ extern CdlLOC CdSeekLoc;
 extern RECT *ScreenRect;
 extern s32 ScreenSetFrame;
 extern s32 ScreenSetFlag;
-extern s32 FntLoadPatch;
-extern u32 DebugFontClutData[];
-extern s32 DebugFontStream;
-extern s32 DebugFontTPage;
-extern s32 DebugFontClut;
 void *mal_trim_front(void *base, s32 offset, _mal_area *arg2);
 void cam_build_view(camera_info_tag *cam, RECT *rect);
 extern GfxState RenderState;
@@ -1884,7 +1877,6 @@ extern u16 SpriteTripleUVs[][3];
 
 mal *mal_next_movable(_mal_area *heap);
 
-void export_exe_functions(void);
 
 
 

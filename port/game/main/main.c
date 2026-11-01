@@ -114,13 +114,11 @@ void shell_run_spyro_demo(void) {
     char unused[24]; /* never used, but the frame has room for it */
 
     machine_quit_sound();
-    DrawSync(0);
     StopRCnt(RCntCNT0);
     StopRCnt(RCntCNT1);
     StopRCnt(RCntCNT2);
     StopRCnt(RCntCNT3);
     VSync(4);
-    ResetGraph(3);
     PadStopCom();
     StopCallback();
     VSync(10);
@@ -502,7 +500,6 @@ static inline void mal_compact_merge(mal *arg0, _mal_area *arg1) {
 }
 
 void mal_compact(_mal_area *heap) {
-    DrawSync(0);
     while (mal_compact_next(heap) != NULL) {
         mal_compact_merge(heap->lowest, heap);
     }
@@ -2867,170 +2864,6 @@ s32 get_angle(s32 x, s32 z) {
     return 0x1000 - AtanTable[(x << 11) / z];
 }
 
-void export_exe_functions(void) {
-    void **t = (void **)ExportTable;
-
-    t[0x000 / 4] = InitDisplay;
-    t[0x004 / 4] = &num_sfx_banks;
-    t[0x008 / 4] = PlaySfx;
-    t[0x00C / 4] = StopSfx;
-    t[0x010 / 4] = sfx_bank_load;
-    t[0x014 / 4] = sound_reinit;
-    t[0x018 / 4] = sfx_delete_all;
-    t[0x01C / 4] = sfx_set_pitch;
-    t[0x020 / 4] = sfx_bank_close;
-    t[0x024 / 4] = sound_pause;
-    t[0x028 / 4] = sound_resume;
-    t[0x02C / 4] = music_play_level;
-    t[0x030 / 4] = music_request;
-    t[0x034 / 4] = sound_init;
-    t[0x038 / 4] = sound_set_mono;
-    t[0x03C / 4] = sound_set_stereo;
-    t[0x040 / 4] = music_fade_out;
-    t[0x044 / 4] = path_find;
-    t[0x048 / 4] = path_get;
-    t[0x04C / 4] = key_interp_pos;
-    t[0x050 / 4] = key_find;
-    t[0x054 / 4] = draw_map_scene;
-    t[0x058 / 4] = draw_map_sub;
-    t[0x05C / 4] = map_update;
-    t[0x060 / 4] = mapscene_init;
-    t[0x064 / 4] = mapscene_load;
-    t[0x068 / 4] = mapscene_release;
-    t[0x06C / 4] = mapscene_place_subs;
-    t[0x070 / 4] = prims_init;
-    t[0x074 / 4] = face_prim_alloc;
-    t[0x078 / 4] = primnode_alloc;
-    t[0x07C / 4] = primset_alloc;
-    t[0x080 / 4] = prims_empty;
-    t[0x084 / 4] = faces_write_colors;
-    t[0x088 / 4] = faces_write_uvs_colors;
-    t[0x08C / 4] = primpool_init;
-    t[0x090 / 4] = primpool_free;
-    t[0x094 / 4] = release_sprim;
-    t[0x098 / 4] = new_sprim;
-    t[0x09C / 4] = draw_gouraud_quad;
-    t[0x0A0 / 4] = draw_panel_rect;
-    t[0x0A4 / 4] = sub_play_script;
-    t[0x0A8 / 4] = draw_model_quad;
-    t[0x0AC / 4] = draw_nas_model_flags;
-    t[0x0B0 / 4] = draw_nas_model;
-    t[0x0B4 / 4] = draw_text_nas;
-    t[0x0B8 / 4] = sub_use_quad_model;
-    t[0x0BC / 4] = kill_sprim_sub;
-    t[0x0C0 / 4] = model_entry_texture;
-    t[0x0C4 / 4] = model_entry_data;
-    t[0x0C8 / 4] = SetDrawArea;
-    t[0x0CC / 4] = tga_convert;
-    t[0x0D0 / 4] = eng_add_subs;
-    t[0x0D4 / 4] = eng_kill;
-    t[0x0D8 / 4] = eng_render;
-    t[0x0DC / 4] = subpool_init;
-    t[0x0E0 / 4] = eng_add_subs_n;
-    t[0x0E4 / 4] = subs_init_array;
-    t[0x0E8 / 4] = draw_init;
-    t[0x0EC / 4] = gfx_set_viewport;
-    t[0x0F0 / 4] = entity_address;
-    t[0x0F4 / 4] = init_dots;
-    t[0x0F8 / 4] = plot_point_sprites;
-    t[0x0FC / 4] = fx_alloc_buffers;
-    t[0x100 / 4] = fx_free_buffers;
-    t[0x104 / 4] = calc_rgbcode;
-    t[0x108 / 4] = cam_init;
-    t[0x10C / 4] = cam_ease_to;
-    t[0x110 / 4] = ResetScreen;
-    t[0x114 / 4] = vram_init;
-    t[0x118 / 4] = load_font;
-    t[0x11C / 4] = dbase_asload_with_anims;
-    t[0x120 / 4] = AllocOtBuffers;
-    t[0x124 / 4] = dbase_init;
-    t[0x128 / 4] = dbase_load_textures_wait;
-    t[0x12C / 4] = dbase_init_all;
-    t[0x130 / 4] = (u8 *)HeroModelBank;
-    t[0x134 / 4] = MulMatrix;
-    t[0x138 / 4] = pad_rumble_small;
-    t[0x13C / 4] = pad_rumble_big;
-    t[0x140 / 4] = debug_font_init2;
-    t[0x144 / 4] = dbase_mesh_anim_name_load;
-    t[0x148 / 4] = dbase_mesh_anim_name_loaded;
-    t[0x14C / 4] = dbase_mesh_anim_name_release;
-    t[0x150 / 4] = dbase_load_all_mesh_anims;
-    t[0x154 / 4] = dbase_mesh_anim_name_size;
-    t[0x158 / 4] = dbase_anim_release;
-    t[0x15C / 4] = dbase_anim_ptr;
-    t[0x160 / 4] = dbase_anim_load;
-    t[0x164 / 4] = set_joypad;
-    t[0x168 / 4] = combo_check_all;
-    t[0x16C / 4] = sub_find_point;
-    t[0x170 / 4] = sortlist_sort;
-    t[0x174 / 4] = load_file_to;
-    t[0x178 / 4] = mal_update_deferred;
-    t[0x17C / 4] = sub_nth;
-    t[0x180 / 4] = load_file_permanent;
-    t[0x184 / 4] = load_file_direct;
-    t[0x188 / 4] = mapenv_place_subs;
-    t[0x18C / 4] = mapscene_find_sub;
-    t[0x190 / 4] = entry_block_value;
-    t[0x194 / 4] = gte_rotate_point;
-    t[0x198 / 4] = fade_update;
-    t[0x19C / 4] = set_fade;
-    t[0x1A0 / 4] = process_init;
-    t[0x1A4 / 4] = process_control_update;
-    t[0x1A8 / 4] = process_control_render;
-    t[0x1AC / 4] = process_quit;
-    t[0x1B0 / 4] = process_control_init;
-    t[0x1B4 / 4] = process_control_goto;
-    t[0x1B8 / 4] = process_interrupt;
-    t[0x1BC / 4] = process_control_back;
-    t[0x1C0 / 4] = texture_draw_quad;
-    t[0x1C4 / 4] = texture_release_loading_mem;
-    t[0x1CC / 4] = music_load_track;
-    t[0x1D0 / 4] = texture_draw_3d;
-    t[0x1D4 / 4] = SysPrintAt3d;
-    t[0x1D8 / 4] = DrawSysText;
-    t[0x1DC / 4] = card_save;
-    t[0x1E0 / 4] = card_reset;
-    t[0x1E4 / 4] = quat_to_matrix;
-    t[0x1E8 / 4] = init_scripts;
-    t[0x1EC / 4] = scripts_update;
-    t[0x1F0 / 4] = scripts_render;
-    t[0x1F4 / 4] = scripts_release;
-    t[0x1F8 / 4] = scripts_kill_all;
-    t[0x1FC / 4] = play_script;
-    t[0x200 / 4] = get_script_header;
-    t[0x204 / 4] = offset_table_entry;
-    t[0x208 / 4] = get_script_track;
-    t[0x20C / 4] = gfx_object_matrix;
-    t[0x210 / 4] = emit_particle;
-    t[0x214 / 4] = vel_update;
-    t[0x218 / 4] = interp;
-    t[0x21C / 4] = lerp_angle;
-    t[0x220 / 4] = lerp_fix12;
-    t[0x224 / 4] = posdst_flash_at;
-    t[0x228 / 4] = posdst_flash;
-    t[0x22C / 4] = CurrentModule;
-    t[0x230 / 4] = LangModeTypeTexts;
-    t[0x238 / 4] = music_set_tempo;
-    t[0x23C / 4] = music_restart;
-    t[0x240 / 4] = music_flag_restart;
-    t[0x244 / 4] = music_duck_off;
-    t[0x248 / 4] = vab_loading;
-    t[0x24C / 4] = vab_transfer_wait;
-    t[0x250 / 4] = quat_slerp;
-    t[0x254 / 4] = (void *)&VabCueTimer;
-    t[0x258 / 4] = (void *)&VabCuePending;
-    t[0x25C / 4] = itoa_div;
-    t[0x260 / 4] = shell_run_spyro_demo;
-    t[0x264 / 4] = dbase_texture_ptr;
-    t[0x268 / 4] = dbase_texture_entry;
-    t[0x270 / 4] = pads_reset_rumble;
-    t[0x27C / 4] = queue_group_load;
-    t[0x280 / 4] = FileGroups;
-    t[0x284 / 4] = subpool_free;
-    t[0x288 / 4] = kill_script_threads;
-    t[0x28C / 4] = kill_script;
-}
-
 void itoa_div(char *dst, s32 val, s32 div) {
     s32 q;
     s32 t;
@@ -3120,10 +2953,6 @@ s32 bit_count(u32 x) {
         bits++;
     }
     return bits;
-}
-
-s32 *get_exe_exports(void) {
-    return ExportTable;
 }
 
 s32 get_dist_angles(s32 *a, s32 *b, s16 *out) {
@@ -4097,11 +3926,9 @@ s16 AtanTable[2050] = {
     0x1FC, 0x1FD, 0x1FD, 0x1FD, 0x1FD, 0x1FD, 0x1FD, 0x1FE, 0x1FE, 0x1FE, 0x1FE, 0x1FE, 0x1FE,
     0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x200, 0x200, 0x200, 0x200, 0,
 };
-u8 ExportTable[656] = {0};
 
 /* After every object's .data (main.yaml's .sdata entry): the startup code (2MBYTE.OBJ) points
  * $gp here and clears what follows up to HeapStart, the .bss. */
-void (*ExportsInit)(void) __attribute__((section(".sdata"))) = export_exe_functions;
 
 /* the .bss, in link order: written into the file as zeros, as the original link did */
 s32 StartupRa __attribute__((section(".bss")));   /* where the startup code saves $ra */

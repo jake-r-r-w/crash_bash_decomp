@@ -560,7 +560,6 @@ void dbase_load_textures_wait(obj_dbase *rec) {
         vab_transfer_check();
     }
 done:
-    DrawSync(0);
     while (mal_update_deferred(&MainHeap) != NULL) {
     }
 }

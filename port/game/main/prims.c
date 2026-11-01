@@ -183,7 +183,6 @@ void prims_empty_back(void) {
     PrimSet *node;
 
     idx = (FrameCount & 1) ^ 1;
-    DrawSync(0);
     node = PrimSetList;
     for (;;) {
         if (node == NULL) {
@@ -610,7 +609,6 @@ void *new_sprim(void) {
 void primpool_free(void) {
     NodePool *pool;
 
-    DrawSync(0);
     primpool_release_all();
     pool = &PrimPool;
     if (pool->mem != NULL) {
@@ -789,7 +787,6 @@ void primlist_reset(PrimList *arg0, s32 arg1) {
 void prims_empty(void) {
     PrimSet *set;
 
-    DrawSync(0);
     printf("empty prims\n");
     if (ScreenRect != 0) {
         ClearOt(DrawBuffers);
