@@ -7,6 +7,7 @@
 #include "bash/papu_ovl.h"
 #include "bash/tank_ovl.h"
 #include "bash/papu_pahero.h"
+#include "bash/n2o_nox.h"
 
 void platform_bot_buttons(int buttons);
 extern s32 PapuBossFlag;
@@ -693,8 +694,212 @@ static s32 slide_to(s32 err) {
     return 0;
 }
 
+#define NOX_LOOK 48
+#define NOX_FORWARD 0x100
+#define NOX_CLOSING (NOX_FORWARD + 0x14)
+#define NOX_MARGIN 0x40
+#define NOX_BALL_MARGIN 0x80
+#define NOX_BOX_PAD 0x180
+#define NOX_BOX_TURN 0x20
+#define NOX_ORBIT 0x200
+#define NOX_ACCEL 0x10
+#define NOX_YAW 0x180
+#define NOX_PITCH 0x180
+#define NOX_THREATS 64
+#define NOX_X_LIMIT 0xA00
+#define NOX_Y_LIMIT (-0xB00)
+#define NOX_MIDDLE_Y (-0x580)
+#define NOX_FIRE_EVERY 4
+#define NOX_MINE_REACH (0x90000 + 0x40000)
+#define NOX_MISSILE_REACH (0x40000 + 0x40000)
+#define NOX_MISSILE_SPEED 220
+#define NOX_MISSILE_AIM 0x100
+
+typedef struct NoxThreat {
+    SLONG_XYZ pos;
+    s32 radius2;      /* a sphere's, 0 for a box */
+    const Box2 *box;
+    s32 turn, turn_rate;
+    s32 homing;       /* a missile, coming for him till it's passed him */
+    s32 closing;
+    s32 damage;       /* as a share of MineDamage: 4 all of it, 1 a quarter */
+} NoxThreat;
+
+static NoxThreat NoxThreats[NOX_THREATS];
+static s32 NoxThreatCount;
+
+/* What's on the way: the asteroids and the spinning bars still ahead. */
+static void nox_find_threats(const EXTengine *he) {
+    AstSceneObj *o = (AstSceneObj *)MapScene->subs;
+    s32 asteroid = 0;
+    NAS *n;
+
+    NoxThreatCount = 0;
+    for (; o != NULL && NoxThreatCount < NOX_THREATS; o = o->next) {
+        u8 kind = o->k.kind;
+        NoxThreat *t = &NoxThreats[NoxThreatCount];
+
+        if (o->k.mode == 0x63 || o->k.mode == 0x64) {
+            continue;
+        }
+        if (kind == 5 || kind == 8) {
+            AstSlot *a = &NoxAsteroids[asteroid++];
+
+            if (a->state != 1 && (o->flags & 0x8000) && a->pos.z > he->XYZ.z - 0x800 && a->pos.z < he->XYZ.z + NOX_LOOK * NOX_CLOSING) {
+                s32 r = (csqrt(a->radius) >> 6) + NOX_BALL_MARGIN + (a->state2 == 1 ? NOX_ORBIT : 0);
+
+                t->pos = a->pos;
+                t->radius2 = r * r;
+                t->box = NULL;
+                t->homing = 0;
+                t->closing = NOX_CLOSING;
+                t->damage = a->state2 == 1 ? 4 : 1;
+                NoxThreatCount++;
+            }
+        } else if (kind == 6 || kind == 9 || kind == 10) {
+            if ((o->flags & 0x8000) && o->pos.z > he->XYZ.z - 0x800 && o->pos.z < he->XYZ.z + NOX_LOOK * NOX_CLOSING) {
+                t->pos = o->pos;
+                t->radius2 = 0;
+                t->box = (const Box2 *)SubFindFlagPoint((subengine *)o, 0, 0);
+                t->turn = o->rz;
+                t->turn_rate = kind == 6 ? NOX_BOX_TURN : kind == 9 ? -NOX_BOX_TURN : 0;
+                t->homing = 0;
+                t->closing = NOX_CLOSING;
+                t->damage = 4;
+                NoxThreatCount += t->box != NULL;
+            }
+        }
+    }
+    /* what Oxide leaves and fires */
+    for (n = NASActiveHead; n != NULL && NoxThreatCount < NOX_THREATS; n = n->Tag.Child) {
+        NoxThreat *t = &NoxThreats[NoxThreatCount];
+        s32 mine = n->Handler == PlotNitroMine;
+        s32 missile = n->Handler == PlotNitroMissile;
+
+        if ((!mine && !missile) || n->Engine == NULL || n->Engine->XYZ.z < he->XYZ.z - 0x800) {
+            continue;
+        }
+        if (missile) {
+            NitroShotExt *x = FindExtension(n, 0x10000000);
+
+            if (x == NULL || x->state != 0) {
+                continue;
+            }
+        }
+        t->pos = n->Engine->XYZ;
+        t->radius2 = mine ? NOX_MINE_REACH : NOX_MISSILE_REACH;
+        t->box = NULL;
+        t->homing = missile;
+        t->closing = NOX_FORWARD;
+        t->damage = 1;
+        NoxThreatCount++;
+    }
+}
+
+/* NoxBoxToSphere's test, for where the bar will have turned to by then */
+static s32 nox_hits_box(const NoxThreat *t, s32 dx, s32 dy, s32 dz, s32 ticks) {
+    s32 a = (t->turn + t->turn_rate * ticks) & 0xFFF;
+    s32 c = rcossin_tbl[a].unk2, s = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
+    s32 bx = (c * dx + s * dy) >> 12, by = (c * dy - s * dx) >> 12;
+    const Box2 *b = t->box;
+
+    return dz >= b->lo.v[2] - NOX_MARGIN && dz <= b->hi.v[2] + NOX_MARGIN && by >= b->hi.v[1] - NOX_BOX_PAD - NOX_MARGIN && by <= b->lo.v[1] + NOX_MARGIN &&
+           bx >= b->lo.v[0] - NOX_BOX_PAD - NOX_MARGIN && bx <= b->hi.v[0] + NOX_BOX_PAD + NOX_MARGIN;
+}
+
+static s32 towards(s32 v, s32 want, s32 step) {
+    return v < want ? (v + step < want ? v + step : want) : (v - step > want ? v - step : want);
+}
+
+/* What holding this steering costs him over what's ahead (NoxPreMoveHero's and NoxMoveHero's flight): the harder and the sooner a hit,
+   the worse. And where it leaves him. */
+static s32 nox_cost(const EXTengine *he, const EXTheromove *m, s32 yaw, s32 pitch, s32 *end) {
+    s32 x = he->XYZ.x, y = he->XYZ.y, xv = m->x_vel, yv = m->jump_vel;
+    s32 ry = he->xform.rot.vy, rx = he->xform.rot.vx;
+    SLONG_XYZ shot[NOX_THREATS];
+    u8 hit[NOX_THREATS] = { 0 };
+    s32 cost = 0;
+    s32 t, i;
+
+    for (i = 0; i < NoxThreatCount; i++) {
+        shot[i] = NoxThreats[i].pos;
+    }
+    for (t = 1; t <= NOX_LOOK; t++) {
+        rx += ((pitch - rx) << 20) >> 23;
+        ry += angle_diff(ry, 0x800 + yaw) >> 2;
+        xv = towards(xv, (NOX_FORWARD * rcossin_tbl[(ry + 0x400) & 0xFFF].unk2) >> 11, NOX_ACCEL);
+        yv = towards(yv, (NOX_FORWARD * rcossin_tbl[(rx + 0x400) & 0xFFF].unk2) >> 11, NOX_ACCEL);
+        x += xv;
+        y += yv;
+        x = x < -NOX_X_LIMIT ? -NOX_X_LIMIT : x > NOX_X_LIMIT ? NOX_X_LIMIT : x;
+        y = y < NOX_Y_LIMIT ? NOX_Y_LIMIT : y > 0 ? 0 : y;
+        for (i = 0; i < NoxThreatCount; i++) {
+            const NoxThreat *o = &NoxThreats[i];
+            s32 dx, dy, dz;
+
+            if (hit[i]) {
+                continue;
+            }
+            if (o->homing) {
+                /* PlotNitroMissile: straight at him, each tick */
+                s32 hz = he->XYZ.z + t * NOX_FORWARD;
+                s32 ax = x - shot[i].x, ay = y - 0x100 - shot[i].y, az = hz - shot[i].z;
+                s32 flat = csqrt(ax * ax + az * az) >> 6;
+
+                if (shot[i].z < hz) {
+                    continue;
+                }
+                if (flat > 0) {
+                    shot[i].x += ax * NOX_MISSILE_SPEED / flat;
+                    shot[i].z += az * NOX_MISSILE_SPEED / flat;
+                    shot[i].y += ay * NOX_MISSILE_SPEED / (flat + abs(ay));
+                }
+                dx = x - shot[i].x;
+                dy = y - shot[i].y;
+                dz = hz - shot[i].z;
+            } else {
+                dx = x - o->pos.x;
+                dy = y - o->pos.y;
+                dz = he->XYZ.z + t * o->closing - o->pos.z;
+            }
+            if (o->box != NULL ? nox_hits_box(o, dx, dy, dz, t) : abs(dz) < 0x2000 && dx * dx + dy * dy + dz * dz < o->radius2) {
+                hit[i] = 1;
+                cost += o->damage * (2 * NOX_LOOK - t);
+            }
+        }
+    }
+    *end = abs(x) + abs(y - NOX_MIDDLE_Y);
+    return cost;
+}
+
+/* His run through the asteroids: try each way of steering for what's ahead, take the one that costs him least and ends nearest the
+   middle, and keep firing, as shots break the small ones up. */
+static s32 play_nox(const EXTengine *he) {
+    static const s32 Yaws[3] = { 0, -NOX_YAW, NOX_YAW };
+    static const s32 Pitches[3] = { 0, -NOX_PITCH, NOX_PITCH };
+    static const u16 YawButtons[3] = { 0, BTN_LEFT, BTN_RIGHT };
+    static const u16 PitchButtons[3] = { 0, BTN_UP, BTN_DOWN };
+    const EXTheromove *m = Heroes[0].hero_move;
+    s32 best = 0x7FFFFFFF, best_end = 0x7FFFFFFF, buttons = 0;
+    s32 a, b;
+
+    nox_find_threats(he);
+    for (a = 0; a < 3; a++) {
+        for (b = 0; b < 3; b++) {
+            s32 end, cost = nox_cost(he, m, Yaws[a], Pitches[b], &end);
+
+            if (cost < best || (cost == best && end < best_end)) {
+                best = cost;
+                best_end = end;
+                buttons = YawButtons[a] | PitchButtons[b];
+            }
+        }
+    }
+    return buttons | (BotTicks % NOX_FIRE_EVERY == 0 ? BTN_SQUARE : 0);
+}
+
 /* Oxide. The first phase is his run over the asteroids, and it ends when his path does: nothing the hero does counts, as his
-   health isn't touched till the ball game, so keep firing and swaying. In the ball game a ball that goes out past him costs him
+   health isn't touched till the ball game. In the ball game a ball that goes out past him costs him
    health. A kick sends a ball straight out from the hero's middle: so stand beside where it'll cross by what puts it to the side
    he isn't, and kick when it's in reach. */
 static s32 play_oxide(void) {
@@ -705,9 +910,7 @@ static s32 play_oxide(void) {
         return 0;
     }
     if (N2OBallPhase != 1) {
-        static const u16 Sway[6] = { BTN_CROSS, 0, BTN_CROSS | BTN_RIGHT, 0, BTN_CROSS | BTN_LEFT, 0 };
-
-        return Sway[((BotTicks % 24) / 4)];
+        return play_nox(he);
     }
     if (N2ONextBall(1, &cross, &bx, &bz) && bz - he->XYZ.z < BALL_LENGTH && abs(cross - he->XYZ.x) < 0x200) {
         return slide_to(cross > he->XYZ.x || cross <= -0x600 ? cross + 0x400 - he->XYZ.x : cross - 0x400 - he->XYZ.x);
