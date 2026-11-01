@@ -758,6 +758,7 @@ u16 tex_palette_id(struct obj_textureset *set, s32 index);
 void tex_release_ids(struct obj_textureset *set);
 void mesh_submit_gt3(void *ot, void *poly, s32 face, s32 wind, s32 hidden);
 void mesh_submit_g3(void *ot, unsigned char *poly, s32 face, s32 wind, s32 hidden);
+void mesh_submit_gt4(void *ot, void *poly, const float first[9], const float last[9]);
 void draw_owner(const struct subengine *sub);
 void draw_owner_part(const void *mesh);
 void draw_depth(s32 on);

@@ -419,6 +419,37 @@ void mesh_submit_gt3(void *ot, void *poly, s32 face, s32 wind, s32 hidden) {
     gfx_face_tri(key, v, t, blend, wind, hidden);
 }
 
+/* A floor tile's textured quad, drawn as a model's faces are, not as the whole PS1 pixels and flat depth its packet holds: first has its
+   first three corners from the GTE, and last the fourth as its last corner. */
+void mesh_submit_gt4(void *ot, void *poly, const float first[9], const float last[9]) {
+    POLY_GT4 *p = poly;
+    s32 key = key_of(ot);
+    const GfxTex *t;
+    GfxVert v[4];
+    s32 blend;
+
+    if (key < 0) {
+        return;
+    }
+    t = tex_of(p->tpage, p->clut);
+    if (t == NULL) {
+        return;
+    }
+    BackPixels = NULL;
+    v[0].x = first[0]; v[0].y = first[1]; v[0].w = first[2]; v[0].u = p->u0; v[0].v = p->v0; v[0].rgba = colour_of(*(u32 *)&p->r0);
+    v[1].x = first[3]; v[1].y = first[4]; v[1].w = first[5]; v[1].u = p->u1; v[1].v = p->v1; v[1].rgba = colour_of(*(u32 *)&p->r1);
+    v[2].x = first[6]; v[2].y = first[7]; v[2].w = first[8]; v[2].u = p->u2; v[2].v = p->v2; v[2].rgba = colour_of(*(u32 *)&p->r2);
+    v[3].x = last[6]; v[3].y = last[7]; v[3].w = last[8]; v[3].u = p->u3; v[3].v = p->v3; v[3].rgba = colour_of(*(u32 *)&p->r3);
+    /* a corner behind the camera has no position that means anything */
+    if (v[0].w <= 1 || v[1].w <= 1 || v[2].w <= 1 || v[3].w <= 1) {
+        return;
+    }
+    blend = (((u8 *)p)[7] & 2) ? (p->tpage >> 5) & 3 : GFX_OPAQUE;
+    OwnerPart++;
+    gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, 0);
+    gfx_quad(key, v, t, blend);
+}
+
 /* An untextured mesh triangle: its blend word at +4, then a POLY_G3 at +8. */
 void mesh_submit_g3(void *ot, u8 *p, s32 face, s32 wind, s32 hidden) {
     s32 key = key_of(ot);

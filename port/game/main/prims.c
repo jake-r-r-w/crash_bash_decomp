@@ -1645,6 +1645,7 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     u8 *t;
     s32 xy, z;
     u32 otz;
+    float first[9], last[9];
 
     if (!(obj->flags & 0x8000)) {
         return;
@@ -1676,17 +1677,19 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     gte_rtps();
     gte_ldv0_t(&((MeshVerts *)t)->v[2]);
     gte_rtps();
+    pc_gte_precise(first);
     xy = *(s32 *)&((MeshVerts *)t)->v[3].vx;
     z = *(s32 *)&((MeshVerts *)t)->v[3].vz;
     gte_stsxy3_gt3(prim);
     gte_ldv0_w(xy, z);
     gte_rtps();
+    pc_gte_precise(last);
     gte_stsxy2(&prim->x3);
     gte_avsz3();
     gte_stotz(&otz);
     otz = (otz + RenderState.otzAdd) >> 1;
     if (otz < RenderState.otLen) {
-        addPrim(RenderState.ot + otz, prim);
+        mesh_submit_gt4(RenderState.ot + otz, prim, first, last);
     }
 }
 
