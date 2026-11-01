@@ -12988,10 +12988,15 @@ void SetPolarHeroWinner(s32 player) {
         game = FindExtension((NAS *)PolarBeamOwner, 0x40000000);
         i = 0;
         if (game != NULL) {
+            /* the lights may not be up yet: the PS1 wrote to low memory and carried on */
             for (; i < 4; i++) {
-                game->eng2[i]->flags &= 0xFFFF7FFF;
+                if (game->eng2[i] != NULL) {
+                    game->eng2[i]->flags &= 0xFFFF7FFF;
+                }
             }
-            game->eng->flags &= 0xFFFF7FFF;
+            if (game->eng != NULL) {
+                game->eng->flags &= 0xFFFF7FFF;
+            }
         }
     }
     base = Heroes;

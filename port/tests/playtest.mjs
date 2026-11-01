@@ -84,7 +84,7 @@ function run(exe, args, logfile, { timeout = 0, env = {} } = {}) {
 }
 
 function crash_where(exe, text) {
-    const crash = text.match(/^crash.*$/m);
+    const crash = text.match(/crash: code.*$/m);
     const image = text.match(/image ([0-9A-F]+)/);
     const stacks = [...text.matchAll(/^stack: (.*)$/gm)].flatMap(m => m[1].trim().split(/\s+/));
 
