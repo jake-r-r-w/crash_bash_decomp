@@ -20,8 +20,62 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was: the user prefers Melt Panic untouched. **To fix:** Dante's Dash (the extra trees look doubled, and flat beside the real ones). **To recheck after play:** Beach Ball's new sand and wall; N.Ballism's front corners. **Black at the sides, most first:** Crashball, Jungle Fox, Big Bad Fox, Ring Ding, Swamp Fox, Metal Fox, Drain Bash, Pogo Painter, El Pogo Loco. **Less:** Pogo Padlock, Sky Balls, Space Bash, Papu Pummel, Desert Fox, Bearminator, Toxic Dash, Warp Room 3. **Other marks:** a white patch at the top of Sky Balls, magenta at the edge of Polar Panic, a white block beside Tilt Panic's crystal arena. **Dark on purpose, probably leave:** Oxide Ride's space, Polar Panic's night sky. **Not looked at yet:** the crystal maps, which are maps of their own, and any level past its first seconds. Black was measured in still frames at the start of each level, so this is where to look first, not a full list | [ ] |
+| 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was. The levels are listed under this table | [ ] |
 | 7.6 | Sharper icons and UI text | Icons upscale with UPSCALE (7.5). Text and digits don't: the scaler spoils them, so they stay as they were. Sharper text would need a font redrawn at a higher resolution, which can't come from the player's data and so would be new art. A texture pack can now carry one (7.10) | [ ] |
 | 7.7 | Optional modern lighting | Lighting beyond the game's own, which is colours baked into its models' vertices | [ ] |
 | 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files. It goes in the launcher's Mods section, with the texture packs (7.10) | [ ] |
 | 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |
+
+### 7.11's levels
+
+Black was measured in still frames at the start of each level, so this is where to look first, not a full list.
+
+To fix:
+
+- Dante's Dash: the extra trees look doubled, and flat beside the real ones
+
+To recheck after playing:
+
+- Beach Ball: the new sand and wall
+- N.Ballism: the front corners
+
+Black at the sides, most first:
+
+- Crashball
+- Jungle Fox
+- Big Bad Fox
+- Ring Ding
+- Swamp Fox
+- Metal Fox
+- Drain Bash
+- Pogo Painter
+- El Pogo Loco
+
+Less black:
+
+- Pogo Padlock
+- Sky Balls
+- Space Bash
+- Papu Pummel
+- Desert Fox
+- Bearminator
+- Toxic Dash
+- Warp Room 3
+
+Other marks:
+
+- Sky Balls: a white patch at the top
+- Polar Panic: magenta at the edge
+- Tilt Panic: a white block beside its crystal arena
+
+Probably leave:
+
+- Oxide Ride: its space is dark on purpose
+- Polar Panic: its night sky
+- Melt Panic: the user prefers it as it was
+
+Not looked at yet:
+
+- The crystal maps, which are maps of their own
+- Any level past its first few seconds
+
