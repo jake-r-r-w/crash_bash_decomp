@@ -7,10 +7,4 @@ The work already done is in [ROADMAP-A.md](ROADMAP-A.md).
 When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 `tools/dk make progress` so the dashboard updates.
 
-## Part 6 - The PC port
-
-A native 64-bit PC port: no emulation, no hacks, on the best tech stack for a game that plays (decided 2026-10-30). The
-disc to disc work is byte matching; this isn't. The port has its own copy of the game's C and is tested by the user
-playing it. The decomp stays as it is. The design and the rules are in [PORT.md](PORT.md).
-
-Nothing is left here for now: Linux stays in the plan (PORT.md), but isn't built, at the user's request.
+Every part is done. The last, Part 6, the PC port, was marked done on 2026-11-01. A Linux build stays in the port's plan (PORT.md), but isn't built, at the user's request.

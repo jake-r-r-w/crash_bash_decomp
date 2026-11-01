@@ -61,11 +61,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-ROADMAP-B.md, Part 6:
+Every part of ROADMAP-B.md is done:
 
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
-3. **The PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
+3. Done 2026-11-01, marked so by the user: **the PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
    `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only for now, at the user's request: Linux
    stays in the plan, but isn't built. 6.7, finishing it, has saving, any resolution, analog sticks and rumble written, and the user has tried a real controller and it was fine (2026-11-01). What's left is a first
    release. Whether it plays the same as retail is checked by the user playing it.
@@ -464,6 +464,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-01: The user marked Part 6 done, which leaves nothing on ROADMAP-B. Linux stays in PORT.md's plan, unbuilt. A new release is the user's call: the repo is ahead of v0.1.0 by the floor fix, all of 6.8 and the spark and sound fixes.
 - 2026-11-01: The VRAM bookkeeping is gone from the port (`vram_*`, clut lists, `GfxTexInfo`'s rect, the shell settings' VRAM fields). `texture_scroll_step`, which looked like frame-swapping textures not showing, was an uncalled second copy of what `texture_update_anims` does properly, so it went too. `same --all` unchanged.
 - 2026-11-01: 6.8's packets are gone: the game calls `bash/draw.h` directly (`DrawFace`, `draw_face_quad`, `draw_plain_quad`, `draw_line`, `draw_mesh_*`, `draw_viewport`), a layer is a plain number, and there are no order tables, per-frame prim buffers, draw environments or `port/psyq/`. The matrix functions lost their Sony names too. `same --all` (44 runs, new, a minute) shows two differences, both fixes: the credits' spark trails now draw (`HubDrawSparks` linked itself into a table nothing read), and Crash Dash's and Tank's hero sounds pan from the hero (a raw `hero_eng + 0x10` was reading a pointer as a position). Debug and release builds agree. The suites all pass on it: `modes` 39 of 39, `bosses` 4 of 4, `menu`, and `adventure` to 200% with its save and reload. 6.8 is closed.
 - 2026-11-01: 6.8's GTE is gone: `platform/maths.c` has the view, `project_point` and its `ViewPoint`, `points_order`, `points_facing`, `view_transform`, `colour_fade` and `vector_towards`, by the same integer rules. `same` 14 of 14, `modes` 39 of 39, `bosses` all. Bear's test limit was too short (it wins at vblank 8378, the old code too), so it's 9000 now. `MulMatrix0` and `ApplyMatrixLV` still leave the view's rotation as their matrix, which the old ones did and nothing has shown the game doesn't need.

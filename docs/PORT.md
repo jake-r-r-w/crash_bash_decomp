@@ -1,7 +1,7 @@
 # The PC port
 
 A native 64-bit PC port of Crash Bash, built from this source on the best tech stack for a game that plays: no
-emulation and no hacks. It plays every mode. This file is the design, and the steps are in [ROADMAP-B.md](ROADMAP-B.md), Part 6.
+emulation and no hacks. It plays every mode. This file is the design, and the steps taken are in [ROADMAP-A.md](ROADMAP-A.md), Part 6.
 
 A first attempt ran the game as a 32-bit program on the PS1's memory layout, with a software PS1 GPU. It was
 deleted on 2026-10-30, and this plan starts again without any of that. Its code is in git

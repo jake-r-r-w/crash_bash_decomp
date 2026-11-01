@@ -770,7 +770,7 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
 
 The release is done: 5.1 to 5.15 (2026-10-29).
 
-## Part 6 - The PC port (done so far; the rest is in ROADMAP-B)
+## Part 6 - The PC port (done 2026-11-01)
 
 - [x] The boundary between the decomp and the port (2026-10-30; PORT.md).
   - `src/` and `include/` are shared and must always match.
