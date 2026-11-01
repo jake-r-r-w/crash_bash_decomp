@@ -797,6 +797,7 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 6.6 Native sound (2026-10-31): the game's sound banks and music played by its own mixer and sequencer on the sound device's thread,
   with the hardware's interpolation and envelopes, libsnd's volume sums read from Sony's code, and reverb from the game's presets. Accepted
   by the user's ear, with the effects 25% under the original's sums at their request.
+- [x] 6.7 Finishing it (2026-11-01): saving, any resolution, analog sticks and rumble, tried with a real controller by the user. The Adventure test plays to 200%. First release, [v0.1.0](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v0.1.0), for Windows, with no game data.
 - A 32-bit port ran the game on the PS1's memory layout, with all 33 modes playing to the end, then was
   deleted (2026-10-30). The layout couldn't reach 64-bit, so the port starts again (ROADMAP-B, PORT.md). Its
   code is in git at `7115b3b8`, and PORT.md has what it taught.
