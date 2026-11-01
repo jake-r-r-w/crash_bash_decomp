@@ -2602,6 +2602,7 @@ void draw_map_scene(map_enviroment *scene) {
         }
         sub = sub->next;
     }
+    wide_scenery_draw(scene, pv);
     GfxSetSceneBg(&RenderState, scene);
 }
 

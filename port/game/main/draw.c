@@ -456,6 +456,12 @@ void draw_clipped_begin(s32 key, s32 w, s32 h) {
     draw_depth(1);
 }
 
+/* What's drawn next goes behind everything else in its view, sorted among itself by real depth. */
+void draw_behind(s32 on) {
+    FixedKey = on ? RenderState.layer + RenderState.otLen - 1 : -1;
+    gfx_set_depth(on ? GFX_DEPTH_LAYERS : 0);
+}
+
 void draw_clipped_end(void) {
     draw_depth(0);
     FixedKey = -1;

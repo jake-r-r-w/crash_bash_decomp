@@ -114,6 +114,8 @@ DrawFace *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *
 void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam);
 void draw_map_scene(map_enviroment *scene);
 void mapenv_place_subs(map_enviroment *env);
+/* More of a level's scenery, for a wide view (main/widescenery.c). */
+void wide_scenery_draw(map_enviroment *scene, MATRIX *view);
 s32 tri_visible(SVECTOR *v);
 void draw_nas_model_flags(subengine *nas, MATRIX *arg1, u32 flags);
 KeyEntry *key_interp_pos(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);

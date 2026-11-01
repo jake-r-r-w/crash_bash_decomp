@@ -40,6 +40,9 @@ void draw_mesh_tri(int32_t layer, const DrawFace *f, const ViewPoint q[3], int32
 void draw_mesh_tri_plain(int32_t layer, const DrawFace *f, const ViewPoint q[3], int32_t face, int32_t wind, int32_t hidden);
 void draw_mesh_quad(int32_t layer, const DrawFace *f, const ViewPoint q[4]);
 
+/* What's drawn next goes behind everything else in its view. */
+void draw_behind(int32_t on);
+
 /* What's drawn next is cut to this rectangle, with a background of the colour under it if fill is set. */
 void draw_viewport(int32_t layer, int32_t x, int32_t y, int32_t w, int32_t h, int32_t fill, uint32_t colour);
 
