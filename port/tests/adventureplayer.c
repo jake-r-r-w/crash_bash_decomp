@@ -2,8 +2,8 @@
  * goes through it, as a player does. In a game the computer plays for it, and hands back as the win comes, as a win only counts
  * for a player; a boss is bossbot.c's. It saves at the computer every few wins, and when no door has anything left to win it saves
  * and stops. --adventure-load loads that save from the title menu and stops, --adventure-resume loads it and plays on. The log says how
- * far it's got each time it's back. A challenge it keeps losing gets weaker computer opponents, a little more each go, and the log says
- * so, as a win like that doesn't show it can be beaten at full strength. */
+ * far it's got each time it's back. A challenge it keeps losing gets weaker computer opponents, a little more each go, and in the end
+ * ones that stand still, and the log says so, as a win like that doesn't show it can be beaten at full strength. */
 #include <stdio.h>
 #include "common.h"
 #include "bash/main.h"
@@ -22,6 +22,7 @@ void platform_finish(int code);
 int platform_vblanks(void);
 void BossBotUpdate(void);
 void PogoPlayerBot(s32 id);
+void BashPlayerBot(s32 id);
 
 #define BTN_UP 0x10
 #define BTN_RIGHT 0x20
@@ -52,8 +53,10 @@ void PogoPlayerBot(s32 id);
 #define WEAKEN_AFTER 6
 #define WEAKEN_STEP 3
 #define WEAKEST 1
+#define FREEZE_AFTER 24
 #define FULL_STRENGTH 0x20
 #define RING_DING 27
+#define BASH_LAST 3
 #define POGO_FIRST 10
 #define POGO_PADLOCK 13
 #define BALLOON_FIRST 8
@@ -79,6 +82,7 @@ static s32 Unsaved;
 static s32 Loaded;
 static s32 WeakLevel = FULL_STRENGTH;
 static s32 WeakWins;
+static s32 FreezeThem;
 
 static s32 in_room(void) {
     return GameMode >= ROOM_FIRST && GameMode <= ROOM_LAST;
@@ -462,6 +466,7 @@ void AdventurePlayerUpdate(void) {
         if (!InRoom) {
             InRoom = 1;
             log_progress();
+            FreezeThem = 0;
         }
         GAME->heroCpu[0] = 0;
         platform_bot_buttons(play_room());
@@ -472,6 +477,10 @@ void AdventurePlayerUpdate(void) {
         Losses = 0;
         printf("adventure: try %d of level %d challenge %d\n", Tries[GameMode][WantChoice], GameMode, WantChoice);
         WeakLevel = FULL_STRENGTH;
+        FreezeThem = Tries[GameMode][WantChoice] > FREEZE_AFTER && !(GAME->levelFlags & 0x100);
+        if (FreezeThem) {
+            printf("adventure: opponents standing still\n");
+        }
         if (Tries[GameMode][WantChoice] > WEAKEN_AFTER && !(GAME->levelFlags & 0x100)) {
             WeakLevel = FULL_STRENGTH - (Tries[GameMode][WantChoice] - WEAKEN_AFTER) * WEAKEN_STEP;
             if (WeakLevel < WEAKEST) {
@@ -490,6 +499,9 @@ void AdventurePlayerUpdate(void) {
             if (AiPlayerSkill[i].level > WeakLevel) {
                 AiPlayerSkill[i].level = WeakLevel;
             }
+            if (FreezeThem && GameMode < ROOM_FIRST) {
+                Heroes[i].hero_frozen = GAME->exitFlags == 0 ? 3 : 0;
+            }
         }
     }
     if (GAME->levelFlags & 0x100) {
@@ -506,6 +518,9 @@ void AdventurePlayerUpdate(void) {
     }
     if (GameMode >= POGO_FIRST && GameMode <= POGO_PADLOCK) {
         HeroHooks.HeroBot = PogoPlayerBot;
+    }
+    if (GameMode <= BASH_LAST) {
+        HeroHooks.HeroBot = BashPlayerBot;
     }
     /* the fail screen: enough goes at this one, back to the warp room for something else */
     if ((GAME->exitFlags & 1) && Losses >= GIVE_UP && GameMode < ROOM_FIRST) {
