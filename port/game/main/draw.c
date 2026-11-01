@@ -87,6 +87,15 @@ static const GfxTex *scrolled_texture(const obj_texture *t, int image, int palet
     return gfx_texture_plain(TEX_ID(image, palette, t->pix + top * row), Rows, t->w, t->h, bpp, pal);
 }
 
+/* The game's text, and the panel's digits: small hand-placed pixels that upscaling or filtering would spoil, so they stay as they are. */
+#define PANEL_DIGITS_FIRST 0x09
+#define PANEL_DIGITS_LAST 0x20
+
+static s32 is_text(const obj_textureset *ts, s32 index) {
+    return ts == &sysfont_dbase->textures ||
+           (ts == &HeroModelBank[DB_Interface].textures && index >= PANEL_DIGITS_FIRST && index <= PANEL_DIGITS_LAST);
+}
+
 static const GfxTex *tex_of(u16 image, u16 palette) {
     ImageReg *im = &Images[image & (MAX_IMAGES - 1)];
     obj_textureset *ts = im->set;
@@ -104,6 +113,9 @@ static const GfxTex *tex_of(u16 image, u16 palette) {
     }
     if (t->scrollRow != 0) {
         return scrolled_texture(t, image, palette, base, pal);
+    }
+    if (is_text(ts, im->index)) {
+        return gfx_texture_sharp(TEX_ID(image, palette, t->pix), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
     }
     return gfx_texture(TEX_ID(image, palette, t->pix), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
 }

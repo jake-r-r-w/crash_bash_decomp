@@ -52,6 +52,7 @@ typedef struct {
 typedef struct {
     const void *pixels, *palette;
     int w, h, bpp;
+    int factor;
     uint64_t hash;
     GfxTex t;
 } Cached;
@@ -711,7 +712,7 @@ static void mark_dirty(int x, int y, int w, int h) {
     NumDirty++;
 }
 
-static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor) {
+static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor, int sharp) {
     static uint32_t *decoded;
     static int decoded_size;
     Cached *c;
@@ -735,7 +736,7 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
     }
     for (i = NumTextures - 1; i >= 0; i--) {
         c = &Textures[i];
-        if (c->hash == hash && c->w == w && c->h == h) {
+        if (c->hash == hash && c->w == w && c->h == h && c->factor == factor && c->t.sharp == sharp) {
             slot->gen = IdGen;
             slot->id = id;
             slot->index = i;
@@ -766,6 +767,8 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
     c->w = w;
     c->h = h;
     c->bpp = bpp;
+    c->factor = factor;
+    c->t.sharp = sharp;
     /* one texel of border all round, copied from the edges below */
     c->t.u0 = (float)(ShelfX + 1) / AtlasSize;
     c->t.v0 = (float)(ShelfY + 1) / AtlasSize;
@@ -853,11 +856,15 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
 
 const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
     /* a picture that fills the screen is already as big as it needs to be */
-    return texture_scaled(id, pixels, w, h, bpp, palette, bpp == 16 ? 1 : Upscale);
+    return texture_scaled(id, pixels, w, h, bpp, palette, bpp == 16 ? 1 : Upscale, 0);
 }
 
 const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, 1);
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0);
+}
+
+const GfxTex *gfx_texture_sharp(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 1);
 }
 
 
@@ -946,8 +953,8 @@ static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float ste
     o->w = w;
     if (tex != NULL) {
         /* filtered, a whole number's the middle of a texel, or it would blend with the next */
-        o->u = tex->u0 + (v->u + (Smooth ? 0.5f : 0)) * tex->us;
-        o->v = tex->v0 + (v->v + (Smooth ? 0.5f : 0)) * tex->vs;
+        o->u = tex->u0 + (v->u + (Smooth && !tex->sharp ? 0.5f : 0)) * tex->us;
+        o->v = tex->v0 + (v->v + (Smooth && !tex->sharp ? 0.5f : 0)) * tex->vs;
     } else {
         o->u = 0;
         o->v = 0;
@@ -958,7 +965,7 @@ static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float ste
 /* One run of triangles with the same state, in draw order. */
 typedef struct {
     int first, count;
-    short blend, textured, clip;
+    short blend, textured, clip, sharp;
 } Run;
 
 /* The largest part of a window with the picture's shape, centred. */
@@ -1023,6 +1030,7 @@ static void draw_shown(float step) {
         r->blend = BLEND_PICTURE;
         r->textured = 1;
         r->clip = 0;
+        r->sharp = 1;
     }
     {
     for (i = 0; i < NumShown; i++) {
@@ -1043,12 +1051,13 @@ static void draw_shown(float step) {
             if (depth) {
                 b = BLEND_DEPTH;
             }
-            if (r == NULL || r->blend != b || r->textured != textured || r->clip != t->clip) {
+            if (r == NULL || r->blend != b || r->textured != textured || r->clip != t->clip || r->sharp != (textured && t->tex->sharp)) {
                 r = &runs[numRuns++];
                 r->first = used;
                 r->count = 0;
                 r->blend = (short)b;
                 r->textured = (short)textured;
+                r->sharp = (short)(textured && t->tex->sharp);
                 r->clip = t->clip;
             }
             put_vert(&gv[used++], &t->v[0], t->moving ? &t->from[0] : NULL, step, t->tex, depth);
@@ -1213,7 +1222,7 @@ static void draw_shown(float step) {
             SDL_BindGPUGraphicsPipeline(pass, pipe);
             SDL_SetGPUScissor(pass, &ShownClips[r->clip]);
             tb.texture = r->blend == BLEND_PICTURE ? Base : Atlas;
-            tb.sampler = Smooth && r->blend != BLEND_PICTURE ? SamplerSmooth : Sampler;
+            tb.sampler = Smooth && !r->sharp ? SamplerSmooth : Sampler;
             SDL_BindGPUFragmentSamplers(pass, 0, &tb, 1);
             SDL_PushGPUFragmentUniformData(cmd, 0, mode, sizeof(mode));
             SDL_DrawGPUPrimitives(pass, r->count, 1, r->first, 0);
