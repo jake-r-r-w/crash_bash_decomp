@@ -5,8 +5,6 @@
 #include "bash/papu.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char PapuAnimBreathe[] = "BREATHE";
@@ -172,9 +170,7 @@ hero_seq KON_PA_seq_hold_throw[18] = {
     0x8007, 0xE, 0x4488, 0x8004, 0,
 };
 /* the shell settings (engine world record 0x0105) */
-shell_setup papu_shell_info = {
-    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x400,
-};
+shell_setup papu_shell_info = { { 0xC8, 0x2BC, 0x200 } };
 s32 PapuFloorWave0[20] = {
     0x70001, 0x80006, -0x10000, 0, 0, 0x70003, 6, -0x10000, 0, 0, 0x70005, 0x80006, -0x10000,
     0, 0, 0, 0, 0, 0, 0,

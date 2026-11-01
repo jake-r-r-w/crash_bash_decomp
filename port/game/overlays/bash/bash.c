@@ -5,8 +5,6 @@
 #include "bash/xtras.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char BashAnimBreathe[] = "BREATHE";
@@ -203,9 +201,7 @@ hero_seq KON_BA_seq_hold_throw[18] = {
     0x8007, 0xE, 0x4488, 0x8004, 0,
 };
 /* the four worlds' shell settings (engine world records 0x0104, 0x0001..0x0003) */
-shell_setup bash_shell_info = {
-    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x400,
-};
+shell_setup bash_shell_info = { { 0xC8, 0x2BC, 0x200 } };
 s32 PenguinSteps0[6] = { (s32)0x80110000, 0x40150026, 0x424800B, 0x168011, (s32)0x80004000, 0 };
 s32 PenguinSteps1[15] = {
     (s32)0x80110000, 0x4100001A, 0x428800B, 0x48011, (s32)0x800F4119, 0x411D0009, 0x800F,

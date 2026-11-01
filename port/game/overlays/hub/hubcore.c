@@ -8,8 +8,6 @@
 #include "bash/titles.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 void InitialiseHUB(void) {
     HeroInfo *hero;

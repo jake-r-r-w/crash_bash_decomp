@@ -8,8 +8,6 @@
 
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char TextAdventureHint[] = "complete each warp room to\nunlock further levels";
@@ -157,9 +155,7 @@ WWInf TitlesWorldInfo[3] = {
     { 0xC5, TitlesAnims, TitlesLevelDB, 3 },
     { 0xC5, TitlesAnims, TitlesLevelDB, 3 },
 };
-shell_setup titles_shell_info = {
-    0x1800, 0x10, 0x100, 0x40, 0x100, 0x40, VramAreas, VramNodePool, 0x20, 0x76C,
-};
+shell_setup titles_shell_info = { { 0x40, 0x100, 0x40 } };
 u16 TitlesLUPtab[4] = { 3, 0x20D, 0x1001, 0x1002 };
 TrigLookUp TitlesLUP = { TitlesLUPtab, 4 };
 PreMap TITLES_PREMAP = { TitlesPreLoadDB, TitlesWorldInfo, &TitlesLUP };

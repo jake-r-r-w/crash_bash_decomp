@@ -8,8 +8,6 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 /* engine.h declares it, but polar.c does not include that */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char PolarAnimLight[] = "LIGHT";
@@ -525,13 +523,9 @@ hero_seq KAN_seq_polarfall[46] = {
 };
 s32 PolarRoundState = 0;
 s32 PolarFirstFlag = 0;
-shell_setup polar_shell_info = {
-    0x1000, 0x10, 0x2000, 0xA0, 0x104, 0x92, VramAreas, VramNodePool, 0x20, 0x4B0,
-};
+shell_setup polar_shell_info = { { 0xA0, 0x104, 0x92 } };
 /* the other worlds' (0x0012, 0x0014..0x0016; the engine's records at 0x80099020..68) */
-shell_setup polar_shell_info_b = {
-    0xC18, 0x10, 0x2000, 0x78, 0x104, 0x6A, VramAreas, VramNodePool, 0x20, 0x4B0,
-};
+shell_setup polar_shell_info_b = { { 0x78, 0x104, 0x6A } };
 s32 PolarAIParams[28] = {
     0x1000, 0x1800, 0x2000, 0x1000, 0x1600, 0x1C00, 0x1000, 0x1400, 0x1800, 0x1000, 0x1200, 0x1400, 0x19A, 0x19A, 0x666, 0x999, 0xC8, 0x19A, 0x666, 0x999, 0x20, 0x24, 0x28, 0x2C, 0, 4, 8, 0x10,
 };

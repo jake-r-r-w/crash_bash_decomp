@@ -5,8 +5,6 @@
 #include "bash/tank.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char TankAnimBreathe[] = "BREATHE";
@@ -78,9 +76,7 @@ VictorySeq TankVictorySeqs[4] = {
     { &TankAnimWin, 0x5C },
 };
 Ambient_data TankJungleAmbience = { 2, 6, 0x3FC, 0, { 0x3FD, 0x3FE, 0x3FF, 0x400, 0x401, 0x402, 0x403, 0x3FD } };
-shell_setup tank_shell_info = {
-    0x4000, 0x20, 0x1800, 0xB0, 0x200, 0x100, VramAreas, VramNodePool, 0x20, 0x5DC,
-};
+shell_setup tank_shell_info = { { 0xB0, 0x200, 0x100 } };
 s32 TankHeroSpeeds[16] = {
     0x1C, 0x1C, 0x18, 0x18, 0x1A, 0x1A, 0x18, 0x18, 0x2028, 0x2037, 0x2038, 0x2039, 0x2029,
     0x202A, 0x202B, 0x202C,

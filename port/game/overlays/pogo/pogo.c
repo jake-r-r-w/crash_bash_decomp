@@ -5,8 +5,6 @@
 #include "bash/pogo.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char PogoAnimBreathe[] = "BREATHE";
@@ -518,9 +516,7 @@ file_group_load_info file_group_POGOBOUNCER = { &FileGroups[23], PogoFiles };
 u16 PogoLUPtab[4] = { 3, 0x20D, 0x201, 0 };
 TrigLookUp PogoLUP = { PogoLUPtab, 3 };
 PreMap POGO_PREMAP = { PogoPreLoadDB, PogoWorldInfo, &PogoLUP };
-shell_setup POGO_shell_info = {
-    0x2100, 0x10, 0x1000, 0x100, 0x200, 0x4B0, VramAreas, VramNodePool, 0x20, 0x400,
-};
+shell_setup POGO_shell_info = { { 0x100, 0x200, 0x4B0 } };
 process_info PogoProcess = { pogo_init, 0, 0, pogo_kill, 0 };
 u16 PogoHeroModels[10] = { 0, 9, 0xA, 0xB, 0xC, 0xD, 0xF, 0xE, 0x10, 0 };
 s32 BrioSmokeFrame = 0;

@@ -6,8 +6,6 @@
 #include "bash/arkenoid.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char N2OAnimWin[] = "WIN";
@@ -325,9 +323,7 @@ u16 N2OLUPtab[6] = { 3, 0x1605, 0x1508, 0x1C06, 0x1C08, 0 };
 TrigLookUp N2OLUP = { N2OLUPtab, 5 };
 PreMap N2O_PREMAP = { N2OPreLoadDB, N2OWorldInfo, &N2OLUP };
 /* the shell settings (engine world record 0x010C) */
-shell_setup n2o_shell_info = {
-    0x4000, 0x20, 0x1800, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x5DC,
-};
+shell_setup n2o_shell_info = { { 0xC8, 0x2BC, 0x200 } };
 u16 N2OHeroModels[10] = {
     0, 0x72, 0x73, 0x74, 0x75, 0x78, 0x79, 0x76, 0x77, 0,
 };

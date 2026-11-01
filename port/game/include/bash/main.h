@@ -23,8 +23,7 @@ typedef struct AnimData {
     s32 subOff;    /* 0x04 */
 } AnimData;
 
-/* One texture's frame animation, in a texture file's anims block (texture_update_anims,
- * texture_scroll_step). */
+/* One texture's frame animation, in a texture file's anims block (texture_update_anims). */
 typedef struct TexFrameAnim {
     s32 frames; /* 0x00: offset from here to a table of offsets to each frame's image */
     s32 tex;    /* 0x04: the texture set's texture it loads into */
@@ -193,15 +192,9 @@ typedef struct MeshAnimFrame {
     /* 0x0C */ s32 points; /* from here to a PointList, 0: none */
 } MeshAnimFrame;
 
-/* A texture entry's VRAM placement and the primitive words drawn with it: its own
- * struct at obj_texture +0x18 (prim_create_entity_single and Pogo's psxpogo_render_tile
+/* What a texture entry is drawn with (prim_create_entity_single and Pogo's psxpogo_render_tile
  * take a pointer to it). */
 typedef struct GfxTexInfo {
-    /* 0x00 */ s16 vramX;    /* its VRAM rect: x, y, vramW, vramH */
-    /* 0x02 */ s16 vramY;
-    /* 0x04 */ u16 vramW;    /* in VRAM units */
-    /* 0x06 */ s16 vramH;
-    /* 0x08 */ struct FreeHdr *vram; /* its VRAM node (vram_take), freed with vram_free_node */
     /* 0x0C */ u16 image;    /* tex_image_id's */
     /* 0x0E */ u16 palette;  /* tex_palette_id's */
     /* 0x10 */ u16 uv0;      /* ORed into each vertex's uv */
@@ -785,44 +778,6 @@ extern s32 first_joypad;            /* first pad with flag 1 set, or -1 */
 extern s32 PadRunEnd;            /* pads 0..n-1 all have flag 1 */
 extern s32 joypad_idle_count;            /* frames with no button down */
 extern PadState Pads[8];
-typedef struct FreeHdr { u16 f0; u16 f2; } FreeHdr;
-typedef struct FreeNode {
-    FreeHdr hdr;
-    struct FreeNode *next;
-    s32 f8;
-    void *fC;
-    void *f10;
-    s32 f14;
-} FreeNode;
-typedef struct BufNode {
-    s32 f0;
-    struct BufNode *next;
-    struct BufNode *prev;
-    struct BufNode *parent;
-    struct BufNode *child;
-    struct BufNode **head;
-} BufNode;
-
-/* vram_init's VRAM areas: a list head and the area's position; x = -1
- * ends the list. */
-typedef struct {
-    BufNode **head;
-    FreeHdr hdr;
-} VramArea;
-extern u8 *VramBufNodes; /* the BufNode pool (vram_init) */
-typedef struct FreePool {
-    FreeNode *head;
-    u16 w;
-    u16 pad6;
-    u16 h;
-    u16 padA;
-} FreePool;
-extern FreeNode *FreeBufNodes;
-extern u8 VramSmallReq[];
-extern u8 VramReqEnd[];
-extern FreeNode *ClutFreeSmall;
-extern FreeNode *ClutUsedSmall;
-extern FreeNode *ClutLargeList;    /* the large cluts' free list (clut_alloc_large) */
 extern s32 MalFreeBytes;            /* mal_count_free: free bytes */
 extern s32 MalFreeBlocks;            /* mal_count_free: free blocks */
 extern file DatIndex[];        /* the archive's entries, file N at [N] */
@@ -999,15 +954,12 @@ typedef struct {
 
 
 
-/* A VRAM slot class (VramSlots). */
-typedef struct { u8 pad[0xC]; } Slot12;
 /* A texture: the 0x38-byte entries of a texture set's table, which
  * texture_draw draws as one quad (the name is the C++ symbols',
  * texture_draw__FP11obj_textureG4xy_wiUl). */
 typedef struct obj_texture {
-    /* 0x00 */ u16 flag;     /* 1: 8-bit (texture_init_entry) */
+    /* 0x00 */ u16 flag;     /* 1: 8-bit */
     /* 0x02 */ u16 clut;     /* its clut: an entry in the set's ent, 0x7FFF none */
-    /* 0x04 */ Slot12 *slot; /* its VRAM slot class */
     /* 0x08 */ s16 w;        /* in pixels */
     /* 0x0A */ s16 h;
     /* 0x0C */ u32 fC;
@@ -1017,7 +969,6 @@ typedef struct obj_texture {
     /* 0x14 */ s32 frames;
     /* 0x18 */ GfxTexInfo info;
     /* 0x30 */ s32 pix;      /* its pixels: an offset into the set's base */
-    /* 0x34 */ s32 time;     /* FrameCount when last used, -1 when loaded (texanims_release) */
     s32 scrollRow;           /* the row shown at the top (texture_update_scroll) */
 } obj_texture;
 
@@ -1261,16 +1212,10 @@ void pad_dpad_to_stick(s32 pad, PadState *out);
 
 
 
-typedef struct {
-    u16 x;
-    u16 y;
-} ClutPos;
-/* One of a texture set's cluts (obj_textureset.ent): its colours are at base + off in the
- * texture file until textureset_upload_cluts loads them into VRAM at pos. */
+/* One of a texture set's cluts (obj_textureset.ent): its colours are at base + off in the texture file. */
 typedef struct TexClut {
     /* 0x00 */ u16 w;       /* colours */
     /* 0x02 */ u16 palette; /* tex_palette_id's */
-    /* 0x04 */ ClutPos *pos;
     /* 0x08 */ s32 off;
 } TexClut;
 
@@ -1510,19 +1455,6 @@ void *mal_alloc_owned_low(s32 bytes, void **owner, _mal_area *heap, s32 flags);
 struct obj_textureset;
 
 
-/* texture_upload_list: count at +0, then 0x10-byte entries from +4. */
-typedef struct {
-    s32 idx;      /* 0x0: record index into the 0x38-byte table */
-    s32 pad4;
-    s32 pad8;
-    FreeHdr *pos; /* 0xC: VRAM slot from vram_take */
-} TexUploadEntry;
-
-typedef struct {
-    s32 count;
-    TexUploadEntry e[1];
-} TexUploadList;
-
 SortNode *sortlist_bubble(SortList *arg0);
 
 
@@ -1678,7 +1610,6 @@ typedef struct ScriptInit {
 
 
 
-extern Slot12 VramSlots[];
 
 /* A texture file's header (docs/ASSETS.md, Texture sets): the CLUTs (each a u32 count and its
  * colours), the images (TexImage, each followed by its pixels), then the animated textures. */

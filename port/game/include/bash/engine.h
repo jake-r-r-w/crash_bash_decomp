@@ -163,14 +163,7 @@ extern s32 CardPromptStep;
 extern s32 SaveMenuState;
 
 /* InitLevelLoad's level setup config (LevelConfig, or DefaultLevelConfig if unset). */
-typedef struct EngineCfg {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 pools[3];       /* prims_init */
-    /* 0x18 */ VramArea *areas;    /* vram_init */
-    /* 0x1C */ FreeNode *pool;
-    /* 0x20 */ s32 npool;
-    /* 0x24 */ s32 nbuf;
-} EngineCfg;
+typedef shell_setup EngineCfg;
 
 extern EngineCfg DefaultLevelConfig;
 extern EngineCfg SceneLevelConfig;

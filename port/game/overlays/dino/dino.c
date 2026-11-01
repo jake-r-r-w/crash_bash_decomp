@@ -6,8 +6,6 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char DinoAnimRun[] = "RUN";
@@ -208,9 +206,7 @@ NAS *DinoGem1 = 0;
 NAS *DinoGem2 = 0;
 NAS *DinoGems[3] = { NULL, NULL, NULL };
 /* the shell settings (engine world record 0x010B) */
-shell_setup dino_shell_info = {
-    0x1000, 0x10, 0x2000, 0xB4, 0xCE, 0x9C, VramAreas, VramNodePool, 0x20, 0x514,
-};
+shell_setup dino_shell_info = { { 0xB4, 0xCE, 0x9C } };
 s16 DinoPreLoadDB[4] = { 0x1C, 0xC4, -1, 0 };
 char *DinoAnims[6] = {
     (char *)DinoAnimRun, (char *)DinoAnimBreathe, (char *)DinoAnimRecoil, (char *)DinoAnimBarge,

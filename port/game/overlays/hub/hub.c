@@ -5,8 +5,6 @@
 #include "bash/hub.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 void HubRender(void) {
     SetGameViewport();
@@ -295,9 +293,7 @@ GroupFile HubFiles[5] = {
 /* the warp rooms' files (the engine's per-mode table points at modes 0x21..0x27's) */
 file_group_load_info file_group_HUB = { &FileGroups[12], HubFiles };
 /* the shell settings (engine world record 0x0102) */
-shell_setup hub_shell_info = {
-    0x3000, 0x10, 0x2000, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x600,
-};
+shell_setup hub_shell_info = { { 0xC8, 0x2BC, 0x200 } };
 s16 HubPreLoadDB[2] = { -1, 0 };
 WWInf HubWorldInfo[16] = {
     { 0xCE, HubAnims, HubLevelDB, 6 },

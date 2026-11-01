@@ -688,15 +688,9 @@ typedef struct LevSpec {
 } LevSpec;
 
 /* Each minigame's shell settings (tank_shell_info, POGO_shell_info, ...): the
- * second pointer of the engine's per-world record, after the PreMap. Its size
- * is from Tank's data (the next object starts 0x28 bytes on); the fields are
- * not known yet. */
+ * second pointer of the engine's per-world record, after the PreMap. */
 typedef struct shell_setup {
-    /* 0x00 */ s32 pad0[6];
-    /* 0x18 */ void *pad18;
-    /* 0x1C */ void *pad1C;
-    /* 0x20 */ s32 pad20;
-    /* 0x24 */ s32 pad24;
+    s32 pools[3]; /* prims_init */
 } shell_setup;
 
 /* A level's files (file_group_TANKDESERT, ...): the engine's table at

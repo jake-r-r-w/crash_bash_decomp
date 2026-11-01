@@ -12,8 +12,6 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char ChaseAnimBreathe[] = "BREATHE";
@@ -62,9 +60,7 @@ s32 ChaseBarrelSfx[4] = { 0x745, 0x744, 0x743, 0x742 };
 s32 ChaseFlameSfx[4] = { 0x741, 0x740, 0x73F, 0x73E };
 s32 ChaseChainSfx[4] = { 0x750, 0x751, 0x752, 0x753 };
 /* the shell settings (engine world record 0x010D) */
-shell_setup chase_shell_info = {
-    0x4000, 0x20, 0x1800, 0x80, 0x200, 0x100, VramAreas, VramNodePool, 0x20, 0x5DC,
-};
+shell_setup chase_shell_info = { { 0x80, 0x200, 0x100 } };
 ChaseSpawnOfs ChaseSpawnOffsets[8] = {
     { 0x82, -0x384, 0xDC },
     { 0x64, -0x4B0, 0xFA },

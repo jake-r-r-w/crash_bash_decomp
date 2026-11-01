@@ -6,5 +6,3 @@
 s32 IntroScriptHandle;
 obj_dbase *IntroDbase;
 void *PapuStraySfx;  /* a word past the end of every slot overlay, where Papu's hero code keeps a sound handle */
-u8 VramAreas[16];
-s32 VramNodePool[16];

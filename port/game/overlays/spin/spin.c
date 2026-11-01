@@ -10,8 +10,6 @@
 #include "bash/xtras.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char SpinAnimBreathe[] = "BREATHE";
@@ -43,9 +41,7 @@ u16 SpinAiHumanTweak[10] = {
     0x10, 0x10, 0x10, 0x10, 0x10, 0x20, 0x13, 0x10, 0x10, 0x20,
 };
 /* the shell settings (engine world record 0x0103) */
-shell_setup spin_shell_info = {
-    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x400,
-};
+shell_setup spin_shell_info = { { 0xC8, 0x2BC, 0x200 } };
 HeroJumpEnt SpinJumpEnts[10] = {
     { 0x88, 0x88, 9, 0xB },
     { 0x80, 0x80, 6, 0xB },

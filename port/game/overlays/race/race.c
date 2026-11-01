@@ -8,8 +8,6 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char RaceAnimRun[] = "RUN";
@@ -374,9 +372,7 @@ s32 RaceTagTimer = 0;
 s32 RaceTimer = 0;
 s32 RaceFloorLevel = -0x100;
 /* the shell settings (engine world records 0x0017 and 0x0018) */
-shell_setup race_shell_info = {
-    0x2000, 0x10, 0x2000, 0xC8, 0x100, 0x200, VramAreas, VramNodePool, 0x20, 0x708,
-};
+shell_setup race_shell_info = { { 0xC8, 0x100, 0x200 } };
 s32 RaceOver = 0;
 VictorySeq RaceVictorySeqs[4] = {
     { &RaceAnimWin, 0x4C },

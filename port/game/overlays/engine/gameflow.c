@@ -1595,7 +1595,6 @@ void InitGraphics(void) {
     ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
     g = GAME;
     g->cheats = 0x80000000;
-    vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
     ResetEnginePool();

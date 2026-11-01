@@ -146,7 +146,6 @@ void InitLevelLoad(void) {
     ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
     GAME->winner[0] = 0;
     GAME->winner[1] = 0;
-    vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
     sound_init();
@@ -607,7 +606,6 @@ void InitScriptScene(void) {
     cfg = &SceneLevelConfig;
     ScreenRect = NULL;
     ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
-    vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
     init_scripts(0x20, 0x80);
@@ -777,7 +775,7 @@ void QuitScriptScene(void) {
         sfx_bank_close(&SfxBanks[1]);
     }
     sound_reinit();
-    ClearVram();
+    draw_clear();
     SceneMarkCount = 0;
     SceneStep += 1;
     VSyncRate = 2;
@@ -843,7 +841,7 @@ void UnloadScene(void) {
         sfx_bank_close(&SfxBanks[1]);
     }
     sound_reinit();
-    ClearVram();
+    draw_clear();
     SceneMarkCount = 0;
     SceneStep += 1;
 }
@@ -1268,8 +1266,6 @@ void *PlaceTextSub(PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 /* what the data points at that this file's headers don't declare */
-extern s32 VramNodePool[];
-extern u8 VramAreas[];
 extern u8 file_group_BALLS[];
 extern u8 file_group_BASHMODE20[];
 extern u8 file_group_BEACHBALL[];
@@ -1323,10 +1319,7 @@ file **ModeTextTables[5] = {
     (void *)&ModeTextFilesLang,
 };
 file *ModeOverlayLoaded = 0;
-EngineCfg DefaultLevelConfig = {
-    { 0, 0x20, 0, 0, 0x10, 0, 0, 0, 0, 1, 0, 0 }, { 0x80, 0x200, 0x20 }, (void *)&VramAreas,
-    (void *)&VramNodePool, 0x20, 0x400,
-};
+EngineCfg DefaultLevelConfig = { { 0x80, 0x200, 0x20 } };
 u16 LoadingEntities[2] = { 0x2001, 0x2002 };
 process_info LoadingProcess = { InitLoadingScreen, AnimateLoadingIcon, RenderLoadingScreen, QuitLoadingScreen, 0 };
 u8 LoadingSceneViewport[40] = {
@@ -1469,10 +1462,7 @@ EngineMarkerPos SceneMarkPos[3] = {
     { 0x1FC3, 0xFA0, 0x7E4, 0x5DC, { 0, 0, 0, 0, 0, 0 } },
     { 0, 0, 0, 0x3E8, { 0, 0, 0, 0, 0, 0 } },
 };
-EngineCfg SceneLevelConfig = {
-    { 0, 0x10, 0, 0, 0x10, 0, 0, 0, 0, 0x10, 0, 0 }, { 0x80, 0x200, 0x20 },
-    (void *)(VramAreas + 0x10), (void *)&VramNodePool, 0x10, 0x400,
-};
+EngineCfg SceneLevelConfig = { { 0x80, 0x200, 0x20 } };
 MarkCtx ExitAMarks[13] = {
     { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingGoodShot3], 0, 1 },
     { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot8], 0, 1 },
