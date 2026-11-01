@@ -306,7 +306,7 @@ int platform_pad(int port) {
 
 int main(int argc, char **argv) {
     const char *Image = NULL;
-    int antialias = 0, smooth = 0, widescreen = 0, level_flags = 0;
+    int antialias = 0, smooth = 0, widescreen = 0, upscale = 0, level_flags = 0;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
@@ -384,6 +384,8 @@ int main(int argc, char **argv) {
             smooth = 1;
         } else if (strcmp(argv[i], "--widescreen") == 0) {
             widescreen = 1;
+        } else if (strcmp(argv[i], "--upscale") == 0 && i + 1 < argc) {
+            upscale = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
             test_mode = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--level-flags") == 0 && i + 1 < argc) {
@@ -472,6 +474,9 @@ int main(int argc, char **argv) {
     if (widescreen) {
         settings()->widescreen = 1;
     }
+    if (upscale == 1 || upscale == 2 || upscale == 4) {
+        settings()->upscale = upscale;
+    }
     /* the first time: the launcher's made of the game's own art, so this comes before it */
     if (Image != NULL) {
         const char *problem = disc_extract(Image, DataPath != NULL ? DataPath : own_data_path());
@@ -479,8 +484,13 @@ int main(int argc, char **argv) {
         if (problem != NULL) {
             platform_fatal(problem);
         }
-    } else if (!testing && platform_data_path() == NULL && !disc_first_run(own_data_path())) {
-        return 0;
+    } else if (platform_data_path() == NULL || !SDL_GetPathInfo(platform_data_path(), NULL)) {
+        const char *out = DataPath != NULL ? DataPath : own_data_path();
+        const char *problem = NULL;
+
+        if (!disc_find_beside(out, &problem) && !testing && !disc_first_run(out, problem)) {
+            return 0;
+        }
     }
     if (!NoWindow && !host_init()) {
         fprintf(stderr, "No window; running without one.\n");

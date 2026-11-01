@@ -5,7 +5,7 @@
 #include "common.h"
 #include "bash/videomenu.h"
 
-enum { VIDEO_DISPLAY, VIDEO_WINDOW, VIDEO_RENDER, VIDEO_FPS, VIDEO_VSYNC, VIDEO_ANTIALIAS, VIDEO_TEXTURES, VIDEO_WIDESCREEN, NUM_VIDEO };
+enum { VIDEO_DISPLAY, VIDEO_WINDOW, VIDEO_RENDER, VIDEO_FPS, VIDEO_VSYNC, VIDEO_ANTIALIAS, VIDEO_TEXTURES, VIDEO_WIDESCREEN, VIDEO_UPSCALE, NUM_VIDEO };
 _Static_assert(NUM_VIDEO == NUM_VIDEO_OPTIONS, "the menus are laid out for this many");
 
 static const struct {
@@ -20,6 +20,7 @@ static const struct {
     { "ANTIALIAS", "SMOOTHS THE EDGES OF THINGS, HIGHER IS SLOWER" },
     { "TEXTURES", "SHARP IS THE ORIGINAL, SMOOTH BLENDS PIXELS" },
     { "WIDESCREEN", "A WIDE WINDOW SHOWS MORE OF THE WORLD" },
+    { "UPSCALE", "SMOOTHS TEXTURES AND TEXT, MADE ON YOUR PC" },
 };
 
 typedef struct {
@@ -86,6 +87,9 @@ void video_option_change(s32 i, s32 dir) {
     case VIDEO_WIDESCREEN:
         s->widescreen = !s->widescreen;
         break;
+    case VIDEO_UPSCALE:
+        s->upscale = dir > 0 ? (s->upscale == 4 ? 1 : s->upscale * 2) : (s->upscale == 1 ? 4 : s->upscale / 2);
+        break;
     }
     settings_apply();
     settings_save();
@@ -126,6 +130,13 @@ void video_option_value(s32 i, char *text, s32 size) {
         break;
     case VIDEO_WIDESCREEN:
         snprintf(text, size, "%s", s->widescreen ? "ON" : "OFF");
+        break;
+    case VIDEO_UPSCALE:
+        if (s->upscale == 1) {
+            snprintf(text, size, "OFF");
+        } else {
+            snprintf(text, size, "%dX", s->upscale);
+        }
         break;
     }
 }

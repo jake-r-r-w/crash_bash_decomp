@@ -217,8 +217,44 @@ static char *ask_for_image(void) {
     return Chosen;
 }
 
-/* Returns 1 with the data in place, or 0 if the player's chosen to leave. */
-int disc_first_run(const char *out) {
+/* The first image in this folder that's the right disc: a .cue before the .bin it names. Returns 1 with the data in place. Otherwise
+   problem says what was wrong with the last one tried, if there was one. */
+static int try_folder(const char *folder, const char *out, const char **problem) {
+    static const char *const Patterns[] = { "*.cue", "*.iso", "*.bin", "*.img" };
+    size_t p;
+
+    for (p = 0; p < SDL_arraysize(Patterns); p++) {
+        int count = 0, i;
+        char **names = SDL_GlobDirectory(folder, Patterns[p], SDL_GLOB_CASEINSENSITIVE, &count);
+
+        for (i = 0; names != NULL && i < count; i++) {
+            char *path;
+
+            if (SDL_asprintf(&path, "%s%s", folder, names[i]) >= 0) {
+                const char *wrong = disc_extract(path, out);
+
+                SDL_free(path);
+                if (wrong == NULL) {
+                    SDL_free(names);
+                    return 1;
+                }
+                *problem = wrong;
+            }
+        }
+        SDL_free(names);
+    }
+    return 0;
+}
+
+int disc_find_beside(const char *out, const char **problem) {
+    const char *base = SDL_GetBasePath();
+
+    *problem = NULL;
+    return (base != NULL && try_folder(base, out, problem)) || try_folder("./", out, problem);
+}
+
+/* Returns 1 with the data in place, or 0 if the player's chosen to leave. first says what's wrong already, if it's not NULL. */
+int disc_first_run(const char *out, const char *first) {
     static const SDL_MessageBoxButtonData Buttons[] = {
         { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Quit" },
         { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Choose a disc image" },
@@ -241,7 +277,8 @@ int disc_first_run(const char *out) {
         char *image;
         const char *problem;
 
-        box.message = message;
+        box.message = first != NULL ? first : message;
+        first = NULL;
         if (!SDL_ShowMessageBox(&box, &pressed) || pressed != 1) {
             return 0;
         }

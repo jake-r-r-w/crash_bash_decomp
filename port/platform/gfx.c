@@ -8,6 +8,7 @@
 #include <SDL3/SDL.h>
 #include "platform.h"
 #include "gfx.h"
+#include "upscale.h"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -15,7 +16,8 @@
 #endif
 
 #define MAX_TRIS 100000
-#define ATLAS_SIZE 4096
+#define ATLAS_NORMAL 4096
+#define ATLAS_FOR_4X 8192 /* 4X is 16 times the texels: the biggest level's are about 5% of the normal atlas */
 #define MAX_TEXTURES 16384
 #define MAX_CLIPS 64
 #define MAX_DIRTY 1024
@@ -91,6 +93,8 @@ static int DrawEvery, DrawnSince;
 static int StepsDone, StepsPerFrame;
 static int BaseStale;
 
+static int AtlasSize = ATLAS_NORMAL;
+static int Upscale = 1;
 static uint8_t *AtlasPixels;
 static Cached *Textures;
 static int NumTextures;
@@ -377,10 +381,45 @@ void gfx_window_resized(void) {
     }
 }
 
+static void atlas_reset(void);
+
+static void make_atlas(void) {
+    SDL_GPUTextureCreateInfo t;
+
+    SDL_zero(t);
+    t.type = SDL_GPU_TEXTURETYPE_2D;
+    t.layer_count_or_depth = 1;
+    t.num_levels = 1;
+    t.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
+    t.width = AtlasSize;
+    t.height = AtlasSize;
+    t.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
+    Atlas = SDL_CreateGPUTexture(Device, &t);
+    AtlasPixels = calloc((size_t)AtlasSize * AtlasSize, 4);
+}
+
+/* What's on it was made at the old factor, so it all goes, to come back as it's next drawn. */
+static void set_upscale(int factor) {
+    int size = factor == 4 ? ATLAS_FOR_4X : ATLAS_NORMAL;
+
+    Upscale = factor;
+    NumDirty = 0;
+    if (size != AtlasSize) {
+        SDL_ReleaseGPUTexture(Device, Atlas);
+        free(AtlasPixels);
+        AtlasSize = size;
+        make_atlas();
+    }
+    atlas_reset();
+}
+
 void gfx_configure(const GfxConfig *config) {
     SDL_GPUSampleCount samples;
 
     SDL_WaitForGPUIdle(Device);
+    if (config->upscale != Upscale) {
+        set_upscale(config->upscale);
+    }
     Wide = config->wide;
     samples = sample_count(config->antialias);
     if (samples != Samples) {
@@ -403,7 +442,6 @@ int gfx_init(void *window, const GfxConfig *config) {
     Wide = config->wide;
     RenderW = width;
     RenderH = height;
-    SDL_GPUTextureCreateInfo t;
     SDL_GPUSamplerCreateInfo sc;
     SDL_GPUBufferCreateInfo bc;
     SDL_GPUTransferBufferCreateInfo tc;
@@ -438,15 +476,9 @@ int gfx_init(void *window, const GfxConfig *config) {
     make_targets(width, height);
     update_view_extra();
 
-    SDL_zero(t);
-    t.type = SDL_GPU_TEXTURETYPE_2D;
-    t.layer_count_or_depth = 1;
-    t.num_levels = 1;
-    t.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
-    t.width = ATLAS_SIZE;
-    t.height = ATLAS_SIZE;
-    t.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
-    Atlas = SDL_CreateGPUTexture(Device, &t);
+    Upscale = config->upscale;
+    AtlasSize = Upscale == 4 ? ATLAS_FOR_4X : ATLAS_NORMAL;
+    make_atlas();
 
     SDL_zero(sc);
     sc.min_filter = SDL_GPU_FILTER_NEAREST;
@@ -477,7 +509,6 @@ int gfx_init(void *window, const GfxConfig *config) {
     Tris = malloc(sizeof(Tri) * MAX_TRIS);
     Shown = malloc(sizeof(Tri) * MAX_TRIS);
     Order = malloc(sizeof(int) * MAX_TRIS);
-    AtlasPixels = calloc(ATLAS_SIZE * ATLAS_SIZE, 4);
     Textures = malloc(sizeof(Cached) * MAX_TEXTURES);
     gfx_begin_frame();
     return 1;
@@ -646,17 +677,29 @@ static uint64_t hash_bytes(const uint8_t *p, size_t n, uint64_t h) {
 
 /* Copies the rect of the atlas to the GPU with the frame. */
 static void mark_dirty(int x, int y, int w, int h) {
+    /* a big one goes in strips that fit a frame */
+    while (NumDirty < MAX_DIRTY && h * w * 4 > ATLAS_UPLOAD_BYTES) {
+        int rows = ATLAS_UPLOAD_BYTES / (w * 4);
+
+        Dirty[NumDirty].x = x;
+        Dirty[NumDirty].y = y;
+        Dirty[NumDirty].w = w;
+        Dirty[NumDirty].h = rows;
+        NumDirty++;
+        y += rows;
+        h -= rows;
+    }
     /* too much waiting to keep a list of: all of it again, in strips that fit a frame */
     if (NumDirty >= MAX_DIRTY) {
-        int rows = ATLAS_UPLOAD_BYTES / (ATLAS_SIZE * 4);
+        int rows = ATLAS_UPLOAD_BYTES / (AtlasSize * 4);
         int top;
 
         NumDirty = 0;
-        for (top = 0; top < ATLAS_SIZE; top += rows) {
+        for (top = 0; top < AtlasSize; top += rows) {
             Dirty[NumDirty].x = 0;
             Dirty[NumDirty].y = top;
-            Dirty[NumDirty].w = ATLAS_SIZE;
-            Dirty[NumDirty].h = top + rows > ATLAS_SIZE ? ATLAS_SIZE - top : rows;
+            Dirty[NumDirty].w = AtlasSize;
+            Dirty[NumDirty].h = top + rows > AtlasSize ? AtlasSize - top : rows;
             NumDirty++;
         }
         return;
@@ -668,10 +711,13 @@ static void mark_dirty(int x, int y, int w, int h) {
     NumDirty++;
 }
 
-const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
+static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor) {
+    static uint32_t *decoded;
+    static int decoded_size;
     Cached *c;
     uint32_t *out;
     int i, x, y;
+    int sw = w * factor, sh = h * factor;
     uint64_t hash;
     size_t bytes;
     IdSlot *slot = &IdCache[(id * 0x9E3779B97F4A7C15ULL) >> 48];
@@ -702,12 +748,12 @@ const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp
     if (NumTextures >= MAX_TEXTURES) {
         atlas_reset();
     }
-    if (ShelfX + w + 2 > ATLAS_SIZE) {
+    if (ShelfX + sw + 2 > AtlasSize) {
         ShelfX = 0;
         ShelfY += ShelfH;
         ShelfH = 0;
     }
-    if (ShelfY + h + 2 > ATLAS_SIZE) {
+    if (ShelfY + sh + 2 > AtlasSize) {
         atlas_reset();
     }
     slot->gen = IdGen;
@@ -721,12 +767,17 @@ const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp
     c->h = h;
     c->bpp = bpp;
     /* one texel of border all round, copied from the edges below */
-    c->t.u0 = (float)(ShelfX + 1) / ATLAS_SIZE;
-    c->t.v0 = (float)(ShelfY + 1) / ATLAS_SIZE;
-    c->t.us = 1.0f / ATLAS_SIZE;
-    c->t.vs = 1.0f / ATLAS_SIZE;
+    c->t.u0 = (float)(ShelfX + 1) / AtlasSize;
+    c->t.v0 = (float)(ShelfY + 1) / AtlasSize;
+    c->t.us = (float)factor / AtlasSize;
+    c->t.vs = (float)factor / AtlasSize;
+    if (factor != 1 && w * h > decoded_size) {
+        free(decoded);
+        decoded = malloc(sizeof(uint32_t) * (size_t)w * h);
+        decoded_size = w * h;
+    }
     for (y = 0; y < h; y++) {
-        out = (uint32_t *)AtlasPixels + (ShelfY + 1 + y) * ATLAS_SIZE + ShelfX + 1;
+        out = factor != 1 ? decoded + y * w : (uint32_t *)AtlasPixels + (ShelfY + 1 + y) * AtlasSize + ShelfX + 1;
         if (bpp == 16) {
             const uint16_t *row = (const uint16_t *)pixels + y * w;
             for (x = 0; x < w; x++) {
@@ -747,44 +798,68 @@ const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp
             }
         }
     }
+    if (factor != 1) {
+        static uint32_t *big;
+        static int big_size;
+
+        if (sw * sh > big_size) {
+            free(big);
+            big = malloc(sizeof(uint32_t) * (size_t)sw * sh);
+            big_size = sw * sh;
+        }
+        upscale_texels(decoded, w, h, big, factor);
+        for (y = 0; y < sh; y++) {
+            memcpy((uint32_t *)AtlasPixels + (ShelfY + 1 + y) * AtlasSize + ShelfX + 1, big + y * sw, (size_t)sw * 4);
+        }
+    }
     {
         uint32_t *px = (uint32_t *)AtlasPixels;
 
         /* a clear texel takes the colour next to it, for filtering to blend with. It's still clear, so it's never drawn itself */
-        for (y = 0; y < h; y++) {
-            out = px + (ShelfY + 1 + y) * ATLAS_SIZE + ShelfX + 1;
-            for (x = 0; x < w; x++) {
+        for (y = 0; y < sh; y++) {
+            out = px + (ShelfY + 1 + y) * AtlasSize + ShelfX + 1;
+            for (x = 0; x < sw; x++) {
                 if ((out[x] >> 24) == 0) {
                     uint32_t beside = 0;
 
                     if (x > 0 && (out[x - 1] >> 24) != 0) {
                         beside = out[x - 1];
-                    } else if (x + 1 < w && (out[x + 1] >> 24) != 0) {
+                    } else if (x + 1 < sw && (out[x + 1] >> 24) != 0) {
                         beside = out[x + 1];
-                    } else if (y > 0 && (out[x - ATLAS_SIZE] >> 24) != 0) {
-                        beside = out[x - ATLAS_SIZE];
-                    } else if (y + 1 < h && (out[x + ATLAS_SIZE] >> 24) != 0) {
-                        beside = out[x + ATLAS_SIZE];
+                    } else if (y > 0 && (out[x - AtlasSize] >> 24) != 0) {
+                        beside = out[x - AtlasSize];
+                    } else if (y + 1 < sh && (out[x + AtlasSize] >> 24) != 0) {
+                        beside = out[x + AtlasSize];
                     }
                     out[x] = beside & 0xFFFFFF;
                 }
             }
         }
-        for (y = 1; y <= h; y++) {
-            out = px + (ShelfY + y) * ATLAS_SIZE + ShelfX;
+        for (y = 1; y <= sh; y++) {
+            out = px + (ShelfY + y) * AtlasSize + ShelfX;
             out[0] = out[1];
-            out[w + 1] = out[w];
+            out[sw + 1] = out[sw];
         }
-        memcpy(px + ShelfY * ATLAS_SIZE + ShelfX, px + (ShelfY + 1) * ATLAS_SIZE + ShelfX, (size_t)(w + 2) * 4);
-        memcpy(px + (ShelfY + h + 1) * ATLAS_SIZE + ShelfX, px + (ShelfY + h) * ATLAS_SIZE + ShelfX, (size_t)(w + 2) * 4);
+        memcpy(px + ShelfY * AtlasSize + ShelfX, px + (ShelfY + 1) * AtlasSize + ShelfX, (size_t)(sw + 2) * 4);
+        memcpy(px + (ShelfY + sh + 1) * AtlasSize + ShelfX, px + (ShelfY + sh) * AtlasSize + ShelfX, (size_t)(sw + 2) * 4);
     }
-    mark_dirty(ShelfX, ShelfY, w + 2, h + 2);
-    ShelfX += w + 2;
-    if (h + 2 > ShelfH) {
-        ShelfH = h + 2;
+    mark_dirty(ShelfX, ShelfY, sw + 2, sh + 2);
+    ShelfX += sw + 2;
+    if (sh + 2 > ShelfH) {
+        ShelfH = sh + 2;
     }
     return &c->t;
 }
+
+const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
+    /* a picture that fills the screen is already as big as it needs to be */
+    return texture_scaled(id, pixels, w, h, bpp, palette, bpp == 16 ? 1 : Upscale);
+}
+
+const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1);
+}
+
 
 void gfx_forget_textures(void) {
     IdGen++;
@@ -1014,7 +1089,7 @@ static void draw_shown(float step) {
                 break;
             }
             for (y = 0; y < r->h; y++) {
-                memcpy(a + offset + (size_t)y * r->w * 4, AtlasPixels + ((size_t)(r->y + y) * ATLAS_SIZE + r->x) * 4, (size_t)r->w * 4);
+                memcpy(a + offset + (size_t)y * r->w * 4, AtlasPixels + ((size_t)(r->y + y) * AtlasSize + r->x) * 4, (size_t)r->w * 4);
             }
             SDL_zero(src);
             SDL_zero(dst);

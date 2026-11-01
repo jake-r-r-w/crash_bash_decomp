@@ -489,6 +489,17 @@ async function image(args) {
 
         results.push([name, { pass: r.code === 1 && !fs.existsSync(r.out) && !fs.existsSync(`${r.out}.part`), what: r.text.trim().split('\n').at(-1) }]);
     }
+    /* next to the program, it's found with nothing asked */
+    const beside = path.join(dir, 'beside');
+    fs.mkdirSync(beside);
+    fs.copyFileSync(path.resolve(ROOT, exe), path.join(beside, 'crashbash.exe'));
+    fs.linkSync(raw, path.join(beside, 'CrashBash.bin'));
+    fs.copyFileSync(path.join(ROOT, 'build/CrashBash.cue'), path.join(beside, 'CrashBash.cue'));
+    const out = path.join(dir, 'beside.dat');
+    const r = await run(path.join(beside, 'crashbash.exe'), ['--data', out, '--frames', '1', '--no-window'], path.join(dir, 'beside.txt'), { timeout: MODE_TIMEOUT });
+    const found = fs.existsSync(out) && sha(out) === want;
+
+    results.push(['beside', { pass: r.code === 0 && found, what: found ? 'found and the same as the disc\'s' : `exit ${r.code}: ${r.text.trim().split('\n').at(-1)}` }]);
     fs.rmSync(dir, { recursive: true, force: true });
     return report(results);
 }

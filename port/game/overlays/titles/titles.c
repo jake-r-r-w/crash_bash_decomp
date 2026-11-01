@@ -953,7 +953,7 @@ static void place_video_page(void) {
 
         label->type = 3;
         label->x = -0xDC;
-        label->y = -0x40 + i * 0x16;
+        label->y = -0x44 + i * 0x14;
         label->data = (void *)video_option_label(i);
         label->frame = 4;
         value->type = 3;

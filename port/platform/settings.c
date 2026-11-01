@@ -23,6 +23,7 @@ void settings_defaults(void) {
     Current.antialias = 1;
     Current.smooth = 0;
     Current.widescreen = 0;
+    Current.upscale = 1;
     Current.test_mode = -1;
 }
 
@@ -73,6 +74,8 @@ void settings_load(void) {
             Current.smooth = a != 0;
         } else if (sscanf(line, "widescreen=%d", &a) == 1) {
             Current.widescreen = a != 0;
+        } else if (sscanf(line, "upscale=%d", &a) == 1 && (a == 1 || a == 2 || a == 4)) {
+            Current.upscale = a;
         }
     }
     fclose(f);
@@ -99,5 +102,6 @@ void settings_save(void) {
     fprintf(f, "antialias=%d\n", Current.antialias);
     fprintf(f, "smooth=%d\n", Current.smooth);
     fprintf(f, "widescreen=%d\n", Current.widescreen);
+    fprintf(f, "upscale=%d\n", Current.upscale);
     fclose(f);
 }

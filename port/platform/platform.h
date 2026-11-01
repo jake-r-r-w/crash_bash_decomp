@@ -28,8 +28,11 @@ void platform_wait_vblanks(int count);
 void platform_fatal(const char *message);
 /* The game's archive from a disc image: what went wrong, or NULL with it at out (discimage.c). */
 const char *disc_extract(const char *image, const char *out);
-/* Asks the player for their disc image. 0: they'd rather not. */
-int disc_first_run(const char *out);
+/* Looks for a disc image next to the program and in the current folder. 1: the data's in place. Otherwise problem says what was wrong, if
+   anything was found. */
+int disc_find_beside(const char *out, const char **problem);
+/* Asks the player for their disc image, with first as what's wrong, if it's not NULL. 0: they'd rather not. */
+int disc_first_run(const char *out, const char *first);
 /* A pad, as the game's libpad reads it: its buttons, or -1 when there's none. */
 int platform_pad(int port);
 int platform_vblanks(void);

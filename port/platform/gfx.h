@@ -29,6 +29,7 @@ typedef struct GfxConfig {
     int antialias;     /* samples a pixel: 1 is off */
     int smooth;        /* textures filtered, rather than their square texels */
     int wide;          /* a wider window shows more of the world, rather than bars at the sides */
+    int upscale;       /* textures made this many times bigger (upscale.c): 1 is off, or 2 or 4 */
 } GfxConfig;
 
 int gfx_init(void *window, const GfxConfig *config);
@@ -68,6 +69,9 @@ int gfx_stepping(void);
 void gfx_window_resized(void);
 /* v[0] v[1] v[2] v[3] in PS1 quad order (Z), as two triangles. */
 void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend);
+
+/* A texture that isn't upscaled, for one that's made again as it moves. Otherwise as gfx_texture. */
+const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
 
 /* A texture from the game's data: bpp 4 or 8 with a palette of u16 colours, or 16. Decoded on first use. id says which texture
  * this is, to find it again without looking at its pixels, until gfx_forget_textures; 0 for one that has no lasting id. */

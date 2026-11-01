@@ -14,6 +14,7 @@ typedef struct Settings {
     int antialias;     /* samples a pixel: 1 is off, or 2, 4 or 8 */
     int smooth;        /* textures filtered, rather than the original's square texels */
     int widescreen;    /* a wider window shows more of the world */
+    int upscale;       /* textures made this many times bigger, on the player's machine: 1 is off, or 2 or 4 */
     int test_mode;     /* a test run's game mode to go straight to, or -1 */
     int test_level_flags; /* and its challenge's flags, as a warp room's door sets them: 0x80 is a crystal's, on the level's other map */
     int testing;       /* went there with --mode: the computer plays, with no time limit */

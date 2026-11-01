@@ -80,11 +80,11 @@ static const GfxTex *scrolled_texture(const obj_texture *t, int image, int palet
     const u8 *src = base + t->pix;
 
     if (row * t->h > (int)sizeof(Rows)) {
-        return gfx_texture(TEX_ID(image, palette, t->pix), src, t->w, t->h, bpp, pal);
+        return gfx_texture_plain(TEX_ID(image, palette, t->pix), src, t->w, t->h, bpp, pal);
     }
     memcpy(Rows, src + top * row, (size_t)((t->h - top) * row));
     memcpy(Rows + (t->h - top) * row, src, (size_t)(top * row));
-    return gfx_texture(TEX_ID(image, palette, t->pix + top * row), Rows, t->w, t->h, bpp, pal);
+    return gfx_texture_plain(TEX_ID(image, palette, t->pix + top * row), Rows, t->w, t->h, bpp, pal);
 }
 
 static const GfxTex *tex_of(u16 image, u16 palette) {

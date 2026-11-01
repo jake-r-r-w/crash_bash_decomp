@@ -76,7 +76,7 @@ and the same integer rules as the PS1.
 
 **Drawing.** The port doesn't write PS1 drawing commands. The game calls `bash/draw.h` directly (`main/draw.c`), which sends vertices to the
 GPU with real 3D transforms, depth and perspective-correct textures. A place in the frame's order is just a number (a layer), and a model keeps
-its faces' look as plain `DrawFace` records. Widescreen leaves the game's own 512-wide screen and logic alone: the renderer shows more past each side of it (`gfx_view_extra`), and the game's culling (`clipX0`, `clipX1`) and the player panel (`HudSpread`) know about it. Anti-aliasing, filtering and widescreen are settings, off by default, and with them off the frames are what they always were. Textures go from the game's indexed files to
+its faces' look as plain `DrawFace` records. Widescreen leaves the game's own 512-wide screen and logic alone: the renderer shows more past each side of it (`gfx_view_extra`), and the game's culling (`clipX0`, `clipX1`) and the player panel (`HudSpread`) know about it. Anti-aliasing, filtering, widescreen and upscaling are settings, off by default, and with them off the frames are what they always were. Upscaling (`platform/upscale.c`) is a texture made bigger as it's first drawn, by a Scale2x rule with near colours counted as the same: not AI, it adds no detail, and it never blends, so a texel's clear, semi or opaque alpha survives. No art ships: it's all from the player's own data. Textures go from the game's indexed files to
 GPU textures at load, and palettes and animated or scrolling textures use GPU resources, not a VRAM allocator. Blend
 modes, fades and draw order are kept, so it looks like the game, sharper. The few effects that draw into VRAM
 become render targets.
@@ -119,7 +119,7 @@ the zip with `playtest.mjs ... --exe`, and unzipped by itself, with and without 
 
 ## Running it
 
-Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. It also looks for `CRASHBSH.DAT` in the current folder, next to the program and in the user's folder, where a disc image's copy goes the first time it runs (`platform/discimage.c`). A settings
+Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. It also looks for `CRASHBSH.DAT` in the current folder, next to the program and in the user's folder, where a disc image's copy goes the first time it runs (`platform/discimage.c`): an image next to the program or in the current folder is used with no questions, and otherwise it asks. A settings
 menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
 Keys: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Q and W = L1 and R1, 1 and 2 = L2 and R2.
 
@@ -131,7 +131,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | Option | What it does |
 |---|---|
 | `--image FILE` | copy the game's data from this disc image first, to `--data`'s path if it's given, and otherwise the user's folder |
-| `--antialias N`, `--smooth`, `--widescreen` | those settings, for this run |
+| `--antialias N`, `--smooth`, `--widescreen`, `--upscale N` | those settings, for this run |
 | `--level-flags HEX` | with `--mode`, a challenge's flags as a door would set them, as a one-player game: `80` is a crystal's, on the level's other map. It opens on the rules, so press through them; `--bot` plays it |
 | `--frames N` | stop after N vblanks |
 | `--skip-intro`, `--skip-loading` | the menu's two skips, for this run |

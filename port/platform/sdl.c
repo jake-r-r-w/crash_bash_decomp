@@ -140,6 +140,7 @@ static GfxConfig gfx_config_from(const Settings *s) {
     c.antialias = s->antialias;
     c.smooth = s->smooth;
     c.wide = s->widescreen;
+    c.upscale = s->upscale;
     return c;
 }
 

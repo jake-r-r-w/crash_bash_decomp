@@ -20,8 +20,7 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 7.5 | High-res texture packs | Packs that replace the game's textures, found by what each texture is. The packs can't ship with the port if they're made from the game's art | [ ] |
-| 7.6 | Sharper icons and UI text | They're at the original's low resolution, whatever size the game draws at. Upscale them. The upscaled art can't ship with the port, as it would be the game's: it's made on the player's machine from their own data, or comes as a pack (7.5) | [ ] |
+| 7.6 | Sharper icons and UI text | UPSCALE (7.5) already does this, along with every other texture. What's left, if it's wanted, is a setting of its own for the HUD and menus | [ ] |
 | 7.7 | Optional modern lighting | Lighting beyond the game's own, which is colours baked into its models' vertices | [ ] |
 | 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files | [ ] |
 | 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |

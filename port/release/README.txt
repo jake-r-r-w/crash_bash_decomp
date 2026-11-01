@@ -8,12 +8,13 @@ This download has no game data. You need your own copy of Crash Bash (USA).
 
 GETTING STARTED
 
-1. Run crashbash.exe.
-2. The first time, it asks for your disc image (a .cue with its .bin, a raw .bin
-   or an .iso) and copies what it needs, so you won't need the image again.
+1. Put your disc image (a .cue with its .bin, a raw .bin or an .iso) in the same
+   folder as crashbash.exe.
+2. Run crashbash.exe. It copies what it needs the first time, so you won't need
+   the image again.
 
-Or copy CRASHBSH.DAT from the CRASHBSH folder on your copy of the game into the
-same folder as crashbash.exe.
+If there's no image there, it asks you where yours is. Or copy CRASHBSH.DAT from
+the CRASHBSH folder on your copy of the game next to crashbash.exe.
 
 It needs 64-bit Windows 10 or 11 and a graphics card with Direct3D 12. Windows
 may warn about an unrecognised program, as this one isn't signed.
