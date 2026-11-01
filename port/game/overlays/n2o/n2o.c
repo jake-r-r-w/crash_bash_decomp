@@ -4186,7 +4186,10 @@ void SetN2OHeroEnter(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
-    h->hero_move->velocity_enable = 0;
+    /* a retry from the ball game places him before InitialiseHeroes has made this */
+    if (h->hero_move != NULL) {
+        h->hero_move->velocity_enable = 0;
+    }
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
