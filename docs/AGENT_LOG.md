@@ -469,6 +469,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-01: A Halloween texture pack for the user, made by `scratch/halloween.mjs` from a dump of all modes (`scratch/full_dump.mjs`, `long_dump.mjs`) into `build/port/windows-clang/packs/halloween`. It's made from the game's art, so it stays on this machine, not in the repo or a release.
 - 2026-11-01: The texture pack option moved to a new Mods section in the launcher (the main and pause menus' Video pages are back to 9 rows). Scrolling textures can now be replaced: named and saved at rest. A pack of untouched originals draws identically in all 41 modes. A dump of all modes gave 3024 textures, which became an inverted test pack in the ignored build folder.
 - 2026-11-01: 7.10 Texture packs: Texture packs (7.10): `packs/NAME/*.png`, named by texture hash, chosen in the launcher's Mods section; `--dump-textures` saves the originals from the player's own disc. Off is unchanged (`same --all`). Broken files fall back to the game's own.
 - 2026-11-01: The user tried UPSCALE: small text too smooth, large text with artifacts. Text (`DB_Font`) and the panel's digits now stay as they were under UPSCALE and SMOOTH, by `GfxTex.sharp`.
