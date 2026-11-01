@@ -1379,7 +1379,7 @@ void PlotPapuMinion(NAS *nas)
   case 7:
     eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     hnas = PapuMinionObjectAhead(slot, 0x180);
-    if (hit != 0) {
+    if (hnas != NULL) {
       for (i = 0; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xFA00) &&
             angle_diff_abs(eng->xform.rot.vy, get_angle(eng->XYZ.x - Heroes[i].hero_eng->XYZ.x,
@@ -1391,7 +1391,7 @@ void PlotPapuMinion(NAS *nas)
       }
       do {
         if (fux->status != 6) {
-          other = hnas != NULL ? (EXTobject *)hnas->FUX : NULL;
+          other = (EXTobject *)hnas->FUX;
           if (other != NULL) {
             other->will_do |= 1;
             other->player = PapuMinionSlots[slot].whatami;
@@ -1673,7 +1673,7 @@ void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
                         if (ang == 0) {
                             return n;
                         }
-                        if (angle_diff_abs(*(s16*)((u8*)q->pad4[4] + 0x16),
+                        if (angle_diff_abs(((EXTmotion *)q->pad4[4])->Xa,
                                           get_angle(ex - o->XYZ.x, ez - o->XYZ.z) ^ 0x800) < ang) {
                             return n;
                         }
