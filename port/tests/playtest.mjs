@@ -358,12 +358,21 @@ async function same(args) {
     const one = async (m, slot) => {
         const shots = SAME_SHOTS.flatMap(v => ['--shot', String(v), rel(`m${m}-${v}.png`)]);
         const what = SAME_EXTRAS[m] ?? ['--frames', String(SAME_VBLANKS), '--skip-intro', '--skip-loading', '--mode', String(m)];
+
+        /* a run that doesn't start mustn't be judged by the last one's files */
+        for (const v of SAME_SHOTS) {
+            fs.rmSync(path.join(dir, `m${m}-${v}.png`), { force: true });
+        }
+        fs.rmSync(path.join(dir, `m${m}.wav`), { force: true });
         const r = await run(exe, [...what, '--turbo', '--tile', String(slot), String(SAME_MODES.length),
             ...shots, '--wav', rel(`m${m}.wav`)], path.join(dir, `m${m}.txt`), { timeout: MODE_TIMEOUT });
         const crash = crash_where(exe, r.text);
 
         if (crash != null) {
             return [`mode ${m}`, { pass: false, what: crash }];
+        }
+        if (r.code !== 0) {
+            return [`mode ${m}`, { pass: false, what: `exit ${r.code}` }];
         }
         for (const v of SAME_SHOTS) {
             now[`m${m}-${v}`] = sha(path.join(dir, `m${m}-${v}.png`));

@@ -4,7 +4,7 @@
 #   cmake --build --preset windows-clang
 #   ctest --preset windows-clang
 cmake_minimum_required(VERSION 3.25)
-project(crash_bash_pc VERSION 0.1.0 LANGUAGES C)
+project(crash_bash_pc VERSION 0.1.1 LANGUAGES C)
 
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
   message(FATAL_ERROR "The port is 64-bit: use a 64-bit compiler (docs/PORT.md, Building).")
