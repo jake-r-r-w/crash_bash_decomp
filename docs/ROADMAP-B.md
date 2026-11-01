@@ -20,62 +20,34 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was. The levels are listed under this table | [ ] |
+| 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was, as Melt Panic is by the user's choice. The rows below are in the order to look at them. Black was measured in still frames at the start of each level, so they're where to look first, not a full list | [ ] |
+| 7.11.1 | Dante's Dash | The extra trees look doubled, and flat beside the real ones | [ ] |
+| 7.11.2 | Beach Ball | Recheck by playing: the new sand and wall | [ ] |
+| 7.11.3 | N.Ballism | Recheck by playing: the front corners | [ ] |
+| 7.11.4 | Crashball | Black at the sides | [ ] |
+| 7.11.5 | Jungle Fox | Black at the sides | [ ] |
+| 7.11.6 | Big Bad Fox | Black at the sides | [ ] |
+| 7.11.7 | Ring Ding | Black at the sides | [ ] |
+| 7.11.8 | Swamp Fox | Black at the sides | [ ] |
+| 7.11.9 | Metal Fox | Black at the sides | [ ] |
+| 7.11.10 | Drain Bash | Black at the sides | [ ] |
+| 7.11.11 | Pogo Painter | Black at the sides | [ ] |
+| 7.11.12 | El Pogo Loco | Black at the sides | [ ] |
+| 7.11.13 | Pogo Padlock | Some black at the sides | [ ] |
+| 7.11.14 | Sky Balls | Some black at the sides, and a white patch at the top | [ ] |
+| 7.11.15 | Space Bash | Some black at the sides | [ ] |
+| 7.11.16 | Papu Pummel | Some black at the sides | [ ] |
+| 7.11.17 | Desert Fox | Some black at the sides | [ ] |
+| 7.11.18 | Bearminator | Some black at the sides | [ ] |
+| 7.11.19 | Toxic Dash | Some black at the sides | [ ] |
+| 7.11.20 | Warp Room 3 | Some black at the sides | [ ] |
+| 7.11.21 | Polar Panic | Magenta at the edge. Its night sky is probably fine as it is | [ ] |
+| 7.11.22 | Tilt Panic | A white block beside its crystal arena | [ ] |
+| 7.11.23 | Oxide Ride | Space is dark on purpose: probably leave | [ ] |
+| 7.11.24 | Crystal maps | Not looked at yet: they're maps of their own | [ ] |
+| 7.11.25 | Later in each level | Not looked at yet: all this is from the first few seconds | [ ] |
 | 7.6 | Sharper icons and UI text | Icons upscale with UPSCALE (7.5). Text and digits don't: the scaler spoils them, so they stay as they were. Sharper text would need a font redrawn at a higher resolution, which can't come from the player's data and so would be new art. A texture pack can now carry one (7.10) | [ ] |
 | 7.7 | Optional modern lighting | Lighting beyond the game's own, which is colours baked into its models' vertices | [ ] |
 | 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files. It goes in the launcher's Mods section, with the texture packs (7.10) | [ ] |
 | 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |
-
-### 7.11's levels
-
-Black was measured in still frames at the start of each level, so this is where to look first, not a full list.
-
-To fix:
-
-- Dante's Dash: the extra trees look doubled, and flat beside the real ones
-
-To recheck after playing:
-
-- Beach Ball: the new sand and wall
-- N.Ballism: the front corners
-
-Black at the sides, most first:
-
-- Crashball
-- Jungle Fox
-- Big Bad Fox
-- Ring Ding
-- Swamp Fox
-- Metal Fox
-- Drain Bash
-- Pogo Painter
-- El Pogo Loco
-
-Less black:
-
-- Pogo Padlock
-- Sky Balls
-- Space Bash
-- Papu Pummel
-- Desert Fox
-- Bearminator
-- Toxic Dash
-- Warp Room 3
-
-Other marks:
-
-- Sky Balls: a white patch at the top
-- Polar Panic: magenta at the edge
-- Tilt Panic: a white block beside its crystal arena
-
-Probably leave:
-
-- Oxide Ride: its space is dark on purpose
-- Polar Panic: its night sky
-- Melt Panic: the user prefers it as it was
-
-Not looked at yet:
-
-- The crystal maps, which are maps of their own
-- Any level past its first few seconds
 
