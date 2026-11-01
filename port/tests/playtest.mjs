@@ -19,6 +19,7 @@
  *       some at once, up to 60 seconds each. For working on the player: which it wins, and in how many goes.
  *   node port/tests/playtest.mjs same [--save] [--all]
  *   node port/tests/playtest.mjs image
+ *   node port/tests/playtest.mjs packs
  *       Frames and sound of a few modes against a saved baseline (--save makes it), about a minute: whether a change that shouldn't alter
  *       anything didn't. Between big steps of cleaning up, in place of the long tests.
  *   node port/tests/playtest.mjs menu
@@ -33,6 +34,7 @@ import crypto from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -504,9 +506,103 @@ async function image(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, menu, shots, image };
+/* A PNG, for a pack: solid colour, by alpha or not (colour type 6 or 2). */
+function png_of(w, h, rgba, colour_type = 6) {
+    const crc = b => {
+        let c = 0xFFFFFFFF;
+        for (const x of b) {
+            c ^= x;
+            for (let k = 0; k < 8; k++) c = c & 1 ? (c >>> 1) ^ 0xEDB88320 : c >>> 1;
+        }
+        return (c ^ 0xFFFFFFFF) >>> 0;
+    };
+    const chunk = (type, data) => {
+        const t = Buffer.concat([Buffer.from(type, 'latin1'), data]);
+        const len = Buffer.alloc(4), sum = Buffer.alloc(4);
+        len.writeUInt32BE(data.length);
+        sum.writeUInt32BE(crc(t));
+        return Buffer.concat([len, t, sum]);
+    };
+    const n = colour_type === 6 ? 4 : 3;
+    const raw = Buffer.alloc((w * n + 1) * h);
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            for (let c = 0; c < n; c++) raw[y * (w * n + 1) + 1 + x * n + c] = rgba[c];
+        }
+    }
+    const head = Buffer.alloc(13);
+    head.writeUInt32BE(w, 0);
+    head.writeUInt32BE(h, 4);
+    head[8] = 8;
+    head[9] = colour_type;
+    return Buffer.concat([Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]), chunk('IHDR', head), chunk('IDAT', zlib.deflateSync(raw)), chunk('IEND', Buffer.alloc(0))]);
+}
+
+/* Making a pack and using it: the textures save, a pack replaces them, and what's broken in one doesn't stop the game. */
+async function packs(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const dir = path.join(OUT, 'packs');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+    const results = [];
+    const go = (name, more) => run(exe, ['--mode', '1', '--skip-intro', '--skip-loading', '--turbo', '--window', '480', '360', '--shot', '500', rel(`${name}.png`), '--frames', '520', ...more], path.join(dir, `${name}.txt`), { timeout: MODE_TIMEOUT });
+    const fine = (name, r) => r.code === 0 && crash_where(exe, r.text) == null && fs.existsSync(path.join(dir, `${name}.png`));
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    const base = await go('base', []);
+    const dumped = await go('dumped', ['--dump-textures', rel('dump')]);
+    const names = fs.existsSync(path.join(dir, 'dump')) ? fs.readdirSync(path.join(dir, 'dump')).filter(n => /^[0-9a-f]{16}\.png$/.test(n)) : [];
+    results.push(['dump', { pass: fine('dumped', dumped) && names.length > 20 && sha(path.join(dir, 'dumped.png')) === sha(path.join(dir, 'base.png')), what: `${names.length} textures saved, picture unchanged` }]);
+
+    /* any pack makes the atlas bigger, which moves a few sprites' edge texels by one (as UPSCALE 4X does), so this one replacing nothing is what the rest compare to */
+    fs.mkdirSync(path.join(dir, 'idle'));
+    fs.writeFileSync(path.join(dir, 'idle', '0000000000000000.png'), png_of(4, 4, [255, 0, 255, 255]));
+    const idle = await go('idle', ['--texture-pack', rel('idle')]);
+    const idle_sha = fine('idle', idle) ? sha(path.join(dir, 'idle.png')) : '';
+
+    /* the dump reloaded as a pack of itself is the same picture */
+    const same_pack = await go('same', ['--texture-pack', rel('dump')]);
+    results.push(['own textures as a pack', { pass: fine('same', same_pack) && sha(path.join(dir, 'same.png')) === idle_sha, what: 'the same picture' }]);
+
+    /* everything loud pink, at a size of its own */
+    fs.mkdirSync(path.join(dir, 'pink'));
+    for (const n of names) fs.writeFileSync(path.join(dir, 'pink', n), png_of(64, 32, [255, 0, 255, 255]));
+    const pink = await go('pink', ['--texture-pack', rel('pink')]);
+    results.push(['replaces', { pass: fine('pink', pink) && sha(path.join(dir, 'pink.png')) !== sha(path.join(dir, 'base.png')), what: 'a different picture' }]);
+
+    /* no alpha channel */
+    fs.mkdirSync(path.join(dir, 'rgb'));
+    for (const n of names) fs.writeFileSync(path.join(dir, 'rgb', n), png_of(32, 32, [0, 255, 0], 2));
+    const rgb = await go('rgb', ['--texture-pack', rel('rgb')]);
+    results.push(['RGB PNG', { pass: fine('rgb', rgb) && sha(path.join(dir, 'rgb.png')) !== sha(path.join(dir, 'base.png')), what: 'loads' }]);
+
+    /* broken ones: not PNGs, cut short, a stated size far too big, a name that isn't one. All stay as the game's own */
+    fs.mkdirSync(path.join(dir, 'bad'));
+    names.forEach((n, i) => {
+        const good = png_of(16, 16, [0, 0, 255, 255]);
+        const kinds = [Buffer.from('not a png'), good.subarray(0, 40), Buffer.alloc(0)];
+        const huge = Buffer.from(good);
+        huge.writeUInt32BE(100000, 16);
+        huge.writeUInt32BE(100000, 20);
+        kinds.push(huge);
+        fs.writeFileSync(path.join(dir, 'bad', n), kinds[i % kinds.length]);
+    });
+    fs.writeFileSync(path.join(dir, 'bad', 'readme.png'), 'hello');
+    const bad = await go('bad', ['--texture-pack', rel('bad')]);
+    results.push(['broken files', { pass: fine('bad', bad) && sha(path.join(dir, 'bad.png')) === idle_sha, what: 'the game\'s own textures, no crash' }]);
+
+    const none = await go('none', ['--texture-pack', rel('nothing-here')]);
+    results.push(['missing pack', { pass: fine('none', none) && sha(path.join(dir, 'none.png')) === sha(path.join(dir, 'base.png')), what: 'as with no pack' }]);
+    fs.mkdirSync(path.join(dir, 'empty'));
+    const empty = await go('empty', ['--texture-pack', rel('empty')]);
+    results.push(['empty pack', { pass: fine('empty', empty) && sha(path.join(dir, 'empty.png')) === sha(path.join(dir, 'base.png')), what: 'as with no pack' }]);
+    return report(results);
+}
+
+const commands = { bosses, modes, adventure, challenges, same, menu, shots, image, packs };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|menu|shots|image: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|menu|shots|image|packs: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

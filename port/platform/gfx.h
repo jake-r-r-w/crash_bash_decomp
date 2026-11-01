@@ -31,6 +31,7 @@ typedef struct GfxConfig {
     int smooth;        /* textures filtered, rather than their square texels */
     int wide;          /* a wider window shows more of the world, rather than bars at the sides */
     int upscale;       /* textures made this many times bigger (upscale.c): 1 is off, or 2 or 4 */
+    const char *pack;  /* the texture pack in use (texpack.c), or empty */
 } GfxConfig;
 
 int gfx_init(void *window, const GfxConfig *config);

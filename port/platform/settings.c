@@ -24,6 +24,7 @@ void settings_defaults(void) {
     Current.smooth = 0;
     Current.widescreen = 0;
     Current.upscale = 1;
+    Current.texture_pack[0] = 0;
     Current.test_mode = -1;
 }
 
@@ -76,6 +77,8 @@ void settings_load(void) {
             Current.widescreen = a != 0;
         } else if (sscanf(line, "upscale=%d", &a) == 1 && (a == 1 || a == 2 || a == 4)) {
             Current.upscale = a;
+        } else if (sscanf(line, "texture_pack=%63[^\r\n]", Current.texture_pack) == 1) {
+            /* that's it */
         }
     }
     fclose(f);
@@ -103,5 +106,6 @@ void settings_save(void) {
     fprintf(f, "smooth=%d\n", Current.smooth);
     fprintf(f, "widescreen=%d\n", Current.widescreen);
     fprintf(f, "upscale=%d\n", Current.upscale);
+    fprintf(f, "texture_pack=%s\n", Current.texture_pack);
     fclose(f);
 }

@@ -11,6 +11,7 @@
 #include <SDL3/SDL.h>
 #include "platform/platform.h"
 #include "platform/gfx.h"
+#include "platform/texpack.h"
 #include "platform/settings.h"
 #include "platform/saves.h"
 
@@ -306,6 +307,7 @@ int platform_pad(int port) {
 
 int main(int argc, char **argv) {
     const char *Image = NULL;
+    const char *texture_pack = NULL;
     int antialias = 0, smooth = 0, widescreen = 0, upscale = 0, level_flags = 0;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
@@ -386,6 +388,10 @@ int main(int argc, char **argv) {
             widescreen = 1;
         } else if (strcmp(argv[i], "--upscale") == 0 && i + 1 < argc) {
             upscale = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--texture-pack") == 0 && i + 1 < argc) {
+            texture_pack = argv[++i];
+        } else if (strcmp(argv[i], "--dump-textures") == 0 && i + 1 < argc) {
+            texpack_dump_to(argv[++i]);
         } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
             test_mode = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--level-flags") == 0 && i + 1 < argc) {
@@ -476,6 +482,9 @@ int main(int argc, char **argv) {
     }
     if (upscale == 1 || upscale == 2 || upscale == 4) {
         settings()->upscale = upscale;
+    }
+    if (texture_pack != NULL) {
+        SDL_strlcpy(settings()->texture_pack, texture_pack, sizeof(settings()->texture_pack));
     }
     /* the first time: the launcher's made of the game's own art, so this comes before it */
     if (Image != NULL) {

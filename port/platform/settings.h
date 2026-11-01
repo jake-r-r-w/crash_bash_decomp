@@ -15,6 +15,7 @@ typedef struct Settings {
     int smooth;        /* textures filtered, rather than the original's square texels */
     int widescreen;    /* a wider window shows more of the world */
     int upscale;       /* textures made this many times bigger, on the player's machine: 1 is off, or 2 or 4 */
+    char texture_pack[64]; /* the texture pack in use, a folder's name under packs/, or empty */
     int test_mode;     /* a test run's game mode to go straight to, or -1 */
     int test_level_flags; /* and its challenge's flags, as a warp room's door sets them: 0x80 is a crystal's, on the level's other map */
     int testing;       /* went there with --mode: the computer plays, with no time limit */
