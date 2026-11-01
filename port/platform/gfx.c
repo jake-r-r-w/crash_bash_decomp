@@ -542,13 +542,26 @@ static uint64_t hash_bytes(const uint8_t *p, size_t n, uint64_t h) {
 
 /* Copies the rect of the atlas to the GPU with the frame. */
 static void mark_dirty(int x, int y, int w, int h) {
-    if (NumDirty < MAX_DIRTY) {
-        Dirty[NumDirty].x = x;
-        Dirty[NumDirty].y = y;
-        Dirty[NumDirty].w = w;
-        Dirty[NumDirty].h = h;
-        NumDirty++;
+    /* too much waiting to keep a list of: all of it again, in strips that fit a frame */
+    if (NumDirty >= MAX_DIRTY) {
+        int rows = ATLAS_UPLOAD_BYTES / (ATLAS_SIZE * 4);
+        int top;
+
+        NumDirty = 0;
+        for (top = 0; top < ATLAS_SIZE; top += rows) {
+            Dirty[NumDirty].x = 0;
+            Dirty[NumDirty].y = top;
+            Dirty[NumDirty].w = ATLAS_SIZE;
+            Dirty[NumDirty].h = top + rows > ATLAS_SIZE ? ATLAS_SIZE - top : rows;
+            NumDirty++;
+        }
+        return;
     }
+    Dirty[NumDirty].x = x;
+    Dirty[NumDirty].y = y;
+    Dirty[NumDirty].w = w;
+    Dirty[NumDirty].h = h;
+    NumDirty++;
 }
 
 const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
@@ -1136,8 +1149,8 @@ void gfx_end_frame(void) {
     memcpy(ShownClips, Clips, sizeof(ShownClips));
     ShownClear = ClearPending;
     ClearPending = 0;
-    /* a test run that's after speed draws now and then, and when it wants a shot */
-    if (DrawEvery > 1 && ShotPath == NULL && ++DrawnSince < DrawEvery) {
+    /* a test run that's after speed draws now and then, when it wants a shot, and while new textures are waiting to go up */
+    if (DrawEvery > 1 && ShotPath == NULL && NumDirty == 0 && ++DrawnSince < DrawEvery) {
         gfx_begin_frame();
         return;
     }

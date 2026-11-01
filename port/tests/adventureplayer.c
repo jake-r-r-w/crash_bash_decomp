@@ -32,11 +32,13 @@ void BossBotUpdate(void);
 #define NEAR_ANGLE 0x40
 #define MAX_SKILL 0x20
 #define CHOICES 5
+#define GIVE_UP 3
 
 static s32 Ticks;
 static s32 InRoom;
 static u16 Tries[0x21][CHOICES];
 static s32 WantLevel, WantChoice;
+static s32 Losses;
 
 static s32 in_room(void) {
     return GameMode >= ROOM_FIRST && GameMode <= ROOM_LAST;
@@ -208,6 +210,10 @@ static void log_round(void) {
     s32 now = GAME->exitFlags & 1;
 
     if (now && !last) {
+        /* a challenge's lost when nobody won it, a trophy when someone else has its three rounds */
+        if (GAME->winner[0] == 0 || GAME->adventure.roundPoints[1] >= 3 || GAME->adventure.roundPoints[2] >= 3 || GAME->adventure.roundPoints[3] >= 3) {
+            Losses++;
+        }
         printf("round: vblank %d mode %d winner %d points %d %d %d %d\n", platform_vblanks(), GameMode, GAME->winner[0], GAME->adventure.roundPoints[0],
                GAME->adventure.roundPoints[1], GAME->adventure.roundPoints[2], GAME->adventure.roundPoints[3]);
     }
@@ -227,6 +233,7 @@ void AdventurePlayerUpdate(void) {
     }
     if (InRoom && GameMode < 0x21 && !(GAME->exitFlags & 0x8008)) {
         Tries[GameMode][WantChoice]++;
+        Losses = 0;
         printf("adventure: try %d of level %d challenge %d\n", Tries[GameMode][WantChoice], GameMode, WantChoice);
         InRoom = 0;
     }
@@ -239,6 +246,11 @@ void AdventurePlayerUpdate(void) {
     GAME->heroCpu[0] = 0;
     if (GameMode < ROOM_FIRST) {
         AiPlayerSkill[0].level = MAX_SKILL;
+    }
+    /* the fail screen: enough goes at this one, back to the warp room for something else */
+    if ((GAME->exitFlags & 1) && Losses >= GIVE_UP && GameMode < ROOM_FIRST) {
+        platform_bot_buttons((Ticks & 15) != 0 ? 0 : PauseChoice == 1 ? BTN_CROSS : BTN_DOWN);
+        return;
     }
     platform_bot_buttons((Ticks & 31) < 3 ? BTN_CROSS : 0);
 }

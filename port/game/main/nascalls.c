@@ -3200,6 +3200,8 @@ void textureset_upload(obj_textureset *arg0) {
     s32 n;
     AnimData *p;
 
+    /* not every load of a set is released first, and the ids are few: a level's textures vanish once they've run out */
+    tex_release_ids(arg0);
     t = arg0->tex;
     base = (u8 *)arg0->base;
     Tex_UploadCluts(arg0);
