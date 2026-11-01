@@ -6782,7 +6782,7 @@ void RaceFireMissile(s32 player) {
     HeroInfo *hero = base + player;
     SLONG_XYZ pos;
     NAS *nas;
-    s32 *ext;
+    RaceMissileExt *ext;
 
     pos = hero->hero_eng->XYZ;
     nas = CreateNAS(pos.x, pos.y - 0x80, pos.z, 0x1701, 0x11);
@@ -6790,7 +6790,7 @@ void RaceFireMissile(s32 player) {
         nas->Engine->xform.rot.vy = hero->hero_eng->xform.rot.vy;
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext[3] = player;
+            ext->owner = player;
         }
     }
 }
