@@ -20,6 +20,7 @@ void platform_bot_buttons(int buttons);
 void platform_finish(int code);
 int platform_vblanks(void);
 void BossBotUpdate(void);
+void PogoPlayerBot(s32 id);
 
 #define BTN_UP 0x10
 #define BTN_RIGHT 0x20
@@ -48,6 +49,7 @@ void BossBotUpdate(void);
 #define CHOICES 5
 #define GIVE_UP 3
 #define RING_DING 27
+#define POGO_FIRST 10
 #define POGO_PADLOCK 13
 #define BALLOON_FIRST 8
 #define BALLOON_LAST 11
@@ -468,15 +470,16 @@ void AdventurePlayerUpdate(void) {
         BossBotUpdate();
         return;
     }
-    /* a game: the computer has the pad (heroes.c). It, the titles, a story or a menu all wait for a button at the end. Padlock deals
-       out what's going by who's a player, and he can't win on the computer's hands against that: he counts as the computer's till the win
-       comes, when it has to be a player's to count. Ring Ding has its own player, as the computer's picks its balloons at random. */
-    GAME->heroCpu[0] = GameMode == POGO_PADLOCK && (GAME->exitFlags & 1) == 0;
-    if (GameMode < ROOM_FIRST && GameMode != RING_DING && GameMode != POGO_PADLOCK) {
+    /* a game: the computer has the pad (heroes.c). It, the titles, a story or a menu all wait for a button at the end. Ring Ding and
+       the Pogo games have their own players, as the computer's go about at random. */
+    if (GameMode < ROOM_FIRST && GameMode != RING_DING && !(GameMode >= POGO_FIRST && GameMode <= POGO_PADLOCK)) {
         AiPlayerSkill[0].level = MAX_SKILL;
     }
     if (GameMode == RING_DING) {
         HeroHooks.HeroBot = ring_play;
+    }
+    if (GameMode >= POGO_FIRST && GameMode <= POGO_PADLOCK) {
+        HeroHooks.HeroBot = PogoPlayerBot;
     }
     /* the fail screen: enough goes at this one, back to the warp room for something else */
     if ((GAME->exitFlags & 1) && Losses >= GIVE_UP && GameMode < ROOM_FIRST) {
