@@ -20,6 +20,8 @@ void settings_defaults(void) {
     Current.render_h = 0;
     Current.vsync = 1;
     Current.fps = 30;
+    Current.antialias = 1;
+    Current.smooth = 0;
     Current.test_mode = -1;
 }
 
@@ -64,6 +66,10 @@ void settings_load(void) {
             Current.vsync = a != 0;
         } else if (sscanf(line, "fps=%d", &a) == 1 && (a == 30 || a == 60 || a == 120)) {
             Current.fps = a;
+        } else if (sscanf(line, "antialias=%d", &a) == 1 && (a == 1 || a == 2 || a == 4 || a == 8)) {
+            Current.antialias = a;
+        } else if (sscanf(line, "smooth=%d", &a) == 1) {
+            Current.smooth = a != 0;
         }
     }
     fclose(f);
@@ -87,5 +93,7 @@ void settings_save(void) {
     fprintf(f, "cheat_menu=%d\n", Current.cheat_menu);
     fprintf(f, "vsync=%d\n", Current.vsync);
     fprintf(f, "fps=%d\n", Current.fps);
+    fprintf(f, "antialias=%d\n", Current.antialias);
+    fprintf(f, "smooth=%d\n", Current.smooth);
     fclose(f);
 }

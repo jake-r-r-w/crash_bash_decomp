@@ -5,6 +5,8 @@
 
 #include "common.h"
 
+#define NUM_VIDEO_OPTIONS 7
+
 s32 video_option_count(void);
 const char *video_option_label(s32 i);
 const char *video_option_help(s32 i);

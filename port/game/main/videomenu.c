@@ -5,7 +5,8 @@
 #include "common.h"
 #include "bash/videomenu.h"
 
-enum { VIDEO_DISPLAY, VIDEO_WINDOW, VIDEO_RENDER, VIDEO_FPS, VIDEO_VSYNC, NUM_VIDEO };
+enum { VIDEO_DISPLAY, VIDEO_WINDOW, VIDEO_RENDER, VIDEO_FPS, VIDEO_VSYNC, VIDEO_ANTIALIAS, VIDEO_TEXTURES, NUM_VIDEO };
+_Static_assert(NUM_VIDEO == NUM_VIDEO_OPTIONS, "the menus are laid out for this many");
 
 static const struct {
     const char *label;
@@ -16,6 +17,8 @@ static const struct {
     { "RESOLUTION", "THE SIZE THE GAME DRAWS AT" },
     { "FRAME RATE", "30 IS THE ORIGINAL, 60 AND 120 ARE SMOOTHER" },
     { "VSYNC", "MATCH YOUR SCREEN, TO STOP TEARING" },
+    { "ANTIALIAS", "SMOOTHS THE EDGES OF THINGS, HIGHER IS SLOWER" },
+    { "TEXTURES", "SHARP IS THE ORIGINAL, SMOOTH BLENDS PIXELS" },
 };
 
 typedef struct {
@@ -73,6 +76,12 @@ void video_option_change(s32 i, s32 dir) {
     case VIDEO_VSYNC:
         s->vsync = !s->vsync;
         break;
+    case VIDEO_ANTIALIAS:
+        s->antialias = dir > 0 ? (s->antialias == 8 ? 1 : s->antialias * 2) : (s->antialias == 1 ? 8 : s->antialias / 2);
+        break;
+    case VIDEO_TEXTURES:
+        s->smooth = !s->smooth;
+        break;
     }
     settings_apply();
     settings_save();
@@ -100,6 +109,16 @@ void video_option_value(s32 i, char *text, s32 size) {
         break;
     case VIDEO_VSYNC:
         snprintf(text, size, "%s", s->vsync ? "ON" : "OFF");
+        break;
+    case VIDEO_ANTIALIAS:
+        if (s->antialias == 1) {
+            snprintf(text, size, "OFF");
+        } else {
+            snprintf(text, size, "%dX", s->antialias);
+        }
+        break;
+    case VIDEO_TEXTURES:
+        snprintf(text, size, "%s", s->smooth ? "SMOOTH" : "SHARP");
         break;
     }
 }

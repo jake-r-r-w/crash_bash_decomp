@@ -130,6 +130,18 @@ static void centre_window(void) {
 }
 
 /* The window as the settings have it. Coming out of fullscreen or to another size it's centred; otherwise it stays where it was moved to. */
+static GfxConfig gfx_config_from(const Settings *s) {
+    GfxConfig c;
+
+    c.width = s->render_w;
+    c.height = s->render_h;
+    c.vsync = s->vsync;
+    c.fps = s->fps;
+    c.antialias = s->antialias;
+    c.smooth = s->smooth;
+    return c;
+}
+
 static void place_window(void) {
     const Settings *s = settings();
     int was_fullscreen = Fullscreen, w, h;
@@ -162,7 +174,9 @@ int host_init(void) {
     if (!Fullscreen && s->tiles == 0) {
         centre_window();
     }
-    if (!gfx_init(Window, s->render_w, s->render_h, s->vsync, s->fps)) {
+    GfxConfig config = gfx_config_from(s);
+
+    if (!gfx_init(Window, &config)) {
         return 0;
     }
     open_pads();
@@ -246,8 +260,10 @@ int host_poll(void) {
         const Settings *s = settings();
 
         ApplyPending = 0;
+        GfxConfig config = gfx_config_from(s);
+
         place_window();
-        gfx_configure(s->render_w, s->render_h, s->vsync, s->fps);
+        gfx_configure(&config);
     }
 
     int resized = 0;

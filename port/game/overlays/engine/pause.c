@@ -852,8 +852,8 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
     eng[6].xform.rot.vy += 0x40;
 }
 
-#define VIDEO_ROW_Y 0x3C
-#define VIDEO_ROW_STEP 0x24
+#define VIDEO_ROW_Y 0x2C
+#define VIDEO_ROW_STEP 0x18
 #define VIDEO_LABEL_X 0x58
 #define VIDEO_VALUE_X 0x13C
 

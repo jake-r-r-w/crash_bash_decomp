@@ -56,7 +56,11 @@ typedef struct {
 static SDL_Window *Window;
 static SDL_GPUDevice *Device;
 static SDL_GPUTexture *Target, *Base, *Depth, *Atlas;
-static SDL_GPUSampler *Sampler;
+static SDL_GPUTexture *Multisampled; /* with anti-aliasing: what's drawn to, and resolved to Target */
+static SDL_GPUSampleCount Samples = SDL_GPU_SAMPLECOUNT_1;
+static SDL_GPUShader *ShaderV, *ShaderF;
+static SDL_GPUSampler *Sampler, *SamplerSmooth;
+static int Smooth;
 static SDL_GPUBuffer *VertexBuf;
 static SDL_GPUTransferBuffer *VertexXfer, *AtlasXfer, *ShotXfer;
 /* solid or textured for each blend, by how the fragment shader is told to treat alpha */
@@ -98,13 +102,15 @@ static const char *const VS_SRC =
     "Out main(In i) { Out o; o.pos = i.pos; o.uv = i.uv; o.col = i.col; return o; }\n";
 
 /* mode.x: the alpha written, for the blend. mode.y: 0 solid, 1 textured keeping all but clear texels, 2 textured keeping only
- * opaque ones, 3 textured keeping only the semi-transparent ones (a texel's alpha: 0 clear, 0.5 semi, 1 opaque). */
+ * opaque ones, 3 textured keeping only the semi-transparent ones (a texel's alpha: 0 clear, 0.5 semi, 1 opaque), 4 the last picture,
+ * put back as it was. */
 static const char *const FS_SRC =
     "Texture2D<float4> tex : register(t0, space2);\n"
     "SamplerState smp : register(s0, space2);\n"
     "cbuffer U : register(b0, space3) { float4 mode; };\n"
     "struct In { float2 uv : TEXCOORD0; float4 col : TEXCOORD1; };\n"
     "float4 main(In i) : SV_Target0 {\n"
+    "  if (mode.y > 3.5) return float4(tex.Sample(smp, i.uv).rgb, 1.0);\n"
     "  float3 c = i.col.rgb;\n"
     "  if (mode.y > 0.5) {\n"
     "    float4 t = tex.Sample(smp, i.uv);\n"
@@ -209,6 +215,7 @@ static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *
     p.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
     p.rasterizer_state.cull_mode = SDL_GPU_CULLMODE_NONE;
     p.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
+    p.multisample_state.sample_count = Samples;
     p.target_info.color_target_descriptions = &c;
     p.target_info.num_color_targets = 1;
     p.target_info.has_depth_stencil_target = true;
@@ -217,6 +224,41 @@ static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *
     p.depth_stencil_state.enable_depth_write = depth != 0;
     p.depth_stencil_state.compare_op = SDL_GPU_COMPAREOP_LESS_OR_EQUAL;
     return SDL_CreateGPUGraphicsPipeline(Device, &p);
+}
+
+static SDL_GPUGraphicsPipeline **const Pipes[] = { &PipeOpaque, &PipeDepth, &PipeHalf, &PipeAdd, &PipeSub, &PipeQuarter };
+
+/* They're made for a number of samples. */
+static int make_pipelines(void) {
+    size_t i;
+
+    for (i = 0; i < SDL_arraysize(Pipes); i++) {
+        if (*Pipes[i] != NULL) {
+            SDL_ReleaseGPUGraphicsPipeline(Device, *Pipes[i]);
+        }
+    }
+    PipeOpaque = make_pipeline(ShaderV, ShaderF, 0, 0, 0, 0, 0);
+    PipeDepth = make_pipeline(ShaderV, ShaderF, 0, 0, 0, 0, 1);
+    PipeHalf = make_pipeline(ShaderV, ShaderF, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA, SDL_GPU_BLENDOP_ADD, 1, 0);
+    PipeAdd = make_pipeline(ShaderV, ShaderF, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1, 0);
+    PipeSub = make_pipeline(ShaderV, ShaderF, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_REVERSE_SUBTRACT, 1, 0);
+    PipeQuarter = make_pipeline(ShaderV, ShaderF, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1, 0);
+    return PipeOpaque && PipeDepth && PipeHalf && PipeAdd && PipeSub && PipeQuarter;
+}
+
+/* The most the card can do, of what's asked for. */
+static SDL_GPUSampleCount sample_count(int asked) {
+    static const SDL_GPUSampleCount Counts[] = { SDL_GPU_SAMPLECOUNT_8, SDL_GPU_SAMPLECOUNT_4, SDL_GPU_SAMPLECOUNT_2 };
+    static const int Numbers[] = { 8, 4, 2 };
+    size_t i;
+
+    for (i = 0; i < SDL_arraysize(Counts); i++) {
+        if (asked >= Numbers[i] && SDL_GPUTextureSupportsSampleCount(Device, SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM, Counts[i]) &&
+            SDL_GPUTextureSupportsSampleCount(Device, SDL_GPU_TEXTUREFORMAT_D32_FLOAT, Counts[i])) {
+            return Counts[i];
+        }
+    }
+    return SDL_GPU_SAMPLECOUNT_1;
 }
 
 /* What's as big as the picture. */
@@ -239,8 +281,15 @@ static void make_targets(int width, int height) {
     Target = SDL_CreateGPUTexture(Device, &t);
     t.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
     Base = SDL_CreateGPUTexture(Device, &t);
+    Multisampled = NULL;
+    if (Samples != SDL_GPU_SAMPLECOUNT_1) {
+        t.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET;
+        t.sample_count = Samples;
+        Multisampled = SDL_CreateGPUTexture(Device, &t);
+    }
     t.format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT;
     t.usage = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET;
+    t.sample_count = Samples;
     Depth = SDL_CreateGPUTexture(Device, &t);
     SDL_zero(tc);
     tc.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
@@ -277,12 +326,15 @@ static void resolve_size(int *width, int *height) {
     *height = h < MIN_TARGET_H ? MIN_TARGET_H : h;
 }
 
-static void set_target_size(int width, int height) {
+static void set_target_size(int width, int height, int remake) {
     resolve_size(&width, &height);
-    if (width != TargetW || height != TargetH) {
+    if (remake || width != TargetW || height != TargetH) {
         SDL_ReleaseGPUTexture(Device, Target);
         SDL_ReleaseGPUTexture(Device, Base);
         SDL_ReleaseGPUTexture(Device, Depth);
+        if (Multisampled != NULL) {
+            SDL_ReleaseGPUTexture(Device, Multisampled);
+        }
         SDL_ReleaseGPUTransferBuffer(Device, ShotXfer);
         make_targets(width, height);
         gfx_clear(0, 0, 0);
@@ -292,23 +344,33 @@ static void set_target_size(int width, int height) {
 void gfx_window_resized(void) {
     if (FollowsWindow && Device != NULL) {
         SDL_WaitForGPUIdle(Device);
-        set_target_size(0, 0);
+        set_target_size(0, 0, 0);
         BaseStale = 1;
     }
 }
 
-void gfx_configure(int width, int height, int vsync, int fps) {
+void gfx_configure(const GfxConfig *config) {
+    SDL_GPUSampleCount samples;
+
     SDL_WaitForGPUIdle(Device);
-    set_target_size(width, height);
-    set_vsync(vsync);
-    Stepping = fps > 30;
-    StepsPerFrame = 2 * fps / 60;
+    samples = sample_count(config->antialias);
+    if (samples != Samples) {
+        Samples = samples;
+        make_pipelines();
+        set_target_size(config->width, config->height, 1);
+    } else {
+        set_target_size(config->width, config->height, 0);
+    }
+    set_vsync(config->vsync);
+    Smooth = config->smooth;
+    Stepping = config->fps > 30;
+    StepsPerFrame = 2 * config->fps / 60;
     StepsDone = 0;
     BaseStale = 1;
 }
 
-int gfx_init(void *window, int width, int height, int vsync, int fps) {
-    SDL_GPUShader *vs, *fs;
+int gfx_init(void *window, const GfxConfig *config) {
+    int width = config->width, height = config->height;
     SDL_GPUTextureCreateInfo t;
     SDL_GPUSamplerCreateInfo sc;
     SDL_GPUBufferCreateInfo bc;
@@ -325,23 +387,17 @@ int gfx_init(void *window, int width, int height, int vsync, int fps) {
         fprintf(stderr, "SDL_ClaimWindowForGPUDevice: %s\n", SDL_GetError());
         return 0;
     }
-    if (!vsync) {
+    if (!config->vsync) {
         set_vsync(0);
     }
-    vs = make_shader(VS_SRC, "vs_5_1", SDL_GPU_SHADERSTAGE_VERTEX, 0, 0);
-    fs = make_shader(FS_SRC, "ps_5_1", SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1);
-    if (vs == NULL || fs == NULL) {
+    ShaderV = make_shader(VS_SRC, "vs_5_1", SDL_GPU_SHADERSTAGE_VERTEX, 0, 0);
+    ShaderF = make_shader(FS_SRC, "ps_5_1", SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1);
+    if (ShaderV == NULL || ShaderF == NULL) {
         return 0;
     }
-    PipeOpaque = make_pipeline(vs, fs, 0, 0, 0, 0, 0);
-    PipeDepth = make_pipeline(vs, fs, 0, 0, 0, 0, 1);
-    PipeHalf = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA, SDL_GPU_BLENDOP_ADD, 1, 0);
-    PipeAdd = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1, 0);
-    PipeSub = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_REVERSE_SUBTRACT, 1, 0);
-    PipeQuarter = make_pipeline(vs, fs, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE, SDL_GPU_BLENDOP_ADD, 1, 0);
-    SDL_ReleaseGPUShader(Device, vs);
-    SDL_ReleaseGPUShader(Device, fs);
-    if (!PipeOpaque || !PipeDepth || !PipeHalf || !PipeAdd || !PipeSub || !PipeQuarter) {
+    Samples = sample_count(config->antialias);
+    Smooth = config->smooth;
+    if (!make_pipelines()) {
         fprintf(stderr, "Pipeline: %s\n", SDL_GetError());
         return 0;
     }
@@ -365,6 +421,9 @@ int gfx_init(void *window, int width, int height, int vsync, int fps) {
     sc.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
     sc.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
     Sampler = SDL_CreateGPUSampler(Device, &sc);
+    sc.min_filter = SDL_GPU_FILTER_LINEAR;
+    sc.mag_filter = SDL_GPU_FILTER_LINEAR;
+    SamplerSmooth = SDL_CreateGPUSampler(Device, &sc);
 
     SDL_zero(bc);
     bc.usage = SDL_GPU_BUFFERUSAGE_VERTEX;
@@ -376,12 +435,12 @@ int gfx_init(void *window, int width, int height, int vsync, int fps) {
     VertexXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
     tc.size = ATLAS_UPLOAD_BYTES;
     AtlasXfer = SDL_CreateGPUTransferBuffer(Device, &tc);
-    if (!Target || !Base || !Depth || !Atlas || !Sampler || !VertexBuf || !VertexXfer || !AtlasXfer || !ShotXfer) {
+    if (!Target || !Base || !Depth || !Atlas || !Sampler || !SamplerSmooth || !VertexBuf || !VertexXfer || !AtlasXfer || !ShotXfer) {
         fprintf(stderr, "GPU resources: %s\n", SDL_GetError());
         return 0;
     }
-    Stepping = fps > 30;
-    StepsPerFrame = 2 * fps / 60;
+    Stepping = config->fps > 30;
+    StepsPerFrame = 2 * config->fps / 60;
     Tris = malloc(sizeof(Tri) * MAX_TRIS);
     Shown = malloc(sizeof(Tri) * MAX_TRIS);
     Order = malloc(sizeof(int) * MAX_TRIS);
@@ -641,6 +700,26 @@ const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp
     {
         uint32_t *px = (uint32_t *)AtlasPixels;
 
+        /* a clear texel takes the colour next to it, for filtering to blend with. It's still clear, so it's never drawn itself */
+        for (y = 0; y < h; y++) {
+            out = px + (ShelfY + 1 + y) * ATLAS_SIZE + ShelfX + 1;
+            for (x = 0; x < w; x++) {
+                if ((out[x] >> 24) == 0) {
+                    uint32_t beside = 0;
+
+                    if (x > 0 && (out[x - 1] >> 24) != 0) {
+                        beside = out[x - 1];
+                    } else if (x + 1 < w && (out[x + 1] >> 24) != 0) {
+                        beside = out[x + 1];
+                    } else if (y > 0 && (out[x - ATLAS_SIZE] >> 24) != 0) {
+                        beside = out[x - ATLAS_SIZE];
+                    } else if (y + 1 < h && (out[x + ATLAS_SIZE] >> 24) != 0) {
+                        beside = out[x + ATLAS_SIZE];
+                    }
+                    out[x] = beside & 0xFFFFFF;
+                }
+            }
+        }
         for (y = 1; y <= h; y++) {
             out = px + (ShelfY + y) * ATLAS_SIZE + ShelfX;
             out[0] = out[1];
@@ -741,8 +820,9 @@ static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float ste
     o->z = depth ? ((depth - 1) * w + (w - DEPTH_NEAR) * DEPTH_FAR / (DEPTH_FAR - DEPTH_NEAR)) / GFX_DEPTH_LAYERS : 0.5f * w;
     o->w = w;
     if (tex != NULL) {
-        o->u = tex->u0 + v->u * tex->us;
-        o->v = tex->v0 + v->v * tex->vs;
+        /* filtered, a whole number's the middle of a texel, or it would blend with the next */
+        o->u = tex->u0 + (v->u + (Smooth ? 0.5f : 0)) * tex->us;
+        o->v = tex->v0 + (v->v + (Smooth ? 0.5f : 0)) * tex->vs;
     } else {
         o->u = 0;
         o->v = 0;
@@ -773,6 +853,8 @@ static void fit_picture(Uint32 sw, Uint32 sh, SDL_GPUBlitRegion *r) {
 
 /* A blend for a depth-tested opaque triangle, past the others in Run.blend. */
 #define BLEND_DEPTH (-3)
+/* And for putting the last picture back, under anti-aliasing. */
+#define BLEND_PICTURE (-4)
 
 /* Draws the shown frame, step of the way from where it was, and shows it. */
 static void draw_shown(float step) {
@@ -796,6 +878,27 @@ static void draw_shown(float step) {
     /* Each semi-transparent textured triangle draws twice: its opaque texels, then its semi-transparent ones. */
     gv = SDL_MapGPUTransferBuffer(Device, VertexXfer, true);
     used = 0;
+    /* many samples can't be loaded back from the one picture they resolved to: it's drawn into them, as the first thing */
+    if (Multisampled != NULL && !ShownClear) {
+        static const float Corners[6][2] = { { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 }, { 0, 1 } };
+        Run *r = &runs[numRuns++];
+
+        for (i = 0; i < 6; i++) {
+            gv[i].x = Corners[i][0] * 2 - 1;
+            gv[i].y = 1 - Corners[i][1] * 2;
+            gv[i].z = 0;
+            gv[i].w = 1;
+            gv[i].u = Corners[i][0];
+            gv[i].v = Corners[i][1];
+            gv[i].rgba = 0xFFFFFFFF;
+        }
+        used = 6;
+        r->first = 0;
+        r->count = 6;
+        r->blend = BLEND_PICTURE;
+        r->textured = 1;
+        r->clip = 0;
+    }
     {
     for (i = 0; i < NumShown; i++) {
         const Tri *t = &Shown[Order[i]];
@@ -883,7 +986,7 @@ static void draw_shown(float step) {
         NumDirty -= done;
         memmove(Dirty, Dirty + done, sizeof(Dirty[0]) * NumDirty);
     }
-    if (Stepping && !ShownClear) {
+    if ((Stepping || Multisampled != NULL) && !ShownClear) {
         /* each step starts from the same picture, so what blends over it doesn't build up */
         SDL_GPUTextureLocation a, b;
 
@@ -891,11 +994,13 @@ static void draw_shown(float step) {
         SDL_zero(b);
         a.texture = Target;
         b.texture = Base;
-        if (BaseStale) {
+        if (BaseStale || !Stepping) {
             SDL_CopyGPUTextureToTexture(copy, &a, &b, TargetW, TargetH, 1, false);
             BaseStale = 0;
         }
-        SDL_CopyGPUTextureToTexture(copy, &b, &a, TargetW, TargetH, 1, false);
+        if (Multisampled == NULL) {
+            SDL_CopyGPUTextureToTexture(copy, &b, &a, TargetW, TargetH, 1, false);
+        }
     }
     SDL_EndGPUCopyPass(copy);
 
@@ -907,6 +1012,12 @@ static void draw_shown(float step) {
     ct.clear_color.a = 1;
     ct.load_op = ShownClear ? SDL_GPU_LOADOP_CLEAR : SDL_GPU_LOADOP_LOAD;
     ct.store_op = SDL_GPU_STOREOP_STORE;
+    if (Multisampled != NULL) {
+        ct.texture = Multisampled;
+        ct.resolve_texture = Target;
+        ct.load_op = SDL_GPU_LOADOP_CLEAR;
+        ct.store_op = SDL_GPU_STOREOP_RESOLVE;
+    }
     SDL_zero(dt);
     dt.texture = Depth;
     dt.clear_depth = 1;
@@ -922,8 +1033,6 @@ static void draw_shown(float step) {
         vb.buffer = VertexBuf;
         vb.offset = 0;
         SDL_BindGPUVertexBuffers(pass, 0, &vb, 1);
-        tb.texture = Atlas;
-        tb.sampler = Sampler;
         for (i = 0; i < numRuns; i++) {
             const Run *r = &runs[i];
             float mode[4];
@@ -962,6 +1071,11 @@ static void draw_shown(float step) {
                 mode[0] = 1;
                 mode[1] = 1;
                 break;
+            case BLEND_PICTURE:
+                pipe = PipeOpaque;
+                mode[0] = 1;
+                mode[1] = 4;
+                break;
             default:
                 pipe = PipeOpaque;
                 mode[0] = 1;
@@ -973,6 +1087,8 @@ static void draw_shown(float step) {
             }
             SDL_BindGPUGraphicsPipeline(pass, pipe);
             SDL_SetGPUScissor(pass, &ShownClips[r->clip]);
+            tb.texture = r->blend == BLEND_PICTURE ? Base : Atlas;
+            tb.sampler = Smooth && r->blend != BLEND_PICTURE ? SamplerSmooth : Sampler;
             SDL_BindGPUFragmentSamplers(pass, 0, &tb, 1);
             SDL_PushGPUFragmentUniformData(cmd, 0, mode, sizeof(mode));
             SDL_DrawGPUPrimitives(pass, r->count, 1, r->first, 0);

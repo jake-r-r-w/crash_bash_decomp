@@ -21,8 +21,16 @@ typedef struct GfxTex {
     float u0, v0, us, vs; /* where it is in the atlas: origin and scale per texel */
 } GfxTex;
 
-/* fps: 30 draws once for each of the game's frames; higher draws between them too, through gfx_present. */
-int gfx_init(void *window, int width, int height, int vsync, int fps);
+/* What the renderer's asked for, from the player's settings. */
+typedef struct GfxConfig {
+    int width, height; /* what it draws at. 0 x 0: as sharp as the window can show */
+    int vsync;
+    int fps;           /* 30 draws once for each of the game's frames; higher draws between them too, through gfx_present */
+    int antialias;     /* samples a pixel: 1 is off */
+    int smooth;        /* textures filtered, rather than their square texels */
+} GfxConfig;
+
+int gfx_init(void *window, const GfxConfig *config);
 void gfx_quit(void);
 
 void gfx_begin_frame(void);
@@ -62,8 +70,8 @@ void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend);
 
 /* A texture from the game's data: bpp 4 or 8 with a palette of u16 colours, or 16. Decoded on first use. id says which texture
  * this is, to find it again without looking at its pixels, until gfx_forget_textures; 0 for one that has no lasting id. */
-/* The render size, sync and frame rate, changed while running. */
-void gfx_configure(int width, int height, int vsync, int fps);
+/* Changed while running. */
+void gfx_configure(const GfxConfig *config);
 
 const GfxTex *gfx_texture(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
 /* The ids are no longer good. What's decoded stays, for when the same pixels come back. */

@@ -230,7 +230,7 @@ PlaceRec OptionsPlace[8] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 /* The video page's records: its title and panels, then each option's label and value in the small font, and its help. */
-#define VIDEO_ROWS 5
+#define VIDEO_ROWS NUM_VIDEO_OPTIONS
 #define VIDEO_SUB_LABEL(i) (3 + (i) * 2)
 #define VIDEO_SUB_VALUE(i) (4 + (i) * 2)
 #define VIDEO_SUB_HELP VIDEO_SUB_LABEL(VIDEO_ROWS)
@@ -946,7 +946,7 @@ static void place_video_page(void) {
 
         label->type = 3;
         label->x = -0xDC;
-        label->y = -0x2C + i * 0x20;
+        label->y = -0x40 + i * 0x16;
         label->data = (void *)video_option_label(i);
         label->frame = 4;
         value->type = 3;

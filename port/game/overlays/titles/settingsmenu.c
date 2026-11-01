@@ -41,7 +41,7 @@ static const MenuOption GameOptionsList[] = {
 
 static const MenuCategory Categories[] = {
     { "GAME", GameOptionsList, NUM_OF(GameOptionsList) },
-    { "VIDEO", NULL, 5 },
+    { "VIDEO", NULL, NUM_VIDEO_OPTIONS },
 };
 #define NUM_CATEGORIES NUM_OF(Categories)
 #define MAX_CATEGORIES 4 /* and BACK */
