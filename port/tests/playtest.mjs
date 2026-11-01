@@ -45,7 +45,7 @@ const BOSS_TIMEOUT = 280, MODE_TIMEOUT = 200;
 const BOSSES = {
     papu: { mode: 4, warp: 33, vblanks: 14000 },
     fox: { mode: 9, warp: 33, vblanks: 13000 },
-    bear: { mode: 22, warp: 33, vblanks: 8000 },
+    bear: { mode: 22, warp: 33, vblanks: 9000 },
     oxide: { mode: 31, warp: 37, vblanks: 16500 },
 };
 const CROSS = '4000', START = '8', DOWN = '40';

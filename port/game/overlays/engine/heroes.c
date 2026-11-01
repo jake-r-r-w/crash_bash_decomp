@@ -1346,7 +1346,7 @@ s32 HeroTestBox(s32 id, u32 flag) {
     r = box->radius;
     top = eng->XYZ.y + box->dy;
     bot = eng->XYZ.y + box->height;
-    gte_rotate_point((SVECTOR *)box, &pos);
+    view_transform((SVECTOR *)box, &pos);
     for (; i < 4; i++) {
         if (i == id) {
             continue;
@@ -4017,8 +4017,8 @@ void PlotFallParticles(subengine *sub, MATRIX *m) {
 
     p = fp->parts;
     prim = fp->prims[FrameCount & 1];
-    gte_SetRotMatrix(m);
-    gte_SetTransMatrix(m);
+    view_set_rotation(m);
+    view_set_translation(m);
     n = fp->count;
     col = calc_rgbcode(0x10, 0x10, 0x10);
     tag = col | 0x2E000000;
@@ -4038,19 +4038,13 @@ void PlotFallParticles(subengine *sub, MATRIX *m) {
         }
         p->bot.vy = p->top.vy + 0x40;
         p->bot.vx = p->top.vx + 0x40;
-        v = &p->top;
-        do { gte_ldv0(v); } while (0);
-        gte_rtps();
         tag2 = tag;
         sxy = &prim->x0;
         do { *(s32 *)&prim->r0 = tag2; } while (0);
-        gte_stsxy(sxy);
-        v = &p->bot;
-        gte_ldv0(v);
-        gte_rtps();
+        project_xy(&p->top, sxy);
+        project_xy(&p->bot, &prim->x3);
         prim->y1 = prim->y0;
         prim->x2 = prim->x0;
-        gte_stsxy(&prim->x3);
         prim->x1 = prim->x3;
         prim->y2 = prim->y3;
         addPrim(RenderState.ot + 0x40, prim);

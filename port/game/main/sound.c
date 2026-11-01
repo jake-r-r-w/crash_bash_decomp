@@ -129,10 +129,10 @@ void vab_transfer_poll(void) {
     audio_voice_states(AudioVoiceStates);
     cam_build_view(&MainCamera, ScreenRect);
     m = &MainCamera.view;
-    gte_SetRotMatrix(m);
-    gte_SetGeomScreen(MainCamera.dist);
-    gte_SetTransMatrix(m);
-    gte_SetGeomOffset(ScreenRect->w / 2, 175);
+    view_set_rotation(m);
+    view_set_distance(MainCamera.dist);
+    view_set_translation(m);
+    view_set_centre(ScreenRect->w / 2, 175);
 }
 
 s32 sfx_distance_volume(VECTOR *v, s32 *range) {
@@ -226,31 +226,25 @@ s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 s32 view_project_volume(VECTOR *pos, camera_info_tag *view) {
-    VECTOR *out = &RenderState.gteOut;
+    VECTOR *out = &RenderState.viewOut;
     s32 sxy;
     s32 *psxy = &sxy;
-    SVECTOR *in = &RenderState.gteIn;
+    SVECTOR *in = &RenderState.viewIn;
 
     in->vx = pos->vx - view->at.x;
     in->vy = pos->vy - view->at.y;
     in->vz = pos->vz - view->at.z;
-    gte_ldv0(in);
-    gte_rtps();
-    gte_stlvl(out);
-    gte_stsxy(psxy);
+    project_view_xy(in, out, psxy);
     return sfx_distance_volume(out, SfxDistanceCurve);
 }
 
 void view_project(VECTOR *pos, camera_info_tag *view, VECTOR *out, s32 *sxy) {
-    SVECTOR *in = &RenderState.gteIn;
+    SVECTOR *in = &RenderState.viewIn;
 
     in->vx = pos->vx - view->at.x;
     in->vy = pos->vy - view->at.y;
     in->vz = pos->vz - view->at.z;
-    gte_ldv0(in);
-    gte_rtps();
-    gte_stlvl(out);
-    gte_stsxy(sxy);
+    project_view_xy(in, out, sxy);
 }
 
 S16Pair sfx_pan(s32 x, s32 v) {

@@ -6,11 +6,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgte.h>
+#include "../../platform/maths.h"
 #include <libgpu.h>
 #include "../../platform/audio.h"
 
-#include <inline_c.h>
-#include <gtemac.h>
 
 #endif

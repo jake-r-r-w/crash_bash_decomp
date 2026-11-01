@@ -675,7 +675,7 @@ void N2OHeroEngineUpdate(s32 arg0) {
         b->a = t;
         b->b = r->height;
         b->c = r->radius;
-        gte_rotate_point((SVECTOR *)r, &sp10);
+        view_transform((SVECTOR *)r, &sp10);
         b->x0 = sp10.vx - (&Heroes[arg0])->hero_eng->XYZ.x;
         b->y0 = sp10.vy - (&Heroes[arg0])->hero_eng->XYZ.y;
         b->z0 = sp10.vz - (&Heroes[arg0])->hero_eng->XYZ.z;
@@ -688,7 +688,7 @@ next:
         t = r->radius;
         b = (N2OHeroBox *)((u8 *)base + arg0 * 40);
         b->d = t;
-        gte_rotate_point((SVECTOR *)r, v);
+        view_transform((SVECTOR *)r, v);
         b->x1 = sp10.vx - (&Heroes[arg0])->hero_eng->XYZ.x;
         b->y1 = sp10.vy - (&Heroes[arg0])->hero_eng->XYZ.y;
         b->z1 = sp10.vz - (&Heroes[arg0])->hero_eng->XYZ.z;
@@ -3762,7 +3762,7 @@ NAS *N2OBossPushObjects(void) {
             }
             gfx_load_xform(me->sub, &me->xform.mtx, &me->XYZ);
             r0 = rec->radius;
-            gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
+            view_transform((SVECTOR *)rec, (VECTOR *)&sp10);
             for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
                 eng = nas->Engine;
                 if (eng != NULL && eng != me) {

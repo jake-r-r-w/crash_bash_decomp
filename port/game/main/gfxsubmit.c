@@ -5,7 +5,7 @@
 
 /* The game's drawing calls on the native renderer. The game still fills in its prim structs, but they're only data here, read as
  * they're submitted: tpage and clut hold texture and palette ids, and a uv is in the texture's own texels. There's no VRAM.
- * Meshes take their positions straight from the GTE, unrounded, so they're real 3D at any resolution. */
+ * Meshes take their positions straight from the projection, unrounded, so they're real 3D at any resolution. */
 
 #define MAX_IMAGES 0x4000
 #define MAX_PALETTES 0x10000
@@ -383,19 +383,18 @@ void SetTile1(TILE_1 *p) {
     setcode(p, 0x68);
 }
 
-/* Whether the last three positions the GTE projected are all behind the camera, which gives them a depth of 1 and positions
+/* Whether three projected positions are all behind the camera, which gives them a depth of 1 and positions
    that mean nothing: as the view turns, those can sweep across the screen as one huge triangle. */
-static s32 behind_camera(const float q[9]) {
-    return q[2] <= 1 && q[5] <= 1 && q[8] <= 1;
+static s32 behind_camera(const ViewPoint q[3]) {
+    return q[0].w <= 1 && q[1].w <= 1 && q[2].w <= 1;
 }
 
-/* A textured mesh triangle, at the last three positions the GTE projected. wind says which way it shows (gfx_face_tri),
+/* A textured mesh triangle, at three projected positions. wind says which way it shows (gfx_face_tri),
    and hidden that it faces away this frame: it's only of use to the pictures between frames. */
-void mesh_submit_gt3(void *ot, void *poly, s32 face, s32 wind, s32 hidden) {
+void mesh_submit_gt3(void *ot, void *poly, const ViewPoint q[3], s32 face, s32 wind, s32 hidden) {
     POLY_GT3 *p = poly;
     s32 key = key_of(ot);
     const GfxTex *t;
-    float q[9];
     GfxVert v[3];
     s32 blend;
 
@@ -407,21 +406,19 @@ void mesh_submit_gt3(void *ot, void *poly, s32 face, s32 wind, s32 hidden) {
         return;
     }
     BackPixels = NULL;
-    pc_gte_precise(q);
     if (behind_camera(q)) {
         return;
     }
-    v[0].x = q[0]; v[0].y = q[1]; v[0].w = q[2]; v[0].u = p->u0; v[0].v = p->v0; v[0].rgba = colour_of(*(u32 *)&p->r0);
-    v[1].x = q[3]; v[1].y = q[4]; v[1].w = q[5]; v[1].u = p->u1; v[1].v = p->v1; v[1].rgba = colour_of(*(u32 *)&p->r1);
-    v[2].x = q[6]; v[2].y = q[7]; v[2].w = q[8]; v[2].u = p->u2; v[2].v = p->v2; v[2].rgba = colour_of(*(u32 *)&p->r2);
+    v[0].x = q[0].x; v[0].y = q[0].y; v[0].w = q[0].w; v[0].u = p->u0; v[0].v = p->v0; v[0].rgba = colour_of(*(u32 *)&p->r0);
+    v[1].x = q[1].x; v[1].y = q[1].y; v[1].w = q[1].w; v[1].u = p->u1; v[1].v = p->v1; v[1].rgba = colour_of(*(u32 *)&p->r1);
+    v[2].x = q[2].x; v[2].y = q[2].y; v[2].w = q[2].w; v[2].u = p->u2; v[2].v = p->v2; v[2].rgba = colour_of(*(u32 *)&p->r2);
     blend = (((u8 *)p)[7] & 2) ? (p->tpage >> 5) & 3 : GFX_OPAQUE;
     gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, face);
     gfx_face_tri(key, v, t, blend, wind, hidden);
 }
 
-/* A floor tile's textured quad, drawn as a model's faces are, not as the whole PS1 pixels and flat depth its packet holds: first has its
-   first three corners from the GTE, and last the fourth as its last corner. */
-void mesh_submit_gt4(void *ot, void *poly, const float first[9], const float last[9]) {
+/* A floor tile's textured quad, drawn as a model's faces are, not as the whole PS1 pixels and flat depth its packet holds. */
+void mesh_submit_gt4(void *ot, void *poly, const ViewPoint q[4]) {
     POLY_GT4 *p = poly;
     s32 key = key_of(ot);
     const GfxTex *t;
@@ -436,10 +433,10 @@ void mesh_submit_gt4(void *ot, void *poly, const float first[9], const float las
         return;
     }
     BackPixels = NULL;
-    v[0].x = first[0]; v[0].y = first[1]; v[0].w = first[2]; v[0].u = p->u0; v[0].v = p->v0; v[0].rgba = colour_of(*(u32 *)&p->r0);
-    v[1].x = first[3]; v[1].y = first[4]; v[1].w = first[5]; v[1].u = p->u1; v[1].v = p->v1; v[1].rgba = colour_of(*(u32 *)&p->r1);
-    v[2].x = first[6]; v[2].y = first[7]; v[2].w = first[8]; v[2].u = p->u2; v[2].v = p->v2; v[2].rgba = colour_of(*(u32 *)&p->r2);
-    v[3].x = last[6]; v[3].y = last[7]; v[3].w = last[8]; v[3].u = p->u3; v[3].v = p->v3; v[3].rgba = colour_of(*(u32 *)&p->r3);
+    v[0].x = q[0].x; v[0].y = q[0].y; v[0].w = q[0].w; v[0].u = p->u0; v[0].v = p->v0; v[0].rgba = colour_of(*(u32 *)&p->r0);
+    v[1].x = q[1].x; v[1].y = q[1].y; v[1].w = q[1].w; v[1].u = p->u1; v[1].v = p->v1; v[1].rgba = colour_of(*(u32 *)&p->r1);
+    v[2].x = q[2].x; v[2].y = q[2].y; v[2].w = q[2].w; v[2].u = p->u2; v[2].v = p->v2; v[2].rgba = colour_of(*(u32 *)&p->r2);
+    v[3].x = q[3].x; v[3].y = q[3].y; v[3].w = q[3].w; v[3].u = p->u3; v[3].v = p->v3; v[3].rgba = colour_of(*(u32 *)&p->r3);
     /* a corner behind the camera has no position that means anything */
     if (v[0].w <= 1 || v[1].w <= 1 || v[2].w <= 1 || v[3].w <= 1) {
         return;
@@ -451,9 +448,8 @@ void mesh_submit_gt4(void *ot, void *poly, const float first[9], const float las
 }
 
 /* An untextured mesh triangle: its blend word at +4, then a POLY_G3 at +8. */
-void mesh_submit_g3(void *ot, u8 *p, s32 face, s32 wind, s32 hidden) {
+void mesh_submit_g3(void *ot, u8 *p, const ViewPoint q[3], s32 face, s32 wind, s32 hidden) {
     s32 key = key_of(ot);
-    float q[9];
     GfxVert v[3];
     s32 blend;
 
@@ -461,13 +457,12 @@ void mesh_submit_g3(void *ot, u8 *p, s32 face, s32 wind, s32 hidden) {
         return;
     }
     BackPixels = NULL;
-    pc_gte_precise(q);
     if (behind_camera(q)) {
         return;
     }
-    v[0].x = q[0]; v[0].y = q[1]; v[0].w = q[2]; v[0].u = v[0].v = 0; v[0].rgba = colour_of(*(u32 *)(p + 12));
-    v[1].x = q[3]; v[1].y = q[4]; v[1].w = q[5]; v[1].u = v[1].v = 0; v[1].rgba = colour_of(*(u32 *)(p + 20));
-    v[2].x = q[6]; v[2].y = q[7]; v[2].w = q[8]; v[2].u = v[2].v = 0; v[2].rgba = colour_of(*(u32 *)(p + 28));
+    v[0].x = q[0].x; v[0].y = q[0].y; v[0].w = q[0].w; v[0].u = v[0].v = 0; v[0].rgba = colour_of(*(u32 *)(p + 12));
+    v[1].x = q[1].x; v[1].y = q[1].y; v[1].w = q[1].w; v[1].u = v[1].v = 0; v[1].rgba = colour_of(*(u32 *)(p + 20));
+    v[2].x = q[2].x; v[2].y = q[2].y; v[2].w = q[2].w; v[2].u = v[2].v = 0; v[2].rgba = colour_of(*(u32 *)(p + 28));
     blend = (p[15] & 2) ? (*(u32 *)(p + 4) >> 5) & 3 : GFX_OPAQUE;
     gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, face);
     gfx_face_tri(key, v, NULL, blend, wind, hidden);

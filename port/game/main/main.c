@@ -3088,12 +3088,6 @@ PointList *sub_point_list(subengine *sub) {
     return NULL;
 }
 
-void gte_rotate_point(SVECTOR *v, VECTOR *out) {
-    gte_ldv0(v);
-    gte_rt();
-    gte_stlvl(out);
-}
-
 FlagPoint *sub_find_point(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out) {
     PointList *list = sub_point_list(sub);
     FlagPoint *pts;
@@ -3118,9 +3112,7 @@ FlagPoint *sub_find_point(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out)
                 rotscale_update(&eng->xform);
             }
             gfx_load_xform(sub, &eng->xform.mtx, &eng->XYZ);
-            gte_ldv0(p);
-            gte_rt();
-            gte_stlvl(out);
+            view_transform(p, out);
             return pt;
         }
         i++;
@@ -3285,16 +3277,14 @@ void plot_point_sprites(PointSprites *ps, MATRIX *m) {
     TILE_1 *prim = set->prims[FrameCount & 1];
     s32 n;
 
-    gte_SetRotMatrix(m);
-    gte_SetTransMatrix(m);
+    view_set_rotation(m);
+    view_set_translation(m);
     n = set->count;
     for (;;) {
         if (n == 0) {
             return;
         }
-        gte_ldv0(&src->v);
-        gte_rtps();
-        gte_stsxy(&prim->x0);
+        project_xy(&src->v, &prim->x0);
         src++;
         n--;
         addPrim(RenderState.ot, prim);

@@ -3,7 +3,7 @@
 #define PC_LIBGPU_H
 
 #include <stdint.h>
-#include <libgte.h>
+#include "../../platform/maths.h"
 
 typedef struct { short x, y, w, h; } RECT;
 

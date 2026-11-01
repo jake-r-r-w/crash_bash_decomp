@@ -2159,8 +2159,8 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
     set = &arg0->set;
     row = set->rows;
     prim = (FrameCount & 1) ? set->dst : set->src;
-    gte_SetRotMatrix(m);
-    gte_SetTransMatrix(m);
+    view_set_rotation(m);
+    view_set_translation(m);
     arg0 = arg0->next;
     while (1) {
         if (arg0 == NULL) {
@@ -2191,10 +2191,8 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
                 v.vy = row->rot[0].vy - 0x80;
                 v.vz = row->rot[0].vz;
                 p = &v;
-                gte_ldv0(p);
-                gte_rtps();
+                project_xy(p, &prim->x0);
                 *(s32 *)&prim->r0 = c;
-                gte_stsxy(&prim->x0);
                 prim->y1 = prim->y0;
                 prim->x2 = prim->x0;
             } else {
@@ -2209,9 +2207,7 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
                 v.vy = row->rot[0].vy + 0x80;
                 v.vz = row->rot[0].vz;
                 p = &v;
-                gte_ldv0(p);
-                gte_rtps();
-                gte_stsxy(&prim->x3);
+                project_xy(p, &prim->x3);
                 prim->x1 = prim->x3;
                 prim->y2 = prim->y3;
             } else {
@@ -2220,16 +2216,12 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
                 v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->angle[i].vz + 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
-                gte_ldv0(p);
-                gte_rtps();
-                gte_stsxy(&prim->x3);
+                project_xy(p, &prim->x3);
                 v.vx = row->rot[i].vx + (r * rcossin_tbl[(((row->angle[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
                 v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->angle[i].vz - 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
-                gte_ldv0(p);
-                gte_rtps();
-                gte_stsxy(&prim->x1);
+                project_xy(p, &prim->x1);
             }
             if (row->live[i] != 0) {
                 prim->tag = (prim->tag & 0xFF000000) | (RenderState.ot[700] & 0xFFFFFF);
@@ -2696,9 +2688,7 @@ void HubProjectObj(HubRenderObj *obj, s16 *out) {
     v[7].vx = bb[3];
     v[7].vy = bb[4];
     v[7].vz = bb[5];
-    gte_ldv0(&v[0]);
-    gte_rtps();
-    gte_stsxy(p);
+    project_xy(&v[0], p);
     if (xy[0] < out[0]) {
         out[0] = xy[0];
     }
@@ -2747,9 +2737,7 @@ void HubDrawObj(HubRenderObj *obj, void *arg1) {
 void HubProject(SVECTOR *v, s16 *b) {
     s16 xy[2];
 
-    gte_ldv0(v);
-    gte_rtps();
-    gte_stsxy(xy);
+    project_xy(v, xy);
     if (xy[0] < b[0]) {
         b[0] = xy[0];
     }

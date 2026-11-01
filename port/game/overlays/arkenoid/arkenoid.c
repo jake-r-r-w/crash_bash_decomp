@@ -484,7 +484,7 @@ void ArkHeroEngineUpdate(s32 arg0) {
         b->a = t;
         b->b = r->height;
         b->c = r->radius;
-        gte_rotate_point((SVECTOR *)r, &sp10);
+        view_transform((SVECTOR *)r, &sp10);
         b->x0 = sp10.vx - (&Heroes[arg0])->hero_eng->XYZ.x;
         b->y0 = sp10.vy - (&Heroes[arg0])->hero_eng->XYZ.y;
         b->z0 = sp10.vz - (&Heroes[arg0])->hero_eng->XYZ.z;
@@ -497,7 +497,7 @@ next:
         t = r->radius;
         b = (ArkenoidHeroBox *)((u8 *)base + arg0 * 40);
         b->d = t;
-        gte_rotate_point((SVECTOR *)r, v);
+        view_transform((SVECTOR *)r, v);
         b->x1 = sp10.vx - (&Heroes[arg0])->hero_eng->XYZ.x;
         b->y1 = sp10.vy - (&Heroes[arg0])->hero_eng->XYZ.y;
         b->z1 = sp10.vz - (&Heroes[arg0])->hero_eng->XYZ.z;
@@ -5431,7 +5431,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
                     z1 = rad * tbl[r].unk2 >> 12;
                     spot.vz = ((ArkenoidSpot *)grab)->z - z1;
                     spot.vy = 0;
-                    gte_rotate_point(&spot, (VECTOR *)&eng->XYZ);
+                    view_transform(&spot, (VECTOR *)&eng->XYZ);
                 }
             }
             continue;
@@ -5669,7 +5669,7 @@ void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
                 rotscale_update(&eng->xform);
             }
             gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
-            gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
+            view_transform((SVECTOR *)rec, (VECTOR *)&sp10);
         } else {
             sp10 = eng->XYZ;
         }
@@ -5725,7 +5725,7 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
                 rotscale_update(&eng->xform);
             }
             gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
-            gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
+            view_transform((SVECTOR *)rec, (VECTOR *)&sp10);
         } else {
             sp10 = eng->XYZ;
         }

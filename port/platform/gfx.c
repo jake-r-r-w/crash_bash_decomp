@@ -708,11 +708,11 @@ static void sort_tris(void) {
     }
 }
 
-/* Depth for the triangles that test it, from 1 to the GTE's furthest. */
+/* Depth for the triangles that test it, from 1 to the projection's furthest. */
 #define DEPTH_NEAR 1.0f
 #define DEPTH_FAR 65536.0f
 
-/* Whether a face shows at this point between two frames, by the same sum as pc_gte_nclip's at the positions it's drawn at. */
+/* Whether a face shows at this point between two frames, by the same sum as points_facing's at the positions it's drawn at. */
 static int tri_shows(const Tri *t, float step) {
     float x[3], y[3], area;
     int i;

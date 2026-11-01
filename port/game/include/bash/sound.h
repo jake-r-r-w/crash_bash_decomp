@@ -42,17 +42,14 @@ S16Pair sfx_pan(s32 x, s32 v);
 S16Pair sfx_position_volume(VECTOR *pos);
 
 static inline void ViewProject(VECTOR *pos, s32 *psxy) {
-    VECTOR *out = &RenderState.gteOut;
-    SVECTOR *in = &RenderState.gteIn;
+    VECTOR *out = &RenderState.viewOut;
+    SVECTOR *in = &RenderState.viewIn;
     camera_info_tag *view = &MainCamera;
 
     in->vx = pos->vx - view->at.x;
     in->vy = pos->vy - view->at.y;
     in->vz = pos->vz - view->at.z;
-    gte_ldv0(in);
-    gte_rtps();
-    gte_stlvl(out);
-    gte_stsxy(psxy);
+    project_view_xy(in, out, psxy);
 }
 static inline S16Pair PanVolume(s32 x, s32 v) {
     S16Pair r;
@@ -77,16 +74,13 @@ static inline S16Pair PanVolume(s32 x, s32 v) {
     return r;
 }
 static inline s32 ViewVolumeXY(VECTOR *pos, camera_info_tag *view, s32 *psxy) {
-    VECTOR *out = &RenderState.gteOut;
-    SVECTOR *in = &RenderState.gteIn;
+    VECTOR *out = &RenderState.viewOut;
+    SVECTOR *in = &RenderState.viewIn;
 
     in->vx = pos->vx - view->at.x;
     in->vy = pos->vy - view->at.y;
     in->vz = pos->vz - view->at.z;
-    gte_ldv0(in);
-    gte_rtps();
-    gte_stlvl(out);
-    gte_stsxy(psxy);
+    project_view_xy(in, out, psxy);
     return sfx_distance_volume(out, SfxDistanceCurve);
 }
 

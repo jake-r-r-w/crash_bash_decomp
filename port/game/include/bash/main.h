@@ -54,7 +54,7 @@ typedef union {
 
 
 /* A viewpoint: its position (+0xC) is subtracted from world positions before
- * they go through the GTE (view_project_volume, view_project). */
+ * they're projected (view_project_volume, view_project). */
 
 
 /* A 0x20-byte block play_script copies whole. */
@@ -257,8 +257,8 @@ typedef struct {
 typedef struct {
     struct obj_dbase *dbase; /* 0x00: the dbase being drawn */
     void *unk4;
-    s32 *farColor; /* 0x08: r, g, b for gte_ldfcdir */
-    s32 dp;        /* 0x0C: depth-cue factor for gte_lddp */
+    s32 *farColor; /* 0x08: r, g, b it fades to */
+    s32 dp;        /* 0x0C: how far, of 0x1000 */
     void *viewport; /* 0x10: GfxViewport (gfx_set_viewport) */
     s32 modelDp;   /* 0x14: dp for ModelObj quads (draw_model_quad); the screen fade */
     u8 pad18[4];
@@ -267,14 +267,14 @@ typedef struct {
     s32 ofx;   /* 0x20: geometry offset x (scaled by the screen width / 640) */
     s32 ofy;   /* 0x24: geometry offset y (halved) */
     u8 screen[0xC];  /* a GfxScreen */
-    SVECTOR gteIn; /* 0x34: GTE scratch, a position relative to the view (view_project_volume) */
+    SVECTOR viewIn; /* 0x34: a position relative to the view (view_project_volume) */
     u8 pad3C[4];
     u32 *ot;   /* 0x40 */
     s16 otzAdd; /* 0x44: added to the average Z before it is halved */
     s16 otLen;  /* 0x46: entries in ot */
     struct camera_info_tag *cam; /* 0x48 */
     u8 pad4C[0x28];
-    VECTOR gteOut; /* 0x74: gteIn rotated and translated */
+    VECTOR viewOut; /* 0x74: viewIn rotated and translated */
     u8 *localMtx;  /* points at mtxBuf */
     u8 *localPos;  /* points at posBuf */
     MATRIX alignMtx;  /* the screen-aligned matrix (identity from draw_init) */
@@ -310,9 +310,6 @@ typedef struct {
     KeyEntry entries[1]; /* 0x4C */
 } KeyBlock;
 
-#define gte_ldv0_w(xy, z) pc_gte_ldv0_words((xy), (z))
-#define gte_ldv0_t(r0) pc_gte_ldv0((const void *)(r0))
-#define gte_stsxy3_10(r0) pc_gte_stsxy3((u8 *)(r0) + 0x10, (u8 *)(r0) + 0x18, (u8 *)(r0) + 0x20)
 
 /* A playing sound (PlaySfx), linked into SfxVoicePool's active or free list.
  * The type name is the prototype's (EXTengine.sfx, TA_player's handlers);
@@ -371,7 +368,7 @@ typedef struct {
     PointSpriteSet set; /* 0x6C */
 } PointSprites;
 
-/* Filled by gfx_setup_xform for gfx_load_xform, which loads it into the GTE. */
+/* Filled by gfx_setup_xform for gfx_load_xform, which sets the view from it. */
 typedef struct {
     MATRIX *rot;
     VECTOR *trans; /* may be NULL: translation left as it is */
@@ -719,7 +716,7 @@ FlagPoint *sub_find_point(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out)
 
 extern SVECTOR MorphVerts[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
-extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
+extern TrigEntry rcossin_tbl[]; /* the sine and cosine table (maths.c) */
 /* A 4.12 fixed-point quaternion (quat_slerp slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
 extern s32 SfxDistanceCurve[];
@@ -759,15 +756,14 @@ struct obj_textureset;
 u16 tex_image_id(struct obj_textureset *set, s32 index);
 u16 tex_palette_id(struct obj_textureset *set, s32 index);
 void tex_release_ids(struct obj_textureset *set);
-void mesh_submit_gt3(void *ot, void *poly, s32 face, s32 wind, s32 hidden);
-void mesh_submit_g3(void *ot, unsigned char *poly, s32 face, s32 wind, s32 hidden);
-void mesh_submit_gt4(void *ot, void *poly, const float first[9], const float last[9]);
+void mesh_submit_gt3(void *ot, void *poly, const ViewPoint q[3], s32 face, s32 wind, s32 hidden);
+void mesh_submit_g3(void *ot, unsigned char *poly, const ViewPoint q[3], s32 face, s32 wind, s32 hidden);
+void mesh_submit_gt4(void *ot, void *poly, const ViewPoint q[4]);
 void draw_owner(const struct subengine *sub);
 void draw_owner_part(const void *mesh);
 void draw_depth(s32 on);
 void draw_clipped_begin(s32 key, s32 w, s32 h);
 void draw_clipped_end(void);
-void pc_gte_precise(float out[9]);
 void overlay_load(const void *f);
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);
 extern ModuleEntry ShellModules;
@@ -1256,7 +1252,6 @@ extern s32 screen_aspect[2];
 
 
 
-void gte_rotate_point(SVECTOR *v, VECTOR *out);
 
 
 
@@ -1463,7 +1458,7 @@ typedef struct {
 /* A text object draw_text_nas draws: a NAS-like header with the position at
  * +4 (x keeps DrawSysText's 0xC000 centring flags) and the text at +0x6C. */
 typedef struct {
-    s32 NASid;   /* 0x00: 0x8000 drawn, 0x10000000 2D (no GTE setup) */
+    s32 NASid;   /* 0x00: 0x8000 drawn, 0x10000000 2D (no view set up) */
     s32 x;       /* 0x04 */
     s32 y;       /* 0x08 */
     s32 z;       /* 0x0C */

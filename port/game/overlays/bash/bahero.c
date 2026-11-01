@@ -605,7 +605,7 @@ NAS *BashHero2ObjectCollision(s32 player, s32 mask, s32 unused, u16 cone) {
     bot = me->XYZ.y + rec->dy;
     top = me->XYZ.y + rec->height;
     rad = rec->radius;
-    gte_rotate_point((SVECTOR *)rec, &pos);
+    view_transform((SVECTOR *)rec, &pos);
     nas = HeadOfSolids;
     self = NULL;
     if (h->hero_object != NULL) {
@@ -792,7 +792,7 @@ s32 BashHeroKickCollision(s32 arg0) {
                     lo2 = tmp;
                 }
                 rad2 = box->radius;
-                gte_rotate_point((SVECTOR *)box, &pos);
+                view_transform((SVECTOR *)box, &pos);
             }
             if (Heroes[arg0].hero_object != NULL) {
                 n = ((NAS **)Heroes[arg0].hero_object)[-1];
@@ -1020,7 +1020,7 @@ s32 BashHeroCarryCollision(s32 idx) {
                     eng->sub = sub;
                     gfx_load_xform(sub, &eng->xform.mtx, &eng->XYZ);
                 }
-                gte_rotate_point((SVECTOR *)box, &v);
+                view_transform((SVECTOR *)box, &v);
             }
             nas = HeadOfSolids;
             self = NULL;

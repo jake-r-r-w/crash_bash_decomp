@@ -2002,16 +2002,14 @@ void NoxDrawSparks(SparkObj *arg0) {
         NoxSparkAngles.vz += 0x10;
         RotMatrix(&NoxSparkAngles, &NoxSparkMatrix);
     }
-    gte_SetRotMatrix(&NoxSparkMatrix);
-    gte_SetTransMatrix(&NoxSparkMatrix);
-    gte_SetGeomOffset(ScreenRect->w / 2, 120);
+    view_set_rotation(&NoxSparkMatrix);
+    view_set_translation(&NoxSparkMatrix);
+    view_set_centre(ScreenRect->w / 2, 120);
     n = set->count;
     calc_rgbcode(0x10, 0x10, 0x10);
     if (n != 0) do {
         v = s;
-        gte_ldv0(v);
-        gte_rtps();
-        gte_stsxy(&l->x0);
+        project_xy(v, &l->x0);
         if (GamePause == 0) {
             s->z -= NoxSparkScale;
         }
@@ -2036,9 +2034,7 @@ void NoxDrawSparks(SparkObj *arg0) {
                 l->r0 = 0;
                 l->g0 = 0;
                 l->b0 = 0;
-                gte_ldv0(v);
-                gte_rtps();
-                gte_stsxy(&l->x1);
+                project_xy(v, &l->x1);
             } else {
                 if (RenderState.modelDp != 0) {
                     l->r1 = l->r1 * ((0x1000 - RenderState.modelDp) >> 12);

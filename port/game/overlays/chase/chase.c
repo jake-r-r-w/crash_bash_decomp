@@ -1258,7 +1258,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                     lo2 = tmp;
                 }
                 rad2 = box->radius;
-                gte_rotate_point((SVECTOR *)box, &pos);
+                view_transform((SVECTOR *)box, &pos);
             }
             if (Heroes[arg0].hero_object != NULL) {
                 n = ((NAS **)Heroes[arg0].hero_object)[-1];

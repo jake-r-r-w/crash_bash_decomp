@@ -58,7 +58,7 @@ foreach(ovl arkenoid bash bonk chase dino hub n2o papu pogo polar race spin tank
   set_property(SOURCE ${ovl_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAME=${ovl}")
 endforeach()
 
-add_executable(crashbash main.c platform/overlays.c platform/gte.c platform/archive.c platform/clock.c platform/pad.c platform/saves.c
+add_executable(crashbash main.c platform/overlays.c platform/maths.c platform/archive.c platform/clock.c platform/pad.c platform/saves.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/settings.c $<TARGET_OBJECTS:game>)
 target_include_directories(crashbash PRIVATE psyq/include)
 if(TARGET SDL3::SDL3-static)

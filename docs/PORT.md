@@ -56,7 +56,7 @@ when it loads (`modetext.c`), into real records and pointer tables. The saves ar
 pointers, and a compile-time check holds it at the PS1's 0x18C bytes.
 
 **What touches the hardware is small.** Of about 116,000 lines of game C, the drawing commands, VRAM calls and sound
-calls come to a few hundred lines. 171 of the 269 GTE calls and most of the primitive code are in one file,
+calls come to a few hundred lines. Most of the projecting and the primitive code are in one file,
 `src/main/prims.c`. The game's logic never sees the hardware, so the port replaces that layer, and the game above
 it is unchanged.
 
@@ -71,8 +71,8 @@ gets a real check, found by running under the sanitizers.
 saying so. With real prototypes, these calls just pass the argument.
 
 **The game's maths.** The fixed-point maths in the game's logic stays, because it decides how the game plays:
-camera, collision and sound positions come out the same. It becomes plain C functions, with no GTE registers,
-and uses the same integer rules as the PS1.
+camera, collision and sound positions come out the same. It's plain C functions (`platform/maths.c`), with no registers,
+and the same integer rules as the PS1.
 
 **Drawing.** The port doesn't write PS1 drawing commands. The functions that do (`draw_object_model`, `draw_verts`
 and the `prim_*` writers, the map, sprite and text drawing) are rewritten to send vertices to the
@@ -102,7 +102,7 @@ ctest --preset windows-clang
 ```
 
 The presets are `windows-clang`, `linux-clang`, `linux-gcc` and `linux-asan`, and the output is under `build/port/`.
-`port/` holds `game/` (the copy of the game's C), `psyq/` (the PsyQ names still left: the GTE and the drawing packets, which go in 6.8), `tests/` (the play tests) and `main.c`.
+`port/` holds `game/` (the copy of the game's C), `psyq/` (the PsyQ names still left: the drawing packets, which go in 6.8), `tests/` (the play tests) and `main.c`.
 
 The game's C isn't in the default build until it compiles. To see what's left:
 

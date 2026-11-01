@@ -2405,7 +2405,7 @@ void RunModules(ModuleEntry *p) {
 }
 
 s32 machine_init(void) {
-    InitGeom();
+    maths_init();
     audio_reset();
     VideoMode = 0;
     pads_init_mtap();
@@ -3184,20 +3184,14 @@ s32 texture_draw_3d(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     v.vx = pos->x - 0x80;
     v.vy = pos->y - 0x80;
     v.vz = 0;
-    gte_ldv0((SVECTOR *)&v);
-    gte_rtps();
+    project_xy(&v, &p->x0);
     v.vx += 0x100;
-    gte_ldv0((SVECTOR *)&v);
-    gte_rtps();
+    project_xy(&v, &p->x1);
     v.vx -= 0x100;
     v.vy += 0x100;
-    gte_ldv0((SVECTOR *)&v);
-    gte_rtps();
+    project_xy(&v, &p->x2);
     v.vx += 0x100;
-    gte_stsxy3_gt3(p);
-    gte_ldv0((SVECTOR *)&v);
-    gte_rtps();
-    gte_stsxy(&p->x3);
+    project_xy(&v, &p->x3);
     setSemiTrans(p, (s32)c0 < 0);
     addPrim(cdb->ot + otz, p);
     return f->advance * 640 / ScreenRect->w;

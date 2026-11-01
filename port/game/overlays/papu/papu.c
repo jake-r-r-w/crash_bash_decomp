@@ -1700,7 +1700,7 @@ s32 PapuStompPoint(s32 *x, s32 *z, s32 *reach) {
         rotscale_update(&eng->xform);
     }
     gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
-    gte_rotate_point((SVECTOR *)box, &pos);
+    view_transform((SVECTOR *)box, &pos);
     *x = pos.vx;
     *z = pos.vz;
     *reach = box->radius;
@@ -1730,7 +1730,7 @@ s32 PapuHitHeroes(EXTengine *eng) {
         r = box->radius;
         top = eng->XYZ.y + box->dy;
         bot = eng->XYZ.y + box->height;
-        gte_rotate_point((SVECTOR *)box, &pos);
+        view_transform((SVECTOR *)box, &pos);
         for (i = 0; i < 4; i++) {
             if (Heroes[i].hero_status & 0xF800) {
                 continue;
@@ -1783,7 +1783,7 @@ s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
     r = box->radius;
     top = eng->XYZ.y + box->dy;
     bot = eng->XYZ.y + box->height;
-    gte_rotate_point((SVECTOR *)box, &pos);
+    view_transform((SVECTOR *)box, &pos);
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_status & 0xF800) {
             continue;
@@ -1835,7 +1835,7 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
         new_var = box;
         top = eng->XYZ.y + new_var->dy;
         bot = eng->XYZ.y + new_var->height;
-        gte_rotate_point((SVECTOR *)new_var, &pos);
+        view_transform((SVECTOR *)new_var, &pos);
         for (n = HeadOfSolids; n != NULL; n = n->Solid.Child) {
             if (!(n->Class & 0x200)) {
                 continue;
@@ -1892,7 +1892,7 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
     r = box->radius;
     top = eng->XYZ.y + box->dy;
     bot = eng->XYZ.y + box->height;
-    gte_rotate_point((SVECTOR *)box, &pos);
+    view_transform((SVECTOR *)box, &pos);
     for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
         if (nas->Class & 0x200) {
             e = nas->Engine;

@@ -382,9 +382,7 @@ void HubProjectObj(HubRenderObj *obj, s16 *out);
 #define HUB_BOUND_XY(v, b, p, xy)     \
     {                                   \
         s16 *q_ = (p);                  \
-        gte_ldv0(v);                    \
-        gte_rtps();                     \
-        gte_stsxy(q_);                  \
+        project_xy(v, q_);                    \
         if ((xy)[0] < (b)[0]) {         \
             (b)[0] = (xy)[0];           \
         }                               \

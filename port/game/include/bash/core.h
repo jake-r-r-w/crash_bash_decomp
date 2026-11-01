@@ -52,7 +52,7 @@ typedef struct {
 typedef struct camera_info_tag {  /* the Oct 9 prototype's name (cam_init, draw_enviroment.cam; 184 bytes) */
     /* 0x00 */ CamXYZ eye;    /* the eye's offset in view space (view.t; cam_init's eye.z 0x300) */
     /* 0x0C */ CamXYZ at;     /* the point looked at, in the world */
-    /* 0x18 */ s32 dist;      /* the projection distance (GTE H; cam_init 0x140) */
+    /* 0x18 */ s32 dist;      /* the projection distance (cam_init 0x140) */
     /* 0x1C */ u8 pad1C[0x38 - 0x1C];
     /* 0x38 */ s32 shakeTime; /* frames of shake left (UpdateCamera, cam_build_view) */
     /* 0x3C */ s32 shakeAmp;

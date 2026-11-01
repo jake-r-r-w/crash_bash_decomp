@@ -201,22 +201,14 @@ void prim_colour_poly(MeshHeader *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) 
     s32 semi = mode & 1;
     s32 abr = mode & 0x60;
 
-    gte_ldfcdir(RenderState.farColor[0], RenderState.farColor[1], RenderState.farColor[2]);
-    gte_lddp(RenderState.dp);
     idx = (u16 *)((u8 *)&face->colors + face->colors);
     colors = (u32 *)((u8 *)&RenderState.dbase->data->colors + RenderState.dbase->data->colors);
     c = &colors[idx[0] & 0x1FFF];
-    gte_ldrgb(c);
-    gte_dpcs();
-    gte_strgb(&poly->r0);
+    *(u32 *)(&poly->r0) = colour_fade(c, RenderState.farColor, RenderState.dp);
     c++;
-    gte_ldrgb(c);
-    gte_dpcs();
-    gte_strgb(&poly->r1);
+    *(u32 *)(&poly->r1) = colour_fade(c, RenderState.farColor, RenderState.dp);
     c++;
-    gte_ldrgb(c);
-    gte_dpcs();
-    gte_strgb(&poly->r2);
+    *(u32 *)(&poly->r2) = colour_fade(c, RenderState.farColor, RenderState.dp);
     setPolyGT4(poly);
     if (idx[0] & 0x8000) {
         *(u32 *)&poly->r0 = *(u32 *)&poly->r0 | 0x02000000;
@@ -229,9 +221,7 @@ void prim_colour_poly(MeshHeader *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) 
         poly->tpage = (poly->tpage & 0xFF9F) | abr;
     }
     c = &colors[idx[1] & 0x1FFF];
-    gte_ldrgb(c);
-    gte_dpcs();
-    gte_strgb(&poly->r3);
+    *(u32 *)(&poly->r3) = colour_fade(c, RenderState.farColor, RenderState.dp);
 }
 
 void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
@@ -297,8 +287,6 @@ void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode
     s32 abr = mode & 0x60;
 
     idx = (u16 *)((u8 *)&faces->colors + faces->colors);
-    gte_ldfcdir(RenderState.farColor[0], RenderState.farColor[1], RenderState.farColor[2]);
-    gte_lddp(RenderState.dp);
     run = (u8 *)&faces->runs + faces->runs;
     colors = (u32 *)((u8 *)&RenderState.dbase->data->colors + RenderState.dbase->data->colors);
     count = run + 1;
@@ -315,9 +303,7 @@ void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode
             if (run[0] & 1) {
                 FacePrim *p = prim;
 
-                gte_ldrgb(c);
-                gte_dpcs();
-                gte_strgb(&prim->g.g.r0);
+                *(u32 *)(&prim->g.g.r0) = colour_fade(c, RenderState.farColor, RenderState.dp);
                 if (semi) {
                     *(u32 *)&prim->g.g.r0 |= 0x32000000;
                     *(u32 *)&prim->g.tp.code[0] = abr | 0xE1000000;
@@ -328,17 +314,11 @@ void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode
                     *(u32 *)&prim->g.g.r0 |= 0x30000000;
                 }
                 c++;
-                gte_ldrgb(c);
-                gte_dpcs();
-                gte_strgb(&p->g.g.r1);
+                *(u32 *)(&p->g.g.r1) = colour_fade(c, RenderState.farColor, RenderState.dp);
                 c++;
-                gte_ldrgb(c);
-                gte_dpcs();
-                gte_strgb(&p->g.g.r2);
+                *(u32 *)(&p->g.g.r2) = colour_fade(c, RenderState.farColor, RenderState.dp);
             } else {
-                gte_ldrgb(c);
-                gte_dpcs();
-                gte_strgb(&prim->gt.r0);
+                *(u32 *)(&prim->gt.r0) = colour_fade(c, RenderState.farColor, RenderState.dp);
                 if (semi) {
                     *(u32 *)&prim->gt.r0 |= 0x36000000;
                     prim->gt.tpage = (prim->gt.tpage & ~0x60) | abr;
@@ -349,13 +329,9 @@ void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode
                     *(u32 *)&prim->gt.r0 |= 0x34000000;
                 }
                 c++;
-                gte_ldrgb(c);
-                gte_dpcs();
-                gte_strgb(&prim->gt.r1);
+                *(u32 *)(&prim->gt.r1) = colour_fade(c, RenderState.farColor, RenderState.dp);
                 c++;
-                gte_ldrgb(c);
-                gte_dpcs();
-                gte_strgb(&prim->gt.r2);
+                *(u32 *)(&prim->gt.r2) = colour_fade(c, RenderState.farColor, RenderState.dp);
             }
             prim++;
             idx++;
@@ -890,10 +866,10 @@ void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam) {
     *(GfxOffset *)&gs->ofx = *(GfxOffset *)&vp->ofx;
     ((GfxOffset *)gs->screen)->x = gs->ofx;
     ((GfxOffset *)gs->screen)->y = gs->ofy;
-    gte_SetGeomOffset(vp->ofx * ScreenRect->w / 640, vp->ofy / 2);
-    gte_SetGeomScreen(cam->dist);
-    gte_SetRotMatrix(&cam->view);
-    gte_SetTransMatrix(&cam->view);
+    view_set_centre(vp->ofx * ScreenRect->w / 640, vp->ofy / 2);
+    view_set_distance(cam->dist);
+    view_set_rotation(&cam->view);
+    view_set_translation(&cam->view);
     gs->ot = cdb->ot + vp->otIdx;
     gs->otLen = vp->otLen - 1;
     ((GfxOffset *)gs->screen)[1].x = vp->ofs2;
@@ -1025,77 +1001,64 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     s32 flags;
     s32 wind;
     s32 hidden;
+    ViewPoint p[3];
 
     gs = &RenderState;
     draw_owner_part(runs);
-    xy = ((s32 *)v)[0];
-    z = ((s32 *)v)[1];
     for (;;) {
         if (runs[1] == 0xFF) {
             return;
         }
-        gte_ldv0_w(xy, z);
+        project_point(v, &p[1]);
         v++;
         n = runs[1];
-        gte_rtps_b();
-        xy = ((s32 *)v)[0];
-        z = ((s32 *)v)[1];
-        gte_ldv0_w(xy, z);
+        project_point(v, &p[2]);
         v++;
         mode = *runs;
-        gte_rtps_b();
-        xy = ((s32 *)v)[0];
-        z = ((s32 *)v)[1];
         if (mode & 1) {
             for (;;) {
                 if (n-- <= 0) {
                     goto next;
                 }
-                gte_ldv0_w(xy, z);
+                flags = ((s32 *)v)[1];
+                p[0] = p[1];
+                p[1] = p[2];
+                project_point(v, &p[2]);
                 v++;
-                flags = z;
-                gte_rtps_b();
-                xy = ((s32 *)v)[0];
-                z = ((s32 *)v)[1];
-                gte_avsz3_b();
-                gte_stotz(&otz);
+                otz = points_order(&p[0], &p[1], &p[2]);
                 if (otz != 0) {
                     otz = (otz + gs->otzAdd) >> 1;
                     if (otz < gs->otLen) {
                         wind = 0;
                         hidden = 0;
                         if (!(flags & 0x20000)) {
-                            gte_nclip_b();
-                            gte_stopz(&opz);
+                            opz = points_facing(&p[0], &p[1], &p[2]);
                             wind = (flags & 0x10000) ? -1 : 1;
                             hidden = (flags & 0x10000) ? opz > 0 : opz <= 0;
                         }
-                        mesh_submit_g3(gs->ot + otz, (u8 *)poly, (s32)(poly - first), wind, hidden);
+                        mesh_submit_g3(gs->ot + otz, (u8 *)poly, p, (s32)(poly - first), wind, hidden);
                     }
                 }
                 poly++;
             }
         } else {
             while (n-- > 0) {
-                gte_ldv0_w(xy, z);
+                flags = ((s32 *)v)[1];
+                p[0] = p[1];
+                p[1] = p[2];
+                project_point(v, &p[2]);
                 v++;
-                flags = z;
-                gte_rtps_b();
-                xy = ((s32 *)v)[0];
-                z = ((s32 *)v)[1];
-                gte_avsz3_b();
-                gte_stotz(&otz);
+                otz = points_order(&p[0], &p[1], &p[2]);
                 otz = (otz + gs->otzAdd) >> 1;
                 if (otz < gs->otLen) {
                     wind = 0;
                     hidden = 0;
                     if (!(flags & 0x20000)) {
-                        gte_nclip_b();
-                        gte_stopz(&opz);
+                        opz = points_facing(&p[0], &p[1], &p[2]);
                         wind = (flags & 0x10000) ? -1 : 1;
                         hidden = (flags & 0x10000) ? opz > 0 : opz <= 0;
                     }
-                    mesh_submit_gt3(gs->ot + otz, poly, (s32)(poly - first), wind, hidden);
+                    mesh_submit_gt3(gs->ot + otz, poly, p, (s32)(poly - first), wind, hidden);
                 }
                 poly++;
             }
@@ -1309,10 +1272,8 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         return;
     case 0x3000:
         memset(&v, 0, 8);
-        gte_ldv0(&v);
-        gte_rtps();
         q = xy;
-        gte_stsxy(q);
+        project_xy(&v, q);
         x = xy[0] * 640 / ScreenRect->w;
         flags = d->flags;
         g = ((flags & 0x21) != 0) << 31;
@@ -1366,11 +1327,11 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
                 RenderState.localMtx = RenderState.mtxBuf;
                 RenderState.localPos = RenderState.posBuf;
                 gfx_setup_xform(arg0, p1, (VECTOR *)p1->t, RenderState.screen, &s);
-                gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
+                view_set_centre(s.ofx * ScreenRect->w / 640, s.ofy / 2);
                 if (s.trans != NULL) {
-                    gte_SetTransVector(s.trans);
+                    view_set_translation_vector(s.trans);
                 }
-                gte_SetRotMatrix(s.rot);
+                view_set_rotation(s.rot);
                 /* an object with a layer of its own stays in the game's order; the rest are real solid things */
                 draw_owner(arg0);
                 draw_depth(!(arg0->flags & 0x02000000));
@@ -1419,14 +1380,16 @@ s32 draw_gouraud_quad(void *arg0, u32 flags) {
         p->v[3].y = (s->y + q->v[3].vy) / 2;
 #undef s
     } else {
-        gte_ldv3c(q->v);
-        gte_rtpt();
-        gte_avsz3();
-        gte_stotz(&otz);
-        gte_stsxy3_10(p);
-        gte_ldv0(&q->v[3]);
-        gte_rtps();
-        gte_stsxy(&p->v[3].x);
+        ViewPoint c[3];
+
+        project_point(&q->v[0], &c[0]);
+        project_point(&q->v[1], &c[1]);
+        project_point(&q->v[2], &c[2]);
+        otz = points_order(&c[0], &c[1], &c[2]);
+        point_store_xy(&c[0], (u8 *)p + 0x10);
+        point_store_xy(&c[1], (u8 *)p + 0x18);
+        point_store_xy(&c[2], (u8 *)p + 0x20);
+        project_xy(&q->v[3], &p->v[3].x);
     }
     otz = (otz + RenderState.otzAdd) >> 1;
     if (otz < RenderState.otLen) {
@@ -1620,11 +1583,11 @@ void draw_text_nas(TextNAS *t, MATRIX *arg1, s32 arg2) {
     RenderState.localMtx = RenderState.mtxBuf;
     RenderState.localPos = RenderState.posBuf;
     gfx_setup_xform(t, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
-    gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
+    view_set_centre(s.ofx * ScreenRect->w / 640, s.ofy / 2);
     if (s.trans != NULL) {
-        gte_SetTransVector(s.trans);
+        view_set_translation_vector(s.trans);
     }
-    gte_SetRotMatrix(s.rot);
+    view_set_rotation(s.rot);
     ((SWORD_XYZ *)&s)->x = t->x;
     ((SWORD_XYZ *)&s)->y = t->y;
     ((SWORD_XYZ *)&s)->z = t->z;
@@ -1640,9 +1603,8 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     ModelFile *colors;
     POLY_GT4 *prim;
     u8 *t;
-    s32 xy, z;
     u32 otz;
-    float first[9], last[9];
+    ViewPoint c[4];
 
     if (!(obj->flags & 0x8000)) {
         return;
@@ -1668,25 +1630,18 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     colors = obj->model->data;
     t = draw_model_quad_setup(obj, arg1, flags, colors, entity_address(obj->index, colors));
     t = (u8 *)&((MeshHeader *)t)->verts + ((MeshHeader *)t)->verts;
-    gte_ldv0_t(&((MeshVerts *)t)->v[0]);
-    gte_rtps();
-    gte_ldv0_t(&((MeshVerts *)t)->v[1]);
-    gte_rtps();
-    gte_ldv0_t(&((MeshVerts *)t)->v[2]);
-    gte_rtps();
-    pc_gte_precise(first);
-    xy = *(s32 *)&((MeshVerts *)t)->v[3].vx;
-    z = *(s32 *)&((MeshVerts *)t)->v[3].vz;
-    gte_stsxy3_gt3(prim);
-    gte_ldv0_w(xy, z);
-    gte_rtps();
-    pc_gte_precise(last);
-    gte_stsxy2(&prim->x3);
-    gte_avsz3();
-    gte_stotz(&otz);
+    project_point(&((MeshVerts *)t)->v[0], &c[0]);
+    project_point(&((MeshVerts *)t)->v[1], &c[1]);
+    project_point(&((MeshVerts *)t)->v[2], &c[2]);
+    project_point(&((MeshVerts *)t)->v[3], &c[3]);
+    point_store_xy(&c[0], &prim->x0);
+    point_store_xy(&c[1], &prim->x1);
+    point_store_xy(&c[2], &prim->x2);
+    point_store_xy(&c[3], &prim->x3);
+    otz = points_order(&c[1], &c[2], &c[3]);
     otz = (otz + RenderState.otzAdd) >> 1;
     if (otz < RenderState.otLen) {
-        mesh_submit_gt4(RenderState.ot + otz, prim, first, last);
+        mesh_submit_gt4(RenderState.ot + otz, prim, c);
     }
 }
 
@@ -1781,13 +1736,10 @@ s32 bbox_visible(void *arg0) {
     s32 ey;
 
     flags = 0;
-    in = &RenderState.gteIn;
+    in = &RenderState.viewIn;
     in = &box->center;
-    gte_ldv0(in);
-    in = &RenderState.gteIn;
-    gte_rtps();
-    gte_stsxy(&c);
-    gte_stsz(&sz);
+    project_xyz(in, &c, &sz);
+    in = &RenderState.viewIn;
     if (sz >= 2) {
         r = box->center.pad;
         gs = &RenderState;
@@ -1808,11 +1760,8 @@ s32 bbox_visible(void *arg0) {
     in->vx = box->min[0];
     in->vy = box->min[1];
     in->vz = box->min[2];
-    gte_ldv0(in);
-    gte_rtps();
+    project_xyz(in, &sxy[0], &sz);
     in->vx = box->max[0];
-    gte_stsxy(&sxy[0]);
-    gte_stsz(&sz);
     if (sz > 0) {
         if ((u16)sxy[0].vx < (u16)RenderState.clipX1 && (u16)sxy[0].vy < (u16)RenderState.clipY1) {
             return 1;
@@ -1820,12 +1769,9 @@ s32 bbox_visible(void *arg0) {
     } else {
         flags |= 1;
     }
-    gte_ldv0(in);
-    gte_rtps();
+    project_xyz(in, &sxy[1], &sz);
     in->vx = box->min[0];
     in->vy = box->max[1];
-    gte_stsxy(&sxy[1]);
-    gte_stsz(&sz);
     if (sz > 0) {
         if ((u16)sxy[1].vx < (u16)RenderState.clipX1 && (u16)sxy[1].vy < (u16)RenderState.clipY1) {
             return 1;
@@ -1833,11 +1779,8 @@ s32 bbox_visible(void *arg0) {
     } else {
         flags |= 2;
     }
-    gte_ldv0(in);
-    gte_rtps();
+    project_xyz(in, &sxy[2], &sz);
     in->vx = box->max[0];
-    gte_stsxy(&sxy[2]);
-    gte_stsz(&sz);
     if (sz > 0) {
         if ((u16)sxy[2].vx < (u16)RenderState.clipX1 && (u16)sxy[2].vy < (u16)RenderState.clipY1) {
             return 1;
@@ -1845,13 +1788,10 @@ s32 bbox_visible(void *arg0) {
     } else {
         flags |= 4;
     }
-    gte_ldv0(in);
-    gte_rtps();
+    project_xyz(in, &sxy[3], &sz);
     in->vx = box->min[0];
     in->vy = box->min[1];
     in->vz = box->max[2];
-    gte_stsxy(&sxy[3]);
-    gte_stsz(&sz);
     if (sz > 0) {
         if ((u16)sxy[3].vx < (u16)RenderState.clipX1 && (u16)sxy[3].vy < (u16)RenderState.clipY1) {
             return 1;
@@ -1859,11 +1799,8 @@ s32 bbox_visible(void *arg0) {
     } else {
         flags |= 8;
     }
-    gte_ldv0(in);
-    gte_rtps();
+    project_xyz(in, &sxy[4], &sz);
     in->vx = box->max[0];
-    gte_stsxy(&sxy[4]);
-    gte_stsz(&sz);
     if (sz > 0) {
         if ((u16)sxy[4].vx < (u16)RenderState.clipX1 && (u16)sxy[4].vy < (u16)RenderState.clipY1) {
             return 1;
@@ -1871,12 +1808,9 @@ s32 bbox_visible(void *arg0) {
     } else {
         flags |= 0x10;
     }
-    gte_ldv0(in);
-    gte_rtps();
+    project_xyz(in, &sxy[5], &sz);
     in->vx = box->min[0];
     in->vy = box->max[1];
-    gte_stsxy(&sxy[5]);
-    gte_stsz(&sz);
     if (sz > 0) {
         if ((u16)sxy[5].vx < (u16)RenderState.clipX1 && (u16)sxy[5].vy < (u16)RenderState.clipY1) {
             return 1;
@@ -1884,11 +1818,8 @@ s32 bbox_visible(void *arg0) {
     } else {
         flags |= 0x20;
     }
-    gte_ldv0(in);
-    gte_rtps();
+    project_xyz(in, &sxy[6], &sz);
     in->vx = box->max[0];
-    gte_stsxy(&sxy[6]);
-    gte_stsz(&sz);
     if (sz > 0) {
         if ((u16)sxy[6].vx < (u16)RenderState.clipX1 && (u16)sxy[6].vy < (u16)RenderState.clipY1) {
             return 1;
@@ -1896,10 +1827,7 @@ s32 bbox_visible(void *arg0) {
     } else {
         flags |= 0x40;
     }
-    gte_ldv0(in);
-    gte_rtps();
-    gte_stsxy(&sxy[7]);
-    gte_stsz(&sz);
+    project_xyz(in, &sxy[7], &sz);
     if (sz > 0) {
         if ((u16)sxy[7].vx < (u16)RenderState.clipX1 && (u16)sxy[7].vy < (u16)RenderState.clipY1) {
             return 1;
@@ -1945,14 +1873,10 @@ s32 tri_visible(SVECTOR *v) {
     inside = 0;
     far = 0;
     farZ = (RenderState.otLen - RenderState.otzAdd) * 8;
-    gte_ldv3c(v);
+    project_three(v, sxy[0], (u32 *)&sz[0]);
     v += 3;
-    gte_rtpt();
-    gte_stsxy3c(sxy[0]);
-    gte_stsz3c(&sz[0]);
-    gte_ldv3c(v);
+    project_three(v, sxy[3], (u32 *)&sz[3]);
     v += 3;
-    gte_rtpt();
     minX = sxy[0][0];
     maxX = minX;
     minY = sxy[0][1];
@@ -1994,10 +1918,7 @@ s32 tri_visible(SVECTOR *v) {
     if (maxX < sxy[2][0]) maxX = sxy[2][0];
     if (sxy[2][1] < minY) minY = sxy[2][1];
     if (maxY < sxy[2][1]) maxY = sxy[2][1];
-    gte_stsxy3c(sxy[3]);
-    gte_stsz3c(&sz[3]);
-    gte_ldv3c(v);
-    gte_rtpt();
+    project_three(v, sxy[6], (u32 *)&sz[6]);
 #define POINT(i)                                                                                      \
     if (sz[i] != 0) {                                                                                 \
         if ((u16)sxy[i][0] < (u16)RenderState.clipX1 && (u16)sxy[i][1] < (u16)RenderState.clipY1) {    \
@@ -2015,8 +1936,6 @@ s32 tri_visible(SVECTOR *v) {
     POINT(3)
     POINT(4)
     POINT(5)
-    gte_stsxy3c(sxy[6]);
-    gte_stsz3c(&sz[6]);
     POINT(6)
     POINT(7)
 #undef POINT
@@ -2061,23 +1980,19 @@ void morph_light_colors(s32 p, MeshHeader *model, SVECTOR *src, SVECTOR *fc) {
     s32 r, g, b;
     s32 i;
 
-    gte_lddp(p);
     r = fc->vx;
     g = fc->vy;
     b = fc->vz;
     for (; run[1] != 0xFF; run += 2) {
         i = run[1] + 2;
         while (i-- > 0) {
-            gte_ldsv(src);
-            gte_ldfcdir(r, g, b);
+            vector_towards(src, r, g, b, p, dst);
             fc++;
             dst->pad = src->pad;
             src++;
-            gte_intpl();
             r = fc->vx;
             g = fc->vy;
             b = fc->vz;
-            gte_stsv(dst);
             dst++;
         }
     }
@@ -2094,7 +2009,6 @@ void morph_blend_verts(s32 p, MeshHeader *model, u16 *ia, u16 *ib, s16 (*verts)[
     s32 i, n;
     s32 r, g, bl;
 
-    gte_lddp(p);
     a = *ia;
     b = *ib;
     run = (u8 *)model + model->runs + 0x15;
@@ -2107,18 +2021,15 @@ void morph_blend_verts(s32 p, MeshHeader *model, u16 *ia, u16 *ib, s16 (*verts)[
         while (i-- > 0) {
             va = verts[a >> 2];
             vb = verts[b >> 2];
-            gte_ldsv(va);
             flag = b & 3;
             r = vb[0];
             g = vb[1];
             bl = vb[2];
-            gte_ldfcdir(r, g, bl);
+            vector_towards(va, r, g, bl, p, dst);
             ia++;
             ib++;
-            gte_intpl_b();
             b = *ib;
             a = *ia;
-            gte_stsv(dst);
             dst->pad = flag;
             dst++;
         }
@@ -2304,11 +2215,11 @@ void draw_nas_model(subengine *nas, MATRIX *arg1) {
             RenderState.localMtx = RenderState.mtxBuf;
             RenderState.localPos = RenderState.posBuf;
             gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
-            gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
+            view_set_centre(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
-                gte_SetTransVector(s.trans);
+                view_set_translation_vector(s.trans);
             }
-            gte_SetRotMatrix(s.rot);
+            view_set_rotation(s.rot);
         }
         /* the record it's kept as in the node, without the pointer's extra bytes */
         rec[0] = (u32)(iptr)nas->u6C.ptr;
@@ -2334,11 +2245,11 @@ void draw_nas_model_flags(subengine *nas, MATRIX *arg1, u32 flags) {
             RenderState.localMtx = RenderState.mtxBuf;
             RenderState.localPos = RenderState.posBuf;
             gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
-            gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
+            view_set_centre(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
-                gte_SetTransVector(s.trans);
+                view_set_translation_vector(s.trans);
             }
-            gte_SetRotMatrix(s.rot);
+            view_set_rotation(s.rot);
         }
         f &= ~0x10000000;
         /* the corners and colours the panels keep in the node, as a plain record */
@@ -2364,11 +2275,11 @@ u32 draw_nas_model_ret(subengine *nas, MATRIX *arg1, u32 flags) {
         RenderState.localMtx = RenderState.mtxBuf;
         RenderState.localPos = RenderState.posBuf;
         gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
-        gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
+        view_set_centre(s.ofx * ScreenRect->w / 640, s.ofy / 2);
         if (s.trans != NULL) {
-            gte_SetTransVector(s.trans);
+            view_set_translation_vector(s.trans);
         }
-        gte_SetRotMatrix(s.rot);
+        view_set_rotation(s.rot);
     }
     flags &= ~0x10000000;
     return flags | nas->flags;
@@ -2423,11 +2334,11 @@ void gfx_load_xform(void *arg0, void *arg1, void *arg2) {
     RenderState.localMtx = RenderState.mtxBuf;
     RenderState.localPos = RenderState.posBuf;
     gfx_setup_xform(arg0, arg1, arg2, RenderState.screen, &s);
-    gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
+    view_set_centre(s.ofx * ScreenRect->w / 640, s.ofy / 2);
     if (s.trans != NULL) {
-        gte_SetTransVector(s.trans);
+        view_set_translation_vector(s.trans);
     }
-    gte_SetRotMatrix(s.rot);
+    view_set_rotation(s.rot);
 }
 
 void draw_model_set_entry(s32 arg0, ModelFile *set, s32 arg2) {
@@ -2502,26 +2413,17 @@ void *draw_morph_model(MeshHeader *model, void *arg1, s32 arg2) {
 
 void project_quad(SVECTOR *v, POLY_GT4 *poly) {
     u32 otz;
-    s32 xy;
-    s32 z;
+    ViewPoint c[4];
 
-    gte_ldv0_w(((s32 *)v)[0], ((s32 *)v)[1]);
-    v++;
-    gte_rtps();
-    gte_ldv0_w(((s32 *)v)[0], ((s32 *)v)[1]);
-    v++;
-    gte_rtps();
-    gte_ldv0_w(((s32 *)v)[0], ((s32 *)v)[1]);
-    v++;
-    gte_rtps();
-    xy = ((s32 *)v)[0];
-    z = ((s32 *)v)[1];
-    gte_stsxy3_gt4(poly);
-    gte_ldv0_w(xy, z);
-    gte_rtps();
-    gte_stsxy(&poly->x3);
-    gte_avsz3();
-    gte_stotz(&otz);
+    project_point(&v[0], &c[0]);
+    project_point(&v[1], &c[1]);
+    project_point(&v[2], &c[2]);
+    project_point(&v[3], &c[3]);
+    point_store_xy(&c[0], &poly->x0);
+    point_store_xy(&c[1], &poly->x1);
+    point_store_xy(&c[2], &poly->x2);
+    point_store_xy(&c[3], &poly->x3);
+    otz = points_order(&c[1], &c[2], &c[3]);
     otz = (otz + RenderState.otzAdd) >> 1;
     if (otz < RenderState.otLen) {
         addPrim(RenderState.ot + otz, poly);
@@ -2800,17 +2702,17 @@ void draw_map_object(void *sub, void *arg1, s32 flags, void *arg3) {
     m.t[1] += RenderState.cam->view.t[1];
     m.t[2] += RenderState.cam->view.t[2];
     if (((subengine *)sub)->flags & 0x20000000) {
-        gte_SetRotMatrix(&RenderState.cam->rot);
+        view_set_rotation(&RenderState.cam->rot);
     } else {
         if (*(u16 *)&((subengine *)sub)->xform.dirty != 0) {
             rotscale_update(&((subengine *)sub)->xform.rot.vx);
         }
         MulMatrix0(rot, &((subengine *)sub)->xform.mtx, mp);
-        gte_SetRotMatrix(mp);
+        view_set_rotation(mp);
     }
-    gte_SetTransMatrix(mp);
+    view_set_translation(mp);
     RenderState.otzAdd = *(u16 *)(RenderState.screen + 8) + ((subengine *)sub)->otz;
-    gte_SetGeomOffset(RenderState.ofx * ScreenRect->w / 640, RenderState.ofy / 2);
+    view_set_centre(RenderState.ofx * ScreenRect->w / 640, RenderState.ofy / 2);
 }
 
 void draw_map_scene(map_enviroment *scene) {

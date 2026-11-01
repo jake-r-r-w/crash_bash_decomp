@@ -552,9 +552,9 @@ void DrawSceneMarks(void) {
         e->xform.rot.vz = (s * p->z) >> 12;
         e->flags = 0x03008000;
         e->otz = p->otz;
-        gte_SetGeomScreen(h);
+        view_set_distance(h);
         draw_object((u8 *)e, (u8 *)&RenderState.cam->view, 0x03008000);
-        gte_SetGeomScreen(RenderState.cam->dist);
+        view_set_distance(RenderState.cam->dist);
     }
 }
 
