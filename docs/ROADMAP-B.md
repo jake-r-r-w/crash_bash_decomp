@@ -13,6 +13,4 @@ A native 64-bit PC port: no emulation, no hacks, on the best tech stack for a ga
 disc to disc work is byte matching; this isn't. The port has its own copy of the game's C and is tested by the user
 playing it. The decomp stays as it is. The design and the rules are in [PORT.md](PORT.md).
 
-| # | Task | Notes | Done |
-|---|------|-------|------|
-| 6.8 | Fully native | Take out the PS1-shaped layers: the game's C calls plain maths instead of GTE operations (`maths.c`), draws directly instead of building GPU packets (`bash/draw.h`), and uses the port's own input, sound and file APIs instead of Sony's library names. Sound keeps the hardware's interpolation and envelopes, as they're how the game sounds | [ ] |
+Nothing is left here for now: Linux stays in the plan (PORT.md), but isn't built, at the user's request.
