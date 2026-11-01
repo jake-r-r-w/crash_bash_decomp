@@ -19,22 +19,11 @@ typedef struct {
     s32 turn;      /* 0x1000 is all the way round */
 } WideExtra;
 
-#define FILE_MELT_PANIC 474
 #define FILE_N_BALLISM 651
 #define FILE_BEACH_BALL 655
 #define FILE_VOLCANO_RACE 637
 
 static const WideExtra Extras[] = {
-    /* the cave's wall, carried on down past the ice */
-    { FILE_MELT_PANIC, 8, -5, 412, 0, 700, 0, 0 },
-    { FILE_MELT_PANIC, 8, -5, 412, 0, 1400, 0, 0 },
-    { FILE_MELT_PANIC, 8, -5, 412, 0, 2100, 0, 0 },
-    { FILE_MELT_PANIC, 8, -5, 412, 0, 2800, 0, 0 },
-    { FILE_MELT_PANIC, 8, -5, 412, 0, 3500, 0, 0 },
-    { FILE_MELT_PANIC, 8, -5, 412, 0, 1000, 0, 500 },
-    { FILE_MELT_PANIC, 8, -5, 412, 0, 1000, 0, -500 },
-    { FILE_MELT_PANIC, 8, -5, 412, 0, 2000, 0, 500 },
-    { FILE_MELT_PANIC, 8, -5, 412, 0, 2000, 0, -500 },
     /* the walls round the arena, carried on round it */
     { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, 500 },
     { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, -500 },
