@@ -107,11 +107,13 @@ static const char *const VS_SRC =
 /* mode.x: the alpha written, for the blend. mode.y: 0 solid, 1 textured keeping all but clear texels, 2 textured keeping only
  * opaque ones, 3 textured keeping only the semi-transparent ones (a texel's alpha: 0 clear, 0.5 semi, 1 opaque), 4 the last picture,
  * put back as it was. */
+/* centroid: with anti-aliasing, a triangle that only just touches a pixel would otherwise be read at the pixel's middle, outside itself, and
+ * pick up the next texture on the atlas or a clear texel. */
 static const char *const FS_SRC =
     "Texture2D<float4> tex : register(t0, space2);\n"
     "SamplerState smp : register(s0, space2);\n"
     "cbuffer U : register(b0, space3) { float4 mode; };\n"
-    "struct In { float2 uv : TEXCOORD0; float4 col : TEXCOORD1; };\n"
+    "struct In { centroid float2 uv : TEXCOORD0; centroid float4 col : TEXCOORD1; };\n"
     "float4 main(In i) : SV_Target0 {\n"
     "  if (mode.y > 3.5) return float4(tex.Sample(smp, i.uv).rgb, 1.0);\n"
     "  float3 c = i.col.rgb;\n"
