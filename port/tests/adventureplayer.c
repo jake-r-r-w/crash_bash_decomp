@@ -21,6 +21,7 @@ void BossBotUpdate(void);
 #define BTN_DOWN 0x40
 #define BTN_LEFT 0x80
 #define BTN_CROSS 0x4000
+#define BTN_SQUARE 0x8000
 
 #define GATEWAYS 12
 #define ROOMS 5
@@ -36,7 +37,17 @@ void BossBotUpdate(void);
 #define GIVE_UP 3
 #define RING_DING 27
 #define POGO_PADLOCK 13
+#define BALLOON_FIRST 8
+#define BALLOON_LAST 11
 #define BALLOON_BLACK 12
+#define SPIN_CRATE 2
+#define BLACK_PULL 0x300
+#define CRATE_PULL 0x200
+#define BALLOON_HIGH (-0x380)
+#define FLIP_REACH 0x180
+#define BAD_REACH 0x140
+#define FLIP_MODE_FIRST 0x34
+#define FLIP_MODE_LAST 0x35
 
 static s32 Ticks;
 static s32 InRoom;
@@ -224,6 +235,78 @@ static void log_round(void) {
     last = now;
 }
 
+/* Whether popping this balloon scores for this hero, or knocks him down */
+static s32 ring_mine(const EXTobject *f) {
+    return SpinBalloonTimer != 0 ? SpinBalloonOwner == 0 : f->contains == 0;
+}
+
+/* Ring Ding's player, in place of the computer's (which picks a balloon at random): the nearest balloon that scores, the black one from
+   further off, and a flip up into it, unless that would burst someone else's on the way. */
+static void ring_play(s32 id) {
+    EXTengine *he = Heroes[0].hero_eng;
+    EXTbotai *ai = Heroes[0].hero_ai;
+    NAS *n, *best = NULL;
+    s32 best_d = 0x7FFFFFFF, bad = 0, pad = 0;
+
+    if (id != 0) {
+        Spin_HeroBot(id);
+        return;
+    }
+    ai->AImode = 2;
+    for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
+        EXTobject *f = (EXTobject *)n->FUX;
+        EXTengine *e = n->Engine;
+        s32 d;
+
+        if (e == NULL || f == NULL || f->status != 1) {
+            continue;
+        }
+        d = csqrt((e->XYZ.x - he->XYZ.x) * (e->XYZ.x - he->XYZ.x) + (e->XYZ.z - he->XYZ.z) * (e->XYZ.z - he->XYZ.z)) >> 6;
+        if (f->whatami >= BALLOON_FIRST && f->whatami <= BALLOON_LAST) {
+            if (!ring_mine(f)) {
+                bad |= d < BAD_REACH;
+                continue;
+            }
+        } else if (f->whatami == BALLOON_BLACK) {
+            d -= BLACK_PULL;
+        } else if (f->whatami == SPIN_CRATE) {
+            /* solid: from on top of one a hit misses it */
+            if (Heroes[0].hero_pu != 0 || he->platform == e) {
+                continue;
+            }
+            d -= CRATE_PULL;
+        } else {
+            continue;
+        }
+        /* still dropping in, out of reach */
+        if (e->XYZ.y < BALLOON_HIGH) {
+            continue;
+        }
+        if (d < best_d) {
+            best_d = d;
+            best = n;
+        }
+    }
+    if (best != NULL) {
+        EXTobject *f = (EXTobject *)best->FUX;
+        s32 x = best->Engine->XYZ.x - he->XYZ.x;
+        s32 z = best->Engine->XYZ.z - he->XYZ.z;
+        s32 ang = get_angle(x, z);
+
+        ai->AIang = ang;
+        pad = DirPadBits[(ang >> 9) & 7];
+        if ((csqrt(x * x + z * z) >> 6) < FLIP_REACH && Heroes[0].hero_mode != FLIP_MODE_FIRST && Heroes[0].hero_mode != FLIP_MODE_LAST) {
+            if (f->whatami == SPIN_CRATE) {
+                pad |= (GameFrameCount & 1) ? BTN_SQUARE : 0;
+            } else if (!bad) {
+                pad |= BTN_CROSS;
+            }
+        }
+    }
+    set_joypad(&Pads[0], pad);
+    Pads[0].angle.w = ai->AIang;
+}
+
 void AdventurePlayerUpdate(void) {
     Ticks++;
     if (in_room()) {
@@ -246,12 +329,15 @@ void AdventurePlayerUpdate(void) {
         BossBotUpdate();
         return;
     }
-    /* a game: the computer has the pad (heroes.c). It, the titles, a story or a menu all wait for a button at the end. These two deal
+    /* a game: the computer has the pad (heroes.c). It, the titles, a story or a menu all wait for a button at the end. Padlock deals
        out what's going by who's a player, and he can't win on the computer's hands against that: he counts as the computer's till the win
-       comes, when it has to be a player's to count. */
-    GAME->heroCpu[0] = (GameMode == RING_DING || GameMode == POGO_PADLOCK) && (GAME->exitFlags & 1) == 0;
+       comes, when it has to be a player's to count. Ring Ding has its own player, as the computer's picks its balloons at random. */
+    GAME->heroCpu[0] = GameMode == POGO_PADLOCK && (GAME->exitFlags & 1) == 0;
     if (GameMode < ROOM_FIRST && GameMode != RING_DING && GameMode != POGO_PADLOCK) {
         AiPlayerSkill[0].level = MAX_SKILL;
+    }
+    if (GameMode == RING_DING) {
+        HeroHooks.HeroBot = ring_play;
     }
     /* the fail screen: enough goes at this one, back to the warp room for something else */
     if ((GAME->exitFlags & 1) && Losses >= GIVE_UP && GameMode < ROOM_FIRST) {
