@@ -489,11 +489,11 @@ s32 RaceAI_DodgeSpinners(s32 player) {
     SLONG_XYZ pos;
 
     i = 0;
-    pos.x = Heroes[player].hero_eng->XYZ.x - (0x40 * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
+    pos.x = Heroes[player].hero_eng->XYZ.x - (0x40 * sin_cos_table[(Heroes[player].hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
     h = &Heroes[player];
     pos.y = 0;
     p = RaceSpinnerBoxes;
-    pos.z = h->hero_eng->XYZ.z - (0x40 * rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
+    pos.z = h->hero_eng->XYZ.z - (0x40 * sin_cos_table[h->hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
 loop:
     if (i < 6) {
         if (RaceXZBoxToSphere(*p, &pos, 1, &pos) != -1) {
@@ -568,9 +568,9 @@ void RaceAI_SpinnerBrake(s32 player) {
     s32 r;
     HeroInfo *h;
 
-    pos.x = Heroes[player].hero_eng->XYZ.x - (0x40 * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
+    pos.x = Heroes[player].hero_eng->XYZ.x - (0x40 * sin_cos_table[(Heroes[player].hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
     pos.y = 0;
-    pos.z = Heroes[player].hero_eng->XYZ.z - (0x40 * rcossin_tbl[Heroes[player].hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
+    pos.z = Heroes[player].hero_eng->XYZ.z - (0x40 * sin_cos_table[Heroes[player].hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
     i = 0;
     if (Heroes[player].hero->FUX != NULL) {
         do {
@@ -649,9 +649,9 @@ loop:
         h = &base[player];
         a[0] = 0;
         a[2] = 0;
-        b[0] = rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2;
+        b[0] = sin_cos_table[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2;
         b[1] = 0;
-        b[2] = rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2;
+        b[2] = sin_cos_table[h->hero_eng->xform.rot.vy & 0xFFF].unk2;
         best = &RaceBarrels[besti];
         c[0] = best->sub->XYZ.x - h->hero_eng->XYZ.x;
         c[2] = best->sub->XYZ.z - h->hero_eng->XYZ.z;
@@ -715,9 +715,9 @@ void RaceAI_AvoidObjects(s32 player) {
         h = &base[player];
         a[0] = 0;
         a[2] = 0;
-        b[0] = rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2;
+        b[0] = sin_cos_table[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2;
         b[1] = 0;
-        b[2] = rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2;
+        b[2] = sin_cos_table[h->hero_eng->xform.rot.vy & 0xFFF].unk2;
         c[0] = best->Engine->XYZ.x - h->hero_eng->XYZ.x;
         c[2] = best->Engine->XYZ.z - h->hero_eng->XYZ.z;
         c[3] = 0x180;
@@ -775,7 +775,7 @@ s32 RaceRayHit(s32 *a, s32 *b, s16 *c, void *unused) {
     if (s < 0) {
         return 0;
     }
-    s = csqrt(s) >> 6;
+    s = int_sqrt(s) >> 6;
     nc = -C;
     t1 = (nc + s) << 8;
     den = A * 2;
@@ -883,7 +883,7 @@ s32 RaceAI_UseAimedWeapon(s32 player) {
         return 0;
     }
     i = 0;
-    trig = rcossin_tbl;
+    trig = sin_cos_table;
     base = Heroes;
     pad = (PadState *) Pads;
     o = base;
@@ -940,7 +940,7 @@ s32 RaceAI_SteerAtVictim(s32 player) {
 
     if (Heroes[player].hero->FUX != NULL) {
         i = 0;
-        trig = rcossin_tbl;
+        trig = sin_cos_table;
         pads = (PadState *)Pads;
         base = Heroes;
         pad = pads + player;
@@ -1226,21 +1226,21 @@ u32 RaceAI_FollowTrack(s32 player) {
     if (ext != NULL) {
         fux = (RaceFux *)h->hero->FUX;
         if (fux != NULL) {
-            d = (((csqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) * 0x180) / 80;
+            d = (((int_sqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) * 0x180) / 80;
             if (d < 0) {
                 d = 0;
             }
             d += 0x200;
-            pos.x = h->hero_eng->XYZ.x - (d * rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
+            pos.x = h->hero_eng->XYZ.x - (d * sin_cos_table[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
             pos.y = 0;
-            pos.z = h->hero_eng->XYZ.z - (d * rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
+            pos.z = h->hero_eng->XYZ.z - (d * sin_cos_table[h->hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
             if (PointInZone(&pos.x, 0) != 0) {
                 h->hero_ai->AIpad |= 0x80;
                 h->hero_ai->AIpad &= ~0x8000;
             }
-            pos.x = h->hero_eng->XYZ.x - (rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x79 >> 8);
+            pos.x = h->hero_eng->XYZ.x - (sin_cos_table[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x79 >> 8);
             pos.y = 0;
-            pos.z = h->hero_eng->XYZ.z - (rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2 * 0x79 >> 8);
+            pos.z = h->hero_eng->XYZ.z - (sin_cos_table[h->hero_eng->xform.rot.vy & 0xFFF].unk2 * 0x79 >> 8);
             if (GameMode == 0x17 && (d = PointInZone(&pos.x, 3) != 1)) {
                 h->hero_ai->AIpad |= 0x20;
                 h->hero_ai->AIpad &= ~0x8000;
@@ -1277,14 +1277,14 @@ void RaceAI_SteerAhead(s32 player) {
     if (FindExtension(Heroes[player].hero, 0x20000000) != NULL) {
         fux = (RaceFux *)Heroes[player].hero->FUX;
         if (fux != NULL) {
-            d = (((csqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) << 10) / 80;
+            d = (((int_sqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) << 10) / 80;
             if (d < 0) {
                 d = 0;
             }
             d += 0xBE8;
-            pos.x = Heroes[player].hero_eng->XYZ.x - (d * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
+            pos.x = Heroes[player].hero_eng->XYZ.x - (d * sin_cos_table[(Heroes[player].hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 >> 12);
             pos.y = 0;
-            pos.z = Heroes[player].hero_eng->XYZ.z - (d * rcossin_tbl[Heroes[player].hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
+            pos.z = Heroes[player].hero_eng->XYZ.z - (d * sin_cos_table[Heroes[player].hero_eng->xform.rot.vy & 0xFFF].unk2 >> 12);
             Heroes[player].hero_ai->AIpad |= 0x8000;
             Heroes[player].hero_ai->AIpad |= RaceAI_FollowTrack(player);
             Heroes[player].hero_ai->AIpad |= 0x800;
@@ -1547,7 +1547,7 @@ void MaintainCentre(void) {
         v.vx = RaceSpinner->rot.vx;
         v.vy = RaceSpinner->rot.vy;
         v.vz = RaceSpinner->rot.vz;
-        RotMatrix(&v, &m);
+        matrix_rotation_xyz(&v, &m);
         RaceSpinner->mat = m;
     }
     i = 0;
@@ -1560,7 +1560,7 @@ loop:
             v.vx = o->rot.vx;
             v.vy = o->rot.vy;
             v.vz = o->rot.vz;
-            RotMatrix(&v, &m);
+            matrix_rotation_xyz(&v, &m);
             o->mat = m;
         }
         pp++;
@@ -1676,11 +1676,11 @@ s32 RaceBarrelHitHero(RaceBarrel *b) {
         dz = e->XYZ.z - obj->XYZ.z;
         d = dx * dx + dz * dz;
         if (d < 0x24000) {
-            d = csqrt(d) >> 6;
+            d = int_sqrt(d) >> 6;
             angle = get_angle(dx, dz) & 0xFFF;
             d = 0x180 - d;
-            e->XYZ.x += d * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
-            e->XYZ.z += d * rcossin_tbl[angle].unk2 >> 12;
+            e->XYZ.x += d * sin_cos_table[(angle - 0x400) & 0xFFF].unk2 >> 12;
+            e->XYZ.z += d * sin_cos_table[angle].unk2 >> 12;
             RaceBarrelBump(i, b);
             if (Heroes[i].hero_mode != 0x61) {
                 r = Random(2);
@@ -1722,11 +1722,11 @@ s32 RaceBarrelSpaceFree(RaceBarrel *self) {
             dz = obj->XYZ.z - o->XYZ.z;
             d = dx * dx + dz * dz;
             if (d < 0x24000) {
-                d = csqrt(d) >> 6;
+                d = int_sqrt(d) >> 6;
                 angle = get_angle(dx, dz) & 0xFFF;
                 d = 0x180 - d;
-                obj->XYZ.x += d * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
-                obj->XYZ.z += d * rcossin_tbl[angle].unk2 >> 12;
+                obj->XYZ.x += d * sin_cos_table[(angle - 0x400) & 0xFFF].unk2 >> 12;
+                obj->XYZ.z += d * sin_cos_table[angle].unk2 >> 12;
             }
         }
     }
@@ -1971,7 +1971,7 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
                             goto next;
                         }
                         n = nrm[2];
-                        k = (rad << 6) - csqrt(d) + 2;
+                        k = (rad << 6) - int_sqrt(d) + 2;
                         dx = (k * n.x) >> 18;
                         dz = (k * n.z) >> 18;
                         arg0->x += dx;
@@ -2067,8 +2067,8 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
             }
             d.x = pos->x - w->segs[0].p0.x;
             d.z = pos->z - w->segs[0].p0.z;
-            if (((d.x * rcossin_tbl[-ang & 0xFFF].unk2) >> 12) -
-                    ((d.z * rcossin_tbl[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
+            if (((d.x * sin_cos_table[-ang & 0xFFF].unk2) >> 12) -
+                    ((d.z * sin_cos_table[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
                 continue;
             }
             d.y = w->segs[0].p1.y - w->segs[0].p0.y;
@@ -2122,13 +2122,13 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
             if (best > r2) {
                 continue;
             }
-            s = csqrt(best) >> 6;
+            s = int_sqrt(best) >> 6;
             out->y = ang;
             a = -ang;
             v = rad - s + 2;
-            out->x = (v * rcossin_tbl[a & 0xFFF].unk2) >> 12;
+            out->x = (v * sin_cos_table[a & 0xFFF].unk2) >> 12;
             ang = a + 0x400;
-            out->z = (v * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+            out->z = (v * sin_cos_table[ang & 0xFFF].unk2) >> 12;
             pos->x += out->x;
             pos->z += out->z;
             found = 1;
@@ -2197,8 +2197,8 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
         rv.vx = 0;
         rv.vy = -bl->rot->ang;
         rv.vz = 0;
-        RotMatrix(&rv, &m);
-        ApplyMatrixLV(&m, pos, &lp);
+        matrix_rotation_xyz(&rv, &m);
+        matrix_apply_long(&m, pos, &lp);
         for (;; i++, w = (RaceSegObj *)((RaceSeg *)w + 1),
                 w2 = (RaceSegObj *)((RaceSeg *)w2 + 1)) {
             s32 gt;
@@ -2228,8 +2228,8 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             }
             d.vx = lp.vx - a.p0.vx;
             d.vz = lp.vz - a.p0.vz;
-            side = ((d.vx * rcossin_tbl[-ang & 0xFFF].unk2) >> 12) -
-                ((d.vz * rcossin_tbl[(-ang - 0x400) & 0xFFF].unk2) >> 12);
+            side = ((d.vx * sin_cos_table[-ang & 0xFFF].unk2) >> 12) -
+                ((d.vz * sin_cos_table[(-ang - 0x400) & 0xFFF].unk2) >> 12);
             if (side < 0 || side > rad) {
                 continue;
             }
@@ -2285,12 +2285,12 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             if (best > r2) {
                 continue;
             }
-            s = csqrt(best);
+            s = int_sqrt(best);
             out->vy = ang + bl->rot->ang;
             ang = (-ang + 0x400) & 0xFFF;
             v = (rad << 6) - s + 2;
-            out->vx = (v * rcossin_tbl[(((ang + bl->rot->ang) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
-            out->vz = (v * rcossin_tbl[(ang + bl->rot->ang) & 0xFFF].unk2) >> 18;
+            out->vx = (v * sin_cos_table[(((ang + bl->rot->ang) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
+            out->vz = (v * sin_cos_table[(ang + bl->rot->ang) & 0xFFF].unk2) >> 18;
             pos->vx += out->vx;
             pos->vz += out->vz;
             found = 1;
@@ -2354,8 +2354,8 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
         rv.vx = -rot->vx;
         rv.vy = -rot->vy;
         rv.vz = -rot->vz;
-        RotMatrix(&rv, &m);
-        ApplyMatrixLV(&m, pos, &lp);
+        matrix_rotation_xyz(&rv, &m);
+        matrix_apply_long(&m, pos, &lp);
         for (;; i++, w = (RaceSegObj *)((RaceSeg *)w + 1)) {
             s32 gt;
 
@@ -2368,8 +2368,8 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             }
             d.vx = lp.vx - w->segs[0].p0.x;
             d.vz = lp.vz - w->segs[0].p0.z;
-            side = ((d.vx * rcossin_tbl[-ang & 0xFFF].unk2) >> 12) -
-                ((d.vz * rcossin_tbl[(-ang - 0x400) & 0xFFF].unk2) >> 12);
+            side = ((d.vx * sin_cos_table[-ang & 0xFFF].unk2) >> 12) -
+                ((d.vz * sin_cos_table[(-ang - 0x400) & 0xFFF].unk2) >> 12);
             if (side < 0 || side > rad) {
                 continue;
             }
@@ -2425,14 +2425,14 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             if (best > r2) {
                 continue;
             }
-            s = csqrt(best);
+            s = int_sqrt(best);
             out->vy = ang;
             pos->vx += out->vx;
             pos->vz += out->vz;
             ang = (-ang + 0x400) & 0xFFF;
             v = (rad << 6) - s + 2;
-            out->vx = (v * rcossin_tbl[(((ang + rot->vy) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
-            out->vz = (v * rcossin_tbl[(ang + rot->vy) & 0xFFF].unk2) >> 18;
+            out->vx = (v * sin_cos_table[(((ang + rot->vy) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
+            out->vz = (v * sin_cos_table[(ang + rot->vy) & 0xFFF].unk2) >> 18;
             found = 1;
             hit.y = obj->segs[i].ang;
             if (flags & 2) {
@@ -2485,8 +2485,8 @@ s32 RaceXZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
     ang.vx = -((u16 *)arg0)[8];
     ang.vy = -((u16 *)arg0)[9];
     ang.vz = -((u16 *)arg0)[10];
-    RotMatrixZYX(&ang, &m);
-    ApplyMatrixLV(&m, &d, &d);
+    matrix_rotation_zyx(&ang, &m);
+    matrix_apply_long(&m, &d, &d);
     if (d.vx < lo.v[0]) {
         side = 2;
     }
@@ -2528,12 +2528,12 @@ s32 RaceXZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
         n.vz = -0x1000;
         break;
     case 6:
-        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        dist = int_sqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
         n.vx = -0x1000;
         n.vz = -0x1000;
         break;
     case 5:
-        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        dist = int_sqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
         n.vx = 0x1000;
         n.vz = -0x1000;
         break;
@@ -2561,12 +2561,12 @@ s32 RaceXZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
         n.vz = 0x1000;
         break;
     case 10:
-        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        dist = int_sqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
         n.vx = -0x1000;
         n.vz = 0x1000;
         break;
     case 9:
-        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        dist = int_sqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
         n.vx = 0x1000;
         n.vz = 0x1000;
         break;
@@ -2593,8 +2593,8 @@ s32 RaceXZBoxToSphere(void *arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
 
             push = p->pad - dist;
             push = RaceBoxPushRot(&ang, (u16 *)arg0, abs(push));
-            RotMatrix(&ang, &m);
-            ApplyMatrixLV(&m, &n, &n);
+            matrix_rotation_xyz(&ang, &m);
+            matrix_apply_long(&m, &n, &n);
             arg3->x += (push * n.vx) >> 12;
             arg3->y += (push * n.vy) >> 12;
             arg3->z += (push * n.vz) >> 12;
@@ -2830,7 +2830,7 @@ void RacePreMoveHero(s32 player) {
                 pad = pads + player;
                 if ((pad->flags & 1) || h->hero_ai->AImode != 0) {
                     if (((PadState *)pad)->dir & 0xA0) {
-                        speed = ((csqrt(fux->vx * fux->vx + fux->vz * fux->vz) * 4 >> 8) * 0x3C8) / 100 >> 8;
+                        speed = ((int_sqrt(fux->vx * fux->vx + fux->vz * fux->vz) * 4 >> 8) * 0x3C8) / 100 >> 8;
                         if (speed > 0x3C8) {
                             speed = 0x3C8;
                         }
@@ -2851,8 +2851,8 @@ void RacePreMoveHero(s32 player) {
                         }
                         m->x_acc = fux->tune1;
                         m->z_acc = fux->tune1;
-                        m->x_max = fux->maxSpeed * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max = fux->maxSpeed * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
+                        m->x_max = fux->maxSpeed * sin_cos_table[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->maxSpeed * sin_cos_table[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
                         if (AiPlayerSkill[player].level >= 0x17 && G63B->heroCpu[player] != 0) {
                             fux->steer -= 0x180 - RaceSteerAngles[AiPlayerSkill[player].level - 0x16];
                         } else if (Heroes[player].hero_mode != 0x61) {
@@ -2886,8 +2886,8 @@ void RacePreMoveHero(s32 player) {
                             fux->vx >>= 3;
                             fux->vz >>= 3;
                         }
-                        m->x_max = fux->jumpVel * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max = fux->jumpVel * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
+                        m->x_max = fux->jumpVel * sin_cos_table[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->jumpVel * sin_cos_table[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
                     }
                 }
             }
@@ -2912,23 +2912,23 @@ s32 RaceKeepOnTrack(s32 arg0, s32 arg1) {
 
     eng = Heroes[arg0].hero_eng;
     if (eng != NULL) {
-        dist = csqrt(eng->XYZ.x * eng->XYZ.x + eng->XYZ.z * eng->XYZ.z) >> 6;
+        dist = int_sqrt(eng->XYZ.x * eng->XYZ.x + eng->XYZ.z * eng->XYZ.z) >> 6;
         if (arg1 == 0) {
             if (dist > 0xB00) {
                 s32 ang = get_angle(eng->XYZ.x, eng->XYZ.z) & 0xFFF;
-                s32 c = rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
+                s32 c = sin_cos_table[(ang - 0x400) & 0xFFF].unk2;
                 s32 d = dist - 0xAFC;
                 eng->XYZ.x -= d * c >> 12;
-                eng->XYZ.z -= d * rcossin_tbl[ang].unk2 >> 12;
+                eng->XYZ.z -= d * sin_cos_table[ang].unk2 >> 12;
                 return 1;
             }
         } else {
             if (dist < 0x464) {
                 s32 ang = get_angle(eng->XYZ.x, eng->XYZ.z) & 0xFFF;
-                s32 c = rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
+                s32 c = sin_cos_table[(ang - 0x400) & 0xFFF].unk2;
                 s32 d = dist - 0x460;
                 eng->XYZ.x -= d * c >> 12;
-                eng->XYZ.z -= d * rcossin_tbl[ang].unk2 >> 12;
+                eng->XYZ.z -= d * sin_cos_table[ang].unk2 >> 12;
                 return 1;
             }
         }
@@ -3029,8 +3029,8 @@ void RaceMoveHero(s32 player) {
                 if (RaceXZBoxToSphere(RaceSpinnerBoxes[i], &Heroes[player].hero_eng->XYZ, 0, &pos) == 4 &&
                     RacePistons[i].state == 1) {
                     ga = get_angle(eng->OldXYZ.x - pos.x, eng->OldXYZ.z - pos.z) & 0xFFF;
-                    vx = -(rcossin_tbl[(ga - 0x400) & 0xFFF].unk2 * 6);
-                    vz = -(rcossin_tbl[ga].unk2 * 6);
+                    vx = -(sin_cos_table[(ga - 0x400) & 0xFFF].unk2 * 6);
+                    vz = -(sin_cos_table[ga].unk2 * 6);
                 }
                 i++;
             }
@@ -3063,10 +3063,10 @@ void RaceMoveHero(s32 player) {
                 } else {
                     a = ang + 0x338;
                 }
-                dist = csqrt(vx * vx + vz * vz) >> 6;
+                dist = int_sqrt(vx * vx + vz * vz) >> 6;
                 dist = dist * 200 >> 8;
-                fux->vx = dist * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
-                fux->vz = dist * rcossin_tbl[a & 0xFFF].unk2 >> 12;
+                fux->vx = dist * sin_cos_table[(a - 0x400) & 0xFFF].unk2 >> 12;
+                fux->vz = dist * sin_cos_table[a & 0xFFF].unk2 >> 12;
                 Heroes[player].hero_move->forward_angle = a + 0x800;
                 a = Random(4);
                 if (fux->vx != 0 || fux->vz != 0) {
@@ -3154,12 +3154,12 @@ void RaceEulerToQuat(VECTOR *ang, Quat *q) {
     x = ang->vx >> 1;
     y = ang->vy >> 1;
     z = ang->vz >> 1;
-    sx = rcossin_tbl[x & 0xFFF].unk2;
-    cx = rcossin_tbl[(x - 0x400) & 0xFFF].unk2;
-    sy = rcossin_tbl[y & 0xFFF].unk2;
-    cy = rcossin_tbl[(y - 0x400) & 0xFFF].unk2;
-    sz = rcossin_tbl[z & 0xFFF].unk2;
-    cz = rcossin_tbl[(z - 0x400) & 0xFFF].unk2;
+    sx = sin_cos_table[x & 0xFFF].unk2;
+    cx = sin_cos_table[(x - 0x400) & 0xFFF].unk2;
+    sy = sin_cos_table[y & 0xFFF].unk2;
+    cy = sin_cos_table[(y - 0x400) & 0xFFF].unk2;
+    sz = sin_cos_table[z & 0xFFF].unk2;
+    cz = sin_cos_table[(z - 0x400) & 0xFFF].unk2;
     a = RaceFixMul(sx, sz);
     b = RaceFixMul(sx, cz);
     c = RaceFixMul(cx, sz);
@@ -3283,9 +3283,9 @@ void RaceHeroIdle(s32 player) {
                     hb = Heroes;
                     h = &hb[player];
                     e = h->hero_eng;
-                    pos.x = e->XYZ.x + (rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    pos.x = e->XYZ.x + (sin_cos_table[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
                     e = h->hero_eng;
-                    pos.z = e->XYZ.z + (rcossin_tbl[e->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
+                    pos.z = e->XYZ.z + (sin_cos_table[e->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
                     pos.y = h->hero_eng->XYZ.y;
                 }
                 if (--f->timer22 == -1) {
@@ -3339,9 +3339,9 @@ void RaceHeroIdle(s32 player) {
                     hb = Heroes;
                     h = &hb[player];
                     e = h->hero_eng;
-                    pos.x = e->XYZ.x + (rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    pos.x = e->XYZ.x + (sin_cos_table[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
                     e = h->hero_eng;
-                    pos.z = e->XYZ.z + (rcossin_tbl[e->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
+                    pos.z = e->XYZ.z + (sin_cos_table[e->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
                     pos.y = h->hero_eng->XYZ.y;
                 }
                 if (--f->timer3 == -1) {
@@ -3370,9 +3370,9 @@ void RaceHeroIdle(s32 player) {
             EXTengine *e2;
 
             e2 = h2->hero_eng;
-            pos.x = e2->XYZ.x + (rcossin_tbl[(e2->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            pos.x = e2->XYZ.x + (sin_cos_table[(e2->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
             e2 = h2->hero_eng;
-            pos.z = e2->XYZ.z + (rcossin_tbl[e2->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
+            pos.z = e2->XYZ.z + (sin_cos_table[e2->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
             pos.y = h2->hero_eng->XYZ.y;
             if (GameMode != 0x19) {
                 CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
@@ -3547,9 +3547,9 @@ void RaceHeroOffTrack(s32 player) {
                     hb = Heroes;
                     h2 = &hb[player];
                     e = h2->hero_eng;
-                    sp.x = e->XYZ.x + (rcossin_tbl[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 256 >> 12);
+                    sp.x = e->XYZ.x + (sin_cos_table[(e->xform.rot.vy - 0x400) & 0xFFF].unk2 * 256 >> 12);
                     e = h2->hero_eng;
-                    sp.z = e->XYZ.z + (rcossin_tbl[e->xform.rot.vy & 0xFFF].unk2 * 256 >> 12);
+                    sp.z = e->XYZ.z + (sin_cos_table[e->xform.rot.vy & 0xFFF].unk2 * 256 >> 12);
                     sp.y = h2->hero_eng->XYZ.y;
                     CreateNAS(sp.x, sp.y, sp.z, 0x1709, 0x11);
                     f->timer22 = 4;
@@ -3577,8 +3577,8 @@ void RaceHeroOffTrack(s32 player) {
             if (G63->mode == 0x19) {
                 SetHeroSeq(player, 0x52);
             }
-            h->hero_eng->XYZ.x -= rcossin_tbl[(f->angle - 0x400) & 0xFFF].unk2 * 512 >> 12;
-            h->hero_eng->XYZ.z -= rcossin_tbl[f->angle & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->XYZ.x -= sin_cos_table[(f->angle - 0x400) & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->XYZ.z -= sin_cos_table[f->angle & 0xFFF].unk2 * 512 >> 12;
             h->hero_eng->XYZ.y = -0x578;
             h->hero_eng->xform.rot.vz = 0;
             if (G63->mode == 0x17) {
@@ -3613,8 +3613,8 @@ void SetRaceHeroRun(s32 player) {
         m = h->hero_move;
         if (m != NULL) {
             spd = HeroHooks.RunSpeeds[h->hero_name * 3];
-            m->x_vel = (spd * rcossin_tbl[(h->hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2) >> 12;
-            m->z_vel = (spd * rcossin_tbl[(h->hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2) >> 12;
+            m->x_vel = (spd * sin_cos_table[(h->hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2) >> 12;
+            m->z_vel = (spd * sin_cos_table[(h->hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2) >> 12;
         }
         f->count = 0;
     }
@@ -3648,8 +3648,8 @@ void RaceHeroRun(s32 player) {
     if (((PadState *)Pads)[player].dir & 0x8000) {
         m->x_acc = 0xC;
         m->z_acc = 0xC;
-        m->x_max = (RaceJumpVel * rcossin_tbl[(h->hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2) >> 12;
-        m->z_max = (RaceJumpVel * rcossin_tbl[(h->hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2) >> 12;
+        m->x_max = (RaceJumpVel * sin_cos_table[(h->hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2) >> 12;
+        m->z_max = (RaceJumpVel * sin_cos_table[(h->hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2) >> 12;
     }
     ProcessHeroAnim(player);
     RaceHeroUsePickup(player);
@@ -3786,8 +3786,8 @@ void SetRaceHeroJump(s32 player) {
         f->phase = 0;
         m = h->hero_move;
         if (m != NULL) {
-            pos.x = h->hero_eng->XYZ.x + (rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
-            pos.z = h->hero_eng->XYZ.z + (rcossin_tbl[h->hero_eng->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
+            pos.x = h->hero_eng->XYZ.x + (sin_cos_table[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            pos.z = h->hero_eng->XYZ.z + (sin_cos_table[h->hero_eng->xform.rot.vy & 0xFFF].unk2 * 25 >> 9);
             pos.y = h->hero_eng->XYZ.y;
             m->jump_acc = 5;
             m->jump_dec = 10;
@@ -3916,8 +3916,8 @@ loop:
             eng2 = Heroes[found].hero_eng;
             angle = get_angle(eng->XYZ.x - eng2->XYZ.x, eng->XYZ.z - eng2->XYZ.z) & 0xFFF;
             if ((u32)(angle - 0x201) < 0xBFF) {
-                move->x_vel = -((rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 7);
-                move->z_vel = -((rcossin_tbl[angle].unk2 * 3) >> 7);
+                move->x_vel = -((sin_cos_table[(angle - 0x400) & 0xFFF].unk2 * 3) >> 7);
+                move->z_vel = -((sin_cos_table[angle].unk2 * 3) >> 7);
             }
         }
     }
@@ -3970,8 +3970,8 @@ s32 RaceHeroUsePickup(s32 player) {
             } else if (t == 2) {
                 pp = &pos;
                 pos.y = 0;
-                pos.x = eng->XYZ.x + ((rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 75) >> 11);
-                pos.z = eng->XYZ.z + ((rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 75) >> 11);
+                pos.x = eng->XYZ.x + ((sin_cos_table[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 75) >> 11);
+                pos.z = eng->XYZ.z + ((sin_cos_table[eng->xform.rot.vy & 0xFFF].unk2 * 75) >> 11);
                 i = 0;
                 lim = 0x1DE84;
                 other = base;
@@ -4481,7 +4481,7 @@ s32 RaceHeroCollide(s32 player) {
       }
       dx = oeng->XYZ.x - eng->XYZ.x;
       dz = oeng->XYZ.z - eng->XYZ.z;
-      dist = csqrt((dx * dx) + (dz * dz)) >> 6;
+      dist = int_sqrt((dx * dx) + (dz * dz)) >> 6;
       if (dist >= 0x180)
       {
         continue;
@@ -4489,8 +4489,8 @@ s32 RaceHeroCollide(s32 player) {
       r = Random(4);
       ang = get_angle(dx, dz) & 0xFFF;
       dist = (lim - dist) + 8;
-      eng->XYZ.x -= (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-      eng->XYZ.z -= (dist * rcossin_tbl[ang].unk2) >> 12;
+      eng->XYZ.x -= (dist * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+      eng->XYZ.z -= (dist * sin_cos_table[ang].unk2) >> 12;
       RaceHeroesBump(player, i);
       a = (RaceFux *) Heroes[player].hero->FUX;
       hit = 1;
@@ -4700,8 +4700,8 @@ void PlotRaceMissile(NAS *m) {
         }
         break;
     }
-    ext->pos.x -= (ext->speed * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
-    ext->pos.z -= (ext->speed * rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
+    ext->pos.x -= (ext->speed * sin_cos_table[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->speed * sin_cos_table[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
     if (RaceMissileHitHeroes((u8 *)&ext->pos, ext->owner) != -1) {
         RaceSpawnPuff(&m->Engine->XYZ, 1, &HeroModelBank[DB_CrateEffects]);
         PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -4710,7 +4710,7 @@ void PlotRaceMissile(NAS *m) {
         }
     } else {
         m->Engine->xform.dirty = 1;
-        if (csqrt(m->Engine->XYZ.x * m->Engine->XYZ.x
+        if (int_sqrt(m->Engine->XYZ.x * m->Engine->XYZ.x
                   + m->Engine->XYZ.z * m->Engine->XYZ.z) >> 6 > 0xF00) {
             goto kill;
         }
@@ -4725,10 +4725,10 @@ void PlotRaceMissile(NAS *m) {
                 break;
             }
             if (i != 1 && RaceTrackCollide(&ext->pos, &hit, 0x96, i, 1) != 0) {
-                n.x = rcossin_tbl[hit.y & 0xFFF].unk2;
-                n.z = rcossin_tbl[(hit.y - 0x400) & 0xFFF].unk2;
-                d.x = -rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2;
-                d.z = -rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2;
+                n.x = sin_cos_table[hit.y & 0xFFF].unk2;
+                n.z = sin_cos_table[(hit.y - 0x400) & 0xFFF].unk2;
+                d.x = -sin_cos_table[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2;
+                d.z = -sin_cos_table[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2;
                 dot = (d.x * n.x >> 12) + (d.z * n.z >> 12);
                 r.x = d.x - (dot * n.x >> 11);
                 r.z = d.z - (dot * n.z >> 11);
@@ -5130,8 +5130,8 @@ heroes_done:
             }
             s = &RacePickupSlots[slot];
             angle = s->angle;
-            spawned = CreateNAS(dist * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
-                                   dist * rcossin_tbl[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
+            spawned = CreateNAS(dist * sin_cos_table[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+                                   dist * sin_cos_table[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
             if (spawned != NULL) {
                 s->used = 1;
                 ext = FindExtension(spawned, 0x10000000);
@@ -5323,8 +5323,8 @@ heroes_done:
             }
             RacePickupSlots[slot].used = 1;
             angle = RacePickupSlots[slot].angle;
-            spawned = CreateNAS(dist * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
-                                   dist * rcossin_tbl[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
+            spawned = CreateNAS(dist * sin_cos_table[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+                                   dist * sin_cos_table[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
             if (spawned != NULL) {
                 ext = FindExtension(spawned, 0x10000000);
                 if (ext != NULL) {
@@ -5495,14 +5495,14 @@ void PlotDinoEgg(NAS *m) {
         ext->dec = 4;
         RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 1, 0);
         RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 0, 1);
-        m->Engine->XYZ.x += (rcossin_tbl[(h->xform.rot.vy - 0x400) & 0xFFF].unk2 * 75) >> 11;
-        m->Engine->XYZ.z += (rcossin_tbl[(u16)h->xform.rot.vy & 0xFFF].unk2 * 75) >> 11;
+        m->Engine->XYZ.x += (sin_cos_table[(h->xform.rot.vy - 0x400) & 0xFFF].unk2 * 75) >> 11;
+        m->Engine->XYZ.z += (sin_cos_table[(u16)h->xform.rot.vy & 0xFFF].unk2 * 75) >> 11;
         break;
     case 2:
         if (ext->vel > 0) {
             ext->vel -= ext->dec;
         }
-        m->Engine->xform.rot.vz = (rcossin_tbl[(ext->angcounter - 0x400) & 0xFFF].unk2 * 3) >> 5;
+        m->Engine->xform.rot.vz = (sin_cos_table[(ext->angcounter - 0x400) & 0xFFF].unk2 * 3) >> 5;
         ext->angcounter += 0x80;
         if (RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 1, 0) != 0) {
             RACE_BOUNCE(ext->yang, n, d, r, m->Engine->xform.rot.vy, hit.y);
@@ -5510,8 +5510,8 @@ void PlotDinoEgg(NAS *m) {
         if (RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 0, 1) != 0) {
             RACE_BOUNCE(ext->yang, n, d, r, m->Engine->xform.rot.vy, hit.y);
         }
-        m->Engine->XYZ.x -= (ext->vel * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
-        m->Engine->XYZ.z -= (ext->vel * rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
+        m->Engine->XYZ.x -= (ext->vel * sin_cos_table[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+        m->Engine->XYZ.z -= (ext->vel * sin_cos_table[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
         m->Engine->xform.rot.vy += ((ext->yang - m->Engine->xform.rot.vy) << 20) >> 21;
         if (RaceHitHero((u8 *)&m->Engine->XYZ) != -1) {
             KillNAS(m);
@@ -5526,8 +5526,8 @@ void PlotDinoEgg(NAS *m) {
         }
         break;
     case 1:
-        m->Engine->XYZ.x -= (rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x20) >> 12;
-        m->Engine->XYZ.z -= (rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2 * 0x20) >> 12;
+        m->Engine->XYZ.x -= (sin_cos_table[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 0x20) >> 12;
+        m->Engine->XYZ.z -= (sin_cos_table[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2 * 0x20) >> 12;
         ext->angcounter += 0x80;
         RunNasAnim(m);
         if (RaceTrackCollide(&m->Engine->XYZ, &hit, 0x9E, 1, 0) != 0)
@@ -5635,8 +5635,8 @@ void PlotRaceShield(NAS *nas) {
             eng = nas->Engine;
             eng2 = h->hero_eng;
             angle = get_angle(eng->XYZ.x - eng2->XYZ.x, eng->XYZ.z - eng2->XYZ.z);
-            c = rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 8;
-            s = rcossin_tbl[angle & 0xFFF].unk2 * 8;
+            c = sin_cos_table[(angle - 0x400) & 0xFFF].unk2 * 8;
+            s = sin_cos_table[angle & 0xFFF].unk2 * 8;
             fux2 = (RaceFux *)h->hero->FUX;
             if (fux2 != NULL) {
                 fux2->vx = -c;
@@ -5817,8 +5817,8 @@ void PlotRaceVolcano(NAS *nas) {
             if (rock >= 3) {
                 break;
             }
-            x = rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 75 >> 9;
-            z = rcossin_tbl[ang & 0xFFF].unk2 * 75 >> 9;
+            x = sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 75 >> 9;
+            z = sin_cos_table[ang & 0xFFF].unk2 * 75 >> 9;
             if (ext->eng[rock] != NULL) {
                 ext->eng[rock]->xform.rot.vy = ang;
                 ext->vel[rock].x = x;
@@ -6096,9 +6096,9 @@ void InitBarrelRoll(NAS *m) {
         ext->unk10 = 0;
         ext->y = 0;
         r = Random(0x400);
-        ext->vel.x = (rcossin_tbl[(r + 0xA00) & 0xFFF].unk2 * 9) >> 4;
+        ext->vel.x = (sin_cos_table[(r + 0xA00) & 0xFFF].unk2 * 9) >> 4;
         r += 0xE00;
-        ext->vel.z = (rcossin_tbl[r & 0xFFF].unk2 * 9) >> 4;
+        ext->vel.z = (sin_cos_table[r & 0xFFF].unk2 * 9) >> 4;
         m->Engine->xform.rot.vy = -r;
         ext->pos.z = 0x1B00;
         ext->vel.y = 0;
@@ -6180,8 +6180,8 @@ void InitTrackGlob(NAS *m) {
         if (++RaceTrackGlobCount == 3) {
             RaceTrackGlobCount = 0;
         }
-        ext->vel = (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 7) >> 4;
-        ext->unk6C = (rcossin_tbl[angle & 0xFFF].unk2 * 7) >> 4;
+        ext->vel = (sin_cos_table[(angle - 0x400) & 0xFFF].unk2 * 7) >> 4;
+        ext->unk6C = (sin_cos_table[angle & 0xFFF].unk2 * 7) >> 4;
         ext->unk68 = 0;
         ext->timer = 0x5A;
         m->Engine->xform.rot.vy = 0;
@@ -6261,9 +6261,9 @@ void PlotTrackGlob(NAS *nas) {
         angle &= 0xFFF;
         i = 0;
         ext->angle = angle;
-        nas->Engine->XYZ.x -= 0x20 * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
+        nas->Engine->XYZ.x -= 0x20 * sin_cos_table[(angle - 0x400) & 0xFFF].unk2 >> 12;
         h = Heroes;
-        nas->Engine->XYZ.z -= 0x20 * rcossin_tbl[ext->angle & 0xFFF].unk2 >> 12;
+        nas->Engine->XYZ.z -= 0x20 * sin_cos_table[ext->angle & 0xFFF].unk2 >> 12;
     loop2:
         if (i < 4) {
             do {
@@ -6289,8 +6289,8 @@ void PlotTrackGlob(NAS *nas) {
     case 3:
         RunNasAnim(nas);
         ext->angle = 0x800;
-        nas->Engine->XYZ.x -= 0x20 * rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2 >> 12;
-        nas->Engine->XYZ.z -= 0x20 * rcossin_tbl[ext->angle & 0xFFF].unk2 >> 12;
+        nas->Engine->XYZ.x -= 0x20 * sin_cos_table[(ext->angle - 0x400) & 0xFFF].unk2 >> 12;
+        nas->Engine->XYZ.z -= 0x20 * sin_cos_table[ext->angle & 0xFFF].unk2 >> 12;
         e = nas->Engine;
         e->xform.rot.vy -= (s32)((e->xform.rot.vy - ext->angle) << 20) >> 22;
         if (nas->Engine->XYZ.x * nas->Engine->XYZ.x + nas->Engine->XYZ.z * nas->Engine->XYZ.z > 0x790000) {
@@ -6316,8 +6316,8 @@ void InitDac(NAS *m) {
         m->Engine->xform.scale.vx = 0x2000;
         m->Engine->xform.scale.vy = 0x2000;
         m->Engine->xform.scale.vz = 0x2000;
-        m->Engine->XYZ.x = (rcossin_tbl[0x800].unk2 * 7) >> 4;
-        m->Engine->XYZ.z = (rcossin_tbl[0xC00].unk2 * 7) >> 4;
+        m->Engine->XYZ.x = (sin_cos_table[0x800].unk2 * 7) >> 4;
+        m->Engine->XYZ.z = (sin_cos_table[0xC00].unk2 * 7) >> 4;
         m->Engine->sub->otz = -0x300;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk10 = ScriptCursorFirst(m, &DacScriptInit);
@@ -6372,8 +6372,8 @@ void PlotDac(NAS *nas) {
     case 0:
         nas->Engine->XYZ.y -= (nas->Engine->XYZ.y - ext->height) >> 4;
         ext->angle = ((get_angle(nas->Engine->XYZ.x, nas->Engine->XYZ.z) & 0xFFF) + 0x400) & 0xFFF;
-        nas->Engine->XYZ.x += rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2 * 32 >> 12;
-        nas->Engine->XYZ.z += rcossin_tbl[ext->angle & 0xFFF].unk2 * 32 >> 12;
+        nas->Engine->XYZ.x += sin_cos_table[(ext->angle - 0x400) & 0xFFF].unk2 * 32 >> 12;
+        nas->Engine->XYZ.z += sin_cos_table[ext->angle & 0xFFF].unk2 * 32 >> 12;
         {
             s32 r;
             r = nas->Engine->xform.rot.vy - 0x800;
@@ -6433,10 +6433,10 @@ void PlotDac(NAS *nas) {
             return;
         }
         a = get_angle(dx, dz) & 0xFFF;
-        b = get_angle(dy, csqrt(dd) >> 6);
+        b = get_angle(dy, int_sqrt(dd) >> 6);
         ext->angle = a;
-        nas->Engine->XYZ.x -= (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 5) >> 9;
-        nas->Engine->XYZ.z -= (rcossin_tbl[ext->angle & 0xFFF].unk2 * 5) >> 9;
+        nas->Engine->XYZ.x -= (sin_cos_table[(a - 0x400) & 0xFFF].unk2 * 5) >> 9;
+        nas->Engine->XYZ.z -= (sin_cos_table[ext->angle & 0xFFF].unk2 * 5) >> 9;
         eng = nas->Engine;
         eng->xform.rot.vy -= ((eng->xform.rot.vy - ext->angle) << 20) >> 22;
         nas->Engine->xform.rot.vx -= ((nas->Engine->xform.rot.vx - (-b & 0xFFF)) << 20) >> 22;
@@ -6688,10 +6688,10 @@ s32 RaceReflectAngle(s32 a, s32 b) {
     s32 r[4];
     s32 dot;
 
-    n[0] = rcossin_tbl[b & 0xFFF].unk2;
-    n[2] = rcossin_tbl[(b - 0x400) & 0xFFF].unk2;
-    d[0] = -rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
-    d[2] = -rcossin_tbl[a & 0xFFF].unk2;
+    n[0] = sin_cos_table[b & 0xFFF].unk2;
+    n[2] = sin_cos_table[(b - 0x400) & 0xFFF].unk2;
+    d[0] = -sin_cos_table[(a - 0x400) & 0xFFF].unk2;
+    d[2] = -sin_cos_table[a & 0xFFF].unk2;
     dot = DotXZ(d, n);
     r[0] = d[0] - (dot * n[0] >> 11);
     r[2] = d[2] - (dot * n[2] >> 11);
@@ -6940,7 +6940,7 @@ void SetRaceHeroOiled(s32 player) {
             b = hero->hero_eng->xform.rot.vy + a - b;
             fux->timer2 = 0x2D;
             fux->unk20 = b;
-            fux->unk28 = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
+            fux->unk28 = int_sqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
         }
     }
 }
@@ -6972,8 +6972,8 @@ void RaceAxisAngleToQuat(s32 *arg0, s32 *arg1)
     s32 t;
 
     a = arg0[3] >> 1;
-    arg1[3] = rcossin_tbl[a & 0xFFF].unk2;
-    c = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
+    arg1[3] = sin_cos_table[a & 0xFFF].unk2;
+    c = sin_cos_table[(a - 0x400) & 0xFFF].unk2;
     t = c * arg0[0];
     arg1[0] = (t >= 0 ? t + 0x800 : t - 0x800) >> 12;
     t = c * arg0[1];
@@ -7036,7 +7036,7 @@ s32 RaceFloorY(void) {
 }
 
 void RacePolarOf(s32 *pos, s32 *polar) {
-    polar[0] = csqrt(pos[0] * pos[0] + pos[2] * pos[2]) >> 6;
+    polar[0] = int_sqrt(pos[0] * pos[0] + pos[2] * pos[2]) >> 6;
     polar[1] = get_angle(pos[0], pos[2]) & 0xFFF;
 }
 

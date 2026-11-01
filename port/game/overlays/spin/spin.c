@@ -457,11 +457,11 @@ void SpinTurnArena(void) {
         d = x * x + z * z;
         if (d > 0x640000) continue;
         if (d <= 0xC3FFF) continue;
-        d = (csqrt(d) + 0x20) >> 6;
+        d = (int_sqrt(d) + 0x20) >> 6;
         a = get_angle(x, z) + SpinAngle;
         a &= 0xFFF;
-        h->hero_eng->XYZ.x = d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
-        h->hero_eng->XYZ.z = d * rcossin_tbl[a].unk2 >> 12;
+        h->hero_eng->XYZ.x = d * sin_cos_table[(a - 0x400) & 0xFFF].unk2 >> 12;
+        h->hero_eng->XYZ.z = d * sin_cos_table[a].unk2 >> 12;
         h->hero_move->forward_angle += SpinAngle;
         h->hero_move->forward_angle &= 0xFFF;
     }
@@ -481,8 +481,8 @@ void SpinTurnArena(void) {
         a += SpinAngle;
         a &= 0xFFF;
         f->coord.angle = a;
-        e->XYZ.x = d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
-        e->XYZ.z = d * rcossin_tbl[a].unk2 >> 12;
+        e->XYZ.x = d * sin_cos_table[(a - 0x400) & 0xFFF].unk2 >> 12;
+        e->XYZ.z = d * sin_cos_table[a].unk2 >> 12;
         e->xform.rot.vy = (e->xform.rot.vy + SpinAngle) & 0xFFF;
         e->xform.dirty = 1;
     }
@@ -970,8 +970,8 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d) {
   EXTobject *new_var;
   s32 z;
   u16 mask;
-  x = (b * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
-  z = (b * rcossin_tbl[a & 0xFFF].unk2) >> 12;
+  x = (b * sin_cos_table[(a - 0x400) & 0xFFF].unk2) >> 12;
+  z = (b * sin_cos_table[a & 0xFFF].unk2) >> 12;
   nas = CreateNAS(x, World_floor_level, z, 0x1801, 0x11);
   if (nas != 0)
   {
@@ -1322,8 +1322,8 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
     s32 z;
     s32 r;
 
-    x = b * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
-    z = b * rcossin_tbl[a & 0xFFF].unk2 >> 12;
+    x = b * sin_cos_table[(a - 0x400) & 0xFFF].unk2 >> 12;
+    z = b * sin_cos_table[a & 0xFFF].unk2 >> 12;
     r = Random(0x80);
     y = World_floor_level - 0x600;
     nas = CreateNAS(x, y - r, z, 0x1802, 0x11);
@@ -1531,12 +1531,12 @@ void PlotBalloon(NAS *nas) {
             mot->Zvel = 4;
             a &= 0xFFF;
             mot->Za = a;
-            eng->XYZ.x -= (mot->Xvel * rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
-            eng->XYZ.z -= (mot->Xvel * rcossin_tbl[mot->Xa & 0xFFF].unk2) >> 12;
+            eng->XYZ.x -= (mot->Xvel * sin_cos_table[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+            eng->XYZ.z -= (mot->Xvel * sin_cos_table[mot->Xa & 0xFFF].unk2) >> 12;
             SPIN_BOUNCE(eng, mot);
             SpinBalloonCollide(eng, mot, fux);
-            eng->XYZ.x -= (mot->Zvel * rcossin_tbl[(mot->Za - 0x400) & 0xFFF].unk2) >> 12;
-            eng->XYZ.z -= (mot->Zvel * rcossin_tbl[mot->Za & 0xFFF].unk2) >> 12;
+            eng->XYZ.x -= (mot->Zvel * sin_cos_table[(mot->Za - 0x400) & 0xFFF].unk2) >> 12;
+            eng->XYZ.z -= (mot->Zvel * sin_cos_table[mot->Za & 0xFFF].unk2) >> 12;
         }
         if ((u16)fux->contains < 4) {
             t = SpinBalloonTimer;
@@ -1558,7 +1558,7 @@ void PlotBalloon(NAS *nas) {
             }
         }
         a = fux->coord.angle + GameFrameCount * 16;
-        eng->sub->XYZ.y = (rcossin_tbl[(a * 4 - 0x400) & 0xFFF].unk2 + rcossin_tbl[a & 0xFFF].unk2) >> 6;
+        eng->sub->XYZ.y = (sin_cos_table[(a * 4 - 0x400) & 0xFFF].unk2 + sin_cos_table[a & 0xFFF].unk2) >> 6;
         SPIN_FLOAT(eng, g, y, s);
     }
     SPIN_SHADOW(eng, shadow);
@@ -1752,11 +1752,11 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, EXTobject *fux) {
                 dz = other->XYZ.z - eng->XYZ.z;
                 d = dx * dx + dz * dz;
                 if (d <= 0x01E3FFFF) {
-                    r = csqrt(d);
+                    r = int_sqrt(d);
                     ang = get_angle(dx, dz) & 0xFFF;
                     d = r >> 9;
-                    eng->XYZ.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                    eng->XYZ.z += (d * rcossin_tbl[ang].unk2) >> 12;
+                    eng->XYZ.x += (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->XYZ.z += (d * sin_cos_table[ang].unk2) >> 12;
                     if (d < 0x280) {
                         t = eng->XYZ.y - 0x200;
                         dy = t - h->hero_powerup->XYZ.y;
@@ -1783,13 +1783,13 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, EXTobject *fux) {
                             if (bot < d && lo < top) {
                                 dx = other->XYZ.x - eng->XYZ.x;
                                 dz = other->XYZ.z - eng->XYZ.z;
-                                d = csqrt(dx * dx + dz * dz) >> 6;
+                                d = int_sqrt(dx * dx + dz * dz) >> 6;
                                 if (d < 0x100) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     d = 0xFF - d;
-                                    eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
                                     hit = 1;
-                                    eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                    eng->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
                                 } else if (d < 0x400) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     mot->Zvel = (0x400 - d) >> 6;
@@ -1992,10 +1992,10 @@ void Spin_HeroBot(s32 arg0) {
         if (Heroes[arg0].hero_pu != 0x13 && turn >= 0x29 && Heroes[arg0].hero_move->jump_max == 0) {
             s32 b;
 
-            d = (csqrt(x * x + z * z) + 0x20) >> 6;
+            d = (int_sqrt(x * x + z * z) + 0x20) >> 6;
             b = (get_angle(x, z) - inv * SpinSpeed) & 0xFFF;
-            x = (d * rcossin_tbl[(b - 0x400) & 0xFFF].unk2) >> 12;
-            z = (d * rcossin_tbl[b].unk2) >> 12;
+            x = (d * sin_cos_table[(b - 0x400) & 0xFFF].unk2) >> 12;
+            z = (d * sin_cos_table[b].unk2) >> 12;
         }
         get_angle(x, z);
         x -= Heroes[arg0].hero_eng->XYZ.x;
@@ -2258,10 +2258,10 @@ void SpinAI_ScanAhead(s32 arg0) {
     rx = eng->XYZ.x;
     rz = eng->XYZ.z;
     mv = Heroes[arg0].hero_move;
-    dx = rcossin_tbl[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
+    dx = sin_cos_table[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
     ang = mv->forward_angle;
-    c = rcossin_tbl[(ang + 0x400) & 0xFFF].unk2;
-    s = rcossin_tbl[(ang + 0x800) & 0xFFF].unk2;
+    c = sin_cos_table[(ang + 0x400) & 0xFFF].unk2;
+    s = sin_cos_table[(ang + 0x800) & 0xFFF].unk2;
     dz = c * 15 >> 9;
     lx = rx + dx;
     rx = rx - dx;
@@ -2410,7 +2410,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
             if (f->contains != player) continue;
             dx = px - e->XYZ.x;
             dz = pz - e->XYZ.z;
-            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = int_sqrt(dx * dx + dz * dz) >> 6;
             d = abs(d - r) * (s16)w0;
             if (bestNasScore < d) {
                 bestNas = n;
@@ -2420,7 +2420,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
         case 2:
             dx = px - e->XYZ.x;
             dz = pz - e->XYZ.z;
-            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = int_sqrt(dx * dx + dz * dz) >> 6;
             d = abs(d - r) * (s16)w1;
             cnt = 0;
             for (i = 0; i < 4; i++) {
@@ -2435,7 +2435,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
         case 12:
             dx = px - e->XYZ.x;
             dz = pz - e->XYZ.z;
-            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = int_sqrt(dx * dx + dz * dz) >> 6;
             d = abs(d - r) * (s16)w2;
             cnt = 0;
             for (i = 0; i < 4; i++) {
@@ -2458,7 +2458,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
         dx = px - Heroes[i].hero_eng->XYZ.x;
         dz = pz - Heroes[i].hero_eng->XYZ.z;
         if (Heroes[i].hero_mode == 2 || Heroes[i].hero_pu != 0) {
-            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = int_sqrt(dx * dx + dz * dz) >> 6;
             d = abs(d - r) * heroW;
             cnt = 0;
             for (k = 0; k < 4; k++) {
@@ -2550,7 +2550,7 @@ s32 SpinAI_NearestEnemy(s32 arg0) {
             best = d;
         }
     }
-    return best != 0x7FFFFF ? csqrt(best) >> 6 : 0;
+    return best != 0x7FFFFF ? int_sqrt(best) >> 6 : 0;
 }
 
 s32 SpinAI_HazardAhead(s32 arg0) {
@@ -2646,8 +2646,8 @@ s32 SPIN_KeepInBounds(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->XYZ.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->XYZ.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
+        eng->XYZ.x = limit * sin_cos_table[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->XYZ.z = limit * sin_cos_table[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;
@@ -3199,8 +3199,8 @@ NAS *SpinHeroGrabObject(s32 idx, s32 mask) {
     h = &hb[idx];
     he = h->hero_eng;
     ang = Heroes[idx].hero_move->facing_angle;
-    hx = he->XYZ.x - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->XYZ.z - (rcossin_tbl[ang & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->XYZ.x - (sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->XYZ.z - (sin_cos_table[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = (EXTobject *)n->FUX;
         if (fux == NULL) continue;
@@ -3302,7 +3302,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = rcossin_tbl;
+                tbl = sin_cos_table;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -3329,7 +3329,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                                     dz = e->XYZ.z - eng->XYZ.z;
                                     d = dx * dx + dz * dz;
                                     if (d < rr) {
-                                        d = csqrt(d) >> 6;
+                                        d = int_sqrt(d) >> 6;
                                         if (d < r) {
                                             ang = get_angle(dx, dz) & 0xFFF;
                                             d = r - d + 1;
@@ -3354,7 +3354,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                                 d = dx * dx + dz * dz;
                                 rr = r * r;
                                 if (d < rr) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     if (d < r) {
                                         hit = 1;
                                         ang = get_angle(dx, dz) & 0xFFF;
@@ -3377,7 +3377,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                                 d = dx * dx + dz * dz;
                                 rr = r * r;
                                 if (d < rr) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     if (d < r) {
                                         hit = 1;
                                         ang = get_angle(dx, dz) & 0xFFF;
@@ -3427,7 +3427,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                     d = dx * dx + dz * dz;
                     rr = r * r;
                     if (d < rr) {
-                        d = csqrt(d) >> 6;
+                        d = int_sqrt(d) >> 6;
                         if (d < r) {
                             hit = 1;
                             a = get_angle(dx, dz);
@@ -3437,8 +3437,8 @@ s32 SpinHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                                eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * sin_cos_table[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->can_do & 8)) {
@@ -3519,12 +3519,12 @@ s32 SpinHeroCarryCollision(s32 idx) {
                                         r += 0x78;
                                         d = dx * dx + dz * dz;
                                         if (d < r * r) {
-                                            d = csqrt(d) >> 6;
+                                            d = int_sqrt(d) >> 6;
                                             if (d < r) {
                                                 ang = get_angle(dx, dz) & 0xFFF;
                                                 d = r - d + 1;
-                                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                                eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
                                                 hit = 1;
                                                 if (ext->can_do & 8) {
                                                     ext->player = idx;
@@ -3551,8 +3551,8 @@ EXTobject *SpinHeroObjectNear(s32 hero, u16 mask, s32 r) {
     EXTengine *eng = Heroes[hero].hero_eng;
     s32 cx = eng->XYZ.x;
     s32 cz = eng->XYZ.z;
-    s32 px = cx - (rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    s32 pz = cz - (rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2 * 1024 >> 14);
+    s32 px = cx - (sin_cos_table[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    s32 pz = cz - (sin_cos_table[eng->xform.rot.vy & 0xFFF].unk2 * 1024 >> 14);
     s32 bestd;
     s32 lim, dx, dz, d;
     EXTobject *f;

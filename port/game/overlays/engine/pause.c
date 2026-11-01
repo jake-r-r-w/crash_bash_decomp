@@ -1697,7 +1697,7 @@ void UpdateWinCounter(s32 arg0) {
         counter_sub.xform.scale.vx += d >> 3;
         counter_sub.xform.scale.vy = counter_sub.xform.scale.vx;
         counter_sub.xform.scale.vz = counter_sub.xform.scale.vx;
-        counter_sub.xform.rot.vy = ((rcossin_tbl[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.xform.rot.vy = ((sin_cos_table[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
         counter_sub.xform.dirty = 1;
         if (d < 0x100) {
             PlaySfx(0x1AF, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1709,7 +1709,7 @@ void UpdateWinCounter(s32 arg0) {
         counter_sub.xform.scale.vx = t;
         counter_sub.xform.scale.vy = t;
         counter_sub.xform.scale.vz = t;
-        counter_sub.xform.rot.vy = ((rcossin_tbl[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.xform.rot.vy = ((sin_cos_table[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
         counter_sub.xform.dirty = 1;
     }
     if (WinCounterSize <= 0) {

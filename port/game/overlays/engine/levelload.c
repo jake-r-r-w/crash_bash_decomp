@@ -36,7 +36,7 @@ void AnimateLoadingIcon(void) {
     s32 i;
 
     if (LevelLoadStage >= 2 && (o = LoadingIconEngine.sub) != NULL) {
-        t = rcossin_tbl;
+        t = sin_cos_table;
         o->xform.order = 0;
         o->xform.rot.vy += 0x20;
         f = FrameCount;
@@ -142,7 +142,7 @@ void InitLevelLoad(void) {
     if (cfg == NULL) {
         cfg = &DefaultLevelConfig;
     }
-    AllocOtBuffers((s32 *)cfg);
+    ScreenRect = NULL;
     ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
     GAME->winner[0] = 0;
     GAME->winner[1] = 0;
@@ -605,7 +605,7 @@ void InitScriptScene(void) {
     mal_init(&MainHeap, HEAP_START, HEAP_END - HEAP_START);
     smallnode_init();
     cfg = &SceneLevelConfig;
-    AllocOtBuffers((s32 *)cfg);
+    ScreenRect = NULL;
     ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);

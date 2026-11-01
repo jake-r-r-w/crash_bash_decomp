@@ -962,7 +962,7 @@ void TextFlashColour(u8 *a, u8 *b) {
     s32 bl, g, r;
 
     r = a[0];
-    t = (rcossin_tbl[(((FrameCount << 7) & 0x7FF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+    t = (sin_cos_table[(((FrameCount << 7) & 0x7FF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
     g = a[1];
     bl = a[2];
     r += ((0xFF - r) * t) / 20;
@@ -1589,10 +1589,10 @@ s32 CheckSolidCollision(NAS *nas) {
                             if (d < r) {
                                 hit = 1;
                                 ang = get_angle(dx, dz) & 0xFFF;
-                                d = csqrt(d) >> 6;
+                                d = int_sqrt(d) >> 6;
                                 d = rec->radius - d;
-                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
                             }
                         }
                     }
@@ -2409,7 +2409,7 @@ s32 machine_init(void) {
     audio_reset();
     VideoMode = 0;
     pads_init_mtap();
-    ClearImage2(&VramRect, 0, 0, 0);
+    draw_clear();
     machine_init_sound();
     /* no debug font on PC */
     shell_init();
@@ -2418,46 +2418,20 @@ s32 machine_init(void) {
 }
 
 void ClearVram(void) {
-    ClearImage2(&VramRect, 0, 0, 0);
+    draw_clear();
 }
 
 void FlipScreen(s32 arg0) {
-    DrawBuffer *buf;
-
     mal_update(&MainHeap);
     platform_wait_vblanks(arg0);
-    DrawOTag((u32 *)&cdb->ot[0xFFF]);
-    buf = DrawBuffers;
-    if (cdb == buf) {
-        buf++;
-    }
-    cdb = buf;
+    draw_end_frame();
     FrameCount += 1;
-    buf->prim = buf->primStart;
     prims_update();
 }
 
-u8 *AllocOtBuffers(s32 *arg0) {
-    OtBuf *b;
-    u8 *t;
-
-    t = mal_alloc(*arg0 + 0x1800, &MainHeap);
-    b = (OtBuf *)DrawBuffers;
-    b[0].prim = t;
-    b[0].end = b[0].prim + *arg0 + 0x1800;
-    b[1].prim = mal_alloc(*arg0 + 0x1800, &MainHeap);
-    b[1].end = b[1].prim + *arg0 + 0x1800;
-    ScreenRect = NULL;
-    return b[1].end;
-}
-
 void ClearScreens(void) {
-    RECT *temp_s0;
-
-    temp_s0 = ScreenRect;
-    if (temp_s0 != 0) {
-        ClearImage(&temp_s0[1], 0, 0, 0);
-        ClearImage(&temp_s0[0], 0, 0, 0);
+    if (ScreenRect != NULL) {
+        draw_clear();
     }
 }
 
@@ -2465,37 +2439,12 @@ void SetScreen(RECT *arg0) {
     ScreenSetFlag = 0;
     if (arg0 != NULL) {
         ScreenSetFrame = FrameCount + 1;
-        if (ScreenRect == NULL) {
-            DrawBuffer *g = (DrawBuffer *)DrawBuffers;
-            DrawBuffer *h;
-
-            h = g + 1;
-            g->prim = g->primStart;
-            h->prim = h->primStart;
-        }
-    } else {
     }
     ScreenRect = arg0;
 }
 
 void ResetScreen(RECT *arg0) {
     SetScreen(arg0);
-}
-
-void AllocPrimBuffers(s32 *arg0) {
-    DrawBuffer *g;
-    u8 *t;
-
-    t = mal_alloc(*arg0 + 0x1800, &MainHeap);
-    g = DrawBuffers;
-    g[0].primStart = t;
-    g[0].primEnd = g[0].primStart + *arg0 + 0x1800;
-    g[1].primStart = mal_alloc(*arg0 + 0x1800, &MainHeap);
-    g[1].primEnd = g[1].primStart + *arg0 + 0x1800;
-}
-
-void ClearOt(DrawBuffer *arg0) {
-    arg0->prim = arg0->primStart;
 }
 
 s32 cd_read(file *a, s32 b, u8 *c, s32 d) {
@@ -2681,7 +2630,7 @@ void pad_input_reset(PadState *arg0) {
     arg0->rumble.reset = 0;
 }
 
-/* No VRAM on PC: textures are decoded from the game's own data (gfxsubmit.c). These stay until nothing calls them. */
+/* No VRAM on PC: textures are decoded from the game's own data (draw.c). These stay until nothing calls them. */
 FreeHdr *vram_take(u8 *arg0) {
     static FreeHdr none;
     return &none;
@@ -2790,14 +2739,14 @@ void texture_upload_anim(obj_texture *t, s32 base, obj_textureset *set) {
     if ((t->flags & 2) && GameLanguage < t->frames) {
         t->pix = t[GameLanguage].pix;
     }
-    t->info.tpage = tex_image_id(set, (s32)(t - set->tex));
+    t->info.image = tex_image_id(set, (s32)(t - set->tex));
     t->info.vramX = 0;
     t->info.vramY = 0;
     t->info.uv0 = uv0;
     t->info.uv1 = t->advance;
     t->info.uv2 = (u16)(t->dv << 8);
     t->info.uv3 = (u16)((t->dv << 8) | t->advance);
-    t->info.clut = t->clut != 0x7FFF ? set->ent[t->clut].clut : 0;
+    t->info.palette = t->clut != 0x7FFF ? set->ent[t->clut].palette : 0;
 }
 
 void texture_update_scroll(texture_scroll *s, obj_textureset *o) {
@@ -2973,7 +2922,7 @@ static inline void Tex_UploadCluts(obj_textureset *set) {
     s32 i;
 
     for (i = 0; i < set->nEnt; i++) {
-        set->ent[i].clut = tex_palette_id(set, i);
+        set->ent[i].palette = tex_palette_id(set, i);
     }
 }
 
@@ -3087,113 +3036,93 @@ void textureset_release(obj_textureset *arg0) {
     }
 }
 
+/* A face of f, and whether and how it blends, from bits 31 and 24-25 of the colour it was asked for. */
+static void texture_face(DrawFace *d, obj_texture *f, u32 asked) {
+    d->uv[0] = f->info.uv0;
+    d->uv[1] = f->info.uv1;
+    d->uv[2] = f->info.uv2;
+    d->uv[3] = f->info.uv3;
+    d->image = f->info.image;
+    d->palette = f->info.palette;
+    d->blend = (asked >> 24) & 3;
+    if ((s32)asked < 0) {
+        d->colour[0] |= DRAW_BLENDS;
+    }
+}
+
+/* f's rectangle at xy, in 640-wide units. */
+static void texture_corners(DVECTOR c[4], obj_texture *f, s32 xy) {
+    s16 x = (s16)xy * ScreenRect->w / 640;
+    s16 y = (s16)(xy >> 16) / 2;
+
+    c[0].vx = x;
+    c[0].vy = y;
+    c[1].vx = x + f->w - 1;
+    c[1].vy = y;
+    c[2].vx = x;
+    c[2].vy = y + f->h - 1;
+    c[3].vx = x + f->w - 1;
+    c[3].vy = y + f->h - 1;
+}
+
 s32 texture_draw_quad(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3) {
-    POLY_GT4 *p;
+    DrawFace d;
+    DVECTOR c[4];
     GfxState *gs;
-    ScreenXY v;
 
     if (ScreenRect == NULL) {
         return 0;
     }
-    v.s.x = (s16)xy * ScreenRect->w / 640;
-    p = *(POLY_GT4 **)&cdb->prim;
-    *(POLY_GT4 **)&cdb->prim = p + 1;
-    v.s.y = (s16)(xy >> 16) / 2;
     gs = &RenderState;
-    *(u32 *)&p->r0 = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
-    *(u32 *)&p->r1 = FadeColorGs(gs, (c1 >> 16) & 0xFF, (c1 >> 8) & 0xFF, c1 & 0xFF);
-    *(u32 *)&p->r2 = FadeColorGs(gs, (c2 >> 16) & 0xFF, (c2 >> 8) & 0xFF, c2 & 0xFF);
-    *(u32 *)&p->r3 = FadeColorGs(gs, (c3 >> 16) & 0xFF, (c3 >> 8) & 0xFF, c3 & 0xFF);
-    setPolyGT4(p);
-    setSemiTrans(p, (s32)c0 < 0);
-    *(u16 *)&p->u0 = f->info.uv0;
-    *(u16 *)&p->u1 = f->info.uv1;
-    *(u16 *)&p->u2 = f->info.uv2;
-    *(u16 *)&p->u3 = f->info.uv3;
-    p->tpage = (f->info.tpage & 0xFF9F) | ((c0 >> 19) & 0x60);
-    p->clut = f->info.clut;
-    *(s32 *)&p->x0 = v.w;
-    v.s.x += f->w - 1;
-    *(s32 *)&p->x1 = v.w;
-    v.s.y += f->h - 1;
-    *(s32 *)&p->x3 = v.w;
-    v.s.x -= f->w - 1;
-    *(s32 *)&p->x2 = v.w;
-    addPrim(RenderState.ot + otz, p);
+    d.colour[0] = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
+    d.colour[1] = FadeColorGs(gs, (c1 >> 16) & 0xFF, (c1 >> 8) & 0xFF, c1 & 0xFF);
+    d.colour[2] = FadeColorGs(gs, (c2 >> 16) & 0xFF, (c2 >> 8) & 0xFF, c2 & 0xFF);
+    d.colour[3] = FadeColorGs(gs, (c3 >> 16) & 0xFF, (c3 >> 8) & 0xFF, c3 & 0xFF);
+    texture_face(&d, f, c0);
+    texture_corners(c, f, xy);
+    draw_face_quad(RenderState.layer + otz, &d, c);
     return f->advance * 640 / ScreenRect->w;
 }
 
 s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color) {
-    POLY_FT4 *p;
-    ScreenXY v;
+    DrawFace d;
+    DVECTOR c[4];
 
     if (ScreenRect == NULL) {
         return 0;
     }
-    v.s.x = (s16)xy * ScreenRect->w / 640;
-    p = *(POLY_FT4 **)&cdb->prim;
-    *(POLY_FT4 **)&cdb->prim = p + 1;
-    v.s.y = (s16)(xy >> 16) / 2;
-    *(u32 *)&p->r0 = FadeColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
-    setPolyFT4(p);
-    setSemiTrans(p, (s32)color < 0);
-    *(u16 *)&p->u0 = f->info.uv0;
-    *(u16 *)&p->u1 = f->info.uv1;
-    *(u16 *)&p->u2 = f->info.uv2;
-    *(u16 *)&p->u3 = f->info.uv3;
-    p->tpage = (f->info.tpage & 0xFF9F) | ((color >> 19) & 0x60);
-    p->clut = f->info.clut;
-    *(s32 *)&p->x0 = v.w;
-    v.s.x += f->w - 1;
-    *(s32 *)&p->x1 = v.w;
-    v.s.y += f->h - 1;
-    *(s32 *)&p->x3 = v.w;
-    v.s.x -= f->w - 1;
-    *(s32 *)&p->x2 = v.w;
-    addPrim(RenderState.ot + otz, p);
+    draw_face_colour(&d, FadeColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF));
+    texture_face(&d, f, color);
+    texture_corners(c, f, xy);
+    draw_face_quad(RenderState.layer + otz, &d, c);
     return f->advance * 640 / ScreenRect->w;
 }
 
 s32 texture_draw_3d(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
-    POLY_GT4 *p;
+    DrawFace d;
+    DVECTOR c[4];
     GfxState *gs;
-    volatile SVECTOR v;
-    s32 t;
+    SVECTOR v;
 
     if (ScreenRect == NULL) {
         return 0;
     }
-    p = *(POLY_GT4 **)&cdb->prim;
-    *(POLY_GT4 **)&cdb->prim = p + 1;
     gs = &RenderState;
-    t = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
-    *(u32 *)&p->r0 = t;
-    *(u32 *)&p->r1 = t;
-    t = FadeColorGs(gs, (c1 >> 16) & 0xFF, (c1 >> 8) & 0xFF, c1 & 0xFF);
-    setlen(p, 12);
-    *(u32 *)&p->r2 = t;
-    *(u32 *)&p->r3 = t;
-    setcode(p, 0x3C);
-    *(u16 *)&p->u0 = f->info.uv0;
-    *(u16 *)&p->u1 = f->info.uv1;
-    *(u16 *)&p->u2 = f->info.uv2;
-    *(u16 *)&p->u3 = f->info.uv3;
-    p->tpage = (f->info.tpage & 0xFF9F) | ((c0 >> 19) & 0x60);
-    p->clut = f->info.clut;
-    setSemiTrans(p, (s32)c0 < 0);
+    d.colour[0] = d.colour[1] = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
+    d.colour[2] = d.colour[3] = FadeColorGs(gs, (c1 >> 16) & 0xFF, (c1 >> 8) & 0xFF, c1 & 0xFF);
+    texture_face(&d, f, c0);
     v.vx = pos->x - 0x80;
     v.vy = pos->y - 0x80;
     v.vz = 0;
-    project_xy(&v, &p->x0);
+    project_xy(&v, &c[0]);
     v.vx += 0x100;
-    project_xy(&v, &p->x1);
+    project_xy(&v, &c[1]);
     v.vx -= 0x100;
     v.vy += 0x100;
-    project_xy(&v, &p->x2);
+    project_xy(&v, &c[2]);
     v.vx += 0x100;
-    project_xy(&v, &p->x3);
-    setSemiTrans(p, (s32)c0 < 0);
-    addPrim(cdb->ot + otz, p);
+    project_xy(&v, &c[3]);
+    draw_face_quad(otz, &d, c);
     return f->advance * 640 / ScreenRect->w;
 }
 
@@ -3260,16 +3189,11 @@ s32 textureset_mem_size(TexFile *arg0) {
 void texture_unused_e(void) {
 }
 
+/* The PS1 copied the frame it reaches over the texture too. No level in the tests changes frame this way, so nothing shows it yet. */
 void texture_scroll_step(TexFrameAnim *arg0, obj_textureset *arg1) {
-    s32 old;
     s32 pos;
     s32 step;
-    s32 idx;
-    s32 *p;
-    obj_texture *rect;
 
-    rect = &arg1->tex[arg0->tex];
-    old = arg0->pos >> 8;
     pos = arg0->pos + arg0->speed;
     arg0->pos = pos;
     if (arg0->speed < 0) {
@@ -3281,11 +3205,6 @@ void texture_scroll_step(TexFrameAnim *arg0, obj_textureset *arg1) {
         if ((pos >> 8) >= step) {
             arg0->pos = pos - (step << 8);
         }
-    }
-    idx = arg0->pos >> 8;
-    if (idx != old) {
-        p = (s32 *)(FILE_AT(arg0, arg0->frames) + idx * 4);
-        LoadImage((RECT *)&rect->info.vramX, (u32 *)SELF_REL(p));
     }
 }
 
@@ -3431,13 +3350,11 @@ MapPoint MapPoints[32] = {0};
 s32 ContourHeight = 0;
 void *ACMD[16][2] = {0};
 obj_dbase *sysfont_dbase = 0;
-RECT VramRect = { 0, 0, 0x1FF, 0x1FF };
 ModuleEntry *CurrentModule = 0;
 s32 EaseCurves[16] = {  /* two easing curves (0..0x7B8, 0..0x1EE); read nowhere */
     0, 0x200, 0x400, 0x580, 0x680, 0x720, 0x780, 0x7B8, 0, 0x80, 0x100, 0x160, 0x1A0, 0x1C8,
     0x1E0, 0x1EE,
 };
-DrawBuffer *cdb = DrawBuffers;
 s32 FrameCount = 0;
 s32 ScreenSetFrame = 0;
 RECT *ScreenRect = 0;
@@ -3453,7 +3370,6 @@ ScreenMode vmode_512_pal = { { 0, 0, 0x200, 0x100 }, { 0, 0x100, 0x200, 0x100 },
 ScreenMode vmode_640_ntsc = { { 0, 0, 0x280, 0xF0 }, { 0, 0x100, 0x280, 0xF0 }, { 0, 0 } };
 ScreenMode vmode_640_pal = { { 0, 0, 0x280, 0x100 }, { 0, 0x100, 0x280, 0x100 }, { 0, 0 } };
 s32 ScreenSetFlag = 0;
-DrawBuffer DrawBuffers[2] = {0};
 s32 VideoMode = 0;
 s32 CdUnused[1] = {0};
 s32 LoadDirectBusy = 0;

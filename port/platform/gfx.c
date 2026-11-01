@@ -486,13 +486,6 @@ int gfx_stepping(void) {
     return Stepping;
 }
 
-void gfx_state_blend(int key, int blend) {
-    GfxVert none[3];
-
-    memset(none, 0, sizeof(none));
-    gfx_tri(key, none, NULL, 100 + blend);
-}
-
 void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend) {
     GfxVert a[3];
 
@@ -702,7 +695,7 @@ static void sort_tris(void) {
         counts[i] = pos;
         pos += n;
     }
-    /* within a bucket the last added draws first, as addPrim's list has it */
+    /* within a bucket the last added draws first, as the PS1's lists had it */
     for (i = NumShown - 1; i >= 0; i--) {
         Order[counts[maxK - Shown[i].key]++] = i;
     }
@@ -804,23 +797,18 @@ static void draw_shown(float step) {
     gv = SDL_MapGPUTransferBuffer(Device, VertexXfer, true);
     used = 0;
     {
-    int stateBlend = GFX_HALF;
     for (i = 0; i < NumShown; i++) {
         const Tri *t = &Shown[Order[i]];
         int textured = t->tex != NULL;
         int passes = (t->blend != GFX_OPAQUE && textured) ? 2 : 1;
         int p;
 
-        if (t->blend >= 100) {
-            stateBlend = t->blend - 100;
-            continue;
-        }
         if (!tri_shows(t, step)) {
             continue;
         }
 
         for (p = 0; p < passes && used + 3 <= MAX_TRIS * 3; p++) {
-            int b = (passes == 2 && p == 0) ? -2 : t->blend == GFX_STATE_BLEND ? stateBlend : t->blend; /* -2: the opaque texels of a semi-transparent triangle */
+            int b = (passes == 2 && p == 0) ? -2 : t->blend; /* -2: the opaque texels of a semi-transparent triangle */
             int depth = b == GFX_OPAQUE ? t->depth : 0;
             Run *r = numRuns ? &runs[numRuns - 1] : NULL;
 

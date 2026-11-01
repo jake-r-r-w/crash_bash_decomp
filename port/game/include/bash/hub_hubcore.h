@@ -70,7 +70,7 @@ typedef struct PodiumTrophy {
     /* 0x58 */ u8 pad58[offsetof(NAS, UserInfo) - (offsetof(NAS, Engine) + sizeof(void *))];
     /* 0x5C */ u16 state;
 } PodiumTrophy;
-#define PODIUM_SIN(k) rcossin_tbl[((((FrameCount * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
+#define PODIUM_SIN(k) sin_cos_table[((((FrameCount * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
 extern u32 PodiumState;
 extern s32 PodiumCamState;
 extern s32 PodiumCamTimer;
@@ -94,23 +94,6 @@ extern s32 *HubChallengePanels[];
 extern s32 *HubWarpPanels[];
 extern s32 *HubPapuPanels[];
 extern s32 HubDoorAngles[];
-/* A POLY_FT4 as HubInitSparks fills it. */
-typedef struct HubFt4 {
-    /* 0x00 */ u32 tag;
-    /* 0x04 */ u8 r0, g0, b0, code;
-    /* 0x08 */ s16 x0, y0;
-    /* 0x0C */ u16 uv0;
-    /* 0x0E */ u16 clut;
-    /* 0x10 */ s16 x1, y1;
-    /* 0x14 */ u16 uv1;
-    /* 0x16 */ u16 tpage;
-    /* 0x18 */ s16 x2, y2;
-    /* 0x1C */ u16 uv2;
-    /* 0x1E */ u16 pad2;
-    /* 0x20 */ s16 x3, y3;
-    /* 0x24 */ u16 uv3;
-    /* 0x26 */ u16 pad3;
-} HubFt4;
 
 /* One row of 8 particles HubInitSparks sets up (0x140 bytes). */
 typedef struct HubSparkRow {
@@ -131,9 +114,8 @@ typedef struct HubSparkRow {
 
 typedef struct HubSparkSet {
     /* 0x0 */ HubSparkRow *rows;
-    /* 0x4 */ HubFt4 *src;
-    /* 0x8 */ HubFt4 *dst;
-    /* 0xC */ s32 count;
+    /* 0x4 */ DrawFace *face;
+    /* 0x8 */ s32 count;
 } HubSparkSet;
 
 typedef struct HubSparks {
@@ -142,17 +124,6 @@ typedef struct HubSparks {
     /* 0x60 */ u8 pad60[offsetof(subengine, u6C.ptr) - (offsetof(subengine, next) + sizeof(void *))];
     /* 0x6C */ HubSparkSet set;
 } HubSparks;
-
-/* A texture entry: the POLY_FT4 fields HubInitSparks copies. */
-typedef struct HubTex {
-    /* 0x00 */ u8 pad0[offsetof(obj_texture, info.tpage)];
-    /* 0x24 */ u16 tpage;
-    /* 0x26 */ u16 clut;
-    /* 0x28 */ u16 uv0;
-    /* 0x2A */ u16 uv1;
-    /* 0x2C */ u16 uv2;
-    /* 0x2E */ u16 uv3;
-} HubTex;
 
 void HubInitSparks(HubSparks *arg0);
 

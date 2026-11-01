@@ -255,7 +255,7 @@ typedef struct {
 BASH_SIZE_CHECK(FlagRecord, 0x10);
 
 /* A rotation and scale and the matrix rotscale_update builds from them (in the order `order`
- * picks: RotMatrix, YXZ, ZYX or a quaternion). */
+ * picks: matrix_rotation_xyz, YXZ, ZYX or a quaternion). */
 typedef struct RotScale {
     /* 0x00 */ SVECTOR rot;
     /* 0x08 */ s32 unk8;     /* a subengine's +0x18 (the panels' counters clear it) */

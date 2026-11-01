@@ -371,10 +371,10 @@ static inline s32 RaceBounce(s32 a, s32 b) {
     s32 r[4];
     s32 dot;
 
-    n[0] = rcossin_tbl[b & 0xFFF].unk2;
-    n[2] = rcossin_tbl[(b - 0x400) & 0xFFF].unk2;
-    d[0] = -rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
-    d[2] = -rcossin_tbl[a & 0xFFF].unk2;
+    n[0] = sin_cos_table[b & 0xFFF].unk2;
+    n[2] = sin_cos_table[(b - 0x400) & 0xFFF].unk2;
+    d[0] = -sin_cos_table[(a - 0x400) & 0xFFF].unk2;
+    d[2] = -sin_cos_table[a & 0xFFF].unk2;
     dot = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);
     r[0] = d[0] - (dot * n[0] >> 11);
     r[2] = d[2] - (dot * n[2] >> 11);
@@ -388,10 +388,10 @@ static inline s32 RaceBounce(s32 a, s32 b) {
         s32 a_ = (ang);                                         \
         s32 dot_;                                               \
                                                                 \
-        n[0] = rcossin_tbl[b_ & 0xFFF].unk2;                     \
-        n[2] = rcossin_tbl[(b_ - 0x400) & 0xFFF].unk2;           \
-        d[0] = -rcossin_tbl[(a_ - 0x400) & 0xFFF].unk2;          \
-        d[2] = -rcossin_tbl[a_ & 0xFFF].unk2;                    \
+        n[0] = sin_cos_table[b_ & 0xFFF].unk2;                     \
+        n[2] = sin_cos_table[(b_ - 0x400) & 0xFFF].unk2;           \
+        d[0] = -sin_cos_table[(a_ - 0x400) & 0xFFF].unk2;          \
+        d[2] = -sin_cos_table[a_ & 0xFFF].unk2;                    \
         dot_ = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);       \
         r[0] = d[0] - (dot_ * n[0] >> 11);                      \
         r[2] = d[2] - (dot_ * n[2] >> 11);                      \
@@ -427,7 +427,7 @@ loop:
 
 /* out[0] = v's x/z distance from the origin, out[1] its angle (PlotRaceMissile). */
 static inline void RaceToPolar(SLONG_XYZ *v, s32 *out) {
-    out[0] = csqrt(v->x * v->x + v->z * v->z) >> 6;
+    out[0] = int_sqrt(v->x * v->x + v->z * v->z) >> 6;
     out[1] = get_angle(v->x, v->z) & 0xFFF;
 }
 

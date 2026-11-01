@@ -106,9 +106,9 @@ void PlotPACrate(NAS *nas) {
                         dy = b.vy - a.vy;
                         dz = a.vz - b.vz;
                         eng->xform.rot.vy = get_angle(dx, dz) - 0x200;
-                        ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
+                        ang = 0x271 - get_angle(int_sqrt(dx * dx + dz * dz) >> 6, dy);
                         eng->xform.rot.vx = ang;
-                        eng->XYZ.y = b.vy - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->XYZ.y = b.vy - (sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
                         eng->xform.rot.vz = 0;
@@ -158,9 +158,9 @@ void PlotPACrate(NAS *nas) {
                         dy = b.vy - a.vy;
                         dz = a.vz - b.vz;
                         eng->xform.rot.vy = get_angle(dx, dz) - 0x200;
-                        ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
+                        ang = 0x271 - get_angle(int_sqrt(dx * dx + dz * dz) >> 6, dy);
                         eng->xform.rot.vx = ang;
-                        eng->XYZ.y = b.vy - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->XYZ.y = b.vy - (sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
                         eng->xform.rot.vz = 0;
@@ -332,8 +332,8 @@ void PlotPACrate(NAS *nas) {
         if (slide->flag > slide->max) {
             slide->flag = slide->max;
         }
-        eng->XYZ.x -= (slide->flag * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
-        eng->XYZ.z -= (slide->flag * rcossin_tbl[eng->xform.rot.vy & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (slide->flag * sin_cos_table[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (slide->flag * sin_cos_table[eng->xform.rot.vy & 0xFFF].unk2) >> 12;
         switch (slide->dir & 0xF0) {
         case 0x10:
         case 0x30:
@@ -891,7 +891,7 @@ void PAHeroHold(s32 arg0) {
             s = self->hero_fx->sub;
             if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->XYZ = self->hero_eng->XYZ;
-                v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+                v = (sin_cos_table[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
                 s->xform.scale.vy = s->xform.scale.vx = v;
                 s->XYZ.x = pos.vx - self->hero_eng->XYZ.x;
                 s->XYZ.y = pos.vy - self->hero_eng->XYZ.y;
@@ -948,7 +948,7 @@ void PAHeroCarry(s32 arg0) {
             s = self->hero_fx->sub;
             if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->XYZ = self->hero_eng->XYZ;
-                v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+                v = (sin_cos_table[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
                 s->xform.scale.vy = s->xform.scale.vx = v;
                 s->XYZ.x = pos.vx - self->hero_eng->XYZ.x;
                 s->XYZ.y = pos.vy - self->hero_eng->XYZ.y;
@@ -1218,8 +1218,8 @@ NAS *PapuHeroGrabObject(s32 idx, u16 arg1) {
     n = HeadOfObjects;
     ang = Heroes[idx2].hero_move->facing_angle;
     he = Heroes[idx2].hero_eng;
-    hx = he->XYZ.x - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->XYZ.z - (rcossin_tbl[ang & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->XYZ.x - (sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->XYZ.z - (sin_cos_table[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = (EXTobject *)n->FUX;
         if (fux == NULL) continue;
@@ -1323,7 +1323,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = rcossin_tbl;
+                tbl = sin_cos_table;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -1350,7 +1350,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                                     dz = e->XYZ.z - eng->XYZ.z;
                                     d = dx * dx + dz * dz;
                                     if (d < rr) {
-                                        d = csqrt(d) >> 6;
+                                        d = int_sqrt(d) >> 6;
                                         if (d < r) {
                                             ang = get_angle(dx, dz) & 0xFFF;
                                             d = r - d + 1;
@@ -1375,7 +1375,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                                 d = dx * dx + dz * dz;
                                 rr = r * r;
                                 if (d < rr) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     if (d < r) {
                                         hit = 1;
                                         ang = get_angle(dx, dz) & 0xFFF;
@@ -1398,7 +1398,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                                 d = dx * dx + dz * dz;
                                 rr = r * r;
                                 if (d < rr) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     if (d < r) {
                                         hit = 1;
                                         ang = get_angle(dx, dz) & 0xFFF;
@@ -1448,7 +1448,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                     d = dx * dx + dz * dz;
                     rr = r * r;
                     if (d < rr) {
-                        d = csqrt(d) >> 6;
+                        d = int_sqrt(d) >> 6;
                         if (d < r) {
                             hit = 1;
                             a = get_angle(dx, dz);
@@ -1458,8 +1458,8 @@ s32 PapuHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                                eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * sin_cos_table[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->can_do & 8)) {
@@ -1540,12 +1540,12 @@ s32 PapuHeroCarryCollision(s32 idx) {
                                         r += 0x78;
                                         d = dx * dx + dz * dz;
                                         if (d < r * r) {
-                                            d = csqrt(d) >> 6;
+                                            d = int_sqrt(d) >> 6;
                                             if (d < r) {
                                                 ang = get_angle(dx, dz) & 0xFFF;
                                                 d = r - d + 1;
-                                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                                eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
                                                 hit = 1;
                                                 if (ext->can_do & 8) {
                                                     ext->player = idx;
@@ -1577,8 +1577,8 @@ void *PapuHeroObjectAhead(s32 idx, s32 mask) {
     m = mask;
     lim = 0x10000;
     he = Heroes[idx].hero_eng;
-    hx = he->XYZ.x - (rcossin_tbl[(he->xform.rot.vy - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->XYZ.z - (rcossin_tbl[he->xform.rot.vy & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->XYZ.x - (sin_cos_table[(he->xform.rot.vy - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->XYZ.z - (sin_cos_table[he->xform.rot.vy & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = (EXTobject *)n->FUX;
         if (fux == NULL) continue;

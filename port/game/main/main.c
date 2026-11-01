@@ -2438,7 +2438,7 @@ void pad_read(PadState *pad) {
     }
     x = PS->lx - 0x80;
     y = 0x80 - PS->ly;
-    PS->dist = csqrt(x * x + y * y);
+    PS->dist = int_sqrt(x * x + y * y);
     PS->angle.w = get_angle(x, y);
     {
         s32 oldBtn = PS->lastHeld;
@@ -2665,7 +2665,7 @@ void quat_to_matrix(SVECTOR *rot, MATRIX *m) {
     m->m[2][0] = xz - wy;
     m->m[2][1] = yz + wx;
     m->m[2][2] = 0x1000 - (xx + yy);
-    MatrixNormal_1(m, m);
+    matrix_normalise(m, m);
 }
 
 void cam_ease_to(CamView *cam, CamView *dst, CamEase *ease) {
@@ -2704,13 +2704,13 @@ void rotscale_update(void *arg0) {
     p->dirty = 0;
     switch (p->order) {
     case 0:
-        RotMatrix(&p->rot, &p->mtx);
+        matrix_rotation_xyz(&p->rot, &p->mtx);
         break;
     case 1:
-        RotMatrixYXZ(&p->rot, &p->mtx);
+        matrix_rotation_yxz(&p->rot, &p->mtx);
         break;
     case 2:
-        RotMatrixZYX(&p->rot, &p->mtx);
+        matrix_rotation_zyx(&p->rot, &p->mtx);
         break;
     case 3:
         quat_to_matrix(&p->rot, &p->mtx);
@@ -2719,7 +2719,7 @@ void rotscale_update(void *arg0) {
         break;
     }
     if (p->hasScale != 0) {
-        ScaleMatrixL(&p->mtx, &p->scale);
+        matrix_scale(&p->mtx, &p->scale);
     }
 }
 
@@ -2783,9 +2783,9 @@ void cam_build_view(camera_info_tag *cam, RECT *rect) {
         cam->shakeTime = t - 1;
     }
     cam_set_projection(cam, rect);
-    RotMatrix(&cam->xform.angle, &cam->view);
+    matrix_rotation_xyz(&cam->xform.angle, &cam->view);
     if (cam->scaled != 0) {
-        ScaleMatrixL(&cam->view, &cam->xform.scale);
+        matrix_scale(&cam->view, &cam->xform.scale);
     }
     a = *(u16 *)&cam->xform.scale.vx;
     b = *(u16 *)&cam->xform.scale.vy;
@@ -2951,10 +2951,10 @@ s32 get_dist_angles(s32 *a, s32 *b, s16 *out) {
     dz = b[2] - a[2];
     zz = dz * dz;
     dy = b[1] - a[1];
-    flat = csqrt(xx + zz) >> 6;
+    flat = int_sqrt(xx + zz) >> 6;
     out[1] = get_angle(dx, dz);
     out[0] = get_angle(dy, flat) & 0xFFF;
-    return csqrt(xx + dy * dy + zz) >> 6;
+    return int_sqrt(xx + dy * dy + zz) >> 6;
 }
 
 s32 angle_diff_abs(s32 arg0, s32 arg1) {
@@ -3239,93 +3239,27 @@ void *dbase_anim_node(s32 *arg0, FileEntry *rec) {
     return node->ptr;
 }
 
-void init_dots(subengine *arg0) {
-    SubFx *fx = (SubFx *)&arg0->u6C;
-    s32 n = fx->count;
-    TILE_1 *a = fx->a;
-    TILE_1 *b = fx->b;
-    s16 *vel = arg0->u6C.ptr;
-
-    if (n != 0) {
-        do {
-            a->x0 = Random(0x200);
-            b->x0 = Random(0x200);
-            a->y0 = Random(0x200);
-            b->y0 = Random(0x200);
-            a->r0 = Random(0xFF);
-            a->g0 = Random(0xFF);
-            a->b0 = Random(0xFF);
-            b->r0 = Random(0xFF);
-            b->g0 = Random(0xFF);
-            b->b0 = Random(0xFF);
-            SetTile1(a);
-            SetTile1(b);
-            vel[0] = Random(0x2000) - 0x1000;
-            vel[1] = Random(0x2000) - 0x1000;
-            vel[2] = Random(0x2000) - 0x1000;
-            a++;
-            b++;
-            vel += 12;
-            n--;
-        } while (n != 0);
-    }
-}
-
-void plot_point_sprites(PointSprites *ps, MATRIX *m) {
-    PointSpriteSet *set = &ps->set;
-    PointSpriteSrc *src = set->src;
-    TILE_1 *prim = set->prims[FrameCount & 1];
-    s32 n;
-
-    view_set_rotation(m);
-    view_set_translation(m);
-    n = set->count;
-    for (;;) {
-        if (n == 0) {
-            return;
-        }
-        project_xy(&src->v, &prim->x0);
-        src++;
-        n--;
-        addPrim(RenderState.ot, prim);
-        prim++;
-    }
-}
 void fx_free_buffers(subengine *sub) {
     SubFx *fx;
 
     fx = (SubFx *)&sub->u6C;
-    mal_free_later(fx->a, &MainHeap, 2);
-    mal_free_later(fx->b, &MainHeap, 2);
+    mal_free_later(fx->face, &MainHeap, 2);
     mal_free(sub->u6C.ptr, &MainHeap);
 }
 
 s32 fx_alloc_buffers(FxDef *def, subengine *sub) {
     SubFx *fx;
-    void **a;
-    void *var_v0;
 
-    a = (void **)&((SubFx *)&sub->u6C)->a;
     fx = (SubFx *)&sub->u6C;
-    fx->a = NULL;
-    fx->b = NULL;
+    fx->face = NULL;
     sub->u6C.ptr = NULL;
     fx->count = 0;
-    mal_alloc_owned_low(def->size, a, &MainHeap, 2);
-    if (fx->a == NULL) {
-        var_v0 = 0;
-    } else {
-        mal_alloc_owned_low(def->size, &((SubFx *)&sub->u6C)->b, &MainHeap, 3);
-        if (fx->b == NULL) {
-            mal_free(a, &MainHeap);
-            var_v0 = 0;
-        } else {
-            mal_alloc_owned_low(def->bufSize, &fx->buf, &MainHeap, 3);
-            fx->count = def->count;
-            var_v0 = sub->u6C.ptr;
-        }
+    mal_alloc_owned_low(sizeof(DrawFace), &fx->face, &MainHeap, 2);
+    if (fx->face != NULL) {
+        mal_alloc_owned_low(def->bufSize, &fx->buf, &MainHeap, 3);
+        fx->count = def->count;
     }
-    if (var_v0 != 0) {
+    if (sub->u6C.ptr != NULL) {
         void (*hook)() = def->hook;
         sub->release = fx_free_buffers;
         sub->hook = (void (*)(subengine *, void *, u32))hook;
@@ -3335,29 +3269,6 @@ s32 fx_alloc_buffers(FxDef *def, subengine *sub) {
         sub->release = NULL;
     }
     return ((SubFx *)&sub->u6C)->count;
-}
-
-void *fx_alloc_buffers_b(FxDef *def, SubFx *fx) {
-    void **a;
-
-    a = &fx->a;
-    fx->a = NULL;
-    fx->b = NULL;
-    fx->buf = NULL;
-    fx->count = 0;
-    mal_alloc_owned_low(def->size, a, &MainHeap, 2);
-    if (fx->a != NULL) {
-        mal_alloc_owned_low(def->size, &fx->b, &MainHeap, 3);
-        if (fx->b != NULL) {
-            mal_alloc_owned_low(def->bufSize, &fx->buf, &MainHeap, 3);
-            fx->count = def->count;
-            return fx->buf;
-        }
-        mal_free(a, &MainHeap);
-        goto fail;
-    }
-fail:
-    return 0;
 }
 
 /* data, in address order (tools/scripts/data2c.py) */

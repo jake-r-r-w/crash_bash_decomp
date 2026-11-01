@@ -37,7 +37,7 @@ endif()
 # The game's C, as it stands: this target is what 6.3 and 6.4 clean up (docs/ROADMAP-B.md).
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS game/main/*.c game/overlays/*.c)
 add_library(game OBJECT ${GAME_SOURCES} tests/bossbot.c tests/adventureplayer.c tests/pogoplayer.c tests/bashplayer.c)
-target_include_directories(game PUBLIC psyq/include game/include)
+target_include_directories(game PUBLIC game/include)
 target_compile_options(game PRIVATE
   # GNU C for the empty-parens hooks, until they have prototypes (6.3); C23 would read them as (void).
   -std=gnu17
@@ -60,7 +60,6 @@ endforeach()
 
 add_executable(crashbash main.c platform/overlays.c platform/maths.c platform/archive.c platform/clock.c platform/pad.c platform/saves.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/settings.c $<TARGET_OBJECTS:game>)
-target_include_directories(crashbash PRIVATE psyq/include)
 if(TARGET SDL3::SDL3-static)
   target_link_libraries(crashbash PRIVATE SDL3::SDL3-static)
 else()
@@ -85,7 +84,7 @@ add_test(NAME sdl COMMAND crashbash --check-sdl)
 file(GLOB MODE_TEXT_FILES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/../assets/CRASHBSH/*.txt/data.bin)
 if(MODE_TEXT_FILES)
   add_executable(modetext_test tests/modetext_test.c game/overlays/engine/modetext.c)
-  target_include_directories(modetext_test PRIVATE psyq/include game/include)
+  target_include_directories(modetext_test PRIVATE game/include)
   target_compile_options(modetext_test PRIVATE -std=gnu17 -fsigned-char -fno-builtin -w -Wno-error=int-conversion -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types)
   add_test(NAME modetext COMMAND modetext_test ${MODE_TEXT_FILES})
 endif()

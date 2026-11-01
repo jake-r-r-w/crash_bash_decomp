@@ -194,40 +194,39 @@ void prims_empty_back(void) {
     }
 }
 
-void prim_colour_poly(MeshHeader *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
+void prim_colour_poly(MeshHeader *face, DrawFace *poly, VECTOR *arg2, s32 mode) {
     u16 *idx;
     u32 *colors;
     u32 *c;
     s32 semi = mode & 1;
-    s32 abr = mode & 0x60;
+    s32 blend = (mode >> 5) & 3;
 
     idx = (u16 *)((u8 *)&face->colors + face->colors);
     colors = (u32 *)((u8 *)&RenderState.dbase->data->colors + RenderState.dbase->data->colors);
     c = &colors[idx[0] & 0x1FFF];
-    *(u32 *)(&poly->r0) = colour_fade(c, RenderState.farColor, RenderState.dp);
+    poly->colour[0] = colour_fade(c, RenderState.farColor, RenderState.dp);
     c++;
-    *(u32 *)(&poly->r1) = colour_fade(c, RenderState.farColor, RenderState.dp);
+    poly->colour[1] = colour_fade(c, RenderState.farColor, RenderState.dp);
     c++;
-    *(u32 *)(&poly->r2) = colour_fade(c, RenderState.farColor, RenderState.dp);
-    setPolyGT4(poly);
+    poly->colour[2] = colour_fade(c, RenderState.farColor, RenderState.dp);
     if (idx[0] & 0x8000) {
-        *(u32 *)&poly->r0 = *(u32 *)&poly->r0 | 0x02000000;
-        poly->tpage = (poly->tpage & 0xFF9F) | 0x20;
+        poly->colour[0] |= DRAW_BLENDS;
+        poly->blend = GFX_ADD;
     } else if (semi) {
-        *(u32 *)&poly->r0 = *(u32 *)&poly->r0 | 0x02000000;
-        poly->tpage = (poly->tpage & 0xFF9F) | abr;
+        poly->colour[0] |= DRAW_BLENDS;
+        poly->blend = blend;
     } else {
-        *(u32 *)&poly->r0 = *(u32 *)&poly->r0 & ~0x02000000;
-        poly->tpage = (poly->tpage & 0xFF9F) | abr;
+        poly->colour[0] &= ~DRAW_BLENDS;
+        poly->blend = blend;
     }
     c = &colors[idx[1] & 0x1FFF];
-    *(u32 *)(&poly->r3) = colour_fade(c, RenderState.farColor, RenderState.dp);
+    poly->colour[3] = colour_fade(c, RenderState.farColor, RenderState.dp);
 }
 
-void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
+void prim_create_entity_single(u8 *arg0, DrawFace *arg1) {
     obj_dbase *model = RenderState.dbase;
     MeshHeader *face = (MeshHeader *)arg0;
-    POLY_GT4 *poly = arg1;
+    DrawFace *poly = arg1;
     u16 *idx;
     u16 *uvIdx;
     u16 *tex;
@@ -249,34 +248,34 @@ void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
     colors = (u32 *)((u8 *)&mc->colors + mc->colors);
     uvs = (u16 *)((u8 *)&mc->uvs + mc->uvs);
     c = &colors[*idx++ & 0x1FFF];
-    *(u32 *)&poly->r0 = *c++;
-    *(u32 *)&poly->r1 = c[0];
-    *(u32 *)&poly->r2 = c[1];
+    poly->colour[0] = *c++;
+    poly->colour[1] = c[0];
+    poly->colour[2] = c[1];
     c = &colors[*idx & 0x1FFF];
-    *(u32 *)&poly->r3 = *c;
-    setPolyGT4(poly);
+    poly->colour[3] = *c;
     t = *tex;
     if (t & 0x8000) {
         ti = &ts->tex[ts->nTex - 1].info;
-        poly->clut = ts->ent[t & 0x1FF].clut;
+        poly->palette = ts->ent[t & 0x1FF].palette;
     } else {
         ti = &ts->tex[t & 0x1FF].info;
-        poly->clut = ti->clut;
+        poly->palette = ti->palette;
     }
     if (*idx & 0x8000) {
-        *(u32 *)&poly->r0 |= 0x02000000;
+        poly->colour[0] |= DRAW_BLENDS;
     }
-    poly->tpage = ti->tpage | 0x20;
+    poly->image = ti->image;
+    poly->blend = GFX_ADD;
     base = ti->uv0;
     uv = &uvs[*uvIdx++];
-    *(u16 *)&poly->u0 = base | uv[0];
-    *(u16 *)&poly->u1 = base | uv[1];
-    *(u16 *)&poly->u2 = base | uv[2];
+    poly->uv[0] = base | uv[0];
+    poly->uv[1] = base | uv[1];
+    poly->uv[2] = base | uv[2];
     uv = &uvs[*uvIdx];
-    *(u16 *)&poly->u3 = base | uv[2];
+    poly->uv[3] = base | uv[2];
 }
 
-void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode) {
+void faces_write_colors_dq(MeshHeader *faces, DrawFace *prim, s32 arg2, s32 mode) {
     u16 *idx;
     u8 *run;
     u8 *count;
@@ -284,117 +283,67 @@ void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode
     u32 *c;
     s32 n;
     s32 semi = mode & 1;
-    s32 abr = mode & 0x60;
+    s32 blend = (mode >> 5) & 3;
 
     idx = (u16 *)((u8 *)&faces->colors + faces->colors);
     run = (u8 *)&faces->runs + faces->runs;
     colors = (u32 *)((u8 *)&RenderState.dbase->data->colors + RenderState.dbase->data->colors);
     count = run + 1;
-    for (;; count += 2, run += 2) {
+    for (;; count += 2) {
         if (*count == 0xFF) {
-            goto done;
+            return;
         }
-        n = *count;
-        for (;;) {
-            if (n-- == 0) {
-                goto next;
-            }
+        for (n = *count; n > 0; n--) {
             c = &colors[*idx & 0x1FFF];
-            if (run[0] & 1) {
-                FacePrim *p = prim;
-
-                *(u32 *)(&prim->g.g.r0) = colour_fade(c, RenderState.farColor, RenderState.dp);
-                if (semi) {
-                    *(u32 *)&prim->g.g.r0 |= 0x32000000;
-                    *(u32 *)&prim->g.tp.code[0] = abr | 0xE1000000;
-                } else if (*idx & 0x8000) {
-                    *(u32 *)&prim->g.g.r0 |= 0x32000000;
-                    *(u32 *)&prim->g.tp.code[0] = ((*idx >> 8) & 0x60) | 0xE1000000;
-                } else {
-                    *(u32 *)&prim->g.g.r0 |= 0x30000000;
-                }
-                c++;
-                *(u32 *)(&p->g.g.r1) = colour_fade(c, RenderState.farColor, RenderState.dp);
-                c++;
-                *(u32 *)(&p->g.g.r2) = colour_fade(c, RenderState.farColor, RenderState.dp);
-            } else {
-                *(u32 *)(&prim->gt.r0) = colour_fade(c, RenderState.farColor, RenderState.dp);
-                if (semi) {
-                    *(u32 *)&prim->gt.r0 |= 0x36000000;
-                    prim->gt.tpage = (prim->gt.tpage & ~0x60) | abr;
-                } else if (*idx & 0x8000) {
-                    *(u32 *)&prim->gt.r0 |= 0x36000000;
-                    prim->gt.tpage = (prim->gt.tpage & ~0x60) | ((*idx >> 8) & 0x60);
-                } else {
-                    *(u32 *)&prim->gt.r0 |= 0x34000000;
-                }
-                c++;
-                *(u32 *)(&prim->gt.r1) = colour_fade(c, RenderState.farColor, RenderState.dp);
-                c++;
-                *(u32 *)(&prim->gt.r2) = colour_fade(c, RenderState.farColor, RenderState.dp);
+            prim->colour[0] = colour_fade(c, RenderState.farColor, RenderState.dp);
+            if (semi) {
+                prim->colour[0] |= DRAW_BLENDS;
+                prim->blend = blend;
+            } else if (*idx & 0x8000) {
+                prim->colour[0] |= DRAW_BLENDS;
+                prim->blend = (*idx >> 13) & 3;
             }
+            c++;
+            prim->colour[1] = colour_fade(c, RenderState.farColor, RenderState.dp);
+            c++;
+            prim->colour[2] = colour_fade(c, RenderState.farColor, RenderState.dp);
             prim++;
             idx++;
         }
-    next:;
     }
-done:;
 }
 
-void faces_write_colors(MeshHeader *faces, FacePrim *prim) {
+void faces_write_colors(MeshHeader *faces, DrawFace *prim) {
     u16 *idx;
-    u8 *run;
     u8 *count;
     u32 *colors;
     u32 *c;
     s32 n;
 
     idx = (u16 *)((u8 *)&faces->colors + faces->colors);
-    run = (u8 *)&faces->runs + faces->runs;
+    count = (u8 *)&faces->runs + faces->runs + 1;
     colors = (u32 *)((u8 *)&RenderState.dbase->data->colors + RenderState.dbase->data->colors);
-    count = run + 1;
-    for (;; count += 2, run += 2) {
+    for (;; count += 2) {
         if (*count == 0xFF) {
-            goto done;
+            return;
         }
-        n = *count;
-        for (;;) {
-            if (n-- == 0) {
-                goto next;
-            }
+        for (n = *count; n > 0; n--) {
             c = &colors[*idx & 0x1FFF];
-            if (run[0] & 1) {
-                FacePrim *p;
-
-                *(u32 *)&prim->g.tp.code[0] = ((*idx >> 8) & 0x60) | 0xE1000000;
-                p = prim;
-                *(u32 *)&p->g.g.r0 = *c | ((*idx & 0x8000) ? 0x32000000 : 0x30000000);
-                c++;
-                *(u32 *)&p->g.g.r1 = c[0];
-                *(u32 *)&p->g.g.r2 = c[1];
-            } else {
-                u32 code = *c | 0x34000000;
-
-                *(u32 *)&prim->gt.r0 = code;
-                if (*idx & 0x8000) {
-                    *(u32 *)&prim->gt.r0 = code | 0x02000000;
-                    prim->gt.tpage &= ~0x60;
-                    prim->gt.tpage |= (*idx >> 8) & 0x60;
-                }
-                c++;
-                *(u32 *)&prim->gt.r1 = c[0];
-                *(u32 *)&prim->gt.r2 = c[1];
+            prim->colour[0] = *c;
+            if (*idx & 0x8000) {
+                prim->colour[0] |= DRAW_BLENDS;
+                prim->blend = (*idx >> 13) & 3;
             }
+            c++;
+            prim->colour[1] = c[0];
+            prim->colour[2] = c[1];
             prim++;
             idx++;
         }
-    next:;
     }
-done:;
 }
 
-void prim_write_uvs(MeshHeader *faces, FacePrim *prim) {
-    u8 *p;
+void prim_write_uvs(MeshHeader *faces, DrawFace *prim) {
     s32 n;
     obj_textureset *ts;
     s32 left;
@@ -404,8 +353,6 @@ void prim_write_uvs(MeshHeader *faces, FacePrim *prim) {
     u16 *uvIdx;
     u8 *run;
     u16 *uvs;
-    u32 v;
-    u32 idx;
     GfxTexInfo *ti;
     ModelFile *ut;
     u16 base;
@@ -418,62 +365,43 @@ void prim_write_uvs(MeshHeader *faces, FacePrim *prim) {
     blend = (u16 *)((u8 *)&faces->colors + faces->colors);
     run = (u8 *)&faces->runs + faces->runs;
     uvs = (u16 *)((u8 *)&ut->uvs + ut->uvs);
-    for (;;) {
+    for (;; run += 2) {
         if (run[1] == 0xFF) {
             return;
         }
-        n = run[1];
-        for (;;) {
+        for (n = run[1]; n > 0; n--) {
             u16 *uv;
-            u16 w;
 
-            if (--n == -1) {
-                break;
-            }
-            p = (u8 *)prim;
             if (--left < 0) {
                 t = *tex++;
                 left = (t >> 9) & 0x3F;
             }
-            if (run[0] & 1) {
-                p[3] = 8;
-                *(u32 *)(p + 4) = 0xE1000200;
-                p[15] = 0x30;
-                *(u32 *)(p + 8) = 0;
-            } else {
-                v = t;
-                if (v & 0x8000) {
+            prim->blend = (*blend >> 13) & 3;
+            if (!(run[0] & 1)) {
+                if (t & 0x8000) {
                     ti = &ts->tex[ts->nTex - 1].info;
-                    idx = v & 0x1FF;
-                    *(u16 *)(p + 14) = ts->ent[idx].clut;
+                    prim->palette = ts->ent[t & 0x1FF].palette;
                 } else {
-                    v = t & 0x1FF;
-                    ti = &ts->tex[v].info;
-                    *(u16 *)(p + 14) = ti->clut;
+                    ti = &ts->tex[t & 0x1FF].info;
+                    prim->palette = ti->palette;
                 }
                 base = ti->uv0;
-                *(u16 *)(p + 0x1A) = (ti->tpage & 0xFF9F) | ((*blend >> 8) & 0x60);
-                {
-                    uv = &uvs[*uvIdx];
-                    *(u16 *)(p + 12) = base | uv[0];
-                    *(u16 *)(p + 0x18) = base | uv[1];
-                    w = uv[2];
-                    p[3] = 9;
-                    *(u16 *)(p + 0x24) = base | w;
-                    p[7] = 0x34;
-                }
+                prim->image = ti->image;
+                uv = &uvs[*uvIdx];
+                prim->uv[0] = base | uv[0];
+                prim->uv[1] = base | uv[1];
+                prim->uv[2] = base | uv[2];
             }
             prim++;
             uvIdx++;
             blend++;
         }
-        run += 2;
     }
 }
 
-FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *faces, s32 arg4) {
+DrawFace *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *faces, s32 arg4) {
     PrimLink *node;
-    FacePrim *prim;
+    DrawFace *prim;
 
     node = PrimList_Take(pool);
     if (node != NULL) {
@@ -486,7 +414,7 @@ FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *
             faces_write_colors(faces, node->data);
         }
     } else {
-        if (mal_first_free(faces->faces * 10, MainHeap.free) == NULL || (node = PrimLinkFree) == NULL) {
+        if (mal_first_free(faces->faces * (sizeof(DrawFace) / 4), MainHeap.free) == NULL || (node = PrimLinkFree) == NULL) {
             return NULL;
         }
         PrimLinkFree = node->next;
@@ -495,7 +423,7 @@ FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *
         }
         node->next = list->f4;
         list->f4 = node;
-        mal_alloc_owned_low(faces->faces * sizeof(FacePrim), &node->data, &MainHeap, ((FrameCount & 1)?3:2));
+        mal_alloc_owned_low(faces->faces * sizeof(DrawFace), &node->data, &MainHeap, ((FrameCount & 1)?3:2));
         prim = node->data;
         prim_write_uvs(faces, prim);
         faces_write_colors(faces, prim);
@@ -600,12 +528,12 @@ void primpool_init(s32 count) {
     s32 last;
 
     if (PrimPool.mem == NULL) {
-        PrimPool.mem = mal_alloc(count * (sizeof(PoolNode) + 0x5C), &MainHeap);
+        PrimPool.mem = mal_alloc(count * (sizeof(PoolNode) + sizeof(DrawFace)), &MainHeap);
     }
     p = PrimPool.mem;
     last = count - 1;
     for (i = 0; i < last; i++) {
-        n = (PoolNode *)FILE_AT(p, sizeof(PoolNode) + 0x5C);
+        n = (PoolNode *)FILE_AT(p, sizeof(PoolNode) + sizeof(DrawFace));
         p->next = n;
         p = n;
     }
@@ -623,9 +551,9 @@ void primset_invalidate(ref32 *arg0) {
     }
 }
 
-FacePrim *primnode_alloc(s32 arg0, PrimList *list, void *pool, MeshHeader *faces) {
+DrawFace *primnode_alloc(s32 arg0, PrimList *list, void *pool, MeshHeader *faces) {
     PrimLink *node;
-    FacePrim *data;
+    DrawFace *data;
 
     node = PrimNodeFree;
     if (node == NULL) {
@@ -635,7 +563,7 @@ FacePrim *primnode_alloc(s32 arg0, PrimList *list, void *pool, MeshHeader *faces
     if (list->f4 == NULL) {
         list->f8 = node;
     }
-    data = (FacePrim *)&node->data;
+    data = (DrawFace *)&node->data;
     node->next = list->f4;
     list->f4 = node;
     prim_write_uvs(faces, data);
@@ -710,7 +638,7 @@ PrimSet *primset_alloc(ref32 *out, s32 mode) {
     return p;
 }
 
-void faces_write_uvs_colors(MeshHeader *arg0, FacePrim *arg1) {
+void faces_write_uvs_colors(MeshHeader *arg0, DrawFace *arg1) {
     prim_write_uvs(arg0, arg1);
     faces_write_colors(arg0, arg1);
 }
@@ -764,10 +692,6 @@ void prims_empty(void) {
     PrimSet *set;
 
     printf("empty prims\n");
-    if (ScreenRect != 0) {
-        ClearOt(DrawBuffers);
-        ClearOt(&DrawBuffers[1]);
-    }
     set = PrimSetList;
     if (set != NULL) {
         do {
@@ -838,31 +762,12 @@ u8 *tga_convert(tga_header *arg0, s32 w, s32 h) {
 }
 
 void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam) {
-    DR_ENV *dr;
-    DRAWENV *env;
-    RECT *disp;
     GfxState *gs = &RenderState;
 
     gs->viewport = vp;
     GfxSetClip(gs, (RECT *)&vp->cx0, cam);
-    disp = ScreenRect;
-    if (cdb == DrawBuffers) {
-        disp += 1;
-    }
-    env = (*(DRAWENV **)&cdb->prim)++;
-    SetDefDrawEnv(env, vp->x0 * ScreenRect->w / 640 + disp->x, vp->y0 / 2 + disp->y,
-                  (vp->x1 - vp->x0) * ScreenRect->w / 640, (vp->y1 - vp->y0) / 2);
-    env->dfe = 1;
-    env->dtd = 0;
-    env->isbg = vp->isbg;
-    env->r0 = vp->bg.r;
-    env->g0 = vp->bg.g;
-    env->b0 = vp->bg.b;
-    env->ofs[0] = disp->x;
-    env->ofs[1] = disp->y;
-    dr = (*(DR_ENV **)&cdb->prim)++;
-    SetDrawEnv(dr, env);
-    addPrim(cdb->ot + vp->otIdx + vp->otLen - 1, dr);
+    draw_viewport(vp->otIdx + vp->otLen - 1, vp->x0 * ScreenRect->w / 640, vp->y0 / 2, (vp->x1 - vp->x0) * ScreenRect->w / 640, (vp->y1 - vp->y0) / 2,
+                  vp->isbg, vp->bg.r | (vp->bg.g << 8) | (vp->bg.b << 16));
     *(GfxOffset *)&gs->ofx = *(GfxOffset *)&vp->ofx;
     ((GfxOffset *)gs->screen)->x = gs->ofx;
     ((GfxOffset *)gs->screen)->y = gs->ofy;
@@ -870,7 +775,7 @@ void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam) {
     view_set_distance(cam->dist);
     view_set_rotation(&cam->view);
     view_set_translation(&cam->view);
-    gs->ot = cdb->ot + vp->otIdx;
+    gs->layer = vp->otIdx;
     gs->otLen = vp->otLen - 1;
     ((GfxOffset *)gs->screen)[1].x = vp->ofs2;
     gs->otzAdd = 0;
@@ -926,7 +831,7 @@ s32 eng_add_subs(EXTengine *eng, s32 n) {
 void *model_prims_begin(void *arg0, s32 arg1) {
     GfxState *gs;
     PrimSet *set;
-    FacePrim *prim;
+    DrawFace *prim;
     s32 dp;
     s32 fog;
     s32 t;
@@ -986,18 +891,15 @@ void *model_prims_begin(void *arg0, s32 arg1) {
 /* Draws the triangle strips of a model: `runs` holds {mode, count} byte
  * pairs ended by count 0xFF, `v` the vertices (vz's high half carries
  * flags: 0x10000 flips the winding test, 0x20000 skips it). Mode bit 0
- * selects primitives whose SXY go at +0x10/+0x18/+0x20 and whose length is
- * preset; otherwise each is a POLY_GT3. The three register variables are
+ * selects untextured faces. The three register variables are
  * the original's: only they give s4/s3/s2 with s0/s1 unused. */
-void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
-    POLY_GT3 *first = poly;
+void draw_verts(DrawFace *poly, SVECTOR *v, u8 *runs) {
+    DrawFace *first = poly;
     u32 otz;
     s32 opz;
     GfxState *gs;
     s32 n;
     s32 mode;
-    s32 xy;
-    s32 z;
     s32 flags;
     s32 wind;
     s32 hidden;
@@ -1036,7 +938,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
                             wind = (flags & 0x10000) ? -1 : 1;
                             hidden = (flags & 0x10000) ? opz > 0 : opz <= 0;
                         }
-                        mesh_submit_g3(gs->ot + otz, (u8 *)poly, p, (s32)(poly - first), wind, hidden);
+                        draw_mesh_tri_plain(gs->layer + otz, poly, p, (s32)(poly - first), wind, hidden);
                     }
                 }
                 poly++;
@@ -1058,7 +960,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
                         wind = (flags & 0x10000) ? -1 : 1;
                         hidden = (flags & 0x10000) ? opz > 0 : opz <= 0;
                     }
-                    mesh_submit_gt3(gs->ot + otz, poly, p, (s32)(poly - first), wind, hidden);
+                    draw_mesh_tri(gs->layer + otz, poly, p, (s32)(poly - first), wind, hidden);
                 }
                 poly++;
             }
@@ -1094,12 +996,12 @@ void gfx_setup_xform(void *arg0, MATRIX *arg1, VECTOR *arg2, u8 *arg3, GteSetup 
     }
     if (!(flags & 0x10010000)) {
         if (flags & 0x80000) {
-            ApplyMatrixLV(&RenderState.cam->view, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.localPos);
+            matrix_apply_long(&RenderState.cam->view, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.localPos);
             ((VECTOR *)RenderState.localPos)->vx += ((VECTOR *)RenderState.cam)->vx;
             ((VECTOR *)RenderState.localPos)->vy += ((VECTOR *)RenderState.cam)->vy;
             ((VECTOR *)RenderState.localPos)->vz += ((VECTOR *)RenderState.cam)->vz;
         } else {
-            ApplyMatrixLV(m, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.localPos);
+            matrix_apply_long(m, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.localPos);
             GfxAddTrans(pos);
         }
         out->trans = (VECTOR *)RenderState.localPos;
@@ -1109,7 +1011,7 @@ void gfx_setup_xform(void *arg0, MATRIX *arg1, VECTOR *arg2, u8 *arg3, GteSetup 
             rotscale_update(&obj->xform);
         }
         if (flags & 0x40000) {
-            MulMatrix0(&RenderState.cam->view, &obj->xform.mtx, (MATRIX *)RenderState.localMtx);
+            matrix_mul(&RenderState.cam->view, &obj->xform.mtx, (MATRIX *)RenderState.localMtx);
         } else if (flags & 0x20000000) {
             if (obj->xform.hasScale != 0) {
                 RenderState.localMtx = (u8 *)&RenderState.alignMtx;
@@ -1120,10 +1022,10 @@ void gfx_setup_xform(void *arg0, MATRIX *arg1, VECTOR *arg2, u8 *arg3, GteSetup 
                 RenderState.localMtx = (u8 *)&RenderState.cam->rot;
             }
         } else {
-            MulMatrix0(m, &obj->xform.mtx, (MATRIX *)RenderState.localMtx);
+            matrix_mul(m, &obj->xform.mtx, (MATRIX *)RenderState.localMtx);
         }
         if ((flags & 0x10010000) == 0x10000) {
-            ApplyMatrixLV((MATRIX *)RenderState.localMtx, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.localPos);
+            matrix_apply_long((MATRIX *)RenderState.localMtx, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.localPos);
             if (flags & 0x80000) {
                 ((VECTOR *)RenderState.localPos)->vx += ((VECTOR *)RenderState.cam)->vx;
                 ((VECTOR *)RenderState.localPos)->vy += ((VECTOR *)RenderState.cam)->vy;
@@ -1344,41 +1246,26 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
 }
 
 s32 draw_gouraud_quad(void *arg0, u32 flags) {
-    ModePolyG4 *p;
+    ColorQuad *q = arg0;
+    DVECTOR xy[4];
+    u32 colour[4];
     u32 otz;
-#define q ((ColorQuad *)arg0)
+    s32 i;
 
-    p =*(ModePolyG4 **)&cdb->prim;
     otz = 0;
-    *(ModePolyG4 **)&cdb->prim = p + 1;
     if (!(flags & 0x8000)) {
         return 0;
     }
-    p->v[0].c = calc_rgbcode(q->c[0][2], q->c[0][1], q->c[0][0]);
-    p->v[1].c = calc_rgbcode(q->c[1][2], q->c[1][1], q->c[1][0]);
-    p->v[2].c = calc_rgbcode(q->c[2][2], q->c[2][1], q->c[2][0]);
-    p->v[3].c = calc_rgbcode(q->c[3][2], q->c[3][1], q->c[3][0]);
-    ((u8 *)p)[3] = 0xA;
-    ((u8 *)p)[0xF] = 0x38;
-    p->mode = 0xE1000200;
-    p->unk8 = 0;
-    if (flags & 0x21) {
-        p->mode = (flags & 0x60) | 0xE1000200;
-        p->v[0].c |= 0x32000000;
+    for (i = 0; i < 4; i++) {
+        colour[i] = calc_rgbcode(q->c[i][2], q->c[i][1], q->c[i][0]);
     }
     if (flags & 0x10000000) {
-        GfxState *gs = &RenderState;
-#define s ((GfxScreen *)gs->screen)
+        GfxScreen *s = (GfxScreen *)RenderState.screen;
 
-        p->v[0].x = ((s->x + q->v[0].vx) * ScreenRect->w) / 640;
-        p->v[0].y = (s->y + q->v[0].vy) / 2;
-        p->v[1].x = ((s->x + q->v[1].vx) * ScreenRect->w) / 640;
-        p->v[1].y = (s->y + q->v[1].vy) / 2;
-        p->v[2].x = ((s->x + q->v[2].vx) * ScreenRect->w) / 640;
-        p->v[2].y = (s->y + q->v[2].vy) / 2;
-        p->v[3].x = ((s->x + q->v[3].vx) * ScreenRect->w) / 640;
-        p->v[3].y = (s->y + q->v[3].vy) / 2;
-#undef s
+        for (i = 0; i < 4; i++) {
+            xy[i].vx = ((s->x + q->v[i].vx) * ScreenRect->w) / 640;
+            xy[i].vy = (s->y + q->v[i].vy) / 2;
+        }
     } else {
         ViewPoint c[3];
 
@@ -1386,17 +1273,16 @@ s32 draw_gouraud_quad(void *arg0, u32 flags) {
         project_point(&q->v[1], &c[1]);
         project_point(&q->v[2], &c[2]);
         otz = points_order(&c[0], &c[1], &c[2]);
-        point_store_xy(&c[0], (u8 *)p + 0x10);
-        point_store_xy(&c[1], (u8 *)p + 0x18);
-        point_store_xy(&c[2], (u8 *)p + 0x20);
-        project_xy(&q->v[3], &p->v[3].x);
+        point_store_xy(&c[0], &xy[0]);
+        point_store_xy(&c[1], &xy[1]);
+        point_store_xy(&c[2], &xy[2]);
+        project_xy(&q->v[3], &xy[3]);
     }
     otz = (otz + RenderState.otzAdd) >> 1;
     if (otz < RenderState.otLen) {
-        addPrim(RenderState.ot + otz, p);
+        draw_plain_quad(RenderState.layer + otz, xy, colour, (flags & 0x21) ? (flags >> 5) & 3 : GFX_OPAQUE);
     }
     return 1;
-#undef q
 }
 
 void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
@@ -1601,7 +1487,7 @@ static inline u8 *draw_model_quad_setup(ModelObj *obj, void *arg1, s32 flags, Mo
 
 void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     ModelFile *colors;
-    POLY_GT4 *prim;
+    DrawFace *prim;
     u8 *t;
     u32 otz;
     ViewPoint c[4];
@@ -1634,14 +1520,10 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     project_point(&((MeshVerts *)t)->v[1], &c[1]);
     project_point(&((MeshVerts *)t)->v[2], &c[2]);
     project_point(&((MeshVerts *)t)->v[3], &c[3]);
-    point_store_xy(&c[0], &prim->x0);
-    point_store_xy(&c[1], &prim->x1);
-    point_store_xy(&c[2], &prim->x2);
-    point_store_xy(&c[3], &prim->x3);
     otz = points_order(&c[1], &c[2], &c[3]);
     otz = (otz + RenderState.otzAdd) >> 1;
     if (otz < RenderState.otLen) {
-        mesh_submit_gt4(RenderState.ot + otz, prim, c);
+        draw_mesh_quad(RenderState.layer + otz, prim, c);
     }
 }
 
@@ -1679,7 +1561,7 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
             if (obj->xform.dirty != 0) {
                 rotscale_update(&obj->xform);
             }
-            MulMatrix0(view, &obj->xform.mtx, out);
+            matrix_mul(view, &obj->xform.mtx, out);
         }
         out->t[0] = view->t[0];
         out->t[1] = view->t[1];
@@ -1696,7 +1578,7 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
         v.vx = obj->XYZ.x - pos[0];
         v.vy = obj->XYZ.y - pos[1];
         v.vz = obj->XYZ.z - pos[2];
-        ApplyMatrixLV(rot, &v, (VECTOR *)out->t);
+        matrix_apply_long(rot, &v, (VECTOR *)out->t);
         out->t[0] += view->t[0];
         out->t[1] += view->t[1];
         out->t[2] += view->t[2];
@@ -1714,7 +1596,7 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
             if (obj->xform.dirty != 0) {
                 rotscale_update(&obj->xform);
             }
-            MulMatrix0(rot, &obj->xform.mtx, out);
+            matrix_mul(rot, &obj->xform.mtx, out);
         }
     }
     RenderState.otzAdd = ((GfxScreen *)RenderState.screen)->otz;
@@ -2411,25 +2293,6 @@ void *draw_morph_model(MeshHeader *model, void *arg1, s32 arg2) {
     return p;
 }
 
-void project_quad(SVECTOR *v, POLY_GT4 *poly) {
-    u32 otz;
-    ViewPoint c[4];
-
-    project_point(&v[0], &c[0]);
-    project_point(&v[1], &c[1]);
-    project_point(&v[2], &c[2]);
-    project_point(&v[3], &c[3]);
-    point_store_xy(&c[0], &poly->x0);
-    point_store_xy(&c[1], &poly->x1);
-    point_store_xy(&c[2], &poly->x2);
-    point_store_xy(&c[3], &poly->x3);
-    otz = points_order(&c[1], &c[2], &c[3]);
-    otz = (otz + RenderState.otzAdd) >> 1;
-    if (otz < RenderState.otLen) {
-        addPrim(RenderState.ot + otz, poly);
-    }
-}
-
 void eng_release_subs_sfx(EXTengine *eng) {
     void (*release)(subengine *);
     _sfx_handler *voice;
@@ -2697,7 +2560,7 @@ void draw_map_object(void *sub, void *arg1, s32 flags, void *arg3) {
     } else {
         rot = &MapSceneMatrix;
     }
-    ApplyMatrixLV(rot, &v, (VECTOR *)m.t);
+    matrix_apply_long(rot, &v, (VECTOR *)m.t);
     m.t[0] += RenderState.cam->view.t[0];
     m.t[1] += RenderState.cam->view.t[1];
     m.t[2] += RenderState.cam->view.t[2];
@@ -2707,7 +2570,7 @@ void draw_map_object(void *sub, void *arg1, s32 flags, void *arg3) {
         if (*(u16 *)&((subengine *)sub)->xform.dirty != 0) {
             rotscale_update(&((subengine *)sub)->xform.rot.vx);
         }
-        MulMatrix0(rot, &((subengine *)sub)->xform.mtx, mp);
+        matrix_mul(rot, &((subengine *)sub)->xform.mtx, mp);
         view_set_rotation(mp);
     }
     view_set_translation(mp);
@@ -2723,8 +2586,8 @@ void draw_map_scene(map_enviroment *scene) {
     void (*fn)(subengine *, void *, u32);
 
     MapScene = scene;
-    RotMatrix(&MapSceneRot, &m);
-    MulMatrix0(&RenderState.cam->view, &m, &MapSceneMatrix);
+    matrix_rotation_xyz(&MapSceneRot, &m);
+    matrix_mul(&RenderState.cam->view, &m, &MapSceneMatrix);
     pv = &view;
     view = RenderState.cam->view;
     sub = scene->subs;

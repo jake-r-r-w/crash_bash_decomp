@@ -857,11 +857,11 @@ bool AR_KeepInBounds(EXTengine *arg0) {
             a = get_angle(-dx, -dz);
             if ((void *)arg0 != (void *)Heroes[ArkSidePlayer2].hero_eng &&
                 (void *)arg0 != (void *)Heroes[ArkSidePlayer1].hero_eng) {
-                arg0->XYZ.x = ArkPosts[i].x - (r * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12);
+                arg0->XYZ.x = ArkPosts[i].x - (r * sin_cos_table[(a - 0x400) & 0xFFF].unk2 >> 12);
             }
             if ((void *)arg0 != (void *)Heroes[ArkSidePlayer3].hero_eng &&
                 (void *)arg0 != (void *)Heroes[ArkSidePlayer0].hero_eng) {
-                arg0->XYZ.z = ArkPosts[i].z - (r * rcossin_tbl[a & 0xFFF].unk2 >> 12);
+                arg0->XYZ.z = ArkPosts[i].z - (r * sin_cos_table[a & 0xFFF].unk2 >> 12);
             }
             return 1;
         }
@@ -885,8 +885,8 @@ bool AR_PI_KeepInBounds(EXTengine *arg0) {
         }
     }
     a = arg0->xform.rot.vy;
-    arg0->XYZ.x = rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
-    arg0->XYZ.z = rcossin_tbl[a & 0xFFF].unk2 * 9 >> 4;
+    arg0->XYZ.x = sin_cos_table[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
+    arg0->XYZ.z = sin_cos_table[a & 0xFFF].unk2 * 9 >> 4;
     for (i = 0; i < 4; i++) {
         dx = arg0->XYZ.x - ArkPosts[i].x;
         dz = arg0->XYZ.z - ArkPosts[i].z;
@@ -899,16 +899,16 @@ bool AR_PI_KeepInBounds(EXTengine *arg0) {
             a = get_angle(-dx, -dz);
             if ((void *)arg0 != (void *)Heroes[ArkSidePlayer2].hero_eng &&
                 (void *)arg0 != (void *)Heroes[ArkSidePlayer1].hero_eng) {
-                arg0->XYZ.x = ArkPosts[i].x - (r * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12);
+                arg0->XYZ.x = ArkPosts[i].x - (r * sin_cos_table[(a - 0x400) & 0xFFF].unk2 >> 12);
             }
             if ((void *)arg0 != (void *)Heroes[ArkSidePlayer3].hero_eng &&
                 (void *)arg0 != (void *)Heroes[ArkSidePlayer0].hero_eng) {
-                arg0->XYZ.z = ArkPosts[i].z - (r * rcossin_tbl[a & 0xFFF].unk2 >> 12);
+                arg0->XYZ.z = ArkPosts[i].z - (r * sin_cos_table[a & 0xFFF].unk2 >> 12);
             }
             a = get_angle(arg0->XYZ.x, arg0->XYZ.z);
             arg0->xform.rot.vy = a;
-            arg0->XYZ.x = rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
-            arg0->XYZ.z = rcossin_tbl[a & 0xFFF].unk2 * 9 >> 4;
+            arg0->XYZ.x = sin_cos_table[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
+            arg0->XYZ.z = sin_cos_table[a & 0xFFF].unk2 * 9 >> 4;
             return 1;
         }
     }
@@ -1293,7 +1293,7 @@ void AR_InitHero(u32 arg0) {
     g = b + arg0;
     a = GameFrameCount;
     g->hero_weapon_count = 1;
-    sp = ((((((a + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + rcossin_tbl)->unk2;
+    sp = ((((((a + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + sin_cos_table)->unk2;
     y = World_floor_level;
     d = (sp * 15 >> 11) - 0x80;
     g->hero_eng->XYZ.y = y + d;
@@ -1530,7 +1530,7 @@ void AR_MoveHero(u32 arg0) {
     if (!(g->hero_status & 0xFA00)) {
         s32 d;
         s32 y;
-        sp = ((((((GameFrameCount + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + rcossin_tbl)->unk2;
+        sp = ((((((GameFrameCount + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + sin_cos_table)->unk2;
         a1 = sp * 17 >> 10;
         y = World_floor_level;
         d = (sp * 15 >> 11) - 0x80;
@@ -1603,7 +1603,7 @@ void AR_PI_MoveHero(u32 arg0) {
         s32 t;
         s32 d;
         a0 = ((GameFrameCount + arg0) << 6) & 0xFFF;
-        t = rcossin_tbl[(a0 - 0x400) & 0xFFF].unk2;
+        t = sin_cos_table[(a0 - 0x400) & 0xFFF].unk2;
         a1 = t * 17 >> 10;
         d = (t * 15 >> 11) - 0x80;
         e->XYZ.y = y + d;
@@ -2329,7 +2329,7 @@ void ArkHeroGrab(u32 arg0) {
         if (s != NULL) {
             s->entity = 0x2003;
             s->flags |= 0x40008021;
-            t = rcossin_tbl[(((GameFrameCount << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 13;
+            t = sin_cos_table[(((GameFrameCount << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 13;
             s->xform.dirty = 1;
             s->xform.scale.vx = t + 0x1000;
             s->xform.scale.vy = t + 0x1000;
@@ -2493,8 +2493,8 @@ s32 ArkBotAimA(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - rcossin_tbl[ang & 0xFFF].unk2;
+    to->x = from->x - sin_cos_table[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - sin_cos_table[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2591,8 +2591,8 @@ s32 ArkBotAimB(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - rcossin_tbl[ang & 0xFFF].unk2;
+    to->x = from->x - sin_cos_table[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - sin_cos_table[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2954,7 +2954,7 @@ void Ark_HeroBot(u32 arg0) {
     if (min != 0x7FFFFF) {
         ang = get_angle(best.x - Heroes[arg0].hero_eng->XYZ.x,
                         best.z - Heroes[arg0].hero_eng->XYZ.z);
-        dist = csqrt(min) >> 6;
+        dist = int_sqrt(min) >> 6;
     } else {
         dist = 0;
         ang = get_angle(ai->TargetXYZ.x - Heroes[arg0].hero_eng->XYZ.x,
@@ -3105,7 +3105,7 @@ void Ark_HeroBot(u32 arg0) {
         eng = Heroes[arg0].hero_eng;
         dx = eng->XYZ.x - ai->TargetXYZ.x;
         row = eng->XYZ.z - ai->TargetXYZ.z;
-        d = csqrt(dx * dx + row * row) >> 6;
+        d = int_sqrt(dx * dx + row * row) >> 6;
         if (d < 0x80) {
             ai->AIsleep = Random(0x3C) + 0x1E;
             ai->AImode = 5;
@@ -3210,8 +3210,8 @@ NAS *CreateBall(NAS *arg0) {
                                 dst->Xmax = srcm->Xmax;
                                 dir = srcm->Xa;
                                 srcm->Xa = (dir + 0x2AA) & 0xFFF;
-                                src->x -= rcossin_tbl[(srcm->Xa - 0x400) & 0xFFF].unk2 * 128 >> 12;
-                                src->z -= rcossin_tbl[srcm->Xa & 0xFFF].unk2 * 128 >> 12;
+                                src->x -= sin_cos_table[(srcm->Xa - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                                src->z -= sin_cos_table[srcm->Xa & 0xFFF].unk2 * 128 >> 12;
                                 if (dst->Xmax < 0x50) {
                                     dst->Xmax = 0x50;
                                 }
@@ -3219,8 +3219,8 @@ NAS *CreateBall(NAS *arg0) {
                                     dst->Xvel = dst->Xmax;
                                 }
                                 dst->Xa = (dir - 0x2AA) & 0xFFF;
-                                eng->x -= rcossin_tbl[(dst->Xa - 0x400) & 0xFFF].unk2 * 128 >> 12;
-                                eng->z -= rcossin_tbl[dst->Xa & 0xFFF].unk2 * 128 >> 12;
+                                eng->x -= sin_cos_table[(dst->Xa - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                                eng->z -= sin_cos_table[dst->Xa & 0xFFF].unk2 * 128 >> 12;
                             }
                         }
                     }
@@ -3268,8 +3268,8 @@ void ArkSpawnBall(void) {
                         mot->Xmax = 0x80;
                         dir = ((ArkenoidSpawn *)ArkBallSpawner)->dir;
                         mot->Xa = dir;
-                        eng->XYZ.x = rcossin_tbl[(dir - 0x400) & 0xFFF].unk2 * 13 >> 7;
-                        eng->XYZ.z = rcossin_tbl[dir & 0xFFF].unk2 * 13 >> 7;
+                        eng->XYZ.x = sin_cos_table[(dir - 0x400) & 0xFFF].unk2 * 13 >> 7;
+                        eng->XYZ.z = sin_cos_table[dir & 0xFFF].unk2 * 13 >> 7;
                     }
                 }
                 PlaySfx(0x5C1, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -3436,8 +3436,8 @@ void PlotBall(NAS *nas) {
                 mot->Xvel = mot->Xmax;
             }
         }
-        eng->XYZ.x -= (mot->Xvel * rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
-        eng->XYZ.z -= (mot->Xvel * rcossin_tbl[mot->Xa & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (mot->Xvel * sin_cos_table[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (mot->Xvel * sin_cos_table[mot->Xa & 0xFFF].unk2) >> 12;
         if (obj->timer != 0) {
             obj->timer--;
         }
@@ -3826,7 +3826,7 @@ void PlotBall(NAS *nas) {
     dx = eng->XYZ.x - eng->OldXYZ.x;
     dz = eng->XYZ.z - eng->OldXYZ.z;
     eng->xform.rot.vy += (((get_angle(dx, dz) & 0xFFF) - eng->xform.rot.vy) << 20) >> 21;
-    dist = csqrt(dx * dx + dz * dz) >> 5;
+    dist = int_sqrt(dx * dx + dz * dz) >> 5;
     eng->xform.dirty = 1;
     dx = ((eng->XYZ.x + 0x800) >> 9) + 1;
     dz = ((eng->XYZ.z + 0x800) >> 9) + 1;
@@ -3932,8 +3932,8 @@ void CalcArkInfluence(EXTmotion *m) {
     s32 scale;
 
     if (GameMode == 0x11) {
-        sx = abs((rcossin_tbl[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 * 5) >> 3);
-        sz = abs((rcossin_tbl[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 * 5) >> 3);
+        sx = abs((sin_cos_table[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 * 5) >> 3);
+        sz = abs((sin_cos_table[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 * 5) >> 3);
         az = 0;
         ax = (ArkFloorTiltX < 0) ? 0x800 : 0;
         if (ArkFloorTiltX > 0) {
@@ -3946,12 +3946,12 @@ void CalcArkInfluence(EXTmotion *m) {
             az = 0xC00;
         }
         scale = (s16)sx;
-        x1 = (scale * rcossin_tbl[(ax - 0x400) & 0xFFF].unk2) >> 12;
-        z1 = (scale * rcossin_tbl[ax].unk2) >> 12;
+        x1 = (scale * sin_cos_table[(ax - 0x400) & 0xFFF].unk2) >> 12;
+        z1 = (scale * sin_cos_table[ax].unk2) >> 12;
         scale = (s16)sz;
-        t = (scale * rcossin_tbl[(az - 0x400) & 0xFFF].unk2) >> 12;
+        t = (scale * sin_cos_table[(az - 0x400) & 0xFFF].unk2) >> 12;
         x1 += t;
-        t = (scale * rcossin_tbl[az].unk2) >> 12;
+        t = (scale * sin_cos_table[az].unk2) >> 12;
         angle = get_angle(x1, z1 + t);
         m->Zvel = (sx + sz) >> 6;
         m->Za = angle;
@@ -3959,11 +3959,11 @@ void CalcArkInfluence(EXTmotion *m) {
     speed = m->Zvel;
     if (speed != 0) {
         vel = m->Xvel;
-        x1 = (vel * rcossin_tbl[((u16)m->Xa - 0x400) & 0xFFF].unk2) >> 12;
-        z1 = (vel * rcossin_tbl[(u16)m->Xa & 0xFFF].unk2) >> 12;
-        t = (speed * rcossin_tbl[((u16)m->Za - 0x400) & 0xFFF].unk2) >> 12;
+        x1 = (vel * sin_cos_table[((u16)m->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        z1 = (vel * sin_cos_table[(u16)m->Xa & 0xFFF].unk2) >> 12;
+        t = (speed * sin_cos_table[((u16)m->Za - 0x400) & 0xFFF].unk2) >> 12;
         x1 += t;
-        t = (speed * rcossin_tbl[(u16)m->Za & 0xFFF].unk2) >> 12;
+        t = (speed * sin_cos_table[(u16)m->Za & 0xFFF].unk2) >> 12;
         m->Xa = get_angle(x1, z1 + t) & 0xFFF;
     }
 }
@@ -4020,8 +4020,8 @@ void FreeGrabbedObject(u32 arg0, bool arg1) {
                                 a += hero->xform.rot.vy;
                                 a &= 0xFFF;
                                 *(volatile s16 *)&mot->Xa = a;
-                                eng->XYZ.x -= mot->Xvel * rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2 >> 12;
-                                eng->XYZ.z -= mot->Xvel * rcossin_tbl[(u16)mot->Xa & 0xFFF].unk2 >> 12;
+                                eng->XYZ.x -= mot->Xvel * sin_cos_table[(mot->Xa - 0x400) & 0xFFF].unk2 >> 12;
+                                eng->XYZ.z -= mot->Xvel * sin_cos_table[(u16)mot->Xa & 0xFFF].unk2 >> 12;
                                 obj->status = 1;
                             }
                         }
@@ -4500,9 +4500,9 @@ void UpdateArkFloor(void)
 
     a = (GameFrameCount << 5) & 0xFFF;
     if (GameMode == 0x11) {
-        ArkFloorTiltZ = ((rcossin_tbl[(a * 2 - 0x400) & 0xFFF].unk2 + rcossin_tbl[a].unk2) * 11) >> 12;
-        ArkFloorTiltX = (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 5) >> 10;
-        World_floor_level = (rcossin_tbl[a].unk2 * 3) >> 7;
+        ArkFloorTiltZ = ((sin_cos_table[(a * 2 - 0x400) & 0xFFF].unk2 + sin_cos_table[a].unk2) * 11) >> 12;
+        ArkFloorTiltX = (sin_cos_table[(a - 0x400) & 0xFFF].unk2 * 5) >> 10;
+        World_floor_level = (sin_cos_table[a].unk2 * 3) >> 7;
     }
     i = 0;
     do {
@@ -5140,7 +5140,7 @@ void Plot_RepulseRing(NAS *arg0) {
     e->xform.rot.vz = base[arg0->UserInfo.user1].hero_eng->xform.rot.vz;
     s = e->sub;
     s->flags |= 0x40008000;
-    t = rcossin_tbl[(((GameFrameCount << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    t = sin_cos_table[(((GameFrameCount << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 12;
     s->xform.dirty = 1;
     s->xform.scale.vx = t + 0x1200;
     s->xform.scale.vy = t + 0x1200;
@@ -5240,8 +5240,8 @@ void LineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
 
     arg1 = (arg1 + 0x800) & 0xFFF;
     start = *pos;
-    start.x -= (0x200 * rcossin_tbl[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
-    start.z -= (0x200 * rcossin_tbl[arg1].unk2) >> 12;
+    start.x -= (0x200 * sin_cos_table[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
+    start.z -= (0x200 * sin_cos_table[arg1].unk2) >> 12;
     dir.x = start.x - pos->x;
     dir.y = 0;
     dir.z = start.z - pos->z;
@@ -5258,7 +5258,7 @@ void LineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
     if (s < 0) {
         return;
     }
-    s = csqrt(s) >> 6;
+    s = int_sqrt(s) >> 6;
     t1 = ((-b + s) << 8) / (a * 2);
     t2 = ((-b - s) << 8) / (a * 2);
     if (t1 < 0 && t2 < 0) {
@@ -5372,7 +5372,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
     hero = &Heroes[arg0];
     farp.y = hero->hero_eng->XYZ.y + box->y1;
     farp.z = hero->hero_eng->XYZ.z + box->z1;
-    tbl = rcossin_tbl;
+    tbl = sin_cos_table;
     for (nas = HeadOfSolids;; nas = nas->Solid.Child) {
         if (nas == NULL) {
             return 0;
@@ -5444,7 +5444,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
         if (!(dist < rad * rad)) {
             continue;
         }
-        dist = csqrt(dist) >> 6;
+        dist = int_sqrt(dist) >> 6;
         if (!(dist < rad)) {
             continue;
         }
@@ -5594,7 +5594,7 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                         r += arg1;
                         d = dx * dx + dz * dz;
                         if (d < r * r) {
-                            d = csqrt(d) >> 6;
+                            d = int_sqrt(d) >> 6;
                             if (d < r) {
                                 t = FindExtension(n, 0x1000);
                                 if (t != NULL
@@ -5602,8 +5602,8 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                                     && t->whatami == 1 && t->timer == 0) {
                                     ang = get_angle(-dx, -dz) & 0xFFF;
                                     d = r - d + 1;
-                                    o->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                    o->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                    o->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    o->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
                                     t->player = arg0;
                                     e = FindExtension(n, 0x800);
                                     if (e != NULL) {
@@ -5686,7 +5686,7 @@ void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
                         dz = o->XYZ.z - sp10.z;
                         d = dx * dx + dz * dz;
                         if (d < lim) {
-                            d = csqrt(d) >> 6;
+                            d = int_sqrt(d) >> 6;
                             ang = get_angle(-dx, -dz) & 0xFFF;
                             d = r - d;                            e = FindExtension((NAS *)n, 0x800);
                             if (e != NULL) {
@@ -5745,7 +5745,7 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
                             ang = get_angle(dx, dz) & 0xFFF;
                             a = angle_diff_abs(ang, e->Xa);
                             if (a < 0x300) {
-                                s32 s = csqrt(d);
+                                s32 s = int_sqrt(d);
                                 d = s >> 6;
                                 if (a < (s >> 8)) {
                                     d = r - d;
@@ -5806,7 +5806,7 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                                 r = rec->radius;
                                 r += rad;
                                 if ((d = dx * dx + dz * dz) < r * r) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     do {
                                     if (d < r) {
                                         ang = get_angle(-dx, -dz) & 0xFFF;
@@ -5816,8 +5816,8 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                                             if (self->can_do & 0x80) {
                                                 m = FindExtension(it, 0x800);
                                                 if (m != NULL) {
-                                                    other->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                    other->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                                    other->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                    other->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
                                                     ang += angle_diff((m->Xa + 0x800) & 0xFFF, ang);
@@ -5829,8 +5829,8 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                                                 if (r / 2 < d) {
                                                     d = r;
                                                 }
-                                                eng->XYZ.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->XYZ.z += (d * rcossin_tbl[ang].unk2) >> 12;
+                                                eng->XYZ.x += (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->XYZ.z += (d * sin_cos_table[ang].unk2) >> 12;
                                                 if (mine != NULL) {
                                                     m = FindExtension(it, 0x800);
                                                     if (m != NULL) {
@@ -5960,8 +5960,8 @@ void Init_RepulseRing(NAS *nas)
 }
 
 s32 GetArkPIContour(EXTengine *v) {
-    return v->XYZ.y - ((World_floor_level - (v->XYZ.z * rcossin_tbl[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 >> 12)) +
-                       (v->XYZ.x * rcossin_tbl[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 >> 12));
+    return v->XYZ.y - ((World_floor_level - (v->XYZ.z * sin_cos_table[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 >> 12)) +
+                       (v->XYZ.x * sin_cos_table[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 >> 12));
 }
 
 s32 GetArkContour(EXTengine *arg0) {
@@ -6277,10 +6277,10 @@ void AR_InitShadow(u32 arg0) {
 }
 
 s32 ArkAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
-    s32 a = arg1 * rcossin_tbl[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 b = arg1 * rcossin_tbl[arg0 & 0xFFF].unk2;
-    s32 c = arg3 * rcossin_tbl[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 d = arg3 * rcossin_tbl[arg2 & 0xFFF].unk2;
+    s32 a = arg1 * sin_cos_table[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 b = arg1 * sin_cos_table[arg0 & 0xFFF].unk2;
+    s32 c = arg3 * sin_cos_table[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 d = arg3 * sin_cos_table[arg2 & 0xFFF].unk2;
     s32 x = a >> 12;
     s32 z = b >> 12;
     x += c >> 12;

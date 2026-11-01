@@ -129,11 +129,11 @@ typedef struct PolarGameExt {
         s32 x_;                                                                    \
         s32 z_;                                                                    \
         s32 *p_;                                                                   \
-        x_ = (spd_ * rcossin_tbl[((move)->forward_angle + 0x400) & 0xFFF].unk2) >> 12; \
+        x_ = (spd_ * sin_cos_table[((move)->forward_angle + 0x400) & 0xFFF].unk2) >> 12; \
         p_ = &(move)->x_vel;                                                       \
         p_[0] = x_;                                                                \
         p_[1] = x_;                                                                \
-        z_ = (spd_ * rcossin_tbl[((move)->forward_angle + 0x800) & 0xFFF].unk2) >> 12; \
+        z_ = (spd_ * sin_cos_table[((move)->forward_angle + 0x800) & 0xFFF].unk2) >> 12; \
         p_ = &(move)->z_vel;                                                       \
         p_[0] = z_;                                                                \
         p_[1] = z_;                                                                \
@@ -773,7 +773,7 @@ typedef struct PolarShardExt {
 
 /* PlotPolarBoss: r * sin(ang) in 12-bit fixed point. */
 static inline s32 PolarSinMul(s32 ang, s32 r) {
-    return (rcossin_tbl[ang & 0xFFF].unk2 * r) >> 12;
+    return (sin_cos_table[ang & 0xFFF].unk2 * r) >> 12;
 }
 
 /* PlotPolarBoss: a random offset in (-n, n). */

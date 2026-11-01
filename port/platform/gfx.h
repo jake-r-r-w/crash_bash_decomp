@@ -15,7 +15,7 @@ typedef struct GfxVert {
 } GfxVert;
 
 /* Blends, as the PS1's semi-transparency modes. */
-enum { GFX_OPAQUE = -1, GFX_HALF = 0, GFX_ADD = 1, GFX_SUB = 2, GFX_ADD_QUARTER = 3, GFX_STATE_BLEND = 4 };
+enum { GFX_OPAQUE = -1, GFX_HALF = 0, GFX_ADD = 1, GFX_SUB = 2, GFX_ADD_QUARTER = 3 };
 
 typedef struct GfxTex {
     float u0, v0, us, vs; /* where it is in the atlas: origin and scale per texel */
@@ -59,9 +59,6 @@ int gfx_stepping(void);
 void gfx_window_resized(void);
 /* v[0] v[1] v[2] v[3] in PS1 quad order (Z), as two triangles. */
 void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend);
-
-/* The blend for what draws after this at its place in the order and uses GFX_STATE_BLEND, as a DR_TPAGE sets it. */
-void gfx_state_blend(int key, int blend);
 
 /* A texture from the game's data: bpp 4 or 8 with a palette of u16 colours, or 16. Decoded on first use. id says which texture
  * this is, to find it again without looking at its pixels, until gfx_forget_textures; 0 for one that has no lasting id. */

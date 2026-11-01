@@ -7,8 +7,8 @@
 
 /* The sine and cosine table, { sin, cos } for 4096 angles, and the normalising table. Both are exactly these formulas: checked against
  * the tables in a retail exe. */
-short rcossin_tbl[4096 * 2];
-static short InvSqrtTbl[192];
+short sin_cos_table[4096 * 2];
+static short NormaliseTable[192];
 
 /* How a triangle's three depths make its place in the order: a third, in 12 bits */
 #define ORDER_SCALE 0x155
@@ -254,11 +254,11 @@ void maths_init(void) {
     for (i = 0; i < 4096; i++) {
         double a = i * 3.14159265358979323846 * 2 / 4096;
 
-        rcossin_tbl[i * 2] = (short)floor(sin(a) * 4096 + 0.5);
-        rcossin_tbl[i * 2 + 1] = (short)floor(cos(a) * 4096 + 0.5);
+        sin_cos_table[i * 2] = (short)floor(sin(a) * 4096 + 0.5);
+        sin_cos_table[i * 2 + 1] = (short)floor(cos(a) * 4096 + 0.5);
     }
     for (i = 0; i < 192; i++) {
-        InvSqrtTbl[i] = (short)floor(4096 * sqrt(64.0 / (i + 64)));
+        NormaliseTable[i] = (short)floor(4096 * sqrt(64.0 / (i + 64)));
     }
 }
 
@@ -277,7 +277,7 @@ static int lzc(int32_t a) {
     return n;
 }
 
-/* csqrt's CORDIC, six steps with the fourth done twice. */
+/* int_sqrt's CORDIC, six steps with the fourth done twice. */
 static int32_t csqrt_steps(int32_t a) {
     int32_t x = a + 0x5D50AD;
     int32_t y = a - 0x5D50AD;
@@ -303,7 +303,7 @@ static int32_t csqrt_steps(int32_t a) {
     return x;
 }
 
-int csqrt(int a) {
+int int_sqrt(int a) {
     int d, n;
     int32_t x, r;
 
@@ -329,15 +329,15 @@ static void angle(int a, int32_t *s, int32_t *c) {
     a = (short)a;
     if (a < 0) {
         a = -a & 0xFFF;
-        *s = -rcossin_tbl[a * 2];
+        *s = -sin_cos_table[a * 2];
     } else {
         a &= 0xFFF;
-        *s = rcossin_tbl[a * 2];
+        *s = sin_cos_table[a * 2];
     }
-    *c = rcossin_tbl[a * 2 + 1];
+    *c = sin_cos_table[a * 2 + 1];
 }
 
-MATRIX *RotMatrix(SVECTOR *r, MATRIX *m) {
+MATRIX *matrix_rotation_xyz(SVECTOR *r, MATRIX *m) {
     int32_t sx, cx, sy, cy, sz, cz, t;
 
     angle(r->vx, &sx, &cx);
@@ -357,7 +357,7 @@ MATRIX *RotMatrix(SVECTOR *r, MATRIX *m) {
     return m;
 }
 
-MATRIX *RotMatrixYXZ(SVECTOR *r, MATRIX *m) {
+MATRIX *matrix_rotation_yxz(SVECTOR *r, MATRIX *m) {
     int32_t sx, cx, sy, cy, sz, cz, t;
 
     angle(r->vx, &sx, &cx);
@@ -377,7 +377,7 @@ MATRIX *RotMatrixYXZ(SVECTOR *r, MATRIX *m) {
     return m;
 }
 
-MATRIX *RotMatrixZYX(SVECTOR *r, MATRIX *m) {
+MATRIX *matrix_rotation_zyx(SVECTOR *r, MATRIX *m) {
     int32_t sx, cx, sy, cy, sz, cz, t;
 
     angle(r->vx, &sx, &cx);
@@ -397,7 +397,7 @@ MATRIX *RotMatrixZYX(SVECTOR *r, MATRIX *m) {
     return m;
 }
 
-MATRIX *ScaleMatrixL(MATRIX *m, VECTOR *v) {
+MATRIX *matrix_scale(MATRIX *m, VECTOR *v) {
     int i, j;
     int32_t s[3];
 
@@ -413,7 +413,7 @@ MATRIX *ScaleMatrixL(MATRIX *m, VECTOR *v) {
 }
 
 /* Leaves the view's rotation as m0, which the game's drawing has come to count on. */
-MATRIX *MulMatrix0(MATRIX *m0, MATRIX *m1, MATRIX *out) {
+MATRIX *matrix_mul(MATRIX *m0, MATRIX *m1, MATRIX *out) {
     int16_t r[3][3];
     int i, j;
 
@@ -434,11 +434,11 @@ MATRIX *MulMatrix0(MATRIX *m0, MATRIX *m1, MATRIX *out) {
     return out;
 }
 
-MATRIX *MulMatrix(MATRIX *m0, MATRIX *m1) {
-    return MulMatrix0(m0, m1, m0);
+MATRIX *matrix_mul_into(MATRIX *m0, MATRIX *m1) {
+    return matrix_mul(m0, m1, m0);
 }
 
-VECTOR *ApplyMatrixLV(MATRIX *m, VECTOR *in, VECTOR *out) {
+VECTOR *matrix_apply_long(MATRIX *m, VECTOR *in, VECTOR *out) {
     int32_t v[3], hi[3], lo[3], rh[3], mac[3], ir[3];
     int i;
 
@@ -486,13 +486,13 @@ static void vector_normal(int32_t *v) {
         return;
     }
     x = lz >= 24 ? (int32_t)((uint32_t)l << (lz - 24)) : l >> (24 - lz);
-    h = InvSqrtTbl[x - 64];
+    h = NormaliseTable[x - 64];
     v[0] = (h * i0) >> sh;
     v[1] = (h * i1) >> sh;
     v[2] = (h * i2) >> sh;
 }
 
-void MatrixNormal_1(MATRIX *m, MATRIX *n) {
+void matrix_normalise(MATRIX *m, MATRIX *n) {
     int32_t a[3], b[3], c[3];
     int i;
 

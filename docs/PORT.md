@@ -16,7 +16,7 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
 3. **Everything PC-only goes in `port/`**, and the port never builds from `src/` or `include/`. A fix found in one
    copy goes to the other by hand, if it applies.
 4. **The port is tested by playing it.** Disc to disc is byte matching; this isn't. The user plays it and says what's wrong.
-5. **No Sony code in `port/`.** PsyQ's names go as the code is cleaned up, in favour of plain functions.
+5. **No Sony code in `port/`.** The game calls plain functions (`platform/`, `bash/draw.h`), not PsyQ's.
 6. **No emulation and no hacks.** No PS1 GPU, VRAM or SPU model, no fixed low addresses, no linker lists that
    recreate the PS1's layout, no crash handlers that patch up bad accesses, no `-O0` to hide undefined
    behaviour. If the C relies on the PS1, the C gets fixed.
@@ -74,9 +74,9 @@ saying so. With real prototypes, these calls just pass the argument.
 camera, collision and sound positions come out the same. It's plain C functions (`platform/maths.c`), with no registers,
 and the same integer rules as the PS1.
 
-**Drawing.** The port doesn't write PS1 drawing commands. The functions that do (`draw_object_model`, `draw_verts`
-and the `prim_*` writers, the map, sprite and text drawing) are rewritten to send vertices to the
-GPU with real 3D transforms, depth and perspective-correct textures. Textures go from the game's indexed files to
+**Drawing.** The port doesn't write PS1 drawing commands. The game calls `bash/draw.h` directly (`main/draw.c`), which sends vertices to the
+GPU with real 3D transforms, depth and perspective-correct textures. A place in the frame's order is just a number (a layer), and a model keeps
+its faces' look as plain `DrawFace` records. Textures go from the game's indexed files to
 GPU textures at load, and palettes and animated or scrolling textures use GPU resources, not a VRAM allocator. Blend
 modes, fades and draw order are kept, so it looks like the game, sharper. The few effects that draw into VRAM
 become render targets.
@@ -102,7 +102,7 @@ ctest --preset windows-clang
 ```
 
 The presets are `windows-clang`, `linux-clang`, `linux-gcc` and `linux-asan`, and the output is under `build/port/`.
-`port/` holds `game/` (the copy of the game's C), `psyq/` (the PsyQ names still left: the drawing packets, which go in 6.8), `tests/` (the play tests) and `main.c`.
+`port/` holds `game/` (the copy of the game's C), `platform/` (the host: window, renderer, sound, maths, files), `tests/` (the play tests) and `main.c`.
 
 The game's C isn't in the default build until it compiles. To see what's left:
 

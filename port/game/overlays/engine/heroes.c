@@ -1076,8 +1076,8 @@ void DefPreMoveHero(s32 arg0) {
                 if (vc != 1) {
                     if (vc != 0) {
                         if (vc < 4) {
-                            m->x_max = (speed * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                            m->z_max = (speed * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                            m->x_max = (speed * sin_cos_table[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                            m->z_max = (speed * sin_cos_table[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                         }
                     }
                 }
@@ -1200,11 +1200,11 @@ void DefMoveHero(s32 arg0) {
         break;
     case 1:
     default:
-        e->XYZ.x -= (m->forward_speed * rcossin_tbl[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
-        e->XYZ.z -= (m->forward_speed * rcossin_tbl[m->forward_angle & 0xFFF].unk2) >> 12;
+        e->XYZ.x -= (m->forward_speed * sin_cos_table[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
+        e->XYZ.z -= (m->forward_speed * sin_cos_table[m->forward_angle & 0xFFF].unk2) >> 12;
         if (m->reactive_speed != 0) {
-            e->XYZ.x -= (m->reactive_speed * rcossin_tbl[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
-            e->XYZ.z -= (m->reactive_speed * rcossin_tbl[m->reactive_angle & 0xFFF].unk2) >> 12;
+            e->XYZ.x -= (m->reactive_speed * sin_cos_table[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
+            e->XYZ.z -= (m->reactive_speed * sin_cos_table[m->reactive_angle & 0xFFF].unk2) >> 12;
             m->reactive_speed -= 4;
             if (m->reactive_speed < 0) {
                 m->reactive_speed = 0;
@@ -2281,8 +2281,8 @@ void HeroSpin(s32 arg0) {
                         m = o->hero_move;
                         vc = m->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
-                            m->x_vel -= (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                            o->hero_move->z_vel -= (rcossin_tbl[angle & 0xFFF].unk2 * 3) >> 8;
+                            m->x_vel -= (sin_cos_table[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                            o->hero_move->z_vel -= (sin_cos_table[angle & 0xFFF].unk2 * 3) >> 8;
                         }
                         Heroes[id].hero_move->reactive_angle = angle;
                         Heroes[id].hero_move->reactive_speed = 0x30;
@@ -2356,8 +2356,8 @@ void HeroWhip(s32 arg0) {
                         m = o->hero_move;
                         vc = m->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
-                            m->x_vel -= (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                            o->hero_move->z_vel -= (rcossin_tbl[angle & 0xFFF].unk2 * 3) >> 8;
+                            m->x_vel -= (sin_cos_table[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                            o->hero_move->z_vel -= (sin_cos_table[angle & 0xFFF].unk2 * 3) >> 8;
                         }
                         Heroes[id].hero_move->reactive_angle = angle;
                         Heroes[id].hero_move->reactive_speed = 0x30;
@@ -2459,8 +2459,8 @@ void HeroShoot(s32 arg0) {
                             if (vc != 1) {
                                 if (vc != 0) {
                                     if (vc < 4) {
-                                        m->x_vel -= (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                                        h2->hero_move->z_vel -= (rcossin_tbl[angle & 0xFFF].unk2 * 3) >> 8;
+                                        m->x_vel -= (sin_cos_table[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                                        h2->hero_move->z_vel -= (sin_cos_table[angle & 0xFFF].unk2 * 3) >> 8;
                                     }
                                 }
                             }
@@ -2579,8 +2579,8 @@ void HeroKick(s32 arg0) {
                             if (vc != 1) {
                                 if (vc != 0) {
                                     if (vc < 4) {
-                                        m->x_vel -= (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                                        h2->hero_move->z_vel -= (rcossin_tbl[angle & 0xFFF].unk2 * 3) >> 8;
+                                        m->x_vel -= (sin_cos_table[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                                        h2->hero_move->z_vel -= (sin_cos_table[angle & 0xFFF].unk2 * 3) >> 8;
                                     }
                                 }
                             }
@@ -2719,8 +2719,8 @@ void HeroGhost(u32 arg0) {
             if (AngelSparkles[i][arg0].speed < 0) {
                 AngelSparkles[i][arg0].speed = 0;
             }
-            s->XYZ.x += AngelSparkles[i][arg0].speed * rcossin_tbl[(AngelSparkles[i][arg0].flags - 0x400) & 0xFFF].unk2 >> 12;
-            s->XYZ.z += AngelSparkles[i][arg0].speed * rcossin_tbl[AngelSparkles[i][arg0].flags & 0xFFF].unk2 >> 12;
+            s->XYZ.x += AngelSparkles[i][arg0].speed * sin_cos_table[(AngelSparkles[i][arg0].flags - 0x400) & 0xFFF].unk2 >> 12;
+            s->XYZ.z += AngelSparkles[i][arg0].speed * sin_cos_table[AngelSparkles[i][arg0].flags & 0xFFF].unk2 >> 12;
             y = AngelSparkles[i][arg0].y;
             y += AngelSparkles[i][arg0].yvel;
             if (y > 0x30) {
@@ -3880,7 +3880,7 @@ s32 PointInZone(s32 *arg0, s32 arg1) {
     if (p != NULL) {
         i = 0;
         n = ((MapContour *)p)->nEdges;
-        t = rcossin_tbl;
+        t = sin_cos_table;
         a2 = p + 0x50;
         a3 = p;
         for (;;) {
@@ -3916,7 +3916,7 @@ s32 ArcUpdate(s32 *from, s32 *to, Arc *arc, s32 *pos) {
         dx = to[0] - from[0];
         dz = to[2] - from[2];
         n = 0;
-        dist = csqrt(dx * dx + dz * dz) >> 6;
+        dist = int_sqrt(dx * dx + dz * dz) >> 6;
         dy = to[1] - from[1];
         if (arc->speed != 0) {
             n = dist / arc->speed;
@@ -3927,8 +3927,8 @@ s32 ArcUpdate(s32 *from, s32 *to, Arc *arc, s32 *pos) {
         arc->vy = arc->vy0 = dy / n - (n >> 1) * arc->gravity;
         ang = get_angle(dx, dz) & 0xFFF;
         arc->angle = ang;
-        arc->vx = arc->speed * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        arc->vz = arc->speed * rcossin_tbl[arc->angle & 0xFFF].unk2 >> 12;
+        arc->vx = arc->speed * sin_cos_table[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        arc->vz = arc->speed * sin_cos_table[arc->angle & 0xFFF].unk2 >> 12;
         arc->started = 1;
     }
     pos[1] += arc->vy;
@@ -3943,10 +3943,8 @@ s32 ArcUpdate(s32 *from, s32 *to, Arc *arc, s32 *pos) {
 }
 
 void PlotSparks(SparkObj *obj) {
-    SparkPoly *p0;
     Spark *s;
-    SparkPoly *p1;
-    SparkTex *tex;
+    obj_texture *tex;
     s32 n;
     s16 a;
     s32 t;
@@ -3955,18 +3953,16 @@ void PlotSparks(SparkObj *obj) {
 
     ss = &obj->set;
     n = ss->count;
-    p0 = ss->prims[0];
-    p1 = ss->prims[1];
     s = obj->set.sparks;
-    tex = (SparkTex *)&HeroModelBank[DB_ArenaBossBearArena].textures.tex[50];
+    tex = &HeroModelBank[DB_ArenaBossBearArena].textures.tex[50];
     if (GameMode == 0x22) {
-        tex = (SparkTex *)&MapScene->dbase->textures.tex[201];
+        tex = &MapScene->dbase->textures.tex[201];
     }
     if (GameMode == 0x13) {
-        tex = (SparkTex *)&MapScene->dbase->textures.tex[31];
+        tex = &MapScene->dbase->textures.tex[31];
     }
     if (GameMode == 0x1D) {
-        tex = (SparkTex *)&MapScene->dbase->textures.tex[46];
+        tex = &MapScene->dbase->textures.tex[46];
     }
     for (; n != 0; n--) {
         do {
@@ -3986,50 +3982,39 @@ void PlotSparks(SparkObj *obj) {
         t = Random(0xFFF);
         s->ang = t;
         s->base_x = s->x;
-        s->x = s->base_x + ((rcossin_tbl[(t - 0x400) & 0xFFF].unk2 * 512 >> 12));
+        s->x = s->base_x + ((sin_cos_table[(t - 0x400) & 0xFFF].unk2 * 512 >> 12));
         s->x2 = s->x + 0x40;
         s++;
-        *(u32 *)&p0->r0 = 0xA0A0A0;
-        p0->tpage = (tex->tpage & 0xFF9F) | 0x20;
-        p0->clut = tex->clut;
-        p0->uv0 = tex->uv0;
-        p0->uv1 = tex->uv1;
-        p0->uv2 = tex->uv2;
-        p0->uv3 = tex->uv3;
-        ((u8 *)&p0->tag)[3] = 9;
-        p0->code = 0x2E;
-        *p1++ = *p0++;
     }
+    ss->face->uv[0] = tex->info.uv0;
+    ss->face->uv[1] = tex->info.uv1;
+    ss->face->uv[2] = tex->info.uv2;
+    ss->face->uv[3] = tex->info.uv3;
+    ss->face->image = tex->info.image;
+    ss->face->palette = tex->info.palette;
+    ss->face->blend = GFX_ADD;
 }
 
 void PlotFallParticles(subengine *sub, MATRIX *m) {
     FallParticles *fp = (FallParticles *)&sub->u6C;  /* the fx buffers' head */
     FallParticle *p;
-    POLY_FT4 *prim;
+    DVECTOR xy[4];
     s32 n;
-    s32 col;
-    s32 tag2;
-    s16 *sxy;
-    s32 tag;
     s32 t;
-    s32 r;
-    SVECTOR *v;
 
     p = fp->parts;
-    prim = fp->prims[FrameCount & 1];
     view_set_rotation(m);
     view_set_translation(m);
     n = fp->count;
-    col = calc_rgbcode(0x10, 0x10, 0x10);
-    tag = col | 0x2E000000;
+    draw_face_colour(fp->face, calc_rgbcode(0x10, 0x10, 0x10) | DRAW_BLENDS);
     while (n != 0) {
         p->top.vy += 0x18;
-        p->top.vx = p->base + (rcossin_tbl[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
+        p->top.vx = p->base + (sin_cos_table[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
         p->angle = (p->angle + 0x10) & 0xFFF;
         if (p->top.vy > 0x800) {
             p->angle = Random(0xFFF);
             p->base = Random(0x3000) - Random(0x3000);
-            p->top.vx = p->base + (rcossin_tbl[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
+            p->top.vx = p->base + (sin_cos_table[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
             t = Random(0x4000) - Random(0x1000);
             p->top.vz = t;
             p->top.vy = -0xDAC;
@@ -4038,17 +4023,13 @@ void PlotFallParticles(subengine *sub, MATRIX *m) {
         }
         p->bot.vy = p->top.vy + 0x40;
         p->bot.vx = p->top.vx + 0x40;
-        tag2 = tag;
-        sxy = &prim->x0;
-        do { *(s32 *)&prim->r0 = tag2; } while (0);
-        project_xy(&p->top, sxy);
-        project_xy(&p->bot, &prim->x3);
-        prim->y1 = prim->y0;
-        prim->x2 = prim->x0;
-        prim->x1 = prim->x3;
-        prim->y2 = prim->y3;
-        addPrim(RenderState.ot + 0x40, prim);
-        prim++;
+        project_xy(&p->top, &xy[0]);
+        project_xy(&p->bot, &xy[3]);
+        xy[1].vy = xy[0].vy;
+        xy[2].vx = xy[0].vx;
+        xy[1].vx = xy[3].vx;
+        xy[2].vy = xy[3].vy;
+        draw_face_quad(RenderState.layer + 0x40, fp->face, xy);
         p++;
         n--;
     }
@@ -4243,7 +4224,7 @@ void PlotFloatyScore(NAS *nas) {
             break;
         case 1:
             eng->XYZ.y -= 0x20;
-            if (nas->UserInfo.user2 - (rcossin_tbl[0xC00].unk2 * 3 >> 7) >= eng->XYZ.y) {
+            if (nas->UserInfo.user2 - (sin_cos_table[0xC00].unk2 * 3 >> 7) >= eng->XYZ.y) {
                 nas->UserInfo.status = 2;
                 nas->UserInfo.flags = 0x1E;
             }
@@ -4251,7 +4232,7 @@ void PlotFloatyScore(NAS *nas) {
         case 2:
             ang = ++nas->UserInfo.user1;
             y = nas->UserInfo.user2;
-            ang = rcossin_tbl[((ang << 7) & 0xFFF) - 0x400 & 0xFFF].unk2;
+            ang = sin_cos_table[((ang << 7) & 0xFFF) - 0x400 & 0xFFF].unk2;
             eng->xform.dirty = one;
             eng->XYZ.y = y - (ang * 3 >> 7);
             s = eng->xform.scale.vx + 0x40;
@@ -4617,7 +4598,7 @@ void HurtHeroesInRadius(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             e = hero[i].hero_eng;
             dx = e->XYZ.x - x;
             dz = e->XYZ.z - z;
-            dist = csqrt(dx * dx + dz * dz) >> 6;
+            dist = int_sqrt(dx * dx + dz * dz) >> 6;
             if (dist < arg1) {
                 if ((GameCheats & 0x80000001) != 0x80000001) {
                     ok = 1;
@@ -4636,8 +4617,8 @@ void HurtHeroesInRadius(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                         dist = (arg1 - dist) >> 3;
                         vc = hero[i].hero_move->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
-                            hero[i].hero_move->x_vel = (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                            hero[i].hero_move->z_vel = (dist * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                            hero[i].hero_move->x_vel = (dist * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                            hero[i].hero_move->z_vel = (dist * sin_cos_table[ang & 0xFFF].unk2) >> 12;
                             hero[i].hero_move->x_max = 0;
                             hero[i].hero_move->z_max = 0;
                         }
@@ -6270,7 +6251,7 @@ ScriptInit SmokePoofInit = { 0, (void *)SmokePoofScripts, 0x402 };
 s32 PolarTiltX = 0;
 s32 PolarTiltZ = 0;
 s32 PolarTiltUnused = 0;
-FxDef WeatherFxDef = { 0x100, 0x2800, 0x1800, PlotSparks, PlotFallParticles };
+FxDef WeatherFxDef = { 0x100, 0x1800, PlotSparks, PlotFallParticles };
 u16 HealthPickupSfx[8] = { 0x1C5, 0x1C6, 0x1C7, 0x1C8, 0x1C9, 0x1CA, 0x1CB, 0x1CC };
 u16 HealthPickupAmounts[4] = { 1, 1, 2, 2 };
 u16 BigPoofScript[18] = {  /* frames, then the end (0x8000 | 4) */

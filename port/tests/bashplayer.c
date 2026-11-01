@@ -32,7 +32,7 @@
 #define FLIGHT_WIDE 0x240
 
 static s32 distance(s32 dx, s32 dz) {
-    return csqrt(dx * dx + dz * dz) >> 6;
+    return int_sqrt(dx * dx + dz * dz) >> 6;
 }
 
 /* Where to get away from: fills it in and says if there's anything to get away from, the nearest of what's dangerous. */
@@ -53,7 +53,7 @@ static s32 bash_danger(const EXTengine *he, s32 *from_x, s32 *from_z) {
         if (f->status == CRATE_FLYING) {
             /* he's in its way if he's on the line it's flying along: off to the side he's on already */
             s32 vy = e->xform.rot.vy;
-            s32 fx = -rcossin_tbl[(vy - 0x400) & 0xFFF].unk2, fz = -rcossin_tbl[vy & 0xFFF].unk2;
+            s32 fx = -sin_cos_table[(vy - 0x400) & 0xFFF].unk2, fz = -sin_cos_table[vy & 0xFFF].unk2;
             s32 rx = he->XYZ.x - x, rz = he->XYZ.z - z;
             s32 along = (rx * fx + rz * fz) >> 12;
             s32 side = (rx * fz - rz * fx) >> 12;

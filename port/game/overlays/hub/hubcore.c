@@ -179,12 +179,12 @@ void HubInitGateways(void) {
                 d = *(Vec3W *)&((MapPath *)obj)->keys[0].pos;
                 d.a -= ref.a;
                 d.c -= ref.c;
-                p->radius_inner = csqrt(d.a * d.a + d.c * d.c) >> 6;
+                p->radius_inner = int_sqrt(d.a * d.a + d.c * d.c) >> 6;
                 p->angle = get_angle(d.a, d.c);
                 d = *(Vec3W *)&((MapPath *)obj)->keys[1].pos;
                 d.a -= ref.a;
                 d.c -= ref.c;
-                p->radius_outer = csqrt(d.a * d.a + d.c * d.c) >> 6;
+                p->radius_outer = int_sqrt(d.a * d.a + d.c * d.c) >> 6;
             }
         }
         i++;
@@ -203,7 +203,7 @@ void HubUpdateGateways(void) {
         if (p->table != NULL) {
             o = (s32 *)p->colour_map;
             if (o != NULL) {
-                s32 v = rcossin_tbl[(((GameFrameCount * 0x50) & 0xFFF) - 0x400) & 0xFFF].unk2;
+                s32 v = sin_cos_table[(((GameFrameCount * 0x50) & 0xFFF) - 0x400) & 0xFFF].unk2;
                 o[2] = v * 0x20 >> 12;
             }
             if (q[-2] == one) {
@@ -825,7 +825,7 @@ static inline void PathFace(KeyEntry *k, s32 dir, PathRot *ang) {
     dx = k->pos.x - n->pos.x;
     dz = k->pos.z - n->pos.z;
     dy = k->pos.y - n->pos.y;
-    dist = csqrt(dx * dx + dz * dz) >> 6;
+    dist = int_sqrt(dx * dx + dz * dz) >> 6;
     ang->y = get_angle(dx, dz) + (dir << 11);
     if (dir != 0) {
         ang->x = get_angle(dy, dist);
@@ -1034,7 +1034,7 @@ void HubPathAngles(s32 *arg0, s32 flag, s32 *out) {
     q = p + 7;
     dz = p[2] - q[2];
     dy = p[1] - q[1];
-    dist = csqrt(dx * dx + dz * dz) >> 6;
+    dist = int_sqrt(dx * dx + dz * dz) >> 6;
     out[1] = get_angle(dx, dz) + (flag << 11);
     if (flag != 0) {
         out[0] = get_angle(dy, dist);
@@ -1189,7 +1189,7 @@ void HubSpawnFlash(s32 *arg0, s32 arg1) {
 s32 HubDist(DistPos *a, DistPos *b) {
     s32 dx = b->x - a->x;
     s32 dz = b->z - a->z;
-    return csqrt(dx * dx + dz * dz) >> 6;
+    return int_sqrt(dx * dx + dz * dz) >> 6;
 }
 
 s32 HubDistXZ(EXTengine *arg0, EXTengine *arg1) {
@@ -1298,10 +1298,10 @@ void HubCamTarget(void) {
 
     s32 a, b;
 
-    a = rcossin_tbl[(HubHeroRing.angle - 0x400) & 0xFFF].unk2 * HubHeroRing.radius;
-    v[0] = rcossin_tbl[(HubHeroRing.angle - 0x400) & 0xFFF].unk2;
-    b = rcossin_tbl[HubHeroRing.angle & 0xFFF].unk2 * HubHeroRing.radius;
-    v[1] = rcossin_tbl[HubHeroRing.angle & 0xFFF].unk2;
+    a = sin_cos_table[(HubHeroRing.angle - 0x400) & 0xFFF].unk2 * HubHeroRing.radius;
+    v[0] = sin_cos_table[(HubHeroRing.angle - 0x400) & 0xFFF].unk2;
+    b = sin_cos_table[HubHeroRing.angle & 0xFFF].unk2 * HubHeroRing.radius;
+    v[1] = sin_cos_table[HubHeroRing.angle & 0xFFF].unk2;
     v[0] = a;
     a >>= 12;
     v[0] = a;
@@ -1819,7 +1819,7 @@ void PlotPodiumTrophy(PodiumTrophy *arg0) {
         }
         fx = in->sub;
         if (fx != NULL) {
-            tb = rcossin_tbl;
+            tb = sin_cos_table;
             t = FrameCount;
 #define TSIN(k) tb[((((t * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
             fx->xform.rot.vx = *(s32 *)&tb[(((t * 0x46) & 0xFFF) - 0x400) & 0xFFF] >> 20;
@@ -1879,11 +1879,11 @@ void PodiumCamera(CamView *out, s32 arg1) {
     d.x = PodiumCamAt.x - key.x;
     d.y = PodiumCamAt.y - key.y;
     d.z = PodiumCamAt.z - key.z;
-    out->eye.z = csqrt(d.x * d.x + d.y * d.y + d.z * d.z) >> 6;
+    out->eye.z = int_sqrt(d.x * d.x + d.y * d.y + d.z * d.z) >> 6;
     out->eye.x = 0;
     out->eye.y = 0;
     out->rot.vy = get_angle(-d.x, d.z);
-    out->rot.vx = get_angle(d.y, csqrt(d.x * d.x + d.z * d.z) >> 6);
+    out->rot.vx = get_angle(d.y, int_sqrt(d.x * d.x + d.z * d.z) >> 6);
     out->rot.vz = 0;
     switch (PodiumState) {
     case 0:
@@ -2023,10 +2023,8 @@ void InitSparkGFX(NAS *arg0) {
 
 void HubInitSparks(HubSparks *arg0) {
     s32 n;
-    HubFt4 *src;
-    HubFt4 *dst;
     HubSparkRow *row;
-    HubTex *tex;
+    obj_texture *tex;
     TrigEntry *a;
     TrigEntry *b;
     s32 ang;
@@ -2038,28 +2036,26 @@ void HubInitSparks(HubSparks *arg0) {
     set = &arg0->set;
     tex = NULL;
     n = set->count;
-    src = set->src;
-    dst = set->dst;
     row = arg0->set.rows;
     g = &HeroModelBank[DB_AdventureItems];
     sel = PodiumCheerKind;
     if (sel == 0) {
-        tex = (HubTex *)&g->textures.tex[7];
+        tex = &g->textures.tex[7];
     }
     if (sel == 1) {
-        tex = (HubTex *)&g->textures.tex[11];
+        tex = &g->textures.tex[11];
     }
     if (sel == 2) {
-        tex = (HubTex *)&g->textures.tex[8];
+        tex = &g->textures.tex[8];
     }
     if (sel == 3) {
-        tex = (HubTex *)&g->textures.tex[10];
+        tex = &g->textures.tex[10];
     }
     if (sel == 4) {
-        tex = (HubTex *)&g->textures.tex[9];
+        tex = &g->textures.tex[9];
     }
     if (sel == 5) {
-        tex = (HubTex *)&g->textures.tex[12];
+        tex = &g->textures.tex[12];
     }
     k = 4;
     for (;;) {
@@ -2071,18 +2067,18 @@ void HubInitSparks(HubSparks *arg0) {
         }
         row->count = 0;
         ang = n << 9;
-        a = &rcossin_tbl[ang & 0xFFF];
+        a = &sin_cos_table[ang & 0xFFF];
         for (;;) {
             s32 r;
 
             if (i >= 8) {
                 break;
             }
-            row->rot[i].vx = rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12;
+            row->rot[i].vx = sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12;
             row->rot[i].vy = (a->unk2 * 64 >> 12) - 0x400;
             row->rot[i].vz = 0x2000;
             row->unk120 = (a->unk2 * 256 >> 12) + Random(0x40) - Random(0x40);
-            row->unk12C = (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> k) + Random(0x40) - Random(0x40);
+            row->unk12C = (sin_cos_table[(ang - 0x400) & 0xFFF].unk2 >> k) + Random(0x40) - Random(0x40);
             row->angle[i].vz = 0;
             row->vel[i].vz = 0;
             row->live[i] = 0;
@@ -2091,23 +2087,18 @@ void HubInitSparks(HubSparks *arg0) {
             row->unk124 = 0;
             row->flag = 0;
             row->brightness = 0;
-            *(u32 *)&src->r0 = 0xA0A0A0;
-            src->tpage = (tex->tpage & ~0x60) | 0x20;
-            src->clut = tex->clut;
-            src->uv0 = tex->uv0;
-            src->uv1 = tex->uv1;
-            src->uv2 = tex->uv2;
-            src->uv3 = tex->uv3;
-            ((u8 *)src)[3] = 9;
-            src->code = 0x2E;
-            *dst = *src;
-            src++;
-            dst++;
             i++;
         }
         row++;
         n--;
     }
+    set->face->uv[0] = tex->info.uv0;
+    set->face->uv[1] = tex->info.uv1;
+    set->face->uv[2] = tex->info.uv2;
+    set->face->uv[3] = tex->info.uv3;
+    set->face->image = tex->info.image;
+    set->face->palette = tex->info.palette;
+    set->face->blend = GFX_ADD;
 }
 
 void HubTrailPoint(HubTrailDst *d, HubTrail *t, s32 idx) {
@@ -2149,7 +2140,7 @@ void HubTrailPoint(HubTrailDst *d, HubTrail *t, s32 idx) {
 
 void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
     HubSparkRow *row;
-    HubFt4 *prim;
+    DVECTOR xy[4];
     HubSparkSet *set;
     SVECTOR *p;
     s32 i;
@@ -2158,7 +2149,6 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
 
     set = &arg0->set;
     row = set->rows;
-    prim = (FrameCount & 1) ? set->dst : set->src;
     view_set_rotation(m);
     view_set_translation(m);
     arg0 = arg0->next;
@@ -2185,50 +2175,44 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
             } else {
                 row->brightness = 255 - i * 255 / 8;
             }
-            c = calc_rgbcode(row->brightness, row->brightness, row->brightness) | 0x2E000000;
+            c = calc_rgbcode(row->brightness, row->brightness, row->brightness) | DRAW_BLENDS;
+            draw_face_colour(set->face, c);
             if (i == 0) {
                 v.vx = row->rot[0].vx - 0x80;
                 v.vy = row->rot[0].vy - 0x80;
                 v.vz = row->rot[0].vz;
                 p = &v;
-                project_xy(p, &prim->x0);
-                *(s32 *)&prim->r0 = c;
-                prim->y1 = prim->y0;
-                prim->x2 = prim->x0;
+                project_xy(p, &xy[0]);
+                xy[1].vy = xy[0].vy;
+                xy[2].vx = xy[0].vx;
             } else {
-                *(s32 *)&prim->r0 = c;
-                prim->x0 = prim[-1].x1;
-                prim->y0 = prim[-1].y1;
-                prim->x2 = prim[-1].x3;
-                prim->y2 = prim[-1].y3;
+                xy[0] = xy[1];
+                xy[2] = xy[3];
             }
             if (i == 0) {
                 v.vx = row->rot[0].vx + 0x80;
                 v.vy = row->rot[0].vy + 0x80;
                 v.vz = row->rot[0].vz;
                 p = &v;
-                project_xy(p, &prim->x3);
-                prim->x1 = prim->x3;
-                prim->y2 = prim->y3;
+                project_xy(p, &xy[3]);
+                xy[1].vx = xy[3].vx;
+                xy[2].vy = xy[3].vy;
             } else {
                 r = 0x80 - i * 16;
-                v.vx = row->rot[i].vx + (r * rcossin_tbl[row->angle[i].vz & 0xFFF].unk2 >> 12);
-                v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->angle[i].vz + 0x400) & 0xFFF].unk2 >> 12);
+                v.vx = row->rot[i].vx + (r * sin_cos_table[row->angle[i].vz & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * sin_cos_table[(row->angle[i].vz + 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
-                project_xy(p, &prim->x3);
-                v.vx = row->rot[i].vx + (r * rcossin_tbl[(((row->angle[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
-                v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->angle[i].vz - 0x400) & 0xFFF].unk2 >> 12);
+                project_xy(p, &xy[3]);
+                v.vx = row->rot[i].vx + (r * sin_cos_table[(((row->angle[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * sin_cos_table[(row->angle[i].vz - 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
-                project_xy(p, &prim->x1);
+                project_xy(p, &xy[1]);
             }
             if (row->live[i] != 0) {
-                prim->tag = (prim->tag & 0xFF000000) | (RenderState.ot[700] & 0xFFFFFF);
-                p = (SVECTOR *)0xFF000000;
-                RenderState.ot[700] = (RenderState.ot[700] & (u32)(iptr)p) | ((u32)(iptr)prim & 0xFFFFFF);
+                draw_face_quad(RenderState.layer + 700, set->face, xy);
             }
-            prim++;
             i++;
         }
         arg0 = arg0->next;
@@ -3193,7 +3177,7 @@ u8 PodiumScore2[4] = { 0x32, 0x30, 0, 0 };
 u8 PodiumScore3[4] = { 0x33, 0x30, 0, 0 };
 u8 PodiumScore4[12] = { 0x34, 0x30, 0, 0, 0x35, 0x30, 0, 0, 0x36, 0x30, 0, 0 };
 s32 PodiumScoreCount = 4;
-FxDef HubSparkFxDef = { 0xC, 0xF00, 0xF00, HubInitSparks, HubDrawSparks };
+FxDef HubSparkFxDef = { 0xC, 0xF00, HubInitSparks, HubDrawSparks };
 NAS *PodiumHeroNas[4] = {0};
 PodiumObj *PodiumTrophyObj = 0;
 s32 PodiumRanks[4] = {0};

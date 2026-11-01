@@ -199,7 +199,7 @@ static s32 crate_flight(s32 xv, s32 xacc, s32 xdec, s32 xmax, s32 yv, s32 yacc, 
 static s32 away_from_blast(const EXTengine *he, s32 bx, s32 bz) {
     s32 dx = he->XYZ.x - bx, dz = he->XYZ.z - bz;
 
-    if ((csqrt(dx * dx + dz * dz) >> 6) >= BLAST_REACH) {
+    if ((int_sqrt(dx * dx + dz * dz) >> 6) >= BLAST_REACH) {
         return 0;
     }
     if (!in_arena(he->XYZ.x + dx / 4, he->XYZ.z + dz / 4)) {
@@ -241,7 +241,7 @@ static s32 papu_dodge(const EXTengine *he) {
         if (PapuStompPoint(&sx, &sz, &reach)) {
             s32 dx = he->XYZ.x - sx, dz = he->XYZ.z - sz;
 
-            if ((csqrt(dx * dx + dz * dz) >> 6) < reach + STOMP_CLEAR) {
+            if ((int_sqrt(dx * dx + dz * dz) >> 6) < reach + STOMP_CLEAR) {
                 return in_arena(he->XYZ.x + dx / 4, he->XYZ.z + dz / 4) ? steer(dx, dz) : steer(-he->XYZ.x, -he->XYZ.z);
             }
         }
@@ -252,7 +252,7 @@ static s32 papu_dodge(const EXTengine *he) {
 
         if (fux != NULL && m != NULL && n->Engine != NULL && n->Engine->platform == NULL && fux->status == CRATE_FLYING && m->Xvel > THROWN_SPEED && fux->player >= MINION_FIRST) {
             s32 vy = n->Engine->xform.rot.vy;
-            s32 fx = -rcossin_tbl[(vy - 0x400) & 0xFFF].unk2, fz = -rcossin_tbl[vy & 0xFFF].unk2;
+            s32 fx = -sin_cos_table[(vy - 0x400) & 0xFFF].unk2, fz = -sin_cos_table[vy & 0xFFF].unk2;
             s32 t;
             s32 go = crate_flight(m->Xvel, m->Xacc, m->Xdec, m->Xmax, m->Yvel, m->Yacc, m->Ydec, m->Ymax, m->Ydir, n->Engine->XYZ.y, &t);
             s32 b = away_from_blast(he, n->Engine->XYZ.x + ((fx * go) >> 12), n->Engine->XYZ.z + ((fz * go) >> 12));
@@ -268,7 +268,7 @@ static s32 papu_dodge(const EXTengine *he) {
         if (fux != NULL && n->Engine != NULL && fux->whatami == PAPU_TNT_LIT) {
             s32 dx = he->XYZ.x - n->Engine->XYZ.x, dz = he->XYZ.z - n->Engine->XYZ.z;
 
-            if ((csqrt(dx * dx + dz * dz) >> 6) < TNT_NEAR) {
+            if ((int_sqrt(dx * dx + dz * dz) >> 6) < TNT_NEAR) {
                 return in_arena(he->XYZ.x + dx / 4, he->XYZ.z + dz / 4) ? steer(dx, dz) : steer(-he->XYZ.x, -he->XYZ.z);
             }
         }
@@ -317,7 +317,7 @@ static s32 play_papu(void) {
         if (h->hero_object != NULL) {
             return (BotTicks & 7) == 0 ? BTN_CIRCLE : steer(mx, mz);
         }
-        if ((csqrt(mx * mx + mz * mz) >> 6) < SPIN_REACH) {
+        if ((int_sqrt(mx * mx + mz * mz) >> 6) < SPIN_REACH) {
             return steer(mx, mz) | ((BotTicks & 3) == 0 ? BTN_SQUARE : 0);
         }
         return steer(mx, mz);
@@ -530,8 +530,8 @@ static s32 near_edge(s32 x, s32 z) {
    holds to one side, one with ice on it, as a robot turns to follow him and swapping sides lets it catch up. */
 static s32 bear_dodge(EXTengine *he, EXTengine *e) {
     s32 vy = e->xform.rot.vy;
-    s32 fx = -rcossin_tbl[(vy - 0x400) & 0xFFF].unk2;
-    s32 fz = -rcossin_tbl[vy & 0xFFF].unk2;
+    s32 fx = -sin_cos_table[(vy - 0x400) & 0xFFF].unk2;
+    s32 fz = -sin_cos_table[vy & 0xFFF].unk2;
     s32 rx = he->XYZ.x - e->XYZ.x;
     s32 rz = he->XYZ.z - e->XYZ.z;
     s32 along = (rx * fx + rz * fz) >> 12;
@@ -611,7 +611,7 @@ static s32 play_bear(void) {
         for (bear = PolarFirstBear(); bear != NULL; bear = bear->Group.Child) {
             if (bear->Engine != NULL) {
                 s32 dx = bear->Engine->XYZ.x - he->XYZ.x, dz = bear->Engine->XYZ.z - he->XYZ.z;
-                s32 d = csqrt(dx * dx + dz * dz) >> 6;
+                s32 d = int_sqrt(dx * dx + dz * dz) >> 6;
                 s32 state = PolarBearState(bear);
 
                 /* each robot fires once, a while after it lands, along the way it faces: it follows the hero until then, so
@@ -641,7 +641,7 @@ static s32 play_bear(void) {
             s32 bx = best->Engine->XYZ.x, bz = best->Engine->XYZ.z;
             s32 dx = bx - he->XYZ.x, dz = bz - he->XYZ.z;
             s32 ox = bx - BearMidX, oz = bz - BearMidZ;
-            s32 br = csqrt(ox * ox + oz * oz) >> 6;
+            s32 br = int_sqrt(ox * ox + oz * oz) >> 6;
             s32 tr = br - BEAR_STANDOFF;
             s32 full = PolarHeroMeter(0) >= PolarHeroAttackPower(0);
 
@@ -746,7 +746,7 @@ static void nox_find_threats(const EXTengine *he) {
             AstSlot *a = &NoxAsteroids[asteroid++];
 
             if (a->state != 1 && (o->flags & 0x8000) && a->pos.z > he->XYZ.z - 0x800 && a->pos.z < he->XYZ.z + NOX_LOOK * NOX_CLOSING) {
-                s32 r = (csqrt(a->radius) >> 6) + NOX_BALL_MARGIN + (a->state2 == 1 ? NOX_ORBIT : 0);
+                s32 r = (int_sqrt(a->radius) >> 6) + NOX_BALL_MARGIN + (a->state2 == 1 ? NOX_ORBIT : 0);
 
                 t->pos = a->pos;
                 t->radius2 = r * r;
@@ -799,7 +799,7 @@ static void nox_find_threats(const EXTengine *he) {
 /* NoxBoxToSphere's test, for where the bar will have turned to by then */
 static s32 nox_hits_box(const NoxThreat *t, s32 dx, s32 dy, s32 dz, s32 ticks) {
     s32 a = (t->turn + t->turn_rate * ticks) & 0xFFF;
-    s32 c = rcossin_tbl[a].unk2, s = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
+    s32 c = sin_cos_table[a].unk2, s = sin_cos_table[(a - 0x400) & 0xFFF].unk2;
     s32 bx = (c * dx + s * dy) >> 12, by = (c * dy - s * dx) >> 12;
     const Box2 *b = t->box;
 
@@ -827,8 +827,8 @@ static s32 nox_cost(const EXTengine *he, const EXTheromove *m, s32 yaw, s32 pitc
     for (t = 1; t <= NOX_LOOK; t++) {
         rx += ((pitch - rx) << 20) >> 23;
         ry += angle_diff(ry, 0x800 + yaw) >> 2;
-        xv = towards(xv, (NOX_FORWARD * rcossin_tbl[(ry + 0x400) & 0xFFF].unk2) >> 11, NOX_ACCEL);
-        yv = towards(yv, (NOX_FORWARD * rcossin_tbl[(rx + 0x400) & 0xFFF].unk2) >> 11, NOX_ACCEL);
+        xv = towards(xv, (NOX_FORWARD * sin_cos_table[(ry + 0x400) & 0xFFF].unk2) >> 11, NOX_ACCEL);
+        yv = towards(yv, (NOX_FORWARD * sin_cos_table[(rx + 0x400) & 0xFFF].unk2) >> 11, NOX_ACCEL);
         x += xv;
         y += yv;
         x = x < -NOX_X_LIMIT ? -NOX_X_LIMIT : x > NOX_X_LIMIT ? NOX_X_LIMIT : x;
@@ -844,7 +844,7 @@ static s32 nox_cost(const EXTengine *he, const EXTheromove *m, s32 yaw, s32 pitc
                 /* PlotNitroMissile: straight at him, each tick */
                 s32 hz = he->XYZ.z + t * NOX_FORWARD;
                 s32 ax = x - shot[i].x, ay = y - 0x100 - shot[i].y, az = hz - shot[i].z;
-                s32 flat = csqrt(ax * ax + az * az) >> 6;
+                s32 flat = int_sqrt(ax * ax + az * az) >> 6;
 
                 if (shot[i].z < hz) {
                     continue;

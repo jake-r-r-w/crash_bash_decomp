@@ -1228,7 +1228,7 @@ void Bash_HeroBot(s32 arg0) {
         if (ai->AIsleep != 0) {
             goto steer;
         }
-        d = csqrt(dist) >> 6;
+        d = int_sqrt(dist) >> 6;
         if (ai->AItimer1 != 0) {
             ang += 0x800;
             ang &= 0xFFF;
@@ -1364,10 +1364,10 @@ void BashAI_ScanAhead(s32 arg0) {
     rx = eng->XYZ.x;
     rz = eng->XYZ.z;
     mv = Heroes[arg0].hero_move;
-    dx = rcossin_tbl[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
+    dx = sin_cos_table[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
     ang = mv->forward_angle;
-    c = rcossin_tbl[(ang + 0x400) & 0xFFF].unk2;
-    s = rcossin_tbl[(ang + 0x800) & 0xFFF].unk2;
+    c = sin_cos_table[(ang + 0x400) & 0xFFF].unk2;
+    s = sin_cos_table[(ang + 0x800) & 0xFFF].unk2;
     dz = c * 15 >> 9;
     lx = rx + dx;
     rx = rx - dx;
@@ -1633,7 +1633,7 @@ s32 BashAI_ChooseTarget(s32 player) {
             if (f->status != 1) continue;
             dx = px - e->XYZ.x;
             dz = pz - e->XYZ.z;
-            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = int_sqrt(dx * dx + dz * dz) >> 6;
             d = (0x1000 - abs(d - r)) * wt;
             cnt = 0;
             for (i = 0; i < 4; i++) {
@@ -1649,7 +1649,7 @@ s32 BashAI_ChooseTarget(s32 player) {
             if (f->status != 1) continue;
             dx = px - e->XYZ.x;
             dz = pz - e->XYZ.z;
-            d2 = csqrt(dx * dx + dz * dz) >> 6;
+            d2 = int_sqrt(dx * dx + dz * dz) >> 6;
             d = 0x800 - d2;
             if (d < 0) d = 0;
             d *= wNear + wRnd;
@@ -1674,7 +1674,7 @@ s32 BashAI_ChooseTarget(s32 player) {
         case 18: case 19: case 25: case 27: case 28:
             dx = px - e->XYZ.x;
             dz = pz - e->XYZ.z;
-            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = int_sqrt(dx * dx + dz * dz) >> 6;
             d = abs(d - r) * 0xFA;
             cnt = 0;
             for (i = 0; i < 4; i++) {
@@ -1689,7 +1689,7 @@ s32 BashAI_ChooseTarget(s32 player) {
         case 2:
             dx = px - e->XYZ.x;
             dz = pz - e->XYZ.z;
-            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = int_sqrt(dx * dx + dz * dz) >> 6;
             d = abs(d - r) * 0x190;
             if (Heroes[player].hero_pu != 0) {
                 d >>= 8;
@@ -1707,7 +1707,7 @@ s32 BashAI_ChooseTarget(s32 player) {
         case 17:
             dx = px - e->XYZ.x;
             dz = pz - e->XYZ.z;
-            d2 = csqrt(dx * dx + dz * dz) >> 6;
+            d2 = int_sqrt(dx * dx + dz * dz) >> 6;
             d = 0xE00 - d2;
             if (d < 0) d = 0;
             cnt = 0;
@@ -1757,7 +1757,7 @@ s32 BashAI_ChooseTarget(s32 player) {
         if (Heroes[i].hero_mode == 2) {
             w += 0x20;
         }
-        d2 = csqrt(dx * dx + dz * dz) >> 6;
+        d2 = int_sqrt(dx * dx + dz * dz) >> 6;
         dh = 0x800 - d2;
         if (dh < 0) dh = 0;
         dh *= wn + w + wRnd;
@@ -1921,7 +1921,7 @@ s32 BashAI_NearestEnemy(s32 arg0) {
         }
     }
     if (min != 0x7FFFFF) {
-        r = csqrt(min) >> 6;
+        r = int_sqrt(min) >> 6;
     } else {
         r = 0;
     }
@@ -2499,7 +2499,7 @@ void PlotBashPenguin(NAS *nas) {
                 }
                 t = nas->UserInfo.user1;
                 if (t > 0) {
-                    r = (rcossin_tbl[(t - 0x400) & 0xFFF].unk2 * 3) >> 3;
+                    r = (sin_cos_table[(t - 0x400) & 0xFFF].unk2 * 3) >> 3;
                     if (r > 0x500) {
                         r = 0x500;
                     }
@@ -2507,8 +2507,8 @@ void PlotBashPenguin(NAS *nas) {
                     d = ((0x500 - abs(r)) >> 6) + 0x28;
                     ang = (nas->UserInfo.user2 + d) & 0xFFF;
                     nas->UserInfo.user2 = ang;
-                    eng->XYZ.x = (r * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                    eng->XYZ.z = (r * rcossin_tbl[ang].unk2) >> 12;
+                    eng->XYZ.x = (r * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->XYZ.z = (r * sin_cos_table[ang].unk2) >> 12;
                     eng->sub->entity = 0x2002;
                 } else {
                     GotoLinkAnim(anim, 2);
@@ -2660,10 +2660,10 @@ void BashPenguinPush(EXTengine *self) {
             dist = dx * dx + dz * dz;
             if (dist < rr * rr) {
                 ang = get_angle(-dx, -dz);
-                dist = csqrt(dist) >> 6;
+                dist = int_sqrt(dist) >> 6;
                 dist = rr - dist;
-                eng->XYZ.x -= (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                eng->XYZ.z -= (dist * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                eng->XYZ.x -= (dist * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                eng->XYZ.z -= (dist * sin_cos_table[ang & 0xFFF].unk2) >> 12;
                 obj = FindExtension(nas, 0x1000);
                 if (obj != NULL) {
                     if (obj->can_do & 8) {
@@ -3069,8 +3069,8 @@ void PlotBash8way(NAS *nas) {
             for (; sub != NULL; ang += 0x200, sub = sub->next, ang &= 0xFFF) {
                 if (sub->flags != 0) {
                     a = (ang - 0x400) & 0xFFF;
-                    sub->XYZ.x -= (speed * rcossin_tbl[a].unk2) >> 12;
-                    sub->XYZ.z -= (speed * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                    sub->XYZ.x -= (speed * sin_cos_table[a].unk2) >> 12;
+                    sub->XYZ.z -= (speed * sin_cos_table[ang & 0xFFF].unk2) >> 12;
                     t = sub->XYZ.y + mot->Yvel;
                     sub->XYZ.y = t;
                     x = eng->XYZ.x + sub->XYZ.x;
@@ -3207,8 +3207,8 @@ void PlotBashHomer(NAS *nas) {
                     eng->XYZ.y -= (eng->XYZ.y - (he->XYZ.y - 0xA0)) >> 2;
                 }
             }
-            eng->XYZ.x -= (mot->Xvel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            eng->XYZ.z -= (mot->Xvel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+            eng->XYZ.x -= (mot->Xvel * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            eng->XYZ.z -= (mot->Xvel * sin_cos_table[ang & 0xFFF].unk2) >> 12;
             x = eng->XYZ.x;
             y = eng->XYZ.y;
             z = eng->XYZ.z;
@@ -3340,8 +3340,8 @@ void PlotBashShox(NAS *nas) {
                     if (vc == 1) {
                     } else if (vc == 0) {
                     } else if (vc < 4) {
-                        mv->x_vel -= (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                        h->hero_move->z_vel -= (rcossin_tbl[ang & 0xFFF].unk2 * 3) >> 8;
+                        mv->x_vel -= (sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                        h->hero_move->z_vel -= (sin_cos_table[ang & 0xFFF].unk2 * 3) >> 8;
                     }
                     Heroes[hit].hero_move->reactive_angle = ang;
                     Heroes[hit].hero_move->reactive_speed = 0x30;
@@ -3846,7 +3846,7 @@ void BashTumblerAim(BashTumbler *arg0, EXTmotion *arg1, s32 arg2) {
     dx = arg0->x - Heroes[arg2].hero_eng->XYZ.x;
     dz = arg0->z - Heroes[arg2].hero_eng->XYZ.z;
     ang = get_angle(dx, dz);
-    dist = csqrt(dx * dx + dz * dz);
+    dist = int_sqrt(dx * dx + dz * dz);
     arg0->angle = ang;
     arg1->Xvel = (u32)(dist >> 6) / arg1->Ftime;
 }

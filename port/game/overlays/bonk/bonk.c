@@ -527,7 +527,7 @@ s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
         z = Random(0x1000) - 0x800;
         for (i = 0, h = heroes; i < 4; i++, h++) {
             eng = h->hero_eng;
-            if ((csqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x400) {
+            if ((int_sqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x400) {
                 ok = 0;
             }
         }
@@ -536,7 +536,7 @@ s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
                 for (i = 0, e = BonkEntries; i < 10; i++, e++) {
                     if (e->flag != 0) {
                         eng = ((NAS *)e->flag)->Engine;
-                        if ((csqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x400) {
+                        if ((int_sqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x400) {
                             ok = 0;
                         }
                     }
@@ -546,7 +546,7 @@ s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
                 for (i = 0, f = BonkEnts; i < 3; i++, f++) {
                     if (f->b != 0) {
                         eng = ((NAS *)f->b)->Engine;
-                        if ((csqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x300) {
+                        if ((int_sqrt(BonkDist2XZ(eng->XYZ.x, eng->XYZ.z, x, z)) >> 6) < 0x300) {
                             ok = 0;
                         }
                     }
@@ -726,7 +726,7 @@ s32 BonkAI_FindClosest(s32 arg0, void **arg1, s32 arg2) {
             }
             ex = ((BonkPad *)e->flag)->eng->XYZ.x;
             ez = ((BonkPad *)e->flag)->eng->XYZ.z;
-            d = csqrt(BonkDist2XZ(x, z, ex, ez));
+            d = int_sqrt(BonkDist2XZ(x, z, ex, ez));
             d >>= 6;
             if (d < best) {
                 if (!(arg2 & 4) || angle_diff_abs(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
@@ -755,7 +755,7 @@ s32 BonkAI_FindClosest(s32 arg0, void **arg1, s32 arg2) {
             }
             ex = ((BonkPad *)f->b)->eng->XYZ.x;
             ez = ((BonkPad *)f->b)->eng->XYZ.z;
-            d = csqrt(BonkDist2XZ(x, z, ex, ez));
+            d = int_sqrt(BonkDist2XZ(x, z, ex, ez));
             d >>= 6;
             if (d < best) {
                 if (!(arg2 & 4) || angle_diff_abs(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
@@ -830,7 +830,7 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         }
         ex = h->hero_eng->XYZ.x;
         ez = h->hero_eng->XYZ.z;
-        if ((csqrt(BonkDist2XZ(x, z, ex, ez)) >> 6) > a) {
+        if ((int_sqrt(BonkDist2XZ(x, z, ex, ez)) >> 6) > a) {
             goto next;
         }
         if ((h->hero_immunity | h->hero_hit) != 0) {
@@ -842,8 +842,8 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         if (vc != 1) {
             if (vc != 0) {
                 if (vc < 4) {
-                    mv->x_vel -= (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 5) >> 8;
-                    h->hero_move->z_vel -= (rcossin_tbl[ang & 0xFFF].unk2 * 5) >> 8;
+                    mv->x_vel -= (sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 5) >> 8;
+                    h->hero_move->z_vel -= (sin_cos_table[ang & 0xFFF].unk2 * 5) >> 8;
                 }
             }
         }
@@ -863,7 +863,7 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
             e = &BonkEntries[i];
             if (e->flag != 0) {
                 eng = ((NAS *)e->flag)->Engine;
-                if ((csqrt(BonkDist2XZ(x, z, eng->XYZ.x, eng->XYZ.z)) >> 6) <= a
+                if ((int_sqrt(BonkDist2XZ(x, z, eng->XYZ.x, eng->XYZ.z)) >> 6) <= a
                     && ((BonkPad *)e->flag)->mode >= 0xB) {
                     BonkHitTarget(b, 1, (BonkTgt2 *)e);
                 }
@@ -1341,7 +1341,7 @@ void Bonk_HeroBot(s32 arg0) {
         while (1) {
             if (i < 4) {
                 if (i != arg0) {
-                    if ((csqrt(bonk_sq(me->hero_eng->XYZ.x, me->hero_eng->XYZ.z,
+                    if ((int_sqrt(bonk_sq(me->hero_eng->XYZ.x, me->hero_eng->XYZ.z,
                                         heroes[i].hero_eng->XYZ.x, heroes[i].hero_eng->XYZ.z)) >> 6) < 0x1000) {
                         sx += me->hero_eng->XYZ.x - heroes[i].hero_eng->XYZ.x;
                         sz += me->hero_eng->XYZ.z - heroes[i].hero_eng->XYZ.z;
@@ -1364,7 +1364,7 @@ void Bonk_HeroBot(s32 arg0) {
         break;
     case 2:
     case 3:
-        if ((csqrt(bonk_sq(ai->pTargetNas->Engine->XYZ.x, ai->pTargetNas->Engine->XYZ.z,
+        if ((int_sqrt(bonk_sq(ai->pTargetNas->Engine->XYZ.x, ai->pTargetNas->Engine->XYZ.z,
                             Heroes[arg0].hero_eng->XYZ.x, Heroes[arg0].hero_eng->XYZ.z)) >> 6) <
             BonkAIRange[Heroes[arg0].hero_name]) {
             if ((ai->AImode == 3 && Heroes[arg0].hero_mode != 0x44) ||
@@ -1375,7 +1375,7 @@ void Bonk_HeroBot(s32 arg0) {
         goto face;
     case 4:
     case 5:
-        if ((csqrt(bonk_sq(ai->pTargetNas->Engine->XYZ.x, ai->pTargetNas->Engine->XYZ.z,
+        if ((int_sqrt(bonk_sq(ai->pTargetNas->Engine->XYZ.x, ai->pTargetNas->Engine->XYZ.z,
                             Heroes[arg0].hero_eng->XYZ.x, Heroes[arg0].hero_eng->XYZ.z)) >> 6) <
             BonkAIRange[Heroes[arg0].hero_name]) {
             if ((ai->AImode == 5 && Heroes[arg0].hero_mode != 0x44) ||
@@ -1410,7 +1410,7 @@ s32 BonkAI_NearestEnemy(s32 arg0) {
     new_var2 = a->XYZ.x;
     dx = b->XYZ.x - new_var2;
     dz = b->XYZ.z - new_var;
-    r = (csqrt((dx * dx) + (dz * dz)) >> 6) < 0x501;
+    r = (int_sqrt((dx * dx) + (dz * dz)) >> 6) < 0x501;
   }
   else
   {

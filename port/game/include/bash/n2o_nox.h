@@ -506,15 +506,6 @@ s32 NoxPointInBox(s32 *arg0, s32 *arg1);
 
 void InitSpiralSat(NAS *nas);
 
-/* A 2-point gouraud line primitive (LINE_G2 layout). */
-typedef struct SparkLine {
-    /* 0x00 */ u8 tag[3];
-    /* 0x03 */ u8 len;
-    /* 0x04 */ u8 r0, g0, b0, code;
-    /* 0x08 */ s16 x0, y0;
-    /* 0x0C */ u8 r1, g1, b1, p1;
-    /* 0x10 */ s16 x1, y1;
-} SparkLine;
 
 /* Spark, SparkSet and SparkObj: pause.h's (the engine's PlotSparks). */
 

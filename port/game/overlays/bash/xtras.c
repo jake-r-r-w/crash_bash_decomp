@@ -35,8 +35,8 @@ void CrateAimAtGrid(EXTengine *a, EXTmotion *b) {
         } while (v != 0);
     }
     x = a->XYZ.x;
-    mx = sum * rcossin_tbl[(a->xform.rot.vy - 0x400) & 0xFFF].unk2;
-    mz = sum * rcossin_tbl[(u16)a->xform.rot.vy & 0xFFF].unk2;
+    mx = sum * sin_cos_table[(a->xform.rot.vy - 0x400) & 0xFFF].unk2;
+    mz = sum * sin_cos_table[(u16)a->xform.rot.vy & 0xFFF].unk2;
     z = a->XYZ.z;
     x -= mx >> 12;
     z -= mz >> 12;
@@ -49,7 +49,7 @@ void CrateAimAtGrid(EXTengine *a, EXTmotion *b) {
     b->flags = *(u8 *)FILE_AT(DirPadBits, ((u16)a->xform.rot.vy >> 7) & 0x1C);
     x -= a->XYZ.x;
     z -= a->XYZ.z;
-    sum = csqrt(x * x + z * z) >> 6;
+    sum = int_sqrt(x * x + z * z) >> 6;
     if (sum > 0) {
         v -= d;
         do {
@@ -385,9 +385,9 @@ void PlotCrate(NAS *arg0) {
                         dy = b.vy - a.vy;
                         dz = a.vz - b.vz;
                         eng->xform.rot.vy = get_angle(dx, dz) - 0x200;
-                        ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
+                        ang = 0x271 - get_angle(int_sqrt(dx * dx + dz * dz) >> 6, dy);
                         eng->xform.rot.vx = ang;
-                        eng->XYZ.y = b.vy - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->XYZ.y = b.vy - (sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
                         eng->xform.rot.vz = 0;
@@ -701,8 +701,8 @@ void PlotCrate(NAS *arg0) {
         if (ext->Xvel > ext->Xmax) {
             ext->Xvel = ext->Xmax;
         }
-        eng->XYZ.x -= (ext->Xvel * rcossin_tbl[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
-        eng->XYZ.z -= (ext->Xvel * rcossin_tbl[(u16)eng->xform.rot.vy & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (ext->Xvel * sin_cos_table[(eng->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (ext->Xvel * sin_cos_table[(u16)eng->xform.rot.vy & 0xFFF].unk2) >> 12;
         switch (ext->flags & 0xF0) {
         case 0x10:
         case 0x30:

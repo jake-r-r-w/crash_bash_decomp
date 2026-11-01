@@ -158,7 +158,7 @@ void BonkHeroRun(s32 arg0) {
                     case 6: a0 = 0x168; break;
                     default: goto done;
                     }
-                    PlaySfx(a0, NULL, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
+                    PlaySfx(a0, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 } else {
                     PlaySfx(a0, NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 }
@@ -176,7 +176,7 @@ void BonkHeroRun(s32 arg0) {
                     case 6: a0 = 0x169; break;
                     default: goto done;
                     }
-                    PlaySfx(a0, NULL, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
+                    PlaySfx(a0, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
                 }
                 break;
             }
@@ -356,7 +356,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = rcossin_tbl;
+                tbl = sin_cos_table;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -383,7 +383,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                                     dz = e->XYZ.z - eng->XYZ.z;
                                     d = dx * dx + dz * dz;
                                     if (d < rr) {
-                                        d = csqrt(d) >> 6;
+                                        d = int_sqrt(d) >> 6;
                                         if (d < r) {
                                             ang = get_angle(dx, dz) & 0xFFF;
                                             d = r - d + 1;
@@ -408,7 +408,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                                 d = dx * dx + dz * dz;
                                 rr = r * r;
                                 if (d < rr) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     if (d < r) {
                                         hit = 1;
                                         ang = get_angle(dx, dz) & 0xFFF;
@@ -431,7 +431,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                                 d = dx * dx + dz * dz;
                                 rr = r * r;
                                 if (d < rr) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     if (d < r) {
                                         hit = 1;
                                         ang = get_angle(dx, dz) & 0xFFF;
@@ -481,7 +481,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                     d = dx * dx + dz * dz;
                     rr = r * r;
                     if (d < rr) {
-                        d = csqrt(d) >> 6;
+                        d = int_sqrt(d) >> 6;
                         if (d < r) {
                             hit = 1;
                             a = get_angle(dx, dz);
@@ -491,8 +491,8 @@ s32 BonkHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                                eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * sin_cos_table[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->can_do & 8)) {
@@ -733,8 +733,8 @@ s32 BonkKeepInBoundsB(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->XYZ.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->XYZ.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
+        eng->XYZ.x = limit * sin_cos_table[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->XYZ.z = limit * sin_cos_table[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;
@@ -754,8 +754,8 @@ s32 BONK_KeepInBounds(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->XYZ.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->XYZ.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
+        eng->XYZ.x = limit * sin_cos_table[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->XYZ.z = limit * sin_cos_table[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;

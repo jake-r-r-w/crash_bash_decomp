@@ -41,7 +41,7 @@ typedef struct { s32 x, y, z; } CamXYZ;
 
 /* At +0x54 of camera_info_tag; gfx_object_matrix takes a pointer to it. */
 typedef struct {
-    SVECTOR angle; /* 0x00: the view's rotation (cam_build_view's RotMatrix) */
+    SVECTOR angle; /* 0x00: the view's rotation (cam_build_view's matrix_rotation_xyz) */
     u8 pad8[8];
     VECTOR scale; /* 0x10: diagonal of the screen-aligned matrix (cam_set_projection) */
 } GfxCamScale;

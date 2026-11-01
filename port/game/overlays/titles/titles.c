@@ -631,7 +631,7 @@ void AnimateTitlesBackdrop(void) {
     sub->xform.scale.vx = 0x2800;
     sub->xform.dirty = 1;
     eng = GetEngineSlot(1);
-    tbl = rcossin_tbl;
+    tbl = sin_cos_table;
     pos = TitlesBackdropPos;
     d = GameFrameCount;
     pos.x += (tbl[(((d * 0x14) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x8F) >> 0xF;
@@ -1518,7 +1518,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
     t->XYZ.x = lerp_snap(t->XYZ.x, x, 0x800);
     t->XYZ.y = lerp_snap(t->XYZ.y, y, 0x800);
     still = abs(t->XYZ.x - x) + abs(t->XYZ.y - y);
-    s->XYZ.y = s2->XYZ.y = ((TitlesTrig *)rcossin_tbl)[(FrameCount * o->y - 0x400) & 0xFFF].hi + 0x1A4;
+    s->XYZ.y = s2->XYZ.y = ((TitlesTrig *)sin_cos_table)[(FrameCount * o->y - 0x400) & 0xFFF].hi + 0x1A4;
     still = still == 0;
     if (o->flags & 1) {
         tgt = CharCards[o->card].target;
@@ -1701,14 +1701,14 @@ void CharSelectUpdate(void) {
     AnimateTitlesBackdrop();
     eng = GetEngineSlot(0);
     s = &eng->sub[24];
-    s->XYZ.y = ((rcossin_tbl[(((GameFrameCount * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
-    s->xform.rot.vy = (rcossin_tbl[(((GameFrameCount * 25) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
-    s->xform.rot.vz = (rcossin_tbl[(((GameFrameCount * 36) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s->XYZ.y = ((sin_cos_table[(((GameFrameCount * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
+    s->xform.rot.vy = (sin_cos_table[(((GameFrameCount * 25) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s->xform.rot.vz = (sin_cos_table[(((GameFrameCount * 36) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
     s->xform.dirty = 1;
     s2 = &GetEngineSlot(0)->sub[25];
-    s2->XYZ.y = ((rcossin_tbl[(((GameFrameCount * 41) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0xBE;
-    s2->xform.rot.vy = (rcossin_tbl[(((GameFrameCount * 35) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
-    s2->xform.rot.vz = (rcossin_tbl[(((GameFrameCount * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s2->XYZ.y = ((sin_cos_table[(((GameFrameCount * 41) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0xBE;
+    s2->xform.rot.vy = (sin_cos_table[(((GameFrameCount * 35) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s2->xform.rot.vz = (sin_cos_table[(((GameFrameCount * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
     s2->xform.dirty = 1;
     min = 0x7FFFFFFF;
     for (i = 0; i < ((GameState *)GameInfo)->players; i++) {
@@ -2058,14 +2058,14 @@ void LevelSelectUpdate(void) {
             s->xform.rot.vx = 0x7D;
             s->xform.rot.vy = 0;
             s->xform.rot.vz = 0;
-            s->XYZ.x = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
-            s->XYZ.y = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+            s->XYZ.x = sin_cos_table[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
+            s->XYZ.y = (sin_cos_table[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
         } else {
             s->u6C.dbase = &HeroModelBank[DB_MainmenuModels];
             s->entity = 0x2006;
             s->xform.rot.vx = 0;
             s->xform.rot.vy = FrameCount * 50 + (i << 10);
-            val = rcossin_tbl[(((GameFrameCount * 100 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2;
+            val = sin_cos_table[(((GameFrameCount * 100 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2;
             s->XYZ.x = 0;
             s->XYZ.y = 0;
             s->xform.rot.vz = (val * 25) >> 9;
@@ -2084,7 +2084,7 @@ void LevelSelectUpdate(void) {
     q = GetEngineSlot(2)->sub;
     q->xform.rot.vx = 0x7D;
     q->xform.order = 0;
-    q->XYZ.x = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->XYZ.y = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+    q->XYZ.x = sin_cos_table[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->XYZ.y = (sin_cos_table[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
     q->xform.dirty = 1;
 }
 

@@ -420,8 +420,8 @@ void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1) {
         break;
     }
     a &= 0xFFF;
-    dx = (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 256) >> 12;
-    dz = (rcossin_tbl[a].unk2 * 256) >> 12;
+    dx = (sin_cos_table[(a - 0x400) & 0xFFF].unk2 * 256) >> 12;
+    dz = (sin_cos_table[a].unk2 * 256) >> 12;
     get_angle(arg1->XYZ.x + dx - hx, arg1->XYZ.z + dz - hz);
     p = &ChaseHeroSlots[arg0];
     p->x = arg1->XYZ.x + dx;
@@ -465,7 +465,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
                 dz = eng->XYZ.z - z;
                 dx *= dx;
                 dz *= dz;
-                d = csqrt(dx + dz) >> 6;
+                d = int_sqrt(dx + dz) >> 6;
                 fux = (ChaseCoalFux *)nas->FUX;
                 if (fux->owner >= 0 && fux->owner != arg0) {
                     d *= 2;
@@ -600,7 +600,7 @@ void Chase_HeroBot(s32 arg0) {
                     dz = e->XYZ.z - z;
                     dx *= dx;
                     dz *= dz;
-                    d = csqrt(dx + dz) >> 6;
+                    d = int_sqrt(dx + dz) >> 6;
                     fux = (ChaseCoalFux *)nas->FUX;
                     if (fux->owner >= 0 && fux->owner != arg0) {
                         d *= 2;
@@ -636,7 +636,7 @@ void Chase_HeroBot(s32 arg0) {
         dz = eng->XYZ.z;
         dx *= dx;
         dz *= dz;
-        if ((csqrt(dx + dz) >> 6) >= ChaseArenaRadius - 200) {
+        if ((int_sqrt(dx + dz) >> 6) >= ChaseArenaRadius - 200) {
             ai->state = 8;
             ai->timer = 0x3C;
             ai->angle -= 0x400;
@@ -662,7 +662,7 @@ void Chase_HeroBot(s32 arg0) {
                 dz = e->XYZ.z - eng->XYZ.z;
                 dx *= dx;
                 dz *= dz;
-                d = csqrt(dx + dz) >> 6;
+                d = int_sqrt(dx + dz) >> 6;
                 if (d < 0x380) {
                     n++;
                 }
@@ -879,11 +879,11 @@ s32 CHASE_KeepInBounds(EXTengine *eng) {
     s32 a;
 
     if (x < -ChaseArenaShrink || ChaseArenaShrink < x || z < -ChaseArenaShrink || ChaseArenaShrink < z) {
-        d = (csqrt(x * x + z * z) >> 6) - ChaseArenaRadius;
+        d = (int_sqrt(x * x + z * z) >> 6) - ChaseArenaRadius;
         if (d > 0) {
             a = get_angle(x, z);
-            eng->XYZ.x -= (d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
-            eng->XYZ.z -= (d * rcossin_tbl[a & 0xFFF].unk2) >> 12;
+            eng->XYZ.x -= (d * sin_cos_table[(a - 0x400) & 0xFFF].unk2) >> 12;
+            eng->XYZ.z -= (d * sin_cos_table[a & 0xFFF].unk2) >> 12;
             return 0;
         }
     }
@@ -990,8 +990,8 @@ void ChasePreMoveHero(s32 arg0) {
                 if (vc != 1) {
                     if (vc != 0) {
                         if (vc < 4) {
-                            m->x_max = (speed * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                            m->z_max = (speed * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                            m->x_max = (speed * sin_cos_table[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                            m->z_max = (speed * sin_cos_table[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                         }
                     }
                 }
@@ -1110,11 +1110,11 @@ void ChaseMoveHero(s32 arg0) {
         break;
     case 1:
     default:
-        e->XYZ.x -= (m->forward_speed * rcossin_tbl[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
-        e->XYZ.z -= (m->forward_speed * rcossin_tbl[m->forward_angle & 0xFFF].unk2) >> 12;
+        e->XYZ.x -= (m->forward_speed * sin_cos_table[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
+        e->XYZ.z -= (m->forward_speed * sin_cos_table[m->forward_angle & 0xFFF].unk2) >> 12;
         if (m->reactive_speed != 0) {
-            e->XYZ.x -= (m->reactive_speed * rcossin_tbl[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
-            e->XYZ.z -= (m->reactive_speed * rcossin_tbl[m->reactive_angle & 0xFFF].unk2) >> 12;
+            e->XYZ.x -= (m->reactive_speed * sin_cos_table[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
+            e->XYZ.z -= (m->reactive_speed * sin_cos_table[m->reactive_angle & 0xFFF].unk2) >> 12;
             m->reactive_speed -= 4;
             if (m->reactive_speed < 0) {
                 m->reactive_speed = 0;
@@ -1273,7 +1273,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = rcossin_tbl;
+                tbl = sin_cos_table;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -1300,7 +1300,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                                     dz = e->XYZ.z - eng->XYZ.z;
                                     d = dx * dx + dz * dz;
                                     if (d < rr) {
-                                        d = csqrt(d) >> 6;
+                                        d = int_sqrt(d) >> 6;
                                         if (d < r) {
                                             ang = get_angle(dx, dz) & 0xFFF;
                                             d = r - d + 1;
@@ -1325,7 +1325,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                                 d = dx * dx + dz * dz;
                                 rr = r * r;
                                 if (d < rr) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     if (d < r) {
                                         hit = 1;
                                         ang = get_angle(dx, dz) & 0xFFF;
@@ -1348,7 +1348,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                                 d = dx * dx + dz * dz;
                                 rr = r * r;
                                 if (d < rr) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     if (d < r) {
                                         hit = 1;
                                         ang = get_angle(dx, dz) & 0xFFF;
@@ -1398,7 +1398,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                     d = dx * dx + dz * dz;
                     rr = r * r;
                     if (d < rr) {
-                        d = csqrt(d) >> 6;
+                        d = int_sqrt(d) >> 6;
                         if (d < r) {
                             hit = 1;
                             a = get_angle(dx, dz);
@@ -1408,8 +1408,8 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->XYZ.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+                                eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->XYZ.z -= (d * sin_cos_table[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->can_do & 8)) {
@@ -2088,7 +2088,7 @@ again:
         x <<= 9;
         z = Random(8) - 4;
         z <<= 9;
-        if ((csqrt(x * x + z * z) >> 6) > 0x800) {
+        if ((int_sqrt(x * x + z * z) >> 6) > 0x800) {
             goto again;
         }
     } while (BarrelNearHero(x, z, 0x200) >= 0);
@@ -2167,11 +2167,11 @@ void PlotBarrelCH(NAS *nas) {
         dx = he->XYZ.x - bx;
         dz = he->XYZ.z - bz;
         if ((u32)(dx + 0xFF) < 0x1FF && dz >= -0xFF && dz < 0x100) {
-            d = (csqrt(dx * dx + dz * dz) >> 6) - 0x70;
+            d = (int_sqrt(dx * dx + dz * dz) >> 6) - 0x70;
             if (d < 0x70) {
                 a = get_angle(dx, dz);
-                he->XYZ.x += (d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
-                he->XYZ.z += (d * rcossin_tbl[a & 0xFFF].unk2) >> 12;
+                he->XYZ.x += (d * sin_cos_table[(a - 0x400) & 0xFFF].unk2) >> 12;
+                he->XYZ.z += (d * sin_cos_table[a & 0xFFF].unk2) >> 12;
             }
         }
         i++;
@@ -2225,8 +2225,8 @@ NAS *ChaseSpawnCoal(s32 arg0) {
     ChaseSpawnOfs *o = &ChaseSpawnOffsets[--lv];
     s32 r = o->r;
     s32 a = (he->xform.rot.vy + o->ang) & 0xFFF;
-    s32 dx = (r * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
-    s32 dz = (r * rcossin_tbl[a].unk2) >> 12;
+    s32 dx = (r * sin_cos_table[(a - 0x400) & 0xFFF].unk2) >> 12;
+    s32 dz = (r * sin_cos_table[a].unk2) >> 12;
     s32 x = he->XYZ.x + dx;
     s32 y = -o->y;
     s32 z;
@@ -2472,8 +2472,8 @@ void PlotCircleFire(NAS *nas) {
         sub->entity = 0x4000;
     }
     nas->UserInfo.status = (nas->UserInfo.status + 0xC) & 0xFFF;
-    eng->XYZ.x = (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
-    eng->XYZ.z = (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
+    eng->XYZ.x = (sin_cos_table[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
+    eng->XYZ.z = (sin_cos_table[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
     cx = eng->XYZ.x;
     eng->xform.rot.vy = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->xform.dirty = 1;
@@ -2577,8 +2577,8 @@ void PlotEgg(NAS *nas) {
         break;
     case 0x29:
         nas->UserInfo.status = (nas->UserInfo.status - 0xA) & 0xFFF;
-        eng->XYZ.x = (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 0x53) >> 7;
-        eng->XYZ.z = (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 0x53) >> 7;
+        eng->XYZ.x = (sin_cos_table[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 0x53) >> 7;
+        eng->XYZ.z = (sin_cos_table[nas->UserInfo.status & 0xFFF].unk2 * 0x53) >> 7;
         eng->xform.rot.vy = (nas->UserInfo.status + 0x400) & 0xFFF;
         eng->xform.dirty = 1;
         if (eng->XYZ.z > 0) {
@@ -2612,8 +2612,8 @@ void PlotEgg(NAS *nas) {
         }
         fux->y += 0xC;
         eng->XYZ.y += fux->y;
-        eng->XYZ.x += (rcossin_tbl[(fux->angle - 0x400) & 0xFFF].unk2 * 5) >> 8;
-        eng->XYZ.z += (rcossin_tbl[fux->angle & 0xFFF].unk2 * 5) >> 8;
+        eng->XYZ.x += (sin_cos_table[(fux->angle - 0x400) & 0xFFF].unk2 * 5) >> 8;
+        eng->XYZ.z += (sin_cos_table[fux->angle & 0xFFF].unk2 * 5) >> 8;
         if (eng->XYZ.y > 0) {
             PlaySfx(0x75A, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             i = BarrelNearHero(eng->XYZ.x, eng->XYZ.z, 0x280);
@@ -3425,8 +3425,8 @@ void InitCircleFire(NAS *nas) {
     ext->unk30 = 1;
     eng = nas->Engine;
     nas->UserInfo.status = eng->XYZ.x;
-    eng->XYZ.x = (rcossin_tbl[((u16)nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
-    eng->XYZ.z = (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
+    eng->XYZ.x = (sin_cos_table[((u16)nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
+    eng->XYZ.z = (sin_cos_table[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
     sub = eng->sub;
     eng->xform.rot.vy = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->xform.dirty = 1;
@@ -3699,12 +3699,12 @@ s32 ChasePadHook(s32 arg0) {
 }
 
 void ChaseClampToArena(EXTengine *eng, s32 arg1) {
-    s32 d = (csqrt(eng->XYZ.x * eng->XYZ.x + eng->XYZ.z * eng->XYZ.z) >> 6) - arg1;
+    s32 d = (int_sqrt(eng->XYZ.x * eng->XYZ.x + eng->XYZ.z * eng->XYZ.z) >> 6) - arg1;
     s32 a;
     if (d > 0) {
         a = get_angle(eng->XYZ.x, eng->XYZ.z);
-        eng->XYZ.x -= (d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
-        eng->XYZ.z -= (d * rcossin_tbl[a & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (d * sin_cos_table[(a - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (d * sin_cos_table[a & 0xFFF].unk2) >> 12;
     }
 }
 
@@ -3872,5 +3872,5 @@ s32 ChaseDist(ChaseObj *a, ChasePos *b) {
     dx = dx * dx;
     dz = b->z - p->z;
     dz = dz * dz;
-    return csqrt(dx + dz) >> 6;
+    return int_sqrt(dx + dz) >> 6;
 }

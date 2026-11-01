@@ -47,14 +47,14 @@ uint32_t colour_fade(const void *colour, const int32_t to[3], int amount);
 void vector_towards(const void *from, int r, int g, int b, int amount, void *out);
 
 void maths_init(void);
-int csqrt(int a);
-VECTOR *ApplyMatrixLV(MATRIX *m, VECTOR *in, VECTOR *out);
-void MatrixNormal_1(MATRIX *m, MATRIX *n);
-MATRIX *MulMatrix(MATRIX *m0, MATRIX *m1);
-MATRIX *MulMatrix0(MATRIX *m0, MATRIX *m1, MATRIX *out);
-MATRIX *RotMatrix(SVECTOR *r, MATRIX *m);
-MATRIX *RotMatrixYXZ(SVECTOR *r, MATRIX *m);
-MATRIX *RotMatrixZYX(SVECTOR *r, MATRIX *m);
-MATRIX *ScaleMatrixL(MATRIX *m, VECTOR *v);
+int int_sqrt(int a);
+VECTOR *matrix_apply_long(MATRIX *m, VECTOR *in, VECTOR *out);
+void matrix_normalise(MATRIX *m, MATRIX *n);
+MATRIX *matrix_mul_into(MATRIX *m0, MATRIX *m1);
+MATRIX *matrix_mul(MATRIX *m0, MATRIX *m1, MATRIX *out);
+MATRIX *matrix_rotation_xyz(SVECTOR *r, MATRIX *m);
+MATRIX *matrix_rotation_yxz(SVECTOR *r, MATRIX *m);
+MATRIX *matrix_rotation_zyx(SVECTOR *r, MATRIX *m);
+MATRIX *matrix_scale(MATRIX *m, VECTOR *v);
 
 #endif

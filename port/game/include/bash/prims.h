@@ -12,7 +12,7 @@ void primpool_release_all(void);
 void primset_invalidate(ref32 *arg0);
 PrimLink *primlist_pop(PrimList *l);
 PrimLink *primlist_pop_b(PrimList *l);
-void faces_write_uvs_colors(MeshHeader *arg0, FacePrim *arg1);
+void faces_write_uvs_colors(MeshHeader *arg0, DrawFace *arg1);
 void primnodes_free(PrimLink *arg0);
 void prims_empty(void);
 void primlist_clear(PrimList *l);
@@ -24,8 +24,8 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d);
 void eng_render_subs(EXTengine *e);
 void kill_sprim_sub(subengine *arg0);
 void draw_model_quad(ModelObj *obj, void *arg1, s32 flags);
-void prim_colour_poly(MeshHeader *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode);
-void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1);
+void prim_colour_poly(MeshHeader *face, DrawFace *poly, VECTOR *arg2, s32 mode);
+void prim_create_entity_single(u8 *arg0, DrawFace *arg1);
 void calc_rgbcode_packed(u32 arg0);
 void sub_release_none(void);
 void eng_release_subs_sfx(EXTengine *eng);
@@ -52,11 +52,10 @@ void draw_panel_rect(void *arg0, u32 hidden);
 s32 draw_gouraud_quad(void *arg0, u32 flags);
 void *model_prims_begin(void *arg0, s32 arg1);
 s32 bbox_visible(void *arg0);
-void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
+void draw_verts(DrawFace *poly, SVECTOR *v, u8 *runs);
 void prims_init(s32 *cfg);
 void map_loaded_geo(u8 *arg0, map_enviroment *env);
 void subs_init_array(EXTengine *eng, s32 n, subengine *sub);
-void project_quad(SVECTOR *v, POLY_GT4 *poly);
 u32 draw_nas_model_ret(subengine *nas, MATRIX *arg1, u32 flags);
 void draw_nas_model(subengine *nas, MATRIX *arg1);
 void *draw_morph_model(MeshHeader *model, void *arg1, s32 arg2);
@@ -75,7 +74,7 @@ void draw_model_set_entry(s32 arg0, ModelFile *set, s32 arg2);
 void draw_map_entity(u16 arg0, u8 *arg1, s32 arg2);
 void draw_text_nas(TextNAS *t, MATRIX *arg1, s32 arg2);
 void primpool_age(void);
-FacePrim *primnode_alloc(s32 arg0, PrimList *list, void *pool, MeshHeader *faces);
+DrawFace *primnode_alloc(s32 arg0, PrimList *list, void *pool, MeshHeader *faces);
 void sub_use_quad_model(subengine *arg0);
 void posdst_flash(PosDst *arg0, MATRIX *arg1, s32 arg2);
 void posdst_flash_at(PosDst *arg0, s32 arg1);
@@ -106,12 +105,12 @@ typedef struct tga_header {
 } tga_header;
 u8 *tga_convert(tga_header *arg0, s32 w, s32 h);
 void prims_empty_back(void);
-void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode);
-void faces_write_colors(MeshHeader *faces, FacePrim *prim);
+void faces_write_colors_dq(MeshHeader *faces, DrawFace *prim, s32 arg2, s32 mode);
+void faces_write_colors(MeshHeader *faces, DrawFace *prim);
 void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2);
 void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 void mapscene_place_subs(map_enviroment *env);
-FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *faces, s32 arg4);
+DrawFace *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *faces, s32 arg4);
 void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam);
 void draw_map_scene(map_enviroment *scene);
 void mapenv_place_subs(map_enviroment *env);
@@ -206,7 +205,7 @@ static inline PrimLink *PrimList_Take(PrimList *l) {
 
 
 /* model_prims_begin: the next free primitive slot of list (refilled from pool). */
-static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, PrimList *pool,
+static inline DrawFace *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, PrimList *pool,
                                          void *faces, s32 flag) {
     PrimLink *n;
     PrimList *list = (PrimList *)((u8 *)set + pairOff) + which;
@@ -223,7 +222,7 @@ static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, P
     if (n != NULL) {
         list->fC = n->next;
         list->f10 = n;
-        return (FacePrim *)&n->data;
+        return (DrawFace *)&n->data;
     }
     return primnode_alloc(0, list, pool, (MeshHeader *)faces);
 }

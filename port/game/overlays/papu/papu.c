@@ -1092,7 +1092,7 @@ NAS *PapuMinionFindCrate(s32 arg0) {
                     dz = px - e->XYZ.z;
                     dx += Random(r);
                     dz += Random(r);
-                    score = csqrt(dx * dx + dz * dz) >> 6;
+                    score = int_sqrt(dx * dx + dz * dz) >> 6;
                     score *= mul;
                     cnt = 0;
                     for (i = 0; i < 6; i++) {
@@ -1291,7 +1291,7 @@ void PlotPapuMinion(NAS *nas)
       dx = target_eng->XYZ.x - eng->XYZ.x;
       dz = target_eng->XYZ.z - eng->XYZ.z;
       angle = get_angle(-dx, -dz);
-      dist = csqrt(dx * dx + dz * dz) >> 6;
+      dist = int_sqrt(dx * dx + dz * dz) >> 6;
     }
   }
   if (!hit) {
@@ -1485,7 +1485,7 @@ void PlotPapuMinion(NAS *nas)
     dx = PapuSpawnPoints[nas->UserInfo.user2].x - eng->XYZ.x;
     dz = PapuSpawnPoints[nas->UserInfo.user2].z - eng->XYZ.z;
     angle = get_angle(-dx, -dz);
-    dist = csqrt(dx * dx + dz * dz) >> 6;
+    dist = int_sqrt(dx * dx + dz * dz) >> 6;
     if (dist < 0x200) {
       fux->status = 0;
     }
@@ -1557,11 +1557,11 @@ void PlotPapuMinion(NAS *nas)
       eng->xform.rot.vy = move->Xa;
     }
   }
-  eng->XYZ.x -= (move->Xvel * rcossin_tbl[(move->Xa - 0x400) & 0xFFF].unk2) >> 12;
-  eng->XYZ.z -= (move->Xvel * rcossin_tbl[(u16)move->Xa & 0xFFF].unk2) >> 12;
+  eng->XYZ.x -= (move->Xvel * sin_cos_table[(move->Xa - 0x400) & 0xFFF].unk2) >> 12;
+  eng->XYZ.z -= (move->Xvel * sin_cos_table[(u16)move->Xa & 0xFFF].unk2) >> 12;
   if (move->Zvel != 0) {
-    eng->XYZ.x -= (move->Zvel * rcossin_tbl[(move->Za - 0x400) & 0xFFF].unk2) >> 12;
-    eng->XYZ.z -= (move->Zvel * rcossin_tbl[(u16)move->Za & 0xFFF].unk2) >> 12;
+    eng->XYZ.x -= (move->Zvel * sin_cos_table[(move->Za - 0x400) & 0xFFF].unk2) >> 12;
+    eng->XYZ.z -= (move->Zvel * sin_cos_table[(u16)move->Za & 0xFFF].unk2) >> 12;
     move->Zvel -= 4;
     if ((s16)move->Zvel < 0) {
       move->Zvel = 0;
@@ -1621,7 +1621,7 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
           dyn = (EXTmotion *) s->pad4[4];
           dx = pos->x - px;
           dz = pos->z - pz;
-          d = csqrt((dx * dx) + (dz * dz)) >> 6;
+          d = int_sqrt((dx * dx) + (dz * dz)) >> 6;
           if (d < arg1)
           {
             if (d < 0x80)
@@ -1654,8 +1654,8 @@ void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
     Slot40 *s = &b[arg0];
     EXTengine *o = (u8*)s->pad4[0];
     EXTmotion *a = (u8*)s->pad4[4];
-    s32 px = o->XYZ.x - (rcossin_tbl[(a->Xa - 0x400) & 0xFFF].unk2 * 256 >> 12);
-    s32 pz = o->XYZ.z - (rcossin_tbl[a->Xa & 0xFFF].unk2 * 256 >> 12);
+    s32 px = o->XYZ.x - (sin_cos_table[(a->Xa - 0x400) & 0xFFF].unk2 * 256 >> 12);
+    s32 pz = o->XYZ.z - (sin_cos_table[a->Xa & 0xFFF].unk2 * 256 >> 12);
     Slot40 *q;
 
     if (n != NULL) {
@@ -1980,13 +1980,13 @@ s32 PapuMinionKick(u32 idx) {
                             dz = e->XYZ.z - eng->XYZ.z;
                             d2 = dx * dx + dz * dz;
                             if (d2 < rr2) {
-                                d2 = csqrt(d2) >> 6;
+                                d2 = int_sqrt(d2) >> 6;
                                 if (d2 < rr) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     d2 = rr - d2 + 1;
-                                    eng->XYZ.x -= d2 * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    eng->XYZ.x -= d2 * sin_cos_table[(ang - 0x400) & 0xFFF].unk2 >> 12;
                                     hit = 1;
-                                    eng->XYZ.z -= d2 * rcossin_tbl[ang].unk2 >> 12;
+                                    eng->XYZ.z -= d2 * sin_cos_table[ang].unk2 >> 12;
                                 }
                             }
                         }
@@ -2020,7 +2020,7 @@ s32 PapuMinionKick(u32 idx) {
                         d2 = dx * dx + dz * dz;
                         rr2 = rr * rr;
                         if (d2 < rr2) {
-                            d2 = csqrt(d2) >> 6;
+                            d2 = int_sqrt(d2) >> 6;
                             if (d2 < rr) {
                                 hit = 1;
                                 ang = get_angle(dx, dz) & 0xFFF;
@@ -2029,8 +2029,8 @@ s32 PapuMinionKick(u32 idx) {
                                 }
                                 d2 = rr - d2 + 1;
                                 if (can) {
-                                    eng->XYZ.x -= d2 * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-                                    eng->XYZ.z -= d2 * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
+                                    eng->XYZ.x -= d2 * sin_cos_table[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    eng->XYZ.z -= d2 * sin_cos_table[ang & 0xFFF].unk2 >> 12;
                                 }
                                 obj = FindExtension(nas, 0x1000);
                                 if (obj != NULL && (obj->can_do & 8)) {
@@ -2113,7 +2113,7 @@ void PapuInitTiles(void) {
                 PapuTiles[j][i].anim = 0;
                 dx = obj->x;
                 dz = obj->z - 0x600;
-                PapuTiles[j][i].dist = csqrt(dx * dx + dz * dz) >> 6;
+                PapuTiles[j][i].dist = int_sqrt(dx * dx + dz * dz) >> 6;
             }
         }
     }
@@ -2221,7 +2221,7 @@ void PapuUpdateFloor(void) {
                     w = PapuFloorState[a];
                     tile->y = PapuTiles[j][i].yoffset;
                     k = ((u & 0xFFF) - 0x400) & 0xFFF;
-                    tile->y += (w * rcossin_tbl[k].unk2) >> 12;
+                    tile->y += (w * sin_cos_table[k].unk2) >> 12;
                     if (PapuTiles[j][i].anim != 0) {
                         PapuTiles[j][i].status |= 0x100;
                         tile->unk74 = PapuTileModels[PapuTiles[j][i].anim];
@@ -2607,8 +2607,8 @@ void PACrateAimAtGrid(EXTengine *a, EXTmotion *b) {
         } while (v != 0);
     }
     x = a->XYZ.x;
-    mx = sum * rcossin_tbl[(a->xform.rot.vy - 0x400) & 0xFFF].unk2;
-    mz = sum * rcossin_tbl[(u16)a->xform.rot.vy & 0xFFF].unk2;
+    mx = sum * sin_cos_table[(a->xform.rot.vy - 0x400) & 0xFFF].unk2;
+    mz = sum * sin_cos_table[(u16)a->xform.rot.vy & 0xFFF].unk2;
     z = a->XYZ.z;
     x -= mx >> 12;
     z -= mz >> 12;
@@ -2621,7 +2621,7 @@ void PACrateAimAtGrid(EXTengine *a, EXTmotion *b) {
     b->flags = *(u8 *)FILE_AT(DirPadBits, ((u16)a->xform.rot.vy >> 7) & 0x1C);
     x -= a->XYZ.x;
     z -= a->XYZ.z;
-    sum = csqrt(x * x + z * z) >> 6;
+    sum = int_sqrt(x * x + z * z) >> 6;
     if (sum > 0) {
         v -= d;
         do {

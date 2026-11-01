@@ -252,7 +252,7 @@ void CalcCameraFrame(void) {
     s32 z0;
 
     cam = &MainCamera;
-    RotMatrix(&cam->xform.angle, &m);
+    matrix_rotation_xyz(&cam->xform.angle, &m);
     n = camera_frame_list_size;
     CamBoundBottom = 0x7FFFFFFF;
     CamBoundTop = 0x80000000;
@@ -272,7 +272,7 @@ void CalcCameraFrame(void) {
         in.vx = e->target[0] - cam->at.x;
         in.vy = e->target[1] - cam->at.y;
         in.vz = e->target[2] - cam->at.z;
-        ApplyMatrixLV(&m, &in, &out);
+        matrix_apply_long(&m, &in, &out);
         out.vx += cam->at.x;
         out.vy += cam->at.y;
         out.vz += cam->at.z;
@@ -642,7 +642,7 @@ void BobSub(subengine *s) {
     TrigEntry *e;
 
     s->xform.order = 0;
-    t = rcossin_tbl;
+    t = sin_cos_table;
     f = FrameCount;
     e = &t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF];
     s->xform.rot.vx = *(s32 *)e >> 20;

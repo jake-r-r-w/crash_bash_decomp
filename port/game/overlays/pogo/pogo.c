@@ -1595,8 +1595,8 @@ bool TestHeroPogo(u32 arg0) {
         if (m->forward_speed != 0) {
             angle = m->forward_angle;
             e = h->hero_eng;
-            sx = rcossin_tbl[(angle - 0x400) & 0xFFF].unk2;
-            sz = rcossin_tbl[angle & 0xFFF].unk2;
+            sx = sin_cos_table[(angle - 0x400) & 0xFFF].unk2;
+            sz = sin_cos_table[angle & 0xFFF].unk2;
             t = e->XYZ.x;
             t -= sx * 512 >> 12;
             t += 0x800;
@@ -2456,9 +2456,9 @@ void Tile_Update(s32 arg0, s32 arg1) {
                 o->anim = anim;
                 if (c->old_player != c->player) {
                     if (GameFrameCount & 1) {
-                        o->frame = CELL_FRAME(o, tbl[c->old_player] & 0xFFF)->clut;
+                        o->frame = CELL_FRAME(o, tbl[c->old_player] & 0xFFF)->palette;
                     } else {
-                        o->frame = CELL_FRAME(o, tbl[c->player] & 0xFFF)->clut;
+                        o->frame = CELL_FRAME(o, tbl[c->player] & 0xFFF)->palette;
                     }
                 }
             }
@@ -2503,7 +2503,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             fr5 = (MV->levelFlags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
             o->anim = fr5;
             fr5 = (MV->levelFlags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
-            o->frame = CELL_FRAME(o, fr5 & 0xFFF)->clut;
+            o->frame = CELL_FRAME(o, fr5 & 0xFFF)->palette;
             break;
         case 7:
             CELL_SET(o, (MV->levelFlags & 0x80) ? 0x304A : 0x3040, (MV->levelFlags & 0x80) ? 0x304A : 0x3040);
@@ -4429,8 +4429,8 @@ void Plot_PogoProjectile(NAS *arg0) {
         return;
     }
     if (arg0->UserInfo.flags & 2) {
-        e->XYZ.x -= (rcossin_tbl[(arg0->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 8;
-        e->XYZ.z -= (rcossin_tbl[arg0->UserInfo.status & 0xFFF].unk2 * 9) >> 8;
+        e->XYZ.x -= (sin_cos_table[(arg0->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 8;
+        e->XYZ.z -= (sin_cos_table[arg0->UserInfo.status & 0xFFF].unk2 * 9) >> 8;
     }
     j = 0;
     n = 0;
@@ -4498,7 +4498,7 @@ void Plot_PogoProjectile(NAS *arg0) {
                 if (he != NULL) {
                     dx = he->XYZ.x - e->XYZ.x;
                     dz = he->XYZ.z - e->XYZ.z;
-                    if ((csqrt(dx * dx + dz * dz) >> 6) < 0xA0) {
+                    if ((int_sqrt(dx * dx + dz * dz) >> 6) < 0xA0) {
                         hit = 1;
                         if (!(h->hero_status & 0x800)) {
                             if (arg0->UserInfo.user2 == 3) {
@@ -4941,7 +4941,7 @@ bool PogoAI_CanPlayerShockAnyone(u32 hero) {
             goto end;
         }
         if (i != hero && i != mate) {
-            if ((u32)(csqrt(PogoSquaredDistanceToDestination(x, z, p->hero_eng->XYZ.x, p->hero_eng->XYZ.z)) >> 6) < 0x381) {
+            if ((u32)(int_sqrt(PogoSquaredDistanceToDestination(x, z, p->hero_eng->XYZ.x, p->hero_eng->XYZ.z)) >> 6) < 0x381) {
                 if ((g->levelFlags & 0x20) && ((u8 *)g)[i + 0x5C] != 0) {  /* matching: g + i first; heroCpu[i] adds the other way round */
                     return 0;
                 }
@@ -6777,7 +6777,7 @@ u32 PogoSquaredDistanceToDestination(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 u32 PogoDistanceToDestination(s32 x0, s32 y0, s32 x1, s32 y1) {
-    return csqrt(PogoSquaredDistanceToDestination(x0, y0, x1, y1)) >> 6;
+    return int_sqrt(PogoSquaredDistanceToDestination(x0, y0, x1, y1)) >> 6;
 }
 
 s32 LevelSpecific_UnclaimedTile(s32 x, s32 z) {
@@ -7617,8 +7617,8 @@ void psxpogo_init_tile(subengine *arg0) {
 }
 
 void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags) {
-    POLY_GT4 *p0;
-    POLY_GT4 *p1;
+    DrawFace *p0;
+    DrawFace *p1;
     GfxTexInfo *ti;
 
     draw_model_quad(obj, arg1, flags);
@@ -7627,21 +7627,21 @@ void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags) {
     if (p0 != NULL && p1 != NULL) {
         if (obj->flags2 != 0) {
             ti = &obj->model->textures.tex[obj->flags2 & 0xFFF].info;
-            *(u16 *)&p0->u0 = ti->uv0;
-            *(u16 *)&p0->u1 = ti->uv1;
-            *(u16 *)&p0->u2 = ti->uv2;
-            *(u16 *)&p0->u3 = ti->uv3;
-            p0->tpage = ti->tpage;
-            *(u16 *)&p1->u0 = ti->uv0;
-            *(u16 *)&p1->u1 = ti->uv1;
-            *(u16 *)&p1->u2 = ti->uv2;
-            *(u16 *)&p1->u3 = ti->uv3;
-            p1->tpage = ti->tpage;
+            p0->uv[0] = ti->uv0;
+            p0->uv[1] = ti->uv1;
+            p0->uv[2] = ti->uv2;
+            p0->uv[3] = ti->uv3;
+            p0->image = ti->image;
+            p1->uv[0] = ti->uv0;
+            p1->uv[1] = ti->uv1;
+            p1->uv[2] = ti->uv2;
+            p1->uv[3] = ti->uv3;
+            p1->image = ti->image;
             obj->flags2 = 0;
         }
         if (obj->flag != 0) {
-            p0->clut = obj->flag;
-            p1->clut = obj->flag;
+            p0->palette = obj->flag;
+            p1->palette = obj->flag;
             obj->flag = 0;
         }
     }

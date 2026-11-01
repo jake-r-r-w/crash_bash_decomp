@@ -127,16 +127,6 @@ typedef struct {
 /* A block holding a table at a byte offset from its field at +0x20. */
 
 
-/* A 0x28-byte primitive slot of faces_write_colors_dq: a textured triangle, or (run flag
- * bit 0) a draw-mode packet followed by an untextured gouraud triangle. */
-typedef union {
-    POLY_GT3 gt;
-    struct {
-        DR_TPAGE tp;
-        POLY_G3 g;
-    } g;
-} FacePrim;
-
 /* A mesh's header in a model file (docs/ASSETS.md, Model files): the header table's 0x34-byte
  * records (ModelFile.meshes) and the entities'. Offsets are counted from their own field. */
 typedef struct MeshHeader {
@@ -212,8 +202,8 @@ typedef struct GfxTexInfo {
     /* 0x04 */ u16 vramW;    /* in VRAM units */
     /* 0x06 */ s16 vramH;
     /* 0x08 */ struct FreeHdr *vram; /* its VRAM node (vram_take), freed with vram_free_node */
-    /* 0x0C */ u16 tpage;
-    /* 0x0E */ u16 clut;
+    /* 0x0C */ u16 image;    /* tex_image_id's */
+    /* 0x0E */ u16 palette;  /* tex_palette_id's */
     /* 0x10 */ u16 uv0;      /* ORed into each vertex's uv */
     /* 0x12 */ u16 uv1;      /* uv of vertices 1-3 */
     /* 0x14 */ u16 uv2;
@@ -227,7 +217,7 @@ typedef struct GfxTexInfo {
 /* An object drawn as one textured quad (draw_model_quad, sub_use_quad_model,
  * kill_sprim_sub): one primitive per frame buffer. */
 typedef struct {
-    POLY_GT4 *prim; /* from new_sprim, freed with release_sprim */
+    DrawFace *prim; /* from new_sprim, freed with release_sprim */
     u8 pad4[8];
 } ModelObjSlot;
 
@@ -251,9 +241,9 @@ typedef struct {
 } GfxScreen;
 
 /* Graphics state at 0x80056998 (placeholder name; 161 references). Only the
- * fields gfx_load_xform and project_quad use are known: two pointers it aims
- * at buffers inside the struct itself, a block at +0x28 it passes to
- * gfx_setup_xform, and the ordering table that primitives are added to. */
+ * fields gfx_load_xform uses are known: two pointers it aims
+ * at buffers inside the struct itself, and a block at +0x28 it passes to
+ * gfx_setup_xform. */
 typedef struct {
     struct obj_dbase *dbase; /* 0x00: the dbase being drawn */
     void *unk4;
@@ -269,9 +259,9 @@ typedef struct {
     u8 screen[0xC];  /* a GfxScreen */
     SVECTOR viewIn; /* 0x34: a position relative to the view (view_project_volume) */
     u8 pad3C[4];
-    u32 *ot;   /* 0x40 */
+    s32 layer; /* 0x40: the view's first place in the frame's order */
     s16 otzAdd; /* 0x44: added to the average Z before it is halved */
-    s16 otLen;  /* 0x46: entries in ot */
+    s16 otLen;  /* 0x46: places the view has */
     struct camera_info_tag *cam; /* 0x48 */
     u8 pad4C[0x28];
     VECTOR viewOut; /* 0x74: viewIn rotated and translated */
@@ -350,23 +340,6 @@ typedef struct sfx_machine_bank_info {
     s32 id;   /* set once the transfer completes */
     void *handle; /* asload_permanent_callback's result (machine_load_sfx) */
 } sfx_machine_bank_info;
-
-/* Points drawn as one-pixel tiles by plot_point_sprites (an engine API entry). */
-typedef struct {
-    SVECTOR v;
-    u8 pad8[0x10];
-} PointSpriteSrc;
-
-typedef struct {
-    PointSpriteSrc *src;
-    TILE_1 *prims[2]; /* one per frame buffer (FrameCount & 1) */
-    s32 count;
-} PointSpriteSet;
-
-typedef struct {
-    u8 pad0[offsetof(subengine, u6C)];
-    PointSpriteSet set; /* 0x6C */
-} PointSprites;
 
 /* Filled by gfx_setup_xform for gfx_load_xform, which sets the view from it. */
 typedef struct {
@@ -692,23 +665,20 @@ void SetRandomSeed(s32 arg0, s32 arg1);
  * with the subengine) and the subengine's hook. The weather's, the hub's sparks, N2O's stars. */
 typedef struct FxDef {
     /* 0x00 */ s32 count;
-    /* 0x04 */ s32 size;              /* bytes of each of the two state buffers */
     /* 0x08 */ s32 bufSize;           /* bytes of the work buffer */
     /* 0x0C */ void (*init)();
     /* 0x10 */ void (*hook)();
 } FxDef;
 
-/* An effect's view of its subengine's +0x6C (subengine.u6C on): the buffers fx_alloc_buffers
- * takes and fx_free_buffers gives back. */
+/* An effect's view of its subengine's +0x6C (subengine.u6C on): its work buffer and the look of
+ * what it draws, from fx_alloc_buffers and given back by fx_free_buffers. */
 typedef struct SubFx {
     /* 0x00 */ void *buf;
-    /* 0x04 */ void *a;
-    /* 0x08 */ void *b;
-    /* 0x0C */ s32 count;
+    /* 0x04 */ DrawFace *face;
+    /* 0x08 */ s32 count;
 } SubFx;
 
 void fx_free_buffers(subengine *sub);
-void *fx_alloc_buffers_b(FxDef *def, SubFx *fx);
 void quat_to_matrix(SVECTOR *rot, MATRIX *m);
 void rotscale_update(void *arg0);
 PointList *sub_point_list(subengine *sub);
@@ -716,7 +686,7 @@ FlagPoint *sub_find_point(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out)
 
 extern SVECTOR MorphVerts[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
-extern TrigEntry rcossin_tbl[]; /* the sine and cosine table (maths.c) */
+extern TrigEntry sin_cos_table[]; /* the sine and cosine table (maths.c) */
 /* A 4.12 fixed-point quaternion (quat_slerp slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
 extern s32 SfxDistanceCurve[];
@@ -756,9 +726,6 @@ struct obj_textureset;
 u16 tex_image_id(struct obj_textureset *set, s32 index);
 u16 tex_palette_id(struct obj_textureset *set, s32 index);
 void tex_release_ids(struct obj_textureset *set);
-void mesh_submit_gt3(void *ot, void *poly, const ViewPoint q[3], s32 face, s32 wind, s32 hidden);
-void mesh_submit_g3(void *ot, unsigned char *poly, const ViewPoint q[3], s32 face, s32 wind, s32 hidden);
-void mesh_submit_gt4(void *ot, void *poly, const ViewPoint q[4]);
 void draw_owner(const struct subengine *sub);
 void draw_owner_part(const void *mesh);
 void draw_depth(s32 on);
@@ -962,7 +929,6 @@ extern EngineRec32 *LevelRecs;
 extern NASTrigger *HeadOfTriggers;
 extern s32 TriggerCount;
 extern script_handler *active_scripts;
-extern RECT VramRect;
 extern script_handler *free_scripts;
 extern map_enviroment *MapScene;
 /* A map trigger record (InitTriggers): position, then a word whose low 2
@@ -1013,18 +979,6 @@ void cam_build_view(camera_info_tag *cam, RECT *rect);
 extern GfxState RenderState;
 extern VECTOR ScreenTrans; /* screen-space translation (gfx_setup_xform) */
 
-/* The current draw buffer: primitives are allocated from the pointer at
- * +0x4008 (texture_draw). */
-/* A frame's draw buffer (DrawBuffers, two; cdb is the one being built): its ordering table,
- * drawn from the last entry (DrawOTag), and its primitive area (AllocPrimBuffers). */
-typedef struct DrawBuffer {
-    /* 0x0000 */ u32 ot[0x1000];
-    /* 0x4000 */ u8 *primStart;
-    /* 0x4004 */ u8 *primEnd;
-    /* 0x4008 */ u8 *prim;        /* the next free primitive */
-} DrawBuffer;
-extern DrawBuffer *cdb;
-
 /* A screen offset pair, copied as one struct. */
 typedef struct {
     s32 x, y;
@@ -1035,7 +989,7 @@ typedef struct {
     s16 x0, y0, x1, y1;     /* 0x00: draw area */
     s16 cx0, cy0, cx1, cy1; /* 0x08: clip area (cam_build_view) */
     s32 ofx, ofy;           /* 0x10: geometry offset */
-    s32 otIdx;              /* 0x18: first ot entry in cdb */
+    s32 otIdx;              /* 0x18: its first place in the frame's order */
     s32 otLen;              /* 0x1C */
     s32 ofs2;  /* the second geometry offset's x */
     UBYTE_RGB bg;           /* 0x24: background (the map's clear colour) */
@@ -1048,7 +1002,7 @@ typedef struct {
 /* A VRAM slot class (VramSlots). */
 typedef struct { u8 pad[0xC]; } Slot12;
 /* A texture: the 0x38-byte entries of a texture set's table, which
- * texture_draw draws as one POLY_FT4 (the name is the C++ symbols',
+ * texture_draw draws as one quad (the name is the C++ symbols',
  * texture_draw__FP11obj_textureG4xy_wiUl). */
 typedef struct obj_texture {
     /* 0x00 */ u16 flag;     /* 1: 8-bit (texture_init_entry) */
@@ -1104,17 +1058,6 @@ typedef struct {
     u8 c[4][4];
 } ColorQuad;
 
-/* draw_gouraud_quad's primitive: a draw-mode word, then a POLY_G4 sharing the
- * tag (len 0xA, code 0x38 at +0xF). */
-typedef struct {
-    u32 tag;
-    u32 mode;  /* 0x04: 0xE1000200 | abr bits */
-    u32 unk8;
-    struct {
-        u32 c;
-        s16 x, y;
-    } v[4];    /* 0x0C */
-} ModePolyG4;
 extern s32 MalMoveVSyncs; /* VSync ticks spent compacting the heap (mal_update) */
 extern s32 MalMoveWords; /* words moved compacting the heap (mal_update) */
 extern s32 PrimDepthLimit; /* draw_object_model: the object's +0x8A */
@@ -1213,16 +1156,6 @@ extern s32 ScriptTimeStep;
 extern void *ScriptThreadPool;
 extern void *ScriptPool;
 extern void *HeadOfBalls;
-/* An ordering table and the primitive area drawn through it (0x400C bytes;
- * DrawBuffers holds two). */
-typedef struct {
-    u32 ot[0x1000];
-    u8 *prim; /* 0x4000 */
-    u8 *end;  /* 0x4004 */
-    u8 *cur;  /* 0x4008 */
-} OtBuf;
-
-extern DrawBuffer DrawBuffers[2];
 extern s32 VideoMode;
 extern u8 *ScriptTrackDbase;
 extern s32 ScriptTrackIndex;
@@ -1258,7 +1191,6 @@ extern s32 screen_aspect[2];
 
 
 
-void plot_point_sprites(PointSprites *ps, MATRIX *m);
 
 
 
@@ -1337,7 +1269,7 @@ typedef struct {
  * texture file until textureset_upload_cluts loads them into VRAM at pos. */
 typedef struct TexClut {
     /* 0x00 */ u16 w;       /* colours */
-    /* 0x02 */ u16 clut;    /* GetClut's word for pos */
+    /* 0x02 */ u16 palette; /* tex_palette_id's */
     /* 0x04 */ ClutPos *pos;
     /* 0x08 */ s32 off;
 } TexClut;
@@ -1731,7 +1663,6 @@ typedef struct ScriptInit {
     u32 flags;
 } ScriptInit;
 
-void init_dots(subengine *arg0);
 
 
 

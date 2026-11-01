@@ -537,7 +537,7 @@ s32 N2O_KeepInBounds(EXTengine *arg0) {
             r = c->r + 0x80;
         }
         if (dx * dx + dz * dz < r * r) {
-            arg0->XYZ.x = N2OPillarList[i].x - ((r * rcossin_tbl[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+            arg0->XYZ.x = N2OPillarList[i].x - ((r * sin_cos_table[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
             return 1;
         }
     }
@@ -984,9 +984,9 @@ void N2OMoveHero(s32 arg0) {
         s32 y;
         s32 d;
         t = ((GameFrameCount + arg0) << 6) & 0xFFF;
-        a1 = rcossin_tbl[(t - 0x400) & 0xFFF].unk2 * 17 >> 10;
+        a1 = sin_cos_table[(t - 0x400) & 0xFFF].unk2 * 17 >> 10;
         y = World_floor_level;
-        d = (rcossin_tbl[(t * 2 - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
+        d = (sin_cos_table[(t * 2 - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         g->hero_eng->XYZ.y = y + d;
     } else {
         g->hero_eng->XYZ.y = World_floor_level - 0x80;
@@ -1668,8 +1668,8 @@ void PlotN2OBall(NAS *nas) {
                 mot->Xvel = mot->Xmax;
             }
         }
-        eng->XYZ.x -= (mot->Xvel * rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
-        eng->XYZ.z -= (mot->Xvel * rcossin_tbl[mot->Xa & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (mot->Xvel * sin_cos_table[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (mot->Xvel * sin_cos_table[mot->Xa & 0xFFF].unk2) >> 12;
         if (obj->timer != 0) {
             obj->timer--;
         }
@@ -1969,7 +1969,7 @@ void PlotN2OBall(NAS *nas) {
     dx = eng->XYZ.x - eng->OldXYZ.x;
     dz = eng->XYZ.z - eng->OldXYZ.z;
     eng->xform.rot.vy += (((get_angle(dx, dz) & 0xFFF) - eng->xform.rot.vy) << 20) >> 21;
-    dist = csqrt(dx * dx + dz * dz);
+    dist = int_sqrt(dx * dx + dz * dz);
     eng->xform.dirty = 1;
     eng->xform.rot.vx -= dist >> 5;
     if (obj->will_do & 0x100) {
@@ -2007,10 +2007,10 @@ void N2OBlendDirection(EXTmotion *p) {
         u32 db = (u16)p->Za;
         s32 a, b, c, d;
         vel = p->Xvel;
-        a = vel * rcossin_tbl[(da - 0x400) & 0xFFF].unk2;
-        b = vel * rcossin_tbl[da & 0xFFF].unk2;
-        c = speed * rcossin_tbl[(db - 0x400) & 0xFFF].unk2;
-        d = speed * rcossin_tbl[db & 0xFFF].unk2;
+        a = vel * sin_cos_table[(da - 0x400) & 0xFFF].unk2;
+        b = vel * sin_cos_table[da & 0xFFF].unk2;
+        c = speed * sin_cos_table[(db - 0x400) & 0xFFF].unk2;
+        d = speed * sin_cos_table[db & 0xFFF].unk2;
         x1 = a >> 12;
         z1 = b >> 12;
         x1 += c >> 12;
@@ -2265,7 +2265,7 @@ void N2OUpdateBoss(void) {
         N2O_KeepInBounds((EXTengine *)eng);
         tm = N2OBossClock;
         q = &World_floor_level;
-        v = (rcossin_tbl[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
+        v = (sin_cos_table[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         eng->XYZ.y = *q + v;
         dx = ((N2OPanRef *)&Heroes[3].hero_move)->p->flag;
         eng->XYZ.x += dx;
@@ -2363,8 +2363,8 @@ s32 N2OBotAimA(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - rcossin_tbl[ang & 0xFFF].unk2;
+    to->x = from->x - sin_cos_table[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - sin_cos_table[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2463,8 +2463,8 @@ s32 N2OBotAimB(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - rcossin_tbl[ang & 0xFFF].unk2;
+    to->x = from->x - sin_cos_table[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - sin_cos_table[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2632,8 +2632,8 @@ s32 N2ONextBall(s32 bomb, s32 *cross, s32 *bx, s32 *bz) {
 
         if (mot != NULL && t != NULL && n->unk58 != NULL && (n->unk58->status == 1 || n->unk58->status == 8)
             && (n->unk58->whatami == 2) == (bomb != 0)) {
-            s32 vx = -rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2;
-            s32 vz = -rcossin_tbl[mot->Xa & 0xFFF].unk2;
+            s32 vx = -sin_cos_table[(mot->Xa - 0x400) & 0xFFF].unk2;
+            s32 vz = -sin_cos_table[mot->Xa & 0xFFF].unk2;
 
             if (vz < -0x40 && t->XYZ.z > hz) {
                 s32 run = ((hz - t->XYZ.z) << 8) / vz;
@@ -2721,7 +2721,7 @@ void N2O_HeroBot(u16 *arg0) {
     }
     if (dist != 0x7FFFFF) {
         ang = get_angle(best.x - Heroes[3].hero_eng->XYZ.x, best.z - Heroes[3].hero_eng->XYZ.z);
-        dist = csqrt(dist) >> 6;
+        dist = int_sqrt(dist) >> 6;
     } else {
         dist = 0;
         ang = get_angle(ai->TargetXYZ.x - Heroes[3].hero_eng->XYZ.x, ai->TargetXYZ.z - Heroes[3].hero_eng->XYZ.z);
@@ -2781,7 +2781,7 @@ void N2O_HeroBot(u16 *arg0) {
         }
         dx = Heroes[3].hero_eng->XYZ.x - ai->TargetXYZ.x;
         dz = Heroes[3].hero_eng->XYZ.z - ai->TargetXYZ.z;
-        d = csqrt(dx * dx + dz * dz) >> 6;
+        d = int_sqrt(dx * dx + dz * dz) >> 6;
         if (d < 0x80) {
             ai->AIsleep = Random(0x3C) + 0x1E;
             ai->AImode = 5;
@@ -2915,8 +2915,8 @@ void PlotN2Omissile(NAS *nas) {
     }
     ang = nas->UserInfo.user2;
     if (sub->flags != 0) {
-        eng->XYZ.x -= (vel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-        eng->XYZ.z -= (vel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (vel * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (vel * sin_cos_table[ang & 0xFFF].unk2) >> 12;
         x = eng->XYZ.x;
         y = eng->XYZ.y += mot->Yvel;
         z = eng->XYZ.z;
@@ -3002,8 +3002,8 @@ void PlotN2Ofirstmissile(NAS *nas) {
     }
     ang = nas->UserInfo.user2;
     if (vel != 0) {
-        eng->XYZ.x -= (vel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-        eng->XYZ.z -= (vel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+        eng->XYZ.x -= (vel * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (vel * sin_cos_table[ang & 0xFFF].unk2) >> 12;
         x = eng->XYZ.x;
         y = eng->XYZ.y += mot->Yvel;
         z = eng->XYZ.z;
@@ -3295,8 +3295,8 @@ void N2OLineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
 
     arg1 = (arg1 + 0x800) & 0xFFF;
     start = *pos;
-    start.x -= (0x200 * rcossin_tbl[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
-    start.z -= (0x200 * rcossin_tbl[arg1].unk2) >> 12;
+    start.x -= (0x200 * sin_cos_table[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
+    start.z -= (0x200 * sin_cos_table[arg1].unk2) >> 12;
     dir.x = start.x - pos->x;
     dir.y = 0;
     dir.z = start.z - pos->z;
@@ -3313,7 +3313,7 @@ void N2OLineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
     if (s < 0) {
         return;
     }
-    s = csqrt(s) >> 6;
+    s = int_sqrt(s) >> 6;
     t1 = ((-b + s) << 8) / (a * 2);
     t2 = ((-b - s) << 8) / (a * 2);
     if (t1 < 0 && t2 < 0) {
@@ -3370,7 +3370,7 @@ s32 N2OHeroPushTeammate(s32 arg0) {
                 r *= 2;
                 r += 0x90;
                 if (dx * dx + dz * dz < r * r) {
-                    eng->XYZ.x = Heroes[mate].hero_eng->XYZ.x - ((r * rcossin_tbl[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+                    eng->XYZ.x = Heroes[mate].hero_eng->XYZ.x - ((r * sin_cos_table[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
                     return 1;
                 }
                 return 0;
@@ -3453,7 +3453,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
     farp.x = hero->hero_eng->XYZ.x + box->x1;
     farp.y = hero->hero_eng->XYZ.y + box->y1;
     farp.z = hero->hero_eng->XYZ.z + box->z1;
-    tbl = rcossin_tbl;
+    tbl = sin_cos_table;
     for (nas = HeadOfSolids;; nas = nas->Solid.Child) {
         if (nas == NULL) {
             return 0;
@@ -3498,7 +3498,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         if (!(dist < rad * rad)) {
             continue;
         }
-        dist = csqrt(dist) >> 6;
+        dist = int_sqrt(dist) >> 6;
         if (!(dist < rad)) {
             continue;
         }
@@ -3606,7 +3606,7 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                         r += arg1;
                         d = dx * dx + dz * dz;
                         if (d < r * r) {
-                            d = csqrt(d) >> 6;
+                            d = int_sqrt(d) >> 6;
                             if (d < r) {
                                 t = FindExtension(n, 0x1000);
                                 if (t != NULL
@@ -3615,8 +3615,8 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                                     t->can_do |= 8;
                                     ang = get_angle(-dx, -dz) & 0xFFF;
                                     d = r - d + 1;
-                                    o->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                    o->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                    o->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    o->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
                                     t->player = arg0;
                                     e = FindExtension(n, 0x800);
                                     if (e != NULL) {
@@ -3682,7 +3682,7 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                 r = rec->radius;
                                 r += rad;
                                 if ((d = dx * dx + dz * dz) < r * r) {
-                                    d = csqrt(d) >> 6;
+                                    d = int_sqrt(d) >> 6;
                                     do {
                                     if (d < r) {
                                         ang = get_angle(-dx, -dz) & 0xFFF;
@@ -3692,8 +3692,8 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                             if (self->flags & 0x80) {
                                                 m = FindExtension(it, 0x800);
                                                 if (m != NULL) {
-                                                    other->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                    other->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                                                    other->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                    other->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
                                                     ang += angle_diff((m->Xa + 0x800) & 0xFFF, ang);
@@ -3705,8 +3705,8 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                                 if (r / 2 < d) {
                                                     d = r;
                                                 }
-                                                eng->XYZ.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->XYZ.z += (d * rcossin_tbl[ang].unk2) >> 12;
+                                                eng->XYZ.x += (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->XYZ.z += (d * sin_cos_table[ang].unk2) >> 12;
                                                 if (mine != NULL) {
                                                     m = FindExtension(it, 0x800);
                                                     if (m != NULL) {
@@ -4264,10 +4264,10 @@ void N2OInitShadow(s32 arg0) {
 }
 
 s32 N2OAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
-    s32 a = arg1 * rcossin_tbl[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 b = arg1 * rcossin_tbl[arg0 & 0xFFF].unk2;
-    s32 c = arg3 * rcossin_tbl[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 d = arg3 * rcossin_tbl[arg2 & 0xFFF].unk2;
+    s32 a = arg1 * sin_cos_table[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 b = arg1 * sin_cos_table[arg0 & 0xFFF].unk2;
+    s32 c = arg3 * sin_cos_table[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 d = arg3 * sin_cos_table[arg2 & 0xFFF].unk2;
     s32 x = a >> 12;
     s32 z = b >> 12;
     x += c >> 12;

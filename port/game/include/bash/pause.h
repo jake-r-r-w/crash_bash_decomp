@@ -182,7 +182,7 @@ typedef struct {
     /* 0x44 */ s32 speed;
 } Arc;
 
-s32 csqrt(s32 x);
+s32 int_sqrt(s32 x);
 
 
 
@@ -223,8 +223,8 @@ typedef struct {
 
 typedef struct {
     FallParticle *parts; /* 0x0 */
-    POLY_FT4 *prims[2];  /* 0x4: indexed by FrameCount & 1 */
-    s32 count;           /* 0xC */
+    DrawFace *face;      /* 0x4 */
+    s32 count;           /* 0x8 */
 } FallParticles;
 
 
@@ -326,29 +326,10 @@ typedef struct {
     s32 base_x;
 } Spark;
 
-/* A POLY_FT4 (0x28 bytes). */
-typedef struct {
-    u32 tag;
-    u8 r0, g0, b0, code;
-    s16 x0, y0;
-    u16 uv0, clut;
-    s16 x1, y1;
-    u16 uv1, tpage;
-    s16 x2, y2;
-    u16 uv2, pad1;
-    s16 x3, y3;
-    u16 uv3, pad2;
-} SparkPoly;
-
-/* The texture PlotSparks puts on its polys. */
-typedef struct {
-    u8 pad[offsetof(obj_texture, info.tpage)];
-    u16 tpage, clut, uv0, uv1, uv2, uv3;
-} SparkTex;
 
 typedef struct {
     Spark *sparks;
-    void *prims[2];     /* two frames' prims: SparkPoly for the engine's, Nox's SparkLine */
+    DrawFace *face;
     s32 count;
 } SparkSet;
 

@@ -17,7 +17,7 @@
  *   node port/tests/playtest.mjs challenges [--seconds N] [--at-once N] [LEVEL | LEVEL.CHOICE ...]
  *       Each Adventure challenge alone (the door's choice: 0 trophy, 1 and 2 the gem and crystal, 3 and 4 the relics) from everything else won,
  *       some at once, up to 60 seconds each. For working on the player: which it wins, and in how many goes.
- *   node port/tests/playtest.mjs same [--save]
+ *   node port/tests/playtest.mjs same [--save] [--all]
  *       Frames and sound of a few modes against a saved baseline (--save makes it), about a minute: whether a change that shouldn't alter
  *       anything didn't. Between big steps of cleaning up, in place of the long tests.
  *   node port/tests/playtest.mjs menu
@@ -337,12 +337,15 @@ async function challenges(args) {
 const SAME_MODES = [0, 1, 4, 5, 10, 14, 18, 23, 27, 28, 30, 31, 33, 40];
 const SAME_SHOTS = [500, 900, 1300];
 const SAME_VBLANKS = 1400;
+/* With --all, every mode too, a few at a time, and what's on screen outside the levels: the logos, the Adventure hub and the pause text. */
+const SAME_EXTRAS = { intro: ['--frames', '1400'], hub: ['--adventure', '--frames', '1400', '--skip-intro', '--skip-loading'], pause: ['--mode', '1', '--press', '700', '8', '--frames', '1400', '--skip-intro', '--skip-loading'] };
 
 async function same(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const save = flag(args, '--save');
+    const all = flag(args, '--all');
     const dir = path.join(OUT, 'same');
-    const base = path.join(dir, 'baseline.json');
+    const base = path.join(dir, all ? 'baseline-all.json' : 'baseline.json');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
     const old = !save && fs.existsSync(base) ? JSON.parse(fs.readFileSync(base, 'utf8')) : null;
@@ -354,7 +357,8 @@ async function same(args) {
     fs.mkdirSync(dir, { recursive: true });
     const one = async (m, slot) => {
         const shots = SAME_SHOTS.flatMap(v => ['--shot', String(v), rel(`m${m}-${v}.png`)]);
-        const r = await run(exe, ['--frames', String(SAME_VBLANKS), '--turbo', '--skip-intro', '--skip-loading', '--mode', String(m), '--tile', String(slot), String(SAME_MODES.length),
+        const what = SAME_EXTRAS[m] ?? ['--frames', String(SAME_VBLANKS), '--skip-intro', '--skip-loading', '--mode', String(m)];
+        const r = await run(exe, [...what, '--turbo', '--tile', String(slot), String(SAME_MODES.length),
             ...shots, '--wav', rel(`m${m}.wav`)], path.join(dir, `m${m}.txt`), { timeout: MODE_TIMEOUT });
         const crash = crash_where(exe, r.text);
 
@@ -369,7 +373,12 @@ async function same(args) {
 
         return [`mode ${m}`, { pass: differ.length === 0, what: differ.length === 0 ? 'the same' : `differs: ${differ.map(k => k.slice(k.indexOf('-') + 1)).join(', ')}` }];
     };
-    const results = await Promise.all(SAME_MODES.map((m, i) => one(m, i)));
+    const results = [];
+    const list = all ? [...Array(41).keys(), ...Object.keys(SAME_EXTRAS)] : SAME_MODES;
+
+    for (let i = 0; i < list.length; i += SAME_MODES.length) {
+        results.push(...await Promise.all(list.slice(i, i + SAME_MODES.length).map((m, slot) => one(m, slot))));
+    }
 
     if (save) {
         fs.writeFileSync(base, JSON.stringify(now, null, 1));

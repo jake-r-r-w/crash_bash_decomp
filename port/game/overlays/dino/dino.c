@@ -619,8 +619,8 @@ void DinoAI_ShootGem(s32 id) {
         DinoAI_SteerToTarget(id);
         yaw = Heroes[id].hero_eng->xform.rot.vy;
         sc = DinoArenaRadius * 4;
-        v1[0] = (sc * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2) >> 12;
-        v1[2] = (sc * rcossin_tbl[yaw & 0xFFF].unk2) >> 12;
+        v1[0] = (sc * sin_cos_table[(yaw - 0x400) & 0xFFF].unk2) >> 12;
+        v1[2] = (sc * sin_cos_table[yaw & 0xFFF].unk2) >> 12;
         v2[0] = 0;
         v2[2] = 0;
         p = (DinoPosH *)DinoGoal;
@@ -685,8 +685,8 @@ void DinoAI_CarryGem(s32 id) {
         }
         yaw = Heroes[id].hero_eng->xform.rot.vy;
         sc = DinoArenaRadius * 4;
-        v1[0] = (sc * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2) >> 12;
-        v1[2] = (sc * rcossin_tbl[yaw & 0xFFF].unk2) >> 12;
+        v1[0] = (sc * sin_cos_table[(yaw - 0x400) & 0xFFF].unk2) >> 12;
+        v1[2] = (sc * sin_cos_table[yaw & 0xFFF].unk2) >> 12;
         v2[0] = 0;
         v2[2] = 0;
         p = (DinoPosH *)DinoGoal;
@@ -743,7 +743,7 @@ s32 DinoRayHit(s32 *a, s32 *b, s16 *c, void *unused) {
     if (s < 0) {
         return 0;
     }
-    s = csqrt(s) >> 6;
+    s = int_sqrt(s) >> 6;
     nc = -C;
     t1 = (nc + s) << 8;
     den = A * 2;
@@ -798,7 +798,7 @@ s32 DinoRayHitB(s32 *a, s32 *b, s16 *c, s32 *d) {
     qc = (p[0] * p[0] + p[1] * p[1] + p[2] * p[2] - c[3] * c[3]) >> 8;
     disc = qb * qb - qa * qc * 4;
     if (disc >= 0) {
-        disc = csqrt(disc) >> 6;
+        disc = int_sqrt(disc) >> 6;
         t0 = ((-qb + disc) << 8) / (qa * 2);
         t1 = ((-qb - disc) << 8) / (qa * 2);
         if (t0 < 0 && t1 < 0) {
@@ -842,8 +842,8 @@ s32 DinoAI_RayToPlayer(s32 a, s32 b) {
     ea = Heroes[a].hero_eng;
     yaw = ea->xform.rot.vy;
     eb = Heroes[b].hero_eng;
-    v1[0] = (DinoArenaRadius * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2) >> 12;
-    v1[2] = (DinoArenaRadius * rcossin_tbl[yaw & 0xFFF].unk2) >> 12;
+    v1[0] = (DinoArenaRadius * sin_cos_table[(yaw - 0x400) & 0xFFF].unk2) >> 12;
+    v1[2] = (DinoArenaRadius * sin_cos_table[yaw & 0xFFF].unk2) >> 12;
     v2[0] = 0;
     v2[2] = 0;
     d[0] = *(u16 *)&eb->XYZ.x - *(u16 *)&ea->XYZ.x;
@@ -1000,7 +1000,7 @@ s32 DinoGetLevelPoint(s32 *arg0, s32 arg1) {
     if (p != NULL) {
         i = 0;
         n = ((DinoSegObj *)p)->count;
-        t = rcossin_tbl;
+        t = sin_cos_table;
         a2 = p + 0x50;
         a3 = p;
         for (;;) {
@@ -1104,8 +1104,8 @@ void DinoAI_Wander(s32 arg0) {
         goto chase;
     }
     rnd = Random(8);
-    v1[0] = (DinoArenaRadius * rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2) >> 12;
-    v1[2] = (DinoArenaRadius * rcossin_tbl[ext->angle & 0xFFF].unk2) >> 12;
+    v1[0] = (DinoArenaRadius * sin_cos_table[(ext->angle - 0x400) & 0xFFF].unk2) >> 12;
+    v1[2] = (DinoArenaRadius * sin_cos_table[ext->angle & 0xFFF].unk2) >> 12;
     best = 0;
     v2[0] = 0;
     v2[2] = 0;
@@ -1146,8 +1146,8 @@ void DinoAI_Wander(s32 arg0) {
                 goto end;
             }
             ang = DinoWanderAngles[j & 7];
-            v1[0] = (DinoArenaRadius * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            v1[2] = (DinoArenaRadius * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+            v1[0] = (DinoArenaRadius * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            v1[2] = (DinoArenaRadius * sin_cos_table[ang & 0xFFF].unk2) >> 12;
             v2[0] = 0;
             v2[2] = 0;
             if (DinoRayHitB(v2, v1, d, sp20) != 0) {
@@ -2010,7 +2010,7 @@ void DinoUpdateTargets(void) {
     }
     if (DinoTargetD != NULL) {
         DinoTargetD->flags |= 0x40000000;
-        DinoTargetD->scale = abs((rcossin_tbl[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 3);
+        DinoTargetD->scale = abs((sin_cos_table[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 3);
         if (DinoTargetTimer == 2) {
             DinoTargetD->color = 0xFFF;
             DinoTargetD->unk7C = 0;
@@ -2035,7 +2035,7 @@ void DinoUpdateTargets(void) {
     }
     if (DinoTargetE != NULL) {
         DinoTargetE->flags |= 0x40000000;
-        DinoTargetE->scale = abs(rcossin_tbl[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2);
+        DinoTargetE->scale = abs(sin_cos_table[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2);
         cur = DinoTargetE;
         cur->color = 0;
         cur->unk7C = 0;
@@ -2203,15 +2203,15 @@ void DinoScoreGems(void) {
         DinoScoreDelay = 0;
     }
     ((subengine *)DinoGoal)->xform.order = 0;
-    ((subengine *)DinoGoal)->XYZ.x = (rcossin_tbl[(DinoScoreB - 0x400) & 0xFFF].unk2 * 11) >> 4;
-    ((subengine *)DinoGoal)->XYZ.z = (rcossin_tbl[DinoScoreB & 0xFFF].unk2 * 11) >> 4;
+    ((subengine *)DinoGoal)->XYZ.x = (sin_cos_table[(DinoScoreB - 0x400) & 0xFFF].unk2 * 11) >> 4;
+    ((subengine *)DinoGoal)->XYZ.z = (sin_cos_table[DinoScoreB & 0xFFF].unk2 * 11) >> 4;
     {
         s32 h = (u16)DinoScoreB;
 
         ((subengine *)DinoGoal)->xform.rot.vy = h;
         ((subengine *)DinoGoal)->xform.rot.vz = h * 2;
     }
-    DinoScoreB = ((rcossin_tbl[(DinoScoreFlag - 0x400) & 0xFFF].unk2 * 3) >> 4) & 0xFFF;
+    DinoScoreB = ((sin_cos_table[(DinoScoreFlag - 0x400) & 0xFFF].unk2 * 3) >> 4) & 0xFFF;
     if (DinoScoreB >= 0x2F8 && DinoScoreDelay == 0 && DinoScoreB <= 0x400) {
         PlaySfx(0x6BF, NULL, NULL, 0x1000, 0x1E00, 0);
         DinoScoreDelay = 0x5A;
@@ -2250,20 +2250,20 @@ void DinoScoreGems(void) {
             continue;
         }
         DinoScoreA++;
-        spd = csqrt(ext->xvel * ext->xvel + ext->zvel * ext->zvel) >> 6;
+        spd = int_sqrt(ext->xvel * ext->xvel + ext->zvel * ext->zvel) >> 6;
         a = (((subengine *)DinoGoal)->xform.rot.vy + 0x800) & 0xFFF;
         ext->timer2 = 0x14;
-        n.vx = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
-        n.vz = rcossin_tbl[a].unk2;
-        d.vx = -rcossin_tbl[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2;
-        d.vz = -rcossin_tbl[nas->Engine->xform.rot.vy & 0xFFF].unk2;
+        n.vx = sin_cos_table[(a - 0x400) & 0xFFF].unk2;
+        n.vz = sin_cos_table[a].unk2;
+        d.vx = -sin_cos_table[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2;
+        d.vz = -sin_cos_table[nas->Engine->xform.rot.vy & 0xFFF].unk2;
         dot = DinoDot(&d, &n);
         r.vx = d.vx - (dot * n.vx >> 11);
         r.vz = d.vz - (dot * n.vz >> 11);
         out = get_angle(r.vx, r.vz) + 0x800;
         nas->Engine->xform.rot.vy = out;
-        ext->xvel = -(spd * rcossin_tbl[(out - 0x400) & 0xFFF].unk2 >> 12);
-        ext->zvel = -(spd * rcossin_tbl[out & 0xFFF].unk2 >> 12);
+        ext->xvel = -(spd * sin_cos_table[(out - 0x400) & 0xFFF].unk2 >> 12);
+        ext->zvel = -(spd * sin_cos_table[out & 0xFFF].unk2 >> 12);
         nas->Engine->XYZ.x += ext->xvel;
         nas->Engine->XYZ.z += ext->zvel;
         sign = 1;
@@ -2388,15 +2388,15 @@ s32 DinoKeepInArena(s32 arg0) {
     s32 d;
     s32 r;
 
-    dist = csqrt(Heroes[arg0].hero_eng->XYZ.x * Heroes[arg0].hero_eng->XYZ.x +
+    dist = int_sqrt(Heroes[arg0].hero_eng->XYZ.x * Heroes[arg0].hero_eng->XYZ.x +
                  Heroes[arg0].hero_eng->XYZ.z * Heroes[arg0].hero_eng->XYZ.z) >> 6;
     if (dist < 0xB01) {
         return 0;
     }
     ang = get_angle(Heroes[arg0].hero_eng->XYZ.x, Heroes[arg0].hero_eng->XYZ.z) & 0xFFF;
     d = dist - 0xAFE;
-    Heroes[arg0].hero_eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-    Heroes[arg0].hero_eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+    Heroes[arg0].hero_eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+    Heroes[arg0].hero_eng->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
     if (Heroes[arg0].hero_move->x_vel * Heroes[arg0].hero_move->x_vel +
             Heroes[arg0].hero_move->z_vel * Heroes[arg0].hero_move->z_vel > 0x1000 &&
         Heroes[arg0].hero_mode == 0x66) {
@@ -2485,8 +2485,8 @@ s32 DinoXZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     ang.vx = -((u16 *)a)[8];
     ang.vy = -((u16 *)a)[9];
     ang.vz = 0;
-    RotMatrixZYX(&ang, &m);
-    ApplyMatrixLV(&m, &d, &d);
+    matrix_rotation_zyx(&ang, &m);
+    matrix_apply_long(&m, &d, &d);
     if (d.vx < lo.v[0]) {
         side = 2;
     }
@@ -2528,12 +2528,12 @@ s32 DinoXZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
         n.vz = -0x1000;
         break;
     case 6:
-        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        dist = int_sqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
         n.vx = -0x1000;
         n.vz = -0x1000;
         break;
     case 5:
-        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        dist = int_sqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
         n.vx = 0x1000;
         n.vz = -0x1000;
         break;
@@ -2561,12 +2561,12 @@ s32 DinoXZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
         n.vz = 0x1000;
         break;
     case 10:
-        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        dist = int_sqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
         n.vx = -0x1000;
         n.vz = 0x1000;
         break;
     case 9:
-        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        dist = int_sqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
         n.vx = 0x1000;
         n.vz = 0x1000;
         break;
@@ -2593,14 +2593,14 @@ s32 DinoXZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
 
             push = p->pad - dist;
             push = DinoBoxPushRot(&ang, (u16 *)a, abs(push));
-            RotMatrix(&ang, &m);
-            ApplyMatrixLV(&m, &n, &n);
+            matrix_rotation_xyz(&ang, &m);
+            matrix_apply_long(&m, &n, &n);
             push += 8;
             e->x += (push * n.vx) >> 12;
             e->y += (push * n.vy) >> 12;
             e->z += (push * n.vz) >> 12;
         }
-        return csqrt((((hi.v[0] + lo.v[0]) >> 1) - d.vx) * (((hi.v[0] + lo.v[0]) >> 1) - d.vx) +
+        return int_sqrt((((hi.v[0] + lo.v[0]) >> 1) - d.vx) * (((hi.v[0] + lo.v[0]) >> 1) - d.vx) +
                      (((hi.v[1] + lo.v[1]) >> 1) - (d.vy + 0x80)) * (((hi.v[1] + lo.v[1]) >> 1) - (d.vy + 0x80))) >> 6;
     }
     return -1;
@@ -2664,8 +2664,8 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
             }
             d.vx = pos->vx - w->segs[0].p0.vx;
             d.vz = pos->vz - w->segs[0].p0.vz;
-            if (((d.vx * rcossin_tbl[-ang & 0xFFF].unk2) >> 12) -
-                    ((d.vz * rcossin_tbl[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
+            if (((d.vx * sin_cos_table[-ang & 0xFFF].unk2) >> 12) -
+                    ((d.vz * sin_cos_table[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
                 continue;
             }
             d.vy = w->segs[0].p1.vy - w->segs[0].p0.vy;
@@ -2719,13 +2719,13 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
             if (best > r2) {
                 continue;
             }
-            s = csqrt(best) >> 6;
+            s = int_sqrt(best) >> 6;
             out->vy = ang;
             a = -ang;
             v = rad - s + 2;
-            out->vx = (v * rcossin_tbl[a & 0xFFF].unk2) >> 12;
+            out->vx = (v * sin_cos_table[a & 0xFFF].unk2) >> 12;
             ang = a + 0x400;
-            out->vz = (v * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
+            out->vz = (v * sin_cos_table[ang & 0xFFF].unk2) >> 12;
             pos->vx += out->vx;
             pos->vz += out->vz;
             found = 1;
@@ -2858,13 +2858,13 @@ void DinoPreMoveHero(s32 id) {
                         if (GAME->heroCpu[id] != 0) {
                             sc = DinoSteerTable[(s16)(u16)AiPlayerSkill[id].level >> 1];
                         }
-                        m->x_max = (sc * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                        m->z_max = (sc * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                        m->x_max = (sc * sin_cos_table[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                        m->z_max = (sc * sin_cos_table[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                     } else {
                         sc = DinoSteerMax;
                         m->forward_angle = (((PadState *)Pads)[id].angle.w + 0x800) & 0xFFF;
-                        m->x_max = (sc * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                        m->z_max = (sc * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                        m->x_max = (sc * sin_cos_table[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                        m->z_max = (sc * sin_cos_table[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                     }
                 }
                 if (Heroes[id].hero_mode == 0x65) {
@@ -3025,10 +3025,10 @@ void SetDinoHeroSlide(s32 id) {
     m->z_dec = 6;
     m->x_dec = 6;
     m->forward_angle = Heroes[id].hero_eng->xform.rot.vy;
-    v = (rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2 * 0x59) >> 0xB;
+    v = (sin_cos_table[(m->forward_angle + 0x400) & 0xFFF].unk2 * 0x59) >> 0xB;
     m->x_vel = v;
     m->x_max = v;
-    v = (rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2 * 0x59) >> 0xB;
+    v = (sin_cos_table[(m->forward_angle + 0x800) & 0xFFF].unk2 * 0x59) >> 0xB;
     m->z_vel = v;
     m->z_max = v;
     SetHeroSeq(id, 0x50);
@@ -3118,7 +3118,7 @@ s32 DinoHeroCollide(s32 hero) {
                     do {
                         dx = oe->XYZ.x - eng->XYZ.x;
                         dz = oe->XYZ.z - eng->XYZ.z;
-                        dist = csqrt(dx * dx + dz * dz) >> 6;
+                        dist = int_sqrt(dx * dx + dz * dz) >> 6;
                     } while (0);
                     if (dist < 0x19C) {
                         if (me->hero_move->x_vel * me->hero_move->x_vel +
@@ -3169,8 +3169,8 @@ s32 DinoHeroCollide(s32 hero) {
                             SetHeroAction(hero, 0x63);
                         }
                         d = dist + 2;
-                        eng->XYZ.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                        eng->XYZ.z -= (d * rcossin_tbl[ang].unk2) >> 12;
+                        eng->XYZ.x -= (d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                        eng->XYZ.z -= (d * sin_cos_table[ang].unk2) >> 12;
                     }
                 }
             }
@@ -3263,14 +3263,14 @@ void DinoGemPhysics(NAS *arg0) {
             if (abs(a->XYZ.y - b->XYZ.y) >= 0x200) {
                 goto next;
             }
-            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = int_sqrt(dx * dx + dz * dz) >> 6;
             if (d >= 0x200) {
                 goto next;
             }
             ang = get_angle(dx, dz) & 0xFFF;
             d = 0x200 - d;
-            arg0->Engine->XYZ.x += ((d + 8) * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            arg0->Engine->XYZ.z += ((d + 8) * rcossin_tbl[ang].unk2) >> 12;
+            arg0->Engine->XYZ.x += ((d + 8) * sin_cos_table[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            arg0->Engine->XYZ.z += ((d + 8) * sin_cos_table[ang].unk2) >> 12;
             r = Random(4);
             if (r == 0) {
                 PlaySfx(0x6C0, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -3452,8 +3452,8 @@ void PlotDinoGem(NAS *m) {
         ext->yvel = 0x800;
         ext->y = 0;
         ext->y2 = 0;
-        ext->xvel0 = -(rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 0xD2) >> 12;
-        ext->zvel0 = -(rcossin_tbl[a & 0xFFF].unk2 * 0xD2) >> 12;
+        ext->xvel0 = -(sin_cos_table[(a - 0x400) & 0xFFF].unk2 * 0xD2) >> 12;
+        ext->zvel0 = -(sin_cos_table[a & 0xFFF].unk2 * 0xD2) >> 12;
         ext->count = 0;
         ext->xvel = ext->xvel0;
         ext->zvel = ext->zvel0;
@@ -3493,8 +3493,8 @@ void PlotDinoGem(NAS *m) {
         ext->y = -0x60;
         ext->yvel = 8;
         ext->y2 = 0;
-        ext->xvel0 = (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 0x40) >> 12;
-        ext->zvel0 = (rcossin_tbl[a & 0xFFF].unk2 * 0x40) >> 12;
+        ext->xvel0 = (sin_cos_table[(a - 0x400) & 0xFFF].unk2 * 0x40) >> 12;
+        ext->zvel0 = (sin_cos_table[a & 0xFFF].unk2 * 0x40) >> 12;
         ext->count = 0;
         ext->xvel = ext->xvel0;
         ext->zvel = ext->zvel0;
@@ -3574,14 +3574,14 @@ void PlotDinoGem(NAS *m) {
 
         e = m->Engine;
         p = &e->XYZ;
-        dist = csqrt(e->XYZ.x * e->XYZ.x + p->z * p->z) >> 6;
+        dist = int_sqrt(e->XYZ.x * e->XYZ.x + p->z * p->z) >> 6;
         lim = 0xB00;
         if (dist > lim) {
             s32 a;
 
             a = get_angle(e->XYZ.x, p->z) & 0xFFF;
-            e->XYZ.x -= ((dist - 0xAFC) * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
-            p->z -= ((dist - 0xAFC) * rcossin_tbl[a].unk2) >> 12;
+            e->XYZ.x -= ((dist - 0xAFC) * sin_cos_table[(a - 0x400) & 0xFFF].unk2) >> 12;
+            p->z -= ((dist - 0xAFC) * sin_cos_table[a].unk2) >> 12;
             ang = a;
         } else {
             ang = -1;
@@ -3591,19 +3591,19 @@ void PlotDinoGem(NAS *m) {
             s32 h;
 
             PlaySfx(0x6CC, NULL, NULL, 0x1000, 0x1E00, 0);
-            spd = csqrt(ext->xvel * ext->xvel + ext->zvel * ext->zvel) >> 6;
+            spd = int_sqrt(ext->xvel * ext->xvel + ext->zvel * ext->zvel) >> 6;
             w = (ang + 0x800) & 0xFFF;
-            n[0] = rcossin_tbl[(w - 0x400) & 0xFFF].unk2;
-            n[2] = rcossin_tbl[w].unk2;
-            d[0] = -rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2;
-            d[2] = -rcossin_tbl[m->Engine->xform.rot.vy & 0xFFF].unk2;
+            n[0] = sin_cos_table[(w - 0x400) & 0xFFF].unk2;
+            n[2] = sin_cos_table[w].unk2;
+            d[0] = -sin_cos_table[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2;
+            d[2] = -sin_cos_table[m->Engine->xform.rot.vy & 0xFFF].unk2;
             dot = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);
             rv[0] = d[0] - (dot * n[0] >> 11);
             rv[2] = d[2] - (dot * n[2] >> 11);
             h = get_angle(rv[0], rv[2]) + 0x800;
             m->Engine->xform.rot.vy = h;
-            ext->xvel = -(spd * rcossin_tbl[(h - 0x400) & 0xFFF].unk2 >> 12);
-            ext->zvel = -(spd * rcossin_tbl[h & 0xFFF].unk2 >> 12);
+            ext->xvel = -(spd * sin_cos_table[(h - 0x400) & 0xFFF].unk2 >> 12);
+            ext->zvel = -(spd * sin_cos_table[h & 0xFFF].unk2 >> 12);
         }
     }
     ext->eng->XYZ = m->Engine->XYZ;
@@ -3716,21 +3716,21 @@ s32 DinoClampToArena(s32 *p, s32 arg1) {
     s32 d;
     s32 ang;
 
-    d = csqrt(p[0] * p[0] + p[2] * p[2]) >> 6;
+    d = int_sqrt(p[0] * p[0] + p[2] * p[2]) >> 6;
     if (0xB00 - arg1 < d) {
         d -= 0xB00;
         d += arg1;
         ang = get_angle(p[0], p[2]) & 0xFFF;
         d += 4;
-        p[0] -= d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        p[2] -= d * rcossin_tbl[ang].unk2 >> 12;
+        p[0] -= d * sin_cos_table[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        p[2] -= d * sin_cos_table[ang].unk2 >> 12;
         return ang;
     }
     return -1;
 }
 
 s32 DinoHeroTestStop(s32 arg0) {
-    if ((csqrt(Heroes[arg0].hero_move->x_vel * Heroes[arg0].hero_move->x_vel +
+    if ((int_sqrt(Heroes[arg0].hero_move->x_vel * Heroes[arg0].hero_move->x_vel +
                Heroes[arg0].hero_move->z_vel * Heroes[arg0].hero_move->z_vel) >> 6) < 0x20) {
         if (Heroes[arg0].hero_mode != 0x63) {
             SetHeroAction(arg0, 0x63);

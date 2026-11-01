@@ -474,9 +474,9 @@ extern u16 TileFramesAlt[][4];
 #define MV ((GameState *)GameInfo)
 /* Set a cell object's animation and its frame (fr: an s32 temp of the caller). */
 #define CELL_SET(o, a, f) \
-    ((o)->anim = (a), fr = (f), (o)->frame = CELL_FRAME(o, fr & 0xFFF)->clut)
+    ((o)->anim = (a), fr = (f), (o)->frame = CELL_FRAME(o, fr & 0xFFF)->palette)
 #define CELL_SET_T(o, a, f) \
-    ((o)->anim = (a), (o)->frame = CELL_FRAME(o, (f) & 0xFFF)->clut)
+    ((o)->anim = (a), (o)->frame = CELL_FRAME(o, (f) & 0xFFF)->palette)
 /* Texture i of the cell's model: its palette is the colour the cell shows. */
 #define CELL_FRAME(o, i) (&(o)->model->textures.tex[i].info)
 

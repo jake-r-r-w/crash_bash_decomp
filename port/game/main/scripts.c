@@ -346,12 +346,12 @@ void emit_particle(subengine *obj, EmitPart *part, partdata *def) {
     if (r != 0) {
         pitch = (def->xrotmin + Random(r)) & 0xFFF;
     }
-    part->vel[0] = speed * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 4;
-    part->vel[2] = speed * rcossin_tbl[yaw & 0xFFF].unk2 >> 4;
-    part->vel[1] = -(speed * rcossin_tbl[pitch & 0xFFF].unk2 >> 4);
-    obj->XYZ.x = (radius * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 12) + def->pos.x;
-    obj->XYZ.z = (radius * rcossin_tbl[yaw & 0xFFF].unk2 >> 12) + def->pos.z;
-    obj->XYZ.y = def->pos.y - (radius * rcossin_tbl[pitch & 0xFFF].unk2 >> 12);
+    part->vel[0] = speed * sin_cos_table[(yaw - 0x400) & 0xFFF].unk2 >> 4;
+    part->vel[2] = speed * sin_cos_table[yaw & 0xFFF].unk2 >> 4;
+    part->vel[1] = -(speed * sin_cos_table[pitch & 0xFFF].unk2 >> 4);
+    obj->XYZ.x = (radius * sin_cos_table[(yaw - 0x400) & 0xFFF].unk2 >> 12) + def->pos.x;
+    obj->XYZ.z = (radius * sin_cos_table[yaw & 0xFFF].unk2 >> 12) + def->pos.z;
+    obj->XYZ.y = def->pos.y - (radius * sin_cos_table[pitch & 0xFFF].unk2 >> 12);
     obj->flags |= 0x8000;
 }
 
@@ -698,7 +698,7 @@ void quat_slerp(Quat *a, Quat *b, s32 t, Quat *out) {
         d = QuatDot(a, &q);
     }
     sq = d * d;
-    s = csqrt(abs(0x1000 - ((sq >= 0 ? sq + 0x800 : sq - 0x800) >> 12)));
+    s = int_sqrt(abs(0x1000 - ((sq >= 0 ? sq + 0x800 : sq - 0x800) >> 12)));
     if (abs(s) < 0x80) {
         out->v[0] = a->v[0];
         out->v[1] = a->v[1];
@@ -708,8 +708,8 @@ void quat_slerp(Quat *a, Quat *b, s32 t, Quat *out) {
     }
     ang = get_angle(s, d);
     inv = 0x1000000 / s;
-    ka = (rcossin_tbl[((((0x1000 - t) * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
-    kb = (rcossin_tbl[(((t * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
+    ka = (sin_cos_table[((((0x1000 - t) * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
+    kb = (sin_cos_table[(((t * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
     out->v[0] = (ka * a->v[0] + kb * q.v[0]) >> 18;
     out->v[1] = (ka * a->v[1] + kb * q.v[1]) >> 18;
     out->v[2] = (ka * a->v[2] + kb * q.v[2]) >> 18;
@@ -719,9 +719,9 @@ void quat_slerp(Quat *a, Quat *b, s32 t, Quat *out) {
 /* Cosine at angle x / 2, linearly interpolated for odd x. */
 static inline s32 Trig_HalfCos(s32 x) {
     if (x & 1) {
-        return (rcossin_tbl[((x >> 1) - 0x400) & 0xFFF].unk2 + rcossin_tbl[((x >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+        return (sin_cos_table[((x >> 1) - 0x400) & 0xFFF].unk2 + sin_cos_table[((x >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     }
-    return rcossin_tbl[((x >> 1) - 0x400) & 0xFFF].unk2;
+    return sin_cos_table[((x >> 1) - 0x400) & 0xFFF].unk2;
 }
 
 void quat_slerp_ex(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
@@ -750,7 +750,7 @@ void quat_slerp_ex(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
         d = QuatDot(a, &q);
     }
     sq = d * d;
-    s = csqrt(abs(0x1000 - ((sq >= 0 ? sq + 0x800 : sq - 0x800) >> 12)));
+    s = int_sqrt(abs(0x1000 - ((sq >= 0 ? sq + 0x800 : sq - 0x800) >> 12)));
     if (abs(s) < 0x80) {
         out->v[0] = a->v[0];
         out->v[1] = a->v[1];
@@ -777,9 +777,9 @@ void quat_slerp_ex(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
     ia >>= 11;
     ka = Trig_HalfCos(ia) * inv;
     if (ib & 1) {
-        ang = (rcossin_tbl[((ib >> 1) - 0x400) & 0xFFF].unk2 + rcossin_tbl[((ib >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+        ang = (sin_cos_table[((ib >> 1) - 0x400) & 0xFFF].unk2 + sin_cos_table[((ib >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     } else {
-        ang = rcossin_tbl[((ib >> 1) - 0x400) & 0xFFF].unk2;
+        ang = sin_cos_table[((ib >> 1) - 0x400) & 0xFFF].unk2;
     }
     ia = ang * inv;
     if (ka > 0) {
@@ -825,8 +825,8 @@ s32 cos_interp(s32 arg0) {
     s32 b;
     s32 t;
 
-    a = rcossin_tbl[((arg0 >> 16) - 0x400) & 0xFFF].unk2;
-    b = rcossin_tbl[((arg0 >> 16) - 0x3FF) & 0xFFF].unk2;
+    a = sin_cos_table[((arg0 >> 16) - 0x400) & 0xFFF].unk2;
+    b = sin_cos_table[((arg0 >> 16) - 0x3FF) & 0xFFF].unk2;
     t = (b - a) * (arg0 & 0xFFFF);
     if (!((arg0 & 0x7FFF) >> 15)) {
         return a;
@@ -836,9 +836,9 @@ s32 cos_interp(s32 arg0) {
 
 s16 cos_half(s32 arg0) {
     if (arg0 & 1) {
-        return (rcossin_tbl[((arg0 >> 1) - 0x400) & 0xFFF].unk2 + rcossin_tbl[((arg0 >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+        return (sin_cos_table[((arg0 >> 1) - 0x400) & 0xFFF].unk2 + sin_cos_table[((arg0 >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     }
-    return rcossin_tbl[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
+    return sin_cos_table[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
 }
 
 void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {

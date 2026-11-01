@@ -44,7 +44,7 @@ s32 NoxUnusedSizes[32] = {
 s32 NoxSparkAlpha = 0;
 s32 NoxSparkScale = 0x100;
 MATRIX NoxSparkMatrix = { { { 0x1000, 0, 0 }, { 0, 0x1000, 0 }, { 0, 0, 0x1000 } }, { 0, 0, 0 } };
-FxDef NoxSparkFxDef = { 0x80, 0xA00, 0xC00, NoxInitSparks, NoxDrawSparks };
+FxDef NoxSparkFxDef = { 0x80, 0xC00, NoxInitSparks, NoxDrawSparks };
 s32 NoxStarted = 0;
 s32 NoxHeroBoost[4] = {0};
 s32 NoxHeroSteer[4] = {0};
@@ -95,8 +95,8 @@ s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     ang.vx = 0;
     ang.vy = 0;
     ang.vz = -((u16 *)a)[10];
-    RotMatrixZYX(&ang, &m);
-    ApplyMatrixLV(&m, &d, &d);
+    matrix_rotation_zyx(&ang, &m);
+    matrix_apply_long(&m, &d, &d);
     if (d.vx < lo.v[0]) {
         side = 2;
     }
@@ -144,12 +144,12 @@ s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
         n.vz = -0x1000;
         break;
     case 6:
-        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        dist = int_sqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
         n.vx = -0x1000;
         n.vz = -0x1000;
         break;
     case 5:
-        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        dist = int_sqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
         n.vx = 0x1000;
         n.vz = -0x1000;
         break;
@@ -177,12 +177,12 @@ s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
         n.vz = 0x1000;
         break;
     case 10:
-        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        dist = int_sqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
         n.vx = -0x1000;
         n.vz = 0x1000;
         break;
     case 9:
-        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        dist = int_sqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
         n.vx = 0x1000;
         n.vz = 0x1000;
         break;
@@ -209,14 +209,14 @@ s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
 
             push = p->pad - dist;
             push = BoxPushRot(&ang, (u16 *)a, abs(push));
-            RotMatrix(&ang, &m);
-            ApplyMatrixLV(&m, &n, &n);
+            matrix_rotation_xyz(&ang, &m);
+            matrix_apply_long(&m, &n, &n);
             push += 8;
             e->x += (push * n.vx) >> 12;
             e->y += (push * n.vy) >> 12;
             e->z += (push * n.vz) >> 12;
         }
-        return csqrt((((hi.v[0] + lo.v[0]) >> 1) - d.vx) * (((hi.v[0] + lo.v[0]) >> 1) - d.vx) +
+        return int_sqrt((((hi.v[0] + lo.v[0]) >> 1) - d.vx) * (((hi.v[0] + lo.v[0]) >> 1) - d.vx) +
                      (((hi.v[1] + lo.v[1]) >> 1) - (d.vy + 0x80)) * (((hi.v[1] + lo.v[1]) >> 1) - (d.vy + 0x80))) >> 6;
     }
     return -1;
@@ -249,7 +249,7 @@ void NoxInitAsteroids(void) {
     nAst = 0;
     nMine = 0;
     nBig = 0;
-    trig = rcossin_tbl;
+    trig = sin_cos_table;
     a = NoxAsteroids;
     NoxAsteroidTimer = 0x3C;
 loop:
@@ -670,8 +670,8 @@ void NoxUpdateAsteroids(void) {
                     o->pos.y = NoxAsteroids[nAst].pos.y;
                     o->pos.x = NoxAsteroids[nAst].pos.x;
                 } else {
-                    o->pos.y = NoxAsteroids[nAst].pos.y + (rcossin_tbl[(NoxAsteroids[nAst].ang - 0x400) & 0xFFF].unk2 * 512 >> 12);
-                    o->pos.x = NoxAsteroids[nAst].pos.x + (rcossin_tbl[NoxAsteroids[nAst].ang & 0xFFF].unk2 * 512 >> 12);
+                    o->pos.y = NoxAsteroids[nAst].pos.y + (sin_cos_table[(NoxAsteroids[nAst].ang - 0x400) & 0xFFF].unk2 * 512 >> 12);
+                    o->pos.x = NoxAsteroids[nAst].pos.x + (sin_cos_table[NoxAsteroids[nAst].ang & 0xFFF].unk2 * 512 >> 12);
                 }
                 NoxAsteroids[nAst].ang = (NoxAsteroids[nAst].ang + 0x20) & 0xFFF;
                 if (o->flags & 0x8000) {
@@ -818,7 +818,7 @@ void NoxHeroCollide(s32 arg0) {
     base = Heroes;
     i = 0;
     total = 0x200;
-    trig = rcossin_tbl;
+    trig = sin_cos_table;
     while (1) {
         if (i >= 4) {
             break;
@@ -829,7 +829,7 @@ void NoxHeroCollide(s32 arg0) {
             dx = h->hero_eng->XYZ.x - me->hero_eng->XYZ.x;
             dz = h->hero_eng->XYZ.y - me->hero_eng->XYZ.y;
             dy = h->hero_eng->XYZ.z - me->hero_eng->XYZ.z;
-            dist = csqrt(dx * dx + dz * dz + dy * dy) >> 6;
+            dist = int_sqrt(dx * dx + dz * dz + dy * dy) >> 6;
             if (dist < 0x300) {
                 om = h->hero_move;
                 mm = me->hero_move;
@@ -917,8 +917,8 @@ void NoxPreMoveHero(s32 arg0) {
         spd = NoxSpeedScale;
         base2 = Heroes;
         hh = &base2[arg0];
-        m->x_max = (spd * rcossin_tbl[(hh->hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2) >> 11;
-        m->jump_max = (spd * rcossin_tbl[(hh->hero_eng->xform.rot.vx + 0x400) & 0xFFF].unk2) >> 11;
+        m->x_max = (spd * sin_cos_table[(hh->hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2) >> 11;
+        m->jump_max = (spd * sin_cos_table[(hh->hero_eng->xform.rot.vx + 0x400) & 0xFFF].unk2) >> 11;
         if (NoxBossHitTimer == 0) {
             m->z_max = spd;
         } else {
@@ -1043,10 +1043,10 @@ void NoxHeroFly(s32 arg0) {
         ProcessHeroAnim(arg0);
     }
     ang = h->hero_eng->xform.rot.vy;
-    x1 = (rcossin_tbl[ang & 0xFFF].unk2 * 0x67) >> 10;
-    z1 = (rcossin_tbl[(ang + 0x400) & 0xFFF].unk2 * 0x67) >> 10;
-    x2 = (rcossin_tbl[(ang - 0x800) & 0xFFF].unk2 * 0x67) >> 10;
-    z2 = (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 0x67) >> 10;
+    x1 = (sin_cos_table[ang & 0xFFF].unk2 * 0x67) >> 10;
+    z1 = (sin_cos_table[(ang + 0x400) & 0xFFF].unk2 * 0x67) >> 10;
+    x2 = (sin_cos_table[(ang - 0x800) & 0xFFF].unk2 * 0x67) >> 10;
+    z2 = (sin_cos_table[(ang - 0x400) & 0xFFF].unk2 * 0x67) >> 10;
     sub = h->hero_sub;
     if (sub->entity < 0x401D) {
         sub->entity++;
@@ -1165,7 +1165,7 @@ void InitAsteroidRoll(NAS *m) {
         ext->arc[1] = 0;
         ext->floor = 0;
         ext->to.x = Heroes->hero_eng->XYZ.x;
-        ext->to.z = (rcossin_tbl[0].unk2 * 9) >> 4;
+        ext->to.z = (sin_cos_table[0].unk2 * 9) >> 4;
         m->Engine->xform.rot.vy = 0;
         ext->to.y = 0;
         ext->from.x = Heroes->hero_eng->XYZ.x;
@@ -1319,14 +1319,14 @@ void PlotNitroMissile(NAS *nas) {
         dz = nas->Engine->XYZ.z - he->XYZ.z;
         zz = dz * dz;
         dy = nas->Engine->XYZ.y - he->XYZ.y + 0x100;
-        d = csqrt(xx + zz) >> 6;
+        d = int_sqrt(xx + zz) >> 6;
         a = get_angle(dx, dz) & 0xFFF;
         b = get_angle(-dy, d);
         nas->Engine->xform.rot.vy += ((a - nas->Engine->xform.rot.vy) << 20) >> 20;
         nas->Engine->xform.rot.vx += ((b - nas->Engine->xform.rot.vx) << 20) >> 20;
-        nas->Engine->XYZ.x -= rcossin_tbl[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->XYZ.z -= rcossin_tbl[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->XYZ.y += rcossin_tbl[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.x -= sin_cos_table[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.z -= sin_cos_table[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.y += sin_cos_table[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 55 >> 10;
         eng = nas->Engine;
         h = &Heroes[ext->player];
         if (eng->XYZ.z < h->hero_eng->XYZ.z) {
@@ -1389,9 +1389,9 @@ void PlotNitroMissile(NAS *nas) {
         }
         goto kill;
     case 1:
-        nas->Engine->XYZ.x -= rcossin_tbl[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->XYZ.z -= rcossin_tbl[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->XYZ.y += rcossin_tbl[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.x -= sin_cos_table[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.z -= sin_cos_table[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->XYZ.y += sin_cos_table[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 55 >> 10;
         if (nas->Engine->XYZ.z < Heroes[ext->player].hero_eng->XYZ.z - 0x1000) {
             goto kill;
         }
@@ -1454,7 +1454,7 @@ void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
     q = p + 7;
     dz = p[2] - q[2];
     dy = p[1] - q[1];
-    dist = csqrt(dx * dx + dz * dz) >> 6;
+    dist = int_sqrt(dx * dx + dz * dz) >> 6;
     out[1] = get_angle(dx, dz);
     ang[0] = -get_angle(dy, dist);
     arg1->eng->xform.rot.vy += ((ang[1] - arg1->eng->xform.rot.vy) << 20) >> 23;
@@ -1653,8 +1653,8 @@ void InitSpiralSat(NAS *nas) {
                 ext->ang[i] = i << 10;
                 ext->eng[i] = e;
                 ext->radius = 0x800;
-                e->XYZ.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
-                e->XYZ.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
+                e->XYZ.x = ext->c.x + ((ext->radius * sin_cos_table[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+                e->XYZ.y = ext->c.y + ((ext->radius * sin_cos_table[ext->ang[i] & 0xFFF].unk2) >> 12);
                 e->XYZ.z = ext->c.z;
                 e->sub->u6C.dbase = MapScene->dbase;
                 e->sub->entity = 0x201A;
@@ -1792,8 +1792,8 @@ void PlotSpiralSat(NAS *nas) {
             ext->eng[i]->xform.rot.vx += 0x40;
             ext->eng[i]->xform.rot.vy += 0x40;
             ext->eng[i]->xform.dirty = 1;
-            ext->eng[i]->XYZ.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
-            ext->eng[i]->XYZ.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
+            ext->eng[i]->XYZ.x = ext->c.x + ((ext->radius * sin_cos_table[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+            ext->eng[i]->XYZ.y = ext->c.y + ((ext->radius * sin_cos_table[ext->ang[i] & 0xFFF].unk2) >> 12);
             ext->eng[i]->XYZ.z = ext->c.z;
             if (ext->sat[i] != NULL) {
                 ext->sat[i]->Engine->XYZ = ext->eng[i]->XYZ;
@@ -1805,7 +1805,7 @@ void PlotSpiralSat(NAS *nas) {
             }
         }
     done:
-        ext->radius = abs((rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
+        ext->radius = abs((sin_cos_table[(ext->angle - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
         ext->angle = (ext->angle + 0x18) & 0xFFF;
     }
     z = nas->Engine->XYZ.z;
@@ -1885,9 +1885,9 @@ void PlotLaserShoot(NAS *nas) {
     s32 dz;
     s32 r;
 
-    nas->Engine->XYZ.x += rcossin_tbl[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 1024 >> 12;
-    nas->Engine->XYZ.z += rcossin_tbl[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 1024 >> 12;
-    nas->Engine->XYZ.y -= rcossin_tbl[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->XYZ.x += sin_cos_table[(nas->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->XYZ.z += sin_cos_table[nas->Engine->xform.rot.vy & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->XYZ.y -= sin_cos_table[(nas->Engine->xform.rot.vx - 0x400) & 0xFFF].unk2 * 1024 >> 12;
     if (nas->UserInfo.user2 == 0) {
         nas->Engine->sub->entity = 0x201D;
     }
@@ -1945,37 +1945,15 @@ void NoxInitSparks(SparkObj *arg0) {
     SparkSet *set = &arg0->set;
     s32 n = set->count;
     Spark *s = arg0->set.sparks;
-    SparkLine *a;
-    SparkLine *b;
 
     NoxSparkScale = 0x100;
     NoxSparkAlpha = 0x100;
-    a = set->prims[0];
-    b = set->prims[1];
     if (n != 0) do {
         s->x = Random(0x2000) - Random(0x2000);
         s->y = Random(0x1000) - Random(0x1000);
         s->z = Random(0x4000);
         s->x2 = s->x + 0x40;
         s->y2 = s->y + 0x40;
-        a->x0 = 0;
-        b->x0 = 0;
-        a->y0 = 0;
-        b->y0 = 0;
-        a->r0 = 0x80;
-        a->g0 = 0x80;
-        a->b0 = 0x80;
-        b->r0 = 0x80;
-        b->g0 = 0x80;
-        b->b0 = 0x80;
-        a->len = 4;
-        a->code = 0x50;
-        b->len = 4;
-        b->code = 0x50;
-        a->code |= 2;
-        b->code |= 2;
-        a++;
-        b++;
         s++;
         n--;
     } while (n != 0);
@@ -1984,7 +1962,8 @@ void NoxInitSparks(SparkObj *arg0) {
 void NoxDrawSparks(SparkObj *arg0) {
     SparkSet *set = &arg0->set;
     Spark *s = set->sparks;
-    SparkLine *l = set->prims[FrameCount & 1];
+    DVECTOR a, b;
+    u32 colour_a, colour_b;
     Spark *v;
     s32 n;
 
@@ -2000,16 +1979,15 @@ void NoxDrawSparks(SparkObj *arg0) {
         NoxSparkAngles.vx = 0;
         NoxSparkAngles.vy = 0;
         NoxSparkAngles.vz += 0x10;
-        RotMatrix(&NoxSparkAngles, &NoxSparkMatrix);
+        matrix_rotation_xyz(&NoxSparkAngles, &NoxSparkMatrix);
     }
     view_set_rotation(&NoxSparkMatrix);
     view_set_translation(&NoxSparkMatrix);
     view_set_centre(ScreenRect->w / 2, 120);
     n = set->count;
-    calc_rgbcode(0x10, 0x10, 0x10);
     if (n != 0) do {
         v = s;
-        project_xy(v, &l->x0);
+        project_xy(v, &a);
         if (GamePause == 0) {
             s->z -= NoxSparkScale;
         }
@@ -2021,37 +1999,17 @@ void NoxDrawSparks(SparkObj *arg0) {
             s->y2 = s->y + 0x40;
         } else {
             s->z2 = s->z;
-            if (RenderState.modelDp != 0) {
-                l->r1 = l->r1 * ((0x1000 - RenderState.modelDp) >> 12);
-                l->g1 = l->g1 * ((0x1000 - RenderState.modelDp) >> 12);
-                l->b1 = l->b1 * ((0x1000 - RenderState.modelDp) >> 12);
-            } else {
-                l->r1 = -(s->z >> 6);
-                l->g1 = -(s->z >> 6);
-                l->b1 = -(s->z >> 6);
-            }
+            /* a fade takes them to nothing */
+            colour_b = RenderState.modelDp != 0 ? 0 : (u8)-(s->z >> 6) * 0x010101;
             if (NoxSparkAlpha >= 0x300) {
-                l->r0 = 0;
-                l->g0 = 0;
-                l->b0 = 0;
-                project_xy(v, &l->x1);
+                colour_a = 0;
+                project_xy(v, &b);
             } else {
-                if (RenderState.modelDp != 0) {
-                    l->r1 = l->r1 * ((0x1000 - RenderState.modelDp) >> 12);
-                    l->g1 = l->g1 * ((0x1000 - RenderState.modelDp) >> 12);
-                    l->b1 = l->b1 * ((0x1000 - RenderState.modelDp) >> 12);
-                }
-                l->r0 = l->r1;
-                l->g0 = l->g1;
-                l->b0 = l->b1;
-                l->x1 = l->x0;
-                l->y1 = l->y0;
+                colour_a = colour_b;
+                b = a;
             }
-            l->len = 4;
-            l->code = 0x50;
-            addPrim(RenderState.ot + RenderState.otLen - 4, l);
+            draw_line(RenderState.layer + RenderState.otLen - 4, a, b, colour_a, colour_b);
         }
-        l++;
         s++;
     } while (--n != 0);
 }
@@ -2102,7 +2060,7 @@ void NoxPathAngles(s32 *arg0, s32 flag, s32 *out) {
     q = p + 7;
     dz = p[2] - q[2];
     dy = p[1] - q[1];
-    dist = csqrt(dx * dx + dz * dz) >> 6;
+    dist = int_sqrt(dx * dx + dz * dz) >> 6;
     out[1] = get_angle(dx, dz) + (flag << 11);
     if (flag != 0) {
         out[0] = get_angle(dy, dist);

@@ -163,7 +163,7 @@ s32 sfx_distance_volume(VECTOR *v, s32 *range) {
         v->vz = 0;
     }
     d[2] = (v->vz << 12) / (range[5] - range[2]);
-    r = 0x1000 - (csqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]) >> 6);
+    r = 0x1000 - (int_sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]) >> 6);
     if (r < 0) {
         r = 0;
     }

@@ -1,7 +1,11 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "psyq.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../../platform/audio.h"
+#include "bash/draw.h"
 #include <stddef.h>
 #include <stdint.h>
 

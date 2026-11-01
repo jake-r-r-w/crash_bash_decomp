@@ -382,7 +382,7 @@ static void ring_play(s32 id) {
         if (e == NULL || f == NULL || f->status != 1) {
             continue;
         }
-        d = csqrt((e->XYZ.x - he->XYZ.x) * (e->XYZ.x - he->XYZ.x) + (e->XYZ.z - he->XYZ.z) * (e->XYZ.z - he->XYZ.z)) >> 6;
+        d = int_sqrt((e->XYZ.x - he->XYZ.x) * (e->XYZ.x - he->XYZ.x) + (e->XYZ.z - he->XYZ.z) * (e->XYZ.z - he->XYZ.z)) >> 6;
         if (f->whatami >= BALLOON_FIRST && f->whatami <= BALLOON_LAST) {
             if (!ring_mine(f)) {
                 bad |= d < BAD_REACH;
@@ -416,7 +416,7 @@ static void ring_play(s32 id) {
 
         ai->AIang = ang;
         pad = DirPadBits[(ang >> 9) & 7];
-        if ((csqrt(x * x + z * z) >> 6) < FLIP_REACH && Heroes[0].hero_mode != FLIP_MODE_FIRST && Heroes[0].hero_mode != FLIP_MODE_LAST) {
+        if ((int_sqrt(x * x + z * z) >> 6) < FLIP_REACH && Heroes[0].hero_mode != FLIP_MODE_FIRST && Heroes[0].hero_mode != FLIP_MODE_LAST) {
             if (f->whatami == SPIN_CRATE) {
                 pad |= (GameFrameCount & 1) ? BTN_SQUARE : 0;
             } else if (!bad) {

@@ -19,7 +19,7 @@ typedef struct TextPos {
     /* 0x06 */ s16 unk6;
 } TextPos;
 
-/* LoadImage packet for one glyph row pair (msg_draw_glyph) */
+/* One glyph row pair (msg_draw_glyph) */
 typedef struct GlyphRow {
     /* 0x00 */ u32 tag;
     /* 0x04 */ u32 cmd;

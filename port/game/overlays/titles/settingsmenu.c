@@ -358,7 +358,7 @@ static void update_options(s32 pressed) {
 /* The logo sways a little. */
 static void sway_logo(void) {
     subengine *sub = GetEngineSlot(LOGO_SLOT)->sub;
-    s32 angle = (rcossin_tbl[(GameFrameCount * 24) & 0xFFF].unk2 * 0x40) >> 12;
+    s32 angle = (sin_cos_table[(GameFrameCount * 24) & 0xFFF].unk2 * 0x40) >> 12;
     s32 i;
 
     for (i = 0; i < 2; i++) {

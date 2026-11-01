@@ -107,8 +107,7 @@ void UpdateIntro(void) {
         a = load_file_permanent(e->pic);
         b = tga_convert(a, ScreenRect->w, ScreenRect->h);
         mal_free(a, &MainHeap);
-        LoadImage(ScreenRect, (u32 *)b);
-        LoadImage(ScreenRect + 1, (u32 *)b);
+        draw_picture(b);
         mal_free(b, &MainHeap);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
             PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
@@ -188,8 +187,7 @@ void LoadScreenImage(file *file) {
     a = load_file_permanent(file);
     b = tga_convert(a, ScreenRect->w, ScreenRect->h);
     mal_free(a, &MainHeap);
-    LoadImage(ScreenRect, (u32 *)b);
-    LoadImage(ScreenRect + 1, (u32 *)b);
+    draw_picture(b);
     mal_free(b, &MainHeap);
 }
 
@@ -338,7 +336,7 @@ void AnimateCupMenu(void) {
     u32 mask;
 
     i = 0;
-    trig = rcossin_tbl;
+    trig = sin_cos_table;
     base = CupTable;
     t = base + GameCup;
     n = t->roundCount;
@@ -498,7 +496,7 @@ void UpdateCupMenu(void) {
     sub->entity = 0x2006;
     sub->xform.rot.vy = FrameCount * 50;
     sub->xform.rot.vx = 0;
-    sub->xform.rot.vz = rcossin_tbl[(((GameFrameCount * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
+    sub->xform.rot.vz = sin_cos_table[(((GameFrameCount * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
     sub->xform.dirty = 1;
     GetEngineSlot(0)->sub[5].flags |= 0x8000;
     UpdateCardMessage();
@@ -1593,7 +1591,7 @@ void InitGraphics(void) {
     EngineCfg *cfg = &DefaultLevelConfig;
     GameState *g;
 
-    AllocOtBuffers((s32 *)cfg);
+    ScreenRect = NULL;
     ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
     g = GAME;
     g->cheats = 0x80000000;

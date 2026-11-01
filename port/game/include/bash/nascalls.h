@@ -60,13 +60,13 @@ void RunModules(ModuleEntry *p);
 void FlipScreen(s32 arg0);
 s32 cd_read(file *file, s32 b, u8 *c, s32 d);
 extern FreeHdr *vram_take(u8 *);
-/* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
- * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */
+/* Draws f at xy (640-wide units) at otz in the view's order; color bit 31 makes
+ * it semi-transparent, bits 24-25 its blend mode. Returns f's advance. */
 s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color);
-/* texture_draw as a POLY_GT4 with one colour per vertex (c0 also sets the
+/* texture_draw with one colour per vertex (c0 also sets the
  * semi-transparency and blend mode). */
 s32 texture_draw_quad(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3);
-/* Draws f at the 3D point pos as a POLY_GT4 in the OT at cdb, c0 on
+/* Draws f at the 3D point pos, at otz in the frame's order, c0 on
  * the top vertices and c1 on the bottom ones; returns f's advance. */
 s32 texture_draw_3d(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1);
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
@@ -78,7 +78,6 @@ EXTmotion *AddMotion(NAS *nas);
 EXTengine *AddExtEngine(NAS *nas, s32 id);
 s32 ApplyContourMoved(EXTengine *eng);
 void *AddExt(NAS *owner, s32 size, s32 id);
-void ClearOt(DrawBuffer *arg0);
 s32 list_count(u8 * *arg0);
 void *FindExtension(NAS *nas, s32 id);
 NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags);
@@ -119,8 +118,6 @@ s32 SysGetLen(char *s);
 Ext400 *AllocExt400(NAS *nas);
 Ext1000 *AddObject(NAS *nas);
 void ClearNasPool(void);
-u8 *AllocOtBuffers(s32 *arg0);  /* AllocPrimBuffers, then ScreenRect = NULL; returns the second end */
-void AllocPrimBuffers(s32 *arg0);
 void cd_init(void);
 void pad_rumble_big(s32 pad, s32 arg1, s8 arg2);
 void pad_rumble_small(s32 pad, s32 arg1);
