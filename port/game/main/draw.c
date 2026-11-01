@@ -18,6 +18,16 @@ typedef struct {
     s32 index;
 } PaletteReg;
 
+/* Which tile's on the other side of each edge of a tile, found as they're drawn: the art's cut into tiles, across meshes too, and filtering
+   has to blend across the cuts or they show. */
+typedef struct {
+    u16 image, palette;
+} TileJoin;
+
+#define JOIN_NONE 0
+#define JOIN_MANY 0xFFFF
+static TileJoin Joins[MAX_IMAGES][4];
+
 static ImageReg Images[MAX_IMAGES];
 static PaletteReg Palettes[MAX_PALETTES];
 static s32 NextImage = 1, NextPalette = 1;
@@ -58,6 +68,7 @@ void tex_release_ids(obj_textureset *set) {
     for (i = 0; i < MAX_IMAGES; i++) {
         if (Images[i].set == set) {
             Images[i].set = NULL;
+            memset(Joins[i], 0, sizeof(Joins[i]));
         }
     }
     for (i = 0; i < MAX_PALETTES; i++) {
@@ -66,6 +77,115 @@ void tex_release_ids(obj_textureset *set) {
         }
     }
     gfx_forget_textures();
+}
+
+static void join_tile(s32 image, s32 side, s32 other, s32 palette) {
+    TileJoin *j = &Joins[image & (MAX_IMAGES - 1)][side];
+
+    if (j->image == JOIN_NONE) {
+        j->image = (u16)other;
+        j->palette = (u16)palette;
+    } else if (j->image != other || j->palette != palette) {
+        j->image = JOIN_MANY;
+    }
+}
+
+/* The edges of the frame's faces that lie along a side of their tile, by where they are on the screen. */
+#define EDGE_SLOTS 8192
+
+typedef struct {
+    s32 frame;
+    s32 a[2], b[2];
+    u16 image, palette;
+    s16 along[2];
+    s32 side;
+} EdgeSeen;
+
+static EdgeSeen Edges[EDGE_SLOTS];
+
+/* Two faces with an edge in the same place, each on opposite sides of its tile and the same way along it: those tiles are next to each other. */
+static void note_tile_edge(const DrawFace *f, const obj_texture *tile, const ViewPoint *p, const ViewPoint *q, u16 uv0, u16 uv1) {
+    s32 u0 = uv0 & 0xFF, v0 = uv0 >> 8, u1 = uv1 & 0xFF, v1 = uv1 >> 8;
+    s32 side, along0, along1;
+    s32 a[2], b[2];
+    u32 hash;
+    s32 i, tries;
+
+    if (u0 == u1 && (u0 == 0 || u0 >= tile->w - 1)) {
+        side = u0 == 0 ? GFX_LEFT : GFX_RIGHT;
+        along0 = v0;
+        along1 = v1;
+    } else if (v0 == v1 && (v0 == 0 || v0 >= tile->h - 1)) {
+        side = v0 == 0 ? GFX_TOP : GFX_BOTTOM;
+        along0 = u0;
+        along1 = u1;
+    } else {
+        return;
+    }
+    a[0] = (s32)(p->x * 4 + 0.5f);
+    a[1] = (s32)(p->y * 4 + 0.5f);
+    b[0] = (s32)(q->x * 4 + 0.5f);
+    b[1] = (s32)(q->y * 4 + 0.5f);
+    /* the same way round from both faces */
+    if (a[0] > b[0] || (a[0] == b[0] && a[1] > b[1])) {
+        s32 x = a[0], y = a[1], was = along0;
+
+        a[0] = b[0];
+        a[1] = b[1];
+        b[0] = x;
+        b[1] = y;
+        along0 = along1;
+        along1 = was;
+    }
+    hash = ((u32)a[0] * 73856093u) ^ ((u32)a[1] * 19349663u) ^ ((u32)b[0] * 83492791u) ^ ((u32)b[1] * 50331653u);
+    for (i = hash & (EDGE_SLOTS - 1), tries = 0; tries < 8; i = (i + 1) & (EDGE_SLOTS - 1), tries++) {
+        EdgeSeen *s = &Edges[i];
+
+        if (s->frame != FrameCount + 1) {
+            s->frame = FrameCount + 1;
+            s->a[0] = a[0];
+            s->a[1] = a[1];
+            s->b[0] = b[0];
+            s->b[1] = b[1];
+            s->image = f->image;
+            s->palette = f->palette;
+            s->along[0] = (s16)along0;
+            s->along[1] = (s16)along1;
+            s->side = side;
+            return;
+        }
+        if (s->a[0] == a[0] && s->a[1] == a[1] && s->b[0] == b[0] && s->b[1] == b[1]) {
+            if ((s->side ^ 1) == side && s->along[0] == along0 && s->along[1] == along1) {
+                join_tile(s->image, s->side, f->image, f->palette);
+                join_tile(f->image, side, s->image, s->palette);
+            }
+            return;
+        }
+    }
+}
+
+static void note_tile_edges(const DrawFace *f, const ViewPoint *q, s32 corners) {
+    const ImageReg *im = &Images[f->image & (MAX_IMAGES - 1)];
+    const obj_texture *tile;
+
+    if (im->set == NULL || im->set->tex == NULL) {
+        return;
+    }
+    tile = &im->set->tex[im->index];
+    /* a sheet of colour swatches: its faces aren't pictures */
+    if (tile->clut == 0x7FFF) {
+        return;
+    }
+    if (corners == 3) {
+        note_tile_edge(f, tile, &q[0], &q[1], f->uv[0], f->uv[1]);
+        note_tile_edge(f, tile, &q[1], &q[2], f->uv[1], f->uv[2]);
+        note_tile_edge(f, tile, &q[2], &q[0], f->uv[2], f->uv[0]);
+    } else {
+        note_tile_edge(f, tile, &q[0], &q[1], f->uv[0], f->uv[1]);
+        note_tile_edge(f, tile, &q[1], &q[3], f->uv[1], f->uv[3]);
+        note_tile_edge(f, tile, &q[3], &q[2], f->uv[3], f->uv[2]);
+        note_tile_edge(f, tile, &q[2], &q[0], f->uv[2], f->uv[0]);
+    }
 }
 
 /* What a texture is, whichever address its file has moved to: its image, palette and frame. */
@@ -84,7 +204,28 @@ static const GfxTex *scrolled_texture(const obj_texture *t, int image, int palet
     }
     memcpy(Rows, src + top * row, (size_t)((t->h - top) * row));
     memcpy(Rows + (t->h - top) * row, src, (size_t)(top * row));
-    return gfx_texture_scrolled(TEX_ID(image, palette, t->pix + top * row), Rows, src, top, t->w, t->h, bpp, pal);
+    /* one that wraps round onto itself joins as it stands now */
+    if (gfx_smooth()) {
+        const TileJoin *j = Joins[image & (MAX_IMAGES - 1)];
+        GfxEdge edges[4];
+        s32 i, any = 0;
+
+        memset(edges, 0, sizeof(edges));
+        for (i = 0; i < 4; i++) {
+            if (j[i].image == image) {
+                edges[i].pixels = Rows;
+                edges[i].palette = pal;
+                edges[i].w = t->w;
+                edges[i].h = t->h;
+                edges[i].bpp = bpp;
+                any = 1;
+            }
+        }
+        if (any) {
+            return gfx_texture_scrolled(TEX_ID(image, palette, t->pix + top * row) ^ 0x4A6F696E65640000ULL, Rows, src, top, t->w, t->h, bpp, pal, edges);
+        }
+    }
+    return gfx_texture_scrolled(TEX_ID(image, palette, t->pix + top * row), Rows, src, top, t->w, t->h, bpp, pal, NULL);
 }
 
 /* The game's text, and the panel's digits: small hand-placed pixels that upscaling or filtering would spoil, so they stay as they are. */
@@ -116,6 +257,42 @@ static const GfxTex *tex_of(u16 image, u16 palette) {
     }
     if (is_text(ts, im->index)) {
         return gfx_texture_sharp(TEX_ID(image, palette, t->pix), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
+    }
+    if (gfx_smooth()) {
+        const TileJoin *j = Joins[image & (MAX_IMAGES - 1)];
+
+        if (j[0].image | j[1].image | j[2].image | j[3].image) {
+            GfxEdge edges[4];
+            s32 i, any = 0;
+
+            memset(edges, 0, sizeof(edges));
+            for (i = 0; i < 4; i++) {
+                const ImageReg *other = j[i].image != JOIN_NONE && j[i].image != JOIN_MANY ? &Images[j[i].image & (MAX_IMAGES - 1)] : NULL;
+                const PaletteReg *p = &Palettes[j[i].palette];
+
+                if (other != NULL && other->set != NULL && other->set->tex != NULL && other->set->base != NULL && p->set != NULL && p->set->ent != NULL) {
+                    const obj_texture *o = &other->set->tex[other->index];
+
+                    if (o->scrollRow == 0) {
+                        edges[i].pixels = (const u8 *)other->set->base + o->pix;
+                        edges[i].palette = (const u8 *)p->set->base + p->set->ent[p->index].off;
+                        edges[i].w = o->w;
+                        edges[i].h = o->h;
+                        edges[i].bpp = o->flag ? 8 : 4;
+                        any = 1;
+                    }
+                }
+            }
+            if (any) {
+                /* more joins can turn up, and it's a new texture then */
+                unsigned long long which = 0;
+
+                for (i = 0; i < 4; i++) {
+                    which = which * 0x10001ULL + j[i].image;
+                }
+                return gfx_texture_joined(TEX_ID(image, palette, t->pix) ^ (which * 0x9E3779B97F4A7C15ULL), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal, edges);
+            }
+        }
     }
     return gfx_texture(TEX_ID(image, palette, t->pix), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
 }
@@ -320,6 +497,9 @@ void draw_mesh_tri(s32 layer, const DrawFace *f, const ViewPoint q[3], s32 face,
     for (i = 0; i < 3; i++) {
         mesh_vert(&v[i], &q[i], f->colour[i], f->uv[i]);
     }
+    if (gfx_smooth()) {
+        note_tile_edges(f, q, 3);
+    }
     gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, face);
     gfx_face_tri(key, v, t, blend_of(f), wind, hidden);
 }
@@ -363,6 +543,9 @@ void draw_mesh_quad(s32 layer, const DrawFace *f, const ViewPoint q[4]) {
             return;
         }
         mesh_vert(&v[i], &q[i], f->colour[i], f->uv[i]);
+    }
+    if (gfx_smooth()) {
+        note_tile_edges(f, q, 4);
     }
     mark_next_part();
     gfx_quad(key, v, t, blend_of(f));

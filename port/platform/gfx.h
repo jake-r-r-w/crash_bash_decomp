@@ -20,7 +20,17 @@ enum { GFX_OPAQUE = -1, GFX_HALF = 0, GFX_ADD = 1, GFX_SUB = 2, GFX_ADD_QUARTER 
 typedef struct GfxTex {
     float u0, v0, us, vs; /* where it is in the atlas: origin and scale per texel */
     int sharp;            /* always as it was: not upscaled, and not filtered */
+    int w, h;             /* in its own texels */
+    int joined;           /* filtered, which sides blend into the next tile (GFX_LEFT and so on) */
 } GfxTex;
+
+/* The tile on the other side of a texture's edge, in the same art. */
+enum { GFX_LEFT, GFX_RIGHT, GFX_TOP, GFX_BOTTOM };
+typedef struct GfxEdge {
+    const void *pixels; /* NULL: none */
+    const void *palette;
+    int w, h, bpp;
+} GfxEdge;
 
 /* What the renderer's asked for, from the player's settings. */
 typedef struct GfxConfig {
@@ -75,9 +85,14 @@ void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend);
 /* A texture that isn't upscaled, for one that's made again as it moves. Otherwise as gfx_texture. */
 const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
 /* A texture with its rows rotated by top, so made again as it moves: source is how it is at rest, which a texture pack replaces. */
-const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *source, int top, int width_texels, int height, int bpp, const void *palette);
+const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *source, int top, int width_texels, int height, int bpp, const void *palette, const GfxEdge *edges);
 /* One that's never upscaled or filtered, whatever the settings: text, whose small hand-placed pixels those would spoil. */
 const GfxTex *gfx_texture_sharp(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
+
+/* As gfx_texture, for one with the tiles beside it known, in GFX_LEFT order. */
+const GfxTex *gfx_texture_joined(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette, const GfxEdge edges[4]);
+/* Whether textures are filtered. */
+int gfx_smooth(void);
 
 /* A texture from the game's data: bpp 4 or 8 with a palette of u16 colours, or 16. Decoded on first use. id says which texture
  * this is, to find it again without looking at its pixels, until gfx_forget_textures; 0 for one that has no lasting id. */

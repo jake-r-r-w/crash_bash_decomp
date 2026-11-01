@@ -428,7 +428,9 @@ void gfx_configure(const GfxConfig *config) {
     SDL_GPUSampleCount samples;
 
     SDL_WaitForGPUIdle(Device);
-    if (config->upscale != Upscale || SDL_strcmp(config->pack, PackName) != 0) {
+    /* filtered, a tile's border holds the next tile's edge, and it doesn't otherwise */
+    if (config->upscale != Upscale || SDL_strcmp(config->pack, PackName) != 0 || !config->smooth != !Smooth) {
+        Smooth = config->smooth;
         set_upscale(config->upscale, config->pack);
     }
     Wide = config->wide;
@@ -670,6 +672,19 @@ static uint32_t decode_colour(uint16_t c) {
     return r | (g << 8) | (b << 16) | (a << 24);
 }
 
+static size_t edge_bytes(const GfxEdge *e) {
+    return e->bpp == 8 ? (size_t)((e->w + 1) & ~1) * e->h : (size_t)((e->w + 3) / 4 * 2) * e->h;
+}
+
+static uint32_t edge_texel(const GfxEdge *e, int x, int y) {
+    const uint16_t *pal = e->palette;
+
+    if (e->bpp == 8) {
+        return decode_colour(pal[((const uint8_t *)e->pixels)[y * ((e->w + 1) & ~1) + x]]);
+    }
+    return decode_colour(pal[(((const uint8_t *)e->pixels)[y * ((e->w + 3) / 4 * 2) + x / 2] >> ((x & 1) * 4)) & 15]);
+}
+
 /* Two levels: ids seen since the last gfx_forget_textures, then the pixels' own content, for when the same pixels load again. */
 #define ID_SLOTS 65536
 typedef struct {
@@ -727,7 +742,52 @@ static void mark_dirty(int x, int y, int w, int h) {
 /* In a cached texture's factor: it came from the pack. */
 #define FACTOR_REPLACED (-1)
 
-static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor, int sharp, const void *source, int top) {
+/* How far into a tile its edge is eased, in the tile's own texels, and how different two edge texels can be and still be the same art. */
+#define RELAX_TEXELS 4
+#define RELAX_MOST 240
+
+/* The art's tiles don't quite meet: its square texels hide that, and filtering shows it as a line. So both sides of a join ease over their last
+   few texels to the colour halfway between them, which each works out for itself, and the border holds that too. */
+static void relax_edge(uint32_t *px, int side, int k, int sw, int sh, int factor, uint32_t other) {
+    int across = side == GFX_LEFT || side == GFX_RIGHT;
+    int depth = RELAX_TEXELS * (factor > 0 ? factor : 1);
+    int step = across ? (side == GFX_LEFT ? 1 : -1) : (side == GFX_TOP ? AtlasSize : -AtlasSize);
+    uint32_t *edge = across ? px + (ShelfY + 1 + k) * AtlasSize + ShelfX + (side == GFX_LEFT ? 1 : sw)
+                            : px + (ShelfY + (side == GFX_TOP ? 1 : sh)) * AtlasSize + ShelfX + 1 + k;
+    uint32_t own = *edge;
+    int gap[3];
+    int c, d;
+
+    if ((own >> 24) == 0 || (other >> 24) == 0) {
+        return;
+    }
+    for (c = 0; c < 3; c++) {
+        gap[c] = (int)((other >> (c * 8)) & 255) - (int)((own >> (c * 8)) & 255);
+    }
+    if (abs(gap[0]) + abs(gap[1]) + abs(gap[2]) > RELAX_MOST) {
+        return;
+    }
+    if (depth > (across ? sw : sh) / 2) {
+        depth = (across ? sw : sh) / 2;
+    }
+    for (d = 0; d < depth; d++) {
+        uint32_t *t = edge + step * d;
+        uint32_t out = *t & 0xFF000000u;
+
+        if ((*t >> 24) == 0) {
+            break;
+        }
+        for (c = 0; c < 3; c++) {
+            int v = (int)((*t >> (c * 8)) & 255) + gap[c] * (depth - d) / (depth * 2);
+
+            out |= (uint32_t)(v < 0 ? 0 : v > 255 ? 255 : v) << (c * 8);
+        }
+        *t = out;
+    }
+    edge[-step] = *edge;
+}
+
+static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor, int sharp, const void *source, int top, const GfxEdge *edges) {
     static uint32_t *decoded;
     static int decoded_size;
     Cached *c;
@@ -753,6 +813,15 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
     }
     /* a pack names a texture by how it is at rest */
     pack_hash = hash;
+    /* the same pixels beside other tiles have other borders */
+    if (edges != NULL && Smooth) {
+        for (i = 0; i < 4; i++) {
+            if (edges[i].pixels != NULL) {
+                hash = hash_bytes(edges[i].pixels, edge_bytes(&edges[i]), hash + (uint64_t)i);
+                hash = hash_bytes(edges[i].palette, edges[i].bpp == 8 ? 512 : 32, hash);
+            }
+        }
+    }
     if (source != pixels && (texpack_active() || texpack_dumping())) {
         pack_hash = hash_bytes(source, bytes, 0xCBF29CE484222325ULL);
         if (palette != NULL) {
@@ -778,7 +847,7 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
         if (art == NULL) {
             /* the game's own, as a broken file shouldn't leave a hole */
             texpack_drop(pack_hash);
-            return texture_scaled(id, pixels, w, h, bpp, palette, own_factor, own_sharp, source, top);
+            return texture_scaled(id, pixels, w, h, bpp, palette, own_factor, own_sharp, source, top, edges);
         }
     }
     if (NumTextures >= MAX_TEXTURES) {
@@ -804,6 +873,9 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
     c->bpp = bpp;
     c->factor = factor;
     c->t.sharp = sharp;
+    c->t.w = w;
+    c->t.h = h;
+    c->t.joined = 0;
     /* one texel of border all round, copied from the edges below */
     c->t.u0 = (float)(ShelfX + 1) / AtlasSize;
     c->t.v0 = (float)(ShelfY + 1) / AtlasSize;
@@ -892,6 +964,27 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
         }
         memcpy(px + ShelfY * AtlasSize + ShelfX, px + (ShelfY + 1) * AtlasSize + ShelfX, (size_t)(sw + 2) * 4);
         memcpy(px + (ShelfY + sh + 1) * AtlasSize + ShelfX, px + (ShelfY + sh) * AtlasSize + ShelfX, (size_t)(sw + 2) * 4);
+        /* filtered, tiles of the same art blend across their join. Not a pack's, which has its own size */
+        if (edges != NULL && Smooth && factor != FACTOR_REPLACED) {
+            for (i = 0; i < 4; i++) {
+                const GfxEdge *e = &edges[i];
+                int across = i == GFX_LEFT || i == GFX_RIGHT;
+                int n = across ? sh : sw;
+                int k;
+
+                if (e->pixels == NULL || (across ? e->h != h : e->w != w)) {
+                    continue;
+                }
+                for (k = 0; k < n; k++) {
+                    int along = k * (across ? h : w) / n;
+                    uint32_t texel = i == GFX_LEFT ? edge_texel(e, e->w - 1, along) : i == GFX_RIGHT ? edge_texel(e, 0, along)
+                                   : i == GFX_TOP ? edge_texel(e, along, e->h - 1) : edge_texel(e, along, 0);
+
+                    relax_edge(px, i, k, sw, sh, factor, texel);
+                }
+                c->t.joined |= 1 << i;
+            }
+        }
     }
     mark_dirty(ShelfX, ShelfY, sw + 2, sh + 2);
     ShelfX += sw + 2;
@@ -903,19 +996,27 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
 
 const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
     /* a picture that fills the screen is already as big as it needs to be */
-    return texture_scaled(id, pixels, w, h, bpp, palette, bpp == 16 ? 1 : Upscale, 0, pixels, 0);
+    return texture_scaled(id, pixels, w, h, bpp, palette, bpp == 16 ? 1 : Upscale, 0, pixels, 0, NULL);
+}
+
+const GfxTex *gfx_texture_joined(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, const GfxEdge edges[4]) {
+    return texture_scaled(id, pixels, w, h, bpp, palette, Upscale, 0, pixels, 0, edges);
+}
+
+int gfx_smooth(void) {
+    return Smooth;
 }
 
 const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, pixels, 0);
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, pixels, 0, NULL);
 }
 
-const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *source, int top, int w, int h, int bpp, const void *palette) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, source, top);
+const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *source, int top, int w, int h, int bpp, const void *palette, const GfxEdge *edges) {
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, source, top, edges);
 }
 
 const GfxTex *gfx_texture_sharp(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 1, pixels, 0);
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 1, pixels, 0, NULL);
 }
 
 
@@ -986,6 +1087,20 @@ static int tri_shows(const Tri *t, float step) {
     return t->wind > 0 ? area > 0 : area <= 0;
 }
 
+/* A side joined to the next tile goes right to its edge, where the two blend: halfway between its last texel and that tile's first, from
+   both sides. */
+static float filtered_texel(float t, int size, int low_joined, int high_joined) {
+    float low, high, at;
+
+    if ((!low_joined && !high_joined) || size < 2) {
+        return t + 0.5f;
+    }
+    low = low_joined ? 0 : 0.5f;
+    high = high_joined ? (float)size : size - 0.5f;
+    at = low + t / (size - 1) * (high - low);
+    return at < 0 ? 0 : at > size ? (float)size : at;
+}
+
 static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float step, const GfxTex *tex, int depth) {
     float x = v->x, y = v->y, w = v->w;
 
@@ -1004,8 +1119,13 @@ static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float ste
     o->w = w;
     if (tex != NULL) {
         /* filtered, a whole number's the middle of a texel, or it would blend with the next */
-        o->u = tex->u0 + (v->u + (Smooth && !tex->sharp ? 0.5f : 0)) * tex->us;
-        o->v = tex->v0 + (v->v + (Smooth && !tex->sharp ? 0.5f : 0)) * tex->vs;
+        if (Smooth && !tex->sharp) {
+            o->u = tex->u0 + filtered_texel(v->u, tex->w, tex->joined & (1 << GFX_LEFT), tex->joined & (1 << GFX_RIGHT)) * tex->us;
+            o->v = tex->v0 + filtered_texel(v->v, tex->h, tex->joined & (1 << GFX_TOP), tex->joined & (1 << GFX_BOTTOM)) * tex->vs;
+        } else {
+            o->u = tex->u0 + v->u * tex->us;
+            o->v = tex->v0 + v->v * tex->vs;
+        }
     } else {
         o->u = 0;
         o->v = 0;
