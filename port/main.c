@@ -51,6 +51,7 @@ static void print_stack(CONTEXT c) {
 static LONG WINAPI crash_report(EXCEPTION_POINTERS *e) {
     uintptr_t image = (uintptr_t)GetModuleHandleA(NULL);
 
+    fflush(stdout); /* the log up to here: on Windows a line-buffered file is really fully buffered */
     fprintf(stderr, "crash: code %08lX, reading %llX, image %llX\n", e->ExceptionRecord->ExceptionCode,
             (unsigned long long)e->ExceptionRecord->ExceptionInformation[1], (unsigned long long)image);
     print_stack(*e->ContextRecord);

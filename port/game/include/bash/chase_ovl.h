@@ -202,7 +202,7 @@ void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1);
 
 void FinishChaseLevel(void);
 
-s32 CHASE_KeepInBounds(s32 *p);
+s32 CHASE_KeepInBounds(EXTengine *eng);
 
 s32 ChaseHeroTestDrop(s32 arg0);
 
@@ -286,7 +286,7 @@ s32 ChaseFindHero(s32 x, s32 z, s32 range);
 
 s32 ChasePadHook(s32 arg0);
 
-void ChaseClampToArena(s32 *p, s32 arg1);
+void ChaseClampToArena(EXTengine *eng, s32 arg1);
 
 void CHASESetUp(void);
 

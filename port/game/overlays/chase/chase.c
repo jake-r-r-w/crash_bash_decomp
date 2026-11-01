@@ -873,15 +873,17 @@ void FinishChaseLevel(void) {
     }
 }
 
-s32 CHASE_KeepInBounds(s32 *p) {
+s32 CHASE_KeepInBounds(EXTengine *eng) {
+    s32 x = eng->XYZ.x, z = eng->XYZ.z;
     s32 d;
     s32 a;
-    if (p[4] < -ChaseArenaShrink || ChaseArenaShrink < p[4] || p[6] < -ChaseArenaShrink || ChaseArenaShrink < p[6]) {
-        d = (csqrt(p[4] * p[4] + p[6] * p[6]) >> 6) - ChaseArenaRadius;
+
+    if (x < -ChaseArenaShrink || ChaseArenaShrink < x || z < -ChaseArenaShrink || ChaseArenaShrink < z) {
+        d = (csqrt(x * x + z * z) >> 6) - ChaseArenaRadius;
         if (d > 0) {
-            a = get_angle(p[4], p[6]);
-            p[4] -= (d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
-            p[6] -= (d * rcossin_tbl[a & 0xFFF].unk2) >> 12;
+            a = get_angle(x, z);
+            eng->XYZ.x -= (d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
+            eng->XYZ.z -= (d * rcossin_tbl[a & 0xFFF].unk2) >> 12;
             return 0;
         }
     }
@@ -3696,13 +3698,13 @@ s32 ChasePadHook(s32 arg0) {
     return m != 0;
 }
 
-void ChaseClampToArena(s32 *p, s32 arg1) {
-    s32 d = (csqrt(p[4] * p[4] + p[6] * p[6]) >> 6) - arg1;
+void ChaseClampToArena(EXTengine *eng, s32 arg1) {
+    s32 d = (csqrt(eng->XYZ.x * eng->XYZ.x + eng->XYZ.z * eng->XYZ.z) >> 6) - arg1;
     s32 a;
     if (d > 0) {
-        a = get_angle(p[4], p[6]);
-        p[4] -= (d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
-        p[6] -= (d * rcossin_tbl[a & 0xFFF].unk2) >> 12;
+        a = get_angle(eng->XYZ.x, eng->XYZ.z);
+        eng->XYZ.x -= (d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
+        eng->XYZ.z -= (d * rcossin_tbl[a & 0xFFF].unk2) >> 12;
     }
 }
 
