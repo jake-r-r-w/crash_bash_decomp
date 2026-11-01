@@ -128,6 +128,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--skip-intro`, `--skip-loading` | the menu's two skips, for this run |
 | `--fps 30\|60\|120` | the frame rate, for this run |
 | `--turbo` | don't wait for the clock, to reach late moments quickly |
+| `--draw-every N` | draw one frame in N, and any a shot needs, so a long test runs as fast as the game's logic can |
 | `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit |
 | `--tile I N` | put this window in slot I of a grid of N on the screen, to watch several test runs at once |
 | `--wav FILE` | record a test run's sound (test runs are silent otherwise) |

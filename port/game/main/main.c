@@ -158,6 +158,7 @@ extern BossRecord BossState;
 s32 CheatHeroHealth(void);
 void BossBotUpdate(void);
 void AdventurePlayerUpdate(void);
+void BossBotCheckDone(void);
 void CheatFightLog(void);
 s32 CheatFightProgress(void);
 void platform_stalled(void);
@@ -200,8 +201,11 @@ static void test_run_update(void) {
     }
     if (settings()->test_adventure) {
         AdventurePlayerUpdate();
-    } else if (settings()->test_aim && (GAME->levelFlags & 0x100)) {
-        BossBotUpdate();
+    } else if (settings()->test_aim) {
+        BossBotCheckDone();
+        if (GAME->levelFlags & 0x100) {
+            BossBotUpdate();
+        }
     }
     GAME->cheats |= settings()->test_cheats;
     if ((settings()->test_bot || (GAME->levelFlags & 0x100)) && platform_vblanks() / 300 != lastLog) {

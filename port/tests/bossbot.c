@@ -6,9 +6,12 @@
 #include "bash/hero.h"
 #include "bash/papu_ovl.h"
 #include "bash/tank_ovl.h"
+#include "bash/papu_pahero.h"
 
 void platform_bot_buttons(int buttons);
 extern s32 PapuBossFlag;
+int platform_vblanks(void);
+void platform_finish(int code);
 
 #define BTN_UP 0x10
 #define BTN_RIGHT 0x20
@@ -38,8 +41,16 @@ static s32 step_towards(s32 dx, s32 dz, s32 near_enough) {
     return b;
 }
 
+#define CRATE_LINE_UP 0x40
+#define CRATE_COMMIT 90
+#define CRATE_GIVE_UP 150
+#define CRATE_LEAVE_FOR 600
+
 static NAS *PapuCrate;
 static s32 PapuCrateUntil;
+static NAS *PapuCrateLeft;
+static s32 PapuCrateLeftUntil;
+static s32 PapuCrateSince;
 
 /* The nearest minion still up, or NULL. */
 static EXTengine *papu_minion(const EXTengine *he) {
@@ -50,7 +61,7 @@ static EXTengine *papu_minion(const EXTengine *he) {
     for (i = 0; i < 6; i++) {
         NAS *n = (NAS *)PapuMinionSlots[i].flag;
 
-        if (n != NULL && n->Engine != NULL) {
+        if (n != NULL && n->Engine != NULL && n->FUX != NULL && ((EXTobject *)n->FUX)->status != 1 && ((EXTobject *)n->FUX)->status != 2 && ((EXTobject *)n->FUX)->status != 3 && ((EXTobject *)n->FUX)->status != 11) {
             s32 ex = (n->Engine->XYZ.x - he->XYZ.x) >> 4;
             s32 ez = (n->Engine->XYZ.z - he->XYZ.z) >> 4;
             s32 d = ex * ex + ez * ez;
@@ -93,6 +104,188 @@ static s32 throw_at(const EXTengine *he, const EXTengine *target, s32 ready) {
     return ready && (BotTicks & 15) == 8 ? BTN_CIRCLE : 0;
 }
 
+#define PAPU_TILE 0x200
+#define PAPU_ARENA 0x680
+#define PAPU_TNT 5
+#define MINION_FIRST 0x14
+#define CRATE_FLYING 8
+#define PAPU_TNT_LIT 7
+#define THROWN_SPEED 0x20
+#define TNT_NEAR 0x400
+#define BLAST_REACH 0x300
+#define STOMP_CLEAR 0x180
+#define SPIN_REACH 0x180
+#define MINION_LANDED 4
+#define HOT_NOW 2
+#define HOT_SOON 6
+
+/* The nearest of the pad's eight ways to a direction. */
+static s32 steer(s32 dx, s32 dz) {
+    s32 big = abs(dx) > abs(dz) ? abs(dx) : abs(dz);
+
+    return step_towards(dx, dz, big * 5 / 12);
+}
+
+static s32 in_arena(s32 x, s32 z) {
+    return abs(x) < PAPU_ARENA && abs(z) < PAPU_ARENA;
+}
+
+/* Out of the way of something coming along (fx, fz), a unit of 0x1000: to a side with floor under it, the one nearer the middle. */
+static s32 papu_side_step(const EXTengine *he, s32 fx, s32 fz) {
+    s32 side = ((he->XYZ.x >> 4) * fz - (he->XYZ.z >> 4) * fx) > 0 ? -1 : 1;
+    s32 sx = fz * side, sz = -fx * side;
+
+    if (!in_arena(he->XYZ.x + (sx >> 3), he->XYZ.z + (sz >> 3))) {
+        sx = -sx;
+        sz = -sz;
+    }
+    return steer(sx, sz);
+}
+
+/* Whether a floor tile's burning, or a line of burning tiles reaches it within so many steps. Off the floor counts. */
+static s32 tile_hot(s32 ix, s32 iz, s32 steps) {
+    PapuFloor_info *k;
+    s32 t;
+
+    if ((u32)ix >= 7U || iz < 1 || iz > 7) {
+        return 1;
+    }
+    if (PapuTiles[ix][iz].anim != 0 || (PapuTiles[ix][iz].status & 0x100)) {
+        return 1;
+    }
+    k = PapuFloorWaveCur;
+    if (k != NULL) {
+        for (; k->z_master != 0; k++) {
+            if (k->status != 0) {
+                for (t = 0; t <= steps; t++) {
+                    if ((s16)k->x + t * (s16)k->xstep == ix && (s16)k->z + t * (s16)k->zstep == iz) {
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+s32 PapuStompPoint(s32 *x, s32 *z, s32 *reach);
+
+/* How far a crate goes from here, and how long it takes, flying by GravitateNas's sums till it's back down. */
+static s32 crate_flight(s32 xv, s32 xacc, s32 xdec, s32 xmax, s32 yv, s32 yacc, s32 ydec, s32 ymax, s32 ydir, s32 y, s32 *ticks) {
+    s32 dist = 0, t;
+
+    for (t = 0; t < 400; t++) {
+        xv += xacc - xdec;
+        xv = xv < 0 ? 0 : xv > xmax ? xmax : xv;
+        dist += xv;
+        yv += yacc - ydec;
+        yv = yv < 0 ? 0 : yv > ymax ? ymax : yv;
+        y += ydir ? -yv : yv;
+        if (yv == 0) {
+            yacc = ydec;
+            ydec = 0;
+            ydir = 0;
+        }
+        if (!ydir && y >= World_floor_level) {
+            break;
+        }
+    }
+    *ticks = t;
+    return dist;
+}
+
+/* The way out of a blast at (bx, bz), if he's in its reach. */
+static s32 away_from_blast(const EXTengine *he, s32 bx, s32 bz) {
+    s32 dx = he->XYZ.x - bx, dz = he->XYZ.z - bz;
+
+    if ((csqrt(dx * dx + dz * dz) >> 6) >= BLAST_REACH) {
+        return 0;
+    }
+    if (!in_arena(he->XYZ.x + dx / 4, he->XYZ.z + dz / 4)) {
+        return abs(he->XYZ.x) > abs(he->XYZ.z) ? steer(0, dz >= 0 ? 0x100 : -0x100) : steer(dx >= 0 ? 0x100 : -0x100, 0);
+    }
+    return steer(dx, dz);
+}
+
+/* What's about to hurt him, most first: a thrown crate, a minion spinning or about to throw, a TNT crate that's going off, a burning
+   tile. 0 if nothing is. */
+static s32 papu_dodge(const EXTengine *he) {
+    static const s8 Around[8][2] = { { -1, 0 }, { 1, 0 }, { 0, 1 }, { 0, -1 }, { -1, 1 }, { 1, 1 }, { -1, -1 }, { 1, -1 } };
+    NAS *n;
+    s32 i, ix, iz;
+
+    ix = (he->XYZ.x + 0x700) >> 9;
+    iz = ((he->XYZ.z + 0x700) >> 9) + 1;
+    if (tile_hot(ix, iz, HOT_NOW)) {
+        for (i = 0; i < 8; i++) {
+            s32 cx = ix + Around[i][0], cz = iz + Around[i][1];
+
+            if (!tile_hot(cx, cz, HOT_SOON)) {
+                return steer((cx * PAPU_TILE) - 0x700 + PAPU_TILE / 2 - he->XYZ.x, ((cz - 1) * PAPU_TILE) - 0x700 + PAPU_TILE / 2 - he->XYZ.z);
+            }
+        }
+        /* none clear for long: any that's clear now */
+        for (i = 0; i < 8; i++) {
+            s32 cx = ix + Around[i][0], cz = iz + Around[i][1];
+
+            if (!tile_hot(cx, cz, 0)) {
+                return steer((cx * PAPU_TILE) - 0x700 + PAPU_TILE / 2 - he->XYZ.x, ((cz - 1) * PAPU_TILE) - 0x700 + PAPU_TILE / 2 - he->XYZ.z);
+            }
+        }
+    }
+    /* his stomp */
+    {
+        s32 sx, sz, reach;
+
+        if (PapuStompPoint(&sx, &sz, &reach)) {
+            s32 dx = he->XYZ.x - sx, dz = he->XYZ.z - sz;
+
+            if ((csqrt(dx * dx + dz * dz) >> 6) < reach + STOMP_CLEAR) {
+                return in_arena(he->XYZ.x + dx / 4, he->XYZ.z + dz / 4) ? steer(dx, dz) : steer(-he->XYZ.x, -he->XYZ.z);
+            }
+        }
+    }
+    for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
+        EXTobject *fux = (EXTobject *)n->FUX;
+        EXTmotion *m = FindExtension(n, 0x800);
+
+        if (fux != NULL && m != NULL && n->Engine != NULL && n->Engine->platform == NULL && fux->status == CRATE_FLYING && m->Xvel > THROWN_SPEED && fux->player >= MINION_FIRST) {
+            s32 vy = n->Engine->xform.rot.vy;
+            s32 fx = -rcossin_tbl[(vy - 0x400) & 0xFFF].unk2, fz = -rcossin_tbl[vy & 0xFFF].unk2;
+            s32 t;
+            s32 go = crate_flight(m->Xvel, m->Xacc, m->Xdec, m->Xmax, m->Yvel, m->Yacc, m->Ydec, m->Ymax, m->Ydir, n->Engine->XYZ.y, &t);
+            s32 b = away_from_blast(he, n->Engine->XYZ.x + ((fx * go) >> 12), n->Engine->XYZ.z + ((fz * go) >> 12));
+
+            if (b != 0) {
+                return b;
+            }
+        }
+    }
+    for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
+        EXTobject *fux = (EXTobject *)n->FUX;
+
+        if (fux != NULL && n->Engine != NULL && fux->whatami == PAPU_TNT_LIT) {
+            s32 dx = he->XYZ.x - n->Engine->XYZ.x, dz = he->XYZ.z - n->Engine->XYZ.z;
+
+            if ((csqrt(dx * dx + dz * dz) >> 6) < TNT_NEAR) {
+                return in_arena(he->XYZ.x + dx / 4, he->XYZ.z + dz / 4) ? steer(dx, dz) : steer(-he->XYZ.x, -he->XYZ.z);
+            }
+        }
+    }
+    return 0;
+}
+
+/* Won't walk him onto a burning tile: he waits at its edge. */
+static s32 papu_safe_step(const EXTengine *he, s32 buttons) {
+    s32 x = he->XYZ.x + (buttons & BTN_RIGHT ? PAPU_TILE / 2 : buttons & BTN_LEFT ? -PAPU_TILE / 2 : 0);
+    s32 z = he->XYZ.z + (buttons & BTN_UP ? PAPU_TILE / 2 : buttons & BTN_DOWN ? -PAPU_TILE / 2 : 0);
+
+    if (tile_hot((he->XYZ.x + 0x700) >> 9, ((he->XYZ.z + 0x700) >> 9) + 1, 0)) {
+        return buttons;
+    }
+    return tile_hot((x + 0x700) >> 9, ((z + 0x700) >> 9) + 1, HOT_NOW) ? buttons & ~(BTN_UP | BTN_DOWN | BTN_LEFT | BTN_RIGHT) : buttons;
+}
+
 /* Papu Papu: each wave of minions goes first, by thrown crates, and he only hurts while he's open (PapuBossFlag). */
 static s32 play_papu(void) {
     HeroInfo *h = &Heroes[0];
@@ -105,17 +298,39 @@ static s32 play_papu(void) {
     if (he == NULL || PapuBoss.nas == NULL || PapuBoss.nas->Engine == NULL) {
         return 0;
     }
-    if (h->hero_object != NULL) {
-        minion = papu_minion(he);
-        if (minion != NULL) {
-            return throw_at(he, minion, 1);
+    {
+        s32 dodge = papu_dodge(he);
+
+        if (dodge != 0) {
+            return dodge;
         }
+    }
+    if (h->hero_object != NULL && (h->hero_object->whatami == PAPU_TNT || h->hero_object->whatami == PAPU_TNT_LIT)) {
+        return (BotTicks & 1) == 0 ? BTN_CIRCLE : 0;
+    }
+    minion = papu_minion(he);
+    if (minion != NULL) {
+        s32 mx = minion->XYZ.x - he->XYZ.x, mz = minion->XYZ.z - he->XYZ.z;
+
+        /* a crate only slows him down: rid of it, and in */
+        if (h->hero_object != NULL) {
+            return (BotTicks & 7) == 0 ? BTN_CIRCLE : steer(mx, mz);
+        }
+        if ((csqrt(mx * mx + mz * mz) >> 6) < SPIN_REACH) {
+            return steer(mx, mz) | ((BotTicks & 3) == 0 ? BTN_SQUARE : 0);
+        }
+        return steer(mx, mz);
+    }
+    if (h->hero_object != NULL) {
         return throw_at(he, PapuBoss.nas->Engine, PapuBossFlag != 0);
     }
     for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
         EXTobject *fux = (EXTobject *)n->FUX;
 
-        if (fux != NULL && (fux->can_do & 1) && n->Engine != NULL && n != PapuBoss.nas) {
+        if (n == PapuCrateLeft && BotTicks < PapuCrateLeftUntil) {
+            continue;
+        }
+        if (fux != NULL && (fux->can_do & 1) && fux->whatami != PAPU_TNT && fux->whatami != PAPU_TNT_LIT && n->Engine != NULL && n != PapuBoss.nas) {
             s32 ex = (n->Engine->XYZ.x - he->XYZ.x) >> 4;
             s32 ez = (n->Engine->XYZ.z - he->XYZ.z) >> 4;
             s32 d = ex * ex + ez * ez;
@@ -130,24 +345,33 @@ static s32 play_papu(void) {
             }
         }
     }
+    if (best != PapuCrate) {
+        PapuCrateSince = BotTicks;
+    }
     if (best != PapuCrate || BotTicks >= PapuCrateUntil) {
         PapuCrate = best;
-        PapuCrateUntil = BotTicks + 90;
+        PapuCrateUntil = BotTicks + CRATE_COMMIT;
     }
     if (best == NULL) {
         return 0;
     }
+    /* can't get it, whatever the reason: try another */
+    if (BotTicks - PapuCrateSince > CRATE_GIVE_UP) {
+        PapuCrateLeft = best;
+        PapuCrateLeftUntil = BotTicks + CRATE_LEAVE_FOR;
+        PapuCrate = NULL;
+    }
     dx = best->Engine->XYZ.x - he->XYZ.x;
     dz = best->Engine->XYZ.z - he->XYZ.z;
     if (abs(dz) >= abs(dx)) {
-        if (abs(dx) > 0x80) {
+        if (abs(dx) > CRATE_LINE_UP) {
             return dx > 0 ? BTN_RIGHT : BTN_LEFT;
         }
         if (abs(dz) > 0x1C0 || (BotTicks & 15) < 4) {
             return dz > 0 ? BTN_UP : BTN_DOWN;
         }
     } else {
-        if (abs(dz) > 0x80) {
+        if (abs(dz) > CRATE_LINE_UP) {
             return dz > 0 ? BTN_UP : BTN_DOWN;
         }
         if (abs(dx) > 0x1C0 || (BotTicks & 15) < 4) {
@@ -155,6 +379,41 @@ static s32 play_papu(void) {
         }
     }
     return (BotTicks & 15) == 8 ? BTN_CIRCLE : 0;
+}
+
+#define STUCK_CHECK 32
+#define STUCK_MOVED 0x40
+#define UNSTICK_TICKS 40
+
+/* Walking into something, with the pad held and no ground covered. A crate in the way can be picked up, which clears it and arms
+   him; anything else, he steps round it. */
+static s32 papu_unstick(s32 buttons) {
+    static s32 lastX, lastZ, checkAt, unstickUntil, side;
+    EXTengine *he = Heroes[0].hero_eng;
+
+    if (he == NULL) {
+        return buttons;
+    }
+    if (BotTicks >= checkAt) {
+        s32 moved = abs(he->XYZ.x - lastX) + abs(he->XYZ.z - lastZ);
+
+        lastX = he->XYZ.x;
+        lastZ = he->XYZ.z;
+        checkAt = BotTicks + STUCK_CHECK;
+        if (moved < STUCK_MOVED && (buttons & (BTN_UP | BTN_DOWN | BTN_LEFT | BTN_RIGHT)) && BotTicks >= unstickUntil) {
+            unstickUntil = BotTicks + UNSTICK_TICKS;
+            side++;
+        }
+    }
+    if (BotTicks < unstickUntil) {
+        s32 away = buttons & (BTN_UP | BTN_DOWN) ? (side & 1 ? BTN_LEFT : BTN_RIGHT) : (side & 1 ? BTN_UP : BTN_DOWN);
+
+        if (BotTicks + UNSTICK_TICKS / 2 >= unstickUntil) {
+            return away;
+        }
+        return (BotTicks & 7) == 0 ? BTN_CIRCLE : 0;
+    }
+    return buttons;
 }
 
 /* The Bearminator: the sniper missile drops into the middle of the ice, so wait there; touching it brings up a crosshair, to
@@ -570,10 +829,36 @@ static s32 play_fox(void) {
     return buttons;
 }
 
+/* Each time the hero's hurt, and what was going on. */
+static void log_hurt(void) {
+    static s32 last;
+    s32 now = Heroes[0].hero_health;
+
+    if (now < last && GameMode == 4 && Heroes[0].hero_eng != NULL) {
+        printf("hurt: vblank %d health %d -> %d hero %d,%d mode %X; boss health %d count %d open %d minions %d\n", platform_vblanks(), last, now,
+               Heroes[0].hero_eng->XYZ.x, Heroes[0].hero_eng->XYZ.z, Heroes[0].hero_mode, BossState.health, PapuBossCount, PapuBossFlag,
+               papu_minion(Heroes[0].hero_eng) != NULL);
+    }
+    last = now;
+}
+
+/* A boss test's over once the boss is beaten and the game's gone back to a warp room. */
+void BossBotCheckDone(void) {
+    static s32 beaten;
+
+    if ((GAME->levelFlags & 0x100) && (BossState.flags & 0x8000)) {
+        beaten = 1;
+    } else if (beaten && !(GAME->levelFlags & 0x100) && !(GAME->exitFlags & 0x8008)) {
+        printf("boss test: back in mode %d at vblank %d\n", GameMode, platform_vblanks());
+        platform_finish(0);
+    }
+}
+
 void BossBotUpdate(void) {
     s32 buttons = 0;
 
     BotTicks++;
+    log_hurt();
     /* the end of a fight waits for a button */
     if (GAME->exitFlags != 0 || (BossState.flags & 0x8000)) {
         platform_bot_buttons((BotTicks & 31) < 3 ? BTN_CROSS : 0);
@@ -581,7 +866,10 @@ void BossBotUpdate(void) {
     }
     switch (GameMode) {
     case 4:
-        buttons = play_papu();
+        buttons = papu_unstick(play_papu());
+        if (Heroes[0].hero_eng != NULL) {
+            buttons = papu_safe_step(Heroes[0].hero_eng, buttons);
+        }
         break;
     case 9:
         buttons = play_fox();

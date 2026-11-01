@@ -79,6 +79,7 @@ static int MarkFace;
 
 /* Above the game's own rate: how far through the step to the shown frame the next picture is. */
 static int Stepping;
+static int DrawEvery, DrawnSince;
 static int StepsDone, StepsPerFrame;
 static int BaseStale;
 
@@ -1113,6 +1114,10 @@ static void find_movement(void) {
     }
 }
 
+void gfx_draw_every(int frames) {
+    DrawEvery = frames;
+}
+
 void gfx_end_frame(void) {
     Tri *swap = Tris;
 
@@ -1131,6 +1136,12 @@ void gfx_end_frame(void) {
     memcpy(ShownClips, Clips, sizeof(ShownClips));
     ShownClear = ClearPending;
     ClearPending = 0;
+    /* a test run that's after speed draws now and then, and when it wants a shot */
+    if (DrawEvery > 1 && ShotPath == NULL && ++DrawnSince < DrawEvery) {
+        gfx_begin_frame();
+        return;
+    }
+    DrawnSince = 0;
     sort_tris();
     if (!Stepping) {
         draw_shown(1);

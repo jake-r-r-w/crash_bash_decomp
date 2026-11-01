@@ -1686,6 +1686,26 @@ void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
     return NULL;
 }
 
+/* For a test run's player: where Papu's stomp reaches this frame, and how far from there. 0 if it isn't on. */
+s32 PapuStompPoint(s32 *x, s32 *z, s32 *reach) {
+    EXTengine *eng = PapuBoss.nas != NULL ? PapuBoss.nas->Engine : NULL;
+    FlagRecord *box;
+    VECTOR pos;
+
+    if (eng == NULL || PapuBossCount != 6 || (box = FindCollisionBox(eng, 0x400)) == NULL) {
+        return 0;
+    }
+    if (eng->xform.dirty != 0) {
+        rotscale_update(&eng->xform);
+    }
+    gfx_load_xform(eng->sub, &eng->xform.mtx, &eng->XYZ);
+    gte_rotate_point((SVECTOR *)box, &pos);
+    *x = pos.vx;
+    *z = pos.vz;
+    *reach = box->radius;
+    return 1;
+}
+
 s32 PapuHitHeroes(EXTengine *eng) {
     VECTOR pos;
     FlagRecord *box;

@@ -14,6 +14,8 @@
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
+ * For bosses, --no-cheats leaves NO HARM HERO off, --vblanks N lets it try for that long, and --shots FROM STEP COUNT takes those shots instead of eight spread over the run.
+ *
  * --exe FILE picks another build. A crash's addresses become source lines if llvm-symbolizer is on the PATH. */
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -158,29 +160,46 @@ function report(results) {
     return failed === 0 ? 0 : 1;
 }
 
-async function play_boss(name, exe, watch, tile) {
-    const boss = BOSSES[name];
+async function play_boss(name, exe, watch, tile, cheats, shot_at, vblanks) {
+    const boss = { ...BOSSES[name], vblanks: vblanks || BOSSES[name].vblanks };
     const dir = path.join(OUT, 'bosses', name);
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
 
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
-    const args = ['--cheat-menu', '--cheats', '1', '--aim', '--skip-intro', '--skip-loading', '--saves', rel('saves'), ...route_to_boss(boss.mode)];
+    const args = ['--cheat-menu', ...(cheats ? ['--cheats', '1'] : []), '--aim', '--skip-intro', '--skip-loading', '--saves', rel('saves'), ...route_to_boss(boss.mode)];
     if (watch) {
         args.push('--sound', '--window', '1280', '960');
     } else {
-        args.push('--turbo', '--tile', String(tile), String(Object.keys(BOSSES).length), '--stall', '20000', rel('stalled.png'));
+        args.push('--turbo', '--draw-every', '60', '--tile', String(tile), String(Object.keys(BOSSES).length), '--stall', '20000', rel('stalled.png'));
     }
-    for (let i = 0; i < 8; i++) {
-        args.push('--shot', String(Math.floor(boss.vblanks * (i + 1) / 9)), rel(`s${i}.png`));
+    if (shot_at != null) {
+        for (let i = 0; i < shot_at.count; i++) {
+            const v = shot_at.from + i * shot_at.step;
+
+            args.push('--shot', String(v), rel(`v${String(v).padStart(6, '0')}.png`));
+        }
+    } else {
+        for (let i = 0; i < 8; i++) {
+            args.push('--shot', String(Math.floor(boss.vblanks * (i + 1) / 9)), rel(`s${i}.png`));
+        }
     }
-    args.push('--frames', String(boss.vblanks));
+    args.push('--frames', String(shot_at != null ? Math.max(boss.vblanks, shot_at.from + shot_at.step * shot_at.count + 5) : boss.vblanks));
     return [name, boss_result(boss, await run(exe, args, path.join(dir, 'log.txt'), { timeout: watch ? 0 : BOSS_TIMEOUT }), exe)];
 }
 
 async function bosses(args) {
     const watch = flag(args, '--watch');
     const exe = option(args, '--exe', DEFAULT_EXE);
+    const cheats = !flag(args, '--no-cheats');
+    const vblanks = Number(option(args, '--vblanks', 0));
+    let shot_at = null;
+    const at = args.indexOf('--shots');
+    if (at >= 0) {
+        const [from, step, count] = args.splice(at, 4).slice(1).map(Number);
+
+        shot_at = { from, step, count };
+    }
     const names = args.length !== 0 ? args : Object.keys(BOSSES);
 
     for (const name of names) {
@@ -192,10 +211,10 @@ async function bosses(args) {
     if (watch) {
         for (const name of names) {
             console.log(`${name}...`);
-            results.push(await play_boss(name, exe, true, 0));
+            results.push(await play_boss(name, exe, true, 0, cheats, shot_at, vblanks));
         }
     } else {
-        results = await Promise.all(names.map((name, i) => play_boss(name, exe, false, i)));
+        results = await Promise.all(names.map((name, i) => play_boss(name, exe, false, i, cheats, shot_at, vblanks)));
     }
     return report(results);
 }

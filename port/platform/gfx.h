@@ -26,7 +26,8 @@ int gfx_init(void *window, int width, int height, int vsync, int fps);
 void gfx_quit(void);
 
 void gfx_begin_frame(void);
-void gfx_end_frame(void); /* what was added is the game's new frame */
+void gfx_end_frame(void);
+void gfx_draw_every(int frames); /* a test run: draw one frame in this many */ /* what was added is the game's new frame */
 void gfx_present(void);   /* draws and shows the next step towards it, at frame rates above the game's */
 /* The picture stays from frame to frame, as a PS1's screen does, until the game clears it. */
 void gfx_clear(uint8_t r, uint8_t g, uint8_t b);

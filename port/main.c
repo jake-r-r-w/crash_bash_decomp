@@ -282,7 +282,7 @@ int platform_pad(int port) {
 int main(int argc, char **argv) {
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
-    int test_sound = 0, test_adventure = 0, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
+    int draw_every = 0, test_sound = 0, test_adventure = 0, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
 
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--version") == 0) {
@@ -352,6 +352,8 @@ int main(int argc, char **argv) {
             test_sound = 1;
         } else if (strcmp(argv[i], "--turbo") == 0) {
             Turbo = 1;
+        } else if (strcmp(argv[i], "--draw-every") == 0 && i + 1 < argc) {
+            draw_every = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--skip-intro") == 0) {
             skip_intro = 1;
         } else if (strcmp(argv[i], "--skip-loading") == 0) {
@@ -418,6 +420,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "No window; running without one.\n");
         NoWindow = 1;
     }
+    gfx_draw_every(draw_every);
     overlays_init();
     machine_init();
     platform_finish(0);
