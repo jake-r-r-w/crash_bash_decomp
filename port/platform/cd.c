@@ -22,8 +22,7 @@ static void open_dat(void) {
     path = platform_data_path();
     Dat = fopen(path, "rb");
     if (Dat == NULL) {
-        fprintf(stderr, "Can't open the game's data, %s (docs/PORT.md, Running it)\n", path);
-        exit(1);
+        platform_fatal("Can't find the game's data.\n\nCopy CRASHBSH.DAT from your own copy of Crash Bash (USA) into the same folder as this program. It's in the CRASHBSH folder on the disc.");
     }
     fseek(Dat, 0, SEEK_END);
     DatSize = ftell(Dat);

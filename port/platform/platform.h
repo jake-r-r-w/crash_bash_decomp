@@ -22,6 +22,7 @@
 
 /* main.c */
 const char *platform_data_path(void);
+void platform_fatal(const char *message);
 /* A pad, as the game's libpad reads it: its buttons, or -1 when there's none. */
 int platform_pad(int port);
 int platform_vblanks(void);

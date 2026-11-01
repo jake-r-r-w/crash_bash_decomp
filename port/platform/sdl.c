@@ -27,6 +27,7 @@ void *host_window(void) {
     SDL_SetMainReady();
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) {
         SDL_Log("SDL_Init: %s", SDL_GetError());
+        platform_fatal("Crash Bash couldn't start its window and sound.");
         return NULL;
     }
     Window = SDL_CreateWindow("Crash Bash", s->window_w, s->window_h, SDL_WINDOW_RESIZABLE | (s->fullscreen ? SDL_WINDOW_FULLSCREEN : 0));

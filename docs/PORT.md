@@ -1,8 +1,7 @@
 # The PC port
 
 A native 64-bit PC port of Crash Bash, built from this source on the best tech stack for a game that plays: no
-emulation and no hacks. It builds but doesn't run the game yet: this file is the design, and the steps are in
-[ROADMAP-B.md](ROADMAP-B.md), Part 6.
+emulation and no hacks. It plays every mode. This file is the design, and the steps are in [ROADMAP-B.md](ROADMAP-B.md), Part 6.
 
 A first attempt ran the game as a 32-bit program on the PS1's memory layout, with a software PS1 GPU. It was
 deleted on 2026-10-30, and this plan starts again without any of that. Its code is in git
@@ -111,9 +110,16 @@ The game's C isn't in the default build until it compiles. To see what's left:
 cmake --build --preset windows-clang --target game -- -k 0
 ```
 
+## A release
+
+`node port/package.mjs`, with `TC` set to the toolchain, builds `build/port/release/crash-bash-pc-VERSION-windows-x64.zip`: the program
+with no console window and no symbols, its README (`port/release/README.txt`) and the licences. The version is the `project()` one in
+`port/CMakeLists.txt`. It fails if the program holds a sample of the game's archive or this machine's paths, and it publishes nothing. Try
+the zip with `playtest.mjs ... --exe`, and unzipped by itself, with and without `CRASHBSH.DAT`. The release's notes are in `port/release/`.
+
 ## Running it
 
-Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. A settings
+Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. It also looks for `CRASHBSH.DAT` in the current folder and next to the program. A settings
 menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
 Keys: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Q and W = L1 and R1, 1 and 2 = L2 and R2.
 

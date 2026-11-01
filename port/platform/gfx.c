@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include "platform.h"
 #include "gfx.h"
 
 #ifdef _WIN32
@@ -317,6 +318,7 @@ int gfx_init(void *window, int width, int height, int vsync, int fps) {
     Device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_DXBC, false, "direct3d12");
     if (Device == NULL) {
         fprintf(stderr, "SDL_CreateGPUDevice: %s\n", SDL_GetError());
+        platform_fatal("Crash Bash needs a graphics card with Direct3D 12.");
         return 0;
     }
     if (!SDL_ClaimWindowForGPUDevice(Device, Window)) {

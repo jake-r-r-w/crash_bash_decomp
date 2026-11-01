@@ -89,19 +89,32 @@ static int NoWindow;
 static int Turbo;
 static int StopAt = -1;
 
+/* Something's stopped the game from starting, and whoever double-clicked it should hear why. */
+void platform_fatal(const char *message) {
+    fprintf(stderr, "%s\n", message);
+    if (StopAt < 0) {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crash Bash", message, NULL);
+    }
+    exit(1);
+}
+
 /* The first of these that exists, unless --data says */
 const char *platform_data_path(void) {
+    static char beside_exe[1024];
     static const char *const places[] = {
         "CRASHBSH.DAT",
+        beside_exe,
         "build/disc/files/CRASHBSH/CRASHBSH.DAT",
         "../disc/files/CRASHBSH/CRASHBSH.DAT",
         "../../disc/files/CRASHBSH/CRASHBSH.DAT",
     };
+    const char *base = SDL_GetBasePath();
     size_t i;
 
     if (DataPath != NULL) {
         return DataPath;
     }
+    SDL_snprintf(beside_exe, sizeof(beside_exe), "%sCRASHBSH.DAT", base != NULL ? base : "");
     for (i = 0; i < sizeof(places) / sizeof(places[0]); i++) {
         FILE *f = fopen(places[i], "rb");
 

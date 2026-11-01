@@ -17,6 +17,16 @@
       "cacheVariables": { "CMAKE_C_COMPILER": "x86_64-w64-mingw32-clang" }
     },
     {
+      "name": "windows-release",
+      "displayName": "Windows x86-64, Clang, for publishing (node port/package.mjs)",
+      "inherits": "windows-clang",
+      "cacheVariables": {
+        "BASH_RELEASE": "ON",
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_FLAGS_RELEASE": "-O2 -DNDEBUG"
+      }
+    },
+    {
       "name": "linux-clang",
       "displayName": "Linux x86-64, Clang",
       "inherits": "base",
@@ -42,6 +52,7 @@
   ],
   "buildPresets": [
     { "name": "windows-clang", "configurePreset": "windows-clang" },
+    { "name": "windows-release", "configurePreset": "windows-release" },
     { "name": "linux-clang", "configurePreset": "linux-clang" },
     { "name": "linux-gcc", "configurePreset": "linux-gcc" },
     { "name": "linux-asan", "configurePreset": "linux-asan" }
