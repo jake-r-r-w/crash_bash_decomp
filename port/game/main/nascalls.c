@@ -1,6 +1,9 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/nascalls.h"
+#include "bash/hero.h"
+
+extern HeroInfo Heroes[5];
 
 static inline NAS *AllocNAS(void) {
     NAS *free;
@@ -181,6 +184,7 @@ found:
 
 s32 KillNAS(NAS *nas) {
     EXTengine *eng;
+    s32 i;
 
     if (!(nas->NASid & 1)) {
         return 1;
@@ -207,6 +211,12 @@ s32 KillNAS(NAS *nas) {
         eng = eng->Engine;
     }
 freed:
+    /* the games don't all let go of what a hero's holding when it's destroyed, and he'd go on writing to that memory */
+    for (i = 0; i < 4; i++) {
+        if (Heroes[i].hero_object != NULL && (EXT *)Heroes[i].hero_object == nas->FUX) {
+            Heroes[i].hero_object = NULL;
+        }
+    }
     FreeAllExtensions(nas);
     RemoveFamily((u8 *)nas);
     RemoveFromGroup(nas);
