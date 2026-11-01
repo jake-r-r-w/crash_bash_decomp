@@ -402,6 +402,8 @@ void PlotCrate(NAS *arg0) {
                 }
             }
         if (fux->will_do & 2) {
+            /* the original cleared player first, so the hero holding it kept a pointer to a dead crate, and wrote to it when he was hit */
+            BC038Release(fux);
             fux->player = -1;
             switch (type) {
             case 3:
