@@ -116,6 +116,7 @@ void draw_map_scene(map_enviroment *scene);
 void mapenv_place_subs(map_enviroment *env);
 /* More of a level's scenery, for a wide view (main/widescenery.c). */
 void wide_scenery_draw(map_enviroment *scene, MATRIX *view);
+s32 wide_scenery_hides(const map_enviroment *scene, const subengine *sub);
 s32 tri_visible(SVECTOR *v);
 void draw_nas_model_flags(subengine *nas, MATRIX *arg1, u32 flags);
 KeyEntry *key_interp_pos(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
