@@ -2,7 +2,8 @@
  * goes through it, as a player does. In a game the computer plays for it, and hands back as the win comes, as a win only counts
  * for a player; a boss is bossbot.c's. It saves at the computer every few wins, and when no door has anything left to win it saves
  * and stops. --adventure-load loads that save from the title menu and stops, --adventure-resume loads it and plays on. The log says how
- * far it's got each time it's back. */
+ * far it's got each time it's back. A challenge it keeps losing gets weaker computer opponents, a little more each go, and the log says
+ * so, as a win like that doesn't show it can be beaten at full strength. */
 #include <stdio.h>
 #include "common.h"
 #include "bash/main.h"
@@ -48,6 +49,10 @@ void PogoPlayerBot(s32 id);
 #define MAX_SKILL 0x20
 #define CHOICES 5
 #define GIVE_UP 3
+#define WEAKEN_AFTER 6
+#define WEAKEN_STEP 3
+#define WEAKEST 1
+#define FULL_STRENGTH 0x20
 #define RING_DING 27
 #define POGO_FIRST 10
 #define POGO_PADLOCK 13
@@ -72,6 +77,8 @@ static s32 Saving;
 static s32 NoDoorLeft;
 static s32 Unsaved;
 static s32 Loaded;
+static s32 WeakLevel = FULL_STRENGTH;
+static s32 WeakWins;
 
 static s32 in_room(void) {
     return GameMode >= ROOM_FIRST && GameMode <= ROOM_LAST;
@@ -186,7 +193,8 @@ static void log_progress(void) {
         for (i = 0; i < 0x21; i++) {
             count[a] += GAME->adventure.won[a][i] != 0;
             if (GAME->adventure.won[a][i] != last[a][i]) {
-                printf("adventure: won award %d %d of level %d\n", a, GAME->adventure.won[a][i], i);
+                printf("adventure: won award %d %d of level %d%s\n", a, GAME->adventure.won[a][i], i, WeakLevel < FULL_STRENGTH ? " against weak opponents" : "");
+                WeakWins += WeakLevel < FULL_STRENGTH;
                 last[a][i] = GAME->adventure.won[a][i];
                 Unsaved++;
             }
@@ -433,7 +441,7 @@ void AdventurePlayerUpdate(void) {
         Saving = 0;
         Unsaved = 0;
         if (NoDoorLeft) {
-            printf("adventure: nothing left to win\n");
+            printf("adventure: nothing left to win, %d of it against weak opponents\n", WeakWins);
             platform_finish(0);
         }
     }
@@ -443,7 +451,7 @@ void AdventurePlayerUpdate(void) {
             s32 entry;
 
             if (ready && next_door(&entry, &WantChoice) < 0) {
-                printf("adventure: challenge won\n");
+                printf("adventure: challenge won%s\n", WeakLevel < FULL_STRENGTH ? " against weak opponents" : "");
                 platform_finish(0);
             }
             if (!ready) {
@@ -463,9 +471,27 @@ void AdventurePlayerUpdate(void) {
         Tries[GameMode][WantChoice]++;
         Losses = 0;
         printf("adventure: try %d of level %d challenge %d\n", Tries[GameMode][WantChoice], GameMode, WantChoice);
+        WeakLevel = FULL_STRENGTH;
+        if (Tries[GameMode][WantChoice] > WEAKEN_AFTER && !(GAME->levelFlags & 0x100)) {
+            WeakLevel = FULL_STRENGTH - (Tries[GameMode][WantChoice] - WEAKEN_AFTER) * WEAKEN_STEP;
+            if (WeakLevel < WEAKEST) {
+                WeakLevel = WEAKEST;
+            }
+            printf("adventure: weak opponents, level %d\n", WeakLevel);
+        }
         InRoom = 0;
     }
     log_round();
+    /* in play: the game sets these again at each round */
+    {
+        s32 i;
+
+        for (i = 1; i < 4; i++) {
+            if (AiPlayerSkill[i].level > WeakLevel) {
+                AiPlayerSkill[i].level = WeakLevel;
+            }
+        }
+    }
     if (GAME->levelFlags & 0x100) {
         BossBotUpdate();
         return;

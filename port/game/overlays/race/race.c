@@ -1263,7 +1263,7 @@ u32 RaceAI_FollowTrack(s32 player) {
                     Heroes[player].hero_ai->AIpad &= ~0x8000;
                 }
             }
-            EXT_W(ext, 7) = 0x20 - AiPlayerSkill[player].level;
+            ((EXTraceai *)ext)->unk1C = 0x20 - AiPlayerSkill[player].level;
         }
     }
     return 0x8000;

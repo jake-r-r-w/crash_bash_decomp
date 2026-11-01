@@ -46,6 +46,7 @@ typedef struct EXTraceai {
     /* 0x00 */ EXT base; u8 padC[8];
     /* 0x14 */ s32 unk14;
     /* 0x18 */ void (*unk18)(s32 player);
+    /* 0x1C */ s32 unk1C;
 } EXTraceai;
 extern s32 RaceAISpeeds[];
 void RaceAI_Think(s32 arg0);

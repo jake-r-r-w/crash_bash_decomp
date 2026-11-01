@@ -12,7 +12,8 @@
  *   node port/tests/playtest.mjs adventure [--seconds N] [--resume]
  *       Plays a new Adventure with no cheats, by adventureplayer.c and bossbot.c: door by door by the game's rules until there's nothing left
  *       to win, then saves at the computer, and passes at 200% if a new run loads that save with everything still there. 30 minutes at most
- *       by default. It saves every few wins, and --resume carries on from the last one. Its log says how far it's got, as it goes.
+ *       by default. It saves every few wins, and --resume carries on from the last one. Its log says how far it's got, as it goes. A challenge
+ *       it keeps losing gets weaker computer opponents, and the log and the result say how many were won that way.
  *   node port/tests/playtest.mjs challenges [--seconds N] [--at-once N] [LEVEL | LEVEL.CHOICE ...]
  *       Each Adventure challenge alone (the door's choice: 0 trophy, 1 and 2 the gem and crystal, 3 and 4 the relics) from everything else won,
  *       some at once, up to 60 seconds each. For working on the player: which it wins, and in how many goes.
@@ -289,8 +290,9 @@ async function adventure(args) {
         path.join(dir, 'load.txt'), { timeout: MODE_TIMEOUT });
     const load_crash = crash_where(exe, load.text);
     const same = /^adventure: loaded/m.test(load.text) && state(load.text) === state(r.text);
+    const weak = r.text.match(/^adventure: nothing left to win, (\d+) of it/m)?.[1] ?? '?';
 
-    return report([['adventure', { pass: load_crash == null && same && / complete 200%/.test(progress(r.text)), what: load_crash ?? `${progress(r.text)}; ${same ? 'loaded the same' : `loaded ${state(load.text)}`}` }]]);
+    return report([['adventure', { pass: load_crash == null && same && / complete 200%/.test(progress(r.text)), what: load_crash ?? `${progress(r.text)}; ${weak} won against weak opponents; ${same ? 'loaded the same' : `loaded ${state(load.text)}`}` }]]);
 }
 
 /* One challenge at a time from everything else won, some at once: which it wins, in how many goes. */
@@ -313,7 +315,9 @@ async function challenges(args) {
         const tries = [...r.text.matchAll(/^adventure: try (\d+) of level/gm)].length;
         const rounds = [...r.text.matchAll(/^round:/gm)].length;
 
-        return [w, { pass: crash == null && /^adventure: challenge won/m.test(r.text), what: crash ?? `${tries} tries, ${rounds} rounds` }];
+        const weak = /^adventure: challenge won against weak/m.test(r.text) ? ', weak opponents' : '';
+
+        return [w, { pass: crash == null && /^adventure: challenge won/m.test(r.text), what: crash ?? `${tries} tries, ${rounds} rounds${weak}` }];
     };
     const queue = [...list];
     await Promise.all(Array.from({ length: at_once }, async (_, slot) => {
