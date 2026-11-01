@@ -17,6 +17,9 @@
  *   node port/tests/playtest.mjs challenges [--seconds N] [--at-once N] [LEVEL | LEVEL.CHOICE ...]
  *       Each Adventure challenge alone (the door's choice: 0 trophy, 1 and 2 the gem and crystal, 3 and 4 the relics) from everything else won,
  *       some at once, up to 60 seconds each. For working on the player: which it wins, and in how many goes.
+ *   node port/tests/playtest.mjs same [--save]
+ *       Frames and sound of a few modes against a saved baseline (--save makes it), about a minute: whether a change that shouldn't alter
+ *       anything didn't. Between big steps of cleaning up, in place of the long tests.
  *   node port/tests/playtest.mjs menu
  *       From the title screen through the menus, by the pad alone, into the first game of a new Adventure's first room.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
@@ -25,6 +28,7 @@
  * For bosses, --no-cheats leaves NO HARM HERO off, --vblanks N lets it try for that long, and --shots FROM STEP COUNT takes those shots instead of eight spread over the run.
  *
  * --exe FILE picks another build. A crash's addresses become source lines if llvm-symbolizer is on the PATH. */
+import crypto from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -328,6 +332,51 @@ async function challenges(args) {
     return report(results.sort((a, b) => a[0].split('.')[0] - b[0].split('.')[0] || a[0].split('.')[1] - b[0].split('.')[1]));
 }
 
+/* Whether a build still draws and sounds the same, for a change that shouldn't alter either: frames and sound of a few modes against a
+   saved baseline, in about a minute. */
+const SAME_MODES = [0, 1, 4, 5, 10, 14, 18, 23, 27, 28, 30, 31, 33, 40];
+const SAME_SHOTS = [500, 900, 1300];
+const SAME_VBLANKS = 1400;
+
+async function same(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const save = flag(args, '--save');
+    const dir = path.join(OUT, 'same');
+    const base = path.join(dir, 'baseline.json');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+    const old = !save && fs.existsSync(base) ? JSON.parse(fs.readFileSync(base, 'utf8')) : null;
+    const now = {};
+
+    if (!save && old == null) {
+        throw new Error('No baseline: run it with --save first');
+    }
+    fs.mkdirSync(dir, { recursive: true });
+    const one = async (m, slot) => {
+        const shots = SAME_SHOTS.flatMap(v => ['--shot', String(v), rel(`m${m}-${v}.png`)]);
+        const r = await run(exe, ['--frames', String(SAME_VBLANKS), '--turbo', '--skip-intro', '--skip-loading', '--mode', String(m), '--tile', String(slot), String(SAME_MODES.length),
+            ...shots, '--wav', rel(`m${m}.wav`)], path.join(dir, `m${m}.txt`), { timeout: MODE_TIMEOUT });
+        const crash = crash_where(exe, r.text);
+
+        if (crash != null) {
+            return [`mode ${m}`, { pass: false, what: crash }];
+        }
+        for (const v of SAME_SHOTS) {
+            now[`m${m}-${v}`] = sha(path.join(dir, `m${m}-${v}.png`));
+        }
+        now[`m${m}-sound`] = sha(path.join(dir, `m${m}.wav`));
+        const differ = Object.keys(now).filter(k => k.startsWith(`m${m}-`) && old != null && old[k] !== now[k]);
+
+        return [`mode ${m}`, { pass: differ.length === 0, what: differ.length === 0 ? 'the same' : `differs: ${differ.map(k => k.slice(k.indexOf('-') + 1)).join(', ')}` }];
+    };
+    const results = await Promise.all(SAME_MODES.map((m, i) => one(m, i)));
+
+    if (save) {
+        fs.writeFileSync(base, JSON.stringify(now, null, 1));
+    }
+    return report(results);
+}
+
 async function menu(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const dir = path.join(OUT, 'menu');
@@ -378,9 +427,9 @@ async function shots(args) {
 }
 
 const [command, ...rest] = process.argv.slice(2);
-const commands = { bosses, modes, adventure, challenges, menu, shots };
+const commands = { bosses, modes, adventure, challenges, same, menu, shots };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|menu|shots: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|menu|shots: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));
