@@ -9,10 +9,13 @@
  *   node port/tests/playtest.mjs modes [--vblanks N] [--slots N] [--from M] [--to M] [--asan]
  *       Every game mode, played by the computer, some at a time tiled on the screen, with three shots of each. --asan uses the
  *       AddressSanitizer build, and fails on anything it reports.
- *   node port/tests/playtest.mjs adventure [--seconds N]
- *       Plays a new Adventure with no cheats, by adventureplayer.c and bossbot.c: door by door by the game's rules, up to beating Oxide and the
- *       credits, then saves at the computer, and passes if a new run loads that save with everything still there. 30 minutes at most by
- *       default. Its log says how far it's got, as it goes.
+ *   node port/tests/playtest.mjs adventure [--seconds N] [--resume]
+ *       Plays a new Adventure with no cheats, by adventureplayer.c and bossbot.c: door by door by the game's rules until there's nothing left
+ *       to win, then saves at the computer, and passes at 200% if a new run loads that save with everything still there. 30 minutes at most
+ *       by default. It saves every few wins, and --resume carries on from the last one. Its log says how far it's got, as it goes.
+ *   node port/tests/playtest.mjs challenges [--seconds N] [--at-once N] [LEVEL | LEVEL.CHOICE ...]
+ *       Each Adventure challenge alone (the door's choice: 0 trophy, 1 and 2 the gem and crystal, 3 and 4 the relics) from everything else won,
+ *       some at once, up to 60 seconds each. For working on the player: which it wins, and in how many goes.
  *   node port/tests/playtest.mjs menu
  *       From the title screen through the menus, by the pad alone, into the first game of a new Adventure's first room.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
@@ -265,18 +268,21 @@ async function modes(args) {
 async function adventure(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const seconds = Number(option(args, '--seconds', 1800));
+    const resume = flag(args, '--resume');
     const dir = path.join(OUT, 'adventure');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
 
-    fs.rmSync(dir, { recursive: true, force: true });
+    if (!resume) {
+        fs.rmSync(dir, { recursive: true, force: true });
+    }
     fs.mkdirSync(dir, { recursive: true });
-    const r = await run(exe, ['--adventure', '--turbo', '--draw-every', '120', '--skip-intro', '--skip-loading', '--saves', rel('saves'), '--frames', '2000000000'],
+    const r = await run(exe, [resume ? '--adventure-resume' : '--adventure', '--turbo', '--draw-every', '120', '--skip-intro', '--skip-loading', '--saves', rel('saves'), '--frames', '2000000000'],
         path.join(dir, 'log.txt'), { timeout: seconds });
     const crash = crash_where(exe, r.text);
     const progress = text => [...text.matchAll(/^adventure: vblank.*$/gm)].at(-1)?.[0] ?? 'nothing';
     const state = text => progress(text).replace(/vblank \d+ /, '');
 
-    if (crash != null || !/^adventure: saved/m.test(r.text)) {
+    if (crash != null || !/^adventure: nothing left to win/m.test(r.text)) {
         return report([['adventure', { pass: false, what: crash ?? `didn't finish in the time; ${progress(r.text)}` }]]);
     }
     const load = await run(exe, ['--adventure-load', '--turbo', '--skip-intro', '--skip-loading', '--saves', rel('saves'), '--frames', '3000'],
@@ -284,7 +290,38 @@ async function adventure(args) {
     const load_crash = crash_where(exe, load.text);
     const same = /^adventure: loaded/m.test(load.text) && state(load.text) === state(r.text);
 
-    return report([['adventure', { pass: load_crash == null && same, what: load_crash ?? `${progress(r.text)}; ${same ? 'loaded the same' : `loaded ${state(load.text)}`}` }]]);
+    return report([['adventure', { pass: load_crash == null && same && / complete 200%/.test(progress(r.text)), what: load_crash ?? `${progress(r.text)}; ${same ? 'loaded the same' : `loaded ${state(load.text)}`}` }]]);
+}
+
+/* One challenge at a time from everything else won, some at once: which it wins, in how many goes. */
+async function challenges(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const seconds = Number(option(args, '--seconds', 60));
+    const at_once = Number(option(args, '--at-once', 8));
+    const dir = path.join(OUT, 'challenges');
+    const levels = [...Array(31).keys()].filter(l => ![4, 9, 22].includes(l));
+    const wanted = args.length !== 0 ? args : levels.flatMap(l => [0, 1, 2, 3, 4].map(c => `${l}.${c}`));
+    const list = wanted.flatMap(w => (w.includes('.') ? [w] : [0, 1, 2, 3, 4].map(c => `${w}.${c}`)));
+    const results = [];
+
+    fs.mkdirSync(dir, { recursive: true });
+    const one = async (w, slot) => {
+        const [level, choice] = w.split('.');
+        const r = await run(exe, ['--challenge', level, choice, '--tile', String(slot), String(at_once), '--turbo', '--draw-every', '120', '--skip-intro', '--skip-loading', '--frames', '2000000000'],
+            path.join(dir, `${w}.txt`), { timeout: seconds });
+        const crash = crash_where(exe, r.text);
+        const tries = [...r.text.matchAll(/^adventure: try (\d+) of level/gm)].length;
+        const rounds = [...r.text.matchAll(/^round:/gm)].length;
+
+        return [w, { pass: crash == null && /^adventure: challenge won/m.test(r.text), what: crash ?? `${tries} tries, ${rounds} rounds` }];
+    };
+    const queue = [...list];
+    await Promise.all(Array.from({ length: at_once }, async (_, slot) => {
+        while (queue.length !== 0) {
+            results.push(await one(queue.shift(), slot));
+        }
+    }));
+    return report(results.sort((a, b) => a[0].split('.')[0] - b[0].split('.')[0] || a[0].split('.')[1] - b[0].split('.')[1]));
 }
 
 async function menu(args) {
@@ -337,9 +374,9 @@ async function shots(args) {
 }
 
 const [command, ...rest] = process.argv.slice(2);
-const commands = { bosses, modes, adventure, menu, shots };
+const commands = { bosses, modes, adventure, challenges, menu, shots };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|menu|shots: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|menu|shots: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));
