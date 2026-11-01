@@ -853,7 +853,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
 }
 
 #define VIDEO_ROW_Y 0x2C
-#define VIDEO_ROW_STEP 0x12
+#define VIDEO_ROW_STEP 0x14
 #define VIDEO_LABEL_X 0x58
 #define VIDEO_VALUE_X 0x13C
 
@@ -876,7 +876,7 @@ static void DrawPauseVideo(void) {
         DrawSysText(VIDEO_LABEL_X, (s16)y, (u8 *)video_option_label(i), 0xD0FF, 0xFF, lit);
         DrawSysText(VIDEO_VALUE_X, (s16)y, (u8 *)value, 0xD0FF, 0xFF, lit);
     }
-    DrawSysText(-0x8000, (s16)(0xDE + PauseMenuY), (u8 *)video_option_help(PauseChoice), 0xD0FF, 0xFF, 0);
+    DrawSysText(-0x8000, (s16)(0xE8 + PauseMenuY), (u8 *)video_option_help(PauseChoice), 0xD0FF, 0xFF, 0);
 }
 
 void DrawPauseMenu(void) {

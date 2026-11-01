@@ -74,6 +74,8 @@ void gfx_quad(int key, const GfxVert v[4], const GfxTex *tex, int blend);
 
 /* A texture that isn't upscaled, for one that's made again as it moves. Otherwise as gfx_texture. */
 const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
+/* A texture with its rows rotated by top, so made again as it moves: source is how it is at rest, which a texture pack replaces. */
+const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *source, int top, int width_texels, int height, int bpp, const void *palette);
 /* One that's never upscaled or filtered, whatever the settings: text, whose small hand-placed pixels those would spoil. */
 const GfxTex *gfx_texture_sharp(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
 

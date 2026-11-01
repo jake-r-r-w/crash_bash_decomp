@@ -214,22 +214,32 @@ int texpack_dumping(void) {
     return DumpFolder[0] != 0;
 }
 
-void texpack_dump(uint64_t hash, const uint32_t *texels, int w, int h, int pitch) {
+void texpack_dump(uint64_t hash, const uint32_t *texels, int w, int h, int pitch, int top) {
     char path[1200];
     SDL_Surface *s;
+    uint32_t *rest;
+    int y;
 
     SDL_snprintf(path, sizeof(path), "%s%016llx.png", DumpFolder, (unsigned long long)hash);
     if (SDL_GetPathInfo(path, NULL)) {
         return;
     }
-    s = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_ABGR8888, (void *)texels, pitch);
+    rest = malloc(sizeof(uint32_t) * (size_t)w * h);
+    if (rest == NULL) {
+        return;
+    }
+    for (y = 0; y < h; y++) {
+        memcpy(rest + (y + top) % h * w, (const uint8_t *)texels + (size_t)y * pitch, (size_t)w * 4);
+    }
+    s = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_ABGR8888, rest, w * 4);
     if (s != NULL) {
         SDL_SavePNG(s, path);
         SDL_DestroySurface(s);
     }
+    free(rest);
 }
 
-int texpack_list(char (*names)[TEXPACK_NAME], int max) {
+static int texpack_list(char (*names)[TEXPACK_NAME], int max) {
     char roots[3][1024];
     int n = pack_roots(roots), r, count = 0;
 
@@ -252,4 +262,23 @@ int texpack_list(char (*names)[TEXPACK_NAME], int max) {
         SDL_free(dirs);
     }
     return count;
+}
+
+void texpack_step(char *pack, int size, int dir) {
+    static char names[32][TEXPACK_NAME];
+    int count = texpack_list(names, 32);
+    int i, at = -1;
+
+    for (i = 0; i < count; i++) {
+        if (SDL_strcasecmp(names[i], pack) == 0) {
+            at = i;
+        }
+    }
+    at += dir;
+    if (at >= count) {
+        at = -1;
+    } else if (at < -1) {
+        at = count - 1;
+    }
+    SDL_strlcpy(pack, at < 0 ? "" : names[at], (size_t)size);
 }

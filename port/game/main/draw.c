@@ -84,7 +84,7 @@ static const GfxTex *scrolled_texture(const obj_texture *t, int image, int palet
     }
     memcpy(Rows, src + top * row, (size_t)((t->h - top) * row));
     memcpy(Rows + (t->h - top) * row, src, (size_t)(top * row));
-    return gfx_texture_plain(TEX_ID(image, palette, t->pix + top * row), Rows, t->w, t->h, bpp, pal);
+    return gfx_texture_scrolled(TEX_ID(image, palette, t->pix + top * row), Rows, src, top, t->w, t->h, bpp, pal);
 }
 
 /* The game's text, and the panel's digits: small hand-placed pixels that upscaling or filtering would spoil, so they stay as they are. */

@@ -22,5 +22,5 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 |---|------|-------|------|
 | 7.6 | Sharper icons and UI text | Icons upscale with UPSCALE (7.5). Text and digits don't: the scaler spoils them, so they stay as they were. Sharper text would need a font redrawn at a higher resolution, which can't come from the player's data and so would be new art. A texture pack can now carry one (7.10) | [ ] |
 | 7.7 | Optional modern lighting | Lighting beyond the game's own, which is colours baked into its models' vertices | [ ] |
-| 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files | [ ] |
+| 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files. It goes in the launcher's Mods section, with the texture packs (7.10) | [ ] |
 | 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |

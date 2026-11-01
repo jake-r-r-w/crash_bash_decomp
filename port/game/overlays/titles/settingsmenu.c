@@ -5,6 +5,7 @@
  * change_setting and in show_value; a video one goes in main/videomenu.c, as other menus show those too. */
 #include <stdio.h>
 #include "../../../platform/settings.h"
+#include "../../../platform/texpack.h"
 #include "common.h"
 #include "bash/engine.h"
 #include "bash/main.h"
@@ -17,7 +18,8 @@ void platform_finish(int code);
 enum {
     SET_SKIP_INTRO,
     SET_SKIP_LOADING,
-    SET_CHEAT_MENU
+    SET_CHEAT_MENU,
+    SET_TEXTURE_PACK
 };
 
 typedef struct {
@@ -37,11 +39,15 @@ static const MenuOption GameOptionsList[] = {
     { "SKIP LOADING", "LOAD IN ONE GO, WITHOUT THE LOADING SCREENS", SET_SKIP_LOADING },
     { "CHEAT MENU", "THE ORIGINAL'S HIDDEN CHEATS, IN THE PAUSE MENU", SET_CHEAT_MENU },
 };
+static const MenuOption ModsOptionsList[] = {
+    { "TEXTURE PACK", "TEXTURES FROM THE PACKS FOLDER", SET_TEXTURE_PACK },
+};
 #define NUM_OF(a) ((s32)(sizeof(a) / sizeof((a)[0])))
 
 static const MenuCategory Categories[] = {
     { "GAME", GameOptionsList, NUM_OF(GameOptionsList) },
     { "VIDEO", NULL, NUM_VIDEO_OPTIONS },
+    { "MODS", ModsOptionsList, NUM_OF(ModsOptionsList) },
 };
 #define NUM_CATEGORIES NUM_OF(Categories)
 #define MAX_CATEGORIES 4 /* and BACK */
@@ -126,6 +132,9 @@ static void change_setting(const MenuCategory *c, s32 n, s32 dir) {
     case SET_CHEAT_MENU:
         s->cheat_menu = !s->cheat_menu;
         break;
+    case SET_TEXTURE_PACK:
+        texpack_step(s->texture_pack, (int)sizeof(s->texture_pack), dir);
+        break;
     }
     settings_apply();
 }
@@ -147,6 +156,16 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
     case SET_CHEAT_MENU:
         snprintf(text, size, "%s", s->cheat_menu ? "ON" : "OFF");
         break;
+    case SET_TEXTURE_PACK: {
+        s32 i;
+
+        /* the game's font is capitals */
+        snprintf(text, size, "%s", s->texture_pack[0] != 0 ? s->texture_pack : "OFF");
+        for (i = 0; text[i] != 0; i++) {
+            text[i] = text[i] >= 'a' && text[i] <= 'z' ? (char)(text[i] - 'a' + 'A') : text[i];
+        }
+        break;
+    }
     }
 }
 

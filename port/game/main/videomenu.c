@@ -1,13 +1,11 @@
 /* The video options, for every menu that offers them: the launcher, and Options in the main menu and the pause menu. They take
  * effect as they change, and are kept. To add one: a row in the table, a case in video_option_change and in video_option_value. */
 #include <stdio.h>
-#include <SDL3/SDL.h>
 #include "../../platform/settings.h"
-#include "../../platform/texpack.h"
 #include "common.h"
 #include "bash/videomenu.h"
 
-enum { VIDEO_DISPLAY, VIDEO_WINDOW, VIDEO_RENDER, VIDEO_FPS, VIDEO_VSYNC, VIDEO_ANTIALIAS, VIDEO_TEXTURES, VIDEO_WIDESCREEN, VIDEO_UPSCALE, VIDEO_PACK, NUM_VIDEO };
+enum { VIDEO_DISPLAY, VIDEO_WINDOW, VIDEO_RENDER, VIDEO_FPS, VIDEO_VSYNC, VIDEO_ANTIALIAS, VIDEO_TEXTURES, VIDEO_WIDESCREEN, VIDEO_UPSCALE, NUM_VIDEO };
 _Static_assert(NUM_VIDEO == NUM_VIDEO_OPTIONS, "the menus are laid out for this many");
 
 static const struct {
@@ -23,7 +21,6 @@ static const struct {
     { "TEXTURES", "SHARP IS THE ORIGINAL, SMOOTH BLENDS PIXELS" },
     { "WIDESCREEN", "A WIDE WINDOW SHOWS MORE OF THE WORLD" },
     { "UPSCALE", "ROUNDS OFF TEXTURES AND ICONS, ON YOUR PC" },
-    { "TEXTURE PACK", "TEXTURES FROM THE PACKS FOLDER" },
 };
 
 typedef struct {
@@ -46,26 +43,6 @@ const char *video_option_label(s32 i) {
 
 const char *video_option_help(s32 i) {
     return Options[i].help;
-}
-
-/* Moves through the packs there are, and none, wrapping at the ends. */
-static void step_pack(char *pack, s32 size, s32 dir) {
-    static char names[32][TEXPACK_NAME];
-    s32 count = texpack_list(names, 32);
-    s32 i, at = -1;
-
-    for (i = 0; i < count; i++) {
-        if (SDL_strcasecmp(names[i], pack) == 0) {
-            at = i;
-        }
-    }
-    at += dir;
-    if (at >= count) {
-        at = -1;
-    } else if (at < -1) {
-        at = count - 1;
-    }
-    SDL_strlcpy(pack, at < 0 ? "" : names[at], size);
 }
 
 /* Moves through a list of sizes from the one in use, wrapping at the ends. */
@@ -113,9 +90,6 @@ void video_option_change(s32 i, s32 dir) {
     case VIDEO_UPSCALE:
         s->upscale = dir > 0 ? (s->upscale == 4 ? 1 : s->upscale * 2) : (s->upscale == 1 ? 4 : s->upscale / 2);
         break;
-    case VIDEO_PACK:
-        step_pack(s->texture_pack, (s32)sizeof(s->texture_pack), dir);
-        break;
     }
     settings_apply();
     settings_save();
@@ -162,19 +136,6 @@ void video_option_value(s32 i, char *text, s32 size) {
             snprintf(text, size, "OFF");
         } else {
             snprintf(text, size, "%dX", s->upscale);
-        }
-        break;
-    case VIDEO_PACK:
-        if (s->texture_pack[0] == 0) {
-            snprintf(text, size, "OFF");
-        } else {
-            s32 i;
-
-            /* the game's font is capitals */
-            snprintf(text, size, "%s", s->texture_pack);
-            for (i = 0; text[i] != 0; i++) {
-                text[i] = (char)SDL_toupper((unsigned char)text[i]);
-            }
         }
         break;
     }

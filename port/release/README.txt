@@ -38,7 +38,8 @@ TEXTURE PACKS
 
 You can replace the game's textures with your own. A pack is a folder in a
 folder called packs, next to crashbash.exe, full of PNGs. Choose it under
-Settings, Video, Texture Pack. None come with the game.
+Settings, Mods, Texture Pack, in the menu the game opens with. None come with
+the game.
 
 To make one, run the game once with
     crashbash.exe --dump-textures mypack
@@ -46,8 +47,9 @@ and play: each texture is saved to mypack as it first appears, named as a pack
 needs it. Edit the PNGs, at any size up to 2048 x 2048, keep the ones you've
 changed, and move the folder into packs. A texture with no PNG stays as it was.
 A PNG's clear parts stay clear. The same picture in other colours counts as
-another texture with its own PNG, and the few textures that scroll can't be
-replaced.
+another texture with its own PNG. Only what's seen gets saved, so play everything
+you want to change. Some things have no texture, like much of the characters,
+whose colours are painted on their models, and no pack can change those.
 
 Packs are PNG files that the game loads, so only use ones from people you trust.
 

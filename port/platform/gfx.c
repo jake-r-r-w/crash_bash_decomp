@@ -727,7 +727,7 @@ static void mark_dirty(int x, int y, int w, int h) {
 /* In a cached texture's factor: it came from the pack. */
 #define FACTOR_REPLACED (-1)
 
-static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor, int sharp, int replaceable) {
+static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor, int sharp, const void *source, int top) {
     static uint32_t *decoded;
     static int decoded_size;
     Cached *c;
@@ -736,7 +736,7 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
     int own_factor = factor, own_sharp = sharp;
     int i, x, y;
     int sw = w * factor, sh = h * factor;
-    uint64_t hash;
+    uint64_t hash, pack_hash;
     size_t bytes;
     IdSlot *slot = &IdCache[(id * 0x9E3779B97F4A7C15ULL) >> 48];
 
@@ -751,8 +751,16 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
     if (palette != NULL) {
         hash = hash_bytes(palette, bpp == 8 ? 512 : 32, hash);
     }
+    /* a pack names a texture by how it is at rest */
+    pack_hash = hash;
+    if (source != pixels && (texpack_active() || texpack_dumping())) {
+        pack_hash = hash_bytes(source, bytes, 0xCBF29CE484222325ULL);
+        if (palette != NULL) {
+            pack_hash = hash_bytes(palette, bpp == 8 ? 512 : 32, pack_hash);
+        }
+    }
     /* a replacement's found by its hash, whatever the settings would have made of the original */
-    if (replaceable && texpack_has(hash)) {
+    if (texpack_has(pack_hash)) {
         factor = FACTOR_REPLACED;
         sharp = 0;
     }
@@ -766,11 +774,11 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
         }
     }
     if (factor == FACTOR_REPLACED) {
-        art = texpack_load(hash, &sw, &sh);
+        art = texpack_load(pack_hash, &sw, &sh);
         if (art == NULL) {
             /* the game's own, as a broken file shouldn't leave a hole */
-            texpack_drop(hash);
-            return texture_scaled(id, pixels, w, h, bpp, palette, own_factor, own_sharp, replaceable);
+            texpack_drop(pack_hash);
+            return texture_scaled(id, pixels, w, h, bpp, palette, own_factor, own_sharp, source, top);
         }
     }
     if (NumTextures >= MAX_TEXTURES) {
@@ -828,16 +836,16 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
             }
         }
     }
-    if (art == NULL && replaceable && texpack_dumping()) {
+    if (art == NULL && texpack_dumping()) {
         if (factor != 1) {
-            texpack_dump(hash, decoded, w, h, w * 4);
+            texpack_dump(pack_hash, decoded, w, h, w * 4, top);
         } else {
-            texpack_dump(hash, (uint32_t *)AtlasPixels + (ShelfY + 1) * AtlasSize + ShelfX + 1, w, h, AtlasSize * 4);
+            texpack_dump(pack_hash, (uint32_t *)AtlasPixels + (ShelfY + 1) * AtlasSize + ShelfX + 1, w, h, AtlasSize * 4, top);
         }
     }
     if (art != NULL) {
         for (y = 0; y < sh; y++) {
-            memcpy((uint32_t *)AtlasPixels + (ShelfY + 1 + y) * AtlasSize + ShelfX + 1, art + y * sw, (size_t)sw * 4);
+            memcpy((uint32_t *)AtlasPixels + (ShelfY + 1 + y) * AtlasSize + ShelfX + 1, art + (y + top * sh / h) % sh * sw, (size_t)sw * 4);
         }
         free(art);
     } else if (factor != 1) {
@@ -895,15 +903,19 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
 
 const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
     /* a picture that fills the screen is already as big as it needs to be */
-    return texture_scaled(id, pixels, w, h, bpp, palette, bpp == 16 ? 1 : Upscale, 0, 1);
+    return texture_scaled(id, pixels, w, h, bpp, palette, bpp == 16 ? 1 : Upscale, 0, pixels, 0);
 }
 
 const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, 0);
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, pixels, 0);
+}
+
+const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *source, int top, int w, int h, int bpp, const void *palette) {
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, source, top);
 }
 
 const GfxTex *gfx_texture_sharp(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 1, 1);
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 1, pixels, 0);
 }
 
 
