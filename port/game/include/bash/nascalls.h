@@ -42,8 +42,6 @@ s32 machine_init(void);
 void ClearVram(void);
 void ClearScreens(void);
 void ResetScreen(RECT *arg0);
-void cd_seek(file *arg0, s32 arg1);
-void cd_read_wait(void);
 void loader_pending_stub(void);
 void cd_unused(void);
 void xa_mute(void);

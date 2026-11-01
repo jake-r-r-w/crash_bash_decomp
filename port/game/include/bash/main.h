@@ -723,7 +723,6 @@ extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
 /* A 4.12 fixed-point quaternion (quat_slerp slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
 extern s32 SfxDistanceCurve[];
-extern s32 SavedSp;
 extern u8 *LoadPermanentBuf;
 extern void **LangModeTypeTexts[];
 extern s32 SoundCritical;
@@ -746,7 +745,9 @@ s32 rand_step(void);
 extern ModuleEntry *EngineModule;
 extern ModuleEntry *CurrentModule;
 extern s32 VSyncRate;
-extern s32 LastFlipVSync;
+void archive_open(void);
+void archive_read(int sector, int count, void *buf);
+void platform_wait_vblanks(int count);
 void mal_update(_mal_area *heap);
 #define HeapStart HEAP_START
 extern struct ModuleEntry EngineEntry;
@@ -768,7 +769,6 @@ mal *mal_init(_mal_area *heap, u8 *start, s32 size);
 extern ModuleEntry ShellModules;
 s32 load_file_direct(file *file, u8 *buf);
 void init_file(void);
-extern s32 DcacheReady;
 extern void *LoadNodeFree;
 extern BlockRef SmallNodePool[]; /* 63 of them, free list in SmallNodeFree */
 extern struct LoadNode LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
@@ -958,14 +958,10 @@ extern ASTEntry *ASTTable;      /* the AST table in use */
 extern void *SubPool;
 extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2];
-extern s32 CdReadStatus;
 
 /* LevelRecs, indexed by LevelRecIndex: a level's world data. */
 typedef WWInf EngineRec32;
 extern EngineRec32 *LevelRecs;
-extern s32 ArchiveSector;
-extern u8 CdControlResult[8];
-extern CdlLOC CdReadLoc;
 extern NASTrigger *HeadOfTriggers;
 extern s32 TriggerCount;
 extern script_handler *active_scripts;
@@ -1012,7 +1008,6 @@ typedef struct ComboSeq {
 extern MATRIX MapSceneMatrix;
 extern SVECTOR MapSceneRot;
 extern ComboSeq ComboSeqs[];
-extern CdlLOC CdSeekLoc;
 extern RECT *ScreenRect;
 extern s32 ScreenSetFrame;
 extern s32 ScreenSetFlag;

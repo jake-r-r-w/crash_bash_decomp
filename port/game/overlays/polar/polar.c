@@ -6220,8 +6220,6 @@ void InitIceBerg(NAS *m) {
 }
 
 s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
-    volatile s32 t0;
-    volatile s32 t1;
     subengine *o;
     TrigEntry *t;
     s32 i;
@@ -6241,7 +6239,6 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
     i = 0;
     o = PolarIceObjects[0];
     if (GameMode == 0x13) {
-        t0 = VSync(1);
         t = rcossin_tbl;
         k = 0x100;
         while (1) {
@@ -6331,7 +6328,6 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
                                 o->flags &= ~0x8000;
                             }
                         }
-                        t1 = VSync(1);
                         return 1;
                     }
                 }
@@ -6342,7 +6338,6 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
             }
             break;
         }
-        t1 = VSync(1);
     }
     return 0;
 }

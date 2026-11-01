@@ -31,7 +31,7 @@ void machine_quit_sound(void) {
         SsEnd();
         SsSetTickCallback(SsTickSaved);
         SsQuit();
-        VSync(3);
+        platform_wait_vblanks(3);
         SsTickSaved = 0;
     }
 }

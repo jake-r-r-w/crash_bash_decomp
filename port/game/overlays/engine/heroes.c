@@ -3180,8 +3180,6 @@ void DebugNasStatus(void) {
 }
 
 subengine *UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg3) {
-    volatile s32 t0;
-    volatile s32 t1;
     EmitPart *part;
     s32 *st;
     partdata *def;
@@ -3196,7 +3194,6 @@ subengine *UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s
     i = 0;
     part = (EmitPart *)td->threadinfo;
     st = (s32 *)td->threadcontrol;
-    t0 = VSync(1);
     def = NULL;
     p = get_script_track((u8 *)sd->dbase, td->scriptnumber, td->threadnumber);
     if (p != NULL) {
@@ -3309,9 +3306,6 @@ subengine *UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s
     if (sd->timer >= def->effecttime << 8) {
         *arg3 = 2;
     }
-    t1 = VSync(1);
-    t1;
-    t0;
     return ((pcontrol *)st)->lastsub;
 }
 
@@ -3673,8 +3667,6 @@ void InitScriptFX(NAS *nas)
 }
 
 void PlotScriptFX(NAS *nas) {
-    volatile s32 t0 = 0;
-    volatile s32 t1 = 0;
     EXTscriptdata *sd;
     subengine *sub;
     threaddata *t;
@@ -3696,7 +3688,6 @@ void PlotScriptFX(NAS *nas) {
     u32 fl;
     s32 first;
 
-    t0 = VSync(1);
     if (((GameState *)GameInfo)->mode == 0x2C && ScriptFxOn != 0) {
         return;
     }
@@ -3841,9 +3832,6 @@ void PlotScriptFX(NAS *nas) {
             }
         }
     }
-    t1 = VSync(1);
-    t1;
-    t0;
 }
 
 void PlotSmokePoof(NAS *m) {

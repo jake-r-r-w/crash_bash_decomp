@@ -109,32 +109,19 @@ const char LevNameBallistix[] = "BALLISTIX";
 const char LevNamePolarPush[] = "POLAR PUSH";
 const char LevNameCrashDash[] = "CRASH DASH";
 
-/* Shuts the system down and runs the Spyro 3 demo from the disc. */
+/* The disc's Spyro 3 demo is another game's exe. */
 void shell_run_spyro_demo(void) {
     char unused[24]; /* never used, but the frame has room for it */
 
     machine_quit_sound();
-    StopRCnt(RCntCNT0);
-    StopRCnt(RCntCNT1);
-    StopRCnt(RCntCNT2);
-    StopRCnt(RCntCNT3);
-    VSync(4);
     PadStopCom();
-    StopCallback();
-    VSync(10);
-    _96_init();
-    LoadExec("cdrom:\\SPYRO3\\SPYRO3.EXE;1", 0, 0);
+    fprintf(stderr, "The game asked to run the Spyro 3 demo, which the PC build can't.\n");
+    exit(0);
 }
 
 void shell_render_dcache(void) {
-    if (DcacheReady == 0) {
-        DcacheReady = 1;
-        SavedSp = GetSp();
-    }
-    SetSp(0x1F8003FC);
     EngineModule->render();
     FlipScreen(VSyncRate);
-    SetSp(SavedSp);
 }
 
 void shell_init_heap(void) {
@@ -3433,7 +3420,6 @@ u16 LevelRequirements[234] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0x1FF, 0x201, 0x102, 0x102, 2, 0, 0, 0,
 };
-s32 DcacheReady = 0;
 s8 HeroSide[16] = { -1, 1, 1, 2, 2, 1, 2, 1, 2 };
 ModuleEntry ShellModules = { shell_start_engine, shell_update, shell_render_dcache, NULL, NULL };
 s16 core_process = 0;
@@ -3442,7 +3428,6 @@ s32 GraphicsMode = 0;
 s32 GameFrameCount = 0;
 ModuleEntry *EngineModule = 0;
 s32 VSyncRate = 0;
-s32 LastFlipVSync = 0;
 s32 MalMoveVSyncs = 0;
 s32 MalMoveWords = 0;
 _mal_area MainHeap = {0};
@@ -3932,6 +3917,5 @@ s16 AtanTable[2050] = {
 
 /* the .bss, in link order: written into the file as zeros, as the original link did */
 s32 StartupRa __attribute__((section(".bss")));   /* where the startup code saves $ra */
-s32 SavedSp __attribute__((section(".bss")));
 u8 *LoadPermanentBuf __attribute__((section(".bss")));
 u8 *LoadWaitBuf __attribute__((section(".bss")));

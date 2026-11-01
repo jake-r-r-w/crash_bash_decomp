@@ -2405,19 +2405,15 @@ void RunModules(ModuleEntry *p) {
 }
 
 s32 machine_init(void) {
-    ResetCallback();
     InitGeom();
     SsInit();
     VideoMode = 0;
     pads_init_mtap();
-    SetVideoMode(VideoMode);
     ClearImage2(&VramRect, 0, 0, 0);
     machine_init_sound();
     /* no debug font on PC */
     shell_init();
-    cd_read_wait();
     machine_quit_sound();
-    StopCallback();
     PadStopCom();
     return 0;
 }
@@ -2430,8 +2426,7 @@ void FlipScreen(s32 arg0) {
     DrawBuffer *buf;
 
     mal_update(&MainHeap);
-    LastFlipVSync = VSync(1);
-    VSync(arg0);
+    platform_wait_vblanks(arg0);
     DrawOTag((u32 *)&cdb->ot[0xFFF]);
     buf = DrawBuffers;
     if (cdb == buf) {
@@ -2505,73 +2500,16 @@ void ClearOt(DrawBuffer *arg0) {
 }
 
 s32 cd_read(file *a, s32 b, u8 *c, s32 d) {
-    s32 r;
-    s32 s;
-    r = CdReadStatus;
-    if (r > 0) {
-        CdReadStatus = CdReadSync(1, 0);
-        if (CdReadStatus == 0) {
-            CdControl(1, 0, CdControlResult);
-            CdStatus();
-        }
-        s = CdReadStatus;
-    } else {
-        s = r;
-    }
-    if (s > 0) {
-        return -1;
-    }
-    CdIntToPos(a->sector + b + ArchiveSector, &CdReadLoc);
-    if (CdControl(2, (u8 *)&CdReadLoc, 0) == 0 || CdRead(d, (u32 *)c, 0x80) == 0) {
-        return -1;
-    }
-    CdReadStatus = 1;
-    CdReadStatus = CdReadSync(1, 0);
-    if (CdReadStatus == 0) {
-        CdControl(1, 0, CdControlResult);
-        CdStatus();
-    }
-    return CdReadStatus;
-}
-
-void cd_seek(file *arg0, s32 arg1) {
-    CdIntToPos(arg0->sector + arg1, &CdSeekLoc);
-    CdControlF(CdlSetloc, (u8 *)&CdSeekLoc);
-    CdControlF(CdlSeekL, (u8 *)&CdSeekLoc);
-}
-
-void cd_read_wait(void) {
-    if (CdReadStatus > 0) {
-        CdReadStatus = CdReadSync(0, 0);
-    }
+    archive_read(a->sector + b, d, c);
+    return 0;
 }
 
 s32 cd_read_poll(void) {
-    s32 r;
-    r = CdReadStatus;
-    if (r > 0) {
-        CdReadStatus = CdReadSync(1, 0);
-        if (CdReadStatus == 0) {
-            CdControl(1, 0, CdControlResult);
-            CdStatus();
-        }
-        r = CdReadStatus;
-    }
-    return r;
+    return 0;
 }
 
 void cd_init(void) {
-    CdlFILE file;
-
-    do {
-        CdInit();
-    } while (CdDiskReady(1) != 2);
-    CdSync(0, 0);
-    CdReadStatus = 0;
-    while (CdSearchFile(&file, "\\CRASHBSH\\CRASHBSH.DAT;1") == NULL) {
-        printf("Cant find CRASHBSH.DAT");
-    }
-    ArchiveSector = CdPosToInt(&file.pos);
+    archive_open();
 }
 
 void xa_setvol(s32 vol) {
@@ -3597,8 +3535,6 @@ DrawBuffer DrawBuffers[2] = {0};
 s32 VideoMode = 0;
 s32 CdUnused[1] = {0};
 s32 LoadDirectBusy = 0;
-s32 CdReadStatus = 0;
-s32 ArchiveSector = 0;
 s32 UnusedPairs[176] = {  /* halfword pairs; read nowhere */
     0x13F0199, 0x16D0128, 0x1CE0136, 0x18A0178, 0x10801A2, 0xFE00C5, 0xF100E4, 0x12B010C,
     0x10B00F1, 0xE000E2, 0x10300FB, 0x12E0126, 0x1610115, 0x12D0124, 0x1400138, 0x12B0112,
@@ -3648,6 +3584,3 @@ s32 SoundUnused[6] = {0};
 /* the .bss (main.c's comes first) */
 u8 *NasHeapMem __attribute__((section(".bss")));
 u32 NasHeapBytes __attribute__((section(".bss")));
-u8 CdControlResult[8] __attribute__((section(".bss")));   /* CdControl's result */
-CdlLOC CdReadLoc __attribute__((section(".bss")));
-CdlLOC CdSeekLoc __attribute__((section(".bss")));

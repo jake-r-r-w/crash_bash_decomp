@@ -58,7 +58,7 @@ foreach(ovl arkenoid bash bonk chase dino hub n2o papu pogo polar race spin tank
   set_property(SOURCE ${ovl_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAME=${ovl}")
 endforeach()
 
-add_executable(crashbash main.c platform/overlays.c platform/gte.c platform/cd.c platform/etc.c platform/pad.c platform/saves.c
+add_executable(crashbash main.c platform/overlays.c platform/gte.c platform/archive.c platform/clock.c platform/pad.c platform/saves.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/settings.c $<TARGET_OBJECTS:game>)
 target_include_directories(crashbash PRIVATE psyq/include)
 if(TARGET SDL3::SDL3-static)
@@ -89,4 +89,4 @@ if(MODE_TEXT_FILES)
   target_compile_options(modetext_test PRIVATE -std=gnu17 -fsigned-char -fno-builtin -w -Wno-error=int-conversion -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types)
   add_test(NAME modetext COMMAND modetext_test ${MODE_TEXT_FILES})
 endif()
-set_source_files_properties(platform/cd.c platform/etc.c platform/pad.c PROPERTIES COMPILE_DEFINITIONS "u32=uint32_t")
+set_source_files_properties(platform/pad.c PROPERTIES COMPILE_DEFINITIONS "u32=uint32_t")
