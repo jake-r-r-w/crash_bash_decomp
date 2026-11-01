@@ -165,8 +165,6 @@ void HubInitGateways(void) {
     ref = *(Vec3W *)((u8 *)path_get(2) + 0x30);
     i = 0;
     for (;;) {
-        s32 k;
-
         if (i >= 12) {
             break;
         }
@@ -2024,7 +2022,6 @@ void HubInitSparks(HubSparks *arg0) {
     HubSparkRow *row;
     obj_texture *tex;
     TrigEntry *a;
-    TrigEntry *b;
     s32 ang;
     s32 k;
     HubSparkSet *set;
@@ -2067,8 +2064,6 @@ void HubInitSparks(HubSparks *arg0) {
         ang = n << 9;
         a = &sin_cos_table[ang & 0xFFF];
         for (;;) {
-            s32 r;
-
             if (i >= 8) {
                 break;
             }
@@ -2736,7 +2731,7 @@ void HubProject(SVECTOR *v, s16 *b) {
 
 /* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
 const char HubTextEnterName[] = "ENTER NAME";
-const char HubTextDot[4] = ".\000\"\226";
+const char HubTextDot[] = ".";
 const char HubCredit000[] = "DEVELOPED BY";
 const char HubCredit001[] = "EUROCOM ENTERTAINMENT";
 const char HubCredit002[] = "SOFTWARE";
@@ -2947,7 +2942,7 @@ const char HubCredit206[] = "ATSUSHI MATSUSHITA";
 const char HubCredit207[] = "SONY COMPUTER ENTERTAINMENT EUROPE";
 const char HubCredit208[] = "ELIZABETH ASHFORD";
 const char HubCredit209[] = "KENNY MATHERS";
-const char HubCredit210[20] = "ISABELLE TOMATIS\000\000\004\225";
+const char HubCredit210[] = "ISABELLE TOMATIS";
 
 /* data, in address order */
 void *HubLockText00[1] = { &HubLockMsg00 };

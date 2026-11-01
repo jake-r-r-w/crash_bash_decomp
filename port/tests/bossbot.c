@@ -131,18 +131,6 @@ static s32 in_arena(s32 x, s32 z) {
     return abs(x) < PAPU_ARENA && abs(z) < PAPU_ARENA;
 }
 
-/* Out of the way of something coming along (fx, fz), a unit of 0x1000: to a side with floor under it, the one nearer the middle. */
-static s32 papu_side_step(const EXTengine *he, s32 fx, s32 fz) {
-    s32 side = ((he->XYZ.x >> 4) * fz - (he->XYZ.z >> 4) * fx) > 0 ? -1 : 1;
-    s32 sx = fz * side, sz = -fx * side;
-
-    if (!in_arena(he->XYZ.x + (sx >> 3), he->XYZ.z + (sz >> 3))) {
-        sx = -sx;
-        sz = -sz;
-    }
-    return steer(sx, sz);
-}
-
 /* Whether a floor tile's burning, or a line of burning tiles reaches it within so many steps. Off the floor counts. */
 static s32 tile_hot(s32 ix, s32 iz, s32 steps) {
     PapuFloor_info *k;

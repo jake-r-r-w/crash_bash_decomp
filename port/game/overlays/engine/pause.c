@@ -1218,7 +1218,6 @@ void DrawAdventureStats(s32 arg0) {
 void UpdatePauseSlide(s32 arg0) {
     EXTengine *e;
     s32 lim;
-    PadState *pads;
 
     lim = 0x15E;
     if (ModeTypes[GameMode * 3] == 0x102) {
@@ -1285,7 +1284,6 @@ void UpdatePauseSlide(s32 arg0) {
         if (StatsHasPage1 == 0 && StatsHasBonus == 0) {
             break;
         }
-        pads = (PadState *)Pads;
         if (HPADS[PausePad].pressed & 0x1000) {
             if (GameLevelFlags & 2) {
                 StatsPageWanted = 5;
@@ -1331,7 +1329,6 @@ void UpdatePauseSlide(s32 arg0) {
         if (StatsHasPage1 == 0 && StatsHasBonus == 0) {
             break;
         }
-        pads = (PadState *)Pads;
         if (HPADS[PausePad].pressed & 0x1000) {
             if (GameLevelFlags & 2) {
                 StatsPageWanted = 5;
@@ -1571,8 +1568,6 @@ void RecordWin(void) {
 
 void AnimateWinCounter(void) {
     s32 t;
-    s32 r;
-    s32 u;
 
     switch (WinCounterAnim) {
     case 1:
@@ -1615,7 +1610,6 @@ void UpdateWinCounter(s32 arg0) {
     SLONG_XYZ pos;
     s32 d;
     s32 t;
-    s32 r;
 
     if (!(counter_sub.flags & 0x8000)) {
         switch (WinCounterState) {

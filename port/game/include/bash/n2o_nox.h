@@ -301,7 +301,6 @@ static inline s32 MineHitLaser(LaserPos p, s32 r) {
 
     n = (LaserNode *)NoxLasers;
     for (;;) {
-        s32 t_;
         if (n == NULL) {
             break;
         }

@@ -61,7 +61,7 @@ chk:
             i--;
         }
     }
-end:
+end:;
 }
 
 TexClut *dbase_texture_entry(obj_dbase *db, s32 i) {

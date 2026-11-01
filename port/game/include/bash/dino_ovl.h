@@ -183,7 +183,7 @@ void Dino_HeroBot(s32 id);
 
 s32 DinoAI_SetNearestGem(s32 *arg0, s32 arg1);
 
-void DinoUnusedStub(void);
+void DinoUnusedStub(s32 arg0);
 
 s32 DinoGemLoose(s32 arg0);
 

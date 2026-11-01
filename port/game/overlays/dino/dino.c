@@ -493,7 +493,6 @@ void DinoAI_ChaseGem(s32 id) {
     EXTengine *b;
     EXTengine *a;
     s32 near;
-    s32 far;
     s32 ok;
     s32 t;
 
@@ -712,7 +711,6 @@ s32 DinoRayHit(s32 *a, s32 *b, s16 *c, void *unused) {
     s32 A;
     s32 B;
     s32 C;
-    s32 disc;
     s32 s;
     s32 t1;
     s32 nc;
@@ -1295,8 +1293,6 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                 GAME->exitFlags |= 0x800;
                 n = 0;
                 for (;; n++) {
-                    s32 t_;
-
                     if (n >= 4) {
                         break;
                     }
@@ -1511,7 +1507,6 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1) {
     {
       HeroInfo *hb;
       HeroInfo *a;
-      u8 *w;
       s32 n;
       hb = Heroes;
       a = &hb[e->adventure.rank[0]];
@@ -1533,7 +1528,6 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1) {
         ((GameState *)GameInfo)->exitFlags |= 0x800;
         for (;; n++)
         {
-          s32 t_;
           if (n >= 4)
           {
             break;
@@ -1764,8 +1758,6 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
             q->exitFlags |= 0x800;
             Clock_flags |= 0x200;
             for (;; i++) {
-                s32 t_;
-
                 if (i >= 4) {
                     break;
                 }
@@ -1788,8 +1780,6 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
             p->exitFlags |= 0x800;
             Clock_flags |= 0x200;
             for (;; i++) {
-                s32 t_;
-
                 if (i >= 4) {
                     break;
                 }
@@ -1820,8 +1810,6 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
             p->exitFlags |= 0x800;
             Clock_flags |= 0x200;
             for (;; i++) {
-                s32 t_;
-
                 if (i >= 4) {
                     break;
                 }
@@ -1851,8 +1839,6 @@ end:
         x->exitFlags |= arg1;
         Clock_flags |= 0x200;
         for (;; i++) {
-            s32 t_;
-
             if (i >= 4) {
                 break;
             }
@@ -2219,8 +2205,6 @@ void DinoScoreGems(void) {
     DinoScoreFlag = (DinoScoreFlag + 0xC) & 0xFFF;
     ((subengine *)DinoGoal)->xform.dirty = 1;
     for (i = 0;; i++) {
-        s32 t_;
-
         if (i >= 3) {
             break;
         }
@@ -2610,7 +2594,6 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
     DinoSegObj *obj;
     DinoSegObj *w;
     u8 *data;
-    s32 *ent;
     s32 best;
     s32 found;
     s32 shift;
@@ -4011,7 +3994,7 @@ s32 DinoAI_SetNearestGem(s32 *arg0, s32 arg1) {
     return 0;
 }
 
-void DinoUnusedStub(void) {
+void DinoUnusedStub(s32 arg0) {
 }
 
 s32 DinoGemFree(s32 arg0) {

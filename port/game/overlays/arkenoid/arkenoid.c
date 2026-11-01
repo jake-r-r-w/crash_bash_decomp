@@ -460,7 +460,6 @@ s32 ArkSidePlayer0 = 0;
 void ArkHeroEngineUpdate(s32 arg0) {
     VECTOR sp10;
     VECTOR *v;
-    HeroInfo *h;
     EXTengine *e = (&Heroes[arg0])->hero_eng;
     FlagRecord *r;
     ArkenoidHeroBox *b;
@@ -771,7 +770,6 @@ void AR_UpdateLevel(void) {
     s32 i;
     s32 best;
     s32 k;
-    u8 *ao;
     u16 *c2;
     NAS *n;
     ArkenoidFuxType *f;
@@ -1419,7 +1417,6 @@ void AR_PI_PreMoveHero(u32 arg0) {
     s32 hit;
     s32 step;
     s32 max;
-    s32 t;
 
     hit = 0;
     max = 0x28;
@@ -1883,10 +1880,6 @@ void ArkHeroIdle(u32 arg0) {
 
 
 void SetArkHeroTaunt(u32 arg0) {
-    s32 id;
-    SLONG_XYZ *pos;
-    HeroInfo *base;
-
     SetHeroSeq(arg0, 0x1C);
     if (Random(3) == 0 || GAME->heroCpu[arg0] == 0) {
         switch (Heroes[arg0].hero_name) {
@@ -1923,7 +1916,6 @@ void ArkHeroTaunt(u32 arg0) {
     HeroInfo *h;
     u16 st;
     u16 mode;
-    s32 act;
     s32 ret;
 
     st = Heroes[arg0].hero_status;
@@ -2816,8 +2808,7 @@ s32 ArkBallComingAtHero(s32 arg0) {
 const char ArkAiDebugFormat[] = "%d ai mode %d target %x %x  angle %x dist %x\n";
 
 void Ark_HeroBot(u32 arg0) {
-    s32 unused[2];
-    ArkenoidPos best;
+    ArkenoidPos best = { 0 };
     ArkenoidPos pos;
     s32 dist;
     s32 ang;
@@ -4233,7 +4224,6 @@ void Plot_N_Gin(NAS *arg0) {
             }
         }
     }
-end:
     eng->xform.dirty = 1;
 }
 
@@ -5570,8 +5560,6 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
     s32 d;
     s32 r;
     s32 ang;
-    u16 v;
-    u16 old;
     bool hit;
 
     hero = Heroes[arg0].hero_eng;
@@ -5652,7 +5640,6 @@ void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
     s32 dx;
     s32 dz;
     s32 d;
-    s32 q;
     s32 r;
     s32 lim;
     s32 ang;
@@ -5777,7 +5764,6 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
     s32 r;
     s32 d;
     s32 ang;
-    s32 avg;
 
     hit = 0;
     box = FindCollisionBox(eng, 0x40);

@@ -827,8 +827,6 @@ void TankBotDodgeFrom(s32 player, s32 x, s32 z, EXTengine *eng, TA_Bot *ai) {
 s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai) {
     NAS *nas;
     EXTengine *te;
-    s32 i;
-    s32 r;
     u16 type;
     NAS *cur;
     s32 ex;
@@ -1594,7 +1592,6 @@ void TA_InitLevel(void) {
 void TA_UpdateLevel(void) {
     s32 i;
     TA_player *ta;
-    HeroInfo *hero;
     EXTengine *eng;
     u8 *base;
     u8 *b2;
@@ -1698,7 +1695,6 @@ void DamageTankHero(s32 player, s32 damage) {
     TA_player *ta;
     u8 *g;
     s32 t;
-    s32 u;
 
     if (TankLevelOver != 0) {
         return;
@@ -1719,7 +1715,6 @@ void DamageTankHero(s32 player, s32 damage) {
             damage *= 3;
         } else if (g[player + 0x5C] != 0) {
             t = (0x20 - AiPlayerSkill[player].level) * 150;
-            u = t / 32; /* dead: keeps t live for the divide's copy */
             t = t / 32 + 50;
             damage = damage * t / 100;
         }
@@ -2574,7 +2569,6 @@ subdone:
 
 void SetTankHeroIdle(u32 player) {
     s32 done;
-    u8 unused[8];
 
     if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
@@ -2868,7 +2862,6 @@ void TankHeroGridMove(s32 player) {
     s32 a;
     s32 sn;
     s32 cs;
-    u16 old;
     s32 x;
     s32 z;
     s32 fx;
@@ -3445,8 +3438,6 @@ s32 MoveTankShot(NAS *nas, s32 arg1, s32 arg2, s32 arg3) {
     s32 x;
     s32 z;
     s32 tile;
-    s32 row;
-    s32 col;
     s32 dx;
     s32 dz;
     s32 v;
@@ -4674,7 +4665,6 @@ void PlotPickupGenerator_TA(NAS *nas)
   s32 j;
   s32 x;
   s32 z;
-  s32 r;
   s32 n;
   s32 new_var;
   NAS *p;
@@ -5407,8 +5397,6 @@ bool MissileCollideWithPickup(EXTengine *eng) {
     s32 j;
     NAS *pickup;
     EXTengine *pe;
-    NAS **pp;
-    NAS **tbl;
     s32 x;
     s32 y;
     s32 z;
@@ -5971,7 +5959,6 @@ void InitTotemBit(NAS *nas, s32 id) {
     EXTengine *eng;
     subengine *sub;
     s32 i;
-    NAS **p;
 
     nas->UserInfo.user1 = 1;
     ext = AddExt(nas, sizeof(EXTobject_TA), 0x10000000);
@@ -7098,7 +7085,6 @@ void TankBossRocketTurretFire(NAS *nas, EXTengine *eng) {
     dir = eng->xform.rot.vy;
     for (i = 0; ; i++) {
         {
-            s32 k;
             if (i >= 2) {
                 break;
             }
@@ -7410,7 +7396,6 @@ void AnimateMoeJoeTurret(s32 player) {
 
 void SetMoeJoeIdle(s32 arg0) {
     EXTengine *eng;
-    s32 pad[2];
 
     if (Heroes[arg0].hero_move != NULL) {
         Heroes[arg0].hero_move->jump_max = 0;
@@ -7492,7 +7477,7 @@ void SetMoeJoeRecoil(s32 arg0) {
     }
 }
 
-void SetMoeJoeDead(s32 hero, s32 last_mode) {
+void SetMoeJoeDead(s32 hero) {
     subengine *s;
 
     Heroes[hero].hero_hit = 0;
@@ -7518,7 +7503,6 @@ void MoeJoeMove(s32 player) {
     subengine *sub;
     HeroInfo *h;
     TA_Bot *ai;
-    subengine *u;
     TA_player *ta;
     s32 ex;
     s32 ez;
@@ -7756,7 +7740,7 @@ void MoeJoeRecoil(s32 arg0) {
             SetMoeJoeRecoil(arg0);
             break;
         case 0x6B:
-            ((void (*)(s32))SetMoeJoeDead)(arg0);
+            SetMoeJoeDead(arg0);
             break;
         case 0x6A:
         case 0x6D:
@@ -7814,7 +7798,7 @@ void MoeJoeDie(s32 arg0) {
         mode = Heroes[arg0].hero_mode;
         Heroes[arg0].hero_mode = 0x6B;
         Heroes[arg0].hero_last_mode = mode;
-        SetMoeJoeDead(arg0, mode);
+        SetMoeJoeDead(arg0);
     }
 }
 
@@ -8383,7 +8367,7 @@ void SetMoeJoeMode(s32 hero, s32 mode) {
         SetMoeJoeRecoil(hero);
         break;
     case 0x6B:
-        SetMoeJoeDead(hero, mode);
+        SetMoeJoeDead(hero);
         break;
     case 0x6A:
     case 0x6D:

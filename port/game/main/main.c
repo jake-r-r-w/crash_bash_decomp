@@ -111,8 +111,6 @@ const char LevNameCrashDash[] = "CRASH DASH";
 
 /* The disc's Spyro 3 demo is another game's exe. */
 void shell_run_spyro_demo(void) {
-    char unused[24]; /* never used, but the frame has room for it */
-
     machine_quit_sound();
     fprintf(stderr, "The game asked to run the Spyro 3 demo, which the PC build can't.\n");
     exit(0);
@@ -904,7 +902,6 @@ void mal_disown(void *p) {
 }
 
 void mal_set_owner(void *p, void **owner) {
-    void **old;
     mal *b;
 
     b = (mal *)p - 1;
@@ -1413,7 +1410,6 @@ void mal_move_down(mal *arg0, _mal_area *arg1) {
     mal *prev;
     mal *new_var;
     mal *end;
-    mal *nb;
     s32 *d;
     s32 *s;
     s32 n;

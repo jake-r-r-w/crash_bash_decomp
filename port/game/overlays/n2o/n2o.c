@@ -701,7 +701,6 @@ void N2OInitHero(s32 i) {
     subengine *sub;
     subengine *n;
     s32 k;
-    void *scene;
 
     Heroes[i].hero_health = 0xFF;
     switch (i) {
@@ -999,7 +998,7 @@ void N2OMoveHero(s32 arg0) {
     {
         EXTengine *e2 = f->hero_eng;
         e2->xform.rot.vz = (u16)e2->xform.rot.vz + (sp >> 2);
-        N2OHeroBallCollision(arg0, e2);
+        N2OHeroBallCollision(arg0);
     }
     if (N2OHeroPushTeammate(arg0) != 0) {
         if ((u16)N2OHeroPushTimer == 0) {
@@ -2117,7 +2116,6 @@ void N2OUpdateBoss(void) {
     N2OPan *p;
     u16 fl;
     u16 n;
-    s16 i;
     s32 ang;
     N2OStep *tbl;
     subengine *hs;
@@ -2306,7 +2304,7 @@ void N2OUpdateBoss(void) {
         break;
     }
     N2OBossClock++;
-    ((s32 (*)(s32))N2OHeroBallCollision)(3);
+    N2OHeroBallCollision(3);
 }
 
 s32 N2OBotAimA(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
@@ -2665,7 +2663,6 @@ void N2O_HeroBot(u16 *arg0) {
     s32 ang;
     s32 r;
     s32 tgt;
-    s32 k;
 
     if (GamePause & 0x04000000) {
         return;
@@ -3376,7 +3373,7 @@ s32 N2OHeroPushTeammate(s32 arg0) {
     return 0;
 }
 
-s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
+s32 N2OHeroBallCollision(s32 arg0) {
     SLONG_XYZ tgt;
     SLONG_XYZ nearp;
     SLONG_XYZ farp;

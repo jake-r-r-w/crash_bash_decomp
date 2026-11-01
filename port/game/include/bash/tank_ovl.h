@@ -95,7 +95,7 @@ typedef struct MineOffset {
     /* 0x08 */ s32 pad8;
 } MineOffset;
 extern MineOffset MineShrapnelOffsets[4];
-void SetMoeJoeDead(s32 hero, s32 last_mode);
+void SetMoeJoeDead(s32 hero);
 extern s32 *MoeAnimPtr;
 extern s32 *JoeAnimPtr;
 extern s32 MoeMoveAnim[];

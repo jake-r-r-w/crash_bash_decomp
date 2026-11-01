@@ -1061,7 +1061,6 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
 
 void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
     SWORD_XYZ pos;
-    SWORD_XYZ tmp;
     s32 c;
     s32 n;
     u8 *p;
@@ -1127,8 +1126,6 @@ void DrawSpriteTriple(s16 x, s16 y, s32 c0, s32 c1, s32 n) {
 }
 
 void InitTriggers(void) {
-    EXTengine tmp;
-    s32 pad[2];
     U16Table *tbl;
     u16 *types;
     s32 ntypes;
@@ -1139,7 +1136,6 @@ void InitTriggers(void) {
     MapTrigInfo *info;
     s32 idx;
 
-    tmp = EngineTemplate;
     tbl = LevelTriggerData->tbl;
     types = tbl->data;
     ntypes = tbl->count;
@@ -2725,8 +2721,6 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
     s32 cnt;
     u8 *a;
     s32 off;
-    u32 t;
-    s32 u;
 
     n = arg0->nEnt;
     e = arg0->ent;
@@ -2735,7 +2729,6 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
     while (1) {
         u16 id;
         u8 *q;
-        s32 len;
 
         if (--n == -1) {
             break;
@@ -2754,7 +2747,6 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
     while (1) {
         TexFile *b;
         u32 t;
-        s32 u;
 
         if (--n == -1) {
             break;

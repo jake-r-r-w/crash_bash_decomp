@@ -125,7 +125,6 @@ static inline void InitHeapToRamTop(_mal_area *heap) {
 }
 
 void InitLevelLoad(void) {
-    s32 start;
     EngineCfg *cfg;
 
     sound_stop();
@@ -659,7 +658,6 @@ void StartSceneScript(void) {
     s32 i;
     s32 n;
     s32 v;
-    s32 t;
     MarkSrcEnt *e;
 
     play_script((obj_dbase *)SceneMark->obj, SceneMark->script, &SceneScriptRot, &SceneScriptPos, 4, &SceneScript);

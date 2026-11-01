@@ -147,10 +147,6 @@ void UpdateIntro(void) {
 }
 
 void QuitIntro(void) {
-    s32 f;
-    RECT *a;
-    RECT *r;
-
     if (IntroDbase != 0) {
         dbase_release((u8 *)IntroDbase);
     }
@@ -379,7 +375,6 @@ s32 CountSavedWins(s32 arg0) {
     cnt = 0;
     i = 0;
     for (;;) {
-    loop:
         if (i >= 7) {
             break;
         }
@@ -398,7 +393,6 @@ s32 CountSavedWins(s32 arg0) {
 void UpdateCardMessage(void) {
     subengine *s0;
     subengine *s1;
-    char **undefined;
     const char **tab;
 
     s0 = GetEngineSlot(0)->sub;
@@ -1628,13 +1622,6 @@ void StartGame(void) {
         if (ProcessControl.process->quit != NULL) {
             ProcessControl.process->quit();
         }
-    }
-}
-
-void GotoProcessFade(process_info *arg0) {
-    if (ProcessControl.next_process != arg0) {
-        ((void (*)(fade_info *))set_fade)(&ScreenFade);
-        ProcessControl.next_process = arg0;
     }
 }
 

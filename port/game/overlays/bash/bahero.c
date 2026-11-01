@@ -807,8 +807,6 @@ s32 BashHeroKickCollision(s32 arg0) {
             i = 0;
             self = &heroes[arg0];
             for (; ; i++) {
-                s32 unused;
-
                 if (i >= 4) {
                     break;
                 }

@@ -536,8 +536,6 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
     s32 bottom;
     s32 dx;
     s32 dz;
-    s32 sum;
-    s32 r2;
     s32 lo;
     s32 hi;
 
@@ -857,7 +855,6 @@ void PAHeroHold(s32 arg0) {
     HeroInfo *base2;
     EXTobject *o;
     s32 v;
-    TrigEntry *te;
     VECTOR pos;
     int new_var;
 
@@ -914,7 +911,6 @@ void PAHeroCarry(s32 arg0) {
     HeroInfo *base2;
     EXTobject *o;
     s32 v;
-    TrigEntry *te;
     VECTOR pos;
     int new_var;
 

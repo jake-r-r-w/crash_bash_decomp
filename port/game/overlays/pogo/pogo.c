@@ -904,6 +904,8 @@ loop:
     case POGO_MODE_11:
         PogoKerb_Poll();
         break;
+    default:
+        break;
     }
 }
 
@@ -1627,7 +1629,6 @@ void HeroPogo(u32 arg0) {
     EXTengine *shadow;
     s32 n;
     s32 max;
-    s32 name;
 
     hb = Heroes;
     h = &hb[arg0];
@@ -1749,8 +1750,6 @@ void HeroPogo(u32 arg0) {
 }
 
 void SetHeroPogoIdle(u32 arg0) {
-    s32 seq;
-
     Player_RemoveReserve(arg0);
     if (Heroes[arg0].hero_move != NULL) {
         Heroes[arg0].hero_move->jump_max = 0;

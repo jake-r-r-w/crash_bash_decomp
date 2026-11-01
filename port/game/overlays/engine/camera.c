@@ -353,7 +353,6 @@ void CameraFrameHeroes(s32 arg0) {
     GameState *g;
     s32 z;
     s32 w;
-    s32 v;
 
     BuildCameraFrameList();
     CalcCameraFrame();
@@ -864,15 +863,14 @@ void ShowLevelLabel(void) {
 
 void RenderScreenLabels(void) {
     s32 *s;
-    s32 v;
-    int new_var;
 
     gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     if (ScreenLabelShown != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;
-        if (s != NULL)
-        ((subengine *)s)[1].flags &= 0xFFFF7FFF; new_var = sizeof(subengine) / 4;  /* the next subengine's flags: as s[1].flags the branches change */
+        if (s != NULL) {
+            ((subengine *)s)[1].flags &= 0xFFFF7FFF;
+        }
         if (s != NULL && (GamePause & 0x240) != 0x240) {
             ((subengine *)s)[1].flags |= 0x8000;
         }

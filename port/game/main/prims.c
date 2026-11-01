@@ -837,7 +837,7 @@ void *model_prims_begin(void *arg0, s32 arg1) {
     s32 t;
     s32 off;
     PrimSet *p;
-    s32 c[3];
+    static s32 c[3]; /* RenderState.farColor is left pointing at it */
 
     prim = NULL;
     if ((arg1 & 0x40000001) | RenderState.modelDp | (PrimDepthTest != 0 && 0 < PrimDepthLimit)) {
@@ -978,12 +978,12 @@ void gfx_setup_xform(void *arg0, MATRIX *arg1, VECTOR *arg2, u8 *arg3, GteSetup 
     GteSetup *out;
 
     out = arg4;
+    out->trans = NULL;
 
     flags = obj->flags;
     if (flags & 0x10000000) {
         GfxState *gs;
 
-        out->trans = NULL;
         ScreenTrans.vz = pos->vz + obj->XYZ.z;
         out->trans = &ScreenTrans;
         gs = &RenderState;
@@ -1167,7 +1167,6 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         }
         p = model_prims_begin(e, c);
         set += 0x14;
-    draw:
         if (p != NULL) {
             draw_verts(p, (SVECTOR *)set, (u8 *)&((MeshHeader *)e)->runs + ((MeshHeader *)e)->runs);
         }

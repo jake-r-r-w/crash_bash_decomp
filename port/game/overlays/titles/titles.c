@@ -73,7 +73,7 @@ const char TextChangeLevel[] = "PRESS UP - DOWN TO CHANGE LEVEL";
 const char TextPressButtonToSelect[] = "PRESS \xFC BUTTON TO SELECT";
 const char TextChooseLevel[] = "CHOOSE LEVEL";
 const char TextCheckCardForSave[] = "PRESS \xFF TO\nCHECK MEMORY CARD\nFOR SAVED GAME";
-const char TextCheckingCard[64] = "CHECKING MEMORY CARD\nIN MEMORY CARD SLOT 1\nFOR UNLOCKED\nLEVELS\x00\x14";
+const char TextCheckingCard[] = "CHECKING MEMORY CARD\nIN MEMORY CARD SLOT 1\nFOR UNLOCKED\nLEVELS";
 const char TextSelectBattleType[] = "SELECT BATTLE TYPE";
 const char TextChangeBattleType[] = "PRESS LEFT - RIGHT TO CHANGE BATTLE TYPE";
 const char TextStartBattle[] = "PRESS \xFC BUTTON TO START BATTLE";
@@ -1497,14 +1497,11 @@ void UpdateCharSelector(TitlesSlot *slot) {
     subengine *s;
     subengine *s2;
     CharCard *card;
-    TitlesOff *off;
     s32 y;
     s32 x;
     s32 still;
     s32 tgt;
     s32 v;
-    s32 a;
-    s32 d;
 
     s = o->sub;
     t = o->sub2;
@@ -1644,9 +1641,6 @@ s32 CpuPickCharacter(s32 a0) {
     GameState *g = GAME;
     s32 r;
     s32 i;
-    s8 *t;
-    s32 v;
-    s32 w;
     CharCard *rec;
 
     if (g->levelFlags & 4) {
@@ -1905,7 +1899,6 @@ void LevelSelectInit(void) {
 }
 
 void LevelSelectInput(void) {
-    void **undefined;
     void **tbl;
     GameState *g;
     EXTengine *e;
@@ -1999,8 +1992,6 @@ void LevelSelectUpdate(void) {
     s32 w;
     s32 c;
     GameState *h;
-    BattleArena *tbl;
-    TrigEntry *trig;
 
     if (LevelSelectReload != 0) {
         prims_empty_back();

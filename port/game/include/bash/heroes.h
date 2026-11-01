@@ -86,7 +86,7 @@ void KillScriptFx(EXTengine *eng);
 void PlotFloatyScore(NAS *nas);
 s32 SetHeroAseq(s32 hero, u16 name, s32 seq);
 void ClearHeroAnimSlots(void);
-s32 CheckHeroAnim(s32 arg0);
+void CheckHeroAnim(s32 arg0);
 void HeroGhost(u32 arg0);
 s32 HeroMovedDist(s32 arg0);
 s32 AdjustAiSkill(s32 arg0);

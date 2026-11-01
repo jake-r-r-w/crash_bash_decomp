@@ -79,7 +79,7 @@ void BashCountObjects(void) {
     s32 x, z;
     u16 t;
     u8 c;
-    u16 *p, *q;
+    u16 *p;
     s32 j;
     NAS *n;
     EXTengine *e;

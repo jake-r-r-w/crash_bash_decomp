@@ -23,7 +23,6 @@ void InitialiseHeroes(void) {
     GameState *g;
     u8 *p;
     u8 *q;
-    s32 m;
     s32 k;
     u16 ang;
     s32 mask;
@@ -34,7 +33,6 @@ void InitialiseHeroes(void) {
     s32 fxv;
 
     i = 0;
-    m = 0;
     k = 0;
     HeroAnimHeroA = -1;
     HeroAnimSeqA = 0;
@@ -275,7 +273,6 @@ void InitialiseHeroes(void) {
         }
     next:
         i++;
-        m += 7;
         k += 3;
     }
     Setup_panel();
@@ -950,7 +947,6 @@ void ClearHeroAnimSlots(void) {
     s32 *p;
     s32 *q;
     s32 t;
-    s32 r;
 
     i = 0;
     tab = (u8 *)HeroOrders;
@@ -1003,31 +999,18 @@ void RequestHeroAnim(s32 arg0, u16 arg1) {
     }
 }
 
-s32 CheckHeroAnim(s32 arg0) {
-    s32 i;
-
+void CheckHeroAnim(s32 arg0) {
     if (HeroAnimHeroA == arg0) {
         if (Heroes[arg0].hero_aseq == HeroAnimSeqA) {
-            return HeroAnimSeqA;
+            return;
         }
-        if (HeroAnimDbaseA != 0) {
-            if (dbase_mesh_anim_name_loaded(HeroAnimDbaseA, HeroAnimNameA) != 0) {
-                SetHeroSeq(arg0, HeroAnimSeqA);
-                i = 3;
-                do {
-                    i -= 1;
-                } while (i >= 0);
-            }
+        if (HeroAnimDbaseA != 0 && dbase_mesh_anim_name_loaded(HeroAnimDbaseA, HeroAnimNameA) != 0) {
+            SetHeroSeq(arg0, HeroAnimSeqA);
         }
     }
     if (HeroAnimHeroB == arg0 && Heroes[arg0].hero_aseq != HeroAnimSeqB && HeroAnimDbaseB != 0) {
         if (dbase_mesh_anim_name_loaded(HeroAnimDbaseB, HeroAnimNameB) != 0) {
             SetHeroSeq(arg0, HeroAnimSeqB);
-            i = 3;
-            do {
-                i -= 1;
-            } while (i >= 0);
-            return i;
         }
     }
 }
@@ -1701,7 +1684,6 @@ s32 HeroTestActions(s32 arg0) {
     PadState *pad;
     PadState *pads2;
     PadState *pad2;
-    s32 action;
 
     if (HeroHooks.TestAttack(arg0) != 0) {
         return 1;
@@ -3157,7 +3139,6 @@ s32 HeroTestMove(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     u16 mode;
-    s32 a1;
 
     if (HeroHooks.TestRun(arg0) == 0) {
         base = Heroes;
@@ -3188,7 +3169,6 @@ subengine *UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s
     s32 n;
     s32 i;
     s32 t;
-    s32 r;
 
     obj = arg1;
     i = 0;
@@ -3290,7 +3270,6 @@ subengine *UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s
         obj = arg1;
         while (obj != NULL) {
             s32 t;
-    s32 r;
 
             obj->flags &= ~0x8000;
             obj->xform.scale.vx = 0x1000;
@@ -4150,7 +4129,6 @@ void KillScriptFx(EXTengine *eng) {
 void emit_script_particle(subengine *arg0, partdata *arg1, EmitPart *arg2, s32 *arg3, threaddata *arg4) {
     s32 life;
     s32 t;
-    s32 r;
     s32 u;
 
     emit_particle(arg0, arg2, arg1);

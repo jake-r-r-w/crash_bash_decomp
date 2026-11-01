@@ -218,7 +218,6 @@ void PickCpuHeroes(void) {
     s32 j;
     s32 n;
     s32 found;
-    s32 off;
     u16 v;
     GameState *g;
     u8 *p;

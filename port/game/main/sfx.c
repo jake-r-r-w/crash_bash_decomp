@@ -5,7 +5,6 @@
 void music_play_level(s32 arg0, s32 arg1) {
     GameState *p;
     u8 *q;
-    u32 t8;
     u32 t;
     u32 v;
     s32 i;
@@ -24,10 +23,7 @@ void music_play_level(s32 arg0, s32 arg1) {
         }
         sfx_bank_load(f);
     }
-    do {
-        q = &DatIndex[278];
-        t8 = 0;
-    } while (0);
+    q = &DatIndex[278];
     d = ModeTypes;
     m = ((GameState *)GameInfo)->mode;
     c = d[m * 3] - 0x101;
@@ -327,22 +323,6 @@ void sfx_reset(void) {
 
 void music_load_track(s32 i) {
     music_load(MusicTable[i].file, MusicTable[i].reverb);
-}
-
-static inline NAS *AllocNAS(void) {
-    NAS *free;
-    NAS *next;
-
-    free = NASFreeList;
-    if (free == NULL) {
-        return NULL;
-    }
-    next = free->Tag.Child;
-    NASFreeList = next;
-    if (next != NULL) {
-        next->Tag.Parent = NULL;
-    }
-    return free;
 }
 
 /* data, in address order (tools/scripts/data2c.py) */

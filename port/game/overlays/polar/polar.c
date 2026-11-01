@@ -1019,7 +1019,6 @@ void PolarUpdateScene(void)
   s32 sign;
   s32 a;
   s32 b;
-  HeroInfo *h;
   NAS *p;
   EXTengine *eng;
   PolarMissileExt *ext;
@@ -2688,7 +2687,6 @@ bool Player2PlayerRayTest(u32 player, u32 target) {
     VECTOR out;
     VECTOR pos;
     SVECTOR d;
-    SVECTOR pad;
     HeroInfo *base;
     HeroInfo *h;
     EXTengine *a;
@@ -6057,23 +6055,23 @@ s32 PolarRayHit(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out) {
         if (t0 < t1) {
             if (t0 < 0) {
                 out->vx = a->vx + ((d.vx * t1) >> 8);
-                out->vy = a->vy + ((d.vy * t1) >> 8);
+                out->vy = 0;
                 out->vz = a->vz + ((d.vz * t1) >> 8);
                 return 1;
             } else {
                 out->vx = a->vx + ((d.vx * t0) >> 8);
-                out->vy = a->vy + ((d.vy * t0) >> 8);
+                out->vy = 0;
                 out->vz = a->vz + ((d.vz * t0) >> 8);
                 return 1;
             }
         } else if (t1 > 0) {
             out->vx = a->vx + ((d.vx * t1) >> 8);
-            out->vy = a->vy + ((d.vy * t1) >> 8);
+            out->vy = 0;
             out->vz = a->vz + ((d.vz * t1) >> 8);
             return 1;
         } else {
             out->vx = a->vx + ((d.vx * t0) >> 8);
-            out->vy = a->vy + ((d.vy * t0) >> 8);
+            out->vy = 0;
             out->vz = a->vz + ((d.vz * t0) >> 8);
             return 1;
         }
@@ -7108,12 +7106,10 @@ s32 PolarBoxOverlap(EXTengine *a, s32 b, EXTengine *c, s32 d)
   SVECTOR rot;
   PolarBox *bp;
   s32 *rp;
-  PolarBox *new_var;
   s32 dist;
   s32 side;
   PolarBox *new_var5;
   VECTOR *new_var3;
-  char new_var4;
   s32 dx;
   s32 dz;
   s32 push;
@@ -7133,11 +7129,11 @@ s32 PolarBoxOverlap(EXTengine *a, s32 b, EXTengine *c, s32 d)
   v.vx = c->XYZ.x - ((unsigned long long) a->XYZ.x);
   v.vz = c->XYZ.z - a->XYZ.z;
   rot.vx = -a->xform.rot.vx;
-  new_var4 = (rot.vy = -a->xform.rot.vy);
+  rot.vy = -a->xform.rot.vy;
   rot.vz = -a->xform.rot.vz;
   matrix_rotation_zyx(&rot, (MATRIX *) (bp = new_var5));
   new_var2 = (MATRIX *) bp;
-  new_var = (bp = &box);
+  bp = &box;
   matrix_apply_long(new_var2, &v, new_var3 = &v);
   rp = &box.r;
   if (v.vx < bp->min.x)

@@ -226,7 +226,6 @@ void NoxInitAsteroids(void) {
     AstSceneObj *o;
     AstKind *k;
     AstSlot *a;
-    AstMineSlot *m;
     TrigEntry *trig;
     s32 nAst;
     s32 nMine;
@@ -240,9 +239,8 @@ void NoxInitAsteroids(void) {
     static const char NoxMsgMineCount[] = "mine count %d\n";
     static const char NoxMsgSpinFireCount[] = "spin/fire count %d\n";
     static const char NoxMsgBigMineCount[] = "big mine count %d\n";
-    static const char NoxMsgMineArrayError[0x44] ="mine array error"
-        "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!\n"
-        "\0\x0B\x80\x82";
+    static const char NoxMsgMineArrayError[] = "mine array error"
+        "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!\n";
 
     o = (AstSceneObj *)((u8 *)MapScene->subs);
     printf(NoxMsgInitAsteroids);
@@ -1692,7 +1690,6 @@ void PlotSpiralSat(NAS *nas) {
     SLONG_XYZ *q;
     SLONG_XYZ *r;
     s32 i, j, mode;
-    SpiralExt *p;
     s32 dx, dy, dz;
     s32 z;
 

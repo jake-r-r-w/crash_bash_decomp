@@ -744,7 +744,6 @@ s32 RaceRayHit(s32 *a, s32 *b, s16 *c, void *unused) {
     s32 A;
     s32 B;
     s32 C;
-    s32 disc;
     s32 s;
     s32 t1;
     s32 nc;
@@ -1582,7 +1581,6 @@ void RaceInitBarrels(void) {
 
     n = 0;
     obj = ((subengine *)MapScene->subs);
-    memset(RaceBarrels, 0x3600, 0);
     while (obj != NULL) {
         if (obj->entity == 0x5006) {
             b = &RaceBarrels[n];
@@ -2013,7 +2011,6 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
     RaceSegObj *obj;
     RaceSegObj *w;
     u8 *data;
-    s32 *ent;
     s32 best;
     s32 found;
     s32 shift;
@@ -2258,7 +2255,6 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             }
             if (t >= 0 && !gt) {
                 p.vx = ((t * e.vx) >> 12) + a.p0.vx;
-                p.vy = ((t * e.vy) >> 12) + a.p0.vy;
                 p.vz = ((t * e.vz) >> 12) + a.p0.vz;
                 dx = p.vx - lp.vx;
                 dz = p.vz - lp.vz;
@@ -4130,7 +4126,6 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
             s32 itb;
             s32 sa;
             s32 sb;
-            s32 p;
 
             ia = g->teamLeader[0];
             ib = g->teamLeader[1];
@@ -4937,7 +4932,6 @@ void RaceCountLaps(s32 player) {
     EXTengine *e;
     s32 one;
     s32 flags;
-    s32 unused[2];
 
     if (!(GameExitFlags & 0x801)) {
         base = Heroes;
@@ -5337,7 +5331,6 @@ heroes_done:
 }
 
 void RaceInitStub(void) {
-    u8 unused[24];
 }
 
 void PlotTNTCrate(NAS *nas) {
@@ -5349,7 +5342,6 @@ void PlotTNTCrate(NAS *nas) {
     NAS *spawned;
     EXTscriptdata *ext;
     HeroInfo *h;
-    subengine *sub;
 
     status = nas->UserInfo.status;
     switch (status) {
@@ -5912,8 +5904,6 @@ void PlotRaceVolcano(NAS *nas) {
             }
         }
         for (n = 0; ; n++) {
-            s32 dummy;
-
             if (n >= 3) {
                 break;
             }
@@ -5922,8 +5912,6 @@ void PlotRaceVolcano(NAS *nas) {
                 count++;
             } else {
                 for (; ; j++) {
-                    s32 dummy;
-
                     if (j >= 4) {
                         break;
                     }

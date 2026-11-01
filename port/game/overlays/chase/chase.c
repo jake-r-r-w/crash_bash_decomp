@@ -519,7 +519,6 @@ void Chase_HeroBot(s32 arg0) {
     EXTengine *e;
     NAS *nas;
     NAS *best;
-    NAS **pp;
     s32 i;
     s32 n;
     s32 d, dx, dz;
@@ -815,31 +814,9 @@ void InitialiseCHASE(void) {
 }
 
 void UpdateCHASE(void) {
-    s32 i;
-    s16 c;
-    s32 n;
-    u8 *h;
-    NAS **p;
-
-    c = 0;
-    i = 0;
-    p = ChaseBarrels;
-loop:
-    if (i < 8) {
-        if (*p != NULL) {
-            c++;
-        }
-        p++;
-        i++;
-        goto loop;
-    }
     if (HeroModelBank[DB_KegObjects].data != 0) {
         texture_update_anims(&HeroModelBank[DB_KegObjects].textures);
     }
-    n = 3;
-    do {
-        n--;
-    } while (n >= 0);
     texture_update_anims(&HeroModelBank[DB_KegObjects].textures);
     ChaseUpdateStub(&ChaseHeroSlots[1]);
 }
@@ -1015,7 +992,6 @@ void ChaseMoveHero(s32 arg0) {
     EXTheromove *m;
     s32 step;
     HeroInfo *base;
-    s32 *st;
     NAS *t;
     SLONG_XYZ *v;
     u8 *anim;
@@ -1121,7 +1097,6 @@ void ChaseMoveHero(s32 arg0) {
     if ((Pads[arg0].dir & 0x8000) && e0->XYZ.y >= -0x31) {
         ChaseHeroSpeed[arg0] = 0xF;
         e0 = Heroes[arg0].hero_eng;
-        st = ChaseHeroState[arg0];
         t = NULL;
         if (ChaseHeroCoal[arg0] == NULL
             || (ne = ChaseHeroCoal[arg0]->Engine, dx = e0->XYZ.x - ne->XYZ.x, dx = dx * dx,
@@ -3769,7 +3744,6 @@ void ChaseKillGridObj(CoalGridObj *obj) {
 
 s32 ChaseFindHeroNear(s32 x, s32 z, s32 range, s32 skip) {
     s32 i;
-    s32 neg;
     s32 dx;
     s32 dz;
     HeroInfo *h;

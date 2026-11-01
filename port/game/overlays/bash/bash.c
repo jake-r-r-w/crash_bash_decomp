@@ -716,7 +716,6 @@ void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev) {
 const char BashAiDebugFormat[] = "%d ai mode %d target %x player %d angle %x dist %x- %x %x %x %x\n";
 
 void Bash_HeroBot(s32 arg0) {
-    s32 unused[6];
     EXTbotai *ai;
     u32 *dirs;
     u32 *tbl;
@@ -2862,7 +2861,6 @@ s32 BashFirePowerup(s32 arg0) {
     HeroInfo *h;
     PadState *p;
     NAS *n;
-    u16 pu;
 
     HeroInfo *ht;
     PadState *pt;
@@ -3096,12 +3094,10 @@ void InitBashHomer(NAS *nas) {
     EXTengine *eng;
     EXTmotion *mot;
     subengine *sub;
-    HeroInfo *h;
     s32 i, best, bestd, d, u1;
 
     eng = nas->Engine;
     if (eng != NULL) {
-        h = Heroes;
         nas->UserInfo.user1 = RoundWinner;
         nas->UserInfo.user2 = Heroes[RoundWinner].hero_move->facing_angle;
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
@@ -3562,8 +3558,6 @@ void BashSpaceDropTile(s32 arg0) {
 }
 
 void BashSpaceBreakTile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    BashCell *c;
-    s32 x;
     GameState *g = GAME;
 
     if (!(g->exitFlags & 0x801) && !(g->cheats & 0x1000) &&
@@ -3599,7 +3593,6 @@ void BashDropFirstCrates(void) {
 u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag) {
     s32 step;
     s32 neg;
-    s32 nx;
     s32 nz;
     s32 zi;
     s32 xi;
@@ -3844,5 +3837,6 @@ void BashTumblerAim(BashTumbler *arg0, EXTmotion *arg1, s32 arg2) {
     ang = get_angle(dx, dz);
     dist = int_sqrt(dx * dx + dz * dz);
     arg0->angle = ang;
-    arg1->Xvel = (u32)(dist >> 6) / arg1->Ftime;
+    /* already on the floor, it's there in the one step */
+    arg1->Xvel = steps != 0 ? (u32)(dist >> 6) / steps : dist >> 6;
 }

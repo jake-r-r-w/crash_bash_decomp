@@ -157,8 +157,6 @@ void Setup_panel(void) {
 }
 
 void UpdatePanel(void) {
-    u16 *t;
-
     if (PanelCtrl & 8) {
         UpdateHealthIcons();
     }
@@ -426,7 +424,6 @@ void Draw_Clock(void) {
     s32 d;
     s32 fl;
     ClockInfo *p;
-    HeroInfo *h;
 
     if (!(PanelCtrl & 1)) {
         return;
@@ -1507,7 +1504,6 @@ void UpdateScoreIcons(void) {
 void CheckHeroesAllOut(void) {
     GameState *g = (GameState *)GameInfo;
     EXTengine *e;
-    EXTengine *f;
 
     if (!(g->exitFlags & 0x8801) && GAME->demo == 0 && HeroesAllOut != 0) {
         if (HeroesOutTimer != 0) {
@@ -1525,7 +1521,6 @@ void CheckHeroesAllOut(void) {
 
 void UpdateOutMessage(void) {
     EXTengine *e;
-    EXTengine *f;
     s32 i;
     GameState *g;
 
@@ -2214,7 +2209,6 @@ void Init_Panel(void) {
 
 void InitBossHealthBar(void) {
     EXTengine *e;
-    EXTengine *f;
 
     e = &PanelTab[5];
     subs_init_array(e, 1, &PauseVolSubA);

@@ -310,8 +310,6 @@ void SpinShuffleDropPoints(void) {
     s32 j;
     s32 k;
     s32 y;
-    s32 a;
-    s32 b;
     s32 c;
     s32 d;
     SpinCell *p;
@@ -491,7 +489,6 @@ s32 SpinRankHeroes(void) {
     s32 i;
     GameState *gt;
     s32 a;
-    s32 b;
     s32 mate;
     s32 score;
     s32 team0;
@@ -1888,7 +1885,6 @@ const char SpinAiDebugFormat[] = "%d ai mode %d target %x player %d angle %x dis
 const char SpinEmptyString[] = "";
 
 void Spin_HeroBot(s32 arg0) {
-    s32 unused[4];
     EXTobject *nf;
     NAS *nas;
     s32 kind;
@@ -3184,7 +3180,7 @@ NAS *SpinHeroGrabObject(s32 idx, s32 mask) {
     EXTobject *fux;
     HeroInfo *h;
     HeroInfo *hb;
-    s32 hx, hz, dx, dz, m, lim;
+    s32 hx, hz, dx, dz, lim;
     u16 ang;
     u16 um;
 
@@ -3583,7 +3579,7 @@ void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero) {
     FlagRecord *r2;
     HeroInfo *h;
     EXTengine *e2;
-    s32 top, bot, dx, dz, rr, y, lo, hi;
+    s32 top, bot, dx, dz, rr, lo, hi;
     s32 rad;
 
     r = FindCollisionBox(eng, 0x40);

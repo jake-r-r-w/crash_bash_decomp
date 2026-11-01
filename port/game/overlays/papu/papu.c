@@ -1152,7 +1152,6 @@ s32 PapuPickSpawnPoint(PapuPos *arg0) {
 
 NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d) {
   NAS *nas;
-  u8 *new_var;
   EXTengine *eng;
   EXTobject *obj;
   Slot40 *s;
@@ -1226,7 +1225,6 @@ void PlotPapuMinion(NAS *nas)
   EXTobject *fux;
   EXTobject *other;
   NAS *target;
-  Slot40 *s;
   s32 dx;
   s32 dz;
   s32 i;
@@ -1238,8 +1236,6 @@ void PlotPapuMinion(NAS *nas)
   EXTobject *tobj;
   s32 who;
   s32 frame;
-  s32 step;
-  u16 a;
 
   slot = nas->UserInfo.user1;
   eng = nas->Engine;
@@ -1926,7 +1922,6 @@ s32 PapuMinionKick(u32 idx) {
     EXTengine *e;
     FlagRecord *box;
     FlagRecord *rec;
-    HeroInfo *h;
     NAS *nas;
     NAS *self;
     EXTobject *obj;
@@ -1937,7 +1932,6 @@ s32 PapuMinionKick(u32 idx) {
     s32 dx;
     s32 dz;
     s32 d2;
-    s32 d;
     s32 ang;
     s32 lo;
     s32 hi;

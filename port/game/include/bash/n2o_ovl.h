@@ -55,7 +55,7 @@ extern N2OHeroBox N2OHeroBoxes[];
 extern u16 N2OBallHitSfx[];
 extern u16 N2OExplosionSfx[];
 
-s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
+s32 N2OHeroBallCollision(s32 arg0);
 
 typedef struct N2OVel {
     u8 pad0[offsetof(EXTengine, XYZ.x)];

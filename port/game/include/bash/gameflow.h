@@ -404,7 +404,6 @@ void AwardCupTrophies(CupDef *cup);
 
 s32 GatewayMode(void);
 
-void GotoProcessFade(process_info *arg0);
 
 void GotoProcess(process_info *process, s32 speed);
 
