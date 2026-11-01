@@ -48,8 +48,8 @@ needs it. Edit the PNGs, at any size up to 2048 x 2048, keep the ones you've
 changed, and move the folder into packs. A texture with no PNG stays as it was.
 A PNG's clear parts stay clear. The same picture in other colours counts as
 another texture with its own PNG. Only what's seen gets saved, so play everything
-you want to change. Some things have no texture, like much of the characters,
-whose colours are painted on their models, and no pack can change those.
+you want to change. Some faces of a model have no texture, only colours painted
+on them, and no pack can change those.
 
 Packs are PNG files that the game loads, so only use ones from people you trust.
 
