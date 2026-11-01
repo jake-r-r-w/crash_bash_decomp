@@ -98,7 +98,7 @@ void vab_loaded(void *data, sfx_machine_bank_info *slot) {
     u8 *body;
     s16 id;
 
-    if ((VabLoading != NULL || SfxBankLoading != NULL)) {
+    if ((VabLoading != NULL && SfxBankLoading != NULL)) {
         SfxBankLoading->id = VabHeadId;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         vab_map_sfx(SfxBankLoading->id, 0);
@@ -119,7 +119,7 @@ void vab_loaded(void *data, sfx_machine_bank_info *slot) {
 void vab_transfer_poll(void) {
     MATRIX *m;
 
-    if (VabLoading != NULL || SfxBankLoading != NULL) {
+    if (VabLoading != NULL && SfxBankLoading != NULL) {
         SfxBankLoading->id = VabHeadId;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         vab_map_sfx(SfxBankLoading->id, 0);
@@ -308,7 +308,7 @@ void machine_load_sfx(file *arg0, sfx_machine_bank_info *slot) {
 }
 
 void vab_transfer_wait(void) {
-    if (VabLoading != NULL || SfxBankLoading != NULL) {
+    if (VabLoading != NULL && SfxBankLoading != NULL) {
         SfxBankLoading->id = VabHeadId;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         vab_map_sfx(SfxBankLoading->id, 0);
@@ -318,7 +318,7 @@ void vab_transfer_wait(void) {
 }
 
 void vab_transfer_check(void) {
-    if ((VabLoading != NULL || SfxBankLoading != NULL)) {
+    if ((VabLoading != NULL && SfxBankLoading != NULL)) {
         SfxBankLoading->id = VabHeadId;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         vab_map_sfx(SfxBankLoading->id, 0);

@@ -2853,6 +2853,9 @@ s32 *path_get(u32 arg0) {
         p = ((s32 *)MapScene->path_list);
     }
     i = 0;
+    if (p == NULL) {
+        return NULL;
+    }
     n = *p;
 loop:
     p++;
@@ -2882,6 +2885,9 @@ s32 path_find(u32 arg0) {
         p = ((s32 *)MapScene->path_list);
     }
     i = 0;
+    if (p == NULL) {
+        return -1;
+    }
     n = *p;
 loop:
     p++;

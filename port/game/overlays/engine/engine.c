@@ -486,7 +486,7 @@ void DrawLevelHud(void) {
             eng_render(HUDPLAYERS[i]);
         }
         if (PanelCtrl & 0x400) {
-            if (Score[i].Ctrl != 0) {
+            if (e != NULL && Score[i].Ctrl != 0) {
                 tim = &HeroModelBank[DB_Interface];
                 c0 = 0xD0FF;
                 c1 = 0xFF;
@@ -506,7 +506,7 @@ void DrawLevelHud(void) {
             }
         }
         if (PanelCtrl & 0x200) {
-            if (Score[i].Ctrl != 0) {
+            if (e != NULL && Score[i].Ctrl != 0) {
                 tim = &HeroModelBank[DB_Interface];
                 c0 = 0xD0FF;
                 c1 = 0xFF;
@@ -521,7 +521,7 @@ void DrawLevelHud(void) {
                               pos.w, 0, c0, c0, c1, c1);
             }
         }
-        if ((PanelCtrl & 0x100) && Score[i].Ctrl != 0) {
+        if ((PanelCtrl & 0x100) && e != NULL && Score[i].Ctrl != 0) {
             tim = &HeroModelBank[DB_Interface];
             c0 = 0xD0FF;
             c1 = 0xFF;

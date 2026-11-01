@@ -627,7 +627,7 @@ s32 update_script(script_control_info *ci) {
         s32 *t = (s32 *)((u8 *)&c->scripts + c->scripts) + idx;
         a = (script_header *)SELF_REL(t);
     }
-    if (ci->time.h.frame >= a->end_frame) {
+    if (a != NULL && ci->time.h.frame >= a->end_frame) {
         ci->flags |= 0x10;
         if (ci->flags & 8) {
             ci->time.w = (a->end_frame - 1) << 16;
@@ -1027,6 +1027,9 @@ void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg
     arg2->script = arg1;
     arg2->threads = NULL;
     arg2->time.w = 0;
+    if (hdr == NULL) {
+        return;
+    }
     arg2->time.h.frame = *(s16 *)&hdr->start_frame;
     arg2->unk10 = hdr->end_frame;
     arg2->handle = (void **)arg4;

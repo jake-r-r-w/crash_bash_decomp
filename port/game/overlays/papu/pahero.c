@@ -636,7 +636,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
                         flags->will_do |= 2;
                     }
                 }
-                if (flags->can_do & 0x10) {
+                if (flags != NULL && (flags->can_do & 0x10)) {
                     return NULL;
                 }
                 return nas;

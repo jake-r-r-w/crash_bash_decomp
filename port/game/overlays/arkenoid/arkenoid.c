@@ -5000,7 +5000,9 @@ void Create_ArkPickup(void)
 
         eng->flags = 0;
         PickupCounts[0]++;
-        obj->contains = k;
+        if (obj != 0) {
+          obj->contains = k;
+        }
         nas->UserInfo.user1 = s;
         nas->UserInfo.user2 = 0xB4;
       }

@@ -760,6 +760,9 @@ void HubSpawnEffects(void) {
         tbl = ((s32 *)MapScene->path_list);
     }
     i = 0;
+    if (tbl == NULL) {
+        return;
+    }
     n = tbl[0];
     p = tbl + 1;
     while (1) {
@@ -2084,6 +2087,10 @@ void HubInitSparks(HubSparks *arg0) {
         }
         row++;
         n--;
+    }
+    set->face->image = 0; /* nothing to show, if there's no texture for it */
+    if (tex == NULL) {
+        return;
     }
     set->face->uv[0] = tex->info.uv0;
     set->face->uv[1] = tex->info.uv1;

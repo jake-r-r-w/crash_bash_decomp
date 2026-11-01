@@ -334,6 +334,9 @@ s32 dbase_mesh_anim_name_size(obj_dbase *arg0, u8 *arg1) {
         res = NULL;
     }
 found:
+    if (res == NULL) {
+        return 0;
+    }
     d = res->end - res->start;
     return ((d + 0x7FF) / 0x800) * 0x800;
 }

@@ -1165,7 +1165,7 @@ void InitCratePickup(NAS *arg0) {
         pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
-        id = obj->whatami;
+        id = obj != NULL ? obj->whatami : 0;
         if (x >= 0x14) {
             x = 0x13;
         }
@@ -1216,7 +1216,7 @@ void InitShieldPickup(NAS *arg0) {
         pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
-        id = obj->whatami;
+        id = obj != NULL ? obj->whatami : 0;
         if (x >= 0x14) {
             x = 0x13;
         }
@@ -1268,7 +1268,7 @@ void InitBootsPickup(NAS *arg0) {
         pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
-        id = obj->whatami;
+        id = obj != NULL ? obj->whatami : 0;
         if (x >= 0x14) {
             x = 0x13;
         }
@@ -1320,7 +1320,7 @@ void InitAnvilPickup(NAS *arg0) {
         pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
-        id = obj->whatami;
+        id = obj != NULL ? obj->whatami : 0;
         if (x >= 0x14) {
             x = 0x13;
         }
@@ -1372,7 +1372,7 @@ void InitSlowmoPickup(NAS *arg0) {
         pos = &eng->XYZ;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
-        id = obj->whatami;
+        id = obj != NULL ? obj->whatami : 0;
         if (x >= 0x14) {
             x = 0x13;
         }

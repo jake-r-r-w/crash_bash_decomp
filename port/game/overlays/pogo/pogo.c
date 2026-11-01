@@ -7221,7 +7221,9 @@ void AddTazerRing(u32 arg0) {
     } else {
         r = NULL;
     }
-    r->Engine->XYZ.y -= 0x40;
+    if (r != NULL) {
+        r->Engine->XYZ.y -= 0x40;
+    }
 }
 
 void Player_SetReserve(u32 arg0, s32 arg1, s32 arg2) {

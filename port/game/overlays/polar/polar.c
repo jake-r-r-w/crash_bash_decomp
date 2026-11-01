@@ -2585,7 +2585,7 @@ void PolarAI_DoWander(s32 player) {
             fux->func = PolarAI_AvoidBomber;
         }
     }
-    if (GameMode == 0x12 && (PolarAIFlags[player] & 1)) {
+    if (fux != NULL && GameMode == 0x12 && (PolarAIFlags[player] & 1)) {
         fux->state = 0xB;
         PolarAI_ClearState(player);
         fux->func = PolarAI_DoChaseBomber;
@@ -2668,6 +2668,9 @@ void PolarAI_DoBeam(s32 player) {
         fux->vel = PolarBeamOwner->eng->XYZ;
     }
     fux->pos = Heroes[player].hero_eng->XYZ;
+    if (PolarBeamOwner == NULL) {
+        return;
+    }
     e = PolarBeamOwner->eng;
     dx = eng->XYZ.x - e->XYZ.x;
     dz = eng->XYZ.z - e->XYZ.z;
@@ -8096,7 +8099,7 @@ void PlotPolarBoss(NAS *m) {
         }
         break;
     case 9:
-        if (mate->anim->Aindex == 1) {
+        if (mate != NULL && mate->anim->Aindex == 1) {
             if (++ext->count == 4) {
                 GotoLinkAnim(mate->anim, 0);
                 ext->state = 10;
@@ -11027,7 +11030,7 @@ void PolarPreMoveHero(s32 player) {
             m2->z_vel = 0;
         }
     }
-    if (abs(angle_diff(m->forward_angle, m->facing_angle)) > 0x110) {
+    if (m != NULL && abs(angle_diff(m->forward_angle, m->facing_angle)) > 0x110) {
         m->facing_angle = (m->forward_angle + 0x100) & 0xE00;
     }
 }
@@ -11958,7 +11961,7 @@ void SetPolarHeroOffice(s32 player) {
                     SetHeroSeq(player, 0x3D);
                 }
                 hero->hero_eng->sub->otz = 0;
-                ext->speed = int_sqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
+                ext->speed = move != NULL ? int_sqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6 : 0;
                 if (ext->speed >= 0x4A || ext->flag2 != 0) {
                     hero->hero_anim->Aindex = 0x21;
                     status = hero->hero_status;

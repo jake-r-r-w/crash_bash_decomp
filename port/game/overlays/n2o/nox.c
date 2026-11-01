@@ -911,7 +911,7 @@ void NoxPreMoveHero(s32 arg0) {
             }
         }
     }
-    if (((GameState *)GameInfo)->pause == 0) {
+    if (m != NULL && ((GameState *)GameInfo)->pause == 0) {
         spd = NoxSpeedScale;
         base2 = Heroes;
         hh = &base2[arg0];
@@ -969,6 +969,9 @@ void NoxPreMoveHero(s32 arg0) {
                 }
             }
         }
+    }
+    if (m == NULL) {
+        return;
     }
     BossHeroSteer(arg0);
     m->x_acc = 0x10;
@@ -1216,7 +1219,9 @@ void PlotAsteroidRoll(NAS *nas) {
         ext->shadow->XYZ.y = 0x100;
     }
     nas->Engine->xform.dirty = 1;
-    ext->shadow->xform.dirty = 1;
+    if (ext != NULL) {
+        ext->shadow->xform.dirty = 1;
+    }
 }
 
 void PlotNitroMine(NAS *nas) {
@@ -1809,7 +1814,7 @@ void PlotSpiralSat(NAS *nas) {
     j = 0;
     if (z < Heroes[0].hero_eng->XYZ.z - 0x800) {
         for (; j < 4; j++) {
-            if (ext->sat[j] != NULL) {
+            if (ext != NULL && ext->sat[j] != NULL) {
                 KillNAS(ext->sat[j]);
             }
         }
@@ -1817,7 +1822,7 @@ void PlotSpiralSat(NAS *nas) {
     }
     if (*GameTeams != 0 && z < Heroes[1].hero_eng->XYZ.z - 0x800) {
         for (mode = 0; mode < 4; mode++) {
-            if (ext->sat[mode] != NULL) {
+            if (ext != NULL && ext->sat[mode] != NULL) {
                 KillNAS(ext->sat[mode]);
             }
         }

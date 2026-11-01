@@ -2863,7 +2863,7 @@ void DinoPreMoveHero(s32 id) {
             }
         }
     }
-    if (abs(angle_diff(m->forward_angle, m->facing_angle)) > 0x110) {
+    if (m != NULL && abs(angle_diff(m->forward_angle, m->facing_angle)) > 0x110) {
         m->facing_angle = (m->forward_angle + 0x100) & 0xE00;
     }
 }

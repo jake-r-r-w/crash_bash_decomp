@@ -3179,7 +3179,10 @@ subengine *UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s
     if (p != NULL) {
         def = &((script_thread *)p)->type.particle;
     }
-    if (def != NULL) {
+    if (def == NULL) {
+        return ((pcontrol *)st)->lastsub;
+    }
+    {
         n = 0;
         if (td->particlesactive <= def->maxparticlecount) {
             st[4] = 0;
@@ -3227,7 +3230,7 @@ subengine *UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s
         }
         part = (EmitPart *)td->threadinfo;
         obj = arg1;
-        for (; i < def->maxparticlecount; i++, obj = obj->next, part++) {
+        for (; i < def->maxparticlecount; i++, obj = obj != NULL ? obj->next : NULL, part++) {
             if (obj == NULL || !(obj->flags & 0x8000)) {
                 continue;
             }
@@ -3628,8 +3631,8 @@ void InitScriptFX(NAS *nas)
             sub->xform.scale.vz = 0x1000;
             sub->xform.scale.vy = 0x1000;
             sub->scale = 0;
+            sub = sub->next;
           }
-          sub = sub->next;
         }
         while ((j++) < k->maxparticlecount);
       }

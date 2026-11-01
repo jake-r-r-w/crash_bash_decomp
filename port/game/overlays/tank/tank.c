@@ -5360,7 +5360,7 @@ follow:
         fe->sub->xform.scale.vz = sc;
         fe->sub->xform.dirty = 1;
     }
-    if (nas->UserInfo.status == 2) {
+    if (fe != NULL && nas->UserInfo.status == 2) {
         fe->xform.rot.vy = eng->xform.rot.vy + 0x400;
         fe->sub->xform.scale.vx = 0x3E8;
         fe->sub->xform.scale.vz = 0xAF0;
@@ -7102,7 +7102,7 @@ void TankBossRocketTurretFire(NAS *nas, EXTengine *eng) {
             fux->Status = 1;
             fux->Owner = -1;
         }
-        puff = TankSpawnBit1605Nas(&n->Engine->XYZ, 7);
+        puff = n != NULL ? TankSpawnBit1605Nas(&n->Engine->XYZ, 7) : NULL;
         if (puff != NULL) {
             TankPuffSetAngle(puff, eng->xform.rot.vy);
         }

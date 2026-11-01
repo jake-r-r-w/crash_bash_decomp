@@ -1042,7 +1042,7 @@ void RaceInitHeroAngle(s32 player) {
 
     base = Heroes;
     h = &base[player];
-    if (h->hero_frozen == 0) {
+    if (h->hero_frozen == 0 && h->hero_move != NULL) {
         if (!(h->hero_ctrl & 1)) {
             h->hero_eng->xform.rot.vy += angle_diff(h->hero_eng->xform.rot.vy, h->hero_move->forward_angle) >> 2;
             if (GAME->heroCpu[player] != 0) {
@@ -2272,7 +2272,6 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             }
             best = dist;
             hit.vx = p.vx;
-            hit.vy = p.vy;
             hit.vz = p.vz;
             if (best > r2) {
                 continue;
@@ -5604,7 +5603,7 @@ void PlotRaceShield(NAS *nas) {
         ext->unk1C = 0x384;
         other = base;
         me = ext->players[0];
-        pos = &fux->shield->Engine->XYZ;
+        pos = &hero->hero_eng->XYZ; /* where the shield is, if there is one */
         while (1) {
             if (i >= 4) {
                 found = -1;
@@ -6140,7 +6139,9 @@ void PlotBarrelRoll(NAS *nas) {
         ext->shadow->XYZ.y = 0x100;
     }
     nas->Engine->xform.dirty = 1;
-    ext->shadow->xform.dirty = 1;
+    if (ext != NULL) {
+        ext->shadow->xform.dirty = 1;
+    }
 }
 
 void InitTrackGlob(NAS *m) {
