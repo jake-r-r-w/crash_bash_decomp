@@ -2406,7 +2406,7 @@ void RunModules(ModuleEntry *p) {
 
 s32 machine_init(void) {
     InitGeom();
-    SsInit();
+    audio_reset();
     VideoMode = 0;
     pads_init_mtap();
     ClearImage2(&VramRect, 0, 0, 0);
@@ -2511,30 +2511,11 @@ void cd_init(void) {
     archive_open();
 }
 
-void xa_setvol(s32 vol) {
-    SpuCommonAttr attr;
-
-    attr.mask = SPU_COMMON_MVOLL | SPU_COMMON_MVOLR | SPU_COMMON_CDVOLL | SPU_COMMON_CDVOLR | SPU_COMMON_CDMIX;
-    attr.mvol.left = 0x37FF;
-    attr.mvol.right = 0x37FF;
-    attr.cd.volume.left = vol;
-    attr.cd.volume.right = vol;
-    attr.cd.mix = 1;
-    SpuSetCommonAttr(&attr);
-}
-
 void loader_pending_stub(void) {
     loader_pending();
 }
 
 void cd_unused(void) {
-}
-
-void xa_mute(void) {
-    if (xa_count >= 0x1F) {
-        xa_count = 0x1E;
-    }
-    xa_setvol(0);
 }
 
 /* Pad n's state now, from the host: a controller has sticks, and the keyboard is a digital pad. */
@@ -3506,7 +3487,6 @@ s32 UnusedPairs[176] = {  /* halfword pairs; read nowhere */
     0xFC0100, 0xF10124, 0xDA00F3, 0x123010A, 0x137010E, 0x1390102, 0xF900EF, 0xEE010F,
     0x10E010B, 0x12700ED, 0x13000EC, 0x2830087, 0x2D00223, 0xD300D2, 0xE4, 0,
 };
-s32 xa_count = 0;
 s32 PadUnused[1] = {0};
 s32 PadLastRead = 0;
 FreeNode *FreeBufNodes = 0;
@@ -3523,7 +3503,7 @@ FreeNode *ClutFreeSmall = 0;
 FreeNode *ClutUsedSmall = 0;
 FreeNode *ClutLargeList = 0;
 u8 *VramBufNodes = 0;
-void (*SsTickSaved)() = (void (*)())(iptr)0x4D2;
+s32 SoundStarted = 0;
 s32 SoundUnused[6] = {0};
 
 /* the .bss (main.c's comes first) */

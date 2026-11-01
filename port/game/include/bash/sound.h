@@ -18,7 +18,6 @@ void sound_vsync_tick(void);
 void sound_resume(void);
 void sound_pause(void);
 void sound_stop(void);
-void sound_continue(void);
 s32 sfx_distance_volume(VECTOR *v, s32 *range);
 s32 view_project_volume(VECTOR *pos, camera_info_tag *view);
 void view_project(VECTOR *pos, camera_info_tag *view, VECTOR *out, s32 *sxy);

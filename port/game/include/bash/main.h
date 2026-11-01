@@ -340,7 +340,7 @@ typedef struct {
 } SfxPool;
 
 /* A VAB file in memory: the header and body as byte offsets from its start
- * (vab_loaded opens it with SsVabOpenHead / SsVabTransBody). */
+ * (vab_loaded opens it with audio_bank_open / audio_bank_load). */
 typedef struct {
     s32 body;
     s32 head;
@@ -512,7 +512,7 @@ typedef struct PadState {
  * the C++ symbols' (music_dload_midi__FP4fileP10music_midil). */
 typedef struct music_midi {
     /* 0x00 */ u8 *data;                 /* heap block, freed by music_free */
-    /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
+    /* 0x04 */ s32 seq;                  /* its song, or -1 */
     /* 0x08 */ u8 *songs[5];             /* each song's SEQ data: data + its header offset (music_setup_slot) */
     /* 0x1C */ s32 handle;  /* -1 when closed */
 } music_midi;
@@ -533,7 +533,7 @@ typedef struct {
 /* MusicTable: what music_load_track passes to music_load for an index. */
 typedef struct MusicEntry {
     /* 0x00 */ file *file;
-    /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
+    /* 0x04 */ s16 reverb;               /* audio_reverb_type */
     /* 0x06 */ u8 pad6[2];
     /* 0x08 */ file *file2;  /* its music file (music_play_level) */
     /* 0x0C */ file *altFile;  /* the alternative music file (flag 0x80) */
@@ -865,7 +865,6 @@ extern s32 MalFreeBlocks;            /* mal_count_free: free blocks */
 extern file DatIndex[];        /* the archive's entries, file N at [N] */
 extern s32 MalLargestFree;            /* mal_count_free: largest free block, bytes */
 extern s32 SfxBankCount;            /* slots of SfxBanks in use */
-extern char SsTable[];
 /* A save slot as the card menus show it (CardSlots): the heroes picked and out (GameInfo +0x4C
  * and +0x5C), then the saved game state. */
 typedef struct CardSlot {
@@ -950,9 +949,8 @@ extern u8 *ExtHeapLow;
 extern u8 *ExtHeapHigh;
 extern VabFile *VabLoading;  /* VAB being transferred to the SPU, or NULL */
 extern sfx_machine_bank_info *SfxBankLoading;  /* where its id goes */
-extern s32 VabHeadId;       /* the id from SsVabOpenHead */
-extern u8 SpuKeyStatus[];
-extern s32 xa_count;
+extern s32 VabHeadId;       /* the id from audio_bank_open */
+extern u8 AudioVoiceStates[];
 extern s32 SfxVoiceMask;
 extern s32 SfxVoiceBits[];       /* voice bit masks, by voice */
 extern s32 MusicDuckCur;
@@ -1169,7 +1167,7 @@ typedef struct AnimStep {
     u16 arg;
 } AnimStep;
 extern s32 ContourHeight;
-extern void (*SsTickSaved)();
+extern s32 SoundStarted;
 extern NAS *NASActiveTail;
 /* A list node of a PrimList: either a heap block of prims (mode 1), or two prims in the node itself, from data on (PrimNode). */
 typedef struct PrimLink {

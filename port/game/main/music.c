@@ -7,18 +7,16 @@ void music_open_seq(music_midi *slot, s32 idx) {
 
     if (slot->handle != -1) {
         if (slot->seq != -1) {
-            SsSeqClose((s16)slot->seq);
-            SsSepStop((s16)slot->seq, 0);
+            audio_song_close((s16)slot->seq);
         }
     }
-    SsSeqOpen(slot->songs[idx], (s16)slot->seq);
+    audio_song_open(slot->songs[idx], (s16)slot->seq);
     slot->handle = idx;
-    SsSetMVol(0x7F, 0x7F);
-    SsSeqPlay((s16)slot->seq, 1, 0);
+    audio_song_play((s16)slot->seq, 1, 0);
     vol = (GameOptions.music * 0x7F) / 100;
-    SsSeqSetVol((s16)slot->seq, vol, vol);
+    audio_song_volume((s16)slot->seq, vol, vol);
     MusicVolCur = (GameOptions.music * 0x7F) / 100;
-    SsSetMute(0);
+    audio_set_mute(0);
 }
 
 void music_update(void) {
@@ -70,45 +68,44 @@ void music_init(void) {
 
 void music_close(music_midi *slot) {
     if (slot->seq >= 0) {
-        SsSeqClose(slot->seq);
-        SsSepStop(slot->seq, 0);
+        audio_song_close(slot->seq);
     }
     slot->handle = -1;
 }
 
 void continue_music(void) {
     if (CurrentMusic.seq >= 0) {
-        SsSeqReplay(CurrentMusic.seq);
+        audio_song_resume(CurrentMusic.seq);
     }
 }
 
 void music_pause(void) {
     if (CurrentMusic.seq >= 0) {
-        SsSeqPause(CurrentMusic.seq);
+        audio_song_pause(CurrentMusic.seq);
     }
 }
 
 void music_replay(music_midi *arg0) {
     if (arg0->seq >= 0) {
-        SsSeqReplay(arg0->seq);
+        audio_song_resume(arg0->seq);
     }
 }
 
 void music_pause_slot(music_midi *arg0) {
     if (arg0->seq >= 0) {
-        SsSeqPause(arg0->seq);
+        audio_song_pause(arg0->seq);
     }
 }
 
 void music_set_tempo(s32 arg0, s32 arg1) {
     if (CurrentMusic.seq >= 0) {
-        SsSeqSetAccelerando((s16)CurrentMusic.seq, (MusicTable[GameMode].tempo * arg0) / 100, arg1);
+        audio_song_tempo((s16)CurrentMusic.seq, (MusicTable[GameMode].tempo * arg0) / 100, arg1);
     }
 }
 
 void music_fade_out(s32 arg0) {
     if (CurrentMusic.seq >= 0) {
-        SsSeqSetDecrescendo(CurrentMusic.seq, 0x7F, arg0);
+        audio_song_fade(CurrentMusic.seq, 0x7F, arg0);
     }
 }
 
@@ -139,18 +136,15 @@ void music_setup_slot(music_midi *slot) {
     slot->songs[3] = slot->data + h->o14;
     slot->songs[4] = slot->data + h->o18;
     slot->handle = -1;
-    slot->seq = SsVabOpenHead(head, -1);
-    SsVabTransBody(body, (s16)slot->seq);
-    SpuIsTransferCompleted(1);
+    slot->seq = audio_bank_open(head, -1);
+    audio_bank_load(body, (s16)slot->seq);
     slot->data = mal_trim_front(slot->data, h->head, &MainHeap);
 }
 
 void music_dload_midi(file *arg0, music_midi *slot, s32 type) {
     asload_permanent_callback(arg0, music_set_data, slot);
-    SpuReserveReverbWorkArea(1);
-    SsUtSetReverbType(type);
-    SsUtSetReverbDepth(0, 0);
-    SsUtReverbOn();
+    audio_reverb_type(type);
+    audio_reverb_depth(0, 0);
 }
 
 void music_set_data(u8 *data, music_midi *slot) {

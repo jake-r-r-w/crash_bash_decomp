@@ -10,8 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libsnd.h>
-#include <libspu.h>
+#include "audio.h"
 #include "platform.h"
 
 #define NUM_BANKS 16
@@ -23,13 +22,13 @@
 #define SAMPLES_PER_STEP (OUT_RATE / 60)
 #define MAX_SAMPLE 256
 #define VAB_PROGRAMS_AT 0x20
-#define VAB_TONES_AT (VAB_PROGRAMS_AT + 128 * (int)sizeof(ProgAtr))
+#define VAB_TONES_AT (VAB_PROGRAMS_AT + 128 * (int)sizeof(AudioProgram))
 #define SEQ_HEADER 15
 
 typedef struct {
     int used;
-    ProgAtr prog[128];
-    VagAtr *tone; /* 16 a program */
+    AudioProgram prog[128];
+    AudioTone *tone; /* 16 a program */
     int nprog, nsample;
     int master; /* the bank's own volume */
     uint32_t sample_end[MAX_SAMPLE + 1];
@@ -93,7 +92,7 @@ static Seq Seqs[NUM_SEQS];
 static uint32_t VoiceMask; /* the voices the game's effects still hold: theirs until it lets them go, even once silent */
 static int Mute;
 static int Mono;
-static void (*TickCb)();
+static void (*TickCb)(void);
 static int TickOn;
 static int ToNextStep;
 
@@ -560,7 +559,7 @@ void snd_vblank(void) {
 
 /* Sound banks: a copy of what's needed, as the game frees its own after the transfer. */
 
-short SsVabOpenHead(unsigned char *addr, short vab) {
+short audio_bank_open(unsigned char *addr, short vab) {
     Bank *b;
     uint16_t nprog, nsample, size;
     uint32_t off = 0;
@@ -587,12 +586,12 @@ short SsVabOpenHead(unsigned char *addr, short vab) {
     b->master = addr[0x18];
     b->nsample = nsample > MAX_SAMPLE ? MAX_SAMPLE : nsample;
     memcpy(b->prog, addr + VAB_PROGRAMS_AT, sizeof(b->prog));
-    b->tone = realloc(b->tone, sizeof(VagAtr) * 16 * (nprog ? nprog : 1));
-    memcpy(b->tone, addr + VAB_TONES_AT, sizeof(VagAtr) * 16 * nprog);
+    b->tone = realloc(b->tone, sizeof(AudioTone) * 16 * (nprog ? nprog : 1));
+    memcpy(b->tone, addr + VAB_TONES_AT, sizeof(AudioTone) * 16 * nprog);
     /* a size a sample, from slot 1: sample n is from the end of n - 1 to the end of n */
     b->sample_end[0] = 0;
     for (i = 1; i <= b->nsample; i++) {
-        memcpy(&size, addr + VAB_TONES_AT + sizeof(VagAtr) * 16 * nprog + i * 2, 2);
+        memcpy(&size, addr + VAB_TONES_AT + sizeof(AudioTone) * 16 * nprog + i * 2, 2);
         off += (uint32_t)size * 8;
         b->sample_end[i] = off;
     }
@@ -601,7 +600,7 @@ short SsVabOpenHead(unsigned char *addr, short vab) {
     return vab;
 }
 
-short SsVabTransBody(unsigned char *addr, short vab) {
+short audio_bank_load(unsigned char *addr, short vab) {
     Bank *b;
 
     if (vab < 0 || vab >= NUM_BANKS) {
@@ -629,7 +628,7 @@ static int samples_playing(const uint8_t *samples) {
 
 /* Closing a bank doesn't stop what it's playing on the PS1: a cutscene's clip overlaps the next, which closes it. So an
    effect plays out, and its samples go when it has. The song's notes stop with it. */
-void SsVabClose(short vab) {
+void audio_bank_close(short vab) {
     static uint8_t *closing[8];
     uint8_t *samples;
     int i;
@@ -673,7 +672,7 @@ void SsVabClose(short vab) {
     host_audio_unlock();
 }
 
-short SsUtGetProgAtr(short vab, short prog, ProgAtr *atr) {
+short audio_bank_program(short vab, short prog, AudioProgram *atr) {
     if (vab < 0 || vab >= NUM_BANKS || !Banks[vab].used || prog < 0 || prog >= 128) {
         return -1;
     }
@@ -681,7 +680,7 @@ short SsUtGetProgAtr(short vab, short prog, ProgAtr *atr) {
     return 0;
 }
 
-short SsUtGetVagAtr(short vab, short prog, short tone, VagAtr *atr) {
+short audio_bank_tone(short vab, short prog, short tone, AudioTone *atr) {
     if (vab < 0 || vab >= NUM_BANKS || !Banks[vab].used || prog < 0 || prog >= Banks[vab].nprog || tone < 0 || tone >= 16) {
         return -1;
     }
@@ -691,7 +690,7 @@ short SsUtGetVagAtr(short vab, short prog, short tone, VagAtr *atr) {
 
 /* Voices */
 
-/* SsPitchFromNote: a tone's shift raises the note, in 128ths of a semitone. */
+/* A tone's shift raises the note, in 128ths of a semitone. */
 static uint32_t note_pitch(double note, int center, int shift) {
     double p = 4096.0 * pow(2.0, (note + shift / 128.0 - center) / 12.0);
 
@@ -709,7 +708,7 @@ static void apply_pan(int pan, int *left, int *right) {
 
 /* Sets a voice going on a tone of a bank's program. */
 static Voice *start_voice(Voice *v, const Bank *b, int prog, int tone) {
-    const VagAtr *t = &b->tone[prog * 16 + tone];
+    const AudioTone *t = &b->tone[prog * 16 + tone];
 
     if (t->vag <= 0 || t->vag > b->nsample || b->samples == NULL) {
         return NULL;
@@ -736,7 +735,7 @@ static Voice *start_voice(Voice *v, const Bank *b, int prog, int tone) {
     return v;
 }
 
-short SsUtKeyOn(short vab, short prog, short tone, short note, short fine, short left, short right) {
+short audio_note_on(short vab, short prog, short tone, short note, short fine, short left, short right) {
     Bank *b;
     Voice *v = NULL;
     int i;
@@ -777,7 +776,7 @@ short SsUtKeyOn(short vab, short prog, short tone, short note, short fine, short
     return (short)(v - Voices);
 }
 
-short SsUtKeyOffV(short voice) {
+short audio_voice_off(short voice) {
     if (voice < 0 || voice >= FX_VOICES) {
         return -1;
     }
@@ -790,7 +789,7 @@ short SsUtKeyOffV(short voice) {
     return 0;
 }
 
-void SsUtAllKeyOff(short mode) {
+void audio_voices_all_off(void) {
     int i;
 
     host_audio_lock();
@@ -800,7 +799,7 @@ void SsUtAllKeyOff(short mode) {
     host_audio_unlock();
 }
 
-short SsUtChangePitch(short voice, short vab, short prog, short old_note, short old_fine, short new_note, short new_fine) {
+short audio_voice_pitch(short voice, short vab, short prog, short old_note, short old_fine, short new_note, short new_fine) {
     if (voice < 0 || voice >= FX_VOICES) {
         return -1;
     }
@@ -810,7 +809,7 @@ short SsUtChangePitch(short voice, short vab, short prog, short old_note, short 
     return 0;
 }
 
-short SsUtSetVVol(short voice, short left, short right) {
+short audio_voice_volume(short voice, short left, short right) {
     if (voice < 0 || voice >= FX_VOICES) {
         return -1;
     }
@@ -821,7 +820,7 @@ short SsUtSetVVol(short voice, short left, short right) {
     return 0;
 }
 
-void SpuGetAllKeysStatus(char *status) {
+void audio_voice_states(char *status) {
     int i;
 
     host_audio_lock();
@@ -903,7 +902,7 @@ static void note_on(Seq *s, int n, int channel, int note, int velocity) {
         return;
     }
     for (i = 0; i < b->prog[prog].tones && i < 16; i++) {
-        const VagAtr *t = &b->tone[prog * 16 + i];
+        const AudioTone *t = &b->tone[prog * 16 + i];
 
         if (note >= t->min && note <= t->max) {
             Voice *v = start_voice(music_voice(), b, prog, i);
@@ -1118,7 +1117,7 @@ static void step_sequencers(void) {
 }
 
 /* The game opens a sequence on the bank it plays from, and uses the bank's number for it. */
-short SsSeqOpen(uint32_t *addr, short vab) {
+short audio_song_open(uint32_t *addr, short vab) {
     Seq *s;
     const uint8_t *p = (const uint8_t *)addr;
 
@@ -1141,7 +1140,7 @@ short SsSeqOpen(uint32_t *addr, short vab) {
     return vab;
 }
 
-void SsSeqClose(short seq) {
+void audio_song_close(short seq) {
     if (seq < 0 || seq >= NUM_SEQS) {
         return;
     }
@@ -1152,10 +1151,7 @@ void SsSeqClose(short seq) {
     host_audio_unlock();
 }
 
-void SsSepStop(short seq, short sep) {
-}
-
-void SsSeqPlay(short seq, char mode, short count) {
+void audio_song_play(short seq, char mode, short count) {
     if (seq < 0 || seq >= NUM_SEQS) {
         return;
     }
@@ -1168,7 +1164,7 @@ void SsSeqPlay(short seq, char mode, short count) {
     host_audio_unlock();
 }
 
-void SsSeqPause(short seq) {
+void audio_song_pause(short seq) {
     if (seq < 0 || seq >= NUM_SEQS) {
         return;
     }
@@ -1178,7 +1174,7 @@ void SsSeqPause(short seq) {
     host_audio_unlock();
 }
 
-void SsSeqReplay(short seq) {
+void audio_song_resume(short seq) {
     if (seq < 0 || seq >= NUM_SEQS) {
         return;
     }
@@ -1189,7 +1185,7 @@ void SsSeqReplay(short seq) {
     host_audio_unlock();
 }
 
-void SsSeqSetVol(short seq, short left, short right) {
+void audio_song_volume(short seq, short left, short right) {
     int i;
 
     if (seq < 0 || seq >= NUM_SEQS) {
@@ -1205,7 +1201,7 @@ void SsSeqSetVol(short seq, short left, short right) {
 }
 
 /* To this speed over this many steps. */
-void SsSeqSetAccelerando(short seq, int32_t tempo, int32_t ticks) {
+void audio_song_tempo(short seq, int32_t tempo, int32_t ticks) {
     Seq *s;
 
     if (seq < 0 || seq >= NUM_SEQS || tempo <= 0) {
@@ -1219,7 +1215,7 @@ void SsSeqSetAccelerando(short seq, int32_t tempo, int32_t ticks) {
 }
 
 /* Down by this much of 127 over this many steps. */
-void SsSeqSetDecrescendo(short seq, short vol, int32_t ticks) {
+void audio_song_fade(short seq, short vol, int32_t ticks) {
     Seq *s;
 
     if (seq < 0 || seq >= NUM_SEQS) {
@@ -1232,98 +1228,51 @@ void SsSeqSetDecrescendo(short seq, short vol, int32_t ticks) {
     host_audio_unlock();
 }
 
-void SsSeqCalledTbyT(void) {
-    /* the mix steps the sequences */
-}
-
-/* The rest of what the game asks of the library. */
-
-int32_t SpuIsTransferCompleted(int32_t flag) {
-    return 1;
-}
-
-int32_t SpuReserveReverbWorkArea(int32_t on_off) {
-    return 1;
-}
-
-void SpuSetCommonAttr(SpuCommonAttr *attr) {
-}
-
 /* Starts over: every voice off and every bank closed. The game counts on it: it never closes its music
  * banks. */
-void SsInit(void) {
+void audio_reset(void) {
     int i;
 
     for (i = 0; i < NUM_BANKS; i++) {
         if (Banks[i].used) {
-            SsVabClose((short)i);
+            audio_bank_close((short)i);
         }
     }
-    SsUtAllKeyOff(0);
+    audio_voices_all_off();
 }
 
-void SsStart(void) {
+void audio_start(void (*tick)(void)) {
+    TickCb = tick;
     TickOn = 1;
 }
 
-void SsEnd(void) {
+void audio_stop(void) {
     TickOn = 0;
 }
 
-void SsQuit(void) {
-    TickOn = 0;
+void audio_set_mono(int mono) {
+    Mono = mono;
 }
 
-void SsSetTableSize(char *table, short s_max, short t_max) {
+void audio_set_mute(int mute) {
+    Mute = mute;
 }
 
-void SsSetTickMode(int32_t mode) {
-}
-
-void *SsSetTickCallback(void (*cb)()) {
-    void (*old)() = TickCb;
-
-    TickCb = cb;
-    return (void *)old;
-}
-
-void SsSetMVol(short left, short right) {
-}
-
-void SsSetMono(void) {
-    Mono = 1;
-}
-
-void SsSetStereo(void) {
-    Mono = 0;
-}
-
-void SsSetMute(char mode) {
-    Mute = mode;
-}
-
-void SsSetVoiceMask(uint32_t mask) {
+void audio_hold_voices(uint32_t mask) {
     host_audio_lock();
     VoiceMask = mask;
     host_audio_unlock();
 }
 
-void SsUtFlush(void) {
-}
-
-void SsUtReverbOn(void) {
-}
-
-short SsUtSetReverbType(short type) {
+void audio_reverb_type(short type) {
     host_audio_lock();
     Reverb = type >= 1 && type <= 9 ? ReverbPresets[type - 1] : NULL;
     memset(ReverbRing, 0, sizeof(ReverbRing));
     ReverbOutL[0] = ReverbOutL[1] = ReverbOutR[0] = ReverbOutR[1] = 0;
     host_audio_unlock();
-    return type;
 }
 
-void SsUtSetReverbDepth(short left, short right) {
+void audio_reverb_depth(short left, short right) {
     host_audio_lock();
     ReverbDepthL = left / 127.0f;
     ReverbDepthR = right / 127.0f;

@@ -52,22 +52,22 @@ void music_play_level(s32 arg0, s32 arg1) {
 }
 
 void sound_set_stereo(void) {
-    SsSetStereo();
+    audio_set_mono(0);
 }
 
 void sound_set_mono(void) {
-    SsSetMono();
+    audio_set_mono(1);
 }
 
 void sound_init(void) {
-    SsInit();
+    audio_reset();
     music_init();
     sfx_voices_init();
 }
 
 void sound_reinit(void) {
     sfx_banks_close();
-    SsInit();
+    audio_reset();
     music_free();
 }
 
@@ -80,7 +80,7 @@ s32 sfx_update_voice(_sfx_handler *voice) {
     s32 *slot = &voice->slot;
 
     if (voice->voice != -1) {
-        if (SpuKeyStatus[voice->slot] != 1) {
+        if (AudioVoiceStates[voice->slot] != 1) {
             return 0;
         }
         f = voice->flags & 0xE;

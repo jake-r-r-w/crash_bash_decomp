@@ -8,8 +8,7 @@
 #include <string.h>
 #include <libgte.h>
 #include <libgpu.h>
-#include <libspu.h>
-#include <libsnd.h>
+#include "../../platform/audio.h"
 
 #include <inline_c.h>
 #include <gtemac.h>

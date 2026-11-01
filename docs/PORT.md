@@ -102,7 +102,7 @@ ctest --preset windows-clang
 ```
 
 The presets are `windows-clang`, `linux-clang`, `linux-gcc` and `linux-asan`, and the output is under `build/port/`.
-`port/` holds `game/` (the copy of the game's C), `psyq/` (the PsyQ names still left: the GTE, the drawing packets and the sound, which go in 6.8), `tests/` (the play tests) and `main.c`.
+`port/` holds `game/` (the copy of the game's C), `psyq/` (the PsyQ names still left: the GTE and the drawing packets, which go in 6.8), `tests/` (the play tests) and `main.c`.
 
 The game's C isn't in the default build until it compiles. To see what's left:
 

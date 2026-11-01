@@ -12,27 +12,20 @@ void sound_critical(void) {
 
 void machine_init_sound(void) {
     CurrentMusic.data = 0;
-    SsInit();
-    SsSetTableSize(SsTable, 1, 1);
-    SpuReserveReverbWorkArea(1);
-    SsUtSetReverbType(7);
-    SsUtSetReverbDepth(100, 0);
-    SsUtReverbOn();
+    audio_reset();
+    audio_reverb_type(7);
+    audio_reverb_depth(100, 0);
     sound_reset_counter();
-    SsTickSaved = (void (*)())SsSetTickCallback(sound_vsync_tick);
-    SsSetTickMode(1);
-    SsStart();
+    audio_start(sound_vsync_tick);
+    SoundStarted = 1;
 }
 
 void machine_quit_sound(void) {
-    if (SsTickSaved != 0) {
+    if (SoundStarted) {
         music_stop();
-        SsUtFlush();
-        SsEnd();
-        SsSetTickCallback(SsTickSaved);
-        SsQuit();
+        audio_stop();
         platform_wait_vblanks(3);
-        SsTickSaved = 0;
+        SoundStarted = 0;
     }
 }
 
@@ -47,9 +40,6 @@ void sound_vsync_tick(void) {
             VabCuePending += 1;
         }
     }
-    if (SoundCritical == 0) {
-        sound_continue();
-    }
 }
 
 void sound_resume(void) {
@@ -60,18 +50,16 @@ void sound_resume(void) {
 void sound_pause(void) {
     music_pause();
     sfx_pause_all();
-    xa_mute();
 }
 
 void sound_stop(void) {
     music_stop();
     sfx_delete_all();
-    xa_mute();
 }
 
 void vab_map_sfx(s32 id, s32 arg1) {
-    ProgAtr prog;
-    VagAtr vag;
+    AudioProgram prog;
+    AudioTone vag;
     s32 i;
     s32 j;
     s32 n;
@@ -81,12 +69,12 @@ void vab_map_sfx(s32 id, s32 arg1) {
         if (i >= 16) {
             goto done;
         }
-        SsUtGetProgAtr(id, i, &prog);
+        audio_bank_program(id, i, &prog);
         for (j = 0;; j++) {
             if (j >= prog.tones) {
                 goto next;
             }
-            if (SsUtGetVagAtr(id, i, j, &vag) == 0) {
+            if (audio_bank_tone(id, i, j, &vag) == 0) {
                 n = vag.min + (vag.max << 8);
                 if (n != 0) {
                     if (arg1 != 0) {
@@ -110,8 +98,7 @@ void vab_loaded(void *data, sfx_machine_bank_info *slot) {
     u8 *body;
     s16 id;
 
-    SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
-    if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
+    if ((VabLoading != NULL || SfxBankLoading != NULL)) {
         SfxBankLoading->id = VabHeadId;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         vab_map_sfx(SfxBankLoading->id, 0);
@@ -122,8 +109,8 @@ void vab_loaded(void *data, sfx_machine_bank_info *slot) {
     slot->head = head;
     slot->handle = 0;
     body = FILE_AT(data, ((VabFile *)data)->body);
-    id = SsVabOpenHead(slot->head, -1);
-    SsVabTransBody(body, id);
+    id = audio_bank_open(slot->head, -1);
+    audio_bank_load(body, id);
     VabHeadId = id;
     VabLoading = data;
     SfxBankLoading = slot;
@@ -133,15 +120,13 @@ void vab_transfer_poll(void) {
     MATRIX *m;
 
     if (VabLoading != NULL || SfxBankLoading != NULL) {
-        if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
-            SfxBankLoading->id = VabHeadId;
-            mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
-            vab_map_sfx(SfxBankLoading->id, 0);
-            VabLoading = NULL;
-            SfxBankLoading = NULL;
-        }
+        SfxBankLoading->id = VabHeadId;
+        mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
+        vab_map_sfx(SfxBankLoading->id, 0);
+        VabLoading = NULL;
+        SfxBankLoading = NULL;
     }
-    SpuGetAllKeysStatus(SpuKeyStatus);
+    audio_voice_states(AudioVoiceStates);
     cam_build_view(&MainCamera, ScreenRect);
     m = &MainCamera.view;
     gte_SetRotMatrix(m);
@@ -211,21 +196,17 @@ S16Pair sfx_position_volume(VECTOR *pos) {
     return ret;
 }
 
-void sound_continue(void) {
-    SsSeqCalledTbyT();
-}
-
 void sfx_change_pitch(PitchVoice *arg0, s32 arg1) {
     PitchInfo *info = arg0->info;
 
-    SsUtChangePitch(arg0->voice, info->note, ((s32)(info->fine << 24)) >> 28, 0x3C, 0,
+    audio_voice_pitch(arg0->voice, info->note, ((s32)(info->fine << 24)) >> 28, 0x3C, 0,
                     (s32)(arg1 << 9) >> 16, arg1 & 0x7F);
 }
 
 void sfx_set_voice_volume(s16 *arg0, s32 arg1, s32 arg2) {
     s32 vol = GameOptions.sfx * 0x7F;
 
-    SsUtSetVVol(*arg0, (arg1 * vol) / 409600, (arg2 * vol) / 409600);
+    audio_voice_volume(*arg0, (arg1 * vol) / 409600, (arg2 * vol) / 409600);
 }
 
 s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -233,13 +214,13 @@ s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s8 *sfx = SfxTable[arg1];
     s16 v;
 
-    v = SsUtKeyOn(sfx[0], (s32)(((u8 *)sfx)[1] << 24) >> 28, ((u8 *)sfx)[1] & 0xF, (s32)(arg2 << 9) >> 16,
+    v = audio_note_on(sfx[0], (s32)(((u8 *)sfx)[1] << 24) >> 28, ((u8 *)sfx)[1] & 0xF, (s32)(arg2 << 9) >> 16,
                   arg2 & 0x7F, (arg3 * ((p->sfx << 7) - p->sfx)) / 409600, (arg4 * ((p->sfx << 7) - p->sfx)) / 409600);
     arg0[0] = v;
     ((PitchVoice *)arg0)->info = (PitchInfo *)sfx;
     if (v != -1) {
         SfxVoiceMask |= SfxVoiceBits[v];
-        SsSetVoiceMask(SfxVoiceMask);
+        audio_hold_voices(SfxVoiceMask);
     }
     return v;
 }
@@ -297,26 +278,24 @@ S16Pair sfx_pan(s32 x, s32 v) {
 
 void sfx_key_off(s32 *voice) {
     if (*voice != -1) {
-        SsUtKeyOffV(*voice);
+        audio_voice_off(*voice);
         SfxVoiceMask &= ~SfxVoiceBits[*voice];
-        SsSetVoiceMask(SfxVoiceMask);
+        audio_hold_voices(SfxVoiceMask);
         *voice = -1;
     }
 }
 
 
 void sfx_all_off(void) {
-    SpuIsTransferCompleted(1);
     SfxVoiceMask = 0;
-    SsSetVoiceMask(0);
-    SsUtAllKeyOff(0);
+    audio_hold_voices(0);
+    audio_voices_all_off();
 }
 
 void sfx_table_init(void) {
     s8 *p;
     s32 i;
 
-    SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
     p = SfxTable[0];
     for (i = 0; i < 2001; i++) {
         p[0] = -1;
@@ -335,20 +314,17 @@ void machine_load_sfx(file *arg0, sfx_machine_bank_info *slot) {
 }
 
 void vab_transfer_wait(void) {
-    SpuIsTransferCompleted(1);
     if (VabLoading != NULL || SfxBankLoading != NULL) {
-        if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
-            SfxBankLoading->id = VabHeadId;
-            mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
-            vab_map_sfx(SfxBankLoading->id, 0);
-            VabLoading = NULL;
-            SfxBankLoading = NULL;
-        }
+        SfxBankLoading->id = VabHeadId;
+        mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
+        vab_map_sfx(SfxBankLoading->id, 0);
+        VabLoading = NULL;
+        SfxBankLoading = NULL;
     }
 }
 
 void vab_transfer_check(void) {
-    if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(0) == 1) {
+    if ((VabLoading != NULL || SfxBankLoading != NULL)) {
         SfxBankLoading->id = VabHeadId;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         vab_map_sfx(SfxBankLoading->id, 0);
@@ -392,9 +368,8 @@ void sfx_banks_close(void) {
         n--;
         slot = &SfxBanks[n];
         SfxBankCount = n;
-        SpuIsTransferCompleted(1);
         vab_map_sfx(slot->id, 1);
-        SsVabClose(slot->id);
+        audio_bank_close(slot->id);
         mal_free(slot->head, &MainHeap);
         slot->head = NULL;
         slot->id = -1;
@@ -408,9 +383,8 @@ void sfx_banks_close(void) {
 }
 
 void sfx_bank_close(sfx_machine_bank_info *arg0) {
-    SpuIsTransferCompleted(1);
     vab_map_sfx(arg0->id, 1);
-    SsVabClose((s16)arg0->id);
+    audio_bank_close((s16)arg0->id);
     mal_free(arg0->head, &MainHeap);
     arg0->head = NULL;
     arg0->id = -1;
@@ -443,7 +417,7 @@ s32 SfxVoiceBits[24] = {
     0x8000, 0x10000, 0x20000, 0x40000, 0x80000, 0x100000, 0x200000, 0x400000, 0x800000,
 };
 s32 SfxDistanceCurve[12] = { 0x400, 0x1000, 0xF00, 0xA00, 0x1200, 0x2800, 0x800, 0x1000, 0xF00, 0xA00, 0x1200, 0x1C00 };
-u8 SpuKeyStatus[24] = {0};
+u8 AudioVoiceStates[24] = {0};
 sfx_machine_bank_info SfxBanks[6] = {0};
 s8 SfxTable[2002][2] = {0};
 s32 num_sfx_banks = 0;
@@ -454,5 +428,4 @@ s32 SfxBankCount = 0;
 VabFile *VabLoading = 0;
 sfx_machine_bank_info *SfxBankLoading = 0;
 s32 VabHeadId = 0;
-char SsTable[176] = {0};
 music_midi CurrentMusic = {0};

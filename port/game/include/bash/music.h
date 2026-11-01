@@ -30,7 +30,7 @@ void music_setup_slot(music_midi *slot);
 void music_open_seq(music_midi *slot, s32 idx);
 
 static inline void SeqSlot_SetVol(music_midi *slot, s32 vol) {
-    SsSeqSetVol((s16)slot->seq, (s16)vol, (s16)vol);
+    audio_song_volume((s16)slot->seq, (s16)vol, (s16)vol);
 }
 
 #endif /* BASH_MUSIC_H */
