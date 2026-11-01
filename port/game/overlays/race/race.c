@@ -3458,16 +3458,16 @@ void SetRaceHeroOffTrack(s32 player) {
 /* The splash a dive leaves in the water (RaceHeroOffTrack). */
 static inline void RaceDiveSplash(SLONG_XYZ *pos, s32 kind) {
     NAS *fx;
-    RaceFux *x;
+    EXTscriptdata *x;
 
     fx = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (fx != NULL) {
         x = FindExtension(fx, 0x10000000);
         if (x != NULL) {
-            x->unkC = kind;
-            x->mode = 0x100;
-            x->unk20 = 1;
-            x->unk28 = 0;
+            x->scriptnumber = kind;
+            x->speed = 0x100;
+            x->flags = 1;
+            x->maxloops = 0;
             fx->InitDelete(fx);
         }
     }

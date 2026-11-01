@@ -249,7 +249,7 @@ extern s32 RaceOver;
 typedef struct EXTracedac {
     /* 0x00 */ EXT base;
     /* 0x0C */ s32 state;
-    /* 0x10 */ s32 pad10;
+    /* 0x10 */ ScriptCursor *cursor;
     /* 0x14 */ s32 angle;
     /* 0x18 */ s32 timer;
     /* 0x1C */ s32 height;
