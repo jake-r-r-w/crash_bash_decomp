@@ -5,8 +5,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 [docs/CONVENTIONS.md](docs/CONVENTIONS.md).
 
 - Every game function matches (2026-10-26), and the source is complete: named, typed, all data
-  in C (2026-10-29). Every part of docs/ROADMAP-B.md is done, the PC port last (2026-11-01; the
-  work is in ROADMAP-A.md). A change to the C is an ordinary commit once `tools/dk make check`
+  in C (2026-10-29). What is left is in docs/ROADMAP-B.md (Part 7, more for the PC port; done work
+  in ROADMAP-A.md). A change to the C is an ordinary commit once `tools/dk make check`
   prints `OK`. The matching tools below stay for reworking a function.
 - Everything runs through `tools/dk` (Docker); the host has no Python.
 - This repo follows the `psx-matching-decomp` skill with different paths:

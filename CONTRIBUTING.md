@@ -20,8 +20,8 @@
 
 Every game function matches (2026-10-26), so this is now the route for
 reworking one (a natural form for a steering match) and the record of how
-the matching was done. The work done is in [docs/ROADMAP-A.md](docs/ROADMAP-A.md), and nothing is left on
-[ROADMAP-B.md](docs/ROADMAP-B.md). Functions were matched by hand (by a person or an AI agent), **one function per
+the matching was done. What is left is in [docs/ROADMAP-B.md](docs/ROADMAP-B.md) (done work in
+[ROADMAP-A.md](docs/ROADMAP-A.md)). Functions were matched by hand (by a person or an AI agent), **one function per
 commit**, through the validation gate described in
 [docs/MATCHING.md](docs/MATCHING.md). All commands run through `tools/dk`:
 

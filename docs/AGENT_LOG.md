@@ -61,7 +61,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-Every part of ROADMAP-B.md is done:
+ROADMAP-B.md, Part 7, more for the PC port: widescreen first (2026-11-01, the user's list). Parts 1 to 6 are done:
 
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
@@ -464,6 +464,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-01: ROADMAP-B has a Part 7, the user's list for the port: widescreen, graphics options, online play, easier setup and mods. Checked widescreen first: a 16:9 window shows the 4:3 picture with bars at the sides (`resolve_size`, `fit_picture`), and `--render 1280 720` shows the same view stretched.
 - 2026-11-01: Port's C cleaned up by `-Wall -Wextra` (on for good now, at zero warnings; `-Wno-missing-braces` for the flat data tables) and clang's analyzer: unused variables, calls through wrongly cast functions (`ApplyContour` was void and read for a result), garbage reads, too few arguments, a divide by zero, and about 40 checks for null followed by using it anyway. `same --all` stayed the same throughout, so most of these are on paths no test reaches and haven't been seen to run. What the analyzer still says is false alarms: `ref_get`'s -1, and one each in `bossbot.c`, `maths.c`, `draw.c`, `gfx.c` and `draw_gouraud_quad`. To run it: `clang --analyze` per file from compile_commands.json (`-Xclang -analyzer-checker=core`). The matching's leftovers remain: `new_var` names, `temp_` names and `do { } while (0)` wrappers.
 - 2026-11-01: [v0.1.1](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v0.1.1) is published, with the user's OK: the floor, spark and sound fixes and all of 6.8. Its zip was tried unzipped, with and without `CRASHBSH.DAT`, and with `same --all`, `menu` and `bosses`. Sticks and rumble weren't tried, which its notes say. `same` had passed runs that never started, on the last run's files: it's fixed. `gh release create --target` needs the full hash.
 - 2026-11-01: The user marked Part 6 done, which leaves nothing on ROADMAP-B. Linux stays in PORT.md's plan, unbuilt.

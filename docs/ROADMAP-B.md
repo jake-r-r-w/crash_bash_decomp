@@ -7,4 +7,17 @@ The work already done is in [ROADMAP-A.md](ROADMAP-A.md).
 When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 `tools/dk make progress` so the dashboard updates.
 
-Every part is done. The last, Part 6, the PC port, was marked done on 2026-11-01. A Linux build stays in the port's plan (PORT.md), but isn't built, at the user's request.
+Parts 1 to 6 are done, the PC port's own last (2026-11-01; ROADMAP-A.md). A Linux build stays in the port's plan (PORT.md), but isn't built, at the
+user's request.
+
+## Part 7 - More for the PC port
+
+What the port could have beyond the game as it was. None of it may reach the decomp: it's all in `port/` (PORT.md, The rules).
+
+| # | Task | Notes | Done |
+|---|------|-------|------|
+| 7.1 | Widescreen | Today a wide window shows the 4:3 picture, centred, with bars at the sides. A wide `--render` size only stretches that picture: it shows no more of the world. A real wider view needs the projection, the clipping and the off-screen culling widened (`ScreenRect`, `cam_set_projection`, `bbox_visible`), the HUD and menus laid out for it, as they place things in 640-wide units, and a look at what each level's edges show once you can see past them | [ ] |
+| 7.2 | Graphics options | Anti-aliasing, a choice of texture filtering, high-res texture packs and optional modern lighting. Drawing is real 3D at any resolution, but with the original art and effects. The original look stays the default | [ ] |
+| 7.3 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |
+| 7.4 | Easier setup | Pull `CRASHBSH.DAT` from the player's own disc image in the launcher, as well as copying it by hand | [ ] |
+| 7.5 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files | [ ] |
