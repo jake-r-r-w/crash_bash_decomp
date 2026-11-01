@@ -15,6 +15,7 @@ typedef struct Settings {
     int smooth;        /* textures filtered, rather than the original's square texels */
     int widescreen;    /* a wider window shows more of the world */
     int test_mode;     /* a test run's game mode to go straight to, or -1 */
+    int test_level_flags; /* and its challenge's flags, as a warp room's door sets them: 0x80 is a crystal's, on the level's other map */
     int testing;       /* went there with --mode: the computer plays, with no time limit */
     int launcher;      /* the settings menu comes first */
     int test_stall;    /* a test run: stop a fight with no progress in this many vblanks */

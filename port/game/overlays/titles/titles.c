@@ -584,6 +584,13 @@ void TitlesCheckIdle(void) {
         g->demoTimer = 0x7FFFFFFF;
         PauseTexts[PAUSE_TEXT_DEMO] = "TESTING";
         g->mode = (u16)settings()->test_mode;
+        /* a challenge's for a person: with nobody playing, it's lost from the start */
+        if (settings()->test_level_flags != 0) {
+            g->levelFlags |= settings()->test_level_flags;
+            g->demo = 0;
+            g->players = 1;
+            g->heroCpu[0] = 0;
+        }
         settings()->test_mode = -1;
         ProcessControl.next_process = &LevelLoadProcess;
         return;

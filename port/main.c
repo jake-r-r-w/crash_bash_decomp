@@ -306,7 +306,7 @@ int platform_pad(int port) {
 
 int main(int argc, char **argv) {
     const char *Image = NULL;
-    int antialias = 0, smooth = 0, widescreen = 0;
+    int antialias = 0, smooth = 0, widescreen = 0, level_flags = 0;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
@@ -386,6 +386,8 @@ int main(int argc, char **argv) {
             widescreen = 1;
         } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
             test_mode = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--level-flags") == 0 && i + 1 < argc) {
+            level_flags = (int)strtol(argv[++i], NULL, 16);
         } else if (strcmp(argv[i], "--wav") == 0 && i + 1 < argc) {
             audio_record(argv[++i]);
         } else if (strcmp(argv[i], "--tile") == 0 && i + 2 < argc) {
@@ -448,6 +450,7 @@ int main(int argc, char **argv) {
         saves_use_default_folder();
     }
     settings()->test_mode = test_mode;
+    settings()->test_level_flags = level_flags;
     settings()->testing = test_mode >= 0;
     settings()->tile = tile;
     settings()->tiles = tiles;

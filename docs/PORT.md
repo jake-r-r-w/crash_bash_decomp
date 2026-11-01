@@ -132,6 +132,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 |---|---|
 | `--image FILE` | copy the game's data from this disc image first, to `--data`'s path if it's given, and otherwise the user's folder |
 | `--antialias N`, `--smooth`, `--widescreen` | those settings, for this run |
+| `--level-flags HEX` | with `--mode`, a challenge's flags as a door would set them, as a one-player game: `80` is a crystal's, on the level's other map. It opens on the rules, so press through them; `--bot` plays it |
 | `--frames N` | stop after N vblanks |
 | `--skip-intro`, `--skip-loading` | the menu's two skips, for this run |
 | `--fps 30\|60\|120` | the frame rate, for this run |
