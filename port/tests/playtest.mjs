@@ -10,8 +10,9 @@
  *       Every game mode, played by the computer, some at a time tiled on the screen, with three shots of each. --asan uses the
  *       AddressSanitizer build, and fails on anything it reports.
  *   node port/tests/playtest.mjs adventure [--seconds N]
- *       Plays a new Adventure with no cheats, by adventureplayer.c and bossbot.c: through every door the game's rules open, as far as it can
- *       in the time (30 minutes by default), and passes if it runs out of doors. Its log says how far it's got, as it goes.
+ *       Plays a new Adventure with no cheats, by adventureplayer.c and bossbot.c: door by door by the game's rules, up to beating Oxide and the
+ *       credits, then saves at the computer, and passes if a new run loads that save with everything still there. 30 minutes at most by
+ *       default. Its log says how far it's got, as it goes.
  *   node port/tests/playtest.mjs menu
  *       From the title screen through the menus, by the pad alone, into the first game of a new Adventure's first room.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
@@ -272,10 +273,18 @@ async function adventure(args) {
     const r = await run(exe, ['--adventure', '--turbo', '--draw-every', '120', '--skip-intro', '--skip-loading', '--saves', rel('saves'), '--frames', '2000000000'],
         path.join(dir, 'log.txt'), { timeout: seconds });
     const crash = crash_where(exe, r.text);
-    const progress = [...r.text.matchAll(/^adventure: vblank.*$/gm)].at(-1)?.[0] ?? 'nothing';
-    const finished = /^adventure: no door left/m.test(r.text);
+    const progress = text => [...text.matchAll(/^adventure: vblank.*$/gm)].at(-1)?.[0] ?? 'nothing';
+    const state = text => progress(text).replace(/vblank \d+ /, '');
 
-    return report([['adventure', { pass: crash == null && finished, what: crash ?? `${finished ? 'no door left' : 'still going at the time limit'}; ${progress}` }]]);
+    if (crash != null || !/^adventure: saved/m.test(r.text)) {
+        return report([['adventure', { pass: false, what: crash ?? `didn't finish in the time; ${progress(r.text)}` }]]);
+    }
+    const load = await run(exe, ['--adventure-load', '--turbo', '--skip-intro', '--skip-loading', '--saves', rel('saves'), '--frames', '3000'],
+        path.join(dir, 'load.txt'), { timeout: MODE_TIMEOUT });
+    const load_crash = crash_where(exe, load.text);
+    const same = /^adventure: loaded/m.test(load.text) && state(load.text) === state(r.text);
+
+    return report([['adventure', { pass: load_crash == null && same, what: load_crash ?? `${progress(r.text)}; ${same ? 'loaded the same' : `loaded ${state(load.text)}`}` }]]);
 }
 
 async function menu(args) {

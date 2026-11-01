@@ -157,7 +157,7 @@ node port/tests/playtest.mjs menu
 ```
 
 `bosses` beats every boss from a real Adventure, by each fight's own rules, and back to the warp room; `--watch` shows them at normal speed with sound. `modes` runs every game mode, played by the
-computer, with `--asan` for the AddressSanitizer build. `adventure` plays a new Adventure with no cheats, door by door. `menu` goes from the title screen into a game by the pad alone. `shots FROM STEP COUNT` makes a contact sheet of one run. What they leave is in
+computer, with `--asan` for the AddressSanitizer build. `adventure` plays a new Adventure with no cheats, door by door, to beating Oxide and the credits, saves at the computer and loads that save in a new run. `menu` goes from the title screen into a game by the pad alone. `shots FROM STEP COUNT` makes a contact sheet of one run. What they leave is in
 `build/port/playtest/`.
 
 **Frame rates.** The game's logic runs at about 30 frames a second (2 vblanks a frame) and stays there, because its movement is per frame. At 60 and 120 the renderer keeps the game's last two frames and draws steps between them, so what's shown is one game frame behind. Triangles are matched by name: `draw_owner` says which object is drawing, and a face number or the order within that object does the rest (`gfx_mark`). What has no owner, like some 2D, just appears. A triangle that jumps more than a quarter of the screen isn't moved.

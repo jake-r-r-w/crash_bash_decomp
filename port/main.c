@@ -313,6 +313,8 @@ int main(int argc, char **argv) {
             aim = 1;
         } else if (strcmp(argv[i], "--adventure") == 0) {
             test_adventure = 1;
+        } else if (strcmp(argv[i], "--adventure-load") == 0) {
+            test_adventure = 2;
         } else if (strcmp(argv[i], "--bot") == 0) {
             bot = 1;
         } else if (strcmp(argv[i], "--cheats") == 0 && i + 1 < argc) {

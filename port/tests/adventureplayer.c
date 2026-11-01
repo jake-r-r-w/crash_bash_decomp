@@ -1,6 +1,7 @@
 /* A test run's player for a whole Adventure (--adventure). In a warp room it walks to the next door the game's own rules open and
  * goes through it, as a player does. In a game the computer plays for it, and hands back as the win comes, as a win only counts
- * for a player; a boss is bossbot.c's. The log says how far it's got each time it's back. */
+ * for a player; a boss is bossbot.c's. Once Oxide's beaten and the credits have rolled it saves at the computer and stops, and
+ * --adventure-load loads that save from the title menu. The log says how far it's got each time it's back. */
 #include <stdio.h>
 #include "common.h"
 #include "bash/main.h"
@@ -10,6 +11,9 @@
 #include "bash/hub_ovl.h"
 #include "bash/aiskill.h"
 #include "bash/spin_ovl.h"
+#include "bash/hub_hubcore.h"
+#include "bash/gameflow.h"
+#include "../platform/settings.h"
 
 void platform_bot_buttons(int buttons);
 void platform_finish(int code);
@@ -29,6 +33,10 @@ void BossBotUpdate(void);
 #define ROOM_LAST 0x25
 #define GATE_LEVEL 2
 #define GATE_WARP 5
+#define GATE_SAVE 4
+#define OXIDE 0x1F
+#define SAVE_NAME_KEYS 3
+#define KEY_DONE 1
 #define AWARD_TROPHY 0
 #define AWARD_BOSS 4
 #define NEAR_ANGLE 0x40
@@ -54,6 +62,7 @@ static s32 InRoom;
 static u16 Tries[0x21][CHOICES];
 static s32 WantLevel, WantChoice;
 static s32 Losses;
+static s32 Saving;
 
 static s32 in_room(void) {
     return GameMode >= ROOM_FIRST && GameMode <= ROOM_LAST;
@@ -155,6 +164,60 @@ static s32 next_door(s32 *entry, s32 *pick) {
     return door;
 }
 
+static void log_progress(void) {
+    s32 count[5] = { 0 };
+    s32 a, i;
+
+    for (a = 0; a < 5; a++) {
+        for (i = 0; i < 0x21; i++) {
+            count[a] += GAME->adventure.won[a][i] != 0;
+        }
+    }
+    printf("adventure: vblank %d room %d trophies %d relics %d crystals %d gems %d bosses %d stage %d\n", platform_vblanks(), GameMode, count[0],
+           count[1], count[2], count[3], count[4], GAME->adventure.stage);
+}
+
+static s32 ending_seen(void) {
+    return GAME->adventure.won[AWARD_BOSS][OXIDE] != 0 && GAME->adventure.creditsDone != 0;
+}
+
+static s32 save_door(void) {
+    s32 i;
+
+    for (i = 0; i < GATEWAYS; i++) {
+        if (HubGateways[i].table != NULL && HubGateways[i].table->gate_type == GATE_SAVE) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/* The save screen: the first slot, a name if it hasn't one, and along to the key that's done. */
+static s32 play_save(void) {
+    if ((Ticks & 7) != 0) {
+        return 0;
+    }
+    if (SaveMenuState == SAVE_NAME_KEYS) {
+        HubKey *k = HubNamePages[HubNamePage].keys + HubNameNext;
+
+        if (k->state == KEY_DONE || (HubNameLen == 0 && GAME->name[0] == 0x20)) {
+            return BTN_CROSS;
+        }
+        return (Ticks & 8) != 0 ? BTN_DOWN : BTN_RIGHT;
+    }
+    return BTN_CROSS;
+}
+
+/* --adventure-load: Adventure Mode, Load Game, the first slot, and what the save brought back goes in the log. */
+static void play_load(void) {
+    if (in_room() && !(GAME->exitFlags & 0x8008)) {
+        printf("adventure: loaded\n");
+        log_progress();
+        platform_finish(0);
+    }
+    platform_bot_buttons(Ticks == 60 ? BTN_CROSS : Ticks == 120 ? BTN_DOWN : Ticks > 180 && (Ticks & 31) == 0 ? BTN_CROSS : 0);
+}
+
 static s32 play_room(void) {
     s32 entry = -1;
     s32 door;
@@ -168,7 +231,7 @@ static s32 play_room(void) {
     if (i == GATEWAYS || (GAME->exitFlags & 0x8008) || Heroes[0].hero_frozen != 0) {
         return 0;
     }
-    door = next_door(&entry, &WantChoice);
+    door = ending_seen() ? save_door() : next_door(&entry, &WantChoice);
     if (door < 0) {
         printf("adventure: no door left to go through\n");
         platform_finish(0);
@@ -195,7 +258,7 @@ static s32 play_room(void) {
         return HubSelectedEntry < entry ? BTN_RIGHT : BTN_LEFT;
     }
     /* a door whose trophy's won has a menu of its challenges */
-    if (entry < 0 && !is_boss(WantLevel) && GAME->adventure.won[AWARD_TROPHY][WantLevel] != 0) {
+    if (entry < 0 && !ending_seen() && !is_boss(WantLevel) && GAME->adventure.won[AWARD_TROPHY][WantLevel] != 0) {
         if (HubDoorChoice < 0) {
             return 0;
         }
@@ -204,19 +267,6 @@ static s32 play_room(void) {
         }
     }
     return (Ticks & 15) == 0 ? BTN_CROSS : 0;
-}
-
-static void log_progress(void) {
-    s32 count[5] = { 0 };
-    s32 a, i;
-
-    for (a = 0; a < 5; a++) {
-        for (i = 0; i < 0x21; i++) {
-            count[a] += GAME->adventure.won[a][i] != 0;
-        }
-    }
-    printf("adventure: vblank %d room %d trophies %d relics %d crystals %d gems %d bosses %d stage %d\n", platform_vblanks(), GameMode, count[0],
-           count[1], count[2], count[3], count[4], GAME->adventure.stage);
 }
 
 /* Each round's result, as a round's the thing that takes the time. */
@@ -309,6 +359,20 @@ static void ring_play(s32 id) {
 
 void AdventurePlayerUpdate(void) {
     Ticks++;
+    if (settings()->test_adventure == 2) {
+        play_load();
+        return;
+    }
+    if (ProcessControl.process == &SaveScreenProcess) {
+        Saving = 1;
+        platform_bot_buttons(play_save());
+        return;
+    }
+    if (Saving && in_room() && !(GAME->exitFlags & 0x8008) && HubGateways[0].table != NULL) {
+        printf("adventure: saved\n");
+        log_progress();
+        platform_finish(0);
+    }
     if (in_room()) {
         if (!InRoom) {
             InRoom = 1;
