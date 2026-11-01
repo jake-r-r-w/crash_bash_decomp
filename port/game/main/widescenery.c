@@ -84,7 +84,7 @@ typedef struct {
 
 static const WideRing Rings[] = {
     /* sand tiles at the size of the level's own, and its far-off city, at the sea's colours */
-    { FILE_BEACH_BALL, 0, 2, 10, 300, 600, 1500, 7500, -3500, 30, 0x4E4320, 0x7A521D },
+    { FILE_BEACH_BALL, 0, 2, 10, 300, 600, 1500, 7500, -3500, 30, 0x40432B, 0x7A521D },
 };
 #define NUM_RINGS ((s32)(sizeof(Rings) / sizeof(Rings[0])))
 
