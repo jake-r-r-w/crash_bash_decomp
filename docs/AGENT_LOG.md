@@ -69,17 +69,14 @@ ROADMAP-B.md, Part 6:
    `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only for now, at the user's request: Linux
    stays in the plan, but isn't built. 6.7, finishing it, has saving, any resolution, analog sticks and rumble written; the user has yet to feel a real controller. What's left is a first
    release. Whether it plays the same as retail is checked by the user playing it.
-   Next on it: finish the Adventure test (Open leads), then the user's controller, then the first release, which needs the user's OK to publish.
+   The Adventure test passes (2026-11-01). Next on it: the user's controller, then the first release, which needs the user's OK to publish.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
-- **Port, the Adventure test isn't finished:** `--adventure` (`port/tests/adventureplayer.c`) walks the warp room's ring and spokes and goes through the next door the game's rules open. Its first version, with
-  `heroCpu[0]` on until the win, won 2 trophies from a new game with no cheats and came back to the hub each time, then spent 110,000 vblanks in Pogo Painter without winning it. That version showed the "force
-  victory" bar, as the game then saw no human left. The current one keeps the hero a player and runs `HeroBot` for it from `heroes.c`; it builds and reaches Crashball, but no round has been seen to finish on it (its
-  run was stopped early), so check that first: `round:` lines in the log say who won each round. Still to do: a player strong enough to win (or a limit on tries), other rooms through the warp door, the other
-  awards (only trophies and bosses are picked so far), the save computer and a reload, the ending (`won[4][31]` and exit flag 1 on leaving Oxide), and a `playtest.mjs adventure` command.
+- **Port, the Adventure test (`playtest.mjs adventure`):** passes with no cheats, about 6.3 million vblanks (5 minutes): new game to Oxide and the credits, a save at the computer, and a new run that loads it. It stops there, at 22 trophies, 16 crystals, 12 gems and 10 relics, so stage 2 (25 trophies), the later doors that need more (Splash Dash, Dante's Dash, Swamp Fox, Dragon Drop, Mallet Mash, Keg Kaboom) and many challenges aren't played by it. Pogo Padlock still counts the hero as the computer until the win comes (`adventureplayer.c`).
+- **Port, "script dbase NULL" in Dot Dash and Toxic Dash:** printed a few times a round in the Adventure, not with `--mode 23`: a `SpawnModelFx`-style effect, script 9, flags 5, no trigger, at y -1400, whose model base reads as null in `InitScriptFX` though the spawner only sets those flags with one. The effect is dropped, nothing else happens. Not found who makes it. Check it against retail before treating it as a bug.
 - **Port, the boss player needs NO HARM HERO:** with no cheats only the Bearminator wins in the time `playtest.mjs bosses` allows; Papu, Fox and Oxide (15 falls, in his asteroid phase) don't. It's the player's dodging, so
   `bosses` keeps `--cheats 1`. The user would rather have all cheats off.
 
@@ -468,6 +465,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-01: The Adventure test passes, no cheats, all four bosses by real play. Oxide's asteroid run: each tick `play_nox` tries nine ways of steering by the flight's own rules against what's ahead and takes what costs least. Ring Ding: `ring_play` as a real player; the computer's hands pick balloons at random. Crashes it found, all null or stale accesses a PS1 shrugs off: Path objects overrunning on level close, Polar's force-victory lights and bomb, Race's missile owner, Papu's spawn point past its array, a hero left holding a destroyed crate (the original clears `player` before the release that needs it; found with a hardware watchpoint), and a retry from Oxide's ball game before `hero_move` exists. Also images leaking until the 16384 limit over a long game. `--draw-every N` runs about 260x normal speed.
 - 2026-11-01: The Adventure test started (Open leads). Found by the user watching: NO HARM HERO stops every player's score in the ball games, not just the hero's, so a match never ends; and Cortex's and Brio's charge left its
   flames behind, as `PlotBrioPack` read its owner from an unset variable. The compiler's `-Wuninitialized -Wsometimes-uninitialized` now finds none in `port/game` (a one-shot scan; the build's own flags don't ask for them).
   A trophy only counts if `heroCpu` of the winner is 0.
