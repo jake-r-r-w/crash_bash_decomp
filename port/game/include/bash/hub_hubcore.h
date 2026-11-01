@@ -315,18 +315,6 @@ void InitPodiumTrophy(NAS *arg0);
 
 void InitPodiumOdo(NAS *arg0);
 
-typedef struct ScriptExt40 {
-    /* 0x00 */ EXT base; u8 padC[8];
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 pad1C[8];
-    /* 0x24 */ s32 unk24;
-    /* 0x28 */ u8 pad28[4];
-    /* 0x2C */ ScriptCursor *cursor;
-    /* 0x30 */ u8 pad30[8];
-    /* 0x38 */ s32 unk38;
-    /* 0x3C */ s32 unk3C;
-} ScriptExt40;
 
 extern ScriptInit HubPathScriptInit;
 

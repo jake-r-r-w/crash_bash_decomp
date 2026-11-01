@@ -984,19 +984,19 @@ void PlotPathEffect(NAS *nas) {
 }
 
 void InitPathEffect(NAS *nas) {
-    ScriptExt40 *ext = AddExt(nas, sizeof(ScriptExt40), 0x10000000);
+    PathExt *ext = AddExt(nas, sizeof(PathExt), 0x10000000);
 
     if (ext != NULL) {
-        ext->cursor = ScriptCursorFirst(nas, &HubPathScriptInit);
+        ext->anim = (EXTanimator *)ScriptCursorFirst(nas, &HubPathScriptInit);
         nas->Engine->sub->u6C.dbase = MapScene->dbase;
         nas->Engine->sub->entity = 0x2018;
         nas->Engine->sub->flags &= 0xFEFFFFFF;
         nas->Engine->xform.order = 2;
-        ext->unk18 = 0;
-        ext->unk24 = 0xC;
-        ext->unk14 = 0;
-        ext->unk38 = 0;
-        ext->unk3C = 0;
+        ext->pos = 0;
+        ext->speed = 0xC;
+        ext->state = 0;
+        ext->fx = NULL;
+        ext->absAngle = 0;
     }
 }
 
