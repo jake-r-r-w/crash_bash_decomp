@@ -768,7 +768,7 @@ void BonkHeroSnapShadow(s32 player) {
 
     h = base + player;
 
-    ((void (*)(EXTengine *))BONK_KeepInBounds)(h->hero_eng);
+    BONK_KeepInBounds(h->hero_eng);
     shadow = h->hero_shadow;
     if (shadow != NULL) {
         shadow->XYZ = h->hero_eng->XYZ;

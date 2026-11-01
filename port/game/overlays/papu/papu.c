@@ -430,7 +430,7 @@ void InitialisePAPU(void) {
                  0x1201, 0x11);
     PapuSetCrateMix(0, 0, 0, 0, 0xC, 4, 0, 0, 0);
     PapuDropFirstCrates();
-    HitHooks.explo_range = (void (*)(s32, s32, s32, s32))PapuExploRange;
+    HitHooks.explo_range = PapuExploRange;
     PapuAttackPos = 0;
     PapuAttackDelay = 0;
 }
@@ -1293,7 +1293,7 @@ void PlotPapuMinion(NAS *nas)
   switch (fux->status) {
   case 5:
     move->Xvel = 0;
-    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ApplyContour(eng);
     break;
   case 1:
     move->Xvel = 0;
@@ -1337,7 +1337,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 6:
-    dx = ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    dx = ApplyContour(eng);
     i = (s16)((s16)(((eng->xform.rot.vy -= 0x155) & 0xFFF) / 341) % 12);
     eng->XYZ.y -= dx;
     if (frame == 8) {
@@ -1370,7 +1370,7 @@ void PlotPapuMinion(NAS *nas)
     move->Xvel = 0x20;
     break;
   case 7:
-    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ApplyContour(eng);
     hnas = PapuMinionObjectAhead(slot, 0x180);
     if (hnas != NULL) {
       for (i = 0; i < 4; i++) {
@@ -1403,7 +1403,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 8:
-    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ApplyContour(eng);
     move->Xvel = 0;
     if (PapuMinionSlots[slot].pad4[6] != 0) {
       if (frame == 8) {
@@ -1439,7 +1439,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 9:
-    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ApplyContour(eng);
     if (PapuMinionSlots[slot].pad4[6] == 0) {
       fux->will_do |= 2;
       break;
@@ -1473,7 +1473,7 @@ void PlotPapuMinion(NAS *nas)
     GotoLinkAnim(anim, 0xA);
     break;
   case 13:
-    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ApplyContour(eng);
     dx = PapuSpawnPoints[nas->UserInfo.user2].x - eng->XYZ.x;
     dz = PapuSpawnPoints[nas->UserInfo.user2].z - eng->XYZ.z;
     angle = get_angle(-dx, -dz);
@@ -1485,7 +1485,7 @@ void PlotPapuMinion(NAS *nas)
     move->Xvel = 0x20;
     break;
   case 10:
-    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ApplyContour(eng);
     move->Xvel = 0;
     if (frame == 8) {
       fux->status = 0;
@@ -1497,7 +1497,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 12:
-    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ApplyContour(eng);
     move->Xvel = 0;
     tobj = PapuMinionSlots[slot].pad4[6];
     if (tobj != 0) {
@@ -1511,7 +1511,7 @@ void PlotPapuMinion(NAS *nas)
     GotoLinkAnim(anim, 0xD);
     break;
   case 11:
-    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ApplyContour(eng);
     move->Xvel = 0;
     PapuMinionSlots[slot].pad4[6] = 0;
     if (frame != 8) {
@@ -1526,7 +1526,7 @@ void PlotPapuMinion(NAS *nas)
     KillNAS(nas);
     return;
   default:
-    eng->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    eng->XYZ.y -= ApplyContour(eng);
     fux->can_do |= 0x102;
     move->Xvel = 0;
     move->Zvel = 0;
@@ -1577,7 +1577,7 @@ void PlotPapuMinion(NAS *nas)
   eng->xform.dirty = 1;
 }
 
-void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
+void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2, s32 arg3)
 {
   B5E44Pos *me;
   s32 i;

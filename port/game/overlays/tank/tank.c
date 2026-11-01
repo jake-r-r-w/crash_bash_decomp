@@ -1710,7 +1710,7 @@ void DamageTankHero(s32 player, s32 damage) {
         return;
     }
     if (damage < 400) {
-        ((void (*)(s32, s32, s32))pad_rumble_big)(player, 0xA, 0xF0);
+        pad_rumble_big(player, 0xA, 0xF0);
         if (HeroesAllOut != 0) {
             damage *= 3;
         } else if (g[player + 0x5C] != 0) {
@@ -6780,14 +6780,14 @@ void PlotTankBossCrashTurret(NAS *nas) {
         a = (a << 20) >> 20;
         if (a >= 0) {
             if (a < 20) {
-                ((TankTurretFireFn)TankBossCrashTurretFire)(eng, 10, -1);
+                TankBossCrashTurretFire(eng);
                 nas->UserInfo.status = 13;
                 break;
             }
             eng->xform.rot.vy += 20;
         } else {
             if (a >= -19) {
-                ((TankTurretFireFn)TankBossCrashTurretFire)(eng, 10, -1);
+                TankBossCrashTurretFire(eng);
                 nas->UserInfo.status = 13;
                 break;
             }
@@ -6868,9 +6868,9 @@ void PlotTankBossCrashTurret(NAS *nas) {
         if (r >= 0) {
             nas->UserInfo.user1++;
             if (nas->UserInfo.user1 & 1) {
-                ((TankTurretFireFn)TankBossCrashTurretFire)(eng, 10, r);
+                TankBossCrashTurretFire(eng);
             } else {
-                ((TankTurretFireFn)TankBossCrashTurretFire)(eng, 3, r);
+                TankBossCrashTurretFire(eng);
             }
             nas->UserInfo.user2 = 0;
             nas->UserInfo.status = 13;
@@ -6892,9 +6892,9 @@ void PlotTankBossCrashTurret(NAS *nas) {
         if (r >= 0) {
             nas->UserInfo.user1++;
             if (nas->UserInfo.user1 & 1) {
-                ((TankTurretFireFn)TankBossCrashTurretFire)(eng, 10, r);
+                TankBossCrashTurretFire(eng);
             } else {
-                ((TankTurretFireFn)TankBossCrashTurretFire)(eng, 3, r);
+                TankBossCrashTurretFire(eng);
             }
             nas->UserInfo.user2 = 0;
             nas->UserInfo.status = 13;

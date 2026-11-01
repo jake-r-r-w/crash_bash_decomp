@@ -442,7 +442,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
         if ((arg2->pickup = ChaseNearPickup(x, z)) != NULL) {
             arg2->state = 5;
             arg2->timer = 0x96;
-            ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, arg2->pickup->Engine, 0);
+            ChaseAI_AngleTo(arg0, arg2->pickup->Engine);
             return;
         }
         bestd = 0x8000;
@@ -481,7 +481,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
             arg2->state = 6;
             arg2->target = best;
             arg2->timer = 0x3C;
-            ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, best->Engine, 0x100);
+            ChaseAI_AngleTo(arg0, best->Engine);
             fux = (ChaseCoalFux *)best->FUX;
             fux->owner = arg0;
             return;
@@ -566,7 +566,7 @@ void Chase_HeroBot(s32 arg0) {
         if (ai->pickup->Type != ChaseASTIndex(0x1D04) || ai->pickup->NASid == 0 || ai->flag != 0) {
             goto rethink;
         }
-        ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, ai->pickup->Engine, 0);
+        ChaseAI_AngleTo(arg0, ai->pickup->Engine);
         ai->flags |= DirPadBits[((ai->angle + off) >> 9) & 7];
         break;
     case 6:
@@ -615,12 +615,12 @@ void Chase_HeroBot(s32 arg0) {
                 ai->state = 6;
                 ai->target = best;
                 ai->timer = 0x3C;
-                ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, best->Engine, 0x100);
+                ChaseAI_AngleTo(arg0, best->Engine);
                 fux = (ChaseCoalFux *)best->FUX;
                 fux->owner = arg0;
             }
         }
-        ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, ai->target->Engine, 0);
+        ChaseAI_AngleTo(arg0, ai->target->Engine);
         ai->flags |= DirPadBits[((ai->angle + off) >> 9) & 7];
         break;
     case 7:
@@ -1849,7 +1849,7 @@ void SetChaseHeroWinner(s32 arg0) {
     }
     h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {
@@ -1880,7 +1880,7 @@ void ChaseHeroWinner(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {
@@ -1920,7 +1920,7 @@ void SetChaseHeroLose(s32 arg0) {
     }
     h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {
@@ -1983,7 +1983,7 @@ void ChaseHeroLose(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {

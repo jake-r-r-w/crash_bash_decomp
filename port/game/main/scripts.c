@@ -879,7 +879,7 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
         } while (++i < e->threadcount);
     }
     update_script(p);
-    sub->hook = (void (*)(subengine *, s32, u32))plot_script_nas;
+    sub->hook = plot_script_nas;
     sub->release = kill_nas_script;
 }
 
@@ -903,7 +903,7 @@ void kill_nas_script(subengine *sub) {
         if (cur == NULL) {
             return;
         }
-        fn = (void (*)(script_thread_handler *, script_control_info *))tab[cur->thread_type].kill;
+        fn = tab[cur->thread_type].kill;
         next = cur->next;
         if (fn != NULL) {
             fn(cur, p);
@@ -915,7 +915,7 @@ void kill_nas_script(subengine *sub) {
     }
 }
 
-void plot_script_nas(subengine *sub, MATRIX *arg1) {
+void plot_script_nas(subengine *sub, MATRIX *arg1, u32 flags) {
     struct { s32 a; s32 b; } saved;
     GteSetup s;
     script_control_info *ci;

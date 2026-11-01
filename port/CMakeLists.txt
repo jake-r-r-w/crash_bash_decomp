@@ -43,6 +43,8 @@ target_compile_options(game PRIVATE
   -std=gnu17
   # What the PS1's compiler did with the rest: a signed char, and signed overflow that wraps.
   -fsigned-char -fwrapv -fno-strict-aliasing -fno-builtin
+  # The warnings stay at zero. Unused parameters are the hooks' shape, and data tables are written flat.
+  -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Wno-missing-field-initializers -Wno-empty-body -Wno-missing-braces
   # Old C, reviewed in 6.3; the warnings that matter for 64-bit stay on.
   -Wno-strict-prototypes -Wno-pointer-sign
   -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-format-security

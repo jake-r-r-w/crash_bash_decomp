@@ -389,7 +389,7 @@ static inline void MineSfxV(void) {
         PlaySfx(0x3F3, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (r == 3) {
-        ((void (*)(s32, _sfx_handler **, SLONG_XYZ *, s32, s32, s32))PlaySfx)(0x3F4, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x3F4, 0, 0, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -408,7 +408,7 @@ static inline void MineSfxH(void) {
         PlaySfx(0x3F3, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (r == 3) {
-        ((s16 (*)(s32, _sfx_handler **, SLONG_XYZ *, s32, s32, s32))PlaySfx)(0x3F4, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x3F4, 0, 0, 0x1000, 0x1E00, 0);
     }
 }
 

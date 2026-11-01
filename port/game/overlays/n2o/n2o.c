@@ -740,7 +740,7 @@ void N2OInitHero(s32 i) {
     }
     k = 1;
     if (N2OBallPhase == k) {
-        ((void (*)(s32, s32))N2OPlaceHero)(i, k);
+        N2OPlaceHero(i);
         return;
     }
     N2OHeroPlaced[i] = 0xF;
@@ -1732,7 +1732,7 @@ void PlotN2OBall(NAS *nas) {
             obj->owner = -1;
             break;
         case 6:
-            if (((s32 (*)(EXTengine *, EXTobject *))N2O_BA_TestLaunchBounds)(eng, obj) == 0) {
+            if (N2O_BA_TestLaunchBounds(eng) == 0) {
                 mot->Xa = mot->Za;
                 mot->Za = 0;
                 obj->status = 8;
@@ -1816,7 +1816,7 @@ void PlotN2OBall(NAS *nas) {
                 obj->status = 10;
             }
             N2OBlendDirection((EXTmotion *)mot);
-            eng->XYZ.y = eng->XYZ.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
+            eng->XYZ.y = eng->XYZ.y - ApplyContour(eng) - 0x60;
             break;
         case 0x11:
             if (obj->countdown != 0) {
@@ -1845,7 +1845,7 @@ void PlotN2OBall(NAS *nas) {
             if (N2OBallOut(eng, obj, 1) || done != 0) {
                 obj->status = 0x12;
             }
-            eng->XYZ.y = eng->XYZ.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
+            eng->XYZ.y = eng->XYZ.y - ApplyContour(eng) - 0x60;
             break;
         case 4:
             if (obj->countdown != 0) {
@@ -1905,7 +1905,7 @@ void PlotN2OBall(NAS *nas) {
                     BossState.flags |= 0x2000;
                 }
             } else {
-                ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, -1, 0);
+                N2OSpawnExplosion(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, -1);
                 if (!(GameCheats & 1) && !(Heroes[obj->player].hero_status & 0xFA00)) {
                     Heroes[0].hero_health -= 0x10;
                     if (Heroes[0].hero_health < 0) {
@@ -1938,7 +1938,7 @@ void PlotN2OBall(NAS *nas) {
                     }
                 }
             } else {
-                ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, -1, 0);
+                N2OSpawnExplosion(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, -1);
                 if (!(GameCheats & 1) && obj->player == 0) {
                     if (!(Heroes[0].hero_status & 0xFA00)) {
                         Heroes[0].hero_health -= 0x10;
@@ -1969,7 +1969,7 @@ void PlotN2OBall(NAS *nas) {
     eng->xform.rot.vx -= dist >> 5;
     if (obj->will_do & 0x100) {
     explode:
-        ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, -1, 0);
+        N2OSpawnExplosion(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, -1);
         KillNAS(nas);
         return;
     }
@@ -3516,7 +3516,7 @@ s32 N2OHeroBallCollision(s32 arg0) {
             if (!(GameCheats & 1)) {
                 hero->hero_score = 0;
                 hero->hero_health = 0;
-                ((void (*)(s32, s32, s32))pad_rumble_big)(arg0, 0xC, 0xFF);
+                pad_rumble_big(arg0, 0xC, 0xFF);
                 SetHeroAction(arg0, 0x2E);
             }
             KillNAS(nas);
@@ -4233,7 +4233,7 @@ void N2OUpdateShadow(s32 arg0) {
     EXTengine *shadow = h->hero_shadow;
 
     shadow->XYZ = h->hero_eng->XYZ;
-    shadow->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(shadow);
+    shadow->XYZ.y -= ApplyContour(shadow);
     shadow->xform.rot.vy = h->hero_eng->xform.rot.vy;
     shadow->xform.dirty = 1;
     if (h->hero_status & 0xF800) {

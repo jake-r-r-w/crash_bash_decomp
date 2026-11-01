@@ -148,7 +148,6 @@ typedef struct {
 extern TankU16Pad PillarCoverFrames[];
 extern u16 CrashTurretFrames[]; /* crash turret anim frames (flags == 0) */
 extern u16 CrashTurretFramesAlt[]; /* crash turret anim frames (flags != 0) */
-typedef void (*TankTurretFireFn)(EXTengine *eng, s32 a, s32 b);
 extern s32 TankTurnSfx[];
 extern s32 TankRecoilSfx[][4];
 /* TankBotPlanSteerMove's fallback roam points: {x, z}. */

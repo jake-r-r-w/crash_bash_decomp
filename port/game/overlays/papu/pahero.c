@@ -1073,7 +1073,7 @@ void SetPAHeroWinner(s32 arg0) {
     }
     h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {
@@ -1100,7 +1100,7 @@ void PAHeroWinner(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {

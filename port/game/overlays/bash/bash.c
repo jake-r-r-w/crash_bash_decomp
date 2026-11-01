@@ -2489,7 +2489,7 @@ void PlotBashPenguin(NAS *nas) {
             case 3:
                 if (GameExitFlags & 0x801) {
                     /* a value-returning call: keeps it from being cross-jumped into case 2's */
-                    ((s32 (*)(EXTanimator *, s16))GotoLinkAnim)(anim, 0);
+                    GotoLinkAnim(anim, 0);
                     goto stop;
                 }
                 t = nas->UserInfo.user1;
@@ -2800,7 +2800,7 @@ void PlotTumbler(NAS *nas) {
         }
         sub = sub->next;
         if (sub != NULL) {
-            dy = ((s32 (*)(EXTengine *))ApplyContour)(eng);
+            dy = ApplyContour(eng);
             sub->XYZ.y = -dy;
             dy = 0x1000 - dy;
             if (dy < 0x10) {

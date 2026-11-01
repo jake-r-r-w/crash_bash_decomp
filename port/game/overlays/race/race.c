@@ -3659,7 +3659,7 @@ void SetRaceHeroDazed(s32 player) {
         SetHeroSeq(player, 0x4A);
     }
     pad_rumble_small(player, 0xA);
-    ((void (*)(s32, s32, s32))pad_rumble_big)(player, 0xA, 0xFF);
+    pad_rumble_big(player, 0xA, 0xFF);
     base = Heroes;
     h = &base[player];
     f = (RaceSpawnExt *)h->hero->FUX;

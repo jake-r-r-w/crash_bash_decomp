@@ -1761,12 +1761,11 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
     return y;
 }
 
-void ApplyContour(EXTengine *eng) {
+s32 ApplyContour(EXTengine *eng) {
     if (LevelSpecs.GetContour == NULL) {
-        AddPlatformContour(eng, eng->XYZ.y - World_floor_level);
-    } else {
-        LevelSpecs.GetContour(eng);
+        return AddPlatformContour(eng, eng->XYZ.y - World_floor_level);
     }
+    return LevelSpecs.GetContour(eng);
 }
 
 void nas_unused_a(void) {
@@ -2533,7 +2532,7 @@ loop:
     card_init();
 }
 
-void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
+void pad_rumble_big(s32 pad, s32 arg1, u8 arg2) {
     PadRumble *p;
 
     if (GAME->heroCpu[pad] == 0 && !(GAME->cheats & 0x80) && GameOptions.vibrate[pad] != 0 &&

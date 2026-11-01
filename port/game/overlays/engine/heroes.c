@@ -396,10 +396,10 @@ void ProcessHeroes(void) {
                 SetHeroAction(id, (u16)HeroActHit);
                 h->hero_immunity = 0;
                 if (h->hero_harm_flags & 0x8000) {
-                    ((void (*)(s32, s32, s32))pad_rumble_big)(id, 4, 0xFF);
+                    pad_rumble_big(id, 4, 0xFF);
                 } else {
                     pad_rumble_small(id, 0xC);
-                    ((void (*)(s32, s32, s32))pad_rumble_big)(id, 0xC, 0xFF);
+                    pad_rumble_big(id, 0xC, 0xFF);
                 }
             }
         }
@@ -481,7 +481,7 @@ void ProcessHeroes(void) {
                 ((void (*)(s32))HeroHooks.PostMoveHero)(id);
             }
         }
-        ((void (*)(EXTengine *))HeroHooks.KeepInBounds)(Heroes[id].hero_eng);
+        HeroHooks.KeepInBounds(Heroes[id].hero_eng);
         UpdateHeroShadow(id);
         if (HeroHooks.HeroExtraEffects != NULL) {
             ((void (*)(s32))HeroHooks.HeroExtraEffects)(id);
@@ -1275,7 +1275,7 @@ s32 HeroMovedDist(s32 arg0) {
     dz = abs(h->hero_eng->XYZ.z - h->hero_eng->OldXYZ.z);
     new_var = 0x40;
     dist = (dist + new_var) + dz;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy == 0x7FFFFFFF) {
         h->hero_eng->XYZ = h->hero_eng->OldXYZ;
         return 0;
@@ -1408,7 +1408,7 @@ void UpdateHeroShadow(s32 idx) {
         if (h->hero_status & 0xA000) {
             s->sub->flags &= 0xFFFF7FFF;
         }
-        s->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(s);
+        s->XYZ.y -= ApplyContour(s);
     }
 }
 
@@ -4343,7 +4343,7 @@ void UpdateBounceMotion(NAS *nas) {
     } else {
         eng->XYZ.y += m->Yvel;
     }
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(eng);
+    dy = ApplyContour(eng);
     next = eng->Engine;
     if (next != NULL) {
         next->XYZ = eng->XYZ;
@@ -4606,7 +4606,7 @@ void HurtHeroesInRadius(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                         hero[i].hero_move->forward_angle = hero[i].hero_move->reactive_angle + 0x800;
                     }
                 }
-                ((void (*)(s32, NAS *, s32, s32, s32))HeroTakeHit)(i, NULL, -1, arg3, 0);
+                HeroTakeHit(i, NULL, -1, arg3, 0);
             }
         }
     } while (++i < 4);

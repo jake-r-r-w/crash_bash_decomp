@@ -1113,7 +1113,7 @@ void SetNoxHeroDead(s32 arg0) {
     HeroInfo *base;
 
     pad_rumble_small(arg0, 0xA);
-    ((void (*)(s32, s32, s32))pad_rumble_big)(arg0, 0xA, 0xFF);
+    pad_rumble_big(arg0, 0xA, 0xFF);
     base = Heroes;
     h = &base[arg0];
     h->hero_status |= 0xA000;
@@ -1293,7 +1293,7 @@ void PlotNitroMissile(NAS *nas) {
 
     if (*GameTeams != 0) {
         if ((Heroes[0].hero_status & 0x2000) && (Heroes[1].hero_status & 0x2000)) {
-            ((void (*)(s32, s32, s32, u16, u16))CreateNAS)(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1C09, 0x11);
+            CreateNAS(nas->Engine->XYZ.x, nas->Engine->XYZ.y, nas->Engine->XYZ.z, 0x1C09, 0x11);
             goto kill;
         }
     } else if (Heroes[0].hero_status & 0x2000) {
@@ -1757,7 +1757,7 @@ void PlotSpiralSat(NAS *nas) {
                     }
                 }
                 if ((((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x30) {
-                    ((s32 (*)(s32, s32))SetHeroAction)(0, 0x30);  /* matching: as an int function's call (the original declared it so here), jump2 doesn't merge it with the void calls */
+                    SetHeroAction(0, 0x30);
                 }
                 goto kill;
             }
@@ -2163,7 +2163,7 @@ void SetNoxHeroHit(s32 arg0) {
 
     CreateNAS(e->XYZ.x, e->XYZ.y, e->XYZ.z + 0x400, 0x1C09, 0x11);
     pad_rumble_small(arg0, 0xA);
-    ((void (*)(s32, s32, s32))pad_rumble_big)(arg0, 0xA, 0xFF);
+    pad_rumble_big(arg0, 0xA, 0xFF);
 }
 
 void NoxHeroDead(void) {

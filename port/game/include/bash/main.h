@@ -744,7 +744,7 @@ typedef struct ScriptCommand {
     void (*init)();
     void (*update)(script_thread_handler *, script_control_info *);
     void (*render)(EXTengine *);
-    void (*kill)(EXTengine *);
+    void (*kill)(script_thread_handler *, script_control_info *);
 } ScriptCommand;
 extern ScriptCommand ScriptCommands[];
 extern s32 World_floor_level;

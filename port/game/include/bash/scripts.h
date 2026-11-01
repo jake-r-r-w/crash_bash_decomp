@@ -42,7 +42,7 @@ void render_script(script_control_info *ci, GteSetup *arg1);
 void scripts_render(void);
 void init_scripts(s32 arg0, s32 arg1);
 void kill_nas_script(subengine *sub);
-void plot_script_nas(subengine *sub, MATRIX *arg1);
+void plot_script_nas(subengine *sub, MATRIX *arg1, u32 flags);
 void kill_script(script_handler *s);
 void kill_script_threads(script_control_info *ci);
 void init_sub_thread(u8 *def, script_control_info *ci, s32 num);

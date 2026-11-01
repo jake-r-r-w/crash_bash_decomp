@@ -75,7 +75,7 @@ extern SpinCell SpinDropPoints[4][16];
         (shadow) = (eng)->Engine;                                                   \
         if ((shadow) != NULL) {                                                     \
             (shadow)->XYZ = (eng)->XYZ;                                         \
-            (shadow)->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);        \
+            (shadow)->XYZ.y -= ApplyContour(eng);        \
         }                                                                           \
     } while (0)
 

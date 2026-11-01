@@ -2932,7 +2932,7 @@ void SetDinoHeroDazed(s32 id) {
         ext->flag = 7;
         ext->flag2 = 0;
         pad_rumble_small(id, 0xA);
-        ((void (*)(s32, s32, s32))pad_rumble_big)(id, 0xA, 0xFF);
+        pad_rumble_big(id, 0xA, 0xFF);
         switch (Heroes[id].hero_name) {
         case 1:
             SFX4(3, 4, 5, 6);

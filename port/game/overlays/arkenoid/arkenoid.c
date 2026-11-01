@@ -1553,7 +1553,7 @@ void AR_MoveHero(u32 arg0) {
             a1 = -sp;
             g->hero_eng->XYZ.z += sp;
         }
-        ((void (*)(EXTengine *))hooks->KeepInBounds)(g->hero_eng);
+        hooks->KeepInBounds(g->hero_eng);
     }
     b = Heroes;
     h = b + arg0;
@@ -1589,7 +1589,7 @@ void AR_PI_MoveHero(u32 arg0) {
     s32 y;
     s32 r;
 
-    r =((s32 (*)(EXTengine *))ApplyContour)(Heroes[arg0].hero_eng);
+    r =ApplyContour(Heroes[arg0].hero_eng);
     e = Heroes[arg0].hero_eng;
     y = e->XYZ.y - r;
     if (!(Heroes[arg0].hero_status & 0xFA00)) {
@@ -3010,7 +3010,7 @@ void Ark_HeroBot(u32 arg0) {
                     if (HeroesAllOut == 0) {
                         flag = 1;
                     }
-                    if (((s32 (*)(s32, s32, s32, s32, s32, s32))ArkBotCanHit)(arg0, target, k, -0x200, 0x200, 0) != 0) {
+                    if (ArkBotCanHit(arg0, target, k, -0x200, 0x200, 0) != 0) {
                         ai->TargetPlayer = -1;
                         ai->AIpad |= 0x8000;
                     } else {
@@ -3020,7 +3020,7 @@ void Ark_HeroBot(u32 arg0) {
                         if (ArkBallComingAtHero(arg0) != 0) {
                             ai->AItimer2 = 0x5A;
                             ai->AIpad |= 0x4000;
-                        } else if (((s32 (*)(s32, s32, s32, s32, s32, s32))ArkBotCanHit)(arg0, target, k, -0x200, 0x200, flag) != 0) {
+                        } else if (ArkBotCanHit(arg0, target, k, -0x200, 0x200, flag) != 0) {
                             ai->TargetPlayer = -1;
                             ai->AIpad |= 0x8000;
                         }
@@ -3052,7 +3052,7 @@ void Ark_HeroBot(u32 arg0) {
                 if (HeroesAllOut == 0) {
                     flag = 1;
                 }
-                if (((s32 (*)(s32, s32, s32, s32, s32, s32))ArkBotCanHit)(arg0, target, k, -0x200, 0x200, flag) != 0) {
+                if (ArkBotCanHit(arg0, target, k, -0x200, 0x200, flag) != 0) {
                     if ((GameLevelFlags & 0x80) && (u16)ArkRedKickTimer == 0) {
                         ai->AIpad |= 0x2000;
                     } else {
@@ -3618,7 +3618,7 @@ void PlotBall(NAS *nas) {
                 PlaySfx(BallFramesA[Random(4)], &eng->sfx, &eng->XYZ, 0x1000, 0x1E00, 0);
                 obj->status = 1;
             }
-            eng->XYZ.y = eng->XYZ.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
+            eng->XYZ.y = eng->XYZ.y - ApplyContour(eng) - 0x60;
             break;
         case 1:
             d = ((s16 (*)(EXTengine *, s32))ArkBounceOnBounds)(eng, mot->Xa);
@@ -3656,7 +3656,7 @@ void PlotBall(NAS *nas) {
                 break;
             }
             CalcArkInfluence(mot);
-            eng->XYZ.y = eng->XYZ.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
+            eng->XYZ.y = eng->XYZ.y - ApplyContour(eng) - 0x60;
             break;
         case 0x63:
             if (obj->countdown != 0) {
@@ -3676,7 +3676,7 @@ void PlotBall(NAS *nas) {
                 mot->Yacc = 6;
                 mot->Ydec = 0;
             }
-            eng->XYZ.y = eng->XYZ.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
+            eng->XYZ.y = eng->XYZ.y - ApplyContour(eng) - 0x60;
             break;
         case 0x11:
             if (obj->countdown != 0) {
@@ -3706,7 +3706,7 @@ void PlotBall(NAS *nas) {
             if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 1) != 0 || done != 0) {
                 obj->status = 0x12;
             }
-            eng->XYZ.y = eng->XYZ.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
+            eng->XYZ.y = eng->XYZ.y - ApplyContour(eng) - 0x60;
             break;
         case 4:
             if (obj->countdown != 0) {
@@ -5494,7 +5494,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
                 if (arg0 == ArkSidePlayer1) {
                     ArkWallFlags |= 8;
                 }
-                ((void (*)(s32, s32, s32))pad_rumble_big)(arg0, 0xC, 0xFF);
+                pad_rumble_big(arg0, 0xC, 0xFF);
                 SetHeroAction(arg0, 0x25);
                 return 0;
             }
@@ -6234,7 +6234,7 @@ void AR_UpdateShadow(u32 arg0) {
     EXTengine *shadow = h->hero_shadow;
 
     shadow->XYZ = h->hero_eng->XYZ;
-    shadow->XYZ.y -= ((s32 (*)(EXTengine *))ApplyContour)(shadow);
+    shadow->XYZ.y -= ApplyContour(shadow);
     shadow->xform.rot.vy = h->hero_eng->xform.rot.vy;
     shadow->xform.dirty = 1;
     if (h->hero_status & 0xF800) {

@@ -2779,7 +2779,7 @@ void SpinHeroHit(s32 arg0) {
         HeroInfo *base2 = Heroes;
 
         h2 = base2 + arg0;
-        if (abs(((s32 (*)(EXTengine *))ApplyContour)(h2->hero_eng)) < 0x20) {
+        if (abs(ApplyContour(h2->hero_eng)) < 0x20) {
             *flag = 0;
             switch (h2->hero_name) {
             case 1:
@@ -2952,7 +2952,7 @@ void SetSpinHeroWinner(s32 arg0) {
     }
     h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {
@@ -2983,7 +2983,7 @@ void SpinHeroWinner(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {
@@ -3024,7 +3024,7 @@ void SetSpinHeroLose(s32 arg0) {
     }
     h->hero_sub->u6C.dbase = &((obj_dbase *)HeroModelBank)[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {
@@ -3053,7 +3053,7 @@ void SpinHeroLose(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->XYZ.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
+    dy = ApplyContour(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->XYZ.y -= dy;
     } else {

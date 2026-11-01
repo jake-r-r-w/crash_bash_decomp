@@ -292,7 +292,7 @@ void InitPapuBoss(NAS *nas);
 
 NAS *PapuMinionFindCrate(s32 arg0);
 
-void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2);
+void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2, s32 arg3);
 
 void *PapuMinionObjectAhead(s32 arg0, s32 arg1);
 

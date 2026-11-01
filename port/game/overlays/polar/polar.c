@@ -4530,7 +4530,7 @@ s32 PolarHeroCollisions(s32 player) {
                     }
                     if (spd > 0x1000) {
                         pad_rumble_small(player, 0xA);
-                        ((void (*)(s32, s32, s32))pad_rumble_big)(player, 0xA, 0xFF);
+                        pad_rumble_big(player, 0xA, 0xFF);
                         hp =&Heroes[player];
                         if (hp->hero_mode == 0x52) {
                             goto snow;
@@ -11108,7 +11108,7 @@ s32 TestPolarHeroMelted(s32 player) {
         return 0;
     } else if (bossmapsub != NULL) {
         if (bossmapsub->entity == 0x2008
-            && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->XYZ, 1, player)
+            && PolarGetLevelPoint((s32 *)&eng->XYZ, 1)
             && !(h->hero_status & 0x200)) {
             ext->unkA8 = 1;
             if (h->hero_mode != 0x4E) {
@@ -11116,7 +11116,7 @@ s32 TestPolarHeroMelted(s32 player) {
             }
         }
         if (bossmapsub->entity == 0x2009
-            && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->XYZ, 2, player)
+            && PolarGetLevelPoint((s32 *)&eng->XYZ, 2)
             && !(Heroes[player].hero_status & 0x200)) {
             ext->unkA8 = 1;
             if (Heroes[player].hero_mode != 0x4E) {
@@ -11124,7 +11124,7 @@ s32 TestPolarHeroMelted(s32 player) {
             }
         }
         if (bossmapsub->entity == 0x200A) {
-            out = ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->XYZ, 3, player) != 1;
+            out = PolarGetLevelPoint((s32 *)&eng->XYZ, 3) != 1;
             if (out && !(Heroes[player].hero_status & 0x200)) {
                 ext->unkA8 = 1;
                 if (Heroes[player].hero_mode != 0x4E) {
@@ -11133,7 +11133,7 @@ s32 TestPolarHeroMelted(s32 player) {
             }
         }
         if (bossmapsub->flags & 0x8000) {
-            if (eng != NULL && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->XYZ, 0, player)) {
+            if (eng != NULL && PolarGetLevelPoint((s32 *)&eng->XYZ, 0)) {
                 ext->unkA8 = 0;
                 return 1;
             }
@@ -12840,7 +12840,7 @@ void SetPolarHeroHit(s32 player) {
         }
         SetHeroSeq(player, 0x3F);
         pad_rumble_small(player, 0xA);
-        ((void (*)(s32, s32, s32))pad_rumble_big)(player, 0xA, 0xFF);
+        pad_rumble_big(player, 0xA, 0xFF);
     }
 }
 
