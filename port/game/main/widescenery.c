@@ -18,6 +18,7 @@
 void draw_map_object(void *sub, void *arg1, s32 flags, void *arg3);
 void draw_owner(const struct subengine *sub);
 void draw_owner_part(const void *mesh);
+extern s32 FarColor[3];
 
 typedef struct {
     s16 file;      /* the map's model file, by its place in DatIndex */
@@ -299,7 +300,8 @@ static void ring_quad_uv(const obj_textureset *ts, s32 image, const s16 corners[
         p[2] = corners[i][2];
         p[3] = 0;
         project_point(p, &q[i]);
-        f.colour[i] = colour[i];
+        /* the screen's fade, as the game's own models have it */
+        f.colour[i] = RenderState.modelDp != 0 ? colour_fade(&colour[i], FarColor, RenderState.modelDp) : colour[i];
         f.uv[i] = (u16)(t->info.uv0 | uv[i]);
     }
     draw_owner(owner);
@@ -321,11 +323,9 @@ static void ring_quad(const obj_textureset *ts, s32 image, const s16 corners[4][
 
 /* The view's own axes, as the map's pieces have them, with nothing moved. */
 static void ring_begin(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    /* where the level's own first piece is: a level's floor can be a few units off the middle, and what's made to meet it has to be too */
     *owner = scene->subs[0];
     owner->next = NULL;
-    owner->XYZ.x = 0;
-    owner->XYZ.y = 0;
-    owner->XYZ.z = 0;
     memset(&owner->xform.mtx, 0, sizeof(owner->xform.mtx));
     owner->xform.mtx.m[0][0] = 0x1000;
     owner->xform.mtx.m[1][1] = 0x1000;
