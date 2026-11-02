@@ -2,18 +2,34 @@
 
 Crash Bash (USA, `SCUS_945.70`) for the PlayStation, decompiled to C. It gives you two things:
 
-- **A PC port**: a native 64-bit Windows game with widescreen, upscaling, controller support and texture packs. Not an emulator.
+- **A native PC port**: a 64-bit Windows game. Not an emulator.
 - **A matching decomp**: C that rebuilds the retail disc byte for byte.
 
 You need your own copy of the game for either. None of its files are included.
 
-## PC port
+## Native PC port
 
 1. Download the zip from the [latest release](https://github.com/jake-r-r-w/crash_bash_decomp/releases/latest) and unzip it.
-2. Put a disc image of your legal copy of Crash Bash (USA) next to `crashbash.exe`.
+2. Copy `CRASHBSH.DAT` from the `CRASHBSH` folder of your legal copy of Crash Bash (USA) next to `crashbash.exe`.
 3. Run `crashbash.exe`.
 
-Controls and texture packs are in the zip's README.
+| Feature | What you get |
+|---|---|
+| The whole game | Every mode: Adventure, Battle and Tournament |
+| Display | Any window size and resolution, fullscreen, vsync |
+| Frame rate | 30, 60 or 120 frames a second |
+| Widescreen\* | Shows more of the world, with extra scenery where a level needs it |
+| Anti-aliasing\* | 2x, 4x or 8x |
+| Texture filtering\* | Smooth, or the original's square texels |
+| Texture upscaling\* | 2x or 4x, on your machine, with no AI |
+| Texture packs\* | Replace any texture with your own PNG |
+| Controls | Controllers with analog sticks and rumble, and the keyboard |
+| Saves | Kept in a file, with no memory card to set up |
+| Extras | Skip the logos and loading screens, and the original's hidden cheat menu |
+
+\* Not in a release yet: build the port yourself to get it.
+
+It needs 64-bit Windows 10 or 11 and Direct3D 12. Only the USA version's data is supported, and playing with several controllers hasn't been tested.
 
 ### Build the port yourself
 
