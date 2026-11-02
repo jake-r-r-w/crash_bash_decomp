@@ -88,10 +88,9 @@ static const WideExtra Extras[] = {
 static const struct {
     s16 file, piece;
 } Hidden[] = {
-    /* the front radars' bases, which go with them (draw_ballism_radars) */
+    /* the front radars' bases and rings, which go with them (draw_ballism_radars) */
     { FILE_N_BALLISM, 3 },
     { FILE_N_BALLISM, 4 },
-    /* the rings round their spikes, only needles from here, as those radars are edge on to the camera */
     { FILE_N_BALLISM, 7 },
     { FILE_N_BALLISM, 8 },
     /* the floor under those bases, which sorts in front of them in places: it goes with the backdrop instead (BallismFloors) */
@@ -330,15 +329,20 @@ static void ring_quad(const obj_textureset *ts, s32 image, const s16 corners[4][
 }
 
 /* The view's own axes, as the map's pieces have them, with nothing moved. */
-static void ring_begin(map_enviroment *scene, subengine *owner, MATRIX *view) {
+static void ring_view(map_enviroment *scene, subengine *owner, MATRIX *view) {
     /* where the level's own first piece is: a level's floor can be a few units off the middle, and what's made to meet it has to be too */
     *owner = scene->subs[0];
     owner->next = NULL;
+    owner->otz = 0;
     memset(&owner->xform.mtx, 0, sizeof(owner->xform.mtx));
     owner->xform.mtx.m[0][0] = 0x1000;
     owner->xform.mtx.m[1][1] = 0x1000;
     owner->xform.mtx.m[2][2] = 0x1000;
     draw_map_object(owner, view, owner->flags, scene->dbase->data);
+}
+
+static void ring_begin(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    ring_view(scene, owner, view);
     draw_behind(1);
 }
 
@@ -637,11 +641,283 @@ static void draw_ballism_backdrop(map_enviroment *scene, subengine *owner, MATRI
 }
 
 /* Its front radars are in its main mesh, which is painted first, so their bases, painted after it, cover them. The 4:3 view hardly saw that, as it stops by them.
-   So they and their bases go in real depth, as the game's solid things do, in the order of where they are. */
-static const s16 BallismRadarPieces[] = { 3, 4 };
-#define NUM_BALLISM_RADAR_PIECES ((s32)(sizeof(BallismRadarPieces) / sizeof(BallismRadarPieces[0])))
+   So they, their bases and their rings go in real depth, as the game's solid things do, in the order of where they are. */
+static const s16 BallismRadarBases[] = { 3, 4 };
+#define NUM_BALLISM_RADAR_BASES ((s32)(sizeof(BallismRadarBases) / sizeof(BallismRadarBases[0])))
+/* The right one's rings, then the left's. */
+static const s16 BallismRadarRings[] = { 8, 7 };
+#define NUM_BALLISM_RADAR_RINGS ((s32)(sizeof(BallismRadarRings) / sizeof(BallismRadarRings[0])))
+/* The game swaps a base and its rings for lit ones while a radar's firing. The lit rings have a shaft of light down the spike too, in these faces. */
+static const s16 BallismLitShaft[][2] = { { 0, 15 } };
+/* It's only lit on one side, which faces the camera on the radars at the back. These are turned copies of those, so it would face away. So it's turned a third of the
+   way round the spike, the line between these on the right one, and all its sides are alike. */
+static const s16 BallismShaftLine[2][3] = { { 2068, -520, -2018 }, { 1836, -419, -1781 } };
+#define BALLISM_SHAFT_ORDER (-96)
+static subengine BallismShafts[NUM_BALLISM_RADAR_RINGS];
 
 static subengine BallismRadars;
+
+/* They were never meant to be seen from the side, so they stop at the back of their rims with nothing there. This is where one's rim stops, and the other's is its
+   mirror image. A wide view gives them a back, as an old television has, with a flat shade to each side, by how much it faces up. */
+static const s16 BallismRadarRim[][3] = {
+    { 2130, -174, -2377 }, { 1928, -397, -2574 }, { 1928, -712, -2574 }, { 2130, -935, -2377 },
+    { 2416, -935, -2098 }, { 2618, -712, -1901 }, { 2618, -397, -1901 }, { 2416, -174, -2098 },
+};
+#define NUM_BALLISM_RIM ((s32)(sizeof(BallismRadarRim) / sizeof(BallismRadarRim[0])))
+/* Its rows from the rim back: a collar, a taper and a block at the end. How far it's gone in each of x and z, how much of the rim's size is left, in 64ths, and how much of its shade, in eighths. */
+static const struct {
+    s16 along;
+    u8 size, light;
+} BallismBackRows[] = {
+    { 0, 64, 8 },
+    { 26, 64, 8 },
+    { 26, 58, 5 },
+    { 105, 38, 6 },
+    { 105, 34, 4 },
+    { 135, 32, 4 },
+};
+#define NUM_BALLISM_BACK_ROWS ((s32)(sizeof(BallismBackRows) / sizeof(BallismBackRows[0])))
+/* What it faces up and down most: the radar's own purple. */
+static const u8 BallismBackShade[2][3] = { { 0x18, 0x10, 0x31 }, { 0x5A, 0x42, 0xAD } };
+
+/* That much of a shade, of 256, and of 8 of that. */
+static u32 radar_shade(const u8 (*shade)[3], s32 up, s32 light) {
+    u32 c = 0;
+    s32 n;
+
+    for (n = 0; n < 3; n++) {
+        s32 v = shade[0][n] + (shade[1][n] - shade[0][n]) * up / 256;
+
+        c |= (u32)(v * light / 8) << (n * 8);
+    }
+    /* the screen's fade, as the game's own models have it */
+    return RenderState.modelDp != 0 ? colour_fade(&c, FarColor, RenderState.modelDp) : c;
+}
+
+static void radar_back_tri(const ViewPoint *a, const ViewPoint *b, const ViewPoint *c, u32 ca, u32 cb, u32 cc, s32 face) {
+    DrawFace f;
+    ViewPoint q[3];
+
+    memset(&f, 0, sizeof(f));
+    q[0] = *a;
+    q[1] = *b;
+    q[2] = *c;
+    f.colour[0] = ca;
+    f.colour[1] = cb;
+    f.colour[2] = cc;
+    draw_mesh_tri_plain(RenderState.layer + ((points_order(a, b, c) + RenderState.otzAdd) >> 1), &f, q, face, 0, 0);
+}
+
+/* Two corners near and two far. The next face's place. */
+static s32 radar_quad(const ViewPoint *a, const ViewPoint *b, const ViewPoint *c, const ViewPoint *d, u32 near_shade, u32 far_shade, s32 face) {
+    radar_back_tri(a, b, c, near_shade, near_shade, far_shade, face);
+    radar_back_tri(b, c, d, near_shade, far_shade, far_shade, face + 1);
+    return face + 2;
+}
+
+/* side is 1 for the right one and -1 for the left. */
+static s32 draw_ballism_radar_back(s32 side, s32 face) {
+    ViewPoint near_row[NUM_BALLISM_RIM], far_row[NUM_BALLISM_RIM];
+    s32 cx = 0, cz = 0, top = 0x7FFF, bottom = -0x7FFF, cy;
+    s16 p[4];
+    s32 i, row;
+
+    for (i = 0; i < NUM_BALLISM_RIM; i++) {
+        cx += BallismRadarRim[i][0];
+        cz += BallismRadarRim[i][2];
+        top = BallismRadarRim[i][1] < top ? BallismRadarRim[i][1] : top;
+        bottom = BallismRadarRim[i][1] > bottom ? BallismRadarRim[i][1] : bottom;
+    }
+    cx /= NUM_BALLISM_RIM;
+    cz /= NUM_BALLISM_RIM;
+    cy = (top + bottom) / 2;
+    p[3] = 0;
+    for (row = 0; row < NUM_BALLISM_BACK_ROWS; row++) {
+        s32 along = BallismBackRows[row].along, size = BallismBackRows[row].size;
+
+        for (i = 0; i < NUM_BALLISM_RIM; i++) {
+            s32 x = BallismRadarRim[i][0], y = BallismRadarRim[i][1], z = BallismRadarRim[i][2];
+
+            near_row[i] = far_row[i];
+            p[0] = (s16)(side * (cx + (x - cx) * size / 64 + along));
+            p[1] = (s16)(cy + (y - cy) * size / 64);
+            p[2] = (s16)(cz + (z - cz) * size / 64 - along);
+            project_point(p, &far_row[i]);
+        }
+        if (row == 0) {
+            continue;
+        }
+        for (i = 0; i < NUM_BALLISM_RIM; i++) {
+            s32 j = (i + 1) % NUM_BALLISM_RIM;
+            /* y is down: a side along the top is the most up it gets */
+            s32 up = (bottom - (BallismRadarRim[i][1] + BallismRadarRim[j][1]) / 2) * 256 / (bottom - top);
+
+            face = radar_quad(&near_row[i], &near_row[j], &far_row[i], &far_row[j], radar_shade(BallismBackShade, up, BallismBackRows[row - 1].light), radar_shade(BallismBackShade, up, BallismBackRows[row].light), face);
+        }
+    }
+    {
+        u32 cap = radar_shade(BallismBackShade, 0, BallismBackRows[NUM_BALLISM_BACK_ROWS - 1].light);
+
+        for (i = 1; i + 1 < NUM_BALLISM_RIM; i++) {
+            radar_back_tri(&far_row[0], &far_row[i], &far_row[i + 1], cap, cap, cap, face++);
+        }
+    }
+    return face;
+}
+
+/* side is 1 for the right one and -1 for the left. */
+static void draw_ballism_shaft(const subengine *rings, subengine *copy, s32 side, MATRIX *view) {
+    float px = (float)(side * BallismShaftLine[0][0]), py = (float)BallismShaftLine[0][1], pz = (float)BallismShaftLine[0][2];
+    float ax = (float)(side * BallismShaftLine[1][0]) - px, ay = (float)BallismShaftLine[1][1] - py, az = (float)BallismShaftLine[1][2] - pz;
+    float length = sqrtf(ax * ax + ay * ay + az * az);
+    float c = -0.5f, n = -0.8660254f * (float)side, t = 1.5f;
+    float m[3][3];
+    MATRIX spin, turned;
+    s32 i, j;
+
+    ax /= length;
+    ay /= length;
+    az /= length;
+    m[0][0] = c + t * ax * ax;
+    m[0][1] = t * ax * ay - n * az;
+    m[0][2] = t * ax * az + n * ay;
+    m[1][0] = t * ay * ax + n * az;
+    m[1][1] = c + t * ay * ay;
+    m[1][2] = t * ay * az - n * ax;
+    m[2][0] = t * az * ax - n * ay;
+    m[2][1] = t * az * ay + n * ax;
+    m[2][2] = c + t * az * az;
+    memset(&spin, 0, sizeof(spin));
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            spin.m[i][j] = (s16)(m[i][j] * 4096.0f);
+        }
+    }
+    *copy = *rings;
+    copy->next = NULL;
+    /* it's light, so it goes by the painted order, and it has to come after the spike it's round, whose long faces sort by their middles */
+    copy->otz = BALLISM_SHAFT_ORDER;
+    copy->XYZ.x = rings->XYZ.x + (s32)(px - (m[0][0] * px + m[0][1] * py + m[0][2] * pz));
+    copy->XYZ.y = rings->XYZ.y + (s32)(py - (m[1][0] * px + m[1][1] * py + m[1][2] * pz));
+    copy->XYZ.z = rings->XYZ.z + (s32)(pz - (m[2][0] * px + m[2][1] * py + m[2][2] * pz));
+    matrix_mul(&spin, (MATRIX *)&rings->xform.mtx, &turned);
+    copy->xform.mtx = turned;
+    draw_face_list(BallismLitShaft, 1, 1);
+    draw_owner(copy);
+    copy->hook(copy, view, 0);
+    draw_face_list(NULL, 0, 0);
+}
+
+/* Their rings are flat, and this view's almost exactly edge on to them, so all they'd be is needles. So they're made solid, from the hexagons the level has them in, in
+   whichever model the game has swapped in. A run of this many faces in it is a ring, going round its corners, outside and inside in turn. */
+#define BALLISM_RING_FACES 12
+#define BALLISM_RING_CORNERS 6
+/* How thick, in 32nds of how big it is. */
+#define BALLISM_RING_THICK 4
+/* The gold they are on the screen, on what faces up and down most: as they are, and while firing. */
+static const u8 BallismRingShade[2][2][3] = { { { 0x40, 0x3A, 0x00 }, { 0xB0, 0xA4, 0x10 } }, { { 0x70, 0x68, 0x00 }, { 0xF0, 0xE4, 0x20 } } };
+
+/* A ring made solid, from the strip of corners its faces go round it in. The next face's place. */
+static s32 draw_ballism_ring(const s16 *strip, const u8 (*shade)[3], s32 face) {
+    ViewPoint point[2][2][BALLISM_RING_CORNERS], middle[BALLISM_RING_CORNERS];
+    float cx = 0, cy = 0, cz = 0, size = 0, nx, ny, nz, length, half;
+    float d[2];
+    const s16 *a, *b, *c;
+    s32 top = 0x7FFF, bottom = -0x7FFF;
+    s32 outside, corner, end, part;
+    s16 p[4];
+
+    for (corner = 0; corner < BALLISM_RING_CORNERS * 2; corner++) {
+        cx += strip[corner * 4];
+        cy += strip[corner * 4 + 1];
+        cz += strip[corner * 4 + 2];
+    }
+    cx /= BALLISM_RING_CORNERS * 2;
+    cy /= BALLISM_RING_CORNERS * 2;
+    cz /= BALLISM_RING_CORNERS * 2;
+    for (part = 0; part < 2; part++) {
+        float x = strip[part * 4] - cx, y = strip[part * 4 + 1] - cy, z = strip[part * 4 + 2] - cz;
+
+        d[part] = x * x + y * y + z * z;
+    }
+    outside = d[0] > d[1] ? 0 : 1;
+    a = strip + outside * 4;
+    b = a + 8;
+    c = b + 8;
+    nx = (float)(b[1] - a[1]) * (float)(c[2] - a[2]) - (float)(b[2] - a[2]) * (float)(c[1] - a[1]);
+    ny = (float)(b[2] - a[2]) * (float)(c[0] - a[0]) - (float)(b[0] - a[0]) * (float)(c[2] - a[2]);
+    nz = (float)(b[0] - a[0]) * (float)(c[1] - a[1]) - (float)(b[1] - a[1]) * (float)(c[0] - a[0]);
+    length = sqrtf(nx * nx + ny * ny + nz * nz);
+    nx /= length;
+    ny /= length;
+    nz /= length;
+    for (corner = 0; corner < BALLISM_RING_CORNERS; corner++) {
+        const s16 *v = a + corner * 8;
+        float x = v[0] - cx, y = v[1] - cy, z = v[2] - cz;
+
+        size += sqrtf(x * x + y * y + z * z);
+        top = v[1] < top ? v[1] : top;
+        bottom = v[1] > bottom ? v[1] : bottom;
+    }
+    half = size / BALLISM_RING_CORNERS * BALLISM_RING_THICK / 64.0f;
+    p[3] = 0;
+    for (end = 0; end < 2; end++) {
+        float along = end == 0 ? -half : half;
+
+        for (part = 0; part < 2; part++) {
+            for (corner = 0; corner < BALLISM_RING_CORNERS; corner++) {
+                const s16 *v = strip + (corner * 2 + (part == 0 ? outside : 1 - outside)) * 4;
+
+                p[0] = (s16)((float)v[0] + nx * along);
+                p[1] = (s16)((float)v[1] + ny * along);
+                p[2] = (s16)((float)v[2] + nz * along);
+                project_point(p, &point[end][part][corner]);
+            }
+        }
+    }
+    for (corner = 0; corner < BALLISM_RING_CORNERS; corner++) {
+        p[0] = a[corner * 8];
+        p[1] = a[corner * 8 + 1];
+        p[2] = a[corner * 8 + 2];
+        project_point(p, &middle[corner]);
+    }
+    for (corner = 0; corner < BALLISM_RING_CORNERS; corner++) {
+        s32 next = (corner + 1) % BALLISM_RING_CORNERS;
+        /* y is down: a side along the top is the most up it gets */
+        s32 up = (bottom - (a[corner * 8 + 1] + a[next * 8 + 1]) / 2) * 256 / (bottom - top);
+        /* shining down the middle of the outside, as metal does */
+        u32 wall = radar_shade(shade, up, 8), edge = radar_shade(shade, up, 4), inner = radar_shade(shade, 256 - up, 4);
+
+        face = radar_quad(&point[0][0][corner], &point[0][0][next], &middle[corner], &middle[next], edge, wall, face);
+        face = radar_quad(&middle[corner], &middle[next], &point[1][0][corner], &point[1][0][next], wall, edge, face);
+        face = radar_quad(&point[0][1][corner], &point[0][1][next], &point[1][1][corner], &point[1][1][next], inner, inner, face);
+        for (end = 0; end < 2; end++) {
+            face = radar_quad(&point[end][0][corner], &point[end][0][next], &point[end][1][corner], &point[end][1][next], radar_shade(shade, up, 6), radar_shade(shade, up, 2), face);
+        }
+    }
+    return face;
+}
+
+static void draw_ballism_rings(const map_enviroment *scene, const subengine *rings) {
+    const MeshHeader *h = (const MeshHeader *)entity_address(rings->entity, (ModelFile *)scene->dbase->data);
+    const u8 (*shade)[3] = BallismRingShade[(rings->entity & 0x7000) == 0x2000];
+    const u8 *run;
+    const s16 *vert;
+    s32 at = 0, face = 0;
+
+    if (h == NULL) {
+        return;
+    }
+    run = (const u8 *)&h->runs + h->runs;
+    vert = (const s16 *)((const u8 *)&h->verts + h->verts + sizeof(BoundBox));
+    draw_owner_part(h);
+    for (; run[1] != 0xFF; run += 2) {
+        if (run[1] == BALLISM_RING_FACES) {
+            face = draw_ballism_ring(vert + at * 4, shade, face);
+        }
+        at += run[1] + 2;
+    }
+}
 
 static void draw_ballism_radars(map_enviroment *scene, MATRIX *view) {
     s32 i;
@@ -649,16 +925,30 @@ static void draw_ballism_radars(map_enviroment *scene, MATRIX *view) {
     draw_depth(1);
     BallismRadars = scene->subs[0];
     BallismRadars.next = NULL;
-    BallismRadars.otz = scene->subs[BallismRadarPieces[0]].otz;
+    BallismRadars.otz = scene->subs[BallismRadarBases[0]].otz;
     draw_face_list(BALLISM_RADAR_FACES, NUM_BALLISM_RADAR_FACES, 1);
     draw_owner(&BallismRadars);
     BallismRadars.hook(&BallismRadars, view, 0);
     draw_face_list(NULL, 0, 0);
-    for (i = 0; i < NUM_BALLISM_RADAR_PIECES; i++) {
-        subengine *piece = &scene->subs[BallismRadarPieces[i]];
+    for (i = 0; i < NUM_BALLISM_RADAR_BASES; i++) {
+        subengine *piece = &scene->subs[BallismRadarBases[i]];
 
         draw_owner(piece);
         piece->hook(piece, view, 0);
+    }
+    for (i = 0; i < NUM_BALLISM_RADAR_RINGS; i++) {
+        subengine *rings = &scene->subs[BallismRadarRings[i]];
+
+        if ((rings->entity & 0x7000) == 0x2000) {
+            draw_ballism_shaft(rings, &BallismShafts[i], i == 0 ? 1 : -1, view);
+        }
+    }
+    ring_view(scene, &BallismRadars, view);
+    draw_owner(&BallismRadars);
+    draw_owner_part(BallismRadarRim);
+    draw_ballism_radar_back(-1, draw_ballism_radar_back(1, 0));
+    for (i = 0; i < NUM_BALLISM_RADAR_RINGS; i++) {
+        draw_ballism_rings(scene, &scene->subs[BallismRadarRings[i]]);
     }
     draw_owner(NULL);
     draw_depth(0);

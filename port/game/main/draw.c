@@ -520,16 +520,20 @@ void draw_mirrored(s32 on) {
     Mirrored = on;
 }
 
+static void face_sides(s32 *wind, s32 *hidden) {
+    if (Mirrored && *wind != 0) {
+        *wind = -*wind;
+        *hidden = !*hidden;
+    }
+}
+
 void draw_mesh_tri(s32 layer, const DrawFace *f, const ViewPoint q[3], s32 face, s32 wind, s32 hidden) {
     s32 key = key_of(layer);
     const GfxTex *t;
     GfxVert v[3];
     s32 i;
 
-    if (Mirrored && wind != 0) {
-        wind = -wind;
-        hidden = !hidden;
-    }
+    face_sides(&wind, &hidden);
     if (key < 0 || (hidden && !gfx_stepping()) || face_left_out(face)) {
         return;
     }
@@ -556,10 +560,7 @@ void draw_mesh_tri_plain(s32 layer, const DrawFace *f, const ViewPoint q[3], s32
     GfxVert v[3];
     s32 i;
 
-    if (Mirrored && wind != 0) {
-        wind = -wind;
-        hidden = !hidden;
-    }
+    face_sides(&wind, &hidden);
     if (key < 0 || (hidden && !gfx_stepping()) || face_left_out(face)) {
         return;
     }
