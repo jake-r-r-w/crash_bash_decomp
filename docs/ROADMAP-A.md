@@ -813,3 +813,4 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 7.12 Polar Push's snowball (2026-11-02): Polar Push's snowball showed as just its reflection: SetPolarHeroSnowball set the mesh through a raw byte offset, `sub + 0x74`, right on a PS1 but inside the `prev` pointer on 64 bits. Now the field. Only Melt Panic has the snowball, from Uka's mask
 - [x] 7.11.1 Dante's Dash (2026-11-02): widescreen's doubled trees gone, for a curved wall of the level's own forest panorama, with its swamp grass carried on round the lava
 - [x] 7.11.2 Beach Ball (2026-11-02): its sand is one surface made from its real floor as the level loads, its wall carried on along its own curve, and the level's kelp and coral stand on the sand
+- [x] 7.11.3 N.Ballism (2026-11-02): its own round wall carried on round the arena in place of the copied map, and its front radars stand on their bases, with a back like an old TV's and solid rings
