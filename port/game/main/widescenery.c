@@ -4,7 +4,7 @@
  *
  * A level's own piece that was never meant to be seen can go too, in a wide view.
  *
- * To place more: WIDE_LIST=1 prints a level's file number and pieces, WIDE_EXTRA="piece,cx,cz,dx,dy,dz,turn[,placed];..." tries some without a
+ * To place more: WIDE_LIST=1 prints a level's file number and pieces, WIDE_EXTRA="piece,cx,cz,dx,dy,dz,turn[,placed[,face]];..." tries some without a
  * rebuild, in place of the table, WIDE_HIDE="piece,piece" hides some, and
  * WIDE_RING="floor,wall,walls,y,tile,inner,outer,top,sides,floor_colour,wall_colour" tries a ring. */
 #include <math.h>
@@ -26,6 +26,7 @@ typedef struct {
     s32 dx, dy, dz;
     s32 turn;      /* 0x1000 is all the way round */
     s32 placed;    /* where the level's own things go, rather than behind everything */
+    s32 face;      /* it faces what it turns round, so a row of them makes a curve, rather than keeping its own angle */
 } WideExtra;
 
 #define FILE_N_BALLISM 651
@@ -33,23 +34,33 @@ typedef struct {
 #define FILE_DANTES_DASH 637
 
 static const WideExtra Extras[] = {
-    /* the swamp grass, on round the edge of the lava */
-    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -150 },
-    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -150 },
-    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -300 },
-    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -300 },
-    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -450 },
-    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -450 },
-    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -600 },
-    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -600 },
-    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 150 },
-    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 150 },
-    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 300 },
-    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 300 },
-    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 450 },
-    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 450 },
-    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 600 },
-    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 600 },
+    /* the swamp grass, on round the edge of the lava, close enough to make a row, and facing in so it curves */
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -100, 0, 1 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -100, 0, 1 },
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -200, 0, 1 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -200, 0, 1 },
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -300, 0, 1 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -300, 0, 1 },
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -400, 0, 1 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -400, 0, 1 },
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -500, 0, 1 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -500, 0, 1 },
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -600, 0, 1 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -600, 0, 1 },
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -700, 0, 1 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -700, 0, 1 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 80, 0, 1 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 80, 0, 1 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 160, 0, 1 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 160, 0, 1 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 240, 0, 1 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 240, 0, 1 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 320, 0, 1 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 320, 0, 1 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 400, 0, 1 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 400, 0, 1 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 480, 0, 1 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 480, 0, 1 },
     /* the walls round the arena, carried on round it */
     { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, 500 },
     { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, -500 },
@@ -135,6 +146,11 @@ static void read_tried(void) {
             s += more;
         }
         e->placed = placed;
+        e->face = 0;
+        if (sscanf(s, ",%d%n", &placed, &more) == 1) {
+            s += more;
+            e->face = placed;
+        }
         NumTried++;
         if (*s == ';') {
             s++;
@@ -172,6 +188,16 @@ static void draw_extra(const map_enviroment *scene, const WideExtra *e, subengin
     from = &scene->subs[e->piece];
     *copy = *from;
     copy->next = NULL;
+    x = from->XYZ.x - e->cx;
+    z = from->XYZ.z - e->cz;
+    copy->XYZ.x = e->cx + (x * c + z * s) / 0x1000 + e->dx;
+    copy->XYZ.y = from->XYZ.y + e->dy;
+    copy->XYZ.z = e->cz + (z * c - x * s) / 0x1000 + e->dz;
+    if (e->face) {
+        angle = atan2f((float)(copy->XYZ.x - e->cx), (float)(copy->XYZ.z - e->cz));
+        c = (s16)(cosf(angle) * 4096.0f);
+        s = (s16)(sinf(angle) * 4096.0f);
+    }
     memset(&spin, 0, sizeof(spin));
     spin.m[0][0] = c;
     spin.m[0][2] = s;
@@ -180,11 +206,6 @@ static void draw_extra(const map_enviroment *scene, const WideExtra *e, subengin
     spin.m[2][2] = c;
     matrix_mul(&spin, (MATRIX *)&from->xform.mtx, &turned);
     copy->xform.mtx = turned;
-    x = from->XYZ.x - e->cx;
-    z = from->XYZ.z - e->cz;
-    copy->XYZ.x = e->cx + (x * c + z * s) / 0x1000 + e->dx;
-    copy->XYZ.y = from->XYZ.y + e->dy;
-    copy->XYZ.z = e->cz + (z * c - x * s) / 0x1000 + e->dz;
     draw_behind(!e->placed);
     draw_owner(copy);
     copy->hook(copy, view, 0);
