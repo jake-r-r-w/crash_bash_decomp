@@ -21,7 +21,6 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | # | Task | Notes | Done |
 |---|------|-------|------|
 | 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was, as Melt Panic is by the user's choice. The rows below are in the order to look at them. Black was measured in still frames at the start of each level, so they're where to look first, not a full list | [ ] |
-| 7.11.2 | Beach Ball | Recheck by playing: its sand, now one surface made from its real floor, and the far edge of it at both back corners. The black under the front horns is the level's own faces | [ ] |
 | 7.11.3 | N.Ballism | Recheck by playing: the front corners | [ ] |
 | 7.11.4 | Crashball | Black at the sides | [ ] |
 | 7.11.5 | Jungle Fox | Black at the sides | [ ] |
