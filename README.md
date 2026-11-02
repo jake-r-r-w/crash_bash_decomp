@@ -7,11 +7,11 @@ Crash Bash (USA, `SCUS_945.70`) for the PlayStation, decompiled to C. It gives y
 
 You need your own copy of the game for either. None of its files are included.
 
-## Play it on PC
+## PC port
 
 1. Download the zip from the [latest release](https://github.com/jake-r-r-w/crash_bash_decomp/releases/latest) and unzip it.
-2. Put your Crash Bash (USA) disc image (`.cue` with its `.bin`, a raw `.bin` or an `.iso`) next to `crashbash.exe`.
-3. Run `crashbash.exe`. It copies what it needs the first time, so you won't need the image again.
+2. Put a disc image of your legal copy of Crash Bash (USA) next to `crashbash.exe`.
+3. Run `crashbash.exe`.
 
 Controls and texture packs are in the zip's README.
 
@@ -28,7 +28,7 @@ cmake --build --preset windows-clang
 
 That makes `build/port/windows-clang/crashbash.exe`. More in [docs/PORT.md](docs/PORT.md).
 
-## Rebuild the disc
+## PS1 decomp (disk 2 disk)
 
 You need [Docker](https://www.docker.com/) (running) and git. On Windows, use Git Bash, or `tools\dk.ps1` in PowerShell.
 
@@ -73,13 +73,19 @@ Issues and pull requests with game or SDK files, or links to them, are refused.
 
 ## Credits
 
-Built with [splat](https://github.com/ethteck/splat), [maspsx](https://github.com/mkst/maspsx),
+**The decomp:** [splat](https://github.com/ethteck/splat), [maspsx](https://github.com/mkst/maspsx),
 [old-gcc](https://github.com/decompals/old-gcc), [m2c](https://github.com/matt-kempster/m2c),
 [decomp-permuter](https://github.com/simonlindholm/decomp-permuter),
 [objdiff](https://github.com/encounter/objdiff), [mkpsxiso](https://github.com/Lameguy64/mkpsxiso),
 GCC and binutils, the converted PsyQ 4.7 libraries
 ([psx.arthus.net](http://psx.arthus.net/sdk/Psy-Q/)), [CTR-tools](https://github.com/DCxDemo/CTR-tools),
-[Pillow](https://python-pillow.org), [SDL3](https://libsdl.org), RetroArch and PCSX ReARMed. And Eurocom, who made Crash Bash.
+[Pillow](https://python-pillow.org), RetroArch and PCSX ReARMed.
+
+**The port:** [SDL3](https://libsdl.org), [LLVM and Clang](https://llvm.org),
+[llvm-mingw](https://github.com/mstorsjo/llvm-mingw), [CMake](https://cmake.org/),
+[Ninja](https://ninja-build.org/) and [Node.js](https://nodejs.org/).
+
+Written with [Claude](https://claude.com/claude-code) by Anthropic. And Eurocom, who made Crash Bash.
 
 ## License
 
