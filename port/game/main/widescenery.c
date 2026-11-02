@@ -88,10 +88,13 @@ static const WideExtra Extras[] = {
 static const struct {
     s16 file, piece;
 } Hidden[] = {
-    /* the rings round the front corners' spikes, only needles from here, as those radars are edge on to the camera */
+    /* the front radars' bases, which go with them (draw_ballism_radars) */
+    { FILE_N_BALLISM, 3 },
+    { FILE_N_BALLISM, 4 },
+    /* the rings round their spikes, only needles from here, as those radars are edge on to the camera */
     { FILE_N_BALLISM, 7 },
     { FILE_N_BALLISM, 8 },
-    /* the floor under their bases, which sorts in front of them in places: it goes with the backdrop instead (BallismFloors) */
+    /* the floor under those bases, which sorts in front of them in places: it goes with the backdrop instead (BallismFloors) */
     { FILE_N_BALLISM, 9 },
     { FILE_N_BALLISM, 10 },
 };
@@ -284,6 +287,10 @@ s32 wide_scenery_hides(const map_enviroment *scene, const subengine *sub) {
             return 1;
         }
     }
+    /* trying something else: what's hidden goes with what's in the table */
+    if (NumTried > 0 || RingTried > 0) {
+        return 0;
+    }
     file = (s32)(scene->dbase->file - DatIndex);
     for (i = 0; i < NUM_HIDDEN; i++) {
         if (Hidden[i].file == file && Hidden[i].piece == piece) {
@@ -433,11 +440,14 @@ static const u32 BeachRowColour[3] = { 0x9C5A39, 0x634A18, 0x212108 };
 static const WideSand BeachFloor = { 0, 0, 1, 0x1E1E10 };
 
 /* The foot of each end of its own wall. Its floor stops short of them, with a gap you can't see in 4:3, so the sand has to come up in front of them. */
-static const s16 BeachWallEnds[] = { 252, 253, 262, 263 };
+static const s16 BeachWallEnds[][2] = { { 252, 253 }, { 262, 263 } };
 #define NUM_BEACH_WALL_ENDS ((s32)(sizeof(BeachWallEnds) / sizeof(BeachWallEnds[0])))
 
-/* A black side of one of its pillars, which only ever hid in the dark. */
-static const s16 BallismLeftOut[] = { 517 };
+/* What N.Ballism's main mesh leaves out: a black side of one of its pillars, which only ever hid in the dark, and its front radars (draw_ballism_radars). */
+static const s16 BallismLeftOut[][2] = { { 517, 517 }, { 801, 858 }, { 933, 982 } };
+#define NUM_BALLISM_LEFT_OUT ((s32)(sizeof(BallismLeftOut) / sizeof(BallismLeftOut[0])))
+#define BALLISM_RADAR_FACES (BallismLeftOut + 1)
+#define NUM_BALLISM_RADAR_FACES (NUM_BALLISM_LEFT_OUT - 1)
 
 /* Before one of a level's pieces draws: which of its own faces it leaves out, as they go with the backdrop or would show against it. */
 void wide_scenery_piece_faces(const map_enviroment *scene, const subengine *sub) {
@@ -447,7 +457,7 @@ void wide_scenery_piece_faces(const map_enviroment *scene, const subengine *sub)
         if (file == FILE_BEACH_BALL) {
             draw_face_list(BeachWallEnds, NUM_BEACH_WALL_ENDS, 0);
         } else if (file == FILE_N_BALLISM) {
-            draw_face_list(BallismLeftOut, 1, 0);
+            draw_face_list(BallismLeftOut, NUM_BALLISM_LEFT_OUT, 0);
         }
     }
 }
@@ -524,7 +534,7 @@ static void draw_beach_backdrop(map_enviroment *scene, subengine *owner, MATRIX 
 
 /* N.Ballism's round wall stops at each side of the arena, where a 4:3 view stops too. It's carried on round with copies of its own last stretch, each the
    mirror image of the one before, as its tiles are from one stretch to the next, so their edges meet. These are the stretch's faces, */
-static const s16 BallismStretch[] = { 265, 266, 267, 268, 269, 270, 271, 272, 409, 410, 413, 414 };
+static const s16 BallismStretch[][2] = { { 265, 272 }, { 409, 410 }, { 413, 414 } };
 #define NUM_BALLISM_STRETCH ((s32)(sizeof(BallismStretch) / sizeof(BallismStretch[0])))
 /* its two ends, */
 static const s16 BallismStretchEnds[2][2] = { { 5509, 1765 }, { 5543, 2781 } };
@@ -626,6 +636,34 @@ static void draw_ballism_backdrop(map_enviroment *scene, subengine *owner, MATRI
     draw_owner(NULL);
 }
 
+/* Its front radars are in its main mesh, which is painted first, so their bases, painted after it, cover them. The 4:3 view hardly saw that, as it stops by them.
+   So they and their bases go in real depth, as the game's solid things do, in the order of where they are. */
+static const s16 BallismRadarPieces[] = { 3, 4 };
+#define NUM_BALLISM_RADAR_PIECES ((s32)(sizeof(BallismRadarPieces) / sizeof(BallismRadarPieces[0])))
+
+static subengine BallismRadars;
+
+static void draw_ballism_radars(map_enviroment *scene, MATRIX *view) {
+    s32 i;
+
+    draw_depth(1);
+    BallismRadars = scene->subs[0];
+    BallismRadars.next = NULL;
+    BallismRadars.otz = scene->subs[BallismRadarPieces[0]].otz;
+    draw_face_list(BALLISM_RADAR_FACES, NUM_BALLISM_RADAR_FACES, 1);
+    draw_owner(&BallismRadars);
+    BallismRadars.hook(&BallismRadars, view, 0);
+    draw_face_list(NULL, 0, 0);
+    for (i = 0; i < NUM_BALLISM_RADAR_PIECES; i++) {
+        subengine *piece = &scene->subs[BallismRadarPieces[i]];
+
+        draw_owner(piece);
+        piece->hook(piece, view, 0);
+    }
+    draw_owner(NULL);
+    draw_depth(0);
+}
+
 void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
     s32 file;
     s32 i;
@@ -667,6 +705,7 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
+            draw_ballism_radars(scene, view);
         }
 
         for (i = 0; i < NUM_RINGS; i++) {

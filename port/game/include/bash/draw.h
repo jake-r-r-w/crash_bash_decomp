@@ -39,7 +39,7 @@ void draw_line(int32_t layer, DVECTOR a, DVECTOR b, uint32_t colour_a, uint32_t 
 void draw_mesh_tri(int32_t layer, const DrawFace *f, const ViewPoint q[3], int32_t face, int32_t wind, int32_t hidden);
 void draw_mesh_tri_plain(int32_t layer, const DrawFace *f, const ViewPoint q[3], int32_t face, int32_t wind, int32_t hidden);
 void draw_mesh_quad(int32_t layer, const DrawFace *f, const ViewPoint q[4]);
-void draw_face_list(const int16_t *faces, int32_t count, int32_t keep);
+void draw_face_list(const int16_t (*faces)[2], int32_t count, int32_t keep);
 void draw_mirrored(int32_t on);
 
 /* What's drawn next goes behind everything else in its view. */
