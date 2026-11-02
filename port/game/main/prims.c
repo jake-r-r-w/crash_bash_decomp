@@ -2597,7 +2597,9 @@ void draw_map_scene(map_enviroment *scene) {
         fn = sub->hook;
         if (fn != NULL && !wide_scenery_hides(scene, sub)) {
             draw_owner(sub);
+            wide_scenery_piece_faces(scene, sub);
             fn(sub, pv, 0);
+            draw_face_list(NULL, 0, 0);
             draw_owner(NULL);
         }
         sub = sub->next;

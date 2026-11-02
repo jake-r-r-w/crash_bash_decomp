@@ -1067,6 +1067,8 @@ static void sort_tris(void) {
 /* Depth for the triangles that test it, from 1 to the projection's furthest. */
 #define DEPTH_NEAR 1.0f
 #define DEPTH_FAR 65536.0f
+/* What's behind everything is far away, and a depth buffer's floats are at their coarsest there: with the near of 1, hundreds of units apart at a level's far wall. So its layer starts further out. */
+#define DEPTH_NEAR_BEHIND 512.0f
 
 /* Whether a face shows at this point between two frames, by the same sum as points_facing's at the positions it's drawn at. */
 static int tri_shows(const Tri *t, float step) {
@@ -1103,6 +1105,7 @@ static float filtered_texel(float t, int size, int low_joined, int high_joined) 
 
 static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float step, const GfxTex *tex, int depth) {
     float x = v->x, y = v->y, w = v->w;
+    float closest;
 
     if (from != NULL) {
         x = from->x + (x - from->x) * step;
@@ -1115,7 +1118,8 @@ static void put_vert(GpuVert *o, const GfxVert *v, const GfxPos *from, float ste
     o->x = ((x + ViewExtra) / (ScreenW + ViewExtra * 2) * 2.0f - 1.0f) * w;
     o->y = (1.0f - y / ScreenH * 2.0f) * w;
     /* linear in w, so it interpolates across the triangle like 1/w's depth does */
-    o->z = depth ? ((depth - 1) * w + (w - DEPTH_NEAR) * DEPTH_FAR / (DEPTH_FAR - DEPTH_NEAR)) / GFX_DEPTH_LAYERS : 0.5f * w;
+    closest = depth == GFX_DEPTH_LAYERS ? DEPTH_NEAR_BEHIND : DEPTH_NEAR;
+    o->z = depth ? ((depth - 1) * w + (w - closest) * DEPTH_FAR / (DEPTH_FAR - closest)) / GFX_DEPTH_LAYERS : 0.5f * w;
     o->w = w;
     if (tex != NULL) {
         /* filtered, a whole number's the middle of a texel, or it would blend with the next */

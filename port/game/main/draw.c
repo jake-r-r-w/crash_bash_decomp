@@ -483,13 +483,34 @@ static void mesh_vert(GfxVert *v, const ViewPoint *q, u32 colour, u16 uv) {
     v->rgba = colour_of(colour);
 }
 
+/* Which of the faces of what's drawn next, by their place in its mesh: only these, or all but these. */
+static const s16 *FaceList;
+static s32 FaceCount, FaceKeep;
+
+void draw_face_list(const s16 *faces, s32 count, s32 keep) {
+    FaceList = faces;
+    FaceCount = count;
+    FaceKeep = keep;
+}
+
+static s32 face_left_out(s32 face) {
+    s32 i;
+
+    for (i = 0; i < FaceCount; i++) {
+        if (FaceList[i] == face) {
+            return !FaceKeep;
+        }
+    }
+    return FaceCount != 0 && FaceKeep;
+}
+
 void draw_mesh_tri(s32 layer, const DrawFace *f, const ViewPoint q[3], s32 face, s32 wind, s32 hidden) {
     s32 key = key_of(layer);
     const GfxTex *t;
     GfxVert v[3];
     s32 i;
 
-    if (key < 0 || (hidden && !gfx_stepping())) {
+    if (key < 0 || (hidden && !gfx_stepping()) || face_left_out(face)) {
         return;
     }
     t = tex_of(f->image, f->palette);
