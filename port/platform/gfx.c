@@ -93,6 +93,10 @@ static int MarkFace;
 static int Stepping;
 static int DrawEvery, DrawnSince;
 static int StepsDone, StepsPerFrame;
+/* How many pictures a second are asked for, whether the screen's waited for, and how much of a picture it has room for by now. */
+static int PictureRate;
+static int VsyncOn = 1;
+static float PicturesFree;
 static int BaseStale;
 
 static int AtlasSize = ATLAS_NORMAL;
@@ -317,6 +321,7 @@ static void set_vsync(int vsync) {
         mode = SDL_GPU_PRESENTMODE_IMMEDIATE;
     }
     SDL_SetGPUSwapchainParameters(Device, Window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, mode);
+    VsyncOn = mode == SDL_GPU_PRESENTMODE_VSYNC;
 }
 
 /* A size of 0 x 0 asks for what the window can show of a 4:3 picture, pixel for pixel. */
@@ -445,6 +450,7 @@ void gfx_configure(const GfxConfig *config) {
     set_vsync(config->vsync);
     Smooth = config->smooth;
     Stepping = config->fps > 30;
+    PictureRate = config->fps;
     StepsPerFrame = 2 * config->fps / 60;
     StepsDone = 0;
     BaseStale = 1;
@@ -520,6 +526,7 @@ int gfx_init(void *window, const GfxConfig *config) {
         return 0;
     }
     Stepping = config->fps > 30;
+    PictureRate = config->fps;
     StepsPerFrame = 2 * config->fps / 60;
     Tris = malloc(sizeof(Tri) * MAX_TRIS);
     Shown = malloc(sizeof(Tri) * MAX_TRIS);
@@ -1423,7 +1430,7 @@ static void draw_shown(float step) {
         SDL_EndGPUCopyPass(c2);
     }
 
-    /* above the display's rate a picture that doesn't fit is dropped, and the game's clock doesn't wait */
+    /* a picture the card has no room for yet is dropped, and the game's clock doesn't wait */
     if ((Stepping ? SDL_AcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh)
                   : SDL_WaitAndAcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh)) && swap != NULL) {
         SDL_GPUBlitInfo b;
@@ -1577,9 +1584,31 @@ void gfx_end_frame(void) {
     gfx_begin_frame();
 }
 
+/* With vsync on a screen takes so many pictures a second, and one more waits for it, which holds up the game's clock too: 120 on a 60 Hz screen ran the game at half speed.
+   So well above the screen's rate, what doesn't fit is left out, by a share of the pictures: going by the clock wouldn't do, as the waiting itself would seem to make room.
+   Only just above it, as 60 on a 59.94 Hz screen, leaving one out would be a hitch every few seconds, and waiting only slows the clock by that little. */
+#define SCREEN_RATE_LEEWAY 1.02f
+
+static int picture_fits(void) {
+    const SDL_DisplayMode *mode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(Window));
+    float rate = mode != NULL ? mode->refresh_rate : 0;
+
+    if (!VsyncOn || rate <= 0 || (float)PictureRate <= rate * SCREEN_RATE_LEEWAY) {
+        return 1;
+    }
+    PicturesFree += rate / (float)PictureRate;
+    if (PicturesFree < 1) {
+        return 0;
+    }
+    PicturesFree -= 1;
+    return 1;
+}
+
 void gfx_present(void) {
     if (Stepping) {
         StepsDone++;
-        draw_shown(StepsDone >= StepsPerFrame ? 1.0f : (float)StepsDone / StepsPerFrame);
+        if (picture_fits()) {
+            draw_shown(StepsDone >= StepsPerFrame ? 1.0f : (float)StepsDone / StepsPerFrame);
+        }
     }
 }
