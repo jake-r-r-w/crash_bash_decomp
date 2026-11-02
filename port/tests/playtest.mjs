@@ -372,7 +372,7 @@ async function same(args) {
             fs.rmSync(path.join(dir, `m${m}-${v}.png`), { force: true });
         }
         fs.rmSync(path.join(dir, `m${m}.wav`), { force: true });
-        const r = await run(exe, [...what, '--turbo', '--tile', String(slot), String(AT_ONCE),
+        const r = await run(exe, [...what, '--turbo', '--tile', String(slot), String(SAME_MODES.length),
             ...shots, '--wav', rel(`m${m}.wav`)], path.join(dir, `m${m}.txt`), { timeout: MODE_TIMEOUT });
         const crash = crash_where(exe, r.text);
 

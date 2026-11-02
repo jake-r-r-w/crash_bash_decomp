@@ -30,9 +30,26 @@ typedef struct {
 
 #define FILE_N_BALLISM 651
 #define FILE_BEACH_BALL 655
-#define FILE_VOLCANO_RACE 637
+#define FILE_DANTES_DASH 637
 
 static const WideExtra Extras[] = {
+    /* the swamp grass, on round the edge of the lava */
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -150 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -150 },
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -300 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -300 },
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -450 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -450 },
+    { FILE_DANTES_DASH, 15, 0, 0, 0, 0, 0, -600 },
+    { FILE_DANTES_DASH, 16, 0, 0, 0, 0, 0, -600 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 150 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 150 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 300 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 300 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 450 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 450 },
+    { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 600 },
+    { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 600 },
     /* the walls round the arena, carried on round it */
     { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, 500 },
     { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, -500 },
@@ -44,13 +61,6 @@ static const WideExtra Extras[] = {
     { FILE_N_BALLISM, 0, -3, 1, 0, 1400, 0, -500 },
     { FILE_N_BALLISM, 0, -3, 1, 0, 700, 0, 1100 },
     { FILE_N_BALLISM, 0, -3, 1, 0, 700, 0, -1100 },
-    /* the forest behind the track */
-    { FILE_VOLCANO_RACE, 10, 0, 0, 0, 0, 0, 600 },
-    { FILE_VOLCANO_RACE, 10, 0, 0, 0, 0, 0, -600 },
-    { FILE_VOLCANO_RACE, 10, 0, 0, 0, 0, 0, 1000 },
-    { FILE_VOLCANO_RACE, 10, 0, 0, 0, 0, 0, -1000 },
-    { FILE_VOLCANO_RACE, 10, 0, 0, 0, 700, 0, 800 },
-    { FILE_VOLCANO_RACE, 10, 0, 0, 0, 700, 0, -800 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -85,6 +95,8 @@ typedef struct {
 static const WideRing Rings[] = {
     /* sand tiles at the size of the level's own, and its far-off city, at the sea's colours */
     { FILE_BEACH_BALL, 0, 2, 10, 300, 600, 1500, 7500, -3500, 30, 0x40432B, 0x7A521D },
+    /* only a wall, as the lava's fine: its own forest panorama, at the colours of the trees in front */
+    { FILE_DANTES_DASH, 0, 14, 4, 3000, 600, 7000, 7000, -4000, 20, 0, 0x0A3A60 },
 };
 #define NUM_RINGS ((s32)(sizeof(Rings) / sizeof(Rings[0])))
 

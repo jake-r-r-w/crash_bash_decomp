@@ -471,6 +471,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-02: Dante's Dash in widescreen: the copied trees looked doubled, so they're gone, for a curved wall of the level's forest panorama and its swamp grass carried on round the lava, as the user asked. The lava's as it was. A 12-cell `--tile` grid broke `same`, as the grid sets the window's size and so the pictures: it stays 14 cells, with 12 running at a time.
 - 2026-11-02: 7.12 Polar Push's snowball: The snowball's mesh was set through a raw offset that's `entity` on a PS1 and the `prev` pointer here, so the hero vanished and only the reflection showed; only the normal level, as a crystal one set the field too. Checked by making the mask's beam always pick the snowball, on eight heroes. The user played it and approved.
 - 2026-11-01: Stopped here. Next, one at a time with the user, who plays each: 7.11.1 (Dante's Dash's doubled trees, which are the extra scenery's). The play tests run 12 copies at most in their grid; a script with full-size windows, 4.
 - 2026-11-01: Beach Ball in widescreen: the user found the copied walls stretched its sea floor and wanted the background to curve. It now has a ring (`Rings` in `widescenery.c`): sand tiles at the level's size, and a curved wall of its city panorama. Its crystal map hasn't one.
