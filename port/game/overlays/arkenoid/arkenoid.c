@@ -3,6 +3,7 @@
 #include "bash/main.h"
 #include "bash/arkenoid_ovl.h"
 #include "bash/arkenoid.h"
+#include "bash/draw.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
 
@@ -5992,7 +5993,12 @@ void Plot_ArkCameraFlash(NAS *arg0)
       sub->xform.scale.vx = c->x;
       sub->xform.scale.vy = c->z;
       new_var = c->r;
-      sub->flags |= 0x8000;
+      /* The crowd's camera flashes, off in the dark behind the top goal. In a wide view they stay out of sight, as they looked like blue sparks there. They still run, so nothing else about the game changes. */
+      if (gfx_view_extra() > 0) {
+        sub->flags &= ~0x8000;
+      } else {
+        sub->flags |= 0x8000;
+      }
       sub->xform.dirty = 1;
       sub->xform.scale.vx = new_var;
       arg0->UserInfo.user1 += 1;
@@ -6016,6 +6022,9 @@ void Init_ArkCameraFlash(NAS *arg0) {
         (sub->xform.order) = 0;
         (sub->u6C.dbase) = val;
         (arg0->UserInfo.user1) = 0;
+        if (gfx_view_extra() > 0) {
+            sub->flags &= ~0x8000;
+        }
     }
     if ((arg0->Failure) != 0) {
         KillNAS(arg0);
