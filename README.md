@@ -13,21 +13,22 @@ You need your own copy of the game for either. None of its files are included.
 2. Copy `CRASHBSH.DAT` from the `CRASHBSH` folder of your legal copy of Crash Bash (USA) next to `crashbash.exe`.
 3. Run `crashbash.exe`.
 
-| Feature | What you get |
-|---|---|
-| The whole game | Every mode: Adventure, Battle and Tournament |
-| Display | Any window size and resolution, fullscreen, vsync |
-| Frame rate | 30, 60 or 120 frames a second |
-| Widescreen\* | Shows more of the world, with extra scenery where a level needs it |
-| Anti-aliasing\* | 2x, 4x or 8x |
-| Texture filtering\* | Smooth, or the original's square texels |
-| Texture upscaling\* | 2x or 4x, on your machine, with no AI |
-| Texture packs\* | Replace any texture with your own PNG |
-| Controls | Controllers with analog sticks and rumble, and the keyboard |
-| Saves | Kept in a file, with no memory card to set up |
-| Extras | Skip the logos and loading screens, and the original's hidden cheat menu |
-
-\* Not in a release yet: build the port yourself to get it.
+| Feature           | Details                                                |
+|-------------------|--------------------------------------------------------|
+| **Game modes**    | All of them: Adventure, Battle and Tournament          |
+| **Resolution**    | Any window size and render resolution                  |
+| **Fullscreen**    | Or a window, whichever you like                        |
+| **Vsync**         | On or off                                              |
+| **Frame rate**    | 30, 60 or 120 FPS                                      |
+| **Widescreen**    | Shows more of the world, with extra scenery where needed |
+| **Anti-aliasing** | 2x, 4x or 8x                                           |
+| **Filtering**     | Smooth textures, or the original's square texels       |
+| **Upscaling**     | Textures at 2x or 4x                                   |
+| **Texture packs** | Replace any texture with your own PNG                  |
+| **Controllers**   | Analog sticks and rumble, or play on the keyboard      |
+| **Saves**         | Kept in a file, with no memory card to set up          |
+| **Quick start**   | Skip the logos and the loading screens                 |
+| **Cheat menu**    | The original's hidden cheats, in the pause menu        |
 
 It needs 64-bit Windows 10 or 11 and Direct3D 12. Only the USA version's data is supported, and playing with several controllers hasn't been tested.
 
