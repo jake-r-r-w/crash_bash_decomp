@@ -37,6 +37,7 @@ typedef struct {
 #define FILE_N_BALLISM 651
 #define FILE_BEACH_BALL 655
 #define FILE_DANTES_DASH 637
+#define FILE_CRASHBALL 659
 
 static const WideExtra Extras[] = {
     /* kelp and coral on the extra sand, the level's own, in its own order: its fish is left out */
@@ -453,15 +454,37 @@ static const s16 BallismLeftOut[][2] = { { 517, 517 }, { 801, 858 }, { 933, 982 
 #define BALLISM_RADAR_FACES (BallismLeftOut + 1)
 #define NUM_BALLISM_RADAR_FACES (NUM_BALLISM_LEFT_OUT - 1)
 
-/* Before one of a level's pieces draws: which of its own faces it leaves out, as they go with the backdrop or would show against it. */
-void wide_scenery_piece_faces(const map_enviroment *scene, const subengine *sub) {
-    if (gfx_view_extra() > 0 && NumTried == 0 && RingTried == 0 && sub == scene->subs) {
-        s32 file = (s32)(scene->dbase->file - DatIndex);
+/* Crashball's side pipes fade to black at their front ends, past where a 4:3 view stops. A corner of the right one's was left lit, so it ends in a hard wedge. So a wide
+   view has the mirror image of the left one's end there instead. */
+#define CRASHBALL_LEFT_PIPE 6
+#define CRASHBALL_RIGHT_PIPE 8
+static const s16 CrashballLeftPipeEnd[][2] = { { 8, 11 }, { 46, 49 }, { 68, 71 }, { 90, 93 }, { 116, 119 } };
+#define NUM_CRASHBALL_LEFT_PIPE_END ((s32)(sizeof(CrashballLeftPipeEnd) / sizeof(CrashballLeftPipeEnd[0])))
+static const s16 CrashballRightPipeEnd[][2] = { { 24, 35 }, { 62, 69 } };
+#define NUM_CRASHBALL_RIGHT_PIPE_END ((s32)(sizeof(CrashballRightPipeEnd) / sizeof(CrashballRightPipeEnd[0])))
 
-        if (file == FILE_BEACH_BALL) {
-            draw_face_list(BeachWallEnds, NUM_BEACH_WALL_ENDS, 0);
-        } else if (file == FILE_N_BALLISM) {
-            draw_face_list(BallismLeftOut, NUM_BALLISM_LEFT_OUT, 0);
+/* What a level's pieces leave out of their own faces, as they go with the backdrop or would show against it. */
+static const struct {
+    s16 file, piece;
+    const s16 (*faces)[2];
+    s32 count;
+} LeftOutFaces[] = {
+    { FILE_BEACH_BALL, 0, BeachWallEnds, NUM_BEACH_WALL_ENDS },
+    { FILE_N_BALLISM, 0, BallismLeftOut, NUM_BALLISM_LEFT_OUT },
+    { FILE_CRASHBALL, CRASHBALL_RIGHT_PIPE, CrashballRightPipeEnd, NUM_CRASHBALL_RIGHT_PIPE_END },
+};
+#define NUM_LEFT_OUT_FACES ((s32)(sizeof(LeftOutFaces) / sizeof(LeftOutFaces[0])))
+
+/* Before one of a level's pieces draws. */
+void wide_scenery_piece_faces(const map_enviroment *scene, const subengine *sub) {
+    if (gfx_view_extra() > 0 && NumTried == 0 && RingTried == 0) {
+        s32 file = (s32)(scene->dbase->file - DatIndex), piece = (s32)(sub - scene->subs);
+        s32 i;
+
+        for (i = 0; i < NUM_LEFT_OUT_FACES; i++) {
+            if (LeftOutFaces[i].file == file && LeftOutFaces[i].piece == piece) {
+                draw_face_list(LeftOutFaces[i].faces, LeftOutFaces[i].count, 0);
+            }
         }
     }
 }
@@ -954,6 +977,33 @@ static void draw_ballism_radars(map_enviroment *scene, MATRIX *view) {
     draw_depth(0);
 }
 
+static subengine CrashballPipeEnd;
+
+static void draw_crashball_pipe_end(const map_enviroment *scene, MATRIX *view) {
+    const subengine *left = &scene->subs[CRASHBALL_LEFT_PIPE];
+    MATRIX mirror, turned;
+
+    if (CRASHBALL_RIGHT_PIPE >= scene->num_placements) {
+        return;
+    }
+    CrashballPipeEnd = *left;
+    CrashballPipeEnd.next = NULL;
+    CrashballPipeEnd.XYZ = scene->subs[CRASHBALL_RIGHT_PIPE].XYZ;
+    memset(&mirror, 0, sizeof(mirror));
+    mirror.m[0][0] = -0x1000;
+    mirror.m[1][1] = 0x1000;
+    mirror.m[2][2] = 0x1000;
+    matrix_mul(&mirror, (MATRIX *)&left->xform.mtx, &turned);
+    CrashballPipeEnd.xform.mtx = turned;
+    draw_mirrored(1);
+    draw_face_list(CrashballLeftPipeEnd, NUM_CRASHBALL_LEFT_PIPE_END, 1);
+    draw_owner(&CrashballPipeEnd);
+    CrashballPipeEnd.hook(&CrashballPipeEnd, view, 0);
+    draw_owner(NULL);
+    draw_face_list(NULL, 0, 0);
+    draw_mirrored(0);
+}
+
 void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
     s32 file;
     s32 i;
@@ -992,6 +1042,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
 
         if (file == FILE_BEACH_BALL) {
             draw_beach_backdrop(scene, &RingOwner, view);
+        }
+        if (file == FILE_CRASHBALL) {
+            draw_crashball_pipe_end(scene, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
