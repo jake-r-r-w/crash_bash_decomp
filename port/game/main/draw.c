@@ -332,9 +332,28 @@ static void mark_next_part(void) {
     gfx_mark(OwnerId != 0 ? PART_ID(OwnerId, OwnerPart) : 0, 0);
 }
 
+/* Behind every view of the frame. */
+#define KEY_BACK 0x2000
+
+static void fill_rect(s32 key, s32 x, s32 y, s32 w, s32 h, u32 colour) {
+    GfxVert v[4];
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        v[i].x = (float)(x + ((i & 1) ? w : 0));
+        v[i].y = (float)(y + ((i & 2) ? h : 0));
+        v[i].w = 1;
+        v[i].u = 0;
+        v[i].v = 0;
+        v[i].rgba = colour_of(colour);
+    }
+    gfx_quad(key, v, NULL, GFX_OPAQUE);
+}
+
 void draw_viewport(s32 layer, s32 x, s32 y, s32 w, s32 h, s32 fill, u32 colour) {
     s32 key = key_of(layer);
-    s32 i;
+    s32 whole = x <= 0 && x + w >= ScreenRect->w;
+    s32 extra = whole ? gfx_view_extra() : 0;
 
     if (key < 0) {
         return;
@@ -342,22 +361,12 @@ void draw_viewport(s32 layer, s32 x, s32 y, s32 w, s32 h, s32 fill, u32 colour) 
     gfx_mark(0, 0);
     gfx_set_clip(x, y, w, h);
     if (fill) {
-        GfxVert v[4];
-
         BackPixels = NULL;
-        if (x <= 0 && x + w >= ScreenRect->w) {
-            x -= gfx_view_extra();
-            w += gfx_view_extra() * 2;
-        }
-        for (i = 0; i < 4; i++) {
-            v[i].x = (float)(x + ((i & 1) ? w : 0));
-            v[i].y = (float)(y + ((i & 2) ? h : 0));
-            v[i].w = 1;
-            v[i].u = 0;
-            v[i].v = 0;
-            v[i].rgba = colour_of(colour);
-        }
-        gfx_quad(key + 1, v, NULL, GFX_OPAQUE);
+        fill_rect(key + 1, x - extra, y, w + extra * 2, h, colour);
+    } else if (extra > 0) {
+        /* A level that fills all of a 4:3 screen doesn't clear what's behind it, so past its sides, where it can leave gaps, old pictures would stay, and what's blended there would build up. */
+        fill_rect(KEY_BACK, x - extra, y, extra, h, 0);
+        fill_rect(KEY_BACK, x + w, y, extra, h, 0);
     }
 }
 
@@ -504,12 +513,23 @@ static s32 face_left_out(s32 face) {
     return FaceCount != 0 && FaceKeep;
 }
 
+/* What's drawn next is a mirror image, so its faces wind the other way. */
+static s32 Mirrored;
+
+void draw_mirrored(s32 on) {
+    Mirrored = on;
+}
+
 void draw_mesh_tri(s32 layer, const DrawFace *f, const ViewPoint q[3], s32 face, s32 wind, s32 hidden) {
     s32 key = key_of(layer);
     const GfxTex *t;
     GfxVert v[3];
     s32 i;
 
+    if (Mirrored && wind != 0) {
+        wind = -wind;
+        hidden = !hidden;
+    }
     if (key < 0 || (hidden && !gfx_stepping()) || face_left_out(face)) {
         return;
     }
@@ -536,7 +556,11 @@ void draw_mesh_tri_plain(s32 layer, const DrawFace *f, const ViewPoint q[3], s32
     GfxVert v[3];
     s32 i;
 
-    if (key < 0 || (hidden && !gfx_stepping())) {
+    if (Mirrored && wind != 0) {
+        wind = -wind;
+        hidden = !hidden;
+    }
+    if (key < 0 || (hidden && !gfx_stepping()) || face_left_out(face)) {
         return;
     }
     BackPixels = NULL;
@@ -597,7 +621,7 @@ static void draw_back(void) {
             v[i].v = (i & 2) ? (float)BackH : 0;
             v[i].rgba = 0xFF808080;
         }
-        gfx_quad(0x2000, v, t, GFX_OPAQUE);
+        gfx_quad(KEY_BACK, v, t, GFX_OPAQUE);
     }
 }
 

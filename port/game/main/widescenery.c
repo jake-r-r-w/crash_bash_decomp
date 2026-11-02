@@ -81,27 +81,17 @@ static const WideExtra Extras[] = {
     { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 400, 0, 1 },
     { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 480, 0, 1 },
     { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 480, 0, 1 },
-    /* the walls round the arena, carried on round it */
-    { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, 500 },
-    { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, -500 },
-    { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, 900 },
-    { FILE_N_BALLISM, 0, -3, 1, 0, 0, 0, -900 },
-    { FILE_N_BALLISM, 0, -3, 1, 0, 700, 0, 700 },
-    { FILE_N_BALLISM, 0, -3, 1, 0, 700, 0, -700 },
-    { FILE_N_BALLISM, 0, -3, 1, 0, 1400, 0, 500 },
-    { FILE_N_BALLISM, 0, -3, 1, 0, 1400, 0, -500 },
-    { FILE_N_BALLISM, 0, -3, 1, 0, 700, 0, 1100 },
-    { FILE_N_BALLISM, 0, -3, 1, 0, 700, 0, -1100 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
-/* Off the sides of a 4:3 screen, and so unfinished: */
+/* What a wide view is better without: */
 static const struct {
     s16 file, piece;
 } Hidden[] = {
-    /* the front corners' wedges and needles, floating on their bases with no dish */
+    /* the rings round the front corners' spikes, only needles from here, as those radars are edge on to the camera */
     { FILE_N_BALLISM, 7 },
     { FILE_N_BALLISM, 8 },
+    /* the floor under their bases, which sorts in front of them in places: it goes with the backdrop instead (BallismFloors) */
     { FILE_N_BALLISM, 9 },
     { FILE_N_BALLISM, 10 },
 };
@@ -446,10 +436,19 @@ static const WideSand BeachFloor = { 0, 0, 1, 0x1E1E10 };
 static const s16 BeachWallEnds[] = { 252, 253, 262, 263 };
 #define NUM_BEACH_WALL_ENDS ((s32)(sizeof(BeachWallEnds) / sizeof(BeachWallEnds[0])))
 
-/* Before one of a level's pieces draws: which of its own faces go with the backdrop instead. */
+/* A black side of one of its pillars, which only ever hid in the dark. */
+static const s16 BallismLeftOut[] = { 517 };
+
+/* Before one of a level's pieces draws: which of its own faces it leaves out, as they go with the backdrop or would show against it. */
 void wide_scenery_piece_faces(const map_enviroment *scene, const subengine *sub) {
-    if (gfx_view_extra() > 0 && NumTried == 0 && RingTried == 0 && sub == scene->subs && (s32)(scene->dbase->file - DatIndex) == FILE_BEACH_BALL) {
-        draw_face_list(BeachWallEnds, NUM_BEACH_WALL_ENDS, 0);
+    if (gfx_view_extra() > 0 && NumTried == 0 && RingTried == 0 && sub == scene->subs) {
+        s32 file = (s32)(scene->dbase->file - DatIndex);
+
+        if (file == FILE_BEACH_BALL) {
+            draw_face_list(BeachWallEnds, NUM_BEACH_WALL_ENDS, 0);
+        } else if (file == FILE_N_BALLISM) {
+            draw_face_list(BallismLeftOut, 1, 0);
+        }
     }
 }
 
@@ -523,6 +522,110 @@ static void draw_beach_backdrop(map_enviroment *scene, subengine *owner, MATRIX 
     draw_owner(NULL);
 }
 
+/* N.Ballism's round wall stops at each side of the arena, where a 4:3 view stops too. It's carried on round with copies of its own last stretch, each the
+   mirror image of the one before, as its tiles are from one stretch to the next, so their edges meet. These are the stretch's faces, */
+static const s16 BallismStretch[] = { 265, 266, 267, 268, 269, 270, 271, 272, 409, 410, 413, 414 };
+#define NUM_BALLISM_STRETCH ((s32)(sizeof(BallismStretch) / sizeof(BallismStretch[0])))
+/* its two ends, */
+static const s16 BallismStretchEnds[2][2] = { { 5509, 1765 }, { 5543, 2781 } };
+/* and where the copies' ends go: on from where it stops on the right, and from behind where it stops on the left. */
+static const s16 BallismRoundRight[][2] = { { 5509, 1765 }, { 5640, 745 }, { 5710, -270 }, { 5640, -1290 }, { 5400, -2280 }, { 5000, -3220 } };
+static const s16 BallismRoundLeft[][2] = { { -5000, 2900 }, { -5400, 1950 }, { -5640, 960 }, { -5710, -60 }, { -5640, -1080 }, { -5400, -2070 }, { -5000, -3010 } };
+#define NUM_BALLISM_RIGHT ((s32)(sizeof(BallismRoundRight) / sizeof(BallismRoundRight[0])))
+#define NUM_BALLISM_LEFT ((s32)(sizeof(BallismRoundLeft) / sizeof(BallismRoundLeft[0])))
+/* Under its floor, as the floor has holes where nothing was ever meant to show through them. It stops short of the floor's edge, which is see-through for its last few texels. */
+#define BALLISM_PLATE_Y 8
+static const s16 BallismPlate[4][2] = { { -2790, 2750 }, { 2750, 2750 }, { -2790, -2750 }, { 2750, -2750 } };
+
+/* What it has in place of the floor under its front corners. */
+static const s16 BallismFloors[] = { 9, 10 };
+#define NUM_BALLISM_FLOORS ((s32)(sizeof(BallismFloors) / sizeof(BallismFloors[0])))
+
+static subengine BallismCopies[NUM_BALLISM_RIGHT + NUM_BALLISM_LEFT];
+
+static void draw_ballism_round(const map_enviroment *scene, const s16 (*round)[2], s32 count, subengine *copies, MATRIX *view) {
+    const subengine *from = &scene->subs[0];
+    const s16 *near_end = BallismStretchEnds[0], *far_end = BallismStretchEnds[1];
+    float sx = (float)(near_end[0] - far_end[0]), sz = (float)(near_end[1] - far_end[1]);
+    float length = sqrtf(sx * sx + sz * sz);
+    /* along the stretch, and from it towards the arena */
+    float dx = sx / length, dz = sz / length;
+    float nx = dz, nz = -dx;
+    s32 i;
+
+    for (i = 0; i + 1 < count; i++) {
+        const s16 *a = round[i + (i & 1)], *b = round[i + 1 - (i & 1)];
+        subengine *copy = &copies[i];
+        float wx = (float)(a[0] - b[0]), wz = (float)(a[1] - b[1]);
+        float width = sqrtf(wx * wx + wz * wz);
+        float tx = wz / width, tz = -wx / width;
+        MATRIX spin, turned;
+
+        if (tx * (float)(a[0] + b[0]) + tz * (float)(a[1] + b[1]) > 0) {
+            tx = -tx;
+            tz = -tz;
+        }
+        memset(&spin, 0, sizeof(spin));
+        spin.m[0][0] = (s16)((wx / length * dx + tx * nx) * 4096.0f);
+        spin.m[0][2] = (s16)((wx / length * dz + tx * nz) * 4096.0f);
+        spin.m[1][1] = 0x1000;
+        spin.m[2][0] = (s16)((wz / length * dx + tz * nx) * 4096.0f);
+        spin.m[2][2] = (s16)((wz / length * dz + tz * nz) * 4096.0f);
+        *copy = *from;
+        copy->next = NULL;
+        copy->XYZ.x = from->XYZ.x + a[0] - (spin.m[0][0] * near_end[0] + spin.m[0][2] * near_end[1]) / 0x1000;
+        copy->XYZ.z = from->XYZ.z + a[1] - (spin.m[2][0] * near_end[0] + spin.m[2][2] * near_end[1]) / 0x1000;
+        matrix_mul(&spin, (MATRIX *)&from->xform.mtx, &turned);
+        copy->xform.mtx = turned;
+        draw_mirrored((s32)spin.m[0][0] * spin.m[2][2] - (s32)spin.m[0][2] * spin.m[2][0] < 0);
+        draw_owner(copy);
+        copy->hook(copy, view, 0);
+    }
+    draw_mirrored(0);
+}
+
+static void draw_ballism_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    DrawFace f;
+    ViewPoint q[4], t[3];
+    s16 p[4];
+    s32 i;
+
+    ring_begin(scene, owner, view);
+    memset(&f, 0, sizeof(f));
+    if (RenderState.modelDp != 0) {
+        const u32 black = 0;
+
+        f.colour[0] = f.colour[1] = f.colour[2] = colour_fade(&black, FarColor, RenderState.modelDp);
+    }
+    draw_owner(owner);
+    draw_owner_part(BallismPlate);
+    for (i = 0; i < 4; i++) {
+        p[0] = BallismPlate[i][0];
+        p[1] = BALLISM_PLATE_Y;
+        p[2] = BallismPlate[i][1];
+        p[3] = 0;
+        project_point(p, &q[i]);
+    }
+    for (i = 0; i < 2; i++) {
+        t[0] = q[i];
+        t[1] = q[i + 1];
+        t[2] = q[i + 2];
+        draw_mesh_tri_plain(RenderState.layer, &f, t, i, 0, 0);
+    }
+    for (i = 0; i < NUM_BALLISM_FLOORS; i++) {
+        subengine *floor = &scene->subs[BallismFloors[i]];
+
+        draw_owner(floor);
+        floor->hook(floor, view, 0);
+    }
+    draw_face_list(BallismStretch, NUM_BALLISM_STRETCH, 1);
+    draw_ballism_round(scene, BallismRoundRight, NUM_BALLISM_RIGHT, BallismCopies, view);
+    draw_ballism_round(scene, BallismRoundLeft, NUM_BALLISM_LEFT, BallismCopies + NUM_BALLISM_RIGHT, view);
+    draw_face_list(NULL, 0, 0);
+    draw_behind(0);
+    draw_owner(NULL);
+}
+
 void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
     s32 file;
     s32 i;
@@ -561,6 +664,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
 
         if (file == FILE_BEACH_BALL) {
             draw_beach_backdrop(scene, &RingOwner, view);
+        }
+        if (file == FILE_N_BALLISM) {
+            draw_ballism_backdrop(scene, &RingOwner, view);
         }
 
         for (i = 0; i < NUM_RINGS; i++) {
