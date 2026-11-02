@@ -12545,11 +12545,7 @@ void SetPolarHeroThrowBomb(s32 player) {
     }
 }
 
-#define SET_ENTITY(v)                                              \
-    *(s16 *)((u8 *)Heroes[player].hero_eng->sub + 0x74) = (v); \
-    if (GameLevelFlags & 0x80) {                                  \
-        Heroes[player].hero_eng->sub->entity = (v);            \
-    }
+#define SET_ENTITY(v) Heroes[player].hero_eng->sub->entity = (v)
 
 void SetPolarHeroSnowball(s32 player) {
     HeroInfo *base;

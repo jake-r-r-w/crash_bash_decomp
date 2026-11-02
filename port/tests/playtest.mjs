@@ -240,7 +240,7 @@ async function modes(args) {
     const asan = flag(args, '--asan');
     const exe = option(args, '--exe', asan ? ASAN_EXE : DEFAULT_EXE);
     const vblanks = Number(option(args, '--vblanks', 900));
-    const slots = Math.min(AT_ONCE, Number(option(args, '--slots', AT_ONCE)));
+    const slots = Math.min(AT_ONCE, Number(option(args, '--slots', 8)));
     const from = Number(option(args, '--from', 1));
     const to = Number(option(args, '--to', 39));
     const dir = path.join(OUT, 'modes');
@@ -308,7 +308,7 @@ async function adventure(args) {
 async function challenges(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const seconds = Number(option(args, '--seconds', 60));
-    const at_once = Math.min(AT_ONCE, Number(option(args, '--at-once', AT_ONCE)));
+    const at_once = Math.min(AT_ONCE, Number(option(args, '--at-once', 8)));
     const dir = path.join(OUT, 'challenges');
     const levels = [...Array(31).keys()].filter(l => ![4, 9, 22].includes(l));
     const wanted = args.length !== 0 ? args : levels.flatMap(l => [0, 1, 2, 3, 4].map(c => `${l}.${c}`));
@@ -339,8 +339,8 @@ async function challenges(args) {
 
 /* Whether a build still draws and sounds the same, for a change that shouldn't alter either: frames and sound of a few modes against a
    saved baseline, in about a minute. */
-/* The most copies of the game at once: 37 together took down the whole PC. */
-const AT_ONCE = 4;
+/* The most copies of the game at once, small and in a grid (--tile): 37 together at full size took down the whole PC. */
+const AT_ONCE = 12;
 
 const SAME_MODES = [0, 1, 4, 5, 10, 14, 18, 23, 27, 28, 30, 31, 33, 40];
 const SAME_SHOTS = [500, 900, 1300];
@@ -372,7 +372,7 @@ async function same(args) {
             fs.rmSync(path.join(dir, `m${m}-${v}.png`), { force: true });
         }
         fs.rmSync(path.join(dir, `m${m}.wav`), { force: true });
-        const r = await run(exe, [...what, '--turbo', '--tile', String(slot), String(SAME_MODES.length),
+        const r = await run(exe, [...what, '--turbo', '--tile', String(slot), String(AT_ONCE),
             ...shots, '--wav', rel(`m${m}.wav`)], path.join(dir, `m${m}.txt`), { timeout: MODE_TIMEOUT });
         const crash = crash_where(exe, r.text);
 
