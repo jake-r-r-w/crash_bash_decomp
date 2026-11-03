@@ -91,8 +91,10 @@ For the game's files,
 saves them all, named by number, and
     crashbash.exe --log-files > files.txt
 lists which ones the game reads as you play. Put a changed one in your mod's
-files folder with the same name. The guide is docs/MODDING.md at the address
-above.
+files folder with the same name. Or, to share your mod without the game's own
+files in it, put a patch there instead, NNN.bps, made with any maker of BPS
+patches: it holds only what you changed. The guide is docs/MODDING.md at the
+address above.
 
 
 YOUR SAVES AND SETTINGS

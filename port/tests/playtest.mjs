@@ -23,7 +23,8 @@
  *       Frames and sound of a few modes against a saved baseline (--save makes it), about a minute: whether a change that shouldn't alter
  *       anything didn't. Between big steps of cleaning up, in place of the long tests.
  *   node port/tests/playtest.mjs mods
- *       Mods from a mods folder: zips of textures and of archive files, broken ones, and which wins, by the pictures of one mode.
+ *       Mods from a mods folder: zips of textures, of archive files and of patches to them, broken ones, and which wins, by the
+ *       pictures of one mode.
  *   node port/tests/playtest.mjs menu
  *       From the title screen through the menus, by the pad alone, into the first game of a new Adventure's first room.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
@@ -38,6 +39,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
+import { bps_make } from '../mods/bps.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const OUT = path.join(ROOT, 'build/port/playtest');
@@ -724,12 +726,20 @@ async function mods(args) {
         at += 4 + n * 2;
     }
     put('changed.zip', zip_of([['files/252.bin', level]]));
+    /* the same as patches: to the game's own file, one that makes a file bigger, one for another file, and one cut about */
+    put('patch.zip', zip_of([['files/252.bps', bps_make(own('252'), level).patch]]));
+    put('patch-bigger.zip', zip_of([['files/010.bps', bps_make(own('010'), pad(own('010'), 100000)).patch]]));
+    put('patch-other.zip', zip_of([['files/252.bps', bps_make(level, own('252')).patch]]));
+    const damaged = Buffer.from(bps_make(own('252'), level).patch);
+    damaged[damaged.length >> 1] ^= 0x40;
+    put('patch-damaged.zip', zip_of([['files/252.bps', damaged]]));
 
     await play([['idle', ['idle.zip']], ['folder', ['pink']], ['deflated', ['pink.zip']], ['stored', ['pink-stored.zip']], ['zipped-folder', ['Pink Pack.zip']],
         ['green', ['green.zip']], ['order', ['green.zip', 'pink.zip']], ['bad-crc', ['bad-crc.zip']], ['encrypted', ['encrypted.zip']],
         ['zip64', ['zip64.zip']], ['truncated', ['truncated.zip']], ['not-a-zip', ['not-a-zip.zip']], ['empty', ['empty.zip']],
         ['same-files', ['same.zip']], ['bigger-files', ['bigger.zip']], ['moved-files', ['moved.zip']], ['text-too-big', ['text-too-big.zip']], ['code', ['code.zip']],
-        ['changed-file', ['changed.zip']]]);
+        ['changed-file', ['changed.zip']], ['patch', ['patch.zip']], ['patch-bigger', ['patch-bigger.zip']], ['patch-other', ['patch-other.zip']],
+        ['patch-damaged', ['patch-damaged.zip']]]);
     results.push(['texture folder', { pass: fine('folder', runs.folder) && sha('folder') !== sha('idle') && sha('idle') !== 'none', what: 'replaces' }]);
     same('deflated zip', 'deflated', 'folder');
     same('stored zip', 'stored', 'folder');
@@ -752,6 +762,12 @@ async function mods(args) {
     results.push(['too big, said', { pass: /TOO BIG/.test(runs['text-too-big'].text), what: 'in the log' }]);
     same('code', 'code', 'base');
     results.push(['code, said', { pass: /ITS CODE IS LEFT OUT/.test(runs.code.text), what: 'in the log' }]);
+    same('a patch', 'patch', 'changed-file');
+    same('a patch that makes a file bigger', 'patch-bigger', 'base');
+    same('a patch for another file', 'patch-other', 'base');
+    results.push(['another file, said', { pass: /FOR ANOTHER FILE/.test(runs['patch-other'].text), what: 'in the log' }]);
+    same('a damaged patch', 'patch-damaged', 'base');
+    results.push(['damaged, said', { pass: /DAMAGED/.test(runs['patch-damaged'].text), what: 'in the log' }]);
     return report(results);
 }
 

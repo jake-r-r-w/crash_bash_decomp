@@ -12,6 +12,7 @@ My Mod.zip
   0a1b2c3d4e5f6789.png    a texture, named after the one it replaces
   textures/...            PNGs can be in folders of any names
   files/0A6.bin           one of the game's files, by its number
+  files/0A7.bps           or a patch to one, with only what it changes
 ```
 
 A zip of a folder, as zipping a folder makes it, is just as good: when everything's in one folder, that folder is the mod.
@@ -34,14 +35,15 @@ short, and so is a description of more than 48.
 ## The demo mod
 
 `port/mods/gift-boxes/` is a mod made as this page says, in art of its own: TNT crates wrapped up as presents, with a bow on the lid.
-To try it, copy the folder into the game's `mods` folder, or zip it and put the zip there. Its five PNGs are named after TNT's sides,
-the sides of the 3, 2 and 1 it counts down with once it's hit, and its lid, which are the same in every crate arena, and they're four
-times the game's size, so they're drawn sharper. `node port/mods/gift_boxes.mjs` draws them again, to change them.
+To try it, copy the folder into the game's `mods` folder, or zip it and put the zip there. Its PNGs are named after TNT's sides, the
+sides of the 3, 2 and 1 it counts down with once it's hit, and its lid, which are the same in every crate arena, and they're four
+times the game's size, so they're drawn sharper.
 
-The lid shows a trick. It's the grey crate's image, which the models tint red for TNT and green for Nitro, and a tint multiplies, so
-TNT's lid shows only the image's red and Nitro's only its green. The lid PNG has the gift's ribbon and bow in its red, for TNT, and a
-crate lid in its green, for Nitro. The 3, 2 and 1 keep their lids: those are the wooden crate's image, which every wooden crate shows
-untinted.
+The game's TNT lid is the grey crate's image tinted red by the model, and a tint multiplies, so nothing on it could be gold. So the
+mod has patches too: each crate arena's texture set gains an image for TNT's lid, and its model points TNT's lid at it, without the
+tint. Nitro, which has the grey crate tinted green, keeps its own lid. `node port/mods/gift_boxes.mjs` draws the PNGs and makes the
+patches again, against your own `CRASHBSH.DAT` (`--data` says where it is). The 3, 2 and 1 keep their lids: those are the wooden
+crate's image, which every wooden crate shows.
 
 ## Making one as you go
 
@@ -90,6 +92,20 @@ PC version, so the code files (`1E7`, `2CC` to `2D8` and `3DF`) are left out of 
 What the files hold is in [ASSETS.md](ASSETS.md): texture sets, models, sound packs, mode text and title screens. The decomp's
 `tools/scripts/dat.py` unpacks them into formats you can edit, and packs them back.
 
+### Patches
+
+A changed file is still the game's, so a mod that has one can't be shared without sharing the game. A patch can: put `files/0A6.bps`
+in place of `files/0A6.bin`, and it holds only what you changed, with checksums of the game's file and of yours. The game applies it
+to the player's own copy as it applies the mod's files. A patch is always to the game's own file, not to another mod's, and one made
+from another version of the file is left out, with the Mods page saying so. Make one with
+
+```
+node port/mods/bps.mjs 0A6-original.bin 0A6-changed.bin files/0A6.bps
+```
+
+from the decomp's repo, which applies the patch again before it keeps it, to be sure; or with any maker of BPS patches, such as
+Floating IPS. The original is the file `--dump-files` saved.
+
 The same thing is often in more than one file: each crate arena has its own copy of the crates, and other games and the warp rooms
 have some too, so a change to one arena's file only changes that arena. And some colours aren't in a texture at all: a model's faces
 have colours that tint their texture, as the tops of TNT and Nitro crates are the grey crate's image tinted red and green, so those
@@ -108,10 +124,10 @@ Textures change as soon as a mod's turned on or off. Files change when PLAY is p
 
 The Mods page says BROKEN for a mod with nothing it can use, and why underneath: not a zip it can read, a zip in parts, a ZIP64 zip, or
 no textures or files in it. A broken file in a mod that works is left out, and the game's own is used: a PNG it can't read, a file
-that's encrypted or fails its check, or a mode text file that's too big. Run as `crashbash.exe > log.txt 2>&1`, the game writes what it
+that's encrypted or fails its check, a mode text file that's too big, or a patch that's damaged or for another file. Run as `crashbash.exe > log.txt 2>&1`, the game writes what it
 found in each mod, and anything it couldn't read, to `log.txt`.
 
 It reads zips that are stored or deflated, the usual kinds, as long as they're not encrypted.
 
 Mods are files the game reads, so only use ones from people you trust. It checks them as it goes: a zip's numbers against its size,
-each file against its size and its CRC, and a PNG's size before it's loaded.
+each file against its size and its CRC, a patch's every count and offset, and a PNG's size before it's loaded.

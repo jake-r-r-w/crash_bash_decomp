@@ -7,6 +7,8 @@
  *   <hash>.png       a texture in place of the game's: the 16 hex digits of the hash of what it replaces (texpack.c), as
  *                    --dump-textures names them
  *   files/<NNN>.bin  an archive file in place of entry NNN, in hex, as tools/scripts/dat.py and --dump-files name them (archive.c)
+ *   files/<NNN>.bps  or a patch to the game's own entry NNN (bps.c), which has only what it changes, so a mod needn't have the game's
+ *                    files to change them
  * A zip with its things in one folder, as zipping a folder makes it, is read from inside that folder. Texture packs from before mods,
  * folders of PNGs in packs/, are mods too. */
 #include <stdio.h>
@@ -14,6 +16,7 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include "bps.h"
 #include "mods.h"
 #include "platform.h"
 #include "settings.h"
@@ -43,6 +46,7 @@ typedef struct {
 
 typedef struct {
     int entry, thing;
+    int patch;  /* a patch to the game's own, rather than the file itself */
 } ModFile;
 
 typedef struct {
@@ -537,12 +541,13 @@ static void add_texture(Mod *m, uint64_t hash, int thing) {
     }
 }
 
-static void add_file(Mod *m, int entry, int thing) {
+static void add_file(Mod *m, int entry, int thing, int patch) {
     ModFile *f = room_for_one(m->files, m->num_files, &m->file_cap, sizeof(ModFile));
 
     if (f != NULL) {
         m->files = f;
         f[m->num_files].entry = entry;
+        f[m->num_files].patch = patch;
         f[m->num_files++].thing = thing;
     }
 }
@@ -578,7 +583,7 @@ static void sort_things(Mod *m) {
                 set_problem(m, "ITS CODE IS LEFT OUT: THE PC GAME HAS ITS OWN");
                 continue;
             }
-            add_file(m, entry, i);
+            add_file(m, entry, i, ends_with(base, ".bps"));
         } else if (texture_hash(base, &hash)) {
             add_texture(m, hash, i);
         }
@@ -977,27 +982,43 @@ void mods_apply_files(void) {
     for (e = 0; from != NULL && e < entries * 2; e++) {
         from[e] = -1;
     }
-    /* the lowest in the list first, so the higher ones' files go over theirs: each entry's mod, and which of its things */
+    /* the lowest in the list first, so the higher ones' files go over theirs: each entry's mod, and which of its files */
     for (i = NumMods - 1; from != NULL && i >= 0; i--) {
         for (k = 0; Mods[i].info.on && k < Mods[i].num_files; k++) {
             from[Mods[i].files[k].entry * 2] = i;
-            from[Mods[i].files[k].entry * 2 + 1] = Mods[i].files[k].thing;
+            from[Mods[i].files[k].entry * 2 + 1] = k;
         }
     }
     for (e = 0; from != NULL && e < entries; e++) {
         Mod *m = from[e * 2] >= 0 ? &Mods[from[e * 2]] : NULL;
-        int room = mode_text_room(e), thing = from[e * 2 + 1];
+        const ModFile *f = m != NULL ? &m->files[from[e * 2 + 1]] : NULL;
+        int room = mode_text_room(e);
+        size_t limit = room != 0 ? (size_t)room : MAX_FILE_BYTES, size;
         const char *problem;
-        size_t size;
         uint8_t *bytes;
 
         if (m == NULL) {
             continue;
         }
-        bytes = read_thing(m, thing, room != 0 ? (size_t)room : MAX_FILE_BYTES, &size, &problem);
+        bytes = read_thing(m, f->thing, f->patch ? MAX_FILE_BYTES : limit, &size, &problem);
+        if (bytes != NULL && f->patch) {
+            int own_size = 0;
+            uint8_t *own = archive_own_file(e, &own_size), *made = NULL;
+
+            problem = "THE GAME'S OWN CAN'T BE READ";
+            if (own != NULL) {
+                made = bps_apply(bytes, size, own, (size_t)own_size, limit, &size, &problem);
+                free(own);
+            }
+            free(bytes);
+            bytes = made;
+        }
         if (bytes == NULL) {
-            fprintf(stderr, "mod %s: %s: %s\n", m->info.id, m->things[thing].name, problem);
-            set_problem(m, room != 0 ? "A TEXT FILE IN IT IS TOO BIG FOR THE GAME" : "A FILE IN IT CAN'T BE READ");
+            fprintf(stderr, "mod %s: %s: %s\n", m->info.id, m->things[f->thing].name, problem);
+            set_problem(m, f->patch && problem != NULL && strcmp(problem, "FOR ANOTHER FILE") == 0 ? "A PATCH IN IT IS FOR OTHER FILES THAN YOURS"
+                           : room != 0 && problem != NULL && strcmp(problem, "TOO BIG") == 0 ? "A TEXT FILE IN IT IS TOO BIG FOR THE GAME"
+                           : f->patch ? "A PATCH IN IT CAN'T BE USED"
+                                      : "A FILE IN IT CAN'T BE READ");
             continue;
         }
         archive_replace(e, bytes, (int)size);
