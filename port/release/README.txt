@@ -34,6 +34,21 @@ A controller just works, with its sticks and rumble. On the keyboard:
   1 / 2         L2 / R2
 
 
+SETTINGS
+
+The menu the game opens with has its settings, and the pause menu has the
+Video ones too. The new looks are all off at first, so the game looks as it
+always did until you turn them on:
+
+  WIDESCREEN    A wide window shows more of the world, with each level's own
+                scenery carried on at the sides
+  ANTIALIAS     Smooths the edges of things
+  TEXTURES      SMOOTH blends the textures' pixels
+  UPSCALE       Rounds off textures on your PC, from your own data
+  ICONS         CRISP sharpens the hero and boss pictures
+  FRAME RATE    30 is the original, 60 and 120 are smoother
+
+
 TEXTURE PACKS
 
 You can replace the game's textures with your own. A pack is a folder in a
