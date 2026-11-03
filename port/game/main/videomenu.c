@@ -45,6 +45,34 @@ const char *video_option_help(s32 i) {
     return Options[i].help;
 }
 
+/* The window's sizes that fit on the screen, smallest first, then maximised, and round again. From a size that isn't one of them, the next one bigger or smaller. */
+static void step_window(Settings *s, s32 dir) {
+    s32 area = s->maximized ? (dir > 0 ? -1 : 0x7FFFFFFF) : s->window_w * s->window_h;
+    s32 i, best = -1;
+
+    for (i = 0; i < NUM_OF(WindowSizes); i++) {
+        s32 a = WindowSizes[i].w * WindowSizes[i].h;
+
+        if (!settings_window_fits(WindowSizes[i].w, WindowSizes[i].h) || (dir > 0 ? a <= area : a >= area)) {
+            continue;
+        }
+        if (best < 0 || (dir > 0) == (a < WindowSizes[best].w * WindowSizes[best].h)) {
+            best = i;
+        }
+    }
+    if (best < 0 && !s->maximized) {
+        s->maximized = 1;
+        return;
+    }
+    if (best < 0) {
+        /* nothing fits: the smallest anyway */
+        best = 0;
+    }
+    s->window_w = WindowSizes[best].w;
+    s->window_h = WindowSizes[best].h;
+    s->maximized = 0;
+}
+
 /* Moves through a list of sizes from the one in use, wrapping at the ends. */
 static void step_size(const VideoSize *sizes, s32 count, int *w, int *h, s32 dir) {
     s32 i, at = 0;
@@ -67,7 +95,7 @@ void video_option_change(s32 i, s32 dir) {
         s->fullscreen = !s->fullscreen;
         break;
     case VIDEO_WINDOW:
-        step_size(WindowSizes, NUM_OF(WindowSizes), &s->window_w, &s->window_h, dir);
+        step_window(s, dir);
         break;
     case VIDEO_RENDER:
         step_size(RenderSizes, NUM_OF(RenderSizes), &s->render_w, &s->render_h, dir);
@@ -103,7 +131,11 @@ void video_option_value(s32 i, char *text, s32 size) {
         snprintf(text, size, "%s", s->fullscreen ? "FULLSCREEN" : "WINDOW");
         break;
     case VIDEO_WINDOW:
-        snprintf(text, size, "%d X %d", s->window_w, s->window_h);
+        if (s->maximized) {
+            snprintf(text, size, "MAXIMISED");
+        } else {
+            snprintf(text, size, "%d X %d", s->window_w, s->window_h);
+        }
         break;
     case VIDEO_RENDER:
         if (s->render_w == 0) {

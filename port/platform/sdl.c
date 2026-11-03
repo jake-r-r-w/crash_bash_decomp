@@ -129,6 +129,40 @@ static void centre_window(void) {
                           usable.y + (usable.h > h + top ? (usable.h - h - top) / 2 : 0) + top);
 }
 
+/* The screen's room for a window, below its title bar. */
+static int window_room(int *w, int *h) {
+    SDL_Rect usable;
+    int top = 0;
+
+    if (Window == NULL || !SDL_GetDisplayUsableBounds(window_display(), &usable)) {
+        return 0;
+    }
+    SDL_GetWindowBordersSize(Window, &top, NULL, NULL, NULL);
+    *w = usable.w;
+    *h = usable.h - top;
+    return 1;
+}
+
+int settings_window_fits(int w, int h) {
+    int room_w, room_h;
+
+    return !window_room(&room_w, &room_h) || (w <= room_w && h <= room_h);
+}
+
+/* A size the screen can't hold, as one kept from a window that was maximised, is a maximised window, at the most of that shape that fits for when it's not. */
+static void keep_on_screen(Settings *s) {
+    int room_w, room_h;
+    float scale;
+
+    if (!window_room(&room_w, &room_h) || settings_window_fits(s->window_w, s->window_h) || room_w <= 0 || room_h <= 0) {
+        return;
+    }
+    scale = SDL_min((float)room_w / s->window_w, (float)room_h / s->window_h);
+    s->window_w = (int)(s->window_w * scale);
+    s->window_h = (int)(s->window_h * scale);
+    s->maximized = 1;
+}
+
 /* The window as the settings have it. Coming out of fullscreen or to another size it's centred; otherwise it stays where it was moved to. */
 static GfxConfig gfx_config_from(const Settings *s) {
     GfxConfig c;
@@ -146,19 +180,32 @@ static GfxConfig gfx_config_from(const Settings *s) {
 }
 
 static void place_window(void) {
-    const Settings *s = settings();
-    int was_fullscreen = Fullscreen, w, h;
+    Settings *s = settings();
+    int was_fullscreen = Fullscreen, w, h, maximised;
 
     Fullscreen = s->fullscreen;
     SDL_SetWindowFullscreen(Window, Fullscreen);
     SDL_SyncWindow(Window);
+    if (s->tiles == 0) {
+        keep_on_screen(s);
+    }
+    /* a maximised window takes no size: it has to come out of that first */
+    maximised = (SDL_GetWindowFlags(Window) & SDL_WINDOW_MAXIMIZED) != 0;
+    if (!Fullscreen && maximised && !s->maximized) {
+        SDL_RestoreWindow(Window);
+        SDL_SyncWindow(Window);
+        maximised = 0;
+    }
     SDL_GetWindowSize(Window, &w, &h);
-    if (!Fullscreen && (was_fullscreen || w != s->window_w || h != s->window_h)) {
+    if (!Fullscreen && !maximised && (was_fullscreen || w != s->window_w || h != s->window_h)) {
         SDL_SetWindowSize(Window, s->window_w, s->window_h);
         SDL_SyncWindow(Window);
         if (s->tiles == 0) {
             centre_window();
         }
+    }
+    if (!Fullscreen && !maximised && s->maximized && s->tiles == 0) {
+        SDL_MaximizeWindow(Window);
     }
     if (s->tiles > 0) {
         place_tile(s->tile, s->tiles);
@@ -174,7 +221,7 @@ int host_init(void) {
         return 0;
     }
     place_window();
-    if (!Fullscreen && s->tiles == 0) {
+    if (!Fullscreen && s->tiles == 0 && !s->maximized) {
         centre_window();
     }
     GfxConfig config = gfx_config_from(s);
@@ -280,9 +327,16 @@ int host_poll(void) {
             resized = 1;
             break;
         case SDL_EVENT_WINDOW_RESIZED:
-            if (!Fullscreen && settings()->tiles == 0) {
+            /* maximised it's the screen's size, not the window's */
+            if (!Fullscreen && settings()->tiles == 0 && !(SDL_GetWindowFlags(Window) & (SDL_WINDOW_MAXIMIZED | SDL_WINDOW_MINIMIZED))) {
                 settings()->window_w = e.window.data1;
                 settings()->window_h = e.window.data2;
+            }
+            break;
+        case SDL_EVENT_WINDOW_MAXIMIZED:
+        case SDL_EVENT_WINDOW_RESTORED:
+            if (!Fullscreen && settings()->tiles == 0) {
+                settings()->maximized = (SDL_GetWindowFlags(Window) & SDL_WINDOW_MAXIMIZED) != 0;
             }
             break;
         case SDL_EVENT_GAMEPAD_ADDED:

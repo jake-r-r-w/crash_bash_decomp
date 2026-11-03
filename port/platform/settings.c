@@ -16,6 +16,7 @@ void settings_defaults(void) {
     Current.fullscreen = 0;
     Current.window_w = 1280;
     Current.window_h = 960;
+    Current.maximized = 0;
     Current.render_w = 0;
     Current.render_h = 0;
     Current.vsync = 1;
@@ -60,6 +61,8 @@ void settings_load(void) {
         } else if (sscanf(line, "window=%dx%d", &a, &b) == 2 && a > 0 && b > 0) {
             Current.window_w = a;
             Current.window_h = b;
+        } else if (sscanf(line, "maximized=%d", &a) == 1) {
+            Current.maximized = a != 0;
         } else if (sscanf(line, "render=%dx%d", &a, &b) == 2 && a >= 0 && b >= 0) {
             Current.render_w = a;
             Current.render_h = b;
@@ -98,6 +101,7 @@ void settings_save(void) {
     fprintf(f, "skip_loading=%d\n", Current.skip_loading);
     fprintf(f, "fullscreen=%d\n", Current.fullscreen);
     fprintf(f, "window=%dx%d\n", Current.window_w, Current.window_h);
+    fprintf(f, "maximized=%d\n", Current.maximized);
     fprintf(f, "render=%dx%d\n", Current.render_w, Current.render_h);
     fprintf(f, "cheat_menu=%d\n", Current.cheat_menu);
     fprintf(f, "vsync=%d\n", Current.vsync);

@@ -6,7 +6,8 @@ typedef struct Settings {
     int skip_intro;    /* start at the main menu, without the logos */
     int skip_loading;  /* load in one go, without the loading screen */
     int fullscreen;
-    int window_w, window_h;
+    int window_w, window_h; /* the window's size when it's neither maximised nor fullscreen */
+    int maximized;
     int render_w, render_h; /* 0 x 0: as sharp as the window can show. Else what the game draws at, whatever the window's size */
     int vsync;
     int cheat_menu;    /* the original's hidden cheat menu, in the pause menu */
@@ -41,5 +42,7 @@ void settings_save(void);
 
 /* The window and renderer take up the settings as soon as they can. */
 void settings_apply(void);
+/* Whether a window of that size fits on the screen it's on, title bar and all. */
+int settings_window_fits(int w, int h);
 
 #endif
