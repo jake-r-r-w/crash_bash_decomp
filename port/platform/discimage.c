@@ -72,7 +72,7 @@ static int find_in(Disc *d, const DiscFile *dir, const char *name, DiscFile *out
 /* The shape of the file: raw sectors with their headers, or just the data. */
 static int open_disc(Disc *d) {
     static const uint8_t Sync[12] = { 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0 };
-    uint8_t head[32];
+    uint8_t head[SECTOR_BYTES]; /* a whole sector: read_sector fills one */
 
     if (read_at(d, (Sint64)VOLUME_SECTOR * RAW_SECTOR_BYTES, head, sizeof(head)) && memcmp(head, Sync, sizeof(Sync)) == 0) {
         d->stride = RAW_SECTOR_BYTES;
@@ -188,6 +188,157 @@ done:
     }
     SDL_CloseIO(d.io);
     return problem;
+}
+
+/* --- the player's other discs, for bonus content --- */
+
+struct DiscImage {
+    Disc d;
+    DiscFile root;
+    char volume[33];
+};
+
+DiscImage *disc_image_open(const char *image) {
+    uint8_t volume[SECTOR_BYTES];
+    char *file = image_file(image);
+    DiscImage *di = file != NULL ? SDL_calloc(1, sizeof(DiscImage)) : NULL;
+    int i;
+
+    if (di == NULL) {
+        SDL_free(file);
+        return NULL;
+    }
+    di->d.io = SDL_IOFromFile(file, "rb");
+    SDL_free(file);
+    if (di->d.io == NULL || !open_disc(&di->d) || !read_sector(&di->d, VOLUME_SECTOR, volume)) {
+        disc_image_close(di);
+        return NULL;
+    }
+    di->root.sector = le32(volume + 156 + 2);
+    di->root.size = le32(volume + 156 + 10);
+    memcpy(di->volume, volume + 40, 32);
+    for (i = 31; i >= 0 && di->volume[i] == ' '; i--) {
+        di->volume[i] = 0;
+    }
+    return di;
+}
+
+const char *disc_image_volume(const DiscImage *di) {
+    return di->volume;
+}
+
+void *disc_image_read(DiscImage *di, const char *path, size_t *size) {
+    DiscFile at = di->root, next;
+    char part[64];
+    uint8_t *buf;
+    uint32_t done;
+
+    /* down its folders, a name at a time */
+    while (*path != 0) {
+        size_t n = strcspn(path, "/");
+
+        if (n == 0 || n >= sizeof(part)) {
+            return NULL;
+        }
+        memcpy(part, path, n);
+        part[n] = 0;
+        if (!find_in(&di->d, &at, part, &next)) {
+            return NULL;
+        }
+        at = next;
+        path += n + (path[n] == '/');
+    }
+    buf = SDL_malloc((size_t)at.size + SECTOR_BYTES);
+    for (done = 0; buf != NULL && done < at.size; done += SECTOR_BYTES) {
+        if (!read_sector(&di->d, at.sector + done / SECTOR_BYTES, buf + done)) {
+            SDL_free(buf);
+            return NULL;
+        }
+    }
+    if (buf != NULL) {
+        *size = at.size;
+    }
+    return buf;
+}
+
+void disc_image_close(DiscImage *di) {
+    if (di != NULL) {
+        if (di->d.io != NULL) {
+            SDL_CloseIO(di->d.io);
+        }
+        SDL_free(di);
+    }
+}
+
+/* In one folder and the folders in it, the first image that's that volume's. */
+static DiscImage *find_volume_in(const char *folder, const char *volume, int depth) {
+    static const char *const Patterns[] = { "*.cue", "*.iso", "*.bin", "*.img" };
+    DiscImage *found = NULL;
+    size_t p;
+    int count = 0, i;
+    char **names;
+
+    for (p = 0; found == NULL && p < SDL_arraysize(Patterns); p++) {
+        names = SDL_GlobDirectory(folder, Patterns[p], SDL_GLOB_CASEINSENSITIVE, &count);
+        for (i = 0; found == NULL && names != NULL && i < count; i++) {
+            char *path;
+
+            if (SDL_asprintf(&path, "%s%s", folder, names[i]) >= 0) {
+                DiscImage *di = disc_image_open(path);
+
+                if (di != NULL && SDL_strcmp(di->volume, volume) == 0) {
+                    found = di;
+                } else {
+                    disc_image_close(di);
+                }
+                SDL_free(path);
+            }
+        }
+        SDL_free(names);
+    }
+    /* a disc in a folder of its own */
+    names = found == NULL && depth > 0 ? SDL_GlobDirectory(folder, "*", 0, &count) : NULL;
+    for (i = 0; found == NULL && names != NULL && i < count; i++) {
+        char *path;
+        SDL_PathInfo info;
+
+        if (SDL_asprintf(&path, "%s%s", folder, names[i]) >= 0) {
+            if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_DIRECTORY) {
+                char *inside;
+
+                if (SDL_asprintf(&inside, "%s/", path) >= 0) {
+                    found = find_volume_in(inside, volume, depth - 1);
+                    SDL_free(inside);
+                }
+            }
+            SDL_free(path);
+        }
+    }
+    SDL_free(names);
+    return found;
+}
+
+DiscImage *disc_image_find(const char *volume) {
+    const char *base = SDL_GetBasePath();
+    char *pref = SDL_GetPrefPath("CrashBash", "CrashBash");
+    char places[4][1024];
+    DiscImage *found = NULL;
+    int n = 0, i;
+
+    if (base != NULL) {
+        SDL_snprintf(places[n++], sizeof(places[0]), "%sdiscs/", base);
+    }
+    if (pref != NULL) {
+        SDL_snprintf(places[n++], sizeof(places[0]), "%sdiscs/", pref);
+        SDL_free(pref);
+    }
+    SDL_snprintf(places[n++], sizeof(places[0]), "discs/");
+    /* where a working copy of the repository keeps its discs */
+    SDL_snprintf(places[n++], sizeof(places[0]), "disc/");
+    for (i = 0; found == NULL && i < n; i++) {
+        found = find_volume_in(places[i], volume, 1);
+    }
+    return found;
 }
 
 /* The file dialog answers from its own thread. */

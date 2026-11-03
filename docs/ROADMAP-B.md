@@ -27,5 +27,6 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | 7.12.4 | The bosses | Papu Papu (7 animations), the Bearminator (6), Big Bad Fox (5), Oxide (a still model in his hovercraft) | [ ] |
 | 7.12.5 | Icons and results | New art where the game has none (Roo, the fox), the podium and win screens | [ ] |
 | 7.12.6 | Adventure | The warp rooms, teams and saves: later, if at all | [ ] |
+| 7.12.7 | Bonus heroes from other discs | At the user's idea (2026-11-03): with the player's own copy of another Crash game in a `discs` folder, an extra hero looks as it did there, its model and animations converted on their machine and never kept (`main/bonusheroes.c`). Ripper Roo from Crash Bandicoot (USA) is in; that disc's other bosses (Pinstripe, Koala Kong, Papu Papu) could follow | [ ] |
 | 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |
 

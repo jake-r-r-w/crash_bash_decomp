@@ -44,6 +44,15 @@ const char *disc_extract(const char *image, const char *out);
 int disc_find_beside(const char *out, const char **problem);
 /* Asks the player for their disc image, with first as what's wrong, if it's not NULL. 0: they'd rather not. */
 int disc_first_run(const char *out, const char *first);
+/* The player's other discs, for bonus content (game/main/bonusheroes.c): an image (.cue with its .bin, .bin, .iso or .img) opened, its
+ * volume's name (the game's code, as SCUS-94900), and a file read whole ("S1/S0000017.NSF", to free with SDL_free; NULL if it has
+ * none). disc_image_find looks in the discs folders (beside the program, in the user's folder, here) and the folders in them. */
+typedef struct DiscImage DiscImage;
+DiscImage *disc_image_open(const char *image);
+const char *disc_image_volume(const DiscImage *di);
+void *disc_image_read(DiscImage *di, const char *path, size_t *size);
+void disc_image_close(DiscImage *di);
+DiscImage *disc_image_find(const char *volume);
 /* A pad, as the game's libpad reads it: its buttons, or -1 when there's none. */
 int platform_pad(int port);
 int platform_vblanks(void);

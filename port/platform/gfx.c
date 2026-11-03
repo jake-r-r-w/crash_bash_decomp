@@ -798,6 +798,40 @@ static void relax_edge(uint32_t *px, int side, int k, int sw, int sh, int factor
 }
 
 /* icon: made sharp at factor (upscale_texels_sharp), rather than upscale_texels */
+/* The texels just put at the shelf's place, sw x sh: each clear one takes the colour next to it, for filtering to blend with (it's still
+ * clear, so it's never drawn itself), and a border of one all round copies the edges. */
+static void atlas_finish(int sw, int sh) {
+    uint32_t *px = (uint32_t *)AtlasPixels, *out;
+    int x, y;
+
+    for (y = 0; y < sh; y++) {
+        out = px + (ShelfY + 1 + y) * AtlasSize + ShelfX + 1;
+        for (x = 0; x < sw; x++) {
+            if ((out[x] >> 24) == 0) {
+                uint32_t beside = 0;
+
+                if (x > 0 && (out[x - 1] >> 24) != 0) {
+                    beside = out[x - 1];
+                } else if (x + 1 < sw && (out[x + 1] >> 24) != 0) {
+                    beside = out[x + 1];
+                } else if (y > 0 && (out[x - AtlasSize] >> 24) != 0) {
+                    beside = out[x - AtlasSize];
+                } else if (y + 1 < sh && (out[x + AtlasSize] >> 24) != 0) {
+                    beside = out[x + AtlasSize];
+                }
+                out[x] = beside & 0xFFFFFF;
+            }
+        }
+    }
+    for (y = 1; y <= sh; y++) {
+        out = px + (ShelfY + y) * AtlasSize + ShelfX;
+        out[0] = out[1];
+        out[sw + 1] = out[sw];
+    }
+    memcpy(px + ShelfY * AtlasSize + ShelfX, px + (ShelfY + 1) * AtlasSize + ShelfX, (size_t)(sw + 2) * 4);
+    memcpy(px + (ShelfY + sh + 1) * AtlasSize + ShelfX, px + (ShelfY + sh) * AtlasSize + ShelfX, (size_t)(sw + 2) * 4);
+}
+
 static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor, int sharp, const void *source, int top, const GfxEdge *edges, int icon) {
     static uint32_t *decoded;
     static int decoded_size;
@@ -954,33 +988,7 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
     {
         uint32_t *px = (uint32_t *)AtlasPixels;
 
-        /* a clear texel takes the colour next to it, for filtering to blend with. It's still clear, so it's never drawn itself */
-        for (y = 0; y < sh; y++) {
-            out = px + (ShelfY + 1 + y) * AtlasSize + ShelfX + 1;
-            for (x = 0; x < sw; x++) {
-                if ((out[x] >> 24) == 0) {
-                    uint32_t beside = 0;
-
-                    if (x > 0 && (out[x - 1] >> 24) != 0) {
-                        beside = out[x - 1];
-                    } else if (x + 1 < sw && (out[x + 1] >> 24) != 0) {
-                        beside = out[x + 1];
-                    } else if (y > 0 && (out[x - AtlasSize] >> 24) != 0) {
-                        beside = out[x - AtlasSize];
-                    } else if (y + 1 < sh && (out[x + AtlasSize] >> 24) != 0) {
-                        beside = out[x + AtlasSize];
-                    }
-                    out[x] = beside & 0xFFFFFF;
-                }
-            }
-        }
-        for (y = 1; y <= sh; y++) {
-            out = px + (ShelfY + y) * AtlasSize + ShelfX;
-            out[0] = out[1];
-            out[sw + 1] = out[sw];
-        }
-        memcpy(px + ShelfY * AtlasSize + ShelfX, px + (ShelfY + 1) * AtlasSize + ShelfX, (size_t)(sw + 2) * 4);
-        memcpy(px + (ShelfY + sh + 1) * AtlasSize + ShelfX, px + (ShelfY + sh) * AtlasSize + ShelfX, (size_t)(sw + 2) * 4);
+        atlas_finish(sw, sh);
         /* filtered, tiles of the same art blend across their join. Not a pack's, which has its own size */
         if (edges != NULL && Smooth && factor != FACTOR_REPLACED) {
             for (i = 0; i < 4; i++) {
@@ -1034,6 +1042,69 @@ const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *
 
 const GfxTex *gfx_texture_sharp(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
     return texture_scaled(id, pixels, w, h, bpp, palette, 1, 1, pixels, 0, NULL, 0);
+}
+
+#define FACTOR_ART (-2) /* gfx_texture_art's */
+
+const GfxTex *gfx_texture_art(uint64_t id, const uint32_t *art, int art_w, int art_h, int w, int h) {
+    IdSlot *slot = &IdCache[(id * 0x9E3779B97F4A7C15ULL) >> 48];
+    uint64_t hash;
+    Cached *c;
+    int i, y;
+
+    if (id != 0 && slot->gen == IdGen && slot->id == id) {
+        return &Textures[slot->index].t;
+    }
+    if (art == NULL || w <= 0 || h <= 0 || art_w <= 0 || art_h <= 0 || art_w + 2 > AtlasSize || art_h + 2 > AtlasSize) {
+        return NULL;
+    }
+    hash = hash_bytes((const uint8_t *)art, (size_t)art_w * art_h * 4, 0xCBF29CE484222325ULL);
+    for (i = NumTextures - 1; i >= 0; i--) {
+        c = &Textures[i];
+        if (c->hash == hash && c->w == w && c->h == h && c->factor == FACTOR_ART) {
+            slot->gen = IdGen;
+            slot->id = id;
+            slot->index = i;
+            return &c->t;
+        }
+    }
+    if (NumTextures >= MAX_TEXTURES) {
+        atlas_reset();
+    }
+    if (ShelfX + art_w + 2 > AtlasSize) {
+        ShelfX = 0;
+        ShelfY += ShelfH;
+        ShelfH = 0;
+    }
+    if (ShelfY + art_h + 2 > AtlasSize) {
+        atlas_reset();
+    }
+    slot->gen = IdGen;
+    slot->id = id;
+    slot->index = NumTextures;
+    c = &Textures[NumTextures++];
+    memset(c, 0, sizeof(*c));
+    c->hash = hash;
+    c->w = w;
+    c->h = h;
+    c->bpp = 32;
+    c->factor = FACTOR_ART;
+    c->t.w = w;
+    c->t.h = h;
+    c->t.u0 = (float)(ShelfX + 1) / AtlasSize;
+    c->t.v0 = (float)(ShelfY + 1) / AtlasSize;
+    c->t.us = (float)art_w / w / AtlasSize;
+    c->t.vs = (float)art_h / h / AtlasSize;
+    for (y = 0; y < art_h; y++) {
+        memcpy((uint32_t *)AtlasPixels + (ShelfY + 1 + y) * AtlasSize + ShelfX + 1, art + (size_t)y * art_w, (size_t)art_w * 4);
+    }
+    atlas_finish(art_w, art_h);
+    mark_dirty(ShelfX, ShelfY, art_w + 2, art_h + 2);
+    ShelfX += art_w + 2;
+    if (art_h + 2 > ShelfH) {
+        ShelfH = art_h + 2;
+    }
+    return &c->t;
 }
 
 const GfxTex *gfx_texture_icon(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {

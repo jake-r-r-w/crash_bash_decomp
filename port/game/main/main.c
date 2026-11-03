@@ -2,6 +2,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/modchip.h"
+#include "bash/extraheroes.h"
 
 s32 count_completion(u8 *arg0) {
     s32 q;
@@ -3041,7 +3042,12 @@ PointList *sub_point_list(subengine *sub) {
     MeshHeader *rec;
     MeshAnimFrame *fr;
     s32 off;
+    PointList *extra;
 
+    /* PC: an extra hero's are its base's (extraheroes.c) */
+    if (extra_hero_points(sub, &extra)) {
+        return extra;
+    }
     flag = sub->entity;
     if (flag != 0) {
         if (sub->u6C.dbase == NULL) {
@@ -3331,7 +3337,7 @@ s32 MalFreeBytes = 0;
 s32 MalFreeBlocks = 0;
 s32 MalLargestFree = 0;
 /* The archive's index: {first sector, size in bytes} for each of CRASHBSH.DAT's 992 files. */
-file DatIndex[992] = {
+file DatIndex[994] = {
     0x0, 0x3770, 0x7, 0x1FB2A, 0x47, 0x3770, 0x4E, 0x3E33C, /* 0 */
     0xCB, 0x3770, 0xD2, 0x2992C, 0x126, 0x3770, 0x12D, 0x293A2, /* 4 */
     0x180, 0x2AD8, 0x186, 0x19F78, 0x1BA, 0x2AD8, 0x1C0, 0x1DD82, /* 8 */
@@ -3580,12 +3586,15 @@ file DatIndex[992] = {
     0x883D, 0x3C762, 0x88B6, 0x1068, 0x88B9, 0x3ACA2, 0x892F, 0x820, /* 980 */
     0x8931, 0x3252E, 0x8996, 0x8E8, 0x8998, 0x39626, 0x8A0B, 0x1010, /* 984 */
     0x8A0E, 0x34A7E, 0x8A78, 0x1250, 0x8A7B, 0x37C26, 0x8AEB, 0x5E4B8, /* 988 */
+    /* PC: 992 and 993, the bonus Ripper Roo's textures and model, empty unless the player's Crash Bandicoot disc fills them
+     * (bonusheroes.c) */
+    0x8BA8, 0, 0x8BA8, 0,
 };
 /* How many, for laying the archive out again round a mod's files (platform/archive.c). */
 s32 DatIndexCount = sizeof(DatIndex) / sizeof(DatIndex[0]);
 /* The archive's file groups: a group's first file, its file count and its bytes (the
  * games' file_group_load_info.group points at one). */
-FileGroup FileGroups[130] = {
+FileGroup FileGroups[132] = {
     { 0, 0x88, 0xCBA000 }, { 0x88, 5, 0x13E800 }, { 0x8D, 0xC, 0x1B800 },  /* 0 */
     { 0x99, 0x7E, 0x1069800 }, { 0x117, 0x19, 0x394800 }, { 0x130, 0xC, 0x5A000 },  /* 3 */
     { 0x13C, 0x10, 0x59000 }, { 0x14C, 0xA, 0x3D800 }, { 0x156, 2, 0x9800 },  /* 6 */
@@ -3630,6 +3639,8 @@ FileGroup FileGroups[130] = {
     { 0x3D3, 2, 0x3D800 }, { 0x3D5, 2, 0x3C800 }, { 0x3D7, 2, 0x33800 },  /* 123 */
     { 0x3D9, 2, 0x3A800 }, { 0x3DB, 2, 0x36800 }, { 0x3DD, 2, 0x39800 },  /* 126 */
     { 0x3DF, 1, 0x5E800 },  /* 129 */
+    { 0x2FF, 2, 0x14000 },  /* 130, PC: Ripper Roo's textures and model, for the extra heroes (extraheroes.c) */
+    { 992, 2, 0 },          /* 131, PC: the bonus Ripper Roo's (bonusheroes.c): its size is laid out with them */
 };
 s32 FileGroupCount = sizeof(FileGroups) / sizeof(FileGroups[0]);
 LoaderState Loader = {0};

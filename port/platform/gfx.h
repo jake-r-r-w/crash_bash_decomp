@@ -88,6 +88,9 @@ const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int width_texel
 const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *source, int top, int width_texels, int height, int bpp, const void *palette, const GfxEdge *edges);
 /* One that's never upscaled or filtered, whatever the settings: text, whose small hand-placed pixels those would spoil. */
 const GfxTex *gfx_texture_sharp(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
+/* A picture made on the player's machine, art_w x art_h colours (red in the low byte, alpha in the top), standing for a texture
+ * width_texels x height, as a mod's picture does: the extra heroes' faces (game/main/extraheroes.c). */
+const GfxTex *gfx_texture_art(uint64_t id, const uint32_t *art, int art_w, int art_h, int width_texels, int height);
 
 /* An icon, made sharp at 4x if icons is on (GfxConfig), or else as gfx_texture. Its id has to be another than the same pixels' as gfx_texture. */
 const GfxTex *gfx_texture_icon(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);

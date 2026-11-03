@@ -33,6 +33,8 @@
 
 int overlay_is_code(int entry);
 int mode_text_room(int entry);
+/* game/main/bonusheroes.c: the bonus heroes' files, from the player's other discs */
+void bonus_heroes_files(void);
 
 typedef struct {
     char *name;  /* from where its things start */
@@ -979,6 +981,8 @@ void mods_apply_files(void) {
     int *from = malloc(sizeof(int) * (size_t)entries * 2);
 
     archive_replace_none();
+    /* the bonus heroes' first, so a mod's can go over them */
+    bonus_heroes_files();
     for (e = 0; from != NULL && e < entries * 2; e++) {
         from[e] = -1;
     }

@@ -5,6 +5,7 @@
 #include "bash/heroes.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
+#include "bash/extraheroes.h"
 
 void InitialiseHeroes(void) {
     s32 i;
@@ -32,6 +33,9 @@ void InitialiseHeroes(void) {
     s32 idx;
     s32 fxv;
 
+    /* PC: an extra hero takes its base's place (main/extraheroes.c) */
+    extra_heroes_assign();
+    extra_heroes_models();
     i = 0;
     k = 0;
     HeroAnimHeroA = -1;
@@ -275,6 +279,7 @@ void InitialiseHeroes(void) {
         i++;
         k += 3;
     }
+    extra_heroes_start();
     Setup_panel();
     ClearHeroAnimSlots();
     ArenaGridReset();
@@ -852,7 +857,7 @@ s32 ProcessHeroAnim(s32 player) {
                 } while (0);
                 break;
             case 0x8006:
-                h->hero_sub->u6C.dbase = &HeroModelBank[((s16 *)anim->Atable)[++anim->Aindex]];
+                h->hero_sub->u6C.dbase = &HeroModelBank[extra_hero_bank(player, ((s16 *)anim->Atable)[++anim->Aindex])];
                 break;
             case 0x8007:
                 anim->Seq_count = ((s16 *)anim->Atable)[++anim->Aindex] - 1;

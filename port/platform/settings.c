@@ -26,6 +26,7 @@ void settings_defaults(void) {
     Current.widescreen = 0;
     Current.upscale = 1;
     Current.icons = 0;
+    Current.extra_heroes = 0;
     Current.texture_pack[0] = 0;
     Current.num_mods = 0;
     Current.test_mode = -1;
@@ -84,6 +85,8 @@ void settings_load(void) {
             Current.upscale = a;
         } else if (sscanf(line, "icons=%d", &a) == 1) {
             Current.icons = a != 0;
+        } else if (sscanf(line, "extra_heroes=%d", &a) == 1) {
+            Current.extra_heroes = a != 0;
         } else if (sscanf(line, "texture_pack=%63[^\r\n]", Current.texture_pack) == 1) {
             /* that's it */
         } else if (strncmp(line, "mod=", 4) == 0 && Current.num_mods < SETTINGS_MODS) {
@@ -124,6 +127,7 @@ void settings_save(void) {
     fprintf(f, "widescreen=%d\n", Current.widescreen);
     fprintf(f, "upscale=%d\n", Current.upscale);
     fprintf(f, "icons=%d\n", Current.icons);
+    fprintf(f, "extra_heroes=%d\n", Current.extra_heroes);
     for (i = 0; i < Current.num_mods; i++) {
         fprintf(f, "mod=%s %s\n", Current.mods[i].on ? "on" : "off", Current.mods[i].id);
     }

@@ -121,6 +121,7 @@ extern s32 CupTimer;
 extern u16 Trophy_Cups;
 extern process_control_info ProcessControl;
 extern ModeDbase ModeDbaseLists[];
+extern const s32 ModeDbaseCount; /* PC: its entries, with the extra heroes' */
 extern process_control_info LoadingControl;
 extern EXTengine EnginePool[];
 extern HeroInfo Heroes[5];

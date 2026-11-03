@@ -5,6 +5,7 @@
 #include "bash/levelload.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
+#include "bash/extraheroes.h"
 
 /* Loads the mode's text (into ModeTextBuffer) and its minigame overlay (into the slot, unless it
  * is there already); returns where the overlay ends, the heap's new start. */
@@ -167,6 +168,9 @@ void QueueHeroModels(void) {
     obj_dbase *e;
     GameState *a = (GameState *)GameInfo;
 
+    /* PC: an extra hero takes its base's place, and loads with all its animations (main/extraheroes.c) */
+    extra_heroes_assign();
+    extra_heroes_models();
     i = 0;
     arg = (void **)LevelRecs[a->levelRecIndex].Anims;
     {
@@ -187,9 +191,9 @@ loop:
                 {
                     ModeDbase *p = ModeDbaseLists;
                     e = &((obj_dbase *)base)[((u16 *)tbl->HeroModels)[c]];
-                    for (j = 0; j < 0x60; j++) {
+                    for (j = 0; j < ModeDbaseCount; j++) {
                         if (e == p->dbase) {
-                            queue_dbase_load((u8 *)p, arg);
+                            queue_dbase_load((u8 *)p, extra_heroes_model_is(e) ? NULL : arg);
                         }
                         p++;
                     }
@@ -197,7 +201,7 @@ loop:
                 if (tbl->flag != NULL) {
                     ModeDbase *p = ModeDbaseLists;
                     e = &((obj_dbase *)base)[((u16 *)tbl->flag)[c]];
-                    for (j = 0; j < 0x60; j++) {
+                    for (j = 0; j < ModeDbaseCount; j++) {
                         if (e == p->dbase) {
                             queue_dbase_load((u8 *)p, arg);
                         }
@@ -438,7 +442,7 @@ void LoadModeDbases(obj_dbase *arg0, void **arg1) {
     s32 i;
     ModeDbase *p = ModeDbaseLists;
 
-    for (i = 0; i < 0x60; i++) {
+    for (i = 0; i < ModeDbaseCount; i++) {
         if (arg0 == p->dbase) {
             queue_dbase_load((u8 *)p, arg1);
         }
@@ -1344,7 +1348,7 @@ Blk32 LoadingScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 LoadingScriptPos = {0};
 process_info LoadingProcess2 = { InitLoadingCamera, UpdateLoadingScene, RenderLoadingScene, QuitLoadingScene, 0 };
 /* the models each mode loads (LoadModeDbases, QueueHeroModels; the last is the adventure stats') */
-ModeDbase ModeDbaseLists[96] = {
+ModeDbase ModeDbaseLists[98] = {
     { &FileGroups[128], &HeroModelBank[DB_CharsCrateCrash], &DatIndex[990], &DatIndex[989] },
     { &FileGroups[127], &HeroModelBank[DB_CharsCrateCoco], &DatIndex[988], &DatIndex[987] },
     { &FileGroups[126], &HeroModelBank[DB_CharsCrateCortex], &DatIndex[986], &DatIndex[985] },
@@ -1441,7 +1445,12 @@ ModeDbase ModeDbaseLists[96] = {
     { &FileGroups[34], &HeroModelBank[DB_CharsSplashRilla], &DatIndex[802], &DatIndex[801] },
     { &FileGroups[38], &HeroModelBank[DB_CharsSplashTiny], &DatIndex[810], &DatIndex[809] },
     { &FileGroups[36], &HeroModelBank[DB_CharsSplashKong], &DatIndex[806], &DatIndex[805] },
+    /* PC: Ripper Roo, for the extra heroes (main/extraheroes.c) */
+    { &FileGroups[130], &HeroModelBank[DB_Roo], &DatIndex[768], &DatIndex[767] },
+    /* and from the player's Crash Bandicoot disc (main/bonusheroes.c) */
+    { &FileGroups[131], &HeroModelBank[DB_BonusRoo], &DatIndex[993], &DatIndex[992] },
 };
+const s32 ModeDbaseCount = sizeof(ModeDbaseLists) / sizeof(ModeDbaseLists[0]);
 s32 FileGroupNone[2] = {0};
 u8 *ModeFileGroups[45] = {
     (void *)&file_group_JUNGLE, (void *)&file_group_SPACE, (void *)&file_group_SNOW,

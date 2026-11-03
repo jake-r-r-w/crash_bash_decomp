@@ -26,6 +26,7 @@ typedef struct Settings {
     int widescreen;    /* a wider window shows more of the world */
     int upscale;       /* textures made this many times bigger, on the player's machine: 1 is off, or 2 or 4 */
     int icons;         /* the heroes' and bosses' icons made sharp, on the player's machine */
+    int extra_heroes;  /* Ripper Roo and the bosses as heroes too, with cards of their own (game/main/extraheroes.c) */
     ModChoice mods[SETTINGS_MODS]; /* the mods in the player's order, first first */
     int num_mods;
     char texture_pack[64]; /* from before mods: the texture pack that was on, which becomes a mod that's on (mods.c) */
@@ -43,6 +44,7 @@ typedef struct Settings {
     int no_save;       /* a test run leaves the player's file alone */
     int test_sound;    /* a test run that's for watching: its sound plays (--sound) */
     int tile, tiles;   /* a test window's slot in a grid of them on the screen, if tiles isn't 0 */
+    int test_extra[4]; /* a test run: a player's extra hero (EXTRA_, bash/extraheroes.h), or 0 */
 } Settings;
 
 /* The settings in use. */

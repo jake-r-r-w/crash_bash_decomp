@@ -2,6 +2,7 @@
 #include "bash/main.h"
 #include "bash/prims.h"
 #include "bash/engine.h"
+#include "bash/extraheroes.h"
 
 static inline void prims_pool_clear(PrimList *l) {
     l->f4 = 0;
@@ -1067,6 +1068,8 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
     s32 otz;
     u32 fog = 0x40000000;
 
+    /* PC: an extra hero's frame is its own stand-in's (extraheroes.c) */
+    a = extra_hero_frame(d, a);
     depth = d->depth;
     {
         /* d->flags read as a plain word: as a field (in-struct) sched1 moves it past the
@@ -1146,6 +1149,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         } else {
             morph_copy_verts((MeshHeader *)e, (u16 *)ia, verts, (u16 *)MorphVerts);
         }
+        extra_hero_shape(d, a, (MeshHeader *)e, MorphVerts); /* PC: an extra hero's hops lower (extraheroes.c) */
         ModelEntry_Draw(e, c, MorphVerts);
         return;
     case 0x2000:
@@ -3095,7 +3099,8 @@ PosEntry PosFlashes[9] = {
 };
 GfxState RenderState = {0};
 s32 PrimDepthLimit = 0;
-SVECTOR MorphVerts[1024] = {0};
+/* PC: 4096, from the PS1's 1024, for the bonus heroes' meshes (bonusheroes.c), a strip a triangle */
+SVECTOR MorphVerts[4096] = {0};
 void *SubPool = 0;
 subengine *next_sub = 0;
 map_enviroment *MapScene = 0;

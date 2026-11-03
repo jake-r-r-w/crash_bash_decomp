@@ -2,6 +2,7 @@
 #include "bash/main.h"
 #include "bash/engine.h"
 #include "../../platform/gfx.h"
+#include "bash/extraheroes.h"
 
 /* The game's drawing on the native renderer. image and palette are ids of the game's own data, and a uv is in the texture's own texels. */
 
@@ -317,6 +318,14 @@ static const GfxTex *tex_of(u16 image, u16 palette) {
     }
     t = &ts->tex[im->index];
     base = (const u8 *)ts->base;
+    /* PC: an extra hero's face on the panel, in its base's place (extraheroes.c) */
+    if (ts == &HeroModelBank[DB_Interface].textures) {
+        const GfxTex *face = extra_hero_face(im->index, t->w, t->h);
+
+        if (face != NULL) {
+            return face;
+        }
+    }
     if (palette != 0 && Palettes[palette].set != NULL && Palettes[palette].set->ent != NULL) {
         pal = (const u8 *)Palettes[palette].set->base + Palettes[palette].set->ent[Palettes[palette].index].off;
     }

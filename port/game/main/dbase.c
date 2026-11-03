@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/dbase.h"
+#include "bash/extraheroes.h"
 
 void dbase_setup_blocks(ModelFile *arg0, void **arg1) {
     FileEntry *tbl;
@@ -238,6 +239,7 @@ void *dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1) {
         res = NULL;
     } else {
         key = string_hash(arg1);
+        key = extra_hero_anim_key(db, key); /* PC: an extra hero's stand-in (extraheroes.c) */
         p = (FileEntry *)((u8 *)&tbl->meshAnims + tbl->meshAnims);
         n = tbl->nMeshAnims;
         n--;
@@ -272,6 +274,7 @@ u8 *dbase_mesh_anim_name_load(obj_dbase *arg0, u8 *arg1) {
         res = NULL;
     } else {
         key = string_hash(arg1);
+        key = extra_hero_anim_key(arg0, key); /* PC: an extra hero's stand-in (extraheroes.c) */
         p = (FileEntry *)((u8 *)&tbl->meshAnims + tbl->meshAnims);
         n = tbl->nMeshAnims;
         n--;
@@ -322,6 +325,7 @@ s32 dbase_mesh_anim_name_size(obj_dbase *arg0, u8 *arg1) {
         res = NULL;
     } else {
         key = string_hash(arg1);
+        key = extra_hero_anim_key(arg0, key); /* PC: an extra hero's stand-in (extraheroes.c) */
         p = (FileEntry *)((u8 *)&tbl->meshAnims + tbl->meshAnims);
         n = tbl->nMeshAnims;
         n--;
@@ -990,4 +994,5 @@ obj_dbase HeroModelBank[DB_COUNT] = {
     { &DatIndex[9], &DatIndex[8] }, /* DB_CutsceneAkuData */
     { &DatIndex[19], &DatIndex[18] }, /* DB_CutsceneAkuUkaData2 */
     { &DatIndex[17], &DatIndex[16] }, /* DB_CutsceneAkuUkaData */
+    { &DatIndex[993], &DatIndex[992] }, /* DB_BonusRoo, PC (bonusheroes.c) */
 };

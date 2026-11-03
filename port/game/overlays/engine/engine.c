@@ -3,6 +3,7 @@
 #include "bash/engine.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
+#include "bash/extraheroes.h"
 
 void InitialiseNasSystem(void) {
     EngineRec32 *rec;
@@ -828,6 +829,7 @@ void QuitLevel(void) {
         LevelSpecs.LevelExit();
     }
     ReleaseHeroAnims();
+    extra_heroes_stop();
     KillEveryNas();
 }
 
