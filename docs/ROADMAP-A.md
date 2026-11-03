@@ -823,3 +823,4 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 7.11.10 Drain Bash (2026-11-03): left as it was, by the user's choice: its drain room reaches the sides
 - [x] 7.11.11 Pogo Painter (2026-11-03): its back wall carried on down both sides towards the camera, a row taller, in its own tiles and row colours, and its grass out to their foot and along the bottom
 - [x] 7.11.26 Menus and the player panel (2026-11-03): menu panels that reach a side of the 4:3 screen carry on past the wide view's sides, a full-screen picture with a one-colour edge (the Universal logo) carries it across the sides, and the player panel keeps its 4:3 place so the heroes' pictures stay in the middle
+- [x] 7.11.12 El Pogo Loco (2026-11-03): its far wall of mesas and its sky carried on at the sides by copies of themselves, and its sand out past the forecourt and the road in a warm shade of its own, its tile's detail fading away far out

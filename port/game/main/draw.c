@@ -297,6 +297,66 @@ static const GfxTex *tex_of(u16 image, u16 palette) {
     return gfx_texture(TEX_ID(image, palette, t->pix), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
 }
 
+/* A texture's texel nearest the colour of all of its texels, for a far floor that fades to its plain shade (main/widesand.c). Whether it found one. */
+s32 draw_texture_plain(const obj_textureset *ts, s32 index, s32 *u, s32 *v) {
+    const obj_texture *t;
+    const u16 *pal;
+    const u8 *px;
+    s32 row, x, y, n = 0, best = 0x7FFFFFFF;
+    s32 sum[3] = { 0, 0, 0 };
+
+    if (ts == NULL || ts->tex == NULL || ts->base == NULL) {
+        return 0;
+    }
+    t = &ts->tex[index];
+    if (t->scrollRow != 0 || t->info.palette == 0 || Palettes[t->info.palette].set == NULL || Palettes[t->info.palette].set->ent == NULL) {
+        return 0;
+    }
+    pal = (const u16 *)((const u8 *)Palettes[t->info.palette].set->base + Palettes[t->info.palette].set->ent[Palettes[t->info.palette].index].off);
+    px = (const u8 *)ts->base + t->pix;
+    row = t->flag ? (t->w + 1) & ~1 : (t->w + 3) / 4 * 2;
+    /* twice over: the average, then the texel nearest it, leaving out clear ones */
+    for (n = 0; n < 2; n++) {
+        s32 count = 0;
+
+        for (y = 0; y < t->h; y++) {
+            for (x = 0; x < t->w; x++) {
+                u16 c = pal[t->flag ? px[y * row + x] : (px[y * row + x / 2] >> ((x & 1) * 4)) & 15];
+                s32 r = c & 31, g = (c >> 5) & 31, b = (c >> 10) & 31;
+
+                if (c == 0) {
+                    continue;
+                }
+                if (n == 0) {
+                    sum[0] += r;
+                    sum[1] += g;
+                    sum[2] += b;
+                    count++;
+                } else {
+                    s32 dr = r * 256 - sum[0], dg = g * 256 - sum[1], db = b * 256 - sum[2];
+                    s32 d = dr / 16 * (dr / 16) + dg / 16 * (dg / 16) + db / 16 * (db / 16);
+
+                    if (d < best) {
+                        best = d;
+                        *u = x;
+                        *v = y;
+                    }
+                }
+            }
+        }
+        if (n == 0) {
+            if (count == 0) {
+                return 0;
+            }
+            /* in 256ths */
+            sum[0] = sum[0] * 256 / count;
+            sum[1] = sum[1] * 256 / count;
+            sum[2] = sum[2] * 256 / count;
+        }
+    }
+    return 1;
+}
+
 /* The picture on the screen, until a scene or a viewport's background is drawn over it. */
 static u8 *BackPixels;
 static s32 BackW, BackH;

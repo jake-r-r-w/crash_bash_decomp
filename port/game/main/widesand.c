@@ -15,6 +15,7 @@
 
 void draw_owner(const struct subengine *sub);
 void draw_owner_part(const void *mesh);
+s32 draw_texture_plain(const obj_textureset *ts, s32 index, s32 *u, s32 *v);
 extern s32 FarColor[3];
 
 #define SAND_CELL 250
@@ -35,6 +36,10 @@ extern s32 FarColor[3];
 #define SAND_RELAX 1.9f
 /* How far past the screen to keep drawing a cell, so one doesn't arrive late at a frame rate above the game's. */
 #define SAND_SCREEN_MARGIN 64.0f
+/* How far out from the floor's edge a sand of its own colour (WideSand.colour) takes to come in. */
+#define SAND_COLOUR_FADE 1200.0f
+/* How far its tile's detail takes to fade away (WideSand.plain_far). */
+#define SAND_DETAIL_FADE 4000.0f
 
 /* y, then red, green and blue. */
 #define SAND_VALUES 4
@@ -60,6 +65,9 @@ static u32 *Colours;
 static ViewPoint *Points;
 static s32 *Cells, *Used;
 static s32 NumCells, NumUsed;
+/* How much of its tile's detail each point has, out of 255, or NULL for all of it, and the texel it fades to, the one nearest the whole tile's colour. */
+static u8 *Detail;
+static s32 PlainU = -1, PlainV;
 
 /* The faces of a mesh with either tile. */
 static s32 read_floor(const ModelFile *m, const MeshHeader *h, const WideSand *sand, SandFace *out) {
@@ -261,11 +269,13 @@ static void forget_sand(void) {
     free(Points);
     free(Cells);
     free(Used);
+    free(Detail);
     Heights = NULL;
     Colours = NULL;
     Points = NULL;
     Cells = NULL;
     Used = NULL;
+    Detail = NULL;
     Made = 0;
     NumCells = 0;
     NumUsed = 0;
@@ -347,6 +357,7 @@ static void make_sand(const map_enviroment *scene, const WideSand *sand, const s
     Points = malloc(sizeof(ViewPoint) * (size_t)count);
     Cells = malloc(sizeof(s32) * (size_t)count);
     Used = malloc(sizeof(s32) * (size_t)count);
+    Detail = sand->plain_far != 0 && draw_texture_plain(&scene->dbase->textures, sand->image_a, &PlainU, &PlainV) ? malloc((size_t)count) : NULL;
     if (num_edges != 0 && values != NULL && distances != NULL && calm != NULL && fixed != NULL && hidden != NULL && used != NULL && Heights != NULL && Colours != NULL &&
         Points != NULL && Cells != NULL && Used != NULL) {
         for (j = 0; j < Depth; j++) {
@@ -391,15 +402,19 @@ static void make_sand(const map_enviroment *scene, const WideSand *sand, const s
                 float *v = &values[at * SAND_VALUES];
                 float out = grow((distances[at] - SAND_BAND) / SAND_BUMP_GROWS);
                 float light = 1 + SAND_PATCH * (0.6f * facet_noise(x, z, 1) + 0.4f * facet_noise(x + 400, z - 300, 2)) * out;
+                float own = sand->colour != 0 ? grow((distances[at] - SAND_BAND) / SAND_COLOUR_FADE) : 0;
                 u32 colour = 0;
 
                 Heights[at] = (s16)floorf(v[0] + SAND_BUMP * facet_noise(x, z, 1) * out * calm[at] + 0.5f);
                 for (n = 0; n < 3; n++) {
-                    float c = v[n + 1] * light;
+                    float c = (v[n + 1] * (1 - own) + (float)((sand->colour >> (n * 8)) & 255) * own) * light;
 
                     colour |= (u32)(c < 0 ? 0 : c > 255 ? 255 : c + 0.5f) << (n * 8);
                 }
                 Colours[at] = colour;
+                if (Detail != NULL) {
+                    Detail[at] = (u8)(255 * (1 - grow((distances[at] - sand->plain_far) / SAND_DETAIL_FADE)) + 0.5f);
+                }
             }
         }
         for (j = 0; j < Depth - 1; j++) {
@@ -502,9 +517,17 @@ void wide_sand_draw(const map_enviroment *scene, const WideSand *sand, subengine
         for (c = 0; c < 4; c++) {
             s32 mu = (first_i + i + (c & 1)) % mirror, mv = (first_j + j + (c >> 1)) % mirror;
             s32 tu = mu <= SAND_CELLS_A_TILE ? mu : mirror - mu, tv = mv <= SAND_CELLS_A_TILE ? mv : mirror - mv;
+            s32 u = tu * (t->w - 1) / SAND_CELLS_A_TILE, v = tv * (t->h - 1) / SAND_CELLS_A_TILE;
 
+            /* less detail: closer to its plain texel, the same at each point for every cell that has it, so they still meet */
+            if (Detail != NULL && Detail[corner[c]] < 255) {
+                float k = Detail[corner[c]] * (1.0f / 255);
+
+                u = (s32)floorf(PlainU + (u - PlainU) * k + 0.5f);
+                v = (s32)floorf(PlainV + (v - PlainV) * k + 0.5f);
+            }
             f.colour[c] = fade != 0 ? colour_fade(&Colours[corner[c]], FarColor, fade) : Colours[corner[c]];
-            f.uv[c] = (u16)(t->info.uv0 | (tu * (t->w - 1) / SAND_CELLS_A_TILE) | ((tv * (t->h - 1) / SAND_CELLS_A_TILE) << 8));
+            f.uv[c] = (u16)(t->info.uv0 | u | (v << 8));
         }
         draw_owner(owner);
         draw_owner_part((void *)(uintptr_t)(at + 1));

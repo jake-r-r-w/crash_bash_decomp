@@ -41,6 +41,7 @@ typedef struct {
 #define FILE_JUNGLE_FOX 691
 #define FILE_RING_DING 627
 #define FILE_POGO_PAINTER 675
+#define FILE_EL_POGO_LOCO 667
 
 static const WideExtra Extras[] = {
     /* kelp and coral on the extra sand, the level's own, in its own order: its fish is left out */
@@ -94,6 +95,16 @@ static const WideExtra Extras[] = {
     { FILE_JUNGLE_FOX, 9, 0, 0, 2200, 0, -2300, 0 },
     /* the grey gear under the platform on the left, on the right too, where it's black: it's in the level's order, as the platform has to come in front */
     { FILE_RING_DING, 4, 0, 0, 4712, 0, 0, 0, 1 },
+    /* the far wall of mesas and the sky behind it, side by side with copies of themselves: each one's two ends are alike, so they meet. A little overlap so no
+       crack shows, where the level's own covers it */
+    { FILE_EL_POGO_LOCO, 70, 0, 0, -21169, 0, 0, 0 },
+    { FILE_EL_POGO_LOCO, 70, 0, 0, 21169, 0, 0, 0 },
+    { FILE_EL_POGO_LOCO, 70, 0, 0, -42338, 0, 0, 0 },
+    { FILE_EL_POGO_LOCO, 70, 0, 0, 42338, 0, 0, 0 },
+    { FILE_EL_POGO_LOCO, 72, 0, 0, -26103, 0, 0, 0 },
+    { FILE_EL_POGO_LOCO, 72, 0, 0, 26103, 0, 0, 0 },
+    { FILE_EL_POGO_LOCO, 72, 0, 0, -52206, 0, 0, 0 },
+    { FILE_EL_POGO_LOCO, 72, 0, 0, 52206, 0, 0, 0 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -644,6 +655,29 @@ static void draw_pogo_painter_backdrop(map_enviroment *scene, subengine *owner, 
     }
     for (i = 0; i < NUM_POGO_WALLS; i++) {
         name = draw_pogo_painter_side(scene, &PogoWalls[i], name, owner);
+    }
+    draw_behind(0);
+    draw_owner(NULL);
+}
+
+/* El Pogo Loco's sand stops at a forecourt on the left and a road on the right, with nothing past them. So its sand is carried on out (widesand.c), under them
+   and on past them, dipping away to the foot of its far wall, whose copies carry the wall on at the sides (Extras). Its view is of the piece with the sand. */
+#define POGO_LOCO_SAND 64
+#define POGO_LOCO_SAND_IMAGE 7
+/* its own colour away from its edges, as they're shaded dark beside the forecourt and the road: a warm one, as the level gives this tile, which at its plain
+   texel far off is the colour of the far wall's own foot */
+static const WideSand PogoLocoSand = { POGO_LOCO_SAND, POGO_LOCO_SAND_IMAGE, POGO_LOCO_SAND_IMAGE, 0x687B99, 0x687B99, 2000 };
+static const s16 PogoLocoRim[][3] = { { -30000, 13844, 2170 }, { 30000, 13844, 2170 }, { 16000, -3300, 4 }, { -16000, -3300, 4 } };
+#define NUM_POGO_LOCO_RIM ((s32)(sizeof(PogoLocoRim) / sizeof(PogoLocoRim[0])))
+
+static void draw_el_pogo_loco_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    if (scene->dbase->textures.tex == NULL || POGO_LOCO_SAND >= scene->num_placements) {
+        return;
+    }
+    ring_view_of(scene, POGO_LOCO_SAND, owner, view);
+    draw_behind(1);
+    if (wide_sand_ready(scene, FILE_EL_POGO_LOCO, &PogoLocoSand, PogoLocoRim, NUM_POGO_LOCO_RIM)) {
+        wide_sand_draw(scene, &PogoLocoSand, owner);
     }
     draw_behind(0);
     draw_owner(NULL);
@@ -1211,6 +1245,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_POGO_PAINTER) {
             draw_pogo_painter_backdrop(scene, &RingOwner, view);
+        }
+        if (file == FILE_EL_POGO_LOCO) {
+            draw_el_pogo_loco_backdrop(scene, &RingOwner, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
