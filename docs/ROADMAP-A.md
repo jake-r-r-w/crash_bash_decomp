@@ -818,3 +818,4 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 7.11.5 Jungle Fox (2026-11-03): its canopy carried on into the top corners with copies of its own leaf clusters; the rest of its dark is its own, a lit clearing fading into the night
 - [x] 7.11.6 Big Bad Fox (2026-11-03): left as it was, by the user's choice: its moon ground and space sky reach the edges at 16:9
 - [x] 7.11.7 Ring Ding (2026-11-03): its brick wall carried on round the sides of the tower, a copy of the grey gear under the platform on the right, and the subtractive shadow that flickered on the turning right cog left out of a wide view
+- [x] 7.11.8 Swamp Fox (2026-11-03): left as it was, by the user's choice: only small black wedges in its top corners, and the dark lower down is its own water fading to black
