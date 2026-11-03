@@ -229,16 +229,22 @@ PlaceRec OptionsPlace[8] = {
     { 0xE, -0x8000, 0x46, 0, 0, 0, 0, 0, 0, &LangExit, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-/* The video page's records: its title and panels, then each option's label and value in the small font, and its help. */
+/* The video page's records: its title and panels, then each option's label and value in the small font, and its help. Its panel is round the rows
+   and the help, as many as there are, with as much room inside its edges as the controller page has. */
 #define VIDEO_ROWS NUM_VIDEO_OPTIONS
 #define VIDEO_SUB_LABEL(i) (3 + (i) * 2)
 #define VIDEO_SUB_VALUE(i) (4 + (i) * 2)
 #define VIDEO_SUB_HELP VIDEO_SUB_LABEL(VIDEO_ROWS)
+#define VIDEO_ROW_TOP -0x44
+#define VIDEO_ROW_STEP 0x12
+#define VIDEO_HELP_Y (VIDEO_ROW_TOP + VIDEO_ROWS * VIDEO_ROW_STEP + 0xA)
+#define VIDEO_TEXT_H 0xE /* the small font */
+#define VIDEO_PANEL_ROOM 0xE
 static char VideoValues[VIDEO_ROWS][24];
 static PlaceRec OptionsVideoPlace[VIDEO_SUB_HELP + 2] = {
     { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &LangVideo, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 4, -0xFA, 0xFA, -0x40, 0x8C, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, -0xFA, 0xFA, VIDEO_ROW_TOP - VIDEO_PANEL_ROOM, VIDEO_HELP_Y + VIDEO_TEXT_H + VIDEO_PANEL_ROOM, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 PlaceRec OptionsSoundPlace[12] = {
     { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, &LangSound, 0, 0, 0, 0 },
@@ -953,7 +959,7 @@ static void place_video_page(void) {
 
         label->type = 3;
         label->x = -0xDC;
-        label->y = -0x44 + i * 0x12;
+        label->y = VIDEO_ROW_TOP + i * VIDEO_ROW_STEP;
         label->data = (void *)video_option_label(i);
         label->frame = 4;
         value->type = 3;
@@ -964,7 +970,7 @@ static void place_video_page(void) {
     }
     OptionsVideoPlace[VIDEO_SUB_HELP].type = 3;
     OptionsVideoPlace[VIDEO_SUB_HELP].x = -0x8000;
-    OptionsVideoPlace[VIDEO_SUB_HELP].y = 0x72;
+    OptionsVideoPlace[VIDEO_SUB_HELP].y = VIDEO_HELP_Y;
     OptionsVideoPlace[VIDEO_SUB_HELP].data = (void *)"";
     OptionsVideoPlace[VIDEO_SUB_HELP].frame = 4;
     PlaceEngineSlot(4, OptionsVideoPlace);

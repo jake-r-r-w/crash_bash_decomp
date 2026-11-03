@@ -589,9 +589,10 @@ HudEntry PauseOptionsMenu[7] = {
     { 0, -0x8000, 0xA4, 0x31, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF },
     { -1, 0, 0, 0, 0, 0, 0, 0 },
 };
-/* The rows are drawn by DrawPauseVideo, from the shared options. */
+/* The rows are drawn by DrawPauseVideo, from the shared options, and the cheat menu's by CheatMenuDraw. Tall enough for the help line under the
+   rows, at 0xE8 on both, with as much room below it as above the title. */
 HudEntry PauseVideoMenu[2] = {
-    { 7, -0xA, 0xFA, 0xFA, 0, 0, 0x8080, 0 },
+    { 7, -0xA, 0x114, 0x114, 0, 0, 0x8080, 0 },
     { -1, 0, 0, 0, 0, 0, 0, 0 },
 };
 HudEntry PauseSoundMenu[12] = {

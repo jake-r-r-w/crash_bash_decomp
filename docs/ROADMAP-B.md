@@ -34,7 +34,6 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | 7.11.23 | Oxide Ride | Space is dark on purpose: probably leave | [ ] |
 | 7.11.24 | Crystal maps | Not looked at yet: they're maps of their own. N.Ballism's has the same front corners as its normal map had: a black wedge on each base, and needles | [ ] |
 | 7.11.25 | Later in each level | Not looked at yet: all this is from the first few seconds | [ ] |
-| 7.6 | Sharper icons and UI text | Recheck by playing: ICONS: CRISP in the Video options sharpens the heroes' and bosses' icons, in the HUD and the hero select (`upscale_texels_sharp`). Text stays the game's own, by the user's choice: a fan font was mocked up over the main menu (2026-11-03) | [ ] |
 | 7.7 | Optional modern lighting | Lighting beyond the game's own, which is colours baked into its models' vertices | [ ] |
 | 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files. It goes in the launcher's Mods section, with the texture packs (7.10) | [ ] |
 | 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |
