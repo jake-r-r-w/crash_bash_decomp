@@ -815,3 +815,4 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 7.11.2 Beach Ball (2026-11-02): its sand is one surface made from its real floor as the level loads, its wall carried on along its own curve, and the level's kelp and coral stand on the sand
 - [x] 7.11.3 N.Ballism (2026-11-02): its own round wall carried on round the arena in place of the copied map, and its front radars stand on their bases, with a back like an old TV's and solid rings
 - [x] 7.11.4 Crashball (2026-11-02): nothing added, as its black is its own, a lit arena in the dark, in 4:3 too; its right pipe's end fades as its left does, and its camera flashes stay out of sight in a wide view
+- [x] 7.11.5 Jungle Fox (2026-11-02): its canopy carried on into the top corners with copies of its own leaf clusters; the rest of its dark is its own, a lit clearing fading into the night
