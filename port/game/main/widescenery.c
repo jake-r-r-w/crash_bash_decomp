@@ -46,6 +46,14 @@ typedef struct {
 #define FILE_SKY_BALLS 647
 #define DRAW_UNCULLED 0x1000000
 #define FILE_PAPU_PUMMEL 697
+#define FILE_DESERT_FOX 693
+/* Desert Fox's panorama of far dunes and sky, on part of a circle round this, its two ends each other's mirror image across the line through it, so turned
+   by the span between them a copy's first end is at its last. Its tiles make a loop, so they go on in their order. A little less, so the level's own covers
+   the join */
+#define DESERT_FOX_PANORAMA 6
+#define DESERT_FOX_PANORAMA_X 1873
+#define DESERT_FOX_PANORAMA_Z 358
+#define DESERT_FOX_PANORAMA_SPAN 1203
 /* Papu Pummel's sunset, a wall that's a part of a circle round this, seen from above, and its far hills, which reach round it as far */
 #define PAPU_SKY 51
 #define PAPU_HILLS 53
@@ -153,6 +161,8 @@ static const WideExtra Extras[] = {
     { FILE_PAPU_PUMMEL, PAPU_HILLS, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
     { FILE_PAPU_PUMMEL, PAPU_HILLS, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, -PAPU_SKY_TWICE },
     { FILE_PAPU_PUMMEL, PAPU_HILLS, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_TWICE },
+    { FILE_DESERT_FOX, DESERT_FOX_PANORAMA, DESERT_FOX_PANORAMA_X, DESERT_FOX_PANORAMA_Z, 0, 0, 0, DESERT_FOX_PANORAMA_SPAN },
+    { FILE_DESERT_FOX, DESERT_FOX_PANORAMA, DESERT_FOX_PANORAMA_X, DESERT_FOX_PANORAMA_Z, 0, 0, 0, -DESERT_FOX_PANORAMA_SPAN },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -740,6 +750,39 @@ static void draw_el_pogo_loco_backdrop(map_enviroment *scene, subengine *owner, 
     draw_owner(NULL);
 }
 
+/* Desert Fox's arena is on an island of sand, with a panorama of far dunes and sky on part of a circle round it, far off, and nothing between them. So its
+   sand is carried on out to the panorama's foot all round (widesand.c), from all its ground, of many tiles, in its plain sand at the size the ground has it.
+   The panorama goes on round its circle at the sides as copies of itself (Extras). All in the coordinates of the ground, its first piece. */
+#define DESERT_FOX_GROUND 0
+#define DESERT_FOX_SAND_IMAGE 2
+#define DESERT_FOX_FOOT (-60)
+#define DESERT_FOX_COLOUR 0x7B7B7B
+static const WideSand DesertFoxSand = { DESERT_FOX_GROUND, DESERT_FOX_SAND_IMAGE, WIDE_SAND_ANY_TILE, DESERT_FOX_COLOUR, DESERT_FOX_COLOUR, 0, 2 };
+/* a little behind the panorama's foot all round, its own and its copies, so the sand goes under it, and on round behind the camera */
+static const s16 DesertFoxRim[][3] = {
+    { -10251, -5546, DESERT_FOX_FOOT }, { -10870, -2939, DESERT_FOX_FOOT }, { -10820, -259, DESERT_FOX_FOOT }, { -10106, 2325, DESERT_FOX_FOOT },
+    { -8772, 4650, DESERT_FOX_FOOT }, { -6994, 6692, DESERT_FOX_FOOT }, { -4651, 8050, DESERT_FOX_FOOT }, { -2291, 8765, DESERT_FOX_FOOT },
+    { -241, 8786, DESERT_FOX_FOOT }, { 1817, 8765, DESERT_FOX_FOOT }, { 4177, 8050, DESERT_FOX_FOOT }, { 6520, 6692, DESERT_FOX_FOOT },
+    { 8298, 4650, DESERT_FOX_FOOT }, { 9632, 2325, DESERT_FOX_FOOT }, { 10346, -259, DESERT_FOX_FOOT }, { 10396, -2939, DESERT_FOX_FOOT },
+    { 9777, -5546, DESERT_FOX_FOOT }, { 8528, -7919, DESERT_FOX_FOOT }, { 6729, -9907, DESERT_FOX_FOOT }, { 4493, -11384, DESERT_FOX_FOOT },
+    { 1959, -12259, DESERT_FOX_FOOT }, { -713, -12476, DESERT_FOX_FOOT }, { -3355, -12022, DESERT_FOX_FOOT }, { -5801, -10926, DESERT_FOX_FOOT },
+    { -7897, -9255, DESERT_FOX_FOOT }, { -9512, -7116, DESERT_FOX_FOOT },
+};
+#define NUM_DESERT_FOX_RIM ((s32)(sizeof(DesertFoxRim) / sizeof(DesertFoxRim[0])))
+
+static void draw_desert_fox_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    if (scene->dbase->textures.tex == NULL || DESERT_FOX_GROUND >= scene->num_placements) {
+        return;
+    }
+    ring_view_of(scene, DESERT_FOX_GROUND, owner, view);
+    draw_behind(1);
+    if (wide_sand_ready(scene, FILE_DESERT_FOX, &DesertFoxSand, DesertFoxRim, NUM_DESERT_FOX_RIM)) {
+        wide_sand_draw(scene, &DesertFoxSand, owner);
+    }
+    draw_behind(0);
+    draw_owner(NULL);
+}
+
 static void draw_beach_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
     obj_textureset *ts = &scene->dbase->textures;
     s16 foot[BEACH_COLUMNS][3];
@@ -1305,6 +1348,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_EL_POGO_LOCO) {
             draw_el_pogo_loco_backdrop(scene, &RingOwner, view);
+        }
+        if (file == FILE_DESERT_FOX) {
+            draw_desert_fox_backdrop(scene, &RingOwner, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);

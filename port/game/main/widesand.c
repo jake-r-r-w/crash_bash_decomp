@@ -69,6 +69,10 @@ static s32 NumCells, NumUsed;
 static u8 *Detail;
 static s32 PlainU = -1, PlainV;
 
+static s32 cells_a_tile(const WideSand *sand) {
+    return sand->tile_cells != 0 ? sand->tile_cells : SAND_CELLS_A_TILE;
+}
+
 /* The faces of a mesh with either tile. */
 static s32 read_floor(const ModelFile *m, const MeshHeader *h, const WideSand *sand, SandFace *out) {
     const u32 *colours = (const u32 *)((const u8 *)&m->colors + m->colors);
@@ -90,7 +94,7 @@ static s32 read_floor(const ModelFile *m, const MeshHeader *h, const WideSand *s
                 left = (t >> 9) & 0x3F;
             }
             image = t & 0x1FF;
-            if (!(run[0] & 1) && !(t & 0x8000) && (image == sand->image_a || image == sand->image_b)) {
+            if (!(run[0] & 1) && !(t & 0x8000) && (image == sand->image_a || image == sand->image_b || sand->image_b == WIDE_SAND_ANY_TILE)) {
                 s32 j;
 
                 for (j = 0; j < 3; j++) {
@@ -311,7 +315,7 @@ static void make_sand(const map_enviroment *scene, const WideSand *sand, const s
     SandEdge *edges;
     float *values, *distances, *calm;
     u8 *fixed, *hidden, *used;
-    s32 tile = SAND_CELL * SAND_CELLS_A_TILE;
+    s32 tile = SAND_CELL * cells_a_tile(sand);
     s32 margin = SAND_CELL * 4;
     s32 num_faces, num_edges, count;
     s32 min_x = 0x7FFF, max_x = -0x7FFF, min_z = 0x7FFF, max_z = -0x7FFF;
@@ -474,7 +478,7 @@ void wide_sand_draw(const map_enviroment *scene, const WideSand *sand, subengine
     const obj_texture *t = &scene->dbase->textures.tex[sand->image_a];
     s32 fade = RenderState.modelDp;
     s32 left = -gfx_view_extra(), right = ScreenRect->w + gfx_view_extra();
-    s32 mirror = SAND_CELLS_A_TILE * 2;
+    s32 cells = cells_a_tile(sand), mirror = cells * 2;
     s32 first_i = ((MinX / SAND_CELL) % mirror + mirror) % mirror, first_j = ((MinZ / SAND_CELL) % mirror + mirror) % mirror;
     DrawFace f;
     s32 n, c;
@@ -516,8 +520,8 @@ void wide_sand_draw(const map_enviroment *scene, const WideSand *sand, subengine
         }
         for (c = 0; c < 4; c++) {
             s32 mu = (first_i + i + (c & 1)) % mirror, mv = (first_j + j + (c >> 1)) % mirror;
-            s32 tu = mu <= SAND_CELLS_A_TILE ? mu : mirror - mu, tv = mv <= SAND_CELLS_A_TILE ? mv : mirror - mv;
-            s32 u = tu * (t->w - 1) / SAND_CELLS_A_TILE, v = tv * (t->h - 1) / SAND_CELLS_A_TILE;
+            s32 tu = mu <= cells ? mu : mirror - mu, tv = mv <= cells ? mv : mirror - mv;
+            s32 u = tu * (t->w - 1) / cells, v = tv * (t->h - 1) / cells;
 
             /* less detail: closer to its plain texel, the same at each point for every cell that has it, so they still meet */
             if (Detail != NULL && Detail[corner[c]] < 255) {

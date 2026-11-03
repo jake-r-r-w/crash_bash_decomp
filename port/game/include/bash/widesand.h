@@ -13,7 +13,11 @@ typedef struct WideSand {
                              dark beside something at its edge, as a road, would carry that shade all the way out */
     s16 plain_far;        /* if it isn't 0, from about this far out from the floor's edge its tile's detail fades away, to the tile's middle texel: a far
                              textured floor seen side on, as the sides of a very wide view see it, is only stripes, as the texels can't all be shown */
+    s16 tile_cells;       /* if it isn't 0, how many of its cells a tile is across, so a tile is the size the floor's own is */
 } WideSand;
+
+/* As image_b: every face of the piece is the floor, whatever its tile, for ground made of many */
+#define WIDE_SAND_ANY_TILE (-1)
 
 /* Makes the sand for a level's file if it isn't made, out to the rim, a loop of x, z and the height it's to have there. Whether there's any. */
 s32 wide_sand_ready(const map_enviroment *scene, s32 file, const WideSand *sand, const s16 (*rim)[3], s32 rim_points);
