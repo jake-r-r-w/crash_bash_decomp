@@ -59,20 +59,21 @@ const DIGITS = {
 };
 const STROKE = 4.6;
 
-/* how far a point is from the nearest polka dot's middle: dots 32 apart, in rows half a step apart */
+/* how far a point is from the nearest polka dot's middle: two columns each side of the ribbon, the sides mirrored so the ribbon cuts
+   none, the columns 32 apart down and half a step from each other */
 function dot(x, y) {
-    const row = Math.floor(y / 32), dx = (((x - (row & 1 ? 16 : 0)) % 32) + 32) % 32 - 16, dy = (y % 32) - 16;
+    const mx = x < SIZE / 2 ? x : SIZE - x, inner = mx >= 23, t = (((y - (inner ? 0 : 16)) % 32) + 32) % 32;
 
-    return Math.hypot(dx, dy);
+    return Math.hypot(mx - (inner ? 35 : 11), Math.min(t, 32 - t));
 }
-const DOT_SIZE = 5.6;
+const DOT_SIZE = 8.5;
 
 function colour(x, y, digit) {
     const edge = Math.min(x, y, SIZE - x, SIZE - y), rx = Math.abs(x - SIZE / 2);
     /* the paper, a little darker towards the box's edges, with its dots */
     let c = mix(RED_DARK, RED, smooth(0, 16, edge));
 
-    c = mix(c, DOT, 0.6 * (1 - smooth(DOT_SIZE - 0.4, DOT_SIZE + 0.4, dot(x, y))));
+    c = mix(c, DOT, 0.85 * (1 - smooth(DOT_SIZE - 0.4, DOT_SIZE + 0.4, dot(x, y))));
     /* the ribbon up the middle, lit down its centre, with its shadow on the paper */
     if (rx < 17.5) {
         c = mix(c, RED_DARK, 0.45);
