@@ -38,6 +38,7 @@ typedef struct {
 #define FILE_BEACH_BALL 655
 #define FILE_DANTES_DASH 637
 #define FILE_CRASHBALL 659
+#define FILE_JUNGLE_FOX 691
 
 static const WideExtra Extras[] = {
     /* kelp and coral on the extra sand, the level's own, in its own order: its fish is left out */
@@ -82,6 +83,13 @@ static const WideExtra Extras[] = {
     { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 400, 0, 1 },
     { FILE_DANTES_DASH, 6, 0, 0, 0, 0, 0, 480, 0, 1 },
     { FILE_DANTES_DASH, 7, 0, 0, 0, 0, 0, 480, 0, 1 },
+    /* the canopy carried on into the top corners: the level's own leaf clusters, out past the floor's edge, where nothing's under them */
+    { FILE_JUNGLE_FOX, 5, 0, 0, -1400, 0, -500, 0 },
+    { FILE_JUNGLE_FOX, 8, 0, 0, -1900, 0, -1500, 0 },
+    { FILE_JUNGLE_FOX, 4, 0, 0, -1800, 0, -300, 0 },
+    { FILE_JUNGLE_FOX, 9, 0, 0, 1300, 0, -1000, 0 },
+    { FILE_JUNGLE_FOX, 6, 0, 0, 3300, 0, -2000, 0 },
+    { FILE_JUNGLE_FOX, 9, 0, 0, 2200, 0, -2300, 0 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
