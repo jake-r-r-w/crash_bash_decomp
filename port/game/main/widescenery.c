@@ -87,6 +87,15 @@ static const s16 OxideTowers[][2] = { { 0, 41 }, { 73, 78 }, { 84, 217 }, { 382,
 #define JUNGLE_BASH_CRYSTAL_Z (-4010)
 #define JUNGLE_BASH_CRYSTAL_LEFT_MIRROR 965
 #define JUNGLE_BASH_CRYSTAL_RIGHT_MIRROR (-971)
+#define FILE_POGO_PAINTER_CRYSTAL 673
+/* Pogo Painter's crystal map, at night, is a ruined garden with its far backdrop the night sky, a wall on part of a wide circle round this, and the ruins'
+   black outline in front of it, which both stop at the sky's ends. Their mirror images across each end, a little inside it, carry them on round */
+#define POGO_PAINTER_CRYSTAL_SKY 6
+#define POGO_PAINTER_CRYSTAL_RUINS 7
+#define POGO_PAINTER_CRYSTAL_X 396
+#define POGO_PAINTER_CRYSTAL_Z (-31820)
+#define POGO_PAINTER_CRYSTAL_LEFT_MIRROR 328
+#define POGO_PAINTER_CRYSTAL_RIGHT_MIRROR (-326)
 /* Tilt Panic's sky, a wall at the back whose two ends are alike, from the haze at its foot up to blue: its mirror image across each, a little inside it */
 #define TILT_SKY 1
 #define TILT_SKY_LEFT_END (-10708 + 30)
@@ -240,6 +249,10 @@ static const WideExtra Extras[] = {
     { FILE_OXIDE, OXIDE_ARENA, 0, 0, OXIDE_TOWERS_ACROSS, 0, 0, 0, 0, 0, 0, 0, 0, OxideTowers, NUM_OXIDE_TOWERS },
     { FILE_JUNGLE_BASH_CRYSTAL, JUNGLE_BASH_CRYSTAL_BACKDROP, JUNGLE_BASH_CRYSTAL_X, JUNGLE_BASH_CRYSTAL_Z, 0, 0, 0, JUNGLE_BASH_CRYSTAL_LEFT_MIRROR, 0, 0, 0, 0, 1 },
     { FILE_JUNGLE_BASH_CRYSTAL, JUNGLE_BASH_CRYSTAL_BACKDROP, JUNGLE_BASH_CRYSTAL_X, JUNGLE_BASH_CRYSTAL_Z, 0, 0, 0, JUNGLE_BASH_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_POGO_PAINTER_CRYSTAL, POGO_PAINTER_CRYSTAL_SKY, POGO_PAINTER_CRYSTAL_X, POGO_PAINTER_CRYSTAL_Z, 0, 0, 0, POGO_PAINTER_CRYSTAL_LEFT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_POGO_PAINTER_CRYSTAL, POGO_PAINTER_CRYSTAL_SKY, POGO_PAINTER_CRYSTAL_X, POGO_PAINTER_CRYSTAL_Z, 0, 0, 0, POGO_PAINTER_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_POGO_PAINTER_CRYSTAL, POGO_PAINTER_CRYSTAL_RUINS, POGO_PAINTER_CRYSTAL_X, POGO_PAINTER_CRYSTAL_Z, 0, 0, 0, POGO_PAINTER_CRYSTAL_LEFT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_POGO_PAINTER_CRYSTAL, POGO_PAINTER_CRYSTAL_RUINS, POGO_PAINTER_CRYSTAL_X, POGO_PAINTER_CRYSTAL_Z, 0, 0, 0, POGO_PAINTER_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
