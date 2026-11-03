@@ -54,6 +54,15 @@ typedef struct {
 #define DESERT_FOX_PANORAMA_X 1873
 #define DESERT_FOX_PANORAMA_Z 358
 #define DESERT_FOX_PANORAMA_SPAN 1203
+#define FILE_BEARMINATOR 472
+/* The Bearminator's sea, the mountains round the back of it and the sky behind them, a wall whose two ends are each other's mirror image across the line
+   x = 40, so turned round the middle of the arena, on that line, by the span between them as seen from there, a copy's first end is at its last. The sea
+   and the mountains turn with it, so they stay in front of it, at its foot. A little less than the span, so the level's own covers the join */
+#define BEAR_SEA 0
+#define BEAR_SKY 1
+#define BEAR_MOUNTAINS 3
+#define BEAR_X 40
+#define BEAR_SPAN 950
 /* Papu Pummel's sunset, a wall that's a part of a circle round this, seen from above, and its far hills, which reach round it as far */
 #define PAPU_SKY 51
 #define PAPU_HILLS 53
@@ -163,6 +172,12 @@ static const WideExtra Extras[] = {
     { FILE_PAPU_PUMMEL, PAPU_HILLS, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_TWICE },
     { FILE_DESERT_FOX, DESERT_FOX_PANORAMA, DESERT_FOX_PANORAMA_X, DESERT_FOX_PANORAMA_Z, 0, 0, 0, DESERT_FOX_PANORAMA_SPAN },
     { FILE_DESERT_FOX, DESERT_FOX_PANORAMA, DESERT_FOX_PANORAMA_X, DESERT_FOX_PANORAMA_Z, 0, 0, 0, -DESERT_FOX_PANORAMA_SPAN },
+    { FILE_BEARMINATOR, BEAR_SEA, BEAR_X, 0, 0, 0, 0, BEAR_SPAN },
+    { FILE_BEARMINATOR, BEAR_SEA, BEAR_X, 0, 0, 0, 0, -BEAR_SPAN },
+    { FILE_BEARMINATOR, BEAR_MOUNTAINS, BEAR_X, 0, 0, 0, 0, BEAR_SPAN },
+    { FILE_BEARMINATOR, BEAR_MOUNTAINS, BEAR_X, 0, 0, 0, 0, -BEAR_SPAN },
+    { FILE_BEARMINATOR, BEAR_SKY, BEAR_X, 0, 0, 0, 0, BEAR_SPAN },
+    { FILE_BEARMINATOR, BEAR_SKY, BEAR_X, 0, 0, 0, 0, -BEAR_SPAN },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -269,7 +284,7 @@ static void list_pieces(const map_enviroment *scene) {
     for (i = 0; i < scene->num_placements; i++) {
         const subengine *p = &scene->subs[i];
 
-        printf("file %d piece %d entity %x at %d,%d,%d\n", (int)(scene->dbase->file - DatIndex), i, p->entity, p->XYZ.x, p->XYZ.y, p->XYZ.z);
+        printf("file %d piece %d entity %x at %d,%d,%d otz %d\n", (int)(scene->dbase->file - DatIndex), i, p->entity, p->XYZ.x, p->XYZ.y, p->XYZ.z, (int)p->otz);
     }
     fflush(stdout);
 }
@@ -352,6 +367,37 @@ static void draw_extra(const map_enviroment *scene, const WideExtra *e, subengin
     draw_behind(0);
 }
 
+/* As the Bearminator's binoculars: its place in the order is where its own middle is. From a little way in under its edges, so no crack shows. */
+#define COVER_OVERLAP 8
+
+void wide_scenery_cover_sides(void) {
+    static const u32 black[4] = { 0, 0, 0, 0 };
+    s32 extra = gfx_view_extra();
+    s16 middle[4] = { 0, 0, 0, 0 };
+    ViewPoint c;
+    DVECTOR xy[4];
+    u32 otz;
+    s32 side, i;
+
+    if (extra <= 0 || ScreenRect == NULL) {
+        return;
+    }
+    project_point(middle, &c);
+    otz = (points_order(&c, &c, &c) + RenderState.otzAdd) >> 1;
+    if (otz >= (u32)RenderState.otLen) {
+        return;
+    }
+    for (side = 0; side < 2; side++) {
+        s32 x0 = side ? ScreenRect->w - COVER_OVERLAP : -extra, x1 = side ? ScreenRect->w + extra : COVER_OVERLAP;
+
+        for (i = 0; i < 4; i++) {
+            xy[i].vx = (s16)((i & 1) ? x1 : x0);
+            xy[i].vy = (s16)((i & 2) ? ScreenRect->h : 0);
+        }
+        draw_plain_quad(RenderState.layer + (s32)otz, xy, black, GFX_OPAQUE);
+    }
+}
+
 s32 wide_scenery_hides(const map_enviroment *scene, const subengine *sub) {
     s32 piece = (s32)(sub - scene->subs);
     s32 file;
@@ -393,16 +439,18 @@ s32 wide_scenery_hides(const map_enviroment *scene, const subengine *sub) {
     return 0;
 }
 
-/* How a quad's tile lies: mirrored, so its edge meets the same edge of the next, or all from its top row. */
+/* How a quad's tile lies: mirrored, so its edge meets the same edge of the next, or all from its top row. And whether it's in the level's own order, by its
+   depth as the game's own quads are, rather than at the front of it, or behind everything with draw_behind. */
 #define RING_FLIP_U 1
 #define RING_TOP_ROW 4
+#define RING_IN_ORDER 8
 
 static void ring_quad(const obj_textureset *ts, s32 image, const s16 corners[4][3], const u32 colour[4], s32 name, subengine *owner, s32 lie) {
     const obj_texture *t = &ts->tex[image];
     DrawFace f;
     ViewPoint q[4];
     s16 p[4];
-    s32 i;
+    s32 i, otz = 0;
 
     memset(&f, 0, sizeof(f));
     f.image = t->info.image;
@@ -417,9 +465,15 @@ static void ring_quad(const obj_textureset *ts, s32 image, const s16 corners[4][
         f.colour[i] = RenderState.modelDp != 0 ? colour_fade(&colour[i], FarColor, RenderState.modelDp) : colour[i];
         f.uv[i] = (u16)(t->info.uv0 | (((i & 1) != 0) != ((lie & RING_FLIP_U) != 0) ? t->w - 1 : 0) | ((!(lie & RING_TOP_ROW) && (i & 2) ? t->h - 1 : 0) << 8));
     }
+    if (lie & RING_IN_ORDER) {
+        otz = (s32)((points_order(&q[1], &q[2], &q[3]) + RenderState.otzAdd) >> 1);
+        if (otz >= RenderState.otLen) {
+            return;
+        }
+    }
     draw_owner(owner);
     draw_owner_part((void *)(uintptr_t)(name + 1));
-    draw_mesh_quad(RenderState.layer, &f, q);
+    draw_mesh_quad(RenderState.layer + otz, &f, q);
 }
 
 /* The view's own axes, as the map's pieces have them, with nothing moved, from where one of them is. */
@@ -780,6 +834,25 @@ static void draw_desert_fox_backdrop(map_enviroment *scene, subengine *owner, MA
         wide_sand_draw(scene, &DesertFoxSand, owner);
     }
     draw_behind(0);
+    draw_owner(NULL);
+}
+
+/* The Bearminator's floe on the right has a face missing from the ice cliff along its edge, out where a 4:3 view doesn't reach, between the two either side
+   of it. It's there again, as they have their tile and their colours where they meet it, in the level's own order, so what passes in front covers it. In the
+   floes' coordinates: its top and its foot at one end, then at the other, with the tile's top along the cliff's top */
+#define BEAR_FLOES 4
+#define BEAR_CLIFF_IMAGE 23
+static const s16 BearCliff[4][3] = { { 5579, 251, 1202 }, { 5579, 772, 1202 }, { 5133, 251, 393 }, { 5133, 772, 393 } };
+static const u32 BearCliffColour[4] = { 0xBDB5B5, 0x425210, 0xC6C6C6, 0x5A6B18 };
+
+static void draw_bear_cliff(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    if (scene->dbase->textures.tex == NULL || BEAR_FLOES >= scene->num_placements) {
+        return;
+    }
+    ring_view_of(scene, BEAR_FLOES, owner, view);
+    /* and the floes' own place in the order, which a view leaves out */
+    RenderState.otzAdd += scene->subs[BEAR_FLOES].otz;
+    ring_quad(&scene->dbase->textures, BEAR_CLIFF_IMAGE, BearCliff, BearCliffColour, 0, owner, RING_IN_ORDER);
     draw_owner(NULL);
 }
 
@@ -1351,6 +1424,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_DESERT_FOX) {
             draw_desert_fox_backdrop(scene, &RingOwner, view);
+        }
+        if (file == FILE_BEARMINATOR) {
+            draw_bear_cliff(scene, &RingOwner, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);

@@ -8891,6 +8891,14 @@ void SniperAimUpdate(SniperAim *a, s32 *out) {
     out[1] -= a->y.cur;
 }
 
+/* The binoculars cover a 4:3 view, with black round their two eyes: a wide view is black past them at the sides too. */
+static void render_binoculars(EXTengine *e) {
+    eng_render_subs(e);
+    if ((e->flags & 0x8000) && e->sub != NULL && (e->sub->flags & 0x8000)) {
+        wide_scenery_cover_sides();
+    }
+}
+
 void InitSniper(NAS *m) {
     SniperExt *ext;
     EXTengine *e;
@@ -8928,6 +8936,7 @@ void InitSniper(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->aimEng = e;
+            e->render = render_binoculars;
             e->sub->u6C.dbase = MapScene->dbase;
             e->sub->entity = 0x2018;
             e->sub->flags = 0x22000000;
