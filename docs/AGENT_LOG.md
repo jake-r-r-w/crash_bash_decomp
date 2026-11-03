@@ -71,6 +71,8 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    release. Whether it plays the same as retail is checked by the user playing it.
    The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. The latest is v0.1.1 (2026-11-01). 6.8, fully native, is done (2026-11-01): plain maths, direct drawing and the port's own APIs. Sticks and rumble since its pad rewrite still need a try on a real controller. Before a change that shouldn't alter the game, `playtest.mjs same [--all]` makes a baseline with `--save`, in `build/`, and afterwards shows in a minute that frames and sound haven't changed. `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
 
+4. Part 7 (2026-11-03): 7.6, sharper icons and text, is done (ICONS: CRISP; the game's own lettering stays). 7.11, widescreen level by level, was paused by the user at **7.11.13 Pogo Padlock**, the next to look at: show each level as it is first, and the user decides whether it needs work. Then 7.7 lighting, 7.8 mods, 7.9 online play.
+
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
