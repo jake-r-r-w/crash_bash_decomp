@@ -11,6 +11,7 @@
 #include <SDL3/SDL.h>
 #include "platform/platform.h"
 #include "platform/gfx.h"
+#include "platform/mods.h"
 #include "platform/texpack.h"
 #include "platform/settings.h"
 #include "platform/saves.h"
@@ -83,6 +84,7 @@ static DWORD WINAPI watchdog(LPVOID game_thread) {
 
 int machine_init(void);
 void overlays_init(void);
+int overlay_is_code(int entry);
 
 static const char *DataPath;
 static const char *SavesFolder;
@@ -285,6 +287,32 @@ int platform_vblanks(void) {
     return Vblanks;
 }
 
+/* --dump-files: the archive's files but its code, named as a mod's files/ has them, for making one. */
+static int dump_files(const char *folder) {
+    int entry, n = 0;
+
+    SDL_CreateDirectory(folder);
+    for (entry = 0; entry < archive_entries(); entry++) {
+        char path[1100];
+        unsigned char *bytes;
+        int size = 0;
+        SDL_IOStream *io;
+
+        if (overlay_is_code(entry) || archive_entry_size(entry) <= 0 || (bytes = archive_own_file(entry, &size)) == NULL) {
+            continue;
+        }
+        SDL_snprintf(path, sizeof(path), "%s/%03X.bin", folder, entry);
+        io = SDL_IOFromFile(path, "wb");
+        if (io != NULL) {
+            n += SDL_WriteIO(io, bytes, (size_t)size) == (size_t)size;
+            SDL_CloseIO(io);
+        }
+        free(bytes);
+    }
+    printf("%d files in %s\n", n, folder);
+    return n != 0 ? 0 : 1;
+}
+
 int platform_pad(int port) {
     int b = NoWindow ? (port == 0 ? 0 : -1) : host_pad(port);
     int i;
@@ -307,7 +335,7 @@ int platform_pad(int port) {
 
 int main(int argc, char **argv) {
     const char *Image = NULL;
-    const char *texture_pack = NULL;
+    const char *dump_files_to = NULL;
     int antialias = 0, smooth = 0, widescreen = 0, upscale = 0, level_flags = 0, sharp_icons = 0;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
@@ -391,9 +419,17 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--upscale") == 0 && i + 1 < argc) {
             upscale = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--texture-pack") == 0 && i + 1 < argc) {
-            texture_pack = argv[++i];
+            mods_add_pack(argv[++i]);
+        } else if (strcmp(argv[i], "--mods-dir") == 0 && i + 1 < argc) {
+            mods_only_in(argv[++i]);
+        } else if (strcmp(argv[i], "--mod") == 0 && i + 1 < argc) {
+            mods_turn_on(argv[++i]);
         } else if (strcmp(argv[i], "--dump-textures") == 0 && i + 1 < argc) {
             texpack_dump_to(argv[++i]);
+        } else if (strcmp(argv[i], "--dump-files") == 0 && i + 1 < argc) {
+            dump_files_to = argv[++i];
+        } else if (strcmp(argv[i], "--log-files") == 0) {
+            archive_log_reads();
         } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
             test_mode = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--level-flags") == 0 && i + 1 < argc) {
@@ -488,9 +524,6 @@ int main(int argc, char **argv) {
     if (sharp_icons) {
         settings()->icons = 1;
     }
-    if (texture_pack != NULL) {
-        SDL_strlcpy(settings()->texture_pack, texture_pack, sizeof(settings()->texture_pack));
-    }
     /* the first time: the launcher's made of the game's own art, so this comes before it */
     if (Image != NULL) {
         const char *problem = disc_extract(Image, DataPath != NULL ? DataPath : own_data_path());
@@ -506,6 +539,12 @@ int main(int argc, char **argv) {
             return 0;
         }
     }
+    if (dump_files_to != NULL) {
+        return dump_files(dump_files_to);
+    }
+    /* before the renderer, which makes room for the textures they have */
+    mods_scan();
+    mods_apply_files();
     if (!NoWindow && !host_init()) {
         fprintf(stderr, "No window; running without one.\n");
         NoWindow = 1;

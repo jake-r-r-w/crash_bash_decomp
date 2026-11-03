@@ -36,7 +36,14 @@ fs.mkdirSync(dir, { recursive: true });
 fs.copyFileSync(exe, path.join(dir, 'crashbash.exe'));
 fs.writeFileSync(path.join(dir, 'README.txt'), fs.readFileSync(path.join(PORT, 'release/README.txt'), 'utf8').replaceAll('@VERSION@', version).replace(/\r?\n/g, '\r\n'));
 const sdl = fs.readFileSync(path.join(toolchain, 'deps/share/licenses/SDL3/LICENSE.txt'), 'utf8');
-fs.writeFileSync(path.join(dir, 'LICENSE.txt'), `${fs.readFileSync(path.join(ROOT, 'LICENSE'), 'utf8')}\n-------------------------------------------------------------------------------\n\nThis program includes SDL3, under this licence:\n\n${sdl}`.replace(/\r?\n/g, '\r\n'));
+/* zlib's licence is the notice at the top of its header */
+const zlib_h = fs.readFileSync(path.join(toolchain, 'deps/include/zlib.h'), 'utf8');
+const zlib = zlib_h.slice(zlib_h.indexOf('Copyright'), zlib_h.indexOf('The data format')).replace(/^ {2}/gm, '').trim();
+const rule = '\n-------------------------------------------------------------------------------\n\n';
+fs.writeFileSync(path.join(dir, 'LICENSE.txt'), `${fs.readFileSync(path.join(ROOT, 'LICENSE'), 'utf8')}${rule}This program includes SDL3, under this licence:\n\n${sdl}${rule}This program includes zlib, under this licence:\n\n${zlib}\n`.replace(/\r?\n/g, '\r\n'));
+/* where mods go, so it's there to drop them in */
+fs.mkdirSync(path.join(dir, 'mods'));
+fs.writeFileSync(path.join(dir, 'mods', 'README.txt'), 'Put mods here, as their zips. They show up on the Mods page, under Settings in\r\nthe menu the game opens with.\r\n');
 
 /* What it mustn't hold */
 const program = fs.readFileSync(exe);
@@ -48,10 +55,19 @@ for (const text of [ROOT, ROOT.replaceAll('\\', '/'), home, home.replaceAll('\\'
 }
 if (fs.existsSync(DATA)) {
     const data = fs.readFileSync(DATA);
+    /* The code entries (ASSETS.md: 1E7, 2CC to 2D8 and 3DF) are the overlays, whose strings and tables are the decomp's own C and so in
+       the program too: the samples are of everything else. Where each entry is comes from the port's copy of the game's table. */
+    const table = fs.readFileSync(path.join(PORT, 'game/main/main.c'), 'utf8').match(/file DatIndex\[\d+\] = \{([^}]*)\}/)[1];
+    const words = table.replace(/\/\*.*?\*\//gs, '').match(/0x[0-9A-Fa-f]+|\d+/g).map(Number);
+    const code = [0x1E7, ...Array.from({ length: 13 }, (_, i) => 0x2CC + i), 0x3DF].map(e => [words[e * 2] * 2048, words[e * 2] * 2048 + words[e * 2 + 1]]);
     let found = 0;
 
     for (let i = 0; i < SAMPLES; i++) {
-        const at = crypto.randomInt(data.length - SAMPLE_BYTES);
+        let at;
+
+        do {
+            at = crypto.randomInt(data.length - SAMPLE_BYTES);
+        } while (code.some(([from, to]) => at + SAMPLE_BYTES > from && at < to));
         const sample = data.subarray(at, at + SAMPLE_BYTES);
 
         if (new Set(sample).size > 8 && program.includes(sample)) {
@@ -61,7 +77,7 @@ if (fs.existsSync(DATA)) {
     if (found !== 0) {
         throw new Error(`${found} of ${SAMPLES} samples of the game's archive are in the program`);
     }
-    console.log(`none of ${SAMPLES} samples of the game's archive are in the program`);
+    console.log(`none of ${SAMPLES} samples of the game's archive, but for its code, are in the program`);
 } else {
     console.log("the game's archive isn't here, so that wasn't checked");
 }

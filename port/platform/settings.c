@@ -27,6 +27,7 @@ void settings_defaults(void) {
     Current.upscale = 1;
     Current.icons = 0;
     Current.texture_pack[0] = 0;
+    Current.num_mods = 0;
     Current.test_mode = -1;
 }
 
@@ -43,7 +44,7 @@ static int settings_path(char *path, size_t size) {
 }
 
 void settings_load(void) {
-    char path[1024], line[128];
+    char path[1024], line[256];
     FILE *f;
 
     settings_defaults();
@@ -85,6 +86,14 @@ void settings_load(void) {
             Current.icons = a != 0;
         } else if (sscanf(line, "texture_pack=%63[^\r\n]", Current.texture_pack) == 1) {
             /* that's it */
+        } else if (strncmp(line, "mod=", 4) == 0 && Current.num_mods < SETTINGS_MODS) {
+            ModChoice *m = &Current.mods[Current.num_mods];
+            char state[4];
+
+            if (sscanf(line + 4, "%3s %127[^\r\n]", state, m->id) == 2 && (strcmp(state, "on") == 0 || strcmp(state, "off") == 0)) {
+                m->on = strcmp(state, "on") == 0;
+                Current.num_mods++;
+            }
         }
     }
     fclose(f);
@@ -93,6 +102,7 @@ void settings_load(void) {
 void settings_save(void) {
     char path[1024];
     FILE *f;
+    int i;
 
     if (Current.no_save) {
         return;
@@ -114,6 +124,8 @@ void settings_save(void) {
     fprintf(f, "widescreen=%d\n", Current.widescreen);
     fprintf(f, "upscale=%d\n", Current.upscale);
     fprintf(f, "icons=%d\n", Current.icons);
-    fprintf(f, "texture_pack=%s\n", Current.texture_pack);
+    for (i = 0; i < Current.num_mods; i++) {
+        fprintf(f, "mod=%s %s\n", Current.mods[i].on ? "on" : "off", Current.mods[i].id);
+    }
     fclose(f);
 }

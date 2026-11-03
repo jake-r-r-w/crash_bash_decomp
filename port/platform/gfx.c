@@ -407,18 +407,18 @@ static void make_atlas(void) {
     AtlasPixels = calloc((size_t)AtlasSize * AtlasSize, 4);
 }
 
-/* What's on it was made at the old factor, so it all goes, to come back as it's next drawn. */
-static char PackName[TEXPACK_NAME];
+/* What's on it was made at the old factor, or with other textures in place of the game's, so it all goes, to come back as it's next
+   drawn. */
+static unsigned PackGeneration;
 
 static int atlas_size_for(int factor) {
     return factor == 4 || texpack_active() ? ATLAS_BIG : ATLAS_NORMAL;
 }
 
-static void set_upscale(int factor, const char *pack) {
+static void set_upscale(int factor) {
     int size;
 
-    SDL_strlcpy(PackName, pack, sizeof(PackName));
-    texpack_select(PackName);
+    PackGeneration = texpack_generation();
     size = atlas_size_for(factor);
     Upscale = factor;
     NumDirty = 0;
@@ -436,9 +436,9 @@ void gfx_configure(const GfxConfig *config) {
 
     SDL_WaitForGPUIdle(Device);
     /* filtered, a tile's border holds the next tile's edge, and it doesn't otherwise */
-    if (config->upscale != Upscale || SDL_strcmp(config->pack, PackName) != 0 || !config->smooth != !Smooth) {
+    if (config->upscale != Upscale || texpack_generation() != PackGeneration || !config->smooth != !Smooth) {
         Smooth = config->smooth;
-        set_upscale(config->upscale, config->pack);
+        set_upscale(config->upscale);
     }
     Wide = config->wide;
     Icons = config->icons;
@@ -500,8 +500,7 @@ int gfx_init(void *window, const GfxConfig *config) {
 
     Upscale = config->upscale;
     Icons = config->icons;
-    SDL_strlcpy(PackName, config->pack, sizeof(PackName));
-    texpack_select(PackName);
+    PackGeneration = texpack_generation();
     AtlasSize = atlas_size_for(Upscale);
     make_atlas();
 

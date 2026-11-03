@@ -1318,6 +1318,20 @@ file **ModeTextTables[5] = {
     (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang,
     (void *)&ModeTextFilesLang,
 };
+extern const s32 ModeTextRoom;
+
+/* For a mod's file in place of an archive entry (platform/mods.c): the most it can be if it's a mode text file, which has a buffer of its
+   own (modetext.c), or 0. */
+s32 mode_text_room(s32 entry) {
+    s32 i;
+
+    for (i = 0; i < 14; i++) {
+        if (ModeTextFilesLang[i] == &DatIndex[entry]) {
+            return ModeTextRoom;
+        }
+    }
+    return 0;
+}
 file *ModeOverlayLoaded = 0;
 EngineCfg DefaultLevelConfig = { { 0x80, 0x200, 0x20 } };
 u16 LoadingEntities[2] = { 0x2001, 0x2002 };

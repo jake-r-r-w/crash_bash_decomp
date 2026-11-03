@@ -49,24 +49,50 @@ always did until you turn them on:
   FRAME RATE    30 is the original, 60 and 120 are smoother
 
 
-TEXTURE PACKS
+MODS
 
-You can replace the game's textures with your own. A pack is a folder in a
-folder called packs, next to crashbash.exe, full of PNGs. Choose it under
-Settings, Mods, Texture Pack, in the menu the game opens with. None come with
-the game.
+Mods change the game's textures, and its files too. To add one, put its zip in
+the mods folder next to crashbash.exe, with no need to unzip it. It shows up on
+the Mods page, under Settings in the menu the game opens with, and it's on.
+OPEN MODS FOLDER at the top of that page opens the folder.
 
-To make one, run the game once with
-    crashbash.exe --dump-textures mypack
-and play: each texture is saved to mypack as it first appears, named as a pack
-needs it. Edit the PNGs, at any size up to 2048 x 2048, keep the ones you've
-changed, and move the folder into packs. A texture with no PNG stays as it was.
-A PNG's clear parts stay clear. The same picture in other colours counts as
-another texture with its own PNG. Only what's seen gets saved, so play everything
-you want to change. Some faces of a model have no texture, only colours painted
-on them, and no pack can change those.
+On the Mods page, Cross turns the chosen mod on or off, and L1 and R1 (Q and W)
+move it up and down: where two mods change the same thing, the higher one wins.
+Textures change at once, and files when you press PLAY. None come with the game.
 
-Packs are PNG files that the game loads, so only use ones from people you trust.
+Texture packs made for earlier versions, folders of PNGs in the packs folder,
+are on the Mods page too, off until you turn them on.
+
+Mods are files the game loads, so only use ones from people you trust.
+
+
+MAKING MODS
+
+A mod is a zip, or a folder in the mods folder while you make it, of PNGs
+named after the textures they replace and of the game's own files in a folder
+called files. A file called mod.json can give its name, author, version and
+description:
+
+    { "name": "Pink Crates", "author": "You", "version": "1.0",
+      "description": "Every crate is pink" }
+
+For textures, run the game once with
+    crashbash.exe --dump-textures mytextures
+and play: each texture is saved to mytextures as it first appears, named as a
+mod needs it. Edit the PNGs, at any size up to 2048 x 2048, and put the ones
+you've changed in your mod. A texture with no PNG stays as it was. A PNG's clear
+parts stay clear. The same picture in other colours counts as another texture
+with its own PNG. Only what's seen gets saved, so play everything you want to
+change. Some faces of a model have no texture, only colours painted on them, and
+no mod can change those.
+
+For the game's files,
+    crashbash.exe --dump-files myfiles
+saves them all, named by number, and
+    crashbash.exe --log-files > files.txt
+lists which ones the game reads as you play. Put a changed one in your mod's
+files folder with the same name. The guide is docs/MODDING.md at the address
+above.
 
 
 YOUR SAVES AND SETTINGS

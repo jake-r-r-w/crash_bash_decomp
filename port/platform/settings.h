@@ -2,6 +2,15 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#define SETTINGS_MODS 64
+#define SETTINGS_MOD_ID 128
+
+/* A mod as the settings have it: its zip's or folder's name, and whether it's on (mods.c) */
+typedef struct ModChoice {
+    char id[SETTINGS_MOD_ID];
+    int on;
+} ModChoice;
+
 typedef struct Settings {
     int skip_intro;    /* start at the main menu, without the logos */
     int skip_loading;  /* load in one go, without the loading screen */
@@ -17,7 +26,9 @@ typedef struct Settings {
     int widescreen;    /* a wider window shows more of the world */
     int upscale;       /* textures made this many times bigger, on the player's machine: 1 is off, or 2 or 4 */
     int icons;         /* the heroes' and bosses' icons made sharp, on the player's machine */
-    char texture_pack[64]; /* the texture pack in use, a folder's name under packs/, or empty */
+    ModChoice mods[SETTINGS_MODS]; /* the mods in the player's order, first first */
+    int num_mods;
+    char texture_pack[64]; /* from before mods: the texture pack that was on, which becomes a mod that's on (mods.c) */
     int test_mode;     /* a test run's game mode to go straight to, or -1 */
     int test_level_flags; /* and its challenge's flags, as a warp room's door sets them: 0x80 is a crystal's, on the level's other map */
     int testing;       /* went there with --mode: the computer plays, with no time limit */

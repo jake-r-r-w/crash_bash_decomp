@@ -42,7 +42,6 @@ typedef struct GfxConfig {
     int wide;          /* a wider window shows more of the world, rather than bars at the sides */
     int upscale;       /* textures made this many times bigger (upscale.c): 1 is off, or 2 or 4 */
     int icons;         /* the heroes' and bosses' icons made sharp at 4x (upscale_texels_sharp), whatever upscale is */
-    const char *pack;  /* the texture pack in use (texpack.c), or empty */
 } GfxConfig;
 
 int gfx_init(void *window, const GfxConfig *config);

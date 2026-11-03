@@ -61,7 +61,11 @@ foreach(ovl arkenoid bash bonk chase dino hub n2o papu pogo polar race spin tank
 endforeach()
 
 add_executable(crashbash main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c
-  platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/settings.c $<TARGET_OBJECTS:game>)
+  platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/zipread.c platform/settings.c
+  $<TARGET_OBJECTS:game>)
+# Mods are zips, which zlib unpacks (platform/zipread.c).
+find_package(ZLIB REQUIRED)
+target_link_libraries(crashbash PRIVATE ZLIB::ZLIB)
 if(TARGET SDL3::SDL3-static)
   target_link_libraries(crashbash PRIVATE SDL3::SDL3-static)
 else()

@@ -52,6 +52,21 @@ void overlays_init(void) {
     }
 }
 
+/* The engine's own overlay, overlays/gameeng.bin, which the program has built in too */
+#define ENGINE_ENTRY 991
+
+/* Whether an archive entry is code: the program has all of it built in, so a mod's file in its place would do nothing (mods.c). */
+int overlay_is_code(int entry) {
+    size_t i;
+
+    for (i = 0; i < sizeof(Overlays) / sizeof(Overlays[0]); i++) {
+        if (Overlays[i].entry == entry) {
+            return 1;
+        }
+    }
+    return entry == ENGINE_ENTRY;
+}
+
 /* LoadModeOverlay's "load this file into the slot": F names which overlay. */
 void overlay_load(const void *f) {
     int entry = (int)((const DatFile *)f - DatIndex);

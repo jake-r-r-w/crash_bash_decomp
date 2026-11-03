@@ -22,6 +22,8 @@
  *   node port/tests/playtest.mjs packs
  *       Frames and sound of a few modes against a saved baseline (--save makes it), about a minute: whether a change that shouldn't alter
  *       anything didn't. Between big steps of cleaning up, in place of the long tests.
+ *   node port/tests/playtest.mjs mods
+ *       Mods from a mods folder: zips of textures and of archive files, broken ones, and which wins, by the pictures of one mode.
  *   node port/tests/playtest.mjs menu
  *       From the title screen through the menus, by the pad alone, into the first game of a new Adventure's first room.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
@@ -511,21 +513,23 @@ async function image(args) {
     return report(results);
 }
 
+/* The CRC that PNGs and zips have. */
+function crc32(b) {
+    let c = 0xFFFFFFFF;
+    for (const x of b) {
+        c ^= x;
+        for (let k = 0; k < 8; k++) c = c & 1 ? (c >>> 1) ^ 0xEDB88320 : c >>> 1;
+    }
+    return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
 /* A PNG, for a pack: solid colour, by alpha or not (colour type 6 or 2). */
 function png_of(w, h, rgba, colour_type = 6) {
-    const crc = b => {
-        let c = 0xFFFFFFFF;
-        for (const x of b) {
-            c ^= x;
-            for (let k = 0; k < 8; k++) c = c & 1 ? (c >>> 1) ^ 0xEDB88320 : c >>> 1;
-        }
-        return (c ^ 0xFFFFFFFF) >>> 0;
-    };
     const chunk = (type, data) => {
         const t = Buffer.concat([Buffer.from(type, 'latin1'), data]);
         const len = Buffer.alloc(4), sum = Buffer.alloc(4);
         len.writeUInt32BE(data.length);
-        sum.writeUInt32BE(crc(t));
+        sum.writeUInt32BE(crc32(t));
         return Buffer.concat([len, t, sum]);
     };
     const n = colour_type === 6 ? 4 : 3;
@@ -605,9 +609,155 @@ async function packs(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, menu, shots, image, packs };
+/* A zip of [name, bytes] pairs as a zip tool makes them, a name ending in / being a folder: deflated, or stored. Or broken in one of the
+   ways a download can be: a wrong CRC, encrypted, or sizes that say it's ZIP64. */
+function zip_of(files, { stored = false, bad_crc = false, locked = false, zip64 = false } = {}) {
+    const locals = [], list = [];
+    let at = 0;
+
+    for (const [name, data] of files) {
+        const nameb = Buffer.from(name, 'utf8'), keep = stored || name.endsWith('/');
+        const packed = keep ? data : zlib.deflateRawSync(data), method = keep ? 0 : 8, flags = locked ? 1 : 0;
+        const crc = (crc32(data) ^ (bad_crc ? 1 : 0)) >>> 0;
+        const local = Buffer.alloc(30), entry = Buffer.alloc(46);
+
+        local.writeUInt32LE(0x04034B50, 0);
+        local.writeUInt16LE(20, 4);
+        local.writeUInt16LE(flags, 6);
+        local.writeUInt16LE(method, 8);
+        local.writeUInt32LE(crc, 14);
+        local.writeUInt32LE(packed.length, 18);
+        local.writeUInt32LE(data.length, 22);
+        local.writeUInt16LE(nameb.length, 26);
+        entry.writeUInt32LE(0x02014B50, 0);
+        entry.writeUInt16LE(20, 4);
+        entry.writeUInt16LE(20, 6);
+        entry.writeUInt16LE(flags, 8);
+        entry.writeUInt16LE(method, 10);
+        entry.writeUInt32LE(crc, 16);
+        entry.writeUInt32LE(zip64 ? 0xFFFFFFFF : packed.length, 20);
+        entry.writeUInt32LE(zip64 ? 0xFFFFFFFF : data.length, 24);
+        entry.writeUInt16LE(nameb.length, 28);
+        entry.writeUInt32LE(at, 42);
+        locals.push(local, nameb, packed);
+        list.push(entry, nameb);
+        at += 30 + nameb.length + packed.length;
+    }
+    const listed = Buffer.concat(list), end = Buffer.alloc(22);
+    end.writeUInt32LE(0x06054B50, 0);
+    end.writeUInt16LE(files.length, 8);
+    end.writeUInt16LE(files.length, 10);
+    end.writeUInt32LE(listed.length, 12);
+    end.writeUInt32LE(at, 16);
+    return Buffer.concat([...locals, listed, end]);
+}
+
+/* Mods from a mods folder: zips and a folder of textures (as the packs above), on and in order, and archive files in place of the
+   game's. Those are the game's own bytes, so the picture's the same if they're read right: at the same size, bigger in a group, and
+   one far before the rest that moves them all. What's broken in a zip, or not allowed, leaves the game as it was. */
+async function mods(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const dir = path.join(OUT, 'mods'), folder = path.join(dir, 'mods');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const sha = name => fs.existsSync(path.join(dir, `${name}.png`)) ? crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, `${name}.png`))).digest('hex') : 'none';
+    const go = (name, more) => run(exe, ['--mode', '1', '--skip-intro', '--skip-loading', '--turbo', '--window', '480', '360', '--shot', '500', rel(`${name}.png`), '--frames', '520', ...more], path.join(dir, `${name}.txt`), { timeout: MODE_TIMEOUT });
+    const fine = (name, r) => r.code === 0 && crash_where(exe, r.text) == null && fs.existsSync(path.join(dir, `${name}.png`));
+    const put = (name, bytes) => fs.writeFileSync(path.join(folder, name), bytes);
+    const runs = {};
+    /* each a mod or two, from the folder: four at a time */
+    const play = async list => {
+        for (let i = 0; i < list.length; i += 4) {
+            const part = list.slice(i, i + 4);
+            const done = await Promise.all(part.map(([name, ids]) => go(name, ['--mods-dir', rel('mods'), ...ids.flatMap(id => ['--mod', id])])));
+            part.forEach(([name], k) => { runs[name] = done[k]; });
+        }
+    };
+    const results = [];
+    const same = (what, name, as) => results.push([what, { pass: fine(name, runs[name]) && sha(name) === sha(as), what: `the same picture as ${as}` }]);
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(folder, { recursive: true });
+    runs.base = await go('base', []);
+    runs.dumped = await go('dumped', ['--dump-textures', rel('dump')]);
+    const dumped_files = await run(exe, ['--dump-files', rel('files')], path.join(dir, 'files.txt'), { timeout: MODE_TIMEOUT });
+    const names = fs.existsSync(path.join(dir, 'dump')) ? fs.readdirSync(path.join(dir, 'dump')).filter(n => /^[0-9a-f]{16}\.png$/.test(n)) : [];
+    const own = id => fs.readFileSync(path.join(dir, 'files', `${id}.bin`));
+    const files = fs.existsSync(path.join(dir, 'files')) ? fs.readdirSync(path.join(dir, 'files')) : [];
+    results.push(['dump', { pass: fine('dumped', runs.dumped) && names.length > 20 && dumped_files.code === 0 && files.length > 900, what: `${names.length} textures and ${files.length} files saved` }]);
+    if (names.length === 0 || files.length === 0) {
+        return report(results);
+    }
+
+    /* textures: in a folder, in zips stored and deflated, and in a zip of a folder as Windows or a Mac makes it */
+    const pink = names.map(n => [n, png_of(64, 32, [255, 0, 255, 255])]);
+    fs.mkdirSync(path.join(folder, 'pink'));
+    for (const [n, png] of pink) put(path.join('pink', n), png);
+    put('pink.zip', zip_of(pink));
+    put('pink-stored.zip', zip_of(pink, { stored: true }));
+    put('Pink Pack.zip', zip_of([['Pink Pack/', Buffer.alloc(0)], ['Pink Pack/mod.json', Buffer.from('{ "name": "Pink \\"Things\\"", "tags": ["pink", { "a": [1, "}"] }], "version": 1, "author": "The tests", "description": "Every texture pink" }')],
+        ...pink.map(([n, png]) => [`Pink Pack/textures/${n}`, png]), ['__MACOSX/Pink Pack/._mod.json', Buffer.from('junk')]]));
+    put('green.zip', zip_of(names.map(n => [n, png_of(32, 32, [0, 255, 0, 255])])));
+    put('idle.zip', zip_of([['0000000000000000.png', png_of(4, 4, [255, 0, 255, 255])]]));
+    /* broken */
+    const pink_zip = zip_of(pink);
+    put('bad-crc.zip', zip_of(pink, { bad_crc: true }));
+    put('encrypted.zip', zip_of(pink, { locked: true }));
+    put('zip64.zip', zip_of(pink, { zip64: true }));
+    put('truncated.zip', pink_zip.subarray(0, pink_zip.length >> 1));
+    put('not-a-zip.zip', Buffer.from('hello'));
+    put('empty.zip', zip_of([]));
+    /* archive files, as the game's own: mode 1 reads 097 (its text), the group 252 to 25D, 07E and 0A6, and never 010 */
+    const pad = (bytes, n) => Buffer.concat([bytes, Buffer.alloc(n)]);
+    put('same.zip', zip_of(['097', '252', '258', '0A6'].map(id => [`files/${id}.bin`, own(id)])));
+    put('bigger.zip', zip_of(['252', '258', '07E'].map(id => [`files/${id}.bin`, pad(own(id), 6000)])));
+    put('moved.zip', zip_of([['files/010.bin', pad(own('010'), 100000)]]));
+    put('text-too-big.zip', zip_of([['files/097.bin', pad(own('097'), 17000 - own('097').length)]]));
+    put('code.zip', zip_of([['files/3DF.bin', Buffer.alloc(4096)]]));
+    /* and one that isn't: the level's texture set (ASSETS.md) with its colours turned round, but for the clear one */
+    const level = Buffer.from(own('252'));
+    for (let k = 0, at = 0x20; k < level.readUInt16LE(0xA); k++) {
+        const n = level.readUInt32LE(at);
+        for (let j = 0; j < n; j++) {
+            const c = level.readUInt16LE(at + 4 + j * 2);
+            if (c & 0x7FFF) level.writeUInt16LE(c ^ 0x7FFF, at + 4 + j * 2);
+        }
+        at += 4 + n * 2;
+    }
+    put('changed.zip', zip_of([['files/252.bin', level]]));
+
+    await play([['idle', ['idle.zip']], ['folder', ['pink']], ['deflated', ['pink.zip']], ['stored', ['pink-stored.zip']], ['zipped-folder', ['Pink Pack.zip']],
+        ['green', ['green.zip']], ['order', ['green.zip', 'pink.zip']], ['bad-crc', ['bad-crc.zip']], ['encrypted', ['encrypted.zip']],
+        ['zip64', ['zip64.zip']], ['truncated', ['truncated.zip']], ['not-a-zip', ['not-a-zip.zip']], ['empty', ['empty.zip']],
+        ['same-files', ['same.zip']], ['bigger-files', ['bigger.zip']], ['moved-files', ['moved.zip']], ['text-too-big', ['text-too-big.zip']], ['code', ['code.zip']],
+        ['changed-file', ['changed.zip']]]);
+    results.push(['texture folder', { pass: fine('folder', runs.folder) && sha('folder') !== sha('idle') && sha('idle') !== 'none', what: 'replaces' }]);
+    same('deflated zip', 'deflated', 'folder');
+    same('stored zip', 'stored', 'folder');
+    same('a zipped folder', 'zipped-folder', 'folder');
+    results.push(['mod.json', { pass: /mod Pink Pack\.zip \(Pink "Things" by The tests\): on, \d+ textures, 0 files\r?\n/.test(runs['zipped-folder'].text), what: 'read past what it doesn\'t know' }]);
+    same('higher wins', 'order', 'green');
+    results.push(['green differs', { pass: fine('green', runs.green) && sha('green') !== sha('folder'), what: 'from pink' }]);
+    same('bad CRC', 'bad-crc', 'idle');
+    same('encrypted', 'encrypted', 'idle');
+    same('ZIP64', 'zip64', 'idle');
+    same('cut short', 'truncated', 'base');
+    same('not a zip', 'not-a-zip', 'base');
+    same('empty zip', 'empty', 'base');
+    same('files, same size', 'same-files', 'base');
+    same('files, bigger in a group', 'bigger-files', 'base');
+    same('a file that moves the rest', 'moved-files', 'base');
+    results.push(['a changed file', { pass: fine('changed-file', runs['changed-file']) && sha('changed-file') !== sha('base'), what: 'changes the picture' }]);
+    results.push(['files replaced', { pass: /mods: 4 of the archive's files replaced/.test(runs['same-files'].text) && /mods: 3 of/.test(runs['bigger-files'].text) && /mods: 1 of/.test(runs['moved-files'].text), what: 'as many as there are' }]);
+    same('mode text too big', 'text-too-big', 'base');
+    results.push(['too big, said', { pass: /TOO BIG/.test(runs['text-too-big'].text), what: 'in the log' }]);
+    same('code', 'code', 'base');
+    results.push(['code, said', { pass: /ITS CODE IS LEFT OUT/.test(runs.code.text), what: 'in the log' }]);
+    return report(results);
+}
+
+const commands = { bosses, modes, adventure, challenges, same, menu, shots, image, packs, mods };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|menu|shots|image|packs: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|menu|shots|image|packs|mods: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

@@ -2,10 +2,12 @@
  * backdrop, in its font and panels, under the 3D logo from the intro. PLAY, SETTINGS and QUIT, and
  * the settings a screen down: categories on the left, a scrolling list of options on the right.
  * Settings take effect as they change. To add one: a row in its category's table, a case in
- * change_setting and in show_value; a video one goes in main/videomenu.c, as other menus show those too. */
+ * change_setting and in show_value; a video one goes in main/videomenu.c, as other menus show those too.
+ * The Mods page lists the mods (mods.c) to turn on and off and put in order. */
 #include <stdio.h>
+#include <string.h>
+#include "../../../platform/mods.h"
 #include "../../../platform/settings.h"
-#include "../../../platform/texpack.h"
 #include "common.h"
 #include "bash/engine.h"
 #include "bash/main.h"
@@ -18,8 +20,7 @@ void platform_finish(int code);
 enum {
     SET_SKIP_INTRO,
     SET_SKIP_LOADING,
-    SET_CHEAT_MENU,
-    SET_TEXTURE_PACK
+    SET_CHEAT_MENU
 };
 
 typedef struct {
@@ -28,10 +29,14 @@ typedef struct {
     s32 id;
 } MenuOption;
 
+/* What a category's list is: options from its table, the video options, or the mods */
+enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS };
+
 typedef struct {
     const char *label;
-    const MenuOption *options; /* NULL: the video options */
+    const MenuOption *options;
     s32 count;
+    s32 kind;
 } MenuCategory;
 
 static const MenuOption GameOptionsList[] = {
@@ -39,15 +44,12 @@ static const MenuOption GameOptionsList[] = {
     { "SKIP LOADING", "LOAD IN ONE GO, WITHOUT THE LOADING SCREENS", SET_SKIP_LOADING },
     { "CHEAT MENU", "THE ORIGINAL'S HIDDEN CHEATS, IN THE PAUSE MENU", SET_CHEAT_MENU },
 };
-static const MenuOption ModsOptionsList[] = {
-    { "TEXTURE PACK", "TEXTURES FROM THE PACKS FOLDER", SET_TEXTURE_PACK },
-};
 #define NUM_OF(a) ((s32)(sizeof(a) / sizeof((a)[0])))
 
 static const MenuCategory Categories[] = {
-    { "GAME", GameOptionsList, NUM_OF(GameOptionsList) },
-    { "VIDEO", NULL, NUM_VIDEO_OPTIONS },
-    { "MODS", ModsOptionsList, NUM_OF(ModsOptionsList) },
+    { "GAME", GameOptionsList, NUM_OF(GameOptionsList), KIND_OPTIONS },
+    { "VIDEO", NULL, NUM_VIDEO_OPTIONS, KIND_VIDEO },
+    { "MODS", NULL, 0, KIND_MODS },
 };
 #define NUM_CATEGORIES NUM_OF(Categories)
 #define MAX_CATEGORIES 4 /* and BACK */
@@ -80,6 +82,7 @@ static camera_info_tag LogoCamera;
 #define VISIBLE_OPTIONS 10
 #define SUB_LABEL(n) (SUB_OPTION + (n) * 2)
 #define SUB_VALUE(n) (SUB_OPTION + (n) * 2 + 1)
+#define SUB_HELP_MORE SUB_LABEL(VISIBLE_OPTIONS)
 
 #define TOP_Y -0x38
 #define TOP_STEP 0x22
@@ -105,8 +108,18 @@ static camera_info_tag LogoCamera;
 #define TEXT_SMALL 4
 #define TEXT_SMALL_LIT 8
 
-static PlaceRec Place[SUB_LABEL(VISIBLE_OPTIONS) + 1];
+/* The pad's shoulder buttons, which move a mod up and down the list */
+#define PAD_L1 0x400
+#define PAD_R1 0x800
+
+/* The longest a mod's name is in the list, and a line of help under it, in the game's small letters */
+#define LABEL_CHARS 18
+#define HELP_CHARS 48
+
+static PlaceRec Place[SUB_HELP_MORE + 2];
 static char Values[VISIBLE_OPTIONS][24];
+static char Labels[VISIBLE_OPTIONS][LABEL_CHARS + 1];
+static char Help[2][HELP_CHARS + 1];
 
 enum { SCREEN_TOP, SCREEN_CATEGORIES, SCREEN_OPTIONS };
 static s32 Screen;
@@ -115,26 +128,140 @@ static s32 Category;  /* NUM_CATEGORIES is BACK */
 static s32 Option;
 static s32 FirstShown;
 
+/* Text for the game's font, which has capitals, digits, a few marks and the space: the rest goes, and what's too long is cut at a word,
+   with dots. */
+static void font_text(char *out, size_t size, const char *in) {
+    char clean[512];
+    size_t n = 0, cut;
+
+    for (; *in != 0 && n + 1 < sizeof(clean); in++) {
+        char c = *in;
+
+        if (c >= 'a' && c <= 'z') {
+            c = (char)(c - 'a' + 'A');
+        } else if (c == '_' || c == '\t') {
+            c = ' ';
+        } else if (c == '&') {
+            c = '+';
+        } else if (c == '"' || c == '`') {
+            c = '\'';
+        } else if (c == ';') {
+            c = ',';
+        } else if (c == '/' || c == '\\') {
+            c = '-';
+        } else if (!((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || strchr(".,':!=+-?%<> ", c) != NULL)) {
+            continue;
+        }
+        if (c == ' ' && (n == 0 || clean[n - 1] == ' ')) {
+            continue;
+        }
+        clean[n++] = c;
+    }
+    while (n > 0 && clean[n - 1] == ' ') {
+        n--;
+    }
+    clean[n] = 0;
+    if (n >= size) {
+        /* at a space in its second half, if there's one */
+        for (cut = size - 4; cut > size / 2 && clean[cut] != ' '; cut--) {
+        }
+        if (clean[cut] != ' ') {
+            cut = size - 4;
+        }
+        while (cut > 0 && clean[cut - 1] == ' ') {
+            cut--;
+        }
+        memcpy(clean + cut, "...", 4);
+    }
+    memcpy(out, clean, strlen(clean) + 1);
+}
+
+/* --- the Mods page: OPEN MODS FOLDER, then the mods in their order --- */
+
+static s32 option_count(const MenuCategory *c) {
+    return c->kind == KIND_MODS ? mods_count() + 1 : c->count;
+}
+
+static s32 mod_usable(const ModInfo *m) {
+    return m != NULL && m->textures + m->files != 0;
+}
+
+/* Two lines: what it does, or what's wrong with it; and who made it. */
+static void mod_help(s32 n) {
+    const ModInfo *m = mods_info(n - 1);
+    char text[512];
+
+    if (m == NULL) {
+        font_text(Help[0], sizeof(Help[0]), "PUT MOD ZIPS IN IT, AND THEY SHOW UP HERE");
+        font_text(Help[1], sizeof(Help[1]), "WHERE TWO CHANGE ONE THING, THE HIGHER ONE WINS");
+        return;
+    }
+    if (m->problem[0] != 0) {
+        snprintf(text, sizeof(text), "%s", m->problem);
+    } else if (m->description[0] != 0) {
+        snprintf(text, sizeof(text), "%s", m->description);
+    } else if (m->textures != 0 && m->files != 0) {
+        snprintf(text, sizeof(text), "%d TEXTURES AND %d FILES", m->textures, m->files);
+    } else {
+        snprintf(text, sizeof(text), "%d %s", m->textures + m->files, m->textures != 0 ? (m->textures == 1 ? "TEXTURE" : "TEXTURES") : (m->files == 1 ? "FILE" : "FILES"));
+    }
+    font_text(Help[0], sizeof(Help[0]), text);
+    if (m->pack) {
+        snprintf(text, sizeof(text), "A TEXTURE PACK FROM THE PACKS FOLDER");
+    } else {
+        snprintf(text, sizeof(text), "%s%s%s%s", m->version[0] != 0 ? "VERSION " : "", m->version,
+                 m->author[0] != 0 ? (m->version[0] != 0 ? " BY " : "BY ") : "", m->author);
+    }
+    font_text(Help[1], sizeof(Help[1]), text);
+}
+
+static void change_mod(s32 n, s32 dir) {
+    const ModInfo *m = mods_info(n - 1);
+
+    if (n == 0) {
+        if (dir > 0) {
+            mods_open_folder();
+        }
+    } else if (mod_usable(m)) {
+        mods_set_on(n - 1, !m->on);
+        mods_apply_textures();
+    }
+}
+
+/* A mod up or down the list, and the cursor with it. */
+static void move_mod(s32 dir) {
+    if (Option + dir >= 1 && Option + dir <= mods_count()) {
+        mods_move(Option - 1, dir);
+        Option += dir;
+        mods_apply_textures();
+        settings_apply();
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+}
+
+/* --- rows --- */
+
 static void change_setting(const MenuCategory *c, s32 n, s32 dir) {
     Settings *s = settings();
 
-    if (c->options == NULL) {
+    if (c->kind == KIND_VIDEO) {
         video_option_change(n, dir);
         return;
     }
-    switch (c->options[n].id) {
-    case SET_SKIP_INTRO:
-        s->skip_intro = !s->skip_intro;
-        break;
-    case SET_SKIP_LOADING:
-        s->skip_loading = !s->skip_loading;
-        break;
-    case SET_CHEAT_MENU:
-        s->cheat_menu = !s->cheat_menu;
-        break;
-    case SET_TEXTURE_PACK:
-        texpack_step(s->texture_pack, (int)sizeof(s->texture_pack), dir);
-        break;
+    if (c->kind == KIND_MODS) {
+        change_mod(n, dir);
+    } else {
+        switch (c->options[n].id) {
+        case SET_SKIP_INTRO:
+            s->skip_intro = !s->skip_intro;
+            break;
+        case SET_SKIP_LOADING:
+            s->skip_loading = !s->skip_loading;
+            break;
+        case SET_CHEAT_MENU:
+            s->cheat_menu = !s->cheat_menu;
+            break;
+        }
     }
     settings_apply();
 }
@@ -142,8 +269,14 @@ static void change_setting(const MenuCategory *c, s32 n, s32 dir) {
 static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
     const Settings *s = settings();
 
-    if (c->options == NULL) {
+    if (c->kind == KIND_VIDEO) {
         video_option_value(n, text, (s32)size);
+        return;
+    }
+    if (c->kind == KIND_MODS) {
+        const ModInfo *m = mods_info(n - 1);
+
+        snprintf(text, size, "%s", m == NULL ? "" : !mod_usable(m) ? "BROKEN" : m->on ? "ON" : "OFF");
         return;
     }
     switch (c->options[n].id) {
@@ -156,17 +289,33 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
     case SET_CHEAT_MENU:
         snprintf(text, size, "%s", s->cheat_menu ? "ON" : "OFF");
         break;
-    case SET_TEXTURE_PACK: {
-        s32 i;
+    }
+}
 
-        /* the game's font is capitals */
-        snprintf(text, size, "%s", s->texture_pack[0] != 0 ? s->texture_pack : "OFF");
-        for (i = 0; text[i] != 0; i++) {
-            text[i] = text[i] >= 'a' && text[i] <= 'z' ? (char)(text[i] - 'a' + 'A') : text[i];
+/* Row n's label, shown in row i. */
+static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
+    if (c->kind == KIND_VIDEO) {
+        return video_option_label(n);
+    }
+    if (c->kind == KIND_MODS) {
+        if (n == 0) {
+            return "OPEN MODS FOLDER";
         }
-        break;
+        font_text(Labels[i], sizeof(Labels[i]), mods_info(n - 1)->name);
+        return Labels[i];
     }
+    return c->options[n].label;
+}
+
+static const char *option_help(const MenuCategory *c, s32 n) {
+    if (c->kind == KIND_VIDEO) {
+        return video_option_help(n);
     }
+    if (c->kind == KIND_MODS) {
+        mod_help(n);
+        return Help[0];
+    }
+    return c->options[n].help;
 }
 
 static void place_text(PlaceRec *r, s32 x, s32 y, const char *text, s32 small) {
@@ -200,6 +349,7 @@ static void place_screen(void) {
         place_panel(&Place[SUB_PANEL + 1], OPTION_LEFT, OPTION_RIGHT, PANEL_TOP, PANEL_BOTTOM);
     }
     place_text(&Place[SUB_HELP], -0x8000, HELP_Y, "", 1);
+    place_text(&Place[SUB_HELP_MORE], -0x8000, HELP_Y + OPTION_STEP, "", 1);
     place_text(&Place[SUB_NAV], -0x8000, NAV_Y, "", 1);
     for (i = 0; i < MAX_CATEGORIES + 1; i++) {
         if (Screen == SCREEN_TOP) {
@@ -226,8 +376,10 @@ static void set_row(subengine *sub, const char *text, s32 colour) {
 static void show_screen(void) {
     subengine *sub = GetEngineSlot(0)->sub;
     const MenuCategory *c = Category < NUM_CATEGORIES ? &Categories[Category] : NULL;
+    s32 mods = Screen == SCREEN_OPTIONS && c->kind == KIND_MODS;
     s32 i;
 
+    set_row(&sub[SUB_HELP_MORE], "", TEXT_SMALL);
     if (Screen == SCREEN_TOP) {
         for (i = 0; i < MAX_CATEGORIES + 1; i++) {
             set_row(&sub[SUB_CATEGORY + i], i < NUM_TOP ? TopRows[i] : "", i == TopCursor ? TEXT_LARGE_LIT : TEXT_LARGE);
@@ -245,21 +397,26 @@ static void show_screen(void) {
 
         set_row(&sub[SUB_CATEGORY + i], i < NUM_CATEGORIES ? Categories[i].label : i == NUM_CATEGORIES ? "BACK" : "", colour);
     }
-    set_row(&sub[SUB_NAV], Screen == SCREEN_OPTIONS ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
-                                                    : "UP - DOWN TO CHOOSE, RIGHT OR \xFC BUTTON TO OPEN", TEXT_SMALL);
-    set_row(&sub[SUB_HELP], Screen == SCREEN_OPTIONS ? (c->options != NULL ? c->options[Option].help : video_option_help(Option)) : "", TEXT_SMALL);
+    set_row(&sub[SUB_NAV], mods && Option > 0 ? "\xFC ON OR OFF, L1 - R1 MOVE IT UP OR DOWN, \xFE BACK"
+                           : mods             ? "UP - DOWN CHOOSE, \xFC BUTTON TO OPEN, \xFE BACK"
+                           : Screen == SCREEN_OPTIONS ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
+                                                      : "UP - DOWN TO CHOOSE, RIGHT OR \xFC BUTTON TO OPEN", TEXT_SMALL);
+    set_row(&sub[SUB_HELP], Screen == SCREEN_OPTIONS ? option_help(c, Option) : "", TEXT_SMALL);
+    if (mods) {
+        set_row(&sub[SUB_HELP_MORE], Help[1], TEXT_SMALL);
+    }
     for (i = 0; i < VISIBLE_OPTIONS; i++) {
         s32 n = FirstShown + i;
 
         Values[i][0] = '\0';
-        if (c != NULL && n < c->count) {
+        if (c != NULL && n < option_count(c)) {
             s32 lit = Screen == SCREEN_OPTIONS && n == Option;
             char value[24];
 
-            set_row(&sub[SUB_LABEL(i)], c->options != NULL ? c->options[n].label : video_option_label(n), lit ? TEXT_SMALL_LIT : TEXT_SMALL);
+            set_row(&sub[SUB_LABEL(i)], option_label(c, n, i), lit ? TEXT_SMALL_LIT : TEXT_SMALL);
             value[0] = '\0';
             show_value(value, sizeof(value), c, n);
-            snprintf(Values[i], sizeof(Values[i]), lit ? "< %s >" : "%s", value);
+            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' ? "< %s >" : "%s", value);
             sub[SUB_VALUE(i)].unk7C = lit ? TEXT_SMALL_LIT : TEXT_SMALL;
         } else {
             set_row(&sub[SUB_LABEL(i)], "", TEXT_SMALL);
@@ -280,6 +437,8 @@ static void go_to_screen(s32 screen) {
 static void start_game(void) {
     settings_save();
     settings()->launcher = 0;
+    /* what the game reads from here on: textures took effect as they were chosen */
+    mods_apply_files();
     if (settings()->skip_intro) {
         process_control_goto(&MenuProcessControl, &MainMenu);
     } else {
@@ -336,6 +495,11 @@ static void update_categories(s32 pressed) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         Option = 0;
         FirstShown = 0;
+        /* what's in the mods folders now, a mod being made and all */
+        if (Categories[Category].kind == KIND_MODS) {
+            mods_scan();
+            settings_apply();
+        }
         go_to_screen(SCREEN_OPTIONS);
     }
     if (pressed & 0x1000) {
@@ -345,15 +509,38 @@ static void update_categories(s32 pressed) {
 }
 
 static void update_options(s32 pressed) {
+    static s32 updates;
     const MenuCategory *c = &Categories[Category];
 
-    if ((pressed & 0x40) && Option < c->count - 1) {
+    /* a mod put in the folder shows up in a second or so, with the cursor still on the mod it was on */
+    if (c->kind == KIND_MODS && ++updates % 30 == 0) {
+        const ModInfo *at = mods_info(Option - 1);
+        char id[MOD_ID];
+        s32 i;
+
+        snprintf(id, sizeof(id), "%s", at != NULL ? at->id : "");
+        if (mods_rescan_if_changed()) {
+            settings_apply();
+            for (i = 0; i < mods_count(); i++) {
+                if (id[0] != '\0' && strcmp(mods_info(i)->id, id) == 0) {
+                    Option = i + 1;
+                }
+            }
+            if (Option >= option_count(c)) {
+                Option = option_count(c) - 1;
+            }
+        }
+    }
+    if ((pressed & 0x40) && Option < option_count(c) - 1) {
         Option++;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if ((pressed & 0x10) && Option > 0) {
         Option--;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if (c->kind == KIND_MODS && Option > 0 && (pressed & (PAD_L1 | PAD_R1))) {
+        move_mod(pressed & PAD_L1 ? -1 : 1);
     }
     if (Option < FirstShown) {
         FirstShown = Option;

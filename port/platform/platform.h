@@ -24,6 +24,17 @@
 const char *platform_data_path(void);
 void archive_open(void);
 void archive_read(int sector, int count, void *buf);
+/* A mod's files in place of the archive's (archive.c): how many entries it has and how big one is as the game has it, a replacement
+   (bytes it takes, or NULL for the game's own), and laying the archive out again for what's replaced, before the game reads on. */
+int archive_entries(void);
+int archive_entry_size(int entry);
+void archive_replace(int entry, unsigned char *bytes, int size);
+void archive_replace_none(void);
+void archive_lay_out(void);
+/* The game's own bytes of an entry, to free, for --dump-files. */
+unsigned char *archive_own_file(int entry, int *size);
+/* --log-files: each read says which files it's of, for finding what to put a mod's in place of. */
+void archive_log_reads(void);
 void platform_wait_vblanks(int count);
 void platform_fatal(const char *message);
 /* The game's archive from a disc image: what went wrong, or NULL with it at out (discimage.c). */

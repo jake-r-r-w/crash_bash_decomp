@@ -3581,6 +3581,8 @@ file DatIndex[992] = {
     0x8931, 0x3252E, 0x8996, 0x8E8, 0x8998, 0x39626, 0x8A0B, 0x1010, /* 984 */
     0x8A0E, 0x34A7E, 0x8A78, 0x1250, 0x8A7B, 0x37C26, 0x8AEB, 0x5E4B8, /* 988 */
 };
+/* How many, for laying the archive out again round a mod's files (platform/archive.c). */
+s32 DatIndexCount = sizeof(DatIndex) / sizeof(DatIndex[0]);
 /* The archive's file groups: a group's first file, its file count and its bytes (the
  * games' file_group_load_info.group points at one). */
 FileGroup FileGroups[130] = {
@@ -3629,6 +3631,7 @@ FileGroup FileGroups[130] = {
     { 0x3D9, 2, 0x3A800 }, { 0x3DB, 2, 0x36800 }, { 0x3DD, 2, 0x39800 },  /* 126 */
     { 0x3DF, 1, 0x5E800 },  /* 129 */
 };
+s32 FileGroupCount = sizeof(FileGroups) / sizeof(FileGroups[0]);
 LoaderState Loader = {0};
 LoadNode LoadNodePool[64] = {0};
 void *LoadNodeFree = 0;

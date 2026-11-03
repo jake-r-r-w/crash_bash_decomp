@@ -11,6 +11,10 @@
 
 u8 ModeTextBuffer[MODE_TEXT_MAX];
 _Alignas(16) u8 ModeTextData[0x10000];
+
+/* The most a mode text file can be, as it's read into the buffer in whole sectors: for a mod's file in its place (mode_text_room) */
+const s32 ModeTextRoom = MODE_TEXT_MAX / 2048 * 2048;
+
 static void *ModeTextEmpty[12];
 PlaceRec ***PauseMenuTexts[45];
 s32 ModeTextLists;
