@@ -76,6 +76,15 @@ typedef struct {
 #define OXIDE_TOWERS_ACROSS 13000
 static const s16 OxideTowers[][2] = { { 0, 41 }, { 73, 78 }, { 84, 217 }, { 382, 877 } };
 #define NUM_OXIDE_TOWERS ((s32)(sizeof(OxideTowers) / sizeof(OxideTowers[0])))
+/* The crystal challenges' maps, a level's other map (its crystal flag, levelRecAlt), are files of their own */
+#define FILE_JUNGLE_BASH_CRYSTAL 713
+/* Jungle Bash's crystal map, at night: its backdrop of dark jungle is two walls on part of a circle round this, either side of the temple, and it stops at
+   their far ends, where a wide view looks out past them. Its mirror images across each end, a little inside it, carry it on round */
+#define JUNGLE_BASH_CRYSTAL_BACKDROP 2
+#define JUNGLE_BASH_CRYSTAL_X 61
+#define JUNGLE_BASH_CRYSTAL_Z (-4010)
+#define JUNGLE_BASH_CRYSTAL_LEFT_MIRROR 965
+#define JUNGLE_BASH_CRYSTAL_RIGHT_MIRROR (-971)
 /* Tilt Panic's sky, a wall at the back whose two ends are alike, from the haze at its foot up to blue: its mirror image across each, a little inside it */
 #define TILT_SKY 1
 #define TILT_SKY_LEFT_END (-10708 + 30)
@@ -225,6 +234,8 @@ static const WideExtra Extras[] = {
     { FILE_TILT_PANIC, TILT_SKY, TILT_SKY_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
     { FILE_OXIDE, OXIDE_ARENA, 0, 0, -OXIDE_TOWERS_ACROSS, 0, 0, 0, 0, 0, 0, 0, 0, OxideTowers, NUM_OXIDE_TOWERS },
     { FILE_OXIDE, OXIDE_ARENA, 0, 0, OXIDE_TOWERS_ACROSS, 0, 0, 0, 0, 0, 0, 0, 0, OxideTowers, NUM_OXIDE_TOWERS },
+    { FILE_JUNGLE_BASH_CRYSTAL, JUNGLE_BASH_CRYSTAL_BACKDROP, JUNGLE_BASH_CRYSTAL_X, JUNGLE_BASH_CRYSTAL_Z, 0, 0, 0, JUNGLE_BASH_CRYSTAL_LEFT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_JUNGLE_BASH_CRYSTAL, JUNGLE_BASH_CRYSTAL_BACKDROP, JUNGLE_BASH_CRYSTAL_X, JUNGLE_BASH_CRYSTAL_Z, 0, 0, 0, JUNGLE_BASH_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
