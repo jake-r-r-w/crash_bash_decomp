@@ -35,7 +35,6 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | 7.11.23 | Oxide Ride | Space is dark on purpose: probably leave | [ ] |
 | 7.11.24 | Crystal maps | Not looked at yet: they're maps of their own. N.Ballism's has the same front corners as its normal map had: a black wedge on each base, and needles | [ ] |
 | 7.11.25 | Later in each level | Not looked at yet: all this is from the first few seconds | [ ] |
-| 7.11.26 | Menus and the player panel | Recheck by playing: the menus' title bars and the hero select's bars carried on past the sides, the Universal logo white to the edges, and the heroes' pictures in the middle in a level | [ ] |
 | 7.6 | Sharper icons and UI text | Icons upscale with UPSCALE (7.5). Text and digits don't: the scaler spoils them, so they stay as they were. Sharper text would need a font redrawn at a higher resolution, which can't come from the player's data and so would be new art. A texture pack can now carry one (7.10) | [ ] |
 | 7.7 | Optional modern lighting | Lighting beyond the game's own, which is colours baked into its models' vertices | [ ] |
 | 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files. It goes in the launcher's Mods section, with the texture packs (7.10) | [ ] |
