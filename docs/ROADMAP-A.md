@@ -821,3 +821,4 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 7.11.8 Swamp Fox (2026-11-03): left as it was, by the user's choice: only small black wedges in its top corners, and the dark lower down is its own water fading to black
 - [x] 7.11.9 Metal Fox (2026-11-03): left as it was, by the user's choice: its junkyard reaches the sides, dark at the top as the level is
 - [x] 7.11.10 Drain Bash (2026-11-03): left as it was, by the user's choice: its drain room reaches the sides
+- [x] 7.11.11 Pogo Painter (2026-11-03): its back wall carried on down both sides towards the camera, a row taller, in its own tiles and row colours, and its grass out to their foot and along the bottom

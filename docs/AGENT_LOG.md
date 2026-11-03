@@ -473,6 +473,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-03: 7.11.11 Pogo Painter: the user played it and approved it.
 - 2026-11-03: Pogo Painter (file 675) in widescreen. Pieces 0-63 are the board's tiles, 64 the garden (back wall, ruins, tree, grass), 65 the front ledge, 66-72 props. Its sides are stone blocks with nothing past them, and the camera's top edge looks almost level (eye at 0,-2360,-4511, the back wall's top -1869 only just off the screen). `draw_pogo_painter_backdrop` carries the back wall down both sides at x -4271 and 3783 towards the camera, a row taller (-2477), and the grass out to their foot with widesand.c (piece 64, image 11, a rim round the garden). The view is of piece 64, at the origin unturned (`ring_view_of`), as the first piece is a floor tile at -1792,0,1792. The other levels' wide views are pixel-identical to before. Test runs at `--fps 60` or above draw nothing in `--turbo` (stepping draws only on the present path), so shots there need real time. Its crystal version is file 673, another map, not changed.
 - 2026-11-03: 7.11.10 Drain Bash: the user looked at it in widescreen and chose to leave it as it was.
 - 2026-11-03: 7.11.9 Metal Fox: the user looked at it in widescreen and chose to leave it as it was.
