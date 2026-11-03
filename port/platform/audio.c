@@ -776,6 +776,45 @@ short audio_note_on(short vab, short prog, short tone, short note, short fine, s
     return (short)(v - Voices);
 }
 
+short audio_play_sample(const unsigned char *adpcm, uint32_t bytes, uint32_t pitch, int left, int right) {
+    Voice *v = NULL;
+    int i;
+
+    if (adpcm == NULL || bytes < 16) {
+        return -1;
+    }
+    host_audio_lock();
+    for (i = 0; i < FX_VOICES && v == NULL; i++) {
+        if (Voices[i].state == ENV_OFF && !(VoiceMask & (1u << i))) {
+            v = &Voices[i];
+        }
+    }
+    for (i = 0; i < FX_VOICES && v == NULL; i++) {
+        if (Voices[i].state == ENV_RELEASE && !(VoiceMask & (1u << i))) {
+            v = &Voices[i];
+        }
+    }
+    if (v == NULL) {
+        host_audio_unlock();
+        return -1;
+    }
+    memset(v, 0, sizeof(*v));
+    v->data = adpcm;
+    v->end = bytes;
+    v->index = 28;
+    /* at once to full, and held there till the sample's own end */
+    v->adsr1 = 0x000F;
+    v->adsr2 = 0x1F00;
+    v->level = 0x3FFF;
+    v->seq = -1;
+    v->pitch = pitch;
+    v->vol_l = v->to_l = left < 0 ? 0 : left > 0x3FFF ? 0x3FFF : left;
+    v->vol_r = v->to_r = right < 0 ? 0 : right > 0x3FFF ? 0x3FFF : right;
+    v->state = ENV_ATTACK;
+    host_audio_unlock();
+    return (short)(v - Voices);
+}
+
 short audio_voice_off(short voice) {
     if (voice < 0 || voice >= FX_VOICES) {
         return -1;

@@ -6,6 +6,7 @@
 #include "bash/titles.h"
 #include "bash/videomenu.h"
 #include "bash/extraheroes.h"
+#include "bash/bonusheroes.h"
 #include "bash/dbase.h"
 
 
@@ -356,7 +357,7 @@ CharCard CharCards[9] = {
 /* PC: the select's pieces with the ninth card's frame (sub 26) and portrait (27, a portrait of the game's in its place, drawn as the extra
  * hero's) after the game's 26 */
 #define EXTRA_CARD 8
-#define EXTRA_CARD_TURN 0xC00 /* a quarter turn to the right */
+#define EXTRA_CARD_TURN 0xE00 /* round till he faces out of the screen as the others do: his face, as his idle pose turns his body */
 static PlaceRec CharSelectPlaceMore[29];
 
 /* Whether there's the ninth card: the launcher's EXTRA HEROES is on, and Roo's disc is in */
@@ -1625,6 +1626,10 @@ void UpdateCharSelector(TitlesSlot *slot) {
         }
         if (o->flags3 == 0 && card[o->card].sfx >= 0) {
             PlaySfx(card[o->card].sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        /* PC: an extra hero's voice from its own game, as the others call out (bonusheroes.c) */
+        if (o->card == EXTRA_CARD) {
+            bonus_heroes_cheer(EXTRA_ROO);
         }
         card[o->card].flags |= 1;
         o->scaleX = 0;

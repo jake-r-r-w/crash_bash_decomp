@@ -24,6 +24,7 @@
 #include "bash/extraheroes.h"
 #include "bash/bonusheroes.h"
 #include "../../platform/platform.h"
+#include "../../platform/audio.h"
 
 void archive_replace(int entry, unsigned char *bytes, int size);
 void SDL_free(void *mem);
@@ -31,7 +32,7 @@ void SDL_free(void *mem);
 #define PAGE_BYTES 65536
 #define BONUS_TEX 992
 #define BONUS_MDL 993
-#define ROO_HEIGHT 820.0f   /* standing, in Crash Bash's units (Rilla Roo is 709; Roo's tall and thin) */
+#define ROO_HEIGHT 620.0f   /* standing, in Crash Bash's units: Crate Crush's heroes stand 452 (Crash) to 748 (Kong), most about 650 */
 #define MAX_TRIS 2048
 #define MAX_VERTS 1024
 #define MAX_IMAGES 32
@@ -181,7 +182,8 @@ static s32 entry_find(const Level *l, const char *name, Entry *out) {
         const u8 *page = l->pages + (size_t)p * PAGE_BYTES;
         s32 n = (s32)rd32(page + 8);
 
-        if (rd16(page + 2) != 0 || n < 0 || n > 4096) {
+        /* a page of entries, or of sounds (3) */
+        if ((rd16(page + 2) != 0 && rd16(page + 2) != 3) || n < 0 || n > 4096) {
             continue;
         }
         for (k = 0; k < n; k++) {
@@ -359,6 +361,25 @@ static void put_box(Bytes *o, const V3 *v, s32 n, float k, float ground) {
 
 static u8 *RooTex, *RooMdl;
 static s32 RooTexSize, RooMdlSize, RooTried, RooMade;
+
+/* His laugh, which his boss fight's object (RRooC) plays: a sound entry (CrznA) in a sound page, PS1 ADPCM at 11025 Hz, as CrashEdit
+ * plays that game's */
+#define ROO_LAUGH_PITCH 0x400
+static u8 *RooLaugh;
+static s32 RooLaughSize;
+
+static void make_laugh(const Level *l) {
+    Entry e;
+
+    if (RooLaugh != NULL || !entry_find(l, "CrznA", &e) || e.type != 12 || e.count < 1 || e.size[0] < 16) {
+        return;
+    }
+    RooLaugh = malloc((size_t)e.size[0]);
+    if (RooLaugh != NULL) {
+        memcpy(RooLaugh, e.item[0], (size_t)e.size[0]);
+        RooLaughSize = e.size[0];
+    }
+}
 
 /* His hero card: the face his boss fight shows, whose tongue is his health (ShadC, the fight's panel: a 64 x 64 sprite), as red | green
  * << 8 | blue << 16 | alpha << 24, with the tongue short: his head and the tongue as it leaves his mouth (rows 0 to 41), then the
@@ -789,8 +810,9 @@ static void make_roo(void) {
     tex.b = mdl.b = NULL;
     RooMade = 1;
     make_card(&level);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s\n", ntri, nimage, RooMdlSize,
-           RooCardMade ? ", and his hero card" : "");
+    make_laugh(&level);
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s\n", ntri, nimage, RooMdlSize,
+           RooCardMade ? ", his hero card" : "", RooLaugh != NULL ? ", his laugh" : "");
 done:
     free(tex.b);
     free(mdl.b);
@@ -836,6 +858,17 @@ const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch) {
     *h = CARD_ROWS;
     *stretch = 1.0f; /* as its pixels are: at the 1.6 its game showed it at, he looked squeezed in the panel */
     return RooCard;
+}
+
+void bonus_heroes_cheer(s32 extra) {
+    /* as loud as the game's own effects at the sound option it's at (sound.c, sfx_key_on) */
+    s32 vol = 0x1E00 * GameOptions.sfx * 0x7F / 409600;
+
+    if (!bonus_heroes_have(extra) || RooLaugh == NULL) {
+        return;
+    }
+    vol = vol < 0 ? 0 : vol > 0x7F ? 0x7F : vol;
+    audio_play_sample(RooLaugh, (uint32_t)RooLaughSize, ROO_LAUGH_PITCH, 0x3FFF * vol / 0x7F, 0x3FFF * vol / 0x7F);
 }
 
 s32 bonus_heroes_bank(s32 extra) {
