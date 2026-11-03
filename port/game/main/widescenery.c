@@ -45,6 +45,16 @@ typedef struct {
 #define FILE_EL_POGO_LOCO 667
 #define FILE_SKY_BALLS 647
 #define DRAW_UNCULLED 0x1000000
+#define FILE_PAPU_PUMMEL 697
+/* Papu Pummel's sunset, a wall that's a part of a circle round this, seen from above, and its far hills, which reach round it as far */
+#define PAPU_SKY 51
+#define PAPU_HILLS 53
+#define PAPU_SKY_X 365
+#define PAPU_SKY_Z (-10738)
+/* turns that make the mirror images across each end of it, a little inside them, and the turn two of them make */
+#define PAPU_SKY_LEFT_MIRROR 532
+#define PAPU_SKY_RIGHT_MIRROR (-513)
+#define PAPU_SKY_TWICE 1045
 /* Sky Balls' far fields, the fields under the arena and the wall of sky at the end of them: one model each, and the same place */
 #define SKY_BALLS_NEAR 12
 #define SKY_BALLS_SKY 13
@@ -133,6 +143,16 @@ static const WideExtra Extras[] = {
     { FILE_SKY_BALLS, SKY_BALLS_SKY, 0, 0, SKY_BALLS_TWICE, 0, 0, 0 },
     { FILE_SKY_BALLS, SKY_BALLS_FAR, 0, 0, SKY_BALLS_TWICE, 0, 0, 0 },
     { FILE_SKY_BALLS, SKY_BALLS_NEAR, 0, 0, SKY_BALLS_TWICE, 0, 0, 0 },
+    /* the sunset carried on round, on its own circle: its mirror images across each end, as its ends are shaded differently, and beyond them the level's own
+       turned on round. The hills go the same way, so they stay in front of it */
+    { FILE_PAPU_PUMMEL, PAPU_SKY, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_LEFT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_PAPU_PUMMEL, PAPU_SKY, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_PAPU_PUMMEL, PAPU_SKY, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, -PAPU_SKY_TWICE },
+    { FILE_PAPU_PUMMEL, PAPU_SKY, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_TWICE },
+    { FILE_PAPU_PUMMEL, PAPU_HILLS, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_LEFT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_PAPU_PUMMEL, PAPU_HILLS, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_PAPU_PUMMEL, PAPU_HILLS, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, -PAPU_SKY_TWICE },
+    { FILE_PAPU_PUMMEL, PAPU_HILLS, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_TWICE },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
