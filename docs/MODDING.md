@@ -40,10 +40,10 @@ sides of the 3, 2 and 1 it counts down with once it's hit, and its lid, which ar
 times the game's size, so they're drawn sharper.
 
 The game's TNT lid is the grey crate's image tinted red by the model, and a tint multiplies, so nothing on it could be gold. So the
-mod has patches too: each crate arena's texture set gains an image for TNT's lid, and its model points TNT's lid at it, without the
-tint. Nitro, which has the grey crate tinted green, keeps its own lid. `node port/mods/gift_boxes.mjs` draws the PNGs and makes the
-patches again, against your own `CRASHBSH.DAT` (`--data` says where it is). The 3, 2 and 1 keep their lids: those are the wooden
-crate's image, which every wooden crate shows.
+mod has patches too: each crate arena's texture set gains an image for the lid, and its model points TNT's lid at it, without the
+tint, and the lids of the 3, 2 and 1 it turns into, which are the wooden crate's image tinted purple. Nitro, the grey crate tinted
+green, and the wooden crates keep their own. `node port/mods/gift_boxes.mjs` draws the PNGs and makes the patches again, against
+your own `CRASHBSH.DAT` (`--data` says where it is).
 
 ## Making one as you go
 

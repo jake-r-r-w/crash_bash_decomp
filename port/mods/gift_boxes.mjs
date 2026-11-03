@@ -282,12 +282,14 @@ function lid_pixels() {
     return out;
 }
 
-/* A crate arena's set and model with TNT's lid on an image of its own, untinted; or null if they've no TNT. And the new image's name.
-   tnt is the pixels of TNT's sides. */
-function give_lid(set_bytes, model_bytes, grey, tnt) {
-    const set = read_set(set_bytes), add = Buffer.alloc(20 + 512);
-    const g = set?.images.findIndex(im => im.pixels.equals(grey)) ?? -1;
-    const sides = new Set((set?.images ?? []).map((im, k) => (tnt.some(p => im.pixels.equals(p)) ? k : -1)).filter(k => k >= 0));
+/* A crate arena's set and model with TNT's lid, and the lids of the 3, 2 and 1 it turns into, on an image of its own, untinted; or null
+   if they've no TNT. And the new image's name. tnt is the pixels of those crates' sides, and lids those of the images their lids are
+   on: the grey crate's for TNT, and the wooden crate's for the 3, 2 and 1. */
+function give_lid(set_bytes, model_bytes, tnt, lids_on) {
+    const set = read_set(set_bytes), add = Buffer.alloc(20 + 512), has = list => im => list.some(p => im.pixels.equals(p));
+    const g = set?.images.findIndex(has([lids_on[0]])) ?? -1;
+    const sides = new Set((set?.images ?? []).map((im, k) => (has(tnt)(im) ? k : -1)).filter(k => k >= 0));
+    const lid_images = new Set((set?.images ?? []).map((im, k) => (has(lids_on)(im) ? k : -1)).filter(k => k >= 0));
 
     if (set == null || g < 0 || sides.size === 0) {
         return null;
@@ -308,8 +310,8 @@ function give_lid(set_bytes, model_bytes, grey, tnt) {
     const clut = set.cluts[set.images[g].clut];
     const name = fnv(set_bytes.subarray(clut, clut + 32), fnv(pixels)).toString(16).padStart(16, '0');
 
-    /* in the model: TNT's lid is the faces on the grey crate in a mesh with TNT's sides. Their runs take the new image, and their
-       colours, where nothing else has them, those of the sides */
+    /* in the model: a lid is the faces on a lid's image in a mesh with those sides. Their runs take the new image, and their colours,
+       where nothing else has them, those of the sides */
     const model = Buffer.from(model_bytes), uses = new Map(), lids = new Set();
     let tnt_meshes = 0;
     for (const h of mesh_headers(model)) {
@@ -317,7 +319,7 @@ function give_lid(set_bytes, model_bytes, grey, tnt) {
 
         tnt_meshes += is_tnt;
         for (const f of faces) {
-            const mine = is_tnt && f.image === g;
+            const mine = is_tnt && lid_images.has(f.image);
 
             for (let k = f.colour; k < f.colour + 3; k++) {
                 uses.set(k, (uses.get(k) ?? 0) | (mine ? 1 : 2));
@@ -347,9 +349,10 @@ function give_lid(set_bytes, model_bytes, grey, tnt) {
 /* --- the mod --- */
 
 const args = process.argv.slice(2), read = archive(args[args.indexOf('--data') + 1] ?? null);
-/* 252's grey crate, and its TNT's sides: one picture in every language but Japanese, whose TNT is a bomb, and whose mesh shares the
-   others' lid colour */
-const grey = read_set(read(0x252)).images[7].pixels, tnt = [9, 10].map(k => read_set(read(0x252)).images[k].pixels);
+/* 252's crates: TNT's sides, one picture in every language but Japanese, whose TNT is a bomb and whose mesh shares the others' lid
+   colour, and the sides of the 1, 2 and 3; and the grey crate and the wooden crate, TNT's lid and theirs */
+const crates = read_set(read(0x252)).images.map(im => im.pixels);
+const tnt = [9, 10, 16, 18, 19].map(k => crates[k]), lids_on = [7, 17].map(k => crates[k]);
 const patches = [];
 let lid_name = null;
 
@@ -361,7 +364,7 @@ for (let id = 0; id < 992; id++) {
     if (read_set(set) == null || model.length < 0x58 || model.readUInt32LE(0) !== 0x0C160029) {
         continue;
     }
-    const made = give_lid(set, model, grey, tnt);
+    const made = give_lid(set, model, tnt, lids_on);
     if (made == null) {
         continue;
     }
