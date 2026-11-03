@@ -45,6 +45,8 @@ typedef struct {
 #define FILE_CRASHBALL 659
 #define FILE_JUNGLE_FOX 691
 #define FILE_RING_DING 627
+/* its crystal map: the same arena, wall and gears, darker */
+#define FILE_RING_DING_CRYSTAL 625
 #define FILE_POGO_PAINTER 675
 #define FILE_EL_POGO_LOCO 667
 #define FILE_SKY_BALLS 647
@@ -246,6 +248,7 @@ static const WideExtra Extras[] = {
     { FILE_JUNGLE_FOX, 9, 0, 0, 2200, 0, -2300, 0 },
     /* the grey gear under the platform on the left, on the right too, where it's black: it's in the level's order, as the platform has to come in front */
     { FILE_RING_DING, 4, 0, 0, 4712, 0, 0, 0, 1 },
+    { FILE_RING_DING_CRYSTAL, 4, 0, 0, 4712, 0, 0, 0, 1 },
     /* the far wall of mesas and the sky behind it, side by side with copies of themselves: each one's two ends are alike, so they meet. A little overlap so no
        crack shows, where the level's own covers it */
     { FILE_EL_POGO_LOCO, 70, 0, 0, -21169, 0, 0, 0 },
@@ -923,9 +926,11 @@ static const s16 RingDingWallLeft[][2] = { { -6429, 3585 }, { -6608, 2592 }, { -
 static const s16 RingDingWallRowY[] = { -3171, -2406, -1642, -877, -113, 651, 1415, 2180, 2944 };
 static const u32 RingDingWallRowColour[] = { 0x080808, 0x080808, 0x181010, 0x292121, 0x292121, 0x292121, 0x292121, 0x292121, 0 };
 #define RING_DING_WALL_ROWS ((s32)(sizeof(RingDingWallRowY) / sizeof(RingDingWallRowY[0])))
+/* the crystal map's wall is one dark shade all over */
+static const u32 RingDingCrystalRowColour[RING_DING_WALL_ROWS] = { 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000, 0x100000 };
 
 /* side is 1 for the right, where the tile runs on outwards from the wall's end, and -1 for the left, where it runs in to it. */
-static s32 draw_ring_ding_side(const obj_textureset *ts, const s16 (*columns)[2], s32 side, s32 name, subengine *owner) {
+static s32 draw_ring_ding_side(const obj_textureset *ts, const s16 (*columns)[2], const u32 *row_colour, s32 side, s32 name, subengine *owner) {
     s16 c[4][3];
     u32 colours[4];
     s32 col, row;
@@ -947,22 +952,23 @@ static s32 draw_ring_ding_side(const obj_textureset *ts, const s16 (*columns)[2]
             c[3][0] = b[0];
             c[3][1] = RingDingWallRowY[row + 1];
             c[3][2] = b[1];
-            colours[0] = colours[1] = RingDingWallRowColour[row];
-            colours[2] = colours[3] = RingDingWallRowColour[row + 1];
+            colours[0] = colours[1] = row_colour[row];
+            colours[2] = colours[3] = row_colour[row + 1];
             ring_quad(ts, RING_DING_WALL_IMAGE, c, colours, name++, owner, 0);
         }
     }
     return name;
 }
 
-static void draw_ring_ding_wall(map_enviroment *scene, subengine *owner, MATRIX *view) {
+/* row_colour is its rows' colours, the normal map's or the crystal map's */
+static void draw_ring_ding_wall(map_enviroment *scene, const u32 *row_colour, subengine *owner, MATRIX *view) {
     obj_textureset *ts = &scene->dbase->textures;
 
     if (ts->tex == NULL) {
         return;
     }
     ring_begin(scene, owner, view);
-    draw_ring_ding_side(ts, RingDingWallLeft, -1, draw_ring_ding_side(ts, RingDingWallRight, 1, 0, owner), owner);
+    draw_ring_ding_side(ts, RingDingWallLeft, row_colour, -1, draw_ring_ding_side(ts, RingDingWallRight, row_colour, 1, 0, owner), owner);
     draw_behind(0);
     draw_owner(NULL);
 }
@@ -1821,7 +1827,10 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
             draw_crashball_pipe_end(scene, view);
         }
         if (file == FILE_RING_DING) {
-            draw_ring_ding_wall(scene, &RingOwner, view);
+            draw_ring_ding_wall(scene, RingDingWallRowColour, &RingOwner, view);
+        }
+        if (file == FILE_RING_DING_CRYSTAL) {
+            draw_ring_ding_wall(scene, RingDingCrystalRowColour, &RingOwner, view);
         }
         if (file == FILE_POGO_PAINTER) {
             draw_pogo_painter_backdrop(scene, &RingOwner, view);
