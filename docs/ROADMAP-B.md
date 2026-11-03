@@ -21,7 +21,7 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | # | Task | Notes | Done |
 |---|------|-------|------|
 | 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was, as Melt Panic is by the user's choice. The rows below are in the order to look at them. Black was measured in still frames at the start of each level, so they're where to look first, not a full list | [ ] |
-| 7.11.22 | Tilt Panic | A white block beside its crystal arena | [ ] |
+| 7.11.22 | Tilt Panic | Recheck by playing: the sea and the sky carried on at the sides, at 32:9 from the start and at 1920x1000 when the round ends. The white block noted before isn't in its normal map: it may be in its crystal one (7.11.24) | [ ] |
 | 7.11.23 | Oxide Ride | Space is dark on purpose: probably leave | [ ] |
 | 7.11.24 | Crystal maps | Not looked at yet: they're maps of their own. N.Ballism's has the same front corners as its normal map had: a black wedge on each base, and needles | [ ] |
 | 7.11.25 | Later in each level | Not looked at yet: all this is from the first few seconds | [ ] |

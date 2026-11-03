@@ -66,6 +66,11 @@ typedef struct {
    spread, so they don't meet. Mirror images would pair off across the line between, there being so few */
 #define POLAR_STAR 43 /* and the seven after it */
 #define POLAR_STARS_ACROSS 14000
+#define FILE_TILT_PANIC 486
+/* Tilt Panic's sky, a wall at the back whose two ends are alike, from the haze at its foot up to blue: its mirror image across each, a little inside it */
+#define TILT_SKY 1
+#define TILT_SKY_LEFT_END (-10708 + 30)
+#define TILT_SKY_RIGHT_END (10516 - 30)
 /* The Bearminator's sea, the mountains round the back of it and the sky behind them, a wall whose two ends are each other's mirror image across the line
    x = 40, so turned round the middle of the arena, on that line, by the span between them as seen from there, a copy's first end is at its last. The sea
    and the mountains turn with it, so they stay in front of it, at its foot. A little less than the span, so the level's own covers the join */
@@ -207,6 +212,8 @@ static const WideExtra Extras[] = {
     { FILE_POLAR_PANIC, POLAR_STAR + 5, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
     { FILE_POLAR_PANIC, POLAR_STAR + 6, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
     { FILE_POLAR_PANIC, POLAR_STAR + 7, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_TILT_PANIC, TILT_SKY, TILT_SKY_LEFT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_TILT_PANIC, TILT_SKY, TILT_SKY_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -868,14 +875,26 @@ static const WideSand PolarSea = { POLAR_SEA, POLAR_SEA_IMAGE, POLAR_FAR_SEA_IMA
 static const s16 PolarRim[][3] = { { -26103, -5850, 751 }, { 25897, -5850, 751 }, { 25897, 6950, 751 }, { -26103, 6950, 751 } };
 #define NUM_POLAR_RIM ((s32)(sizeof(PolarRim) / sizeof(PolarRim[0])))
 
-static void draw_polar_panic_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
-    if (scene->dbase->textures.tex == NULL || POLAR_SEA >= scene->num_placements) {
+/* Tilt Panic's sea is Polar Panic's again by day, as wide as a 4:3 view and with steps at its sides, and its sky a wall at the back whose ends are alike
+   (Extras). So it's carried on in the same way, out to past where the sky's mirror images reach, shading on out to the haze at the sky's foot, as it does at
+   the back. In the sea's coordinates: it's 2735 further on. */
+#define TILT_SEA 2
+#define TILT_SEA_IMAGE 22
+#define TILT_FAR_SEA_IMAGE 23
+#define TILT_HAZE 0xADA5B5
+static const WideSand TiltSea = { TILT_SEA, TILT_SEA_IMAGE, TILT_FAR_SEA_IMAGE, TILT_HAZE, 0, 4000, 6 };
+static const s16 TiltRim[][3] = { { -32062, -7835, 728 }, { 31938, -7835, 728 }, { 31938, 6965, 728 }, { -32062, 6965, 728 } };
+#define NUM_TILT_RIM ((s32)(sizeof(TiltRim) / sizeof(TiltRim[0])))
+
+/* A level whose only floor carried on is its sea, in the view of the sea's piece, behind everything. */
+static void draw_sea_backdrop(map_enviroment *scene, s32 file, const WideSand *sea, const s16 (*rim)[3], s32 rim_points, subengine *owner, MATRIX *view) {
+    if (scene->dbase->textures.tex == NULL || sea->piece >= scene->num_placements) {
         return;
     }
-    ring_view_of(scene, POLAR_SEA, owner, view);
+    ring_view_of(scene, sea->piece, owner, view);
     draw_behind(1);
-    if (wide_sand_ready(scene, FILE_POLAR_PANIC, &PolarSea, PolarRim, NUM_POLAR_RIM)) {
-        wide_sand_draw(scene, &PolarSea, owner);
+    if (wide_sand_ready(scene, file, sea, rim, rim_points)) {
+        wide_sand_draw(scene, sea, owner);
     }
     draw_behind(0);
     draw_owner(NULL);
@@ -1532,7 +1551,10 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
             draw_toxic_dash_backdrop(scene, &RingOwner, view);
         }
         if (file == FILE_POLAR_PANIC) {
-            draw_polar_panic_backdrop(scene, &RingOwner, view);
+            draw_sea_backdrop(scene, FILE_POLAR_PANIC, &PolarSea, PolarRim, NUM_POLAR_RIM, &RingOwner, view);
+        }
+        if (file == FILE_TILT_PANIC) {
+            draw_sea_backdrop(scene, FILE_TILT_PANIC, &TiltSea, TiltRim, NUM_TILT_RIM, &RingOwner, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
