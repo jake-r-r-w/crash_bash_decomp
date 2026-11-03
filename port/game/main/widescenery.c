@@ -38,6 +38,8 @@ typedef struct {
 } WideExtra;
 
 #define FILE_N_BALLISM 651
+/* its crystal map: other surroundings, and the same front radars in its own colours */
+#define FILE_N_BALLISM_CRYSTAL 649
 #define FILE_BEACH_BALL 655
 #define FILE_DANTES_DASH 637
 #define FILE_CRASHBALL 659
@@ -308,6 +310,13 @@ static const struct {
     /* the floor under those bases, which sorts in front of them in places: it goes with the backdrop instead (BallismFloors) */
     { FILE_N_BALLISM, 9 },
     { FILE_N_BALLISM, 10 },
+    /* the same in its crystal map */
+    { FILE_N_BALLISM_CRYSTAL, 3 },
+    { FILE_N_BALLISM_CRYSTAL, 4 },
+    { FILE_N_BALLISM_CRYSTAL, 7 },
+    { FILE_N_BALLISM_CRYSTAL, 8 },
+    { FILE_N_BALLISM_CRYSTAL, 9 },
+    { FILE_N_BALLISM_CRYSTAL, 10 },
     /* a shadow cast over the turning cog on the right, by taking light away from what's drawn before it. The cog's faces come before or after it by
        where each one is as it turns, so they flickered in and out of it, out where a 4:3 view doesn't reach */
     { FILE_RING_DING, 13 },
@@ -816,6 +825,9 @@ static const s16 BallismLeftOut[][2] = { { 517, 517 }, { 801, 858 }, { 933, 982 
 #define NUM_BALLISM_LEFT_OUT ((s32)(sizeof(BallismLeftOut) / sizeof(BallismLeftOut[0])))
 #define BALLISM_RADAR_FACES (BallismLeftOut + 1)
 #define NUM_BALLISM_RADAR_FACES (NUM_BALLISM_LEFT_OUT - 1)
+/* its crystal map's front radars, in its own main mesh */
+static const s16 BallismCrystalLeftOut[][2] = { { 466, 523 }, { 1048, 1097 } };
+#define NUM_BALLISM_CRYSTAL_LEFT_OUT ((s32)(sizeof(BallismCrystalLeftOut) / sizeof(BallismCrystalLeftOut[0])))
 
 /* Crashball's side pipes fade to black at their front ends, past where a 4:3 view stops. A corner of the right one's was left lit, so it ends in a hard wedge. So a wide
    view has the mirror image of the left one's end there instead. */
@@ -834,6 +846,7 @@ static const struct {
 } LeftOutFaces[] = {
     { FILE_BEACH_BALL, 0, BeachWallEnds, NUM_BEACH_WALL_ENDS },
     { FILE_N_BALLISM, 0, BallismLeftOut, NUM_BALLISM_LEFT_OUT },
+    { FILE_N_BALLISM_CRYSTAL, 0, BallismCrystalLeftOut, NUM_BALLISM_CRYSTAL_LEFT_OUT },
     { FILE_CRASHBALL, CRASHBALL_RIGHT_PIPE, CrashballRightPipeEnd, NUM_CRASHBALL_RIGHT_PIPE_END },
 };
 #define NUM_LEFT_OUT_FACES ((s32)(sizeof(LeftOutFaces) / sizeof(LeftOutFaces[0])))
@@ -1337,6 +1350,21 @@ static void draw_ballism_backdrop(map_enviroment *scene, subengine *owner, MATRI
     draw_owner(NULL);
 }
 
+/* Its crystal map's floor under the front radars' bases goes with the backdrop too, for the same reason: its surroundings are another map's */
+static void draw_ballism_crystal_floors(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    s32 i;
+
+    ring_begin(scene, owner, view);
+    for (i = 0; i < NUM_BALLISM_FLOORS; i++) {
+        subengine *floor = &scene->subs[BallismFloors[i]];
+
+        draw_owner(floor);
+        floor->hook(floor, view, 0);
+    }
+    draw_behind(0);
+    draw_owner(NULL);
+}
+
 /* Its front radars are in its main mesh, which is painted first, so their bases, painted after it, cover them. The 4:3 view hardly saw that, as it stops by them.
    So they, their bases and their rings go in real depth, as the game's solid things do, in the order of where they are. */
 static const s16 BallismRadarBases[] = { 3, 4 };
@@ -1376,6 +1404,17 @@ static const struct {
 #define NUM_BALLISM_BACK_ROWS ((s32)(sizeof(BallismBackRows) / sizeof(BallismBackRows[0])))
 /* What it faces up and down most: the radar's own purple. */
 static const u8 BallismBackShade[2][3] = { { 0x18, 0x10, 0x31 }, { 0x5A, 0x42, 0xAD } };
+/* the crystal map's gold */
+static const u8 BallismCrystalBackShade[2][3] = { { 0x31, 0x26, 0x12 }, { 0xAD, 0x8C, 0x46 } };
+
+/* A map's front radars: their faces in its main mesh, and the shades of their backs and of their rings, as they are and while firing */
+typedef struct {
+    const s16 (*faces)[2];
+    s32 num_faces;
+    const u8 (*back_shade)[3];
+    const u8 (*ring_shade)[2][3];
+} BallismRadarLook;
+static const BallismRadarLook *RadarLook;
 
 /* That much of a shade, of 256, and of 8 of that. */
 static u32 radar_shade(const u8 (*shade)[3], s32 up, s32 light) {
@@ -1449,11 +1488,11 @@ static s32 draw_ballism_radar_back(s32 side, s32 face) {
             /* y is down: a side along the top is the most up it gets */
             s32 up = (bottom - (BallismRadarRim[i][1] + BallismRadarRim[j][1]) / 2) * 256 / (bottom - top);
 
-            face = radar_quad(&near_row[i], &near_row[j], &far_row[i], &far_row[j], radar_shade(BallismBackShade, up, BallismBackRows[row - 1].light), radar_shade(BallismBackShade, up, BallismBackRows[row].light), face);
+            face = radar_quad(&near_row[i], &near_row[j], &far_row[i], &far_row[j], radar_shade(RadarLook->back_shade, up, BallismBackRows[row - 1].light), radar_shade(RadarLook->back_shade, up, BallismBackRows[row].light), face);
         }
     }
     {
-        u32 cap = radar_shade(BallismBackShade, 0, BallismBackRows[NUM_BALLISM_BACK_ROWS - 1].light);
+        u32 cap = radar_shade(RadarLook->back_shade, 0, BallismBackRows[NUM_BALLISM_BACK_ROWS - 1].light);
 
         for (i = 1; i + 1 < NUM_BALLISM_RIM; i++) {
             radar_back_tri(&far_row[0], &far_row[i], &far_row[i + 1], cap, cap, cap, face++);
@@ -1513,6 +1552,12 @@ static void draw_ballism_shaft(const subengine *rings, subengine *copy, s32 side
 #define BALLISM_RING_THICK 4
 /* The gold they are on the screen, on what faces up and down most: as they are, and while firing. */
 static const u8 BallismRingShade[2][2][3] = { { { 0x40, 0x3A, 0x00 }, { 0xB0, 0xA4, 0x10 } }, { { 0x70, 0x68, 0x00 }, { 0xF0, 0xE4, 0x20 } } };
+/* the crystal map's green */
+static const u8 BallismCrystalRingShade[2][2][3] = { { { 0x12, 0x40, 0x16 }, { 0x33, 0xB0, 0x3E } }, { { 0x20, 0x70, 0x26 }, { 0x45, 0xF0, 0x55 } } };
+static const BallismRadarLook BallismRadarLooks[] = {
+    { BALLISM_RADAR_FACES, NUM_BALLISM_RADAR_FACES, BallismBackShade, BallismRingShade },
+    { BallismCrystalLeftOut, NUM_BALLISM_CRYSTAL_LEFT_OUT, BallismCrystalBackShade, BallismCrystalRingShade },
+};
 
 /* A ring made solid, from the strip of corners its faces go round it in. The next face's place. */
 static s32 draw_ballism_ring(const s16 *strip, const u8 (*shade)[3], s32 face) {
@@ -1597,7 +1642,7 @@ static s32 draw_ballism_ring(const s16 *strip, const u8 (*shade)[3], s32 face) {
 
 static void draw_ballism_rings(const map_enviroment *scene, const subengine *rings) {
     const MeshHeader *h = (const MeshHeader *)entity_address(rings->entity, (ModelFile *)scene->dbase->data);
-    const u8 (*shade)[3] = BallismRingShade[(rings->entity & 0x7000) == 0x2000];
+    const u8 (*shade)[3] = RadarLook->ring_shade[(rings->entity & 0x7000) == 0x2000];
     const u8 *run;
     const s16 *vert;
     s32 at = 0, face = 0;
@@ -1616,14 +1661,15 @@ static void draw_ballism_rings(const map_enviroment *scene, const subengine *rin
     }
 }
 
-static void draw_ballism_radars(map_enviroment *scene, MATRIX *view) {
+static void draw_ballism_radars(map_enviroment *scene, MATRIX *view, const BallismRadarLook *look) {
     s32 i;
 
+    RadarLook = look;
     draw_depth(1);
     BallismRadars = scene->subs[0];
     BallismRadars.next = NULL;
     BallismRadars.otz = scene->subs[BallismRadarBases[0]].otz;
-    draw_face_list(BALLISM_RADAR_FACES, NUM_BALLISM_RADAR_FACES, 1);
+    draw_face_list(look->faces, look->num_faces, 1);
     draw_owner(&BallismRadars);
     BallismRadars.hook(&BallismRadars, view, 0);
     draw_face_list(NULL, 0, 0);
@@ -1752,7 +1798,11 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
-            draw_ballism_radars(scene, view);
+            draw_ballism_radars(scene, view, &BallismRadarLooks[0]);
+        }
+        if (file == FILE_N_BALLISM_CRYSTAL) {
+            draw_ballism_crystal_floors(scene, &RingOwner, view);
+            draw_ballism_radars(scene, view, &BallismRadarLooks[1]);
         }
 
         for (i = 0; i < NUM_RINGS; i++) {
