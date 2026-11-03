@@ -33,10 +33,9 @@ with, and the Video ones are in the pause menu too.
 
 With the new settings off, frames were compared with the build before each change, and only the fixes above change anything.
 Each level's widescreen look was checked by eye at several shapes, from 16:9 to 32:9. The release build plays every game mode, beats
-all four bosses and goes through the menus.
+all four bosses and goes through the menus. It's been played with a real controller, analog sticks and rumble included.
 
-**Analog sticks and rumble still haven't been tried on a real controller since the pads were rewritten in 0.1.1,** and playing with
-several controllers hasn't been tested. If yours misbehaves, please say.
+**Playing with several controllers hasn't been tested.** If yours misbehaves, please say.
 
 Windows only for now. Only the USA version's data is supported.
 
