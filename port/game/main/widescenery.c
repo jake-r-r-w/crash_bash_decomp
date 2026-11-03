@@ -62,6 +62,10 @@ typedef struct {
 #define POLAR_HORIZON 52
 #define POLAR_HORIZON_LEFT_END (-10132 + 30)
 #define POLAR_HORIZON_RIGHT_END (10221 - 30)
+/* and its stars, each a piece of its own, spread only as wide as a 4:3 view sees: copies of them all moved this far each way, a little more than they
+   spread, so they don't meet. Mirror images would pair off across the line between, there being so few */
+#define POLAR_STAR 43 /* and the seven after it */
+#define POLAR_STARS_ACROSS 14000
 /* The Bearminator's sea, the mountains round the back of it and the sky behind them, a wall whose two ends are each other's mirror image across the line
    x = 40, so turned round the middle of the arena, on that line, by the span between them as seen from there, a copy's first end is at its last. The sea
    and the mountains turn with it, so they stay in front of it, at its foot. A little less than the span, so the level's own covers the join */
@@ -187,6 +191,22 @@ static const WideExtra Extras[] = {
     { FILE_BEARMINATOR, BEAR_SKY, BEAR_X, 0, 0, 0, 0, -BEAR_SPAN },
     { FILE_POLAR_PANIC, POLAR_HORIZON, POLAR_HORIZON_LEFT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
     { FILE_POLAR_PANIC, POLAR_HORIZON, POLAR_HORIZON_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_POLAR_PANIC, POLAR_STAR, 0, 0, -POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 1, 0, 0, -POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 2, 0, 0, -POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 3, 0, 0, -POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 4, 0, 0, -POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 5, 0, 0, -POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 6, 0, 0, -POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 7, 0, 0, -POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 1, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 2, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 3, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 4, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 5, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 6, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
+    { FILE_POLAR_PANIC, POLAR_STAR + 7, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
