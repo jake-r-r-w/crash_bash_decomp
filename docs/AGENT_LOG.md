@@ -475,6 +475,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-03: 7.11.16 Papu Pummel: the user played it and approved it.
 - 2026-11-03: Papu Pummel (file 697) in widescreen. Piece 51 is the sunset, a wall on a circle round (365, -10738) of radius 20838 (fitted to its points, within 97), from -23.5 to 22.6 degrees, its two ends shaded differently; 53 the far hills, an uneven band that spans the same angles from there; 49 the island's cliffs, 50 the lava, 54 the pit's walls, 52 the ruins. A mirror image across a vertical plane through C at angle phi from +z is `turn` -2 phi with `mirror`, as T = Mx R(a) reflects across the line at -a/2; so the copies are mirror images across each end (30 units inside), then the level's own turned by twice the span, for both sky and hills. Left: the island's own pixel slivers at its outer edges (one's inside 4:3 too), and at 32:9 its cliffs stop at the bottom corners, which would need a second pit. `scratch/mk_worldprobe2.mjs`'s anchor follows `draw_mirrored` now.
 - 2026-11-03: 7.11.15 Space Bash: the user looked at it and chose to leave it as it was.
 - 2026-11-03: 7.11.14 Sky Balls: the user played it and approved it.
