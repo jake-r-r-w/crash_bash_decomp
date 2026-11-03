@@ -138,6 +138,28 @@ static const s16 BeachBallCrystalSky[][2] = { { 83, 102 } };
 #define TILT_SKY 1
 #define TILT_SKY_LEFT_END (-10708 + 30)
 #define TILT_SKY_RIGHT_END (10516 - 30)
+#define FILE_TILT_PANIC_CRYSTAL 476
+/* Tilt Panic's crystal map is in a storm: a dome of storm clouds turning round it, its foot above the sea, and the sea stopping short of it at the sides,
+   where the clear colour, white, showed under the dome's foot. So the sea is carried on out to past the dome (widesand.c), and seen under its foot */
+#define TILT_CRYSTAL_SEA 2
+#define TILT_CRYSTAL_SEA_IMAGE 22
+#define TILT_CRYSTAL_SEA_COLOUR 0x6B4231
+/* and the dark band along its horizon, between the sea and the dome's foot, which stops at the sea's ends: its mirror images across each end, square to it
+   there and a little inside it */
+#define TILT_CRYSTAL_HORIZON 1
+#define TILT_CRYSTAL_HORIZON_LEFT_X (-11188)
+#define TILT_CRYSTAL_HORIZON_LEFT_Z 11222
+#define TILT_CRYSTAL_HORIZON_LEFT_MIRROR 214
+#define TILT_CRYSTAL_HORIZON_RIGHT_X 11263
+#define TILT_CRYSTAL_HORIZON_RIGHT_Z 11235
+#define TILT_CRYSTAL_HORIZON_RIGHT_MIRROR (-212)
+#define FILE_POLAR_PANIC_CRYSTAL 456
+/* Polar Panic's crystal map, at sunset, has Polar Panic's sea, and a wall of sunset sky behind it that stops at the sea's ends, straight across: the sea is
+   carried on as the normal map's is, and the sky by its mirror images across each end, a little inside it */
+#define POLAR_CRYSTAL_SKY 43
+#define POLAR_CRYSTAL_SKY_LEFT_END (-10782 + 30)
+#define POLAR_CRYSTAL_SKY_RIGHT_END (10442 - 30)
+#define POLAR_CRYSTAL_SUNSET 0x42ADC6
 /* The Bearminator's sea, the mountains round the back of it and the sky behind them, a wall whose two ends are each other's mirror image across the line
    x = 40, so turned round the middle of the arena, on that line, by the span between them as seen from there, a copy's first end is at its last. The sea
    and the mountains turn with it, so they stay in front of it, at its foot. A little less than the span, so the level's own covers the join */
@@ -307,6 +329,10 @@ static const WideExtra Extras[] = {
     { FILE_BEACH_BALL_CRYSTAL, BEACH_BALL_CRYSTAL_SEA, BEACH_BALL_CRYSTAL_RIGHT_X, BEACH_BALL_CRYSTAL_RIGHT_Z, 0, 0, 0, BEACH_BALL_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1, BeachBallCrystalSky, 1 },
     { FILE_SKY_BALLS_CRYSTAL, SKY_BALLS_CRYSTAL_CITY, SKY_BALLS_CRYSTAL_LEFT_X, SKY_BALLS_CRYSTAL_LEFT_Z, 0, 0, 0, SKY_BALLS_CRYSTAL_LEFT_MIRROR, 0, 0, 0, 0, 1 },
     { FILE_SKY_BALLS_CRYSTAL, SKY_BALLS_CRYSTAL_CITY, SKY_BALLS_CRYSTAL_RIGHT_X, SKY_BALLS_CRYSTAL_RIGHT_Z, 0, 0, 0, SKY_BALLS_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_POLAR_PANIC_CRYSTAL, POLAR_CRYSTAL_SKY, POLAR_CRYSTAL_SKY_LEFT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_POLAR_PANIC_CRYSTAL, POLAR_CRYSTAL_SKY, POLAR_CRYSTAL_SKY_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_TILT_PANIC_CRYSTAL, TILT_CRYSTAL_HORIZON, TILT_CRYSTAL_HORIZON_LEFT_X, TILT_CRYSTAL_HORIZON_LEFT_Z, 0, 0, 0, TILT_CRYSTAL_HORIZON_LEFT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_TILT_PANIC_CRYSTAL, TILT_CRYSTAL_HORIZON, TILT_CRYSTAL_HORIZON_RIGHT_X, TILT_CRYSTAL_HORIZON_RIGHT_Z, 0, 0, 0, TILT_CRYSTAL_HORIZON_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -1086,6 +1112,12 @@ static const s16 PolarRim[][3] = { { -26103, -5850, 751 }, { 25897, -5850, 751 }
 static const WideSand TiltSea = { TILT_SEA, TILT_SEA_IMAGE, TILT_FAR_SEA_IMAGE, TILT_HAZE, 0, 4000, 6 };
 static const s16 TiltRim[][3] = { { -32062, -7835, 728 }, { 31938, -7835, 728 }, { 31938, 6965, 728 }, { -32062, 6965, 728 } };
 #define NUM_TILT_RIM ((s32)(sizeof(TiltRim) / sizeof(TiltRim[0])))
+/* Tilt Panic's crystal map's sea, out past the storm's dome all round, rising a little to its far edge so that's above the dome's foot from the arena: the
+   level's white clear colour showed between them. And Polar Panic's crystal map's, as the normal map's, out to its sunset */
+static const WideSand TiltCrystalSea = { TILT_CRYSTAL_SEA, TILT_CRYSTAL_SEA_IMAGE, TILT_CRYSTAL_SEA_IMAGE, TILT_CRYSTAL_SEA_COLOUR, 0, 4000, 6 };
+static const s16 TiltCrystalRim[][3] = { { -32000, -9000, 0 }, { 32000, -9000, 0 }, { 32000, 20000, 0 }, { -32000, 20000, 0 } };
+#define NUM_TILT_CRYSTAL_RIM ((s32)(sizeof(TiltCrystalRim) / sizeof(TiltCrystalRim[0])))
+static const WideSand PolarCrystalSea = { POLAR_SEA, POLAR_SEA_IMAGE, POLAR_FAR_SEA_IMAGE, POLAR_CRYSTAL_SUNSET, 0, 4000, 6 };
 
 /* Pogo Padlock's crystal map's pavement, out to the foot of the wall's copies at the back and to past where any view reaches at the sides and in front,
    where it's as low as the road: its tiles fade to their plain one far off, in the road's dark. In the alley's coordinates */
@@ -1801,6 +1833,12 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_TILT_PANIC) {
             draw_sea_backdrop(scene, FILE_TILT_PANIC, &TiltSea, TiltRim, NUM_TILT_RIM, &RingOwner, view);
+        }
+        if (file == FILE_TILT_PANIC_CRYSTAL) {
+            draw_sea_backdrop(scene, FILE_TILT_PANIC_CRYSTAL, &TiltCrystalSea, TiltCrystalRim, NUM_TILT_CRYSTAL_RIM, &RingOwner, view);
+        }
+        if (file == FILE_POLAR_PANIC_CRYSTAL) {
+            draw_sea_backdrop(scene, FILE_POLAR_PANIC_CRYSTAL, &PolarCrystalSea, PolarRim, NUM_POLAR_RIM, &RingOwner, view);
         }
         if (file == FILE_BEACH_BALL_CRYSTAL) {
             draw_sea_backdrop(scene, FILE_BEACH_BALL_CRYSTAL, &BeachBallCrystalSea, BeachBallCrystalRim, NUM_BEACH_BALL_CRYSTAL_RIM, &RingOwner, view);
