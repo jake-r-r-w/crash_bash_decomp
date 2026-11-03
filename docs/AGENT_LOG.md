@@ -475,6 +475,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-03: 7.11.13 Pogo Padlock: the user looked at it and chose to leave it as it was.
 - 2026-11-03: 7.7, optional modern lighting, taken off the roadmap at the user's word: the game keeps its own lighting, the colours baked into its models.
 - 2026-11-03: The Video pages after the tenth row, at the user's word: the main menu Options page's first row sat on its panel's top edge (it always started above it, at -0x44 against -0x40), and the pause menu's help line hung below its box (at 0xE8 against a box to 0xF0, which the cheat menu's pages share, and had too). The Options panel is now worked out from the row count (`VIDEO_ROW_TOP`, `VIDEO_HELP_Y`), and `PauseVideoMenu` is 0x114 tall. The launcher's fitted already.
 - 2026-11-03: 7.6 Sharper icons and UI text: the user played it and approved it.
