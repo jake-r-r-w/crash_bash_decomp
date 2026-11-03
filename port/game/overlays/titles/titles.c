@@ -357,7 +357,7 @@ CharCard CharCards[9] = {
 /* PC: the select's pieces with the ninth card's frame (sub 26) and portrait (27, a portrait of the game's in its place, drawn as the extra
  * hero's) after the game's 26 */
 #define EXTRA_CARD 8
-#define EXTRA_CARD_TURN 0xE00 /* round till he faces out of the screen as the others do: his face, as his idle pose turns his body */
+#define EXTRA_CARD_TURN 0xF00 /* round till he stands square to the screen as the others do, body and face: matched to Crash on the same stand */
 static PlaceRec CharSelectPlaceMore[29];
 
 /* Whether there's the ninth card: the launcher's EXTRA HEROES is on, and Roo's disc is in */
