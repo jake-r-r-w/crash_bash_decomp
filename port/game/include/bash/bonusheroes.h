@@ -13,5 +13,8 @@ s32 bonus_heroes_have(s32 extra);
 s32 bonus_heroes_bank(s32 extra);
 /* Its model file, whole, to free. */
 u8 *bonus_heroes_model(s32 extra);
+/* Its face from its game, if that has one: w x h pixels (red | green << 8 | blue << 16 | alpha << 24), each stretch times as tall as
+ * it's wide as its game showed it; NULL for none. */
+const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch);
 
 #endif

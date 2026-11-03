@@ -360,6 +360,52 @@ static void put_box(Bytes *o, const V3 *v, s32 n, float k, float ground) {
 static u8 *RooTex, *RooMdl;
 static s32 RooTexSize, RooMdlSize, RooTried, RooMade;
 
+/* His hero card: the face his boss fight shows, whose tongue is his health (ShadC, the fight's panel: a 64 x 64 sprite), as red | green
+ * << 8 | blue << 16 | alpha << 24. Its game drew 512 pixels across a 4:3 screen, so its texels are 1.6 times as tall as they're wide. */
+#define CARD_ROWS 44 /* his head and the tongue as it leaves his mouth */
+static u32 RooCard[64 * CARD_ROWS];
+static s32 RooCardMade;
+
+static void make_card(const Level *l) {
+    Entry obj;
+    const u8 *it;
+    s32 at, f, x, y;
+
+    if (!entry_find(l, "ShadC", &obj) || obj.type != 11 || obj.count < 6) {
+        return;
+    }
+    it = obj.item[5];
+    for (at = 4; at + 12 <= obj.size[5]; at += 4) {
+        const u8 *page = texture_page(l, rd32(it + at));
+        u32 head = rd32(it + at - 4);
+
+        if (page == NULL || (head & 0xFFFF) != 2) {
+            continue;
+        }
+        for (f = 0; f < (s32)(head >> 16) && at + 12 + f * 8 <= obj.size[5]; f++) {
+            u32 col = rd32(it + at + 4 + f * 8), ti = rd32(it + at + 8 + f * 8);
+            s32 uvi = (s32)(ti >> 22 & 0x3FF), cm = (s32)(ti >> 20 & 3), seg = (s32)(ti >> 18 & 3), xoffu = (s32)(ti >> 13 & 0x1F);
+            s32 cy = (s32)(ti >> 6 & 0x7F), y0 = (s32)(ti & 0x1F) * 4, x0 = 256 * seg + 8 * xoffu, cx = (s32)(col >> 24 & 0xF) * 16;
+
+            /* the face: the one 64 x 64 4-bit sprite */
+            if (cm != 0 || 4 << (uvi % 5) != 64 || 4 << (uvi / 5 % 5) != 64 || y0 + CARD_ROWS > 128) {
+                continue;
+            }
+            for (y = 0; y < CARD_ROWS; y++) {
+                for (x = 0; x < 64; x++) {
+                    s32 u = x0 + x, i = page[(y0 + y) * 512 + u / 2] >> (u & 1) * 4 & 15;
+                    u16 c = rd16(page + cy * 512 + (cx + i) * 2);
+
+                    RooCard[y * 64 + x] = c == 0 ? 0 : 0xFF000000u | (u32)((c & 0x1F) * 255 / 31) | (u32)((c >> 5 & 0x1F) * 255 / 31) << 8
+                                                   | (u32)((c >> 10 & 0x1F) * 255 / 31) << 16;
+                }
+            }
+            RooCardMade = 1;
+            return;
+        }
+    }
+}
+
 static void make_roo(void) {
     static V3 verts[MAX_VERTS], normals[MAX_VERTS];
     static Tri tris[MAX_TRIS];
@@ -737,7 +783,9 @@ static void make_roo(void) {
     RooMdlSize = (s32)mdl.n;
     tex.b = mdl.b = NULL;
     RooMade = 1;
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes\n", ntri, nimage, RooMdlSize);
+    make_card(&level);
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s\n", ntri, nimage, RooMdlSize,
+           RooCardMade ? ", and his hero card" : "");
 done:
     free(tex.b);
     free(mdl.b);
@@ -773,6 +821,16 @@ u8 *bonus_heroes_model(s32 extra) {
         memcpy(copy, RooMdl, (size_t)RooMdlSize);
     }
     return copy;
+}
+
+const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch) {
+    if (!bonus_heroes_have(extra) || !RooCardMade) {
+        return NULL;
+    }
+    *w = 64;
+    *h = CARD_ROWS;
+    *stretch = 1.6f;
+    return RooCard;
 }
 
 s32 bonus_heroes_bank(s32 extra) {
