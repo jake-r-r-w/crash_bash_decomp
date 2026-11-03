@@ -827,3 +827,4 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 7.6 Sharper icons and UI text (2026-11-03): ICONS: CRISP, a Video option, sharpens the heroes' and bosses' icons (a smooth 4x made sharp again, upscale_texels_sharp); the game's own lettering stays, by the user's choice
 - [x] 7.11.13 Pogo Padlock (2026-11-03): left as it was, by the user's choice: its warehouse reaches the sides, with only thin slivers of black at the top corners and beside the right roller door; the strip along the bottom is in 4:3 too
 - [x] 7.11.14 Sky Balls (2026-11-03): its sky and fields carried on at the sides by their mirror images, so the sky's shading meets its own, out to the edges at every width; scenery copies are drawn whatever their bounding box says
+- [x] 7.11.15 Space Bash (2026-11-03): left as it was, by the user's choice: its city's towers reach the sides; its black is the towers' own window bands, as in 4:3, and at 32:9 its own dark purple night sky
