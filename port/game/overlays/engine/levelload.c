@@ -1348,7 +1348,7 @@ Blk32 LoadingScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 LoadingScriptPos = {0};
 process_info LoadingProcess2 = { InitLoadingCamera, UpdateLoadingScene, RenderLoadingScene, QuitLoadingScene, 0 };
 /* the models each mode loads (LoadModeDbases, QueueHeroModels; the last is the adventure stats') */
-ModeDbase ModeDbaseLists[98] = {
+ModeDbase ModeDbaseLists[97] = {
     { &FileGroups[128], &HeroModelBank[DB_CharsCrateCrash], &DatIndex[990], &DatIndex[989] },
     { &FileGroups[127], &HeroModelBank[DB_CharsCrateCoco], &DatIndex[988], &DatIndex[987] },
     { &FileGroups[126], &HeroModelBank[DB_CharsCrateCortex], &DatIndex[986], &DatIndex[985] },
@@ -1445,10 +1445,8 @@ ModeDbase ModeDbaseLists[98] = {
     { &FileGroups[34], &HeroModelBank[DB_CharsSplashRilla], &DatIndex[802], &DatIndex[801] },
     { &FileGroups[38], &HeroModelBank[DB_CharsSplashTiny], &DatIndex[810], &DatIndex[809] },
     { &FileGroups[36], &HeroModelBank[DB_CharsSplashKong], &DatIndex[806], &DatIndex[805] },
-    /* PC: Ripper Roo, for the extra heroes (main/extraheroes.c) */
-    { &FileGroups[130], &HeroModelBank[DB_Roo], &DatIndex[768], &DatIndex[767] },
-    /* and from the player's Crash Bandicoot disc (main/bonusheroes.c) */
-    { &FileGroups[131], &HeroModelBank[DB_BonusRoo], &DatIndex[993], &DatIndex[992] },
+    /* PC: Ripper Roo from the player's Crash Bandicoot disc, for the extra heroes (main/bonusheroes.c) */
+    { &FileGroups[130], &HeroModelBank[DB_BonusRoo], &DatIndex[993], &DatIndex[992] },
 };
 const s32 ModeDbaseCount = sizeof(ModeDbaseLists) / sizeof(ModeDbaseLists[0]);
 s32 FileGroupNone[2] = {0};

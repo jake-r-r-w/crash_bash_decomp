@@ -80,6 +80,8 @@ static struct {
 } MarkedIcons[MAX_MARKED_ICONS];
 static s32 NumMarkedIcons;
 static s32 DrawingSprite;
+/* the subengine being drawn (draw_owner), for an extra hero's portrait in the character select */
+static const struct subengine *OwnerSub;
 
 static s32 is_icon(const obj_textureset *ts, s32 index) {
     s32 i;
@@ -318,9 +320,23 @@ static const GfxTex *tex_of(u16 image, u16 palette) {
     }
     t = &ts->tex[im->index];
     base = (const u8 *)ts->base;
-    /* PC: an extra hero's face on the panel, in its base's place (extraheroes.c) */
+    /* PC: an extra hero's face on the panel, in its base's place, and its portrait in the character select (extraheroes.c) */
     if (ts == &HeroModelBank[DB_Interface].textures) {
         const GfxTex *face = extra_hero_face(im->index, t->w, t->h);
+
+        if (face != NULL) {
+            return face;
+        }
+    }
+    if (ts == &HeroModelBank[DB_MainmenuModels].textures && DrawingSprite) {
+        const GfxTex *face = extra_hero_menu_portrait(im->index, t->w, t->h);
+
+        if (face != NULL) {
+            return face;
+        }
+    }
+    if (OwnerSub != NULL && DrawingSprite) {
+        const GfxTex *face = extra_hero_portrait(OwnerSub, t->w, t->h);
 
         if (face != NULL) {
             return face;
@@ -599,6 +615,7 @@ void draw_line(s32 layer, DVECTOR a, DVECTOR b, u32 colour_a, u32 colour_b) {
 
 /* Named by what it shows too: a subengine given another model or text is a new thing, not this one moved. */
 void draw_owner(const struct subengine *sub) {
+    OwnerSub = sub;
     OwnerId = sub != NULL ? (uint64_t)(uintptr_t)sub ^ ((uint64_t)(uintptr_t)sub->u6C.ptr * 0x9E3779B97F4A7C15ULL) : 0;
     OwnerPart = 0;
     OwnerMesh = 0;

@@ -5,6 +5,8 @@
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
 #include "bash/videomenu.h"
+#include "bash/extraheroes.h"
+#include "bash/dbase.h"
 
 
 /* the exe's data the tables point at, not declared in the headers yet */
@@ -337,7 +339,9 @@ PlaceRec CharSelectModelsPlace[9] = {
     { 7, 0x1FE, 0x1A4, 0, 0x800, 0, 0, 0, 0, 0, 0, 0xC7, 0x2005, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-CharCard CharCards[8] = {
+/* PC: and a ninth for an extra hero, at the red row's left under Aku Aku, when the launcher's EXTRA HEROES is on (extraheroes.c); its
+ * hero is the base it would rather have, its model and pick filled as the select starts, and a sound of -1 is none */
+CharCard CharCards[9] = {
     { 0, 1, { 0 }, 0x8E, 0x20, 0xCCCC, 0xC7, 0, &CharSelectSteps2, 0x38E, 0 },
     { 0, 2, { 0 }, 0xE8, 0x20, 0xCCCC, 0xC7, 0, &CharSelectSteps1, 0x38F, 0 },
     { 0, 5, { 0 }, 0x142, 0x20, 0x9999, 0xC7, 0, &CharSelectSteps6, 0x394, 0 },
@@ -346,7 +350,51 @@ CharCard CharCards[8] = {
     { 0, 4, { 0 }, 0xE8, 0x84, 0x9999, 0xC7, 0, &CharSelectSteps0, 0x390, 0 },
     { 0, 6, { 0 }, 0x142, 0x84, 0x9999, 0xC7, 0, CharSelectSteps7, 0x395, 0 },
     { 0, 8, { 0 }, 0x19C, 0x84, 0x9999, 0xC7, 0, &CharSelectSteps5, 0x393, 0 },
+    { 0, 8, { 0 }, 0x34, 0x84, 0x9999, 0, 0, 0, -1, 0 },
 };
+
+/* PC: the select's pieces with the ninth card's frame (sub 26) and portrait (27, a portrait of the game's in its place, drawn as the extra
+ * hero's) after the game's 26 */
+#define EXTRA_CARD 8
+#define EXTRA_CARD_TURN 0xC00 /* a quarter turn to the right */
+static PlaceRec CharSelectPlaceMore[29];
+
+/* Whether there's the ninth card: the launcher's EXTRA HEROES is on, and Roo's disc is in */
+static s32 extra_card_on(void) {
+    return extra_heroes_on() && extra_hero_available(EXTRA_ROO);
+}
+
+static PlaceRec *char_select_place(void) {
+    static const PlaceRec Frame = { 0x10, 0x34, 0x8A, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 };
+    static const PlaceRec Portrait = { 0xF, 0x3C, 0x8A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x306F, 0 };
+    s32 n = CountPlaceRecs(CharSelectPlace);
+
+    if (!extra_card_on() || n + 3 > (s32)(sizeof(CharSelectPlaceMore) / sizeof(CharSelectPlaceMore[0]))) {
+        return CharSelectPlace;
+    }
+    memcpy(CharSelectPlaceMore, CharSelectPlace, sizeof(PlaceRec) * (size_t)n);
+    CharSelectPlaceMore[n] = Portrait;
+    CharSelectPlaceMore[n + 1] = Frame;
+    memset(&CharSelectPlaceMore[n + 2], 0, sizeof(PlaceRec));
+    return CharSelectPlaceMore;
+}
+
+/* PC: the selector's moves with the ninth card: left and right go round all nine, it between Dingodile's and Cortex's, and up or down
+ * from it goes to the corner above it */
+static s32 card_step(s32 card, s32 move) {
+    static const s8 Order[9] = { 0, 1, 2, 3, EXTRA_CARD, 4, 5, 6, 7 };
+    s32 i;
+
+    if (!extra_card_on()) {
+        return (card + move) & 7;
+    }
+    if (move == 1 || move == -1) {
+        for (i = 0; i < 8 && Order[i] != card; i++) {
+        }
+        return Order[(i + move + 9) % 9];
+    }
+    return card == EXTRA_CARD ? 0 : (card + move) & 7;
+}
 TitlesOff CharSelectorOffsets[4] = { { 7, 4 }, { 0x2D, 4 }, { 7, 0x30 }, { 0x2D, 0x30 } };
 s32 CharPickSfx[4] = { 0x389, 0x38A, 0x38B, 0x38C };
 s32 CharMoveSfx[4] = { 0x385, 0x386, 0x387, 0x388 };
@@ -1549,22 +1597,24 @@ void UpdateCharSelector(TitlesSlot *slot) {
     if (o->flags2 < GamePlayers) {
         if (O69PAD[o->flags2].pressed & 0x80) {
             PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
-            o->card--;
+            o->card = card_step(o->card, -1);
         }
         if (O69PAD[o->flags2].pressed & 0x20) {
             PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
-            o->card++;
+            o->card = card_step(o->card, 1);
         }
         if (O69PAD[o->flags2].pressed & 0x10) {
             PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
-            o->card -= 4;
+            o->card = card_step(o->card, -4);
         }
         if (O69PAD[o->flags2].pressed & 0x40) {
             PlaySfx(CharMoveSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
-            o->card += 4;
+            o->card = card_step(o->card, 4);
         }
     }
-    o->card &= 7;
+    if (o->card != EXTRA_CARD || !extra_card_on()) {
+        o->card &= 7;
+    }
     if ((o->flags2 < ((GameState *)GameInfo)->players && (O69PAD[o->flags2].pressed & 0x4000) && still) || o->flags3 != 0) {
         GetEngineSlot(0)->sub[20].flags &= 0xFFFF7FFF;
         GetEngineSlot(0)->sub[21].flags &= 0xFFFF7FFF;
@@ -1573,7 +1623,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
             PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
             return;
         }
-        if (o->flags3 == 0) {
+        if (o->flags3 == 0 && card[o->card].sfx >= 0) {
             PlaySfx(card[o->card].sfx, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         card[o->card].flags |= 1;
@@ -1585,9 +1635,29 @@ void UpdateCharSelector(TitlesSlot *slot) {
         {
             s->u6C.dbase = &HeroModelBank[card[o->card].model];
             s->flags |= 0x8000;
+            /* PC: an extra hero's model faces along x, so turned to face the camera as the menu's own do; the rest as they are */
+            s->xform.rot.vy = o->card == EXTRA_CARD ? EXTRA_CARD_TURN : 0;
+            s->xform.dirty = 1;
         }
-        GAME->heroes[o->flags2] = card[o->card].hero;
-        GAME->heroChoice[o->flags2] = card[o->card].hero;
+        {
+            s32 hero = card[o->card].hero, b = 7;
+
+            /* PC: an extra hero borrows the card of a hero nobody's taken, its base, Rilla Roo's if it can, which nobody else can have
+             * then: so the menus after, which show the heroes by number, can show it in that one's place (extraheroes.c) */
+            if (o->card == EXTRA_CARD) {
+                if (card[b].flags & 1) {
+                    for (b = 0; b < 8 && (card[b].flags & 1); b++) {
+                    }
+                }
+                if (b < 8) {
+                    card[b].flags |= 1;
+                    hero = card[b].hero;
+                }
+            }
+            GAME->heroes[o->flags2] = (u8)hero;
+            GAME->heroChoice[o->flags2] = (u8)hero;
+            extra_hero_pick(o->flags2, o->card == EXTRA_CARD ? EXTRA_ROO : EXTRA_NONE);
+        }
         PlaySfx(CharPickSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
         o->ext = ExtTemplate400;
         {
@@ -1608,7 +1678,7 @@ void CharSelectInit(void) {
     *(s32 *)((u8 *)&CharSelectCamera + 8) = 0x400;
     *(s32 *)((u8 *)&CharSelectCamera + 0x18) = 0x190;
     eng = GetEngineSlot(0);
-    PlaceEngineSlot(0, (PlaceRec *)CharSelectPlace);
+    PlaceEngineSlot(0, char_select_place());
     PlaceEngineSlot(2, (PlaceRec *)CharSelectModelsPlace);
     i = 0;
     do {
@@ -1625,6 +1695,19 @@ void CharSelectInit(void) {
         rec++;
         off++;
     } while (i < 8);
+    /* PC: the ninth card's, when there's one */
+    CharCards[EXTRA_CARD].flags = 0;
+    if (char_select_place() != CharSelectPlace) {
+        CharCards[EXTRA_CARD].sub = (u8 *)&eng->sub[27];
+        CharCards[EXTRA_CARD].model = extra_hero_model(EXTRA_ROO);
+        CharCards[EXTRA_CARD].anim = extra_hero_select_steps(EXTRA_ROO);
+        CharCards[EXTRA_CARD].target = extra_hero_select_scale(EXTRA_ROO);
+        CharCards[EXTRA_CARD].flags = CharCards[EXTRA_CARD].anim == NULL;
+        extra_heroes_select_enter(&eng->sub[26]);
+    } else {
+        CharCards[EXTRA_CARD].flags = 1;
+        extra_heroes_select_enter(NULL);
+    }
     ShuffleCharSelectors();
 }
 
@@ -1740,11 +1823,13 @@ void CharSelectUpdate(void) {
         }
         if (min >= 0x79) {
             TitlesSetHeroMasks();
+            extra_heroes_select_leave();
             MenuChainNext();
         }
     }
     if (Pads[0].pressed & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        extra_heroes_select_leave();
         MenuChainBack();
     }
     for (i = 0; i < 4; i++) {

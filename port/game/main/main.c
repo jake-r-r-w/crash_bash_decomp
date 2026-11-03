@@ -3594,7 +3594,7 @@ file DatIndex[994] = {
 s32 DatIndexCount = sizeof(DatIndex) / sizeof(DatIndex[0]);
 /* The archive's file groups: a group's first file, its file count and its bytes (the
  * games' file_group_load_info.group points at one). */
-FileGroup FileGroups[132] = {
+FileGroup FileGroups[131] = {
     { 0, 0x88, 0xCBA000 }, { 0x88, 5, 0x13E800 }, { 0x8D, 0xC, 0x1B800 },  /* 0 */
     { 0x99, 0x7E, 0x1069800 }, { 0x117, 0x19, 0x394800 }, { 0x130, 0xC, 0x5A000 },  /* 3 */
     { 0x13C, 0x10, 0x59000 }, { 0x14C, 0xA, 0x3D800 }, { 0x156, 2, 0x9800 },  /* 6 */
@@ -3639,8 +3639,7 @@ FileGroup FileGroups[132] = {
     { 0x3D3, 2, 0x3D800 }, { 0x3D5, 2, 0x3C800 }, { 0x3D7, 2, 0x33800 },  /* 123 */
     { 0x3D9, 2, 0x3A800 }, { 0x3DB, 2, 0x36800 }, { 0x3DD, 2, 0x39800 },  /* 126 */
     { 0x3DF, 1, 0x5E800 },  /* 129 */
-    { 0x2FF, 2, 0x14000 },  /* 130, PC: Ripper Roo's textures and model, for the extra heroes (extraheroes.c) */
-    { 992, 2, 0 },          /* 131, PC: the bonus Ripper Roo's (bonusheroes.c): its size is laid out with them */
+    { 992, 2, 0 },          /* 130, PC: the bonus Ripper Roo's textures and model (bonusheroes.c): its size is laid out with them */
 };
 s32 FileGroupCount = sizeof(FileGroups) / sizeof(FileGroups[0]);
 LoaderState Loader = {0};

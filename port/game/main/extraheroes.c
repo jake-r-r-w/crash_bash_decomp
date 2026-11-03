@@ -1,11 +1,12 @@
-/* Extra heroes (bash/extraheroes.h, PC only): characters the game has but never let anyone play, as heroes of their own.
+/* Extra heroes (bash/extraheroes.h, PC only): characters from the player's own copies of other Crash games, as heroes of their own:
+ * Ripper Roo, from Crash Bandicoot, when that disc is in a discs folder (bonusheroes.c, which makes his model). Without it, there's none.
  *
  * The game keeps a great deal by hero number, 1 to 8: speeds, the computer's play, sounds, shadows, the moves, which model each game
  * loads. So an extra hero borrows, inside, the number of an original hero nobody's playing that match (at most four of the eight are),
  * its base, and plays as that hero does: the same moves, timing and reach. What makes it itself is its model, put in the base's place
  * in the game's table of models by hero (HeroHooks.HeroModels), its face on the panel, and how its frames are drawn. The moves name
  * frames of the base's own model, 0x4000 | n << 7 | f, frame f of its animation n, so as an extra hero is drawn each one is its
- * stand-in for that animation, by name (Roo, who has only ATTACK, BREATHE and JUMP, hops where a hero would run), the same share of the
+ * stand-in for that animation, by name (Roo, who has only JUMP, BREATHE, TAUNT and DIE, hops where a hero would run), the same share of the
  * way through, with less of its lift off the ground. The points the game finds on a frame (the boxes it collides with, the hands that
  * hold a crate) are the base's, from its own model; what it holds sits on its head, which is where the head point is too. The moves
  * themselves never change, so the game's checks of how far one has got still hold. */
@@ -39,7 +40,6 @@ typedef struct {
 typedef struct {
     const char *name;
     const char *id; /* for --extra-hero */
-    s32 bank;    /* its model, in HeroModelBank */
     s32 prefer;  /* the original hero it borrows, if nobody's playing that one */
     const Stand *stands;
     const char *otherwise; /* its stand-in for any animation not listed */
@@ -47,24 +47,23 @@ typedef struct {
     float face_turn;       /* and how far round it's turned, in degrees */
 } ExtraHero;
 
-/* Ripper Roo, who has three animations in Crash Bash (El Pogo Loco's: ATTACK, BREATHE and JUMP) and four from Crash Bandicoot (JUMP,
- * BREATHE, TAUNT and DIE, bonusheroes.c): he hops where others run, slide or swim, laughs or attacks where they throw, hit or fire, and
- * falls over when he's hurt. Each stand-in is the first of its names the model has. */
+/* Ripper Roo, who has four animations from Crash Bandicoot (JUMP, BREATHE, TAUNT and DIE, bonusheroes.c): he hops where others run,
+ * slide or swim, laughs where they throw, attack or win, and falls over when he's hurt. A stand-in can be a list of names, the first
+ * the model has. */
 static const Stand RooStands[] = {
     { "JUMP", "JUMP" }, { "MEDIUM", "JUMP" }, { "RUN", "JUMP" }, { "SKATE", "JUMP" }, { "SLIDE", "JUMP" }, { "SWIM", "JUMP" },
     { "FLIP", "JUMP" }, { "FALL", "JUMP" }, { "PUSH", "JUMP" }, { "TRANS", "JUMP" }, { "HOLD_SLOW", "JUMP" }, { "BANK", "JUMP" },
-    { "BARGE", "JUMP" }, { "WIN", "TAUNT JUMP" }, { "WIN2", "TAUNT JUMP" },
-    { "ATTACK", "TAUNT ATTACK" }, { "PICKUP", "TAUNT ATTACK" }, { "HOLD_THROW", "TAUNT ATTACK" }, { "TAUNT", "TAUNT ATTACK" },
-    { "TAUNT_A", "TAUNT ATTACK" }, { "KICK", "TAUNT ATTACK" }, { "FIRE1", "TAUNT ATTACK" }, { "FIRE2", "TAUNT ATTACK" },
-    { "FIRE3", "TAUNT ATTACK" }, { "MINE", "TAUNT ATTACK" }, { "RECOIL", "TAUNT ATTACK" }, { "TAZING", "TAUNT ATTACK" },
-    { "LIGHT", "TAUNT ATTACK" },
-    { "HIT", "DIE ATTACK" }, { "DAZED", "DIE ATTACK" }, { "DIE", "DIE ATTACK" },
+    { "BARGE", "JUMP" }, { "WIN", "TAUNT" }, { "WIN2", "TAUNT" },
+    { "ATTACK", "TAUNT" }, { "PICKUP", "TAUNT" }, { "HOLD_THROW", "TAUNT" }, { "TAUNT", "TAUNT" }, { "TAUNT_A", "TAUNT" },
+    { "KICK", "TAUNT" }, { "FIRE1", "TAUNT" }, { "FIRE2", "TAUNT" }, { "FIRE3", "TAUNT" }, { "MINE", "TAUNT" }, { "RECOIL", "TAUNT" },
+    { "TAZING", "TAUNT" }, { "LIGHT", "TAUNT" },
+    { "HIT", "DIE" }, { "DAZED", "DIE" }, { "DIE", "DIE" },
     { NULL, NULL },
 };
 
 static const ExtraHero ExtraHeroes[NUM_EXTRA] = {
-    { NULL, NULL, 0, 0, NULL, NULL, NULL, 0 },
-    { "RIPPER ROO", "roo", DB_Roo, Kanga, RooStands, "BREATHE", "BREATHE", 0 },
+    { NULL, NULL, 0, NULL, NULL, NULL, 0 },
+    { "RIPPER ROO", "roo", Kanga, RooStands, "BREATHE", "BREATHE", 0 },
 };
 
 /* A player's extra hero while a level's on. */
@@ -129,9 +128,14 @@ s32 extra_hero_named(const char *id) {
     return EXTRA_NONE;
 }
 
-/* Its model: from the player's disc of another game, if there's one (bonusheroes.c), or Crash Bash's own. */
+/* Whether it's there to play: its model came from the player's disc of its game (bonusheroes.c). */
+s32 extra_hero_available(s32 extra) {
+    return extra > EXTRA_NONE && extra < NUM_EXTRA && bonus_heroes_have(extra);
+}
+
+/* Its model's bank. */
 static s32 bank_of(s32 extra) {
-    return bonus_heroes_have(extra) ? bonus_heroes_bank(extra) : ExtraHeroes[extra].bank;
+    return bonus_heroes_bank(extra);
 }
 
 s32 extra_hero_model(s32 extra) {
@@ -156,7 +160,10 @@ void extra_heroes_assign(void) {
         if (settings()->test_extra[i] != 0 && PlayerExtra[i] != settings()->test_extra[i]) {
             extra_hero_pick(i, settings()->test_extra[i]);
         }
-        if (!extra_heroes_on()) {
+        if (!extra_heroes_on() || (PlayerExtra[i] != EXTRA_NONE && !extra_hero_available(PlayerExtra[i]))) {
+            if (PlayerExtra[i] != EXTRA_NONE && settings()->test_extra[i] != 0) {
+                printf("extra heroes: %s needs your copy of his game in a discs folder\n", ExtraHeroes[PlayerExtra[i]].name);
+            }
             PlayerExtra[i] = EXTRA_NONE;
         }
     }
@@ -201,7 +208,7 @@ s32 extra_heroes_model_is(const obj_dbase *db) {
     s32 x;
 
     for (x = EXTRA_NONE + 1; x < NUM_EXTRA; x++) {
-        if (db == &HeroModelBank[ExtraHeroes[x].bank] || db == &HeroModelBank[bonus_heroes_bank(x)]) {
+        if (db == &HeroModelBank[bonus_heroes_bank(x)]) {
             return 1;
         }
     }
@@ -397,7 +404,7 @@ static u8 *own_model(s32 bank) {
 
 /* An extra hero's whole model file, to free: its bonus one, or the archive's. */
 static u8 *model_file(s32 extra) {
-    return bonus_heroes_have(extra) ? bonus_heroes_model(extra) : own_model(ExtraHeroes[extra].bank);
+    return bonus_heroes_have(extra) ? bonus_heroes_model(extra) : NULL;
 }
 
 void extra_heroes_start(void) {
@@ -665,7 +672,7 @@ static u32 texel_of(const obj_textureset *ts, s32 image, s32 clut, s32 u, s32 v)
 }
 
 /* Its model's face frame, drawn: w x h, with depth. */
-static void draw_face(const ExtraHero *x, const u8 *file, const obj_textureset *ts, u32 *rgba, s32 w, s32 h) {
+static void draw_face(const ExtraHero *x, const u8 *file, const obj_textureset *ts, u32 *rgba, s32 w, s32 h, float aspect, float room) {
     const ModelFile *m = (const ModelFile *)file;
     Frame fr;
     float *depth, *sx, *sy, *sz;
@@ -704,11 +711,11 @@ static void draw_face(const ExtraHero *x, const u8 *file, const obj_textureset *
             maxy = sy[k] > maxy ? sy[k] : maxy;
         }
     }
-    scale = fminf(w * 0.92f / ((maxx - minx) * FACE_ASPECT + 1), h * (FACE_ROOM - 0.04f) / (maxy - miny + 1));
-    ox = w * 0.5f - (minx + maxx) * 0.5f * scale * FACE_ASPECT;
+    scale = fminf(w * 0.92f / ((maxx - minx) * aspect + 1), h * (room - 0.04f) / (maxy - miny + 1));
+    ox = w * 0.5f - (minx + maxx) * 0.5f * scale * aspect;
     oy = h * 0.04f - miny * scale;
     for (k = 0; k < fr.count; k++) {
-        sx[k] = ox + sx[k] * scale * FACE_ASPECT;
+        sx[k] = ox + sx[k] * scale * aspect;
         sy[k] = oy + sy[k] * scale;
     }
     for (i = 0; i < w * h; i++) {
@@ -802,13 +809,20 @@ static void draw_face(const ExtraHero *x, const u8 *file, const obj_textureset *
     free(depth);
 }
 
-#define CARD_ROOM 0.94f /* of the panel's face, from the top, a hero card fills */
+#define CARD_ROOM 0.98f /* of the panel's face, from the top, a hero card fills: its tongue hangs over the health bar */
 
 /* Its own game's face for it (bonusheroes.c), fitted to the panel's: in its top CARD_ROOM, each texel as much taller than it's wide as
  * its game showed it, each pixel the mean of the card's under it. */
-static void card_face(const u32 *card, s32 cw, s32 ch, float stretch, u32 *out, s32 fw, s32 fh) {
-    float rows = fh * CARD_ROOM / ch, cols = rows * FACE_ASPECT / stretch;
-    float ox = (fw - cw * cols) / 2, oy = fh * 0.02f;
+static void card_face(const u32 *card, s32 cw, s32 ch, float stretch, u32 *out, s32 fw, s32 fh, float aspect, float room) {
+    float rows = fh * room / ch, cols = rows * aspect / stretch, ox, oy = fh * 0.02f;
+
+    /* too wide that way: fitted across instead, and in the middle down */
+    if (cw * cols > fw * room) {
+        cols = fw * room / cw;
+        rows = cols * stretch / aspect;
+        oy = (fh - ch * rows) / 2;
+    }
+    ox = (fw - cw * cols) / 2;
     s32 px, py, i, j;
 
     for (py = 0; py < fh; py++) {
@@ -850,7 +864,7 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
         if ((out = malloc(sizeof(u32) * (size_t)fw * fh)) == NULL) {
             return NULL;
         }
-        card_face(card, cw, ch, stretch, out, fw, fh);
+        card_face(card, cw, ch, stretch, out, fw, fh, FACE_ASPECT, CARD_ROOM);
         goto made;
     }
     if (bank->textures.base == NULL || bank->textures.tex == NULL || (file = model_file(extra)) == NULL) {
@@ -864,7 +878,7 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
         free(file);
         return NULL;
     }
-    draw_face(x, file, &bank->textures, big, bw, bh);
+    draw_face(x, file, &bank->textures, big, bw, bh, FACE_ASPECT, FACE_ROOM);
     free(file);
     /* each pixel the mean of its samples, its colour weighed by how solid each is */
     for (py = 0; py < fh; py++) {
@@ -937,9 +951,211 @@ const GfxTex *extra_hero_face(s32 index, s32 w, s32 h) {
             if (face == NULL) {
                 return NULL;
             }
-            return gfx_texture_art(0x4558545241464143ULL + (uint64_t)PlayerExtra[i] * 0x10000 + (uint64_t)index, face, FaceW[PlayerExtra[i]],
-                                   FaceH[PlayerExtra[i]], w, h);
+            return gfx_texture_art(0x4558545241464143ULL + ((uint64_t)FaceBank[PlayerExtra[i]] << 20) + (uint64_t)PlayerExtra[i] * 0x10000
+                                       + (uint64_t)index,
+                                   face, FaceW[PlayerExtra[i]], FaceH[PlayerExtra[i]], w, h);
         }
     }
     return NULL;
+}
+
+/* --- the character select (titles.c) ---
+ * An extra hero's card is the red row's ninth, at its left under Aku Aku: a frame and a portrait of the game's own kinds, the portrait
+ * one of the game's in its place on the screen, and as it's drawn the extra hero's own instead: its face on a gradient, as the others'
+ * are. Picked, it stands on its stand in its own model, which loads while the select's up. */
+
+#define SELECT_ROWS 38      /* of a portrait's 64 rows, those the game's own use: the rest is clear */
+#define SELECT_ASPECT 1.83f /* and how much taller than wide the select shows its texels, a row to each of 240 lines */
+#define SELECT_ROOM 1.06f   /* the share of those a face fills: a close-up, as the others are, its ears to the edges */
+#define SELECT_HEAD 40      /* the rows of a hero card that are its head, without the tongue below */
+
+static const subengine *SelectPortrait;
+static s32 SelectBank = -1; /* the model loaded for its stand, while the select's up */
+static u32 *Portrait;
+static s32 PortraitW, PortraitH, PortraitBank;
+static s16 SelectSteps[8];
+
+void extra_heroes_select_enter(const subengine *portrait) {
+    SelectPortrait = portrait;
+    if (portrait != NULL && extra_heroes_on()) {
+        obj_dbase *db = &HeroModelBank[bank_of(EXTRA_ROO)];
+
+        if (db->data == NULL && db->load == 0) {
+            dbase_asload_with_anims(db, NULL);
+            SelectBank = bank_of(EXTRA_ROO);
+        }
+    }
+}
+
+void extra_heroes_select_leave(void) {
+    SelectPortrait = NULL;
+    if (SelectBank >= 0) {
+        dbase_release(&HeroModelBank[SelectBank]);
+        SelectBank = -1;
+    }
+}
+
+void *extra_hero_select_steps(s32 extra) {
+    u8 *file = extra > EXTRA_NONE && extra < NUM_EXTRA ? model_file(extra) : NULL;
+    const ModelFile *m = (const ModelFile *)file;
+    s32 n, frames;
+
+    if (file == NULL) {
+        return NULL;
+    }
+    /* its face animation, the one it stands in, round and round, a frame every other tick */
+    n = find(m, hash_of(ExtraHeroes[extra].face));
+    frames = n < m->nMeshAnims && anims_of(m)[n].frames > 0 ? anims_of(m)[n].frames : 1;
+    free(file);
+    SelectSteps[0] = 1;
+    SelectSteps[1] = (s16)(u16)0x8011;
+    SelectSteps[2] = (s16)frames;
+    SelectSteps[3] = (s16)(0x4000 | n << 7);
+    SelectSteps[4] = (s16)(u16)0x8000;
+    SelectSteps[5] = 0;
+    return SelectSteps;
+}
+
+/* How big it stands on its stand (CharCard.target): a hero 640 tall at 0x9999, as Kong is about. */
+s32 extra_hero_select_scale(s32 extra) {
+    u8 *file = extra > EXTRA_NONE && extra < NUM_EXTRA ? model_file(extra) : NULL;
+    s32 target = 0x9999;
+    Shape s;
+
+    if (file != NULL && shape_of(file, find((const ModelFile *)file, hash_of(ExtraHeroes[extra].face)), 0, &s) && s.top < -100) {
+        target = 0x9999 * 640 / -s.top;
+        target = target < 0x2000 ? 0x2000 : target > 0xCCCC ? 0xCCCC : target;
+    }
+    free(file);
+    return target;
+}
+
+/* A portrait's picture: its top SELECT_ROWS rows a gradient from yellow to orange, that his blue shows against, with face (fw x ph,
+ * or none) over it; the rest clear. */
+static void select_picture(u32 *out, s32 fw, s32 fh, s32 ph, const u32 *face) {
+    s32 x, y, k;
+
+    for (y = 0; y < fh; y++) {
+        u32 bg[3];
+
+        bg[0] = 255;
+        bg[1] = (u32)(224 - 104 * y / (ph > 0 ? ph : 1));
+        bg[2] = (u32)(72 - 56 * y / (ph > 0 ? ph : 1));
+        for (x = 0; x < fw; x++) {
+            u32 c = y < ph && face != NULL ? face[y * fw + x] : 0, a = c >> 24, mixed = 0xFF000000u;
+
+            for (k = 0; k < 3; k++) {
+                mixed |= ((c >> (k * 8) & 0xFF) * a + bg[k] * (255 - a)) / 255 << (k * 8);
+            }
+            out[y * fw + x] = y < ph ? mixed : 0;
+        }
+    }
+}
+
+/* Its portrait, w x h texels at FACE_SCALE: its face, from its own game or drawn from its model, on the gradient. NULL until its
+ * model's loaded, if there's no card. */
+static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
+    s32 fw = w * FACE_SCALE, fh = h * FACE_SCALE, ph = h > SELECT_ROWS ? fh * SELECT_ROWS / h : fh, bw = fw * FACE_SAMPLES, bh = ph * FACE_SAMPLES;
+    s32 cw, ch, x, y, i, j;
+    const obj_dbase *bank = &HeroModelBank[bank_of(extra)];
+    const u32 *card;
+    float stretch;
+    u32 *face, *out;
+
+    if (Portrait != NULL && PortraitW == fw && PortraitH == fh && PortraitBank == bank_of(extra)) {
+        return Portrait;
+    }
+    card = bonus_heroes_card(extra, &cw, &ch, &stretch);
+    if (card == NULL && (bank->textures.base == NULL || bank->textures.tex == NULL)) {
+        return NULL;
+    }
+    face = malloc(sizeof(u32) * (size_t)fw * fh);
+    out = malloc(sizeof(u32) * (size_t)fw * fh);
+    if (face == NULL || out == NULL) {
+        free(face);
+        free(out);
+        return NULL;
+    }
+    if (card != NULL) {
+        card_face(card, cw, ch < SELECT_HEAD ? ch : SELECT_HEAD, stretch, face, fw, ph, SELECT_ASPECT, SELECT_ROOM);
+    } else {
+        u32 *big = malloc(sizeof(u32) * (size_t)bw * bh);
+        u8 *file = model_file(extra);
+
+        memset(face, 0, sizeof(u32) * (size_t)fw * ph);
+        if (big != NULL && file != NULL) {
+            draw_face(&ExtraHeroes[extra], file, &bank->textures, big, bw, bh, SELECT_ASPECT, SELECT_ROOM);
+            for (y = 0; y < ph; y++) {
+                for (x = 0; x < fw; x++) {
+                    u32 r = 0, g = 0, b = 0, a = 0;
+
+                    for (j = 0; j < FACE_SAMPLES; j++) {
+                        for (i = 0; i < FACE_SAMPLES; i++) {
+                            u32 c = big[(y * FACE_SAMPLES + j) * bw + x * FACE_SAMPLES + i], ca = c >> 24;
+
+                            r += (c & 0xFF) * ca;
+                            g += (c >> 8 & 0xFF) * ca;
+                            b += (c >> 16 & 0xFF) * ca;
+                            a += ca;
+                        }
+                    }
+                    face[y * fw + x] = a == 0 ? 0 : (r / a) | (g / a) << 8 | (b / a) << 16 | (a / (FACE_SAMPLES * FACE_SAMPLES)) << 24;
+                }
+            }
+        }
+        free(big);
+        free(file);
+    }
+    select_picture(out, fw, fh, ph, face);
+    free(face);
+    free(Portrait);
+    Portrait = out;
+    PortraitW = fw;
+    PortraitH = fh;
+    PortraitBank = bank_of(extra);
+    return out;
+}
+
+const GfxTex *extra_hero_menu_portrait(s32 index, s32 w, s32 h) {
+    /* titles.c's TeamModeHeroFrames: each hero's portrait */
+    static const u16 Portraits[9] = { 0, 0x6B, 0x67, 0x69, 0x7B, 0x73, 0x71, 0x6D, 0x6F };
+    const u32 *art;
+    s32 i, hero;
+
+    if (SelectPortrait != NULL || !extra_heroes_on()) {
+        return NULL;
+    }
+    for (i = 0; i < 4; i++) {
+        hero = GAME->heroChoice[i];
+        if (PlayerExtra[i] != EXTRA_NONE && hero >= 1 && hero <= 8 && Portraits[hero] == index) {
+            art = portrait_of(PlayerExtra[i], w, h);
+            return art != NULL ? gfx_texture_art(0x504F525452414954ULL + ((uint64_t)PortraitBank << 20), art, PortraitW, PortraitH, w, h) : NULL;
+        }
+    }
+    return NULL;
+}
+
+const GfxTex *extra_hero_portrait(const subengine *sub, s32 w, s32 h) {
+    static u32 *blank;
+    static s32 blank_size;
+    const u32 *art;
+    s32 fw = w * FACE_SCALE, fh = h * FACE_SCALE;
+
+    if (sub == NULL || sub != SelectPortrait || !extra_heroes_on() || w <= 0 || h <= 0) {
+        return NULL;
+    }
+    if ((art = portrait_of(EXTRA_ROO, w, h)) != NULL) {
+        return gfx_texture_art(0x504F525452414954ULL + ((uint64_t)PortraitBank << 20), art, PortraitW, PortraitH, w, h);
+    }
+    /* its model's still loading: the gradient alone, not another's face */
+    if (blank_size < fw * fh) {
+        free(blank);
+        blank = malloc(sizeof(u32) * (size_t)fw * fh);
+        blank_size = blank != NULL ? fw * fh : 0;
+    }
+    if (blank == NULL) {
+        return NULL;
+    }
+    select_picture(blank, fw, fh, h > SELECT_ROWS ? fh * SELECT_ROWS / h : fh, NULL);
+    return gfx_texture_art(0x424C414E4B504F52ULL, blank, fw, fh, w, h);
 }

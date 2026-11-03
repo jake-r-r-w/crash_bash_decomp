@@ -361,8 +361,11 @@ static u8 *RooTex, *RooMdl;
 static s32 RooTexSize, RooMdlSize, RooTried, RooMade;
 
 /* His hero card: the face his boss fight shows, whose tongue is his health (ShadC, the fight's panel: a 64 x 64 sprite), as red | green
- * << 8 | blue << 16 | alpha << 24. Its game drew 512 pixels across a 4:3 screen, so its texels are 1.6 times as tall as they're wide. */
-#define CARD_ROWS 44 /* his head and the tongue as it leaves his mouth */
+ * << 8 | blue << 16 | alpha << 24, with the tongue short: his head and the tongue as it leaves his mouth (rows 0 to 41), then the
+ * curl at its end (rows 50 to 62), so it hangs over the health bar. */
+#define CARD_HEAD 42
+#define CARD_TIP 50
+#define CARD_ROWS (CARD_HEAD + 63 - CARD_TIP)
 static u32 RooCard[64 * CARD_ROWS];
 static s32 RooCardMade;
 
@@ -388,12 +391,14 @@ static void make_card(const Level *l) {
             s32 cy = (s32)(ti >> 6 & 0x7F), y0 = (s32)(ti & 0x1F) * 4, x0 = 256 * seg + 8 * xoffu, cx = (s32)(col >> 24 & 0xF) * 16;
 
             /* the face: the one 64 x 64 4-bit sprite */
-            if (cm != 0 || 4 << (uvi % 5) != 64 || 4 << (uvi / 5 % 5) != 64 || y0 + CARD_ROWS > 128) {
+            if (cm != 0 || 4 << (uvi % 5) != 64 || 4 << (uvi / 5 % 5) != 64 || y0 + 64 > 128) {
                 continue;
             }
             for (y = 0; y < CARD_ROWS; y++) {
+                s32 row = y < CARD_HEAD ? y : y - CARD_HEAD + CARD_TIP;
+
                 for (x = 0; x < 64; x++) {
-                    s32 u = x0 + x, i = page[(y0 + y) * 512 + u / 2] >> (u & 1) * 4 & 15;
+                    s32 u = x0 + x, i = page[(y0 + row) * 512 + u / 2] >> (u & 1) * 4 & 15;
                     u16 c = rd16(page + cy * 512 + (cx + i) * 2);
 
                     RooCard[y * 64 + x] = c == 0 ? 0 : 0xFF000000u | (u32)((c & 0x1F) * 255 / 31) | (u32)((c >> 5 & 0x1F) * 255 / 31) << 8
@@ -829,7 +834,7 @@ const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch) {
     }
     *w = 64;
     *h = CARD_ROWS;
-    *stretch = 1.6f;
+    *stretch = 1.0f; /* as its pixels are: at the 1.6 its game showed it at, he looked squeezed in the panel */
     return RooCard;
 }
 

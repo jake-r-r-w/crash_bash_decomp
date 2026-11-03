@@ -1,8 +1,8 @@
 #ifndef BASH_EXTRAHEROES_H
 #define BASH_EXTRAHEROES_H
 
-/* Extra heroes (main/extraheroes.c, PC only): characters the game has but never let anyone play, as heroes of their own, with a card
- * in the character select when the launcher's EXTRA HEROES is on (docs/ROADMAP-B.md, 7.12). Each one borrows, inside, the number of an
+/* Extra heroes (main/extraheroes.c, PC only): characters from the player's own copies of other Crash games, as heroes of their own,
+ * with a card in the character select when the launcher's EXTRA HEROES is on and the disc is in (docs/ROADMAP-B.md, 7.12). Each one borrows, inside, the number of an
  * original hero nobody's playing, so every table the game keeps by hero still works, and plays that hero's moves; its model takes that
  * hero's place, and each frame of the moves is drawn as its own stand-in for that animation, by name. */
 
@@ -21,6 +21,8 @@ const char *extra_hero_name(s32 extra);
 s32 extra_hero_model(s32 extra);
 /* By its short name, for a test run's --extra-hero (roo), or EXTRA_NONE. */
 s32 extra_hero_named(const char *id);
+/* Whether it's there to play: its model came from the player's disc of its game (bonusheroes.c). */
+s32 extra_hero_available(s32 extra);
 
 /* Once the heroes are known, before their models load: each extra hero's base, and the models with theirs in their bases' places. */
 void extra_heroes_assign(void);
@@ -43,5 +45,15 @@ s32 extra_hero_points(const subengine *sub, PointList **list);
 s32 extra_hero_anim_key(const obj_dbase *db, s32 key);
 /* The panel's face of an extra hero's base (DB_Interface's image index, w x h texels), as the extra hero's own; NULL for any other. */
 const struct GfxTex *extra_hero_face(s32 index, s32 w, s32 h);
+
+/* The character select (titles.c): its card's portrait is this subengine's, and its model loads, while the select's up; what a pick
+ * plays on its stand; and its portrait as the subengine that shows it is drawn (draw.c), NULL for any other. */
+void extra_heroes_select_enter(const subengine *portrait);
+void extra_heroes_select_leave(void);
+void *extra_hero_select_steps(s32 extra);
+s32 extra_hero_select_scale(s32 extra);
+const struct GfxTex *extra_hero_portrait(const subengine *sub, s32 w, s32 h);
+/* The menus after it, which show the heroes' portraits by number (DB_MainmenuModels' image index): an extra hero's in its base's place. */
+const struct GfxTex *extra_hero_menu_portrait(s32 index, s32 w, s32 h);
 
 #endif
