@@ -1284,6 +1284,23 @@ s32 draw_gouraud_quad(void *arg0, u32 flags) {
     return 1;
 }
 
+/* A wide view shows past the sides of the 4:3 screen. A menu's panel that reaches a side of that ran off the screen there, as its title bars do, so it carries
+   on out past the wide view's side too, rather than show an end that was never meant to be seen. Its left and right, in the 640 units of a screen-space panel. */
+static void wide_panel_sides(s32 *left, s32 *right, u32 flags) {
+    s32 extra = gfx_view_extra() * 640 / ScreenRect->w;
+    s32 origin = ((GfxScreen *)RenderState.screen)->x;
+
+    if (extra <= 0 || !(flags & 0x10000000)) {
+        return;
+    }
+    if (origin + *left <= 0) {
+        *left -= extra;
+    }
+    if (origin + *right >= 640) {
+        *right += extra;
+    }
+}
+
 void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     QuadVerts q;
     s32 x;
@@ -1298,6 +1315,7 @@ void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
         x -= ((GfxScreen *)RenderState.screen)->x;
         w += x;
     }
+    wide_panel_sides(&x, &w, arg2);
     l = x - arg3;
     q.v[0].x = l;
     q.v[0].y = arg0[1];
@@ -1395,6 +1413,7 @@ void draw_panel_rect(void *arg0, u32 hidden) {
             }
             w += x;
         }
+        wide_panel_sides(&x, &w, f);
         if (arg0) {
             q.v[0].x = x;
             q.v[0].y = r[1];

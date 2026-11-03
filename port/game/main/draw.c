@@ -299,6 +299,25 @@ static const GfxTex *tex_of(u16 image, u16 palette) {
 
 /* The picture on the screen, until a scene or a viewport's background is drawn over it. */
 static u8 *BackPixels;
+static s32 BackW, BackH;
+
+/* A wide view's side of the picture, when its edge is one colour all the way down, as a white logo's is: that edge is carried on across the side
+   (draw_back). With more at its edge than that, the side is black, as round any 4:3 picture. */
+static s32 back_side_flat(s32 right) {
+    const u16 *px = (const u16 *)BackPixels;
+    s32 x = right ? BackW - 1 : 0;
+    s32 y;
+
+    if (px == NULL || BackW <= 0 || BackH <= 0) {
+        return 0;
+    }
+    for (y = 1; y < BackH; y++) {
+        if ((px[y * BackW + x] & 0x7FFF) != (px[x] & 0x7FFF)) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 /* The one place everything goes for now, when it isn't -1 (draw_clipped_begin). */
 static s32 FixedKey = -1;
@@ -603,26 +622,38 @@ void draw_mesh_quad(s32 layer, const DrawFace *f, const ViewPoint q[4]) {
     gfx_quad(key, v, t, blend_of(f));
 }
 
-static s32 BackW, BackH;
+/* The picture from x0 to x1 on the screen, of its columns u0 to u1. */
+static void back_quad(s32 key, const GfxTex *t, float x0, float x1, float u0, float u1) {
+    GfxVert v[4];
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        v[i].x = (i & 1) ? x1 : x0;
+        v[i].y = (i & 2) ? (float)ScreenRect->h : 0;
+        v[i].w = 1;
+        v[i].u = (i & 1) ? u1 : u0;
+        v[i].v = (i & 2) ? (float)BackH : 0;
+        v[i].rgba = 0xFF808080;
+    }
+    gfx_quad(key, v, t, GFX_OPAQUE);
+}
 
 static void draw_back(void) {
     if (BackPixels != NULL && ScreenRect != NULL) {
         const GfxTex *t = gfx_texture(0, BackPixels, BackW, BackH, 16, NULL);
-        GfxVert v[4];
-        s32 i;
+        float extra = (float)gfx_view_extra();
 
         if (t == NULL) {
             return;
         }
-        for (i = 0; i < 4; i++) {
-            v[i].x = (i & 1) ? (float)ScreenRect->w : 0;
-            v[i].y = (i & 2) ? (float)ScreenRect->h : 0;
-            v[i].w = 1;
-            v[i].u = (i & 1) ? (float)BackW : 0;
-            v[i].v = (i & 2) ? (float)BackH : 0;
-            v[i].rgba = 0xFF808080;
+        back_quad(KEY_BACK, t, 0, (float)ScreenRect->w, 0, (float)BackW);
+        /* its edge column, from the middle of it so it's that column alone, over the black a viewport puts there and behind all the rest */
+        if (extra > 0 && back_side_flat(0)) {
+            back_quad(KEY_BACK - 1, t, -extra, 0, 0.5f, 0.5f);
         }
-        gfx_quad(KEY_BACK, v, t, GFX_OPAQUE);
+        if (extra > 0 && back_side_flat(1)) {
+            back_quad(KEY_BACK - 1, t, (float)ScreenRect->w, (float)ScreenRect->w + extra, (float)BackW - 0.5f, (float)BackW - 0.5f);
+        }
     }
 }
 
