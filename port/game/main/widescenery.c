@@ -55,6 +55,7 @@ typedef struct {
 #define DESERT_FOX_PANORAMA_Z 358
 #define DESERT_FOX_PANORAMA_SPAN 1203
 #define FILE_BEARMINATOR 472
+#define FILE_TOXIC_DASH 639
 /* The Bearminator's sea, the mountains round the back of it and the sky behind them, a wall whose two ends are each other's mirror image across the line
    x = 40, so turned round the middle of the arena, on that line, by the span between them as seen from there, a copy's first end is at its last. The sea
    and the mountains turn with it, so they stay in front of it, at its foot. A little less than the span, so the level's own covers the join */
@@ -701,22 +702,27 @@ static void draw_ring_ding_wall(map_enviroment *scene, subengine *owner, MATRIX 
 #define POGO_GARDEN 64
 #define POGO_GRASS_IMAGE 11
 #define POGO_WALL_ROWS 5
-#define POGO_WALL_MAX_COLUMNS 12
+/* A level's wall carried on straight from an end of it, in rows of its own tiles in turn, with the colours its rows' edges have. */
+#define SIDE_WALL_MAX_ROWS 5
+#define SIDE_WALL_MAX_COLUMNS 12
 typedef struct {
-    s16 start_x, start_z; /* a little way in behind the end of the level's own wall, which covers the join */
-    s16 x, front_z;       /* then along this, to past where any view reaches */
+    s16 start_x, start_z;   /* a little way in behind the end of the level's own wall, which covers the join */
+    s16 x, front_z;         /* then along this, to past where any view reaches */
     s16 columns;
-    s16 side;             /* 1 on the right, where the tiles run on from the back on the screen, and -1 on the left, where they run in to it */
-    s16 row_y[POGO_WALL_ROWS];
-} PogoWall;
-static const PogoWall PogoWalls[] = {
-    { -4257, 2257, -4271, -3400, 9, -1, { -2477, -1867, -1261, -713, -200 } },
-    { 3773, 2669, 3783, -3400, 10, 1, { -2446, -1836, -1230, -715, -200 } },
-};
-#define NUM_POGO_WALLS ((s32)(sizeof(PogoWalls) / sizeof(PogoWalls[0])))
+    s16 side;               /* 1 on the right, where the tiles run on from the back on the screen, and -1 on the left, where they run in to it */
+    s16 rows;               /* how many edges its rows have, from the top */
+    s16 row_y[SIDE_WALL_MAX_ROWS];
+    const s16 (*images)[3]; /* each row's tiles in turn, from the join */
+    const u32 *colours;     /* each edge's */
+} SideWall;
 /* Each row's tiles in turn, as the back wall has them, and its colours, from the top: the new row darkens on up, as the top row does. */
 static const s16 PogoWallImages[POGO_WALL_ROWS - 1][3] = { { 21, 16, 17 }, { 17, 21, 16 }, { 15, 12, 20 }, { 14, 13, 12 } };
 static const u32 PogoWallRowColour[POGO_WALL_ROWS] = { 0x1C140C, 0x392918, 0x735A39, 0x735A39, 0x213121 };
+static const SideWall PogoWalls[] = {
+    { -4257, 2257, -4271, -3400, 9, -1, POGO_WALL_ROWS, { -2477, -1867, -1261, -713, -200 }, PogoWallImages, PogoWallRowColour },
+    { 3773, 2669, 3783, -3400, 10, 1, POGO_WALL_ROWS, { -2446, -1836, -1230, -715, -200 }, PogoWallImages, PogoWallRowColour },
+};
+#define NUM_POGO_WALLS ((s32)(sizeof(PogoWalls) / sizeof(PogoWalls[0])))
 
 /* The grass out to a loop round the garden: behind the back wall, then down the walls' foot, as high as the grass is where it meets the level's own wall at
    the back corners, and across the front, where the level stops. It runs on a little past that, so the strip of black along the bottom, in front of the
@@ -727,9 +733,9 @@ static const s16 PogoRim[][3] = {
 };
 #define NUM_POGO_RIM ((s32)(sizeof(PogoRim) / sizeof(PogoRim[0])))
 
-static s32 draw_pogo_painter_side(map_enviroment *scene, const PogoWall *w, s32 name, subengine *owner) {
+static s32 draw_side_wall(map_enviroment *scene, const SideWall *w, s32 name, subengine *owner) {
     const obj_textureset *ts = &scene->dbase->textures;
-    s16 columns[POGO_WALL_MAX_COLUMNS + 1][2];
+    s16 columns[SIDE_WALL_MAX_COLUMNS + 1][2];
     s16 c[4][3];
     u32 colours[4];
     s32 col, row;
@@ -742,7 +748,7 @@ static s32 draw_pogo_painter_side(map_enviroment *scene, const PogoWall *w, s32 
         /* on the screen, left then right */
         const s16 *a = w->side > 0 ? columns[col] : columns[col + 1], *b = w->side > 0 ? columns[col + 1] : columns[col];
 
-        for (row = 0; row + 1 < POGO_WALL_ROWS; row++) {
+        for (row = 0; row + 1 < w->rows; row++) {
             c[0][0] = a[0];
             c[0][1] = w->row_y[row];
             c[0][2] = a[1];
@@ -755,9 +761,9 @@ static s32 draw_pogo_painter_side(map_enviroment *scene, const PogoWall *w, s32 
             c[3][0] = b[0];
             c[3][1] = w->row_y[row + 1];
             c[3][2] = b[1];
-            colours[0] = colours[1] = PogoWallRowColour[row];
-            colours[2] = colours[3] = PogoWallRowColour[row + 1];
-            ring_quad(ts, PogoWallImages[row][col % 3], c, colours, name++, owner, 0);
+            colours[0] = colours[1] = w->colours[row];
+            colours[2] = colours[3] = w->colours[row + 1];
+            ring_quad(ts, w->images[row][col % 3], c, colours, name++, owner, 0);
         }
     }
     return name;
@@ -775,7 +781,49 @@ static void draw_pogo_painter_backdrop(map_enviroment *scene, subengine *owner, 
         wide_sand_draw(scene, &PogoGrass, owner);
     }
     for (i = 0; i < NUM_POGO_WALLS; i++) {
-        name = draw_pogo_painter_side(scene, &PogoWalls[i], name, owner);
+        name = draw_side_wall(scene, &PogoWalls[i], name, owner);
+    }
+    draw_behind(0);
+    draw_owner(NULL);
+}
+
+/* Toxic Dash's room is round, with its wall round the back half and a floor of toxic waste round the track, and open at the front for the camera, which is
+   outside it. A wide view looks out past the wall's two ends, at the sides. So the wall is carried on from each end, straight towards the camera, in its own
+   tiles in their turn and the colours of its rows, and the waste on out to the walls' foot (widesand.c). In the coordinates of the room, its piece. */
+#define TOXIC_ROOM 16
+#define TOXIC_WASTE_IMAGE 16
+#define TOXIC_WALL_ROWS 4
+/* the tiles before the left end's on the screen, and after the right end's: the wall has them in that turn, left to right */
+static const s16 ToxicWallLeftImages[TOXIC_WALL_ROWS - 1][3] = { { 13, 12, 11 }, { 13, 12, 11 }, { 10, 9, 8 } };
+static const s16 ToxicWallRightImages[TOXIC_WALL_ROWS - 1][3] = { { 12, 13, 11 }, { 12, 13, 11 }, { 9, 10, 8 } };
+/* dark at the top, and lit by the waste at the foot */
+static const u32 ToxicWallRowColour[TOXIC_WALL_ROWS] = { 0x000010, 0x080831, 0x08525A, 0x21FFEF };
+static const SideWall ToxicWalls[] = {
+    { -4871, 54, -4880, -6000, 4, -1, TOXIC_WALL_ROWS, { -3560, -2151, -585, 441 }, ToxicWallLeftImages, ToxicWallRowColour },
+    { 4807, 54, 4816, -6000, 4, 1, TOXIC_WALL_ROWS, { -3560, -2151, -585, 441 }, ToxicWallRightImages, ToxicWallRowColour },
+};
+#define NUM_TOXIC_WALLS ((s32)(sizeof(ToxicWalls) / sizeof(ToxicWalls[0])))
+/* The waste out to a loop behind the room's wall, then down the new walls' foot and across behind the camera, as high as it is at the wall's foot, and as
+   bright as it is there, where it lights the wall. Its tile is the size the floor's own is. */
+static const WideSand ToxicWaste = { TOXIC_ROOM, TOXIC_WASTE_IMAGE, TOXIC_WASTE_IMAGE, 0x6BFF00, 0, 0, 6 };
+static const s16 ToxicRim[][3] = {
+    { -4950, 0, 441 }, { -4950, -6100, 441 }, { 4890, -6100, 441 }, { 4890, 0, 441 }, { 3500, 3500, 441 }, { 0, 4970, 441 }, { -3500, 3500, 441 },
+};
+#define NUM_TOXIC_RIM ((s32)(sizeof(ToxicRim) / sizeof(ToxicRim[0])))
+
+static void draw_toxic_dash_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    s32 i, name = 0;
+
+    if (scene->dbase->textures.tex == NULL || TOXIC_ROOM >= scene->num_placements) {
+        return;
+    }
+    ring_view_of(scene, TOXIC_ROOM, owner, view);
+    draw_behind(1);
+    if (wide_sand_ready(scene, FILE_TOXIC_DASH, &ToxicWaste, ToxicRim, NUM_TOXIC_RIM)) {
+        wide_sand_draw(scene, &ToxicWaste, owner);
+    }
+    for (i = 0; i < NUM_TOXIC_WALLS; i++) {
+        name = draw_side_wall(scene, &ToxicWalls[i], name, owner);
     }
     draw_behind(0);
     draw_owner(NULL);
@@ -1427,6 +1475,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_BEARMINATOR) {
             draw_bear_cliff(scene, &RingOwner, view);
+        }
+        if (file == FILE_TOXIC_DASH) {
+            draw_toxic_dash_backdrop(scene, &RingOwner, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
