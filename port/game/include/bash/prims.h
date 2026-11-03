@@ -120,6 +120,8 @@ s32 wide_scenery_hides(const map_enviroment *scene, const subengine *sub);
 void wide_scenery_piece_faces(const map_enviroment *scene, const subengine *sub);
 /* What's just been drawn covers a 4:3 view and is black at its sides: a wide view's sides are black too, in its place in the order. */
 void wide_scenery_cover_sides(void);
+/* A scene mark has just been drawn (DrawSceneMarks): a wide view's more of it, for a backdrop that stops at its sides. */
+void wide_scenery_mark(const subengine *mark);
 s32 tri_visible(SVECTOR *v);
 void draw_nas_model_flags(subengine *nas, MATRIX *arg1, u32 flags);
 KeyEntry *key_interp_pos(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);

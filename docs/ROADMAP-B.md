@@ -21,7 +21,7 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | # | Task | Notes | Done |
 |---|------|-------|------|
 | 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was, as Melt Panic is by the user's choice. The rows below are in the order to look at them. Black was measured in still frames at the start of each level, so they're where to look first, not a full list | [ ] |
-| 7.11.23 | Oxide Ride | Space is dark on purpose: probably leave | [ ] |
+| 7.11.23 | Oxide Ride | Recheck by playing: the purple haze carried on at the sides in the asteroid part, and the arena's towers on out at the sides in the ship | [ ] |
 | 7.11.24 | Crystal maps | Not looked at yet: they're maps of their own. N.Ballism's has the same front corners as its normal map had: a black wedge on each base, and needles | [ ] |
 | 7.11.25 | Later in each level | Not looked at yet: all this is from the first few seconds | [ ] |
 | 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files. It goes in the launcher's Mods section, with the texture packs (7.10) | [ ] |

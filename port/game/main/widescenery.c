@@ -33,6 +33,8 @@ typedef struct {
     s32 entity;    /* shows this of the level's file instead of what the piece does, or 0. A mesh animation's first frame plays it */
     s32 on_sand;   /* it stands on the level's extended floor (widesand.c), with dy from there */
     s32 mirror;    /* it's the mirror image across the line x = cx, after turning, so an end of it meets the same end of the level's own */
+    const s16 (*faces)[2]; /* only these of its faces, as runs of their places in its mesh, first and last, or all of them */
+    s32 num_faces;
 } WideExtra;
 
 #define FILE_N_BALLISM 651
@@ -67,6 +69,13 @@ typedef struct {
 #define POLAR_STAR 43 /* and the seven after it */
 #define POLAR_STARS_ACROSS 14000
 #define FILE_TILT_PANIC 486
+#define FILE_OXIDE 613
+/* The second part of Oxide's fight is in an arena in his ship, its towers round the back of its floor, out of the dark. A wide view sees past them at the
+   sides, into the dark, so copies of them, without the floor, stand on out at each side */
+#define OXIDE_ARENA 10
+#define OXIDE_TOWERS_ACROSS 13000
+static const s16 OxideTowers[][2] = { { 0, 41 }, { 73, 78 }, { 84, 217 }, { 382, 877 } };
+#define NUM_OXIDE_TOWERS ((s32)(sizeof(OxideTowers) / sizeof(OxideTowers[0])))
 /* Tilt Panic's sky, a wall at the back whose two ends are alike, from the haze at its foot up to blue: its mirror image across each, a little inside it */
 #define TILT_SKY 1
 #define TILT_SKY_LEFT_END (-10708 + 30)
@@ -214,6 +223,8 @@ static const WideExtra Extras[] = {
     { FILE_POLAR_PANIC, POLAR_STAR + 7, 0, 0, POLAR_STARS_ACROSS, 0, 0, 0 },
     { FILE_TILT_PANIC, TILT_SKY, TILT_SKY_LEFT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
     { FILE_TILT_PANIC, TILT_SKY, TILT_SKY_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_OXIDE, OXIDE_ARENA, 0, 0, -OXIDE_TOWERS_ACROSS, 0, 0, 0, 0, 0, 0, 0, 0, OxideTowers, NUM_OXIDE_TOWERS },
+    { FILE_OXIDE, OXIDE_ARENA, 0, 0, OXIDE_TOWERS_ACROSS, 0, 0, 0, 0, 0, 0, 0, 0, OxideTowers, NUM_OXIDE_TOWERS },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -397,10 +408,107 @@ static void draw_extra(const map_enviroment *scene, const WideExtra *e, subengin
     draw_behind(!e->placed);
     draw_mirrored(e->mirror);
     draw_owner(copy);
+    if (e->faces != NULL) {
+        draw_face_list(e->faces, e->num_faces, 1);
+    }
     copy->hook(copy, view, 0);
+    draw_face_list(NULL, 0, 0);
     draw_owner(NULL);
     draw_mirrored(0);
     draw_behind(0);
+}
+
+/* The first part of Oxide's fight is a flight through asteroids, over a purple haze, a backdrop of the level's that's always the same in front of the
+   camera (DrawSceneMarks). The haze stops a little past where a 4:3 view does, with a straight edge, so it's carried on out at the sides to past where any
+   view reaches, from the colours its edge has, from its foot up to where it goes from purple to black, fading on as the haze does towards its sides. Its
+   edge is where it is in the view. The haze is all at one depth and faces the camera, so a point of the view at that depth lands on the screen a straight
+   step from two of the haze's own points, whatever the scale its model is drawn at */
+#define OXIDE_HAZE 0x201F
+#define OXIDE_HAZE_Z 21639
+#define OXIDE_HAZE_ROWS 3
+#define OXIDE_HAZE_COLUMNS 4
+static const s32 OxideHazeEdge[2][OXIDE_HAZE_ROWS][2] = {
+    { { -18298, 6610 }, { -18506, 1527 }, { -20842, -1661 } },
+    { { 18934, 6609 }, { 18939, 1353 }, { 20803, -1913 } },
+};
+static const u32 OxideHazeRowColour[OXIDE_HAZE_ROWS] = { 0x390021, 0x390021, 0 };
+/* each column's way out from the edge, and how much of the edge's colour it has, of 256 */
+static const s32 OxideHazeColumnOut[OXIDE_HAZE_COLUMNS] = { 0, 12000, 28000, 52000 };
+static const s32 OxideHazeColumnKeep[OXIDE_HAZE_COLUMNS] = { 256, 170, 90, 40 };
+
+static u32 haze_colour(u32 c, s32 keep) {
+    u32 out = 0;
+    s32 n;
+
+    for (n = 0; n < 3; n++) {
+        out |= (((c >> (n * 8)) & 0xFF) * (u32)keep / 256) << (n * 8);
+    }
+    /* the screen's fade, as the game's own models have it */
+    return RenderState.modelDp != 0 ? colour_fade(&out, FarColor, RenderState.modelDp) : out;
+}
+
+void wide_scenery_mark(const subengine *mark) {
+    ViewPoint a, b, q[OXIDE_HAZE_COLUMNS][OXIDE_HAZE_ROWS];
+    u32 colour[OXIDE_HAZE_COLUMNS][OXIDE_HAZE_ROWS];
+    DrawFace f;
+    float kx, ky, cx, cy;
+    s32 side, col, row, layer, face = 0;
+    s16 pa[4] = { 0, 0, OXIDE_HAZE_Z, 0 }, pb[4] = { 8192, 8192, OXIDE_HAZE_Z, 0 };
+
+    if (gfx_view_extra() <= 0 || mark->entity != OXIDE_HAZE || mark->u6C.dbase == NULL || (s32)(mark->u6C.dbase->file - DatIndex) != FILE_OXIDE) {
+        return;
+    }
+    project_point(pa, &a);
+    project_point(pb, &b);
+    /* not as it was measured: leave it as it is */
+    if (a.view[2] != OXIDE_HAZE_Z || b.view[2] != OXIDE_HAZE_Z || b.view[0] == a.view[0] || b.view[1] == a.view[1]) {
+        return;
+    }
+    kx = (b.x - a.x) / (float)(b.view[0] - a.view[0]);
+    ky = (b.y - a.y) / (float)(b.view[1] - a.view[1]);
+    cx = a.x - kx * (float)a.view[0];
+    cy = a.y - ky * (float)a.view[1];
+    /* its place in the order is the haze's own, as all of the haze is at the one depth */
+    layer = RenderState.layer + (s32)((points_order(&a, &a, &a) + RenderState.otzAdd) >> 1);
+    if (layer - RenderState.layer >= RenderState.otLen) {
+        return;
+    }
+    memset(&f, 0, sizeof(f));
+    draw_owner(mark);
+    for (side = 0; side < 2; side++) {
+        s32 out = side ? 1 : -1;
+
+        draw_owner_part(OxideHazeEdge[side]);
+        for (col = 0; col < OXIDE_HAZE_COLUMNS; col++) {
+            for (row = 0; row < OXIDE_HAZE_ROWS; row++) {
+                s32 x = OxideHazeEdge[side][row][0] + out * OxideHazeColumnOut[col], y = OxideHazeEdge[side][row][1];
+
+                q[col][row] = a;
+                q[col][row].view[0] = x;
+                q[col][row].view[1] = y;
+                q[col][row].x = cx + kx * (float)x;
+                q[col][row].y = cy + ky * (float)y;
+                colour[col][row] = haze_colour(OxideHazeRowColour[row], OxideHazeColumnKeep[col]);
+            }
+        }
+        for (col = 0; col + 1 < OXIDE_HAZE_COLUMNS; col++) {
+            for (row = 0; row + 1 < OXIDE_HAZE_ROWS; row++) {
+                ViewPoint t[3];
+
+                t[0] = q[col][row];
+                t[1] = q[col + 1][row];
+                t[2] = q[col][row + 1];
+                f.colour[0] = colour[col][row];
+                f.colour[1] = colour[col + 1][row];
+                f.colour[2] = colour[col][row + 1];
+                draw_mesh_tri_plain(layer, &f, t, face++, 0, 0);
+                t[0] = q[col + 1][row + 1];
+                f.colour[0] = colour[col + 1][row + 1];
+                draw_mesh_tri_plain(layer, &f, t, face++, 0, 0);
+            }
+        }
+    }
+    draw_owner(NULL);
 }
 
 /* As the Bearminator's binoculars: its place in the order is where its own middle is. From a little way in under its edges, so no crack shows. */

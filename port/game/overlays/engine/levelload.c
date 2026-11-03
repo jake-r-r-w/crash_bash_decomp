@@ -552,6 +552,8 @@ void DrawSceneMarks(void) {
         e->otz = p->otz;
         view_set_distance(h);
         draw_object((u8 *)e, (u8 *)&RenderState.cam->view, 0x03008000);
+        /* and in a wide view, more of a backdrop that stops at its sides */
+        wide_scenery_mark(e);
         view_set_distance(RenderState.cam->dist);
     }
 }
