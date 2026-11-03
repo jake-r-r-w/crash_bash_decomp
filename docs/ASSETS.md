@@ -108,12 +108,12 @@ f` frame f of mesh animation n.
 | 0x10 | self | the map's animations (`map_enviroment.map_animations` is 8 bytes past it) |
 | 0x14 | u32 | 0 or 1 (1 in 73 files, arenas and others) |
 | 0x18 | self | the maps: a `map_list` (u32 count, then a self offset each to a `map_map`) |
-| 0x1C | self | the map directory: s32 count, then 12-byte entities (s32 self offset to a mesh header, s32, s32 group) |
+| 0x1C | self | the map directory: s32 count, then 12-byte entities, a level's placed objects: s32 the mesh header's offset in its block, s32 from the entity to 4 bytes into its block's record in the chunk list (0x3C), s32 group (`map_entity_address`, `rel_ptr`). Block 0 is the file itself, and the rest are its chunks loaded on demand |
 | 0x20 | self | the colour table: u32 RGB + code, 3 per face (one a corner: Gouraud) |
 | 0x24 | self | the UV table: u16 `u \| v << 8` |
 | 0x28 | self | the default vertex pool for animations (s16 x, y, z) |
 | 0x2C | self | not read by the exe |
-| 0x3C | self | chunks loaded on demand: s32 count, then 16 bytes each (u32 start, u32 end, then the loaded data's pointer and load handle, 0 in the file) |
+| 0x3C | self | chunks loaded on demand: s32 count, then 16 bytes each (u32 start, u32 end, then the loaded data's pointer and load handle, 0 in the file), after a first record that isn't counted: the file itself, whose pointer the game sets as it loads |
 | 0x40, 0x44 | u32, self | the mesh animations: count, then 0x18-byte entries (below) |
 | 0x48, 0x4C | u32, self | the scripts: count, then a self offset each to a `script_header` (the prototype's: thread count, sub count, end, start, frames, then a self offset per thread) |
 | 0x50 | u32 | the size of the part kept in memory: the whole file in 168, in 228 the on-demand data (mesh animations, chunks) starts at the next 2 KB sector after it |
@@ -146,7 +146,7 @@ indices, +0x24 the end, +0x28 the normals (0: none), +0x2C its attachment points
 | strips | u16 `faces << 8 \| flags` until 0xFFFF (in memory: a flags byte and a count byte, ended by count 0xFF); a strip of n faces takes the next n + 2 vertices; flag bit 0: untextured (Gouraud only); 0x08 flips the first face's winding |
 | UV indices | u16 a face: its corners are UV table entries i, i + 1, i + 2, in strip order (faces along a strip share two) |
 | texture runs | u16 entries, each for 1 + bits 9-14 faces: bits 0-8 the texture (image N of the texture set before the model in the DAT); bit 15: the set's last image with CLUT bits 0-8 instead (half of all faces) |
-| colour indices | u16 a face: bits 0-12 the first of its 3 colours, bit 15 semi-transparent, bits 13-14 the blend mode |
+| colour indices | u16 a face: bits 0-12 the first of its 3 colours, bit 15 semi-transparent, bits 13-14 the blend mode. A textured face's colours tint its texture: the tops of TNT and Nitro crates are the grey crate's image, tinted red and green |
 
 Animation entry (0x18 bytes): u32 start and end (offsets of its data in the file, loaded on
 demand), u32 frames, s32 offset from +0xC to the mesh header it moves, u32 the `string_hash` of

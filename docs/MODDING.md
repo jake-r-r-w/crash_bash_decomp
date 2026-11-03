@@ -78,6 +78,11 @@ PC version, so the code files (`1E7`, `2CC` to `2D8` and `3DF`) are left out of 
 What the files hold is in [ASSETS.md](ASSETS.md): texture sets, models, sound packs, mode text and title screens. The decomp's
 `tools/scripts/dat.py` unpacks them into formats you can edit, and packs them back.
 
+The same thing is often in more than one file: each crate arena has its own copy of the crates, and other games and the warp rooms
+have some too, so a change to one arena's file only changes that arena. And some colours aren't in a texture at all: a model's faces
+have colours that tint their texture, as the tops of TNT and Nitro crates are the grey crate's image tinted red and green, so those
+are changed in the model's file.
+
 ## Which one wins
 
 Where two mods have the same texture or file, the one higher on the Mods page wins. On that page, L1 and R1 (Q and W on the keyboard)
