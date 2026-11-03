@@ -49,6 +49,8 @@ typedef struct {
 #define DRAW_UNCULLED 0x1000000
 #define FILE_PAPU_PUMMEL 697
 #define FILE_DESERT_FOX 693
+/* its crystal map, the same island and far dunes with a pool in the middle: the same fix */
+#define FILE_DESERT_FOX_CRYSTAL 683
 /* Desert Fox's panorama of far dunes and sky, on part of a circle round this, its two ends each other's mirror image across the line through it, so turned
    by the span between them a copy's first end is at its last. Its tiles make a loop, so they go on in their order. A little less, so the level's own covers
    the join */
@@ -206,6 +208,8 @@ static const WideExtra Extras[] = {
     { FILE_PAPU_PUMMEL, PAPU_HILLS, PAPU_SKY_X, PAPU_SKY_Z, 0, 0, 0, PAPU_SKY_TWICE },
     { FILE_DESERT_FOX, DESERT_FOX_PANORAMA, DESERT_FOX_PANORAMA_X, DESERT_FOX_PANORAMA_Z, 0, 0, 0, DESERT_FOX_PANORAMA_SPAN },
     { FILE_DESERT_FOX, DESERT_FOX_PANORAMA, DESERT_FOX_PANORAMA_X, DESERT_FOX_PANORAMA_Z, 0, 0, 0, -DESERT_FOX_PANORAMA_SPAN },
+    { FILE_DESERT_FOX_CRYSTAL, DESERT_FOX_PANORAMA, DESERT_FOX_PANORAMA_X, DESERT_FOX_PANORAMA_Z, 0, 0, 0, DESERT_FOX_PANORAMA_SPAN },
+    { FILE_DESERT_FOX_CRYSTAL, DESERT_FOX_PANORAMA, DESERT_FOX_PANORAMA_X, DESERT_FOX_PANORAMA_Z, 0, 0, 0, -DESERT_FOX_PANORAMA_SPAN },
     { FILE_BEARMINATOR, BEAR_SEA, BEAR_X, 0, 0, 0, 0, BEAR_SPAN },
     { FILE_BEARMINATOR, BEAR_SEA, BEAR_X, 0, 0, 0, 0, -BEAR_SPAN },
     { FILE_BEARMINATOR, BEAR_MOUNTAINS, BEAR_X, 0, 0, 0, 0, BEAR_SPAN },
@@ -1062,13 +1066,14 @@ static const s16 DesertFoxRim[][3] = {
 };
 #define NUM_DESERT_FOX_RIM ((s32)(sizeof(DesertFoxRim) / sizeof(DesertFoxRim[0])))
 
-static void draw_desert_fox_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
+/* the file is the map's, normal or crystal, which the sand is made from */
+static void draw_desert_fox_backdrop(map_enviroment *scene, s32 file, subengine *owner, MATRIX *view) {
     if (scene->dbase->textures.tex == NULL || DESERT_FOX_GROUND >= scene->num_placements) {
         return;
     }
     ring_view_of(scene, DESERT_FOX_GROUND, owner, view);
     draw_behind(1);
-    if (wide_sand_ready(scene, FILE_DESERT_FOX, &DesertFoxSand, DesertFoxRim, NUM_DESERT_FOX_RIM)) {
+    if (wide_sand_ready(scene, file, &DesertFoxSand, DesertFoxRim, NUM_DESERT_FOX_RIM)) {
         wide_sand_draw(scene, &DesertFoxSand, owner);
     }
     draw_behind(0);
@@ -1660,8 +1665,8 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         if (file == FILE_EL_POGO_LOCO) {
             draw_el_pogo_loco_backdrop(scene, &RingOwner, view);
         }
-        if (file == FILE_DESERT_FOX) {
-            draw_desert_fox_backdrop(scene, &RingOwner, view);
+        if (file == FILE_DESERT_FOX || file == FILE_DESERT_FOX_CRYSTAL) {
+            draw_desert_fox_backdrop(scene, file, &RingOwner, view);
         }
         if (file == FILE_BEARMINATOR) {
             draw_bear_cliff(scene, &RingOwner, view);
