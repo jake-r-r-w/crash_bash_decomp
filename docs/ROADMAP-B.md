@@ -21,7 +21,7 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | # | Task | Notes | Done |
 |---|------|-------|------|
 | 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was, as Melt Panic is by the user's choice. The rows below are in the order to look at them. Black was measured in still frames at the start of each level, so they're where to look first, not a full list | [ ] |
-| 7.11.7 | Ring Ding | Recheck by playing: the grey gear under its platform on the right, as on the left. Its back wall fades to dark at its ends by design | [ ] |
+| 7.11.7 | Ring Ding | Recheck by playing: its brick wall carried on round the sides, the grey gear under the platform on the right, and the right cog without its flickering shadow | [ ] |
 | 7.11.8 | Swamp Fox | Black at the sides | [ ] |
 | 7.11.9 | Metal Fox | Black at the sides | [ ] |
 | 7.11.10 | Drain Bash | Black at the sides | [ ] |

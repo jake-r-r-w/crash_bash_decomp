@@ -108,6 +108,9 @@ static const struct {
     /* the floor under those bases, which sorts in front of them in places: it goes with the backdrop instead (BallismFloors) */
     { FILE_N_BALLISM, 9 },
     { FILE_N_BALLISM, 10 },
+    /* a shadow cast over the turning cog on the right, by taking light away from what's drawn before it. The cog's faces come before or after it by
+       where each one is as it turns, so they flickered in and out of it, out where a 4:3 view doesn't reach */
+    { FILE_RING_DING, 13 },
 };
 #define NUM_HIDDEN ((s32)(sizeof(Hidden) / sizeof(Hidden[0])))
 
@@ -498,6 +501,60 @@ void wide_scenery_piece_faces(const map_enviroment *scene, const subengine *sub)
             }
         }
     }
+}
+
+/* Ring Ding's brick wall curves round behind the arena and stops at its sides, where a 4:3 view stops too. It's carried on round them: on along the
+   turn its ends make, then straight towards the camera. A tile to each row and column, as the wall has, in its own tile and the colours of its ends. It starts a
+   little way in behind the wall's own end, which covers that: the two are made apart and their corners don't quite meet, which left a crack of black between them. */
+#define RING_DING_WALL_IMAGE 7
+static const s16 RingDingWallRight[][2] = { { 6475, 3583 }, { 6654, 2589 }, { 6654, 1589 }, { 6654, 589 }, { 6654, -411 }, { 6654, -1411 }, { 6654, -2411 } };
+static const s16 RingDingWallLeft[][2] = { { -6429, 3585 }, { -6608, 2592 }, { -6608, 1592 }, { -6608, 592 }, { -6608, -408 }, { -6608, -1408 }, { -6608, -2408 } };
+#define RING_DING_WALL_COLUMNS ((s32)(sizeof(RingDingWallRight) / sizeof(RingDingWallRight[0])))
+static const s16 RingDingWallRowY[] = { -3171, -2406, -1642, -877, -113, 651, 1415, 2180, 2944 };
+static const u32 RingDingWallRowColour[] = { 0x080808, 0x080808, 0x181010, 0x292121, 0x292121, 0x292121, 0x292121, 0x292121, 0 };
+#define RING_DING_WALL_ROWS ((s32)(sizeof(RingDingWallRowY) / sizeof(RingDingWallRowY[0])))
+
+/* side is 1 for the right, where the tile runs on outwards from the wall's end, and -1 for the left, where it runs in to it. */
+static s32 draw_ring_ding_side(const obj_textureset *ts, const s16 (*columns)[2], s32 side, s32 name, subengine *owner) {
+    s16 c[4][3];
+    u32 colours[4];
+    s32 col, row;
+
+    for (col = 0; col + 1 < RING_DING_WALL_COLUMNS; col++) {
+        /* on the screen, left then right */
+        const s16 *a = side > 0 ? columns[col] : columns[col + 1], *b = side > 0 ? columns[col + 1] : columns[col];
+
+        for (row = 0; row + 1 < RING_DING_WALL_ROWS; row++) {
+            c[0][0] = a[0];
+            c[0][1] = RingDingWallRowY[row];
+            c[0][2] = a[1];
+            c[1][0] = b[0];
+            c[1][1] = RingDingWallRowY[row];
+            c[1][2] = b[1];
+            c[2][0] = a[0];
+            c[2][1] = RingDingWallRowY[row + 1];
+            c[2][2] = a[1];
+            c[3][0] = b[0];
+            c[3][1] = RingDingWallRowY[row + 1];
+            c[3][2] = b[1];
+            colours[0] = colours[1] = RingDingWallRowColour[row];
+            colours[2] = colours[3] = RingDingWallRowColour[row + 1];
+            ring_quad(ts, RING_DING_WALL_IMAGE, c, colours, name++, owner, 0);
+        }
+    }
+    return name;
+}
+
+static void draw_ring_ding_wall(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    obj_textureset *ts = &scene->dbase->textures;
+
+    if (ts->tex == NULL) {
+        return;
+    }
+    ring_begin(scene, owner, view);
+    draw_ring_ding_side(ts, RingDingWallLeft, -1, draw_ring_ding_side(ts, RingDingWallRight, 1, 0, owner), owner);
+    draw_behind(0);
+    draw_owner(NULL);
 }
 
 static void draw_beach_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
@@ -1056,6 +1113,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_CRASHBALL) {
             draw_crashball_pipe_end(scene, view);
+        }
+        if (file == FILE_RING_DING) {
+            draw_ring_ding_wall(scene, &RingOwner, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
