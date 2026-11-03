@@ -107,6 +107,21 @@ static const s16 OxideTowers[][2] = { { 0, 41 }, { 73, 78 }, { 84, 217 }, { 382,
 #define POGO_PADLOCK_CRYSTAL_WALL_SPAN 1532
 #define POGO_PADLOCK_CRYSTAL_RIGHT_START 10719
 #define POGO_PADLOCK_CRYSTAL_RIGHT_DROP 235
+#define FILE_BEACH_BALL_CRYSTAL 653
+/* Beach Ball's crystal map is a raft on the sea before a floating city, with a wall of sky along the far side of the sea, a part of the sea's own piece,
+   and the sea stepped at its sides. The sea is carried on out at the sides (widesand.c), and the sky by its mirror images across each end, square to it
+   there and a little inside it */
+#define BEACH_BALL_CRYSTAL_SEA 0
+#define BEACH_BALL_CRYSTAL_SEA_IMAGE 0
+#define BEACH_BALL_CRYSTAL_FAR_SEA_IMAGE 1
+#define BEACH_BALL_CRYSTAL_FAR_SEA 0x9C7B63
+static const s16 BeachBallCrystalSky[][2] = { { 83, 102 } };
+#define BEACH_BALL_CRYSTAL_LEFT_X (-10231)
+#define BEACH_BALL_CRYSTAL_LEFT_Z 11253
+#define BEACH_BALL_CRYSTAL_LEFT_MIRROR 118
+#define BEACH_BALL_CRYSTAL_RIGHT_X 10222
+#define BEACH_BALL_CRYSTAL_RIGHT_Z 11063
+#define BEACH_BALL_CRYSTAL_RIGHT_MIRROR (-121)
 /* Tilt Panic's sky, a wall at the back whose two ends are alike, from the haze at its foot up to blue: its mirror image across each, a little inside it */
 #define TILT_SKY 1
 #define TILT_SKY_LEFT_END (-10708 + 30)
@@ -276,6 +291,8 @@ static const WideExtra Extras[] = {
     { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 3 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
     { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 4 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
     { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 5 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
+    { FILE_BEACH_BALL_CRYSTAL, BEACH_BALL_CRYSTAL_SEA, BEACH_BALL_CRYSTAL_LEFT_X, BEACH_BALL_CRYSTAL_LEFT_Z, 0, 0, 0, BEACH_BALL_CRYSTAL_LEFT_MIRROR, 0, 0, 0, 0, 1, BeachBallCrystalSky, 1 },
+    { FILE_BEACH_BALL_CRYSTAL, BEACH_BALL_CRYSTAL_SEA, BEACH_BALL_CRYSTAL_RIGHT_X, BEACH_BALL_CRYSTAL_RIGHT_Z, 0, 0, 0, BEACH_BALL_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1, BeachBallCrystalSky, 1 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -1051,6 +1068,11 @@ static const WideSand PogoPadlockCrystalPavement = { POGO_PADLOCK_CRYSTAL_ALLEY,
 static const s16 PogoPadlockCrystalRim[][3] = { { -14000, 4254, -157 }, { 14000, 4254, -157 }, { 14000, -5000, 4 }, { -14000, -5000, 4 } };
 #define NUM_POGO_PADLOCK_CRYSTAL_RIM ((s32)(sizeof(PogoPadlockCrystalRim) / sizeof(PogoPadlockCrystalRim[0])))
 
+/* Beach Ball's crystal map's sea, out to past where any view reaches, at its own level, its far texels faded to its plain one. In the sea's coordinates */
+static const WideSand BeachBallCrystalSea = { BEACH_BALL_CRYSTAL_SEA, BEACH_BALL_CRYSTAL_SEA_IMAGE, BEACH_BALL_CRYSTAL_FAR_SEA_IMAGE, BEACH_BALL_CRYSTAL_FAR_SEA, 0, 4000, 6 };
+static const s16 BeachBallCrystalRim[][3] = { { -30000, -6000, 505 }, { 30000, -6000, 505 }, { 30000, 13000, 505 }, { -30000, 13000, 505 } };
+#define NUM_BEACH_BALL_CRYSTAL_RIM ((s32)(sizeof(BeachBallCrystalRim) / sizeof(BeachBallCrystalRim[0])))
+
 /* A level whose only floor carried on is its sea, or its pavement, in the view of that floor's piece, behind everything. */
 static void draw_sea_backdrop(map_enviroment *scene, s32 file, const WideSand *sea, const s16 (*rim)[3], s32 rim_points, subengine *owner, MATRIX *view) {
     if (scene->dbase->textures.tex == NULL || sea->piece >= scene->num_placements) {
@@ -1721,6 +1743,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_TILT_PANIC) {
             draw_sea_backdrop(scene, FILE_TILT_PANIC, &TiltSea, TiltRim, NUM_TILT_RIM, &RingOwner, view);
+        }
+        if (file == FILE_BEACH_BALL_CRYSTAL) {
+            draw_sea_backdrop(scene, FILE_BEACH_BALL_CRYSTAL, &BeachBallCrystalSea, BeachBallCrystalRim, NUM_BEACH_BALL_CRYSTAL_RIM, &RingOwner, view);
         }
         if (file == FILE_POGO_PADLOCK_CRYSTAL) {
             draw_sea_backdrop(scene, FILE_POGO_PADLOCK_CRYSTAL, &PogoPadlockCrystalPavement, PogoPadlockCrystalRim, NUM_POGO_PADLOCK_CRYSTAL_RIM, &RingOwner, view);
