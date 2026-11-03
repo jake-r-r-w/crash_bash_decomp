@@ -21,7 +21,7 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | # | Task | Notes | Done |
 |---|------|-------|------|
 | 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was, as Melt Panic is by the user's choice. The rows below are in the order to look at them. Black was measured in still frames at the start of each level, so they're where to look first, not a full list | [ ] |
-| 7.11.14 | Sky Balls | Some black at the sides, with cloud drifting over it at the top | [ ] |
+| 7.11.14 | Sky Balls | Recheck by playing: its sky and fields carried on at the sides by their mirror images, out to the edges at every width. Its crystal version, a night map, isn't changed | [ ] |
 | 7.11.15 | Space Bash | Some black at the sides | [ ] |
 | 7.11.16 | Papu Pummel | Some black at the sides | [ ] |
 | 7.11.17 | Desert Fox | Some black at the sides | [ ] |

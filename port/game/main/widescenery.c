@@ -32,6 +32,7 @@ typedef struct {
     s32 face;      /* it faces what it turns round, so a row of them makes a curve, rather than keeping its own angle */
     s32 entity;    /* shows this of the level's file instead of what the piece does, or 0. A mesh animation's first frame plays it */
     s32 on_sand;   /* it stands on the level's extended floor (widesand.c), with dy from there */
+    s32 mirror;    /* it's the mirror image across the line x = cx, after turning, so an end of it meets the same end of the level's own */
 } WideExtra;
 
 #define FILE_N_BALLISM 651
@@ -42,6 +43,18 @@ typedef struct {
 #define FILE_RING_DING 627
 #define FILE_POGO_PAINTER 675
 #define FILE_EL_POGO_LOCO 667
+#define FILE_SKY_BALLS 647
+#define DRAW_UNCULLED 0x1000000
+/* Sky Balls' far fields, the fields under the arena and the wall of sky at the end of them: one model each, and the same place */
+#define SKY_BALLS_NEAR 12
+#define SKY_BALLS_SKY 13
+#define SKY_BALLS_FAR 14
+/* the lines its mirror images are across: the sky's two ends, a little inside them, so the level's own covers the join, where edge to edge a pixel showed
+   through now and then */
+#define SKY_BALLS_LEFT_END (-15580 + 30)
+#define SKY_BALLS_RIGHT_END (15023 - 30)
+/* two mirror images are the level's own moved this far */
+#define SKY_BALLS_TWICE (2 * (SKY_BALLS_RIGHT_END - SKY_BALLS_LEFT_END))
 
 static const WideExtra Extras[] = {
     /* kelp and coral on the extra sand, the level's own, in its own order: its fish is left out */
@@ -105,6 +118,21 @@ static const WideExtra Extras[] = {
     { FILE_EL_POGO_LOCO, 72, 0, 0, 26103, 0, 0, 0 },
     { FILE_EL_POGO_LOCO, 72, 0, 0, -52206, 0, 0, 0 },
     { FILE_EL_POGO_LOCO, 72, 0, 0, 52206, 0, 0, 0 },
+    /* the sky and the fields carried on at the sides: their mirror images across each end of the sky, so the sky's shading meets its own, and beyond them
+       the level's own again. The fields' far edge is the sky's foot, so they all move as one, and the fields' scroll runs towards the camera, the same in a
+       mirror image */
+    { FILE_SKY_BALLS, SKY_BALLS_SKY, SKY_BALLS_LEFT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_SKY_BALLS, SKY_BALLS_FAR, SKY_BALLS_LEFT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_SKY_BALLS, SKY_BALLS_NEAR, SKY_BALLS_LEFT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_SKY_BALLS, SKY_BALLS_SKY, SKY_BALLS_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_SKY_BALLS, SKY_BALLS_FAR, SKY_BALLS_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_SKY_BALLS, SKY_BALLS_NEAR, SKY_BALLS_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_SKY_BALLS, SKY_BALLS_SKY, 0, 0, -SKY_BALLS_TWICE, 0, 0, 0 },
+    { FILE_SKY_BALLS, SKY_BALLS_FAR, 0, 0, -SKY_BALLS_TWICE, 0, 0, 0 },
+    { FILE_SKY_BALLS, SKY_BALLS_NEAR, 0, 0, -SKY_BALLS_TWICE, 0, 0, 0 },
+    { FILE_SKY_BALLS, SKY_BALLS_SKY, 0, 0, SKY_BALLS_TWICE, 0, 0, 0 },
+    { FILE_SKY_BALLS, SKY_BALLS_FAR, 0, 0, SKY_BALLS_TWICE, 0, 0, 0 },
+    { FILE_SKY_BALLS, SKY_BALLS_NEAR, 0, 0, SKY_BALLS_TWICE, 0, 0, 0 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -248,12 +276,15 @@ static void draw_extra(const map_enviroment *scene, const WideExtra *e, subengin
     from = &scene->subs[e->piece];
     *copy = *from;
     copy->next = NULL;
+    /* the game's own flag for a model drawn whatever its bounding box says (draw_object_model): the box's test goes by a sphere round its middle, and a big
+       piece moved out to the side has its middle off the screen while its near end is on it */
+    copy->flags |= DRAW_UNCULLED;
     if (e->entity != 0) {
         copy->entity = (u16)extra_frame(scene, e->entity, (s32)(copy - Copies));
     }
     x = from->XYZ.x - e->cx;
     z = from->XYZ.z - e->cz;
-    copy->XYZ.x = e->cx + (x * c + z * s) / 0x1000 + e->dx;
+    copy->XYZ.x = e->cx + (e->mirror ? -1 : 1) * (x * c + z * s) / 0x1000 + e->dx;
     copy->XYZ.y = from->XYZ.y + e->dy;
     copy->XYZ.z = e->cz + (z * c - x * s) / 0x1000 + e->dz;
     if (e->on_sand) {
@@ -276,12 +307,18 @@ static void draw_extra(const map_enviroment *scene, const WideExtra *e, subengin
     spin.m[1][1] = 0x1000;
     spin.m[2][0] = (s16)-s;
     spin.m[2][2] = c;
+    if (e->mirror) {
+        spin.m[0][0] = (s16)-c;
+        spin.m[0][2] = (s16)-s;
+    }
     matrix_mul(&spin, (MATRIX *)&from->xform.mtx, &turned);
     copy->xform.mtx = turned;
     draw_behind(!e->placed);
+    draw_mirrored(e->mirror);
     draw_owner(copy);
     copy->hook(copy, view, 0);
     draw_owner(NULL);
+    draw_mirrored(0);
     draw_behind(0);
 }
 
