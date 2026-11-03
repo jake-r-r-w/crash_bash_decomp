@@ -160,6 +160,12 @@ static const s16 BeachBallCrystalSky[][2] = { { 83, 102 } };
 #define POLAR_CRYSTAL_SKY_LEFT_END (-10782 + 30)
 #define POLAR_CRYSTAL_SKY_RIGHT_END (10442 - 30)
 #define POLAR_CRYSTAL_SUNSET 0x42ADC6
+#define FILE_DOT_DASH_CRYSTAL 631
+/* Dot Dash's crystal map is a canyon at sunset, mesas rising out of a haze, with the Bearminator's wall of sky behind them, nearer, and the far mesas'
+   outline in front of it. Both stop at the sides, so copies of them turned round the point the Bearminator's are, as near, carry them on */
+#define DOT_DASH_CRYSTAL_SKY 12
+#define DOT_DASH_CRYSTAL_MESAS 18
+#define DOT_DASH_CRYSTAL_Z (-859)
 /* The Bearminator's sea, the mountains round the back of it and the sky behind them, a wall whose two ends are each other's mirror image across the line
    x = 40, so turned round the middle of the arena, on that line, by the span between them as seen from there, a copy's first end is at its last. The sea
    and the mountains turn with it, so they stay in front of it, at its foot. A little less than the span, so the level's own covers the join */
@@ -333,6 +339,10 @@ static const WideExtra Extras[] = {
     { FILE_POLAR_PANIC_CRYSTAL, POLAR_CRYSTAL_SKY, POLAR_CRYSTAL_SKY_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
     { FILE_TILT_PANIC_CRYSTAL, TILT_CRYSTAL_HORIZON, TILT_CRYSTAL_HORIZON_LEFT_X, TILT_CRYSTAL_HORIZON_LEFT_Z, 0, 0, 0, TILT_CRYSTAL_HORIZON_LEFT_MIRROR, 0, 0, 0, 0, 1 },
     { FILE_TILT_PANIC_CRYSTAL, TILT_CRYSTAL_HORIZON, TILT_CRYSTAL_HORIZON_RIGHT_X, TILT_CRYSTAL_HORIZON_RIGHT_Z, 0, 0, 0, TILT_CRYSTAL_HORIZON_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_DOT_DASH_CRYSTAL, DOT_DASH_CRYSTAL_MESAS, BEAR_X, DOT_DASH_CRYSTAL_Z, 0, 0, 0, BEAR_SPAN },
+    { FILE_DOT_DASH_CRYSTAL, DOT_DASH_CRYSTAL_MESAS, BEAR_X, DOT_DASH_CRYSTAL_Z, 0, 0, 0, -BEAR_SPAN },
+    { FILE_DOT_DASH_CRYSTAL, DOT_DASH_CRYSTAL_SKY, BEAR_X, DOT_DASH_CRYSTAL_Z, 0, 0, 0, BEAR_SPAN },
+    { FILE_DOT_DASH_CRYSTAL, DOT_DASH_CRYSTAL_SKY, BEAR_X, DOT_DASH_CRYSTAL_Z, 0, 0, 0, -BEAR_SPAN },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
