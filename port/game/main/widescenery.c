@@ -124,6 +124,16 @@ static const s16 BeachBallCrystalSky[][2] = { { 83, 102 } };
 #define BEACH_BALL_CRYSTAL_RIGHT_X 10222
 #define BEACH_BALL_CRYSTAL_RIGHT_Z 11063
 #define BEACH_BALL_CRYSTAL_RIGHT_MIRROR (-121)
+#define FILE_SKY_BALLS_CRYSTAL 645
+/* Sky Balls' crystal map is the arena over a city at night, its rooftops a wide stretch below, wider in front than at the back, so past its slanting edges
+   there was only the night. Its mirror images across those edges, a little inside them, carry it on */
+#define SKY_BALLS_CRYSTAL_CITY 1
+#define SKY_BALLS_CRYSTAL_LEFT_X (-15559)
+#define SKY_BALLS_CRYSTAL_LEFT_Z 21690
+#define SKY_BALLS_CRYSTAL_LEFT_MIRROR (-1042)
+#define SKY_BALLS_CRYSTAL_RIGHT_X 15002
+#define SKY_BALLS_CRYSTAL_RIGHT_Z 21752
+#define SKY_BALLS_CRYSTAL_RIGHT_MIRROR 1048
 /* Tilt Panic's sky, a wall at the back whose two ends are alike, from the haze at its foot up to blue: its mirror image across each, a little inside it */
 #define TILT_SKY 1
 #define TILT_SKY_LEFT_END (-10708 + 30)
@@ -295,6 +305,8 @@ static const WideExtra Extras[] = {
     { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 5 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
     { FILE_BEACH_BALL_CRYSTAL, BEACH_BALL_CRYSTAL_SEA, BEACH_BALL_CRYSTAL_LEFT_X, BEACH_BALL_CRYSTAL_LEFT_Z, 0, 0, 0, BEACH_BALL_CRYSTAL_LEFT_MIRROR, 0, 0, 0, 0, 1, BeachBallCrystalSky, 1 },
     { FILE_BEACH_BALL_CRYSTAL, BEACH_BALL_CRYSTAL_SEA, BEACH_BALL_CRYSTAL_RIGHT_X, BEACH_BALL_CRYSTAL_RIGHT_Z, 0, 0, 0, BEACH_BALL_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1, BeachBallCrystalSky, 1 },
+    { FILE_SKY_BALLS_CRYSTAL, SKY_BALLS_CRYSTAL_CITY, SKY_BALLS_CRYSTAL_LEFT_X, SKY_BALLS_CRYSTAL_LEFT_Z, 0, 0, 0, SKY_BALLS_CRYSTAL_LEFT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_SKY_BALLS_CRYSTAL, SKY_BALLS_CRYSTAL_CITY, SKY_BALLS_CRYSTAL_RIGHT_X, SKY_BALLS_CRYSTAL_RIGHT_Z, 0, 0, 0, SKY_BALLS_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
