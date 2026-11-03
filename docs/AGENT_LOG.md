@@ -144,6 +144,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Gotchas
 
+**Port test runs**
+- **A `--mode` run is the game's demo:** it has a pause bit set (0x2000000), so code that stops while `GAME->pause` isn't 0 never runs there. Polar Push's tilt (`PolarUpdateScene`) stays level whoever stands where, and start doesn't open the pause menu. Check those in a game reached through the menus, by `--press` as `route_to_boss` in `port/tests/playtest.mjs` does.
+
 **Tooling**
 - **Data as C: a label inside another object is a field.** The asm gave every
   label its own symbol; in C a label data2c merges into the object before it
@@ -476,6 +479,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-03: The user saw Tilt Panic's platform not tip toward the walrus. Checked: the tilt code, the walrus's and the tilted map's drawing are the decomp's; he counts as heavy as all four heroes, so with them on the far side the platform swings to him over a second or two. In a game reached through the menus it does, at 30 and 120 fps, and the user found it fine when they played it. In a `--mode` run it never tilts (Gotchas).
 - 2026-11-03: 7.11.22 Tilt Panic: the user approved Tilt Panic in widescreen
 - 2026-11-03: Tilt Panic (mode 18, file 486) in widescreen. Four pieces only: 0 the arena, 1 a gradient sky wall (untextured, haze ADA5B5 at the foot to blue and pale at the top, from x -10708 to 10516, z 8057 to 9422, its two ends alike), 2 the sea (at 62,-198,2735; tiles 22 and 23, Polar Panic's stepped shape again, out to z -4996 in front), 3 the arena's front; the icebergs are objects, not pieces. The camera only moves, from (-1042..1637, -1051..-690, -4907..-2837), and goes right when the round ends. The sky goes on as its mirror image across each end (`TILT_SKY_LEFT_END`/`RIGHT_END`), and the sea out to x -32000..32000 (`TiltSea`, rim the haze), past where those reach; `draw_sea_backdrop` draws both seas, and Polar Panic's shots are byte-identical. 4:3 and sixteen other levels' 21:9 shots are byte-identical. No white block in this map.
 - 2026-11-03: 7.11.21 Polar Panic: the user approved Polar Panic in widescreen
