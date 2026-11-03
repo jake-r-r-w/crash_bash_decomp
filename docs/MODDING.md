@@ -31,6 +31,18 @@ Each one is optional. A mod without a name is called after its zip. The page sho
 spaces and `. , ' : ! = + - ? % < >`: other letters become capitals and the rest are left out. A name of more than 18 characters is cut
 short, and so is a description of more than 48.
 
+## The demo mod
+
+`port/mods/gift-boxes/` is a mod made as this page says, in art of its own: TNT crates wrapped up as presents, with a bow on the lid.
+To try it, copy the folder into the game's `mods` folder, or zip it and put the zip there. Its five PNGs are named after TNT's sides,
+the sides of the 3, 2 and 1 it counts down with once it's hit, and its lid, which are the same in every crate arena, and they're four
+times the game's size, so they're drawn sharper. `node port/mods/gift_boxes.mjs` draws them again, to change them.
+
+The lid shows a trick. It's the grey crate's image, which the models tint red for TNT and green for Nitro, and a tint multiplies, so
+TNT's lid shows only the image's red and Nitro's only its green. The lid PNG has the gift's ribbon and bow in its red, for TNT, and a
+crate lid in its green, for Nitro. The 3, 2 and 1 keep their lids: those are the wooden crate's image, which every wooden crate shows
+untinted.
+
 ## Making one as you go
 
 Make a folder in `mods` and put what your mod has in that. A folder is a mod too, the same as its zip. The Mods page looks at the mods

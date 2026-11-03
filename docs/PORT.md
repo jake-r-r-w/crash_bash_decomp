@@ -96,7 +96,8 @@ and files at PLAY, for what the game reads from then on. A file can be bigger th
 archive out again, moving every later file on and growing its group's size, and finds each sector of a read where it is now. The code
 entries are left out, as the program has its own, and a mode text file can't be bigger than its buffer (`mode_text_room`). Texture packs
 from before mods, folders in `packs/`, are mods too, and the setting that chose one turns that one on. With no mods, the archive's tables
-are the game's own and a read is a plain read. Test runs look in no mods folder but `--mods-dir`.
+are the game's own and a read is a plain read. Test runs look in no mods folder but `--mods-dir`. The demo mod, `port/mods/gift-boxes/`,
+is all new art (`port/mods/gift_boxes.mjs` draws it), as a mod made of the game's own files, even recoloured, can't be in git.
 
 **Keeping it the same game.** The user plays each stage next to retail and says what's wrong. All 33 modes also play to the
 end by themselves on every build, optimised and under ASan and UBSan, which catches crashes and bad memory but not a
