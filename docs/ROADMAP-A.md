@@ -829,3 +829,4 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 7.11.14 Sky Balls (2026-11-03): its sky and fields carried on at the sides by their mirror images, so the sky's shading meets its own, out to the edges at every width; scenery copies are drawn whatever their bounding box says
 - [x] 7.11.15 Space Bash (2026-11-03): left as it was, by the user's choice: its city's towers reach the sides; its black is the towers' own window bands, as in 4:3, and at 32:9 its own dark purple night sky
 - [x] 7.11.16 Papu Pummel (2026-11-03): its sunset and far hills carried on round their own circle at the sides, as mirror images across each end and the level's own turned on round; at 32:9 the island's cliffs still stop at the bottom corners
+- [x] 7.11.17 Desert Fox (2026-11-03): its sand carried on out to the far dunes all round its island, and the panorama of far dunes and sky on round its circle as turned copies of itself
