@@ -21,7 +21,7 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | # | Task | Notes | Done |
 |---|------|-------|------|
 | 7.11 | Widescreen fixes, level by level | Levels stop short of what a wide view shows. Tune each by eye and by playing it, with the level's own art (`main/widescenery.c`: extra pieces, a ring of floor and wall, or a hidden piece), or leave it as it was, as Melt Panic is by the user's choice. The rows below are in the order to look at them. Black was measured in still frames at the start of each level, so they're where to look first, not a full list | [ ] |
-| 7.11.24 | Crystal maps | Not looked at yet: they're maps of their own. N.Ballism's has the same front corners as its normal map had: a black wedge on each base, and needles | [ ] |
+| 7.11.24 | Crystal maps | Recheck by playing: the eleven the user picked are carried on at the sides, Jungle Bash, Desert Fox, Pogo Painter, Pogo Padlock, Beach Ball, N.Ballism (its radars as the normal map's), Sky Balls, Tilt and Polar Panic, Dot Dash and Ring Ding (as the normal map's). The other 17 are left as they were. Gem and relic challenges use the normal maps | [ ] |
 | 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files. It goes in the launcher's Mods section, with the texture packs (7.10) | [ ] |
 | 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |
 
