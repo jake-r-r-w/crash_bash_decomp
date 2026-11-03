@@ -40,6 +40,7 @@ typedef struct {
 #define FILE_CRASHBALL 659
 #define FILE_JUNGLE_FOX 691
 #define FILE_RING_DING 627
+#define FILE_POGO_PAINTER 675
 
 static const WideExtra Extras[] = {
     /* kelp and coral on the extra sand, the level's own, in its own order: its fish is left out */
@@ -343,10 +344,9 @@ static void ring_quad(const obj_textureset *ts, s32 image, const s16 corners[4][
     draw_mesh_quad(RenderState.layer, &f, q);
 }
 
-/* The view's own axes, as the map's pieces have them, with nothing moved. */
-static void ring_view(map_enviroment *scene, subengine *owner, MATRIX *view) {
-    /* where the level's own first piece is: a level's floor can be a few units off the middle, and what's made to meet it has to be too */
-    *owner = scene->subs[0];
+/* The view's own axes, as the map's pieces have them, with nothing moved, from where one of them is. */
+static void ring_view_of(map_enviroment *scene, s32 piece, subengine *owner, MATRIX *view) {
+    *owner = scene->subs[piece];
     owner->next = NULL;
     owner->otz = 0;
     memset(&owner->xform.mtx, 0, sizeof(owner->xform.mtx));
@@ -354,6 +354,11 @@ static void ring_view(map_enviroment *scene, subengine *owner, MATRIX *view) {
     owner->xform.mtx.m[1][1] = 0x1000;
     owner->xform.mtx.m[2][2] = 0x1000;
     draw_map_object(owner, view, owner->flags, scene->dbase->data);
+}
+
+static void ring_view(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    /* where the level's own first piece is: a level's floor can be a few units off the middle, and what's made to meet it has to be too */
+    ring_view_of(scene, 0, owner, view);
 }
 
 static void ring_begin(map_enviroment *scene, subengine *owner, MATRIX *view) {
@@ -553,6 +558,93 @@ static void draw_ring_ding_wall(map_enviroment *scene, subengine *owner, MATRIX 
     }
     ring_begin(scene, owner, view);
     draw_ring_ding_side(ts, RingDingWallLeft, -1, draw_ring_ding_side(ts, RingDingWallRight, 1, 0, owner), owner);
+    draw_behind(0);
+    draw_owner(NULL);
+}
+
+/* Pogo Painter's garden has a wall only at the back, and stone blocks for its sides, with nothing past them, where a 4:3 view doesn't reach. So the wall is
+   carried on down each side from its ends, straight towards the camera, in its own tiles and the colours of its rows. It has a row more on top: the view looks
+   out over the blocks, almost level at the top of the screen, and the wall's own top is only just out of it. And the garden's grass is carried on out to the
+   walls' foot (widesand.c). All in the coordinates of the garden, the piece that has the wall and the grass. */
+#define POGO_GARDEN 64
+#define POGO_GRASS_IMAGE 11
+#define POGO_WALL_ROWS 5
+#define POGO_WALL_MAX_COLUMNS 12
+typedef struct {
+    s16 start_x, start_z; /* a little way in behind the end of the level's own wall, which covers the join */
+    s16 x, front_z;       /* then along this, to past where any view reaches */
+    s16 columns;
+    s16 side;             /* 1 on the right, where the tiles run on from the back on the screen, and -1 on the left, where they run in to it */
+    s16 row_y[POGO_WALL_ROWS];
+} PogoWall;
+static const PogoWall PogoWalls[] = {
+    { -4257, 2257, -4271, -3400, 9, -1, { -2477, -1867, -1261, -713, -200 } },
+    { 3773, 2669, 3783, -3400, 10, 1, { -2446, -1836, -1230, -715, -200 } },
+};
+#define NUM_POGO_WALLS ((s32)(sizeof(PogoWalls) / sizeof(PogoWalls[0])))
+/* Each row's tiles in turn, as the back wall has them, and its colours, from the top: the new row darkens on up, as the top row does. */
+static const s16 PogoWallImages[POGO_WALL_ROWS - 1][3] = { { 21, 16, 17 }, { 17, 21, 16 }, { 15, 12, 20 }, { 14, 13, 12 } };
+static const u32 PogoWallRowColour[POGO_WALL_ROWS] = { 0x1C140C, 0x392918, 0x735A39, 0x735A39, 0x213121 };
+
+/* The grass out to a loop round the garden: behind the back wall, then down the walls' foot, as high as the grass is where it meets the level's own wall at
+   the back corners, and across the front, where the level stops. It runs on a little past that, so the strip of black along the bottom, in front of the
+   level's edge, is grass too in a wide view. */
+static const WideSand PogoGrass = { POGO_GARDEN, POGO_GRASS_IMAGE, POGO_GRASS_IMAGE, 0x213121 };
+static const s16 PogoRim[][3] = {
+    { -4271, 2252, -752 }, { -3641, 2700, -752 }, { 3783, 2700, -715 }, { 3783, 1916, -312 }, { 3783, -2864, -250 }, { -4271, -2864, -250 }, { -4271, 1518, -752 },
+};
+#define NUM_POGO_RIM ((s32)(sizeof(PogoRim) / sizeof(PogoRim[0])))
+
+static s32 draw_pogo_painter_side(map_enviroment *scene, const PogoWall *w, s32 name, subengine *owner) {
+    const obj_textureset *ts = &scene->dbase->textures;
+    s16 columns[POGO_WALL_MAX_COLUMNS + 1][2];
+    s16 c[4][3];
+    u32 colours[4];
+    s32 col, row;
+
+    for (col = 0; col <= w->columns; col++) {
+        columns[col][0] = col == 0 ? w->start_x : w->x;
+        columns[col][1] = (s16)(w->start_z + (w->front_z - w->start_z) * col / w->columns);
+    }
+    for (col = 0; col < w->columns; col++) {
+        /* on the screen, left then right */
+        const s16 *a = w->side > 0 ? columns[col] : columns[col + 1], *b = w->side > 0 ? columns[col + 1] : columns[col];
+
+        for (row = 0; row + 1 < POGO_WALL_ROWS; row++) {
+            c[0][0] = a[0];
+            c[0][1] = w->row_y[row];
+            c[0][2] = a[1];
+            c[1][0] = b[0];
+            c[1][1] = w->row_y[row];
+            c[1][2] = b[1];
+            c[2][0] = a[0];
+            c[2][1] = w->row_y[row + 1];
+            c[2][2] = a[1];
+            c[3][0] = b[0];
+            c[3][1] = w->row_y[row + 1];
+            c[3][2] = b[1];
+            colours[0] = colours[1] = PogoWallRowColour[row];
+            colours[2] = colours[3] = PogoWallRowColour[row + 1];
+            ring_quad(ts, PogoWallImages[row][col % 3], c, colours, name++, owner, 0);
+        }
+    }
+    return name;
+}
+
+static void draw_pogo_painter_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    s32 i, name = 0;
+
+    if (scene->dbase->textures.tex == NULL || POGO_GARDEN >= scene->num_placements) {
+        return;
+    }
+    ring_view_of(scene, POGO_GARDEN, owner, view);
+    draw_behind(1);
+    if (wide_sand_ready(scene, FILE_POGO_PAINTER, &PogoGrass, PogoRim, NUM_POGO_RIM)) {
+        wide_sand_draw(scene, &PogoGrass, owner);
+    }
+    for (i = 0; i < NUM_POGO_WALLS; i++) {
+        name = draw_pogo_painter_side(scene, &PogoWalls[i], name, owner);
+    }
     draw_behind(0);
     draw_owner(NULL);
 }
@@ -1116,6 +1208,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_RING_DING) {
             draw_ring_ding_wall(scene, &RingOwner, view);
+        }
+        if (file == FILE_POGO_PAINTER) {
+            draw_pogo_painter_backdrop(scene, &RingOwner, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
