@@ -96,6 +96,17 @@ static const s16 OxideTowers[][2] = { { 0, 41 }, { 73, 78 }, { 84, 217 }, { 382,
 #define POGO_PAINTER_CRYSTAL_Z (-31820)
 #define POGO_PAINTER_CRYSTAL_LEFT_MIRROR 328
 #define POGO_PAINTER_CRYSTAL_RIGHT_MIRROR (-326)
+#define FILE_POGO_PADLOCK_CRYSTAL 661
+/* Pogo Padlock's crystal map is a back alley at night, its brick wall along the back with the pavement at its foot, and nothing past them at the sides but
+   the night. The wall goes on at each side as copies of a stretch of it, a panel of its own, edge to edge, and the pavement out to their foot (widesand.c)
+   in the road's dark. On the right the copies start where the level's own wall ends, and as low as it is */
+#define POGO_PADLOCK_CRYSTAL_ALLEY 64
+#define POGO_PADLOCK_CRYSTAL_PAVEMENT_IMAGE 7
+#define POGO_PADLOCK_CRYSTAL_DARK 0x292121
+#define POGO_PADLOCK_CRYSTAL_WALL 83
+#define POGO_PADLOCK_CRYSTAL_WALL_SPAN 1532
+#define POGO_PADLOCK_CRYSTAL_RIGHT_START 10719
+#define POGO_PADLOCK_CRYSTAL_RIGHT_DROP 235
 /* Tilt Panic's sky, a wall at the back whose two ends are alike, from the haze at its foot up to blue: its mirror image across each, a little inside it */
 #define TILT_SKY 1
 #define TILT_SKY_LEFT_END (-10708 + 30)
@@ -253,6 +264,18 @@ static const WideExtra Extras[] = {
     { FILE_POGO_PAINTER_CRYSTAL, POGO_PAINTER_CRYSTAL_SKY, POGO_PAINTER_CRYSTAL_X, POGO_PAINTER_CRYSTAL_Z, 0, 0, 0, POGO_PAINTER_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
     { FILE_POGO_PAINTER_CRYSTAL, POGO_PAINTER_CRYSTAL_RUINS, POGO_PAINTER_CRYSTAL_X, POGO_PAINTER_CRYSTAL_Z, 0, 0, 0, POGO_PAINTER_CRYSTAL_LEFT_MIRROR, 0, 0, 0, 0, 1 },
     { FILE_POGO_PAINTER_CRYSTAL, POGO_PAINTER_CRYSTAL_RUINS, POGO_PAINTER_CRYSTAL_X, POGO_PAINTER_CRYSTAL_Z, 0, 0, 0, POGO_PAINTER_CRYSTAL_RIGHT_MIRROR, 0, 0, 0, 0, 1 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, -1 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, 0, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, -2 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, 0, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, -3 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, 0, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, -4 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, 0, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, -5 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, 0, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, -6 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, 0, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 0 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 1 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 2 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 3 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 4 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
+    { FILE_POGO_PADLOCK_CRYSTAL, POGO_PADLOCK_CRYSTAL_WALL, 0, 0, POGO_PADLOCK_CRYSTAL_RIGHT_START + 5 * POGO_PADLOCK_CRYSTAL_WALL_SPAN, POGO_PADLOCK_CRYSTAL_RIGHT_DROP, 0, 0 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -1022,7 +1045,13 @@ static const WideSand TiltSea = { TILT_SEA, TILT_SEA_IMAGE, TILT_FAR_SEA_IMAGE, 
 static const s16 TiltRim[][3] = { { -32062, -7835, 728 }, { 31938, -7835, 728 }, { 31938, 6965, 728 }, { -32062, 6965, 728 } };
 #define NUM_TILT_RIM ((s32)(sizeof(TiltRim) / sizeof(TiltRim[0])))
 
-/* A level whose only floor carried on is its sea, in the view of the sea's piece, behind everything. */
+/* Pogo Padlock's crystal map's pavement, out to the foot of the wall's copies at the back and to past where any view reaches at the sides and in front,
+   where it's as low as the road: its tiles fade to their plain one far off, in the road's dark. In the alley's coordinates */
+static const WideSand PogoPadlockCrystalPavement = { POGO_PADLOCK_CRYSTAL_ALLEY, POGO_PADLOCK_CRYSTAL_PAVEMENT_IMAGE, POGO_PADLOCK_CRYSTAL_PAVEMENT_IMAGE, POGO_PADLOCK_CRYSTAL_DARK, POGO_PADLOCK_CRYSTAL_DARK, 3000, 2 };
+static const s16 PogoPadlockCrystalRim[][3] = { { -14000, 4254, -157 }, { 14000, 4254, -157 }, { 14000, -5000, 4 }, { -14000, -5000, 4 } };
+#define NUM_POGO_PADLOCK_CRYSTAL_RIM ((s32)(sizeof(PogoPadlockCrystalRim) / sizeof(PogoPadlockCrystalRim[0])))
+
+/* A level whose only floor carried on is its sea, or its pavement, in the view of that floor's piece, behind everything. */
 static void draw_sea_backdrop(map_enviroment *scene, s32 file, const WideSand *sea, const s16 (*rim)[3], s32 rim_points, subengine *owner, MATRIX *view) {
     if (scene->dbase->textures.tex == NULL || sea->piece >= scene->num_placements) {
         return;
@@ -1692,6 +1721,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_TILT_PANIC) {
             draw_sea_backdrop(scene, FILE_TILT_PANIC, &TiltSea, TiltRim, NUM_TILT_RIM, &RingOwner, view);
+        }
+        if (file == FILE_POGO_PADLOCK_CRYSTAL) {
+            draw_sea_backdrop(scene, FILE_POGO_PADLOCK_CRYSTAL, &PogoPadlockCrystalPavement, PogoPadlockCrystalRim, NUM_POGO_PADLOCK_CRYSTAL_RIM, &RingOwner, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
