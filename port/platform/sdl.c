@@ -175,6 +175,7 @@ static GfxConfig gfx_config_from(const Settings *s) {
     c.smooth = s->smooth;
     c.wide = s->widescreen;
     c.upscale = s->upscale;
+    c.icons = s->icons;
     c.pack = s->texture_pack;
     return c;
 }

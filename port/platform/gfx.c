@@ -54,6 +54,7 @@ typedef struct {
     const void *pixels, *palette;
     int w, h, bpp;
     int factor;
+    int icon;
     uint64_t hash;
     GfxTex t;
 } Cached;
@@ -101,6 +102,7 @@ static int BaseStale;
 
 static int AtlasSize = ATLAS_NORMAL;
 static int Upscale = 1;
+static int Icons;
 static uint8_t *AtlasPixels;
 static Cached *Textures;
 static int NumTextures;
@@ -439,6 +441,7 @@ void gfx_configure(const GfxConfig *config) {
         set_upscale(config->upscale, config->pack);
     }
     Wide = config->wide;
+    Icons = config->icons;
     samples = sample_count(config->antialias);
     if (samples != Samples) {
         Samples = samples;
@@ -496,6 +499,7 @@ int gfx_init(void *window, const GfxConfig *config) {
     update_view_extra();
 
     Upscale = config->upscale;
+    Icons = config->icons;
     SDL_strlcpy(PackName, config->pack, sizeof(PackName));
     texpack_select(PackName);
     AtlasSize = atlas_size_for(Upscale);
@@ -794,13 +798,14 @@ static void relax_edge(uint32_t *px, int side, int k, int sw, int sh, int factor
     edge[-step] = *edge;
 }
 
-static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor, int sharp, const void *source, int top, const GfxEdge *edges) {
+/* icon: made sharp at factor (upscale_texels_sharp), rather than upscale_texels */
+static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, int factor, int sharp, const void *source, int top, const GfxEdge *edges, int icon) {
     static uint32_t *decoded;
     static int decoded_size;
     Cached *c;
     uint32_t *out;
     uint32_t *art = NULL; /* from the texture pack */
-    int own_factor = factor, own_sharp = sharp;
+    int own_factor = factor, own_sharp = sharp, own_icon = icon;
     int i, x, y;
     int sw = w * factor, sh = h * factor;
     uint64_t hash, pack_hash;
@@ -839,10 +844,11 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
     if (texpack_has(pack_hash)) {
         factor = FACTOR_REPLACED;
         sharp = 0;
+        icon = 0;
     }
     for (i = NumTextures - 1; i >= 0; i--) {
         c = &Textures[i];
-        if (c->hash == hash && c->w == w && c->h == h && c->factor == factor && c->t.sharp == sharp) {
+        if (c->hash == hash && c->w == w && c->h == h && c->factor == factor && c->t.sharp == sharp && c->icon == icon) {
             slot->gen = IdGen;
             slot->id = id;
             slot->index = i;
@@ -854,7 +860,7 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
         if (art == NULL) {
             /* the game's own, as a broken file shouldn't leave a hole */
             texpack_drop(pack_hash);
-            return texture_scaled(id, pixels, w, h, bpp, palette, own_factor, own_sharp, source, top, edges);
+            return texture_scaled(id, pixels, w, h, bpp, palette, own_factor, own_sharp, source, top, edges, own_icon);
         }
     }
     if (NumTextures >= MAX_TEXTURES) {
@@ -879,6 +885,7 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
     c->h = h;
     c->bpp = bpp;
     c->factor = factor;
+    c->icon = icon;
     c->t.sharp = sharp;
     c->t.w = w;
     c->t.h = h;
@@ -936,7 +943,11 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
             big = malloc(sizeof(uint32_t) * (size_t)sw * sh);
             big_size = sw * sh;
         }
-        upscale_texels(decoded, w, h, big, factor);
+        if (icon) {
+            upscale_texels_sharp(decoded, w, h, big);
+        } else {
+            upscale_texels(decoded, w, h, big, factor);
+        }
         for (y = 0; y < sh; y++) {
             memcpy((uint32_t *)AtlasPixels + (ShelfY + 1 + y) * AtlasSize + ShelfX + 1, big + y * sw, (size_t)sw * 4);
         }
@@ -1003,11 +1014,11 @@ static const GfxTex *texture_scaled(uint64_t id, const void *pixels, int w, int 
 
 const GfxTex *gfx_texture(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
     /* a picture that fills the screen is already as big as it needs to be */
-    return texture_scaled(id, pixels, w, h, bpp, palette, bpp == 16 ? 1 : Upscale, 0, pixels, 0, NULL);
+    return texture_scaled(id, pixels, w, h, bpp, palette, bpp == 16 ? 1 : Upscale, 0, pixels, 0, NULL, 0);
 }
 
 const GfxTex *gfx_texture_joined(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette, const GfxEdge edges[4]) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, Upscale, 0, pixels, 0, edges);
+    return texture_scaled(id, pixels, w, h, bpp, palette, Upscale, 0, pixels, 0, edges, 0);
 }
 
 int gfx_smooth(void) {
@@ -1015,15 +1026,26 @@ int gfx_smooth(void) {
 }
 
 const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, pixels, 0, NULL);
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, pixels, 0, NULL, 0);
 }
 
 const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *source, int top, int w, int h, int bpp, const void *palette, const GfxEdge *edges) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, source, top, edges);
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 0, source, top, edges, 0);
 }
 
 const GfxTex *gfx_texture_sharp(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
-    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 1, pixels, 0, NULL);
+    return texture_scaled(id, pixels, w, h, bpp, palette, 1, 1, pixels, 0, NULL, 0);
+}
+
+const GfxTex *gfx_texture_icon(uint64_t id, const void *pixels, int w, int h, int bpp, const void *palette) {
+    if (!Icons) {
+        return gfx_texture(id, pixels, w, h, bpp, palette);
+    }
+    return texture_scaled(id, pixels, w, h, bpp, palette, UPSCALE_SHARP_FACTOR, 0, pixels, 0, NULL, 1);
+}
+
+int gfx_sharp_icons(void) {
+    return Icons;
 }
 
 

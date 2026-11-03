@@ -41,6 +41,7 @@ typedef struct GfxConfig {
     int smooth;        /* textures filtered, rather than their square texels */
     int wide;          /* a wider window shows more of the world, rather than bars at the sides */
     int upscale;       /* textures made this many times bigger (upscale.c): 1 is off, or 2 or 4 */
+    int icons;         /* the heroes' and bosses' icons made sharp at 4x (upscale_texels_sharp), whatever upscale is */
     const char *pack;  /* the texture pack in use (texpack.c), or empty */
 } GfxConfig;
 
@@ -88,6 +89,10 @@ const GfxTex *gfx_texture_plain(uint64_t id, const void *pixels, int width_texel
 const GfxTex *gfx_texture_scrolled(uint64_t id, const void *pixels, const void *source, int top, int width_texels, int height, int bpp, const void *palette, const GfxEdge *edges);
 /* One that's never upscaled or filtered, whatever the settings: text, whose small hand-placed pixels those would spoil. */
 const GfxTex *gfx_texture_sharp(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
+
+/* An icon, made sharp at 4x if icons is on (GfxConfig), or else as gfx_texture. Its id has to be another than the same pixels' as gfx_texture. */
+const GfxTex *gfx_texture_icon(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
+int gfx_sharp_icons(void);
 
 /* As gfx_texture, for one with the tiles beside it known, in GFX_LEFT order. */
 const GfxTex *gfx_texture_joined(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette, const GfxEdge edges[4]);

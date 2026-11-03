@@ -722,6 +722,8 @@ u16 tex_palette_id(struct obj_textureset *set, s32 index);
 void tex_release_ids(struct obj_textureset *set);
 void draw_owner(const struct subengine *sub);
 void draw_owner_part(const void *mesh);
+/* What sub shows is a hero's or a boss's icon, for the icons setting (main/draw.c). */
+void draw_mark_icon(const struct subengine *sub);
 void draw_depth(s32 on);
 void draw_clipped_begin(s32 key, s32 w, s32 h);
 void draw_clipped_end(void);

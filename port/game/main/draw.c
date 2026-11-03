@@ -62,9 +62,77 @@ u16 tex_palette_id(obj_textureset *set, s32 index) {
     return 0;
 }
 
+/* The heroes' and bosses' icons, which the icons setting makes sharp (gfx_texture_icon): the frames of the panel's file the panel gives each hero
+   (IconImage), the hero select's portraits, two of each hero, and whatever the panel's icon shows, which is how a boss's comes, from its own file
+   (draw_mark_icon). Only drawn as a flat sprite (draw_face_quad): what's drawn on a model isn't an icon. */
+#define NUM_ICON_IMAGES 10
+#define HERO_PORTRAITS_FIRST 0x67
+#define HERO_PORTRAITS_LAST 0x74
+#define HERO_PORTRAITS_MORE 0x7B /* and the one after it */
+#define MAX_MARKED_ICONS 16
+/* in a texture's id, so its sharp copy is another texture than it */
+#define ICON_ID 0x5348415250494331ULL
+
+static struct {
+    const obj_textureset *set;
+    s32 index;
+} MarkedIcons[MAX_MARKED_ICONS];
+static s32 NumMarkedIcons;
+static s32 DrawingSprite;
+
+static s32 is_icon(const obj_textureset *ts, s32 index) {
+    s32 i;
+
+    if (ts == &HeroModelBank[DB_Interface].textures) {
+        for (i = 0; i < NUM_ICON_IMAGES; i++) {
+            if (IconImage[i] != 0 && (IconImage[i] & 0xFFF) == index) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+    if (ts == &HeroModelBank[DB_MainmenuModels].textures) {
+        return (index >= HERO_PORTRAITS_FIRST && index <= HERO_PORTRAITS_LAST) || index == HERO_PORTRAITS_MORE || index == HERO_PORTRAITS_MORE + 1;
+    }
+    for (i = 0; i < NumMarkedIcons; i++) {
+        if (MarkedIcons[i].set == ts && MarkedIcons[i].index == index) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void draw_mark_icon(const struct subengine *sub) {
+    const obj_textureset *ts;
+    s32 i;
+
+    if (sub == NULL || sub->u6C.dbase == NULL || (sub->entity & 0xF000) != 0x3000) {
+        return;
+    }
+    ts = &sub->u6C.dbase->textures;
+    for (i = 0; i < NumMarkedIcons; i++) {
+        if (MarkedIcons[i].set == ts && MarkedIcons[i].index == (sub->entity & 0xFFF)) {
+            return;
+        }
+    }
+    if (NumMarkedIcons < MAX_MARKED_ICONS) {
+        MarkedIcons[NumMarkedIcons].set = ts;
+        MarkedIcons[NumMarkedIcons].index = sub->entity & 0xFFF;
+        NumMarkedIcons++;
+    }
+}
+
 void tex_release_ids(obj_textureset *set) {
     s32 i;
 
+    /* another file can come into the same place */
+    for (i = 0; i < NumMarkedIcons;) {
+        if (MarkedIcons[i].set == set) {
+            MarkedIcons[i] = MarkedIcons[--NumMarkedIcons];
+        } else {
+            i++;
+        }
+    }
     for (i = 0; i < MAX_IMAGES; i++) {
         if (Images[i].set == set) {
             Images[i].set = NULL;
@@ -254,6 +322,10 @@ static const GfxTex *tex_of(u16 image, u16 palette) {
     }
     if (t->scrollRow != 0) {
         return scrolled_texture(t, image, palette, base, pal);
+    }
+    /* before text, as the panel's file has its eighth hero's icon among its digits */
+    if (DrawingSprite && gfx_sharp_icons() && is_icon(ts, im->index)) {
+        return gfx_texture_icon(TEX_ID(image, palette, t->pix) ^ ICON_ID, base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
     }
     if (is_text(ts, im->index)) {
         return gfx_texture_sharp(TEX_ID(image, palette, t->pix), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
@@ -459,7 +531,9 @@ void draw_face_quad(s32 layer, const DrawFace *f, const DVECTOR xy[4]) {
         return;
     }
     mark_next_part();
+    DrawingSprite = 1;
     t = tex_of(f->image, f->palette);
+    DrawingSprite = 0;
     if (t != NULL) {
         for (i = 0; i < 4; i++) {
             v[i].x = xy[i].vx;

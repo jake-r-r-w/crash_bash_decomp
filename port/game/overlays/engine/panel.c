@@ -2136,6 +2136,8 @@ void SetPanelHeroIconB(u16 arg0, s16 arg1) {
         subengine *s = IconParts[3];
         s->u6C.dbase = &HeroModelBank[arg0];
         s->entity = arg1;
+        /* a boss's own icon, from its own file (the icons setting) */
+        draw_mark_icon(s);
         move_icon(Icon.b, IconPos[2], IconPos[3]);
         if (GameTeams[0] == 0) {
             move_icon(Icon.c, IconPos[0], IconPos[1]);

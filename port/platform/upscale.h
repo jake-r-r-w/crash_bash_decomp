@@ -7,4 +7,8 @@
 /* w x h texels into w * factor x h * factor: factor is 2 or 4. */
 void upscale_texels(const uint32_t *in, int w, int h, uint32_t *out, int factor);
 
+/* An icon's w x h texels into UPSCALE_SHARP_FACTOR times that, made smooth and then sharp again. */
+#define UPSCALE_SHARP_FACTOR 4
+void upscale_texels_sharp(const uint32_t *in, int w, int h, uint32_t *out);
+
 #endif
