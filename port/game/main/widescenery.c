@@ -56,6 +56,12 @@ typedef struct {
 #define DESERT_FOX_PANORAMA_SPAN 1203
 #define FILE_BEARMINATOR 472
 #define FILE_TOXIC_DASH 639
+#define FILE_POLAR_PANIC 478
+/* Polar Panic's misty band along the horizon, which stops at the sea's two ends: its mirror image across each, a little inside it, so the level's own
+   covers the join */
+#define POLAR_HORIZON 52
+#define POLAR_HORIZON_LEFT_END (-10132 + 30)
+#define POLAR_HORIZON_RIGHT_END (10221 - 30)
 /* The Bearminator's sea, the mountains round the back of it and the sky behind them, a wall whose two ends are each other's mirror image across the line
    x = 40, so turned round the middle of the arena, on that line, by the span between them as seen from there, a copy's first end is at its last. The sea
    and the mountains turn with it, so they stay in front of it, at its foot. A little less than the span, so the level's own covers the join */
@@ -179,6 +185,8 @@ static const WideExtra Extras[] = {
     { FILE_BEARMINATOR, BEAR_MOUNTAINS, BEAR_X, 0, 0, 0, 0, -BEAR_SPAN },
     { FILE_BEARMINATOR, BEAR_SKY, BEAR_X, 0, 0, 0, 0, BEAR_SPAN },
     { FILE_BEARMINATOR, BEAR_SKY, BEAR_X, 0, 0, 0, 0, -BEAR_SPAN },
+    { FILE_POLAR_PANIC, POLAR_HORIZON, POLAR_HORIZON_LEFT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+    { FILE_POLAR_PANIC, POLAR_HORIZON, POLAR_HORIZON_RIGHT_END, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
@@ -824,6 +832,30 @@ static void draw_toxic_dash_backdrop(map_enviroment *scene, subengine *owner, MA
     }
     for (i = 0; i < NUM_TOXIC_WALLS; i++) {
         name = draw_side_wall(scene, &ToxicWalls[i], name, owner);
+    }
+    draw_behind(0);
+    draw_owner(NULL);
+}
+
+/* Polar Panic's sea is only as wide as a 4:3 view sees, with steps at its sides. So it's carried on out at the sides, to past where the horizon's band and
+   its mirror images reach (Extras), and behind the band (widesand.c), from its own tiles, shading on out to the band's foot, as the sea does at the back. Its
+   far texels fade to its plain one, as side on they'd be only stripes. The sky above is black, as it is. In the sea's coordinates: it's 2750 further on. */
+#define POLAR_SEA 1
+#define POLAR_SEA_IMAGE 22
+#define POLAR_FAR_SEA_IMAGE 23
+#define POLAR_HORIZON_FOOT 0x4A3931
+static const WideSand PolarSea = { POLAR_SEA, POLAR_SEA_IMAGE, POLAR_FAR_SEA_IMAGE, POLAR_HORIZON_FOOT, 0, 4000, 6 };
+static const s16 PolarRim[][3] = { { -26103, -5850, 751 }, { 25897, -5850, 751 }, { 25897, 6950, 751 }, { -26103, 6950, 751 } };
+#define NUM_POLAR_RIM ((s32)(sizeof(PolarRim) / sizeof(PolarRim[0])))
+
+static void draw_polar_panic_backdrop(map_enviroment *scene, subengine *owner, MATRIX *view) {
+    if (scene->dbase->textures.tex == NULL || POLAR_SEA >= scene->num_placements) {
+        return;
+    }
+    ring_view_of(scene, POLAR_SEA, owner, view);
+    draw_behind(1);
+    if (wide_sand_ready(scene, FILE_POLAR_PANIC, &PolarSea, PolarRim, NUM_POLAR_RIM)) {
+        wide_sand_draw(scene, &PolarSea, owner);
     }
     draw_behind(0);
     draw_owner(NULL);
@@ -1478,6 +1510,9 @@ void wide_scenery_draw(map_enviroment *scene, MATRIX *view) {
         }
         if (file == FILE_TOXIC_DASH) {
             draw_toxic_dash_backdrop(scene, &RingOwner, view);
+        }
+        if (file == FILE_POLAR_PANIC) {
+            draw_polar_panic_backdrop(scene, &RingOwner, view);
         }
         if (file == FILE_N_BALLISM) {
             draw_ballism_backdrop(scene, &RingOwner, view);
