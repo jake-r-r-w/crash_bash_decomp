@@ -831,3 +831,4 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 7.11.16 Papu Pummel (2026-11-03): its sunset and far hills carried on round their own circle at the sides, as mirror images across each end and the level's own turned on round; at 32:9 the island's cliffs still stop at the bottom corners
 - [x] 7.11.17 Desert Fox (2026-11-03): its sand carried on out to the far dunes all round its island, and the panorama of far dunes and sky on round its circle as turned copies of itself
 - [x] 7.11.18 Bearminator (2026-11-03): the sea, the mountains and the sky carried on round the arena at the sides, the hole in the right floe's ice cliff filled, and the sniper's binoculars black to the sides
+- [x] 7.11.19 Toxic Dash (2026-11-03): the room's wall carried on at the sides straight towards the camera, in its own tiles and row colours, and the toxic waste out to its foot
