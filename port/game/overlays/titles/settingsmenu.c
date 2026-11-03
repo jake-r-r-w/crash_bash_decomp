@@ -168,7 +168,7 @@ static void font_text(char *out, size_t size, const char *in) {
         if (clean[cut] != ' ') {
             cut = size - 4;
         }
-        while (cut > 0 && clean[cut - 1] == ' ') {
+        while (cut > 0 && strchr(" ,:", clean[cut - 1]) != NULL) {
             cut--;
         }
         memcpy(clean + cut, "...", 4);
