@@ -473,6 +473,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-03: 7.11.10 Drain Bash: the user looked at it in widescreen and chose to leave it as it was.
 - 2026-11-03: 7.11.9 Metal Fox: the user looked at it in widescreen and chose to leave it as it was.
 - 2026-11-03: 7.11.8 Swamp Fox: the user looked at it in widescreen and chose to leave it as it was.
 - 2026-11-03: 7.11.7 Ring Ding: the user played it and approved it.
