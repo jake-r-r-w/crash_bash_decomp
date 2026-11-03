@@ -832,3 +832,4 @@ The release is done: 5.1 to 5.15 (2026-10-29).
 - [x] 7.11.17 Desert Fox (2026-11-03): its sand carried on out to the far dunes all round its island, and the panorama of far dunes and sky on round its circle as turned copies of itself
 - [x] 7.11.18 Bearminator (2026-11-03): the sea, the mountains and the sky carried on round the arena at the sides, the hole in the right floe's ice cliff filled, and the sniper's binoculars black to the sides
 - [x] 7.11.19 Toxic Dash (2026-11-03): the room's wall carried on at the sides straight towards the camera, in its own tiles and row colours, and the toxic waste out to its foot
+- [x] 7.11.20 Warp Room 3 (2026-11-03): left as it was, by the user's choice: walked all the way round at 32:9 (mode 35), the room's own sky, tree, signs and platforms reach the edges; what measured as black is the sky's own dark side and the floor's own dark gaps

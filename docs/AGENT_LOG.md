@@ -71,7 +71,7 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    release. Whether it plays the same as retail is checked by the user playing it.
    The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. The latest is v0.1.1 (2026-11-01). 6.8, fully native, is done (2026-11-01): plain maths, direct drawing and the port's own APIs. Sticks and rumble since its pad rewrite still need a try on a real controller. Before a change that shouldn't alter the game, `playtest.mjs same [--all]` makes a baseline with `--save`, in `build/`, and afterwards shows in a minute that frames and sound haven't changed. `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
 
-4. Part 7 (2026-11-03): 7.6, sharper icons and text, is done (ICONS: CRISP; the game's own lettering stays). 7.11, widescreen level by level, is done to 7.11.19 Toxic Dash; **7.11.20 Warp Room 3** is the next to look at: show each level as it is first, and the user decides whether it needs work. Then 7.8 mods and 7.9 online play. 7.7, optional modern lighting, was taken off the roadmap by the user (2026-11-03).
+4. Part 7 (2026-11-03): 7.6, sharper icons and text, is done (ICONS: CRISP; the game's own lettering stays). 7.11, widescreen level by level, is done to 7.11.20 Warp Room 3; **7.11.21 Polar Panic** is the next to look at: show each level as it is first, and the user decides whether it needs work. Then 7.8 mods and 7.9 online play. 7.7, optional modern lighting, was taken off the roadmap by the user (2026-11-03).
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -476,6 +476,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-03: 7.11.20 Warp Room 3: the user left Warp Room 3 as it was: walked round the hub at 32:9 (`--mode 35`, left held through `--press`), the room's own sky, tree and platforms reach the edges at every angle
 - 2026-11-03: 7.11.19 Toxic Dash: the user approved Toxic Dash in widescreen
 - 2026-11-03: Toxic Dash (mode 24, file 639) in widescreen. Piece 16 is the room: a wall on a circle of radius about 4880 round the back half only (angles -90 to 90 from the middle; panels about 17.7 degrees wide, rows at y -3560, -2151, -585 and 441, tiles 11-13 above and 8-10 at the foot in that turn left to right, colours 000010, 080831, 08525A and 21FFEF), and the waste floor (tile 16, a flipbook of a frame each frame) round the track. The camera stays at (181, -2770, -5864), outside the room, until a close one at the end. The walls go on from each end to z -6000 (`ToxicWalls`; `PogoWall` is `SideWall` now, with its rows, tiles and colours, and Pogo Painter's shots are byte-identical), and the waste out to their foot (`ToxicWaste`, rim colour 6BFF00, a tile 6 cells across). The black left inside the right porthole is the level's own. 4:3 and twelve other levels' wide shots are byte-identical.
 - 2026-11-03: 7.11.18 Bearminator: the user approved the Bearminator in widescreen
