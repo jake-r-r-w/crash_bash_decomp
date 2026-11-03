@@ -16,7 +16,7 @@ What the port could have beyond the game as it was. None of it may reach the dec
 quick wins for every player first, then the look, each building on the last, then the two big jobs. Mods can use what the packs need, and online play comes
 last as it's the largest and any change to the game's state affects it.
 
-Where it makes sense, each is optional: a setting in the launcher to turn it on or off, so people can play with the original or the new. That's 7.2 to 7.7, and each mod in 7.8. Turned off, the game looks and plays as it did. Easier setup and online play aren't toggles: one's a step in setting up and the other's a way to play.
+Where it makes sense, each is optional: a setting in the launcher to turn it on or off, so people can play with the original or the new. That's 7.2 to 7.6, and each mod in 7.8. Turned off, the game looks and plays as it did. Easier setup and online play aren't toggles: one's a step in setting up and the other's a way to play.
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
@@ -34,7 +34,6 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | 7.11.23 | Oxide Ride | Space is dark on purpose: probably leave | [ ] |
 | 7.11.24 | Crystal maps | Not looked at yet: they're maps of their own. N.Ballism's has the same front corners as its normal map had: a black wedge on each base, and needles | [ ] |
 | 7.11.25 | Later in each level | Not looked at yet: all this is from the first few seconds | [ ] |
-| 7.7 | Optional modern lighting | Lighting beyond the game's own, which is colours baked into its models' vertices | [ ] |
 | 7.8 | Mod support | A mod loader, with a mod manager built into the launcher (`settingsmenu.c`): list, turn on and off and order mods, over the game's archive files. It goes in the launcher's Mods section, with the texture packs (7.10) | [ ] |
 | 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |
 
