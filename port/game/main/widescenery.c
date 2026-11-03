@@ -39,6 +39,7 @@ typedef struct {
 #define FILE_DANTES_DASH 637
 #define FILE_CRASHBALL 659
 #define FILE_JUNGLE_FOX 691
+#define FILE_RING_DING 627
 
 static const WideExtra Extras[] = {
     /* kelp and coral on the extra sand, the level's own, in its own order: its fish is left out */
@@ -90,6 +91,8 @@ static const WideExtra Extras[] = {
     { FILE_JUNGLE_FOX, 9, 0, 0, 1300, 0, -1000, 0 },
     { FILE_JUNGLE_FOX, 6, 0, 0, 3300, 0, -2000, 0 },
     { FILE_JUNGLE_FOX, 9, 0, 0, 2200, 0, -2300, 0 },
+    /* the grey gear under the platform on the left, on the right too, where it's black: it's in the level's order, as the platform has to come in front */
+    { FILE_RING_DING, 4, 0, 0, 4712, 0, 0, 0, 1 },
 };
 #define NUM_EXTRAS ((s32)(sizeof(Extras) / sizeof(Extras[0])))
 
