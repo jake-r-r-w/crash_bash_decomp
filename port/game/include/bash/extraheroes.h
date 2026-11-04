@@ -33,14 +33,15 @@ s32 extra_heroes_model_is(const obj_dbase *db);
 void extra_heroes_start(void);
 void extra_heroes_stop(void);
 
-/* A move's model switch (0x8006): the base's own model is the extra hero's. */
+/* A move's model switch (0x8006): the base's own model of a kind is the extra hero's. */
 s32 extra_hero_bank(s32 player, s32 bank);
-/* A move's sound (0x8008 to 0x800A): 1 if an extra hero has played its own instead, its laugh for its base's taunt. */
-s32 extra_hero_voice(s32 player, s32 sfx);
-/* A winner's voice (UpdateHeroVictory: 0 the announcer's name, 1 the winner's cheer): 1 if an extra hero has played its own instead,
- * its laugh for the cheer. */
-s32 extra_hero_win_voice(s32 player, s32 line);
-/* Any sound (PlaySfx): 1 if it's an extra hero's base's hit or fall, and the extra hero's own has played instead. */
+/* The model a subengine's drawn with: an extra hero's own, where the game has given it its base's (Polar Push's, by hero), or as it is. */
+const obj_dbase *extra_hero_dbase(const subengine *sub, const obj_dbase *db);
+/* The hero whose weight and speeds a player's hero `name` has in this game: an extra hero's kind can be another's (Roo's on his bear,
+ * Crash's), and anyone else is themselves. */
+s32 extra_hero_like(s32 player, s32 name);
+/* Any sound (PlaySfx): 1 if it's one of an extra hero's base's own (its block: its moves', hits', taunt's and cheers') and the extra
+ * hero's own has played instead, or none. The announcer naming it stays the base's. */
 s32 extra_hero_sound(s32 sfx);
 /* A frame as it's drawn: for an extra hero's own subengine, its stand-in's; anything else as it is. */
 s32 extra_hero_frame(const subengine *sub, s32 entity);

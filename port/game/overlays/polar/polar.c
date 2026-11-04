@@ -5,6 +5,7 @@
 #include "bash/polar.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
+#include "bash/extraheroes.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
 /* engine.h declares it, but polar.c does not include that */
@@ -1759,7 +1760,8 @@ void ResetMass(s32 player) {
     s32 *ext;
 
     if (move != NULL) {
-        switch (GAME->heroes[player]) {
+        /* PC: an extra hero on its bear is as heavy as its kind says (extraheroes.c) */
+        switch (extra_hero_like(player, GAME->heroes[player])) {
         case 1:
             move->mass = 0x100;
             break;
@@ -4905,7 +4907,7 @@ void PolarBeamRelease(s32 arg0, s32 arg1, s32 arg2) {
                 shadow->xform.scale.vy = 0x1000;
                 shadow->xform.scale.vz = 0x1000;
                 ResetMass(arg0);
-                PolarHeroMass[arg0] = HeroHooks.RunSpeeds[h->hero_name * 3];
+                PolarHeroMass[arg0] = HeroHooks.RunSpeeds[extra_hero_like(arg0, h->hero_name) * 3];
             }
         }
         break;
@@ -5678,7 +5680,7 @@ void PlotTransmuterBeam(NAS *m) {
                     hs->xform.scale.vz += 0x100;
                 } else {
                     ext->hero_last_action[ext->effect_player] = -1;
-                    PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[Heroes[ext->effect_player].hero_name * 3];
+                    PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[extra_hero_like(ext->effect_player, Heroes[ext->effect_player].hero_name) * 3];
                     ext->onoff_timer = 0;
                     ResetMass(ext->effect_player);
                     ext->effect_player = -1;
@@ -5696,7 +5698,7 @@ void PlotTransmuterBeam(NAS *m) {
                 } else {
                     ext->hero_last_action[ext->effect_player] = -1;
                     ResetMass(ext->effect_player);
-                    PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[Heroes[ext->effect_player].hero_name * 3];
+                    PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[extra_hero_like(ext->effect_player, Heroes[ext->effect_player].hero_name) * 3];
                     ext->onoff_timer = 0;
                     ext->effect_player = -1;
                     he->xform.scale.vx = 0x1000;
@@ -6258,7 +6260,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
                             mv->x_vel = -(sp * t[(-ang + 0x400) & 0xFFF].unk2 >> 13);
                             mv->z_vel = -(sp * t[-ang & 0xFFF].unk2 >> 13);
                             sp *= Heroes[player].hero_move->mass;
-                            if ((HeroHooks.RunSpeeds[Heroes[player].hero_name * 3] * 0xC000 >> 8) < sp) {
+                            if ((HeroHooks.RunSpeeds[extra_hero_like(player, Heroes[player].hero_name) * 3] * 0xC000 >> 8) < sp) {
                                 nas = CreateNAS(o->XYZ.x, o->XYZ.y - 0x80, o->XYZ.z, 0x1604, 0x11);
                                 if (nas != NULL) {
                                     m = (EXTmotion *)nas->FUX;
@@ -6922,7 +6924,7 @@ void PlotUkaPolarMask(NAS *m) {
                     sh->xform.scale.vz += 0x100;
                 } else {
                     ext->hero_last_action[ext->effect_player] = -1;
-                    PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[Heroes[ext->effect_player].hero_name * 3];
+                    PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[extra_hero_like(ext->effect_player, Heroes[ext->effect_player].hero_name) * 3];
                     ResetMass(ext->effect_player);
                     ext->effect_player = -1;
                     ext->NasStatus = 0;
@@ -6975,7 +6977,7 @@ void PlotUkaPolarMask(NAS *m) {
             if (ext->offtime-- < 0) {
                 ResetMass(ext->effect_player);
                 ext->NasStatus = 0;
-                PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[Heroes[ext->effect_player].hero_name * 3];
+                PolarHeroMass[ext->effect_player] = HeroHooks.RunSpeeds[extra_hero_like(ext->effect_player, Heroes[ext->effect_player].hero_name) * 3];
                 ext->hero_last_action[ext->effect_player] = -1;
                 if (Heroes[ext->effect_player].hero_mode != 0x49) {
                     SetHeroAction(ext->effect_player, 0x49);
@@ -13355,7 +13357,7 @@ void PolarInitHeroMove(s32 arg0) {
         m->x_acc = two;
         m->z_acc = two;
         m->velocity_calc = 3;
-        PolarHeroMass[arg0] = HeroHooks.RunSpeeds[h->hero_name * 3];
+        PolarHeroMass[arg0] = HeroHooks.RunSpeeds[extra_hero_like(arg0, h->hero_name) * 3];
     }
 }
 

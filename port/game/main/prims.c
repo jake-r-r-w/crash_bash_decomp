@@ -1224,7 +1224,8 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
         g->otzAdd = ((GfxScreen *)g->screen)->otz;
     }
     if (n != 0 && (arg0->flags & 0x8000)) {
-        model = arg0->u6C.dbase;
+        /* PC: an extra hero is drawn in its own model where the game gives it its base's (extraheroes.c) */
+        model = (obj_dbase *)extra_hero_dbase(arg0, arg0->u6C.dbase);
         if (model != NULL) {
             RenderState.dbase = model;
             colors = model->data;

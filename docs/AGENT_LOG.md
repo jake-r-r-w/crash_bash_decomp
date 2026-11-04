@@ -71,7 +71,7 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    release. Whether it plays the same as retail is checked by the user playing it.
    The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. The latest is v0.2.0 (2026-11-03). 6.8, fully native, is done (2026-11-01): plain maths, direct drawing and the port's own APIs. The user has tried sticks and rumble on a real controller since its pad rewrite, and they're fine (2026-11-03). Before a change that shouldn't alter the game, `playtest.mjs same [--all]` makes a baseline with `--save`, in `build/`, and afterwards shows in a minute that frames and sound haven't changed. `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
 
-4. Part 7 (2026-11-03): 7.6, sharper icons and text, is done (ICONS: CRISP; the game's own lettering stays). 7.11, widescreen level by level, is done (2026-11-03): every level shown to the user and fixed or left at their word, and the eleven crystal maps they picked. 7.8, mods, is done (2026-11-03; PORT.md, Mods, and MODDING.md), approved by the user after playing with it. **Now: 7.12, extra heroes** (the user's, 2026-11-03): with the launcher's EXTRA HEROES on and the player's Crash Bandicoot (USA) disc in a `discs` folder (or the repo's `disc/`), Ripper Roo has a ninth card in the character select and plays Crate Crush as that game's Roo, converted on their machine (`main/bonusheroes.c`); only that Roo, at the user's word (no Crash Bash Roo without the disc). Next the other games and the bosses (ROADMAP-B 7.12). Then 7.9 online play, the last row. 7.7, optional modern lighting, was taken off the roadmap by the user (2026-11-03). At the next release, README.md's Texture packs row becomes Mods.
+4. Part 7 (2026-11-03): 7.6, sharper icons and text, is done (ICONS: CRISP; the game's own lettering stays). 7.11, widescreen level by level, is done (2026-11-03): every level shown to the user and fixed or left at their word, and the eleven crystal maps they picked. 7.8, mods, is done (2026-11-03; PORT.md, Mods, and MODDING.md), approved by the user after playing with it. **Now: 7.12, extra heroes** (the user's, 2026-11-03): with the launcher's EXTRA HEROES on and the player's Crash Bandicoot (USA) disc in a `discs` folder (or the repo's `disc/`), Ripper Roo has a ninth card in the character select and plays Crate Crush as that game's Roo, converted on their machine; only that Roo, at the user's word (no Crash Bash Roo without the disc). Since 2026-11-04 he rides a polar bear in Polar Push too (7.12.3, waiting on the user's play), and each hero is a file of its own, `main/heroes/roo.c` the template (docs/EXTRA_HEROES.md). Next the other games and the bosses (ROADMAP-B 7.12). Then 7.9 online play, the last row. 7.7, optional modern lighting, was taken off the roadmap by the user (2026-11-03). At the next release, README.md's Texture packs row becomes Mods.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -147,6 +147,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Gotchas
 
 **Port test runs**
+- **A frame's index list holds a vertex << 2 in 16 bits,** so one animation's vertices over all its frames can't pass 16,384 (Roo's JUMP was 28 x 592 = 16,576: on its last frame the tornado's vertices wrapped round onto others). `made_write` writes such an animation as keyframes with the frames between blended, as the game's own models are.
+- **Polar Push gives each hero its model by name** in 108 places (`SetPolarHeroIdle`, `SetPolarHeroWinner`, ...), never from `HeroHooks.HeroModels`; an extra hero is drawn in its own where the game sets its base's (`extra_hero_dbase`, from `prims.c`). Its last arena (mode 0x15) loads two tables: the heroes on foot in `HeroModels`, on bears in `HeroHooks.flag`.
+- **Hero sound blocks are 50 apart but the games use 26:** the 50th id of Koala Kong's, 0x190, is a menu's. The medieval chicken arena's own sounds are ids 1 to 0x11, inside Crash's block.
 - **`GameFrameCount` in the launcher steps by 2, and is odd:** something else counts it too, so `GameFrameCount % 30 == 0` never comes. The Mods page counts its own updates.
 - **A crystal challenge's test run waits on its rules:** with `--level-flags 80` the rules box covers the screen until a press: `--press 300 4000 --press 360 4000` starts it.
 - **`WIDE_HIDE` takes 32 pieces at most** (`MAX_TRIED_HIDDEN`); past that the rest are left shown, so hide a big level's pieces in groups. To find what draws a pixel, `scratch/dbg_tri2.mjs` (`TRI_PROBE="x,y,r"`) names the owner of the triangles under it: Pogo Painter's crystal sky and Oxide's haze weren't the pieces they looked to be.
@@ -497,6 +500,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-04: Roo rides a polar bear in Polar Push, and the extra heroes have a template, at the user's word (Roo is the standard
+  the others follow). Each hero is a file in `port/game/main/heroes/` filling a `HeroDef` (bash/herodef.h): how it plays (stand-ins
+  per kind of model, sounds, whose weight it has) and its make, which uses bash/heromake.h (Crash Bandicoot's formats, `made_write`,
+  riding). His bear model is Crash's polar model's bear from the player's archive (its strips by texture, outline and colour, 129
+  faces) with Roo sat on it (`seated()`, tried out first in scratch/roo_polar.mjs), moving as Crash does: his hips' motion (Horn's
+  fit) and his lean, hips to head (a fit of his chest caught his punching arms), at Roo's waist and neck; his sway and laugh over
+  it. Two meshes, the second charred for a bomb. DB_BonusRooPolar, entries 994 and 995. As heavy and quick as Crash there
+  (`extra_hero_like`). All of his base's 26 sounds are his now (they were Rilla Roo's for jumps, attacks and pick-ups in Crate
+  Crush too). Tried in all four Polar Push arenas and Crate Crush by shots; not heard, and not played by the user yet.
 
 - 2026-11-04: The user approved Roo (LGTM): 7.12.2, Ripper Roo in Crate Crush, is ticked and in ROADMAP-A (`make progress` not
   run: Docker was down). A bonus disc is found loose beside the program too now, or where it's run from (depth 0), as the game's

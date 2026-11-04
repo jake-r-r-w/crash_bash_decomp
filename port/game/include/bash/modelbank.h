@@ -327,7 +327,8 @@ enum DbaseIds {
     DB_CutsceneAkuData, /* 280: models\cutscene\aku\data.mdl */
     DB_CutsceneAkuUkaData2, /* 281: models\cutscene\aku_uka\data2.mdl */
     DB_CutsceneAkuUkaData, /* 282: models\cutscene\aku_uka\data.mdl */
-    DB_BonusRoo, /* 283, PC: Ripper Roo from the player's Crash Bandicoot disc (main/bonusheroes.c) */
+    DB_BonusRoo, /* 283, PC: Ripper Roo from the player's Crash Bandicoot disc (main/bonusheroes.c, main/heroes/roo.c) */
+    DB_BonusRooPolar, /* 284, PC: and riding a polar bear */
     DB_COUNT
 };
 

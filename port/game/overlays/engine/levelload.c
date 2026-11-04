@@ -203,7 +203,7 @@ loop:
                     e = &((obj_dbase *)base)[((u16 *)tbl->flag)[c]];
                     for (j = 0; j < ModeDbaseCount; j++) {
                         if (e == p->dbase) {
-                            queue_dbase_load((u8 *)p, arg);
+                            queue_dbase_load((u8 *)p, extra_heroes_model_is(e) ? NULL : arg);
                         }
                         p++;
                     }
@@ -249,10 +249,13 @@ void load_initial_dbases(void)
     k = ((u8 *) g)[i + 0x50];
     if ((k - 1) < 8)
     {
-      dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]], (void **)arg);
+      /* PC: an extra hero's with all its animations (extraheroes.c) */
+      dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]],
+                              extra_heroes_model_is(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]]) ? NULL : (void **)arg);
       if (h->flag != 0)
       {
-        dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->flag)[k]], (void **)arg);
+        dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->flag)[k]],
+                                extra_heroes_model_is(&((obj_dbase *) b)[((u16 *) h->flag)[k]]) ? NULL : (void **)arg);
       }
     }
     i++;
@@ -1348,7 +1351,7 @@ Blk32 LoadingScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 LoadingScriptPos = {0};
 process_info LoadingProcess2 = { InitLoadingCamera, UpdateLoadingScene, RenderLoadingScene, QuitLoadingScene, 0 };
 /* the models each mode loads (LoadModeDbases, QueueHeroModels; the last is the adventure stats') */
-ModeDbase ModeDbaseLists[97] = {
+ModeDbase ModeDbaseLists[98] = {
     { &FileGroups[128], &HeroModelBank[DB_CharsCrateCrash], &DatIndex[990], &DatIndex[989] },
     { &FileGroups[127], &HeroModelBank[DB_CharsCrateCoco], &DatIndex[988], &DatIndex[987] },
     { &FileGroups[126], &HeroModelBank[DB_CharsCrateCortex], &DatIndex[986], &DatIndex[985] },
@@ -1447,6 +1450,7 @@ ModeDbase ModeDbaseLists[97] = {
     { &FileGroups[36], &HeroModelBank[DB_CharsSplashKong], &DatIndex[806], &DatIndex[805] },
     /* PC: Ripper Roo from the player's Crash Bandicoot disc, for the extra heroes (main/bonusheroes.c) */
     { &FileGroups[130], &HeroModelBank[DB_BonusRoo], &DatIndex[993], &DatIndex[992] },
+    { &FileGroups[131], &HeroModelBank[DB_BonusRooPolar], &DatIndex[995], &DatIndex[994] },
 };
 const s32 ModeDbaseCount = sizeof(ModeDbaseLists) / sizeof(ModeDbaseLists[0]);
 s32 FileGroupNone[2] = {0};

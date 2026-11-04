@@ -60,8 +60,8 @@ character select, in a third row under the others, and the computer players can
 pick him too.
 
 He's made from the image each time the game starts, so keep it there: nothing of
-it is copied or kept. So far he's made for Crate Crush; the other games aren't
-done for him yet.
+it is copied or kept. So far he's made for Crate Crush and Polar Push, where he
+rides a polar bear as the others do; the other games aren't done for him yet.
 
 
 MODS

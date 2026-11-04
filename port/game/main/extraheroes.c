@@ -1,16 +1,19 @@
 /* Extra heroes (bash/extraheroes.h, PC only): characters from the player's own copies of other Crash games, as heroes of their own:
- * Ripper Roo, from Crash Bandicoot, when that disc is in a discs folder (bonusheroes.c, which makes his model). Without it, there's none.
+ * Ripper Roo, from Crash Bandicoot, when that disc is beside the program or in a discs folder. Each is a file of its own in heroes/
+ * (bash/herodef.h: how it plays, and how bonusheroes.c makes its models), and without its disc there's none.
  *
  * The game keeps a great deal by hero number, 1 to 8: speeds, the computer's play, sounds, shadows, the moves, which model each game
  * loads. So an extra hero borrows, inside, the number of an original hero nobody's playing that match (at most four of the eight are),
- * its base, and plays as that hero does: the same moves, timing and reach. What makes it itself is its model, put in the base's place
- * in the game's table of models by hero (HeroHooks.HeroModels), its face on the panel, and how its frames are drawn. The moves name
- * frames of the base's own model, 0x4000 | n << 7 | f, frame f of its animation n, so as an extra hero is drawn each one is its
- * stand-in for that animation, by name (Roo's walk where a hero would run, his spin where one attacks), the same share of the way
- * through or at its own speed, with less of its lift off the ground. The points the game finds on a frame (the boxes it collides
- * with, the hands that hold a crate) are the base's, from its own model, and so is its body's box (body_box); what it holds sits on
- * its head, which is where the head point is too. The moves themselves never change, so the game's checks of how far one has got
- * still hold. */
+ * its base, and plays as that hero does: the same moves, timing and reach. What makes it itself is its models, one of each kind the
+ * games have (on foot, riding a polar bear), each put in the base's place in the game's tables of models by hero (HeroHooks.HeroModels
+ * and the second some games load, HeroHooks.flag) and drawn wherever the game shows the base's of that kind; its face on the panel; its
+ * sounds in place of its base's; and how its frames are drawn. The moves name frames of the base's own model, 0x4000 | n << 7 | f,
+ * frame f of its animation n, so as an extra hero is drawn each one is its stand-in for that animation, by name (Roo's walk where a hero
+ * would run, his spin where one attacks), the same share of the way through or at its own speed, with less of its lift off the ground
+ * if its kind says so. The points the game finds on a frame (the boxes it collides with, the hands that hold a crate) are the base's,
+ * from its own model, and so is its body's box (body_box); what it holds sits on its head, which is where the head point is too. The
+ * moves themselves never change, so the game's checks of how far one has got still hold. In a game where its kind says so it's as
+ * heavy and as quick as another hero (Roo on his bear as Crash). */
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,6 +26,7 @@
 #include "bash/nascalls.h"
 #include "bash/pause.h"
 #include "bash/heroes.h"
+#include "bash/herodef.h"
 #include "bash/extraheroes.h"
 #include "bash/bonusheroes.h"
 #include "../../platform/settings.h"
@@ -33,60 +37,17 @@ unsigned char *archive_own_file(int entry, int *size);
 #define MAX_ANIMS 32   /* a model's animations, as n in a frame's model id can count */
 #define MODELS 10      /* a game's table of models by hero number: nobody, the eight, and Off */
 #define MAX_POINTS 512 /* bytes of a frame's points and boxes */
-#define KEEP_LIFT 0x500 /* of a frame's lift off the ground, the share an extra hero keeps (0x1000 all): Roo's hops are a crate or more high */
 #define HELD_FLAGS 0x31 /* the points a held crate goes between (0x10, 0x20) or at (1): xtras.c, CrateFux */
 #define HEAD_FLAG 0x80  /* the top of a hero's head */
-#define MORPH_VERTS 4096 /* prims.c's MorphVerts, a frame's vertices as they're drawn: all of a mesh's (Roo's are 2091, 3 a triangle) */
+#define MORPH_VERTS 4096 /* prims.c's MorphVerts, a frame's vertices as they're drawn: all of a mesh's (Roo's are 3435, 3 a triangle) */
+#define HIT_FIRST 2     /* a hero's hit voices, in its block of sounds (HeroHitSfx: the first of them) */
 
-/* How a stand-in's frames go as its base's animation plays: the same share of the way through it (STRETCH), or at the stand-in's own
- * speed, a frame a tick from when the base's started, round and round (LOOP) or once, its last frame then held (ONCE). Roo's laugh is
- * a sixth of his base's win and his fall most of its hurt, slowed at its end, so drawn the same share through they went in slow
- * motion. */
-enum { STRETCH, LOOP, ONCE };
-
+/* A player's extra hero's model of one kind, while a level's on */
 typedef struct {
-    const char *from, *to;
-    s32 pace;
-} Stand;
-
-typedef struct {
-    const char *name;
-    const char *id; /* for --extra-hero */
-    s32 prefer;  /* the original hero it borrows, if nobody's playing that one */
-    const Stand *stands;
-    const char *otherwise; /* its stand-in for any animation not listed */
-    const char *face;      /* the animation its face on the panel is from, frame 0 */
-    float face_turn;       /* and how far round it's turned, in degrees */
-} ExtraHero;
-
-/* Ripper Roo, who has four animations from Crash Bandicoot (JUMP, BREATHE, TAUNT and DIE) and two made for him (bonusheroes.c): a
- * walk (WALK), his legs stepping, where others run, walk carrying, slide or swim, and a spin attack (SPIN), his legs out as he spins
- * in a hop, where they attack or kick. He stands still holding a crate (BANK), laughs where they throw, taunt or win, and falls over
- * when he's hurt. A stand-in can be a list of names, the first the model has, and a name can have a range of its frames
- * (NAME:first-last). His JUMP is his boss fight's, which crouches into a tall stance first (frames 0 to 12), so he jumps from 13. */
-static const Stand RooStands[] = {
-    { "JUMP", "JUMP:13-27" }, { "MEDIUM", "WALK" }, { "RUN", "WALK" }, { "SKATE", "WALK" }, { "SLIDE", "WALK" },
-    { "SWIM", "WALK" }, { "FLIP", "WALK" }, { "FALL", "WALK" }, { "PUSH", "WALK" }, { "TRANS", "WALK" },
-    { "HOLD_SLOW", "WALK" }, { "BARGE", "WALK" }, { "BANK", "BREATHE" }, { "ATTACK", "SPIN" }, { "KICK", "SPIN" },
-    { "WIN", "TAUNT", LOOP }, { "WIN2", "TAUNT", LOOP },
-    { "PICKUP", "TAUNT" }, { "HOLD_THROW", "TAUNT" }, { "TAUNT", "TAUNT" }, { "TAUNT_A", "TAUNT" },
-    { "FIRE1", "TAUNT" }, { "FIRE2", "TAUNT" }, { "FIRE3", "TAUNT" }, { "MINE", "TAUNT" }, { "RECOIL", "TAUNT" },
-    { "TAZING", "TAUNT" }, { "LIGHT", "TAUNT" },
-    { "HIT", "DIE", ONCE }, { "DAZED", "DIE", ONCE }, { "DIE", "DIE", ONCE },
-    { NULL, NULL, STRETCH },
-};
-
-static const ExtraHero ExtraHeroes[NUM_EXTRA] = {
-    { NULL, NULL, 0, NULL, NULL, NULL, 0 },
-    { "RIPPER ROO", "roo", Kanga, RooStands, "BREATHE", "BREATHE", 0 },
-};
-
-/* A player's extra hero while a level's on. */
-typedef struct {
-    s32 on;
-    const subengine *sub;   /* the hero's own */
+    s32 kind;
     const obj_dbase *bank;  /* the extra hero's model */
-    u8 *base;               /* the base's own model for this game, from the archive */
+    s32 base_bank;          /* and its base's, as the game's table has it */
+    u8 *base;               /* the base's own model, from the archive */
     u8 *own;                /* and the extra hero's */
     s32 count;              /* the base's animations */
     s32 to_anim[MAX_ANIMS]; /* the extra hero's stand-in for each, and the frames of it that stand in */
@@ -95,8 +56,15 @@ typedef struct {
     s32 pace[MAX_ANIMS];    /* STRETCH, LOOP or ONCE */
     s32 clock_anim;         /* the base's animation it was last drawn in, its frame, and the tick it started (GameFrameCount) */
     s32 clock_frame, clock_start;
-    s32 taunt_sfx;          /* the sound its base's taunt plays, which is its own laugh instead; -1 for none */
-    s32 scale;             /* the extra hero's height over the base's, 0x1000 = the same */
+    s32 scale;              /* the extra hero's height over the base's, 0x1000 = the same */
+} Variant;
+
+/* A player's extra hero while a level's on: its models of the kinds this game loads (its table's, and its second's) */
+typedef struct {
+    s32 on;
+    const subengine *sub; /* the hero's own */
+    s32 nvar;
+    Variant var[2];
     union {
         PointList list;
         u8 bytes[MAX_POINTS];
@@ -105,8 +73,8 @@ typedef struct {
 
 static s32 PlayerExtra[4];
 static s32 PlayerBase[4]; /* 0 until extra_heroes_assign has given it one */
-static u16 Models[MODELS];
-static u16 *ModelsFrom;
+static u16 Models[MODELS], FlagModels[MODELS];
+static u16 *ModelsFrom, *FlagFrom;
 static Playing Play[4];
 static s32 AnyPlaying;
 
@@ -133,32 +101,45 @@ void extra_hero_pick(s32 player, s32 extra) {
 }
 
 const char *extra_hero_name(s32 extra) {
-    return extra > EXTRA_NONE && extra < NUM_EXTRA ? ExtraHeroes[extra].name : "";
+    return extra > EXTRA_NONE && extra < NUM_EXTRA ? HeroDefs[extra]->name : "";
 }
 
 s32 extra_hero_named(const char *id) {
     s32 x;
 
     for (x = EXTRA_NONE + 1; x < NUM_EXTRA; x++) {
-        if (strcmp(ExtraHeroes[x].id, id) == 0) {
+        if (strcmp(HeroDefs[x]->id, id) == 0) {
             return x;
         }
     }
     return EXTRA_NONE;
 }
 
-/* Whether it's there to play: its model came from the player's disc of its game (bonusheroes.c). */
+/* Whether it's there to play: its models came from the player's disc of its game (bonusheroes.c). */
 s32 extra_hero_available(s32 extra) {
     return extra > EXTRA_NONE && extra < NUM_EXTRA && bonus_heroes_have(extra);
 }
 
-/* Its model's bank. */
-static s32 bank_of(s32 extra) {
-    return bonus_heroes_bank(extra);
+/* Its model on foot's bank, and its file (to free): what its face and portrait are drawn from */
+static s32 foot_bank(s32 extra) {
+    return bonus_heroes_bank(extra, KIND_FOOT);
+}
+
+static u8 *foot_file(s32 extra) {
+    return bonus_heroes_have(extra) ? bonus_heroes_model(extra, KIND_FOOT) : NULL;
 }
 
 s32 extra_hero_model(s32 extra) {
-    return extra > EXTRA_NONE && extra < NUM_EXTRA ? bank_of(extra) : DB_Empty;
+    return extra > EXTRA_NONE && extra < NUM_EXTRA ? foot_bank(extra) : DB_Empty;
+}
+
+/* The kind of model a hero's bank in one of the game's tables is */
+static s32 kind_of(s32 bank) {
+    if ((bank >= DB_CharsPolar2Crash && bank <= DB_CharsPolar2Brio) || bank == DB_CharsPolar2Kong || bank == DB_CharsPolar2Rilla
+        || (bank >= DB_CharsPolarCrash && bank <= DB_CharsPolarKong)) {
+        return KIND_POLAR;
+    }
+    return KIND_FOOT;
 }
 
 static s32 taken(s32 name, s32 except) {
@@ -181,7 +162,7 @@ void extra_heroes_assign(void) {
         }
         if (!extra_heroes_on() || (PlayerExtra[i] != EXTRA_NONE && !extra_hero_available(PlayerExtra[i]))) {
             if (PlayerExtra[i] != EXTRA_NONE && settings()->test_extra[i] != 0) {
-                printf("extra heroes: %s needs your copy of his game beside the program or in a discs folder\n", ExtraHeroes[PlayerExtra[i]].name);
+                printf("extra heroes: %s needs your copy of his game beside the program or in a discs folder\n", HeroDefs[PlayerExtra[i]]->name);
             }
             PlayerExtra[i] = EXTRA_NONE;
         }
@@ -191,7 +172,7 @@ void extra_heroes_assign(void) {
             continue;
         }
         /* its own base, if nobody else has it; then the first nobody has */
-        name = ExtraHeroes[PlayerExtra[i]].prefer;
+        name = HeroDefs[PlayerExtra[i]]->prefer;
         if (taken(name, i)) {
             for (name = Crash; name <= Kanga && taken(name, i); name++) {
             }
@@ -202,33 +183,48 @@ void extra_heroes_assign(void) {
     }
 }
 
+/* A table of models by hero with each extra hero's of the kind there in its base's place */
+static void swap_models(u16 *to, const u16 *from) {
+    s32 i;
+
+    memcpy(to, from, sizeof(u16) * MODELS);
+    for (i = 0; i < 4; i++) {
+        if (PlayerExtra[i] != EXTRA_NONE && (u32)(PlayerBase[i] - 1) < 8) {
+            to[PlayerBase[i]] = (u16)bonus_heroes_bank(PlayerExtra[i], kind_of(from[PlayerBase[i]]));
+        }
+    }
+}
+
 void extra_heroes_models(void) {
     s32 i;
 
-    if (HeroHooks.HeroModels == NULL || HeroHooks.HeroModels == Models) {
-        return;
-    }
     for (i = 0; i < 4 && PlayerExtra[i] == EXTRA_NONE; i++) {
     }
     if (i == 4) {
         return;
     }
-    ModelsFrom = HeroHooks.HeroModels;
-    memcpy(Models, ModelsFrom, sizeof(Models));
-    for (i = 0; i < 4; i++) {
-        if (PlayerExtra[i] != EXTRA_NONE) {
-            Models[PlayerBase[i]] = (u16)bank_of(PlayerExtra[i]);
-        }
+    if (HeroHooks.HeroModels != NULL && HeroHooks.HeroModels != Models) {
+        ModelsFrom = HeroHooks.HeroModels;
+        swap_models(Models, ModelsFrom);
+        HeroHooks.HeroModels = Models;
     }
-    HeroHooks.HeroModels = Models;
+    if (HeroHooks.flag == NULL) {
+        FlagFrom = NULL;
+    } else if (HeroHooks.flag != (void *)FlagModels) {
+        FlagFrom = HeroHooks.flag;
+        swap_models(FlagModels, FlagFrom);
+        HeroHooks.flag = FlagModels;
+    }
 }
 
 s32 extra_heroes_model_is(const obj_dbase *db) {
-    s32 x;
+    s32 x, k;
 
     for (x = EXTRA_NONE + 1; x < NUM_EXTRA; x++) {
-        if (db == &HeroModelBank[bonus_heroes_bank(x)]) {
-            return 1;
+        for (k = 0; k < NUM_KINDS; k++) {
+            if (db == &HeroModelBank[bonus_heroes_bank(x, k)]) {
+                return 1;
+            }
         }
     }
     return 0;
@@ -267,18 +263,20 @@ static s32 has(const ModelFile *m, s32 key) {
     return 0;
 }
 
-/* The extra hero's stand-in for one of its base's animations, by name: the first of its names that its model m has, and if first
- * isn't NULL, the range of its frames that name gives (or -1, all of them) and its pace. */
-static s32 stand_in(const ExtraHero *x, s32 key, const ModelFile *m, s32 *first, s32 *last, s32 *pace) {
+/* The extra hero's stand-in for one of its base's animations, by name, in its model of a kind m: the first of its stand-in's names that
+ * m has; or the base's own name, if m has it; or else its kind's `otherwise`. If first isn't NULL, the range of its frames that name
+ * gives (or -1, all of them) and its pace. */
+static s32 stand_in(const HeroDef *x, s32 kind, s32 key, const ModelFile *m, s32 *first, s32 *last, s32 *pace) {
+    const HeroKind *k = &x->kinds[kind];
     const Stand *s;
-    const char *names = x->otherwise;
+    const char *names = NULL;
     char one[24];
 
     if (first != NULL) {
         *first = *last = -1;
         *pace = STRETCH;
     }
-    for (s = x->stands; s->from != NULL; s++) {
+    for (s = k->stands; s != NULL && s->from != NULL; s++) {
         if (hash_of(s->from) == key) {
             names = s->to;
             if (pace != NULL) {
@@ -287,7 +285,7 @@ static s32 stand_in(const ExtraHero *x, s32 key, const ModelFile *m, s32 *first,
             break;
         }
     }
-    while (*names != 0) {
+    while (names != NULL && *names != 0) {
         size_t n = strcspn(names, " ");
 
         if (n > 0 && n < sizeof(one)) {
@@ -309,7 +307,10 @@ static s32 stand_in(const ExtraHero *x, s32 key, const ModelFile *m, s32 *first,
         names += n;
         names += strspn(names, " ");
     }
-    return hash_of(x->otherwise);
+    if (has(m, key)) {
+        return key;
+    }
+    return hash_of(k->otherwise);
 }
 
 static s32 find(const ModelFile *m, s32 key) {
@@ -414,36 +415,21 @@ static s32 shape_of(const u8 *file, s32 n, s32 f, Shape *s) {
     return 1;
 }
 
-/* How far down a frame's drawn, for less of its lift. */
-static s32 lowered(const Shape *s) {
-    return s->lift * (0x1000 - KEEP_LIFT) >> 12;
+/* How far down a frame's drawn, for less of its lift: keep of it is kept. */
+static s32 lowered(const Shape *s, s32 keep) {
+    return s->lift * (0x1000 - keep) >> 12;
 }
 
 /* --- the frames --- */
 
-/* The sound hero `name`'s taunt plays as it starts (its moves' third, taunt_a: speed, then a sound command, 0x8008 to 0x800A, and the
- * sound), or -1. A minigame's own taunt plays the same one (N2O's). */
-static s32 taunt_sound(s32 name) {
-    const hero_seq *s = name >= Crash && name <= Kanga && HeroSeqTables[name] != NULL ? HeroSeqTables[name][2] : NULL;
-    s32 k;
-
-    for (k = 1; s != NULL && k < 16; k++) {
-        if (s[k] >= 0x8008 && s[k] <= 0x800A) {
-            return s[k + 1];
-        }
-        if (s[k] == 0x8000 || s[k] == 0x8004 || s[k] == 0x8005 || !(s[k] & 0x8000)) {
-            break;
-        }
-    }
-    return -1;
-}
-
 void extra_heroes_stop(void) {
-    s32 i;
+    s32 i, k;
 
     for (i = 0; i < 4; i++) {
-        free(Play[i].base);
-        free(Play[i].own);
+        for (k = 0; k < Play[i].nvar; k++) {
+            free(Play[i].var[k].base);
+            free(Play[i].var[k].own);
+        }
         memset(&Play[i], 0, sizeof(Play[i]));
     }
     AnyPlaying = 0;
@@ -455,55 +441,71 @@ static u8 *own_model(s32 bank) {
     return archive_own_file((s32)(HeroModelBank[bank].file - DatIndex), &size);
 }
 
-/* An extra hero's whole model file, to free: its bonus one, or the archive's. */
-static u8 *model_file(s32 extra) {
-    return bonus_heroes_have(extra) ? bonus_heroes_model(extra) : NULL;
-}
-
 static void body_box(s32 player);
 
+/* Its model of the kind a table's base bank is, as it's loaded now: 0 if it isn't */
+static s32 variant_start(s32 player, Variant *v, s32 base_bank) {
+    const HeroDef *x = HeroDefs[PlayerExtra[player]];
+    const ModelFile *from, *to;
+    s32 k, from_height;
+
+    memset(v, 0, sizeof(*v));
+    v->kind = kind_of(base_bank);
+    v->bank = &HeroModelBank[bonus_heroes_bank(PlayerExtra[player], v->kind)];
+    v->base_bank = base_bank;
+    if ((to = v->bank->data) == NULL) {
+        return 0;
+    }
+    /* the base's own model for this game, as it isn't loaded, and the extra hero's whole, with the frames a load leaves out */
+    v->base = own_model(base_bank);
+    v->own = bonus_heroes_model(PlayerExtra[player], v->kind);
+    if (v->base == NULL || v->own == NULL) {
+        free(v->base);
+        free(v->own);
+        v->base = v->own = NULL;
+        return 0;
+    }
+    from = (const ModelFile *)v->base;
+    v->count = from->nMeshAnims < MAX_ANIMS ? from->nMeshAnims : MAX_ANIMS;
+    for (k = 0; k < v->count; k++) {
+        s32 first, last, m, frames, pace;
+
+        v->from_frames[k] = anims_of(from)[k].frames;
+        m = find(to, stand_in(x, v->kind, anims_of(from)[k].hash, to, &first, &last, &pace));
+        frames = anims_of(to)[m].frames > 0 ? anims_of(to)[m].frames : 1;
+        first = first < 0 ? 0 : first >= frames ? frames - 1 : first;
+        last = last < first ? frames - 1 : last >= frames ? frames - 1 : last;
+        v->to_anim[k] = m;
+        v->to_first[k] = first;
+        v->to_count[k] = last - first + 1;
+        v->pace[k] = pace;
+    }
+    v->clock_anim = -1;
+    from_height = height_of(from);
+    v->scale = from_height > 0 && height_of(to) > 0 ? height_of(to) * 0x1000 / from_height : 0x1000;
+    return 1;
+}
+
 void extra_heroes_start(void) {
-    s32 i, k, from_height;
+    s32 i;
 
     extra_heroes_stop();
     for (i = 0; i < 4; i++) {
         Playing *p = &Play[i];
-        const ExtraHero *x = &ExtraHeroes[PlayerExtra[i]];
-        const ModelFile *from, *to;
+        s32 base = PlayerBase[i];
 
-        if (PlayerExtra[i] == EXTRA_NONE || ModelsFrom == NULL || Heroes[i].hero_sub == NULL) {
+        if (PlayerExtra[i] == EXTRA_NONE || ModelsFrom == NULL || Heroes[i].hero_sub == NULL || (u32)(base - 1) >= 8) {
             continue;
         }
-        p->bank = &HeroModelBank[bank_of(PlayerExtra[i])];
-        to = p->bank->data;
-        if (to == NULL) {
+        if (variant_start(i, &p->var[p->nvar], ModelsFrom[base])) {
+            p->nvar++;
+        }
+        if (FlagFrom != NULL && FlagFrom[base] != ModelsFrom[base] && variant_start(i, &p->var[p->nvar], FlagFrom[base])) {
+            p->nvar++;
+        }
+        if (p->nvar == 0) {
             continue;
         }
-        /* the base's own model for this game, as it isn't loaded, and the extra hero's whole, with the frames a load leaves out */
-        p->base = own_model(ModelsFrom[PlayerBase[i]]);
-        p->own = model_file(PlayerExtra[i]);
-        if (p->base == NULL || p->own == NULL) {
-            continue;
-        }
-        from = (const ModelFile *)p->base;
-        p->count = from->nMeshAnims < MAX_ANIMS ? from->nMeshAnims : MAX_ANIMS;
-        for (k = 0; k < p->count; k++) {
-            s32 first, last, m, frames, pace;
-
-            p->from_frames[k] = anims_of(from)[k].frames;
-            m = find(to, stand_in(x, anims_of(from)[k].hash, to, &first, &last, &pace));
-            frames = anims_of(to)[m].frames > 0 ? anims_of(to)[m].frames : 1;
-            first = first < 0 ? 0 : first >= frames ? frames - 1 : first;
-            last = last < first ? frames - 1 : last >= frames ? frames - 1 : last;
-            p->to_anim[k] = m;
-            p->to_first[k] = first;
-            p->to_count[k] = last - first + 1;
-            p->pace[k] = pace;
-        }
-        p->clock_anim = -1;
-        p->taunt_sfx = taunt_sound(PlayerBase[i]);
-        from_height = height_of(from);
-        p->scale = from_height > 0 && height_of(to) > 0 ? height_of(to) * 0x1000 / from_height : 0x1000;
         p->sub = Heroes[i].hero_sub;
         p->on = 1;
         AnyPlaying = 1;
@@ -528,74 +530,91 @@ static void body_box(s32 player) {
     sub->entity = was;
 }
 
-s32 extra_hero_voice(s32 player, s32 sfx) {
-    if (player < 0 || player >= 4 || !Play[player].on || Play[player].taunt_sfx < 0 || sfx != Play[player].taunt_sfx) {
-        return 0;
-    }
-    bonus_heroes_cheer(PlayerExtra[player]);
-    return 1;
-}
-
 /* A hero's sounds are a block from the one the announcer names it with (UpdateHeroVictory's first): its hit voices the third to the
- * sixth (HeroHitSfx, one at random as it's hit), its fall the thirteenth (BashHeroHit's, as a hit throws it down, and its moves' as
- * it lands from a jump). Nobody plays an extra hero's base, so any of those is the extra hero's. */
-#define HIT_FIRST 2
-#define HIT_LAST 5
-#define FALL 12
-
+ * sixth (HeroHitSfx, one at random as it's hit), and the rest the games' own (docs/EXTRA_HEROES.md). Nobody plays an extra hero's
+ * base, so any of them is the extra hero's: its own for that one, or none, or (VOICE_BASE) the base's. */
 s32 extra_hero_sound(s32 sfx) {
     s32 i, block;
+    const Voice *v;
 
     for (i = 0; AnyPlaying && i < 4; i++) {
         if (!Play[i].on || (u32)(PlayerBase[i] - 1) >= 8) {
             continue;
         }
         block = HeroHitSfx[PlayerBase[i]][0] - HIT_FIRST;
-        if ((sfx >= block + HIT_FIRST && sfx <= block + HIT_LAST) || sfx == block + FALL) {
-            bonus_heroes_hurt(PlayerExtra[i], sfx == block + FALL);
-            return 1;
+        if (sfx < block || sfx >= block + HERO_SOUNDS) {
+            continue;
         }
+        for (v = HeroDefs[PlayerExtra[i]]->voices; v != NULL && v->offset >= 0; v++) {
+            if (v->offset == sfx - block) {
+                if (v->voice == VOICE_BASE) {
+                    return 0;
+                }
+                bonus_heroes_voice(PlayerExtra[i], v->voice);
+                return 1;
+            }
+        }
+        return 1;
     }
     return 0;
 }
 
-s32 extra_hero_win_voice(s32 player, s32 line) {
-    /* the first line is the announcer naming the winner (the base's name, as near as there is), the second the winner's own cheer */
-    if (player < 0 || player >= 4 || !Play[player].on || line == 0) {
-        return 0;
+s32 extra_hero_like(s32 player, s32 name) {
+    s32 kind, like;
+
+    if (player < 0 || player >= 4 || PlayerExtra[player] == EXTRA_NONE || ModelsFrom == NULL || (u32)(PlayerBase[player] - 1) >= 8
+        || name != PlayerBase[player]) {
+        return name;
     }
-    bonus_heroes_cheer(PlayerExtra[player]);
-    return 1;
+    kind = kind_of(FlagFrom != NULL ? FlagFrom[PlayerBase[player]] : ModelsFrom[PlayerBase[player]]);
+    like = HeroDefs[PlayerExtra[player]]->kinds[kind].like;
+    return like > 0 ? like : name;
 }
 
 s32 extra_hero_bank(s32 player, s32 bank) {
-    if (player >= 0 && player < 4 && PlayerExtra[player] != EXTRA_NONE && ModelsFrom != NULL
-        && bank == ModelsFrom[PlayerBase[player]]) {
-        return bank_of(PlayerExtra[player]);
+    s32 base;
+
+    if (player < 0 || player >= 4 || PlayerExtra[player] == EXTRA_NONE || (u32)((base = PlayerBase[player]) - 1) >= 8) {
+        return bank;
+    }
+    if ((ModelsFrom != NULL && bank == ModelsFrom[base]) || (FlagFrom != NULL && bank == FlagFrom[base])) {
+        return bonus_heroes_bank(PlayerExtra[player], kind_of(bank));
     }
     return bank;
 }
 
-/* The extra hero a subengine draws, if it's one's own and shows its model. */
-static Playing *playing(const subengine *sub) {
-    s32 i;
+/* The extra hero a subengine draws, if it's one's own and shows one of its models or its base's in its place, and which. */
+static Playing *playing(const subengine *sub, Variant **var) {
+    s32 i, k;
 
     if (!AnyPlaying || sub == NULL) {
         return NULL;
     }
     for (i = 0; i < 4; i++) {
-        const Playing *p = &Play[i];
+        Playing *p = &Play[i];
 
-        if (p->on && sub->u6C.dbase == p->bank
-            && (sub == p->sub || (Heroes[i].hero_anim != NULL && sub == Heroes[i].hero_anim->sub))) {
-            return &Play[i];
+        if (!p->on || (sub != p->sub && (Heroes[i].hero_anim == NULL || sub != Heroes[i].hero_anim->sub))) {
+            continue;
+        }
+        for (k = 0; k < p->nvar; k++) {
+            if (sub->u6C.dbase == p->var[k].bank || sub->u6C.dbase == &HeroModelBank[p->var[k].base_bank]) {
+                *var = &p->var[k];
+                return p;
+            }
         }
     }
     return NULL;
 }
 
+const obj_dbase *extra_hero_dbase(const subengine *sub, const obj_dbase *db) {
+    Variant *v;
+
+    return playing(sub, &v) != NULL ? v->bank : db;
+}
+
 s32 extra_hero_frame(const subengine *sub, s32 entity) {
-    Playing *p = playing(sub);
+    Variant *v;
+    Playing *p = playing(sub, &v);
     s32 tag = entity & 0x7000, n, f, m, frames, t;
 
     if (p == NULL) {
@@ -603,29 +622,29 @@ s32 extra_hero_frame(const subengine *sub, s32 entity) {
     }
     if (tag == 0x4000 || tag == 0x1000) {
         n = (entity >> 7) & 0x1F;
-        if (n >= p->count) {
+        if (n >= v->count) {
             return entity;
         }
-        m = p->to_anim[n];
-        frames = p->to_count[n] > 0 ? p->to_count[n] : 1;
+        m = v->to_anim[n];
+        frames = v->to_count[n] > 0 ? v->to_count[n] : 1;
         f = entity & 0x7F;
         /* the base's animation started, or one played once started again */
-        if (n != p->clock_anim || (f < p->clock_frame && p->pace[n] != LOOP)) {
-            p->clock_anim = n;
-            p->clock_start = GameFrameCount;
+        if (n != v->clock_anim || (f < v->clock_frame && v->pace[n] != LOOP)) {
+            v->clock_anim = n;
+            v->clock_start = GameFrameCount;
         }
-        p->clock_frame = f;
-        if (p->pace[n] != STRETCH) {
-            t = GameFrameCount - p->clock_start;
+        v->clock_frame = f;
+        if (v->pace[n] != STRETCH) {
+            t = GameFrameCount - v->clock_start;
             t = t < 0 ? 0 : t;
-            f = p->pace[n] == LOOP ? t % frames : t;
-        } else if (p->from_frames[n] > 0) {
-            f = f * frames / p->from_frames[n];
+            f = v->pace[n] == LOOP ? t % frames : t;
+        } else if (v->from_frames[n] > 0) {
+            f = f * frames / v->from_frames[n];
         }
         if (f >= frames) {
             f = frames - 1;
         }
-        return (entity & 0xF000) | m << 7 | (p->to_first[n] + f);
+        return (entity & 0xF000) | m << 7 | (v->to_first[n] + f);
     }
     if (tag == 0x2000) {
         return (entity & 0xF000) | 1;
@@ -634,12 +653,14 @@ s32 extra_hero_frame(const subengine *sub, s32 entity) {
 }
 
 void extra_hero_shape(const subengine *sub, s32 entity, const MeshHeader *mesh, SVECTOR *verts) {
-    const Playing *p = playing(sub);
+    Variant *v;
+    const Playing *p = playing(sub, &v);
+    s32 keep, k, n, dy;
     Shape s;
-    s32 k, n, dy;
 
-    if (p == NULL || ((entity & 0x7000) != 0x4000 && (entity & 0x7000) != 0x1000)
-        || !shape_of(p->own, (entity >> 7) & 0x1F, entity & 0x7F, &s) || (dy = lowered(&s)) == 0) {
+    if (p == NULL || (keep = HeroDefs[PlayerExtra[p - Play]]->kinds[v->kind].keep_lift) >= 0x1000
+        || ((entity & 0x7000) != 0x4000 && (entity & 0x7000) != 0x1000)
+        || !shape_of(v->own, (entity >> 7) & 0x1F, entity & 0x7F, &s) || (dy = lowered(&s, keep)) == 0) {
         return;
     }
     n = vertex_count(mesh);
@@ -649,26 +670,27 @@ void extra_hero_shape(const subengine *sub, s32 entity, const MeshHeader *mesh, 
 }
 
 s32 extra_hero_points(const subengine *sub, PointList **list) {
-    Playing *p = playing(sub);
+    Variant *v;
+    Playing *p = playing(sub, &v);
     const ModelFile *m;
     const PointList *from = NULL;
     PointList *out;
     FlagPoint head;
     Shape s;
-    s32 x, n, f, k, held = 0, have_head, drawn;
+    s32 x, n, f, k, held = 0, have_head, drawn, keep;
 
     if (p == NULL) {
         return 0;
     }
     *list = NULL;
-    m = (const ModelFile *)p->base;
+    m = (const ModelFile *)v->base;
     x = sub->entity;
     switch (x & 0x7000) {
     case 0x4000:
         n = (x >> 7) & 0x1F;
         f = x & 0x7F;
         if (n < m->nMeshAnims && f < anims_of(m)[n].frames) {
-            const MeshAnimFrame *fr = (const MeshAnimFrame *)(p->base + anims_of(m)[n].start + 4) + f;
+            const MeshAnimFrame *fr = (const MeshAnimFrame *)(v->base + anims_of(m)[n].start + 4) + f;
 
             if (fr->points != 0) {
                 from = (const PointList *)((const u8 *)&fr->points + fr->points);
@@ -692,12 +714,13 @@ s32 extra_hero_points(const subengine *sub, PointList **list) {
         return 1;
     }
     /* the top of its head, in the frame it's drawn in */
+    keep = HeroDefs[PlayerExtra[p - Play]]->kinds[v->kind].keep_lift;
     drawn = extra_hero_frame(sub, x);
-    have_head = (drawn & 0x7000) == 0x4000 && shape_of(p->own, (drawn >> 7) & 0x1F, drawn & 0x7F, &s);
+    have_head = (drawn & 0x7000) == 0x4000 && shape_of(v->own, (drawn >> 7) & 0x1F, drawn & 0x7F, &s);
     memset(&head, 0, sizeof(head));
     if (have_head) {
         head.vx = (s16)s.head_x;
-        head.vy = (s16)(s.top + lowered(&s));
+        head.vy = (s16)(s.top + (keep < 0x1000 ? lowered(&s, keep) : 0));
         head.vz = (s16)s.head_z;
     }
     out = &p->points.list;
@@ -715,9 +738,9 @@ s32 extra_hero_points(const subengine *sub, PointList **list) {
             pt.vy = head.vy;
             pt.vz = head.vz;
         } else {
-            pt.vx = (s16)(pt.vx * p->scale >> 12);
-            pt.vy = (s16)(pt.vy * p->scale >> 12);
-            pt.vz = (s16)(pt.vz * p->scale >> 12);
+            pt.vx = (s16)(pt.vx * v->scale >> 12);
+            pt.vy = (s16)(pt.vy * v->scale >> 12);
+            pt.vz = (s16)(pt.vz * v->scale >> 12);
         }
         out->pts[out->count++] = pt;
     }
@@ -739,17 +762,14 @@ s32 extra_hero_anim_key(const obj_dbase *db, s32 key) {
     if (!AnyPlaying) {
         return key;
     }
-    for (i = 0; i < 4 && !(Play[i].on && Play[i].bank == db); i++) {
-    }
-    if (i == 4 || (m = db->data) == NULL) {
-        return key;
-    }
-    for (k = 0; k < m->nMeshAnims; k++) {
-        if (anims_of(m)[k].hash == key) {
-            return key;
+    for (i = 0; i < 4; i++) {
+        for (k = 0; Play[i].on && k < Play[i].nvar; k++) {
+            if (Play[i].var[k].bank == db && (m = db->data) != NULL) {
+                return has(m, key) ? key : stand_in(HeroDefs[PlayerExtra[i]], Play[i].var[k].kind, key, m, NULL, NULL, NULL);
+            }
         }
     }
-    return stand_in(&ExtraHeroes[PlayerExtra[i]], key, m, NULL, NULL, NULL);
+    return key;
 }
 
 /* --- its face, for the panel ---
@@ -803,7 +823,7 @@ static u32 texel_of(const obj_textureset *ts, s32 image, s32 clut, s32 u, s32 v)
 }
 
 /* Its model's face frame, drawn: w x h, with depth. */
-static void draw_face(const ExtraHero *x, const u8 *file, const obj_textureset *ts, u32 *rgba, s32 w, s32 h, float aspect, float room) {
+static void draw_face(const HeroDef *x, const u8 *file, const obj_textureset *ts, u32 *rgba, s32 w, s32 h, float aspect, float room) {
     const ModelFile *m = (const ModelFile *)file;
     Frame fr;
     float *depth, *sx, *sy, *sz;
@@ -977,8 +997,8 @@ static void card_face(const u32 *card, s32 cw, s32 ch, u32 *out, s32 stride, s32
 /* Its face for the panel, w x h texels: its own game's, at the panel's texels as the others are, or else drawn from its model; made
  * once, when its model and textures are loaded. */
 static const u32 *face_of(s32 extra, s32 w, s32 h) {
-    const ExtraHero *x = &ExtraHeroes[extra];
-    const obj_dbase *bank = &HeroModelBank[bank_of(extra)];
+    const HeroDef *x = HeroDefs[extra];
+    const obj_dbase *bank = &HeroModelBank[foot_bank(extra)];
     s32 bw = w * FACE_SCALE * FACE_SAMPLES, bh = h * FACE_SCALE * FACE_SAMPLES, fw = w * FACE_SCALE, fh = h * FACE_SCALE;
     s32 px, py, i, j, k, cw, ch, head;
     u32 *big, *out;
@@ -989,7 +1009,7 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
         fw = w;
         fh = h;
     }
-    if (Face[extra] != NULL && FaceW[extra] == fw && FaceH[extra] == fh && FaceBank[extra] == bank_of(extra)) {
+    if (Face[extra] != NULL && FaceW[extra] == fw && FaceH[extra] == fh && FaceBank[extra] == foot_bank(extra)) {
         return Face[extra];
     }
     if (card != NULL) {
@@ -999,7 +1019,7 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
         card_face(card, cw, ch, out, fw, fw, fh, 0, CARD_FACE_ROWS * h / 32 / (head > 0 ? head : ch), CARD_TOP * h / 32, CARD_BAR * h / 32);
         goto made;
     }
-    if (bank->textures.base == NULL || bank->textures.tex == NULL || (file = model_file(extra)) == NULL) {
+    if (bank->textures.base == NULL || bank->textures.tex == NULL || (file = foot_file(extra)) == NULL) {
         return NULL;
     }
     big = malloc(sizeof(u32) * (size_t)bw * bh);
@@ -1066,7 +1086,7 @@ made:
     Face[extra] = out;
     FaceW[extra] = fw;
     FaceH[extra] = fh;
-    FaceBank[extra] = bank_of(extra);
+    FaceBank[extra] = foot_bank(extra);
     return out;
 }
 
@@ -1111,11 +1131,11 @@ static s16 SelectSteps[8];
 void extra_heroes_select_enter(const subengine *portrait) {
     SelectPortrait = portrait;
     if (portrait != NULL && extra_heroes_on()) {
-        obj_dbase *db = &HeroModelBank[bank_of(EXTRA_ROO)];
+        obj_dbase *db = &HeroModelBank[foot_bank(EXTRA_ROO)];
 
         if (db->data == NULL && db->load == 0) {
             dbase_asload_with_anims(db, NULL);
-            SelectBank = bank_of(EXTRA_ROO);
+            SelectBank = foot_bank(EXTRA_ROO);
         }
     }
 }
@@ -1129,7 +1149,7 @@ void extra_heroes_select_leave(void) {
 }
 
 void *extra_hero_select_steps(s32 extra) {
-    u8 *file = extra > EXTRA_NONE && extra < NUM_EXTRA ? model_file(extra) : NULL;
+    u8 *file = extra > EXTRA_NONE && extra < NUM_EXTRA ? foot_file(extra) : NULL;
     const ModelFile *m = (const ModelFile *)file;
     s32 n, frames;
 
@@ -1137,7 +1157,7 @@ void *extra_hero_select_steps(s32 extra) {
         return NULL;
     }
     /* its face animation, the one it stands in, round and round, a frame every other tick */
-    n = find(m, hash_of(ExtraHeroes[extra].face));
+    n = find(m, hash_of(HeroDefs[extra]->face));
     frames = n < m->nMeshAnims && anims_of(m)[n].frames > 0 ? anims_of(m)[n].frames : 1;
     free(file);
     SelectSteps[0] = 1;
@@ -1151,11 +1171,11 @@ void *extra_hero_select_steps(s32 extra) {
 
 /* How big it stands on its stand (CharCard.target): a hero 640 tall at 0x9999, as Kong is about. */
 s32 extra_hero_select_scale(s32 extra) {
-    u8 *file = extra > EXTRA_NONE && extra < NUM_EXTRA ? model_file(extra) : NULL;
+    u8 *file = extra > EXTRA_NONE && extra < NUM_EXTRA ? foot_file(extra) : NULL;
     s32 target = 0x9999;
     Shape s;
 
-    if (file != NULL && shape_of(file, find((const ModelFile *)file, hash_of(ExtraHeroes[extra].face)), 0, &s) && s.top < -100) {
+    if (file != NULL && shape_of(file, find((const ModelFile *)file, hash_of(HeroDefs[extra]->face)), 0, &s) && s.top < -100) {
         target = 0x9999 * 640 / -s.top;
         target = target < 0x2000 ? 0x2000 : target > 0xCCCC ? 0xCCCC : target;
     }
@@ -1193,10 +1213,10 @@ static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
     s32 scale = card != NULL ? 1 : FACE_SCALE;
     s32 fw = w * scale, fh = h * scale, ph = h > SELECT_ROWS ? fh * SELECT_ROWS / h : fh, pw = w > SELECT_COLS ? fw * SELECT_COLS / w : fw;
     s32 bw = pw * FACE_SAMPLES, bh = ph * FACE_SAMPLES;
-    const obj_dbase *bank = &HeroModelBank[bank_of(extra)];
+    const obj_dbase *bank = &HeroModelBank[foot_bank(extra)];
     u32 *face, *out;
 
-    if (Portrait != NULL && PortraitW == fw && PortraitH == fh && PortraitBank == bank_of(extra)) {
+    if (Portrait != NULL && PortraitW == fw && PortraitH == fh && PortraitBank == foot_bank(extra)) {
         return Portrait;
     }
     if (card == NULL && (bank->textures.base == NULL || bank->textures.tex == NULL)) {
@@ -1214,11 +1234,11 @@ static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
         card_face(card, cw, ch, face, fw, pw, ph, SELECT_INSET, (float)ph / ch, 0, ph);
     } else {
         u32 *big = malloc(sizeof(u32) * (size_t)bw * bh);
-        u8 *file = model_file(extra);
+        u8 *file = foot_file(extra);
 
         memset(face, 0, sizeof(u32) * (size_t)fw * ph);
         if (big != NULL && file != NULL) {
-            draw_face(&ExtraHeroes[extra], file, &bank->textures, big, bw, bh, SELECT_ASPECT, SELECT_ROOM);
+            draw_face(HeroDefs[extra], file, &bank->textures, big, bw, bh, SELECT_ASPECT, SELECT_ROOM);
             for (y = 0; y < ph; y++) {
                 for (x = 0; x < pw; x++) {
                     u32 r = 0, g = 0, b = 0, a = 0;
@@ -1246,7 +1266,7 @@ static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
     Portrait = out;
     PortraitW = fw;
     PortraitH = fh;
-    PortraitBank = bank_of(extra);
+    PortraitBank = foot_bank(extra);
     return out;
 }
 

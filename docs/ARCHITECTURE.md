@@ -212,7 +212,9 @@ scripts.
   Dingodile 0xFB, Tiny 0x12D, Koala Kong 0x15F). From that one: +1 its taunt (its taunt move's
   0x800A), +2 to +5 its hit voices (`HeroHitSfx`, one at random as it's hit), +6 its cheer as
   it wins (step 2), +11 its jump, +12 its fall (`BashHeroHit` as a hit throws it down; Rilla
-  Roo's land move too).
+  Roo's land move too). The rest are a game's own: Crate Crush's +9 to +16, Polar Push's +19 to
+  +25 (docs/EXTRA_HEROES.md lists each, from the heroes' voice packs). The blocks are 50 apart, and
+  the games use the first 26 of each.
 - **Music** (`music.c`) is SEQ (`music_dload_midi`, `SsSeqOpen`), one track per mode
   (`MusicTable`). `music_request` names the next track, and `music_update` switches to it after a
   short stop delay.

@@ -1,20 +1,11 @@
-/* Bonus heroes (bash/bonusheroes.h, PC only): extra heroes' models from the player's own copies of other Crash games.
+/* Bonus heroes (bash/bonusheroes.h, bash/heromake.h; PC only): the extra heroes' models, sounds and pictures, made from the player's own
+ * copies of other Crash games, and what the heroes' own files (main/heroes/) use to make them.
  *
- * A disc is found in the discs folders (disc_image_find), the character's level read from it, and its model and animations made into a
- * Crash Bash model and texture set (docs/ASSETS.md), which go into the archive's entries 992 and 993 (main.c) as a mod's files do: the
- * game loads them as it does any model, into a bank of their own (DB_BonusRoo), and nothing of them is kept but in memory.
- *
- * Ripper Roo, from Crash Bandicoot (USA, SCUS-94900): level 0x17, his boss fight, has his model (RS1nG) and four animations, RS1nV (a big
- * jump), RS2nV (standing), RS3nV (a laugh) and RS4nV (knocked over), which become JUMP, BREATHE, TAUNT and DIE, and two more are made
- * for him from them: a walk, his legs stepping (WALK), and a spin attack, his legs out as he spins in a blue tornado (SPIN).
- *
- * Crash Bandicoot's formats, as CrashEdit (the cbhacks project) reads them: a level's NSF is 64 KB pages, each raw (magic 0x1234) or
- * compressed (0x1235: runs and repeats for its first `length` bytes, `skip` bytes to pass, the rest raw). A page of entries lists them,
- * and each entry its items; a texture page is 256 x 128 16-bit units of VRAM. An animation's items are its frames: a 56-byte header
- * (vertex count, model, x, y, z offsets, collision) and 6 bytes a vertex (x, y, z unsigned, a normal signed), each at (xyz + offset -
- * 128) * the model's scale. A model's first item has its triangle count, its scale and its colours (4-byte slots: r, g, b, flags) and
- * textures (3 slots: the colour with byte 3's top bit, the texture page, and where in it), its second 8 bytes a triangle: three
- * vertices' byte offsets and its slot. */
+ * Each hero's make (bash/herodef.h) finds its game's disc (disc_image_find), reads what it needs from it, and makes it into a Crash Bash
+ * model and texture set of each kind it has (docs/ASSETS.md): on foot, and riding a polar bear. They go into the archive's entries for
+ * that hero (main.c's DatIndex, from 992) as a mod's files do, and the game loads them as it does any model, into banks of their own
+ * (DB_BonusRoo, ...). Nothing of them is kept but in memory, and without its disc there's no hero. docs/EXTRA_HEROES.md has how to add
+ * one, from Ripper Roo's (heroes/roo.c). */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,220 +15,51 @@
 #include "bash/modelbank.h"
 #include "bash/extraheroes.h"
 #include "bash/bonusheroes.h"
-#include "../../platform/platform.h"
+#include "bash/heromake.h"
 #include "../../platform/audio.h"
 
 void archive_replace(int entry, unsigned char *bytes, int size);
+unsigned char *archive_own_file(int entry, int *size);
 void SDL_free(void *mem);
 
-#define PAGE_BYTES 65536
-#define BONUS_TEX 992
-#define BONUS_MDL 993
-#define ROO_HEIGHT 620.0f   /* standing, in Crash Bash's units: Crate Crush's heroes stand 452 (Crash) to 748 (Kong), most about 650 */
-#define MAX_TRIS 2048
-#define MAX_VERTS 1024
-#define MAX_IMAGES 32
-#define FLIP_FACES 0        /* 1: the other way round from Crash Bandicoot's */
+extern const HeroDef HeroRoo;
 
-static u32 rd32(const u8 *p) {
+const HeroDef *const HeroDefs[NUM_EXTRA] = { NULL, &HeroRoo };
+
+/* Each hero's archive entries and bank for each kind it has (main.c, dbase.c, levelload.c's ModeDbaseLists) */
+static const struct {
+    s32 tex, mdl, bank;
+} Slots[NUM_EXTRA][NUM_KINDS] = {
+    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty } },
+    { { 992, 993, DB_BonusRoo }, { 994, 995, DB_BonusRooPolar } },
+};
+
+static HeroMade Made[NUM_EXTRA];
+static s32 Tried[NUM_EXTRA], Have[NUM_EXTRA];
+
+/* --- bytes --- */
+
+u32 hm_rd32(const u8 *p) {
     return p[0] | p[1] << 8 | p[2] << 16 | (u32)p[3] << 24;
 }
 
-static u16 rd16(const u8 *p) {
+u16 hm_rd16(const u8 *p) {
     return (u16)(p[0] | p[1] << 8);
 }
 
-static void wr32(u8 *p, u32 v) {
+void hm_wr32(u8 *p, u32 v) {
     p[0] = (u8)v;
     p[1] = (u8)(v >> 8);
     p[2] = (u8)(v >> 16);
     p[3] = (u8)(v >> 24);
 }
 
-static void wr16(u8 *p, u32 v) {
+void hm_wr16(u8 *p, u32 v) {
     p[0] = (u8)v;
     p[1] = (u8)(v >> 8);
 }
 
-/* --- Crash Bandicoot's levels --- */
-
-typedef struct {
-    u8 *pages; /* count of PAGE_BYTES */
-    s32 count;
-} Level;
-
-static s32 decompress(const u8 *in, size_t size, size_t *at, u8 *out) {
-    size_t p = *at;
-    s32 length, skip, pos = 0, rest;
-
-    if (p + 12 > size) {
-        return 0;
-    }
-    length = (s32)rd32(in + p + 4);
-    skip = (s32)rd32(in + p + 8);
-    if (length < 0 || length > PAGE_BYTES || skip < 0) {
-        return 0;
-    }
-    p += 12;
-    while (pos < length) {
-        s32 prefix;
-
-        if (p >= size) {
-            return 0;
-        }
-        prefix = in[p++];
-        if (prefix & 0x80) {
-            s32 b, seek, span, i;
-
-            if (p >= size) {
-                return 0;
-            }
-            b = in[p++];
-            seek = b >> 3 | (prefix & 0x7F) << 5;
-            span = (b & 7) == 7 ? 64 : (b & 7) + 3;
-            if (seek > pos || seek == 0 || pos + span > PAGE_BYTES) {
-                return 0;
-            }
-            for (i = 0; i < span; i++) {
-                out[pos + i] = out[pos - seek + i];
-            }
-            pos += span;
-        } else {
-            if (p + (size_t)prefix > size || pos + prefix > PAGE_BYTES) {
-                return 0;
-            }
-            memcpy(out + pos, in + p, (size_t)prefix);
-            p += (size_t)prefix;
-            pos += prefix;
-        }
-    }
-    p += (size_t)skip;
-    rest = PAGE_BYTES - length < PAGE_BYTES - pos ? PAGE_BYTES - length : PAGE_BYTES - pos;
-    if (p + (size_t)(PAGE_BYTES - length) > size) {
-        return 0;
-    }
-    memcpy(out + pos, in + p, (size_t)rest);
-    *at = p + (size_t)(PAGE_BYTES - length);
-    return 1;
-}
-
-static s32 level_read(DiscImage *disc, const char *path, Level *out) {
-    size_t size = 0, at = 0;
-    u8 *nsf = disc_image_read(disc, path, &size);
-    s32 cap = 0;
-
-    memset(out, 0, sizeof(*out));
-    if (nsf == NULL) {
-        return 0;
-    }
-    while (at + 12 <= size) {
-        u16 magic = rd16(nsf + at);
-        u8 *page;
-
-        if (out->count == cap) {
-            u8 *more = realloc(out->pages, (size_t)(cap = cap ? cap * 2 : 64) * PAGE_BYTES);
-
-            if (more == NULL) {
-                break;
-            }
-            out->pages = more;
-        }
-        page = out->pages + (size_t)out->count * PAGE_BYTES;
-        if (magic == 0x1234 && at + PAGE_BYTES <= size) {
-            memcpy(page, nsf + at, PAGE_BYTES);
-            at += PAGE_BYTES;
-        } else if (magic != 0x1235 || !decompress(nsf, size, &at, page)) {
-            break;
-        }
-        out->count++;
-    }
-    SDL_free(nsf);
-    return out->count > 0;
-}
-
-static u32 eid_of(const char *name) {
-    static const char Chars[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_!";
-    u32 eid = 1;
-    s32 i;
-
-    for (i = 0; i < 5; i++) {
-        const char *c = strchr(Chars, name[i]);
-
-        eid |= (u32)(c != NULL ? c - Chars : 0) << (25 - 6 * i);
-    }
-    return eid;
-}
-
-/* An entry: its items, each with its size. */
-typedef struct {
-    s32 type, count;
-    const u8 *item[128];
-    s32 size[128];
-} Entry;
-
-static s32 entry_find(const Level *l, const char *name, Entry *out) {
-    u32 eid = eid_of(name);
-    s32 p, k, i;
-
-    for (p = 0; p < l->count; p++) {
-        const u8 *page = l->pages + (size_t)p * PAGE_BYTES;
-        s32 n = (s32)rd32(page + 8);
-
-        /* a page of entries, or of sounds (3) */
-        if ((rd16(page + 2) != 0 && rd16(page + 2) != 3) || n < 0 || n > 4096) {
-            continue;
-        }
-        for (k = 0; k < n; k++) {
-            u32 s = rd32(page + 16 + k * 4), e = rd32(page + 20 + k * 4);
-            const u8 *en = page + s;
-            s32 items;
-
-            if (s >= e || e > PAGE_BYTES || e - s < 16 || rd32(en) != 0x100FFFF || rd32(en + 4) != eid) {
-                continue;
-            }
-            items = (s32)rd32(en + 12);
-            if (items < 0 || items > 128 || 20 + items * 4 > (s32)(e - s)) {
-                return 0;
-            }
-            out->type = (s32)rd32(en + 8);
-            out->count = items;
-            for (i = 0; i < items; i++) {
-                u32 a = rd32(en + 16 + i * 4), b = rd32(en + 20 + i * 4);
-
-                if (a > b || b > e - s) {
-                    return 0;
-                }
-                out->item[i] = en + a;
-                out->size[i] = (s32)(b - a);
-            }
-            return 1;
-        }
-    }
-    return 0;
-}
-
-static const u8 *texture_page(const Level *l, u32 eid) {
-    s32 p;
-
-    for (p = 0; p < l->count; p++) {
-        const u8 *page = l->pages + (size_t)p * PAGE_BYTES;
-
-        if (rd16(page + 2) == 1 && rd32(page + 4) == eid) {
-            return page;
-        }
-    }
-    return NULL;
-}
-
-/* --- into Crash Bash's --- */
-
-/* A grown buffer of bytes. */
-typedef struct {
-    u8 *b;
-    size_t n, cap;
-} Bytes;
-
-static size_t put(Bytes *o, const void *src, size_t n) {
+size_t hm_put(Bytes *o, const void *src, size_t n) {
     size_t at = o->n;
 
     if (o->n + n > o->cap) {
@@ -263,63 +85,232 @@ static size_t put(Bytes *o, const void *src, size_t n) {
     return at;
 }
 
-static void align(Bytes *o, size_t to) {
+void hm_align(Bytes *o, size_t to) {
     if (o->n % to != 0) {
-        put(o, NULL, to - o->n % to);
+        hm_put(o, NULL, to - o->n % to);
     }
 }
 
-/* A self offset: from the field at `field` to `to`. */
-static void self(Bytes *o, size_t field, size_t to) {
-    wr32(o->b + field, (u32)(s32)((long long)to - (long long)field));
+void hm_self(Bytes *o, size_t field, size_t to) {
+    hm_wr32(o->b + field, (u32)(s32)((long long)to - (long long)field));
 }
 
-typedef struct {
-    float x, y, z;
-} V3;
+/* --- points --- */
 
-/* A texture of Roo's: a rect of a page, in 4 or 8 bits, with its palette, as a Crash Bash image. */
-typedef struct {
-    u32 page_eid, info;
-    s32 clutx;
-    s32 x, y, w, h, bpp;
-} Image;
+float hm_smooth(float a, float b, float x) {
+    float t = (x - a) / (b - a);
 
-typedef struct {
-    s32 a, b, c;      /* vertices */
-    s32 slot;
-    s32 image;        /* -1 untextured */
-    s32 uv[3][2];     /* in the image's texels */
-    u8 rgb[3];
-    u8 glow;          /* the tornado's: its corners' own colours, unlit, drawn adding them */
-    u8 corner_rgb[3][3];
-} Tri;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    return t * t * (3 - 2 * t);
+}
 
-typedef struct {
-    const char *entry, *name;
-    s32 made; /* the frames of one made for him from that entry's (rig_setup), or 0 for the entry's own */
-} Anim;
+V3 hm_mix(V3 a, V3 b, float t) {
+    V3 r;
 
-static const Anim RooAnims[] = {
-    { "RS1nV", "JUMP", 0 }, { "RS2nV", "BREATHE", 0 }, { "RS3nV", "TAUNT", 0 }, { "RS4nV", "DIE", 0 }, { "RS2nV", "WALK", 20 },
-    { "RS1nV", "SPIN", 15 },
-};
-#define ROO_ANIMS 6
-#define ROO_REST 1 /* the one he stands in: his height and his colours' light are from its first frame */
-#define ROO_WALK 4 /* made for him, as his game has no walk (he only ever jumps in his boss fight) and no attack */
-#define ROO_SPIN 5
+    r.x = a.x + (b.x - a.x) * t;
+    r.y = a.y + (b.y - a.y) * t;
+    r.z = a.z + (b.z - a.z) * t;
+    return r;
+}
 
-/* A frame's vertices, in Crash Bash's axes (y down, z the other way) before they're scaled. */
-static s32 frame_verts(const u8 *f, s32 size, const s32 scale[3], V3 *out, V3 *normals, s32 max) {
-    s32 n = (s32)rd32(f), k;
+V3 hm_turn_x(V3 p, V3 c, float a) {
+    float s = sinf(a), k = cosf(a), y = p.y - c.y, z = p.z - c.z;
+
+    p.y = c.y + y * k - z * s;
+    p.z = c.z + y * s + z * k;
+    return p;
+}
+
+V3 hm_turn_y(V3 p, V3 c, float a) {
+    float s = sinf(a), k = cosf(a), x = p.x - c.x, z = p.z - c.z;
+
+    p.x = c.x + x * k + z * s;
+    p.z = c.z - x * s + z * k;
+    return p;
+}
+
+V3 hm_turn_z(V3 p, V3 c, float a) {
+    float s = sinf(a), k = cosf(a), x = p.x - c.x, y = p.y - c.y;
+
+    p.x = c.x + x * k - y * s;
+    p.y = c.y + x * s + y * k;
+    return p;
+}
+
+/* --- Crash Bandicoot's levels --- */
+
+static s32 decompress(const u8 *in, size_t size, size_t *at, u8 *out) {
+    size_t p = *at;
+    s32 length, skip, pos = 0, rest;
+
+    if (p + 12 > size) {
+        return 0;
+    }
+    length = (s32)hm_rd32(in + p + 4);
+    skip = (s32)hm_rd32(in + p + 8);
+    if (length < 0 || length > C1_PAGE_BYTES || skip < 0) {
+        return 0;
+    }
+    p += 12;
+    while (pos < length) {
+        s32 prefix;
+
+        if (p >= size) {
+            return 0;
+        }
+        prefix = in[p++];
+        if (prefix & 0x80) {
+            s32 b, seek, span, i;
+
+            if (p >= size) {
+                return 0;
+            }
+            b = in[p++];
+            seek = b >> 3 | (prefix & 0x7F) << 5;
+            span = (b & 7) == 7 ? 64 : (b & 7) + 3;
+            if (seek > pos || seek == 0 || pos + span > C1_PAGE_BYTES) {
+                return 0;
+            }
+            for (i = 0; i < span; i++) {
+                out[pos + i] = out[pos - seek + i];
+            }
+            pos += span;
+        } else {
+            if (p + (size_t)prefix > size || pos + prefix > C1_PAGE_BYTES) {
+                return 0;
+            }
+            memcpy(out + pos, in + p, (size_t)prefix);
+            p += (size_t)prefix;
+            pos += prefix;
+        }
+    }
+    p += (size_t)skip;
+    rest = C1_PAGE_BYTES - length < C1_PAGE_BYTES - pos ? C1_PAGE_BYTES - length : C1_PAGE_BYTES - pos;
+    if (p + (size_t)(C1_PAGE_BYTES - length) > size) {
+        return 0;
+    }
+    memcpy(out + pos, in + p, (size_t)rest);
+    *at = p + (size_t)(C1_PAGE_BYTES - length);
+    return 1;
+}
+
+s32 c1_level_read(DiscImage *disc, const char *path, C1Level *out) {
+    size_t size = 0, at = 0;
+    u8 *nsf = disc_image_read(disc, path, &size);
+    s32 cap = 0;
+
+    memset(out, 0, sizeof(*out));
+    if (nsf == NULL) {
+        return 0;
+    }
+    while (at + 12 <= size) {
+        u16 magic = hm_rd16(nsf + at);
+        u8 *page;
+
+        if (out->count == cap) {
+            u8 *more = realloc(out->pages, (size_t)(cap = cap ? cap * 2 : 64) * C1_PAGE_BYTES);
+
+            if (more == NULL) {
+                break;
+            }
+            out->pages = more;
+        }
+        page = out->pages + (size_t)out->count * C1_PAGE_BYTES;
+        if (magic == 0x1234 && at + C1_PAGE_BYTES <= size) {
+            memcpy(page, nsf + at, C1_PAGE_BYTES);
+            at += C1_PAGE_BYTES;
+        } else if (magic != 0x1235 || !decompress(nsf, size, &at, page)) {
+            break;
+        }
+        out->count++;
+    }
+    SDL_free(nsf);
+    return out->count > 0;
+}
+
+static u32 eid_of(const char *name) {
+    static const char Chars[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_!";
+    u32 eid = 1;
+    s32 i;
+
+    for (i = 0; i < 5; i++) {
+        const char *c = strchr(Chars, name[i]);
+
+        eid |= (u32)(c != NULL ? c - Chars : 0) << (25 - 6 * i);
+    }
+    return eid;
+}
+
+s32 c1_entry_find(const C1Level *l, const char *name, C1Entry *out) {
+    u32 eid = eid_of(name);
+    s32 p, k, i;
+
+    for (p = 0; p < l->count; p++) {
+        const u8 *page = l->pages + (size_t)p * C1_PAGE_BYTES;
+        s32 n = (s32)hm_rd32(page + 8);
+
+        /* a page of entries, or of sounds (3) */
+        if ((hm_rd16(page + 2) != 0 && hm_rd16(page + 2) != 3) || n < 0 || n > 4096) {
+            continue;
+        }
+        for (k = 0; k < n; k++) {
+            u32 s = hm_rd32(page + 16 + k * 4), e = hm_rd32(page + 20 + k * 4);
+            const u8 *en = page + s;
+            s32 items;
+
+            if (s >= e || e > C1_PAGE_BYTES || e - s < 16 || hm_rd32(en) != 0x100FFFF || hm_rd32(en + 4) != eid) {
+                continue;
+            }
+            items = (s32)hm_rd32(en + 12);
+            if (items < 0 || items > 128 || 20 + items * 4 > (s32)(e - s)) {
+                return 0;
+            }
+            out->type = (s32)hm_rd32(en + 8);
+            out->count = items;
+            for (i = 0; i < items; i++) {
+                u32 a = hm_rd32(en + 16 + i * 4), b = hm_rd32(en + 20 + i * 4);
+
+                if (a > b || b > e - s) {
+                    return 0;
+                }
+                out->item[i] = en + a;
+                out->size[i] = (s32)(b - a);
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
+
+const u8 *c1_texture_page(const C1Level *l, u32 eid) {
+    s32 p;
+
+    for (p = 0; p < l->count; p++) {
+        const u8 *page = l->pages + (size_t)p * C1_PAGE_BYTES;
+
+        if (hm_rd16(page + 2) == 1 && hm_rd32(page + 4) == eid) {
+            return page;
+        }
+    }
+    return NULL;
+}
+
+void c1_model_scale(const C1Entry *model, s32 scale[3]) {
+    scale[0] = (s32)hm_rd32(model->item[0] + 4);
+    scale[1] = (s32)hm_rd32(model->item[0] + 8);
+    scale[2] = (s32)hm_rd32(model->item[0] + 12);
+}
+
+s32 c1_frame_verts(const u8 *f, s32 size, const s32 scale[3], V3 *out, V3 *normals, s32 max) {
+    s32 n = (s32)hm_rd32(f), k;
     s32 off[3];
 
     if (n <= 0 || n > max || 56 + n * 6 > size) {
         return 0;
     }
-    off[0] = (s32)rd32(f + 8);
-    off[1] = (s32)rd32(f + 12);
-    off[2] = (s32)rd32(f + 16);
+    off[0] = (s32)hm_rd32(f + 8);
+    off[1] = (s32)hm_rd32(f + 12);
+    off[2] = (s32)hm_rd32(f + 16);
     for (k = 0; k < n; k++) {
         const u8 *v = f + 56 + k * 6;
 
@@ -336,313 +327,211 @@ static s32 frame_verts(const u8 *f, s32 size, const s32 scale[3], V3 *out, V3 *n
     return n;
 }
 
-/* His standing animation (ROO_REST) as his boss fight's, but with only ROO_SWAY of its rocking: each frame's vertices are drawn in
- * toward the middle of its frames, each vertex's mean over them. */
-#define ROO_SWAY 0.6f
-static V3 SwayMiddle[MAX_VERTS];
-static s32 SwayVerts;
+u8 *c1_sound(const C1Level *l, const char *name, s32 *size) {
+    C1Entry e;
+    u8 *copy;
 
-static void sway_middle(const Entry *a, const s32 scale[3]) {
-    static V3 fv[MAX_VERTS];
-    s32 f, k, n;
+    if (!c1_entry_find(l, name, &e) || e.type != 12 || e.count < 1 || e.size[0] < 16 || (copy = malloc((size_t)e.size[0])) == NULL) {
+        return NULL;
+    }
+    memcpy(copy, e.item[0], (size_t)e.size[0]);
+    *size = e.size[0];
+    return copy;
+}
 
-    SwayVerts = 0;
-    memset(SwayMiddle, 0, sizeof(SwayMiddle));
-    for (f = 0; f < a->count; f++) {
-        n = frame_verts(a->item[f], a->size[f], scale, fv, NULL, MAX_VERTS);
-        if (n == 0 || (f > 0 && n != SwayVerts)) {
-            SwayVerts = 0;
-            return;
+/* An object's item: a run of sprite lists, each a head word (count << 16 | kind, kind 2 the sprites) then the texture page's eid and
+ * 8 bytes a sprite: its colour word (the CLUT's x in bits 24-27) and where in the page it is (uvi its size, cm 0 for 4-bit). */
+s32 c1_sprite64(const C1Level *l, const char *object, s32 item, u32 out[64 * 64]) {
+    C1Entry obj;
+    const u8 *it;
+    s32 at, f, x, y;
+
+    if (!c1_entry_find(l, object, &obj) || obj.type != 11 || obj.count <= item) {
+        return 0;
+    }
+    it = obj.item[item];
+    for (at = 4; at + 12 <= obj.size[item]; at += 4) {
+        const u8 *page = c1_texture_page(l, hm_rd32(it + at));
+        u32 head = hm_rd32(it + at - 4);
+
+        if (page == NULL || (head & 0xFFFF) != 2) {
+            continue;
         }
-        SwayVerts = n;
-        for (k = 0; k < n; k++) {
-            SwayMiddle[k].x += fv[k].x / a->count;
-            SwayMiddle[k].y += fv[k].y / a->count;
-            SwayMiddle[k].z += fv[k].z / a->count;
-        }
-    }
-}
+        for (f = 0; f < (s32)(head >> 16) && at + 12 + f * 8 <= obj.size[item]; f++) {
+            u32 col = hm_rd32(it + at + 4 + f * 8), ti = hm_rd32(it + at + 8 + f * 8);
+            s32 uvi = (s32)(ti >> 22 & 0x3FF), cm = (s32)(ti >> 20 & 3), seg = (s32)(ti >> 18 & 3), xoffu = (s32)(ti >> 13 & 0x1F);
+            s32 cy = (s32)(ti >> 6 & 0x7F), y0 = (s32)(ti & 0x1F) * 4, x0 = 256 * seg + 8 * xoffu, cx = (s32)(col >> 24 & 0xF) * 16;
 
-/* --- his made animations ---
- * His game has no walk and no attack, so they're made for him from his own frames (ROO_WALK, ROO_SPIN), worked in his game's axes
- * and units, y up and him facing +z: frame_verts' over ROO_UNIT, y and z the other way round. Both start from his standing pose,
- * SwayMiddle. WALK steps: each foot goes back flat along the floor, then up, its knee out in front, and forward again, the body
- * bobbing, leaning over the leg it's on and turning against the legs. SPIN, his attack: he throws his legs out to the sides as his
- * jump does (its frame SPIN_OUT, the splits), spins round twice in a hop in a blue tornado, and lands as he stood. */
-#define ROO_UNIT 4096.0f
-#define ROO_PI 3.14159265f
-
-/* His hips, and how much of a leg each vertex is: all of it below LEG_FULL, none above LEG_TOP (the bottom of his straitjacket goes
- * with both), and none within LEG_MID of his middle across, all from LEG_SIDE out. His tail, behind him and down to the floor
- * (TAIL_), is his body's. A leg leans from its hip (HIP_Y) to the top of its foot (FOOT_Y), and the foot under that stays flat. */
-#define HIP_Y 58.0f
-#define HIP_Z 4.0f
-#define FOOT_Y 12.0f
-#define LEG_TOP 70.0f
-#define LEG_FULL 42.0f
-#define LEG_MID 5.0f
-#define LEG_SIDE 16.0f
-#define TAIL_X 14.0f
-#define TAIL_Y 30.0f
-#define TAIL_Z -15.0f
-
-/* A stride, as each leg goes through it: on the ground for its first STEP_STANCE, its foot going back steadily from STEP_REACH in
- * front of its hip to STEP_REACH behind, then up STEP_LIFT with its knee STEP_KNEE_OUT in front, and forward again. Two strides an
- * animation, a step 5 ticks of his base's 20-tick run: his legs are short, and so many steps keep his feet up with the floor as he
- * goes (Tiny's, a stride a run, go back as fast as he moves). The body bobs, leans over the leg it's on, and turns against the legs. */
-#define STEP_STRIDES 2
-#define STEP_STANCE 0.6f
-#define STEP_REACH 44.0f
-#define STEP_LIFT 22.0f
-#define STEP_KNEE_OUT 26.0f
-#define STEP_BOB 4.0f
-#define STEP_ROLL 0.10f
-#define STEP_TWIST 0.10f
-
-/* The spin: his jump's frame with his legs out, the turns, the hop (extraheroes.c draws a third of a frame's lift, KEEP_LIFT), the
- * frames he takes to throw his legs out and bring them in, and the one he's landed by: the base's attack shows only its first 14. */
-#define SPIN_OUT 14
-#define SPIN_TURNS 2
-#define SPIN_LIFT 150.0f
-#define SPIN_OPEN 3
-#define SPIN_LAND 13
-#define SPIN_BODY 70.0f /* he spins round the middle of what's above this */
-
-/* The tornado round his spin, as Crash's and Coco's spins have (their models' second mesh), but blue and glowing: streaks of faces,
- * drawn adding their colour (a face's colour index, bit 15 and blend mode 1), rising round him from his legs to his head, wide at
- * the bottom and narrower up, each bright at its front and fading behind, whirling round faster than he turns. They're vertices of
- * his mesh like the rest, all at one point (so nothing to draw) in any other frame, and open out and fold away with his legs. */
-#define TORN_STREAKS 8
-#define TORN_SEGS 14
-#define TORN_VERTS (TORN_STREAKS * (TORN_SEGS + 1) * 2)
-#define TORN_TRIS (TORN_STREAKS * TORN_SEGS * 4) /* two a quad, each side */
-#define TORN_STEP 24.0f    /* how much higher each streak starts */
-#define TORN_RISE 46.0f    /* and rises along itself */
-#define TORN_HALF 7.0f     /* half its width */
-#define TORN_BOTTOM 126.0f /* the radius at the floor, and at TORN_TOP */
-#define TORN_RADIUS_TOP 66.0f
-#define TORN_TOP 210.0f
-#define TORN_SPAN 3.6f     /* the way round a streak goes (radians), the way it turns a frame, and how far round each starts from the last */
-#define TORN_SPEED 1.75f
-#define TORN_PHASE 2.2f
-#define TORN_RAMP 1.6f     /* how a streak's brightness rises to its front */
-static const u8 TornRgb[3] = { 60, 150, 255 };
-
-static V3 Rest[MAX_VERTS], LegsOut[MAX_VERTS];
-static float LegShare[MAX_VERTS];
-static u8 LegOf[MAX_VERTS]; /* 0 his left (-x), 1 his right */
-static s32 RigVerts;
-static float SpinX, SpinZ;
-
-static V3 to_rig(V3 p) {
-    V3 r;
-
-    r.x = p.x / ROO_UNIT;
-    r.y = -p.y / ROO_UNIT;
-    r.z = -p.z / ROO_UNIT;
-    return r;
-}
-
-static V3 from_rig(V3 r) {
-    V3 p;
-
-    p.x = r.x * ROO_UNIT;
-    p.y = -r.y * ROO_UNIT;
-    p.z = -r.z * ROO_UNIT;
-    return p;
-}
-
-/* 0 at a, 1 at b (either way round), smoothly between */
-static float smooth(float a, float b, float x) {
-    float t = (x - a) / (b - a);
-
-    t = t < 0 ? 0 : t > 1 ? 1 : t;
-    return t * t * (3 - 2 * t);
-}
-
-static V3 mix(V3 a, V3 b, float t) {
-    V3 r;
-
-    r.x = a.x + (b.x - a.x) * t;
-    r.y = a.y + (b.y - a.y) * t;
-    r.z = a.z + (b.z - a.z) * t;
-    return r;
-}
-
-/* p turned a radians round an axis through c: up (y) or forward (z) */
-static V3 turn_y(V3 p, V3 c, float a) {
-    float s = sinf(a), k = cosf(a), x = p.x - c.x, z = p.z - c.z;
-
-    p.x = c.x + x * k + z * s;
-    p.z = c.z - x * s + z * k;
-    return p;
-}
-
-static V3 turn_z(V3 p, V3 c, float a) {
-    float s = sinf(a), k = cosf(a), x = p.x - c.x, y = p.y - c.y;
-
-    p.x = c.x + x * k - y * s;
-    p.y = c.y + x * s + y * k;
-    return p;
-}
-
-/* His standing pose (sway_middle first), each vertex's share of a leg and its knee, and his jump's legs out, on the same floor. */
-static void rig_setup(const Entry *jump, const s32 scale[3]) {
-    static V3 fv[MAX_VERTS];
-    float low = 1e9f, out_low = 1e9f, sx = 0, sz = 0;
-    s32 k, n, f, body = 0;
-
-    RigVerts = 0;
-    if (SwayVerts == 0 || jump->count <= 0) {
-        return;
-    }
-    for (k = 0; k < SwayVerts; k++) {
-        V3 p = to_rig(SwayMiddle[k]);
-        s32 tail = p.z < TAIL_Z && fabsf(p.x) < TAIL_X && p.y < TAIL_Y;
-
-        Rest[k] = p;
-        LegOf[k] = p.x < 0 ? 0 : 1;
-        LegShare[k] = tail ? 0 : smooth(LEG_TOP, LEG_FULL, p.y) * smooth(LEG_MID, LEG_SIDE, fabsf(p.x));
-        low = p.y < low ? p.y : low;
-        if (p.y > SPIN_BODY) {
-            sx += p.x;
-            sz += p.z;
-            body++;
-        }
-    }
-    SpinX = body > 0 ? sx / body : 0;
-    SpinZ = body > 0 ? sz / body : 0;
-    f = jump->count > SPIN_OUT ? SPIN_OUT : jump->count - 1;
-    n = frame_verts(jump->item[f], jump->size[f], scale, fv, NULL, MAX_VERTS);
-    for (k = 0; k < SwayVerts; k++) {
-        LegsOut[k] = k < n ? to_rig(fv[k]) : Rest[k];
-        out_low = LegsOut[k].y < out_low ? LegsOut[k].y : out_low;
-    }
-    for (k = 0; k < SwayVerts; k++) {
-        LegsOut[k].y += low - out_low;
-    }
-    RigVerts = SwayVerts;
-}
-
-/* Where a leg is at p (0 to 1) through its stride: its foot's way in front of its hip, and how far up it is (0 on the ground to 1). */
-static void stride(float p, float *z, float *up) {
-    if (p < STEP_STANCE) {
-        *z = STEP_REACH * (1 - 2 * p / STEP_STANCE);
-        *up = 0;
-        return;
-    }
-    p = (p - STEP_STANCE) / (1 - STEP_STANCE);
-    *z = STEP_REACH * (2 * smooth(0, 1, p) - 1);
-    *up = sinf(ROO_PI * p);
-}
-
-static s32 walk_verts(s32 f, V3 *out) {
-    float t = (float)STEP_STRIDES * f / RooAnims[ROO_WALK].made, z[2], up[2], bob, roll, twist;
-    V3 pelvis = { 0, HIP_Y, HIP_Z };
-    s32 k;
-
-    /* his right leg half a stride behind his left */
-    stride(t - floorf(t), &z[0], &up[0]);
-    stride(t + 0.5f - floorf(t + 0.5f), &z[1], &up[1]);
-    bob = STEP_BOB * (up[0] + up[1] - 0.5f);
-    roll = STEP_ROLL * (up[0] - up[1]);
-    twist = STEP_TWIST * (z[0] - z[1]) / (2 * STEP_REACH);
-    for (k = 0; k < RigVerts; k++) {
-        V3 p = Rest[k], q, body;
-        s32 leg = LegOf[k];
-        float w = LegShare[k], d;
-
-        body = turn_y(turn_z(p, pelvis, roll), pelvis, -twist);
-        body.y += bob;
-        q = mix(p, body, 1 - w);
-        if (w > 0) {
-            /* how far down the leg, 0 at the hip to 1 at the foot and all of the foot */
-            d = (HIP_Y - p.y) / (HIP_Y - FOOT_Y);
-            d = d < 0 ? 0 : d > 1 ? 1 : d;
-            q.y += STEP_LIFT * up[leg] * d * w;
-            q.z += (z[leg] * d + STEP_KNEE_OUT * up[leg] * sinf(ROO_PI * d)) * w;
-        }
-        out[k] = from_rig(q);
-    }
-    return RigVerts;
-}
-
-/* The tornado's vertices after his n, from frame f of his spin, open of the way out and up off the ground: each streak a strip of
- * TORN_SEGS + 1 pairs, its back end first; or, shut, all at one point inside him. */
-static s32 add_tornado(V3 *out, s32 n, s32 f, float open, float up) {
-    s32 k, s, at = n;
-
-    for (k = 0; k < TORN_STREAKS; k++) {
-        for (s = 0; s <= TORN_SEGS; s++) {
-            float u = (float)s / TORN_SEGS, a = k * TORN_PHASE + TORN_SPEED * f + TORN_SPAN * u, y = k * TORN_STEP + TORN_RISE * u;
-            float r = (TORN_BOTTOM + (TORN_RADIUS_TOP - TORN_BOTTOM) * y / TORN_TOP) * open, h = TORN_HALF * open;
-            V3 lo, hi;
-
-            if (open <= 0) {
-                lo.x = hi.x = SpinX;
-                lo.y = hi.y = SPIN_BODY + 30;
-                lo.z = hi.z = SpinZ;
-            } else {
-                lo.x = hi.x = SpinX + r * sinf(a);
-                lo.z = hi.z = SpinZ + r * cosf(a);
-                lo.y = y - h + up;
-                hi.y = y + h + up;
+            if (cm != 0 || 4 << (uvi % 5) != 64 || 4 << (uvi / 5 % 5) != 64 || y0 + 64 > 128) {
+                continue;
             }
-            out[at++] = from_rig(lo);
-            out[at++] = from_rig(hi);
+            for (y = 0; y < 64; y++) {
+                for (x = 0; x < 64; x++) {
+                    s32 u = x0 + x, i = page[(y0 + y) * 512 + u / 2] >> (u & 1) * 4 & 15;
+                    u16 c = hm_rd16(page + cy * 512 + (cx + i) * 2);
+
+                    out[y * 64 + x] = c == 0 ? 0 : 0xFF000000u | (u32)((c & 0x1F) * 255 / 31) | (u32)((c >> 5 & 0x1F) * 255 / 31) << 8
+                                                   | (u32)((c >> 10 & 0x1F) * 255 / 31) << 16;
+                }
+            }
+            return 1;
         }
     }
-    return at;
+    return 0;
 }
 
-static s32 spin_verts(s32 f, V3 *out) {
-    float t = f >= SPIN_LAND ? 1 : (float)f / SPIN_LAND;
-    float open = fminf(smooth(0, SPIN_OPEN, (float)f), smooth(SPIN_LAND, SPIN_LAND - SPIN_OPEN, (float)f));
-    float turn = 2 * ROO_PI * SPIN_TURNS * smooth(0, 1, t), up = SPIN_LIFT * sinf(ROO_PI * t);
-    V3 axis = { SpinX, 0, SpinZ };
-    s32 k;
+/* --- Crash Bandicoot's models into made faces --- */
 
-    for (k = 0; k < RigVerts; k++) {
-        V3 q = turn_y(mix(Rest[k], LegsOut[k], open), axis, turn);
+/* A texture of the model's: a rect of a page, in 4 or 8 bits, and its CLUT's place */
+typedef struct {
+    u32 page_eid, info;
+    s32 clutx;
+    s32 x, y, w, h, bpp;
+} C1Texture;
 
-        q.y += up;
-        out[k] = from_rig(q);
+s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s32 nvert, MadeFace *faces, s32 max, s32 *nfaces,
+                   MadeImage *images, s32 *nimages) {
+    static C1Texture texs[MADE_MAX_IMAGES];
+    const u8 *info = model->item[0], *polys = model->item[1];
+    const V3 light = { -0.35f, -0.75f, -0.55f };
+    float ll = sqrtf(light.x * light.x + light.y * light.y + light.z * light.z);
+    s32 ntri = (s32)hm_rd32(info), nslot = (s32)hm_rd32(info + 16), ntex = 0, i, j, k;
+
+    *nfaces = *nimages = 0;
+    if (model->count < 2 || ntri <= 0 || ntri > max || model->size[1] < ntri * 8 || model->size[0] < 20 + nslot * 4) {
+        return 0;
     }
-    return add_tornado(out, RigVerts, f, open, up);
-}
+    for (i = 0; i < ntri; i++) {
+        const u8 *p = polys + i * 8, *s;
+        MadeFace *t = &faces[i];
+        u16 w = hm_rd16(p + 6);
+        s32 slot = w & 0x7FFF;
+        u8 rgb[3];
 
-/* His animation j's frames, and its frame f as frame_verts gives it, then the tornado's (shut but in his spin): his standing one with
- * less sway, the made ones made. */
-static s32 anim_frames(const Entry *a, s32 j) {
-    return RooAnims[j].made > 0 && RigVerts > 0 ? RooAnims[j].made : a->count;
-}
+        memset(t, 0, sizeof(*t));
+        t->v[0] = hm_rd16(p) / 6;
+        t->v[1] = hm_rd16(p + 2) / 6;
+        t->v[2] = hm_rd16(p + 4) / 6;
+        t->image = -1;
+        if (t->v[0] >= nvert || t->v[1] >= nvert || t->v[2] >= nvert || slot >= nslot) {
+            t->v[0] = t->v[1] = t->v[2] = 0;
+            slot = 0;
+        }
+        s = info + 20 + slot * 4;
+        rgb[0] = s[0];
+        rgb[1] = s[1];
+        rgb[2] = s[2];
+        if ((s[3] & 0x80) && 20 + (slot + 3) * 4 <= model->size[0]) {
+            u32 page = hm_rd32(s + 4), tinfo = hm_rd32(s + 8);
+            s32 uvi = (s32)(tinfo >> 22 & 0x3FF), cm = (s32)(tinfo >> 20 & 3), seg = (s32)(tinfo >> 18 & 3);
+            s32 xoffu = (s32)(tinfo >> 13 & 0x1F), yoffu = (s32)(tinfo & 0x1F), wind = uvi / 25 & 31;
+            s32 tw = 4 << (uvi % 5), th = 4 << (uvi / 5 % 5), xoff, yoff;
 
-static s32 anim_verts(const Entry *a, s32 j, s32 f, const s32 scale[3], V3 *out, V3 *normals) {
-    s32 n, k;
+            if (cm <= 1 && c1_texture_page(l, page) != NULL) {
+                xoff = (64 << (2 - cm)) * seg + (2 << (2 - cm)) * xoffu;
+                yoff = yoffu * 4;
+                for (j = 0; j < ntex; j++) {
+                    if (texs[j].page_eid == page && texs[j].x == xoff && texs[j].y == yoff && texs[j].w == tw && texs[j].h == th
+                        && texs[j].bpp == (cm == 0 ? 4 : 8) && texs[j].clutx == (s[3] & 0xF) && (texs[j].info >> 6 & 0x7F) == (tinfo >> 6 & 0x7F)) {
+                        break;
+                    }
+                }
+                if (j == ntex && ntex < MADE_MAX_IMAGES) {
+                    texs[ntex].page_eid = page;
+                    texs[ntex].info = tinfo;
+                    texs[ntex].clutx = s[3] & 0xF;
+                    texs[ntex].x = xoff;
+                    texs[ntex].y = yoff;
+                    texs[ntex].w = tw;
+                    texs[ntex].h = th;
+                    texs[ntex].bpp = cm == 0 ? 4 : 8;
+                    ntex++;
+                }
+                if (j < ntex) {
+                    t->image = j;
+                    /* corner a has U1 V1, b U2 V2, c U3 V3 */
+                    t->uv[0][0] = (u8)(tw * (0x30FF0C >> wind & 1) > 255 ? 255 : tw * (0x30FF0C >> wind & 1));
+                    t->uv[1][0] = (u8)(tw * (0x8799E1 >> wind & 1) > 255 ? 255 : tw * (0x8799E1 >> wind & 1));
+                    t->uv[2][0] = (u8)(tw * (0x4B66D2 >> wind & 1) > 255 ? 255 : tw * (0x4B66D2 >> wind & 1));
+                    t->uv[0][1] = (u8)(th * (0xF3CC30 >> wind & 1) > 255 ? 255 : th * (0xF3CC30 >> wind & 1));
+                    t->uv[1][1] = (u8)(th * (0x9E7186 >> wind & 1) > 255 ? 255 : th * (0x9E7186 >> wind & 1));
+                    t->uv[2][1] = (u8)(th * (0x6DB249 >> wind & 1) > 255 ? 255 : th * (0x6DB249 >> wind & 1));
+                }
+            }
+        }
+        /* each corner's colour, lit by the light as it stands: the game's own models have their light in their colours */
+        for (j = 0; j < 3; j++) {
+            const V3 *nn = &normals[t->v[j]];
+            float len = sqrtf(nn->x * nn->x + nn->y * nn->y + nn->z * nn->z), lit = 0;
 
-    if (RooAnims[j].made > 0 && RigVerts > 0) {
-        return j == ROO_SPIN ? spin_verts(f, out) : add_tornado(out, walk_verts(f, out), 0, 0, 0);
+            if (len > 0) {
+                lit = (nn->x * light.x + nn->y * light.y + nn->z * light.z) / (len * ll);
+            }
+            lit = 0.62f + 0.55f * (lit > 0 ? lit : 0);
+            for (k = 0; k < 3; k++) {
+                float v = rgb[k] * lit;
+
+                t->rgb[0][j][k] = (u8)(v > 255 ? 255 : v);
+            }
+        }
+        memcpy(t->rgb[1], t->rgb[0], sizeof(t->rgb[0]));
     }
-    f = f < a->count ? f : a->count - 1;
-    n = frame_verts(a->item[f], a->size[f], scale, out, normals, MAX_VERTS - TORN_VERTS);
-    if (j == ROO_REST && n > 0 && n == SwayVerts) {
-        for (k = 0; k < n; k++) {
-            out[k].x = SwayMiddle[k].x + (out[k].x - SwayMiddle[k].x) * ROO_SWAY;
-            out[k].y = SwayMiddle[k].y + (out[k].y - SwayMiddle[k].y) * ROO_SWAY;
-            out[k].z = SwayMiddle[k].z + (out[k].z - SwayMiddle[k].z) * ROO_SWAY;
+    /* the images, out of their pages: each a palette and its rows */
+    for (j = 0; j < ntex; j++) {
+        const u8 *page = c1_texture_page(l, texs[j].page_eid);
+        MadeImage *im = &images[j];
+        s32 cy = (s32)(texs[j].info >> 6 & 0x7F), cx = texs[j].clutx * 16, row, y;
+
+        memset(im, 0, sizeof(*im));
+        im->bpp8 = texs[j].bpp == 8;
+        im->units = im->bpp8 ? texs[j].w / 2 : texs[j].w / 4;
+        im->h = texs[j].h;
+        im->colours = im->bpp8 ? 256 : 16;
+        for (k = 0; k < im->colours; k++) {
+            im->clut[k] = cx + k < 256 ? hm_rd16(page + cy * 512 + (cx + k) * 2) : 0;
+        }
+        row = im->units * 2;
+        if ((im->pixels = calloc((size_t)row * (size_t)im->h, 1)) == NULL) {
+            made_images_free(images, j);
+            return 0;
+        }
+        for (y = 0; y < im->h; y++) {
+            s32 at = (texs[j].y + y) * 512 + (im->bpp8 ? texs[j].x : texs[j].x / 2);
+
+            if (at + row <= C1_PAGE_BYTES) {
+                memcpy(im->pixels + (size_t)y * row, page + at, (size_t)row);
+            }
         }
     }
-    return n > 0 && RigVerts > 0 ? add_tornado(out, n, 0, 0, 0) : n;
+    *nfaces = ntri;
+    *nimages = ntex;
+    return 1;
 }
 
-static void put_box(Bytes *o, const V3 *v, s32 n, float k, float ground) {
+void made_images_free(MadeImage *images, s32 n) {
+    s32 i;
+
+    for (i = 0; i < n; i++) {
+        free(images[i].pixels);
+        images[i].pixels = NULL;
+    }
+}
+
+/* --- writing a made model --- */
+
+#define INDEX_LIMIT 16384 /* an index list's entries are a vertex << 2 in 16 bits */
+
+static void put_box(Bytes *o, const V3 *v, s32 n) {
     float lo[3] = { 1e9f, 1e9f, 1e9f }, hi[3] = { -1e9f, -1e9f, -1e9f }, r = 0;
     u8 box[0x14];
     s32 i, j;
 
     for (i = 0; i < n; i++) {
-        float p[3] = { v[i].x * k, v[i].y * k - ground, v[i].z * k };
+        float p[3];
 
+        p[0] = v[i].x;
+        p[1] = v[i].y;
+        p[2] = v[i].z;
         for (j = 0; j < 3; j++) {
             lo[j] = p[j] < lo[j] ? p[j] : lo[j];
             hi[j] = p[j] > hi[j] ? p[j] : hi[j];
@@ -654,612 +543,1057 @@ static void put_box(Bytes *o, const V3 *v, s32 n, float k, float ground) {
         r += h * h;
     }
     /* as the game's own: across from least to most, but down from the bottom to the top */
-    wr16(box + 0, (u32)(s16)lo[0]);
-    wr16(box + 2, (u32)(s16)hi[1]);
-    wr16(box + 4, (u32)(s16)lo[2]);
-    wr16(box + 6, (u32)(s16)hi[0]);
-    wr16(box + 8, (u32)(s16)lo[1]);
-    wr16(box + 10, (u32)(s16)hi[2]);
-    wr16(box + 12, (u32)(s16)((lo[0] + hi[0]) / 2));
-    wr16(box + 14, (u32)(s16)((lo[1] + hi[1]) / 2));
-    wr16(box + 16, (u32)(s16)((lo[2] + hi[2]) / 2));
-    wr16(box + 18, (u32)(s16)sqrtf(r));
-    put(o, box, sizeof(box));
+    hm_wr16(box + 0, (u32)(s16)lo[0]);
+    hm_wr16(box + 2, (u32)(s16)hi[1]);
+    hm_wr16(box + 4, (u32)(s16)lo[2]);
+    hm_wr16(box + 6, (u32)(s16)hi[0]);
+    hm_wr16(box + 8, (u32)(s16)lo[1]);
+    hm_wr16(box + 10, (u32)(s16)hi[2]);
+    hm_wr16(box + 12, (u32)(s16)((lo[0] + hi[0]) / 2));
+    hm_wr16(box + 14, (u32)(s16)((lo[1] + hi[1]) / 2));
+    hm_wr16(box + 16, (u32)(s16)((lo[2] + hi[2]) / 2));
+    hm_wr16(box + 18, (u32)(s16)sqrtf(r));
+    hm_put(o, box, sizeof(box));
 }
 
-static u8 *RooTex, *RooMdl;
-static s32 RooTexSize, RooMdlSize, RooTried, RooMade;
+static void write_texture_set(Bytes *tex, const MadeImage *images, s32 nimages) {
+    size_t first_image;
+    s32 j, k;
 
-/* His sounds, which his boss fight's object (RRooC) plays: sound entries in sound pages, PS1 ADPCM at 11025 Hz, as CrashEdit plays that
- * game's. His laugh (CrznA), and his landing (ld00A). His game has no hurt voice for him, so his yelp is his laugh's first "ha", its
- * first 86 blocks (0.22 s, where it falls quiet), a little higher. */
-#define ROO_LAUGH_PITCH 0x400
-#define ROO_YELP_BYTES (86 * 16)
-#define ROO_YELP_PITCH 0x480
-static u8 *RooLaugh, *RooThud;
-static s32 RooLaughSize, RooThudSize;
+    hm_put(tex, NULL, 0x20);
+    hm_wr32(tex->b, 8);
+    for (j = 0; j < nimages; j++) {
+        u8 head[4], c[2];
 
-static u8 *sound_of(const Level *l, const char *name, s32 *size) {
-    Entry e;
-    u8 *copy;
-
-    if (!entry_find(l, name, &e) || e.type != 12 || e.count < 1 || e.size[0] < 16 || (copy = malloc((size_t)e.size[0])) == NULL) {
-        return NULL;
-    }
-    memcpy(copy, e.item[0], (size_t)e.size[0]);
-    *size = e.size[0];
-    return copy;
-}
-
-static void make_sounds(const Level *l) {
-    if (RooLaugh == NULL) {
-        RooLaugh = sound_of(l, "CrznA", &RooLaughSize);
-    }
-    if (RooThud == NULL) {
-        RooThud = sound_of(l, "ld00A", &RooThudSize);
-    }
-}
-
-/* His hero card: the face his boss fight shows, whose tongue is his health (ShadC, the fight's panel: a 64 x 64 sprite), as red | green
- * << 8 | blue << 16 | alpha << 24: his head and the tongue as it leaves his mouth (rows 0 to CARD_HEAD - 1), then the tongue hanging
- * down and curling at its end. */
-#define CARD_HEAD 42
-static u32 RooCard[64 * 64];
-static s32 RooCardMade;
-
-static void make_card(const Level *l) {
-    Entry obj;
-    const u8 *it;
-    s32 at, f, x, y;
-
-    if (!entry_find(l, "ShadC", &obj) || obj.type != 11 || obj.count < 6) {
-        return;
-    }
-    it = obj.item[5];
-    for (at = 4; at + 12 <= obj.size[5]; at += 4) {
-        const u8 *page = texture_page(l, rd32(it + at));
-        u32 head = rd32(it + at - 4);
-
-        if (page == NULL || (head & 0xFFFF) != 2) {
-            continue;
-        }
-        for (f = 0; f < (s32)(head >> 16) && at + 12 + f * 8 <= obj.size[5]; f++) {
-            u32 col = rd32(it + at + 4 + f * 8), ti = rd32(it + at + 8 + f * 8);
-            s32 uvi = (s32)(ti >> 22 & 0x3FF), cm = (s32)(ti >> 20 & 3), seg = (s32)(ti >> 18 & 3), xoffu = (s32)(ti >> 13 & 0x1F);
-            s32 cy = (s32)(ti >> 6 & 0x7F), y0 = (s32)(ti & 0x1F) * 4, x0 = 256 * seg + 8 * xoffu, cx = (s32)(col >> 24 & 0xF) * 16;
-
-            /* the face: the one 64 x 64 4-bit sprite */
-            if (cm != 0 || 4 << (uvi % 5) != 64 || 4 << (uvi / 5 % 5) != 64 || y0 + 64 > 128) {
-                continue;
-            }
-            for (y = 0; y < 64; y++) {
-                for (x = 0; x < 64; x++) {
-                    s32 u = x0 + x, i = page[(y0 + y) * 512 + u / 2] >> (u & 1) * 4 & 15;
-                    u16 c = rd16(page + cy * 512 + (cx + i) * 2);
-
-                    RooCard[y * 64 + x] = c == 0 ? 0 : 0xFF000000u | (u32)((c & 0x1F) * 255 / 31) | (u32)((c >> 5 & 0x1F) * 255 / 31) << 8
-                                                   | (u32)((c >> 10 & 0x1F) * 255 / 31) << 16;
-                }
-            }
-            RooCardMade = 1;
-            return;
+        hm_wr32(head, (u32)images[j].colours);
+        hm_put(tex, head, 4);
+        for (k = 0; k < images[j].colours; k++) {
+            hm_wr16(c, images[j].clut[k]);
+            hm_put(tex, c, 2);
         }
     }
+    first_image = tex->n;
+    for (j = 0; j < nimages; j++) {
+        s32 row = images[j].units * 2;
+        u8 head[20];
+
+        memset(head, 0, sizeof(head));
+        hm_wr16(head, (u32)images[j].units);
+        hm_wr16(head + 2, (u32)images[j].h);
+        hm_wr16(head + 6, (u32)((images[j].h & 0xFF) << 8 | (row & 0xFF)));
+        hm_wr16(head + 12, (u32)(j << 1 | images[j].bpp8));
+        hm_wr32(head + 16, 1);
+        hm_put(tex, head, sizeof(head));
+        hm_put(tex, images[j].pixels, (size_t)row * (size_t)images[j].h);
+    }
+    if (nimages == 0) {
+        /* none: one clear image, as a set has some */
+        u8 head[20], clut[36];
+
+        memset(clut, 0, sizeof(clut));
+        hm_wr32(clut, 16);
+        hm_put(tex, clut, sizeof(clut));
+        first_image = tex->n;
+        memset(head, 0, sizeof(head));
+        hm_wr16(head, 1);
+        hm_wr16(head + 2, 4);
+        hm_wr16(head + 6, 4 << 8 | 2);
+        hm_wr32(head + 16, 1);
+        hm_put(tex, head, sizeof(head));
+        hm_put(tex, NULL, 8);
+        nimages = 1;
+    }
+    hm_wr16(tex->b + 8, (u32)nimages);
+    hm_wr16(tex->b + 10, (u32)nimages);
+    hm_wr32(tex->b + 0x0C, (u32)(first_image - 0x0C));
+    hm_wr32(tex->b + 0x10, 0x10);
+    hm_align(tex, 4);
+    hm_wr32(tex->b + 4, (u32)tex->n);
 }
 
-static void make_roo(void) {
-    static V3 verts[MAX_VERTS], normals[MAX_VERTS];
-    static Tri tris[MAX_TRIS];
-    static Image images[MAX_IMAGES];
-    DiscImage *disc;
-    Level level;
-    Entry model, anims[ROO_ANIMS];
+/* An animation's keyframes, every `step` frames and its last: the frames between are blended from the one before to the one after. */
+static s32 key_step(s32 frames, s32 nvert) {
+    s32 step = 1;
+
+    while (((frames - 1) / step + 2) * nvert > INDEX_LIMIT && step < frames) {
+        step++;
+    }
+    return step;
+}
+
+s32 made_write(const MadeModel *m, u8 **tex_out, s32 *tex_size, u8 **mdl_out, s32 *mdl_size) {
     Bytes tex = { 0 }, mdl = { 0 };
-    const u8 *info, *polys;
-    s32 scale[3], ntri, nslot, nvert = 0, nimage = 0, i, j, k, n;
-    float lo = 1e9f, hi = -1e9f, kscale, ground;
-    size_t mesh, strips, vblock, uvidx, texs, colidx, end, colours, uvs, zeros, count0, entries, kept;
+    V3 *fv = malloc(sizeof(V3) * (size_t)(m->nvert > 0 ? m->nvert : 1)), *corners = malloc(sizeof(V3) * (size_t)m->nfaces * 3);
+    size_t strips, vblock, uvidx, texs, colidx[2], end, colours, uvs, zeros, count0, entries, kept;
+    s32 i, j, k, n, mesh;
 
-    const V3 light = { -0.35f, -0.75f, -0.55f };
-
-    RooTried = 1;
-    disc = disc_image_find("SCUS-94900");
-    if (disc == NULL) {
-        return;
+    *tex_out = *mdl_out = NULL;
+    if (fv == NULL || corners == NULL || m->nfaces <= 0 || m->nvert <= 0 || m->nvert > INDEX_LIMIT / 2 || m->nfaces * 3 > 4096) {
+        free(fv);
+        free(corners);
+        return 0;
     }
-    if (!level_read(disc, "S1/S0000017.NSF", &level)) {
-        printf("bonus: Crash Bandicoot's Ripper Roo level can't be read\n");
-        disc_image_close(disc);
-        return;
-    }
-    disc_image_close(disc);
-    if (!entry_find(&level, "RS1nG", &model) || model.type != 2 || model.count < 2) {
-        printf("bonus: Crash Bandicoot's disc has no Ripper Roo\n");
-        goto done;
-    }
-    for (i = 0; i < ROO_ANIMS; i++) {
-        if (!entry_find(&level, RooAnims[i].entry, &anims[i]) || anims[i].type != 1 || anims[i].count <= 0) {
-            printf("bonus: Ripper Roo's %s is missing\n", RooAnims[i].entry);
-            goto done;
-        }
-    }
-    info = model.item[0];
-    polys = model.item[1];
-    ntri = (s32)rd32(info);
-    scale[0] = (s32)rd32(info + 4);
-    scale[1] = (s32)rd32(info + 8);
-    scale[2] = (s32)rd32(info + 12);
-    nslot = (s32)rd32(info + 16);
-    if (ntri <= 0 || ntri > MAX_TRIS || model.size[1] < ntri * 8 || model.size[0] < 20 + nslot * 4) {
-        goto done;
-    }
-    /* how big he is, standing */
-    sway_middle(&anims[ROO_REST], scale);
-    rig_setup(&anims[ROO_SPIN], scale);
-    nvert = anim_verts(&anims[ROO_REST], ROO_REST, 0, scale, verts, normals);
-    if (nvert == 0) {
-        goto done;
-    }
-    for (k = 0; k < nvert; k++) {
-        lo = verts[k].y < lo ? verts[k].y : lo;
-        hi = verts[k].y > hi ? verts[k].y : hi;
-    }
-    kscale = ROO_HEIGHT / (hi - lo);
-    ground = hi * kscale;
+    write_texture_set(&tex, m->images, m->nimages);
 
-    /* his triangles, their colours lit as he stands, and their textures */
-    for (i = 0; i < ntri; i++) {
-        const u8 *p = polys + i * 8, *s;
-        Tri *t = &tris[i];
-        u16 w = rd16(p + 6);
-
-        t->a = rd16(p) / 6;
-        t->b = rd16(p + 2) / 6;
-        t->c = rd16(p + 4) / 6;
-        t->slot = w & 0x7FFF;
-        t->image = -1;
-        if (t->a >= nvert || t->b >= nvert || t->c >= nvert || t->slot >= nslot) {
-            t->a = t->b = t->c = 0;
-            t->slot = 0;
-        }
-        s = info + 20 + t->slot * 4;
-        t->rgb[0] = s[0];
-        t->rgb[1] = s[1];
-        t->rgb[2] = s[2];
-        if ((s[3] & 0x80) && 20 + (t->slot + 3) * 4 <= model.size[0]) {
-            u32 page = rd32(s + 4), tinfo = rd32(s + 8);
-            s32 uvi = (s32)(tinfo >> 22 & 0x3FF), cm = (s32)(tinfo >> 20 & 3), seg = (s32)(tinfo >> 18 & 3);
-            s32 xoffu = (s32)(tinfo >> 13 & 0x1F), yoffu = (s32)(tinfo & 0x1F), wind = uvi / 25 & 31;
-            s32 tw = 4 << (uvi % 5), th = 4 << (uvi / 5 % 5), xoff, yoff;
-
-            if (cm <= 1 && texture_page(&level, page) != NULL) {
-                xoff = (64 << (2 - cm)) * seg + (2 << (2 - cm)) * xoffu;
-                yoff = yoffu * 4;
-                for (j = 0; j < nimage; j++) {
-                    if (images[j].page_eid == page && images[j].x == xoff && images[j].y == yoff && images[j].w == tw && images[j].h == th
-                        && images[j].bpp == (cm == 0 ? 4 : 8) && images[j].clutx == (s[3] & 0xF) && (images[j].info >> 6 & 0x7F) == (tinfo >> 6 & 0x7F)) {
-                        break;
-                    }
-                }
-                if (j == nimage && nimage < MAX_IMAGES) {
-                    images[nimage].page_eid = page;
-                    images[nimage].info = tinfo;
-                    images[nimage].clutx = s[3] & 0xF;
-                    images[nimage].x = xoff;
-                    images[nimage].y = yoff;
-                    images[nimage].w = tw;
-                    images[nimage].h = th;
-                    images[nimage].bpp = cm == 0 ? 4 : 8;
-                    nimage++;
-                }
-                if (j < nimage) {
-                    t->image = j;
-                    /* corner a has U1 V1, b U2 V2, c U3 V3 */
-                    t->uv[0][0] = tw * (0x30FF0C >> wind & 1);
-                    t->uv[1][0] = tw * (0x8799E1 >> wind & 1);
-                    t->uv[2][0] = tw * (0x4B66D2 >> wind & 1);
-                    t->uv[0][1] = th * (0xF3CC30 >> wind & 1);
-                    t->uv[1][1] = th * (0x9E7186 >> wind & 1);
-                    t->uv[2][1] = th * (0x6DB249 >> wind & 1);
-
-                }
-            }
-        }
-    }
-
-    /* the tornado's faces, after his own, on its vertices after his (add_tornado): each quad two faces a side, so it shows from in
-     * and out, each corner bright as far as it is to its streak's front */
-    if (RigVerts > 0 && nvert == RigVerts + TORN_VERTS && ntri + TORN_TRIS <= MAX_TRIS) {
-        s32 streak, seg, q, c;
-
-        for (streak = 0; streak < TORN_STREAKS; streak++) {
-            for (seg = 0; seg < TORN_SEGS; seg++) {
-                /* this pair's low and high, then the next pair's */
-                s32 v0 = RigVerts + (streak * (TORN_SEGS + 1) + seg) * 2;
-                const s32 faces[4][3] = {
-                    { v0, v0 + 2, v0 + 3 }, { v0, v0 + 3, v0 + 1 }, { v0, v0 + 3, v0 + 2 }, { v0, v0 + 1, v0 + 3 },
-                };
-
-                for (q = 0; q < 4; q++) {
-                    Tri *t = &tris[ntri++];
-
-                    memset(t, 0, sizeof(*t));
-                    t->a = faces[q][0];
-                    t->b = faces[q][1];
-                    t->c = faces[q][2];
-                    t->image = -1;
-                    t->glow = 1;
-                    for (j = 0; j < 3; j++) {
-                        float b = powf((float)((faces[q][j] - RigVerts) / 2 % (TORN_SEGS + 1)) / TORN_SEGS, TORN_RAMP);
-
-                        for (c = 0; c < 3; c++) {
-                            t->corner_rgb[j][c] = (u8)(TornRgb[c] * b);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /* the texture set: a palette and an image a texture */
-    {
-        size_t first_image;
-
-        put(&tex, NULL, 0x20);
-        wr32(tex.b, 8);
-        for (j = 0; j < nimage; j++) {
-            const u8 *page = texture_page(&level, images[j].page_eid);
-            s32 colours_n = images[j].bpp == 4 ? 16 : 256, cy = (s32)(images[j].info >> 6 & 0x7F), cx = images[j].clutx * 16;
-            u8 head[4];
-
-            wr32(head, (u32)colours_n);
-            put(&tex, head, 4);
-            for (k = 0; k < colours_n; k++) {
-                s32 x = cx + k;
-
-                put(&tex, x < 256 ? page + cy * 512 + x * 2 : (const u8 *)"\0\0", 2);
-            }
-        }
-        first_image = tex.n;
-        for (j = 0; j < nimage; j++) {
-            const u8 *page = texture_page(&level, images[j].page_eid);
-            s32 units = images[j].bpp == 4 ? images[j].w / 4 : images[j].w / 2, row = units * 2, y;
-            u8 head[20];
-
-            memset(head, 0, sizeof(head));
-            wr16(head, (u32)units);
-            wr16(head + 2, (u32)images[j].h);
-            wr16(head + 6, (u32)((images[j].h & 0xFF) << 8 | (row & 0xFF)));
-            wr16(head + 12, (u32)(j << 1 | (images[j].bpp == 8)));
-            wr32(head + 16, 1);
-            put(&tex, head, sizeof(head));
-            for (y = 0; y < images[j].h; y++) {
-                s32 at = (images[j].y + y) * 512 + (images[j].bpp == 4 ? images[j].x / 2 : images[j].x);
-
-                put(&tex, at + row <= PAGE_BYTES ? page + at : NULL, (size_t)row);
-            }
-        }
-        if (nimage == 0) {
-            /* none: one clear image, as a set has some */
-            u8 head[20], clut[36];
-
-            memset(clut, 0, sizeof(clut));
-            wr32(clut, 16);
-            put(&tex, clut, sizeof(clut));
-            first_image = tex.n;
-            memset(head, 0, sizeof(head));
-            wr16(head, 1);
-            wr16(head + 2, 4);
-            wr16(head + 6, 4 << 8 | 2);
-            wr32(head + 16, 1);
-            put(&tex, head, sizeof(head));
-            put(&tex, NULL, 8);
-            nimage = 1;
-        }
-        wr16(tex.b + 8, (u32)nimage);
-        wr16(tex.b + 10, (u32)nimage);
-        wr32(tex.b + 0x0C, (u32)(first_image - 0x0C));
-        wr32(tex.b + 0x10, 0x10);
-        align(&tex, 4);
-        wr32(tex.b + 4, (u32)tex.n);
-    }
-
-    /* the model: a mesh of a strip a triangle, and his animations */
-    put(&mdl, NULL, 0x58 + 0x34);
-    mesh = 0x58;
+    /* the meshes: a strip a face, all of them sharing all but their colours */
+    hm_put(&mdl, NULL, 0x58 + 0x34 * (size_t)m->meshes);
     strips = mdl.n;
-    for (i = 0; i < ntri; i++) {
+    for (i = 0; i < m->nfaces; i++) {
         u8 s[2];
 
-        wr16(s, (u32)(1 << 8 | (tris[i].image < 0)));
-        put(&mdl, s, 2);
+        hm_wr16(s, (u32)(1 << 8 | (m->faces[i].image < 0)));
+        hm_put(&mdl, s, 2);
     }
-    put(&mdl, "\xFF\xFF", 2);
-    align(&mdl, 4);
+    hm_put(&mdl, "\xFF\xFF", 2);
+    hm_align(&mdl, 4);
     vblock = mdl.n;
-    {
-        static V3 corners[MAX_TRIS * 3];
-
-        for (i = 0; i < ntri; i++) {
-            corners[i * 3] = verts[tris[i].a];
-            corners[i * 3 + 1] = verts[tris[i].b];
-            corners[i * 3 + 2] = verts[tris[i].c];
+    m->frame(m->ctx, m->rest_anim >= 0 && m->rest_anim < m->nanims ? m->rest_anim : 0, 0, fv);
+    for (i = 0; i < m->nfaces; i++) {
+        for (k = 0; k < 3; k++) {
+            corners[i * 3 + k] = fv[m->faces[i].v[k]];
         }
-        put_box(&mdl, corners, ntri * 3, kscale, ground);
-        for (i = 0; i < ntri * 3; i++) {
-            u8 v[8];
+    }
+    put_box(&mdl, corners, m->nfaces * 3);
+    for (i = 0; i < m->nfaces * 3; i++) {
+        u8 v[8];
 
-            memset(v, 0, sizeof(v));
-            wr16(v, (u32)(s16)(corners[i].x * kscale));
-            wr16(v + 2, (u32)(s16)(corners[i].y * kscale - ground));
-            wr16(v + 4, (u32)(s16)(corners[i].z * kscale));
-            put(&mdl, v, sizeof(v));
-        }
+        memset(v, 0, sizeof(v));
+        hm_wr16(v, (u32)(s16)corners[i].x);
+        hm_wr16(v + 2, (u32)(s16)corners[i].y);
+        hm_wr16(v + 4, (u32)(s16)corners[i].z);
+        hm_put(&mdl, v, sizeof(v));
     }
     uvidx = mdl.n;
-    for (i = 0, n = 0; i < ntri; i++) {
+    for (i = 0, n = 0; i < m->nfaces; i++) {
         u8 s[2];
 
-        wr16(s, (u32)(tris[i].image >= 0 ? n : 0));
-        n += tris[i].image >= 0 ? 3 : 0;
-        put(&mdl, s, 2);
+        hm_wr16(s, (u32)(m->faces[i].image >= 0 ? n : 0));
+        n += m->faces[i].image >= 0 ? 3 : 0;
+        hm_put(&mdl, s, 2);
     }
-    align(&mdl, 4);
+    hm_align(&mdl, 4);
     texs = mdl.n;
-    for (i = 0; i < ntri; i++) {
+    for (i = 0; i < m->nfaces; i++) {
         u8 s[2];
 
-        wr16(s, (u32)(tris[i].image >= 0 ? tris[i].image : 0));
-        put(&mdl, s, 2);
+        hm_wr16(s, (u32)(m->faces[i].image >= 0 ? m->faces[i].image : 0));
+        hm_put(&mdl, s, 2);
     }
-    align(&mdl, 4);
-    colidx = mdl.n;
-    for (i = 0; i < ntri; i++) {
-        u8 s[2];
+    hm_align(&mdl, 4);
+    for (mesh = 0; mesh < m->meshes; mesh++) {
+        colidx[mesh] = mdl.n;
+        for (i = 0; i < m->nfaces; i++) {
+            u8 s[2];
 
-        /* the tornado's added, semi-transparent (bit 15) in blend mode 1 */
-        wr16(s, (u32)(i * 3 | (tris[i].glow ? 0x8000 | 1 << 13 : 0)));
-        put(&mdl, s, 2);
+            hm_wr16(s, (u32)((mesh * m->nfaces + i) * 3 | m->faces[i].blend));
+            hm_put(&mdl, s, 2);
+        }
+        hm_align(&mdl, 4);
     }
-    align(&mdl, 4);
     end = mdl.n;
-    /* each corner's colour, lit by the light as he stands: the game's own models have their light in their colours */
     colours = mdl.n;
-    {
-        float ll = sqrtf(light.x * light.x + light.y * light.y + light.z * light.z);
-
-        for (i = 0; i < ntri; i++) {
-            const s32 corner[3] = { tris[i].a, tris[i].b, tris[i].c };
-
+    for (mesh = 0; mesh < m->meshes; mesh++) {
+        for (i = 0; i < m->nfaces; i++) {
             for (j = 0; j < 3; j++) {
-                const V3 *nn = &normals[corner[j]];
-                float len, lit = 0;
                 u8 c[4];
 
-                if (tris[i].glow) {
-                    c[0] = tris[i].corner_rgb[j][0];
-                    c[1] = tris[i].corner_rgb[j][1];
-                    c[2] = tris[i].corner_rgb[j][2];
-                    c[3] = 0;
-                    put(&mdl, c, 4);
-                    continue;
-                }
-                len = sqrtf(nn->x * nn->x + nn->y * nn->y + nn->z * nn->z);
-                if (len > 0) {
-                    lit = (nn->x * light.x + nn->y * light.y + nn->z * light.z) / (len * ll);
-                }
-                lit = 0.62f + 0.55f * (lit > 0 ? lit : 0);
-                for (k = 0; k < 3; k++) {
-                    float v = tris[i].rgb[k] * lit;
-
-                    c[k] = (u8)(v > 255 ? 255 : v);
-                }
+                c[0] = m->faces[i].rgb[mesh][j][0];
+                c[1] = m->faces[i].rgb[mesh][j][1];
+                c[2] = m->faces[i].rgb[mesh][j][2];
                 c[3] = 0;
-                put(&mdl, c, 4);
+                hm_put(&mdl, c, 4);
             }
         }
     }
     uvs = mdl.n;
-    for (i = 0; i < ntri; i++) {
-        for (j = 0; tris[i].image >= 0 && j < 3; j++) {
+    for (i = 0; i < m->nfaces; i++) {
+        for (j = 0; m->faces[i].image >= 0 && j < 3; j++) {
             u8 s[2];
-            s32 u = tris[i].uv[j][0], v = tris[i].uv[j][1];
 
-            wr16(s, (u32)((u > 255 ? 255 : u) | (v > 255 ? 255 : v) << 8));
-            put(&mdl, s, 2);
+            hm_wr16(s, (u32)(m->faces[i].uv[j][0] | m->faces[i].uv[j][1] << 8));
+            hm_put(&mdl, s, 2);
         }
     }
-    put(&mdl, NULL, 4);
-    align(&mdl, 4);
-    zeros = put(&mdl, NULL, 0x18);
-    count0 = put(&mdl, NULL, 4);
-    entries = put(&mdl, NULL, (size_t)ROO_ANIMS * 0x18);
+    hm_put(&mdl, NULL, 4);
+    hm_align(&mdl, 4);
+    zeros = hm_put(&mdl, NULL, 0x18);
+    count0 = hm_put(&mdl, NULL, 4);
+    entries = hm_put(&mdl, NULL, (size_t)m->nanims * 0x18);
     kept = mdl.n;
 
     /* the header */
-    wr32(mdl.b, 0x0C160029);
-    self(&mdl, 0x08, zeros);
-    self(&mdl, 0x10, zeros);
-    self(&mdl, 0x18, count0);
-    self(&mdl, 0x1C, count0);
-    self(&mdl, 0x20, colours);
-    self(&mdl, 0x24, uvs);
-    self(&mdl, 0x28, zeros);
-    self(&mdl, 0x2C, zeros);
-    self(&mdl, 0x3C, zeros);
-    wr32(mdl.b + 0x40, ROO_ANIMS);
-    self(&mdl, 0x44, entries);
-    self(&mdl, 0x4C, count0);
-    wr32(mdl.b + 0x50, (u32)kept);
-    wr32(mdl.b + 0x54, 1);
-    wr16(mdl.b + mesh + 0x08, (u32)ntri);
-    wr16(mdl.b + mesh + 0x0A, 4);
-    self(&mdl, mesh + 0x10, vblock);
-    self(&mdl, mesh + 0x14, strips);
-    self(&mdl, mesh + 0x18, uvidx);
-    self(&mdl, mesh + 0x1C, texs);
-    self(&mdl, mesh + 0x20, colidx);
-    self(&mdl, mesh + 0x24, end);
-    wr32(tex.b + 0x14, (u32)kept);
+    hm_wr32(mdl.b, 0x0C160029);
+    hm_self(&mdl, 0x08, zeros);
+    hm_self(&mdl, 0x10, zeros);
+    hm_self(&mdl, 0x18, count0);
+    hm_self(&mdl, 0x1C, count0);
+    hm_self(&mdl, 0x20, colours);
+    hm_self(&mdl, 0x24, uvs);
+    hm_self(&mdl, 0x28, zeros);
+    hm_self(&mdl, 0x2C, zeros);
+    hm_self(&mdl, 0x3C, zeros);
+    hm_wr32(mdl.b + 0x40, (u32)m->nanims);
+    hm_self(&mdl, 0x44, entries);
+    hm_self(&mdl, 0x4C, count0);
+    hm_wr32(mdl.b + 0x50, (u32)kept);
+    hm_wr32(mdl.b + 0x54, (u32)m->meshes);
+    for (mesh = 0; mesh < m->meshes; mesh++) {
+        size_t h = 0x58 + 0x34 * (size_t)mesh;
 
-    /* the animations, each in a block of its own from a 2 KB sector on, with room before it for the heap's header as it's split off */
-    for (j = 0; j < ROO_ANIMS; j++) {
-        static V3 fv[MAX_VERTS];
-        s32 frames = anim_frames(&anims[j], j), f, nv = 0;
-        size_t start, list0, pool, e = entries + (size_t)j * 0x18;
+        hm_wr16(mdl.b + h + 0x08, (u32)m->nfaces);
+        hm_wr16(mdl.b + h + 0x0A, 4);
+        hm_self(&mdl, h + 0x10, vblock);
+        hm_self(&mdl, h + 0x14, strips);
+        hm_self(&mdl, h + 0x18, uvidx);
+        hm_self(&mdl, h + 0x1C, texs);
+        hm_self(&mdl, h + 0x20, colidx[mesh]);
+        hm_self(&mdl, h + 0x24, end);
+    }
+    hm_wr32(tex.b + 0x14, (u32)kept);
 
-        put(&mdl, NULL, 0x20);
-        align(&mdl, 2048);
-        start = put(&mdl, NULL, 4 + (size_t)frames * 16);
-        list0 = mdl.n;
-        for (f = 0; f < frames; f++) {
-            static V3 corners[MAX_TRIS * 3];
-            size_t list;
+    /* the animations, each in a block of its own from a 2 KB sector on, with room before it for the heap's header as it's split off:
+     * its frames' records, an index list a keyframe, and the keyframes' vertices */
+    for (j = 0; j < m->nanims; j++) {
+        s32 frames = m->anims[j].frames > 0 ? m->anims[j].frames : 1, step = key_step(frames, m->nvert), keys = 0, f, q;
+        s32 key_frame[256];
+        size_t start, list[256], pool, e = entries + (size_t)j * 0x18;
 
-            nv = anim_verts(&anims[j], j, f, scale, fv, NULL);
-            for (i = 0; i < ntri; i++) {
-                corners[i * 3] = fv[nv > tris[i].a ? tris[i].a : 0];
-                corners[i * 3 + 1] = fv[nv > tris[i].b ? tris[i].b : 0];
-                corners[i * 3 + 2] = fv[nv > tris[i].c ? tris[i].c : 0];
-            }
-            list = mdl.n;
-            self(&mdl, start + 4 + (size_t)f * 16, list);
-            put_box(&mdl, corners, ntri * 3, kscale, ground);
-            for (i = 0; i < ntri; i++) {
-                const s32 corner[3] = { tris[i].a, tris[i].b, tris[i].c };
-
+        for (f = 0; f < frames - 1 && keys < 255; f += step) {
+            key_frame[keys++] = f;
+        }
+        key_frame[keys++] = frames - 1;
+        hm_put(&mdl, NULL, 0x20);
+        hm_align(&mdl, 2048);
+        start = hm_put(&mdl, NULL, 4 + (size_t)frames * 16);
+        for (q = 0; q < keys; q++) {
+            m->frame(m->ctx, j, key_frame[q], fv);
+            for (i = 0; i < m->nfaces; i++) {
                 for (k = 0; k < 3; k++) {
-                    u8 s[2];
-                    s32 index = f * nvert + (corner[k] < nv ? corner[k] : 0);
-
-                    /* the third corner says which way round the face is */
-                    wr16(s, (u32)(index << 2 | (k == 2 && FLIP_FACES)));
-                    put(&mdl, s, 2);
+                    corners[i * 3 + k] = fv[m->faces[i].v[k]];
                 }
             }
-            align(&mdl, 4);
-        }
-        (void)list0;
-        pool = mdl.n;
-        self(&mdl, start, pool);
-        for (f = 0; f < frames; f++) {
-            nv = anim_verts(&anims[j], j, f, scale, fv, NULL);
-            for (k = 0; k < nvert; k++) {
-                u8 v[6];
-                const V3 *p = &fv[k < nv ? k : 0];
+            list[q] = mdl.n;
+            put_box(&mdl, corners, m->nfaces * 3);
+            for (i = 0; i < m->nfaces; i++) {
+                for (k = 0; k < 3; k++) {
+                    u8 s[2];
 
-                wr16(v, (u32)(s16)(p->x * kscale));
-                wr16(v + 2, (u32)(s16)(p->y * kscale - ground));
-                wr16(v + 4, (u32)(s16)(p->z * kscale));
-                put(&mdl, v, sizeof(v));
+                    hm_wr16(s, (u32)((q * m->nvert + m->faces[i].v[k]) << 2));
+                    hm_put(&mdl, s, 2);
+                }
+            }
+            hm_align(&mdl, 4);
+        }
+        for (f = 0, q = 0; f < frames; f++) {
+            size_t rec = start + 4 + (size_t)f * 16;
+
+            while (q + 1 < keys && key_frame[q + 1] <= f) {
+                q++;
+            }
+            hm_self(&mdl, rec, list[q]);
+            if (f != key_frame[q] && q + 1 < keys) {
+                hm_self(&mdl, rec + 4, list[q + 1]);
+                hm_wr32(mdl.b + rec + 8, (u32)((f - key_frame[q]) * 0x1000 / (key_frame[q + 1] - key_frame[q])));
             }
         }
-        align(&mdl, 4);
-        wr32(mdl.b + e, (u32)start);
-        wr32(mdl.b + e + 4, (u32)mdl.n);
-        wr32(mdl.b + e + 8, (u32)frames);
-        self(&mdl, e + 0x0C, mesh);
-        wr32(mdl.b + e + 0x10, (u32)string_hash((u8 *)RooAnims[j].name));
+        pool = mdl.n;
+        hm_self(&mdl, start, pool);
+        for (q = 0; q < keys; q++) {
+            m->frame(m->ctx, j, key_frame[q], fv);
+            for (k = 0; k < m->nvert; k++) {
+                u8 v[6];
+
+                hm_wr16(v, (u32)(s16)fv[k].x);
+                hm_wr16(v + 2, (u32)(s16)fv[k].y);
+                hm_wr16(v + 4, (u32)(s16)fv[k].z);
+                hm_put(&mdl, v, sizeof(v));
+            }
+        }
+        hm_align(&mdl, 4);
+        hm_wr32(mdl.b + e, (u32)start);
+        hm_wr32(mdl.b + e + 4, (u32)mdl.n);
+        hm_wr32(mdl.b + e + 8, (u32)frames);
+        hm_self(&mdl, e + 0x0C, 0x58 + 0x34 * (size_t)(m->anims[j].mesh < m->meshes ? m->anims[j].mesh : 0));
+        hm_wr32(mdl.b + e + 0x10, (u32)string_hash((u8 *)m->anims[j].name));
     }
-    if (tex.b == NULL || mdl.b == NULL || (size_t)ntri * 3 > 4096) {
-        goto done;
+    free(fv);
+    free(corners);
+    if (tex.b == NULL || mdl.b == NULL) {
+        free(tex.b);
+        free(mdl.b);
+        return 0;
     }
-    RooTex = tex.b;
-    RooTexSize = (s32)tex.n;
-    RooMdl = mdl.b;
-    RooMdlSize = (s32)mdl.n;
-    tex.b = mdl.b = NULL;
-    RooMade = 1;
-    make_card(&level);
-    make_sounds(&level);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s\n", ntri, nimage, RooMdlSize,
-           RooCardMade ? ", his hero card" : "", RooLaugh != NULL ? ", his laugh" : "", RooThud != NULL ? ", his landing" : "");
-done:
-    free(tex.b);
-    free(mdl.b);
-    free(level.pages);
+    *tex_out = tex.b;
+    *tex_size = (s32)tex.n;
+    *mdl_out = mdl.b;
+    *mdl_size = (s32)mdl.n;
+    return 1;
 }
 
-void bonus_heroes_files(void) {
-    u8 *tex, *mdl;
+/* --- Crash Bash's own models, as the archive has them --- */
 
-    if (!extra_heroes_on()) {
+static const FileEntry *file_anims(const ModelFile *m) {
+    return (const FileEntry *)((const u8 *)&m->meshAnims + m->meshAnims);
+}
+
+static s32 mesh_corners(const MeshHeader *h) {
+    const u16 *s = (const u16 *)((const u8 *)&h->runs + h->runs);
+    s32 n = 0;
+
+    for (; *s != 0xFFFF; s++) {
+        n += (*s >> 8) + 2;
+    }
+    return n;
+}
+
+/* Frame f of animation n: each of its mesh's corners, blended if it's between two keyframes. The count. */
+static s32 file_frame(const u8 *file, s32 n, s32 f, V3 *out, s32 max) {
+    const ModelFile *m = (const ModelFile *)file;
+    const FileEntry *e;
+    const MeshHeader *mesh;
+    const s32 *anim, *fr;
+    const s16 *pool;
+    const u16 *a, *b;
+    s32 k, count, blend;
+
+    if (n < 0 || n >= m->nMeshAnims || f < 0 || f >= file_anims(m)[n].frames) {
+        return 0;
+    }
+    e = &file_anims(m)[n];
+    anim = (const s32 *)(file + e->start);
+    fr = (const s32 *)((const u8 *)anim + 4 + f * 16);
+    mesh = (const MeshHeader *)((const u8 *)&e->mesh + e->mesh);
+    pool = (const s16 *)(anim[0] != 0 ? (const u8 *)anim + anim[0] : (const u8 *)&m->verts + m->verts);
+    a = (const u16 *)((const u8 *)fr + fr[0] + 0x14);
+    blend = fr[2];
+    b = blend != 0 ? (const u16 *)((const u8 *)&fr[1] + fr[1] + 0x14) : a;
+    count = mesh_corners(mesh);
+    for (k = 0; k < count && k < max; k++) {
+        const s16 *pa = pool + (a[k] >> 2) * 3, *pb = pool + (b[k] >> 2) * 3;
+
+        out[k].x = (float)(pa[0] + ((pb[0] - pa[0]) * blend >> 12));
+        out[k].y = (float)(pa[1] + ((pb[1] - pa[1]) * blend >> 12));
+        out[k].z = (float)(pa[2] + ((pb[2] - pa[2]) * blend >> 12));
+    }
+    return count;
+}
+
+static s32 file_anim_named(const u8 *file, const char *name) {
+    const ModelFile *m = (const ModelFile *)file;
+    s32 key = string_hash((u8 *)name), i;
+
+    for (i = 0; i < m->nMeshAnims; i++) {
+        if (file_anims(m)[i].hash == key) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/* --- the bear ---
+ * Crash's polar model (DB_CharsPolar2Crash), as the archive has it: one mesh of Crash and his bear (and a second with the bear charred,
+ * as the game draws it once a bomb's hit). The bear is its strips that are textured only with the bear's images (BEAR_IMAGES and the
+ * last image with BEAR_CLUT) or not at all, inside its outline, and neither blue (his jeans) nor orange (his skin). */
+#define BEAR_CORNERS 1024
+#define BEAR_FACES 512
+#define BEAR_IMAGES 2   /* images 0 and 1, its fur's */
+#define BEAR_CLUT 12    /* and the set's last with this CLUT, its shading */
+#define BEAR_HALF 110   /* its outline: this far either side, and below BEAR_TOP */
+#define BEAR_TOP -215
+#define HIPS_TOP -225   /* Crash's hips: his corners below this and within BEAR_HALF across; his head, above HEAD_BOTTOM */
+#define HEAD_BOTTOM -400
+#define MAX_BEAR_IMAGES 8
+
+typedef struct {
+    s32 made;
+    u8 *mdl;
+    s32 corners;
+    s32 nfaces, nimages, nvert;
+    MadeFace faces[BEAR_FACES];
+    MadeImage images[MAX_BEAR_IMAGES];
+    s16 vert_of[BEAR_CORNERS], corner_of[BEAR_CORNERS];
+    s32 nhips, nhead;
+    s16 hips[BEAR_CORNERS], head[BEAR_CORNERS];
+    V3 ref[BEAR_CORNERS]; /* his first breathing frame */
+    float back_y, seat_z;
+    s32 anim[RIDE_ANIMS];
+} Bear;
+
+static Bear TheBear;
+static s32 BearTried;
+
+static const char *const RideNames[RIDE_ANIMS] = { "FALL", "RUN", "BREATHE", "PUSH", "TAUNT", "LIGHT", "WIN" };
+
+/* A texture set's images and CLUTs (docs/ASSETS.md, Texture sets) */
+typedef struct {
+    s32 nimg, nclut;
+    const u8 *img[64], *clut[64];
+    s32 clut_n[64];
+} TexSet;
+
+static s32 tex_set(const u8 *t, s32 size, TexSet *s) {
+    s32 i, at;
+
+    memset(s, 0, sizeof(*s));
+    if (size < 0x20 || hm_rd32(t) != 8) {
+        return 0;
+    }
+    s->nimg = hm_rd16(t + 8);
+    s->nclut = hm_rd16(t + 10);
+    if (s->nimg > 64 || s->nclut > 64) {
+        return 0;
+    }
+    for (i = 0, at = 0x10 + (s32)hm_rd32(t + 0x10); i < s->nclut; i++) {
+        if (at + 4 > size) {
+            return 0;
+        }
+        s->clut_n[i] = (s32)hm_rd32(t + at);
+        s->clut[i] = t + at + 4;
+        at += 4 + s->clut_n[i] * 2;
+    }
+    for (i = 0, at = 0x0C + (s32)hm_rd32(t + 0x0C); i < s->nimg; i++) {
+        if (at + 20 > size) {
+            return 0;
+        }
+        s->img[i] = t + at;
+        at += 20 + hm_rd16(t + at) * hm_rd16(t + at + 2) * 2;
+    }
+    return 1;
+}
+
+/* The bear's image for a face textured with image `img` and `clut` (-1: its own), made once */
+static s32 bear_image(Bear *b, const TexSet *ts, s32 img, s32 clut, s32 *made_img, s32 *made_clut) {
+    MadeImage *im;
+    s32 i, c, w, h, k;
+
+    for (i = 0; i < b->nimages; i++) {
+        if (made_img[i] == img && made_clut[i] == clut) {
+            return i;
+        }
+    }
+    if (b->nimages == MAX_BEAR_IMAGES || img < 0 || img >= ts->nimg) {
+        return -1;
+    }
+    w = hm_rd16(ts->img[img]);
+    h = hm_rd16(ts->img[img] + 2);
+    c = clut >= 0 ? clut : hm_rd16(ts->img[img] + 12) >> 1;
+    if (c < 0 || c >= ts->nclut) {
+        return -1;
+    }
+    im = &b->images[b->nimages];
+    memset(im, 0, sizeof(*im));
+    im->units = w;
+    im->h = h;
+    im->bpp8 = hm_rd16(ts->img[img] + 12) & 1;
+    im->colours = ts->clut_n[c] > 256 ? 256 : ts->clut_n[c];
+    for (k = 0; k < im->colours; k++) {
+        im->clut[k] = hm_rd16(ts->clut[c] + k * 2);
+    }
+    if ((im->pixels = malloc((size_t)w * h * 2)) == NULL) {
+        return -1;
+    }
+    memcpy(im->pixels, ts->img[img] + 20, (size_t)w * h * 2);
+    made_img[b->nimages] = img;
+    made_clut[b->nimages] = clut;
+    return b->nimages++;
+}
+
+static s32 bear_load(void) {
+    static V3 rest[BEAR_CORNERS];
+    Bear *b = &TheBear;
+    const obj_dbase *db = &HeroModelBank[DB_CharsPolar2Crash];
+    const ModelFile *m;
+    const MeshHeader *h1, *h2;
+    const u16 *runs, *runs2, *uv_idx, *texs, *col1, *col2, *uvs;
+    const u8 *colours, *vb;
+    u8 *tex;
+    TexSet ts;
+    s32 mdl_size = 0, tex_size = 0, made_img[MAX_BEAR_IMAGES], made_clut[MAX_BEAR_IMAGES];
+    s32 i, k, s, face, corner, left = 0, t = 0, back_n = 0, breathe;
+    s8 strip_bear[256];
+    s32 strip_of[BEAR_CORNERS];
+    float zs = 0;
+
+    if (BearTried) {
+        return b->made;
+    }
+    BearTried = 1;
+    memset(b, 0, sizeof(*b));
+    b->mdl = archive_own_file((s32)(db->file - DatIndex), &mdl_size);
+    tex = archive_own_file((s32)(db->textureFile - DatIndex), &tex_size);
+    if (b->mdl == NULL || tex == NULL || !tex_set(tex, tex_size, &ts)) {
+        goto fail;
+    }
+    m = (const ModelFile *)b->mdl;
+    if (m->nMeshes < 2) {
+        goto fail;
+    }
+    h1 = &m->meshes[0];
+    h2 = &m->meshes[1];
+    runs = (const u16 *)((const u8 *)&h1->runs + h1->runs);
+    runs2 = (const u16 *)((const u8 *)&h2->runs + h2->runs);
+    uv_idx = (const u16 *)((const u8 *)&h1->uvIdx + h1->uvIdx);
+    texs = (const u16 *)((const u8 *)&h1->texs + h1->texs);
+    col1 = (const u16 *)((const u8 *)&h1->colors + h1->colors);
+    col2 = (const u16 *)((const u8 *)&h2->colors + h2->colors);
+    uvs = (const u16 *)((const u8 *)&m->uvs + m->uvs);
+    colours = (const u8 *)&m->colors + m->colors;
+    vb = (const u8 *)&h1->verts + h1->verts + 0x14;
+    b->corners = mesh_corners(h1);
+    if (b->corners > BEAR_CORNERS || mesh_corners(h2) != b->corners) {
+        goto fail;
+    }
+    for (k = 0; k < b->corners; k++) {
+        rest[k].x = (s16)hm_rd16(vb + k * 8);
+        rest[k].y = (s16)hm_rd16(vb + k * 8 + 2);
+        rest[k].z = (s16)hm_rd16(vb + k * 8 + 4);
+    }
+    /* which strips are the bear's */
+    for (s = 0, face = 0, corner = 0; runs[s] != 0xFFFF && s < 256; corner += (runs[s] >> 8) + 2, s++) {
+        s32 n = runs[s] >> 8, ok = 1, j;
+        float rgb[3] = { 0, 0, 0 };
+
+        for (j = 0; j < n + 2; j++) {
+            strip_of[corner + j] = s;
+            if (fabsf(rest[corner + j].x) > BEAR_HALF || rest[corner + j].y < BEAR_TOP) {
+                ok = 0;
+            }
+        }
+        for (j = 0; j < n; j++, face++) {
+            s32 c = col1[face] & 0x1FFF, q;
+
+            if (--left < 0) {
+                t = texs[0];
+                texs++;
+                left = (t >> 9) & 0x3F;
+            }
+            if (!(runs[s] & 1) && ((t & 0x8000) ? (t & 0x1FF) != BEAR_CLUT : (t & 0x1FF) >= BEAR_IMAGES)) {
+                ok = 0;
+            }
+            for (q = 0; q < 3; q++) {
+                rgb[0] += colours[(c + q) * 4] / (3.0f * n);
+                rgb[1] += colours[(c + q) * 4 + 1] / (3.0f * n);
+                rgb[2] += colours[(c + q) * 4 + 2] / (3.0f * n);
+            }
+        }
+        /* not blue (his jeans) nor orange (his skin) */
+        if (rgb[2] > rgb[0] + 10 || rgb[0] > 1.6f * rgb[1] + 10) {
+            ok = 0;
+        }
+        strip_bear[s] = (s8)ok;
+    }
+    if (runs[s] != 0xFFFF || memcmp(runs, runs2, (size_t)(s + 1) * 2) != 0) {
+        goto fail;
+    }
+    /* its faces, each a strip of its own on the corners its strip has, drawn the same way round, and the corners they use */
+    for (k = 0; k < b->corners; k++) {
+        b->vert_of[k] = -1;
+    }
+    texs = (const u16 *)((const u8 *)&h1->texs + h1->texs);
+    left = 0;
+    for (s = 0, face = 0, corner = 0; runs[s] != 0xFFFF; corner += (runs[s] >> 8) + 2, s++) {
+        s32 n = runs[s] >> 8, flip0 = (runs[s] & 8) != 0, j;
+
+        for (j = 0; j < n; j++, face++) {
+            /* the strip's corners in the order this face's made one has them: a strip's first face is drawn a, c, b, so one drawn
+             * a, b, c in its own strip has its last two the other way */
+            s32 order[3], q;
+            MadeFace *mf;
+
+            if (--left < 0) {
+                t = texs[0];
+                texs++;
+                left = (t >> 9) & 0x3F;
+            }
+            if (!strip_bear[s] || b->nfaces == BEAR_FACES) {
+                continue;
+            }
+            order[0] = 0;
+            order[1] = j % 2 == flip0 ? 1 : 2;
+            order[2] = j % 2 == flip0 ? 2 : 1;
+            mf = &b->faces[b->nfaces++];
+            memset(mf, 0, sizeof(*mf));
+            mf->image = -1;
+            if (!(runs[s] & 1)) {
+                mf->image = (t & 0x8000) ? bear_image(b, &ts, ts.nimg - 1, t & 0x1FF, made_img, made_clut)
+                                         : bear_image(b, &ts, t & 0x1FF, -1, made_img, made_clut);
+            }
+            mf->blend = (u16)(col1[face] & 0xE000);
+            for (q = 0; q < 3; q++) {
+                s32 at = corner + j + order[q], c1 = (col1[face] & 0x1FFF) + order[q], c2 = (col2[face] & 0x1FFF) + order[q], w;
+
+                if (b->vert_of[at] < 0) {
+                    b->corner_of[b->nvert] = (s16)at;
+                    b->vert_of[at] = (s16)b->nvert++;
+                }
+                mf->v[q] = b->vert_of[at];
+                w = uvs[uv_idx[face] + order[q]];
+                mf->uv[q][0] = (u8)(w & 0xFF);
+                mf->uv[q][1] = (u8)(w >> 8);
+                memcpy(mf->rgb[0][q], colours + c1 * 4, 3);
+                memcpy(mf->rgb[1][q], colours + c2 * 4, 3);
+            }
+        }
+    }
+    /* his animations, and his parts in his first breathing frame */
+    for (i = 0; i < RIDE_ANIMS; i++) {
+        if ((b->anim[i] = file_anim_named(b->mdl, RideNames[i])) < 0) {
+            goto fail;
+        }
+    }
+    breathe = b->anim[RIDE_BREATHE];
+    if (file_frame(b->mdl, breathe, 0, b->ref, BEAR_CORNERS) != b->corners) {
+        goto fail;
+    }
+    for (k = 0; k < b->corners; k++) {
+        const V3 *p = &b->ref[k];
+
+        if (strip_bear[strip_of[k]]) {
+            if (fabsf(p->x) < 30 && p->z > -40 && p->z < 60) {
+                b->back_y = back_n++ == 0 || p->y < b->back_y ? p->y : b->back_y;
+            }
+        } else if (p->y > HIPS_TOP && fabsf(p->x) < BEAR_HALF) {
+            b->hips[b->nhips++] = (s16)k;
+            zs += p->z;
+        } else if (p->y <= HEAD_BOTTOM) {
+            b->head[b->nhead++] = (s16)k;
+        }
+    }
+    if (b->nfaces < 64 || b->nhips < 8 || b->nhead < 4 || back_n == 0) {
+        goto fail;
+    }
+    b->seat_z = zs / b->nhips;
+    b->made = 1;
+    free(tex);
+    printf("bonus: the bear from Crash's polar model, %d faces, %d images\n", b->nfaces, b->nimages);
+    return 1;
+fail:
+    printf("bonus: Crash's polar model has no bear to ride\n");
+    made_images_free(b->images, b->nimages);
+    free(b->mdl);
+    free(tex);
+    memset(b, 0, sizeof(*b));
+    return 0;
+}
+
+s32 ride_seat(float *back_y, float *seat_z) {
+    if (!bear_load()) {
+        return 0;
+    }
+    *back_y = TheBear.back_y;
+    *seat_z = TheBear.seat_z;
+    return 1;
+}
+
+/* --- riding --- */
+
+typedef struct {
+    float m[3][3];
+} M3;
+
+static V3 m3_mul(const M3 *r, V3 p) {
+    V3 o;
+
+    o.x = r->m[0][0] * p.x + r->m[0][1] * p.y + r->m[0][2] * p.z;
+    o.y = r->m[1][0] * p.x + r->m[1][1] * p.y + r->m[1][2] * p.z;
+    o.z = r->m[2][0] * p.x + r->m[2][1] * p.y + r->m[2][2] * p.z;
+    return o;
+}
+
+static V3 m3_mul_t(const M3 *r, V3 p) {
+    V3 o;
+
+    o.x = r->m[0][0] * p.x + r->m[1][0] * p.y + r->m[2][0] * p.z;
+    o.y = r->m[0][1] * p.x + r->m[1][1] * p.y + r->m[2][1] * p.z;
+    o.z = r->m[0][2] * p.x + r->m[1][2] * p.y + r->m[2][2] * p.z;
+    return o;
+}
+
+static V3 centre_of(const V3 *v, const s16 *ids, s32 n) {
+    V3 c = { 0, 0, 0 };
+    s32 i;
+
+    for (i = 0; i < n; i++) {
+        c.x += v[ids[i]].x / n;
+        c.y += v[ids[i]].y / n;
+        c.z += v[ids[i]].z / n;
+    }
+    return c;
+}
+
+/* The turn that best takes points A to B about their middles (Horn's: the quaternion is the eigenvector of the largest eigenvalue of a
+ * 4 x 4 matrix of their products, found by Jacobi's turns). */
+static void fit_turn(const V3 *A, const V3 *B, const s16 *ids, s32 n, M3 *r, V3 *ca, V3 *cb) {
+    double S[3][3], N[4][4], V[4][4], w, x, y, z;
+    s32 i, j, k, p, q, sweep, best = 0;
+
+    *ca = centre_of(A, ids, n);
+    *cb = centre_of(B, ids, n);
+    memset(S, 0, sizeof(S));
+    for (k = 0; k < n; k++) {
+        double a[3], bb[3];
+
+        a[0] = A[ids[k]].x - ca->x;
+        a[1] = A[ids[k]].y - ca->y;
+        a[2] = A[ids[k]].z - ca->z;
+        bb[0] = B[ids[k]].x - cb->x;
+        bb[1] = B[ids[k]].y - cb->y;
+        bb[2] = B[ids[k]].z - cb->z;
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 3; j++) {
+                S[i][j] += a[i] * bb[j];
+            }
+        }
+    }
+    N[0][0] = S[0][0] + S[1][1] + S[2][2];
+    N[0][1] = N[1][0] = S[1][2] - S[2][1];
+    N[0][2] = N[2][0] = S[2][0] - S[0][2];
+    N[0][3] = N[3][0] = S[0][1] - S[1][0];
+    N[1][1] = S[0][0] - S[1][1] - S[2][2];
+    N[1][2] = N[2][1] = S[0][1] + S[1][0];
+    N[1][3] = N[3][1] = S[2][0] + S[0][2];
+    N[2][2] = -S[0][0] + S[1][1] - S[2][2];
+    N[2][3] = N[3][2] = S[1][2] + S[2][1];
+    N[3][3] = -S[0][0] - S[1][1] + S[2][2];
+    memset(V, 0, sizeof(V));
+    for (i = 0; i < 4; i++) {
+        V[i][i] = 1;
+    }
+    for (sweep = 0; sweep < 30; sweep++) {
+        for (p = 0; p < 3; p++) {
+            for (q = p + 1; q < 4; q++) {
+                double th, t, c, s;
+
+                if (fabs(N[p][q]) < 1e-12) {
+                    continue;
+                }
+                th = (N[q][q] - N[p][p]) / (2 * N[p][q]);
+                t = (th >= 0 ? 1 : -1) / (fabs(th) + sqrt(th * th + 1));
+                c = 1 / sqrt(t * t + 1);
+                s = t * c;
+                for (k = 0; k < 4; k++) {
+                    double akp = N[k][p], akq = N[k][q];
+
+                    N[k][p] = c * akp - s * akq;
+                    N[k][q] = s * akp + c * akq;
+                }
+                for (k = 0; k < 4; k++) {
+                    double apk = N[p][k], aqk = N[q][k];
+
+                    N[p][k] = c * apk - s * aqk;
+                    N[q][k] = s * apk + c * aqk;
+                }
+                for (k = 0; k < 4; k++) {
+                    double vkp = V[k][p], vkq = V[k][q];
+
+                    V[k][p] = c * vkp - s * vkq;
+                    V[k][q] = s * vkp + c * vkq;
+                }
+            }
+        }
+    }
+    for (k = 1; k < 4; k++) {
+        best = N[k][k] > N[best][best] ? k : best;
+    }
+    w = V[0][best];
+    x = V[1][best];
+    y = V[2][best];
+    z = V[3][best];
+    r->m[0][0] = (float)(w * w + x * x - y * y - z * z);
+    r->m[0][1] = (float)(2 * (x * y - w * z));
+    r->m[0][2] = (float)(2 * (x * z + w * y));
+    r->m[1][0] = (float)(2 * (x * y + w * z));
+    r->m[1][1] = (float)(w * w - x * x + y * y - z * z);
+    r->m[1][2] = (float)(2 * (y * z - w * x));
+    r->m[2][0] = (float)(2 * (x * z - w * y));
+    r->m[2][1] = (float)(2 * (y * z + w * x));
+    r->m[2][2] = (float)(w * w - x * x - y * y + z * z);
+}
+
+static V3 unit(V3 v) {
+    float l = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+
+    if (l > 0) {
+        v.x /= l;
+        v.y /= l;
+        v.z /= l;
+    }
+    return v;
+}
+
+/* t of the turn taking direction a to b, about their cross */
+static void turn_between(V3 a, V3 b, float t, M3 *r) {
+    V3 ax;
+    float sn, cs, ang, c, s, k;
+
+    ax.x = a.y * b.z - a.z * b.y;
+    ax.y = a.z * b.x - a.x * b.z;
+    ax.z = a.x * b.y - a.y * b.x;
+    sn = sqrtf(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
+    cs = a.x * b.x + a.y * b.y + a.z * b.z;
+    memset(r, 0, sizeof(*r));
+    r->m[0][0] = r->m[1][1] = r->m[2][2] = 1;
+    if (sn < 1e-6f) {
         return;
     }
-    if (!RooTried) {
-        make_roo();
-    }
-    if (!RooMade || (tex = malloc((size_t)RooTexSize)) == NULL || (mdl = malloc((size_t)RooMdlSize)) == NULL) {
-        return;
-    }
-    memcpy(tex, RooTex, (size_t)RooTexSize);
-    memcpy(mdl, RooMdl, (size_t)RooMdlSize);
-    archive_replace(BONUS_TEX, tex, RooTexSize);
-    archive_replace(BONUS_MDL, mdl, RooMdlSize);
+    ang = atan2f(sn, cs) * t;
+    ax.x /= sn;
+    ax.y /= sn;
+    ax.z /= sn;
+    c = cosf(ang);
+    s = sinf(ang);
+    k = 1 - c;
+    r->m[0][0] = c + ax.x * ax.x * k;
+    r->m[0][1] = ax.x * ax.y * k - ax.z * s;
+    r->m[0][2] = ax.x * ax.z * k + ax.y * s;
+    r->m[1][0] = ax.y * ax.x * k + ax.z * s;
+    r->m[1][1] = c + ax.y * ax.y * k;
+    r->m[1][2] = ax.y * ax.z * k - ax.x * s;
+    r->m[2][0] = ax.z * ax.x * k - ax.y * s;
+    r->m[2][1] = ax.z * ax.y * k + ax.x * s;
+    r->m[2][2] = c + ax.z * ax.z * k;
 }
 
-s32 bonus_heroes_have(s32 extra) {
-    return extra == EXTRA_ROO && RooMade && extra_heroes_on();
+static V3 turn_about(V3 p, V3 c, const M3 *r) {
+    V3 d, o;
+
+    d.x = p.x - c.x;
+    d.y = p.y - c.y;
+    d.z = p.z - c.z;
+    d = m3_mul(r, d);
+    o.x = c.x + d.x;
+    o.y = c.y + d.y;
+    o.z = c.z + d.z;
+    return o;
 }
 
-u8 *bonus_heroes_model(s32 extra) {
-    u8 *copy = extra == EXTRA_ROO && RooMade ? malloc((size_t)RooMdlSize) : NULL;
+typedef struct {
+    const Rider *r;
+    MadeAnim anims[RIDE_ANIMS];
+} RideCtx;
 
-    if (copy != NULL) {
-        memcpy(copy, RooMdl, (size_t)RooMdlSize);
+static void ride_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    static V3 F[BEAR_CORNERS];
+    const RideCtx *c = ctx;
+    const Rider *r = c->r;
+    const Bear *b = &TheBear;
+    M3 hips, at_waist, at_neck;
+    V3 ca, cb, spine, spine_ref, hc, hd;
+    s32 k;
+
+    if (file_frame(b->mdl, b->anim[a], f, F, BEAR_CORNERS) != b->corners) {
+        memcpy(F, b->ref, sizeof(V3) * (size_t)b->corners);
     }
-    return copy;
-}
-
-const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, s32 *head) {
-    if (!bonus_heroes_have(extra) || !RooCardMade) {
-        return NULL;
+    /* Crash's hips' motion, and how far he leans from it, hips to head */
+    fit_turn(b->ref, F, b->hips, b->nhips, &hips, &ca, &cb);
+    hc = centre_of(b->ref, b->hips, b->nhips);
+    hd = centre_of(b->ref, b->head, b->nhead);
+    spine_ref.x = hd.x - hc.x;
+    spine_ref.y = hd.y - hc.y;
+    spine_ref.z = hd.z - hc.z;
+    hc = centre_of(F, b->hips, b->nhips);
+    hd = centre_of(F, b->head, b->nhead);
+    spine.x = hd.x - hc.x;
+    spine.y = hd.y - hc.y;
+    spine.z = hd.z - hc.z;
+    spine = m3_mul_t(&hips, spine);
+    turn_between(unit(spine_ref), unit(spine), r->lean_waist, &at_waist);
+    turn_between(unit(spine_ref), unit(spine), r->lean_neck, &at_neck);
+    /* the hero: sat, its own motion, bent at its neck and waist as he leans, then moved as his hips are */
+    memcpy(out, r->seat, sizeof(V3) * (size_t)r->nvert);
+    if (r->own != NULL) {
+        r->own(r->ctx, a, f, c->anims[a].frames, out);
     }
-    *w = 64;
-    *h = 64;
-    *head = CARD_HEAD;
-    return RooCard;
+    for (k = 0; k < r->nvert; k++) {
+        V3 q = out[k], d;
+
+        q = hm_mix(q, turn_about(q, r->neck, &at_neck), r->neck_share[k]);
+        q = hm_mix(q, turn_about(q, r->waist, &at_waist), r->waist_share[k]);
+        d.x = q.x - ca.x;
+        d.y = q.y - ca.y;
+        d.z = q.z - ca.z;
+        d = m3_mul(&hips, d);
+        out[k].x = cb.x + d.x;
+        out[k].y = cb.y + d.y;
+        out[k].z = cb.z + d.z;
+    }
+    /* and the bear */
+    for (k = 0; k < b->nvert; k++) {
+        out[r->nvert + k] = F[b->corner_of[k]];
+    }
 }
 
-/* One of his sounds, bytes of it, as loud as the game's own effects at the sound option it's at (sound.c, sfx_key_on); with a voice,
- * the one that had it last stops first. */
-static void play_own(const u8 *adpcm, s32 bytes, u32 pitch, short *voice) {
+s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) {
+    const Bear *b = &TheBear;
+    MadeFace *faces;
+    MadeImage images[MADE_MAX_IMAGES + MAX_BEAR_IMAGES];
+    MadeModel mm;
+    RideCtx ctx;
+    s32 i, j, k, ok;
+
+    *tex = *mdl = NULL;
+    if (!bear_load() || r->nimages + b->nimages > MADE_MAX_IMAGES + MAX_BEAR_IMAGES
+        || (faces = malloc(sizeof(MadeFace) * (size_t)(r->nfaces + b->nfaces))) == NULL) {
+        return 0;
+    }
+    /* its faces, and their charred colours; then the bear's, on its vertices after the hero's */
+    for (i = 0; i < r->nfaces; i++) {
+        faces[i] = r->faces[i];
+        for (j = 0; j < 3; j++) {
+            for (k = 0; k < 3; k++) {
+                faces[i].rgb[1][j][k] = (u8)(faces[i].rgb[0][j][k] * r->charred);
+            }
+        }
+    }
+    for (i = 0; i < b->nfaces; i++) {
+        MadeFace *f = &faces[r->nfaces + i];
+
+        *f = b->faces[i];
+        for (j = 0; j < 3; j++) {
+            f->v[j] += r->nvert;
+        }
+        f->image = f->image >= 0 ? f->image + r->nimages : -1;
+    }
+    memcpy(images, r->images, sizeof(MadeImage) * (size_t)r->nimages);
+    memcpy(images + r->nimages, b->images, sizeof(MadeImage) * (size_t)b->nimages);
+    /* Polar Push's animations, as long as Crash's, each on his mesh for it */
+    ctx.r = r;
+    for (i = 0; i < RIDE_ANIMS; i++) {
+        const FileEntry *e = &file_anims((const ModelFile *)b->mdl)[b->anim[i]];
+        const MeshHeader *moved = (const MeshHeader *)((const u8 *)&e->mesh + e->mesh);
+
+        ctx.anims[i].name = RideNames[i];
+        ctx.anims[i].frames = e->frames;
+        ctx.anims[i].mesh = moved == &((const ModelFile *)b->mdl)->meshes[1] ? 1 : 0;
+    }
+    memset(&mm, 0, sizeof(mm));
+    mm.faces = faces;
+    mm.nfaces = r->nfaces + b->nfaces;
+    mm.meshes = 2;
+    mm.images = images;
+    mm.nimages = r->nimages + b->nimages;
+    mm.anims = ctx.anims;
+    mm.nanims = RIDE_ANIMS;
+    mm.nvert = r->nvert + b->nvert;
+    mm.rest_anim = RIDE_BREATHE;
+    mm.frame = ride_frame;
+    mm.ctx = &ctx;
+    ok = made_write(&mm, tex, tex_size, mdl, mdl_size);
+    free(faces);
+    return ok;
+}
+
+/* --- sounds --- */
+
+void hm_play(const HeroSound *s, short *voice) {
     s32 vol = 0x1E00 * GameOptions.sfx * 0x7F / 409600;
     short v;
 
-    if (adpcm == NULL || bytes < 16) {
+    if (s == NULL || s->adpcm == NULL || s->bytes < 16) {
         return;
     }
-    if (voice != NULL && audio_sample_playing(*voice, adpcm)) {
+    if (voice != NULL && audio_sample_playing(*voice, s->adpcm)) {
         audio_voice_off(*voice);
     }
     vol = vol < 0 ? 0 : vol > 0x7F ? 0x7F : vol;
-    v = audio_play_sample(adpcm, (uint32_t)bytes, pitch, 0x3FFF * vol / 0x7F, 0x3FFF * vol / 0x7F);
+    v = audio_play_sample(s->adpcm, (uint32_t)s->bytes, s->pitch, 0x3FFF * vol / 0x7F, 0x3FFF * vol / 0x7F);
     if (voice != NULL) {
         *voice = v;
     }
 }
 
-void bonus_heroes_cheer(s32 extra) {
-    static short voice = -1;
+/* --- the heroes --- */
 
-    /* one laugh at a time: a new one starts it again, as a hero's taunt sound does (its move's 0x800A, on the hero's own sound) */
-    if (bonus_heroes_have(extra)) {
-        play_own(RooLaugh, RooLaughSize, ROO_LAUGH_PITCH, &voice);
-    }
-}
+static void make_hero(s32 extra) {
+    const HeroDef *d = HeroDefs[extra];
+    HeroMade *m = &Made[extra];
 
-void bonus_heroes_hurt(s32 extra, s32 fall) {
-    if (!bonus_heroes_have(extra)) {
+    Tried[extra] = 1;
+    memset(m, 0, sizeof(*m));
+    if (d == NULL || d->make == NULL || !d->make(m) || m->mdl[KIND_FOOT] == NULL) {
+        s32 k;
+
+        for (k = 0; k < NUM_KINDS; k++) {
+            free(m->tex[k]);
+            free(m->mdl[k]);
+        }
+        memset(m, 0, sizeof(*m));
         return;
     }
-    if (fall) {
-        play_own(RooThud, RooThudSize, ROO_LAUGH_PITCH, NULL);
-    } else {
-        play_own(RooLaugh, RooLaughSize < ROO_YELP_BYTES ? RooLaughSize : ROO_YELP_BYTES, ROO_YELP_PITCH, NULL);
+    Have[extra] = 1;
+}
+
+void bonus_heroes_files(void) {
+    s32 x, k;
+
+    if (!extra_heroes_on()) {
+        return;
+    }
+    for (x = EXTRA_NONE + 1; x < NUM_EXTRA; x++) {
+        if (!Tried[x]) {
+            make_hero(x);
+        }
+        for (k = 0; Have[x] && k < NUM_KINDS; k++) {
+            u8 *tex, *mdl;
+
+            if (Made[x].mdl[k] == NULL || (tex = malloc((size_t)Made[x].tex_size[k])) == NULL) {
+                continue;
+            }
+            if ((mdl = malloc((size_t)Made[x].mdl_size[k])) == NULL) {
+                free(tex);
+                continue;
+            }
+            memcpy(tex, Made[x].tex[k], (size_t)Made[x].tex_size[k]);
+            memcpy(mdl, Made[x].mdl[k], (size_t)Made[x].mdl_size[k]);
+            archive_replace(Slots[x][k].tex, tex, Made[x].tex_size[k]);
+            archive_replace(Slots[x][k].mdl, mdl, Made[x].mdl_size[k]);
+        }
     }
 }
 
-s32 bonus_heroes_bank(s32 extra) {
-    return extra == EXTRA_ROO ? DB_BonusRoo : DB_Empty;
+s32 bonus_heroes_have(s32 extra) {
+    return extra > EXTRA_NONE && extra < NUM_EXTRA && Have[extra] && extra_heroes_on();
+}
+
+s32 bonus_heroes_bank(s32 extra, s32 kind) {
+    if (extra <= EXTRA_NONE || extra >= NUM_EXTRA || kind < 0 || kind >= NUM_KINDS) {
+        return DB_Empty;
+    }
+    /* a kind it has none of: its model on foot */
+    return Slots[extra][Have[extra] && Made[extra].mdl[kind] == NULL ? KIND_FOOT : kind].bank;
+}
+
+u8 *bonus_heroes_model(s32 extra, s32 kind) {
+    u8 *copy;
+
+    if (!bonus_heroes_have(extra) || kind < 0 || kind >= NUM_KINDS) {
+        return NULL;
+    }
+    if (Made[extra].mdl[kind] == NULL) {
+        kind = KIND_FOOT;
+    }
+    if ((copy = malloc((size_t)Made[extra].mdl_size[kind])) != NULL) {
+        memcpy(copy, Made[extra].mdl[kind], (size_t)Made[extra].mdl_size[kind]);
+    }
+    return copy;
+}
+
+const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, s32 *head) {
+    if (!bonus_heroes_have(extra) || Made[extra].card == NULL) {
+        return NULL;
+    }
+    *w = Made[extra].card_w;
+    *h = Made[extra].card_h;
+    *head = Made[extra].card_head;
+    return Made[extra].card;
+}
+
+void bonus_heroes_voice(s32 extra, s32 voice) {
+    /* its laugh one at a time, a new one starting it again, as a hero's taunt sound does (its move's 0x800A, on its own sound) */
+    static short laughing = -1;
+
+    if (!bonus_heroes_have(extra) || voice <= VOICE_BASE || voice >= NUM_VOICES) {
+        return;
+    }
+    hm_play(&Made[extra].sound[voice], voice == VOICE_LAUGH ? &laughing : NULL);
 }
