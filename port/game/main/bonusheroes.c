@@ -5,8 +5,8 @@
  * game loads them as it does any model, into a bank of their own (DB_BonusRoo), and nothing of them is kept but in memory.
  *
  * Ripper Roo, from Crash Bandicoot (USA, SCUS-94900): level 0x17, his boss fight, has his model (RS1nG) and four animations, RS1nV (a big
- * jump), RS2nV (standing), RS3nV (a laugh) and RS4nV (knocked over), which become JUMP, BREATHE, TAUNT and DIE, and a walk is made
- * for him, his standing one hopping (WALK).
+ * jump), RS2nV (standing), RS3nV (a laugh) and RS4nV (knocked over), which become JUMP, BREATHE, TAUNT and DIE, and two more are made
+ * for him from them: a walk, his legs stepping (WALK), and a spin attack, his legs out as he spins like a tornado (SPIN).
  *
  * Crash Bandicoot's formats, as CrashEdit (the cbhacks project) reads them: a level's NSF is 64 KB pages, each raw (magic 0x1234) or
  * compressed (0x1235: runs and repeats for its first `length` bytes, `skip` bytes to pass, the rest raw). A page of entries lists them,
@@ -295,14 +295,17 @@ typedef struct {
 
 typedef struct {
     const char *entry, *name;
+    s32 made; /* the frames of one made for him from that entry's (rig_setup), or 0 for the entry's own */
 } Anim;
 
 static const Anim RooAnims[] = {
-    { "RS1nV", "JUMP" }, { "RS2nV", "BREATHE" }, { "RS3nV", "TAUNT" }, { "RS4nV", "DIE" }, { "RS2nV", "WALK" },
+    { "RS1nV", "JUMP", 0 }, { "RS2nV", "BREATHE", 0 }, { "RS3nV", "TAUNT", 0 }, { "RS4nV", "DIE", 0 }, { "RS2nV", "WALK", 20 },
+    { "RS1nV", "SPIN", 15 },
 };
-#define ROO_ANIMS 5
+#define ROO_ANIMS 6
 #define ROO_REST 1 /* the one he stands in: his height and his colours' light are from its first frame */
-#define ROO_WALK 4 /* made for him from his standing one (walk_setup), as his game has no walk: he only ever jumps in his boss fight */
+#define ROO_WALK 4 /* made for him, as his game has no walk (he only ever jumps in his boss fight) and no attack */
+#define ROO_SPIN 5
 
 /* A frame's vertices, in Crash Bash's axes (y down, z the other way) before they're scaled. */
 static s32 frame_verts(const u8 *f, s32 size, const s32 scale[3], V3 *out, V3 *normals, s32 max) {
@@ -358,61 +361,228 @@ static void sway_middle(const Entry *a, const s32 scale[3]) {
     }
 }
 
-/* His walk (ROO_WALK): his standing animation, hopping. It bobs him down into a crouch and up again, so he leaves the ground as he
- * stands up out of the crouch, is highest where he's tallest, and lands as he crouches again; it starts at the deepest crouch. */
-#define WALK_LIFT 0.3f /* the hop at its highest, of his height: extraheroes.c draws a frame's lift a third as high (KEEP_LIFT) */
-#define WALK_FRAMES 64
-static float WalkLift[WALK_FRAMES];
-static s32 WalkFirst;
+/* --- his made animations ---
+ * His game has no walk and no attack, so they're made for him from his own frames (ROO_WALK, ROO_SPIN), worked in his game's axes
+ * and units, y up and him facing +z: frame_verts' over ROO_UNIT, y and z the other way round. Both start from his standing pose,
+ * SwayMiddle. WALK steps: each leg swings from its hip, and as it comes forward its foot lifts and its knee bends, while the other
+ * foot is on the ground; the body bobs, leans over the leg it's on and turns against the legs. SPIN, his attack: he throws his legs
+ * out to the sides as his jump does (its frame SPIN_OUT, the splits), spins round twice in a hop like a tornado, and lands as he
+ * stood. */
+#define ROO_UNIT 4096.0f
+#define ROO_PI 3.14159265f
 
-/* Frame f of his animation j, as frame_verts gives it, his standing one with less sway, and his walk its frames hopping. */
+/* His hips, where each leg turns, and how much of a leg each vertex is: all of it below LEG_FULL, none above LEG_TOP (the bottom of
+ * his straitjacket goes with both), and none within LEG_MID of his middle across, all from LEG_SIDE out. His tail, behind him and
+ * down to the floor (TAIL_), is his body's. */
+#define HIP_X 26.0f
+#define HIP_Y 58.0f
+#define HIP_Z 4.0f
+#define LEG_TOP 70.0f
+#define LEG_FULL 42.0f
+#define LEG_MID 5.0f
+#define LEG_SIDE 16.0f
+#define TAIL_X 14.0f
+#define TAIL_Y 30.0f
+#define TAIL_Z -15.0f
+#define KNEE_Y 32.0f /* the knee, where what's below it turns, over KNEE_SPAN each way */
+#define KNEE_Z -4.0f
+#define KNEE_SPAN 8.0f
+
+/* A step: a leg's swing each way (radians), its foot's lift and its knee's bend at their highest, and the body's bob, lean and turn. */
+#define STEP_SWING 0.5f
+#define STEP_LIFT 30.0f
+#define STEP_KNEE 0.8f
+#define STEP_BOB 5.0f
+#define STEP_ROLL 0.12f
+#define STEP_TWIST 0.12f
+
+/* The spin: his jump's frame with his legs out, the turns, the hop (extraheroes.c draws a third of a frame's lift, KEEP_LIFT), the
+ * frames he takes to throw his legs out and bring them in, and the one he's landed by: the base's attack shows only its first 14. */
+#define SPIN_OUT 14
+#define SPIN_TURNS 2
+#define SPIN_LIFT 150.0f
+#define SPIN_OPEN 3
+#define SPIN_LAND 13
+#define SPIN_BODY 70.0f /* he spins round the middle of what's above this */
+
+static V3 Rest[MAX_VERTS], LegsOut[MAX_VERTS];
+static float LegShare[MAX_VERTS], KneeShare[MAX_VERTS];
+static u8 LegOf[MAX_VERTS]; /* 0 his left (-x), 1 his right */
+static s32 RigVerts;
+static float SpinX, SpinZ;
+
+static V3 to_rig(V3 p) {
+    V3 r;
+
+    r.x = p.x / ROO_UNIT;
+    r.y = -p.y / ROO_UNIT;
+    r.z = -p.z / ROO_UNIT;
+    return r;
+}
+
+static V3 from_rig(V3 r) {
+    V3 p;
+
+    p.x = r.x * ROO_UNIT;
+    p.y = -r.y * ROO_UNIT;
+    p.z = -r.z * ROO_UNIT;
+    return p;
+}
+
+/* 0 at a, 1 at b (either way round), smoothly between */
+static float smooth(float a, float b, float x) {
+    float t = (x - a) / (b - a);
+
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    return t * t * (3 - 2 * t);
+}
+
+static V3 mix(V3 a, V3 b, float t) {
+    V3 r;
+
+    r.x = a.x + (b.x - a.x) * t;
+    r.y = a.y + (b.y - a.y) * t;
+    r.z = a.z + (b.z - a.z) * t;
+    return r;
+}
+
+/* p turned a radians round an axis through c: across (x), up (y) or forward (z) */
+static V3 turn_x(V3 p, V3 c, float a) {
+    float s = sinf(a), k = cosf(a), y = p.y - c.y, z = p.z - c.z;
+
+    p.y = c.y + y * k - z * s;
+    p.z = c.z + y * s + z * k;
+    return p;
+}
+
+static V3 turn_y(V3 p, V3 c, float a) {
+    float s = sinf(a), k = cosf(a), x = p.x - c.x, z = p.z - c.z;
+
+    p.x = c.x + x * k + z * s;
+    p.z = c.z - x * s + z * k;
+    return p;
+}
+
+static V3 turn_z(V3 p, V3 c, float a) {
+    float s = sinf(a), k = cosf(a), x = p.x - c.x, y = p.y - c.y;
+
+    p.x = c.x + x * k - y * s;
+    p.y = c.y + x * s + y * k;
+    return p;
+}
+
+/* His standing pose (sway_middle first), each vertex's share of a leg and its knee, and his jump's legs out, on the same floor. */
+static void rig_setup(const Entry *jump, const s32 scale[3]) {
+    static V3 fv[MAX_VERTS];
+    float low = 1e9f, out_low = 1e9f, sx = 0, sz = 0;
+    s32 k, n, f, body = 0;
+
+    RigVerts = 0;
+    if (SwayVerts == 0 || jump->count <= 0) {
+        return;
+    }
+    for (k = 0; k < SwayVerts; k++) {
+        V3 p = to_rig(SwayMiddle[k]);
+        s32 tail = p.z < TAIL_Z && fabsf(p.x) < TAIL_X && p.y < TAIL_Y;
+
+        Rest[k] = p;
+        LegOf[k] = p.x < 0 ? 0 : 1;
+        LegShare[k] = tail ? 0 : smooth(LEG_TOP, LEG_FULL, p.y) * smooth(LEG_MID, LEG_SIDE, fabsf(p.x));
+        KneeShare[k] = smooth(KNEE_Y + KNEE_SPAN, KNEE_Y - KNEE_SPAN, p.y);
+        low = p.y < low ? p.y : low;
+        if (p.y > SPIN_BODY) {
+            sx += p.x;
+            sz += p.z;
+            body++;
+        }
+    }
+    SpinX = body > 0 ? sx / body : 0;
+    SpinZ = body > 0 ? sz / body : 0;
+    f = jump->count > SPIN_OUT ? SPIN_OUT : jump->count - 1;
+    n = frame_verts(jump->item[f], jump->size[f], scale, fv, NULL, MAX_VERTS);
+    for (k = 0; k < SwayVerts; k++) {
+        LegsOut[k] = k < n ? to_rig(fv[k]) : Rest[k];
+        out_low = LegsOut[k].y < out_low ? LegsOut[k].y : out_low;
+    }
+    for (k = 0; k < SwayVerts; k++) {
+        LegsOut[k].y += low - out_low;
+    }
+    RigVerts = SwayVerts;
+}
+
+static s32 walk_verts(s32 f, V3 *out) {
+    float phi = 2 * ROO_PI * f / RooAnims[ROO_WALK].made, swing = STEP_SWING * sinf(phi), lift[2];
+    float bob = STEP_BOB * (fabsf(cosf(phi)) - 0.5f), roll = STEP_ROLL * cosf(phi), twist = STEP_TWIST * sinf(phi);
+    V3 pelvis = { 0, HIP_Y, HIP_Z }, knee = { 0, KNEE_Y, KNEE_Z };
+    s32 k;
+
+    /* his left leg comes forward as sin rises, off the ground as it does */
+    lift[0] = STEP_LIFT * fmaxf(0, cosf(phi));
+    lift[1] = STEP_LIFT * fmaxf(0, -cosf(phi));
+    for (k = 0; k < RigVerts; k++) {
+        V3 p = Rest[k], q, body;
+        s32 leg = LegOf[k];
+        float w = LegShare[k];
+
+        body = turn_y(turn_z(p, pelvis, roll), pelvis, -twist);
+        body.y += bob;
+        q = mix(p, body, 1 - w);
+        if (w > 0) {
+            V3 hip, l;
+
+            hip.x = leg ? HIP_X : -HIP_X;
+            hip.y = HIP_Y;
+            hip.z = HIP_Z;
+            l = mix(p, turn_x(p, knee, STEP_KNEE * lift[leg] / STEP_LIFT), KneeShare[k]);
+            l = turn_x(l, hip, leg ? swing : -swing);
+            l.y += lift[leg];
+            l = mix(p, l, w);
+            q.x += l.x - p.x;
+            q.y += l.y - p.y;
+            q.z += l.z - p.z;
+        }
+        out[k] = from_rig(q);
+    }
+    return RigVerts;
+}
+
+static s32 spin_verts(s32 f, V3 *out) {
+    float t = f >= SPIN_LAND ? 1 : (float)f / SPIN_LAND;
+    float open = fminf(smooth(0, SPIN_OPEN, (float)f), smooth(SPIN_LAND, SPIN_LAND - SPIN_OPEN, (float)f));
+    float turn = 2 * ROO_PI * SPIN_TURNS * smooth(0, 1, t), up = SPIN_LIFT * sinf(ROO_PI * t);
+    V3 axis = { SpinX, 0, SpinZ };
+    s32 k;
+
+    for (k = 0; k < RigVerts; k++) {
+        V3 q = turn_y(mix(Rest[k], LegsOut[k], open), axis, turn);
+
+        q.y += up;
+        out[k] = from_rig(q);
+    }
+    return RigVerts;
+}
+
+/* His animation j's frames, and its frame f as frame_verts gives it: his standing one with less sway, the made ones made. */
+static s32 anim_frames(const Entry *a, s32 j) {
+    return RooAnims[j].made > 0 && RigVerts > 0 ? RooAnims[j].made : a->count;
+}
+
 static s32 anim_verts(const Entry *a, s32 j, s32 f, const s32 scale[3], V3 *out, V3 *normals) {
-    s32 from = j == ROO_WALK && a->count > 0 ? (f + WalkFirst) % a->count : f;
-    s32 n = frame_verts(a->item[from], a->size[from], scale, out, normals, MAX_VERTS), k;
+    s32 n, k;
 
-    if ((j == ROO_REST || j == ROO_WALK) && n > 0 && n == SwayVerts) {
+    if (RooAnims[j].made > 0 && RigVerts > 0) {
+        return j == ROO_SPIN ? spin_verts(f, out) : walk_verts(f, out);
+    }
+    f = f < a->count ? f : a->count - 1;
+    n = frame_verts(a->item[f], a->size[f], scale, out, normals, MAX_VERTS);
+    if (j == ROO_REST && n > 0 && n == SwayVerts) {
         for (k = 0; k < n; k++) {
             out[k].x = SwayMiddle[k].x + (out[k].x - SwayMiddle[k].x) * ROO_SWAY;
             out[k].y = SwayMiddle[k].y + (out[k].y - SwayMiddle[k].y) * ROO_SWAY;
             out[k].z = SwayMiddle[k].z + (out[k].z - SwayMiddle[k].z) * ROO_SWAY;
         }
     }
-    if (j == ROO_WALK && from < WALK_FRAMES) {
-        for (k = 0; k < n; k++) {
-            out[k].y -= WalkLift[from]; /* up is less y */
-        }
-    }
     return n;
-}
-
-static void walk_setup(const Entry *a, const s32 scale[3]) {
-    static V3 fv[MAX_VERTS];
-    float tall[WALK_FRAMES], lo = 1e9f, hi = -1e9f;
-    s32 f, k, n, frames = a->count < WALK_FRAMES ? a->count : WALK_FRAMES;
-
-    WalkFirst = 0;
-    memset(WalkLift, 0, sizeof(WalkLift));
-    for (f = 0; f < frames; f++) {
-        float top = 1e9f, bottom = -1e9f;
-
-        n = anim_verts(a, ROO_REST, f, scale, fv, NULL);
-        for (k = 0; k < n; k++) {
-            top = fv[k].y < top ? fv[k].y : top;
-            bottom = fv[k].y > bottom ? fv[k].y : bottom;
-        }
-        tall[f] = n > 0 ? bottom - top : 0;
-        if (tall[f] < lo) {
-            lo = tall[f];
-            WalkFirst = f;
-        }
-        hi = tall[f] > hi ? tall[f] : hi;
-    }
-    for (f = 0; f < frames && hi > lo; f++) {
-        /* how far up from the middle of his bob he is, 0 to 1 */
-        float up = (tall[f] - (lo + hi) / 2) / ((hi - lo) / 2);
-
-        WalkLift[f] = up > 0 ? up * WALK_LIFT * hi : 0;
-    }
 }
 
 static void put_box(Bytes *o, const V3 *v, s32 n, float k, float ground) {
@@ -568,7 +738,7 @@ static void make_roo(void) {
     }
     /* how big he is, standing */
     sway_middle(&anims[ROO_REST], scale);
-    walk_setup(&anims[ROO_REST], scale);
+    rig_setup(&anims[ROO_SPIN], scale);
     nvert = anim_verts(&anims[ROO_REST], ROO_REST, 0, scale, verts, normals);
     if (nvert == 0) {
         goto done;
@@ -703,7 +873,7 @@ static void make_roo(void) {
         wr32(tex.b + 4, (u32)tex.n);
     }
 
-    /* the model: a mesh of a strip a triangle, and his four animations */
+    /* the model: a mesh of a strip a triangle, and his animations */
     put(&mdl, NULL, 0x58 + 0x34);
     mesh = 0x58;
     strips = mdl.n;
@@ -834,7 +1004,7 @@ static void make_roo(void) {
     /* the animations, each in a block of its own from a 2 KB sector on, with room before it for the heap's header as it's split off */
     for (j = 0; j < ROO_ANIMS; j++) {
         static V3 fv[MAX_VERTS];
-        s32 frames = anims[j].count, f, nv = 0;
+        s32 frames = anim_frames(&anims[j], j), f, nv = 0;
         size_t start, list0, pool, e = entries + (size_t)j * 0x18;
 
         put(&mdl, NULL, 0x20);
@@ -950,7 +1120,7 @@ const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch) {
     return RooCard;
 }
 
-void bonus_heroes_cheer(s32 extra) {
+void bonus_heroes_cheer(s32 extra, s32 again) {
     static short voice = -1;
     /* as loud as the game's own effects at the sound option it's at (sound.c, sfx_key_on) */
     s32 vol = 0x1E00 * GameOptions.sfx * 0x7F / 409600;
@@ -958,8 +1128,12 @@ void bonus_heroes_cheer(s32 extra) {
     if (!bonus_heroes_have(extra) || RooLaugh == NULL) {
         return;
     }
-    /* one laugh at a time: a new one starts it again, as a hero's taunt sound does (its move's 0x800A, on the hero's own sound) */
+    /* one laugh at a time: a new one starts it again, as a hero's taunt sound does (its move's 0x800A, on the hero's own sound), or
+     * if it's not to, lets the one going finish */
     if (audio_sample_playing(voice, RooLaugh)) {
+        if (!again) {
+            return;
+        }
         audio_voice_off(voice);
     }
     vol = vol < 0 ? 0 : vol > 0x7F ? 0x7F : vol;

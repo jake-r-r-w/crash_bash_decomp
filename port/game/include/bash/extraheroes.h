@@ -37,6 +37,8 @@ void extra_heroes_stop(void);
 s32 extra_hero_bank(s32 player, s32 bank);
 /* A move's sound (0x8008 to 0x800A): 1 if an extra hero has played its own instead, its laugh for its base's taunt. */
 s32 extra_hero_voice(s32 player, s32 sfx);
+/* A winner's voice (UpdateHeroVictory, its first line 0 or its second 1): 1 if an extra hero has played its own instead, its laugh. */
+s32 extra_hero_win_voice(s32 player, s32 line);
 /* A frame as it's drawn: for an extra hero's own subengine, its stand-in's; anything else as it is. */
 s32 extra_hero_frame(const subengine *sub, s32 entity);
 /* A frame's vertices, once morphed (draw_object_model): an extra hero's lower, for less of a hop. */

@@ -2805,6 +2805,13 @@ void StartHeroVictory(s32 arg0) {
     }
 }
 
+/* PC: a winner's voice, its first line (0) or its second (1): an extra hero's own (extraheroes.c), or else the hero's sound. */
+static void HeroWinVoice(s32 player, s32 line, s32 sfx) {
+    if (!extra_hero_win_voice(player, line)) {
+        PlaySfx(sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+}
+
 s32 UpdateHeroVictory(s32 arg0) {
     HeroInfo *h;
     HeroInfo *p;
@@ -2835,35 +2842,35 @@ s32 UpdateHeroVictory(s32 arg0) {
     case 0:
         switch (Heroes[arg0].hero_name) {
         case 1:
-            PlaySfx(1,NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 0, 1);
             WinSeqTimer = 0x18;
             break;
         case 2:
-            PlaySfx(0x33, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 0, 0x33);
             WinSeqTimer = 0x17;
             break;
         case 3:
-            PlaySfx(0x65, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 0, 0x65);
             WinSeqTimer = 0x1A;
             break;
         case 4:
-            PlaySfx(0x97, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 0, 0x97);
             WinSeqTimer = 0x17;
             break;
         case 7:
-            PlaySfx(0xFB, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 0, 0xFB);
             WinSeqTimer = 0x1A;
             break;
         case 8:
-            PlaySfx(0xC9, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 0, 0xC9);
             WinSeqTimer = 0x1A;
             break;
         case 5:
-            PlaySfx(0x12D, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 0, 0x12D);
             WinSeqTimer = 0x17;
             break;
         case 6:
-            PlaySfx(0x15F, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 0, 0x15F);
             WinSeqTimer = 0x17;
             break;
         default:
@@ -2880,35 +2887,35 @@ s32 UpdateHeroVictory(s32 arg0) {
         ret = 1;
         switch (Heroes[arg0].hero_name) {
         case 1:
-            PlaySfx(7, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 1, 7);
             WinSeqTimer = 0x12;
             break;
         case 2:
-            PlaySfx(0x39, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 1, 0x39);
             WinSeqTimer = 0x12;
             break;
         case 3:
-            PlaySfx(0x6B, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 1, 0x6B);
             WinSeqTimer = 0x12;
             break;
         case 4:
-            PlaySfx(0x9D, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 1, 0x9D);
             WinSeqTimer = 0x12;
             break;
         case 7:
-            PlaySfx(0x101, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 1, 0x101);
             WinSeqTimer = 0x12;
             break;
         case 8:
-            PlaySfx(0xCF, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 1, 0xCF);
             WinSeqTimer = 0x12;
             break;
         case 5:
-            PlaySfx(0x133, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 1, 0x133);
             WinSeqTimer = 0x12;
             break;
         case 6:
-            PlaySfx(0x165, NULL, NULL, 0x1000, 0x1E00, 0);
+            HeroWinVoice(arg0, 1, 0x165);
             WinSeqTimer = 0x12;
             break;
         default:

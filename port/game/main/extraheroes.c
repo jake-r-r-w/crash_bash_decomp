@@ -6,10 +6,10 @@
  * its base, and plays as that hero does: the same moves, timing and reach. What makes it itself is its model, put in the base's place
  * in the game's table of models by hero (HeroHooks.HeroModels), its face on the panel, and how its frames are drawn. The moves name
  * frames of the base's own model, 0x4000 | n << 7 | f, frame f of its animation n, so as an extra hero is drawn each one is its
- * stand-in for that animation, by name (Roo, who has only JUMP, BREATHE, TAUNT and DIE, hops where a hero would run), the same share of the
- * way through, with less of its lift off the ground. The points the game finds on a frame (the boxes it collides with, the hands that
- * hold a crate) are the base's, from its own model; what it holds sits on its head, which is where the head point is too. The moves
- * themselves never change, so the game's checks of how far one has got still hold. */
+ * stand-in for that animation, by name (Roo's walk where a hero would run, his spin where one attacks), the same share of the way
+ * through or at its own speed, with less of its lift off the ground. The points the game finds on a frame (the boxes it collides
+ * with, the hands that hold a crate) are the base's, from its own model; what it holds sits on its head, which is where the head point
+ * is too. The moves themselves never change, so the game's checks of how far one has got still hold. */
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,8 +34,15 @@ unsigned char *archive_own_file(int entry, int *size);
 #define HEAD_FLAG 0x80  /* the top of a hero's head */
 #define MORPH_VERTS 4096 /* prims.c's MorphVerts, a frame's vertices as they're drawn: all of a mesh's (Roo's are 2091, 3 a triangle) */
 
+/* How a stand-in's frames go as its base's animation plays: the same share of the way through it (STRETCH), or at the stand-in's own
+ * speed, a frame a tick from when the base's started, round and round (LOOP) or once, its last frame then held (ONCE). Roo's laugh is
+ * a sixth of his base's win and his fall most of its hurt, slowed at its end, so drawn the same share through they went in slow
+ * motion. */
+enum { STRETCH, LOOP, ONCE };
+
 typedef struct {
     const char *from, *to;
+    s32 pace;
 } Stand;
 
 typedef struct {
@@ -48,20 +55,21 @@ typedef struct {
     float face_turn;       /* and how far round it's turned, in degrees */
 } ExtraHero;
 
-/* Ripper Roo, who has four animations from Crash Bandicoot (JUMP, BREATHE, TAUNT and DIE) and a walk made for him (WALK: his
- * standing one, hopping; bonusheroes.c): he hops where others run, slide or swim, laughs where they throw, attack or win, and falls
- * over when he's hurt. A stand-in can be a list of names, the first the model has, and a name can have a range of its frames
+/* Ripper Roo, who has four animations from Crash Bandicoot (JUMP, BREATHE, TAUNT and DIE) and two made for him (bonusheroes.c): a
+ * walk (WALK), his legs stepping, where others run, walk carrying, slide or swim, and a spin attack (SPIN), his legs out as he spins
+ * in a hop, where they attack or kick. He stands still holding a crate (BANK), laughs where they throw, taunt or win, and falls over
+ * when he's hurt. A stand-in can be a list of names, the first the model has, and a name can have a range of its frames
  * (NAME:first-last). His JUMP is his boss fight's, which crouches into a tall stance first (frames 0 to 12), so he jumps from 13. */
-#define ROO_HOP "WALK"
 static const Stand RooStands[] = {
-    { "JUMP", "JUMP:13-27" }, { "MEDIUM", ROO_HOP }, { "RUN", ROO_HOP }, { "SKATE", ROO_HOP }, { "SLIDE", ROO_HOP },
-    { "SWIM", ROO_HOP }, { "FLIP", ROO_HOP }, { "FALL", ROO_HOP }, { "PUSH", ROO_HOP }, { "TRANS", ROO_HOP },
-    { "HOLD_SLOW", ROO_HOP }, { "BANK", ROO_HOP }, { "BARGE", ROO_HOP }, { "WIN", "TAUNT" }, { "WIN2", "TAUNT" },
-    { "ATTACK", "TAUNT" }, { "PICKUP", "TAUNT" }, { "HOLD_THROW", "TAUNT" }, { "TAUNT", "TAUNT" }, { "TAUNT_A", "TAUNT" },
-    { "KICK", "TAUNT" }, { "FIRE1", "TAUNT" }, { "FIRE2", "TAUNT" }, { "FIRE3", "TAUNT" }, { "MINE", "TAUNT" }, { "RECOIL", "TAUNT" },
+    { "JUMP", "JUMP:13-27" }, { "MEDIUM", "WALK" }, { "RUN", "WALK" }, { "SKATE", "WALK" }, { "SLIDE", "WALK" },
+    { "SWIM", "WALK" }, { "FLIP", "WALK" }, { "FALL", "WALK" }, { "PUSH", "WALK" }, { "TRANS", "WALK" },
+    { "HOLD_SLOW", "WALK" }, { "BARGE", "WALK" }, { "BANK", "BREATHE" }, { "ATTACK", "SPIN" }, { "KICK", "SPIN" },
+    { "WIN", "TAUNT", LOOP }, { "WIN2", "TAUNT", LOOP },
+    { "PICKUP", "TAUNT" }, { "HOLD_THROW", "TAUNT" }, { "TAUNT", "TAUNT" }, { "TAUNT_A", "TAUNT" },
+    { "FIRE1", "TAUNT" }, { "FIRE2", "TAUNT" }, { "FIRE3", "TAUNT" }, { "MINE", "TAUNT" }, { "RECOIL", "TAUNT" },
     { "TAZING", "TAUNT" }, { "LIGHT", "TAUNT" },
-    { "HIT", "DIE" }, { "DAZED", "DIE" }, { "DIE", "DIE" },
-    { NULL, NULL },
+    { "HIT", "DIE", ONCE }, { "DAZED", "DIE", ONCE }, { "DIE", "DIE", ONCE },
+    { NULL, NULL, STRETCH },
 };
 
 static const ExtraHero ExtraHeroes[NUM_EXTRA] = {
@@ -80,6 +88,9 @@ typedef struct {
     s32 to_anim[MAX_ANIMS]; /* the extra hero's stand-in for each, and the frames of it that stand in */
     s32 to_first[MAX_ANIMS], to_count[MAX_ANIMS];
     s32 from_frames[MAX_ANIMS];
+    s32 pace[MAX_ANIMS];    /* STRETCH, LOOP or ONCE */
+    s32 clock_anim;         /* the base's animation it was last drawn in, its frame, and the tick it started (GameFrameCount) */
+    s32 clock_frame, clock_start;
     s32 taunt_sfx;          /* the sound its base's taunt plays, which is its own laugh instead; -1 for none */
     s32 scale;             /* the extra hero's height over the base's, 0x1000 = the same */
     union {
@@ -252,19 +263,23 @@ static s32 has(const ModelFile *m, s32 key) {
     return 0;
 }
 
-/* The extra hero's stand-in for one of its base's animations, by name: the first of its names that its model m has, and the range of
- * its frames that name gives (or -1, all of them), if first isn't NULL. */
-static s32 stand_in(const ExtraHero *x, s32 key, const ModelFile *m, s32 *first, s32 *last) {
+/* The extra hero's stand-in for one of its base's animations, by name: the first of its names that its model m has, and if first
+ * isn't NULL, the range of its frames that name gives (or -1, all of them) and its pace. */
+static s32 stand_in(const ExtraHero *x, s32 key, const ModelFile *m, s32 *first, s32 *last, s32 *pace) {
     const Stand *s;
     const char *names = x->otherwise;
     char one[24];
 
     if (first != NULL) {
         *first = *last = -1;
+        *pace = STRETCH;
     }
     for (s = x->stands; s->from != NULL; s++) {
         if (hash_of(s->from) == key) {
             names = s->to;
+            if (pace != NULL) {
+                *pace = s->pace;
+            }
             break;
         }
     }
@@ -467,17 +482,19 @@ void extra_heroes_start(void) {
         from = (const ModelFile *)p->base;
         p->count = from->nMeshAnims < MAX_ANIMS ? from->nMeshAnims : MAX_ANIMS;
         for (k = 0; k < p->count; k++) {
-            s32 first, last, m, frames;
+            s32 first, last, m, frames, pace;
 
             p->from_frames[k] = anims_of(from)[k].frames;
-            m = find(to, stand_in(x, anims_of(from)[k].hash, to, &first, &last));
+            m = find(to, stand_in(x, anims_of(from)[k].hash, to, &first, &last, &pace));
             frames = anims_of(to)[m].frames > 0 ? anims_of(to)[m].frames : 1;
             first = first < 0 ? 0 : first >= frames ? frames - 1 : first;
             last = last < first ? frames - 1 : last >= frames ? frames - 1 : last;
             p->to_anim[k] = m;
             p->to_first[k] = first;
             p->to_count[k] = last - first + 1;
+            p->pace[k] = pace;
         }
+        p->clock_anim = -1;
         p->taunt_sfx = taunt_sound(PlayerBase[i]);
         from_height = height_of(from);
         p->scale = from_height > 0 && height_of(to) > 0 ? height_of(to) * 0x1000 / from_height : 0x1000;
@@ -491,7 +508,16 @@ s32 extra_hero_voice(s32 player, s32 sfx) {
     if (player < 0 || player >= 4 || !Play[player].on || Play[player].taunt_sfx < 0 || sfx != Play[player].taunt_sfx) {
         return 0;
     }
-    bonus_heroes_cheer(PlayerExtra[player]);
+    bonus_heroes_cheer(PlayerExtra[player], 1);
+    return 1;
+}
+
+s32 extra_hero_win_voice(s32 player, s32 line) {
+    if (player < 0 || player >= 4 || !Play[player].on) {
+        return 0;
+    }
+    /* the first starts its laugh; the second, a couple of seconds on, lets it finish */
+    bonus_heroes_cheer(PlayerExtra[player], line == 0);
     return 1;
 }
 
@@ -522,8 +548,8 @@ static Playing *playing(const subengine *sub) {
 }
 
 s32 extra_hero_frame(const subengine *sub, s32 entity) {
-    const Playing *p = playing(sub);
-    s32 tag = entity & 0x7000, n, f, m, frames;
+    Playing *p = playing(sub);
+    s32 tag = entity & 0x7000, n, f, m, frames, t;
 
     if (p == NULL) {
         return entity;
@@ -536,7 +562,17 @@ s32 extra_hero_frame(const subengine *sub, s32 entity) {
         m = p->to_anim[n];
         frames = p->to_count[n] > 0 ? p->to_count[n] : 1;
         f = entity & 0x7F;
-        if (p->from_frames[n] > 0) {
+        /* the base's animation started, or one played once started again */
+        if (n != p->clock_anim || (f < p->clock_frame && p->pace[n] != LOOP)) {
+            p->clock_anim = n;
+            p->clock_start = GameFrameCount;
+        }
+        p->clock_frame = f;
+        if (p->pace[n] != STRETCH) {
+            t = GameFrameCount - p->clock_start;
+            t = t < 0 ? 0 : t;
+            f = p->pace[n] == LOOP ? t % frames : t;
+        } else if (p->from_frames[n] > 0) {
             f = f * frames / p->from_frames[n];
         }
         if (f >= frames) {
@@ -666,7 +702,7 @@ s32 extra_hero_anim_key(const obj_dbase *db, s32 key) {
             return key;
         }
     }
-    return stand_in(&ExtraHeroes[PlayerExtra[i]], key, m, NULL, NULL);
+    return stand_in(&ExtraHeroes[PlayerExtra[i]], key, m, NULL, NULL, NULL);
 }
 
 /* --- its face, for the panel ---

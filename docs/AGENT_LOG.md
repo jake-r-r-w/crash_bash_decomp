@@ -482,11 +482,25 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - The port's `--no-window` is for one-frame boot checks only (playtest.mjs): a level run with it crashes in `texture_scaled`
   (no window, no texture cache), with or without any change. Shoot levels with `--window W H`.
 - In a test run of Crate Crush (`--mode 1 --skip-intro --skip-loading`) the round's GO is at about vblank 276 to 300; a press
-  before it does nothing. A hero taunts on triangle (`--press N 1000`, the engine's `dir & 0x1000`).
+  before it does nothing. A hero taunts on triangle (`--press N 1000`, the engine's `dir & 0x1000`), attacks on square (`8000`).
+  With no presses the game's AI plays player 1 as `--bot` does, and a run goes the same way every time, so a move seen at a
+  vblank in one run can be shot at that vblank in the next.
+- A test run opens no sound device: `audio_play_sample` gives -1, so `audio_sample_playing` is never true, unless the run records
+  (`--wav FILE`) or plays (`--sound`).
 
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-04: Ripper Roo after the user's play, at their word. A walk of his own (WALK, 20 frames as Crate Crush's run and carry):
+  bonusheroes.c rigs his standing pose in his game's axes, each leg swung from its hip and lifted on a bent knee in turn, the body
+  bobbing, leaning and turning (tried out first in `scratch/roo_walk.mjs`, drawn by `roo_view.mjs`). A spin attack (SPIN, for
+  ATTACK and KICK): his jump's legs-out frame 14 spun twice in a hop, landed by 13 as the base's attack shows 14 (`roo_spin.mjs`).
+  His win and hurt went in slow motion, a stand-in stretched over its base's animation (his 20-frame laugh over Rilla Roo's
+  118-frame win; his fall over a hurt ending on 5-tick frames): a stand-in now has a pace, LOOP or ONCE, at its own speed from the
+  base's start by GameFrameCount. He stands still holding a crate (BANK is BREATHE). His win voice is his laugh: UpdateHeroVictory's
+  two hero lines go through `HeroWinVoice` (`extra_hero_win_voice`), the first starting it, the second letting it finish. Checked in
+  Crate Crush by shots of each move (his win by knocking the others out in a test build, his laugh by a `--wav` run).
 
 - 2026-11-04: Roo split in two in the air: `extra_hero_shape` lowered only the first 1024 of a frame's vertices (a hop kept a third
   of its lift), and his mesh is 2091, a strip of 3 a triangle; now all of MorphVerts' 4096. At the user's word he has a new walk,

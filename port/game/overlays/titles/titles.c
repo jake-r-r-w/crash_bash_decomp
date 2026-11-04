@@ -1629,7 +1629,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
         }
         /* PC: an extra hero's voice from its own game, as the others call out (bonusheroes.c) */
         if (o->card == EXTRA_CARD) {
-            bonus_heroes_cheer(EXTRA_ROO);
+            bonus_heroes_cheer(EXTRA_ROO, 1);
         }
         card[o->card].flags |= 1;
         o->scaleX = 0;
