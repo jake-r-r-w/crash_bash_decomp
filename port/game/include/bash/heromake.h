@@ -82,6 +82,7 @@ typedef struct {
     const char *name;
     s32 frames;
     s32 mesh; /* the one it moves: 0, or 1 the second */
+    s32 step; /* at least this many frames from one keyframe to the next (0 or 1: any), the frames between blended */
 } MadeAnim;
 typedef struct {
     MadeFace *faces;

@@ -611,12 +611,13 @@ static void write_texture_set(Bytes *tex, const MadeImage *images, s32 nimages) 
     hm_wr32(tex->b + 4, (u32)tex->n);
 }
 
-/* An animation's keyframes, every `step` frames and its last: the frames between are blended from the one before to the one after. */
-static s32 key_step(s32 frames, s32 nvert) {
-    s32 step = 1;
+/* An animation's keyframes, every `step` frames (a multiple of its own at_least) and its last: the frames between are blended from the
+ * one before to the one after. */
+static s32 key_step(s32 frames, s32 nvert, s32 at_least) {
+    s32 unit = at_least > 1 ? at_least : 1, step = unit;
 
     while (((frames - 1) / step + 2) * nvert > INDEX_LIMIT && step < frames) {
-        step++;
+        step += unit;
     }
     return step;
 }
@@ -754,7 +755,7 @@ s32 made_write(const MadeModel *m, u8 **tex_out, s32 *tex_size, u8 **mdl_out, s3
     /* the animations, each in a block of its own from a 2 KB sector on, with room before it for the heap's header as it's split off:
      * its frames' records, an index list a keyframe, and the keyframes' vertices */
     for (j = 0; j < m->nanims; j++) {
-        s32 frames = m->anims[j].frames > 0 ? m->anims[j].frames : 1, step = key_step(frames, m->nvert), keys = 0, f, q;
+        s32 frames = m->anims[j].frames > 0 ? m->anims[j].frames : 1, step = key_step(frames, m->nvert, m->anims[j].step), keys = 0, f, q;
         s32 key_frame[256];
         size_t start, list[256], pool, e = entries + (size_t)j * 0x18;
 

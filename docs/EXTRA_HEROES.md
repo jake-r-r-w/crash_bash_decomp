@@ -53,7 +53,7 @@ the base's do.
 ```c
 const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
-    { { RooStands, "BREATHE", 0x500, 0 }, { RooRides, "BREATHE", 0x1000, Crash } },
+    { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 } },
     RooVoices, "BREATHE", 0, roo_make,
 };
 ```
@@ -63,7 +63,8 @@ const HeroDef HeroRoo = {
 - The base he borrows if nobody's playing it (`Kanga`, Rilla Roo); else the first nobody is.
 - A `HeroKind` for each kind of model: its stand-ins, the stand-in for any animation not listed,
   how much of a frame's lift off the ground is drawn (Roo's own jump is a crate or more high, so
-  on foot 0x500 of 0x1000), and whose weight and speeds he has (0 for the base's).
+  on foot 0x500 of 0x1000), whose weight and speeds he has (0 for the base's), and how many of his
+  model's frames make one of his game's (on foot 4: below, step 4).
 - His sounds for his base's, the animation his face is drawn from if he had no card, and his
   make.
 
@@ -125,7 +126,12 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    SPIN in a blue tornado (faces of their own, drawn adding their colour). This is the part a new
    hero writes most of, and only if it needs moves its game hasn't got.
 4. **On foot.** A `MadeModel` (faces, images, animations, a frame function giving each frame's
-   vertices in Crash Bash's units), written by `made_write`. An animation with more vertices than
+   vertices in Crash Bash's units), written by `made_write`. Each animation has four frames to each
+   of his game's (`ROO_SUBFRAMES`): his game's are its keyframes (`MadeAnim.step`) and the frames
+   between are blended. His base's moves are longer than his own (Rilla Roo's idle is 20 frames, his
+   12), and with only his own he'd hold some of his frames for two of theirs, stepping, and slowly
+   at 120 frames a second. His stand-ins at their own speed play four a tick, and a range in a
+   stand-in (`JUMP:13-27`) is in his game's frames. An animation with more vertices than
    an index can reach (16,384 over its frames) is written as keyframes with the frames between
    blended, as the game's own models are.
 5. **Riding a polar bear.** `ride_make` takes Crash's polar model from the player's archive (the

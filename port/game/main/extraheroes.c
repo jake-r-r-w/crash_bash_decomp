@@ -298,8 +298,10 @@ static s32 stand_in(const HeroDef *x, s32 kind, s32 key, const ModelFile *m, s32
             }
             if (has(m, hash_of(one))) {
                 if (range != NULL && first != NULL) {
-                    *first = atoi(range);
-                    *last = strchr(range, '-') != NULL ? atoi(strchr(range, '-') + 1) : *first;
+                    s32 sub = k->subframes > 1 ? k->subframes : 1;
+
+                    *first = atoi(range) * sub;
+                    *last = (strchr(range, '-') != NULL ? atoi(strchr(range, '-') + 1) : atoi(range)) * sub;
                 }
                 return hash_of(one);
             }
@@ -635,8 +637,11 @@ s32 extra_hero_frame(const subengine *sub, s32 entity) {
         }
         v->clock_frame = f;
         if (v->pace[n] != STRETCH) {
+            /* its model's frames to each of its game's, a tick */
+            s32 per = HeroDefs[PlayerExtra[p - Play]]->kinds[v->kind].subframes;
+
             t = GameFrameCount - v->clock_start;
-            t = t < 0 ? 0 : t;
+            t = (t < 0 ? 0 : t) * (per > 1 ? per : 1);
             f = v->pace[n] == LOOP ? t % frames : t;
         } else if (v->from_frames[n] > 0) {
             f = f * frames / v->from_frames[n];
@@ -1126,7 +1131,7 @@ static const subengine *SelectPortrait;
 static s32 SelectBank = -1; /* the model loaded for its stand, while the select's up */
 static u32 *Portrait;
 static s32 PortraitW, PortraitH, PortraitBank;
-static s16 SelectSteps[8];
+static s16 SelectSteps[136];
 
 void extra_heroes_select_enter(const subengine *portrait) {
     SelectPortrait = portrait;
@@ -1151,21 +1156,24 @@ void extra_heroes_select_leave(void) {
 void *extra_hero_select_steps(s32 extra) {
     u8 *file = extra > EXTRA_NONE && extra < NUM_EXTRA ? foot_file(extra) : NULL;
     const ModelFile *m = (const ModelFile *)file;
-    s32 n, frames;
+    s32 n, frames, step, f, k = 0;
 
     if (file == NULL) {
         return NULL;
     }
-    /* its face animation, the one it stands in, round and round, a frame every other tick */
+    /* its face animation, the one it stands in, round and round, a frame of its game's every other tick: its model's frames a tick
+     * (DoAnimCommand: a speed, then the frames, each shown that many ticks more), half its subframes apart */
     n = find(m, hash_of(HeroDefs[extra]->face));
     frames = n < m->nMeshAnims && anims_of(m)[n].frames > 0 ? anims_of(m)[n].frames : 1;
     free(file);
-    SelectSteps[0] = 1;
-    SelectSteps[1] = (s16)(u16)0x8011;
-    SelectSteps[2] = (s16)frames;
-    SelectSteps[3] = (s16)(0x4000 | n << 7);
-    SelectSteps[4] = (s16)(u16)0x8000;
-    SelectSteps[5] = 0;
+    step = HeroDefs[extra]->kinds[KIND_FOOT].subframes / 2;
+    step = step < 1 ? 1 : step;
+    SelectSteps[k++] = (s16)(step < 2 && HeroDefs[extra]->kinds[KIND_FOOT].subframes < 2 ? 1 : 0);
+    for (f = 0; f < frames && k < (s32)(sizeof(SelectSteps) / sizeof(SelectSteps[0])) - 2; f += step) {
+        SelectSteps[k++] = (s16)(0x4000 | n << 7 | f);
+    }
+    SelectSteps[k++] = (s16)(u16)0x8000;
+    SelectSteps[k] = 0;
     return SelectSteps;
 }
 

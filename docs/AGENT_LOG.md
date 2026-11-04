@@ -502,6 +502,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Roo's breathing looked slow at 120 frames a second (the user's settings: fps=120). Not the frame rate: his frames
+  map the same at 30 and 120 (traced), but his base's moves are longer than his own (Rilla Roo's idle 20 frames, his 12), so
+  stretched over hers he held some frames for two of hers, and drawn between frames that stepping shows. His foot model has four
+  frames to each of his game's now (ROO_SUBFRAMES; his game's the keyframes, MadeAnim.step, the rest blended), so every frame of
+  hers is one of his (her idle's 20 to his 2, 4, 6, 9, 11 ... of 45); HeroKind.subframes plays four a tick at his own speed (LOOP,
+  ONCE) and scales stand-in ranges (JUMP:13-27 is 52 to 108). The select's stand steps through his idle two frames a tick, the pace
+  it had (DoAnimCommand: a speed word, then frames). Checked by a trace of the frames and the select's shots; not played yet.
+
 - 2026-11-04: Roo's hop approved ("looks so much better"). His sounds, at the user's word: no yelp as he picks up or throws a
   crate, only as he's hit, and his throw is Crash's. `hm_game_sound` takes a tone's sample out of a sound pack in the archive
   (Crash's vox_crate, 0xD4, sound 0x10) at the game's pitch (note 60 against the tone's centre and shift, as PlaySfx's 0x1E00 keys

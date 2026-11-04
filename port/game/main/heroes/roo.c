@@ -54,10 +54,12 @@ static const Voice RooVoices[] = {
 static s32 roo_make(HeroMade *out);
 
 #define ROO_KEEP_LIFT 0x500 /* on foot, the share of a frame's lift off the floor that's drawn: his own jump is a crate or more high */
+#define ROO_SUBFRAMES 4     /* on foot, his model's frames to his game's, blended between: his base's moves are longer than his, and
+                             * without them he'd hold some of his frames for two of theirs, stepping (at 120 frames a second, slowly) */
 
 const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
-    { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0 }, { RooRides, "BREATHE", 0x1000, Crash } },
+    { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 } },
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -515,7 +517,7 @@ typedef struct {
 static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
     static V3 fv[MAX_VERTS];
     const FootCtx *c = ctx;
-    s32 n = anim_verts(&c->anims[j], j, f, c->scale, fv, NULL), k, total = RigVerts > 0 ? RigVerts + TORN_VERTS : n;
+    s32 n = anim_verts(&c->anims[j], j, f / ROO_SUBFRAMES, c->scale, fv, NULL), k, total = RigVerts > 0 ? RigVerts + TORN_VERTS : n;
 
     for (k = 0; k < total; k++) {
         const V3 *p = &fv[k < n ? k : 0];
@@ -660,8 +662,10 @@ static s32 roo_make(HeroMade *out) {
     /* on foot */
     for (j = 0; j < ROO_ANIMS; j++) {
         made_anims[j].name = RooAnims[j].name;
-        made_anims[j].frames = anim_frames(&anims[j], j);
+        /* ROO_SUBFRAMES to each of his game's, its frames the keyframes: the last is his game's last */
+        made_anims[j].frames = (anim_frames(&anims[j], j) - 1) * ROO_SUBFRAMES + 1;
         made_anims[j].mesh = 0;
+        made_anims[j].step = ROO_SUBFRAMES;
     }
     memset(&mm, 0, sizeof(mm));
     mm.faces = faces;
