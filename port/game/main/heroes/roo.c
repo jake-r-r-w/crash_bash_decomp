@@ -35,6 +35,11 @@ static const Stand RooStands[] = {
 static const Stand RooRides[] = {
     { NULL, NULL, STRETCH },
 };
+/* On his cane his model has Pogo's moves by name, as long as his base's; his tazing is the boss's attack, at its own speed */
+static const Stand RooPogo[] = {
+    { "TAZING", "TAZING", LOOP },
+    { NULL, NULL, STRETCH },
+};
 
 /* His sounds for his base's (docs/EXTRA_HEROES.md, A hero's sounds): the announcer still names Rilla Roo, as near a name as there is;
  * he laughs as he taunts and wins, yelps only as he's hurt, gives his jump's call as he jumps and lunges, thuds as he lands, and throws
@@ -59,7 +64,8 @@ static s32 roo_make(HeroMade *out);
 
 const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
-    { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 } },
+    { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
+      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES } },
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -82,6 +88,7 @@ static const Anim RooAnims[] = {
 #define ROO_ANIMS 6
 #define ROO_REST 1  /* the one he stands in: his height and his colours' light are from its first frame */
 #define ROO_LAUGH 2
+#define ROO_DIE 3
 #define ROO_WALK 4  /* made for him, as his game has no walk (he only ever jumps in his boss fight) and no attack */
 #define ROO_SPIN 5
 
@@ -581,6 +588,289 @@ static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
     }
 }
 
+/* --- on his cane (Pogo) ---
+ * Pogo's heroes bounce on pogo sticks, a model each with its stick (models\chars\pogo\). Where Ripper Roo is the arena's boss
+ * (models\arena\pogo_epl\roo2.mdl, DB_Roo, from the player's archive) he bounces on a stick of his own: a cane that telescopes,
+ * squeezed short between his feet as he lands, shooting out to throw him high, and left below as he flies, to land on again. Roo's
+ * pogo model is that cane, moving as it does there (the boss model's strips all within CANE_HALF of its middle across and below
+ * CANE_TOP, as it rests), and Roo on it, going up and down as the boss does (the middle of the boss's body, his corners above BOSS_BODY
+ * as he rests, from where it is at his bounce's bottom, his BREATHE's first frame): stood as he lands, his legs thrown out in the air as
+ * in his own jump's splits (LegsOut, from POGO_OPEN_FROM up, all the way from POGO_OPEN_FULL), his tongue and ears swinging. Pogo's
+ * moves (PogoMoves): his bounce, the boss's; his hop to the next square, the boss's, eased from and back to his bounce's bottom over
+ * POGO_EASE of it at each end, as his base's hop lands on it; dazed, he staggers through his knocked-over animation's frames before he
+ * falls (to POGO_DAZE_LAST), stood on the squeezed cane; as he wins, he laughs through a bounce; and his tazing is the boss's attack,
+ * the cane flipped up and fired. */
+#define CANE_HALF 16.0f
+#define CANE_TOP -400.0f
+#define BOSS_BODY -300.0f
+#define POGO_OPEN_FROM 120.0f
+#define POGO_OPEN_FULL 420.0f
+#define POGO_EASE 0.25f
+#define POGO_DAZE_LAST 10
+#define POGO_MAX_TICKS 40
+#define POGO_MAX_CORNERS 1024
+
+enum { POSE_BOUNCE, POSE_LAUGH, POSE_DAZED };
+typedef struct {
+    const char *name; /* Pogo's (its heroes' pogo models') */
+    const char *boss; /* the boss's it moves as, */
+    s32 from, to;     /* from and to which of its frames */
+    s32 own_speed;    /* at the boss's speed, a frame of his a tick (a LOOP stand-in); else as long as his base's */
+    s32 loops;
+    s32 ease;
+    s32 pose;
+} PogoMove;
+
+static const PogoMove PogoMoves[] = {
+    { "BREATHE", "BREATHE", 0, 13, 0, 1, 0, POSE_BOUNCE }, { "JUMP", "JUMP", 0, 13, 0, 0, 1, POSE_BOUNCE },
+    { "DAZED", "BREATHE", 0, 0, 0, 0, 0, POSE_DAZED },     { "WIN", "BREATHE", 0, 13, 0, 0, 0, POSE_LAUGH },
+    { "TAZING", "ATTACK", 0, 20, 1, 0, 0, POSE_BOUNCE },
+};
+#define POGO_MOVES 5
+
+typedef struct {
+    const FootCtx *foot;
+    GamePart cane;
+    s32 boss[POGO_MOVES], bottom; /* the boss's animations, and his BREATHE */
+    float bottom_y;               /* the middle of his body at his bounce's bottom */
+    MadeAnim anims[POGO_MOVES];
+    V3 swing[POGO_MOVES][POGO_MAX_TICKS];
+} PogoCtx;
+
+static PogoCtx Pogo;
+static V3 PogoOut[MAX_VERTS]; /* LegsOut with his body as high as he stands */
+
+static s32 keep_cane(void *ctx, const V3 *rest, s32 n, s32 textured) {
+    s32 k;
+
+    (void)ctx;
+    (void)textured;
+    for (k = 0; k < n; k++) {
+        if (fabsf(rest[k].x) > CANE_HALF || rest[k].y < CANE_TOP) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/* The middle of the boss's body (not the cane) in his corners */
+static float boss_body_y(const PogoCtx *c, const V3 *corners) {
+    float sum = 0;
+    s32 k, n = 0;
+
+    for (k = 0; k < c->cane.corners; k++) {
+        if (!c->cane.in_part[k] && c->cane.rest[k].y < BOSS_BODY) {
+            sum += corners[k].y;
+            n++;
+        }
+    }
+    return n > 0 ? sum / n : 0;
+}
+
+/* Frame f of move a, but for the swing: Roo (RigVerts) and the boss's corners */
+static void pogo_pose(const PogoCtx *c, s32 a, s32 f, V3 *roo, V3 *corners) {
+    static V3 fv[MAX_VERTS], bottom[POGO_MAX_CORNERS];
+    const PogoMove *m = &PogoMoves[a];
+    const FootCtx *foot = c->foot;
+    s32 frames = c->anims[a].frames, k, n = 0, g;
+    float phase, t, lift, ease = 0;
+
+    if (m->own_speed) {
+        t = m->from + (float)f / ROO_SUBFRAMES;
+        t = t > m->to ? (float)m->to : t;
+        phase = m->to > m->from ? (t - m->from) / (m->to - m->from) : 0;
+    } else {
+        phase = m->loops ? (float)f / frames : frames > ROO_SUBFRAMES ? (float)f / (frames - ROO_SUBFRAMES) : 0;
+        phase = phase > 1 ? 1 : phase;
+        t = m->from + (m->to - m->from) * phase;
+    }
+    if (!hm_model_at(&c->cane, c->boss[a], t, corners)) {
+        hm_model_at(&c->cane, c->bottom, 0, corners);
+    }
+    lift = c->bottom_y - boss_body_y(c, corners);
+    if (m->ease) {
+        ease = 1 - fminf(hm_smooth(0, POGO_EASE, phase), hm_smooth(1, 1 - POGO_EASE, phase));
+        if (ease > 0 && hm_model_at(&c->cane, c->bottom, 0, bottom)) {
+            for (k = 0; k < c->cane.corners; k++) {
+                corners[k] = hm_mix(corners[k], bottom[k], ease);
+            }
+            lift *= 1 - ease;
+        }
+    }
+    switch (m->pose) {
+    case POSE_LAUGH:
+        g = f / ROO_SUBFRAMES % (foot->anims[ROO_LAUGH].count > 0 ? foot->anims[ROO_LAUGH].count : 1);
+        n = anim_verts(&foot->anims[ROO_LAUGH], ROO_LAUGH, g, foot->scale, fv, NULL);
+        break;
+    case POSE_DAZED:
+        g = (s32)(phase * POGO_DAZE_LAST + 0.5f);
+        n = anim_verts(&foot->anims[ROO_DIE], ROO_DIE, g, foot->scale, fv, NULL);
+        break;
+    default: {
+        float open = hm_smooth(POGO_OPEN_FROM, POGO_OPEN_FULL, lift);
+
+        for (k = 0; k < RigVerts; k++) {
+            fv[k] = from_rig(hm_mix(Rest[k], PogoOut[k], open));
+        }
+        n = RigVerts;
+    }
+    }
+    for (k = 0; k < RigVerts; k++) {
+        const V3 *p = &fv[k < n ? k : 0];
+
+        roo[k].x = p->x * foot->k;
+        roo[k].y = p->y * foot->k - foot->ground - lift;
+        roo[k].z = p->z * foot->k;
+    }
+}
+
+/* The swing of his tongue and ears through each move, a tick at a time (every ROO_SUBFRAMES of its frames), from his head's path */
+static void pogo_swing(PogoCtx *c) {
+    static V3 roo[MAX_VERTS], corners[POGO_MAX_CORNERS], path[POGO_MAX_TICKS];
+    s32 a, i, k, ticks;
+
+    memset(c->swing, 0, sizeof(c->swing));
+    for (a = 0; a < POGO_MOVES; a++) {
+        ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES;
+        ticks = ticks > POGO_MAX_TICKS ? POGO_MAX_TICKS : ticks;
+        for (i = 0; i < ticks; i++) {
+            V3 sum = { 0, 0, 0 };
+            float w = 0;
+
+            pogo_pose(c, a, i * ROO_SUBFRAMES, roo, corners);
+            for (k = 0; k < RigVerts; k++) {
+                if (Rest[k].y > FOOT_HEAD_Y) {
+                    sum.x += roo[k].x;
+                    sum.y += roo[k].y;
+                    sum.z += roo[k].z;
+                    w++;
+                }
+            }
+            if (w > 0) {
+                sum.x /= w;
+                sum.y /= w;
+                sum.z /= w;
+            }
+            path[i] = sum;
+        }
+        hm_flop(path, ticks, PogoMoves[a].loops, &RooSwing, c->swing[a]);
+    }
+}
+
+static void pogo_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    static V3 corners[POGO_MAX_CORNERS];
+    const PogoCtx *c = ctx;
+    s32 ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES, i0, i1, k;
+    float s = (float)f / ROO_SUBFRAMES, u;
+    V3 swing;
+
+    ticks = ticks > POGO_MAX_TICKS ? POGO_MAX_TICKS : ticks;
+    pogo_pose(c, a, f, out, corners);
+    i0 = (s32)floorf(s);
+    u = s - i0;
+    i0 = i0 < ticks ? i0 : ticks - 1;
+    i1 = i0 + 1 < ticks ? i0 + 1 : PogoMoves[a].loops ? 0 : i0;
+    swing = hm_mix(c->swing[a][i0], c->swing[a][i1], u);
+    for (k = 0; k < RigVerts; k++) {
+        out[k].x += swing.x * FlopShare[k];
+        out[k].y += swing.y * FlopShare[k];
+        out[k].z += swing.z * FlopShare[k];
+    }
+    for (k = 0; k < c->cane.nvert; k++) {
+        out[RigVerts + k] = corners[c->cane.corner_of[k]];
+    }
+}
+
+/* His pogo model: his own faces (own_tris of them, on his RigVerts) and images, then the cane's */
+static s32 pogo_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, const MadeImage *images, s32 nimage, HeroMade *out) {
+    static V3 corners[POGO_MAX_CORNERS];
+    PogoCtx *c = &Pogo;
+    MadeFace *all = NULL;
+    MadeImage *imgs = NULL;
+    MadeModel mm;
+    s32 a, k, j, n, ok = 0;
+    float raise = 0, rest_y = 0, out_y = 0;
+
+    memset(c, 0, sizeof(*c));
+    c->foot = foot;
+    if (RigVerts == 0 || !hm_game_part(DB_Roo, keep_cane, NULL, &c->cane)) {
+        printf("bonus: Pogo's Ripper Roo has no cane\n");
+        return 0;
+    }
+    if (c->cane.corners > POGO_MAX_CORNERS || (c->bottom = hm_model_anim(&c->cane, "BREATHE", NULL)) < 0
+        || !hm_model_at(&c->cane, c->bottom, 0, corners)) {
+        goto done;
+    }
+    c->bottom_y = boss_body_y(c, corners);
+    for (a = 0; a < POGO_MOVES; a++) {
+        const PogoMove *m = &PogoMoves[a];
+
+        if ((c->boss[a] = hm_model_anim(&c->cane, m->boss, NULL)) < 0) {
+            goto done;
+        }
+        /* as long as his base's, each frame of it ROO_SUBFRAMES of his; or at the boss's speed */
+        n = m->own_speed ? m->to - m->from + 1 : hm_bank_frames(DB_CharsPogoRilla, m->name);
+        n = n > 0 ? n : m->to - m->from + 1;
+        n = n > POGO_MAX_TICKS ? POGO_MAX_TICKS : n;
+        c->anims[a].name = m->name;
+        c->anims[a].frames = n * ROO_SUBFRAMES;
+        c->anims[a].mesh = 0;
+        c->anims[a].step = ROO_SUBFRAMES;
+    }
+    /* his legs-out pose with his body (all but his legs and tail) where it is as he stands */
+    for (k = 0, n = 0; k < RigVerts; k++) {
+        if (LegShare[k] <= 0 && !TailOf[k]) {
+            rest_y += Rest[k].y;
+            out_y += LegsOut[k].y;
+            n++;
+        }
+    }
+    raise = n > 0 ? (rest_y - out_y) / n : 0;
+    for (k = 0; k < RigVerts; k++) {
+        PogoOut[k] = LegsOut[k];
+        PogoOut[k].y += raise;
+    }
+    pogo_swing(c);
+    all = malloc(sizeof(MadeFace) * (size_t)(own_tris + c->cane.nfaces));
+    imgs = malloc(sizeof(MadeImage) * (size_t)(nimage + c->cane.nimages + 1));
+    if (all == NULL || imgs == NULL) {
+        goto done;
+    }
+    memcpy(all, faces, sizeof(MadeFace) * (size_t)own_tris);
+    for (k = 0; k < c->cane.nfaces; k++) {
+        MadeFace *f = &all[own_tris + k];
+
+        *f = c->cane.faces[k];
+        for (j = 0; j < 3; j++) {
+            f->v[j] += RigVerts;
+        }
+        f->image = f->image >= 0 ? f->image + nimage : -1;
+    }
+    memcpy(imgs, images, sizeof(MadeImage) * (size_t)nimage);
+    memcpy(imgs + nimage, c->cane.images, sizeof(MadeImage) * (size_t)c->cane.nimages);
+    memset(&mm, 0, sizeof(mm));
+    mm.faces = all;
+    mm.nfaces = own_tris + c->cane.nfaces;
+    mm.meshes = 1;
+    mm.images = imgs;
+    mm.nimages = nimage + c->cane.nimages;
+    mm.anims = c->anims;
+    mm.nanims = POGO_MOVES;
+    mm.nvert = RigVerts + c->cane.nvert;
+    mm.rest_anim = 0;
+    mm.frame = pogo_frame;
+    mm.ctx = c;
+    ok = made_write(&mm, &out->tex[KIND_POGO], &out->tex_size[KIND_POGO], &out->mdl[KIND_POGO], &out->mdl_size[KIND_POGO]);
+done:
+    if (!ok) {
+        printf("bonus: Ripper Roo can't be put on his cane\n");
+    }
+    free(all);
+    free(imgs);
+    hm_part_free(&c->cane);
+    return ok;
+}
+
 /* His sounds, which his boss fight's object (RRooC) plays: sound entries in sound pages, at 11025 Hz. His laugh (CrznA), his jump's
  * call (rjpnA), and his landings, light (ld30A) and heavy (ld00A). His game has no hurt voice for him, so his yelp is his laugh's first
  * "ha", its first ROO_YELP_BYTES (0.22 s, where it falls quiet), a little higher. */
@@ -787,14 +1077,19 @@ static s32 roo_make(HeroMade *out) {
             printf("bonus: Ripper Roo has no polar bear to ride\n");
         }
     }
+    /* on his cane (Pogo): his own faces, as riding */
+    if (RigVerts > 0) {
+        pogo_make(&foot, faces, own_tris, images, nimage, out);
+    }
     if (c1_sprite64(&level, "ShadC", 5, RooCard)) {
         out->card = RooCard;
         out->card_w = out->card_h = 64;
         out->card_head = CARD_HEAD;
     }
     make_sounds(&level, out);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s\n", ntri, nimage, out->mdl_size[KIND_FOOT],
-           out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "", out->card != NULL ? ", his hero card" : "",
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s\n", ntri, nimage,
+           out->mdl_size[KIND_FOOT], out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "",
+           out->mdl[KIND_POGO] != NULL ? ", on his cane" : "", out->card != NULL ? ", his hero card" : "",
            out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "",
            out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "");
     ok = 1;

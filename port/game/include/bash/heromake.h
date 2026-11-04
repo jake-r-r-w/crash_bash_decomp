@@ -108,6 +108,33 @@ void made_images_free(MadeImage *images, s32 n);
 s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s32 nvert, MadeFace *faces, s32 max, s32 *nfaces,
                    MadeImage *images, s32 *nimages);
 
+/* --- part of one of the game's own models, as the player's archive has it ---
+ * The strips of a model bank's first mesh that `keep` picks, from where each one's corners are as the model rests (Crash Bash's axes,
+ * y down) and whether it's textured: their faces as made faces, each on its strip's own corners and drawn the same way round, their
+ * images, and where its corners are in any frame of the model's animations (hm_model_at, then corner_of). */
+#define PART_MAX_IMAGES 8
+typedef struct {
+    u8 *mdl;          /* the model's file */
+    s32 corners;      /* its first mesh's corners, */
+    V3 *rest;         /* where each is as it rests, */
+    u8 *in_part;      /* and which are the part's */
+    MadeFace *faces;  /* the part's faces, on its own vertices */
+    s32 nfaces;
+    MadeImage images[PART_MAX_IMAGES];
+    s32 nimages;
+    s16 *corner_of;   /* each of its vertices' corner */
+    s32 nvert;
+} GamePart;
+s32 hm_game_part(s32 bank, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s32 textured), void *ctx, GamePart *out);
+void hm_part_free(GamePart *p);
+/* The model's animation by name, and its frames; -1 if it has none. */
+s32 hm_model_anim(const GamePart *p, const char *name, s32 *frames);
+/* The frames of a model bank's animation by name, as the archive has it: 0 if it has none (a made animation as long as its base's
+ * plays a frame a tick). */
+s32 hm_bank_frames(s32 bank, const char *name);
+/* All its first mesh's corners at t of animation `anim`, between the frames either side (t is kept within its frames). 0 if it can't. */
+s32 hm_model_at(const GamePart *p, s32 anim, float t, V3 *corners);
+
 /* --- what's loose on a hero (a tongue, ears) ---
  * Its swing: a damped spring at the hero's head, thrown about by the head's accelerations from frame to frame. The frames a swing
  * takes, its damping (a share of what would stop it swinging at all), how much of the head's throw it takes, and the most it swings

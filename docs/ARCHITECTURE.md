@@ -1155,7 +1155,17 @@ signature alone is not enough.
   `PogoProcess` (`pogo_init`/`pogo_kill`, the tile prims' heap). Each
   hero's `HeroPogo` frame table runs straight into its five
   `*_seq_pogo_*` sequences (`HeroSeqTables[hero][46..50]`). The players
-  are the leak's `PogoPlay[4]` (`PogoPlayer`).
+  are the leak's `PogoPlay[4]` (`PogoPlayer`). Each hero's pogo model
+  (`models/chars/pogo/`) is the hero and its stick in one, with five
+  moves in any order: BREATHE (the bounce in place, its bottom at frame
+  0), JUMP (the hop to the next square: `PogoFrames*` turns the hop's 23
+  steps into its frames), DAZED, WIN and TAZING (the tazer: its
+  sequence's `0x8003 0x14` is when `AddTazerRing` fires). The boss
+  Ripper Roo of worlds 0x49 and 0x4D (`PogoLevelDB1`, `DB_Roo`,
+  `models/arena/pogo_epl/roo2.mdl`) has a top hat and bounces on a cane
+  that telescopes, 107 units squeezed to about 375 out (his last five
+  strips);
+  its ATTACK, BREATHE (two bounces in 26 frames) and JUMP are all he has.
 - **The front end** (Titles; named 2026-10-26). Modes 0x28..0x2A
   (the engine's per-mode table gives each `file_group_TITLES`); its world
   record (`0x800990B0`, world 0x0101) is `{..., &TITLES_PREMAP,

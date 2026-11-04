@@ -139,6 +139,9 @@ static s32 kind_of(s32 bank) {
         || (bank >= DB_CharsPolarCrash && bank <= DB_CharsPolarKong)) {
         return KIND_POLAR;
     }
+    if (bank >= DB_CharsPogoCrash && bank <= DB_CharsPogoRilla) {
+        return KIND_POGO;
+    }
     return KIND_FOOT;
 }
 
@@ -454,6 +457,10 @@ static s32 variant_start(s32 player, Variant *v, s32 base_bank) {
     memset(v, 0, sizeof(*v));
     v->kind = kind_of(base_bank);
     v->bank = &HeroModelBank[bonus_heroes_bank(PlayerExtra[player], v->kind)];
+    if (v->kind != KIND_FOOT && v->bank == &HeroModelBank[foot_bank(PlayerExtra[player])]) {
+        /* it has no model of this kind, so it plays as on foot */
+        v->kind = KIND_FOOT;
+    }
     v->base_bank = base_bank;
     if ((to = v->bank->data) == NULL) {
         return 0;

@@ -996,4 +996,5 @@ obj_dbase HeroModelBank[DB_COUNT] = {
     { &DatIndex[17], &DatIndex[16] }, /* DB_CutsceneAkuUkaData */
     { &DatIndex[993], &DatIndex[992] }, /* DB_BonusRoo, PC (bonusheroes.c) */
     { &DatIndex[995], &DatIndex[994] }, /* DB_BonusRooPolar, PC */
+    { &DatIndex[997], &DatIndex[996] }, /* DB_BonusRooPogo, PC */
 };

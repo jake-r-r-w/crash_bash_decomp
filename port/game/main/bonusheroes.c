@@ -2,7 +2,7 @@
  * copies of other Crash games, and what the heroes' own files (main/heroes/) use to make them.
  *
  * Each hero's make (bash/herodef.h) finds its game's disc (disc_image_find), reads what it needs from it, and makes it into a Crash Bash
- * model and texture set of each kind it has (docs/ASSETS.md): on foot, and riding a polar bear. They go into the archive's entries for
+ * model and texture set of each kind it has (docs/ASSETS.md): on foot, riding a polar bear, and on a pogo stick. They go into the archive's entries for
  * that hero (main.c's DatIndex, from 992) as a mod's files do, and the game loads them as it does any model, into banks of their own
  * (DB_BonusRoo, ...). Nothing of them is kept but in memory, and without its disc there's no hero. docs/EXTRA_HEROES.md has how to add
  * one, from Ripper Roo's (heroes/roo.c). */
@@ -30,8 +30,8 @@ const HeroDef *const HeroDefs[NUM_EXTRA] = { NULL, &HeroRoo };
 static const struct {
     s32 tex, mdl, bank;
 } Slots[NUM_EXTRA][NUM_KINDS] = {
-    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty } },
-    { { 992, 993, DB_BonusRoo }, { 994, 995, DB_BonusRooPolar } },
+    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty } },
+    { { 992, 993, DB_BonusRoo }, { 994, 995, DB_BonusRooPolar }, { 996, 997, DB_BonusRooPogo } },
 };
 
 static HeroMade Made[NUM_EXTRA];
@@ -891,44 +891,6 @@ static s32 file_anim_named(const u8 *file, const char *name) {
     return -1;
 }
 
-/* --- the bear ---
- * Crash's polar model (DB_CharsPolar2Crash), as the archive has it: one mesh of Crash and his bear (and a second with the bear charred,
- * as the game draws it once a bomb's hit). The bear is its strips that are textured only with the bear's images (BEAR_IMAGES and the
- * last image with BEAR_CLUT) or not at all, inside its outline, and neither blue (his jeans) nor orange (his skin). */
-#define BEAR_CORNERS 1024
-#define BEAR_FACES 512
-#define BEAR_IMAGES 2   /* images 0 and 1, its fur's */
-#define BEAR_CLUT 12    /* and the set's last with this CLUT, its shading */
-#define BEAR_HALF 110   /* its outline: this far either side, and below BEAR_TOP */
-#define BEAR_TOP -215
-#define HIPS_TOP -225   /* Crash's hips: his corners below this and within BEAR_HALF across; his head, above HEAD_BOTTOM */
-#define HEAD_BOTTOM -400
-#define BACK_BELOW -110 /* its back, which the hero moves with: its corners above this (not its legs), within BACK_HALF across, */
-#define BACK_HALF 70    /* from BACK_FRONT to BACK_REAR along (not its head, which nods, nor its tail) */
-#define BACK_FRONT -90
-#define BACK_REAR 110
-#define MAX_BEAR_IMAGES 8
-
-typedef struct {
-    s32 made;
-    u8 *mdl;
-    s32 corners;
-    s32 nfaces, nimages, nvert;
-    MadeFace faces[BEAR_FACES];
-    MadeImage images[MAX_BEAR_IMAGES];
-    s16 vert_of[BEAR_CORNERS], corner_of[BEAR_CORNERS];
-    s32 nhips, nhead, nback;
-    s16 hips[BEAR_CORNERS], head[BEAR_CORNERS], back[BEAR_CORNERS];
-    V3 ref[BEAR_CORNERS]; /* his first breathing frame */
-    float back_y, seat_z;
-    s32 anim[RIDE_ANIMS];
-} Bear;
-
-static Bear TheBear;
-static s32 BearTried;
-
-static const char *const RideNames[RIDE_ANIMS] = { "FALL", "RUN", "BREATHE", "PUSH", "TAUNT", "LIGHT", "WIN" };
-
 /* A texture set's images and CLUTs (docs/ASSETS.md, Texture sets) */
 typedef struct {
     s32 nimg, nclut;
@@ -966,17 +928,18 @@ static s32 tex_set(const u8 *t, s32 size, TexSet *s) {
     return 1;
 }
 
-/* The bear's image for a face textured with image `img` and `clut` (-1: its own), made once */
-static s32 bear_image(Bear *b, const TexSet *ts, s32 img, s32 clut, s32 *made_img, s32 *made_clut) {
+/* The made image for a face whose texture word is t (a mesh's texs: its image, or with bit 15 the set's last image with CLUT t & 0x1FF),
+ * into images (n of max made so far), made once: made_img and made_clut keep which each is. -1 if there's none. */
+static s32 face_image(MadeImage *images, s32 *n, s32 max, const TexSet *ts, s32 t, s32 *made_img, s32 *made_clut) {
     MadeImage *im;
-    s32 i, c, w, h, k;
+    s32 i, c, w, h, k, img = (t & 0x8000) ? ts->nimg - 1 : t & 0x1FF, clut = (t & 0x8000) ? t & 0x1FF : -1;
 
-    for (i = 0; i < b->nimages; i++) {
+    for (i = 0; i < *n; i++) {
         if (made_img[i] == img && made_clut[i] == clut) {
             return i;
         }
     }
-    if (b->nimages == MAX_BEAR_IMAGES || img < 0 || img >= ts->nimg) {
+    if (*n == max || img < 0 || img >= ts->nimg) {
         return -1;
     }
     w = hm_rd16(ts->img[img]);
@@ -985,7 +948,7 @@ static s32 bear_image(Bear *b, const TexSet *ts, s32 img, s32 clut, s32 *made_im
     if (c < 0 || c >= ts->nclut) {
         return -1;
     }
-    im = &b->images[b->nimages];
+    im = &images[*n];
     memset(im, 0, sizeof(*im));
     im->units = w;
     im->h = h;
@@ -998,10 +961,216 @@ static s32 bear_image(Bear *b, const TexSet *ts, s32 img, s32 clut, s32 *made_im
         return -1;
     }
     memcpy(im->pixels, ts->img[img] + 20, (size_t)w * h * 2);
-    made_img[b->nimages] = img;
-    made_clut[b->nimages] = clut;
-    return b->nimages++;
+    made_img[*n] = img;
+    made_clut[*n] = clut;
+    return (*n)++;
 }
+
+/* --- part of a model --- */
+
+void hm_part_free(GamePart *p) {
+    made_images_free(p->images, p->nimages);
+    free(p->mdl);
+    free(p->rest);
+    free(p->in_part);
+    free(p->faces);
+    free(p->corner_of);
+    memset(p, 0, sizeof(*p));
+}
+
+s32 hm_game_part(s32 bank, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s32 textured), void *ctx, GamePart *out) {
+    const obj_dbase *db = &HeroModelBank[bank];
+    const ModelFile *m;
+    const MeshHeader *h;
+    const u16 *runs, *uv_idx, *texs, *cols, *uvs;
+    const u8 *colours, *vb;
+    u8 *tex = NULL;
+    TexSet ts;
+    s32 mdl_size = 0, tex_size = 0, made_img[PART_MAX_IMAGES], made_clut[PART_MAX_IMAGES];
+    s32 k, s, face, corner, left, t = 0, faces = 0, *vert_of = NULL;
+
+    memset(out, 0, sizeof(*out));
+    out->mdl = archive_own_file((s32)(db->file - DatIndex), &mdl_size);
+    if (out->mdl == NULL || ((const ModelFile *)out->mdl)->nMeshes < 1) {
+        goto fail;
+    }
+    m = (const ModelFile *)out->mdl;
+    h = &m->meshes[0];
+    runs = (const u16 *)((const u8 *)&h->runs + h->runs);
+    uv_idx = (const u16 *)((const u8 *)&h->uvIdx + h->uvIdx);
+    cols = (const u16 *)((const u8 *)&h->colors + h->colors);
+    uvs = (const u16 *)((const u8 *)&m->uvs + m->uvs);
+    colours = (const u8 *)&m->colors + m->colors;
+    vb = (const u8 *)&h->verts + h->verts + 0x14;
+    out->corners = mesh_corners(h);
+    for (s = 0; runs[s] != 0xFFFF; s++) {
+        faces += runs[s] >> 8;
+    }
+    out->rest = malloc(sizeof(V3) * (size_t)out->corners);
+    out->in_part = calloc((size_t)out->corners, 1);
+    out->faces = malloc(sizeof(MadeFace) * (size_t)(faces > 0 ? faces : 1));
+    out->corner_of = malloc(sizeof(s16) * (size_t)out->corners);
+    vert_of = malloc(sizeof(s32) * (size_t)out->corners);
+    if (out->rest == NULL || out->in_part == NULL || out->faces == NULL || out->corner_of == NULL || vert_of == NULL) {
+        goto fail;
+    }
+    for (k = 0; k < out->corners; k++) {
+        out->rest[k].x = (s16)hm_rd16(vb + k * 8);
+        out->rest[k].y = (s16)hm_rd16(vb + k * 8 + 2);
+        out->rest[k].z = (s16)hm_rd16(vb + k * 8 + 4);
+        vert_of[k] = -1;
+    }
+    /* its textures, if any face of the part has one */
+    if (db->textureFile != NULL && (tex = archive_own_file((s32)(db->textureFile - DatIndex), &tex_size)) != NULL
+        && !tex_set(tex, tex_size, &ts)) {
+        free(tex);
+        tex = NULL;
+    }
+    texs = (const u16 *)((const u8 *)&h->texs + h->texs);
+    left = 0;
+    for (s = 0, face = 0, corner = 0; runs[s] != 0xFFFF; corner += (runs[s] >> 8) + 2, s++) {
+        s32 n = runs[s] >> 8, flip0 = (runs[s] & 8) != 0, textured = !(runs[s] & 1), take, j;
+
+        take = corner + n + 2 <= out->corners && keep(ctx, out->rest + corner, n + 2, textured);
+        for (j = 0; j < n; j++, face++) {
+            /* a strip's first face is drawn a, c, b, so one drawn a, b, c in its own strip has its last two the other way */
+            s32 order[3], q;
+            MadeFace *mf;
+
+            if (--left < 0) {
+                t = texs[0];
+                texs++;
+                left = (t >> 9) & 0x3F;
+            }
+            if (!take) {
+                continue;
+            }
+            order[0] = 0;
+            order[1] = j % 2 == flip0 ? 1 : 2;
+            order[2] = j % 2 == flip0 ? 2 : 1;
+            mf = &out->faces[out->nfaces++];
+            memset(mf, 0, sizeof(*mf));
+            mf->image = textured && tex != NULL ? face_image(out->images, &out->nimages, PART_MAX_IMAGES, &ts, t, made_img, made_clut) : -1;
+            mf->blend = (u16)(cols[face] & 0xE000);
+            for (q = 0; q < 3; q++) {
+                s32 at = corner + j + order[q], c = (cols[face] & 0x1FFF) + order[q], w;
+
+                if (vert_of[at] < 0) {
+                    out->corner_of[out->nvert] = (s16)at;
+                    out->in_part[at] = 1;
+                    vert_of[at] = out->nvert++;
+                }
+                mf->v[q] = vert_of[at];
+                w = uvs[uv_idx[face] + order[q]];
+                mf->uv[q][0] = (u8)(w & 0xFF);
+                mf->uv[q][1] = (u8)(w >> 8);
+                memcpy(mf->rgb[0][q], colours + c * 4, 3);
+                memcpy(mf->rgb[1][q], colours + c * 4, 3);
+            }
+        }
+    }
+    free(vert_of);
+    free(tex);
+    if (out->nfaces == 0) {
+        hm_part_free(out);
+        return 0;
+    }
+    return 1;
+fail:
+    free(vert_of);
+    free(tex);
+    hm_part_free(out);
+    return 0;
+}
+
+s32 hm_model_anim(const GamePart *p, const char *name, s32 *frames) {
+    s32 a = p->mdl != NULL ? file_anim_named(p->mdl, name) : -1;
+
+    if (frames != NULL) {
+        *frames = a >= 0 ? file_anims((const ModelFile *)p->mdl)[a].frames : 0;
+    }
+    return a;
+}
+
+s32 hm_bank_frames(s32 bank, const char *name) {
+    s32 size = 0, a, n = 0;
+    u8 *file = archive_own_file((s32)(HeroModelBank[bank].file - DatIndex), &size);
+
+    if (file != NULL && (a = file_anim_named(file, name)) >= 0) {
+        n = file_anims((const ModelFile *)file)[a].frames;
+    }
+    free(file);
+    return n;
+}
+
+s32 hm_model_at(const GamePart *p, s32 anim, float t, V3 *corners) {
+    static V3 *next;
+    static s32 next_n;
+    s32 n, f0, f1, k;
+    float u;
+
+    if (p->mdl == NULL || anim < 0 || anim >= ((const ModelFile *)p->mdl)->nMeshAnims) {
+        return 0;
+    }
+    n = file_anims((const ModelFile *)p->mdl)[anim].frames;
+    t = t < 0 ? 0 : t > n - 1 ? (float)(n - 1) : t;
+    f0 = (s32)floorf(t);
+    f1 = f0 + 1 < n ? f0 + 1 : f0;
+    u = t - f0;
+    if (file_frame(p->mdl, anim, f0, corners, p->corners) != p->corners) {
+        return 0;
+    }
+    if (u > 0 && f1 != f0) {
+        if (next_n < p->corners) {
+            free(next);
+            next_n = (next = malloc(sizeof(V3) * (size_t)p->corners)) != NULL ? p->corners : 0;
+        }
+        if (next != NULL && file_frame(p->mdl, anim, f1, next, p->corners) == p->corners) {
+            for (k = 0; k < p->corners; k++) {
+                corners[k] = hm_mix(corners[k], next[k], u);
+            }
+        }
+    }
+    return 1;
+}
+
+/* --- the bear ---
+ * Crash's polar model (DB_CharsPolar2Crash), as the archive has it: one mesh of Crash and his bear (and a second with the bear charred,
+ * as the game draws it once a bomb's hit). The bear is its strips that are textured only with the bear's images (BEAR_IMAGES and the
+ * last image with BEAR_CLUT) or not at all, inside its outline, and neither blue (his jeans) nor orange (his skin). */
+#define BEAR_CORNERS 1024
+#define BEAR_FACES 512
+#define BEAR_IMAGES 2   /* images 0 and 1, its fur's */
+#define BEAR_CLUT 12    /* and the set's last with this CLUT, its shading */
+#define BEAR_HALF 110   /* its outline: this far either side, and below BEAR_TOP */
+#define BEAR_TOP -215
+#define HIPS_TOP -225   /* Crash's hips: his corners below this and within BEAR_HALF across; his head, above HEAD_BOTTOM */
+#define HEAD_BOTTOM -400
+#define BACK_BELOW -110 /* its back, which the hero moves with: its corners above this (not its legs), within BACK_HALF across, */
+#define BACK_HALF 70    /* from BACK_FRONT to BACK_REAR along (not its head, which nods, nor its tail) */
+#define BACK_FRONT -90
+#define BACK_REAR 110
+#define MAX_BEAR_IMAGES 8
+
+typedef struct {
+    s32 made;
+    u8 *mdl;
+    s32 corners;
+    s32 nfaces, nimages, nvert;
+    MadeFace faces[BEAR_FACES];
+    MadeImage images[MAX_BEAR_IMAGES];
+    s16 vert_of[BEAR_CORNERS], corner_of[BEAR_CORNERS];
+    s32 nhips, nhead, nback;
+    s16 hips[BEAR_CORNERS], head[BEAR_CORNERS], back[BEAR_CORNERS];
+    V3 ref[BEAR_CORNERS]; /* his first breathing frame */
+    float back_y, seat_z;
+    s32 anim[RIDE_ANIMS];
+} Bear;
+
+static Bear TheBear;
+static s32 BearTried;
+
+static const char *const RideNames[RIDE_ANIMS] = { "FALL", "RUN", "BREATHE", "PUSH", "TAUNT", "LIGHT", "WIN" };
 
 static s32 bear_load(void) {
     static V3 rest[BEAR_CORNERS];
@@ -1120,8 +1289,7 @@ static s32 bear_load(void) {
             memset(mf, 0, sizeof(*mf));
             mf->image = -1;
             if (!(runs[s] & 1)) {
-                mf->image = (t & 0x8000) ? bear_image(b, &ts, ts.nimg - 1, t & 0x1FF, made_img, made_clut)
-                                         : bear_image(b, &ts, t & 0x1FF, -1, made_img, made_clut);
+                mf->image = face_image(b->images, &b->nimages, MAX_BEAR_IMAGES, &ts, t, made_img, made_clut);
             }
             mf->blend = (u16)(col1[face] & 0xE000);
             for (q = 0; q < 3; q++) {
