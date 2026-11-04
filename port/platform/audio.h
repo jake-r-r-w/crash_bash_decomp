@@ -42,6 +42,8 @@ short audio_note_on(short bank, short prog, short tone, short note, short fine, 
 /* A sample of the port's own, PS1 ADPCM as a bank's are, once, at pitch (0x1000: 44100 Hz) and volumes 0 to 0x3FFF: the extra heroes'
  * voices from their own games' discs (game/main/bonusheroes.c). It has to stay as it is till it's played. */
 short audio_play_sample(const unsigned char *adpcm, uint32_t bytes, uint32_t pitch, int left, int right);
+/* Whether a voice audio_play_sample gave is still playing that sample, not yet let go or given to another sound. */
+int audio_sample_playing(short voice, const unsigned char *adpcm);
 short audio_voice_off(short voice);
 void audio_voices_all_off(void);
 short audio_voice_pitch(short voice, short bank, short prog, short old_note, short old_fine, short new_note, short new_fine);

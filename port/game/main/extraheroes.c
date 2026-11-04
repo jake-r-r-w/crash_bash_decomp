@@ -49,11 +49,13 @@ typedef struct {
 
 /* Ripper Roo, who has four animations from Crash Bandicoot (JUMP, BREATHE, TAUNT and DIE, bonusheroes.c): he hops where others run,
  * slide or swim, laughs where they throw, attack or win, and falls over when he's hurt. A stand-in can be a list of names, the first
- * the model has. */
+ * the model has, and a name can have a range of its frames (NAME:first-last). His JUMP is his boss fight's, which crouches into a
+ * tall stance first (frames 0 to 12) and settles after (25 to 27), so he walks on the hop itself, 13 to 24, and jumps from it on. */
+#define ROO_HOP "JUMP:13-24"
 static const Stand RooStands[] = {
-    { "JUMP", "JUMP" }, { "MEDIUM", "JUMP" }, { "RUN", "JUMP" }, { "SKATE", "JUMP" }, { "SLIDE", "JUMP" }, { "SWIM", "JUMP" },
-    { "FLIP", "JUMP" }, { "FALL", "JUMP" }, { "PUSH", "JUMP" }, { "TRANS", "JUMP" }, { "HOLD_SLOW", "JUMP" }, { "BANK", "JUMP" },
-    { "BARGE", "JUMP" }, { "WIN", "TAUNT" }, { "WIN2", "TAUNT" },
+    { "JUMP", "JUMP:13-27" }, { "MEDIUM", ROO_HOP }, { "RUN", ROO_HOP }, { "SKATE", ROO_HOP }, { "SLIDE", ROO_HOP },
+    { "SWIM", ROO_HOP }, { "FLIP", ROO_HOP }, { "FALL", ROO_HOP }, { "PUSH", ROO_HOP }, { "TRANS", ROO_HOP },
+    { "HOLD_SLOW", ROO_HOP }, { "BANK", ROO_HOP }, { "BARGE", ROO_HOP }, { "WIN", "TAUNT" }, { "WIN2", "TAUNT" },
     { "ATTACK", "TAUNT" }, { "PICKUP", "TAUNT" }, { "HOLD_THROW", "TAUNT" }, { "TAUNT", "TAUNT" }, { "TAUNT_A", "TAUNT" },
     { "KICK", "TAUNT" }, { "FIRE1", "TAUNT" }, { "FIRE2", "TAUNT" }, { "FIRE3", "TAUNT" }, { "MINE", "TAUNT" }, { "RECOIL", "TAUNT" },
     { "TAZING", "TAUNT" }, { "LIGHT", "TAUNT" },
@@ -74,10 +76,11 @@ typedef struct {
     u8 *base;               /* the base's own model for this game, from the archive */
     u8 *own;                /* and the extra hero's */
     s32 count;              /* the base's animations */
-    s32 to_anim[MAX_ANIMS]; /* the extra hero's stand-in for each */
+    s32 to_anim[MAX_ANIMS]; /* the extra hero's stand-in for each, and the frames of it that stand in */
+    s32 to_first[MAX_ANIMS], to_count[MAX_ANIMS];
     s32 from_frames[MAX_ANIMS];
-    s32 to_frames[MAX_ANIMS];
-    s32 scale;              /* the extra hero's height over the base's, 0x1000 = the same */
+    s32 taunt_sfx;          /* the sound its base's taunt plays, which is its own laugh instead; -1 for none */
+    s32 scale;             /* the extra hero's height over the base's, 0x1000 = the same */
     union {
         PointList list;
         u8 bytes[MAX_POINTS];
@@ -248,12 +251,16 @@ static s32 has(const ModelFile *m, s32 key) {
     return 0;
 }
 
-/* The extra hero's stand-in for one of its base's animations, by name: the first of its names that its model m has. */
-static s32 stand_in(const ExtraHero *x, s32 key, const ModelFile *m) {
+/* The extra hero's stand-in for one of its base's animations, by name: the first of its names that its model m has, and the range of
+ * its frames that name gives (or -1, all of them), if first isn't NULL. */
+static s32 stand_in(const ExtraHero *x, s32 key, const ModelFile *m, s32 *first, s32 *last) {
     const Stand *s;
     const char *names = x->otherwise;
     char one[24];
 
+    if (first != NULL) {
+        *first = *last = -1;
+    }
     for (s = x->stands; s->from != NULL; s++) {
         if (hash_of(s->from) == key) {
             names = s->to;
@@ -264,9 +271,18 @@ static s32 stand_in(const ExtraHero *x, s32 key, const ModelFile *m) {
         size_t n = strcspn(names, " ");
 
         if (n > 0 && n < sizeof(one)) {
+            char *range;
+
             memcpy(one, names, n);
             one[n] = 0;
+            if ((range = strchr(one, ':')) != NULL) {
+                *range++ = 0;
+            }
             if (has(m, hash_of(one))) {
+                if (range != NULL && first != NULL) {
+                    *first = atoi(range);
+                    *last = strchr(range, '-') != NULL ? atoi(strchr(range, '-') + 1) : *first;
+                }
                 return hash_of(one);
             }
         }
@@ -385,6 +401,23 @@ static s32 lowered(const Shape *s) {
 
 /* --- the frames --- */
 
+/* The sound hero `name`'s taunt plays as it starts (its moves' third, taunt_a: speed, then a sound command, 0x8008 to 0x800A, and the
+ * sound), or -1. A minigame's own taunt plays the same one (N2O's). */
+static s32 taunt_sound(s32 name) {
+    const hero_seq *s = name >= Crash && name <= Kanga && HeroSeqTables[name] != NULL ? HeroSeqTables[name][2] : NULL;
+    s32 k;
+
+    for (k = 1; s != NULL && k < 16; k++) {
+        if (s[k] >= 0x8008 && s[k] <= 0x800A) {
+            return s[k + 1];
+        }
+        if (s[k] == 0x8000 || s[k] == 0x8004 || s[k] == 0x8005 || !(s[k] & 0x8000)) {
+            break;
+        }
+    }
+    return -1;
+}
+
 void extra_heroes_stop(void) {
     s32 i;
 
@@ -433,18 +466,32 @@ void extra_heroes_start(void) {
         from = (const ModelFile *)p->base;
         p->count = from->nMeshAnims < MAX_ANIMS ? from->nMeshAnims : MAX_ANIMS;
         for (k = 0; k < p->count; k++) {
+            s32 first, last, m, frames;
+
             p->from_frames[k] = anims_of(from)[k].frames;
-            p->to_anim[k] = find(to, stand_in(x, anims_of(from)[k].hash, to));
+            m = find(to, stand_in(x, anims_of(from)[k].hash, to, &first, &last));
+            frames = anims_of(to)[m].frames > 0 ? anims_of(to)[m].frames : 1;
+            first = first < 0 ? 0 : first >= frames ? frames - 1 : first;
+            last = last < first ? frames - 1 : last >= frames ? frames - 1 : last;
+            p->to_anim[k] = m;
+            p->to_first[k] = first;
+            p->to_count[k] = last - first + 1;
         }
-        for (k = 0; k < to->nMeshAnims && k < MAX_ANIMS; k++) {
-            p->to_frames[k] = anims_of(to)[k].frames;
-        }
+        p->taunt_sfx = taunt_sound(PlayerBase[i]);
         from_height = height_of(from);
         p->scale = from_height > 0 && height_of(to) > 0 ? height_of(to) * 0x1000 / from_height : 0x1000;
         p->sub = Heroes[i].hero_sub;
         p->on = 1;
         AnyPlaying = 1;
     }
+}
+
+s32 extra_hero_voice(s32 player, s32 sfx) {
+    if (player < 0 || player >= 4 || !Play[player].on || Play[player].taunt_sfx < 0 || sfx != Play[player].taunt_sfx) {
+        return 0;
+    }
+    bonus_heroes_cheer(PlayerExtra[player]);
+    return 1;
 }
 
 s32 extra_hero_bank(s32 player, s32 bank) {
@@ -486,7 +533,7 @@ s32 extra_hero_frame(const subengine *sub, s32 entity) {
             return entity;
         }
         m = p->to_anim[n];
-        frames = p->to_frames[m] > 0 ? p->to_frames[m] : 1;
+        frames = p->to_count[n] > 0 ? p->to_count[n] : 1;
         f = entity & 0x7F;
         if (p->from_frames[n] > 0) {
             f = f * frames / p->from_frames[n];
@@ -494,7 +541,7 @@ s32 extra_hero_frame(const subengine *sub, s32 entity) {
         if (f >= frames) {
             f = frames - 1;
         }
-        return (entity & 0xF000) | m << 7 | f;
+        return (entity & 0xF000) | m << 7 | (p->to_first[n] + f);
     }
     if (tag == 0x2000) {
         return (entity & 0xF000) | 1;
@@ -618,7 +665,7 @@ s32 extra_hero_anim_key(const obj_dbase *db, s32 key) {
             return key;
         }
     }
-    return stand_in(&ExtraHeroes[PlayerExtra[i]], key, m);
+    return stand_in(&ExtraHeroes[PlayerExtra[i]], key, m, NULL, NULL);
 }
 
 /* --- its face, for the panel ---

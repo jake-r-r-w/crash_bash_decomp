@@ -479,10 +479,21 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - The GTE table's `ll`/`lc`/`sqr` entries come from encodings, not a retail
   match: if one mismatches by a bit, check `tools/scripts/dmpsx.py` first.
 - Grepping asm for `4A`/`4B` opcode bytes also hits ASCII in data ("MARK").
+- The port's `--no-window` is for one-frame boot checks only (playtest.mjs): a level run with it crashes in `texture_scaled`
+  (no window, no texture cache), with or without any change. Shoot levels with `--window W H`.
+- In a test run of Crate Crush (`--mode 1 --skip-intro --skip-loading`) the round's GO is at about vblank 276 to 300; a press
+  before it does nothing. A hero taunts on triangle (`--press N 1000`, the engine's `dir & 0x1000`).
 
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-04: Ripper Roo after the user's play: he walks on the hop of his JUMP alone (frames 13 to 24; a stand-in can name a
+  range, `JUMP:13-24`), not its crouch into a tall stance (0 to 12, feet below the floor) and settle; he jumps from 13 to 27. He
+  rocks less standing: BREATHE is drawn in toward its frames' middle, keeping 0.6 of its sway (`ROO_SWAY`, bonusheroes.c), his
+  height and floor from that. His taunt laughs his own laugh: the base's taunt sound (its moves' third's 0x800A operand, 0xCA for
+  Rilla Roo, N2O's taunt the same) is caught in ProcessHeroAnim's sound commands (`extra_hero_voice`) and his laugh plays
+  instead, a new one restarting the last (`audio_sample_playing`). His other sounds (pickup, hurt, win) are still his base's.
 
 - 2026-11-04: Ripper Roo in the character select, at the user's word: a ninth card at the red row's left under Aku Aku (the game's 26 placements, then his portrait, then his frame: in the other order the frame hid it), his portrait his hero card on a yellow-to-orange gradient in the top 38 of a portrait's 64 rows (the rest are clear in the game's own; the select draws a row a line of 240, so a texel shows 1.83 times as tall as it's wide), his own model on his stand, a quarter turn to face the camera, and his pick taking his base's card too (Rilla Roo's if it's free), so the menus after, which show heroes by number (Battle Type), show his portrait in its place. The launcher's GAME page has EXTRA HEROES. At the user's word only the Crash Bandicoot Roo: without the disc there's no ninth card. His panel face is his card at its own pixel shape (at 1.6 he looked squeezed) with a short tongue, his head and mouth then the curl at its end, hanging over the health bar. menu and same pass with it off. After the user's play: he stands 620 (Crate Crush's heroes stand 452 to 748, most about 650; he was 820), faces out of the screen on his stand like the others (0xE00: his idle pose turns his body, so it's his face that's square), and as he's picked laughs his own laugh, CrznA from his boss fight's sound pages (type 3; RRooC plays it), PS1 ADPCM at 11025 Hz as CrashEdit plays that game's, through `audio_play_sample` (a voice of its own, at the sound option's loudness).
 

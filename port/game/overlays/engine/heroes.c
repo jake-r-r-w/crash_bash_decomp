@@ -864,13 +864,19 @@ s32 ProcessHeroAnim(s32 player) {
                 anim->Currentframe = 0;
                 break;
             case 0x8008:
-                PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, NULL, 0x1000, 0x1E00, 0);
+                if (!extra_hero_voice(player, ((s16 *)anim->Atable)[++anim->Aindex])) {
+                    PlaySfx(((s16 *)anim->Atable)[anim->Aindex], NULL, NULL, 0x1000, 0x1E00, 0);
+                }
                 break;
             case 0x8009:
-                PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
+                if (!extra_hero_voice(player, ((s16 *)anim->Atable)[++anim->Aindex])) {
+                    PlaySfx(((s16 *)anim->Atable)[anim->Aindex], NULL, &h->hero_eng->XYZ, 0x1000, 0x1E00, 0);
+                }
                 break;
             case 0x800A:
-                PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
+                if (!extra_hero_voice(player, ((s16 *)anim->Atable)[++anim->Aindex])) {
+                    PlaySfx(((s16 *)anim->Atable)[anim->Aindex], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
+                }
                 break;
             case 0x800B:
                 if (h->hero_eng->sfx != NULL) {

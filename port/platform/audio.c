@@ -815,6 +815,18 @@ short audio_play_sample(const unsigned char *adpcm, uint32_t bytes, uint32_t pit
     return (short)(v - Voices);
 }
 
+int audio_sample_playing(short voice, const unsigned char *adpcm) {
+    int on;
+
+    if (voice < 0 || voice >= FX_VOICES || adpcm == NULL) {
+        return 0;
+    }
+    host_audio_lock();
+    on = Voices[voice].state != ENV_OFF && Voices[voice].state != ENV_RELEASE && Voices[voice].data == adpcm;
+    host_audio_unlock();
+    return on;
+}
+
 short audio_voice_off(short voice) {
     if (voice < 0 || voice >= FX_VOICES) {
         return -1;

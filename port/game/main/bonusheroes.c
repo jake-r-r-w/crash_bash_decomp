@@ -327,6 +327,47 @@ static s32 frame_verts(const u8 *f, s32 size, const s32 scale[3], V3 *out, V3 *n
     return n;
 }
 
+/* His standing animation (ROO_REST) as his boss fight's, but with only ROO_SWAY of its rocking: each frame's vertices are drawn in
+ * toward the middle of its frames, each vertex's mean over them. */
+#define ROO_SWAY 0.6f
+static V3 SwayMiddle[MAX_VERTS];
+static s32 SwayVerts;
+
+static void sway_middle(const Entry *a, const s32 scale[3]) {
+    static V3 fv[MAX_VERTS];
+    s32 f, k, n;
+
+    SwayVerts = 0;
+    memset(SwayMiddle, 0, sizeof(SwayMiddle));
+    for (f = 0; f < a->count; f++) {
+        n = frame_verts(a->item[f], a->size[f], scale, fv, NULL, MAX_VERTS);
+        if (n == 0 || (f > 0 && n != SwayVerts)) {
+            SwayVerts = 0;
+            return;
+        }
+        SwayVerts = n;
+        for (k = 0; k < n; k++) {
+            SwayMiddle[k].x += fv[k].x / a->count;
+            SwayMiddle[k].y += fv[k].y / a->count;
+            SwayMiddle[k].z += fv[k].z / a->count;
+        }
+    }
+}
+
+/* Frame f of his animation j, as frame_verts gives it, his standing one with less sway. */
+static s32 anim_verts(const Entry *a, s32 j, s32 f, const s32 scale[3], V3 *out, V3 *normals) {
+    s32 n = frame_verts(a->item[f], a->size[f], scale, out, normals, MAX_VERTS), k;
+
+    if (j == ROO_REST && n > 0 && n == SwayVerts) {
+        for (k = 0; k < n; k++) {
+            out[k].x = SwayMiddle[k].x + (out[k].x - SwayMiddle[k].x) * ROO_SWAY;
+            out[k].y = SwayMiddle[k].y + (out[k].y - SwayMiddle[k].y) * ROO_SWAY;
+            out[k].z = SwayMiddle[k].z + (out[k].z - SwayMiddle[k].z) * ROO_SWAY;
+        }
+    }
+    return n;
+}
+
 static void put_box(Bytes *o, const V3 *v, s32 n, float k, float ground) {
     float lo[3] = { 1e9f, 1e9f, 1e9f }, hi[3] = { -1e9f, -1e9f, -1e9f }, r = 0;
     u8 box[0x14];
@@ -479,7 +520,8 @@ static void make_roo(void) {
         goto done;
     }
     /* how big he is, standing */
-    nvert = frame_verts(anims[ROO_REST].item[0], anims[ROO_REST].size[0], scale, verts, normals, MAX_VERTS);
+    sway_middle(&anims[ROO_REST], scale);
+    nvert = anim_verts(&anims[ROO_REST], ROO_REST, 0, scale, verts, normals);
     if (nvert == 0) {
         goto done;
     }
@@ -755,7 +797,7 @@ static void make_roo(void) {
             static V3 corners[MAX_TRIS * 3];
             size_t list;
 
-            nv = frame_verts(anims[j].item[f], anims[j].size[f], scale, fv, NULL, MAX_VERTS);
+            nv = anim_verts(&anims[j], j, f, scale, fv, NULL);
             for (i = 0; i < ntri; i++) {
                 corners[i * 3] = fv[nv > tris[i].a ? tris[i].a : 0];
                 corners[i * 3 + 1] = fv[nv > tris[i].b ? tris[i].b : 0];
@@ -782,7 +824,7 @@ static void make_roo(void) {
         pool = mdl.n;
         self(&mdl, start, pool);
         for (f = 0; f < frames; f++) {
-            nv = frame_verts(anims[j].item[f], anims[j].size[f], scale, fv, NULL, MAX_VERTS);
+            nv = anim_verts(&anims[j], j, f, scale, fv, NULL);
             for (k = 0; k < nvert; k++) {
                 u8 v[6];
                 const V3 *p = &fv[k < nv ? k : 0];
@@ -861,14 +903,19 @@ const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch) {
 }
 
 void bonus_heroes_cheer(s32 extra) {
+    static short voice = -1;
     /* as loud as the game's own effects at the sound option it's at (sound.c, sfx_key_on) */
     s32 vol = 0x1E00 * GameOptions.sfx * 0x7F / 409600;
 
     if (!bonus_heroes_have(extra) || RooLaugh == NULL) {
         return;
     }
+    /* one laugh at a time: a new one starts it again, as a hero's taunt sound does (its move's 0x800A, on the hero's own sound) */
+    if (audio_sample_playing(voice, RooLaugh)) {
+        audio_voice_off(voice);
+    }
     vol = vol < 0 ? 0 : vol > 0x7F ? 0x7F : vol;
-    audio_play_sample(RooLaugh, (uint32_t)RooLaughSize, ROO_LAUGH_PITCH, 0x3FFF * vol / 0x7F, 0x3FFF * vol / 0x7F);
+    voice = audio_play_sample(RooLaugh, (uint32_t)RooLaughSize, ROO_LAUGH_PITCH, 0x3FFF * vol / 0x7F, 0x3FFF * vol / 0x7F);
 }
 
 s32 bonus_heroes_bank(s32 extra) {
