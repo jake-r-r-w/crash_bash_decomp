@@ -32,6 +32,7 @@ unsigned char *archive_own_file(int entry, int *size);
 #define KEEP_LIFT 0x500 /* of a frame's lift off the ground, the share an extra hero keeps (0x1000 all): Roo's hops are a crate or more high */
 #define HELD_FLAGS 0x31 /* the points a held crate goes between (0x10, 0x20) or at (1): xtras.c, CrateFux */
 #define HEAD_FLAG 0x80  /* the top of a hero's head */
+#define MORPH_VERTS 4096 /* prims.c's MorphVerts, a frame's vertices as they're drawn: all of a mesh's (Roo's are 2091, 3 a triangle) */
 
 typedef struct {
     const char *from, *to;
@@ -47,11 +48,11 @@ typedef struct {
     float face_turn;       /* and how far round it's turned, in degrees */
 } ExtraHero;
 
-/* Ripper Roo, who has four animations from Crash Bandicoot (JUMP, BREATHE, TAUNT and DIE, bonusheroes.c): he hops where others run,
- * slide or swim, laughs where they throw, attack or win, and falls over when he's hurt. A stand-in can be a list of names, the first
- * the model has, and a name can have a range of its frames (NAME:first-last). His JUMP is his boss fight's, which crouches into a
- * tall stance first (frames 0 to 12) and settles after (25 to 27), so he walks on the hop itself, 13 to 24, and jumps from it on. */
-#define ROO_HOP "JUMP:13-24"
+/* Ripper Roo, who has four animations from Crash Bandicoot (JUMP, BREATHE, TAUNT and DIE) and a walk made for him (WALK: his
+ * standing one, hopping; bonusheroes.c): he hops where others run, slide or swim, laughs where they throw, attack or win, and falls
+ * over when he's hurt. A stand-in can be a list of names, the first the model has, and a name can have a range of its frames
+ * (NAME:first-last). His JUMP is his boss fight's, which crouches into a tall stance first (frames 0 to 12), so he jumps from 13. */
+#define ROO_HOP "WALK"
 static const Stand RooStands[] = {
     { "JUMP", "JUMP:13-27" }, { "MEDIUM", ROO_HOP }, { "RUN", ROO_HOP }, { "SKATE", ROO_HOP }, { "SLIDE", ROO_HOP },
     { "SWIM", ROO_HOP }, { "FLIP", ROO_HOP }, { "FALL", ROO_HOP }, { "PUSH", ROO_HOP }, { "TRANS", ROO_HOP },
@@ -559,7 +560,7 @@ void extra_hero_shape(const subengine *sub, s32 entity, const MeshHeader *mesh, 
         return;
     }
     n = vertex_count(mesh);
-    for (k = 0; k < n && k < 1024; k++) {
+    for (k = 0; k < n && k < MORPH_VERTS; k++) {
         verts[k].vy = (s16)(verts[k].vy + dy);
     }
 }

@@ -488,6 +488,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Roo split in two in the air: `extra_hero_shape` lowered only the first 1024 of a frame's vertices (a hop kept a third
+  of its lift), and his mesh is 2091, a strip of 3 a triangle; now all of MorphVerts' 4096. At the user's word he has a new walk,
+  WALK, made in bonusheroes.c from his standing one (his game has none; his four animations all use RS1nG's 352 vertices): he's
+  off the ground as he stands up out of its crouch, highest where he's tallest (`WALK_LIFT`, before KEEP_LIFT), and lands as he
+  crouches; it starts at the deepest crouch (frame 11). Walking moves stand in on it; his JUMP stays 13 to 27.
 - 2026-11-04: Ripper Roo after the user's play: he walks on the hop of his JUMP alone (frames 13 to 24; a stand-in can name a
   range, `JUMP:13-24`), not its crouch into a tall stance (0 to 12, feet below the floor) and settle; he jumps from 13 to 27. He
   rocks less standing: BREATHE is drawn in toward its frames' middle, keeping 0.6 of its sway (`ROO_SWAY`, bonusheroes.c), his

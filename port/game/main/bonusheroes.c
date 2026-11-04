@@ -5,7 +5,8 @@
  * game loads them as it does any model, into a bank of their own (DB_BonusRoo), and nothing of them is kept but in memory.
  *
  * Ripper Roo, from Crash Bandicoot (USA, SCUS-94900): level 0x17, his boss fight, has his model (RS1nG) and four animations, RS1nV (a big
- * jump), RS2nV (standing), RS3nV (a laugh) and RS4nV (knocked over), which become JUMP, BREATHE, TAUNT and DIE.
+ * jump), RS2nV (standing), RS3nV (a laugh) and RS4nV (knocked over), which become JUMP, BREATHE, TAUNT and DIE, and a walk is made
+ * for him, his standing one hopping (WALK).
  *
  * Crash Bandicoot's formats, as CrashEdit (the cbhacks project) reads them: a level's NSF is 64 KB pages, each raw (magic 0x1234) or
  * compressed (0x1235: runs and repeats for its first `length` bytes, `skip` bytes to pass, the rest raw). A page of entries lists them,
@@ -296,9 +297,12 @@ typedef struct {
     const char *entry, *name;
 } Anim;
 
-static const Anim RooAnims[] = { { "RS1nV", "JUMP" }, { "RS2nV", "BREATHE" }, { "RS3nV", "TAUNT" }, { "RS4nV", "DIE" } };
-#define ROO_ANIMS 4
+static const Anim RooAnims[] = {
+    { "RS1nV", "JUMP" }, { "RS2nV", "BREATHE" }, { "RS3nV", "TAUNT" }, { "RS4nV", "DIE" }, { "RS2nV", "WALK" },
+};
+#define ROO_ANIMS 5
 #define ROO_REST 1 /* the one he stands in: his height and his colours' light are from its first frame */
+#define ROO_WALK 4 /* made for him from his standing one (walk_setup), as his game has no walk: he only ever jumps in his boss fight */
 
 /* A frame's vertices, in Crash Bash's axes (y down, z the other way) before they're scaled. */
 static s32 frame_verts(const u8 *f, s32 size, const s32 scale[3], V3 *out, V3 *normals, s32 max) {
@@ -354,18 +358,61 @@ static void sway_middle(const Entry *a, const s32 scale[3]) {
     }
 }
 
-/* Frame f of his animation j, as frame_verts gives it, his standing one with less sway. */
-static s32 anim_verts(const Entry *a, s32 j, s32 f, const s32 scale[3], V3 *out, V3 *normals) {
-    s32 n = frame_verts(a->item[f], a->size[f], scale, out, normals, MAX_VERTS), k;
+/* His walk (ROO_WALK): his standing animation, hopping. It bobs him down into a crouch and up again, so he leaves the ground as he
+ * stands up out of the crouch, is highest where he's tallest, and lands as he crouches again; it starts at the deepest crouch. */
+#define WALK_LIFT 0.3f /* the hop at its highest, of his height: extraheroes.c draws a frame's lift a third as high (KEEP_LIFT) */
+#define WALK_FRAMES 64
+static float WalkLift[WALK_FRAMES];
+static s32 WalkFirst;
 
-    if (j == ROO_REST && n > 0 && n == SwayVerts) {
+/* Frame f of his animation j, as frame_verts gives it, his standing one with less sway, and his walk its frames hopping. */
+static s32 anim_verts(const Entry *a, s32 j, s32 f, const s32 scale[3], V3 *out, V3 *normals) {
+    s32 from = j == ROO_WALK && a->count > 0 ? (f + WalkFirst) % a->count : f;
+    s32 n = frame_verts(a->item[from], a->size[from], scale, out, normals, MAX_VERTS), k;
+
+    if ((j == ROO_REST || j == ROO_WALK) && n > 0 && n == SwayVerts) {
         for (k = 0; k < n; k++) {
             out[k].x = SwayMiddle[k].x + (out[k].x - SwayMiddle[k].x) * ROO_SWAY;
             out[k].y = SwayMiddle[k].y + (out[k].y - SwayMiddle[k].y) * ROO_SWAY;
             out[k].z = SwayMiddle[k].z + (out[k].z - SwayMiddle[k].z) * ROO_SWAY;
         }
     }
+    if (j == ROO_WALK && from < WALK_FRAMES) {
+        for (k = 0; k < n; k++) {
+            out[k].y -= WalkLift[from]; /* up is less y */
+        }
+    }
     return n;
+}
+
+static void walk_setup(const Entry *a, const s32 scale[3]) {
+    static V3 fv[MAX_VERTS];
+    float tall[WALK_FRAMES], lo = 1e9f, hi = -1e9f;
+    s32 f, k, n, frames = a->count < WALK_FRAMES ? a->count : WALK_FRAMES;
+
+    WalkFirst = 0;
+    memset(WalkLift, 0, sizeof(WalkLift));
+    for (f = 0; f < frames; f++) {
+        float top = 1e9f, bottom = -1e9f;
+
+        n = anim_verts(a, ROO_REST, f, scale, fv, NULL);
+        for (k = 0; k < n; k++) {
+            top = fv[k].y < top ? fv[k].y : top;
+            bottom = fv[k].y > bottom ? fv[k].y : bottom;
+        }
+        tall[f] = n > 0 ? bottom - top : 0;
+        if (tall[f] < lo) {
+            lo = tall[f];
+            WalkFirst = f;
+        }
+        hi = tall[f] > hi ? tall[f] : hi;
+    }
+    for (f = 0; f < frames && hi > lo; f++) {
+        /* how far up from the middle of his bob he is, 0 to 1 */
+        float up = (tall[f] - (lo + hi) / 2) / ((hi - lo) / 2);
+
+        WalkLift[f] = up > 0 ? up * WALK_LIFT * hi : 0;
+    }
 }
 
 static void put_box(Bytes *o, const V3 *v, s32 n, float k, float ground) {
@@ -521,6 +568,7 @@ static void make_roo(void) {
     }
     /* how big he is, standing */
     sway_middle(&anims[ROO_REST], scale);
+    walk_setup(&anims[ROO_REST], scale);
     nvert = anim_verts(&anims[ROO_REST], ROO_REST, 0, scale, verts, normals);
     if (nvert == 0) {
         goto done;
