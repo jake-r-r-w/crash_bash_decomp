@@ -187,7 +187,7 @@ node port/tests/playtest.mjs menu
 node port/tests/playtest.mjs mods
 ```
 
-`bosses` beats every boss from a real Adventure, by each fight's own rules, and back to the warp room; `--watch` shows them at normal speed with sound. `modes` runs every game mode, played by the
+`bosses` beats every boss from a real Adventure, by each fight's own rules, and back to the warp room; `--watch` shows them at normal speed with sound, and `--hero roo` plays them as an extra hero (`--extra-hero 0 roo`). `modes` runs every game mode, played by the
 computer, with `--asan` for the AddressSanitizer build. `adventure` plays a new Adventure with no cheat flags, door by door, until there's nothing left to win, saves at the computer, loads that save in a new run, and passes at 200%. A challenge it keeps losing gets weaker computer heroes and in the end ones that stand still, and the log says which. `--resume` carries on from its last save, and `challenges` plays any challenge alone. `menu` goes from the title screen into a game by the pad alone. `packs` and `mods` check textures and files from mods by the pictures of one mode: zips stored and deflated, a zipped folder, which of two wins, broken zips, and archive files at the same size, bigger and moving the rest. `shots FROM STEP COUNT` makes a contact sheet of one run. What they leave is in
 `build/port/playtest/`.
 

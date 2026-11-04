@@ -325,3 +325,11 @@ Bandicoot, 1145 triangles, 1 textures, ... riding a bear, on his cane, in a car,
 cart, riding a fish, with a mallet, riding a dino, with a keg, his hero card, his laugh, his landing`. A test run needs a window (a small one will do) once a
 mode draws: with `--no-window` it crashes there (AGENT_LOG.md), though his models are made, and
 written for `BONUS_DUMP`, before that.
+
+A boss fight plays through the boss test, from a real Adventure: `node port/tests/playtest.mjs
+bosses oxide --hero roo` (mode 31 alone only starts its space phase, and nobody fights). Oxide's
+fight draws the heroes' Ballistix models in its ships, so Roo is in his car there: he won it as
+Roo. Two looks were left as they are, at the user's word: its ball phase loops the whole steering
+move as a hero moves (Ballistix holds it at the lean for the way he goes), so his head smacks down
+on one side then the other; and in its space phase he sits higher in the ship than the others, as
+his car model is bigger and sat back for Ballistix.

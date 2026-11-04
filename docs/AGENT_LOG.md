@@ -505,6 +505,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: At the user's word, checked Roo in the Oxide fight, by the boss test as they said (mode 31 alone starts only the
+  space phase, with nobody fighting): `playtest.mjs bosses` takes `--hero ID` now (`--extra-hero 0 ID`). He won it as Roo, in his
+  Ballistix car model (the fight draws the ball models in its ships). Its ball phase loops the whole BANK as a hero moves, so his
+  head smacks side to side; in its space phase he sits higher than the others. A ship model of his own was offered; the user
+  chose to leave it as is.
+
 - 2026-11-04: At the user's word, the kegs game, the keg "on his head or under his chin, whichever looks best": a tenth kind,
   KIND_KEGS (DB_BonusRooKegs, entries 1010 and 1011). Rilla Roo's keg is her kegs model's second mesh's first strip (all her moves
   move that mesh; the first, without it, is never drawn), so `hm_game_part_of` takes part of any mesh now. On his head, lying as she

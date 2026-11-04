@@ -30,7 +30,8 @@
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
- * For bosses, --no-cheats leaves NO HARM HERO off, --vblanks N lets it try for that long, and --shots FROM STEP COUNT takes those shots instead of eight spread over the run.
+ * For bosses, --no-cheats leaves NO HARM HERO off, --vblanks N lets it try for that long, --shots FROM STEP COUNT takes those shots instead of eight spread over the run,
+ * and --hero ID plays it as that extra hero (roo: --extra-hero 0 ID, docs/EXTRA_HEROES.md).
  *
  * --exe FILE picks another build. A crash's addresses become source lines if llvm-symbolizer is on the PATH. */
 import crypto from 'node:crypto';
@@ -179,7 +180,7 @@ function report(results) {
     return failed === 0 ? 0 : 1;
 }
 
-async function play_boss(name, exe, watch, tile, cheats, shot_at, vblanks) {
+async function play_boss(name, exe, watch, tile, cheats, shot_at, vblanks, hero) {
     const boss = { ...BOSSES[name], vblanks: vblanks || BOSSES[name].vblanks };
     const dir = path.join(OUT, 'bosses', name);
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
@@ -187,6 +188,9 @@ async function play_boss(name, exe, watch, tile, cheats, shot_at, vblanks) {
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
     const args = ['--cheat-menu', ...(cheats ? ['--cheats', '1'] : []), '--aim', '--skip-intro', '--skip-loading', '--saves', rel('saves'), ...route_to_boss(boss.mode)];
+    if (hero != null) {
+        args.push('--extra-hero', '0', hero);
+    }
     if (watch) {
         args.push('--sound', '--window', '1280', '960');
     } else {
@@ -212,6 +216,7 @@ async function bosses(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const cheats = !flag(args, '--no-cheats');
     const vblanks = Number(option(args, '--vblanks', 0));
+    const hero = option(args, '--hero', null);
     let shot_at = null;
     const at = args.indexOf('--shots');
     if (at >= 0) {
@@ -230,11 +235,11 @@ async function bosses(args) {
     if (watch) {
         for (const name of names) {
             console.log(`${name}...`);
-            results.push(await play_boss(name, exe, true, 0, cheats, shot_at, vblanks));
+            results.push(await play_boss(name, exe, true, 0, cheats, shot_at, vblanks, hero));
         }
     } else {
         for (let i = 0; i < names.length; i += AT_ONCE) {
-            results.push(...await Promise.all(names.slice(i, i + AT_ONCE).map((name, k) => play_boss(name, exe, false, i + k, cheats, shot_at, vblanks))));
+            results.push(...await Promise.all(names.slice(i, i + AT_ONCE).map((name, k) => play_boss(name, exe, false, i + k, cheats, shot_at, vblanks, hero))));
         }
     }
     return report(results);
