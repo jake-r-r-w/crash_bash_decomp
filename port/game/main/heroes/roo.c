@@ -464,6 +464,7 @@ static V3 seated(s32 k) {
 static const Flop RooSwing = { FLOP_PERIOD, FLOP_DAMPING, FLOP_GAIN, FLOP_MAX };
 static float FlopShare[MAX_VERTS];
 static float TongueShare[MAX_VERTS]; /* of it, his tongue's: none at its root, all at its tip */
+static u8 InMouth[MAX_VERTS];        /* the reds and pinks of his mouth's inside, behind his lips (his tongue's root and back) */
 
 static void flop_setup(const C1Entry *model) {
     static u8 red[MAX_VERTS];
@@ -495,6 +496,7 @@ static void flop_setup(const C1Entry *model) {
 
         FlopShare[k] = t > e ? t : e;
         TongueShare[k] = t;
+        InMouth[k] = (u8)(red[k] && t <= 0);
     }
 }
 
@@ -2150,10 +2152,11 @@ done:
  * MEDIUM as it runs with it, HIT knocked down, ATTACK the swing: back, held back as it's charged, then down onto the floor in front,
  * and WIN). Roo's model has Rilla Roo's mallet: her model's first MALLET_HEAD_STRIPS strips (its head) and its strips from
  * MALLET_HANDLE_FROM on (its handle). With no hands, he holds it in his mouth (at the user's word), as a dog carries a stick: its
- * handle across his mouth, bitten in its side, the end of it (its corners within MALLET_GRIP of the end away from its head) poking out
- * MALLET_BITE past the middle of his mouth on his tongue's side, and the rest out of the other side, MALLET_YAW round from ahead and
- * MALLET_TILT forward from up (a little up from level), MALLET_SCALE of its size; and it goes with his head (a fit of his head's
- * vertices, from standing to the frame). He's as on foot, the mallet in his mouth: he
+ * handle across his mouth, bitten in its side: its shaft (its strips from MALLET_SHAFT_FROM on; the line along it a fit of their
+ * corners) MALLET_THIN as thick across, to fit between his jaws, its end poking out MALLET_BITE past the middle of his mouth's inside on
+ * his tongue's side (its red behind his lips, InMouth: his tongue's root is lower, on his lower jaw, and further forward), and the rest
+ * out of the other side, MALLET_YAW round from ahead and MALLET_TILT forward from up (a little up from level), MALLET_SCALE of its size;
+ * and it goes with his head (a fit of his head's vertices, from standing to the frame). He's as on foot, the mallet in his mouth: he
  * stands as he breathes, hops as he runs, falls over as he's hit, and laughs as he wins (at his own pace, round and round). He swings
  * it with his whole body: rearing back MALLET_REAR as he swings it back (by MALLET_BACK of the swing, as hers), winding back to
  * MALLET_WIND as it's charged (by MALLET_HELD) and twisting MALLET_TWIST_BACK round to carry it behind him, then bowing forward
@@ -2162,14 +2165,15 @@ done:
  * waist. His tongue and ears swing. */
 #define MALLET_HEAD_STRIPS 16
 #define MALLET_HANDLE_FROM 56
-#define MALLET_GRIP 60.0f
+#define MALLET_SHAFT_FROM 59
+#define MALLET_THIN 0.35f
 #define MALLET_SCALE 0.9f
 #define MALLET_TILT 1.3f
 #define MALLET_YAW 1.35f
 #define MALLET_BITE 45.0f
 #define MALLET_REAR 0.45f
 #define MALLET_WIND 0.7f
-#define MALLET_BOW 1.0f
+#define MALLET_BOW 0.93f
 #define MALLET_TWIST 1.15f
 #define MALLET_TWIST_BACK 0.35f
 #define MALLET_NECK 0.4f
@@ -2185,7 +2189,7 @@ static const char *const MalletNames[MALLET_MOVES] = { "BREATHE", "MEDIUM", "HIT
 static const u8 MalletLoops[MALLET_MOVES] = { 1, 1, 0, 0, 1 };
 
 typedef struct {
-    s32 strips, corners, head_end, handle_from; /* her model's strips and corners so far, as hm_game_part goes through them */
+    s32 strips, corners, head_end, handle_from, shaft_from; /* her model's strips and corners so far, as hm_game_part goes through them */
 } MalletKeep;
 
 typedef struct {
@@ -2213,6 +2217,9 @@ static s32 keep_mallet(void *ctx, const V3 *rest, s32 n, s32 textured) {
     }
     if (strip == MALLET_HANDLE_FROM) {
         m->handle_from = m->corners;
+    }
+    if (strip == MALLET_SHAFT_FROM) {
+        m->shaft_from = m->corners;
     }
     m->corners += n;
     return strip < MALLET_HEAD_STRIPS || strip >= MALLET_HANDLE_FROM;
@@ -2438,9 +2445,9 @@ static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris,
     MadeFace *all = NULL;
     MadeImage *imgs = NULL;
     MadeModel mm;
-    V3 *at = NULL, mid = { 0, 0, 0 }, grip = { 0, 0, 0 }, mouth = { 0, 0, 0 }, d0, d1, d2;
-    s32 a, n, k, j, ok = 0, breathe, far = -1;
-    float best = -1, l, tip_x = 0, side;
+    V3 *at = NULL, mid = { 0, 0, 0 }, grip = { 0, 0, 0 }, mouth = { 0, 0, 0 }, in, d0, d1, d2;
+    s32 a, n, k, j, ok = 0, breathe;
+    float best = 0, l, tip_x = 0, side;
 
     memset(c, 0, sizeof(*c));
     memset(&keep, 0, sizeof(keep));
@@ -2460,7 +2467,7 @@ static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris,
         printf("bonus: Ripper Roo has no mallet (Rilla Roo's)\n");
         goto done;
     }
-    /* its head's middle, and its grip: the corners of its handle near its end away from the head */
+    /* its head's middle */
     for (k = 0, n = 0; k < keep.head_end; k++) {
         if (c->mallet.in_part[k]) {
             mid.x += at[k].x;
@@ -2469,29 +2476,18 @@ static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris,
             n++;
         }
     }
-    if (n == 0) {
+    if (n == 0 || keep.shaft_from <= keep.handle_from) {
         goto done;
     }
     mid.x /= n;
     mid.y /= n;
     mid.z /= n;
-    for (k = keep.handle_from; k < c->mallet.corners; k++) {
-        float d = (at[k].x - mid.x) * (at[k].x - mid.x) + (at[k].y - mid.y) * (at[k].y - mid.y) + (at[k].z - mid.z) * (at[k].z - mid.z);
-
-        if (c->mallet.in_part[k] && d > best) {
-            best = d;
-            far = k;
-        }
-    }
-    for (k = keep.handle_from, n = 0; far >= 0 && k < c->mallet.corners; k++) {
-        float dx = at[k].x - at[far].x, dy = at[k].y - at[far].y, dz = at[k].z - at[far].z;
-
-        if (c->mallet.in_part[k] && dx * dx + dy * dy + dz * dz < MALLET_GRIP * MALLET_GRIP) {
-            grip.x += at[k].x;
-            grip.y += at[k].y;
-            grip.z += at[k].z;
-            n++;
-        }
+    /* its shaft: its middle, and the line along it (the way its corners go furthest, toward the head) */
+    for (k = keep.shaft_from, n = 0; k < c->mallet.corners; k++) {
+        grip.x += at[k].x;
+        grip.y += at[k].y;
+        grip.z += at[k].z;
+        n++;
     }
     if (n == 0) {
         goto done;
@@ -2502,10 +2498,43 @@ static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris,
     d0.x = mid.x - grip.x;
     d0.y = mid.y - grip.y;
     d0.z = mid.z - grip.z;
-    l = sqrtf(d0.x * d0.x + d0.y * d0.y + d0.z * d0.z);
-    d0.x /= l;
-    d0.y /= l;
-    d0.z /= l;
+    for (j = 0; j < 30; j++) {
+        V3 w = { 0, 0, 0 };
+
+        for (k = keep.shaft_from; k < c->mallet.corners; k++) {
+            V3 d = { at[k].x - grip.x, at[k].y - grip.y, at[k].z - grip.z };
+            float s = d.x * d0.x + d.y * d0.y + d.z * d0.z;
+
+            w.x += s * d.x;
+            w.y += s * d.y;
+            w.z += s * d.z;
+        }
+        l = sqrtf(w.x * w.x + w.y * w.y + w.z * w.z);
+        if (l <= 0) {
+            break;
+        }
+        d0.x = w.x / l;
+        d0.y = w.y / l;
+        d0.z = w.z / l;
+    }
+    if ((mid.x - grip.x) * d0.x + (mid.y - grip.y) * d0.y + (mid.z - grip.z) * d0.z < 0) {
+        d0.x = -d0.x;
+        d0.y = -d0.y;
+        d0.z = -d0.z;
+    }
+    /* thinner (MALLET_THIN across it, about that line), to fit his mouth, and its grip the end of it away from the head, on the line */
+    for (k = keep.shaft_from; k < c->mallet.corners; k++) {
+        V3 d = { at[k].x - grip.x, at[k].y - grip.y, at[k].z - grip.z };
+        float s = d.x * d0.x + d.y * d0.y + d.z * d0.z;
+
+        at[k].x = grip.x + s * d0.x + (d.x - s * d0.x) * MALLET_THIN;
+        at[k].y = grip.y + s * d0.y + (d.y - s * d0.y) * MALLET_THIN;
+        at[k].z = grip.z + s * d0.z + (d.z - s * d0.z) * MALLET_THIN;
+        best = s < best ? s : best;
+    }
+    grip.x += best * d0.x;
+    grip.y += best * d0.y;
+    grip.z += best * d0.z;
     d1.x = 0;
     d1.y = -cosf(MALLET_TILT);
     d1.z = -sinf(MALLET_TILT);
@@ -2537,6 +2566,21 @@ static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris,
         }
     }
     side = n > 0 && tip_x / n > mouth.x ? -1.0f : 1.0f;
+    /* where he bites it: the middle of his mouth's inside, between his jaws (his tongue's root is lower, on the lower one, and further
+     * forward) */
+    for (k = 0, n = 0, in.x = in.y = in.z = 0; k < RigVerts; k++) {
+        if (InMouth[k]) {
+            in.x += c->stand[k].x;
+            in.y += c->stand[k].y;
+            in.z += c->stand[k].z;
+            n++;
+        }
+    }
+    if (n > 0) {
+        mouth.x = in.x / n;
+        mouth.y = in.y / n;
+        mouth.z = in.z / n;
+    }
     c->side = side;
     /* the mallet as he holds it, standing, bitten across his mouth: turned from the way hers goes up to the way his goes out (forward
      * and up), then round about upright out that side, and its handle's end MALLET_BITE back through his mouth from its middle */

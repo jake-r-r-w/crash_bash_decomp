@@ -505,6 +505,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: At the user's word, Roo's mallet lined up in his mouth ("it's currently under it"): it went through his tongue's
+  root, which is on his lower jaw (31 lower and 38 further forward than his mouth's inside), and its shaft is 110 to 130 thick, a
+  club for Rilla Roo's hands. Now through the middle of his mouth's inside (`InMouth`, flop_setup's reds with no tongue share), the
+  shaft (her last three strips) a third as thick about its own line (a fit of its corners), gripped at its end on that line; bow
+  0.93 so it lands on the floor. Checked by renders of his head from three sides and a four-Roo match. Not played by the user yet.
+
 - 2026-11-04: At the user's word ("more like it's in its side and he's biting it"), Roo's mallet is bitten across his mouth as a
   dog carries a stick: its handle's end out 45 past his mouth's middle on his tongue's side, the rest out of the other, 77 degrees
   round from ahead and a little up from level. Held so, a bow alone would keep it at his side, so his swing twists him round too

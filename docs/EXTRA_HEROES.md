@@ -260,7 +260,11 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    its last six, its handle). He holds it in his mouth (at the user's word) as a dog carries a stick:
    its handle across his mouth, bitten in its side, its end poking out on his tongue's side and the
    rest out of the other, a little forward and up from level (out ahead from his mouth, or angled out
-   of its corner, it looked less real); and it moves with his head (`hm_fit` of his head's
+   of its corner, it looked less real). It goes through the middle of his mouth's inside, between his
+   jaws (`InMouth`: the reds of his model behind his lips; his tongue's root, where it was first, is
+   lower, on his lower jaw, so it looked under his mouth), and its shaft is a third as thick across
+   (about the line along it, a fit of its corners), as hers is a club for her big hands and his mouth
+   is about 34 tall. It moves with his head (`hm_fit` of his head's
    vertices from standing to the frame). He's as on foot (`mallet_own`: his own animations, between
    their frames): standing, hopping as he runs, falling over as he's hit, laughing as he wins. He
    swings it with his whole body (`mallet_bend`), timed as hers by the share of the way through
