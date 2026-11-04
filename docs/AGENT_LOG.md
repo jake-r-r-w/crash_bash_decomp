@@ -498,6 +498,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Roo's face on the panel, at the user's word, stretched across to the others' size and resolution: the game's panel
+  faces are 64 x 32 texels drawn right across (rows 0 to 24), and his hero card was made at four times that and kept its pixels'
+  shape, so it filled 46 of the 64 and finer. Now it's made at the panel's own 64 x 32, right across (`card_face`'s `across`), the
+  same height as before (his tongue still hangs over the health bar). The select's portrait is as it was.
+
 - 2026-11-04: Ripper Roo, at the user's word (they called the last round LGTM): his own hurt sounds. His base's hit voices
   (`HeroHitSfx`) and fall (its block's +12, ARCHITECTURE.md) are caught in `PlaySfx` (`extra_hero_sound`: nobody plays his base,
   so they're his), and his yelp plays, his laugh's first "ha" (86 blocks, a little higher: his game has no hurt voice; rjpnA,
