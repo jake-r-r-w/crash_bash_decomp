@@ -1216,7 +1216,13 @@ signature alone is not enough.
   TA_SetUp}`. `TANK_PREMAP` is a `PreMap`: `TankPreLoadDB` (an `s16` list
   ending in -1), `TankWorldInfo` (nine `WWInf`, map databases 0x2E..0x36,
   each with `TankAnims`, the animation names, and a level database list)
-  and `TankLUP` (a `TrigLookUp` of 8 ids) just before it. Each character's
+  and `TankLUP` (a `TrigLookUp` of 8 ids) just before it. Each hero's tank
+  model (`models/chars/tank/`) is the hero from the waist up at its foot
+  model's scale, its lowest point inside the turret (whose top is 301 up
+  on the hull, 185), with BREATHE, IDLE1, MINE, HIT, DIE and WIN. A hero's
+  weapon is by its name (`ResetToBasicWeapon`): Crash and Coco the swirly,
+  Cortex and Brio the laser, Tiny and Kong the flubber, Dingodile and Rilla
+  Roo the flamethrower; its speed `TankHeroSpeeds`, the two 0x18 alike. Each character's
   nine `*_seq_tank*` sequences (`HeroSeqTables[hero_name][0x57..0x5F]`,
   hero_name 1..8 = Crash, Coco, Cortex, Brio, Tiny, Kong, Dingodile,
   Kangaroo) are 6 halfwords each, defined in the leak's prefix order; Crash

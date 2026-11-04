@@ -2,7 +2,8 @@
  * copies of other Crash games, and what the heroes' own files (main/heroes/) use to make them.
  *
  * Each hero's make (bash/herodef.h) finds its game's disc (disc_image_find), reads what it needs from it, and makes it into a Crash Bash
- * model and texture set of each kind it has (docs/ASSETS.md): on foot, riding a polar bear, on a pogo stick, and in a Ballistix car. They go into the archive's entries for
+ * model and texture set of each kind it has (docs/ASSETS.md): on foot, riding a polar bear, on a pogo stick, in a Ballistix car, and in a
+ * tank. They go into the archive's entries for
  * that hero (main.c's DatIndex, from 992) as a mod's files do, and the game loads them as it does any model, into banks of their own
  * (DB_BonusRoo, ...). Nothing of them is kept but in memory, and without its disc there's no hero. docs/EXTRA_HEROES.md has how to add
  * one, from Ripper Roo's (heroes/roo.c). */
@@ -30,8 +31,9 @@ const HeroDef *const HeroDefs[NUM_EXTRA] = { NULL, &HeroRoo };
 static const struct {
     s32 tex, mdl, bank;
 } Slots[NUM_EXTRA][NUM_KINDS] = {
-    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty } },
-    { { 992, 993, DB_BonusRoo }, { 994, 995, DB_BonusRooPolar }, { 996, 997, DB_BonusRooPogo }, { 998, 999, DB_BonusRooBall } },
+    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty } },
+    { { 992, 993, DB_BonusRoo }, { 994, 995, DB_BonusRooPolar }, { 996, 997, DB_BonusRooPogo }, { 998, 999, DB_BonusRooBall },
+      { 1000, 1001, DB_BonusRooTank } },
 };
 
 static HeroMade Made[NUM_EXTRA];

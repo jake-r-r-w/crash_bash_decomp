@@ -36,8 +36,11 @@ static const Stand RooRides[] = {
     { NULL, NULL, STRETCH },
 };
 /* On his cane his model has Pogo's moves by name, as long as his base's; his tazing is the boss's attack, at its own speed */
-/* In a car his model has Ballistix's moves by name */
+/* In a car his model has Ballistix's moves by name, and in a tank Tank's */
 static const Stand RooCar[] = {
+    { NULL, NULL, STRETCH },
+};
+static const Stand RooTank[] = {
     { NULL, NULL, STRETCH },
 };
 static const Stand RooPogo[] = {
@@ -69,7 +72,8 @@ static s32 roo_make(HeroMade *out);
 const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
-      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, ROO_SUBFRAMES } },
+      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, ROO_SUBFRAMES },
+      { RooTank, "BREATHE", 0x1000, Dingodile, ROO_SUBFRAMES } },
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -1251,6 +1255,208 @@ done:
     return ok;
 }
 
+/* --- in a tank (Tank) ---
+ * Tank draws each hero's tank round it (the hull and its weapon's turret, from the tank objects model, or the swamp's hover tank) and
+ * the hero's own model stood in the turret's hatch (models\chars\tank\), as big as on foot, from the waist up out of it. Roo stands in
+ * it as on foot, his rig's TANK_CUT (just below his straitjacket) at the turret's top, TANK_HATCH up; what of him is below that, his
+ * legs, feet and tail, isn't drawn (it's all at TANK_HIDDEN, inside), as the others' models have nothing below the hatch either; and
+ * nothing of him lower than TANK_FLOOR, inside the hull. His moves (TankNames, each as long as Rilla Roo's): he
+ * sways as he breathes (TANK_SWAY of his standing animation's); looks about as he waits (IDLE1: his head turning TANK_LOOK each way,
+ * laughing TANK_FIDGET of his laugh); with no hands to drop a mine he ducks into the hatch for it and pops up again (MINE: TANK_DUCK
+ * down, springing up TANK_POP past where he stood); he's thrown back as he's hit (HIT: TANK_RECOIL at his waist, wobbling upright
+ * again); slumps forward over the turret's front as he loses (DIE: TANK_SLUMP at his waist, TANK_DROOP more at his neck); and laughs
+ * as he wins, bouncing TANK_HOP in the hatch. His tongue and ears swing. He plays as Dingodile does (his kind's like): the
+ * flamethrower and its speed, whoever's place he has (Rilla Roo's has the same). */
+#define TANK_CUT 64.0f
+#define TANK_HATCH 301.0f
+#define TANK_FLOOR 20.0f
+#define TANK_HIDDEN 30.0f
+#define TANK_SWAY 0.3f
+#define TANK_LOOK 0.6f
+#define TANK_FIDGET 0.3f
+#define TANK_DUCK 200.0f
+#define TANK_POP 30.0f
+#define TANK_RECOIL 0.5f
+#define TANK_SLUMP 1.0f
+#define TANK_DROOP 0.6f
+#define TANK_HOP 40.0f
+#define TANK_FADE 4.0f
+#define TANK_MAX_TICKS 96
+
+enum { TANK_BREATHE, TANK_IDLE, TANK_MINE, TANK_HIT, TANK_DIE, TANK_WIN, TANK_MOVES };
+static const char *const TankNames[TANK_MOVES] = { "BREATHE", "IDLE1", "MINE", "HIT", "DIE", "WIN" };
+
+typedef struct {
+    const FootCtx *foot;
+    MadeAnim anims[TANK_MOVES];
+    V3 swing[TANK_MOVES][TANK_MAX_TICKS];
+} TankCtx;
+
+static TankCtx Tank;
+
+/* Frame f of move a, but for the swing: his vertices in Crash Bash's units, in the hatch */
+static void tank_pose(const TankCtx *c, s32 a, s32 f, V3 *out) {
+    static V3 q[MAX_VERTS];
+    const FootCtx *foot = c->foot;
+    s32 frames = c->anims[a].frames, k;
+    float g = (float)f / ROO_SUBFRAMES, ticks = (float)frames / ROO_SUBFRAMES, last = ticks > 1 ? ticks - 1 : 1;
+    float t = g / last, fade, look = 0, back = 0, slump = 0, lift = 0, s = ROO_UNIT * foot->k;
+    V3 waist = { 0, RIDE_WAIST, 0 }, neck = { 0, RIDE_NECK, 0 };
+
+    for (k = 0; k < RigVerts; k++) {
+        /* what of him is below the hatch, his legs, feet and tail, isn't drawn: all of it at one point inside the turret, so its
+         * faces have no size (his long feet would poke out through the hull) */
+        if (TailOf[k] || Rest[k].y < TANK_CUT) {
+            q[k].x = 0;
+            q[k].y = TANK_HIDDEN;
+            q[k].z = 0;
+        } else {
+            q[k] = Rest[k];
+        }
+    }
+    fade = fminf(hm_smooth(0, TANK_FADE, g), hm_smooth(last, last - TANK_FADE, g));
+    switch (a) {
+    case TANK_BREATHE:
+        car_motion(foot, ROO_REST, g * foot->anims[ROO_REST].count / (ticks > 0 ? ticks : 1), TANK_SWAY, q);
+        break;
+    case TANK_IDLE:
+        car_motion(foot, ROO_LAUGH, g, TANK_FIDGET * fade, q);
+        look = TANK_LOOK * sinf(2 * ROO_PI * t) * fade;
+        break;
+    case TANK_MINE:
+        /* down quickly, a moment there, and up again past where he stood, settling */
+        lift = -TANK_DUCK * fminf(hm_smooth(0, 0.25f, t), hm_smooth(0.7f, 0.45f, t)) + TANK_POP * sinf(ROO_PI * hm_smooth(0.6f, 1, t));
+        break;
+    case TANK_HIT:
+        /* thrown back, and wobbling upright again */
+        back = TANK_RECOIL * hm_smooth(0, 2, g) * expf(-3 * t) * cosf(3 * ROO_PI * t);
+        break;
+    case TANK_DIE:
+        slump = hm_smooth(0, last * 0.5f, g);
+        break;
+    case TANK_WIN:
+        car_motion(foot, ROO_LAUGH, g, fade, q);
+        lift = TANK_HOP * fabsf(sinf(ROO_PI * g / 8)) * fade;
+        break;
+    }
+    for (k = 0; k < RigVerts; k++) {
+        float up = hm_smooth(RIDE_WAIST - RIDE_WAIST_BLEND, RIDE_WAIST + RIDE_WAIST_BLEND, Rest[k].y);
+        float head = hm_smooth(RIDE_NECK - RIDE_NECK_BLEND, RIDE_NECK + RIDE_NECK_BLEND, Rest[k].y);
+        V3 p = q[k];
+
+        if (head > 0 && look != 0) {
+            p = hm_mix(p, hm_turn_y(p, neck, look), head);
+        }
+        if (up > 0 && back != 0) {
+            p = hm_mix(p, hm_turn_x(p, waist, -back), up);
+        }
+        if (up > 0 && slump > 0) {
+            /* forward at his waist, his head hanging */
+            V3 at_neck = hm_turn_x(neck, waist, slump * TANK_SLUMP);
+
+            p = hm_mix(p, hm_turn_x(p, waist, slump * TANK_SLUMP), up);
+            p = hm_mix(p, hm_turn_x(p, at_neck, slump * TANK_DROOP), head);
+        }
+        out[k].x = p.x * s;
+        out[k].y = -(p.y - TANK_CUT) * s - TANK_HATCH - lift;
+        out[k].z = -p.z * s;
+        /* nothing through the hull's floor: what of his legs would go through it lies on it, inside */
+        if (out[k].y > -TANK_FLOOR) {
+            out[k].y = -TANK_FLOOR;
+        }
+    }
+}
+
+/* The swing of his tongue and ears through each move, a tick at a time, from his head's path */
+static void tank_swing(TankCtx *c) {
+    static V3 v[MAX_VERTS], path[TANK_MAX_TICKS];
+    s32 a, i, k, ticks;
+
+    memset(c->swing, 0, sizeof(c->swing));
+    for (a = 0; a < TANK_MOVES; a++) {
+        ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES;
+        ticks = ticks > TANK_MAX_TICKS ? TANK_MAX_TICKS : ticks;
+        for (i = 0; i < ticks; i++) {
+            V3 sum = { 0, 0, 0 };
+            float w = 0;
+
+            tank_pose(c, a, i * ROO_SUBFRAMES, v);
+            for (k = 0; k < RigVerts; k++) {
+                if (Rest[k].y > FOOT_HEAD_Y) {
+                    sum.x += v[k].x;
+                    sum.y += v[k].y;
+                    sum.z += v[k].z;
+                    w++;
+                }
+            }
+            if (w > 0) {
+                sum.x /= w;
+                sum.y /= w;
+                sum.z /= w;
+            }
+            path[i] = sum;
+        }
+        hm_flop(path, ticks, a == TANK_BREATHE, &RooSwing, c->swing[a]);
+    }
+}
+
+static void tank_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    const TankCtx *c = ctx;
+    s32 ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES, i0, i1, k;
+    float s = (float)f / ROO_SUBFRAMES, u;
+    V3 swing;
+
+    ticks = ticks > TANK_MAX_TICKS ? TANK_MAX_TICKS : ticks;
+    tank_pose(c, a, f, out);
+    i0 = (s32)floorf(s);
+    u = s - i0;
+    i0 = i0 < ticks ? i0 : ticks - 1;
+    i1 = i0 + 1 < ticks ? i0 + 1 : a == TANK_BREATHE ? 0 : i0;
+    swing = hm_mix(c->swing[a][i0], c->swing[a][i1], u);
+    for (k = 0; k < RigVerts; k++) {
+        out[k].x += swing.x * FlopShare[k];
+        out[k].y += swing.y * FlopShare[k];
+        out[k].z += swing.z * FlopShare[k];
+    }
+}
+
+/* His tank model: his own faces (own_tris of them) and images, Tank's moves as long as his base's */
+static s32 tank_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, const MadeImage *images, s32 nimage, HeroMade *out) {
+    TankCtx *c = &Tank;
+    MadeModel mm;
+    s32 a, n;
+
+    memset(c, 0, sizeof(*c));
+    c->foot = foot;
+    for (a = 0; a < TANK_MOVES; a++) {
+        n = hm_bank_frames(DB_CharsTankRilla, TankNames[a]);
+        n = n > 0 ? n : 20;
+        n = n > TANK_MAX_TICKS ? TANK_MAX_TICKS : n;
+        c->anims[a].name = TankNames[a];
+        c->anims[a].frames = n * ROO_SUBFRAMES;
+        c->anims[a].mesh = 0;
+        c->anims[a].step = ROO_SUBFRAMES;
+    }
+    tank_swing(c);
+    memset(&mm, 0, sizeof(mm));
+    mm.faces = faces;
+    mm.nfaces = own_tris;
+    mm.meshes = 1;
+    mm.images = images;
+    mm.nimages = nimage;
+    mm.anims = c->anims;
+    mm.nanims = TANK_MOVES;
+    mm.nvert = RigVerts;
+    mm.rest_anim = TANK_BREATHE;
+    mm.frame = tank_frame;
+    mm.ctx = c;
+    if (!made_write(&mm, &out->tex[KIND_TANK], &out->tex_size[KIND_TANK], &out->mdl[KIND_TANK], &out->mdl_size[KIND_TANK])) {
+        printf("bonus: Ripper Roo can't be put in a tank\n");
+        return 0;
+    }
+    return 1;
+}
+
 /* His sounds, which his boss fight's object (RRooC) plays: sound entries in sound pages, at 11025 Hz. His laugh (CrznA), his jump's
  * call (rjpnA), and his landings, light (ld30A) and heavy (ld00A). His game has no hurt voice for him, so his yelp is his laugh's first
  * "ha", its first ROO_YELP_BYTES (0.22 s, where it falls quiet), a little higher. */
@@ -1457,10 +1663,11 @@ static s32 roo_make(HeroMade *out) {
             printf("bonus: Ripper Roo has no polar bear to ride\n");
         }
     }
-    /* on his cane (Pogo) and in a car (Ballistix): his own faces, as riding */
+    /* on his cane (Pogo), in a car (Ballistix) and in a tank: his own faces, as riding */
     if (RigVerts > 0) {
         pogo_make(&foot, faces, own_tris, images, nimage, out);
         car_make(&foot, faces, own_tris, images, nimage, out);
+        tank_make(&foot, faces, own_tris, images, nimage, out);
     }
     if (c1_sprite64(&level, "ShadC", 5, RooCard)) {
         out->card = RooCard;
@@ -1468,10 +1675,10 @@ static s32 roo_make(HeroMade *out) {
         out->card_head = CARD_HEAD;
     }
     make_sounds(&level, out);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s\n", ntri, nimage,
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s\n", ntri, nimage,
            out->mdl_size[KIND_FOOT], out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "",
            out->mdl[KIND_POGO] != NULL ? ", on his cane" : "", out->mdl[KIND_BALL] != NULL ? ", in a car" : "",
-           out->card != NULL ? ", his hero card" : "",
+           out->mdl[KIND_TANK] != NULL ? ", in a tank" : "", out->card != NULL ? ", his hero card" : "",
            out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "",
            out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "");
     ok = 1;

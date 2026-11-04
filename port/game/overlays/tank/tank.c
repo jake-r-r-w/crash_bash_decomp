@@ -3,6 +3,7 @@
 #include "bash/main.h"
 #include "bash/tank_ovl.h"
 #include "bash/tank.h"
+#include "bash/extraheroes.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
 
@@ -1836,7 +1837,8 @@ void TA_InitHero(u32 player) {
         break;
     }
     ta = &TA_players[player];
-    ta->Speed = TankHeroSpeeds[Heroes[player].hero_name - 1];
+    /* PC: an extra hero drives as the hero its kind is like (extraheroes.c): Ripper Roo as Dingodile */
+    ta->Speed = TankHeroSpeeds[extra_hero_like(player, Heroes[player].hero_name) - 1];
     hh = &Heroes[player];
     ta->SpeedX = 0;
     ta->SpeedZ = 0;
@@ -1873,7 +1875,7 @@ void TA_InitHero(u32 player) {
         ta->MainWeaponFireDelay = 0;
     }
     ta->MainWeaponNas[0] = NULL;
-    n = Heroes[player].hero_name;
+    n = extra_hero_like(player, Heroes[player].hero_name);
     if (n == 0 || n >= 7) {
         ta->MainWeaponNas[2] = (NAS *)0xFFEEEEFF;
     } else {
@@ -1993,7 +1995,8 @@ void ResetToBasicWeapon(s32 player) {
     ta->MainWeaponRounds = 999;
     ta->MainWeaponFireDelay = 30;
     sub = Heroes[player].hero_sub->next;
-    switch (Heroes[player].hero_name) {
+    /* PC: an extra hero has the weapon of the hero its kind is like (extraheroes.c) */
+    switch (extra_hero_like(player, Heroes[player].hero_name)) {
     case 1:
     case 2:
         ta->MainWeaponType = 9;
@@ -2312,7 +2315,7 @@ void UpdateTankHeroWeapons(s32 player) {
                         sub->entity = 0x427F;
                         ta->TurretAnimPtr = TankLaserFireAnim;
                     }
-                    if (Heroes[player].hero_name == 3) {
+                    if (extra_hero_like(player, Heroes[player].hero_name) == 3) {
                         PlaySfx(0x4CC, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     } else {
                         PlaySfx(0x4CD, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -2357,7 +2360,7 @@ void UpdateTankHeroWeapons(s32 player) {
                         sub->entity = 0x41FF;
                         ta->TurretAnimPtr = TankFlamerFireAnim;
                     }
-                    if (Heroes[player].hero_name == 2) {
+                    if (extra_hero_like(player, Heroes[player].hero_name) == 2) {
                         PlaySfx(0x4CB, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     } else {
                         PlaySfx(0x4D0, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -2393,7 +2396,7 @@ void UpdateTankHeroWeapons(s32 player) {
                         ta->TurretAnimPtr = TankSwirlyFireAnim;
                         sub->entity = 0x417F;
                     }
-                    if (Heroes[player].hero_name == 1) {
+                    if (extra_hero_like(player, Heroes[player].hero_name) == 1) {
                         PlaySfx(0x4CA, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     } else {
                         PlaySfx(0x4CB, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -2428,7 +2431,7 @@ void UpdateTankHeroWeapons(s32 player) {
                         sub->entity = 0x40FF;
                         ta->TurretAnimPtr = TankFlubberFireAnim;
                     }
-                    if (Heroes[player].hero_name == 5) {
+                    if (extra_hero_like(player, Heroes[player].hero_name) == 5) {
                         PlaySfx(0x4CE, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     } else {
                         PlaySfx(0x4CF, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);

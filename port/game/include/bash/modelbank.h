@@ -331,6 +331,7 @@ enum DbaseIds {
     DB_BonusRooPolar, /* 284, PC: and riding a polar bear */
     DB_BonusRooPogo, /* 285, PC: and on his cane (Pogo) */
     DB_BonusRooBall, /* 286, PC: and in a Ballistix car */
+    DB_BonusRooTank, /* 287, PC: and in a tank */
     DB_COUNT
 };
 
