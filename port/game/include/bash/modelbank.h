@@ -334,6 +334,7 @@ enum DbaseIds {
     DB_BonusRooTank, /* 287, PC: and in a tank */
     DB_BonusRooRace, /* 288, PC: and in a race cart (Crash Dash) */
     DB_BonusRooSplash, /* 289, PC: and riding a fish (Splash Dash) */
+    DB_BonusRooMallet, /* 290, PC: and with a mallet (the mallet game) */
     DB_COUNT
 };
 

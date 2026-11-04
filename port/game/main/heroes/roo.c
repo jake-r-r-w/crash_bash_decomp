@@ -52,6 +52,11 @@ static const Stand RooRace[] = {
 static const Stand RooSplash[] = {
     { NULL, NULL, STRETCH },
 };
+/* With a mallet the mallet game's, and he laughs as he wins at his own pace */
+static const Stand RooMallet[] = {
+    { "WIN", "WIN", LOOP },
+    { NULL, NULL, STRETCH },
+};
 static const Stand RooPogo[] = {
     { "TAZING", "TAZING", LOOP },
     { NULL, NULL, STRETCH },
@@ -83,8 +88,9 @@ const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
       { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, 1 },
-      { RooTank, "BREATHE", 0x1000, Dingodile, 1 }, { RooRace, "BREATHE", 0x1000, 0, 1 }, { RooSplash, "SWIM", 0x1000, 0, 1 } },
-    /* in a car, a tank, a race cart and on a fish a frame of his to each of his base's (VEHICLE_PER) */
+      { RooTank, "BREATHE", 0x1000, Dingodile, 1 }, { RooRace, "BREATHE", 0x1000, 0, 1 }, { RooSplash, "SWIM", 0x1000, 0, 1 },
+      { RooMallet, "BREATHE", ROO_KEEP_LIFT, 0, 1 } },
+    /* in a car, a tank, a race cart, on a fish and with a mallet a frame of his to each of his base's (VEHICLE_PER) */
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -2139,6 +2145,409 @@ done:
     return ok;
 }
 
+/* --- with a mallet (the mallet game) ---
+ * The mallet game's heroes swing big spiked mallets, each hero's in its own model with it (models\chars\mallet\; its moves BREATHE,
+ * MEDIUM as it runs with it, HIT knocked down, ATTACK the swing: back, held back as it's charged, then down onto the floor in front,
+ * and WIN). Roo's model has Rilla Roo's mallet: her model's first MALLET_HEAD_STRIPS strips (its head) and its strips from
+ * MALLET_HANDLE_FROM on (its handle). With no hands, he holds it in his mouth (at the user's word): the end of its handle (its corners
+ * within MALLET_GRIP of the end away from its head) in his teeth, the handle out MALLET_TILT forward from up, MALLET_SCALE of its size,
+ * and it goes with his head (a fit of his head's vertices, from standing to the frame). He's as on foot, the mallet in his mouth: he
+ * stands as he breathes, hops as he runs, falls over as he's hit, and laughs as he wins (at his own pace, round and round). He swings
+ * it with his whole body: rearing back MALLET_REAR as he swings it back (by MALLET_BACK of the swing, as hers), winding back to
+ * MALLET_WIND as it's charged (by MALLET_HELD), and bowing forward MALLET_BOW, faster and faster, to bring it down onto the floor in
+ * front of him as hers lands (MALLET_LANDS), held there a moment (to MALLET_UP) and up again; MALLET_NECK of each at his neck, the rest
+ * at his waist. His tongue and ears swing. */
+#define MALLET_HEAD_STRIPS 16
+#define MALLET_HANDLE_FROM 56
+#define MALLET_GRIP 60.0f
+#define MALLET_SCALE 0.9f
+#define MALLET_TILT 1.0f
+#define MALLET_REAR 0.55f
+#define MALLET_WIND 0.9f
+#define MALLET_BOW 1.25f
+#define MALLET_NECK 0.4f
+#define MALLET_BACK (8.0f / 38)  /* her ATTACK's frames, as shares of the way through its 39 */
+#define MALLET_HELD (17.0f / 38)
+#define MALLET_LANDS (24.0f / 38)
+#define MALLET_UP (27.0f / 38)
+#define MALLET_MAX_TICKS 96
+#define MALLET_MAX_HEAD 512
+
+enum { MALLET_BREATHE, MALLET_RUN, MALLET_HIT, MALLET_ATTACK, MALLET_WIN, MALLET_MOVES };
+static const char *const MalletNames[MALLET_MOVES] = { "BREATHE", "MEDIUM", "HIT", "ATTACK", "WIN" };
+static const u8 MalletLoops[MALLET_MOVES] = { 1, 1, 0, 0, 1 };
+
+typedef struct {
+    s32 strips, corners, head_end, handle_from; /* her model's strips and corners so far, as hm_game_part goes through them */
+} MalletKeep;
+
+typedef struct {
+    const FootCtx *foot;
+    MadeAnim anims[MALLET_MOVES];
+    V3 swing[MALLET_MOVES][MALLET_MAX_TICKS];
+    GamePart mallet;
+    V3 *held;                  /* each of its vertices as he holds it, standing */
+    V3 stand[MAX_VERTS];       /* his vertices standing */
+    s16 head[MALLET_MAX_HEAD]; /* his head's vertices (but what swings) */
+    s32 nhead;
+} MalletCtx;
+
+static MalletCtx Mallet;
+
+static s32 keep_mallet(void *ctx, const V3 *rest, s32 n, s32 textured) {
+    MalletKeep *m = ctx;
+    s32 strip = m->strips++;
+
+    (void)rest;
+    (void)textured;
+    if (strip == MALLET_HEAD_STRIPS) {
+        m->head_end = m->corners;
+    }
+    if (strip == MALLET_HANDLE_FROM) {
+        m->handle_from = m->corners;
+    }
+    m->corners += n;
+    return strip < MALLET_HEAD_STRIPS || strip >= MALLET_HANDLE_FROM;
+}
+
+/* A point of his rig in Crash Bash's units, on foot */
+static V3 foot_at(const FootCtx *foot, V3 r) {
+    V3 p = from_rig(r);
+
+    p.x *= foot->k;
+    p.y = p.y * foot->k - foot->ground;
+    p.z *= foot->k;
+    return p;
+}
+
+/* His vertices in his own animation j at t of its frames (his game's; round and round, or held at its end), between the two either
+ * side, on foot in Crash Bash's units */
+static void mallet_own(const FootCtx *foot, s32 j, float t, s32 loops, V3 *out) {
+    static V3 fv[MAX_VERTS], gv[MAX_VERTS];
+    s32 n = anim_frames(&foot->anims[j], j), f0, f1, a, b, k;
+    float u;
+
+    n = n > 0 ? n : 1;
+    if (loops) {
+        t = fmodf(t, (float)n);
+        t = t < 0 ? t + n : t;
+    } else {
+        t = t < 0 ? 0 : t > n - 1 ? (float)(n - 1) : t;
+    }
+    f0 = (s32)floorf(t);
+    u = t - f0;
+    f1 = loops ? (f0 + 1) % n : f0 + 1 < n ? f0 + 1 : f0;
+    a = anim_verts(&foot->anims[j], j, f0, foot->scale, fv, NULL);
+    b = anim_verts(&foot->anims[j], j, f1, foot->scale, gv, NULL);
+    for (k = 0; k < RigVerts; k++) {
+        V3 p = fv[k < a ? k : 0], q = k < b ? gv[k] : p;
+
+        p = hm_mix(p, q, u);
+        out[k].x = p.x * foot->k;
+        out[k].y = p.y * foot->k - foot->ground;
+        out[k].z = p.z * foot->k;
+    }
+}
+
+/* How far forward he's bent (radians; back if it's less than 0) at t of the way through a swing */
+static float mallet_bend(float t) {
+    float u;
+
+    if (t < MALLET_BACK) {
+        return -MALLET_REAR * hm_smooth(0, MALLET_BACK, t);
+    }
+    if (t < MALLET_HELD) {
+        return -MALLET_REAR - (MALLET_WIND - MALLET_REAR) * hm_smooth(MALLET_BACK, MALLET_HELD, t);
+    }
+    if (t < MALLET_LANDS) {
+        u = (t - MALLET_HELD) / (MALLET_LANDS - MALLET_HELD);
+        return -MALLET_WIND + (MALLET_WIND + MALLET_BOW) * u * u;
+    }
+    if (t < MALLET_UP) {
+        return MALLET_BOW;
+    }
+    return MALLET_BOW * hm_smooth(1, MALLET_UP, t);
+}
+
+/* Frame f of move a, but for the swing and the mallet: his vertices in Crash Bash's units */
+static void mallet_pose(const MalletCtx *c, s32 a, s32 f, V3 *out) {
+    const FootCtx *foot = c->foot;
+    s32 frames = c->anims[a].frames, k;
+    float g = (float)f / VEHICLE_PER, ticks = (float)frames / VEHICLE_PER, last = ticks > 1 ? ticks - 1 : 1, bend = 0;
+
+    switch (a) {
+    case MALLET_BREATHE:
+        mallet_own(foot, ROO_REST, g * anim_frames(&foot->anims[ROO_REST], ROO_REST) / (ticks > 0 ? ticks : 1), 1, out);
+        break;
+    case MALLET_RUN:
+        mallet_own(foot, ROO_WALK, g * anim_frames(&foot->anims[ROO_WALK], ROO_WALK) / (ticks > 0 ? ticks : 1), 1, out);
+        break;
+    case MALLET_HIT:
+        mallet_own(foot, ROO_DIE, g, 0, out);
+        break;
+    case MALLET_WIN:
+        mallet_own(foot, ROO_LAUGH, g, 1, out);
+        break;
+    default:
+        mallet_own(foot, ROO_REST, 0, 1, out);
+        bend = mallet_bend(g / last);
+        break;
+    }
+    if (bend != 0) {
+        V3 waist = { 0, RIDE_WAIST, 0 }, neck = { 0, RIDE_NECK, 0 };
+        float at_waist = bend * (1 - MALLET_NECK), at_neck = bend * MALLET_NECK;
+
+        waist = foot_at(foot, waist);
+        neck = hm_turn_x(foot_at(foot, neck), waist, at_waist);
+        for (k = 0; k < RigVerts; k++) {
+            float up = hm_smooth(RIDE_WAIST - RIDE_WAIST_BLEND, RIDE_WAIST + RIDE_WAIST_BLEND, Rest[k].y);
+            float head = hm_smooth(RIDE_NECK - RIDE_NECK_BLEND, RIDE_NECK + RIDE_NECK_BLEND, Rest[k].y);
+
+            if (up > 0) {
+                out[k] = hm_mix(out[k], hm_turn_x(out[k], waist, at_waist), up);
+            }
+            if (head > 0) {
+                out[k] = hm_mix(out[k], hm_turn_x(out[k], neck, at_neck), head);
+            }
+        }
+    }
+}
+
+/* The swing of his tongue and ears through each move, a tick at a time, from his head's path */
+static void mallet_swing(MalletCtx *c) {
+    static V3 v[MAX_VERTS], path[MALLET_MAX_TICKS];
+    s32 a, i, k, ticks;
+
+    memset(c->swing, 0, sizeof(c->swing));
+    for (a = 0; a < MALLET_MOVES; a++) {
+        ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER;
+        ticks = ticks > MALLET_MAX_TICKS ? MALLET_MAX_TICKS : ticks;
+        for (i = 0; i < ticks; i++) {
+            V3 sum = { 0, 0, 0 };
+            float w = 0;
+
+            mallet_pose(c, a, i * VEHICLE_PER, v);
+            for (k = 0; k < RigVerts; k++) {
+                if (Rest[k].y > FOOT_HEAD_Y) {
+                    sum.x += v[k].x;
+                    sum.y += v[k].y;
+                    sum.z += v[k].z;
+                    w++;
+                }
+            }
+            if (w > 0) {
+                sum.x /= w;
+                sum.y /= w;
+                sum.z /= w;
+            }
+            path[i] = sum;
+        }
+        hm_flop(path, ticks, MalletLoops[a], &RooSwing, c->swing[a]);
+    }
+}
+
+static void mallet_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    const MalletCtx *c = ctx;
+    s32 ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER, i0, i1, k;
+    float s = (float)f / VEHICLE_PER, u;
+    V3 swing;
+    Moved head;
+
+    ticks = ticks > MALLET_MAX_TICKS ? MALLET_MAX_TICKS : ticks;
+    mallet_pose(c, a, f, out);
+    i0 = (s32)floorf(s);
+    u = s - i0;
+    i0 = i0 < ticks ? i0 : ticks - 1;
+    i1 = i0 + 1 < ticks ? i0 + 1 : MalletLoops[a] ? 0 : i0;
+    swing = hm_mix(c->swing[a][i0], c->swing[a][i1], u);
+    for (k = 0; k < RigVerts; k++) {
+        out[k].x += swing.x * FlopShare[k];
+        out[k].y += swing.y * FlopShare[k];
+        out[k].z += swing.z * FlopShare[k];
+    }
+    /* the mallet, in his mouth as his head's gone */
+    hm_fit(c->stand, out, c->head, c->nhead, &head);
+    for (k = 0; k < c->mallet.nvert; k++) {
+        out[RigVerts + k] = hm_moved(&head, c->held[k]);
+    }
+}
+
+/* v turned as one direction is to another (both of length 1) */
+static V3 turn_toward(V3 v, V3 from, V3 to) {
+    V3 e = { from.y * to.z - from.z * to.y, from.z * to.x - from.x * to.z, from.x * to.y - from.y * to.x }, ev, o;
+    float sn = sqrtf(e.x * e.x + e.y * e.y + e.z * e.z), cs = from.x * to.x + from.y * to.y + from.z * to.z, ed;
+
+    if (sn < 1e-6f) {
+        return v;
+    }
+    e.x /= sn;
+    e.y /= sn;
+    e.z /= sn;
+    ed = e.x * v.x + e.y * v.y + e.z * v.z;
+    ev.x = e.y * v.z - e.z * v.y;
+    ev.y = e.z * v.x - e.x * v.z;
+    ev.z = e.x * v.y - e.y * v.x;
+    o.x = v.x * cs + ev.x * sn + e.x * ed * (1 - cs);
+    o.y = v.y * cs + ev.y * sn + e.y * ed * (1 - cs);
+    o.z = v.z * cs + ev.z * sn + e.z * ed * (1 - cs);
+    return o;
+}
+
+/* His mallet model: his own faces (own_tris of them) and images, and the mallet; the mallet game's moves as long as Rilla Roo's, but
+ * his WIN, his laugh's */
+static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, const MadeImage *images, s32 nimage, HeroMade *out) {
+    MalletCtx *c = &Mallet;
+    MalletKeep keep;
+    MadeFace *all = NULL;
+    MadeImage *imgs = NULL;
+    MadeModel mm;
+    V3 *at = NULL, mid = { 0, 0, 0 }, grip = { 0, 0, 0 }, mouth = { 0, 0, 0 }, d0, d1;
+    s32 a, n, k, j, ok = 0, breathe, far = -1;
+    float best = -1, l;
+
+    memset(c, 0, sizeof(*c));
+    memset(&keep, 0, sizeof(keep));
+    c->foot = foot;
+    for (a = 0; a < MALLET_MOVES; a++) {
+        n = a == MALLET_WIN ? anim_frames(&foot->anims[ROO_LAUGH], ROO_LAUGH) : hm_bank_frames(DB_CharsMalletRilla, MalletNames[a]);
+        n = n > 0 ? n : 20;
+        n = n > MALLET_MAX_TICKS ? MALLET_MAX_TICKS : n;
+        c->anims[a].name = MalletNames[a];
+        c->anims[a].frames = n * VEHICLE_PER;
+        c->anims[a].mesh = 0;
+        c->anims[a].step = VEHICLE_PER;
+    }
+    if (!hm_game_part(DB_CharsMalletRilla, keep_mallet, &keep, &c->mallet) || keep.head_end <= 0 || keep.handle_from <= keep.head_end
+        || (breathe = hm_model_anim(&c->mallet, "BREATHE", NULL)) < 0 || (at = malloc(sizeof(V3) * (size_t)c->mallet.corners)) == NULL
+        || (c->held = malloc(sizeof(V3) * (size_t)c->mallet.nvert)) == NULL || !hm_model_at(&c->mallet, breathe, 0, at)) {
+        printf("bonus: Ripper Roo has no mallet (Rilla Roo's)\n");
+        goto done;
+    }
+    /* its head's middle, and its grip: the corners of its handle near its end away from the head */
+    for (k = 0, n = 0; k < keep.head_end; k++) {
+        if (c->mallet.in_part[k]) {
+            mid.x += at[k].x;
+            mid.y += at[k].y;
+            mid.z += at[k].z;
+            n++;
+        }
+    }
+    if (n == 0) {
+        goto done;
+    }
+    mid.x /= n;
+    mid.y /= n;
+    mid.z /= n;
+    for (k = keep.handle_from; k < c->mallet.corners; k++) {
+        float d = (at[k].x - mid.x) * (at[k].x - mid.x) + (at[k].y - mid.y) * (at[k].y - mid.y) + (at[k].z - mid.z) * (at[k].z - mid.z);
+
+        if (c->mallet.in_part[k] && d > best) {
+            best = d;
+            far = k;
+        }
+    }
+    for (k = keep.handle_from, n = 0; far >= 0 && k < c->mallet.corners; k++) {
+        float dx = at[k].x - at[far].x, dy = at[k].y - at[far].y, dz = at[k].z - at[far].z;
+
+        if (c->mallet.in_part[k] && dx * dx + dy * dy + dz * dz < MALLET_GRIP * MALLET_GRIP) {
+            grip.x += at[k].x;
+            grip.y += at[k].y;
+            grip.z += at[k].z;
+            n++;
+        }
+    }
+    if (n == 0) {
+        goto done;
+    }
+    grip.x /= n;
+    grip.y /= n;
+    grip.z /= n;
+    d0.x = mid.x - grip.x;
+    d0.y = mid.y - grip.y;
+    d0.z = mid.z - grip.z;
+    l = sqrtf(d0.x * d0.x + d0.y * d0.y + d0.z * d0.z);
+    d0.x /= l;
+    d0.y /= l;
+    d0.z /= l;
+    d1.x = 0;
+    d1.y = -cosf(MALLET_TILT);
+    d1.z = -sinf(MALLET_TILT);
+    /* him standing, his mouth (where his tongue comes out of it) and his head */
+    mallet_own(foot, ROO_REST, 0, 1, c->stand);
+    for (k = 0, n = 0; k < RigVerts; k++) {
+        if (TongueShare[k] > 0 && TongueShare[k] < 0.25f) {
+            mouth.x += c->stand[k].x;
+            mouth.y += c->stand[k].y;
+            mouth.z += c->stand[k].z;
+            n++;
+        }
+        if (Rest[k].y > FOOT_HEAD_Y && FlopShare[k] <= 0 && c->nhead < MALLET_MAX_HEAD) {
+            c->head[c->nhead++] = (s16)k;
+        }
+    }
+    if (n == 0 || c->nhead < 3) {
+        printf("bonus: Ripper Roo can't hold a mallet (%d of his mouth, %d of his head)\n", n, c->nhead);
+        goto done;
+    }
+    mouth.x /= n;
+    mouth.y /= n;
+    mouth.z /= n;
+    /* the mallet as he holds it, standing: its grip in his teeth, turned from the way hers goes up to the way his goes out */
+    for (k = 0; k < c->mallet.nvert; k++) {
+        V3 p = at[c->mallet.corner_of[k]];
+
+        p.x = (p.x - grip.x) * MALLET_SCALE;
+        p.y = (p.y - grip.y) * MALLET_SCALE;
+        p.z = (p.z - grip.z) * MALLET_SCALE;
+        p = turn_toward(p, d0, d1);
+        c->held[k].x = mouth.x + p.x;
+        c->held[k].y = mouth.y + p.y;
+        c->held[k].z = mouth.z + p.z;
+    }
+    mallet_swing(c);
+    all = malloc(sizeof(MadeFace) * (size_t)(own_tris + c->mallet.nfaces));
+    imgs = malloc(sizeof(MadeImage) * (size_t)(nimage + c->mallet.nimages + 1));
+    if (all == NULL || imgs == NULL) {
+        goto done;
+    }
+    memcpy(all, faces, sizeof(MadeFace) * (size_t)own_tris);
+    for (k = 0; k < c->mallet.nfaces; k++) {
+        MadeFace *f = &all[own_tris + k];
+
+        *f = c->mallet.faces[k];
+        for (j = 0; j < 3; j++) {
+            f->v[j] += RigVerts;
+        }
+        f->image = f->image >= 0 ? f->image + nimage : -1;
+    }
+    memcpy(imgs, images, sizeof(MadeImage) * (size_t)nimage);
+    memcpy(imgs + nimage, c->mallet.images, sizeof(MadeImage) * (size_t)c->mallet.nimages);
+    memset(&mm, 0, sizeof(mm));
+    mm.faces = all;
+    mm.nfaces = own_tris + c->mallet.nfaces;
+    mm.meshes = 1;
+    mm.images = imgs;
+    mm.nimages = nimage + c->mallet.nimages;
+    mm.anims = c->anims;
+    mm.nanims = MALLET_MOVES;
+    mm.nvert = RigVerts + c->mallet.nvert;
+    mm.rest_anim = MALLET_BREATHE;
+    mm.frame = mallet_frame;
+    mm.ctx = c;
+    ok = made_write(&mm, &out->tex[KIND_MALLET], &out->tex_size[KIND_MALLET], &out->mdl[KIND_MALLET], &out->mdl_size[KIND_MALLET]);
+done:
+    if (!ok) {
+        printf("bonus: Ripper Roo can't be given a mallet\n");
+    }
+    free(all);
+    free(imgs);
+    free(at);
+    free(c->held);
+    c->held = NULL;
+    hm_part_free(&c->mallet);
+    return ok;
+}
+
 /* His sounds, which his boss fight's object (RRooC) plays: sound entries in sound pages, at 11025 Hz. His laugh (CrznA), his jump's
  * call (rjpnA), and his landings, light (ld30A) and heavy (ld00A). His game has no hurt voice for him, so his yelp is his laugh's first
  * "ha", its first ROO_YELP_BYTES (0.22 s, where it falls quiet), a little higher. */
@@ -2366,6 +2775,7 @@ static s32 roo_make(HeroMade *out) {
         tank_make(&foot, faces, own_tris, images, nimage, out);
         dash_make(&foot, faces, own_tris, images, nimage, out);
         fish_make(&foot, faces, own_tris, images, nimage, out);
+        mallet_make(&foot, faces, own_tris, images, nimage, out);
     }
     if (c1_sprite64(&level, "ShadC", 5, RooCard)) {
         out->card = RooCard;
@@ -2373,11 +2783,12 @@ static s32 roo_make(HeroMade *out) {
         out->card_head = CARD_HEAD;
     }
     make_sounds(&level, out);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s%s%s%s\n", ntri, nimage,
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s%s%s%s%s\n", ntri, nimage,
            out->mdl_size[KIND_FOOT], out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "",
            out->mdl[KIND_POGO] != NULL ? ", on his cane" : "", out->mdl[KIND_BALL] != NULL ? ", in a car" : "",
            out->mdl[KIND_TANK] != NULL ? ", in a tank" : "", out->mdl[KIND_RACE] != NULL ? ", in a race cart" : "",
-           out->mdl[KIND_SPLASH] != NULL ? ", riding a fish" : "", out->card != NULL ? ", his hero card" : "",
+           out->mdl[KIND_SPLASH] != NULL ? ", riding a fish" : "", out->mdl[KIND_MALLET] != NULL ? ", with a mallet" : "",
+           out->card != NULL ? ", his hero card" : "",
            out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "",
            out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "", RooName.adpcm != NULL ? ", named Rilla Roo" : "");
     ok = 1;

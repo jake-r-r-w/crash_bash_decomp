@@ -1024,7 +1024,15 @@ signature alone is not enough.
   is chosen four ways by game flags (`BonkChooseWinner`). `bohero.c` holds the
   hero states, `HEROFunc` pairs 64..72 (`HEROmode_bonk_idle` .. `bonk_loser`,
   actions 0x40..0x48); the 56 sequences are each character's
-  `hero_seq_bonk_*` (`CRA_seq_bonk_idle` ..).
+  `hero_seq_bonk_*` (`CRA_seq_bonk_idle` ..): idle, run, backswing, extended
+  backswing, swing, hit and winner. The heroes' models (`models\chars\mallet\`)
+  are each the hero with its spiked mallet, one mesh (Rilla Roo's: the mallet's
+  head its first 16 strips, on its own two images, its handle its last six),
+  six moves each by name: BREATHE, MEDIUM (running), HIT, ATTACK (one move for
+  the whole swing: Rilla Roo's 39 frames are the backswing to 8, held there,
+  the extended backswing to 17, held as it's charged, and the swing, landing
+  at 24), WIN and one known only by its hash, #4a7. The swing's shockwave and
+  hit are at the frame's point 1 (`BonkSpawnShockwave`, `sub_find_point`).
 - **Dino** (dino, the gem game; named 2026-10-26). Mode 0x1C (`LEV_DINO`);
   one engine world record (0x010B) points at `DINO_PREMAP`, `dino_shell_info`
   and `DINOSetUp`, the per-mode table at `file_group_DINO` (`DinoFiles` with the

@@ -505,6 +505,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: At the user's word, the mallet game, Roo holding the mallet in his mouth. An eighth kind, KIND_MALLET
+  (DB_BonusRooMallet, entries 1006 and 1007): Rilla Roo's mallet (her mallet model's first 16 strips and last 6), its handle's
+  end in his teeth, moving with his head (`hm_fit` of his head's vertices); him as on foot from his own animations
+  (`mallet_own`), and the swing his whole body rearing back and bowing forward, timed as hers by share of ATTACK (`mallet_bend`).
+  The sixth mallet move, #4a7, has no name to make it by, so it's his BREATHE stand-in. Four-Roo matches: swings, hits scored,
+  knocked flat with it still in his mouth. Normal play unchanged (playtest same, 14 of 14). Not played by the user yet.
+
 - 2026-11-04: The user approved the race cart (LGTM) and asked for Splash Dash, Roo holding on "with his tongue or mouth". A
   seventh kind, KIND_SPLASH (DB_BonusRooSplash, entries 1004 and 1005): Rilla Roo's fish (her splash model's first 16 strips),
   painted red from its blue (`hm_paint` takes the hue to paint from now), Roo astride as on the bear but less spread (`astride`),

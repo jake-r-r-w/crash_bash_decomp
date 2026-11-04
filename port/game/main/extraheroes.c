@@ -154,6 +154,9 @@ static s32 kind_of(s32 bank) {
     if (bank >= DB_CharsSplashCrash && bank <= DB_CharsSplashRilla) {
         return KIND_SPLASH;
     }
+    if (bank >= DB_CharsMalletCrash && bank <= DB_CharsMalletKong) {
+        return KIND_MALLET;
+    }
     return KIND_FOOT;
 }
 
