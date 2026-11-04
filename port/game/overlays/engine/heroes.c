@@ -2805,7 +2805,8 @@ void StartHeroVictory(s32 arg0) {
     }
 }
 
-/* PC: a winner's voice, its first line (0) or its second (1): an extra hero's own (extraheroes.c), or else the hero's sound. */
+/* PC: a winner's voice, the announcer naming it (0) or its own cheer (1): an extra hero's own (extraheroes.c), or else the hero's
+ * sound. */
 static void HeroWinVoice(s32 player, s32 line, s32 sfx) {
     if (!extra_hero_win_voice(player, line)) {
         PlaySfx(sfx, NULL, NULL, 0x1000, 0x1E00, 0);

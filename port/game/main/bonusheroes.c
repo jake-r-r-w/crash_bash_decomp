@@ -6,7 +6,7 @@
  *
  * Ripper Roo, from Crash Bandicoot (USA, SCUS-94900): level 0x17, his boss fight, has his model (RS1nG) and four animations, RS1nV (a big
  * jump), RS2nV (standing), RS3nV (a laugh) and RS4nV (knocked over), which become JUMP, BREATHE, TAUNT and DIE, and two more are made
- * for him from them: a walk, his legs stepping (WALK), and a spin attack, his legs out as he spins like a tornado (SPIN).
+ * for him from them: a walk, his legs stepping (WALK), and a spin attack, his legs out as he spins in a blue tornado (SPIN).
  *
  * Crash Bandicoot's formats, as CrashEdit (the cbhacks project) reads them: a level's NSF is 64 KB pages, each raw (magic 0x1234) or
  * compressed (0x1235: runs and repeats for its first `length` bytes, `skip` bytes to pass, the rest raw). A page of entries lists them,
@@ -291,6 +291,8 @@ typedef struct {
     s32 image;        /* -1 untextured */
     s32 uv[3][2];     /* in the image's texels */
     u8 rgb[3];
+    u8 glow;          /* the tornado's: its corners' own colours, unlit, drawn adding them */
+    u8 corner_rgb[3][3];
 } Tri;
 
 typedef struct {
@@ -364,19 +366,18 @@ static void sway_middle(const Entry *a, const s32 scale[3]) {
 /* --- his made animations ---
  * His game has no walk and no attack, so they're made for him from his own frames (ROO_WALK, ROO_SPIN), worked in his game's axes
  * and units, y up and him facing +z: frame_verts' over ROO_UNIT, y and z the other way round. Both start from his standing pose,
- * SwayMiddle. WALK steps: each leg swings from its hip, and as it comes forward its foot lifts and its knee bends, while the other
- * foot is on the ground; the body bobs, leans over the leg it's on and turns against the legs. SPIN, his attack: he throws his legs
- * out to the sides as his jump does (its frame SPIN_OUT, the splits), spins round twice in a hop like a tornado, and lands as he
- * stood. */
+ * SwayMiddle. WALK steps: each foot goes back flat along the floor, then up, its knee out in front, and forward again, the body
+ * bobbing, leaning over the leg it's on and turning against the legs. SPIN, his attack: he throws his legs out to the sides as his
+ * jump does (its frame SPIN_OUT, the splits), spins round twice in a hop in a blue tornado, and lands as he stood. */
 #define ROO_UNIT 4096.0f
 #define ROO_PI 3.14159265f
 
-/* His hips, where each leg turns, and how much of a leg each vertex is: all of it below LEG_FULL, none above LEG_TOP (the bottom of
- * his straitjacket goes with both), and none within LEG_MID of his middle across, all from LEG_SIDE out. His tail, behind him and
- * down to the floor (TAIL_), is his body's. */
-#define HIP_X 26.0f
+/* His hips, and how much of a leg each vertex is: all of it below LEG_FULL, none above LEG_TOP (the bottom of his straitjacket goes
+ * with both), and none within LEG_MID of his middle across, all from LEG_SIDE out. His tail, behind him and down to the floor
+ * (TAIL_), is his body's. A leg leans from its hip (HIP_Y) to the top of its foot (FOOT_Y), and the foot under that stays flat. */
 #define HIP_Y 58.0f
 #define HIP_Z 4.0f
+#define FOOT_Y 12.0f
 #define LEG_TOP 70.0f
 #define LEG_FULL 42.0f
 #define LEG_MID 5.0f
@@ -384,17 +385,19 @@ static void sway_middle(const Entry *a, const s32 scale[3]) {
 #define TAIL_X 14.0f
 #define TAIL_Y 30.0f
 #define TAIL_Z -15.0f
-#define KNEE_Y 32.0f /* the knee, where what's below it turns, over KNEE_SPAN each way */
-#define KNEE_Z -4.0f
-#define KNEE_SPAN 8.0f
 
-/* A step: a leg's swing each way (radians), its foot's lift and its knee's bend at their highest, and the body's bob, lean and turn. */
-#define STEP_SWING 0.5f
-#define STEP_LIFT 30.0f
-#define STEP_KNEE 0.8f
-#define STEP_BOB 5.0f
-#define STEP_ROLL 0.12f
-#define STEP_TWIST 0.12f
+/* A stride, as each leg goes through it: on the ground for its first STEP_STANCE, its foot going back steadily from STEP_REACH in
+ * front of its hip to STEP_REACH behind, then up STEP_LIFT with its knee STEP_KNEE_OUT in front, and forward again. Two strides an
+ * animation, a step 5 ticks of his base's 20-tick run: his legs are short, and so many steps keep his feet up with the floor as he
+ * goes (Tiny's, a stride a run, go back as fast as he moves). The body bobs, leans over the leg it's on, and turns against the legs. */
+#define STEP_STRIDES 2
+#define STEP_STANCE 0.6f
+#define STEP_REACH 44.0f
+#define STEP_LIFT 22.0f
+#define STEP_KNEE_OUT 26.0f
+#define STEP_BOB 4.0f
+#define STEP_ROLL 0.10f
+#define STEP_TWIST 0.10f
 
 /* The spin: his jump's frame with his legs out, the turns, the hop (extraheroes.c draws a third of a frame's lift, KEEP_LIFT), the
  * frames he takes to throw his legs out and bring them in, and the one he's landed by: the base's attack shows only its first 14. */
@@ -405,8 +408,28 @@ static void sway_middle(const Entry *a, const s32 scale[3]) {
 #define SPIN_LAND 13
 #define SPIN_BODY 70.0f /* he spins round the middle of what's above this */
 
+/* The tornado round his spin, as Crash's and Coco's spins have (their models' second mesh), but blue and glowing: streaks of faces,
+ * drawn adding their colour (a face's colour index, bit 15 and blend mode 1), rising round him from his legs to his head, wide at
+ * the bottom and narrower up, each bright at its front and fading behind, whirling round faster than he turns. They're vertices of
+ * his mesh like the rest, all at one point (so nothing to draw) in any other frame, and open out and fold away with his legs. */
+#define TORN_STREAKS 8
+#define TORN_SEGS 14
+#define TORN_VERTS (TORN_STREAKS * (TORN_SEGS + 1) * 2)
+#define TORN_TRIS (TORN_STREAKS * TORN_SEGS * 4) /* two a quad, each side */
+#define TORN_STEP 24.0f    /* how much higher each streak starts */
+#define TORN_RISE 46.0f    /* and rises along itself */
+#define TORN_HALF 7.0f     /* half its width */
+#define TORN_BOTTOM 126.0f /* the radius at the floor, and at TORN_TOP */
+#define TORN_RADIUS_TOP 66.0f
+#define TORN_TOP 210.0f
+#define TORN_SPAN 3.6f     /* the way round a streak goes (radians), the way it turns a frame, and how far round each starts from the last */
+#define TORN_SPEED 1.75f
+#define TORN_PHASE 2.2f
+#define TORN_RAMP 1.6f     /* how a streak's brightness rises to its front */
+static const u8 TornRgb[3] = { 60, 150, 255 };
+
 static V3 Rest[MAX_VERTS], LegsOut[MAX_VERTS];
-static float LegShare[MAX_VERTS], KneeShare[MAX_VERTS];
+static float LegShare[MAX_VERTS];
 static u8 LegOf[MAX_VERTS]; /* 0 his left (-x), 1 his right */
 static s32 RigVerts;
 static float SpinX, SpinZ;
@@ -446,15 +469,7 @@ static V3 mix(V3 a, V3 b, float t) {
     return r;
 }
 
-/* p turned a radians round an axis through c: across (x), up (y) or forward (z) */
-static V3 turn_x(V3 p, V3 c, float a) {
-    float s = sinf(a), k = cosf(a), y = p.y - c.y, z = p.z - c.z;
-
-    p.y = c.y + y * k - z * s;
-    p.z = c.z + y * s + z * k;
-    return p;
-}
-
+/* p turned a radians round an axis through c: up (y) or forward (z) */
 static V3 turn_y(V3 p, V3 c, float a) {
     float s = sinf(a), k = cosf(a), x = p.x - c.x, z = p.z - c.z;
 
@@ -488,7 +503,6 @@ static void rig_setup(const Entry *jump, const s32 scale[3]) {
         Rest[k] = p;
         LegOf[k] = p.x < 0 ? 0 : 1;
         LegShare[k] = tail ? 0 : smooth(LEG_TOP, LEG_FULL, p.y) * smooth(LEG_MID, LEG_SIDE, fabsf(p.x));
-        KneeShare[k] = smooth(KNEE_Y + KNEE_SPAN, KNEE_Y - KNEE_SPAN, p.y);
         low = p.y < low ? p.y : low;
         if (p.y > SPIN_BODY) {
             sx += p.x;
@@ -510,40 +524,75 @@ static void rig_setup(const Entry *jump, const s32 scale[3]) {
     RigVerts = SwayVerts;
 }
 
+/* Where a leg is at p (0 to 1) through its stride: its foot's way in front of its hip, and how far up it is (0 on the ground to 1). */
+static void stride(float p, float *z, float *up) {
+    if (p < STEP_STANCE) {
+        *z = STEP_REACH * (1 - 2 * p / STEP_STANCE);
+        *up = 0;
+        return;
+    }
+    p = (p - STEP_STANCE) / (1 - STEP_STANCE);
+    *z = STEP_REACH * (2 * smooth(0, 1, p) - 1);
+    *up = sinf(ROO_PI * p);
+}
+
 static s32 walk_verts(s32 f, V3 *out) {
-    float phi = 2 * ROO_PI * f / RooAnims[ROO_WALK].made, swing = STEP_SWING * sinf(phi), lift[2];
-    float bob = STEP_BOB * (fabsf(cosf(phi)) - 0.5f), roll = STEP_ROLL * cosf(phi), twist = STEP_TWIST * sinf(phi);
-    V3 pelvis = { 0, HIP_Y, HIP_Z }, knee = { 0, KNEE_Y, KNEE_Z };
+    float t = (float)STEP_STRIDES * f / RooAnims[ROO_WALK].made, z[2], up[2], bob, roll, twist;
+    V3 pelvis = { 0, HIP_Y, HIP_Z };
     s32 k;
 
-    /* his left leg comes forward as sin rises, off the ground as it does */
-    lift[0] = STEP_LIFT * fmaxf(0, cosf(phi));
-    lift[1] = STEP_LIFT * fmaxf(0, -cosf(phi));
+    /* his right leg half a stride behind his left */
+    stride(t - floorf(t), &z[0], &up[0]);
+    stride(t + 0.5f - floorf(t + 0.5f), &z[1], &up[1]);
+    bob = STEP_BOB * (up[0] + up[1] - 0.5f);
+    roll = STEP_ROLL * (up[0] - up[1]);
+    twist = STEP_TWIST * (z[0] - z[1]) / (2 * STEP_REACH);
     for (k = 0; k < RigVerts; k++) {
         V3 p = Rest[k], q, body;
         s32 leg = LegOf[k];
-        float w = LegShare[k];
+        float w = LegShare[k], d;
 
         body = turn_y(turn_z(p, pelvis, roll), pelvis, -twist);
         body.y += bob;
         q = mix(p, body, 1 - w);
         if (w > 0) {
-            V3 hip, l;
-
-            hip.x = leg ? HIP_X : -HIP_X;
-            hip.y = HIP_Y;
-            hip.z = HIP_Z;
-            l = mix(p, turn_x(p, knee, STEP_KNEE * lift[leg] / STEP_LIFT), KneeShare[k]);
-            l = turn_x(l, hip, leg ? swing : -swing);
-            l.y += lift[leg];
-            l = mix(p, l, w);
-            q.x += l.x - p.x;
-            q.y += l.y - p.y;
-            q.z += l.z - p.z;
+            /* how far down the leg, 0 at the hip to 1 at the foot and all of the foot */
+            d = (HIP_Y - p.y) / (HIP_Y - FOOT_Y);
+            d = d < 0 ? 0 : d > 1 ? 1 : d;
+            q.y += STEP_LIFT * up[leg] * d * w;
+            q.z += (z[leg] * d + STEP_KNEE_OUT * up[leg] * sinf(ROO_PI * d)) * w;
         }
         out[k] = from_rig(q);
     }
     return RigVerts;
+}
+
+/* The tornado's vertices after his n, from frame f of his spin, open of the way out and up off the ground: each streak a strip of
+ * TORN_SEGS + 1 pairs, its back end first; or, shut, all at one point inside him. */
+static s32 add_tornado(V3 *out, s32 n, s32 f, float open, float up) {
+    s32 k, s, at = n;
+
+    for (k = 0; k < TORN_STREAKS; k++) {
+        for (s = 0; s <= TORN_SEGS; s++) {
+            float u = (float)s / TORN_SEGS, a = k * TORN_PHASE + TORN_SPEED * f + TORN_SPAN * u, y = k * TORN_STEP + TORN_RISE * u;
+            float r = (TORN_BOTTOM + (TORN_RADIUS_TOP - TORN_BOTTOM) * y / TORN_TOP) * open, h = TORN_HALF * open;
+            V3 lo, hi;
+
+            if (open <= 0) {
+                lo.x = hi.x = SpinX;
+                lo.y = hi.y = SPIN_BODY + 30;
+                lo.z = hi.z = SpinZ;
+            } else {
+                lo.x = hi.x = SpinX + r * sinf(a);
+                lo.z = hi.z = SpinZ + r * cosf(a);
+                lo.y = y - h + up;
+                hi.y = y + h + up;
+            }
+            out[at++] = from_rig(lo);
+            out[at++] = from_rig(hi);
+        }
+    }
+    return at;
 }
 
 static s32 spin_verts(s32 f, V3 *out) {
@@ -559,10 +608,11 @@ static s32 spin_verts(s32 f, V3 *out) {
         q.y += up;
         out[k] = from_rig(q);
     }
-    return RigVerts;
+    return add_tornado(out, RigVerts, f, open, up);
 }
 
-/* His animation j's frames, and its frame f as frame_verts gives it: his standing one with less sway, the made ones made. */
+/* His animation j's frames, and its frame f as frame_verts gives it, then the tornado's (shut but in his spin): his standing one with
+ * less sway, the made ones made. */
 static s32 anim_frames(const Entry *a, s32 j) {
     return RooAnims[j].made > 0 && RigVerts > 0 ? RooAnims[j].made : a->count;
 }
@@ -571,10 +621,10 @@ static s32 anim_verts(const Entry *a, s32 j, s32 f, const s32 scale[3], V3 *out,
     s32 n, k;
 
     if (RooAnims[j].made > 0 && RigVerts > 0) {
-        return j == ROO_SPIN ? spin_verts(f, out) : walk_verts(f, out);
+        return j == ROO_SPIN ? spin_verts(f, out) : add_tornado(out, walk_verts(f, out), 0, 0, 0);
     }
     f = f < a->count ? f : a->count - 1;
-    n = frame_verts(a->item[f], a->size[f], scale, out, normals, MAX_VERTS);
+    n = frame_verts(a->item[f], a->size[f], scale, out, normals, MAX_VERTS - TORN_VERTS);
     if (j == ROO_REST && n > 0 && n == SwayVerts) {
         for (k = 0; k < n; k++) {
             out[k].x = SwayMiddle[k].x + (out[k].x - SwayMiddle[k].x) * ROO_SWAY;
@@ -582,7 +632,7 @@ static s32 anim_verts(const Entry *a, s32 j, s32 f, const s32 scale[3], V3 *out,
             out[k].z = SwayMiddle[k].z + (out[k].z - SwayMiddle[k].z) * ROO_SWAY;
         }
     }
-    return n;
+    return n > 0 && RigVerts > 0 ? add_tornado(out, n, 0, 0, 0) : n;
 }
 
 static void put_box(Bytes *o, const V3 *v, s32 n, float k, float ground) {
@@ -810,6 +860,40 @@ static void make_roo(void) {
         }
     }
 
+    /* the tornado's faces, after his own, on its vertices after his (add_tornado): each quad two faces a side, so it shows from in
+     * and out, each corner bright as far as it is to its streak's front */
+    if (RigVerts > 0 && nvert == RigVerts + TORN_VERTS && ntri + TORN_TRIS <= MAX_TRIS) {
+        s32 streak, seg, q, c;
+
+        for (streak = 0; streak < TORN_STREAKS; streak++) {
+            for (seg = 0; seg < TORN_SEGS; seg++) {
+                /* this pair's low and high, then the next pair's */
+                s32 v0 = RigVerts + (streak * (TORN_SEGS + 1) + seg) * 2;
+                const s32 faces[4][3] = {
+                    { v0, v0 + 2, v0 + 3 }, { v0, v0 + 3, v0 + 1 }, { v0, v0 + 3, v0 + 2 }, { v0, v0 + 1, v0 + 3 },
+                };
+
+                for (q = 0; q < 4; q++) {
+                    Tri *t = &tris[ntri++];
+
+                    memset(t, 0, sizeof(*t));
+                    t->a = faces[q][0];
+                    t->b = faces[q][1];
+                    t->c = faces[q][2];
+                    t->image = -1;
+                    t->glow = 1;
+                    for (j = 0; j < 3; j++) {
+                        float b = powf((float)((faces[q][j] - RigVerts) / 2 % (TORN_SEGS + 1)) / TORN_SEGS, TORN_RAMP);
+
+                        for (c = 0; c < 3; c++) {
+                            t->corner_rgb[j][c] = (u8)(TornRgb[c] * b);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /* the texture set: a palette and an image a texture */
     {
         size_t first_image;
@@ -926,7 +1010,8 @@ static void make_roo(void) {
     for (i = 0; i < ntri; i++) {
         u8 s[2];
 
-        wr16(s, (u32)(i * 3));
+        /* the tornado's added, semi-transparent (bit 15) in blend mode 1 */
+        wr16(s, (u32)(i * 3 | (tris[i].glow ? 0x8000 | 1 << 13 : 0)));
         put(&mdl, s, 2);
     }
     align(&mdl, 4);
@@ -941,9 +1026,18 @@ static void make_roo(void) {
 
             for (j = 0; j < 3; j++) {
                 const V3 *nn = &normals[corner[j]];
-                float len = sqrtf(nn->x * nn->x + nn->y * nn->y + nn->z * nn->z), lit = 0;
+                float len, lit = 0;
                 u8 c[4];
 
+                if (tris[i].glow) {
+                    c[0] = tris[i].corner_rgb[j][0];
+                    c[1] = tris[i].corner_rgb[j][1];
+                    c[2] = tris[i].corner_rgb[j][2];
+                    c[3] = 0;
+                    put(&mdl, c, 4);
+                    continue;
+                }
+                len = sqrtf(nn->x * nn->x + nn->y * nn->y + nn->z * nn->z);
                 if (len > 0) {
                     lit = (nn->x * light.x + nn->y * light.y + nn->z * light.z) / (len * ll);
                 }
@@ -1120,7 +1214,7 @@ const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch) {
     return RooCard;
 }
 
-void bonus_heroes_cheer(s32 extra, s32 again) {
+void bonus_heroes_cheer(s32 extra) {
     static short voice = -1;
     /* as loud as the game's own effects at the sound option it's at (sound.c, sfx_key_on) */
     s32 vol = 0x1E00 * GameOptions.sfx * 0x7F / 409600;
@@ -1128,12 +1222,8 @@ void bonus_heroes_cheer(s32 extra, s32 again) {
     if (!bonus_heroes_have(extra) || RooLaugh == NULL) {
         return;
     }
-    /* one laugh at a time: a new one starts it again, as a hero's taunt sound does (its move's 0x800A, on the hero's own sound), or
-     * if it's not to, lets the one going finish */
+    /* one laugh at a time: a new one starts it again, as a hero's taunt sound does (its move's 0x800A, on the hero's own sound) */
     if (audio_sample_playing(voice, RooLaugh)) {
-        if (!again) {
-            return;
-        }
         audio_voice_off(voice);
     }
     vol = vol < 0 ? 0 : vol > 0x7F ? 0x7F : vol;

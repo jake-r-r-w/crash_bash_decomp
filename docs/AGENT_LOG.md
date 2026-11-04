@@ -486,11 +486,26 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   With no presses the game's AI plays player 1 as `--bot` does, and a run goes the same way every time, so a move seen at a
   vblank in one run can be shot at that vblank in the next.
 - A test run opens no sound device: `audio_play_sample` gives -1, so `audio_sample_playing` is never true, unless the run records
-  (`--wav FILE`) or plays (`--sound`).
+  (`--wav FILE`) or plays (`--sound`). Two `--wav` runs that differ only in one sound, subtracted, show just that sound.
+- A run takes at most 64 `--shot`s (MAX_SHOTS in port/main.c); one more and it stops with "unknown option --shot".
+- A hero's body box (`FindCollisionBox(eng, 0x40)`, what crates and heroes stop against) is copied from its model's mesh as the
+  hero's made (CreateHeroes' `FetchDefaultColBox`, the mesh `HeroEntities` shows), not read per frame: a hero's frames carry no
+  boxes. Anything that changes a hero's model after that has to fetch it again (extraheroes.c, `body_box`).
+- The victory's hero sounds (UpdateHeroVictory): step 0 is the announcer saying the winner's name (each hero's wait after it fits
+  the name), then 0x1B0, then step 2 the winner's own cheer.
 
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-04: Ripper Roo after the user's play, at their word. Crates, TNT, Nitro and heroes didn't stop him: a hero's body box is
+  copied from its model's mesh as it's made, before extra_heroes_start, and his model has none, so `body_box` fetches it again from
+  his base's (35 ticks against crates in an AI round, none without it). The announcer names him again (Rilla Roo's line, step 0);
+  his laugh is the winner's cheer (step 2) and plays out whole (two `--wav` runs subtracted). His spin has a blue tornado, as
+  Crash's and Coco's spins have theirs (their attack shows their model's mesh 2): 8 glowing streaks (faces with colour index bit 15,
+  blend mode 1) in his own mesh, at one point in every other frame. His walk keeps up with the floor as Tiny's does (Tiny's 20-frame
+  run is one stride of about 385 units a step, as fast as he moves; Roo's short legs slid): two strides a run, each foot going back
+  flat along the floor, then up with the knee out (`roo_walk.mjs`, `roo_spin.mjs` tried both first).
 
 - 2026-11-04: Ripper Roo after the user's play, at their word. A walk of his own (WALK, 20 frames as Crate Crush's run and carry):
   bonusheroes.c rigs his standing pose in his game's axes, each leg swung from its hip and lifted on a bent knee in turn, the body

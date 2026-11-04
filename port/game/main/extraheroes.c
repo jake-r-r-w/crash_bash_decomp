@@ -8,8 +8,9 @@
  * frames of the base's own model, 0x4000 | n << 7 | f, frame f of its animation n, so as an extra hero is drawn each one is its
  * stand-in for that animation, by name (Roo's walk where a hero would run, his spin where one attacks), the same share of the way
  * through or at its own speed, with less of its lift off the ground. The points the game finds on a frame (the boxes it collides
- * with, the hands that hold a crate) are the base's, from its own model; what it holds sits on its head, which is where the head point
- * is too. The moves themselves never change, so the game's checks of how far one has got still hold. */
+ * with, the hands that hold a crate) are the base's, from its own model, and so is its body's box (body_box); what it holds sits on
+ * its head, which is where the head point is too. The moves themselves never change, so the game's checks of how far one has got
+ * still hold. */
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,6 +20,8 @@
 #include "bash/dbase.h"
 #include "bash/modelbank.h"
 #include "bash/panel.h"
+#include "bash/nascalls.h"
+#include "bash/pause.h"
 #include "bash/extraheroes.h"
 #include "bash/bonusheroes.h"
 #include "../../platform/settings.h"
@@ -456,6 +459,8 @@ static u8 *model_file(s32 extra) {
     return bonus_heroes_have(extra) ? bonus_heroes_model(extra) : NULL;
 }
 
+static void body_box(s32 player);
+
 void extra_heroes_start(void) {
     s32 i, k, from_height;
 
@@ -501,23 +506,41 @@ void extra_heroes_start(void) {
         p->sub = Heroes[i].hero_sub;
         p->on = 1;
         AnyPlaying = 1;
+        body_box(i);
     }
+}
+
+/* Its body's box, which crates, TNT and Nitro and the other heroes stop against (FindCollisionBox's 0x40): the game takes it from a
+ * hero's model as the hero's made (CreateHeroes, FetchDefaultColBox, from the mesh HeroEntities shows), before an extra hero's on,
+ * when its own model, which has none, was all there was. So again now, from its base's mesh. */
+static void body_box(s32 player) {
+    EXTengine *eng = Heroes[player].hero_eng;
+    subengine *sub = eng != NULL ? eng->sub : NULL;
+    s32 was;
+
+    if (sub == NULL || sub != Play[player].sub || (u32)(PlayerBase[player] - 1) >= 8) {
+        return;
+    }
+    was = sub->entity;
+    sub->entity = HeroEntities[PlayerBase[player]];
+    FetchDefaultColBox(eng, 0x50);
+    sub->entity = was;
 }
 
 s32 extra_hero_voice(s32 player, s32 sfx) {
     if (player < 0 || player >= 4 || !Play[player].on || Play[player].taunt_sfx < 0 || sfx != Play[player].taunt_sfx) {
         return 0;
     }
-    bonus_heroes_cheer(PlayerExtra[player], 1);
+    bonus_heroes_cheer(PlayerExtra[player]);
     return 1;
 }
 
 s32 extra_hero_win_voice(s32 player, s32 line) {
-    if (player < 0 || player >= 4 || !Play[player].on) {
+    /* the first line is the announcer naming the winner (the base's name, as near as there is), the second the winner's own cheer */
+    if (player < 0 || player >= 4 || !Play[player].on || line == 0) {
         return 0;
     }
-    /* the first starts its laugh; the second, a couple of seconds on, lets it finish */
-    bonus_heroes_cheer(PlayerExtra[player], line == 0);
+    bonus_heroes_cheer(PlayerExtra[player]);
     return 1;
 }
 
