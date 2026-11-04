@@ -63,8 +63,9 @@ He's made from the image each time the game starts, so keep it there: nothing of
 it is copied or kept. So far he's made for Crate Crush, Polar Push, where he
 rides a polar bear as the others do, Pogo, where he bounces on the cane he has
 as its boss, Ballistix, where he drives his car with his head, Tank, where he
-has Dingodile's flamethrower, and Crash Dash, in a red race cart of his own (but
-on the water track); the other games aren't done for him yet.
+has Dingodile's flamethrower, and Crash Dash, in a red race cart of his own, or
+on the water track riding a red fish, holding on with his tongue; the other
+games aren't done for him yet.
 
 
 MODS

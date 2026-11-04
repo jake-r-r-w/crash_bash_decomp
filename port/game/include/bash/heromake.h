@@ -138,11 +138,22 @@ s32 hm_model_anim(const GamePart *p, const char *name, s32 *frames);
 s32 hm_bank_frames(s32 bank, const char *name);
 /* All its first mesh's corners at t of animation `anim`, between the frames either side (t is kept within its frames). 0 if it can't. */
 s32 hm_model_at(const GamePart *p, s32 anim, float t, V3 *corners);
-/* Faces and their images painted another colour, `paint` (red | green << 8 | blue << 16): their warm colours (reds, oranges and
- * yellows) turned to its hue, as strong as it is of theirs, and as bright of their own shade, a little of how far apart they were kept;
- * greys and the cold colours as they are. For a part of the game's own models made a hero's own colour (the cart Roo has is Rilla
- * Roo's orange one, painted his). */
-void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, u32 paint);
+/* Faces and their images painted another colour, `paint` (red | green << 8 | blue << 16): their colours of about hue `from` (degrees
+ * round from red; 45 for oranges and yellows, reds to yellow-greens) turned to its hue, as strong as it is of theirs, and as bright of
+ * their own shade, a little of how far apart they were kept; greys and the other colours as they are. For a part of the game's own
+ * models made a hero's own colour (the cart Roo has is Rilla Roo's orange one, and his fish her blue one, painted his red). */
+void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, float from, u32 paint);
+/* How part of a model's moved from one frame to another: the turn that best takes its corners `ids` (n of them) at `from` to theirs at
+ * `to`, about their middles (Horn's fit), and those middles. A point on it goes to hm_moved's; a direction turns to hm_turned's, and
+ * back to its first frame's with hm_unturned. */
+typedef struct {
+    float m[3][3];
+    V3 from, to;
+} Moved;
+void hm_fit(const V3 *from, const V3 *to, const s16 *ids, s32 n, Moved *out);
+V3 hm_moved(const Moved *mv, V3 p);
+V3 hm_turned(const Moved *mv, V3 v);
+V3 hm_unturned(const Moved *mv, V3 v);
 
 /* --- what's loose on a hero (a tongue, ears) ---
  * Its swing: a damped spring at the hero's head, thrown about by the head's accelerations from frame to frame. The frames a swing

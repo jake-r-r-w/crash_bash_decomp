@@ -48,6 +48,10 @@ static const Stand RooRace[] = {
     { "BREATHE", "BREATHE", LOOP },
     { NULL, NULL, STRETCH },
 };
+/* Riding a fish his model has Splash Dash's moves by name */
+static const Stand RooSplash[] = {
+    { NULL, NULL, STRETCH },
+};
 static const Stand RooPogo[] = {
     { "TAZING", "TAZING", LOOP },
     { NULL, NULL, STRETCH },
@@ -79,8 +83,8 @@ const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
       { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, 1 },
-      { RooTank, "BREATHE", 0x1000, Dingodile, 1 }, { RooRace, "BREATHE", 0x1000, 0, 1 } },
-    /* in a car, a tank and a race cart a frame of his to each of his base's (VEHICLE_PER) */
+      { RooTank, "BREATHE", 0x1000, Dingodile, 1 }, { RooRace, "BREATHE", 0x1000, 0, 1 }, { RooSplash, "SWIM", 0x1000, 0, 1 } },
+    /* in a car, a tank, a race cart and on a fish a frame of his to each of his base's (VEHICLE_PER) */
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -401,7 +405,8 @@ static s32 anim_verts(const C1Entry *a, s32 j, s32 f, const s32 scale[3], V3 *ou
 #define RIDE_STEADY 0.3f /* of Crash's tilt from upright, the share he keeps back from, steadier as he's taller */
 #define RIDE_CHARRED 0.35f /* his colours' share when a bomb's charred him */
 
-static V3 seated(s32 k) {
+/* Astride: how far his thighs go out over its sides (spread), and how far of that his shins come back in under them (knee_out) */
+static V3 astride(s32 k, float spread, float knee_out) {
     V3 q = Rest[k];
 
     if (LegShare[k] > 0) {
@@ -415,9 +420,9 @@ static V3 seated(s32 k) {
             q = hm_mix(q, hm_turn_z(q, ankle, -side * SEAT_FOOT_DROOP), foot);
         }
         /* the thigh, from the hip; then the shin, from where the knee's gone */
-        r = hm_turn_x(hm_turn_z(q, hip, side * SEAT_SPREAD), hip, -SEAT_FLEX);
-        knee = hm_turn_x(hm_turn_z(knee, hip, side * SEAT_SPREAD), hip, -SEAT_FLEX);
-        shin = hm_turn_x(hm_turn_z(r, knee, -side * SEAT_SPREAD * SEAT_KNEE_OUT), knee, SEAT_KNEE_BACK);
+        r = hm_turn_x(hm_turn_z(q, hip, side * spread), hip, -SEAT_FLEX);
+        knee = hm_turn_x(hm_turn_z(knee, hip, side * spread), hip, -SEAT_FLEX);
+        shin = hm_turn_x(hm_turn_z(r, knee, -side * spread * knee_out), knee, SEAT_KNEE_BACK);
         r = hm_mix(r, shin, below);
         q = hm_mix(q, r, LegShare[k]);
     }
@@ -428,6 +433,11 @@ static V3 seated(s32 k) {
         q.z = SEAT_TAIL_Z;
     }
     return q;
+}
+
+/* On the bear */
+static V3 seated(s32 k) {
+    return astride(k, SEAT_SPREAD, SEAT_KNEE_OUT);
 }
 
 /* What's loose on him: his tongue, the faces of his model that are its reds and pinks, more of it the further it's out of his mouth
@@ -447,6 +457,7 @@ static V3 seated(s32 k) {
 #define FLOP_MAX 60.0f
 static const Flop RooSwing = { FLOP_PERIOD, FLOP_DAMPING, FLOP_GAIN, FLOP_MAX };
 static float FlopShare[MAX_VERTS];
+static float TongueShare[MAX_VERTS]; /* of it, his tongue's: none at its root, all at its tip */
 
 static void flop_setup(const C1Entry *model) {
     static u8 red[MAX_VERTS];
@@ -477,6 +488,7 @@ static void flop_setup(const C1Entry *model) {
         float e = Rest[k].y > FLOP_EAR_LOW ? FLOP_EAR * hm_smooth(FLOP_EAR_ROOT, FLOP_EAR_TIP, fabsf(Rest[k].x)) : 0;
 
         FlopShare[k] = t > e ? t : e;
+        TongueShare[k] = t;
     }
 }
 
@@ -1485,6 +1497,7 @@ static s32 tank_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, c
  * leans back as he falls (DASH_BACK); and laughs as he wins, bouncing DASH_HOP in his seat. His tongue and ears swing. */
 #define DASH_CART_TOP -220.0f
 #define DASH_PAINT 0x2020E0 /* red | green << 8 | blue << 16 */
+#define DASH_FROM 45.0f     /* its oranges and yellows (hm_paint) */
 #define DASH_LIGHTS 10      /* her texture set's image for its lights */
 #define DASH_SCALE 0.8f
 #define DASH_HIPS 95.0f
@@ -1707,12 +1720,12 @@ static s32 dash_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, c
     }
     for (k = 0; k < c->cart.nfaces; k++) {
         if (c->cart.faces[k].image < 0 || c->cart.image_of[c->cart.faces[k].image] != DASH_LIGHTS) {
-            hm_paint(&c->cart.faces[k], 1, NULL, 0, DASH_PAINT);
+            hm_paint(&c->cart.faces[k], 1, NULL, 0, DASH_FROM, DASH_PAINT);
         }
     }
     for (k = 0; k < c->cart.nimages; k++) {
         if (c->cart.image_of[k] != DASH_LIGHTS) {
-            hm_paint(NULL, 0, &c->cart.images[k], 1, DASH_PAINT);
+            hm_paint(NULL, 0, &c->cart.images[k], 1, DASH_FROM, DASH_PAINT);
         }
     }
     dash_swing(c);
@@ -1755,6 +1768,374 @@ done:
     free(c->cart_at);
     c->cart_at = NULL;
     hm_part_free(&c->cart);
+    return ok;
+}
+
+/* --- riding a fish (Splash Dash) ---
+ * Crash Dash's water track has its heroes riding fish, each hero's in its own model with it (models\chars\splash\: Crash's and Coco's
+ * a pink dolphin, Cortex's and Brio's a grey shark, Tiny's and Kong's an orca, Dingodile's and Rilla Roo's a blue fish), five moves:
+ * BREATHE sat up on it, SWIM lying along it holding its head (as it swims, and as it waits too), TRANS sitting up and down again as it
+ * sets off, FALL as it dives, and WIN sat up, waving. Roo's model has Rilla Roo's fish, her model's first FISH_STRIPS strips (it's
+ * before her in it), moving as hers does in the same move and frame; painted his red, as his cart is (its blues, FISH_FROM), as he's
+ * blue too. He sits astride it as on a polar bear, his legs less spread (FISH_SPREAD, his shins FISH_KNEE_OUT of it back in) as it's
+ * narrower, FISH_SCALE of his size, his hips FISH_HIP_UP above the top of its back FISH_SEAT_Z along it, as it rests, and moves as its
+ * back does there (a fit of its corners above FISH_BACK_Y within FISH_BACK_Z of his seat along it). With no hands, he holds on with his
+ * tongue (at the user's word): out of his mouth to the top of its head (its corner nearest FISH_HEAD_Y and FISH_HEAD_Z as it rests,
+ * FISH_REIN_UP over it) as a rein, all of it but its root (FISH_REIN_ROOT of the way out) on the way there. He sways as he sits up
+ * (BREATHE); crouches forward FISH_CROUCH at his waist as it swims, rocking FISH_STROKE with its strokes; leans into the crouch as it
+ * sets off (TRANS); is thrown back FISH_THROWN as it dives; and laughs as he wins, bouncing FISH_HOP. His ears swing. */
+#define FISH_STRIPS 16
+#define FISH_FROM 197.0f
+#define FISH_SCALE 1.1f
+#define FISH_SPREAD 0.7f
+#define FISH_KNEE_OUT 0.9f
+#define FISH_HIP_UP 5.0f
+#define FISH_SEAT_Z 80.0f
+#define FISH_SEAT_NEAR 40.0f
+#define FISH_BACK_Y -40.0f
+#define FISH_BACK_Z 220.0f
+#define FISH_CROUCH 0.4f
+#define FISH_STROKE 0.06f
+#define FISH_THROWN 0.5f
+#define FISH_HOP 30.0f
+#define FISH_HEAD_Y -110.0f
+#define FISH_HEAD_Z -300.0f
+#define FISH_REIN_UP 8.0f
+#define FISH_REIN_ROOT 0.3f
+#define FISH_SWAY 0.3f
+#define FISH_FADE 4.0f
+#define FISH_MAX_TICKS 96
+#define FISH_MAX_IDS 256
+
+enum { FISH_BREATHE, FISH_FALL, FISH_SWIM, FISH_TRANS, FISH_WIN, FISH_MOVES };
+static const char *const FishNames[FISH_MOVES] = { "BREATHE", "FALL", "SWIM", "TRANS", "WIN" };
+
+typedef struct {
+    const FootCtx *foot;
+    MadeAnim anims[FISH_MOVES];
+    V3 swing[FISH_MOVES][FISH_MAX_TICKS];
+    GamePart fish;
+    s32 fish_anim[FISH_MOVES], fish_rest; /* Rilla Roo's animations it moves with, by the same names, and her BREATHE */
+    V3 *rest_at, *at;                     /* her model's corners as it rests, and in a frame */
+    s16 back[FISH_MAX_IDS];
+    s32 nback, head;                      /* its back's corners by his seat, and the one his tongue holds */
+    float seat_y;                         /* the top of its back at his seat */
+} FishCtx;
+
+static FishCtx Fish;
+
+static s32 keep_fish(void *ctx, const V3 *rest, s32 n, s32 textured) {
+    s32 *strips = ctx;
+
+    (void)rest;
+    (void)n;
+    (void)textured;
+    return (*strips)++ < FISH_STRIPS;
+}
+
+/* Rilla Roo's model in move a at its frame f: its corners into c->at, and how its back's moved from as it rests */
+static void fish_at(const FishCtx *c, s32 a, s32 f, Moved *back) {
+    s32 h = c->fish_anim[a] >= 0 ? c->fish_anim[a] : c->fish_rest;
+
+    if (!hm_model_at(&c->fish, h, (float)f / VEHICLE_PER, c->at)) {
+        memcpy(c->at, c->rest_at, sizeof(V3) * (size_t)c->fish.corners);
+    }
+    hm_fit(c->rest_at, c->at, c->back, c->nback, back);
+}
+
+/* Frame f of move a, but for the swing and the rein: his vertices in Crash Bash's units, on the fish (and her model's corners there,
+ * in c->at) */
+static void fish_pose(const FishCtx *c, s32 a, s32 f, V3 *out) {
+    static V3 q[MAX_VERTS];
+    const FootCtx *foot = c->foot;
+    s32 frames = c->anims[a].frames, k;
+    float g = (float)f / VEHICLE_PER, ticks = (float)frames / VEHICLE_PER, last = ticks > 1 ? ticks - 1 : 1;
+    float t = g / last, fade, lean = 0, hop = 0, s = ROO_UNIT * foot->k * FISH_SCALE;
+    V3 waist = { 0, RIDE_WAIST, 0 };
+    Moved back;
+
+    fish_at(c, a, f, &back);
+    for (k = 0; k < RigVerts; k++) {
+        q[k] = astride(k, FISH_SPREAD, FISH_KNEE_OUT);
+    }
+    fade = fminf(hm_smooth(0, FISH_FADE, g), hm_smooth(last, last - FISH_FADE, g));
+    switch (a) {
+    case FISH_BREATHE:
+        car_motion(foot, ROO_REST, g * foot->anims[ROO_REST].count / (ticks > 0 ? ticks : 1), FISH_SWAY, q);
+        break;
+    case FISH_SWIM:
+        lean = FISH_CROUCH + FISH_STROKE * sinf(2 * ROO_PI * g / (ticks > 0 ? ticks : 1));
+        break;
+    case FISH_TRANS:
+        lean = FISH_CROUCH * hm_smooth(0, 1, t);
+        break;
+    case FISH_FALL:
+        lean = -FISH_THROWN * hm_smooth(0, 6, g);
+        break;
+    case FISH_WIN:
+        car_motion(foot, ROO_LAUGH, g, fade, q);
+        hop = FISH_HOP * fabsf(sinf(ROO_PI * g / 8)) * fade;
+        break;
+    }
+    for (k = 0; k < RigVerts; k++) {
+        float up = hm_smooth(RIDE_WAIST - RIDE_WAIST_BLEND, RIDE_WAIST + RIDE_WAIST_BLEND, Rest[k].y);
+        V3 p = q[k], o;
+
+        if (up > 0 && lean != 0) {
+            p = hm_mix(p, hm_turn_x(p, waist, lean), up);
+        }
+        p.y += hop / s * up;
+        o.x = p.x * s;
+        o.y = -(p.y - HIP_Y) * s + c->seat_y - FISH_HIP_UP;
+        o.z = -(p.z - HIP_Z) * s + FISH_SEAT_Z;
+        out[k] = hm_moved(&back, o);
+    }
+}
+
+/* His tongue as a rein, from his mouth to the top of its head: each of its vertices on the way there as far as it's out of his mouth
+ * (but its root, coming out of it), the tongue's own shape about the way kept */
+static void fish_rein(const FishCtx *c, V3 *out) {
+    V3 root = { 0, 0, 0 }, tip = { 0, 0, 0 }, to = c->at[c->head], u, w, e;
+    float nr = 0, nt = 0, l, l2, sn, cs;
+    s32 k;
+
+    to.y -= FISH_REIN_UP;
+    for (k = 0; k < RigVerts; k++) {
+        if (TongueShare[k] > 0 && TongueShare[k] < 0.25f) {
+            root.x += out[k].x;
+            root.y += out[k].y;
+            root.z += out[k].z;
+            nr++;
+        } else if (TongueShare[k] > 0.85f) {
+            tip.x += out[k].x;
+            tip.y += out[k].y;
+            tip.z += out[k].z;
+            nt++;
+        }
+    }
+    if (nr == 0 || nt == 0) {
+        return;
+    }
+    root.x /= nr;
+    root.y /= nr;
+    root.z /= nr;
+    u.x = tip.x / nt - root.x;
+    u.y = tip.y / nt - root.y;
+    u.z = tip.z / nt - root.z;
+    w.x = to.x - root.x;
+    w.y = to.y - root.y;
+    w.z = to.z - root.z;
+    l = sqrtf(u.x * u.x + u.y * u.y + u.z * u.z);
+    l2 = sqrtf(w.x * w.x + w.y * w.y + w.z * w.z);
+    if (l < 1 || l2 < 1) {
+        return;
+    }
+    u.x /= l;
+    u.y /= l;
+    u.z /= l;
+    w.x /= l2;
+    w.y /= l2;
+    w.z /= l2;
+    /* the turn from the way it goes to the way to its head: about e, by the angle whose sine and cosine are sn and cs */
+    e.x = u.y * w.z - u.z * w.y;
+    e.y = u.z * w.x - u.x * w.z;
+    e.z = u.x * w.y - u.y * w.x;
+    sn = sqrtf(e.x * e.x + e.y * e.y + e.z * e.z);
+    cs = u.x * w.x + u.y * w.y + u.z * w.z;
+    if (sn > 1e-6f) {
+        e.x /= sn;
+        e.y /= sn;
+        e.z /= sn;
+    }
+    for (k = 0; k < RigVerts; k++) {
+        float along, ed, share = hm_smooth(0, FISH_REIN_ROOT, TongueShare[k]);
+        V3 v, a, p;
+
+        if (TongueShare[k] <= 0) {
+            continue;
+        }
+        v.x = out[k].x - root.x;
+        v.y = out[k].y - root.y;
+        v.z = out[k].z - root.z;
+        along = v.x * u.x + v.y * u.y + v.z * u.z;
+        a.x = v.x - along * u.x;
+        a.y = v.y - along * u.y;
+        a.z = v.z - along * u.z;
+        if (sn > 1e-6f) {
+            /* Rodrigues': a turned about e */
+            V3 ea = { e.y * a.z - e.z * a.y, e.z * a.x - e.x * a.z, e.x * a.y - e.y * a.x };
+
+            ed = e.x * a.x + e.y * a.y + e.z * a.z;
+            a.x = a.x * cs + ea.x * sn + e.x * ed * (1 - cs);
+            a.y = a.y * cs + ea.y * sn + e.y * ed * (1 - cs);
+            a.z = a.z * cs + ea.z * sn + e.z * ed * (1 - cs);
+        }
+        along *= l2 / l;
+        p.x = root.x + along * w.x + a.x;
+        p.y = root.y + along * w.y + a.y;
+        p.z = root.z + along * w.z + a.z;
+        out[k] = hm_mix(out[k], p, share);
+    }
+}
+
+/* The swing of his ears through each move, a tick at a time, from his head's path */
+static void fish_swing(FishCtx *c) {
+    static V3 v[MAX_VERTS], path[FISH_MAX_TICKS];
+    s32 a, i, k, ticks;
+
+    memset(c->swing, 0, sizeof(c->swing));
+    for (a = 0; a < FISH_MOVES; a++) {
+        ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER;
+        ticks = ticks > FISH_MAX_TICKS ? FISH_MAX_TICKS : ticks;
+        for (i = 0; i < ticks; i++) {
+            V3 sum = { 0, 0, 0 };
+            float w = 0;
+
+            fish_pose(c, a, i * VEHICLE_PER, v);
+            for (k = 0; k < RigVerts; k++) {
+                if (Rest[k].y > FOOT_HEAD_Y) {
+                    sum.x += v[k].x;
+                    sum.y += v[k].y;
+                    sum.z += v[k].z;
+                    w++;
+                }
+            }
+            if (w > 0) {
+                sum.x /= w;
+                sum.y /= w;
+                sum.z /= w;
+            }
+            path[i] = sum;
+        }
+        hm_flop(path, ticks, a == FISH_SWIM || a == FISH_BREATHE, &RooSwing, c->swing[a]);
+    }
+}
+
+static void fish_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    const FishCtx *c = ctx;
+    s32 ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER, i0, i1, k;
+    float s = (float)f / VEHICLE_PER, u;
+    V3 swing;
+
+    ticks = ticks > FISH_MAX_TICKS ? FISH_MAX_TICKS : ticks;
+    fish_pose(c, a, f, out);
+    i0 = (s32)floorf(s);
+    u = s - i0;
+    i0 = i0 < ticks ? i0 : ticks - 1;
+    i1 = i0 + 1 < ticks ? i0 + 1 : a == FISH_SWIM || a == FISH_BREATHE ? 0 : i0;
+    swing = hm_mix(c->swing[a][i0], c->swing[a][i1], u);
+    for (k = 0; k < RigVerts; k++) {
+        float w = TongueShare[k] > 0 ? 0 : FlopShare[k]; /* his ears; his tongue's the rein */
+
+        out[k].x += swing.x * w;
+        out[k].y += swing.y * w;
+        out[k].z += swing.z * w;
+    }
+    fish_rein(c, out);
+    /* the fish, where fish_pose found it */
+    for (k = 0; k < c->fish.nvert; k++) {
+        out[RigVerts + k] = c->at[c->fish.corner_of[k]];
+    }
+}
+
+/* His fish model: his own faces (own_tris of them) and images, and the fish; Splash Dash's moves as long as Rilla Roo's */
+static s32 fish_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, const MadeImage *images, s32 nimage, HeroMade *out) {
+    FishCtx *c = &Fish;
+    MadeFace *all = NULL;
+    MadeImage *imgs = NULL;
+    MadeModel mm;
+    s32 a, n, k, j, ok = 0, strips = 0;
+    float best = 1e30f;
+
+    memset(c, 0, sizeof(*c));
+    c->foot = foot;
+    for (a = 0; a < FISH_MOVES; a++) {
+        n = hm_bank_frames(DB_CharsSplashRilla, FishNames[a]);
+        n = n > 0 ? n : 20;
+        n = n > FISH_MAX_TICKS ? FISH_MAX_TICKS : n;
+        c->anims[a].name = FishNames[a];
+        c->anims[a].frames = n * VEHICLE_PER;
+        c->anims[a].mesh = 0;
+        c->anims[a].step = VEHICLE_PER;
+    }
+    /* the fish, moving as Rilla Roo's does, painted his red */
+    if (!hm_game_part(DB_CharsSplashRilla, keep_fish, &strips, &c->fish)
+        || (c->fish_rest = hm_model_anim(&c->fish, "BREATHE", NULL)) < 0
+        || (c->rest_at = malloc(sizeof(V3) * (size_t)c->fish.corners)) == NULL
+        || (c->at = malloc(sizeof(V3) * (size_t)c->fish.corners)) == NULL || !hm_model_at(&c->fish, c->fish_rest, 0, c->rest_at)) {
+        printf("bonus: Ripper Roo has no fish (Rilla Roo's)\n");
+        goto done;
+    }
+    for (a = 0; a < FISH_MOVES; a++) {
+        c->fish_anim[a] = hm_model_anim(&c->fish, FishNames[a], NULL);
+    }
+    /* its back by his seat, the top of it there, and the corner his tongue holds */
+    c->seat_y = 1e30f;
+    for (k = 0; k < c->fish.corners; k++) {
+        const V3 *p = &c->rest_at[k];
+        float d;
+
+        if (!c->fish.in_part[k]) {
+            continue;
+        }
+        if (p->y < FISH_BACK_Y && fabsf(p->z - FISH_SEAT_Z) < FISH_BACK_Z && c->nback < FISH_MAX_IDS) {
+            c->back[c->nback++] = (s16)k;
+        }
+        if (fabsf(p->x) < FISH_SEAT_NEAR && fabsf(p->z - FISH_SEAT_Z) < FISH_SEAT_NEAR && p->y < c->seat_y) {
+            c->seat_y = p->y;
+        }
+        d = p->x * p->x + (p->y - FISH_HEAD_Y) * (p->y - FISH_HEAD_Y) + (p->z - FISH_HEAD_Z) * (p->z - FISH_HEAD_Z);
+        if (d < best) {
+            best = d;
+            c->head = k;
+        }
+    }
+    if (c->nback < 3 || c->seat_y > 1e29f) {
+        printf("bonus: Rilla Roo's fish isn't as it was (%d corners of its back)\n", c->nback);
+        goto done;
+    }
+    hm_paint(c->fish.faces, c->fish.nfaces, c->fish.images, c->fish.nimages, FISH_FROM, DASH_PAINT);
+    fish_swing(c);
+    all = malloc(sizeof(MadeFace) * (size_t)(own_tris + c->fish.nfaces));
+    imgs = malloc(sizeof(MadeImage) * (size_t)(nimage + c->fish.nimages + 1));
+    if (all == NULL || imgs == NULL) {
+        goto done;
+    }
+    memcpy(all, faces, sizeof(MadeFace) * (size_t)own_tris);
+    for (k = 0; k < c->fish.nfaces; k++) {
+        MadeFace *f = &all[own_tris + k];
+
+        *f = c->fish.faces[k];
+        for (j = 0; j < 3; j++) {
+            f->v[j] += RigVerts;
+        }
+        f->image = f->image >= 0 ? f->image + nimage : -1;
+    }
+    memcpy(imgs, images, sizeof(MadeImage) * (size_t)nimage);
+    memcpy(imgs + nimage, c->fish.images, sizeof(MadeImage) * (size_t)c->fish.nimages);
+    memset(&mm, 0, sizeof(mm));
+    mm.faces = all;
+    mm.nfaces = own_tris + c->fish.nfaces;
+    mm.meshes = 1;
+    mm.images = imgs;
+    mm.nimages = nimage + c->fish.nimages;
+    mm.anims = c->anims;
+    mm.nanims = FISH_MOVES;
+    mm.nvert = RigVerts + c->fish.nvert;
+    mm.rest_anim = FISH_BREATHE;
+    mm.frame = fish_frame;
+    mm.ctx = c;
+    ok = made_write(&mm, &out->tex[KIND_SPLASH], &out->tex_size[KIND_SPLASH], &out->mdl[KIND_SPLASH], &out->mdl_size[KIND_SPLASH]);
+done:
+    if (!ok) {
+        printf("bonus: Ripper Roo can't be put on a fish\n");
+    }
+    free(all);
+    free(imgs);
+    free(c->rest_at);
+    free(c->at);
+    c->rest_at = c->at = NULL;
+    hm_part_free(&c->fish);
     return ok;
 }
 
@@ -1977,12 +2358,14 @@ static s32 roo_make(HeroMade *out) {
             printf("bonus: Ripper Roo has no polar bear to ride\n");
         }
     }
-    /* on his cane (Pogo), in a car (Ballistix), in a tank and in a race cart (Crash Dash): his own faces, as riding */
+    /* on his cane (Pogo), in a car (Ballistix), in a tank, in a race cart (Crash Dash) and on a fish (Splash Dash): his own faces, as
+     * riding */
     if (RigVerts > 0) {
         pogo_make(&foot, faces, own_tris, images, nimage, out);
         car_make(&foot, faces, own_tris, images, nimage, out);
         tank_make(&foot, faces, own_tris, images, nimage, out);
         dash_make(&foot, faces, own_tris, images, nimage, out);
+        fish_make(&foot, faces, own_tris, images, nimage, out);
     }
     if (c1_sprite64(&level, "ShadC", 5, RooCard)) {
         out->card = RooCard;
@@ -1990,11 +2373,11 @@ static s32 roo_make(HeroMade *out) {
         out->card_head = CARD_HEAD;
     }
     make_sounds(&level, out);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s%s%s\n", ntri, nimage,
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s%s%s%s\n", ntri, nimage,
            out->mdl_size[KIND_FOOT], out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "",
            out->mdl[KIND_POGO] != NULL ? ", on his cane" : "", out->mdl[KIND_BALL] != NULL ? ", in a car" : "",
            out->mdl[KIND_TANK] != NULL ? ", in a tank" : "", out->mdl[KIND_RACE] != NULL ? ", in a race cart" : "",
-           out->card != NULL ? ", his hero card" : "",
+           out->mdl[KIND_SPLASH] != NULL ? ", riding a fish" : "", out->card != NULL ? ", his hero card" : "",
            out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "",
            out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "", RooName.adpcm != NULL ? ", named Rilla Roo" : "");
     ok = 1;

@@ -3,7 +3,7 @@
  *
  * Each hero's make (bash/herodef.h) finds its game's disc (disc_image_find), reads what it needs from it, and makes it into a Crash Bash
  * model and texture set of each kind it has (docs/ASSETS.md): on foot, riding a polar bear, on a pogo stick, in a Ballistix car, in a
- * tank, and in a race cart. They go into the archive's entries for
+ * tank, in a race cart, and riding a fish. They go into the archive's entries for
  * that hero (main.c's DatIndex, from 992) as a mod's files do, and the game loads them as it does any model, into banks of their own
  * (DB_BonusRoo, ...). Nothing of them is kept but in memory, and without its disc there's no hero. docs/EXTRA_HEROES.md has how to add
  * one, from Ripper Roo's (heroes/roo.c). */
@@ -31,9 +31,10 @@ const HeroDef *const HeroDefs[NUM_EXTRA] = { NULL, &HeroRoo };
 static const struct {
     s32 tex, mdl, bank;
 } Slots[NUM_EXTRA][NUM_KINDS] = {
-    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty } },
+    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty },
+      { 0, 0, DB_Empty } },
     { { 992, 993, DB_BonusRoo }, { 994, 995, DB_BonusRooPolar }, { 996, 997, DB_BonusRooPogo }, { 998, 999, DB_BonusRooBall },
-      { 1000, 1001, DB_BonusRooTank }, { 1002, 1003, DB_BonusRooRace } },
+      { 1000, 1001, DB_BonusRooTank }, { 1002, 1003, DB_BonusRooRace }, { 1004, 1005, DB_BonusRooSplash } },
 };
 
 static HeroMade Made[NUM_EXTRA];
@@ -1149,12 +1150,10 @@ s32 hm_model_at(const GamePart *p, s32 anim, float t, V3 *corners) {
 }
 
 /* --- painting ---
- * A colour less saturated than PAINT_GREY is a grey, and kept. The warm hues go from PAINT_RED below red round to PAINT_WARM (yellows):
- * PAINT_MIDDLE of them becomes the paint's own hue, and the others are PAINT_SPREAD as far from it as they were from that. */
+ * A colour less saturated than PAINT_GREY is a grey, and kept. Of the others, those within PAINT_NEAR of the hue painted from are
+ * painted: that hue becomes the paint's own, and the others are PAINT_SPREAD as far from it as they were from that. */
 #define PAINT_GREY 0.2f
-#define PAINT_RED 20.0f
-#define PAINT_WARM 75.0f
-#define PAINT_MIDDLE 45.0f
+#define PAINT_NEAR 65.0f
 #define PAINT_SPREAD 0.5f
 
 /* A colour's hue (degrees), saturation and value (as its largest part) */
@@ -1174,17 +1173,17 @@ static void colour_hsv(const float *c, float *h, float *s, float *v) {
     }
 }
 
-/* One colour (any scale) painted the hue, saturation and value of a paint */
-static void paint_colour(float *c, const float *paint) {
+/* One colour (any scale) of about hue `from` painted the hue, saturation and value of a paint */
+static void paint_colour(float *c, float from, const float *paint) {
     float h, s, v, f, p, q, t;
     s32 i;
 
     colour_hsv(c, &h, &s, &v);
-    if (s < PAINT_GREY || (h > PAINT_WARM && h < 360 - PAINT_RED)) {
+    h = fmodf(h - from + 540, 360) - 180; /* how far round from `from`, either way */
+    if (s < PAINT_GREY || fabsf(h) > PAINT_NEAR) {
         return;
     }
-    h = h >= 360 - PAINT_RED ? h - 360 : h;
-    h = fmodf(paint[0] + (h - PAINT_MIDDLE) * PAINT_SPREAD + 720, 360) / 60;
+    h = fmodf(paint[0] + h * PAINT_SPREAD + 720, 360) / 60;
     s *= paint[1];
     v *= paint[2];
     i = (s32)h % 6;
@@ -1201,7 +1200,7 @@ static void paint_colour(float *c, const float *paint) {
     }
 }
 
-void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, u32 paint) {
+void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, float from, u32 paint) {
     s32 i, m, q, j, k;
     float c[3], hsv[3];
 
@@ -1216,7 +1215,7 @@ void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, u32 p
                 for (j = 0; j < 3; j++) {
                     c[j] = faces[i].rgb[m][q][j];
                 }
-                paint_colour(c, hsv);
+                paint_colour(c, from, hsv);
                 for (j = 0; j < 3; j++) {
                     faces[i].rgb[m][q][j] = (u8)(c[j] + 0.5f);
                 }
@@ -1231,7 +1230,7 @@ void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, u32 p
             c[0] = (float)(w & 31);
             c[1] = (float)(w >> 5 & 31);
             c[2] = (float)(w >> 10 & 31);
-            paint_colour(c, hsv);
+            paint_colour(c, from, hsv);
             images[i].clut[k] = (u16)((w & 0x8000) | (s32)(c[0] + 0.5f) | (s32)(c[1] + 0.5f) << 5 | (s32)(c[2] + 0.5f) << 10);
         }
     }
@@ -1587,6 +1586,40 @@ static void fit_turn(const V3 *A, const V3 *B, const s16 *ids, s32 n, M3 *r, V3 
     r->m[2][0] = (float)(2 * (x * z - w * y));
     r->m[2][1] = (float)(2 * (y * z + w * x));
     r->m[2][2] = (float)(w * w - x * x - y * y + z * z);
+}
+
+void hm_fit(const V3 *from, const V3 *to, const s16 *ids, s32 n, Moved *out) {
+    M3 r;
+
+    fit_turn(from, to, ids, n, &r, &out->from, &out->to);
+    memcpy(out->m, r.m, sizeof(out->m));
+}
+
+V3 hm_turned(const Moved *mv, V3 v) {
+    M3 r;
+
+    memcpy(r.m, mv->m, sizeof(r.m));
+    return m3_mul(&r, v);
+}
+
+V3 hm_unturned(const Moved *mv, V3 v) {
+    M3 r;
+
+    memcpy(r.m, mv->m, sizeof(r.m));
+    return m3_mul_t(&r, v);
+}
+
+V3 hm_moved(const Moved *mv, V3 p) {
+    V3 d;
+
+    d.x = p.x - mv->from.x;
+    d.y = p.y - mv->from.y;
+    d.z = p.z - mv->from.z;
+    d = hm_turned(mv, d);
+    d.x += mv->to.x;
+    d.y += mv->to.y;
+    d.z += mv->to.z;
+    return d;
 }
 
 static V3 unit(V3 v) {

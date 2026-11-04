@@ -6,6 +6,9 @@
 #include "bash/polar.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
+#include "bash/herodef.h"
+#include "bash/extraheroes.h"
+#include "bash/bonusheroes.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
 
@@ -3240,17 +3243,25 @@ void RaceHeroIdle(s32 player) {
                         SetHeroSeq(player, 0x53);
                         hn = Heroes;
                         h = &hn[player];
-                        if (h->hero_name == 1) {
-                            PlaySfx(0x67D, NULL, NULL, 0x1000, 0x1E00, 0);
-                        }
-                        if (h->hero_name == 3) {
-                            PlaySfx(0x67F, NULL, NULL, 0x1000, 0x1E00, 0);
-                        }
-                        if (h->hero_name == 5) {
-                            PlaySfx(0x681, NULL, NULL, 0x1000, 0x1E00, 0);
-                        }
-                        if (h->hero_name == 7) {
-                            PlaySfx(0x684, NULL, NULL, 0x1000, 0x1E00, 0);
+                        if (extra_hero_of(player) != EXTRA_NONE) {
+                            /* PC: an extra hero's own call where its base calls out (the water's calls are by hero, not in its
+                             * sounds' block) */
+                            if (h->hero_name == 1 || h->hero_name == 3 || h->hero_name == 5 || h->hero_name == 7) {
+                                bonus_heroes_voice(extra_hero_of(player), VOICE_JUMP);
+                            }
+                        } else {
+                            if (h->hero_name == 1) {
+                                PlaySfx(0x67D, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (h->hero_name == 3) {
+                                PlaySfx(0x67F, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (h->hero_name == 5) {
+                                PlaySfx(0x681, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (h->hero_name == 7) {
+                                PlaySfx(0x684, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
                         }
                     }
                     if (player == 0) {
@@ -3670,7 +3681,9 @@ void SetRaceHeroDazed(s32 player) {
             m->jump_dec = 0x14;
             m->jump_vel = -0xA0;
         }
-        if (G63->mode != 0x19) {
+        /* PC: an extra hero yelps as on the other tracks in the water too (the water's yelps are its base's voice, by hero; these are
+         * its base's block's, its own instead) */
+        if (G63->mode != 0x19 || extra_hero_of(player) != EXTRA_NONE) {
             switch (h->hero_name) {
             case 1:
                 RACE_SFX4(3, 4, 5, 6);

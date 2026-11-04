@@ -505,6 +505,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: The user approved the race cart (LGTM) and asked for Splash Dash, Roo holding on "with his tongue or mouth". A
+  seventh kind, KIND_SPLASH (DB_BonusRooSplash, entries 1004 and 1005): Rilla Roo's fish (her splash model's first 16 strips),
+  painted red from its blue (`hm_paint` takes the hue to paint from now), Roo astride as on the bear but less spread (`astride`),
+  moving with its back by a fit (`hm_fit`, the bear's Horn fit made shared), his tongue stretched to its head as a rein
+  (`fish_rein`; `TongueShare` is FlopShare's tongue part). Her lean on the fish is too mixed with her arms to copy (tried: the
+  middle of her body's top against its bottom; WIN swings 50 degrees with her waving), so his leans are his own per move. The
+  water track's voices are by hero outside the blocks (yelps 0x685-0x68C, calls 0x67D/F, 0x681, 0x684): race.c plays an extra
+  hero's own there. Four-Roo races to a round's win (his name and laugh traced; no hit or boost came up, so his water yelp and
+  call weren't). Normal play unchanged (playtest same, 14 of 14). Not played by the user yet.
+
 - 2026-11-04: At the user's word, Roo in Crash Dash ("like the ball minigame but a different cart"): a sixth kind, KIND_RACE
   (DB_BonusRooRace, archive entries 1002 and 1003), for the race models (`models\chars\race\`: the hero in its cart, one mesh).
   `dash_make` takes Rilla Roo's cart (strips below -220 as her model rests), moving as hers does, and seats him in it as big as
@@ -513,7 +523,7 @@ Newest first, a few lines each. Details are in the commits.
   (renders of all eight: Crash blue, Coco pink, Cortex yellow, Brio green, Tiny dark purple, the rest orange); red, lights kept
   yellow. Four-Roo races on Dot, Toxic and Lava to a round's win, all moves by renders from four sides. Splash Dash's heroes ride
   fish (another kind, not made: he's on foot there). `--no-window` still crashes once a mode draws (an old one): use a window.
-  Normal play unchanged (playtest same, 14 of 14). Not played by the user yet.
+  Normal play unchanged (playtest same, 14 of 14). The user played it and approved it.
 
 - 2026-11-04: "It's not saying his name still": by the "found file for his win that we used in bash" the user meant the announcer's
   "Rilla Roo" (what his wins said with Rilla Roo's place), not his laugh. VOICE_NAME is that now: sound 0xC9 of
