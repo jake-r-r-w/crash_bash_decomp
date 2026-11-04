@@ -513,7 +513,7 @@ Newest first, a few lines each. Details are in the commits.
   middle of her body's top against its bottom; WIN swings 50 degrees with her waving), so his leans are his own per move. The
   water track's voices are by hero outside the blocks (yelps 0x685-0x68C, calls 0x67D/F, 0x681, 0x684): race.c plays an extra
   hero's own there. Four-Roo races to a round's win (his name and laugh traced; no hit or boost came up, so his water yelp and
-  call weren't). Normal play unchanged (playtest same, 14 of 14). Not played by the user yet.
+  call weren't). Normal play unchanged (playtest same, 14 of 14). The user played it and approved it.
 
 - 2026-11-04: At the user's word, Roo in Crash Dash ("like the ball minigame but a different cart"): a sixth kind, KIND_RACE
   (DB_BonusRooRace, archive entries 1002 and 1003), for the race models (`models\chars\race\`: the hero in its cart, one mesh).
