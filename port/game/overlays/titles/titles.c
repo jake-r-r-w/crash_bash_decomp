@@ -340,7 +340,7 @@ PlaceRec CharSelectModelsPlace[9] = {
     { 7, 0x1FE, 0x1A4, 0, 0x800, 0, 0, 0, 0, 0, 0, 0xC7, 0x2005, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-/* PC: and a ninth for an extra hero, at the red row's left under Aku Aku, when the launcher's EXTRA HEROES is on (extraheroes.c); its
+/* PC: and a ninth for an extra hero, the first of a third row under the red one, when the launcher's EXTRA HEROES is on (extraheroes.c); its
  * hero is the base it would rather have, its model and pick filled as the select starts, and a sound of -1 is none */
 CharCard CharCards[9] = {
     { 0, 1, { 0 }, 0x8E, 0x20, 0xCCCC, 0xC7, 0, &CharSelectSteps2, 0x38E, 0 },
@@ -351,13 +351,15 @@ CharCard CharCards[9] = {
     { 0, 4, { 0 }, 0xE8, 0x84, 0x9999, 0xC7, 0, &CharSelectSteps0, 0x390, 0 },
     { 0, 6, { 0 }, 0x142, 0x84, 0x9999, 0xC7, 0, CharSelectSteps7, 0x395, 0 },
     { 0, 8, { 0 }, 0x19C, 0x84, 0x9999, 0xC7, 0, &CharSelectSteps5, 0x393, 0 },
-    { 0, 8, { 0 }, 0x34, 0x84, 0x9999, 0, 0, 0, -1, 0 },
+    { 0, 8, { 0 }, 0x8E, 0xE8, 0x9999, 0, 0, 0, -1, 0 },
 };
 
 /* PC: the select's pieces with the ninth card's frame (sub 26) and portrait (27, a portrait of the game's in its place, drawn as the extra
- * hero's) after the game's 26 */
+ * hero's) after the game's 26: a third row of the extra heroes', under the red row and as far in as its first, its frame gold (the
+ * twelfth of TextTemplates, levelload.c) */
 #define EXTRA_CARD 8
 #define EXTRA_CARD_TURN 0xF00 /* round till he stands square to the screen as the others do, body and face: matched to Crash on the same stand */
+#define EXTRA_ROW_TITLE 0x46  /* how much lower the title goes with the third row there */
 static PlaceRec CharSelectPlaceMore[29];
 
 /* Whether there's the ninth card: the launcher's EXTRA HEROES is on, and Roo's disc is in */
@@ -366,9 +368,9 @@ static s32 extra_card_on(void) {
 }
 
 static PlaceRec *char_select_place(void) {
-    static const PlaceRec Frame = { 0x10, 0x34, 0x8A, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 };
-    static const PlaceRec Portrait = { 0xF, 0x3C, 0x8A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x306F, 0 };
-    s32 n = CountPlaceRecs(CharSelectPlace);
+    static const PlaceRec Frame = { 0x10, 0x8E, 0xE4, 0xE8, 0x13E, 0xB, 0, 0, 0, 0, 0, 0, 0, 0 };
+    static const PlaceRec Portrait = { 0xF, 0x96, 0xEE, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x306F, 0 };
+    s32 n = CountPlaceRecs(CharSelectPlace), i;
 
     if (!extra_card_on() || n + 3 > (s32)(sizeof(CharSelectPlaceMore) / sizeof(CharSelectPlaceMore[0]))) {
         return CharSelectPlace;
@@ -377,13 +379,19 @@ static PlaceRec *char_select_place(void) {
     CharSelectPlaceMore[n] = Portrait;
     CharSelectPlaceMore[n + 1] = Frame;
     memset(&CharSelectPlaceMore[n + 2], 0, sizeof(PlaceRec));
+    /* and the title (CHARACTER SELECT), which was where the third row is, under it */
+    for (i = 0; i < n; i++) {
+        if (CharSelectPlaceMore[i].type == 0xE) {
+            CharSelectPlaceMore[i].y += EXTRA_ROW_TITLE;
+        }
+    }
     return CharSelectPlaceMore;
 }
 
-/* PC: the selector's moves with the ninth card: left and right go round all nine, it between Dingodile's and Cortex's, and up or down
- * from it goes to the corner above it */
+/* PC: the selector's moves with the ninth card, in its third row: left and right go round all nine, it after Rilla Roo's; down from
+ * the red row goes to it, and on round to the top; up from it goes to Cortex's above it, and up from Crash's at the top round to it */
 static s32 card_step(s32 card, s32 move) {
-    static const s8 Order[9] = { 0, 1, 2, 3, EXTRA_CARD, 4, 5, 6, 7 };
+    static const s8 Order[9] = { 0, 1, 2, 3, 4, 5, 6, 7, EXTRA_CARD };
     s32 i;
 
     if (!extra_card_on()) {
@@ -394,7 +402,13 @@ static s32 card_step(s32 card, s32 move) {
         }
         return Order[(i + move + 9) % 9];
     }
-    return card == EXTRA_CARD ? 0 : (card + move) & 7;
+    if (card == EXTRA_CARD) {
+        return move > 0 ? 0 : 4;
+    }
+    if ((move > 0 && card >= 4) || (move < 0 && card == 0)) {
+        return EXTRA_CARD;
+    }
+    return (card + move) & 7;
 }
 TitlesOff CharSelectorOffsets[4] = { { 7, 4 }, { 0x2D, 4 }, { 7, 0x30 }, { 0x2D, 0x30 } };
 s32 CharPickSfx[4] = { 0x389, 0x38A, 0x38B, 0x38C };

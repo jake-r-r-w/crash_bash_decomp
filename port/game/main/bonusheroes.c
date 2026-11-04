@@ -701,12 +701,10 @@ static void make_sounds(const Level *l) {
 }
 
 /* His hero card: the face his boss fight shows, whose tongue is his health (ShadC, the fight's panel: a 64 x 64 sprite), as red | green
- * << 8 | blue << 16 | alpha << 24, with the tongue short: his head and the tongue as it leaves his mouth (rows 0 to 41), then the
- * curl at its end (rows 50 to 62), so it hangs over the health bar. */
+ * << 8 | blue << 16 | alpha << 24: his head and the tongue as it leaves his mouth (rows 0 to CARD_HEAD - 1), then the tongue hanging
+ * down and curling at its end. */
 #define CARD_HEAD 42
-#define CARD_TIP 50
-#define CARD_ROWS (CARD_HEAD + 63 - CARD_TIP)
-static u32 RooCard[64 * CARD_ROWS];
+static u32 RooCard[64 * 64];
 static s32 RooCardMade;
 
 static void make_card(const Level *l) {
@@ -734,11 +732,9 @@ static void make_card(const Level *l) {
             if (cm != 0 || 4 << (uvi % 5) != 64 || 4 << (uvi / 5 % 5) != 64 || y0 + 64 > 128) {
                 continue;
             }
-            for (y = 0; y < CARD_ROWS; y++) {
-                s32 row = y < CARD_HEAD ? y : y - CARD_HEAD + CARD_TIP;
-
+            for (y = 0; y < 64; y++) {
                 for (x = 0; x < 64; x++) {
-                    s32 u = x0 + x, i = page[(y0 + row) * 512 + u / 2] >> (u & 1) * 4 & 15;
+                    s32 u = x0 + x, i = page[(y0 + y) * 512 + u / 2] >> (u & 1) * 4 & 15;
                     u16 c = rd16(page + cy * 512 + (cx + i) * 2);
 
                     RooCard[y * 64 + x] = c == 0 ? 0 : 0xFF000000u | (u32)((c & 0x1F) * 255 / 31) | (u32)((c >> 5 & 0x1F) * 255 / 31) << 8
@@ -1215,13 +1211,13 @@ u8 *bonus_heroes_model(s32 extra) {
     return copy;
 }
 
-const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch) {
+const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, s32 *head) {
     if (!bonus_heroes_have(extra) || !RooCardMade) {
         return NULL;
     }
     *w = 64;
-    *h = CARD_ROWS;
-    *stretch = 1.0f; /* as its pixels are: at the 1.6 its game showed it at, he looked squeezed in the panel */
+    *h = 64;
+    *head = CARD_HEAD;
     return RooCard;
 }
 

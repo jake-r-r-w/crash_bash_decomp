@@ -498,6 +498,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Roo's pictures and card, at the user's word. His hero card is his boss fight's whole 64 x 64 sprite now, the
+  tongue whole (`bonus_heroes_card` gives the rows that are his head). On the panel his tongue hangs on down behind the health
+  bar: his head as tall as before, and nothing of him from texel row 26, the bar's top (measured at 1440 high, six pixels a row),
+  so the bar's never covered. The select's portrait and the battle-type menu's are his whole card, tongue too, at the select's
+  own texels, a margin each side so his ears clear the frame. His card is a third row's first, under Cortex's (CharCards[8] at
+  0x8E, 0xE8), framed gold (a twelfth TextTemplates entry, levelload.c); the title goes 0x46 lower to clear it, and up and down
+  reach it from the red row and Crash's (`card_step`). With heroes on their stands, Roo's and Cortex's stand a little over it.
+
 - 2026-11-04: Roo's face on the panel, at the user's word, stretched across to the others' size and resolution: the game's panel
   faces are 64 x 32 texels drawn right across (rows 0 to 24), and his hero card was made at four times that and kept its pixels'
   shape, so it filled 46 of the 64 and finer. Now it's made at the panel's own 64 x 32, right across (`card_face`'s `across`), the

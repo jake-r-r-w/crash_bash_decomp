@@ -13,9 +13,9 @@ s32 bonus_heroes_have(s32 extra);
 s32 bonus_heroes_bank(s32 extra);
 /* Its model file, whole, to free. */
 u8 *bonus_heroes_model(s32 extra);
-/* Its face from its game, if that has one: w x h pixels (red | green << 8 | blue << 16 | alpha << 24), each stretch times as tall as
- * it's wide as its game showed it; NULL for none. */
-const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch);
+/* Its face from its game, if that has one: w x h pixels (red | green << 8 | blue << 16 | alpha << 24), its head the top `head` rows,
+ * what hangs from it (Roo's tongue) the rest; NULL for none. */
+const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, s32 *head);
 /* Its voice from its game, Roo's laugh: as it's picked, taunts and wins. A laugh that's going starts again. */
 void bonus_heroes_cheer(s32 extra);
 /* Its hurt sounds: its yelp as it's hit, or (fall) its thud as it lands from a fall or a jump. */

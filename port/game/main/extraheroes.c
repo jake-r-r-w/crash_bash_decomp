@@ -940,21 +940,17 @@ static void draw_face(const ExtraHero *x, const u8 *file, const obj_textureset *
     free(depth);
 }
 
-#define CARD_ROOM 0.98f /* of the panel's face, from the top, a hero card fills: its tongue hangs over the health bar */
+/* A hero card on the panel (64 x 32 texels, as the game's faces are, which fill it across and down to row 24): right across, its head
+ * CARD_FACE_ROWS texels tall as theirs are, from CARD_TOP down, and what hangs from it (Roo's tongue) on down to CARD_BAR, the health
+ * bar's top, so it goes on behind the bar. */
+#define CARD_FACE_ROWS 24.0f
+#define CARD_TOP 0.6f
+#define CARD_BAR 26
 
-/* Its own game's face for it (bonusheroes.c), fitted to a picture: in its top `room`, and right across it if across, as the game's
- * faces on the panel are (64 x 32 texels, every one of them across), or else each texel as much taller than it's wide as its game
- * showed it; each pixel the mean of the card's under it. */
-static void card_face(const u32 *card, s32 cw, s32 ch, float stretch, u32 *out, s32 fw, s32 fh, float aspect, float room, s32 across) {
-    float rows = fh * room / ch, cols = across ? (float)fw / cw : rows * aspect / stretch, ox, oy = fh * 0.02f;
-
-    /* too wide that way: fitted across instead, and in the middle down */
-    if (!across && cw * cols > fw * room) {
-        cols = fw * room / cw;
-        rows = cols * stretch / aspect;
-        oy = (fh - ch * rows) / 2;
-    }
-    ox = (fw - cw * cols) / 2;
+/* Its own game's face for it (bonusheroes.c), drawn into a picture fw x fh: across it but `inset` of its width each side, a card row
+ * `rows` texels tall from oy, and none of it from row `stop` on; each pixel the mean of the card's under it. */
+static void card_face(const u32 *card, s32 cw, s32 ch, u32 *out, s32 fw, s32 fh, float inset, float rows, float oy, s32 stop) {
+    float cols = fw * (1 - 2 * inset) / cw, ox = fw * inset;
     s32 px, py, i, j;
 
     for (py = 0; py < fh; py++) {
@@ -964,7 +960,7 @@ static void card_face(const u32 *card, s32 cw, s32 ch, float stretch, u32 *out, 
             for (j = 0; j < 4; j++) {
                 for (i = 0; i < 4; i++) {
                     s32 x = (s32)floorf((px + (i + 0.5f) / 4 - ox) / cols), y = (s32)floorf((py + (j + 0.5f) / 4 - oy) / rows);
-                    u32 c = x >= 0 && y >= 0 && x < cw && y < ch ? card[y * cw + x] : 0, ca = c >> 24;
+                    u32 c = x >= 0 && y >= 0 && x < cw && y < ch && py < stop ? card[y * cw + x] : 0, ca = c >> 24;
 
                     r += (c & 0xFF) * ca;
                     g += (c >> 8 & 0xFF) * ca;
@@ -983,10 +979,9 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
     const ExtraHero *x = &ExtraHeroes[extra];
     const obj_dbase *bank = &HeroModelBank[bank_of(extra)];
     s32 bw = w * FACE_SCALE * FACE_SAMPLES, bh = h * FACE_SCALE * FACE_SAMPLES, fw = w * FACE_SCALE, fh = h * FACE_SCALE;
-    s32 px, py, i, j, k, cw, ch;
+    s32 px, py, i, j, k, cw, ch, head;
     u32 *big, *out;
-    float stretch;
-    const u32 *card = bonus_heroes_card(extra, &cw, &ch, &stretch);
+    const u32 *card = bonus_heroes_card(extra, &cw, &ch, &head);
     u8 *file;
 
     if (card != NULL) {
@@ -1000,7 +995,7 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
         if ((out = malloc(sizeof(u32) * (size_t)fw * fh)) == NULL) {
             return NULL;
         }
-        card_face(card, cw, ch, 1, out, fw, fh, FACE_ASPECT, CARD_ROOM, 1);
+        card_face(card, cw, ch, out, fw, fh, 0, CARD_FACE_ROWS * h / 32 / (head > 0 ? head : ch), CARD_TOP * h / 32, CARD_BAR * h / 32);
         goto made;
     }
     if (bank->textures.base == NULL || bank->textures.tex == NULL || (file = model_file(extra)) == NULL) {
@@ -1096,14 +1091,14 @@ const GfxTex *extra_hero_face(s32 index, s32 w, s32 h) {
 }
 
 /* --- the character select (titles.c) ---
- * An extra hero's card is the red row's ninth, at its left under Aku Aku: a frame and a portrait of the game's own kinds, the portrait
+ * An extra hero's card is the ninth, the first of a third row under the red one: a frame and a portrait of the game's own kinds, the portrait
  * one of the game's in its place on the screen, and as it's drawn the extra hero's own instead: its face on a gradient, as the others'
  * are. Picked, it stands on its stand in its own model, which loads while the select's up. */
 
 #define SELECT_ROWS 38      /* of a portrait's 64 rows, those the game's own use: the rest is clear */
 #define SELECT_ASPECT 1.83f /* and how much taller than wide the select shows its texels, a row to each of 240 lines */
-#define SELECT_ROOM 1.06f   /* the share of those a face fills: a close-up, as the others are, its ears to the edges */
-#define SELECT_HEAD 40      /* the rows of a hero card that are its head, without the tongue below */
+#define SELECT_ROOM 1.06f   /* the share of those a face drawn from a model fills: a close-up, as the others are, its ears to the edges */
+#define SELECT_INSET 0.05f  /* and a hero card's room each side, so its ears clear the frame */
 
 static const subengine *SelectPortrait;
 static s32 SelectBank = -1; /* the model loaded for its stand, while the select's up */
@@ -1188,20 +1183,19 @@ static void select_picture(u32 *out, s32 fw, s32 fh, s32 ph, const u32 *face) {
     }
 }
 
-/* Its portrait, w x h texels at FACE_SCALE: its face, from its own game or drawn from its model, on the gradient. NULL until its
- * model's loaded, if there's no card. */
+/* Its portrait, w x h texels: its face on the gradient, its own game's at the select's texels as the others' are, or else drawn from
+ * its model at FACE_SCALE. NULL until its model's loaded, if there's no card. */
 static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
-    s32 fw = w * FACE_SCALE, fh = h * FACE_SCALE, ph = h > SELECT_ROWS ? fh * SELECT_ROWS / h : fh, bw = fw * FACE_SAMPLES, bh = ph * FACE_SAMPLES;
-    s32 cw, ch, x, y, i, j;
+    s32 cw, ch, head, x, y, i, j;
+    const u32 *card = bonus_heroes_card(extra, &cw, &ch, &head);
+    s32 scale = card != NULL ? 1 : FACE_SCALE;
+    s32 fw = w * scale, fh = h * scale, ph = h > SELECT_ROWS ? fh * SELECT_ROWS / h : fh, bw = fw * FACE_SAMPLES, bh = ph * FACE_SAMPLES;
     const obj_dbase *bank = &HeroModelBank[bank_of(extra)];
-    const u32 *card;
-    float stretch;
     u32 *face, *out;
 
     if (Portrait != NULL && PortraitW == fw && PortraitH == fh && PortraitBank == bank_of(extra)) {
         return Portrait;
     }
-    card = bonus_heroes_card(extra, &cw, &ch, &stretch);
     if (card == NULL && (bank->textures.base == NULL || bank->textures.tex == NULL)) {
         return NULL;
     }
@@ -1213,7 +1207,8 @@ static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
         return NULL;
     }
     if (card != NULL) {
-        card_face(card, cw, ch < SELECT_HEAD ? ch : SELECT_HEAD, stretch, face, fw, ph, SELECT_ASPECT, SELECT_ROOM, 0);
+        /* all of it, his tongue too, right across and down the rows the game's own use */
+        card_face(card, cw, ch, face, fw, ph, SELECT_INSET, (float)ph / ch, 0, ph);
     } else {
         u32 *big = malloc(sizeof(u32) * (size_t)bw * bh);
         u8 *file = model_file(extra);
