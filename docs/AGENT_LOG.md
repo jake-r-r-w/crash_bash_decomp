@@ -510,8 +510,8 @@ Newest first, a few lines each. Details are in the commits.
   (`MountMove`, with a new GO_KICKED for the dino's recoil); the fish model is byte-identical to before (cmp of the dumps).
   Rilla Roo's dino is her model's first 5 strips and all from the 45th, painted red; at the fish's 40 the seat search found only
   the dino's feet (he sat inside it), so a mount has its own `seat_near` (the dino's 90). His red is close to Dingodile's dino's;
-  their riders tell them apart. One-Roo and four-Roo matches. Normal play unchanged (playtest same, 14 of 14). Not played by the
-  user yet.
+  their riders tell them apart. One-Roo and four-Roo matches. Normal play unchanged (playtest same, 14 of 14). The user played it
+  and approved it.
 
 - 2026-11-04: At the user's word, Roo's mallet lined up in his mouth ("it's currently under it"): it went through his tongue's
   root, which is on his lower jaw (31 lower and 38 further forward than his mouth's inside), and its shaft is 110 to 130 thick, a
