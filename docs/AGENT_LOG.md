@@ -505,6 +505,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: At the user's word, Roo's mallet "slightly at an angle but more realistic": its handle's end now in the corner of
+  his mouth away from his tongue (MALLET_SIDE), MALLET_BITE of it inside, out 29 degrees to that side (MALLET_YAW) and lower
+  (MALLET_TILT 1.2); his bow down to 1.0 so its spiked face lands on the floor (at 1.25 it went 82 into it). Checked by renders
+  and a four-Roo match. Not played by the user yet.
+
 - 2026-11-04: At the user's word, the mallet game, Roo holding the mallet in his mouth. An eighth kind, KIND_MALLET
   (DB_BonusRooMallet, entries 1006 and 1007): Rilla Roo's mallet (her mallet model's first 16 strips and last 6), its handle's
   end in his teeth, moving with his head (`hm_fit` of his head's vertices); him as on foot from his own animations

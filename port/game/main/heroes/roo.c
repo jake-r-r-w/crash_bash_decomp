@@ -2150,8 +2150,10 @@ done:
  * MEDIUM as it runs with it, HIT knocked down, ATTACK the swing: back, held back as it's charged, then down onto the floor in front,
  * and WIN). Roo's model has Rilla Roo's mallet: her model's first MALLET_HEAD_STRIPS strips (its head) and its strips from
  * MALLET_HANDLE_FROM on (its handle). With no hands, he holds it in his mouth (at the user's word): the end of its handle (its corners
- * within MALLET_GRIP of the end away from its head) in his teeth, the handle out MALLET_TILT forward from up, MALLET_SCALE of its size,
- * and it goes with his head (a fit of his head's vertices, from standing to the frame). He's as on foot, the mallet in his mouth: he
+ * within MALLET_GRIP of the end away from its head) in his teeth at the corner of his mouth away from his tongue (MALLET_SIDE out),
+ * MALLET_BITE of it back inside, the handle out MALLET_TILT forward from up and MALLET_YAW round to that side (as the user asked, at an
+ * angle, not straight out ahead), MALLET_SCALE of its size; and it goes with his head (a fit of his head's vertices, from standing to
+ * the frame). He's as on foot, the mallet in his mouth: he
  * stands as he breathes, hops as he runs, falls over as he's hit, and laughs as he wins (at his own pace, round and round). He swings
  * it with his whole body: rearing back MALLET_REAR as he swings it back (by MALLET_BACK of the swing, as hers), winding back to
  * MALLET_WIND as it's charged (by MALLET_HELD), and bowing forward MALLET_BOW, faster and faster, to bring it down onto the floor in
@@ -2161,10 +2163,13 @@ done:
 #define MALLET_HANDLE_FROM 56
 #define MALLET_GRIP 60.0f
 #define MALLET_SCALE 0.9f
-#define MALLET_TILT 1.0f
+#define MALLET_TILT 1.2f
+#define MALLET_YAW 0.5f
+#define MALLET_SIDE 14.0f
+#define MALLET_BITE 25.0f
 #define MALLET_REAR 0.55f
 #define MALLET_WIND 0.9f
-#define MALLET_BOW 1.25f
+#define MALLET_BOW 1.0f
 #define MALLET_NECK 0.4f
 #define MALLET_BACK (8.0f / 38)  /* her ATTACK's frames, as shares of the way through its 39 */
 #define MALLET_HELD (17.0f / 38)
@@ -2401,9 +2406,9 @@ static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris,
     MadeFace *all = NULL;
     MadeImage *imgs = NULL;
     MadeModel mm;
-    V3 *at = NULL, mid = { 0, 0, 0 }, grip = { 0, 0, 0 }, mouth = { 0, 0, 0 }, d0, d1;
+    V3 *at = NULL, mid = { 0, 0, 0 }, grip = { 0, 0, 0 }, mouth = { 0, 0, 0 }, d0, d1, d2;
     s32 a, n, k, j, ok = 0, breathe, far = -1;
-    float best = -1, l;
+    float best = -1, l, tip_x = 0, side;
 
     memset(c, 0, sizeof(*c));
     memset(&keep, 0, sizeof(keep));
@@ -2492,17 +2497,30 @@ static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris,
     mouth.x /= n;
     mouth.y /= n;
     mouth.z /= n;
-    /* the mallet as he holds it, standing: its grip in his teeth, turned from the way hers goes up to the way his goes out */
+    /* the side of his mouth away from his tongue (where its tip hangs, across), and its corner there */
+    for (k = 0, n = 0; k < RigVerts; k++) {
+        if (TongueShare[k] > 0.85f) {
+            tip_x += c->stand[k].x;
+            n++;
+        }
+    }
+    side = n > 0 && tip_x / n > mouth.x ? -1.0f : 1.0f;
+    mouth.x += side * MALLET_SIDE;
+    /* the mallet as he holds it, standing: its grip in his teeth there, turned from the way hers goes up to the way his goes out
+     * (forward and up), then about upright out that side, and its handle's end MALLET_BITE back inside his mouth */
+    d2.x = side * sinf(MALLET_YAW) * sinf(MALLET_TILT);
+    d2.y = d1.y;
+    d2.z = -cosf(MALLET_YAW) * sinf(MALLET_TILT);
     for (k = 0; k < c->mallet.nvert; k++) {
-        V3 p = at[c->mallet.corner_of[k]];
+        V3 p = at[c->mallet.corner_of[k]], o = { 0, 0, 0 };
 
         p.x = (p.x - grip.x) * MALLET_SCALE;
         p.y = (p.y - grip.y) * MALLET_SCALE;
         p.z = (p.z - grip.z) * MALLET_SCALE;
-        p = turn_toward(p, d0, d1);
-        c->held[k].x = mouth.x + p.x;
-        c->held[k].y = mouth.y + p.y;
-        c->held[k].z = mouth.z + p.z;
+        p = hm_turn_y(turn_toward(p, d0, d1), o, -side * MALLET_YAW);
+        c->held[k].x = mouth.x - d2.x * MALLET_BITE + p.x;
+        c->held[k].y = mouth.y - d2.y * MALLET_BITE + p.y;
+        c->held[k].z = mouth.z - d2.z * MALLET_BITE + p.z;
     }
     mallet_swing(c);
     all = malloc(sizeof(MadeFace) * (size_t)(own_tris + c->mallet.nfaces));

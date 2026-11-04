@@ -258,7 +258,9 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    swing, WIN, and one by a name only as its hash, #4a7, that Rilla Roo's sequences don't play).
    `mallet_make` takes Rilla Roo's mallet (`keep_mallet`: her model's first 16 strips, its head, and
    its last six, its handle). He holds it in his mouth (at the user's word): the end of its handle in
-   his teeth, the handle out forward and up, and it moves with his head (`hm_fit` of his head's
+   his teeth at the corner of his mouth away from his tongue, a little of it back inside, the handle
+   out forward, up and to that side at an angle (straight out ahead it looked less real), and it
+   moves with his head (`hm_fit` of his head's
    vertices from standing to the frame). He's as on foot (`mallet_own`: his own animations, between
    their frames): standing, hopping as he runs, falling over as he's hit, laughing as he wins. He
    swings it with his whole body (`mallet_bend`), timed as hers by the share of the way through
