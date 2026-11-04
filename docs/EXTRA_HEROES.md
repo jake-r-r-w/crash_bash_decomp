@@ -130,8 +130,9 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    bear is its strips with only the bear's textures, inside its outline, neither his jeans' blue
    nor his skin's orange) and sits the hero on its back: `seated()` is his pose, as on a horse:
    thighs out over the bear's sides, knees bent so the shins go back under, his long feet poking out
-   at the sides and tipped a little down, tail along its back, his hips down in its fur where Crash
-   sits (`ride_seat`). Each
+   at the sides and tipped a little down, his tail tucked away into its root inside the bear (laid
+   behind him, it only cut through the bear's rump), his hips down in its fur where Crash sits
+   (`ride_seat`). Each
    frame he moves with the bear's back (a fit of its corners there: Crash's own hips wobble with
    his legs), and leans as Crash does on his, hips to head, as the world sees it: smoothed over a
    few frames, then turned into the bear's frame, so he leans smoothly against every pitch of its

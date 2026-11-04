@@ -351,8 +351,9 @@ static s32 anim_verts(const C1Entry *a, s32 j, s32 f, const s32 scale[3], V3 *ou
 /* --- sat on a polar bear ---
  * Astride it as on a horse: each thigh swung forward from its hip (SEAT_FLEX) and out over the bear's side (SEAT_SPREAD), the knee
  * bent so the shin goes back under it (SEAT_KNEE_BACK) and toward straight down (SEAT_KNEE_OUT of the spread), the long feet poking
- * out at the sides as he stands on them, tipped a little down at the ankle (SEAT_FOOT_DROOP), and the tail swung up behind about its
- * root to lie along the bear's back (SEAT_TAIL_UP). His hips are SEAT_HIP_UP above the top of its back, low enough that he sits down
+ * out at the sides as he stands on them, tipped a little down at the ankle (SEAT_FOOT_DROOP), and the tail tucked away into its root,
+ * down inside the bear (SEAT_TAIL_), as behind him it would only cut through the bear's rump. His hips are SEAT_HIP_UP above the top
+ * of its back, low enough that he sits down
  * into its fur, SEAT_Z behind where Crash sits. He moves as the bear's back does, and as Crash leans on his, hips to head, he bends at
  * his waist and neck (RIDE_WAIST and RIDE_NECK, a share of it at each), each vertex as much as it's above those, smoothly over
  * RIDE_*_BLEND, keeping RIDE_STEADY back toward upright. His tongue and ears swing as his head's thrown about (FLOP_). */
@@ -367,7 +368,6 @@ static s32 anim_verts(const C1Entry *a, s32 j, s32 f, const s32 scale[3], V3 *ou
 #define SEAT_FOOT_DROOP 0.3f
 #define SEAT_TAIL_Y 30.0f
 #define SEAT_TAIL_Z -14.0f
-#define SEAT_TAIL_UP 1.25f
 #define SEAT_HIP_UP 5.0f
 #define SEAT_Z 5.0f
 #define RIDE_WAIST 92.0f
@@ -400,9 +400,10 @@ static V3 seated(s32 k) {
         q = hm_mix(q, r, LegShare[k]);
     }
     if (TailOf[k]) {
-        V3 root = { 0, SEAT_TAIL_Y, SEAT_TAIL_Z };
-
-        q = hm_turn_x(q, root, SEAT_TAIL_UP);
+        /* all of it at its root: its faces have no size there, and the ones joining it to him go into the bear */
+        q.x = 0;
+        q.y = SEAT_TAIL_Y;
+        q.z = SEAT_TAIL_Z;
     }
     return q;
 }

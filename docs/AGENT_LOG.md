@@ -502,6 +502,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Roo's tail is hidden on his bear, at the user's word ("a blue triangle behind him that's clipping the bear"):
+  laid along its back, it ran into the bear's rump, which rises behind him. Its vertices all go to its root, inside the bear, so
+  its six faces have no size and the fourteen joining it to him run into the bear. Looked at from behind in a match.
+
 - 2026-11-04: Roo's feet poke out at the sides on his bear, his knees bent as on a horse, and his tongue and ears swing as he
   bounces, at the user's word. The feet keep how they splay as he stands, tipped down 0.3 at the ankle (his lowest point stays
   57 to 79 above the ice, but in FALL); the thigh 0.7 forward, the shin 0.9 back under it. The swing (`flop` on the Rider,
