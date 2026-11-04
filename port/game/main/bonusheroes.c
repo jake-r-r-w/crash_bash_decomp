@@ -1402,6 +1402,7 @@ typedef struct {
     M3 back;    /* the bear's back's turn, about its middle in the first breathing frame (from), then to its middle now */
     V3 from, to;
     V3 lean;
+    V3 flop;    /* where the swing of what's loose on the hero has got to */
 } RideStep;
 
 typedef struct {
@@ -1447,6 +1448,8 @@ static void crash_at(s32 a, float t, V3 *F) {
         }
     }
 }
+
+static void ride_flop(RideCtx *c, s32 a);
 
 static void ride_steps(RideCtx *c) {
     static V3 F[BEAR_CORNERS];
@@ -1496,22 +1499,22 @@ static void ride_steps(RideCtx *c) {
             }
             c->steps[a][f].lean = turn_vector(spine_ref, unit(m3_mul_t(&c->steps[a][f].back, unit(sum))));
         }
+        if (c->r->flop != NULL && c->r->flop_period > 0) {
+            ride_flop(c, a);
+        }
     }
 }
 
-static void ride_frame(void *ctx, s32 a, s32 f, V3 *out) {
-    static V3 F[BEAR_CORNERS];
-    const RideCtx *c = ctx;
+/* The hero's vertices at a step, but for what's loose on it: sat, its own motion, bent at its neck and waist as Crash leans, then
+ * moved as the bear's back is */
+static void hero_at(const RideCtx *c, s32 a, s32 f, V3 *out) {
     const Rider *r = c->r;
-    const Bear *b = &TheBear;
     const RideStep *st = &c->steps[a][f];
     M3 at_waist, at_neck;
     s32 k;
 
-    crash_at(a, crash_time(a, f, c->anims[a].frames), F);
     vector_turn(st->lean, r->lean_waist, &at_waist);
     vector_turn(st->lean, r->lean_neck, &at_neck);
-    /* the hero: sat, its own motion, bent at its neck and waist as Crash leans, then moved as the bear's back is */
     memcpy(out, r->seat, sizeof(V3) * (size_t)r->nvert);
     if (r->own != NULL) {
         r->own(r->ctx, a, f, c->anims[a].frames, out);
@@ -1528,6 +1531,88 @@ static void ride_frame(void *ctx, s32 a, s32 f, V3 *out) {
         out[k].x = st->to.x + d.x;
         out[k].y = st->to.y + d.y;
         out[k].z = st->to.z + d.z;
+    }
+}
+
+/* The swing of what's loose on it, each frame of animation a: a damped spring at its head (the middle of what bends at its neck),
+ * thrown about by the head's accelerations (from each frame to the next and the last), from rest as the animation starts, or as it
+ * goes round and round in one that loops (a few times round first, so the swing has settled into the loop's own). */
+static void ride_flop(RideCtx *c, s32 a) {
+    static V3 path[RIDE_MAX_FRAMES];
+    const Rider *r = c->r;
+    s32 n = c->anims[a].frames, rounds = RideLoops[a] ? 4 : 1, round, f, k;
+    float K = 4 * 3.14159265f * 3.14159265f / (r->flop_period * r->flop_period), C = 2 * r->flop_damping * sqrtf(K);
+    V3 *verts = malloc(sizeof(V3) * (size_t)r->nvert), x = { 0, 0, 0 }, v = { 0, 0, 0 };
+
+    if (verts == NULL) {
+        return;
+    }
+    for (f = 0; f < n; f++) {
+        float w = 0;
+
+        hero_at(c, a, f, verts);
+        path[f].x = path[f].y = path[f].z = 0;
+        for (k = 0; k < r->nvert; k++) {
+            path[f].x += verts[k].x * r->neck_share[k];
+            path[f].y += verts[k].y * r->neck_share[k];
+            path[f].z += verts[k].z * r->neck_share[k];
+            w += r->neck_share[k];
+        }
+        if (w > 0) {
+            path[f].x /= w;
+            path[f].y /= w;
+            path[f].z /= w;
+        }
+    }
+    free(verts);
+    for (round = 0; round < rounds; round++) {
+        for (f = 0; f < n; f++) {
+            s32 last = f - 1, next = f + 1;
+            V3 acc = { 0, 0, 0 };
+            float len;
+
+            if (RideLoops[a]) {
+                last = (last + n) % n;
+                next %= n;
+            }
+            if (last >= 0 && next < n && n > 2) {
+                acc.x = path[next].x - 2 * path[f].x + path[last].x;
+                acc.y = path[next].y - 2 * path[f].y + path[last].y;
+                acc.z = path[next].z - 2 * path[f].z + path[last].z;
+            }
+            v.x += -K * x.x - C * v.x - r->flop_gain * acc.x;
+            v.y += -K * x.y - C * v.y - r->flop_gain * acc.y;
+            v.z += -K * x.z - C * v.z - r->flop_gain * acc.z;
+            x.x += v.x;
+            x.y += v.y;
+            x.z += v.z;
+            if ((len = sqrtf(x.x * x.x + x.y * x.y + x.z * x.z)) > r->flop_max) {
+                x.x *= r->flop_max / len;
+                x.y *= r->flop_max / len;
+                x.z *= r->flop_max / len;
+                v.x = v.y = v.z = 0;
+            }
+            if (round == rounds - 1) {
+                c->steps[a][f].flop = x;
+            }
+        }
+    }
+}
+
+static void ride_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    static V3 F[BEAR_CORNERS];
+    const RideCtx *c = ctx;
+    const Rider *r = c->r;
+    const Bear *b = &TheBear;
+    const RideStep *st = &c->steps[a][f];
+    s32 k;
+
+    crash_at(a, crash_time(a, f, c->anims[a].frames), F);
+    hero_at(c, a, f, out);
+    for (k = 0; r->flop != NULL && k < r->nvert; k++) {
+        out[k].x += st->flop.x * r->flop[k];
+        out[k].y += st->flop.y * r->flop[k];
+        out[k].z += st->flop.z * r->flop[k];
     }
     /* and the bear */
     for (k = 0; k < b->nvert; k++) {
@@ -1573,6 +1658,7 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
         match = archive_own_file((s32)(HeroModelBank[r->match_bank].file - DatIndex), &size);
     }
     Ride.r = r;
+    memset(Ride.steps, 0, sizeof(Ride.steps));
     for (i = 0; i < RIDE_ANIMS; i++) {
         const FileEntry *e = &file_anims((const ModelFile *)b->mdl)[b->anim[i]];
         const MeshHeader *moved = (const MeshHeader *)((const u8 *)&e->mesh + e->mesh);

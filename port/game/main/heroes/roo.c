@@ -349,24 +349,22 @@ static s32 anim_verts(const C1Entry *a, s32 j, s32 f, const s32 scale[3], V3 *ou
 }
 
 /* --- sat on a polar bear ---
- * Astride it: each thigh swung forward from its hip (SEAT_FLEX) and out over the bear's side (SEAT_SPREAD), the shin hung back toward
- * straight down from the knee (SEAT_KNEE_OUT of the spread, and SEAT_KNEE_BACK under), each long foot turned at its ankle to point
- * forward (SEAT_FOOT_TURN) and its toes curled down from the ball of it (SEAT_BALL_X out from his middle, standing) against the bear's
- * side (SEAT_TOE_CURL), and the tail swung up behind about its root to lie along the bear's back (SEAT_TAIL_UP). His hips are
- * SEAT_HIP_UP above the top of its back, low enough that he sits down into its fur, SEAT_Z behind where Crash sits. As Crash leans,
- * hips to head, he bends at his waist and neck (RIDE_WAIST and RIDE_NECK, a share of it at each, less than all of it: he's taller,
- * so the same turn would swing his head further), each vertex as much as it's above those, smoothly over RIDE_*_BLEND. */
+ * Astride it as on a horse: each thigh swung forward from its hip (SEAT_FLEX) and out over the bear's side (SEAT_SPREAD), the knee
+ * bent so the shin goes back under it (SEAT_KNEE_BACK) and toward straight down (SEAT_KNEE_OUT of the spread), the long feet poking
+ * out at the sides as he stands on them, tipped a little down at the ankle (SEAT_FOOT_DROOP), and the tail swung up behind about its
+ * root to lie along the bear's back (SEAT_TAIL_UP). His hips are SEAT_HIP_UP above the top of its back, low enough that he sits down
+ * into its fur, SEAT_Z behind where Crash sits. He moves as the bear's back does, and as Crash leans on his, hips to head, he bends at
+ * his waist and neck (RIDE_WAIST and RIDE_NECK, a share of it at each), each vertex as much as it's above those, smoothly over
+ * RIDE_*_BLEND, keeping RIDE_STEADY back toward upright. His tongue and ears swing as his head's thrown about (FLOP_). */
 #define SEAT_HIP_X 12.0f
-#define SEAT_FLEX 0.4f
+#define SEAT_FLEX 0.7f
 #define SEAT_SPREAD 0.9f
 #define SEAT_KNEE_Y 30.0f
 #define SEAT_KNEE_OUT 0.8f
-#define SEAT_KNEE_BACK 0.3f
+#define SEAT_KNEE_BACK 0.9f
 #define SEAT_ANKLE_X 22.0f
 #define SEAT_ANKLE_Y 6.0f
-#define SEAT_FOOT_TURN 1.2f
-#define SEAT_BALL_X 60.0f
-#define SEAT_TOE_CURL 1.0f
+#define SEAT_FOOT_DROOP 0.3f
 #define SEAT_TAIL_Y 30.0f
 #define SEAT_TAIL_Z -14.0f
 #define SEAT_TAIL_UP 1.25f
@@ -387,16 +385,12 @@ static V3 seated(s32 k) {
     if (LegShare[k] > 0) {
         float side = Rest[k].x < 0 ? -1.0f : 1.0f, foot = hm_smooth(SEAT_ANKLE_Y + 4, SEAT_ANKLE_Y - 4, Rest[k].y);
         float below = hm_smooth(SEAT_KNEE_Y + 8, SEAT_KNEE_Y - 8, Rest[k].y);
-        float toes = foot * hm_smooth(SEAT_BALL_X - 8, SEAT_BALL_X + 8, fabsf(Rest[k].x));
         V3 hip = { side * SEAT_HIP_X, HIP_Y, HIP_Z }, ankle = { side * SEAT_ANKLE_X, SEAT_ANKLE_Y, 0 };
-        V3 knee = { side * SEAT_HIP_X, SEAT_KNEE_Y, HIP_Z }, ball = { side * SEAT_BALL_X, SEAT_ANKLE_Y - 6, 0 }, r, shin;
+        V3 knee = { side * SEAT_HIP_X, SEAT_KNEE_Y, HIP_Z }, r, shin;
 
-        /* the toes down, then the foot round to point forward */
-        if (toes > 0) {
-            q = hm_mix(q, hm_turn_z(q, ball, -side * SEAT_TOE_CURL), toes);
-        }
+        /* the foot, out at his side, tipped down a little */
         if (foot > 0) {
-            q = hm_mix(q, hm_turn_y(q, ankle, -side * SEAT_FOOT_TURN), foot);
+            q = hm_mix(q, hm_turn_z(q, ankle, -side * SEAT_FOOT_DROOP), foot);
         }
         /* the thigh, from the hip; then the shin, from where the knee's gone */
         r = hm_turn_x(hm_turn_z(q, hip, side * SEAT_SPREAD), hip, -SEAT_FLEX);
@@ -411,6 +405,54 @@ static V3 seated(s32 k) {
         q = hm_turn_x(q, root, SEAT_TAIL_UP);
     }
     return q;
+}
+
+/* What's loose on him as he rides: his tongue, the faces of his model that are its reds and pinks, more of it the further it's out of
+ * his mouth (FLOP_TONGUE_ROOT to FLOP_TONGUE_TIP forward, standing); and his ears, out to the sides of his head above FLOP_EAR_LOW,
+ * more the further out (FLOP_EAR_ROOT to FLOP_EAR_TIP), FLOP_EAR of the tongue's. They swing on a spring at his head as the bear
+ * throws it about: FLOP_PERIOD frames a swing, FLOP_DAMPING of what would stop it, taking FLOP_GAIN of the throws, FLOP_MAX at most. */
+#define FLOP_TONGUE_ROOT 10.0f
+#define FLOP_TONGUE_TIP 38.0f
+#define FLOP_EAR_LOW 178.0f
+#define FLOP_EAR_ROOT 28.0f
+#define FLOP_EAR_TIP 58.0f
+#define FLOP_EAR 0.8f
+#define FLOP_PERIOD 9.0f
+#define FLOP_DAMPING 0.25f
+#define FLOP_GAIN 1.0f
+#define FLOP_MAX 60.0f
+static float FlopShare[MAX_VERTS];
+
+static void flop_setup(const C1Entry *model) {
+    static u8 red[MAX_VERTS];
+    const u8 *info = model->item[0], *polys = model->item[1];
+    s32 ntri = (s32)hm_rd32(info), nslot = (s32)hm_rd32(info + 16), i, j, k;
+
+    memset(red, 0, sizeof(red));
+    for (i = 0; i < ntri && (i + 1) * 8 <= model->size[1]; i++) {
+        const u8 *p = polys + i * 8, *s;
+        s32 slot = hm_rd16(p + 6) & 0x7FFF;
+
+        if (slot >= nslot || 20 + (slot + 1) * 4 > model->size[0]) {
+            continue;
+        }
+        s = info + 20 + slot * 4;
+        if (s[0] > 100 && s[0] > 1.5f * s[1] && s[0] > 1.5f * s[2]) {
+            for (j = 0; j < 3; j++) {
+                s32 v = hm_rd16(p + j * 2) / 6;
+
+                if (v < MAX_VERTS) {
+                    red[v] = 1;
+                }
+            }
+        }
+    }
+    for (k = 0; k < RigVerts; k++) {
+        float t = red[k] ? hm_smooth(FLOP_TONGUE_ROOT, FLOP_TONGUE_TIP, Rest[k].z) : 0;
+        float e = Rest[k].y > FLOP_EAR_LOW ? FLOP_EAR * hm_smooth(FLOP_EAR_ROOT, FLOP_EAR_TIP, fabsf(Rest[k].x)) : 0;
+
+        FlopShare[k] = t > e ? t : e;
+    }
 }
 
 /* What riding needs of his making: his frames for his own motion over it */
@@ -667,6 +709,12 @@ static s32 roo_make(HeroMade *out) {
         rider.nimages = nimage;
         rider.charred = RIDE_CHARRED;
         rider.own = ride_own;
+        flop_setup(&model);
+        rider.flop = FlopShare;
+        rider.flop_period = FLOP_PERIOD;
+        rider.flop_damping = FLOP_DAMPING;
+        rider.flop_gain = FLOP_GAIN;
+        rider.flop_max = FLOP_MAX;
         RideOwn.anims = anims;
         memcpy(RideOwn.scale, foot.scale, sizeof(RideOwn.scale));
         RideOwn.k = foot.k;

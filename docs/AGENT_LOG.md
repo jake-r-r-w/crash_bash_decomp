@@ -502,6 +502,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Roo's feet poke out at the sides on his bear, his knees bent as on a horse, and his tongue and ears swing as he
+  bounces, at the user's word. The feet keep how they splay as he stands, tipped down 0.3 at the ankle (his lowest point stays
+  57 to 79 above the ice, but in FALL); the thigh 0.7 forward, the shin 0.9 back under it. The swing (`flop` on the Rider,
+  `ride_flop`): a damped spring at his head, 9 frames a swing, driven by his head's acceleration frame to frame through each
+  animation, run round four times in a loop to settle; his tongue is his model's red and pink faces (by its colour slots), more of
+  it further out of his mouth, and his ears his head's sides above y 178. Shots in a match and the model drawn; not played yet.
+
 - 2026-11-04: Roo sits down in his bear and his head holds steady, at the user's word ("lower on the bear", "his head bobs
   back and forth too much", "some artifacting"). Lower (his hips in its fur, forward where Crash sits: further back the bear's
   rump poked up through him), his long toes curled down against its sides (they stuck out past its nose as black spikes). He moves

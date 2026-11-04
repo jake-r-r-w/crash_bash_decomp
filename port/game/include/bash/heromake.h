@@ -133,6 +133,11 @@ typedef struct {
     /* any motion of its own, before the riding's, for frame f of RIDE_ animation `anim` (of `frames`); may be NULL */
     void (*own)(void *ctx, s32 anim, s32 f, s32 frames, V3 *verts);
     void *ctx;
+    /* what's loose on it (a tongue, ears): each vertex's share of their swing, 1 at their ends, or NULL for none; and the swing, a
+     * damped spring at its head that the head's thrown about by, frame to frame: the frames a swing takes, its damping (a share of
+     * what would stop it swinging at all), how much of the head's throw it takes, and the most it swings (Crash Bash's units) */
+    const float *flop;
+    float flop_period, flop_damping, flop_gain, flop_max;
 } Rider;
 /* Where the hero sits: the top of the bear's back under its middle, and that middle (Crash Bash's axes). 0 if there's no bear. */
 s32 ride_seat(float *back_y, float *seat_z);
