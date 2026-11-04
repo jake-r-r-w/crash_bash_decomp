@@ -21,8 +21,8 @@ base's moves with the same timing and reach. What makes it itself:
   (Pogo), sat in a car (Ballistix, the game drawing the car round it), stood in a tank's
   hatch (Tank, the game drawing the tank round it), sat in a race cart (Crash Dash's tracks but
   the water's, the cart in its own model), riding a fish (Splash Dash, Crash Dash's water track,
-  the fish in its own model), and with a mallet (the mallet game, the mallet in its own model); a kind
-  it has no model of, it plays as on foot. Each goes in the
+  the fish in its own model), with a mallet (the mallet game, the mallet in its own model), and riding
+  a dino (the gem game, the dino in its own model); a kind it has no model of, it plays as on foot. Each goes in the
   base's place in the game's tables of models by hero (`HeroHooks.HeroModels`, and the second
   table Polar Push's last arena loads, `HeroHooks.flag`), and wherever the game draws the base's
   model of that kind it draws the hero's (`extra_hero_dbase`, from `prims.c`): Polar Push gives
@@ -63,7 +63,7 @@ const HeroDef HeroRoo = {
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
       { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, 1 },
       { RooTank, "BREATHE", 0x1000, Dingodile, 1 }, { RooRace, "BREATHE", 0x1000, 0, 1 }, { RooSplash, "SWIM", 0x1000, 0, 1 },
-      { RooMallet, "BREATHE", ROO_KEEP_LIFT, 0, 1 } },
+      { RooMallet, "BREATHE", ROO_KEEP_LIFT, 0, 1 }, { RooDinoStands, "BREATHE", 0x1000, 0, 1 } },
     RooVoices, "BREATHE", 0, roo_make,
 };
 ```
@@ -74,8 +74,8 @@ const HeroDef HeroRoo = {
 - A `HeroKind` for each kind of model: its stand-ins, the stand-in for any animation not listed,
   how much of a frame's lift off the ground is drawn (Roo's own jump is a crate or more high, so
   on foot 0x500 of 0x1000), whose weight and speeds he has (0 for the base's), and how many of his
-  model's frames make one of his game's (on foot 4: below, step 4; in a car, a tank, a race cart, on a fish and with a
-  mallet 1).
+  model's frames make one of his game's (on foot 4: below, step 4; in a car, a tank, a race cart, on a fish, with a mallet
+  and on a dino 1).
 - His sounds for his base's, the animation his face is drawn from if he had no card, and his
   make.
 
@@ -244,15 +244,17 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
 10. **Riding a fish (Splash Dash).** On the water track each hero's model is it riding a fish
    (`models/chars/splash/`; the mounts go in pairs: Crash and Coco a pink dolphin, Cortex and Brio a
    grey shark, Tiny and Kong an orca, Dingodile and Rilla Roo a blue fish; five moves: BREATHE sat up,
-   SWIM as it swims and waits, TRANS as it sets off, FALL as it dives, WIN). `fish_make` takes Rilla
-   Roo's fish (`keep_fish`: her model's first 16 strips, as it's before her in it), moving as hers
+   SWIM as it swims and waits, TRANS as it sets off, FALL as it dives, WIN). It's a mount
+   (`mount_make` with `RooFish`, a `Mount`: what's ridden, as the dino is too, step 12): Rilla Roo's fish
+   (`keep_mount`: her model's first 16 strips, as it's before her in it), moving as hers
    does, painted his red as his cart is (`hm_paint` from its blue, as he's blue too). He sits astride
    it as on the bear (`astride`, his legs less spread on the narrower fish) and moves as its back does
    by his seat (`hm_fit`: the turn and move that best take its corners there from as it rests to a
    frame, Horn's, shared with the bear). He has no hands, so he holds on with his tongue (at the
-   user's word): `fish_rein` stretches it from his mouth to the top of the fish's head, its own shape
+   user's word): `mount_rein` stretches it from his mouth to the top of the fish's head, its own shape
    kept about the way there, as a rein. He sways as he sits up, crouches forward as it swims, leans
-   into it as it sets off, is thrown back as it dives, and laughs, bouncing, as he wins.
+   into it as it sets off, is thrown back as it dives, and laughs, bouncing, as he wins: each of a
+   mount's moves is one of those motions of his (`MountMove`).
 11. **With a mallet (the mallet game).** Each hero's model is it with its big spiked mallet
    (`models/chars/mallet/`; six moves, BREATHE, MEDIUM as it runs, HIT knocked down, ATTACK the
    swing, WIN, and one by a name only as its hash, #4a7, that Rilla Roo's sequences don't play).
@@ -273,7 +275,17 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    charged, twisting round to carry it behind him, then bowing forward and twisting the other way,
    faster and faster, to sweep it round and down onto the floor in front as hers lands
    (`mallet_twist`), and up again. Where the game finds a swing's hit, the base's point on its frame, it stays.
-12. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
+12. **Riding a dino (the gem game).** Each hero's model is it riding a small dino, each a colour of
+   its own (`models/chars/dino/`: Crash's blue, Coco's pink, Cortex's yellow, Brio's teal, Tiny's dark
+   purple, Kong's and Dingodile's reds, Rilla Roo's orange; five moves: BREATHE, RUN, SLIDE as it
+   skids, RECOIL as it shoots, WIN). The same mount ride as the fish (`RooDino`): Rilla Roo's dino, her
+   model's first 5 strips (a crest down its middle) and all from the 45th (its body, head, legs and
+   tail), painted red from its oranges and yellows; him astride its back, his tongue a rein to its
+   head; crouched forward as it runs, thrown back as it skids, jolted back as it shoots (`GO_KICKED`),
+   laughing as he wins. Its corners are few by his seat, so a mount says how far round it looks for
+   the top of its back (`seat_near`: at the fish's 40 only the dino's feet were near, and he sat in it).
+   Dingodile's dino is red too, with a green crest: they're told apart by their riders.
+13. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
    health), `c1_sound` his sounds.
 
 ### 5. Putting him in
@@ -282,7 +294,7 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
 - His `HeroDef` in `HeroDefs` and his archive entries and banks in `Slots` (`bonusheroes.c`).
 - An archive entry for each model and its texture set (main.c's `DatIndex`, from 992, empty until
   his make fills them) and a file group of each pair (`FileGroups`, from 130).
-- A bank of each (`modelbank.h`'s `DB_BonusRoo`, `DB_BonusRooPolar`, `DB_BonusRooPogo`, `DB_BonusRooBall`, `DB_BonusRooTank`, `DB_BonusRooRace`, `DB_BonusRooSplash` and `DB_BonusRooMallet`, dbase.c's
+- A bank of each (`modelbank.h`'s `DB_BonusRoo`, `DB_BonusRooPolar`, `DB_BonusRooPogo`, `DB_BonusRooBall`, `DB_BonusRooTank`, `DB_BonusRooRace`, `DB_BonusRooSplash`, `DB_BonusRooMallet` and `DB_BonusRooDino`, dbase.c's
   `HeroModelBank`) and their loading (levelload.c's `ModeDbaseLists`).
 - A card in the character select (titles.c): the ninth, first of the third row, is Roo's; another
   hero needs one of its own.
@@ -294,10 +306,10 @@ build/port/windows-clang/crashbash.exe --mode 18 --skip-intro --skip-loading --t
 ```
 
 Mode 0 is Crate Crush, 5 to 8 Tank's four arenas (5 the swamp's hover tanks), 10 to 13 Pogo's,
-14 to 17 Ballistix's, 18 to 21 Polar Push's, 23 to 26 Crash Dash's (25 the water's, Splash Dash), 29 the mallet game.
+14 to 17 Ballistix's, 18 to 21 Polar Push's, 23 to 26 Crash Dash's (25 the water's, Splash Dash), 28 the gem game, 29 the mallet game.
 `--extra-hero N roo` for each of players 0 to 3 puts him on every side at once. In a test run the computer plays
 player 1, the same way each run. The log says what was made: `bonus: Ripper Roo from Crash
 Bandicoot, 1145 triangles, 1 textures, ... riding a bear, on his cane, in a car, in a tank, in a race
-cart, riding a fish, with a mallet, his hero card, his laugh, his landing`. A test run needs a window (a small one will do) once a
+cart, riding a fish, with a mallet, riding a dino, his hero card, his laugh, his landing`. A test run needs a window (a small one will do) once a
 mode draws: with `--no-window` it crashes there (AGENT_LOG.md), though his models are made, and
 written for `BONUS_DUMP`, before that.

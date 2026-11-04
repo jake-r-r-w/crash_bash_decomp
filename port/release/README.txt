@@ -64,9 +64,9 @@ it is copied or kept. So far he's made for Crate Crush, Polar Push, where he
 rides a polar bear as the others do, Pogo, where he bounces on the cane he has
 as its boss, Ballistix, where he drives his car with his head, Tank, where he
 has Dingodile's flamethrower, Crash Dash, in a red race cart of his own, or on
-the water track riding a red fish, holding on with his tongue, and the mallet
-game, where he swings his mallet with it in his mouth; the other games aren't
-done for him yet.
+the water track riding a red fish, holding on with his tongue, the mallet game,
+where he swings his mallet with it in his mouth, and the gem game, riding a red
+dino; the other games aren't done for him yet.
 
 
 MODS

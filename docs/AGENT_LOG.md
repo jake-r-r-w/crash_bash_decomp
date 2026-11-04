@@ -505,6 +505,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: At the user's word, the gem game: a ninth kind, KIND_DINO (DB_BonusRooDino, entries 1008 and 1009). The fish ride
+  became a shared mount ride in roo.c (`Mount`, `mount_make`; `RooFish` and `RooDino`), each mount's moves one of his motions
+  (`MountMove`, with a new GO_KICKED for the dino's recoil); the fish model is byte-identical to before (cmp of the dumps).
+  Rilla Roo's dino is her model's first 5 strips and all from the 45th, painted red; at the fish's 40 the seat search found only
+  the dino's feet (he sat inside it), so a mount has its own `seat_near` (the dino's 90). His red is close to Dingodile's dino's;
+  their riders tell them apart. One-Roo and four-Roo matches. Normal play unchanged (playtest same, 14 of 14). Not played by the
+  user yet.
+
 - 2026-11-04: At the user's word, Roo's mallet lined up in his mouth ("it's currently under it"): it went through his tongue's
   root, which is on his lower jaw (31 lower and 38 further forward than his mouth's inside), and its shaft is 110 to 130 thick, a
   club for Rilla Roo's hands. Now through the middle of his mouth's inside (`InMouth`, flop_setup's reds with no tongue share), the

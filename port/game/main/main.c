@@ -3337,7 +3337,7 @@ s32 MalFreeBytes = 0;
 s32 MalFreeBlocks = 0;
 s32 MalLargestFree = 0;
 /* The archive's index: {first sector, size in bytes} for each of CRASHBSH.DAT's 992 files. */
-file DatIndex[1008] = {
+file DatIndex[1010] = {
     0x0, 0x3770, 0x7, 0x1FB2A, 0x47, 0x3770, 0x4E, 0x3E33C, /* 0 */
     0xCB, 0x3770, 0xD2, 0x2992C, 0x126, 0x3770, 0x12D, 0x293A2, /* 4 */
     0x180, 0x2AD8, 0x186, 0x19F78, 0x1BA, 0x2AD8, 0x1C0, 0x1DD82, /* 8 */
@@ -3588,15 +3588,16 @@ file DatIndex[1008] = {
     0x8A0E, 0x34A7E, 0x8A78, 0x1250, 0x8A7B, 0x37C26, 0x8AEB, 0x5E4B8, /* 988 */
     /* PC: 992 and 993, the bonus Ripper Roo's textures and model, 994 and 995 his riding a polar bear, 996 and 997 his on his
      * cane, 998 and 999 his in a Ballistix car, 1000 and 1001 his in a tank, 1002 and 1003 his in a race cart, 1004 and 1005 his
-     * riding a fish, and 1006 and 1007 his with a mallet, empty unless the player's Crash Bandicoot disc fills them (bonusheroes.c) */
+     * riding a fish, 1006 and 1007 his with a mallet, and 1008 and 1009 his riding a dino, empty unless the player's Crash Bandicoot
+     * disc fills them (bonusheroes.c) */
     0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0,
-    0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0,
+    0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0, 0x8BA8, 0,
 };
 /* How many, for laying the archive out again round a mod's files (platform/archive.c). */
 s32 DatIndexCount = sizeof(DatIndex) / sizeof(DatIndex[0]);
 /* The archive's file groups: a group's first file, its file count and its bytes (the
  * games' file_group_load_info.group points at one). */
-FileGroup FileGroups[138] = {
+FileGroup FileGroups[139] = {
     { 0, 0x88, 0xCBA000 }, { 0x88, 5, 0x13E800 }, { 0x8D, 0xC, 0x1B800 },  /* 0 */
     { 0x99, 0x7E, 0x1069800 }, { 0x117, 0x19, 0x394800 }, { 0x130, 0xC, 0x5A000 },  /* 3 */
     { 0x13C, 0x10, 0x59000 }, { 0x14C, 0xA, 0x3D800 }, { 0x156, 2, 0x9800 },  /* 6 */
@@ -3649,6 +3650,7 @@ FileGroup FileGroups[138] = {
     { 1002, 2, 0 },         /* 135, PC: and his in a race cart (Crash Dash) */
     { 1004, 2, 0 },         /* 136, PC: and his riding a fish (Splash Dash) */
     { 1006, 2, 0 },         /* 137, PC: and his with a mallet (the mallet game) */
+    { 1008, 2, 0 },         /* 138, PC: and his riding a dino (the gem game) */
 };
 s32 FileGroupCount = sizeof(FileGroups) / sizeof(FileGroups[0]);
 LoaderState Loader = {0};

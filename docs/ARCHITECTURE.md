@@ -1043,7 +1043,15 @@ signature alone is not enough.
   (`HEROmode_dinoidle` .. `dinowinner`, actions 0x63..0x68); its 48 sequences
   are each character's `hero_seq_dino*` (`CRA_seq_dinowin` ..). Its AI and
   movement code is Polar's and Race's again (`DinoAI_ShotBlocked`,
-  `DinoRayHit`, `DinoTrackCollide`, ...).
+  `DinoRayHit`, `DinoTrackCollide`, ...). The heroes' models
+  (`models\chars\dino\`) are each the hero riding a small two-legged dino,
+  one mesh, each dino a colour of its own (Crash blue, Coco pink, Cortex
+  yellow, Brio teal, Tiny dark purple, Kong and Dingodile reds, Dingodile's
+  with a green crest, Rilla Roo orange: yellow textures under dark vertex
+  colours); Rilla Roo's dino is its first 5 strips (a crest down its middle,
+  in the x = 0 plane) and all from the 45th. Five moves each by name: BREATHE,
+  RUN, SLIDE (a skid, stretched low), RECOIL (as it shoots) and WIN (rearing
+  up, its rider jumping up off its back).
 - **Spin** (spin, the turning ring arena; named 2026-10-26). Mode 0x1B
   (`LEV_RING`); one engine world record (0x0103) points at `SPIN_PREMAP`,
   `spin_shell_info` and `SPINSetUp`, the per-mode table at `file_group_RING`
