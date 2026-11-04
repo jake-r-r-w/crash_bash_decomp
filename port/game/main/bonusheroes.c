@@ -670,22 +670,33 @@ static void put_box(Bytes *o, const V3 *v, s32 n, float k, float ground) {
 static u8 *RooTex, *RooMdl;
 static s32 RooTexSize, RooMdlSize, RooTried, RooMade;
 
-/* His laugh, which his boss fight's object (RRooC) plays: a sound entry (CrznA) in a sound page, PS1 ADPCM at 11025 Hz, as CrashEdit
- * plays that game's */
+/* His sounds, which his boss fight's object (RRooC) plays: sound entries in sound pages, PS1 ADPCM at 11025 Hz, as CrashEdit plays that
+ * game's. His laugh (CrznA), and his landing (ld00A). His game has no hurt voice for him, so his yelp is his laugh's first "ha", its
+ * first 86 blocks (0.22 s, where it falls quiet), a little higher. */
 #define ROO_LAUGH_PITCH 0x400
-static u8 *RooLaugh;
-static s32 RooLaughSize;
+#define ROO_YELP_BYTES (86 * 16)
+#define ROO_YELP_PITCH 0x480
+static u8 *RooLaugh, *RooThud;
+static s32 RooLaughSize, RooThudSize;
 
-static void make_laugh(const Level *l) {
+static u8 *sound_of(const Level *l, const char *name, s32 *size) {
     Entry e;
+    u8 *copy;
 
-    if (RooLaugh != NULL || !entry_find(l, "CrznA", &e) || e.type != 12 || e.count < 1 || e.size[0] < 16) {
-        return;
+    if (!entry_find(l, name, &e) || e.type != 12 || e.count < 1 || e.size[0] < 16 || (copy = malloc((size_t)e.size[0])) == NULL) {
+        return NULL;
     }
-    RooLaugh = malloc((size_t)e.size[0]);
-    if (RooLaugh != NULL) {
-        memcpy(RooLaugh, e.item[0], (size_t)e.size[0]);
-        RooLaughSize = e.size[0];
+    memcpy(copy, e.item[0], (size_t)e.size[0]);
+    *size = e.size[0];
+    return copy;
+}
+
+static void make_sounds(const Level *l) {
+    if (RooLaugh == NULL) {
+        RooLaugh = sound_of(l, "CrznA", &RooLaughSize);
+    }
+    if (RooThud == NULL) {
+        RooThud = sound_of(l, "ld00A", &RooThudSize);
     }
 }
 
@@ -1164,9 +1175,9 @@ static void make_roo(void) {
     tex.b = mdl.b = NULL;
     RooMade = 1;
     make_card(&level);
-    make_laugh(&level);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s\n", ntri, nimage, RooMdlSize,
-           RooCardMade ? ", his hero card" : "", RooLaugh != NULL ? ", his laugh" : "");
+    make_sounds(&level);
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s\n", ntri, nimage, RooMdlSize,
+           RooCardMade ? ", his hero card" : "", RooLaugh != NULL ? ", his laugh" : "", RooThud != NULL ? ", his landing" : "");
 done:
     free(tex.b);
     free(mdl.b);
@@ -1214,20 +1225,43 @@ const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch) {
     return RooCard;
 }
 
-void bonus_heroes_cheer(s32 extra) {
-    static short voice = -1;
-    /* as loud as the game's own effects at the sound option it's at (sound.c, sfx_key_on) */
+/* One of his sounds, bytes of it, as loud as the game's own effects at the sound option it's at (sound.c, sfx_key_on); with a voice,
+ * the one that had it last stops first. */
+static void play_own(const u8 *adpcm, s32 bytes, u32 pitch, short *voice) {
     s32 vol = 0x1E00 * GameOptions.sfx * 0x7F / 409600;
+    short v;
 
-    if (!bonus_heroes_have(extra) || RooLaugh == NULL) {
+    if (adpcm == NULL || bytes < 16) {
         return;
     }
-    /* one laugh at a time: a new one starts it again, as a hero's taunt sound does (its move's 0x800A, on the hero's own sound) */
-    if (audio_sample_playing(voice, RooLaugh)) {
-        audio_voice_off(voice);
+    if (voice != NULL && audio_sample_playing(*voice, adpcm)) {
+        audio_voice_off(*voice);
     }
     vol = vol < 0 ? 0 : vol > 0x7F ? 0x7F : vol;
-    voice = audio_play_sample(RooLaugh, (uint32_t)RooLaughSize, ROO_LAUGH_PITCH, 0x3FFF * vol / 0x7F, 0x3FFF * vol / 0x7F);
+    v = audio_play_sample(adpcm, (uint32_t)bytes, pitch, 0x3FFF * vol / 0x7F, 0x3FFF * vol / 0x7F);
+    if (voice != NULL) {
+        *voice = v;
+    }
+}
+
+void bonus_heroes_cheer(s32 extra) {
+    static short voice = -1;
+
+    /* one laugh at a time: a new one starts it again, as a hero's taunt sound does (its move's 0x800A, on the hero's own sound) */
+    if (bonus_heroes_have(extra)) {
+        play_own(RooLaugh, RooLaughSize, ROO_LAUGH_PITCH, &voice);
+    }
+}
+
+void bonus_heroes_hurt(s32 extra, s32 fall) {
+    if (!bonus_heroes_have(extra)) {
+        return;
+    }
+    if (fall) {
+        play_own(RooThud, RooThudSize, ROO_LAUGH_PITCH, NULL);
+    } else {
+        play_own(RooLaugh, RooLaughSize < ROO_YELP_BYTES ? RooLaughSize : ROO_YELP_BYTES, ROO_YELP_PITCH, NULL);
+    }
 }
 
 s32 bonus_heroes_bank(s32 extra) {

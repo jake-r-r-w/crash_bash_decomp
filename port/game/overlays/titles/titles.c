@@ -1771,6 +1771,17 @@ s32 CpuPickCharacter(s32 a0) {
         CharCard *p = CharCards;
         s32 k;
         s32 j;
+
+        /* PC: with the ninth card there and nobody on it, the computer picks it, Roo, as often as any one hero still free; the pick
+         * then goes as a player's does (UpdateCharSelector), his base the card of one of those */
+        if (extra_card_on() && !(p[EXTRA_CARD].flags & 1)) {
+            for (j = 0, k = 0; k < 8; k++) {
+                j += !(p[k].flags & 1);
+            }
+            if (j > 0 && Random(j + 1) == 0) {
+                return EXTRA_CARD;
+            }
+        }
         do {
             k = Random(4) * 2;
             if (p[k].flags & 1) {

@@ -207,6 +207,12 @@ scripts.
   (`music_play_level`, `LevelSfxBanks`).
 - **Voices.** `PlaySfx(id, ...)` looks the id up in `SfxTable` and takes a voice from a pool
   (`_sfx_handler`). An engine can own one, so a sound follows its object.
+- **A hero's sounds** are a block of ids from the one the announcer names it with as it wins
+  (`UpdateHeroVictory`, step 0: Crash 1, Coco 0x33, Cortex 0x65, Brio 0x97, Rilla Roo 0xC9,
+  Dingodile 0xFB, Tiny 0x12D, Koala Kong 0x15F). From that one: +1 its taunt (its taunt move's
+  0x800A), +2 to +5 its hit voices (`HeroHitSfx`, one at random as it's hit), +6 its cheer as
+  it wins (step 2), +11 its jump, +12 its fall (`BashHeroHit` as a hit throws it down; Rilla
+  Roo's land move too).
 - **Music** (`music.c`) is SEQ (`music_dload_midi`, `SsSeqOpen`), one track per mode
   (`MusicTable`). `music_request` names the next track, and `music_update` switches to it after a
   short stop delay.

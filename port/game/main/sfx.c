@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/sfx.h"
+#include "bash/extraheroes.h"
 
 void music_play_level(s32 arg0, s32 arg1) {
     GameState *p;
@@ -172,6 +173,10 @@ _sfx_handler *PlaySfx(s32 id, _sfx_handler **handle, SLONG_XYZ *pos, s32 arg3, s
     _sfx_handler *v;
 
     voice = NULL;
+    /* PC: an extra hero's hurt sounds are its own (extraheroes.c) */
+    if (!(id & 0x8000) && extra_hero_sound(id)) {
+        return NULL;
+    }
     if (id & 0x8000) {
         loader_pending_stub();
     } else {

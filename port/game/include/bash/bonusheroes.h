@@ -18,5 +18,7 @@ u8 *bonus_heroes_model(s32 extra);
 const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, float *stretch);
 /* Its voice from its game, Roo's laugh: as it's picked, taunts and wins. A laugh that's going starts again. */
 void bonus_heroes_cheer(s32 extra);
+/* Its hurt sounds: its yelp as it's hit, or (fall) its thud as it lands from a fall or a jump. */
+void bonus_heroes_hurt(s32 extra, s32 fall);
 
 #endif

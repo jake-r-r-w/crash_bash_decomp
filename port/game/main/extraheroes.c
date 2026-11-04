@@ -22,6 +22,7 @@
 #include "bash/panel.h"
 #include "bash/nascalls.h"
 #include "bash/pause.h"
+#include "bash/heroes.h"
 #include "bash/extraheroes.h"
 #include "bash/bonusheroes.h"
 #include "../../platform/settings.h"
@@ -533,6 +534,29 @@ s32 extra_hero_voice(s32 player, s32 sfx) {
     }
     bonus_heroes_cheer(PlayerExtra[player]);
     return 1;
+}
+
+/* A hero's sounds are a block from the one the announcer names it with (UpdateHeroVictory's first): its hit voices the third to the
+ * sixth (HeroHitSfx, one at random as it's hit), its fall the thirteenth (BashHeroHit's, as a hit throws it down, and its moves' as
+ * it lands from a jump). Nobody plays an extra hero's base, so any of those is the extra hero's. */
+#define HIT_FIRST 2
+#define HIT_LAST 5
+#define FALL 12
+
+s32 extra_hero_sound(s32 sfx) {
+    s32 i, block;
+
+    for (i = 0; AnyPlaying && i < 4; i++) {
+        if (!Play[i].on || (u32)(PlayerBase[i] - 1) >= 8) {
+            continue;
+        }
+        block = HeroHitSfx[PlayerBase[i]][0] - HIT_FIRST;
+        if ((sfx >= block + HIT_FIRST && sfx <= block + HIT_LAST) || sfx == block + FALL) {
+            bonus_heroes_hurt(PlayerExtra[i], sfx == block + FALL);
+            return 1;
+        }
+    }
+    return 0;
 }
 
 s32 extra_hero_win_voice(s32 player, s32 line) {

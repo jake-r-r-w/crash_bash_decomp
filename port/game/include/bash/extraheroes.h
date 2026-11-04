@@ -40,6 +40,8 @@ s32 extra_hero_voice(s32 player, s32 sfx);
 /* A winner's voice (UpdateHeroVictory: 0 the announcer's name, 1 the winner's cheer): 1 if an extra hero has played its own instead,
  * its laugh for the cheer. */
 s32 extra_hero_win_voice(s32 player, s32 line);
+/* Any sound (PlaySfx): 1 if it's an extra hero's base's hit or fall, and the extra hero's own has played instead. */
+s32 extra_hero_sound(s32 sfx);
 /* A frame as it's drawn: for an extra hero's own subengine, its stand-in's; anything else as it is. */
 s32 extra_hero_frame(const subengine *sub, s32 entity);
 /* A frame's vertices, once morphed (draw_object_model): an extra hero's lower, for less of a hop. */

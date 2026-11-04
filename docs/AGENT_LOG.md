@@ -498,6 +498,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Ripper Roo, at the user's word (they called the last round LGTM): his own hurt sounds. His base's hit voices
+  (`HeroHitSfx`) and fall (its block's +12, ARCHITECTURE.md) are caught in `PlaySfx` (`extra_hero_sound`: nobody plays his base,
+  so they're his), and his yelp plays, his laugh's first "ha" (86 blocks, a little higher: his game has no hurt voice; rjpnA,
+  the other sound his boss object plays, is a steady 93 Hz boing), or his landing thud from his boss fight (ld00A); a `--wav` run
+  against one with the base's muted shows just those two. And the computer picks him in the character select when the ninth
+  card's there and free, as often as any one free hero (`CpuPickCharacter`): five of eight runs did, and one played a Jungle
+  Bash round as the computer.
+
 - 2026-11-04: Ripper Roo after the user's play, at their word. Crates, TNT, Nitro and heroes didn't stop him: a hero's body box is
   copied from its model's mesh as it's made, before extra_heroes_start, and his model has none, so `body_box` fetches it again from
   his base's (35 ticks against crates in an AI round, none without it). The announcer names him again (Rilla Roo's line, step 0);
