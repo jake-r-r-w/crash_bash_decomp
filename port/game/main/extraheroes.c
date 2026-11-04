@@ -574,20 +574,6 @@ s32 extra_hero_sound(s32 sfx) {
     return 0;
 }
 
-s32 extra_hero_wins(s32 player) {
-    const Voice *v;
-
-    if (player < 0 || player >= 4 || PlayerExtra[player] == EXTRA_NONE) {
-        return 1;
-    }
-    for (v = HeroDefs[PlayerExtra[player]]->voices; v != NULL && v->offset >= 0; v++) {
-        if (v->offset == 0) {
-            return v->voice == VOICE_BASE;
-        }
-    }
-    return 0;
-}
-
 s32 extra_hero_like(s32 player, s32 name) {
     s32 kind, like;
 

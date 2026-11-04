@@ -95,10 +95,10 @@ play them:
 
 | Offset | Where | Rilla Roo's | Roo's |
 |---|---|---|---|
-| 0 | The announcer naming the winner (`UpdateHeroVictory`, step 0) | 0.50 s | laugh (*) |
+| 0 | The announcer naming the winner (`UpdateHeroVictory`, step 0) | 0.50 s | his name (*) |
 | 1 | Taunt (the taunt move's 0x800A) | 0.46 s | laugh |
 | 2-5 | Hit, one at random (`HeroHitSfx`) | 0.18 s | yelp |
-| 6 | Cheer as it wins (`UpdateHeroVictory`, step 2) | 0.43 s | none (*) |
+| 6 | Cheer as it wins (`UpdateHeroVictory`, step 2) | 0.43 s | laugh |
 | 9, 10 | Crate Crush: walking with a crate (`hold_slow`), and the warp rooms' | 0.06 s | none |
 | 11 | Crate Crush: jump | 0.06 s | jump |
 | 12 | Crate Crush: land; a hit's fall (`BashHeroHit`) | 0.05 s | thud |
@@ -113,10 +113,11 @@ play them:
 | 24 | Polar Push: win | 0.36 s | laugh |
 
 (*) The game has no name for an extra hero, and its base's is another hero's (with Coco's place,
-Roo "won" as Coco). So at a solo win Roo laughs where the name would be, and the announcer's "wins!"
-(0x1B0) and his cheer after it are left out, as his laugh (2.7 s) goes on over them: `extra_hero_wins`
-skips "wins!" for an extra hero whose voice for offset 0 isn't `VOICE_BASE`. All the games' wins
-go through `UpdateHeroVictory`.
+Roo "won" as Coco). So a hero has a `VOICE_NAME` of its own, short enough to be done before the
+announcer's "wins!" (0x1B0), which comes 0.77 to 0.87 s after the name, by its base. Roo's is his
+laugh's first 0.65 s, its long "ha" and four short ones, cut at a quiet gap (`ROO_NAME_BYTES`): a
+win is then his name, "wins!", and his whole laugh as he cheers, as the others' go. All the games'
+wins go through `UpdateHeroVictory`.
 
 His own (`VOICE_`), as his make finds them: the laugh, a yelp (the laugh's first "ha", higher),
 his jump's call, a light landing and a heavy one; and one of the game's own, Crash's throw, as his game has no throw of

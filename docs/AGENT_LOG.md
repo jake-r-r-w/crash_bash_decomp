@@ -505,6 +505,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: The user approved Roo's tank (LGTM), but missed the announcer's "wins!" (left out last time, as his 2.7 s laugh in
+  the name's place ran over it). A hero has a VOICE_NAME now: Roo's is his laugh's first 0.65 s (260 blocks), to a quiet gap
+  (scratch/laugh_gaps.mjs decodes PS1 ADPCM and shows its loudness every 20 ms), done before "wins!" at 0.77 s or later; his cheer
+  is his laugh again, and extra_hero_wins is gone (the engine's victory is the game's). Traced in a four-Roo Tank win: name,
+  "wins!" 25 ticks on, laugh 31 after that. Not heard by the user yet.
+
 - 2026-11-04: At the user's word: Roo vanished as he won in Tank, his death should slump down over the tank, and "it said COCO
   wins". The vanishing: a frame is named 0x4000 | anim << 7 | frame, 7 bits, and his made moves were four frames to each of his
   base's, so Tank's WIN (320) spilled into the animation number past 127 (traced: 0x4240 to 0x4380, an animation he hasn't got).

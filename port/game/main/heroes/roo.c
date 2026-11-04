@@ -48,14 +48,14 @@ static const Stand RooPogo[] = {
     { NULL, NULL, STRETCH },
 };
 
-/* His sounds for his base's (docs/EXTRA_HEROES.md, A hero's sounds): as he wins he laughs where the announcer would name the winner (the
- * game has no name for him, and his base's is another hero's: with Coco's place he "won" as Coco), the announcer's "wins!" and his
- * cheer after it left out, as his laugh goes on over them (extra_hero_wins); he laughs as he taunts, yelps only as he's hurt, gives his
- * jump's call as he jumps and lunges, thuds as he lands, and throws with Crash's throw (his game has none of his own). Picking up a
- * crate, carrying it and pushing he's quiet. */
+/* His sounds for his base's (docs/EXTRA_HEROES.md, A hero's sounds): as he wins the start of his laugh is his name, where the announcer
+ * would name the winner (the game has no name for him, and his base's is another hero's: with Coco's place he "won" as Coco), then the
+ * announcer's "wins!", and he laughs as he cheers; he laughs as he taunts, yelps only as he's hurt, gives his jump's call as he jumps
+ * and lunges, thuds as he lands, and throws with Crash's throw (his game has none of his own). Picking up a crate, carrying it and
+ * pushing he's quiet. */
 static const Voice RooVoices[] = {
-    { 0, VOICE_LAUGH }, { 1, VOICE_LAUGH }, { 2, VOICE_YELP }, { 3, VOICE_YELP }, { 4, VOICE_YELP }, { 5, VOICE_YELP },
-    { 6, VOICE_NONE },
+    { 0, VOICE_NAME }, { 1, VOICE_LAUGH }, { 2, VOICE_YELP }, { 3, VOICE_YELP }, { 4, VOICE_YELP }, { 5, VOICE_YELP },
+    { 6, VOICE_LAUGH },
     /* Crate Crush's */
     { 9, VOICE_NONE }, { 10, VOICE_NONE }, { 11, VOICE_JUMP }, { 12, VOICE_THUD }, { 13, VOICE_JUMP }, { 14, VOICE_NONE },
     { 15, VOICE_THROW }, { 16, VOICE_NONE },
@@ -1471,6 +1471,8 @@ static s32 tank_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, c
 #define ROO_PITCH 0x400
 #define ROO_YELP_BYTES (86 * 16)
 #define ROO_YELP_PITCH 0x480
+#define ROO_NAME_BYTES (260 * 16) /* his name as he wins: his laugh's first 0.65 s, its long "ha" and four short ones, to a quiet gap
+                                   * in it, done before the announcer's "wins!" (0.77 s on at the soonest) */
 #define CARD_HEAD 42 /* his hero card: his head and the tongue as it leaves his mouth; then the tongue hanging down and curling at its end */
 #define CRASH_CRATE_VOICES 0xD4 /* his throw is Crash's: the archive's sfx/vox_crate/crash.sfx, Crash's voice in Crate Crush, */
 #define CRASH_THROW 0x10        /* its sound for his throw, the sixteenth of his block (from sound 1) */
@@ -1498,6 +1500,8 @@ static void make_sounds(const C1Level *l, HeroMade *out) {
         out->sound[v].bytes = RooSoundBytes[v];
         out->sound[v].pitch = ROO_PITCH;
     }
+    out->sound[VOICE_NAME] = out->sound[VOICE_LAUGH];
+    out->sound[VOICE_NAME].bytes = out->sound[VOICE_LAUGH].bytes < ROO_NAME_BYTES ? out->sound[VOICE_LAUGH].bytes : ROO_NAME_BYTES;
     out->sound[VOICE_YELP] = out->sound[VOICE_LAUGH];
     out->sound[VOICE_YELP].bytes = out->sound[VOICE_LAUGH].bytes < ROO_YELP_BYTES ? out->sound[VOICE_LAUGH].bytes : ROO_YELP_BYTES;
     out->sound[VOICE_YELP].pitch = ROO_YELP_PITCH;

@@ -2052,5 +2052,5 @@ void bonus_heroes_voice(s32 extra, s32 voice) {
     if (!bonus_heroes_have(extra) || voice <= VOICE_BASE || voice >= NUM_VOICES) {
         return;
     }
-    hm_play(&Made[extra].sound[voice], voice == VOICE_LAUGH ? &laughing : NULL);
+    hm_play(&Made[extra].sound[voice], voice == VOICE_LAUGH || voice == VOICE_NAME ? &laughing : NULL);
 }

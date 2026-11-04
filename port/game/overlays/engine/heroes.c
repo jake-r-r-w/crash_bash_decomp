@@ -2868,10 +2868,7 @@ s32 UpdateHeroVictory(s32 arg0) {
         }
         break;
     case 1:
-        /* PC: not after an extra hero's own sound in place of its name, which goes on over it (extraheroes.c) */
-        if (extra_hero_wins(arg0)) {
-            PlaySfx(0x1B0, NULL, NULL, 0x1000, 0x1E00, 0);
-        }
+        PlaySfx(0x1B0, NULL, NULL, 0x1000, 0x1E00, 0);
         WinSeqTimer = 0x1E;
         break;
     case 2:
