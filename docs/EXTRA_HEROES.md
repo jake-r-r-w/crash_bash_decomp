@@ -133,7 +133,12 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    at 120 frames a second. His stand-ins at their own speed play four a tick, and a range in a
    stand-in (`JUMP:13-27`) is in his game's frames. An animation with more vertices than
    an index can reach (16,384 over its frames) is written as keyframes with the frames between
-   blended, as the game's own models are.
+   blended, as the game's own models are. What's loose on him, his tongue and his ears, swings as
+   his head is thrown about (`foot_swing`): his head's path through each of his game's frames, as
+   it's drawn (with the lift `keep_lift` takes off), goes through `hm_flop`, a damped spring
+   (`Flop`: a swing's frames, its damping, how much of the throw it takes, the most it swings),
+   settled into the loop in the ones that loop (his breathing, laugh and walk). So they flap with
+   every hop, carrying a crate too (`HOLD_SLOW` is his walk).
 5. **Riding a polar bear.** `ride_make` takes Crash's polar model from the player's archive (the
    bear is its strips with only the bear's textures, inside its outline, neither his jeans' blue
    nor his skin's orange) and sits the hero on its back: `seated()` is his pose, as on a horse:
@@ -148,8 +153,8 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    further for the same lean. Roo takes it at his waist and neck. Over that, his own motion
    (`ride_own`): a little of his standing sway as he breathes, and his laugh as he taunts and wins,
    each blended between its frames and the laugh faded in and out. What's loose on him, his tongue
-   and his ears, swings on a damped spring at his head as the bear throws it about (`flop`: each
-   vertex's share, 1 at the tips; `ride_flop`), settled into the loop in one that loops. The animations are as long as
+   and his ears, swings on the same spring at his head as the bear throws it about (`flop`: each
+   vertex's share, 1 at the tips; `swing`, his `Flop`), settled into the loop in one that loops. The animations are as long as
    his base's (`match_bank`, Rilla Roo's), Crash's resampled to them, so the base's moves play them
    a frame a tick; and there's a second mesh, charred, that the game draws once a bomb hits him.
 6. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his

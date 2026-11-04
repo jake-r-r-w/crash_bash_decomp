@@ -1500,7 +1500,7 @@ static void ride_steps(RideCtx *c) {
             }
             c->steps[a][f].lean = turn_vector(spine_ref, unit(m3_mul_t(&c->steps[a][f].back, unit(sum))));
         }
-        if (c->r->flop != NULL && c->r->flop_period > 0) {
+        if (c->r->flop != NULL && c->r->swing.period > 0) {
             ride_flop(c, a);
         }
     }
@@ -1535,15 +1535,56 @@ static void hero_at(const RideCtx *c, s32 a, s32 f, V3 *out) {
     }
 }
 
-/* The swing of what's loose on it, each frame of animation a: a damped spring at its head (the middle of what bends at its neck),
- * thrown about by the head's accelerations (from each frame to the next and the last), from rest as the animation starts, or as it
- * goes round and round in one that loops (a few times round first, so the swing has settled into the loop's own). */
+void hm_flop(const V3 *path, s32 n, s32 loops, const Flop *spring, V3 *out) {
+    s32 rounds = loops ? 4 : 1, round, f;
+    float K, C;
+    V3 x = { 0, 0, 0 }, v = { 0, 0, 0 };
+
+    if (n <= 0 || spring->period <= 0) {
+        return;
+    }
+    K = 4 * 3.14159265f * 3.14159265f / (spring->period * spring->period);
+    C = 2 * spring->damping * sqrtf(K);
+    for (round = 0; round < rounds; round++) {
+        for (f = 0; f < n; f++) {
+            s32 last = f - 1, next = f + 1;
+            V3 acc = { 0, 0, 0 };
+            float len;
+
+            if (loops) {
+                last = (last + n) % n;
+                next %= n;
+            }
+            if (last >= 0 && next < n && n > 2) {
+                acc.x = path[next].x - 2 * path[f].x + path[last].x;
+                acc.y = path[next].y - 2 * path[f].y + path[last].y;
+                acc.z = path[next].z - 2 * path[f].z + path[last].z;
+            }
+            v.x += -K * x.x - C * v.x - spring->gain * acc.x;
+            v.y += -K * x.y - C * v.y - spring->gain * acc.y;
+            v.z += -K * x.z - C * v.z - spring->gain * acc.z;
+            x.x += v.x;
+            x.y += v.y;
+            x.z += v.z;
+            if ((len = sqrtf(x.x * x.x + x.y * x.y + x.z * x.z)) > spring->max) {
+                x.x *= spring->max / len;
+                x.y *= spring->max / len;
+                x.z *= spring->max / len;
+                v.x = v.y = v.z = 0;
+            }
+            if (round == rounds - 1) {
+                out[f] = x;
+            }
+        }
+    }
+}
+
+/* The swing of what's loose on the rider, each frame of animation a, from its head's path (the middle of what bends at its neck) */
 static void ride_flop(RideCtx *c, s32 a) {
-    static V3 path[RIDE_MAX_FRAMES];
+    static V3 path[RIDE_MAX_FRAMES], swing[RIDE_MAX_FRAMES];
     const Rider *r = c->r;
-    s32 n = c->anims[a].frames, rounds = RideLoops[a] ? 4 : 1, round, f, k;
-    float K = 4 * 3.14159265f * 3.14159265f / (r->flop_period * r->flop_period), C = 2 * r->flop_damping * sqrtf(K);
-    V3 *verts = malloc(sizeof(V3) * (size_t)r->nvert), x = { 0, 0, 0 }, v = { 0, 0, 0 };
+    s32 n = c->anims[a].frames, f, k;
+    V3 *verts = malloc(sizeof(V3) * (size_t)r->nvert);
 
     if (verts == NULL) {
         return;
@@ -1566,37 +1607,9 @@ static void ride_flop(RideCtx *c, s32 a) {
         }
     }
     free(verts);
-    for (round = 0; round < rounds; round++) {
-        for (f = 0; f < n; f++) {
-            s32 last = f - 1, next = f + 1;
-            V3 acc = { 0, 0, 0 };
-            float len;
-
-            if (RideLoops[a]) {
-                last = (last + n) % n;
-                next %= n;
-            }
-            if (last >= 0 && next < n && n > 2) {
-                acc.x = path[next].x - 2 * path[f].x + path[last].x;
-                acc.y = path[next].y - 2 * path[f].y + path[last].y;
-                acc.z = path[next].z - 2 * path[f].z + path[last].z;
-            }
-            v.x += -K * x.x - C * v.x - r->flop_gain * acc.x;
-            v.y += -K * x.y - C * v.y - r->flop_gain * acc.y;
-            v.z += -K * x.z - C * v.z - r->flop_gain * acc.z;
-            x.x += v.x;
-            x.y += v.y;
-            x.z += v.z;
-            if ((len = sqrtf(x.x * x.x + x.y * x.y + x.z * x.z)) > r->flop_max) {
-                x.x *= r->flop_max / len;
-                x.y *= r->flop_max / len;
-                x.z *= r->flop_max / len;
-                v.x = v.y = v.z = 0;
-            }
-            if (round == rounds - 1) {
-                c->steps[a][f].flop = x;
-            }
-        }
+    hm_flop(path, n, RideLoops[a], &r->swing, swing);
+    for (f = 0; f < n; f++) {
+        c->steps[a][f].flop = swing[f];
     }
 }
 

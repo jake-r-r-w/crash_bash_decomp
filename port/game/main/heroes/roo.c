@@ -408,10 +408,11 @@ static V3 seated(s32 k) {
     return q;
 }
 
-/* What's loose on him as he rides: his tongue, the faces of his model that are its reds and pinks, more of it the further it's out of
- * his mouth (FLOP_TONGUE_ROOT to FLOP_TONGUE_TIP forward, standing); and his ears, out to the sides of his head above FLOP_EAR_LOW,
- * more the further out (FLOP_EAR_ROOT to FLOP_EAR_TIP), FLOP_EAR of the tongue's. They swing on a spring at his head as the bear
- * throws it about: FLOP_PERIOD frames a swing, FLOP_DAMPING of what would stop it, taking FLOP_GAIN of the throws, FLOP_MAX at most. */
+/* What's loose on him: his tongue, the faces of his model that are its reds and pinks, more of it the further it's out of his mouth
+ * (FLOP_TONGUE_ROOT to FLOP_TONGUE_TIP forward, standing); and his ears, out to the sides of his head above FLOP_EAR_LOW, more the
+ * further out (FLOP_EAR_ROOT to FLOP_EAR_TIP), FLOP_EAR of the tongue's. They swing on a spring at his head as it's thrown about, as he
+ * hops, jumps, spins and laughs and as the bear bounces him (RooSwing): FLOP_PERIOD frames a swing, FLOP_DAMPING of what would stop
+ * it, taking FLOP_GAIN of the throws, FLOP_MAX at most. */
 #define FLOP_TONGUE_ROOT 10.0f
 #define FLOP_TONGUE_TIP 38.0f
 #define FLOP_EAR_LOW 178.0f
@@ -422,6 +423,7 @@ static V3 seated(s32 k) {
 #define FLOP_DAMPING 0.25f
 #define FLOP_GAIN 1.0f
 #define FLOP_MAX 60.0f
+static const Flop RooSwing = { FLOP_PERIOD, FLOP_DAMPING, FLOP_GAIN, FLOP_MAX };
 static float FlopShare[MAX_VERTS];
 
 static void flop_setup(const C1Entry *model) {
@@ -514,17 +516,68 @@ typedef struct {
     float k, ground; /* his units to Crash Bash's, and how far down his feet are then */
 } FootCtx;
 
+/* On foot, the swing of what's loose on him through each of his animations' frames (his game's), from his head's path (his vertices
+ * above FOOT_HEAD_Y, standing) as it's seen: with the lift a frame's drawn without taken off it (ROO_KEEP_LIFT). Round and round in
+ * the ones that go round (FootLoops: his breathing, his laugh, his walk). */
+#define FOOT_HEAD_Y 150.0f
+#define MAX_OWN_FRAMES 32 /* his animations' frames (his jump's 28 the most) */
+static const u8 FootLoops[ROO_ANIMS] = { 0, 1, 1, 0, 1, 0 };
+static V3 FootSwing[ROO_ANIMS][MAX_OWN_FRAMES];
+
+static void foot_swing(const FootCtx *c) {
+    static V3 fv[MAX_VERTS], path[MAX_OWN_FRAMES];
+    float keep = (float)ROO_KEEP_LIFT / 0x1000;
+    s32 j, f, k, n, nv;
+
+    memset(FootSwing, 0, sizeof(FootSwing));
+    for (j = 0; j < ROO_ANIMS; j++) {
+        n = anim_frames(&c->anims[j], j);
+        n = n > MAX_OWN_FRAMES ? MAX_OWN_FRAMES : n;
+        for (f = 0; f < n; f++) {
+            V3 sum = { 0, 0, 0 };
+            float w = 0, low = -1e9f;
+
+            nv = anim_verts(&c->anims[j], j, f, c->scale, fv, NULL);
+            for (k = 0; k < nv && k < RigVerts; k++) {
+                float y = fv[k].y * c->k - c->ground;
+
+                low = y > low ? y : low;
+                if (Rest[k].y > FOOT_HEAD_Y) {
+                    sum.x += fv[k].x * c->k;
+                    sum.y += y;
+                    sum.z += fv[k].z * c->k;
+                    w++;
+                }
+            }
+            if (w > 0) {
+                sum.x /= w;
+                sum.y /= w;
+                sum.z /= w;
+            }
+            /* drawn lower by part of its lift off the floor (extraheroes.c, extra_hero_shape) */
+            if (low < 0) {
+                sum.y += -low * (1 - keep);
+            }
+            path[f] = sum;
+        }
+        hm_flop(path, n, FootLoops[j], &RooSwing, FootSwing[j]);
+    }
+}
+
 static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
     static V3 fv[MAX_VERTS];
     const FootCtx *c = ctx;
-    s32 n = anim_verts(&c->anims[j], j, f / ROO_SUBFRAMES, c->scale, fv, NULL), k, total = RigVerts > 0 ? RigVerts + TORN_VERTS : n;
+    s32 own = f / ROO_SUBFRAMES, n = anim_verts(&c->anims[j], j, own, c->scale, fv, NULL), k;
+    s32 total = RigVerts > 0 ? RigVerts + TORN_VERTS : n;
+    V3 swing = own < MAX_OWN_FRAMES ? FootSwing[j][own] : FootSwing[j][MAX_OWN_FRAMES - 1];
 
     for (k = 0; k < total; k++) {
         const V3 *p = &fv[k < n ? k : 0];
+        float w = k < RigVerts ? FlopShare[k] : 0;
 
-        out[k].x = p->x * c->k;
-        out[k].y = p->y * c->k - c->ground;
-        out[k].z = p->z * c->k;
+        out[k].x = p->x * c->k + swing.x * w;
+        out[k].y = p->y * c->k - c->ground + swing.y * w;
+        out[k].z = p->z * c->k + swing.z * w;
     }
 }
 
@@ -659,7 +712,11 @@ static s32 roo_make(HeroMade *out) {
         }
     }
 
-    /* on foot */
+    /* on foot, his tongue and ears swinging */
+    if (RigVerts > 0) {
+        flop_setup(&model);
+        foot_swing(&foot);
+    }
     for (j = 0; j < ROO_ANIMS; j++) {
         made_anims[j].name = RooAnims[j].name;
         /* ROO_SUBFRAMES to each of his game's, its frames the keyframes: the last is his game's last */
@@ -720,12 +777,8 @@ static s32 roo_make(HeroMade *out) {
         rider.nimages = nimage;
         rider.charred = RIDE_CHARRED;
         rider.own = ride_own;
-        flop_setup(&model);
         rider.flop = FlopShare;
-        rider.flop_period = FLOP_PERIOD;
-        rider.flop_damping = FLOP_DAMPING;
-        rider.flop_gain = FLOP_GAIN;
-        rider.flop_max = FLOP_MAX;
+        rider.swing = RooSwing;
         RideOwn.anims = anims;
         memcpy(RideOwn.scale, foot.scale, sizeof(RideOwn.scale));
         RideOwn.k = foot.k;

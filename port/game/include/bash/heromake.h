@@ -108,6 +108,17 @@ void made_images_free(MadeImage *images, s32 n);
 s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s32 nvert, MadeFace *faces, s32 max, s32 *nfaces,
                    MadeImage *images, s32 *nimages);
 
+/* --- what's loose on a hero (a tongue, ears) ---
+ * Its swing: a damped spring at the hero's head, thrown about by the head's accelerations from frame to frame. The frames a swing
+ * takes, its damping (a share of what would stop it swinging at all), how much of the head's throw it takes, and the most it swings
+ * (Crash Bash's units). */
+typedef struct {
+    float period, damping, gain, max;
+} Flop;
+/* The swing at each of an animation's n frames, from its head's path through them: from rest as it starts, or, in one that loops,
+ * settled into the loop's own (a few times round it first). */
+void hm_flop(const V3 *path, s32 n, s32 loops, const Flop *spring, V3 *out);
+
 /* --- riding a polar bear (Polar Push) ---
  * The games' riders sit on their bears in one model; an extra hero's rider model is Crash's bear, from the player's archive as the game
  * has it, with the hero sat on its back: it moves as the bear's back does, bent as Crash leans on his, hips to head (a share of it,
@@ -134,11 +145,10 @@ typedef struct {
     /* any motion of its own, before the riding's, for frame f of RIDE_ animation `anim` (of `frames`); may be NULL */
     void (*own)(void *ctx, s32 anim, s32 f, s32 frames, V3 *verts);
     void *ctx;
-    /* what's loose on it (a tongue, ears): each vertex's share of their swing, 1 at their ends, or NULL for none; and the swing, a
-     * damped spring at its head that the head's thrown about by, frame to frame: the frames a swing takes, its damping (a share of
-     * what would stop it swinging at all), how much of the head's throw it takes, and the most it swings (Crash Bash's units) */
+    /* what's loose on it (a tongue, ears): each vertex's share of their swing, 1 at their ends, or NULL for none; and the swing, at
+     * its head (the middle of what bends at its neck) */
     const float *flop;
-    float flop_period, flop_damping, flop_gain, flop_max;
+    Flop swing;
 } Rider;
 /* Where the hero sits: the top of the bear's back under its middle, and that middle (Crash Bash's axes). 0 if there's no bear. */
 s32 ride_seat(float *back_y, float *seat_z);

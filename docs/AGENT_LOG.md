@@ -502,6 +502,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: At the user's word, Roo's ears and tongue flap as he walks about, carrying a crate too. The rider's spring is shared
+  now (`hm_flop`, `Flop` in heromake.h); on foot `foot_swing` runs it on his head's path through each of his game's frames, as
+  drawn (keep_lift's lowering taken off), round the loop in his breathing, laugh and walk, and `foot_frame` adds it by FlopShare.
+  A hop is 10 of his frames to the spring's 9, so the walk swings most (about 50 units at the tongue's tip, 40 at the ears');
+  his jump and spin barely change. Checked by renders of the dumped model with and without it, and Crate Crush shots; not played.
+
 - 2026-11-04: Roo's breathing looked slow at 120 frames a second (the user's settings: fps=120). Not the frame rate: his frames
   map the same at 30 and 120 (traced), but his base's moves are longer than his own (Rilla Roo's idle 20 frames, his 12), so
   stretched over hers he held some frames for two of hers, and drawn between frames that stepping shows. His foot model has four
