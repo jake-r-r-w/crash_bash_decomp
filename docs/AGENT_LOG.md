@@ -508,7 +508,8 @@ Newest first, a few lines each. Details are in the commits.
 - 2026-11-04: "It's not saying his name still": by the "found file for his win that we used in bash" the user meant the announcer's
   "Rilla Roo" (what his wins said with Rilla Roo's place), not his laugh. VOICE_NAME is that now: sound 0xC9 of
   sfx/vox_common/rilla.sfx (entry 0xB8; scratch/pack_ids.mjs lists a pack's sound ids), via hm_game_sound, whoever's place he
-  has, the short laugh only if it's missing. Traced in a four-Roo win: the name (6288 bytes) then his laugh. Not heard yet.
+  has, the short laugh only if it's missing. Traced in a four-Roo win: the name (6288 bytes) then his laugh. The user heard it
+  in a four-Roo Tank match ("Rilla Roo", "wins!", his laugh) and approved it.
 
 - 2026-11-04: The user approved Roo's tank (LGTM), but missed the announcer's "wins!" (left out last time, as his 2.7 s laugh in
   the name's place ran over it). A hero has a VOICE_NAME now: Roo's is his laugh's first 0.65 s (260 blocks), to a quiet gap
