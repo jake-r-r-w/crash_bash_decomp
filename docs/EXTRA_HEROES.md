@@ -95,7 +95,7 @@ play them:
 
 | Offset | Where | Rilla Roo's | Roo's |
 |---|---|---|---|
-| 0 | The announcer naming the winner (`UpdateHeroVictory`, step 0) | 0.50 s | his name (*) |
+| 0 | The announcer naming the winner (`UpdateHeroVictory`, step 0) | 0.50 s | "Rilla Roo" (*) |
 | 1 | Taunt (the taunt move's 0x800A) | 0.46 s | laugh |
 | 2-5 | Hit, one at random (`HeroHitSfx`) | 0.18 s | yelp |
 | 6 | Cheer as it wins (`UpdateHeroVictory`, step 2) | 0.43 s | laugh |
@@ -114,10 +114,11 @@ play them:
 
 (*) The game has no name for an extra hero, and its base's is another hero's (with Coco's place,
 Roo "won" as Coco). So a hero has a `VOICE_NAME` of its own, short enough to be done before the
-announcer's "wins!" (0x1B0), which comes 0.77 to 0.87 s after the name, by its base. Roo's is his
-laugh's first 0.65 s, its long "ha" and four short ones, cut at a quiet gap (`ROO_NAME_BYTES`): a
-win is then his name, "wins!", and his whole laugh as he cheers, as the others' go. All the games'
-wins go through `UpdateHeroVictory`.
+announcer's "wins!" (0x1B0), which comes 0.77 to 0.87 s after the name, by its base. Roo's is the
+announcer's "Rilla Roo", the nearest name the game has, whoever's place he has: sound 0xC9, the
+first of her block, from `sfx/vox_common/rilla.sfx` in the player's archive (`hm_game_sound`; if it's
+not there, his laugh's first 0.65 s, cut at a quiet gap). A win is then his name, "wins!", and his
+laugh as he cheers, as the others' go. All the games' wins go through `UpdateHeroVictory`.
 
 His own (`VOICE_`), as his make finds them: the laugh, a yelp (the laugh's first "ha", higher),
 his jump's call, a light landing and a heavy one; and one of the game's own, Crash's throw, as his game has no throw of

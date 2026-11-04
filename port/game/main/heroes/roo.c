@@ -48,11 +48,10 @@ static const Stand RooPogo[] = {
     { NULL, NULL, STRETCH },
 };
 
-/* His sounds for his base's (docs/EXTRA_HEROES.md, A hero's sounds): as he wins the start of his laugh is his name, where the announcer
- * would name the winner (the game has no name for him, and his base's is another hero's: with Coco's place he "won" as Coco), then the
- * announcer's "wins!", and he laughs as he cheers; he laughs as he taunts, yelps only as he's hurt, gives his jump's call as he jumps
- * and lunges, thuds as he lands, and throws with Crash's throw (his game has none of his own). Picking up a crate, carrying it and
- * pushing he's quiet. */
+/* His sounds for his base's (docs/EXTRA_HEROES.md, A hero's sounds): as he wins the announcer names him "Rilla Roo", the nearest name the
+ * game has (RILLA_NAME), whoever's place he has (with Coco's he "won" as Coco), then "wins!", and he laughs as he cheers; he laughs as
+ * he taunts, yelps only as he's hurt, gives his jump's call as he jumps and lunges, thuds as he lands, and throws with Crash's throw
+ * (his game has none of his own). Picking up a crate, carrying it and pushing he's quiet. */
 static const Voice RooVoices[] = {
     { 0, VOICE_NAME }, { 1, VOICE_LAUGH }, { 2, VOICE_YELP }, { 3, VOICE_YELP }, { 4, VOICE_YELP }, { 5, VOICE_YELP },
     { 6, VOICE_LAUGH },
@@ -1471,13 +1470,15 @@ static s32 tank_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, c
 #define ROO_PITCH 0x400
 #define ROO_YELP_BYTES (86 * 16)
 #define ROO_YELP_PITCH 0x480
-#define ROO_NAME_BYTES (260 * 16) /* his name as he wins: his laugh's first 0.65 s, its long "ha" and four short ones, to a quiet gap
-                                   * in it, done before the announcer's "wins!" (0.77 s on at the soonest) */
 #define CARD_HEAD 42 /* his hero card: his head and the tongue as it leaves his mouth; then the tongue hanging down and curling at its end */
 #define CRASH_CRATE_VOICES 0xD4 /* his throw is Crash's: the archive's sfx/vox_crate/crash.sfx, Crash's voice in Crate Crush, */
 #define CRASH_THROW 0x10        /* its sound for his throw, the sixteenth of his block (from sound 1) */
+#define RILLA_COMMON_VOICES 0xB8 /* his name as he wins is the announcer's "Rilla Roo", the nearest the game has: sfx/vox_common/rilla.sfx, */
+#define RILLA_NAME 0xC9          /* the first of her block; whoever's place he has, as with another's he "won" as that hero */
+#define ROO_NAME_BYTES (260 * 16) /* and if it hasn't got it, his laugh's first 0.65 s, its long "ha" and four short ones, to a quiet gap
+                                   * in it, done before the announcer's "wins!" (0.77 s on at the soonest) */
 static u8 *RooSound[NUM_VOICES];
-static HeroSound RooThrow;
+static HeroSound RooThrow, RooName;
 static s32 RooSoundBytes[NUM_VOICES];
 static u32 RooCard[64 * 64];
 
@@ -1500,8 +1501,15 @@ static void make_sounds(const C1Level *l, HeroMade *out) {
         out->sound[v].bytes = RooSoundBytes[v];
         out->sound[v].pitch = ROO_PITCH;
     }
-    out->sound[VOICE_NAME] = out->sound[VOICE_LAUGH];
-    out->sound[VOICE_NAME].bytes = out->sound[VOICE_LAUGH].bytes < ROO_NAME_BYTES ? out->sound[VOICE_LAUGH].bytes : ROO_NAME_BYTES;
+    if (RooName.adpcm == NULL) {
+        hm_game_sound(RILLA_COMMON_VOICES, RILLA_NAME, &RooName);
+    }
+    if (RooName.adpcm != NULL) {
+        out->sound[VOICE_NAME] = RooName;
+    } else {
+        out->sound[VOICE_NAME] = out->sound[VOICE_LAUGH];
+        out->sound[VOICE_NAME].bytes = out->sound[VOICE_LAUGH].bytes < ROO_NAME_BYTES ? out->sound[VOICE_LAUGH].bytes : ROO_NAME_BYTES;
+    }
     out->sound[VOICE_YELP] = out->sound[VOICE_LAUGH];
     out->sound[VOICE_YELP].bytes = out->sound[VOICE_LAUGH].bytes < ROO_YELP_BYTES ? out->sound[VOICE_LAUGH].bytes : ROO_YELP_BYTES;
     out->sound[VOICE_YELP].pitch = ROO_YELP_PITCH;
@@ -1687,12 +1695,12 @@ static s32 roo_make(HeroMade *out) {
         out->card_head = CARD_HEAD;
     }
     make_sounds(&level, out);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s\n", ntri, nimage,
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s%s\n", ntri, nimage,
            out->mdl_size[KIND_FOOT], out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "",
            out->mdl[KIND_POGO] != NULL ? ", on his cane" : "", out->mdl[KIND_BALL] != NULL ? ", in a car" : "",
            out->mdl[KIND_TANK] != NULL ? ", in a tank" : "", out->card != NULL ? ", his hero card" : "",
            out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "",
-           out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "");
+           out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "", RooName.adpcm != NULL ? ", named Rilla Roo" : "");
     ok = 1;
 done:
     made_images_free(images, nimage);
