@@ -17,8 +17,9 @@ moves, which model each game loads), so the base's all still work, and the extra
 base's moves with the same timing and reach. What makes it itself:
 
 - **Its models**, one of each **kind** the games' own heroes have: on foot (Crate Crush, and any
-  game with no kind of its own for it), riding a polar bear (Polar Push), and on a pogo stick
-  (Pogo); a kind it has no model of, it plays as on foot. Each goes in the
+  game with no kind of its own for it), riding a polar bear (Polar Push), on a pogo stick
+  (Pogo), and sat in a car (Ballistix, the game drawing the car round it); a kind it has no model
+  of, it plays as on foot. Each goes in the
   base's place in the game's tables of models by hero (`HeroHooks.HeroModels`, and the second
   table Polar Push's last arena loads, `HeroHooks.flag`), and wherever the game draws the base's
   model of that kind it draws the hero's (`extra_hero_dbase`, from `prims.c`): Polar Push gives
@@ -55,7 +56,7 @@ the base's do.
 const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
-      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES } },
+      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, ROO_SUBFRAMES } },
     RooVoices, "BREATHE", 0, roo_make,
 };
 ```
@@ -179,7 +180,18 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    through a bounce as he wins; and the boss's attack, the cane flipped up and fired, as he tazes.
    Each is as long as his base's (`hm_bank_frames`, Rilla Roo's pogo model's) at four frames to
    each of hers; the tazing at the boss's own speed.
-7. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
+7. **In a car (Ballistix).** The game draws a car round each hero (`DB_BallsVehicle`, its meshes
+   4 and 1) and the hero's own model in it, the four of them round the arena, so each is seen from a
+   side of its own: from behind, the front and either side. `car_make` sits Roo in it as the others
+   sit (`car_seated`: thighs forward, shins down, his long feet turned in, his tail tucked, all of
+   it inside the car, his straitjacket and head above it). He has no hands for its handles, so he
+   drives it with his head (at the user's word): BANK, which the game sets from his sideways speed
+   each tick and holds at frame 9 or 23 of 28 as he goes one way or the other, smacks his head down
+   on the car's side the way he goes (`car_bank`), and he comes back upright as he stops. He sways
+   as he breathes, laughs as he fidgets (IDLE_A), taunts and wins (bouncing in his seat), and slumps
+   back as he loses (DIE); each move as long as Rilla Roo's ball model's, four frames to each of
+   hers.
+8. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
    health), `c1_sound` his sounds.
 
 ### 5. Putting him in
@@ -188,7 +200,7 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
 - His `HeroDef` in `HeroDefs` and his archive entries and banks in `Slots` (`bonusheroes.c`).
 - An archive entry for each model and its texture set (main.c's `DatIndex`, from 992, empty until
   his make fills them) and a file group of each pair (`FileGroups`, from 130).
-- A bank of each (`modelbank.h`'s `DB_BonusRoo`, `DB_BonusRooPolar` and `DB_BonusRooPogo`, dbase.c's
+- A bank of each (`modelbank.h`'s `DB_BonusRoo`, `DB_BonusRooPolar`, `DB_BonusRooPogo` and `DB_BonusRooBall`, dbase.c's
   `HeroModelBank`) and their loading (levelload.c's `ModeDbaseLists`).
 - A card in the character select (titles.c): the ninth, first of the third row, is Roo's; another
   hero needs one of its own.
@@ -199,7 +211,8 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
 build/port/windows-clang/crashbash.exe --mode 18 --skip-intro --skip-loading --turbo --window 640 480 --extra-hero 0 roo --shot 700 build/roo.png --frames 720
 ```
 
-Mode 0 is Crate Crush, 10 to 13 Pogo's four arenas, 18 to 21 Polar Push's four. In a test run the computer plays
+Mode 0 is Crate Crush, 10 to 13 Pogo's four arenas, 14 to 17 Ballistix's, 18 to 21 Polar Push's.
+`--extra-hero N roo` for each of players 0 to 3 puts him on every side at once. In a test run the computer plays
 player 1, the same way each run. The log says what was made: `bonus: Ripper Roo from Crash
-Bandicoot, 1145 triangles, 1 textures, ... riding a bear, on his cane, his hero card, his laugh, his
-landing`.
+Bandicoot, 1145 triangles, 1 textures, ... riding a bear, on his cane, in a car, his hero card, his
+laugh, his landing`.

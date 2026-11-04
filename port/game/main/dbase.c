@@ -997,4 +997,5 @@ obj_dbase HeroModelBank[DB_COUNT] = {
     { &DatIndex[993], &DatIndex[992] }, /* DB_BonusRoo, PC (bonusheroes.c) */
     { &DatIndex[995], &DatIndex[994] }, /* DB_BonusRooPolar, PC */
     { &DatIndex[997], &DatIndex[996] }, /* DB_BonusRooPogo, PC */
+    { &DatIndex[999], &DatIndex[998] }, /* DB_BonusRooBall, PC */
 };

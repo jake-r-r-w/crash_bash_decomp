@@ -1166,6 +1166,15 @@ signature alone is not enough.
   that telescopes, 107 units squeezed to about 375 out (his last five
   strips);
   its ATTACK, BREATHE (two bounces in 26 frames) and JUMP are all he has.
+- **Ballistix's cars** (arkenoid). A hero's engine has three subs
+  (`AR_InitHero`): the car's body (`DB_BallsVehicle` mesh 4,
+  entity 0x2004, 0x2006 as it's hit), the hero's own ball model
+  (`models/chars/ball/`, the animator's sub), and the car's mesh 1 (0x2001).
+  The car's seat back stands 263 high, its sides 158, its front 86. The
+  heroes' moves are BREATHE, BANK, IDLE_A, TAUNT_A, DIE and WIN; BANK's hash
+  (0x2DA) is HOLD's too. BANK is a 28-frame cycle that `ArkHeroUpdateSpeed`
+  sets each tick from the sideways speed (`ArkHeroSpeeds[hero]`: frame 9 or
+  23 held while moving one way or the other, back to 14 or 27 when stopped).
 - **The front end** (Titles; named 2026-10-26). Modes 0x28..0x2A
   (the engine's per-mode table gives each `file_group_TITLES`); its world
   record (`0x800990B0`, world 0x0101) is `{..., &TITLES_PREMAP,

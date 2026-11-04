@@ -71,7 +71,7 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    release. Whether it plays the same as retail is checked by the user playing it.
    The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. The latest is v0.2.0 (2026-11-03). 6.8, fully native, is done (2026-11-01): plain maths, direct drawing and the port's own APIs. The user has tried sticks and rumble on a real controller since its pad rewrite, and they're fine (2026-11-03). Before a change that shouldn't alter the game, `playtest.mjs same [--all]` makes a baseline with `--save`, in `build/`, and afterwards shows in a minute that frames and sound haven't changed. `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
 
-4. Part 7 (2026-11-03): 7.6, sharper icons and text, is done (ICONS: CRISP; the game's own lettering stays). 7.11, widescreen level by level, is done (2026-11-03): every level shown to the user and fixed or left at their word, and the eleven crystal maps they picked. 7.8, mods, is done (2026-11-03; PORT.md, Mods, and MODDING.md), approved by the user after playing with it. **Now: 7.12, extra heroes** (the user's, 2026-11-03): with the launcher's EXTRA HEROES on and the player's Crash Bandicoot (USA) disc in a `discs` folder (or the repo's `disc/`), Ripper Roo has a ninth card in the character select and plays Crate Crush as that game's Roo, converted on their machine; only that Roo, at the user's word (no Crash Bash Roo without the disc). Since 2026-11-04 he rides a polar bear in Polar Push too, and bounces on Pogo's boss's cane in Pogo (7.12.3, waiting on the user's play), and each hero is a file of its own, `main/heroes/roo.c` the template (docs/EXTRA_HEROES.md). Next the other games and the bosses (ROADMAP-B 7.12). Then 7.9 online play, the last row. 7.7, optional modern lighting, was taken off the roadmap by the user (2026-11-03). At the next release, README.md's Texture packs row becomes Mods.
+4. Part 7 (2026-11-03): 7.6, sharper icons and text, is done (ICONS: CRISP; the game's own lettering stays). 7.11, widescreen level by level, is done (2026-11-03): every level shown to the user and fixed or left at their word, and the eleven crystal maps they picked. 7.8, mods, is done (2026-11-03; PORT.md, Mods, and MODDING.md), approved by the user after playing with it. **Now: 7.12, extra heroes** (the user's, 2026-11-03): with the launcher's EXTRA HEROES on and the player's Crash Bandicoot (USA) disc in a `discs` folder (or the repo's `disc/`), Ripper Roo has a ninth card in the character select and plays Crate Crush as that game's Roo, converted on their machine; only that Roo, at the user's word (no Crash Bash Roo without the disc). Since 2026-11-04 he rides a polar bear in Polar Push too, bounces on Pogo's boss's cane in Pogo, and sits in a Ballistix car (7.12.3, the car waiting on the user's play), and each hero is a file of its own, `main/heroes/roo.c` the template (docs/EXTRA_HEROES.md). Next the other games and the bosses (ROADMAP-B 7.12). Then 7.9 online play, the last row. 7.7, optional modern lighting, was taken off the roadmap by the user (2026-11-03). At the next release, README.md's Texture packs row becomes Mods.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -502,6 +502,15 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-04: The user approved Roo's cane (LGTM). Roo sits in a Ballistix car now, at their word ("it needs to look good from
+  all 4 sides"; "he does not have hands/arms to operate the handles", so going left "he smacks his head down on the left side
+  of the cart"). A fourth kind, KIND_BALL (DB_BonusRooBall, entries 998/999): the game draws the car (DB_BallsVehicle meshes 4
+  and 1) round the hero's own model, so his is only him, sat (`car_seated`) with his legs and tail inside the car. BANK is a
+  28-frame cycle the game sets from the sideways speed (`ArkHeroUpdateSpeed`: held at frame 9 or 23 while moving, back to 14
+  or 27 when stopped), so `car_bank` leans him at his waist and neck down onto the side he goes to. Checked by renders and a
+  match with all four players Roo (`--extra-hero N roo` for each): head down on the side he drives toward from all four sides.
+  Not played by the user yet; his fidget, taunt, win and lose only seen in renders.
 
 - 2026-11-04: The user approved Roo on his cane (LGTM) but for his feet: the cane squeezed between his legs at the bottom of
   each bounce ("bouncing on a bad place"). His soles are on the cane's top now whenever the boss is below it (`feet = max(lift,

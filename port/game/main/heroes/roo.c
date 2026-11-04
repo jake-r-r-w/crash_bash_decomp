@@ -36,6 +36,10 @@ static const Stand RooRides[] = {
     { NULL, NULL, STRETCH },
 };
 /* On his cane his model has Pogo's moves by name, as long as his base's; his tazing is the boss's attack, at its own speed */
+/* In a car his model has Ballistix's moves by name */
+static const Stand RooCar[] = {
+    { NULL, NULL, STRETCH },
+};
 static const Stand RooPogo[] = {
     { "TAZING", "TAZING", LOOP },
     { NULL, NULL, STRETCH },
@@ -65,7 +69,7 @@ static s32 roo_make(HeroMade *out);
 const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
-      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES } },
+      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, ROO_SUBFRAMES } },
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -911,6 +915,264 @@ done:
     return ok;
 }
 
+/* --- in a Ballistix car ---
+ * Ballistix draws a car round each hero (its vehicle model's meshes 4 and 1) and the hero's own model in it (models\chars\ball\), the
+ * four of them round the arena, so each is seen from a side of its own: from behind, the front and either side. Roo sits in it as the
+ * others do, his hips CAR_HIPS above its floor and CAR_Z behind its middle: his thighs forward (CAR_FLEX), his shins down
+ * (CAR_KNEE_BACK), his long feet turned in under him as on his cane, his tail tucked into its root, all of that inside the car and his
+ * straitjacket and head above it. With no hands for its handles, he drives it by smacking his head down on its side, the way he goes
+ * (BANK: CAR_LEAN at his waist and CAR_NOD more at his neck, all of it from CAR_SMACK of the way there); he sways as he breathes
+ * (CAR_SWAY of his standing animation's), laughs as he fidgets, taunts and wins (CAR_FIDGET, CAR_LAUGH and all of it, bouncing CAR_HOP
+ * in his seat as he wins), and slumps back as he loses (CAR_SLUMP, his head dropping CAR_DROOP). His tongue and ears swing, but as he
+ * drives: its frames are the way he leans, not time. */
+#define CAR_HIPS 120.0f
+#define CAR_Z 30.0f
+#define CAR_FLEX 1.45f
+#define CAR_KNEE_Y 30.0f
+#define CAR_KNEE_BACK 1.45f
+#define CAR_LEAN 1.25f
+#define CAR_NOD 0.6f
+#define CAR_SMACK 0.75f
+#define CAR_SWAY 0.3f
+#define CAR_FIDGET 0.4f
+#define CAR_LAUGH 0.6f
+#define CAR_HOP 40.0f
+#define CAR_SLUMP 0.55f
+#define CAR_DROOP 0.5f
+#define CAR_FADE 4.0f
+#define CAR_MAX_TICKS 96 /* his base's longest move (Rilla Roo's IDLE_A is 75 frames) */
+
+enum { CAR_BREATHE, CAR_BANK, CAR_IDLE, CAR_TAUNT, CAR_DIE, CAR_WIN, CAR_MOVES };
+static const char *const CarNames[CAR_MOVES] = { "BREATHE", "BANK", "IDLE_A", "TAUNT_A", "DIE", "WIN" };
+
+typedef struct {
+    const FootCtx *foot;
+    MadeAnim anims[CAR_MOVES];
+    V3 swing[CAR_MOVES][CAR_MAX_TICKS];
+} CarCtx;
+
+static CarCtx Car;
+
+/* A vertex of his (in his rig) sat in the car, legs and tail; above his waist he's as he stands */
+static V3 car_seated(V3 q, s32 k) {
+    if (LegShare[k] > 0) {
+        float side = Rest[k].x < 0 ? -1.0f : 1.0f, foot = hm_smooth(FOOT_Y + 4, FOOT_Y - 2, Rest[k].y);
+        float below = hm_smooth(CAR_KNEE_Y + 8, CAR_KNEE_Y - 8, Rest[k].y);
+        V3 hip = { side * SEAT_HIP_X, HIP_Y, HIP_Z }, knee = { side * SEAT_HIP_X, CAR_KNEE_Y, HIP_Z }, ankle = { side * SEAT_ANKLE_X, 0, 0 };
+        V3 r, shin;
+
+        if (foot > 0) {
+            q = hm_turn_y(q, ankle, -side * POGO_FOOT_TURN * foot);
+        }
+        r = hm_turn_x(q, hip, -CAR_FLEX);
+        knee = hm_turn_x(knee, hip, -CAR_FLEX);
+        shin = hm_turn_x(r, knee, CAR_KNEE_BACK);
+        r = hm_mix(r, shin, below);
+        q = hm_mix(q, r, LegShare[k]);
+    }
+    if (TailOf[k]) {
+        q.x = 0;
+        q.y = SEAT_TAIL_Y;
+        q.z = SEAT_TAIL_Z;
+    }
+    return q;
+}
+
+/* The way he leans in the car's BANK frame g of n (its base's): none at its first, middle and last, his head down on one side by a
+ * quarter of the way and on the other by three quarters, as the base's leans (the game holds frame 9 or 23 of 28 as he goes one way or
+ * the other, and comes back upright as he stops) */
+static float car_bank(float g, s32 n) {
+    float half = n / 2.0f, s;
+
+    if (g <= half) {
+        s = -sinf(ROO_PI * g / half);
+    } else {
+        s = n - 1 > half ? sinf(ROO_PI * (g - half) / (n - 1 - half)) : 0;
+    }
+    s /= CAR_SMACK;
+    return s > 1 ? 1 : s < -1 ? -1 : s;
+}
+
+/* Add `amount` of his own animation a's motion above his waist at t of his frames (round and round), blended between two of them,
+ * to his rig's vertices */
+static void car_motion(const FootCtx *foot, s32 a, float t, float amount, V3 *q) {
+    static V3 fv[MAX_VERTS], gv[MAX_VERTS];
+    const C1Entry *e = &foot->anims[a];
+    s32 g0, g1, n, m, k;
+    float u;
+
+    if (e->count <= 0 || amount <= 0 || SwayVerts == 0) {
+        return;
+    }
+    g0 = (s32)floorf(t);
+    u = t - g0;
+    g0 = (g0 % e->count + e->count) % e->count;
+    g1 = (g0 + 1) % e->count;
+    n = c1_frame_verts(e->item[g0], e->size[g0], foot->scale, fv, NULL, MAX_VERTS);
+    m = c1_frame_verts(e->item[g1], e->size[g1], foot->scale, gv, NULL, MAX_VERTS);
+    for (k = 0; k < n && k < m && k < RigVerts && k < SwayVerts; k++) {
+        float w = hm_smooth(RIDE_WAIST - RIDE_WAIST_BLEND, RIDE_WAIST + RIDE_WAIST_BLEND, Rest[k].y) * amount;
+        V3 d = to_rig(hm_mix(fv[k], gv[k], u)), s = to_rig(SwayMiddle[k]);
+
+        q[k].x += (d.x - s.x) * w;
+        q[k].y += (d.y - s.y) * w;
+        q[k].z += (d.z - s.z) * w;
+    }
+}
+
+/* Frame f of move a, but for the swing: his vertices in Crash Bash's units, in the car */
+static void car_pose(const CarCtx *c, s32 a, s32 f, V3 *out) {
+    static V3 q[MAX_VERTS];
+    const FootCtx *foot = c->foot;
+    s32 frames = c->anims[a].frames, k;
+    float g = (float)f / ROO_SUBFRAMES, ticks = (float)frames / ROO_SUBFRAMES, lean = 0, slump = 0, hop = 0, fade, s;
+    V3 waist = { 0, RIDE_WAIST, 0 }, neck = { 0, RIDE_NECK, 0 };
+
+    for (k = 0; k < RigVerts; k++) {
+        q[k] = car_seated(Rest[k], k);
+    }
+    fade = fminf(hm_smooth(0, CAR_FADE, g), hm_smooth(ticks - 1, ticks - 1 - CAR_FADE, g));
+    switch (a) {
+    case CAR_BREATHE:
+        car_motion(foot, ROO_REST, g * foot->anims[ROO_REST].count / (ticks > 0 ? ticks : 1), CAR_SWAY, q);
+        break;
+    case CAR_BANK:
+        lean = car_bank(g, (s32)(ticks + 0.5f));
+        break;
+    case CAR_IDLE:
+        car_motion(foot, ROO_LAUGH, g, CAR_FIDGET * fade, q);
+        break;
+    case CAR_TAUNT:
+        car_motion(foot, ROO_LAUGH, g, CAR_LAUGH * fade, q);
+        break;
+    case CAR_WIN:
+        car_motion(foot, ROO_LAUGH, g, fade, q);
+        hop = CAR_HOP * fabsf(sinf(ROO_PI * g / 8)) * fade;
+        break;
+    case CAR_DIE:
+        slump = hm_smooth(0, ticks * 0.5f, g);
+        break;
+    }
+    for (k = 0; k < RigVerts; k++) {
+        float up = hm_smooth(RIDE_WAIST - RIDE_WAIST_BLEND, RIDE_WAIST + RIDE_WAIST_BLEND, Rest[k].y);
+        float head = hm_smooth(RIDE_NECK - RIDE_NECK_BLEND, RIDE_NECK + RIDE_NECK_BLEND, Rest[k].y);
+        V3 p = q[k];
+
+        if (up > 0 && lean != 0) {
+            /* down on the car's side, his head the most */
+            V3 at_neck = hm_turn_z(neck, waist, -lean * CAR_LEAN);
+
+            p = hm_mix(p, hm_turn_z(p, waist, -lean * CAR_LEAN), up);
+            p = hm_mix(p, hm_turn_z(p, at_neck, -lean * CAR_NOD), head);
+        }
+        if (up > 0 && slump > 0) {
+            /* back in his seat, his head dropping */
+            V3 at_neck = hm_turn_x(neck, waist, -slump * CAR_SLUMP);
+
+            p = hm_mix(p, hm_turn_x(p, waist, -slump * CAR_SLUMP), up);
+            p = hm_mix(p, hm_turn_x(p, at_neck, slump * CAR_DROOP), head);
+        }
+        p.y += hop / (ROO_UNIT * foot->k) * up;
+        s = ROO_UNIT * foot->k;
+        out[k].x = p.x * s;
+        out[k].y = -(p.y - HIP_Y) * s - CAR_HIPS;
+        out[k].z = -p.z * s + CAR_Z;
+    }
+}
+
+/* The swing of his tongue and ears through each move but BANK, a tick at a time, from his head's path */
+static void car_swing(CarCtx *c) {
+    static V3 v[MAX_VERTS], path[CAR_MAX_TICKS];
+    s32 a, i, k, ticks;
+
+    memset(c->swing, 0, sizeof(c->swing));
+    for (a = 0; a < CAR_MOVES; a++) {
+        if (a == CAR_BANK) {
+            continue;
+        }
+        ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES;
+        ticks = ticks > CAR_MAX_TICKS ? CAR_MAX_TICKS : ticks;
+        for (i = 0; i < ticks; i++) {
+            V3 sum = { 0, 0, 0 };
+            float w = 0;
+
+            car_pose(c, a, i * ROO_SUBFRAMES, v);
+            for (k = 0; k < RigVerts; k++) {
+                if (Rest[k].y > FOOT_HEAD_Y) {
+                    sum.x += v[k].x;
+                    sum.y += v[k].y;
+                    sum.z += v[k].z;
+                    w++;
+                }
+            }
+            if (w > 0) {
+                sum.x /= w;
+                sum.y /= w;
+                sum.z /= w;
+            }
+            path[i] = sum;
+        }
+        hm_flop(path, ticks, a == CAR_BREATHE, &RooSwing, c->swing[a]);
+    }
+}
+
+static void car_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    const CarCtx *c = ctx;
+    s32 ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES, i0, i1, k;
+    float s = (float)f / ROO_SUBFRAMES, u;
+    V3 swing;
+
+    ticks = ticks > CAR_MAX_TICKS ? CAR_MAX_TICKS : ticks;
+    car_pose(c, a, f, out);
+    i0 = (s32)floorf(s);
+    u = s - i0;
+    i0 = i0 < ticks ? i0 : ticks - 1;
+    i1 = i0 + 1 < ticks ? i0 + 1 : a == CAR_BREATHE ? 0 : i0;
+    swing = hm_mix(c->swing[a][i0], c->swing[a][i1], u);
+    for (k = 0; k < RigVerts; k++) {
+        out[k].x += swing.x * FlopShare[k];
+        out[k].y += swing.y * FlopShare[k];
+        out[k].z += swing.z * FlopShare[k];
+    }
+}
+
+/* His car model: his own faces (own_tris of them) and images, Ballistix's moves as long as his base's */
+static s32 car_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, const MadeImage *images, s32 nimage, HeroMade *out) {
+    CarCtx *c = &Car;
+    MadeModel mm;
+    s32 a, n;
+
+    memset(c, 0, sizeof(*c));
+    c->foot = foot;
+    for (a = 0; a < CAR_MOVES; a++) {
+        n = hm_bank_frames(DB_CharsBallRilla, CarNames[a]);
+        n = n > 0 ? n : 20;
+        n = n > CAR_MAX_TICKS ? CAR_MAX_TICKS : n;
+        c->anims[a].name = CarNames[a];
+        c->anims[a].frames = n * ROO_SUBFRAMES;
+        c->anims[a].mesh = 0;
+        c->anims[a].step = ROO_SUBFRAMES;
+    }
+    car_swing(c);
+    memset(&mm, 0, sizeof(mm));
+    mm.faces = faces;
+    mm.nfaces = own_tris;
+    mm.meshes = 1;
+    mm.images = images;
+    mm.nimages = nimage;
+    mm.anims = c->anims;
+    mm.nanims = CAR_MOVES;
+    mm.nvert = RigVerts;
+    mm.rest_anim = CAR_BREATHE;
+    mm.frame = car_frame;
+    mm.ctx = c;
+    if (!made_write(&mm, &out->tex[KIND_BALL], &out->tex_size[KIND_BALL], &out->mdl[KIND_BALL], &out->mdl_size[KIND_BALL])) {
+        printf("bonus: Ripper Roo can't be put in a car\n");
+        return 0;
+    }
+    return 1;
+}
+
 /* His sounds, which his boss fight's object (RRooC) plays: sound entries in sound pages, at 11025 Hz. His laugh (CrznA), his jump's
  * call (rjpnA), and his landings, light (ld30A) and heavy (ld00A). His game has no hurt voice for him, so his yelp is his laugh's first
  * "ha", its first ROO_YELP_BYTES (0.22 s, where it falls quiet), a little higher. */
@@ -1117,9 +1379,10 @@ static s32 roo_make(HeroMade *out) {
             printf("bonus: Ripper Roo has no polar bear to ride\n");
         }
     }
-    /* on his cane (Pogo): his own faces, as riding */
+    /* on his cane (Pogo) and in a car (Ballistix): his own faces, as riding */
     if (RigVerts > 0) {
         pogo_make(&foot, faces, own_tris, images, nimage, out);
+        car_make(&foot, faces, own_tris, images, nimage, out);
     }
     if (c1_sprite64(&level, "ShadC", 5, RooCard)) {
         out->card = RooCard;
@@ -1127,9 +1390,10 @@ static s32 roo_make(HeroMade *out) {
         out->card_head = CARD_HEAD;
     }
     make_sounds(&level, out);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s\n", ntri, nimage,
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s\n", ntri, nimage,
            out->mdl_size[KIND_FOOT], out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "",
-           out->mdl[KIND_POGO] != NULL ? ", on his cane" : "", out->card != NULL ? ", his hero card" : "",
+           out->mdl[KIND_POGO] != NULL ? ", on his cane" : "", out->mdl[KIND_BALL] != NULL ? ", in a car" : "",
+           out->card != NULL ? ", his hero card" : "",
            out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "",
            out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "");
     ok = 1;

@@ -330,6 +330,7 @@ enum DbaseIds {
     DB_BonusRoo, /* 283, PC: Ripper Roo from the player's Crash Bandicoot disc (main/bonusheroes.c, main/heroes/roo.c) */
     DB_BonusRooPolar, /* 284, PC: and riding a polar bear */
     DB_BonusRooPogo, /* 285, PC: and on his cane (Pogo) */
+    DB_BonusRooBall, /* 286, PC: and in a Ballistix car */
     DB_COUNT
 };
 
