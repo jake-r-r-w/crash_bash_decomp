@@ -999,4 +999,5 @@ obj_dbase HeroModelBank[DB_COUNT] = {
     { &DatIndex[997], &DatIndex[996] }, /* DB_BonusRooPogo, PC */
     { &DatIndex[999], &DatIndex[998] }, /* DB_BonusRooBall, PC */
     { &DatIndex[1001], &DatIndex[1000] }, /* DB_BonusRooTank, PC */
+    { &DatIndex[1003], &DatIndex[1002] }, /* DB_BonusRooRace, PC */
 };

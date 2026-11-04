@@ -505,6 +505,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: At the user's word, Roo in Crash Dash ("like the ball minigame but a different cart"): a sixth kind, KIND_RACE
+  (DB_BonusRooRace, archive entries 1002 and 1003), for the race models (`models\chars\race\`: the hero in its cart, one mesh).
+  `dash_make` takes Rilla Roo's cart (strips below -220 as her model rests), moving as hers does, and seats him in it as big as
+  Brio, thrown about as she is (her body's middle from where it is as she drives). Paint (`hm_paint`, shared; `GamePart.image_of`
+  for which of the model's images each is): his blue first, but the user wanted better, and it was Crash's cart's colour too
+  (renders of all eight: Crash blue, Coco pink, Cortex yellow, Brio green, Tiny dark purple, the rest orange); red, lights kept
+  yellow. Four-Roo races on Dot, Toxic and Lava to a round's win, all moves by renders from four sides. Splash Dash's heroes ride
+  fish (another kind, not made: he's on foot there). `--no-window` still crashes once a mode draws (an old one): use a window.
+  Normal play unchanged (playtest same, 14 of 14). Not played by the user yet.
+
 - 2026-11-04: "It's not saying his name still": by the "found file for his win that we used in bash" the user meant the announcer's
   "Rilla Roo" (what his wins said with Rilla Roo's place), not his laugh. VOICE_NAME is that now: sound 0xC9 of
   sfx/vox_common/rilla.sfx (entry 0xB8; scratch/pack_ids.mjs lists a pack's sound ids), via hm_game_sound, whoever's place he

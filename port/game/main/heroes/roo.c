@@ -36,11 +36,16 @@ static const Stand RooRides[] = {
     { NULL, NULL, STRETCH },
 };
 /* On his cane his model has Pogo's moves by name, as long as his base's; his tazing is the boss's attack, at its own speed */
-/* In a car his model has Ballistix's moves by name, and in a tank Tank's */
+/* In a car his model has Ballistix's moves by name, in a tank Tank's, and in a race cart Crash Dash's; he sways in it as he drives at
+ * his own pace */
 static const Stand RooCar[] = {
     { NULL, NULL, STRETCH },
 };
 static const Stand RooTank[] = {
+    { NULL, NULL, STRETCH },
+};
+static const Stand RooRace[] = {
+    { "BREATHE", "BREATHE", LOOP },
     { NULL, NULL, STRETCH },
 };
 static const Stand RooPogo[] = {
@@ -74,7 +79,8 @@ const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
       { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, 1 },
-      { RooTank, "BREATHE", 0x1000, Dingodile, 1 } }, /* in a car and a tank a frame of his to each of his base's (VEHICLE_PER) */
+      { RooTank, "BREATHE", 0x1000, Dingodile, 1 }, { RooRace, "BREATHE", 0x1000, 0, 1 } },
+    /* in a car, a tank and a race cart a frame of his to each of his base's (VEHICLE_PER) */
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -1464,6 +1470,294 @@ static s32 tank_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, c
     return 1;
 }
 
+/* --- in a race cart (Crash Dash) ---
+ * Crash Dash's heroes drive carts round its tracks (but the water's, where they ride fish), each hero's cart in its own model with it
+ * (models\chars\race\, five moves: BREATHE as it drives, RUN as a boost stretches the cart out and back, HIT as it's knocked dazed, FALL
+ * as it drops off the track, and WIN). Roo's model has Rilla Roo's cart, her model's strips all lower than DASH_CART_TOP as it rests
+ * (she's above it), moving as hers does in the same move and frame. Each hero's cart is a colour of its own (Crash's blue, Coco's pink,
+ * Cortex's yellow, Brio's green, Tiny's dark purple, the others orange) and she may be racing too, so his is painted DASH_PAINT, red
+ * (his fur's blue was Crash's, and he blended into it), but for its lights (DASH_LIGHTS), yellow as every cart's are. He sits in it as
+ * big as the biggest of the others, DASH_SCALE of his size about his hips, which are DASH_HIPS
+ * up and DASH_Z back in it, against its back, his legs as in a Ballistix car. He's thrown about as she is in it, by how far the middle of
+ * her body goes from where it is as she drives (back as it boosts, up as it's knocked, down as it falls); sways as he drives (DASH_SWAY
+ * of his standing animation's, at his own pace: his BREATHE is DASH_BREATHE_TICKS long, round and round); laughs as he boosts
+ * (DASH_WHEE, thrown DASH_BACK back into his seat); his head goes round and round as he's dazed (DASH_DAZE at his neck, slowing); he
+ * leans back as he falls (DASH_BACK); and laughs as he wins, bouncing DASH_HOP in his seat. His tongue and ears swing. */
+#define DASH_CART_TOP -220.0f
+#define DASH_PAINT 0x2020E0 /* red | green << 8 | blue << 16 */
+#define DASH_LIGHTS 10      /* her texture set's image for its lights */
+#define DASH_SCALE 0.8f
+#define DASH_HIPS 95.0f
+#define DASH_Z 45.0f
+#define DASH_SWAY 0.3f
+#define DASH_BREATHE_TICKS 24
+#define DASH_WHEE 0.6f
+#define DASH_BACK 0.35f
+#define DASH_DAZE 0.3f
+#define DASH_HOP 40.0f
+#define DASH_FADE 4.0f
+#define DASH_MAX_TICKS 96
+
+enum { DASH_BREATHE, DASH_RUN, DASH_HIT, DASH_FALL, DASH_WIN, DASH_MOVES };
+static const char *const DashNames[DASH_MOVES] = { "BREATHE", "RUN", "HIT", "FALL", "WIN" };
+
+typedef struct {
+    const FootCtx *foot;
+    MadeAnim anims[DASH_MOVES];
+    V3 swing[DASH_MOVES][DASH_MAX_TICKS];
+    GamePart cart;
+    s32 cart_anim[DASH_MOVES], cart_rest; /* Rilla Roo's animations it moves with, by the same names, and her BREATHE */
+    V3 *cart_at;                           /* where her model's corners are */
+    V3 rider;                              /* the middle of her body as she drives */
+} DashCtx;
+
+static DashCtx Dash;
+
+static s32 keep_cart(void *ctx, const V3 *rest, s32 n, s32 textured) {
+    s32 k;
+
+    (void)ctx;
+    (void)textured;
+    for (k = 0; k < n; k++) {
+        if (rest[k].y < DASH_CART_TOP) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/* Rilla Roo's model in his move a at its frame f (hers the same, but his own BREATHE: her cart's still in hers): its corners into
+ * c->cart_at, and how far the middle of her body is from where it is as she drives */
+static V3 dash_at(const DashCtx *c, s32 a, s32 f) {
+    V3 d = { 0, 0, 0 };
+    s32 h = a != DASH_BREATHE && c->cart_anim[a] >= 0 ? c->cart_anim[a] : c->cart_rest, k, n = 0;
+
+    if (c->cart_at == NULL || !hm_model_at(&c->cart, h, h == c->cart_rest ? 0 : (float)f / VEHICLE_PER, c->cart_at)) {
+        return d;
+    }
+    for (k = 0; k < c->cart.corners; k++) {
+        if (!c->cart.in_part[k]) {
+            d.x += c->cart_at[k].x;
+            d.y += c->cart_at[k].y;
+            d.z += c->cart_at[k].z;
+            n++;
+        }
+    }
+    if (n > 0) {
+        d.x = d.x / n - c->rider.x;
+        d.y = d.y / n - c->rider.y;
+        d.z = d.z / n - c->rider.z;
+    }
+    return d;
+}
+
+/* Frame f of move a, but for the swing: his vertices in Crash Bash's units, in the cart (and her model's corners there, in c->cart_at) */
+static void dash_pose(const DashCtx *c, s32 a, s32 f, V3 *out) {
+    static V3 q[MAX_VERTS];
+    const FootCtx *foot = c->foot;
+    s32 frames = c->anims[a].frames, k;
+    float g = (float)f / VEHICLE_PER, ticks = (float)frames / VEHICLE_PER, last = ticks > 1 ? ticks - 1 : 1;
+    float t = g / last, fade, back = 0, daze = 0, spin = 0, hop = 0, s = ROO_UNIT * foot->k * DASH_SCALE;
+    V3 waist = { 0, RIDE_WAIST, 0 }, neck = { 0, RIDE_NECK, 0 }, thrown = dash_at(c, a, f);
+
+    for (k = 0; k < RigVerts; k++) {
+        q[k] = car_seated(Rest[k], k);
+    }
+    fade = fminf(hm_smooth(0, DASH_FADE, g), hm_smooth(last, last - DASH_FADE, g));
+    switch (a) {
+    case DASH_BREATHE:
+        car_motion(foot, ROO_REST, g * foot->anims[ROO_REST].count / (ticks > 0 ? ticks : 1), DASH_SWAY, q);
+        break;
+    case DASH_RUN:
+        car_motion(foot, ROO_LAUGH, g, DASH_WHEE * fade, q);
+        back = DASH_BACK * sinf(ROO_PI * t);
+        break;
+    case DASH_HIT:
+        /* round and round, slowing */
+        daze = DASH_DAZE * hm_smooth(0, 3, g) * (1 - 0.5f * t);
+        spin = 2 * ROO_PI * 2.5f * (t - 0.25f * t * t);
+        break;
+    case DASH_FALL:
+        back = DASH_BACK * hm_smooth(0, 6, g);
+        break;
+    case DASH_WIN:
+        car_motion(foot, ROO_LAUGH, g, fade, q);
+        hop = DASH_HOP * fabsf(sinf(ROO_PI * g / 8)) * fade;
+        thrown.x = thrown.y = thrown.z = 0;
+        break;
+    }
+    for (k = 0; k < RigVerts; k++) {
+        float up = hm_smooth(RIDE_WAIST - RIDE_WAIST_BLEND, RIDE_WAIST + RIDE_WAIST_BLEND, Rest[k].y);
+        float head = hm_smooth(RIDE_NECK - RIDE_NECK_BLEND, RIDE_NECK + RIDE_NECK_BLEND, Rest[k].y);
+        V3 p = q[k];
+
+        if (up > 0 && back != 0) {
+            p = hm_mix(p, hm_turn_x(p, waist, -back), up);
+        }
+        if (head > 0 && daze != 0) {
+            /* his head nodding round in a circle */
+            p = hm_mix(p, hm_turn_x(hm_turn_z(p, neck, daze * sinf(spin)), neck, daze * cosf(spin)), head);
+        }
+        p.y += hop / s * up;
+        out[k].x = p.x * s + thrown.x;
+        out[k].y = -(p.y - HIP_Y) * s - DASH_HIPS + thrown.y;
+        out[k].z = -(p.z - HIP_Z) * s + DASH_Z + thrown.z;
+    }
+}
+
+/* The swing of his tongue and ears through each move, a tick at a time, from his head's path */
+static void dash_swing(DashCtx *c) {
+    static V3 v[MAX_VERTS], path[DASH_MAX_TICKS];
+    s32 a, i, k, ticks;
+
+    memset(c->swing, 0, sizeof(c->swing));
+    for (a = 0; a < DASH_MOVES; a++) {
+        ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER;
+        ticks = ticks > DASH_MAX_TICKS ? DASH_MAX_TICKS : ticks;
+        for (i = 0; i < ticks; i++) {
+            V3 sum = { 0, 0, 0 };
+            float w = 0;
+
+            dash_pose(c, a, i * VEHICLE_PER, v);
+            for (k = 0; k < RigVerts; k++) {
+                if (Rest[k].y > FOOT_HEAD_Y) {
+                    sum.x += v[k].x;
+                    sum.y += v[k].y;
+                    sum.z += v[k].z;
+                    w++;
+                }
+            }
+            if (w > 0) {
+                sum.x /= w;
+                sum.y /= w;
+                sum.z /= w;
+            }
+            path[i] = sum;
+        }
+        hm_flop(path, ticks, a == DASH_BREATHE, &RooSwing, c->swing[a]);
+    }
+}
+
+static void dash_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    const DashCtx *c = ctx;
+    s32 ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER, i0, i1, k;
+    float s = (float)f / VEHICLE_PER, u;
+    V3 swing;
+
+    ticks = ticks > DASH_MAX_TICKS ? DASH_MAX_TICKS : ticks;
+    dash_pose(c, a, f, out);
+    i0 = (s32)floorf(s);
+    u = s - i0;
+    i0 = i0 < ticks ? i0 : ticks - 1;
+    i1 = i0 + 1 < ticks ? i0 + 1 : a == DASH_BREATHE ? 0 : i0;
+    swing = hm_mix(c->swing[a][i0], c->swing[a][i1], u);
+    for (k = 0; k < RigVerts; k++) {
+        out[k].x += swing.x * FlopShare[k];
+        out[k].y += swing.y * FlopShare[k];
+        out[k].z += swing.z * FlopShare[k];
+    }
+    /* the cart, where dash_pose found it */
+    for (k = 0; k < c->cart.nvert; k++) {
+        out[RigVerts + k] = c->cart_at[c->cart.corner_of[k]];
+    }
+}
+
+/* His race model: his own faces (own_tris of them) and images, and the cart; Crash Dash's moves as long as Rilla Roo's, but BREATHE */
+static s32 dash_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, const MadeImage *images, s32 nimage, HeroMade *out) {
+    DashCtx *c = &Dash;
+    MadeFace *all = NULL;
+    MadeImage *imgs = NULL;
+    MadeModel mm;
+    s32 a, n, k, j, ok = 0, breathe;
+    V3 sum = { 0, 0, 0 };
+
+    memset(c, 0, sizeof(*c));
+    c->foot = foot;
+    for (a = 0; a < DASH_MOVES; a++) {
+        n = a == DASH_BREATHE ? DASH_BREATHE_TICKS : hm_bank_frames(DB_CharsRaceRilla, DashNames[a]);
+        n = n > 0 ? n : 20;
+        n = n > DASH_MAX_TICKS ? DASH_MAX_TICKS : n;
+        c->anims[a].name = DashNames[a];
+        c->anims[a].frames = n * VEHICLE_PER;
+        c->anims[a].mesh = 0;
+        c->anims[a].step = VEHICLE_PER;
+    }
+    /* the cart, moving as Rilla Roo's does, painted his blue */
+    if (!hm_game_part(DB_CharsRaceRilla, keep_cart, NULL, &c->cart) || (breathe = hm_model_anim(&c->cart, "BREATHE", NULL)) < 0
+        || (c->cart_at = malloc(sizeof(V3) * (size_t)c->cart.corners)) == NULL || !hm_model_at(&c->cart, breathe, 0, c->cart_at)) {
+        printf("bonus: Ripper Roo has no race cart (Rilla Roo's)\n");
+        goto done;
+    }
+    c->cart_rest = breathe;
+    for (a = 0; a < DASH_MOVES; a++) {
+        c->cart_anim[a] = hm_model_anim(&c->cart, DashNames[a], NULL);
+    }
+    for (k = 0, n = 0; k < c->cart.corners; k++) {
+        if (!c->cart.in_part[k]) {
+            sum.x += c->cart_at[k].x;
+            sum.y += c->cart_at[k].y;
+            sum.z += c->cart_at[k].z;
+            n++;
+        }
+    }
+    if (n > 0) {
+        c->rider.x = sum.x / n;
+        c->rider.y = sum.y / n;
+        c->rider.z = sum.z / n;
+    }
+    for (k = 0; k < c->cart.nfaces; k++) {
+        if (c->cart.faces[k].image < 0 || c->cart.image_of[c->cart.faces[k].image] != DASH_LIGHTS) {
+            hm_paint(&c->cart.faces[k], 1, NULL, 0, DASH_PAINT);
+        }
+    }
+    for (k = 0; k < c->cart.nimages; k++) {
+        if (c->cart.image_of[k] != DASH_LIGHTS) {
+            hm_paint(NULL, 0, &c->cart.images[k], 1, DASH_PAINT);
+        }
+    }
+    dash_swing(c);
+    all = malloc(sizeof(MadeFace) * (size_t)(own_tris + c->cart.nfaces));
+    imgs = malloc(sizeof(MadeImage) * (size_t)(nimage + c->cart.nimages + 1));
+    if (all == NULL || imgs == NULL) {
+        goto done;
+    }
+    memcpy(all, faces, sizeof(MadeFace) * (size_t)own_tris);
+    for (k = 0; k < c->cart.nfaces; k++) {
+        MadeFace *f = &all[own_tris + k];
+
+        *f = c->cart.faces[k];
+        for (j = 0; j < 3; j++) {
+            f->v[j] += RigVerts;
+        }
+        f->image = f->image >= 0 ? f->image + nimage : -1;
+    }
+    memcpy(imgs, images, sizeof(MadeImage) * (size_t)nimage);
+    memcpy(imgs + nimage, c->cart.images, sizeof(MadeImage) * (size_t)c->cart.nimages);
+    memset(&mm, 0, sizeof(mm));
+    mm.faces = all;
+    mm.nfaces = own_tris + c->cart.nfaces;
+    mm.meshes = 1;
+    mm.images = imgs;
+    mm.nimages = nimage + c->cart.nimages;
+    mm.anims = c->anims;
+    mm.nanims = DASH_MOVES;
+    mm.nvert = RigVerts + c->cart.nvert;
+    mm.rest_anim = DASH_BREATHE;
+    mm.frame = dash_frame;
+    mm.ctx = c;
+    ok = made_write(&mm, &out->tex[KIND_RACE], &out->tex_size[KIND_RACE], &out->mdl[KIND_RACE], &out->mdl_size[KIND_RACE]);
+done:
+    if (!ok) {
+        printf("bonus: Ripper Roo can't be put in a race cart\n");
+    }
+    free(all);
+    free(imgs);
+    free(c->cart_at);
+    c->cart_at = NULL;
+    hm_part_free(&c->cart);
+    return ok;
+}
+
 /* His sounds, which his boss fight's object (RRooC) plays: sound entries in sound pages, at 11025 Hz. His laugh (CrznA), his jump's
  * call (rjpnA), and his landings, light (ld30A) and heavy (ld00A). His game has no hurt voice for him, so his yelp is his laugh's first
  * "ha", its first ROO_YELP_BYTES (0.22 s, where it falls quiet), a little higher. */
@@ -1683,11 +1977,12 @@ static s32 roo_make(HeroMade *out) {
             printf("bonus: Ripper Roo has no polar bear to ride\n");
         }
     }
-    /* on his cane (Pogo), in a car (Ballistix) and in a tank: his own faces, as riding */
+    /* on his cane (Pogo), in a car (Ballistix), in a tank and in a race cart (Crash Dash): his own faces, as riding */
     if (RigVerts > 0) {
         pogo_make(&foot, faces, own_tris, images, nimage, out);
         car_make(&foot, faces, own_tris, images, nimage, out);
         tank_make(&foot, faces, own_tris, images, nimage, out);
+        dash_make(&foot, faces, own_tris, images, nimage, out);
     }
     if (c1_sprite64(&level, "ShadC", 5, RooCard)) {
         out->card = RooCard;
@@ -1695,10 +1990,11 @@ static s32 roo_make(HeroMade *out) {
         out->card_head = CARD_HEAD;
     }
     make_sounds(&level, out);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s%s\n", ntri, nimage,
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s%s%s\n", ntri, nimage,
            out->mdl_size[KIND_FOOT], out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "",
            out->mdl[KIND_POGO] != NULL ? ", on his cane" : "", out->mdl[KIND_BALL] != NULL ? ", in a car" : "",
-           out->mdl[KIND_TANK] != NULL ? ", in a tank" : "", out->card != NULL ? ", his hero card" : "",
+           out->mdl[KIND_TANK] != NULL ? ", in a tank" : "", out->mdl[KIND_RACE] != NULL ? ", in a race cart" : "",
+           out->card != NULL ? ", his hero card" : "",
            out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "",
            out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "", RooName.adpcm != NULL ? ", named Rilla Roo" : "");
     ok = 1;

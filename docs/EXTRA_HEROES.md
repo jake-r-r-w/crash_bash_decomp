@@ -18,8 +18,9 @@ base's moves with the same timing and reach. What makes it itself:
 
 - **Its models**, one of each **kind** the games' own heroes have: on foot (Crate Crush, and any
   game with no kind of its own for it), riding a polar bear (Polar Push), on a pogo stick
-  (Pogo), sat in a car (Ballistix, the game drawing the car round it), and stood in a tank's
-  hatch (Tank, the game drawing the tank round it); a kind it has no model of, it plays as on foot. Each goes in the
+  (Pogo), sat in a car (Ballistix, the game drawing the car round it), stood in a tank's
+  hatch (Tank, the game drawing the tank round it), and sat in a race cart (Crash Dash's tracks but
+  the water's, the cart in its own model); a kind it has no model of, it plays as on foot. Each goes in the
   base's place in the game's tables of models by hero (`HeroHooks.HeroModels`, and the second
   table Polar Push's last arena loads, `HeroHooks.flag`), and wherever the game draws the base's
   model of that kind it draws the hero's (`extra_hero_dbase`, from `prims.c`): Polar Push gives
@@ -58,8 +59,8 @@ the base's do.
 const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
-      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, ROO_SUBFRAMES },
-      { RooTank, "BREATHE", 0x1000, Dingodile, ROO_SUBFRAMES } },
+      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, 1 },
+      { RooTank, "BREATHE", 0x1000, Dingodile, 1 }, { RooRace, "BREATHE", 0x1000, 0, 1 } },
     RooVoices, "BREATHE", 0, roo_make,
 };
 ```
@@ -70,7 +71,7 @@ const HeroDef HeroRoo = {
 - A `HeroKind` for each kind of model: its stand-ins, the stand-in for any animation not listed,
   how much of a frame's lift off the ground is drawn (Roo's own jump is a crate or more high, so
   on foot 0x500 of 0x1000), whose weight and speeds he has (0 for the base's), and how many of his
-  model's frames make one of his game's (on foot 4: below, step 4; in a car and a tank 1).
+  model's frames make one of his game's (on foot 4: below, step 4; in a car, a tank and a race cart 1).
 - His sounds for his base's, the animation his face is drawn from if he had no card, and his
   make.
 
@@ -81,7 +82,8 @@ const HeroDef HeroRoo = {
 at its own speed as he wins. An animation the hero's model has by the base's own name is its own
 stand-in, so `RooRides` (riding) is empty: his bear model has all of Polar Push's by name. On his
 cane (`RooPogo`) he has Pogo's by name too, and `{ "TAZING", "TAZING", LOOP }` plays his tazing
-at its own speed, as his base's is a short loop.
+at its own speed, as his base's is a short loop; in a race cart (`RooRace`) his BREATHE goes at
+its own pace the same way, as the base's is as short as 10 frames.
 
 ### 3. His sounds
 
@@ -216,7 +218,22 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    ducks into the hatch for a mine and pops up again (MINE: no hands to drop it), is thrown back as
    he's hit, slumps down over the turret as he loses, folded over its front with his head hanging
    over the edge, and laughs, bouncing, as he wins.
-9. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
+9. **In a race cart (Crash Dash).** On its tracks but the water's (Splash Dash, where the heroes
+   ride fish, `models/chars/splash/`), each hero's model is it in its cart (`models/chars/race/`, all
+   the carts the same size; five moves: BREATHE as it drives, RUN as a boost stretches the cart out
+   and back, HIT dazed, FALL as it drops off the track, WIN). `dash_make` takes Rilla Roo's cart
+   (`keep_cart`: her strips all below 220 as her model rests, as she's above it) and moves it as hers
+   moves in the same move and frame. The heroes' carts are each a colour of their own (Crash's blue,
+   Coco's pink, Cortex's yellow, Brio's green, Tiny's dark purple, the rest orange) and Rilla Roo may
+   be racing too, so it's painted a colour of his own, red (`hm_paint`: the warm colours of its faces
+   and images turned to a paint's hue, each keeping its shade; his fur's blue was tried first, but
+   that's Crash's, and he blended into it), but for its lights (her texture set's image 10,
+   `GamePart.image_of`), yellow as every cart's are. He sits in it as big as the biggest (Brio), back against its back, legs
+   as in a Ballistix car, and is thrown about as she is in it (the middle of her body from where it is
+   as she drives: back as it boosts, up as it's knocked, down as it falls). He sways as he drives,
+   laughs as he boosts, thrown back into his seat, his head goes round and round as he's dazed, he
+   leans back as he falls, and laughs, bouncing, as he wins.
+10. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
    health), `c1_sound` his sounds.
 
 ### 5. Putting him in
@@ -225,7 +242,7 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
 - His `HeroDef` in `HeroDefs` and his archive entries and banks in `Slots` (`bonusheroes.c`).
 - An archive entry for each model and its texture set (main.c's `DatIndex`, from 992, empty until
   his make fills them) and a file group of each pair (`FileGroups`, from 130).
-- A bank of each (`modelbank.h`'s `DB_BonusRoo`, `DB_BonusRooPolar`, `DB_BonusRooPogo`, `DB_BonusRooBall` and `DB_BonusRooTank`, dbase.c's
+- A bank of each (`modelbank.h`'s `DB_BonusRoo`, `DB_BonusRooPolar`, `DB_BonusRooPogo`, `DB_BonusRooBall`, `DB_BonusRooTank` and `DB_BonusRooRace`, dbase.c's
   `HeroModelBank`) and their loading (levelload.c's `ModeDbaseLists`).
 - A card in the character select (titles.c): the ninth, first of the third row, is Roo's; another
   hero needs one of its own.
@@ -237,8 +254,10 @@ build/port/windows-clang/crashbash.exe --mode 18 --skip-intro --skip-loading --t
 ```
 
 Mode 0 is Crate Crush, 5 to 8 Tank's four arenas (5 the swamp's hover tanks), 10 to 13 Pogo's,
-14 to 17 Ballistix's, 18 to 21 Polar Push's.
+14 to 17 Ballistix's, 18 to 21 Polar Push's, 23 to 26 Crash Dash's (25 the water's, Splash Dash).
 `--extra-hero N roo` for each of players 0 to 3 puts him on every side at once. In a test run the computer plays
 player 1, the same way each run. The log says what was made: `bonus: Ripper Roo from Crash
-Bandicoot, 1145 triangles, 1 textures, ... riding a bear, on his cane, in a car, in a tank, his hero
-card, his laugh, his landing`.
+Bandicoot, 1145 triangles, 1 textures, ... riding a bear, on his cane, in a car, in a tank, in a race
+cart, his hero card, his laugh, his landing`. A test run needs a window (a small one will do) once a
+mode draws: with `--no-window` it crashes there (AGENT_LOG.md), though his models are made, and
+written for `BONUS_DUMP`, before that.

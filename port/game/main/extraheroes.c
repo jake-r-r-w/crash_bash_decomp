@@ -148,6 +148,9 @@ static s32 kind_of(s32 bank) {
     if (bank >= DB_CharsTankCrash && bank <= DB_CharsTankRilla) {
         return KIND_TANK;
     }
+    if ((bank >= DB_CharsRaceCrash && bank <= DB_CharsRaceBrio) || (bank >= DB_CharsRaceCoco && bank <= DB_CharsRaceKong)) {
+        return KIND_RACE;
+    }
     return KIND_FOOT;
 }
 

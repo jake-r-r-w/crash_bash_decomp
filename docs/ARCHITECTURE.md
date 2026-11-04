@@ -1047,7 +1047,7 @@ signature alone is not enough.
   actions 0x33..0x38); its 24 sequences are each character's `long_hit`,
   `flip_jump` and `SP_seq_die`. Much of its crate and collision code is
   Bash's and Papu's again (`SpinHitTest`, `SpinHero2ObjectCollision`, ...).
-- **Race** (race, the hover-board races; functions named 2026-10-26). Modes
+- **Race** (race, the hover-cart races; functions named 2026-10-26). Modes
   0x17..0x1A (`LEV_DASH`, `TOXIC`, `WATER`, `LAVA`; Water sets its own hero
   models and moves). `RACESetUp` fills `InitialiseRACEFirst`, `InitialiseRACE`,
   `UpdateRACE` and `FirstTriggersRACE`; the engine hooks are `RaceInitHero`,
@@ -1069,6 +1069,17 @@ signature alone is not enough.
   start of the data; the AI's tweak tables come in four sets (Dash, the
   default, Toxic, Lava, Water); `RaceHeroModelsWater` replaces the models in
   Water.
+  The heroes' race models (`models\chars\race\`) are each the hero sat in its cart, one mesh
+  (the cart its strips below the hero; Crash's has a second, for an unused SWIM): the carts are
+  all the same size (x ±215, z -216 to 266, the cockpit's floor 59 up) and each a colour of its
+  own (Crash blue, Coco pink, Cortex yellow, Brio green, Tiny dark purple, the others orange),
+  the paint their vertex colours over grey textures, the lights their own (Rilla Roo's image 10).
+  Five moves each: BREATHE as it drives (Rilla Roo's 10 frames, most 20), RUN as a boost
+  stretches the cart out along its length and back (`racerun`), HIT dazed, FALL as the cart
+  drops away under the hero off the track, and WIN; the model leans by `RaceSteer` (rot.vz) as
+  it turns. Water's (`models\chars\splash\`) ride fish instead (BREATHE, FALL, SWIM, TRANS,
+  WIN). The sequence table's order is raceidle, racerun, racehit, racefall, racewin (0x48 to
+  0x4C), then the dino ones, and raceswimidle, run, fall and win at 0x52 to 0x55.
 - **Papu's data** (papu, the crate games' boss; named 2026-10-26). Mode 4
   (`LEV_PAPU`); one engine world record (0x0105) points at `PAPU_PREMAP`,
   `papu_shell_info` and `PAPUSetUp`, the per-mode table at `file_group_PAPU`

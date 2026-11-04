@@ -1351,7 +1351,7 @@ Blk32 LoadingScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 LoadingScriptPos = {0};
 process_info LoadingProcess2 = { InitLoadingCamera, UpdateLoadingScene, RenderLoadingScene, QuitLoadingScene, 0 };
 /* the models each mode loads (LoadModeDbases, QueueHeroModels; the last is the adventure stats') */
-ModeDbase ModeDbaseLists[101] = {
+ModeDbase ModeDbaseLists[102] = {
     { &FileGroups[128], &HeroModelBank[DB_CharsCrateCrash], &DatIndex[990], &DatIndex[989] },
     { &FileGroups[127], &HeroModelBank[DB_CharsCrateCoco], &DatIndex[988], &DatIndex[987] },
     { &FileGroups[126], &HeroModelBank[DB_CharsCrateCortex], &DatIndex[986], &DatIndex[985] },
@@ -1454,6 +1454,7 @@ ModeDbase ModeDbaseLists[101] = {
     { &FileGroups[132], &HeroModelBank[DB_BonusRooPogo], &DatIndex[997], &DatIndex[996] },
     { &FileGroups[133], &HeroModelBank[DB_BonusRooBall], &DatIndex[999], &DatIndex[998] },
     { &FileGroups[134], &HeroModelBank[DB_BonusRooTank], &DatIndex[1001], &DatIndex[1000] },
+    { &FileGroups[135], &HeroModelBank[DB_BonusRooRace], &DatIndex[1003], &DatIndex[1002] },
 };
 const s32 ModeDbaseCount = sizeof(ModeDbaseLists) / sizeof(ModeDbaseLists[0]);
 s32 FileGroupNone[2] = {0};

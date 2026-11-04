@@ -124,6 +124,7 @@ typedef struct {
     MadeFace *faces;  /* the part's faces, on its own vertices */
     s32 nfaces;
     MadeImage images[PART_MAX_IMAGES];
+    s16 image_of[PART_MAX_IMAGES]; /* each one's in the model's texture set (the set's last for the one any model's faces share) */
     s32 nimages;
     s16 *corner_of;   /* each of its vertices' corner */
     s32 nvert;
@@ -137,6 +138,11 @@ s32 hm_model_anim(const GamePart *p, const char *name, s32 *frames);
 s32 hm_bank_frames(s32 bank, const char *name);
 /* All its first mesh's corners at t of animation `anim`, between the frames either side (t is kept within its frames). 0 if it can't. */
 s32 hm_model_at(const GamePart *p, s32 anim, float t, V3 *corners);
+/* Faces and their images painted another colour, `paint` (red | green << 8 | blue << 16): their warm colours (reds, oranges and
+ * yellows) turned to its hue, as strong as it is of theirs, and as bright of their own shade, a little of how far apart they were kept;
+ * greys and the cold colours as they are. For a part of the game's own models made a hero's own colour (the cart Roo has is Rilla
+ * Roo's orange one, painted his). */
+void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, u32 paint);
 
 /* --- what's loose on a hero (a tongue, ears) ---
  * Its swing: a damped spring at the hero's head, thrown about by the head's accelerations from frame to frame. The frames a swing

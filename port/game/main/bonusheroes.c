@@ -2,8 +2,8 @@
  * copies of other Crash games, and what the heroes' own files (main/heroes/) use to make them.
  *
  * Each hero's make (bash/herodef.h) finds its game's disc (disc_image_find), reads what it needs from it, and makes it into a Crash Bash
- * model and texture set of each kind it has (docs/ASSETS.md): on foot, riding a polar bear, on a pogo stick, in a Ballistix car, and in a
- * tank. They go into the archive's entries for
+ * model and texture set of each kind it has (docs/ASSETS.md): on foot, riding a polar bear, on a pogo stick, in a Ballistix car, in a
+ * tank, and in a race cart. They go into the archive's entries for
  * that hero (main.c's DatIndex, from 992) as a mod's files do, and the game loads them as it does any model, into banks of their own
  * (DB_BonusRoo, ...). Nothing of them is kept but in memory, and without its disc there's no hero. docs/EXTRA_HEROES.md has how to add
  * one, from Ripper Roo's (heroes/roo.c). */
@@ -31,9 +31,9 @@ const HeroDef *const HeroDefs[NUM_EXTRA] = { NULL, &HeroRoo };
 static const struct {
     s32 tex, mdl, bank;
 } Slots[NUM_EXTRA][NUM_KINDS] = {
-    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty } },
+    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty } },
     { { 992, 993, DB_BonusRoo }, { 994, 995, DB_BonusRooPolar }, { 996, 997, DB_BonusRooPogo }, { 998, 999, DB_BonusRooBall },
-      { 1000, 1001, DB_BonusRooTank } },
+      { 1000, 1001, DB_BonusRooTank }, { 1002, 1003, DB_BonusRooRace } },
 };
 
 static HeroMade Made[NUM_EXTRA];
@@ -1080,6 +1080,9 @@ s32 hm_game_part(s32 bank, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s
             }
         }
     }
+    for (k = 0; k < out->nimages; k++) {
+        out->image_of[k] = (s16)made_img[k];
+    }
     free(vert_of);
     free(tex);
     if (out->nfaces == 0) {
@@ -1143,6 +1146,95 @@ s32 hm_model_at(const GamePart *p, s32 anim, float t, V3 *corners) {
         }
     }
     return 1;
+}
+
+/* --- painting ---
+ * A colour less saturated than PAINT_GREY is a grey, and kept. The warm hues go from PAINT_RED below red round to PAINT_WARM (yellows):
+ * PAINT_MIDDLE of them becomes the paint's own hue, and the others are PAINT_SPREAD as far from it as they were from that. */
+#define PAINT_GREY 0.2f
+#define PAINT_RED 20.0f
+#define PAINT_WARM 75.0f
+#define PAINT_MIDDLE 45.0f
+#define PAINT_SPREAD 0.5f
+
+/* A colour's hue (degrees), saturation and value (as its largest part) */
+static void colour_hsv(const float *c, float *h, float *s, float *v) {
+    float mx = fmaxf(c[0], fmaxf(c[1], c[2])), d = mx - fminf(c[0], fminf(c[1], c[2]));
+
+    *v = mx;
+    *s = mx > 0 ? d / mx : 0;
+    if (d <= 0) {
+        *h = 0;
+    } else if (mx == c[0]) {
+        *h = 60 * fmodf((c[1] - c[2]) / d + 6, 6);
+    } else if (mx == c[1]) {
+        *h = 60 * ((c[2] - c[0]) / d + 2);
+    } else {
+        *h = 60 * ((c[0] - c[1]) / d + 4);
+    }
+}
+
+/* One colour (any scale) painted the hue, saturation and value of a paint */
+static void paint_colour(float *c, const float *paint) {
+    float h, s, v, f, p, q, t;
+    s32 i;
+
+    colour_hsv(c, &h, &s, &v);
+    if (s < PAINT_GREY || (h > PAINT_WARM && h < 360 - PAINT_RED)) {
+        return;
+    }
+    h = h >= 360 - PAINT_RED ? h - 360 : h;
+    h = fmodf(paint[0] + (h - PAINT_MIDDLE) * PAINT_SPREAD + 720, 360) / 60;
+    s *= paint[1];
+    v *= paint[2];
+    i = (s32)h % 6;
+    f = h - floorf(h);
+    p = v * (1 - s);
+    q = v * (1 - s * f);
+    t = v * (1 - s * (1 - f));
+    {
+        const float rgb[6][3] = { { v, t, p }, { q, v, p }, { p, v, t }, { p, q, v }, { t, p, v }, { v, p, q } };
+
+        c[0] = rgb[i][0];
+        c[1] = rgb[i][1];
+        c[2] = rgb[i][2];
+    }
+}
+
+void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, u32 paint) {
+    s32 i, m, q, j, k;
+    float c[3], hsv[3];
+
+    c[0] = (float)(paint & 0xFF) / 255;
+    c[1] = (float)(paint >> 8 & 0xFF) / 255;
+    c[2] = (float)(paint >> 16 & 0xFF) / 255;
+    colour_hsv(c, &hsv[0], &hsv[1], &hsv[2]);
+
+    for (i = 0; i < nfaces; i++) {
+        for (m = 0; m < 2; m++) {
+            for (q = 0; q < 3; q++) {
+                for (j = 0; j < 3; j++) {
+                    c[j] = faces[i].rgb[m][q][j];
+                }
+                paint_colour(c, hsv);
+                for (j = 0; j < 3; j++) {
+                    faces[i].rgb[m][q][j] = (u8)(c[j] + 0.5f);
+                }
+            }
+        }
+    }
+    /* their CLUTs' colours, 5 bits each, the top bit (semi-transparent) kept */
+    for (i = 0; i < nimages; i++) {
+        for (k = 0; k < images[i].colours; k++) {
+            u16 w = images[i].clut[k];
+
+            c[0] = (float)(w & 31);
+            c[1] = (float)(w >> 5 & 31);
+            c[2] = (float)(w >> 10 & 31);
+            paint_colour(c, hsv);
+            images[i].clut[k] = (u16)((w & 0x8000) | (s32)(c[0] + 0.5f) | (s32)(c[1] + 0.5f) << 5 | (s32)(c[2] + 0.5f) << 10);
+        }
+    }
 }
 
 /* --- the bear ---
