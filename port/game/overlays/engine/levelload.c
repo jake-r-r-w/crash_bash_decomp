@@ -1732,8 +1732,9 @@ script_handler *SceneScript = 0;
 s32 SceneStarting = 0;
 s32 SceneStep = 0;
 s32 SceneUnused[1] = {0};
-/* PC: and a twelfth, a gold frame, for the character select's row of extra heroes (titles.c) */
-sub_string_info TextTemplates[12] = {
+/* PC: and two more for the character select's row of extra heroes (titles.c): a gold frame, as the blue (9) and red (10) rows' are,
+ * and a gold band behind the row, as theirs (7, 8) are */
+sub_string_info TextTemplates[13] = {
     { 0x8001, 0, 0x8021, 0x8080, 4, 0, 4, 0, 0x180, 0 },
     { 0x8001, 0, 0x8021, 0x8080, 4, 0, 4, 0, 0x100, 0 },
     { 0x8000, 0, 0x8000, 0xC0C0, 4, 0, 4, 0, 0x180, 0 },
@@ -1746,6 +1747,7 @@ sub_string_info TextTemplates[12] = {
     { 0x8000, 0, 0x8000, 0xFFC000, 4, 0, 4, 0, 0x100, 0 },
     { 0x8000, 0, 0x8000, 0xFF, 4, 0, 4, 0, 0x100, 0 },
     { 0x8000, 0, 0x8000, 0x00C0FF, 4, 0, 4, 0, 0x100, 0 },
+    { 0x8001, 0x0048C0, 0x8000, 0x0048C0, 4, 0, 4, 0, 0x180, 0 },
 };
 EXTengine EnginePool[9] = {0};
 subengine EngineSlotSubs[9][32] = {0};

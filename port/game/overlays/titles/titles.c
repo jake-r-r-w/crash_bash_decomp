@@ -354,13 +354,14 @@ CharCard CharCards[9] = {
     { 0, 8, { 0 }, 0x8E, 0xE8, 0x9999, 0, 0, 0, -1, 0 },
 };
 
-/* PC: the select's pieces with the ninth card's frame (sub 26) and portrait (27, a portrait of the game's in its place, drawn as the extra
- * hero's) after the game's 26: a third row of the extra heroes', under the red row and as far in as its first, its frame gold (the
- * twelfth of TextTemplates, levelload.c) */
+/* PC: the select's pieces with the ninth card's portrait (sub 26, a portrait of the game's in its place, drawn as the extra hero's) and
+ * frame (27) after the game's 26, then its row's band (28): a third row of the extra heroes', under the red row and as far in as its
+ * first, its frame gold as the others' are blue and red (the twelfth of TextTemplates, levelload.c), and behind it a gold band as
+ * thick as theirs are (the thirteenth) */
 #define EXTRA_CARD 8
 #define EXTRA_CARD_TURN 0xF00 /* round till he stands square to the screen as the others do, body and face: matched to Crash on the same stand */
-#define EXTRA_ROW_TITLE 0x46  /* how much lower the title goes with the third row there */
-static PlaceRec CharSelectPlaceMore[29];
+#define EXTRA_ROW_TITLE 0x46  /* how much lower the title and its band go with the third row there */
+static PlaceRec CharSelectPlaceMore[30];
 
 /* Whether there's the ninth card: the launcher's EXTRA HEROES is on, and Roo's disc is in */
 static s32 extra_card_on(void) {
@@ -370,19 +371,26 @@ static s32 extra_card_on(void) {
 static PlaceRec *char_select_place(void) {
     static const PlaceRec Frame = { 0x10, 0x8E, 0xE4, 0xE8, 0x13E, 0xB, 0, 0, 0, 0, 0, 0, 0, 0 };
     static const PlaceRec Portrait = { 0xF, 0x96, 0xEE, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x306F, 0 };
+    /* as the blue and red rows' bands (types 4, templates 7 and 8): across the screen, 8 in from the row's cards top and bottom */
+    static const PlaceRec Band = { 4, 0, 0x2BC, 0xF0, 0x136, 0xC, 0, 0, 0, 0, 0, 0, 0, 0 };
     s32 n = CountPlaceRecs(CharSelectPlace), i;
 
-    if (!extra_card_on() || n + 3 > (s32)(sizeof(CharSelectPlaceMore) / sizeof(CharSelectPlaceMore[0]))) {
+    if (!extra_card_on() || n + 4 > (s32)(sizeof(CharSelectPlaceMore) / sizeof(CharSelectPlaceMore[0]))) {
         return CharSelectPlace;
     }
     memcpy(CharSelectPlaceMore, CharSelectPlace, sizeof(PlaceRec) * (size_t)n);
     CharSelectPlaceMore[n] = Portrait;
     CharSelectPlaceMore[n + 1] = Frame;
-    memset(&CharSelectPlaceMore[n + 2], 0, sizeof(PlaceRec));
-    /* and the title (CHARACTER SELECT), which was where the third row is, under it */
+    CharSelectPlaceMore[n + 2] = Band;
+    memset(&CharSelectPlaceMore[n + 3], 0, sizeof(PlaceRec));
+    /* and the title (CHARACTER SELECT) and its band (a type 4, template 1, from z down to scale), where the third row is, under it */
     for (i = 0; i < n; i++) {
         if (CharSelectPlaceMore[i].type == 0xE) {
             CharSelectPlaceMore[i].y += EXTRA_ROW_TITLE;
+        }
+        if (CharSelectPlaceMore[i].type == 4 && CharSelectPlaceMore[i].rx == 1) {
+            CharSelectPlaceMore[i].z += EXTRA_ROW_TITLE;
+            CharSelectPlaceMore[i].scale += EXTRA_ROW_TITLE;
         }
     }
     return CharSelectPlaceMore;

@@ -498,6 +498,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Roo's select card lined up, at the user's word: the game's portraits are 64 x 64 images drawn only in columns 0 to
+  55 and rows 0 to 37 (the frame's border shows in the rest), and his filled all 64 columns, over the border; now SELECT_COLS. The
+  "green thing" behind his row was the title's band (a type 4 box, template 1), left there when only the title's text moved: it
+  moves with the text now, and his row has a band of its own as thick as the blue and red rows' (theirs are type 4 boxes 8 in from
+  the cards, templates 7 and 8), gold (a thirteenth TextTemplates entry).
+
 - 2026-11-04: Roo's pictures and card, at the user's word. His hero card is his boss fight's whole 64 x 64 sprite now, the
   tongue whole (`bonus_heroes_card` gives the rows that are his head). On the panel his tongue hangs on down behind the health
   bar: his head as tall as before, and nothing of him from texel row 26, the bar's top (measured at 1440 high, six pixels a row),
