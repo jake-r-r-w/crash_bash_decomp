@@ -2,8 +2,8 @@
  * through this file a part at a time, for making another.
  *
  * Level 0x17, his boss fight, has his model (RS1nG) and four animations, RS1nV (a big jump), RS2nV (standing), RS3nV (a laugh) and RS4nV
- * (knocked over), which become JUMP, BREATHE, TAUNT and DIE; two more are made for him from them, a walk, his legs stepping (WALK), and
- * a spin attack, his legs out as he spins in a blue tornado (SPIN). Riding a polar bear, he's sat astride Crash's and moves as Crash
+ * (knocked over), which become JUMP, BREATHE, TAUNT and DIE; two more are made for him from them, a walk of small bouncy hops (WALK),
+ * and a spin attack, his legs out as he spins in a blue tornado (SPIN). Riding a polar bear, he's sat astride Crash's and moves as Crash
  * does on it (bonusheroes.c, ride_make), swaying as he stands and laughing as he taunts and wins. His sounds are his boss fight's: his
  * laugh, his jump and his landings. His hero card is the face that fight shows, whose tongue is his health. */
 #include <math.h>
@@ -17,7 +17,7 @@
 #include "bash/heromake.h"
 
 /* --- how he plays ---
- * His base is Rilla Roo, Kanga inside, if nobody else is playing her. On foot he stands still holding a crate (BANK), walks where the
+ * His base is Rilla Roo, Kanga inside, if nobody else is playing her. On foot he stands still holding a crate (BANK), hops where the
  * others run, walk carrying, slide or swim, spins where they attack or kick, laughs where they throw, taunt or win, and falls over when
  * he's hurt. His JUMP is his boss fight's, which crouches into a tall stance first (frames 0 to 12), so he jumps from 13. Riding a bear,
  * his model has every one of Polar Push's animations by name, and he's as strong and as quick on it as Crash is. */
@@ -53,9 +53,11 @@ static const Voice RooVoices[] = {
 
 static s32 roo_make(HeroMade *out);
 
+#define ROO_KEEP_LIFT 0x500 /* on foot, the share of a frame's lift off the floor that's drawn: his own jump is a crate or more high */
+
 const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
-    { { RooStands, "BREATHE", 0x500, 0 }, { RooRides, "BREATHE", 0x1000, Crash } },
+    { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0 }, { RooRides, "BREATHE", 0x1000, Crash } },
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -111,8 +113,7 @@ static void sway_middle(const C1Entry *a, const s32 scale[3]) {
 /* --- his made animations ---
  * His game has no walk and no attack, so they're made for him from his own frames (ROO_WALK, ROO_SPIN), worked in his game's axes
  * and units, y up and him facing +z: c1_frame_verts' over ROO_UNIT, y and z the other way round. Both start from his standing pose,
- * SwayMiddle. WALK steps: each foot goes back flat along the floor, then up, its knee out in front, and forward again, the body
- * bobbing, leaning over the leg it's on and turning against the legs. SPIN, his attack: he throws his legs out to the sides as his
+ * SwayMiddle. WALK hops, small and bouncy, as a kangaroo goes. SPIN, his attack: he throws his legs out to the sides as his
  * jump does (its frame SPIN_OUT, the splits), spins round twice in a hop in a blue tornado, and lands as he stood. */
 #define ROO_UNIT 4096.0f
 #define ROO_PI 3.14159265f
@@ -131,18 +132,20 @@ static void sway_middle(const C1Entry *a, const s32 scale[3]) {
 #define TAIL_Y 30.0f
 #define TAIL_Z -15.0f
 
-/* A stride, as each leg goes through it: on the ground for its first STEP_STANCE, its foot going back steadily from STEP_REACH in
- * front of its hip to STEP_REACH behind, then up STEP_LIFT with its knee STEP_KNEE_OUT in front, and forward again. Two strides an
- * animation, a step 5 ticks of his base's 20-tick run: his legs are short, and so many steps keep his feet up with the floor as he
- * goes (Tiny's, a stride a run, go back as fast as he moves). The body bobs, leans over the leg it's on, and turns against the legs. */
-#define STEP_STRIDES 2
-#define STEP_STANCE 0.6f
-#define STEP_REACH 44.0f
-#define STEP_LIFT 22.0f
-#define STEP_KNEE_OUT 26.0f
-#define STEP_BOB 4.0f
-#define STEP_ROLL 0.10f
-#define STEP_TWIST 0.10f
+/* His walk, a kangaroo's: small hops on both feet together, HOP_HOPS an animation (a hop every 10 ticks of his base's 20-tick run).
+ * Each hop his feet are on the floor for HOP_CONTACT of it, going back flat under him from HOP_REACH in front to HOP_REACH behind as
+ * he goes over them, his body sinking HOP_CROUCH as he lands and springing up again; then he's in the air, as high as HOP_SEEN looks
+ * once less of his lift is drawn (ROO_KEEP_LIFT), his feet tucked HOP_TUCK up under him and swinging forward to land, his knees out
+ * in front (HOP_KNEE), and his body tipped HOP_LEAN forward. */
+#define HOP_HOPS 2
+#define HOP_CONTACT 0.3f
+#define HOP_REACH 22.0f
+#define HOP_CROUCH 6.0f
+#define HOP_SEEN 55.0f
+#define HOP_TUCK 10.0f
+#define HOP_KNEE 12.0f
+#define HOP_LEAN 0.12f
+static float HopLift; /* HOP_SEEN in his units, before less of it's drawn: roo_make works it out */
 
 /* The spin: his jump's frame with his legs out, the turns, the hop (extraheroes.c draws a third of a frame's lift, keep_lift), the
  * frames he takes to throw his legs out and bring them in, and the one he's landed by: the base's attack shows only its first 14. */
@@ -175,7 +178,6 @@ static const u8 TornRgb[3] = { 60, 150, 255 };
 
 static V3 Rest[MAX_VERTS], LegsOut[MAX_VERTS];
 static float LegShare[MAX_VERTS];
-static u8 LegOf[MAX_VERTS]; /* 0 his left (-x), 1 his right */
 static u8 TailOf[MAX_VERTS];
 static s32 RigVerts;
 static float SpinX, SpinZ;
@@ -213,7 +215,6 @@ static void rig_setup(const C1Entry *jump, const s32 scale[3]) {
         s32 tail = p.z < TAIL_Z && fabsf(p.x) < TAIL_X && p.y < TAIL_Y;
 
         Rest[k] = p;
-        LegOf[k] = p.x < 0 ? 0 : 1;
         TailOf[k] = (u8)tail;
         LegShare[k] = tail ? 0 : hm_smooth(LEG_TOP, LEG_FULL, p.y) * hm_smooth(LEG_MID, LEG_SIDE, fabsf(p.x));
         low = p.y < low ? p.y : low;
@@ -237,43 +238,40 @@ static void rig_setup(const C1Entry *jump, const s32 scale[3]) {
     RigVerts = SwayVerts;
 }
 
-/* Where a leg is at p (0 to 1) through its stride: its foot's way in front of its hip, and how far up it is (0 on the ground to 1). */
-static void stride(float p, float *z, float *up) {
-    if (p < STEP_STANCE) {
-        *z = STEP_REACH * (1 - 2 * p / STEP_STANCE);
-        *up = 0;
-        return;
-    }
-    p = (p - STEP_STANCE) / (1 - STEP_STANCE);
-    *z = STEP_REACH * (2 * hm_smooth(0, 1, p) - 1);
-    *up = sinf(ROO_PI * p);
-}
-
-static s32 walk_verts(s32 f, V3 *out) {
-    float t = (float)STEP_STRIDES * f / RooAnims[ROO_WALK].made, z[2], up[2], bob, roll, twist;
+static s32 hop_verts(s32 f, V3 *out) {
+    float t = (float)HOP_HOPS * f / RooAnims[ROO_WALK].made, p = t - floorf(t), up = 0, crouch = 0, feet, tuck = 0, lean = 0;
     V3 pelvis = { 0, HIP_Y, HIP_Z };
     s32 k;
 
-    /* his right leg half a stride behind his left */
-    stride(t - floorf(t), &z[0], &up[0]);
-    stride(t + 0.5f - floorf(t + 0.5f), &z[1], &up[1]);
-    bob = STEP_BOB * (up[0] + up[1] - 0.5f);
-    roll = STEP_ROLL * (up[0] - up[1]);
-    twist = STEP_TWIST * (z[0] - z[1]) / (2 * STEP_REACH);
+    if (p < HOP_CONTACT) {
+        /* on the floor: his feet going back under him as he goes over them, his body sinking and springing up */
+        float c = p / HOP_CONTACT;
+
+        feet = HOP_REACH * (1 - 2 * c);
+        crouch = HOP_CROUCH * sinf(ROO_PI * c);
+    } else {
+        /* in the air: up and down again, his feet swinging forward from behind to land, tucked up under him on the way */
+        float a = (p - HOP_CONTACT) / (1 - HOP_CONTACT), arc = sinf(ROO_PI * a);
+
+        up = HopLift * arc;
+        feet = HOP_REACH * (2 * hm_smooth(0, 1, a) - 1);
+        tuck = HOP_TUCK * arc;
+        lean = HOP_LEAN * arc;
+    }
     for (k = 0; k < RigVerts; k++) {
-        V3 p = Rest[k], q, body;
-        s32 leg = LegOf[k];
+        V3 r = Rest[k], q, body;
         float w = LegShare[k], d;
 
-        body = hm_turn_y(hm_turn_z(p, pelvis, roll), pelvis, -twist);
-        body.y += bob;
-        q = hm_mix(p, body, 1 - w);
+        body = hm_turn_x(r, pelvis, lean);
+        body.y += up - crouch;
+        r.y += up - crouch;
+        q = hm_mix(r, body, 1 - w);
         if (w > 0) {
-            /* how far down the leg, 0 at the hip to 1 at the foot and all of the foot */
-            d = (HIP_Y - p.y) / (HIP_Y - FOOT_Y);
+            /* how far down the leg, 0 at the hip to 1 at the foot and all of the foot: the feet stay on the floor as he sinks */
+            d = (HIP_Y - Rest[k].y) / (HIP_Y - FOOT_Y);
             d = d < 0 ? 0 : d > 1 ? 1 : d;
-            q.y += STEP_LIFT * up[leg] * d * w;
-            q.z += (z[leg] * d + STEP_KNEE_OUT * up[leg] * sinf(ROO_PI * d)) * w;
+            q.y += (crouch + tuck) * d * w;
+            q.z += (feet * d + HOP_KNEE * (tuck / HOP_TUCK) * sinf(ROO_PI * d)) * w;
         }
         out[k] = from_rig(q);
     }
@@ -334,7 +332,7 @@ static s32 anim_verts(const C1Entry *a, s32 j, s32 f, const s32 scale[3], V3 *ou
     s32 n, k;
 
     if (RooAnims[j].made > 0 && RigVerts > 0) {
-        return j == ROO_SPIN ? spin_verts(f, out) : add_tornado(out, walk_verts(f, out), 0, 0, 0);
+        return j == ROO_SPIN ? spin_verts(f, out) : add_tornado(out, hop_verts(f, out), 0, 0, 0);
     }
     f = f < a->count ? f : a->count - 1;
     n = c1_frame_verts(a->item[f], a->size[f], scale, out, normals, MAX_VERTS - TORN_VERTS);
@@ -612,6 +610,7 @@ static s32 roo_make(HeroMade *out) {
         hi = verts[k].y > hi ? verts[k].y : hi;
     }
     foot.k = ROO_HEIGHT / (hi - lo);
+    HopLift = HOP_SEEN / ((float)ROO_KEEP_LIFT / 0x1000) / (ROO_UNIT * foot.k);
     foot.ground = hi * foot.k;
 
     /* his triangles, their colours lit as he stands, and their textures; then the tornado's, on its vertices after his (add_tornado):

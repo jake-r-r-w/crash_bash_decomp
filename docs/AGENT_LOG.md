@@ -502,6 +502,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: The user approved Roo on his bear (LGTM). His walk on foot (Crate Crush and the games with no kind of their own)
+  is a kangaroo's now, at their word ("slightly hop around instead, he is a bouncy guy but not too high"): two hops a WALK,
+  feet together, on the floor 0.3 of each (going back under him, his body sinking 6 and springing up), then up to 55 units as seen
+  (made at 55 over ROO_KEEP_LIFT's share, as less of a frame's lift is drawn on foot), feet tucked and swinging forward to land, body
+  tipped forward. Checked by the made walk drawn lowered as drawn, and shots in Crate Crush.
+
 - 2026-11-04: Roo's tail is hidden on his bear, at the user's word ("a blue triangle behind him that's clipping the bear"):
   laid along its back, it ran into the bear's rump, which rises behind him. Its vertices all go to its root, inside the bear, so
   its six faces have no size and the fourteen joining it to him run into the bear. Looked at from behind in a match.

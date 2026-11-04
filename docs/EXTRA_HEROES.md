@@ -119,7 +119,7 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
 2. **His faces and textures.** `c1_model_faces` makes the model's triangles into made faces, each
    corner's colour lit as he stands, and their textures into made images.
 3. **His made animations.** His game has no walk and no attack, so they're made from his own
-   frames: a rig (his hips, each vertex's share of a leg, his tail), a WALK of two strides, and a
+   frames: a rig (his hips, each vertex's share of a leg, his tail), a WALK of two small hops, and a
    SPIN in a blue tornado (faces of their own, drawn adding their colour). This is the part a new
    hero writes most of, and only if it needs moves its game hasn't got.
 4. **On foot.** A `MadeModel` (faces, images, animations, a frame function giving each frame's
