@@ -181,7 +181,7 @@ void extra_heroes_assign(void) {
         }
         if (!extra_heroes_on() || (PlayerExtra[i] != EXTRA_NONE && !extra_hero_available(PlayerExtra[i]))) {
             if (PlayerExtra[i] != EXTRA_NONE && settings()->test_extra[i] != 0) {
-                printf("extra heroes: %s needs your copy of his game in a discs folder\n", ExtraHeroes[PlayerExtra[i]].name);
+                printf("extra heroes: %s needs your copy of his game beside the program or in a discs folder\n", ExtraHeroes[PlayerExtra[i]].name);
             }
             PlayerExtra[i] = EXTRA_NONE;
         }

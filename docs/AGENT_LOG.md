@@ -498,6 +498,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: The user approved Roo (LGTM): 7.12.2, Ripper Roo in Crate Crush, is ticked and in ROADMAP-A (`make progress` not
+  run: Docker was down). A bonus disc is found loose beside the program too now, or where it's run from (depth 0), as the game's
+  own is on its first run (`disc_find_beside`), as well as in a `discs` folder: tried with a copy of the program and of the disc
+  in a scratch folder (Roo made; without the disc, the message). The release's README.txt has an EXTRA HEROES section. A new
+  save has only Crate Crush in Battle (Choose Level's up and down change its arena), so he's untried in the other games (7.12.3).
+
 - 2026-11-04: Roo's select card lined up, at the user's word: the game's portraits are 64 x 64 images drawn only in columns 0 to
   55 and rows 0 to 37 (the frame's border shows in the rest), and his filled all 64 columns, over the border; now SELECT_COLS. The
   "green thing" behind his row was the title's band (a type 4 box, template 1), left there when only the title's text moved: it

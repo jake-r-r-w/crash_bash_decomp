@@ -321,28 +321,42 @@ static DiscImage *find_volume_in(const char *folder, const char *volume, int dep
 DiscImage *disc_image_find(const char *volume) {
     const char *base = SDL_GetBasePath();
     char *pref = SDL_GetPrefPath("CrashBash", "CrashBash");
-    char places[7][1024];
+    char places[9][1024];
+    int depth[9];
     DiscImage *found = NULL;
     int n = 0, i;
 
+    /* a discs folder beside the program, in the saves folder or where it's run from: an image in it, or in a folder of its own there */
     if (base != NULL) {
+        depth[n] = 1;
         SDL_snprintf(places[n++], sizeof(places[0]), "%sdiscs/", base);
     }
     if (pref != NULL) {
+        depth[n] = 1;
         SDL_snprintf(places[n++], sizeof(places[0]), "%sdiscs/", pref);
         SDL_free(pref);
     }
+    depth[n] = 1;
     SDL_snprintf(places[n++], sizeof(places[0]), "discs/");
+    /* or loose beside the program, as the game's own disc is the first time it runs (disc_find_beside), or where it's run from */
+    if (base != NULL) {
+        depth[n] = 0;
+        SDL_snprintf(places[n++], sizeof(places[0]), "%s", base);
+    }
+    depth[n] = 0;
+    SDL_snprintf(places[n++], sizeof(places[0]), "./");
     /* where a working copy of the repository keeps its discs: from where it's run, or above the program (build/port/windows-clang/),
        which is where it's run from when it's started from its own folder */
+    depth[n] = 1;
     SDL_snprintf(places[n++], sizeof(places[0]), "disc/");
     if (base != NULL) {
+        depth[n] = depth[n + 1] = depth[n + 2] = 1;
         SDL_snprintf(places[n++], sizeof(places[0]), "%s../disc/", base);
         SDL_snprintf(places[n++], sizeof(places[0]), "%s../../disc/", base);
         SDL_snprintf(places[n++], sizeof(places[0]), "%s../../../disc/", base);
     }
     for (i = 0; found == NULL && i < n; i++) {
-        found = find_volume_in(places[i], volume, 1);
+        found = find_volume_in(places[i], volume, depth[i]);
     }
     return found;
 }
