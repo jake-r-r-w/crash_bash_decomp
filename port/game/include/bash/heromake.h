@@ -109,8 +109,10 @@ s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s3
 
 /* --- riding a polar bear (Polar Push) ---
  * The games' riders sit on their bears in one model; an extra hero's rider model is Crash's bear, from the player's archive as the game
- * has it, with the hero sat on its back: it moves as Crash does, the motion of his hips (and the bear's back) and how far he leans,
- * hips to head, and over that any motion of its own. The animations are Polar Push's, as long as Crash's are. */
+ * has it, with the hero sat on its back: it moves as the bear's back does, bent as Crash leans on his, hips to head (a share of it,
+ * smoothed over a few frames, so a tall hero's head doesn't swing with every bob of his), and over that any motion of its own. The
+ * animations are Polar Push's, as long as another hero's are (match_bank, the hero's base's: its moves then go a frame a tick), Crash's
+ * resampled to them. */
 enum { RIDE_FALL, RIDE_RUN, RIDE_BREATHE, RIDE_PUSH, RIDE_TAUNT, RIDE_LIGHT, RIDE_WIN, RIDE_ANIMS };
 typedef struct {
     /* the hero sat on the bear's back, as for its first breathing frame, in Crash Bash's units and axes: its vertices, and each one's
@@ -120,13 +122,15 @@ typedef struct {
     const float *waist_share, *neck_share;
     V3 waist, neck;
     float lean_waist, lean_neck; /* of Crash's lean, the shares bent at each */
+    float steady;                /* and of his tilt from upright, the share the hero keeps back from: a tall one's head swings further */
+    s32 match_bank;              /* the model whose animations' lengths its own have (HeroModelBank), or -1 for Crash's */
     /* its faces (their vertices its own) and images; a face's second colours are made from its first, `charred` of them */
     const MadeFace *faces;
     s32 nfaces;
     const MadeImage *images;
     s32 nimages;
     float charred;
-    /* any motion of its own, after the riding's, for frame f of RIDE_ animation `anim` (of `frames`); may be NULL */
+    /* any motion of its own, before the riding's, for frame f of RIDE_ animation `anim` (of `frames`); may be NULL */
     void (*own)(void *ctx, s32 anim, s32 f, s32 frames, V3 *verts);
     void *ctx;
 } Rider;

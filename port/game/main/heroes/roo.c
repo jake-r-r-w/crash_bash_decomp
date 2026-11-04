@@ -13,6 +13,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/hero.h"
+#include "bash/modelbank.h"
 #include "bash/heromake.h"
 
 /* --- how he plays ---
@@ -350,9 +351,11 @@ static s32 anim_verts(const C1Entry *a, s32 j, s32 f, const s32 scale[3], V3 *ou
 /* --- sat on a polar bear ---
  * Astride it: each thigh swung forward from its hip (SEAT_FLEX) and out over the bear's side (SEAT_SPREAD), the shin hung back toward
  * straight down from the knee (SEAT_KNEE_OUT of the spread, and SEAT_KNEE_BACK under), each long foot turned at its ankle to point
- * forward (SEAT_FOOT_TURN), and the tail swung up behind about its root to lie along the bear's back (SEAT_TAIL_UP). His hips are
- * SEAT_HIP_UP above the top of its back, SEAT_Z behind where Crash sits. As Crash leans, hips to head, he bends at his waist and neck
- * (RIDE_WAIST and RIDE_NECK, each a share of it), each vertex as much as it's above those, smoothly over RIDE_*_BLEND. */
+ * forward (SEAT_FOOT_TURN) and its toes curled down from the ball of it (SEAT_BALL_X out from his middle, standing) against the bear's
+ * side (SEAT_TOE_CURL), and the tail swung up behind about its root to lie along the bear's back (SEAT_TAIL_UP). His hips are
+ * SEAT_HIP_UP above the top of its back, low enough that he sits down into its fur, SEAT_Z behind where Crash sits. As Crash leans,
+ * hips to head, he bends at his waist and neck (RIDE_WAIST and RIDE_NECK, a share of it at each, less than all of it: he's taller,
+ * so the same turn would swing his head further), each vertex as much as it's above those, smoothly over RIDE_*_BLEND. */
 #define SEAT_HIP_X 12.0f
 #define SEAT_FLEX 0.4f
 #define SEAT_SPREAD 0.9f
@@ -362,17 +365,20 @@ static s32 anim_verts(const C1Entry *a, s32 j, s32 f, const s32 scale[3], V3 *ou
 #define SEAT_ANKLE_X 22.0f
 #define SEAT_ANKLE_Y 6.0f
 #define SEAT_FOOT_TURN 1.2f
+#define SEAT_BALL_X 60.0f
+#define SEAT_TOE_CURL 1.0f
 #define SEAT_TAIL_Y 30.0f
 #define SEAT_TAIL_Z -14.0f
 #define SEAT_TAIL_UP 1.25f
-#define SEAT_HIP_UP 45.0f
-#define SEAT_Z 28.0f
+#define SEAT_HIP_UP 5.0f
+#define SEAT_Z 5.0f
 #define RIDE_WAIST 92.0f
 #define RIDE_WAIST_BLEND 22.0f
 #define RIDE_NECK 145.0f
 #define RIDE_NECK_BLEND 12.0f
-#define RIDE_LEAN_WAIST 0.6f
-#define RIDE_LEAN_NECK 0.4f
+#define RIDE_LEAN_WAIST 0.8f
+#define RIDE_LEAN_NECK 0.2f
+#define RIDE_STEADY 0.3f /* of Crash's tilt from upright, the share he keeps back from, steadier as he's taller */
 #define RIDE_CHARRED 0.35f /* his colours' share when a bomb's charred him */
 
 static V3 seated(s32 k) {
@@ -381,9 +387,14 @@ static V3 seated(s32 k) {
     if (LegShare[k] > 0) {
         float side = Rest[k].x < 0 ? -1.0f : 1.0f, foot = hm_smooth(SEAT_ANKLE_Y + 4, SEAT_ANKLE_Y - 4, Rest[k].y);
         float below = hm_smooth(SEAT_KNEE_Y + 8, SEAT_KNEE_Y - 8, Rest[k].y);
+        float toes = foot * hm_smooth(SEAT_BALL_X - 8, SEAT_BALL_X + 8, fabsf(Rest[k].x));
         V3 hip = { side * SEAT_HIP_X, HIP_Y, HIP_Z }, ankle = { side * SEAT_ANKLE_X, SEAT_ANKLE_Y, 0 };
-        V3 knee = { side * SEAT_HIP_X, SEAT_KNEE_Y, HIP_Z }, r, shin;
+        V3 knee = { side * SEAT_HIP_X, SEAT_KNEE_Y, HIP_Z }, ball = { side * SEAT_BALL_X, SEAT_ANKLE_Y - 6, 0 }, r, shin;
 
+        /* the toes down, then the foot round to point forward */
+        if (toes > 0) {
+            q = hm_mix(q, hm_turn_z(q, ball, -side * SEAT_TOE_CURL), toes);
+        }
         if (foot > 0) {
             q = hm_mix(q, hm_turn_y(q, ankle, -side * SEAT_FOOT_TURN), foot);
         }
@@ -410,30 +421,45 @@ static struct {
     const float *share;
 } RideOwn;
 
-/* Over the riding: his standing sway as he breathes, and his laugh as he taunts and wins, round and round, his body above his waist */
+/* Over the riding, his body above his waist: his standing sway as he breathes (RIDE_SWAY of it, the same share of the way round),
+ * and his laugh as he taunts and wins (RIDE_LAUGH of it, at its own speed, round and round), each between two of its frames, and
+ * the laugh coming in and going out over RIDE_FADE frames, so neither starts or stops with a jump. */
+#define RIDE_SWAY 0.12f
+#define RIDE_LAUGH 0.2f
+#define RIDE_FADE 4.0f
+
 static void ride_own(void *ctx, s32 anim, s32 f, s32 frames, V3 *verts) {
-    static V3 fv[MAX_VERTS];
+    static V3 fv[MAX_VERTS], gv[MAX_VERTS];
     const C1Entry *a;
-    float amount = 1;
-    s32 g, n, k;
+    float amount, t, u;
+    s32 g0, g1, n, m, k;
 
     if (anim == RIDE_BREATHE) {
         a = &RideOwn.anims[ROO_REST];
-        g = frames > 0 ? f * a->count / frames : 0;
-        amount = ROO_SWAY;
+        t = frames > 0 ? (float)f * a->count / frames : 0;
+        amount = RIDE_SWAY;
     } else if (anim == RIDE_TAUNT || anim == RIDE_WIN) {
         a = &RideOwn.anims[ROO_LAUGH];
-        g = a->count > 0 ? f % a->count : 0;
+        t = (float)f;
+        amount = RIDE_LAUGH * fminf(hm_smooth(0, RIDE_FADE, (float)f), hm_smooth((float)(frames - 1), frames - 1 - RIDE_FADE, (float)f));
     } else {
         return;
     }
-    n = c1_frame_verts(a->item[g], a->size[g], RideOwn.scale, fv, NULL, MAX_VERTS);
-    for (k = 0; k < n && k < RigVerts && k < SwayVerts; k++) {
+    if (a->count <= 0 || amount <= 0) {
+        return;
+    }
+    g0 = (s32)floorf(t);
+    u = t - g0;
+    g0 %= a->count;
+    g1 = (g0 + 1) % a->count;
+    n = c1_frame_verts(a->item[g0], a->size[g0], RideOwn.scale, fv, NULL, MAX_VERTS);
+    m = c1_frame_verts(a->item[g1], a->size[g1], RideOwn.scale, gv, NULL, MAX_VERTS);
+    for (k = 0; k < n && k < m && k < RigVerts && k < SwayVerts; k++) {
         float w = RideOwn.share[k] * amount * RideOwn.k;
 
-        verts[k].x += (fv[k].x - SwayMiddle[k].x) * w;
-        verts[k].y += (fv[k].y - SwayMiddle[k].y) * w;
-        verts[k].z += (fv[k].z - SwayMiddle[k].z) * w;
+        verts[k].x += (fv[k].x + (gv[k].x - fv[k].x) * u - SwayMiddle[k].x) * w;
+        verts[k].y += (fv[k].y + (gv[k].y - fv[k].y) * u - SwayMiddle[k].y) * w;
+        verts[k].z += (fv[k].z + (gv[k].z - fv[k].z) * u - SwayMiddle[k].z) * w;
     }
 }
 
@@ -633,6 +659,8 @@ static s32 roo_make(HeroMade *out) {
         rider.neck.z = neck.z * foot.k + seat_z + SEAT_Z;
         rider.lean_waist = RIDE_LEAN_WAIST;
         rider.lean_neck = RIDE_LEAN_NECK;
+        rider.steady = RIDE_STEADY;
+        rider.match_bank = DB_CharsPolar2Rilla; /* his base's: its moves then go a frame a tick */
         rider.faces = faces;
         rider.nfaces = own_tris;
         rider.images = images;

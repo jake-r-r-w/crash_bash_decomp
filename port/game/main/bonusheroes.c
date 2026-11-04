@@ -902,6 +902,10 @@ static s32 file_anim_named(const u8 *file, const char *name) {
 #define BEAR_TOP -215
 #define HIPS_TOP -225   /* Crash's hips: his corners below this and within BEAR_HALF across; his head, above HEAD_BOTTOM */
 #define HEAD_BOTTOM -400
+#define BACK_BELOW -110 /* its back, which the hero moves with: its corners above this (not its legs), within BACK_HALF across, */
+#define BACK_HALF 70    /* from BACK_FRONT to BACK_REAR along (not its head, which nods, nor its tail) */
+#define BACK_FRONT -90
+#define BACK_REAR 110
 #define MAX_BEAR_IMAGES 8
 
 typedef struct {
@@ -912,8 +916,8 @@ typedef struct {
     MadeFace faces[BEAR_FACES];
     MadeImage images[MAX_BEAR_IMAGES];
     s16 vert_of[BEAR_CORNERS], corner_of[BEAR_CORNERS];
-    s32 nhips, nhead;
-    s16 hips[BEAR_CORNERS], head[BEAR_CORNERS];
+    s32 nhips, nhead, nback;
+    s16 hips[BEAR_CORNERS], head[BEAR_CORNERS], back[BEAR_CORNERS];
     V3 ref[BEAR_CORNERS]; /* his first breathing frame */
     float back_y, seat_z;
     s32 anim[RIDE_ANIMS];
@@ -1152,6 +1156,9 @@ static s32 bear_load(void) {
             if (fabsf(p->x) < 30 && p->z > -40 && p->z < 60) {
                 b->back_y = back_n++ == 0 || p->y < b->back_y ? p->y : b->back_y;
             }
+            if (p->y < BACK_BELOW && fabsf(p->x) < BACK_HALF && p->z > BACK_FRONT && p->z < BACK_REAR) {
+                b->back[b->nback++] = (s16)k;
+            }
         } else if (p->y > HIPS_TOP && fabsf(p->x) < BEAR_HALF) {
             b->hips[b->nhips++] = (s16)k;
             zs += p->z;
@@ -1159,7 +1166,7 @@ static s32 bear_load(void) {
             b->head[b->nhead++] = (s16)k;
         }
     }
-    if (b->nfaces < 64 || b->nhips < 8 || b->nhead < 4 || back_n == 0) {
+    if (b->nfaces < 64 || b->nhips < 8 || b->nhead < 4 || b->nback < 8 || back_n == 0) {
         goto fail;
     }
     b->seat_z = zs / b->nhips;
@@ -1321,25 +1328,40 @@ static V3 unit(V3 v) {
     return v;
 }
 
-/* t of the turn taking direction a to b, about their cross */
-static void turn_between(V3 a, V3 b, float t, M3 *r) {
+/* The turn taking direction a to b, as its axis times its angle */
+static V3 turn_vector(V3 a, V3 b) {
     V3 ax;
-    float sn, cs, ang, c, s, k;
+    float sn, ang;
 
     ax.x = a.y * b.z - a.z * b.y;
     ax.y = a.z * b.x - a.x * b.z;
     ax.z = a.x * b.y - a.y * b.x;
     sn = sqrtf(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
-    cs = a.x * b.x + a.y * b.y + a.z * b.z;
+    if (sn < 1e-6f) {
+        ax.x = ax.y = ax.z = 0;
+        return ax;
+    }
+    ang = atan2f(sn, a.x * b.x + a.y * b.y + a.z * b.z);
+    ax.x *= ang / sn;
+    ax.y *= ang / sn;
+    ax.z *= ang / sn;
+    return ax;
+}
+
+/* t of a turn given as its axis times its angle */
+static void vector_turn(V3 v, float t, M3 *r) {
+    float ang = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z), c, s, k;
+    V3 ax;
+
     memset(r, 0, sizeof(*r));
     r->m[0][0] = r->m[1][1] = r->m[2][2] = 1;
-    if (sn < 1e-6f) {
+    if (ang < 1e-6f) {
         return;
     }
-    ang = atan2f(sn, cs) * t;
-    ax.x /= sn;
-    ax.y /= sn;
-    ax.z /= sn;
+    ax.x = v.x / ang;
+    ax.y = v.y / ang;
+    ax.z = v.z / ang;
+    ang *= t;
     c = cosf(ang);
     s = sinf(ang);
     k = 1 - c;
@@ -1367,39 +1389,129 @@ static V3 turn_about(V3 p, V3 c, const M3 *r) {
     return o;
 }
 
+/* The riding's frames, worked out before the model's written: for each of Polar Push's animations, as long as the hero's are, Crash's
+ * frame that each is (the same share of the way through his, blended between the two either side), the bear's back's motion from
+ * its first breathing frame, and Crash's lean from his then, in the back's frame (a turn: its axis times its angle), smoothed over
+ * RIDE_SMOOTH frames each side (RideSmooth's weights). */
+#define RIDE_MAX_FRAMES 128
+#define RIDE_SMOOTH 2
+static const float RideSmooth[RIDE_SMOOTH * 2 + 1] = { 1, 4, 6, 4, 1 };
+static const s8 RideLoops[RIDE_ANIMS] = { 0, 1, 1, 0, 0, 1, 0 }; /* RUN, BREATHE and LIGHT go round and round */
+
+typedef struct {
+    M3 back;    /* the bear's back's turn, about its middle in the first breathing frame (from), then to its middle now */
+    V3 from, to;
+    V3 lean;
+} RideStep;
+
 typedef struct {
     const Rider *r;
     MadeAnim anims[RIDE_ANIMS];
+    RideStep steps[RIDE_ANIMS][RIDE_MAX_FRAMES];
 } RideCtx;
+
+static RideCtx Ride;
+
+/* Crash's frame f of an animation the hero's has `frames` of: where in his it is, a share of the way through */
+static float crash_time(s32 a, s32 f, s32 frames) {
+    const Bear *b = &TheBear;
+    s32 n = file_anims((const ModelFile *)b->mdl)[b->anim[a]].frames;
+
+    if (RideLoops[a]) {
+        return frames > 0 ? (float)f * n / frames : 0;
+    }
+    return frames > 1 ? (float)f * (n - 1) / (frames - 1) : 0;
+}
+
+/* Crash's corners at t of his animation a, blended between the frames either side */
+static void crash_at(s32 a, float t, V3 *F) {
+    static V3 G[BEAR_CORNERS];
+    const Bear *b = &TheBear;
+    s32 n = file_anims((const ModelFile *)b->mdl)[b->anim[a]].frames, f0 = (s32)floorf(t), f1, k;
+    float u = t - f0;
+
+    if (RideLoops[a]) {
+        f0 = (f0 % n + n) % n;
+        f1 = (f0 + 1) % n;
+    } else {
+        f0 = f0 < 0 ? 0 : f0 >= n ? n - 1 : f0;
+        f1 = f0 + 1 >= n ? n - 1 : f0 + 1;
+    }
+    if (file_frame(b->mdl, b->anim[a], f0, F, BEAR_CORNERS) != b->corners) {
+        memcpy(F, b->ref, sizeof(V3) * (size_t)b->corners);
+        return;
+    }
+    if (u > 0 && f1 != f0 && file_frame(b->mdl, b->anim[a], f1, G, BEAR_CORNERS) == b->corners) {
+        for (k = 0; k < b->corners; k++) {
+            F[k] = hm_mix(F[k], G[k], u);
+        }
+    }
+}
+
+static void ride_steps(RideCtx *c) {
+    static V3 F[BEAR_CORNERS];
+    static V3 lean[RIDE_MAX_FRAMES];
+    const Bear *b = &TheBear;
+    V3 hc, hd, spine_ref, spine;
+    s32 a, f, d, n;
+
+    hc = centre_of(b->ref, b->hips, b->nhips);
+    hd = centre_of(b->ref, b->head, b->nhead);
+    spine_ref.x = hd.x - hc.x;
+    spine_ref.y = hd.y - hc.y;
+    spine_ref.z = hd.z - hc.z;
+    spine_ref = unit(spine_ref);
+    for (a = 0; a < RIDE_ANIMS; a++) {
+        n = c->anims[a].frames;
+        /* where Crash's spine points each frame (the way he leans as the world sees it, not the bear), part of the way back toward
+         * upright as he first sat, steadier than him */
+        for (f = 0; f < n; f++) {
+            RideStep *st = &c->steps[a][f];
+
+            crash_at(a, crash_time(a, f, n), F);
+            fit_turn(b->ref, F, b->back, b->nback, &st->back, &st->from, &st->to);
+            hc = centre_of(F, b->hips, b->nhips);
+            hd = centre_of(F, b->head, b->nhead);
+            spine.x = hd.x - hc.x;
+            spine.y = hd.y - hc.y;
+            spine.z = hd.z - hc.z;
+            lean[f] = unit(hm_mix(unit(spine), spine_ref, c->r->steady));
+        }
+        /* that smoothed, so it doesn't jitter, and then as a turn from how he sat in the bear's back's frame: the bear can pitch every
+         * frame and he still leans smoothly against it */
+        for (f = 0; f < n; f++) {
+            V3 sum = { 0, 0, 0 };
+
+            for (d = -RIDE_SMOOTH; d <= RIDE_SMOOTH; d++) {
+                s32 g = f + d;
+
+                if (RideLoops[a]) {
+                    g = (g % n + n) % n;
+                } else {
+                    g = g < 0 ? 0 : g >= n ? n - 1 : g;
+                }
+                sum.x += lean[g].x * RideSmooth[d + RIDE_SMOOTH];
+                sum.y += lean[g].y * RideSmooth[d + RIDE_SMOOTH];
+                sum.z += lean[g].z * RideSmooth[d + RIDE_SMOOTH];
+            }
+            c->steps[a][f].lean = turn_vector(spine_ref, unit(m3_mul_t(&c->steps[a][f].back, unit(sum))));
+        }
+    }
+}
 
 static void ride_frame(void *ctx, s32 a, s32 f, V3 *out) {
     static V3 F[BEAR_CORNERS];
     const RideCtx *c = ctx;
     const Rider *r = c->r;
     const Bear *b = &TheBear;
-    M3 hips, at_waist, at_neck;
-    V3 ca, cb, spine, spine_ref, hc, hd;
+    const RideStep *st = &c->steps[a][f];
+    M3 at_waist, at_neck;
     s32 k;
 
-    if (file_frame(b->mdl, b->anim[a], f, F, BEAR_CORNERS) != b->corners) {
-        memcpy(F, b->ref, sizeof(V3) * (size_t)b->corners);
-    }
-    /* Crash's hips' motion, and how far he leans from it, hips to head */
-    fit_turn(b->ref, F, b->hips, b->nhips, &hips, &ca, &cb);
-    hc = centre_of(b->ref, b->hips, b->nhips);
-    hd = centre_of(b->ref, b->head, b->nhead);
-    spine_ref.x = hd.x - hc.x;
-    spine_ref.y = hd.y - hc.y;
-    spine_ref.z = hd.z - hc.z;
-    hc = centre_of(F, b->hips, b->nhips);
-    hd = centre_of(F, b->head, b->nhead);
-    spine.x = hd.x - hc.x;
-    spine.y = hd.y - hc.y;
-    spine.z = hd.z - hc.z;
-    spine = m3_mul_t(&hips, spine);
-    turn_between(unit(spine_ref), unit(spine), r->lean_waist, &at_waist);
-    turn_between(unit(spine_ref), unit(spine), r->lean_neck, &at_neck);
-    /* the hero: sat, its own motion, bent at its neck and waist as he leans, then moved as his hips are */
+    crash_at(a, crash_time(a, f, c->anims[a].frames), F);
+    vector_turn(st->lean, r->lean_waist, &at_waist);
+    vector_turn(st->lean, r->lean_neck, &at_neck);
+    /* the hero: sat, its own motion, bent at its neck and waist as Crash leans, then moved as the bear's back is */
     memcpy(out, r->seat, sizeof(V3) * (size_t)r->nvert);
     if (r->own != NULL) {
         r->own(r->ctx, a, f, c->anims[a].frames, out);
@@ -1409,13 +1521,13 @@ static void ride_frame(void *ctx, s32 a, s32 f, V3 *out) {
 
         q = hm_mix(q, turn_about(q, r->neck, &at_neck), r->neck_share[k]);
         q = hm_mix(q, turn_about(q, r->waist, &at_waist), r->waist_share[k]);
-        d.x = q.x - ca.x;
-        d.y = q.y - ca.y;
-        d.z = q.z - ca.z;
-        d = m3_mul(&hips, d);
-        out[k].x = cb.x + d.x;
-        out[k].y = cb.y + d.y;
-        out[k].z = cb.z + d.z;
+        d.x = q.x - st->from.x;
+        d.y = q.y - st->from.y;
+        d.z = q.z - st->from.z;
+        d = m3_mul(&st->back, d);
+        out[k].x = st->to.x + d.x;
+        out[k].y = st->to.y + d.y;
+        out[k].z = st->to.z + d.z;
     }
     /* and the bear */
     for (k = 0; k < b->nvert; k++) {
@@ -1428,8 +1540,8 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
     MadeFace *faces;
     MadeImage images[MADE_MAX_IMAGES + MAX_BEAR_IMAGES];
     MadeModel mm;
-    RideCtx ctx;
-    s32 i, j, k, ok;
+    u8 *match = NULL;
+    s32 i, j, k, ok, size = 0;
 
     *tex = *mdl = NULL;
     if (!bear_load() || r->nimages + b->nimages > MADE_MAX_IMAGES + MAX_BEAR_IMAGES
@@ -1456,28 +1568,35 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
     }
     memcpy(images, r->images, sizeof(MadeImage) * (size_t)r->nimages);
     memcpy(images + r->nimages, b->images, sizeof(MadeImage) * (size_t)b->nimages);
-    /* Polar Push's animations, as long as Crash's, each on his mesh for it */
-    ctx.r = r;
+    /* Polar Push's animations, as long as the model's it matches (or Crash's), each on Crash's mesh for it */
+    if (r->match_bank >= 0) {
+        match = archive_own_file((s32)(HeroModelBank[r->match_bank].file - DatIndex), &size);
+    }
+    Ride.r = r;
     for (i = 0; i < RIDE_ANIMS; i++) {
         const FileEntry *e = &file_anims((const ModelFile *)b->mdl)[b->anim[i]];
         const MeshHeader *moved = (const MeshHeader *)((const u8 *)&e->mesh + e->mesh);
+        s32 m = match != NULL ? file_anim_named(match, RideNames[i]) : -1;
+        s32 frames = m >= 0 ? file_anims((const ModelFile *)match)[m].frames : e->frames;
 
-        ctx.anims[i].name = RideNames[i];
-        ctx.anims[i].frames = e->frames;
-        ctx.anims[i].mesh = moved == &((const ModelFile *)b->mdl)->meshes[1] ? 1 : 0;
+        Ride.anims[i].name = RideNames[i];
+        Ride.anims[i].frames = frames < 1 ? 1 : frames >= RIDE_MAX_FRAMES ? RIDE_MAX_FRAMES - 1 : frames;
+        Ride.anims[i].mesh = moved == &((const ModelFile *)b->mdl)->meshes[1] ? 1 : 0;
     }
+    free(match);
+    ride_steps(&Ride);
     memset(&mm, 0, sizeof(mm));
     mm.faces = faces;
     mm.nfaces = r->nfaces + b->nfaces;
     mm.meshes = 2;
     mm.images = images;
     mm.nimages = r->nimages + b->nimages;
-    mm.anims = ctx.anims;
+    mm.anims = Ride.anims;
     mm.nanims = RIDE_ANIMS;
     mm.nvert = r->nvert + b->nvert;
     mm.rest_anim = RIDE_BREATHE;
     mm.frame = ride_frame;
-    mm.ctx = &ctx;
+    mm.ctx = &Ride;
     ok = made_write(&mm, tex, tex_size, mdl, mdl_size);
     free(faces);
     return ok;

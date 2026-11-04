@@ -129,12 +129,17 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
 5. **Riding a polar bear.** `ride_make` takes Crash's polar model from the player's archive (the
    bear is its strips with only the bear's textures, inside its outline, neither his jeans' blue
    nor his skin's orange) and sits the hero on its back: `seated()` is his pose, thighs out over
-   the bear's sides, shins hanging, feet turned forward, tail along its back, his hips just above
-   its back (`ride_seat`). Each frame he moves as Crash does on his: the motion of Crash's hips, and
-   his lean from hips to head, which Roo takes at his waist and neck. Over that, his own motion
-   (`ride_own`): his standing sway as he breathes, his laugh as he taunts and wins. The model has
-   Polar Push's seven animations as long as Crash's, and a second mesh, charred, that the game
-   draws once a bomb hits him.
+   the bear's sides, shins hanging, long feet turned forward with their toes curled down against
+   its sides, tail along its back, his hips down in its fur where Crash sits (`ride_seat`). Each
+   frame he moves with the bear's back (a fit of its corners there: Crash's own hips wobble with
+   his legs), and leans as Crash does on his, hips to head, as the world sees it: smoothed over a
+   few frames, then turned into the bear's frame, so he leans smoothly against every pitch of its
+   gallop; and a share of it kept back toward upright (`steady`), as a tall hero's head swings
+   further for the same lean. Roo takes it at his waist and neck. Over that, his own motion
+   (`ride_own`): a little of his standing sway as he breathes, and his laugh as he taunts and wins,
+   each blended between its frames and the laugh faded in and out. The animations are as long as
+   his base's (`match_bank`, Rilla Roo's), Crash's resampled to them, so the base's moves play them
+   a frame a tick; and there's a second mesh, charred, that the game draws once a bomb hits him.
 6. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
    health), `c1_sound` his sounds.
 

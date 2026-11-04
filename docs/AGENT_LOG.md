@@ -147,6 +147,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Gotchas
 
 **Port test runs**
+- **A rider's lean smoothed in the bear's frame comes loose from its gallop:** Crash leans against every pitch of his bear's run to stay upright, so his lean measured against the bear swings each frame, and smoothing that blurs it out of step and leaves a tall rider rocking with the bear. Smooth where his spine points as the world sees it, then turn it into the bear's frame each frame (`ride_steps`).
 - **A frame's index list holds a vertex << 2 in 16 bits,** so one animation's vertices over all its frames can't pass 16,384 (Roo's JUMP was 28 x 592 = 16,576: on its last frame the tornado's vertices wrapped round onto others). `made_write` writes such an animation as keyframes with the frames between blended, as the game's own models are.
 - **Polar Push gives each hero its model by name** in 108 places (`SetPolarHeroIdle`, `SetPolarHeroWinner`, ...), never from `HeroHooks.HeroModels`; an extra hero is drawn in its own where the game sets its base's (`extra_hero_dbase`, from `prims.c`). Its last arena (mode 0x15) loads two tables: the heroes on foot in `HeroModels`, on bears in `HeroHooks.flag`.
 - **Hero sound blocks are 50 apart but the games use 26:** the 50th id of Koala Kong's, 0x190, is a menu's. The medieval chicken arena's own sounds are ids 1 to 0x11, inside Crash's block.
@@ -500,6 +501,15 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-04: Roo sits down in his bear and his head holds steady, at the user's word ("lower on the bear", "his head bobs
+  back and forth too much", "some artifacting"). Lower (his hips in its fur, forward where Crash sits: further back the bear's
+  rump poked up through him), his long toes curled down against its sides (they stuck out past its nose as black spikes). He moves
+  with the bear's back now, not Crash's hips (they wobble with his legs), and leans as Crash does as the world sees it, smoothed,
+  with 0.3 kept back toward upright; his sway and laugh smaller (0.12, 0.2), blended between frames, the laugh faded in and out;
+  his animations as long as Rilla Roo's, so her moves play them a frame a tick (PUSH was 20 frames for her 25: a hold every few).
+  Measured by his head's path per frame against Crash's (scratch/head_path.mjs on a dumped model): idle 0-6 (Crash 0-1), run up
+  to 39 (Crash 28, and he's taller). Shots only; not played by the user yet.
 
 - 2026-11-04: Roo rides a polar bear in Polar Push, and the extra heroes have a template, at the user's word (Roo is the standard
   the others follow). Each hero is a file in `port/game/main/heroes/` filling a `HeroDef` (bash/herodef.h): how it plays (stand-ins
