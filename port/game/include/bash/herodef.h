@@ -26,7 +26,7 @@ typedef struct {
  * games play the ones for its moves from the first HERO_SOUNDS of it (docs/EXTRA_HEROES.md has the list; the last of a block is a menu's
  * in one); an extra hero's base's are all its own instead, by offset in the block: VOICE_BASE keeps the base's (the announcer's name),
  * and one it has none for (VOICE_NONE, and any offset not listed) is quiet. */
-enum { VOICE_NONE, VOICE_BASE, VOICE_LAUGH, VOICE_YELP, VOICE_JUMP, VOICE_LAND, VOICE_THUD, NUM_VOICES };
+enum { VOICE_NONE, VOICE_BASE, VOICE_LAUGH, VOICE_YELP, VOICE_JUMP, VOICE_LAND, VOICE_THUD, VOICE_THROW, NUM_VOICES };
 #define HERO_SOUNDS 26
 typedef struct {
     s32 offset, voice;

@@ -37,17 +37,17 @@ static const Stand RooRides[] = {
 };
 
 /* His sounds for his base's (docs/EXTRA_HEROES.md, A hero's sounds): the announcer still names Rilla Roo, as near a name as there is;
- * he laughs as he taunts and wins, yelps as he's hurt, grunts and throws, gives his jump's call as he jumps and lunges, and thuds as he
- * lands. Carrying a crate he's quiet. */
+ * he laughs as he taunts and wins, yelps only as he's hurt, gives his jump's call as he jumps and lunges, thuds as he lands, and throws
+ * with Crash's throw (his game has none of his own). Picking up a crate, carrying it and pushing he's quiet. */
 static const Voice RooVoices[] = {
     { 0, VOICE_BASE }, { 1, VOICE_LAUGH }, { 2, VOICE_YELP }, { 3, VOICE_YELP }, { 4, VOICE_YELP }, { 5, VOICE_YELP },
     { 6, VOICE_LAUGH },
     /* Crate Crush's */
-    { 9, VOICE_NONE }, { 10, VOICE_NONE }, { 11, VOICE_JUMP }, { 12, VOICE_THUD }, { 13, VOICE_JUMP }, { 14, VOICE_YELP },
-    { 15, VOICE_YELP }, { 16, VOICE_YELP },
+    { 9, VOICE_NONE }, { 10, VOICE_NONE }, { 11, VOICE_JUMP }, { 12, VOICE_THUD }, { 13, VOICE_JUMP }, { 14, VOICE_NONE },
+    { 15, VOICE_THROW }, { 16, VOICE_NONE },
     /* Polar Push's */
-    { 19, VOICE_YELP }, { 20, VOICE_YELP }, { 21, VOICE_JUMP }, { 22, VOICE_YELP }, { 23, VOICE_YELP }, { 24, VOICE_LAUGH },
-    { 25, VOICE_YELP },
+    { 19, VOICE_NONE }, { 20, VOICE_NONE }, { 21, VOICE_JUMP }, { 22, VOICE_NONE }, { 23, VOICE_NONE }, { 24, VOICE_LAUGH },
+    { 25, VOICE_NONE },
     { -1, 0 },
 };
 
@@ -533,7 +533,10 @@ static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
 #define ROO_YELP_BYTES (86 * 16)
 #define ROO_YELP_PITCH 0x480
 #define CARD_HEAD 42 /* his hero card: his head and the tongue as it leaves his mouth; then the tongue hanging down and curling at its end */
+#define CRASH_CRATE_VOICES 0xD4 /* his throw is Crash's: the archive's sfx/vox_crate/crash.sfx, Crash's voice in Crate Crush, */
+#define CRASH_THROW 0x10        /* its sound for his throw, the sixteenth of his block (from sound 1) */
 static u8 *RooSound[NUM_VOICES];
+static HeroSound RooThrow;
 static s32 RooSoundBytes[NUM_VOICES];
 static u32 RooCard[64 * 64];
 
@@ -559,6 +562,10 @@ static void make_sounds(const C1Level *l, HeroMade *out) {
     out->sound[VOICE_YELP] = out->sound[VOICE_LAUGH];
     out->sound[VOICE_YELP].bytes = out->sound[VOICE_LAUGH].bytes < ROO_YELP_BYTES ? out->sound[VOICE_LAUGH].bytes : ROO_YELP_BYTES;
     out->sound[VOICE_YELP].pitch = ROO_YELP_PITCH;
+    if (RooThrow.adpcm == NULL) {
+        hm_game_sound(CRASH_CRATE_VOICES, CRASH_THROW, &RooThrow);
+    }
+    out->sound[VOICE_THROW] = RooThrow;
 }
 
 static s32 roo_make(HeroMade *out) {
@@ -729,9 +736,10 @@ static s32 roo_make(HeroMade *out) {
         out->card_head = CARD_HEAD;
     }
     make_sounds(&level, out);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s\n", ntri, nimage, out->mdl_size[KIND_FOOT],
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s\n", ntri, nimage, out->mdl_size[KIND_FOOT],
            out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "", out->card != NULL ? ", his hero card" : "",
-           out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "");
+           out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "",
+           out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "");
     ok = 1;
 done:
     made_images_free(images, nimage);

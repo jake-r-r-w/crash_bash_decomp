@@ -502,6 +502,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Roo's hop approved ("looks so much better"). His sounds, at the user's word: no yelp as he picks up or throws a
+  crate, only as he's hit, and his throw is Crash's. `hm_game_sound` takes a tone's sample out of a sound pack in the archive
+  (Crash's vox_crate, 0xD4, sound 0x10) at the game's pitch (note 60 against the tone's centre and shift, as PlaySfx's 0x1E00 keys
+  it): decoded, it's the extracted pack's WAV sample for sample. Polar Push's pushes and skating are quiet too now. `hm_play`'s
+  loudness was from 0x1E00, PlaySfx's pitch; it's 0x1000, its volume (the same at full sound, quieter below as the others are).
+  Traced in a Crate Crush match: pick-ups quiet, throws Crash's, hits yelp.
+
 - 2026-11-04: The user approved Roo on his bear (LGTM). His walk on foot (Crate Crush and the games with no kind of their own)
   is a kangaroo's now, at their word ("slightly hop around instead, he is a bouncy guy but not too high"): two hops a WALK,
   feet together, on the floor 0.3 of each (going back under him, his body sinking 6 and springing up), then up to 55 units as seen

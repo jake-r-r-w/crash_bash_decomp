@@ -1690,8 +1690,67 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
 
 /* --- sounds --- */
 
+#define VAB_PROGRAMS 0x20  /* a sound pack's VAB header (its VH): 128 programs of 16 bytes from here, */
+#define VAB_TONES 0x820    /* then 16 tones of 32 bytes each of its programs, then a u16 size / 8 each of its samples from slot 1 */
+
+s32 hm_game_sound(s32 entry, s32 id, HeroSound *out) {
+    s32 size = 0, nprog, nsample, p, j, k, at, vag = -1, centre = 0, shift = 0;
+    u8 *pack = archive_own_file(entry, &size), *copy;
+    const u8 *vh, *vb, *sizes;
+    u32 from = 0, bytes;
+    double pitch;
+
+    memset(out, 0, sizeof(*out));
+    if (pack == NULL || size < 8) {
+        free(pack);
+        return 0;
+    }
+    /* the pack: a table of offsets, the VB (its samples) first and the VH */
+    vb = pack + hm_rd32(pack);
+    vh = pack + hm_rd32(pack + 4);
+    if (vh + VAB_TONES > pack + size) {
+        free(pack);
+        return 0;
+    }
+    nprog = hm_rd16(vh + 0x12);
+    nsample = hm_rd16(vh + 0x16);
+    sizes = vh + VAB_TONES + nprog * 16 * 32;
+    for (p = 0; p < nprog && vag < 0; p++) {
+        for (j = 0; j < 16 && j < vh[VAB_PROGRAMS + p * 16]; j++) {
+            const u8 *t = vh + VAB_TONES + (p * 16 + j) * 32;
+
+            if ((t[6] | t[7] << 8) == id) {
+                vag = hm_rd16(t + 22);
+                centre = t[4];
+                shift = t[5];
+                break;
+            }
+        }
+    }
+    if (vag <= 0 || vag > nsample || sizes + (vag + 1) * 2 > pack + size) {
+        free(pack);
+        return 0;
+    }
+    for (k = 1; k < vag; k++) {
+        from += hm_rd16(sizes + k * 2) * 8u;
+    }
+    bytes = hm_rd16(sizes + vag * 2) * 8u;
+    at = (s32)(vb - pack) + (s32)from;
+    if (bytes < 16 || at + (s32)bytes > size || (copy = malloc(bytes)) == NULL) {
+        free(pack);
+        return 0;
+    }
+    memcpy(copy, pack + at, bytes);
+    free(pack);
+    pitch = 4096.0 * pow(2.0, (60 + shift / 128.0 - centre) / 12.0);
+    out->adpcm = copy;
+    out->bytes = (s32)bytes;
+    out->pitch = pitch > 0x3FFF ? 0x3FFF : (u32)pitch;
+    return 1;
+}
+
 void hm_play(const HeroSound *s, short *voice) {
-    s32 vol = 0x1E00 * GameOptions.sfx * 0x7F / 409600;
+    s32 vol = 0x1000 * GameOptions.sfx * 0x7F / 409600;
     short v;
 
     if (s == NULL || s->adpcm == NULL || s->bytes < 16) {

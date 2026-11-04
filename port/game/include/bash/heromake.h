@@ -143,6 +143,9 @@ typedef struct {
 s32 ride_seat(float *back_y, float *seat_z);
 s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size);
 
+/* One of the game's own sounds, out of a sound pack in the archive (docs/ASSETS.md, Sound packs): the sample its tone for sound `id`
+ * plays (copied, kept), at the pitch the game plays it (PlaySfx's note, 60, against the tone's centre and shift). 0 if there's none. */
+s32 hm_game_sound(s32 entry, s32 id, HeroSound *out);
 /* PS1 ADPCM played from memory, as loud as the game's own effects (sound.c, sfx_key_on); voice: the one that played it last stops
  * first (NULL: any number at once). */
 void hm_play(const HeroSound *s, short *voice);

@@ -94,17 +94,19 @@ play them:
 | 11 | Crate Crush: jump | 0.06 s | jump |
 | 12 | Crate Crush: land; a hit's fall (`BashHeroHit`) | 0.05 s | thud |
 | 13 | Crate Crush: attack; and the warp rooms' | 0.35 s | jump |
-| 14 | Crate Crush: pick up | 0.21 s | yelp |
-| 15 | Crate Crush: throw | 0.23 s | yelp |
-| 16 | Crate Crush (not played by the moves) | 0.07 s | yelp |
-| 19, 20, 25 | Polar Push: skating on foot (`skate_ft`), one sample | 0.25 s | yelp |
+| 14 | Crate Crush: pick up | 0.21 s | none |
+| 15 | Crate Crush: throw | 0.23 s | Crash's throw |
+| 16 | Crate Crush (not played by the moves) | 0.07 s | none |
+| 19, 20, 25 | Polar Push: skating on foot (`skate_ft`), one sample | 0.25 s | none |
 | 21 | Polar Push: a push starts | 0.32 s | jump |
-| 22 | Polar Push (not played by the moves) | 0.11 s | yelp |
-| 23 | Polar Push: the push | 0.12 s | yelp |
+| 22 | Polar Push (not played by the moves) | 0.11 s | none |
+| 23 | Polar Push: the push | 0.12 s | none |
 | 24 | Polar Push: win | 0.36 s | laugh |
 
 His own (`VOICE_`), as his make finds them: the laugh, a yelp (the laugh's first "ha", higher),
-his jump's call, a light landing and a heavy one. One limit: a game's own sounds with ids in a
+his jump's call, a light landing and a heavy one; and one of the game's own, Crash's throw, as his game has no throw of
+his (`hm_game_sound`: a tone's sample out of a sound pack in the archive, at the pitch the game plays it). He yelps only as he's
+hurt. One limit: a game's own sounds with ids in a
 base's block are taken too. Only the medieval chicken arena has any (1 to 0x11, in Crash's block),
 so there a hero whose base is Crash would quiet them.
 
