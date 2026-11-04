@@ -919,8 +919,9 @@ done:
  * Ballistix draws a car round each hero (its vehicle model's meshes 4 and 1) and the hero's own model in it (models\chars\ball\), the
  * four of them round the arena, so each is seen from a side of its own: from behind, the front and either side. The car's handles are
  * the heroes' models' own (all the same: Rilla Roo's, her strips all CAR_HANDLE_X or more out to the sides, no higher than
- * CAR_HANDLE_TOP and within CAR_HANDLE_Z of the middle along), so his model has them too, though he can't hold them. Roo sits in it
- * as big as the others, CAR_SCALE of his size about his hips, which are CAR_HIPS above its floor and CAR_Z back in its seat: his thighs
+ * CAR_HANDLE_TOP and within CAR_HANDLE_Z of the middle along), so his model has them too, rocking as hers do as she steers, though he
+ * can't hold them. Roo sits in it as big as the others, CAR_SCALE of his size about his hips, which are CAR_HIPS above its floor and
+ * CAR_Z back in its seat: his thighs
  * forward (CAR_FLEX), his shins down (CAR_KNEE_BACK), his long feet turned in under him as on his cane, his tail tucked into its root,
  * all of that inside the car and his straitjacket and head above it. With no hands for its handles, he drives it by smacking his head
  * down on its side, the way he goes (BANK: CAR_LEAN at his waist and CAR_NOD more at his neck, all of it from CAR_SMACK of the way
@@ -956,7 +957,8 @@ typedef struct {
     MadeAnim anims[CAR_MOVES];
     V3 swing[CAR_MOVES][CAR_MAX_TICKS];
     GamePart handles;
-    V3 *handle_at; /* where their corners are, still */
+    s32 handle_anim[CAR_MOVES], handle_rest; /* Rilla Roo's animations they move with, by the same names, and her BREATHE */
+    V3 *handle_at;                            /* where their corners are */
 } CarCtx;
 
 static CarCtx Car;
@@ -1155,8 +1157,16 @@ static void car_frame(void *ctx, s32 a, s32 f, V3 *out) {
         out[k].y += swing.y * FlopShare[k];
         out[k].z += swing.z * FlopShare[k];
     }
-    for (k = 0; c->handle_at != NULL && k < c->handles.nvert; k++) {
-        out[RigVerts + k] = c->handle_at[c->handles.corner_of[k]];
+    /* the handles, as they move in Rilla Roo's same move at the same frame of hers (they rock as she steers) */
+    if (c->handle_at != NULL) {
+        s32 h = c->handle_anim[a] >= 0 ? c->handle_anim[a] : c->handle_rest;
+
+        if (!hm_model_at(&c->handles, h, h == c->handle_anim[a] ? s : 0, c->handle_at)) {
+            hm_model_at(&c->handles, c->handle_rest, 0, c->handle_at);
+        }
+        for (k = 0; k < c->handles.nvert; k++) {
+            out[RigVerts + k] = c->handle_at[c->handles.corner_of[k]];
+        }
     }
 }
 
@@ -1179,11 +1189,15 @@ static s32 car_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, co
         c->anims[a].mesh = 0;
         c->anims[a].step = ROO_SUBFRAMES;
     }
-    /* the handles, where they are as Rilla Roo breathes (they don't move) */
+    /* the handles, moving as Rilla Roo's do */
     if (hm_game_part(DB_CharsBallRilla, keep_handles, NULL, &c->handles)) {
         if ((breathe = hm_model_anim(&c->handles, "BREATHE", NULL)) >= 0
             && (c->handle_at = malloc(sizeof(V3) * (size_t)c->handles.corners)) != NULL
             && hm_model_at(&c->handles, breathe, 0, c->handle_at)) {
+            c->handle_rest = breathe;
+            for (a = 0; a < CAR_MOVES; a++) {
+                c->handle_anim[a] = hm_model_anim(&c->handles, CarNames[a], NULL);
+            }
             nh = c->handles.nfaces;
             nhi = c->handles.nimages;
         } else {

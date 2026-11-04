@@ -149,6 +149,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 **Port test runs**
 - **A rider's lean smoothed in the bear's frame comes loose from its gallop:** Crash leans against every pitch of his bear's run to stay upright, so his lean measured against the bear swings each frame, and smoothing that blurs it out of step and leaves a tall rider rocking with the bear. Smooth where his spine points as the world sees it, then turn it into the bear's frame each frame (`ride_steps`).
 - **A frame's index list holds a vertex << 2 in 16 bits,** so one animation's vertices over all its frames can't pass 16,384 (Roo's JUMP was 28 x 592 = 16,576: on its last frame the tornado's vertices wrapped round onto others). `made_write` writes such an animation as keyframes with the frames between blended, as the game's own models are.
+- **A sub with its own order layer (flags 0x02000000, `otz`) is drawn by the game's order; every other model by real depth** (prims.c, `draw_object`). Where one of each meet, as Ballistix's near car and its hero's handles do, their triangles swap as they move: see that as z-fighting.
 - **`made_write` asks a made model's frame function only for its keyframes** (every `step` frames, and the last); the frames between are blended. So anything worked out per frame (a swing) only needs its keyframes, and a frame function can't add motion between them.
 - **Polar Push gives each hero its model by name** in 108 places (`SetPolarHeroIdle`, `SetPolarHeroWinner`, ...), never from `HeroHooks.HeroModels`; an extra hero is drawn in its own where the game sets its base's (`extra_hero_dbase`, from `prims.c`). Its last arena (mode 0x15) loads two tables: the heroes on foot in `HeroModels`, on bears in `HeroHooks.flag`.
 - **Hero sound blocks are 50 apart but the games use 26:** the 50th id of Koala Kong's, 0x190, is a menu's. The medieval chicken arena's own sounds are ids 1 to 0x11, inside Crash's block.
@@ -502,6 +503,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-04: Roo's car handles, at the user's word: they "animate for the other heroes" (they rock in BANK, up to 86, and a
+  little in TAUNT_A), so his take Rilla's frame of the same move; and they z-fought on his cart. Not z-fighting: `AR_InitHero`
+  gives player 0's car its own order layer, 16 nearer, for Tiny, Kong and Rilla, and the port draws such a sub by the game's
+  order and heroes by real depth, so handle and car triangles swapped as the car bobbed. An extra hero's car is depth-drawn now
+  (arkenoid.c). Six frames in a row steady; the originals at player 1 may do the same, not checked (no test option picks heroes).
 
 - 2026-11-04: Roo's car, at the user's word ("it looks good but he is clipping", "made larger ... and sat back into the seat"):
   the other heroes sit 150 to 250 further back than he did, and his toes reached the car's front. He's 1.25 of his size now,

@@ -4,6 +4,7 @@
 #include "bash/arkenoid_ovl.h"
 #include "bash/arkenoid.h"
 #include "bash/draw.h"
+#include "bash/extraheroes.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
 
@@ -1258,7 +1259,10 @@ void AR_InitHero(u32 arg0) {
         }
     }
     s->u6C.dbase = &HeroModelBank[DB_BallsVehicle];
-    if (arg0 == ArkSidePlayer0) {
+    /* PC: the near car of a big hero drawn by the game's order, 16 nearer than its hero, which the port draws by real depth:
+     * where an extra hero's handles meet its car the two swap as the car bobs. An extra hero (extraheroes.c) sits inside its car,
+     * so its car is drawn by real depth like the hero. */
+    if (arg0 == ArkSidePlayer0 && extra_hero_of(arg0) == EXTRA_NONE) {
         switch (Heroes[arg0].hero_name) {
         case 5:
         case 6:

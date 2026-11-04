@@ -183,8 +183,11 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
 7. **In a car (Ballistix).** The game draws a car round each hero (`DB_BallsVehicle`, its meshes
    4 and 1) and the hero's own model in it, the four of them round the arena, so each is seen from a
    side of its own: from behind, the front and either side. The car's handles are in the heroes'
-   models, not the car's, so Roo's has them too, Rilla Roo's taken with `hm_game_part`, though he
-   can't hold them. `car_make` sits Roo in it as big as the others (1.25 of his size), back in its
+   models, not the car's, so Roo's has them too, Rilla Roo's taken with `hm_game_part` and rocking
+   as hers do in the same move (`hm_model_at` of her frame), though he can't hold them. For big
+   heroes the game draws the near car by its own order, 16 nearer (`AR_InitHero`), and the port
+   draws heroes by real depth, so the handles and car swapped as the car bobbed; an extra hero's
+   car is drawn by real depth too. `car_make` sits Roo in it as big as the others (1.25 of his size), back in its
    seat (`car_seated`: thighs forward, shins down, his long feet turned in, his tail tucked, all of it
    inside the car, his straitjacket and head above it). He has no hands for its handles, so he
    drives it with his head (at the user's word): BANK, which the game sets from his sideways speed

@@ -1177,6 +1177,9 @@ signature alone is not enough.
   (0x2DA) is HOLD's too. BANK is a 28-frame cycle that `ArkHeroUpdateSpeed`
   sets each tick from the sideways speed (`ArkHeroSpeeds[hero]`: frame 9 or
   23 held while moving one way or the other, back to 14 or 27 when stopped).
+  The handles rock in BANK (up to 86) and a little in TAUNT_A. For player
+  0 with Tiny, Kong or Rilla Roo, `AR_InitHero` gives the car an order
+  layer of its own, 16 nearer than its hero (`otz`, flags 0x02000000).
 - **The front end** (Titles; named 2026-10-26). Modes 0x28..0x2A
   (the engine's per-mode table gives each `file_group_TITLES`); its world
   record (`0x800990B0`, world 0x0101) is `{..., &TITLES_PREMAP,
