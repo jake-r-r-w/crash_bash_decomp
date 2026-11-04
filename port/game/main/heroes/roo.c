@@ -2149,27 +2149,29 @@ done:
  * The mallet game's heroes swing big spiked mallets, each hero's in its own model with it (models\chars\mallet\; its moves BREATHE,
  * MEDIUM as it runs with it, HIT knocked down, ATTACK the swing: back, held back as it's charged, then down onto the floor in front,
  * and WIN). Roo's model has Rilla Roo's mallet: her model's first MALLET_HEAD_STRIPS strips (its head) and its strips from
- * MALLET_HANDLE_FROM on (its handle). With no hands, he holds it in his mouth (at the user's word): the end of its handle (its corners
- * within MALLET_GRIP of the end away from its head) in his teeth at the corner of his mouth away from his tongue (MALLET_SIDE out),
- * MALLET_BITE of it back inside, the handle out MALLET_TILT forward from up and MALLET_YAW round to that side (as the user asked, at an
- * angle, not straight out ahead), MALLET_SCALE of its size; and it goes with his head (a fit of his head's vertices, from standing to
- * the frame). He's as on foot, the mallet in his mouth: he
+ * MALLET_HANDLE_FROM on (its handle). With no hands, he holds it in his mouth (at the user's word), as a dog carries a stick: its
+ * handle across his mouth, bitten in its side, the end of it (its corners within MALLET_GRIP of the end away from its head) poking out
+ * MALLET_BITE past the middle of his mouth on his tongue's side, and the rest out of the other side, MALLET_YAW round from ahead and
+ * MALLET_TILT forward from up (a little up from level), MALLET_SCALE of its size; and it goes with his head (a fit of his head's
+ * vertices, from standing to the frame). He's as on foot, the mallet in his mouth: he
  * stands as he breathes, hops as he runs, falls over as he's hit, and laughs as he wins (at his own pace, round and round). He swings
  * it with his whole body: rearing back MALLET_REAR as he swings it back (by MALLET_BACK of the swing, as hers), winding back to
- * MALLET_WIND as it's charged (by MALLET_HELD), and bowing forward MALLET_BOW, faster and faster, to bring it down onto the floor in
- * front of him as hers lands (MALLET_LANDS), held there a moment (to MALLET_UP) and up again; MALLET_NECK of each at his neck, the rest
- * at his waist. His tongue and ears swing. */
+ * MALLET_WIND as it's charged (by MALLET_HELD) and twisting MALLET_TWIST_BACK round to carry it behind him, then bowing forward
+ * MALLET_BOW, faster and faster, and twisting MALLET_TWIST the other way round, to sweep it round and down onto the floor in front of
+ * him as hers lands (MALLET_LANDS); held there a moment (to MALLET_UP) and up again. MALLET_NECK of each at his neck, the rest at his
+ * waist. His tongue and ears swing. */
 #define MALLET_HEAD_STRIPS 16
 #define MALLET_HANDLE_FROM 56
 #define MALLET_GRIP 60.0f
 #define MALLET_SCALE 0.9f
-#define MALLET_TILT 1.2f
-#define MALLET_YAW 0.5f
-#define MALLET_SIDE 14.0f
-#define MALLET_BITE 25.0f
-#define MALLET_REAR 0.55f
-#define MALLET_WIND 0.9f
+#define MALLET_TILT 1.3f
+#define MALLET_YAW 1.35f
+#define MALLET_BITE 45.0f
+#define MALLET_REAR 0.45f
+#define MALLET_WIND 0.7f
 #define MALLET_BOW 1.0f
+#define MALLET_TWIST 1.15f
+#define MALLET_TWIST_BACK 0.35f
 #define MALLET_NECK 0.4f
 #define MALLET_BACK (8.0f / 38)  /* her ATTACK's frames, as shares of the way through its 39 */
 #define MALLET_HELD (17.0f / 38)
@@ -2195,6 +2197,7 @@ typedef struct {
     V3 stand[MAX_VERTS];       /* his vertices standing */
     s16 head[MALLET_MAX_HEAD]; /* his head's vertices (but what swings) */
     s32 nhead;
+    float side;                /* the side of him it's out of, across (Crash Bash's x) */
 } MalletCtx;
 
 static MalletCtx Mallet;
@@ -2274,11 +2277,28 @@ static float mallet_bend(float t) {
     return MALLET_BOW * hm_smooth(1, MALLET_UP, t);
 }
 
+/* How far round he's twisted (radians) toward bringing the mallet out in front, at t of the way through a swing */
+static float mallet_twist(float t) {
+    float u;
+
+    if (t < MALLET_HELD) {
+        return -MALLET_TWIST_BACK * hm_smooth(0, MALLET_HELD, t);
+    }
+    if (t < MALLET_LANDS) {
+        u = (t - MALLET_HELD) / (MALLET_LANDS - MALLET_HELD);
+        return -MALLET_TWIST_BACK + (MALLET_TWIST_BACK + MALLET_TWIST) * u * u;
+    }
+    if (t < MALLET_UP) {
+        return MALLET_TWIST;
+    }
+    return MALLET_TWIST * hm_smooth(1, MALLET_UP, t);
+}
+
 /* Frame f of move a, but for the swing and the mallet: his vertices in Crash Bash's units */
 static void mallet_pose(const MalletCtx *c, s32 a, s32 f, V3 *out) {
     const FootCtx *foot = c->foot;
     s32 frames = c->anims[a].frames, k;
-    float g = (float)f / VEHICLE_PER, ticks = (float)frames / VEHICLE_PER, last = ticks > 1 ? ticks - 1 : 1, bend = 0;
+    float g = (float)f / VEHICLE_PER, ticks = (float)frames / VEHICLE_PER, last = ticks > 1 ? ticks - 1 : 1, bend = 0, twist = 0;
 
     switch (a) {
     case MALLET_BREATHE:
@@ -2296,24 +2316,36 @@ static void mallet_pose(const MalletCtx *c, s32 a, s32 f, V3 *out) {
     default:
         mallet_own(foot, ROO_REST, 0, 1, out);
         bend = mallet_bend(g / last);
+        twist = mallet_twist(g / last) * c->side;
         break;
     }
-    if (bend != 0) {
-        V3 waist = { 0, RIDE_WAIST, 0 }, neck = { 0, RIDE_NECK, 0 };
+    if (bend != 0 || twist != 0) {
+        V3 waist = { 0, RIDE_WAIST, 0 }, neck = { 0, RIDE_NECK, 0 }, bent;
         float at_waist = bend * (1 - MALLET_NECK), at_neck = bend * MALLET_NECK;
+        float turn_waist = twist * (1 - MALLET_NECK), turn_neck = twist * MALLET_NECK;
 
+        /* twisted round about upright, then bent forward or back, at his waist and at his neck */
         waist = foot_at(foot, waist);
-        neck = hm_turn_x(foot_at(foot, neck), waist, at_waist);
+        neck = hm_turn_y(foot_at(foot, neck), waist, turn_waist);
+        bent = hm_turn_x(neck, waist, at_waist);
         for (k = 0; k < RigVerts; k++) {
             float up = hm_smooth(RIDE_WAIST - RIDE_WAIST_BLEND, RIDE_WAIST + RIDE_WAIST_BLEND, Rest[k].y);
             float head = hm_smooth(RIDE_NECK - RIDE_NECK_BLEND, RIDE_NECK + RIDE_NECK_BLEND, Rest[k].y);
+            V3 p = out[k];
 
             if (up > 0) {
-                out[k] = hm_mix(out[k], hm_turn_x(out[k], waist, at_waist), up);
+                p = hm_mix(p, hm_turn_y(p, waist, turn_waist), up);
             }
             if (head > 0) {
-                out[k] = hm_mix(out[k], hm_turn_x(out[k], neck, at_neck), head);
+                p = hm_mix(p, hm_turn_y(p, neck, turn_neck), head);
             }
+            if (up > 0) {
+                p = hm_mix(p, hm_turn_x(p, waist, at_waist), up);
+            }
+            if (head > 0) {
+                p = hm_mix(p, hm_turn_x(p, bent, at_neck), head);
+            }
+            out[k] = p;
         }
     }
 }
@@ -2497,7 +2529,7 @@ static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris,
     mouth.x /= n;
     mouth.y /= n;
     mouth.z /= n;
-    /* the side of his mouth away from his tongue (where its tip hangs, across), and its corner there */
+    /* the side of him away from his tongue (where its tip hangs, across): the mallet's out of that side */
     for (k = 0, n = 0; k < RigVerts; k++) {
         if (TongueShare[k] > 0.85f) {
             tip_x += c->stand[k].x;
@@ -2505,9 +2537,9 @@ static s32 mallet_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris,
         }
     }
     side = n > 0 && tip_x / n > mouth.x ? -1.0f : 1.0f;
-    mouth.x += side * MALLET_SIDE;
-    /* the mallet as he holds it, standing: its grip in his teeth there, turned from the way hers goes up to the way his goes out
-     * (forward and up), then about upright out that side, and its handle's end MALLET_BITE back inside his mouth */
+    c->side = side;
+    /* the mallet as he holds it, standing, bitten across his mouth: turned from the way hers goes up to the way his goes out (forward
+     * and up), then round about upright out that side, and its handle's end MALLET_BITE back through his mouth from its middle */
     d2.x = side * sinf(MALLET_YAW) * sinf(MALLET_TILT);
     d2.y = d1.y;
     d2.z = -cosf(MALLET_YAW) * sinf(MALLET_TILT);

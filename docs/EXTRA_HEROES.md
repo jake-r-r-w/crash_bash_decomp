@@ -257,17 +257,18 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    (`models/chars/mallet/`; six moves, BREATHE, MEDIUM as it runs, HIT knocked down, ATTACK the
    swing, WIN, and one by a name only as its hash, #4a7, that Rilla Roo's sequences don't play).
    `mallet_make` takes Rilla Roo's mallet (`keep_mallet`: her model's first 16 strips, its head, and
-   its last six, its handle). He holds it in his mouth (at the user's word): the end of its handle in
-   his teeth at the corner of his mouth away from his tongue, a little of it back inside, the handle
-   out forward, up and to that side at an angle (straight out ahead it looked less real), and it
-   moves with his head (`hm_fit` of his head's
+   its last six, its handle). He holds it in his mouth (at the user's word) as a dog carries a stick:
+   its handle across his mouth, bitten in its side, its end poking out on his tongue's side and the
+   rest out of the other, a little forward and up from level (out ahead from his mouth, or angled out
+   of its corner, it looked less real); and it moves with his head (`hm_fit` of his head's
    vertices from standing to the frame). He's as on foot (`mallet_own`: his own animations, between
    their frames): standing, hopping as he runs, falling over as he's hit, laughing as he wins. He
    swings it with his whole body (`mallet_bend`), timed as hers by the share of the way through
    ATTACK, whichever hero's place he has (every base's sequences name frames of its own, and his
    frames go the same share of the way): rearing back for the backswing, back further as it's
-   charged, then bowing forward faster and faster to bring it down on the floor in front as hers
-   lands, and up again. Where the game finds a swing's hit, the base's point on its frame, it stays.
+   charged, twisting round to carry it behind him, then bowing forward and twisting the other way,
+   faster and faster, to sweep it round and down onto the floor in front as hers lands
+   (`mallet_twist`), and up again. Where the game finds a swing's hit, the base's point on its frame, it stays.
 12. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
    health), `c1_sound` his sounds.
 

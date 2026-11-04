@@ -505,6 +505,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: At the user's word ("more like it's in its side and he's biting it"), Roo's mallet is bitten across his mouth as a
+  dog carries a stick: its handle's end out 45 past his mouth's middle on his tongue's side, the rest out of the other, 77 degrees
+  round from ahead and a little up from level. Held so, a bow alone would keep it at his side, so his swing twists him round too
+  (`mallet_twist`: back as it's charged, then round the other way as he bows), sweeping it down onto the floor in front as before.
+  Checked by renders (his head close up, the landing from three sides) and a four-Roo match. Not played by the user yet.
+
 - 2026-11-04: At the user's word, Roo's mallet "slightly at an angle but more realistic": its handle's end now in the corner of
   his mouth away from his tongue (MALLET_SIDE), MALLET_BITE of it inside, out 29 degrees to that side (MALLET_YAW) and lower
   (MALLET_TILT 1.2); his bow down to 1.0 so its spiked face lands on the floor (at 1.25 it went 82 into it). Checked by renders
