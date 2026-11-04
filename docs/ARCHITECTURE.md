@@ -1170,7 +1170,9 @@ signature alone is not enough.
   (`AR_InitHero`): the car's body (`DB_BallsVehicle` mesh 4,
   entity 0x2004, 0x2006 as it's hit), the hero's own ball model
   (`models/chars/ball/`, the animator's sub), and the car's mesh 1 (0x2001).
-  The car's seat back stands 263 high, its sides 158, its front 86. The
+  The car's seat back stands 263 high, its sides 158 (86 toward the seat),
+  its front 86. Its handles are in each hero's ball model, not the car's:
+  the same strips in all of them, out from 216 to 384 across and up to 245.
   heroes' moves are BREATHE, BANK, IDLE_A, TAUNT_A, DIE and WIN; BANK's hash
   (0x2DA) is HOLD's too. BANK is a 28-frame cycle that `ArkHeroUpdateSpeed`
   sets each tick from the sideways speed (`ArkHeroSpeeds[hero]`: frame 9 or

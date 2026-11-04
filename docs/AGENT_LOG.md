@@ -503,6 +503,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: Roo's car, at the user's word ("it looks good but he is clipping", "made larger ... and sat back into the seat"):
+  the other heroes sit 150 to 250 further back than he did, and his toes reached the car's front. He's 1.25 of his size now,
+  hips 40 up and 170 back. The car's handles turned out to be in each hero's ball model (the same in all), so his has Rilla's
+  (`keep_handles`). Bigger, his smash threw his head out past the car's side; now it's less at his waist (0.8) and more at his
+  neck (1.18), his head landing on the side's top. Checked by renders of every move and a four-Roo match. Not played yet.
+
 - 2026-11-04: The user approved Roo's cane (LGTM). Roo sits in a Ballistix car now, at their word ("it needs to look good from
   all 4 sides"; "he does not have hands/arms to operate the handles", so going left "he smacks his head down on the left side
   of the cart"). A fourth kind, KIND_BALL (DB_BonusRooBall, entries 998/999): the game draws the car (DB_BallsVehicle meshes 4

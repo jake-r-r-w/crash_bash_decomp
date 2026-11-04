@@ -917,21 +917,27 @@ done:
 
 /* --- in a Ballistix car ---
  * Ballistix draws a car round each hero (its vehicle model's meshes 4 and 1) and the hero's own model in it (models\chars\ball\), the
- * four of them round the arena, so each is seen from a side of its own: from behind, the front and either side. Roo sits in it as the
- * others do, his hips CAR_HIPS above its floor and CAR_Z behind its middle: his thighs forward (CAR_FLEX), his shins down
- * (CAR_KNEE_BACK), his long feet turned in under him as on his cane, his tail tucked into its root, all of that inside the car and his
- * straitjacket and head above it. With no hands for its handles, he drives it by smacking his head down on its side, the way he goes
- * (BANK: CAR_LEAN at his waist and CAR_NOD more at his neck, all of it from CAR_SMACK of the way there); he sways as he breathes
- * (CAR_SWAY of his standing animation's), laughs as he fidgets, taunts and wins (CAR_FIDGET, CAR_LAUGH and all of it, bouncing CAR_HOP
- * in his seat as he wins), and slumps back as he loses (CAR_SLUMP, his head dropping CAR_DROOP). His tongue and ears swing, but as he
- * drives: its frames are the way he leans, not time. */
-#define CAR_HIPS 120.0f
-#define CAR_Z 30.0f
+ * four of them round the arena, so each is seen from a side of its own: from behind, the front and either side. The car's handles are
+ * the heroes' models' own (all the same: Rilla Roo's, her strips all CAR_HANDLE_X or more out to the sides, no higher than
+ * CAR_HANDLE_TOP and within CAR_HANDLE_Z of the middle along), so his model has them too, though he can't hold them. Roo sits in it
+ * as big as the others, CAR_SCALE of his size about his hips, which are CAR_HIPS above its floor and CAR_Z back in its seat: his thighs
+ * forward (CAR_FLEX), his shins down (CAR_KNEE_BACK), his long feet turned in under him as on his cane, his tail tucked into its root,
+ * all of that inside the car and his straitjacket and head above it. With no hands for its handles, he drives it by smacking his head
+ * down on its side, the way he goes (BANK: CAR_LEAN at his waist and CAR_NOD more at his neck, all of it from CAR_SMACK of the way
+ * there); he sways as he breathes (CAR_SWAY of his standing animation's), laughs as he fidgets, taunts and wins (CAR_FIDGET, CAR_LAUGH
+ * and all of it, bouncing CAR_HOP in his seat as he wins), and slumps back as he loses (CAR_SLUMP, his head dropping CAR_DROOP). His
+ * tongue and ears swing, but as he drives: its frames are the way he leans, not time. */
+#define CAR_HANDLE_X 210.0f
+#define CAR_HANDLE_TOP -250.0f
+#define CAR_HANDLE_Z 30.0f
+#define CAR_SCALE 1.25f
+#define CAR_HIPS 40.0f
+#define CAR_Z 170.0f
 #define CAR_FLEX 1.45f
 #define CAR_KNEE_Y 30.0f
 #define CAR_KNEE_BACK 1.45f
-#define CAR_LEAN 1.25f
-#define CAR_NOD 0.6f
+#define CAR_LEAN 0.8f
+#define CAR_NOD 1.18f
 #define CAR_SMACK 0.75f
 #define CAR_SWAY 0.3f
 #define CAR_FIDGET 0.4f
@@ -949,9 +955,24 @@ typedef struct {
     const FootCtx *foot;
     MadeAnim anims[CAR_MOVES];
     V3 swing[CAR_MOVES][CAR_MAX_TICKS];
+    GamePart handles;
+    V3 *handle_at; /* where their corners are, still */
 } CarCtx;
 
 static CarCtx Car;
+
+static s32 keep_handles(void *ctx, const V3 *rest, s32 n, s32 textured) {
+    s32 k;
+
+    (void)ctx;
+    (void)textured;
+    for (k = 0; k < n; k++) {
+        if (fabsf(rest[k].x) < CAR_HANDLE_X || rest[k].y < CAR_HANDLE_TOP || fabsf(rest[k].z) > CAR_HANDLE_Z) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 /* A vertex of his (in his rig) sat in the car, legs and tail; above his waist he's as he stands */
 static V3 car_seated(V3 q, s32 k) {
@@ -1072,11 +1093,11 @@ static void car_pose(const CarCtx *c, s32 a, s32 f, V3 *out) {
             p = hm_mix(p, hm_turn_x(p, waist, -slump * CAR_SLUMP), up);
             p = hm_mix(p, hm_turn_x(p, at_neck, slump * CAR_DROOP), head);
         }
-        p.y += hop / (ROO_UNIT * foot->k) * up;
-        s = ROO_UNIT * foot->k;
+        s = ROO_UNIT * foot->k * CAR_SCALE;
+        p.y += hop / s * up;
         out[k].x = p.x * s;
         out[k].y = -(p.y - HIP_Y) * s - CAR_HIPS;
-        out[k].z = -p.z * s + CAR_Z;
+        out[k].z = -(p.z - HIP_Z) * s + CAR_Z;
     }
 }
 
@@ -1134,13 +1155,18 @@ static void car_frame(void *ctx, s32 a, s32 f, V3 *out) {
         out[k].y += swing.y * FlopShare[k];
         out[k].z += swing.z * FlopShare[k];
     }
+    for (k = 0; c->handle_at != NULL && k < c->handles.nvert; k++) {
+        out[RigVerts + k] = c->handle_at[c->handles.corner_of[k]];
+    }
 }
 
-/* His car model: his own faces (own_tris of them) and images, Ballistix's moves as long as his base's */
+/* His car model: his own faces (own_tris of them) and images, and the handles; Ballistix's moves as long as his base's */
 static s32 car_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, const MadeImage *images, s32 nimage, HeroMade *out) {
     CarCtx *c = &Car;
+    MadeFace *all = NULL;
+    MadeImage *imgs = NULL;
     MadeModel mm;
-    s32 a, n;
+    s32 a, n, k, j, ok = 0, breathe, nh = 0, nhi = 0;
 
     memset(c, 0, sizeof(*c));
     c->foot = foot;
@@ -1153,24 +1179,62 @@ static s32 car_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, co
         c->anims[a].mesh = 0;
         c->anims[a].step = ROO_SUBFRAMES;
     }
+    /* the handles, where they are as Rilla Roo breathes (they don't move) */
+    if (hm_game_part(DB_CharsBallRilla, keep_handles, NULL, &c->handles)) {
+        if ((breathe = hm_model_anim(&c->handles, "BREATHE", NULL)) >= 0
+            && (c->handle_at = malloc(sizeof(V3) * (size_t)c->handles.corners)) != NULL
+            && hm_model_at(&c->handles, breathe, 0, c->handle_at)) {
+            nh = c->handles.nfaces;
+            nhi = c->handles.nimages;
+        } else {
+            free(c->handle_at);
+            c->handle_at = NULL;
+        }
+    }
+    if (nh == 0) {
+        printf("bonus: Rilla Roo's car has no handles\n");
+    }
     car_swing(c);
+    all = malloc(sizeof(MadeFace) * (size_t)(own_tris + nh));
+    imgs = malloc(sizeof(MadeImage) * (size_t)(nimage + nhi + 1));
+    if (all == NULL || imgs == NULL) {
+        goto done;
+    }
+    memcpy(all, faces, sizeof(MadeFace) * (size_t)own_tris);
+    for (k = 0; k < nh; k++) {
+        MadeFace *f = &all[own_tris + k];
+
+        *f = c->handles.faces[k];
+        for (j = 0; j < 3; j++) {
+            f->v[j] += RigVerts;
+        }
+        f->image = f->image >= 0 ? f->image + nimage : -1;
+    }
+    memcpy(imgs, images, sizeof(MadeImage) * (size_t)nimage);
+    memcpy(imgs + nimage, c->handles.images, sizeof(MadeImage) * (size_t)nhi);
     memset(&mm, 0, sizeof(mm));
-    mm.faces = faces;
-    mm.nfaces = own_tris;
+    mm.faces = all;
+    mm.nfaces = own_tris + nh;
     mm.meshes = 1;
-    mm.images = images;
-    mm.nimages = nimage;
+    mm.images = imgs;
+    mm.nimages = nimage + nhi;
     mm.anims = c->anims;
     mm.nanims = CAR_MOVES;
-    mm.nvert = RigVerts;
+    mm.nvert = RigVerts + (nh > 0 ? c->handles.nvert : 0);
     mm.rest_anim = CAR_BREATHE;
     mm.frame = car_frame;
     mm.ctx = c;
-    if (!made_write(&mm, &out->tex[KIND_BALL], &out->tex_size[KIND_BALL], &out->mdl[KIND_BALL], &out->mdl_size[KIND_BALL])) {
+    ok = made_write(&mm, &out->tex[KIND_BALL], &out->tex_size[KIND_BALL], &out->mdl[KIND_BALL], &out->mdl_size[KIND_BALL]);
+done:
+    if (!ok) {
         printf("bonus: Ripper Roo can't be put in a car\n");
-        return 0;
     }
-    return 1;
+    free(all);
+    free(imgs);
+    free(c->handle_at);
+    c->handle_at = NULL;
+    hm_part_free(&c->handles);
+    return ok;
 }
 
 /* His sounds, which his boss fight's object (RRooC) plays: sound entries in sound pages, at 11025 Hz. His laugh (CrznA), his jump's
