@@ -636,6 +636,15 @@ s32 made_write(const MadeModel *m, u8 **tex_out, s32 *tex_size, u8 **mdl_out, s3
         free(corners);
         return 0;
     }
+    for (j = 0; j < m->nanims; j++) {
+        if (m->anims[j].frames > MADE_MAX_FRAMES) {
+            printf("bonus: a made model's %s has %d frames, more than a frame's number can name (%d)\n", m->anims[j].name,
+                   m->anims[j].frames, MADE_MAX_FRAMES);
+            free(fv);
+            free(corners);
+            return 0;
+        }
+    }
     write_texture_set(&tex, m->images, m->nimages);
 
     /* the meshes: a strip a face, all of them sharing all but their colours */

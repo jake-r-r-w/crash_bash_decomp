@@ -150,6 +150,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - **A rider's lean smoothed in the bear's frame comes loose from its gallop:** Crash leans against every pitch of his bear's run to stay upright, so his lean measured against the bear swings each frame, and smoothing that blurs it out of step and leaves a tall rider rocking with the bear. Smooth where his spine points as the world sees it, then turn it into the bear's frame each frame (`ride_steps`).
 - **A frame's index list holds a vertex << 2 in 16 bits,** so one animation's vertices over all its frames can't pass 16,384 (Roo's JUMP was 28 x 592 = 16,576: on its last frame the tornado's vertices wrapped round onto others). `made_write` writes such an animation as keyframes with the frames between blended, as the game's own models are.
 - **A sub with its own order layer (flags 0x02000000, `otz`) is drawn by the game's order; every other model by real depth** (prims.c, `draw_object`). Where one of each meet, as Ballistix's near car and its hero's handles do, their triangles swap as they move: see that as z-fighting.
+- **A made animation can't be longer than 128 frames:** the games name a frame 0x4000 | animation << 7 | frame, so frame 128 is the next animation's frame 0, and one past the last animation draws nothing (the hero vanishes). `made_write` refuses longer ones (`MADE_MAX_FRAMES`); four frames to each of a base's 80 is 320.
 - **`made_write` asks a made model's frame function only for its keyframes** (every `step` frames, and the last); the frames between are blended. So anything worked out per frame (a swing) only needs its keyframes, and a frame function can't add motion between them.
 - **Polar Push gives each hero its model by name** in 108 places (`SetPolarHeroIdle`, `SetPolarHeroWinner`, ...), never from `HeroHooks.HeroModels`; an extra hero is drawn in its own where the game sets its base's (`extra_hero_dbase`, from `prims.c`). Its last arena (mode 0x15) loads two tables: the heroes on foot in `HeroModels`, on bears in `HeroHooks.flag`.
 - **Hero sound blocks are 50 apart but the games use 26:** the 50th id of Koala Kong's, 0x190, is a menu's. The medieval chicken arena's own sounds are ids 1 to 0x11, inside Crash's block.
@@ -503,6 +504,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-04: At the user's word: Roo vanished as he won in Tank, his death should slump down over the tank, and "it said COCO
+  wins". The vanishing: a frame is named 0x4000 | anim << 7 | frame, 7 bits, and his made moves were four frames to each of his
+  base's, so Tank's WIN (320) spilled into the animation number past 127 (traced: 0x4240 to 0x4380, an animation he hasn't got).
+  His tank death and four car moves (IDLE_A 300, TAUNT_A 160, DIE 140, WIN 256) too. The car and tank are a frame to each of the
+  base's now (VEHICLE_PER), and made_write refuses an animation over MADE_MAX_FRAMES (128). The death folds 1.45 at his waist and
+  0.8 at his neck, sunk 25 onto the turret. The win: offset 0 (the announcer's name) is his laugh, offset 6 (the cheer) quiet, and
+  `extra_hero_wins` skips the announcer's "wins!" (traced: laugh at step 0, no wins). Checked by a four-Roo match to its win.
 
 - 2026-11-04: Roo in Tank, at the user's word ("use Dingodile's tank settings"). A fifth kind, KIND_TANK (DB_BonusRooTank,
   entries 1000/1001): the heroes' tank models are them from the waist up at foot scale, the game drawing the tank round them, so

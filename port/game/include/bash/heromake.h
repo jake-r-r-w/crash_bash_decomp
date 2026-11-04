@@ -65,6 +65,9 @@ s32 c1_sprite64(const C1Level *l, const char *object, s32 item, u32 out[64 * 64]
 
 /* --- a made model: its faces, images and animations, written as Crash Bash's (docs/ASSETS.md) --- */
 #define MADE_MAX_IMAGES 32
+/* The most frames an animation can have: the games name a frame 0x4000 | animation << 7 | frame, so a frame past 127 would be another
+ * animation's (or none, and the model isn't drawn). made_write refuses a longer one. */
+#define MADE_MAX_FRAMES 128
 typedef struct {
     s32 v[3];          /* its corners: vertices of each frame */
     s32 image;         /* in the made texture set, -1 untextured */

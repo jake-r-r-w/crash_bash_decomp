@@ -48,12 +48,14 @@ static const Stand RooPogo[] = {
     { NULL, NULL, STRETCH },
 };
 
-/* His sounds for his base's (docs/EXTRA_HEROES.md, A hero's sounds): the announcer still names Rilla Roo, as near a name as there is;
- * he laughs as he taunts and wins, yelps only as he's hurt, gives his jump's call as he jumps and lunges, thuds as he lands, and throws
- * with Crash's throw (his game has none of his own). Picking up a crate, carrying it and pushing he's quiet. */
+/* His sounds for his base's (docs/EXTRA_HEROES.md, A hero's sounds): as he wins he laughs where the announcer would name the winner (the
+ * game has no name for him, and his base's is another hero's: with Coco's place he "won" as Coco), the announcer's "wins!" and his
+ * cheer after it left out, as his laugh goes on over them (extra_hero_wins); he laughs as he taunts, yelps only as he's hurt, gives his
+ * jump's call as he jumps and lunges, thuds as he lands, and throws with Crash's throw (his game has none of his own). Picking up a
+ * crate, carrying it and pushing he's quiet. */
 static const Voice RooVoices[] = {
-    { 0, VOICE_BASE }, { 1, VOICE_LAUGH }, { 2, VOICE_YELP }, { 3, VOICE_YELP }, { 4, VOICE_YELP }, { 5, VOICE_YELP },
-    { 6, VOICE_LAUGH },
+    { 0, VOICE_LAUGH }, { 1, VOICE_LAUGH }, { 2, VOICE_YELP }, { 3, VOICE_YELP }, { 4, VOICE_YELP }, { 5, VOICE_YELP },
+    { 6, VOICE_NONE },
     /* Crate Crush's */
     { 9, VOICE_NONE }, { 10, VOICE_NONE }, { 11, VOICE_JUMP }, { 12, VOICE_THUD }, { 13, VOICE_JUMP }, { 14, VOICE_NONE },
     { 15, VOICE_THROW }, { 16, VOICE_NONE },
@@ -72,8 +74,8 @@ static s32 roo_make(HeroMade *out);
 const HeroDef HeroRoo = {
     "RIPPER ROO", "roo", "SCUS-94900", Kanga,
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
-      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, ROO_SUBFRAMES },
-      { RooTank, "BREATHE", 0x1000, Dingodile, ROO_SUBFRAMES } },
+      { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, 1 },
+      { RooTank, "BREATHE", 0x1000, Dingodile, 1 } }, /* in a car and a tank a frame of his to each of his base's (VEHICLE_PER) */
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -952,6 +954,9 @@ done:
 #define CAR_DROOP 0.5f
 #define CAR_FADE 4.0f
 #define CAR_MAX_TICKS 96 /* his base's longest move (Rilla Roo's IDLE_A is 75 frames) */
+/* In a car or a tank, his model's frames to each of his base's: one, as his moves there are worked out for each frame of theirs (they
+ * don't step as his game's own frames stretched over theirs would), and an animation can't be longer than MADE_MAX_FRAMES */
+#define VEHICLE_PER 1
 
 enum { CAR_BREATHE, CAR_BANK, CAR_IDLE, CAR_TAUNT, CAR_DIE, CAR_WIN, CAR_MOVES };
 static const char *const CarNames[CAR_MOVES] = { "BREATHE", "BANK", "IDLE_A", "TAUNT_A", "DIE", "WIN" };
@@ -1052,7 +1057,7 @@ static void car_pose(const CarCtx *c, s32 a, s32 f, V3 *out) {
     static V3 q[MAX_VERTS];
     const FootCtx *foot = c->foot;
     s32 frames = c->anims[a].frames, k;
-    float g = (float)f / ROO_SUBFRAMES, ticks = (float)frames / ROO_SUBFRAMES, lean = 0, slump = 0, hop = 0, fade, s;
+    float g = (float)f / VEHICLE_PER, ticks = (float)frames / VEHICLE_PER, lean = 0, slump = 0, hop = 0, fade, s;
     V3 waist = { 0, RIDE_WAIST, 0 }, neck = { 0, RIDE_NECK, 0 };
 
     for (k = 0; k < RigVerts; k++) {
@@ -1117,13 +1122,13 @@ static void car_swing(CarCtx *c) {
         if (a == CAR_BANK) {
             continue;
         }
-        ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES;
+        ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER;
         ticks = ticks > CAR_MAX_TICKS ? CAR_MAX_TICKS : ticks;
         for (i = 0; i < ticks; i++) {
             V3 sum = { 0, 0, 0 };
             float w = 0;
 
-            car_pose(c, a, i * ROO_SUBFRAMES, v);
+            car_pose(c, a, i * VEHICLE_PER, v);
             for (k = 0; k < RigVerts; k++) {
                 if (Rest[k].y > FOOT_HEAD_Y) {
                     sum.x += v[k].x;
@@ -1145,8 +1150,8 @@ static void car_swing(CarCtx *c) {
 
 static void car_frame(void *ctx, s32 a, s32 f, V3 *out) {
     const CarCtx *c = ctx;
-    s32 ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES, i0, i1, k;
-    float s = (float)f / ROO_SUBFRAMES, u;
+    s32 ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER, i0, i1, k;
+    float s = (float)f / VEHICLE_PER, u;
     V3 swing;
 
     ticks = ticks > CAR_MAX_TICKS ? CAR_MAX_TICKS : ticks;
@@ -1189,9 +1194,9 @@ static s32 car_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, co
         n = n > 0 ? n : 20;
         n = n > CAR_MAX_TICKS ? CAR_MAX_TICKS : n;
         c->anims[a].name = CarNames[a];
-        c->anims[a].frames = n * ROO_SUBFRAMES;
+        c->anims[a].frames = n * VEHICLE_PER;
         c->anims[a].mesh = 0;
-        c->anims[a].step = ROO_SUBFRAMES;
+        c->anims[a].step = VEHICLE_PER;
     }
     /* the handles, moving as Rilla Roo's do */
     if (hm_game_part(DB_CharsBallRilla, keep_handles, NULL, &c->handles)) {
@@ -1264,7 +1269,8 @@ done:
  * sways as he breathes (TANK_SWAY of his standing animation's); looks about as he waits (IDLE1: his head turning TANK_LOOK each way,
  * laughing TANK_FIDGET of his laugh); with no hands to drop a mine he ducks into the hatch for it and pops up again (MINE: TANK_DUCK
  * down, springing up TANK_POP past where he stood); he's thrown back as he's hit (HIT: TANK_RECOIL at his waist, wobbling upright
- * again); slumps forward over the turret's front as he loses (DIE: TANK_SLUMP at his waist, TANK_DROOP more at his neck); and laughs
+ * again); slumps down over the turret as he loses, folded over its front (DIE: TANK_SLUMP at his waist, TANK_DROOP more at his neck,
+ * TANK_SINK down onto it), his head hanging over the edge; and laughs
  * as he wins, bouncing TANK_HOP in the hatch. His tongue and ears swing. He plays as Dingodile does (his kind's like): the
  * flamethrower and its speed, whoever's place he has (Rilla Roo's has the same). */
 #define TANK_CUT 64.0f
@@ -1277,8 +1283,9 @@ done:
 #define TANK_DUCK 200.0f
 #define TANK_POP 30.0f
 #define TANK_RECOIL 0.5f
-#define TANK_SLUMP 1.0f
-#define TANK_DROOP 0.6f
+#define TANK_SLUMP 1.45f
+#define TANK_DROOP 0.8f
+#define TANK_SINK 25.0f
 #define TANK_HOP 40.0f
 #define TANK_FADE 4.0f
 #define TANK_MAX_TICKS 96
@@ -1299,7 +1306,7 @@ static void tank_pose(const TankCtx *c, s32 a, s32 f, V3 *out) {
     static V3 q[MAX_VERTS];
     const FootCtx *foot = c->foot;
     s32 frames = c->anims[a].frames, k;
-    float g = (float)f / ROO_SUBFRAMES, ticks = (float)frames / ROO_SUBFRAMES, last = ticks > 1 ? ticks - 1 : 1;
+    float g = (float)f / VEHICLE_PER, ticks = (float)frames / VEHICLE_PER, last = ticks > 1 ? ticks - 1 : 1;
     float t = g / last, fade, look = 0, back = 0, slump = 0, lift = 0, s = ROO_UNIT * foot->k;
     V3 waist = { 0, RIDE_WAIST, 0 }, neck = { 0, RIDE_NECK, 0 };
 
@@ -1333,6 +1340,7 @@ static void tank_pose(const TankCtx *c, s32 a, s32 f, V3 *out) {
         break;
     case TANK_DIE:
         slump = hm_smooth(0, last * 0.5f, g);
+        lift = -TANK_SINK * slump;
         break;
     case TANK_WIN:
         car_motion(foot, ROO_LAUGH, g, fade, q);
@@ -1374,13 +1382,13 @@ static void tank_swing(TankCtx *c) {
 
     memset(c->swing, 0, sizeof(c->swing));
     for (a = 0; a < TANK_MOVES; a++) {
-        ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES;
+        ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER;
         ticks = ticks > TANK_MAX_TICKS ? TANK_MAX_TICKS : ticks;
         for (i = 0; i < ticks; i++) {
             V3 sum = { 0, 0, 0 };
             float w = 0;
 
-            tank_pose(c, a, i * ROO_SUBFRAMES, v);
+            tank_pose(c, a, i * VEHICLE_PER, v);
             for (k = 0; k < RigVerts; k++) {
                 if (Rest[k].y > FOOT_HEAD_Y) {
                     sum.x += v[k].x;
@@ -1402,8 +1410,8 @@ static void tank_swing(TankCtx *c) {
 
 static void tank_frame(void *ctx, s32 a, s32 f, V3 *out) {
     const TankCtx *c = ctx;
-    s32 ticks = (c->anims[a].frames + ROO_SUBFRAMES - 1) / ROO_SUBFRAMES, i0, i1, k;
-    float s = (float)f / ROO_SUBFRAMES, u;
+    s32 ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER, i0, i1, k;
+    float s = (float)f / VEHICLE_PER, u;
     V3 swing;
 
     ticks = ticks > TANK_MAX_TICKS ? TANK_MAX_TICKS : ticks;
@@ -1433,9 +1441,9 @@ static s32 tank_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, c
         n = n > 0 ? n : 20;
         n = n > TANK_MAX_TICKS ? TANK_MAX_TICKS : n;
         c->anims[a].name = TankNames[a];
-        c->anims[a].frames = n * ROO_SUBFRAMES;
+        c->anims[a].frames = n * VEHICLE_PER;
         c->anims[a].mesh = 0;
-        c->anims[a].step = ROO_SUBFRAMES;
+        c->anims[a].step = VEHICLE_PER;
     }
     tank_swing(c);
     memset(&mm, 0, sizeof(mm));

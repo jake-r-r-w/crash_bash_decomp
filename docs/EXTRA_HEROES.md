@@ -70,7 +70,7 @@ const HeroDef HeroRoo = {
 - A `HeroKind` for each kind of model: its stand-ins, the stand-in for any animation not listed,
   how much of a frame's lift off the ground is drawn (Roo's own jump is a crate or more high, so
   on foot 0x500 of 0x1000), whose weight and speeds he has (0 for the base's), and how many of his
-  model's frames make one of his game's (on foot 4: below, step 4).
+  model's frames make one of his game's (on foot 4: below, step 4; in a car and a tank 1).
 - His sounds for his base's, the animation his face is drawn from if he had no card, and his
   make.
 
@@ -95,10 +95,10 @@ play them:
 
 | Offset | Where | Rilla Roo's | Roo's |
 |---|---|---|---|
-| 0 | The announcer naming the winner (`UpdateHeroVictory`, step 0) | 0.50 s | hers |
+| 0 | The announcer naming the winner (`UpdateHeroVictory`, step 0) | 0.50 s | laugh (*) |
 | 1 | Taunt (the taunt move's 0x800A) | 0.46 s | laugh |
 | 2-5 | Hit, one at random (`HeroHitSfx`) | 0.18 s | yelp |
-| 6 | Cheer as it wins (`UpdateHeroVictory`, step 2) | 0.43 s | laugh |
+| 6 | Cheer as it wins (`UpdateHeroVictory`, step 2) | 0.43 s | none (*) |
 | 9, 10 | Crate Crush: walking with a crate (`hold_slow`), and the warp rooms' | 0.06 s | none |
 | 11 | Crate Crush: jump | 0.06 s | jump |
 | 12 | Crate Crush: land; a hit's fall (`BashHeroHit`) | 0.05 s | thud |
@@ -111,6 +111,12 @@ play them:
 | 22 | Polar Push (not played by the moves) | 0.11 s | none |
 | 23 | Polar Push: the push | 0.12 s | none |
 | 24 | Polar Push: win | 0.36 s | laugh |
+
+(*) The game has no name for an extra hero, and its base's is another hero's (with Coco's place,
+Roo "won" as Coco). So at a solo win Roo laughs where the name would be, and the announcer's "wins!"
+(0x1B0) and his cheer after it are left out, as his laugh (2.7 s) goes on over them: `extra_hero_wins`
+skips "wins!" for an extra hero whose voice for offset 0 isn't `VOICE_BASE`. All the games' wins
+go through `UpdateHeroVictory`.
 
 His own (`VOICE_`), as his make finds them: the laugh, a yelp (the laugh's first "ha", higher),
 his jump's call, a light landing and a heavy one; and one of the game's own, Crash's throw, as his game has no throw of
@@ -197,8 +203,8 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    each tick and holds at frame 9 or 23 of 28 as he goes one way or the other, smacks his head down
    on the car's side the way he goes (`car_bank`), and he comes back upright as he stops. He sways
    as he breathes, laughs as he fidgets (IDLE_A), taunts and wins (bouncing in his seat), and slumps
-   back as he loses (DIE); each move as long as Rilla Roo's ball model's, four frames to each of
-   hers.
+   back as he loses (DIE); each move as long as Rilla Roo's ball model's, a frame to each of hers
+   (his moves there are worked out for each of her frames, so they don't step).
 8. **In a tank (Tank).** The game draws each hero's tank round it (the hull and its weapon's
    turret, or the swamp's hover tank) and the hero's own model stood in the hatch
    (`models/chars/tank/`, as big as on foot, nothing below the hatch). `tank_make` stands Roo in
@@ -206,7 +212,8 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    isn't drawn (all of it at one point inside, so its faces have no size; at the user's word, as his
    long feet poked out through the hull). Tank's moves: he sways, looks about as he waits (IDLE1),
    ducks into the hatch for a mine and pops up again (MINE: no hands to drop it), is thrown back as
-   he's hit, slumps forward over the turret as he loses, and laughs, bouncing, as he wins.
+   he's hit, slumps down over the turret as he loses, folded over its front with his head hanging
+   over the edge, and laughs, bouncing, as he wins.
 9. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
    health), `c1_sound` his sounds.
 

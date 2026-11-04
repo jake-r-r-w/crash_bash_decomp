@@ -40,9 +40,12 @@ const obj_dbase *extra_hero_dbase(const subengine *sub, const obj_dbase *db);
 /* The hero whose weight and speeds a player's hero `name` has in this game: an extra hero's kind can be another's (Roo's on his bear,
  * Crash's), and anyone else is themselves. */
 s32 extra_hero_like(s32 player, s32 name);
-/* Any sound (PlaySfx): 1 if it's one of an extra hero's base's own (its block: its moves', hits', taunt's and cheers') and the extra
- * hero's own has played instead, or none. The announcer naming it stays the base's. */
+/* Any sound (PlaySfx): 1 if it's one of an extra hero's base's own (its block: its moves', hits', taunt's and cheers', and the announcer
+ * naming it as it wins) and the extra hero's own has played instead, or none. */
 s32 extra_hero_sound(s32 sfx);
+/* Whether the announcer's "wins!" follows the winner's name (UpdateHeroVictory): not for an extra hero with a sound of its own in place
+ * of its name (its voice for the name isn't VOICE_BASE), which goes on over it. */
+s32 extra_hero_wins(s32 player);
 /* A frame as it's drawn: for an extra hero's own subengine, its stand-in's; anything else as it is. */
 s32 extra_hero_frame(const subengine *sub, s32 entity);
 /* A frame's vertices, once morphed (draw_object_model): an extra hero's lower, for less of a hop. */
