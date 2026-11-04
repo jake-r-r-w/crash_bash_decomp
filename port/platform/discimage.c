@@ -321,7 +321,7 @@ static DiscImage *find_volume_in(const char *folder, const char *volume, int dep
 DiscImage *disc_image_find(const char *volume) {
     const char *base = SDL_GetBasePath();
     char *pref = SDL_GetPrefPath("CrashBash", "CrashBash");
-    char places[4][1024];
+    char places[7][1024];
     DiscImage *found = NULL;
     int n = 0, i;
 
@@ -333,8 +333,14 @@ DiscImage *disc_image_find(const char *volume) {
         SDL_free(pref);
     }
     SDL_snprintf(places[n++], sizeof(places[0]), "discs/");
-    /* where a working copy of the repository keeps its discs */
+    /* where a working copy of the repository keeps its discs: from where it's run, or above the program (build/port/windows-clang/),
+       which is where it's run from when it's started from its own folder */
     SDL_snprintf(places[n++], sizeof(places[0]), "disc/");
+    if (base != NULL) {
+        SDL_snprintf(places[n++], sizeof(places[0]), "%s../disc/", base);
+        SDL_snprintf(places[n++], sizeof(places[0]), "%s../../disc/", base);
+        SDL_snprintf(places[n++], sizeof(places[0]), "%s../../../disc/", base);
+    }
     for (i = 0; found == NULL && i < n; i++) {
         found = find_volume_in(places[i], volume, 1);
     }
