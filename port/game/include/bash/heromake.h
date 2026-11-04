@@ -130,6 +130,8 @@ typedef struct {
     s32 nvert;
 } GamePart;
 s32 hm_game_part(s32 bank, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s32 textured), void *ctx, GamePart *out);
+/* The same of its mesh `mesh` (0 the first), for a model whose animations move another (the kegs game's move its second) */
+s32 hm_game_part_of(s32 bank, s32 mesh, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s32 textured), void *ctx, GamePart *out);
 void hm_part_free(GamePart *p);
 /* The model's animation by name, and its frames; -1 if it has none. */
 s32 hm_model_anim(const GamePart *p, const char *name, s32 *frames);

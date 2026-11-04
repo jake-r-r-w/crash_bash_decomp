@@ -11,9 +11,9 @@
  * their own for it), riding a polar bear (Polar Push), bouncing on a pogo stick (Pogo), sat in a car (Ballistix, the game drawing the
  * car round it), stood in a tank's hatch (Tank, the game drawing the tank round it), sat in a race cart (Crash Dash's tracks but
  * the water's, the cart in its model), riding a fish (Splash Dash, Crash Dash's water track, the fish in its model), with a mallet (the
- * mallet game, the mallet in its model), and riding a dino (the gem game, the dino in its model). Each loads where the games load their
- * heroes' of that kind; a kind it has no model of, it plays as on foot. */
-enum { KIND_FOOT, KIND_POLAR, KIND_POGO, KIND_BALL, KIND_TANK, KIND_RACE, KIND_SPLASH, KIND_MALLET, KIND_DINO, NUM_KINDS };
+ * mallet game, the mallet in its model), riding a dino (the gem game, the dino in its model), and with a keg (the kegs game, the keg in
+ * its model). Each loads where the games load their heroes' of that kind; a kind it has no model of, it plays as on foot. */
+enum { KIND_FOOT, KIND_POLAR, KIND_POGO, KIND_BALL, KIND_TANK, KIND_RACE, KIND_SPLASH, KIND_MALLET, KIND_DINO, KIND_KEGS, NUM_KINDS };
 
 /* How a stand-in's frames go as its base's animation plays: the same share of the way through (STRETCH), or at the stand-in's own speed,
  * a frame a tick from when the base's started, round and round (LOOP) or once, its last frame then held (ONCE). */

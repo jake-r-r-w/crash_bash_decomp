@@ -1003,4 +1003,5 @@ obj_dbase HeroModelBank[DB_COUNT] = {
     { &DatIndex[1005], &DatIndex[1004] }, /* DB_BonusRooSplash, PC */
     { &DatIndex[1007], &DatIndex[1006] }, /* DB_BonusRooMallet, PC */
     { &DatIndex[1009], &DatIndex[1008] }, /* DB_BonusRooDino, PC */
+    { &DatIndex[1011], &DatIndex[1010] }, /* DB_BonusRooKegs, PC */
 };

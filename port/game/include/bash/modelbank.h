@@ -336,6 +336,7 @@ enum DbaseIds {
     DB_BonusRooSplash, /* 289, PC: and riding a fish (Splash Dash) */
     DB_BonusRooMallet, /* 290, PC: and with a mallet (the mallet game) */
     DB_BonusRooDino, /* 291, PC: and riding a dino (the gem game) */
+    DB_BonusRooKegs, /* 292, PC: and with a keg (the kegs game) */
     DB_COUNT
 };
 

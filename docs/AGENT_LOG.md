@@ -505,6 +505,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: At the user's word, the kegs game, the keg "on his head or under his chin, whichever looks best": a tenth kind,
+  KIND_KEGS (DB_BonusRooKegs, entries 1010 and 1011). Rilla Roo's keg is her kegs model's second mesh's first strip (all her moves
+  move that mesh; the first, without it, is never drawn), so `hm_game_part_of` takes part of any mesh now. On his head, lying as she
+  carries it, down into his crown, going with his head (`hm_fit`); under his chin it'd cover his neck, chest and tongue. Him as on
+  foot (`mallet_own`), his jump from 13. Every game's kind of hero model is made for him now. The other models are byte-identical
+  (cmp of the dumps). One-Roo and four-Roo matches. Normal play unchanged (playtest same, 14 of 14). Not played by the user yet.
+
 - 2026-11-04: At the user's word, the gem game: a ninth kind, KIND_DINO (DB_BonusRooDino, entries 1008 and 1009). The fish ride
   became a shared mount ride in roo.c (`Mount`, `mount_make`; `RooFish` and `RooDino`), each mount's moves one of his motions
   (`MountMove`, with a new GO_KICKED for the dino's recoil); the fish model is byte-identical to before (cmp of the dumps).

@@ -60,6 +60,11 @@ static const Stand RooMallet[] = {
 static const Stand RooDinoStands[] = {
     { NULL, NULL, STRETCH },
 };
+/* With a keg the kegs game's, and he laughs as he wins at his own pace */
+static const Stand RooKegs[] = {
+    { "WIN", "WIN", LOOP },
+    { NULL, NULL, STRETCH },
+};
 static const Stand RooPogo[] = {
     { "TAZING", "TAZING", LOOP },
     { NULL, NULL, STRETCH },
@@ -92,8 +97,10 @@ const HeroDef HeroRoo = {
     { { RooStands, "BREATHE", ROO_KEEP_LIFT, 0, ROO_SUBFRAMES }, { RooRides, "BREATHE", 0x1000, Crash, 1 },
       { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, 1 },
       { RooTank, "BREATHE", 0x1000, Dingodile, 1 }, { RooRace, "BREATHE", 0x1000, 0, 1 }, { RooSplash, "SWIM", 0x1000, 0, 1 },
-      { RooMallet, "BREATHE", ROO_KEEP_LIFT, 0, 1 }, { RooDinoStands, "BREATHE", 0x1000, 0, 1 } },
-    /* in a car, a tank, a race cart, on a fish, with a mallet and on a dino a frame of his to each of his base's (VEHICLE_PER) */
+      { RooMallet, "BREATHE", ROO_KEEP_LIFT, 0, 1 }, { RooDinoStands, "BREATHE", 0x1000, 0, 1 },
+      { RooKegs, "BREATHE", ROO_KEEP_LIFT, 0, 1 } },
+    /* in a car, a tank, a race cart, on a fish, with a mallet, on a dino and with a keg a frame of his to each of his base's
+     * (VEHICLE_PER) */
     RooVoices, "BREATHE", 0, roo_make,
 };
 
@@ -114,6 +121,7 @@ static const Anim RooAnims[] = {
     { "RS1nV", "SPIN", 15 },
 };
 #define ROO_ANIMS 6
+#define ROO_JUMP 0
 #define ROO_REST 1  /* the one he stands in: his height and his colours' light are from its first frame */
 #define ROO_LAUGH 2
 #define ROO_DIE 3
@@ -2686,6 +2694,250 @@ done:
     return ok;
 }
 
+/* --- with a keg (the kegs game) ---
+ * The kegs game's heroes carry a keg under an arm all game, each in its own model with it (models\chars\kegs\: the hero with it is the
+ * model's second mesh, which all its moves move, BREATHE, MEDIUM as it runs, JUMP up, falling and landing, HIT and WIN; the first, the
+ * hero without it, is never drawn). Roo's model has Rilla Roo's keg, her second mesh's first KEG_STRIPS strip. With no hands he
+ * balances it on his head (at the user's word, that or under his chin, whichever looked best: as big as it is, under his chin it
+ * would cover his neck, chest and tongue), lying across as she carries it, KEG_SCALE of its size, its bottom KEG_SINK down into the
+ * top of his head (his head's highest vertices but his ears) over his crown (the middle of what of it is within KEG_CROWN of the top),
+ * and it goes with his head (a fit of his head's vertices from standing to the frame). He's as on foot: he stands as he breathes, hops
+ * as he runs, jumps as he does on foot (his jump from KEG_JUMP_FROM, its crouch left out, to its end, as his base's goes up, falls and
+ * lands), falls over as he's hit, and laughs as he wins (at his own pace, round and round). His tongue and ears swing. */
+#define KEG_STRIPS 1
+#define KEG_MESH 1
+#define KEG_SCALE 0.8f
+#define KEG_SINK 20.0f
+#define KEG_CROWN 40.0f
+#define KEG_JUMP_FROM 13
+#define KEG_MAX_TICKS 96
+#define KEG_MAX_HEAD 512
+
+enum { KEG_BREATHE, KEG_RUN, KEG_JUMP, KEG_HIT, KEG_WIN, KEG_MOVES };
+static const char *const KegNames[KEG_MOVES] = { "BREATHE", "MEDIUM", "JUMP", "HIT", "WIN" };
+static const u8 KegLoops[KEG_MOVES] = { 1, 1, 0, 0, 1 };
+
+typedef struct {
+    const FootCtx *foot;
+    MadeAnim anims[KEG_MOVES];
+    V3 swing[KEG_MOVES][KEG_MAX_TICKS];
+    GamePart keg;
+    V3 *held;               /* each of its vertices as he holds it, standing */
+    V3 stand[MAX_VERTS];    /* his vertices standing */
+    s16 head[KEG_MAX_HEAD]; /* his head's vertices (but what swings) */
+    s32 nhead;
+} KegCtx;
+
+static KegCtx Keg;
+
+static s32 keep_keg(void *ctx, const V3 *rest, s32 n, s32 textured) {
+    s32 *strips = ctx;
+
+    (void)rest;
+    (void)n;
+    (void)textured;
+    return (*strips)++ < KEG_STRIPS;
+}
+
+/* Frame f of move a, but for the swing and the keg: his vertices in Crash Bash's units, on foot */
+static void keg_pose(const KegCtx *c, s32 a, s32 f, V3 *out) {
+    const FootCtx *foot = c->foot;
+    s32 frames = c->anims[a].frames, n;
+    float g = (float)f / VEHICLE_PER, ticks = (float)frames / VEHICLE_PER, last = ticks > 1 ? ticks - 1 : 1, from;
+
+    switch (a) {
+    case KEG_BREATHE:
+        mallet_own(foot, ROO_REST, g * anim_frames(&foot->anims[ROO_REST], ROO_REST) / (ticks > 0 ? ticks : 1), 1, out);
+        break;
+    case KEG_RUN:
+        mallet_own(foot, ROO_WALK, g * anim_frames(&foot->anims[ROO_WALK], ROO_WALK) / (ticks > 0 ? ticks : 1), 1, out);
+        break;
+    case KEG_JUMP:
+        n = anim_frames(&foot->anims[ROO_JUMP], ROO_JUMP);
+        from = KEG_JUMP_FROM < n ? (float)KEG_JUMP_FROM : 0;
+        mallet_own(foot, ROO_JUMP, from + (n - 1 - from) * g / last, 0, out);
+        break;
+    case KEG_HIT:
+        mallet_own(foot, ROO_DIE, g, 0, out);
+        break;
+    default:
+        mallet_own(foot, ROO_LAUGH, g, 1, out);
+        break;
+    }
+}
+
+/* The swing of his tongue and ears through each move, a tick at a time, from his head's path */
+static void keg_swing(KegCtx *c) {
+    static V3 v[MAX_VERTS], path[KEG_MAX_TICKS];
+    s32 a, i, k, ticks;
+
+    memset(c->swing, 0, sizeof(c->swing));
+    for (a = 0; a < KEG_MOVES; a++) {
+        ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER;
+        ticks = ticks > KEG_MAX_TICKS ? KEG_MAX_TICKS : ticks;
+        for (i = 0; i < ticks; i++) {
+            V3 sum = { 0, 0, 0 };
+            float w = 0;
+
+            keg_pose(c, a, i * VEHICLE_PER, v);
+            for (k = 0; k < RigVerts; k++) {
+                if (Rest[k].y > FOOT_HEAD_Y) {
+                    sum.x += v[k].x;
+                    sum.y += v[k].y;
+                    sum.z += v[k].z;
+                    w++;
+                }
+            }
+            if (w > 0) {
+                sum.x /= w;
+                sum.y /= w;
+                sum.z /= w;
+            }
+            path[i] = sum;
+        }
+        hm_flop(path, ticks, KegLoops[a], &RooSwing, c->swing[a]);
+    }
+}
+
+static void keg_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    const KegCtx *c = ctx;
+    s32 ticks = (c->anims[a].frames + VEHICLE_PER - 1) / VEHICLE_PER, i0, i1, k;
+    float s = (float)f / VEHICLE_PER, u;
+    V3 swing;
+    Moved head;
+
+    ticks = ticks > KEG_MAX_TICKS ? KEG_MAX_TICKS : ticks;
+    keg_pose(c, a, f, out);
+    i0 = (s32)floorf(s);
+    u = s - i0;
+    i0 = i0 < ticks ? i0 : ticks - 1;
+    i1 = i0 + 1 < ticks ? i0 + 1 : KegLoops[a] ? 0 : i0;
+    swing = hm_mix(c->swing[a][i0], c->swing[a][i1], u);
+    for (k = 0; k < RigVerts; k++) {
+        out[k].x += swing.x * FlopShare[k];
+        out[k].y += swing.y * FlopShare[k];
+        out[k].z += swing.z * FlopShare[k];
+    }
+    /* the keg, on his head as it's gone */
+    hm_fit(c->stand, out, c->head, c->nhead, &head);
+    for (k = 0; k < c->keg.nvert; k++) {
+        out[RigVerts + k] = hm_moved(&head, c->held[k]);
+    }
+}
+
+/* His kegs model: his own faces (own_tris of them) and images, and the keg; the kegs game's moves as long as Rilla Roo's, but his WIN,
+ * his laugh's */
+static s32 keg_make(const FootCtx *foot, const MadeFace *faces, s32 own_tris, const MadeImage *images, s32 nimage, HeroMade *out) {
+    KegCtx *c = &Keg;
+    MadeFace *all = NULL;
+    MadeImage *imgs = NULL;
+    MadeModel mm;
+    V3 *at = NULL, mid = { 0, 0, 0 }, crown = { 0, 0, 0 };
+    s32 a, n, k, j, ok = 0, breathe, strips = 0;
+    float low = -1e30f, top = 1e30f;
+
+    memset(c, 0, sizeof(*c));
+    c->foot = foot;
+    for (a = 0; a < KEG_MOVES; a++) {
+        n = a == KEG_WIN ? anim_frames(&foot->anims[ROO_LAUGH], ROO_LAUGH) : hm_bank_frames(DB_CharsKegsRilla, KegNames[a]);
+        n = n > 0 ? n : 20;
+        n = n > KEG_MAX_TICKS ? KEG_MAX_TICKS : n;
+        c->anims[a].name = KegNames[a];
+        c->anims[a].frames = n * VEHICLE_PER;
+        c->anims[a].mesh = 0;
+        c->anims[a].step = VEHICLE_PER;
+    }
+    if (!hm_game_part_of(DB_CharsKegsRilla, KEG_MESH, keep_keg, &strips, &c->keg)
+        || (breathe = hm_model_anim(&c->keg, "BREATHE", NULL)) < 0 || (at = malloc(sizeof(V3) * (size_t)c->keg.corners)) == NULL
+        || (c->held = malloc(sizeof(V3) * (size_t)c->keg.nvert)) == NULL || !hm_model_at(&c->keg, breathe, 0, at)) {
+        printf("bonus: Ripper Roo has no keg (Rilla Roo's)\n");
+        goto done;
+    }
+    /* its middle and its bottom, as she carries it */
+    for (k = 0; k < c->keg.nvert; k++) {
+        V3 p = at[c->keg.corner_of[k]];
+
+        mid.x += p.x / c->keg.nvert;
+        mid.y += p.y / c->keg.nvert;
+        mid.z += p.z / c->keg.nvert;
+        low = p.y > low ? p.y : low;
+    }
+    /* him standing, his head, and his crown */
+    mallet_own(foot, ROO_REST, 0, 1, c->stand);
+    for (k = 0; k < RigVerts; k++) {
+        if (Rest[k].y > FOOT_HEAD_Y && FlopShare[k] <= 0) {
+            if (c->nhead < KEG_MAX_HEAD) {
+                c->head[c->nhead++] = (s16)k;
+            }
+            top = c->stand[k].y < top ? c->stand[k].y : top;
+        }
+    }
+    for (k = 0, n = 0; k < RigVerts; k++) {
+        if (Rest[k].y > FOOT_HEAD_Y && FlopShare[k] <= 0 && c->stand[k].y < top + KEG_CROWN) {
+            crown.x += c->stand[k].x;
+            crown.z += c->stand[k].z;
+            n++;
+        }
+    }
+    if (n == 0 || c->nhead < 3) {
+        printf("bonus: Ripper Roo can't carry a keg (%d of his head)\n", c->nhead);
+        goto done;
+    }
+    crown.x /= n;
+    crown.z /= n;
+    crown.y = top + KEG_SINK - (low - mid.y) * KEG_SCALE;
+    /* the keg as he holds it, standing: lying across on his crown */
+    for (k = 0; k < c->keg.nvert; k++) {
+        V3 p = at[c->keg.corner_of[k]];
+
+        c->held[k].x = crown.x + (p.x - mid.x) * KEG_SCALE;
+        c->held[k].y = crown.y + (p.y - mid.y) * KEG_SCALE;
+        c->held[k].z = crown.z + (p.z - mid.z) * KEG_SCALE;
+    }
+    keg_swing(c);
+    all = malloc(sizeof(MadeFace) * (size_t)(own_tris + c->keg.nfaces));
+    imgs = malloc(sizeof(MadeImage) * (size_t)(nimage + c->keg.nimages + 1));
+    if (all == NULL || imgs == NULL) {
+        goto done;
+    }
+    memcpy(all, faces, sizeof(MadeFace) * (size_t)own_tris);
+    for (k = 0; k < c->keg.nfaces; k++) {
+        MadeFace *f = &all[own_tris + k];
+
+        *f = c->keg.faces[k];
+        for (j = 0; j < 3; j++) {
+            f->v[j] += RigVerts;
+        }
+        f->image = f->image >= 0 ? f->image + nimage : -1;
+    }
+    memcpy(imgs, images, sizeof(MadeImage) * (size_t)nimage);
+    memcpy(imgs + nimage, c->keg.images, sizeof(MadeImage) * (size_t)c->keg.nimages);
+    memset(&mm, 0, sizeof(mm));
+    mm.faces = all;
+    mm.nfaces = own_tris + c->keg.nfaces;
+    mm.meshes = 1;
+    mm.images = imgs;
+    mm.nimages = nimage + c->keg.nimages;
+    mm.anims = c->anims;
+    mm.nanims = KEG_MOVES;
+    mm.nvert = RigVerts + c->keg.nvert;
+    mm.rest_anim = KEG_BREATHE;
+    mm.frame = keg_frame;
+    mm.ctx = c;
+    ok = made_write(&mm, &out->tex[KIND_KEGS], &out->tex_size[KIND_KEGS], &out->mdl[KIND_KEGS], &out->mdl_size[KIND_KEGS]);
+done:
+    if (!ok) {
+        printf("bonus: Ripper Roo can't be given a keg\n");
+    }
+    free(all);
+    free(imgs);
+    free(at);
+    free(c->held);
+    c->held = NULL;
+    hm_part_free(&c->keg);
+    return ok;
+}
+
 /* His sounds, which his boss fight's object (RRooC) plays: sound entries in sound pages, at 11025 Hz. His laugh (CrznA), his jump's
  * call (rjpnA), and his landings, light (ld30A) and heavy (ld00A). His game has no hurt voice for him, so his yelp is his laugh's first
  * "ha", its first ROO_YELP_BYTES (0.22 s, where it falls quiet), a little higher. */
@@ -2905,8 +3157,8 @@ static s32 roo_make(HeroMade *out) {
             printf("bonus: Ripper Roo has no polar bear to ride\n");
         }
     }
-    /* on his cane (Pogo), in a car (Ballistix), in a tank, in a race cart (Crash Dash), on a fish (Splash Dash), with a mallet and on a
-     * dino (the gem game): his own faces, as riding */
+    /* on his cane (Pogo), in a car (Ballistix), in a tank, in a race cart (Crash Dash), on a fish (Splash Dash), with a mallet, on a dino
+     * (the gem game) and with a keg: his own faces, as riding */
     if (RigVerts > 0) {
         pogo_make(&foot, faces, own_tris, images, nimage, out);
         car_make(&foot, faces, own_tris, images, nimage, out);
@@ -2915,6 +3167,7 @@ static s32 roo_make(HeroMade *out) {
         mount_make(&RooFish, &foot, faces, own_tris, images, nimage, out);
         mallet_make(&foot, faces, own_tris, images, nimage, out);
         mount_make(&RooDino, &foot, faces, own_tris, images, nimage, out);
+        keg_make(&foot, faces, own_tris, images, nimage, out);
     }
     if (c1_sprite64(&level, "ShadC", 5, RooCard)) {
         out->card = RooCard;
@@ -2922,12 +3175,13 @@ static s32 roo_make(HeroMade *out) {
         out->card_head = CARD_HEAD;
     }
     make_sounds(&level, out);
-    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s%s%s%s%s%s\n", ntri, nimage,
+    printf("bonus: Ripper Roo from Crash Bandicoot, %d triangles, %d textures, %d bytes%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", ntri, nimage,
            out->mdl_size[KIND_FOOT], out->mdl[KIND_POLAR] != NULL ? ", riding a bear" : "",
            out->mdl[KIND_POGO] != NULL ? ", on his cane" : "", out->mdl[KIND_BALL] != NULL ? ", in a car" : "",
            out->mdl[KIND_TANK] != NULL ? ", in a tank" : "", out->mdl[KIND_RACE] != NULL ? ", in a race cart" : "",
            out->mdl[KIND_SPLASH] != NULL ? ", riding a fish" : "", out->mdl[KIND_MALLET] != NULL ? ", with a mallet" : "",
-           out->mdl[KIND_DINO] != NULL ? ", riding a dino" : "", out->card != NULL ? ", his hero card" : "",
+           out->mdl[KIND_DINO] != NULL ? ", riding a dino" : "", out->mdl[KIND_KEGS] != NULL ? ", with a keg" : "",
+           out->card != NULL ? ", his hero card" : "",
            out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_THUD].adpcm != NULL ? ", his landing" : "",
            out->sound[VOICE_THROW].adpcm != NULL ? ", Crash's throw" : "", RooName.adpcm != NULL ? ", named Rilla Roo" : "");
     ok = 1;

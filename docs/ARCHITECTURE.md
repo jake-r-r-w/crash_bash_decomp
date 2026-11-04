@@ -1014,7 +1014,15 @@ signature alone is not enough.
   the winner is chosen four ways as Bonk's. The hero states are `HEROFunc`
   pairs 113..123 (`HEROmode_ChaseIdle` .. `ChaseLand`, actions 0x71..0x7B);
   the 96 sequence slots are each character's `hero_seq_keg*`, the eight
-  `kegdead` slots one shared sequence (`CHASE_seq_kegdead`).
+  `kegdead` slots one shared sequence (`CHASE_seq_kegdead`). The heroes' models
+  (`models\chars\kegs\`) are each the hero with a keg under an arm all game,
+  if it has one: Rilla Roo's and Crash's in a second mesh that all their moves
+  move (the first, without it, never drawn: nothing sets the draw's 0x400000
+  mesh override here), its keg that mesh's first strip; Cortex's in his only
+  mesh; Tiny's has none. The kegs that roll about and are picked up are
+  objects of their own (`DB_KegObjects`, `ChasePickup`). Five moves by name:
+  BREATHE, MEDIUM, JUMP (`kegjump`, `kegfall` and `kegland` its frames up,
+  falling and down), HIT and WIN.
 - **Bonk** (bonk, the mallet game; named 2026-10-26). Mode 0x1D
   (`LEV_BONK`); one engine world record (0x010E) points at `BONK_PREMAP`,
   `bonk_shell_info` and `BONKSetUp`, the per-mode table at `file_group_BONK`
