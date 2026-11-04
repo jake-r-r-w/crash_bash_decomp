@@ -168,10 +168,12 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    throws him high, and stays below as he flies. `hm_game_part` takes part of one of the game's own
    models from the player's archive (the strips a `keep` picks, as made faces and images, and
    `hm_model_at` for where its corners are in any frame): `keep_cane` picks the boss's cane, his
-   strips within 16 of his middle across and below 400. `pogo_make` puts Roo on it, going up and down
-   as the boss does (the middle of the boss's body against his bounce's bottom): stood as he lands,
-   his legs thrown out in the air as in his jump's splits, his tongue and ears swinging (`hm_flop`,
-   a tick at a time). `PogoMoves` says what each of Pogo's moves is: the boss's bounce; the boss's
+   strips within 16 of his middle across and below 400. `pogo_make` puts Roo on it: his feet on the
+   cane's top as it squeezes and shoots out (`perched`: his long splayed feet turned in about the
+   ankles and his legs drawn together, so they go side by side over the crook), and once the boss goes
+   higher than it (the middle of the boss's body against his bounce's bottom), flying above it, his
+   legs thrown out as in his jump's splits and in again to land on it; his tongue and ears swinging
+   (`hm_flop`, a tick at a time). `PogoMoves` says what each of Pogo's moves is: the boss's bounce; the boss's
    hop, eased from and back to his bounce's bottom as the base's hop lands on it; dazed, a stagger
    through his knocked-over animation's frames before he falls, on the squeezed cane; a laugh
    through a bounce as he wins; and the boss's attack, the cane flipped up and fired, as he tazes.

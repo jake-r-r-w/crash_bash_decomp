@@ -594,8 +594,9 @@ static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
  * squeezed short between his feet as he lands, shooting out to throw him high, and left below as he flies, to land on again. Roo's
  * pogo model is that cane, moving as it does there (the boss model's strips all within CANE_HALF of its middle across and below
  * CANE_TOP, as it rests), and Roo on it, going up and down as the boss does (the middle of the boss's body, his corners above BOSS_BODY
- * as he rests, from where it is at his bounce's bottom, his BREATHE's first frame): stood as he lands, his legs thrown out in the air as
- * in his own jump's splits (LegsOut, from POGO_OPEN_FROM up, all the way from POGO_OPEN_FULL), his tongue and ears swinging. Pogo's
+ * as he rests, from where it is at his bounce's bottom, his BREATHE's first frame): his feet on the cane's top (perched) as it squeezes
+ * and shoots out, and once the boss goes higher than it, flying above it, his legs thrown out as in his own jump's splits (LegsOut,
+ * from POGO_OPEN_FROM above the cane, all the way from POGO_OPEN_FULL) and in again to land on it; his tongue and ears swinging. Pogo's
  * moves (PogoMoves): his bounce, the boss's; his hop to the next square, the boss's, eased from and back to his bounce's bottom over
  * POGO_EASE of it at each end, as his base's hop lands on it; dazed, he staggers through his knocked-over animation's frames before he
  * falls (to POGO_DAZE_LAST), stood on the squeezed cane; as he wins, he laughs through a bounce; and his tazing is the boss's attack,
@@ -603,8 +604,10 @@ static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
 #define CANE_HALF 16.0f
 #define CANE_TOP -400.0f
 #define BOSS_BODY -300.0f
-#define POGO_OPEN_FROM 120.0f
-#define POGO_OPEN_FULL 420.0f
+#define POGO_OPEN_FROM 15.0f
+#define POGO_OPEN_FULL 140.0f
+#define POGO_FOOT_TURN 1.0f
+#define POGO_ANKLE_X 8.0f
 #define POGO_EASE 0.25f
 #define POGO_DAZE_LAST 10
 #define POGO_MAX_TICKS 40
@@ -667,13 +670,44 @@ static float boss_body_y(const PogoCtx *c, const V3 *corners) {
     return n > 0 ? sum / n : 0;
 }
 
+/* How high the cane's top is off the floor */
+static float cane_top(const PogoCtx *c, const V3 *corners) {
+    float top = 0;
+    s32 k;
+
+    for (k = 0; k < c->cane.nvert; k++) {
+        float y = -corners[c->cane.corner_of[k]].y;
+
+        top = k == 0 || y > top ? y : top;
+    }
+    return top;
+}
+
+/* A vertex of his (in his rig) stood on the cane, `amount` of the way: each foot turned in about its ankle toward forward
+ * (POGO_FOOT_TURN) and each leg drawn in, more of it further down, till the ankles are POGO_ANKLE_X across, so his long feet,
+ * splayed out as he stands, go side by side over the crook */
+static V3 perched(V3 q, s32 k, float amount) {
+    if (LegShare[k] > 0 && amount > 0) {
+        float side = Rest[k].x < 0 ? -1.0f : 1.0f, foot = hm_smooth(FOOT_Y + 4, FOOT_Y - 2, Rest[k].y) * amount;
+        float d = (HIP_Y - Rest[k].y) / (HIP_Y - SEAT_ANKLE_Y);
+        V3 ankle = { side * SEAT_ANKLE_X, 0, 0 };
+
+        d = d < 0 ? 0 : d > 1 ? 1 : d;
+        if (foot > 0) {
+            q = hm_turn_y(q, ankle, -side * POGO_FOOT_TURN * foot);
+        }
+        q.x -= side * (SEAT_ANKLE_X - POGO_ANKLE_X) * d * LegShare[k] * amount;
+    }
+    return q;
+}
+
 /* Frame f of move a, but for the swing: Roo (RigVerts) and the boss's corners */
 static void pogo_pose(const PogoCtx *c, s32 a, s32 f, V3 *roo, V3 *corners) {
-    static V3 fv[MAX_VERTS], bottom[POGO_MAX_CORNERS];
+    static V3 fv[MAX_VERTS], posed[MAX_VERTS], bottom[POGO_MAX_CORNERS];
     const PogoMove *m = &PogoMoves[a];
     const FootCtx *foot = c->foot;
     s32 frames = c->anims[a].frames, k, n = 0, g;
-    float phase, t, lift, ease = 0;
+    float phase, t, lift, ease = 0, top, feet, open, sole;
 
     if (m->own_speed) {
         t = m->from + (float)f / ROO_SUBFRAMES;
@@ -697,6 +731,10 @@ static void pogo_pose(const PogoCtx *c, s32 a, s32 f, V3 *roo, V3 *corners) {
             lift *= 1 - ease;
         }
     }
+    /* his feet on the cane's top, or as high as the boss goes once he's above it */
+    top = cane_top(c, corners);
+    feet = lift > top ? lift : top;
+    open = hm_smooth(POGO_OPEN_FROM, POGO_OPEN_FULL, feet - top);
     switch (m->pose) {
     case POSE_LAUGH:
         g = f / ROO_SUBFRAMES % (foot->anims[ROO_LAUGH].count > 0 ? foot->anims[ROO_LAUGH].count : 1);
@@ -706,21 +744,23 @@ static void pogo_pose(const PogoCtx *c, s32 a, s32 f, V3 *roo, V3 *corners) {
         g = (s32)(phase * POGO_DAZE_LAST + 0.5f);
         n = anim_verts(&foot->anims[ROO_DIE], ROO_DIE, g, foot->scale, fv, NULL);
         break;
-    default: {
-        float open = hm_smooth(POGO_OPEN_FROM, POGO_OPEN_FULL, lift);
-
-        for (k = 0; k < RigVerts; k++) {
-            fv[k] = from_rig(hm_mix(Rest[k], PogoOut[k], open));
-        }
-        n = RigVerts;
+    default:
+        n = 0;
     }
+    /* his soles where he stands, or a frame of his own game's own lowest: either way on the cane's top as he's on it */
+    sole = foot->ground;
+    for (k = 0; k < RigVerts; k++) {
+        if (n > 0) {
+            posed[k] = from_rig(perched(to_rig(fv[k < n ? k : 0]), k, 1));
+            sole = k == 0 || posed[k].y * foot->k > sole ? posed[k].y * foot->k : sole;
+        } else {
+            posed[k] = from_rig(perched(hm_mix(Rest[k], PogoOut[k], open), k, 1 - open));
+        }
     }
     for (k = 0; k < RigVerts; k++) {
-        const V3 *p = &fv[k < n ? k : 0];
-
-        roo[k].x = p->x * foot->k;
-        roo[k].y = p->y * foot->k - foot->ground - lift;
-        roo[k].z = p->z * foot->k;
+        roo[k].x = posed[k].x * foot->k;
+        roo[k].y = posed[k].y * foot->k - sole - feet;
+        roo[k].z = posed[k].z * foot->k;
     }
 }
 

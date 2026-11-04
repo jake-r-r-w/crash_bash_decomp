@@ -503,6 +503,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-04: The user approved Roo on his cane (LGTM) but for his feet: the cane squeezed between his legs at the bottom of
+  each bounce ("bouncing on a bad place"). His soles are on the cane's top now whenever the boss is below it (`feet = max(lift,
+  top)`), perched (`perched`: feet turned in 1 radian about the ankles, legs drawn in to ankles 8 across, as his feet splay
+  out wide), the splits only above the cane; his laugh and stagger frames stood on it by their own lowest point. Tried first
+  in scratch/perch_look.mjs on the dumped model; checked by renders of all five moves and Pogo shots. Not played yet.
+
 - 2026-11-04: At the user's word ("his unique stick he bounces on when he is the boss"), Roo bounces on a cane in Pogo. Crash
   Bash's own Pogo boss Roo (DB_Roo, roo2.mdl: top hat, ATTACK/BREATHE/JUMP) bounces on a cane that telescopes. A third kind,
   KIND_POGO (DB_BonusRooPogo, entries 996/997): the cane from the player's archive (`hm_game_part`, shared: a model's strips a
