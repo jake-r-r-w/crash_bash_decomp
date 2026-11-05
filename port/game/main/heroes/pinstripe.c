@@ -6,12 +6,13 @@
  * (PiE1-9V), stepping and diving aside (PiL1-6V, PiR1-6V), thrown back as he's hit (PiF1V, PiF4V), looking about (PiF2V, PiF3V) and
  * throwing the gun up (PiA1-3V). His upper body hardly bends in them: his arms stay on the gun and turn with his chest.
  *
- * At the user's word he has the gun only as he attacks. The rest of the time it's away, its faces folded into his right hand, and his
- * arms are his own: a rig of his (each arm two bones, each leg two and its shoe) hangs them at his sides as he stands, swings them as
- * he walks and puts them up for a crate. His walk, jump, holding and throwing a crate, and his breathing are made by it. His attack
- * is his stride's fire (PiG3V), the gun coming out into his hands and away again, its muzzle flashing; he's thrown back as he's hit
- * (PiF1V) and knocked down (PiF4V), laughs crouched as he taunts (PiG2V, his arms down), and throws his fist up as he wins (PiA2V).
- * His sounds are his boss fight's: his laugh and his tommy gun. His hero card is the face that fight shows by his health. */
+ * At the user's word he has the gun only as he attacks. The rest of the time it's away, its faces folded into his hands (its front grip
+ * into his left), and his arms are his own: a rig of his (each arm two bones, each leg two and its shoe) hangs them at his sides as he
+ * stands, swings them as he walks and puts them up for a crate. His walk, jump, holding and throwing a crate, and his breathing are
+ * made by it. His attack is his stride's fire (PiG3V), the gun coming out into his hands and away again, its muzzle flashing; he's
+ * thrown back as he's hit (PiF1V) and knocked down (PiF4V), laughs crouched as he taunts (PiG2V, his arms down), and throws his fist up
+ * as he wins (PiA2V), each of those at his still's size (PIN_SOURCE_SCALE). His sounds are his boss fight's: his laugh and his tommy
+ * gun. His hero card is the face that fight shows by his health. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +26,12 @@
 /* --- how he plays ---
  * His base is Cortex, if nobody else is playing him: a villain as he is, and about his size. On foot he walks where the others run,
  * slide or swim, holds a crate up as they do, fires his gun where they attack or kick, laughs where they taunt, throws his fist up as
- * he wins, is thrown back as he's hit and knocked down where they die. */
+ * he wins, is thrown back as he's hit and knocked down where they die.
+ *
+ * Whoever's place he has (Cortex's, or another's if someone has Cortex), its moves are its own scripts (extraheroes.c, SeqNames), so
+ * some go by them: his attack's all of any hero's (Crash's and Coco's spin is a still mesh, the others' animations of their own), and
+ * so are his hit, taunt, picking up a crate and throwing it; his jump's three parts are the three sequences a jump is (up, falling and
+ * landing, his JUMP split as Cortex's is), so he lands as a hero does after a throw (Crash, Coco) and doesn't jump again. */
 static const Stand PinStands[] = {
     { "MEDIUM", "WALK" }, { "RUN", "WALK" }, { "SKATE", "WALK" }, { "SLIDE", "WALK" }, { "SWIM", "WALK" }, { "FALL", "WALK" },
     { "PUSH", "WALK" }, { "TRANS", "WALK" }, { "BARGE", "WALK" },
@@ -34,6 +40,9 @@ static const Stand PinStands[] = {
     { "WIN", "WIN", LOOP }, { "WIN2", "WIN", LOOP },
     { "TAUNT_A", "TAUNT" }, { "MINE", "TAUNT" }, { "TAZING", "TAUNT" }, { "LIGHT", "TAUNT" },
     { "RECOIL", "HIT" }, { "FLIP", "HIT", ONCE }, { "DAZED", "DIE", ONCE },
+    { "@JUMP", "JUMP:0-7", ONCE }, { "@FALL", "JUMP:8-12", ONCE }, { "@LAND", "JUMP:13-19", ONCE },
+    { "@ATTACK", "ATTACK" }, { "@HIT", "HIT" }, { "@TAUNT_A", "TAUNT" },
+    { "@BA_PICKUP", "PICKUP" }, { "@BA_HOLD_THROW", "THROW" }, { "@PA_PICKUP", "PICKUP" }, { "@PA_HOLD_THROW", "THROW" },
     { NULL, NULL, STRETCH },
 };
 
@@ -55,13 +64,18 @@ static const Voice PinVoices[] = {
 
 static s32 pin_make(HeroMade *out);
 
+/* His model's frames to each of his base's, blended between (as Roo's, roo.c): his moves are as long as Cortex's, and another hero's
+ * longer ones would otherwise hold some of his frames for two of theirs, stepping (at 120 frames a second, slowly) */
+#define PIN_SUBFRAMES 4
+
 /* Each kind of game plays as on foot until he has a model of it */
 const HeroDef HeroPinstripe = {
     "PINSTRIPE", "pinstripe", "SCUS-94900", Cortex,
-    { { PinStands, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, 1 },
-      { PinStands, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, 1 },
-      { PinStands, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, 1 },
-      { PinStands, "BREATHE", 0x1000, 0, 1 } },
+    { { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
+      { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
+      { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
+      { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
+      { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES } },
     PinVoices, "BREATHE", 0, pin_make,
 };
 
@@ -71,12 +85,15 @@ const HeroDef HeroPinstripe = {
 #define PIN_HEIGHT 640.0f /* standing, in Crash Bash's units: a little taller than Roo (620), as the user found him too small at Cortex's
                            * height (540); Crate Crush's heroes stand 452 (Crash) to 748 (Kong), most about 650 */
 #define PIN_UNIT 4096.0f  /* c1_frame_verts' units to his game's own */
+#define PIN_SOURCE_SCALE 1.2f /* his boss fight's moves against its still (PinSV), which his rig is made from: every rigid piece of him
+                               * (his shoes, his hands, the gun) is 1.2 times as big in each of them, and they're drawn at its size */
 #define PIN_PI 3.14159265f
 #define MAX_TRIS 1024
 #define MAX_VERTS 640     /* his 441 and the gun's own copies */
 
-/* The animations of his his model has, each from one of his game's (src, its frames resampled to the made one's) or made by the rig
- * from his standing pose (src NULL); as long as his base's of the same name (hm_bank_frames of Cortex's, `base`), or `frames` */
+/* The animations his model has, each from one of his game's (src, its frames resampled to the made one's) or made by the rig from his
+ * standing pose (src NULL); as long as his base's of the same name (hm_bank_frames of Cortex's, `base`) or `frames` ticks, each tick
+ * PIN_SUBFRAMES of his frames (and no more than MADE_MAX_FRAMES) */
 typedef struct {
     const char *name, *src, *base;
     s32 frames;
@@ -92,39 +109,39 @@ static const Anim PinAnims[PIN_ANIMS] = {
 /* --- his rig ---
  * Worked in his game's axes and units, y up and him facing +z (c1_frame_verts' over PIN_UNIT, y and z the other way round), from his
  * standing pose. His model is seven pieces (triangles joined by their corners): his body (with his arms and head), the gun with his
- * right hand on it, his legs, his left hand, his shoes and the gun's muzzle flash. The gun's faces are those of its piece that aren't
- * the hand's colours (its skin and the green cuff); they're drawn on copies of their corners of their own (after his), so the gun can
- * be folded away into the hand and the hand left as it is. */
-typedef struct {
-    float x, y, z;
-} P3;
-
+ * right hand on it, his legs, his left hand (with the gun's front grip in it), his shoes and the gun's muzzle flash. The gun's faces
+ * are those of the gun's piece and his left hand's that aren't a hand's colours (its skin and the green cuff): the gun and both its
+ * grips. They're drawn on copies of their corners of their own (after his), so the gun can be folded away into his hands, each grip
+ * into the hand holding it, and the hands left as they are. */
 static V3 Rest[MAX_VERTS];     /* standing, in the rig */
 static u8 PieceOf[MAX_VERTS];  /* PIECE_ */
 enum { PIECE_BODY, PIECE_GUN, PIECE_LEGS, PIECE_LEFT_HAND, PIECE_SHOE, PIECE_FLASH, PIECE_NONE };
-static u8 RightHand[MAX_VERTS];
+static u8 HandOf[MAX_VERTS];   /* 1 his right hand's, 2 his left's (its skin and cuff), else 0 */
 static s32 Verts;              /* his own */
 static s16 CopyOf[MAX_VERTS];  /* each of his vertices' copy (after his), or -1 */
 static s16 CopyFrom[MAX_VERTS]; /* and each copy's vertex of his */
 static u8 GunTri[MAX_TRIS];    /* the gun's triangles and the flash's, drawn on the copies */
 static u8 CopyFlash[MAX_VERTS];
+static u8 CopyHand[MAX_VERTS]; /* the hand each copy folds into: 1 the right, 2 the left */
 static s32 Copies;
 
 /* Each arm: its shoulder, elbow and wrist standing (his game's units), the vertices of his body within ARM_RADIUS of the line through
- * them (and its hand's), each one's share of the forearm (blended over ARM_ELBOW about the elbow along the arm) and how much it moves
- * at all (less into the shoulder, ARM_SHOULDER along the arm from it, and none above ARM_TOP). */
+ * them (and its hand's, and what it holds: the gun and its flash the right, the front grip the left), each one's share of the forearm
+ * (blended over ARM_ELBOW about the elbow along the arm) and how much it moves at all (less into the shoulder, ARM_SHOULDER along the
+ * arm from it, and none above ARM_TOP). */
 #define ARM_RADIUS 17.0f
 #define ARM_ELBOW 8.0f
 #define ARM_SHOULDER_IN -4.0f
 #define ARM_SHOULDER 10.0f
 #define ARM_TOP_FULL 220.0f
 #define ARM_TOP 232.0f
+#define ARM_VERTS 256
 typedef struct {
     float side;
     V3 joint[3];
     float len[2];
-    s16 verts[128];
-    float fore[128], weight[128];
+    s16 verts[ARM_VERTS];
+    float fore[ARM_VERTS], weight[ARM_VERTS];
     s32 n;
 } Arm;
 static Arm Arms[2] = {
@@ -236,7 +253,7 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
         up[k] = k;
         size[k] = 0;
         PieceOf[k] = PIECE_NONE;
-        RightHand[k] = 0;
+        HandOf[k] = 0;
     }
 #define ROOT(x) \
     do { \
@@ -300,31 +317,34 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
         PieceOf[k] = i < 7 ? Kinds[i] : PIECE_NONE;
     }
 #undef ROOT
-    /* the gun's faces and the flash's: copies of their corners of their own; the hand's, its skin and its cuff, as they are */
+    /* the gun's faces, its grips' and the flash's: copies of their corners of their own; the hands', their skin and their cuffs, as they
+     * are */
     Copies = 0;
     for (k = 0; k < nvert; k++) {
         CopyOf[k] = -1;
     }
     for (i = 0; i < ntri && i < MAX_TRIS; i++) {
         const u8 *p = polys + i * 8, *s;
-        s32 slot = hm_rd16(p + 6) & 0x7FFF, v0 = hm_rd16(p) / 6, hand;
+        s32 slot = hm_rd16(p + 6) & 0x7FFF, v0 = hm_rd16(p) / 6, piece = PieceOf[v0], hand, held;
 
         GunTri[i] = 0;
-        if (slot >= nslot || (PieceOf[v0] != PIECE_GUN && PieceOf[v0] != PIECE_FLASH)) {
+        if (slot >= nslot || (piece != PIECE_GUN && piece != PIECE_LEFT_HAND && piece != PIECE_FLASH)) {
             continue;
         }
         s = info + 20 + slot * 4;
-        hand = PieceOf[v0] == PIECE_GUN && ((s[0] == 89 && s[1] == 35 && s[2] == 0) || (s[0] == 0 && s[1] == 107 && s[2] == 0));
+        held = piece == PIECE_LEFT_HAND ? 2 : 1;
+        hand = piece != PIECE_FLASH && ((s[0] == 89 && s[1] == 35 && s[2] == 0) || (s[0] == 0 && s[1] == 107 && s[2] == 0));
         GunTri[i] = (u8)!hand;
         for (j = 0; j < 3; j++) {
             s32 v = hm_rd16(p + j * 2) / 6;
 
             if (hand) {
-                RightHand[v] = 1;
+                HandOf[v] = (u8)held;
             } else if (CopyOf[v] < 0 && nvert + Copies < MAX_VERTS) {
                 CopyOf[v] = (s16)(nvert + Copies);
                 CopyFrom[Copies] = (s16)v;
-                CopyFlash[Copies] = PieceOf[v0] == PIECE_FLASH;
+                CopyFlash[Copies] = piece == PIECE_FLASH;
+                CopyHand[Copies] = (u8)held;
                 Copies++;
             }
         }
@@ -337,7 +357,7 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
         arm->len[0] = l0 = vlen(vsub(arm->joint[1], arm->joint[0]));
         arm->len[1] = l1 = vlen(vsub(arm->joint[2], arm->joint[1]));
         arm->n = 0;
-        for (k = 0; k < nvert && arm->n < 128; k++) {
+        for (k = 0; k < nvert && arm->n < ARM_VERTS; k++) {
             V3 p = Rest[k];
             float u0, u1, d0, d1, s;
 
@@ -352,7 +372,7 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
                 arm->fore[arm->n] = hm_smooth(l0 - ARM_ELBOW, l0 + ARM_ELBOW, s);
                 arm->weight[arm->n] = hm_smooth(ARM_SHOULDER_IN, ARM_SHOULDER, s) * hm_smooth(ARM_TOP, ARM_TOP_FULL, p.y);
                 arm->n++;
-            } else if ((a == 0 && PieceOf[k] == PIECE_LEFT_HAND) || (a == 1 && RightHand[k])) {
+            } else if ((a == 0 && PieceOf[k] == PIECE_LEFT_HAND) || (a == 1 && (PieceOf[k] == PIECE_GUN || PieceOf[k] == PIECE_FLASH))) {
                 arm->verts[arm->n] = (s16)k;
                 arm->fore[arm->n] = 1;
                 arm->weight[arm->n] = 1;
@@ -485,7 +505,8 @@ static const C1Entry *Src[PIN_ANIMS];
 static s32 Scale[3];
 static s32 Frames[PIN_ANIMS];
 
-/* A frame of one of his game's animations, at t of its frames (blended between two), in the rig; its count, 0 if it can't */
+/* A frame of one of his game's animations, at t of its frames (blended between two), in the rig and at its size (PIN_SOURCE_SCALE,
+ * about his feet: the rig's origin is on the floor between them); its count, 0 if it can't */
 static s32 src_at(const C1Entry *a, float t, V3 *r) {
     static V3 fa[MAX_VERTS], fb[MAX_VERTS];
     s32 f0, f1, n, m, k;
@@ -501,7 +522,7 @@ static s32 src_at(const C1Entry *a, float t, V3 *r) {
         return 0;
     }
     for (k = 0; k < n; k++) {
-        r[k] = to_rig(hm_mix(fa[k], fb[k], u));
+        r[k] = vmul(to_rig(hm_mix(fa[k], fb[k], u)), 1 / PIN_SOURCE_SCALE);
     }
     return n;
 }
@@ -511,23 +532,24 @@ static void chest_move(const V3 *r, Moved *mv) {
     hm_fit(Rest, r, Chest, ChestN, mv);
 }
 
-/* The gun's and the flash's copies: out of his hands (`gun` 1, as big as it is, 0 folded away into the hand's middle) and the flash
- * showing or not, as the frame `r` has them */
+/* The gun's, its grips' and the flash's copies: out of his hands (`gun` 1, as big as it is, 0 folded away, each part into the middle
+ * of the hand holding it) and the flash showing or not (only with the gun all out), as the frame `r` has them */
 static void place_gun(V3 *r, float gun, s32 flash) {
-    V3 grip = { 0, 0, 0 };
-    s32 k, n = 0;
+    V3 grip[3] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+    s32 k, n[3] = { 0, 0, 0 };
 
     for (k = 0; k < Verts; k++) {
-        if (RightHand[k]) {
-            grip = vadd(grip, r[k]);
-            n++;
-        }
+        grip[HandOf[k]] = vadd(grip[HandOf[k]], r[k]);
+        n[HandOf[k]]++;
     }
-    grip = n > 0 ? vmul(grip, 1.0f / n) : grip;
+    for (k = 1; k < 3; k++) {
+        grip[k] = n[k] > 0 ? vmul(grip[k], 1.0f / n[k]) : grip[k];
+    }
     for (k = 0; k < Copies; k++) {
         float s = CopyFlash[k] ? (flash && gun >= 1 ? 1.0f : 0.0f) : gun;
+        V3 g = grip[CopyHand[k]];
 
-        r[Verts + k] = vadd(grip, vmul(vsub(r[CopyFrom[k]], grip), s));
+        r[Verts + k] = vadd(g, vmul(vsub(r[CopyFrom[k]], g), s));
     }
 }
 
@@ -569,10 +591,13 @@ static void walk(V3 *r, float t, s32 holding) {
     pose_shift(r, v3(0, -leg_len * (1 - cosf(WALK_HIP * sinf(a))), 0));
 }
 
-/* His jump (made): a crouch, up off his feet, legs tucked up and arms out in the air (the game lifts him), and landing */
+/* His jump (made), in the three parts a jump's three sequences play (PinStands' @JUMP, @FALL and @LAND, as Cortex's JUMP is split: its
+ * frames 0 to 7 of 20, 8 to 12 and 13 to 19), the last frame of each held for as long as the game takes: a crouch and up off his feet,
+ * legs tucking up and arms out as he rises (the game lifts him); his legs reaching down for the floor as he falls; and landing, down
+ * into a crouch and up again, standing by its end */
 static void jump(V3 *r, float t) {
-    float crouch = hm_smooth(0, 0.15f, t) * hm_smooth(0.32f, 0.18f, t) + hm_smooth(0.86f, 0.93f, t) * hm_smooth(1.0f, 0.95f, t);
-    float tuck = hm_smooth(0.25f, 0.45f, t) * hm_smooth(0.85f, 0.65f, t), arms = hm_smooth(0.15f, 0.35f, t) * hm_smooth(0.95f, 0.75f, t);
+    float crouch = hm_smooth(0, 0.15f, t) * hm_smooth(0.32f, 0.2f, t) + hm_smooth(0.64f, 0.72f, t) * hm_smooth(0.92f, 0.78f, t);
+    float tuck = hm_smooth(0.2f, 0.36f, t) * hm_smooth(0.6f, 0.45f, t), arms = hm_smooth(0.12f, 0.3f, t) * hm_smooth(0.82f, 0.64f, t);
     s32 i;
 
     memcpy(r, Rest, sizeof(V3) * Verts);
@@ -611,40 +636,23 @@ static void throw_crate(V3 *r, float t) {
     pose_body(r, 0.25f * fwd * (1 - back), 0, 0);
 }
 
-/* His attack: his stride's fire, its frames from ATTACK_FROM, the gun out of his right hand over ATTACK_DRAW frames from standing,
- * its muzzle flashing every other frame as it fires, and away again over the last ATTACK_DRAW */
+/* His attack: his stride's fire, a frame of it a tick from ATTACK_FROM, his hands coming up from standing to the gun over ATTACK_DRAW
+ * ticks as it grows into them, its muzzle flashing every other tick as it fires, and back and away again over the last ATTACK_DRAW.
+ * The gun's held as he stands too (his arms carry it), so it comes out of his hands wherever they are. */
 #define ATTACK_FROM 2.0f
 #define ATTACK_DRAW 3.0f
 static void attack(V3 *r, s32 f, s32 frames) {
     static V3 s[MAX_VERTS];
-    float in = hm_smooth(0, ATTACK_DRAW, (float)f), out = hm_smooth((float)(frames - 1), frames - 1 - ATTACK_DRAW, (float)f);
-    float w = in < out ? in : out;
+    float tick = (float)f / PIN_SUBFRAMES, ticks = (float)frames / PIN_SUBFRAMES;
+    float in = hm_smooth(0, ATTACK_DRAW, tick), out = hm_smooth(ticks - 1, ticks - 1 - ATTACK_DRAW, tick), w = in < out ? in : out;
     s32 k;
 
     stand(s, 0, &ArmsDown);
-    src_at(Src[A_ATTACK], ATTACK_FROM + f, r);
-    place_gun(r, 1, f % 2 == 0);
+    src_at(Src[A_ATTACK], ATTACK_FROM + tick, r);
     for (k = 0; k < Verts; k++) {
         r[k] = hm_mix(s[k], r[k], w);
     }
-    /* the gun grows into his hands as they come up to it, and shrinks back out of them */
-    {
-        V3 grip = { 0, 0, 0 };
-        s32 n = 0;
-
-        for (k = 0; k < Verts; k++) {
-            if (RightHand[k]) {
-                grip = vadd(grip, r[k]);
-                n++;
-            }
-        }
-        grip = n > 0 ? vmul(grip, 1.0f / n) : grip;
-        for (k = 0; k < Copies; k++) {
-            float g = CopyFlash[k] ? (w >= 1 && f % 2 == 0 ? 1.0f : 0.0f) : w;
-
-            r[Verts + k] = vadd(grip, vmul(vsub(r[Verts + k], grip), g));
-        }
-    }
+    place_gun(r, w, (s32)tick % 2 == 0);
 }
 
 /* One of his game's, resampled to `frames`, the gun away; his arms down (as his chest moves) if `arms_down` */
@@ -686,7 +694,7 @@ static void pose(s32 j, s32 f, V3 *r) {
         break;
     case A_ATTACK:
         attack(r, f, n);
-        return;
+        return; /* its own gun */
     case A_HIT:
     case A_DIE:
     case A_WIN:
@@ -811,7 +819,7 @@ static s32 pin_make(HeroMade *out) {
             Src[i] = &anims[i];
         }
         Frames[i] = PinAnims[i].base != NULL ? hm_bank_frames(DB_CharsCrateCortex, PinAnims[i].base) : 0;
-        Frames[i] = Frames[i] > 0 ? Frames[i] : PinAnims[i].frames;
+        Frames[i] = (Frames[i] > 0 ? Frames[i] : PinAnims[i].frames) * PIN_SUBFRAMES;
         Frames[i] = Frames[i] > MADE_MAX_FRAMES ? MADE_MAX_FRAMES : Frames[i];
     }
     c1_model_scale(&model, Scale);
@@ -853,7 +861,7 @@ static s32 pin_make(HeroMade *out) {
         made_anims[j].name = PinAnims[j].name;
         made_anims[j].frames = Frames[j];
         made_anims[j].mesh = 0;
-        made_anims[j].step = 1;
+        made_anims[j].step = PIN_SUBFRAMES;
     }
     memset(&mm, 0, sizeof(mm));
     mm.faces = faces;

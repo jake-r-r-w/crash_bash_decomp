@@ -22,7 +22,9 @@ _Static_assert(NUM_KINDS == HERO_KINDS, "bash/herolist.h's HERO_KINDS and HERO_K
 enum { STRETCH, LOOP, ONCE };
 
 /* For its base's animation `from`, its own `to`: a list of names, the first its model has, and a name can have a range of its frames
- * (NAME:first-last). */
+ * (NAME:first-last). A `from` of "@" and one of the heroes' sequences (extraheroes.c, SeqNames: "@JUMP", "@BA_HOLD_THROW") is for all
+ * of that sequence, whatever of its base's frames it shows: STRETCH over the ticks its base's script shows frames for, or at its own
+ * speed from when it starts. */
 typedef struct {
     const char *from, *to;
     s32 pace;

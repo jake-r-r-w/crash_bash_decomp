@@ -26,6 +26,15 @@ playing.
 3. **On foot** (below, 4, steps 1 to 4): its model, faces and textures. Make any moves its game
    hasn't got, and give it stand-ins for its base's (below, 2). Try it in Crate Crush and Ring Ding
    (below, 6). Most of the work is here, and in the games where it rides or holds something.
+   - Make its moves 4 frames a tick (`subframes` 4, as Roo's and Pinstripe's): another hero's
+     longer moves would otherwise hold its frames for two ticks, and it steps at 120 frames a second.
+   - It won't always have its own base: a test run's player 1 has Crash's place, and in a game it
+     has another's when someone has its own. Each hero's moves are its own scripts, so give it
+     **sequence stand-ins** (below, 2) for the ones that play parts of an animation or none: the
+     jump, fall and landing, the attack (Crash's and Coco's spin is a still mesh), the hit, the
+     taunt, picking up and throwing a crate. Try it as player 1 and as player 3 (another place).
+   - Check its game's moves are the size of the pose it's rigged from: by a rigid piece (a shoe, a
+     hand), not the whole body. Pinstripe's still is 1/1.2 the size of his moves.
 4. **Its sounds** (below, 3): a voice for each offset of its base's block, or none where one would
    be wrong. Its name as it wins has to be short enough for the announcer's "wins!" after it. An
    attack with a sound of its own (Pinstripe's tommy gun) is `VOICE_FIRE`, at offset 13.
@@ -61,11 +70,15 @@ every game (2026-11-04) and called him done (2026-11-05). Two things are left ou
 name is never written in the game, and the podium and win screens weren't looked at with him.
 
 **Under way:** Pinstripe (`pinstripe`, the same disc, `main/heroes/pinstripe.c`): on foot (step 3,
-2026-11-05), not yet played by the user; every other game plays him on foot for now. His model has
-his tommy gun in every frame, and at the user's word he has it only as he attacks: its faces are on
-copies of their corners of their own, folded into his hand the rest of the time. His arms are rigged
-(two bones each, from a shoulder, elbow and wrist placed by hand), as his game's animations never
-take them off the gun. How it's done is at the top of his file.
+2026-11-05); every other game plays him on foot for now. His model has his tommy gun in every frame,
+and at the user's word he has it only as he attacks: its faces (and its front grip, in his left
+hand's piece) are on copies of their corners of their own, folded into his hands the rest of the
+time. His arms are rigged (two bones each, from a shoulder, elbow and wrist placed by hand), as his
+game's animations never take them off the gun. The user played him in Crash's place and found his
+hands glitchy (the front grip), his size changing as he taunted (his game's moves are 1.2 times his
+still), a jump after each throw (Crash lands after a throw), no gun in his attack (Crash's spin)
+and a stiff frame rate (held frames): all fixed, his jump, attack, hit, taunt, pickup and throw now
+going by the sequence. How it's done is at the top of his file.
 
 ## How one plays
 
@@ -89,7 +102,9 @@ base's moves with the same timing and reach. What makes it itself:
 - **Its frames.** A move names a frame of the base's model, `0x4000 | n << 7 | f`. As the hero is
   drawn, animation n becomes the hero's **stand-in** for it, by name (`extra_hero_frame`):
   Roo walks where a hero runs. A stand-in goes the same share of the way through as the base's,
-  or at its own speed (LOOP, ONCE).
+  or at its own speed (LOOP, ONCE). The moves are each hero's own scripts (`HeroSeqTables`, by
+  `HeroInfo.hero_aseq`), and a **sequence stand-in** is for all of one, whatever frames of the
+  base's it shows: over as many ticks as the script shows frames for, or at its own speed.
 - **Its sounds**, in place of all of its base's (below).
 - **Its face** on the panel and in the character select: its game's own picture if it has one
   (Roo's hero card), or drawn from its model.
@@ -150,6 +165,19 @@ stand-in, so `RooRides` (riding) is empty: his bear model has all of Polar Push'
 cane (`RooPogo`) he has Pogo's by name too, and `{ "TAZING", "TAZING", LOOP }` plays his tazing
 at its own speed, as his base's is a short loop; in a race cart (`RooRace`) his BREATHE goes at
 its own pace the same way, as the base's is as short as 10 frames.
+
+A stand-in from `"@"` and a sequence's name (`SeqNames` in extraheroes.c: the shared ones, then
+Crate Crush's `BA_` and the jungle game's `PA_`) is for the whole of that sequence. Each hero's
+scripts differ: Crash's jump, fall and landing are frames 0-7, 8-11 and 12-38 of his 41-frame JUMP,
+Cortex's 0-7, 7-12 and 13-18 of 20; Crash and Coco land after a throw; their attack is a still mesh
+(their spin) for 16 ticks, the others' an animation of 12 to 19; Coco, Tiny and Kong taunt forwards
+and back. So Pinstripe has `{ "@JUMP", "JUMP:0-7", ONCE }`, `@FALL` and `@LAND` (his JUMP split
+as Cortex's is, each part's last frame held as long as the game takes), and `{ "@ATTACK", "ATTACK" }`,
+`@HIT`, `@TAUNT_A`, `@BA_PICKUP` and `@BA_HOLD_THROW`, each all of his over the base's script. It's
+used only while what's drawn is the frame the script shows. Roo has none, and plays as before.
+The scripts are in heroes.c (`CRA_seq_jump` ...) and bash.c (`CRA_BA_seq_hold_throw` ...), as u16s
+(the s32 arrays low half first): the first is the ticks past one each frame shows, `0x8007 n` the
+frame after it and n - 1 more, `0x8018` a new speed, `0x8004` the next action (ProcessHeroAnim).
 
 ### 3. His sounds
 

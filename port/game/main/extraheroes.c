@@ -10,10 +10,11 @@
  * sounds in place of its base's; and how its frames are drawn. The moves name frames of the base's own model, 0x4000 | n << 7 | f,
  * frame f of its animation n, so as an extra hero is drawn each one is its stand-in for that animation, by name (Roo's walk where a hero
  * would run, his spin where one attacks), the same share of the way through or at its own speed, with less of its lift off the ground
- * if its kind says so. The points the game finds on a frame (the boxes it collides with, the hands that hold a crate) are the base's,
- * from its own model, and so is its body's box (body_box); what it holds sits on its head, which is where the head point is too. The
- * moves themselves never change, so the game's checks of how far one has got still hold. In a game where its kind says so it's as
- * heavy and as quick as another hero (Roo on his bear as Crash). */
+ * if its kind says so; or, in a sequence of the base's its kind names a stand-in for, all of that (SeqNames: Pinstripe's jump in three
+ * parts, whichever hero's place he has). The points the game finds on a frame (the boxes it collides with, the hands that hold a
+ * crate) are the base's, from its own model, and so is its body's box (body_box); what it holds sits on its head, which is where the
+ * head point is too. The moves themselves never change, so the game's checks of how far one has got still hold. In a game where its
+ * kind says so it's as heavy and as quick as another hero (Roo on his bear as Crash). */
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,6 +43,18 @@ unsigned char *archive_own_file(int entry, int *size);
 #define MORPH_VERTS 4096 /* prims.c's MorphVerts, a frame's vertices as they're drawn: all of a mesh's (Roo's are 3435, 3 a triangle) */
 #define HIT_FIRST 2     /* a hero's hit voices, in its block of sounds (HeroHitSfx: the first of them) */
 
+/* The heroes' sequences (HeroSeqTables, each hero's in the same order, by HeroInfo.hero_aseq): the moves every game shares, then Crate
+ * Crush's (BA_) and the jungle game's (PA_) crate moves. A kind's stand-in for "@" and one of these names is for all of that sequence,
+ * whatever of its base's frames it shows: each hero's moves are its own scripts, some showing parts of one animation (Crash's jump, fall
+ * and landing are parts of his JUMP, and he lands after a throw), skipping or playing back through it, or a mesh that isn't an animation
+ * at all (Crash's and Coco's spin), so a stand-in by its base's frames would play its stand-in's parts out of order. */
+static const char *const SeqNames[] = {
+    "NONE", "BREATHE", "TAUNT_A", "IDLE_A", "IDLE_B", "MEDIUM", "JUMP", "FALL", "LAND", "HIT", "ATTACK", "DEAD", "WIN", "VICTORY",
+    "BA_SLIDE", "BA_PICKUP", "BA_HOLD", "BA_HOLD_SLOW", "BA_HOLD_THROW", "BA_DIE",
+    "PA_PICKUP", "PA_HOLD", "PA_HOLD_SLOW", "PA_HOLD_THROW", "PA_DIE",
+};
+#define SEQ_STANDS ((s32)(sizeof(SeqNames) / sizeof(SeqNames[0])))
+
 /* A player's extra hero's model of one kind, while a level's on */
 typedef struct {
     s32 kind;
@@ -57,6 +70,11 @@ typedef struct {
     s32 pace[MAX_ANIMS];    /* STRETCH, LOOP or ONCE */
     s32 clock_anim;         /* the base's animation it was last drawn in, its frame, and the tick it started (GameFrameCount) */
     s32 clock_frame, clock_start;
+    s32 seq_anim[SEQ_STANDS]; /* its stand-in for each sequence its kind names one for (-1 none), the frames of it, and its pace */
+    s32 seq_first[SEQ_STANDS], seq_count[SEQ_STANDS], seq_pace[SEQ_STANDS];
+    s32 seq_on;             /* the sequence it was last drawn in (-1 none of those), where its script had got to, the tick it started, */
+    const u8 *seq_at;
+    s32 seq_start, seq_ticks; /* and how many ticks its script shows frames for */
     s32 scale;              /* the extra hero's height over the base's, 0x1000 = the same */
 } Variant;
 
@@ -306,28 +324,11 @@ static s32 has(const ModelFile *m, s32 key) {
     return 0;
 }
 
-/* The extra hero's stand-in for one of its base's animations, by name, in its model of a kind m: the first of its stand-in's names that
- * m has; or the base's own name, if m has it; or else its kind's `otherwise`. If first isn't NULL, the range of its frames that name
- * gives (or -1, all of them) and its pace. */
-static s32 stand_in(const HeroDef *x, s32 kind, s32 key, const ModelFile *m, s32 *first, s32 *last, s32 *pace) {
-    const HeroKind *k = &x->kinds[kind];
-    const Stand *s;
-    const char *names = NULL;
+/* Of a stand-in's names, the first that m has, as *key; and if first isn't NULL, the range of its frames that name gives (or -1, all of
+ * them). 0 if m has none of them. */
+static s32 first_had(const HeroKind *k, const char *names, const ModelFile *m, s32 *key, s32 *first, s32 *last) {
     char one[24];
 
-    if (first != NULL) {
-        *first = *last = -1;
-        *pace = STRETCH;
-    }
-    for (s = k->stands; s != NULL && s->from != NULL; s++) {
-        if (hash_of(s->from) == key) {
-            names = s->to;
-            if (pace != NULL) {
-                *pace = s->pace;
-            }
-            break;
-        }
-    }
     while (names != NULL && *names != 0) {
         size_t n = strcspn(names, " ");
 
@@ -346,16 +347,106 @@ static s32 stand_in(const HeroDef *x, s32 kind, s32 key, const ModelFile *m, s32
                     *first = atoi(range) * sub;
                     *last = (strchr(range, '-') != NULL ? atoi(strchr(range, '-') + 1) : atoi(range)) * sub;
                 }
-                return hash_of(one);
+                *key = hash_of(one);
+                return 1;
             }
         }
         names += n;
         names += strspn(names, " ");
     }
+    return 0;
+}
+
+/* The extra hero's stand-in for one of its base's animations, by name, in its model of a kind m: the first of its stand-in's names that
+ * m has; or the base's own name, if m has it; or else its kind's `otherwise`. If first isn't NULL, the range of its frames that name
+ * gives (or -1, all of them) and its pace. */
+static s32 stand_in(const HeroDef *x, s32 kind, s32 key, const ModelFile *m, s32 *first, s32 *last, s32 *pace) {
+    const HeroKind *k = &x->kinds[kind];
+    const Stand *s;
+    const char *names = NULL;
+    s32 own;
+
+    if (first != NULL) {
+        *first = *last = -1;
+        *pace = STRETCH;
+    }
+    for (s = k->stands; s != NULL && s->from != NULL; s++) {
+        if (hash_of(s->from) == key) {
+            names = s->to;
+            if (pace != NULL) {
+                *pace = s->pace;
+            }
+            break;
+        }
+    }
+    if (first_had(k, names, m, &own, first, last)) {
+        return own;
+    }
     if (has(m, key)) {
         return key;
     }
     return hash_of(k->otherwise);
+}
+
+/* Its stand-in for all of one of the heroes' sequences (SeqNames), by "@" and its name: 0 if its kind names none, or m has none of it */
+static s32 seq_stand_in(const HeroDef *x, s32 kind, s32 seq, const ModelFile *m, s32 *key, s32 *first, s32 *last, s32 *pace) {
+    const HeroKind *k = &x->kinds[kind];
+    const Stand *s;
+
+    *first = *last = -1;
+    *pace = STRETCH;
+    for (s = k->stands; s != NULL && s->from != NULL; s++) {
+        if (s->from[0] == '@' && strcmp(s->from + 1, SeqNames[seq]) == 0) {
+            *pace = s->pace;
+            return first_had(k, s->to, m, key, first, last);
+        }
+    }
+    return 0;
+}
+
+/* How many ticks a hero's sequence's script shows frames for, from its start to where it hands on or goes round (ProcessHeroAnim: its
+ * first word the ticks each frame shows past one, 0x8018 a new count of them, 0x8007 n the frame that follows and the n - 1 after it) */
+static s32 seq_ticks(const u16 *s) {
+    s32 speed = (s16)s[0], ticks = 0, count = 1, i;
+
+    for (i = 1; i < 256; i++) {
+        u16 c = s[i];
+
+        if (!(c & 0x8000)) {
+            ticks += count * (speed + 1);
+            count = 1;
+            continue;
+        }
+        switch (c) {
+        case 0x8000:
+        case 0x8004:
+        case 0x8005:
+            return ticks > 0 ? ticks : 1;
+        case 0x8002: /* the frame it's on again */
+            i++;
+            ticks += speed + 1;
+            break;
+        case 0x8007:
+            count = (s16)s[++i];
+            count = count > 0 ? count : 1;
+            break;
+        case 0x8018:
+            speed = (s16)s[++i];
+            break;
+        case 0x8003:
+        case 0x8006:
+        case 0x8008:
+        case 0x8009:
+        case 0x800A:
+        case 0x8019:
+        case 0x801A:
+            i++;
+            break;
+        default:
+            break;
+        }
+    }
+    return ticks > 0 ? ticks : 1;
 }
 
 static s32 find(const ModelFile *m, s32 key) {
@@ -529,6 +620,23 @@ static s32 variant_start(s32 player, Variant *v, s32 base_bank) {
         v->to_count[k] = last - first + 1;
         v->pace[k] = pace;
     }
+    for (k = 0; k < SEQ_STANDS; k++) {
+        s32 key, first, last, frames, pace;
+
+        v->seq_anim[k] = -1;
+        if (seq_stand_in(x, v->kind, k, to, &key, &first, &last, &pace)) {
+            s32 m = find(to, key);
+
+            frames = anims_of(to)[m].frames > 0 ? anims_of(to)[m].frames : 1;
+            first = first < 0 ? 0 : first >= frames ? frames - 1 : first;
+            last = last < first ? frames - 1 : last >= frames ? frames - 1 : last;
+            v->seq_anim[k] = m;
+            v->seq_first[k] = first;
+            v->seq_count[k] = last - first + 1;
+            v->seq_pace[k] = pace;
+        }
+    }
+    v->seq_on = -1;
     v->clock_anim = -1;
     from_height = height_of(from);
     v->scale = from_height > 0 && height_of(to) > 0 ? height_of(to) * 0x1000 / from_height : 0x1000;
@@ -679,6 +787,41 @@ const obj_dbase *extra_hero_dbase(const subengine *sub, const obj_dbase *db) {
     return playing(sub, &v) != NULL ? v->bank : db;
 }
 
+/* Its frame as its stand-in for the sequence its hero's in, if its kind names one for that sequence and what's drawn is the frame the
+ * sequence's script shows (not one the game's put there itself); -1 if not. Its clock starts as the sequence does (or starts again, or
+ * goes round): at its own speed, its model's frames a tick, or (STRETCH) all of it over as many ticks as the script shows frames for. */
+static s32 seq_frame(Playing *p, Variant *v, s32 entity) {
+    s32 player = (s32)(p - Play), per = HeroDefs[PlayerExtra[player]]->kinds[v->kind].subframes, seq, t, f, n;
+    const HeroInfo *h = &Heroes[player];
+    const EXTanimator *anim = h->hero_anim;
+    const u8 *at;
+
+    seq = h->hero_aseq;
+    if (anim == NULL || anim->Atable == NULL || seq >= SEQ_STANDS || v->seq_anim[seq] < 0 || (u16)entity != (u16)anim->Currentframe
+        || (u32)(h->hero_name - 1) >= 8) {
+        v->seq_on = -1;
+        return -1;
+    }
+    at = (const u8 *)anim->Atable + anim->Aindex * 2;
+    if (seq != v->seq_on || at < v->seq_at) {
+        v->seq_on = seq;
+        v->seq_start = GameFrameCount;
+        v->seq_ticks = seq_ticks((const u16 *)HeroSeqTables[h->hero_name][seq]);
+    }
+    v->seq_at = at;
+    n = v->seq_count[seq];
+    t = GameFrameCount - v->seq_start;
+    t = t < 0 ? 0 : t;
+    if (v->seq_pace[seq] == STRETCH) {
+        f = v->seq_ticks > 1 ? t * (n - 1) / (v->seq_ticks - 1) : 0;
+    } else {
+        f = t * (per > 1 ? per : 1);
+        f = v->seq_pace[seq] == LOOP ? f % n : f;
+    }
+    f = f >= n ? n - 1 : f;
+    return 0x4000 | v->seq_anim[seq] << 7 | (v->seq_first[seq] + f);
+}
+
 s32 extra_hero_frame(const subengine *sub, s32 entity) {
     Variant *v;
     Playing *p = playing(sub, &v);
@@ -686,6 +829,9 @@ s32 extra_hero_frame(const subengine *sub, s32 entity) {
 
     if (p == NULL) {
         return entity;
+    }
+    if ((f = seq_frame(p, v, entity)) >= 0) {
+        return f;
     }
     if (tag == 0x4000 || tag == 0x1000) {
         n = (entity >> 7) & 0x1F;
