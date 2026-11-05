@@ -338,6 +338,10 @@ u8 *c1_sound(const C1Level *l, const char *name, s32 *size) {
 /* An object's item: a run of sprite lists, each a head word (count << 16 | kind, kind 2 the sprites) then the texture page's eid and
  * 8 bytes a sprite: its colour word (the CLUT's x in bits 24-27) and where in the page it is (uvi its size, cm 0 for 4-bit). */
 s32 c1_sprite64(const C1Level *l, const char *object, s32 item, u32 out[64 * 64]) {
+    return c1_sprite(l, object, item, 64, 64, out);
+}
+
+s32 c1_sprite(const C1Level *l, const char *object, s32 item, s32 w, s32 h, u32 *out) {
     C1Entry obj;
     const u8 *it;
     s32 at, f, x, y;
@@ -358,15 +362,15 @@ s32 c1_sprite64(const C1Level *l, const char *object, s32 item, u32 out[64 * 64]
             s32 uvi = (s32)(ti >> 22 & 0x3FF), cm = (s32)(ti >> 20 & 3), seg = (s32)(ti >> 18 & 3), xoffu = (s32)(ti >> 13 & 0x1F);
             s32 cy = (s32)(ti >> 6 & 0x7F), y0 = (s32)(ti & 0x1F) * 4, x0 = 256 * seg + 8 * xoffu, cx = (s32)(col >> 24 & 0xF) * 16;
 
-            if (cm != 0 || 4 << (uvi % 5) != 64 || 4 << (uvi / 5 % 5) != 64 || y0 + 64 > 128) {
+            if (cm != 0 || 4 << (uvi % 5) != w || 4 << (uvi / 5 % 5) != h || y0 + h > 128) {
                 continue;
             }
-            for (y = 0; y < 64; y++) {
-                for (x = 0; x < 64; x++) {
+            for (y = 0; y < h; y++) {
+                for (x = 0; x < w; x++) {
                     s32 u = x0 + x, i = page[(y0 + y) * 512 + u / 2] >> (u & 1) * 4 & 15;
                     u16 c = hm_rd16(page + cy * 512 + (cx + i) * 2);
 
-                    out[y * 64 + x] = c == 0 ? 0 : 0xFF000000u | (u32)((c & 0x1F) * 255 / 31) | (u32)((c >> 5 & 0x1F) * 255 / 31) << 8
+                    out[y * w + x] = c == 0 ? 0 : 0xFF000000u | (u32)((c & 0x1F) * 255 / 31) | (u32)((c >> 5 & 0x1F) * 255 / 31) << 8
                                                    | (u32)((c >> 10 & 0x1F) * 255 / 31) << 16;
                 }
             }
@@ -2181,6 +2185,10 @@ const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, s32 *head) {
     *h = Made[extra].card_h;
     *head = Made[extra].card_head;
     return Made[extra].card;
+}
+
+float bonus_heroes_card_aspect(s32 extra) {
+    return bonus_heroes_have(extra) && Made[extra].card != NULL ? Made[extra].card_aspect : 0;
 }
 
 void bonus_heroes_voice(s32 extra, s32 voice) {

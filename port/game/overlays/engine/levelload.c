@@ -198,7 +198,8 @@ loop:
                         p++;
                     }
                 }
-                if (tbl->flag != NULL) {
+                /* PC: and its second, unless it's the same model (an extra hero with none of this kind plays on foot in both) */
+                if (tbl->flag != NULL && ((u16 *)tbl->flag)[c] != ((u16 *)tbl->HeroModels)[c]) {
                     ModeDbase *p = ModeDbaseLists;
                     e = &((obj_dbase *)base)[((u16 *)tbl->flag)[c]];
                     for (j = 0; j < ModeDbaseCount; j++) {
@@ -252,7 +253,7 @@ void load_initial_dbases(void)
       /* PC: an extra hero's with all its animations (extraheroes.c) */
       dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]],
                               extra_heroes_model_is(&((obj_dbase *) b)[((u16 *) h->HeroModels)[k]]) ? NULL : (void **)arg);
-      if (h->flag != 0)
+      if (h->flag != 0 && ((u16 *) h->flag)[k] != ((u16 *) h->HeroModels)[k])
       {
         dbase_asload_with_anims(&((obj_dbase *) b)[((u16 *) h->flag)[k]],
                                 extra_heroes_model_is(&((obj_dbase *) b)[((u16 *) h->flag)[k]]) ? NULL : (void **)arg);

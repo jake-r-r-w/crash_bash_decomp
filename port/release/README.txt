@@ -51,23 +51,24 @@ always did until you turn them on:
 
 EXTRA HEROES
 
-With your own copy of Crash Bandicoot (USA) too, Ripper Roo from its boss fight
-can play, as he looked there, with his own laugh. Put that disc image (a .cue
+With your own copy of Crash Bandicoot (USA) too, Ripper Roo and Pinstripe from
+its boss fights can play, as they looked there, with their own laughs. Put that disc image (a .cue
 with its .bin, a raw .bin or an .iso) in the same folder as crashbash.exe, or in
 a folder called discs next to it, and turn on EXTRA HEROES on the Game page,
-under Settings in the menu the game opens with. He has a card of his own in the
-character select, in a third row under the others, and the computer players can
-pick him too.
+under Settings in the menu the game opens with. Each has a card of his own in
+the character select, in a third row under the others, and the computer players
+can pick them too.
 
-He's made from the image each time the game starts, so keep it there: nothing of
-it is copied or kept. He's made for every game: Crate Crush and the others on
+They're made from the image each time the game starts, so keep it there: nothing
+of it is copied or kept. Roo's made for every game: Crate Crush and the others on
 foot, Polar Push, where he rides a polar bear as the others do, Pogo, where he
 bounces on the cane he has as its boss, Ballistix, where he drives his car with
 his head, Tank, where he has Dingodile's flamethrower, Crash Dash, in a red race
 cart of his own, or on the water track riding a red fish, holding on with his
 tongue, the mallet game, where he swings his mallet with it in his mouth, the
 gem game, riding a red dino, and the kegs game, with his keg balanced on his
-head.
+head. Pinstripe so far plays every game on foot, his tommy gun out only as he
+attacks.
 
 
 MODS

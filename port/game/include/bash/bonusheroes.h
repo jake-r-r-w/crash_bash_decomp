@@ -18,6 +18,8 @@ u8 *bonus_heroes_model(s32 extra, s32 kind);
 /* Its face from its game, if that has one: w x h pixels (red | green << 8 | blue << 16 | alpha << 24), its head the top `head` rows,
  * what hangs from it (Roo's tongue) the rest; NULL for none. */
 const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, s32 *head);
+/* How wide its card's pixels are shown against their height (HeroMade.card_aspect), 0 for stretched to fill */
+float bonus_heroes_card_aspect(s32 extra);
 /* One of its sounds (VOICE_), as it plays in place of its base's: its laugh one at a time, a new one starting it again. */
 void bonus_heroes_voice(s32 extra, s32 voice);
 

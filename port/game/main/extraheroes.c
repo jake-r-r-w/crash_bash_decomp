@@ -1314,8 +1314,12 @@ static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
         return NULL;
     }
     if (card != NULL) {
-        /* all of it, his tongue too, across and down the part of the picture the game's own use */
-        card_face(card, cw, ch, face, fw, pw, ph, SELECT_INSET, (float)ph / ch, 0, ph);
+        /* all of it, across the part of the picture the game's own use, and down it (Roo's, his tongue too), or as tall as its
+         * game shows it and in the middle of it (card_aspect) */
+        float aspect = bonus_heroes_card_aspect(extra), cols = pw * (1 - 2 * SELECT_INSET) / cw;
+        float rows = aspect > 0 ? cols / (SELECT_ASPECT * aspect) : (float)ph / ch;
+
+        card_face(card, cw, ch, face, fw, pw, ph, SELECT_INSET, rows, aspect > 0 ? (ph - ch * rows) / 2 : 0, ph);
     } else {
         u32 *big = malloc(sizeof(u32) * (size_t)bw * bh);
         u8 *file = foot_file(extra);

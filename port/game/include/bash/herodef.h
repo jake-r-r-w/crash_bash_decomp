@@ -33,7 +33,7 @@ typedef struct {
  * in one); an extra hero's base's are all its own instead, by offset in the block: VOICE_BASE keeps the base's, and one it has none for
  * (VOICE_NONE, and any offset not listed) is quiet. VOICE_NAME is its own in the announcer's name for it as it wins (UpdateHeroVictory's
  * first): the game has none for it, and the base's would be another hero's; short enough for the announcer's "wins!" after it. */
-enum { VOICE_NONE, VOICE_BASE, VOICE_LAUGH, VOICE_YELP, VOICE_JUMP, VOICE_LAND, VOICE_THUD, VOICE_THROW, VOICE_NAME, NUM_VOICES };
+enum { VOICE_NONE, VOICE_BASE, VOICE_LAUGH, VOICE_YELP, VOICE_JUMP, VOICE_LAND, VOICE_THUD, VOICE_THROW, VOICE_NAME, VOICE_FIRE, NUM_VOICES };
 #define HERO_SOUNDS 26
 typedef struct {
     s32 offset, voice;
@@ -64,6 +64,8 @@ typedef struct {
     HeroSound sound[NUM_VOICES];
     const u32 *card;
     s32 card_w, card_h, card_head;
+    float card_aspect;   /* how wide its pixels are as its game shows them, against their height, kept in the select's portrait (0: the
+                          * card's stretched to fill it) */
 } HeroMade;
 
 typedef struct HeroDef {

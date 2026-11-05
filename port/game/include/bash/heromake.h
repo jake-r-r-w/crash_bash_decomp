@@ -62,6 +62,8 @@ s32 c1_frame_verts(const u8 *frame, s32 size, const s32 scale[3], V3 *out, V3 *n
 u8 *c1_sound(const C1Level *l, const char *name, s32 *size);
 /* The 64 x 64 sprite an object's item `item` shows first (its HUD face, for one), into out; 0 if there's none. */
 s32 c1_sprite64(const C1Level *l, const char *object, s32 item, u32 out[64 * 64]);
+/* The same of the first sprite of its that's w x h (out w x h, a power of two each, 4 to 256) */
+s32 c1_sprite(const C1Level *l, const char *object, s32 item, s32 w, s32 h, u32 *out);
 
 /* --- a made model: its faces, images and animations, written as Crash Bash's (docs/ASSETS.md) --- */
 #define MADE_MAX_IMAGES 32

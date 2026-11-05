@@ -7,7 +7,8 @@
  * model an archive entry for its textures and one for its model (main.c's DatIndex), a file group of the two (FileGroups), a bank
  * (modelbank.h's DB_Bonus, dbase.c's HeroModelBank) and its loading (levelload.c's ModeDbaseLists), all by the numbers below. */
 #define EXTRA_HERO_LIST(X) \
-    X(ROO, HeroRoo)
+    X(ROO, HeroRoo) \
+    X(PINSTRIPE, HeroPinstripe)
 
 #define EXTRA_COUNT_ONE(name, def) +1
 enum { EXTRA_HERO_COUNT = 0 EXTRA_HERO_LIST(EXTRA_COUNT_ONE) };

@@ -27,10 +27,13 @@ playing.
    hasn't got, and give it stand-ins for its base's (below, 2). Try it in Crate Crush and Ring Ding
    (below, 6). Most of the work is here, and in the games where it rides or holds something.
 4. **Its sounds** (below, 3): a voice for each offset of its base's block, or none where one would
-   be wrong. Its name as it wins has to be short enough for the announcer's "wins!" after it.
-5. **Its card and portraits**: its game's own picture if it has one (`HeroMade.card`), or one
-   drawn from its model (`HeroDef.face`). It shows in the select, on the panel and in the menus
-   after.
+   be wrong. Its name as it wins has to be short enough for the announcer's "wins!" after it. An
+   attack with a sound of its own (Pinstripe's tommy gun) is `VOICE_FIRE`, at offset 13.
+5. **Its card and portraits**: its game's own picture if it has one (`HeroMade.card`, any size
+   by `c1_sprite`), or one drawn from its model (`HeroDef.face`). It shows in the select, on the
+   panel and in the menus after. The select stretches a card to fill its portrait (Roo's), unless
+   `card_aspect` says how wide its pixels are as its game shows them (Pinstripe's 64 x 32, 0.625 on
+   Crash Bandicoot's 512-wide screen).
 6. **Each other kind** (below, 4, steps 5 to 13), one at a time: riding a polar bear, on a pogo
    stick, in a Ballistix car, in a tank, in a race cart, riding a fish, with a mallet, riding a
    dino, and with a keg. Each step says what it takes from the game's own models and how it's put
@@ -56,6 +59,13 @@ playing.
 **Done:** Ripper Roo (`roo`, from Crash Bandicoot (USA), SCUS-94900). The user played and approved
 every game (2026-11-04) and called him done (2026-11-05). Two things are left out at their word: his
 name is never written in the game, and the podium and win screens weren't looked at with him.
+
+**Under way:** Pinstripe (`pinstripe`, the same disc, `main/heroes/pinstripe.c`): on foot (step 3,
+2026-11-05), not yet played by the user; every other game plays him on foot for now. His model has
+his tommy gun in every frame, and at the user's word he has it only as he attacks: its faces are on
+copies of their corners of their own, folded into his hand the rest of the time. His arms are rigged
+(two bones each, from a shoulder, elbow and wrist placed by hand), as his game's animations never
+take them off the gun. How it's done is at the top of his file.
 
 ## How one plays
 
