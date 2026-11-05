@@ -341,9 +341,11 @@ PlaceRec CharSelectModelsPlace[9] = {
     { 7, 0x1FE, 0x1A4, 0, 0x800, 0, 0, 0, 0, 0, 0, 0xC7, 0x2005, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-/* PC: and a ninth for an extra hero, the first of a third row under the red one, when the launcher's EXTRA HEROES is on (extraheroes.c); its
- * hero is the base it would rather have, its model and pick filled as the select starts, and a sound of -1 is none */
-CharCard CharCards[9] = {
+/* PC: and from the ninth, one for each extra hero there is, a third row under the red one, when the launcher's EXTRA HEROES is on
+ * (extraheroes.c; their order is bash/herolist.h's); each one's hero is the base it would rather have, and its model and pick are filled
+ * as the select starts. A sound of -1 is none */
+_Static_assert(EXTRA_CARDS_MAX == 4, "the third row has room for four cards, as the others do");
+CharCard CharCards[8 + EXTRA_CARDS_MAX] = {
     { 0, 1, { 0 }, 0x8E, 0x20, 0xCCCC, 0xC7, 0, &CharSelectSteps2, 0x38E, 0 },
     { 0, 2, { 0 }, 0xE8, 0x20, 0xCCCC, 0xC7, 0, &CharSelectSteps1, 0x38F, 0 },
     { 0, 5, { 0 }, 0x142, 0x20, 0x9999, 0xC7, 0, &CharSelectSteps6, 0x394, 0 },
@@ -353,20 +355,35 @@ CharCard CharCards[9] = {
     { 0, 6, { 0 }, 0x142, 0x84, 0x9999, 0xC7, 0, CharSelectSteps7, 0x395, 0 },
     { 0, 8, { 0 }, 0x19C, 0x84, 0x9999, 0xC7, 0, &CharSelectSteps5, 0x393, 0 },
     { 0, 8, { 0 }, 0x8E, 0xE8, 0x9999, 0, 0, 0, -1, 0 },
+    { 0, 8, { 0 }, 0xE8, 0xE8, 0x9999, 0, 0, 0, -1, 0 },
+    { 0, 8, { 0 }, 0x142, 0xE8, 0x9999, 0, 0, 0, -1, 0 },
+    { 0, 8, { 0 }, 0x19C, 0xE8, 0x9999, 0, 0, 0, -1, 0 },
 };
 
-/* PC: the select's pieces with the ninth card's portrait (sub 26, a portrait of the game's in its place, drawn as the extra hero's) and
- * frame (27) after the game's 26, then its row's band (28): a third row of the extra heroes', under the red row and as far in as its
- * first, its frame gold as the others' are blue and red (the twelfth of TextTemplates, levelload.c), and behind it a gold band as
- * thick as theirs are (the thirteenth) */
-#define EXTRA_CARD 8
+/* PC: the select's pieces with the extra heroes' cards, after the game's 26: for each its portrait (subs 26, 28, ...: a portrait of the
+ * game's in its place, drawn as the extra hero's) and its frame (27, 29, ...), then their row's band: a third row under the red row, from
+ * as far in as its first, the frames gold as the others' are blue and red (the twelfth of TextTemplates, levelload.c), and behind them
+ * a gold band as thick as theirs are (the thirteenth) */
+#define EXTRA_CARD 8          /* the first extra hero's card */
+#define EXTRA_CARD_STEP 0x5A  /* from a card to the next across, as in the rows above */
 #define EXTRA_CARD_TURN 0xF00 /* round till he stands square to the screen as the others do, body and face: matched to Crash on the same stand */
 #define EXTRA_ROW_TITLE 0x46  /* how much lower the title and its band go with the third row there */
-static PlaceRec CharSelectPlaceMore[30];
+static PlaceRec CharSelectPlaceMore[sizeof(CharSelectPlace) / sizeof(CharSelectPlace[0]) + 2 * EXTRA_CARDS_MAX + 1];
 
-/* Whether there's the ninth card: the launcher's EXTRA HEROES is on, and Roo's disc is in */
-static s32 extra_card_on(void) {
-    return extra_heroes_on() && extra_hero_available(EXTRA_ROO);
+/* How many extra heroes' cards there are: the launcher's EXTRA HEROES is on, and their discs are in */
+static s32 extra_cards(void) {
+    return extra_heroes_cards(NULL);
+}
+
+static s32 is_extra_card(s32 card) {
+    return card >= EXTRA_CARD && card < EXTRA_CARD + extra_cards();
+}
+
+/* The extra hero on a card, or EXTRA_NONE */
+static s32 card_extra(s32 card) {
+    s32 heroes[EXTRA_CARDS_MAX], n = extra_heroes_cards(heroes);
+
+    return card >= EXTRA_CARD && card < EXTRA_CARD + n ? heroes[card - EXTRA_CARD] : EXTRA_NONE;
 }
 
 static PlaceRec *char_select_place(void) {
@@ -374,16 +391,24 @@ static PlaceRec *char_select_place(void) {
     static const PlaceRec Portrait = { 0xF, 0x96, 0xEE, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x306F, 0 };
     /* as the blue and red rows' bands (types 4, templates 7 and 8): across the screen, 8 in from the row's cards top and bottom */
     static const PlaceRec Band = { 4, 0, 0x2BC, 0xF0, 0x136, 0xC, 0, 0, 0, 0, 0, 0, 0, 0 };
-    s32 n = CountPlaceRecs(CharSelectPlace), i;
+    s32 n = CountPlaceRecs(CharSelectPlace), cards = extra_cards(), i;
 
-    if (!extra_card_on() || n + 4 > (s32)(sizeof(CharSelectPlaceMore) / sizeof(CharSelectPlaceMore[0]))) {
+    if (cards == 0 || n + 2 * cards + 2 > (s32)(sizeof(CharSelectPlaceMore) / sizeof(CharSelectPlaceMore[0]))) {
         return CharSelectPlace;
     }
     memcpy(CharSelectPlaceMore, CharSelectPlace, sizeof(PlaceRec) * (size_t)n);
-    CharSelectPlaceMore[n] = Portrait;
-    CharSelectPlaceMore[n + 1] = Frame;
-    CharSelectPlaceMore[n + 2] = Band;
-    memset(&CharSelectPlaceMore[n + 3], 0, sizeof(PlaceRec));
+    /* each card's portrait and frame, a card further across (a frame's x and y are its left and right) */
+    for (i = 0; i < cards; i++) {
+        PlaceRec *p = &CharSelectPlaceMore[n + 2 * i];
+
+        p[0] = Portrait;
+        p[0].x += (s16)(i * EXTRA_CARD_STEP);
+        p[1] = Frame;
+        p[1].x += (s16)(i * EXTRA_CARD_STEP);
+        p[1].y += (s16)(i * EXTRA_CARD_STEP);
+    }
+    CharSelectPlaceMore[n + 2 * cards] = Band;
+    memset(&CharSelectPlaceMore[n + 2 * cards + 1], 0, sizeof(PlaceRec));
     /* and the title (CHARACTER SELECT) and its band (a type 4, template 1, from z down to scale), where the third row is, under it */
     for (i = 0; i < n; i++) {
         if (CharSelectPlaceMore[i].type == 0xE) {
@@ -397,25 +422,26 @@ static PlaceRec *char_select_place(void) {
     return CharSelectPlaceMore;
 }
 
-/* PC: the selector's moves with the ninth card, in its third row: left and right go round all nine, it after Rilla Roo's; down from
- * the red row goes to it, and on round to the top; up from it goes to Cortex's above it, and up from Crash's at the top round to it */
+/* PC: the selector's moves with the extra heroes' cards, in their third row: left and right go round all the cards, theirs after Rilla
+ * Roo's; down from the red row goes to the one below, or the nearest, and on round to the top; up from one goes to the red card above
+ * it, and up from the top row round to the one below there, if there is one */
 static s32 card_step(s32 card, s32 move) {
-    static const s8 Order[9] = { 0, 1, 2, 3, 4, 5, 6, 7, EXTRA_CARD };
-    s32 i;
+    s32 cards = extra_cards(), all = 8 + cards, column = card & 3;
 
-    if (!extra_card_on()) {
+    if (cards == 0) {
         return (card + move) & 7;
     }
     if (move == 1 || move == -1) {
-        for (i = 0; i < 8 && Order[i] != card; i++) {
-        }
-        return Order[(i + move + 9) % 9];
+        return (card + move + all) % all;
     }
-    if (card == EXTRA_CARD) {
-        return move > 0 ? 0 : 4;
+    if (card >= EXTRA_CARD) {
+        return move > 0 ? card - EXTRA_CARD : 4 + card - EXTRA_CARD;
     }
-    if ((move > 0 && card >= 4) || (move < 0 && card == 0)) {
-        return EXTRA_CARD;
+    if (move > 0 && card >= 4) {
+        return EXTRA_CARD + (column < cards ? column : cards - 1);
+    }
+    if (move < 0 && card < 4 && column < cards) {
+        return EXTRA_CARD + column;
     }
     return (card + move) & 7;
 }
@@ -1636,7 +1662,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
             o->card = card_step(o->card, 4);
         }
     }
-    if (o->card != EXTRA_CARD || !extra_card_on()) {
+    if (!is_extra_card(o->card)) {
         o->card &= 7;
     }
     if ((o->flags2 < ((GameState *)GameInfo)->players && (O69PAD[o->flags2].pressed & 0x4000) && still) || o->flags3 != 0) {
@@ -1651,8 +1677,8 @@ void UpdateCharSelector(TitlesSlot *slot) {
             PlaySfx(card[o->card].sfx, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         /* PC: an extra hero's voice from its own game, as the others call out (bonusheroes.c) */
-        if (o->card == EXTRA_CARD) {
-            bonus_heroes_voice(EXTRA_ROO, VOICE_LAUGH);
+        if (is_extra_card(o->card)) {
+            bonus_heroes_voice(card_extra(o->card), VOICE_LAUGH);
         }
         card[o->card].flags |= 1;
         o->scaleX = 0;
@@ -1664,16 +1690,19 @@ void UpdateCharSelector(TitlesSlot *slot) {
             s->u6C.dbase = &HeroModelBank[card[o->card].model];
             s->flags |= 0x8000;
             /* PC: an extra hero's model faces along x, so turned to face the camera as the menu's own do; the rest as they are */
-            s->xform.rot.vy = o->card == EXTRA_CARD ? EXTRA_CARD_TURN : 0;
+            s->xform.rot.vy = is_extra_card(o->card) ? EXTRA_CARD_TURN : 0;
             s->xform.dirty = 1;
         }
         {
-            s32 hero = card[o->card].hero, b = 7;
+            s32 hero = card[o->card].hero, extra = card_extra(o->card), b;
 
-            /* PC: an extra hero borrows the card of a hero nobody's taken, its base, Rilla Roo's if it can, which nobody else can have
-             * then: so the menus after, which show the heroes by number, can show it in that one's place (extraheroes.c) */
-            if (o->card == EXTRA_CARD) {
-                if (card[b].flags & 1) {
+            /* PC: an extra hero borrows the card of a hero nobody's taken, its base, the one it would rather have (its card's hero) if it
+             * can, which nobody else can have then: so the menus after, which show the heroes by number, can show it in that one's place
+             * (extraheroes.c) */
+            if (extra != EXTRA_NONE) {
+                for (b = 0; b < 8 && card[b].hero != hero; b++) {
+                }
+                if (b == 8 || (card[b].flags & 1)) {
                     for (b = 0; b < 8 && (card[b].flags & 1); b++) {
                     }
                 }
@@ -1684,7 +1713,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
             }
             GAME->heroes[o->flags2] = (u8)hero;
             GAME->heroChoice[o->flags2] = (u8)hero;
-            extra_hero_pick(o->flags2, o->card == EXTRA_CARD ? EXTRA_ROO : EXTRA_NONE);
+            extra_hero_pick(o->flags2, extra);
         }
         PlaySfx(CharPickSfx[o->flags2], NULL, NULL, 0x1000, 0x1E00, 0);
         o->ext = ExtTemplate400;
@@ -1723,18 +1752,29 @@ void CharSelectInit(void) {
         rec++;
         off++;
     } while (i < 8);
-    /* PC: the ninth card's, when there's one */
-    CharCards[EXTRA_CARD].flags = 0;
-    if (char_select_place() != CharSelectPlace) {
-        CharCards[EXTRA_CARD].sub = (u8 *)&eng->sub[27];
-        CharCards[EXTRA_CARD].model = extra_hero_model(EXTRA_ROO);
-        CharCards[EXTRA_CARD].anim = extra_hero_select_steps(EXTRA_ROO);
-        CharCards[EXTRA_CARD].target = extra_hero_select_scale(EXTRA_ROO);
-        CharCards[EXTRA_CARD].flags = CharCards[EXTRA_CARD].anim == NULL;
-        extra_heroes_select_enter(&eng->sub[26]);
-    } else {
-        CharCards[EXTRA_CARD].flags = 1;
-        extra_heroes_select_enter(NULL);
+    /* PC: the extra heroes' cards, when there are any: each its frame and portrait, its hero's model on the stand and how it stands */
+    {
+        const subengine *portraits[EXTRA_CARDS_MAX];
+        s32 heroes[EXTRA_CARDS_MAX], n = extra_heroes_cards(heroes);
+
+        for (i = 0; i < EXTRA_CARDS_MAX; i++) {
+            CharCards[EXTRA_CARD + i].flags = 1;
+        }
+        if (char_select_place() == CharSelectPlace) {
+            n = 0;
+        }
+        for (i = 0; i < n; i++) {
+            CharCard *c = &CharCards[EXTRA_CARD + i];
+
+            c->sub = (u8 *)&eng->sub[27 + 2 * i];
+            c->hero = (u8)extra_hero_prefer(heroes[i]);
+            c->model = extra_hero_model(heroes[i]);
+            c->anim = extra_hero_select_steps(heroes[i]);
+            c->target = extra_hero_select_scale(heroes[i]);
+            c->flags = c->anim == NULL;
+            portraits[i] = &eng->sub[26 + 2 * i];
+        }
+        extra_heroes_select_enter(portraits, heroes, n);
     }
     ShuffleCharSelectors();
 }
@@ -1795,14 +1835,21 @@ s32 CpuPickCharacter(s32 a0) {
         s32 k;
         s32 j;
 
-        /* PC: with the ninth card there and nobody on it, the computer picks it, Roo, as often as any one hero still free; the pick
-         * then goes as a player's does (UpdateCharSelector), his base the card of one of those */
-        if (extra_card_on() && !(p[EXTRA_CARD].flags & 1)) {
-            for (j = 0, k = 0; k < 8; k++) {
+        /* PC: with extra heroes' cards there and nobody on one, the computer picks each as often as any one hero still free; the
+         * pick then goes as a player's does (UpdateCharSelector), its base the card of one of those */
+        {
+            s32 avail[EXTRA_CARDS_MAX], e = 0, n = extra_cards(), r;
+
+            for (k = 0; k < n; k++) {
+                if (!(p[EXTRA_CARD + k].flags & 1)) {
+                    avail[e++] = EXTRA_CARD + k;
+                }
+            }
+            for (j = 0, k = 0; e > 0 && k < 8; k++) {
                 j += !(p[k].flags & 1);
             }
-            if (j > 0 && Random(j + 1) == 0) {
-                return EXTRA_CARD;
+            if (e > 0 && j > 0 && (r = Random(j + e)) < e) {
+                return avail[r];
             }
         }
         do {

@@ -32,9 +32,10 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   the same gate. Functions >= `--big-bytes` (600) go to resumable big-mode
   workers; `swarm.mjs stats` shows match rates by size to tune that. `--seg`
   is a prefix (`main/` covers every main.exe unit).
-- The port's play tests: `node port/tests/playtest.mjs bosses|modes|adventure|challenges|menu|shots` (host Node; PORT.md, Running it).
-- The port's extra heroes (Ripper Roo from the player's Crash Bandicoot disc): one file each in `port/game/main/heroes/`,
-  Roo's (`roo.c`) the template; how to add one is in [docs/EXTRA_HEROES.md](docs/EXTRA_HEROES.md).
+- The port's play tests: `node port/tests/playtest.mjs bosses|modes|adventure|challenges|hero|menu|shots` (host Node; PORT.md, Running it).
+- The port's extra heroes (Ripper Roo from the player's Crash Bandicoot disc): a line each in `port/game/include/bash/herolist.h`
+  and a file each in `port/game/main/heroes/`, Roo's (`roo.c`) the template. Adding one follows the checklist at the top of
+  [docs/EXTRA_HEROES.md](docs/EXTRA_HEROES.md); `playtest.mjs hero ID` checks it in every game.
 - Playing/testing a build: `tools/dk make disc` (bootable `build/CrashBash.cue`),
   `make disc-check` (byte-identical to retail), `make shift OVL=tank PAD=0x40`
   (a disc with that overlay's addresses all moved, `build/shift/CrashBash.cue`), `make shift-all PAD=0x40`

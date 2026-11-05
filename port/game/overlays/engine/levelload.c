@@ -1351,7 +1351,7 @@ Blk32 LoadingScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 LoadingScriptPos = {0};
 process_info LoadingProcess2 = { InitLoadingCamera, UpdateLoadingScene, RenderLoadingScene, QuitLoadingScene, 0 };
 /* the models each mode loads (LoadModeDbases, QueueHeroModels; the last is the adventure stats') */
-ModeDbase ModeDbaseLists[106] = {
+ModeDbase ModeDbaseLists[BONUS_LOAD_FIRST + BONUS_SLOTS] = {
     { &FileGroups[128], &HeroModelBank[DB_CharsCrateCrash], &DatIndex[990], &DatIndex[989] },
     { &FileGroups[127], &HeroModelBank[DB_CharsCrateCoco], &DatIndex[988], &DatIndex[987] },
     { &FileGroups[126], &HeroModelBank[DB_CharsCrateCortex], &DatIndex[986], &DatIndex[985] },
@@ -1448,17 +1448,11 @@ ModeDbase ModeDbaseLists[106] = {
     { &FileGroups[34], &HeroModelBank[DB_CharsSplashRilla], &DatIndex[802], &DatIndex[801] },
     { &FileGroups[38], &HeroModelBank[DB_CharsSplashTiny], &DatIndex[810], &DatIndex[809] },
     { &FileGroups[36], &HeroModelBank[DB_CharsSplashKong], &DatIndex[806], &DatIndex[805] },
-    /* PC: Ripper Roo from the player's Crash Bandicoot disc, for the extra heroes (main/bonusheroes.c) */
-    { &FileGroups[130], &HeroModelBank[DB_BonusRoo], &DatIndex[993], &DatIndex[992] },
-    { &FileGroups[131], &HeroModelBank[DB_BonusRooPolar], &DatIndex[995], &DatIndex[994] },
-    { &FileGroups[132], &HeroModelBank[DB_BonusRooPogo], &DatIndex[997], &DatIndex[996] },
-    { &FileGroups[133], &HeroModelBank[DB_BonusRooBall], &DatIndex[999], &DatIndex[998] },
-    { &FileGroups[134], &HeroModelBank[DB_BonusRooTank], &DatIndex[1001], &DatIndex[1000] },
-    { &FileGroups[135], &HeroModelBank[DB_BonusRooRace], &DatIndex[1003], &DatIndex[1002] },
-    { &FileGroups[136], &HeroModelBank[DB_BonusRooSplash], &DatIndex[1005], &DatIndex[1004] },
-    { &FileGroups[137], &HeroModelBank[DB_BonusRooMallet], &DatIndex[1007], &DatIndex[1006] },
-    { &FileGroups[138], &HeroModelBank[DB_BonusRooDino], &DatIndex[1009], &DatIndex[1008] },
-    { &FileGroups[139], &HeroModelBank[DB_BonusRooKegs], &DatIndex[1011], &DatIndex[1010] },
+    /* PC: from 96 (BONUS_LOAD_FIRST), the extra heroes' from the player's own discs (main/bonusheroes.c; bash/herolist.h), a kind each */
+#define BONUS_LOAD(x, k) \
+    { &FileGroups[BONUS_GROUP_FIRST + BONUS_SLOT(x, k)], &HeroModelBank[DB_Bonus + BONUS_SLOT(x, k)], &DatIndex[BONUS_MDL(x, k)], &DatIndex[BONUS_TEX(x, k)] },
+#define BONUS_LOADS_OF(name, def) HERO_KIND_EACH(BONUS_LOAD, EXTRA_##name)
+    EXTRA_HERO_LIST(BONUS_LOADS_OF)
 };
 const s32 ModeDbaseCount = sizeof(ModeDbaseLists) / sizeof(ModeDbaseLists[0]);
 s32 FileGroupNone[2] = {0};

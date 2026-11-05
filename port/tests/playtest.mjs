@@ -17,11 +17,16 @@
  *   node port/tests/playtest.mjs challenges [--seconds N] [--at-once N] [LEVEL | LEVEL.CHOICE ...]
  *       Each Adventure challenge alone (the door's choice: 0 trophy, 1 and 2 the gem and crystal, 3 and 4 the relics) from everything else won,
  *       some at once, up to 60 seconds each. For working on the player: which it wins, and in how many goes.
- *   node port/tests/playtest.mjs same [--save] [--all]
+ *   node port/tests/playtest.mjs same [--save] [--all] [--hero ID]
  *   node port/tests/playtest.mjs image
  *   node port/tests/playtest.mjs packs
  *       Frames and sound of a few modes against a saved baseline (--save makes it), about a minute: whether a change that shouldn't alter
- *       anything didn't. Between big steps of cleaning up, in place of the long tests.
+ *       anything didn't. Between big steps of cleaning up, in place of the long tests. --hero ID plays the hero check's games with
+ *       four of that extra hero instead, against a baseline of its own: for a change to its making or to extra heroes' code.
+ *   node port/tests/playtest.mjs hero ID [--one]
+ *       An extra hero (docs/EXTRA_HEROES.md) in every game, four of it at once, each borrowing another base (--one: only player 1):
+ *       its model of every kind made, each game drawing it in its own kind, none on foot for want of one, nothing crashed, and three
+ *       shots of each game on a contact sheet to look over. The checklist's automatic part.
  *   node port/tests/playtest.mjs mods
  *       Mods from a mods folder: zips of textures, of archive files and of patches to them, broken ones, and which wins, by the
  *       pictures of one mode.
@@ -361,8 +366,10 @@ async function same(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const save = flag(args, '--save');
     const all = flag(args, '--all');
-    const dir = path.join(OUT, 'same');
+    const hero = option(args, '--hero', null);
+    const dir = path.join(OUT, 'same', ...(hero != null ? [`hero-${hero}`] : []));
     const base = path.join(dir, all ? 'baseline-all.json' : 'baseline.json');
+    const extra = hero != null ? [0, 1, 2, 3].flatMap(p => ['--extra-hero', String(p), hero]) : [];
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
     const old = !save && fs.existsSync(base) ? JSON.parse(fs.readFileSync(base, 'utf8')) : null;
@@ -382,7 +389,7 @@ async function same(args) {
         }
         fs.rmSync(path.join(dir, `m${m}.wav`), { force: true });
         const r = await run(exe, [...what, '--turbo', '--tile', String(slot), String(SAME_MODES.length),
-            ...shots, '--wav', rel(`m${m}.wav`)], path.join(dir, `m${m}.txt`), { timeout: MODE_TIMEOUT });
+            ...shots, '--wav', rel(`m${m}.wav`), ...extra], path.join(dir, `m${m}.txt`), { timeout: MODE_TIMEOUT });
         const crash = crash_where(exe, r.text);
 
         if (crash != null) {
@@ -400,7 +407,7 @@ async function same(args) {
         return [`mode ${m}`, { pass: differ.length === 0, what: differ.length === 0 ? 'the same' : `differs: ${differ.map(k => k.slice(k.indexOf('-') + 1)).join(', ')}` }];
     };
     const results = [];
-    const list = all ? [...Array(41).keys(), ...Object.keys(SAME_EXTRAS)] : SAME_MODES;
+    const list = hero != null ? HERO_GAMES.map(g => g.mode) : all ? [...Array(41).keys(), ...Object.keys(SAME_EXTRAS)] : SAME_MODES;
 
     for (let i = 0; i < list.length; i += AT_ONCE) {
         results.push(...await Promise.all(list.slice(i, i + AT_ONCE).map((m, slot) => one(m, slot))));
@@ -408,6 +415,95 @@ async function same(args) {
 
     if (save) {
         fs.writeFileSync(base, JSON.stringify(now, null, 1));
+    }
+    return report(results);
+}
+
+/* An extra hero in every game (docs/EXTRA_HEROES.md, The checklist): a game of each kind of model the games' heroes have, and the
+   games with something of their own (Ring Ding on foot, Manic Panic on foot and on the bear, the swamp's hover tanks). */
+const HERO_GAMES = [
+    { mode: 0, game: 'Jungle Bash' }, { mode: 27, game: 'Ring Ding' }, { mode: 18, game: 'Tilt Panic' }, { mode: 21, game: 'Manic Panic' },
+    { mode: 10, game: 'Pogo Painter' }, { mode: 14, game: 'Crashball' }, { mode: 6, game: 'Desert Fox' }, { mode: 5, game: 'Swamp Fox' },
+    { mode: 23, game: 'Dot Dash' }, { mode: 25, game: 'Splash Dash' }, { mode: 29, game: 'Mallet Mash' }, { mode: 28, game: 'Dragon Drop' },
+    { mode: 30, game: 'Keg Kaboom' },
+];
+const HERO_SHOTS = [500, 900, 1300];
+const HERO_VBLANKS = 1400;
+
+/* Its model of each kind made (bonusheroes.c's log), each game drawing every player who's it in that game's kind (extraheroes.c's),
+   none on foot for want of a model, each on a base of its own, every kind it has played somewhere, and nothing crashed; the shots on
+   one sheet. What's left is looking and playing. */
+async function hero(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const one = flag(args, '--one');
+    const id = args.shift();
+    const dir = path.join(OUT, 'hero', id ?? '');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const players = one ? [1] : [1, 2, 3, 4];
+    const extra = players.flatMap(p => ['--extra-hero', String(p - 1), id]);
+    const results = [];
+    const played = new Set();
+    let made = null;
+
+    if (id == null) {
+        console.log('node port/tests/playtest.mjs hero ID [--one]: which extra hero? (roo)');
+        return 2;
+    }
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    const name_of = g => `m${g.mode}-${g.game.toLowerCase().replace(/[^a-z]+/g, '-')}`;
+    const shots_of = g => HERO_SHOTS.map((v, i) => rel(`${name_of(g)}-${'abc'[i]}.png`));
+    const play = async (g, slot) => {
+        const name = name_of(g);
+        const shots = shots_of(g);
+        const r = await run(exe, ['--mode', String(g.mode), '--skip-intro', '--skip-loading', '--turbo', '--tile', String(slot), String(AT_ONCE),
+            '--frames', String(HERO_VBLANKS), ...HERO_SHOTS.flatMap((v, i) => ['--shot', String(v), shots[i]]), ...extra],
+            path.join(dir, `${name}.txt`), { timeout: MODE_TIMEOUT });
+        const crash = crash_where(exe, r.text);
+        /* a game can start its heroes more than once (a round, the game proper after its intro): each player's last */
+        const lines = [...new Map([...r.text.matchAll(new RegExp(`^extra heroes: player (\\d) is ${id}, in hero (\\d+)'s place:(.*)$`, 'gm'))]
+            .map(m => [m[1], m])).values()].sort((a, b) => Number(a[1]) - Number(b[1]));
+        const missing = players.filter(p => !lines.some(m => Number(m[1]) === p));
+        const bases = new Set(lines.map(m => m[2]));
+        const kinds = [...new Set(lines.map(m => m[3].trim()))];
+        const wanting = lines.filter(m => /it has no model|no model loaded/.test(m[3]));
+
+        made ??= r.text.match(new RegExp(`^bonus heroes: ${id} (is made: a model .*|isn't made.*)$`, 'm'))?.[1] ?? null;
+        for (const k of kinds.flatMap(k => k.split(', '))) {
+            played.add(k);
+        }
+        if (crash != null) {
+            return [g.game, { pass: false, what: crash }];
+        }
+        if (r.code !== 0) {
+            return [g.game, { pass: false, what: `exit ${r.code}` }];
+        }
+        if (missing.length !== 0) {
+            return [g.game, { pass: false, what: `player ${missing.join(', ')} isn't ${id} (not made, or nobody's base was free)` }];
+        }
+        if (wanting.length !== 0) {
+            return [g.game, { pass: false, what: wanting.map(m => `player ${m[1]}${m[3]}`).join('; ') }];
+        }
+        if (bases.size !== lines.length) {
+            return [g.game, { pass: false, what: `two of them on one base: ${lines.map(m => m[2]).join(', ')}` }];
+        }
+        return [g.game, { pass: true, what: `${kinds.join('; ')} (bases ${lines.map(m => m[2]).join(', ')})` }];
+    };
+    for (let i = 0; i < HERO_GAMES.length; i += AT_ONCE) {
+        results.push(...await Promise.all(HERO_GAMES.slice(i, i + AT_ONCE).map((g, slot) => play(g, slot))));
+    }
+    /* what it was made with, and that each kind it has was played */
+    const has = made?.startsWith('is made') ? made.replace(/^is made: a model /, '').split('; none ')[0].split(', ') : [];
+    const none = made?.includes('; none ') ? made.split('; none ')[1] : null;
+    results.unshift(['made', { pass: made?.startsWith('is made') === true && none == null,
+        what: made == null ? 'no log line: is EXTRA HEROES there?' : none != null ? `no model ${none}` : made }]);
+    const unplayed = has.filter(k => !played.has(k));
+    results.push(['every kind played', { pass: has.length > 0 && unplayed.length === 0, what: unplayed.length === 0 ? `${has.length} kinds` : `not: ${unplayed.join(', ')}` }]);
+    if (process.platform === 'win32') {
+        const sheet = rel('sheet.png');
+
+        spawnSync('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', 'port/tests/sheet.ps1', sheet, String(HERO_SHOTS.length), ...HERO_GAMES.flatMap(shots_of)], { cwd: ROOT, stdio: 'inherit' });
+        console.log(`shots: ${sheet}`);
     }
     return report(results);
 }
@@ -776,9 +872,9 @@ async function mods(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, menu, shots, image, packs, mods };
+const commands = { bosses, modes, adventure, challenges, same, hero, menu, shots, image, packs, mods };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|menu|shots|image|packs|mods: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|menu|shots|image|packs|mods: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

@@ -9,6 +9,54 @@ Nothing of another game is kept or shipped. Each hero is made from its disc on t
 machine every time the port starts (the disc beside `crashbash.exe` or in a `discs` folder,
 `disc_image_find`), and lives only in memory.
 
+## Adding a hero: the checklist
+
+A new hero is one line in a list and a file of its own; everything else comes from the line. Go
+through it in order, and show the user each game's model before starting the next: they test by
+playing.
+
+1. **Its line.** `X(NAME, HeroName)` in `EXTRA_HERO_LIST` (`include/bash/herolist.h`). From it
+   come its `EXTRA_NAME` number, its place in `HeroDefs`, its card in the character select, and,
+   for each kind of model, its archive entries, file group, bank and loading (below, 5). The third
+   row has room for four cards, in the list's order.
+2. **Its file**, `main/heroes/name.c`: a copy of `roo.c` with what's his taken out. It holds its
+   `HeroDef` (below, 1), with its game's disc by serial and the base it would rather have, and its
+   make. Another game's formats need readers of their own, beside Crash Bandicoot's (`c1_` in
+   heromake.h).
+3. **On foot** (below, 4, steps 1 to 4): its model, faces and textures. Make any moves its game
+   hasn't got, and give it stand-ins for its base's (below, 2). Try it in Crate Crush and Ring Ding
+   (below, 6). Most of the work is here, and in the games where it rides or holds something.
+4. **Its sounds** (below, 3): a voice for each offset of its base's block, or none where one would
+   be wrong. Its name as it wins has to be short enough for the announcer's "wins!" after it.
+5. **Its card and portraits**: its game's own picture if it has one (`HeroMade.card`), or one
+   drawn from its model (`HeroDef.face`). It shows in the select, on the panel and in the menus
+   after.
+6. **Each other kind** (below, 4, steps 5 to 13), one at a time: riding a polar bear, on a pogo
+   stick, in a Ballistix car, in a tank, in a race cart, riding a fish, with a mallet, riding a
+   dino, and with a keg. Each step says what it takes from the game's own models and how it's put
+   on the hero. `hm_game_part` (part of any of the game's models) and `mount_make` (a ride, for the
+   fish and the dino) are already written. A kind it has no model of, it plays as on foot.
+7. **The check**: `node port/tests/playtest.mjs hero ID` plays it in every game, four of it at once,
+   each on a base of its own (`--one` makes only player 1 it). It passes when:
+   - its model of every kind is made;
+   - each game draws every one of them in that game's kind;
+   - none is on foot for want of a model;
+   - every kind it has was played.
+
+   Then look over its sheet (`build/port/playtest/hero/ID/sheet.png`), and the user plays each game.
+8. **The bosses**: `node port/tests/playtest.mjs bosses --hero ID` beats each boss as it. Oxide's
+   fight draws its Ballistix car model in the ships.
+9. **Its baseline**, once the user approves it: `node port/tests/playtest.mjs same --hero ID --save`.
+   After that, `same --hero ID` shows in a minute whether it still draws and sounds the same after
+   a change to its making or to the extra heroes' code.
+10. **The words**: the EXTRA HEROES setting's hint (`overlays/titles/settingsmenu.c`) and the
+    release's README.txt say who's there. Game facts found go in ARCHITECTURE.md. Then the roadmap
+    (ROADMAP-B.md, 7.12.7) and AGENT_LOG.md.
+
+**Done:** Ripper Roo (`roo`, from Crash Bandicoot (USA), SCUS-94900). The user played and approved
+every game (2026-11-04) and called him done (2026-11-05). Two things are left out at their word: his
+name is never written in the game, and the podium and win screens weren't looked at with him.
+
 ## How one plays
 
 An extra hero borrows, inside, the number of an original hero nobody's playing that match: its
@@ -48,11 +96,13 @@ the base's do.
 
 | File | What |
 |---|---|
+| `include/bash/herolist.h` | The list of heroes, a line each, and where each one's models go |
 | `include/bash/herodef.h` | The definition a hero's file fills in (`HeroDef`): the template's shape |
 | `include/bash/heromake.h` | What a hero's file uses to make itself: reading its disc, writing Crash Bash's models, taking part of one of the game's own, riding a bear |
 | `main/heroes/roo.c` | Ripper Roo: everything that's his |
-| `main/bonusheroes.c` | The making that's shared, the list of heroes (`HeroDefs`), their archive entries and banks (`Slots`), playing their sounds |
-| `main/extraheroes.c` | The playing that's shared: bases, tables, frames, points, sounds, faces |
+| `main/bonusheroes.c` | The making that's shared, the heroes by number (`HeroDefs`), putting their models in the archive, playing their sounds |
+| `main/extraheroes.c` | The playing that's shared: bases, tables, frames, points, sounds, faces, the select's cards |
+| `overlays/titles/titles.c` | The character select: the extra heroes' cards, a third row |
 
 ## Ripper Roo, a part at a time
 
@@ -302,29 +352,56 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
 
 ### 5. Putting him in
 
-- An `EXTRA_` number for him (`extraheroes.h`).
-- His `HeroDef` in `HeroDefs` and his archive entries and banks in `Slots` (`bonusheroes.c`).
-- An archive entry for each model and its texture set (main.c's `DatIndex`, from 992, empty until
-  his make fills them) and a file group of each pair (`FileGroups`, from 130).
-- A bank of each (`modelbank.h`'s `DB_BonusRoo`, `DB_BonusRooPolar`, `DB_BonusRooPogo`, `DB_BonusRooBall`, `DB_BonusRooTank`, `DB_BonusRooRace`, `DB_BonusRooSplash`, `DB_BonusRooMallet`, `DB_BonusRooDino` and `DB_BonusRooKegs`, dbase.c's
-  `HeroModelBank`) and their loading (levelload.c's `ModeDbaseLists`).
-- A card in the character select (titles.c): the ninth, first of the third row, is Roo's; another
-  hero needs one of its own.
+His line in `include/bash/herolist.h`, `X(ROO, HeroRoo)`, is all of it:
+
+- His number, `EXTRA_ROO` (extraheroes.h), and his place in `HeroDefs` (bonusheroes.c).
+- For each kind, at `BONUS_SLOT` (his place in the list times the kinds, plus the kind):
+  - an archive entry for its textures and one for its model, two from 992 for each, empty until
+    his make fills them (main.c's `DatIndex`);
+  - a file group of the pair, from 130 (`FileGroups`);
+  - a bank, `DB_Bonus` on (modelbank.h; dbase.c's `HeroModelBank`);
+  - and its loading, from 96 (levelload.c's `ModeDbaseLists`).
+- His card in the character select (titles.c). The extra heroes' cards are a third row under the red
+  one, four at most, in the list's order. Each card's portrait and frame come after the game's own
+  pieces. The computer picks each free one as often as any one hero still free.
 
 ### 6. Trying him
+
+In every game at once, with a contact sheet of them (the checklist, step 7):
+
+```bash
+node port/tests/playtest.mjs hero roo
+```
+
+One game:
 
 ```bash
 build/port/windows-clang/crashbash.exe --mode 18 --skip-intro --skip-loading --turbo --window 640 480 --extra-hero 0 roo --shot 700 build/roo.png --frames 720
 ```
 
-Mode 0 is Crate Crush, 5 to 8 Tank's four arenas (5 the swamp's hover tanks), 10 to 13 Pogo's,
-14 to 17 Ballistix's, 18 to 21 Polar Push's, 23 to 26 Crash Dash's (25 the water's, Splash Dash), 28 the gem game, 29 the mallet game, 30 the kegs game.
-`--extra-hero N roo` for each of players 0 to 3 puts him on every side at once. In a test run the computer plays
-player 1, the same way each run. The log says what was made: `bonus: Ripper Roo from Crash
-Bandicoot, 1145 triangles, 1 textures, ... riding a bear, on his cane, in a car, in a tank, in a race
-cart, riding a fish, with a mallet, riding a dino, with a keg, his hero card, his laugh, his landing`. A test run needs a window (a small one will do) once a
-mode draws: with `--no-window` it crashes there (AGENT_LOG.md), though his models are made, and
-written for `BONUS_DUMP`, before that.
+The modes:
+
+- 0 to 3: Crate Crush.
+- 5 to 8: Tank's four arenas (5 is the swamp's, with hover tanks).
+- 10 to 13: Pogo.
+- 14 to 17: Ballistix.
+- 18 to 21: Polar Push. In 21, Manic Panic, a hero can be on foot as well as on its bear.
+- 23 to 26: Crash Dash. 25 is the water track, Splash Dash.
+- 27: Ring Ding, on foot.
+- 28: the gem game.
+- 29: the mallet game.
+- 30: the kegs game.
+
+`--extra-hero N roo` for each of players 0 to 3 puts him on every side at once. In a test run the
+computer plays player 1, the same way each run.
+
+The log says what was made, in his make's words (`bonus: Ripper Roo from Crash Bandicoot, 1145
+triangles, ...`) and in the checks' (`bonus heroes: roo is made: a model on foot, riding a polar
+bear, ...`). As a game starts, it says what each player who's an extra hero is drawn as: `extra
+heroes: player 1 is roo, in hero 8's place: riding a polar bear`.
+
+A test run needs a window once a mode draws (a small one will do). With `--no-window` it crashes
+there (AGENT_LOG.md), though his models are made before that.
 
 A boss fight plays through the boss test, from a real Adventure: `node port/tests/playtest.mjs
 bosses oxide --hero roo` (mode 31 alone only starts its space phase, and nobody fights). Oxide's

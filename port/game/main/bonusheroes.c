@@ -5,7 +5,7 @@
  * model and texture set of each kind it has (docs/ASSETS.md): on foot, riding a polar bear, on a pogo stick, in a Ballistix car, in a
  * tank, in a race cart, riding a fish, with a mallet, riding a dino, and with a keg. They go into the archive's entries for
  * that hero (main.c's DatIndex, from 992) as a mod's files do, and the game loads them as it does any model, into banks of their own
- * (DB_BonusRoo, ...). Nothing of them is kept but in memory, and without its disc there's no hero. docs/EXTRA_HEROES.md has how to add
+ * (DB_Bonus on; bash/herolist.h). Nothing of them is kept but in memory, and without its disc there's no hero. docs/EXTRA_HEROES.md has how to add
  * one, from Ripper Roo's (heroes/roo.c). */
 #include <math.h>
 #include <stdio.h>
@@ -23,20 +23,12 @@ void archive_replace(int entry, unsigned char *bytes, int size);
 unsigned char *archive_own_file(int entry, int *size);
 void SDL_free(void *mem);
 
-extern const HeroDef HeroRoo;
-
-const HeroDef *const HeroDefs[NUM_EXTRA] = { NULL, &HeroRoo };
-
-/* Each hero's archive entries and bank for each kind it has (main.c, dbase.c, levelload.c's ModeDbaseLists) */
-static const struct {
-    s32 tex, mdl, bank;
-} Slots[NUM_EXTRA][NUM_KINDS] = {
-    { { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty },
-      { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty }, { 0, 0, DB_Empty } },
-    { { 992, 993, DB_BonusRoo }, { 994, 995, DB_BonusRooPolar }, { 996, 997, DB_BonusRooPogo }, { 998, 999, DB_BonusRooBall },
-      { 1000, 1001, DB_BonusRooTank }, { 1002, 1003, DB_BonusRooRace }, { 1004, 1005, DB_BonusRooSplash },
-      { 1006, 1007, DB_BonusRooMallet }, { 1008, 1009, DB_BonusRooDino }, { 1010, 1011, DB_BonusRooKegs } },
-};
+/* The heroes, from bash/herolist.h's list: each one's HeroDef, by its EXTRA_ number. Each kind of each has its archive entries and bank
+ * by its place in the list (BONUS_TEX, BONUS_MDL, DB_Bonus + BONUS_SLOT; main.c, dbase.c, levelload.c's ModeDbaseLists). */
+#define HERO_DEF_EXTERN(name, def) extern const HeroDef def;
+#define HERO_DEF_OF(name, def) &def,
+EXTRA_HERO_LIST(HERO_DEF_EXTERN)
+const HeroDef *const HeroDefs[NUM_EXTRA] = { NULL, EXTRA_HERO_LIST(HERO_DEF_OF) };
 
 static HeroMade Made[NUM_EXTRA];
 static s32 Tried[NUM_EXTRA], Have[NUM_EXTRA];
@@ -2095,19 +2087,35 @@ static void make_hero(s32 extra) {
     const HeroDef *d = HeroDefs[extra];
     HeroMade *m = &Made[extra];
 
+    s32 k, n;
+
     Tried[extra] = 1;
     memset(m, 0, sizeof(*m));
     if (d == NULL || d->make == NULL || !d->make(m) || m->mdl[KIND_FOOT] == NULL) {
-        s32 k;
-
         for (k = 0; k < NUM_KINDS; k++) {
             free(m->tex[k]);
             free(m->mdl[k]);
         }
         memset(m, 0, sizeof(*m));
+        if (d != NULL) {
+            printf("bonus heroes: %s isn't made (its disc, %s)\n", d->id, d->disc);
+        }
         return;
     }
     Have[extra] = 1;
+    /* for the log, which a hero's checks read (port/tests/playtest.mjs hero) */
+    printf("bonus heroes: %s is made: a model", d->id);
+    for (k = 0, n = 0; k < NUM_KINDS; k++) {
+        if (m->mdl[k] != NULL) {
+            printf("%s %s", n++ > 0 ? "," : "", extra_hero_kind_name(k));
+        }
+    }
+    for (k = 0, n = 0; k < NUM_KINDS; k++) {
+        if (m->mdl[k] == NULL) {
+            printf("%s %s", n++ > 0 ? "," : "; none", extra_hero_kind_name(k));
+        }
+    }
+    printf("\n");
 }
 
 void bonus_heroes_files(void) {
@@ -2132,8 +2140,8 @@ void bonus_heroes_files(void) {
             }
             memcpy(tex, Made[x].tex[k], (size_t)Made[x].tex_size[k]);
             memcpy(mdl, Made[x].mdl[k], (size_t)Made[x].mdl_size[k]);
-            archive_replace(Slots[x][k].tex, tex, Made[x].tex_size[k]);
-            archive_replace(Slots[x][k].mdl, mdl, Made[x].mdl_size[k]);
+            archive_replace(BONUS_TEX(x, k), tex, Made[x].tex_size[k]);
+            archive_replace(BONUS_MDL(x, k), mdl, Made[x].mdl_size[k]);
         }
     }
 }
@@ -2147,7 +2155,7 @@ s32 bonus_heroes_bank(s32 extra, s32 kind) {
         return DB_Empty;
     }
     /* a kind it has none of: its model on foot */
-    return Slots[extra][Have[extra] && Made[extra].mdl[kind] == NULL ? KIND_FOOT : kind].bank;
+    return DB_Bonus + BONUS_SLOT(extra, Have[extra] && Made[extra].mdl[kind] == NULL ? KIND_FOOT : kind);
 }
 
 u8 *bonus_heroes_model(s32 extra, s32 kind) {

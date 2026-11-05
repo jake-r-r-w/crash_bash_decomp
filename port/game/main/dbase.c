@@ -994,14 +994,8 @@ obj_dbase HeroModelBank[DB_COUNT] = {
     { &DatIndex[9], &DatIndex[8] }, /* DB_CutsceneAkuData */
     { &DatIndex[19], &DatIndex[18] }, /* DB_CutsceneAkuUkaData2 */
     { &DatIndex[17], &DatIndex[16] }, /* DB_CutsceneAkuUkaData */
-    { &DatIndex[993], &DatIndex[992] }, /* DB_BonusRoo, PC (bonusheroes.c) */
-    { &DatIndex[995], &DatIndex[994] }, /* DB_BonusRooPolar, PC */
-    { &DatIndex[997], &DatIndex[996] }, /* DB_BonusRooPogo, PC */
-    { &DatIndex[999], &DatIndex[998] }, /* DB_BonusRooBall, PC */
-    { &DatIndex[1001], &DatIndex[1000] }, /* DB_BonusRooTank, PC */
-    { &DatIndex[1003], &DatIndex[1002] }, /* DB_BonusRooRace, PC */
-    { &DatIndex[1005], &DatIndex[1004] }, /* DB_BonusRooSplash, PC */
-    { &DatIndex[1007], &DatIndex[1006] }, /* DB_BonusRooMallet, PC */
-    { &DatIndex[1009], &DatIndex[1008] }, /* DB_BonusRooDino, PC */
-    { &DatIndex[1011], &DatIndex[1010] }, /* DB_BonusRooKegs, PC */
+    /* PC: the extra heroes' (DB_Bonus; bash/herolist.h), each kind's model and textures as bonusheroes.c fills them */
+#define BONUS_BANK(x, k) { &DatIndex[BONUS_MDL(x, k)], &DatIndex[BONUS_TEX(x, k)] },
+#define BONUS_BANKS_OF(name, def) HERO_KIND_EACH(BONUS_BANK, EXTRA_##name)
+    EXTRA_HERO_LIST(BONUS_BANKS_OF)
 };

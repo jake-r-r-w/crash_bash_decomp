@@ -6,6 +6,7 @@
  * is the one the others follow: docs/EXTRA_HEROES.md goes through him, a part at a time. */
 
 #include "common.h"
+#include "bash/herolist.h"
 
 /* The kinds of model a hero has, one for each kind the games' own heroes have: on foot (Crate Crush, and the games that have no model of
  * their own for it), riding a polar bear (Polar Push), bouncing on a pogo stick (Pogo), sat in a car (Ballistix, the game drawing the
@@ -14,6 +15,7 @@
  * mallet game, the mallet in its model), riding a dino (the gem game, the dino in its model), and with a keg (the kegs game, the keg in
  * its model). Each loads where the games load their heroes' of that kind; a kind it has no model of, it plays as on foot. */
 enum { KIND_FOOT, KIND_POLAR, KIND_POGO, KIND_BALL, KIND_TANK, KIND_RACE, KIND_SPLASH, KIND_MALLET, KIND_DINO, KIND_KEGS, NUM_KINDS };
+_Static_assert(NUM_KINDS == HERO_KINDS, "bash/herolist.h's HERO_KINDS and HERO_KIND_EACH go with the kinds");
 
 /* How a stand-in's frames go as its base's animation plays: the same share of the way through (STRETCH), or at the stand-in's own speed,
  * a frame a tick from when the base's started, round and round (LOOP) or once, its last frame then held (ONCE). */

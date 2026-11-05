@@ -8,8 +8,11 @@
 
 #include "common.h"
 #include "bash/main.h"
+#include "bash/herolist.h"
 
-enum { EXTRA_NONE, EXTRA_ROO, NUM_EXTRA };
+/* Each extra hero's number, from bash/herolist.h's list (EXTRA_ROO, ...) */
+#define EXTRA_NUMBER(name, def) EXTRA_##name,
+enum { EXTRA_NONE, EXTRA_HERO_LIST(EXTRA_NUMBER) NUM_EXTRA };
 
 /* Whether the launcher has them on, or a test run asks for one. */
 s32 extra_heroes_on(void);
@@ -19,10 +22,17 @@ void extra_hero_pick(s32 player, s32 extra);
 /* Its name, in the game's capitals, and its model (HeroModelBank). */
 const char *extra_hero_name(s32 extra);
 s32 extra_hero_model(s32 extra);
+/* A kind of model (herodef.h's KIND_) in words, for the log: "on foot", "riding a polar bear", ... */
+const char *extra_hero_kind_name(s32 kind);
 /* By its short name, for a test run's --extra-hero (roo), or EXTRA_NONE. */
 s32 extra_hero_named(const char *id);
 /* Whether it's there to play: its model came from the player's disc of its game (bonusheroes.c). */
 s32 extra_hero_available(s32 extra);
+/* The original hero it would rather borrow, if nobody's playing that one (HeroDef.prefer). */
+s32 extra_hero_prefer(s32 extra);
+/* The extra heroes with a card in the character select, in bash/herolist.h's order, into heroes (if not NULL), EXTRA_CARDS_MAX at
+ * most; how many. None unless the launcher has them on. */
+s32 extra_heroes_cards(s32 *heroes);
 
 /* Once the heroes are known, before their models load: each extra hero's base, and the models with theirs in their bases' places. */
 void extra_heroes_assign(void);
@@ -54,9 +64,9 @@ s32 extra_hero_anim_key(const obj_dbase *db, s32 key);
 /* The panel's face of an extra hero's base (DB_Interface's image index, w x h texels), as the extra hero's own; NULL for any other. */
 const struct GfxTex *extra_hero_face(s32 index, s32 w, s32 h);
 
-/* The character select (titles.c): its card's portrait is this subengine's, and its model loads, while the select's up; what a pick
- * plays on its stand; and its portrait as the subengine that shows it is drawn (draw.c), NULL for any other. */
-void extra_heroes_select_enter(const subengine *portrait);
+/* The character select (titles.c): each of the n heroes' cards has its portrait in portraits[i], and its model loads, while the select's
+ * up; what a pick plays on its stand; and its portrait as the subengine that shows it is drawn (draw.c), NULL for any other. */
+void extra_heroes_select_enter(const subengine *const *portraits, const s32 *heroes, s32 n);
 void extra_heroes_select_leave(void);
 void *extra_hero_select_steps(s32 extra);
 s32 extra_hero_select_scale(s32 extra);

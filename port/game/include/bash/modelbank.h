@@ -7,6 +7,7 @@
  * owner: src/main/dbase.c */
 
 #include "common.h"
+#include "bash/herolist.h"
 
 /* An archive entry (DatIndex): the demos' C++ class `file` (asload_permanent_callback(file *, ...)). */
 typedef struct file {
@@ -327,17 +328,10 @@ enum DbaseIds {
     DB_CutsceneAkuData, /* 280: models\cutscene\aku\data.mdl */
     DB_CutsceneAkuUkaData2, /* 281: models\cutscene\aku_uka\data2.mdl */
     DB_CutsceneAkuUkaData, /* 282: models\cutscene\aku_uka\data.mdl */
-    DB_BonusRoo, /* 283, PC: Ripper Roo from the player's Crash Bandicoot disc (main/bonusheroes.c, main/heroes/roo.c) */
-    DB_BonusRooPolar, /* 284, PC: and riding a polar bear */
-    DB_BonusRooPogo, /* 285, PC: and on his cane (Pogo) */
-    DB_BonusRooBall, /* 286, PC: and in a Ballistix car */
-    DB_BonusRooTank, /* 287, PC: and in a tank */
-    DB_BonusRooRace, /* 288, PC: and in a race cart (Crash Dash) */
-    DB_BonusRooSplash, /* 289, PC: and riding a fish (Splash Dash) */
-    DB_BonusRooMallet, /* 290, PC: and with a mallet (the mallet game) */
-    DB_BonusRooDino, /* 291, PC: and riding a dino (the gem game) */
-    DB_BonusRooKegs, /* 292, PC: and with a keg (the kegs game) */
-    DB_COUNT
+    /* 283, PC: the extra heroes' models, made from the player's own discs (main/bonusheroes.c, main/heroes/): HERO_KINDS of each, in
+     * bash/herolist.h's order, DB_Bonus + BONUS_SLOT(EXTRA_ number, KIND_) */
+    DB_Bonus,
+    DB_COUNT = DB_Bonus + BONUS_SLOTS
 };
 
 extern struct obj_dbase HeroModelBank[DB_COUNT];
