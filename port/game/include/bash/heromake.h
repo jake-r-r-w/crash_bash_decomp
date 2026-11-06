@@ -210,6 +210,8 @@ typedef struct {
     /* any motion of its own, before the riding's, for frame f of RIDE_ animation `anim` (of `frames`); may be NULL */
     void (*own)(void *ctx, s32 anim, s32 f, s32 frames, V3 *verts);
     void *ctx;
+    /* the animations (1 << RIDE_) in which its own motion follows Crash's body itself (ride_crash_body), so it isn't bent as he leans */
+    s32 follow;
     /* what's loose on it (a tongue, ears): each vertex's share of their swing, 1 at their ends, or NULL for none; and the swing, at
      * its head (the middle of what bends at its neck) */
     const float *flop;
@@ -218,6 +220,16 @@ typedef struct {
 /* Where the hero sits: the top of the bear's back under its middle, and that middle (Crash Bash's axes). 0 if there's no bear. */
 s32 ride_seat(float *back_y, float *seat_z);
 s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size);
+/* Crash's body on his bear in frame f of RIDE_ animation `anim`, as the rider's own motion is in (the bear's back's frame, before the
+ * riding moves it with the back), from his first breathing frame: how far his hips have moved; his body's turn (his spine's, hips to
+ * chest, and his shoulders' line across it); and each arm's upper arm and forearm (0 his left, x below 0), as directions in his body's
+ * frame, now and then. Crash Bash's axes. For a rider's own motion (Rider.own) while ride_make makes its model; 0 outside that. */
+typedef struct {
+    V3 hips;
+    float body[3][3];
+    V3 arm[2][2], arm_was[2][2];
+} CrashBody;
+s32 ride_crash_body(s32 anim, s32 f, CrashBody *out);
 
 /* One of the game's own sounds, out of a sound pack in the archive (docs/ASSETS.md, Sound packs): the sample its tone for sound `id`
  * plays (copied, kept), at the pitch the game plays it (PlaySfx's note, 60, against the tone's centre and shift). 0 if there's none. */

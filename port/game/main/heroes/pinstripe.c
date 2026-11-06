@@ -14,7 +14,8 @@
  * he's hit (PiF1V) and knocked down (PiF4V), his arms flung out by his rig, laughs crouched as he taunts (PiG2V, his arms down), and as
  * he wins shoots his gun about laughing, as in that fight (PiG2V, the gun out), each of those at his still's size (PIN_SOURCE_SCALE)
  * with his still's eyes. He's lit brighter and softer than his game's colours are, and his head's bigger, as Crash Bash's heroes look
- * (PinLight, HEAD_SCALE). Riding a polar bear he's sat astride Crash's, his hands on its neck (ride_bear). His sounds are his boss
+ * (PinLight, HEAD_SCALE). Riding a polar bear he's sat astride Crash's, his hands on its neck (ride_bear), and thrown about at the
+ * ice's edge as Crash is (ride_own). His sounds are his boss
  * fight's: his laugh and his tommy gun. His hero card is the face that fight shows by his health. */
 #include <math.h>
 #include <stdio.h>
@@ -1250,6 +1251,85 @@ static s32 own_vertex(s32 k) {
     return 0;
 }
 
+/* Where he's sat on the bear's back (ride_bear): his units to Crash Bash's, the top of its back and its middle */
+static struct {
+    float k, back_y, seat_z;
+    s32 n;
+} RideAt;
+
+/* A point of him in his rig as he sits in Crash Bash's: RIDE_SCALE of him, about the middle of his hips, his hips on its back */
+static V3 to_seat(V3 r) {
+    V3 hips = { 0, Legs[0].joint[0].y, Legs[0].joint[0].z }, p;
+    float hip = Legs[0].joint[0].y;
+
+    p = from_rig(vadd(hips, vmul(vsub(r, hips), RIDE_SCALE)));
+    return v3(p.x * RideAt.k, p.y * RideAt.k + hip * PIN_UNIT * RideAt.k - RIDE_HIP_UP + RideAt.back_y,
+              p.z * RideAt.k + RideAt.seat_z + RIDE_Z);
+}
+
+/* A direction in Crash Bash's axes in his rig's (y and z the other way round), and a turn of Crash Bash's on one in his rig */
+static V3 rig_dir(V3 d) {
+    return v3(d.x, -d.y, -d.z);
+}
+static V3 bash_turned(const float m[3][3], V3 v) {
+    V3 b = rig_dir(v);
+
+    return rig_dir(v3(m[0][0] * b.x + m[0][1] * b.y + m[0][2] * b.z, m[1][0] * b.x + m[1][1] * b.y + m[1][2] * b.z,
+                      m[2][0] * b.x + m[2][1] * b.y + m[2][2] * b.z));
+}
+
+/* Thrown about at the ice's edge (FALL: the teeter, then the drop), he goes as Crash does on his bear (ride_crash_body): each of his
+ * arms turned from how he sits as Crash's turns from how Crash sat, and then, as Crash's goes further (a turn of FOLLOW_FROM to
+ * FOLLOW_ALL radians), more and more the very way Crash's goes, so he flails his arms out and up as Crash does; his body above his
+ * waist turned as Crash's body turns, back and over to his left; his legs astride still; and all of him moved as Crash's hips move,
+ * aside and back off the bear's back as he hangs on, and above it as it drops away from under him. Without Crash's body, as he sits. */
+#define FOLLOW_FROM 0.3f
+#define FOLLOW_ALL 1.1f
+static void ride_own(void *ctx, s32 anim, s32 f, s32 frames, V3 *verts) {
+    static V3 r[MAX_VERTS];
+    V3 waist = { 0, WAIST_Y, 0 };
+    CrashBody cb;
+    s32 i, j, k;
+
+    (void)ctx;
+    (void)frames;
+    if (anim != RIDE_FALL || !ride_crash_body(anim, f, &cb)) {
+        return;
+    }
+    memcpy(r, Rest, sizeof(V3) * Verts);
+    for (i = 0; i < 2; i++) {
+        V3 own[2], dir[2];
+        Turn t[2];
+        float w = 0;
+
+        own[0] = sided(ArmsRide.up, Arms[i].side);
+        own[1] = sided(ArmsRide.fore, Arms[i].side);
+        for (j = 0; j < 2; j++) {
+            t[j] = turn_from(vnorm(rig_dir(cb.arm_was[i][j])), vnorm(rig_dir(cb.arm[i][j])));
+            w = fmaxf(w, hm_smooth(FOLLOW_FROM, FOLLOW_ALL, t[j].angle));
+        }
+        for (j = 0; j < 2; j++) {
+            dir[j] = vnorm(hm_mix(turned(&t[j], vnorm(own[j])), vnorm(rig_dir(cb.arm[i][j])), w));
+        }
+        pose_arm(r, &Arms[i], dir[0], dir[1], NULL);
+    }
+    pose_body(r, RIDE_LEAN, 0, 0);
+    for (k = 0; k < Verts; k++) {
+        if (PieceOf[k] != PIECE_LEGS && PieceOf[k] != PIECE_SHOE) {
+            r[k] = hm_mix(r[k], vadd(waist, bash_turned(cb.body, vsub(r[k], waist))),
+                          hm_smooth(WAIST_Y - WAIST_BLEND, WAIST_Y + WAIST_BLEND, Rest[k].y));
+        }
+    }
+    for (i = 0; i < 2; i++) {
+        pose_astride(r, &Legs[i], RIDE_SPREAD, RIDE_FLEX, RIDE_KNEE, RIDE_FOOT);
+    }
+    place_gun(r, 0, 0);
+    grow_head(r);
+    for (k = 0; k < RideAt.n; k++) {
+        verts[k] = vadd(to_seat(r[k]), cb.hips);
+    }
+}
+
 /* His bear model: sat on its back, his faces and images; 0 if there's no bear or it couldn't */
 static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, const MadeImage *images, s32 nimages, HeroMade *out) {
     static V3 r[MAX_VERTS], seat[MAX_VERTS];
@@ -1262,18 +1342,15 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
     if (!ride_seat(&back_y, &seat_z)) {
         return 0;
     }
+    RideAt.k = foot->k;
+    RideAt.back_y = back_y;
+    RideAt.seat_z = seat_z;
+    RideAt.n = n;
     seated(r);
-    /* RIDE_SCALE of him, about the middle of his hips */
     for (k = 0; k < n; k++) {
-        V3 hips = { 0, Legs[0].joint[0].y, Legs[0].joint[0].z };
-
-        r[k] = vadd(hips, vmul(vsub(r[k], hips), RIDE_SCALE));
-    }
-    for (k = 0; k < n; k++) {
-        V3 p = from_rig(r[k]);
         s32 own = own_vertex(k);
 
-        seat[k] = v3(p.x * foot->k, p.y * foot->k + hip * s - RIDE_HIP_UP + back_y, p.z * foot->k + seat_z + RIDE_Z);
+        seat[k] = to_seat(r[k]);
         waist_share[k] = hm_smooth(WAIST_Y - WAIST_BLEND, WAIST_Y + WAIST_BLEND, Rest[own].y);
         neck_share[k] = hm_smooth(NECK_Y - NECK_BLEND, NECK_Y + NECK_BLEND, Rest[own].y);
     }
@@ -1295,6 +1372,8 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
     rider.images = images;
     rider.nimages = nimages;
     rider.charred = RIDE_CHARRED;
+    rider.own = ride_own;
+    rider.follow = 1 << RIDE_FALL;
     return ride_make(&rider, &out->tex[KIND_POLAR], &out->tex_size[KIND_POLAR], &out->mdl[KIND_POLAR], &out->mdl_size[KIND_POLAR]);
 }
 

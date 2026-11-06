@@ -1035,7 +1035,9 @@ void PolarUpdateScene(void)
   {
     PolarSceneTimer = (PolarSceneTimer + 0x20) & 0xFFF;
   }
-  if (((GameState *) GameInfo)->pause != 0)
+  /* (the port) but for a demo's own pause bit, on all through one (StartWinSequence): the game never shows these levels as its demo, but
+   * a test run (--mode) is one, and their ground stayed level whoever stood where (the user took it for the tilt being broken) */
+  if ((((GameState *) GameInfo)->pause & ~0x02000000) != 0)
   {
     return;
   }

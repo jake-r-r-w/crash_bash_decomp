@@ -158,7 +158,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--fps 30\|60\|120` | the frame rate, for this run |
 | `--turbo` | don't wait for the clock, to reach late moments quickly |
 | `--draw-every N` | draw one frame in N, and any a shot needs, so a long test runs as fast as the game's logic can |
-| `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit |
+| `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit. It's the game's demo, whose pause bit stops what waits on a pause; Polar Push's tilt doesn't wait on that bit (the game never demos its tilting levels) |
 | `--tile I N` | put this window in slot I of a grid of N on the screen, to watch several test runs at once |
 | `--wav FILE` | record a test run's sound (test runs are silent otherwise) |
 | `--sound` | play a test run's sound, for one that's being watched |

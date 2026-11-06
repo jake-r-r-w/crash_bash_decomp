@@ -1293,6 +1293,22 @@ void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, float
 #define MAX_FILL_VERTS (2 + (FILL_RINGS - 1) * FILL_SEGS)
 #define MAX_FILL_FACES (2 * FILL_SEGS * (FILL_RINGS - 1))
 static const u8 FillTop[3] = { 255, 250, 222 }, FillSide[3] = { 195, 182, 158 }, FillUnder[3] = { 115, 90, 74 };
+/* Crash himself as he first breathes, for a rider that follows his body (ride_crash_body): each arm's shoulder, elbow and hand (his
+ * left's first, x below 0; his hands rest on his hips, not quite each other's mirror), each the middle of his corners within
+ * CRASH_JOINT_R of it; his hips, his corners from CRASH_HIPS_TOP down to CRASH_HIPS_LOW within CRASH_MIDDLE either side; and his
+ * chest, from CRASH_CHEST_TOP to CRASH_CHEST_LOW within it. As he's thrown back at the ice's edge (FALL) his spine tips 70 to 105
+ * degrees back and to his left, his hips slide 50 or so aside and 60 back off the bear's back, and his arms fly out and up. */
+static const V3 CrashJoints[2][3] = {
+    { { -55, -322, 3 }, { -100, -243, 38 }, { -72, -175, 35 } },
+    { { 55, -322, 3 }, { 95, -240, 40 }, { 62, -205, -12 } },
+};
+#define CRASH_JOINT_R 25.0f
+#define CRASH_MIDDLE 45.0f
+#define CRASH_HIPS_TOP -225.0f
+#define CRASH_HIPS_LOW -150.0f
+#define CRASH_CHEST_TOP -335.0f
+#define CRASH_CHEST_LOW -250.0f
+#define CRASH_PART_MAX 96
 
 typedef struct {
     s32 made;
@@ -1312,6 +1328,9 @@ typedef struct {
     s16 fill_near[MAX_FILL_VERTS][FILL_NEAR]; /* the bear's vertices that move each, and how much */
     float fill_w[MAX_FILL_VERTS][FILL_NEAR];
     MadeFace fill_faces[MAX_FILL_FACES];
+    s32 crash_ok; /* Crash himself (CrashJoints): his hips, his chest and each arm's joints, if all were found */
+    s32 nc_hips, nc_chest, nc_joint[2][3];
+    s16 c_hips[CRASH_PART_MAX], c_chest[CRASH_PART_MAX], c_joint[2][3][CRASH_PART_MAX];
 } Bear;
 
 static Bear TheBear;
@@ -1704,12 +1723,41 @@ static s32 bear_load(void) {
     if (b->nfaces < 64 || b->nhips < 8 || b->nhead < 4 || b->nback < 8 || back_n == 0) {
         goto fail;
     }
+    /* Crash's own parts, for a rider that follows him */
+    for (k = 0; k < b->corners; k++) {
+        const V3 *p = &b->ref[k];
+        s32 side, j;
+
+        if (strip_bear[strip_of[k]]) {
+            continue;
+        }
+        if (fabsf(p->x) < CRASH_MIDDLE && p->y > CRASH_HIPS_TOP && p->y < CRASH_HIPS_LOW && b->nc_hips < CRASH_PART_MAX) {
+            b->c_hips[b->nc_hips++] = (s16)k;
+        }
+        if (fabsf(p->x) < CRASH_MIDDLE && p->y > CRASH_CHEST_TOP && p->y < CRASH_CHEST_LOW && b->nc_chest < CRASH_PART_MAX) {
+            b->c_chest[b->nc_chest++] = (s16)k;
+        }
+        for (side = 0; side < 2; side++) {
+            for (j = 0; j < 3; j++) {
+                const V3 *q = &CrashJoints[side][j];
+                float dx = p->x - q->x, dy = p->y - q->y, dz = p->z - q->z;
+
+                if (dx * dx + dy * dy + dz * dz < CRASH_JOINT_R * CRASH_JOINT_R && b->nc_joint[side][j] < CRASH_PART_MAX) {
+                    b->c_joint[side][j][b->nc_joint[side][j]++] = (s16)k;
+                }
+            }
+        }
+    }
+    b->crash_ok = b->nc_hips >= 4 && b->nc_chest >= 4;
+    for (k = 0; k < 6; k++) {
+        b->crash_ok &= b->nc_joint[k / 3][k % 3] >= 2;
+    }
     b->seat_z = zs / b->nhips;
     bear_fill(b);
     b->made = 1;
     free(tex);
-    printf("bonus: the bear from Crash's polar model, %d faces, %d images, its back filled with %d\n", b->nfaces, b->nimages,
-           b->nfill_faces);
+    printf("bonus: the bear from Crash's polar model, %d faces, %d images, its back filled with %d%s\n", b->nfaces, b->nimages,
+           b->nfill_faces, b->crash_ok ? "" : " (Crash's body not found in it)");
     return 1;
 fail:
     printf("bonus: Crash's polar model has no bear to ride\n");
@@ -1974,6 +2022,9 @@ typedef struct {
     V3 from, to;
     V3 lean;
     V3 flop;    /* where the swing of what's loose on the hero has got to */
+    V3 hips;    /* Crash's body (ride_crash_body): his hips' move, his body's turn and his arms */
+    M3 body;
+    V3 arm[2][2];
 } RideStep;
 
 typedef struct {
@@ -1981,6 +2032,7 @@ typedef struct {
     s32 fill; /* whether the model has the fill in the bear's back */
     MadeAnim anims[RIDE_ANIMS];
     RideStep steps[RIDE_ANIMS][RIDE_MAX_FRAMES];
+    V3 arm_was[2][2]; /* Crash's arms as he first breathes */
 } RideCtx;
 
 static RideCtx Ride;
@@ -2023,6 +2075,71 @@ static void crash_at(s32 a, float t, V3 *F) {
 
 static void ride_flop(RideCtx *c, s32 a);
 
+/* Crash's arms' upper arm and forearm, his corners at `at`, turned back by `body` into his body's frame (NULL: as they are) */
+static void crash_arms(const V3 *at, const M3 *body, V3 arm[2][2]) {
+    const Bear *b = &TheBear;
+    s32 side, j;
+
+    for (side = 0; side < 2; side++) {
+        V3 joint[3];
+
+        for (j = 0; j < 3; j++) {
+            joint[j] = centre_of(at, b->c_joint[side][j], b->nc_joint[side][j]);
+        }
+        for (j = 0; j < 2; j++) {
+            V3 d = v3(joint[j + 1].x - joint[j].x, joint[j + 1].y - joint[j].y, joint[j + 1].z - joint[j].z);
+
+            arm[side][j] = unit(body != NULL ? m3_mul_t(body, d) : d);
+        }
+    }
+}
+
+/* How Crash's body lies, his corners at `at`: a frame (its columns across, up and forward) of his spine, from his hips to his chest,
+ * and his shoulders' line across it */
+static void crash_frame(const V3 *at, M3 *out) {
+    const Bear *b = &TheBear;
+    V3 hips = centre_of(at, b->c_hips, b->nc_hips), chest = centre_of(at, b->c_chest, b->nc_chest);
+    V3 left = centre_of(at, b->c_joint[0][0], b->nc_joint[0][0]), right = centre_of(at, b->c_joint[1][0], b->nc_joint[1][0]);
+    V3 up = unit(v3(chest.x - hips.x, chest.y - hips.y, chest.z - hips.z)), across = v3(right.x - left.x, right.y - left.y, right.z - left.z);
+    float d = across.x * up.x + across.y * up.y + across.z * up.z;
+    V3 fwd;
+
+    across = unit(v3(across.x - up.x * d, across.y - up.y * d, across.z - up.z * d));
+    fwd = v3(across.y * up.z - across.z * up.y, across.z * up.x - across.x * up.z, across.x * up.y - across.y * up.x);
+    out->m[0][0] = across.x, out->m[0][1] = up.x, out->m[0][2] = fwd.x;
+    out->m[1][0] = across.y, out->m[1][1] = up.y, out->m[1][2] = fwd.y;
+    out->m[2][0] = across.z, out->m[2][1] = up.z, out->m[2][2] = fwd.z;
+}
+
+/* Crash's body in a frame (ride_crash_body), his corners F, in the bear's back's frame (st's turn of it from the first breathing frame
+ * undone): his hips' move; his body's turn, from how his spine and shoulders lay as he first breathed to how they lie now (a fit of
+ * his chest's corners went with the cartoon stretch he's drawn with as the bear drops away, and turned him back 60 degrees while he
+ * was upright); and his arms */
+static void crash_body_at(const V3 *F, RideStep *st) {
+    static V3 L[BEAR_CORNERS];
+    const Bear *b = &TheBear;
+    V3 h0, h1;
+    M3 was, now;
+    s32 k, i, j;
+
+    for (k = 0; k < b->corners; k++) {
+        V3 d = m3_mul_t(&st->back, v3(F[k].x - st->to.x, F[k].y - st->to.y, F[k].z - st->to.z));
+
+        L[k] = v3(st->from.x + d.x, st->from.y + d.y, st->from.z + d.z);
+    }
+    h0 = centre_of(b->ref, b->c_hips, b->nc_hips);
+    h1 = centre_of(L, b->c_hips, b->nc_hips);
+    st->hips = v3(h1.x - h0.x, h1.y - h0.y, h1.z - h0.z);
+    crash_frame(b->ref, &was);
+    crash_frame(L, &now);
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            st->body.m[i][j] = now.m[i][0] * was.m[j][0] + now.m[i][1] * was.m[j][1] + now.m[i][2] * was.m[j][2];
+        }
+    }
+    crash_arms(L, &st->body, st->arm);
+}
+
 static void ride_steps(RideCtx *c) {
     static V3 F[BEAR_CORNERS];
     static V3 lean[RIDE_MAX_FRAMES];
@@ -2036,6 +2153,9 @@ static void ride_steps(RideCtx *c) {
     spine_ref.y = hd.y - hc.y;
     spine_ref.z = hd.z - hc.z;
     spine_ref = unit(spine_ref);
+    if (b->crash_ok) {
+        crash_arms(b->ref, NULL, c->arm_was);
+    }
     for (a = 0; a < RIDE_ANIMS; a++) {
         n = c->anims[a].frames;
         /* where Crash's spine points each frame (the way he leans as the world sees it, not the bear), part of the way back toward
@@ -2045,6 +2165,9 @@ static void ride_steps(RideCtx *c) {
 
             crash_at(a, crash_time(a, f, n), F);
             fit_turn(b->ref, F, b->back, b->nback, &st->back, &st->from, &st->to);
+            if (b->crash_ok) {
+                crash_body_at(F, st);
+            }
             hc = centre_of(F, b->hips, b->nhips);
             hd = centre_of(F, b->head, b->nhead);
             spine.x = hd.x - hc.x;
@@ -2094,8 +2217,10 @@ static void hero_at(const RideCtx *c, s32 a, s32 f, V3 *out) {
     for (k = 0; k < r->nvert; k++) {
         V3 q = out[k], d;
 
-        q = hm_mix(q, turn_about(q, r->neck, &at_neck), r->neck_share[k]);
-        q = hm_mix(q, turn_about(q, r->waist, &at_waist), r->waist_share[k]);
+        if (!(r->follow >> a & 1)) {
+            q = hm_mix(q, turn_about(q, r->neck, &at_neck), r->neck_share[k]);
+            q = hm_mix(q, turn_about(q, r->waist, &at_waist), r->waist_share[k]);
+        }
         d.x = q.x - st->from.x;
         d.y = q.y - st->from.y;
         d.z = q.z - st->from.z;
@@ -2184,6 +2309,20 @@ static void ride_flop(RideCtx *c, s32 a) {
     }
 }
 
+s32 ride_crash_body(s32 anim, s32 f, CrashBody *out) {
+    const RideStep *st;
+
+    if (Ride.r == NULL || !TheBear.crash_ok || anim < 0 || anim >= RIDE_ANIMS || f < 0 || f >= Ride.anims[anim].frames) {
+        return 0;
+    }
+    st = &Ride.steps[anim][f];
+    out->hips = st->hips;
+    memcpy(out->body, st->body.m, sizeof(out->body));
+    memcpy(out->arm, st->arm, sizeof(out->arm));
+    memcpy(out->arm_was, Ride.arm_was, sizeof(out->arm_was));
+    return 1;
+}
+
 static void ride_frame(void *ctx, s32 a, s32 f, V3 *out) {
     static V3 F[BEAR_CORNERS];
     const RideCtx *c = ctx;
@@ -2261,7 +2400,8 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
     }
     memcpy(images, r->images, sizeof(MadeImage) * (size_t)r->nimages);
     memcpy(images + r->nimages, b->images, sizeof(MadeImage) * (size_t)b->nimages);
-    /* Polar Push's animations, as long as the model's it matches (or Crash's), each on Crash's mesh for it */
+    /* Polar Push's animations, as long as the model's it matches (or Crash's), each on Crash's mesh for it; but FALL as long as Crash's,
+     * as its teeter and its drop go to a base's each in their own part (extraheroes.c, Splits) */
     if (r->match_bank >= 0) {
         match = archive_own_file((s32)(HeroModelBank[r->match_bank].file - DatIndex), &size);
     }
@@ -2271,7 +2411,7 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
     for (i = 0; i < RIDE_ANIMS; i++) {
         const FileEntry *e = &file_anims((const ModelFile *)b->mdl)[b->anim[i]];
         const MeshHeader *moved = (const MeshHeader *)((const u8 *)&e->mesh + e->mesh);
-        s32 m = match != NULL ? file_anim_named(match, RideNames[i]) : -1;
+        s32 m = match != NULL && i != RIDE_FALL ? file_anim_named(match, RideNames[i]) : -1;
         s32 frames = m >= 0 ? file_anims((const ModelFile *)match)[m].frames : e->frames;
 
         Ride.anims[i].name = RideNames[i];
@@ -2293,6 +2433,7 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
     mm.frame = ride_frame;
     mm.ctx = &Ride;
     ok = made_write(&mm, tex, tex_size, mdl, mdl_size);
+    Ride.r = NULL;
     free(faces);
     return ok;
 }

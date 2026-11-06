@@ -109,7 +109,11 @@ first): sat astride Crash's (`ride_bear`, `seated`, `pose_astride`), at 0.8 of h
 hips (at his own his long legs reached the floor beside it), his hands on its neck. How it's done is at
 the top of his file. The user asked him to ride more like Crash and Coco, without the jetpack push, and
 for the gaps in the bear closed: his push is one now (`@POLAR_ATTACK`, his stand-ins below), and the
-bear's back and side are filled for every rider (step 5).
+bear's back and side are filled for every rider (step 5). Then the user saw him sit stiffly as he was
+hit off the edge, where the others hang on and flail ("look carefully how some other hero falls like
+crash"): at the ice's edge he goes as Crash does (`ride_own`, from Crash's body measured frame by frame,
+step 5), thrown back off the bear's rump with his arms flying, back up if he gets back on, and left in
+the air as the bear drops away; and his fall's teeter and drop now meet the game's (Splits, step 2).
 
 ## How one plays
 
@@ -214,6 +218,14 @@ makes things of the base's own too (`PolarHeroAttackThrow`): Cortex's and Brio's
 their backs and a smoke trail, and Dingodile's and Rilla Roo's tails, each a part of their models. An
 extra hero in their place makes none (the user saw the flames on Pinstripe). It's
 used only while what's drawn is the frame the script shows. Roo has none, and plays as before.
+A "@" stand-in goes by the time since its sequence started, so it can't follow a script that jumps:
+Polar Push's fall (`seq_polarfall`) is its teeter for its first 32 frames in every hero's script and
+then the drop (8 frames in Cortex's and Brio's, 10 in the others'), and a hero hit too hard starts at
+the drop (`SetPolarHeroOffice`, Aindex 0x21). So its FALL goes by its frames, in two parts at 32
+(`Splits` in extraheroes.c): the base's teeter frames to the rider's, and the rest of what the script
+plays to the rest of the rider's (`script_last`). The rider's FALL is Crash's 42 frames for it
+(`ride_make` doesn't match it to the base's length); all of it over all of Cortex's 50 had had his drop
+start 6 frames into the base's.
 The scripts are in heroes.c (`CRA_seq_jump` ...) and bash.c (`CRA_BA_seq_hold_throw` ...), as u16s
 (the s32 arrays low half first): the first is the ticks past one each frame shows, `0x8007 n` the
 frame after it and n - 1 more, `0x8018` a new speed, `0x8004` the next action (ProcessHeroAnim).
@@ -320,7 +332,16 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    and his ears, swings on the same spring at his head as the bear throws it about (`flop`: each
    vertex's share, 1 at the tips; `swing`, his `Flop`), settled into the loop in one that loops. The animations are as long as
    his base's (`match_bank`, Rilla Roo's), Crash's resampled to them, so the base's moves play them
-   a frame a tick; and there's a second mesh, charred, that the game draws once a bomb hits him.
+   a frame a tick (but FALL, Crash's own, step 2); and there's a second mesh, charred, that the game
+   draws once a bomb hits him. A rider can follow Crash's body itself where sitting still and leaning
+   wouldn't do (`Rider.follow`, its own motion then not bent as he leans): `ride_crash_body` gives, in
+   the bear's back's frame, how far his hips have moved, his body's turn (his spine from hips to chest
+   and his shoulders' line, `crash_frame`: a fit of his chest's corners followed his cartoon stretch as
+   the bear drops and turned him back 60 degrees while he was upright) and each arm's upper arm and
+   forearm, from his corners near his shoulders, elbows and hands as he first breathes (`CrashJoints`).
+   Pinstripe's FALL is that (`ride_own` in pinstripe.c): each arm turned from how he sits as Crash's
+   turns from how Crash sat, then more and more Crash's very direction as it goes further, his body
+   turned at the waist as Crash's is, his legs astride, all of him moved with Crash's hips.
 6. **On his cane (Pogo).** Pogo's heroes bounce on pogo sticks, each a model of its own with its
    stick (`models/chars/pogo/`, five moves each: BREATHE, JUMP, DAZED, WIN, TAZING). Where Ripper
    Roo is the arena's boss (`DB_Roo`, `models/arena/pogo_epl/roo2.mdl`) he bounces on a stick of

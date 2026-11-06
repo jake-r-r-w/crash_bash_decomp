@@ -76,6 +76,7 @@ typedef struct {
     s32 to_first[MAX_ANIMS], to_count[MAX_ANIMS];
     s32 from_frames[MAX_ANIMS];
     s32 pace[MAX_ANIMS];    /* STRETCH, LOOP or ONCE */
+    s32 split[MAX_ANIMS];   /* a frame its stand-in and it are both at the same point of, or 0 (Splits) */
     s32 clock_anim;         /* the base's animation it was last drawn in, its frame, and the tick it started (GameFrameCount) */
     s32 clock_frame, clock_start;
     s32 seq_anim[SEQ_STANDS]; /* its stand-in for each sequence its kind names one for (-1 none), the frames of it, and its pace */
@@ -457,6 +458,89 @@ static s32 seq_ticks(const u16 *s) {
     return ticks > 0 ? ticks : 1;
 }
 
+/* Animations whose stand-ins go in two parts, at a frame both are at the same point of: Polar Push's FALL, whose first 32 frames are its
+ * teeter at the ice's edge in every hero's script, and the rest its drop (PolarHeroOffice: a hero still in those 32 can get back on, and
+ * one hit too hard starts at the 33rd, Aindex 0x21). A rider's has Crash's 32 and his drop of 10 (bonusheroes.c), and the bases' drops are
+ * 8 or 10 frames long in animations of 42 to 50, so all of it over all of the base's had the drop start before the teeter was over. */
+static const struct {
+    s32 kind;
+    const char *name;
+    s32 split;
+} Splits[] = {
+    { KIND_POLAR, "FALL", 32 },
+};
+
+static s32 split_of(s32 kind, s32 key) {
+    u32 i;
+
+    for (i = 0; i < sizeof(Splits) / sizeof(Splits[0]); i++) {
+        if (Splits[i].kind == kind && hash_of(Splits[i].name) == key) {
+            return Splits[i].split;
+        }
+    }
+    return 0;
+}
+
+/* The last frame of the base's animation n that the script its hero's in now shows, or -1 (ProcessHeroAnim's words, as seq_ticks reads
+ * them: 0x8007 c before a frame for that frame and the c - 1 after it) */
+static s32 script_last(s32 player, s32 n) {
+    const HeroInfo *h = &Heroes[player];
+    const u16 *s;
+    s32 i, count = 1, last = -1;
+
+    if ((u32)(h->hero_name - 1) >= 8 || h->hero_aseq >= SEQ_STANDS || (s = (const u16 *)HeroSeqTables[h->hero_name][h->hero_aseq]) == NULL) {
+        return -1;
+    }
+    for (i = 1; i < 256; i++) {
+        u16 c = s[i];
+
+        if (!(c & 0x8000)) {
+            if ((c & 0x7000) == 0x4000 && ((c >> 7) & 0x1F) == n && (c & 0x7F) + count - 1 > last) {
+                last = (c & 0x7F) + count - 1;
+            }
+            count = 1;
+            continue;
+        }
+        switch (c) {
+        case 0x8000:
+        case 0x8004:
+        case 0x8005:
+            return last;
+        case 0x8007:
+            count = (s16)s[++i];
+            count = count > 0 ? count : 1;
+            break;
+        case 0x8002:
+        case 0x8003:
+        case 0x8006:
+        case 0x8008:
+        case 0x8009:
+        case 0x800A:
+        case 0x8018:
+        case 0x8019:
+        case 0x801A:
+            i++;
+            break;
+        default:
+            break;
+        }
+    }
+    return last;
+}
+
+/* Frame f of the base's animation n (of from_frames), split at `split`: its frames before it are the stand-in's before it, and the rest,
+ * to the last its hero's script shows, the rest of the stand-in's (of frames) */
+static s32 split_frame(s32 player, s32 n, s32 f, s32 split, s32 from_frames, s32 frames) {
+    s32 last;
+
+    if (f < split || frames <= split + 1) {
+        return f;
+    }
+    last = script_last(player, n);
+    last = last > split ? last : from_frames - 1;
+    return last > split ? split + (f - split) * (frames - 1 - split) / (last - split) : split;
+}
+
 static s32 find(const ModelFile *m, s32 key) {
     const FileEntry *e = anims_of(m);
     s32 i;
@@ -627,6 +711,9 @@ static s32 variant_start(s32 player, Variant *v, s32 base_bank) {
         v->to_first[k] = first;
         v->to_count[k] = last - first + 1;
         v->pace[k] = pace;
+        /* (in two parts only an animation longer than its first part: one shorter goes over all of the stand-in, as any other) */
+        v->split[k] = split_of(v->kind, anims_of(from)[k].hash);
+        v->split[k] = v->from_frames[k] > v->split[k] + 1 ? v->split[k] : 0;
     }
     for (k = 0; k < SEQ_STANDS; k++) {
         s32 key, first, last, frames, pace;
@@ -862,6 +949,8 @@ s32 extra_hero_frame(const subengine *sub, s32 entity) {
             t = GameFrameCount - v->clock_start;
             t = (t < 0 ? 0 : t) * (per > 1 ? per : 1);
             f = v->pace[n] == LOOP ? t % frames : t;
+        } else if (v->split[n] > 0) {
+            f = split_frame((s32)(p - Play), n, f, v->split[n], v->from_frames[n], frames);
         } else if (v->from_frames[n] > 0) {
             f = f * frames / v->from_frames[n];
         }

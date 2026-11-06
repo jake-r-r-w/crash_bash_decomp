@@ -163,7 +163,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - **`GameFrameCount` in the launcher steps by 2, and is odd:** something else counts it too, so `GameFrameCount % 30 == 0` never comes. The Mods page counts its own updates.
 - **A crystal challenge's test run waits on its rules:** with `--level-flags 80` the rules box covers the screen until a press: `--press 300 4000 --press 360 4000` starts it.
 - **`WIDE_HIDE` takes 32 pieces at most** (`MAX_TRIED_HIDDEN`); past that the rest are left shown, so hide a big level's pieces in groups. To find what draws a pixel, `scratch/dbg_tri2.mjs` (`TRI_PROBE="x,y,r"`) names the owner of the triangles under it: Pogo Painter's crystal sky and Oxide's haze weren't the pieces they looked to be.
-- **A `--mode` run is the game's demo:** it has a pause bit set (0x2000000), so code that stops while `GAME->pause` isn't 0 never runs there. Polar Push's tilt (`PolarUpdateScene`) stays level whoever stands where, and start doesn't open the pause menu. Check those in a game reached through the menus, by `--press` as `route_to_boss` in `port/tests/playtest.mjs` does.
+- **A `--mode` run is the game's demo:** it has a pause bit set (0x2000000, from `StartWinSequence` at the level's start, all through it), so code that stops while `GAME->pause` isn't 0 never runs there, and start doesn't open the pause menu. Check those in a game reached through the menus, by `--press` as `route_to_boss` in `port/tests/playtest.mjs` does. Polar Push's tilt (`PolarUpdateScene`, Tilt Panic and the Bearminator) skips that one bit since 2026-11-06, as the user twice took its level ground in a launch to show them for the tilt broken (the game's own demos are only modes 0xA and 0xE, `TitlesDemoModes`). Showing the user a game with `--mode` runs the computer for all four.
+- **A made animation that a base's script jumps through needs its frames, not its time:** a "@" stand-in goes by the ticks since its sequence started, so a script that skips (Polar Push's fall, started at the drop on a hard hit) shows the wrong part. Map it by frame (`Splits` in extraheroes.c).
 
 **Tooling**
 - **Data as C: a label inside another object is a field.** The asm gave every
@@ -511,6 +512,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-06: Watching Pinstripe in a Tilt Panic launch, the user saw the ice not tilt and him sit stiffly as he was hit off the
+  edge ("look carefully how some other hero falls like crash"). Crash's FALL: the teeter for 32 frames (thrown back off the bear's
+  rump, arms flying, back up), then the drop (the bear falls away, he's left in the air). Pinstripe's FALL now follows Crash's body,
+  measured each frame in the bear's back's frame (`ride_crash_body`: hips, a spine-and-shoulders frame, arms from `CrashJoints`),
+  through `ride_own` and `Rider.follow`. His FALL is Crash's 42 frames, mapped to the base's in two parts at 32 (`Splits`): stretched
+  over Cortex's 50 his drop had started early. The still ice was a `--mode` run's demo pause bit (Gotchas), which the tilt skips now.
+  Checked by renders beside Crash's, shots of a teeter beside Crash's and a hard hit's drop, Roo 15 of 15, Pinstripe 5 of 15 (his
+  on foot and bear; the rest not made). The `same` pictures had changed size again (two 1920x1080 screens now, tiles 320x240):
+  both baselines re-saved from the committed build (the old as `baseline-2026-11-06-before-1080p.json`), then Tilt Panic's after a
+  look (13 of 14, Roo 12 of 13: only its tilt differed).
 - 2026-11-06: The user played his bear: "flames are still shooting out his back for no reason when he pushes. also when he is
   on the edge he instantly falls off". The flames were Cortex's pack (`AST_BrioPack`, made in `PolarHeroAttackThrow` for heroes
   3 and 4, with Dingodile's and Rilla Roo's tails for 7 and 8): an extra hero makes none now. The fall was the port's, for anyone
