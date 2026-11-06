@@ -72,8 +72,11 @@ static s32 pin_make(HeroMade *out);
  * longer ones would otherwise hold some of his frames for two of theirs, stepping (at 120 frames a second, slowly) */
 #define PIN_SUBFRAMES 4
 
-/* Riding a polar bear his model has all of Polar Push's moves by name */
+/* Riding a polar bear his model has all of Polar Push's moves by name; his push is one push, as long as the polar attack's sequence
+ * (Cortex's plays his push's middle three times, his jetpack, which on Crash's bear was a push lunging three times; once at its own
+ * speed it would end with him still sliding as the game pushes) */
 static const Stand PinRides[] = {
+    { "@POLAR_ATTACK", "PUSH", STRETCH },
     { NULL, NULL, STRETCH },
 };
 

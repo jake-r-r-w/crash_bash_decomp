@@ -644,7 +644,7 @@ s32 made_write(const MadeModel *m, u8 **tex_out, s32 *tex_size, u8 **mdl_out, s3
     s32 i, j, k, n, mesh;
 
     *tex_out = *mdl_out = NULL;
-    if (fv == NULL || corners == NULL || m->nfaces <= 0 || m->nvert <= 0 || m->nvert > INDEX_LIMIT / 2 || m->nfaces * 3 > 4096) {
+    if (fv == NULL || corners == NULL || m->nfaces <= 0 || m->nvert <= 0 || m->nvert > INDEX_LIMIT / 2 || m->nfaces > MADE_MAX_FACES) {
         free(fv);
         free(corners);
         return 0;
@@ -1269,6 +1269,30 @@ void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, float
 #define BACK_FRONT -90
 #define BACK_REAR 110
 #define MAX_BEAR_IMAGES 8
+#define BEAR_FUR_R 214 /* the colour its fur is painted where his jeans were, and charred */
+#define BEAR_FUR_G 208
+#define BEAR_FUR_B 196
+#define BEAR_CHAR 58
+/* Its back is open where Crash sat, and its left side where his leg hung (the artist left out what he covered): a fill of its fur
+ * closes them for any rider. It's a rounded body just inside the bear's own, FILL_X, FILL_Y and FILL_Z either way of (0, FILL_MID_Y,
+ * FILL_MID_Z) and as square as FILL_SQUARE, kept only where none of the bear's faces is within FILL_REACH along its facing. Each
+ * corner moves as its FILL_NEAR nearest of the bear's do (not its legs', below FILL_LEGS), and is lit as the bear's fur is: FillTop
+ * facing up, FillSide across, FillUnder down, and charred FILL_BURN darker, as the bear's charred colours are its own. */
+#define FILL_RINGS 12 /* along it */
+#define FILL_SEGS 16  /* around it */
+#define FILL_MID_Y -112.0f
+#define FILL_MID_Z -30.0f
+#define FILL_X 70.0f
+#define FILL_Y 68.0f
+#define FILL_Z 130.0f
+#define FILL_SQUARE 2.5f
+#define FILL_REACH 45.0f
+#define FILL_NEAR 4
+#define FILL_LEGS -60.0f
+#define FILL_BURN 100
+#define MAX_FILL_VERTS (2 + (FILL_RINGS - 1) * FILL_SEGS)
+#define MAX_FILL_FACES (2 * FILL_SEGS * (FILL_RINGS - 1))
+static const u8 FillTop[3] = { 255, 250, 222 }, FillSide[3] = { 195, 182, 158 }, FillUnder[3] = { 115, 90, 74 };
 
 typedef struct {
     s32 made;
@@ -1283,10 +1307,201 @@ typedef struct {
     V3 ref[BEAR_CORNERS]; /* his first breathing frame */
     float back_y, seat_z;
     s32 anim[RIDE_ANIMS];
+    s32 nfill, nfill_faces; /* the fill in its back: its corners after the bear's, as it first breathes, and its faces */
+    V3 fill[MAX_FILL_VERTS];
+    s16 fill_near[MAX_FILL_VERTS][FILL_NEAR]; /* the bear's vertices that move each, and how much */
+    float fill_w[MAX_FILL_VERTS][FILL_NEAR];
+    MadeFace fill_faces[MAX_FILL_FACES];
 } Bear;
 
 static Bear TheBear;
 static s32 BearTried;
+
+static V3 unit(V3 v);
+
+static V3 v3(float x, float y, float z) {
+    V3 v;
+
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
+}
+
+/* The fill's point toward d from its middle, and its outward facing there */
+static V3 fill_point(V3 d, V3 *out) {
+    float s = powf(powf(fabsf(d.x) / FILL_X, FILL_SQUARE) + powf(fabsf(d.y) / FILL_Y, FILL_SQUARE)
+                       + powf(fabsf(d.z) / FILL_Z, FILL_SQUARE), -1 / FILL_SQUARE),
+          q[3], g[3], r[3] = { FILL_X, FILL_Y, FILL_Z }, len;
+    s32 j;
+
+    q[0] = d.x * s;
+    q[1] = d.y * s;
+    q[2] = d.z * s;
+    for (j = 0; j < 3; j++) {
+        g[j] = powf(fabsf(q[j]) / r[j], FILL_SQUARE - 1) / r[j] * (q[j] < 0 ? -1 : 1);
+    }
+    len = sqrtf(g[0] * g[0] + g[1] * g[1] + g[2] * g[2]);
+    out->x = len > 0 ? g[0] / len : 0;
+    out->y = len > 0 ? g[1] / len : -1;
+    out->z = len > 0 ? g[2] / len : 0;
+    return v3(q[0], q[1] + FILL_MID_Y, q[2] + FILL_MID_Z);
+}
+
+/* Whether one of the bear's faces crosses the line through p along n within FILL_REACH either way */
+static s32 fill_covered(const Bear *b, V3 p, V3 n) {
+    s32 i;
+
+    for (i = 0; i < b->nfaces; i++) {
+        const V3 *a = &b->ref[b->corner_of[b->faces[i].v[0]]], *c1 = &b->ref[b->corner_of[b->faces[i].v[1]]],
+                 *c2 = &b->ref[b->corner_of[b->faces[i].v[2]]];
+        V3 e1 = v3(c1->x - a->x, c1->y - a->y, c1->z - a->z), e2 = v3(c2->x - a->x, c2->y - a->y, c2->z - a->z), h, s, q;
+        float det, u, v, t;
+
+        h = v3(n.y * e2.z - n.z * e2.y, n.z * e2.x - n.x * e2.z, n.x * e2.y - n.y * e2.x);
+        det = e1.x * h.x + e1.y * h.y + e1.z * h.z;
+        if (fabsf(det) < 1e-6f) {
+            continue;
+        }
+        s = v3(p.x - a->x, p.y - a->y, p.z - a->z);
+        u = (s.x * h.x + s.y * h.y + s.z * h.z) / det;
+        if (u < 0 || u > 1) {
+            continue;
+        }
+        q = v3(s.y * e1.z - s.z * e1.y, s.z * e1.x - s.x * e1.z, s.x * e1.y - s.y * e1.x);
+        v = (n.x * q.x + n.y * q.y + n.z * q.z) / det;
+        if (v < 0 || u + v > 1) {
+            continue;
+        }
+        t = (e2.x * q.x + e2.y * q.y + e2.z * q.z) / det;
+        if (fabsf(t) <= FILL_REACH) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/* The fill: its corners around the bear's length, the faces of it none of the bear's cover, the corners those use, each moved by
+ * the bear's nearest and coloured by its facing */
+static void bear_fill(Bear *b) {
+    static V3 at[MAX_FILL_VERTS], facing[MAX_FILL_VERTS];
+    static s16 used[MAX_FILL_VERTS];
+    s32 ring, seg, i, j, k, nat = 0, last = 1 + (FILL_RINGS - 2) * FILL_SEGS;
+
+    b->nfill = b->nfill_faces = 0;
+    at[nat] = fill_point(v3(0, 0, 1), &facing[nat]);
+    nat++;
+    for (ring = 1; ring < FILL_RINGS; ring++) {
+        float th = 3.14159265f * ring / FILL_RINGS;
+
+        for (seg = 0; seg < FILL_SEGS; seg++) {
+            float ph = 2 * 3.14159265f * seg / FILL_SEGS;
+
+            at[nat] = fill_point(v3(sinf(th) * cosf(ph), sinf(th) * sinf(ph), cosf(th)), &facing[nat]);
+            nat++;
+        }
+    }
+    at[nat] = fill_point(v3(0, 0, -1), &facing[nat]);
+    nat++;
+    for (i = 0; i < nat; i++) {
+        used[i] = -1;
+    }
+    for (seg = 0; seg < FILL_SEGS; seg++) {
+        s32 next = (seg + 1) % FILL_SEGS, tri[2 * FILL_RINGS][3], ntri = 0, t;
+
+        tri[ntri][0] = 0;
+        tri[ntri][1] = 1 + seg;
+        tri[ntri++][2] = 1 + next;
+        for (ring = 1; ring < FILL_RINGS - 1; ring++) {
+            s32 a = 1 + (ring - 1) * FILL_SEGS, c = a + FILL_SEGS;
+
+            tri[ntri][0] = a + seg;
+            tri[ntri][1] = a + next;
+            tri[ntri++][2] = c + next;
+            tri[ntri][0] = a + seg;
+            tri[ntri][1] = c + next;
+            tri[ntri++][2] = c + seg;
+        }
+        tri[ntri][0] = nat - 1;
+        tri[ntri][1] = last + next;
+        tri[ntri++][2] = last + seg;
+        for (t = 0; t < ntri; t++) {
+            s32 *v = tri[t], open = 0;
+            V3 mid = v3((at[v[0]].x + at[v[1]].x + at[v[2]].x) / 3, (at[v[0]].y + at[v[1]].y + at[v[2]].y) / 3,
+                        (at[v[0]].z + at[v[1]].z + at[v[2]].z) / 3),
+               out = unit(v3(facing[v[0]].x + facing[v[1]].x + facing[v[2]].x, facing[v[0]].y + facing[v[1]].y + facing[v[2]].y,
+                             facing[v[0]].z + facing[v[1]].z + facing[v[2]].z)),
+               e1 = v3(at[v[1]].x - at[v[0]].x, at[v[1]].y - at[v[0]].y, at[v[1]].z - at[v[0]].z),
+               e2 = v3(at[v[2]].x - at[v[0]].x, at[v[2]].y - at[v[0]].y, at[v[2]].z - at[v[0]].z);
+            MadeFace *f;
+
+            open = !fill_covered(b, mid, out);
+            for (j = 0; j < 3 && !open; j++) {
+                open = !fill_covered(b, at[v[j]], facing[v[j]]);
+            }
+            if (!open || b->nfill_faces == MAX_FILL_FACES) {
+                continue;
+            }
+            /* drawn from outside: the game's fronts go round the other way to their facing, as its axes have it */
+            if ((e1.y * e2.z - e1.z * e2.y) * out.x + (e1.z * e2.x - e1.x * e2.z) * out.y + (e1.x * e2.y - e1.y * e2.x) * out.z > 0) {
+                s32 swap = v[1];
+
+                v[1] = v[2];
+                v[2] = swap;
+            }
+            f = &b->fill_faces[b->nfill_faces++];
+            memset(f, 0, sizeof(*f));
+            f->image = -1;
+            for (j = 0; j < 3; j++) {
+                float up = -facing[v[j]].y;
+                const u8 *to = up >= 0 ? FillTop : FillUnder;
+
+                if (used[v[j]] < 0) {
+                    used[v[j]] = (s16)b->nfill;
+                    b->fill[b->nfill++] = at[v[j]];
+                }
+                f->v[j] = used[v[j]];
+                for (k = 0; k < 3; k++) {
+                    s32 c = (s32)(FillSide[k] + (to[k] - FillSide[k]) * fabsf(up) + 0.5f);
+
+                    f->rgb[0][j][k] = (u8)c;
+                    f->rgb[1][j][k] = (u8)(c > FILL_BURN ? c - FILL_BURN : 0);
+                }
+            }
+        }
+    }
+    /* each corner moved by the bear's nearest */
+    for (i = 0; i < b->nfill; i++) {
+        float best[FILL_NEAR], sum = 0;
+
+        for (j = 0; j < FILL_NEAR; j++) {
+            best[j] = 1e30f;
+            b->fill_near[i][j] = -1;
+        }
+        for (k = 0; k < b->nvert; k++) {
+            const V3 *p = &b->ref[b->corner_of[k]];
+            float d = (p->x - b->fill[i].x) * (p->x - b->fill[i].x) + (p->y - b->fill[i].y) * (p->y - b->fill[i].y)
+                      + (p->z - b->fill[i].z) * (p->z - b->fill[i].z);
+
+            if (p->y >= FILL_LEGS || d >= best[FILL_NEAR - 1]) {
+                continue;
+            }
+            for (j = FILL_NEAR - 1; j > 0 && d < best[j - 1]; j--) {
+                best[j] = best[j - 1];
+                b->fill_near[i][j] = b->fill_near[i][j - 1];
+            }
+            best[j] = d;
+            b->fill_near[i][j] = (s16)k;
+        }
+        for (j = 0; j < FILL_NEAR; j++) {
+            b->fill_w[i][j] = b->fill_near[i][j] >= 0 ? 1 / (best[j] + 100) : 0;
+            sum += b->fill_w[i][j];
+        }
+        for (j = 0; j < FILL_NEAR; j++) {
+            b->fill_w[i][j] = sum > 0 ? b->fill_w[i][j] / sum : 0;
+        }
+    }
+}
 
 static const char *const RideNames[RIDE_ANIMS] = { "FALL", "RUN", "BREATHE", "PUSH", "TAUNT", "LIGHT", "WIN" };
 
@@ -1389,7 +1604,7 @@ static s32 bear_load(void) {
         for (j = 0; j < n; j++, face++) {
             /* the strip's corners in the order this face's made one has them: a strip's first face is drawn a, c, b, so one drawn
              * a, b, c in its own strip has its last two the other way */
-            s32 order[3], q;
+            s32 order[3], q, jeans;
             MadeFace *mf;
 
             if (--left < 0) {
@@ -1400,15 +1615,13 @@ static s32 bear_load(void) {
             if (!strip_bear[s] || b->nfaces == BEAR_FACES) {
                 continue;
             }
-            /* a face of his jeans, or their shadow, in a strip that's mostly the bear's (they showed on its back beside Pinstripe's
-             * thinner legs) */
+            /* a face of his jeans, or their shadow, in a strip that's mostly the bear's: they show on its back beside a thinner rider
+             * (Pinstripe), but they're its back's faces there too (it has none under him), so they're painted its fur (below) */
             {
                 const u8 *jc = colours + (col1[face] & 0x1FFF) * 4;
                 s32 jr = (jc[0] + jc[4] + jc[8]) / 3, jg = (jc[1] + jc[5] + jc[9]) / 3, jb = (jc[2] + jc[6] + jc[10]) / 3;
 
-                if (jb >= 40 && jb > jr + 30 && jb > jg + 30) {
-                    continue;
-                }
+                jeans = jb >= 40 && jb > jr + 30 && jb > jg + 30;
             }
             order[0] = 0;
             order[1] = j % 2 == flip0 ? 1 : 2;
@@ -1447,9 +1660,16 @@ static s32 bear_load(void) {
                     tr = (w & 31) * 255 / 31;
                     tg = (w >> 5 & 31) * 255 / 31;
                     tb = (w >> 10 & 31) * 255 / 31;
-                    if (tb >= 90 && tb > tr + 50 && tb > tg + 50) {
-                        b->nfaces--;
-                    }
+                    jeans |= tb >= 90 && tb > tr + 50 && tb > tg + 50;
+                }
+            }
+            if (jeans) {
+                mf->image = -1;
+                for (q = 0; q < 3; q++) {
+                    mf->rgb[0][q][0] = BEAR_FUR_R;
+                    mf->rgb[0][q][1] = BEAR_FUR_G;
+                    mf->rgb[0][q][2] = BEAR_FUR_B;
+                    mf->rgb[1][q][0] = mf->rgb[1][q][1] = mf->rgb[1][q][2] = BEAR_CHAR;
                 }
             }
         }
@@ -1485,9 +1705,11 @@ static s32 bear_load(void) {
         goto fail;
     }
     b->seat_z = zs / b->nhips;
+    bear_fill(b);
     b->made = 1;
     free(tex);
-    printf("bonus: the bear from Crash's polar model, %d faces, %d images\n", b->nfaces, b->nimages);
+    printf("bonus: the bear from Crash's polar model, %d faces, %d images, its back filled with %d\n", b->nfaces, b->nimages,
+           b->nfill_faces);
     return 1;
 fail:
     printf("bonus: Crash's polar model has no bear to ride\n");
@@ -1756,6 +1978,7 @@ typedef struct {
 
 typedef struct {
     const Rider *r;
+    s32 fill; /* whether the model has the fill in the bear's back */
     MadeAnim anims[RIDE_ANIMS];
     RideStep steps[RIDE_ANIMS][RIDE_MAX_FRAMES];
 } RideCtx;
@@ -1976,9 +2199,22 @@ static void ride_frame(void *ctx, s32 a, s32 f, V3 *out) {
         out[k].y += st->flop.y * r->flop[k];
         out[k].z += st->flop.z * r->flop[k];
     }
-    /* and the bear */
+    /* and the bear, and the fill in its back as its nearest corners move */
     for (k = 0; k < b->nvert; k++) {
         out[r->nvert + k] = F[b->corner_of[k]];
+    }
+    for (k = 0; c->fill && k < b->nfill; k++) {
+        V3 p = b->fill[k];
+        s32 j;
+
+        for (j = 0; j < FILL_NEAR && b->fill_near[k][j] >= 0; j++) {
+            s32 at = b->corner_of[b->fill_near[k][j]];
+
+            p.x += (F[at].x - b->ref[at].x) * b->fill_w[k][j];
+            p.y += (F[at].y - b->ref[at].y) * b->fill_w[k][j];
+            p.z += (F[at].z - b->ref[at].z) * b->fill_w[k][j];
+        }
+        out[r->nvert + b->nvert + k] = p;
     }
 }
 
@@ -1988,13 +2224,15 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
     MadeImage images[MADE_MAX_IMAGES + MAX_BEAR_IMAGES];
     MadeModel mm;
     u8 *match = NULL;
-    s32 i, j, k, ok, size = 0;
+    s32 i, j, k, ok, size = 0, nfill;
 
     *tex = *mdl = NULL;
     if (!bear_load() || r->nimages + b->nimages > MADE_MAX_IMAGES + MAX_BEAR_IMAGES
-        || (faces = malloc(sizeof(MadeFace) * (size_t)(r->nfaces + b->nfaces))) == NULL) {
+        || (faces = malloc(sizeof(MadeFace) * (size_t)(r->nfaces + b->nfaces + b->nfill_faces))) == NULL) {
         return 0;
     }
+    /* the fill in its back, if the model has room */
+    nfill = r->nfaces + b->nfaces + b->nfill_faces <= MADE_MAX_FACES ? b->nfill_faces : 0;
     /* its faces, and their charred colours; then the bear's, on its vertices after the hero's */
     for (i = 0; i < r->nfaces; i++) {
         faces[i] = r->faces[i];
@@ -2013,6 +2251,14 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
         }
         f->image = f->image >= 0 ? f->image + r->nimages : -1;
     }
+    for (i = 0; i < nfill; i++) {
+        MadeFace *f = &faces[r->nfaces + b->nfaces + i];
+
+        *f = b->fill_faces[i];
+        for (j = 0; j < 3; j++) {
+            f->v[j] += r->nvert + b->nvert;
+        }
+    }
     memcpy(images, r->images, sizeof(MadeImage) * (size_t)r->nimages);
     memcpy(images + r->nimages, b->images, sizeof(MadeImage) * (size_t)b->nimages);
     /* Polar Push's animations, as long as the model's it matches (or Crash's), each on Crash's mesh for it */
@@ -2020,6 +2266,7 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
         match = archive_own_file((s32)(HeroModelBank[r->match_bank].file - DatIndex), &size);
     }
     Ride.r = r;
+    Ride.fill = nfill > 0;
     memset(Ride.steps, 0, sizeof(Ride.steps));
     for (i = 0; i < RIDE_ANIMS; i++) {
         const FileEntry *e = &file_anims((const ModelFile *)b->mdl)[b->anim[i]];
@@ -2035,13 +2282,13 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
     ride_steps(&Ride);
     memset(&mm, 0, sizeof(mm));
     mm.faces = faces;
-    mm.nfaces = r->nfaces + b->nfaces;
+    mm.nfaces = r->nfaces + b->nfaces + nfill;
     mm.meshes = 2;
     mm.images = images;
     mm.nimages = r->nimages + b->nimages;
     mm.anims = Ride.anims;
     mm.nanims = RIDE_ANIMS;
-    mm.nvert = r->nvert + b->nvert;
+    mm.nvert = r->nvert + b->nvert + (nfill > 0 ? b->nfill : 0);
     mm.rest_anim = RIDE_BREATHE;
     mm.frame = ride_frame;
     mm.ctx = &Ride;

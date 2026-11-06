@@ -52,6 +52,14 @@ static const char *const SeqNames[] = {
     "NONE", "BREATHE", "TAUNT_A", "IDLE_A", "IDLE_B", "MEDIUM", "JUMP", "FALL", "LAND", "HIT", "ATTACK", "DEAD", "WIN", "VICTORY",
     "BA_SLIDE", "BA_PICKUP", "BA_HOLD", "BA_HOLD_SLOW", "BA_HOLD_THROW", "BA_DIE",
     "PA_PICKUP", "PA_HOLD", "PA_HOLD_SLOW", "PA_HOLD_THROW", "PA_DIE",
+    "ARK_BREATHE", "ARK_MOVE", "ARK_IDLE", "ARK_TAUNT", "ARK_KICK", "ARK_WIN", "ARK_VICTORY", "ARK_LOSE",
+    "N2O_BREATHE", "N2O_MOVE", "N2O_IDLE", "N2O_TAUNT", "N2O_KICK", "N2O_HIT", "N2O_WIN", "N2O_VICTORY", "N2O_LOSE", "N2O_FLY",
+    "LONG_HIT", "FLIP_JUMP", "SP_DIE",
+    "POGO_IDLE", "POGO_QUICK_IDLE", "POGO_TAZING", "POGO_DAZED", "POGO_WINNER",
+    "BONK_IDLE", "BONK_RUN", "BONK_BACKSWING", "BONK_EXTENDED_BACKSWING", "BONK_SWING", "BONK_HIT", "BONK_WINNER",
+    /* Polar Push's: Cortex's and Brio's attacks play their push's middle three times (Cortex's jetpack), the others' once */
+    "POLAR_IDLE", "POLAR_RUN", "POLAR_DAZED", "POLAR_FALL", "POLAR_ATTACK", "POLAR_HIT", "POLAR_DEAD", "POLAR_TAUNT",
+    "BREATHE_FT", "SKATE_FT", "LIGHT_BEAR", "SKATE_ATTACK", "POLAR_WIN", "WIN_FT",
 };
 #define SEQ_STANDS ((s32)(sizeof(SeqNames) / sizeof(SeqNames[0])))
 

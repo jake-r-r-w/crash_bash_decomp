@@ -107,7 +107,9 @@ over each eye as he faces at one size for both, and his pupils' polygons are lef
 the rest his design and moved on to his other games (2026-11-06). Riding a polar bear (step 6, the
 first): sat astride Crash's (`ride_bear`, `seated`, `pose_astride`), at 0.8 of his size about his
 hips (at his own his long legs reached the floor beside it), his hands on its neck. How it's done is at
-the top of his file.
+the top of his file. The user asked him to ride more like Crash and Coco, without the jetpack push, and
+for the gaps in the bear closed: his push is one now (`@POLAR_ATTACK`, his stand-ins below), and the
+bear's back and side are filled for every rider (step 5).
 
 ## How one plays
 
@@ -196,13 +198,18 @@ at its own speed, as his base's is a short loop; in a race cart (`RooRace`) his 
 its own pace the same way, as the base's is as short as 10 frames.
 
 A stand-in from `"@"` and a sequence's name (`SeqNames` in extraheroes.c: the shared ones, then
-Crate Crush's `BA_` and the jungle game's `PA_`) is for the whole of that sequence. Each hero's
+Crate Crush's `BA_` and the jungle game's `PA_`, and on in the order of the heroes' tables, heroes.c's
+`CTX_seqs`, through Polar Push's `POLAR_`) is for the whole of that sequence. Each hero's
 scripts differ: Crash's jump, fall and landing are frames 0-7, 8-11 and 12-38 of his 41-frame JUMP,
 Cortex's 0-7, 7-12 and 13-18 of 20; Crash and Coco land after a throw; their attack is a still mesh
 (their spin) for 16 ticks, the others' an animation of 12 to 19; Coco, Tiny and Kong taunt forwards
 and back. So Pinstripe has `{ "@JUMP", "JUMP:0-7", ONCE }`, `@FALL` and `@LAND` (his JUMP split
 as Cortex's is, each part's last frame held as long as the game takes), and `{ "@ATTACK", "ATTACK" }`,
-`@HIT`, `@TAUNT_A`, `@BA_PICKUP` and `@BA_HOLD_THROW`, each all of his over the base's script. It's
+`@HIT`, `@TAUNT_A`, `@BA_PICKUP` and `@BA_HOLD_THROW`, each all of his over the base's script. On
+his bear he has `{ "@POLAR_ATTACK", "PUSH" }`: Cortex's push (`CTX_seq_polarattack`, 37 ticks) plays
+its frames 8 to 13 three times, his jetpack, which on Crash's bear was a push lunging three times
+(the user: not like Crash's); his is one push as long as the script, as Crash's and Coco's are one
+of 20. Once at its own speed it ended with him still, sliding as the game pushed. It's
 used only while what's drawn is the frame the script shows. Roo has none, and plays as before.
 The scripts are in heroes.c (`CRA_seq_jump` ...) and bash.c (`CRA_BA_seq_hold_throw` ...), as u16s
 (the s32 arrays low half first): the first is the ticks past one each frame shows, `0x8007 n` the
@@ -286,9 +293,16 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    every hop, carrying a crate too (`HOLD_SLOW` is his walk).
 5. **Riding a polar bear.** `ride_make` takes Crash's polar model from the player's archive (the
    bear is its strips with only the bear's textures, inside its outline, neither his jeans' blue
-   nor his skin's orange; and of those strips, no face of his jeans' blue or their shadow, by its
-   colour or, as his jeans share the fur's image, by its texel at its middle: they'd showed on its back
-   beside Pinstripe's thinner legs) and sits the hero on its back: `seated()` is his pose, as on a horse:
+   nor his skin's orange; and in those strips a face of his jeans' blue or their shadow, by its
+   colour or, as his jeans share the fur's image, by its texel at its middle, is painted the bear's
+   fur: they showed on its back beside Pinstripe's thinner legs, and left out they were gaps). The
+   bear is still open where Crash covered it, its back between its shoulders and rump and its left
+   side from its neck to its rump (one loop of 23 open edges), so
+   `bear_fill` closes it for any rider: a rounded body just inside the bear's (`FILL_*`), kept only
+   where none of the bear's faces is within reach along its facing (179 of 352 faces), each corner
+   moved as its nearest four of the bear's are (above its legs), and lit as its fur is, its charred
+   colours 100 darker as the bear's are. Models draw with real depth (prims.c, `draw_depth`), so
+   what's inside the bear's own fur stays hidden. It then sits the hero on its back: `seated()` is his pose, as on a horse:
    thighs out over the bear's sides, knees bent so the shins go back under, his long feet poking out
    at the sides and tipped a little down, his tail tucked away into its root inside the bear (laid
    behind him, it only cut through the bear's rump), his hips down in its fur where Crash sits
