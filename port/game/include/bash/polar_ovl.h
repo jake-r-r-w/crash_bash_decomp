@@ -139,6 +139,31 @@ typedef struct PolarGameExt {
         p_[1] = z_;                                                                \
     }
 
+/* A hero's 0x20000000 extension (0xB8 bytes on the PS1), as it's made (sizeof(PolarAi)); the prototype's EXTpolardata. Ext20 and
+ * PolarHitExt are views of it, their fields from 0xA0 on placed by its own: there are pointers among them (PC: 8 bytes), and
+ * placed by the PS1's offsets, Ext20's push effect overlapped PolarHitExt's fall flag, so a hero who'd pushed once fell straight
+ * off the ice at its edge. */
+typedef struct PolarAi {
+    /* 0x00 */ u8 pad0[sizeof(EXT)];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 flag;  /* tested for zero */
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ u8 pad2C[0x6C];
+    /* 0x98 */ s32 unk98;
+    /* 0x9C */ s32 deadTimer;     /* counts up in the dead state */
+    /* 0xA0 */ NAS *unkA0;
+    /* 0xA4 */ NAS *unkA4;        /* its push's effect (boostgfx): Cortex's and Brio's pack, Dingodile's and Rilla Roo's tail */
+    /* 0xA8 */ s32 unkA8;         /* off the ice, fall at once (fallflag) */
+    /* 0xAC */ s32 unkAC;         /* falling in (makefall) */
+    /* 0xB0 */ EXTengine *eng;
+    /* 0xB4 */ s32 flag2;  /* tested for zero */
+} PolarAi;
+
 typedef struct Ext20 {
     /* 0x00 */ EXT base; u8 padC[8];
     /* 0x14 */ s32 count;  /* counted up */
@@ -146,11 +171,13 @@ typedef struct Ext20 {
     /* 0x1C */ u8 pad1C[0x4];
     /* 0x20 */ s32 val;
     /* 0x24 */ s32 state;
-    /* 0x28 */ u8 pad28[0xA4 - 0x28];
+    /* 0x28 */ u8 pad28[offsetof(PolarAi, unkA4) - offsetof(PolarAi, unk28)];
     /* 0xA4 */ NAS *nas;
     /* 0xA8 */ s32 unkA8;
     /* 0xAC */ s32 flag2;  /* tested for zero */
 } Ext20;
+_Static_assert(offsetof(Ext20, nas) == offsetof(PolarAi, unkA4) && offsetof(Ext20, flag2) == offsetof(PolarAi, unkAC),
+               "Ext20 is a view of PolarAi");
 
 /* PadState (Pads) as PolarHeroFootIdle and PolarHeroInBeam use it: the
  * buttons at 0x50, a word at 0x54. */
@@ -1102,10 +1129,12 @@ typedef struct PolarHitExt {
     /* 0x18 */ s32 speed;
     /* 0x1C */ u8 pad1C[0x24 - 0x1C];
     /* 0x24 */ s32 flag;  /* tested for zero */
-    /* 0x28 */ u8 pad28[0xA8 - 0x28];
+    /* 0x28 */ u8 pad28[offsetof(PolarAi, unkA8) - offsetof(PolarAi, unk28)];
     /* 0xA8 */ s32 flag2;  /* tested for zero */
     /* 0xAC */ s32 unkAC;
 } PolarHitExt;
+_Static_assert(offsetof(PolarHitExt, flag2) == offsetof(PolarAi, unkA8) && offsetof(PolarHitExt, unkAC) == offsetof(PolarAi, unkAC),
+               "PolarHitExt is a view of PolarAi");
 
 void PolarHeroChallenge(s32 player);
 
@@ -1217,28 +1246,6 @@ void SetPolarHeroDazed(s32 player);
 
 void SetPolarHeroChallenge(s32 player);
 
-
-/* The hero's 0x20000000 extension (0xB8 bytes). */
-typedef struct PolarAi {
-    /* 0x00 */ u8 pad0[sizeof(EXT)];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 flag;  /* tested for zero */
-    /* 0x28 */ s32 unk28;
-    /* 0x2C */ u8 pad2C[0x6C];
-    /* 0x98 */ s32 unk98;
-    /* 0x9C */ s32 deadTimer;     /* counts up in the dead state */
-    /* 0xA0 */ NAS *unkA0;
-    /* 0xA4 */ s32 unkA4;
-    /* 0xA8 */ s32 unkA8;
-    /* 0xAC */ s32 unkAC;
-    /* 0xB0 */ EXTengine *eng;
-    /* 0xB4 */ s32 flag2;  /* tested for zero */
-} PolarAi;
 
 /* PolarBeamOwner's 0x40000000 extension as PolarHeroCollisions reads it. */
 typedef struct PolarGame {

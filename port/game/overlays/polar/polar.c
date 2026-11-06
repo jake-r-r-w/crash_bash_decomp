@@ -12365,7 +12365,10 @@ void PolarHeroAttackThrow(s32 player) {
                 {
                     EXTengine *eng = hero->hero_eng;
                     hero->hero_frozen = 2;
-                    nas = CreateNAS(eng->XYZ.x, eng->XYZ.y - ((eng->xform.scale.vx * 0x1A4) >> 12), eng->XYZ.z, 0x1616, 0x11);
+                    /* PC: Cortex's and Brio's pack, flames out of their backs as they push: an extra hero in their place has none */
+                    nas = extra_hero_of(player) != EXTRA_NONE
+                              ? NULL
+                              : CreateNAS(eng->XYZ.x, eng->XYZ.y - ((eng->xform.scale.vx * 0x1A4) >> 12), eng->XYZ.z, 0x1616, 0x11);
                 }
                 ext->nas = nas;
                 if (nas != NULL) {
@@ -12384,7 +12387,10 @@ void PolarHeroAttackThrow(s32 player) {
             if (hero->hero_anim->Aindex == 7) {
                 {
                     EXTengine *eng = hero->hero_eng;
-                    nas = CreateNAS(eng->XYZ.x, eng->XYZ.y - ((eng->xform.scale.vx * 0x1A4) >> 12), eng->XYZ.z, 0x1615, 0x11);
+                    /* PC: Dingodile's tail, a part of his model: an extra hero in his place has its own */
+                    nas = extra_hero_of(player) != EXTRA_NONE
+                              ? NULL
+                              : CreateNAS(eng->XYZ.x, eng->XYZ.y - ((eng->xform.scale.vx * 0x1A4) >> 12), eng->XYZ.z, 0x1615, 0x11);
                 }
                 ext->nas = nas;
                 if (nas != NULL) {
@@ -12407,7 +12413,10 @@ void PolarHeroAttackThrow(s32 player) {
             if (hero->hero_anim->Aindex == 7) {
                 {
                     EXTengine *eng = hero->hero_eng;
-                    nas = CreateNAS(eng->XYZ.x, eng->XYZ.y - ((eng->xform.scale.vx * 0xB4) >> 12), eng->XYZ.z, 0x1615, 0x11);
+                    /* PC: Rilla Roo's tail, the same: not an extra hero's */
+                    nas = extra_hero_of(player) != EXTRA_NONE
+                              ? NULL
+                              : CreateNAS(eng->XYZ.x, eng->XYZ.y - ((eng->xform.scale.vx * 0xB4) >> 12), eng->XYZ.z, 0x1615, 0x11);
                 }
                 ext->nas = nas;
                 if (nas != NULL) {

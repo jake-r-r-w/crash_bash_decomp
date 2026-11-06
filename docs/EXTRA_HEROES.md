@@ -209,7 +209,10 @@ as Cortex's is, each part's last frame held as long as the game takes), and `{ "
 his bear he has `{ "@POLAR_ATTACK", "PUSH" }`: Cortex's push (`CTX_seq_polarattack`, 37 ticks) plays
 its frames 8 to 13 three times, his jetpack, which on Crash's bear was a push lunging three times
 (the user: not like Crash's); his is one push as long as the script, as Crash's and Coco's are one
-of 20. Once at its own speed it ended with him still, sliding as the game pushed. It's
+of 20. Once at its own speed it ended with him still, sliding as the game pushed. The game's push
+makes things of the base's own too (`PolarHeroAttackThrow`): Cortex's and Brio's pack, flames out of
+their backs and a smoke trail, and Dingodile's and Rilla Roo's tails, each a part of their models. An
+extra hero in their place makes none (the user saw the flames on Pinstripe). It's
 used only while what's drawn is the frame the script shows. Roo has none, and plays as before.
 The scripts are in heroes.c (`CRA_seq_jump` ...) and bash.c (`CRA_BA_seq_hold_throw` ...), as u16s
 (the s32 arrays low half first): the first is the ticks past one each frame shows, `0x8007 n` the

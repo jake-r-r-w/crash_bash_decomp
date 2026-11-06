@@ -210,6 +210,11 @@ at 32 and 64 bits. Most of what it still reports is casts back to the real type,
 - Tables split across two labels: the PS1 read on from one to the next (`DefaultArenaDef`, `TitlesBackdropAtable`). Make them one array.
 - Words that were next to each other: `ScreenLabelState` and the four after it are one array now. `p[1]` from a single global reads whatever Clang put next.
 - Views over an `EXTobject` with `sizeof(EXT) + 8`: its two pointers count for more now. Name the field with `offsetof`.
+- Views of one extension that place their fields by the PS1's offsets past a pointer of the real struct: a Polar Push hero's
+  (`PolarAi`, the prototype's `EXTpolardata`) has two at 0xA0 and 0xA4, so `Ext20`'s push effect at 0xA4 lay over
+  `PolarHitExt`'s fall flag at 0xA8, and a hero who'd pushed with an effect (Cortex, Brio, Dingodile, Rilla Roo) fell straight
+  off the ice ever after. The views' pads are `offsetof(PolarAi, ...)` now, with a `_Static_assert` each. `views.mjs` doesn't
+  see these: `FindExtension` returns `void *`.
 - Hooks: a function stored in `subengine.hook` takes a view of the subengine, which the view check can't see through the pointer (`PosDst`, `TextNAS`, `ModelObj`).
 - A view indexed as an array has to be the struct's size: `PanelPrim` has a size check now.
 - A slot that holds a number in some uses and an address in others is an `iptr` (`NAS.UserInfo`). Otherwise it gets its
