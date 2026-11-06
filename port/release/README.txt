@@ -67,8 +67,8 @@ his head, Tank, where he has Dingodile's flamethrower, Crash Dash, in a red race
 cart of his own, or on the water track riding a red fish, holding on with his
 tongue, the mallet game, where he swings his mallet with it in his mouth, the
 gem game, riding a red dino, and the kegs game, with his keg balanced on his
-head. Pinstripe so far plays every game on foot, his tommy gun out only as he
-attacks.
+head. Pinstripe so far rides a polar bear in the polar games and plays the
+others on foot, his tommy gun out as he attacks and as he wins.
 
 
 MODS

@@ -149,6 +149,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 **Port test runs**
 - **A `same` baseline goes stale with the machine:** twice (2026-11-02, 2026-11-05) every picture differed on the last commit's own build, with the sound the same. Before trusting a fail, save a baseline from the last commit's build (`git stash push -- port/game`, build, `same --save`, pop, build, compare). And once a run's window came out 1345x1009, not its tile's 320x240, so its pictures "differed": check the shots' sizes, and run it again. Once, too, the node process sat idle after its runs had all finished: stop it, and score the files against `baseline.json` (scratch/same_score.mjs).
 - **A game starts its heroes more than once** (`extra_heroes_start` runs two or three times, first with the on-foot table): read a player's last `extra heroes:` line for what the game draws it as.
+- **A crash in `dbase_setup_blocks` as a level loads** is the loader's small nodes running out (one for each animation of each model loaded; the PS1 had 64). An extra hero's models keep all their animations: Pinstripe's on foot and on his bear in Manic Panic did it. The port has `SMALL_NODES` (512) now; a crash there again means something else.
 - **An extra hero isn't always in its own base's place:** a `--mode` run's player 1 has Crash's (so a launch with `--extra-hero 0 ID` plays it as Crash), and in a game it has another's when someone has its own. Each hero's moves are its own scripts (`HeroSeqTables`): Crash's jump, fall and landing are other parts of his JUMP than Cortex's, he lands after a throw, and his spin is a still mesh. A stand-in by the base's frames plays its parts out of order there (Pinstripe jumped after every throw and had no gun in his attack); a sequence stand-in (`"@LAND"`, EXTRA_HEROES.md, 2) doesn't. To see what a base plays, a print in `extra_hero_frame` of `GameFrameCount`, `Heroes[i].hero_aseq` and the entity in and out, for one player, is enough.
 - **A rider's lean smoothed in the bear's frame comes loose from its gallop:** Crash leans against every pitch of his bear's run to stay upright, so his lean measured against the bear swings each frame, and smoothing that blurs it out of step and leaves a tall rider rocking with the bear. Smooth where his spine points as the world sees it, then turn it into the bear's frame each frame (`ride_steps`).
 - **A frame's index list holds a vertex << 2 in 16 bits,** so one animation's vertices over all its frames can't pass 16,384 (Roo's JUMP was 28 x 592 = 16,576: on its last frame the tornado's vertices wrapped round onto others). `made_write` writes such an animation as keyframes with the frames between blended, as the game's own models are.
@@ -507,6 +508,17 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-06: Pinstripe rides a polar bear (Tilt Panic, Manic Panic), the first of his other games ("ok add him to the other
+  mini games now"). `ride_bear` sits him astride Crash's bear by `ride_make` as Roo is: `seated` poses his rig (each thigh out and
+  forward at his hip, shins bent back down its flanks, toes down, leaning forward, his hands on its neck), at 0.8 of his size about
+  his hips (at his own, his long legs reached the floor beside it; the game's own big heroes, Tiny and Kong, dwarf the same bear),
+  his gun's copies, palm caps and bigger head as on foot. As heavy and quick as Crash on it; his moves as long as Cortex's. His
+  thinner legs showed Crash's jeans on the bear's back: the bear's strips were tested by their average colour, so a face of jeans
+  in a strip of fur stayed; now each face is, by its colour and, as the jeans share the fur's image, by its texel at its middle
+  (129 faces to 121). Roo's bear loses the same faces (his baseline re-saved: only Tilt and Manic Panic differed, blue on blue).
+  The hero check found a crash in Manic Panic as it loaded: the loader's 64 small nodes, one an animation, ran out with his two
+  models; the port has 512 (`SMALL_NODES`), the first 64 as they were.
 
 - 2026-11-06: Pinstripe's eyes painted, at the user's word ("his eyes are still messed up. I think its because all the other
   heros use a texture"). His pupils were slits of four polygons on his eyeballs' own corners, tiny and broken up by the game's

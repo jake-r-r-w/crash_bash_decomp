@@ -103,8 +103,11 @@ behind it, unlit, as his game's colour slot says (it had been drawn solid, black
 hurt, his arms flung out and back by his rig, then hanging (his game had them on the gun). His eyes were
 still wrong by the game's heroes, whose eyes are their textures (the user's diagnosis): his eyeballs are
 painted now with an eye made in code, of nobody's art (yellow, a round pupil, its glint), laid flat
-over each eye as he faces at one size for both, and his pupils' polygons are left out. How it's done is
-at the top of his file.
+over each eye as he faces at one size for both, and his pupils' polygons are left out. The user called
+the rest his design and moved on to his other games (2026-11-06). Riding a polar bear (step 6, the
+first): sat astride Crash's (`ride_bear`, `seated`, `pose_astride`), at 0.8 of his size about his
+hips (at his own his long legs reached the floor beside it), his hands on its neck. How it's done is at
+the top of his file.
 
 ## How one plays
 
@@ -283,7 +286,9 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    every hop, carrying a crate too (`HOLD_SLOW` is his walk).
 5. **Riding a polar bear.** `ride_make` takes Crash's polar model from the player's archive (the
    bear is its strips with only the bear's textures, inside its outline, neither his jeans' blue
-   nor his skin's orange) and sits the hero on its back: `seated()` is his pose, as on a horse:
+   nor his skin's orange; and of those strips, no face of his jeans' blue or their shadow, by its
+   colour or, as his jeans share the fur's image, by its texel at its middle: they'd showed on its back
+   beside Pinstripe's thinner legs) and sits the hero on its back: `seated()` is his pose, as on a horse:
    thighs out over the bear's sides, knees bent so the shins go back under, his long feet poking out
    at the sides and tipped a little down, his tail tucked away into its root inside the bear (laid
    behind him, it only cut through the bear's rump), his hips down in its fur where Crash sits

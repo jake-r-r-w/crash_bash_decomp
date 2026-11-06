@@ -14,8 +14,8 @@
  * he's hit (PiF1V) and knocked down (PiF4V), his arms flung out by his rig, laughs crouched as he taunts (PiG2V, his arms down), and as
  * he wins shoots his gun about laughing, as in that fight (PiG2V, the gun out), each of those at his still's size (PIN_SOURCE_SCALE)
  * with his still's eyes. He's lit brighter and softer than his game's colours are, and his head's bigger, as Crash Bash's heroes look
- * (PinLight, HEAD_SCALE). His sounds are his boss fight's: his laugh and his tommy gun. His hero card is the face that fight shows by
- * his health. */
+ * (PinLight, HEAD_SCALE). Riding a polar bear he's sat astride Crash's, his hands on its neck (ride_bear). His sounds are his boss
+ * fight's: his laugh and his tommy gun. His hero card is the face that fight shows by his health. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,10 +72,15 @@ static s32 pin_make(HeroMade *out);
  * longer ones would otherwise hold some of his frames for two of theirs, stepping (at 120 frames a second, slowly) */
 #define PIN_SUBFRAMES 4
 
-/* Each kind of game plays as on foot until he has a model of it */
+/* Riding a polar bear his model has all of Polar Push's moves by name */
+static const Stand PinRides[] = {
+    { NULL, NULL, STRETCH },
+};
+
+/* Each kind of game plays as on foot until he has a model of it; on his bear he's as heavy and as quick as Crash on his */
 const HeroDef HeroPinstripe = {
     "PINSTRIPE", "pinstripe", "SCUS-94900", Cortex,
-    { { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
+    { { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinRides, "BREATHE", 0x1000, Crash, 1 },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
@@ -1171,6 +1176,125 @@ static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
     }
 }
 
+/* --- riding a polar bear (Polar Push) ---
+ * Sat astride Crash's bear (ride_make, bonusheroes.c, which moves him with its back and leans him as Crash leans): each thigh out
+ * over its side RIDE_SPREAD and forward RIDE_FLEX at his hip, his shins bent RIDE_KNEE back down its flanks, his toes tipped
+ * RIDE_FOOT down, his hips RIDE_HIP_UP over its back where Crash sits; leaning RIDE_LEAN forward, his hands forward on its shoulders
+ * (ArmsRide), the gun away. As Roo, he's as heavy and as quick as Crash on it, his moves as long as his base's. */
+#define RIDE_SPREAD 0.75f
+#define RIDE_FLEX 1.3f
+#define RIDE_KNEE 2.1f
+#define RIDE_FOOT 0.35f
+#define RIDE_LEAN 0.14f
+#define RIDE_HIP_UP 4.0f /* Crash Bash's units */
+#define RIDE_Z 4.0f
+#define RIDE_LEAN_WAIST 0.8f
+#define RIDE_LEAN_NECK 0.2f
+#define RIDE_STEADY 0.35f /* of Crash's tilt from upright, the share he keeps back from: he's taller than Crash */
+#define RIDE_CHARRED 0.35f /* his colours' share when a bomb's charred him */
+#define RIDE_SCALE 0.8f /* his size on it, about his hips: the bear is Crash's, and his legs reached the floor beside it */
+static const ArmPose ArmsRide = { { 0.3f, -0.72f, 0.6f }, { 0.04f, -0.88f, 0.46f } };
+
+/* A leg astride (made): out to its side `spread` radians and forward `flex` at the hip, its shin back `knee` at the knee, its shoe
+ * tipped `foot` more at the ankle */
+static void pose_astride(V3 *r, const Leg *leg, float spread, float flex, float knee, float foot) {
+    V3 o = { 0, 0, 0 };
+    s32 i;
+
+    for (i = 0; i < leg->n; i++) {
+        s32 k = leg->verts[i];
+        V3 p = Rest[k], shin;
+
+        if (leg->shoe[i]) {
+            p = vadd(leg->joint[2], hm_turn_x(vsub(p, leg->joint[2]), o, -foot));
+        }
+        shin = vadd(leg->joint[1], hm_turn_x(vsub(p, leg->joint[1]), o, knee));
+        p = leg->shoe[i] ? shin : hm_mix(p, shin, leg->shin[i]);
+        p = hm_turn_z(p, leg->joint[0], leg->side * spread);
+        r[k] = hm_turn_x(p, leg->joint[0], -flex);
+    }
+}
+
+/* Sat on the bear, in his rig: all of him, the gun's copies, his palms' caps and his head as foot_frame has them */
+static void seated(V3 *r) {
+    s32 i;
+
+    memcpy(r, Rest, sizeof(V3) * Verts);
+    pose_arms(r, &ArmsRide, &ArmsRide, 0, 0, 0, NULL);
+    pose_body(r, RIDE_LEAN, 0, 0);
+    for (i = 0; i < 2; i++) {
+        pose_astride(r, &Legs[i], RIDE_SPREAD, RIDE_FLEX, RIDE_KNEE, RIDE_FOOT);
+    }
+    place_gun(r, 0, 0);
+    grow_head(r);
+}
+
+/* The vertex of his whose place in him a vertex has: itself, a copy's of the gun, or a palm cap's first corner */
+static s32 own_vertex(s32 k) {
+    s32 c;
+
+    if (k < Verts) {
+        return k;
+    }
+    if (k < Verts + Copies) {
+        return CopyFrom[k - Verts];
+    }
+    for (c = 0; c < NCaps; c++) {
+        if (k >= Caps[c].base && k <= Caps[c].base + Caps[c].n) {
+            return Caps[c].loop[0];
+        }
+    }
+    return 0;
+}
+
+/* His bear model: sat on its back, his faces and images; 0 if there's no bear or it couldn't */
+static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, const MadeImage *images, s32 nimages, HeroMade *out) {
+    static V3 r[MAX_VERTS], seat[MAX_VERTS];
+    static float waist_share[MAX_VERTS], neck_share[MAX_VERTS];
+    float back_y, seat_z, s = PIN_UNIT * foot->k, hip = Legs[0].joint[0].y;
+    s32 n = Verts + Copies + CapVerts, k;
+    Rider rider;
+    V3 w, nk;
+
+    if (!ride_seat(&back_y, &seat_z)) {
+        return 0;
+    }
+    seated(r);
+    /* RIDE_SCALE of him, about the middle of his hips */
+    for (k = 0; k < n; k++) {
+        V3 hips = { 0, Legs[0].joint[0].y, Legs[0].joint[0].z };
+
+        r[k] = vadd(hips, vmul(vsub(r[k], hips), RIDE_SCALE));
+    }
+    for (k = 0; k < n; k++) {
+        V3 p = from_rig(r[k]);
+        s32 own = own_vertex(k);
+
+        seat[k] = v3(p.x * foot->k, p.y * foot->k + hip * s - RIDE_HIP_UP + back_y, p.z * foot->k + seat_z + RIDE_Z);
+        waist_share[k] = hm_smooth(WAIST_Y - WAIST_BLEND, WAIST_Y + WAIST_BLEND, Rest[own].y);
+        neck_share[k] = hm_smooth(NECK_Y - NECK_BLEND, NECK_Y + NECK_BLEND, Rest[own].y);
+    }
+    w = from_rig(v3(0, hip + (WAIST_Y - hip) * RIDE_SCALE, 0));
+    nk = from_rig(v3(0, hip + (NECK_Y - hip) * RIDE_SCALE, 0));
+    memset(&rider, 0, sizeof(rider));
+    rider.seat = seat;
+    rider.nvert = n;
+    rider.waist_share = waist_share;
+    rider.neck_share = neck_share;
+    rider.waist = v3(w.x * foot->k, w.y * foot->k + hip * s - RIDE_HIP_UP + back_y, w.z * foot->k + seat_z + RIDE_Z);
+    rider.neck = v3(nk.x * foot->k, nk.y * foot->k + hip * s - RIDE_HIP_UP + back_y, nk.z * foot->k + seat_z + RIDE_Z);
+    rider.lean_waist = RIDE_LEAN_WAIST;
+    rider.lean_neck = RIDE_LEAN_NECK;
+    rider.steady = RIDE_STEADY;
+    rider.match_bank = DB_CharsPolar2Cortex; /* his base's: its moves then go a frame a tick */
+    rider.faces = faces;
+    rider.nfaces = nfaces;
+    rider.images = images;
+    rider.nimages = nimages;
+    rider.charred = RIDE_CHARRED;
+    return ride_make(&rider, &out->tex[KIND_POLAR], &out->tex_size[KIND_POLAR], &out->mdl[KIND_POLAR], &out->mdl_size[KIND_POLAR]);
+}
+
 /* --- his sounds and card ---
  * His boss fight's object (PinsC) plays his laugh (laf8A) and his tommy gun (MGn8A), at 11025 Hz. His game has no hurt voice or name
  * for him: his yelp is his laugh's first "ha" (PIN_YELP_BYTES, to where it falls quiet), higher, and his name as he wins its first
@@ -1322,6 +1446,9 @@ static s32 pin_make(HeroMade *out) {
     mm.ctx = &foot;
     if (!made_write(&mm, &out->tex[KIND_FOOT], &out->tex_size[KIND_FOOT], &out->mdl[KIND_FOOT], &out->mdl_size[KIND_FOOT])) {
         goto done;
+    }
+    if (!ride_bear(&foot, faces, ntri, images, nimage, out)) {
+        printf("bonus: Pinstripe has no polar bear to ride\n");
     }
     if (c1_sprite(&level, "ShadC", 5, CARD_W, CARD_H, PinCard)) {
         out->card = PinCard;

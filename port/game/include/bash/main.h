@@ -733,7 +733,8 @@ extern ModuleEntry ShellModules;
 s32 load_file_direct(file *file, u8 *buf);
 void init_file(void);
 extern void *LoadNodeFree;
-extern BlockRef SmallNodePool[]; /* 63 of them, free list in SmallNodeFree */
+#define SMALL_NODES 512 /* PC: the PS1 had 64 (main.c) */
+extern BlockRef SmallNodePool[]; /* SMALL_NODES of them, free list in SmallNodeFree */
 extern struct LoadNode LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
 extern s32 cam_ramp_overide_count;
 extern void *CamEaseOverride;

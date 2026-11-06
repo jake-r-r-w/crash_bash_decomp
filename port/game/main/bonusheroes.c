@@ -1400,6 +1400,16 @@ static s32 bear_load(void) {
             if (!strip_bear[s] || b->nfaces == BEAR_FACES) {
                 continue;
             }
+            /* a face of his jeans, or their shadow, in a strip that's mostly the bear's (they showed on its back beside Pinstripe's
+             * thinner legs) */
+            {
+                const u8 *jc = colours + (col1[face] & 0x1FFF) * 4;
+                s32 jr = (jc[0] + jc[4] + jc[8]) / 3, jg = (jc[1] + jc[5] + jc[9]) / 3, jb = (jc[2] + jc[6] + jc[10]) / 3;
+
+                if (jb >= 40 && jb > jr + 30 && jb > jg + 30) {
+                    continue;
+                }
+            }
             order[0] = 0;
             order[1] = j % 2 == flip0 ? 1 : 2;
             order[2] = j % 2 == flip0 ? 2 : 1;
@@ -1423,6 +1433,24 @@ static s32 bear_load(void) {
                 mf->uv[q][1] = (u8)(w >> 8);
                 memcpy(mf->rgb[0][q], colours + c1 * 4, 3);
                 memcpy(mf->rgb[1][q], colours + c2 * 4, 3);
+            }
+            /* his jeans have texels of the bear's fur's image too: a face whose texel at its middle is their blue isn't the bear's */
+            if (mf->image >= 0 && mf->image < b->nimages && b->images[mf->image].pixels != NULL) {
+                const MadeImage *im = &b->images[mf->image];
+                s32 u = (mf->uv[0][0] + mf->uv[1][0] + mf->uv[2][0]) / 3, v = (mf->uv[0][1] + mf->uv[1][1] + mf->uv[2][1]) / 3;
+                s32 row = im->units * 2, i, tr, tg, tb;
+                u16 w;
+
+                if (v >= 0 && v < im->h && u >= 0 && u < row * (im->bpp8 ? 1 : 2)) {
+                    i = im->bpp8 ? im->pixels[v * row + u] : (im->pixels[v * row + u / 2] >> ((u & 1) * 4)) & 15;
+                    w = im->clut[i];
+                    tr = (w & 31) * 255 / 31;
+                    tg = (w >> 5 & 31) * 255 / 31;
+                    tb = (w >> 10 & 31) * 255 / 31;
+                    if (tb >= 90 && tb > tr + 50 && tb > tg + 50) {
+                        b->nfaces--;
+                    }
+                }
             }
         }
     }

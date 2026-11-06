@@ -2042,7 +2042,7 @@ void smallnode_init(void) {
 
     p = SmallNodePool;
     SmallNodeFree = p;
-    for (i = 62; i != -1; i--) {
+    for (i = SMALL_NODES - 2; i != -1; i--) {
         p->next = p + 1;
         p++;
     }
@@ -3651,7 +3651,9 @@ s32 FileGroupCount = sizeof(FileGroups) / sizeof(FileGroups[0]);
 LoaderState Loader = {0};
 LoadNode LoadNodePool[64] = {0};
 void *LoadNodeFree = 0;
-BlockRef SmallNodePool[64] = {0};
+/* PC: the PS1's 64 ran out in Manic Panic, where an extra hero's two models keep all their animations (a node each: Pinstripe's
+ * on foot has 12) beside the level's and the other heroes'; the first 64 are as they were */
+BlockRef SmallNodePool[SMALL_NODES] = {0};
 BlockRef *SmallNodeFree = 0;
 s32 DirPadBits[24] = {
     0x10, 0x30, 0x20, 0x60, 0x40, 0xC0, 0x80, 0x90, 0, 0, 0x400, 0x200, 0x800, 0, 0x600, 0,
