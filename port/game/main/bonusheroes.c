@@ -389,11 +389,14 @@ typedef struct {
     s32 x, y, w, h, bpp;
 } C1Texture;
 
+const C1Light C1LightPlain = { { -0.35f, -0.75f, -0.55f }, 0.62f, 0.55f, 0 };
+
 s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s32 nvert, MadeFace *faces, s32 max, s32 *nfaces,
-                   MadeImage *images, s32 *nimages) {
+                   MadeImage *images, s32 *nimages, const C1Light *how) {
     static C1Texture texs[MADE_MAX_IMAGES];
     const u8 *info = model->item[0], *polys = model->item[1];
-    const V3 light = { -0.35f, -0.75f, -0.55f };
+    const C1Light *lighting = how != NULL ? how : &C1LightPlain;
+    const V3 light = lighting->dir;
     float ll = sqrtf(light.x * light.x + light.y * light.y + light.z * light.z);
     s32 ntri = (s32)hm_rd32(info), nslot = (s32)hm_rd32(info + 16), ntex = 0, i, j, k;
 
@@ -467,7 +470,12 @@ s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s3
             if (len > 0) {
                 lit = (nn->x * light.x + nn->y * light.y + nn->z * light.z) / (len * ll);
             }
-            lit = 0.62f + 0.55f * (lit > 0 ? lit : 0);
+            if (lighting->wrap) {
+                lit = (1 + lit) / 2;
+                lit = lighting->base + lighting->gain * lit * lit;
+            } else {
+                lit = lighting->base + lighting->gain * (lit > 0 ? lit : 0);
+            }
             for (k = 0; k < 3; k++) {
                 float v = rgb[k] * lit;
 

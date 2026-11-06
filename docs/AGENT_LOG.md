@@ -508,6 +508,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-06: Pinstripe's eyes, and his look against the game's, at the user's word ("artifacting near his eyes", "make him fit
+  into the game style more"). His eyes are three layers his game drew in order (eyeballs, pupils, lids, the lids' colour flagged
+  0x10); each of its frames is quantised by itself, so some corner of a layer poked through the next in every frame and a depth
+  test drew slivers that changed as he moved. His still's pupils and lids are lifted 1 and 2 of his game's units forward (drawn
+  back to front, the head looks the same), and his game's moves have his still's eyes, moved as their own move (`hm_fit`). Against
+  the game's heroes: theirs are mostly textured, their colours' shading about a quarter either way; his light left the side away
+  from it flat (42% of his faces one colour), darker and duller. `c1_model_faces` takes a `C1Light` now (NULL, Roo's, as before);
+  his wraps round, 0.8 to 1.3. Their idles move a corner 2-4% of their height on average, their runs 11-43%; his 0.8% and 8%: an
+  idle that bobs at the knees, nods and turns (2.4%), and a jog with his arms pumping and his shoulders turning (12%).
+
 - 2026-11-06: Pinstripe's palms and win, from the user's next play. His palms were see-through in the select and in Jungle Bash:
   his hands close round the gun's grips, so with them folded away each palm is an open loop of edges (14 corners on the right, 10
   on the left; each hand's wrist is another, in his sleeve), and the game draws only faces' fronts. Each palm is capped: the loop

@@ -3047,7 +3047,7 @@ static s32 roo_make(HeroMade *out) {
 
     /* his triangles, their colours lit as he stands, and their textures; then the tornado's, on its vertices after his (add_tornado):
      * each quad two faces a side, so it shows from in and out, each corner bright as far as it is to its streak's front */
-    if (!c1_model_faces(&level, &model, normals, nvert, faces, MAX_TRIS - TORN_TRIS, &ntri, images, &nimage)) {
+    if (!c1_model_faces(&level, &model, normals, nvert, faces, MAX_TRIS - TORN_TRIS, &ntri, images, &nimage, NULL)) {
         goto done;
     }
     own_tris = ntri;

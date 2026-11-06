@@ -35,6 +35,14 @@ playing.
      taunt, picking up and throwing a crate. Try it as player 1 and as player 3 (another place).
    - Check its game's moves are the size of the pose it's rigged from: by a rigid piece (a shoe, a
      hand), not the whole body. Pinstripe's still is 1/1.2 the size of his moves.
+   - Look at it the way the game draws it: only faces' fronts, and with a depth test. A game drawn
+     back to front (the PS1's) can have layers drawn in order whatever their depths, which a depth
+     test cuts into slivers (Pinstripe's eyeballs, pupils and lids), and holes nobody saw (his palms).
+   - Fit it to Crash Bash's look. The game's heroes are bright and soft, their shading mostly in their
+     textures: a corner's colour no more than about a quarter either way from the rest of its colour's.
+     A light that leaves the side away from it flat looks dark and faceted by them (`C1Light`, `wrap`).
+     Their idles move their corners 2 to 4% of their height on average, and their runs 11 to 43%;
+     moves made much stiller than that look stiff beside them.
 4. **Its sounds** (below, 3): a voice for each offset of its base's block, or none where one would
    be wrong. Its name as it wins has to be short enough for the announcer's "wins!" after it. An
    attack with a sound of its own (Pinstripe's tommy gun) is `VOICE_FIRE`, at offset 13.
@@ -82,7 +90,12 @@ going by the sequence. Then (2026-11-06) his palms were still see-through: his h
 grips, so without them each palm is a hole, and the game draws only faces' fronts. Each is closed by a
 cap fanned across the hole's edge loop, which folds away as the gun comes out. As he wins he shoots his
 gun about laughing, as in his boss fight (its PiG2V, at the user's word), for both wins (`@WIN`,
-`@VICTORY`). How it's done is at the top of his file.
+`@VICTORY`). Then, at the user's word, his face's slivers near his eyes went (his game drew his eyeballs,
+pupils and lids in order; his still's pupils and lids are lifted a little forward, and his game's moves
+have his still's eyes), and he was made to fit the game's look: a brighter, wrapped light (he'd been
+darker and duller than the others, 42% of his faces one flat colour), an idle that bobs at the knees and
+a jog with his arms pumping, moving as much as the game's heroes do. How it's done is at the top of his
+file.
 
 ## How one plays
 

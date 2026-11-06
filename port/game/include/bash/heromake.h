@@ -108,10 +108,20 @@ typedef struct {
 s32 made_write(const MadeModel *m, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size);
 void made_images_free(MadeImage *images, s32 n);
 
-/* A Crash Bandicoot model's triangles as made faces, lit as they'd stand by normals (frame `normals` of its standing animation), and
- * their textures as made images; 0 if it couldn't. */
+/* How a Crash Bandicoot model's faces are lit as they stand (c1_model_faces): from `dir` (Crash Bash's axes, y down), each corner's
+ * colour times base + gain of its light, the share of its normal toward dir, none from behind (C1LightPlain, Roo's); or, wrapped,
+ * gain of ((1 + that share) / 2) squared, so the side away from the light still shades and isn't all one colour. */
+typedef struct {
+    V3 dir;
+    float base, gain;
+    s32 wrap;
+} C1Light;
+extern const C1Light C1LightPlain;
+
+/* A Crash Bandicoot model's triangles as made faces, lit as they'd stand by normals (frame `normals` of its standing animation) by
+ * `light` (NULL for C1LightPlain), and their textures as made images; 0 if it couldn't. */
 s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s32 nvert, MadeFace *faces, s32 max, s32 *nfaces,
-                   MadeImage *images, s32 *nimages);
+                   MadeImage *images, s32 *nimages, const C1Light *light);
 
 /* --- part of one of the game's own models, as the player's archive has it ---
  * The strips of a model bank's first mesh that `keep` picks, from where each one's corners are as the model rests (Crash Bash's axes,

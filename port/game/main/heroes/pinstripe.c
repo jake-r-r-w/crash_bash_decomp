@@ -8,12 +8,13 @@
  *
  * At the user's word he has the gun only as he attacks and wins. The rest of the time it's away, its faces folded into his hands (its
  * front grip into his left, his palms closed over where the grips went), and his arms are his own: a rig of his (each arm two bones,
- * each leg two and its shoe) hangs them at his sides as he stands, swings them as he walks and puts them up for a crate. His walk,
- * jump, holding and throwing a crate, and his breathing are made by it. His attack is his stride's fire (PiG3V), the gun coming out
- * into his hands and away again, its muzzle flashing; he's thrown back as he's hit (PiF1V) and knocked down (PiF4V), laughs crouched
- * as he taunts (PiG2V, his arms down), and as he wins shoots his gun about laughing, as in that fight (PiG2V, the gun out), each of
- * those at his still's size (PIN_SOURCE_SCALE). His sounds are his boss fight's: his laugh and his tommy gun. His hero card is the
- * face that fight shows by his health. */
+ * each leg two and its shoe) hangs them at his sides as he stands, pumps them as he jogs and puts them up for a crate. His jog, jump,
+ * holding and throwing a crate, and his breathing (bobbing at the knees) are made by it, moving as much as Crash Bash's heroes' do.
+ * His attack is his stride's fire (PiG3V), the gun coming out into his hands and away again, its muzzle flashing; he's thrown back as
+ * he's hit (PiF1V) and knocked down (PiF4V), laughs crouched as he taunts (PiG2V, his arms down), and as he wins shoots his gun about
+ * laughing, as in that fight (PiG2V, the gun out), each of those at his still's size (PIN_SOURCE_SCALE) with his still's eyes. He's lit
+ * brighter and softer than his game's colours are, as Crash Bash's heroes look (PinLight). His sounds are his boss fight's: his laugh
+ * and his tommy gun. His hero card is the face that fight shows by his health. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +26,7 @@
 #include "bash/heromake.h"
 
 /* --- how he plays ---
- * His base is Cortex, if nobody else is playing him: a villain as he is, and about his size. On foot he walks where the others run,
+ * His base is Cortex, if nobody else is playing him: a villain as he is, and about his size. On foot he jogs where the others run,
  * slide or swim, holds a crate up as they do, fires his gun where they attack or kick, laughs where they taunt, shoots his gun about
  * laughing as he wins, is thrown back as he's hit and knocked down where they die.
  *
@@ -92,6 +93,12 @@ const HeroDef HeroPinstripe = {
 #define PIN_PI 3.14159265f
 #define MAX_TRIS 1024
 #define MAX_VERTS 640     /* his 441 and the gun's own copies */
+
+/* His light, in his colours as he stands (c1_model_faces), for Crash Bash's look: its heroes' colours are bright and soft, their shading
+ * mostly in their textures, a corner's colour no more than about a quarter either way from the rest of its colour's. Lit as Roo is (all
+ * flat on the side away from the light: 42% of his faces were one colour) he was darker and duller than them, so his light wraps round,
+ * brighter, and goes from 0.8 of his colours away from it to 1.3 toward it. */
+static const C1Light PinLight = { { -0.35f, -0.75f, -0.55f }, 0.8f, 0.5f, 1 };
 
 /* The animations his model has, each from one of his game's (src, its frames resampled to the made one's) or made by the rig from his
  * standing pose (src NULL); as long as his base's of the same name (hm_bank_frames of Cortex's, `base`) or `frames` ticks, each tick
@@ -176,6 +183,19 @@ static Leg Legs[2] = {
 #define WAIST_BLEND 20.0f
 static s16 Chest[128];
 static s32 ChestN;
+
+/* His eyes: three layers his game drew in that order, each over the last whatever their depths: his eyeballs (yellow), the slits of
+ * his pupils on them (5, 5, 11) and his lids over both (their colour flagged 0x10). Each of its frames' vertices is quantised by itself,
+ * so in every one some corner of a layer pokes through the one over it, and a depth test showed those as slivers round his eyes,
+ * changing as he moved. His still's pupils and lids are lifted forward, EYE_LIFT_PUPIL and EYE_LIFT_LID of his game's units (his
+ * height is about 290; drawn back to front as his game drew them, his head looks the same), and each frame from his game has his eyes
+ * from his still, moved as its own eyes move (src_at). */
+#define EYE_LIFT_PUPIL 1.0f
+#define EYE_LIFT_LID 2.0f
+#define EYE_MAX 96
+static u8 EyeLayer[MAX_VERTS]; /* each vertex's layers, of the triangles it's a corner of: 1 eyeball, 2 pupil, 4 lid */
+static s16 EyeIds[EYE_MAX];
+static s32 EyeN;
 
 /* His palms: his hands close round the gun's grips, so with the gun away each palm is a hole where its grip went in (the game draws
  * only a face's front, and you'd see through the hand). Each is closed with a cap, the loop of edges where its hand's faces meet the
@@ -417,7 +437,41 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
             Chest[ChestN++] = (s16)k;
         }
     }
+    /* his eyes' layers, by their colours */
+    for (k = 0; k < nvert; k++) {
+        EyeLayer[k] = 0;
+    }
+    for (i = 0; i < ntri && i < MAX_TRIS; i++) {
+        const u8 *p = polys + i * 8, *s;
+        s32 slot = hm_rd16(p + 6) & 0x7FFF, layer = 0;
+
+        if (slot >= nslot || PieceOf[hm_rd16(p) / 6] != PIECE_BODY) {
+            continue;
+        }
+        s = info + 20 + slot * 4;
+        layer = s[0] == 255 && s[1] == 255 && s[2] == 0 ? 1 : s[0] == 5 && s[1] == 5 && s[2] == 11 ? 2 : (s[3] & 0x10) ? 4 : 0;
+        for (j = 0; j < 3; j++) {
+            EyeLayer[hm_rd16(p + j * 2) / 6] |= (u8)layer;
+        }
+    }
+    EyeN = 0;
+    for (k = 0; k < nvert && EyeN < EYE_MAX; k++) {
+        if (EyeLayer[k]) {
+            EyeIds[EyeN++] = (s16)k;
+        }
+    }
     return Arms[0].n > 20 && Arms[1].n > 20 && Legs[0].n > 20 && Legs[1].n > 20 && ChestN >= 4;
+}
+
+/* His still's pupils and lids lifted forward (above, EyeLayer), each corner by the topmost layer it's a corner of */
+static void eye_lift(void) {
+    s32 k;
+
+    for (k = 0; k < EyeN; k++) {
+        s32 v = EyeIds[k];
+
+        Rest[v].z += EyeLayer[v] & 4 ? EYE_LIFT_LID : EyeLayer[v] & 2 ? EYE_LIFT_PUPIL : 0;
+    }
 }
 
 /* An arm put along `up` (its upper arm) and `fore` (its forearm), directions in his rig, its vertices from where they stand moved to
@@ -505,6 +559,19 @@ static void pose_body(V3 *r, float lean, float lift, float breath) {
     }
 }
 
+/* His upper body (all above his waist, blended over WAIST_BLEND) turned `turn` radians about the upright through his waist, his
+ * shoulders swinging round as he walks */
+static void pose_turn(V3 *r, float turn) {
+    V3 waist = { 0, WAIST_Y, 0 };
+    s32 k;
+
+    for (k = 0; k < Verts; k++) {
+        if (PieceOf[k] != PIECE_LEGS && PieceOf[k] != PIECE_SHOE) {
+            r[k] = hm_turn_y(r[k], waist, turn * hm_smooth(WAIST_Y - WAIST_BLEND, WAIST_Y + WAIST_BLEND, Rest[k].y));
+        }
+    }
+}
+
 /* All of him moved by d */
 static void pose_shift(V3 *r, V3 d) {
     s32 k;
@@ -512,6 +579,17 @@ static void pose_shift(V3 *r, V3 d) {
     for (k = 0; k < Verts; k++) {
         r[k] = vadd(r[k], d);
     }
+}
+
+/* Both knees bent `bend` radians, his thighs forward half that and his shoes flat, and all of him down so his feet stay on the floor */
+static void pose_knees(V3 *r, float bend) {
+    float thigh = vlen(vsub(Legs[0].joint[1], Legs[0].joint[0])), shin = vlen(vsub(Legs[0].joint[2], Legs[0].joint[1]));
+    s32 i;
+
+    for (i = 0; i < 2; i++) {
+        pose_leg(r, &Legs[i], bend / 2, bend, bend / 2);
+    }
+    pose_shift(r, v3(0, -(thigh + shin) * (1 - cosf(bend / 2)), 0));
 }
 
 /* --- his moves --- */
@@ -538,6 +616,15 @@ static s32 src_at(const C1Entry *a, float t, V3 *r) {
     }
     for (k = 0; k < n; k++) {
         r[k] = vmul(to_rig(hm_mix(fa[k], fb[k], u)), 1 / PIN_SOURCE_SCALE);
+    }
+    /* his eyes his still's, in order, moved as these are */
+    if (EyeN >= 3) {
+        Moved mv;
+
+        hm_fit(Rest, r, EyeIds, EyeN, &mv);
+        for (k = 0; k < EyeN; k++) {
+            r[EyeIds[k]] = hm_moved(&mv, Rest[EyeIds[k]]);
+        }
     }
     return n;
 }
@@ -681,21 +768,36 @@ static void add_caps(MadeFace *faces, s32 *ntri) {
     }
 }
 
-/* Standing as he breathes, arms down (made): at t of the way round */
+/* Standing as he breathes (made), at t of the way round, with the bounce Crash Bash's heroes stand with (their idles move a corner 2 to
+ * 4% of their height on average; his had moved 0.8%, and looked stiff by them): his knees bending from IDLE_KNEE to IDLE_KNEE +
+ * IDLE_BOUNCE and back, his chest rising IDLE_BREATH, nodding IDLE_NOD, his shoulders turning IDLE_TURN and his arms swaying IDLE_ARM */
+#define IDLE_KNEE 0.18f
+#define IDLE_BOUNCE 0.5f
+#define IDLE_BREATH 3.0f
+#define IDLE_NOD 0.035f
+#define IDLE_TURN 0.05f
+#define IDLE_ARM 0.08f
 static void stand(V3 *r, float t, const ArmPose *arms) {
+    float a = 2 * PIN_PI * t, s = sinf(a), down = (1 - cosf(a)) / 2;
+
     memcpy(r, Rest, sizeof(V3) * Verts);
-    pose_arms(r, arms, arms, 0, 0.04f * sinf(2 * PIN_PI * t), 0, NULL);
-    pose_body(r, 0.015f * sinf(2 * PIN_PI * t), 0, 1.2f * sinf(2 * PIN_PI * t));
+    pose_arms(r, arms, arms, 0, IDLE_ARM * s, 0, NULL);
+    pose_body(r, IDLE_NOD * down, 0, IDLE_BREATH * s);
+    pose_turn(r, IDLE_TURN * s);
+    pose_knees(r, IDLE_KNEE + IDLE_BOUNCE * down);
 }
 
-/* His walk, two steps a go round (made): legs swinging WALK_HIP forward and back, the one coming forward bent WALK_KNEE at the knee,
- * the body sinking as the legs spread so the foot on the ground stays there, leaning WALK_LEAN forward, arms swinging WALK_ARM against
- * the legs (or up, holding a crate) */
-#define WALK_HIP 0.42f
-#define WALK_KNEE 0.75f
-#define WALK_LEAN 0.06f
-#define WALK_ARM 0.32f
-#define WALK_BOB 3.0f
+/* His jog, two steps a go round (made), as Crash Bash's heroes run (their runs move a corner 11 to 43% of their height on average;
+ * his walk had moved 8%): legs swinging WALK_HIP forward and back, the one coming forward bent WALK_KNEE at the knee, the body sinking
+ * as the legs spread so the foot on the ground stays there and bobbing WALK_BOB, leaning WALK_LEAN forward, his shoulders turning
+ * WALK_TURN against his hips, his elbows bent and his arms pumping WALK_ARM against his legs (or up, holding a crate, and steadier) */
+#define WALK_HIP 0.55f
+#define WALK_KNEE 1.1f
+#define WALK_LEAN 0.11f
+#define WALK_ARM 0.48f
+#define WALK_BOB 7.0f
+#define WALK_TURN 0.14f
+static const ArmPose ArmsJog = { { 0.16f, -1, -0.12f }, { 0.06f, -0.8f, 0.6f } };
 static void walk(V3 *r, float t, s32 holding) {
     float a = 2 * PIN_PI * t, leg_len = Legs[0].joint[0].y - Legs[0].joint[2].y;
     s32 i;
@@ -704,9 +806,10 @@ static void walk(V3 *r, float t, s32 holding) {
     if (holding) {
         pose_arms(r, &ArmsUp, &ArmsUp, 0, 0, 0, NULL);
     } else {
-        pose_arms(r, &ArmsDown, &ArmsDown, 0, -WALK_ARM * sinf(a), 0, NULL);
+        pose_arms(r, &ArmsJog, &ArmsJog, 0, -WALK_ARM * sinf(a), 0, NULL);
     }
-    pose_body(r, WALK_LEAN, -WALK_BOB * sinf(a) * sinf(a), 0);
+    pose_body(r, WALK_LEAN, -WALK_BOB * (holding ? 0.5f : 1) * sinf(a) * sinf(a), 0);
+    pose_turn(r, WALK_TURN * (holding ? 0.3f : 1) * sinf(a));
     for (i = 0; i < 2; i++) {
         /* the first leg forward as the first arm (on its side) goes back */
         float ph = i == 0 ? a : a + PIN_PI, hip = WALK_HIP * sinf(ph), swing = cosf(ph) > 0 ? cosf(ph) : 0;
@@ -983,12 +1086,13 @@ static s32 pin_make(HeroMade *out) {
         printf("bonus: Pinstripe can't be rigged\n");
         goto done;
     }
+    eye_lift();
     /* as tall as PIN_HEIGHT from his feet to the top of his head (y down: hi his feet) */
     foot.k = PIN_HEIGHT / (hi - lo);
     foot.ground = hi * foot.k;
 
     /* his triangles, their colours lit as he stands, and their textures; the gun's and the flash's on their own copies */
-    if (!c1_model_faces(&level, &model, normals, nvert, faces, MAX_TRIS, &ntri, images, &nimage)) {
+    if (!c1_model_faces(&level, &model, normals, nvert, faces, MAX_TRIS, &ntri, images, &nimage, &PinLight)) {
         goto done;
     }
     for (i = 0; i < ntri && i < MAX_TRIS; i++) {
