@@ -114,6 +114,20 @@ hit off the edge, where the others hang on and flail ("look carefully how some o
 crash"): at the ice's edge he goes as Crash does (`ride_own`, from Crash's body measured frame by frame,
 step 5), thrown back off the bear's rump with his arms flying, back up if he gets back on, and left in
 the air as the bear drops away; and his fall's teeter and drop now meet the game's (Splits, step 2).
+The user approved his bear (2026-11-06). On a pogo stick (step 6, the second): Pogo's heroes ride things
+of their own (Crash and Coco pogo sticks, Cortex and Brio their jetpacks, Tiny and Kong springs), and
+as he rides as Crash does he bounces on Crash's stick (`pogo_make`): its strips of Crash's pogo model,
+picked by where they are as Crash first bounces (the model's own pose has his arms out, and a first
+pick by it took his arms and legs), its tube 1.3 times as long above its pegs so the handle's at his
+waist, its blues gunmetal against his red suit. He stands on it at 0.8 of his size, his feet on its
+pegs and his hands on its grips (two-bone limbs put to them), and moves as Crash does in the stick's
+own frame: Crash springs up off the pegs at the top of each bounce, his limbs stretching to keep hold,
+so Pinstripe's hips and feet move as Crash's (for his height, 1.3 as far) and his limbs stretch the
+same way; his body turns as Crash's, and a hand Crash lets go with (punching the air as he wins) goes
+as Crash's arm goes. Pogo's five moves are Crash's; his win and tazing at their own speed, as
+Cortex's are 87 and 4 ticks. His lean (`pose_body`) turns out to go back for a lean above 0, though his
+moves on foot and on his bear were written as if forward (his crate pickup leans back as he kneels):
+they're as the user approved them, and only the pogo's lean is put the right way round.
 
 ## How one plays
 

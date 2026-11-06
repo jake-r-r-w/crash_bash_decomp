@@ -512,6 +512,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-06: The user approved Pinstripe's bear ("LGTM"); his pogo stick (Pogo Painter) next. Cortex's pogo model is his jetpack, so
+  he bounces on Crash's stick (`pogo_make` in pinstripe.c): its strips picked by where they are as Crash first bounces (a pick by the
+  model's own pose, arms out, took Crash's limbs), its tube 1.3 times as long, its blues gunmetal; him on it at 0.8, feet on the pegs
+  and hands on the grips by two-bone limbs, moving as Crash does in the stick's fitted frame. Crash springs off the pegs at the top of a
+  bounce with stretching limbs, so Pinstripe's do too (`two_bone`'s stretch); following Crash's hips at twice his move had torn him
+  off his shoes. Renders of all five moves beside Crash's, Pogo Painter shots, `hero pinstripe` 6 of 15 (on foot, bear, pogo).
+  Found: `pose_body` leans back for a lean above 0, so his pickup and jog lean back; left as approved, the pogo's put right. Not
+  played by the user yet.
 - 2026-11-06: Watching Pinstripe in a Tilt Panic launch, the user saw the ice not tilt and him sit stiffly as he was hit off the
   edge ("look carefully how some other hero falls like crash"). Crash's FALL: the teeter for 32 frames (thrown back off the bear's
   rump, arms flying, back up), then the drop (the bear falls away, he's left in the air). Pinstripe's FALL now follows Crash's body,
