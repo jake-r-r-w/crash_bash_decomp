@@ -508,6 +508,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-06: Pinstripe's eyes painted, at the user's word ("his eyes are still messed up. I think its because all the other
+  heros use a texture"). His pupils were slits of four polygons on his eyeballs' own corners, tiny and broken up by the game's
+  heroes' textured eyes. `eye_image` paints a 32 x 16 eye in code (yellow, deeper at its edge and under his lid, a round black
+  pupil blended at its edge, a white glint), and `eye_paint` lays it on his eyeball faces flat as he faces: both eyes at one size
+  (his are 14 and 8.5 of his game's units across), each centred where its yellow is (its faces' middles by area: its corners'
+  extent leans to its long pointed corner, and the pupil there looked aside), untinted; his pupils' faces are left out. Checked in
+  the select at the user's settings and drawn up close; the hero check plays him in all 13 games.
+
 - 2026-11-06: Pinstripe's head, pupils, muzzle flash and hurt arms, at the user's word ("lets try with a bigger head", "his hurt
   animation is the last one to improve", the flash "got a black all over it", "his pupils look cross eyed"). A Crash Bandicoot
   colour slot's fourth byte: bit 7 textured, bits 5-6 a blend mode (3, every solid face's, is solid), bit 4 unlit, bits 0-3 the

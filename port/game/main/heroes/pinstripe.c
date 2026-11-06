@@ -190,24 +190,18 @@ static s32 ChestN;
  * so in every one some corner of a layer pokes through the one over it, and a depth test showed those as slivers round his eyes,
  * changing as he moved. His still's lids are lifted forward EYE_LIFT_LID of his game's units (his height is about 290; drawn back to
  * front as his game drew them, his head looks the same), and each frame from his game has his eyes from his still, moved as its own
- * eyes move (src_at). His pupils are drawn on his eyeballs' own corners, and in his still one looks aside (the user found him cross-
- * eyed): they're on corners of their own, each in the middle of its eye, PUPIL_LIFT in front of the eyeball there, moved as his eyes
- * move in each frame (place_gun). */
+ * eyes move (src_at). His pupils were slits of a few polygons drawn on his eyeballs' own corners, tiny and broken up beside Crash
+ * Bash's heroes' eyes, which are their textures' (the user's word: "all the other heroes use a texture"): so his eyeballs are painted
+ * (eye_paint), each eye an image of its own made here, of nobody's art, a pupil in the middle and its glint, laid flat over the eye
+ * as he faces, and the pupils' polygons are left out. */
 #define EYE_LIFT_LID 2.0f
-#define PUPIL_LIFT 0.8f
 #define EYE_MAX 96
-#define EYEBALL_MAX 32
-#define PUPIL_MAX 32
+#define EYE_TEX_W 32 /* the eye's image, texels (4 bits each) */
+#define EYE_TEX_H 16
 static u8 EyeLayer[MAX_VERTS]; /* each vertex's layers, of the triangles it's a corner of: 1 eyeball, 2 pupil, 4 lid */
 static s16 EyeIds[EYE_MAX];
 static s32 EyeN;
-static s16 Eyeball[EYEBALL_MAX][3]; /* his eyeballs' triangles' corners */
-static s32 EyeballN;
-static u8 PupilTri[MAX_TRIS];       /* his pupils' triangles */
-static s16 PupilOf[MAX_VERTS];      /* each vertex's pupil corner (from PupilBase), or -1 */
-static s16 PupilFrom[PUPIL_MAX];    /* and each pupil corner's vertex */
-static V3 PupilAt[PUPIL_MAX];       /* where each goes in his still */
-static s32 Pupils, PupilBase;
+static u8 EyeTri[MAX_TRIS];    /* each triangle's layer, the same */
 
 /* His head, HEAD_SCALE as big as his game's, as Crash Bash's heroes' heads are big for their bodies (the user's pick, 2026-11-06): all
  * of his body's piece above his neck (blended over NECK_BLEND about NECK_Y, where his body's narrowest under his head), grown about
@@ -464,12 +458,11 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
     for (k = 0; k < nvert; k++) {
         EyeLayer[k] = 0;
     }
-    EyeballN = 0;
     for (i = 0; i < ntri && i < MAX_TRIS; i++) {
         const u8 *p = polys + i * 8, *s;
         s32 slot = hm_rd16(p + 6) & 0x7FFF, layer = 0;
 
-        PupilTri[i] = 0;
+        EyeTri[i] = 0;
         if (slot >= nslot || PieceOf[hm_rd16(p) / 6] != PIECE_BODY) {
             continue;
         }
@@ -477,12 +470,8 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
         layer = s[0] == 255 && s[1] == 255 && s[2] == 0 ? 1 : s[0] == 5 && s[1] == 5 && s[2] == 11 ? 2 : (s[3] & 0x10) ? 4 : 0;
         for (j = 0; j < 3; j++) {
             EyeLayer[hm_rd16(p + j * 2) / 6] |= (u8)layer;
-            if (layer == 1 && EyeballN < EYEBALL_MAX) {
-                Eyeball[EyeballN][j] = (s16)(hm_rd16(p + j * 2) / 6);
-            }
         }
-        EyeballN += layer == 1 && EyeballN < EYEBALL_MAX;
-        PupilTri[i] = layer == 2;
+        EyeTri[i] = (u8)layer;
     }
     EyeN = 0;
     for (k = 0; k < nvert && EyeN < EYE_MAX; k++) {
@@ -515,9 +504,6 @@ static void grow_head(V3 *r) {
             r[k] = vadd(neck, vmul(vsub(r[k], neck), 1 + (HEAD_SCALE - 1) * HeadGrow[k]));
         }
     }
-    for (k = 0; k < Pupils; k++) {
-        r[PupilBase + k] = vadd(neck, vmul(vsub(r[PupilBase + k], neck), HEAD_SCALE));
-    }
 }
 
 /* His still's lids lifted forward (above, EyeLayer) */
@@ -531,87 +517,137 @@ static void eye_lift(void) {
     }
 }
 
-/* The front of his still's eyeball on `side` (by x) at x, y, or -1e9 if none of its faces is there */
-static float eyeball_z(float side, float x, float y) {
-    float best = -1e9f;
-    s32 i;
+/* His eye's image (above): yellow, deeper toward its edge and under his lid, a black pupil in its middle a little taller than wide
+ * (an eye's shape on him is about 2.3 times as wide as it's tall), blended into the yellow at its edge, and a white glint at its top
+ * left; four bits a texel. 0 if there's no memory for it. */
+#define RGB15(r, g, b) ((u16)(((r) >> 3) | ((g) >> 3) << 5 | ((b) >> 3) << 10))
+enum { EYE_YELLOW = 1, EYE_DEEP, EYE_SHADE, EYE_RIM1, EYE_RIM2, EYE_PUPIL, EYE_GLINT, EYE_GLINT_RIM };
+#define EYE_PUPIL_W 3.4f /* half the pupil's width and height, texels */
+#define EYE_PUPIL_H 5.2f
+#define EYE_GLINT_R 1.1f
+static s32 eye_image(MadeImage *im) {
+    static const u16 Clut[16] = {
+        0x8000, RGB15(255, 228, 40), RGB15(240, 190, 20), RGB15(200, 140, 10), RGB15(170, 152, 27), RGB15(85, 76, 13),
+        RGB15(12, 10, 8), RGB15(255, 255, 240), RGB15(130, 130, 125),
+    };
+    float cx = EYE_TEX_W / 2.0f, cy = EYE_TEX_H / 2.0f + 0.5f, gx = cx - 1.4f, gy = cy - 2.2f;
+    s32 u, v, k;
 
-    for (i = 0; i < EyeballN; i++) {
-        V3 a = Rest[Eyeball[i][0]], b = Rest[Eyeball[i][1]], c = Rest[Eyeball[i][2]];
-        float d = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x), u, v;
+    memset(im, 0, sizeof(*im));
+    im->units = EYE_TEX_W / 4;
+    im->h = EYE_TEX_H;
+    im->bpp8 = 0;
+    im->colours = 16;
+    for (k = 0; k < 16; k++) {
+        im->clut[k] = Clut[k] != 0 ? Clut[k] : Clut[EYE_YELLOW];
+    }
+    im->clut[0] = 0x8000;
+    if ((im->pixels = calloc((size_t)im->units * 2 * EYE_TEX_H, 1)) == NULL) {
+        return 0;
+    }
+    for (v = 0; v < EYE_TEX_H; v++) {
+        for (u = 0; u < EYE_TEX_W; u++) {
+            float pupil = 0, glint = 0, e = ((u + 0.5f - cx) / cx) * ((u + 0.5f - cx) / cx) + ((v + 0.5f - cy) / cy) * ((v + 0.5f - cy) / cy);
+            s32 sx, sy, c;
 
-        if ((a.x + b.x + c.x) * side < 0 || fabsf(d) < 1e-6f) {
-            continue;
-        }
-        u = ((x - a.x) * (c.y - a.y) - (y - a.y) * (c.x - a.x)) / d;
-        v = ((b.x - a.x) * (y - a.y) - (b.y - a.y) * (x - a.x)) / d;
-        if (u >= 0 && v >= 0 && u + v <= 1) {
-            float z = a.z + u * (b.z - a.z) + v * (c.z - a.z);
+            /* the pupil's and glint's share of it, by 4 x 4 points in it */
+            for (sy = 0; sy < 4; sy++) {
+                for (sx = 0; sx < 4; sx++) {
+                    float x = u + (sx + 0.5f) / 4, y = v + (sy + 0.5f) / 4;
+                    float px = (x - cx) / EYE_PUPIL_W, py = (y - cy) / EYE_PUPIL_H, qx = x - gx, qy = y - gy;
 
-            best = z > best ? z : best;
+                    pupil += (px * px + py * py <= 1) / 16.0f;
+                    glint += (qx * qx + qy * qy <= EYE_GLINT_R * EYE_GLINT_R) / 16.0f;
+                }
+            }
+            c = v < 3 ? EYE_SHADE : e > 0.75f ? EYE_DEEP : EYE_YELLOW;
+            c = glint > 0.6f ? EYE_GLINT : glint > 0.2f ? EYE_GLINT_RIM : pupil > 0.85f ? EYE_PUPIL : pupil > 0.5f ? EYE_RIM2
+                : pupil > 0.15f ? EYE_RIM1 : c;
+            im->pixels[v * im->units * 2 + u / 2] |= (u8)(c << (u & 1) * 4);
         }
     }
-    return best;
+    return 1;
 }
 
-/* His pupils on corners of their own (above, PupilTri), after his gun's and his palms': each pupil's shape moved to the middle of its
- * eye in his still, PUPIL_LIFT in front of the eyeball there */
-static void pupil_setup(MadeFace *faces, s32 ntri) {
-    s32 i, j, k;
+/* His eyeballs painted with it (above), each face's corners placed on it by where they are from the middle of their eye's extent in
+ * his still as he faces, both eyes at one size (his are 14 and 8.5 of his game's units across, and each would have its own pupil's
+ * shape), untinted; and his pupils' faces left out (all their corners at one). Its image is the last of his. */
+static void eye_paint(MadeFace *faces, s32 ntri, MadeImage *images, s32 *nimages) {
+    V3 lo[2], hi[2], mid[2];
+    float half_w = 0, half_h = 0;
+    s32 i, j, k, side;
 
-    Pupils = 0;
-    PupilBase = Verts + Copies + CapVerts;
-    for (k = 0; k < Verts; k++) {
-        PupilOf[k] = -1;
+    if (*nimages >= MADE_MAX_IMAGES || !eye_image(&images[*nimages])) {
+        return;
+    }
+    for (side = 0; side < 2; side++) {
+        lo[side] = v3(1e9f, 1e9f, 1e9f);
+        hi[side] = v3(-1e9f, -1e9f, -1e9f);
+    }
+    for (k = 0; k < EyeN; k++) {
+        V3 p = Rest[EyeIds[k]];
+
+        side = p.x > 0;
+        if (EyeLayer[EyeIds[k]] & 1) {
+            lo[side] = v3(p.x < lo[side].x ? p.x : lo[side].x, p.y < lo[side].y ? p.y : lo[side].y, 0);
+            hi[side] = v3(p.x > hi[side].x ? p.x : hi[side].x, p.y > hi[side].y ? p.y : hi[side].y, 0);
+        }
+    }
+    for (side = 0; side < 2; side++) {
+        half_w = (hi[side].x - lo[side].x) / 2 > half_w ? (hi[side].x - lo[side].x) / 2 : half_w;
+        half_h = (hi[side].y - lo[side].y) / 2 > half_h ? (hi[side].y - lo[side].y) / 2 : half_h;
+    }
+    /* each eye's middle where its yellow is, as he faces: its faces' middles by their areas (its corners' extent leans to its long
+     * pointed corner, and its pupil there looked aside) */
+    for (side = 0; side < 2; side++) {
+        float area = 0;
+
+        mid[side] = vmul(vadd(lo[side], hi[side]), 0.5f);
+        for (i = 0; i < ntri && i < MAX_TRIS; i++) {
+            V3 a = Rest[faces[i].v[0]], b = Rest[faces[i].v[1]], c = Rest[faces[i].v[2]];
+            float s = fabsf((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) / 2;
+
+            if (EyeTri[i] != 1 || (a.x + b.x + c.x > 0) != side) {
+                continue;
+            }
+            if (area == 0) {
+                mid[side] = v3(0, 0, 0);
+            }
+            mid[side] = vadd(mid[side], vmul(v3((a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3, 0), s));
+            area += s;
+        }
+        if (area > 0) {
+            mid[side] = vmul(mid[side], 1 / area);
+        }
     }
     for (i = 0; i < ntri && i < MAX_TRIS; i++) {
-        for (j = 0; PupilTri[i] && j < 3; j++) {
-            s32 v = faces[i].v[j];
-
-            if (v < Verts && PupilOf[v] < 0 && Pupils < PUPIL_MAX && PupilBase + Pupils < MAX_VERTS) {
-                PupilOf[v] = (s16)Pupils;
-                PupilFrom[Pupils++] = (s16)v;
-            }
-            if (v < Verts && PupilOf[v] >= 0) {
-                faces[i].v[j] = PupilBase + PupilOf[v];
-            }
-        }
-    }
-    for (i = -1; i <= 1; i += 2) {
-        V3 eye, pupil = { 0, 0, 0 }, lo = { 1e9f, 1e9f, 1e9f }, hi = { -1e9f, -1e9f, -1e9f };
-        s32 ne = 0, np = 0;
-
-        /* the middle of the eye as it's seen: of its corners' extent (most of them are at its outer end) */
-        for (k = 0; k < EyeN; k++) {
-            V3 p = Rest[EyeIds[k]];
-
-            if ((EyeLayer[EyeIds[k]] & 1) && p.x * i > 0) {
-                lo = v3(p.x < lo.x ? p.x : lo.x, p.y < lo.y ? p.y : lo.y, p.z < lo.z ? p.z : lo.z);
-                hi = v3(p.x > hi.x ? p.x : hi.x, p.y > hi.y ? p.y : hi.y, p.z > hi.z ? p.z : hi.z);
-                ne++;
-            }
-        }
-        eye = vmul(vadd(lo, hi), 0.5f);
-        for (k = 0; k < Pupils; k++) {
-            if (Rest[PupilFrom[k]].x * i > 0) {
-                pupil = vadd(pupil, Rest[PupilFrom[k]]);
-                np++;
-            }
-        }
-        if (ne == 0 || np == 0) {
+        if (EyeTri[i] == 2) {
+            faces[i].v[1] = faces[i].v[2] = faces[i].v[0];
             continue;
         }
-        pupil = vmul(pupil, 1.0f / np);
-        for (k = 0; k < Pupils; k++) {
-            if (Rest[PupilFrom[k]].x * i > 0) {
-                V3 at = vadd(eye, vsub(Rest[PupilFrom[k]], pupil));
-                float z = eyeball_z((float)i, at.x, at.y);
+        if (EyeTri[i] != 1) {
+            continue;
+        }
+        side = Rest[faces[i].v[0]].x + Rest[faces[i].v[1]].x + Rest[faces[i].v[2]].x > 0;
+        if (half_w <= 0 || half_h <= 0) {
+            continue;
+        }
+        faces[i].image = *nimages;
+        for (j = 0; j < 3; j++) {
+            V3 p = Rest[faces[i].v[j]];
+            float u = 0.5f + (p.x - mid[side].x) / (2 * half_w), v = 0.5f - (p.y - mid[side].y) / (2 * half_h);
 
-                at.z = (z > -1e8f ? z : Rest[PupilFrom[k]].z) + PUPIL_LIFT;
-                PupilAt[k] = at;
+            u = u < 0 ? 0 : u > 1 ? 1 : u;
+            v = v < 0 ? 0 : v > 1 ? 1 : v;
+
+            faces[i].uv[j][0] = (u8)(u * (EYE_TEX_W - 1) + 0.5f);
+            faces[i].uv[j][1] = (u8)(v * (EYE_TEX_H - 1) + 0.5f);
+            for (k = 0; k < 3; k++) {
+                faces[i].rgb[0][j][k] = faces[i].rgb[1][j][k] = 128;
             }
         }
     }
+    (*nimages)++;
 }
 
 /* An arm put along `up` (its upper arm) and `fore` (its forearm), directions in his rig, its vertices from where they stand moved to
@@ -807,15 +843,6 @@ static void place_gun(V3 *r, float gun, s32 flash) {
             r[c->base + j] = gun <= 0 ? r[c->loop[j]] : vadd(mid, vmul(vsub(r[c->loop[j]], mid), 1 - (gun < 1 ? gun : 1)));
         }
         r[c->base + c->n] = mid;
-    }
-    /* his pupils, as his eyes have moved from his still */
-    if (Pupils > 0 && EyeN >= 3) {
-        Moved mv;
-
-        hm_fit(Rest, r, EyeIds, EyeN, &mv);
-        for (k = 0; k < Pupils; k++) {
-            r[PupilBase + k] = hm_moved(&mv, PupilAt[k]);
-        }
     }
 }
 
@@ -1135,7 +1162,7 @@ static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
 
     pose(j, f, r);
     grow_head(r);
-    for (k = 0; k < Verts + Copies + CapVerts + Pupils; k++) {
+    for (k = 0; k < Verts + Copies + CapVerts; k++) {
         V3 p = from_rig(r[k]);
 
         out[k].x = p.x * c->k;
@@ -1274,7 +1301,7 @@ static s32 pin_make(HeroMade *out) {
         }
     }
     add_caps(faces, &ntri);
-    pupil_setup(faces, ntri);
+    eye_paint(faces, ntri, images, &nimage);
     for (j = 0; j < PIN_ANIMS; j++) {
         made_anims[j].name = PinAnims[j].name;
         made_anims[j].frames = Frames[j];
@@ -1289,7 +1316,7 @@ static s32 pin_make(HeroMade *out) {
     mm.nimages = nimage;
     mm.anims = made_anims;
     mm.nanims = PIN_ANIMS;
-    mm.nvert = nvert + Copies + CapVerts + Pupils;
+    mm.nvert = nvert + Copies + CapVerts;
     mm.rest_anim = A_BREATHE;
     mm.frame = foot_frame;
     mm.ctx = &foot;

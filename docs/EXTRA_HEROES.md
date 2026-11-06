@@ -42,7 +42,9 @@ playing.
      textures: a corner's colour no more than about a quarter either way from the rest of its colour's.
      A light that leaves the side away from it flat looks dark and faceted by them (`C1Light`, `wrap`).
      Their idles move their corners 2 to 4% of their height on average, and their runs 11 to 43%;
-     moves made much stiller than that look stiff beside them.
+     moves made much stiller than that look stiff beside them. Their eyes are their textures: eyes made
+     of a few polygons (Pinstripe's pupils were slits) look broken by them, and an eye painted in code
+     (`eye_image` in pinstripe.c) does better.
 4. **Its sounds** (below, 3): a voice for each offset of its base's block, or none where one would
    be wrong. Its name as it wins has to be short enough for the announcer's "wins!" after it. An
    attack with a sound of its own (Pinstripe's tommy gun) is `VOICE_FIRE`, at offset 13.
@@ -98,8 +100,11 @@ a jog with his arms pumping, moving as much as the game's heroes do. Then, at th
 1.2 times as big, grown about his neck in every frame; his pupils, which looked cross-eyed (in his still
 one looks aside), on corners of their own in the middle of his eyes; his muzzle flash added to what's
 behind it, unlit, as his game's colour slot says (it had been drawn solid, black round it); and as he's
-hurt, his arms flung out and back by his rig, then hanging (his game had them on the gun). How it's done
-is at the top of his file.
+hurt, his arms flung out and back by his rig, then hanging (his game had them on the gun). His eyes were
+still wrong by the game's heroes, whose eyes are their textures (the user's diagnosis): his eyeballs are
+painted now with an eye made in code, of nobody's art (yellow, a round pupil, its glint), laid flat
+over each eye as he faces at one size for both, and his pupils' polygons are left out. How it's done is
+at the top of his file.
 
 ## How one plays
 
