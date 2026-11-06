@@ -508,6 +508,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-06: Pinstripe's palms and win, from the user's next play. His palms were see-through in the select and in Jungle Bash:
+  his hands close round the gun's grips, so with them folded away each palm is an open loop of edges (14 corners on the right, 10
+  on the left; each hand's wrist is another, in his sleeve), and the game draws only faces' fronts. Each palm is capped: the loop
+  (edges only one hand face has, by corners either way round, as the right hand has two faces twice over) fanned to its middle,
+  wound against the faces beside it, coloured from them, on copies that fold away as the gun comes out. My viewer drew both sides
+  and hid it; `CULL=1` in scratch/made_look.mjs draws only the fronts, as the game does. His win, at the user's word, is his boss
+  fight's laughing spray (PiG2V) with the gun out, looped, for a round's win and the match's (`@WIN`, `@VICTORY`; some heroes'
+  round win plays their taunt). The muzzle flash is his game's own (small, half, full, every three frames), in his attack too.
+  Checked: front-faces-only drawings from four sides and below; a round's winner close-up in game; `hero pinstripe` plays all 13.
+
 - 2026-11-06: The user played Pinstripe on foot (Jungle Bash, in Crash's place, as a `--mode` run's player 1 has) and found five
   things, all fixed. Glitchy hands: his left hand's piece holds the gun's front grip, a dark block left showing; its non-skin faces
   now fold away with the gun, into that hand. His size changing as he taunted: every move of his boss fight is 1.2 times its still

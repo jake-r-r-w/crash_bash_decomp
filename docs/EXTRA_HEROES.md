@@ -78,7 +78,11 @@ game's animations never take them off the gun. The user played him in Crash's pl
 hands glitchy (the front grip), his size changing as he taunted (his game's moves are 1.2 times his
 still), a jump after each throw (Crash lands after a throw), no gun in his attack (Crash's spin)
 and a stiff frame rate (held frames): all fixed, his jump, attack, hit, taunt, pickup and throw now
-going by the sequence. How it's done is at the top of his file.
+going by the sequence. Then (2026-11-06) his palms were still see-through: his hands close round the
+grips, so without them each palm is a hole, and the game draws only faces' fronts. Each is closed by a
+cap fanned across the hole's edge loop, which folds away as the gun comes out. As he wins he shoots his
+gun about laughing, as in his boss fight (its PiG2V, at the user's word), for both wins (`@WIN`,
+`@VICTORY`). How it's done is at the top of his file.
 
 ## How one plays
 

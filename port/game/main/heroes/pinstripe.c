@@ -6,13 +6,14 @@
  * (PiE1-9V), stepping and diving aside (PiL1-6V, PiR1-6V), thrown back as he's hit (PiF1V, PiF4V), looking about (PiF2V, PiF3V) and
  * throwing the gun up (PiA1-3V). His upper body hardly bends in them: his arms stay on the gun and turn with his chest.
  *
- * At the user's word he has the gun only as he attacks. The rest of the time it's away, its faces folded into his hands (its front grip
- * into his left), and his arms are his own: a rig of his (each arm two bones, each leg two and its shoe) hangs them at his sides as he
- * stands, swings them as he walks and puts them up for a crate. His walk, jump, holding and throwing a crate, and his breathing are
- * made by it. His attack is his stride's fire (PiG3V), the gun coming out into his hands and away again, its muzzle flashing; he's
- * thrown back as he's hit (PiF1V) and knocked down (PiF4V), laughs crouched as he taunts (PiG2V, his arms down), and throws his fist up
- * as he wins (PiA2V), each of those at his still's size (PIN_SOURCE_SCALE). His sounds are his boss fight's: his laugh and his tommy
- * gun. His hero card is the face that fight shows by his health. */
+ * At the user's word he has the gun only as he attacks and wins. The rest of the time it's away, its faces folded into his hands (its
+ * front grip into his left, his palms closed over where the grips went), and his arms are his own: a rig of his (each arm two bones,
+ * each leg two and its shoe) hangs them at his sides as he stands, swings them as he walks and puts them up for a crate. His walk,
+ * jump, holding and throwing a crate, and his breathing are made by it. His attack is his stride's fire (PiG3V), the gun coming out
+ * into his hands and away again, its muzzle flashing; he's thrown back as he's hit (PiF1V) and knocked down (PiF4V), laughs crouched
+ * as he taunts (PiG2V, his arms down), and as he wins shoots his gun about laughing, as in that fight (PiG2V, the gun out), each of
+ * those at his still's size (PIN_SOURCE_SCALE). His sounds are his boss fight's: his laugh and his tommy gun. His hero card is the
+ * face that fight shows by his health. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,13 +26,14 @@
 
 /* --- how he plays ---
  * His base is Cortex, if nobody else is playing him: a villain as he is, and about his size. On foot he walks where the others run,
- * slide or swim, holds a crate up as they do, fires his gun where they attack or kick, laughs where they taunt, throws his fist up as
- * he wins, is thrown back as he's hit and knocked down where they die.
+ * slide or swim, holds a crate up as they do, fires his gun where they attack or kick, laughs where they taunt, shoots his gun about
+ * laughing as he wins, is thrown back as he's hit and knocked down where they die.
  *
  * Whoever's place he has (Cortex's, or another's if someone has Cortex), its moves are its own scripts (extraheroes.c, SeqNames), so
  * some go by them: his attack's all of any hero's (Crash's and Coco's spin is a still mesh, the others' animations of their own), and
- * so are his hit, taunt, picking up a crate and throwing it; his jump's three parts are the three sequences a jump is (up, falling and
- * landing, his JUMP split as Cortex's is), so he lands as a hero does after a throw (Crash, Coco) and doesn't jump again. */
+ * so are his hit, taunt, picking up a crate and throwing it; his win's all of either win (a round's, which some heroes play their taunt
+ * for, and the match's), round and round; his jump's three parts are the three sequences a jump is (up, falling and landing, his JUMP
+ * split as Cortex's is), so he lands as a hero does after a throw (Crash, Coco) and doesn't jump again. */
 static const Stand PinStands[] = {
     { "MEDIUM", "WALK" }, { "RUN", "WALK" }, { "SKATE", "WALK" }, { "SLIDE", "WALK" }, { "SWIM", "WALK" }, { "FALL", "WALK" },
     { "PUSH", "WALK" }, { "TRANS", "WALK" }, { "BARGE", "WALK" },
@@ -41,7 +43,7 @@ static const Stand PinStands[] = {
     { "TAUNT_A", "TAUNT" }, { "MINE", "TAUNT" }, { "TAZING", "TAUNT" }, { "LIGHT", "TAUNT" },
     { "RECOIL", "HIT" }, { "FLIP", "HIT", ONCE }, { "DAZED", "DIE", ONCE },
     { "@JUMP", "JUMP:0-7", ONCE }, { "@FALL", "JUMP:8-12", ONCE }, { "@LAND", "JUMP:13-19", ONCE },
-    { "@ATTACK", "ATTACK" }, { "@HIT", "HIT" }, { "@TAUNT_A", "TAUNT" },
+    { "@ATTACK", "ATTACK" }, { "@HIT", "HIT" }, { "@TAUNT_A", "TAUNT" }, { "@WIN", "WIN", LOOP }, { "@VICTORY", "WIN", LOOP },
     { "@BA_PICKUP", "PICKUP" }, { "@BA_HOLD_THROW", "THROW" }, { "@PA_PICKUP", "PICKUP" }, { "@PA_HOLD_THROW", "THROW" },
     { NULL, NULL, STRETCH },
 };
@@ -102,7 +104,7 @@ enum { A_BREATHE, A_WALK, A_JUMP, A_ATTACK, A_HIT, A_DIE, A_TAUNT, A_WIN, A_HOLD
 static const Anim PinAnims[PIN_ANIMS] = {
     { "BREATHE", NULL, "BREATHE", 32 }, { "WALK", NULL, "MEDIUM", 22 }, { "JUMP", NULL, "JUMP", 20 },
     { "ATTACK", "PiG3V", "ATTACK", 19 }, { "HIT", "PiF1V", "HIT", 26 }, { "DIE", "PiF4V", "DIE", 21 },
-    { "TAUNT", "PiG2V", "TAUNT_A", 40 }, { "WIN", "PiA2V", NULL, 20 }, { "HOLD", NULL, "HOLD", 24 },
+    { "TAUNT", "PiG2V", "TAUNT_A", 40 }, { "WIN", "PiG2V", NULL, 24 }, { "HOLD", NULL, "HOLD", 24 },
     { "HOLDWALK", NULL, "HOLD_SLOW", 24 }, { "PICKUP", NULL, "PICKUP", 9 }, { "THROW", NULL, "HOLD_THROW", 13 },
 };
 
@@ -174,6 +176,19 @@ static Leg Legs[2] = {
 #define WAIST_BLEND 20.0f
 static s16 Chest[128];
 static s32 ChestN;
+
+/* His palms: his hands close round the gun's grips, so with the gun away each palm is a hole where its grip went in (the game draws
+ * only a face's front, and you'd see through the hand). Each is closed with a cap, the loop of edges where its hand's faces meet the
+ * grip's fanned to the loop's middle, its colours from the faces beside it, on copies of its corners of their own: they fold away into
+ * that middle as the gun comes out, its grip filling the palm again. */
+#define MAX_CAPS 2
+#define CAP_MAX 32
+typedef struct {
+    s16 loop[CAP_MAX]; /* its corners round the hole, in order */
+    s32 n, base;       /* their count, and its first vertex: their copies, then its middle */
+} Cap;
+static Cap Caps[MAX_CAPS];
+static s32 NCaps, CapVerts;
 
 static V3 v3(float x, float y, float z) {
     V3 v;
@@ -551,6 +566,119 @@ static void place_gun(V3 *r, float gun, s32 flash) {
 
         r[Verts + k] = vadd(g, vmul(vsub(r[CopyFrom[k]], g), s));
     }
+    /* the palms' caps, as the gun isn't there */
+    for (k = 0; k < NCaps; k++) {
+        const Cap *c = &Caps[k];
+        V3 mid = { 0, 0, 0 };
+        s32 j;
+
+        for (j = 0; j < c->n; j++) {
+            mid = vadd(mid, r[c->loop[j]]);
+        }
+        mid = vmul(mid, 1.0f / c->n);
+        for (j = 0; j < c->n; j++) {
+            r[c->base + j] = gun <= 0 ? r[c->loop[j]] : vadd(mid, vmul(vsub(r[c->loop[j]], mid), 1 - (gun < 1 ? gun : 1)));
+        }
+        r[c->base + c->n] = mid;
+    }
+}
+
+/* The palms' caps (above, Caps) as faces after his: from each hand's own faces (its skin and cuff), the edges only one of them has,
+ * chained into loops; the loops mostly on the grip's corners are its palm's (the others its wrist's, inside his sleeve). Each edge's
+ * face is the one beside it, and the cap's face there goes the other way along it, so it's drawn from the same side. */
+static void add_caps(MadeFace *faces, s32 *ntri) {
+    static s16 next[MAX_VERTS], face_of[MAX_VERTS];
+    static u8 seen[MAX_VERTS];
+    s32 hand, i, j, k, a;
+
+    NCaps = 0;
+    CapVerts = 0;
+    for (hand = 1; hand <= 2; hand++) {
+        for (k = 0; k < Verts; k++) {
+            next[k] = -1;
+            seen[k] = 0;
+        }
+        for (i = 0; i < *ntri; i++) {
+            if (GunTri[i] || faces[i].v[0] >= Verts || HandOf[faces[i].v[0]] != hand) {
+                continue;
+            }
+            for (j = 0; j < 3; j++) {
+                s32 x = faces[i].v[j], y = faces[i].v[(j + 1) % 3], shared = 0, o, e;
+
+                /* by its corners either way round: the right hand has two faces twice over */
+                for (o = 0; o < *ntri && !shared; o++) {
+                    if (o == i || GunTri[o] || faces[o].v[0] >= Verts || HandOf[faces[o].v[0]] != hand) {
+                        continue;
+                    }
+                    for (e = 0; e < 3; e++) {
+                        s32 p = faces[o].v[e], q = faces[o].v[(e + 1) % 3];
+
+                        shared |= (p == x && q == y) || (p == y && q == x);
+                    }
+                }
+                if (!shared) {
+                    next[x] = (s16)y;
+                    face_of[x] = (s16)i;
+                }
+            }
+        }
+        for (a = 0; a < Verts && NCaps < MAX_CAPS; a++) {
+            Cap *c = &Caps[NCaps];
+            s32 v, on_grip = 0;
+
+            if (next[a] < 0 || seen[a]) {
+                continue;
+            }
+            c->n = 0;
+            for (v = a; v >= 0 && !seen[v] && c->n < CAP_MAX; v = next[v]) {
+                seen[v] = 1;
+                c->loop[c->n++] = (s16)v;
+                on_grip += CopyOf[v] >= 0;
+            }
+            if (c->n < 3 || v != a || on_grip * 2 < c->n || Verts + Copies + CapVerts + c->n + 1 > MAX_VERTS
+                || *ntri + c->n > MAX_TRIS) {
+                continue;
+            }
+            c->base = Verts + Copies + CapVerts;
+            CapVerts += c->n + 1;
+            {
+                s32 sum[2][3] = { { 0, 0, 0 }, { 0, 0, 0 } }, first = *ntri, m, ch;
+
+                for (j = 0; j < c->n; j++) {
+                    const MadeFace *by = &faces[face_of[c->loop[j]]];
+                    MadeFace *f = &faces[(*ntri)++];
+                    s32 ja = 0, jb = 0, q;
+
+                    for (q = 0; q < 3; q++) {
+                        ja = by->v[q] == c->loop[j] ? q : ja;
+                        jb = by->v[q] == c->loop[(j + 1) % c->n] ? q : jb;
+                    }
+                    memset(f, 0, sizeof(*f));
+                    f->v[0] = c->base + (j + 1) % c->n;
+                    f->v[1] = c->base + j;
+                    f->v[2] = c->base + c->n;
+                    f->image = -1;
+                    f->blend = by->blend;
+                    for (m = 0; m < 2; m++) {
+                        for (ch = 0; ch < 3; ch++) {
+                            f->rgb[m][0][ch] = by->rgb[m][jb][ch];
+                            f->rgb[m][1][ch] = by->rgb[m][ja][ch];
+                            sum[m][ch] += by->rgb[m][ja][ch];
+                        }
+                    }
+                }
+                /* the middle the loop's colour */
+                for (j = first; j < *ntri; j++) {
+                    for (m = 0; m < 2; m++) {
+                        for (ch = 0; ch < 3; ch++) {
+                            faces[j].rgb[m][2][ch] = (u8)(sum[m][ch] / c->n);
+                        }
+                    }
+                }
+            }
+            NCaps++;
+        }
+    }
 }
 
 /* Standing as he breathes, arms down (made): at t of the way round */
@@ -637,8 +765,8 @@ static void throw_crate(V3 *r, float t) {
 }
 
 /* His attack: his stride's fire, a frame of it a tick from ATTACK_FROM, his hands coming up from standing to the gun over ATTACK_DRAW
- * ticks as it grows into them, its muzzle flashing every other tick as it fires, and back and away again over the last ATTACK_DRAW.
- * The gun's held as he stands too (his arms carry it), so it comes out of his hands wherever they are. */
+ * ticks as it grows into them, its muzzle flashing as his game's does while it's all out, and back and away again over the last
+ * ATTACK_DRAW. The gun's held as he stands too (his arms carry it), so it comes out of his hands wherever they are. */
 #define ATTACK_FROM 2.0f
 #define ATTACK_DRAW 3.0f
 static void attack(V3 *r, s32 f, s32 frames) {
@@ -652,7 +780,23 @@ static void attack(V3 *r, s32 f, s32 frames) {
     for (k = 0; k < Verts; k++) {
         r[k] = hm_mix(s[k], r[k], w);
     }
-    place_gun(r, w, (s32)tick % 2 == 0);
+    place_gun(r, w, 1);
+}
+
+/* His win: his boss fight's laughing spray (PiG2V), a frame of it a tick round and round, the gun out all the while and its muzzle
+ * flashing as it does there (a burst every third frame, the flash's own piece growing), shooting it about as he does in that fight */
+static void win(V3 *r, s32 f) {
+    static V3 a[MAX_VERTS], b[MAX_VERTS];
+    const C1Entry *src = Src[A_WIN];
+    float tick = (float)f / PIN_SUBFRAMES;
+    s32 f0 = (s32)tick % src->count, f1 = (f0 + 1) % src->count, k;
+
+    src_at(src, (float)f0, a);
+    src_at(src, (float)f1, b);
+    for (k = 0; k < Verts; k++) {
+        r[k] = hm_mix(a[k], b[k], tick - (s32)tick);
+    }
+    place_gun(r, 1, 1);
 }
 
 /* One of his game's, resampled to `frames`, the gun away; his arms down (as his chest moves) if `arms_down` */
@@ -697,9 +841,11 @@ static void pose(s32 j, s32 f, V3 *r) {
         return; /* its own gun */
     case A_HIT:
     case A_DIE:
-    case A_WIN:
         from_game(r, j, f, n, 0);
         break;
+    case A_WIN:
+        win(r, f);
+        return; /* its own gun */
     case A_TAUNT:
         from_game(r, j, f, n, 1);
         break;
@@ -720,7 +866,7 @@ static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
     s32 k;
 
     pose(j, f, r);
-    for (k = 0; k < Verts + Copies; k++) {
+    for (k = 0; k < Verts + Copies + CapVerts; k++) {
         V3 p = from_rig(r[k]);
 
         out[k].x = p.x * c->k;
@@ -857,6 +1003,7 @@ static s32 pin_make(HeroMade *out) {
             }
         }
     }
+    add_caps(faces, &ntri);
     for (j = 0; j < PIN_ANIMS; j++) {
         made_anims[j].name = PinAnims[j].name;
         made_anims[j].frames = Frames[j];
@@ -871,7 +1018,7 @@ static s32 pin_make(HeroMade *out) {
     mm.nimages = nimage;
     mm.anims = made_anims;
     mm.nanims = PIN_ANIMS;
-    mm.nvert = nvert + Copies;
+    mm.nvert = nvert + Copies + CapVerts;
     mm.rest_anim = A_BREATHE;
     mm.frame = foot_frame;
     mm.ctx = &foot;
@@ -886,8 +1033,8 @@ static s32 pin_make(HeroMade *out) {
         out->card_aspect = CARD_ASPECT;
     }
     make_sounds(&level, out);
-    printf("bonus: Pinstripe from Crash Bandicoot, %d triangles, %d textures, %d bytes, the gun on %d corners of its own%s%s%s\n", ntri,
-           nimage, out->mdl_size[KIND_FOOT], Copies, out->card != NULL ? ", his hero card" : "",
+    printf("bonus: Pinstripe from Crash Bandicoot, %d triangles, %d textures, %d bytes, the gun on %d corners of its own, %d palms closed"
+           "%s%s%s\n", ntri, nimage, out->mdl_size[KIND_FOOT], Copies, NCaps, out->card != NULL ? ", his hero card" : "",
            out->sound[VOICE_LAUGH].adpcm != NULL ? ", his laugh" : "", out->sound[VOICE_FIRE].adpcm != NULL ? ", his tommy gun" : "");
     ok = 1;
 done:
