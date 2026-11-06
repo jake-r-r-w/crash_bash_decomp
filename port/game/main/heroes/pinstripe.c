@@ -11,10 +11,11 @@
  * each leg two and its shoe) hangs them at his sides as he stands, pumps them as he jogs and puts them up for a crate. His jog, jump,
  * holding and throwing a crate, and his breathing (bobbing at the knees) are made by it, moving as much as Crash Bash's heroes' do.
  * His attack is his stride's fire (PiG3V), the gun coming out into his hands and away again, its muzzle flashing; he's thrown back as
- * he's hit (PiF1V) and knocked down (PiF4V), laughs crouched as he taunts (PiG2V, his arms down), and as he wins shoots his gun about
- * laughing, as in that fight (PiG2V, the gun out), each of those at his still's size (PIN_SOURCE_SCALE) with his still's eyes. He's lit
- * brighter and softer than his game's colours are, as Crash Bash's heroes look (PinLight). His sounds are his boss fight's: his laugh
- * and his tommy gun. His hero card is the face that fight shows by his health. */
+ * he's hit (PiF1V) and knocked down (PiF4V), his arms flung out by his rig, laughs crouched as he taunts (PiG2V, his arms down), and as
+ * he wins shoots his gun about laughing, as in that fight (PiG2V, the gun out), each of those at his still's size (PIN_SOURCE_SCALE)
+ * with his still's eyes. He's lit brighter and softer than his game's colours are, and his head's bigger, as Crash Bash's heroes look
+ * (PinLight, HEAD_SCALE). His sounds are his boss fight's: his laugh and his tommy gun. His hero card is the face that fight shows by
+ * his health. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -187,15 +188,37 @@ static s32 ChestN;
 /* His eyes: three layers his game drew in that order, each over the last whatever their depths: his eyeballs (yellow), the slits of
  * his pupils on them (5, 5, 11) and his lids over both (their colour flagged 0x10). Each of its frames' vertices is quantised by itself,
  * so in every one some corner of a layer pokes through the one over it, and a depth test showed those as slivers round his eyes,
- * changing as he moved. His still's pupils and lids are lifted forward, EYE_LIFT_PUPIL and EYE_LIFT_LID of his game's units (his
- * height is about 290; drawn back to front as his game drew them, his head looks the same), and each frame from his game has his eyes
- * from his still, moved as its own eyes move (src_at). */
-#define EYE_LIFT_PUPIL 1.0f
+ * changing as he moved. His still's lids are lifted forward EYE_LIFT_LID of his game's units (his height is about 290; drawn back to
+ * front as his game drew them, his head looks the same), and each frame from his game has his eyes from his still, moved as its own
+ * eyes move (src_at). His pupils are drawn on his eyeballs' own corners, and in his still one looks aside (the user found him cross-
+ * eyed): they're on corners of their own, each in the middle of its eye, PUPIL_LIFT in front of the eyeball there, moved as his eyes
+ * move in each frame (place_gun). */
 #define EYE_LIFT_LID 2.0f
+#define PUPIL_LIFT 0.8f
 #define EYE_MAX 96
+#define EYEBALL_MAX 32
+#define PUPIL_MAX 32
 static u8 EyeLayer[MAX_VERTS]; /* each vertex's layers, of the triangles it's a corner of: 1 eyeball, 2 pupil, 4 lid */
 static s16 EyeIds[EYE_MAX];
 static s32 EyeN;
+static s16 Eyeball[EYEBALL_MAX][3]; /* his eyeballs' triangles' corners */
+static s32 EyeballN;
+static u8 PupilTri[MAX_TRIS];       /* his pupils' triangles */
+static s16 PupilOf[MAX_VERTS];      /* each vertex's pupil corner (from PupilBase), or -1 */
+static s16 PupilFrom[PUPIL_MAX];    /* and each pupil corner's vertex */
+static V3 PupilAt[PUPIL_MAX];       /* where each goes in his still */
+static s32 Pupils, PupilBase;
+
+/* His head, HEAD_SCALE as big as his game's, as Crash Bash's heroes' heads are big for their bodies (the user's pick, 2026-11-06): all
+ * of his body's piece above his neck (blended over NECK_BLEND about NECK_Y, where his body's narrowest under his head), grown about
+ * the middle of his neck (its corners NECK_BLEND under NECK_Y) in each frame, so it grows where his neck is however he's moving. */
+#define HEAD_SCALE 1.2f
+#define NECK_Y 230.0f
+#define NECK_BLEND 6.0f
+#define NECK_MAX 32
+static float HeadGrow[MAX_VERTS]; /* each vertex's share of HEAD_SCALE (0 none, 1 all of it) */
+static s16 Neck[NECK_MAX];
+static s32 NeckN;
 
 /* His palms: his hands close round the gun's grips, so with the gun away each palm is a hole where its grip went in (the game draws
  * only a face's front, and you'd see through the hand). Each is closed with a cap, the loop of edges where its hand's faces meet the
@@ -441,10 +464,12 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
     for (k = 0; k < nvert; k++) {
         EyeLayer[k] = 0;
     }
+    EyeballN = 0;
     for (i = 0; i < ntri && i < MAX_TRIS; i++) {
         const u8 *p = polys + i * 8, *s;
         s32 slot = hm_rd16(p + 6) & 0x7FFF, layer = 0;
 
+        PupilTri[i] = 0;
         if (slot >= nslot || PieceOf[hm_rd16(p) / 6] != PIECE_BODY) {
             continue;
         }
@@ -452,7 +477,12 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
         layer = s[0] == 255 && s[1] == 255 && s[2] == 0 ? 1 : s[0] == 5 && s[1] == 5 && s[2] == 11 ? 2 : (s[3] & 0x10) ? 4 : 0;
         for (j = 0; j < 3; j++) {
             EyeLayer[hm_rd16(p + j * 2) / 6] |= (u8)layer;
+            if (layer == 1 && EyeballN < EYEBALL_MAX) {
+                Eyeball[EyeballN][j] = (s16)(hm_rd16(p + j * 2) / 6);
+            }
         }
+        EyeballN += layer == 1 && EyeballN < EYEBALL_MAX;
+        PupilTri[i] = layer == 2;
     }
     EyeN = 0;
     for (k = 0; k < nvert && EyeN < EYE_MAX; k++) {
@@ -460,17 +490,127 @@ static s32 rig_setup(const C1Entry *model, s32 nvert) {
             EyeIds[EyeN++] = (s16)k;
         }
     }
-    return Arms[0].n > 20 && Arms[1].n > 20 && Legs[0].n > 20 && Legs[1].n > 20 && ChestN >= 4;
+    /* his head, and his neck */
+    NeckN = 0;
+    for (k = 0; k < nvert; k++) {
+        HeadGrow[k] = PieceOf[k] == PIECE_BODY ? hm_smooth(NECK_Y - NECK_BLEND, NECK_Y + NECK_BLEND, Rest[k].y) : 0;
+        if (PieceOf[k] == PIECE_BODY && Rest[k].y >= NECK_Y - NECK_BLEND && Rest[k].y < NECK_Y && NeckN < NECK_MAX) {
+            Neck[NeckN++] = (s16)k;
+        }
+    }
+    return Arms[0].n > 20 && Arms[1].n > 20 && Legs[0].n > 20 && Legs[1].n > 20 && ChestN >= 4 && NeckN >= 3;
 }
 
-/* His still's pupils and lids lifted forward (above, EyeLayer), each corner by the topmost layer it's a corner of */
+/* His head grown about the middle of his neck as frame r has it (above, HEAD_SCALE) */
+static void grow_head(V3 *r) {
+    V3 neck = { 0, 0, 0 };
+    s32 k;
+
+    for (k = 0; k < NeckN; k++) {
+        neck = vadd(neck, r[Neck[k]]);
+    }
+    neck = vmul(neck, 1.0f / NeckN);
+    for (k = 0; k < Verts; k++) {
+        if (HeadGrow[k] > 0) {
+            r[k] = vadd(neck, vmul(vsub(r[k], neck), 1 + (HEAD_SCALE - 1) * HeadGrow[k]));
+        }
+    }
+    for (k = 0; k < Pupils; k++) {
+        r[PupilBase + k] = vadd(neck, vmul(vsub(r[PupilBase + k], neck), HEAD_SCALE));
+    }
+}
+
+/* His still's lids lifted forward (above, EyeLayer) */
 static void eye_lift(void) {
     s32 k;
 
     for (k = 0; k < EyeN; k++) {
-        s32 v = EyeIds[k];
+        if (EyeLayer[EyeIds[k]] & 4) {
+            Rest[EyeIds[k]].z += EYE_LIFT_LID;
+        }
+    }
+}
 
-        Rest[v].z += EyeLayer[v] & 4 ? EYE_LIFT_LID : EyeLayer[v] & 2 ? EYE_LIFT_PUPIL : 0;
+/* The front of his still's eyeball on `side` (by x) at x, y, or -1e9 if none of its faces is there */
+static float eyeball_z(float side, float x, float y) {
+    float best = -1e9f;
+    s32 i;
+
+    for (i = 0; i < EyeballN; i++) {
+        V3 a = Rest[Eyeball[i][0]], b = Rest[Eyeball[i][1]], c = Rest[Eyeball[i][2]];
+        float d = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x), u, v;
+
+        if ((a.x + b.x + c.x) * side < 0 || fabsf(d) < 1e-6f) {
+            continue;
+        }
+        u = ((x - a.x) * (c.y - a.y) - (y - a.y) * (c.x - a.x)) / d;
+        v = ((b.x - a.x) * (y - a.y) - (b.y - a.y) * (x - a.x)) / d;
+        if (u >= 0 && v >= 0 && u + v <= 1) {
+            float z = a.z + u * (b.z - a.z) + v * (c.z - a.z);
+
+            best = z > best ? z : best;
+        }
+    }
+    return best;
+}
+
+/* His pupils on corners of their own (above, PupilTri), after his gun's and his palms': each pupil's shape moved to the middle of its
+ * eye in his still, PUPIL_LIFT in front of the eyeball there */
+static void pupil_setup(MadeFace *faces, s32 ntri) {
+    s32 i, j, k;
+
+    Pupils = 0;
+    PupilBase = Verts + Copies + CapVerts;
+    for (k = 0; k < Verts; k++) {
+        PupilOf[k] = -1;
+    }
+    for (i = 0; i < ntri && i < MAX_TRIS; i++) {
+        for (j = 0; PupilTri[i] && j < 3; j++) {
+            s32 v = faces[i].v[j];
+
+            if (v < Verts && PupilOf[v] < 0 && Pupils < PUPIL_MAX && PupilBase + Pupils < MAX_VERTS) {
+                PupilOf[v] = (s16)Pupils;
+                PupilFrom[Pupils++] = (s16)v;
+            }
+            if (v < Verts && PupilOf[v] >= 0) {
+                faces[i].v[j] = PupilBase + PupilOf[v];
+            }
+        }
+    }
+    for (i = -1; i <= 1; i += 2) {
+        V3 eye, pupil = { 0, 0, 0 }, lo = { 1e9f, 1e9f, 1e9f }, hi = { -1e9f, -1e9f, -1e9f };
+        s32 ne = 0, np = 0;
+
+        /* the middle of the eye as it's seen: of its corners' extent (most of them are at its outer end) */
+        for (k = 0; k < EyeN; k++) {
+            V3 p = Rest[EyeIds[k]];
+
+            if ((EyeLayer[EyeIds[k]] & 1) && p.x * i > 0) {
+                lo = v3(p.x < lo.x ? p.x : lo.x, p.y < lo.y ? p.y : lo.y, p.z < lo.z ? p.z : lo.z);
+                hi = v3(p.x > hi.x ? p.x : hi.x, p.y > hi.y ? p.y : hi.y, p.z > hi.z ? p.z : hi.z);
+                ne++;
+            }
+        }
+        eye = vmul(vadd(lo, hi), 0.5f);
+        for (k = 0; k < Pupils; k++) {
+            if (Rest[PupilFrom[k]].x * i > 0) {
+                pupil = vadd(pupil, Rest[PupilFrom[k]]);
+                np++;
+            }
+        }
+        if (ne == 0 || np == 0) {
+            continue;
+        }
+        pupil = vmul(pupil, 1.0f / np);
+        for (k = 0; k < Pupils; k++) {
+            if (Rest[PupilFrom[k]].x * i > 0) {
+                V3 at = vadd(eye, vsub(Rest[PupilFrom[k]], pupil));
+                float z = eyeball_z((float)i, at.x, at.y);
+
+                at.z = (z > -1e8f ? z : Rest[PupilFrom[k]].z) + PUPIL_LIFT;
+                PupilAt[k] = at;
+            }
+        }
     }
 }
 
@@ -667,6 +807,15 @@ static void place_gun(V3 *r, float gun, s32 flash) {
             r[c->base + j] = gun <= 0 ? r[c->loop[j]] : vadd(mid, vmul(vsub(r[c->loop[j]], mid), 1 - (gun < 1 ? gun : 1)));
         }
         r[c->base + c->n] = mid;
+    }
+    /* his pupils, as his eyes have moved from his still */
+    if (Pupils > 0 && EyeN >= 3) {
+        Moved mv;
+
+        hm_fit(Rest, r, EyeIds, EyeN, &mv);
+        for (k = 0; k < Pupils; k++) {
+            r[PupilBase + k] = hm_moved(&mv, PupilAt[k]);
+        }
     }
 }
 
@@ -903,15 +1052,31 @@ static void win(V3 *r, s32 f) {
 }
 
 /* One of his game's, resampled to `frames`, the gun away; his arms down (as his chest moves) if `arms_down` */
-static void from_game(V3 *r, s32 j, s32 f, s32 frames, s32 arms_down) {
+enum { ARMS_GAME, ARMS_DOWN, ARMS_HURT };
+
+/* As he's hurt his game has his arms on the gun, so they're his rig's: flung out and up as the blow jolts him (from `from` to `peak`
+ * of his game's frames, held to `hold`) and down by `end`, hanging as he recovers or goes down, moving as his chest does */
+typedef struct {
+    float from, peak, hold, end;
+} Fling;
+static const ArmPose ArmsFlung = { { 0.85f, 0.05f, -0.4f }, { 0.6f, 0.5f, -0.25f } };
+static const Fling HitFling = { 0.5f, 3, 6, 11 }, DieFling = { 0, 2, 4, 9 };
+
+/* One of his game's, resampled to `frames`, the gun away; his arms as his game has them, down, or hurt (as his chest moves) */
+static void from_game(V3 *r, s32 j, s32 f, s32 frames, s32 arms) {
     const C1Entry *a = Src[j];
     float t = frames > 1 ? (float)f * (a->count - 1) / (frames - 1) : 0;
     Moved chest;
 
     src_at(a, t, r);
-    if (arms_down) {
+    if (arms == ARMS_DOWN) {
         chest_move(r, &chest);
         pose_arms(r, &ArmsDown, &ArmsDown, 0, 0, 0, &chest);
+    } else if (arms == ARMS_HURT) {
+        const Fling *fl = j == A_DIE ? &DieFling : &HitFling;
+
+        chest_move(r, &chest);
+        pose_arms(r, &ArmsDown, &ArmsFlung, hm_smooth(fl->from, fl->peak, t) * hm_smooth(fl->end, fl->hold, t), 0, 0, &chest);
     }
 }
 
@@ -944,13 +1109,13 @@ static void pose(s32 j, s32 f, V3 *r) {
         return; /* its own gun */
     case A_HIT:
     case A_DIE:
-        from_game(r, j, f, n, 0);
+        from_game(r, j, f, n, ARMS_HURT);
         break;
     case A_WIN:
         win(r, f);
         return; /* its own gun */
     case A_TAUNT:
-        from_game(r, j, f, n, 1);
+        from_game(r, j, f, n, ARMS_DOWN);
         break;
     default:
         stand(r, t, &ArmsDown);
@@ -969,7 +1134,8 @@ static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
     s32 k;
 
     pose(j, f, r);
-    for (k = 0; k < Verts + Copies + CapVerts; k++) {
+    grow_head(r);
+    for (k = 0; k < Verts + Copies + CapVerts + Pupils; k++) {
         V3 p = from_rig(r[k]);
 
         out[k].x = p.x * c->k;
@@ -1108,6 +1274,7 @@ static s32 pin_make(HeroMade *out) {
         }
     }
     add_caps(faces, &ntri);
+    pupil_setup(faces, ntri);
     for (j = 0; j < PIN_ANIMS; j++) {
         made_anims[j].name = PinAnims[j].name;
         made_anims[j].frames = Frames[j];
@@ -1122,7 +1289,7 @@ static s32 pin_make(HeroMade *out) {
     mm.nimages = nimage;
     mm.anims = made_anims;
     mm.nanims = PIN_ANIMS;
-    mm.nvert = nvert + Copies + CapVerts;
+    mm.nvert = nvert + Copies + CapVerts + Pupils;
     mm.rest_anim = A_BREATHE;
     mm.frame = foot_frame;
     mm.ctx = &foot;

@@ -508,6 +508,17 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-06: Pinstripe's head, pupils, muzzle flash and hurt arms, at the user's word ("lets try with a bigger head", "his hurt
+  animation is the last one to improve", the flash "got a black all over it", "his pupils look cross eyed"). A Crash Bandicoot
+  colour slot's fourth byte: bit 7 textured, bits 5-6 a blend mode (3, every solid face's, is solid), bit 4 unlit, bits 0-3 the
+  CLUT's x; his muzzle flash's is additive and unlit (0xB0), so it was drawn solid with its black showing. `c1_model_faces` draws
+  each as its game did (Roo's slots are all 0x60 and 0xE3, unchanged). His head grows 1.2 about his neck (where his body is
+  narrowest, y 230 of 290) in every frame, after his pose. His pupils are drawn on his eyeballs' own corners, and in his still one
+  looks aside: they have corners of their own now, each pupil moved to the middle of its eye's extent (not its corners' average:
+  most corners are at the outer end), 0.8 in front of the eyeball there, moved by a fit of his eyes each frame. As he's hurt
+  (PiF1V, PiF4V) his game had his arms on the gun: his rig flings them out and back with the jolt, then lets them hang as he
+  recovers or kneels. Checked: the flash in a win close-up in game, his face in the select, the frames drawn front-faces-only.
+
 - 2026-11-06: Pinstripe's eyes, and his look against the game's, at the user's word ("artifacting near his eyes", "make him fit
   into the game style more"). His eyes are three layers his game drew in order (eyeballs, pupils, lids, the lids' colour flagged
   0x10); each of its frames is quantised by itself, so some corner of a layer poked through the next in every frame and a depth

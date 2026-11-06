@@ -462,6 +462,11 @@ s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s3
                 }
             }
         }
+        /* drawn as its game drew it: its slot's blend mode (bits 5 and 6 of its fourth byte; 3, the common one, solid) and bit 4 unlit
+         * (Pinstripe's muzzle flash is both, added to what's behind it; his lids are unlit) */
+        if (((s[3] >> 5) & 3) != 3) {
+            t->blend = (u16)(0x8000 | ((s[3] >> 5) & 3) << 13);
+        }
         /* each corner's colour, lit by the light as it stands: the game's own models have their light in their colours */
         for (j = 0; j < 3; j++) {
             const V3 *nn = &normals[t->v[j]];
@@ -470,7 +475,9 @@ s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s3
             if (len > 0) {
                 lit = (nn->x * light.x + nn->y * light.y + nn->z * light.z) / (len * ll);
             }
-            if (lighting->wrap) {
+            if (s[3] & 0x10) {
+                lit = 1;
+            } else if (lighting->wrap) {
                 lit = (1 + lit) / 2;
                 lit = lighting->base + lighting->gain * lit * lit;
             } else {

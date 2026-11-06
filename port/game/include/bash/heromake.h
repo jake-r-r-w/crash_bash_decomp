@@ -119,7 +119,9 @@ typedef struct {
 extern const C1Light C1LightPlain;
 
 /* A Crash Bandicoot model's triangles as made faces, lit as they'd stand by normals (frame `normals` of its standing animation) by
- * `light` (NULL for C1LightPlain), and their textures as made images; 0 if it couldn't. */
+ * `light` (NULL for C1LightPlain), and their textures as made images; 0 if it couldn't. Each is drawn as its game drew it: blended if
+ * its slot's blend mode (its fourth byte's bits 5 and 6) isn't 3, the solid one, and unlit if that byte's bit 4 is set (Pinstripe's
+ * muzzle flash is both, added to what's behind it). */
 s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s32 nvert, MadeFace *faces, s32 max, s32 *nfaces,
                    MadeImage *images, s32 *nimages, const C1Light *light);
 

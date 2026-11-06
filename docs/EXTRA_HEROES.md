@@ -94,8 +94,12 @@ gun about laughing, as in his boss fight (its PiG2V, at the user's word), for bo
 pupils and lids in order; his still's pupils and lids are lifted a little forward, and his game's moves
 have his still's eyes), and he was made to fit the game's look: a brighter, wrapped light (he'd been
 darker and duller than the others, 42% of his faces one flat colour), an idle that bobs at the knees and
-a jog with his arms pumping, moving as much as the game's heroes do. How it's done is at the top of his
-file.
+a jog with his arms pumping, moving as much as the game's heroes do. Then, at the user's word: his head
+1.2 times as big, grown about his neck in every frame; his pupils, which looked cross-eyed (in his still
+one looks aside), on corners of their own in the middle of his eyes; his muzzle flash added to what's
+behind it, unlit, as his game's colour slot says (it had been drawn solid, black round it); and as he's
+hurt, his arms flung out and back by his rig, then hanging (his game had them on the gun). How it's done
+is at the top of his file.
 
 ## How one plays
 
