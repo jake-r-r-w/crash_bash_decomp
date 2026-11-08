@@ -512,6 +512,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-08: At the user's word, Pinstripe's lean goes forward: `pose_body` turned his upper body back for a lean above 0, so his
+  crate pickup leaned back as he knelt and his jog, jump crouch and throw leaned a little back. His bear keeps its approved look
+  (`RIDE_LEAN` -0.14 now) and his bear and pogo models came out byte for byte the same; renders of his moves on foot before and after,
+  and a Jungle Bash run. Not played by the user yet.
 - 2026-11-06: The user approved Pinstripe's bear ("LGTM"); his pogo stick (Pogo Painter) next. Cortex's pogo model is his jetpack, so
   he bounces on Crash's stick (`pogo_make` in pinstripe.c): its strips picked by where they are as Crash first bounces (a pick by the
   model's own pose, arms out, took Crash's limbs), its tube 1.3 times as long, its blues gunmetal; him on it at 0.8, feet on the pegs

@@ -733,9 +733,9 @@ static void pose_leg(V3 *r, const Leg *leg, float hip, float knee, float foot) {
     }
 }
 
-/* His upper body (all above his waist, blended over WAIST_BLEND): leaned by `lean` radians about his waist and lifted `lift`; and his
- * chest risen `breath` more (as he breathes), with his arms and hands. A lean above 0 leans him back, though his moves on foot and on
- * his bear were written as if forward (his pickup leans back as he kneels): they're as the user approved them, so as they are. */
+/* His upper body (all above his waist, blended over WAIST_BLEND): leaned forward by `lean` radians about his waist (back if it's below
+ * 0) and lifted `lift`; and his chest risen `breath` more (as he breathes), with his arms and hands. (It leaned back for a lean above
+ * 0 till 2026-11-08, so his pickup leaned back as he knelt and his jog a little back; the user had them put right.) */
 static void pose_body(V3 *r, float lean, float lift, float breath) {
     V3 waist = { 0, WAIST_Y, 0 };
     s32 k;
@@ -747,7 +747,7 @@ static void pose_body(V3 *r, float lean, float lift, float breath) {
             continue;
         }
         w = hm_smooth(WAIST_Y - WAIST_BLEND, WAIST_Y + WAIST_BLEND, Rest[k].y);
-        r[k] = hm_turn_x(r[k], waist, -lean * w);
+        r[k] = hm_turn_x(r[k], waist, lean * w);
         r[k].y += lift * w + breath * hm_smooth(WAIST_Y + 25, 200, Rest[k].y);
     }
 }
@@ -1191,13 +1191,14 @@ static void foot_frame(void *ctx, s32 j, s32 f, V3 *out) {
 /* --- riding a polar bear (Polar Push) ---
  * Sat astride Crash's bear (ride_make, bonusheroes.c, which moves him with its back and leans him as Crash leans): each thigh out
  * over its side RIDE_SPREAD and forward RIDE_FLEX at his hip, his shins bent RIDE_KNEE back down its flanks, his toes tipped
- * RIDE_FOOT down, his hips RIDE_HIP_UP over its back where Crash sits; leaning RIDE_LEAN forward, his hands forward on its shoulders
- * (ArmsRide), the gun away. As Roo, he's as heavy and as quick as Crash on it, his moves as long as his base's. */
+ * RIDE_FOOT down, his hips RIDE_HIP_UP over its back where Crash sits; sat up a little back (RIDE_LEAN: as the user approved him,
+ * from when pose_body leaned back for this forward lean), his hands forward on its shoulders (ArmsRide), the gun away. As Roo, he's as
+ * heavy and as quick as Crash on it, his moves as long as his base's. */
 #define RIDE_SPREAD 0.75f
 #define RIDE_FLEX 1.3f
 #define RIDE_KNEE 2.1f
 #define RIDE_FOOT 0.35f
-#define RIDE_LEAN 0.14f
+#define RIDE_LEAN -0.14f
 #define RIDE_HIP_UP 4.0f /* Crash Bash's units */
 #define RIDE_Z 4.0f
 #define RIDE_LEAN_WAIST 0.8f
@@ -1619,7 +1620,7 @@ static void pogo_pose(const PogoCtx *c, const PogoBody *b, V3 *r) {
         t = hm_turn_x(t, waist, -POGO_LEAN);
         pose_arm_to(r, &Arms[i], c->palm[i], hm_mix(t, own, b->off[i]), vnorm(hm_mix(v3(Arms[i].side, -0.3f, -0.5f), up, b->off[i])));
     }
-    pose_body(r, -POGO_LEAN, 0, 0); /* (pose_body leans him back for a lean above 0) */
+    pose_body(r, POGO_LEAN, 0, 0);
     for (k = 0; k < Verts; k++) {
         if (PieceOf[k] != PIECE_LEGS && PieceOf[k] != PIECE_SHOE) {
             r[k] = hm_mix(r[k], vadd(waist, bash_turned(b->M, vsub(r[k], waist))),

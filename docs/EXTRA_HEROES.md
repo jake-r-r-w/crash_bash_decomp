@@ -125,9 +125,11 @@ own frame: Crash springs up off the pegs at the top of each bounce, his limbs st
 so Pinstripe's hips and feet move as Crash's (for his height, 1.3 as far) and his limbs stretch the
 same way; his body turns as Crash's, and a hand Crash lets go with (punching the air as he wins) goes
 as Crash's arm goes. Pogo's five moves are Crash's; his win and tazing at their own speed, as
-Cortex's are 87 and 4 ticks. His lean (`pose_body`) turns out to go back for a lean above 0, though his
-moves on foot and on his bear were written as if forward (his crate pickup leans back as he kneels):
-they're as the user approved them, and only the pogo's lean is put the right way round.
+Cortex's are 87 and 4 ticks. His lean (`pose_body`) had gone back for a lean above 0, though his
+moves were written as if forward (his crate pickup leaned back as he knelt, his jog a little back): at
+the user's word (2026-11-08) it leans forward, so his pickup reaches down for the crate and he leans
+into his jog, jump and throw; his bear is as approved (`RIDE_LEAN` is a lean back now) and his pogo
+model byte for byte the same.
 
 ## How one plays
 
