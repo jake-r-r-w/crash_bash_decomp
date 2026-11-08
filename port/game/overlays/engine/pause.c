@@ -2031,8 +2031,7 @@ PlaceRec AdvStatsPanel7[12] = {
     { 3, 0x19A, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits4, 4, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-HudBox PauseMenuPanel = { 0x10008001, 0x7C, -1, 0, 0x204, -1, 0, 0, 0x8080 };
-s32 PauseMenuPanelUnused[2] = { 0x40004, 0x10008021 };
+HudBox PauseMenuPanel = { 0x10008001, 0x7C, -1, 0, 0x204, -1, 0, 0, 0x8080, 4, 4, 0x10008021 };
 u16 StatsPageWanted = 0;
 s32 ElapsedStart = 0;
 s32 WinCounterSize = 0;

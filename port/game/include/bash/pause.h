@@ -289,6 +289,11 @@ typedef struct HudBox {
     /* 0x0E */ s16 padE;
     /* 0x10 */ s32 colour;
     /* 0x14 */ s32 unk14;
+    /* PC: and its frame, which draw_panel_rect reads after those: the PS1's PauseMenuPanel ran on into the two words after it
+     * (PauseMenuPanelUnused in the decomp), and in the port it read whatever came next, so the frame wasn't drawn */
+    /* 0x18 */ s16 frameW;
+    /* 0x1A */ s16 frameH;
+    /* 0x1C */ u32 frameFlags; /* 0x8000 a frame drawn (draw_panel_frame) */
 } HudBox;
 extern s32 HeroesInPlay;
 #define HPADS ((PadState *)Pads)
