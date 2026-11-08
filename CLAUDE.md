@@ -39,7 +39,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   after a change, and HLSL in `gfx.c` for Direct3D: a change goes in both.
 - The port's extra heroes (Ripper Roo from the player's Crash Bandicoot disc): a line each in `port/game/include/bash/herolist.h`
   and a file each in `port/game/main/heroes/`, Roo's (`roo.c`) the template. Adding one follows the checklist at the top of
-  [docs/EXTRA_HEROES.md](docs/EXTRA_HEROES.md); `playtest.mjs hero ID` checks it in every game.
+  [docs/EXTRA_HEROES.md](docs/EXTRA_HEROES.md); `playtest.mjs hero ID` checks it in every game, for work on that hero. Releases and
+  other changes only check that they load, `playtest.mjs heroes` (a few seconds; the user's word, 2026-11-09).
 - Playing/testing a build: `tools/dk make disc` (bootable `build/CrashBash.cue`),
   `make disc-check` (byte-identical to retail), `make shift OVL=tank PAD=0x40`
   (a disc with that overlay's addresses all moved, `build/shift/CrashBash.cue`), `make shift-all PAD=0x40`

@@ -26,7 +26,10 @@
  *   node port/tests/playtest.mjs hero ID [--one]
  *       An extra hero (docs/EXTRA_HEROES.md) in every game, four of it at once, each borrowing another base (--one: only player 1):
  *       its model of every kind made, each game drawing it in its own kind, none on foot for want of one, nothing crashed, and three
- *       shots of each game on a contact sheet to look over. The checklist's automatic part.
+ *       shots of each game on a contact sheet to look over. The checklist's automatic part, for work on that hero.
+ *   node port/tests/playtest.mjs heroes [ID ...]
+ *       Whether the extra heroes load (all of herolist.h's by default), in a few seconds: one short game with them as the players, each
+ *       made from its disc and drawn as itself. What a release or a change elsewhere checks of them, in place of `hero ID`.
  *   node port/tests/playtest.mjs mods
  *       Mods from a mods folder: zips of textures, of archive files and of patches to them, broken ones, and which wins, by the
  *       pictures of one mode.
@@ -516,6 +519,46 @@ async function hero(args) {
     return report(results);
 }
 
+/* Whether the extra heroes load, which is all a release or a change elsewhere needs to know of them (the user's word, 2026-11-09):
+   one short game with each of them a player, four at a time, each made from the player's disc and drawn as itself, and nothing
+   crashed. `hero ID` plays one in every game, for work on that hero. The heroes are herolist.h's, by its names. */
+async function heroes(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const list = fs.readFileSync(path.join(ROOT, 'port/game/include/bash/herolist.h'), 'utf8');
+    const ids = args.length !== 0 ? args : [...list.matchAll(/^\s*X\((\w+), \w+\)/gm)].map(m => m[1].toLowerCase());
+    const dir = path.join(OUT, 'heroes');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const results = [];
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    for (let i = 0; i < ids.length; i += 4) {
+        const group = ids.slice(i, i + 4);
+        const name = `game${i / 4 + 1}`;
+        const r = await run(exe, ['--mode', String(HERO_GAMES[0].mode), '--skip-intro', '--skip-loading', '--turbo', '--frames', '600',
+            '--shot', '590', rel(`${name}.png`), ...group.flatMap((id, p) => ['--extra-hero', String(p), id])],
+            path.join(dir, `${name}.txt`), { timeout: MODE_TIMEOUT });
+        const crash = crash_where(exe, r.text);
+
+        group.forEach((id, p) => {
+            const made = r.text.match(new RegExp(`^bonus heroes: ${id} (is made: .*|isn't made.*)$`, 'm'))?.[1];
+            /* a game starts its heroes more than once: the last says what it's drawn as */
+            const drawn = [...r.text.matchAll(new RegExp(`^extra heroes: player ${p + 1} is ${id}, in hero \\d+'s place: (.*)$`, 'gm'))].at(-1)?.[1];
+
+            if (crash != null || r.code !== 0) {
+                results.push([id, { pass: false, what: crash ?? `exit ${r.code}` }]);
+            } else if (made == null || !made.startsWith('is made') || made.includes('; none ')) {
+                results.push([id, { pass: false, what: made ?? 'not made: no log line (is its disc there?)' }]);
+            } else if (drawn == null || /no model/.test(drawn)) {
+                results.push([id, { pass: false, what: `player ${p + 1}: ${drawn ?? 'not this hero'}` }]);
+            } else {
+                results.push([id, { pass: true, what: `made from its disc, player ${p + 1} ${drawn} in ${HERO_GAMES[0].game}` }]);
+            }
+        });
+    }
+    return report(results);
+}
+
 async function menu(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const dir = path.join(OUT, 'menu');
@@ -890,9 +933,9 @@ async function mods(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, hero, menu, shots, image, packs, mods };
+const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, shots, image, packs, mods };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|menu|shots|image|packs|mods: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|shots|image|packs|mods: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

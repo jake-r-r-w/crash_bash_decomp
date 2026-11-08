@@ -15,7 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
-import { bps_make } from './bps.mjs';
+import { bps_make, crc32 } from './bps.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(HERE, 'gift-boxes');
@@ -163,7 +163,7 @@ function png(w, h, rgba) {
     const chunk = (type, data) => {
         const body = Buffer.concat([Buffer.from(type, 'latin1'), data]), len = Buffer.alloc(4), crc = Buffer.alloc(4);
         len.writeUInt32BE(data.length);
-        crc.writeUInt32BE(zlib.crc32(body));
+        crc.writeUInt32BE(crc32(body));
         return Buffer.concat([len, body, crc]);
     };
     const raw = Buffer.alloc((w * 4 + 1) * h), head = Buffer.alloc(13);

@@ -29,7 +29,24 @@ function number(out, n) {
     }
 }
 
-const crc = bytes => zlib.crc32(bytes) >>> 0;
+/* The CRC-32 that BPS, zips and PNGs have: zlib's from Node 20.15 on, and by a table before (Debian 12's Node, in tools/dl, is 18) */
+const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
+    for (let k = 0; k < 8; k++) {
+        n = n & 1 ? 0xEDB88320 ^ (n >>> 1) : n >>> 1;
+    }
+    return n >>> 0;
+});
+export function crc32(bytes) {
+    if (zlib.crc32 != null) {
+        return zlib.crc32(bytes) >>> 0;
+    }
+    let c = 0xFFFFFFFF;
+    for (const b of bytes) {
+        c = CRC_TABLE[(c ^ b) & 0xFF] ^ (c >>> 8);
+    }
+    return (c ^ 0xFFFFFFFF) >>> 0;
+}
+const crc = crc32;
 const u32 = n => [n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255];
 
 export function bps_create(source, target) {
