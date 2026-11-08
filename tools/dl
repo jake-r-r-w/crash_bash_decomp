@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Run a command in the PC port's Linux container, with the repo mounted at /work (docs/PORT.md, Linux):
+#   tools/dl sh -c "cd port && cmake --preset linux-clang && cmake --build --preset linux-clang"
+#   tools/dl xvfb-run -a -s "-screen 0 1920x1080x24" node port/tests/playtest.mjs modes
+#   tools/dl node port/package.mjs
+# The image (tools/docker/port-linux/Dockerfile) is built on first use and tagged by the Dockerfile's git hash, as tools/dk's is.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+HASH="$(cd "$ROOT" && git hash-object tools/docker/port-linux/Dockerfile | cut -c1-12)"
+IMAGE="${PORT_LINUX_IMAGE:-crash-bash-port-linux:$HASH}"
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "ERROR: docker not found. Install/start Docker Desktop (WSL 2 backend on Windows)." >&2
+  exit 127
+fi
+if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+  if ! docker info >/dev/null 2>&1; then
+    echo "ERROR: Docker daemon not reachable. Start Docker Desktop and retry." >&2
+    exit 127
+  fi
+  echo "Building the port's Linux image $IMAGE (one-time, several minutes)..." >&2
+  docker build -q -t "$IMAGE" "$ROOT/tools/docker/port-linux" >&2
+fi
+
+USER_ARGS=()
+if command -v cygpath >/dev/null 2>&1; then
+  HOSTDIR="$(cygpath -w "$ROOT")"
+  export MSYS_NO_PATHCONV=1
+else
+  HOSTDIR="$ROOT"
+  if [ "$(uname -s)" = "Linux" ]; then USER_ARGS=(--user "$(id -u):$(id -g)"); fi
+fi
+
+TTY=()
+if [ -t 0 ] && [ -t 1 ]; then TTY=(-it); fi
+exec docker run --rm "${TTY[@]}" "${USER_ARGS[@]}" -v "$HOSTDIR:/work" -w /work "$IMAGE" "$@"

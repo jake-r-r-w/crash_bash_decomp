@@ -34,11 +34,28 @@
       "cacheVariables": { "CMAKE_C_COMPILER": "clang" }
     },
     {
+      "name": "linux-release",
+      "displayName": "Linux x86-64, Clang, for publishing (node port/package.mjs, in tools/dl)",
+      "inherits": "linux-clang",
+      "cacheVariables": {
+        "BASH_RELEASE": "ON",
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_FLAGS_RELEASE": "-O2 -DNDEBUG",
+        "ZLIB_USE_STATIC_LIBS": "ON"
+      }
+    },
+    {
       "name": "linux-gcc",
       "displayName": "Linux x86-64, GCC (the second check)",
       "inherits": "base",
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
       "cacheVariables": { "CMAKE_C_COMPILER": "gcc" }
+    },
+    {
+      "name": "macos-clang",
+      "displayName": "macOS, Apple's Clang (not yet built: docs/PORT.md, The Mac)",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
     },
     {
       "name": "linux-asan",
@@ -54,8 +71,10 @@
     { "name": "windows-clang", "configurePreset": "windows-clang" },
     { "name": "windows-release", "configurePreset": "windows-release" },
     { "name": "linux-clang", "configurePreset": "linux-clang" },
+    { "name": "linux-release", "configurePreset": "linux-release" },
     { "name": "linux-gcc", "configurePreset": "linux-gcc" },
-    { "name": "linux-asan", "configurePreset": "linux-asan" }
+    { "name": "linux-asan", "configurePreset": "linux-asan" },
+    { "name": "macos-clang", "configurePreset": "macos-clang" }
   ],
   "testPresets": [
     { "name": "windows-clang", "configurePreset": "windows-clang", "output": { "outputOnFailure": true } },

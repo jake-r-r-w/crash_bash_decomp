@@ -66,12 +66,17 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. Done 2026-11-01, marked so by the user: **the PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
-   `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only for now, at the user's request: Linux
-   stays in the plan, but isn't built. 6.7, finishing it, has saving, any resolution, analog sticks and rumble written, and the user has tried a real controller and it was fine (2026-11-01). What's left is a first
+   `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only at first, at the user's request; Linux
+   builds and plays since 2026-11-08, in a container (`tools/dl`, PORT.md, Linux), and the Mac is next (7.13). 6.7, finishing it, has saving, any resolution, analog sticks and rumble written, and the user has tried a real controller and it was fine (2026-11-01). What's left is a first
    release. Whether it plays the same as retail is checked by the user playing it.
    The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. The latest is v0.3.1 (2026-11-08: the podium, Mallet Mash and the misread fixes). 6.8, fully native, is done (2026-11-01): plain maths, direct drawing and the port's own APIs. The user has tried sticks and rumble on a real controller since its pad rewrite, and they're fine (2026-11-03). Before a change that shouldn't alter the game, `playtest.mjs same [--all]` makes a baseline with `--save`, in `build/`, and afterwards shows in a minute that frames and sound haven't changed. `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
 
 4. Part 7 (2026-11-03): 7.6, sharper icons and text, is done (ICONS: CRISP; the game's own lettering stays). 7.11, widescreen level by level, is done (2026-11-03): every level shown to the user and fixed or left at their word, and the eleven crystal maps they picked. 7.8, mods, is done (2026-11-03; PORT.md, Mods, and MODDING.md), approved by the user after playing with it. **Now: 7.12, extra heroes** (the user's, 2026-11-03): with the launcher's EXTRA HEROES on and the player's Crash Bandicoot (USA) disc in a `discs` folder (or the repo's `disc/`), Ripper Roo has a ninth card in the character select and plays Crate Crush as that game's Roo, converted on their machine; only that Roo, at the user's word (no Crash Bash Roo without the disc). He has a model of every kind the games' heroes have, all played and approved by the user, who called him done (2026-11-05; 7.12.1 and 7.12.3 ticked). Adding another hero is one line in `include/bash/herolist.h` and its file in `main/heroes/`, `roo.c` the template, by the checklist that opens docs/EXTRA_HEROES.md, with `playtest.mjs hero ID` to check it in every game (7.12.8). Now Pinstripe, at the user's word (2026-11-05, `main/heroes/pinstripe.c`): on foot made, played by the user, and the five things they found fixed (2026-11-06); then his other kinds of model, one game at a time, as Roo's were: the bear, pogo stick, car and tank approved by the user, and the last five (race cart, fish, mallet, dino, keg) made in one go at their word (2026-11-08), each riding or carrying Crash's own prop as Crash does (`follow_make`, EXTRA_HEROES.md); the user approved them from a demo of each (2026-11-08), so every kind of his is approved. 7.12.5: the win screens are right with the extra heroes, and the podium has their own podium models now (2026-11-08), waiting on the user's look. Then 7.9 online play, the last row. 7.7, optional modern lighting, was taken off the roadmap by the user (2026-11-03).
+
+5. 7.13, Linux and the Mac (the user's, 2026-11-08, Linux first). Linux builds and plays in the container, `tools/dl` (PORT.md, Linux), and
+   `tools/dl node port/package.mjs` makes its release: not yet published (a release needs the user's word) or played on a real Linux
+   desktop and GPU. The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
+   user picks.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -147,6 +152,15 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Gotchas
 
 **Port test runs**
+- **Linux runs in the container (`tools/dl`, PORT.md, Linux).** The image is tagged by its Dockerfile's hash, so any change to that
+  rebuilds it (about 4 minutes, SDL3 too). Play tests need a 24-bit virtual screen: `xvfb-run -a -s "-screen 0 1920x1080x24"`. The
+  container sees the repo through Windows' file sharing, which ignores case and can't hard-link, so try anything case-sensitive in its
+  own `/tmp`. SDL turns SIGTERM into a quit event that a program waiting in a message box never reads: `timeout -s KILL`, not
+  `timeout`. A release built on a newer glibc needs that newer glibc to run: check `package.mjs`'s "needs glibc" line. The play
+  tests load most games once, so they can't see a game going wrong on its second load: for a change to how the systems differ, play
+  `--adventure --turbo --draw-every 120 --skip-intro --skip-loading --saves DIR --frames 1500000` on both and diff the logs (the same
+  but for `%p`'s null, `0000000000000000` on Windows and `(nil)` on Linux). Clang's ASan on ELF leaves globals in a section named as
+  a C identifier unchecked, which the overlays' `ovl_` sections are: reads past an overlay's variables are for the Windows ASan build.
 - **The PS1 reads on past one variable into the next; the port's linker doesn't keep them together.** Where the game indexes a
   table past its end, takes a scalar's address as a list, or runs a script past its last word, the PS1 got the bytes laid next to it
   and the port gets anything (the port's copy also dropped some of those words as unused). `node port/tests/playtest.mjs modes --asan
@@ -520,6 +534,23 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-08: Linux, at the user's word ("we need a linux build and a mac build next"; Linux first, 7.13). The port builds and plays on
+  Linux in a container, `tools/dl` (Debian 12: Clang 14, SDL3 3.4.18 built in static, glslang, SPIRV-Cross, Xvfb, lavapipe), and draws
+  with Vulkan: the two HLSL shaders have GLSL copies compiled ahead to SPIR-V (`port/platform/shaders/`, `make.sh`), the Mac's Metal MSL
+  is made from that SPIR-V by SPIRV-Cross, and `gfx.c` picks Direct3D 12, Vulkan or Metal by system (`GPU_DRIVER`). The Mac isn't built:
+  that needs a Mac. Linux took `size_t` in `platform.h`, libm, five discarded `abs()` calls glibc's headers warn about (gone), a cue
+  sheet's file found whatever its case, the first-run box saying what to do with no file chooser, and the overlays' data sections:
+  ELF linkers don't sort `$a/$b/$c` parts as Windows' does, so each overlay's marks sat side by side around nothing, its data was never
+  put back, and an Adventure stuck in the warp room the second time it loaded (vblank 40550); now `ovl_NAME` sections and the linker's
+  `__start_`/`__stop_` symbols (PORT.md, Overlays), and 1.5 million vblanks of Adventure, 136 loads, log the same on Linux as on Windows
+  (but for `%p`'s null). The play tests had passed without it, as they load most games once. The `linux-gcc` preset builds now (two
+  Clang-only flags), but its program stops at startup, as GCC can't put a file's data in a section. On the Linux release build:
+  `modes` 39 of 39, `bosses` 4 of 4 won on the same vblanks as on Windows, `menu`, `hero roo` and `hero pinstripe` 16 of 16, `image` 8
+  of 8; `same` has the same sound as Windows' baseline in all 14 and pictures a few edge pixels apart, so a baseline per system now.
+  `tools/dl node port/package.mjs` makes `crash-bash-pc-VERSION-linux-x64.tar.gz`, which needs glibc 2.34 (built on Ubuntu 24.04 it
+  needed 2.38, hence Debian 12) and runs unpacked by itself. Windows after it all: `same` 14 of 14, and its package unchanged but for
+  the README's saves line. Not yet run on a real Linux desktop or GPU, and not released.
 
 - 2026-11-08: [v0.3.1](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v0.3.1) is published, at the user's word ("Cut v0.3.1"):
   the podium (heroes all there, its score panel, the extra heroes as themselves), Mallet Mash's stages, the pause menu's frame and the

@@ -38,7 +38,9 @@
  * For bosses, --no-cheats leaves NO HARM HERO off, --vblanks N lets it try for that long, --shots FROM STEP COUNT takes those shots instead of eight spread over the run,
  * and --hero ID plays it as that extra hero (roo: --extra-hero 0 ID, docs/EXTRA_HEROES.md).
  *
- * --exe FILE picks another build. A crash's addresses become source lines if llvm-symbolizer is on the PATH. */
+ * --exe FILE picks another build (by default windows-clang's, or linux-clang's on Linux). A crash's addresses become source lines if
+ * llvm-symbolizer is on the PATH (Windows). On Linux they run in the port's container, on its virtual screen (docs/PORT.md, Linux):
+ *   tools/dl xvfb-run -a -s "-screen 0 1920x1080x24" node port/tests/playtest.mjs modes */
 import crypto from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -49,9 +51,9 @@ import { bps_make } from '../mods/bps.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const OUT = path.join(ROOT, 'build/port/playtest');
-const SUFFIX = process.platform === 'win32' ? '.exe' : '';
-const DEFAULT_EXE = `build/port/windows-clang/crashbash${SUFFIX}`;
-const ASAN_EXE = `build/port/asan/crashbash${SUFFIX}`;
+const WINDOWS = process.platform === 'win32';
+const DEFAULT_EXE = WINDOWS ? 'build/port/windows-clang/crashbash.exe' : 'build/port/linux-clang/crashbash';
+const ASAN_EXE = WINDOWS ? 'build/port/asan/crashbash.exe' : 'build/port/linux-asan/crashbash';
 const BOSS_TIMEOUT = 280, MODE_TIMEOUT = 200;
 
 /* mode: the level selector's row and the game mode's number; warp: the room a win leaves for; vblanks: long enough to get there */
@@ -88,7 +90,7 @@ function route_to_boss(mode) {
     return args;
 }
 
-/* Runs the game; resolves with its exit code, and what it printed, also kept in logfile. */
+/* Runs the game; resolves with its exit code (or the signal that ended it, on Linux), and what it printed, also kept in logfile. */
 function run(exe, args, logfile, { timeout = 0, env = {} } = {}) {
     return new Promise(resolve => {
         const log = fs.openSync(logfile, 'w');
@@ -101,7 +103,7 @@ function run(exe, args, logfile, { timeout = 0, env = {} } = {}) {
         };
 
         child.on('error', () => done(-1));
-        child.on('exit', code => done(code));
+        child.on('exit', (code, signal) => done(code ?? signal));
     });
 }
 
@@ -368,7 +370,8 @@ async function same(args) {
     const all = flag(args, '--all');
     const hero = option(args, '--hero', null);
     const dir = path.join(OUT, 'same', ...(hero != null ? [`hero-${hero}`] : []));
-    const base = path.join(dir, all ? 'baseline-all.json' : 'baseline.json');
+    /* one for each system, as their GPU APIs draw a pixel here and there differently: the sound is the same on both */
+    const base = path.join(dir, `baseline${all ? '-all' : ''}${WINDOWS ? '' : `-${process.platform}`}.json`);
     const extra = hero != null ? [0, 1, 2, 3].flatMap(p => ['--extra-hero', String(p), hero]) : [];
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -588,13 +591,16 @@ async function image(args) {
     other.write('SCES_000.00;1', at);
     fs.writeFileSync(path.join(dir, 'other.iso'), other);
     fs.writeFileSync(path.join(dir, 'junk.bin'), Buffer.alloc(1 << 20, 0x55));
+    /* a cue sheet with its file's name in another case, which Windows finds anyway and other systems must look for (but not the Linux
+       container in a Windows folder, which ignores case too: there it's tried by hand in /tmp) */
+    fs.writeFileSync(path.join(dir, 'case.cue'), 'FILE "DISC.ISO" BINARY\n  TRACK 01 MODE1/2048\n    INDEX 01 00:00:00\n');
     const run_image = async (name, img) => {
         const out = `${name}.dat`;
         const r = await run(exe, ['--image', img, '--data', rel(out), '--frames', '1', '--no-window'], path.join(dir, `${name}.txt`), { timeout: MODE_TIMEOUT });
 
         return { code: r.code, text: r.text, out: path.join(dir, out) };
     };
-    for (const [name, img] of [['cue', 'build/CrashBash.cue'], ['bin', 'build/CrashBash.bin'], ['iso', rel('disc.iso')]]) {
+    for (const [name, img] of [['cue', 'build/CrashBash.cue'], ['bin', 'build/CrashBash.bin'], ['iso', rel('disc.iso')], ['cue-case', rel('case.cue')]]) {
         const r = await run_image(name, img);
         const same_data = fs.existsSync(r.out) && sha(r.out) === want;
 
@@ -609,11 +615,18 @@ async function image(args) {
     /* next to the program, it's found with nothing asked */
     const beside = path.join(dir, 'beside');
     fs.mkdirSync(beside);
-    fs.copyFileSync(path.resolve(ROOT, exe), path.join(beside, 'crashbash.exe'));
-    fs.linkSync(raw, path.join(beside, 'CrashBash.bin'));
+    const beside_exe = path.join(beside, path.basename(exe));
+    fs.copyFileSync(path.resolve(ROOT, exe), beside_exe);
+    fs.chmodSync(beside_exe, 0o755);
+    /* a link if the folder can have one (the Linux container's view of a Windows folder can't) */
+    try {
+        fs.linkSync(raw, path.join(beside, 'CrashBash.bin'));
+    } catch {
+        fs.copyFileSync(raw, path.join(beside, 'CrashBash.bin'));
+    }
     fs.copyFileSync(path.join(ROOT, 'build/CrashBash.cue'), path.join(beside, 'CrashBash.cue'));
     const out = path.join(dir, 'beside.dat');
-    const r = await run(path.join(beside, 'crashbash.exe'), ['--data', out, '--frames', '1', '--no-window'], path.join(dir, 'beside.txt'), { timeout: MODE_TIMEOUT });
+    const r = await run(beside_exe, ['--data', out, '--frames', '1', '--no-window'], path.join(dir, 'beside.txt'), { timeout: MODE_TIMEOUT });
     const found = fs.existsSync(out) && sha(out) === want;
 
     results.push(['beside', { pass: r.code === 0 && found, what: found ? 'found and the same as the disc\'s' : `exit ${r.code}: ${r.text.trim().split('\n').at(-1)}` }]);

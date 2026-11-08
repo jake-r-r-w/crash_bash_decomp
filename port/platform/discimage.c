@@ -1,6 +1,7 @@
 /* Pulls the game's archive out of the player's own disc image, for the first time it runs: a .cue with its .bin, a raw .bin or an .iso. Only
  * the one file is read, by the disc's own ISO 9660 directories. SDL's file calls, so a path can hold any characters. */
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include <SDL3/SDL.h>
@@ -111,6 +112,21 @@ static char *image_file(const char *image) {
     }
     if (SDL_asprintf(&dup, "%.*s%s", slash != NULL ? (int)(slash + 1 - image) : 0, image, at + 1) < 0) {
         dup = NULL;
+    }
+    /* Windows finds it whatever the case of its name in the cue sheet, so cue sheets don't always have it right: elsewhere, look for it so */
+    if (dup != NULL && !SDL_GetPathInfo(dup, NULL)) {
+        char *folder = SDL_strndup(image, slash != NULL ? (size_t)(slash + 1 - image) : 0);
+        int count = 0;
+        char **names = folder != NULL ? SDL_GlobDirectory(folder[0] != 0 ? folder : "./", at + 1, SDL_GLOB_CASEINSENSITIVE, &count) : NULL;
+
+        if (names != NULL && count > 0) {
+            SDL_free(dup);
+            if (SDL_asprintf(&dup, "%s%s", folder, names[0]) < 0) {
+                dup = NULL;
+            }
+        }
+        SDL_free(names);
+        SDL_free(folder);
     }
     SDL_free(text);
     return dup;
@@ -361,14 +377,19 @@ DiscImage *disc_image_find(const char *volume) {
     return found;
 }
 
-/* The file dialog answers from its own thread. */
+/* The file dialog answers from its own thread. NoDialog: there wasn't one to show (on Linux it needs a desktop portal or zenity). */
 static SDL_AtomicInt Answered;
 static char *Chosen;
+static int NoDialog;
 
 static void SDLCALL file_chosen(void *unused, const char *const *files, int filter) {
     (void)unused;
     (void)filter;
     Chosen = files != NULL && files[0] != NULL ? SDL_strdup(files[0]) : NULL;
+    if (files == NULL) {
+        fprintf(stderr, "No file dialog: %s\n", SDL_GetError());
+        NoDialog = 1;
+    }
     SDL_SetAtomicInt(&Answered, 1);
 }
 
@@ -455,6 +476,10 @@ int disc_first_run(const char *out, const char *first) {
         }
         image = ask_for_image();
         if (image == NULL) {
+            if (NoDialog) {
+                first = "There's no way to choose a file on this system. Put your disc image (a .cue with its .bin, an .iso or a .bin) "
+                        "in the same folder as this program, or copy CRASHBSH.DAT there, and start it again.";
+            }
             continue;
         }
         problem = disc_extract(image, out);

@@ -46,6 +46,10 @@ cmake --build --preset windows-clang
 
 That makes `build/port/windows-clang/crashbash.exe`. More in [docs/PORT.md](docs/PORT.md).
 
+On Linux it's the same with the `linux-clang` preset, which makes `build/port/linux-clang/crashbash`: it needs Clang, CMake, Ninja,
+zlib's headers and [SDL3's build dependencies](https://github.com/libsdl-org/SDL/blob/main/docs/README-linux.md), and Vulkan to run. Or
+build it in Docker with `tools/dl` ([docs/PORT.md](docs/PORT.md), Linux).
+
 ## PS1 decomp (disk 2 disk)
 
 You need [Docker](https://www.docker.com/) (running) and git. On Windows, use Git Bash, or `tools\dk.ps1` in PowerShell.

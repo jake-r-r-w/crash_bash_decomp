@@ -1,6 +1,6 @@
-# The native PC port of Crash Bash (docs/PORT.md): 64-bit Windows and Linux, on SDL3.
+# The native PC port of Crash Bash (docs/PORT.md): 64-bit Windows and Linux, and the Mac to come, on SDL3.
 #
-#   cmake --preset windows-clang       (or linux-clang, linux-gcc, linux-asan)
+#   cmake --preset windows-clang       (or linux-clang in tools/dl, linux-gcc, linux-asan; macos-clang)
 #   cmake --build --preset windows-clang
 #   ctest --preset windows-clang
 cmake_minimum_required(VERSION 3.25)
@@ -48,9 +48,9 @@ target_compile_options(game PRIVATE
   # Old C, reviewed in 6.3; the warnings that matter for 64-bit stay on.
   -Wno-strict-prototypes -Wno-pointer-sign
   -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-format-security
-  # An address in an integer is an error.
+  # An address in an integer is an error (the void * ones are Clang's alone: GCC's two above cover them).
   -Werror=int-conversion -Werror=pointer-to-int-cast -Werror=int-to-pointer-cast
-  -Werror=void-pointer-to-int-cast -Werror=int-to-void-pointer-cast
+  $<$<C_COMPILER_ID:Clang>:-Werror=void-pointer-to-int-cast> $<$<C_COMPILER_ID:Clang>:-Werror=int-to-void-pointer-cast>
   $<$<C_COMPILER_ID:Clang>:-ferror-limit=0>)
 
 # Each slot overlay's data goes in a section of its own (platform/overlays.c).
@@ -66,6 +66,10 @@ add_executable(crashbash main.c platform/overlays.c platform/maths.c platform/ar
 # Mods are zips, which zlib unpacks (platform/zipread.c).
 find_package(ZLIB REQUIRED)
 target_link_libraries(crashbash PRIVATE ZLIB::ZLIB)
+# The maths library is its own on Linux and the Mac (Windows links it by itself)
+if(UNIX)
+  target_link_libraries(crashbash PRIVATE m)
+endif()
 if(TARGET SDL3::SDL3-static)
   target_link_libraries(crashbash PRIVATE SDL3::SDL3-static)
 else()

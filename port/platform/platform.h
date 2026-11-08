@@ -2,6 +2,7 @@
 #ifndef PC_PLATFORM_H
 #define PC_PLATFORM_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 /* The pad buttons, as bits of platform_pad's result: the PS1's own order. */

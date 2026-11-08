@@ -7,8 +7,8 @@ The work already done is in [ROADMAP-A.md](ROADMAP-A.md).
 When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 `tools/dk make progress` so the dashboard updates.
 
-Parts 1 to 6 are done, the PC port's own last (2026-11-01; ROADMAP-A.md). A Linux build stays in the port's plan (PORT.md), but isn't built, at the
-user's request.
+Parts 1 to 6 are done, the PC port's own last (2026-11-01; ROADMAP-A.md). The port was Windows only at first, at the user's request; Linux
+and the Mac are 7.13.
 
 ## Part 7 - More for the PC port
 
@@ -25,5 +25,6 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | 7.12.5 | Icons and results | New art where the game has none (Roo, the fox), the podium and win screens. Roo and Pinstripe have their games' own cards; the win screens are right with them; on the podium each stood as the hero whose number it borrows, so each has a podium model of its own (2026-11-08, EXTRA_HEROES.md 4, step 14), not yet played by the user. The fox's art goes with the bosses (7.12.4) | [ ] |
 | 7.12.6 | Adventure | The warp rooms, teams and saves: later, if at all | [ ] |
 | 7.12.7 | Bonus heroes from other discs | At the user's idea (2026-11-03): with the player's own copy of another Crash game beside the program or in a `discs` folder, an extra hero looks as it did there, its model and animations converted on their machine and never kept (`main/bonusheroes.c`). Ripper Roo from Crash Bandicoot (USA) is in, with his hero card from his boss fight on the panel; that disc's other bosses (Pinstripe, Koala Kong, Papu Papu) could follow. Each hero is a file of its own (`main/heroes/`), Roo's the template the others follow: docs/EXTRA_HEROES.md goes through it. Adding one is a line in `include/bash/herolist.h` and its file, with a checklist and a check of it in every game (7.12.8, done). Pinstripe, at the user's word (2026-11-05): a model for every game, one game at a time as Roo's were, each approved by the user (2026-11-08) | [ ] |
+| 7.13 | Linux and the Mac | At the user's word (2026-11-08), Linux first. Linux builds and plays (PORT.md, Linux): in a container (`tools/dl`), on Vulkan, with the modes, bosses, menu, hero and disc image checks passing there on a virtual screen and software Vulkan, the bosses won on the same vblanks as on Windows and the sound the same, and `package.mjs` makes its release (glibc 2.34 or newer), not yet published. Not yet played on a real Linux desktop. The Mac's code is ready as far as it can be without one (Metal, PORT.md, The Mac); building it needs a Mac, the route the user's call | [ ] |
 | 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |
 

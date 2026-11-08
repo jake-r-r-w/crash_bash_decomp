@@ -1,5 +1,6 @@
 /* The native renderer on SDL3's GPU API (gfx.h). On Windows it runs on Direct3D 12, with its shaders compiled from the HLSL here by
- * d3dcompiler_47.dll, which comes with Windows. */
+ * d3dcompiler_47.dll, which comes with Windows; on Linux on Vulkan, with the same shaders in GLSL compiled ahead to SPIR-V; on the Mac on
+ * Metal, with those made into MSL (shaders/, make.sh). */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +15,21 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#endif
+
+/* Each system's own GPU API */
+#if defined(_WIN32)
+#define GPU_FORMAT SDL_GPU_SHADERFORMAT_DXBC
+#define GPU_DRIVER "direct3d12"
+#define GPU_NAME "Direct3D 12"
+#elif defined(__APPLE__)
+#define GPU_FORMAT SDL_GPU_SHADERFORMAT_MSL
+#define GPU_DRIVER "metal"
+#define GPU_NAME "Metal"
+#else
+#define GPU_FORMAT SDL_GPU_SHADERFORMAT_SPIRV
+#define GPU_DRIVER "vulkan"
+#define GPU_NAME "Vulkan"
 #endif
 
 #define MAX_TRIS 100000
@@ -151,11 +167,40 @@ typedef struct { ID3DBlobVtbl *v; } ID3DBlob_;
 typedef long(__stdcall *D3DCompileFn)(const void *, size_t, const char *, const void *, void *, const char *, const char *, unsigned, unsigned,
                                       ID3DBlob_ **, ID3DBlob_ **);
 
-static SDL_GPUShader *make_shader(const char *src, const char *profile, SDL_GPUShaderStage stage, int samplers, int uniforms) {
-    static D3DCompileFn compile;
-    ID3DBlob_ *code = NULL, *err = NULL;
+#else
+#include "shaders/gfx_vert.h"
+#include "shaders/gfx_frag.h"
+#include "shaders/gfx_vert_msl.h"
+#include "shaders/gfx_frag_msl.h"
+#endif
+
+/* A shader from its code for the GPU API in use */
+static SDL_GPUShader *create_shader(const void *code, size_t size, const char *entry, SDL_GPUShaderFormat format, SDL_GPUShaderStage stage,
+                                    int samplers, int uniforms) {
     SDL_GPUShaderCreateInfo info;
     SDL_GPUShader *s;
+
+    SDL_zero(info);
+    info.code = code;
+    info.code_size = size;
+    info.entrypoint = entry;
+    info.format = format;
+    info.stage = stage;
+    info.num_samplers = samplers;
+    info.num_uniform_buffers = uniforms;
+    s = SDL_CreateGPUShader(Device, &info);
+    if (s == NULL) {
+        fprintf(stderr, "SDL_CreateGPUShader: %s\n", SDL_GetError());
+    }
+    return s;
+}
+
+/* src and profile are the HLSL's, which Direct3D's are compiled from as the game starts. Vulkan's are the shaders in shaders/, compiled
+ * ahead to SPIR-V, and Metal's those made into MSL by SPIRV-Cross, which calls each one's entry point main0 (make.sh). */
+static SDL_GPUShader *make_shader(const char *src, const char *profile, SDL_GPUShaderStage stage, int samplers, int uniforms) {
+#ifdef _WIN32
+    static D3DCompileFn compile;
+    ID3DBlob_ *code = NULL, *err = NULL;
 
     if (compile == NULL) {
         HMODULE dll = LoadLibraryA("d3dcompiler_47.dll");
@@ -169,27 +214,21 @@ static SDL_GPUShader *make_shader(const char *src, const char *profile, SDL_GPUS
         fprintf(stderr, "Shader: %s\n", err ? (char *)err->v->GetBufferPointer(err) : "failed");
         return NULL;
     }
-    SDL_zero(info);
-    info.code = code->v->GetBufferPointer(code);
-    info.code_size = code->v->GetBufferSize(code);
-    info.entrypoint = "main";
-    info.format = SDL_GPU_SHADERFORMAT_DXBC;
-    info.stage = stage;
-    info.num_samplers = samplers;
-    info.num_uniform_buffers = uniforms;
-    s = SDL_CreateGPUShader(Device, &info);
-    if (s == NULL) {
-        fprintf(stderr, "SDL_CreateGPUShader: %s\n", SDL_GetError());
-    }
-    return s;
-}
+    return create_shader(code->v->GetBufferPointer(code), code->v->GetBufferSize(code), "main", SDL_GPU_SHADERFORMAT_DXBC, stage, samplers,
+                         uniforms);
 #else
-static SDL_GPUShader *make_shader(const char *src, const char *profile, SDL_GPUShaderStage stage, int samplers, int uniforms) {
-    (void)src; (void)profile; (void)stage; (void)samplers; (void)uniforms;
-    fprintf(stderr, "No shaders for this system yet\n");
-    return NULL;
-}
+    int vertex = stage == SDL_GPU_SHADERSTAGE_VERTEX;
+
+    (void)src;
+    (void)profile;
+    if (SDL_GetGPUShaderFormats(Device) & SDL_GPU_SHADERFORMAT_MSL) {
+        return create_shader(vertex ? gfx_vert_msl : gfx_frag_msl, vertex ? sizeof(gfx_vert_msl) - 1 : sizeof(gfx_frag_msl) - 1, "main0",
+                             SDL_GPU_SHADERFORMAT_MSL, stage, samplers, uniforms);
+    }
+    return create_shader(vertex ? gfx_vert_spv : gfx_frag_spv, vertex ? sizeof(gfx_vert_spv) : sizeof(gfx_frag_spv), "main",
+                         SDL_GPU_SHADERFORMAT_SPIRV, stage, samplers, uniforms);
 #endif
+}
 
 static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *fs, SDL_GPUBlendFactor src, SDL_GPUBlendFactor dst, SDL_GPUBlendOp op, int blend, int depth) {
     SDL_GPUGraphicsPipelineCreateInfo p;
@@ -469,10 +508,10 @@ int gfx_init(void *window, const GfxConfig *config) {
     SDL_GPUTransferBufferCreateInfo tc;
 
     Window = window;
-    Device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_DXBC, false, "direct3d12");
+    Device = SDL_CreateGPUDevice(GPU_FORMAT, false, GPU_DRIVER);
     if (Device == NULL) {
         fprintf(stderr, "SDL_CreateGPUDevice: %s\n", SDL_GetError());
-        platform_fatal("Crash Bash needs a graphics card with Direct3D 12.");
+        platform_fatal("Crash Bash needs a graphics card with " GPU_NAME ".");
         return 0;
     }
     if (!SDL_ClaimWindowForGPUDevice(Device, Window)) {

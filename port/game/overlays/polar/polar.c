@@ -6742,7 +6742,6 @@ void PlotUkaPolarMask(NAS *m) {
         m->UserInfo.user1 += ext->angular_speed;
         ga = get_angle(m->Engine->XYZ.x, m->Engine->XYZ.z) & 0xFFF;
         d = ((ga - ext->target_angle) << 20) >> 20;
-        abs(d);
         if (ext->angular_speed == ext->angular_max) {
             s32 brake = abs(d) <= abs(ext->angular_speed) * 8;
 

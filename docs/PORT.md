@@ -29,7 +29,7 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
 | Build | CMake with presets, and Ninja |
 | Compilers | Clang on both systems, GCC as a second check on Linux |
 | Window, sound, input | SDL3 |
-| Drawing | SDL3's GPU API: Direct3D 12 on Windows, with Vulkan to come for Linux |
+| Drawing | SDL3's GPU API: Direct3D 12 on Windows, Vulkan on Linux |
 | Checking | CTest, ASan and UBSan builds, optimised release builds |
 
 There are no GitHub workflows: all of this runs by hand, on a machine with the game's data. Playing the
@@ -62,7 +62,12 @@ it is unchanged.
 
 **Overlays.** They all link into the program. A loaded overlay's data has to go back to its starting values,
 so each overlay's data goes in a section of its own, saved at startup and restored on load. Their global
-names have one clash, `XZBoxToSphere`.
+names have one clash, `XZBoxToSphere`. How a section's ends are found is each system's linker's own
+(`platform/ovlsection.h`): Windows sorts a section's `$a`, `$b` and `$c` parts by name, so marks go either side;
+Linux's linkers don't (the marks ended up side by side, around nothing, and the warp room stuck the second time it
+loaded), but mark a section named as a C identifier with `__start_` and `__stop_` symbols; the Mac's give
+`section$start$` and `section$end$` ones. GCC has no pragma to put a file's data in a section, so a GCC build links
+but stops at startup.
 
 **Null pointers.** The PS1 has RAM at address 0, so the game's null reads and writes just work there. Each one
 gets a real check, found by running under the sanitizers.
@@ -125,12 +130,48 @@ The game's C isn't in the default build until it compiles. To see what's left:
 cmake --build --preset windows-clang --target game -- -k 0
 ```
 
+### Linux
+
+Linux builds in a container, `tools/dl` (Docker, as `tools/dk` is for the decomp; `tools/docker/port-linux/Dockerfile`): Debian 12,
+for its glibc (a program needs the glibc it was built with or newer, and this one's 2.36 makes a release that needs 2.34), with Clang
+and GCC, SDL3 built in as a static library, glslang and SPIRV-Cross, and for the play tests a virtual screen (Xvfb) and Mesa's software
+Vulkan (lavapipe). From the repo's root:
+
+```sh
+tools/dl sh -c "cd port && cmake --preset linux-clang && cmake --build --preset linux-clang"
+tools/dl xvfb-run -a -s "-screen 0 1920x1080x24" node port/tests/playtest.mjs modes
+```
+
+The play tests take `build/port/linux-clang/crashbash` there by default. Linux draws with Vulkan, whose shaders are GLSL compiled ahead
+to SPIR-V (`port/platform/shaders/`): a change to the HLSL in `gfx.c` gets made in `gfx.vert` or `gfx.frag` too, and
+`tools/dl sh port/platform/shaders/make.sh` makes the headers `gfx.c` includes again. The container's pictures are lavapipe's, a pixel
+here and there from Direct3D's, so `same` keeps a baseline per system.
+
+### The Mac
+
+Not built yet: that needs a Mac, as Apple's SDK is licensed for Apple's own computers only. The code is ready for it as far as it can be
+from here: the renderer runs on Metal there (`gfx.c`, `GPU_DRIVER`), with the MSL that SPIRV-Cross makes from the Vulkan shaders
+(`make.sh`, so all three systems draw with one shader source; the Linux build compiles the Metal path too, but can't run it), and the
+`macos-clang` preset. On a Mac with Xcode's command-line tools, CMake and Ninja (SDL3 from Homebrew, or fetched):
+
+```sh
+cd port && cmake --preset macos-clang -DBASH_FETCH_SDL3=ON && cmake --build --preset macos-clang
+```
+
+What's left for it: building and playing it there, then a release (one program for Apple silicon and Intel, signed if it's to open
+without macOS's warning) and the README's Mac parts in `package.mjs`.
+
 ## A release
 
 `node port/package.mjs`, with `TC` set to the toolchain, builds `build/port/release/crash-bash-pc-VERSION-windows-x64.zip`: the program
 with no console window and no symbols, its README (`port/release/README.txt`) and the licences. The version is the `project()` one in
 `port/CMakeLists.txt`. It fails if the program holds a sample of the game's archive or this machine's paths, and it publishes nothing. Try
 the zip with `playtest.mjs ... --exe`, and unzipped by itself, with and without `CRASHBSH.DAT`. The release's notes are in `port/release/`.
+
+`tools/dl node port/package.mjs` builds the Linux one, `crash-bash-pc-VERSION-linux-x64.tar.gz` (preset `linux-release`): the program
+with SDL3 and zlib in it, so it needs only what every Linux has, as SDL opens the system's own window, sound and Vulkan libraries as it
+runs. Its README says the oldest glibc it runs on, from what the program imports. The README is one for both, with `@NAME@` parts that
+`package.mjs` fills for each system.
 
 ## Running it
 

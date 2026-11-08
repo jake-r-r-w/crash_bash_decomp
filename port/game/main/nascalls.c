@@ -1651,9 +1651,6 @@ void FetchDefaultColBox(EXTengine *eng, u32 flag) {
 s32 ApplyContourMoved(EXTengine *eng) {
     s32 dy;
 
-    abs(eng->XYZ.y - eng->OldXYZ.y);
-    abs(eng->XYZ.x - eng->OldXYZ.x);
-    abs(eng->XYZ.z - eng->OldXYZ.z);
     if (LevelSpecs.GetContour != NULL) {
         dy = LevelSpecs.GetContour(eng);
     } else {
@@ -1699,12 +1696,7 @@ s32 FollowUnderContour(EXTengine *eng) {
 
 s32 FollowContour(EXTengine *eng) {
     s32 dy;
-    int new_var;
 
-    new_var = eng->XYZ.x;
-    new_var = -eng->OldXYZ.x + new_var;
-    abs(new_var);
-    abs(eng->XYZ.z - eng->OldXYZ.z);
     if (LevelSpecs.GetContour != NULL) {
         dy = LevelSpecs.GetContour(eng);
     } else {
