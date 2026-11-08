@@ -129,7 +129,16 @@ Cortex's are 87 and 4 ticks. His lean (`pose_body`) had gone back for a lean abo
 moves were written as if forward (his crate pickup leaned back as he knelt, his jog a little back): at
 the user's word (2026-11-08) it leans forward, so his pickup reaches down for the crate and he leans
 into his jog, jump and throw; his bear is as approved (`RIDE_LEAN` is a lean back now) and his pogo
-model byte for byte the same.
+model byte for byte the same. In a Ballistix car (step 7, the third): his pogo stick's making became
+one for any kind where Crash holds or stands on something (`follow_make`, a `FollowKind` each: the
+prop's strips, its frame if it has one, its grips and pegs, Crash's hips, chest, shoulders, elbows,
+hands and feet, his size, lean and squat), and his stick came out of it byte for byte the same. In
+the car he has Crash's handles (`CarKind`: the levers, Crash's textured strips all 210 or more out to
+the sides), holds their grip bars' inner ends as they rock, sits where Crash sits (his hips on
+Crash's, his legs folded in the car), and lets go with a hand as Crash does to fidget, wave, cheer
+and wipe his face. The levers' posts are red in the model, but inside the car; only their grey grips
+show, as Crash's do. Ballistix's six moves are Crash's (BANK has HOLD's name hash: "HOLD" and "BANK"
+hash alike), each over all of his base's.
 
 ## How one plays
 

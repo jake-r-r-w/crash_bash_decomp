@@ -15,7 +15,8 @@
  * he wins shoots his gun about laughing, as in that fight (PiG2V, the gun out), each of those at his still's size (PIN_SOURCE_SCALE)
  * with his still's eyes. He's lit brighter and softer than his game's colours are, and his head's bigger, as Crash Bash's heroes look
  * (PinLight, HEAD_SCALE). Riding a polar bear he's sat astride Crash's, his hands on its neck (ride_bear), and thrown about at the
- * ice's edge as Crash is (ride_own). His sounds are his boss
+ * ice's edge as Crash is (ride_own); on a pogo stick and in a Ballistix car he has Crash's, and moves as Crash does with it, his hands
+ * on its grips (follow_make). His sounds are his boss
  * fight's: his laugh and his tommy gun. His hero card is the face that fight shows by his health. */
 #include <math.h>
 #include <stdio.h>
@@ -87,12 +88,16 @@ static const Stand PinPogo[] = {
     { "TAZING", "TAZING", LOOP },
     { NULL, NULL, STRETCH },
 };
+/* In a car his model has Ballistix's moves by name, Crash's, each over all of his base's */
+static const Stand PinCar[] = {
+    { NULL, NULL, STRETCH },
+};
 
 /* Each kind of game plays as on foot until he has a model of it; on his bear he's as heavy and as quick as Crash on his */
 const HeroDef HeroPinstripe = {
     "PINSTRIPE", "pinstripe", "SCUS-94900", Cortex,
     { { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinRides, "BREATHE", 0x1000, Crash, 1 },
-      { PinPogo, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
+      { PinPogo, "BREATHE", 0x1000, 0, 1 }, { PinCar, "BREATHE", 0x1000, 0, 1 },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES } },
@@ -1386,80 +1391,80 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
     return ride_make(&rider, &out->tex[KIND_POLAR], &out->tex_size[KIND_POLAR], &out->mdl[KIND_POLAR], &out->mdl_size[KIND_POLAR]);
 }
 
-/* --- on a pogo stick (Pogo) ---
- * Pogo's heroes each bounce on a thing of their own, in a model of their own with it (models\chars\pogo\): Crash and Coco on pogo
- * sticks, Cortex and Brio on their jetpacks, Tiny and Kong on springs. He bounces on Crash's stick, as he rides as Crash does (the user,
- * of his bear: not with Cortex's jetpack). His pogo model is that stick, as it moves in Crash's (its strips keep_stick picks: the ones
- * that reach down to its pegs, and its handle's grips in front of Crash), its tube POGO_TUBE as long above its pegs so its handle's
- * at his waist, its blues gunmetal (stick_metal: dark, as his tommy gun is, against his red suit); and him on it at POGO_SCALE of his
- * size, his feet on its pegs and his hands on its grips (pose_leg_to, pose_arm_to: each limb's two bones put to reach them). He
- * bounces as Crash does on it, in the stick's own frame (its frame, pegs and grips fitted each frame; its tip slides in and out): his
- * hips and feet moved as Crash's are (`follow` as far, for his height against Crash's; POGO_SQUAT lower than he stands), so he springs
- * up off the pegs at the top of a bounce as Crash does, holding on, his limbs stretching to the grips and pegs as Crash's do when
- * they're out of reach (two_bone); his body above his waist leaning POGO_LEAN forward over it and turned as Crash's turns, his spine
- * and shoulders; and a hand Crash lets go with (he punches the air as he wins) going as Crash's arm goes. Pogo's five moves are
- * Crash's, each as long: the bounce, the hop, dazed, the win and the tazing; the win and the tazing at their own speed (PinPogo), as his
- * base's are 87 and 4 ticks long. */
-#define STICK_LOW -76.0f      /* a strip of the stick's reaches below this (Crash Bash's axes, y down): its tube, frame and pegs; */
-#define GRIP_TOP -276.0f      /* and its grips are all within this box, in front of Crash (whose hands are on them, and higher) */
-#define GRIP_LOW -230.0f
-#define GRIP_BACK -60.0f
-#define GRIP_FRONT -105.0f
-#define GRIP_HALF 76.0f
-#define TIP_HALF 15.0f        /* its tip, which slides in and out: its corners within this of its middle across, below TIP_TOP */
-#define TIP_TOP -45.0f
-#define PEG_ASIDE 30.0f       /* its pegs: its corners below STICK_LOW and more than this aside */
-#define POGO_HIPS_TOP -190.0f /* Crash on it: his hips, his corners from POGO_HIPS_TOP down to POGO_HIPS_LOW within POGO_MIDDLE aside; */
-#define POGO_HIPS_LOW -155.0f
-#define POGO_MIDDLE 30.0f
-#define POGO_CHEST_TOP -330.0f /* his chest, from POGO_CHEST_TOP to POGO_CHEST_LOW within POGO_CHEST_HALF, behind POGO_CHEST_FRONT (his */
-#define POGO_CHEST_LOW -255.0f /* hands are in front, on the grips); and his shoulders, within POGO_SHOULDER_R of PogoShoulders */
-#define POGO_CHEST_HALF 40.0f
-#define POGO_CHEST_FRONT -80.0f
-#define POGO_SHOULDER_R 20.0f
-#define POGO_FEET_TOP -100.0f  /* and his feet, his corners below this more than POGO_MIDDLE aside: they leave the pegs as he springs; */
-#define POGO_ELBOW_R 25.0f     /* his elbows, within POGO_ELBOW_R of PogoElbows; and his hands, within POGO_HAND_R of the grips and */
-#define POGO_HAND_R 45.0f      /* in front of POGO_HAND_BACK. As Crash wins he lets go with a hand and punches the air with it, so a */
-#define POGO_HAND_BACK -55.0f  /* hand of his goes as Crash's goes off its grip, from POGO_OFF_FROM further from it to all by POGO_OFF_ALL */
-#define POGO_OFF_FROM 10.0f
-#define POGO_OFF_ALL 40.0f
-static const V3 PogoShoulders[2] = { { -50, -302, 10 }, { 50, -302, 10 } };
-static const V3 PogoElbows[2] = { { -126, -297, -25 }, { 126, -300, -27 } };
-#define POGO_SCALE 0.8f
-#define POGO_TUBE 1.3f
-#define POGO_SQUAT 12.0f /* his rig's units */
-#define POGO_LEAN 0.25f
-#define POGO_METAL 0.45f  /* the stick's blues as greys this much of their brightness */
-#define POGO_PART_MAX 128
-#define POGO_CORNERS 1024
-#define POGO_MOVES 5
-static const char *const PogoNames[POGO_MOVES] = { "BREATHE", "JUMP", "DAZED", "WIN", "TAZING" };
+/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles) ---
+ * In some games each hero's model has what the hero holds or stands on in it: Pogo's heroes bounce on things of their own
+ * (models\chars\pogo\: Crash and Coco on pogo sticks, Cortex and Brio on their jetpacks, Tiny and Kong on springs), and Ballistix's
+ * hold the handles of the car the game draws round them (models\chars\ball\). He rides and drives as Crash does (the user, of his
+ * bear: not with Cortex's jetpack), so his model of such a kind (a FollowKind) is Crash's prop from Crash's model of it, moving as it
+ * does there (its strips by where they are as Crash first moves: the model's own pose has his arms out, and a first pick by it took
+ * Crash's arms and legs), and him with it, following Crash's body frame by frame:
+ * - in the prop's own frame, fitted each frame if it has one (Pogo's stick: its tip slides in and out), else the model's;
+ * - his hands on the prop's grips (pose_arm_to: each arm's two bones put to reach them), but a hand Crash lets go with (he waves,
+ *   punches the air as he wins) going as Crash's arm goes, as far as Crash's hand has gone off its grip (OFF_FROM to OFF_ALL further);
+ * - his feet on its pegs (pose_leg_to), as far off them as Crash's go; or, where Crash sits, his legs folded under him (FOLLOW_SIT);
+ * - his hips moved as Crash's are, `follow` as far for his height against Crash's; his body above his waist leant `lean` forward and
+ *   turned as Crash's turns, his spine and his shoulders' line; his limbs stretching to what they hold when it's out of their reach,
+ *   as Crash's do (two_bone).
+ * His moves of a kind are Crash's there, each as long as Crash's (a frame a tick). */
+#define FOLLOW_PART_MAX 128
+#define FOLLOW_CORNERS 1024
+#define FOLLOW_MOVES 8
+#define FOLLOW_SIT 1.45f    /* sat, his thighs forward at his hips this far and his shins back down from them as far */
+#define OFF_FROM 10.0f
+#define OFF_ALL 40.0f
 
+typedef struct Follow Follow;
 typedef struct {
-    GamePart stick;              /* Crash's pogo model, the stick its part: all its corners as it moves (hm_model_at) */
-    s32 anim[POGO_MOVES];
-    V3 ref[POGO_CORNERS];        /* its corners as Crash first bounces (BREATHE's first frame) */
-    s16 frame[POGO_PART_MAX], hips[POGO_PART_MAX], chest[POGO_PART_MAX], shoulder[2][POGO_PART_MAX], feet[2][POGO_PART_MAX];
-    s16 elbow[2][POGO_PART_MAX], hand[2][POGO_PART_MAX];
-    s32 nframe, nhips, nchest, nshoulder[2], nfeet[2], nelbow[2], nhand[2];
+    s32 bank;                /* Crash's model of the kind, */
+    s32 kind;                /* the kind (KIND_), */
+    const char *what;        /* and what it's called in the log */
+    const char *const *moves;
+    s32 nmoves;
+    /* the prop: a strip of Crash's model that's the prop's, by its corners as he first moves (at) */
+    s32 (*prop)(const V3 *at, s32 n, s32 textured);
+    s32 (*frame)(V3 p);      /* of the prop's corners, those of its frame, fitted each frame; NULL: the model's own frame */
+    s32 (*grip)(V3 p);       /* its grips' (each side's by its x) */
+    s32 (*peg)(V3 p);        /* its pegs', under his feet; NULL as he sits */
+    s32 (*hips)(V3 p);       /* Crash's corners of his hips, */
+    s32 (*chest)(V3 p);      /* his chest, */
+    s32 (*foot)(V3 p);       /* and his feet (each side's by its x; NULL as he sits) */
+    V3 shoulder[2], elbow[2]; /* his joints as he first moves, his left first, */
+    float shoulder_r, elbow_r; /* how far round them their corners are, */
+    float hand_r, hand_back; /* and his hands: his corners within hand_r of a grip, in front of hand_back (z) */
+    float scale;             /* his size on it */
+    float lean;              /* his body leant forward over it, radians */
+    float squat;             /* his hips lower than he stands (his rig's units), standing */
+    float tube;              /* the prop's length above its pegs against Crash's (1 as it is) */
+    void (*paint)(const Follow *c, MadeFace *f); /* the prop's colours made his, or NULL */
+} FollowKind;
+
+struct Follow {
+    const FollowKind *kind;
+    GamePart prop;               /* Crash's model, the prop its part: all its corners as it moves (hm_model_at) */
+    s32 anim[FOLLOW_MOVES];
+    V3 ref[FOLLOW_CORNERS];      /* its corners as Crash first moves (the first move's first frame) */
+    s16 frame[FOLLOW_PART_MAX], hips[FOLLOW_PART_MAX], chest[FOLLOW_PART_MAX], shoulder[2][FOLLOW_PART_MAX], feet[2][FOLLOW_PART_MAX];
+    s16 elbow[2][FOLLOW_PART_MAX], hand[2][FOLLOW_PART_MAX], grips[2][FOLLOW_PART_MAX];
+    s32 nframe, nhips, nchest, nshoulder[2], nfeet[2], nelbow[2], nhand[2], ngrips[2];
     V3 grip_at[2];               /* the grips' middles as it rests (Crash Bash's axes), */
     float hand_off[2];           /* and how far Crash's hands' are from them then */
     float peg_y;                 /* the top of its pegs, which its tube's lengthened from */
-    float k;                     /* Crash Bash's units to a unit of his rig, at POGO_SCALE */
+    float k;                     /* Crash Bash's units to a unit of his rig, at his size on it */
     float follow;                /* his height on it against Crash's: how much further he moves than Crash does on it */
-    V3 origin;                   /* where his rig's floor point is on the stick as it rests */
+    V3 origin;                   /* where his rig's floor point is on it as it rests */
     V3 grip[2], ankle[2], palm[2]; /* in his rig: each hand's target on its grip, each ankle's on its peg, and each palm as he stands */
-    float was[3][3];             /* how Crash's body lies as he first bounces (body_lie) */
-    MadeAnim anims[POGO_MOVES];
-} PogoCtx;
-static PogoCtx Pogo;
+    float was[3][3];             /* how Crash's body lies as he first moves (body_lie) */
+    MadeAnim anims[FOLLOW_MOVES];
+};
+static Follow Follower;
 
-/* The stick's strips, by where their corners are as Crash first bounces (the model's own pose is another: his arms out): `ref`, all
- * its corners then, and `at`, the strip's first, counted on as the strips go by */
+/* The prop's strips, by where their corners are as Crash first moves: `ref`, all its corners then, and `at`, the strip's first,
+ * counted on as the strips go by */
 typedef struct {
+    const FollowKind *kind;
     const V3 *ref;
     s32 at;
-} StickPick;
+} PropPick;
 
 static s32 keep_all(void *ctx, const V3 *rest, s32 n, s32 textured) {
     (void)ctx;
@@ -1469,21 +1474,13 @@ static s32 keep_all(void *ctx, const V3 *rest, s32 n, s32 textured) {
     return 1;
 }
 
-static s32 keep_stick(void *ctx, const V3 *rest, s32 n, s32 textured) {
-    StickPick *pick = ctx;
+static s32 keep_prop(void *ctx, const V3 *rest, s32 n, s32 textured) {
+    PropPick *pick = ctx;
     const V3 *p = pick->ref + pick->at;
-    s32 k, low = 0, grip = 1;
 
     (void)rest;
     pick->at += n;
-    if (textured) {
-        return 0;
-    }
-    for (k = 0; k < n; k++) {
-        low |= p[k].y > STICK_LOW;
-        grip &= p[k].y >= GRIP_TOP && p[k].y <= GRIP_LOW && p[k].z >= GRIP_FRONT && p[k].z <= GRIP_BACK && fabsf(p[k].x) <= GRIP_HALF;
-    }
-    return low || grip;
+    return pick->kind->prop(p, n, textured);
 }
 
 static V3 mid_of(const V3 *at, const s16 *ids, s32 n) {
@@ -1498,7 +1495,7 @@ static V3 mid_of(const V3 *at, const s16 *ids, s32 n) {
 
 /* How Crash's body lies, his corners at `at`: a frame (its columns across, up and forward) of his spine, hips to chest, and his
  * shoulders' line across it */
-static void body_lie(const PogoCtx *c, const V3 *at, float m[3][3]) {
+static void body_lie(const Follow *c, const V3 *at, float m[3][3]) {
     V3 up = vnorm(vsub(mid_of(at, c->chest, c->nchest), mid_of(at, c->hips, c->nhips)));
     V3 across = vsub(mid_of(at, c->shoulder[1], c->nshoulder[1]), mid_of(at, c->shoulder[0], c->nshoulder[0])), fwd;
 
@@ -1586,41 +1583,44 @@ static void pose_leg_to(V3 *r, const Leg *leg, V3 hip, V3 ankle, V3 hint) {
     }
 }
 
-/* A point of his rig on the stick as it rests, in Crash Bash's units and axes, and back */
-static V3 rig_on_stick(const PogoCtx *c, V3 r) {
+/* A point of his rig on the prop as it rests, in Crash Bash's units and axes, and back */
+static V3 rig_on_stick(const Follow *c, V3 r) {
     return vadd(c->origin, v3(r.x * c->k, -r.y * c->k, -r.z * c->k));
 }
-static V3 stick_in_rig(const PogoCtx *c, V3 p) {
+static V3 stick_in_rig(const Follow *c, V3 p) {
     return v3((p.x - c->origin.x) / c->k, -(p.y - c->origin.y) / c->k, -(p.z - c->origin.z) / c->k);
 }
 
-/* Crash's body on the stick for a frame, in its own frame (Crash Bash's axes): how far his hips and feet have moved, his body's turn
- * (M), and each arm: how far off its grip its hand's gone (0 to 1) and its upper arm and forearm as they'd be with his body unturned */
+/* Crash's body for a frame, in the prop's own frame (Crash Bash's axes): how far his hips and feet have moved, his body's turn (M);
+ * and each arm: how far off its grip its hand's gone (0 to 1) and its upper arm and forearm as they'd be with his body unturned; and
+ * where (in his rig) each of his hands' grips is */
 typedef struct {
     V3 hips, feet[2];
     float M[3][3];
     float off[2];
     V3 arm[2][2];
-} PogoBody;
+    V3 grip[2];
+} FollowBody;
 
-/* His pose on the stick (in his rig) as Crash's is (b) */
-static void pogo_pose(const PogoCtx *c, const PogoBody *b, V3 *r) {
+/* His pose on the prop (in his rig) as Crash's is (b) */
+static void follow_pose(const Follow *c, const FollowBody *b, V3 *r) {
+    const FollowKind *fk = c->kind;
     V3 waist = { 0, WAIST_Y, 0 }, o = { 0, 0, 0 }, move = vmul(rig_dir(b->hips), c->follow / c->k);
     s32 i, k;
 
-    move.y -= POGO_SQUAT;
+    move.y -= fk->squat;
     memcpy(r, Rest, sizeof(V3) * Verts);
     /* each hand to its grip: the grip taken back by how his body will be moved, turned and leant, and the arm put to it there; or, as
      * far as Crash's has let go of his, where Crash's arm would put it (his upper arm and forearm as Crash's, leant back as he'll lean) */
     for (i = 0; i < 2; i++) {
-        V3 t = vsub(c->grip[i], move), up = hm_turn_x(rig_dir(b->arm[i][0]), o, -POGO_LEAN), fore = hm_turn_x(rig_dir(b->arm[i][1]), o, -POGO_LEAN);
+        V3 t = vsub(b->grip[i], move), up = hm_turn_x(rig_dir(b->arm[i][0]), o, -fk->lean), fore = hm_turn_x(rig_dir(b->arm[i][1]), o, -fk->lean);
         V3 own = vadd(Arms[i].joint[0], vadd(vmul(up, Arms[i].len[0]), vmul(fore, vlen(vsub(c->palm[i], Arms[i].joint[1])))));
 
         t = vadd(waist, bash_unturned(b->M, vsub(t, waist)));
-        t = hm_turn_x(t, waist, -POGO_LEAN);
+        t = hm_turn_x(t, waist, -fk->lean);
         pose_arm_to(r, &Arms[i], c->palm[i], hm_mix(t, own, b->off[i]), vnorm(hm_mix(v3(Arms[i].side, -0.3f, -0.5f), up, b->off[i])));
     }
-    pose_body(r, POGO_LEAN, 0, 0);
+    pose_body(r, fk->lean, 0, 0);
     for (k = 0; k < Verts; k++) {
         if (PieceOf[k] != PIECE_LEGS && PieceOf[k] != PIECE_SHOE) {
             r[k] = hm_mix(r[k], vadd(waist, bash_turned(b->M, vsub(r[k], waist))),
@@ -1629,28 +1629,49 @@ static void pogo_pose(const PogoCtx *c, const PogoBody *b, V3 *r) {
         }
     }
     for (i = 0; i < 2; i++) {
-        pose_leg_to(r, &Legs[i], vadd(Legs[i].joint[0], move), vadd(c->ankle[i], vmul(rig_dir(b->feet[i]), c->follow / c->k)),
-                    v3(Legs[i].side * 0.3f, 0, 1));
+        if (fk->peg != NULL) {
+            pose_leg_to(r, &Legs[i], vadd(Legs[i].joint[0], move), vadd(c->ankle[i], vmul(rig_dir(b->feet[i]), c->follow / c->k)),
+                        v3(Legs[i].side * 0.3f, 0, 1));
+        } else {
+            pose_leg(r, &Legs[i], FOLLOW_SIT, FOLLOW_SIT, 0);
+            for (k = 0; k < Legs[i].n; k++) {
+                r[Legs[i].verts[k]] = vadd(r[Legs[i].verts[k]], move);
+            }
+        }
     }
     place_gun(r, 0, 0);
     grow_head(r);
 }
 
-static void pogo_frame(void *ctx, s32 a, s32 f, V3 *out) {
-    static V3 F[POGO_CORNERS], L[POGO_CORNERS], r[MAX_VERTS];
-    const PogoCtx *c = ctx;
+/* A corner of the prop where it's drawn, in its own frame: its tube lengthened above its pegs */
+static V3 prop_drawn(const Follow *c, V3 p) {
+    if (c->kind->tube != 1 && p.y < c->peg_y) {
+        p.y = c->peg_y + (p.y - c->peg_y) * c->kind->tube;
+    }
+    return p;
+}
+
+static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    static V3 F[FOLLOW_CORNERS], L[FOLLOW_CORNERS], r[MAX_VERTS];
+    const Follow *c = ctx;
     float now[3][3];
     s32 n = Verts + Copies + CapVerts, i, j, k;
-    PogoBody b;
+    FollowBody b;
     Moved mv;
 
-    if (!hm_model_at(&c->stick, c->anim[a], (float)f, F)) {
-        memcpy(F, c->ref, sizeof(V3) * (size_t)c->stick.corners);
+    if (!hm_model_at(&c->prop, c->anim[a], (float)f, F)) {
+        memcpy(F, c->ref, sizeof(V3) * (size_t)c->prop.corners);
     }
-    /* the stick's frame (its tip slides), and all of it in it */
-    hm_fit(c->ref, F, c->frame, c->nframe, &mv);
-    for (k = 0; k < c->stick.corners; k++) {
-        L[k] = vadd(mv.from, hm_unturned(&mv, vsub(F[k], mv.to)));
+    /* the prop's frame (its tip slides), and all of it in it; or the model's own */
+    if (c->kind->frame != NULL) {
+        hm_fit(c->ref, F, c->frame, c->nframe, &mv);
+        for (k = 0; k < c->prop.corners; k++) {
+            L[k] = vadd(mv.from, hm_unturned(&mv, vsub(F[k], mv.to)));
+        }
+    } else {
+        memset(&mv, 0, sizeof(mv));
+        mv.m[0][0] = mv.m[1][1] = mv.m[2][2] = 1;
+        memcpy(L, F, sizeof(V3) * (size_t)c->prop.corners);
     }
     body_lie(c, L, now);
     for (i = 0; i < 3; i++) {
@@ -1661,36 +1682,282 @@ static void pogo_frame(void *ctx, s32 a, s32 f, V3 *out) {
     b.hips = vsub(mid_of(L, c->hips, c->nhips), mid_of(c->ref, c->hips, c->nhips));
     for (i = 0; i < 2; i++) {
         V3 s = mid_of(L, c->shoulder[i], c->nshoulder[i]), e = mid_of(L, c->elbow[i], c->nelbow[i]), h = mid_of(L, c->hand[i], c->nhand[i]);
-        V3 u = vsub(e, s), w = vsub(h, e);
+        V3 u = vsub(e, s), w = vsub(h, e), grip = c->grip_at[i];
 
-        b.feet[i] = vsub(mid_of(L, c->feet[i], c->nfeet[i]), mid_of(c->ref, c->feet[i], c->nfeet[i]));
-        b.off[i] = hm_smooth(POGO_OFF_FROM, POGO_OFF_ALL, vlen(vsub(h, c->grip_at[i])) - c->hand_off[i]);
+        /* a prop with a frame holds its grips still in it; another's (the car's handles) rock, and are where their corners are */
+        b.grip[i] = c->grip[i];
+        if (c->kind->frame == NULL) {
+            grip = mid_of(L, c->grips[i], c->ngrips[i]);
+            b.grip[i] = stick_in_rig(c, prop_drawn(c, grip));
+        }
+        b.feet[i] = c->nfeet[i] > 0 ? vsub(mid_of(L, c->feet[i], c->nfeet[i]), mid_of(c->ref, c->feet[i], c->nfeet[i])) : v3(0, 0, 0);
+        b.off[i] = hm_smooth(OFF_FROM, OFF_ALL, vlen(vsub(h, grip)) - c->hand_off[i]);
         /* unturned by his body's turn (its transpose) */
         b.arm[i][0] = vnorm(v3(b.M[0][0] * u.x + b.M[1][0] * u.y + b.M[2][0] * u.z, b.M[0][1] * u.x + b.M[1][1] * u.y + b.M[2][1] * u.z,
                                b.M[0][2] * u.x + b.M[1][2] * u.y + b.M[2][2] * u.z));
         b.arm[i][1] = vnorm(v3(b.M[0][0] * w.x + b.M[1][0] * w.y + b.M[2][0] * w.z, b.M[0][1] * w.x + b.M[1][1] * w.y + b.M[2][1] * w.z,
                                b.M[0][2] * w.x + b.M[1][2] * w.y + b.M[2][2] * w.z));
     }
-    pogo_pose(c, &b, r);
+    follow_pose(c, &b, r);
     for (k = 0; k < n; k++) {
         out[k] = hm_moved(&mv, rig_on_stick(c, r[k]));
     }
-    for (k = 0; k < c->stick.nvert; k++) {
-        V3 p = L[c->stick.corner_of[k]];
-
-        if (p.y < c->peg_y) {
-            p.y = c->peg_y + (p.y - c->peg_y) * POGO_TUBE;
-        }
-        out[n + k] = hm_moved(&mv, p);
+    for (k = 0; k < c->prop.nvert; k++) {
+        out[n + k] = hm_moved(&mv, prop_drawn(c, L[c->prop.corner_of[k]]));
     }
 }
 
+/* His model of a kind: him (his faces and images, on his own vertices) with Crash's prop; 0 if there's no prop or it couldn't */
+static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace *faces, s32 nfaces, const MadeImage *images,
+                       s32 nimages, HeroMade *out) {
+    Follow *c = &Follower;
+    MadeFace *all = NULL;
+    MadeImage *imgs = NULL;
+    MadeModel mm;
+    V3 g[2] = { { 0, 0, 0 }, { 0, 0, 0 } }, pg[2] = { { 0, 0, 0 }, { 0, 0, 0 } }, pm[2] = { { 0, 0, 0 }, { 0, 0, 0 } };
+    s32 ng[2] = { 0, 0 }, npg[2] = { 0, 0 }, npm[2] = { 0, 0 }, n = Verts + Copies + CapVerts, i, k, ok = 0;
+    float top = 0, sole = -1e9f;
+
+    memset(c, 0, sizeof(*c));
+    c->kind = fk;
+    /* all of Crash's model first, for where its corners are as he first moves, then its prop by those */
+    {
+        GamePart whole;
+        PropPick pick;
+        s32 got;
+
+        if (!hm_game_part(fk->bank, keep_all, NULL, &whole)) {
+            printf("bonus: Crash's %s model isn't in the archive\n", fk->what);
+            return 0;
+        }
+        got = whole.corners <= FOLLOW_CORNERS && (i = hm_model_anim(&whole, fk->moves[0], NULL)) >= 0 && hm_model_at(&whole, i, 0, c->ref);
+        hm_part_free(&whole);
+        pick.kind = fk;
+        pick.ref = c->ref;
+        pick.at = 0;
+        if (!got || !hm_game_part(fk->bank, keep_prop, &pick, &c->prop)) {
+            printf("bonus: Crash's %s model has nothing of it to take\n", fk->what);
+            return 0;
+        }
+    }
+    if (c->prop.corners > FOLLOW_CORNERS || fk->nmoves > FOLLOW_MOVES) {
+        goto done;
+    }
+    for (i = 0; i < fk->nmoves; i++) {
+        if ((c->anim[i] = hm_model_anim(&c->prop, fk->moves[i], &c->anims[i].frames)) < 0) {
+            goto done;
+        }
+        c->anims[i].name = fk->moves[i];
+        c->anims[i].mesh = 0;
+        c->anims[i].step = 1;
+    }
+    if (!hm_model_at(&c->prop, c->anim[0], 0, c->ref)) {
+        goto done;
+    }
+    /* the prop's frame, grips and pegs, and Crash's hips, chest, shoulders, elbows and feet */
+    c->peg_y = 0;
+    for (k = 0; k < c->prop.corners; k++) {
+        V3 p = c->ref[k];
+
+        if (c->prop.in_part[k]) {
+            if (fk->frame != NULL && fk->frame(p) && c->nframe < FOLLOW_PART_MAX) {
+                c->frame[c->nframe++] = (s16)k;
+            }
+            if (fk->grip(p)) {
+                g[p.x > 0] = vadd(g[p.x > 0], p);
+                ng[p.x > 0]++;
+                if (c->ngrips[p.x > 0] < FOLLOW_PART_MAX) {
+                    c->grips[p.x > 0][c->ngrips[p.x > 0]++] = (s16)k;
+                }
+            }
+            if (fk->peg != NULL && fk->peg(p)) {
+                pg[p.x > 0] = vadd(pg[p.x > 0], p);
+                npg[p.x > 0]++;
+                c->peg_y = c->peg_y == 0 || p.y < c->peg_y ? p.y : c->peg_y;
+            }
+            continue;
+        }
+        if (fk->hips(p) && c->nhips < FOLLOW_PART_MAX) {
+            c->hips[c->nhips++] = (s16)k;
+        }
+        if (fk->chest(p) && c->nchest < FOLLOW_PART_MAX) {
+            c->chest[c->nchest++] = (s16)k;
+        }
+        for (i = 0; i < 2; i++) {
+            if (vlen(vsub(p, fk->shoulder[i])) < fk->shoulder_r && c->nshoulder[i] < FOLLOW_PART_MAX) {
+                c->shoulder[i][c->nshoulder[i]++] = (s16)k;
+            }
+            if (vlen(vsub(p, fk->elbow[i])) < fk->elbow_r && c->nelbow[i] < FOLLOW_PART_MAX) {
+                c->elbow[i][c->nelbow[i]++] = (s16)k;
+            }
+        }
+        if (fk->foot != NULL && fk->foot(p) && c->nfeet[p.x > 0] < FOLLOW_PART_MAX) {
+            c->feet[p.x > 0][c->nfeet[p.x > 0]++] = (s16)k;
+        }
+        top = p.y < top ? p.y : top;
+        sole = p.y > sole ? p.y : sole;
+    }
+    /* his hands, at the grips */
+    for (i = 0; i < 2; i++) {
+        c->grip_at[i] = ng[i] > 0 ? vmul(g[i], 1.0f / ng[i]) : g[i];
+    }
+    for (k = 0; k < c->prop.corners; k++) {
+        V3 p = c->ref[k];
+
+        for (i = 0; i < 2 && !c->prop.in_part[k]; i++) {
+            if (vlen(vsub(p, c->grip_at[i])) < fk->hand_r && p.z < fk->hand_back && c->nhand[i] < FOLLOW_PART_MAX) {
+                c->hand[i][c->nhand[i]++] = (s16)k;
+            }
+        }
+    }
+    if ((fk->frame != NULL && c->nframe < 8) || c->nhips < 4 || c->nchest < 4 || c->nshoulder[0] < 2 || c->nshoulder[1] < 2
+        || c->nelbow[0] < 2 || c->nelbow[1] < 2 || c->nhand[0] < 2 || c->nhand[1] < 2 || ng[0] == 0 || ng[1] == 0
+        || (fk->peg != NULL && (c->nfeet[0] < 2 || c->nfeet[1] < 2 || npg[0] == 0 || npg[1] == 0)) || sole <= top) {
+        printf("bonus: Crash isn't with his %s as he was (%d %d %d %d %d %d %d %d %d %d %d, grips %d %d, pegs %d %d)\n", fk->what,
+               c->nframe, c->nhips, c->nchest, c->nshoulder[0], c->nshoulder[1], c->nfeet[0], c->nfeet[1], c->nelbow[0], c->nelbow[1],
+               c->nhand[0], c->nhand[1], ng[0], ng[1], npg[0], npg[1]);
+        goto done;
+    }
+    for (i = 0; i < 2; i++) {
+        c->hand_off[i] = vlen(vsub(mid_of(c->ref, c->hand[i], c->nhand[i]), c->grip_at[i]));
+    }
+    body_lie(c, c->ref, c->was);
+    c->k = PIN_UNIT * foot->k * fk->scale;
+    if (fk->peg != NULL) {
+        /* stood on it: his rig's floor point between its pegs, on their top; as tall on it against Crash's height */
+        c->follow = fk->scale * PIN_HEIGHT / (sole - top);
+        pg[0] = vmul(pg[0], 1.0f / npg[0]);
+        pg[1] = vmul(pg[1], 1.0f / npg[1]);
+        c->origin = v3(0, c->peg_y, (pg[0].z + pg[1].z) / 2);
+    } else {
+        /* sat in it: his hips on Crash's; as tall above them against Crash's */
+        V3 h = mid_of(c->ref, c->hips, c->nhips);
+
+        c->follow = (PIN_HEIGHT / (PIN_UNIT * foot->k) - Legs[0].joint[0].y) * c->k / (h.y - top);
+        c->origin = vadd(h, v3(0, Legs[0].joint[0].y * c->k, Legs[0].joint[0].z * c->k));
+    }
+    for (k = 0; k < Verts; k++) {
+        if (HandOf[k] != 0) {
+            pm[HandOf[k] == 1] = vadd(pm[HandOf[k] == 1], Rest[k]);
+            npm[HandOf[k] == 1]++;
+        }
+    }
+    for (i = 0; i < 2; i++) {
+        c->grip[i] = stick_in_rig(c, prop_drawn(c, c->grip_at[i]));
+        c->palm[i] = npm[i] > 0 ? vmul(pm[i], 1.0f / npm[i]) : Arms[i].joint[2];
+        c->ankle[i] = fk->peg != NULL ? v3(stick_in_rig(c, pg[i]).x, Legs[i].joint[2].y, Legs[i].joint[2].z) : Legs[i].joint[2];
+    }
+    /* his faces and images, then the prop's */
+    all = malloc(sizeof(MadeFace) * (size_t)(nfaces + c->prop.nfaces));
+    imgs = malloc(sizeof(MadeImage) * (size_t)(nimages + c->prop.nimages + 1));
+    if (all == NULL || imgs == NULL || nfaces + c->prop.nfaces > MADE_MAX_FACES) {
+        goto done;
+    }
+    memcpy(all, faces, sizeof(MadeFace) * (size_t)nfaces);
+    for (k = 0; k < c->prop.nfaces; k++) {
+        MadeFace *f = &all[nfaces + k];
+
+        *f = c->prop.faces[k];
+        if (fk->paint != NULL) {
+            fk->paint(c, f);
+        }
+        for (i = 0; i < 3; i++) {
+            f->v[i] += n;
+        }
+        f->image = f->image >= 0 ? f->image + nimages : -1;
+    }
+    memcpy(imgs, images, sizeof(MadeImage) * (size_t)nimages);
+    memcpy(imgs + nimages, c->prop.images, sizeof(MadeImage) * (size_t)c->prop.nimages);
+    memset(&mm, 0, sizeof(mm));
+    mm.faces = all;
+    mm.nfaces = nfaces + c->prop.nfaces;
+    mm.meshes = 1;
+    mm.images = imgs;
+    mm.nimages = nimages + c->prop.nimages;
+    mm.anims = c->anims;
+    mm.nanims = fk->nmoves;
+    mm.nvert = n + c->prop.nvert;
+    mm.rest_anim = 0;
+    mm.frame = follow_frame;
+    mm.ctx = c;
+    ok = made_write(&mm, &out->tex[fk->kind], &out->tex_size[fk->kind], &out->mdl[fk->kind], &out->mdl_size[fk->kind]);
+    printf("bonus: Pinstripe with Crash's %s, its %d faces, %s\n", fk->what, c->prop.nfaces, ok ? "made" : "not made");
+done:
+    free(all);
+    free(imgs);
+    hm_part_free(&c->prop);
+    return ok;
+}
+
+/* -- on a pogo stick (Pogo) --
+ * Crash's stick: its strips that reach down to its pegs (below STICK_LOW: its tube, frame and pegs), and its handle's grips (all within
+ * the GRIP_ box, in front of Crash, whose hands on them reach higher); its tube POGO_TUBE as long above its pegs so its handle's at his
+ * waist; its blues gunmetal (stick_metal: dark, as his tommy gun is, against his red suit). Its frame is all of it but its tip (within
+ * TIP_HALF of its middle across, below TIP_TOP), which slides in and out. Crash on it: his hips from POGO_HIPS_TOP down to POGO_HIPS_LOW
+ * within POGO_MIDDLE aside; his chest from POGO_CHEST_TOP to POGO_CHEST_LOW within POGO_CHEST_HALF, behind POGO_CHEST_FRONT (his hands
+ * are in front, on the grips); his feet below POGO_FEET_TOP more than POGO_MIDDLE aside, on its pegs (its corners below STICK_LOW more
+ * than PEG_ASIDE aside); his hands within POGO_HAND_R of the grips in front of POGO_HAND_BACK. Crash springs up off the pegs at the top
+ * of a bounce, holding on, and so does he; he punches the air with a hand as he wins. His win and tazing are at their own speed
+ * (PinPogo), as his base's are 87 and 4 ticks long. */
+#define STICK_LOW -76.0f
+#define GRIP_TOP -276.0f
+#define GRIP_LOW -230.0f
+#define GRIP_BACK -60.0f
+#define GRIP_FRONT -105.0f
+#define GRIP_HALF 76.0f
+#define TIP_HALF 15.0f
+#define TIP_TOP -45.0f
+#define PEG_ASIDE 30.0f
+#define POGO_HIPS_TOP -190.0f
+#define POGO_HIPS_LOW -155.0f
+#define POGO_MIDDLE 30.0f
+#define POGO_CHEST_TOP -330.0f
+#define POGO_CHEST_LOW -255.0f
+#define POGO_CHEST_HALF 40.0f
+#define POGO_CHEST_FRONT -80.0f
+#define POGO_FEET_TOP -100.0f
+#define POGO_HAND_R 45.0f
+#define POGO_HAND_BACK -55.0f
+#define POGO_METAL 0.45f /* the stick's blues as greys this much of their brightness */
+static const char *const PogoNames[] = { "BREATHE", "JUMP", "DAZED", "WIN", "TAZING" };
+
+static s32 pogo_prop(const V3 *p, s32 n, s32 textured) {
+    s32 k, low = 0, grip = 1;
+
+    if (textured) {
+        return 0;
+    }
+    for (k = 0; k < n; k++) {
+        low |= p[k].y > STICK_LOW;
+        grip &= p[k].y >= GRIP_TOP && p[k].y <= GRIP_LOW && p[k].z >= GRIP_FRONT && p[k].z <= GRIP_BACK && fabsf(p[k].x) <= GRIP_HALF;
+    }
+    return low || grip;
+}
+static s32 pogo_frame(V3 p) {
+    return !(fabsf(p.x) < TIP_HALF && p.y > TIP_TOP);
+}
+static s32 pogo_grip(V3 p) {
+    return p.y >= GRIP_TOP && p.y <= GRIP_LOW && p.z >= GRIP_FRONT && p.z <= GRIP_BACK && fabsf(p.x) > 10;
+}
+static s32 pogo_peg(V3 p) {
+    return p.y > STICK_LOW && fabsf(p.x) > PEG_ASIDE;
+}
+static s32 pogo_hips(V3 p) {
+    return p.y > POGO_HIPS_TOP && p.y < POGO_HIPS_LOW && fabsf(p.x) < POGO_MIDDLE;
+}
+static s32 pogo_chest(V3 p) {
+    return p.y > POGO_CHEST_TOP && p.y < POGO_CHEST_LOW && fabsf(p.x) < POGO_CHEST_HALF && p.z > POGO_CHEST_FRONT;
+}
+static s32 pogo_foot(V3 p) {
+    return p.y > POGO_FEET_TOP && fabsf(p.x) > POGO_MIDDLE;
+}
+
 /* The stick's blues (not its handle's white, nor its tip's chrome) as greys, POGO_METAL of their brightness */
-static void stick_metal(const PogoCtx *c, MadeFace *f) {
+static void stick_metal(const Follow *c, MadeFace *f) {
     s32 m, q, tip = 1;
 
     for (q = 0; q < 3; q++) {
-        const V3 *p = &c->ref[c->stick.corner_of[f->v[q]]];
+        const V3 *p = &c->ref[c->prop.corner_of[f->v[q]]];
 
         tip &= fabsf(p->x) < TIP_HALF && p->y > TIP_TOP;
     }
@@ -1706,175 +1973,59 @@ static void stick_metal(const PogoCtx *c, MadeFace *f) {
     }
 }
 
-/* His pogo model: him (his faces and images, on his own vertices) on Crash's stick; 0 if there's no stick or it couldn't */
-static s32 pogo_make(const FootCtx *foot, const MadeFace *faces, s32 nfaces, const MadeImage *images, s32 nimages, HeroMade *out) {
-    PogoCtx *c = &Pogo;
-    MadeFace *all = NULL;
-    MadeImage *imgs = NULL;
-    MadeModel mm;
-    V3 g[2] = { { 0, 0, 0 }, { 0, 0, 0 } }, pg[2] = { { 0, 0, 0 }, { 0, 0, 0 } }, pm[2] = { { 0, 0, 0 }, { 0, 0, 0 } };
-    s32 ng[2] = { 0, 0 }, npg[2] = { 0, 0 }, npm[2] = { 0, 0 }, n = Verts + Copies + CapVerts, i, k, ok = 0;
-    float top = 0, sole = -1e9f;
+static const FollowKind PogoKind = {
+    DB_CharsPogoCrash, KIND_POGO, "pogo stick", PogoNames, 5,
+    pogo_prop, pogo_frame, pogo_grip, pogo_peg, pogo_hips, pogo_chest, pogo_foot,
+    { { -50, -302, 10 }, { 50, -302, 10 } }, { { -126, -297, -25 }, { 126, -300, -27 } }, 20.0f, 25.0f,
+    POGO_HAND_R, POGO_HAND_BACK,
+    0.8f, 0.25f, 12.0f, 1.3f, stick_metal,
+};
 
-    memset(c, 0, sizeof(*c));
-    /* all of Crash's model first, for where its corners are as he first bounces, then its stick by those */
-    {
-        GamePart whole;
-        StickPick pick;
-        s32 got;
+/* -- in a Ballistix car --
+ * Ballistix draws a car round each hero (its vehicle model's meshes 4 and 1) and the hero's own model in it (models\chars\ball\), the
+ * four of them round the arena, so each is seen from a side of its own. The car's handles are the heroes' models' own: two levers, one
+ * each side (Crash's textured strips all CAR_LEVER_X or more out to the sides), a grip bar out from the top of each, which rock as he
+ * steers (BANK). He holds their grip bars' inner ends (their corners no more than CAR_GRIP_X out, above CAR_GRIP_LOW), sat as Crash sits
+ * (his hips on Crash's: Crash's corners below CAR_HIPS_TOP within CAR_MIDDLE across; his chest from CAR_CHEST_TOP to CAR_CHEST_LOW,
+ * behind CAR_CHEST_BACK),
+ * his legs folded in the car under him; he lets go with a hand as Crash does to fidget, wave and cheer. */
+#define CAR_LEVER_X 210.0f
+#define CAR_GRIP_X 260.0f
+#define CAR_GRIP_LOW -165.0f
+#define CAR_HIPS_TOP -150.0f
+#define CAR_MIDDLE 50.0f
+#define CAR_CHEST_TOP -250.0f
+#define CAR_CHEST_LOW -160.0f
+#define CAR_CHEST_BACK 50.0f /* behind his jaw */
+static const char *const CarNames[] = { "BREATHE", "BANK", "IDLE_A", "TAUNT_A", "DIE", "WIN" };
 
-        if (!hm_game_part(DB_CharsPogoCrash, keep_all, NULL, &whole)) {
-            printf("bonus: Pogo's Crash isn't in the archive\n");
+static s32 car_prop(const V3 *p, s32 n, s32 textured) {
+    s32 k;
+
+    for (k = 0; k < n; k++) {
+        if (fabsf(p[k].x) < CAR_LEVER_X) {
             return 0;
         }
-        got = whole.corners <= POGO_CORNERS && (i = hm_model_anim(&whole, PogoNames[0], NULL)) >= 0 && hm_model_at(&whole, i, 0, c->ref);
-        hm_part_free(&whole);
-        pick.ref = c->ref;
-        pick.at = 0;
-        if (!got || !hm_game_part(DB_CharsPogoCrash, keep_stick, &pick, &c->stick)) {
-            printf("bonus: Pogo's Crash has no stick\n");
-            return 0;
-        }
     }
-    if (c->stick.corners > POGO_CORNERS) {
-        goto done;
-    }
-    for (i = 0; i < POGO_MOVES; i++) {
-        if ((c->anim[i] = hm_model_anim(&c->stick, PogoNames[i], &c->anims[i].frames)) < 0) {
-            goto done;
-        }
-        c->anims[i].name = PogoNames[i];
-        c->anims[i].mesh = 0;
-        c->anims[i].step = 1;
-    }
-    if (!hm_model_at(&c->stick, c->anim[0], 0, c->ref)) {
-        goto done;
-    }
-    /* the stick's frame, grips and pegs, and Crash's hips, chest and shoulders */
-    c->peg_y = 0;
-    for (k = 0; k < c->stick.corners; k++) {
-        V3 p = c->ref[k];
-
-        if (c->stick.in_part[k]) {
-            if (!(fabsf(p.x) < TIP_HALF && p.y > TIP_TOP) && c->nframe < POGO_PART_MAX) {
-                c->frame[c->nframe++] = (s16)k;
-            }
-            if (p.y >= GRIP_TOP && p.y <= GRIP_LOW && p.z >= GRIP_FRONT && p.z <= GRIP_BACK && fabsf(p.x) > 10) {
-                g[p.x > 0] = vadd(g[p.x > 0], p);
-                ng[p.x > 0]++;
-            }
-            if (p.y > STICK_LOW && fabsf(p.x) > PEG_ASIDE) {
-                pg[p.x > 0] = vadd(pg[p.x > 0], p);
-                npg[p.x > 0]++;
-                c->peg_y = c->peg_y == 0 || p.y < c->peg_y ? p.y : c->peg_y;
-            }
-            continue;
-        }
-        if (p.y > POGO_HIPS_TOP && p.y < POGO_HIPS_LOW && fabsf(p.x) < POGO_MIDDLE && c->nhips < POGO_PART_MAX) {
-            c->hips[c->nhips++] = (s16)k;
-        }
-        if (p.y > POGO_CHEST_TOP && p.y < POGO_CHEST_LOW && fabsf(p.x) < POGO_CHEST_HALF && p.z > POGO_CHEST_FRONT
-            && c->nchest < POGO_PART_MAX) {
-            c->chest[c->nchest++] = (s16)k;
-        }
-        for (i = 0; i < 2; i++) {
-            if (vlen(vsub(p, PogoShoulders[i])) < POGO_SHOULDER_R && c->nshoulder[i] < POGO_PART_MAX) {
-                c->shoulder[i][c->nshoulder[i]++] = (s16)k;
-            }
-            if (vlen(vsub(p, PogoElbows[i])) < POGO_ELBOW_R && c->nelbow[i] < POGO_PART_MAX) {
-                c->elbow[i][c->nelbow[i]++] = (s16)k;
-            }
-        }
-        if (p.y > POGO_FEET_TOP && fabsf(p.x) > POGO_MIDDLE && c->nfeet[p.x > 0] < POGO_PART_MAX) {
-            c->feet[p.x > 0][c->nfeet[p.x > 0]++] = (s16)k;
-        }
-        top = p.y < top ? p.y : top;
-        sole = p.y > sole ? p.y : sole;
-    }
-    /* his hands, at the grips */
-    for (i = 0; i < 2; i++) {
-        c->grip_at[i] = ng[i] > 0 ? vmul(g[i], 1.0f / ng[i]) : g[i];
-    }
-    for (k = 0; k < c->stick.corners; k++) {
-        V3 p = c->ref[k];
-
-        for (i = 0; i < 2 && !c->stick.in_part[k]; i++) {
-            if (vlen(vsub(p, c->grip_at[i])) < POGO_HAND_R && p.z < POGO_HAND_BACK && c->nhand[i] < POGO_PART_MAX) {
-                c->hand[i][c->nhand[i]++] = (s16)k;
-            }
-        }
-    }
-    if (c->nframe < 8 || c->nhips < 4 || c->nchest < 4 || c->nshoulder[0] < 2 || c->nshoulder[1] < 2 || c->nfeet[0] < 2
-        || c->nfeet[1] < 2 || c->nelbow[0] < 2 || c->nelbow[1] < 2 || c->nhand[0] < 2 || c->nhand[1] < 2 || ng[0] == 0 || ng[1] == 0
-        || npg[0] == 0 || npg[1] == 0 || sole <= top) {
-        printf("bonus: Pogo's Crash isn't on his stick as he was (%d %d %d %d %d %d %d %d %d %d %d, grips %d %d, pegs %d %d)\n",
-               c->nframe, c->nhips, c->nchest, c->nshoulder[0], c->nshoulder[1], c->nfeet[0], c->nfeet[1], c->nelbow[0], c->nelbow[1],
-               c->nhand[0], c->nhand[1], ng[0], ng[1], npg[0], npg[1]);
-        goto done;
-    }
-    for (i = 0; i < 2; i++) {
-        c->hand_off[i] = vlen(vsub(mid_of(c->ref, c->hand[i], c->nhand[i]), c->grip_at[i]));
-    }
-    c->follow = POGO_SCALE * PIN_HEIGHT / (sole - top);
-    body_lie(c, c->ref, c->was);
-    /* him on it: his rig's floor point between its pegs, on their top */
-    c->k = PIN_UNIT * foot->k * POGO_SCALE;
-    pg[0] = vmul(pg[0], 1.0f / npg[0]);
-    pg[1] = vmul(pg[1], 1.0f / npg[1]);
-    c->origin = v3(0, c->peg_y, (pg[0].z + pg[1].z) / 2);
-    for (k = 0; k < Verts; k++) {
-        if (HandOf[k] != 0) {
-            pm[HandOf[k] == 1] = vadd(pm[HandOf[k] == 1], Rest[k]);
-            npm[HandOf[k] == 1]++;
-        }
-    }
-    for (i = 0; i < 2; i++) {
-        V3 grip = c->grip_at[i];
-
-        grip.y = c->peg_y + (grip.y - c->peg_y) * POGO_TUBE;
-        c->grip[i] = stick_in_rig(c, grip);
-        c->palm[i] = npm[i] > 0 ? vmul(pm[i], 1.0f / npm[i]) : Arms[i].joint[2];
-        c->ankle[i] = v3(stick_in_rig(c, pg[i]).x, Legs[i].joint[2].y, Legs[i].joint[2].z);
-    }
-    /* his faces and images, then the stick's */
-    all = malloc(sizeof(MadeFace) * (size_t)(nfaces + c->stick.nfaces));
-    imgs = malloc(sizeof(MadeImage) * (size_t)(nimages + c->stick.nimages + 1));
-    if (all == NULL || imgs == NULL || nfaces + c->stick.nfaces > MADE_MAX_FACES) {
-        goto done;
-    }
-    memcpy(all, faces, sizeof(MadeFace) * (size_t)nfaces);
-    for (k = 0; k < c->stick.nfaces; k++) {
-        MadeFace *f = &all[nfaces + k];
-
-        *f = c->stick.faces[k];
-        stick_metal(c, f);
-        for (i = 0; i < 3; i++) {
-            f->v[i] += n;
-        }
-        f->image = f->image >= 0 ? f->image + nimages : -1;
-    }
-    memcpy(imgs, images, sizeof(MadeImage) * (size_t)nimages);
-    memcpy(imgs + nimages, c->stick.images, sizeof(MadeImage) * (size_t)c->stick.nimages);
-    memset(&mm, 0, sizeof(mm));
-    mm.faces = all;
-    mm.nfaces = nfaces + c->stick.nfaces;
-    mm.meshes = 1;
-    mm.images = imgs;
-    mm.nimages = nimages + c->stick.nimages;
-    mm.anims = c->anims;
-    mm.nanims = POGO_MOVES;
-    mm.nvert = n + c->stick.nvert;
-    mm.rest_anim = 0;
-    mm.frame = pogo_frame;
-    mm.ctx = c;
-    ok = made_write(&mm, &out->tex[KIND_POGO], &out->tex_size[KIND_POGO], &out->mdl[KIND_POGO], &out->mdl_size[KIND_POGO]);
-    printf("bonus: Pinstripe on Crash's pogo stick, its %d faces, %s\n", c->stick.nfaces, ok ? "made" : "not made");
-done:
-    free(all);
-    free(imgs);
-    hm_part_free(&c->stick);
-    return ok;
+    return textured;
 }
+static s32 car_grip(V3 p) {
+    return fabsf(p.x) <= CAR_GRIP_X && p.y < CAR_GRIP_LOW;
+}
+static s32 car_hips(V3 p) {
+    return p.y > CAR_HIPS_TOP && fabsf(p.x) < CAR_MIDDLE;
+}
+static s32 car_chest(V3 p) {
+    return p.y > CAR_CHEST_TOP && p.y < CAR_CHEST_LOW && fabsf(p.x) < CAR_MIDDLE && p.z > CAR_CHEST_BACK;
+}
+
+static const FollowKind CarKind = {
+    DB_CharsBallCrash, KIND_BALL, "car", CarNames, 6,
+    car_prop, NULL, car_grip, NULL, car_hips, car_chest, NULL,
+    { { -65, -226, 150 }, { 65, -226, 150 } }, { { -172, -208, 192 }, { 172, -208, 192 } }, 25.0f, 30.0f,
+    70.0f, 1e9f,
+    1.0f, 0.1f, 0, 1, NULL,
+};
 
 /* --- his sounds and card ---
  * His boss fight's object (PinsC) plays his laugh (laf8A) and his tommy gun (MGn8A), at 11025 Hz. His game has no hurt voice or name
@@ -2031,8 +2182,11 @@ static s32 pin_make(HeroMade *out) {
     if (!ride_bear(&foot, faces, ntri, images, nimage, out)) {
         printf("bonus: Pinstripe has no polar bear to ride\n");
     }
-    if (!pogo_make(&foot, faces, ntri, images, nimage, out)) {
+    if (!follow_make(&PogoKind, &foot, faces, ntri, images, nimage, out)) {
         printf("bonus: Pinstripe has no pogo stick\n");
+    }
+    if (!follow_make(&CarKind, &foot, faces, ntri, images, nimage, out)) {
+        printf("bonus: Pinstripe has no car\n");
     }
     if (c1_sprite(&level, "ShadC", 5, CARD_W, CARD_H, PinCard)) {
         out->card = PinCard;

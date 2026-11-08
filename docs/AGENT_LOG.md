@@ -512,6 +512,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-08: Pinstripe in a Ballistix car, at the user's word. His pogo code became `follow_make` with a `FollowKind` per kind
+  (`PogoKind`, `CarKind`), checked by his pogo model coming out byte for byte as before. In the car he has Crash's handles (the
+  levers, textured and 210 or more aside), his hands on their grips as they rock, his hips on Crash's, his legs folded in, a hand
+  following Crash's as Crash lets go. Renders of the six moves, Crashball shots (him at the far car; his grips are grey as Crash's
+  are, the levers' red posts inside the car), `hero pinstripe` 7 of 15. Not played by the user yet.
 - 2026-11-08: At the user's word, Pinstripe's lean goes forward: `pose_body` turned his upper body back for a lean above 0, so his
   crate pickup leaned back as he knelt and his jog, jump crouch and throw leaned a little back. His bear keeps its approved look
   (`RIDE_LEAN` -0.14 now) and his bear and pogo models came out byte for byte the same; renders of his moves on foot before and after,
