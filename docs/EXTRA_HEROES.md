@@ -138,7 +138,13 @@ the sides), holds their grip bars' inner ends as they rock, sits where Crash sit
 Crash's, his legs folded in the car), and lets go with a hand as Crash does to fidget, wave, cheer
 and wipe his face. The levers' posts are red in the model, but inside the car; only their grey grips
 show, as Crash's do. Ballistix's six moves are Crash's (BANK has HOLD's name hash: "HOLD" and "BANK"
-hash alike), each over all of his base's.
+hash alike), each over all of his base's. The user saw his hands off the grips: aiming his hand's
+middle at a grip left it hanging under the bar, as he stands with his hands round the gun's pistol
+grips. So a hand that holds a grip (`pose_arm_grip`) puts the middle of its hole, where the gun's
+grip went through it (`hand_hole`: the palm's cap loop, its axis by Newell's method), on the bar
+(`grip_in` out along it from the car's grip's inner end, as Crash's fist covers that end), turns
+the hand at the wrist so the hole runs along the bar (both bars are along x), and puts the wrist
+where that hand needs it, worked out a few times over. His pogo handle's grip is the same now.
 
 ## How one plays
 

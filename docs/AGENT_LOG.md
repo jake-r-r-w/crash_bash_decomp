@@ -512,6 +512,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-08: "his hands are not on the sticks for the car correctly": his hand's middle was aimed at the grip, and as his hands
+  are shaped round the gun's pistol grips it hung under the bar. `pose_arm_grip` puts the hand's hole (where the gun's grip went:
+  `hand_hole`, the palm cap's loop) on the bar, turned at the wrist to run along it (x), the wrist placed to suit, found in a few
+  passes; the car's grip 20 out from the bar's inner end (`grip_in`). Close-up renders of both hands, big Crashball shots from the
+  far car and the near (player 1), and his pogo hands now round the handle too. Not played by the user yet.
 - 2026-11-08: Pinstripe in a Ballistix car, at the user's word. His pogo code became `follow_make` with a `FollowKind` per kind
   (`PogoKind`, `CarKind`), checked by his pogo model coming out byte for byte as before. In the car he has Crash's handles (the
   levers, textured and 210 or more aside), his hands on their grips as they rock, his hips on Crash's, his legs folded in, a hand

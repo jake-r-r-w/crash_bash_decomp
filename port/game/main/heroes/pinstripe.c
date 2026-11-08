@@ -1435,6 +1435,7 @@ typedef struct {
     float lean;              /* his body leant forward over it, radians */
     float squat;             /* his hips lower than he stands (his rig's units), standing */
     float tube;              /* the prop's length above its pegs against Crash's (1 as it is) */
+    float grip_in;           /* his hand's hole this far out along a grip's bar from its grip's middle (Crash's fist covers its end) */
     void (*paint)(const Follow *c, MadeFace *f); /* the prop's colours made his, or NULL */
 } FollowKind;
 
@@ -1453,6 +1454,8 @@ struct Follow {
     float follow;                /* his height on it against Crash's: how much further he moves than Crash does on it */
     V3 origin;                   /* where his rig's floor point is on it as it rests */
     V3 grip[2], ankle[2], palm[2]; /* in his rig: each hand's target on its grip, each ankle's on its peg, and each palm as he stands */
+    V3 hole[2], hole_axis[2];    /* and each hand's hole (hand_hole), which holds the grip, */
+    s32 has_hole[2];             /* if it has one */
     float was[3][3];             /* how Crash's body lies as he first moves (body_lie) */
     MadeAnim anims[FOLLOW_MOVES];
 };
@@ -1558,6 +1561,69 @@ static void pose_arm_to(V3 *r, const Arm *arm, V3 palm, V3 target, V3 hint) {
     }
 }
 
+/* A hand's hole, where the gun's grip went through it (his hands close round the gun's grips: Caps), as he stands: its middle and its
+ * axis (the loop's facing, Newell's); arm 0 his left hand's. 0 if it has none. */
+static s32 hand_hole(s32 arm, V3 *mid, V3 *axis) {
+    s32 c, j, hand = arm == 0 ? 2 : 1;
+
+    for (c = 0; c < NCaps; c++) {
+        const Cap *cap = &Caps[c];
+        V3 m = { 0, 0, 0 }, nrm = { 0, 0, 0 };
+
+        if (cap->n < 3 || HandOf[cap->loop[0]] != hand) {
+            continue;
+        }
+        for (j = 0; j < cap->n; j++) {
+            V3 a = Rest[cap->loop[j]], b = Rest[cap->loop[(j + 1) % cap->n]];
+
+            m = vadd(m, a);
+            nrm = vadd(nrm, v3((a.y - b.y) * (a.z + b.z), (a.z - b.z) * (a.x + b.x), (a.x - b.x) * (a.y + b.y)));
+        }
+        *mid = vmul(m, 1.0f / cap->n);
+        *axis = vnorm(nrm);
+        return vlen(nrm) > 0;
+    }
+    return 0;
+}
+
+/* An arm put so its hand holds a bar: its hole's middle (`mid` as he stands, its axis `axis`, hand_hole) at `target` and that axis
+ * along `bar` (either way: a bar's the same both ways along), turned at the wrist from how the forearm carries it, `grip` of the way
+ * (0: as the forearm carries it); its elbow bent toward `hint`, its shoulder where it stands. The wrist's put where the hand needs it,
+ * found a few times over (the hand's turn goes by the forearm's, and the forearm's by where the wrist goes). */
+static void pose_arm_grip(V3 *r, const Arm *arm, s32 hand, V3 mid, V3 axis, V3 target, V3 bar, V3 hint, float grip) {
+    V3 s = arm->joint[0], e0 = arm->joint[1], w0 = arm->joint[2], wrist = vsub(target, vsub(mid, w0)), elbow = e0, up, fore, at;
+    float st = 1;
+    Turn t0, t1, q;
+    s32 i, pass;
+
+    for (pass = 0; pass < 4; pass++) {
+        V3 g;
+
+        elbow = two_bone(s, wrist, arm->len[0], arm->len[1], hint, &st);
+        up = vnorm(vsub(elbow, s));
+        fore = vnorm(vsub(wrist, elbow));
+        t0 = turn_from(vnorm(vsub(e0, s)), up);
+        t1 = turn_from(turned(&t0, vnorm(vsub(w0, e0))), fore);
+        g = turned(&t1, turned(&t0, axis));
+        q = turn_from(vdot(g, bar) < 0 ? vmul(g, -1) : g, bar);
+        q.angle *= grip;
+        if (pass < 3) {
+            wrist = vsub(target, turned(&q, turned(&t1, turned(&t0, vsub(mid, w0)))));
+        }
+    }
+    at = vadd(elbow, vmul(fore, arm->len[1] * st));
+    for (i = 0; i < arm->n; i++) {
+        s32 k = arm->verts[i];
+        V3 p = Rest[k], a = stretched(vadd(s, turned(&t0, vsub(p, s))), s, up, st);
+        V3 b = stretched(vadd(elbow, turned(&t1, turned(&t0, vsub(p, e0)))), elbow, fore, st);
+
+        if (HandOf[k] == hand) {
+            b = vadd(at, turned(&q, vsub(b, at)));
+        }
+        r[k] = hm_mix(p, hm_mix(a, b, arm->fore[i]), arm->weight[i]);
+    }
+}
+
 /* A leg from its hip at `hip` to its ankle at `ankle`, its knee bent toward `hint`, its shoe flat as he stands */
 static void pose_leg_to(V3 *r, const Leg *leg, V3 hip, V3 ankle, V3 hint) {
     V3 h0 = leg->joint[0], k0 = leg->joint[1], a0 = leg->joint[2], knee, thigh, shin;
@@ -1615,10 +1681,17 @@ static void follow_pose(const Follow *c, const FollowBody *b, V3 *r) {
     for (i = 0; i < 2; i++) {
         V3 t = vsub(b->grip[i], move), up = hm_turn_x(rig_dir(b->arm[i][0]), o, -fk->lean), fore = hm_turn_x(rig_dir(b->arm[i][1]), o, -fk->lean);
         V3 own = vadd(Arms[i].joint[0], vadd(vmul(up, Arms[i].len[0]), vmul(fore, vlen(vsub(c->palm[i], Arms[i].joint[1])))));
+        V3 bar = hm_turn_x(bash_unturned(b->M, v3(Arms[i].side, 0, 0)), o, -fk->lean), hint;
 
         t = vadd(waist, bash_unturned(b->M, vsub(t, waist)));
         t = hm_turn_x(t, waist, -fk->lean);
-        pose_arm_to(r, &Arms[i], c->palm[i], hm_mix(t, own, b->off[i]), vnorm(hm_mix(v3(Arms[i].side, -0.3f, -0.5f), up, b->off[i])));
+        hint = vnorm(hm_mix(v3(Arms[i].side, -0.3f, -0.5f), up, b->off[i]));
+        if (c->has_hole[i]) {
+            /* its hand round the grip's bar (the handle's, the car's grip bars: both along x), as far as Crash's holds his */
+            pose_arm_grip(r, &Arms[i], i == 0 ? 2 : 1, c->hole[i], c->hole_axis[i], hm_mix(t, own, b->off[i]), bar, hint, 1 - b->off[i]);
+        } else {
+            pose_arm_to(r, &Arms[i], c->palm[i], hm_mix(t, own, b->off[i]), hint);
+        }
     }
     pose_body(r, fk->lean, 0, 0);
     for (k = 0; k < Verts; k++) {
@@ -1688,7 +1761,7 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
         b.grip[i] = c->grip[i];
         if (c->kind->frame == NULL) {
             grip = mid_of(L, c->grips[i], c->ngrips[i]);
-            b.grip[i] = stick_in_rig(c, prop_drawn(c, grip));
+            b.grip[i] = stick_in_rig(c, prop_drawn(c, vadd(grip, v3(Arms[i].side * c->kind->grip_in, 0, 0))));
         }
         b.feet[i] = c->nfeet[i] > 0 ? vsub(mid_of(L, c->feet[i], c->nfeet[i]), mid_of(c->ref, c->feet[i], c->nfeet[i])) : v3(0, 0, 0);
         b.off[i] = hm_smooth(OFF_FROM, OFF_ALL, vlen(vsub(h, grip)) - c->hand_off[i]);
@@ -1843,8 +1916,12 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         }
     }
     for (i = 0; i < 2; i++) {
-        c->grip[i] = stick_in_rig(c, prop_drawn(c, c->grip_at[i]));
+        c->grip[i] = stick_in_rig(c, prop_drawn(c, vadd(c->grip_at[i], v3(Arms[i].side * fk->grip_in, 0, 0))));
         c->palm[i] = npm[i] > 0 ? vmul(pm[i], 1.0f / npm[i]) : Arms[i].joint[2];
+        c->has_hole[i] = hand_hole(i, &c->hole[i], &c->hole_axis[i]);
+        if (c->has_hole[i]) {
+            c->palm[i] = c->hole[i];
+        }
         c->ankle[i] = fk->peg != NULL ? v3(stick_in_rig(c, pg[i]).x, Legs[i].joint[2].y, Legs[i].joint[2].z) : Legs[i].joint[2];
     }
     /* his faces and images, then the prop's */
@@ -1978,7 +2055,7 @@ static const FollowKind PogoKind = {
     pogo_prop, pogo_frame, pogo_grip, pogo_peg, pogo_hips, pogo_chest, pogo_foot,
     { { -50, -302, 10 }, { 50, -302, 10 } }, { { -126, -297, -25 }, { 126, -300, -27 } }, 20.0f, 25.0f,
     POGO_HAND_R, POGO_HAND_BACK,
-    0.8f, 0.25f, 12.0f, 1.3f, stick_metal,
+    0.8f, 0.25f, 12.0f, 1.3f, 0, stick_metal,
 };
 
 /* -- in a Ballistix car --
@@ -1997,6 +2074,7 @@ static const FollowKind PogoKind = {
 #define CAR_CHEST_TOP -250.0f
 #define CAR_CHEST_LOW -160.0f
 #define CAR_CHEST_BACK 50.0f /* behind his jaw */
+#define CAR_HAND_IN 20.0f    /* his fist this far out along a grip bar from its inner end */
 static const char *const CarNames[] = { "BREATHE", "BANK", "IDLE_A", "TAUNT_A", "DIE", "WIN" };
 
 static s32 car_prop(const V3 *p, s32 n, s32 textured) {
@@ -2024,7 +2102,7 @@ static const FollowKind CarKind = {
     car_prop, NULL, car_grip, NULL, car_hips, car_chest, NULL,
     { { -65, -226, 150 }, { 65, -226, 150 } }, { { -172, -208, 192 }, { 172, -208, 192 } }, 25.0f, 30.0f,
     70.0f, 1e9f,
-    1.0f, 0.1f, 0, 1, NULL,
+    1.0f, 0.1f, 0, 1, CAR_HAND_IN, NULL,
 };
 
 /* --- his sounds and card ---
