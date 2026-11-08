@@ -95,13 +95,18 @@ static const Stand PinCar[] = {
 static const Stand PinTank[] = {
     { NULL, NULL, STRETCH },
 };
+/* In a race cart Crash Dash's, his sway as he drives at its own pace (his base's is half as long) */
+static const Stand PinRace[] = {
+    { "BREATHE", "BREATHE", LOOP },
+    { NULL, NULL, STRETCH },
+};
 
 /* Each kind of game plays as on foot until he has a model of it; on his bear he's as heavy and as quick as Crash on his */
 const HeroDef HeroPinstripe = {
     "PINSTRIPE", "pinstripe", "SCUS-94900", Cortex,
     { { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinRides, "BREATHE", 0x1000, Crash, 1 },
       { PinPogo, "BREATHE", 0x1000, 0, 1 }, { PinCar, "BREATHE", 0x1000, 0, 1 },
-      { PinTank, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
+      { PinTank, "BREATHE", 0x1000, 0, 1 }, { PinRace, "BREATHE", 0x1000, 0, 1 },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES } },
     PinVoices, "BREATHE", 0, pin_make,
@@ -1394,10 +1399,11 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
     return ride_make(&rider, &out->tex[KIND_POLAR], &out->tex_size[KIND_POLAR], &out->mdl[KIND_POLAR], &out->mdl_size[KIND_POLAR]);
 }
 
-/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles) ---
+/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles, a race cart) ---
  * In some games each hero's model has what the hero holds or stands on in it: Pogo's heroes bounce on things of their own
- * (models\chars\pogo\: Crash and Coco on pogo sticks, Cortex and Brio on their jetpacks, Tiny and Kong on springs), and Ballistix's
- * hold the handles of the car the game draws round them (models\chars\ball\). He rides and drives as Crash does (the user, of his
+ * (models\chars\pogo\: Crash and Coco on pogo sticks, Cortex and Brio on their jetpacks, Tiny and Kong on springs), Ballistix's
+ * hold the handles of the car the game draws round them (models\chars\ball\), and Crash Dash's sit in their carts
+ * (models\chars\race\). He rides and drives as Crash does (the user, of his
  * bear: not with Cortex's jetpack), so his model of such a kind (a FollowKind) is Crash's prop from Crash's model of it, moving as it
  * does there (its strips by where they are as Crash first moves: the model's own pose has his arms out, and a first pick by it took
  * Crash's arms and legs), and him with it, following Crash's body frame by frame:
@@ -1407,7 +1413,9 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
  * - his feet on its pegs (pose_leg_to), as far off them as Crash's go; or, where Crash sits, his legs folded under him (FOLLOW_SIT);
  * - his hips moved as Crash's are, `follow` as far for his height against Crash's; his body above his waist leant `lean` forward and
  *   turned as Crash's turns, his spine and his shoulders' line; his limbs stretching to what they hold when it's out of their reach,
- *   as Crash's do (two_bone).
+ *   as Crash's do (two_bone);
+ * - and where Crash's body stretches tall and squashes (in his cart: as he bobs, cheers and is left in the air as it drops), his
+ *   too (`stretch`): his chest as far from his hips against his size as Crash's is against his.
  * His moves of a kind are Crash's there, each as long as Crash's (a frame a tick). */
 #define FOLLOW_PART_MAX 128
 #define FOLLOW_CORNERS 1024
@@ -1415,7 +1423,9 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
 #define FOLLOW_SIT 1.45f    /* sat, his thighs forward at his hips this far and his shins back down from them as far */
 #define OFF_FROM 10.0f
 #define FOLLOW_HIDE 6.0f    /* what's cut away goes this far under the cut (his rig's units) */
+#define FOLLOW_CUT 122.0f   /* his rig's: his hips, all of him below hidden (in a tank's hatch, in a race cart) */
 #define OFF_ALL 40.0f
+#define FOLLOW_SQUASH 0.85f /* stretching, his body no shorter than this of its length (Crash's squashes flat far below, falling) */
 
 typedef struct Follow Follow;
 typedef struct {
@@ -1441,9 +1451,10 @@ typedef struct {
     float squat;             /* his hips lower than he stands (his rig's units), standing */
     float tube;              /* the prop's length above its pegs against Crash's (1 as it is) */
     float grip_in;           /* his hand's hole this far out along a grip's bar from its grip's middle (Crash's fist covers its end) */
-    float cut;               /* all of him below this in his rig hidden (in a tank's hatch), or 0 */
+    float cut;               /* all of him below this in his rig hidden (in a tank's hatch, a race cart), or 0 */
     s32 across_chest;        /* his body's line across from his chest's two halves, not his shoulders (which go with his arms) */
-    void (*paint)(const Follow *c, MadeFace *f); /* the prop's colours made his, or NULL */
+    void (*paint)(Follow *c); /* the prop's colours (its faces' and images') made his, or NULL */
+    s32 stretch;             /* his body stretched up and squashed down as Crash's is (his chest from his hips) */
 } FollowKind;
 
 struct Follow {
@@ -1464,6 +1475,8 @@ struct Follow {
     V3 hole[2], hole_axis[2];    /* and each hand's hole (hand_hole), which holds the grip, */
     s32 has_hole[2];             /* if it has one */
     float was[3][3];             /* how Crash's body lies as he first moves (body_lie) */
+    float spine;                 /* and how far his chest is from his hips then */
+    u8 in_arm[MAX_VERTS];        /* his vertices that go with his arms */
     MadeAnim anims[FOLLOW_MOVES];
 };
 static Follow Follower;
@@ -1675,6 +1688,7 @@ typedef struct {
     float off[2];
     V3 arm[2][2];
     V3 grip[2];
+    float rise;                  /* how far his chest is lifted from his hips as Crash's body stretches (his rig's units) */
 } FollowBody;
 
 /* His pose on the prop (in his rig) as Crash's is (b) */
@@ -1694,12 +1708,19 @@ static void follow_pose(const Follow *c, const FollowBody *b, V3 *r) {
 
         t = vadd(waist, bash_unturned(b->M, vsub(t, waist)));
         t = hm_turn_x(t, waist, -fk->lean);
+        t.y -= b->rise;
         hint = vnorm(hm_mix(v3(Arms[i].side, -0.3f, -0.5f), up, b->off[i]));
         if (c->has_hole[i]) {
             /* its hand round the grip's bar (the handle's, the car's grip bars: both along x), as far as Crash's holds his */
             pose_arm_grip(r, &Arms[i], i == 0 ? 2 : 1, c->hole[i], c->hole_axis[i], hm_mix(t, own, b->off[i]), bar, hint, 1 - b->off[i]);
         } else {
             pose_arm_to(r, &Arms[i], c->palm[i], hm_mix(t, own, b->off[i]), hint);
+        }
+    }
+    /* stretched as Crash is: his chest and all above (his arms too) lifted, his body between his waist and his neck drawn out */
+    for (k = 0; b->rise != 0 && k < Verts; k++) {
+        if (PieceOf[k] != PIECE_LEGS && PieceOf[k] != PIECE_SHOE) {
+            r[k].y += b->rise * (c->in_arm[k] ? 1 : hm_smooth(WAIST_Y, NECK_Y, Rest[k].y));
         }
     }
     pose_body(r, fk->lean, 0, 0);
@@ -1768,6 +1789,12 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
         }
     }
     b.hips = vsub(mid_of(L, c->hips, c->nhips), mid_of(c->ref, c->hips, c->nhips));
+    b.rise = 0;
+    if (c->kind->stretch) {
+        float st = vlen(vsub(mid_of(L, c->chest, c->nchest), mid_of(L, c->hips, c->nhips))) / c->spine;
+
+        b.rise = (fmaxf(st, FOLLOW_SQUASH) - 1) * c->spine * c->follow / c->k;
+    }
     for (i = 0; i < 2; i++) {
         V3 s = mid_of(L, c->shoulder[i], c->nshoulder[i]), e = mid_of(L, c->elbow[i], c->nelbow[i]), h = mid_of(L, c->hand[i], c->nhand[i]);
         V3 u = vsub(e, s), w = vsub(h, e), grip = c->grip_at[i];
@@ -1921,6 +1948,15 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         c->hand_off[i] = vlen(vsub(mid_of(c->ref, c->hand[i], c->nhand[i]), c->grip_at[i]));
     }
     body_lie(c, c->ref, c->was);
+    c->spine = vlen(vsub(mid_of(c->ref, c->chest, c->nchest), mid_of(c->ref, c->hips, c->nhips)));
+    for (i = 0; i < 2; i++) {
+        for (k = 0; k < Arms[i].n; k++) {
+            c->in_arm[Arms[i].verts[k]] |= Arms[i].weight[k] > 0;
+        }
+    }
+    for (k = 0; k < Verts; k++) {
+        c->in_arm[k] |= HandOf[k] != 0;
+    }
     c->k = PIN_UNIT * foot->k * fk->scale;
     if (fk->peg != NULL) {
         /* stood on it: his rig's floor point between its pegs, on their top; as tall on it against Crash's height */
@@ -1951,6 +1987,9 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         c->ankle[i] = fk->peg != NULL ? v3(stick_in_rig(c, pg[i]).x, Legs[i].joint[2].y, Legs[i].joint[2].z) : Legs[i].joint[2];
     }
     /* his faces and images, then the prop's */
+    if (fk->paint != NULL) {
+        fk->paint(c);
+    }
     if (fk->prop == NULL) {
         /* nothing of Crash's model drawn: only its corners kept, to follow him by */
         made_images_free(c->prop.images, c->prop.nimages);
@@ -1966,9 +2005,6 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         MadeFace *f = &all[nfaces + k];
 
         *f = c->prop.faces[k];
-        if (fk->paint != NULL) {
-            fk->paint(c, f);
-        }
         for (i = 0; i < 3; i++) {
             f->v[i] += n;
         }
@@ -2061,21 +2097,26 @@ static s32 pogo_foot(V3 p) {
 }
 
 /* The stick's blues (not its handle's white, nor its tip's chrome) as greys, POGO_METAL of their brightness */
-static void stick_metal(const Follow *c, MadeFace *f) {
-    s32 m, q, tip = 1;
+static void stick_metal(Follow *c) {
+    s32 i, m, q, tip;
 
-    for (q = 0; q < 3; q++) {
-        const V3 *p = &c->ref[c->prop.corner_of[f->v[q]]];
+    for (i = 0; i < c->prop.nfaces; i++) {
+        MadeFace *f = &c->prop.faces[i];
 
-        tip &= fabsf(p->x) < TIP_HALF && p->y > TIP_TOP;
-    }
-    for (m = 0; m < 2 && !tip; m++) {
+        tip = 1;
         for (q = 0; q < 3; q++) {
-            u8 *rgb = f->rgb[m][q];
-            s32 v = rgb[0] > rgb[1] ? (rgb[0] > rgb[2] ? rgb[0] : rgb[2]) : (rgb[1] > rgb[2] ? rgb[1] : rgb[2]);
+            const V3 *p = &c->ref[c->prop.corner_of[f->v[q]]];
 
-            if (rgb[2] >= rgb[0] + 8) {
-                rgb[0] = rgb[1] = rgb[2] = (u8)(v * POGO_METAL);
+            tip &= fabsf(p->x) < TIP_HALF && p->y > TIP_TOP;
+        }
+        for (m = 0; m < 2 && !tip; m++) {
+            for (q = 0; q < 3; q++) {
+                u8 *rgb = f->rgb[m][q];
+                s32 v = rgb[0] > rgb[1] ? (rgb[0] > rgb[2] ? rgb[0] : rgb[2]) : (rgb[1] > rgb[2] ? rgb[1] : rgb[2]);
+
+                if (rgb[2] >= rgb[0] + 8) {
+                    rgb[0] = rgb[1] = rgb[2] = (u8)(v * POGO_METAL);
+                }
             }
         }
     }
@@ -2142,7 +2183,7 @@ static const FollowKind CarKind = {
  * his hips on Crash's (Crash's corners at the bottom, below TANK_HIPS_TOP within TANK_MIDDLE across, behind TANK_HIPS_FRONT: the
  * hatch; his hands rest on his belly in front, and a set with them rose out of the hatch as he raised his arms), his chest from
  * TANK_CHEST_TOP to TANK_CHEST_LOW behind TANK_CHEST_FRONT (not his face), his body and arms as Crash's, who drops mines over the side, is thrown back as he's hit, slumps
- * as he loses and cheers as he wins; and all of him below his hips (TANK_CUT, his rig's) hidden inside, as the others have nothing
+ * as he loses and cheers as he wins; and all of him below his hips (FOLLOW_CUT) hidden inside, as the others have nothing
  * below the hatch. */
 #define TANK_HIPS_TOP -320.0f
 #define TANK_HIPS_FRONT -30.0f
@@ -2150,7 +2191,6 @@ static const FollowKind CarKind = {
 #define TANK_CHEST_TOP -410.0f
 #define TANK_CHEST_LOW -330.0f
 #define TANK_CHEST_FRONT -50.0f
-#define TANK_CUT 122.0f
 static const char *const TankNames[] = { "BREATHE", "IDLE1", "MINE", "HIT", "DIE", "WIN" };
 
 static s32 tank_hips(V3 p) {
@@ -2165,7 +2205,73 @@ static const FollowKind TankKind = {
     NULL, NULL, NULL, NULL, tank_hips, tank_chest, NULL,
     { { -52, -425, 20 }, { 52, -425, 20 } }, { { -88, -345, 15 }, { 88, -345, 15 } }, 30.0f, 25.0f,
     30.0f, 1e9f, { { -50, -312, -45 }, { 50, -312, -45 } },
-    1.0f, 0, 0, 1, 0, TANK_CUT, 1, NULL,
+    1.0f, 0, 0, 1, 0, FOLLOW_CUT, 1, NULL,
+};
+
+/* -- in a race cart (Crash Dash) --
+ * On Crash Dash's tracks (but the water's) each hero's model is it in its cart (models\chars\race\: all the carts the same, each a
+ * colour of its own, Crash's blue, Coco's pink, Cortex's yellow, Brio's green, Tiny's dark purple, the others orange, Ripper Roo's
+ * red). Crash's is him from the waist up, sat in its cockpit, and the cart: its strips with a corner where he isn't (below his seat,
+ * RACE_SEAT, or further out across than his elbows, RACE_OUT). Its frame is the cockpit's rim (its corners within RACE_RIM_HALF of
+ * RACE_RIM_Y, but the jets' behind RACE_RIM_BACK), which goes forward and back as a boost stretches the cart and down as it drops off
+ * the track. Crash holds the front of the cockpit by its dashboard, so he does: his hands RACE_HAND_IN in from the rim's front corners
+ * (those further out than RACE_OUT, from RACE_GRIP_FRONT to RACE_GRIP_BACK along). He sits in Crash's seat (his hips on Crash's
+ * bottom, Crash's corners below RACE_HIPS_TOP within RACE_MIDDLE across; his chest from RACE_CHEST_TOP to RACE_CHEST_LOW within
+ * RACE_CHEST_HALF across, behind his jaw, RACE_CHEST_FRONT), as big as on foot as Cortex is in his, and all of him below his hips is
+ * hidden in the cart (FOLLOW_CUT), as Crash's model has nothing there. His cart is gunmetal (RACE_PAINT, from its blues, RACE_FROM, as
+ * his pogo stick is), its jets' lights yellow as every cart's are. */
+#define RACE_SEAT -64.0f
+#define RACE_OUT 104.0f
+#define RACE_RIM_Y -108.0f
+#define RACE_RIM_HALF 4.0f
+#define RACE_RIM_BACK 170.0f
+#define RACE_GRIP_FRONT -60.0f
+#define RACE_GRIP_BACK -30.0f
+#define RACE_HAND_IN 52.0f
+#define RACE_HIPS_TOP -80.0f
+#define RACE_MIDDLE 30.0f
+#define RACE_CHEST_TOP -235.0f
+#define RACE_CHEST_LOW -140.0f
+#define RACE_CHEST_HALF 46.0f
+#define RACE_CHEST_FRONT -30.0f
+#define RACE_FROM 220.0f
+#define RACE_PAINT 0x80746E /* red | green << 8 | blue << 16: a blue-grey, half as bright as the blues it's painted from */
+static const char *const RaceNames[] = { "BREATHE", "RUN", "HIT", "FALL", "WIN" };
+
+static s32 race_prop(const V3 *p, s32 n, s32 textured) {
+    s32 k;
+
+    (void)textured;
+    for (k = 0; k < n; k++) {
+        if (p[k].y > RACE_SEAT || fabsf(p[k].x) > RACE_OUT) {
+            return 1;
+        }
+    }
+    return 0;
+}
+static s32 race_frame(V3 p) {
+    return fabsf(p.y - RACE_RIM_Y) < RACE_RIM_HALF && p.z < RACE_RIM_BACK;
+}
+static s32 race_grip(V3 p) {
+    return fabsf(p.y - RACE_RIM_Y) < RACE_RIM_HALF && fabsf(p.x) > RACE_OUT && p.z > RACE_GRIP_FRONT && p.z < RACE_GRIP_BACK;
+}
+static s32 race_hips(V3 p) {
+    return p.y > RACE_HIPS_TOP && fabsf(p.x) < RACE_MIDDLE;
+}
+static s32 race_chest(V3 p) {
+    return p.y > RACE_CHEST_TOP && p.y < RACE_CHEST_LOW && fabsf(p.x) < RACE_CHEST_HALF && p.z > RACE_CHEST_FRONT;
+}
+
+static void cart_gunmetal(Follow *c) {
+    hm_paint(c->prop.faces, c->prop.nfaces, c->prop.images, c->prop.nimages, RACE_FROM, RACE_PAINT);
+}
+
+static const FollowKind RaceKind = {
+    DB_CharsRaceCrash, KIND_RACE, "race cart", RaceNames, 5,
+    race_prop, race_frame, race_grip, NULL, race_hips, race_chest, NULL,
+    { { -48, -205, 18 }, { 48, -205, 18 } }, { { -90, -115, 35 }, { 90, -115, 35 } }, 25.0f, 25.0f,
+    80.0f, -5.0f, { { 0, 0, 0 }, { 0, 0, 0 } },
+    1.0f, 0.1f, 0, 1, -RACE_HAND_IN, FOLLOW_CUT, 1, cart_gunmetal, 1,
 };
 
 /* --- his sounds and card ---
@@ -2331,6 +2437,9 @@ static s32 pin_make(HeroMade *out) {
     }
     if (!follow_make(&TankKind, &foot, faces, ntri, images, nimage, out)) {
         printf("bonus: Pinstripe has no tank\n");
+    }
+    if (!follow_make(&RaceKind, &foot, faces, ntri, images, nimage, out)) {
+        printf("bonus: Pinstripe has no race cart\n");
     }
     if (c1_sprite(&level, "ShadC", 5, CARD_W, CARD_H, PinCard)) {
         out->card = PinCard;

@@ -153,7 +153,19 @@ his hips put at one point just under them (`cut`), as the others have nothing be
 rests his hands on his belly by the hatch, and a hips set with them in it rose out of the hatch as he
 raised his arms to cheer (Pinstripe floated above the turret in a win's close-up): the tank's hips and
 chest sets keep to his back half, and his body's line across comes from his chest's two halves
-(`across_chest`), as his shoulders' corners go with his arms.
+(`across_chest`), as his shoulders' corners go with his arms. The user approved his tank (2026-11-08)
+and had his last five games' models made in one go, to look over at the end. In a race cart (step 9,
+the fifth): Crash's race model is him from the waist up in the cockpit and his cart, so `RaceKind`
+takes the cart (its strips with a corner where Crash isn't: below his seat or out past his elbows) and
+paints it gunmetal from its blues (`hm_paint`, a blue-grey half as bright, as his pogo stick is), its
+jets' lights yellow as every cart's are (a kind's `paint` now paints the prop's faces and images at
+once). Its frame is the cockpit's rim, which goes forward and back as a boost stretches the cart and
+down as it drops off the track. He holds the front of the cockpit by the dashboard as Crash does,
+sits in Crash's seat as big as on foot (as Cortex is in his), and all of him below his hips is hidden
+in the cart, as in the tank. Crash's body stretches as he drives, cheers and drops (his chest from his
+hips 1.25 times as far as he bobs, 1.7 as he wins, nearly 3 as the cart falls away under him), and so
+does Pinstripe's (`FollowKind.stretch`: his chest and all above it lifted, his body between his waist
+and neck drawn out); his sway as he drives goes at its own pace (Cortex's is half as long).
 
 ## How one plays
 
