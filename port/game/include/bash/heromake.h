@@ -154,6 +154,15 @@ s32 hm_model_anim(const GamePart *p, const char *name, s32 *frames);
 /* The frames of a model bank's animation by name, as the archive has it: 0 if it has none (a made animation as long as its base's
  * plays a frame a tick). */
 s32 hm_bank_frames(s32 bank, const char *name);
+/* A podium model (KIND_WARP; bonusheroes.c says why): the podium's moves in the order and lengths its base's (hero number, 1 Crash to 8
+ * Rilla Roo) warp-room model has them, each a stretch of one of its own moves on foot (foot's animation anim, from to to, shares of it),
+ * drawn as its model on foot is. 0 if it couldn't, or its base has a move none of them is. */
+typedef struct {
+    const char *name; /* WIN_BREATHE, WIN, LOSE_BREATHE or LOSE */
+    s32 anim;
+    float from, to;
+} WarpMove;
+s32 hm_warp_make(const MadeModel *foot, const WarpMove *moves, s32 nmoves, s32 base, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size);
 /* All its first mesh's corners at t of animation `anim`, between the frames either side (t is kept within its frames). 0 if it can't. */
 s32 hm_model_at(const GamePart *p, s32 anim, float t, V3 *corners);
 /* Faces and their images painted another colour, `paint` (red | green << 8 | blue << 16): their colours of about hue `from` (degrees

@@ -15,8 +15,8 @@ enum { EXTRA_HERO_COUNT = 0 EXTRA_HERO_LIST(EXTRA_COUNT_ONE) };
 #define EXTRA_CARDS_MAX 4
 
 /* Each one's kinds of model (bash/herodef.h's KIND_, as many as HERO_KINDS): M(x, kind) for each, as the tables list them */
-#define HERO_KINDS 10
-#define HERO_KIND_EACH(M, x) M(x, 0) M(x, 1) M(x, 2) M(x, 3) M(x, 4) M(x, 5) M(x, 6) M(x, 7) M(x, 8) M(x, 9)
+#define HERO_KINDS 11
+#define HERO_KIND_EACH(M, x) M(x, 0) M(x, 1) M(x, 2) M(x, 3) M(x, 4) M(x, 5) M(x, 6) M(x, 7) M(x, 8) M(x, 9) M(x, 10)
 
 /* Where they go: extra hero x's (from 1, its EXTRA_ number) kind k is the BONUS_SLOT'th of all theirs. Its bank is DB_Bonus plus that,
  * its archive entries two from BONUS_FILE_FIRST, its file group BONUS_GROUP_FIRST plus it, and its loading BONUS_LOAD_FIRST plus it. */

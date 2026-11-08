@@ -6,6 +6,7 @@
 #include "bash/hub.h"
 #include "bash/n2o.h"
 #include "bash/titles.h"
+#include "bash/extraheroes.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
 
@@ -1456,12 +1457,21 @@ const char PodiumAnimWin[] = "WIN";
 const char PodiumAnimLoseBreathe[] = "LOSE_BREATHE";
 const char PodiumAnimLose[] = "LOSE";
 
+/* PC: an extra hero's own podium model, by the place on the podium it's drawn in (extraheroes.c), or 0 */
+static s32 PodiumOwnBank[4];
+
 void InitialisePodiumFirst(void) {
     s32 i;
+    s32 bank;
 
     PodiumTrophyObj = NULL;
     for (i = 0; i < 4; i++) {
         PodiumHeroNas[i] = 0;
+        /* PC: an extra hero stands on the podium as itself, in its own podium model */
+        if (extra_hero_podium(i, &bank)) {
+            extra_hero_load(bank);
+            continue;
+        }
         switch (GAME->heroChoice[i]) {
         case 1: dbase_load_textures(&HeroModelBank[DB_CharsWarpCrash]); break;
         case 2: dbase_load_textures(&HeroModelBank[DB_CharsWarpCoco]); break;
@@ -1491,6 +1501,7 @@ void InitialisePodium(void) {
     s32 j;
     s32 name;
     s32 h;
+    s32 own;
 
     World_floor_level = 0;
     CameraMode = 4;
@@ -1511,11 +1522,17 @@ void InitialisePodium(void) {
         case 1:
         default: k = 0xD6; break;
         }
+        /* PC: an extra hero's own podium model, which has its base's moves, and so plays its base's script */
+        PodiumOwnBank[i] = 0;
+        own = extra_hero_podium(h, &PodiumOwnBank[i]);
+        if (own != 0) {
+            k = PodiumOwnBank[i];
+        }
         for (j = 0; (&PodiumAnimName)[j] != NULL;) {
             dbase_mesh_anim_name_load(&HeroModelBank[k], (&PodiumAnimName)[j++]);
         }
         PodiumSpawnHero(i, &((HubSpawnEnt (*)[4])PodiumSpawns)[PodiumTies][i]);
-        PodiumInitScript(i, name);
+        PodiumInitScript(i, own != 0 ? own : name);
     }
     PodiumShowScores();
     SetupSceneMarks(((u8 *)MapScene->dbase));
@@ -1786,6 +1803,10 @@ void PodiumInitScript(s32 arg0, s32 arg1) {
                 mid->inner->script = &HeroModelBank[DB_CharsWarpRilla];
                 ScriptCursorFirst((NAS *)obj, &PodiumScript5);
                 break;
+            }
+            /* PC: an extra hero's own model, playing its base's script */
+            if (PodiumOwnBank[arg0] != 0) {
+                mid->inner->script = &HeroModelBank[PodiumOwnBank[arg0]];
             }
             obj->unk64 = arg1;
             RunNasAnim((NAS *)obj);

@@ -1123,6 +1123,69 @@ s32 hm_model_anim(const GamePart *p, const char *name, s32 *frames) {
     return a;
 }
 
+/* --- a podium model (KIND_WARP) ---
+ * The tournament's podium (the hub's mode 0x2B, hubcore.c) draws each hero's warp-room model (models\chars\warp\) and plays it the
+ * podium's moves, WIN_BREATHE and WIN for the winner and LOSE_BREATHE and LOSE for the others; but its script for each hero
+ * (PodiumScript0..7) plays them by their place in that hero's model and by frame. So an extra hero's podium model has its base's moves,
+ * in its base's order and lengths (Crash's and Cortex's have no LOSE_BREATHE), each a stretch of one of its own moves on foot, drawn
+ * from its model on foot: the same faces and images. */
+#define WARP_MAX 8
+typedef struct {
+    const MadeModel *foot;
+    const WarpMove *moves[WARP_MAX];
+    s32 frames[WARP_MAX];
+} WarpCtx;
+static WarpCtx Warp;
+
+static void warp_frame(void *ctx, s32 a, s32 f, V3 *out) {
+    const WarpCtx *w = ctx;
+    const WarpMove *m = w->moves[a];
+    s32 own = w->foot->anims[m->anim].frames;
+    float t = w->frames[a] > 1 ? (float)f / (w->frames[a] - 1) : 0;
+
+    w->foot->frame(w->foot->ctx, m->anim, (s32)floorf((m->from + (m->to - m->from) * t) * (own - 1) + 0.5f), out);
+}
+
+s32 hm_warp_make(const MadeModel *foot, const WarpMove *moves, s32 nmoves, s32 base, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) {
+    static MadeAnim anims[WARP_MAX];
+    s32 size = 0, i, j, n = 0, ok = 0, rest = 0;
+    u8 *file = base >= 1 && base <= 8 ? archive_own_file((s32)(HeroModelBank[DB_CharsWarpCrash + base - 1].file - DatIndex), &size) : NULL;
+    MadeModel mm;
+
+    if (file == NULL) {
+        return 0;
+    }
+    for (i = 0; i < ((const ModelFile *)file)->nMeshAnims; i++) {
+        const FileEntry *e = &file_anims((const ModelFile *)file)[i];
+
+        for (j = 0; j < nmoves && (s32)string_hash((u8 *)moves[j].name) != (s32)e->hash; j++) {
+        }
+        if (j == nmoves || n == WARP_MAX) {
+            printf("bonus: no podium move for its base's animation %d (#%x)\n", i, (u32)e->hash);
+            goto done;
+        }
+        anims[n].name = moves[j].name;
+        anims[n].frames = e->frames;
+        anims[n].mesh = 0;
+        anims[n].step = 1;
+        Warp.frames[n] = e->frames;
+        Warp.moves[n] = &moves[j];
+        rest = strcmp(moves[j].name, "WIN_BREATHE") == 0 ? n : rest;
+        n++;
+    }
+    Warp.foot = foot;
+    mm = *foot;
+    mm.anims = anims;
+    mm.nanims = n;
+    mm.rest_anim = rest;
+    mm.frame = warp_frame;
+    mm.ctx = &Warp;
+    ok = made_write(&mm, tex, tex_size, mdl, mdl_size);
+done:
+    free(file);
+    return ok;
+}
+
 s32 hm_bank_frames(s32 bank, const char *name) {
     s32 size = 0, a, n = 0;
     u8 *file = archive_own_file((s32)(HeroModelBank[bank].file - DatIndex), &size);
@@ -2591,6 +2654,10 @@ s32 bonus_heroes_bank(s32 extra, s32 kind) {
     }
     /* a kind it has none of: its model on foot */
     return DB_Bonus + BONUS_SLOT(extra, Have[extra] && Made[extra].mdl[kind] == NULL ? KIND_FOOT : kind);
+}
+
+s32 bonus_heroes_made(s32 extra, s32 kind) {
+    return bonus_heroes_have(extra) && kind >= 0 && kind < NUM_KINDS && Made[extra].mdl[kind] != NULL;
 }
 
 u8 *bonus_heroes_model(s32 extra, s32 kind) {

@@ -116,6 +116,10 @@ static const Stand PinDino[] = {
 static const Stand PinKegs[] = {
     { NULL, NULL, STRETCH },
 };
+/* On the tournament's podium his podium model's moves are its own (the podium plays them by place and frame: hm_warp_make) */
+static const Stand PinPodium[] = {
+    { NULL, NULL, STRETCH },
+};
 
 /* Each kind of game plays as on foot until he has a model of it; on his bear he's as heavy and as quick as Crash on his */
 const HeroDef HeroPinstripe = {
@@ -124,7 +128,7 @@ const HeroDef HeroPinstripe = {
       { PinPogo, "BREATHE", 0x1000, 0, 1 }, { PinCar, "BREATHE", 0x1000, 0, 1 },
       { PinTank, "BREATHE", 0x1000, 0, 1 }, { PinRace, "BREATHE", 0x1000, 0, 1 },
       { PinSplash, "BREATHE", 0x1000, 0, 1 }, { PinMallet, "BREATHE", 0x1000, 0, 1 },
-      { PinDino, "BREATHE", 0x1000, 0, 1 }, { PinKegs, "BREATHE", 0x1000, 0, 1 } },
+      { PinDino, "BREATHE", 0x1000, 0, 1 }, { PinKegs, "BREATHE", 0x1000, 0, 1 }, { PinPodium, "WIN_BREATHE", 0x1000, 0, 1 } },
     PinVoices, "BREATHE", 0, pin_make,
 };
 
@@ -2794,6 +2798,18 @@ static s32 pin_make(HeroMade *out) {
     mm.ctx = &foot;
     if (!made_write(&mm, &out->tex[KIND_FOOT], &out->tex_size[KIND_FOOT], &out->mdl[KIND_FOOT], &out->mdl_size[KIND_FOOT])) {
         goto done;
+    }
+    /* on the tournament's podium: standing as he stands, cheering with his win (his gun about, laughing), and thrown about as he's hurt
+     * as he loses */
+    {
+        static const WarpMove Podium[] = {
+            { "WIN_BREATHE", A_BREATHE, 0, 1 }, { "WIN", A_WIN, 0, 1 }, { "LOSE_BREATHE", A_BREATHE, 0, 1 }, { "LOSE", A_HIT, 0, 1 },
+        };
+
+        if (!hm_warp_make(&mm, Podium, 4, HeroPinstripe.prefer, &out->tex[KIND_WARP], &out->tex_size[KIND_WARP], &out->mdl[KIND_WARP],
+                          &out->mdl_size[KIND_WARP])) {
+            printf("bonus: Pinstripe has no podium model\n");
+        }
     }
     if (!ride_bear(&foot, faces, ntri, images, nimage, out)) {
         printf("bonus: Pinstripe has no polar bear to ride\n");

@@ -14,7 +14,7 @@
  * the water's, the cart in its model), riding a fish (Splash Dash, Crash Dash's water track, the fish in its model), with a mallet (the
  * mallet game, the mallet in its model), riding a dino (the gem game, the dino in its model), and with a keg (the kegs game, the keg in
  * its model). Each loads where the games load their heroes' of that kind; a kind it has no model of, it plays as on foot. */
-enum { KIND_FOOT, KIND_POLAR, KIND_POGO, KIND_BALL, KIND_TANK, KIND_RACE, KIND_SPLASH, KIND_MALLET, KIND_DINO, KIND_KEGS, NUM_KINDS };
+enum { KIND_FOOT, KIND_POLAR, KIND_POGO, KIND_BALL, KIND_TANK, KIND_RACE, KIND_SPLASH, KIND_MALLET, KIND_DINO, KIND_KEGS, KIND_WARP, NUM_KINDS };
 _Static_assert(NUM_KINDS == HERO_KINDS, "bash/herolist.h's HERO_KINDS and HERO_KIND_EACH go with the kinds");
 
 /* How a stand-in's frames go as its base's animation plays: the same share of the way through (STRETCH), or at the stand-in's own speed,

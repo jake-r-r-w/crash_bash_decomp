@@ -695,6 +695,18 @@ void TitlesCheckIdle(void) {
             g->players = 1;
             g->heroCpu[0] = 0;
         }
+        /* the tournament's podium (0x2B), as at a tournament's end, with nobody chosen it had no heroes: Crash, Coco, Cortex and Brio
+         * (or extra heroes in their places), tallied by place, player 1 first */
+        if (g->mode == 0x2B) {
+            s32 i;
+
+            for (i = 0; i < 4; i++) {
+                g->heroChoice[i] = (u8)(i + 1);
+                g->heroes[i] = (u8)(i + 1);
+                g->adventure.points[i] = (u8)(4 - i);
+            }
+            g->levelFlags = (u16)((g->levelFlags & 0xFF00) | 2);
+        }
         settings()->test_mode = -1;
         ProcessControl.next_process = &LevelLoadProcess;
         return;

@@ -209,14 +209,18 @@ static s32 kind_of(s32 bank) {
     if (bank >= DB_CharsKegsCrash && bank <= DB_CharsKegsRilla) {
         return KIND_KEGS;
     }
+    if (bank >= DB_CharsWarpCrash && bank <= DB_CharsWarpRilla) {
+        return KIND_WARP;
+    }
     return KIND_FOOT;
 }
 
+/* Whether another player has hero `name`: in a game (heroes), or chosen (heroChoice; the podium sets every player's heroes to none) */
 static s32 taken(s32 name, s32 except) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (i != except && GAME->heroes[i] == name) {
+        if (i != except && (GAME->heroes[i] == name || GAME->heroChoice[i] == name)) {
             return 1;
         }
     }
@@ -284,6 +288,28 @@ void extra_heroes_models(void) {
         FlagFrom = HeroHooks.flag;
         swap_models(FlagModels, FlagFrom);
         HeroHooks.flag = FlagModels;
+    }
+}
+
+s32 extra_hero_podium(s32 player, s32 *bank) {
+    s32 x = player >= 0 && player < 4 ? PlayerExtra[player] : EXTRA_NONE;
+
+    if (x == EXTRA_NONE || !bonus_heroes_made(x, KIND_WARP)) {
+        return 0;
+    }
+    *bank = bonus_heroes_bank(x, KIND_WARP);
+    printf("extra heroes: player %d is %s, in hero %d's place: %s\n", player + 1, HeroDefs[x]->id, PlayerBase[player], extra_hero_kind_name(KIND_WARP));
+    return HeroDefs[x]->prefer;
+}
+
+void extra_hero_load(s32 bank) {
+    ModeDbase *p = ModeDbaseLists;
+    s32 j;
+
+    for (j = 0; j < ModeDbaseCount; j++, p++) {
+        if (p->dbase == &HeroModelBank[bank]) {
+            queue_dbase_load(p, NULL);
+        }
     }
 }
 
@@ -741,7 +767,7 @@ static s32 variant_start(s32 player, Variant *v, s32 base_bank) {
 /* What each kind is, for the log (a hero's checks read it: port/tests/playtest.mjs hero) */
 static const char *const KindNames[NUM_KINDS] = {
     "on foot", "riding a polar bear", "on a pogo stick", "in a Ballistix car", "in a tank", "in a race cart", "riding a fish",
-    "with a mallet", "riding a dino", "with a keg",
+    "with a mallet", "riding a dino", "with a keg", "on the podium",
 };
 
 const char *extra_hero_kind_name(s32 kind) {

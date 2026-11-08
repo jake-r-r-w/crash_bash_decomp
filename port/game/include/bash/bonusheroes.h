@@ -13,6 +13,8 @@ void bonus_heroes_files(void);
 /* Whether an extra hero (EXTRA_) was made, and the bank of its model of a kind (KIND_; its model on foot for a kind it has none of). */
 s32 bonus_heroes_have(s32 extra);
 s32 bonus_heroes_bank(s32 extra, s32 kind);
+/* Whether it has a model of its own of a kind (not its model on foot in its place). */
+s32 bonus_heroes_made(s32 extra, s32 kind);
 /* Its model file of a kind, whole, to free. */
 u8 *bonus_heroes_model(s32 extra, s32 kind);
 /* Its face from its game, if that has one: w x h pixels (red | green << 8 | blue << 16 | alpha << 24), its head the top `head` rows,

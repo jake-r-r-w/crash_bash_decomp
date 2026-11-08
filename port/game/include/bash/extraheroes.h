@@ -37,6 +37,11 @@ s32 extra_heroes_cards(s32 *heroes);
 /* Once the heroes are known, before their models load: each extra hero's base, and the models with theirs in their bases' places. */
 void extra_heroes_assign(void);
 void extra_heroes_models(void);
+/* On the tournament's podium (hubcore.c): a player's extra hero's own podium model (KIND_WARP) as *bank, and the hero number whose
+ * podium script it plays (its base: its podium model has that one's moves); 0 for a player who isn't one, or has none. And a model's
+ * loading, all its animations. */
+s32 extra_hero_podium(s32 player, s32 *bank);
+void extra_hero_load(s32 bank);
 /* Whether a model is an extra hero's: it keeps all its animations, as it stands in for others. */
 s32 extra_heroes_model_is(const obj_dbase *db);
 /* As the heroes are made, and when the level ends. */

@@ -53,9 +53,10 @@ playing.
    panel and in the menus after. The select stretches a card to fill its portrait (Roo's), unless
    `card_aspect` says how wide its pixels are as its game shows them (Pinstripe's 64 x 32, 0.625 on
    Crash Bandicoot's 512-wide screen).
-6. **Each other kind** (below, 4, steps 5 to 13), one at a time: riding a polar bear, on a pogo
+6. **Each other kind** (below, 4, steps 5 to 14), one at a time: riding a polar bear, on a pogo
    stick, in a Ballistix car, in a tank, in a race cart, riding a fish, with a mallet, riding a
-   dino, and with a keg. Each step says what it takes from the game's own models and how it's put
+   dino, with a keg, and on the tournament's podium (its four podium moves, each a stretch of one of
+   its moves on foot: `hm_warp_make`). Each step says what it takes from the game's own models and how it's put
    on the hero. `hm_game_part` (part of any of the game's models) and `mount_make` (a ride, for the
    fish and the dino) are already written. A kind it has no model of, it plays as on foot.
 7. **The check**: `node port/tests/playtest.mjs hero ID` plays it in every game, four of it at once,
@@ -76,8 +77,11 @@ playing.
     (ROADMAP-B.md, 7.12.7) and AGENT_LOG.md.
 
 **Done:** Ripper Roo (`roo`, from Crash Bandicoot (USA), SCUS-94900). The user played and approved
-every game (2026-11-04) and called him done (2026-11-05). Two things are left out at their word: his
-name is never written in the game, and the podium and win screens weren't looked at with him.
+every game (2026-11-04) and called him done (2026-11-05). His name is never written in the game, at
+their word. The podium and win screens were looked at later, at the user's word (2026-11-08): the
+win screens (a game's winner's close-up, the tallies with his card) were right, and on the podium he
+stood as Rilla Roo, whose number he borrows, so he has a podium model of his own now (below, 4,
+step 14). Not played by the user there yet.
 
 **Under way:** Pinstripe (`pinstripe`, the same disc, `main/heroes/pinstripe.c`): every kind of game
 has a model of his, each approved by the user (2026-11-08; the last five, race cart, fish, mallet, dino
@@ -202,7 +206,10 @@ his. Scaled to him as the mallet is, it was half as big again as the game's othe
 so it keeps its own size (`carry_kept`): it's where it would be for his size against his shoulder,
 and his hand reaches round it where Crash's is. So all of his games have models of their own now
 (2026-11-08), each made the user's way: the bear, the stick, the car and the tank looked over by the
-user, the last five made in one go to look over at the end.
+user, the last five made in one go to look over at the end. On the tournament's podium he stood as
+Cortex, whose number he borrows; his podium model (below, 4, step 14) has Cortex's podium moves, from
+his own: he stands as he stands, cheers with his win (his gun about, laughing), and is thrown about
+as he's hurt as he loses.
 
 ## How one plays
 
@@ -543,7 +550,23 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    cover his neck, chest and tongue); it goes with his head as the mallet does. He's as on foot:
    standing, hopping as he runs, jumping as he does on foot (from frame 13 of his jump, its crouch left
    out), falling over as he's hit, laughing as he wins.
-14. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
+14. **On the tournament's podium.** At a tournament's end the podium (the hub's mode 0x2B,
+   `hubcore.c`) draws each hero's warp-room model (`models/chars/warp/`) and plays it WIN_BREATHE and
+   WIN for the winner, LOSE_BREATHE and LOSE for the others; but its script for each hero
+   (`PodiumScript0..7`) plays them by their place in that hero's model and by frame, so an extra hero
+   stood on it in the model of the hero whose number it had borrowed. Its podium model (`KIND_WARP`,
+   `hm_warp_make` in bonusheroes.c) has its base's moves in its base's order and lengths (Rilla Roo's
+   for Roo: LOSE_BREATHE 20, LOSE 67, WIN_BREATHE 20, WIN 13; Crash's and Cortex's have no
+   LOSE_BREATHE), each a stretch of one of its own moves on foot (a `WarpMove`), drawn as its model on
+   foot is; and the podium loads it and plays it its base's script (`extra_hero_podium`). Roo stands
+   as he stands, laughs as he cheers, and as he loses reels his head (the dizzy start of his boss
+   fight's defeat, as Rilla Roo's script goes round its LOSE, and the rest of it falls flat). The
+   podium sets every player's hero to none, and the extra heroes are placed again as it loads, so a
+   hero chosen counts as taken too (`taken`): Pinstripe had Cortex's number while player 3 was Cortex,
+   and two Cortexes stood there. `--mode 43` gives a test run the podium as at a tournament's end
+   (Crash, Coco, Cortex and Brio, or extra heroes in their places, player 1 first: titles.c), and the
+   hero check plays it.
+15. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
    health), `c1_sound` his sounds.
 
 ### 5. Putting him in

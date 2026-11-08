@@ -65,6 +65,10 @@ static const Stand RooKegs[] = {
     { "WIN", "WIN", LOOP },
     { NULL, NULL, STRETCH },
 };
+/* On the tournament's podium his podium model's moves are its own (the podium plays them by place and frame: hm_warp_make) */
+static const Stand RooPodium[] = {
+    { NULL, NULL, STRETCH },
+};
 static const Stand RooPogo[] = {
     { "TAZING", "TAZING", LOOP },
     { NULL, NULL, STRETCH },
@@ -98,7 +102,7 @@ const HeroDef HeroRoo = {
       { RooPogo, "BREATHE", 0x1000, 0, ROO_SUBFRAMES }, { RooCar, "BREATHE", 0x1000, 0, 1 },
       { RooTank, "BREATHE", 0x1000, Dingodile, 1 }, { RooRace, "BREATHE", 0x1000, 0, 1 }, { RooSplash, "SWIM", 0x1000, 0, 1 },
       { RooMallet, "BREATHE", ROO_KEEP_LIFT, 0, 1 }, { RooDinoStands, "BREATHE", 0x1000, 0, 1 },
-      { RooKegs, "BREATHE", ROO_KEEP_LIFT, 0, 1 } },
+      { RooKegs, "BREATHE", ROO_KEEP_LIFT, 0, 1 }, { RooPodium, "WIN_BREATHE", 0x1000, 0, 1 } },
     /* in a car, a tank, a race cart, on a fish, with a mallet, on a dino and with a keg a frame of his to each of his base's
      * (VEHICLE_PER) */
     RooVoices, "BREATHE", 0, roo_make,
@@ -3108,6 +3112,18 @@ static s32 roo_make(HeroMade *out) {
     mm.ctx = &foot;
     if (!made_write(&mm, &out->tex[KIND_FOOT], &out->tex_size[KIND_FOOT], &out->mdl[KIND_FOOT], &out->mdl_size[KIND_FOOT])) {
         goto done;
+    }
+    /* on the tournament's podium: standing as he stands, laughing as he cheers, and his boss fight's defeat as he loses, only its dizzy
+     * start (its head reeling), as Rilla Roo's script he plays goes round its LOSE and the rest of it falls flat */
+    {
+        static const WarpMove Podium[] = {
+            { "WIN_BREATHE", ROO_REST, 0, 1 }, { "WIN", ROO_LAUGH, 0, 1 }, { "LOSE_BREATHE", ROO_REST, 0, 1 }, { "LOSE", ROO_DIE, 0, 0.45f },
+        };
+
+        if (!hm_warp_make(&mm, Podium, 4, HeroRoo.prefer, &out->tex[KIND_WARP], &out->tex_size[KIND_WARP], &out->mdl[KIND_WARP],
+                          &out->mdl_size[KIND_WARP])) {
+            printf("bonus: Ripper Roo has no podium model\n");
+        }
     }
 
     /* riding a polar bear: sat on its back as he stands, his own faces (not the tornado's) */

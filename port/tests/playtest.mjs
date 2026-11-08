@@ -426,6 +426,9 @@ const HERO_GAMES = [
     { mode: 10, game: 'Pogo Painter' }, { mode: 14, game: 'Crashball' }, { mode: 6, game: 'Desert Fox' }, { mode: 5, game: 'Swamp Fox' },
     { mode: 23, game: 'Dot Dash' }, { mode: 25, game: 'Splash Dash' }, { mode: 29, game: 'Mallet Mash' }, { mode: 28, game: 'Dragon Drop' },
     { mode: 30, game: 'Keg Kaboom' },
+    /* the tournament's podium (its test run has the four ranked, player 1 first); its lines are the ones there, as the main menu's after
+       it start heroes on foot, and its shots are before it ends */
+    { mode: 43, game: 'Podium', only: 'on the podium', shots: [300, 600, 900] },
 ];
 const HERO_SHOTS = [500, 900, 1300];
 const HERO_VBLANKS = 1400;
@@ -452,16 +455,18 @@ async function hero(args) {
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
     const name_of = g => `m${g.mode}-${g.game.toLowerCase().replace(/[^a-z]+/g, '-')}`;
-    const shots_of = g => HERO_SHOTS.map((v, i) => rel(`${name_of(g)}-${'abc'[i]}.png`));
+    const shots_of = g => (g.shots ?? HERO_SHOTS).map((v, i) => rel(`${name_of(g)}-${'abc'[i]}.png`));
     const play = async (g, slot) => {
         const name = name_of(g);
         const shots = shots_of(g);
         const r = await run(exe, ['--mode', String(g.mode), '--skip-intro', '--skip-loading', '--turbo', '--tile', String(slot), String(AT_ONCE),
-            '--frames', String(HERO_VBLANKS), ...HERO_SHOTS.flatMap((v, i) => ['--shot', String(v), shots[i]]), ...extra],
+            '--frames', String(HERO_VBLANKS), ...(g.shots ?? HERO_SHOTS).flatMap((v, i) => ['--shot', String(v), shots[i]]), ...extra],
             path.join(dir, `${name}.txt`), { timeout: MODE_TIMEOUT });
         const crash = crash_where(exe, r.text);
-        /* a game can start its heroes more than once (a round, the game proper after its intro): each player's last */
+        /* a game can start its heroes more than once (a round, the game proper after its intro): each player's last (of its kind, for a
+           game that names one) */
         const lines = [...new Map([...r.text.matchAll(new RegExp(`^extra heroes: player (\\d) is ${id}, in hero (\\d+)'s place:(.*)$`, 'gm'))]
+            .filter(m => g.only == null || m[3].trim() === g.only)
             .map(m => [m[1], m])).values()].sort((a, b) => Number(a[1]) - Number(b[1]));
         const missing = players.filter(p => !lines.some(m => Number(m[1]) === p));
         const bases = new Set(lines.map(m => m[2]));
