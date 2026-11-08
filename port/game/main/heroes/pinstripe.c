@@ -100,6 +100,10 @@ static const Stand PinRace[] = {
     { "BREATHE", "BREATHE", LOOP },
     { NULL, NULL, STRETCH },
 };
+/* Riding a fish Splash Dash's, each over all of his base's */
+static const Stand PinSplash[] = {
+    { NULL, NULL, STRETCH },
+};
 
 /* Each kind of game plays as on foot until he has a model of it; on his bear he's as heavy and as quick as Crash on his */
 const HeroDef HeroPinstripe = {
@@ -107,7 +111,7 @@ const HeroDef HeroPinstripe = {
     { { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinRides, "BREATHE", 0x1000, Crash, 1 },
       { PinPogo, "BREATHE", 0x1000, 0, 1 }, { PinCar, "BREATHE", 0x1000, 0, 1 },
       { PinTank, "BREATHE", 0x1000, 0, 1 }, { PinRace, "BREATHE", 0x1000, 0, 1 },
-      { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
+      { PinSplash, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES } },
     PinVoices, "BREATHE", 0, pin_make,
 };
@@ -1399,11 +1403,11 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
     return ride_make(&rider, &out->tex[KIND_POLAR], &out->tex_size[KIND_POLAR], &out->mdl[KIND_POLAR], &out->mdl_size[KIND_POLAR]);
 }
 
-/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles, a race cart) ---
+/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles, a race cart, a fish) ---
  * In some games each hero's model has what the hero holds or stands on in it: Pogo's heroes bounce on things of their own
  * (models\chars\pogo\: Crash and Coco on pogo sticks, Cortex and Brio on their jetpacks, Tiny and Kong on springs), Ballistix's
  * hold the handles of the car the game draws round them (models\chars\ball\), and Crash Dash's sit in their carts
- * (models\chars\race\). He rides and drives as Crash does (the user, of his
+ * (models\chars\race\) or ride their fish (models\chars\splash\). He rides and drives as Crash does (the user, of his
  * bear: not with Cortex's jetpack), so his model of such a kind (a FollowKind) is Crash's prop from Crash's model of it, moving as it
  * does there (its strips by where they are as Crash first moves: the model's own pose has his arms out, and a first pick by it took
  * Crash's arms and legs), and him with it, following Crash's body frame by frame:
@@ -1411,6 +1415,8 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
  * - his hands on the prop's grips (pose_arm_to: each arm's two bones put to reach them), but a hand Crash lets go with (he waves,
  *   punches the air as he wins) going as Crash's arm goes, as far as Crash's hand has gone off its grip (OFF_FROM to OFF_ALL further);
  * - his feet on its pegs (pose_leg_to), as far off them as Crash's go; or, where Crash sits, his legs folded under him (FOLLOW_SIT);
+ *   or, where Crash rides astride (`legs`), all his limbs where Crash's go, his hands and feet where Crash's are from his shoulders
+ *   and hips (for his size), his elbows and knees bent Crash's way;
  * - his hips moved as Crash's are, `follow` as far for his height against Crash's; his body above his waist leant `lean` forward and
  *   turned as Crash's turns, his spine and his shoulders' line; his limbs stretching to what they hold when it's out of their reach,
  *   as Crash's do (two_bone);
@@ -1425,17 +1431,27 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
 #define FOLLOW_HIDE 6.0f    /* what's cut away goes this far under the cut (his rig's units) */
 #define FOLLOW_CUT 122.0f   /* his rig's: his hips, all of him below hidden (in a tank's hatch, in a race cart) */
 #define OFF_ALL 40.0f
+#define GUNMETAL 0x80746E   /* his colour for what he rides (red | green << 8 | blue << 16): a blue-grey, half as bright as what
+                             * it's painted from (hm_paint) */
 #define FOLLOW_SQUASH 0.85f /* stretching, his body no shorter than this of its length (Crash's squashes flat far below, falling) */
 
 typedef struct Follow Follow;
+/* Crash's legs where he rides astride (a fish): his hips', knees' and ankles' points as he first moves (his left first), each followed by
+ * his corners within `r` of it. A kind with them follows all of Crash's limbs where they go, his hands too (not only which way they
+ * point), so they stretch as Crash's do (he holds on to his diving fish upside down, his arms stretched long) */
+typedef struct {
+    V3 hip[2], knee[2], ankle[2];
+    float r;
+} FollowLegs;
 typedef struct {
     s32 bank;                /* Crash's model of the kind, */
     s32 kind;                /* the kind (KIND_), */
     const char *what;        /* and what it's called in the log */
     const char *const *moves;
     s32 nmoves;
-    /* the prop: a strip of Crash's model that's the prop's, by its corners as he first moves (at); NULL: none, he holds nothing */
-    s32 (*prop)(const V3 *at, s32 n, s32 textured);
+    /* the prop: a strip of Crash's model that's the prop's, by its corners as he first moves (at) or its place in the model (strip, from
+     * 0); NULL: none, he holds nothing */
+    s32 (*prop)(const V3 *at, s32 n, s32 textured, s32 strip);
     s32 (*frame)(V3 p);      /* of the prop's corners, those of its frame, fitted each frame; NULL: the model's own frame */
     s32 (*grip)(V3 p);       /* its grips' (each side's by its x); NULL: none, his arms as Crash's */
     s32 (*peg)(V3 p);        /* its pegs', under his feet; NULL as he sits */
@@ -1455,6 +1471,7 @@ typedef struct {
     s32 across_chest;        /* his body's line across from his chest's two halves, not his shoulders (which go with his arms) */
     void (*paint)(Follow *c); /* the prop's colours (its faces' and images') made his, or NULL */
     s32 stretch;             /* his body stretched up and squashed down as Crash's is (his chest from his hips) */
+    const FollowLegs *legs;  /* his legs as Crash's go, from where Crash's are (riding astride); NULL: on its pegs, or sat */
 } FollowKind;
 
 struct Follow {
@@ -1464,6 +1481,8 @@ struct Follow {
     V3 ref[FOLLOW_CORNERS];      /* its corners as Crash first moves (the first move's first frame) */
     s16 frame[FOLLOW_PART_MAX], hips[FOLLOW_PART_MAX], chest[FOLLOW_PART_MAX], half[2][FOLLOW_PART_MAX], nhalf[2], shoulder[2][FOLLOW_PART_MAX], feet[2][FOLLOW_PART_MAX];
     s16 elbow[2][FOLLOW_PART_MAX], hand[2][FOLLOW_PART_MAX], grips[2][FOLLOW_PART_MAX];
+    s16 leg[3][2][FOLLOW_PART_MAX]; /* with FollowKind.legs: Crash's hips', knees' and ankles' corners, each side's */
+    s32 nleg[3][2];
     s32 nframe, nhips, nchest, nshoulder[2], nfeet[2], nelbow[2], nhand[2], ngrips[2];
     V3 grip_at[2];               /* the grips' middles as it rests (Crash Bash's axes), */
     float hand_off[2];           /* and how far Crash's hands' are from them then */
@@ -1482,11 +1501,11 @@ struct Follow {
 static Follow Follower;
 
 /* The prop's strips, by where their corners are as Crash first moves: `ref`, all its corners then, and `at`, the strip's first,
- * counted on as the strips go by */
+ * counted on as the strips go by, as `strip` counts them */
 typedef struct {
     const FollowKind *kind;
     const V3 *ref;
-    s32 at;
+    s32 at, strip;
 } PropPick;
 
 static s32 keep_all(void *ctx, const V3 *rest, s32 n, s32 textured) {
@@ -1503,7 +1522,7 @@ static s32 keep_prop(void *ctx, const V3 *rest, s32 n, s32 textured) {
 
     (void)rest;
     pick->at += n;
-    return pick->kind->prop(p, n, textured);
+    return pick->kind->prop(p, n, textured, pick->strip++);
 }
 
 static V3 mid_of(const V3 *at, const s16 *ids, s32 n) {
@@ -1646,8 +1665,9 @@ static void pose_arm_grip(V3 *r, const Arm *arm, s32 hand, V3 mid, V3 axis, V3 t
     }
 }
 
-/* A leg from its hip at `hip` to its ankle at `ankle`, its knee bent toward `hint`, its shoe flat as he stands */
-static void pose_leg_to(V3 *r, const Leg *leg, V3 hip, V3 ankle, V3 hint) {
+/* A leg from its hip at `hip` to its ankle at `ankle`, its knee bent toward `hint`, its shoe flat as he stands (on a peg) or
+ * turned with its shin (shoe_turns) */
+static void pose_leg_to(V3 *r, const Leg *leg, V3 hip, V3 ankle, V3 hint, s32 shoe_turns) {
     V3 h0 = leg->joint[0], k0 = leg->joint[1], a0 = leg->joint[2], knee, thigh, shin;
     float st;
     Turn t0, t1;
@@ -1663,7 +1683,7 @@ static void pose_leg_to(V3 *r, const Leg *leg, V3 hip, V3 ankle, V3 hint) {
         V3 p = Rest[k];
 
         if (leg->shoe[i]) {
-            r[k] = vadd(ankle, vsub(p, a0));
+            r[k] = vadd(ankle, shoe_turns ? turned(&t1, turned(&t0, vsub(p, a0))) : vsub(p, a0));
         } else {
             r[k] = hm_mix(stretched(vadd(hip, turned(&t0, vsub(p, h0))), hip, thigh, st),
                           stretched(vadd(knee, turned(&t1, turned(&t0, vsub(p, k0)))), knee, shin, st), leg->shin[i]);
@@ -1684,6 +1704,8 @@ static V3 stick_in_rig(const Follow *c, V3 p) {
  * where (in his rig) each of his hands' grips is */
 typedef struct {
     V3 hips, feet[2];
+    V3 leg_to[2], knee_way[2];   /* with FollowKind.legs: each of Crash's ankles from its hip, and his knee from the middle of the two; */
+    V3 hand_to[2], elbow_way[2]; /* and his hands from his shoulders and his elbows the same, as they'd be with his body unturned */
     float M[3][3];
     float off[2];
     V3 arm[2][2];
@@ -1709,6 +1731,12 @@ static void follow_pose(const Follow *c, const FollowBody *b, V3 *r) {
         t = vadd(waist, bash_unturned(b->M, vsub(t, waist)));
         t = hm_turn_x(t, waist, -fk->lean);
         t.y -= b->rise;
+        if (fk->legs != NULL) {
+            /* his hand where Crash's is from his shoulder, for his size (his arm stretching as far as Crash's does), his elbow bent
+             * Crash's way */
+            own = vadd(Arms[i].joint[0], vmul(hm_turn_x(rig_dir(b->hand_to[i]), o, -fk->lean), c->follow / c->k));
+            up = hm_turn_x(rig_dir(b->elbow_way[i]), o, -fk->lean);
+        }
         hint = vnorm(hm_mix(v3(Arms[i].side, -0.3f, -0.5f), up, b->off[i]));
         if (c->has_hole[i]) {
             /* its hand round the grip's bar (the handle's, the car's grip bars: both along x), as far as Crash's holds his */
@@ -1732,9 +1760,14 @@ static void follow_pose(const Follow *c, const FollowBody *b, V3 *r) {
         }
     }
     for (i = 0; i < 2; i++) {
-        if (fk->peg != NULL) {
+        if (fk->legs != NULL) {
+            /* astride, as Crash's: his ankle where Crash's is from his hip (for his size), his knee bent Crash's way */
+            V3 hip = vadd(Legs[i].joint[0], move);
+
+            pose_leg_to(r, &Legs[i], hip, vadd(hip, vmul(rig_dir(b->leg_to[i]), c->follow / c->k)), rig_dir(b->knee_way[i]), 1);
+        } else if (fk->peg != NULL) {
             pose_leg_to(r, &Legs[i], vadd(Legs[i].joint[0], move), vadd(c->ankle[i], vmul(rig_dir(b->feet[i]), c->follow / c->k)),
-                        v3(Legs[i].side * 0.3f, 0, 1));
+                        v3(Legs[i].side * 0.3f, 0, 1), 0);
         } else {
             pose_leg(r, &Legs[i], FOLLOW_SIT, FOLLOW_SIT, 0);
             for (k = 0; k < Legs[i].n; k++) {
@@ -1789,6 +1822,13 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
         }
     }
     b.hips = vsub(mid_of(L, c->hips, c->nhips), mid_of(c->ref, c->hips, c->nhips));
+    for (i = 0; i < 2 && c->kind->legs != NULL; i++) {
+        V3 hip = mid_of(L, c->leg[0][i], c->nleg[0][i]), knee = mid_of(L, c->leg[1][i], c->nleg[1][i]);
+        V3 ankle = mid_of(L, c->leg[2][i], c->nleg[2][i]);
+
+        b.leg_to[i] = vsub(ankle, hip);
+        b.knee_way[i] = vsub(knee, hm_mix(hip, ankle, 0.5f));
+    }
     b.rise = 0;
     if (c->kind->stretch) {
         float st = vlen(vsub(mid_of(L, c->chest, c->nchest), mid_of(L, c->hips, c->nhips))) / c->spine;
@@ -1812,6 +1852,14 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
                                b.M[0][2] * u.x + b.M[1][2] * u.y + b.M[2][2] * u.z));
         b.arm[i][1] = vnorm(v3(b.M[0][0] * w.x + b.M[1][0] * w.y + b.M[2][0] * w.z, b.M[0][1] * w.x + b.M[1][1] * w.y + b.M[2][1] * w.z,
                                b.M[0][2] * w.x + b.M[1][2] * w.y + b.M[2][2] * w.z));
+        if (c->kind->legs != NULL) {
+            V3 d = vsub(h, s), e2 = vsub(e, hm_mix(s, h, 0.5f));
+
+            b.hand_to[i] = v3(b.M[0][0] * d.x + b.M[1][0] * d.y + b.M[2][0] * d.z, b.M[0][1] * d.x + b.M[1][1] * d.y + b.M[2][1] * d.z,
+                              b.M[0][2] * d.x + b.M[1][2] * d.y + b.M[2][2] * d.z);
+            b.elbow_way[i] = v3(b.M[0][0] * e2.x + b.M[1][0] * e2.y + b.M[2][0] * e2.z, b.M[0][1] * e2.x + b.M[1][1] * e2.y
+                                + b.M[2][1] * e2.z, b.M[0][2] * e2.x + b.M[1][2] * e2.y + b.M[2][2] * e2.z);
+        }
     }
     follow_pose(c, &b, r);
     for (k = 0; k < n; k++) {
@@ -1855,7 +1903,7 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         hm_part_free(&whole);
         pick.kind = fk;
         pick.ref = c->ref;
-        pick.at = 0;
+        pick.at = pick.strip = 0;
         if (!got || !hm_game_part(fk->bank, keep_prop, &pick, &c->prop)) {
             printf("bonus: Crash's %s model has nothing of it to take\n", fk->what);
             return 0;
@@ -1915,6 +1963,16 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
                 c->elbow[i][c->nelbow[i]++] = (s16)k;
             }
         }
+        for (i = 0; i < 2 && fk->legs != NULL; i++) {
+            const V3 *joint[3] = { fk->legs->hip, fk->legs->knee, fk->legs->ankle };
+            s32 j;
+
+            for (j = 0; j < 3; j++) {
+                if (vlen(vsub(p, joint[j][i])) < fk->legs->r && c->nleg[j][i] < FOLLOW_PART_MAX) {
+                    c->leg[j][i][c->nleg[j][i]++] = (s16)k;
+                }
+            }
+        }
         if (fk->foot != NULL && fk->foot(p) && c->nfeet[p.x > 0] < FOLLOW_PART_MAX) {
             c->feet[p.x > 0][c->nfeet[p.x > 0]++] = (s16)k;
         }
@@ -1938,6 +1996,8 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
     if ((fk->frame != NULL && c->nframe < 8) || c->nhips < 4 || c->nchest < 4 || c->nshoulder[0] < 2 || c->nshoulder[1] < 2
         || c->nelbow[0] < 2 || c->nelbow[1] < 2 || c->nhand[0] < 2 || c->nhand[1] < 2
         || (fk->across_chest && (c->nhalf[0] < 2 || c->nhalf[1] < 2)) || (fk->grip != NULL && (ng[0] == 0 || ng[1] == 0))
+        || (fk->legs != NULL && (c->nleg[0][0] == 0 || c->nleg[0][1] == 0 || c->nleg[1][0] == 0 || c->nleg[1][1] == 0
+                                 || c->nleg[2][0] == 0 || c->nleg[2][1] == 0))
         || (fk->peg != NULL && (c->nfeet[0] < 2 || c->nfeet[1] < 2 || npg[0] == 0 || npg[1] == 0)) || sole <= top) {
         printf("bonus: Crash isn't with his %s as he was (%d %d %d %d %d %d %d %d %d %d %d, grips %d %d, pegs %d %d)\n", fk->what,
                c->nframe, c->nhips, c->nchest, c->nshoulder[0], c->nshoulder[1], c->nfeet[0], c->nfeet[1], c->nelbow[0], c->nelbow[1],
@@ -2065,9 +2125,10 @@ done:
 #define POGO_METAL 0.45f /* the stick's blues as greys this much of their brightness */
 static const char *const PogoNames[] = { "BREATHE", "JUMP", "DAZED", "WIN", "TAZING" };
 
-static s32 pogo_prop(const V3 *p, s32 n, s32 textured) {
+static s32 pogo_prop(const V3 *p, s32 n, s32 textured, s32 strip) {
     s32 k, low = 0, grip = 1;
 
+    (void)strip;
     if (textured) {
         return 0;
     }
@@ -2149,9 +2210,10 @@ static const FollowKind PogoKind = {
 #define CAR_HAND_IN 20.0f    /* his fist this far out along a grip bar from its inner end */
 static const char *const CarNames[] = { "BREATHE", "BANK", "IDLE_A", "TAUNT_A", "DIE", "WIN" };
 
-static s32 car_prop(const V3 *p, s32 n, s32 textured) {
+static s32 car_prop(const V3 *p, s32 n, s32 textured, s32 strip) {
     s32 k;
 
+    (void)strip;
     for (k = 0; k < n; k++) {
         if (fabsf(p[k].x) < CAR_LEVER_X) {
             return 0;
@@ -2218,7 +2280,7 @@ static const FollowKind TankKind = {
  * (those further out than RACE_OUT, from RACE_GRIP_FRONT to RACE_GRIP_BACK along). He sits in Crash's seat (his hips on Crash's
  * bottom, Crash's corners below RACE_HIPS_TOP within RACE_MIDDLE across; his chest from RACE_CHEST_TOP to RACE_CHEST_LOW within
  * RACE_CHEST_HALF across, behind his jaw, RACE_CHEST_FRONT), as big as on foot as Cortex is in his, and all of him below his hips is
- * hidden in the cart (FOLLOW_CUT), as Crash's model has nothing there. His cart is gunmetal (RACE_PAINT, from its blues, RACE_FROM, as
+ * hidden in the cart (FOLLOW_CUT), as Crash's model has nothing there. His cart is gunmetal (GUNMETAL, from its blues, RACE_FROM, as
  * his pogo stick is), its jets' lights yellow as every cart's are. */
 #define RACE_SEAT -64.0f
 #define RACE_OUT 104.0f
@@ -2235,13 +2297,13 @@ static const FollowKind TankKind = {
 #define RACE_CHEST_HALF 46.0f
 #define RACE_CHEST_FRONT -30.0f
 #define RACE_FROM 220.0f
-#define RACE_PAINT 0x80746E /* red | green << 8 | blue << 16: a blue-grey, half as bright as the blues it's painted from */
 static const char *const RaceNames[] = { "BREATHE", "RUN", "HIT", "FALL", "WIN" };
 
-static s32 race_prop(const V3 *p, s32 n, s32 textured) {
+static s32 race_prop(const V3 *p, s32 n, s32 textured, s32 strip) {
     s32 k;
 
     (void)textured;
+    (void)strip;
     for (k = 0; k < n; k++) {
         if (p[k].y > RACE_SEAT || fabsf(p[k].x) > RACE_OUT) {
             return 1;
@@ -2263,7 +2325,7 @@ static s32 race_chest(V3 p) {
 }
 
 static void cart_gunmetal(Follow *c) {
-    hm_paint(c->prop.faces, c->prop.nfaces, c->prop.images, c->prop.nimages, RACE_FROM, RACE_PAINT);
+    hm_paint(c->prop.faces, c->prop.nfaces, c->prop.images, c->prop.nimages, RACE_FROM, GUNMETAL);
 }
 
 static const FollowKind RaceKind = {
@@ -2272,6 +2334,60 @@ static const FollowKind RaceKind = {
     { { -48, -205, 18 }, { 48, -205, 18 } }, { { -90, -115, 35 }, { 90, -115, 35 } }, 25.0f, 25.0f,
     80.0f, -5.0f, { { 0, 0, 0 }, { 0, 0, 0 } },
     1.0f, 0.1f, 0, 1, -RACE_HAND_IN, FOLLOW_CUT, 1, cart_gunmetal, 1,
+};
+
+/* -- riding a fish (Splash Dash) --
+ * On Crash Dash's water track each hero's model is it riding a fish (models\chars\splash\: Crash's and Coco's a pink dolphin, Cortex's
+ * and Brio's a grey shark, Tiny's and Kong's an orca, Dingodile's and Rilla Roo's a blue fish, Ripper Roo's red). Crash's dolphin is
+ * his model's strips from FISH_STRIP on (it's after him in the model), painted gunmetal from its pinks (FISH_FROM), as his cart is.
+ * Its frame is its middle (its corners from FISH_FRONT to FISH_BACK along), which bobs as it swims, leaps out of the water and flips
+ * over as he wins, and spins round as it dives. Crash sits astride it, lies along it holding its head as it swims, and goes up and over
+ * with it as it flips; Pinstripe goes as he does, all of him: his hips on Crash's (Crash's corners below FISH_HIPS_TOP within
+ * FISH_MIDDLE across, behind FISH_HIPS_FRONT), his chest from FISH_CHEST_TOP to FISH_CHEST_LOW within FISH_CHEST_HALF across, behind
+ * his jaw (FISH_CHEST_FRONT), his arms as Crash's (his hands by where they are) and his legs as Crash's (FishLegs), at 0.8 of his
+ * size, as on the bear. */
+#define FISH_STRIP 39
+#define FISH_FRONT -120.0f
+#define FISH_BACK 160.0f
+#define FISH_FROM 315.0f
+#define FISH_HIPS_TOP -130.0f
+#define FISH_MIDDLE 40.0f
+#define FISH_HIPS_FRONT 50.0f
+#define FISH_CHEST_TOP -260.0f
+#define FISH_CHEST_LOW -175.0f
+#define FISH_CHEST_HALF 55.0f
+#define FISH_CHEST_FRONT 30.0f
+static const char *const FishNames[] = { "BREATHE", "SWIM", "TRANS", "WIN", "FALL" };
+static const FollowLegs FishLegs = {
+    { { -45, -100, 85 }, { 45, -100, 85 } }, { { -95, -60, 100 }, { 95, -60, 100 } }, { { -95, -8, 75 }, { 95, -8, 75 } }, 30.0f,
+};
+
+static s32 fish_prop(const V3 *p, s32 n, s32 textured, s32 strip) {
+    (void)p;
+    (void)n;
+    (void)textured;
+    return strip >= FISH_STRIP;
+}
+static s32 fish_frame(V3 p) {
+    return p.z > FISH_FRONT && p.z < FISH_BACK;
+}
+static s32 fish_hips(V3 p) {
+    return p.y > FISH_HIPS_TOP && fabsf(p.x) < FISH_MIDDLE && p.z > FISH_HIPS_FRONT;
+}
+static s32 fish_chest(V3 p) {
+    return p.y > FISH_CHEST_TOP && p.y < FISH_CHEST_LOW && fabsf(p.x) < FISH_CHEST_HALF && p.z > FISH_CHEST_FRONT;
+}
+
+static void fish_gunmetal(Follow *c) {
+    hm_paint(c->prop.faces, c->prop.nfaces, c->prop.images, c->prop.nimages, FISH_FROM, GUNMETAL);
+}
+
+static const FollowKind FishKind = {
+    DB_CharsSplashCrash, KIND_SPLASH, "fish", FishNames, 5,
+    fish_prop, fish_frame, NULL, NULL, fish_hips, fish_chest, NULL,
+    { { -55, -250, 95 }, { 55, -250, 95 } }, { { -70, -160, 70 }, { 70, -160, 70 } }, 25.0f, 25.0f,
+    45.0f, 20.0f, { { -47, -145, -33 }, { 45, -146, -26 } },
+    0.8f, 0, 0, 1, 0, 0, 1, fish_gunmetal, 0, &FishLegs,
 };
 
 /* --- his sounds and card ---
@@ -2440,6 +2556,9 @@ static s32 pin_make(HeroMade *out) {
     }
     if (!follow_make(&RaceKind, &foot, faces, ntri, images, nimage, out)) {
         printf("bonus: Pinstripe has no race cart\n");
+    }
+    if (!follow_make(&FishKind, &foot, faces, ntri, images, nimage, out)) {
+        printf("bonus: Pinstripe has no fish\n");
     }
     if (c1_sprite(&level, "ShadC", 5, CARD_W, CARD_H, PinCard)) {
         out->card = PinCard;

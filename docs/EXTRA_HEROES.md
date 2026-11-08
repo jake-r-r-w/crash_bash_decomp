@@ -165,7 +165,18 @@ sits in Crash's seat as big as on foot (as Cortex is in his), and all of him bel
 in the cart, as in the tank. Crash's body stretches as he drives, cheers and drops (his chest from his
 hips 1.25 times as far as he bobs, 1.7 as he wins, nearly 3 as the cart falls away under him), and so
 does Pinstripe's (`FollowKind.stretch`: his chest and all above it lifted, his body between his waist
-and neck drawn out); his sway as he drives goes at its own pace (Cortex's is half as long).
+and neck drawn out); his sway as he drives goes at its own pace (Cortex's is half as long). Riding a
+fish (step 10, the sixth): Crash rides a pink dolphin, so Pinstripe rides it too, painted the same
+gunmetal (from its pinks; its white belly and eyes kept), at 0.8 of his size as on the bear (`FishKind`:
+the dolphin is Crash's model's strips from the 40th on, as it's after him in the model, and its frame
+is its middle, which bobs, leaps out of the water and flips over as he wins, and spins round as it
+dives). Crash goes all over it, so Pinstripe follows all of him (`FollowKind.legs`, Crash's hips,
+knees and ankles): his hands and feet go where Crash's are from his shoulders and hips (for his size),
+his elbows and knees bent Crash's way and his shoes turned with his shins, and his limbs stretch as
+Crash's do: Crash sits up on it, lies along it holding its head as it swims, kicks his legs up behind
+as it sets off, goes up and over with it as it flips, and does a handstand on it as it dives, holding
+on with his arms stretched long, and so does Pinstripe. Following only which way Crash's arms pointed,
+his own arms' length left him floating above the diving dolphin.
 
 ## How one plays
 
