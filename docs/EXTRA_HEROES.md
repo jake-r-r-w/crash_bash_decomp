@@ -176,7 +176,19 @@ his elbows and knees bent Crash's way and his shoes turned with his shins, and h
 Crash's do: Crash sits up on it, lies along it holding its head as it swims, kicks his legs up behind
 as it sets off, goes up and over with it as it flips, and does a handstand on it as it dives, holding
 on with his arms stretched long, and so does Pinstripe. Following only which way Crash's arms pointed,
-his own arms' length left him floating above the diving dolphin.
+his own arms' length left him floating above the diving dolphin (`FollowKind.reach` now: his hands
+where Crash's are). With a mallet (step 11, the seventh): Crash carries his wooden mallet over his
+shoulder in his left hand, and swings it, slams it down and cheers with it in that hand alone, so
+Pinstripe does too (`MalletKind`: the mallet is Crash's model's strips from the 40th on, its handle its
+corners below its head). He's on foot as big as in Crate Crush (`FollowKind.stand`: on the floor, his
+hips moved as Crash's are and his feet as far off their places as Crash's go, for his height), his
+hands where Crash's are, and the mallet goes with his left (`FollowKind.carry`): its handle through
+his hand's hole (the line along it a fit of its corners, his hand turned so the hole runs along it,
+as on the car's grips), as big against him as Crash's is against Crash, so its head lands on the floor
+as he slams it down, as Crash's does (at Crash's size, held higher in his bigger hand, it would stop
+short of it). Cortex's sixth
+move, #4a7, Crash's model hasn't: his BREATHE stands in. His cheer goes at its own pace, as
+Cortex's is twice as long.
 
 ## How one plays
 

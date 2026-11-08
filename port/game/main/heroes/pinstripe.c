@@ -104,6 +104,11 @@ static const Stand PinRace[] = {
 static const Stand PinSplash[] = {
     { NULL, NULL, STRETCH },
 };
+/* With a mallet the mallet game's, his cheer at its own pace (his base's is twice as long) */
+static const Stand PinMallet[] = {
+    { "WIN", "WIN", LOOP },
+    { NULL, NULL, STRETCH },
+};
 
 /* Each kind of game plays as on foot until he has a model of it; on his bear he's as heavy and as quick as Crash on his */
 const HeroDef HeroPinstripe = {
@@ -111,7 +116,7 @@ const HeroDef HeroPinstripe = {
     { { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinRides, "BREATHE", 0x1000, Crash, 1 },
       { PinPogo, "BREATHE", 0x1000, 0, 1 }, { PinCar, "BREATHE", 0x1000, 0, 1 },
       { PinTank, "BREATHE", 0x1000, 0, 1 }, { PinRace, "BREATHE", 0x1000, 0, 1 },
-      { PinSplash, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES },
+      { PinSplash, "BREATHE", 0x1000, 0, 1 }, { PinMallet, "BREATHE", 0x1000, 0, 1 },
       { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES } },
     PinVoices, "BREATHE", 0, pin_make,
 };
@@ -1403,11 +1408,12 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
     return ride_make(&rider, &out->tex[KIND_POLAR], &out->tex_size[KIND_POLAR], &out->mdl[KIND_POLAR], &out->mdl_size[KIND_POLAR]);
 }
 
-/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles, a race cart, a fish) ---
+/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles, a race cart, a fish, a mallet) ---
  * In some games each hero's model has what the hero holds or stands on in it: Pogo's heroes bounce on things of their own
  * (models\chars\pogo\: Crash and Coco on pogo sticks, Cortex and Brio on their jetpacks, Tiny and Kong on springs), Ballistix's
- * hold the handles of the car the game draws round them (models\chars\ball\), and Crash Dash's sit in their carts
- * (models\chars\race\) or ride their fish (models\chars\splash\). He rides and drives as Crash does (the user, of his
+ * hold the handles of the car the game draws round them (models\chars\ball\), Crash Dash's sit in their carts (models\chars\race\)
+ * or ride their fish (models\chars\splash\), and the mallet game's carry their mallets (models\chars\mallet\). He rides, drives and
+ * carries as Crash does (the user, of his
  * bear: not with Cortex's jetpack), so his model of such a kind (a FollowKind) is Crash's prop from Crash's model of it, moving as it
  * does there (its strips by where they are as Crash first moves: the model's own pose has his arms out, and a first pick by it took
  * Crash's arms and legs), and him with it, following Crash's body frame by frame:
@@ -1415,8 +1421,11 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
  * - his hands on the prop's grips (pose_arm_to: each arm's two bones put to reach them), but a hand Crash lets go with (he waves,
  *   punches the air as he wins) going as Crash's arm goes, as far as Crash's hand has gone off its grip (OFF_FROM to OFF_ALL further);
  * - his feet on its pegs (pose_leg_to), as far off them as Crash's go; or, where Crash sits, his legs folded under him (FOLLOW_SIT);
- *   or, where Crash rides astride (`legs`), all his limbs where Crash's go, his hands and feet where Crash's are from his shoulders
- *   and hips (for his size), his elbows and knees bent Crash's way;
+ *   or, where Crash rides astride (`legs`), his feet where Crash's are from his hips (for his size), his knees bent Crash's way; or,
+ *   where Crash stands (`stand`), on the floor, his feet as far off their places as Crash's go;
+ * - where Crash's hands go all about (`reach`), his hands where Crash's are from his shoulders (for his size), his elbows bent Crash's
+ *   way; and what Crash carries in a hand (`carry`: his mallet), in his, its handle through his hand's hole, as big against him as
+ *   against Crash;
  * - his hips moved as Crash's are, `follow` as far for his height against Crash's; his body above his waist leant `lean` forward and
  *   turned as Crash's turns, his spine and his shoulders' line; his limbs stretching to what they hold when it's out of their reach,
  *   as Crash's do (two_bone);
@@ -1437,8 +1446,7 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
 
 typedef struct Follow Follow;
 /* Crash's legs where he rides astride (a fish): his hips', knees' and ankles' points as he first moves (his left first), each followed by
- * his corners within `r` of it. A kind with them follows all of Crash's limbs where they go, his hands too (not only which way they
- * point), so they stretch as Crash's do (he holds on to his diving fish upside down, his arms stretched long) */
+ * his corners within `r` of it */
 typedef struct {
     V3 hip[2], knee[2], ankle[2];
     float r;
@@ -1472,6 +1480,11 @@ typedef struct {
     void (*paint)(Follow *c); /* the prop's colours (its faces' and images') made his, or NULL */
     s32 stretch;             /* his body stretched up and squashed down as Crash's is (his chest from his hips) */
     const FollowLegs *legs;  /* his legs as Crash's go, from where Crash's are (riding astride); NULL: on its pegs, or sat */
+    s32 reach;               /* his hands where Crash's are from his shoulders (for his size), his arms stretching as far as Crash's do,
+                              * not only pointing Crash's way */
+    s32 stand;               /* stood on the floor as Crash stands, his feet as far off their places as Crash's go (foot) */
+    s32 carry;               /* the prop in his hand (1 his left, 2 his right) and moved with it, its handle (its grip corners' line)
+                              * through his hand's hole, as big against him as against Crash; 0 none */
 } FollowKind;
 
 struct Follow {
@@ -1495,6 +1508,7 @@ struct Follow {
     s32 has_hole[2];             /* if it has one */
     float was[3][3];             /* how Crash's body lies as he first moves (body_lie) */
     float spine;                 /* and how far his chest is from his hips then */
+    V3 bar_at, bar_dir;          /* with FollowKind.carry: where Crash holds its handle then, and the line along it */
     u8 in_arm[MAX_VERTS];        /* his vertices that go with his arms */
     MadeAnim anims[FOLLOW_MOVES];
 };
@@ -1533,6 +1547,30 @@ static V3 mid_of(const V3 *at, const s16 *ids, s32 n) {
         c = vadd(c, at[ids[i]]);
     }
     return n > 0 ? vmul(c, 1.0f / n) : c;
+}
+
+/* The line along corners `ids` of `at` through their middle m: the way they spread furthest (power iteration on their spread) */
+static V3 line_of(const V3 *at, const s16 *ids, s32 n, V3 m) {
+    V3 d = { 0, 1, 0 };
+    s32 i, j;
+
+    for (i = 0; i < n; i++) {
+        d = vlen(vsub(at[ids[i]], m)) > vlen(d) ? vsub(at[ids[i]], m) : d;
+    }
+    for (j = 0; j < 30; j++) {
+        V3 w = { 0, 0, 0 };
+
+        for (i = 0; i < n; i++) {
+            V3 p = vsub(at[ids[i]], m);
+
+            w = vadd(w, vmul(p, vdot(p, d)));
+        }
+        if (vlen(w) <= 0) {
+            break;
+        }
+        d = vnorm(w);
+    }
+    return d;
 }
 
 /* How Crash's body lies, his corners at `at`: a frame (its columns across, up and forward) of his spine, hips to chest, and his
@@ -1627,6 +1665,22 @@ static s32 hand_hole(s32 arm, V3 *mid, V3 *axis) {
     return 0;
 }
 
+/* Where a hand's hole is in a pose (r): its loop's middle (hand_hole's as he stands); arm 0 his left hand's */
+static V3 hole_at(const V3 *r, s32 arm) {
+    V3 m = { 0, 0, 0 };
+    s32 c, j, hand = arm == 0 ? 2 : 1;
+
+    for (c = 0; c < NCaps; c++) {
+        if (Caps[c].n >= 3 && HandOf[Caps[c].loop[0]] == hand) {
+            for (j = 0; j < Caps[c].n; j++) {
+                m = vadd(m, r[Caps[c].loop[j]]);
+            }
+            return vmul(m, 1.0f / Caps[c].n);
+        }
+    }
+    return m;
+}
+
 /* An arm put so its hand holds a bar: its hole's middle (`mid` as he stands, its axis `axis`, hand_hole) at `target` and that axis
  * along `bar` (either way: a bar's the same both ways along), turned at the wrist from how the forearm carries it, `grip` of the way
  * (0: as the forearm carries it); its elbow bent toward `hint`, its shoulder where it stands. The wrist's put where the hand needs it,
@@ -1711,6 +1765,7 @@ typedef struct {
     V3 arm[2][2];
     V3 grip[2];
     float rise;                  /* how far his chest is lifted from his hips as Crash's body stretches (his rig's units) */
+    V3 bar;                      /* with FollowKind.carry: the line along its handle */
 } FollowBody;
 
 /* His pose on the prop (in his rig) as Crash's is (b) */
@@ -1731,14 +1786,18 @@ static void follow_pose(const Follow *c, const FollowBody *b, V3 *r) {
         t = vadd(waist, bash_unturned(b->M, vsub(t, waist)));
         t = hm_turn_x(t, waist, -fk->lean);
         t.y -= b->rise;
-        if (fk->legs != NULL) {
+        if (fk->reach) {
             /* his hand where Crash's is from his shoulder, for his size (his arm stretching as far as Crash's does), his elbow bent
              * Crash's way */
             own = vadd(Arms[i].joint[0], vmul(hm_turn_x(rig_dir(b->hand_to[i]), o, -fk->lean), c->follow / c->k));
             up = hm_turn_x(rig_dir(b->elbow_way[i]), o, -fk->lean);
         }
         hint = vnorm(hm_mix(v3(Arms[i].side, -0.3f, -0.5f), up, b->off[i]));
-        if (c->has_hole[i]) {
+        if (fk->carry == i + 1) {
+            /* his hand round the handle of what he carries, where Crash's is */
+            pose_arm_grip(r, &Arms[i], i == 0 ? 2 : 1, c->hole[i], c->hole_axis[i], own,
+                          hm_turn_x(bash_unturned(b->M, rig_dir(b->bar)), o, -fk->lean), hint, 1);
+        } else if (c->has_hole[i]) {
             /* its hand round the grip's bar (the handle's, the car's grip bars: both along x), as far as Crash's holds his */
             pose_arm_grip(r, &Arms[i], i == 0 ? 2 : 1, c->hole[i], c->hole_axis[i], hm_mix(t, own, b->off[i]), bar, hint, 1 - b->off[i]);
         } else {
@@ -1765,7 +1824,7 @@ static void follow_pose(const Follow *c, const FollowBody *b, V3 *r) {
             V3 hip = vadd(Legs[i].joint[0], move);
 
             pose_leg_to(r, &Legs[i], hip, vadd(hip, vmul(rig_dir(b->leg_to[i]), c->follow / c->k)), rig_dir(b->knee_way[i]), 1);
-        } else if (fk->peg != NULL) {
+        } else if (fk->peg != NULL || fk->stand) {
             pose_leg_to(r, &Legs[i], vadd(Legs[i].joint[0], move), vadd(c->ankle[i], vmul(rig_dir(b->feet[i]), c->follow / c->k)),
                         v3(Legs[i].side * 0.3f, 0, 1), 0);
         } else {
@@ -1799,7 +1858,7 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
     float now[3][3];
     s32 n = Verts + Copies + CapVerts, i, j, k;
     FollowBody b;
-    Moved mv;
+    Moved mv, pm;
 
     if (!hm_model_at(&c->prop, c->anim[a], (float)f, F)) {
         memcpy(F, c->ref, sizeof(V3) * (size_t)c->prop.corners);
@@ -1829,6 +1888,11 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
         b.leg_to[i] = vsub(ankle, hip);
         b.knee_way[i] = vsub(knee, hm_mix(hip, ankle, 0.5f));
     }
+    if (c->kind->carry) {
+        /* what he carries: how it's moved from as Crash first moves (a fit of its handle), and its line */
+        hm_fit(c->ref, L, c->grips[0], c->ngrips[0], &pm);
+        b.bar = hm_turned(&pm, c->bar_dir);
+    }
     b.rise = 0;
     if (c->kind->stretch) {
         float st = vlen(vsub(mid_of(L, c->chest, c->nchest), mid_of(L, c->hips, c->nhips))) / c->spine;
@@ -1846,13 +1910,13 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
             b.grip[i] = stick_in_rig(c, prop_drawn(c, vadd(grip, v3(Arms[i].side * c->kind->grip_in, 0, 0))));
         }
         b.feet[i] = c->nfeet[i] > 0 ? vsub(mid_of(L, c->feet[i], c->nfeet[i]), mid_of(c->ref, c->feet[i], c->nfeet[i])) : v3(0, 0, 0);
-        b.off[i] = c->kind->grip != NULL ? hm_smooth(OFF_FROM, OFF_ALL, vlen(vsub(h, grip)) - c->hand_off[i]) : 1;
+        b.off[i] = c->kind->grip != NULL && !c->kind->carry ? hm_smooth(OFF_FROM, OFF_ALL, vlen(vsub(h, grip)) - c->hand_off[i]) : 1;
         /* unturned by his body's turn (its transpose) */
         b.arm[i][0] = vnorm(v3(b.M[0][0] * u.x + b.M[1][0] * u.y + b.M[2][0] * u.z, b.M[0][1] * u.x + b.M[1][1] * u.y + b.M[2][1] * u.z,
                                b.M[0][2] * u.x + b.M[1][2] * u.y + b.M[2][2] * u.z));
         b.arm[i][1] = vnorm(v3(b.M[0][0] * w.x + b.M[1][0] * w.y + b.M[2][0] * w.z, b.M[0][1] * w.x + b.M[1][1] * w.y + b.M[2][1] * w.z,
                                b.M[0][2] * w.x + b.M[1][2] * w.y + b.M[2][2] * w.z));
-        if (c->kind->legs != NULL) {
+        if (c->kind->reach) {
             V3 d = vsub(h, s), e2 = vsub(e, hm_mix(s, h, 0.5f));
 
             b.hand_to[i] = v3(b.M[0][0] * d.x + b.M[1][0] * d.y + b.M[2][0] * d.z, b.M[0][1] * d.x + b.M[1][1] * d.y + b.M[2][1] * d.z,
@@ -1864,6 +1928,15 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
     follow_pose(c, &b, r);
     for (k = 0; k < n; k++) {
         out[k] = hm_moved(&mv, rig_on_stick(c, r[k]));
+    }
+    if (c->kind->carry) {
+        /* what he carries in his hand's hole, where Crash holds it, as big against him as against Crash */
+        V3 at = rig_on_stick(c, hole_at(r, c->kind->carry - 1)), from = hm_moved(&pm, c->bar_at);
+
+        for (k = 0; k < c->prop.nvert; k++) {
+            out[n + k] = hm_moved(&mv, vadd(at, vmul(vsub(L[c->prop.corner_of[k]], from), c->follow)));
+        }
+        return;
     }
     for (k = 0; k < c->prop.nvert; k++) {
         out[n + k] = hm_moved(&mv, prop_drawn(c, L[c->prop.corner_of[k]]));
@@ -1933,10 +2006,12 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
                 c->frame[c->nframe++] = (s16)k;
             }
             if (fk->grip != NULL && fk->grip(p)) {
-                g[p.x > 0] = vadd(g[p.x > 0], p);
-                ng[p.x > 0]++;
-                if (c->ngrips[p.x > 0] < FOLLOW_PART_MAX) {
-                    c->grips[p.x > 0][c->ngrips[p.x > 0]++] = (s16)k;
+                s32 side = fk->carry ? 0 : p.x > 0; /* what he carries has one handle, its grips all of it */
+
+                g[side] = vadd(g[side], p);
+                ng[side]++;
+                if (c->ngrips[side] < FOLLOW_PART_MAX) {
+                    c->grips[side][c->ngrips[side]++] = (s16)k;
                 }
             }
             if (fk->peg != NULL && fk->peg(p)) {
@@ -1987,7 +2062,7 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         V3 p = c->ref[k];
 
         for (i = 0; i < 2 && !(fk->prop != NULL && c->prop.in_part[k]); i++) {
-            if (vlen(vsub(p, fk->grip != NULL ? c->grip_at[i] : fk->hand[i])) < fk->hand_r && p.z < fk->hand_back
+            if (vlen(vsub(p, fk->grip != NULL && !fk->carry ? c->grip_at[i] : fk->hand[i])) < fk->hand_r && p.z < fk->hand_back
                 && c->nhand[i] < FOLLOW_PART_MAX) {
                 c->hand[i][c->nhand[i]++] = (s16)k;
             }
@@ -1995,7 +2070,8 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
     }
     if ((fk->frame != NULL && c->nframe < 8) || c->nhips < 4 || c->nchest < 4 || c->nshoulder[0] < 2 || c->nshoulder[1] < 2
         || c->nelbow[0] < 2 || c->nelbow[1] < 2 || c->nhand[0] < 2 || c->nhand[1] < 2
-        || (fk->across_chest && (c->nhalf[0] < 2 || c->nhalf[1] < 2)) || (fk->grip != NULL && (ng[0] == 0 || ng[1] == 0))
+        || (fk->across_chest && (c->nhalf[0] < 2 || c->nhalf[1] < 2)) || (fk->grip != NULL && (ng[0] == 0 || (ng[1] == 0 && !fk->carry)))
+        || (fk->carry && c->ngrips[0] < 3) || (fk->stand && (c->nfeet[0] < 2 || c->nfeet[1] < 2))
         || (fk->legs != NULL && (c->nleg[0][0] == 0 || c->nleg[0][1] == 0 || c->nleg[1][0] == 0 || c->nleg[1][1] == 0
                                  || c->nleg[2][0] == 0 || c->nleg[2][1] == 0))
         || (fk->peg != NULL && (c->nfeet[0] < 2 || c->nfeet[1] < 2 || npg[0] == 0 || npg[1] == 0)) || sole <= top) {
@@ -2024,6 +2100,10 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         pg[0] = vmul(pg[0], 1.0f / npg[0]);
         pg[1] = vmul(pg[1], 1.0f / npg[1]);
         c->origin = v3(0, c->peg_y, (pg[0].z + pg[1].z) / 2);
+    } else if (fk->stand) {
+        /* stood on the floor: his rig's floor point between Crash's feet; as tall against Crash's height */
+        c->follow = fk->scale * PIN_HEIGHT / (sole - top);
+        c->origin = v3(0, sole, (mid_of(c->ref, c->feet[0], c->nfeet[0]).z + mid_of(c->ref, c->feet[1], c->nfeet[1]).z) / 2);
     } else {
         /* sat in it: his hips on Crash's; as tall above them against Crash's */
         V3 h = mid_of(c->ref, c->hips, c->nhips);
@@ -2045,6 +2125,16 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
             c->palm[i] = c->hole[i];
         }
         c->ankle[i] = fk->peg != NULL ? v3(stick_in_rig(c, pg[i]).x, Legs[i].joint[2].y, Legs[i].joint[2].z) : Legs[i].joint[2];
+    }
+    if (fk->carry) {
+        /* its handle's line, and where on it Crash holds it (his hand's middle's nearest) */
+        V3 m = mid_of(c->ref, c->grips[0], c->ngrips[0]), h = mid_of(c->ref, c->hand[fk->carry - 1], c->nhand[fk->carry - 1]);
+
+        if (!c->has_hole[fk->carry - 1]) {
+            goto done;
+        }
+        c->bar_dir = line_of(c->ref, c->grips[0], c->ngrips[0], m);
+        c->bar_at = vadd(m, vmul(c->bar_dir, vdot(vsub(h, m), c->bar_dir)));
     }
     /* his faces and images, then the prop's */
     if (fk->paint != NULL) {
@@ -2387,7 +2477,54 @@ static const FollowKind FishKind = {
     fish_prop, fish_frame, NULL, NULL, fish_hips, fish_chest, NULL,
     { { -55, -250, 95 }, { 55, -250, 95 } }, { { -70, -160, 70 }, { 70, -160, 70 } }, 25.0f, 25.0f,
     45.0f, 20.0f, { { -47, -145, -33 }, { 45, -146, -26 } },
-    0.8f, 0, 0, 1, 0, 0, 1, fish_gunmetal, 0, &FishLegs,
+    0.8f, 0, 0, 1, 0, 0, 1, fish_gunmetal, 0, &FishLegs, 1, 0, 0,
+};
+
+/* -- with a mallet (Mallet Mash) --
+ * Each hero's model in the mallet game is it with its big mallet (models\chars\mallet\: six moves, BREATHE, MEDIUM as it runs, HIT
+ * knocked down, ATTACK the swing, WIN, and #4a7, which Crash's hasn't: his stand-in for it is his BREATHE). Crash carries his over his
+ * shoulder in his left hand and swings it with that hand alone: the mallet is his model's strips from MALLET_STRIP on (after him in the
+ * model), its handle its corners below its head (below MALLET_HEAD). Pinstripe stands, runs, swings, falls and cheers as Crash does,
+ * as big as on foot: stood on the floor, his feet as far off their places as Crash's go (Crash's corners below MALLET_FEET_TOP more
+ * than MALLET_MIDDLE aside), his hips Crash's (from MALLET_HIPS_TOP to MALLET_HIPS_LOW within MALLET_MIDDLE across), his chest from
+ * MALLET_CHEST_TOP to MALLET_CHEST_LOW within MALLET_CHEST_HALF across, his hands where Crash's are (for his size), and his left round
+ * the mallet's handle, which goes with it, as big against him as Crash's is against Crash. */
+#define MALLET_STRIP 39
+#define MALLET_HEAD -340.0f
+#define MALLET_FEET_TOP -50.0f
+#define MALLET_MIDDLE 30.0f
+#define MALLET_HIPS_TOP -180.0f
+#define MALLET_HIPS_LOW -115.0f
+#define MALLET_CHEST_TOP -260.0f
+#define MALLET_CHEST_LOW -215.0f
+#define MALLET_CHEST_HALF 55.0f
+static const char *const MalletNames[] = { "BREATHE", "MEDIUM", "ATTACK", "HIT", "WIN" };
+
+static s32 mallet_prop(const V3 *p, s32 n, s32 textured, s32 strip) {
+    (void)p;
+    (void)n;
+    (void)textured;
+    return strip >= MALLET_STRIP;
+}
+static s32 mallet_grip(V3 p) {
+    return p.y > MALLET_HEAD;
+}
+static s32 mallet_hips(V3 p) {
+    return p.y > MALLET_HIPS_TOP && p.y < MALLET_HIPS_LOW && fabsf(p.x) < MALLET_MIDDLE;
+}
+static s32 mallet_chest(V3 p) {
+    return p.y > MALLET_CHEST_TOP && p.y < MALLET_CHEST_LOW && fabsf(p.x) < MALLET_CHEST_HALF;
+}
+static s32 mallet_foot(V3 p) {
+    return p.y > MALLET_FEET_TOP && fabsf(p.x) > MALLET_MIDDLE;
+}
+
+static const FollowKind MalletKind = {
+    DB_CharsMalletCrash, KIND_MALLET, "mallet", MalletNames, 5,
+    mallet_prop, NULL, mallet_grip, NULL, mallet_hips, mallet_chest, mallet_foot,
+    { { -54, -292, 15 }, { 54, -292, 15 } }, { { -112, -222, -8 }, { 115, -225, 30 } }, 45.0f, 45.0f,
+    45.0f, 1e9f, { { -160, -232, -85 }, { 115, -136, -15 } },
+    1.0f, 0, 0, 1, 0, 0, 1, NULL, 0, NULL, 1, 1, 1,
 };
 
 /* --- his sounds and card ---
@@ -2559,6 +2696,9 @@ static s32 pin_make(HeroMade *out) {
     }
     if (!follow_make(&FishKind, &foot, faces, ntri, images, nimage, out)) {
         printf("bonus: Pinstripe has no fish\n");
+    }
+    if (!follow_make(&MalletKind, &foot, faces, ntri, images, nimage, out)) {
+        printf("bonus: Pinstripe has no mallet\n");
     }
     if (c1_sprite(&level, "ShadC", 5, CARD_W, CARD_H, PinCard)) {
         out->card = PinCard;
