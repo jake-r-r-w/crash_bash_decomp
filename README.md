@@ -2,16 +2,16 @@
 
 Crash Bash (USA, `SCUS_945.70`) for the PlayStation, decompiled to C. It gives you two things:
 
-- **A native PC port**: a 64-bit Windows game. Not an emulator.
+- **A native PC port**: a 64-bit game for Windows and Linux. Not an emulator.
 - **A matching decomp**: C that rebuilds the retail disc byte for byte.
 
 You need your own copy of the game for either. None of its files are included.
 
 ## Native PC port
 
-1. Download the zip from the [latest release](https://github.com/jake-r-r-w/crash_bash_decomp/releases/latest) and unzip it.
-2. Put the disc image of your legal copy of Crash Bash (USA) (a `.cue` with its `.bin`, a raw `.bin` or an `.iso`) next to `crashbash.exe`, or copy `CRASHBSH.DAT` from the `CRASHBSH` folder on it there.
-3. Run `crashbash.exe`.
+1. Download the zip for Windows or the `.tar.gz` for Linux from the [latest release](https://github.com/jake-r-r-w/crash_bash_decomp/releases/latest) and unpack it.
+2. Put the disc image of your legal copy of Crash Bash (USA) (a `.cue` with its `.bin`, a raw `.bin` or an `.iso`) next to `crashbash.exe` (`crashbash` on Linux), or copy `CRASHBSH.DAT` from the `CRASHBSH` folder on it there.
+3. Run `crashbash.exe` (`crashbash` on Linux).
 
 | Feature           | Details                                                |
 |-------------------|--------------------------------------------------------|
@@ -31,7 +31,7 @@ You need your own copy of the game for either. None of its files are included.
 | **Quick start**   | Skip the logos and the loading screens                 |
 | **Cheat menu**    | The original's hidden cheats, in the pause menu        |
 
-It needs 64-bit Windows 10 or 11 and Direct3D 12. Only the USA version's data is supported, and playing with several controllers hasn't been tested.
+It needs 64-bit Windows 10 or 11 and Direct3D 12, or 64-bit Linux with glibc 2.34 or newer (Ubuntu 22.04, Debian 12, Fedora 35 and later) and Vulkan. The Linux version hasn't been played on a real Linux PC with a graphics card yet, only in software. No Mac version yet. Only the USA version's data is supported, and playing with several controllers hasn't been tested.
 
 ### Build the port yourself
 
