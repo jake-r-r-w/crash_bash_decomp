@@ -56,8 +56,9 @@ for (const text of [ROOT, ROOT.replaceAll('\\', '/'), home, home.replaceAll('\\'
 if (fs.existsSync(DATA)) {
     const data = fs.readFileSync(DATA);
     /* The code entries (ASSETS.md: 1E7, 2CC to 2D8 and 3DF) are the overlays, whose strings and tables are the decomp's own C and so in
-       the program too: the samples are of everything else. Where each entry is comes from the port's copy of the game's table. */
-    const table = fs.readFileSync(path.join(PORT, 'game/main/main.c'), 'utf8').match(/file DatIndex\[\d+\] = \{([^}]*)\}/)[1];
+       the program too: the samples are of everything else. Where each entry is comes from the port's copy of the game's table (its size
+       a sum since the extra heroes' empty entries were added after the game's 992, which come after all of those). */
+    const table = fs.readFileSync(path.join(PORT, 'game/main/main.c'), 'utf8').match(/file DatIndex\[[^\]]*\] = \{([^}]*)\}/)[1];
     const words = table.replace(/\/\*.*?\*\//gs, '').match(/0x[0-9A-Fa-f]+|\d+/g).map(Number);
     const code = [0x1E7, ...Array.from({ length: 13 }, (_, i) => 0x2CC + i), 0x3DF].map(e => [words[e * 2] * 2048, words[e * 2] * 2048 + words[e * 2 + 1]]);
     let found = 0;

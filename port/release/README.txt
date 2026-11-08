@@ -52,12 +52,12 @@ always did until you turn them on:
 EXTRA HEROES
 
 With your own copy of Crash Bandicoot (USA) too, Ripper Roo and Pinstripe from
-its boss fights can play, as they looked there, with their own laughs. Put that disc image (a .cue
-with its .bin, a raw .bin or an .iso) in the same folder as crashbash.exe, or in
-a folder called discs next to it, and turn on EXTRA HEROES on the Game page,
-under Settings in the menu the game opens with. Each has a card of his own in
-the character select, in a third row under the others, and the computer players
-can pick them too.
+its boss fights can play, as they looked there, with their own laughs. Put that
+disc image (a .cue with its .bin, a raw .bin or an .iso) in the same folder as
+crashbash.exe, or in a folder called discs next to it, and turn on EXTRA HEROES
+on the Game page, under Settings in the menu the game opens with. Each has a
+card of his own in the character select, in a third row under the others, and
+the computer players can pick them too.
 
 They're made from the image each time the game starts, so keep it there: nothing
 of it is copied or kept. Roo's made for every game: Crate Crush and the others on
@@ -67,8 +67,11 @@ his head, Tank, where he has Dingodile's flamethrower, Crash Dash, in a red race
 cart of his own, or on the water track riding a red fish, holding on with his
 tongue, the mallet game, where he swings his mallet with it in his mouth, the
 gem game, riding a red dino, and the kegs game, with his keg balanced on his
-head. Pinstripe so far rides a polar bear in the polar games and plays the
-others on foot, his tommy gun out as he attacks and as he wins.
+head. Pinstripe's made for every game too, doing as Crash does: on foot, his
+tommy gun out as he attacks and as he wins, riding Crash's polar bear, bouncing
+on Crash's pogo stick, in Crash's Ballistix car and tank, in a gunmetal race
+cart of his own, riding a gunmetal dolphin and dino, swinging Crash's mallet and
+carrying a keg under his arm.
 
 
 MODS

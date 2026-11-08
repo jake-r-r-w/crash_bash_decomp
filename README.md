@@ -10,7 +10,7 @@ You need your own copy of the game for either. None of its files are included.
 ## Native PC port
 
 1. Download the zip from the [latest release](https://github.com/jake-r-r-w/crash_bash_decomp/releases/latest) and unzip it.
-2. Copy `CRASHBSH.DAT` from the `CRASHBSH` folder of your legal copy of Crash Bash (USA) next to `crashbash.exe`.
+2. Put the disc image of your legal copy of Crash Bash (USA) (a `.cue` with its `.bin`, a raw `.bin` or an `.iso`) next to `crashbash.exe`, or copy `CRASHBSH.DAT` from the `CRASHBSH` folder on it there.
 3. Run `crashbash.exe`.
 
 | Feature           | Details                                                |
@@ -24,7 +24,8 @@ You need your own copy of the game for either. None of its files are included.
 | **Anti-aliasing** | 2x, 4x or 8x                                           |
 | **Filtering**     | Smooth textures, or the original's square texels       |
 | **Upscaling**     | Textures at 2x or 4x                                   |
-| **Texture packs** | Replace any texture with your own PNG                  |
+| **Mods**          | Textures and game files from zips, on a Mods page      |
+| **Extra heroes**  | Ripper Roo and Pinstripe, from your own Crash Bandicoot (USA) |
 | **Controllers**   | Analog sticks and rumble, or play on the keyboard      |
 | **Saves**         | Kept in a file, with no memory card to set up          |
 | **Quick start**   | Skip the logos and the loading screens                 |
