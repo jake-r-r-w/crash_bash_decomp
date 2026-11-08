@@ -71,7 +71,7 @@ head. Pinstripe's made for every game too, doing as Crash does: on foot, his
 tommy gun out as he attacks and as he wins, riding Crash's polar bear, bouncing
 on Crash's pogo stick, in Crash's Ballistix car and tank, in a gunmetal race
 cart of his own, riding a gunmetal dolphin and dino, swinging Crash's mallet and
-carrying a keg under his arm.
+carrying a keg under his arm. Both stand on the tournament's podium as themselves.
 
 
 MODS
