@@ -1129,9 +1129,9 @@ void CheatFightLog(void) {
 
             if (!shown) {
                 shown = 1;
-                for (z = 0x1000; z >= -0x1000; z -= 0x200) {
+                for (z = TankArenaMaxZ - 0x200; z >= 0; z -= 0x200) {
                     printf("  map z %6d: ", z);
-                    for (x = -0x1000; x <= 0x1000; x += 0x200) {
+                    for (x = 0; x < TankArenaMaxX; x += 0x200) {
                         printf("%c", TankMapCell(x, z) ? '#' : '.');
                     }
                     printf("\n");

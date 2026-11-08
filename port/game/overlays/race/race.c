@@ -452,11 +452,13 @@ s32 RaceGreenSmokeBoostSteps[17] = {
 };
 void *RaceGreenSmokeBoostAnimList[3] = { &RaceGreenSmokeBoostSteps, 0, 0 };
 ScriptInit RaceGreenSmokeBoostScriptInit = { 0, (void *)&RaceGreenSmokeBoostAnimList, 0x402 };
-s32 GlobSteps0[3] = { (s32)0x80110000, 0x4007006F, 0x18005 };
-s32 GlobSteps1[3] = { (s32)0x80110000, 0x4080002B, 0x18005 };
-s32 GlobSteps2[3] = { (s32)0x80110000, 0x41800020, 0x18005 };
-s32 GlobSteps3[3] = { (s32)0x80110000, 0x42000001, 0x8000 };
-void *GlobAnimList[6] = { &GlobSteps0, &GlobSteps1, &GlobSteps3, &GlobSteps2, 0, 0 };
+/* PC: the glob's four step lists, one list in the PS1's order: each ends 0x8005 1, which carries on to the next word, so on the PS1 the
+ * first runs on through the others (GlobSteps0 to 3 in the decomp, each 3 words, at 0x800C6E38 on) */
+s32 GlobSteps[12] = {
+    (s32)0x80110000, 0x4007006F, 0x18005, (s32)0x80110000, 0x4080002B, 0x18005,
+    (s32)0x80110000, 0x41800020, 0x18005, (s32)0x80110000, 0x42000001, 0x8000,
+};
+void *GlobAnimList[6] = { &GlobSteps[0], &GlobSteps[3], &GlobSteps[9], &GlobSteps[6], 0, 0 };
 ScriptInit GlobScriptInit = { 0, (void *)&GlobAnimList, 0x401 };
 s32 TrackGlobSteps[3] = { (s32)0x80110000, 0x4100001C, 0x8000 };
 void *TrackGlobAnimList[3] = { &TrackGlobSteps, 0, 0 };
@@ -4095,7 +4097,7 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
             best = -1;
             for (i = 0; i < 4; i++) {
                 if (!((taken >> i) & 1)) {
-                    if (Heroes[i].hero_score < Heroes[best].hero_score || best == -1) {
+                    if (best == -1 || Heroes[i].hero_score < Heroes[best].hero_score) {
                         best = i;
                     }
                 }

@@ -1264,7 +1264,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
             best = -1;
             for (i = 0; i < 4; i++) {
                 if (!((taken >> i) & 1)) {
-                    if (Heroes[i].hero_score > Heroes[best].hero_score || best == -1) {
+                    if (best == -1 || Heroes[i].hero_score > Heroes[best].hero_score) {
                         best = i;
                     }
                 }
@@ -1386,7 +1386,7 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
             best = -1;
             for (i = 0; i < 4; i++) {
                 if (!((taken >> i) & 1)) {
-                    if (Heroes[i].hero_score > Heroes[best].hero_score || best == -1) {
+                    if (best == -1 || Heroes[i].hero_score > Heroes[best].hero_score) {
                         best = i;
                     }
                 }
@@ -1492,7 +1492,7 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1) {
       best = -1;
       for (i = 0; i < 4; i++)
       {
-        if ((!((taken >> i) & 1)) && ((Heroes[i].hero_score > Heroes[best].hero_score) || (best == (-1))))
+        if ((!((taken >> i) & 1)) && ((best == (-1)) || (Heroes[i].hero_score > Heroes[best].hero_score)))
         {
           best = i;
         }

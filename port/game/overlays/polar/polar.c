@@ -798,22 +798,23 @@ s32 BeamDelay = 0;
 subengine *PolarIceObjects[80] = {0};
 PolarRiserObj *UkaMaskRisers[16] = {0};
 subengine *UkaMaskObjects[16] = {0};
-u16 PolarShadowFrames0[31][2] = {
+/* PC: the shadows' frame tables, by hero, one list in the PS1's order (0x800D61D0 on): a hero's animation can run longer than its table,
+ * and the PS1 reads on into the next there (bash/polar_ovl.h names each one's start). */
+u16 PolarShadowFrames[469][2] = {
+    /* PolarShadowFrames0, from 0 */
     { 0x4180, 0 }, { 0x4181, 0 }, { 0x4182, 0 }, { 0x4183, 0 }, { 0x4184, 0 }, { 0x4185, 0 },
     { 0x4186, 0 }, { 0x4187, 0 }, { 0x4188, 0 }, { 0x4189, 0 }, { 0x418A, 0 }, { 0x418B, 0 },
     { 0x418C, 0 }, { 0x418D, 0 }, { 0x4188, 0 }, { 0x4189, 0 }, { 0x418A, 0 }, { 0x418B, 0 },
     { 0x418C, 0 }, { 0x418D, 0 }, { 0x418E, 0 }, { 0x418F, 0 }, { 0x4190, 0 }, { 0x4191, 0 },
     { 0x4192, 0 }, { 0x4193, 0 }, { 0x4194, 0 }, { 0x4195, 0 }, { 0x4196, 0 }, { 0x4197, 0 },
     { 0x4198, 0 },
-};
-u16 PolarShadowFrames1[26][2] = {
+    /* PolarShadowFrames1, from 31 */
     { 0x4080, 0 }, { 0x4081, 0 }, { 0x4082, 0 }, { 0x4083, 0 }, { 0x4084, 0 }, { 0x4085, 0 },
     { 0x4086, 0 }, { 0x4087, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 },
     { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4089, 0 }, { 0x408A, 0 }, { 0x408B, 0 },
     { 0x408C, 0 }, { 0x408D, 0 }, { 0x408E, 0 }, { 0x408F, 0 }, { 0x4090, 0 }, { 0x4091, 0 },
     { 0x4092, 0 }, { 0x4093, 0 },
-};
-u16 PolarShadowFrames2[63][2] = {
+    /* PolarShadowFrames2, from 57 */
     { 0x4080, 0 }, { 0x4081, 0 }, { 0x4082, 0 }, { 0x4083, 0 }, { 0x4084, 0 }, { 0x4085, 0 },
     { 0x4086, 0 }, { 0x4087, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 },
     { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 },
@@ -825,15 +826,13 @@ u16 PolarShadowFrames2[63][2] = {
     { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4089, 0 }, { 0x408A, 0 },
     { 0x408B, 0 }, { 0x408C, 0 }, { 0x408D, 0 }, { 0x408E, 0 }, { 0x408F, 0 }, { 0x4090, 0 },
     { 0x4091, 0 }, { 0x4092, 0 }, { 0x4093, 0 },
-};
-u16 PolarShadowFrames3[26][2] = {
+    /* PolarShadowFrames3, from 120 */
     { 0x4080, 0 }, { 0x4081, 0 }, { 0x4082, 0 }, { 0x4083, 0 }, { 0x4084, 0 }, { 0x4085, 0 },
     { 0x4086, 0 }, { 0x4087, 0 }, { 0x4088, 0 }, { 0x4089, 0 }, { 0x408A, 0 }, { 0x408B, 0 },
     { 0x408C, 0 }, { 0x408D, 0 }, { 0x408E, 0 }, { 0x408F, 0 }, { 0x4090, 0 }, { 0x4091, 0 },
     { 0x4092, 0 }, { 0x4093, 0 }, { 0x4080, 0 }, { 0x4081, 0 }, { 0x4082, 0 }, { 0x4083, 0 },
     { 0x4084, 0 }, { 0x4085, 0 },
-};
-u16 PolarShadowFrames4[41][2] = {
+    /* PolarShadowFrames4, from 146 */
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4186, 0 },
     { 0x4187, 0 }, { 0x4188, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 },
@@ -841,16 +840,14 @@ u16 PolarShadowFrames4[41][2] = {
     { 0x4189, 0 }, { 0x4188, 0 }, { 0x4187, 0 }, { 0x4186, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
-};
-u16 PolarShadowFrames5[35][2] = {
+    /* PolarShadowFrames5, from 187 */
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4186, 0 },
     { 0x4187, 0 }, { 0x4188, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 },
     { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4188, 0 }, { 0x4187, 0 }, { 0x4186, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
-};
-u16 PolarShadowFrames6[42][2] = {
+    /* PolarShadowFrames6, from 222 */
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4186, 0 }, { 0x4187, 0 }, { 0x4188, 0 },
     { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 },
@@ -858,8 +855,7 @@ u16 PolarShadowFrames6[42][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
-};
-u16 PolarShadowFrames7[46][2] = {
+    /* PolarShadowFrames7, from 264 */
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4200, 0 }, { 0x4201, 0 },
     { 0x4202, 0 }, { 0x4203, 0 }, { 0x4204, 0 }, { 0x4203, 0 }, { 0x4202, 0 }, { 0x4201, 0 },
@@ -868,8 +864,7 @@ u16 PolarShadowFrames7[46][2] = {
     { 0x4202, 0 }, { 0x4203, 0 }, { 0x4204, 0 }, { 0x4203, 0 }, { 0x4202, 0 }, { 0x4201, 0 },
     { 0x4200, 0 }, { 0x4200, 0 }, { 0x4201, 0 }, { 0x4202, 0 }, { 0x4203, 0 }, { 0x4204, 0 },
     { 0x4203, 0 }, { 0x4202, 0 }, { 0x4201, 0 }, { 0x4200, 0 },
-};
-u16 PolarShadowFrames8[46][2] = {
+    /* PolarShadowFrames8, from 310 */
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4200, 0 }, { 0x4200, 0 },
     { 0x4201, 0 }, { 0x4201, 0 }, { 0x4202, 0 }, { 0x4202, 0 }, { 0x4203, 0 }, { 0x4203, 0 },
@@ -878,8 +873,7 @@ u16 PolarShadowFrames8[46][2] = {
     { 0x4201, 0 }, { 0x4201, 0 }, { 0x4202, 0 }, { 0x4202, 0 }, { 0x4203, 0 }, { 0x4203, 0 },
     { 0x4204, 0 }, { 0x4204, 0 }, { 0x4203, 0 }, { 0x4203, 0 }, { 0x4202, 0 }, { 0x4202, 0 },
     { 0x4201, 0 }, { 0x4201, 0 }, { 0x4200, 0 }, { 0x4200, 0 },
-};
-u16 PolarShadowFrames9[50][2] = {
+    /* PolarShadowFrames9, from 356 */
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4200, 0 }, { 0x4201, 0 }, { 0x4202, 0 },
     { 0x4203, 0 }, { 0x4204, 0 }, { 0x4203, 0 }, { 0x4202, 0 }, { 0x4201, 0 }, { 0x4200, 0 },
@@ -889,8 +883,7 @@ u16 PolarShadowFrames9[50][2] = {
     { 0x4201, 0 }, { 0x4200, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 },
-};
-u16 PolarShadowFrames10[63][2] = {
+    /* PolarShadowFrames10, from 406 */
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 },
     { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 },
@@ -5080,6 +5073,14 @@ static inline void TBSetHeroEffect(EXTtransmuter *e, s32 i, s32 k) {
    it and jump2 deletes the test, but until then its read keeps the mode test's
    view base live, which is why retail holds that base in a1 for a single lh
    (MATCHING.md, Diff patterns). */
+/* PC: the beam's hero, or for nobody (5, or anything past the four) an empty one. The PS1 read past its four heroes there, into
+ * HeroOrders' small numbers, so nobody's mode was never 0x50 or 0x56 and nobody's status had no 0x2000; the port's memory there is
+ * anything. */
+static HeroInfo PolarNoHero;
+static HeroInfo *PolarBeamHero(HeroInfo *heroes, s32 i) {
+    return (u32)i < 4 ? &heroes[i] : &PolarNoHero;
+}
+
 void PlotTransmuterBeam(NAS *m) {
     EXTtransmuter *ext;
     HeroInfo *h;
@@ -5806,7 +5807,7 @@ void PlotTransmuterBeam(NAS *m) {
                             ext->itplayer = 5;
                         }
                     }
-                    if (PolarClock != 0 || (hb3 = Heroes, h = &hb3[ext->itplayer], h->hero_mode == 0x50) || (h->hero_status & 0x2000)) {
+                    if (PolarClock != 0 || (hb3 = Heroes, h = PolarBeamHero(hb3, ext->itplayer), h->hero_mode == 0x50) || (h->hero_status & 0x2000)) {
                         if (ext->it_eng->sfx != NULL) {
                             StopSfx(ext->it_eng->sfx);
                         }
@@ -5902,7 +5903,7 @@ void PlotTransmuterBeam(NAS *m) {
                         ext->itplayer = 5;
                     }
                     hb4 = Heroes;
-                    h = &hb4[ext->itplayer];
+                    h = PolarBeamHero(hb4, ext->itplayer);
                     mode = h->hero_mode;
                     if (mode == 0x56 || mode == 0x50 || (h->hero_status & 0x2000) || PolarClock != 0) {
                         k3 = 0;

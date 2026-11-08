@@ -2875,7 +2875,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
             best = -1;
             for (m = 0; m < 4; m++) {
                 if (!((taken >> m) & 1)) {
-                    if (Heroes[m].hero_score > Heroes[best].hero_score || best == -1) {
+                    if (best == -1 || Heroes[m].hero_score > Heroes[best].hero_score) {
                         best = m;
                     }
                 }
@@ -2987,7 +2987,7 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
             best = -1;
             for (i = 0; i < 4; i++) {
                 if (!((taken >> i) & 1)) {
-                    if (Heroes[i].hero_score > Heroes[best].hero_score || best == -1) {
+                    if (best == -1 || Heroes[i].hero_score > Heroes[best].hero_score) {
                         best = i;
                     }
                 }
@@ -3201,7 +3201,7 @@ void ChaseChooseWinnerRank(s32 arg0, u16 arg1) {
     for (i = 0; i < 4; i++) {
         best = -1;
         for (j = 0; j < 4; j++) {
-            if (!((used >> j) & 1) && (Heroes[j].hero_score > Heroes[best].hero_score || best == -1)) {
+            if (!((used >> j) & 1) && (best == -1 || Heroes[j].hero_score > Heroes[best].hero_score)) {
                 best = j;
             }
         }

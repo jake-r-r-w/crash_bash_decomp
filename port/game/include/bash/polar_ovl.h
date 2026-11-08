@@ -1192,9 +1192,19 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player);
 void PolarHeroesCollide(s32 p1, s32 p2);
 
 /* PolarUpdateShadow: shadow frame tables, indexed by the hero's Aindex - 1. */
-extern u16 PolarShadowFrames0[][2], PolarShadowFrames1[][2], PolarShadowFrames2[][2], PolarShadowFrames3[][2];
-extern u16 PolarShadowFrames4[][2], PolarShadowFrames5[][2], PolarShadowFrames6[][2], PolarShadowFrames7[][2];
-extern u16 PolarShadowFrames8[][2], PolarShadowFrames9[][2], PolarShadowFrames10[][2];
+/* PC: one list in the PS1's order (polar.c), each table a place in it */
+extern u16 PolarShadowFrames[469][2];
+#define PolarShadowFrames0 (PolarShadowFrames + 0)
+#define PolarShadowFrames1 (PolarShadowFrames + 31)
+#define PolarShadowFrames2 (PolarShadowFrames + 57)
+#define PolarShadowFrames3 (PolarShadowFrames + 120)
+#define PolarShadowFrames4 (PolarShadowFrames + 146)
+#define PolarShadowFrames5 (PolarShadowFrames + 187)
+#define PolarShadowFrames6 (PolarShadowFrames + 222)
+#define PolarShadowFrames7 (PolarShadowFrames + 264)
+#define PolarShadowFrames8 (PolarShadowFrames + 310)
+#define PolarShadowFrames9 (PolarShadowFrames + 356)
+#define PolarShadowFrames10 (PolarShadowFrames + 406)
 /* the polar.h sequences the code names directly are declared there */
 void PolarUpdateShadow(s32 player);
 void PolarPreMoveHero(s32 player);

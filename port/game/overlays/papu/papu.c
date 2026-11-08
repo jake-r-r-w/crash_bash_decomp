@@ -327,8 +327,9 @@ u16 PapuCrateMixPos = 0;
 u16 PapuDropPos = 0;
 u16 PapuFirstCrates = 0;
 s16 PapuUnused1 = 0;
-u16 PapuMaxCrates = 0;
-s16 PapuUnused2[2] = {0};
+/* PC: four maximums, one list, as the PS1 wrote them (the decomp's PapuMaxCrates, a pad and PapuUnused2, written past the first);
+ * only the first is read. In the port the last write landed past PapuMaxCrates in whatever came next. */
+u16 PapuMaxCrates[4] = {0};
 u16 PapuCrateCounts[4] = {0};
 s16 PapuUnused3[8] = {0};
 u8 PapuCrateMix[64] = {0};
@@ -465,14 +466,14 @@ void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u
     } while (0);
     i = 0;
     PapuFirstCrates = arg0;
-    e = &PapuMaxCrates;
+    e = PapuMaxCrates;
     do {
     } while (0);
     p[0] = k;
     e[3] = arg0;
     e[2] = arg0;
     e[1] = arg0;
-    PapuMaxCrates = arg0;
+    PapuMaxCrates[0] = arg0;
     do {
     } while (0);
     for (j = i; j < n4; j++) {
@@ -514,7 +515,7 @@ void PapuCrateMaster(void) {
         return;
     }
     if (PapuCrateTimer == 0) {
-        if (CrateCounts[0] < PapuMaxCrates) {
+        if (CrateCounts[0] < PapuMaxCrates[0]) {
             PapuCrateTimer = Random(15) + 15;
             PapuDropCrates(1);
         } else {
@@ -1003,7 +1004,7 @@ void PlotPapuBoss(NAS *nas) {
                 PapuFloorObj->flags &= ~0x8000;
             }
             PapuBossCount = 6;
-            PapuMaxCrates = (&PapuMaxCrates)[1] = 0;
+            PapuMaxCrates[0] = PapuMaxCrates[1] = 0;
             GotoLinkAnim(anim, 3);
             PapuSetColumns(PapuAttackWave);
             break;
@@ -1014,7 +1015,7 @@ void PlotPapuBoss(NAS *nas) {
             break;
         case 5:
             PapuCrateTimer = 0x1E;
-            PapuMaxCrates = (&PapuMaxCrates)[1] = 6;
+            PapuMaxCrates[0] = PapuMaxCrates[1] = 6;
             break;
         case 6:
             PapuFloorTimer = 1;

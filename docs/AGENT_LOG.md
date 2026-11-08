@@ -77,12 +77,6 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
-- **Port, lists read on past one variable:** the PS1 code sometimes reads a list from one variable on into the ones after it, as they
-  lay together in its data; the port's linker doesn't keep them together (and the port's copy dropped some of those words as unused),
-  so such a read gets the wrong memory. The podium had two (its move names and score panel, fixed 2026-11-08). Known still: Papu's
-  `e = &PapuMaxCrates; e[1..3] = ...` and `(&PapuMaxCrates)[1] = ...` (papu.c), which on the PS1 wrote `PapuUnused2` and
-  `PapuCrateCounts[0]`, and in the port write padding for the last. A tell in the decomp: a `*Unused*` array right after a variable
-  whose address is passed as a list (`llvm-nm` shows where the port put them).
 - **Port, a black last pixel row:** at a window that isn't the picture's own shape (1920x1000 with widescreen on or off, 3840x2001 maximised), the bottom row of the picture is black right across, on every level; at 1333x1000 it isn't (2026-11-03). Most likely the 240 lines' scale to the window's height rounding one row short.
 - **Port, a test window maximised now and then:** a test run comes out 3840x2001 (maximised) instead of its `--window` size: once in four runs at once after the window-size change, and once alone, right after a build, at 1920x1000 (2026-11-03); the repeat of each didn't. Test runs take the default settings, and only `keep_on_screen` maximises, for a size that doesn't fit, which 1920x1000 does: so either it saw a smaller screen for a moment, or something outside the game maximised the window. A third time it happened in the middle of an `--adventure` run, between two shots in Crashball. A fourth on 2026-11-03, in a 1333x1000 Oxide fight reached through the menus: its shots from vblank 11500 on came out 2668x2001, sheared, and a rerun matched the other build on every shot.
 - **Port, the present queue:** at 60 and above with vsync on, `Present` takes the whole vblank, as its queue stays full, and the clock was 60 to 70 ms behind after loading, closing by about 1 ms a second. That could mean a few frames of input lag against 30. Not looked into, and nobody's complained.
@@ -153,6 +147,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Gotchas
 
 **Port test runs**
+- **The PS1 reads on past one variable into the next; the port's linker doesn't keep them together.** Where the game indexes a
+  table past its end, takes a scalar's address as a list, or runs a script past its last word, the PS1 got the bytes laid next to it
+  and the port gets anything (the port's copy also dropped some of those words as unused). `node port/tests/playtest.mjs modes --asan
+  --vblanks 6000` finds them (ASan puts a guard after every global; 900 vblanks is too short to reach some, as Mallet Mash's stage
+  change): each report says which global it ran past. The fix is the PS1's layout for those variables (one array or struct in its
+  order, `configs/USA/sym.*.txt` for its addresses), the value the PS1 read there, or the same result without the read. 2026-11-08
+  fixed the podium (two), Bonk, Papu (two), Tank, Polar (two), Ballistix, Toxic Dash, the AI skill and 13 winner rankings.
 - **A `same` baseline goes stale with the machine:** twice (2026-11-02, 2026-11-05) every picture differed on the last commit's own build, with the sound the same. Before trusting a fail, save a baseline from the last commit's build (`git stash push -- port/game`, build, `same --save`, pop, build, compare). And once a run's window came out 1345x1009, not its tile's 320x240, so its pictures "differed": check the shots' sizes, and run it again. Once, too, the node process sat idle after its runs had all finished: stop it, and score the files against `baseline.json` (scratch/same_score.mjs).
 - **A game starts its heroes more than once** (`extra_heroes_start` runs two or three times, first with the on-foot table): read a player's last `extra heroes:` line for what the game draws it as.
 - **A crash in `dbase_setup_blocks` as a level loads** is the loader's small nodes running out (one for each animation of each model loaded; the PS1 had 64). An extra hero's models keep all their animations: Pinstripe's on foot and on his bear in Manic Panic did it. The port has `SMALL_NODES` (512) now; a crash there again means something else.
@@ -518,6 +519,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-08: The port's reads past one variable into the next, at the user's word (the podium had two). An ASan sweep of every mode at
+  6000 vblanks (`modes --asan --vblanks 6000`; 900 was too short) found them: Mallet Mash's stage times (`BonkRoundTime`, its later
+  stages 0, 0, 600, 600 in place of 600, 600, 450, 300: a real difference), Papu's crate maximums and throw table end, Tank's grid maps
+  read off their edges, Polar's shadow frame tables and transmuter beam, Ballistix's aim angle 32, Toxic Dash's glob script, the AI
+  skill in a warp room, and 13 winner rankings reading `Heroes[-1]` (harmless). Each now has the PS1's layout, the PS1's value or the
+  same result without the read (Gotchas). ASan 39 of 39, `same` 14 of 14, `bosses` 4 of 4, `same --hero roo` 14 of 14 (Mallet Mash
+  saved again, as its stages now change on time). Not played by the user yet.
 - 2026-11-08: The user saw "double copies of the hero on the right" on the podium. That's the fourth, stood at the foot of the third
   step in front of whoever's on it, and retail does the same (`scratch/podium_ra.mjs` opens retail's podium in RetroArch, by RAM
   writes). Looking found the port's own podium bugs: a stray extra hero of the level, on foot, inside the top step (a player with no

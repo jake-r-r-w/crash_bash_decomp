@@ -291,8 +291,10 @@ shell_setup bonk_shell_info = { { 0x80, 0x200, 0x190 } };
 u16 BonkHeroModels[10] = {
     0, 0x54, 0x55, 0x56, 0x57, 0x5A, 0x5B, 0x58, 0x59, 0,
 };
-s32 BonkRoundTime = 0x258;
-s32 BonkUnused2[4] = { 0x258, 0x258, 0x1C2, 0x12C };
+/* PC: each stage's frames, one list. The PS1's was its first (BonkRoundTime) and the next four as the words after it (BonkUnused2 in
+ * the decomp), read on past the first; the port's linker doesn't keep them together, so the later stages got padding's 0 or the wrong
+ * times (600, 0, 0, 600, 600 in place of 600, 600, 600, 450, 300). */
+s32 BonkRoundTime[5] = { 0x258, 0x258, 0x258, 0x1C2, 0x12C };
 s32 BonkStoolSfx[4] = { 0x733, 0x734, 0x735, 0x736 };
 s32 BonkTargetSfx[4] = { 0x71D, 0x71E, 0x71F, 0x720 };
 s32 BonkObjectSfx[4] = { 0x3F5, 0x3F6, 0x3F7, 0x3F8 };
@@ -332,7 +334,7 @@ void BonkInitEntries(void) {
     BonkEntryCur = 0;
     BonkCrateCount = 0;
     BonkRoundState = 0;
-    BonkRoundTimer = BonkRoundTime;
+    BonkRoundTimer = BonkRoundTime[0];
     for (i = 0; i < 10; i++) {
         BonkEntries[i].unk0 = 0x100;
         BonkEntries[i].flag = 0;
@@ -406,7 +408,7 @@ void PlotBonkStool(NAS *nas) {
             e->flags &= 0xFFFF7FFF;
             if (BonkRoundTimer == 0) {
                 e->sub->entity = 0x2015;
-                p = &BonkRoundTime;
+                p = BonkRoundTime;
                 BonkRoundTimer = p[++BonkRoundState];
             } else {
                 e->sub->entity = 0x2002;
@@ -883,7 +885,7 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
             best = -1;
             for (i = 0; i < 4; i++) {
                 if (!((taken >> i) & 1)) {
-                    if (Heroes[i].hero_score > Heroes[best].hero_score || best == -1) {
+                    if (best == -1 || Heroes[i].hero_score > Heroes[best].hero_score) {
                         best = i;
                     }
                 }
@@ -995,7 +997,7 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
             best = -1;
             for (i = 0; i < 4; i++) {
                 if (!((taken >> i) & 1)) {
-                    if (Heroes[i].hero_score > Heroes[best].hero_score || best == -1) {
+                    if (best == -1 || Heroes[i].hero_score > Heroes[best].hero_score) {
                         best = i;
                     }
                 }
@@ -1209,7 +1211,7 @@ void BonkChooseWinnerRank(s32 arg0, u16 arg1) {
     for (i = 0; i < 4; i++) {
         best = -1;
         for (j = 0; j < 4; j++) {
-            if (!((used >> j) & 1) && (Heroes[j].hero_score > Heroes[best].hero_score || best == -1)) {
+            if (!((used >> j) & 1) && (best == -1 || Heroes[j].hero_score > Heroes[best].hero_score)) {
                 best = j;
             }
         }

@@ -90,7 +90,7 @@ typedef struct BonkEntry {
 } BonkEntry;
 extern s32 BonkEntryCount[7];
 extern s32 BonkStoolCount[7];
-extern s32 BonkRoundTime;
+extern s32 BonkRoundTime[5]; /* PC: a list (bonk.c) */
 extern BonkEntry BonkEntries[10];
 extern s32 BonkEntryCur;
 extern s32 BonkCrateTimer;

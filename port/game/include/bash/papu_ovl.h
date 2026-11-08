@@ -85,7 +85,7 @@ extern u16 PapuPickupActive;
 extern u16 PapuPickupDelay;
 extern u16 PapuPickupTimer;
 extern u16 PapuCrateTimer;
-extern u16 PapuMaxCrates;
+extern u16 PapuMaxCrates[4]; /* PC: a list (papu.c) */
 
 typedef struct Slot40 {
     /* 0x00 */ void *flag;  /* tested for zero */

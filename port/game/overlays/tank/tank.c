@@ -519,13 +519,16 @@ s32 JoeDieAnim[35] = {
     0x4116, 0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x411C, 0x411D, 0x411E, 0x411F, 0x4120,
     0x4121, 0,
 };
-s32 JoeRecoilAnim[31] = {
+/* PC: JoeRecoilAnim and the two grid maps after it, together and in the PS1's order (0x800CAC38, 0x800CACB4, 0x800CACFC), as the game
+ * reads the maps off their edges (a tile out of the arena: a few before the first, and on into the second) and on the PS1 gets the
+ * bytes next to them there (bash/tank_ovl.h names each). */
+TankGridBlock TankGrid = {
+    {
     0x4080, 0x4081, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A,
     0x408B, 0x408C, 0x408D, 0x408E, 0x408F, 0x4090, 0x4091, 0x4092, 0x4093, 0x4094, 0x4095,
     0x4096, 0x4097, 0x4098, 0x4099, 0x409A, 0x409B, 0x409C, 0x409D, 0,
+    },
 };
-u8 TankLevelsGridMapMiss[72] = {0};
-u8 TankLevelsGridMapTank[72] = {0};
 NAS *PU_TA_list[3] = {0};
 TA_player TA_players[4] = {0};
 /* TankUnused0..4, TankUnusedTable and TankUnusedGrid: TA_InitLevel clears all but the table and

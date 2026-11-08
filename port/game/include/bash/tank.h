@@ -248,8 +248,6 @@ void InitTankBossRocketTurret(NAS *);
 void PlotTankBossRocketTurret(NAS *);
 void CheckMineToBoss(s32 PosX, s32 PosY, s32);
 void SetMoeJoeMode(s32 player, s32 mode);
-extern u8 TankLevelsGridMapTank[9 *8];
-extern u8 TankLevelsGridMapMiss[9 *8];
 extern PreMap TANK_PREMAP;
 extern LevSpec TANKSpecifics;
 extern shell_setup tank_shell_info;

@@ -103,7 +103,17 @@ extern s32 JoeMoveAnim[];
 extern s32 MoeDieAnim[];
 extern s32 JoeDieAnim[];
 extern s32 MoeRecoilAnim[];
-extern s32 JoeRecoilAnim[];
+/* PC: JoeRecoilAnim and the two grid maps (9 x 8 tiles) after it, together as on the PS1 (tank.c); the maps as bytes of the whole, so a
+ * tile read off a map's edge is the PS1's neighbouring byte */
+typedef struct {
+    s32 recoil[31];
+    u8 miss[72];
+    u8 tank[72];
+} TankGridBlock;
+extern TankGridBlock TankGrid;
+#define JoeRecoilAnim (TankGrid.recoil)
+#define TankLevelsGridMapMiss ((u8 *)&TankGrid + offsetof(TankGridBlock, miss))
+#define TankLevelsGridMapTank ((u8 *)&TankGrid + offsetof(TankGridBlock, tank))
 extern s32 TankShotBounce;
 
 

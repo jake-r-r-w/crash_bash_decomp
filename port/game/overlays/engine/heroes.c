@@ -1522,7 +1522,9 @@ void SetTweakAi(void) {
                     t[i].quality = ((u16 *)AiHumanRoundTweakTable)[9];
                 }
             } else {
-                c = ((u8 *)g)[g->mode + 0xAB];
+                /* PC: a game mode's (modeSkill has the 33 game modes'); a warp room's or the podium's read on past it and then far past
+                 * the table, where there's no computer player to use it */
+                c = g->mode < 0x21 ? ((u8 *)g)[g->mode + 0xAB] : 0;
                 g->adventure.aiSkill[i] = c;
                 t[i].level = ((u16 *)AiSkillTable)[c];
                 if (g->heroCpu[i] != 0) {
