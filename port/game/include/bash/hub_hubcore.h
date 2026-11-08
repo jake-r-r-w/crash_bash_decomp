@@ -9,7 +9,7 @@
 #include "bash/hub_ovl.h"
 
 extern s32 PodiumTies;
-extern u8 *PodiumAnimName;
+extern u8 *PodiumAnimNames[5]; /* PC: one list, ended by NULL (hubcore.c) */
 extern u8 PodiumSpawns[];
 
 typedef struct HubPt {
@@ -144,7 +144,7 @@ extern u8 PodiumScore1[];
 extern u8 PodiumScore2[];
 extern u8 PodiumScore3[];
 extern u8 PodiumScore4[];
-extern s32 PodiumScoreCount;
+extern PlaceRec PodiumScorePanel[11]; /* PC: the score panel's records (hubcore.c) */
 
 void HubOpenDoorMenu(s32 arg0);
 

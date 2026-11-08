@@ -561,11 +561,20 @@ sounds, and his card. From his disc (Crash Bandicoot's formats, `c1_` in heromak
    foot is; and the podium loads it and plays it its base's script (`extra_hero_podium`). Roo stands
    as he stands, laughs as he cheers, and as he loses reels his head (the dizzy start of his boss
    fight's defeat, as Rilla Roo's script goes round its LOSE, and the rest of it falls flat). The
-   podium sets every player's hero to none, and the extra heroes are placed again as it loads, so a
-   hero chosen counts as taken too (`taken`): Pinstripe had Cortex's number while player 3 was Cortex,
-   and two Cortexes stood there. `--mode 43` gives a test run the podium as at a tournament's end
-   (Crash, Coco, Cortex and Brio, or extra heroes in their places, player 1 first: titles.c), and the
-   hero check plays it.
+   podium sets every player's hero to none (9), as it draws its own models, and the extra heroes are
+   placed again as it loads: one given a hero number back was made a hero of the level too, on foot,
+   and stood inside the top step (its face showed at the front of it), so a player with none keeps
+   none now; and a hero chosen counts as taken in placing them (`taken`). The user saw "double copies
+   of the hero on the right": the fourth stands on the floor at the foot of the third step, in front
+   of whoever's on it (`PodiumSpawns`), and the original game draws it so too (seen in RetroArch,
+   `scratch/podium_ra.mjs`). Looking into it found two of the port's own bugs on the podium, each a
+   list the PS1 read on past one variable into the next (the port's linker doesn't keep them
+   together): its four moves' names (`PodiumAnimNames` now), so only the first loaded for the game's
+   own heroes and they vanished whenever they played another; and its score panel's records
+   (`PodiumScorePanel` now, from `PodiumScoreCount` and the 106 words after it, which the port's copy
+   had lost), so the panel of faces and points never showed. `--mode 43` gives a test run the podium
+   as at a tournament's end (Crash, Coco, Cortex and Brio, or extra heroes in their places, player 1
+   first: titles.c), and the hero check plays it.
 15. **His card and sounds.** `c1_sprite64` the 64 x 64 face his boss fight shows (his tongue is his
    health), `c1_sound` his sounds.
 

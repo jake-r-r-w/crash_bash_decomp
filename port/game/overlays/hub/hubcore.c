@@ -1528,8 +1528,8 @@ void InitialisePodium(void) {
         if (own != 0) {
             k = PodiumOwnBank[i];
         }
-        for (j = 0; (&PodiumAnimName)[j] != NULL;) {
-            dbase_mesh_anim_name_load(&HeroModelBank[k], (&PodiumAnimName)[j++]);
+        for (j = 0; PodiumAnimNames[j] != NULL;) {
+            dbase_mesh_anim_name_load(&HeroModelBank[k], PodiumAnimNames[j++]);
         }
         PodiumSpawnHero(i, &((HubSpawnEnt (*)[4])PodiumSpawns)[PodiumTies][i]);
         PodiumInitScript(i, own != 0 ? own : name);
@@ -1984,7 +1984,7 @@ void PodiumShowScores(void) {
         n = GAME->adventure.points[3];
         PodiumScore4[1] = n % 10 + 0x30;
         PodiumScore4[0] = n / 10 % 10 + 0x30;
-        PlaceEngineSlot(6, &PodiumScoreCount);
+        PlaceEngineSlot(6, PodiumScorePanel);
         e->XYZ.x = 0x28;
         e->XYZ.y = 0x21C;
         e->flags |= 0x10008000;
@@ -3191,13 +3191,30 @@ u8 PodiumSpawns[384] = {
 };
 s32 PodiumCheerTimer = 0;
 s32 PodiumCheerKind = 0;
-u8 *PodiumAnimName = (void *)&PodiumAnimWinBreathe;
-void *PodiumAnims[4] = { &PodiumAnimWin, &PodiumAnimLoseBreathe, &PodiumAnimLose, 0 };
+/* PC: the podium's moves, which it loads from each hero's model, as one list. The PS1's were its first name and the rest as two
+ * neighbouring words (PodiumAnimName and PodiumAnims), read as one list past the first; the port's linker doesn't keep them together, so
+ * only WIN_BREATHE loaded, and on the podium the game's own heroes vanished whenever they played another move. */
+u8 *PodiumAnimNames[5] = { (u8 *)PodiumAnimWinBreathe, (u8 *)PodiumAnimWin, (u8 *)PodiumAnimLoseBreathe, (u8 *)PodiumAnimLose, NULL };
 u8 PodiumScore1[4] = { 0x31, 0x30, 0, 0 };
 u8 PodiumScore2[4] = { 0x32, 0x30, 0, 0 };
 u8 PodiumScore3[4] = { 0x33, 0x30, 0, 0 };
 u8 PodiumScore4[12] = { 0x34, 0x30, 0, 0, 0x35, 0x30, 0, 0, 0x36, 0x30, 0, 0 };
-s32 PodiumScoreCount = 4;
+/* PC: the podium's score panel, as records (ApplyPlaceRecs): its box, the trophy, and each player's face and points. The PS1's are
+ * PodiumScoreCount (the first record's type, 4) and the 106 words after it (PodiumUnused in the decomp), read as one list from it; the
+ * port's copy had lost those words, so its panel was never drawn. */
+PlaceRec PodiumScorePanel[11] = {
+    { 4, 0, 0x230, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xA, 0x118, 0x40, 0, 0x1800, 0x100, -0x80, 0, 0, NULL, 0, 0x1C, 0x2001, 2 },
+    { 8, 0, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, 0x3D, 0x40, 0, 0, 0, 0, 0, 0, PodiumScore1, 4, 0, 0, 0 },
+    { 8, 0x70, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 1, 0 },
+    { 3, 0xAD, 0x40, 0, 0, 0, 0, 0, 0, PodiumScore2, 4, 0, 0, 0 },
+    { 8, 0x150, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 2, 0 },
+    { 3, 0x18D, 0x40, 0, 0, 0, 0, 0, 0, PodiumScore3, 4, 0, 0, 0 },
+    { 8, 0x1C0, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 3, 0 },
+    { 3, 0x1FD, 0x40, 0, 0, 0, 0, 0, 0, PodiumScore4, 4, 0, 0, 0 },
+    { 0 },
+};
 FxDef HubSparkFxDef = { 0xC, 0xF00, HubInitSparks, HubDrawSparks };
 NAS *PodiumHeroNas[4] = {0};
 PodiumObj *PodiumTrophyObj = 0;

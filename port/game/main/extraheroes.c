@@ -215,6 +215,8 @@ static s32 kind_of(s32 bank) {
     return KIND_FOOT;
 }
 
+#define NO_HERO 9 /* a player's hero (GameState.heroes) where it has none in the level: the podium's (InitialisePodiumFirst) */
+
 /* Whether another player has hero `name`: in a game (heroes), or chosen (heroChoice; the podium sets every player's heroes to none) */
 static s32 taken(s32 name, s32 except) {
     s32 i;
@@ -251,7 +253,11 @@ void extra_heroes_assign(void) {
             for (name = Crash; name <= Kanga && taken(name, i); name++) {
             }
         }
-        GAME->heroes[i] = (u8)name;
+        /* a player with no hero in this level keeps none: the podium sets none (9) for everyone, as it draws its own models, and one
+         * given its number back was made a hero too, its base's model (or its own on foot) stood beside it */
+        if (GAME->heroes[i] != NO_HERO) {
+            GAME->heroes[i] = (u8)name;
+        }
         GAME->heroChoice[i] = (u8)name; /* the panel's tallies show the face of who was chosen */
         PlayerBase[i] = name;
     }

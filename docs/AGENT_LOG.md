@@ -77,6 +77,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
+- **Port, lists read on past one variable:** the PS1 code sometimes reads a list from one variable on into the ones after it, as they
+  lay together in its data; the port's linker doesn't keep them together (and the port's copy dropped some of those words as unused),
+  so such a read gets the wrong memory. The podium had two (its move names and score panel, fixed 2026-11-08). Known still: Papu's
+  `e = &PapuMaxCrates; e[1..3] = ...` and `(&PapuMaxCrates)[1] = ...` (papu.c), which on the PS1 wrote `PapuUnused2` and
+  `PapuCrateCounts[0]`, and in the port write padding for the last. A tell in the decomp: a `*Unused*` array right after a variable
+  whose address is passed as a list (`llvm-nm` shows where the port put them).
 - **Port, a black last pixel row:** at a window that isn't the picture's own shape (1920x1000 with widescreen on or off, 3840x2001 maximised), the bottom row of the picture is black right across, on every level; at 1333x1000 it isn't (2026-11-03). Most likely the 240 lines' scale to the window's height rounding one row short.
 - **Port, a test window maximised now and then:** a test run comes out 3840x2001 (maximised) instead of its `--window` size: once in four runs at once after the window-size change, and once alone, right after a build, at 1920x1000 (2026-11-03); the repeat of each didn't. Test runs take the default settings, and only `keep_on_screen` maximises, for a size that doesn't fit, which 1920x1000 does: so either it saw a smaller screen for a moment, or something outside the game maximised the window. A third time it happened in the middle of an `--adventure` run, between two shots in Crashball. A fourth on 2026-11-03, in a 1333x1000 Oxide fight reached through the menus: its shots from vblank 11500 on came out 2668x2001, sheared, and a rerun matched the other build on every shot.
 - **Port, the present queue:** at 60 and above with vsync on, `Present` takes the whole vblank, as its queue stays full, and the clock was 60 to 70 ms behind after loading, closing by about 1 ms a second. That could mean a few frames of input lag against 30. Not looked into, and nobody's complained.
@@ -512,6 +518,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-08: The user saw "double copies of the hero on the right" on the podium. That's the fourth, stood at the foot of the third
+  step in front of whoever's on it, and retail does the same (`scratch/podium_ra.mjs` opens retail's podium in RetroArch, by RAM
+  writes). Looking found the port's own podium bugs: a stray extra hero of the level, on foot, inside the top step (a player with no
+  hero, 9, now keeps none); its four moves' names and its score panel's records were lists the PS1 read on past one variable into the
+  next, which the port's linker doesn't keep together, so the game's own heroes vanished whenever they played a move but the first, and
+  the panel of faces and points never showed (`PodiumAnimNames`, `PodiumScorePanel`). The same kind of read is in Papu's
+  `(&PapuMaxCrates)[1..3]` (Open leads). Not played by the user yet.
 - 2026-11-08: The podium and win screens with the extra heroes, at the user's word (7.12.5). The win screens (a game's winner's close-up,
   the tallies with their cards) were right; on the tournament's podium (the hub's mode 0x2B) each stood as the hero whose number it
   borrows, as the podium draws warp-room models by number and plays their four podium moves by place in the model and frame. Each
