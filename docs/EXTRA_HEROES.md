@@ -79,8 +79,9 @@ playing.
 every game (2026-11-04) and called him done (2026-11-05). Two things are left out at their word: his
 name is never written in the game, and the podium and win screens weren't looked at with him.
 
-**Under way:** Pinstripe (`pinstripe`, the same disc, `main/heroes/pinstripe.c`): on foot (step 3,
-2026-11-05); every other game plays him on foot for now. His model has his tommy gun in every frame,
+**Under way:** Pinstripe (`pinstripe`, the same disc, `main/heroes/pinstripe.c`): every kind of game
+has a model of his (2026-11-08); the last five (race cart, fish, mallet, dino, keg) aren't played by
+the user yet. On foot (step 3, 2026-11-05) first. His model has his tommy gun in every frame,
 and at the user's word he has it only as he attacks: its faces (and its front grip, in his left
 hand's piece) are on copies of their corners of their own, folded into his hands the rest of the
 time. His arms are rigged (two bones each, from a shoulder, elbow and wrist placed by hand), as his
@@ -192,7 +193,16 @@ Cortex's is twice as long. Riding a dino (step 12, the eighth): as on the fish (
 Crash followed, at 0.8 of his size): Crash's blue dino (his model's first 5 strips, a crest down its
 middle, and all from the 45th), painted gunmetal from its blues, its tan belly kept, its frame its back
 under him (it squashes as it runs, so it's a fit of its middle); he sits astride it as it runs, stands
-up on its back as it skids, and leaps up off it as he wins, as Crash does.
+up on its back as it skids, and leaps up off it as he wins, as Crash does. With a keg (step 13, the
+ninth and last): Crash's keg model has two meshes, the second with his keg, which all his moves move
+(`FollowKind.mesh`); he carries it under his left arm, his hand round its far side, in every move. So
+`KegKind` is the mallet's again (on foot, his hands where Crash's are; Crash stands the same in both),
+the keg (that mesh's strips from the 40th on) going with Pinstripe's left hand as Crash's goes with
+his. Scaled to him as the mallet is, it was half as big again as the game's other kegs lying about,
+so it keeps its own size (`carry_kept`): it's where it would be for his size against his shoulder,
+and his hand reaches round it where Crash's is. So all of his games have models of their own now
+(2026-11-08), each made the user's way: the bear, the stick, the car and the tank looked over by the
+user, the last five made in one go to look over at the end.
 
 ## How one plays
 

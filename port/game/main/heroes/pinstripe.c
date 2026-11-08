@@ -112,6 +112,10 @@ static const Stand PinMallet[] = {
 static const Stand PinDino[] = {
     { NULL, NULL, STRETCH },
 };
+/* With a keg the kegs game's, each over all of his base's */
+static const Stand PinKegs[] = {
+    { NULL, NULL, STRETCH },
+};
 
 /* Each kind of game plays as on foot until he has a model of it; on his bear he's as heavy and as quick as Crash on his */
 const HeroDef HeroPinstripe = {
@@ -120,7 +124,7 @@ const HeroDef HeroPinstripe = {
       { PinPogo, "BREATHE", 0x1000, 0, 1 }, { PinCar, "BREATHE", 0x1000, 0, 1 },
       { PinTank, "BREATHE", 0x1000, 0, 1 }, { PinRace, "BREATHE", 0x1000, 0, 1 },
       { PinSplash, "BREATHE", 0x1000, 0, 1 }, { PinMallet, "BREATHE", 0x1000, 0, 1 },
-      { PinDino, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES } },
+      { PinDino, "BREATHE", 0x1000, 0, 1 }, { PinKegs, "BREATHE", 0x1000, 0, 1 } },
     PinVoices, "BREATHE", 0, pin_make,
 };
 
@@ -1411,12 +1415,12 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
     return ride_make(&rider, &out->tex[KIND_POLAR], &out->tex_size[KIND_POLAR], &out->mdl[KIND_POLAR], &out->mdl_size[KIND_POLAR]);
 }
 
-/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles, a race cart, a fish, a mallet, a dino) ---
+/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles, a race cart, a fish, a mallet, a dino, a keg) ---
  * In some games each hero's model has what the hero holds or stands on in it: Pogo's heroes bounce on things of their own
  * (models\chars\pogo\: Crash and Coco on pogo sticks, Cortex and Brio on their jetpacks, Tiny and Kong on springs), Ballistix's
  * hold the handles of the car the game draws round them (models\chars\ball\), Crash Dash's sit in their carts (models\chars\race\)
- * or ride their fish (models\chars\splash\), the mallet game's carry their mallets (models\chars\mallet\), and the gem game's ride
- * their dinos (models\chars\dino\). He rides, drives and
+ * or ride their fish (models\chars\splash\), the mallet game's carry their mallets (models\chars\mallet\), the gem game's ride
+ * their dinos (models\chars\dino\), and the kegs game's carry their kegs (models\chars\kegs\). He rides, drives and
  * carries as Crash does (the user, of his
  * bear: not with Cortex's jetpack), so his model of such a kind (a FollowKind) is Crash's prop from Crash's model of it, moving as it
  * does there (its strips by where they are as Crash first moves: the model's own pose has his arms out, and a first pick by it took
@@ -1428,8 +1432,8 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
  *   or, where Crash rides astride (`legs`), his feet where Crash's are from his hips (for his size), his knees bent Crash's way; or,
  *   where Crash stands (`stand`), on the floor, his feet as far off their places as Crash's go;
  * - where Crash's hands go all about (`reach`), his hands where Crash's are from his shoulders (for his size), his elbows bent Crash's
- *   way; and what Crash carries in a hand (`carry`: his mallet), in his, its handle through his hand's hole, as big against him as
- *   against Crash;
+ *   way; and what Crash carries in a hand (`carry`: his mallet, his keg), in his, a mallet's handle through his hand's hole and a keg
+ *   as it is against Crash's hand, as big against him as against Crash;
  * - his hips moved as Crash's are, `follow` as far for his height against Crash's; his body above his waist leant `lean` forward and
  *   turned as Crash's turns, his spine and his shoulders' line; his limbs stretching to what they hold when it's out of their reach,
  *   as Crash's do (two_bone);
@@ -1487,8 +1491,12 @@ typedef struct {
     s32 reach;               /* his hands where Crash's are from his shoulders (for his size), his arms stretching as far as Crash's do,
                               * not only pointing Crash's way */
     s32 stand;               /* stood on the floor as Crash stands, his feet as far off their places as Crash's go (foot) */
-    s32 carry;               /* the prop in his hand (1 his left, 2 his right) and moved with it, its handle (its grip corners' line)
-                              * through his hand's hole, as big against him as against Crash; 0 none */
+    s32 carry;               /* the prop in his hand (1 his left, 2 his right) and moved with it, as big against him as against Crash:
+                              * its handle (its grip corners' line) through his hand's hole, or, without grips, where it is against
+                              * Crash's hand (held round it); 0 none */
+    s32 mesh;                /* the mesh of Crash's model his moves move (the kegs game's: the second, with his keg) */
+    s32 carry_kept;          /* what he carries kept Crash's size (a keg, as big as the game's others), where it'd be for his size
+                              * against his shoulder, his hand reaching round it as Crash's does */
 } FollowKind;
 
 struct Follow {
@@ -1797,7 +1805,7 @@ static void follow_pose(const Follow *c, const FollowBody *b, V3 *r) {
             up = hm_turn_x(rig_dir(b->elbow_way[i]), o, -fk->lean);
         }
         hint = vnorm(hm_mix(v3(Arms[i].side, -0.3f, -0.5f), up, b->off[i]));
-        if (fk->carry == i + 1) {
+        if (fk->carry == i + 1 && fk->grip != NULL) {
             /* his hand round the handle of what he carries, where Crash's is */
             pose_arm_grip(r, &Arms[i], i == 0 ? 2 : 1, c->hole[i], c->hole_axis[i], own,
                           hm_turn_x(bash_unturned(b->M, rig_dir(b->bar)), o, -fk->lean), hint, 1);
@@ -1892,7 +1900,7 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
         b.leg_to[i] = vsub(ankle, hip);
         b.knee_way[i] = vsub(knee, hm_mix(hip, ankle, 0.5f));
     }
-    if (c->kind->carry) {
+    if (c->kind->carry && c->kind->grip != NULL) {
         /* what he carries: how it's moved from as Crash first moves (a fit of its handle), and its line */
         hm_fit(c->ref, L, c->grips[0], c->ngrips[0], &pm);
         b.bar = hm_turned(&pm, c->bar_dir);
@@ -1923,6 +1931,22 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
         if (c->kind->reach) {
             V3 d = vsub(h, s), e2 = vsub(e, hm_mix(s, h, 0.5f));
 
+            if (c->kind->carry_kept && c->kind->carry == i + 1) {
+                /* his hand round what he carries, which keeps its size: it where it'd be for his size, and his hand on it where Crash's
+                 * is (taken back to Crash's size, as follow_pose puts his hand his size further) */
+                V3 kc = { 0, 0, 0 };
+                s32 nk = 0;
+
+                for (k = 0; k < c->prop.corners; k++) {
+                    if (c->prop.in_part[k]) {
+                        kc = vadd(kc, L[k]);
+                        nk++;
+                    }
+                }
+                kc = vmul(kc, 1.0f / (nk > 0 ? nk : 1));
+                d = vadd(vsub(kc, s), vmul(vsub(h, kc), 1.0f / c->follow));
+            }
+
             b.hand_to[i] = v3(b.M[0][0] * d.x + b.M[1][0] * d.y + b.M[2][0] * d.z, b.M[0][1] * d.x + b.M[1][1] * d.y + b.M[2][1] * d.z,
                               b.M[0][2] * d.x + b.M[1][2] * d.y + b.M[2][2] * d.z);
             b.elbow_way[i] = v3(b.M[0][0] * e2.x + b.M[1][0] * e2.y + b.M[2][0] * e2.z, b.M[0][1] * e2.x + b.M[1][1] * e2.y
@@ -1934,11 +1958,14 @@ static void follow_frame(void *ctx, s32 a, s32 f, V3 *out) {
         out[k] = hm_moved(&mv, rig_on_stick(c, r[k]));
     }
     if (c->kind->carry) {
-        /* what he carries in his hand's hole, where Crash holds it, as big against him as against Crash */
-        V3 at = rig_on_stick(c, hole_at(r, c->kind->carry - 1)), from = hm_moved(&pm, c->bar_at);
+        /* what he carries in his hand's hole, where Crash holds it (by its handle, or as it is against his hand), as big against him
+         * as against Crash */
+        s32 h = c->kind->carry - 1;
+        float size = c->kind->carry_kept ? 1 : c->follow;
+        V3 at = rig_on_stick(c, hole_at(r, h)), from = c->kind->grip != NULL ? hm_moved(&pm, c->bar_at) : mid_of(L, c->hand[h], c->nhand[h]);
 
         for (k = 0; k < c->prop.nvert; k++) {
-            out[n + k] = hm_moved(&mv, vadd(at, vmul(vsub(L[c->prop.corner_of[k]], from), c->follow)));
+            out[n + k] = hm_moved(&mv, vadd(at, vmul(vsub(L[c->prop.corner_of[k]], from), size)));
         }
         return;
     }
@@ -1963,7 +1990,7 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
     /* all of Crash's model first, for where its corners are as he first moves, then its prop by those (or, with none, all of it, to
      * follow him by, none of it drawn) */
     if (fk->prop == NULL) {
-        if (!hm_game_part(fk->bank, keep_all, NULL, &c->prop)) {
+        if (!hm_game_part_of(fk->bank, fk->mesh, keep_all, NULL, &c->prop)) {
             printf("bonus: Crash's %s model isn't in the archive\n", fk->what);
             return 0;
         }
@@ -1972,7 +1999,7 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         PropPick pick;
         s32 got;
 
-        if (!hm_game_part(fk->bank, keep_all, NULL, &whole)) {
+        if (!hm_game_part_of(fk->bank, fk->mesh, keep_all, NULL, &whole)) {
             printf("bonus: Crash's %s model isn't in the archive\n", fk->what);
             return 0;
         }
@@ -1981,7 +2008,7 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         pick.kind = fk;
         pick.ref = c->ref;
         pick.at = pick.strip = 0;
-        if (!got || !hm_game_part(fk->bank, keep_prop, &pick, &c->prop)) {
+        if (!got || !hm_game_part_of(fk->bank, fk->mesh, keep_prop, &pick, &c->prop)) {
             printf("bonus: Crash's %s model has nothing of it to take\n", fk->what);
             return 0;
         }
@@ -2075,7 +2102,7 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
     if ((fk->frame != NULL && c->nframe < 8) || c->nhips < 4 || c->nchest < 4 || c->nshoulder[0] < 2 || c->nshoulder[1] < 2
         || c->nelbow[0] < 2 || c->nelbow[1] < 2 || c->nhand[0] < 2 || c->nhand[1] < 2
         || (fk->across_chest && (c->nhalf[0] < 2 || c->nhalf[1] < 2)) || (fk->grip != NULL && (ng[0] == 0 || (ng[1] == 0 && !fk->carry)))
-        || (fk->carry && c->ngrips[0] < 3) || (fk->stand && (c->nfeet[0] < 2 || c->nfeet[1] < 2))
+        || (fk->carry && fk->grip != NULL && c->ngrips[0] < 3) || (fk->stand && (c->nfeet[0] < 2 || c->nfeet[1] < 2))
         || (fk->legs != NULL && (c->nleg[0][0] == 0 || c->nleg[0][1] == 0 || c->nleg[1][0] == 0 || c->nleg[1][1] == 0
                                  || c->nleg[2][0] == 0 || c->nleg[2][1] == 0))
         || (fk->peg != NULL && (c->nfeet[0] < 2 || c->nfeet[1] < 2 || npg[0] == 0 || npg[1] == 0)) || sole <= top) {
@@ -2137,8 +2164,10 @@ static s32 follow_make(const FollowKind *fk, const FootCtx *foot, const MadeFace
         if (!c->has_hole[fk->carry - 1]) {
             goto done;
         }
-        c->bar_dir = line_of(c->ref, c->grips[0], c->ngrips[0], m);
-        c->bar_at = vadd(m, vmul(c->bar_dir, vdot(vsub(h, m), c->bar_dir)));
+        if (fk->grip != NULL) {
+            c->bar_dir = line_of(c->ref, c->grips[0], c->ngrips[0], m);
+            c->bar_at = vadd(m, vmul(c->bar_dir, vdot(vsub(h, m), c->bar_dir)));
+        }
     }
     /* his faces and images, then the prop's */
     if (fk->paint != NULL) {
@@ -2588,6 +2617,32 @@ static const FollowKind DinoKind = {
     0.8f, 0, 0, 1, 0, 0, 1, dino_gunmetal, 0, &DinoLegs, 1, 0, 0,
 };
 
+/* -- with a keg (Keg Kaboom) --
+ * Each hero's model in the kegs game is it with the keg it carries all game (models\chars\kegs\: five moves, BREATHE, MEDIUM as it runs,
+ * JUMP up, falling and landing, HIT knocked down, and WIN). Crash's has two meshes, the second with his keg, and it's that one his
+ * moves move (KEG_MESH; the first is never drawn): the keg is its strips from KEG_STRIP on. He carries it under his left arm, his hand
+ * round its far side, in every move. Pinstripe does as Crash does, as with the mallet (stood on the floor, his hands where Crash's are;
+ * Crash stands the same in both games), the keg under his left arm as Crash's is, at its own size (as big against him as against Crash
+ * it was half as big again as the game's other kegs), his hand round it where Crash's is. */
+#define KEG_MESH 1
+#define KEG_STRIP 39
+static const char *const KegNames[] = { "BREATHE", "MEDIUM", "JUMP", "WIN", "HIT" };
+
+static s32 keg_prop(const V3 *p, s32 n, s32 textured, s32 strip) {
+    (void)p;
+    (void)n;
+    (void)textured;
+    return strip >= KEG_STRIP;
+}
+
+static const FollowKind KegKind = {
+    DB_CharsKegsCrash, KIND_KEGS, "keg", KegNames, 5,
+    keg_prop, NULL, NULL, NULL, mallet_hips, mallet_chest, mallet_foot,
+    { { -54, -292, 15 }, { 54, -292, 15 } }, { { -155, -294, 16 }, { 114, -226, 28 } }, 45.0f, 35.0f,
+    45.0f, 1e9f, { { -221, -241, 18 }, { 100, -152, -12 } },
+    1.0f, 0, 0, 1, 0, 0, 1, NULL, 0, NULL, 1, 1, 1, KEG_MESH, 1,
+};
+
 /* --- his sounds and card ---
  * His boss fight's object (PinsC) plays his laugh (laf8A) and his tommy gun (MGn8A), at 11025 Hz. His game has no hurt voice or name
  * for him: his yelp is his laugh's first "ha" (PIN_YELP_BYTES, to where it falls quiet), higher, and his name as he wins its first
@@ -2763,6 +2818,9 @@ static s32 pin_make(HeroMade *out) {
     }
     if (!follow_make(&DinoKind, &foot, faces, ntri, images, nimage, out)) {
         printf("bonus: Pinstripe has no dino\n");
+    }
+    if (!follow_make(&KegKind, &foot, faces, ntri, images, nimage, out)) {
+        printf("bonus: Pinstripe has no keg\n");
     }
     if (c1_sprite(&level, "ShadC", 5, CARD_W, CARD_H, PinCard)) {
         out->card = PinCard;
