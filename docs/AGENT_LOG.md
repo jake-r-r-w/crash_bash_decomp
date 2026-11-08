@@ -512,6 +512,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-08: The user approved his car ("LGTM whats next"); his tank next. `follow_make` takes kinds with nothing held
+  (`TankKind`: no prop, no grips, hands by points, everything below his hips at one point inside: `cut`). A win close-up in Desert
+  Fox had him floating over the turret: the hips set had Crash's hands (resting on his belly by the hatch) and rose as he cheered,
+  and the chest set had his face; both keep to his back half now, and his body's line across is from his chest's halves
+  (`across_chest`). Bear, pogo and car models byte for byte as before; `hero pinstripe` 9 of 15 (Desert and Swamp Fox). Not played
+  by the user yet.
 - 2026-11-08: "his hands are not on the sticks for the car correctly": his hand's middle was aimed at the grip, and as his hands
   are shaped round the gun's pistol grips it hung under the bar. `pose_arm_grip` puts the hand's hole (where the gun's grip went:
   `hand_hole`, the palm cap's loop) on the bar, turned at the wrist to run along it (x), the wrist placed to suit, found in a few

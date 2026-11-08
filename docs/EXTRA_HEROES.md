@@ -144,7 +144,16 @@ grips. So a hand that holds a grip (`pose_arm_grip`) puts the middle of its hole
 grip went through it (`hand_hole`: the palm's cap loop, its axis by Newell's method), on the bar
 (`grip_in` out along it from the car's grip's inner end, as Crash's fist covers that end), turns
 the hand at the wrist so the hole runs along the bar (both bars are along x), and puts the wrist
-where that hand needs it, worked out a few times over. His pogo handle's grip is the same now.
+where that hand needs it, worked out a few times over. His pogo handle's grip is the same now. The
+user approved his car (2026-11-08). In a tank (step 8, the fourth): Crash's tank model is him from the
+waist up and nothing else, the game drawing the tank round him, so `TankKind` has no prop (`follow_make`
+then follows all of Crash's model and draws none of it), no grips (his arms go as Crash's do, all the
+time: Crash's hands found by where they are, `FollowKind.hand`), and everything of Pinstripe's below
+his hips put at one point just under them (`cut`), as the others have nothing below the hatch. Crash
+rests his hands on his belly by the hatch, and a hips set with them in it rose out of the hatch as he
+raised his arms to cheer (Pinstripe floated above the turret in a win's close-up): the tank's hips and
+chest sets keep to his back half, and his body's line across comes from his chest's two halves
+(`across_chest`), as his shoulders' corners go with his arms.
 
 ## How one plays
 
