@@ -188,7 +188,11 @@ as on the car's grips), as big against him as Crash's is against Crash, so its h
 as he slams it down, as Crash's does (at Crash's size, held higher in his bigger hand, it would stop
 short of it). Cortex's sixth
 move, #4a7, Crash's model hasn't: his BREATHE stands in. His cheer goes at its own pace, as
-Cortex's is twice as long.
+Cortex's is twice as long. Riding a dino (step 12, the eighth): as on the fish (`DinoKind`, all of
+Crash followed, at 0.8 of his size): Crash's blue dino (his model's first 5 strips, a crest down its
+middle, and all from the 45th), painted gunmetal from its blues, its tan belly kept, its frame its back
+under him (it squashes as it runs, so it's a fit of its middle); he sits astride it as it runs, stands
+up on its back as it skids, and leaps up off it as he wins, as Crash does.
 
 ## How one plays
 

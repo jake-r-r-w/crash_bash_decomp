@@ -104,9 +104,12 @@ static const Stand PinRace[] = {
 static const Stand PinSplash[] = {
     { NULL, NULL, STRETCH },
 };
-/* With a mallet the mallet game's, his cheer at its own pace (his base's is twice as long) */
+/* With a mallet the mallet game's, his cheer at its own pace (his base's is twice as long); riding a dino the gem game's */
 static const Stand PinMallet[] = {
     { "WIN", "WIN", LOOP },
+    { NULL, NULL, STRETCH },
+};
+static const Stand PinDino[] = {
     { NULL, NULL, STRETCH },
 };
 
@@ -117,7 +120,7 @@ const HeroDef HeroPinstripe = {
       { PinPogo, "BREATHE", 0x1000, 0, 1 }, { PinCar, "BREATHE", 0x1000, 0, 1 },
       { PinTank, "BREATHE", 0x1000, 0, 1 }, { PinRace, "BREATHE", 0x1000, 0, 1 },
       { PinSplash, "BREATHE", 0x1000, 0, 1 }, { PinMallet, "BREATHE", 0x1000, 0, 1 },
-      { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES } },
+      { PinDino, "BREATHE", 0x1000, 0, 1 }, { PinStands, "BREATHE", 0x1000, 0, PIN_SUBFRAMES } },
     PinVoices, "BREATHE", 0, pin_make,
 };
 
@@ -1408,11 +1411,12 @@ static s32 ride_bear(const FootCtx *foot, const MadeFace *faces, s32 nfaces, con
     return ride_make(&rider, &out->tex[KIND_POLAR], &out->tex_size[KIND_POLAR], &out->mdl[KIND_POLAR], &out->mdl_size[KIND_POLAR]);
 }
 
-/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles, a race cart, a fish, a mallet) ---
+/* --- on what Crash rides or holds (Pogo's stick, Ballistix's handles, a race cart, a fish, a mallet, a dino) ---
  * In some games each hero's model has what the hero holds or stands on in it: Pogo's heroes bounce on things of their own
  * (models\chars\pogo\: Crash and Coco on pogo sticks, Cortex and Brio on their jetpacks, Tiny and Kong on springs), Ballistix's
  * hold the handles of the car the game draws round them (models\chars\ball\), Crash Dash's sit in their carts (models\chars\race\)
- * or ride their fish (models\chars\splash\), and the mallet game's carry their mallets (models\chars\mallet\). He rides, drives and
+ * or ride their fish (models\chars\splash\), the mallet game's carry their mallets (models\chars\mallet\), and the gem game's ride
+ * their dinos (models\chars\dino\). He rides, drives and
  * carries as Crash does (the user, of his
  * bear: not with Cortex's jetpack), so his model of such a kind (a FollowKind) is Crash's prop from Crash's model of it, moving as it
  * does there (its strips by where they are as Crash first moves: the model's own pose has his arms out, and a first pick by it took
@@ -2527,6 +2531,63 @@ static const FollowKind MalletKind = {
     1.0f, 0, 0, 1, 0, 0, 1, NULL, 0, NULL, 1, 1, 1,
 };
 
+/* -- riding a dino (the gem game) --
+ * In the gem game each hero rides a small dino of its own colour (models\chars\dino\: Crash's blue, Coco's pink, Cortex's yellow, Brio's
+ * teal, Tiny's dark purple, Kong's and Dingodile's red, Rilla Roo's orange, Ripper Roo's red). Crash's is his model's first
+ * DINO_CREST strips (a crest down its middle) and all from DINO_STRIP on (its body, head, legs and tail), painted gunmetal from its
+ * blues (DINO_FROM; its tan belly kept). Its frame is its back under him (its corners above DINO_BACK_LOW, from DINO_FRONT to DINO_BACK
+ * along), which bobs as it runs, rears as it skids and jolts as it shoots. Crash sits astride it, stands up on it as it skids and leaps
+ * up off it as he wins; Pinstripe does as he does, all of him, at 0.8 of his size as on the fish: his hips on Crash's (Crash's corners
+ * from DINO_HIPS_TOP to DINO_HIPS_LOW within DINO_MIDDLE across, behind DINO_HIPS_FRONT), his chest from DINO_CHEST_TOP to
+ * DINO_CHEST_LOW within DINO_CHEST_HALF, behind DINO_CHEST_FRONT, his hands where Crash's are and his legs as Crash's (DinoLegs). */
+#define DINO_CREST 5
+#define DINO_STRIP 44
+#define DINO_FROM 215.0f
+#define DINO_BACK_LOW -250.0f
+#define DINO_FRONT -100.0f
+#define DINO_BACK 150.0f
+#define DINO_HIPS_TOP -415.0f
+#define DINO_HIPS_LOW -350.0f
+#define DINO_MIDDLE 32.0f
+#define DINO_HIPS_FRONT -45.0f
+#define DINO_CHEST_TOP -500.0f
+#define DINO_CHEST_LOW -450.0f
+#define DINO_CHEST_HALF 45.0f
+#define DINO_CHEST_FRONT -60.0f
+static const char *const DinoNames[] = { "BREATHE", "RUN", "SLIDE", "WIN", "RECOIL" };
+static const FollowLegs DinoLegs = {
+    { { -45, -395, -15 }, { 45, -395, -15 } }, { { -100, -355, -50 }, { 100, -355, -50 } },
+    { { -110, -330, -110 }, { 110, -330, -110 } }, 30.0f,
+};
+
+static s32 dino_prop(const V3 *p, s32 n, s32 textured, s32 strip) {
+    (void)p;
+    (void)n;
+    (void)textured;
+    return strip < DINO_CREST || strip >= DINO_STRIP;
+}
+static s32 dino_frame(V3 p) {
+    return p.y < DINO_BACK_LOW && p.z > DINO_FRONT && p.z < DINO_BACK;
+}
+static s32 dino_hips(V3 p) {
+    return p.y > DINO_HIPS_TOP && p.y < DINO_HIPS_LOW && fabsf(p.x) < DINO_MIDDLE && p.z > DINO_HIPS_FRONT;
+}
+static s32 dino_chest(V3 p) {
+    return p.y > DINO_CHEST_TOP && p.y < DINO_CHEST_LOW && fabsf(p.x) < DINO_CHEST_HALF && p.z > DINO_CHEST_FRONT;
+}
+
+static void dino_gunmetal(Follow *c) {
+    hm_paint(c->prop.faces, c->prop.nfaces, c->prop.images, c->prop.nimages, DINO_FROM, GUNMETAL);
+}
+
+static const FollowKind DinoKind = {
+    DB_CharsDinoCrash, KIND_DINO, "dino", DinoNames, 5,
+    dino_prop, dino_frame, NULL, NULL, dino_hips, dino_chest, NULL,
+    { { -55, -545, 0 }, { 55, -545, 0 } }, { { -65, -452, -30 }, { 65, -452, -30 } }, 35.0f, 30.0f,
+    45.0f, -40.0f, { { -63, -408, -125 }, { 60, -396, -82 } },
+    0.8f, 0, 0, 1, 0, 0, 1, dino_gunmetal, 0, &DinoLegs, 1, 0, 0,
+};
+
 /* --- his sounds and card ---
  * His boss fight's object (PinsC) plays his laugh (laf8A) and his tommy gun (MGn8A), at 11025 Hz. His game has no hurt voice or name
  * for him: his yelp is his laugh's first "ha" (PIN_YELP_BYTES, to where it falls quiet), higher, and his name as he wins its first
@@ -2699,6 +2760,9 @@ static s32 pin_make(HeroMade *out) {
     }
     if (!follow_make(&MalletKind, &foot, faces, ntri, images, nimage, out)) {
         printf("bonus: Pinstripe has no mallet\n");
+    }
+    if (!follow_make(&DinoKind, &foot, faces, ntri, images, nimage, out)) {
+        printf("bonus: Pinstripe has no dino\n");
     }
     if (c1_sprite(&level, "ShadC", 5, CARD_W, CARD_H, PinCard)) {
         out->card = PinCard;
