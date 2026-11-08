@@ -80,8 +80,8 @@ every game (2026-11-04) and called him done (2026-11-05). Two things are left ou
 name is never written in the game, and the podium and win screens weren't looked at with him.
 
 **Under way:** Pinstripe (`pinstripe`, the same disc, `main/heroes/pinstripe.c`): every kind of game
-has a model of his (2026-11-08); the last five (race cart, fish, mallet, dino, keg) aren't played by
-the user yet. On foot (step 3, 2026-11-05) first. His model has his tommy gun in every frame,
+has a model of his, each approved by the user (2026-11-08; the last five, race cart, fish, mallet, dino
+and keg, from a demo of each, "LGTM"). On foot (step 3, 2026-11-05) first. His model has his tommy gun in every frame,
 and at the user's word he has it only as he attacks: its faces (and its front grip, in his left
 hand's piece) are on copies of their corners of their own, folded into his hands the rest of the
 time. His arms are rigged (two bones each, from a shoulder, elbow and wrist placed by hand), as his
