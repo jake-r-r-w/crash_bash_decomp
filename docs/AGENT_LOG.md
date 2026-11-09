@@ -69,7 +69,7 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only at first, at the user's request; Linux
    builds and plays since 2026-11-08, in a container (`tools/dl`, PORT.md, Linux), and the Mac is next (7.13). 6.7, finishing it, has saving, any resolution, analog sticks and rumble written, and the user has tried a real controller and it was fine (2026-11-01). What's left is a first
    release. Whether it plays the same as retail is checked by the user playing it.
-   The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. The latest is v0.3.2 (2026-11-09: the first Linux download, beside Windows's). 6.8, fully native, is done (2026-11-01): plain maths, direct drawing and the port's own APIs. The user has tried sticks and rumble on a real controller since its pad rewrite, and they're fine (2026-11-03). Before a change that shouldn't alter the game, `playtest.mjs same [--all]` makes a baseline with `--save`, in `build/`, and afterwards shows in a minute that frames and sound haven't changed. `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
+   The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. The latest is v0.4.0 (2026-11-09: the first Android download, beside Windows's and Linux's). 6.8, fully native, is done (2026-11-01): plain maths, direct drawing and the port's own APIs. The user has tried sticks and rumble on a real controller since its pad rewrite, and they're fine (2026-11-03). Before a change that shouldn't alter the game, `playtest.mjs same [--all]` makes a baseline with `--save`, in `build/`, and afterwards shows in a minute that frames and sound haven't changed. `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
 
 4. Part 7 (2026-11-03): 7.6, sharper icons and text, is done (ICONS: CRISP; the game's own lettering stays). 7.11, widescreen level by level, is done (2026-11-03): every level shown to the user and fixed or left at their word, and the eleven crystal maps they picked. 7.8, mods, is done (2026-11-03; PORT.md, Mods, and MODDING.md), approved by the user after playing with it. **Now: 7.12, extra heroes** (the user's, 2026-11-03): with the launcher's EXTRA HEROES on and the player's Crash Bandicoot (USA) disc in a `discs` folder (or the repo's `disc/`), Ripper Roo has a ninth card in the character select and plays Crate Crush as that game's Roo, converted on their machine; only that Roo, at the user's word (no Crash Bash Roo without the disc). He has a model of every kind the games' heroes have, all played and approved by the user, who called him done (2026-11-05; 7.12.1 and 7.12.3 ticked). Adding another hero is one line in `include/bash/herolist.h` and its file in `main/heroes/`, `roo.c` the template, by the checklist that opens docs/EXTRA_HEROES.md, with `playtest.mjs hero ID` to check it in every game (7.12.8). Now Pinstripe, at the user's word (2026-11-05, `main/heroes/pinstripe.c`): on foot made, played by the user, and the five things they found fixed (2026-11-06); then his other kinds of model, one game at a time, as Roo's were: the bear, pogo stick, car and tank approved by the user, and the last five (race cart, fish, mallet, dino, keg) made in one go at their word (2026-11-08), each riding or carrying Crash's own prop as Crash does (`follow_make`, EXTRA_HEROES.md); the user approved them from a demo of each (2026-11-08), so every kind of his is approved. 7.12.5: the win screens are right with the extra heroes, and the podium has their own podium models now (2026-11-08), waiting on the user's look. Then 7.9 online play, the last row. 7.7, optional modern lighting, was taken off the roadmap by the user (2026-11-03).
 
@@ -80,8 +80,7 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
 6. 7.14, Android (the user's, 2026-11-09). It builds (`tools/da`) and plays in the emulator, filling a sideways phone with faint touch
    buttons, either way round; every mode passes there (`playtest.mjs modes --android`), the disc picker works, and arm64's
    function-pointer calls are checked (`port/android/check-fnptrs.sh`). Its release key is made (2026-11-09, at the user's word, kept
-   outside the repo: PORT.md, Android), and `package.mjs --android` makes the signed APK. Next: a release with it, at the user's word, and a
-   real phone. The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
+   outside the repo: PORT.md, Android), and `package.mjs --android` makes the signed APK, published in v0.4.0. Next: a real phone. The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
    user picks.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
@@ -551,6 +550,15 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-09: [v0.4.0](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v0.4.0) is published, at the user's word ("Cut
+  v0.4.0"): the first Android download (signed by the release key), the save icon on the window, the Windows program's icon. Its checks
+  found three things: the release check's samples matched overlay data in a code file's last sector and an unlisted sector after one
+  (it skips each code file to the next entry now: 100,000 samples, no hits); Android's app couldn't list a `discs` folder adb made, so
+  the extra heroes found no disc (the game makes `discs` and `mods` itself); and two systems' suites at once shared one play-test
+  folder (one each now). The emulator hung once (a fresh one, after its locks went). On the release builds: Windows modes 39, bosses 4,
+  menu, heroes 2, mods 29, image 8; Linux the same with image 8; Android modes 39 and heroes 2; each download unpacked by itself works,
+  and no program holds the archive's or the Crash Bandicoot image's samples.
 
 - 2026-11-09: Android, at the user's word ("can we do a android release?"; downloads in Docker, Google's SDK licence accepted at their
   word, tested in an emulator, touch buttons in the first version; 7.14). `tools/da` builds the APK in its own container with the SDK's
