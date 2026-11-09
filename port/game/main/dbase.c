@@ -680,6 +680,8 @@ void slotlist_mark(SlotList *arg0) {
 
 void load_font(void) {
     dbase_load_textures_wait(&HeroModelBank[DB_Font]);
+    /* PC: the window's icon, the memory card's, from the font's textures (main/saveicon.c) */
+    save_icon_to_window();
 }
 
 void dbase_set(obj_dbase *db, u8 *data, u8 *base) {

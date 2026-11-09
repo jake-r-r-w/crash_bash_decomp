@@ -509,3 +509,34 @@ void host_rumble(int port, int small_on, int big) {
 void host_quit(void) {
     SDL_Quit();
 }
+
+/* The window's icon, from w x h colours (red in the low byte, alpha in the top), scaled pixel for pixel so it stays sharp. SDL gives the
+   system the one picture, and Windows stretches that to its big and small icons itself, which blurred 16 pixels to the 72 it wants on a
+   screen at 225%: so on Windows it's the big icon's own size at this screen's scaling, and elsewhere a big one, which shrinks well.
+   Android's windows have none. */
+void host_set_icon(const uint32_t *rgba, int w, int h) {
+#ifndef SDL_PLATFORM_ANDROID
+    SDL_Surface *icon, *big;
+    int y, size;
+
+    if (Window == NULL || (icon = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888)) == NULL) {
+        return;
+    }
+    for (y = 0; y < h; y++) {
+        SDL_memcpy((Uint8 *)icon->pixels + (size_t)y * icon->pitch, rgba + (size_t)y * w, (size_t)w * 4);
+    }
+#ifdef SDL_PLATFORM_WINDOWS
+    size = (int)(32 * SDL_GetWindowDisplayScale(Window) + 0.5f);
+#else
+    size = 128;
+#endif
+    big = SDL_ScaleSurface(icon, SDL_max(size, w), SDL_max(size, w) * h / w, SDL_SCALEMODE_NEAREST);
+    SDL_SetWindowIcon(Window, big != NULL ? big : icon);
+    SDL_DestroySurface(big);
+    SDL_DestroySurface(icon);
+#else
+    (void)rgba;
+    (void)w;
+    (void)h;
+#endif
+}

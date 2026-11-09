@@ -79,6 +79,8 @@ int host_pad(int port);
 int host_pad_sticks(int port, unsigned char sticks[4]); /* 0: no sticks. Else right x, y, left x, y, 0 to 0xFF, centred at 0x80. */
 int host_pad_rumbles(int port);
 void host_rumble(int port, int small_on, int big);
+/* The window's icon, w x h colours (red in the low byte, alpha in the top): the memory card's, from the game's own font (saveicon.c). */
+void host_set_icon(const uint32_t *rgba, int w, int h);
 /* Held while anything changes what the sound device's thread is playing. */
 void host_audio_lock(void);
 void host_audio_unlock(void);

@@ -208,6 +208,11 @@ the zip with `playtest.mjs ... --exe`, and unzipped by itself, with and without 
 first six were "Crash Bash for PC", and were renamed): `gh release create vVERSION ZIP TAR.GZ --title "Crash Bash Port VERSION"
 --notes-file port/release/NOTES-VERSION.md`.
 
+**Icons.** The window's icon is the PS1 game's memory card icon, the first of its two 16x16 frames in the font's textures, made from the
+player's own data as the game starts (`game/main/saveicon.c`) and scaled pixel for pixel to the size the system asks for (`host_set_icon`).
+What a download carries itself, the Windows program's icon (`platform/crashbash.rc`) and Android's launcher icon, is a drawn one
+(`port/release/icons.ps1` makes both), as the save icon is the game's art (the user's word, 2026-11-09).
+
 `tools/dl node port/package.mjs` builds the Linux one, `crash-bash-port-VERSION-linux-x64.tar.gz` (preset `linux-release`): the program
 with SDL3 and zlib in it, so it needs only what every Linux has, as SDL opens the system's own window, sound and Vulkan libraries as it
 runs. Its README says the oldest glibc it runs on, from what the program imports. The README is one for both, with `@NAME@` parts that

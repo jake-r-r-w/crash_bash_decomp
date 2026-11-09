@@ -1,0 +1,3 @@
+// The program's own icon, drawn (port/release/icons.ps1): Explorer's and the taskbar's until the game has loaded its font and the
+// window takes the memory card's (game/main/saveicon.c), which is the player's own data and so not in a download.
+1 ICON "crashbash.ico"

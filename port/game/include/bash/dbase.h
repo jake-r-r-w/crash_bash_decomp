@@ -27,6 +27,8 @@ BlockRef *dbase_mesh_anim_rec_load(file **f, FileEntry *e);
 void dbase_load_textures(obj_dbase *db);
 void dbase_set_textures(obj_dbase *db, u8 *base);
 void load_font(void);
+/* PC: main/saveicon.c */
+void save_icon_to_window(void);
 void dbase_set(obj_dbase *db, u8 *data, u8 *base);
 void dbase_init(obj_dbase *db);
 void dbase_textures_loaded(u8 *data, obj_dbase *rec);
