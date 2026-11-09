@@ -174,7 +174,9 @@ What's Android's own:
 - It draws with Vulkan, as Linux does, and turns with the phone: the picture fits either way round.
 - The program's folder (`platform_base_path`) is the app's in shared storage, `Android/data/io.github.jakerrw.crashbash/files/`, which a
   PC reaches over USB: `CRASHBSH.DAT`, a disc image, `discs/` and `mods/` go there, and the game writes its output to `log.txt` there.
-  Saves and settings are in the app's private storage.
+  The game makes `discs/` and `mods/` itself at startup: Android doesn't let an app look in a folder something else made in its own
+  storage (one adb made was "No such directory" to it), though it can read the files in it. Saves and settings are in the app's private
+  storage.
 - The first run asks for the disc image with Android's file chooser: the .bin, or an .iso (a .cue's .bin can't be found from it there).
 - WIDESCREEN is on by default, so a phone held sideways is filled (the user's word, 2026-11-09).
 - On-screen buttons (`platform/touch.c`), drawn over the picture on the window itself, so never in a test run's shots: a d-pad, the face
