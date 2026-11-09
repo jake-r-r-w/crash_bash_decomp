@@ -102,8 +102,11 @@ function route_to_boss(mode) {
     return args;
 }
 
-function adb(args) {
-    return spawnSync(ADB, args, { encoding: 'utf8', env: { ...process.env, MSYS_NO_PATHCONV: '1' } });
+/* adb, given a limit: one adb shell call hung for ten minutes once, and a suite waited on it for good */
+function adb(args, limit = 60000) {
+    const r = spawnSync(ADB, args, { encoding: 'utf8', env: { ...process.env, MSYS_NO_PATHCONV: '1' }, timeout: limit });
+
+    return { ...r, stdout: r.stdout ?? '' };
 }
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));

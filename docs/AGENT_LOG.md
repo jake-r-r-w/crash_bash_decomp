@@ -162,7 +162,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   `C:/Program Files/Git/sdcard/...` and a push lands nowhere. PowerShell's `>` mangles binary output: take `adb exec-out screencap -p`
   in Git Bash. Google's command-line tools now hand `sdkmanager` over to a new "Android CLI" that collects usage data unless given
   `--no-metrics`, and it skipped the system image: the emulator's image came by direct download from dl.google.com (its SHA-1 checked
-  against the repository XML). The emulator itself takes `-no-metrics`. GitHub's release downloads gave 504s for a minute once: the
+  against the repository XML). The emulator itself takes `-no-metrics`. The app can't list a folder adb made in its storage (the
+  game makes `discs/` and `mods/` itself; copy files into those, don't `mkdir` them by adb). The emulator hung once an hour into a
+  headless session (adb showed it offline): its process is `qemu-system-x86_64-headless` with `netsimd`, not `emulator`, and after
+  stopping them the AVD's `*.lock` files have to go before it starts again; `playtest.mjs` gives each adb call a time limit since. GitHub's release downloads gave 504s for a minute once: the
   Dockerfile's curl retries. Phones are arm64, where a function returning u8 or u16 needn't clear the rest of its register: the
   game's C turns off Clang's incompatible-function-pointer warnings, so such calls through a mismatched pointer may hide (NDK r30 found
   one, `HubGatewayKind`); the emulator is x86_64 and can't show them.
