@@ -53,10 +53,15 @@ function check_program(program, what) {
     const data = fs.readFileSync(DATA);
     /* The code entries (ASSETS.md: 1E7, 2CC to 2D8 and 3DF) are the overlays, whose strings and tables are the decomp's own C and so in
        the program too: the samples are of everything else. Where each entry is comes from the port's copy of the game's table (its size
-       a sum since the extra heroes' empty entries were added after the game's 992, which come after all of those). */
+       a sum since the extra heroes' empty entries were added after the game's 992, which come after all of those). Each runs on to where
+       the next entry starts: the rest of its last sector, and a sector after one of them that no entry lists, hold more of the same
+       overlay's data, and matched the programs. */
     const table = fs.readFileSync(path.join(PORT, 'game/main/main.c'), 'utf8').match(/file DatIndex\[[^\]]*\] = \{([^}]*)\}/)[1];
     const words = table.replace(/\/\*.*?\*\//gs, '').match(/0x[0-9A-Fa-f]+|\d+/g).map(Number);
-    const code = [0x1E7, ...Array.from({ length: 13 }, (_, i) => 0x2CC + i), 0x3DF].map(e => [words[e * 2] * 2048, words[e * 2] * 2048 + words[e * 2 + 1]]);
+    const starts = [...new Set(Array.from({ length: words.length >> 1 }, (_, e) => words[e * 2] * 2048))].sort((a, b) => a - b);
+    const next_start = at => starts.find(s => s > at) ?? data.length;
+    const code = [0x1E7, ...Array.from({ length: 13 }, (_, i) => 0x2CC + i), 0x3DF]
+        .map(e => [words[e * 2] * 2048, Math.max(words[e * 2] * 2048 + words[e * 2 + 1], next_start(words[e * 2] * 2048))]);
     let found = 0;
 
     for (let i = 0; i < SAMPLES; i++) {
