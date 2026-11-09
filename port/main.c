@@ -388,6 +388,12 @@ int main(int argc, char **argv) {
             setvbuf(stdout, NULL, _IOLBF, 0);
             dup2(fileno(stdout), fileno(stderr));
         }
+        /* The game makes its discs and mods folders itself, so they're there to put things in, and are the app's: Android doesn't let
+           an app look in a folder something else made in its own (one adb made was "No such directory" to it) */
+        SDL_snprintf(log, sizeof(log), "%sdiscs", platform_base_path());
+        SDL_CreateDirectory(log);
+        SDL_snprintf(log, sizeof(log), "%smods", platform_base_path());
+        SDL_CreateDirectory(log);
     }
 #endif
     for (i = 1; i < argc; i++) {

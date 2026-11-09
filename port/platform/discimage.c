@@ -296,6 +296,9 @@ static DiscImage *find_volume_in(const char *folder, const char *volume, int dep
 
     for (p = 0; found == NULL && p < SDL_arraysize(Patterns); p++) {
         names = SDL_GlobDirectory(folder, Patterns[p], SDL_GLOB_CASEINSENSITIVE, &count);
+        if (names == NULL && p == 0 && SDL_GetPathInfo(folder, NULL)) {
+            fprintf(stderr, "discs: can't look in %s: %s\n", folder, SDL_GetError());
+        }
         for (i = 0; found == NULL && names != NULL && i < count; i++) {
             char *path;
 
@@ -305,6 +308,9 @@ static DiscImage *find_volume_in(const char *folder, const char *volume, int dep
                 if (di != NULL && SDL_strcmp(di->volume, volume) == 0) {
                     found = di;
                 } else {
+                    if (di == NULL) {
+                        fprintf(stderr, "discs: can't read %s as a disc image: %s\n", path, SDL_GetError());
+                    }
                     disc_image_close(di);
                 }
                 SDL_free(path);

@@ -53,7 +53,6 @@ import { fileURLToPath } from 'node:url';
 import { bps_make } from '../mods/bps.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const OUT = path.join(ROOT, 'build/port/playtest');
 const WINDOWS = process.platform === 'win32';
 /* --android: the game in Android's emulator (or a phone) by adb, one run at a time (docs/PORT.md, Android). The app takes its arguments
    with its launch; a file it's told to write goes in its folder on the device and is fetched after; what it printed is its log.txt there.
@@ -62,6 +61,9 @@ const ANDROID = process.argv.includes('--android');
 const ADB = process.env.ADB ?? (WINDOWS ? path.join(process.env.LOCALAPPDATA ?? '', 'Android/Sdk/platform-tools/adb.exe') : 'adb');
 const ANDROID_APP = 'io.github.jakerrw.crashbash';
 const ANDROID_DIR = `/sdcard/Android/data/${ANDROID_APP}/files`;
+/* A folder for each system's runs, as a suite empties its own first: two systems' suites at once shared one, and one emptied it under
+   the other */
+const OUT = path.join(ROOT, `build/port/playtest${ANDROID ? '-android' : WINDOWS ? '' : `-${process.platform}`}`);
 const DEFAULT_EXE = ANDROID ? 'android' : WINDOWS ? 'build/port/windows-clang/crashbash.exe' : 'build/port/linux-clang/crashbash';
 const ASAN_EXE = WINDOWS ? 'build/port/asan/crashbash.exe' : 'build/port/linux-asan/crashbash';
 const BOSS_TIMEOUT = 280, MODE_TIMEOUT = 200;
