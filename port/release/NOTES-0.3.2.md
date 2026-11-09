@@ -1,4 +1,4 @@
-# Crash Bash for PC 0.3.2
+# Crash Bash Port 0.3.2
 
 A Linux version, alongside the Windows one. On Windows the game plays as in 0.3.1.
 

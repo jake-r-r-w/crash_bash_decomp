@@ -1,4 +1,4 @@
-# Crash Bash for PC 0.3.1
+# Crash Bash Port 0.3.1
 
 Fixes, so the game plays and looks as it does on the PlayStation, and the extra heroes on the tournament's podium.
 

@@ -1,4 +1,4 @@
-# Crash Bash for PC 0.1.1
+# Crash Bash Port 0.1.1
 
 A patch release of the native 64-bit Windows version of Crash Bash.
 

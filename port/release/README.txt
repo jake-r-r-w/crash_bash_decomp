@@ -1,4 +1,4 @@
-CRASH BASH for PC - version @VERSION@
+CRASH BASH PORT - version @VERSION@
 
 A native 64-bit @SYSTEM@ version of Crash Bash, built from the decompiled source
 at https://github.com/jake-r-r-w/crash_bash_decomp. It isn't an emulator.

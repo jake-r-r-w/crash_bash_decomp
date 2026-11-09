@@ -1,4 +1,4 @@
-# Crash Bash for PC 0.1.0
+# Crash Bash Port 0.1.0
 
 The first release of the native 64-bit Windows version of Crash Bash, built from this repo's decompiled source. It isn't an
 emulator: the game's C runs natively, drawing with Direct3D 12 through SDL3.
