@@ -3,8 +3,9 @@
 #   1. the game as libmain.so for each kind of processor (arm64-v8a for phones, x86_64 for the emulator) with the NDK, beside the
 #      image's libSDL3.so for it;
 #   2. SDL's Java side (from SDL's source) and the port's activity, compiled against the platform and made into dex;
-#   3. the manifest and icon, then all of it zipped, aligned and signed: with $ANDROID_KEYSTORE (its password in
-#      $ANDROID_KEYSTORE_PASS) if that's set, or else with a debug key kept in build/port/android/, which does to install it for testing.
+#   3. the manifest and icon, then all of it zipped, aligned and signed: with $ANDROID_KEYSTORE (its password in the file
+#      $ANDROID_KEYSTORE_PASS_FILE, or in $ANDROID_KEYSTORE_PASS) if that's set, as tools/da sets them from CRASH_BASH_ANDROID_KEY for
+#      a release, or else with a debug key kept in build/port/android/, which does to install it for testing.
 # It makes build/port/android/crashbash.apk, its version the port's own (port/CMakeLists.txt).
 set -e
 cd "$(dirname "$0")/../.."
@@ -37,13 +38,19 @@ javac -nowarn -encoding UTF-8 -source 8 -target 8 -Xlint:-options -bootclasspath
 
 if [ -n "$ANDROID_KEYSTORE" ]; then
     KEYSTORE="$ANDROID_KEYSTORE"
-    PASS="$ANDROID_KEYSTORE_PASS"
+    if [ -n "$ANDROID_KEYSTORE_PASS_FILE" ]; then
+        PASS="file:$ANDROID_KEYSTORE_PASS_FILE"
+    else
+        PASS="pass:$ANDROID_KEYSTORE_PASS"
+    fi
+    SIGNED_WITH="the release key"
 else
     KEYSTORE=$OUT/debug.keystore
-    PASS=android
+    PASS=pass:android
+    SIGNED_WITH="a debug key, for testing"
     [ -f $KEYSTORE ] || keytool -genkeypair -keystore $KEYSTORE -storepass android -keypass android -alias androiddebugkey \
         -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000 > /dev/null 2>&1
 fi
-"$ANDROID_BUILD_TOOLS/apksigner" sign --ks "$KEYSTORE" --ks-pass "pass:$PASS" --out $OUT/crashbash.apk $OUT/aligned.apk
+"$ANDROID_BUILD_TOOLS/apksigner" sign --ks "$KEYSTORE" --ks-pass "$PASS" --out $OUT/crashbash.apk $OUT/aligned.apk
 rm -f $OUT/unsigned.apk $OUT/aligned.apk $OUT/crashbash.apk.idsig
-echo "$OUT/crashbash.apk: version $VERSION ($CODE), $(stat -c %s $OUT/crashbash.apk) bytes"
+echo "$OUT/crashbash.apk: version $VERSION ($CODE), $(stat -c %s $OUT/crashbash.apk) bytes, signed with $SIGNED_WITH"

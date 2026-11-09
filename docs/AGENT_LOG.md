@@ -79,8 +79,9 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
 
 6. 7.14, Android (the user's, 2026-11-09). It builds (`tools/da`) and plays in the emulator, filling a sideways phone with faint touch
    buttons, either way round; every mode passes there (`playtest.mjs modes --android`), the disc picker works, and arm64's
-   function-pointer calls are checked (`port/android/check-fnptrs.sh`). Next: a signed release APK, whose key is the user's call (it
-   signs every update after), and a real phone. The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
+   function-pointer calls are checked (`port/android/check-fnptrs.sh`). Its release key is made (2026-11-09, at the user's word, kept
+   outside the repo: PORT.md, Android), and `package.mjs --android` makes the signed APK. Next: a release with it, at the user's word, and a
+   real phone. The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
    user picks.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
@@ -562,7 +563,9 @@ Newest first, a few lines each. Details are in the commits.
   .exe has one now). `playtest.mjs --android` runs the play tests in the emulator by adb, and with it every mode passes there (the
   emulator headless, `-no-window`); the disc picker takes a .bin from Downloads through Android's chooser; an arm64 check of the game's
   function-pointer calls found two that read a small result through the wrong type (grab hooks returning a pointer, two of Polar's AI
-  tests a bool), now through wrappers. Not yet: a real phone, a release.
+  tests a bool), now through wrappers. The release key ("Make a key here") is in the user's home folder, `.android-keys/crash-bash`,
+  which `tools/da` mounts only for `package.mjs --android`; its signed APK installs and plays modes 1 to 3 in the emulator. Not yet: a
+  real phone, a release.
 
 - 2026-11-09: [v0.3.2](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v0.3.2) is published, at the user's word ("Cut
   v0.3.2"): the first Linux download (`crash-bash-pc-0.3.2-linux-x64.tar.gz`, glibc 2.34 or newer and Vulkan) beside Windows's, which

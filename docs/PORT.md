@@ -197,6 +197,13 @@ adb shell am start -n io.github.jakerrw.crashbash/.CrashBashActivity --esa args 
 
 In Git Bash `MSYS_NO_PATHCONV=1` has to be set, or it turns the `/sdcard` paths into Windows ones.
 
+A release is signed with the release key, which signs every Android release after it too, as Android only installs an update over an
+app signed by the same key. It lives outside the repo (on the user's PC, `.android-keys/crash-bash/` in their home folder: `release.jks`,
+alias `crashbash`, and its password in `release.pass`; its certificate's SHA-256 begins `8DE18A0A`), and `tools/da` mounts it only when
+asked: `CRASH_BASH_ANDROID_KEY=FOLDER tools/da node port/package.mjs --android` makes `crash-bash-port-VERSION-android.apk` in
+`build/port/release/`, checks each processor's `libmain.so` as the other downloads' programs are checked, and says which certificate
+signed it. A test build is signed with a debug key instead, so going from one to the other in the emulator needs an uninstall first.
+
 The play tests run there too, with `--android` (`node port/tests/playtest.mjs modes --android`): one run at a time, each launched by adb
 with its arguments, its shots fetched from the app's folder and its result read from its `log.txt` and Android's crash log, as an app has
 no exit code to give. The emulator can run without a window for them (`-no-window`), out of the way.

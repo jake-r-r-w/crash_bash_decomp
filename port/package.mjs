@@ -2,7 +2,8 @@
  *
  * On Windows it's a zip, and needs TC in the environment for the toolchain (docs/PORT.md, Building). On Linux it's a .tar.gz, made in the
  * port's container: tools/dl node port/package.mjs. It holds the program, its README and the licences, and never the game's data. It checks
- * that: no sample of the game's archive may be in the program, nor this machine's paths. It publishes nothing. */
+ * that: no sample of the game's archive may be in the program, nor this machine's paths. Android's is the APK, signed with the release key:
+ * CRASH_BASH_ANDROID_KEY=FOLDER tools/da node port/package.mjs --android. It publishes nothing. */
 import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -11,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 
 const PORT = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.dirname(PORT);
+const ANDROID = process.argv.includes('--android');
 const LINUX = process.platform === 'linux';
 const PRESET = LINUX ? 'linux-release' : 'windows-release';
 const BUILD = path.join(ROOT, 'build/port', PRESET);
@@ -34,6 +36,68 @@ if (LINUX) {
     zlib_include = path.join(toolchain, 'deps/include');
 }
 const run = (cmd, args, cwd = ROOT) => execFileSync(cmd, args, { cwd, env, stdio: ['ignore', 'pipe', 'inherit'] }).toString();
+
+/* What a program mustn't hold: this machine's paths, or any of the game's archive but for its code */
+function check_program(program, what) {
+    const home = process.env.USERPROFILE ?? process.env.HOME ?? '';
+
+    for (const text of [ROOT, ROOT.replaceAll('\\', '/'), home, home.replaceAll('\\', '/')]) {
+        if (text !== '' && text !== '/' && program.includes(text)) {
+            throw new Error(`${what} holds this machine's path: ${text}`);
+        }
+    }
+    if (!fs.existsSync(DATA)) {
+        console.log(`the game's archive isn't here, so ${what} wasn't checked for it`);
+        return;
+    }
+    const data = fs.readFileSync(DATA);
+    /* The code entries (ASSETS.md: 1E7, 2CC to 2D8 and 3DF) are the overlays, whose strings and tables are the decomp's own C and so in
+       the program too: the samples are of everything else. Where each entry is comes from the port's copy of the game's table (its size
+       a sum since the extra heroes' empty entries were added after the game's 992, which come after all of those). */
+    const table = fs.readFileSync(path.join(PORT, 'game/main/main.c'), 'utf8').match(/file DatIndex\[[^\]]*\] = \{([^}]*)\}/)[1];
+    const words = table.replace(/\/\*.*?\*\//gs, '').match(/0x[0-9A-Fa-f]+|\d+/g).map(Number);
+    const code = [0x1E7, ...Array.from({ length: 13 }, (_, i) => 0x2CC + i), 0x3DF].map(e => [words[e * 2] * 2048, words[e * 2] * 2048 + words[e * 2 + 1]]);
+    let found = 0;
+
+    for (let i = 0; i < SAMPLES; i++) {
+        let at;
+
+        do {
+            at = crypto.randomInt(data.length - SAMPLE_BYTES);
+        } while (code.some(([from, to]) => at + SAMPLE_BYTES > from && at < to));
+        const sample = data.subarray(at, at + SAMPLE_BYTES);
+
+        if (new Set(sample).size > 8 && program.includes(sample)) {
+            found++;
+        }
+    }
+    if (found !== 0) {
+        throw new Error(`${found} of ${SAMPLES} samples of the game's archive are in ${what}`);
+    }
+    console.log(`none of ${SAMPLES} samples of the game's archive, but for its code, are in ${what}`);
+}
+
+/* Android's (--android, in tools/da): the APK port/android/build.sh makes, which a release has signed with the release key (tools/da
+   passes it from CRASH_BASH_ANDROID_KEY), each kind of processor's program checked as the others' are */
+if (ANDROID) {
+    if (!process.env.ANDROID_KEYSTORE) {
+        throw new Error('An Android release is signed with the release key: CRASH_BASH_ANDROID_KEY=FOLDER tools/da node port/package.mjs --android (docs/PORT.md, Android)');
+    }
+    run('sh', ['port/android/build.sh']);
+    const version = fs.readFileSync(path.join(PORT, 'CMakeLists.txt'), 'utf8').match(/project\(crash_bash_pc VERSION ([0-9.]+)/)[1];
+    for (const abi of ['arm64-v8a', 'x86_64']) {
+        check_program(fs.readFileSync(path.join(ROOT, 'build/port/android', abi, 'libmain.so')), `libmain.so for ${abi}`);
+    }
+    const apk = path.join(OUT, `crash-bash-port-${version}-android.apk`);
+    fs.mkdirSync(OUT, { recursive: true });
+    fs.copyFileSync(path.join(ROOT, 'build/port/android/crashbash.apk'), apk);
+    const signer = run(path.join(process.env.ANDROID_BUILD_TOOLS, 'apksigner'), ['verify', '--print-certs', apk]);
+    console.log(`signed by: ${signer.split('\n').find(l => /certificate SHA-256 digest/.test(l))?.split(': ').at(-1) ?? 'nothing?'}`);
+    const sha = crypto.createHash('sha256').update(fs.readFileSync(apk)).digest('hex');
+    fs.writeFileSync(`${apk}.sha256`, `${sha}  ${path.basename(apk)}\n`);
+    console.log(`${path.relative(ROOT, apk)}: ${fs.statSync(apk).size} bytes, sha256 ${sha}`);
+    process.exit(0);
+}
 
 run('cmake', ['--preset', PRESET, ...(LINUX ? [] : [`-DCMAKE_PREFIX_PATH=${sdl_dir}`])], PORT);
 run('cmake', ['--build', '--preset', PRESET], PORT);
@@ -85,43 +149,7 @@ fs.writeFileSync(path.join(dir, 'LICENSE.txt'), eol(`${fs.readFileSync(path.join
 fs.mkdirSync(path.join(dir, 'mods'));
 fs.writeFileSync(path.join(dir, 'mods', 'README.txt'), eol('Put mods here, as their zips. They show up on the Mods page, under Settings in\nthe menu the game opens with.\n'));
 
-/* What it mustn't hold */
-const program = fs.readFileSync(exe);
-const home = process.env.USERPROFILE ?? process.env.HOME ?? '';
-for (const text of [ROOT, ROOT.replaceAll('\\', '/'), home, home.replaceAll('\\', '/')]) {
-    if (text !== '' && text !== '/' && program.includes(text)) {
-        throw new Error(`The program holds this machine's path: ${text}`);
-    }
-}
-if (fs.existsSync(DATA)) {
-    const data = fs.readFileSync(DATA);
-    /* The code entries (ASSETS.md: 1E7, 2CC to 2D8 and 3DF) are the overlays, whose strings and tables are the decomp's own C and so in
-       the program too: the samples are of everything else. Where each entry is comes from the port's copy of the game's table (its size
-       a sum since the extra heroes' empty entries were added after the game's 992, which come after all of those). */
-    const table = fs.readFileSync(path.join(PORT, 'game/main/main.c'), 'utf8').match(/file DatIndex\[[^\]]*\] = \{([^}]*)\}/)[1];
-    const words = table.replace(/\/\*.*?\*\//gs, '').match(/0x[0-9A-Fa-f]+|\d+/g).map(Number);
-    const code = [0x1E7, ...Array.from({ length: 13 }, (_, i) => 0x2CC + i), 0x3DF].map(e => [words[e * 2] * 2048, words[e * 2] * 2048 + words[e * 2 + 1]]);
-    let found = 0;
-
-    for (let i = 0; i < SAMPLES; i++) {
-        let at;
-
-        do {
-            at = crypto.randomInt(data.length - SAMPLE_BYTES);
-        } while (code.some(([from, to]) => at + SAMPLE_BYTES > from && at < to));
-        const sample = data.subarray(at, at + SAMPLE_BYTES);
-
-        if (new Set(sample).size > 8 && program.includes(sample)) {
-            found++;
-        }
-    }
-    if (found !== 0) {
-        throw new Error(`${found} of ${SAMPLES} samples of the game's archive are in the program`);
-    }
-    console.log(`none of ${SAMPLES} samples of the game's archive, but for its code, are in the program`);
-} else {
-    console.log("the game's archive isn't here, so that wasn't checked");
-}
+check_program(fs.readFileSync(exe), 'the program');
 for (const file of fs.readdirSync(dir)) {
     if (/\.(dat|bin|cue|iso)$/i.test(file)) {
         throw new Error(`${file} is in the package`);

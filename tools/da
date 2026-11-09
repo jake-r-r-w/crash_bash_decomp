@@ -2,6 +2,8 @@
 # Run a command in the PC port's Android build container, with the repo mounted at /work (docs/PORT.md, Android):
 #   tools/da sh port/android/build.sh
 # The image (tools/docker/port-android/Dockerfile) is built on first use and tagged by the Dockerfile's git hash, as tools/dk's is.
+# With CRASH_BASH_ANDROID_KEY naming the folder of the release signing key (release.jks, release.pass), that folder is there too, at
+# /keys, read-only, and build.sh signs with it; it's never in the repo or the image.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -30,6 +32,17 @@ else
   if [ "$(uname -s)" = "Linux" ]; then USER_ARGS=(--user "$(id -u):$(id -g)"); fi
 fi
 
+KEY_ARGS=()
+if [ -n "${CRASH_BASH_ANDROID_KEY:-}" ]; then
+  if [ ! -f "$CRASH_BASH_ANDROID_KEY/release.jks" ] || [ ! -f "$CRASH_BASH_ANDROID_KEY/release.pass" ]; then
+    echo "ERROR: no release.jks and release.pass in $CRASH_BASH_ANDROID_KEY" >&2
+    exit 1
+  fi
+  KEYDIR="$CRASH_BASH_ANDROID_KEY"
+  if command -v cygpath >/dev/null 2>&1; then KEYDIR="$(cygpath -w "$KEYDIR")"; fi
+  KEY_ARGS=(-v "$KEYDIR:/keys:ro" -e ANDROID_KEYSTORE=/keys/release.jks -e ANDROID_KEYSTORE_PASS_FILE=/keys/release.pass)
+fi
+
 TTY=()
 if [ -t 0 ] && [ -t 1 ]; then TTY=(-it); fi
-exec docker run --rm "${TTY[@]}" "${USER_ARGS[@]}" -v "$HOSTDIR:/work" -w /work "$IMAGE" "$@"
+exec docker run --rm "${TTY[@]}" "${USER_ARGS[@]}" "${KEY_ARGS[@]}" -v "$HOSTDIR:/work" -w /work "$IMAGE" "$@"
