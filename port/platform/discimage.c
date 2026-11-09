@@ -464,6 +464,11 @@ int disc_first_run(const char *out, const char *first) {
     const char *message = android_message;
     const char *base = platform_base_path() != NULL ? platform_base_path() : "";
 
+    /* as a phone's file manager shows it, from Android/data on */
+    if (SDL_strstr(base, "Android/data/") != NULL) {
+        base = SDL_strstr(base, "Android/data/");
+    }
+
     SDL_snprintf(android_message, sizeof(android_message),
                  "Crash Bash needs the game's data, from your own copy of Crash Bash (USA).\n\n"
                  "Choose your disc image (the .bin, or an .iso) and it's copied once, so you won't need the image again. "

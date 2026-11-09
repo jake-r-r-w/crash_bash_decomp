@@ -77,9 +77,10 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    `tools/dl node port/package.mjs` makes its release, published in v0.3.2 (2026-11-09), but not yet played on a real Linux desktop and
    GPU.
 
-6. 7.14, Android (the user's, 2026-11-09). It builds (`tools/da`) and plays in the emulator with touch buttons, in either orientation.
-   Next: every minigame through the emulator (one at a time, by adb), the disc picker (Android's chooser, content:// URIs), arm64's
-   mismatched function pointers, then a signed release APK, whose key is the user's call (it signs every update after). The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
+6. 7.14, Android (the user's, 2026-11-09). It builds (`tools/da`) and plays in the emulator, filling a sideways phone with faint touch
+   buttons, either way round; every mode passes there (`playtest.mjs modes --android`), the disc picker works, and arm64's
+   function-pointer calls are checked (`port/android/check-fnptrs.sh`). Next: a signed release APK, whose key is the user's call (it
+   signs every update after), and a real phone. The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
    user picks.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
@@ -555,8 +556,13 @@ Newest first, a few lines each. Details are in the commits.
   draw over the picture on the window, beside it sideways and below it upright. NDK r30's Clang showed `HubGatewayKind` (u16) called as
   an s32 function, which arm64 needn't zero-extend: now a plain call. In the emulator (Windows Hypervisor Platform, turned on by the
   user; the AOSP Android 15 image) it runs a test of Crate Crush and its menus, the user played it by clicking its touch buttons, and
-  it turns. Linux `same` 14 of 14 and `heroes` after it all; Windows built, but `same` not run there (the user was playing). Not yet:
-  every minigame in the emulator, the disc picker, a real phone (arm64), a release.
+  it turns. Linux `same` 14 of 14 and `heroes` after it all; Windows built, but `same` not run there (the user was playing). Then, at
+  the user's word: the game fills a sideways phone (WIDESCREEN on by default there) with the buttons thin and faint over it, fading when
+  idle; the window's icon is the PS1 save icon from the player's data, and what a download carries a drawn one (`icons.ps1`, and the
+  .exe has one now). `playtest.mjs --android` runs the play tests in the emulator by adb, and with it every mode passes there (the
+  emulator headless, `-no-window`); the disc picker takes a .bin from Downloads through Android's chooser; an arm64 check of the game's
+  function-pointer calls found two that read a small result through the wrong type (grab hooks returning a pointer, two of Polar's AI
+  tests a bool), now through wrappers. Not yet: a real phone, a release.
 
 - 2026-11-09: [v0.3.2](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v0.3.2) is published, at the user's word ("Cut
   v0.3.2"): the first Linux download (`crash-bash-pc-0.3.2-linux-x64.tar.gz`, glibc 2.34 or newer and Vulkan) beside Windows's, which

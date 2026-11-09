@@ -311,6 +311,11 @@ s32 BashTumblerTimer = 0;
 EXTengine *BashPenguinEng = 0;
 EXTobject *BashPenguinObj = 0;
 
+/* PC: the hook is s32 (s32, s32) and is only asked whether something was grabbed; a pointer read as an s32 is cut to 32 bits */
+static s32 BashGrabHook(s32 idx, s32 arg) {
+    return BashHeroGrabObject(idx, (u16)arg) != NULL;
+}
+
 void InitialiseBASHFirst(void) {
     GameState *g;
     void **p;
@@ -324,7 +329,7 @@ void InitialiseBASHFirst(void) {
     HeroHooks.HeroExtraEffects = BashHero_ExtraEffects;
     HeroHooks.HeroesTouched = BashHeroesTouched;
     HeroHooks.Hero2ObjectCollision = BashHero2ObjectCollision;
-    HeroHooks.HeroGrabObject = BashHeroGrabObject;
+    HeroHooks.HeroGrabObject = BashGrabHook;
     HeroHooks.HeroKickCollision = BashHeroKickCollision;
     HeroHooks.HeroCarryCollision = BashHeroCarryCollision;
     BashCrateList = NULL;

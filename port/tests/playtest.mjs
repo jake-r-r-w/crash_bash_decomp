@@ -55,7 +55,14 @@ import { bps_make } from '../mods/bps.mjs';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const OUT = path.join(ROOT, 'build/port/playtest');
 const WINDOWS = process.platform === 'win32';
-const DEFAULT_EXE = WINDOWS ? 'build/port/windows-clang/crashbash.exe' : 'build/port/linux-clang/crashbash';
+/* --android: the game in Android's emulator (or a phone) by adb, one run at a time (docs/PORT.md, Android). The app takes its arguments
+   with its launch; a file it's told to write goes in its folder on the device and is fetched after; what it printed is its log.txt there.
+   Its exit code can't be had, so a run's is the signal if Android logged one, else 0 if its log reached the vblanks asked for, else 1. */
+const ANDROID = process.argv.includes('--android');
+const ADB = process.env.ADB ?? (WINDOWS ? path.join(process.env.LOCALAPPDATA ?? '', 'Android/Sdk/platform-tools/adb.exe') : 'adb');
+const ANDROID_APP = 'io.github.jakerrw.crashbash';
+const ANDROID_DIR = `/sdcard/Android/data/${ANDROID_APP}/files`;
+const DEFAULT_EXE = ANDROID ? 'android' : WINDOWS ? 'build/port/windows-clang/crashbash.exe' : 'build/port/linux-clang/crashbash';
 const ASAN_EXE = WINDOWS ? 'build/port/asan/crashbash.exe' : 'build/port/linux-asan/crashbash';
 const BOSS_TIMEOUT = 280, MODE_TIMEOUT = 200;
 
@@ -93,8 +100,58 @@ function route_to_boss(mode) {
     return args;
 }
 
+function adb(args) {
+    return spawnSync(ADB, args, { encoding: 'utf8', env: { ...process.env, MSYS_NO_PATHCONV: '1' } });
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* run's Android side (--android, above) */
+async function run_android(args, logfile, timeout) {
+    const fetch = [];
+    const sent = args.slice();
+
+    for (let i = 0; i < sent.length; i++) {
+        const at = sent[i] === '--shot' ? i + 2 : sent[i] === '--wav' ? i + 1 : -1;
+
+        if (at > 0 && at < sent.length) {
+            const device = `${ANDROID_DIR}/out/${path.basename(sent[at])}`;
+
+            fetch.push([device, path.resolve(ROOT, sent[at])]);
+            sent[at] = device;
+            i = at;
+        }
+    }
+    adb(['shell', 'am', 'force-stop', ANDROID_APP]);
+    adb(['shell', 'rm', '-rf', `${ANDROID_DIR}/out`, `${ANDROID_DIR}/log.txt`]);
+    adb(['shell', 'mkdir', '-p', `${ANDROID_DIR}/out`]);
+    adb(['logcat', '-c']);
+    adb(['shell', 'am', 'start', '-n', `${ANDROID_APP}/.CrashBashActivity`, '--esa', 'args', sent.join(',')]);
+    const started = Date.now();
+    await sleep(2000);
+    while (adb(['shell', 'pidof', ANDROID_APP]).stdout.trim() !== '') {
+        if (timeout && Date.now() - started > timeout * 1000) {
+            adb(['shell', 'am', 'force-stop', ANDROID_APP]);
+            break;
+        }
+        await sleep(1000);
+    }
+    adb(['pull', `${ANDROID_DIR}/log.txt`, logfile]);
+    for (const [device, local] of fetch) {
+        adb(['pull', device, local]);
+    }
+    const text = fs.existsSync(logfile) ? fs.readFileSync(logfile, 'latin1') : '';
+    const fatal = adb(['logcat', '-d', '-s', 'libc:F', 'DEBUG:F']).stdout.match(/Fatal signal \d+ \((\w+)\)/);
+    const frames = args.includes('--frames') ? args[args.indexOf('--frames') + 1] : null;
+
+    return { code: fatal != null ? fatal[1] : frames != null && new RegExp(`^${frames} vblanks`, 'm').test(text) ? 0 : 1, text };
+}
+
 /* Runs the game; resolves with its exit code (or the signal that ended it, on Linux), and what it printed, also kept in logfile. */
 function run(exe, args, logfile, { timeout = 0, env = {} } = {}) {
+    if (ANDROID) {
+        return run_android(args, logfile, timeout);
+    }
     return new Promise(resolve => {
         const log = fs.openSync(logfile, 'w');
         const child = spawn(path.resolve(ROOT, exe), args, { cwd: ROOT, stdio: ['ignore', log, log], env: { ...process.env, ...env } });
@@ -359,7 +416,7 @@ async function challenges(args) {
 /* Whether a build still draws and sounds the same, for a change that shouldn't alter either: frames and sound of a few modes against a
    saved baseline, in about a minute. */
 /* The most copies of the game at once, small and in a grid (--tile): 37 together at full size took down the whole PC. */
-const AT_ONCE = 12;
+const AT_ONCE = ANDROID ? 1 : 12; /* one app at a time on a phone */
 
 const SAME_MODES = [0, 1, 4, 5, 10, 14, 18, 23, 27, 28, 30, 31, 33, 40];
 const SAME_SHOTS = [500, 900, 1300];
@@ -608,7 +665,12 @@ async function shots(args) {
     return r.code === 0 && crash == null ? 0 : 1;
 }
 
-const [command, ...rest] = process.argv.slice(2);
+const [command, ...rest] = process.argv.slice(2).filter(a => a !== '--android');
+/* adb waits for a device that isn't there, for some of what a run asks */
+if (ANDROID && adb(['get-state']).stdout.trim() !== 'device') {
+    console.log(`No Android device or emulator for adb (${ADB}): start one (docs/PORT.md, Android)`);
+    process.exit(2);
+}
 /* A disc image's data comes out the same as the disc's, from each kind of image, and a wrong image is turned away. Needs make disc's image. */
 async function image(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);

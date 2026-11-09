@@ -355,6 +355,11 @@ s16 PapuWaveFlag = 0;
 /* two zero bytes before pahero.c's data: the link packs to 2 (SUBALIGN), so the padding is written out */
 s16 PapuDataPad = 0;
 
+/* PC: the hook is s32 (s32, s32) and is only asked whether something was grabbed; a pointer read as an s32 is cut to 32 bits */
+static s32 PapuGrabHook(s32 idx, s32 arg) {
+    return PapuHeroGrabObject(idx, (u16)arg) != NULL;
+}
+
 void InitialisePAPUFirst(void) {
     GameState *g;
     u8 *v;
@@ -362,7 +367,7 @@ void InitialisePAPUFirst(void) {
 
     HeroHooks.KeepInBounds = PAPU_KeepInBounds;
     HeroHooks.Hero2ObjectCollision = PapuHero2ObjectCollision;
-    HeroHooks.HeroGrabObject = PapuHeroGrabObject;
+    HeroHooks.HeroGrabObject = PapuGrabHook;
     HeroHooks.HeroKickCollision = PapuHeroKickCollision;
     HeroHooks.HeroCarryCollision = PapuHeroCarryCollision;
     PapuInitCrateHooks();

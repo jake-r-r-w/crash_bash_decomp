@@ -209,6 +209,11 @@ u16 SpinShadowModels[4] = { 0x2013, 0x2012, 0x2010, 0x2011 };
 u16 SpinHitSfx[4] = { 0x446, 0x447, 0x448, 0x449 };
 u16 SpinHitDone[4] = {0};
 
+/* PC: the hook is s32 (s32, s32) and is only asked whether something was grabbed; a pointer read as an s32 is cut to 32 bits */
+static s32 SpinGrabHook(s32 idx, s32 arg) {
+    return SpinHeroGrabObject(idx, arg) != NULL;
+}
+
 void InitialiseSPINFirst() {
     void *p;
     void **q;
@@ -221,7 +226,7 @@ void InitialiseSPINFirst() {
     HeroHooks.HeroBot = Spin_HeroBot;
     HeroHooks.ChooseWinner = SpinChooseWinner;
     HeroHooks.Hero2ObjectCollision = SpinHero2ObjectCollision;
-    HeroHooks.HeroGrabObject = SpinHeroGrabObject;
+    HeroHooks.HeroGrabObject = SpinGrabHook;
     HeroHooks.HeroKickCollision = SpinHeroKickCollision;
     HeroHooks.HeroCarryCollision = SpinHeroCarryCollision;
     HeroHooks.HeroExtraEffects = SpinHero_ExtraEffects;

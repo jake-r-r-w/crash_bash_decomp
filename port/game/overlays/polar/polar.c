@@ -534,7 +534,16 @@ s32 PolarArenaRadius2 = 0x400000;
 VECTOR PolarCentre = {0};
 s32 PolarUnused0[2] = { 0, 0x800 };
 s32 PolarClock = 0;
-s32 (*PolarAITests[5])(s32 player) = { TestAttackChance, TestHuntChance, TestWanderChance, TestChaseChance, TestBombChance };
+/* PC: two of the tests return bool, called through the table as s32 and tested against 0: a bool sets only its lowest byte */
+static s32 TestChaseChanceAI(s32 player) {
+    return TestChaseChance((u32)player);
+}
+
+static s32 TestBombChanceAI(s32 player) {
+    return TestBombChance((u32)player);
+}
+
+s32 (*PolarAITests[5])(s32 player) = { TestAttackChance, TestHuntChance, TestWanderChance, TestChaseChanceAI, TestBombChanceAI };
 s32 PolarIceRadius = 0x658;
 s32 PolarAnimFlag = 0;
 s32 PolarAIChances[72] = {

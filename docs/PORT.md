@@ -197,6 +197,16 @@ adb shell am start -n io.github.jakerrw.crashbash/.CrashBashActivity --esa args 
 
 In Git Bash `MSYS_NO_PATHCONV=1` has to be set, or it turns the `/sdcard` paths into Windows ones.
 
+The play tests run there too, with `--android` (`node port/tests/playtest.mjs modes --android`): one run at a time, each launched by adb
+with its arguments, its shots fetched from the app's folder and its result read from its `log.txt` and Android's crash log, as an app has
+no exit code to give. The emulator can run without a window for them (`-no-window`), out of the way.
+
+Phones are arm64, where a function returning a small type (u8, u16, bool) needn't clear the rest of its register, and the emulator is
+x86_64, so it can't show a call through a pointer of the wrong type. The game's C turns off Clang's function-pointer warnings, so a
+check builds it for arm64 with them on (`tools/da sh port/android/check-fnptrs.sh`): the calls that read such a result
+go through wrappers of the right type now (the grab hooks, which returned a pointer read as an s32, and two of Polar's AI tests, a bool
+read as an s32), and what's left differs only in arguments of the same size, or results nobody reads.
+
 ## A release
 
 `node port/package.mjs`, with `TC` set to the toolchain, builds `build/port/release/crash-bash-port-VERSION-windows-x64.zip` (up to
