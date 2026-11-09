@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef __ANDROID__
+#include <unistd.h>
+#endif
 
 #include <SDL3/SDL.h>
 #include "platform/platform.h"
@@ -94,13 +97,45 @@ static int NoWindow;
 static int Turbo;
 static int StopAt = -1;
 
+/* The end of the program, from wherever in the game. On Android the process goes at once: an exit() there tears down shared code that
+   Android's own threads still use (its UI thread crashed on a destroyed lock), and Android can keep a process to start the app in again,
+   with all the game's state as it was left. */
+static void platform_exit(int code) {
+    fflush(stdout);
+#ifdef __ANDROID__
+    _exit(code);
+#else
+    exit(code);
+#endif
+}
+
 /* Something's stopped the game from starting, and whoever double-clicked it should hear why. */
 void platform_fatal(const char *message) {
     fprintf(stderr, "%s\n", message);
     if (StopAt < 0) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crash Bash", message, NULL);
     }
-    exit(1);
+    platform_exit(1);
+}
+
+/* The program's folder, where it looks for its data, a disc image, discs/ and mods/. On Android, where the program has no folder of its
+   own to see, the app's folder in shared storage (Android/data/PACKAGE/files/), which a PC can reach over USB and adb can write to. */
+const char *platform_base_path(void) {
+#ifdef SDL_PLATFORM_ANDROID
+    static char path[1024];
+
+    if (path[0] == 0) {
+        const char *shared = SDL_GetAndroidExternalStoragePath();
+
+        if (shared == NULL) {
+            return NULL;
+        }
+        SDL_snprintf(path, sizeof(path), "%s/", shared);
+    }
+    return path;
+#else
+    return SDL_GetBasePath();
+#endif
 }
 
 /* Where a disc image's copy of the data goes: the user's own folder, as the program's may not be theirs to write to */
@@ -127,7 +162,7 @@ const char *platform_data_path(void) {
         "../disc/files/CRASHBSH/CRASHBSH.DAT",
         "../../disc/files/CRASHBSH/CRASHBSH.DAT",
     };
-    const char *base = SDL_GetBasePath();
+    const char *base = platform_base_path();
     size_t i;
 
     if (DataPath != NULL) {
@@ -147,8 +182,7 @@ void platform_finish(int code) {
     if (!NoWindow) {
         host_quit();
     }
-    fflush(stdout);
-    exit(code);
+    platform_exit(code);
 }
 
 /* Once a vblank: the window and the clock */
@@ -344,6 +378,18 @@ int main(int argc, char **argv) {
     int extra[4] = { 0 }, extra_heroes = 0;
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
 
+#ifdef SDL_PLATFORM_ANDROID
+    /* Android sends a program's output nowhere: it goes in log.txt in its folder, for test runs and for anyone to send with a report */
+    if (platform_base_path() != NULL) {
+        char log[1100];
+
+        SDL_snprintf(log, sizeof(log), "%slog.txt", platform_base_path());
+        if (freopen(log, "w", stdout) != NULL) {
+            setvbuf(stdout, NULL, _IOLBF, 0);
+            dup2(fileno(stdout), fileno(stderr));
+        }
+    }
+#endif
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--version") == 0) {
             printf("crashbash %s\n", BASH_VERSION);

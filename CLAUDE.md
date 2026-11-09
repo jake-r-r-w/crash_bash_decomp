@@ -37,6 +37,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `linux-clang` preset, play tests under `xvfb-run`, and `tools/dl node port/package.mjs` for its release (PORT.md, Linux). The Mac isn't
   built yet (PORT.md, The Mac). The renderer's shaders are GLSL in `port/platform/shaders/` for Vulkan and Metal, `make.sh` in `tools/dl`
   after a change, and HLSL in `gfx.c` for Direct3D: a change goes in both.
+- The port on Android: `tools/da sh port/android/build.sh` makes the APK in its own container, and it's tested in Android's emulator on
+  Windows with adb (PORT.md, Android; `MSYS_NO_PATHCONV=1` in Git Bash). Touch buttons are `port/platform/touch.c`.
 - The port's extra heroes (Ripper Roo from the player's Crash Bandicoot disc): a line each in `port/game/include/bash/herolist.h`
   and a file each in `port/game/main/heroes/`, Roo's (`roo.c`) the template. Adding one follows the checklist at the top of
   [docs/EXTRA_HEROES.md](docs/EXTRA_HEROES.md); `playtest.mjs hero ID` checks it in every game, for work on that hero. Releases and

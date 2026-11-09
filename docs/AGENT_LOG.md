@@ -75,7 +75,11 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
 
 5. 7.13, Linux and the Mac (the user's, 2026-11-08, Linux first). Linux builds and plays in the container, `tools/dl` (PORT.md, Linux), and
    `tools/dl node port/package.mjs` makes its release, published in v0.3.2 (2026-11-09), but not yet played on a real Linux desktop and
-   GPU. The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
+   GPU.
+
+6. 7.14, Android (the user's, 2026-11-09). It builds (`tools/da`) and plays in the emulator with touch buttons, in either orientation.
+   Next: every minigame through the emulator (one at a time, by adb), the disc picker (Android's chooser, content:// URIs), arm64's
+   mismatched function pointers, then a signed release APK, whose key is the user's call (it signs every update after). The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
    user picks.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
@@ -152,6 +156,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Gotchas
 
 **Port test runs**
+- **Android (PORT.md, Android).** In Git Bash, `MSYS_NO_PATHCONV=1` before any adb call with an Android path, or `/sdcard/...` becomes
+  `C:/Program Files/Git/sdcard/...` and a push lands nowhere. PowerShell's `>` mangles binary output: take `adb exec-out screencap -p`
+  in Git Bash. Google's command-line tools now hand `sdkmanager` over to a new "Android CLI" that collects usage data unless given
+  `--no-metrics`, and it skipped the system image: the emulator's image came by direct download from dl.google.com (its SHA-1 checked
+  against the repository XML). The emulator itself takes `-no-metrics`. GitHub's release downloads gave 504s for a minute once: the
+  Dockerfile's curl retries. Phones are arm64, where a function returning u8 or u16 needn't clear the rest of its register: the
+  game's C turns off Clang's incompatible-function-pointer warnings, so such calls through a mismatched pointer may hide (NDK r30 found
+  one, `HubGatewayKind`); the emulator is x86_64 and can't show them.
 - **Linux runs in the container (`tools/dl`, PORT.md, Linux).** The image is tagged by its Dockerfile's hash, so any change to that
   rebuilds it (about 4 minutes, SDL3 too). Play tests need a 24-bit virtual screen: `xvfb-run -a -s "-screen 0 1920x1080x24"`. The
   container sees the repo through Windows' file sharing, which ignores case and can't hard-link, so try anything case-sensitive in its
@@ -534,6 +546,17 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-09: Android, at the user's word ("can we do a android release?"; downloads in Docker, Google's SDK licence accepted at their
+  word, tested in an emulator, touch buttons in the first version; 7.14). `tools/da` builds the APK in its own container with the SDK's
+  tools (no Gradle): the game as `libmain.so`, SDL's Java side and `CrashBashActivity`, which runs `main` with a launch's `args`. On
+  Android the program's folder is the app's in shared storage (`platform_base_path`), output goes to `log.txt` there, the screen turns
+  either way, back is Triangle, and the game `_exit`s (an `exit()` crashed in Android's UI thread). Touch buttons (`platform/touch.c`)
+  draw over the picture on the window, beside it sideways and below it upright. NDK r30's Clang showed `HubGatewayKind` (u16) called as
+  an s32 function, which arm64 needn't zero-extend: now a plain call. In the emulator (Windows Hypervisor Platform, turned on by the
+  user; the AOSP Android 15 image) it runs a test of Crate Crush and its menus, the user played it by clicking its touch buttons, and
+  it turns. Linux `same` 14 of 14 and `heroes` after it all; Windows built, but `same` not run there (the user was playing). Not yet:
+  every minigame in the emulator, the disc picker, a real phone (arm64), a release.
 
 - 2026-11-09: [v0.3.2](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v0.3.2) is published, at the user's word ("Cut
   v0.3.2"): the first Linux download (`crash-bash-pc-0.3.2-linux-x64.tar.gz`, glibc 2.34 or newer and Vulkan) beside Windows's, which

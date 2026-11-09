@@ -29,7 +29,7 @@ at `7115b3b8`, as a reference only. What it taught is at the end of this file.
 | Build | CMake with presets, and Ninja |
 | Compilers | Clang on both systems, GCC as a second check on Linux |
 | Window, sound, input | SDL3 |
-| Drawing | SDL3's GPU API: Direct3D 12 on Windows, Vulkan on Linux |
+| Drawing | SDL3's GPU API: Direct3D 12 on Windows, Vulkan on Linux and Android |
 | Checking | CTest, ASan and UBSan builds, optimised release builds |
 
 There are no GitHub workflows: all of this runs by hand, on a machine with the game's data. Playing the
@@ -160,6 +160,39 @@ cd port && cmake --preset macos-clang -DBASH_FETCH_SDL3=ON && cmake --build --pr
 
 What's left for it: building and playing it there, then a release (one program for Apple silicon and Intel, signed if it's to open
 without macOS's warning) and the README's Mac parts in `package.mjs`.
+
+### Android
+
+Android builds in a container of its own, `tools/da` (`tools/docker/port-android/Dockerfile`: Debian 12, Google's SDK command-line tools,
+then with them a platform to build against, the build tools and the NDK, a JDK, and SDL3 built with the NDK for arm64 and x86_64).
+`tools/da sh port/android/build.sh` makes `build/port/android/crashbash.apk` with the SDK's own tools, no Gradle: the game as
+`libmain.so` beside SDL's `libSDL3.so` for each processor, SDL's Java side with the port's activity (`port/android/java/`, which runs the
+game's `main` with the arguments a launch gives it), the manifest and icon, signed with a debug key unless `$ANDROID_KEYSTORE` names
+another.
+
+What's Android's own:
+- It draws with Vulkan, as Linux does, and turns with the phone: the picture fits either way round.
+- The program's folder (`platform_base_path`) is the app's in shared storage, `Android/data/io.github.jakerrw.crashbash/files/`, which a
+  PC reaches over USB: `CRASHBSH.DAT`, a disc image, `discs/` and `mods/` go there, and the game writes its output to `log.txt` there.
+  Saves and settings are in the app's private storage.
+- The first run asks for the disc image with Android's file chooser: the .bin, or an .iso (a .cue's .bin can't be found from it there).
+- On-screen buttons (`platform/touch.c`), drawn over the picture on the window itself, so never in a test run's shots: a d-pad, the face
+  buttons, the shoulders, Select and Start, in the bars beside the picture when the phone's sideways and below it when it's upright.
+  They show from the start, go when a controller or keyboard is used, and come back at a touch (anywhere, a PC's touch screen too).
+- The back button is Triangle.
+- The game ends its process at once (`_exit`): an `exit()` crashed in Android's UI thread on a lock it had torn down, and Android may
+  start the app again in a process it kept, with all of the game's state as it was.
+
+Testing is in Android's emulator on Windows: the SDK in `%LOCALAPPDATA%\Android\Sdk`, which needs Windows Hypervisor Platform turned
+on, and its virtual device `crashbash` (a 2400x1080 phone, the AOSP Android 15 x86_64 image), started with `-no-metrics`. Then:
+
+```sh
+adb install -r build/port/android/crashbash.apk
+adb push CRASHBSH.DAT /sdcard/Android/data/io.github.jakerrw.crashbash/files/
+adb shell am start -n io.github.jakerrw.crashbash/.CrashBashActivity --esa args --mode,1,--frames,900,--shot,600,/sdcard/Android/data/io.github.jakerrw.crashbash/files/m1.png
+```
+
+In Git Bash `MSYS_NO_PATHCONV=1` has to be set, or it turns the `/sdcard` paths into Windows ones.
 
 ## A release
 

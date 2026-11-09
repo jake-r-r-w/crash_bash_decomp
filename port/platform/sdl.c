@@ -5,6 +5,7 @@
 #include "platform.h"
 #include "gfx.h"
 #include "settings.h"
+#include "touch.h"
 
 #define MAX_PADS 4
 #define VBLANK_HZ 59.94
@@ -18,6 +19,16 @@ static bool Fullscreen;
 
 static void open_pads(void);
 
+/* A phone's game has the whole screen, its bars hidden, whatever the settings (made for a window on a PC) say */
+static int want_fullscreen(const Settings *s) {
+#ifdef SDL_PLATFORM_ANDROID
+    (void)s;
+    return 1;
+#else
+    return s->fullscreen;
+#endif
+}
+
 void *host_window(void) {
     const Settings *s = settings();
 
@@ -25,12 +36,14 @@ void *host_window(void) {
         return Window;
     }
     SDL_SetMainReady();
+    /* a phone turns either way: the picture fits it, and the touch buttons go where there's room (touch.c) */
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight Portrait PortraitUpsideDown");
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) {
         SDL_Log("SDL_Init: %s", SDL_GetError());
         platform_fatal("Crash Bash couldn't start its window and sound.");
         return NULL;
     }
-    Window = SDL_CreateWindow("Crash Bash", s->window_w, s->window_h, SDL_WINDOW_RESIZABLE | (s->fullscreen ? SDL_WINDOW_FULLSCREEN : 0));
+    Window = SDL_CreateWindow("Crash Bash", s->window_w, s->window_h, SDL_WINDOW_RESIZABLE | (want_fullscreen(s) ? SDL_WINDOW_FULLSCREEN : 0));
     if (Window == NULL) {
         SDL_Log("SDL_CreateWindow: %s", SDL_GetError());
     }
@@ -183,7 +196,7 @@ static void place_window(void) {
     Settings *s = settings();
     int was_fullscreen = Fullscreen, w, h, maximised;
 
-    Fullscreen = s->fullscreen;
+    Fullscreen = want_fullscreen(s);
     SDL_SetWindowFullscreen(Window, Fullscreen);
     SDL_SyncWindow(Window);
     if (s->tiles == 0) {
@@ -343,6 +356,12 @@ int host_poll(void) {
         case SDL_EVENT_GAMEPAD_REMOVED:
             open_pads();
             break;
+        case SDL_EVENT_FINGER_DOWN:
+        case SDL_EVENT_FINGER_MOTION:
+        case SDL_EVENT_FINGER_UP:
+        case SDL_EVENT_FINGER_CANCELED:
+            touch_event(&e);
+            break;
         case SDL_EVENT_KEY_DOWN:
             if (e.key.key == SDLK_RETURN && (e.key.mod & SDL_KMOD_ALT) && !e.key.repeat) {
                 settings()->fullscreen = !Fullscreen;
@@ -429,15 +448,28 @@ static int keyboard_buttons(void) {
     return b;
 }
 
-/* The first pad is the keyboard and the first controller; then a controller each. */
+/* The first pad is the keyboard, the first controller and the touch buttons (touch.c); then a controller each. Using the keyboard or a
+   controller hides the touch buttons. Android's back button is Triangle, the game's own way back. */
 int host_pad(int port) {
     int b = -1;
 
     if (port == 0) {
-        b = keyboard_buttons();
+        int other = keyboard_buttons();
+
+        if (port < MAX_PADS && Pads[port] != NULL) {
+            other |= pad_buttons(Pads[port]);
+        }
+        if (other != 0) {
+            touch_other_input();
+        }
+        b = other | touch_buttons();
+        if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_AC_BACK]) {
+            b |= PAD_TRIANGLE;
+        }
+        return b;
     }
     if (port < MAX_PADS && Pads[port] != NULL) {
-        b = (b < 0 ? 0 : b) | pad_buttons(Pads[port]);
+        b = pad_buttons(Pads[port]);
     }
     return b;
 }

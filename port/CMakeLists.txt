@@ -34,6 +34,11 @@ if(NOT SDL3_FOUND)
   FetchContent_MakeAvailable(SDL3)
 endif()
 
+# On Android the game is a shared library, so its objects are position-independent too.
+if(ANDROID)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 # The game's C, as it stands: this target is what 6.3 and 6.4 clean up (docs/ROADMAP-B.md).
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS game/main/*.c game/overlays/*.c)
 add_library(game OBJECT ${GAME_SOURCES} tests/bossbot.c tests/adventureplayer.c tests/pogoplayer.c tests/bashplayer.c)
@@ -60,9 +65,16 @@ foreach(ovl arkenoid bash bonk chase dino hub n2o papu pogo polar race spin tank
   set_property(SOURCE ${ovl_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAME=${ovl}")
 endforeach()
 
-add_executable(crashbash main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c
+set(PORT_SOURCES main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/zipread.c platform/bps.c platform/settings.c
-  $<TARGET_OBJECTS:game>)
+  platform/touch.c)
+if(ANDROID)
+  # Android loads the game as libmain.so, and SDL's Java side calls its main (port/android/, docs/PORT.md, Android)
+  add_library(crashbash SHARED ${PORT_SOURCES} $<TARGET_OBJECTS:game>)
+  set_target_properties(crashbash PROPERTIES OUTPUT_NAME main)
+else()
+  add_executable(crashbash ${PORT_SOURCES} $<TARGET_OBJECTS:game>)
+endif()
 # Mods are zips, which zlib unpacks (platform/zipread.c).
 find_package(ZLIB REQUIRED)
 target_link_libraries(crashbash PRIVATE ZLIB::ZLIB)
@@ -86,6 +98,9 @@ if(BASH_RELEASE AND WIN32)
   set_target_properties(crashbash PROPERTIES WIN32_EXECUTABLE TRUE)
 endif()
 
+if(ANDROID)
+  return()
+endif()
 enable_testing()
 add_test(NAME version COMMAND crashbash --version)
 set_tests_properties(version PROPERTIES PASS_REGULAR_EXPRESSION "crashbash ${PROJECT_VERSION}")

@@ -335,7 +335,7 @@ static DiscImage *find_volume_in(const char *folder, const char *volume, int dep
 }
 
 DiscImage *disc_image_find(const char *volume) {
-    const char *base = SDL_GetBasePath();
+    const char *base = platform_base_path();
     char *pref = SDL_GetPrefPath("CrashBash", "CrashBash");
     char places[9][1024];
     int depth[9];
@@ -401,7 +401,13 @@ static char *ask_for_image(void) {
 
     SDL_SetAtomicInt(&Answered, 0);
     Chosen = NULL;
+#ifdef SDL_PLATFORM_ANDROID
+    /* Android's chooser filters by type, and has no type for a disc image's .bin, so it offers every file */
+    (void)Filters;
+    SDL_ShowOpenFileDialog(file_chosen, NULL, NULL, NULL, 0, NULL, false);
+#else
     SDL_ShowOpenFileDialog(file_chosen, NULL, NULL, Filters, SDL_arraysize(Filters), NULL, false);
+#endif
     while (!SDL_GetAtomicInt(&Answered)) {
         SDL_PumpEvents();
         SDL_Delay(10);
@@ -439,7 +445,7 @@ static int try_folder(const char *folder, const char *out, const char **problem)
 }
 
 int disc_find_beside(const char *out, const char **problem) {
-    const char *base = SDL_GetBasePath();
+    const char *base = platform_base_path();
 
     *problem = NULL;
     return (base != NULL && try_folder(base, out, problem)) || try_folder("./", out, problem);
@@ -452,9 +458,24 @@ int disc_first_run(const char *out, const char *first) {
         { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Choose a disc image" },
     };
     SDL_MessageBoxData box;
+#ifdef SDL_PLATFORM_ANDROID
+    /* On Android a .cue's .bin can't be found from it (the chooser gives one file), and the folder is the app's in shared storage */
+    static char android_message[1400], android_none[1400];
+    const char *message = android_message;
+    const char *base = platform_base_path() != NULL ? platform_base_path() : "";
+
+    SDL_snprintf(android_message, sizeof(android_message),
+                 "Crash Bash needs the game's data, from your own copy of Crash Bash (USA).\n\n"
+                 "Choose your disc image (the .bin, or an .iso) and it's copied once, so you won't need the image again. "
+                 "Or copy CRASHBSH.DAT from the disc to %s on this device.", base);
+    SDL_snprintf(android_none, sizeof(android_none),
+                 "There's no way to choose a file here. Put your disc image (the .bin, or an .iso) or CRASHBSH.DAT in %s on this "
+                 "device, and start it again.", base);
+#else
     const char *message = "Crash Bash needs the game's data, from your own copy of Crash Bash (USA).\n\n"
                           "Choose your disc image (a .cue, .iso or .bin) and it's copied once, so you won't need the image again. "
                           "Or copy CRASHBSH.DAT from the disc into the same folder as this program.";
+#endif
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         return 0;
@@ -477,8 +498,12 @@ int disc_first_run(const char *out, const char *first) {
         image = ask_for_image();
         if (image == NULL) {
             if (NoDialog) {
+#ifdef SDL_PLATFORM_ANDROID
+                first = android_none;
+#else
                 first = "There's no way to choose a file on this system. Put your disc image (a .cue with its .bin, an .iso or a .bin) "
                         "in the same folder as this program, or copy CRASHBSH.DAT there, and start it again.";
+#endif
             }
             continue;
         }

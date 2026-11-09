@@ -50,7 +50,7 @@ void InitialiseHUB(void) {
         CAM6A->angle = HubGateways[G6A->gateway].angle;
         CAM6A->radius = (HubGateways[G6A->gateway].radius_outer + HubGateways[G6A->gateway].radius_inner) >> 1;
     } else {
-        switch (((s32(*)(void))HubGatewayKind)()) {
+        switch (HubGatewayKind()) {
         case 5:
             G6A->gateway = -1;
             CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
@@ -372,18 +372,18 @@ void HubPreMoveHero(s32 arg0) {
         }
         if (HubGateways[GameGateway].on_pad != old) {
             if (HubGateways[GameGateway].on_pad != 0) {
-                switch (((s32(*)(void))HubGatewayKind)()) {
+                switch (HubGatewayKind()) {
                 case 2:
                     PlaySfx(0x399, NULL, NULL, 0x1000, 0x1E00, 0);
                     break;
                 case 5:
-                    PlaySfx(((s32(*)(void))WarpRoomBestLevel)() >= 0 ? 0x39E : 0x39D, &HubSelectSfx, NULL, 0x1000, 0x1E00, 0);
+                    PlaySfx(WarpRoomBestLevel() >= 0 ? 0x39E : 0x39D, &HubSelectSfx, NULL, 0x1000, 0x1E00, 0);
                 case 4:
                     PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
                     break;
                 }
             } else {
-                switch (((s32(*)(void))HubGatewayKind)()) {
+                switch (HubGatewayKind()) {
                 case 2:
                     PlaySfx(0x39A, NULL, NULL, 0x1000, 0x1E00, 0);
                     break;
@@ -405,7 +405,7 @@ void HubPreMoveHero(s32 arg0) {
         if ((u32)(p[g->gateway].radius_outer - HubHeroRing.radius) >= 0x100) {
             goto done;
         }
-        switch (((s32(*)(void))HubGatewayKind)()) {
+        switch (HubGatewayKind()) {
         case 5:
             n = HubSelectedLevel();
             if (n >= 0 && ModeRequirementMet(n & 0xFFFF) == 1) {
@@ -593,7 +593,7 @@ void HubDoorMenuUpdate(void) {
         sub->scale = v + 90;
     }
     if (HubDoorFade != 0) {
-        switch (((s32(*)(void))HubGatewayKind)()) {
+        switch (HubGatewayKind()) {
         case 2:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
                 n = HubGateways[((GameState *)GameInfo)->gateway].table->level;

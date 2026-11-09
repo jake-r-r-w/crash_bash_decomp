@@ -10,6 +10,7 @@
 #include "platform.h"
 #include "gfx.h"
 #include "texpack.h"
+#include "touch.h"
 #include "upscale.h"
 
 #ifdef _WIN32
@@ -87,6 +88,9 @@ static SDL_GPUBuffer *VertexBuf;
 static SDL_GPUTransferBuffer *VertexXfer, *AtlasXfer, *ShotXfer;
 /* solid or textured for each blend, by how the fragment shader is told to treat alpha */
 static SDL_GPUGraphicsPipeline *PipeOpaque, *PipeDepth, *PipeHalf, *PipeAdd, *PipeSub, *PipeQuarter;
+/* The touch buttons, over the picture on the window itself (touch.h) */
+static SDL_GPUGraphicsPipeline *PipeOverlay;
+#define OVERLAY_MAX_VERTS 6000
 static int TargetW, TargetH;
 static int ScreenW = 640, ScreenH = 480;
 static int Wide;
@@ -230,7 +234,10 @@ static SDL_GPUShader *make_shader(const char *src, const char *profile, SDL_GPUS
 #endif
 }
 
-static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *fs, SDL_GPUBlendFactor src, SDL_GPUBlendFactor dst, SDL_GPUBlendOp op, int blend, int depth) {
+/* For a target of this format and samples, with or without the depth buffer */
+static SDL_GPUGraphicsPipeline *make_pipeline_for(SDL_GPUShader *vs, SDL_GPUShader *fs, SDL_GPUBlendFactor src, SDL_GPUBlendFactor dst,
+                                                  SDL_GPUBlendOp op, int blend, int depth, SDL_GPUTextureFormat format,
+                                                  SDL_GPUSampleCount samples, int has_depth) {
     SDL_GPUGraphicsPipelineCreateInfo p;
     SDL_GPUVertexBufferDescription vb;
     SDL_GPUVertexAttribute a[3];
@@ -252,7 +259,7 @@ static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *
     a[2].location = 2;
     a[2].format = SDL_GPU_VERTEXELEMENTFORMAT_UBYTE4_NORM;
     a[2].offset = 24;
-    c.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
+    c.format = format;
     if (blend) {
         c.blend_state.enable_blend = true;
         c.blend_state.color_blend_op = op;
@@ -271,15 +278,20 @@ static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *
     p.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
     p.rasterizer_state.cull_mode = SDL_GPU_CULLMODE_NONE;
     p.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
-    p.multisample_state.sample_count = Samples;
+    p.multisample_state.sample_count = samples;
     p.target_info.color_target_descriptions = &c;
     p.target_info.num_color_targets = 1;
-    p.target_info.has_depth_stencil_target = true;
-    p.target_info.depth_stencil_format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT;
+    p.target_info.has_depth_stencil_target = has_depth != 0;
+    p.target_info.depth_stencil_format = has_depth ? SDL_GPU_TEXTUREFORMAT_D32_FLOAT : SDL_GPU_TEXTUREFORMAT_INVALID;
     p.depth_stencil_state.enable_depth_test = depth != 0;
     p.depth_stencil_state.enable_depth_write = depth != 0;
     p.depth_stencil_state.compare_op = SDL_GPU_COMPAREOP_LESS_OR_EQUAL;
     return SDL_CreateGPUGraphicsPipeline(Device, &p);
+}
+
+/* For the picture the game's drawn into */
+static SDL_GPUGraphicsPipeline *make_pipeline(SDL_GPUShader *vs, SDL_GPUShader *fs, SDL_GPUBlendFactor src, SDL_GPUBlendFactor dst, SDL_GPUBlendOp op, int blend, int depth) {
+    return make_pipeline_for(vs, fs, src, dst, op, blend, depth, SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM, Samples, 1);
 }
 
 static SDL_GPUGraphicsPipeline **const Pipes[] = { &PipeOpaque, &PipeDepth, &PipeHalf, &PipeAdd, &PipeSub, &PipeQuarter };
@@ -531,6 +543,11 @@ int gfx_init(void *window, const GfxConfig *config) {
     if (!make_pipelines()) {
         fprintf(stderr, "Pipeline: %s\n", SDL_GetError());
         return 0;
+    }
+    PipeOverlay = make_pipeline_for(ShaderV, ShaderF, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                                    SDL_GPU_BLENDOP_ADD, 1, 0, SDL_GetGPUSwapchainTextureFormat(Device, Window), SDL_GPU_SAMPLECOUNT_1, 0);
+    if (PipeOverlay == NULL) {
+        fprintf(stderr, "Overlay pipeline: %s\n", SDL_GetError());
     }
 
     resolve_size(&width, &height);
@@ -1301,10 +1318,69 @@ static void fit_picture(Uint32 sw, Uint32 sh, SDL_GPUBlitRegion *r) {
 /* And for putting the last picture back, under anti-aliasing. */
 #define BLEND_PICTURE (-4)
 
+/* The touch buttons' corners (touch.h) into gv from used, in clip space for the window: how many, and of them the buttons' own */
+static int put_overlay(GpuVert *gv, Uint32 used, int *bodies) {
+    static TouchVert tv[OVERLAY_MAX_VERTS];
+    int ww = 0, wh = 0, n, i;
+
+    *bodies = 0;
+    if (PipeOverlay == NULL || !SDL_GetWindowSizeInPixels(Window, &ww, &wh) || ww <= 0 || wh <= 0) {
+        return 0;
+    }
+    n = touch_shapes(ww, wh, tv, OVERLAY_MAX_VERTS, bodies);
+    if (used + n > MAX_TRIS * 3) {
+        return 0;
+    }
+    for (i = 0; i < n; i++) {
+        GpuVert *g = &gv[used + i];
+
+        g->x = tv[i].x / ww * 2 - 1;
+        g->y = 1 - tv[i].y / wh * 2;
+        g->z = 0;
+        g->w = 1;
+        g->u = g->v = 0;
+        g->rgba = tv[i].rgb | 0xFF000000u;
+    }
+    return n;
+}
+
+/* Over the picture on the window: the buttons, then their marks, each at its own alpha */
+static void draw_overlay(SDL_GPUCommandBuffer *cmd, SDL_GPUTexture *swap, Uint32 first, int bodies, int count) {
+    SDL_GPUColorTargetInfo ct;
+    SDL_GPURenderPass *pass;
+    SDL_GPUBufferBinding vb;
+    SDL_GPUTextureSamplerBinding tb;
+    float mode[4] = { TOUCH_BODY_ALPHA, 0, 0, 0 };
+
+    SDL_zero(ct);
+    ct.texture = swap;
+    ct.load_op = SDL_GPU_LOADOP_LOAD;
+    ct.store_op = SDL_GPU_STOREOP_STORE;
+    pass = SDL_BeginGPURenderPass(cmd, &ct, 1, NULL);
+    if (pass == NULL) {
+        return;
+    }
+    vb.buffer = VertexBuf;
+    vb.offset = 0;
+    SDL_BindGPUVertexBuffers(pass, 0, &vb, 1);
+    SDL_BindGPUGraphicsPipeline(pass, PipeOverlay);
+    /* the shader has a texture, though nothing here is textured */
+    tb.texture = Atlas;
+    tb.sampler = Sampler;
+    SDL_BindGPUFragmentSamplers(pass, 0, &tb, 1);
+    SDL_PushGPUFragmentUniformData(cmd, 0, mode, sizeof(mode));
+    SDL_DrawGPUPrimitives(pass, bodies, 1, first, 0);
+    mode[0] = TOUCH_MARK_ALPHA;
+    SDL_PushGPUFragmentUniformData(cmd, 0, mode, sizeof(mode));
+    SDL_DrawGPUPrimitives(pass, count - bodies, 1, first + bodies, 0);
+    SDL_EndGPURenderPass(pass);
+}
+
 /* Draws the shown frame, step of the way from where it was, and shows it. */
 static void draw_shown(float step) {
     static Run runs[MAX_TRIS];
-    int numRuns = 0;
+    int numRuns = 0, overlay, overlay_bodies;
+    Uint32 overlay_first;
     SDL_GPUCommandBuffer *cmd = SDL_AcquireGPUCommandBuffer(Device);
     SDL_GPUTexture *swap = NULL;
     Uint32 sw = 0, sh = 0;
@@ -1380,6 +1456,9 @@ static void draw_shown(float step) {
         }
     }
     }
+    overlay_first = used;
+    overlay = put_overlay(gv, used, &overlay_bodies);
+    used += overlay;
     SDL_UnmapGPUTransferBuffer(Device, VertexXfer);
 
     copy = SDL_BeginGPUCopyPass(cmd);
@@ -1575,6 +1654,9 @@ static void draw_shown(float step) {
         b.load_op = SDL_GPU_LOADOP_CLEAR;
         b.filter = SDL_GPU_FILTER_LINEAR;
         SDL_BlitGPUTexture(cmd, &b);
+        if (overlay != 0) {
+            draw_overlay(cmd, swap, overlay_first, overlay_bodies, overlay);
+        }
     }
     if (ShotPath != NULL) {
         SDL_GPUFence *f = SDL_SubmitGPUCommandBufferAndAcquireFence(cmd);

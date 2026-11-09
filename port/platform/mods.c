@@ -123,7 +123,7 @@ static void add_root(const char *path, int packs) {
 
 /* The places a folder of them is kept: beside the program, in the user's own folder, and here, each with / at the end. */
 static int standard_places(char places[3][1024], const char *folder) {
-    const char *base = SDL_GetBasePath();
+    const char *base = platform_base_path();
     char *pref = SDL_GetPrefPath("CrashBash", "CrashBash");
     int n = 0;
 
