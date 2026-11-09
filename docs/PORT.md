@@ -163,7 +163,8 @@ without macOS's warning) and the README's Mac parts in `package.mjs`.
 
 ## A release
 
-`node port/package.mjs`, with `TC` set to the toolchain, builds `build/port/release/crash-bash-pc-VERSION-windows-x64.zip`: the program
+`node port/package.mjs`, with `TC` set to the toolchain, builds `build/port/release/crash-bash-port-VERSION-windows-x64.zip` (up to
+0.3.2 they were `crash-bash-pc-...`; renamed at the user's word, 2026-11-09, the published ones left as they are): the program
 with no console window and no symbols, its README (`port/release/README.txt`) and the licences. The version is the `project()` one in
 `port/CMakeLists.txt`. It fails if the program holds a sample of the game's archive or this machine's paths, and it publishes nothing. Try
 the zip with `playtest.mjs ... --exe`, and unzipped by itself, with and without `CRASHBSH.DAT`. The release's notes are in `port/release/`,
@@ -171,7 +172,7 @@ the zip with `playtest.mjs ... --exe`, and unzipped by itself, with and without 
 first six were "Crash Bash for PC", and were renamed): `gh release create vVERSION ZIP TAR.GZ --title "Crash Bash Port VERSION"
 --notes-file port/release/NOTES-VERSION.md`.
 
-`tools/dl node port/package.mjs` builds the Linux one, `crash-bash-pc-VERSION-linux-x64.tar.gz` (preset `linux-release`): the program
+`tools/dl node port/package.mjs` builds the Linux one, `crash-bash-port-VERSION-linux-x64.tar.gz` (preset `linux-release`): the program
 with SDL3 and zlib in it, so it needs only what every Linux has, as SDL opens the system's own window, sound and Vulkan libraries as it
 runs. Its README says the oldest glibc it runs on, from what the program imports. The README is one for both, with `@NAME@` parts that
 `package.mjs` fills for each system.

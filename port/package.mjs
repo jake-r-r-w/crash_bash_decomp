@@ -41,7 +41,7 @@ run('cmake', ['--build', '--preset', PRESET], PORT);
 const program_name = LINUX ? 'crashbash' : 'crashbash.exe';
 const exe = path.join(BUILD, program_name);
 const version = run(exe, ['--version']).trim().split(' ').at(-1);
-const name = `crash-bash-pc-${version}-${LINUX ? 'linux' : 'windows'}-x64`;
+const name = `crash-bash-port-${version}-${LINUX ? 'linux' : 'windows'}-x64`;
 const dir = path.join(OUT, name);
 const eol = text => text.replace(/\r?\n/g, LINUX ? '\n' : '\r\n');
 
