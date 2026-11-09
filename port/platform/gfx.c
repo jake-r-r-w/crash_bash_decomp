@@ -1318,8 +1318,9 @@ static void fit_picture(Uint32 sw, Uint32 sh, SDL_GPUBlitRegion *r) {
 /* And for putting the last picture back, under anti-aliasing. */
 #define BLEND_PICTURE (-4)
 
-/* The touch buttons' corners (touch.h) into gv from used, in clip space for the window: how many, and of them the buttons' own */
-static int put_overlay(GpuVert *gv, Uint32 used, int *bodies) {
+/* The touch buttons' corners (touch.h) into gv from used, in clip space for the window: how many, of them the buttons' own, and the
+   two layers' alphas */
+static int put_overlay(GpuVert *gv, Uint32 used, int *bodies, float alpha[2]) {
     static TouchVert tv[OVERLAY_MAX_VERTS];
     int ww = 0, wh = 0, n, i;
 
@@ -1327,7 +1328,7 @@ static int put_overlay(GpuVert *gv, Uint32 used, int *bodies) {
     if (PipeOverlay == NULL || !SDL_GetWindowSizeInPixels(Window, &ww, &wh) || ww <= 0 || wh <= 0) {
         return 0;
     }
-    n = touch_shapes(ww, wh, tv, OVERLAY_MAX_VERTS, bodies);
+    n = touch_shapes(ww, wh, tv, OVERLAY_MAX_VERTS, bodies, alpha);
     if (used + n > MAX_TRIS * 3) {
         return 0;
     }
@@ -1345,12 +1346,12 @@ static int put_overlay(GpuVert *gv, Uint32 used, int *bodies) {
 }
 
 /* Over the picture on the window: the buttons, then their marks, each at its own alpha */
-static void draw_overlay(SDL_GPUCommandBuffer *cmd, SDL_GPUTexture *swap, Uint32 first, int bodies, int count) {
+static void draw_overlay(SDL_GPUCommandBuffer *cmd, SDL_GPUTexture *swap, Uint32 first, int bodies, int count, const float alpha[2]) {
     SDL_GPUColorTargetInfo ct;
     SDL_GPURenderPass *pass;
     SDL_GPUBufferBinding vb;
     SDL_GPUTextureSamplerBinding tb;
-    float mode[4] = { TOUCH_BODY_ALPHA, 0, 0, 0 };
+    float mode[4] = { alpha[0], 0, 0, 0 };
 
     SDL_zero(ct);
     ct.texture = swap;
@@ -1370,7 +1371,7 @@ static void draw_overlay(SDL_GPUCommandBuffer *cmd, SDL_GPUTexture *swap, Uint32
     SDL_BindGPUFragmentSamplers(pass, 0, &tb, 1);
     SDL_PushGPUFragmentUniformData(cmd, 0, mode, sizeof(mode));
     SDL_DrawGPUPrimitives(pass, bodies, 1, first, 0);
-    mode[0] = TOUCH_MARK_ALPHA;
+    mode[0] = alpha[1];
     SDL_PushGPUFragmentUniformData(cmd, 0, mode, sizeof(mode));
     SDL_DrawGPUPrimitives(pass, count - bodies, 1, first + bodies, 0);
     SDL_EndGPURenderPass(pass);
@@ -1381,6 +1382,7 @@ static void draw_shown(float step) {
     static Run runs[MAX_TRIS];
     int numRuns = 0, overlay, overlay_bodies;
     Uint32 overlay_first;
+    float overlay_alpha[2];
     SDL_GPUCommandBuffer *cmd = SDL_AcquireGPUCommandBuffer(Device);
     SDL_GPUTexture *swap = NULL;
     Uint32 sw = 0, sh = 0;
@@ -1457,7 +1459,7 @@ static void draw_shown(float step) {
     }
     }
     overlay_first = used;
-    overlay = put_overlay(gv, used, &overlay_bodies);
+    overlay = put_overlay(gv, used, &overlay_bodies, overlay_alpha);
     used += overlay;
     SDL_UnmapGPUTransferBuffer(Device, VertexXfer);
 
@@ -1655,7 +1657,7 @@ static void draw_shown(float step) {
         b.filter = SDL_GPU_FILTER_LINEAR;
         SDL_BlitGPUTexture(cmd, &b);
         if (overlay != 0) {
-            draw_overlay(cmd, swap, overlay_first, overlay_bodies, overlay);
+            draw_overlay(cmd, swap, overlay_first, overlay_bodies, overlay, overlay_alpha);
         }
     }
     if (ShotPath != NULL) {

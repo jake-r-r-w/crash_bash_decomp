@@ -14,15 +14,15 @@ void touch_other_input(void);
 /* pad 1's buttons that fingers hold (PAD_ bits). */
 int touch_buttons(void);
 
-/* The shapes, as triangles in the window's pixels, w x h: first the buttons themselves, drawn at TOUCH_BODY_ALPHA, then their marks
- * at TOUCH_MARK_ALPHA. Returns how many corners there are in all, and *bodies how many of them are the buttons'; 0 when they're
- * hidden. rgb is 0xBBGGRR. */
-#define TOUCH_BODY_ALPHA 0.4f
-#define TOUCH_MARK_ALPHA 0.85f
+/* The shapes, as triangles in the window's pixels, w x h: first the buttons themselves, drawn at alpha[0], then their marks at alpha[1]
+ * (TOUCH_BODY_ALPHA and TOUCH_MARK_ALPHA, less once nothing's touched them for a while). Returns how many corners there are in all,
+ * and *bodies how many of them are the buttons'; 0 when they're hidden. rgb is 0xBBGGRR. */
+#define TOUCH_BODY_ALPHA 0.12f
+#define TOUCH_MARK_ALPHA 0.45f
 typedef struct TouchVert {
     float x, y;
     uint32_t rgb;
 } TouchVert;
-int touch_shapes(int w, int h, TouchVert *out, int max, int *bodies);
+int touch_shapes(int w, int h, TouchVert *out, int max, int *bodies, float alpha[2]);
 
 #endif

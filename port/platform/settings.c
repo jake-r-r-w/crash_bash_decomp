@@ -23,7 +23,12 @@ void settings_defaults(void) {
     Current.fps = 30;
     Current.antialias = 1;
     Current.smooth = 0;
+#ifdef SDL_PLATFORM_ANDROID
+    /* a phone held sideways is filled, the touch buttons over the picture, as phones' games are (the user's word, 2026-11-09) */
+    Current.widescreen = 1;
+#else
     Current.widescreen = 0;
+#endif
     Current.upscale = 1;
     Current.icons = 0;
     Current.extra_heroes = 0;

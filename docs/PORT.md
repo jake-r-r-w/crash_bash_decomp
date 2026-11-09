@@ -176,9 +176,12 @@ What's Android's own:
   PC reaches over USB: `CRASHBSH.DAT`, a disc image, `discs/` and `mods/` go there, and the game writes its output to `log.txt` there.
   Saves and settings are in the app's private storage.
 - The first run asks for the disc image with Android's file chooser: the .bin, or an .iso (a .cue's .bin can't be found from it there).
+- WIDESCREEN is on by default, so a phone held sideways is filled (the user's word, 2026-11-09).
 - On-screen buttons (`platform/touch.c`), drawn over the picture on the window itself, so never in a test run's shots: a d-pad, the face
-  buttons, the shoulders, Select and Start, in the bars beside the picture when the phone's sideways and below it when it's upright.
-  They show from the start, go when a controller or keyboard is used, and come back at a touch (anywhere, a PC's touch screen too).
+  buttons, the shoulders, Select and Start, thin and see-through as phones' games have them (the user's word: "they should not get in
+  the way of the game"), fading to under half after 4 seconds untouched. What a finger presses is bigger than what's drawn. Upright
+  they sit below the picture. They show from the start, go when a controller or keyboard is used, and come back at a touch (anywhere, a
+  PC's touch screen too).
 - The back button is Triangle.
 - The game ends its process at once (`_exit`): an `exit()` crashed in Android's UI thread on a lock it had torn down, and Android may
   start the app again in a process it kept, with all of the game's state as it was.
