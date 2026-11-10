@@ -137,6 +137,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   serverless"), knowing it means a player on a hotspot or a shared address can join and not host: no relay, and no need to put it
   to them again. So the router's side of hosting (`portmap.c`) can only be tried by someone with a home router hosting, with this
   same build.
+- **Port, online play, virtual networks (2026-11-10, the user's "what about using something like hamachi"):** the way for them to
+  host, as it's that tool's servers in the middle, not ours. JOIN GAME now asks on every adapter (`everyone_on_each`: each
+  network's broadcast address; `GetAdaptersAddresses`, or `getifaddrs`), and a game hosted only on this PC's Hyper-V adapter
+  address was found, joined and played. No such tool is installed here and none was tried: whether Hamachi's or Radmin's adapter
+  passes the broadcast, and Windows' firewall on its "public" network, are for the user's own try. The host's screen still shows
+  the main adapter's address, not the virtual one's.
 - **Port, online play, left from step 3:** no real router has been asked for a port: `portmap.c`'s UPnP and NAT-PMP paths compile
   and link on Windows and Linux and have never run (the tests' router is a pretend one, `--online-pretend-router`, and asking the
   user's own router is theirs to do, by hosting). So unknown: whether miniupnpc finds their router from a PC with Docker's and
@@ -624,6 +630,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: The user chose to keep online play serverless, a relay of our own turned down, and asked about "something like
+  hamachi". That works as the game is, the tool's servers being in the middle; to make it need no typing, JOIN GAME looks for games
+  on every network adapter, not only the main one. Tried with a game hosted on a Hyper-V adapter's address alone. The release's
+  README says how.
 
 - 2026-11-10: The user tried hosting for real: "your router will not let players in". `--check-router` (new: `portmap_check`, each
   step of the asking and what it found) showed why: they're on a phone's hotspot, and nothing on it answers UPnP or NAT-PMP. The

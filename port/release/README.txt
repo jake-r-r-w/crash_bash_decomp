@@ -52,10 +52,18 @@ in another form, so give it only to people you'd give that to.
 
 Some routers won't (the setting is called UPnP, and can be off), and some
 internet providers share one address between many homes, as phone networks do.
-The game says so if it meets either. Then someone else can host; or the host can
-open UDP port 47000 on the router by hand, and the others type the host's
-internet address where the code goes; or everyone can use a free virtual network
-such as Tailscale, and join by the address it gives the host.
+The game says so if it meets either. Then someone else can host (you can still
+join); or the host can open UDP port 47000 on the router by hand, and the others
+type the host's internet address where the code goes; or everyone can use a
+virtual network.
+
+A virtual network puts everyone's machines on one network over the internet,
+whatever their own is like: Hamachi, Radmin VPN and ZeroTier are three, free for
+a few players. Each player installs the same one and joins the same network in
+it. Then host as usual, and the game shows up in the others' JOIN GAME by
+itself. If it doesn't (Tailscale is one that won't), type the address the tool
+gives the host where the code goes. When Windows asks about its firewall, allow
+the game on public networks too, as that's what it takes these for.
 
 Each player's own machine runs the whole game, and only the button presses
 travel, each used a moment late so it reaches everyone in time. Player 1, the

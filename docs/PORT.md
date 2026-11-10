@@ -476,6 +476,15 @@ work from any network because everything goes through servers their makers run o
 a shared address can't be reached at all. A relay of our own would fix that and was turned down; such a player joins, and someone
 else hosts.
 
+**Virtual networks** (Hamachi, Radmin VPN, ZeroTier, Tailscale) are the way round a network that can't host: each player installs
+one and joins the same network in it, and their machines are then on one network as far as the game can tell, through that
+tool's own servers. The host hosts as ever; nothing is asked of any router that matters. JOIN GAME asks who's hosting on every
+network the machine is on, each adapter's by name (`everyone_on_each`), not only the main one's, so a game on a virtual network
+shows by itself like one at home: tried here with a game hosted only on a Hyper-V adapter's address, which was found, joined and
+played. That needs the tool to carry broadcasts, which Hamachi, Radmin VPN and ZeroTier do; Tailscale doesn't, and there the
+host's address in it is typed in the CODE row. Not tried with any of those tools themselves. Windows treats such a network as a
+public one, so its firewall question has to be allowed for public networks too.
+
 **For tests** no router is ever asked: `--online-local` games don't, and `--online-pretend-router open|refused|none|shared` gives
 that answer after a moment. `--make-code ADDRESS N` prints the code for an address and port N of the eight, and `--check-codes`
 (a `ctest`) makes and reads codes and tries every slip in some.

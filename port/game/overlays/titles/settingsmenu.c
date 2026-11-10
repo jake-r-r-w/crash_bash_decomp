@@ -922,6 +922,10 @@ static void update_join(s32 pressed) {
     while (found < PLAYERS - 1 && net_lobby_found(found, text, sizeof(text)) != 0) {
         found++;
     }
+    if (settings()->no_save && found > JoinFound) {
+        net_lobby_found(found - 1, text, sizeof(text));
+        printf("launcher: found a game at %s\n", text);
+    }
     /* till it's moved, the cursor's on the first game there is; once on the address, it stays there as games come and go */
     if (!JoinMoved) {
         JoinCursor = 0;

@@ -22,9 +22,12 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <iphlpapi.h>
 #else
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <ifaddrs.h>
+#include <net/if.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/select.h>
@@ -1397,6 +1400,53 @@ void net_lobby_leave(void) {
     Lobby = LOBBY_OFF;
 }
 
+/* Every network this machine is on, by the address that reaches everyone on it: for asking who's hosting. The plain "everyone"
+   address only goes out of the main adapter, and a virtual network (Hamachi, Radmin VPN, ZeroTier: what players use when no router
+   will let them in) is one more adapter, whose games should show by themselves like any other network's. */
+static int everyone_on_each(struct in_addr *out, int most) {
+    int n = 0;
+#ifdef _WIN32
+    ULONG size = 32 * 1024;
+    IP_ADAPTER_ADDRESSES *list = malloc(size), *a;
+
+    if (list == NULL || GetAdaptersAddresses(AF_INET, GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_DNS_SERVER, NULL, list, &size) != NO_ERROR) {
+        free(list);
+        return 0;
+    }
+    for (a = list; a != NULL; a = a->Next) {
+        IP_ADAPTER_UNICAST_ADDRESS *u;
+
+        if (a->OperStatus != IfOperStatusUp || a->IfType == IF_TYPE_SOFTWARE_LOOPBACK) {
+            continue;
+        }
+        for (u = a->FirstUnicastAddress; u != NULL && n < most; u = u->Next) {
+            const struct sockaddr_in *at = (const struct sockaddr_in *)u->Address.lpSockaddr;
+
+            if (at->sin_family == AF_INET && u->OnLinkPrefixLength > 0 && u->OnLinkPrefixLength < 31) {
+                out[n++].s_addr = at->sin_addr.s_addr | ~htonl(0xFFFFFFFFu << (32 - u->OnLinkPrefixLength));
+            }
+        }
+    }
+    free(list);
+#elif !defined(__ANDROID__) || __ANDROID_API__ >= 24
+    struct ifaddrs *list, *a;
+
+    if (getifaddrs(&list) != 0) {
+        return 0;
+    }
+    for (a = list; a != NULL && n < most; a = a->ifa_next) {
+        if (a->ifa_addr != NULL && a->ifa_addr->sa_family == AF_INET && (a->ifa_flags & IFF_UP) && (a->ifa_flags & IFF_BROADCAST) && a->ifa_broadaddr != NULL) {
+            out[n++] = ((const struct sockaddr_in *)a->ifa_broadaddr)->sin_addr;
+        }
+    }
+    freeifaddrs(list);
+#else
+    (void)out;
+    (void)most;
+#endif
+    return n;
+}
+
 /* Once a frame while there's a lobby: where it's got to. */
 int net_lobby_poll(void) {
     const Settings *s = settings();
@@ -1415,11 +1465,18 @@ int net_lobby_poll(void) {
             LobbySent = now;
             send_packet(&Machines[0].addr, buf, p);
             if (!Options.local) {
-                /* and this PC itself, which a network with nobody else on it mightn't pass the question back to */
-                struct sockaddr_in here = Machines[0].addr;
+                /* and each network this machine is on by name, a virtual one too; and this PC itself, which a network with nobody
+                   else on it mightn't pass the question back to */
+                struct sockaddr_in to = Machines[0].addr;
+                struct in_addr each[8];
+                int count = everyone_on_each(each, 8), k;
 
-                inet_pton(AF_INET, "127.0.0.1", &here.sin_addr);
-                send_packet(&here, buf, p);
+                for (k = 0; k < count; k++) {
+                    to.sin_addr = each[k];
+                    send_packet(&to, buf, p);
+                }
+                inet_pton(AF_INET, "127.0.0.1", &to.sin_addr);
+                send_packet(&to, buf, p);
             }
         }
         for (i = 0; i < NumFound; i++) {
