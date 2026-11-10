@@ -10,54 +10,52 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-29)
+## Current state (2026-11-10)
 
-- **Every game function matches**: all 2537 in `main.exe`, the engine and the 14 slot overlays
-  (100% of game code bytes, 2026-10-26). All 564 PsyQ functions are Sony's own objects (281,
-  plus `2MBYTE.OBJ`), and so is their `.data`, except `bios_1.o`'s, which is C.
-  `make check` and `make disc-check` are OK. Live figures: `decomp.py progress` /
-  `docs/index.html`.
-- **The source is complete.** Every function, all rodata and all data are C. Every function is
-  named, and all but one are typed (`progress`: 2536/2537). Nothing is parked, and no `func_`
-  or `D_` name is left in `src/`.
-  - What still comes from the disc: Sony's `2MBYTE.OBJ` and the engine's two memory images
-    (zeros in source builds). The exe header is C (`src/ps1/header.c`). `make hidden` checks
-    that nothing else is (ROADMAP-B 4.2, passed 2026-10-29).
-- **The roadmap.** [ROADMAP-A.md](ROADMAP-A.md) holds the done work: the old Phases 1-5 and
-  ROADMAP-B Parts 1-3 (typing, names and loose ends, documentation; 2026-10-29).
-  [ROADMAP-B.md](ROADMAP-B.md) has what is left: Part 4 (the final test), Part 5 (release),
-  Part 6 (the PC port).
-- **Matching rules.** Matches are C only, natural C first (CONVENTIONS.md, Matching rules).
-  - Steering C counts as matched, and the gate refuses inline asm.
-  - One recorded exception (2026-10-26): `draw_verts` (`src/main/prims.c`) keeps its three
-    original register pins (CONVENTIONS.md).
-  - Three matches stay steering: `InitialiseCHASE`, `RaceHeroesBump` and `PlotTransmuterBeam`
-    (ROADMAP-A, Names and loose ends).
-- **Files.**
-  - `main/main` is nine files: `main`, `dbase`, `prims`, `scripts`, `sfx`, `nascalls`,
-    `sound`, `music`, `card`.
-  - `src/ps1/` holds what only the PS1 build compiles (PORT.md): `header`, `bios_1`, `modchip` and
-    `modchip_msg` (gcc 2.7.2), and the 14 `<game>_id` words.
-  - The engine is nine files: `engine`, `panel`, `pause`, `heroes`, `gameflow`,
-    `levelload`, `camera`, `asttable`, `entry`.
-  - `bash` is three files, and `papu`, `bonk`, `n2o`, `hub` two each. Every slot overlay's id
-    word is its own unit.
-  - Evidence: ARCHITECTURE.md, Files inside `main/main`, the engine, the slot overlays.
-- **The compiler.** gcc 2.8.1-psx `-O2 -G0 -fno-builtin` and maspsx `--aspsx-version=2.86`.
-  The two gcc 2.7.2 + ASPSX units share one setting (`-fno-rerun-cse-after-loop`, ROADMAP-A
-  2.4). `tools/cc1/` rebuilds the cc1 from source byte for byte, for analysis variants only.
-- **Docs.** ARCHITECTURE.md opens with How the game works: boot, processes, objects, heroes,
-  drawing, maps, scripts, loading, sound, card. The prototype and demo discs' findings are in
-  PROTOTYPES.md, and the asset formats in ASSETS.md.
-- **Game data.** Every `CRASHBSH.DAT` entry but the 15 code overlays extracts to editable files
-  in `assets/CRASHBSH/` and packs back byte for byte, and `card.py` reads and writes the
-  memory-card save (docs/ASSETS.md). Edits to placements, menus, cutscene keys and saves are
-  playtested.
-- **Shifted builds.** `make shift-all` (every binary moved, the memory images zeroed) boots and
-  plays, playtested by hand on 2026-10-29.
-- **The PC port is starting again (2026-10-30).** A 32-bit port ran but was deleted, with its changes to the
-  shared C. The new one is native and 64-bit, for Windows and Linux, with its own copy of the game's C: PORT.md has the
-  design and what the first attempt taught.
+- **The decomp is done.** Every game function matches: all 2537 in `main.exe`, the engine and the 14 slot overlays (100% of game
+  code bytes, 2026-10-26). All 564 PsyQ functions are Sony's own objects (281, plus `2MBYTE.OBJ`), and so is their `.data`, except
+  `bios_1.o`'s, which is C. `make check` and `make disc-check` are OK. Live figures: `decomp.py progress` / `docs/index.html`.
+- **The source is complete.** Every function, all rodata and all data are C. Every function is named, and all but one are typed
+  (`progress`: 2536/2537). Nothing is parked, and no `func_` or `D_` name is left in `src/`. What still comes from the disc is
+  Sony's `2MBYTE.OBJ` and the engine's two memory images (zeros in source builds); `make hidden` checks nothing else does (passed
+  2026-10-29).
+- **Matching rules.** C only, natural C first (CONVENTIONS.md, Matching rules): steering C counts as matched, and the gate refuses
+  inline asm. One recorded exception, `draw_verts`'s three register pins (2026-10-26). Three matches stay steering:
+  `InitialiseCHASE`, `RaceHeroesBump` and `PlotTransmuterBeam` (ROADMAP-A, Names and loose ends).
+- **Files.** `main/main` is nine files (`main`, `dbase`, `prims`, `scripts`, `sfx`, `nascalls`, `sound`, `music`, `card`), the engine
+  nine (`engine`, `panel`, `pause`, `heroes`, `gameflow`, `levelload`, `camera`, `asttable`, `entry`), `bash` three, and `papu`,
+  `bonk`, `n2o` and `hub` two each; every slot overlay's id word is its own unit. `src/ps1/` holds what only the PS1 build compiles.
+  Evidence: ARCHITECTURE.md, Files.
+- **The compiler.** gcc 2.8.1-psx `-O2 -G0 -fno-builtin` and maspsx `--aspsx-version=2.86`; the two gcc 2.7.2 + ASPSX units share
+  one setting. `tools/cc1/` rebuilds the cc1 from source byte for byte, for analysis variants only.
+- **Game data and discs.** Every `CRASHBSH.DAT` entry but the 15 code overlays extracts to editable files and packs back byte for
+  byte, and `card.py` reads and writes the memory-card save (ASSETS.md). `make shift-all` (every binary moved) boots and plays.
+- **The roadmap.** ROADMAP-A.md holds the done work: Phases 1 to 5, and ROADMAP-B's Parts 1 to 6 and all of Part 7 but two rows.
+  ROADMAP-B.md has those two: 7.9, online play (written, tested and hardened; left is the user's own game between two machines on
+  different networks, and a release with it), and 7.12.6, Adventure with the extra heroes (later, if at all). Taken off at the
+  user's word: modern lighting (7.7), the Mac (no Mac; 7.13 was done as Linux), the bosses as heroes and heroes from other discs.
+- **The PC port** (PORT.md) is native and 64-bit, with its own copy of the game's C in `port/game/`, which has to play the same as
+  retail and needn't match it.
+  - Windows (Direct3D 12) builds on the host with CMake. Linux (Vulkan) builds and is tested in `tools/dl`'s container, on a virtual
+    screen with software Vulkan: never yet on a real Linux desktop and graphics card. Android (Vulkan) builds in `tools/da`, is
+    tested in the emulator, and works on the user's phone. No Mac.
+  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v0.4.1 (2026-11-10), for Windows, Linux and Android.
+    `node port/package.mjs` makes them (PORT.md, A release).
+  - Beyond the original: a launcher (PLAY, ONLINE, SETTINGS, QUIT); any window and render size, fullscreen, vsync and 30, 60 or
+    120 FPS; widescreen, with each level's own scenery carried on at the sides; anti-aliasing, smooth textures, upscaling and crisp
+    icons; mods of textures, files and BPS patches (MODDING.md); Ripper Roo and Pinstripe from the player's own Crash Bandicoot
+    disc (EXTRA_HEROES.md); couch play for up to four, with a players screen; every key and button rebindable; saves in files;
+    skipping the logos and loading; the cheat menu; touch buttons on Android.
+  - Online play (PORT.md, Online play): every machine runs the whole game and only presses travel, a few steps late, over UDP with
+    no servers. The launcher's ONLINE hosts and joins; games on the same network show by themselves, on every adapter; a join code
+    when the router opens a port (UPnP, NAT-PMP); a virtual network's address on the host's screen. The machines compare the game's
+    fingerprint every second. Sound and video options are each machine's own, each connected player has a tag with a dot for their
+    connection, and the last game's presses are kept beside the saves. Hardened (2026-11-10): the packets fuzzed (`netfuzz`), and a
+    host's saves checked before a joiner's game has them (`card_check`). Played on one PC, between Windows and Linux, and between
+    Windows and Android's emulator; not yet between two networks, nor on a real phone.
+  - Checks: `playtest.mjs` (CLAUDE.md lists its suites), with `same` against a saved baseline for a change that shouldn't alter
+    anything, `identical` and `online` for online play, and `fuzz` for its packets. `build/port/asan` is the game built with ASan on
+    Windows, for `modes --asan`.
 
 ## Next
 
@@ -67,7 +65,7 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
 2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
 3. Done 2026-11-01, marked so by the user: **the PC port** (Part 6), native and 64-bit, for Windows and Linux, with its own copy of the game's C in
    `port/game/`. 6.1 to 6.6 are done: it boots, plays every mode and has sound. Windows only at first, at the user's request; Linux
-   builds and plays since 2026-11-08, in a container (`tools/dl`, PORT.md, Linux), and the Mac is next (7.13). 6.7, finishing it, has saving, any resolution, analog sticks and rumble written, and the user has tried a real controller and it was fine (2026-11-01). What's left is a first
+   builds and plays since 2026-11-08, in a container (`tools/dl`, PORT.md, Linux), and Android since 2026-11-09; the Mac is off the roadmap (7.13). 6.7, finishing it, has saving, any resolution, analog sticks and rumble written, and the user has tried a real controller and it was fine (2026-11-01). What's left is a first
    release. Whether it plays the same as retail is checked by the user playing it.
    The Adventure test passes at 200% (2026-11-01, with a handicap; Open leads). The user calls play testing done. The first release, v0.1.0, is published (2026-11-01, on GitHub, with the user's OK), which finishes 6.7. The latest is v0.4.1 (2026-11-10: the Vulkan fix for Android phones; v0.4.0, 2026-11-09, was the first Android download, beside Windows's and Linux's). 6.8, fully native, is done (2026-11-01): plain maths, direct drawing and the port's own APIs. The user has tried sticks and rumble on a real controller since its pad rewrite, and they're fine (2026-11-03). Before a change that shouldn't alter the game, `playtest.mjs same [--all]` makes a baseline with `--save`, in `build/`, and afterwards shows in a minute that frames and sound haven't changed. `node port/package.mjs` builds a release's zip, and publishing another needs the user's OK.
 

@@ -183,6 +183,9 @@ KNOWN LIMITS
   player needed weakened opponents for many of the challenges, so the hardest
   ones have had less testing at full strength.
 - Playing with several controllers hasn't been tested.
+- Online play has been tested between copies on one PC, between Windows and
+  Linux, and with Android's emulator, but not yet between two homes over the
+  internet.
 
 
 LICENCE
