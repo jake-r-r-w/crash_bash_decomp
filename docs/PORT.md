@@ -149,8 +149,8 @@ here and there from Direct3D's, so `same` keeps a baseline per system.
 
 ### The Mac
 
-Not built yet: that needs a Mac, as Apple's SDK is licensed for Apple's own computers only. The code is ready for it as far as it can be
-from here: the renderer runs on Metal there (`gfx.c`, `GPU_DRIVER`), with the MSL that SPIRV-Cross makes from the Vulkan shaders
+Not built, and off the roadmap: that needs a Mac, as Apple's SDK is licensed for Apple's own computers only, and the user has none
+(2026-11-10). The code stays ready for it as far as it can be from here: the renderer runs on Metal there (`gfx.c`, `GPU_DRIVER`), with the MSL that SPIRV-Cross makes from the Vulkan shaders
 (`make.sh`, so all three systems draw with one shader source; the Linux build compiles the Metal path too, but can't run it), and the
 `macos-clang` preset. On a Mac with Xcode's command-line tools, CMake and Ninja (SDL3 from Homebrew, or fetched):
 

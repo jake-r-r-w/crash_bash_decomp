@@ -33,7 +33,7 @@ On Android, install the `.apk` from the same release, and the first time it asks
 | **Quick start**   | Skip the logos and the loading screens                 |
 | **Cheat menu**    | The original's hidden cheats, in the pause menu        |
 
-It needs 64-bit Windows 10 or 11 and Direct3D 12, 64-bit Linux with glibc 2.34 or newer (Ubuntu 22.04, Debian 12, Fedora 35 and later) and Vulkan, or Android 8.0 or newer with Vulkan. The Linux version hasn't been played on a real Linux PC with a graphics card yet, only in software, and the Android version only in Android's emulator. No Mac version yet. Only the USA version's data is supported, and playing with several controllers hasn't been tested.
+It needs 64-bit Windows 10 or 11 and Direct3D 12, 64-bit Linux with glibc 2.34 or newer (Ubuntu 22.04, Debian 12, Fedora 35 and later) and Vulkan, or Android 8.0 or newer with Vulkan. The Linux version hasn't been played on a real Linux PC with a graphics card yet, only in software. There's no Mac version. Only the USA version's data is supported, and playing with several controllers hasn't been tested.
 
 ### Build the port yourself
 

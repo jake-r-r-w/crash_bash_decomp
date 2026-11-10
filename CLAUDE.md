@@ -35,7 +35,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 - The port's play tests: `node port/tests/playtest.mjs bosses|modes|adventure|challenges|hero|menu|shots` (host Node; PORT.md, Running it).
 - The port on Linux: `tools/dl` runs a command in its Docker container (Debian 12, SDL3, Xvfb and software Vulkan): builds with the
   `linux-clang` preset, play tests under `xvfb-run`, and `tools/dl node port/package.mjs` for its release (PORT.md, Linux). The Mac isn't
-  built yet (PORT.md, The Mac). The renderer's shaders are GLSL in `port/platform/shaders/` for Vulkan and Metal, `make.sh` in `tools/dl`
+  built, nor planned: the user has none (PORT.md, The Mac). The renderer's shaders are GLSL in `port/platform/shaders/` for Vulkan and Metal, `make.sh` in `tools/dl`
   after a change, and HLSL in `gfx.c` for Direct3D: a change goes in both.
 - The port on Android: `tools/da sh port/android/build.sh` makes the APK in its own container, and it's tested in Android's emulator on
   Windows with adb (PORT.md, Android; `MSYS_NO_PATHCONV=1` in Git Bash). Touch buttons are `port/platform/touch.c`.
