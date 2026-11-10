@@ -31,15 +31,16 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - **Game data and discs.** Every `CRASHBSH.DAT` entry but the 15 code overlays extracts to editable files and packs back byte for
   byte, and `card.py` reads and writes the memory-card save (ASSETS.md). `make shift-all` (every binary moved) boots and plays.
 - **The roadmap.** ROADMAP-A.md holds the done work: Phases 1 to 5, and ROADMAP-B's Parts 1 to 6 and all of Part 7 but two rows.
-  ROADMAP-B.md has those two: 7.9, online play (written, tested and hardened; left is the user's own game between two machines on
-  different networks, and a release with it), and 7.12.6, Adventure with the extra heroes (later, if at all). Taken off at the
+  ROADMAP-B.md has those two: 7.9, online play (written, tested and hardened, and released in 1.0.0; left is the user's own game
+  between two machines on different networks), and 7.12.6, Adventure with the extra heroes (later, if at all). Taken off at the
   user's word: modern lighting (7.7), the Mac (no Mac; 7.13 was done as Linux), the bosses as heroes and heroes from other discs.
 - **The PC port** (PORT.md) is native and 64-bit, with its own copy of the game's C in `port/game/`, which has to play the same as
   retail and needn't match it.
   - Windows (Direct3D 12) builds on the host with CMake. Linux (Vulkan) builds and is tested in `tools/dl`'s container, on a virtual
     screen with software Vulkan: never yet on a real Linux desktop and graphics card. Android (Vulkan) builds in `tools/da`, is
     tested in the emulator, and works on the user's phone. No Mac.
-  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v0.4.1 (2026-11-10), for Windows, Linux and Android.
+  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.0.0 (2026-11-10, online play and couch play), for
+    Windows, Linux and Android.
     `node port/package.mjs` makes them (PORT.md, A release).
   - Beyond the original: a launcher (PLAY, ONLINE, SETTINGS, QUIT); any window and render size, fullscreen, vsync and 30, 60 or
     120 FPS; widescreen, with each level's own scenery carried on at the sides; anti-aliasing, smooth textures, upscaling and crisp
@@ -93,7 +94,7 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    router. Since then, tidy-ups from the user's own play, as they give them (the session log): the players menu, the joiner's
    lobby, virtual networks' addresses, each machine's own sound options, and tags that show who's connected. And
    hardening, done (2026-11-10: PORT.md, Online play, Hardening). **Next: the user's own try**, a game between two real machines on different networks (theirs to arrange, 2026-11-10: "leave that with me"), which is what the
-   plan calls done; then a release with it (their OK first, as for every release).
+   plan calls done. Released in 1.0.0 (2026-11-10, at the user's word: "lets cut a release lets go for 1.0.0").
    What the review of the plan added is in PORT.md's Online play and the Open leads below.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
@@ -644,6 +645,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: [v1.0.0](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v1.0.0) is published, at the user's word ("lets cut
+  a release lets go for 1.0.0"): online play and couch play (notes in `port/release/NOTES-1.0.0.md`). On the packaged programs:
+  Windows and Linux `modes` 39, `bosses` 4, `menu`, `heroes` 2, `mods` 29, `image` 8, `online` 22, `identical` 18, `pads` 9 and
+  `controls` 3; Android in the emulator `modes` 39, `heroes` 2 and `online --android` with the packaged Windows program as host (against the development build, still 0.4.1, the phone was refused for another version, as it should be). Packaging it found `package.mjs` looking for
+  miniupnpc's licence in the wrong folder (it's at the top of the miniupnp download), never run before as online play hadn't been
+  released.
 
 - 2026-11-10: The checks that could be run here ("Run the checks"). The host's code typed with a controller, and a second game
   after the first in the same run, are `online` cases now (22 on Windows and Linux). Every online game keeps its presses beside

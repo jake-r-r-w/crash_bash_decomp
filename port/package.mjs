@@ -150,7 +150,7 @@ const zlib_h = fs.readFileSync(path.join(zlib_include, 'zlib.h'), 'utf8');
 const zlib = zlib_h.slice(zlib_h.indexOf('Copyright'), zlib_h.indexOf('The data format')).replace(/^ {2}/gm, '').trim();
 const rule = '\n-------------------------------------------------------------------------------\n\n';
 /* the two that open the router's port for online play, fetched as the build's set up (CMakeLists.txt) */
-const miniupnpc = fs.readFileSync(path.join(BUILD, '_deps/miniupnp-src/miniupnpc/LICENSE'), 'utf8').trim();
+const miniupnpc = fs.readFileSync(path.join(BUILD, '_deps/miniupnp-src/LICENSE'), 'utf8').trim();
 const natpmp = fs.readFileSync(path.join(BUILD, '_deps/libnatpmp-src/LICENSE'), 'utf8').trim();
 fs.writeFileSync(path.join(dir, 'LICENSE.txt'), eol(`${fs.readFileSync(path.join(ROOT, 'LICENSE'), 'utf8')}${rule}This program includes SDL3, under this licence:\n\n${sdl}${rule}This program includes zlib, under this licence:\n\n${zlib}\n${rule}This program includes miniupnpc, under this licence:\n\n${miniupnpc}\n${rule}This program includes libnatpmp, under this licence:\n\n${natpmp}\n`));
 /* where mods go, so it's there to drop them in */
