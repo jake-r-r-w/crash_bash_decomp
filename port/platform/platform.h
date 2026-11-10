@@ -100,6 +100,15 @@ void host_audio_queue(const int16_t *frames, int count);
 void audio_mix(int16_t *out, int frames);
 void audio_record(const char *path); /* a test run's sound, to a .wav */
 void audio_finish(void);
+/* For the game starting again from its beginning in the same window (main.c, platform_restart): each part of the platform that the
+   game reads from as it was when the program started. */
+void audio_restart(void);
+void clock_restart(void);
+void pad_restart(void);
+void overlays_restart(void);
+/* The game again from its very beginning, in this window, as if the program had just started: an online game's start, the same on
+   every machine whatever went before (online: with the game's own files only, no mod's). It doesn't return. */
+void platform_restart(int online);
 void host_quit(void);
 
 #endif

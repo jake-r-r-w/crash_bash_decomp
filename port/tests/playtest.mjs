@@ -849,8 +849,9 @@ async function identical(args) {
     const dir = path.join(OUT, 'identical');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const presses = identical_presses();
-    /* PLAY at that vblank, START on the players screen, and the same presses from there on */
-    const launcher = play => ['--launcher', '--press', String(play), CROSS, '--press', String(play + 170), START, ...identical_presses({ shift: play + 170 })];
+    /* PLAY at that vblank and START on the players screen, which starts the game again from its beginning (--restart-on-play), as an
+       online game's START does; then the same presses, for that start (--then) */
+    const launcher = play => ['--launcher', '--restart-on-play', '--press', String(play), CROSS, '--press', String(play + 170), START, '--then', ...presses];
     const cases = [
         { name: 'flat out', args: ['--turbo', ...presses] },
         { name: 'flat out, again', args: ['--turbo', ...presses] },
@@ -864,10 +865,11 @@ async function identical(args) {
         { name: 'drawn one frame in 60', args: ['--draw-every', '60', '--turbo', ...presses] },
         { name: 'every picture setting at once, in real time', args: ['--fps', '120', '--widescreen', '--upscale', '4', '--smooth', '--antialias', '8', '--sharp-icons', '--sound', ...presses] },
         { name: 'one press more', args: ['--turbo', ...identical_presses({ one_more: true })], want: 'differs' },
-        /* the launcher's part of the game's own menus, so its steps count: a game begun from it after a longer wait is a different game
-           (its random numbers have moved on). Online play's START has to put every machine at the same beginning (docs/PORT.md) */
-        { name: 'from the launcher, PLAY at once', args: ['--turbo', ...launcher(120)], with: 'launcher' },
-        { name: 'from the launcher, PLAY after a wait', args: ['--turbo', ...launcher(333)], with: 'launcher', want: 'said' },
+        /* the launcher's part of the game's own menus, so its steps count, and a game played on from it is a different game the longer
+           it was open (its random numbers have moved on). So an online game's START starts the game again from its very beginning,
+           in the same window, which has to be the game a fresh start gives, however long the launcher was open (docs/PORT.md) */
+        { name: 'started again from the launcher', args: ['--turbo', ...launcher(120)] },
+        { name: 'started again from the launcher, after a wait', args: ['--turbo', ...launcher(333)] },
         /* what changes the game: the host's, online */
         { name: 'the cheat menu on', args: ['--turbo', '--cheat-menu', ...presses], want: 'said' },
         { name: 'loading skipped', args: ['--turbo', '--skip-loading', ...presses], want: 'said' },
@@ -883,7 +885,7 @@ async function identical(args) {
     const slots = Math.min(AT_ONCE, cases.length);
     const one = async (c, i) => {
         const saves = ANDROID ? [] : ['--saves', rel(`saves${i}`)];
-        const last = Math.max(...c.args.map((a, k) => (c.args[k - 1] === '--press' ? Number(a) : 0)));
+        const last = Math.max(...presses.map((a, k) => (presses[k - 1] === '--press' ? Number(a) : 0)));
         const r = await run(exe, ['--skip-intro', '--pretend-pads', '2', '--fingerprints', '1', ...(c.device_sound ? [] : ['--game-clock-sound']), ...saves,
             '--tile', String(i % slots), String(slots), ...c.args, '--frames', String(last + 30)], path.join(dir, `case${i}.txt`), { timeout: MODE_TIMEOUT });
 
@@ -895,7 +897,7 @@ async function identical(args) {
         wrong.push(...await Promise.all(cases.slice(i, i + slots).map((c, j) => one(c, i + j))));
     }
     cases.forEach((c, i) => {
-        const first = cases.findIndex(x => x.with === c.with);
+        const first = 0;
         const parted = fingerprints_part(prints[first], prints[i]);
 
         if (wrong[i] != null) {

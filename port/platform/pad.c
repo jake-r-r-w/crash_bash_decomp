@@ -13,6 +13,18 @@ void pad_set_motors(int player, int small_on, int big) {
     platform_rumble(player, small_on, big);
 }
 
+void pad_restart(void) {
+    int i;
+
+    for (i = 0; i < NUM_PLAYERS; i++) {
+        if (Motors[i][0] != 0 || Motors[i][1] != 0) {
+            platform_rumble(i, 0, 0);
+        }
+        Motors[i][0] = Motors[i][1] = 0;
+    }
+    RumbleWait = 0;
+}
+
 void pad_vblank(void) {
     int i;
 

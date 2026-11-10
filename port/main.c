@@ -3,6 +3,7 @@
  *   crashbash [--data CRASHBSH.DAT] [--saves FOLDER] [--no-window] [--frames N]
  *
  * --frames stops after N vblanks. */
+#include <setjmp.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,6 +100,18 @@ static const char *SavesFolder;
 static int NoWindow;
 static int Turbo;
 static int StopAt = -1;
+
+/* The game can start again from its beginning in the same window (platform_restart), and a test's presses, shots and stop are for one
+   start or another: those after --then on the command line are for the next. Each start's vblanks count from 0, and a test's clock
+   puts the starts end to end. */
+#define EPOCH_VBLANKS 100000000
+static int Epoch, ParseEpoch;
+static jmp_buf Restart;
+#define TEST_NOW (Vblanks + Epoch * EPOCH_VBLANKS)
+
+static int when(const char *text) {
+    return atoi(text) + ParseEpoch * EPOCH_VBLANKS;
+}
 
 /* The end of the program, from wherever in the game. On Android the process goes at once: an exit() there tears down shared code that
    Android's own threads still use (its UI thread crashed on a destroyed lock), and Android can keep a process to start the app in again,
@@ -218,10 +231,10 @@ static void pretend_pads_vblank(void) {
 
     for (i = 0; i < NumPadEvents; i++) {
         if (PadEvents[i].kind == PAD_KEY) {
-            if (Vblanks == PadEvents[i].frame || Vblanks == PadEvents[i].frame + PRESS_VBLANKS) {
-                host_pretend_key(PadEvents[i].buttons, Vblanks == PadEvents[i].frame);
+            if (TEST_NOW == PadEvents[i].frame || TEST_NOW == PadEvents[i].frame + PRESS_VBLANKS) {
+                host_pretend_key(PadEvents[i].buttons, TEST_NOW == PadEvents[i].frame);
             }
-        } else if (PadEvents[i].kind != PAD_PRESS && PadEvents[i].frame == Vblanks) {
+        } else if (PadEvents[i].kind != PAD_PRESS && PadEvents[i].frame == TEST_NOW) {
             host_pretend_plug(PadEvents[i].pad, PadEvents[i].kind == PAD_PLUG);
             held[PadEvents[i].pad] = -1;
         }
@@ -230,8 +243,8 @@ static void pretend_pads_vblank(void) {
         int buttons = 0;
 
         for (i = 0; i < NumPadEvents; i++) {
-            if (PadEvents[i].kind == PAD_PRESS && PadEvents[i].pad == p && Vblanks >= PadEvents[i].frame &&
-                Vblanks < PadEvents[i].frame + PRESS_VBLANKS) {
+            if (PadEvents[i].kind == PAD_PRESS && PadEvents[i].pad == p && TEST_NOW >= PadEvents[i].frame &&
+                TEST_NOW < PadEvents[i].frame + PRESS_VBLANKS) {
                 buttons |= PadEvents[i].buttons;
             }
         }
@@ -248,7 +261,7 @@ void platform_vblank(void) {
     Vblanks++;
     net_vblank();
     for (i = 0; i < NumShots; i++) {
-        if (Shots[i].frame == Vblanks) {
+        if (Shots[i].frame == TEST_NOW) {
             gfx_screenshot(Shots[i].path);
         }
     }
@@ -264,7 +277,7 @@ void platform_vblank(void) {
             host_wait_vblank();
         }
     }
-    if (StopAt >= 0 && Vblanks >= StopAt) {
+    if (StopAt >= 0 && TEST_NOW >= StopAt) {
         printf("%d vblanks\n", Vblanks);
         platform_finish(0);
     }
@@ -284,7 +297,7 @@ int platform_local_pad_sticks(int port, unsigned char sticks[4]) {
     if (port == 0 && NumSticks > 0) {
         memset(sticks, 0x80, 4);
         for (i = 0; i < NumSticks; i++) {
-            if (Vblanks >= Sticks[i].frame && Vblanks < Sticks[i].frame + PRESS_VBLANKS) {
+            if (TEST_NOW >= Sticks[i].frame && TEST_NOW < Sticks[i].frame + PRESS_VBLANKS) {
                 sticks[2] = Sticks[i].x;
                 sticks[3] = Sticks[i].y;
             }
@@ -324,10 +337,10 @@ static int MacroSteps, MacroLength, MacroFrom, MacroUntil = 0x7FFFFFFF; /* --mac
 static int macro_buttons(void) {
     int at, i;
 
-    if (MacroLength == 0 || Vblanks < MacroFrom || Vblanks >= MacroUntil) {
+    if (MacroLength == 0 || TEST_NOW < MacroFrom || TEST_NOW >= MacroUntil) {
         return 0;
     }
-    at = (Vblanks - MacroFrom) % MacroLength;
+    at = (TEST_NOW - MacroFrom) % MacroLength;
     for (i = 0; i < MacroSteps; i++) {
         if (at < Macro[i].vblanks) {
             return Macro[i].buttons;
@@ -365,7 +378,7 @@ void platform_stalled(void) {
         if (StallShot != NULL) {
             gfx_screenshot(StallShot);
         }
-        StopAt = Vblanks + 6;
+        StopAt = TEST_NOW + 6;
     }
 }
 
@@ -411,12 +424,42 @@ int platform_local_pad(int port) {
             b = (b < 0 ? 0 : b) | BotButtons;
         }
         for (i = 0; i < NumPresses; i++) {
-            if (Vblanks >= Presses[i].frame && Vblanks < Presses[i].frame + PRESS_VBLANKS) {
+            if (TEST_NOW >= Presses[i].frame && TEST_NOW < Presses[i].frame + PRESS_VBLANKS) {
                 b = (b < 0 ? 0 : b) | Presses[i].buttons;
             }
         }
     }
     return b;
+}
+
+/* The game again from its very beginning, in this window, as if the program had just started. The game's own data is put back as it
+   was then and its heap emptied (overlays.c), the sound, the clock and the pads are as they were then, and the game's first function
+   is called again. What the game has drawn textures from is forgotten, as it will load them again. Online, the game's own files are
+   all it has: no mod's, which other machines mightn't have. */
+void platform_restart(int online) {
+    audio_restart();
+    clock_restart();
+    pad_restart();
+    gfx_forget_textures();
+    overlays_restart();
+    if (online) {
+        archive_replace_none();
+        archive_lay_out();
+    } else {
+        mods_apply_files();
+    }
+    Vblanks = 0;
+    Epoch++;
+    BotButtons = 0;
+    Stalled = 0;
+    if (settings()->no_save) {
+        printf("restart: the game from its beginning\n");
+    }
+    if (settings()->fingerprints > 0) {
+        printf("fp start\n");
+    }
+    fflush(stdout);
+    longjmp(Restart, 1);
 }
 
 /* The pads the game reads: this machine's own, or online everyone's, as the step being played has them (net.c). */
@@ -455,7 +498,7 @@ int main(int argc, char **argv) {
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int extra[4] = { 0 }, extra_heroes = 0;
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
-    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0;
+    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0;
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
 #ifdef SDL_PLATFORM_ANDROID
@@ -488,7 +531,7 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--image") == 0 && i + 1 < argc) {
             Image = argv[++i];
         } else if (strcmp(argv[i], "--stick") == 0 && i + 3 < argc && NumSticks < MAX_STICKS) {
-            Sticks[NumSticks].frame = atoi(argv[++i]);
+            Sticks[NumSticks].frame = when(argv[++i]);
             Sticks[NumSticks].x = (unsigned char)strtol(argv[++i], NULL, 16);
             Sticks[NumSticks++].y = (unsigned char)strtol(argv[++i], NULL, 16);
         } else if (strcmp(argv[i], "--window") == 0 && i + 2 < argc) {
@@ -498,10 +541,10 @@ int main(int argc, char **argv) {
             render_w = atoi(argv[++i]);
             render_h = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--macro") == 0 && i + 2 < argc) {
-            MacroFrom = atoi(argv[++i]);
+            MacroFrom = when(argv[++i]);
             read_macro(argv[++i]);
         } else if (strcmp(argv[i], "--macro-until") == 0 && i + 1 < argc) {
-            MacroUntil = atoi(argv[++i]);
+            MacroUntil = when(argv[++i]);
         } else if (strcmp(argv[i], "--stall") == 0 && i + 2 < argc) {
             stall = atoi(argv[++i]);
             StallShot = argv[++i];
@@ -537,17 +580,17 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--saves") == 0 && i + 1 < argc) {
             SavesFolder = argv[++i];
         } else if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
-            StopAt = atoi(argv[++i]);
+            StopAt = when(argv[++i]);
             testing = 1;
         } else if (strcmp(argv[i], "--shot") == 0 && i + 2 < argc && NumShots < MAX_SHOTS) {
-            Shots[NumShots].frame = atoi(argv[++i]);
+            Shots[NumShots].frame = when(argv[++i]);
             Shots[NumShots++].path = argv[++i];
         } else if (strcmp(argv[i], "--pretend-pads") == 0 && i + 1 < argc) {
             host_pretend_pads(atoi(argv[++i]));
         } else if (strcmp(argv[i], "--pad-press") == 0 && i + 3 < argc && NumPadEvents < MAX_PRESSES) {
             PadEvents[NumPadEvents].kind = PAD_PRESS;
             PadEvents[NumPadEvents].pad = atoi(argv[++i]) - 1;
-            PadEvents[NumPadEvents].frame = atoi(argv[++i]);
+            PadEvents[NumPadEvents].frame = when(argv[++i]);
             PadEvents[NumPadEvents++].buttons = (int)strtol(argv[++i], NULL, 16);
             if (PadEvents[NumPadEvents - 1].pad < 0 || PadEvents[NumPadEvents - 1].pad > 3) {
                 NumPadEvents--;
@@ -555,13 +598,13 @@ int main(int argc, char **argv) {
         } else if ((strcmp(argv[i], "--pad-unplug") == 0 || strcmp(argv[i], "--pad-plug") == 0) && i + 2 < argc && NumPadEvents < MAX_PRESSES) {
             PadEvents[NumPadEvents].kind = strcmp(argv[i], "--pad-plug") == 0 ? PAD_PLUG : PAD_UNPLUG;
             PadEvents[NumPadEvents].pad = atoi(argv[++i]) - 1;
-            PadEvents[NumPadEvents++].frame = atoi(argv[++i]);
+            PadEvents[NumPadEvents++].frame = when(argv[++i]);
             if (PadEvents[NumPadEvents - 1].pad < 0 || PadEvents[NumPadEvents - 1].pad > 3) {
                 NumPadEvents--;
             }
         } else if (strcmp(argv[i], "--key-press") == 0 && i + 2 < argc && NumPadEvents < MAX_PRESSES) {
             PadEvents[NumPadEvents].kind = PAD_KEY;
-            PadEvents[NumPadEvents].frame = atoi(argv[++i]);
+            PadEvents[NumPadEvents].frame = when(argv[++i]);
             PadEvents[NumPadEvents].buttons = controls_key_from_id(argv[++i]);
             if (PadEvents[NumPadEvents].buttons > 0) {
                 NumPadEvents++;
@@ -569,7 +612,7 @@ int main(int argc, char **argv) {
                 fprintf(stderr, "--key-press: no key called %s\n", argv[i]);
             }
         } else if (strcmp(argv[i], "--press") == 0 && i + 2 < argc && NumPresses < MAX_PRESSES) {
-            Presses[NumPresses].frame = atoi(argv[++i]);
+            Presses[NumPresses].frame = when(argv[++i]);
             Presses[NumPresses++].buttons = (int)strtol(argv[++i], NULL, 16);
         } else if (strcmp(argv[i], "--no-window") == 0) {
             NoWindow = 1;
@@ -626,6 +669,10 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--controllers") == 0 && i + 1 < argc) {
             host_controllers_use(strcmp(argv[i + 1], "none") == 0 ? 0 : atoi(argv[i + 1]));
             i++;
+        } else if (strcmp(argv[i], "--then") == 0) {
+            ParseEpoch++;
+        } else if (strcmp(argv[i], "--restart-on-play") == 0) {
+            restart_on_play = 1;
         } else if (strcmp(argv[i], "--no-sound") == 0) {
             no_sound = 1;
         } else if (strcmp(argv[i], "--host") == 0 && i + 1 < argc) {
@@ -687,6 +734,7 @@ int main(int argc, char **argv) {
     settings()->test_sound = test_sound;
     settings()->fingerprints = fingerprints;
     settings()->no_sound = no_sound;
+    settings()->test_restart = restart_on_play;
     settings()->game_clock_sound = game_clock_sound;
     if (cheat_menu) {
         settings()->cheat_menu = 1;
@@ -787,6 +835,8 @@ int main(int argc, char **argv) {
     }
     gfx_draw_every(draw_every);
     overlays_init();
+    /* where platform_restart comes back to: the game from its beginning again */
+    setjmp(Restart);
     machine_init();
     platform_finish(0);
     return 0;

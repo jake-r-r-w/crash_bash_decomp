@@ -14,6 +14,11 @@ static void vblank(void) {
     platform_vblank();
 }
 
+void clock_restart(void) {
+    VBlanks = 0;
+    LastWait = 0;
+}
+
 /* Until this many vblanks after the last wait, and at least to the next one. */
 void platform_wait_vblanks(int count) {
     int target = LastWait + (count == 0 ? 1 : count);

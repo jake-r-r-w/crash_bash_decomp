@@ -64,6 +64,12 @@ foreach(ovl arkenoid bash bonk chase dino hub n2o papu pogo polar race spin tank
   set_property(SOURCE ${ovl_sources} APPEND PROPERTY COMPILE_OPTIONS "-include;${CMAKE_CURRENT_SOURCE_DIR}/platform/ovlsection.h;-fno-zero-initialized-in-bss")
   set_property(SOURCE ${ovl_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAME=${ovl}")
 endforeach()
+# And the rest of the game's data, main's and the engine's, in one: all of it is put back when the game starts again from its
+# beginning in the same window (platform/overlays.c, overlays_restart).
+file(GLOB_RECURSE core_sources CONFIGURE_DEPENDS game/main/*.c game/overlays/engine/*.c)
+list(APPEND core_sources tests/bossbot.c tests/adventureplayer.c tests/pogoplayer.c tests/bashplayer.c)
+set_property(SOURCE ${core_sources} APPEND PROPERTY COMPILE_OPTIONS "-include;${CMAKE_CURRENT_SOURCE_DIR}/platform/ovlsection.h;-fno-zero-initialized-in-bss")
+set_property(SOURCE ${core_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAME=game")
 
 set(PORT_SOURCES main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/zipread.c platform/bps.c platform/settings.c

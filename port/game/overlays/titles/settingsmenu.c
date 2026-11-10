@@ -20,6 +20,7 @@
 #include "bash/videomenu.h"
 
 void platform_finish(int code);
+void platform_restart(int online);
 int platform_vblanks(void);
 
 enum {
@@ -574,6 +575,9 @@ static void start_game(void) {
     }
     settings_save();
     settings()->launcher = 0;
+    if (settings()->test_restart) {
+        platform_restart(0);
+    }
     /* what the game reads from here on: textures took effect as they were chosen */
     mods_apply_files();
     fingerprint_start();

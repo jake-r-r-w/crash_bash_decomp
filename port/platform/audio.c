@@ -1306,6 +1306,34 @@ void audio_reset(void) {
     audio_voices_all_off();
 }
 
+/* The sound as it was when the program started, for the game starting again from its beginning (main.c, platform_restart): nothing
+   open, nothing playing, and the mix's own counts at nought, so that it mixes the same from here as from a fresh start. */
+void audio_restart(void) {
+    int i;
+
+    host_audio_lock();
+    for (i = 0; i < NUM_SEQS; i++) {
+        if (Seqs[i].open) {
+            audio_song_close((short)i);
+        }
+    }
+    audio_reset();
+    memset(Voices, 0, sizeof(Voices));
+    memset(Seqs, 0, sizeof(Seqs));
+    memset(ReverbRing, 0, sizeof(ReverbRing));
+    ReverbPos = ReverbHalf = 0;
+    Reverb = NULL;
+    ReverbDepthL = ReverbDepthR = ReverbInL = ReverbInR = 0;
+    ReverbOutL[0] = ReverbOutL[1] = ReverbOutR[0] = ReverbOutR[1] = 0;
+    VoiceMask = 0;
+    Mute = Mono = 0;
+    TickCb = NULL;
+    TickOn = 0;
+    ToNextStep = 0;
+    RecordingFrac = 0;
+    host_audio_unlock();
+}
+
 void audio_start(void (*tick)(void)) {
     TickCb = tick;
     TickOn = 1;

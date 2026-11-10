@@ -48,7 +48,6 @@ s32 count_completion(u8 *arg0) {
     return n;
 }
 
-_Alignas(16) unsigned char HeapArena[HEAP_ARENA_BYTES];
 
 void shell_init(void) {
     VSyncRate = 2;

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../../platform/arena.h"
 #include "../../platform/audio.h"
 #include "bash/draw.h"
 #include <stddef.h>
@@ -15,12 +16,10 @@ typedef intptr_t iptr;
 /* A pointer in 4 bytes, for where a file's format or a heap block's header has no room for more: an offset from the heap
  * arena. The arena is static, so every heap and static address the game holds is within 2 GB of it. 0 is NULL. */
 typedef struct ref32 { int off; } ref32;
-#define HEAP_ARENA_BYTES (64 * 1024 * 1024)
 /* The arena's last part is the draw heap (prims.c, DrawHeap): each mesh's faces, allocated as it's first drawn and freed when it hasn't
  * been for a while. What's drawn depends on the view (widescreen sees more), so on the PS1's one heap it would make the game's heap a
  * different shape on machines with different picture settings, which online play can't have (docs/PORT.md, Online play). */
 #define DRAW_HEAP_BYTES (16 * 1024 * 1024)
-extern unsigned char HeapArena[];
 #define HEAP_START (HeapArena + 8)
 #define HEAP_END (HeapArena + HEAP_ARENA_BYTES - DRAW_HEAP_BYTES)
 #define ARENA_END (HeapArena + HEAP_ARENA_BYTES)

@@ -1,9 +1,16 @@
 /* The minigame overlays. On the PS1 they share addresses, and loading one puts its data back as the file has it. Here they
  * all link into the program, so each one's data has a section of its own (ovlsection.h), saved at startup and put back when
- * the game loads that overlay. */
+ * the game loads that overlay.
+ *
+ * The rest of the game's data, main's and the engine's, has a section too ("game"), saved the same way: put back, with every
+ * overlay's, and the heap arena emptied, the game is as it was when the program started, and can start again from its very
+ * beginning in the same window (overlays_restart). An online game starts so on every machine (docs/PORT.md, Online play). */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "arena.h"
+
+_Alignas(16) unsigned char HeapArena[HEAP_ARENA_BYTES];
 
 typedef struct {
     unsigned sector, size;
@@ -37,6 +44,7 @@ extern DatFile DatIndex[];
 #define OVL(name, entry) OVL_MARKS(name)
 #include "overlay_list.h"
 #undef OVL
+OVL_MARKS(game)
 
 typedef struct {
     int entry;
@@ -48,6 +56,8 @@ static Overlay Overlays[] = {
 #define OVL(name, entry) { entry, OVL_BEGIN(name), OVL_END(name), NULL },
 #include "overlay_list.h"
 #undef OVL
+    /* the rest of the game's data: no archive entry is its */
+    { -1, OVL_BEGIN(game), OVL_END(game), NULL },
 };
 
 /* A whole section, across every object in it: a sanitizer's check of one object would stop memcpy. */
@@ -78,6 +88,16 @@ void overlays_init(void) {
         o->saved = malloc(n);
         copy_section(o->saved, o->data, n);
     }
+}
+
+/* The game as it was when the program started: every section put back, and the heap arena emptied. */
+void overlays_restart(void) {
+    size_t i;
+
+    for (i = 0; i < sizeof(Overlays) / sizeof(Overlays[0]); i++) {
+        copy_section(Overlays[i].data, Overlays[i].saved, (size_t)(Overlays[i].data_end - Overlays[i].data));
+    }
+    memset(HeapArena, 0, HEAP_ARENA_BYTES);
 }
 
 /* The engine's own overlay, overlays/gameeng.bin, which the program has built in too */
