@@ -50,10 +50,10 @@
  *       flat out and in real time, with packets late and lost, a machine that vanishes and one that stalls, all compared by the
  *       game's fingerprint after every step; and through the launcher's ONLINE screens, hosting, finding and joining. About two
  *       minutes.
- *   node port/tests/playtest.mjs online --play [2|3|4] [--delay STEPS] [--lag MS] [--loss N]
+ *   node port/tests/playtest.mjs online --play [2|3|4] [--demo] [--delay STEPS] [--lag MS] [--loss N]
  *       Online play on this PC to try yourself: copies of the game side by side, each at its launcher, to host in one and join in the
  *       others. The first has the keyboard and each other a controller. --delay, --lag and --loss are for feeling what a game over
- *       the internet is like.
+ *       the internet is like. --demo hosts in one and joins by its code in the other by itself, to watch, with a pretend router.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
@@ -1001,20 +1001,40 @@ function online_presses(machine, machines) {
    controller another, both at once. The games are this PC's alone (--online-local), so Windows doesn't ask about its firewall.
    --delay sets how many steps late a press is used, and --lag and --loss make every packet late and lose some, to feel a game over
    the internet. The host keeps the game's presses in game.txt, to play again (--replay). It ends when the windows are closed, and
-   says what each copy said of the game. */
+   says what each copy said of the game.
+
+   --demo shows a join code at work, with nobody pressing anything for the first half minute: the left copy hosts, and its router
+   "opens a port" (a pretend router: none is asked), so it shows a code; the right copy goes to JOIN GAME, down to CODE, types the
+   code a letter at a time and joins; the host presses START, and the game begins, yours to play from there. */
 async function online_play(args, exe) {
     const delay = option(args, '--delay', null), lag = option(args, '--lag', null), loss = option(args, '--loss', null);
-    const copies = Math.min(4, Math.max(2, Number(args.find(a => /^\d$/.test(a)) ?? 2)));
+    const demo = flag(args, '--demo');
+    const copies = demo ? 2 : Math.min(4, Math.max(2, Number(args.find(a => /^\d$/.test(a)) ?? 2)));
     const dir = path.join(OUT, 'online-play');
+    const press = (v, b) => ['--press', String(v), b];
+    /* the demo's presses, by vblank (60 a second), slow enough to follow */
+    const code = demo ? spawnSync(path.resolve(ROOT, exe), ['--make-code', '127.0.0.1', '0'], { encoding: 'utf8' }).stdout.trim() : '';
+    const shown = [
+        ['--online-pretend-router', 'open', ...press(240, DOWN), ...press(300, CROSS), ...press(380, CROSS), ...press(1500, START)],
+        [...press(420, DOWN), ...press(480, CROSS), ...press(540, DOWN), ...press(600, CROSS), ...press(720, DOWN), ...press(780, CROSS),
+            ...[...code.replace('-', '')].flatMap((key, i) => ['--key-press', String(860 + i * 45), key]), ...press(1300, START)],
+    ];
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
 
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
-    console.log(`${copies} copies of the game, side by side. In the left one choose ONLINE, then HOST GAME; in ${copies === 2 ? 'the other' : 'each other'}, ONLINE, then JOIN GAME and the game it finds; then START in the left one.`);
-    console.log('The left copy has the keyboard; the others a controller each, or the keyboard when clicked. Close the windows to end it.');
+    if (demo) {
+        console.log(`A join code at work, by itself, for about 25 seconds: hands off till the game starts.`);
+        console.log(`  left:  ONLINE, HOST GAME, and it shows the code ${code}`);
+        console.log('  right: ONLINE, JOIN GAME, down to CODE, types it, and Start');
+        console.log('  left:  START, and the game begins on both, yours to play. Close the windows to end it.');
+    } else {
+        console.log(`${copies} copies of the game, side by side. In the left one choose ONLINE, then HOST GAME; in ${copies === 2 ? 'the other' : 'each other'}, ONLINE, then JOIN GAME and the game it finds; then START in the left one.`);
+        console.log('The left copy has the keyboard; the others a controller each, or the keyboard when clicked. Close the windows to end it.');
+    }
     const runs = await Promise.all(Array.from({ length: copies }, (_, m) => run(exe, ['--tile', String(m), '4', '--online-local',
         ...(m === 0 ? ['--controllers', 'none', '--net-record', rel('game.txt'), ...(delay != null ? ['--net-delay', delay] : [])] : ['--controllers', String(m), '--no-sound']),
-        ...(lag != null ? ['--net-lag', lag] : []), ...(loss != null ? ['--net-loss', loss] : [])], path.join(dir, `copy${m + 1}.txt`))));
+        ...(lag != null ? ['--net-lag', lag] : []), ...(loss != null ? ['--net-loss', loss] : []), ...(demo ? shown[m] : [])], path.join(dir, `copy${m + 1}.txt`))));
 
     runs.forEach((r, m) => {
         console.log(`--- copy ${m + 1} (exit ${r.code})`);
