@@ -84,6 +84,8 @@ void host_set_icon(const uint32_t *rgba, int w, int h);
 /* Held while anything changes what the sound device's thread is playing. */
 void host_audio_lock(void);
 void host_audio_unlock(void);
+/* Sound by the game's clock (audio.c, snd_vblank): a vblank's worth of mixed sound, left then right, for the device to play next. */
+void host_audio_queue(const int16_t *frames, int count);
 
 /* The sound: audio.c. */
 void audio_mix(int16_t *out, int frames);

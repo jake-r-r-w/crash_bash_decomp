@@ -2406,6 +2406,9 @@ s32 machine_init(void) {
 
 void FlipScreen(s32 arg0) {
     mal_update(&MainHeap);
+    if (DrawHeap.first != NULL) {
+        mal_update(&DrawHeap);
+    }
     platform_wait_vblanks(arg0);
     draw_end_frame();
     FrameCount += 1;

@@ -23,6 +23,8 @@ void prims_init(s32 *cfg) {
 
     cnt = cfg[0];
     PrimsConfig = cfg;
+    /* the lists start empty, so nothing's left in the draw heap either (common.h, DRAW_HEAP_BYTES) */
+    mal_init(&DrawHeap, HEAP_END, DRAW_HEAP_BYTES);
     PrimSetPool = mal_alloc(cnt * sizeof(PrimSet), &MainHeap);
     PrimNodePool = mal_alloc(cfg[2] * sizeof(PrimNode), &MainHeap);
     q = mal_alloc(cfg[1] * sizeof(PrimLink), &MainHeap);
@@ -415,7 +417,7 @@ DrawFace *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *
             faces_write_colors(faces, node->data);
         }
     } else {
-        if (mal_first_free(faces->faces * (sizeof(DrawFace) / 4), MainHeap.free) == NULL || (node = PrimLinkFree) == NULL) {
+        if (mal_first_free(faces->faces * (sizeof(DrawFace) / 4), DrawHeap.free) == NULL || (node = PrimLinkFree) == NULL) {
             return NULL;
         }
         PrimLinkFree = node->next;
@@ -424,7 +426,7 @@ DrawFace *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *
         }
         node->next = list->f4;
         list->f4 = node;
-        mal_alloc_owned_low(faces->faces * sizeof(DrawFace), &node->data, &MainHeap, ((FrameCount & 1)?3:2));
+        mal_alloc_owned_low(faces->faces * sizeof(DrawFace), &node->data, &DrawHeap, ((FrameCount & 1)?3:2));
         prim = node->data;
         prim_write_uvs(faces, prim);
         faces_write_colors(faces, prim);
@@ -653,7 +655,7 @@ void primnodes_free(PrimLink *arg0) {
     var_a0 = NULL;
     if (arg0 != NULL) {
         do {
-            mal_free(var_s0->data, &MainHeap);
+            mal_free(var_s0->data, &DrawHeap);
             var_a0 = var_s0;
             var_s0 = var_a0->next;
         } while (var_s0 != NULL);

@@ -86,9 +86,32 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    0.4.0 and works on the user's phone (2026-11-10, their word: "it worked good"), published in v0.4.1 (2026-11-10). Ticked by the user
    (2026-11-10).
 
+7. 7.9, online play (the user's plan, 2026-11-10; PORT.md, Online play): one player hosts, the others join by a code, no servers, each
+   press used a few steps late, rollback later. Step 1, staying identical, is done (2026-11-10, `playtest.mjs identical [--all]`).
+   **Next: step 2**, online by address from the command line (`--host PORT`, `--join ADDRESS:PORT` over UDP, `platform/net.c`), with
+   pretend lag and loss and `playtest.mjs online`; then 3, join codes (miniupnpc and libnatpmp are a download, so the user's OK
+   first), and 4, ONLINE in the launcher. What the review of the plan added is in PORT.md's Online play and the Open leads below.
+
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
+
+- **Port, online play, the start (step 4):** a game begun from the launcher after a longer wait is a different game from its first step
+  (`identical`'s launcher case: the random numbers, the frame counts, then the heap and the sound). START online has to put every
+  machine at a fresh boot's state. Thought through, not built: every slot overlay's data already has a section that's saved and put
+  back (`platform/overlays.c`); the same for the rest of the game's C (main, the engine, titles), with `HeapArena` kept out and
+  zeroed, the sound, clock and textures reset, and a jump back to `machine_init`, would restart the game in the same window, and is
+  what rollback's snapshots would need too. Starting the program again with `--host`/`--join` is the other way.
+- **Port, online play, not yet checked:** `identical` on Android (the emulator is x86; a real phone is ARM, where `audio.c`'s
+  `note_pitch` goes through `pow`, which sets when a voice ends); sound by the game's clock heard by a person (its queue held about
+  45 ms and was never empty in runs of up to 200 seconds here, by the line a test run prints as it ends); a Battle past its first
+  level (6000 steps of one, its rounds and their results, matched flat out, wide and in real time, by hand; `--all` loads each mode
+  once); two real machines.
+- **Port, online play, for step 2 on:** everything `pad_poll` reads has to travel (a pad being there, its sticks, whether it
+  rumbles), taken once per `pads_update`; the host's save in memory only on a joiner, by a flag of its own (`no_save` also means a
+  test run: no sound, no mods); rumble only on the machine whose player it is; a stalled machine (a window being dragged stops the
+  loop, `sdl.c`) can catch up flat out and have its controller "plugged back in", which couch play already handles; the join
+  code's 8 letters hold 40 bits, so an address and a check letter leave room for one of 8 fixed ports, not any port.
 
 - **Port, the Windows zip's one backslash:** Windows PowerShell 5.1's `Compress-Archive` (`package.mjs`) names `mods\README.txt` with a
   backslash, against the zip format's forward slashes, in every Windows download since at least 0.3.2. Windows unpacks it right; Info-ZIP
@@ -568,6 +591,17 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: Online play, step 1 of the user's plan (7.9; PORT.md, Online play): staying identical. The game's fingerprint after every
+  step (`game/main/fingerprint.c`, `--fingerprints N`) and `playtest.mjs identical`: the same presses from two pretend controllers into
+  a Battle match step for step under every picture setting, flat out and in real time, and `--all`'s 41 modes under all of them at
+  once. Two things had to change: sound mixed by the game's clock for online games (`--game-clock-sound`: the device's thread, mixing
+  at the sound card's pace, ends a voice a step apart, and the game reads that back), and each drawn mesh's faces in a heap of their
+  own (`DrawHeap`), as a wide view draws more and the game's one heap was a different shape with widescreen on. `same` is unchanged,
+  and `pads`, `controls` and `menu` pass. Linux passes the same 60 checks in its container, and its fingerprints are Windows's for the
+  Battle and all 41 modes (`--against`).
+  Found for later: a wait in the launcher gives a different game from step 1 (the random numbers step there too), so online's START
+  has to restart from boot; and the pad read takes more than buttons and sticks.
 
 - 2026-11-10: Rebinding, at the user's word ("we need an options menu to re-bind controls"; then one page, the game's button pictures
   for the face buttons, and one column, "way more simple", all theirs): SETTINGS' CONTROLS page, a row per game button showing its key,

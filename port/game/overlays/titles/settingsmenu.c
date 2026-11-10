@@ -13,6 +13,7 @@
 #include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/engine.h"
+#include "bash/fingerprint.h"
 #include "bash/main.h"
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
@@ -575,6 +576,7 @@ static void start_game(void) {
     settings()->launcher = 0;
     /* what the game reads from here on: textures took effect as they were chosen */
     mods_apply_files();
+    fingerprint_start();
     if (settings()->skip_intro) {
         process_control_goto(&MenuProcessControl, &MainMenu);
     } else {

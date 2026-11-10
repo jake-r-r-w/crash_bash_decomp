@@ -3,6 +3,7 @@
 #include "bash/main.h"
 #include "bash/modchip.h"
 #include "bash/extraheroes.h"
+#include "bash/fingerprint.h"
 
 s32 count_completion(u8 *arg0) {
     s32 q;
@@ -217,6 +218,7 @@ void shell_update(void) {
     sfx_update_all();
     music_update();
     EngineModule->update();
+    fingerprint_step();
 }
 
 void shell_start_engine(void) {
@@ -1277,6 +1279,11 @@ mal *mal_init(_mal_area *heap, u8 *start, s32 size) {
     heap->lowest = blk;
     heap->end = end;
     heap->deferred = NULL;
+    /* the draw heap's blocks are owned by records in this one, which are gone now: it starts again too, before anything there is moved
+       and its owner told */
+    if (heap == &MainHeap) {
+        mal_init(&DrawHeap, HEAP_END, DRAW_HEAP_BYTES);
+    }
     return blk;
 }
 
@@ -3336,6 +3343,7 @@ s32 VSyncRate = 0;
 s32 MalMoveVSyncs = 0;
 s32 MalMoveWords = 0;
 _mal_area MainHeap = {0};
+_mal_area DrawHeap = {0}; /* the faces of what's drawn, apart from the game's own heap (common.h, DRAW_HEAP_BYTES) */
 s32 MalFreeBytes = 0;
 s32 MalFreeBlocks = 0;
 s32 MalLargestFree = 0;

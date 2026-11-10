@@ -40,6 +40,11 @@
  *   node port/tests/playtest.mjs pads
  *       Couch play, with pretend controllers: the launcher's players screen, Battle, Adventure and Tournament offering as many players as
  *       there are controllers, each choosing its own hero, and controllers pulled out and plugged in without anyone else's player changing.
+ *   node port/tests/playtest.mjs identical [--all] [--against FILE]
+ *       Whether the game repeats itself exactly, for online play: the same presses from two pretend controllers under each picture
+ *       setting, flat out and in real time, with sound and without, compared by the game's fingerprint after every step. About two
+ *       minutes. --all adds every game mode under every picture setting at once, a few minutes more. --against FILE checks this
+ *       system's fingerprints against another's (its fingerprints-SYSTEM.json from a run there).
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
@@ -745,6 +750,199 @@ async function pads(args) {
     return report(results);
 }
 
+/* Whether the game repeats itself exactly, which online play rests on (docs/PORT.md, Online play): every machine runs the whole game
+   from everyone's presses, so the same presses have to give the same game whatever the machine's own settings. Each run here has the
+   same presses, from two pretend controllers, through the menus into a Battle and on through it, and prints the game's fingerprint
+   after every step (--fingerprints, game/main/fingerprint.c), with its sound mixed by the game's clock (--game-clock-sound), as
+   online play's is. Under each picture setting, flat out and in real time, with the sound played and not, the fingerprints have to
+   match the first run's step for step. A run with one press more has to differ, or the fingerprint isn't looking. Then what's known
+   to change the game, which online has to be the same for everyone: the settings that are the host's, a wait in the launcher, and
+   sound mixed by the sound device. What each does is said, and none of those can fail.
+
+   --all adds every game mode, played by the computer: flat out as it comes, against every picture setting at once in real time.
+
+   Each game's last fingerprint is kept in fingerprints-SYSTEM.json, and --against FILE checks them against another system's. */
+const IDENTICAL_VBLANKS = 4000;
+
+function identical_presses({ shift = 0, one_more = false } = {}) {
+    const UP = 0x10, RIGHT = 0x20, LEFT = 0x80, SQUARE = 0x8000, CIRCLE = 0x2000;
+    const down = parseInt(DOWN, 16), cross = parseInt(CROSS, 16);
+    const args = [];
+    const pad1 = (v, b) => args.push('--press', String(v + shift), b.toString(16));
+    const pad2 = (v, b) => args.push('--pad-press', '2', String(v + shift), b.toString(16));
+    let seed = 12345;
+    const next = n => {
+        seed = (Math.imul(seed, 1103515245) + 12345) >>> 0;
+        return (seed >>> 16) % n;
+    };
+
+    /* the menus: Battle, two players, each controller's Cross through the character select and on, and past the first game's rules */
+    pad1(170, down);
+    pad1(230, cross);
+    pad1(280, down);
+    pad1(350, cross);
+    for (const v of [470, 590, 850, 1150, 1250, 1550, 1650, 1750, 2000]) {
+        pad1(v, cross);
+        pad2(v, cross);
+    }
+    /* the game: each controller a direction held for a while and a button now and then, the same ones every time */
+    for (const press of [pad1, pad2]) {
+        let dir = 0, left = 0;
+
+        for (let v = 2100; v < IDENTICAL_VBLANKS - 12; v += 6) {
+            if (left-- <= 0) {
+                dir = [UP, RIGHT, down, LEFT, UP | RIGHT, down | LEFT, 0][next(7)];
+                left = 2 + next(8);
+            }
+            const button = [0, 0, 0, SQUARE, cross, CIRCLE][next(6)];
+
+            if ((dir | button) !== 0) {
+                press(v, dir | button);
+            }
+        }
+    }
+    if (one_more) {
+        pad2(3003, SQUARE | UP);
+    }
+    return args;
+}
+
+/* A run's fingerprint lines, from its last start (the launcher's PLAY starts them again) */
+function fingerprints(text) {
+    const lines = text.split(/\r?\n/);
+    const from = lines.lastIndexOf('fp start');
+
+    return lines.slice(from + 1).filter(l => l.startsWith('fp '));
+}
+
+/* Where two runs' fingerprints part, and in what: null if they never do */
+function fingerprints_part(a, b) {
+    const n = Math.min(a.length, b.length);
+
+    for (let i = 0; i < n; i++) {
+        if (a[i] !== b[i]) {
+            const wa = a[i].split(' '), wb = b[i].split(' ');
+            const parts = [];
+
+            for (let k = 4; k + 1 < wa.length; k += 2) {
+                if (wa[k + 1] !== wb[k + 1]) {
+                    parts.push(wa[k]);
+                }
+            }
+            return `step ${wa[1]}, in ${parts.join(', ') || 'an earlier step'}`;
+        }
+    }
+    return a.length !== b.length || n === 0 ? `${a.length} steps against ${b.length}` : null;
+}
+
+async function identical(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const against = option(args, '--against', null);
+    const all = flag(args, '--all');
+    const dir = path.join(OUT, 'identical');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const presses = identical_presses();
+    /* PLAY at that vblank, START on the players screen, and the same presses from there on */
+    const launcher = play => ['--launcher', '--press', String(play), CROSS, '--press', String(play + 170), START, ...identical_presses({ shift: play + 170 })];
+    const cases = [
+        { name: 'flat out', args: ['--turbo', ...presses] },
+        { name: 'flat out, again', args: ['--turbo', ...presses] },
+        { name: 'in real time, its sound played', args: ['--sound', ...presses] },
+        { name: '60 FPS, its sound played', args: ['--fps', '60', '--sound', ...presses] },
+        { name: '120 FPS', args: ['--fps', '120', ...presses] },
+        { name: 'widescreen', args: ['--widescreen', '--turbo', ...presses] },
+        { name: 'textures made bigger and smoothed', args: ['--upscale', '2', '--smooth', '--turbo', ...presses] },
+        { name: 'anti-aliased', args: ['--antialias', '4', '--turbo', ...presses] },
+        { name: 'sharp icons', args: ['--sharp-icons', '--turbo', ...presses] },
+        { name: 'drawn one frame in 60', args: ['--draw-every', '60', '--turbo', ...presses] },
+        { name: 'every picture setting at once, in real time', args: ['--fps', '120', '--widescreen', '--upscale', '4', '--smooth', '--antialias', '8', '--sharp-icons', '--sound', ...presses] },
+        { name: 'one press more', args: ['--turbo', ...identical_presses({ one_more: true })], want: 'differs' },
+        /* the launcher's part of the game's own menus, so its steps count: a game begun from it after a longer wait is a different game
+           (its random numbers have moved on). Online play's START has to put every machine at the same beginning (docs/PORT.md) */
+        { name: 'from the launcher, PLAY at once', args: ['--turbo', ...launcher(120)], with: 'launcher' },
+        { name: 'from the launcher, PLAY after a wait', args: ['--turbo', ...launcher(333)], with: 'launcher', want: 'said' },
+        /* what changes the game: the host's, online */
+        { name: 'the cheat menu on', args: ['--turbo', '--cheat-menu', ...presses], want: 'said' },
+        { name: 'loading skipped', args: ['--turbo', '--skip-loading', ...presses], want: 'said' },
+        { name: 'extra heroes on', args: ['--turbo', '--extra-heroes', ...presses], want: 'said' },
+        /* and why the sound's mixed by the game's clock */
+        { name: 'sound mixed by the sound device, as offline', args: ['--sound', ...presses], device_sound: true, want: 'said' },
+    ];
+    const results = [];
+    const prints = [];
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    const slots = Math.min(AT_ONCE, cases.length);
+    const one = async (c, i) => {
+        const saves = ANDROID ? [] : ['--saves', rel(`saves${i}`)];
+        const last = Math.max(...c.args.map((a, k) => (c.args[k - 1] === '--press' ? Number(a) : 0)));
+        const r = await run(exe, ['--skip-intro', '--pretend-pads', '2', '--fingerprints', '1', ...(c.device_sound ? [] : ['--game-clock-sound']), ...saves,
+            '--tile', String(i % slots), String(slots), ...c.args, '--frames', String(last + 30)], path.join(dir, `case${i}.txt`), { timeout: MODE_TIMEOUT });
+
+        prints[i] = fingerprints(r.text);
+        return crash_where(exe, r.text) ?? (r.code !== 0 ? `exit ${r.code}` : !/^players 2, computer 0 0 1 1/m.test(r.text) ? 'never reached the two-player game' : null);
+    };
+    const wrong = [];
+    for (let i = 0; i < cases.length; i += slots) {
+        wrong.push(...await Promise.all(cases.slice(i, i + slots).map((c, j) => one(c, i + j))));
+    }
+    cases.forEach((c, i) => {
+        const first = cases.findIndex(x => x.with === c.with);
+        const parted = fingerprints_part(prints[first], prints[i]);
+
+        if (wrong[i] != null) {
+            results.push([c.name, { pass: false, what: wrong[i] }]);
+        } else if (c.want === 'said') {
+            results.push([c.name, { pass: true, what: parted == null ? 'no different, in this game' : `a different game from ${parted}` }]);
+        } else if (c.want === 'differs') {
+            results.push([c.name, { pass: parted != null, what: parted == null ? 'no different: the fingerprint missed it' : `a different game from ${parted}` }]);
+        } else {
+            results.push([c.name, { pass: parted == null, what: parted == null ? `the same, ${prints[i].length} steps` : `differs from ${parted} (case${first}.txt, case${i}.txt)` }]);
+        }
+    });
+    /* what another system's run is checked against: each game's steps and the last one's fingerprint of them all */
+    const mine = { 'the Battle': { steps: prints[0].length, all: prints[0].at(-1)?.split(' ')[3] } };
+
+    if (all) {
+        /* every mode, played by the computer: flat out as it comes, against every picture setting at once in real time with its sound */
+        const modes = [...Array(41).keys()];
+        const flat = [], varied = [], bad = [];
+        const mode = async (m, slot, into, more) => {
+            const r = await run(exe, ['--mode', String(m), '--skip-intro', '--skip-loading', '--fingerprints', '1', '--game-clock-sound', '--tile', String(slot),
+                String(AT_ONCE), ...more, '--frames', '1400'], path.join(dir, `mode${m}${into === flat ? '' : '-varied'}.txt`), { timeout: MODE_TIMEOUT });
+
+            into[m] = fingerprints(r.text);
+            bad[m] ??= crash_where(exe, r.text) ?? (r.code !== 0 ? `exit ${r.code}` : null);
+        };
+
+        for (let i = 0; i < modes.length; i += AT_ONCE) {
+            await Promise.all(modes.slice(i, i + AT_ONCE).map((m, slot) => mode(m, slot, flat, ['--turbo'])));
+        }
+        for (let i = 0; i < modes.length; i += AT_ONCE) {
+            await Promise.all(modes.slice(i, i + AT_ONCE).map((m, slot) => mode(m, slot, varied,
+                ['--fps', '120', '--widescreen', '--upscale', '4', '--smooth', '--antialias', '8', '--sharp-icons', '--sound'])));
+        }
+        for (const m of modes) {
+            const parted = bad[m] ?? fingerprints_part(flat[m], varied[m]);
+
+            mine[`mode ${m}`] = { steps: flat[m].length, all: flat[m].at(-1)?.split(' ')[3] };
+            results.push([`mode ${m}, every picture setting`, { pass: parted == null, what: parted == null ? `the same, ${flat[m].length} steps`
+                : bad[m] ?? `differs from ${parted} (mode${m}.txt, mode${m}-varied.txt)` }]);
+        }
+    }
+    fs.writeFileSync(path.join(dir, `fingerprints-${ANDROID ? 'android' : process.platform}.json`), JSON.stringify(mine, null, 1));
+    if (against != null) {
+        const theirs = JSON.parse(fs.readFileSync(against, 'utf8'));
+        const both = Object.keys(mine).filter(k => theirs[k] != null);
+        const differ = both.filter(k => theirs[k].steps !== mine[k].steps || theirs[k].all !== mine[k].all);
+
+        results.push([`against ${path.basename(against)}`, { pass: both.length !== 0 && differ.length === 0, what: both.length === 0 ? 'nothing of the same in it'
+            : differ.length === 0 ? `the same: ${both.length === 1 ? both[0] : `${both.length} games`}` : `differs: ${differ.join(', ')}` }]);
+    }
+    return report(results);
+}
+
 /* The launcher's CONTROLS page, with pretend keys (--key-press) and a pretend controller: a key chosen for Cross, a key
    another button had (they swap), the new key choosing PLAY, a controller button chosen and used the same way, and RESET TO
    DEFAULTS. From the log's "controls:" lines (settingsmenu.c). */
@@ -1154,9 +1352,9 @@ async function mods(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, controls, shots, image, packs, mods };
+const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, controls, identical, shots, image, packs, mods };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|controls|shots|image|packs|mods: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|controls|identical|shots|image|packs|mods: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

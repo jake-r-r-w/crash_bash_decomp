@@ -49,6 +49,9 @@ typedef struct Settings {
     int test_sound;    /* a test run that's for watching: its sound plays (--sound) */
     int tile, tiles;   /* a test window's slot in a grid of them on the screen, if tiles isn't 0 */
     int test_extra[4]; /* a test run: a player's extra hero (EXTRA_, bash/extraheroes.h), or 0 */
+    int fingerprints;  /* a test run: print the game's fingerprint every this many steps (game/main/fingerprint.c), or 0 */
+    int game_clock_sound; /* sound mixed a vblank at a time by the game's clock, not as the sound device asks, so that voices end at the
+                             same step on every machine (audio.c, snd_vblank): online play's */
 } Settings;
 
 /* The settings in use. */

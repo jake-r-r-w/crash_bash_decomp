@@ -12,6 +12,7 @@
 #include <string.h>
 #include "audio.h"
 #include "platform.h"
+#include "settings.h"
 
 #define NUM_BANKS 16
 #define NUM_SEQS NUM_BANKS
@@ -539,12 +540,20 @@ void audio_finish(void) {
     }
 }
 
-/* Once a vblank (etc.c): the game's sound tick. */
+/* Once a vblank (etc.c): the game's sound tick.
+ *
+ * And a vblank's worth of sound, for a test's recording, and for sound by the game's clock (settings.h, game_clock_sound). The game
+ * reads back which voices are still playing (audio_voice_states, sfx_update_voice), and takes the first free one for a new sound, so
+ * when the device's thread does the mixing, at the sound card's pace, two machines given the same presses hear a voice end a step
+ * apart and go different ways. Mixed here, a voice ends at the same vblank on every machine, every time. What's mixed joins the device's
+ * queue (host_audio_queue). */
 void snd_vblank(void) {
+    int by_clock = settings()->game_clock_sound;
+
     if (TickCb != NULL && TickOn) {
         TickCb();
     }
-    if (Recording != NULL) {
+    if (Recording != NULL || by_clock) {
         static int16_t buf[4096];
         uint32_t n;
 
@@ -552,8 +561,13 @@ void snd_vblank(void) {
         n = RecordingFrac >> 16;
         RecordingFrac &= 0xFFFF;
         audio_mix(buf, (int)n);
-        fwrite(buf, 4, n, Recording);
-        RecordedFrames += n;
+        if (Recording != NULL) {
+            fwrite(buf, 4, n, Recording);
+            RecordedFrames += n;
+        }
+        if (by_clock) {
+            host_audio_queue(buf, (int)n);
+        }
     }
 }
 

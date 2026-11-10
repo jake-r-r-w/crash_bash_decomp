@@ -131,6 +131,38 @@ static void SDLCALL fill_audio(void *userdata, SDL_AudioStream *stream, int addi
     }
 }
 
+/* Sound by the game's clock: the game mixes a vblank's worth at each vblank (audio.c, snd_vblank), and it waits here for the device.
+   About QUEUE_AIM waits, enough to ride out a late vblank. The game's clock and the sound card's never quite agree, so the device plays
+   a touch faster the longer the queue and slower the shorter, by too little to hear, which holds it there. A queue far too long (the
+   game catching up after a stall, or a test run going flat out) takes no more till it's played down. */
+#define QUEUE_AIM (OUT_RATE / 20)  /* frames: 50 ms */
+#define QUEUE_MOST (QUEUE_AIM * 4)
+#define QUEUE_BEND 0.01f           /* the most it's sped up or slowed */
+
+static int QueueVblanks, QueueEmpty, QueueFull;
+static long long QueueWaited;
+
+void host_audio_queue(const int16_t *frames, int count) {
+    float off;
+    int waiting;
+
+    if (Audio == NULL) {
+        return;
+    }
+    waiting = SDL_GetAudioStreamQueued(Audio) / 4;
+    /* a test run says how the queue did, as it ends (host_quit) */
+    QueueVblanks++;
+    QueueWaited += waiting;
+    QueueEmpty += waiting == 0 && QueueVblanks > 1;
+    QueueFull += waiting > QUEUE_MOST;
+    if (waiting > QUEUE_MOST) {
+        return;
+    }
+    off = (float)(waiting - QUEUE_AIM) / QUEUE_AIM * QUEUE_BEND;
+    SDL_SetAudioStreamFrequencyRatio(Audio, 1.0f + SDL_clamp(off, -QUEUE_BEND, QUEUE_BEND));
+    SDL_PutAudioStreamData(Audio, frames, count * 4);
+}
+
 void host_audio_lock(void) {
     if (Audio != NULL) {
         SDL_LockAudioStream(Audio);
@@ -270,7 +302,8 @@ int host_init(void) {
         spec.channels = 2;
         spec.freq = OUT_RATE;
         SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, "512");
-        Audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, fill_audio, NULL);
+        /* by the game's clock, the game fills the stream itself (host_audio_queue) */
+        Audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, s->game_clock_sound ? NULL : fill_audio, NULL);
         if (Audio != NULL) {
             SDL_ResumeAudioStreamDevice(Audio);
         } else {
@@ -832,6 +865,10 @@ void host_rumble(int port, int small_on, int big) {
 }
 
 void host_quit(void) {
+    if (settings()->no_save && QueueVblanks > 0) {
+        printf("sound queue: %d vblanks, %d ms waiting on average, found empty %d times and too full %d\n", QueueVblanks,
+               (int)(QueueWaited / QueueVblanks * 1000 / OUT_RATE), QueueEmpty, QueueFull);
+    }
     SDL_Quit();
 }
 

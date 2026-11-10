@@ -759,6 +759,7 @@ extern s32 MusicRestart;
 extern s32 CardStatus;
 s32 count_completion(u8 *arg0);
 extern _mal_area MainHeap;
+extern _mal_area DrawHeap;
 extern s32 LoadDirectBusy;
 extern u8 *LoadWaitBuf;
 extern NAS *HeadOfCameras;

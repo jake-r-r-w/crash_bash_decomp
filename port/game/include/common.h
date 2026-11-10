@@ -16,9 +16,14 @@ typedef intptr_t iptr;
  * arena. The arena is static, so every heap and static address the game holds is within 2 GB of it. 0 is NULL. */
 typedef struct ref32 { int off; } ref32;
 #define HEAP_ARENA_BYTES (64 * 1024 * 1024)
+/* The arena's last part is the draw heap (prims.c, DrawHeap): each mesh's faces, allocated as it's first drawn and freed when it hasn't
+ * been for a while. What's drawn depends on the view (widescreen sees more), so on the PS1's one heap it would make the game's heap a
+ * different shape on machines with different picture settings, which online play can't have (docs/PORT.md, Online play). */
+#define DRAW_HEAP_BYTES (16 * 1024 * 1024)
 extern unsigned char HeapArena[];
 #define HEAP_START (HeapArena + 8)
-#define HEAP_END (HeapArena + HEAP_ARENA_BYTES)
+#define HEAP_END (HeapArena + HEAP_ARENA_BYTES - DRAW_HEAP_BYTES)
+#define ARENA_END (HeapArena + HEAP_ARENA_BYTES)
 static inline void *ref_get(ref32 r) { return r.off == 0 ? (void *)0 : r.off == -1 ? (void *)-1 : (void *)(HeapArena + r.off); }
 static inline ref32 ref_of(const void *p) { ref32 r; r.off = p == (void *)0 ? 0 : p == (void *)-1 ? -1 : (int)((const unsigned char *)p - HeapArena); return r; }
 

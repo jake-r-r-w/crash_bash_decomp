@@ -298,6 +298,8 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--tile I N` | put this window in slot I of a grid of N on the screen, to watch several test runs at once |
 | `--wav FILE` | record a test run's sound (test runs are silent otherwise) |
 | `--sound` | play a test run's sound, for one that's being watched |
+| `--game-clock-sound` | mix the sound a vblank at a time by the game's clock, as online play does (Online play, below), not as the sound device asks |
+| `--fingerprints N` | print the game's fingerprint every N steps (`game/main/fingerprint.c`; Online play, below) |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
 | `--no-launcher` | start with the saved settings, without the menu |
@@ -323,17 +325,75 @@ node port/tests/playtest.mjs menu
 node port/tests/playtest.mjs mods
 node port/tests/playtest.mjs heroes
 node port/tests/playtest.mjs hero roo
+node port/tests/playtest.mjs identical
 ```
 
 `bosses` beats every boss from a real Adventure, by each fight's own rules, and back to the warp room; `--watch` shows them at normal speed with sound, and `--hero roo` plays them as an extra hero (`--extra-hero 0 roo`). `modes` runs every game mode, played by the
 computer, with `--asan` for the AddressSanitizer build. `adventure` plays a new Adventure with no cheat flags, door by door, until there's nothing left to win, saves at the computer, loads that save in a new run, and passes at 200%. A challenge it keeps losing gets weaker computer heroes and in the end ones that stand still, and the log says which. `--resume` carries on from its last save, and `challenges` plays any challenge alone. `menu` goes from the title screen into a game by the pad alone. `packs` and `mods` check textures and files from mods by the pictures of one mode: zips stored and deflated, a zipped folder, which of two wins, broken zips, and archive files at the same size, bigger and moving the rest. `shots FROM STEP COUNT` makes a contact sheet of one run. `heroes` checks in a few seconds that the extra heroes load: one short game
 with them as the players, each made from its disc and drawn as itself. That's all a release or a change elsewhere checks of them (the
-user's word, 2026-11-09). `hero ID`, for work on that hero, plays it in every game, four of it at once, and checks from the log that each game draws it in a model of its own of that game's kind, with a contact sheet of them (docs/EXTRA_HEROES.md, the checklist); `same --hero ID` compares its pictures and sound with a baseline of its own. What they leave is in
+user's word, 2026-11-09). `hero ID`, for work on that hero, plays it in every game, four of it at once, and checks from the log that each game draws it in a model of its own of that game's kind, with a contact sheet of them (docs/EXTRA_HEROES.md, the checklist); `same --hero ID` compares its pictures and sound with a baseline of its own. `identical` checks that the game repeats itself exactly, for online play (Online play, below): the same presses under each picture setting, by the game's fingerprint after every step, in about two minutes, with `--all` for every game mode too and `--against FILE` for another system's fingerprints. What they leave is in
 `build/port/playtest/`.
 
 **Frame rates.** The game's logic runs at about 30 frames a second (2 vblanks a frame) and stays there, because its movement is per frame. At 60 and 120 the renderer keeps the game's last two frames and draws steps between them, so what's shown is one game frame behind. Triangles are matched by name: `draw_owner` says which object is drawing, and a face number or the order within that object does the rest (`gfx_mark`). What has no owner, like some 2D, just appears. A triangle that jumps more than a quarter of the screen isn't moved. The window keeps being maximised as `maximized=1` in the settings, not as its size, and the menu's WINDOW SIZE goes through the sizes that fit on the screen, then MAXIMISED (`step_window`). With vsync on, a picture past the screen's rate would wait for the screen and hold up the game's clock, which ran the game at half speed at 120 on a 60 Hz screen, so well above its rate a share of the pictures is left out (`picture_fits`).
 
 **Depth.** The game sorts by bucket, as a PS1 must. Solid parts of `draw_object`'s models also test real depth against each other, so a moving model's faces don't swap. The map, effects and anything semi-transparent or with a layer of its own stay in the game's order alone.
+
+## Online play
+
+Roadmap 7.9, begun 2026-11-10. The user's choices: one player hosts and the others join with a join code, with no servers of our own,
+as plug and play as it can be. The first version is the simple kind: every machine runs the whole game, only presses travel, and each
+press is used a few of the game's steps late (it steps 30 times a second, whatever the FPS), so that it reaches everyone in time.
+Rollback can come later.
+
+That only works if the game repeats itself exactly from the same presses, on every machine, whatever that machine's own settings.
+Step 1 was making sure of it, and it does (`playtest.mjs identical`).
+
+**The fingerprint** (`game/main/fingerprint.c`). After every step (`shell_update`), the game's own values are folded into a number:
+the random numbers' state, the game's record (`GameState`) and frame counts, each hero's numbers, every object in play (which, what
+kind, its state, where), the heap's free room, the pads as the game read them, and which voices are playing. Not raw memory, whose
+addresses differ between machines: nothing in it is a pointer, and what's in the heap goes in by its place in the heap. A test run
+prints it with `--fingerprints N`, a line of parts, so the first part to differ says where to look; `all` is every step's so far,
+which is what machines will compare online.
+
+**What stays each player's own**, as it doesn't change the game: FPS, widescreen, bigger textures, smoothing, anti-aliasing, sharp
+icons, the window's and the picture's size, and whether it runs in real time or behind. `identical` plays the same presses from two
+pretend controllers through the menus into a Battle under each, and its `--all` plays every game mode under all of them at once, in
+real time with the sound played: every step's fingerprint matches. Windows's and Linux's match each other too (`--against`).
+
+**What has to be the same for everyone**, as it does change the game (the test says what each does): the cheat menu
+(`GameState.cheats`), SKIP LOADING and SKIP INTRO (the steps a load or the logos take), EXTRA HEROES (a ninth card, and what's
+loaded) and mods that change the game's files. Online these are the host's. Mods and extra heroes are files, and an extra hero comes
+from each player's own disc, so they're to be compared at joining, not sent.
+
+Two things had to change for it:
+
+- **Sound by the game's clock** (`settings.h`, `game_clock_sound`; `audio.c`, `snd_vblank`). The game reads back which voices are
+  still playing (`audio_voice_states`, read by `sfx_update_voice`), and a new sound takes the first free voice. Offline the sound
+  device's thread mixes, at the sound card's pace, so a voice ends a step sooner on one machine than another: the test's run mixed
+  that way parts from the others within a thousand steps. Online the game mixes a vblank's worth at each vblank, as a test's
+  recording (`--wav`) always has, and the device plays from a queue of it (`sdl.c`, `host_audio_queue`): about 50 ms deep, held
+  there by playing a touch faster or slower (up to 1%), as the game's clock and the sound card's never quite agree. Offline play
+  is as it was. A silent test run mixes nothing at all, so its voices never end: fingerprints are only comparable between runs that
+  mix (`--game-clock-sound` or `--wav`).
+- **The draw heap** (`common.h`, `DRAW_HEAP_BYTES`; `prims.c`, `face_prim_alloc`). The PS1 game allocates each mesh's faces from its
+  one heap as the mesh is first drawn, and frees them when it hasn't been for a while. A wide view draws more, so the heap was a
+  different shape with widescreen on, which the fingerprint caught. Those faces have a heap of their own now, the last 16 MB of the
+  arena, and the game's heap is the same whatever is drawn. Frames and sound didn't change (`same`).
+
+**Found, for the later steps:**
+
+- A game begun from the launcher isn't from the very beginning: the launcher is one of the game's own menus, its steps count
+  (`shell_update` steps the random numbers every step), and a longer wait in it gives a different game from the first step
+  (`identical` says so). Online play's START has to put every machine at the same beginning. The sure way is to start the game again
+  from boot, as a test run does, not to put back the values known to have moved.
+- The pad read takes more than buttons and sticks (`pad_poll`, `nascalls.c`): whether there's a pad at all (which makes `PadCount` 2
+  or 4), whether it has sticks, and whether it rumbles. All of it has to travel. `platform_pad` is called several times a step, so
+  everyone's presses are to be taken once per `pads_update`, and steps numbered by pad reads, not vblanks.
+
+The steps: 1, staying identical (done); 2, online by address from the command line (`--host PORT`, `--join ADDRESS:PORT`, UDP, with
+pretend lag and loss, as `playtest.mjs online`); 3, join codes (UPnP and NAT-PMP, same-network games found by themselves, plain
+messages when hosting can't work); 4, ONLINE in the launcher. Not in the first version: rollback, joining a game already running,
+spectators, hosting from behind a shared address, IPv6 codes, chat.
 
 ## What a pointer's size breaks
 
