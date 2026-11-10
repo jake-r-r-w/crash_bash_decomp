@@ -171,7 +171,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   in Git Bash. Google's command-line tools now hand `sdkmanager` over to a new "Android CLI" that collects usage data unless given
   `--no-metrics`, and it skipped the system image: the emulator's image came by direct download from dl.google.com (its SHA-1 checked
   against the repository XML). The emulator itself takes `-no-metrics`. The app can't list a folder adb made in its storage (the
-  game makes `discs/` and `mods/` itself; copy files into those, don't `mkdir` them by adb). The emulator hung once an hour into a
+  game makes `discs/` and `mods/` itself; copy files into those, don't `mkdir` them by adb), nor write in one: the play tests'
+  Android shots went in an adb-made `out/` and none ever came back, unnoticed as no Android test looked at them, until 2026-11-10
+  (they're `out-NAME` files in the app's folder now). The emulator hung once an hour into a
   headless session (adb showed it offline): its process is `qemu-system-x86_64-headless` with `netsimd`, not `emulator`, and after
   stopping them the AVD's `*.lock` files have to go before it starts again; `playtest.mjs` gives each adb call a time limit since. GitHub's release downloads gave 504s for a minute once: the
   Dockerfile's curl retries. Phones are arm64, where a function returning u8 or u16 needn't clear the rest of its register: the

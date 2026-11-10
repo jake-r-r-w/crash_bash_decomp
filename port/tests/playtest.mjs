@@ -120,7 +120,8 @@ async function run_android(args, logfile, timeout) {
         const at = sent[i] === '--shot' ? i + 2 : sent[i] === '--wav' ? i + 1 : -1;
 
         if (at > 0 && at < sent.length) {
-            const device = `${ANDROID_DIR}/out/${path.basename(sent[at])}`;
+            /* in the app's own folder: it can't write in one adb made */
+            const device = `${ANDROID_DIR}/out-${path.basename(sent[at])}`;
 
             fetch.push([device, path.resolve(ROOT, sent[at])]);
             sent[at] = device;
@@ -128,8 +129,7 @@ async function run_android(args, logfile, timeout) {
         }
     }
     adb(['shell', 'am', 'force-stop', ANDROID_APP]);
-    adb(['shell', 'rm', '-rf', `${ANDROID_DIR}/out`, `${ANDROID_DIR}/log.txt`]);
-    adb(['shell', 'mkdir', '-p', `${ANDROID_DIR}/out`]);
+    adb(['shell', 'rm', '-rf', `${ANDROID_DIR}/out`, `${ANDROID_DIR}/out-*`, `${ANDROID_DIR}/log.txt`]);
     adb(['logcat', '-c']);
     adb(['shell', 'am', 'start', '-n', `${ANDROID_APP}/.CrashBashActivity`, '--esa', 'args', sent.join(',')]);
     const started = Date.now();
