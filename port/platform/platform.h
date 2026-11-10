@@ -109,6 +109,17 @@ void overlays_restart(void);
 /* The game again from its very beginning, in this window, as if the program had just started: an online game's start, the same on
    every machine whatever went before (online: with the game's own files only, no mod's). It doesn't return. */
 void platform_restart(int online);
+/* An online game from the launcher (net.c's lobby says everyone's ready): the game starts again from its beginning, as it does on
+   every machine. And its end, back in the launcher, with why if it wasn't the players' doing (shown there), or NULL. A game from the
+   command line ends the program instead, saying why. Neither returns. */
+void platform_online_start(void);
+void platform_online_stop(const char *why);
+/* What the launcher's to say as it opens, once: why the last online game ended, or NULL. */
+const char *platform_launcher_message(void);
+/* Sound by the game's clock, or as the device asks (sdl.c): changed as an online game starts and ends. */
+void host_audio_by_clock(int by_clock);
+/* A character typed since this was last asked: a digit, a dot, 8 for backspace, or 0 for none. For an address. */
+int host_typed(void);
 void host_quit(void);
 
 #endif

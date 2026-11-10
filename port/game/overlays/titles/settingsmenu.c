@@ -4,12 +4,17 @@
  * Settings take effect as they change. To add one: a row in its category's table, a case in
  * change_setting and in show_value; a video one goes in main/videomenu.c, as other menus show those too.
  * The Mods page lists the mods (mods.c) to turn on and off and put in order. With two or more controllers, PLAY goes through the
- * players screen first: each controller's player, put in order by pressing up or down on it. */
+ * players screen first: each controller's player, put in order by pressing up or down on it.
+ *
+ * ONLINE (docs/PORT.md, Online play): HOST GAME opens a game for others to join and lists them as they do, and START begins it;
+ * JOIN GAME lists the games being hosted on this network, and takes a host's address typed in for one that isn't. The game then starts
+ * again from its very beginning on every machine (platform_online_start), and comes back here when it's over. */
 #include <stdio.h>
 #include <string.h>
 #include "../../../platform/controllers.h"
 #include "../../../platform/controls.h"
 #include "../../../platform/mods.h"
+#include "../../../platform/net.h"
 #include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/engine.h"
@@ -21,6 +26,10 @@
 
 void platform_finish(int code);
 void platform_restart(int online);
+void platform_online_start(void);
+void platform_online_stop(const char *why);
+const char *platform_launcher_message(void);
+int host_typed(void);
 int platform_vblanks(void);
 
 enum {
@@ -74,8 +83,10 @@ static s32 WaitFrames;
 static s32 Settling; /* a key or button was just chosen: till everything's let go, as the one still held is a press of its new control */
 #define CONTROL_VALUE_X 0x18 /* past SELECT, with room for PRESS A KEY OR BUTTON */
 
-static const char *const TopRows[] = { "PLAY", "SETTINGS", "QUIT" };
-enum { TOP_PLAY, TOP_SETTINGS, TOP_QUIT, NUM_TOP };
+static const char *const TopRows[] = { "PLAY", "ONLINE", "SETTINGS", "QUIT" };
+enum { TOP_PLAY, TOP_ONLINE, TOP_SETTINGS, TOP_QUIT, NUM_TOP };
+static const char *const OnlineRows[] = { "HOST GAME", "JOIN GAME", "BACK" };
+enum { ONLINE_HOST, ONLINE_JOIN, ONLINE_BACK, NUM_ONLINE };
 
 /* The logo: two meshes of the intro's model at their full size, in a view of their own: small because
  * its camera is far away, as the intro has it. A rotation matrix scaled this far down loses too much. */
@@ -152,8 +163,17 @@ static char Labels[VISIBLE_OPTIONS][LABEL_CHARS + 1];
 static char Help[2][HELP_CHARS + 1];
 static s32 PlayerLit[PLAYERS]; /* frames its row stays lit, after its controller was pressed or moved */
 
-enum { SCREEN_TOP, SCREEN_CATEGORIES, SCREEN_OPTIONS, SCREEN_PLAYERS };
+enum { SCREEN_TOP, SCREEN_CATEGORIES, SCREEN_OPTIONS, SCREEN_PLAYERS, SCREEN_ONLINE, SCREEN_HOST, SCREEN_JOIN, SCREEN_JOINED };
 static s32 Screen;
+/* ONLINE's screens: where its cursors are, the address being typed, the host being joined, and what there is to say (why a game
+   ended, or couldn't be joined), over two lines */
+#define ADDRESS_CHARS 15
+static s32 OnlineCursor, JoinCursor, Typing;
+static s32 JoinMoved, JoinFound; /* whether the cursor's been moved, and how many games there were last frame */
+static char Address[ADDRESS_CHARS + 1];
+static char Joining[32];
+static char Message[2][HELP_CHARS + 1];
+static s32 layout(s32 screen);
 static s32 TopCursor;
 static s32 Category;  /* NUM_CATEGORIES is BACK */
 static s32 Option;
@@ -435,13 +455,14 @@ static void place_panel(PlaceRec *r, s32 left, s32 right, s32 top, s32 bottom) {
 
 /* A screen's records: what it doesn't use is empty text, or a panel off the screen. */
 static void place_screen(void) {
+    s32 top = layout(Screen) == SCREEN_TOP, players = layout(Screen) == SCREEN_PLAYERS;
     s32 i;
 
     memset(Place, 0, sizeof(Place));
-    if (Screen == SCREEN_TOP) {
+    if (top) {
         place_panel(&Place[SUB_PANEL], -0xA0, 0xA0, TOP_Y - 0x10, TOP_Y + NUM_TOP * TOP_STEP + 0xA);
         place_panel(&Place[SUB_PANEL + 1], 0, 0, -0x400, -0x400);
-    } else if (Screen == SCREEN_PLAYERS) {
+    } else if (players) {
         place_panel(&Place[SUB_PANEL], PLAYERS_LEFT, PLAYERS_RIGHT, PLAYERS_TOP - 0x12, PLAYERS_TOP + PLAYERS * PLAYERS_STEP + 0x10);
         place_panel(&Place[SUB_PANEL + 1], 0, 0, -0x400, -0x400);
     } else {
@@ -452,7 +473,7 @@ static void place_screen(void) {
     place_text(&Place[SUB_HELP_MORE], -0x8000, HELP_Y + OPTION_STEP, "", 1);
     place_text(&Place[SUB_NAV], -0x8000, NAV_Y, "", 1);
     for (i = 0; i < MAX_CATEGORIES + 1; i++) {
-        if (Screen == SCREEN_TOP) {
+        if (top) {
             place_text(&Place[SUB_CATEGORY + i], -0x8000, TOP_Y + i * TOP_STEP, "", 0);
         } else {
             place_text(&Place[SUB_CATEGORY + i], CATEGORY_LEFT + 0x14, OPTION_TOP + i * CATEGORY_STEP, "", 0);
@@ -461,7 +482,7 @@ static void place_screen(void) {
     for (i = 0; i < VISIBLE_OPTIONS; i++) {
         s32 y = OPTION_TOP + i * OPTION_STEP;
 
-        if (Screen == SCREEN_PLAYERS && i < PLAYERS) {
+        if (players && i < PLAYERS) {
             place_text(&Place[SUB_LABEL(i)], PLAYER_X, PLAYERS_TOP + i * PLAYERS_STEP, "", 0);
             place_text(&Place[SUB_VALUE(i)], CONTROLLER_X, PLAYERS_TOP + i * PLAYERS_STEP + 4, Values[i], 1);
         } else {
@@ -475,6 +496,98 @@ static void place_screen(void) {
 static void set_row(subengine *sub, const char *text, s32 colour) {
     sub->u6C.text = (char *)text;
     sub->unk7C = colour;
+}
+
+/* What there is to say, over the help's two lines: why an online game ended, or couldn't be joined. */
+static void say_message(const char *text) {
+    char all[HELP_CHARS * 2 + 2];
+    size_t cut;
+
+    Message[0][0] = Message[1][0] = '\0';
+    if (text == NULL) {
+        return;
+    }
+    if (strncmp(text, "Online play: ", 13) == 0) {
+        text += 13;
+    }
+    font_text(all, sizeof(all), text);
+    if (strlen(all) <= HELP_CHARS) {
+        memcpy(Message[0], all, strlen(all) + 1);
+        return;
+    }
+    for (cut = HELP_CHARS; cut > 0 && all[cut] != ' '; cut--) {
+    }
+    cut = cut == 0 ? HELP_CHARS : cut;
+    memcpy(Message[0], all, cut);
+    Message[0][cut] = '\0';
+    font_text(Message[1], sizeof(Message[1]), all + cut);
+}
+
+/* The host's lobby, the games to join, and the wait once joined: rows in the players screen's places. */
+static void show_online(subengine *sub) {
+    s32 state = net_lobby_poll(), found = 0, machines = net_lobby_machines(), first = 0, i;
+    char text[64];
+
+    for (i = 0; i < MAX_CATEGORIES + 1; i++) {
+        set_row(&sub[SUB_CATEGORY + i], "", TEXT_LARGE);
+    }
+    for (i = 0; i < VISIBLE_OPTIONS; i++) {
+        Values[i][0] = '\0';
+        Labels[i][0] = '\0';
+        set_row(&sub[SUB_LABEL(i)], Labels[i], TEXT_LARGE);
+        if (i < PLAYERS) {
+            sub[SUB_VALUE(i)].unk7C = TEXT_SMALL;
+        }
+    }
+    set_row(&sub[SUB_HELP], Message[0], TEXT_SMALL);
+    set_row(&sub[SUB_HELP_MORE], Message[1], TEXT_SMALL);
+    if (Screen == SCREEN_HOST) {
+        for (i = 0; i < PLAYERS; i++) {
+            s32 pads = i < machines ? net_lobby_machine(i, text, sizeof(text)) : 0;
+
+            if (i < machines && first < PLAYERS) {
+                char value[96];
+
+                snprintf(Labels[i], sizeof(Labels[i]), "PLAYER %d", first + 1);
+                snprintf(value, sizeof(value), pads > 1 ? "%s, %d players" : "%s", i == 0 ? "This PC" : text, pads);
+                font_text(Values[i], sizeof(Values[i]), value);
+                first += pads;
+            } else if (i == machines) {
+                font_text(Values[i], sizeof(Values[i]), "Waiting for someone to join");
+            }
+        }
+        snprintf(text, sizeof(text), "The others join at %s", net_lobby_address());
+        font_text(Help[0], sizeof(Help[0]), text);
+        if (Message[0][0] == '\0') {
+            set_row(&sub[SUB_HELP], Help[0], TEXT_SMALL);
+        }
+        set_row(&sub[SUB_NAV], state == LOBBY_STARTING ? "STARTING" : machines >= 2 ? "START TO PLAY, \xFE BACK" : "\xFE BACK", TEXT_SMALL);
+    } else if (Screen == SCREEN_JOIN) {
+        while (found < PLAYERS - 1 && net_lobby_found(found, text, sizeof(text)) != 0) {
+            char value[96];
+
+            snprintf(Labels[found], sizeof(Labels[found]), "GAME %d", found + 1);
+            snprintf(value, sizeof(value), "%s, %d here", text, net_lobby_found(found, text, sizeof(text)));
+            font_text(Values[found], sizeof(Values[found]), value);
+            found++;
+        }
+        JoinCursor = JoinCursor > found ? found : JoinCursor;
+        snprintf(Labels[found], sizeof(Labels[found]), "ADDRESS");
+        snprintf(Values[found], sizeof(Values[found]), Typing && (GameFrameCount & 0x10) ? "%s." : "%s", Address);
+        for (i = 0; i <= found; i++) {
+            set_row(&sub[SUB_LABEL(i)], Labels[i], i == JoinCursor ? TEXT_LARGE_LIT : TEXT_LARGE);
+            sub[SUB_VALUE(i)].unk7C = i == JoinCursor ? TEXT_SMALL_LIT : TEXT_SMALL;
+        }
+        if (Message[0][0] == '\0') {
+            set_row(&sub[SUB_HELP], found == 0 ? "A GAME HOSTED ON YOUR NETWORK SHOWS HERE BY ITSELF" : "", TEXT_SMALL);
+        }
+        set_row(&sub[SUB_NAV], Typing ? "TYPE THE HOST'S ADDRESS, \xFC JOIN, \xFE BACK" : "UP - DOWN CHOOSE, \xFC BUTTON TO JOIN, \xFE BACK", TEXT_SMALL);
+    } else {
+        snprintf(Labels[0], sizeof(Labels[0]), "JOINED");
+        font_text(Values[0], sizeof(Values[0]), Joining);
+        set_row(&sub[SUB_HELP], state == LOBBY_ASKING ? "ASKING TO JOIN" : "WAITING FOR THE HOST TO START", TEXT_SMALL);
+        set_row(&sub[SUB_NAV], "\xFE LEAVE", TEXT_SMALL);
+    }
 }
 
 /* What's on screen now, from where the cursor is. */
@@ -507,11 +620,29 @@ static void show_screen(void) {
         set_row(&sub[SUB_NAV], "START TO PLAY, \xFE BACK", TEXT_SMALL);
         return;
     }
+    if (Screen == SCREEN_HOST || Screen == SCREEN_JOIN || Screen == SCREEN_JOINED) {
+        show_online(sub);
+        return;
+    }
+    if (Screen == SCREEN_ONLINE) {
+        for (i = 0; i < MAX_CATEGORIES + 1; i++) {
+            set_row(&sub[SUB_CATEGORY + i], i < NUM_ONLINE ? OnlineRows[i] : "", i == OnlineCursor ? TEXT_LARGE_LIT : TEXT_LARGE);
+        }
+        set_row(&sub[SUB_HELP], Message[0], TEXT_SMALL);
+        set_row(&sub[SUB_HELP_MORE], Message[1], TEXT_SMALL);
+        set_row(&sub[SUB_NAV], "PRESS UP - DOWN TO CHOOSE, \xFC BUTTON TO SELECT", TEXT_SMALL);
+        for (i = 0; i < VISIBLE_OPTIONS; i++) {
+            set_row(&sub[SUB_LABEL(i)], "", TEXT_SMALL);
+            Values[i][0] = '\0';
+        }
+        return;
+    }
     if (Screen == SCREEN_TOP) {
         for (i = 0; i < MAX_CATEGORIES + 1; i++) {
             set_row(&sub[SUB_CATEGORY + i], i < NUM_TOP ? TopRows[i] : "", i == TopCursor ? TEXT_LARGE_LIT : TEXT_LARGE);
         }
-        set_row(&sub[SUB_HELP], "", TEXT_SMALL);
+        set_row(&sub[SUB_HELP], Message[0], TEXT_SMALL);
+        set_row(&sub[SUB_HELP_MORE], Message[1], TEXT_SMALL);
         set_row(&sub[SUB_NAV], "PRESS UP - DOWN TO CHOOSE, \xFC BUTTON TO SELECT", TEXT_SMALL);
         for (i = 0; i < VISIBLE_OPTIONS; i++) {
             set_row(&sub[SUB_LABEL(i)], "", TEXT_SMALL);
@@ -557,7 +688,8 @@ static void show_screen(void) {
 
 /* The top level, the settings and the players screen lay out their rows differently. */
 static s32 layout(s32 screen) {
-    return screen == SCREEN_OPTIONS ? SCREEN_CATEGORIES : screen;
+    return screen == SCREEN_OPTIONS ? SCREEN_CATEGORIES : screen == SCREEN_ONLINE ? SCREEN_TOP
+           : screen == SCREEN_HOST || screen == SCREEN_JOIN || screen == SCREEN_JOINED ? SCREEN_PLAYERS : screen;
 }
 
 static void go_to_screen(s32 screen) {
@@ -653,7 +785,181 @@ static void update_players(s32 pressed) {
     }
 }
 
+/* --- online --- */
+
+static void open_join(void) {
+    JoinCursor = 0;
+    JoinMoved = JoinFound = 0;
+    Typing = 0;
+    if (Address[0] == '\0') {
+        /* most likely another machine on this one's network: its address as far as the last dot */
+        const char *here = net_lobby_address();
+        const char *dot = strrchr(here, '.');
+
+        if (dot != NULL && (size_t)(dot - here) < ADDRESS_CHARS && strcmp(here, "127.0.0.1") != 0) {
+            memcpy(Address, here, (size_t)(dot - here) + 1);
+            Address[dot - here + 1] = '\0';
+        }
+    }
+    net_lobby_find();
+    go_to_screen(SCREEN_JOIN);
+}
+
+static void update_online(s32 pressed) {
+    if ((pressed & 0x40) && OnlineCursor < NUM_ONLINE - 1) {
+        OnlineCursor++;
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((pressed & 0x10) && OnlineCursor > 0) {
+        OnlineCursor--;
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((pressed & 0x1000) || ((pressed & (0x4000 | 8)) && OnlineCursor == ONLINE_BACK)) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        say_message(NULL);
+        go_to_screen(SCREEN_TOP);
+    } else if (pressed & (0x4000 | 8)) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        say_message(NULL);
+        if (OnlineCursor == ONLINE_JOIN) {
+            open_join();
+        } else if (net_lobby_host(NULL)) {
+            if (settings()->no_save) {
+                printf("launcher: hosting\n");
+            }
+            go_to_screen(SCREEN_HOST);
+        } else {
+            say_message(net_lobby_problem());
+        }
+    }
+}
+
+/* The host's lobby: START once someone's here, and the game begins when they've all taken the start. */
+static void update_host(s32 pressed) {
+    s32 state = net_lobby_poll();
+
+    if (state == LOBBY_GO) {
+        platform_online_start();
+    } else if (state == LOBBY_FAILED) {
+        say_message(net_lobby_problem());
+        go_to_screen(SCREEN_ONLINE);
+    } else if (state == LOBBY_OPEN && (pressed & 0x1000)) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        net_lobby_leave();
+        go_to_screen(SCREEN_ONLINE);
+    } else if (state == LOBBY_OPEN && (pressed & (0x4000 | 8)) && net_lobby_machines() >= 2) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        net_lobby_start();
+    }
+}
+
+static void join(const char *where) {
+    say_message(NULL);
+    snprintf(Joining, sizeof(Joining), "%s", where);
+    if (net_lobby_join(where)) {
+        if (settings()->no_save) {
+            printf("launcher: joining %s\n", where);
+        }
+        go_to_screen(SCREEN_JOINED);
+    } else {
+        say_message(net_lobby_problem());
+        net_lobby_find();
+    }
+}
+
+/* The games found, and under them an address to type: digits and dots from the keyboard, or with a controller up and down for the last
+   character, right for another and left to take one off. */
+static void update_join(s32 pressed) {
+    static const char pick[] = "0123456789.";
+    size_t n = strlen(Address);
+    char text[64];
+    s32 found = 0, typed;
+
+    net_lobby_poll();
+    while (found < PLAYERS - 1 && net_lobby_found(found, text, sizeof(text)) != 0) {
+        found++;
+    }
+    /* till it's moved, the cursor's on the first game there is; once on the address, it stays there as games come and go */
+    if (!JoinMoved) {
+        JoinCursor = 0;
+    } else if (JoinCursor == JoinFound || JoinCursor > found) {
+        JoinCursor = found;
+    }
+    JoinFound = found;
+    if (!Typing) {
+        if ((pressed & 0x40) && JoinCursor < found) {
+            JoinCursor++;
+            JoinMoved = 1;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if ((pressed & 0x10) && JoinCursor > 0) {
+            JoinCursor--;
+            JoinMoved = 1;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (pressed & 0x1000) {
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            net_lobby_leave();
+            say_message(NULL);
+            go_to_screen(SCREEN_ONLINE);
+        } else if (pressed & (0x4000 | 8)) {
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (JoinCursor < found) {
+                net_lobby_found(JoinCursor, text, sizeof(text));
+                join(text);
+            } else {
+                Typing = 1;
+                JoinMoved = 1;
+                host_typed(); /* not a key from before */
+            }
+        }
+        return;
+    }
+    typed = host_typed();
+    if (typed == 8 || (pressed & 0x80)) {
+        if (n > 0) {
+            Address[n - 1] = '\0';
+        }
+    } else if (typed != 0 && n < ADDRESS_CHARS) {
+        Address[n] = (char)typed;
+        Address[n + 1] = '\0';
+    } else if ((pressed & 0x20) && n < ADDRESS_CHARS) {
+        Address[n] = n > 0 && Address[n - 1] != '.' ? '.' : '1';
+        Address[n + 1] = '\0';
+    } else if ((pressed & (0x10 | 0x40)) && n > 0) {
+        const char *at = strchr(pick, Address[n - 1]);
+        s32 i = at != NULL ? (s32)(at - pick) : 0;
+
+        Address[n - 1] = pick[(i + ((pressed & 0x10) ? 1 : (s32)sizeof(pick) - 2)) % ((s32)sizeof(pick) - 1)];
+    } else if (pressed & 0x1000) {
+        Typing = 0;
+    } else if ((pressed & (0x4000 | 8)) && n > 0) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        Typing = 0;
+        join(Address);
+    }
+}
+
+/* Joined, and waiting for the host's START: the game begins when it comes. */
+static void update_joined(s32 pressed) {
+    s32 state = net_lobby_poll();
+
+    if (state == LOBBY_GO) {
+        platform_online_start();
+    } else if (state == LOBBY_FAILED) {
+        say_message(net_lobby_problem());
+        open_join();
+    } else if (pressed & 0x1000) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        net_lobby_leave();
+        open_join();
+    }
+}
+
 static void update_top(s32 pressed) {
+    if (pressed != 0) {
+        say_message(NULL);
+    }
     if ((pressed & 0x40) && TopCursor < NUM_TOP - 1) {
         TopCursor++;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -671,6 +977,10 @@ static void update_top(s32 pressed) {
             } else {
                 start_game();
             }
+            break;
+        case TOP_ONLINE:
+            OnlineCursor = 0;
+            go_to_screen(SCREEN_ONLINE);
             break;
         case TOP_SETTINGS:
             Category = 0;
@@ -848,6 +1158,11 @@ static void sway_logo(void) {
 }
 
 static void SettingsMenuInit(void) {
+    /* the main menu's EXIT, in an online game: the game's over for this machine, and it's back here on its own (it doesn't return:
+       the game starts again from its beginning, offline) */
+    if (net_on()) {
+        platform_online_stop(NULL);
+    }
     dbase_asload_with_anims(&HeroModelBank[LOGO_MODEL], NULL);
     while (loader_pending() != 0) {
         loader_update();
@@ -863,6 +1178,8 @@ static void SettingsMenuInit(void) {
     GetEngineSlot(LOGO_SLOT)->sub[1].flags |= 0x02000000;
     Screen = SCREEN_TOP;
     TopCursor = 0;
+    /* why the last online game ended, if it wasn't the players' doing */
+    say_message(platform_launcher_message());
     place_screen();
     show_screen();
 }
@@ -885,6 +1202,18 @@ static void SettingsMenuUpdate(void) {
         break;
     case SCREEN_PLAYERS:
         update_players(pressed);
+        break;
+    case SCREEN_ONLINE:
+        update_online(pressed);
+        break;
+    case SCREEN_HOST:
+        update_host(pressed);
+        break;
+    case SCREEN_JOIN:
+        update_join(pressed);
+        break;
+    case SCREEN_JOINED:
+        update_joined(pressed);
         break;
     }
     show_screen();

@@ -163,6 +163,15 @@ void host_audio_queue(const int16_t *frames, int count) {
     SDL_PutAudioStreamData(Audio, frames, count * 4);
 }
 
+/* An online game's sound is mixed by the game (above); otherwise the device asks for it. */
+void host_audio_by_clock(int by_clock) {
+    if (Audio != NULL) {
+        SDL_SetAudioStreamGetCallback(Audio, by_clock ? NULL : fill_audio, NULL);
+        SDL_ClearAudioStream(Audio);
+        SDL_SetAudioStreamFrequencyRatio(Audio, 1.0f);
+    }
+}
+
 void host_audio_lock(void) {
     if (Audio != NULL) {
         SDL_LockAudioStream(Audio);
@@ -740,6 +749,27 @@ static int keyboard_buttons(void) {
         }
     }
     return b;
+}
+
+/* What a just-pressed key types, of what an address is made of: the launcher's JOIN GAME. */
+int host_typed(void) {
+    int key = KeyPressed;
+
+    if (key >= SDL_SCANCODE_1 && key <= SDL_SCANCODE_9) {
+        key = '1' + key - SDL_SCANCODE_1;
+    } else if (key >= SDL_SCANCODE_KP_1 && key <= SDL_SCANCODE_KP_9) {
+        key = '1' + key - SDL_SCANCODE_KP_1;
+    } else if (key == SDL_SCANCODE_0 || key == SDL_SCANCODE_KP_0) {
+        key = '0';
+    } else if (key == SDL_SCANCODE_PERIOD || key == SDL_SCANCODE_KP_PERIOD) {
+        key = '.';
+    } else if (key == SDL_SCANCODE_BACKSPACE || key == SDL_SCANCODE_DELETE) {
+        key = 8;
+    } else {
+        return 0;
+    }
+    KeyPressed = -1;
+    return key;
 }
 
 int host_key_pressed_any(void) {

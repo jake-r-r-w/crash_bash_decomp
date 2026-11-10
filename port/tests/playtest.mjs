@@ -48,10 +48,12 @@
  *   node port/tests/playtest.mjs online
  *       Online play, with every machine a copy of the game on this PC: two and four of them through a Battle and back to the title,
  *       flat out and in real time, with packets late and lost, a machine that vanishes and one that stalls, all compared by the
- *       game's fingerprint after every step. About two minutes.
+ *       game's fingerprint after every step; and through the launcher's ONLINE screens, hosting, finding and joining. About two
+ *       minutes.
  *   node port/tests/playtest.mjs online --play [2|3|4] [--delay STEPS] [--lag MS] [--loss N]
- *       An online game on this PC to play yourself: a host and its joiners in windows side by side, the host on the keyboard and each
- *       joiner on a controller. --delay, --lag and --loss are for feeling what a game over the internet is like.
+ *       Online play on this PC to try yourself: copies of the game side by side, each at its launcher, to host in one and join in the
+ *       others. The first has the keyboard and each other a controller. --delay, --lag and --loss are for feeling what a game over
+ *       the internet is like.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
@@ -961,7 +963,12 @@ async function identical(args) {
    (--replay) has to give the same game once more. A machine made to disagree (--net-differ) has to be caught, and both stop.
 
    Then in real time, as it's played: late and lost packets again, a machine that vanishes without a word (the host plays on without
-   its player after a wait), and one that stalls, as a window being dragged does, and is back. */
+   its player after a wait), and one that stalls, as a window being dragged does, and is back.
+
+   And through the launcher's ONLINE screens, as players start it: one copy hosts (HOST GAME), another finds its game and joins it
+   (JOIN GAME), or types its address, and the host's START starts the game again from its beginning on both, where the same Battle
+   is played. The main menu's EXIT, and the host leaving, each bring a machine back to its launcher. Those copies' games are this
+   PC's alone (--online-local), each on a port of its own (--online-port). */
 const ONLINE_END = 7700;
 const ONLINE_MACROS = ['10:40,4010:6,20:50,8020:6,40:30,2040:6,80:60,4000:6,0:20', '80:35,4080:6,10:45,8010:6,20:55,4000:6,40:25,2040:6,0:14',
     '40:50,8040:6,80:30,4000:6,10:40,2010:6,20:44,4020:6,0:10', '20:30,4020:6,40:56,8040:6,10:36,4000:6,80:48,2080:6,0:26'];
@@ -986,31 +993,31 @@ function online_presses(machine, machines) {
     return args;
 }
 
-/* online --play [2|3|4] [--delay STEPS] [--lag MS] [--loss N]: an online game on this PC to play yourself, with your own settings. A
-   host and its joiners, each a copy of the game in a window of its own, side by side. The host has the keyboard and no controller, and
-   is the one with sound; each joiner has a controller, the first, second and third found, read even while its window isn't the one
-   in front, and the keyboard too once its window's clicked. So with the host's window in front, the keyboard is player 1 and a
-   controller player 2, both at once. --delay sets how many steps late a press is used, and --lag and --loss make every packet late
-   and lose some, to feel a game over the internet. The host keeps the game's presses in game.txt, to play again (--replay). It ends
-   when the windows are closed, and says what each copy said of the game. */
+/* online --play [2|3|4] [--delay STEPS] [--lag MS] [--loss N]: online play on this PC to try yourself, with your own settings. Copies
+   of the game in windows side by side, each at its launcher: choose ONLINE and HOST GAME in one, and ONLINE and JOIN GAME in the
+   others, where the game hosted shows by itself, then START in the host's. The first copy has the keyboard and no controller, and is
+   the one with sound; each other copy has a controller, the first, second and third found, read even while its window isn't the one
+   in front, and the keyboard too once its window's clicked. So with the first window in front, the keyboard is one player and a
+   controller another, both at once. The games are this PC's alone (--online-local), so Windows doesn't ask about its firewall.
+   --delay sets how many steps late a press is used, and --lag and --loss make every packet late and lose some, to feel a game over
+   the internet. The host keeps the game's presses in game.txt, to play again (--replay). It ends when the windows are closed, and
+   says what each copy said of the game. */
 async function online_play(args, exe) {
     const delay = option(args, '--delay', null), lag = option(args, '--lag', null), loss = option(args, '--loss', null);
-    const machines = Math.min(4, Math.max(2, Number(args.find(a => /^\d$/.test(a)) ?? 2)));
+    const copies = Math.min(4, Math.max(2, Number(args.find(a => /^\d$/.test(a)) ?? 2)));
     const dir = path.join(OUT, 'online-play');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
-    const here = '127.0.0.1:47290';
 
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
-    console.log(`${machines} copies of the game, side by side: the host (player 1) at the left, on the keyboard; ${machines === 2 ? 'the joiner has' : 'the joiners have'} a controller each, or the keyboard when clicked.`);
-    console.log('Close the windows to end it.');
-    const runs = await Promise.all(Array.from({ length: machines }, (_, m) => run(exe, ['--tile', String(m), '4',
-        ...(m === 0 ? ['--host', here, '--net-joiners', String(machines - 1), '--controllers', 'none', '--net-record', rel('game.txt'), ...(delay != null ? ['--net-delay', delay] : [])]
-            : ['--join', here, '--controllers', String(m), '--no-sound']),
-        ...(lag != null ? ['--net-lag', lag] : []), ...(loss != null ? ['--net-loss', loss] : [])], path.join(dir, `machine${m + 1}.txt`))));
+    console.log(`${copies} copies of the game, side by side. In the left one choose ONLINE, then HOST GAME; in ${copies === 2 ? 'the other' : 'each other'}, ONLINE, then JOIN GAME and the game it finds; then START in the left one.`);
+    console.log('The left copy has the keyboard; the others a controller each, or the keyboard when clicked. Close the windows to end it.');
+    const runs = await Promise.all(Array.from({ length: copies }, (_, m) => run(exe, ['--tile', String(m), '4', '--online-local',
+        ...(m === 0 ? ['--controllers', 'none', '--net-record', rel('game.txt'), ...(delay != null ? ['--net-delay', delay] : [])] : ['--controllers', String(m), '--no-sound']),
+        ...(lag != null ? ['--net-lag', lag] : []), ...(loss != null ? ['--net-loss', loss] : [])], path.join(dir, `copy${m + 1}.txt`))));
 
     runs.forEach((r, m) => {
-        console.log(`--- ${m === 0 ? 'the host' : `joiner ${m}`} (exit ${r.code})`);
+        console.log(`--- copy ${m + 1} (exit ${r.code})`);
         console.log(r.text.split(/\r?\n/).filter(l => /^(online|pads|crash|stack):|^Online play/.test(l)).join('\n'));
     });
     return 0;
@@ -1034,10 +1041,54 @@ async function online(args) {
         { name: 'in real time, a machine vanishes', machines: 3, real: true, per: { 2: ['--net-vanish', '800'] }, host: ['--net-patience', '1500', '--shot', '2300', rel('vanished.png')], want: 'vanishes' },
         { name: 'in real time, a machine stalls and is back', machines: 3, real: true, per: { 2: ['--net-stall', '800', '3000'] }, host: ['--net-patience', '1000'], want: 'back' },
     ];
+    const press = (v, b) => ['--press', String(v), b];
+    /* the launcher's presses: ONLINE, then HOST GAME and in time START; or JOIN GAME and the first game found, or down to ADDRESS
+       and the host's typed. In real time, as finding and joining take as long as they take */
+    const lobby = (m, typed) => m === 0 ? [...press(100, DOWN), ...press(130, CROSS), ...press(170, CROSS), ...press(720, START)]
+        : [...press(100, DOWN), ...press(130, CROSS), ...press(170, DOWN), ...press(200, CROSS), ...(!typed ? press(360, CROSS)
+            : [...press(330, DOWN), ...press(360, CROSS), ...[...'127.0.0.1'].flatMap((key, i) => ['--key-press', String(400 + i * 14), key]), ...press(560, CROSS)])];
+    /* the game after it: the same Battle; or the main menu's EXIT, by the host; or nothing, till the host's gone */
+    const after = (c, m) => c.launcher === 'exit' ? [...(m === 0 ? [300, 320, 340, 360].flatMap(v => press(v, DOWN)).concat(press(400, CROSS)) : []), '--then', '--frames', '200']
+        : c.launcher === 'host leaves' ? ['--frames', m === 0 ? '600' : '100000', ...(m === 0 ? [] : ['--then', '--shot', '150', rel('left.png'), '--frames', '200'])]
+        : [...online_presses(m, c.machines), '--frames', String(ONLINE_END)];
+    const through = [
+        { name: 'from the launcher: hosted, found and joined', machines: 2, launcher: 'play' },
+        { name: 'from the launcher: the host\'s address typed', machines: 2, launcher: 'play', typed: true },
+        { name: 'from the launcher: EXIT brings each machine back to it', machines: 2, launcher: 'exit' },
+        { name: 'from the launcher: the host leaving brings the joiner back to it', machines: 2, launcher: 'host leaves' },
+    ];
     const results = [];
 
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
+    const play_through = (c, k, slot, slots) => Promise.all(Array.from({ length: c.machines }, (_, m) => run(exe, ['--launcher', '--online-local', '--online-port',
+        String(47250 + k), '--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--draw-every', '60', '--tile', String(slot + m), String(slots),
+        '--saves', rel(`through${k}-${m}`), ...lobby(m, c.typed), '--then', '--turbo', ...after(c, m)],
+        path.join(dir, `through${k}-machine${m + 1}.txt`), { timeout: MODE_TIMEOUT })));
+    const judge_through = (c, runs) => {
+        const prints = runs.map(r => fingerprints(r.text));
+        const count = (m, re) => [...runs[m].text.matchAll(re)].length;
+        let wrong = runs.map(r => crash_where(exe, r.text)).find(x => x != null) ?? null;
+
+        for (let m = 0; wrong == null && m < c.machines; m++) {
+            wrong = runs[m].code !== 0 ? `machine ${m + 1}: exit ${runs[m].code}`
+                : count(m, /^restart: the game from its beginning/gm) < 1 ? `machine ${m + 1}'s game never started` : null;
+            if (wrong == null && c.launcher === 'play') {
+                const parted = fingerprints_part(prints[0], prints[m]);
+
+                wrong = !/^players 2, /m.test(runs[m].text) ? `machine ${m + 1} never reached the two-player game`
+                    : parted != null ? `machine ${m + 1}'s game differs from the host's from ${parted}`
+                    : count(m, /^mode 40 at vblank/gm) !== 3 ? `machine ${m + 1} wasn't back at the title at the end` : null;
+            } else if (wrong == null && (c.launcher === 'exit' || m !== 0)) {
+                /* back in the launcher: the game started again a second time, offline */
+                wrong = count(m, /^restart: the game from its beginning/gm) !== 2 ? `machine ${m + 1} never came back to its launcher` : null;
+            }
+        }
+        if (wrong == null && c.launcher === 'host leaves' && !/^online: Online play: the host has left the game/m.test(runs[1].text)) {
+            wrong = 'the joiner never said the host had left';
+        }
+        return [c.name, { pass: wrong == null, what: wrong ?? (c.launcher === 'play' ? `the same on both, ${prints[0].length} steps` : 'back in the launcher') }];
+    };
     /* a game's machines, all at once: what each printed */
     const play = async (c, k, slot, slots) => {
         const end = c.real ? 2400 : ONLINE_END;
@@ -1107,6 +1158,18 @@ async function online(args) {
             return play(c, k, from, slots).then(runs => judge(c, k, runs));
         })));
     }
+    /* through the launcher: all together, its screens in real time and the games flat out */
+    {
+        const slots = through.reduce((n, c) => n + c.machines, 0);
+        let slot = 0;
+
+        results.push(...await Promise.all(through.map((c, k) => {
+            const from = slot;
+
+            slot += c.machines;
+            return play_through(c, k, from, slots).then(runs => judge_through(c, runs));
+        })));
+    }
     /* the recorded game again, with nobody else */
     {
         const r = await run(exe, ['--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--turbo', '--draw-every', '60', '--replay', rel('late.txt'),
@@ -1128,9 +1191,9 @@ async function controls(args) {
     const UP = '10', TRIANGLE = '1000', CIRCLE = '2000';
     const press = (...pairs) => pairs.flatMap(([v, b]) => ['--press', String(v), b]);
     /* SETTINGS, then that many down the categories (CONTROLS is 2), and into its rows at Cross's */
-    const page = n => press([100, DOWN], [130, CROSS], ...Array.from({ length: n }, (_, i) => [160 + i * 20, DOWN]), [230, CROSS]);
+    const page = n => press([85, DOWN], [100, DOWN], [130, CROSS], ...Array.from({ length: n }, (_, i) => [160 + i * 20, DOWN]), [230, CROSS]);
     /* back out to the top and up onto PLAY */
-    const out = from => press([from, TRIANGLE], [from + 30, TRIANGLE], [from + 60, UP]);
+    const out = from => press([from, TRIANGLE], [from + 30, TRIANGLE], [from + 60, UP], [from + 75, UP]);
     const cases = [
         {
             name: 'keyboard: J for Cross, J for Circle (Cross gets X), K for Cross, K plays',

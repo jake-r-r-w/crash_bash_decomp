@@ -90,19 +90,21 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    press used a few steps late, rollback later. Step 1, staying identical, is done (2026-11-10, `playtest.mjs identical [--all]`).
    Step 2, online by address from the command line, is done too (2026-11-10: `--host PORT`, `--join ADDRESS:PORT` over UDP,
    `platform/net.c`, `playtest.mjs online`), but for two real machines on a network, which is the user's to try.
-   **Next: step 3**, join codes (miniupnpc and libnatpmp are a download, so the user's OK first), then 4, ONLINE in the launcher.
+   Step 4, ONLINE in the launcher, is done too, before 3 at the user's word (2026-11-10: "ONLINE screens first").
+   **Next: step 3**, join codes (miniupnpc and libnatpmp are a download, so the user's OK first), for games between homes.
    What the review of the plan added is in PORT.md's Online play and the Open leads below.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
-- **Port, online play, the start (step 4):** a game begun from the launcher after a longer wait is a different game from its first step
-  (`identical`'s launcher case: the random numbers, the frame counts, then the heap and the sound). START online has to put every
-  machine at a fresh boot's state. Thought through, not built: every slot overlay's data already has a section that's saved and put
-  back (`platform/overlays.c`); the same for the rest of the game's C (main, the engine, titles), with `HeapArena` kept out and
-  zeroed, the sound, clock and textures reset, and a jump back to `machine_init`, would restart the game in the same window, and is
-  what rollback's snapshots would need too. Starting the program again with `--host`/`--join` is the other way.
+- **Port, online play, left from step 4:** nobody has played through the launcher's ONLINE screens yet but the tests. A second game
+  hosted and joined after the first ended, in the same run of both copies, worked by hand (the same fingerprints on both), but no
+  test does it. Not tried: hosting for real on a network (the tests'
+  games are this PC's alone, `--online-local`, so the broadcast that finds games, Windows' firewall question and
+  `net_lobby_address`'s pick of this machine's address haven't met a real network: a PC with Docker's or a VPN's adapters may
+  broadcast out of the wrong one); the address typed with a controller; Android. A joiner doesn't see who else is in the lobby,
+  only that it's joined. The game's data being in file-backed sections now makes the program about 4 MB bigger.
 - **Port, online play, not yet checked:** `identical` on Android (the emulator is x86; a real phone is ARM, where `audio.c`'s
   `note_pitch` goes through `pow`, which sets when a voice ends); sound by the game's clock heard by a person (its queue held about
   45 ms and was never empty in runs of up to 200 seconds here, by the line a test run prints as it ends); a Battle past its first
@@ -598,6 +600,15 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: Online play, step 4 before step 3, at the user's word ("ONLINE screens first"; they'd played step 2 on one PC and
+  it "feels good", and asked for a way to see that you're hosting and who's joined): ONLINE in the launcher, with HOST GAME and
+  JOIN GAME (`settingsmenu.c`). Hosting and joining run a frame at a time now (`net_lobby_*`, the command line's waits through the
+  same), games on the network are found by a broadcast, and the host's address can be typed. START starts the game again from its
+  beginning on every machine, in the same window (`platform_restart`): all the game's data in a saved section, the arena emptied,
+  the sound, clock and pads put back, a `longjmp` to `main`. `identical` shows that's the game a fresh start gives; `online` has
+  four cases through the launcher (found and joined, the address typed, EXIT back to the launcher, the host leaving). The ping from
+  the lobby read 11 to 34 ms on one PC, as each side looks at the network once a vblank, so it's timed properly as START is pressed.
 
 - 2026-11-10: Online play, step 2 (7.9; PORT.md, Online play): by address from the command line. `platform/net.c`: `--host PORT`
   and `--join ADDRESS:PORT` over UDP; each machine sends its pads for the step DELAY on, the host makes each step's record of all

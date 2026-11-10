@@ -150,6 +150,17 @@ void settings_borrow(int skip_intro, int skip_loading, int cheat_menu, int extra
     Current.extra_heroes = extra_heroes;
 }
 
+/* The game's over: the player's own again. */
+void settings_return(void) {
+    if (Own.on) {
+        Own.on = 0;
+        Current.skip_intro = Own.skip_intro;
+        Current.skip_loading = Own.skip_loading;
+        Current.cheat_menu = Own.cheat_menu;
+        Current.extra_heroes = Own.extra_heroes;
+    }
+}
+
 static void save_settings(void);
 
 void settings_save(void) {

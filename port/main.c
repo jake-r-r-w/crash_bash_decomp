@@ -106,6 +106,7 @@ static int StopAt = -1;
    puts the starts end to end. */
 #define EPOCH_VBLANKS 100000000
 static int Epoch, ParseEpoch;
+static int TurboFrom; /* --turbo after --then: flat out from that start on */
 static jmp_buf Restart;
 #define TEST_NOW (Vblanks + Epoch * EPOCH_VBLANKS)
 
@@ -273,7 +274,7 @@ void platform_vblank(void) {
             platform_finish(0);
         }
         /* an online game that's behind the host plays on without waiting, till it's caught up */
-        if (!Turbo && !net_behind()) {
+        if (!(Turbo && Epoch >= TurboFrom) && !net_behind()) {
             host_wait_vblank();
         }
     }
@@ -460,6 +461,46 @@ void platform_restart(int online) {
     }
     fflush(stdout);
     longjmp(Restart, 1);
+}
+
+/* An online game from the launcher: every machine starts the game again from its beginning, with its sound mixed by the game's clock,
+   and no launcher this time. */
+static int OnlineFromLauncher, ClockSoundAsked;
+static const char *LauncherMessage;
+
+void platform_online_start(void) {
+    OnlineFromLauncher = 1;
+    settings()->launcher = 0;
+    settings()->game_clock_sound = 1;
+    host_audio_by_clock(1);
+    net_record();
+    platform_restart(1);
+}
+
+/* And its end. From the launcher, that's where it goes back to, offline again, with why to say there; from the command line the
+   program ends, saying why. */
+void platform_online_stop(const char *why) {
+    net_end();
+    if (!OnlineFromLauncher) {
+        if (why != NULL) {
+            platform_fatal(why);
+        }
+        platform_finish(0);
+    }
+    net_lobby_reset();
+    OnlineFromLauncher = 0;
+    LauncherMessage = why;
+    settings()->launcher = 1;
+    settings()->game_clock_sound = ClockSoundAsked;
+    host_audio_by_clock(ClockSoundAsked);
+    platform_restart(0);
+}
+
+const char *platform_launcher_message(void) {
+    const char *message = LauncherMessage;
+
+    LauncherMessage = NULL;
+    return message;
 }
 
 /* The pads the game reads: this machine's own, or online everyone's, as the step being played has them (net.c). */
@@ -658,6 +699,7 @@ int main(int argc, char **argv) {
             test_sound = 1;
         } else if (strcmp(argv[i], "--turbo") == 0) {
             Turbo = 1;
+            TurboFrom = ParseEpoch;
         } else if (strcmp(argv[i], "--depth-clip") == 0) {
             gfx_without_depth_clamp();
         } else if (strcmp(argv[i], "--draw-every") == 0 && i + 1 < argc) {
@@ -695,6 +737,10 @@ int main(int argc, char **argv) {
             net.patience = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--net-differ") == 0 && i + 1 < argc) {
             net.differ_at = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--online-local") == 0) {
+            net.local = 1;
+        } else if (strcmp(argv[i], "--online-port") == 0 && i + 1 < argc) {
+            net.port = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--net-vanish") == 0 && i + 1 < argc) {
             net.vanish_at = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--net-stall") == 0 && i + 2 < argc) {
@@ -736,6 +782,7 @@ int main(int argc, char **argv) {
     settings()->no_sound = no_sound;
     settings()->test_restart = restart_on_play;
     settings()->game_clock_sound = game_clock_sound;
+    ClockSoundAsked = game_clock_sound;
     if (cheat_menu) {
         settings()->cheat_menu = 1;
     }
@@ -827,7 +874,8 @@ int main(int argc, char **argv) {
         NoWindow = 1;
     }
     /* the others, before the game's first step */
-    if (online && (i = net_start(&net)) <= 0) {
+    net_configure(&net);
+    if (online && (i = net_start()) <= 0) {
         if (i == 0 && StopAt < 0) {
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crash Bash", "The online game couldn't start. What went wrong is in the program's output.", NULL);
         }

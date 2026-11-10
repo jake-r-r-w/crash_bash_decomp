@@ -49,9 +49,8 @@ static struct {
     unsigned char data[SAVES_MOST];
 } Kept[SAVES_SLOTS];
 
-void saves_in_memory(void) {
-    InMemory = 1;
-    memset(Kept, 0, sizeof(Kept));
+void saves_in_memory(int on) {
+    InMemory = on;
 }
 
 void saves_put(int slot, const void *data, int size) {

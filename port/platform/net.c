@@ -57,13 +57,14 @@ typedef int SOCKET;
 #define PACKET_MOST 1200
 #define STEP_MS 33.3667 /* two vblanks */
 #define PINGS 6
+#define TIMED 24 /* pings timed as the game starts */
 #define PRINT_EVERY 30 /* steps between fingerprints compared */
 #define PRINTS 64
 #define RESEND_MS 12
 #define HOST_GONE_MS 10000
 
 enum { PAD_THERE = 1, PAD_STICKS = 2, PAD_RUMBLES = 4 };
-enum { T_JOIN = 1, T_WELCOME, T_PING, T_PONG, T_SAVE, T_START, T_READY, T_INPUT, T_RECORD, T_BYE };
+enum { T_JOIN = 1, T_WELCOME, T_PING, T_PONG, T_SAVE, T_START, T_READY, T_INPUT, T_RECORD, T_BYE, T_FIND, T_HERE };
 enum { BYE_LEFT = 1, BYE_DIFFERS, BYE_FULL, BYE_VERSION, BYE_DATA, BYE_BEHIND };
 enum { OFFLINE, HOST, JOINER, REPLAY };
 enum { READY_SAVES = 0x0F, READY_START = 0x10, READY_ALL = 0x1F };
@@ -83,7 +84,9 @@ typedef struct {
     int32_t acked;   /* it has every step's record before this */
     int ready;       /* what it has of the start */
     uint32_t nonce;
-    int rtt[PINGS], rtts;
+    int rtt, rtts;   /* the quickest a packet's been there and back, of how many tries */
+    int timed[TIMED], timeds; /* and how long each took as the game was about to start, with both sides doing nothing else */
+    Uint64 pinged;   /* when it was last pinged, in the lobby */
     uint8_t last[PADS]; /* what each of its pads was (PAD_ bits) when it last sent any */
     Print prints[PRINTS]; /* its fingerprints, as it's sent them */
     uint8_t in[HISTORY][RECORD_BYTES];
@@ -102,7 +105,20 @@ static int32_t HostNext; /* a joiner: the host's, as last heard */
 static int32_t HostAcked; /* a joiner: the host has its pads for every step before this */
 static uint8_t Now[RECORD_BYTES]; /* the step being played */
 static Print Mine[PRINTS];
-static int Welcomed, Refused, Ready, Ended;
+static int Welcomed, Refused, Ready, Ended, Differed;
+static int Lobby; /* where hosting or joining has got to (LOBBY_, net.h) */
+static int Timing; /* the host: pings are being timed (time_pings) */
+static void lobby_fail(const char *why);
+/* Games found on this network, by asking everyone on it (T_FIND) */
+#define FOUND 3
+static struct {
+    struct sockaddr_in addr;
+    uint32_t session;
+    int machines;
+    Uint64 seen;
+} Found[FOUND];
+static int NumFound;
+static Uint64 AnswerTill; /* a joiner: till then it does nothing but answer pings, so they're timed truly */
 static int HostLeft; /* a joiner: the host has said goodbye, and what it sent before that is all there is */
 static int LeftOut;  /* a joiner: the host is playing on without waiting for this machine, till its pads arrive in time again */
 static FILE *Recording, *Replaying;
@@ -267,18 +283,18 @@ static void send_bye(const struct sockaddr_in *to, int reason, int32_t step) {
 static void stop(const char *why) {
     say("%s", why);
     net_end();
-    platform_fatal(why);
+    /* back to the launcher, if that's where the game was started; else the program ends, saying why */
+    platform_online_stop(why);
 }
 
 static void differs(int32_t step, int machine) {
-    static int said;
     char why[200];
     int m;
 
-    if (said || Ended) {
+    if (Differed || Ended) {
         return;
     }
-    said = 1;
+    Differed = 1;
     say("the games differ at step %d: this machine's and %s", step, Role == HOST ? "a joiner's" : "the host's");
     if (Role == HOST) {
         for (m = 1; m < NumMachines; m++) {
@@ -542,7 +558,7 @@ static void host_takes(int type, Reader *r, const struct sockaddr_in *from) {
             send_welcome(from, nonce, BYE_VERSION, 0);
         } else if (data != data_hash()) {
             send_welcome(from, nonce, BYE_DATA, 0);
-        } else if (Role == HOST || NumMachines > Want || NumMachines >= MACHINES) {
+        } else if (Lobby != LOBBY_OPEN || (Want > 0 && NumMachines > Want) || NumMachines >= MACHINES) {
             send_welcome(from, nonce, BYE_FULL, 0);
         } else {
             mc = &Machines[NumMachines];
@@ -552,16 +568,32 @@ static void host_takes(int type, Reader *r, const struct sockaddr_in *from) {
             mc->nonce = nonce;
             mc->pads = pads < 1 ? 1 : pads > PADS ? PADS : (int)pads;
             mc->heard = SDL_GetTicks();
-            say("%s has joined, with %d controller%s: %d of %d here", address_text(from), mc->pads, mc->pads == 1 ? "" : "s", NumMachines + 1, Want + 1);
+            say("%s has joined, with %d controller%s: %d here", address_text(from), mc->pads, mc->pads == 1 ? "" : "s", NumMachines + 1);
             send_welcome(from, nonce, 0, NumMachines++);
+        }
+        return;
+    }
+    if (type == T_FIND) {
+        /* someone looking for games on this network: there's one here while the lobby's open */
+        if (get(r, 2) == PROTOCOL && !r->bad && Lobby == LOBBY_OPEN) {
+            uint8_t buf[32], *p = begin(buf, T_HERE);
+
+            p = put(p, PROTOCOL, 2);
+            p = put(p, build_hash(), 4);
+            p = put(p, (uint32_t)NumMachines, 1);
+            p = put(p, Session, 4);
+            send_packet(from, buf, p);
         }
         return;
     }
     if (get(r, 4) != Session) {
         return;
     }
-    m = (int)get(r, 1);
-    if (r->bad || m < 1 || m >= NumMachines || !same_address(&Machines[m].addr, from) || Machines[m].left) {
+    get(r, 1);
+    /* by its address: a machine's number changes if one before it leaves the lobby */
+    for (m = 1; m < NumMachines && !same_address(&Machines[m].addr, from); m++) {
+    }
+    if (r->bad || m >= NumMachines || Machines[m].left) {
         return;
     }
     mc = &Machines[m];
@@ -569,8 +601,16 @@ static void host_takes(int type, Reader *r, const struct sockaddr_in *from) {
     if (type == T_PONG) {
         uint32_t sent = get(r, 4);
 
-        if (!r->bad && mc->rtts < PINGS) {
-            mc->rtt[mc->rtts++] = (int)((uint32_t)SDL_GetTicks() - sent);
+        if (!r->bad) {
+            int took = (int)((uint32_t)SDL_GetTicks() - sent);
+
+            /* the quickest: from the launcher each side only looks at what's come once a vblank, so most tries wait on that, not on
+               the network */
+            mc->rtt = mc->rtts == 0 || took < mc->rtt ? took : mc->rtt;
+            mc->rtts = mc->rtts < PINGS ? mc->rtts + 1 : PINGS;
+            if (Timing && mc->timeds < TIMED) {
+                mc->timed[mc->timeds++] = took;
+            }
         }
     } else if (type == T_READY) {
         mc->ready |= (int)get(r, 1);
@@ -580,6 +620,17 @@ static void host_takes(int type, Reader *r, const struct sockaddr_in *from) {
 
         if (reason == BYE_DIFFERS && Role == HOST) {
             differs(step, m);
+        }
+        if (Role != HOST) {
+            /* still in the lobby: there's one fewer */
+            say("%s has left", address_text(from));
+            if (Lobby == LOBBY_STARTING) {
+                lobby_fail("The game couldn't start: a player left");
+                return;
+            }
+            memmove(&Machines[m], &Machines[m + 1], sizeof(Machine) * (size_t)(NumMachines - m - 1));
+            NumMachines--;
+            return;
         }
         mc->left = mc->quiet = 1;
         say("machine %d has left, at step %d", m + 1, Have);
@@ -616,14 +667,13 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
     if (type == T_WELCOME) {
         uint32_t nonce = get(r, 4), refused = get(r, 1), machine = get(r, 1), session = get(r, 4);
 
-        if (r->bad || nonce != Machines[1].nonce || Welcomed) {
+        if (r->bad || nonce != Machines[Me].nonce || Welcomed) {
             return;
         }
         if (refused != 0) {
             Refused = (int)refused;
         } else if (machine >= 1 && machine < MACHINES) {
             Welcomed = 1;
-            Me = (int)machine;
             Session = session;
         }
         host->heard = SDL_GetTicks();
@@ -635,12 +685,15 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
     host->heard = SDL_GetTicks();
     if (type == T_PING) {
         uint8_t buf[32], *p = begin(buf, T_PONG);
-        uint32_t sent = get(r, 4);
+        uint32_t sent = get(r, 4), timed = get(r, 1);
 
         p = put(p, Session, 4);
         p = put(p, (uint32_t)Me, 1);
         p = put(p, sent, 4);
         send_packet(&host->addr, buf, p);
+        if (!r->bad && timed != 0) {
+            AnswerTill = SDL_GetTicks() + 60;
+        }
     } else if (type == T_SAVE || type == T_START) {
         uint8_t buf[32], *p = begin(buf, T_READY);
 
@@ -658,8 +711,13 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
             uint32_t delay = get(r, 1), machines = get(r, 1), me = get(r, 1), flags = get(r, 1);
             uint32_t m;
 
-            if (r->bad || machines < 2 || machines > MACHINES || (int)me != Me || delay < 1 || delay > HISTORY / 8) {
+            if (r->bad || machines < 2 || machines > MACHINES || me < 1 || me >= machines || delay < 1 || delay > HISTORY / 8) {
                 return;
+            }
+            /* which machine this is now: one that joined before it may have left since */
+            if ((int)me != Me) {
+                Machines[me].nonce = Machines[Me].nonce;
+                Me = (int)me;
             }
             for (m = 0; m < machines; m++) {
                 uint32_t first = get(r, 1), pads = get(r, 1);
@@ -722,7 +780,50 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
     }
 }
 
+/* Who's hosting on this network, as they answer */
+static void finder_takes(int type, Reader *r, const struct sockaddr_in *from) {
+    uint32_t protocol = get(r, 2), build = get(r, 4), machines = get(r, 1), session = get(r, 4);
+    int i;
+
+    if (type != T_HERE || r->bad || protocol != PROTOCOL || build != build_hash()) {
+        return;
+    }
+    /* one game, whichever of its addresses answered first */
+    for (i = 0; i < NumFound && Found[i].session != session; i++) {
+    }
+    if (i == NumFound) {
+        if (NumFound == FOUND) {
+            return;
+        }
+        NumFound++;
+        Found[i].addr = *from;
+        Found[i].session = session;
+    }
+    Found[i].machines = (int)machines;
+    Found[i].seen = SDL_GetTicks();
+}
+
+static void pump_once(void);
+
+/* What's come is taken in. A joiner the host is timing does nothing else till that's over, so its answers go back at once. */
 static void pump(void) {
+    static int answering;
+
+    pump_once();
+    if (!answering) {
+        answering = 1;
+        while (Sock != INVALID_SOCKET && SDL_GetTicks() < AnswerTill) {
+            wait_packet(1);
+            pump_once();
+        }
+        answering = 0;
+    }
+}
+
+static void pump_once(void) {
+    if (Sock == INVALID_SOCKET) {
+        return;
+    }
     send_late();
     for (;;) {
         uint8_t buf[PACKET_MOST + 64];
@@ -743,19 +844,33 @@ static void pump(void) {
             continue;
         }
         type = (int)get(&r, 1);
-        if (Me == 0) {
+        if (Lobby == LOBBY_FINDING) {
+            finder_takes(type, &r, &from);
+        } else if (Me == 0) {
             host_takes(type, &r, &from);
         } else {
             joiner_takes(type, &r, &from);
         }
+        if (Sock == INVALID_SOCKET) {
+            return; /* what came ended the lobby */
+        }
     }
 }
 
-/* --- starting --- */
+/* --- starting: the lobby, a frame at a time, so the launcher can show it (net_lobby_poll) --- */
+
+static char Problem[128]; /* why the last try failed, for the launcher to say */
+static Uint64 LobbyBegan, LobbySent;
+static int OwnPads, LobbyPort, AskFor = 8000;
+
+static int default_port(void) {
+    return Options.port > 0 ? Options.port : NET_PORT;
+}
 
 static int open_socket(const char *address, int port, int bind_it, struct sockaddr_in *out) {
     struct addrinfo hints, *found = NULL;
     char service[16];
+    int yes = 1;
 #ifdef _WIN32
     static int started;
     u_long on = 1;
@@ -788,10 +903,19 @@ static int open_socket(const char *address, int port, int bind_it, struct sockad
 #else
     fcntl(Sock, F_SETFL, fcntl(Sock, F_GETFL, 0) | O_NONBLOCK);
 #endif
+    /* for asking a whole network who's hosting */
+    setsockopt(Sock, SOL_SOCKET, SO_BROADCAST, (const char *)&yes, sizeof(yes));
     return !bind_it || bind(Sock, (const struct sockaddr *)out, sizeof(*out)) == 0;
 }
 
-/* "ADDRESS:PORT", or just "PORT": 0 if it's neither. */
+static void close_socket(void) {
+    if (Sock != INVALID_SOCKET) {
+        closesocket(Sock);
+        Sock = INVALID_SOCKET;
+    }
+}
+
+/* "ADDRESS:PORT", or just "PORT", or just "ADDRESS" where there's a port to fall back on: 0 if it's none of them. */
 static int split_address(const char *text, char *address, size_t room, int *port) {
     const char *colon = strrchr(text, ':');
 
@@ -803,6 +927,9 @@ static int split_address(const char *text, char *address, size_t room, int *port
         memcpy(address, text, (size_t)(colon - text));
         address[colon - text] = '\0';
         text = colon + 1;
+    } else if (strchr(text, '.') != NULL && *port > 0) {
+        SDL_strlcpy(address, text, room);
+        return 1;
     }
     *port = atoi(text);
     return *port > 0 && *port < 65536;
@@ -819,20 +946,6 @@ static uint32_t saves_hash(void) {
         h = fold(fold(h, &size, sizeof(size)), save, (size_t)size);
     }
     return h;
-}
-
-static int median(int *v, int n) {
-    int i, j;
-
-    for (i = 1; i < n; i++) {
-        for (j = i; j > 0 && v[j - 1] > v[j]; j--) {
-            int t = v[j];
-
-            v[j] = v[j - 1];
-            v[j - 1] = t;
-        }
-    }
-    return v[n / 2];
 }
 
 /* The first DELAY steps have nobody's presses: every pad there, with nothing held. */
@@ -862,54 +975,129 @@ static void record_header(void) {
     }
 }
 
-static int start_host(void) {
-    const Settings *s = settings();
+/* Everything of a game that's over, or never began, put away, so that another can start. */
+static void reset_session(void) {
+    close_socket();
+    if (Recording != NULL) {
+        fclose(Recording);
+        Recording = NULL;
+    }
+    if (Replaying != NULL) {
+        fclose(Replaying);
+        Replaying = NULL;
+    }
+    settings_return();
+    saves_in_memory(0);
+    Role = OFFLINE;
+    Session = 0;
+    Delay = NumMachines = Me = Want = 0;
+    memset(Machines, 0, sizeof(Machines));
+    memset(Now, 0, sizeof(Now));
+    Have = Next = HostNext = HostAcked = 0;
+    prints_clear(Mine);
+    Welcomed = Refused = Ready = Ended = HostLeft = LeftOut = Differed = 0;
+    AnswerTill = 0;
+    Timing = 0;
+    LateFirst = LateCount = 0;
+    Sent = Received = Lost = Waits = Quiets = 0;
+    Waited = Longest = 0;
+    NumFound = 0;
+}
+
+static void lobby_fail(const char *why) {
+    SDL_strlcpy(Problem, why, sizeof(Problem));
+    say("%s", why);
+    settings_return();
+    reset_session();
+    Lobby = LOBBY_FAILED;
+}
+
+int net_lobby_host(const char *where) {
     char address[128];
     struct sockaddr_in here;
-    Uint64 pinged = 0, sent = 0, began;
-    int port, m, worst = 0, next_pad = 0;
+    int port = default_port();
 
-    if (!split_address(Options.host, address, sizeof(address), &port) || !open_socket(address[0] != '\0' ? address : NULL, port, 1, &here)) {
-        say("can't host on %s: the port may be in use", Options.host);
+    reset_session();
+    Problem[0] = '\0';
+    /* from the launcher: the usual port, on every address this PC has (a test: only its own) */
+    if (where == NULL) {
+        where = Options.local ? "127.0.0.1" : "0.0.0.0";
+    }
+    if (!split_address(where, address, sizeof(address), &port) || !open_socket(address[0] != '\0' ? address : NULL, port, 1, &here)) {
+        lobby_fail("Can't host a game: is this PC hosting one already?");
         return 0;
     }
+    LobbyPort = port;
     Me = 0;
     NumMachines = 1;
-    Want = Options.joiners < 1 ? 1 : Options.joiners > MACHINES - 1 ? MACHINES - 1 : Options.joiners;
     Session = (uint32_t)SDL_GetPerformanceCounter() * 2654435761u + (uint32_t)SDL_GetTicksNS();
     Random ^= Session;
-    say("hosting on port %d, waiting for %d to join", port, Want);
-    /* everyone here, and how long a packet takes to each and back */
-    for (;;) {
-        Uint64 now = SDL_GetTicks();
-        int measured = NumMachines == Want + 1;
+    prints_clear(Machines[0].prints);
+    Lobby = LOBBY_OPEN;
+    say("hosting on port %d", port);
+    return 1;
+}
 
-        pump();
-        for (m = 1; m < NumMachines; m++) {
-            measured &= Machines[m].rtts >= PINGS;
-        }
-        if (measured) {
-            break;
-        }
-        if (now - pinged >= 30) {
-            pinged = now;
+/* How long a packet takes to each machine and back, timed with nothing in the way: for a quarter of a second the host and the
+   joiners do nothing but this. In the lobby each side only looks at what's come once a vblank, which adds up to two of them to
+   every ping, and the delay would be a step longer than the network needs. The middle one of each machine's, so one late packet
+   doesn't count. */
+static void time_pings(void) {
+    Uint64 began = SDL_GetTicks(), sent = 0, now;
+    int m, i, j;
+
+    Timing = 1;
+    for (m = 1; m < NumMachines; m++) {
+        Machines[m].timeds = 0;
+    }
+    while ((now = SDL_GetTicks()) - began < 260 && Lobby == LOBBY_OPEN) {
+        if (now - sent >= 10 && now - began < 220) {
+            sent = now;
             for (m = 1; m < NumMachines; m++) {
-                if (Machines[m].rtts < PINGS) {
-                    uint8_t buf[32], *p = begin(buf, T_PING);
+                uint8_t buf[32], *p = begin(buf, T_PING);
 
-                    p = put(p, Session, 4);
-                    p = put(p, (uint32_t)now, 4);
-                    send_packet(&Machines[m].addr, buf, p);
-                }
+                p = put(p, Session, 4);
+                p = put(p, (uint32_t)now, 4);
+                p = put(p, 1, 1);
+                send_packet(&Machines[m].addr, buf, p);
             }
         }
-        if (!platform_idle()) {
-            return -1;
+        wait_packet(1);
+        pump();
+    }
+    Timing = 0;
+    for (m = 1; m < NumMachines && Lobby == LOBBY_OPEN; m++) {
+        Machine *mc = &Machines[m];
+        /* the first few come before the other side's noticed it's being timed */
+        int *v = mc->timed + (mc->timeds > 8 ? 4 : 0), n = mc->timeds > 8 ? mc->timeds - 4 : mc->timeds;
+
+        for (i = 1; i < n; i++) {
+            for (j = i; j > 0 && v[j - 1] > v[j]; j--) {
+                int t = v[j];
+
+                v[j] = v[j - 1];
+                v[j - 1] = t;
+            }
         }
-        wait_packet(2);
+        if (n > 0) {
+            mc->rtt = v[n / 2];
+        }
+    }
+}
+
+/* The host: everyone's here. They're sent the host's saves and the start, till each says it has them. */
+void net_lobby_start(void) {
+    int m, worst = 0, next_pad = 0;
+
+    if (Lobby != LOBBY_OPEN || NumMachines < 2) {
+        return;
+    }
+    time_pings();
+    if (Lobby != LOBBY_OPEN || NumMachines < 2) {
+        return;
     }
     for (m = 1; m < NumMachines; m++) {
-        int rtt = median(Machines[m].rtt, Machines[m].rtts);
+        int rtt = Machines[m].rtt;
 
         say("machine %d: %d ms there and back", m + 1, rtt);
         worst = rtt > worst ? rtt : worst;
@@ -920,31 +1108,230 @@ static int start_host(void) {
     Delay = Delay > 30 ? 30 : Delay;
     /* the host's players first, then each machine's as it joined */
     Machines[0].pads = own_pads();
-    prints_clear(Machines[0].prints);
     for (m = 0; m < NumMachines; m++) {
         Machines[m].first = next_pad;
         Machines[m].pads = Machines[m].pads > PADS - next_pad ? PADS - next_pad : Machines[m].pads;
+        Machines[m].ready = 0;
         next_pad += Machines[m].pads;
     }
-    /* each gets the host's saves and the start, sent till it says it has them */
-    began = SDL_GetTicks();
-    for (;;) {
-        Uint64 now = SDL_GetTicks();
+    LobbyBegan = SDL_GetTicks();
+    LobbySent = 0;
+    Lobby = LOBBY_STARTING;
+}
+
+int net_lobby_join(const char *where) {
+    char address[128];
+    struct sockaddr_in host;
+    int port = default_port(), slot;
+
+    reset_session();
+    Problem[0] = '\0';
+    if (!split_address(where, address, sizeof(address), &port) || address[0] == '\0' || !open_socket(address, port, 0, &host)) {
+        lobby_fail("That isn't an address: it's the host's, as 192.168.1.20");
+        return 0;
+    }
+    Me = 1; /* till the host says which */
+    Machines[0].addr = host;
+    Machines[0].heard = SDL_GetTicks();
+    prints_clear(Machines[0].prints);
+    Random ^= (uint32_t)SDL_GetPerformanceCounter() * 2654435761u;
+    Machines[1].nonce = random_next();
+    OwnPads = own_pads();
+    for (slot = 0; slot < SAVES_SLOTS; slot++) {
+        saves_put(slot, "", 0);
+    }
+    LobbyBegan = SDL_GetTicks();
+    LobbySent = 0;
+    Lobby = LOBBY_ASKING;
+    say("joining %s", address_text(&host));
+    return 1;
+}
+
+/* Looks for games on this network, from now till something's hosted or joined: whoever's hosting answers (net_lobby_found). */
+void net_lobby_find(void) {
+    struct sockaddr_in everyone;
+    int port = default_port();
+
+    if (Lobby == LOBBY_FINDING) {
+        return;
+    }
+    reset_session();
+    Lobby = LOBBY_OFF;
+    if (!open_socket(Options.local ? "127.0.0.1" : "255.255.255.255", port, 0, &everyone)) {
+        return;
+    }
+    Machines[0].addr = everyone;
+    LobbyPort = port;
+    Me = 1;
+    LobbySent = 0;
+    Lobby = LOBBY_FINDING;
+}
+
+int net_lobby_found(int i, char *text, size_t room) {
+    char ip[32] = "?";
+
+    if (Lobby != LOBBY_FINDING || i < 0 || i >= NumFound) {
+        return 0;
+    }
+    inet_ntop(AF_INET, &Found[i].addr.sin_addr, ip, sizeof(ip));
+    if (ntohs(Found[i].addr.sin_port) == LobbyPort) {
+        SDL_snprintf(text, room, "%s", ip);
+    } else {
+        SDL_snprintf(text, room, "%s:%d", ip, ntohs(Found[i].addr.sin_port));
+    }
+    return Found[i].machines;
+}
+
+int net_lobby_machines(void) {
+    return Lobby == LOBBY_OPEN || Lobby == LOBBY_STARTING ? NumMachines : 0;
+}
+
+/* A machine in the host's lobby: its address and ping as text (nothing for the host's own), and how many players it brings. */
+int net_lobby_machine(int m, char *text, size_t room) {
+    char ip[32] = "?";
+
+    if (m < 0 || m >= net_lobby_machines()) {
+        return 0;
+    }
+    if (m == 0) {
+        text[0] = '\0';
+        return own_pads();
+    }
+    inet_ntop(AF_INET, &Machines[m].addr.sin_addr, ip, sizeof(ip));
+    SDL_snprintf(text, room, "%s, %d ms", ip, Machines[m].rtt);
+    return Machines[m].pads;
+}
+
+/* This machine's address on its network, for the host to tell the others: the one its packets to the wider world would leave by. */
+const char *net_lobby_address(void) {
+    static char text[64];
+    struct sockaddr_in there, mine; /* (far and near are words Windows has taken) */
+    socklen_t size = sizeof(mine);
+    SOCKET s;
+
+    SDL_strlcpy(text, "127.0.0.1", sizeof(text));
+    if (Options.local || (s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET) {
+        return text;
+    }
+    memset(&there, 0, sizeof(there));
+    there.sin_family = AF_INET;
+    there.sin_port = htons(9);
+    inet_pton(AF_INET, "192.0.2.1", &there.sin_addr);
+    /* nothing's sent: a UDP socket's "connection" only picks the way out */
+    if (connect(s, (const struct sockaddr *)&there, sizeof(there)) == 0 && getsockname(s, (struct sockaddr *)&mine, &size) == 0) {
+        inet_ntop(AF_INET, &mine.sin_addr, text, sizeof(text));
+    }
+    closesocket(s);
+    return text;
+}
+
+const char *net_lobby_problem(void) {
+    return Problem;
+}
+
+/* Backing out: the others are told. */
+void net_lobby_leave(void) {
+    int m;
+
+    if (Lobby == LOBBY_OPEN || Lobby == LOBBY_STARTING) {
+        for (m = 1; m < NumMachines; m++) {
+            send_bye(&Machines[m].addr, BYE_LEFT, 0);
+        }
+    } else if ((Lobby == LOBBY_ASKING || Lobby == LOBBY_IN) && Welcomed) {
+        send_bye(&Machines[0].addr, BYE_LEFT, 0);
+    }
+    while (LateCount > 0) {
+        send_late();
+        SDL_Delay(1);
+    }
+    settings_return();
+    reset_session();
+    Lobby = LOBBY_OFF;
+}
+
+/* Once a frame while there's a lobby: where it's got to. */
+int net_lobby_poll(void) {
+    const Settings *s = settings();
+    Uint64 now;
+    int m, i;
+
+    if (Lobby == LOBBY_OFF || Lobby == LOBBY_GO || Lobby == LOBBY_FAILED) {
+        return Lobby;
+    }
+    pump();
+    now = SDL_GetTicks();
+    if (Lobby == LOBBY_FINDING) {
+        if (now - LobbySent >= 700 || LobbySent == 0) {
+            uint8_t buf[16], *p = put(begin(buf, T_FIND), PROTOCOL, 2);
+
+            LobbySent = now;
+            send_packet(&Machines[0].addr, buf, p);
+            if (!Options.local) {
+                /* and this PC itself, which a network with nobody else on it mightn't pass the question back to */
+                struct sockaddr_in here = Machines[0].addr;
+
+                inet_pton(AF_INET, "127.0.0.1", &here.sin_addr);
+                send_packet(&here, buf, p);
+            }
+        }
+        for (i = 0; i < NumFound; i++) {
+            if (now - Found[i].seen > 2500) {
+                Found[i] = Found[--NumFound];
+                i--;
+            }
+        }
+    } else if (Lobby == LOBBY_OPEN) {
+        /* how long a packet takes to each and back: quickly at first, then now and then, which also says each is still there */
+        int pinged = 0;
+
+        for (m = 1; m < NumMachines; m++) {
+            if (now - Machines[m].pinged >= (Uint64)(Machines[m].rtts < PINGS ? 30 : 400)) {
+                uint8_t buf[32], *p = begin(buf, T_PING);
+
+                Machines[m].pinged = now;
+                p = put(p, Session, 4);
+                p = put(p, (uint32_t)now, 4);
+                p = put(p, 0, 1);
+                send_packet(&Machines[m].addr, buf, p);
+                pinged = 1;
+            }
+        }
+        /* a moment for an answer that's quick, which otherwise isn't seen till the next vblank's look */
+        if (pinged && Options.lag == 0) {
+            wait_packet(3);
+            pump();
+            if (Lobby != LOBBY_OPEN) {
+                return Lobby;
+            }
+        }
+        for (m = 1; m < NumMachines; m++) {
+            if (now > Machines[m].heard && now - Machines[m].heard > 6000) {
+                say("%s has gone", address_text(&Machines[m].addr));
+                memmove(&Machines[m], &Machines[m + 1], sizeof(Machine) * (size_t)(NumMachines - m - 1));
+                NumMachines--;
+                m--;
+            }
+        }
+    } else if (Lobby == LOBBY_STARTING) {
         int ready = 1;
 
-        pump();
         for (m = 1; m < NumMachines; m++) {
             ready &= Machines[m].ready == READY_ALL;
         }
         if (ready) {
-            break;
-        }
-        if (now - began > 15000) {
-            say("the others didn't take the start");
-            return 0;
-        }
-        if (now - sent >= 60) {
-            sent = now;
+            /* extra heroes come from each player's own disc, and there's no telling yet that everyone has them */
+            settings_borrow(s->skip_intro, s->skip_loading, s->cheat_menu, 0);
+            first_steps();
+            Role = HOST;
+            for (m = 0; m < NumMachines; m++) {
+                say("machine %d has player%s %d to %d", m + 1, Machines[m].pads == 1 ? "" : "s", Machines[m].first + 1, Machines[m].first + Machines[m].pads);
+            }
+            say("starting: each press is used %d step%s late (%d ms); saves %08X", Delay, Delay == 1 ? "" : "s", (int)(Delay * STEP_MS), saves_hash());
+            Lobby = LOBBY_GO;
+        } else if (now - LobbyBegan > 15000) {
+            lobby_fail("The game couldn't start: a player didn't answer");
+        } else if (now - LobbySent >= 60) {
+            LobbySent = now;
             for (m = 1; m < NumMachines; m++) {
                 Machine *mc = &Machines[m];
                 uint8_t buf[PACKET_MOST], *p;
@@ -963,7 +1350,7 @@ static int start_host(void) {
                         send_packet(&mc->addr, buf, p + size);
                     }
                 }
-                if ((mc->ready & READY_SAVES) == READY_SAVES) {
+                if ((mc->ready & READY_SAVES) == READY_SAVES && !(mc->ready & READY_START)) {
                     p = begin(buf, T_START);
                     p = put(p, Session, 4);
                     p = put(p, (uint32_t)Delay, 1);
@@ -978,84 +1365,92 @@ static int start_host(void) {
                 }
             }
         }
-        if (!platform_idle()) {
-            return -1;
-        }
-        wait_packet(2);
-    }
-    /* extra heroes come from each player's own disc, and there's no telling yet that everyone has them */
-    settings_borrow(s->skip_intro, s->skip_loading, s->cheat_menu, 0);
-    first_steps();
-    Role = HOST;
-    for (m = 0; m < NumMachines; m++) {
-        say("machine %d has player%s %d to %d", m + 1, Machines[m].pads == 1 ? "" : "s", Machines[m].first + 1, Machines[m].first + Machines[m].pads);
-    }
-    say("starting: each press is used %d step%s late (%d ms); saves %08X", Delay, Delay == 1 ? "" : "s", (int)(Delay * STEP_MS), saves_hash());
-    return 1;
-}
+    } else if (Refused != 0) {
+        lobby_fail(Refused == BYE_VERSION ? "The host has another version of the game: everyone needs the same one"
+                   : Refused == BYE_DATA ? "The host's game data isn't the same as this machine's" : "That game is full, or has started");
+    } else if (Lobby == LOBBY_ASKING) {
+        if (Welcomed) {
+            Lobby = LOBBY_IN;
+            say("in the lobby of %s", address_text(&Machines[0].addr));
+        } else if (now - LobbyBegan > (Uint64)AskFor) {
+            lobby_fail("Nobody's hosting a game at that address");
+        } else if (now - LobbySent >= 250 || LobbySent == 0) {
+            uint8_t buf[64], *p = begin(buf, T_JOIN);
 
-static int start_join(void) {
-    char address[128];
-    struct sockaddr_in host;
-    uint8_t buf[64], *p;
-    Uint64 asked = 0, began = SDL_GetTicks();
-    int port, pads;
-
-    if (!split_address(Options.join, address, sizeof(address), &port) || address[0] == '\0' || !open_socket(address, port, 0, &host)) {
-        say("can't find %s: it's the host's address and port, as 192.168.1.20:47000", Options.join);
-        return 0;
-    }
-    Me = 1; /* till the host says which */
-    memset(Machines, 0, sizeof(Machines));
-    Machines[0].addr = host;
-    Machines[0].heard = began;
-    prints_clear(Machines[0].prints);
-    Random ^= (uint32_t)SDL_GetPerformanceCounter() * 2654435761u;
-    Machines[1].nonce = random_next();
-    /* a moment for the controllers to be found */
-    platform_idle();
-    platform_idle();
-    pads = own_pads();
-    saves_in_memory();
-    say("joining %s", address_text(&host));
-    while (Ready != READY_ALL) {
-        Uint64 now;
-
-        pump();
-        now = SDL_GetTicks();
-        if (Refused != 0) {
-            say(Refused == BYE_VERSION ? "the host has another version of the game: everyone needs the same one"
-                : Refused == BYE_DATA ? "the host's game data isn't the same as this machine's" : "the host's game is full, or has started");
-            return 0;
-        }
-        if (!Welcomed && now - asked >= 250) {
-            asked = now;
-            p = begin(buf, T_JOIN);
+            LobbySent = now;
             p = put(p, PROTOCOL, 2);
             p = put(p, build_hash(), 4);
             p = put(p, data_hash(), 4);
-            p = put(p, (uint32_t)pads, 1);
+            p = put(p, (uint32_t)OwnPads, 1);
             p = put(p, Machines[1].nonce, 4);
-            send_packet(&host, buf, p);
+            send_packet(&Machines[0].addr, buf, p);
         }
-        if (now - (Welcomed ? Machines[0].heard : began) > (Welcomed ? 15000u : 30000u)) {
-            say(Welcomed ? "the host has gone" : "nothing answered at %s", address_text(&host));
-            return 0;
+    } else if (Lobby == LOBBY_IN) {
+        if (HostLeft) {
+            lobby_fail("The host has stopped hosting");
+        } else if (Ready == READY_ALL) {
+            saves_in_memory(1);
+            first_steps();
+            Role = JOINER;
+            say("joined as machine %d, with player%s %d to %d of %d machines: each press is used %d step%s late; saves %08X", Me + 1,
+                Machines[Me].pads == 1 ? "" : "s", Machines[Me].first + 1, Machines[Me].first + Machines[Me].pads, NumMachines, Delay, Delay == 1 ? "" : "s", saves_hash());
+            Lobby = LOBBY_GO;
+        } else if (now > Machines[0].heard && now - Machines[0].heard > 6000) {
+            lobby_fail("The host has gone");
+        }
+    }
+    return Lobby;
+}
+
+/* From the command line (--host, --join): the same lobby, waited through here, with the window still answering. */
+static int start_host(void) {
+    int m;
+
+    if (!net_lobby_host(Options.host)) {
+        return 0;
+    }
+    Want = Options.joiners < 1 ? 1 : Options.joiners > MACHINES - 1 ? MACHINES - 1 : Options.joiners;
+    say("waiting for %d to join", Want);
+    for (;;) {
+        int state = net_lobby_poll(), measured = NumMachines == Want + 1;
+
+        if (state == LOBBY_GO || state == LOBBY_FAILED) {
+            return state == LOBBY_GO;
+        }
+        for (m = 1; m < NumMachines; m++) {
+            measured &= Machines[m].rtts >= PINGS;
+        }
+        if (state == LOBBY_OPEN && measured) {
+            net_lobby_start();
         }
         if (!platform_idle()) {
-            if (Welcomed) {
-                send_bye(&host, BYE_LEFT, 0);
-                send_late();
-            }
+            net_lobby_leave();
             return -1;
         }
         wait_packet(2);
     }
-    first_steps();
-    Role = JOINER;
-    say("joined as machine %d, with player%s %d to %d of %d machines: each press is used %d step%s late; saves %08X", Me + 1,
-        Machines[Me].pads == 1 ? "" : "s", Machines[Me].first + 1, Machines[Me].first + Machines[Me].pads, NumMachines, Delay, Delay == 1 ? "" : "s", saves_hash());
-    return 1;
+}
+
+static int start_join(void) {
+    /* a moment for the controllers to be found */
+    platform_idle();
+    platform_idle();
+    AskFor = 30000;
+    if (!net_lobby_join(Options.join)) {
+        return 0;
+    }
+    for (;;) {
+        int state = net_lobby_poll();
+
+        if (state == LOBBY_GO || state == LOBBY_FAILED) {
+            return state == LOBBY_GO;
+        }
+        if (!platform_idle()) {
+            net_lobby_leave();
+            return -1;
+        }
+        wait_packet(2);
+    }
 }
 
 static int hex_bytes(const char *text, uint8_t *out, int most) {
@@ -1072,12 +1467,16 @@ static int start_replay(void) {
     static char line[SAVES_MOST * 2 + 64];
     int a, b, c;
 
+    reset_session();
     Replaying = fopen(Options.replay, "r");
     if (Replaying == NULL || fgets(line, sizeof(line), Replaying) == NULL || sscanf(line, "crashbash online %d", &a) != 1 || a != PROTOCOL) {
         say("%s isn't a game's record", Options.replay);
         return 0;
     }
-    saves_in_memory();
+    for (a = 0; a < SAVES_SLOTS; a++) {
+        saves_put(a, "", 0);
+    }
+    saves_in_memory(1);
     for (;;) {
         long at = ftell(Replaying);
 
@@ -1102,17 +1501,33 @@ static int start_replay(void) {
     return 1;
 }
 
-int net_start(const NetOptions *options) {
-    int ok;
-
+/* What the command line asked of online play, for a game from there or from the launcher. */
+void net_configure(const NetOptions *options) {
     Options = *options;
     Patience = options->patience > 0 ? options->patience : 5000;
     prints_clear(Mine);
-    ok = options->replay != NULL ? start_replay() : options->host != NULL ? start_host() : start_join();
-    if (ok > 0 && options->record != NULL && (Recording = fopen(options->record, "w")) != NULL) {
-        record_header();
+}
+
+int net_start(void) {
+    int ok = Options.replay != NULL ? start_replay() : Options.host != NULL ? start_host() : start_join();
+
+    if (ok > 0) {
+        net_record();
     }
     return ok;
+}
+
+/* Keeps the game's presses, if that was asked: as it starts. */
+void net_record(void) {
+    if (Options.record != NULL && Recording == NULL && (Recording = fopen(Options.record, "w")) != NULL) {
+        record_header();
+    }
+}
+
+/* A game that's over, put away: another can be hosted or joined. */
+void net_lobby_reset(void) {
+    reset_session();
+    Lobby = LOBBY_OFF;
 }
 
 int net_on(void) {
@@ -1277,7 +1692,14 @@ void net_step_done(uint32_t fingerprint) {
 void net_vblank(void) {
     int32_t before = Have;
 
-    if ((Role != HOST && Role != JOINER) || Ended) {
+    if (Ended) {
+        return;
+    }
+    if (Role != HOST && Role != JOINER) {
+        /* in a lobby: pings are answered a vblank sooner than the launcher's own look, once a frame */
+        if (Lobby != LOBBY_OFF && Lobby != LOBBY_GO && Lobby != LOBBY_FAILED) {
+            pump();
+        }
         return;
     }
     pump();
@@ -1339,8 +1761,5 @@ void net_end(void) {
         fclose(Recording);
         Recording = NULL;
     }
-    if (Sock != INVALID_SOCKET) {
-        closesocket(Sock);
-        Sock = INVALID_SOCKET;
-    }
+    close_socket();
 }

@@ -37,7 +37,10 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `playtest.mjs identical [--all]` checks it by the game's fingerprint after every step (`port/game/main/fingerprint.c`), for a change
   to the game's logic, sound, heap or pads. Nothing a machine's own settings or timing decide may reach the game's state.
   `playtest.mjs online` plays whole online games with every machine a copy on this PC (`port/platform/net.c`: `--host PORT`,
-  `--join ADDRESS:PORT`), for a change to the network layer or to how the game reads its pads.
+  `--join ADDRESS:PORT`), and through the launcher's ONLINE screens, for a change to the network layer, the launcher or how the game
+  reads its pads. An online game starts the game again from its beginning in the same window (`platform_restart`): all the game's
+  data is in sections saved at the start (`port/platform/overlays.c`), so a new global in `port/game` needs nothing, but state the
+  game reads from `port/platform` has to be put back there too.
 - The port on Linux: `tools/dl` runs a command in its Docker container (Debian 12, SDL3, Xvfb and software Vulkan): builds with the
   `linux-clang` preset, play tests under `xvfb-run`, and `tools/dl node port/package.mjs` for its release (PORT.md, Linux). The Mac isn't
   built, nor planned: the user has none (PORT.md, The Mac). The renderer's shaders are GLSL in `port/platform/shaders/` for Vulkan and Metal, `make.sh` in `tools/dl`

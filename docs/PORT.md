@@ -305,6 +305,9 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--net-lag MS`, `--net-loss N`, `--net-differ STEP`, `--net-vanish STEP`, `--net-stall STEP MS` | tests of online play: late and lost packets, a machine that disagrees, vanishes or stalls |
 | `--net-record FILE`, `--replay FILE` | keep an online game's presses, step by step, and play them again with nobody else |
 | `--macro-until N` | `--macro`'s pattern stops at vblank N |
+| `--then` | what follows is for the game's next start (an online game from the launcher starts it again): presses, shots, `--frames` and `--turbo` |
+| `--restart-on-play` | the launcher's PLAY starts the game again from its beginning, as an online game's START does |
+| `--online-local`, `--online-port N` | the launcher's online games are this PC's alone, and on that port |
 | `--controllers none|N`, `--no-sound` | for several copies of the game on one PC: this copy uses no controller, or only the Nth found (from 1), read even when its window isn't in front; and plays no sound |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
@@ -386,10 +389,52 @@ Two things had to change for it:
   different shape with widescreen on, which the fingerprint caught. Those faces have a heap of their own now, the last 16 MB of the
   arena, and the game's heap is the same whatever is drawn. Frames and sound didn't change (`same`).
 
-**Found, for step 4:** a game begun from the launcher isn't from the very beginning: the launcher is one of the game's own menus, its
-steps count (`shell_update` steps the random numbers every step), and a longer wait in it gives a different game from the first step
-(`identical` says so). Online play's START has to put every machine at the same beginning. The sure way is to start the game again
-from boot, as a test run does, not to put back the values known to have moved.
+### ONLINE in the launcher (step 4)
+
+The launcher's top menu is PLAY, ONLINE, SETTINGS and QUIT (`game/overlays/titles/settingsmenu.c`), and ONLINE has HOST GAME and
+JOIN GAME, in the game's own menus, as the players screen is:
+
+- **HOST GAME** opens a game on port 47000 (`NET_PORT`) and lists who's here: this PC's players, and each machine that's joined, by
+  its address and ping. Under it is the address for the others to join at, this machine's on its network. START (or Cross) begins
+  the game once someone's joined; Triangle stops hosting. The first time, Windows asks whether to let the game through its
+  firewall, and it has to be allowed.
+- **JOIN GAME** lists the games being hosted on this network, which show by themselves: every second it asks the whole network who's
+  hosting (`T_FIND`, a broadcast), and each host with its lobby open answers. Cross joins one. Under them is ADDRESS, for a host
+  that isn't on this network or didn't show: digits and dots from the keyboard, or with a controller up and down for the last
+  character, right for another and left to take one off. It starts with this machine's own address as far as its last dot, as the
+  host's is most likely beside it. Joined, it waits for the host's START.
+- What goes wrong is said under the menu: nobody hosting at that address, another version of the game, different game data, a full
+  game, the host gone.
+
+**The start.** A game played on from the launcher differs the longer the launcher was open: it's one of the game's own menus, and
+the random numbers step in it too (`shell_update`). So START starts the game again from its very beginning on every machine, in the
+same window (`platform_online_start`, `platform_restart` in `main.c`):
+
+- All of the game's own data is in a section (`ovl_game`: main's and the engine's; each minigame overlay already had its own),
+  saved as the program starts and put back (`platform/overlays.c`, `overlays_restart`), and the heap arena, which is the platform's
+  and outside that data (`arena.h`), is emptied. That's everything the game has: its C has no other state.
+- What the platform keeps for the game is put back as it was at the start: the sound (`audio_restart`: nothing open or playing, the
+  mix's counts at nought), the clock's vblank counts, the pads' motors, and the textures it has seen. The sound device changes to
+  being fed by the game's clock, and back afterwards (`host_audio_by_clock`).
+- Then the game's first function is called again (a `longjmp` back to `main`).
+
+`playtest.mjs identical` checks it's the same game a fresh start gives, step for step, however long the launcher was open
+(`--restart-on-play` makes the launcher's PLAY restart so). The same sections and arena are what a snapshot of the whole game
+would be made of, for rollback later.
+
+**The end.** The main menu's EXIT, in an online game, takes each machine back to its own launcher, offline: the game starts again
+from its beginning once more, with the player's own settings, saves and mods back (`platform_online_stop`). So does the host
+leaving or stopping answering, a mismatch, or falling too far behind, and the launcher says which under its menu. A game from the
+command line ends the program instead.
+
+**The ping** that sets the delay is timed as the host presses START, for a quarter of a second in which the host and the joiners
+do nothing else (`time_pings`): in the lobby each side only looks at what's come once a vblank, which would add up to two of them
+to every ping and a step to the delay.
+
+**A test's presses** are for one start of the game or another: those after `--then` on the command line are for the next start,
+whose vblanks count from 0 again. `--turbo` after `--then` is flat out from that start on, so a test can go through the launcher
+in real time, as finding and joining need, and then play fast. `--online-local` keeps the launcher's games to this PC (hosted at
+127.0.0.1 and looked for there, so Windows doesn't ask about the firewall), and `--online-port N` puts them on another port.
 
 ### By address, from the command line (step 2)
 
@@ -400,15 +445,16 @@ crashbash --host 47000 --net-joiners 2      # waits for two machines to join, th
 crashbash --join 192.168.1.20:47000         # on each of the others
 ```
 
-There's no screen for it yet (step 4): the window stays black till everyone's there, and what's happening is in the program's
-output. The first time, Windows asks the host's player whether to let the game through its firewall, and it has to be allowed.
-`--host ADDRESS:PORT` hosts on one address only (`127.0.0.1` for games on one PC, which Windows doesn't ask about).
+The launcher's ONLINE does the same with screens (above); this way is for tests, and the window stays black till everyone's there,
+with what's happening in the program's output. `--host ADDRESS:PORT` hosts on one address only (`127.0.0.1` for games on one PC,
+which Windows doesn't ask about its firewall for).
 
-**On one PC.** `node port/tests/playtest.mjs online --play` starts a host and a joiner (or `3` or `4` copies) side by side, with the
-player's own settings, to play: the host has the keyboard and the sound, and each joiner a controller (`--controllers`), so with the
-host's window in front the keyboard is player 1 and a controller player 2, both at once; a joiner's window, clicked, takes the
-keyboard. `--delay STEPS`, `--lag MS` and `--loss N` are for feeling what a game over the internet would be like. The host keeps the
-game's presses in `build/port/playtest/online-play/game.txt`.
+**On one PC.** `node port/tests/playtest.mjs online --play` starts two copies of the game (or `3` or `4`) side by side, each at its
+launcher with the player's own settings, to host in one and join in the others: the first has the keyboard and the sound, and each
+other a controller (`--controllers`), so with the first window in front the keyboard is one player and a controller another, both
+at once; another copy's window, clicked, takes the keyboard. Their games are this PC's alone (`--online-local`). `--delay STEPS`,
+`--lag MS` and `--loss N` are for feeling what a game over the internet would be like. The host keeps the game's presses in
+`build/port/playtest/online-play/game.txt`.
 
 **Players.** Each machine brings its own: the keyboard's, and one for each controller after the first, as offline. The host's are
 the first players, then each machine's in the order they joined, up to four. Player 1 drives the menus, as on the PlayStation.
@@ -454,9 +500,10 @@ four machines from the menus through a Battle's rounds and back to the title by 
 lost, matched step for step by fingerprint; a recorded game played again; a machine that disagrees; and in real time, late and lost
 packets, a machine that vanishes and one that stalls and is back.
 
-The steps: 1, staying identical (done); 2, online by address from the command line (done on one PC and between Windows and Linux;
-two real machines on a network are the user's to try); 3, join codes (UPnP and NAT-PMP, same-network games found by themselves, plain
-messages when hosting can't work); 4, ONLINE in the launcher. Not in the first version: rollback, joining a game already running,
+The steps: 1, staying identical (done); 2, online by address from the command line (done on one PC and between Windows and Linux);
+4, ONLINE in the launcher (done before 3, at the user's word: hosting and joining need nothing but the launcher, on one network);
+3, join codes, is what's left: the router's port opened by the game (UPnP and NAT-PMP), a code in place of the address, and plain
+messages when hosting can't work, for games between homes. Not in the first version: rollback, joining a game already running,
 spectators, hosting from behind a shared address, IPv6 codes, chat.
 
 ## What a pointer's size breaks
