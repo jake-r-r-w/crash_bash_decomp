@@ -251,13 +251,14 @@ Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it find
 menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
 Keys at first: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Right Shift = Select, Q and W = L1 and R1, 1 and 2 = L2 and R2.
 SETTINGS has a CONTROLS page to change them, and a controller's buttons (the same for every controller), at the user's word
-(2026-11-10, one page for both, also theirs): each of the game's buttons with its key and its controller button side by side; a row,
-Cross, then whichever's pressed first, a key or a controller's button, is its new one; one another button had swaps with it, so each
-has one; Esc, or a few seconds with nothing, keeps it; RESET TO DEFAULTS puts them all back. They're kept in the settings file by SDL's
-names (`key_cross=Z`, `pad_cross=a`; `platform/controls.c`). The face buttons show as the font's pictures of them (`\xFC` Cross, `\xFD`
-Circle, `\xFF` Square, `\xFE` Triangle), and so do a PlayStation controller's. The buttons column is text of an engine slot of its own
-(slot 0's 32 are all taken, and the game's letters aren't one width, so spaces can't line it up). `playtest.mjs controls` checks it
-with pretend keys.
+(2026-11-10; as simple as it can be, also theirs): a row for each of the game's buttons, showing what plays it on what the player's
+using, its key or, once a controller's had the last press, its controller button (`host_using_gamepad`), as modern games' prompts
+follow the controller. A row, Cross, then whichever's pressed first, a key or a controller's button, is its new one; one another button
+had swaps with it, so each has one; Esc, or a few seconds with nothing, keeps it; RESET TO DEFAULTS puts them all back. They're kept in
+the settings file by SDL's names (`key_cross=Z`, `pad_cross=a`; `platform/controls.c`). The face buttons show as the font's pictures of
+them (`\xFC` Cross, `\xFD` Circle, `\xFF` Square, `\xFE` Triangle), and so do a PlayStation controller's. Two columns, keys and
+buttons, were tried first and dropped by the user: the game's letters aren't one width, so a second column needs text records of its
+own, and slot 0's 32 are all taken. `playtest.mjs controls` checks it with pretend keys.
 
 The menu is PLAY, SETTINGS and QUIT, with the settings in categories; a new setting is a row in its category's table and a case in
 `change_setting` and `show_value`. The main menu's EXIT comes back to it.

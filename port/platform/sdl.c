@@ -33,6 +33,7 @@ static Controller Slots[MAX_PADS];
 
 /* What's been pressed, for a page that's waiting for a key or button to choose (controls.h), and test runs' pretend keys */
 static int KeyPressed = -1, ButtonPressed = -1;
+static int UsingPad = -1; /* the last press was on a controller (1) or the keyboard (0), or there's been none (-1) */
 static bool PretendKeys[SDL_SCANCODE_COUNT];
 
 static void open_pads(void);
@@ -604,10 +605,12 @@ int host_poll(void) {
                 settings_apply();
             } else if (!e.key.repeat) {
                 KeyPressed = e.key.scancode;
+                UsingPad = 0;
             }
             break;
         case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
             ButtonPressed = e.gbutton.button;
+            UsingPad = 1;
             break;
         default:
             break;
@@ -626,9 +629,11 @@ int host_poll(void) {
             /* a trigger's an axis, so it's pressed when it's pulled past halfway */
             if (triggers & ~Slots[i].triggers & 1) {
                 ButtonPressed = BUTTON_LEFT_TRIGGER;
+                UsingPad = 1;
             }
             if (triggers & ~Slots[i].triggers & 2) {
                 ButtonPressed = BUTTON_RIGHT_TRIGGER;
+                UsingPad = 1;
             }
             Slots[i].triggers = triggers;
         }
@@ -685,6 +690,11 @@ int host_key_pressed_any(void) {
     return key;
 }
 
+/* With no press yet, a controller if one's plugged in */
+int host_using_gamepad(void) {
+    return UsingPad >= 0 ? UsingPad : host_controllers() > 0;
+}
+
 int host_button_pressed_any(void) {
     int button = ButtonPressed;
 
@@ -696,6 +706,7 @@ void host_pretend_key(int key, int down) {
     if (key > SDL_SCANCODE_UNKNOWN && key < SDL_SCANCODE_COUNT) {
         if (down && !PretendKeys[key]) {
             KeyPressed = key;
+            UsingPad = 0;
         }
         PretendKeys[key] = down != 0;
     }

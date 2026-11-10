@@ -47,5 +47,7 @@ const char *control_file_id(int control);     /* cross, l1, up: key_cross and pa
 /* The key or controller button pressed since this was last asked, or -1 (sdl.c), for a page waiting for one */
 int host_key_pressed_any(void);
 int host_button_pressed_any(void);
+/* Whether the player's on a controller, not the keyboard: the last press was a controller's (the CONTROLS page shows its buttons) */
+int host_using_gamepad(void);
 
 #endif
