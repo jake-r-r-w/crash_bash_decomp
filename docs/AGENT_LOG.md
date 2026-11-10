@@ -646,6 +646,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-10: GitHub issue 1 ("Can we have option to adjust amount of deadzone on analog sticks? Currently I feel it's bit high"):
+  STICK DEADZONE on the CONTROLS page, ORIGINAL or 10% to 60%. The deadzone was the game's own, an axis nearly three quarters of the
+  way out before a stick's a direction, so it's done to each player's stick before the game has it (`controls_stick`), the same in an
+  online game's every machine. The user had it moved to the top with a line under it, and asked for a picture of it: a yellow box in
+  the panel's empty side with the deadzone and the stick's live place, the stick only for trying there. `--check-sticks`, and a
+  stick case in `pads`. The user answers the issue themselves ("no dont reply i will do that").
+
 - 2026-11-10: [v1.0.0](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v1.0.0) is published, at the user's word ("lets cut
   a release lets go for 1.0.0"): online play and couch play (notes in `port/release/NOTES-1.0.0.md`). On the packaged programs:
   Windows and Linux `modes` 39, `bosses` 4, `menu`, `heroes` 2, `mods` 29, `image` 8, `online` 22, `identical` 18, `pads` 9 and

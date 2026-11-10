@@ -40,6 +40,7 @@
  *   node port/tests/playtest.mjs pads
  *       Couch play, with pretend controllers: the launcher's players screen, Battle, Adventure and Tournament offering as many players as
  *       there are controllers, each choosing its own hero, and controllers pulled out and plugged in without anyone else's player changing.
+ *       And the stick's deadzone: a stick a third of the way out moves the hero with a deadzone of 20%, and not with the game's own.
  *   node port/tests/playtest.mjs identical [--all] [--against FILE]
  *       Whether the game repeats itself exactly, for online play: the same presses from two pretend controllers under each picture
  *       setting, flat out and in real time, with sound and without, compared by the game's fingerprint after every step. About two
@@ -774,6 +775,38 @@ async function pads(args) {
     for (let i = 0; i < cases.length; i += slots) {
         results.push(...await Promise.all(cases.slice(i, i + slots).map((c, j) => one(c, i + j))));
     }
+    /* The stick's deadzone (controls.c, controls_stick): the same Battle four times, its one player's stick held a third of the way to
+       the right once the rules are read and it's playing, or not at all. The computer players do the same each time, so the heroes and the objects
+       are the same as with no stick unless that player's hero moved: a third out it stands still with the game's own deadzone, and
+       moves with 20%; nearly all the way out it moves with the game's own. */
+    if (!ANDROID) {
+        const stick = (name, extra) => run(exe, ['--turbo', '--skip-intro', '--saves', rel(`stick-${name}`), '--tile', String(results.length % 4), '4',
+            '--pretend-pads', '1', ...battle(1, 2), '--press', '2000', CROSS, '--fingerprints', '1', ...extra, '--frames', '3000'], path.join(dir, `stick-${name}.txt`), { timeout: MODE_TIMEOUT });
+        const moved = (a, b) => {
+            const parts = l => Object.fromEntries(l.split(' ').slice(2).reduce((p, w, i, all) => (i % 2 === 0 ? [...p, [w, all[i + 1]]] : p), []));
+            const pa = fingerprints(a.text), pb = fingerprints(b.text);
+
+            for (let i = 0; i < Math.min(pa.length, pb.length); i++) {
+                const x = parts(pa[i]), y = parts(pb[i]);
+
+                if (x.heroes !== y.heroes || x.objects !== y.objects) {
+                    return i + 1;
+                }
+            }
+            return null;
+        };
+        const [none, third, third20, most] = await Promise.all([stick('none', []), stick('third', ['--pad-stick', '1', '2050', '35', '0']),
+            stick('third-20', ['--pad-stick', '1', '2050', '35', '0', '--stick-deadzone', '20']), stick('most', ['--pad-stick', '1', '2050', '90', '0'])]);
+        const runs = [none, third, third20, most];
+        const wrong = runs.map(r => crash_where(exe, r.text) ?? (r.code !== 0 ? `exit ${r.code}` : null)).find(x => x != null)
+            ?? (fingerprints(none.text).length < 300 ? `the game's short: ${fingerprints(none.text).length} steps`
+            : moved(none, third) != null ? `a third out with the game's own deadzone, the hero moved, from step ${moved(none, third)}`
+            : moved(none, third20) == null ? 'a third out with a 20% deadzone, the hero never moved'
+            : moved(none, most) == null ? 'nearly all the way out with the game\'s own deadzone, the hero never moved' : null);
+
+        results.push(['the stick\'s deadzone: a third out moves the hero at 20%, not at the game\'s own', { pass: wrong == null,
+            what: wrong ?? `moved from step ${moved(none, third20)} at 20%, and from ${moved(none, most)} nearly all the way out` }]);
+    }
     return report(results);
 }
 
@@ -1364,8 +1397,8 @@ async function controls(args) {
     const dir = path.join(OUT, 'controls');
     const UP = '10', TRIANGLE = '1000', CIRCLE = '2000';
     const press = (...pairs) => pairs.flatMap(([v, b]) => ['--press', String(v), b]);
-    /* SETTINGS, then that many down the categories (CONTROLS is 2), and into its rows at Cross's */
-    const page = n => press([85, DOWN], [100, DOWN], [130, CROSS], ...Array.from({ length: n }, (_, i) => [160 + i * 20, DOWN]), [230, CROSS]);
+    /* SETTINGS, then that many down the categories (CONTROLS is 2), into its rows, and down past STICK DEADZONE and the line to Cross's */
+    const page = n => press([85, DOWN], [100, DOWN], [130, CROSS], ...Array.from({ length: n }, (_, i) => [160 + i * 20, DOWN]), [230, CROSS], [245, DOWN]);
     /* back out to the top and up onto PLAY */
     const out = from => press([from, TRIANGLE], [from + 30, TRIANGLE], [from + 60, UP], [from + 75, UP]);
     const cases = [

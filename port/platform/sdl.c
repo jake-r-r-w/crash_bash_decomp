@@ -4,6 +4,7 @@
 #include <SDL3/SDL_main.h>
 #include <stdio.h>
 #include "controllers.h"
+#include "controls.h"
 #include "platform.h"
 #include "gfx.h"
 #include "settings.h"
@@ -435,6 +436,15 @@ void host_pretend_press(int n, int buttons) {
     SDL_SetJoystickVirtualAxis(PretendSticks[n], SDL_GAMEPAD_AXIS_RIGHT_TRIGGER, (buttons & PAD_R2) ? SDL_JOYSTICK_AXIS_MAX : SDL_JOYSTICK_AXIS_MIN);
 }
 
+/* where its left stick is (--pad-stick), in percent of the way out each way: it stays there till it's moved */
+void host_pretend_stick(int n, int x, int y) {
+    if (n < 0 || n >= MAX_PRETEND || PretendSticks[n] == NULL) {
+        return;
+    }
+    SDL_SetJoystickVirtualAxis(PretendSticks[n], SDL_GAMEPAD_AXIS_LEFTX, (Sint16)SDL_clamp(x * 32767 / 100, -32768, 32767));
+    SDL_SetJoystickVirtualAxis(PretendSticks[n], SDL_GAMEPAD_AXIS_LEFTY, (Sint16)SDL_clamp(y * 32767 / 100, -32768, 32767));
+}
+
 /* --- plugging in and pulling out --- */
 
 static void controller_log(const char *what, const Controller *c, int slot) {
@@ -573,6 +583,15 @@ int host_controller_pressed(int player) {
     b = Slots[player].pressed;
     Slots[player].pressed = 0;
     return b;
+}
+
+int host_controller_stick(int player, int *x, int *y) {
+    if (player < 0 || player >= MAX_PADS || Slots[player].pad == NULL) {
+        return 0;
+    }
+    *x = SDL_GetGamepadAxis(Slots[player].pad, SDL_GAMEPAD_AXIS_LEFTX);
+    *y = SDL_GetGamepadAxis(Slots[player].pad, SDL_GAMEPAD_AXIS_LEFTY);
+    return 1;
 }
 
 void host_controllers_swap(int a, int b) {
@@ -895,20 +914,16 @@ int host_pad(int port) {
     return b;
 }
 
-static unsigned char stick_of(SDL_Gamepad *c, SDL_GamepadAxis axis) {
-    return (unsigned char)((SDL_GetGamepadAxis(c, axis) + 32768) >> 8);
-}
-
+/* The sticks as the game has them, with the player's deadzone (controls_stick). */
 int host_pad_sticks(int port, unsigned char sticks[4]) {
     SDL_Gamepad *c = port < MAX_PADS ? Slots[port].pad : NULL;
+    int deadzone = settings()->stick_deadzone;
 
     if (c == NULL) {
         return 0;
     }
-    sticks[0] = stick_of(c, SDL_GAMEPAD_AXIS_RIGHTX);
-    sticks[1] = stick_of(c, SDL_GAMEPAD_AXIS_RIGHTY);
-    sticks[2] = stick_of(c, SDL_GAMEPAD_AXIS_LEFTX);
-    sticks[3] = stick_of(c, SDL_GAMEPAD_AXIS_LEFTY);
+    controls_stick(SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_RIGHTX), SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_RIGHTY), deadzone, sticks);
+    controls_stick(SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTX), SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFTY), deadzone, sticks + 2);
     return 1;
 }
 

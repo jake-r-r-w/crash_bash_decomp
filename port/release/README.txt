@@ -21,7 +21,11 @@ the CRASHBSH folder on your copy of the game next to @PROGRAM@.
 
 CONTROLS
 
-A controller just works, with its sticks and rumble. On the keyboard:
+A controller just works, with its sticks and rumble. If the stick has to go
+too far before you move, set STICK DEADZONE on the CONTROLS page, under
+Settings in the menu the game opens with: ORIGINAL is the PlayStation's, nearly
+three quarters of the way out, and 10% to 60% are less. The box beside it shows
+where your stick is, green once it would move you. On the keyboard:
 
   Arrows        Move
   Z             Cross

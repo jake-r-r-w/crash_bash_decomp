@@ -30,6 +30,13 @@ enum {
 const char *control_name(int control); /* as the menus say it: CROSS, L1, UP */
 int control_bit(int control);          /* its PAD_ bit (platform.h) */
 
+/* A stick's position as the game has it, 0 to 255 on each axis with 128 the middle, from SDL's (-32768 to 32767), with the player's
+   deadzone: how far out, in percent, the stick has to go before the game takes it for a direction (0: the game's own). And for the
+   build's tests (--check-sticks): 0 if a deadzone's edge isn't where it should be at every angle. */
+#define STICK_DEADZONE_MOST 60
+void controls_stick(int x, int y, int deadzone, unsigned char out[2]);
+int controls_check_sticks(void);
+
 void controls_default_keys(int keys[NUM_CONTROLS]);
 void controls_default_buttons(int buttons[NUM_CONTROLS]);
 /* control gets code, and the control that had code gets control's old one, so every control keeps one of its own */

@@ -222,9 +222,10 @@ static struct {
 static int NumPresses;
 
 /* What the pretend controllers do (--pretend-pads): a press held for a few vblanks as --press's are, or pulled out or plugged in */
-enum { PAD_PRESS, PAD_UNPLUG, PAD_PLUG, PAD_KEY };
+enum { PAD_PRESS, PAD_UNPLUG, PAD_PLUG, PAD_KEY, PAD_STICK };
 static struct {
     int pad, frame, buttons, kind; /* a pretend key's (--key-press) buttons is its scancode */
+    int x, y;                      /* a stick's (--pad-stick), in percent */
 } PadEvents[MAX_PRESSES];
 static int NumPadEvents;
 
@@ -236,6 +237,10 @@ static void pretend_pads_vblank(void) {
         if (PadEvents[i].kind == PAD_KEY) {
             if (TEST_NOW == PadEvents[i].frame || TEST_NOW == PadEvents[i].frame + PRESS_VBLANKS) {
                 host_pretend_key(PadEvents[i].buttons, TEST_NOW == PadEvents[i].frame);
+            }
+        } else if (PadEvents[i].kind == PAD_STICK) {
+            if (PadEvents[i].frame == TEST_NOW) {
+                host_pretend_stick(PadEvents[i].pad, PadEvents[i].x, PadEvents[i].y);
             }
         } else if (PadEvents[i].kind != PAD_PRESS && PadEvents[i].frame == TEST_NOW) {
             host_pretend_plug(PadEvents[i].pad, PadEvents[i].kind == PAD_PLUG);
@@ -547,7 +552,7 @@ int main(int argc, char **argv) {
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int extra[4] = { 0 }, extra_heroes = 0, heroes[4] = { 0 };
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
-    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0;
+    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1;
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
 #ifdef SDL_PLATFORM_ANDROID
@@ -599,6 +604,11 @@ int main(int argc, char **argv) {
 
             printf("%s\n", net_code_make(argv[i + 1], NET_PORT + atoi(argv[i + 2]), code, sizeof(code)) ? code : "none");
             return 0;
+        } else if (strcmp(argv[i], "--check-sticks") == 0) {
+            /* a deadzone's edge where it should be, at every angle (controls_stick) */
+            i = controls_check_sticks();
+            printf(i ? "sticks ok\n" : "sticks wrong\n");
+            return i ? 0 : 1;
         } else if (strcmp(argv[i], "--check-codes") == 0) {
             /* the build's test of join codes (net.c) */
             printf(net_code_check() ? "codes ok\n" : "codes wrong\n");
@@ -686,6 +696,18 @@ int main(int argc, char **argv) {
             if (PadEvents[NumPadEvents - 1].pad < 0 || PadEvents[NumPadEvents - 1].pad > 3) {
                 NumPadEvents--;
             }
+        } else if (strcmp(argv[i], "--pad-stick") == 0 && i + 4 < argc && NumPadEvents < MAX_PRESSES) {
+            /* a pretend controller's left stick from a vblank on, X and Y in percent of the way out (-100 to 100) */
+            PadEvents[NumPadEvents].kind = PAD_STICK;
+            PadEvents[NumPadEvents].pad = atoi(argv[++i]) - 1;
+            PadEvents[NumPadEvents].frame = when(argv[++i]);
+            PadEvents[NumPadEvents].x = atoi(argv[++i]);
+            PadEvents[NumPadEvents++].y = atoi(argv[++i]);
+            if (PadEvents[NumPadEvents - 1].pad < 0 || PadEvents[NumPadEvents - 1].pad > 3) {
+                NumPadEvents--;
+            }
+        } else if (strcmp(argv[i], "--stick-deadzone") == 0 && i + 1 < argc) {
+            stick_deadzone = atoi(argv[++i]);
         } else if ((strcmp(argv[i], "--pad-unplug") == 0 || strcmp(argv[i], "--pad-plug") == 0) && i + 2 < argc && NumPadEvents < MAX_PRESSES) {
             PadEvents[NumPadEvents].kind = strcmp(argv[i], "--pad-plug") == 0 ? PAD_PLUG : PAD_UNPLUG;
             PadEvents[NumPadEvents].pad = atoi(argv[++i]) - 1;
@@ -879,6 +901,9 @@ int main(int argc, char **argv) {
     }
     if (fps == 30 || fps == 60 || fps == 120) {
         settings()->fps = fps;
+    }
+    if (stick_deadzone >= 0 && stick_deadzone <= 90) {
+        settings()->stick_deadzone = stick_deadzone;
     }
     if (antialias == 1 || antialias == 2 || antialias == 4 || antialias == 8) {
         settings()->antialias = antialias;

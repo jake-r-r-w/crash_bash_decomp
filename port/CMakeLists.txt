@@ -156,6 +156,8 @@ set_tests_properties(version PROPERTIES PASS_REGULAR_EXPRESSION "crashbash ${PRO
 add_test(NAME sdl COMMAND crashbash --check-sdl)
 add_test(NAME codes COMMAND crashbash --check-codes)
 set_tests_properties(codes PROPERTIES PASS_REGULAR_EXPRESSION "codes ok")
+add_test(NAME sticks COMMAND crashbash --check-sticks)
+set_tests_properties(sticks PROPERTIES PASS_REGULAR_EXPRESSION "sticks ok")
 
 # The fuzzer for online play's packets (tests/netfuzz.c; PORT.md, Online play, Hardening), with ASan and UBSan: built only when
 # asked for (cmake --build --preset windows-clang --target netfuzz), and only where the compiler has libFuzzer, as the Windows

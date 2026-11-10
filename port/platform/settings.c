@@ -36,6 +36,7 @@ void settings_defaults(void) {
     Current.online_music = 70;
     Current.online_sfx = 100;
     Current.online_stereo = 1;
+    Current.stick_deadzone = 0;
     controls_default_keys(Current.keys);
     controls_default_buttons(Current.buttons);
     Current.texture_pack[0] = 0;
@@ -117,6 +118,8 @@ void settings_load(void) {
             Current.icons = a != 0;
         } else if (sscanf(line, "extra_heroes=%d", &a) == 1) {
             Current.extra_heroes = a != 0;
+        } else if (sscanf(line, "stick_deadzone=%d", &a) == 1 && a >= 0 && a <= 90) {
+            Current.stick_deadzone = a;
         } else if (sscanf(line, "online_music=%d", &a) == 1 && a >= 0 && a <= 100) {
             Current.online_music = a;
         } else if (sscanf(line, "online_sfx=%d", &a) == 1 && a >= 0 && a <= 100) {
@@ -215,6 +218,7 @@ static void save_settings(void) {
     fprintf(f, "upscale=%d\n", Current.upscale);
     fprintf(f, "icons=%d\n", Current.icons);
     fprintf(f, "extra_heroes=%d\n", Current.extra_heroes);
+    fprintf(f, "stick_deadzone=%d\n", Current.stick_deadzone);
     fprintf(f, "online_music=%d\n", Current.online_music);
     fprintf(f, "online_sfx=%d\n", Current.online_sfx);
     fprintf(f, "online_stereo=%d\n", Current.online_stereo);

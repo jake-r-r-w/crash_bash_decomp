@@ -11,6 +11,7 @@
  * what can be done. JOIN GAME lists the games being hosted on this network, and takes a host's code typed in (or its address) for
  * one that isn't. The game then starts again from its very beginning on every machine (platform_online_start), and comes back here
  * when it's over. */
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include "../../../platform/controllers.h"
@@ -26,6 +27,7 @@
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
 #include "bash/videomenu.h"
+#include "bash/draw.h"
 
 void platform_finish(int code);
 void platform_restart(int online);
@@ -52,8 +54,13 @@ typedef struct {
    buttons (controls.h) */
 enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS, KIND_CONTROLS };
 
-/* The CONTROLS page's rows: one for each of the game's buttons, and RESET TO DEFAULTS */
-#define ROW_RESET NUM_CONTROLS
+/* The CONTROLS page's rows: STICK DEADZONE first, a line under it that the cursor passes over, one for each of the game's buttons, and
+   RESET TO DEFAULTS (the user's word on where the deadzone goes, 2026-11-10) */
+#define ROW_DEADZONE 0
+#define ROW_LINE 1
+#define ROW_CONTROLS 2 /* the first button's row: a button's row is ROW_CONTROLS + its CONTROL_ number */
+#define ROW_RESET (ROW_CONTROLS + NUM_CONTROLS)
+#define ROW_CONTROL(row) ((row) - ROW_CONTROLS)
 
 typedef struct {
     const char *label;
@@ -85,6 +92,7 @@ static s32 Waiting = -1;
 static s32 WaitFrames;
 static s32 Settling; /* a key or button was just chosen: till everything's let go, as the one still held is a press of its new control */
 #define CONTROL_VALUE_X 0x18 /* past SELECT, with room for PRESS A KEY OR BUTTON */
+#define DEADZONE_VALUE_X 0x90 /* past STICK DEADZONE, with room for its arrows */
 
 static const char *const TopRows[] = { "PLAY", "ONLINE", "SETTINGS", "QUIT" };
 enum { TOP_PLAY, TOP_ONLINE, TOP_SETTINGS, TOP_QUIT, NUM_TOP };
@@ -117,6 +125,13 @@ static camera_info_tag LogoCamera;
 #define SUB_LABEL(n) (SUB_OPTION + (n) * 2)
 #define SUB_VALUE(n) (SUB_OPTION + (n) * 2 + 1)
 #define SUB_HELP_MORE SUB_LABEL(VISIBLE_OPTIONS)
+#define SUB_STICK_BOX (SUB_HELP_MORE + 1) /* the deadzone's box, on the CONTROLS page */
+
+/* The deadzone's box: in the options panel's right-hand side, under STICK DEADZONE's row and its line, past the buttons' longest names */
+#define STICK_BOX_LEFT 0xC0
+#define STICK_BOX_RIGHT 0x124
+#define STICK_BOX_TOP -0x46
+#define STICK_BOX_BOTTOM 0x1E
 
 #define TOP_Y -0x38
 #define TOP_STEP 0x22
@@ -160,7 +175,7 @@ static camera_info_tag LogoCamera;
 #define CONTROLLER_X -0x68 /* room for 31 letters, as long as SDL's names get: DUALSENSE WIRELESS CONTROLLER is 29 */
 #define LIT_FRAMES 40
 
-static PlaceRec Place[SUB_HELP_MORE + 2];
+static PlaceRec Place[SUB_STICK_BOX + 2];
 static char Values[VISIBLE_OPTIONS][32];
 static char Labels[VISIBLE_OPTIONS][LABEL_CHARS + 1];
 static char Help[2][HELP_CHARS + 1];
@@ -254,10 +269,19 @@ static void control_value(char *text, size_t size, s32 n) {
     const char *label;
     s32 f;
 
-    if (n == ROW_RESET) {
+    if (n == ROW_RESET || n == ROW_LINE) {
         text[0] = '\0';
         return;
     }
+    if (n == ROW_DEADZONE) {
+        if (settings()->stick_deadzone == 0) {
+            snprintf(text, size, "ORIGINAL");
+        } else {
+            snprintf(text, size, "%d%%", settings()->stick_deadzone);
+        }
+        return;
+    }
+    n = ROW_CONTROL(n);
     if (Waiting == n) {
         snprintf(text, size, "%s", "PRESS A KEY OR BUTTON");
         return;
@@ -403,6 +427,9 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
 }
 
 /* Row n's label, shown in row i. */
+/* The line between the deadzone and the buttons, the panel's width in the font's dashes */
+#define CONTROLS_LINE "- - - - - - - - - - - - - - - - -"
+
 static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
     if (c->kind == KIND_VIDEO) {
         return video_option_label(n);
@@ -415,7 +442,7 @@ static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
         return Labels[i];
     }
     if (c->kind == KIND_CONTROLS) {
-        return n == ROW_RESET ? "RESET TO DEFAULTS" : control_label(n);
+        return n == ROW_RESET ? "RESET TO DEFAULTS" : n == ROW_DEADZONE ? "STICK DEADZONE" : n == ROW_LINE ? CONTROLS_LINE : control_label(ROW_CONTROL(n));
     }
     return c->options[n].label;
 }
@@ -433,7 +460,8 @@ static const char *option_help(const MenuCategory *c, s32 n) {
             snprintf(Help[0], sizeof(Help[0]), "PRESS A KEY OR BUTTON FOR %s, OR ESC", control_label(Waiting));
             return Help[0];
         }
-        return n == ROW_RESET ? "EVERY KEY AND BUTTON BACK AS IT WAS" : "\xFC THEN A KEY OR A BUTTON FOR IT";
+        return n == ROW_RESET ? "EVERY KEY AND BUTTON BACK AS IT WAS" : n == ROW_DEADZONE ? "HOW FAR OUT A STICK GOES: GREEN MOVES YOU"
+               : "\xFC THEN A KEY OR A BUTTON FOR IT";
     }
     return c->options[n].help;
 }
@@ -465,12 +493,15 @@ static void place_screen(void) {
     if (top) {
         place_panel(&Place[SUB_PANEL], -0xA0, 0xA0, TOP_Y - 0x10, TOP_Y + NUM_TOP * TOP_STEP + 0xA);
         place_panel(&Place[SUB_PANEL + 1], 0, 0, -0x400, -0x400);
+        place_panel(&Place[SUB_STICK_BOX], 0, 0, -0x400, -0x400);
     } else if (players) {
         place_panel(&Place[SUB_PANEL], PLAYERS_LEFT, PLAYERS_RIGHT, PLAYERS_TOP - 0x12, PLAYERS_TOP + PLAYERS * PLAYERS_STEP + 0x10);
         place_panel(&Place[SUB_PANEL + 1], 0, 0, -0x400, -0x400);
+        place_panel(&Place[SUB_STICK_BOX], 0, 0, -0x400, -0x400);
     } else {
         place_panel(&Place[SUB_PANEL], CATEGORY_LEFT, CATEGORY_RIGHT, PANEL_TOP, PANEL_BOTTOM);
         place_panel(&Place[SUB_PANEL + 1], OPTION_LEFT, OPTION_RIGHT, PANEL_TOP, PANEL_BOTTOM);
+        place_panel(&Place[SUB_STICK_BOX], STICK_BOX_LEFT, STICK_BOX_RIGHT, STICK_BOX_TOP, STICK_BOX_BOTTOM);
     }
     place_text(&Place[SUB_HELP], -0x8000, HELP_Y, "", 1);
     place_text(&Place[SUB_HELP_MORE], -0x8000, HELP_Y + OPTION_STEP, "", 1);
@@ -692,6 +723,11 @@ static void show_online(subengine *sub) {
     }
 }
 
+/* Whether the deadzone's box and picture are up: on the CONTROLS page, with STICK DEADZONE chosen. */
+static s32 deadzone_shown(void) {
+    return Screen == SCREEN_OPTIONS && Category < NUM_CATEGORIES && Categories[Category].kind == KIND_CONTROLS && Option == ROW_DEADZONE && Waiting < 0;
+}
+
 /* What's on screen now, from where the cursor is. */
 static void show_screen(void) {
     subengine *sub = GetEngineSlot(0)->sub;
@@ -699,6 +735,13 @@ static void show_screen(void) {
     s32 mods = Screen == SCREEN_OPTIONS && c->kind == KIND_MODS;
     s32 controls = c != NULL && c->kind == KIND_CONTROLS;
     s32 i;
+
+    /* the deadzone's box, while it's chosen (draw_deadzone) */
+    if (deadzone_shown()) {
+        sub[SUB_STICK_BOX].flags |= 0x8000;
+    } else {
+        sub[SUB_STICK_BOX].flags &= ~0x8000;
+    }
 
     set_row(&sub[SUB_HELP_MORE], "", TEXT_SMALL);
     if (Screen == SCREEN_PLAYERS) {
@@ -760,7 +803,10 @@ static void show_screen(void) {
     set_row(&sub[SUB_NAV], mods && Option > 0 ? "\xFC ON OR OFF, L1 - R1 MOVE IT UP OR DOWN, \xFE BACK"
                            : mods             ? "UP - DOWN CHOOSE, \xFC BUTTON TO OPEN, \xFE BACK"
                            : controls && Waiting >= 0 ? ""
-                           : controls         ? "UP - DOWN CHOOSE, \xFC BUTTON TO CHANGE, \xFE BACK"
+                           /* a CONTROLS row's own: the help over it says how (the user's word on what was there: "super cluttered") */
+                           : controls && Screen == SCREEN_OPTIONS && Option == ROW_DEADZONE ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
+                           : controls && Screen == SCREEN_OPTIONS && Option == ROW_RESET ? "UP - DOWN CHOOSE, \xFC BUTTON TO RESET, \xFE BACK"
+                           : controls         ? "UP - DOWN CHOOSE, \xFE BACK"
                            : Screen == SCREEN_OPTIONS ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
                                                       : "UP - DOWN TO CHOOSE, RIGHT OR \xFC BUTTON TO OPEN", TEXT_SMALL);
     set_row(&sub[SUB_HELP], Screen == SCREEN_OPTIONS ? option_help(c, Option) : "", TEXT_SMALL);
@@ -779,9 +825,10 @@ static void show_screen(void) {
             value[0] = '\0';
             show_value(value, sizeof(value), c, n);
             /* left and right change an option's value; a key or button is changed by pressing the new one */
-            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && !controls ? "< %s >" : "%s", value);
-            sub[SUB_VALUE(i)].unk7C = lit || (controls && Waiting == n) ? TEXT_SMALL_LIT : TEXT_SMALL;
-            sub[SUB_VALUE(i)].XYZ.x = controls ? CONTROL_VALUE_X : VALUE_X;
+            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && (!controls || n == ROW_DEADZONE) ? "< %s >" : "%s", value);
+            sub[SUB_VALUE(i)].unk7C = lit || (controls && Waiting >= 0 && Waiting == ROW_CONTROL(n)) ? TEXT_SMALL_LIT : TEXT_SMALL;
+            /* (the deadzone's name is longer than a button's, so its value is further out) */
+            sub[SUB_VALUE(i)].XYZ.x = controls ? (n == ROW_DEADZONE ? DEADZONE_VALUE_X : CONTROL_VALUE_X) : VALUE_X;
         } else {
             set_row(&sub[SUB_LABEL(i)], "", TEXT_SMALL);
         }
@@ -1161,6 +1208,22 @@ static void update_waiting(void) {
 }
 
 static void update_controls(s32 pressed) {
+    if (Option == ROW_DEADZONE) {
+        /* ORIGINAL, the game's own, then 10% to 60% in tens, round again either way */
+        Settings *s = settings();
+        s32 steps = STICK_DEADZONE_MOST / 10 + 1, at = s->stick_deadzone / 10;
+
+        if (pressed & (0x20 | 0x80 | 0x4000)) {
+            at = (at + ((pressed & 0x80) ? steps - 1 : 1)) % steps;
+            s->stick_deadzone = at * 10;
+            settings_save();
+            if (s->no_save) {
+                printf("controls: stick deadzone %d\n", s->stick_deadzone);
+            }
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        return;
+    }
     if (!(pressed & (0x20 | 0x4000))) {
         return;
     }
@@ -1177,7 +1240,7 @@ static void update_controls(s32 pressed) {
     /* what was pressed to get here isn't the new one */
     host_key_pressed_any();
     host_button_pressed_any();
-    Waiting = Option;
+    Waiting = ROW_CONTROL(Option);
     WaitFrames = WAIT_FRAMES;
     PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
 }
@@ -1196,6 +1259,11 @@ static void update_options(s32 pressed) {
             return;
         }
         Settling = 0;
+    }
+    /* on STICK DEADZONE the stick is for trying out in its box: there only the d-pad and the keys change it or move off it. A stick's
+       direction is what the game adds to the buttons, held but not among them (pad_read) */
+    if (deadzone_shown()) {
+        pressed &= ~(Pads[0].held & ~Pads[0].buttons & 0xF0);
     }
     /* a mod put in the folder shows up in a second or so, with the cursor still on the mod it was on */
     if (c->kind == KIND_MODS && ++updates % 30 == 0) {
@@ -1218,10 +1286,13 @@ static void update_options(s32 pressed) {
     }
     if ((pressed & 0x40) && Option < option_count(c) - 1) {
         Option++;
+        /* the CONTROLS page's line is passed over */
+        Option += controls && Option == ROW_LINE;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if ((pressed & 0x10) && Option > 0) {
         Option--;
+        Option -= controls && Option == ROW_LINE;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if (c->kind == KIND_MODS && Option > 0 && (pressed & (PAD_L1 | PAD_R1))) {
@@ -1322,8 +1393,80 @@ static void SettingsMenuUpdate(void) {
     show_screen();
 }
 
+/* --- the deadzone, drawn ---
+ *
+ * While STICK DEADZONE is chosen, a picture of the stick in a box of its own, in the panel's empty right-hand side, so nothing else
+ * moves (the user's words, 2026-11-10): a ring for as far as it goes,
+ * the deadzone darker inside it, and a dot for where player 1's stick is now, lit once it's far enough out to move a hero. The game's
+ * own deadzone is a square, as it's each axis on its own (controls.c), and pokes out past the ring at the corners, where a stick never
+ * gets. It's drawn in the panel's units (640 across and 480 down, from the screen's middle), and made the game's screen's. */
+#define STICK_X ((STICK_BOX_LEFT + STICK_BOX_RIGHT) / 2)
+#define STICK_Y ((STICK_BOX_TOP + STICK_BOX_BOTTOM) / 2)
+#define STICK_R 0x26
+enum { STICK_RING = 0x20B0FF, STICK_ZONE = 0x1870D0, STICK_IDLE = 0xB0B0B0, STICK_MOVES = 0x40FF40 }; /* blue, green, red */
+
+#define STICK_PI 3.14159265f
+#define STICK_CLAMP(v) ((v) < -1.0f ? -1.0f : (v) > 1.0f ? 1.0f : (v))
+
+static void stick_quad(const float x[4], const float y[4], u32 colour, s32 blend) {
+    DVECTOR xy[4];
+    u32 c[4];
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        xy[i].vx = (s16)((x[i] + 320.0f) * ScreenRect->w / 640.0f);
+        xy[i].vy = (s16)((y[i] + 240.0f) / 2.0f);
+        c[i] = colour;
+    }
+    draw_plain_quad(RenderState.layer, xy, c, blend);
+}
+
+/* A wedge of a disc, or of a ring from radius r0 out to r1, round a point, from angle a to b */
+static void stick_arc(float cx, float cy, float r0, float r1, float a, float b, u32 colour, s32 blend) {
+    float x[4] = { cx + r0 * cosf(a), cx + r0 * cosf(b), cx + r1 * cosf(a), cx + r1 * cosf(b) };
+    float y[4] = { cy + r0 * sinf(a), cy + r0 * sinf(b), cy + r1 * sinf(a), cy + r1 * sinf(b) };
+
+    stick_quad(x, y, colour, blend);
+}
+
+static void draw_deadzone(void) {
+    const s32 parts = 48;
+    s32 dz = settings()->stick_deadzone, sx, sy, i;
+    float step = 2.0f * STICK_PI / parts;
+
+    if (!deadzone_shown() || ScreenRect == NULL) {
+        return;
+    }
+    /* drawn front to back, after the panels: what's drawn later in a layer goes under what's drawn before */
+    if (host_controller_stick(0, &sx, &sy)) {
+        unsigned char at[2];
+        float px = STICK_X + STICK_CLAMP(sx / 32767.0f) * STICK_R, py = STICK_Y + STICK_CLAMP(sy / 32767.0f) * STICK_R;
+        s32 moves;
+
+        controls_stick(sx, sy, dz, at);
+        moves = at[0] < 0x25 || at[0] >= 0xDB || at[1] < 0x25 || at[1] >= 0xDB;
+        for (i = 0; i < parts / 4; i++) {
+            stick_arc(px, py, 0.0f, 5.0f, i * step * 4, (i + 1) * step * 4, moves ? STICK_MOVES : STICK_IDLE, GFX_OPAQUE);
+        }
+    }
+    for (i = 0; i < parts; i++) {
+        stick_arc(STICK_X, STICK_Y, STICK_R - 1.5f, STICK_R + 1.5f, i * step, (i + 1) * step, STICK_RING, GFX_OPAQUE);
+    }
+    if (dz == 0) {
+        float h = STICK_R * 92.0f / 127.5f;
+        float x[4] = { STICK_X - h, STICK_X + h, STICK_X - h, STICK_X + h }, y[4] = { STICK_Y - h, STICK_Y - h, STICK_Y + h, STICK_Y + h };
+
+        stick_quad(x, y, STICK_ZONE, GFX_HALF);
+    } else {
+        for (i = 0; i < parts; i++) {
+            stick_arc(STICK_X, STICK_Y, 0.0f, STICK_R * dz / 100.0f, i * step, (i + 1) * step, STICK_ZONE, GFX_HALF);
+        }
+    }
+}
+
 static void SettingsMenuRender(void) {
     RenderTitlesBackdropAndMenu();
+    draw_deadzone();
     gfx_set_viewport(&LogoView, &LogoCamera);
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs(GetEngineSlot(LOGO_SLOT));

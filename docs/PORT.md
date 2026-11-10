@@ -265,6 +265,19 @@ them (`\xFC` Cross, `\xFD` Circle, `\xFF` Square, `\xFE` Triangle), and so do a 
 buttons, were tried first and dropped by the user: the game's letters aren't one width, so a second column needs text records of its
 own, and slot 0's 32 are all taken. `playtest.mjs controls` checks it with pretend keys.
 
+**The sticks' deadzone** (GitHub issue 1, 2026-11-10: "Currently I feel it's bit high"). The game takes a stick for a d-pad direction,
+which is what moves a hero, only once one axis is past 0x24 or 0xDB, nearly three quarters of the way out (`pad_read`), as on the
+PlayStation; on a diagonal that's all the way. STICK DEADZONE, first on the CONTROLS page with a line under it (the user's word on
+where), is ORIGINAL, that, or 10% to 60%: with one, a stick is pushed further out along its own angle by as much as puts the game's
+line at the deadzone, the same distance out every way round, never past the square the game reads (`controls_stick`,
+`platform/controls.c`). It's done to each player's own controller before the game has it, so online each machine's players have their
+own and every machine sees the same presses. While it's chosen, a box of its own in the panel's empty right-hand side (the user's
+word, so nothing else moves) shows a ring for the stick's reach, the deadzone in it (ORIGINAL's a square, as it's each axis on its
+own), and a dot for where player 1's stick is, green once it'd move a hero (`draw_deadzone`). On that row the stick is only for
+trying out there: the d-pad and the keys change it and move off it. It's kept as `stick_deadzone=N`. `--check-sticks` (a `ctest`)
+checks the line's at the deadzone at every angle, through the game's own averaging of a stick, and that ORIGINAL is as it was;
+`playtest.mjs pads` has a Battle where a stick a third of the way out moves the hero at 20% and not at ORIGINAL.
+
 The menu is PLAY, SETTINGS and QUIT, with the settings in categories; a new setting is a row in its category's table and a case in
 `change_setting` and `show_value`. The main menu's EXIT comes back to it.
 
@@ -295,6 +308,9 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--turbo` | don't wait for the clock, to reach late moments quickly |
 | `--pretend-pads N` | plug in N pretend controllers (SDL's virtual gamepads, "Pretend pad 1" on), and use no real ones; up to four can come and go |
 | `--pad-press P N BUTTONS` | hold pretend controller P's buttons (1 to 4; hex, `platform.h`) from vblank N for a few vblanks |
+| `--pad-stick P N X Y` | put pretend controller P's left stick at X, Y (percent of the way out, -100 to 100) from vblank N, till it's moved again |
+| `--stick-deadzone N` | the sticks' deadzone, in percent (0: the game's own) |
+| `--check-sticks` | check the deadzone's line is where it should be at every angle (a `ctest`) |
 | `--pad-unplug P N`, `--pad-plug P N` | pull pretend controller P out, or plug it in, at vblank N |
 | `--key-press N KEY` | hold a pretend key (SDL's name: `J`, `Escape`, `Right Shift`) from vblank N for a few vblanks, through the CONTROLS page's keys as a real one is |
 | `--depth-clip` | draw as a device without depth clamping does (some phones): a point outside the depth range is clipped, not drawn at its edge (gfx.c, `make_device`) |

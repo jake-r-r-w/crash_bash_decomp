@@ -32,6 +32,7 @@ typedef struct Settings {
     /* an online game's sound options, which are each machine's own there (game/main/online.c): the volumes, 0 to 100 as the game has
        them, and stereo or mono. Offline they're the game's, kept in its saves */
     int online_music, online_sfx, online_stereo;
+    int stick_deadzone; /* how far out a stick has to go to count, in percent: 0 is the game's own (controls.c, controls_stick) */
     int keys[NUM_CONTROLS];    /* each game button's key, an SDL scancode (controls.h) */
     int buttons[NUM_CONTROLS]; /* and its controller button, SDL's or a trigger */
     ModChoice mods[SETTINGS_MODS]; /* the mods in the player's order, first first */
