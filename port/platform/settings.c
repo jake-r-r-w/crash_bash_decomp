@@ -32,6 +32,10 @@ void settings_defaults(void) {
     Current.upscale = 1;
     Current.icons = 0;
     Current.extra_heroes = 0;
+    /* as the game starts with */
+    Current.online_music = 70;
+    Current.online_sfx = 100;
+    Current.online_stereo = 1;
     controls_default_keys(Current.keys);
     controls_default_buttons(Current.buttons);
     Current.texture_pack[0] = 0;
@@ -113,6 +117,12 @@ void settings_load(void) {
             Current.icons = a != 0;
         } else if (sscanf(line, "extra_heroes=%d", &a) == 1) {
             Current.extra_heroes = a != 0;
+        } else if (sscanf(line, "online_music=%d", &a) == 1 && a >= 0 && a <= 100) {
+            Current.online_music = a;
+        } else if (sscanf(line, "online_sfx=%d", &a) == 1 && a >= 0 && a <= 100) {
+            Current.online_sfx = a;
+        } else if (sscanf(line, "online_stereo=%d", &a) == 1) {
+            Current.online_stereo = a != 0;
         } else if (sscanf(line, "texture_pack=%63[^\r\n]", Current.texture_pack) == 1) {
             /* that's it */
         } else if (strncmp(line, "mod=", 4) == 0 && Current.num_mods < SETTINGS_MODS) {
@@ -205,6 +215,9 @@ static void save_settings(void) {
     fprintf(f, "upscale=%d\n", Current.upscale);
     fprintf(f, "icons=%d\n", Current.icons);
     fprintf(f, "extra_heroes=%d\n", Current.extra_heroes);
+    fprintf(f, "online_music=%d\n", Current.online_music);
+    fprintf(f, "online_sfx=%d\n", Current.online_sfx);
+    fprintf(f, "online_stereo=%d\n", Current.online_stereo);
     for (i = 0; i < NUM_CONTROLS; i++) {
         fprintf(f, "key_%s=%s\n", control_file_id(i), controls_key_id(Current.keys[i]));
     }

@@ -38,7 +38,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   to the game's logic, sound, heap or pads. Nothing a machine's own settings or timing decide may reach the game's state.
   `playtest.mjs online` plays whole online games with every machine a copy on this PC (`port/platform/net.c`: `--host PORT`,
   `--join ADDRESS:PORT`), and through the launcher's ONLINE screens, for a change to the network layer, the launcher or how the game
-  reads its pads. An online game starts the game again from its beginning in the same window (`platform_restart`): all the game's
+  reads its pads. Whatever a press changes, changes on every machine: an option that should be a player's own goes through
+  `port/game/main/online.c`, as the sound options do, and the players' connection tags are drawn from there.
+  An online game starts the game again from its beginning in the same window (`platform_restart`): all the game's
   data is in sections saved at the start (`port/platform/overlays.c`), so a new global in `port/game` needs nothing, but state the
   game reads from `port/platform` has to be put back there too.
 - The port on Linux: `tools/dl` runs a command in its Docker container (Debian 12, SDL3, Xvfb and software Vulkan): builds with the

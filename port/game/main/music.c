@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/music.h"
+#include "bash/online.h"
 
 void music_open_seq(music_midi *slot, s32 idx) {
     s16 vol;
@@ -13,9 +14,9 @@ void music_open_seq(music_midi *slot, s32 idx) {
     audio_song_open(slot->songs[idx], (s16)slot->seq);
     slot->handle = idx;
     audio_song_play((s16)slot->seq, 1, 0);
-    vol = (GameOptions.music * 0x7F) / 100;
+    vol = (heard_music() * 0x7F) / 100;
     audio_song_volume((s16)slot->seq, vol, vol);
-    MusicVolCur = (GameOptions.music * 0x7F) / 100;
+    MusicVolCur = (heard_music() * 0x7F) / 100;
     audio_set_mute(0);
 }
 
@@ -44,17 +45,17 @@ void music_update(void) {
         }
     } else {
         if (slot->seq >= 0) {
-            vol = (GameOptions.music * 0x7F) / 100;
+            vol = (heard_music() * 0x7F) / 100;
             if (MusicVolCur != vol || MusicDuck != MusicDuckCur) {
                 if (MusicDuck != 0) {
-                    SeqSlot_SetVol(slot, (GameOptions.music * 0x55) / 100);
+                    SeqSlot_SetVol(slot, (heard_music() * 0x55) / 100);
                 } else {
                     SeqSlot_SetVol(slot, vol);
                 }
             }
         }
         MusicDuckCur = MusicDuck;
-        MusicVolCur = (GameOptions.music * 0x7F) / 100;
+        MusicVolCur = (heard_music() * 0x7F) / 100;
     }
 }
 

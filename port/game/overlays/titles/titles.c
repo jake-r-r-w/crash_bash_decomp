@@ -5,6 +5,7 @@
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
 #include "bash/videomenu.h"
+#include "bash/online.h"
 #include "bash/extraheroes.h"
 #include "bash/bonusheroes.h"
 #include "bash/herodef.h"
@@ -1176,6 +1177,21 @@ void OptionsUpdate(void) {
         sub[9].unk7C = 0;
         sub[6].unk7C = 0;
         sub[7].unk7C = 0;
+        /* PC: online, the sound options are each machine's own (main/online.c): player 1's machine changes its own, the game's are
+           left alone, and the moves sound on every machine alike */
+        if (own_options()) {
+            if ((Pads[0].pressed & 0xA0) && OptionsCursor != 1) {
+                PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (Pads[0].pressed & 0xA0) {
+                own_sound_change(0, OptionsCursor == 0 ? OWN_STEREO : OptionsCursor == 1 ? OWN_MUSIC : OWN_SFX, (Pads[0].pressed & 0x20) ? 1 : -1);
+            }
+            sub[OptionsCursor == 0 ? 3 : OptionsCursor == 1 ? 6 : 8].unk7C = 2;
+            sub[OptionsCursor == 0 ? 4 : OptionsCursor == 1 ? 7 : 9].unk7C = 2;
+            if (OptionsCursor == 0) {
+                sub[5].unk7C = 2;
+            }
+        } else
         switch (OptionsCursor) {
         case 0:
             if (Pads[0].pressed & 0xA0) {
@@ -1244,7 +1260,10 @@ void OptionsUpdate(void) {
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (Pads[0].pressed & 0xA0) {
-            video_option_change(OptionsCursor, (Pads[0].pressed & 0x20) ? 1 : -1);
+            /* online, a machine's video options are its own players' to change */
+            if (own_press(0)) {
+                video_option_change(OptionsCursor, (Pads[0].pressed & 0x20) ? 1 : -1);
+            }
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         break;
@@ -1268,15 +1287,15 @@ void OptionsRender(void) {
     RenderState.modelDp = ScreenFade.amount;
     switch (OptionsPage) {
     case 1:
-        FormatPercent(sub[7].u6C.dbase, GameOptions.music);
-        if (GameOptions.stereo != 0) {
+        FormatPercent(sub[7].u6C.dbase, heard_music());
+        if (heard_stereo() != 0) {
             sub[5].flags &= ~0x8000;
             sub[4].flags |= 0x8000;
         } else {
             sub[5].flags |= 0x8000;
             sub[4].flags &= ~0x8000;
         }
-        FormatPercent(sub[9].u6C.dbase, GameOptions.sfx);
+        FormatPercent(sub[9].u6C.dbase, heard_sfx());
         break;
     case 3:
         for (i = 0; i < VIDEO_ROWS; i++) {

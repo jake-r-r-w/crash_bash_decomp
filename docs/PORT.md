@@ -310,7 +310,8 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--restart-on-play` | the launcher's PLAY starts the game again from its beginning, as an online game's START does |
 | `--online-local`, `--online-port N` | the launcher's online games are this PC's alone, and on that port |
 | `--online-pretend-router open\|refused\|none\|shared` | hosting asks no router for a port, and is told that |
-| `--check-router` | ask the router for a port as HOST GAME does, a step at a time, saying what each step found, and close it again: for when hosting says the router won't |
+| `--check-router` | list this PC's network adapters and what each is taken for, then ask the router for a port as HOST GAME does, a step at a time, saying what each step found, and close it again: for when hosting says the router won't, or doesn't offer a virtual network's address |
+| `--online-pretend-network "NAME=ADDRESS"` | a test: this PC has one more network adapter, called that, with that address |
 | `--make-code ADDRESS N`, `--check-codes` | print the join code for an address and port N of the eight; check codes are made and read right |
 | `--controllers none|N`, `--no-sound` | for several copies of the game on one PC: this copy uses no controller, or only the Nth found (from 1), read even when its window isn't in front; and plays no sound |
 | `--shot N FILE` | save vblank N as a PNG |
@@ -406,7 +407,9 @@ JOIN GAME, in the game's own menus, as the players screen is:
   hosting (`T_FIND`, a broadcast), and each host with its lobby open answers. Cross joins one. Under them is ADDRESS, for a host
   that isn't on this network or didn't show: digits and dots from the keyboard, or with a controller up and down for the last
   character, right for another and left to take one off. It starts with this machine's own address as far as its last dot, as the
-  host's is most likely beside it. Joined, it waits for the host's START.
+  host's is most likely beside it. Joined, it shows who's here as the host's screen does, and waits for the host's START: the host
+  says who with every ping (`send_ping`: how many machines, which this one is, and the players each brings). This PC is said as
+  that, the host by its address, and the others only as other players, as their addresses are the host's to know.
 - What goes wrong is said under the menu: nobody hosting at that address, another version of the game, different game data, a full
   game, the host gone.
 
@@ -439,6 +442,37 @@ to every ping and a step to the delay.
 whose vblanks count from 0 again. `--turbo` after `--then` is flat out from that start on, so a test can go through the launcher
 in real time, as finding and joining need, and then play fast. `--online-local` keeps the launcher's games to this PC (hosted at
 127.0.0.1 and looked for there, so Windows doesn't ask about the firewall), and `--online-port N` puts them on another port.
+
+### In the game: what's a machine's own, and who's there
+
+`game/main/online.c`. Every machine runs the same game from the same presses, so whatever a press changes, changes on all of
+them. That's wrong for a player's own options, and the game itself says nothing of anyone else being there.
+
+**The sound options** (the pause menu's and the main menu's: stereo or mono, music and effects volume) are each machine's own
+online: one player turning the music down mustn't turn it down for everyone (the user's word, 2026-11-10). They're kept in the
+settings file (`online_music`, `online_sfx`, `online_stereo`), shown on that machine, and changed only by presses of its own
+players (`own_sound_change`, by the pad that pressed: the pausing player's, or player 1's in the main menu). What the sound plays
+by is `heard_music` and its like: the game's own options offline, the machine's own online. The game's own (`GameOptions`) are
+left alone for as long as the game's online, as they're in its saves and its fingerprint. Machines can differ in what volume a
+voice sounds at because the game never reads that back, only which voices have ended. The moves on those pages make their sounds
+on every machine alike, whoever's they are, so the same voices are in use everywhere; that takes the blip a volume makes at its
+limit too, where offline there's none. The credits' fade of the effects, which is done on the game's own option, isn't heard
+online. The video options in the same menus were a machine's own settings already; online only the machine whose player pressed
+changes its own (`own_press`). `playtest.mjs online` has a joiner's player change all three in the pause menu: that machine's
+change, the host's don't, and the games stay the same.
+
+**Who's there.** Each player who's connected carries a small, faint tag over their icon on the game's own panel (`DrawLevelHud`
+calls `online_tag_draw` where it draws each player's icon, so it's right in every game): a dot and which player they are, or
+YOU. The dot is green while that player's connection keeps up; orange for three seconds after the game has had to wait a tenth
+of a second for it; red when it's stopped answering (blinking, as the others play on without it) or gone. The host knows each
+machine's state and sends it with every step's record (a byte of who's not answering and who's left, and one of who's slow); a
+joiner knows for itself when the host's packets stop coming (the host still sends while it waits for someone else). Where the
+game has no panel, in its menus and the warp rooms, the same tags are in a row at the foot of the screen. Words come only for
+six seconds at a time: as the game starts (ONLINE, how many players, and which this machine's is), and when a player stops
+answering, is back, or leaves. It's drawn with the game's own text and reads only the network's state, so it changes nothing the
+game goes by. How it looks is the user's choice of three designs drawn for them (2026-11-10), after a line of text that stayed
+was "abit in your face" and dots alone didn't say how many were connected; they asked for it fainter than drawn, and for the
+dot's three colours.
 
 ### Join codes (step 3)
 
@@ -482,8 +516,16 @@ tool's own servers. The host hosts as ever; nothing is asked of any router that 
 network the machine is on, each adapter's by name (`everyone_on_each`), not only the main one's, so a game on a virtual network
 shows by itself like one at home: tried here with a game hosted only on a Hyper-V adapter's address, which was found, joined and
 played. That needs the tool to carry broadcasts, which Hamachi, Radmin VPN and ZeroTier do; Tailscale doesn't, and there the
-host's address in it is typed in the CODE row. Not tried with any of those tools themselves. Windows treats such a network as a
-public one, so its firewall question has to be allowed for public networks too.
+host's address in it is typed in the CODE row. Windows treats such a network as a public one, so its firewall question has to be
+allowed for public networks too.
+
+The host's screen says the address to join at on each virtual network the PC is on, "ON HAMACHI, THEY JOIN AT 25.17.9.118", with
+the one for its own network; when the router can't help, that's said in place of what else could be done, as such a network is
+the answer to it (`net_lobby_network`, `router_lines`). An adapter is taken for a virtual network by its name (`virtual_network`:
+Hamachi, Radmin, ZeroTier, Tailscale), or by its address for the two whose addresses nobody else has (Hamachi's start 25, Radmin
+VPN's 26). A PC's other adapters, a virtual machine's or a work VPN's, are no use to players and can't be told apart by name, so
+they aren't offered. `--check-router` lists every adapter and what it's taken for; on the user's PC it finds their Hamachi
+(2026-11-10). No game has been played over one of these tools yet: that's the user's to try with a friend.
 
 **For tests** no router is ever asked: `--online-local` games don't, and `--online-pretend-router open|refused|none|shared` gives
 that answer after a moment. `--make-code ADDRESS N` prints the code for an address and port N of the eight, and `--check-codes`
@@ -538,7 +580,8 @@ mods' textures are each player's own.
 every machine and says so, as from then on they'd be playing different games.
 
 **A machine that stops answering.** The host waits 5 seconds for it (`--net-patience MS`), then plays on without waiting: that
-machine's pads are as they last were, with nothing held, so its hero stands there. (Pulled out, the game would pause for the
+machine's pads are as they last were, with nothing held, so its hero stands there, and its player's tag goes red on everyone's
+screen. (Pulled out, the game would pause for the
 controller to come back, as it does offline, and everyone would wait on a machine that may never.) If the machine was only stalled,
 as when its window's dragged, it plays the steps it missed flat out, and once its pads arrive in time again the host waits for it as
 before. A machine more than a minute behind is told it's out. A joiner that leaves says so, and the others play on at once. If the

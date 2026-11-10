@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/sound.h"
+#include "bash/online.h"
 
 void sound_reset_counter(void) {
     SoundCritical = 0;
@@ -181,7 +182,7 @@ S16Pair sfx_position_volume(VECTOR *pos) {
 
     ViewProject(pos, (s32 *)&sxy);
     vol = ViewVolumeXY(pos, &MainCamera, (s32 *)&ret);
-    if (GameOptions.stereo != 0) {
+    if (heard_stereo() != 0) {
         vol *= 0x1450;
         vol /= 4096;
         if (vol > 0x1000) {
@@ -204,18 +205,18 @@ void sfx_change_pitch(PitchVoice *arg0, s32 arg1) {
 }
 
 void sfx_set_voice_volume(s16 *arg0, s32 arg1, s32 arg2) {
-    s32 vol = GameOptions.sfx * 0x7F;
+    s32 vol = heard_sfx() * 0x7F;
 
     audio_voice_volume(*arg0, (arg1 * vol) / 409600, (arg2 * vol) / 409600);
 }
 
 s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    GameOptionSet *p = &GameOptions;
+    s32 vol = heard_sfx() * 0x7F;
     s8 *sfx = SfxTable[arg1];
     s16 v;
 
     v = audio_note_on(sfx[0], (s32)(((u8 *)sfx)[1] << 24) >> 28, ((u8 *)sfx)[1] & 0xF, (s32)(arg2 << 9) >> 16,
-                  arg2 & 0x7F, (arg3 * ((p->sfx << 7) - p->sfx)) / 409600, (arg4 * ((p->sfx << 7) - p->sfx)) / 409600);
+                  arg2 & 0x7F, (arg3 * vol) / 409600, (arg4 * vol) / 409600);
     arg0[0] = v;
     ((PitchVoice *)arg0)->info = (PitchInfo *)sfx;
     if (v != -1) {

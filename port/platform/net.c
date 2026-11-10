@@ -51,7 +51,7 @@ typedef int SOCKET;
 #include "settings.h"
 
 #define MAGIC 0x314E4243u /* "CBN1" */
-#define PROTOCOL 1
+#define PROTOCOL 2
 #define MACHINES 4
 #define PADS 4
 #define PAD_BYTES 7 /* what's there, the buttons, the sticks */
@@ -66,6 +66,8 @@ typedef int SOCKET;
 #define PRINTS 64
 #define RESEND_MS 12
 #define HOST_GONE_MS 10000
+#define SLOW_MS 100        /* a wait this long for a machine's pads, or the host's packets, and its connection is slow */
+#define SLOW_SHOWN_MS 3000 /* and it's said to be for this long after */
 
 enum { PAD_THERE = 1, PAD_STICKS = 2, PAD_RUMBLES = 4 };
 enum { T_JOIN = 1, T_WELCOME, T_PING, T_PONG, T_SAVE, T_START, T_READY, T_INPUT, T_RECORD, T_BYE, T_FIND, T_HERE };
@@ -84,6 +86,7 @@ typedef struct {
     int quiet;       /* not waited for: it's stopped answering */
     int left;        /* it's said goodbye, or been told to go */
     Uint64 heard;    /* when it last said anything */
+    Uint64 slow_at;  /* when the game last had to wait for it, or 0 */
     int32_t have;    /* its pads are here for every step before this */
     int32_t acked;   /* it has every step's record before this */
     int ready;       /* what it has of the start */
@@ -125,6 +128,10 @@ static int NumFound;
 static Uint64 AnswerTill; /* a joiner: till then it does nothing but answer pings, so they're timed truly */
 static int HostLeft; /* a joiner: the host has said goodbye, and what it sent before that is all there is */
 static int LeftOut;  /* a joiner: the host is playing on without waiting for this machine, till its pads arrive in time again */
+static int Gone;     /* a joiner: the machines the host is playing on without (bit m), and those gone for good (bit 4 + m) */
+static int Slow;     /* a joiner: the machines the host has lately had to wait for (bit m) */
+/* A joiner in the lobby: who's there, as the host last said: how many machines, which is this one, and the players each brings */
+static int RosterMachines, RosterMe, RosterPads[MACHINES];
 static FILE *Recording, *Replaying;
 static int ReplayPlayers; /* how many players a recording's game had */
 /* how it went, for a test run to say */
@@ -447,6 +454,31 @@ static void finalise(void) {
     }
 }
 
+/* The machines the game's going on without, for the others to show: bit m for one that isn't answering, bit 4 + m for one that's
+   gone for good. */
+static int gone_mask(void) {
+    int m, mask = 0;
+
+    for (m = 1; m < NumMachines; m++) {
+        mask |= (Machines[m].quiet ? 1 << m : 0) | (Machines[m].left ? 16 << m : 0);
+    }
+    return mask;
+}
+
+/* Whether the game has had to wait for a machine in the last few seconds. */
+static int slow_now(const Machine *mc) {
+    return mc->slow_at != 0 && SDL_GetTicks() - mc->slow_at < SLOW_SHOWN_MS;
+}
+
+static int slow_mask(void) {
+    int m, mask = 0;
+
+    for (m = 1; m < NumMachines; m++) {
+        mask |= slow_now(&Machines[m]) ? 1 << m : 0;
+    }
+    return mask;
+}
+
 static void send_records(int m) {
     Machine *mc = &Machines[m];
     uint8_t buf[PACKET_MOST], *p = begin(buf, T_RECORD);
@@ -462,6 +494,8 @@ static void send_records(int m) {
     p = put(p, (uint32_t)print->step, 4);
     p = put(p, print->value, 4);
     p = put(p, (uint32_t)mc->quiet, 1);
+    p = put(p, (uint32_t)gone_mask(), 1);
+    p = put(p, (uint32_t)slow_mask(), 1);
     p = put(p, (uint32_t)mc->acked, 4);
     p = put(p, (uint32_t)count, 1);
     for (i = 0; i < count; i++) {
@@ -690,7 +724,8 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
     host->heard = SDL_GetTicks();
     if (type == T_PING) {
         uint8_t buf[32], *p = begin(buf, T_PONG);
-        uint32_t sent = get(r, 4), timed = get(r, 1);
+        uint32_t sent = get(r, 4), timed = get(r, 1), machines = get(r, 1), me = get(r, 1), m;
+        int pads[MACHINES];
 
         p = put(p, Session, 4);
         p = put(p, (uint32_t)Me, 1);
@@ -698,6 +733,15 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
         send_packet(&host->addr, buf, p);
         if (!r->bad && timed != 0) {
             AnswerTill = SDL_GetTicks() + 60;
+        }
+        /* and who's in the lobby now, for this machine to show */
+        for (m = 0; m < machines && m < MACHINES; m++) {
+            pads[m] = (int)get(r, 1);
+        }
+        if (!r->bad && machines >= 2 && machines <= MACHINES && me >= 1 && me < machines) {
+            RosterMachines = (int)machines;
+            RosterMe = (int)me;
+            memcpy(RosterPads, pads, sizeof(pads[0]) * machines);
         }
     } else if (type == T_SAVE || type == T_START) {
         uint8_t buf[32], *p = begin(buf, T_READY);
@@ -744,7 +788,7 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
         send_packet(&host->addr, buf, p);
     } else if (type == T_RECORD && Role == JOINER) {
         int32_t acked = (int32_t)get(r, 4), host_next = (int32_t)get(r, 4), print_step = (int32_t)get(r, 4);
-        uint32_t print = get(r, 4), quiet = get(r, 1);
+        uint32_t print = get(r, 4), quiet = get(r, 1), gone = get(r, 1), slow = get(r, 1);
         int32_t first = (int32_t)get(r, 4);
         int count = (int)get(r, 1), i;
 
@@ -753,6 +797,8 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
         }
         if (host_next >= HostNext) {
             LeftOut = (int)quiet;
+            Gone = (int)gone;
+            Slow = (int)slow;
         }
         if (acked > HostAcked && acked <= Machines[Me].have) {
             HostAcked = acked;
@@ -872,14 +918,10 @@ static int default_port(void) {
     return Options.port > 0 ? Options.port : NET_PORT;
 }
 
-static int open_socket(const char *address, int port, int bind_it, struct sockaddr_in *out) {
-    struct addrinfo hints, *found = NULL;
-    char service[16];
-    int yes = 1;
+/* Windows wants asking before the first socket. */
+static int sockets_start(void) {
 #ifdef _WIN32
     static int started;
-    u_long on = 1;
-    DWORD off = 0, got = 0;
     WSADATA data;
 
     if (!started && WSAStartup(MAKEWORD(2, 2), &data) != 0) {
@@ -887,6 +929,21 @@ static int open_socket(const char *address, int port, int bind_it, struct sockad
     }
     started = 1;
 #endif
+    return 1;
+}
+
+static int open_socket(const char *address, int port, int bind_it, struct sockaddr_in *out) {
+    struct addrinfo hints, *found = NULL;
+    char service[16];
+    int yes = 1;
+#ifdef _WIN32
+    u_long on = 1;
+    DWORD off = 0, got = 0;
+#endif
+
+    if (!sockets_start()) {
+        return 0;
+    }
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
@@ -1115,6 +1172,7 @@ static void reset_session(void) {
     Have = Next = HostNext = HostAcked = 0;
     prints_clear(Mine);
     Welcomed = Refused = Ready = Ended = HostLeft = LeftOut = Differed = 0;
+    Gone = Slow = RosterMachines = RosterMe = 0;
     AnswerTill = 0;
     Timing = 0;
     LateFirst = LateCount = 0;
@@ -1161,6 +1219,23 @@ int net_lobby_host(const char *where) {
     return 1;
 }
 
+/* A ping, which also says who's in the lobby, for the machine to show: how many machines, which of them it is, and the players each
+   brings. */
+static void send_ping(int m, Uint64 now, int timed) {
+    uint8_t buf[32], *p = begin(buf, T_PING);
+    int k;
+
+    p = put(p, Session, 4);
+    p = put(p, (uint32_t)now, 4);
+    p = put(p, (uint32_t)timed, 1);
+    p = put(p, (uint32_t)NumMachines, 1);
+    p = put(p, (uint32_t)m, 1);
+    for (k = 0; k < NumMachines; k++) {
+        p = put(p, (uint32_t)(k == 0 ? own_pads() : Machines[k].pads), 1);
+    }
+    send_packet(&Machines[m].addr, buf, p);
+}
+
 /* How long a packet takes to each machine and back, timed with nothing in the way: for a quarter of a second the host and the
    joiners do nothing but this. In the lobby each side only looks at what's come once a vblank, which adds up to two of them to
    every ping, and the delay would be a step longer than the network needs. The middle one of each machine's, so one late packet
@@ -1177,12 +1252,7 @@ static void time_pings(void) {
         if (now - sent >= 10 && now - began < 220) {
             sent = now;
             for (m = 1; m < NumMachines; m++) {
-                uint8_t buf[32], *p = begin(buf, T_PING);
-
-                p = put(p, Session, 4);
-                p = put(p, (uint32_t)now, 4);
-                p = put(p, 1, 1);
-                send_packet(&Machines[m].addr, buf, p);
+                send_ping(m, now, 1);
             }
         }
         wait_packet(1);
@@ -1316,18 +1386,30 @@ int net_lobby_found(int i, char *text, size_t room) {
 }
 
 int net_lobby_machines(void) {
-    return Lobby == LOBBY_OPEN || Lobby == LOBBY_STARTING ? NumMachines : 0;
+    return Lobby == LOBBY_OPEN || Lobby == LOBBY_STARTING ? NumMachines : Lobby == LOBBY_IN ? RosterMachines : 0;
 }
 
-/* A machine in the host's lobby: its address and ping as text (nothing for the host's own), and how many players it brings. */
+int net_lobby_me(void) {
+    return Lobby == LOBBY_IN ? RosterMe : 0;
+}
+
+/* A machine in the lobby, and how many players it brings. To the host: its address and ping as text (nothing for the host's own). To
+   a machine that's joined: the host's address, and nothing for the others. */
 int net_lobby_machine(int m, char *text, size_t room) {
     char ip[32] = "?";
 
+    text[0] = '\0';
     if (m < 0 || m >= net_lobby_machines()) {
         return 0;
     }
+    if (Lobby == LOBBY_IN) {
+        if (m == 0) {
+            inet_ntop(AF_INET, &Machines[0].addr.sin_addr, ip, sizeof(ip));
+            SDL_snprintf(text, room, "%s", ip);
+        }
+        return RosterPads[m];
+    }
     if (m == 0) {
-        text[0] = '\0';
         return own_pads();
     }
     inet_ntop(AF_INET, &Machines[m].addr.sin_addr, ip, sizeof(ip));
@@ -1335,16 +1417,144 @@ int net_lobby_machine(int m, char *text, size_t room) {
     return Machines[m].pads;
 }
 
-/* This machine's address on its network, for the host to tell the others: the one its packets to the wider world would leave by. */
-const char *net_lobby_address(void) {
-    static char text[64];
+/* --- the networks this machine is on ---
+ *
+ * A PC is often on more than one: its Wi-Fi or cable, and a virtual network (Hamachi, Radmin VPN, ZeroTier, Tailscale), which is what
+ * players use when no router will let them in (docs/PORT.md, Online play). Each is one more adapter with an address of its own. A
+ * game is looked for on every one of them, and the host's screen says the address to join at on each that players may be on. */
+typedef struct {
+    struct in_addr address;
+    struct in_addr everyone; /* the address that reaches everyone on it, or 0.0.0.0 if it has none */
+    char called[160];        /* its name, and on Windows what it is too: "Hamachi (LogMeIn Hamachi Virtual Ethernet Adapter)", or "ham0" */
+} Adapter;
+
+static int adapters(Adapter *out, int most) {
+    int n = 0;
+    /* (a test's games are this PC's alone, and so none of its real networks count: Options.local) */
+#ifdef _WIN32
+    ULONG size = 32 * 1024;
+    IP_ADAPTER_ADDRESSES *list = Options.local ? NULL : malloc(size), *a;
+
+    if (list == NULL || GetAdaptersAddresses(AF_INET, GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_DNS_SERVER, NULL, list, &size) != NO_ERROR) {
+        free(list);
+        list = NULL;
+    }
+    for (a = list; a != NULL; a = a->Next) {
+        IP_ADAPTER_UNICAST_ADDRESS *u;
+
+        if (a->OperStatus != IfOperStatusUp || a->IfType == IF_TYPE_SOFTWARE_LOOPBACK) {
+            continue;
+        }
+        for (u = a->FirstUnicastAddress; u != NULL && n < most; u = u->Next) {
+            const struct sockaddr_in *at = (const struct sockaddr_in *)u->Address.lpSockaddr;
+            char *name, *what;
+
+            if (at->sin_family != AF_INET) {
+                continue;
+            }
+            out[n].address = at->sin_addr;
+            out[n].everyone.s_addr = 0;
+            if (u->OnLinkPrefixLength > 0 && u->OnLinkPrefixLength < 31) {
+                out[n].everyone.s_addr = at->sin_addr.s_addr | ~htonl(0xFFFFFFFFu << (32 - u->OnLinkPrefixLength));
+            }
+            name = SDL_iconv_string("UTF-8", "UTF-16LE", (const char *)a->FriendlyName, (SDL_wcslen(a->FriendlyName) + 1) * sizeof(WCHAR));
+            what = SDL_iconv_string("UTF-8", "UTF-16LE", (const char *)a->Description, (SDL_wcslen(a->Description) + 1) * sizeof(WCHAR));
+            SDL_snprintf(out[n].called, sizeof(out[n].called), "%s (%s)", name != NULL ? name : "?", what != NULL ? what : "?");
+            SDL_free(name);
+            SDL_free(what);
+            n++;
+        }
+    }
+    free(list);
+#elif !defined(__ANDROID__) || __ANDROID_API__ >= 24
+    struct ifaddrs *list, *a;
+
+    if (Options.local || getifaddrs(&list) != 0) {
+        list = NULL;
+    }
+    for (a = list; a != NULL && n < most; a = a->ifa_next) {
+        if (a->ifa_addr == NULL || a->ifa_addr->sa_family != AF_INET || !(a->ifa_flags & IFF_UP) || (a->ifa_flags & IFF_LOOPBACK)) {
+            continue;
+        }
+        out[n].address = ((const struct sockaddr_in *)a->ifa_addr)->sin_addr;
+        out[n].everyone.s_addr = 0;
+        if ((a->ifa_flags & IFF_BROADCAST) && a->ifa_broadaddr != NULL) {
+            out[n].everyone = ((const struct sockaddr_in *)a->ifa_broadaddr)->sin_addr;
+        }
+        SDL_strlcpy(out[n].called, a->ifa_name, sizeof(out[n].called));
+        n++;
+    }
+    if (list != NULL) {
+        freeifaddrs(list);
+    }
+#endif
+    /* a test's: one more, as the command line has it */
+    if (Options.pretend_network != NULL && n < most) {
+        const char *equals = strrchr(Options.pretend_network, '=');
+
+        if (equals != NULL && inet_pton(AF_INET, equals + 1, &out[n].address) == 1) {
+            size_t len = (size_t)(equals - Options.pretend_network);
+
+            len = len < sizeof(out[n].called) - 1 ? len : sizeof(out[n].called) - 1;
+            memcpy(out[n].called, Options.pretend_network, len);
+            out[n].called[len] = '\0';
+            out[n].everyone.s_addr = 0;
+            n++;
+        }
+    }
+    return n;
+}
+
+/* Each network by the address that reaches everyone on it, for asking who's hosting: the plain "everyone" address only goes out of the
+   main adapter, and a virtual network's games should show by themselves like any other's. */
+static int everyone_on_each(struct in_addr *out, int most) {
+    Adapter all[16];
+    int count = adapters(all, 16), n = 0, i;
+
+    for (i = 0; i < count && n < most; i++) {
+        if (all[i].everyone.s_addr != 0) {
+            out[n++] = all[i].everyone;
+        }
+    }
+    return n;
+}
+
+/* The virtual network an adapter is, by its tool's name, or NULL if it isn't one this knows: by what the adapter's called, or by its
+   address where the tool has addresses nobody else uses (Hamachi's all start 25, Radmin VPN's 26). Other adapters a PC has (a virtual
+   machine's, a work VPN's) are no use to players, and telling those apart by name is guesswork, so only these are offered. */
+static const char *virtual_network(const char *called, struct in_addr address) {
+    char low[160];
+    unsigned first = ntohl(address.s_addr) >> 24;
+    size_t i;
+
+    for (i = 0; called[i] != '\0' && i < sizeof(low) - 1; i++) {
+        low[i] = called[i] >= 'A' && called[i] <= 'Z' ? (char)(called[i] - 'A' + 'a') : called[i];
+    }
+    low[i] = '\0';
+    if (strstr(low, "hamachi") != NULL || strncmp(low, "ham", 3) == 0 || first == 25) {
+        return "Hamachi";
+    }
+    if (strstr(low, "radmin") != NULL || first == 26) {
+        return "Radmin VPN";
+    }
+    if (strstr(low, "zerotier") != NULL || (low[0] == 'z' && low[1] == 't' && strchr(low, ' ') == NULL)) {
+        return "ZeroTier";
+    }
+    if (strstr(low, "tailscale") != NULL) {
+        return "Tailscale";
+    }
+    return NULL;
+}
+
+/* The main network's address: the one this machine's packets to the wider world would leave by. */
+static void main_address(char *text, size_t room) {
     struct sockaddr_in there, mine; /* (far and near are words Windows has taken) */
     socklen_t size = sizeof(mine);
     SOCKET s;
 
-    SDL_strlcpy(text, "127.0.0.1", sizeof(text));
-    if (Options.local || (s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET) {
-        return text;
+    SDL_strlcpy(text, "127.0.0.1", room);
+    if (Options.local || !sockets_start() || (s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET) {
+        return;
     }
     memset(&there, 0, sizeof(there));
     there.sin_family = AF_INET;
@@ -1352,10 +1562,92 @@ const char *net_lobby_address(void) {
     inet_pton(AF_INET, "192.0.2.1", &there.sin_addr);
     /* nothing's sent: a UDP socket's "connection" only picks the way out */
     if (connect(s, (const struct sockaddr *)&there, sizeof(there)) == 0 && getsockname(s, (struct sockaddr *)&mine, &size) == 0) {
-        inet_ntop(AF_INET, &mine.sin_addr, text, sizeof(text));
+        inet_ntop(AF_INET, &mine.sin_addr, text, (socklen_t)room);
     }
     closesocket(s);
-    return text;
+}
+
+/* The addresses a game here can be joined at: looked up again once a second, as the launcher asks every frame and a virtual network
+   can be switched on while its lobby's open. */
+#define NETWORKS 4
+static struct {
+    char address[32];
+    const char *name;
+} Networks[NETWORKS];
+static int NumNetworks;
+static Uint64 NetworksAt;
+
+static void find_networks(void) {
+    Adapter all[16];
+    Uint64 now = SDL_GetTicks();
+    int count, i, k;
+
+    if (NumNetworks > 0 && now - NetworksAt < 1000) {
+        return;
+    }
+    NetworksAt = now;
+    main_address(Networks[0].address, sizeof(Networks[0].address));
+    Networks[0].name = "";
+    NumNetworks = 1;
+    count = adapters(all, 16);
+    for (i = 0; i < count && NumNetworks < NETWORKS; i++) {
+        const char *name = virtual_network(all[i].called, all[i].address);
+        char text[32] = "";
+
+        inet_ntop(AF_INET, &all[i].address, text, sizeof(text));
+        for (k = 0; name != NULL && k < NumNetworks; k++) {
+            /* the main one may be it; and one address for each tool */
+            if (strcmp(Networks[k].address, text) == 0 || strcmp(Networks[k].name, name) == 0) {
+                name = NULL;
+            }
+        }
+        if (name != NULL) {
+            SDL_strlcpy(Networks[NumNetworks].address, text, sizeof(Networks[NumNetworks].address));
+            Networks[NumNetworks++].name = name;
+        }
+    }
+}
+
+const char *net_lobby_address(void) {
+    find_networks();
+    return Networks[0].address;
+}
+
+int net_lobby_network(int i, char *address, size_t room, const char **name) {
+    find_networks();
+    if (i < 0 || i >= NumNetworks) {
+        return 0;
+    }
+    SDL_strlcpy(address, Networks[i].address, room);
+    *name = Networks[i].name;
+    return 1;
+}
+
+/* For --check-router: every adapter, and what it's taken for, so a virtual network that isn't offered can be seen not to be. */
+void net_say_networks(void) {
+    Adapter all[16];
+    char main_one[32], text[32];
+    int count = adapters(all, 16), i;
+
+    main_address(main_one, sizeof(main_one));
+    printf("The networks this PC is on:\n");
+    for (i = 0; i < count; i++) {
+        const char *name = virtual_network(all[i].called, all[i].address);
+
+        text[0] = '\0';
+        inet_ntop(AF_INET, &all[i].address, text, sizeof(text));
+        if (strcmp(text, main_one) == 0) {
+            printf("  %s, %s: the main one, which players on it join at\n", all[i].called, text);
+        } else if (name != NULL) {
+            printf("  %s, %s: a virtual network (%s), which players on it join at\n", all[i].called, text, name);
+        } else {
+            printf("  %s, %s: not one for players\n", all[i].called, text);
+        }
+    }
+    if (count == 0) {
+        printf("  none\n");
+    }
+    fflush(stdout);
 }
 
 const char *net_lobby_problem(void) {
@@ -1402,53 +1694,6 @@ void net_lobby_leave(void) {
     Lobby = LOBBY_OFF;
 }
 
-/* Every network this machine is on, by the address that reaches everyone on it: for asking who's hosting. The plain "everyone"
-   address only goes out of the main adapter, and a virtual network (Hamachi, Radmin VPN, ZeroTier: what players use when no router
-   will let them in) is one more adapter, whose games should show by themselves like any other network's. */
-static int everyone_on_each(struct in_addr *out, int most) {
-    int n = 0;
-#ifdef _WIN32
-    ULONG size = 32 * 1024;
-    IP_ADAPTER_ADDRESSES *list = malloc(size), *a;
-
-    if (list == NULL || GetAdaptersAddresses(AF_INET, GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_DNS_SERVER, NULL, list, &size) != NO_ERROR) {
-        free(list);
-        return 0;
-    }
-    for (a = list; a != NULL; a = a->Next) {
-        IP_ADAPTER_UNICAST_ADDRESS *u;
-
-        if (a->OperStatus != IfOperStatusUp || a->IfType == IF_TYPE_SOFTWARE_LOOPBACK) {
-            continue;
-        }
-        for (u = a->FirstUnicastAddress; u != NULL && n < most; u = u->Next) {
-            const struct sockaddr_in *at = (const struct sockaddr_in *)u->Address.lpSockaddr;
-
-            if (at->sin_family == AF_INET && u->OnLinkPrefixLength > 0 && u->OnLinkPrefixLength < 31) {
-                out[n++].s_addr = at->sin_addr.s_addr | ~htonl(0xFFFFFFFFu << (32 - u->OnLinkPrefixLength));
-            }
-        }
-    }
-    free(list);
-#elif !defined(__ANDROID__) || __ANDROID_API__ >= 24
-    struct ifaddrs *list, *a;
-
-    if (getifaddrs(&list) != 0) {
-        return 0;
-    }
-    for (a = list; a != NULL && n < most; a = a->ifa_next) {
-        if (a->ifa_addr != NULL && a->ifa_addr->sa_family == AF_INET && (a->ifa_flags & IFF_UP) && (a->ifa_flags & IFF_BROADCAST) && a->ifa_broadaddr != NULL) {
-            out[n++] = ((const struct sockaddr_in *)a->ifa_broadaddr)->sin_addr;
-        }
-    }
-    freeifaddrs(list);
-#else
-    (void)out;
-    (void)most;
-#endif
-    return n;
-}
-
 /* Once a frame while there's a lobby: where it's got to. */
 int net_lobby_poll(void) {
     const Settings *s = settings();
@@ -1493,13 +1738,8 @@ int net_lobby_poll(void) {
 
         for (m = 1; m < NumMachines; m++) {
             if (now - Machines[m].pinged >= (Uint64)(Machines[m].rtts < PINGS ? 30 : 400)) {
-                uint8_t buf[32], *p = begin(buf, T_PING);
-
                 Machines[m].pinged = now;
-                p = put(p, Session, 4);
-                p = put(p, (uint32_t)now, 4);
-                p = put(p, 0, 1);
-                send_packet(&Machines[m].addr, buf, p);
+                send_ping(m, now, 0);
                 pinged = 1;
             }
         }
@@ -1743,6 +1983,27 @@ int net_on(void) {
     return Role != OFFLINE;
 }
 
+int net_machines(void) {
+    return Role == HOST || Role == JOINER ? NumMachines : 0;
+}
+
+int net_me(void) {
+    return Me;
+}
+
+int net_machine(int m, int *first, int *pads) {
+    if (m < 0 || m >= net_machines()) {
+        *first = *pads = 0;
+        return NET_LEFT;
+    }
+    *first = Machines[m].first;
+    *pads = Machines[m].pads;
+    if (Role == HOST) {
+        return Machines[m].left ? NET_LEFT : Machines[m].quiet ? NET_QUIET : slow_now(&Machines[m]) ? NET_SLOW : NET_PLAYING;
+    }
+    return (Gone >> 4) & (1 << m) ? NET_LEFT : Gone & (1 << m) ? NET_QUIET : (Slow & (1 << m)) || (m == 0 && slow_now(&Machines[0])) ? NET_SLOW : NET_PLAYING;
+}
+
 int net_players(void) {
     int m, players = 0;
 
@@ -1803,6 +2064,17 @@ void net_step(void) {
         now = SDL_GetTicks();
         if (Role == HOST) {
             finalise();
+            if (Have <= Next && now - began > SLOW_MS) {
+                /* whoever this step is waiting for is holding everyone up */
+                for (m = 1; m < NumMachines; m++) {
+                    if (Machines[m].have <= Have && !Machines[m].quiet) {
+                        if (!slow_now(&Machines[m])) {
+                            say("machine %d is slow: the game waited for it, at step %d", m + 1, Have);
+                        }
+                        Machines[m].slow_at = now;
+                    }
+                }
+            }
             if (Have <= Next && now - began > (Uint64)Patience) {
                 /* whoever this step waits for has had long enough: on without them */
                 for (m = 1; m < NumMachines; m++) {
@@ -1818,6 +2090,9 @@ void net_step(void) {
             stop("Online play: the host has left the game.");
         } else if (now - Machines[0].heard > HOST_GONE_MS) {
             stop("Online play: the host has stopped answering.");
+        } else if (now > Machines[0].heard && now - Machines[0].heard > SLOW_MS) {
+            /* nothing from the host for a while: while it waits for another machine, it still sends */
+            Machines[0].slow_at = now;
         }
         if (Have != before || now - sent >= RESEND_MS) {
             send_news();

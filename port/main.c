@@ -569,6 +569,7 @@ int main(int argc, char **argv) {
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--check-router") == 0) {
             /* why HOST GAME says the router won't: what each step of asking it finds (portmap.c) */
+            net_say_networks();
             return portmap_check(NET_PORT, NET_PORT) ? 0 : 1;
         } else if (strcmp(argv[i], "--make-code") == 0 && i + 2 < argc) {
             /* a join code for an address and one of the eight ports from the usual one (0 to 7): what a test's joiner types */
@@ -770,6 +771,9 @@ int main(int argc, char **argv) {
             i++;
             net.pretend_router = strcmp(argv[i], "open") == 0 ? PORTMAP_OPEN : strcmp(argv[i], "refused") == 0 ? PORTMAP_REFUSED
                                  : strcmp(argv[i], "shared") == 0 ? PORTMAP_SHARED : PORTMAP_NO_ROUTER;
+        } else if (strcmp(argv[i], "--online-pretend-network") == 0 && i + 1 < argc) {
+            /* a test: this PC has one more network adapter, "WHAT IT'S CALLED=ADDRESS" */
+            net.pretend_network = argv[++i];
         } else if (strcmp(argv[i], "--online-port") == 0 && i + 1 < argc) {
             net.port = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--net-vanish") == 0 && i + 1 < argc) {

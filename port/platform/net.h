@@ -24,6 +24,7 @@ typedef struct NetOptions {
     int local;          /* a test: the launcher's games are this PC's alone: hosted at 127.0.0.1, and looked for there (--online-local) */
     int port;           /* the launcher's games' port, if not NET_PORT (--online-port) */
     int pretend_router; /* a test: no router's asked for a port, and the answer's this (PORTMAP_, portmap.h; --online-pretend-router) */
+    const char *pretend_network; /* a test: one more network adapter on this machine, as "WHAT IT'S CALLED=ADDRESS" (--online-pretend-network) */
 } NetOptions;
 
 /* What the command line asked of online play, for a game from there or from the launcher: before either. */
@@ -50,9 +51,18 @@ void net_lobby_find(void);
 int net_lobby_found(int i, char *text, size_t room); /* the i'th game found: its address, and how many machines are in it (0: no i'th) */
 int net_lobby_join(const char *where); /* an address, with a port or the usual one. 0: that's no address */
 int net_lobby_poll(void);
-int net_lobby_machines(void);                          /* hosting: how many machines are here, this one too */
-int net_lobby_machine(int m, char *text, size_t room); /* its address and ping (nothing for this one), and how many players it brings */
-const char *net_lobby_address(void);                   /* this machine's address on its network, for the others to join */
+/* Who's in the lobby, this machine too: as the host has them, or as it last told a machine that's joined (0 till it has). A machine's
+   text is its address and ping for the host (nothing for its own), and for one that's joined the host's address and nothing for the
+   others, whose addresses are the host's to know; what comes back is how many players it brings. */
+int net_lobby_machines(void);
+int net_lobby_machine(int m, char *text, size_t room);
+int net_lobby_me(void); /* which of them this machine is: 0 when hosting */
+const char *net_lobby_address(void); /* this machine's address on its main network, for the others to join */
+/* Each address this machine's game can be joined at: the main network's first, with a name of "", then one for each virtual network
+   it's on (Hamachi, Radmin VPN, ZeroTier, Tailscale), with that tool's name. 0: there's no i'th. */
+int net_lobby_network(int i, char *address, size_t room, const char **name);
+/* Every network adapter this machine has, and what each is taken for: said by --check-router. */
+void net_say_networks(void);
 /* Hosting: whether the router has let the world in (PORTMAP_, portmap.h), and the code the others join with once it has ("" till then). */
 int net_lobby_router(void);
 const char *net_lobby_code(void);
@@ -79,6 +89,14 @@ int net_pad_sticks(int pad, unsigned char sticks[4]);
 int net_pad_rumbles(int pad);
 /* Which of this machine's own pads a player's is, or -1 if it's another machine's. */
 int net_own_pad(int pad);
+/* The machines of the game being played, for showing who's in it (game/main/online.c): how many (0 when it isn't an online game),
+   which is this one, and each one's players (the first's number from 0, and how many) with how it's doing: playing; slow, which is
+   that the game has had to wait for it in the last few seconds; not answering, so played on without; or gone for good. The host
+   knows, and tells the others with every step; a joiner knows for itself when the host's packets have stopped coming. */
+enum { NET_PLAYING, NET_SLOW, NET_QUIET, NET_LEFT };
+int net_machines(void);
+int net_me(void);
+int net_machine(int m, int *first, int *pads);
 /* After a step, with the game's fingerprint (game/main/fingerprint.c): the machines compare them once a second. */
 void net_step_done(uint32_t fingerprint);
 /* Once a vblank: what's arrived is taken in, so nobody waits on this machine longer than that. */

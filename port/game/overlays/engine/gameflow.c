@@ -6,6 +6,7 @@
 #include "bash/main.h"
 #include "bash/engine.h"
 #include "bash/gameflow.h"
+#include "bash/online.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
 
@@ -1604,6 +1605,7 @@ void InitGraphics(void) {
     GameOptions.vibrate[3] = 1;
     InitGameState(g);
     sound_init();
+    own_sound_start();
 }
 
 void StartGame(void) {

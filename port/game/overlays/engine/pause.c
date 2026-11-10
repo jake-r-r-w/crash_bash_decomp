@@ -7,6 +7,7 @@
 #include "bash/shell.h"
 #include "bash/videomenu.h"
 #include "bash/cheatmenu.h"
+#include "bash/online.h"
 #include <stdio.h>
 
 /* The rows that aren't the game's own (DrawHudEntries' type 8), by a HudEntry's idx. */
@@ -470,6 +471,19 @@ found:
             switch (s) {
             case 1:
                 {
+                    /* PC: online, the sound options are each machine's own (main/online.c): the pausing player's machine changes
+                       its own, the game's are left alone, and the moves sound on every machine alike */
+                    if (own_options()) {
+                        s32 pressed = ActivePad()->pressed;
+
+                        if ((pressed & 0xA0) && (PauseChoice == 0 || PauseChoice == 2)) {
+                            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if ((pressed & 0xA0) && PauseChoice <= 2) {
+                            own_sound_change(PausePad, PauseChoice == 0 ? OWN_STEREO : PauseChoice == 1 ? OWN_MUSIC : OWN_SFX, (pressed & 0x20) ? 1 : -1);
+                        }
+                        PauseToggles[0] = heard_stereo() != 0;
+                    } else
                     switch (PauseChoice) {
                     case 0:
                         on = GameOptions.stereo != 0;
@@ -533,7 +547,10 @@ found:
                 break;
             case 3:
                 if (ActivePad()->pressed & 0xA0) {
-                    video_option_change(PauseChoice, (ActivePad()->pressed & 0x20) ? 1 : -1);
+                    /* online, a machine's video options are its own players' to change */
+                    if (own_press(PausePad)) {
+                        video_option_change(PauseChoice, (ActivePad()->pressed & 0x20) ? 1 : -1);
+                    }
                     PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
                 if (PauseChooseUpDown(PausePad, video_option_count() - 1) != 0 || (ActivePad()->pressed & 0x1000)) {
@@ -958,9 +975,9 @@ void DrawPauseMenu(void) {
         case 1:
             PauseToggles[1] = sel;
             PauseToggles[2] = sel;
-            PauseToggles[0] = GameOptions.stereo != 0;
-            FormatPercent(LangMessages[GAME->language]->musicText, GameOptions.music);
-            FormatPercent(LangMessages[GAME->language]->sfxText, GameOptions.sfx);
+            PauseToggles[0] = heard_stereo() != 0;
+            FormatPercent(LangMessages[GAME->language]->musicText, heard_music());
+            FormatPercent(LangMessages[GAME->language]->sfxText, heard_sfx());
             DrawHudEntries(PauseSoundMenu, PauseMenuY);
             break;
         case 2:

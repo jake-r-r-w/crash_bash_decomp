@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
+#include "bash/online.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
 #include "bash/extraheroes.h"
@@ -487,6 +488,10 @@ void DrawLevelHud(void) {
                 s->flags = v | 0x8000;
             }
             eng_render(HUDPLAYERS[i]);
+            /* PC: online, a player's icon carries a tag saying they're connected, and how well (main/online.c) */
+            if ((e->flags & 0x8000) && i < GAME->players && GAME->heroCpu[i] == 0) {
+                online_tag_draw(i, e->XYZ.x, e->XYZ.y);
+            }
         }
         if (PanelCtrl & 0x400) {
             if (e != NULL && Score[i].Ctrl != 0) {

@@ -57,13 +57,20 @@ join); or the host can open UDP port 47000 on the router by hand, and the others
 type the host's internet address where the code goes; or everyone can use a
 virtual network.
 
+In an online game each connected player has a small tag over their picture at
+the top of the screen: which player they are (YOU on yours), and a dot that is
+green while their connection keeps up, orange when the game has had to wait for
+it, and red when it has stopped answering. The pause menu's sound options, and
+its video options, are your own there: changing them changes them for you only.
+
 A virtual network puts everyone's machines on one network over the internet,
 whatever their own is like: Hamachi, Radmin VPN and ZeroTier are three, free for
 a few players. Each player installs the same one and joins the same network in
 it. Then host as usual, and the game shows up in the others' JOIN GAME by
-itself. If it doesn't (Tailscale is one that won't), type the address the tool
-gives the host where the code goes. When Windows asks about its firewall, allow
-the game on public networks too, as that's what it takes these for.
+itself. If it doesn't (Tailscale is one that won't), type the host's address on
+that network where the code goes: the host's screen shows it. When Windows asks
+about its firewall, allow the game on public networks too, as that's what it
+takes these for.
 
 Each player's own machine runs the whole game, and only the button presses
 travel, each used a moment late so it reaches everyone in time. Player 1, the

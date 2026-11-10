@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/nascalls.h"
+#include "bash/online.h"
 #include "bash/hero.h"
 
 extern HeroInfo Heroes[5];
@@ -2405,6 +2406,7 @@ s32 machine_init(void) {
 }
 
 void FlipScreen(s32 arg0) {
+    online_strip_draw();
     mal_update(&MainHeap);
     if (DrawHeap.first != NULL) {
         mal_update(&DrawHeap);

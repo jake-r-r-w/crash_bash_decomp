@@ -1060,6 +1060,14 @@ async function online(args) {
         { name: 'in real time, packets late and lost', machines: 2, real: true, all: ['--net-lag', '30', '--net-loss', '5'] },
         { name: 'in real time, a machine vanishes', machines: 3, real: true, per: { 2: ['--net-vanish', '800'] }, host: ['--net-patience', '1500', '--shot', '2300', rel('vanished.png')], want: 'vanishes' },
         { name: 'in real time, a machine stalls and is back', machines: 3, real: true, per: { 2: ['--net-stall', '800', '3000'] }, host: ['--net-patience', '1000'], want: 'back' },
+        /* the joiner's player pauses in the round, and in OPTIONS, SOUND turns the music down three steps, the effects one, and
+           chooses mono: that machine's own change, the host's don't, and the games stay the same */
+        { name: 'a player\'s sound options are their own', machines: 2, want: 'own sound', end: 3600, presses: m => [
+            ...(m === 0 ? [...press(170, DOWN), ...press(230, CROSS), ...press(350, CROSS)] : []),
+            ...[470, 590, 850, 1150, 1250, 1550, 1650, 1750, 2000].flatMap(v => press(v, CROSS)),
+            ...(m === 1 ? [[3000, START], [3040, DOWN], [3070, DOWN], [3100, CROSS], [3140, CROSS], [3180, DOWN], [3210, '80'], [3240, '80'], [3270, '80'],
+                [3300, DOWN], [3330, '80'], [3380, '10'], [3410, '10'], [3440, '80']].flatMap(([v, b]) => press(v, b)) : []),
+            '--shot', '3500', rel(`sound-machine${m + 1}.png`)] },
     ];
     const press = (v, b) => ['--press', String(v), b];
     /* the launcher's presses: ONLINE, then HOST GAME and in time START; or JOIN GAME and the first game found, or down to ADDRESS
@@ -1113,6 +1121,9 @@ async function online(args) {
         if (wrong == null && c.launcher === 'host leaves' && !/^online: Online play: the host has left the game/m.test(runs[1].text)) {
             wrong = 'the joiner never said the host had left';
         }
+        if (wrong == null && c.launcher === 'play' && !/^launcher: the lobby has 2, this one 2$/m.test(runs[1].text)) {
+            wrong = 'the joiner was never shown who\'s in the lobby';
+        }
         if (wrong == null && c.router === 'open' && !runs[0].text.includes(`the join code is ${code}`)) {
             wrong = 'the host never had its code';
         }
@@ -1123,7 +1134,7 @@ async function online(args) {
     };
     /* a game's machines, all at once: what each printed */
     const play = async (c, k, slot, slots) => {
-        const end = c.real ? 2400 : ONLINE_END;
+        const end = c.end ?? (c.real ? 2400 : ONLINE_END);
 
         if (c.save) {
             /* the host has a save, which the others are to play with: a slot's file as saves.c writes it */
@@ -1140,7 +1151,7 @@ async function online(args) {
         return Promise.all(Array.from({ length: c.machines }, (_, m) => run(exe, ['--skip-intro', '--pretend-pads', '1', '--fingerprints', '1',
             ...(c.real ? [] : ['--turbo', '--draw-every', '60']), '--tile', String(slot + m), String(slots), '--saves', rel(`saves${k}-${m}`),
             ...(m === 0 ? ['--host', `127.0.0.1:${47200 + k}`, '--net-joiners', String(c.machines - 1), ...(c.host ?? [])] : ['--join', `127.0.0.1:${47200 + k}`]),
-            ...(c.all ?? []), ...(c.per?.[m] ?? []), ...online_presses(m, c.machines), '--frames', String(end)],
+            ...(c.all ?? []), ...(c.per?.[m] ?? []), ...(c.presses != null ? c.presses(m) : online_presses(m, c.machines)), '--frames', String(end)],
             path.join(dir, `game${k}-machine${m + 1}.txt`), { timeout: MODE_TIMEOUT })));
     };
     const judge = (c, k, runs) => {
@@ -1161,7 +1172,11 @@ async function online(args) {
             wrong = runs[m].code !== 0 ? `machine ${m + 1}: exit ${runs[m].code}`
                 : !new RegExp(`^players ${c.machines}, `, 'm').test(runs[m].text) ? `machine ${m + 1} never reached the ${c.machines}-player game`
                 : parted != null ? `machine ${m + 1}'s game differs from the host's from ${parted}`
-                : !c.real && !gone && [...runs[m].text.matchAll(/^mode 40 at vblank/gm)].length !== 2 ? `machine ${m + 1} wasn't back at the title at the end` : null;
+                : !c.real && c.presses == null && !gone && [...runs[m].text.matchAll(/^mode 40 at vblank/gm)].length !== 2 ? `machine ${m + 1} wasn't back at the title at the end` : null;
+        }
+        if (wrong == null && c.want === 'own sound') {
+            wrong = !said(1, /^own sound: music 55, fx 95, mono$/m) ? 'the joiner\'s own sound options didn\'t change as pressed'
+                : said(0, /^own sound:/m) ? 'the host\'s sound options changed with the joiner\'s' : null;
         }
         if (wrong == null && c.save) {
             const saves = runs.map(r => r.text.match(/saves ([0-9A-F]{8})$/m)?.[1]);
@@ -1172,7 +1187,8 @@ async function online(args) {
             /* the third copy's machine, by the order they happened to join in */
             const n = runs[2].text.match(/^online: joined as machine (\d)/m)?.[1];
 
-            wrong = !said(0, new RegExp(`^online: machine ${n} isn't answering`, 'm')) ? 'the host never played on without it'
+            wrong = !said(0, new RegExp(`^online: machine ${n} is slow`, 'm')) ? 'the host never said it was slow, while it waited for it'
+                : !said(0, new RegExp(`^online: machine ${n} isn't answering`, 'm')) ? 'the host never played on without it'
                 : c.want === 'back' && !said(0, new RegExp(`^online: machine ${n} is back`, 'm')) ? 'it never came back' : null;
         }
         return [c.name, { pass: wrong == null, what: wrong ?? `the same on all ${c.machines}, ${prints[0].length} steps; ${how}` }];
@@ -1202,16 +1218,21 @@ async function online(args) {
             return play_through(c, k, from, slots).then(runs => judge_through(c, runs));
         })));
     }
-    /* a router that won't help, each way it can: the host's screen says which (a pretend router again), with a shot of each page */
+    /* a router that won't help, each way it can: the host's screen says which (a pretend router again), with a shot of each page.
+       And the same PC on a virtual network (a pretend adapter, called as Radmin VPN's is): the screen says the address to join at there */
     {
-        const routers = { refused: 'a router that won\'t open a port', none: 'no router that opens ports', shared: 'an address shared between homes' };
+        const routers = { refused: 'a router that won\'t open a port', none: 'no router that opens ports', shared: 'an address shared between homes',
+            network: 'no router, on a virtual network' };
 
         results.push(...await Promise.all(Object.keys(routers).map(async (router, i) => {
-            const r = await run(exe, ['--launcher', '--online-local', '--online-port', String(47270 + i), '--online-pretend-router', router, '--skip-intro',
+            const network = router === 'network';
+            const r = await run(exe, ['--launcher', '--online-local', '--online-port', String(47270 + i), '--online-pretend-router', network ? 'none' : router,
+                ...(network ? ['--online-pretend-network', 'Radmin VPN (Famatech Radmin VPN Ethernet Adapter)=26.41.7.9'] : []), '--skip-intro',
                 '--pretend-pads', '1', '--turbo', '--tile', String(i), '4', ...press(100, DOWN), ...press(130, CROSS), ...press(170, CROSS),
                 '--shot', '700', rel(`router-${router}-1.png`), '--shot', '1000', rel(`router-${router}-2.png`), '--frames', '1020'],
                 path.join(dir, `router-${router}.txt`), { timeout: MODE_TIMEOUT });
-            const said = new RegExp(`^launcher: router ${router}$`, 'm').test(r.text);
+            const said = new RegExp(`^launcher: router ${network ? 'none' : router}$`, 'm').test(r.text)
+                && /^launcher: on Radmin VPN, they join at 26\.41\.7\.9$/m.test(r.text) === network;
 
             return [`hosting with ${routers[router]}`, { pass: r.code === 0 && said, what: crash_where(exe, r.text) ?? (said ? 'said so' : `not said (exit ${r.code})`) }];
         })));

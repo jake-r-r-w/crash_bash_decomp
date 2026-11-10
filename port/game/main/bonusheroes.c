@@ -17,6 +17,7 @@
 #include "bash/extraheroes.h"
 #include "bash/bonusheroes.h"
 #include "bash/heromake.h"
+#include "bash/online.h"
 #include "../../platform/audio.h"
 
 void archive_replace(int entry, unsigned char *bytes, int size);
@@ -2563,7 +2564,7 @@ s32 hm_game_sound(s32 entry, s32 id, HeroSound *out) {
 }
 
 void hm_play(const HeroSound *s, short *voice) {
-    s32 vol = 0x1000 * GameOptions.sfx * 0x7F / 409600;
+    s32 vol = 0x1000 * heard_sfx() * 0x7F / 409600;
     short v;
 
     if (s == NULL || s->adpcm == NULL || s->bytes < 16) {

@@ -526,50 +526,79 @@ static void say_message(const char *text) {
     font_text(Message[1], sizeof(Message[1]), all + cut);
 }
 
-/* Under the host's lobby: how the others join. Players elsewhere need the router to let them in, which the game has asked of it
-   (portmap.c): the join code if it has, and if it hasn't, that it hasn't and what can be done, a page of each in turn. Players on
-   this network need neither: the game shows in their JOIN GAME by itself. */
+/* Under the host's lobby: how the others join, two lines at a time, a page of them for five seconds where there's more. Players
+   elsewhere need the router to let them in, which the game has asked of it (portmap.c): the join code if it has, and if it hasn't,
+   that it hasn't and what can be done. Players on this network need neither: the game shows in their JOIN GAME by itself. And if
+   this PC is on a virtual network (Hamachi and its like: net.c), players on that join at its address there, whatever the router
+   said: that's what such a network is for, so then it's said in place of what else could be done. */
 static void router_lines(void) {
-    static s32 said = -1;
-    s32 router = net_lobby_router(), second = (GameFrameCount / 300) & 1; /* a page for five seconds */
-    char text[2][96];
+    static s32 said = -1, said_networks = -1;
+    s32 router = net_lobby_router(), networks = 0, n = 0, page;
+    char line[8][96], address[32], own[32];
+    const char *name = "";
 
-    text[1][0] = '\0';
+    net_lobby_network(0, own, sizeof(own), &name);
+    while (networks < 2 && net_lobby_network(networks + 1, address, sizeof(address), &name)) {
+        networks++;
+    }
     if (router == PORTMAP_OPEN) {
-        snprintf(text[0], sizeof(text[0]), "Players elsewhere join with the code %s", net_lobby_code());
-        snprintf(text[1], sizeof(text[1]), "On your network, the game shows by itself");
+        snprintf(line[n++], sizeof(line[0]), "Players elsewhere join with the code %s", net_lobby_code());
+        snprintf(line[n++], sizeof(line[0]), "On your network, the game shows by itself");
     } else if (router == PORTMAP_WORKING) {
-        snprintf(text[0], sizeof(text[0]), "Asking your router to let players elsewhere in");
-        snprintf(text[1], sizeof(text[1]), "On your network, the game shows by itself");
-    } else if (router == PORTMAP_SHARED && !second) {
-        snprintf(text[0], sizeof(text[0]), "Your provider shares your address with others,");
-        snprintf(text[1], sizeof(text[1]), "so only players on your network can join");
+        snprintf(line[n++], sizeof(line[0]), "Asking your router to let players elsewhere in");
+        snprintf(line[n++], sizeof(line[0]), "On your network, the game shows by itself");
+    } else if (networks > 0) {
+        /* below */
     } else if (router == PORTMAP_SHARED) {
-        snprintf(text[0], sizeof(text[0]), "Someone else could host, or you could all use");
-        snprintf(text[1], sizeof(text[1]), "a free virtual network such as Tailscale");
-    } else if (router == PORTMAP_NO_ROUTER && !second) {
+        snprintf(line[n++], sizeof(line[0]), "Your provider shares your address with others,");
+        snprintf(line[n++], sizeof(line[0]), "so only players on your network can join");
+        snprintf(line[n++], sizeof(line[0]), "Someone else could host, or you could all use");
+        snprintf(line[n++], sizeof(line[0]), "a free virtual network such as Tailscale");
+    } else if (router == PORTMAP_NO_ROUTER) {
         /* nothing answered at all: a phone's hotspot, a shared network, or a router with this turned off. It's not "your router":
            there may be none */
-        snprintf(text[0], sizeof(text[0]), "This network can't let players elsewhere in.");
-        snprintf(text[1], sizeof(text[1]), "On your network, they join at %s", net_lobby_address());
-    } else if (router == PORTMAP_NO_ROUTER) {
-        snprintf(text[0], sizeof(text[0]), "You can still join a game someone else hosts,");
-        snprintf(text[1], sizeof(text[1]), "or all use a virtual network such as Tailscale");
-    } else if (router == PORTMAP_REFUSED && !second) {
-        snprintf(text[0], sizeof(text[0]), "Your router won't let players elsewhere in.");
-        snprintf(text[1], sizeof(text[1]), "On your network, they join at %s", net_lobby_address());
+        snprintf(line[n++], sizeof(line[0]), "This network can't let players elsewhere in.");
+        snprintf(line[n++], sizeof(line[0]), "On your network, they join at %s", own);
+        snprintf(line[n++], sizeof(line[0]), "You can still join a game someone else hosts,");
+        snprintf(line[n++], sizeof(line[0]), "or all use a virtual network such as Tailscale");
     } else if (router == PORTMAP_REFUSED) {
-        snprintf(text[0], sizeof(text[0]), "Someone else could host, or open UDP port %d", NET_PORT);
-        snprintf(text[1], sizeof(text[1]), "on it by hand, or all use a VPN like Tailscale");
+        snprintf(line[n++], sizeof(line[0]), "Your router won't let players elsewhere in.");
+        snprintf(line[n++], sizeof(line[0]), "On your network, they join at %s", own);
+        snprintf(line[n++], sizeof(line[0]), "Someone else could host, or open UDP port %d", NET_PORT);
+        snprintf(line[n++], sizeof(line[0]), "on it by hand, or all use a VPN like Tailscale");
     } else {
-        snprintf(text[0], sizeof(text[0]), "The others join at %s", net_lobby_address());
+        snprintf(line[n++], sizeof(line[0]), "The others join at %s", own);
     }
-    font_text(Help[0], sizeof(Help[0]), text[0]);
-    font_text(Help[1], sizeof(Help[1]), text[1]);
+    if (networks > 0) {
+        s32 i;
+
+        for (i = 1; i <= networks; i++) {
+            net_lobby_network(i, address, sizeof(address), &name);
+            snprintf(line[n++], sizeof(line[0]), "On %s, they join at %s", name, address);
+        }
+        if (router != PORTMAP_OPEN && router != PORTMAP_WORKING) {
+            snprintf(line[n++], sizeof(line[0]), "On your network, they join at %s", own);
+        }
+    }
+    if (n & 1) {
+        line[n++][0] = '\0';
+    }
+    page = (GameFrameCount / 300) % (n / 2);
+    font_text(Help[0], sizeof(Help[0]), line[page * 2]);
+    font_text(Help[1], sizeof(Help[1]), line[page * 2 + 1]);
     if (settings()->no_save && router != said && router != PORTMAP_WORKING) {
         said = router;
         printf("launcher: router %s\n", router == PORTMAP_OPEN ? "open" : router == PORTMAP_SHARED ? "shared" : router == PORTMAP_REFUSED ? "refused"
                                          : router == PORTMAP_NO_ROUTER ? "none" : "not asked");
+    }
+    if (settings()->no_save && networks != said_networks) {
+        s32 i;
+
+        said_networks = networks;
+        for (i = 1; i <= networks; i++) {
+            net_lobby_network(i, address, sizeof(address), &name);
+            printf("launcher: on %s, they join at %s\n", name, address);
+        }
     }
 }
 
@@ -591,21 +620,34 @@ static void show_online(subengine *sub) {
     }
     set_row(&sub[SUB_HELP], Message[0], TEXT_SMALL);
     set_row(&sub[SUB_HELP_MORE], Message[1], TEXT_SMALL);
-    if (Screen == SCREEN_HOST) {
+    if (Screen == SCREEN_HOST || (Screen == SCREEN_JOINED && machines > 0)) {
+        /* who's here, the same list on every machine: each one's first player, with this PC said as that. A machine that's joined
+           knows the host's address, and of the others only that they're there */
+        s32 me = net_lobby_me();
+
         for (i = 0; i < PLAYERS; i++) {
             s32 pads = i < machines ? net_lobby_machine(i, text, sizeof(text)) : 0;
 
             if (i < machines && first < PLAYERS) {
-                char value[96];
+                char value[96], who[64];
 
                 snprintf(Labels[i], sizeof(Labels[i]), "PLAYER %d", first + 1);
-                snprintf(value, sizeof(value), pads > 1 ? "%s, %d players" : "%s", i == 0 ? "This PC" : text, pads);
+                if (i == me) {
+                    snprintf(who, sizeof(who), "This PC");
+                } else if (Screen == SCREEN_HOST) {
+                    snprintf(who, sizeof(who), "%s", text);
+                } else {
+                    snprintf(who, sizeof(who), i == 0 ? "The host, %s" : "Another player%s", text);
+                }
+                snprintf(value, sizeof(value), pads > 1 ? "%s, %d players" : "%s", who, pads);
                 font_text(Values[i], sizeof(Values[i]), value);
                 first += pads;
-            } else if (i == machines) {
+            } else if (i == machines && Screen == SCREEN_HOST) {
                 font_text(Values[i], sizeof(Values[i]), "Waiting for someone to join");
             }
         }
+    }
+    if (Screen == SCREEN_HOST) {
         router_lines();
         if (Message[0][0] == '\0') {
             set_row(&sub[SUB_HELP], Help[0], TEXT_SMALL);
@@ -633,8 +675,18 @@ static void show_online(subengine *sub) {
         }
         set_row(&sub[SUB_NAV], Typing ? "TYPE IT, THEN START TO JOIN" : "UP - DOWN CHOOSE, \xFC BUTTON TO JOIN, \xFE BACK", TEXT_SMALL);
     } else {
-        snprintf(Labels[0], sizeof(Labels[0]), "JOINED");
-        font_text(Values[0], sizeof(Values[0]), Joining);
+        static s32 said_machines, said_me;
+
+        if (machines == 0) {
+            /* till the host has said who's there */
+            snprintf(Labels[0], sizeof(Labels[0]), "JOINED");
+            font_text(Values[0], sizeof(Values[0]), Joining);
+        }
+        if (settings()->no_save && (machines != said_machines || net_lobby_me() != said_me)) {
+            said_machines = machines;
+            said_me = net_lobby_me();
+            printf("launcher: the lobby has %d, this one %d\n", said_machines, said_me + 1);
+        }
         set_row(&sub[SUB_HELP], state == LOBBY_ASKING ? "ASKING TO JOIN" : "WAITING FOR THE HOST TO START", TEXT_SMALL);
         set_row(&sub[SUB_NAV], "\xFE LEAVE", TEXT_SMALL);
     }

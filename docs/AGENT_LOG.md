@@ -92,7 +92,8 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    `platform/net.c`, `playtest.mjs online`), but for two real machines on a network, which is the user's to try.
    Step 4, ONLINE in the launcher, is done too, before 3 at the user's word (2026-11-10: "ONLINE screens first").
    Step 3, join codes, is written (2026-11-10, with the user's OK for miniupnpc and libnatpmp), and tested with a pretend
-   router. **Next: the user's own try**, hosting at home with a friend joining from elsewhere by the code, which is what the
+   router. Since then, tidy-ups from the user's own play, as they give them (the session log): the players menu, the joiner's
+   lobby, virtual networks' addresses, each machine's own sound options, and tags that show who's connected. **Next: the user's own try**, hosting at home with a friend joining from elsewhere by the code, which is what the
    plan calls done; then a release with it (their OK first, as for every release).
    What the review of the plan added is in PORT.md's Online play and the Open leads below.
 
@@ -105,8 +106,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   test does it. Not tried: hosting for real on a network (the tests'
   games are this PC's alone, `--online-local`, so the broadcast that finds games, Windows' firewall question and
   `net_lobby_address`'s pick of this machine's address haven't met a real network: a PC with Docker's or a VPN's adapters may
-  broadcast out of the wrong one); the address typed with a controller; any of it running on Android. A joiner doesn't see who else is in the lobby,
-  only that it's joined. The game's data being in file-backed sections now makes the program about 4 MB bigger.
+  broadcast out of the wrong one); the address typed with a controller; any of it running on Android. The game's data being in file-backed sections now makes the program about 4 MB bigger.
 - **Port, online play, not yet checked:** `identical` on Android (the emulator is x86; a real phone is ARM, where `audio.c`'s
   `note_pitch` goes through `pow`, which sets when a voice ends); sound by the game's clock heard by a person (its queue held about
   45 ms and was never empty in runs of up to 200 seconds here, by the line a test run prints as it ends); a Battle past its first
@@ -118,8 +118,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   save reaches a joiner as bytes that go straight into the game's own slots (`card_init`), unchecked beyond their size: fine among
   friends, not against a host that means harm. A game's records are only kept if asked (`--net-record`), so a real game that
   stops for differing leaves nothing to play again. Extra heroes and mods' files are off online till machines can compare what
-  they have. Android builds with all of online play in it, both kinds of processor (`tools/da sh port/android/build.sh`, 2026-11-10), and has the permission in its manifest, but hasn't been run with it. The options menu's volumes are in
-  the game's record, so one player changing them in the pause menu changes them for everyone.
+  they have. Android builds with all of online play in it, both kinds of processor (`tools/da sh port/android/build.sh`, 2026-11-10), and has the permission in its manifest, but hasn't been run with it.
 - **Port, online play, hardening, put off by the user (2026-11-10: "not now we will do it later"):** before a game is hosted for
   real, the packet handlers in `net.c` fuzzed (the `linux-asan` build, malformed and random packets at a host and at a joiner), and
   the host's save checked on a joiner before the game's own loading code has it. Asked about security, they were told what's
@@ -140,9 +139,18 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - **Port, online play, virtual networks (2026-11-10, the user's "what about using something like hamachi"):** the way for them to
   host, as it's that tool's servers in the middle, not ours. JOIN GAME now asks on every adapter (`everyone_on_each`: each
   network's broadcast address; `GetAdaptersAddresses`, or `getifaddrs`), and a game hosted only on this PC's Hyper-V adapter
-  address was found, joined and played. No such tool is installed here and none was tried: whether Hamachi's or Radmin's adapter
-  passes the broadcast, and Windows' firewall on its "public" network, are for the user's own try. The host's screen still shows
-  the main adapter's address, not the virtual one's.
+  address was found, joined and played. The user has Hamachi on now (`--check-router` lists it, 25.17.9.118, 2026-11-10), and the
+  host's screen says a virtual network's address to join at (`net_lobby_network`). No game has been played over it: whether
+  Hamachi's adapter passes the broadcast that finds games, and Windows' firewall on its "public" network, are for the user's own
+  try with a friend. Only adapters known by name are offered (Hamachi, Radmin VPN, ZeroTier, Tailscale; 25. and 26. addresses).
+- **Port, online play, in the game (2026-11-10, `game/main/online.c`):** the players' tags sit over their icons, where the user's
+  chosen picture had them under the health bar: under is where each game puts its own bars and scores, at different heights. They
+  haven't seen the built one over a real game yet, so its place, how faint it is and its size are theirs to judge. Orange is "the
+  game waited 100 ms for this machine in the last 3 seconds" (`SLOW_MS`, `SLOW_SHOWN_MS`): guesses, never met a real network. A
+  game with two icons for four players (teams) tags only the players who have an icon. Menus and warp rooms show the tags in a
+  row at the foot of the screen, which the user wasn't asked about. The credits' fade of the effects isn't heard online. The
+  sound options a machine uses online start at the game's own defaults, not at what its saves hold, and are kept in its settings
+  file from then on. None of it has run on Android.
 - **Port, online play, left from step 3:** no real router has been asked for a port: `portmap.c`'s UPnP and NAT-PMP paths compile
   and link on Windows and Linux and have never run (the tests' router is a pretend one, `--online-pretend-router`, and asking the
   user's own router is theirs to do, by hosting). So unknown: whether miniupnpc finds their router from a PC with Docker's and
@@ -630,6 +638,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: Four more from the user's list. A joiner's lobby lists who's there (the host says with its pings). The host's
+  screen says a virtual network's address to join at ("ON HAMACHI, THEY JOIN AT ..."), by the adapters' names;
+  `--check-router` lists them, and found the user's Hamachi. The pause menu's and main menu's sound options, and their video
+  options, are each machine's own online (`game/main/online.c`: `heard_music`, `own_sound_change`, `own_press`), the game's own
+  left alone. And who's connected shows in the game: first a line of text that stayed ("abit in your face"), then dots ("does not
+  communicate ... the numbers of players connected"), then three designs drawn over a real shot for them to choose from
+  (`scratch/online-indicator/`): they chose tags on the players' own panels, fainter, with a dot that's green, orange or red by
+  the connection (`NET_SLOW`, sent with each record). The protocol is 2. `online` has a case for the sound options and one for
+  a virtual network's address, and checks the joiner's lobby and a slow machine.
 
 - 2026-11-10: Online tidying, the user's list as they play it. First: the players menu online offers only as many players as the
   lobby has ("it should always only be selectable for the players in the lobby so 2 players = 2, 3 players = 3"), or as many of
