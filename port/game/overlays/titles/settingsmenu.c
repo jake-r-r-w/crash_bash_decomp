@@ -128,7 +128,7 @@ static camera_info_tag LogoCamera;
 #define PLAYERS_LEFT -0x130
 #define PLAYERS_RIGHT 0x130
 #define PLAYER_X -0x118
-#define CONTROLLER_X -0x48
+#define CONTROLLER_X -0x68 /* room for 31 letters, as long as SDL's names get: DUALSENSE WIRELESS CONTROLLER is 29 */
 #define LIT_FRAMES 40
 
 static PlaceRec Place[SUB_HELP_MORE + 2];
