@@ -80,8 +80,11 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
 6. 7.14, Android (the user's, 2026-11-09). It builds (`tools/da`) and plays in the emulator, filling a sideways phone with faint touch
    buttons, either way round; every mode passes there (`playtest.mjs modes --android`), the disc picker works, and arm64's
    function-pointer calls are checked (`port/android/check-fnptrs.sh`). Its release key is made (2026-11-09, at the user's word, kept
-   outside the repo: PORT.md, Android), and `package.mjs --android` makes the signed APK, published in v0.4.0. Next: a real phone. The Mac's code is ready as far as it can be without one (PORT.md, The Mac): building it needs a Mac, by a route the
-   user picks.
+   outside the repo: PORT.md, Android), and `package.mjs --android` makes the signed APK, published in v0.4.0. The first real phone,
+   the user's (2026-11-10), said it needed a graphics card with Vulkan: SDL's Vulkan device asks for features many phones lack, and
+   the renderer turns off what it doesn't use now (PORT.md, Android). A test APK with that, signed by the release key so it installs
+   over 0.4.0, is waiting on the user's phone (`build/port/phone-test/`); then 0.4.1. The Mac's code is ready as far as it can be
+   without one (PORT.md, The Mac): building it needs a Mac, by a route the user picks.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -157,6 +160,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Gotchas
 
 **Port test runs**
+- **The emulator isn't a phone.** Its Vulkan is the PC's GPU, with every feature, so it passed what the first real phone failed: SDL's
+  Vulkan device by default needs depth clamping, clip distances, indirect draws' first instance and anisotropic filtering, which many
+  phones haven't got (`make_device` in gfx.c turns off what the renderer doesn't use; `--depth-clip` draws as a phone without depth
+  clamping does). And the `crashbash` target builds with `-w`, so Linux's Clang 14 takes a call to an undeclared function as one
+  returning an int (a pointer cut short) without a word, where the NDK's newer Clang refuses it: build Android too after a change to
+  `platform/`.
 - **Android (PORT.md, Android).** In Git Bash, `MSYS_NO_PATHCONV=1` before any adb call with an Android path, or `/sdcard/...` becomes
   `C:/Program Files/Git/sdcard/...` and a push lands nowhere. PowerShell's `>` mangles binary output: take `adb exec-out screencap -p`
   in Git Bash. Google's command-line tools now hand `sdkmanager` over to a new "Android CLI" that collects usage data unless given
@@ -550,6 +559,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: the user's own phone, the first real one, said "Crash Bash needs a graphics card with Vulkan" with v0.4.0. SDL 3.4's
+  Vulkan device asks for four features unless told not to (SDL_gpu.h, `SDL_PROP_GPU_DEVICE_CREATE_FEATURE_*`); the renderer turns off
+  the three it never uses, and takes a device without depth clamping if that's all there is, clipping depth then. With the new
+  `--depth-clip`, all 39 modes' shots (three each) are byte for byte the same on Windows and Linux. With still no device, the message
+  names each GPU and what it lacks (checked on Linux by forcing SDL to fail). A test APK, signed by the release key, is in
+  `build/port/phone-test/` for the user's phone.
 
 - 2026-11-09: [v0.4.0](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v0.4.0) is published, at the user's word ("Cut
   v0.4.0"): the first Android download (signed by the release key), the save icon on the window, the Windows program's icon. Its checks

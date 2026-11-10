@@ -172,6 +172,12 @@ another.
 
 What's Android's own:
 - It draws with Vulkan, as Linux does, and turns with the phone: the picture fits either way round.
+- Unless told not to, SDL asks a Vulkan device for four features many phones haven't got, and turns down one without them: the first
+  real phone said "Crash Bash needs a graphics card with Vulkan" (2026-11-10). The renderer turns off the three it doesn't use (clip
+  distances, indirect draws' first instance, anisotropic filtering) everywhere, and if no device has the fourth, depth clamping, it
+  takes one without and clips depth instead (gfx.c, `make_device`; `--depth-clip` draws that way on any device). Every mode's shots
+  are the same either way on Windows and Linux. With still no device, the message and `log.txt` name each GPU and what it lacks of what
+  SDL still needs (`vulkan_lacks`).
 - The program's folder (`platform_base_path`) is the app's in shared storage, `Android/data/io.github.jakerrw.crashbash/files/`, which a
   PC reaches over USB: `CRASHBSH.DAT`, a disc image, `discs/` and `mods/` go there, and the game writes its output to `log.txt` there.
   The game makes `discs/` and `mods/` itself at startup: Android doesn't let an app look in a folder something else made in its own
@@ -262,6 +268,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--skip-intro`, `--skip-loading` | the menu's two skips, for this run |
 | `--fps 30\|60\|120` | the frame rate, for this run |
 | `--turbo` | don't wait for the clock, to reach late moments quickly |
+| `--depth-clip` | draw as a device without depth clamping does (some phones): a point outside the depth range is clipped, not drawn at its edge (gfx.c, `make_device`) |
 | `--draw-every N` | draw one frame in N, and any a shot needs, so a long test runs as fast as the game's logic can |
 | `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit. It's the game's demo, whose pause bit stops what waits on a pause; Polar Push's tilt doesn't wait on that bit (the game never demos its tilting levels). Mode 43, the tournament's podium, is as at a tournament's end: Crash, Coco, Cortex and Brio (or extra heroes in their places), player 1 first |
 | `--tile I N` | put this window in slot I of a grid of N on the screen, to watch several test runs at once |

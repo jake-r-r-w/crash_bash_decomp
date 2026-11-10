@@ -507,6 +507,8 @@ int main(int argc, char **argv) {
             test_sound = 1;
         } else if (strcmp(argv[i], "--turbo") == 0) {
             Turbo = 1;
+        } else if (strcmp(argv[i], "--depth-clip") == 0) {
+            gfx_without_depth_clamp();
         } else if (strcmp(argv[i], "--draw-every") == 0 && i + 1 < argc) {
             draw_every = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--skip-intro") == 0) {

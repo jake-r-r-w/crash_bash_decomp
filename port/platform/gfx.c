@@ -2,11 +2,18 @@
  * d3dcompiler_47.dll, which comes with Windows; on Linux on Vulkan, with the same shaders in GLSL compiled ahead to SPIR-V; on the Mac on
  * Metal, with those made into MSL (shaders/, make.sh). */
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#if !defined(_WIN32) && !defined(__APPLE__)
+#include <vulkan/vulkan.h> /* to say why there's no Vulkan device, when there isn't (vulkan_lacks) */
+#endif
 #include <SDL3/SDL.h>
+#if !defined(_WIN32) && !defined(__APPLE__)
+#include <SDL3/SDL_vulkan.h>
+#endif
 #include "platform.h"
 #include "gfx.h"
 #include "texpack.h"
@@ -20,17 +27,22 @@
 
 /* Each system's own GPU API */
 #if defined(_WIN32)
-#define GPU_FORMAT SDL_GPU_SHADERFORMAT_DXBC
+#define GPU_SHADERS SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXBC_BOOLEAN
 #define GPU_DRIVER "direct3d12"
-#define GPU_NAME "Direct3D 12"
+#define GPU_NEEDS "Crash Bash needs a graphics card with Direct3D 12."
 #elif defined(__APPLE__)
-#define GPU_FORMAT SDL_GPU_SHADERFORMAT_MSL
+#define GPU_SHADERS SDL_PROP_GPU_DEVICE_CREATE_SHADERS_MSL_BOOLEAN
 #define GPU_DRIVER "metal"
-#define GPU_NAME "Metal"
+#define GPU_NEEDS "Crash Bash needs a graphics card with Metal."
 #else
-#define GPU_FORMAT SDL_GPU_SHADERFORMAT_SPIRV
+#define GPU_SHADERS SDL_PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN
 #define GPU_DRIVER "vulkan"
-#define GPU_NAME "Vulkan"
+#define GPU_VULKAN
+#ifdef __ANDROID__
+#define GPU_NEEDS "Crash Bash can't use this device's graphics (Vulkan)."
+#else
+#define GPU_NEEDS "Crash Bash needs a graphics card with Vulkan."
+#endif
 #endif
 
 #define MAX_TRIS 100000
@@ -78,6 +90,8 @@ typedef struct {
 
 static SDL_Window *Window;
 static SDL_GPUDevice *Device;
+static int DepthClip;    /* the device has no depth clamping (make_device) */
+static int WithoutClamp; /* a test run: as if it had none */
 static SDL_GPUTexture *Target, *Base, *Depth, *Atlas;
 static SDL_GPUTexture *Multisampled; /* with anti-aliasing: what's drawn to, and resolved to Target */
 static SDL_GPUSampleCount Samples = SDL_GPU_SAMPLECOUNT_1;
@@ -278,6 +292,7 @@ static SDL_GPUGraphicsPipeline *make_pipeline_for(SDL_GPUShader *vs, SDL_GPUShad
     p.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
     p.rasterizer_state.cull_mode = SDL_GPU_CULLMODE_NONE;
     p.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
+    p.rasterizer_state.enable_depth_clip = DepthClip != 0;
     p.multisample_state.sample_count = samples;
     p.target_info.color_target_descriptions = &c;
     p.target_info.num_color_targets = 1;
@@ -510,6 +525,123 @@ void gfx_configure(const GfxConfig *config) {
     BaseStale = 1;
 }
 
+/* Unless it's told not to, SDL asks a Vulkan device for features this renderer doesn't use: clip distances in shaders, indirect draws'
+   first instance and anisotropic filtering. Many phones haven't got them, so they're off everywhere. It does use depth clamping, which
+   Direct3D 12 and Metal always have, but a phone may not: then a point outside the depth range is clipped instead of drawn at its edge. */
+static SDL_GPUDevice *make_device(int clamp) {
+    SDL_PropertiesID props = SDL_CreateProperties();
+    SDL_GPUDevice *device;
+
+    SDL_SetBooleanProperty(props, GPU_SHADERS, true);
+    SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, false);
+    SDL_SetStringProperty(props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, GPU_DRIVER);
+    SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_FEATURE_CLIP_DISTANCE_BOOLEAN, false);
+    SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_FEATURE_INDIRECT_DRAW_FIRST_INSTANCE_BOOLEAN, false);
+    SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_FEATURE_ANISOTROPY_BOOLEAN, false);
+    SDL_SetBooleanProperty(props, SDL_PROP_GPU_DEVICE_CREATE_FEATURE_DEPTH_CLAMPING_BOOLEAN, clamp != 0);
+    device = SDL_CreateGPUDeviceWithProperties(props);
+    SDL_DestroyProperties(props);
+    return device;
+}
+
+#ifdef GPU_VULKAN
+static void append(char *out, size_t size, const char *format, ...) {
+    size_t used = strlen(out);
+    va_list args;
+
+    va_start(args, format);
+    SDL_vsnprintf(out + used, size - used, format, args);
+    va_end(args);
+}
+
+/* Why SDL found no Vulkan device to use, for the log and the message: each one's name, and what it hasn't got of what SDL still needs
+   with the features above turned off (SDL_gpu_vulkan.c, VULKAN_INTERNAL_IsDeviceSuitable). */
+static void vulkan_lacks(char *out, size_t size) {
+    static const char *const Extensions[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_MAINTENANCE1_EXTENSION_NAME };
+    PFN_vkGetInstanceProcAddr get;
+    PFN_vkCreateInstance create_instance = NULL;
+    PFN_vkDestroyInstance destroy_instance;
+    PFN_vkEnumeratePhysicalDevices devices_of;
+    PFN_vkGetPhysicalDeviceProperties properties_of;
+    PFN_vkGetPhysicalDeviceFeatures features_of;
+    PFN_vkEnumerateDeviceExtensionProperties extensions_of;
+    VkApplicationInfo app;
+    VkInstanceCreateInfo info;
+    VkInstance instance;
+    VkPhysicalDevice devices[4];
+    uint32_t count = SDL_arraysize(devices), i, j, k, n;
+
+    out[0] = 0;
+    if (!SDL_Vulkan_LoadLibrary(NULL)) {
+        append(out, size, "There's no Vulkan here: %s", SDL_GetError());
+        return;
+    }
+    get = (PFN_vkGetInstanceProcAddr)SDL_Vulkan_GetVkGetInstanceProcAddr();
+    if (get != NULL) {
+        create_instance = (PFN_vkCreateInstance)get(NULL, "vkCreateInstance");
+    }
+    SDL_zero(app);
+    app.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    app.apiVersion = VK_API_VERSION_1_0;
+    SDL_zero(info);
+    info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    info.pApplicationInfo = &app;
+    if (create_instance == NULL || create_instance(&info, NULL, &instance) != VK_SUCCESS) {
+        append(out, size, "Vulkan won't start here.");
+        SDL_Vulkan_UnloadLibrary();
+        return;
+    }
+    destroy_instance = (PFN_vkDestroyInstance)get(instance, "vkDestroyInstance");
+    devices_of = (PFN_vkEnumeratePhysicalDevices)get(instance, "vkEnumeratePhysicalDevices");
+    properties_of = (PFN_vkGetPhysicalDeviceProperties)get(instance, "vkGetPhysicalDeviceProperties");
+    features_of = (PFN_vkGetPhysicalDeviceFeatures)get(instance, "vkGetPhysicalDeviceFeatures");
+    extensions_of = (PFN_vkEnumerateDeviceExtensionProperties)get(instance, "vkEnumerateDeviceExtensionProperties");
+    if (devices_of(instance, &count, devices) < 0 || count == 0) {
+        append(out, size, "Vulkan has no graphics device here.");
+        count = 0;
+    }
+    for (i = 0; i < count; i++) {
+        VkPhysicalDeviceProperties p;
+        VkPhysicalDeviceFeatures f;
+        VkExtensionProperties *has = NULL;
+        int lacking = 0;
+
+        properties_of(devices[i], &p);
+        features_of(devices[i], &f);
+        append(out, size, "%s%s, Vulkan %u.%u.%u: ", i ? "\n" : "", p.deviceName, VK_API_VERSION_MAJOR(p.apiVersion),
+               VK_API_VERSION_MINOR(p.apiVersion), VK_API_VERSION_PATCH(p.apiVersion));
+        if (!f.independentBlend) {
+            append(out, size, "%sno independentBlend", lacking++ ? ", " : "");
+        }
+        if (!f.imageCubeArray) {
+            append(out, size, "%sno imageCubeArray", lacking++ ? ", " : "");
+        }
+        if (!f.sampleRateShading) {
+            append(out, size, "%sno sampleRateShading", lacking++ ? ", " : "");
+        }
+        n = 0;
+        if (extensions_of(devices[i], NULL, &n, NULL) >= 0 && n > 0) {
+            has = calloc(n, sizeof(*has));
+        }
+        if (has != NULL && extensions_of(devices[i], NULL, &n, has) >= 0) {
+            for (j = 0; j < SDL_arraysize(Extensions); j++) {
+                for (k = 0; k < n && strcmp(has[k].extensionName, Extensions[j]) != 0; k++) {
+                }
+                if (k == n) {
+                    append(out, size, "%sno %s", lacking++ ? ", " : "", Extensions[j]);
+                }
+            }
+        }
+        free(has);
+        if (lacking == 0) {
+            append(out, size, "has all SDL needs");
+        }
+    }
+    destroy_instance(instance, NULL);
+    SDL_Vulkan_UnloadLibrary();
+}
+#endif
+
 int gfx_init(void *window, const GfxConfig *config) {
     int width = config->width, height = config->height;
     Wide = config->wide;
@@ -520,11 +652,28 @@ int gfx_init(void *window, const GfxConfig *config) {
     SDL_GPUTransferBufferCreateInfo tc;
 
     Window = window;
-    Device = SDL_CreateGPUDevice(GPU_FORMAT, false, GPU_DRIVER);
+    Device = WithoutClamp ? NULL : make_device(1);
     if (Device == NULL) {
-        fprintf(stderr, "SDL_CreateGPUDevice: %s\n", SDL_GetError());
-        platform_fatal("Crash Bash needs a graphics card with " GPU_NAME ".");
+        if (!WithoutClamp) {
+            fprintf(stderr, "gfx: no " GPU_DRIVER " device with depth clamping (%s), so trying one without\n", SDL_GetError());
+        }
+        Device = make_device(0);
+        DepthClip = 1;
+    }
+    if (Device == NULL) {
+        char error[256], why[1024] = "", message[1400];
+
+        SDL_strlcpy(error, SDL_GetError(), sizeof(error));
+#ifdef GPU_VULKAN
+        vulkan_lacks(why, sizeof(why));
+#endif
+        fprintf(stderr, "SDL_CreateGPUDevice: %s\n%s\n", error, why);
+        SDL_snprintf(message, sizeof(message), "%s%s%s", GPU_NEEDS, why[0] ? "\n\n" : "", why);
+        platform_fatal(message);
         return 0;
+    }
+    if (DepthClip) {
+        fprintf(stderr, "gfx: the device has no depth clamping, so depth is clipped\n");
     }
     if (!SDL_ClaimWindowForGPUDevice(Device, Window)) {
         fprintf(stderr, "SDL_ClaimWindowForGPUDevice: %s\n", SDL_GetError());
@@ -1762,6 +1911,10 @@ static void find_movement(void) {
             }
         }
     }
+}
+
+void gfx_without_depth_clamp(void) {
+    WithoutClamp = 1;
 }
 
 void gfx_draw_every(int frames) {

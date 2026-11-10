@@ -49,6 +49,7 @@ void gfx_quit(void);
 
 void gfx_begin_frame(void);
 void gfx_end_frame(void);
+void gfx_without_depth_clamp(void); /* a test run: draw as a device without depth clamping does (--depth-clip) */
 void gfx_draw_every(int frames); /* a test run: draw one frame in this many */ /* what was added is the game's new frame */
 void gfx_present(void);   /* draws and shows the next step towards it, at frame rates above the game's */
 /* The picture stays from frame to frame, as a PS1's screen does, until the game clears it. */
