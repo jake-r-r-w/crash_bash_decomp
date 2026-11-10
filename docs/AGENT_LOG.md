@@ -105,7 +105,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   test does it. Not tried: hosting for real on a network (the tests'
   games are this PC's alone, `--online-local`, so the broadcast that finds games, Windows' firewall question and
   `net_lobby_address`'s pick of this machine's address haven't met a real network: a PC with Docker's or a VPN's adapters may
-  broadcast out of the wrong one); the address typed with a controller; Android. A joiner doesn't see who else is in the lobby,
+  broadcast out of the wrong one); the address typed with a controller; any of it running on Android. A joiner doesn't see who else is in the lobby,
   only that it's joined. The game's data being in file-backed sections now makes the program about 4 MB bigger.
 - **Port, online play, not yet checked:** `identical` on Android (the emulator is x86; a real phone is ARM, where `audio.c`'s
   `note_pitch` goes through `pow`, which sets when a voice ends); sound by the game's clock heard by a person (its queue held about
@@ -118,7 +118,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   save reaches a joiner as bytes that go straight into the game's own slots (`card_init`), unchecked beyond their size: fine among
   friends, not against a host that means harm. A game's records are only kept if asked (`--net-record`), so a real game that
   stops for differing leaves nothing to play again. Extra heroes and mods' files are off online till machines can compare what
-  they have. Android has the permission in its manifest but hasn't been built or run with it. The options menu's volumes are in
+  they have. Android builds with all of online play in it, both kinds of processor (`tools/da sh port/android/build.sh`, 2026-11-10), and has the permission in its manifest, but hasn't been run with it. The options menu's volumes are in
   the game's record, so one player changing them in the pause menu changes them for everyone.
 - **Port, online play, left from step 3:** no real router has been asked for a port: `portmap.c`'s UPnP and NAT-PMP paths compile
   and link on Windows and Linux and have never run (the tests' router is a pretend one, `--online-pretend-router`, and asking the
