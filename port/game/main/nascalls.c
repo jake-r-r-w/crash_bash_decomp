@@ -2,6 +2,7 @@
 #include "bash/main.h"
 #include "bash/nascalls.h"
 #include "bash/online.h"
+#include "bash/menumouse.h"
 #include "bash/hero.h"
 
 extern HeroInfo Heroes[5];
@@ -2492,7 +2493,9 @@ void pads_read(void) {
     PadState *pad = Pads;
     s32 count;
 
-    /* online, everyone's pads for this step, once they're all here (platform/net.c) */
+    /* the mouse's presses, in a menu, on this machine's first pad (menumouse.c); then online, everyone's pads for this step, once
+       they're all here (platform/net.c) */
+    menu_mouse_step();
     platform_pad_step();
     /* a third or fourth pad is what makes it a multitap's four */
     PadCount = platform_pad(2) >= 0 || platform_pad(3) >= 0 ? 4 : 2;

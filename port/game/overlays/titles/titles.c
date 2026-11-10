@@ -10,6 +10,7 @@
 #include "bash/bonusheroes.h"
 #include "bash/herodef.h"
 #include "bash/dbase.h"
+#include "bash/menumouse.h"
 
 
 /* the exe's data the tables point at, not declared in the headers yet */
@@ -865,6 +866,15 @@ void MainMenuUpdate(void) {
         s[6].flags &= ~0x8000;
     }
     s[MainMenuCursor + 1].unk7C = 2;
+    /* PC: the mouse (main/menumouse.c): its rows */
+    {
+        s32 i;
+
+        menu_mouse_list(0, MainMenuCursor, 0);
+        for (i = 0; i < 5; i++) {
+            menu_mouse_sub(i, &s[i + 1], 0);
+        }
+    }
 }
 
 void PlayersMenuUpdate(void) {
@@ -941,6 +951,11 @@ void PlayersMenuUpdate(void) {
         O69CV->teammateChoice[2] = -1;
         O69CV->teammateChoice[3] = -1;
     }
+    /* PC: the mouse: the rows that can be chosen */
+    menu_mouse_list(0, O69CV->players - 1, 0);
+    for (i = least - 1; i < n; i++) {
+        menu_mouse_sub(i, &s[i], 0);
+    }
     c = O69CV->players;
     O69CV->heroCpu[0] = c < 1;
     O69CV->heroCpu[1] = c < 2;
@@ -997,6 +1012,10 @@ void NewLoadMenuUpdate(void) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
+    /* PC: the mouse */
+    menu_mouse_list(0, NewLoadMenuCursor, 0);
+    menu_mouse_sub(0, &s[3], 0);
+    menu_mouse_sub(1, &s[4], 0);
 }
 
 void BattleOptionsUpdate(void) {
@@ -1045,6 +1064,15 @@ void BattleOptionsUpdate(void) {
         GameExitFlags = 0x8008;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
     }
+    /* PC: the mouse: the cups' panel is fewer and more by its halves, the difficulty's easier and harder, and BEGIN BATTLE's bar
+       starts it (the panels where they're drawn: wider than BattleOptionsPlace has them, as a centred one's width is scaled) */
+    menu_mouse_list(0, 0, 0);
+    menu_mouse_row(0, 0x42, 0x85, 0x23C, 0xE8, 0);
+    menu_mouse_press(0x80, 0x20);
+    menu_mouse_row(0, 0x42, 0x115, 0x23C, 0x157, 0);
+    menu_mouse_press(0x40, 0x10);
+    menu_mouse_row(0, 0, 0x188, 0x280, 0x1B2, 0);
+    menu_mouse_press(0x4000, 0x4000);
 }
 
 void BattleOptionsRender(void) {
@@ -1285,6 +1313,29 @@ void OptionsRender(void) {
 
     sub = GetEngineSlot(4)->sub;
     RenderState.modelDp = ScreenFade.amount;
+    /* PC: the mouse: each page's rows; on SOUND's and VIDEO's, Cross leaves, so a click on a row only chooses it and its value's
+       changed by a click on its half; on CONTROLLER's, each player's own pad changes their own, so the mouse only goes back */
+    menu_mouse_list(0, OptionsCursor, 0);
+    switch (OptionsPage) {
+    case 0:
+        for (i = 0; i < 4; i++) {
+            menu_mouse_sub(i, &sub[3 + i], 0);
+        }
+        break;
+    case 1:
+        for (i = 0; i < 3; i++) {
+            menu_mouse_sub(i, &sub[i == 0 ? 3 : i == 1 ? 6 : 8], MENU_CHOOSE);
+            menu_mouse_sub(i, &sub[i == 0 ? 4 : i == 1 ? 7 : 9], MENU_VALUES);
+        }
+        menu_mouse_sub(0, &sub[5], MENU_VALUES);
+        break;
+    case 3:
+        for (i = 0; i < VIDEO_ROWS; i++) {
+            menu_mouse_sub(i, &sub[VIDEO_SUB_LABEL(i)], MENU_CHOOSE);
+            menu_mouse_sub(i, &sub[VIDEO_SUB_VALUE(i)], MENU_VALUES);
+        }
+        break;
+    }
     switch (OptionsPage) {
     case 1:
         FormatPercent(sub[7].u6C.dbase, heard_music());
@@ -1715,6 +1766,15 @@ void UpdateCharSelector(TitlesSlot *slot) {
     }
     if (!is_extra_card(o->card)) {
         o->card &= 7;
+    }
+    /* PC: the mouse: the cards, in the order left and right go round them; a card's taken once the selector's still on it */
+    if (o->flags2 < GamePlayers) {
+        s32 c;
+
+        menu_mouse_list(o->flags2, o->card, MENU_ACROSS | (still ? 0 : MENU_BUSY));
+        for (c = 0; c < 8 + extra_cards(); c++) {
+            menu_mouse_row(c, CharCards[c].x, CharCards[c].y, CharCards[c].x + 0x56, CharCards[c].y + 0x56, 0);
+        }
     }
     if ((o->flags2 < ((GameState *)GameInfo)->players && (O69PAD[o->flags2].pressed & 0x4000) && still) || o->flags3 != 0) {
         GetEngineSlot(0)->sub[20].flags &= 0xFFFF7FFF;
@@ -2170,6 +2230,18 @@ void LevelSelectInput(void) {
             PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
         }
     }
+    /* PC: the mouse: the levels' pictures are its rows, the arena's big picture changes it by its halves, as CHANGE ARENA's line
+       does, and PRESS X's line takes the level (LevelSelectView0 to 4) */
+    menu_mouse_list(0, (s8)GAME->arenaLevel, 0);
+    for (c = 0; c < BattleArenas[(s8)GAME->arena].count; c++) {
+        menu_mouse_row(c, 0x1CC, 0x24 + 0x64 * c, 0x25C, 0x84 + 0x64 * c, 0);
+    }
+    menu_mouse_row(0, 0x28, 0xEE, 0x19A, 0x1B0, 0);
+    menu_mouse_press(0x80, 0x20);
+    menu_mouse_sub(0, &GetEngineSlot(0)->sub[2], 0);
+    menu_mouse_press(0x80, 0x20);
+    menu_mouse_sub(0, &GetEngineSlot(0)->sub[4], 0);
+    menu_mouse_press(0x4000, 0x4000);
     if (TitlesSlotOn()) {
         GetEngineSlot(0)->sub->u6C.dbase = TitlesSlotRowI((s8)GAME->arena, (s8)GAME->arenaLevel);
         GetEngineSlot(0)->sub->XYZ.y = 8;
@@ -2499,6 +2571,18 @@ void TeamModeUpdate(void) {
     if (Pads[0].pressed & 0x1000) {
         PlaySfx(0x384, 0, 0, 0x1000, 0x1E00, 0);
         MenuChainBack();
+    }
+    /* PC: the mouse: the kind's name changes it by its halves, as CHANGE BATTLE TYPE's line does, and START BATTLE's line goes on */
+    {
+        subengine *s = GetEngineSlot(0)->sub;
+
+        menu_mouse_list(0, 0, 0);
+        menu_mouse_sub(0, &s[13], 0);
+        menu_mouse_press(0x80, 0x20);
+        menu_mouse_sub(0, &s[15], 0);
+        menu_mouse_press(0x20, 0x20);
+        menu_mouse_sub(0, &s[16], 0);
+        menu_mouse_press(0x4000, 0x4000);
     }
 }
 

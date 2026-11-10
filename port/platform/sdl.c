@@ -561,6 +561,7 @@ static void open_pads(void) {
 /* --- the mouse --- */
 
 static HostMouse Mouse;
+static int Pretending; /* a test's pretend mouse: the real one's left out, so it can't upset the test */
 
 static void mouse_at(float wx, float wy) {
     float x, y;
@@ -579,6 +580,7 @@ void host_mouse(HostMouse *out) {
 }
 
 void host_pretend_mouse(float x, float y, int left, int right, int wheel) {
+    Pretending = 1;
     Mouse.on = 1;
     Mouse.moved |= x != Mouse.x || y != Mouse.y;
     Mouse.x = x;
@@ -731,19 +733,19 @@ int host_poll(void) {
             break;
         /* the mouse's, but not the ones SDL makes from touches */
         case SDL_EVENT_MOUSE_MOTION:
-            if (e.motion.which != SDL_TOUCH_MOUSEID) {
+            if (e.motion.which != SDL_TOUCH_MOUSEID && !Pretending) {
                 mouse_at(e.motion.x, e.motion.y);
             }
             break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            if (e.button.which != SDL_TOUCH_MOUSEID) {
+            if (e.button.which != SDL_TOUCH_MOUSEID && !Pretending) {
                 mouse_at(e.button.x, e.button.y);
                 Mouse.left += e.button.button == SDL_BUTTON_LEFT;
                 Mouse.right += e.button.button == SDL_BUTTON_RIGHT;
             }
             break;
         case SDL_EVENT_MOUSE_WHEEL:
-            if (e.wheel.which != SDL_TOUCH_MOUSEID) {
+            if (e.wheel.which != SDL_TOUCH_MOUSEID && !Pretending) {
                 Mouse.wheel += e.wheel.integer_y * (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -1 : 1);
             }
             break;

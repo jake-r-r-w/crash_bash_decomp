@@ -8,7 +8,19 @@
 #include "bash/videomenu.h"
 #include "bash/cheatmenu.h"
 #include "bash/online.h"
+#include "bash/menumouse.h"
 #include <stdio.h>
+
+/* PC: the mouse (main/menumouse.c). DrawPauseMenu begins a menu for it, and DrawHudEntries gives it the rows it draws: the rows
+   the cursor's on (types 0, 1 and 8), and if they're asked for, the values beside them (the toggles' types 10 to 39), which a click
+   on a half of changes, while a click on a row only chooses it. */
+enum { PAUSE_MOUSE_ROWS = 1, PAUSE_MOUSE_VALUES = 2 };
+static s32 PauseMouse;
+
+static void pause_mouse(s32 pad, s32 flags, s32 rows) {
+    menu_mouse_list(pad, PauseChoice, flags);
+    PauseMouse = rows;
+}
 
 /* The rows that aren't the game's own (DrawHudEntries' type 8), by a HudEntry's idx. */
 static const char *const PauseOwnTexts[] = { "SAVE GAME", "VIDEO" };
@@ -720,12 +732,19 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 DrawSysText(e->x, (s16)(e->y + arg1),
                               ((u8 **)LangMessages[g->language])[e->idx], e->a, e->b,
                               PauseChoice == n);
+                if (PauseMouse) {
+                    menu_mouse_text(n, e->x, e->y + arg1, ((char **)LangMessages[g->language])[e->idx],
+                                    PauseMouse & PAUSE_MOUSE_VALUES ? MENU_CHOOSE : 0);
+                }
             }
             n++;
             break;
         case 8:
             if (PauseTextHold == 0) {
                 DrawSysText(e->x, (s16)(e->y + arg1), (u8 *)PauseOwnTexts[e->idx], e->a, e->b, PauseChoice == n);
+                if (PauseMouse) {
+                    menu_mouse_text(n, e->x, e->y + arg1, PauseOwnTexts[e->idx], 0);
+                }
             }
             n++;
             break;
@@ -834,7 +853,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             }
             DrawSysText(e->x, (s16)(e->y + arg1),
                           ((u8 **)LangMessages[g->language])[e->idx], e->c, e->d, 0);
-            break;
+            goto value;
         case 20: case 21: case 22: case 23: case 24:
         case 25: case 26: case 27: case 28: case 29:
             k = e->type - 20;
@@ -846,7 +865,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             }
             DrawSysText(e->x, (s16)(e->y + arg1),
                           ((u8 **)LangMessages[g->language])[e->idx], e->c, e->d, 0);
-            break;
+            goto value;
         case 30: case 31: case 32: case 33: case 34:
         case 35: case 36: case 37: case 38: case 39:
             k = e->type - 30;
@@ -856,6 +875,10 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
         draw:
             DrawSysText(e->x, (s16)(e->y + arg1),
                           ((u8 **)LangMessages[g->language])[e->idx], e->a, e->b, 0);
+        value:
+            if (PauseMouse & PAUSE_MOUSE_VALUES) {
+                menu_mouse_text(k, e->x, e->y + arg1, ((char **)LangMessages[g->language])[e->idx], MENU_VALUES);
+            }
             break;
         }
     }
@@ -892,6 +915,8 @@ static void DrawPauseVideo(void) {
         video_option_value(i, value, sizeof(value));
         DrawSysText(VIDEO_LABEL_X, (s16)y, (u8 *)video_option_label(i), 0xD0FF, 0xFF, lit);
         DrawSysText(VIDEO_VALUE_X, (s16)y, (u8 *)value, 0xD0FF, 0xFF, lit);
+        menu_mouse_text(i, VIDEO_LABEL_X, y, video_option_label(i), MENU_CHOOSE);
+        menu_mouse_text(i, VIDEO_VALUE_X, y, value, MENU_VALUES);
     }
     DrawSysText(-0x8000, (s16)(0xE8 + PauseMenuY), (u8 *)video_option_help(PauseChoice), 0xD0FF, 0xFF, 0);
 }
@@ -916,6 +941,7 @@ void DrawPauseMenu(void) {
     if (GAME->pause & 0x08000002) {
         return;
     }
+    PauseMouse = 0;
     if (GAME->pause & 0x7000) {
         if (GAME->pause & 0x2000) {
             DrawHudEntries(PauseBlankB, 0x70);
@@ -932,9 +958,11 @@ void DrawPauseMenu(void) {
     }
     switch (GAME->pause & 0x023F8FEC) {
     case 0:
+        pause_mouse(PausePad, 0, PAUSE_MOUSE_ROWS);
         if (GAME->mode == 0x20) {
             DrawHudEntries(PauseMenuQuit, PauseMenuY);
             PauseStatsAllowed = 0;
+            PauseMouse = 0;
             return;
         }
         if (GAME->levelFlags & 4) {
@@ -945,10 +973,12 @@ void DrawPauseMenu(void) {
         PauseStatsAllowed = 1;
         break;
     case 8:
+        pause_mouse(PausePad, 0, PAUSE_MOUSE_ROWS);
         DrawHudEntries(pause_can_save() ? PauseMenuSave : PauseMenuShort, PauseMenuY);
         PauseStatsAllowed = 1;
         break;
     case 0x8000:
+        pause_mouse(PausePad, MENU_ACROSS, PAUSE_MOUSE_ROWS);
         DrawHudEntries(PauseConfirmExit, PauseMenuY);
         break;
     case 0x10000:
@@ -957,14 +987,22 @@ void DrawPauseMenu(void) {
         break;
     case 4:
     case 0xC:
+        pause_mouse(PausePad, MENU_ACROSS, PAUSE_MOUSE_ROWS);
         DrawHudEntries(PauseConfirmMenus, PauseMenuY);
         break;
     case 0x40:
     case 0x240:
+        /* the rules: a click anywhere is Cross, the next page, and a right click the last */
+        if (GAME->mode != 0x25) {
+            menu_mouse_list(PausePad, 0, 0);
+            menu_mouse_row(0, -0x400, -0x400, 0x400, 0x400, 0);
+        }
         DrawHudEntries(PauseRules1, PauseMenuY);
         SetPauseY(PauseMenuY);
         break;
     case 0x80:
+        menu_mouse_list(PausePad, 0, 0);
+        menu_mouse_row(0, -0x400, -0x400, 0x400, 0x400, 0);
         DrawHudEntries(PauseRules0, PauseMenuY);
         SetPauseY(PauseMenuY);
         break;
@@ -978,6 +1016,7 @@ void DrawPauseMenu(void) {
             PauseToggles[0] = heard_stereo() != 0;
             FormatPercent(LangMessages[GAME->language]->musicText, heard_music());
             FormatPercent(LangMessages[GAME->language]->sfxText, heard_sfx());
+            pause_mouse(PausePad, 0, PAUSE_MOUSE_ROWS | PAUSE_MOUSE_VALUES);
             DrawHudEntries(PauseSoundMenu, PauseMenuY);
             break;
         case 2:
@@ -991,23 +1030,30 @@ void DrawPauseMenu(void) {
             for (; i < 4; i++) {
                 PauseToggles[i] = 9;
             }
+            /* each player's own pad changes their own vibration: the mouse only goes back */
+            menu_mouse_list(PausePad, PauseChoice, 0);
             DrawHudEntries(PauseControllerMenu, PauseMenuY);
             break;
         case 3:
+            menu_mouse_list(PausePad, PauseChoice, 0);
             DrawPauseVideo();
             break;
         default:
+            pause_mouse(PausePad, 0, PAUSE_MOUSE_ROWS);
             DrawHudEntries(PauseOptionsMenu, PauseMenuY);
             break;
         }
         break;
     case 0x200:
+        pause_mouse(0, 0, PAUSE_MOUSE_ROWS);
         DrawHudEntries(PauseEndMenu, PauseMenuY);
         break;
     case 0x20:
+        pause_mouse(0, 0, PAUSE_MOUSE_ROWS);
         DrawHudEntries(PauseEndWarpMenu, PauseMenuY);
         break;
     case 0x400:
+        pause_mouse(0, 0, PAUSE_MOUSE_ROWS);
         DrawHudEntries(PauseEndAdventureMenu, PauseMenuY);
         break;
     case 0x2000000:
@@ -1016,6 +1062,7 @@ void DrawPauseMenu(void) {
         }
         break;
     }
+    PauseMouse = 0;
 }
 
 void DrawAdventureStats(s32 arg0) {

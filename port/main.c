@@ -378,7 +378,11 @@ static void read_macro(const char *text) {
     }
 }
 
-static int BotButtons;
+static int BotButtons, MouseButtons;
+
+void platform_mouse_buttons(int buttons) {
+    MouseButtons = buttons;
+}
 
 void platform_bot_buttons(int buttons) {
     BotButtons = buttons;
@@ -439,6 +443,9 @@ int platform_local_pad(int port) {
         if (BotButtons != 0) {
             b = (b < 0 ? 0 : b) | BotButtons;
         }
+        if (MouseButtons != 0) {
+            b = (b < 0 ? 0 : b) | MouseButtons;
+        }
         for (i = 0; i < NumPresses; i++) {
             if (TEST_NOW >= Presses[i].frame && TEST_NOW < Presses[i].frame + PRESS_VBLANKS) {
                 b = (b < 0 ? 0 : b) | Presses[i].buttons;
@@ -467,6 +474,7 @@ void platform_restart(int online) {
     Vblanks = 0;
     Epoch++;
     BotButtons = 0;
+    MouseButtons = 0;
     Stalled = 0;
     if (settings()->no_save) {
         printf("restart: the game from its beginning\n");

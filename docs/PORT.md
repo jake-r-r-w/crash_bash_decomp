@@ -272,7 +272,25 @@ other panel is gone to first: a category clicked opens it, and a setting clicked
 setting chosen, for the next click to change. Where a screen's only press is START (HOST GAME's, the players screen's), it's the line at
 the foot saying so that's clicked, so a stray click can't start a game. The window's point goes to the menus' units through how the
 picture's fitted to the window (`gfx_window_point`). Touches that SDL turns into a mouse aren't it, as touch has buttons of its own.
-The game's own menus, after PLAY, still take the keys and controllers only. `playtest.mjs controls` drives it with `--mouse`.
+`playtest.mjs controls` drives it with `--mouse`.
+
+**The mouse in the game's own menus** (the user's word, 2026-11-10: "the menu should be clickable in game too";
+`game/main/menumouse.c`). Online, every machine plays the same game from the same presses, so the mouse can't choose a row itself as
+the launcher's does: it presses this machine's first pad, as the keyboard does (`platform_mouse_buttons`, held with its own in
+`platform_local_pad`), and those presses go to the others like any. Pointing at a row presses up or down (left and right for rows side
+by side) till the menu's own cursor is on it; a click does that and then presses Cross, or on a row with a value (SOUND's, VIDEO's) left
+or right by the half clicked, as Cross leaves those pages; a right click is Triangle, and the wheel up and down. Some things are buttons
+with no cursor: an arrow, a line saying what Cross does (PRESS X BUTTON TO SELECT, START BATTLE), the game options' panels by their
+halves, the rules' pages anywhere. One press at a time, held a step and let go a step, and the next waits till the cursor's moved, or
+long enough that it won't (40 steps online, where it's played late): a row it can't reach is given up on. Only a menu this machine's
+first player chooses in takes it, so a joiner's mouse works their own pause menu and not the host's title screens. Each menu tells it
+its rows every frame (`menu_mouse_list`, then `menu_mouse_row`, `menu_mouse_text` or `menu_mouse_sub`): the pause menu's from
+`DrawHudEntries` as it draws them, the title screens' (main menu, players, NEW/LOAD, OPTIONS and its pages, character select, level
+select, battle type, game options), the tournament select's and the memory card's from their text objects' boxes as last drawn
+(`menu_mouse_drawn`, from `draw_text_nas`). A Battle's results menus are the pause menu's lists. Not done: the warp room's door picker
+and save computer, the name entry's keys, the cheat menu. The launcher takes the mouse as it is, through `menu_mouse_take`, so nothing's
+read twice. A test's pretend mouse shuts the real one out. `playtest.mjs mouse` plays a Battle and a Tournament through by it, and
+`online` has the host's mouse in the menus, quitting by it.
 
 **The sticks' deadzone** (GitHub issue 1, 2026-11-10: "Currently I feel it's bit high"). The game takes a stick for a d-pad direction,
 which is what moves a hero, only once one axis is past 0x24 or 0xDB, nearly three quarters of the way out (`pad_read`), as on the
@@ -319,7 +337,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--pad-press P N BUTTONS` | hold pretend controller P's buttons (1 to 4; hex, `platform.h`) from vblank N for a few vblanks |
 | `--pad-stick P N X Y` | put pretend controller P's left stick at X, Y (percent of the way out, -100 to 100) from vblank N, till it's moved again |
 | `--stick-deadzone N` | the sticks' deadzone, in percent (0: the game's own) |
-| `--mouse N X Y WHAT` | a pretend mouse at vblank N: to X, Y (a 640 x 480 picture's units from its middle, as the launcher lays out its menus), and there `move`, `click`, `right` (a right click), `up` or `down` (the wheel) |
+| `--mouse N X Y WHAT` | a pretend mouse at vblank N: to X, Y (a 640 x 480 picture's units from its middle, as the launcher lays out its menus), and there `move`, `click`, `right` (a right click), `up` or `down` (the wheel); in the launcher and the game's own menus alike, and the real mouse is left out |
 | `--check-sticks` | check the deadzone's line is where it should be at every angle (a `ctest`) |
 | `--pad-unplug P N`, `--pad-plug P N` | pull pretend controller P out, or plug it in, at vblank N |
 | `--key-press N KEY` | hold a pretend key (SDL's name: `J`, `Escape`, `Right Shift`) from vblank N for a few vblanks, through the CONTROLS page's keys as a real one is |

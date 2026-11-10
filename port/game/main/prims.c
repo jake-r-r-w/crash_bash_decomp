@@ -3,6 +3,7 @@
 #include "bash/prims.h"
 #include "bash/engine.h"
 #include "bash/extraheroes.h"
+#include "bash/menumouse.h"
 
 static inline void prims_pool_clear(PrimList *l) {
     l->f4 = 0;
@@ -1489,6 +1490,8 @@ void draw_text_nas(TextNAS *t, MATRIX *arg1, s32 arg2) {
             x = ((GfxScreen *)RenderState.screen)->x + t->x;
         }
         DrawSysText(x, (s16)(*(s16 *)&((GfxScreen *)RenderState.screen)->y + t->y), t->str, t->c0, t->c1, 0);
+        /* PC: where it is, for the mouse in a menu (menumouse.c) */
+        menu_mouse_drawn(t, (s16)x, (s16)(*(s16 *)&((GfxScreen *)RenderState.screen)->y + t->y), (const char *)t->str);
         return;
     }
     RenderState.localMtx = RenderState.mtxBuf;

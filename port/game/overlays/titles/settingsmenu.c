@@ -24,6 +24,7 @@
 #include "bash/engine.h"
 #include "bash/fingerprint.h"
 #include "bash/main.h"
+#include "bash/menumouse.h"
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
 #include "bash/videomenu.h"
@@ -1380,7 +1381,7 @@ static s32 mouse_presses(void) {
     s32 out = 0, row = -1;
     s32 point;
 
-    host_mouse(&m);
+    menu_mouse_take(&m);
     if (Screen == SCREEN_OPTIONS && Waiting >= 0) {
         return 0; /* waiting for a key or a button: not the mouse's */
     }

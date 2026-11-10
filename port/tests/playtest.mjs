@@ -38,6 +38,9 @@
  *   node port/tests/playtest.mjs controls
  *       The launcher's CONTROLS page, with pretend keys and a pretend controller: new keys and buttons, swaps, Esc and the reset. And a
  *       pretend mouse through the menus: rows pointed at and clicked, right clicks back, the wheel.
+ *   node port/tests/playtest.mjs mouse
+ *       The game's own menus by a pretend mouse alone (game/main/menumouse.c): a Battle set up from the title to its start, its rules
+ *       clicked through, paused and quit by YES; a Tournament, its arrow clicked for the next; and the wheel. By the modes each starts.
  *   node port/tests/playtest.mjs pads
  *       Couch play, with pretend controllers: the launcher's players screen, Battle, Adventure and Tournament offering as many players as
  *       there are controllers, each choosing its own hero, and controllers pulled out and plugged in without anyone else's player changing.
@@ -1160,6 +1163,12 @@ async function online(args) {
             ...(m === 1 ? [[3000, START], [3040, DOWN], [3070, DOWN], [3100, CROSS], [3140, CROSS], [3180, DOWN], [3210, '80'], [3240, '80'], [3270, '80'],
                 [3300, DOWN], [3330, '80'], [3380, '10'], [3410, '10'], [3440, '80']].flatMap(([v, b]) => press(v, b)) : []),
             '--shot', '3500', rel(`sound-machine${m + 1}.png`)] },
+        /* the host's mouse in the game's menus (game/main/menumouse.c): BATTLE and the players screen's one row clicked, and at the end
+           paused, QUIT GAME and YES clicked; its presses go to the joiner as any do, so the games stay the same and both quit */
+        { name: 'the host\'s mouse in the game\'s menus', machines: 2, want: 'quit', presses: m => m !== 0 ? online_presses(m, 2) : [
+            '--mouse', '200', '134', '2', 'click', '--mouse', '340', '134', '-16', 'click',
+            ...[470, 590, 850, 1150, 1250, 1550, 1650, 1750, 2000].flatMap(v => press(v, CROSS)), '--macro', '2100', ONLINE_MACROS[0], '--macro-until', '6900',
+            ...press(7000, START), '--mouse', '7060', '0', '74', 'click', '--mouse', '7250', '-100', '-36', 'click'] },
     ];
     const press = (v, b) => ['--press', String(v), b];
     /* the launcher's presses: ONLINE, then HOST GAME and in time START; or JOIN GAME and the first game found, or down to ADDRESS
@@ -1303,6 +1312,11 @@ async function online(args) {
                 : !new RegExp(`^players ${c.machines}, `, 'm').test(runs[m].text) ? `machine ${m + 1} never reached the ${c.machines}-player game`
                 : parted != null ? `machine ${m + 1}'s game differs from the host's from ${parted}`
                 : !c.real && c.presses == null && !gone && [...runs[m].text.matchAll(/^mode 40 at vblank/gm)].length !== 2 ? `machine ${m + 1} wasn't back at the title at the end` : null;
+        }
+        if (wrong == null && c.want === 'quit') {
+            const back = runs.map(r => [...r.text.matchAll(/^mode 40 at vblank/gm)].length);
+
+            wrong = back.some(n => n !== 2) ? `not every machine was back at the title at the end: ${back.join(', ')}` : null;
         }
         if (wrong == null && c.want === 'own sound') {
             wrong = !said(1, /^own sound: music 55, fx 95, mono$/m) ? 'the joiner\'s own sound options didn\'t change as pressed'
@@ -1448,6 +1462,61 @@ async function controls(args) {
         const wrong = crash ?? (r.code !== 0 ? `exit ${r.code}` : got.join('|') !== c.want.join('|') ? `got ${got.join(', ') || 'nothing'}` : null);
 
         return [c.name, { pass: wrong == null, what: wrong ?? `case${i}.txt` }];
+    }));
+    return report(results);
+}
+
+/* The game's own menus by a pretend mouse (game/main/menumouse.c), in a 640 x 480 picture's units from its middle, by the modes the
+   games start in. The title's main menu's rows are at x 134: BATTLE at y 2, TOURNAMENT at 34; the players screen's first at -52. */
+const MOUSE_BATTLE = ['--mouse', '200', '134', '2', 'click', '--mouse', '340', '134', '-52', 'click',
+    /* a hero's card (the seventh), PRESS X's line on the level select, START BATTLE's line, the game options' start bar */
+    '--mouse', '600', '45', '-65', 'click', '--mouse', '1120', '-95', '-33', 'click', '--mouse', '1380', '0', '178', 'click', '--mouse', '1620', '0', '172', 'click'];
+
+async function mouse(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const dir = path.join(OUT, 'mouse');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const cases = [
+        {
+            /* a click anywhere turns the rules' four pages; then paused, QUIT GAME (the fifth row) clicked, NO pointed at and YES clicked */
+            name: 'a Battle set up from the title, started, its rules clicked through, paused and quit, by the mouse alone',
+            args: [...MOUSE_BATTLE, ...[2000, 2080, 2160, 2240].flatMap(v => ['--mouse', String(v), '100', '100', 'click']), '--press', '2700', START,
+                   '--mouse', '2800', '0', '74', 'click', '--mouse', '2860', '100', '-36', 'move', '--mouse', '2920', '-100', '-36', 'click', '--frames', '3100'],
+            want: [40, 0, 40],
+        },
+        {
+            /* the arrow to the right of the tournament's name for the next (Polar Push's, whose first round is mode 19), then its name */
+            name: 'a Tournament: its arrow clicked for the next, then its name, and started',
+            args: ['--mouse', '200', '134', '34', 'click', '--mouse', '340', '134', '-52', 'click', '--mouse', '600', '45', '-65', 'click',
+                   '--mouse', '1000', '250', '129', 'click', '--mouse', '1100', '0', '129', 'click', '--mouse', '1500', '0', '172', 'click', '--frames', '1700'],
+            want: [40, 19],
+        },
+        {
+            /* the wheel, away from the rows, down one to BATTLE, the keyboard's Cross, then the mouse's Battle from the players screen */
+            name: 'the wheel, then the keyboard, then the mouse again: a Battle',
+            args: ['--mouse', '150', '-200', '150', 'down', '--press', '200', CROSS, ...MOUSE_BATTLE.slice(5), '--frames', '1800'],
+            want: [40, 0],
+        },
+        {
+            /* a right click goes back: the players screen to the title, where TOURNAMENT is clicked instead */
+            name: 'a right click back from the players screen, and TOURNAMENT clicked instead',
+            args: ['--mouse', '200', '134', '2', 'click', '--mouse', '340', '134', '-52', 'right', '--mouse', '460', '134', '34', 'click',
+                   '--mouse', '600', '134', '-52', 'click', '--mouse', '860', '45', '-65', 'click', '--mouse', '1360', '0', '129', 'click',
+                   '--mouse', '1760', '0', '172', 'click', '--frames', '1960'],
+            want: [40, 0],
+        },
+    ];
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    const results = await Promise.all(cases.map(async (c, i) => {
+        const r = await run(exe, ['--skip-intro', '--turbo', '--draw-every', '60', '--tile', String(i), String(cases.length), '--saves', rel(`saves${i}`),
+            ...c.args], path.join(dir, `case${i}.txt`), { timeout: MODE_TIMEOUT });
+        const crash = crash_where(exe, r.text);
+        const got = [...r.text.matchAll(/^mode (\d+) at vblank/gm)].map(m => Number(m[1]));
+        const wrong = crash ?? (r.code !== 0 ? `exit ${r.code}` : got.join(',') !== c.want.join(',') ? `modes ${got.join(', ') || 'none'}` : null);
+
+        return [c.name, { pass: wrong == null, what: wrong ?? `modes ${got.join(', ')}, case${i}.txt` }];
     }));
     return report(results);
 }
@@ -1891,9 +1960,9 @@ async function fuzz(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, controls, identical, online, fuzz, shots, image, packs, mods };
+const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, mouse, pads, controls, identical, online, fuzz, shots, image, packs, mods };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|controls|identical|online|fuzz|shots|image|packs|mods: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|mouse|pads|controls|identical|online|fuzz|shots|image|packs|mods: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

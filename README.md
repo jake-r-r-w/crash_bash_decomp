@@ -30,7 +30,7 @@ On Android, install the `.apk` from the same release, and the first time it asks
 | **Mods**          | Textures, game files and patches from zips, on a Mods page |
 | **Extra heroes**  | Ripper Roo and Pinstripe, from your own Crash Bandicoot (USA), in every game |
 | **Online play**   | Up to four players on their own machines, with no servers: by your network, a join code or a virtual network |
-| **Controllers**   | Up to four players on one machine, with a screen to put the controllers in order; analog sticks, with a deadzone of your choosing, and rumble, or the keyboard; every key and button can be changed |
+| **Controllers**   | Up to four players on one machine, with a screen to put the controllers in order; analog sticks, with a deadzone of your choosing, and rumble, or the keyboard; every key and button can be changed; the menus work with the mouse too |
 | **Touch**         | On Android, faint buttons over the picture, or a controller |
 | **Saves**         | Kept in a file, with no memory card to set up          |
 | **Quick start**   | Skip the logos and the loading screens                 |

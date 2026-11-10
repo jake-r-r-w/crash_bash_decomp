@@ -9,6 +9,7 @@
 #include "bash/online.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
+#include "bash/menumouse.h"
 
 void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     s32 id;
@@ -463,6 +464,19 @@ void UpdateCupMenu(void) {
             p[i + 0xA3] = 0;
         }
     }
+    /* PC: the mouse: the tournament's name takes it, as its rounds' pictures and PRESS X's line do, and the arrows each side
+       change it */
+    menu_mouse_list(0, 0, 0);
+    menu_mouse_sub(0, GetEngineSlot(0)->sub, 0);
+    menu_mouse_press(0x4000, 0x4000);
+    menu_mouse_sub(0, &GetEngineSlot(0)->sub[7], 0);
+    menu_mouse_press(0x4000, 0x4000);
+    menu_mouse_row(0, 0x2D, 0x55, 0x250, 0x159, 0);
+    menu_mouse_press(0x4000, 0x4000);
+    menu_mouse_sub(0, &GetEngineSlot(0)->sub[8], 0);
+    menu_mouse_press(0x80, 0x80);
+    menu_mouse_sub(0, &GetEngineSlot(0)->sub[9], 0);
+    menu_mouse_press(0x20, 0x20);
     GetEngineSlot(0)->sub->u6C.dbase = EngineCurWorldName();
     if (GAME->cup != 0) {
         GetEngineSlot(0)->sub[8].flags |= 0x8000;
@@ -1021,6 +1035,10 @@ void UpdateSaveMenu(void) {
         break;
     case 7:
         SAVEMENU_SET_ANIM(LangConfirmOverwrite);
+        /* PC: the mouse: the question's line is Square, to save over the game there, and a right click is Triangle, not to */
+        menu_mouse_list(0, 0, 0);
+        menu_mouse_sub(0, &GetEngineSlot(1)->sub[1], 0);
+        menu_mouse_press(0x8000, 0x8000);
         if (Pads[0].pressed & 0x8000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             if (HubSaveMenuHooks.unk0 != NULL) {
@@ -1037,6 +1055,9 @@ void UpdateSaveMenu(void) {
         break;
     case 5:
         SAVEMENU_SET_ANIM(LangSaveCompleted);
+        menu_mouse_list(0, 0, 0);
+        menu_mouse_sub(0, &GetEngineSlot(1)->sub[1], 0);
+        menu_mouse_press(0x4000, 0x4000);
         if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             GotoProcess(&RetryProcess, 0x200);
@@ -1046,6 +1067,9 @@ void UpdateSaveMenu(void) {
         break;
     case 2:
         SAVEMENU_SET_ANIM(LangSaveFailedPressButtonToExit);
+        menu_mouse_list(0, 0, 0);
+        menu_mouse_sub(0, &GetEngineSlot(1)->sub[1], 0);
+        menu_mouse_press(0x4000, 0x4000);
         if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             card_reset();
@@ -1186,6 +1210,19 @@ void UpdateCardSlots(void) {
         SELECT_SLOT(CardSlotIndex + 1);
     }
     CardSlotIndex &= 3;
+    /* PC: the mouse: the slots, in the order left and right go round them, and the line saying what Triangle does */
+    {
+        s32 i;
+
+        menu_mouse_list(0, CardSlotIndex, MENU_ACROSS);
+        for (i = 0; i < 4; i++) {
+            EXTengine *s = GetEngineSlot(4 + i);
+
+            menu_mouse_row(i, s->XYZ.x, s->XYZ.y, s->XYZ.x + 0x118, s->XYZ.y + 0x5A, 0);
+        }
+        menu_mouse_sub(0, &GetEngineSlot(3)->sub[14], 0);
+        menu_mouse_press(0x1000, 0x1000);
+    }
     e = GetEngineSlot(CardSlotIndex | 4);
     e2 = GetEngineSlot(2);
     e2->XYZ.y = e->XYZ.y;

@@ -646,6 +646,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-10: The mouse in the game's own menus too (the user's "the menu should be clickable in game too"; `menumouse.c`): it
+  presses player 1's pad, so online it's the same as any press. Pause menu, title screens, tournament select, memory card slots;
+  `playtest.mjs mouse` (4 cases) and an online case where the host quits by mouse. Not done: the warp room's door picker and save
+  computer, the name entry, the cheat menu.
 - 2026-11-10: The mouse in the launcher (the user's "we should be able to click around the menu"): pointing chooses a row once it's
   moved, a click is Cross, a right click back, the wheel up and down, across every launcher screen; `gfx_window_point` turns a window
   point into the menus' units. `--mouse` for tests, two cases in `controls`, and a game joined by mouse alone by hand. The game's own

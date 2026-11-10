@@ -87,8 +87,11 @@ and mods that change the game's files are off online.
 
 SETTINGS
 
-The menu the game opens with works with the mouse too: point at a row and click
-it, right-click to go back, and turn the wheel to go up and down. It has its
+The menus work with the mouse too, the game's own as well as the one it opens
+with: point at a row and click it, right-click to go back, and turn the wheel to
+go up and down. On a setting with a value, click its left half for less and its
+right half for more. Online, the mouse is your first player's, as the keyboard
+is. The menu the game opens with has its
 settings, and the pause menu has the
 Video ones too. The new looks are all off at first, so the game looks as it
 always did until you turn them on:
