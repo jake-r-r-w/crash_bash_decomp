@@ -35,6 +35,8 @@
  *       pictures of one mode.
  *   node port/tests/playtest.mjs menu
  *       From the title screen through the menus, by the pad alone, into the first game of a new Adventure's first room.
+ *   node port/tests/playtest.mjs controls
+ *       The launcher's CONTROLS page, with pretend keys and a pretend controller: new keys and buttons, swaps, Esc and the reset.
  *   node port/tests/playtest.mjs pads
  *       Couch play, with pretend controllers: the launcher's players screen, Battle, Adventure and Tournament offering as many players as
  *       there are controllers, each choosing its own hero, and controllers pulled out and plugged in without anyone else's player changing.
@@ -743,6 +745,54 @@ async function pads(args) {
     return report(results);
 }
 
+/* The launcher's CONTROLS page, with pretend keys (--key-press) and a pretend controller: a key chosen for Cross, a key
+   another button had (they swap), the new key choosing PLAY, a controller button chosen and used the same way, and RESET TO
+   DEFAULTS. From the log's "controls:" lines (settingsmenu.c). */
+async function controls(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const dir = path.join(OUT, 'controls');
+    const UP = '10', TRIANGLE = '1000', CIRCLE = '2000';
+    const press = (...pairs) => pairs.flatMap(([v, b]) => ['--press', String(v), b]);
+    /* SETTINGS, then that many down the categories (CONTROLS is 2), and into its rows at Cross's */
+    const page = n => press([100, DOWN], [130, CROSS], ...Array.from({ length: n }, (_, i) => [160 + i * 20, DOWN]), [230, CROSS]);
+    /* back out to the top and up onto PLAY */
+    const out = from => press([from, TRIANGLE], [from + 30, TRIANGLE], [from + 60, UP]);
+    const cases = [
+        {
+            name: 'keyboard: J for Cross, J for Circle (Cross gets X), K for Cross, K plays',
+            args: [...page(2), ...press([260, CROSS]), '--key-press', '300', 'J', ...press([360, DOWN], [390, CROSS]), '--key-press', '420', 'J',
+                   ...press([480, UP], [510, CROSS]), '--key-press', '540', 'K', ...out(570), '--key-press', '660', 'K', '--frames', '720'],
+            want: ['CROSS is key J', 'CIRCLE is key J', 'CROSS is key K', 'play'],
+        },
+        {
+            name: 'gamepad: the right-hand button for Cross, and it plays',
+            args: ['--pretend-pads', '1', ...page(2), ...press([260, CROSS]), '--pad-press', '1', '290', CIRCLE, ...out(350), '--pad-press', '1', '440', CIRCLE,
+                   '--frames', '500'],
+            want: ['CROSS is button b', 'play'],
+        },
+        {
+            name: 'keyboard: Esc keeps a key, and RESET TO DEFAULTS puts them back: Z plays',
+            args: [...page(2), ...press([260, CROSS]), '--key-press', '300', 'ESCAPE', ...press([330, CROSS]), '--key-press', '360', 'J',
+                   ...Array.from({ length: 14 }, (_, i) => [390 + i * 12, DOWN]).flatMap(([v, b]) => ['--press', String(v), b]), ...press([580, CROSS]),
+                   ...out(610), '--key-press', '700', 'Z', '--frames', '760'],
+            want: ['CROSS is key J', 'keys and buttons as they were', 'play'],
+        },
+    ];
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    const results = await Promise.all(cases.map(async (c, i) => {
+        const r = await run(exe, ['--launcher', '--skip-intro', '--turbo', '--tile', String(i), String(cases.length), ...c.args], path.join(dir, `case${i}.txt`),
+                            { timeout: MODE_TIMEOUT });
+        const crash = crash_where(exe, r.text);
+        const got = r.text.split(/\r?\n/).filter(l => /^(controls|launcher): /.test(l)).map(l => l.replace(/^\w+: /, '').replace(/ at vblank \d+$/, ''));
+        const wrong = crash ?? (r.code !== 0 ? `exit ${r.code}` : got.join('|') !== c.want.join('|') ? `got ${got.join(', ') || 'nothing'}` : null);
+
+        return [c.name, { pass: wrong == null, what: wrong ?? `case${i}.txt` }];
+    }));
+    return report(results);
+}
+
 async function shots(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const [first, step, count] = args.splice(0, 3).map(Number);
@@ -1104,9 +1154,9 @@ async function mods(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, shots, image, packs, mods };
+const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, controls, shots, image, packs, mods };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|shots|image|packs|mods: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|controls|shots|image|packs|mods: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

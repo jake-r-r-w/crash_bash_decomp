@@ -249,7 +249,15 @@ runs. Its README says the oldest glibc it runs on, from what the program imports
 
 Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. It also looks for `CRASHBSH.DAT` in the current folder, next to the program and in the user's folder, where a disc image's copy goes the first time it runs (`platform/discimage.c`): an image next to the program or in the current folder is used with no questions, and otherwise it asks. A settings
 menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
-Keys: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Q and W = L1 and R1, 1 and 2 = L2 and R2.
+Keys at first: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Right Shift = Select, Q and W = L1 and R1, 1 and 2 = L2 and R2.
+SETTINGS has a CONTROLS page to change them, and a controller's buttons (the same for every controller), at the user's word
+(2026-11-10, one page for both, also theirs): each of the game's buttons with its key and its controller button side by side; a row,
+Cross, then whichever's pressed first, a key or a controller's button, is its new one; one another button had swaps with it, so each
+has one; Esc, or a few seconds with nothing, keeps it; RESET TO DEFAULTS puts them all back. They're kept in the settings file by SDL's
+names (`key_cross=Z`, `pad_cross=a`; `platform/controls.c`). The face buttons show as the font's pictures of them (`\xFC` Cross, `\xFD`
+Circle, `\xFF` Square, `\xFE` Triangle), and so do a PlayStation controller's. The buttons column is text of an engine slot of its own
+(slot 0's 32 are all taken, and the game's letters aren't one width, so spaces can't line it up). `playtest.mjs controls` checks it
+with pretend keys.
 
 The menu is PLAY, SETTINGS and QUIT, with the settings in categories; a new setting is a row in its category's table and a case in
 `change_setting` and `show_value`. The main menu's EXIT comes back to it.
@@ -282,6 +290,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--pretend-pads N` | plug in N pretend controllers (SDL's virtual gamepads, "Pretend pad 1" on), and use no real ones; up to four can come and go |
 | `--pad-press P N BUTTONS` | hold pretend controller P's buttons (1 to 4; hex, `platform.h`) from vblank N for a few vblanks |
 | `--pad-unplug P N`, `--pad-plug P N` | pull pretend controller P out, or plug it in, at vblank N |
+| `--key-press N KEY` | hold a pretend key (SDL's name: `J`, `Escape`, `Right Shift`) from vblank N for a few vblanks, through the CONTROLS page's keys as a real one is |
 | `--depth-clip` | draw as a device without depth clamping does (some phones): a point outside the depth range is clipped, not drawn at its edge (gfx.c, `make_device`) |
 | `--draw-every N` | draw one frame in N, and any a shot needs, so a long test runs as fast as the game's logic can |
 | `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit. It's the game's demo, whose pause bit stops what waits on a pause; Polar Push's tilt doesn't wait on that bit (the game never demos its tilting levels). Mode 43, the tournament's podium, is as at a tournament's end: Crash, Coco, Cortex and Brio (or extra heroes in their places), player 1 first |

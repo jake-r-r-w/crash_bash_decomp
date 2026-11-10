@@ -8,10 +8,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../../platform/controllers.h"
+#include "../../../platform/controls.h"
 #include "../../../platform/mods.h"
 #include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/engine.h"
+#include "bash/gameflow.h"
 #include "bash/main.h"
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
@@ -33,8 +35,15 @@ typedef struct {
     s32 id;
 } MenuOption;
 
-/* What a category's list is: options from its table, the video options, or the mods */
-enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS };
+/* What a category's list is: options from its table, the video options, the mods, or the keys or controller buttons for the game's
+   buttons (controls.h) */
+enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS, KIND_CONTROLS };
+
+/* The CONTROLS page's rows: the columns' names, a row for each of the game's buttons, and RESET TO DEFAULTS */
+#define ROW_HEADER 0
+#define ROW_CONTROL(n) ((n) - 1)
+#define ROW_RESET (NUM_CONTROLS + 1)
+#define KEY_COLUMN 12 /* a key's name, up to 11 letters, and the space before the button's */
 
 typedef struct {
     const char *label;
@@ -54,10 +63,22 @@ static const MenuOption GameOptionsList[] = {
 static const MenuCategory Categories[] = {
     { "GAME", GameOptionsList, NUM_OF(GameOptionsList), KIND_OPTIONS },
     { "VIDEO", NULL, NUM_VIDEO_OPTIONS, KIND_VIDEO },
+    { "CONTROLS", NULL, ROW_RESET + 1, KIND_CONTROLS },
     { "MODS", NULL, 0, KIND_MODS },
 };
 #define NUM_CATEGORIES NUM_OF(Categories)
 #define MAX_CATEGORIES 4 /* and BACK */
+
+/* The control waiting for its new key or button, and for how many more frames: the page gives up after a few seconds */
+#define WAIT_FRAMES 300
+static s32 Waiting = -1;
+static s32 WaitFrames;
+static s32 Settling; /* a key or button was just chosen: till everything's let go, as the one still held is a press of its new control */
+#define CONTROL_VALUE_X 0x18 /* past SELECT, with room for RIGHT SHIFT before the buttons' column */
+/* The CONTROLS page's buttons column: text records of an engine slot of its own, as slot 0's 32 are all taken. Slot 3 is the level
+   select's, whose screen places it afresh; the launcher empties it as it goes. */
+#define PAD_SLOT 3
+#define PAD_X 0xB8
 
 static const char *const TopRows[] = { "PLAY", "SETTINGS", "QUIT" };
 enum { TOP_PLAY, TOP_SETTINGS, TOP_QUIT, NUM_TOP };
@@ -132,6 +153,9 @@ static camera_info_tag LogoCamera;
 #define LIT_FRAMES 40
 
 static PlaceRec Place[SUB_HELP_MORE + 2];
+static PlaceRec PadPlace[VISIBLE_OPTIONS + 1];
+static PlaceRec NoPlace[1];
+static char PadNames[VISIBLE_OPTIONS][16];
 static char Values[VISIBLE_OPTIONS][32];
 static char Labels[VISIBLE_OPTIONS][LABEL_CHARS + 1];
 static char Help[2][HELP_CHARS + 1];
@@ -190,6 +214,64 @@ static void font_text(char *out, size_t size, const char *in) {
         memcpy(clean + cut, "...", 4);
     }
     memcpy(out, clean, strlen(clean) + 1);
+}
+
+/* A game button as the CONTROLS page shows it: the face buttons as the font's own button pictures, as the game's
+   menus draw them ("PRESS \xFC BUTTON TO START"), and the rest by name */
+static const char *control_label(s32 n) {
+    switch (n) {
+    case CONTROL_CROSS:
+        return "\xFC";
+    case CONTROL_CIRCLE:
+        return "\xFD";
+    case CONTROL_SQUARE:
+        return "\xFF";
+    case CONTROL_TRIANGLE:
+        return "\xFE";
+    default:
+        return control_name(n);
+    }
+}
+
+/* A row of the CONTROLS page: its key, in the value column, or for the top row the column's name */
+static void control_value(char *text, size_t size, s32 n) {
+    if (n == ROW_HEADER) {
+        snprintf(text, size, "%s", "KEYBOARD");
+    } else if (n == ROW_RESET) {
+        text[0] = '\0';
+    } else if (Waiting == ROW_CONTROL(n)) {
+        snprintf(text, size, "%s", "PRESS A KEY");
+    } else {
+        font_text(text, size < KEY_COLUMN ? size : KEY_COLUMN, controls_key_label(settings()->keys[ROW_CONTROL(n)]));
+    }
+}
+
+/* and its controller button, in a column of its own (PAD_SLOT), as the game's letters aren't all one width */
+static void control_button(char *text, size_t size, s32 n) {
+    static const char *const Faces[][2] = { { "CROSS", "\xFC" }, { "CIRCLE", "\xFD" }, { "SQUARE", "\xFF" }, { "TRIANGLE", "\xFE" } };
+    const char *label;
+    s32 f;
+
+    if (n == ROW_HEADER) {
+        snprintf(text, size, "%s", "GAMEPAD");
+        return;
+    }
+    if (n == ROW_RESET) {
+        text[0] = '\0';
+        return;
+    }
+    if (Waiting == ROW_CONTROL(n)) {
+        snprintf(text, size, "%s", "OR BUTTON");
+        return;
+    }
+    /* a PlayStation controller's face buttons as the font's pictures of them, as the rows have them */
+    label = controls_button_label(settings()->buttons[ROW_CONTROL(n)]);
+    font_text(text, size, label);
+    for (f = 0; f < NUM_OF(Faces); f++) {
+        if (strcmp(label, Faces[f][0]) == 0) {
+            snprintf(text, size, "%s", Faces[f][1]);
+        }
+    }
 }
 
 /* --- the Mods page: OPEN MODS FOLDER, then the mods in their order --- */
@@ -298,6 +380,10 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
         snprintf(text, size, "%s", m == NULL ? "" : !mod_usable(m) ? "BROKEN" : m->on ? "ON" : "OFF");
         return;
     }
+    if (c->kind == KIND_CONTROLS) {
+        control_value(text, size, n);
+        return;
+    }
     switch (c->options[n].id) {
     case SET_SKIP_INTRO:
         snprintf(text, size, "%s", s->skip_intro ? "ON" : "OFF");
@@ -326,6 +412,9 @@ static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
         font_text(Labels[i], sizeof(Labels[i]), mods_info(n - 1)->name);
         return Labels[i];
     }
+    if (c->kind == KIND_CONTROLS) {
+        return n == ROW_HEADER ? "" : n == ROW_RESET ? "RESET TO DEFAULTS" : control_label(ROW_CONTROL(n));
+    }
     return c->options[n].label;
 }
 
@@ -336,6 +425,13 @@ static const char *option_help(const MenuCategory *c, s32 n) {
     if (c->kind == KIND_MODS) {
         mod_help(n);
         return Help[0];
+    }
+    if (c->kind == KIND_CONTROLS) {
+        if (Waiting >= 0) {
+            snprintf(Help[0], sizeof(Help[0]), "PRESS A KEY OR BUTTON FOR %s, OR ESC", control_label(Waiting));
+            return Help[0];
+        }
+        return n == ROW_RESET ? "EVERY KEY AND BUTTON BACK AS IT WAS" : "\xFC THEN A KEY OR A CONTROLLER'S BUTTON FOR IT";
     }
     return c->options[n].help;
 }
@@ -407,8 +503,14 @@ static void show_screen(void) {
     subengine *sub = GetEngineSlot(0)->sub;
     const MenuCategory *c = Category < NUM_CATEGORIES ? &Categories[Category] : NULL;
     s32 mods = Screen == SCREEN_OPTIONS && c->kind == KIND_MODS;
+    s32 controls = c != NULL && c->kind == KIND_CONTROLS;
+    subengine *pads = GetEngineSlot(PAD_SLOT)->sub;
     s32 i;
 
+    /* the buttons column has something only on the CONTROLS page, and its preview from the categories */
+    for (i = 0; i < VISIBLE_OPTIONS; i++) {
+        PadNames[i][0] = '\0';
+    }
     set_row(&sub[SUB_HELP_MORE], "", TEXT_SMALL);
     if (Screen == SCREEN_PLAYERS) {
         for (i = 0; i < MAX_CATEGORIES + 1; i++) {
@@ -450,6 +552,8 @@ static void show_screen(void) {
     }
     set_row(&sub[SUB_NAV], mods && Option > 0 ? "\xFC ON OR OFF, L1 - R1 MOVE IT UP OR DOWN, \xFE BACK"
                            : mods             ? "UP - DOWN CHOOSE, \xFC BUTTON TO OPEN, \xFE BACK"
+                           : controls && Waiting >= 0 ? ""
+                           : controls         ? "UP - DOWN CHOOSE, \xFC BUTTON TO CHANGE, \xFE BACK"
                            : Screen == SCREEN_OPTIONS ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
                                                       : "UP - DOWN TO CHOOSE, RIGHT OR \xFC BUTTON TO OPEN", TEXT_SMALL);
     set_row(&sub[SUB_HELP], Screen == SCREEN_OPTIONS ? option_help(c, Option) : "", TEXT_SMALL);
@@ -462,13 +566,19 @@ static void show_screen(void) {
         Values[i][0] = '\0';
         if (c != NULL && n < option_count(c)) {
             s32 lit = Screen == SCREEN_OPTIONS && n == Option;
-            char value[24];
+            char value[32];
 
             set_row(&sub[SUB_LABEL(i)], option_label(c, n, i), lit ? TEXT_SMALL_LIT : TEXT_SMALL);
             value[0] = '\0';
             show_value(value, sizeof(value), c, n);
-            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' ? "< %s >" : "%s", value);
-            sub[SUB_VALUE(i)].unk7C = lit ? TEXT_SMALL_LIT : TEXT_SMALL;
+            /* left and right change an option's value; a key or button is changed by pressing the new one */
+            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && !controls ? "< %s >" : "%s", value);
+            sub[SUB_VALUE(i)].unk7C = lit || (controls && Waiting == n) ? TEXT_SMALL_LIT : TEXT_SMALL;
+            sub[SUB_VALUE(i)].XYZ.x = controls ? CONTROL_VALUE_X : VALUE_X;
+            if (controls) {
+                control_button(PadNames[i], sizeof(PadNames[i]), n);
+                pads[i].unk7C = sub[SUB_VALUE(i)].unk7C;
+            }
         } else {
             set_row(&sub[SUB_LABEL(i)], "", TEXT_SMALL);
         }
@@ -619,7 +729,7 @@ static void update_categories(s32 pressed) {
         }
     } else if (pressed & (0x20 | 0x4000)) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-        Option = 0;
+        Option = Categories[Category].kind == KIND_CONTROLS ? ROW_HEADER + 1 : 0; /* the columns' names aren't a row to choose */
         FirstShown = 0;
         /* what's in the mods folders now, a mod being made and all */
         if (Categories[Category].kind == KIND_MODS) {
@@ -634,10 +744,72 @@ static void update_categories(s32 pressed) {
     }
 }
 
+/* A control waiting for its new key or button: whichever's pressed first, a key (Esc keeps them as they were) or a button on any
+   controller. Given one another control has, that control gets this one's old one (controls_bind). Nothing else on the page answers
+   till it's done. */
+static void update_waiting(void) {
+    Settings *s = settings();
+    s32 key = host_key_pressed_any();
+    s32 button = host_button_pressed_any();
+    s32 keys = key >= 0;
+    s32 code = keys ? key : button;
+
+    if (key == KEY_ESCAPE || --WaitFrames <= 0) {
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        Waiting = -1;
+        Settling = 1;
+        return;
+    }
+    if (code < 0) {
+        return;
+    }
+    controls_bind(keys ? s->keys : s->buttons, Waiting, code);
+    if (s->no_save) {
+        printf("controls: %s is %s %s at vblank %d\n", control_name(Waiting), keys ? "key" : "button",
+               keys ? controls_key_id(code) : controls_button_id(code), platform_vblanks());
+    }
+    PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+    Waiting = -1;
+    Settling = 1;
+}
+
+static void update_controls(s32 pressed) {
+    if (!(pressed & (0x20 | 0x4000))) {
+        return;
+    }
+    if (Option == ROW_RESET) {
+        controls_default_keys(settings()->keys);
+        controls_default_buttons(settings()->buttons);
+        if (settings()->no_save) {
+            printf("controls: keys and buttons as they were\n");
+        }
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        Settling = 1;
+        return;
+    }
+    /* what was pressed to get here isn't the new one */
+    host_key_pressed_any();
+    host_button_pressed_any();
+    Waiting = ROW_CONTROL(Option);
+    WaitFrames = WAIT_FRAMES;
+    PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+}
+
 static void update_options(s32 pressed) {
     static s32 updates;
     const MenuCategory *c = &Categories[Category];
+    s32 controls = c->kind == KIND_CONTROLS;
 
+    if (controls && Waiting >= 0) {
+        update_waiting();
+        return;
+    }
+    if (Settling) {
+        if (Pads[0].buttons != 0) {
+            return;
+        }
+        Settling = 0;
+    }
     /* a mod put in the folder shows up in a second or so, with the cursor still on the mod it was on */
     if (c->kind == KIND_MODS && ++updates % 30 == 0) {
         const ModInfo *at = mods_info(Option - 1);
@@ -661,7 +833,7 @@ static void update_options(s32 pressed) {
         Option++;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((pressed & 0x10) && Option > 0) {
+    if ((pressed & 0x10) && Option > (controls ? ROW_HEADER + 1 : 0)) {
         Option--;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
@@ -674,7 +846,9 @@ static void update_options(s32 pressed) {
     if (Option >= FirstShown + VISIBLE_OPTIONS) {
         FirstShown = Option - VISIBLE_OPTIONS + 1;
     }
-    if (pressed & (0x20 | 0x4000)) {
+    if (controls) {
+        update_controls(pressed);
+    } else if (pressed & (0x20 | 0x4000)) {
         change_setting(c, Option, 1);
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     } else if (pressed & 0x80) {
@@ -715,6 +889,11 @@ static void SettingsMenuInit(void) {
     GetEngineSlot(LOGO_SLOT)->sub[1].flags |= 0x02000000;
     Screen = SCREEN_TOP;
     TopCursor = 0;
+    for (s32 i = 0; i < VISIBLE_OPTIONS; i++) {
+        PadNames[i][0] = '\0';
+        place_text(&PadPlace[i], PAD_X, OPTION_TOP + i * OPTION_STEP, PadNames[i], 1);
+    }
+    PlaceEngineSlot(PAD_SLOT, PadPlace);
     place_screen();
     show_screen();
 }
@@ -744,6 +923,10 @@ static void SettingsMenuUpdate(void) {
 
 static void SettingsMenuRender(void) {
     RenderTitlesBackdropAndMenu();
+    /* the buttons column, in the menu's own view */
+    gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
+    RenderState.modelDp = ScreenFade.amount;
+    eng_render_subs(GetEngineSlot(PAD_SLOT));
     gfx_set_viewport(&LogoView, &LogoCamera);
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs(GetEngineSlot(LOGO_SLOT));
@@ -751,6 +934,7 @@ static void SettingsMenuRender(void) {
 
 static void SettingsMenuQuit(void) {
     dbase_release(&HeroModelBank[LOGO_MODEL]);
+    PlaceEngineSlot(PAD_SLOT, NoPlace);
 }
 
 process_info SettingsMenu = { SettingsMenuInit, SettingsMenuUpdate, SettingsMenuRender, SettingsMenuQuit, 0 };

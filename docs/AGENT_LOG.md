@@ -569,6 +569,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-10: Rebinding, at the user's word ("we need an options menu to re-bind controls"; one page for keys and buttons, and the
+  game's button pictures for the face buttons, also theirs): SETTINGS' CONTROLS page, each game button's key and controller button side
+  by side, changed by Cross then whichever's pressed first; a key another had swaps with it; Esc or a few seconds keeps it; RESET TO
+  DEFAULTS. Kept in settings.ini by SDL's names (`platform/controls.c`). The font's button pictures are `\xFC` Cross, `\xFD` Circle,
+  `\xFF` Square, `\xFE` Triangle. Its first try found the key just chosen still held, read the next frame as a fresh press of its new
+  control (it waits now till everything's let go), and the font isn't one width, so the buttons column is slot 3's text. New:
+  `--key-press N KEY` and `playtest.mjs controls` (3 cases); `pads` still passes.
+
 - 2026-11-10: Couch play, before online play (the user's call): pretend controllers for tests (`--pretend-pads`, `--pad-press`,
   `--pad-unplug`, `--pad-plug`: SDL's virtual gamepads) and `playtest.mjs pads`, 9 cases: the launcher's new players screen (the
   user's idea: after PLAY with two or more controllers, each moved up or down its players by its own up and down, START plays),

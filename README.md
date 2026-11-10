@@ -28,7 +28,7 @@ On Android, install the `.apk` from the same release, and the first time it asks
 | **Upscaling**     | Textures at 2x or 4x                                   |
 | **Mods**          | Textures and game files from zips, on a Mods page      |
 | **Extra heroes**  | Ripper Roo and Pinstripe, from your own Crash Bandicoot (USA) |
-| **Controllers**   | Up to four players, with a screen to put the controllers in order; analog sticks and rumble, or the keyboard |
+| **Controllers**   | Up to four players, with a screen to put the controllers in order; analog sticks and rumble, or the keyboard; every key and button can be changed |
 | **Saves**         | Kept in a file, with no memory card to set up          |
 | **Quick start**   | Skip the logos and the loading screens                 |
 | **Cheat menu**    | The original's hidden cheats, in the pause menu        |

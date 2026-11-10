@@ -2,6 +2,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include "controls.h"
+
 #define SETTINGS_MODS 64
 #define SETTINGS_MOD_ID 128
 
@@ -27,6 +29,8 @@ typedef struct Settings {
     int upscale;       /* textures made this many times bigger, on the player's machine: 1 is off, or 2 or 4 */
     int icons;         /* the heroes' and bosses' icons made sharp, on the player's machine */
     int extra_heroes;  /* Ripper Roo and the bosses as heroes too, with cards of their own (game/main/extraheroes.c) */
+    int keys[NUM_CONTROLS];    /* each game button's key, an SDL scancode (controls.h) */
+    int buttons[NUM_CONTROLS]; /* and its controller button, SDL's or a trigger */
     ModChoice mods[SETTINGS_MODS]; /* the mods in the player's order, first first */
     int num_mods;
     char texture_pack[64]; /* from before mods: the texture pack that was on, which becomes a mod that's on (mods.c) */

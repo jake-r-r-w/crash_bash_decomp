@@ -32,6 +32,8 @@ void settings_defaults(void) {
     Current.upscale = 1;
     Current.icons = 0;
     Current.extra_heroes = 0;
+    controls_default_keys(Current.keys);
+    controls_default_buttons(Current.buttons);
     Current.texture_pack[0] = 0;
     Current.num_mods = 0;
     Current.test_mode = -1;
@@ -47,6 +49,25 @@ static int settings_path(char *path, size_t size) {
     SDL_snprintf(path, size, "%ssettings.ini", dir);
     SDL_free(dir);
     return 1;
+}
+
+/* key_cross=Z or pad_cross=a: SDL's names, a control at a time, each keeping one of its own however the file was written */
+static void load_control(const char *line) {
+    char name[32], value[64];
+    int c, code;
+
+    if (sscanf(line + 4, "%31[^=]=%63[^\r\n]", name, value) != 2) {
+        return;
+    }
+    for (c = 0; c < NUM_CONTROLS; c++) {
+        if (strcmp(name, control_file_id(c)) == 0) {
+            if (line[0] == 'k' && (code = controls_key_from_id(value)) >= 0) {
+                controls_bind(Current.keys, c, code);
+            } else if (line[0] == 'p' && (code = controls_button_from_id(value)) >= 0) {
+                controls_bind(Current.buttons, c, code);
+            }
+        }
+    }
 }
 
 void settings_load(void) {
@@ -102,6 +123,8 @@ void settings_load(void) {
                 m->on = strcmp(state, "on") == 0;
                 Current.num_mods++;
             }
+        } else if (strncmp(line, "key_", 4) == 0 || strncmp(line, "pad_", 4) == 0) {
+            load_control(line);
         }
     }
     fclose(f);
@@ -133,6 +156,12 @@ void settings_save(void) {
     fprintf(f, "upscale=%d\n", Current.upscale);
     fprintf(f, "icons=%d\n", Current.icons);
     fprintf(f, "extra_heroes=%d\n", Current.extra_heroes);
+    for (i = 0; i < NUM_CONTROLS; i++) {
+        fprintf(f, "key_%s=%s\n", control_file_id(i), controls_key_id(Current.keys[i]));
+    }
+    for (i = 0; i < NUM_CONTROLS; i++) {
+        fprintf(f, "pad_%s=%s\n", control_file_id(i), controls_button_id(Current.buttons[i]));
+    }
     for (i = 0; i < Current.num_mods; i++) {
         fprintf(f, "mod=%s %s\n", Current.mods[i].on ? "on" : "off", Current.mods[i].id);
     }

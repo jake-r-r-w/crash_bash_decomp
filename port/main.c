@@ -203,9 +203,9 @@ static struct {
 static int NumPresses;
 
 /* What the pretend controllers do (--pretend-pads): a press held for a few vblanks as --press's are, or pulled out or plugged in */
-enum { PAD_PRESS, PAD_UNPLUG, PAD_PLUG };
+enum { PAD_PRESS, PAD_UNPLUG, PAD_PLUG, PAD_KEY };
 static struct {
-    int pad, frame, buttons, kind;
+    int pad, frame, buttons, kind; /* a pretend key's (--key-press) buttons is its scancode */
 } PadEvents[MAX_PRESSES];
 static int NumPadEvents;
 
@@ -214,7 +214,11 @@ static void pretend_pads_vblank(void) {
     int i, p;
 
     for (i = 0; i < NumPadEvents; i++) {
-        if (PadEvents[i].kind != PAD_PRESS && PadEvents[i].frame == Vblanks) {
+        if (PadEvents[i].kind == PAD_KEY) {
+            if (Vblanks == PadEvents[i].frame || Vblanks == PadEvents[i].frame + PRESS_VBLANKS) {
+                host_pretend_key(PadEvents[i].buttons, Vblanks == PadEvents[i].frame);
+            }
+        } else if (PadEvents[i].kind != PAD_PRESS && PadEvents[i].frame == Vblanks) {
             host_pretend_plug(PadEvents[i].pad, PadEvents[i].kind == PAD_PLUG);
             held[PadEvents[i].pad] = -1;
         }
@@ -513,6 +517,15 @@ int main(int argc, char **argv) {
             PadEvents[NumPadEvents++].frame = atoi(argv[++i]);
             if (PadEvents[NumPadEvents - 1].pad < 0 || PadEvents[NumPadEvents - 1].pad > 3) {
                 NumPadEvents--;
+            }
+        } else if (strcmp(argv[i], "--key-press") == 0 && i + 2 < argc && NumPadEvents < MAX_PRESSES) {
+            PadEvents[NumPadEvents].kind = PAD_KEY;
+            PadEvents[NumPadEvents].frame = atoi(argv[++i]);
+            PadEvents[NumPadEvents].buttons = controls_key_from_id(argv[++i]);
+            if (PadEvents[NumPadEvents].buttons > 0) {
+                NumPadEvents++;
+            } else {
+                fprintf(stderr, "--key-press: no key called %s\n", argv[i]);
             }
         } else if (strcmp(argv[i], "--press") == 0 && i + 2 < argc && NumPresses < MAX_PRESSES) {
             Presses[NumPresses].frame = atoi(argv[++i]);

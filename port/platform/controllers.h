@@ -10,9 +10,12 @@ void host_controllers_swap(int a, int b);    /* players a and b swap controllers
 void host_controllers_close_gaps(void);      /* before a game: those plugged in to players 1 on, in their order */
 void host_controller_buzz(int player);       /* a short rumble, so its player knows which it is */
 
-/* Pretend controllers, for test runs: SDL's virtual gamepads, plugged in, pressed and pulled out as real ones are (--pretend-pads) */
+/* Pretend controllers, for test runs: SDL's virtual gamepads, plugged in, pressed and pulled out as real ones are (--pretend-pads).
+   A press is of the buttons where the game's are by default, whatever they're set to now. */
 void host_pretend_pads(int count);
 void host_pretend_plug(int n, int in);
 void host_pretend_press(int n, int buttons);
+/* and a pretend key held down or let go (--key-press), an SDL scancode, through the keyboard's settings as a real one is */
+void host_pretend_key(int key, int down);
 
 #endif

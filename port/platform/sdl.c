@@ -27,11 +27,17 @@ typedef struct {
     char key[160]; /* who it is, to know it again: its GUID, name and serial */
     int held;      /* its buttons when last polled */
     int pressed;   /* what it's pressed since that was last asked for */
+    int triggers;  /* its triggers pulled past halfway when last polled: bit 0 the left, 1 the right */
 } Controller;
 static Controller Slots[MAX_PADS];
 
+/* What's been pressed, for a page that's waiting for a key or button to choose (controls.h), and test runs' pretend keys */
+static int KeyPressed = -1, ButtonPressed = -1;
+static bool PretendKeys[SDL_SCANCODE_COUNT];
+
 static void open_pads(void);
 static int pad_buttons(SDL_Gamepad *c);
+static bool pad_holds(SDL_Gamepad *c, int button);
 
 /* A phone's game has the whole screen, its bars hidden, whatever the settings (made for a window on a PC) say */
 static int want_fullscreen(const Settings *s) {
@@ -437,6 +443,7 @@ static void plug(SDL_JoystickID id) {
     Slots[slot].id = id;
     Slots[slot].held = pad_buttons(pad);
     Slots[slot].pressed = 0;
+    Slots[slot].triggers = pad_holds(pad, BUTTON_LEFT_TRIGGER) | pad_holds(pad, BUTTON_RIGHT_TRIGGER) << 1;
     SDL_strlcpy(Slots[slot].key, key, sizeof(Slots[slot].key));
     controller_log("is", &Slots[slot], slot);
 }
@@ -595,7 +602,12 @@ int host_poll(void) {
             if (e.key.key == SDLK_RETURN && (e.key.mod & SDL_KMOD_ALT) && !e.key.repeat) {
                 settings()->fullscreen = !Fullscreen;
                 settings_apply();
+            } else if (!e.key.repeat) {
+                KeyPressed = e.key.scancode;
             }
+            break;
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+            ButtonPressed = e.gbutton.button;
             break;
         default:
             break;
@@ -607,82 +619,147 @@ int host_poll(void) {
     for (int i = 0; i < MAX_PADS; i++) {
         if (Slots[i].pad != NULL) {
             int now = pad_buttons(Slots[i].pad);
+            int triggers = pad_holds(Slots[i].pad, BUTTON_LEFT_TRIGGER) | pad_holds(Slots[i].pad, BUTTON_RIGHT_TRIGGER) << 1;
 
             Slots[i].pressed |= now & ~Slots[i].held;
             Slots[i].held = now;
+            /* a trigger's an axis, so it's pressed when it's pulled past halfway */
+            if (triggers & ~Slots[i].triggers & 1) {
+                ButtonPressed = BUTTON_LEFT_TRIGGER;
+            }
+            if (triggers & ~Slots[i].triggers & 2) {
+                ButtonPressed = BUTTON_RIGHT_TRIGGER;
+            }
+            Slots[i].triggers = triggers;
         }
     }
     return 1;
 }
 
-static int pad_buttons(SDL_Gamepad *c) {
-    static const struct {
-        SDL_GamepadButton button;
-        int bit;
-    } map[] = {
-        { SDL_GAMEPAD_BUTTON_SOUTH, PAD_CROSS },
-        { SDL_GAMEPAD_BUTTON_EAST, PAD_CIRCLE },
-        { SDL_GAMEPAD_BUTTON_WEST, PAD_SQUARE },
-        { SDL_GAMEPAD_BUTTON_NORTH, PAD_TRIANGLE },
-        { SDL_GAMEPAD_BUTTON_START, PAD_START },
-        { SDL_GAMEPAD_BUTTON_BACK, PAD_SELECT },
-        { SDL_GAMEPAD_BUTTON_LEFT_SHOULDER, PAD_L1 },
-        { SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, PAD_R1 },
-        { SDL_GAMEPAD_BUTTON_DPAD_UP, PAD_UP },
-        { SDL_GAMEPAD_BUTTON_DPAD_DOWN, PAD_DOWN },
-        { SDL_GAMEPAD_BUTTON_DPAD_LEFT, PAD_LEFT },
-        { SDL_GAMEPAD_BUTTON_DPAD_RIGHT, PAD_RIGHT },
-    };
-    int b = 0;
-    size_t i;
+/* --- the game's buttons, by the player's choice of key and controller button for each (controls.h) --- */
 
-    for (i = 0; i < sizeof(map) / sizeof(map[0]); i++) {
-        if (SDL_GetGamepadButton(c, map[i].button)) {
-            b |= map[i].bit;
+static bool pad_holds(SDL_Gamepad *c, int button) {
+    if (button == BUTTON_LEFT_TRIGGER) {
+        return SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFT_TRIGGER) > 16000;
+    }
+    if (button == BUTTON_RIGHT_TRIGGER) {
+        return SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) > 16000;
+    }
+    return button >= 0 && button < SDL_GAMEPAD_BUTTON_COUNT && SDL_GetGamepadButton(c, (SDL_GamepadButton)button);
+}
+
+static int pad_buttons(SDL_Gamepad *c) {
+    const int *buttons = settings()->buttons;
+    int b = 0, i;
+
+    for (i = 0; i < NUM_CONTROLS; i++) {
+        if (pad_holds(c, buttons[i])) {
+            b |= control_bit(i);
         }
-    }
-    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_LEFT_TRIGGER) > 16000) {
-        b |= PAD_L2;
-    }
-    if (SDL_GetGamepadAxis(c, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) > 16000) {
-        b |= PAD_R2;
     }
     return b;
 }
 
 static int keyboard_buttons(void) {
-    static const struct {
-        SDL_Scancode key;
-        int bit;
-    } map[] = {
-        { SDL_SCANCODE_Z, PAD_CROSS },
-        { SDL_SCANCODE_X, PAD_CIRCLE },
-        { SDL_SCANCODE_A, PAD_SQUARE },
-        { SDL_SCANCODE_S, PAD_TRIANGLE },
-        { SDL_SCANCODE_RETURN, PAD_START },
-        { SDL_SCANCODE_RSHIFT, PAD_SELECT },
-        { SDL_SCANCODE_Q, PAD_L1 },
-        { SDL_SCANCODE_W, PAD_R1 },
-        { SDL_SCANCODE_1, PAD_L2 },
-        { SDL_SCANCODE_2, PAD_R2 },
-        { SDL_SCANCODE_UP, PAD_UP },
-        { SDL_SCANCODE_DOWN, PAD_DOWN },
-        { SDL_SCANCODE_LEFT, PAD_LEFT },
-        { SDL_SCANCODE_RIGHT, PAD_RIGHT },
-    };
     const bool *keys = SDL_GetKeyboardState(NULL);
-    int b = 0;
-    size_t i;
+    const int *bound = settings()->keys;
+    int b = 0, i;
 
     if (keys[SDL_SCANCODE_LALT] || keys[SDL_SCANCODE_RALT]) {
         return 0;
     }
-    for (i = 0; i < sizeof(map) / sizeof(map[0]); i++) {
-        if (keys[map[i].key]) {
-            b |= map[i].bit;
+    for (i = 0; i < NUM_CONTROLS; i++) {
+        int key = bound[i];
+
+        if (key > SDL_SCANCODE_UNKNOWN && key < SDL_SCANCODE_COUNT && (keys[key] || PretendKeys[key])) {
+            b |= control_bit(i);
         }
     }
     return b;
+}
+
+int host_key_pressed_any(void) {
+    int key = KeyPressed;
+
+    KeyPressed = -1;
+    return key;
+}
+
+int host_button_pressed_any(void) {
+    int button = ButtonPressed;
+
+    ButtonPressed = -1;
+    return button;
+}
+
+void host_pretend_key(int key, int down) {
+    if (key > SDL_SCANCODE_UNKNOWN && key < SDL_SCANCODE_COUNT) {
+        if (down && !PretendKeys[key]) {
+            KeyPressed = key;
+        }
+        PretendKeys[key] = down != 0;
+    }
+}
+
+/* A button's name for the menu, as the first controller plugged in calls it, in 8 letters at most (a column of the CONTROLS page): its
+   face buttons by their own letters or shapes, and the rest as Xbox controllers have them, or as a PlayStation's do. With no controller,
+   the face buttons by the shapes of a PlayStation's in their places. */
+const char *controls_button_label(int button) {
+    SDL_Gamepad *first = NULL;
+    SDL_GamepadType type = SDL_GAMEPAD_TYPE_STANDARD;
+    int ps, xbox, i;
+
+    for (i = 0; i < MAX_PADS && first == NULL; i++) {
+        first = Slots[i].pad;
+    }
+    if (first != NULL) {
+        type = SDL_GetGamepadType(first);
+    }
+    ps = type == SDL_GAMEPAD_TYPE_PS3 || type == SDL_GAMEPAD_TYPE_PS4 || type == SDL_GAMEPAD_TYPE_PS5;
+    xbox = type == SDL_GAMEPAD_TYPE_XBOX360 || type == SDL_GAMEPAD_TYPE_XBOXONE;
+    switch (button) {
+    case SDL_GAMEPAD_BUTTON_SOUTH:
+    case SDL_GAMEPAD_BUTTON_EAST:
+    case SDL_GAMEPAD_BUTTON_WEST:
+    case SDL_GAMEPAD_BUTTON_NORTH:
+        if (first != NULL) {
+            switch (SDL_GetGamepadButtonLabel(first, (SDL_GamepadButton)button)) {
+            case SDL_GAMEPAD_BUTTON_LABEL_A: return "A";
+            case SDL_GAMEPAD_BUTTON_LABEL_B: return "B";
+            case SDL_GAMEPAD_BUTTON_LABEL_X: return "X";
+            case SDL_GAMEPAD_BUTTON_LABEL_Y: return "Y";
+            case SDL_GAMEPAD_BUTTON_LABEL_CROSS: return "CROSS";
+            case SDL_GAMEPAD_BUTTON_LABEL_CIRCLE: return "CIRCLE";
+            case SDL_GAMEPAD_BUTTON_LABEL_SQUARE: return "SQUARE";
+            case SDL_GAMEPAD_BUTTON_LABEL_TRIANGLE: return "TRIANGLE";
+            default: break;
+            }
+        }
+        return button == SDL_GAMEPAD_BUTTON_SOUTH ? "CROSS" : button == SDL_GAMEPAD_BUTTON_EAST ? "CIRCLE"
+             : button == SDL_GAMEPAD_BUTTON_WEST  ? "SQUARE" : "TRIANGLE";
+    case SDL_GAMEPAD_BUTTON_BACK:
+        return type == SDL_GAMEPAD_TYPE_PS5 ? "CREATE" : type == SDL_GAMEPAD_TYPE_PS4 ? "SHARE" : type == SDL_GAMEPAD_TYPE_PS3 ? "SELECT"
+             : type == SDL_GAMEPAD_TYPE_XBOXONE ? "VIEW" : "BACK";
+    case SDL_GAMEPAD_BUTTON_START:
+        return type == SDL_GAMEPAD_TYPE_PS4 || type == SDL_GAMEPAD_TYPE_PS5 ? "OPTIONS" : type == SDL_GAMEPAD_TYPE_XBOXONE ? "MENU" : "START";
+    case SDL_GAMEPAD_BUTTON_GUIDE: return ps ? "PS" : xbox ? "XBOX" : "HOME";
+    case SDL_GAMEPAD_BUTTON_LEFT_STICK: return xbox ? "LS" : "L3";
+    case SDL_GAMEPAD_BUTTON_RIGHT_STICK: return xbox ? "RS" : "R3";
+    case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER: return xbox ? "LB" : "L1";
+    case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER: return xbox ? "RB" : "R1";
+    case BUTTON_LEFT_TRIGGER: return xbox ? "LT" : "L2";
+    case BUTTON_RIGHT_TRIGGER: return xbox ? "RT" : "R2";
+    case SDL_GAMEPAD_BUTTON_DPAD_UP: return "D-UP";
+    case SDL_GAMEPAD_BUTTON_DPAD_DOWN: return "D-DOWN";
+    case SDL_GAMEPAD_BUTTON_DPAD_LEFT: return "D-LEFT";
+    case SDL_GAMEPAD_BUTTON_DPAD_RIGHT: return "D-RIGHT";
+    case SDL_GAMEPAD_BUTTON_TOUCHPAD: return "TOUCHPAD";
+    case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1: return "PADDLE 1";
+    case SDL_GAMEPAD_BUTTON_LEFT_PADDLE1: return "PADDLE 2";
+    case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2: return "PADDLE 3";
+    case SDL_GAMEPAD_BUTTON_LEFT_PADDLE2: return "PADDLE 4";
+    default: return "OTHER";
+    }
 }
 
 /* The first pad is the keyboard, the first controller and the touch buttons (touch.c); then a controller each. Using the keyboard or a
