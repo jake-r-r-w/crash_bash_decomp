@@ -144,8 +144,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   Hamachi's adapter passes the broadcast that finds games, and Windows' firewall on its "public" network, are for the user's own
   try with a friend. Only adapters known by name are offered (Hamachi, Radmin VPN, ZeroTier, Tailscale; 25. and 26. addresses).
 - **Port, online play, in the game (2026-11-10, `game/main/online.c`):** the players' tags sit over their icons, where the user's
-  chosen picture had them under the health bar: under is where each game puts its own bars and scores, at different heights. They
-  haven't seen the built one over a real game yet, so its place, how faint it is and its size are theirs to judge. Orange is "the
+  chosen picture had them under the health bar: under is where each game puts its own bars and scores, at different heights. Shown
+  the built one in shots, they said to keep them above (2026-11-10, "Keep above"). They haven't seen it over a real game yet, so
+  how faint it is and its size are still theirs to judge. Orange is "the
   game waited 100 ms for this machine in the last 3 seconds" (`SLOW_MS`, `SLOW_SHOWN_MS`): guesses, never met a real network. A
   game with two icons for four players (teams) tags only the players who have an icon. Menus and warp rooms show the tags in a
   row at the foot of the screen, which the user wasn't asked about. The credits' fade of the effects isn't heard online. The
