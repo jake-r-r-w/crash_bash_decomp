@@ -90,6 +90,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
+- **Port, the Windows zip's one backslash:** Windows PowerShell 5.1's `Compress-Archive` (`package.mjs`) names `mods\README.txt` with a
+  backslash, against the zip format's forward slashes, in every Windows download since at least 0.3.2. Windows unpacks it right; Info-ZIP
+  warns. Windows' own `C:\Windows\System32\tar.exe -a -c -f X.zip` may be the fix (untried; 2026-11-10).
 - **Port, a black last pixel row:** at a window that isn't the picture's own shape (1920x1000 with widescreen on or off, 3840x2001 maximised), the bottom row of the picture is black right across, on every level; at 1333x1000 it isn't (2026-11-03). Most likely the 240 lines' scale to the window's height rounding one row short.
 - **Port, a test window maximised now and then:** a test run comes out 3840x2001 (maximised) instead of its `--window` size: once in four runs at once after the window-size change, and once alone, right after a build, at 1920x1000 (2026-11-03); the repeat of each didn't. Test runs take the default settings, and only `keep_on_screen` maximises, for a size that doesn't fit, which 1920x1000 does: so either it saw a smaller screen for a moment, or something outside the game maximised the window. A third time it happened in the middle of an `--adventure` run, between two shots in Crashball. A fourth on 2026-11-03, in a 1333x1000 Oxide fight reached through the menus: its shots from vblank 11500 on came out 2668x2001, sheared, and a rerun matched the other build on every shot.
 - **Port, the present queue:** at 60 and above with vsync on, `Present` takes the whole vblank, as its queue stays full, and the clock was 60 to 70 ms behind after loading, closing by about 1 ms a second. That could mean a few frames of input lag against 30. Not looked into, and nobody's complained.
