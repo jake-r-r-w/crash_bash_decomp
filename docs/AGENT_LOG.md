@@ -39,7 +39,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   - Windows (Direct3D 12) builds on the host with CMake. Linux (Vulkan) builds and is tested in `tools/dl`'s container, on a virtual
     screen with software Vulkan: never yet on a real Linux desktop and graphics card. Android (Vulkan) builds in `tools/da`, is
     tested in the emulator, and works on the user's phone. No Mac.
-  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.0.0 (2026-11-10, online play and couch play), for
+  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.1.0 (2026-11-11, the sticks' deadzone and the mouse
+    in every menu; v1.0.0, 2026-11-10, brought online play and couch play), for
     Windows, Linux and Android.
     `node port/package.mjs` makes them (PORT.md, A release).
   - Beyond the original: a launcher (PLAY, ONLINE, SETTINGS, QUIT); any window and render size, fullscreen, vsync and 30, 60 or
@@ -126,6 +127,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   the game's reading of a slot changes. Found and left: `HealthPickupAmounts[3 - aiSkill[0]]` (`heroes.c`) reads before the table
   when `aiSkill` is over 3, which genuine play allows (a warp room sets it from the byte past `modeSkill`, the music's volume in
   the fifth); the PS1 read the bytes before it there, so the fix is the PS1's layout, as for the other reads past a table.
+  Looked at again and left at the user's word (2026-11-11, "Skip it": it's rare, small and can't crash). It needs a loaded save
+  from the fifth warp room and then a Battle or Tournament in the same run (their branches of `SetTweakAi` leave `aiSkill` alone),
+  and a computer player's health pickup. What the PS1 read there is the engine overlay's halfwords from 0x8009E0E8 to the table at
+  0x8009E224: `AngelSparkles`, `AngelUnused`, `ScriptFxOn`, `SmokePoofScript` with its table and init (PS1 addresses), the Polar
+  tilt, `WeatherFxDef` as the PS1's five words, and `HealthPickupSfx`. The same cause has `SetTweakAi`'s warp-room branch
+  (`flags & 0x100`) read `AiSkillTable[c]` past `DefaultAiSkills`, into a level no AI uses before the next level sets it again.
 - **Port, online play, the user's own network can't host (2026-11-10):** they're on a phone's mobile-internet hotspot, with no
   router. `--check-router` here: the way out is 10.112.155.113 (the phone), nothing answers UPnP, no other UPnP device answers,
   nothing answers NAT-PMP. A phone network also shares one address between its users, so no port opened anywhere on their side
@@ -645,6 +652,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-11: [v1.1.0](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v1.1.0) is published, at the user's word ("Skip
+  it, release"): the sticks' deadzone (GitHub issue 1) and the mouse in every menu (notes in `port/release/NOTES-1.1.0.md`). The
+  HealthPickupAmounts read was looked at and left at their word (Open leads). On the packaged programs: Windows and Linux `modes` 39,
+  `bosses` 4, `menu`, `mouse` 4, `heroes` 2, `mods` 29, `image` 8, `online` 23, `identical` 18, `pads` 10 and `controls` 5; Android
+  in the emulator, installed over 1.0.0 as an update, `modes` 39, `heroes` 2 and `online --android` with the packaged Windows
+  program as host.
 
 - 2026-11-10: The mouse in the game's own menus too (the user's "the menu should be clickable in game too"; `menumouse.c`): it
   presses player 1's pad, so online it's the same as any press. Pause menu, title screens, tournament select, memory card slots;
