@@ -60,6 +60,8 @@ Settings *settings(void);
 void settings_defaults(void);
 void settings_load(void);
 void settings_save(void);
+/* The settings that change the game, as another machine has them, for an online game: the player's own are still what's saved. */
+void settings_borrow(int skip_intro, int skip_loading, int cheat_menu, int extra_heroes);
 
 /* The window and renderer take up the settings as soon as they can. */
 void settings_apply(void);

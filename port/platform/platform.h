@@ -65,6 +65,15 @@ void platform_rumble(int port, int small_on, int big);
 void platform_present(const uint32_t *pixels, int w, int h);
 void platform_vblank(void);
 int platform_pad(int port); /* the buttons held, or -1 with no pad */
+/* This machine's own pads, whatever the game's are: online the game's are everyone's (net.c). */
+int platform_local_pad(int port);
+int platform_local_pad_sticks(int port, unsigned char sticks[4]);
+int platform_local_pad_rumbles(int port);
+/* Before the game reads the pads, once a step, and after the step with the game's fingerprint (game/main/fingerprint.c). */
+void platform_pad_step(void);
+void platform_step_done(uint32_t fingerprint);
+/* While the game waits on something outside it: the window still answers. 0: it's been closed. */
+int platform_idle(void);
 void platform_shot(const char *path);
 void platform_finish(int code);
 

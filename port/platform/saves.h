@@ -9,4 +9,13 @@ int saves_read(int slot, void *data, int size);
 /* 1: it's safely written. */
 int saves_write(int slot, const void *data, int size);
 
+/* Online play (net.c). A machine that joins plays with the host's saves, in memory, and its own files are left alone: saves_in_memory
+   from then on, and saves_put for each slot the host has (size 0: an empty one). saves_get is what the host sends: a slot's bytes,
+   however many it has (0: empty, or more than there's room for). */
+#define SAVES_SLOTS 4
+#define SAVES_MOST 1024
+void saves_in_memory(void);
+void saves_put(int slot, const void *data, int size);
+int saves_get(int slot, void *data, int room);
+
 #endif

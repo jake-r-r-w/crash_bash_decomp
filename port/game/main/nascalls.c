@@ -2490,6 +2490,8 @@ void pads_read(void) {
     PadState *pad = Pads;
     s32 count;
 
+    /* online, everyone's pads for this step, once they're all here (platform/net.c) */
+    platform_pad_step();
     /* a third or fourth pad is what makes it a multitap's four */
     PadCount = platform_pad(2) >= 0 || platform_pad(3) >= 0 ? 4 : 2;
     for (count = 0; count < PadCount; count++) {

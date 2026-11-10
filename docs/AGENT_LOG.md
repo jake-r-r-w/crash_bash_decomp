@@ -88,9 +88,10 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
 
 7. 7.9, online play (the user's plan, 2026-11-10; PORT.md, Online play): one player hosts, the others join by a code, no servers, each
    press used a few steps late, rollback later. Step 1, staying identical, is done (2026-11-10, `playtest.mjs identical [--all]`).
-   **Next: step 2**, online by address from the command line (`--host PORT`, `--join ADDRESS:PORT` over UDP, `platform/net.c`), with
-   pretend lag and loss and `playtest.mjs online`; then 3, join codes (miniupnpc and libnatpmp are a download, so the user's OK
-   first), and 4, ONLINE in the launcher. What the review of the plan added is in PORT.md's Online play and the Open leads below.
+   Step 2, online by address from the command line, is done too (2026-11-10: `--host PORT`, `--join ADDRESS:PORT` over UDP,
+   `platform/net.c`, `playtest.mjs online`), but for two real machines on a network, which is the user's to try.
+   **Next: step 3**, join codes (miniupnpc and libnatpmp are a download, so the user's OK first), then 4, ONLINE in the launcher.
+   What the review of the plan added is in PORT.md's Online play and the Open leads below.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -107,11 +108,17 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   45 ms and was never empty in runs of up to 200 seconds here, by the line a test run prints as it ends); a Battle past its first
   level (6000 steps of one, its rounds and their results, matched flat out, wide and in real time, by hand; `--all` loads each mode
   once); two real machines.
-- **Port, online play, for step 2 on:** everything `pad_poll` reads has to travel (a pad being there, its sticks, whether it
-  rumbles), taken once per `pads_update`; the host's save in memory only on a joiner, by a flag of its own (`no_save` also means a
-  test run: no sound, no mods); rumble only on the machine whose player it is; a stalled machine (a window being dragged stops the
-  loop, `sdl.c`) can catch up flat out and have its controller "plugged back in", which couch play already handles; the join
-  code's 8 letters hold 40 bits, so an address and a check letter leave room for one of 8 fixed ports, not any port.
+- **Port, online play, left from step 2:** not yet played between two real machines, nor with a real controller, nor by a person
+  at all (how it feels at each delay, and whether a joiner kept a step behind the host judders, are unknown: `net_behind` and the
+  delay's sum in `start_host` are the two things to tune). The delay is set once at the start and never changes. The host's
+  save reaches a joiner as bytes that go straight into the game's own slots (`card_init`), unchecked beyond their size: fine among
+  friends, not against a host that means harm. A game's records are only kept if asked (`--net-record`), so a real game that
+  stops for differing leaves nothing to play again. Extra heroes and mods' files are off online till machines can compare what
+  they have. Android has the permission in its manifest but hasn't been built or run with it. The options menu's volumes are in
+  the game's record, so one player changing them in the pause menu changes them for everyone.
+- **Port, online play, for step 3:** the join code's 8 letters hold 40 bits, so an address and a check letter leave room for one
+  of 8 fixed ports, not any port. The host's Windows asks about the firewall the first time it hosts, which the screen should
+  say.
 
 - **Port, the Windows zip's one backslash:** Windows PowerShell 5.1's `Compress-Archive` (`package.mjs`) names `mods\README.txt` with a
   backslash, against the zip format's forward slashes, in every Windows download since at least 0.3.2. Windows unpacks it right; Info-ZIP
@@ -591,6 +598,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: Online play, step 2 (7.9; PORT.md, Online play): by address from the command line. `platform/net.c`: `--host PORT`
+  and `--join ADDRESS:PORT` over UDP; each machine sends its pads for the step DELAY on, the host makes each step's record of all
+  four and sends it to everyone, and a machine plays a step once it has its record (`platform_pad_step`, from `pads_read`). The
+  host's saves and game settings go to the joiners for that game; fingerprints are compared once a second. `playtest.mjs online`,
+  8 cases with every machine a copy on this PC: two and four machines through a Battle's rounds and out by the pause menu, with
+  packets 40 ms late and one in ten lost, a recorded game played again, a machine that disagrees, and in real time a machine that
+  vanishes and one that stalls and is back. Found on the way: a pad pulled out pauses the game for good, so a machine the host
+  stops waiting for has its pads left in with nothing held; and a joiner a step behind the host never got its pads there in
+  time to be let back in, so it keeps within a step now. New test options: `--macro-until`, `--net-*`, `--replay`.
 
 - 2026-11-10: Online play, step 1 of the user's plan (7.9; PORT.md, Online play): staying identical. The game's fingerprint after every
   step (`game/main/fingerprint.c`, `--fingerprints N`) and `playtest.mjs identical`: the same presses from two pretend controllers into

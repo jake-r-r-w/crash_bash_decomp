@@ -15,6 +15,8 @@
     <uses-feature android:name="android.hardware.type.pc" android:required="false" />
     <!-- A controller's rumble -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- online play (platform/net.c) -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application android:label="Crash Bash"
         android:icon="@mipmap/ic_launcher"

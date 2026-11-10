@@ -300,6 +300,11 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--sound` | play a test run's sound, for one that's being watched |
 | `--game-clock-sound` | mix the sound a vblank at a time by the game's clock, as online play does (Online play, below), not as the sound device asks |
 | `--fingerprints N` | print the game's fingerprint every N steps (`game/main/fingerprint.c`; Online play, below) |
+| `--host [ADDRESS:]PORT`, `--join ADDRESS:PORT` | host an online game, or join one (Online play, below); `--net-joiners N` is how many machines the host waits for (1) |
+| `--net-delay N`, `--net-patience MS` | an online game's delay in steps, and how long the host waits for a machine that's stopped answering |
+| `--net-lag MS`, `--net-loss N`, `--net-differ STEP`, `--net-vanish STEP`, `--net-stall STEP MS` | tests of online play: late and lost packets, a machine that disagrees, vanishes or stalls |
+| `--net-record FILE`, `--replay FILE` | keep an online game's presses, step by step, and play them again with nobody else |
+| `--macro-until N` | `--macro`'s pattern stops at vblank N |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
 | `--no-launcher` | start with the saved settings, without the menu |
@@ -331,7 +336,7 @@ node port/tests/playtest.mjs identical
 `bosses` beats every boss from a real Adventure, by each fight's own rules, and back to the warp room; `--watch` shows them at normal speed with sound, and `--hero roo` plays them as an extra hero (`--extra-hero 0 roo`). `modes` runs every game mode, played by the
 computer, with `--asan` for the AddressSanitizer build. `adventure` plays a new Adventure with no cheat flags, door by door, until there's nothing left to win, saves at the computer, loads that save in a new run, and passes at 200%. A challenge it keeps losing gets weaker computer heroes and in the end ones that stand still, and the log says which. `--resume` carries on from its last save, and `challenges` plays any challenge alone. `menu` goes from the title screen into a game by the pad alone. `packs` and `mods` check textures and files from mods by the pictures of one mode: zips stored and deflated, a zipped folder, which of two wins, broken zips, and archive files at the same size, bigger and moving the rest. `shots FROM STEP COUNT` makes a contact sheet of one run. `heroes` checks in a few seconds that the extra heroes load: one short game
 with them as the players, each made from its disc and drawn as itself. That's all a release or a change elsewhere checks of them (the
-user's word, 2026-11-09). `hero ID`, for work on that hero, plays it in every game, four of it at once, and checks from the log that each game draws it in a model of its own of that game's kind, with a contact sheet of them (docs/EXTRA_HEROES.md, the checklist); `same --hero ID` compares its pictures and sound with a baseline of its own. `identical` checks that the game repeats itself exactly, for online play (Online play, below): the same presses under each picture setting, by the game's fingerprint after every step, in about two minutes, with `--all` for every game mode too and `--against FILE` for another system's fingerprints. What they leave is in
+user's word, 2026-11-09). `hero ID`, for work on that hero, plays it in every game, four of it at once, and checks from the log that each game draws it in a model of its own of that game's kind, with a contact sheet of them (docs/EXTRA_HEROES.md, the checklist); `same --hero ID` compares its pictures and sound with a baseline of its own. `identical` checks that the game repeats itself exactly, for online play (Online play, below): the same presses under each picture setting, by the game's fingerprint after every step, in about two minutes, with `--all` for every game mode too and `--against FILE` for another system's fingerprints. `online` plays whole online games with every machine a copy of the game on this PC (Online play, below). What they leave is in
 `build/port/playtest/`.
 
 **Frame rates.** The game's logic runs at about 30 frames a second (2 vblanks a frame) and stays there, because its movement is per frame. At 60 and 120 the renderer keeps the game's last two frames and draws steps between them, so what's shown is one game frame behind. Triangles are matched by name: `draw_owner` says which object is drawing, and a face number or the order within that object does the rest (`gfx_mark`). What has no owner, like some 2D, just appears. A triangle that jumps more than a quarter of the screen isn't moved. The window keeps being maximised as `maximized=1` in the settings, not as its size, and the menu's WINDOW SIZE goes through the sizes that fit on the screen, then MAXIMISED (`step_window`). With vsync on, a picture past the screen's rate would wait for the screen and hold up the game's clock, which ran the game at half speed at 120 on a 60 Hz screen, so well above its rate a share of the pictures is left out (`picture_fits`).
@@ -380,18 +385,70 @@ Two things had to change for it:
   different shape with widescreen on, which the fingerprint caught. Those faces have a heap of their own now, the last 16 MB of the
   arena, and the game's heap is the same whatever is drawn. Frames and sound didn't change (`same`).
 
-**Found, for the later steps:**
+**Found, for step 4:** a game begun from the launcher isn't from the very beginning: the launcher is one of the game's own menus, its
+steps count (`shell_update` steps the random numbers every step), and a longer wait in it gives a different game from the first step
+(`identical` says so). Online play's START has to put every machine at the same beginning. The sure way is to start the game again
+from boot, as a test run does, not to put back the values known to have moved.
 
-- A game begun from the launcher isn't from the very beginning: the launcher is one of the game's own menus, its steps count
-  (`shell_update` steps the random numbers every step), and a longer wait in it gives a different game from the first step
-  (`identical` says so). Online play's START has to put every machine at the same beginning. The sure way is to start the game again
-  from boot, as a test run does, not to put back the values known to have moved.
-- The pad read takes more than buttons and sticks (`pad_poll`, `nascalls.c`): whether there's a pad at all (which makes `PadCount` 2
-  or 4), whether it has sticks, and whether it rumbles. All of it has to travel. `platform_pad` is called several times a step, so
-  everyone's presses are to be taken once per `pads_update`, and steps numbered by pad reads, not vblanks.
+### By address, from the command line (step 2)
 
-The steps: 1, staying identical (done); 2, online by address from the command line (`--host PORT`, `--join ADDRESS:PORT`, UDP, with
-pretend lag and loss, as `playtest.mjs online`); 3, join codes (UPnP and NAT-PMP, same-network games found by themselves, plain
+`platform/net.c`, plain UDP sockets. One machine hosts and the others join it by its address:
+
+```sh
+crashbash --host 47000 --net-joiners 2      # waits for two machines to join, then starts
+crashbash --join 192.168.1.20:47000         # on each of the others
+```
+
+There's no screen for it yet (step 4): the window stays black till everyone's there, and what's happening is in the program's
+output. The first time, Windows asks the host's player whether to let the game through its firewall, and it has to be allowed.
+`--host ADDRESS:PORT` hosts on one address only (`127.0.0.1` for games on one PC, which Windows doesn't ask about).
+
+**Players.** Each machine brings its own: the keyboard's, and one for each controller after the first, as offline. The host's are
+the first players, then each machine's in the order they joined, up to four. Player 1 drives the menus, as on the PlayStation.
+
+**Steps.** A step is one read of the pads by the game (`pads_update`, 30 a second; `platform_pad_step`). At each, a machine takes
+its own pads as they are, all of what the game reads of a pad (`pad_poll`: whether it's there, its buttons, its sticks if it has
+any, whether it rumbles), and sends them for the step DELAY steps on. The host puts every machine's together into that step's
+record, the four pads as the game will read them, and sends it to everyone; a machine plays a step once it has its record, and
+waits if it must. So the host decides what each step's presses were, and nobody can disagree. A machine only ever talks to the host,
+so the host's is the one address anyone needs. Every packet carries all that the other side hasn't said it has, up to 32 steps, so
+a lost one is made up by the next; and what's arrived is looked at every vblank, not only when the game wants it.
+
+**The delay** is set once, by the host, from the longest ping to a joiner (`start_host`: the ping and a fifth, 25 ms, and a step
+over), and is the same for everyone, the host too: 1 step on one PC or a home network, about 3 at 60 ms there and back.
+`--net-delay N` sets it by hand.
+
+**The start.** Every machine starts the game at its very beginning, as a test run does, and the first step can't be played till
+everyone's first pads are in, so they start together. Before it, a joiner is checked (the same version of the program, the same
+game data, by its size and first part) and sent the host's four save slots, which it plays with in memory, its own files left alone
+(`saves_in_memory`), and the host's settings that change the game, for this game only (`settings_borrow`: the player's own are still
+what's saved). Extra heroes and mods' files are off for everyone online for now, as there's no telling yet that everyone has them;
+mods' textures are each player's own.
+
+**Checking.** Once a second the machines swap the game's fingerprint, and if a joiner's and the host's differ the game stops on
+every machine and says so, as from then on they'd be playing different games.
+
+**A machine that stops answering.** The host waits 5 seconds for it (`--net-patience MS`), then plays on without waiting: that
+machine's pads are as they last were, with nothing held, so its hero stands there. (Pulled out, the game would pause for the
+controller to come back, as it does offline, and everyone would wait on a machine that may never.) If the machine was only stalled,
+as when its window's dragged, it plays the steps it missed flat out, and once its pads arrive in time again the host waits for it as
+before. A machine more than a minute behind is told it's out. A joiner that leaves says so, and the others play on at once. If the
+host leaves or stops answering (10 seconds), the game ends for everyone: a joiner plays out the steps the host had sent, then says
+so.
+
+**Keeping close.** Each machine plays by its own clock. A joiner a whole step behind the host plays on without waiting for its
+clock till it's caught up (`net_behind`), as its pads would arrive that much later and the host would wait for them.
+
+**For tests.** `--net-lag MS` and `--net-loss N` make this machine's packets late and lose N in a hundred; `--net-record FILE` keeps
+a game's records, with its saves and settings, and `--replay FILE` plays them again with nobody else, which has to give the same
+game; `--net-differ STEP` makes this machine's fingerprints wrong from a step, `--net-vanish STEP` ends it without a word, and
+`--net-stall STEP MS` stops it for a while. `playtest.mjs online` plays whole games with every machine a copy on this PC: two and
+four machines from the menus through a Battle's rounds and back to the title by the pause menu, flat out with packets late and
+lost, matched step for step by fingerprint; a recorded game played again; a machine that disagrees; and in real time, late and lost
+packets, a machine that vanishes and one that stalls and is back.
+
+The steps: 1, staying identical (done); 2, online by address from the command line (done on one PC and between Windows and Linux;
+two real machines on a network are the user's to try); 3, join codes (UPnP and NAT-PMP, same-network games found by themselves, plain
 messages when hosting can't work); 4, ONLINE in the launcher. Not in the first version: rollback, joining a game already running,
 spectators, hosting from behind a shared address, IPv6 codes, chat.
 

@@ -130,7 +130,45 @@ void settings_load(void) {
     fclose(f);
 }
 
+/* Online, the settings that change the game are the host's on every machine (net.c), for that game only: the player's own are kept
+   here, and they're what's saved. */
+static struct {
+    int on, skip_intro, skip_loading, cheat_menu, extra_heroes;
+} Own;
+
+void settings_borrow(int skip_intro, int skip_loading, int cheat_menu, int extra_heroes) {
+    if (!Own.on) {
+        Own.on = 1;
+        Own.skip_intro = Current.skip_intro;
+        Own.skip_loading = Current.skip_loading;
+        Own.cheat_menu = Current.cheat_menu;
+        Own.extra_heroes = Current.extra_heroes;
+    }
+    Current.skip_intro = skip_intro;
+    Current.skip_loading = skip_loading;
+    Current.cheat_menu = cheat_menu;
+    Current.extra_heroes = extra_heroes;
+}
+
+static void save_settings(void);
+
 void settings_save(void) {
+    Settings now;
+
+    if (!Own.on) {
+        save_settings();
+        return;
+    }
+    now = Current;
+    Current.skip_intro = Own.skip_intro;
+    Current.skip_loading = Own.skip_loading;
+    Current.cheat_menu = Own.cheat_menu;
+    Current.extra_heroes = Own.extra_heroes;
+    save_settings();
+    Current = now;
+}
+
+static void save_settings(void) {
     char path[1024];
     FILE *f;
     int i;

@@ -45,6 +45,10 @@
  *       setting, flat out and in real time, with sound and without, compared by the game's fingerprint after every step. About two
  *       minutes. --all adds every game mode under every picture setting at once, a few minutes more. --against FILE checks this
  *       system's fingerprints against another's (its fingerprints-SYSTEM.json from a run there).
+ *   node port/tests/playtest.mjs online
+ *       Online play, with every machine a copy of the game on this PC: two and four of them through a Battle and back to the title,
+ *       flat out and in real time, with packets late and lost, a machine that vanishes and one that stalls, all compared by the
+ *       game's fingerprint after every step. About two minutes.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
@@ -943,6 +947,140 @@ async function identical(args) {
     return report(results);
 }
 
+/* Online play (docs/PORT.md, Online play), with every machine a copy of the game on this PC: a host and the others joining it at
+   127.0.0.1 (--host, --join), each with one pretend controller, so each is a player. The host's player goes through the menus into a
+   Battle for as many players as there are machines; everyone picks a hero and plays, by a pattern of presses each (--macro), through
+   a round, its result and into the next; then the host pauses and quits, and they're all back at the title. Every machine prints the
+   game's fingerprint after every step, and they have to match step for step: flat out, with packets late and lost (--net-lag,
+   --net-loss), with two machines and with four. The host of one keeps the game's presses (--net-record), and playing that again alone
+   (--replay) has to give the same game once more. A machine made to disagree (--net-differ) has to be caught, and both stop.
+
+   Then in real time, as it's played: late and lost packets again, a machine that vanishes without a word (the host plays on without
+   its player after a wait), and one that stalls, as a window being dragged does, and is back. */
+const ONLINE_END = 7700;
+const ONLINE_MACROS = ['10:40,4010:6,20:50,8020:6,40:30,2040:6,80:60,4000:6,0:20', '80:35,4080:6,10:45,8010:6,20:55,4000:6,40:25,2040:6,0:14',
+    '40:50,8040:6,80:30,4000:6,10:40,2010:6,20:44,4020:6,0:10', '20:30,4020:6,40:56,8040:6,10:36,4000:6,80:48,2080:6,0:26'];
+
+function online_presses(machine, machines) {
+    const press = (v, b) => ['--press', String(v), b];
+    const LEFT = '80';
+    const args = [];
+
+    if (machine === 0) {
+        /* Battle, and its players menu down to as many as there are */
+        args.push(...press(170, DOWN), ...press(230, CROSS), ...Array.from({ length: machines - 1 }, (_, i) => press(280 + i * 20, DOWN)).flat(), ...press(350, CROSS));
+    }
+    for (const v of [470, 590, 850, 1150, 1250, 1550, 1650, 1750, 2000]) {
+        args.push(...press(v, CROSS));
+    }
+    args.push('--macro', '2100', ONLINE_MACROS[machine], '--macro-until', '6900');
+    if (machine === 0) {
+        /* paused, down to QUIT GAME, and YES */
+        args.push(...press(7000, START), ...[7060, 7090, 7120, 7150].flatMap(v => press(v, DOWN)), ...press(7200, CROSS), ...press(7250, LEFT), ...press(7300, CROSS));
+    }
+    return args;
+}
+
+async function online(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const dir = path.join(OUT, 'online');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const late = ['--net-lag', '40', '--net-loss', '10'];
+    /* flat out, a press has to be used many steps late for the steps to come as fast as they're played: a packet takes as long as ever */
+    const cases = [
+        { name: 'two machines', machines: 2, save: true },
+        { name: 'two machines, packets late and lost', machines: 2, all: late, host: ['--net-delay', '30', '--net-record', rel('late.txt')] },
+        { name: 'four machines, packets late and lost', machines: 4, all: late, host: ['--net-delay', '30'] },
+        { name: 'a machine that disagrees is caught', machines: 2, per: { 1: ['--net-differ', '600'] }, want: 'differs' },
+        { name: 'in real time, packets late and lost', machines: 2, real: true, all: ['--net-lag', '30', '--net-loss', '5'] },
+        { name: 'in real time, a machine vanishes', machines: 3, real: true, per: { 2: ['--net-vanish', '800'] }, host: ['--net-patience', '1500', '--shot', '2300', rel('vanished.png')], want: 'vanishes' },
+        { name: 'in real time, a machine stalls and is back', machines: 3, real: true, per: { 2: ['--net-stall', '800', '3000'] }, host: ['--net-patience', '1000'], want: 'back' },
+    ];
+    const results = [];
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    /* a game's machines, all at once: what each printed */
+    const play = async (c, k, slot, slots) => {
+        const end = c.real ? 2400 : ONLINE_END;
+
+        if (c.save) {
+            /* the host has a save, which the others are to play with: a slot's file as saves.c writes it */
+            const data = Buffer.alloc(0x194, 0x21);
+            const head = Buffer.alloc(16);
+
+            head.write('CBSV');
+            head.writeUInt32LE(1, 4);
+            head.writeUInt32LE(data.length, 8);
+            head.writeUInt32LE(crc32(data), 12);
+            fs.mkdirSync(path.join(dir, `saves${k}-0`), { recursive: true });
+            fs.writeFileSync(path.join(dir, `saves${k}-0`, 'slot2.sav'), Buffer.concat([head, data]));
+        }
+        return Promise.all(Array.from({ length: c.machines }, (_, m) => run(exe, ['--skip-intro', '--pretend-pads', '1', '--fingerprints', '1',
+            ...(c.real ? [] : ['--turbo', '--draw-every', '60']), '--tile', String(slot + m), String(slots), '--saves', rel(`saves${k}-${m}`),
+            ...(m === 0 ? ['--host', `127.0.0.1:${47200 + k}`, '--net-joiners', String(c.machines - 1), ...(c.host ?? [])] : ['--join', `127.0.0.1:${47200 + k}`]),
+            ...(c.all ?? []), ...(c.per?.[m] ?? []), ...online_presses(m, c.machines), '--frames', String(end)],
+            path.join(dir, `game${k}-machine${m + 1}.txt`), { timeout: MODE_TIMEOUT })));
+    };
+    const judge = (c, k, runs) => {
+        const prints = runs.map(r => fingerprints(r.text));
+        const said = (m, re) => re.test(runs[m].text);
+        const crash = runs.map(r => crash_where(exe, r.text)).find(x => x != null);
+        const how = runs[0].text.match(/^online: \d+ steps; waited.*$/m)?.[0].replace(/^online: /, '').replace(/; \d+ packets.*/, '') ?? '';
+        let wrong = crash ?? null;
+
+        if (wrong == null && c.want === 'differs') {
+            wrong = runs.every(r => /^online: the games differ at step 600/m.test(r.text)) ? null : 'not every machine said the games differ at step 600';
+            return [c.name, { pass: wrong == null, what: wrong ?? 'caught at step 600, and both stopped' }];
+        }
+        for (let m = 0; wrong == null && m < c.machines; m++) {
+            const gone = c.want === 'vanishes' && m === 2;
+            const parted = gone ? fingerprints_part(prints[0].slice(0, prints[m].length), prints[m]) : fingerprints_part(prints[0], prints[m]);
+
+            wrong = runs[m].code !== 0 ? `machine ${m + 1}: exit ${runs[m].code}`
+                : !new RegExp(`^players ${c.machines}, `, 'm').test(runs[m].text) ? `machine ${m + 1} never reached the ${c.machines}-player game`
+                : parted != null ? `machine ${m + 1}'s game differs from the host's from ${parted}`
+                : !c.real && !gone && [...runs[m].text.matchAll(/^mode 40 at vblank/gm)].length !== 2 ? `machine ${m + 1} wasn't back at the title at the end` : null;
+        }
+        if (wrong == null && c.save) {
+            const saves = runs.map(r => r.text.match(/saves ([0-9A-F]{8})$/m)?.[1]);
+
+            wrong = saves.some(s => s == null || s !== saves[0]) || saves[0] === '9AE73935' ? `the host's save didn't reach the others: ${saves.join(', ')}` : null;
+        }
+        if (wrong == null && (c.want === 'vanishes' || c.want === 'back')) {
+            /* the third copy's machine, by the order they happened to join in */
+            const n = runs[2].text.match(/^online: joined as machine (\d)/m)?.[1];
+
+            wrong = !said(0, new RegExp(`^online: machine ${n} isn't answering`, 'm')) ? 'the host never played on without it'
+                : c.want === 'back' && !said(0, new RegExp(`^online: machine ${n} is back`, 'm')) ? 'it never came back' : null;
+        }
+        return [c.name, { pass: wrong == null, what: wrong ?? `the same on all ${c.machines}, ${prints[0].length} steps; ${how}` }];
+    };
+    /* flat out first, then the ones in real time: each lot together, in a grid */
+    for (const real of [false, true]) {
+        const lot = cases.map((c, k) => [c, k]).filter(([c]) => !!c.real === real);
+        const slots = lot.reduce((n, [c]) => n + c.machines, 0);
+        let slot = 0;
+
+        results.push(...await Promise.all(lot.map(([c, k]) => {
+            const from = slot;
+
+            slot += c.machines;
+            return play(c, k, from, slots).then(runs => judge(c, k, runs));
+        })));
+    }
+    /* the recorded game again, with nobody else */
+    {
+        const r = await run(exe, ['--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--turbo', '--draw-every', '60', '--replay', rel('late.txt'),
+            '--frames', String(ONLINE_END)], path.join(dir, 'again.txt'), { timeout: MODE_TIMEOUT });
+        const parted = crash_where(exe, r.text) ?? (r.code !== 0 ? `exit ${r.code}`
+            : fingerprints_part(fingerprints(fs.readFileSync(path.join(dir, 'game1-machine1.txt'), 'latin1')), fingerprints(r.text)));
+
+        results.push(['a recorded game played again', { pass: parted == null, what: parted == null ? 'the same game' : `differs: ${parted}` }]);
+    }
+    return report(results);
+}
+
 /* The launcher's CONTROLS page, with pretend keys (--key-press) and a pretend controller: a key chosen for Cross, a key
    another button had (they swap), the new key choosing PLAY, a controller button chosen and used the same way, and RESET TO
    DEFAULTS. From the log's "controls:" lines (settingsmenu.c). */
@@ -1352,9 +1490,9 @@ async function mods(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, controls, identical, shots, image, packs, mods };
+const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, controls, identical, online, shots, image, packs, mods };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|controls|identical|shots|image|packs|mods: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|controls|identical|online|shots|image|packs|mods: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

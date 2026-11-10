@@ -34,4 +34,8 @@ fi
 
 TTY=()
 if [ -t 0 ] && [ -t 1 ]; then TTY=(-it); fi
-exec docker run --rm "${TTY[@]}" "${USER_ARGS[@]}" -v "$HOSTDIR:/work" -w /work "$IMAGE" "$@"
+# More for docker run itself: DL_DOCKER="-p 47300:47300/udp" lets a game outside join one hosted in the container (docs/PORT.md,
+# Online play).
+MORE=()
+if [ -n "${DL_DOCKER:-}" ]; then read -r -a MORE <<< "$DL_DOCKER"; fi
+exec docker run --rm "${TTY[@]}" "${USER_ARGS[@]}" "${MORE[@]}" -v "$HOSTDIR:/work" -w /work "$IMAGE" "$@"

@@ -16,6 +16,7 @@
 #include "platform/controllers.h"
 #include "platform/gfx.h"
 #include "platform/mods.h"
+#include "platform/net.h"
 #include "platform/texpack.h"
 #include "platform/settings.h"
 #include "platform/saves.h"
@@ -23,6 +24,7 @@
 int extra_hero_named(const char *id); /* game/main/extraheroes.c: --extra-hero's names */
 
 static int Vblanks;
+static volatile int Alive; /* moves while the game waits on something outside it, as an online game does for the others */
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -74,8 +76,8 @@ static DWORD WINAPI watchdog(LPVOID game_thread) {
         CONTEXT c;
 
         Sleep(20000);
-        if (*(volatile int *)&Vblanks != seen) {
-            seen = Vblanks;
+        if (*(volatile int *)&Vblanks + Alive != seen) {
+            seen = Vblanks + Alive;
             continue;
         }
         c.ContextFlags = CONTEXT_FULL;
@@ -179,6 +181,7 @@ const char *platform_data_path(void) {
 }
 
 void platform_finish(int code) {
+    net_end();
     audio_finish();
     if (!NoWindow) {
         host_quit();
@@ -243,6 +246,7 @@ void platform_vblank(void) {
     int i;
 
     Vblanks++;
+    net_vblank();
     for (i = 0; i < NumShots; i++) {
         if (Shots[i].frame == Vblanks) {
             gfx_screenshot(Shots[i].path);
@@ -255,7 +259,8 @@ void platform_vblank(void) {
         if (!host_poll()) {
             platform_finish(0);
         }
-        if (!Turbo) {
+        /* an online game that's behind the host plays on without waiting, till it's caught up */
+        if (!Turbo && !net_behind()) {
             host_wait_vblank();
         }
     }
@@ -273,7 +278,7 @@ static struct {
 } Sticks[MAX_STICKS];
 static int NumSticks;
 
-int platform_pad_sticks(int port, unsigned char sticks[4]) {
+int platform_local_pad_sticks(int port, unsigned char sticks[4]) {
     int i;
 
     if (port == 0 && NumSticks > 0) {
@@ -289,7 +294,7 @@ int platform_pad_sticks(int port, unsigned char sticks[4]) {
     return NoWindow ? 0 : host_pad_sticks(port, sticks);
 }
 
-int platform_pad_rumbles(int port) {
+int platform_local_pad_rumbles(int port) {
     if (port == 0 && NumSticks > 0) {
         return 1;
     }
@@ -298,6 +303,10 @@ int platform_pad_rumbles(int port) {
 
 /* A test run doesn't shake a controller left on the desk, and says what it would have done. */
 void platform_rumble(int port, int small_on, int big) {
+    /* online, only the machine whose player it is shakes */
+    if (net_on() && (port = net_own_pad(port)) < 0) {
+        return;
+    }
     if (StopAt >= 0 || NoWindow) {
         printf("rumble: pad %d small %d big %d at vblank %d\n", port, small_on, big, Vblanks);
     } else {
@@ -310,12 +319,12 @@ void platform_rumble(int port, int small_on, int big) {
 static struct {
     int buttons, vblanks;
 } Macro[MAX_MACRO];
-static int MacroSteps, MacroLength, MacroFrom;
+static int MacroSteps, MacroLength, MacroFrom, MacroUntil = 0x7FFFFFFF; /* --macro-until: the vblank it stops at */
 
 static int macro_buttons(void) {
     int at, i;
 
-    if (MacroLength == 0 || Vblanks < MacroFrom) {
+    if (MacroLength == 0 || Vblanks < MacroFrom || Vblanks >= MacroUntil) {
         return 0;
     }
     at = (Vblanks - MacroFrom) % MacroLength;
@@ -390,7 +399,7 @@ static int dump_files(const char *folder) {
     return n != 0 ? 0 : 1;
 }
 
-int platform_pad(int port) {
+int platform_local_pad(int port) {
     int b = NoWindow ? (port == 0 ? 0 : -1) : host_pad(port);
     int i;
 
@@ -410,6 +419,34 @@ int platform_pad(int port) {
     return b;
 }
 
+/* The pads the game reads: this machine's own, or online everyone's, as the step being played has them (net.c). */
+int platform_pad(int port) {
+    return net_on() ? net_pad(port) : platform_local_pad(port);
+}
+
+int platform_pad_sticks(int port, unsigned char sticks[4]) {
+    return net_on() ? net_pad_sticks(port, sticks) : platform_local_pad_sticks(port, sticks);
+}
+
+int platform_pad_rumbles(int port) {
+    return net_on() ? net_pad_rumbles(port) : platform_local_pad_rumbles(port);
+}
+
+/* Before the game reads the pads, once a step, and after the step, with its fingerprint. */
+void platform_pad_step(void) {
+    net_step();
+}
+
+void platform_step_done(uint32_t fingerprint) {
+    net_step_done(fingerprint);
+}
+
+/* While the game waits on something outside it: the window still answers. 0: it's been closed. */
+int platform_idle(void) {
+    Alive++;
+    return NoWindow || host_poll();
+}
+
 int main(int argc, char **argv) {
     const char *Image = NULL;
     const char *dump_files_to = NULL;
@@ -418,7 +455,8 @@ int main(int argc, char **argv) {
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int extra[4] = { 0 }, extra_heroes = 0;
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
-    int fingerprints = 0, game_clock_sound = 0;
+    int fingerprints = 0, game_clock_sound = 0, online;
+    NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
 #ifdef SDL_PLATFORM_ANDROID
     /* Android sends a program's output nowhere: it goes in log.txt in its folder, for test runs and for anyone to send with a report */
@@ -462,6 +500,8 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--macro") == 0 && i + 2 < argc) {
             MacroFrom = atoi(argv[++i]);
             read_macro(argv[++i]);
+        } else if (strcmp(argv[i], "--macro-until") == 0 && i + 1 < argc) {
+            MacroUntil = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--stall") == 0 && i + 2 < argc) {
             stall = atoi(argv[++i]);
             StallShot = argv[++i];
@@ -583,6 +623,31 @@ int main(int argc, char **argv) {
             skip_intro = 1;
         } else if (strcmp(argv[i], "--skip-loading") == 0) {
             skip_loading = 1;
+        } else if (strcmp(argv[i], "--host") == 0 && i + 1 < argc) {
+            net.host = argv[++i];
+        } else if (strcmp(argv[i], "--join") == 0 && i + 1 < argc) {
+            net.join = argv[++i];
+        } else if (strcmp(argv[i], "--replay") == 0 && i + 1 < argc) {
+            net.replay = argv[++i];
+        } else if (strcmp(argv[i], "--net-record") == 0 && i + 1 < argc) {
+            net.record = argv[++i];
+        } else if (strcmp(argv[i], "--net-joiners") == 0 && i + 1 < argc) {
+            net.joiners = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--net-delay") == 0 && i + 1 < argc) {
+            net.delay = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--net-lag") == 0 && i + 1 < argc) {
+            net.lag = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--net-loss") == 0 && i + 1 < argc) {
+            net.loss = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--net-patience") == 0 && i + 1 < argc) {
+            net.patience = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--net-differ") == 0 && i + 1 < argc) {
+            net.differ_at = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--net-vanish") == 0 && i + 1 < argc) {
+            net.vanish_at = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--net-stall") == 0 && i + 2 < argc) {
+            net.stall_at = atoi(argv[++i]);
+            net.stall_ms = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--fingerprints") == 0 && i + 1 < argc) {
             fingerprints = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--game-clock-sound") == 0) {
@@ -603,6 +668,14 @@ int main(int argc, char **argv) {
         settings_defaults();
     } else {
         settings_load();
+    }
+    /* an online game starts at the game's own beginning on every machine, as a test run does, with its sound mixed by the game's
+       clock (docs/PORT.md, Online play) */
+    online = net.host != NULL || net.join != NULL || net.replay != NULL;
+    if (online) {
+        launcher = 0;
+        no_launcher = 1;
+        game_clock_sound = 1;
     }
     settings()->launcher = launcher || (!testing && !no_launcher);
     settings()->no_save = testing;
@@ -688,10 +761,23 @@ int main(int argc, char **argv) {
     }
     /* before the renderer, which makes room for the textures they have */
     mods_scan();
-    mods_apply_files();
+    if (online) {
+        /* everyone has to play the same game: no mod's files or bonus hero's, which other machines mightn't have. Textures are
+           each player's own */
+        archive_replace_none();
+    } else {
+        mods_apply_files();
+    }
     if (!NoWindow && !host_init()) {
         fprintf(stderr, "No window; running without one.\n");
         NoWindow = 1;
+    }
+    /* the others, before the game's first step */
+    if (online && (i = net_start(&net)) <= 0) {
+        if (i == 0 && StopAt < 0) {
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crash Bash", "The online game couldn't start. What went wrong is in the program's output.", NULL);
+        }
+        platform_finish(1);
     }
     gfx_draw_every(draw_every);
     overlays_init();

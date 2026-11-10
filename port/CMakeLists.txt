@@ -67,7 +67,7 @@ endforeach()
 
 set(PORT_SOURCES main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/zipread.c platform/bps.c platform/settings.c
-  platform/touch.c platform/controls.c)
+  platform/touch.c platform/controls.c platform/net.c)
 if(ANDROID)
   # Android loads the game as libmain.so, and SDL's Java side calls its main (port/android/, docs/PORT.md, Android)
   add_library(crashbash SHARED ${PORT_SOURCES} $<TARGET_OBJECTS:game>)
@@ -83,6 +83,10 @@ endif()
 # Mods are zips, which zlib unpacks (platform/zipread.c).
 find_package(ZLIB REQUIRED)
 target_link_libraries(crashbash PRIVATE ZLIB::ZLIB)
+# Online play is plain sockets (platform/net.c), which Windows keeps in a library of their own
+if(WIN32)
+  target_link_libraries(crashbash PRIVATE ws2_32)
+endif()
 # The maths library is its own on Linux and the Mac (Windows links it by itself)
 if(UNIX)
   target_link_libraries(crashbash PRIVATE m)

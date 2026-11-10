@@ -42,12 +42,68 @@ static void slot_path(char *path, size_t size, int slot) {
     SDL_snprintf(path, size, "%sslot%d.sav", Folder, slot + 1);
 }
 
+/* Saves in memory: an online game's on a machine that joined, which plays with the host's saves and leaves its own files alone. */
+static int InMemory;
+static struct {
+    int size;
+    unsigned char data[SAVES_MOST];
+} Kept[SAVES_SLOTS];
+
+void saves_in_memory(void) {
+    InMemory = 1;
+    memset(Kept, 0, sizeof(Kept));
+}
+
+void saves_put(int slot, const void *data, int size) {
+    if (slot >= 0 && slot < SAVES_SLOTS && size >= 0 && size <= SAVES_MOST) {
+        Kept[slot].size = size;
+        memcpy(Kept[slot].data, data, (size_t)size);
+    }
+}
+
+int saves_get(int slot, void *data, int room) {
+    char path[1100];
+    SaveHeader h;
+    FILE *f;
+    int ok;
+
+    if (slot < 0 || slot >= SAVES_SLOTS) {
+        return 0;
+    }
+    if (InMemory) {
+        if (Kept[slot].size > room) {
+            return 0;
+        }
+        memcpy(data, Kept[slot].data, (size_t)Kept[slot].size);
+        return Kept[slot].size;
+    }
+    if (Folder[0] == '\0') {
+        return 0;
+    }
+    slot_path(path, sizeof(path), slot);
+    f = fopen(path, "rb");
+    if (f == NULL) {
+        return 0;
+    }
+    ok = fread(&h, sizeof(h), 1, f) == 1 && memcmp(h.magic, MAGIC, 4) == 0 && h.version == VERSION && h.size <= (Uint32)room
+        && fread(data, 1, h.size, f) == h.size && SDL_crc32(0, data, h.size) == h.checksum;
+    fclose(f);
+    return ok ? (int)h.size : 0;
+}
+
 int saves_read(int slot, void *data, int size) {
     char path[1100];
     SaveHeader h;
     FILE *f;
     int ok;
 
+    if (InMemory) {
+        if (slot < 0 || slot >= SAVES_SLOTS || Kept[slot].size != size || size == 0) {
+            return 0;
+        }
+        memcpy(data, Kept[slot].data, (size_t)size);
+        return 1;
+    }
     if (Folder[0] == '\0') {
         return 0;
     }
@@ -71,6 +127,10 @@ int saves_write(int slot, const void *data, int size) {
     FILE *f;
     int ok;
 
+    if (InMemory) {
+        saves_put(slot, data, size);
+        return slot >= 0 && slot < SAVES_SLOTS && size <= SAVES_MOST;
+    }
     if (Folder[0] == '\0') {
         return 1;
     }

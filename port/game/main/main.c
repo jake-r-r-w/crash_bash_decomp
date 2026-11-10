@@ -218,7 +218,7 @@ void shell_update(void) {
     sfx_update_all();
     music_update();
     EngineModule->update();
-    fingerprint_step();
+    platform_step_done(fingerprint_step());
 }
 
 void shell_start_engine(void) {
