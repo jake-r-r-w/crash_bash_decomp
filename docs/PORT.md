@@ -525,7 +525,7 @@ the answer to it (`net_lobby_network`, `router_lines`). An adapter is taken for 
 Hamachi, Radmin, ZeroTier, Tailscale), or by its address for the two whose addresses nobody else has (Hamachi's start 25, Radmin
 VPN's 26). A PC's other adapters, a virtual machine's or a work VPN's, are no use to players and can't be told apart by name, so
 they aren't offered. `--check-router` lists every adapter and what it's taken for; on the user's PC it finds their Hamachi
-(2026-11-10). No game has been played over one of these tools yet: that's the user's to try with a friend.
+(2026-11-10). No game has been played over one of these tools yet: that's the user's to try.
 
 **For tests** no router is ever asked: `--online-local` games don't, and `--online-pretend-router open|refused|none|shared` gives
 that answer after a moment. `--make-code ADDRESS N` prints the code for an address and port N of the eight, and `--check-codes`
@@ -602,7 +602,7 @@ packets, a machine that vanishes and one that stalls and is back.
 The steps: 1, staying identical (done); 2, online by address from the command line (done on one PC and between Windows and Linux);
 4, ONLINE in the launcher (done before 3, at the user's word: hosting and joining need nothing but the launcher, on one network);
 3, join codes (written, and tested with a pretend router: no real router has been asked for a port yet, which is the user's to
-try, hosting at home with a friend joining from elsewhere). Not in the first version: rollback, joining a game already running,
+try, with two machines on different networks). Not in the first version: rollback, joining a game already running,
 spectators, hosting from behind a shared address, IPv6 codes, chat.
 
 ## What a pointer's size breaks

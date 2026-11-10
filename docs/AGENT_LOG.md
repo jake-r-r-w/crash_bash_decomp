@@ -93,7 +93,7 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    Step 4, ONLINE in the launcher, is done too, before 3 at the user's word (2026-11-10: "ONLINE screens first").
    Step 3, join codes, is written (2026-11-10, with the user's OK for miniupnpc and libnatpmp), and tested with a pretend
    router. Since then, tidy-ups from the user's own play, as they give them (the session log): the players menu, the joiner's
-   lobby, virtual networks' addresses, each machine's own sound options, and tags that show who's connected. **Next: the user's own try**, hosting at home with a friend joining from elsewhere by the code, which is what the
+   lobby, virtual networks' addresses, each machine's own sound options, and tags that show who's connected. **Next: the user's own try**, a game between two real machines on different networks (theirs to arrange, 2026-11-10: "leave that with me"), which is what the
    plan calls done; then a release with it (their OK first, as for every release).
    What the review of the plan added is in PORT.md's Online play and the Open leads below.
 
@@ -116,7 +116,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   at all (how it feels at each delay, and whether a joiner kept a step behind the host judders, are unknown: `net_behind` and the
   delay's sum in `start_host` are the two things to tune). The delay is set once at the start and never changes. The host's
   save reaches a joiner as bytes that go straight into the game's own slots (`card_init`), unchecked beyond their size: fine among
-  friends, not against a host that means harm. A game's records are only kept if asked (`--net-record`), so a real game that
+  players who trust each other, not against a host that means harm. A game's records are only kept if asked (`--net-record`), so a real game that
   stops for differing leaves nothing to play again. Extra heroes and mods' files are off online till machines can compare what
   they have. Android builds with all of online play in it, both kinds of processor (`tools/da sh port/android/build.sh`, 2026-11-10), and has the permission in its manifest, but hasn't been run with it.
 - **Port, online play, hardening, put off by the user (2026-11-10: "not now we will do it later"):** before a game is hosted for
@@ -142,7 +142,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   address was found, joined and played. The user has Hamachi on now (`--check-router` lists it, 25.17.9.118, 2026-11-10), and the
   host's screen says a virtual network's address to join at (`net_lobby_network`). No game has been played over it: whether
   Hamachi's adapter passes the broadcast that finds games, and Windows' firewall on its "public" network, are for the user's own
-  try with a friend. Only adapters known by name are offered (Hamachi, Radmin VPN, ZeroTier, Tailscale; 25. and 26. addresses).
+  try. Only adapters known by name are offered (Hamachi, Radmin VPN, ZeroTier, Tailscale; 25. and 26. addresses).
 - **Port, online play, in the game (2026-11-10, `game/main/online.c`):** the players' tags sit over their icons, where the user's
   chosen picture had them under the health bar: under is where each game puts its own bars and scores, at different heights. Shown
   the built one in shots, they said to keep them above (2026-11-10, "Keep above"). They haven't seen it over a real game yet, so
