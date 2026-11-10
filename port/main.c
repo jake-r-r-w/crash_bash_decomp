@@ -353,6 +353,8 @@ static int macro_buttons(void) {
     return 0;
 }
 
+/* --macro's steps, BUTTONS:VBLANKS, one after another with a comma or a semicolon between: Android's launch splits its arguments at
+   commas, so a test there gives semicolons. */
 static void read_macro(const char *text) {
     while (*text != '\0' && MacroSteps < MAX_MACRO) {
         char *end;
@@ -361,7 +363,7 @@ static void read_macro(const char *text) {
         text = *end == ':' ? end + 1 : end;
         Macro[MacroSteps].vblanks = (int)strtol(text, &end, 10);
         MacroLength += Macro[MacroSteps++].vblanks;
-        text = *end == ',' ? end + 1 : end;
+        text = *end == ',' || *end == ';' ? end + 1 : end;
     }
 }
 

@@ -103,11 +103,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Open leads
 
 - **Port, online play, left from step 4:** nobody has played through the launcher's ONLINE screens yet but the tests. A second game
-  hosted and joined after the first ended, in the same run of both copies, worked by hand (the same fingerprints on both), but no
-  test does it. Not tried: hosting for real on a network (the tests'
+  hosted and joined after the first, in the same run, is in `online` now, and so is the host's code typed with a controller.
+  Not tried: hosting for real on a network (the tests'
   games are this PC's alone, `--online-local`, so the broadcast that finds games, Windows' firewall question and
   `net_lobby_address`'s pick of this machine's address haven't met a real network: a PC with Docker's or a VPN's adapters may
-  broadcast out of the wrong one); the address typed with a controller; any of it running on Android. The game's data being in file-backed sections now makes the program about 4 MB bigger.
+  broadcast out of the wrong one); the launcher's ONLINE screens on Android. The game's data being in file-backed sections now makes the program about 4 MB bigger.
 - **Port, online play, not yet checked:** `identical` on Android (the emulator is x86; a real phone is ARM, where `audio.c`'s
   `note_pitch` goes through `pow`, which sets when a voice ends); sound by the game's clock heard by a person (its queue held about
   45 ms and was never empty in runs of up to 200 seconds here, by the line a test run prints as it ends); a Battle past its first
@@ -116,9 +116,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - **Port, online play, left from step 2:** not yet played between two real machines, nor with a real controller, nor by a person
   at all (how it feels at each delay, and whether a joiner kept a step behind the host judders, are unknown: `net_behind` and the
   delay's sum in `start_host` are the two things to tune). The delay is set once at the start and never changes. The host's
-  saves are checked on a joiner before the game has them (`card_check`; the hardening lead below). A game's records are only kept if asked (`--net-record`), so a real game that
-  stops for differing leaves nothing to play again. Extra heroes and mods' files are off online till machines can compare what
-  they have. Android builds with all of online play in it, both kinds of processor (`tools/da sh port/android/build.sh`, 2026-11-10), and has the permission in its manifest, but hasn't been run with it.
+  saves are checked on a joiner before the game has them (`card_check`; the hardening lead below). Every game's presses are kept beside the saves (`last-online-game.txt`), so a
+  game that stops for differing can be played again. Extra heroes and mods' files are off online till machines can compare what
+  they have. Android plays online: `online --android`, this PC hosting and the emulator joining, played the same game (2026-11-10), from the
+  command line; a real phone (arm64) hasn't played online yet.
 - **Port, online play, hardening (done 2026-11-10, PORT.md, Online play, Hardening):** what's left of it is what was chosen not to
   do: no lobby password and no check on who joins, nothing encrypted or signed, and a machine in the game can still spoil it
   (pausing everyone by "pulling out" its pad, ending it by disagreeing). The fuzzer only builds on Windows (`netfuzz`); the save
@@ -645,6 +646,15 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: The checks that could be run here ("Run the checks"). The host's code typed with a controller, and a second game
+  after the first in the same run, are `online` cases now (22 on Windows and Linux). Every online game keeps its presses beside
+  the saves (`last-online-game.txt`), and a joiner's plays again as the same game. And Android played online for the first time:
+  `online --android`, this PC hosting and the emulator joining at 10.0.2.2, the same game for 4,450 steps. Android's launch splits
+  its arguments at commas, which broke the test's `--macro`: it takes semicolons too now. Signing the emulator's test build with
+  the release key, so it installs over the release without wiping the app's data, overwrote build/port/release's 0.4.1 APK (the
+  published one is on GitHub). The first try left a black host window up, waiting for a phone that never joined, and the user saw
+  it: the test stops the host after 90 seconds with nobody joined now.
 
 - 2026-11-10: Hardening online play, at the user's word ("Start hardening"). Reading every packet handler found five small holes
   (a forged ping reply could make the delay nought, stray "ready" bits stall the start, a host keep a joiner's window frozen

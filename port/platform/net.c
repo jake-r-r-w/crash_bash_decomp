@@ -2035,10 +2035,25 @@ int net_start(void) {
     return ok;
 }
 
-/* Keeps the game's presses, if that was asked: as it starts. */
+/* Keeps the game's presses, as it starts: where --net-record asked, or else beside the saves, so that a game that stopped because the
+   machines differed can be played again to see why (--replay). The last game's only: each is kept over the one before, about 7 MB
+   an hour. That's the player's own saves folder, or a test run's --saves; a test run with none keeps nothing it wasn't asked to. */
 void net_record(void) {
-    if (Options.record != NULL && Recording == NULL && (Recording = fopen(Options.record, "w")) != NULL) {
+    char path[1100];
+    const char *to = Options.record;
+
+    if (Recording != NULL || (Role != HOST && Role != JOINER && Options.record == NULL)) {
+        return;
+    }
+    if (to == NULL && saves_folder()[0] != '\0') {
+        SDL_snprintf(path, sizeof(path), "%slast-online-game.txt", saves_folder());
+        to = path;
+    }
+    if (to != NULL && (Recording = fopen(to, "w")) != NULL) {
         record_header();
+        if (Options.record == NULL) {
+            say("this game's presses are kept in %s, to play it again (--replay)", to);
+        }
     }
 }
 

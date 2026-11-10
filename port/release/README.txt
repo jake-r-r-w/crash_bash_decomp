@@ -73,10 +73,12 @@ about its firewall, allow the game on public networks too, as that's what it
 takes these for.
 
 Each player's own machine runs the whole game, and only the button presses
-travel, each used a moment late so it reaches everyone in time. Player 1, the
-host, drives the menus. Picture settings are each player's own. Cheats, the two
-skips and the save are the host's; extra heroes and mods that change the game's
-files are off online.
+travel, each used a moment late so it reaches everyone in time. The last online
+game's presses are kept beside your saves, in last-online-game.txt: if a game
+stops because the players' games are no longer the same, that file is what
+shows why. Player 1, the host, drives the menus. Picture settings are each
+player's own. Cheats, the two skips and the save are the host's; extra heroes
+and mods that change the game's files are off online.
 
 
 SETTINGS

@@ -214,6 +214,11 @@ asked: `CRASH_BASH_ANDROID_KEY=FOLDER tools/da node port/package.mjs --android` 
 `build/port/release/`, checks each processor's `libmain.so` as the other downloads' programs are checked, and says which certificate
 signed it. A test build is signed with a debug key instead, so going from one to the other in the emulator needs an uninstall first.
 
+Online play runs there too: `node port/tests/playtest.mjs online --android` plays the online test's Battle between this PC, hosting
+on 127.0.0.1, and the emulator, joining it at 10.0.2.2 (the emulator's way to the PC). The first time (2026-11-10), Windows and the
+emulator played the same game, 4,450 steps by fingerprint. The emulator is x86_64, as the PC is; a phone is arm64, which hasn't
+played online yet.
+
 The play tests run there too, with `--android` (`node port/tests/playtest.mjs modes --android`): one run at a time, each launched by adb
 with its arguments, its shots fetched from the app's folder and its result read from its `log.txt` and Android's crash log, as an app has
 no exit code to give. The emulator can run without a window for them (`-no-window`), out of the way.
@@ -321,7 +326,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--launcher` | open the menu in a test run too (drive it with `--press`) |
 | `--window W H`, `--render W H` | the window's size and what the game draws at, for this run (`--render 0 0`: match the window). A size the screen can't hold, title bar and all, opens maximised |
 | `--cheat-menu` | the cheat menu on, for this run |
-| `--macro N HEX:VBLANKS,...` | a repeating pattern of buttons on pad 1 from vblank N. A test run logs a boss fight's health |
+| `--macro N HEX:VBLANKS,...` | a repeating pattern of buttons on pad 1 from vblank N (`;` between steps does too, for Android, whose launch splits arguments at commas). A test run logs a boss fight's health |
 | `--stall N FILE` | stops a boss fight that's made no progress in N vblanks, with a shot in FILE; the log, written as it goes, says where it stuck |
 | `--aim` | a test run's player for the boss fights (`port/tests/bossbot.c`): it looks where things are and only presses the pad's buttons |
 | `--bot`, `--cheats HEX` | the game's own AI plays pad 1 and its fight's state is logged; cheat flags kept on (`shell.h`, `cheatflags`: 2 is no death) |
@@ -656,13 +661,19 @@ so.
 **Keeping close.** Each machine plays by its own clock. A joiner a whole step behind the host plays on without waiting for its
 clock till it's caught up (`net_behind`), as its pads would arrive that much later and the host would wait for them.
 
+**Every game's presses are kept** (`net_record`), beside the saves, in `last-online-game.txt`: the last game's only, each over the one
+before, about 7 MB an hour. So a game that stopped because the machines differed can be played again to see why (`--replay`), on
+any machine that was in it, as each keeps the same. A test run keeps it in its `--saves` folder, and none without one.
+
 **For tests.** `--net-lag MS` and `--net-loss N` make this machine's packets late and lose N in a hundred; `--net-record FILE` keeps
-a game's records, with its saves and settings, and `--replay FILE` plays them again with nobody else, which has to give the same
-game; `--net-differ STEP` makes this machine's fingerprints wrong from a step, `--net-vanish STEP` ends it without a word, and
+a game's records where it's told, with its saves and settings, and `--replay FILE` plays them again with nobody else, which has to
+give the same game; `--net-differ STEP` makes this machine's fingerprints wrong from a step, `--net-vanish STEP` ends it without a word, and
 `--net-stall STEP MS` stops it for a while. `playtest.mjs online` plays whole games with every machine a copy on this PC: two and
 four machines from the menus through a Battle's rounds and back to the title by the pause menu, flat out with packets late and
-lost, matched step for step by fingerprint; a recorded game played again; a machine that disagrees; and in real time, late and lost
-packets, a machine that vanishes and one that stalls and is back.
+lost, matched step for step by fingerprint; a recorded game played again, and a joiner's own kept one; a machine that disagrees;
+and in real time, late and lost packets, a machine that vanishes and one that stalls and is back. Through the launcher it also has
+the host's code typed with a controller (right for another character, up and down to it, Cross to join), and a second game hosted
+and joined after the first, in the same run.
 
 The steps: 1, staying identical (done); 2, online by address from the command line (done on one PC and between Windows and Linux);
 4, ONLINE in the launcher (done before 3, at the user's word: hosting and joining need nothing but the launcher, on one network);

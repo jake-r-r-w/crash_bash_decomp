@@ -50,6 +50,8 @@
  *       flat out and in real time, with packets late and lost, a machine that vanishes and one that stalls, all compared by the
  *       game's fingerprint after every step; and through the launcher's ONLINE screens, hosting, finding and joining. About two
  *       minutes.
+ *   node port/tests/playtest.mjs online --android
+ *       An online game between this PC, hosting, and Android's emulator, joining it: the Battle above, matched step for step.
  *   node port/tests/playtest.mjs online --play [2|3|4] [--demo] [--delay STEPS] [--lag MS] [--loss N]
  *       Online play on this PC to try yourself: copies of the game side by side, each at its launcher, to host in one and join in the
  *       others. The first has the keyboard and each other a controller. --delay, --lag and --loss are for feeling what a game over
@@ -139,7 +141,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 /* run's Android side (--android, above) */
 async function run_android(args, logfile, timeout) {
     const fetch = [];
-    const sent = args.slice();
+    /* the launch splits its arguments at commas: a macro's steps go with semicolons (main.c, read_macro) */
+    const sent = args.map(a => String(a).replaceAll(',', ';'));
 
     for (let i = 0; i < sent.length; i++) {
         const at = sent[i] === '--shot' ? i + 2 : sent[i] === '--wav' ? i + 1 : -1;
@@ -177,14 +180,21 @@ async function run_android(args, logfile, timeout) {
     return { code: fatal != null ? fatal[1] : frames != null && new RegExp(`^${frames} vblanks`, 'm').test(text) ? 0 : 1, text };
 }
 
-/* Runs the game; resolves with its exit code (or the signal that ended it, on Linux), and what it printed, also kept in logfile. */
-function run(exe, args, logfile, { timeout = 0, env = {} } = {}) {
-    if (ANDROID) {
-        return run_android(args, logfile, timeout);
+/* Runs the game; resolves with its exit code (or the signal that ended it, on Linux), and what it printed, also kept in logfile. here: on
+   this machine even with --android. What's returned can be stopped early (.stop). */
+function run(exe, args, logfile, { timeout = 0, env = {}, here = false } = {}) {
+    let child = null;
+
+    if (ANDROID && !here) {
+        const p = run_android(args, logfile, timeout);
+
+        p.stop = () => adb(['shell', 'am', 'force-stop', ANDROID_APP]);
+        return p;
     }
-    return new Promise(resolve => {
+    const p = new Promise(resolve => {
         const log = fs.openSync(logfile, 'w');
-        const child = spawn(path.resolve(ROOT, exe), args, { cwd: ROOT, stdio: ['ignore', log, log], env: { ...process.env, ...env } });
+
+        child = spawn(path.resolve(ROOT, exe), args, { cwd: ROOT, stdio: ['ignore', log, log], env: { ...process.env, ...env } });
         const timer = timeout ? setTimeout(() => child.kill(), timeout * 1000) : null;
         const done = code => {
             clearTimeout(timer);
@@ -195,6 +205,9 @@ function run(exe, args, logfile, { timeout = 0, env = {} } = {}) {
         child.on('error', () => done(-1));
         child.on('exit', (code, signal) => done(code ?? signal));
     });
+
+    p.stop = () => child?.kill();
+    return p;
 }
 
 function crash_where(exe, text) {
@@ -1048,10 +1061,49 @@ async function online_play(args, exe) {
     return 0;
 }
 
+/* online --android: a game between this PC, hosting, and Android's emulator, joining it at 10.0.2.2 (the emulator's way to the PC): the
+   online test's two-machine Battle, matched step for step by fingerprint. The PC's copy hosts on 127.0.0.1, so Windows doesn't ask about
+   its firewall, and is stopped if the phone hasn't joined in a minute and a half, as a host's window is black till someone does. The
+   phone plays on past its own --frames: catching up with the host, it plays steps without waiting for vblanks (net_behind), and the
+   emulator is slow enough to be catching up most of the time. So its game ends with the host's last step, as "the host has left". */
+async function online_android(args) {
+    const pc = option(args, '--pc-exe', WINDOWS ? 'build/port/windows-clang/crashbash.exe' : 'build/port/linux-clang/crashbash');
+    const dir = path.join(OUT, 'online');
+    const port = '47310';
+    const common = ['--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--turbo', '--draw-every', '60'];
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(path.join(dir, 'saves'), { recursive: true });
+    const host = run(pc, [...common, '--tile', '0', '4', '--no-sound', '--saves', path.relative(ROOT, path.join(dir, 'saves')).replaceAll('\\', '/'),
+        '--host', `127.0.0.1:${port}`, '--net-joiners', '1', ...online_presses(0, 2), '--frames', String(ONLINE_END + 200)],
+        path.join(dir, 'pc.txt'), { timeout: MODE_TIMEOUT, here: true });
+    const phone = run('android', [...common, '--join', `10.0.2.2:${port}`, ...online_presses(1, 2), '--frames', String(ONLINE_END)], path.join(dir, 'phone.txt'),
+        { timeout: MODE_TIMEOUT });
+    const guard = setTimeout(() => {
+        if (!/has joined/.test(fs.readFileSync(path.join(dir, 'pc.txt'), 'latin1'))) {
+            host.stop();
+            phone.stop();
+        }
+    }, 90000);
+    const [a, b] = await Promise.all([host, phone]);
+    const pa = fingerprints(a.text), pb = fingerprints(b.text);
+    const parted = fingerprints_part(pa, pb);
+
+    clearTimeout(guard);
+    const wrong = !/has joined/.test(a.text) ? 'the phone never joined'
+        : crash_where(pc, a.text) ?? (/^crash: /m.test(b.text) ? b.text.match(/^crash: .*$/m)[0] : null)
+        ?? (pb.length < 3800 ? `the phone's game is short: ${pb.length} steps` : parted != null ? `the phone's game differs from the PC's from ${parted}` : null);
+
+    return report([['this PC hosting, Android\'s emulator joining', { pass: wrong == null, what: wrong ?? `the same on both, ${pb.length} steps` }]]);
+}
+
 async function online(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     if (flag(args, '--play')) {
         return online_play(args, exe);
+    }
+    if (ANDROID) {
+        return online_android(args);
     }
     const dir = path.join(OUT, 'online');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
@@ -1078,13 +1130,36 @@ async function online(args) {
     const press = (v, b) => ['--press', String(v), b];
     /* the launcher's presses: ONLINE, then HOST GAME and in time START; or JOIN GAME and the first game found, or down to ADDRESS
        and the host's typed. In real time, as finding and joining take as long as they take */
-    const lobby = (m, typed) => m === 0 ? [...press(100, DOWN), ...press(130, CROSS), ...press(170, CROSS), ...press(720, START)]
+    /* a code typed with the controller (settingsmenu.c, update_join): right for a character more, up and down through the letters to
+       it, then its Cross. From vblank 400, a press every 8; how long it takes, for the host to wait till then to start */
+    const PICK = '0123456789ABCDEFGHJKMNPQRSTVWXYZ.';
+    const pad_typing = text => {
+        const presses = [];
+        let last = null;
+
+        for (const ch of text) {
+            presses.push('20');
+            last = last ?? '0';
+            const d = (PICK.indexOf(ch) - PICK.indexOf(last) + PICK.length) % PICK.length;
+            presses.push(...Array(d <= PICK.length / 2 ? d : 0).fill(UP_PAD), ...Array(d > PICK.length / 2 ? PICK.length - d : 0).fill(DOWN));
+            last = ch;
+        }
+        presses.push(CROSS);
+        return presses.flatMap((b, i) => ['--pad-press', '1', String(400 + i * 8), b]);
+    };
+    const UP_PAD = '10';
+    const typing_ends = text => 400 + (pad_typing(text).length / 4) * 8;
+    const lobby = (m, typed, pad, start = 720) => m === 0 ? [...press(100, DOWN), ...press(130, CROSS), ...press(170, CROSS), ...press(start, START)]
         : [...press(100, DOWN), ...press(130, CROSS), ...press(170, DOWN), ...press(200, CROSS), ...(typed == null ? press(360, CROSS)
-            : [...press(330, DOWN), ...press(360, CROSS), ...[...typed].flatMap((key, i) => ['--key-press', String(400 + i * 14), key]), ...press(560, START)])];
+            : [...press(330, DOWN), ...press(360, CROSS), ...(pad ? pad_typing(typed)
+                : [...[...typed].flatMap((key, i) => ['--key-press', String(400 + i * 14), key]), ...press(560, START)])])];
     /* the join code of a game hosted on this PC, as the program makes it: what its pretend router gives the host to show */
     const code = spawnSync(path.resolve(ROOT, exe), ['--make-code', '127.0.0.1', '0'], { encoding: 'utf8' }).stdout.trim();
     /* the game after it: the same Battle; or the main menu's EXIT, by the host; or nothing, till the host's gone */
-    const after = (c, m) => c.launcher === 'exit' ? [...(m === 0 ? [300, 320, 340, 360].flatMap(v => press(v, DOWN)).concat(press(400, CROSS)) : []), '--then', '--frames', '200']
+    const exit = m => m === 0 ? [300, 320, 340, 360].flatMap(v => press(v, DOWN)).concat(press(400, CROSS)) : [];
+    const after = (c, m) => c.launcher === 'exit' ? [...exit(m), '--then', '--frames', '200']
+        /* the main menu's EXIT, back in the launcher, hosted and joined again, and the same Battle played */
+        : c.launcher === 'second' ? [...exit(m), '--then', ...lobby(m), '--then', '--turbo', ...online_presses(m, c.machines), '--frames', String(ONLINE_END)]
         : c.launcher === 'host leaves' ? ['--frames', m === 0 ? '600' : '100000', ...(m === 0 ? [] : ['--then', '--shot', '150', rel('left.png'), '--frames', '200'])]
         : [...online_presses(m, c.machines), '--frames', String(ONLINE_END)];
     const through = [
@@ -1093,7 +1168,9 @@ async function online(args) {
         /* the host's router "opens its port" (a pretend one: none is asked), the host shows the code, and the joiner types it: its
            letters are also keys the game's buttons are set to, which mustn't act as them */
         { name: `from the launcher: joined by the host's code, ${code}`, machines: 2, launcher: 'play', typed: code.replace('-', ''), router: 'open' },
+        { name: 'from the launcher: the host\'s code typed with a controller', machines: 2, launcher: 'play', typed: code.replace('-', ''), pad: true, router: 'open' },
         { name: 'from the launcher: EXIT brings each machine back to it', machines: 2, launcher: 'exit' },
+        { name: 'from the launcher: a second game after the first, in the same run', machines: 2, launcher: 'second' },
         { name: 'from the launcher: the host leaving brings the joiner back to it', machines: 2, launcher: 'host leaves' },
     ];
     const results = [];
@@ -1103,7 +1180,7 @@ async function online(args) {
     const play_through = (c, k, slot, slots) => Promise.all(Array.from({ length: c.machines }, (_, m) => run(exe, ['--launcher', '--online-local', '--online-port',
         String(47250 + k), '--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--draw-every', '60', '--tile', String(slot + m), String(slots),
         ...(c.router != null && m === 0 ? ['--online-pretend-router', c.router] : []),
-        '--saves', rel(`through${k}-${m}`), ...lobby(m, c.typed), '--then', '--turbo', ...after(c, m)],
+        '--saves', rel(`through${k}-${m}`), ...lobby(m, c.typed, c.pad, c.pad ? typing_ends(c.typed) + 200 : 720), '--then', '--turbo', ...after(c, m)],
         path.join(dir, `through${k}-machine${m + 1}.txt`), { timeout: MODE_TIMEOUT })));
     const judge_through = (c, runs) => {
         const prints = runs.map(r => fingerprints(r.text));
@@ -1113,7 +1190,15 @@ async function online(args) {
         for (let m = 0; wrong == null && m < c.machines; m++) {
             wrong = runs[m].code !== 0 ? `machine ${m + 1}: exit ${runs[m].code}`
                 : count(m, /^restart: the game from its beginning/gm) < 1 ? `machine ${m + 1}'s game never started` : null;
-            if (wrong == null && c.launcher === 'play') {
+            if (wrong == null && c.launcher === 'second') {
+                /* the second game's fingerprints are the ones after its start */
+                const parted = fingerprints_part(prints[0], prints[m]);
+
+                wrong = count(m, /^restart: the game from its beginning/gm) !== 3 ? `machine ${m + 1} didn't start a second game`
+                    : count(m, /^players 2, /gm) < 2 ? `machine ${m + 1} never reached the second two-player game`
+                    : parted != null ? `machine ${m + 1}'s second game differs from the host's from ${parted}`
+                    : prints[m].length < 3000 ? `machine ${m + 1}'s second game is short: ${prints[m].length} steps` : null;
+            } else if (wrong == null && c.launcher === 'play') {
                 const parted = fingerprints_part(prints[0], prints[m]);
 
                 wrong = !/^players 2, /m.test(runs[m].text) ? `machine ${m + 1} never reached the two-player game`
@@ -1136,7 +1221,7 @@ async function online(args) {
         if (wrong == null && c.router === 'open' && !/^launcher: joining [0-9A-Z]{8}$/m.test(runs[1].text)) {
             wrong = 'the joiner never joined by the code';
         }
-        return [c.name, { pass: wrong == null, what: wrong ?? (c.launcher === 'play' ? `the same on both, ${prints[0].length} steps` : 'back in the launcher') }];
+        return [c.name, { pass: wrong == null, what: wrong ?? (c.launcher === 'play' || c.launcher === 'second' ? `the same on both, ${prints[0].length} steps` : 'back in the launcher') }];
     };
     /* a game's machines, all at once: what each printed */
     const play = async (c, k, slot, slots) => {
@@ -1256,6 +1341,17 @@ async function online(args) {
             : fingerprints_part(fingerprints(fs.readFileSync(path.join(dir, `game${cases.findIndex(c => c.host?.includes(rel('late.txt')))}-machine1.txt`), 'latin1')), fingerprints(r.text)));
 
         results.push(['a recorded game played again', { pass: parted == null, what: parted == null ? 'the same game' : `differs: ${parted}` }]);
+    }
+    /* and what a joiner kept of its game by itself, beside its saves: the host's saves were in it, which it played with */
+    {
+        const k = cases.findIndex(c => c.save === 'good');
+        const kept = path.join(dir, `saves${k}-1`, 'last-online-game.txt');
+        const r = fs.existsSync(kept) ? await run(exe, ['--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--turbo', '--draw-every', '60',
+            '--replay', path.relative(ROOT, kept).replaceAll('\\', '/'), '--frames', String(ONLINE_END)], path.join(dir, 'kept-again.txt'), { timeout: MODE_TIMEOUT }) : null;
+        const parted = r == null ? 'none was kept' : crash_where(exe, r.text) ?? (r.code !== 0 ? `exit ${r.code}`
+            : fingerprints_part(fingerprints(fs.readFileSync(path.join(dir, `game${k}-machine1.txt`), 'latin1')), fingerprints(r.text)));
+
+        results.push(['a joiner\'s own record of its game, played again', { pass: parted == null, what: parted == null ? 'the same game' : `differs: ${parted}` }]);
     }
     return report(results);
 }

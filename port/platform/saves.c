@@ -38,6 +38,10 @@ void saves_use_default_folder(void) {
     }
 }
 
+const char *saves_folder(void) {
+    return Folder;
+}
+
 static void slot_path(char *path, size_t size, int slot) {
     SDL_snprintf(path, size, "%sslot%d.sav", Folder, slot + 1);
 }
