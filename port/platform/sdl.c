@@ -297,7 +297,7 @@ int host_init(void) {
     }
     open_pads();
     /* a test run is silent, unless it's asked for (--sound): it can record its sound instead (--wav) */
-    if (!s->no_save || s->test_sound) {
+    if ((!s->no_save || s->test_sound) && !s->no_sound) {
         spec.format = SDL_AUDIO_S16;
         spec.channels = 2;
         spec.freq = OUT_RATE;
@@ -435,6 +435,19 @@ static void controller_log(const char *what, const Controller *c, int slot) {
     }
 }
 
+/* Which of the machine's controllers this copy of the game uses (--controllers), for several copies on one PC, as when an online game's
+   tried on one: all of them (-1), none (0), or only the Nth as they were found, from 1, which is then read whether or not this copy's
+   window has the focus, so that one copy can have the keyboard and another a controller at once. */
+static int UseControllers = -1, NumSeen;
+static SDL_JoystickID Seen[16];
+
+void host_controllers_use(int which) {
+    UseControllers = which;
+    if (which > 0) {
+        SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+    }
+}
+
 static void plug(SDL_JoystickID id) {
     char key[sizeof(Slots[0].key)];
     SDL_GUID guid = SDL_GetGamepadGUIDForID(id);
@@ -443,6 +456,19 @@ static void plug(SDL_JoystickID id) {
 
     if (NumPretend != 0 && !SDL_IsJoystickVirtual(id)) {
         return;
+    }
+    if (UseControllers >= 0 && !SDL_IsJoystickVirtual(id)) {
+        int nth = 0;
+
+        while (nth < NumSeen && Seen[nth] != id) {
+            nth++;
+        }
+        if (nth == NumSeen && NumSeen < 16) {
+            Seen[NumSeen++] = id;
+        }
+        if (nth + 1 != UseControllers) {
+            return;
+        }
     }
     for (i = 0; i < MAX_PADS; i++) {
         if (Slots[i].pad != NULL && Slots[i].id == id) {

@@ -9,6 +9,9 @@ int host_controller_pressed(int player);     /* the buttons its controller's pre
 void host_controllers_swap(int a, int b);    /* players a and b swap controllers */
 void host_controllers_close_gaps(void);      /* before a game: those plugged in to players 1 on, in their order */
 void host_controller_buzz(int player);       /* a short rumble, so its player knows which it is */
+/* Several copies of the game on one PC (--controllers): this one uses all the controllers (-1), none (0), or only the Nth found, from 1,
+   and that one whether or not its window has the focus. Before the window opens. */
+void host_controllers_use(int which);
 
 /* Pretend controllers, for test runs: SDL's virtual gamepads, plugged in, pressed and pulled out as real ones are (--pretend-pads).
    A press is of the buttons where the game's are by default, whatever they're set to now. */

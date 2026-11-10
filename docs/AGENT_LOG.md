@@ -607,7 +607,10 @@ Newest first, a few lines each. Details are in the commits.
   packets 40 ms late and one in ten lost, a recorded game played again, a machine that disagrees, and in real time a machine that
   vanishes and one that stalls and is back. Found on the way: a pad pulled out pauses the game for good, so a machine the host
   stops waiting for has its pads left in with nothing held; and a joiner a step behind the host never got its pads there in
-  time to be let back in, so it keeps within a step now. New test options: `--macro-until`, `--net-*`, `--replay`.
+  time to be let back in, so it keeps within a step now. New test options: `--macro-until`, `--net-*`, `--replay`. Then, as the
+  user tests on one PC ("i need to test on the same machine"): `playtest.mjs online --play` starts a host and a joiner side by
+  side with their own settings, the host on the keyboard and the joiner on a controller (`--controllers none|N`, `--no-sound`).
+  It started and stepped here; how it plays is theirs to say.
 
 - 2026-11-10: Online play, step 1 of the user's plan (7.9; PORT.md, Online play): staying identical. The game's fingerprint after every
   step (`game/main/fingerprint.c`, `--fingerprints N`) and `playtest.mjs identical`: the same presses from two pretend controllers into

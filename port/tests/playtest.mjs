@@ -49,6 +49,9 @@
  *       Online play, with every machine a copy of the game on this PC: two and four of them through a Battle and back to the title,
  *       flat out and in real time, with packets late and lost, a machine that vanishes and one that stalls, all compared by the
  *       game's fingerprint after every step. About two minutes.
+ *   node port/tests/playtest.mjs online --play [2|3|4] [--delay STEPS] [--lag MS] [--loss N]
+ *       An online game on this PC to play yourself: a host and its joiners in windows side by side, the host on the keyboard and each
+ *       joiner on a controller. --delay, --lag and --loss are for feeling what a game over the internet is like.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
@@ -981,8 +984,41 @@ function online_presses(machine, machines) {
     return args;
 }
 
+/* online --play [2|3|4] [--delay STEPS] [--lag MS] [--loss N]: an online game on this PC to play yourself, with your own settings. A
+   host and its joiners, each a copy of the game in a window of its own, side by side. The host has the keyboard and no controller, and
+   is the one with sound; each joiner has a controller, the first, second and third found, read even while its window isn't the one
+   in front, and the keyboard too once its window's clicked. So with the host's window in front, the keyboard is player 1 and a
+   controller player 2, both at once. --delay sets how many steps late a press is used, and --lag and --loss make every packet late
+   and lose some, to feel a game over the internet. The host keeps the game's presses in game.txt, to play again (--replay). It ends
+   when the windows are closed, and says what each copy said of the game. */
+async function online_play(args, exe) {
+    const delay = option(args, '--delay', null), lag = option(args, '--lag', null), loss = option(args, '--loss', null);
+    const machines = Math.min(4, Math.max(2, Number(args.find(a => /^\d$/.test(a)) ?? 2)));
+    const dir = path.join(OUT, 'online-play');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const here = '127.0.0.1:47290';
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`${machines} copies of the game, side by side: the host (player 1) at the left, on the keyboard; ${machines === 2 ? 'the joiner has' : 'the joiners have'} a controller each, or the keyboard when clicked.`);
+    console.log('Close the windows to end it.');
+    const runs = await Promise.all(Array.from({ length: machines }, (_, m) => run(exe, ['--tile', String(m), '4',
+        ...(m === 0 ? ['--host', here, '--net-joiners', String(machines - 1), '--controllers', 'none', '--net-record', rel('game.txt'), ...(delay != null ? ['--net-delay', delay] : [])]
+            : ['--join', here, '--controllers', String(m), '--no-sound']),
+        ...(lag != null ? ['--net-lag', lag] : []), ...(loss != null ? ['--net-loss', loss] : [])], path.join(dir, `machine${m + 1}.txt`))));
+
+    runs.forEach((r, m) => {
+        console.log(`--- ${m === 0 ? 'the host' : `joiner ${m}`} (exit ${r.code})`);
+        console.log(r.text.split(/\r?\n/).filter(l => /^(online|pads|crash|stack):|^Online play/.test(l)).join('\n'));
+    });
+    return 0;
+}
+
 async function online(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
+    if (flag(args, '--play')) {
+        return online_play(args, exe);
+    }
     const dir = path.join(OUT, 'online');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const late = ['--net-lag', '40', '--net-loss', '10'];

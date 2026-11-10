@@ -305,6 +305,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--net-lag MS`, `--net-loss N`, `--net-differ STEP`, `--net-vanish STEP`, `--net-stall STEP MS` | tests of online play: late and lost packets, a machine that disagrees, vanishes or stalls |
 | `--net-record FILE`, `--replay FILE` | keep an online game's presses, step by step, and play them again with nobody else |
 | `--macro-until N` | `--macro`'s pattern stops at vblank N |
+| `--controllers none|N`, `--no-sound` | for several copies of the game on one PC: this copy uses no controller, or only the Nth found (from 1), read even when its window isn't in front; and plays no sound |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
 | `--no-launcher` | start with the saved settings, without the menu |
@@ -402,6 +403,12 @@ crashbash --join 192.168.1.20:47000         # on each of the others
 There's no screen for it yet (step 4): the window stays black till everyone's there, and what's happening is in the program's
 output. The first time, Windows asks the host's player whether to let the game through its firewall, and it has to be allowed.
 `--host ADDRESS:PORT` hosts on one address only (`127.0.0.1` for games on one PC, which Windows doesn't ask about).
+
+**On one PC.** `node port/tests/playtest.mjs online --play` starts a host and a joiner (or `3` or `4` copies) side by side, with the
+player's own settings, to play: the host has the keyboard and the sound, and each joiner a controller (`--controllers`), so with the
+host's window in front the keyboard is player 1 and a controller player 2, both at once; a joiner's window, clicked, takes the
+keyboard. `--delay STEPS`, `--lag MS` and `--loss N` are for feeling what a game over the internet would be like. The host keeps the
+game's presses in `build/port/playtest/online-play/game.txt`.
 
 **Players.** Each machine brings its own: the keyboard's, and one for each controller after the first, as offline. The host's are
 the first players, then each machine's in the order they joined, up to four. Player 1 drives the menus, as on the PlayStation.

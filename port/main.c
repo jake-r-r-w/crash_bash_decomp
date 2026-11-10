@@ -455,7 +455,7 @@ int main(int argc, char **argv) {
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int extra[4] = { 0 }, extra_heroes = 0;
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
-    int fingerprints = 0, game_clock_sound = 0, online;
+    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0;
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
 #ifdef SDL_PLATFORM_ANDROID
@@ -623,6 +623,11 @@ int main(int argc, char **argv) {
             skip_intro = 1;
         } else if (strcmp(argv[i], "--skip-loading") == 0) {
             skip_loading = 1;
+        } else if (strcmp(argv[i], "--controllers") == 0 && i + 1 < argc) {
+            host_controllers_use(strcmp(argv[i + 1], "none") == 0 ? 0 : atoi(argv[i + 1]));
+            i++;
+        } else if (strcmp(argv[i], "--no-sound") == 0) {
+            no_sound = 1;
         } else if (strcmp(argv[i], "--host") == 0 && i + 1 < argc) {
             net.host = argv[++i];
         } else if (strcmp(argv[i], "--join") == 0 && i + 1 < argc) {
@@ -681,6 +686,7 @@ int main(int argc, char **argv) {
     settings()->no_save = testing;
     settings()->test_sound = test_sound;
     settings()->fingerprints = fingerprints;
+    settings()->no_sound = no_sound;
     settings()->game_clock_sound = game_clock_sound;
     if (cheat_menu) {
         settings()->cheat_menu = 1;
