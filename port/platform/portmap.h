@@ -19,6 +19,8 @@ void portmap_open(int port, int first, int pretend);
 int portmap_state(void);
 const char *portmap_address(void);
 int portmap_port(void);
+/* --check-router: the same asking, a step at a time, saying what each found; a port it opens is closed again at once. 1: it could. */
+int portmap_check(int port, int first);
 /* The port's closed again, if it was opened. */
 void portmap_close(void);
 

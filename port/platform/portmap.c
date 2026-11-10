@@ -28,7 +28,9 @@
 #include <SDL3/SDL.h>
 #include "miniupnpc.h"
 #include "upnpcommands.h"
+#include "upnperrors.h"
 #include "natpmp.h"
+#include "getgateway.h"
 #include "portmap.h"
 
 #define PORTS 8
@@ -209,6 +211,93 @@ static int SDLCALL ask(void *data) {
         SDL_free(k);
     }
     return 0;
+}
+
+/* --check-router: the same asking as a hosted game's, a step at a time, saying what each found, for when the launcher says the router
+   won't. It opens the port if it can, and closes it again at once. */
+int portmap_check(int port, int first) {
+    static const char *const status_names[] = { "none of them is a router", "a router that's connected", "a router whose own address is a private one",
+                                                 "a router that isn't connected", "something that isn't a router" };
+    struct UPNPDev *found, *d;
+    struct UPNPUrls urls;
+    struct IGDdatas data;
+    char lan[64] = "", wan[64] = "", outside[16], inside[16];
+    struct in_addr gateway;
+    in_addr_t gw = 0;
+    natpmpresp_t answer;
+    natpmp_t n;
+    int error = 0, status, r, opened = 0, count = 0;
+#ifdef _WIN32
+    WSADATA wsa;
+
+    WSAStartup(MAKEWORD(2, 2), &wsa);
+#endif
+    if (getdefaultgateway(&gw) == 0) {
+        gateway.s_addr = gw;
+        inet_ntop(AF_INET, &gateway, lan, sizeof(lan));
+        printf("router: this machine's way out is through %s\n", lan);
+    } else {
+        printf("router: this machine has no way out that could be found\n");
+    }
+    lan[0] = '\0';
+    printf("router: asking by UPnP who's a router (2 seconds)...\n");
+    fflush(stdout);
+    found = upnpDiscover(2000, NULL, NULL, UPNP_LOCAL_PORT_ANY, 0, 2, &error);
+    for (d = found; d != NULL; d = d->pNext) {
+        printf("router:   an answer from %s (%s)\n", d->descURL, d->st);
+        count++;
+    }
+    if (found == NULL) {
+        printf("router:   nothing answered (error %d): no router here takes UPnP requests, or it's turned off on it\n", error);
+        /* anything at all that speaks UPnP on this network? If not even that, the network keeps its machines apart */
+        found = upnpDiscoverAll(2000, NULL, NULL, UPNP_LOCAL_PORT_ANY, 0, 2, &error);
+        for (d = found, count = 0; d != NULL; d = d->pNext) {
+            count++;
+        }
+        printf("router:   %d other UPnP device%s on this network answered\n", count, count == 1 ? "" : "s");
+        freeUPNPDevlist(found);
+    } else {
+        status = UPNP_GetValidIGD(found, &urls, &data, lan, sizeof(lan), wan, sizeof(wan));
+        printf("router:   %s; this machine is %s to it, and its own address is %s\n", status >= 0 && status <= 4 ? status_names[status] : "?", lan[0] != '\0' ? lan : "?",
+               wan[0] != '\0' ? wan : "unknown");
+        if (status == UPNP_CONNECTED_IGD || status == UPNP_PRIVATEIP_IGD) {
+            if (status == UPNP_PRIVATEIP_IGD || is_private(wan)) {
+                printf("router:   that address isn't one the world can reach: the provider shares one between homes, or there's another router beyond this one\n");
+            }
+            SDL_snprintf(inside, sizeof(inside), "%d", port);
+            SDL_snprintf(outside, sizeof(outside), "%d", first);
+            r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype, outside, inside, lan, "Crash Bash", "UDP", NULL, LEASE_TEXT);
+            printf("router:   asked for UDP port %s for two hours: %s (%d)\n", outside, r == UPNPCOMMAND_SUCCESS ? "opened" : strupnperror(r), r);
+            if (r == UPNP_ONLY_FOR_GOOD) {
+                r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype, outside, inside, lan, "Crash Bash", "UDP", NULL, "0");
+                printf("router:   asked for it with no time limit: %s (%d)\n", r == UPNPCOMMAND_SUCCESS ? "opened" : strupnperror(r), r);
+            }
+            if (r == UPNPCOMMAND_SUCCESS) {
+                opened = 1;
+                r = UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, outside, "UDP", NULL);
+                printf("router:   and closed it again: %s (%d)\n", r == UPNPCOMMAND_SUCCESS ? "closed" : strupnperror(r), r);
+            }
+        }
+        if (status != UPNP_NO_IGD) {
+            FreeUPNPUrls(&urls);
+        }
+        freeUPNPDevlist(found);
+    }
+    printf("router: asking by NAT-PMP (up to 2 seconds)...\n");
+    fflush(stdout);
+    if (initnatpmp(&n, 0, 0) < 0) {
+        printf("router:   no way out to ask\n");
+    } else {
+        if (sendpublicaddressrequest(&n) >= 0 && natpmp_answer(&n, &answer)) {
+            inet_ntop(AF_INET, &answer.pnu.publicaddress.addr, wan, sizeof(wan));
+            printf("router:   it answered: its own address is %s%s\n", wan, is_private(wan) ? ", which isn't one the world can reach" : "");
+        } else {
+            printf("router:   nothing answered: it doesn't take NAT-PMP requests\n");
+        }
+        closenatpmp(&n);
+    }
+    printf(opened ? "router: it opens ports when asked, so hosting should work\n" : "router: no port could be opened\n");
+    return opened;
 }
 
 void portmap_open(int port, int first, int pretend) {

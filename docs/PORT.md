@@ -310,6 +310,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--restart-on-play` | the launcher's PLAY starts the game again from its beginning, as an online game's START does |
 | `--online-local`, `--online-port N` | the launcher's online games are this PC's alone, and on that port |
 | `--online-pretend-router open\|refused\|none\|shared` | hosting asks no router for a port, and is told that |
+| `--check-router` | ask the router for a port as HOST GAME does, a step at a time, saying what each step found, and close it again: for when hosting says the router won't |
 | `--make-code ADDRESS N`, `--check-codes` | print the join code for an address and port N of the eight; check codes are made and read right |
 | `--controllers none|N`, `--no-sound` | for several copies of the game on one PC: this copy uses no controller, or only the Nth found (from 1), read even when its window isn't in front; and plays no sound |
 | `--shot N FILE` | save vblank N as a PNG |
@@ -461,9 +462,11 @@ code is the host's address in another form, so it's for people the host would gi
 
 **When it can't work**, the host's screen says which, and what can be done, a page of each in turn:
 
-- The router didn't answer or wouldn't (UPnP is turned off on some): players on the host's network can still join, at the
-  address shown, and someone else could host, or UDP port 47000 can be opened on the router by hand (the others then type the
-  host's address as the world sees it), or everyone can use a virtual network such as Tailscale.
+- Nothing answered: there's no router that takes such requests, as on a phone's hotspot or a shared network, or it's turned off
+  on it. Players on the host's network can still join, at the address shown; the host can still join a game someone else hosts;
+  or everyone can use a virtual network such as Tailscale.
+- A router answered and wouldn't: the same, and UDP port 47000 can be opened on it by hand (the others then type the host's
+  address as the world sees it).
 - The router's own address isn't one the world can reach (a private one): the provider shares one address between homes, as
   phone networks and some broadband do, or there's a second router beyond this one. No port opened here would help, so someone
   else has to host, or everyone uses a virtual network.

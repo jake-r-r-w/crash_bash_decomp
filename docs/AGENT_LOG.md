@@ -126,6 +126,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   exposed: one UDP port while hosting, no password on a lobby, the code being the host's address, nothing encrypted. `online
   --play --demo` shows a code at work with a pretend router; they then hosted and joined a second game by hand through the
   screens, which worked.
+- **Port, online play, the user's own network can't host (2026-11-10):** they're on a phone's mobile-internet hotspot, with no
+  router. `--check-router` here: the way out is 10.112.155.113 (the phone), nothing answers UPnP, no other UPnP device answers,
+  nothing answers NAT-PMP. A phone network also shares one address between its users, so no port opened anywhere on their side
+  would help. They can join a game hosted elsewhere, not host one, and no real-router test can run from this network. Their word
+  on it: "Other games like r.e.p.o let you join with codes etc and you dont need to mess around with settings". Those games send
+  everything through servers their makers run or rent; this plan chose none (the plan's own "not in this version": hosting from
+  behind shared addresses, which needs a relay server). Put to the user: a small relay of our own, which would also make codes
+  short and not the host's address, against staying as it is. Their answer decides what's next.
 - **Port, online play, left from step 3:** no real router has been asked for a port: `portmap.c`'s UPnP and NAT-PMP paths compile
   and link on Windows and Linux and have never run (the tests' router is a pretend one, `--online-pretend-router`, and asking the
   user's own router is theirs to do, by hosting). So unknown: whether miniupnpc finds their router from a PC with Docker's and
@@ -613,6 +621,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: The user tried hosting for real: "your router will not let players in". `--check-router` (new: `portmap_check`, each
+  step of the asking and what it found) showed why: they're on a phone's hotspot, and nothing on it answers UPnP or NAT-PMP. The
+  host's screen now tells the two cases apart, as there may be no router to blame: "THIS NETWORK CAN'T LET PLAYERS ELSEWHERE IN"
+  and "YOU CAN STILL JOIN A GAME SOMEONE ELSE HOSTS" when nothing answers. Also this session: `online --play --demo` (a code at
+  work by itself, a pretend router), after which they hosted and joined a second game by hand through the screens; and hardening
+  the network code put off at their word.
 
 - 2026-11-10: Online play, step 3 (7.9; PORT.md, Online play): join codes, with the user's OK for the two libraries ("ok back to
   join codes"). miniupnpc 2.3.3 and libnatpmp (its April 2025 commit) are fetched from their GitHub by CMake, pinned by hash, and

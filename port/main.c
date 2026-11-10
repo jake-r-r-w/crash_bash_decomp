@@ -563,7 +563,10 @@ int main(int argc, char **argv) {
     }
 #endif
     for (i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--make-code") == 0 && i + 2 < argc) {
+        if (strcmp(argv[i], "--check-router") == 0) {
+            /* why HOST GAME says the router won't: what each step of asking it finds (portmap.c) */
+            return portmap_check(NET_PORT, NET_PORT) ? 0 : 1;
+        } else if (strcmp(argv[i], "--make-code") == 0 && i + 2 < argc) {
             /* a join code for an address and one of the eight ports from the usual one (0 to 7): what a test's joiner types */
             char code[16];
 

@@ -547,10 +547,18 @@ static void router_lines(void) {
     } else if (router == PORTMAP_SHARED) {
         snprintf(text[0], sizeof(text[0]), "Someone else could host, or you could all use");
         snprintf(text[1], sizeof(text[1]), "a free virtual network such as Tailscale");
-    } else if ((router == PORTMAP_NO_ROUTER || router == PORTMAP_REFUSED) && !second) {
+    } else if (router == PORTMAP_NO_ROUTER && !second) {
+        /* nothing answered at all: a phone's hotspot, a shared network, or a router with this turned off. It's not "your router":
+           there may be none */
+        snprintf(text[0], sizeof(text[0]), "This network can't let players elsewhere in.");
+        snprintf(text[1], sizeof(text[1]), "On your network, they join at %s", net_lobby_address());
+    } else if (router == PORTMAP_NO_ROUTER) {
+        snprintf(text[0], sizeof(text[0]), "You can still join a game someone else hosts,");
+        snprintf(text[1], sizeof(text[1]), "or all use a virtual network such as Tailscale");
+    } else if (router == PORTMAP_REFUSED && !second) {
         snprintf(text[0], sizeof(text[0]), "Your router won't let players elsewhere in.");
         snprintf(text[1], sizeof(text[1]), "On your network, they join at %s", net_lobby_address());
-    } else if (router == PORTMAP_NO_ROUTER || router == PORTMAP_REFUSED) {
+    } else if (router == PORTMAP_REFUSED) {
         snprintf(text[0], sizeof(text[0]), "Someone else could host, or open UDP port %d", NET_PORT);
         snprintf(text[1], sizeof(text[1]), "on it by hand, or all use a VPN like Tailscale");
     } else {
