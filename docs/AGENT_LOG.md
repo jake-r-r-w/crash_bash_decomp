@@ -82,8 +82,8 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    function-pointer calls are checked (`port/android/check-fnptrs.sh`). Its release key is made (2026-11-09, at the user's word, kept
    outside the repo: PORT.md, Android), and `package.mjs --android` makes the signed APK, published in v0.4.0. The first real phone,
    the user's (2026-11-10), said it needed a graphics card with Vulkan: SDL's Vulkan device asks for features many phones lack, and
-   the renderer turns off what it doesn't use now (PORT.md, Android). A test APK with that, signed by the release key so it installs
-   over 0.4.0, is waiting on the user's phone (`build/port/phone-test/`); then 0.4.1. The Mac's code is ready as far as it can be
+   the renderer turns off what it doesn't use now (PORT.md, Android). With that, a test APK signed by the release key installed over
+   0.4.0 and works on the user's phone (2026-11-10, their word: "it worked good"). Next: 0.4.1 with the fix, at the user's word. The Mac's code is ready as far as it can be
    without one (PORT.md, The Mac): building it needs a Mac, by a route the user picks.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
@@ -566,8 +566,8 @@ Newest first, a few lines each. Details are in the commits.
   Vulkan device asks for four features unless told not to (SDL_gpu.h, `SDL_PROP_GPU_DEVICE_CREATE_FEATURE_*`); the renderer turns off
   the three it never uses, and takes a device without depth clamping if that's all there is, clipping depth then. With the new
   `--depth-clip`, all 39 modes' shots (three each) are byte for byte the same on Windows and Linux. With still no device, the message
-  names each GPU and what it lacks (checked on Linux by forcing SDL to fail). A test APK, signed by the release key, is in
-  `build/port/phone-test/` for the user's phone.
+  names each GPU and what it lacks (checked on Linux by forcing SDL to fail). A test APK, signed by the release key, installed over
+  0.4.0 on the user's phone and works there. The play tests' Android shots, which had never come back, do now.
 
 - 2026-11-09: [v0.4.0](https://github.com/jake-r-r-w/crash_bash_decomp/releases/tag/v0.4.0) is published, at the user's word ("Cut
   v0.4.0"): the first Android download (signed by the release key), the save icon on the window, the Windows program's icon. Its checks
