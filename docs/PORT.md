@@ -511,6 +511,9 @@ at once; another copy's window, clicked, takes the keyboard. Their games are thi
 
 **Players.** Each machine brings its own: the keyboard's, and one for each controller after the first, as offline. The host's are
 the first players, then each machine's in the order they joined, up to four. Player 1 drives the menus, as on the PlayStation.
+The game's own players menu (SELECT NUMBER OF PLAYERS) offers only the number there are, or as many of them as that kind of
+game takes (Adventure's two): an online game is for everyone in it (the user's word, 2026-11-10; `PlayersMenuUpdate`,
+`platform_online_players`). A recording says how many its game had, so playing it again does the same.
 
 **Steps.** A step is one read of the pads by the game (`pads_update`, 30 a second; `platform_pad_step`). At each, a machine takes
 its own pads as they are, all of what the game reads of a pad (`pad_poll`: whether it's there, its buttons, its sticks if it has

@@ -69,6 +69,8 @@ void net_record(void);      /* keeps the game's presses, if that was asked (--ne
 
 /* Whether the pads are an online game's (or a recording's), not this machine's own. */
 int net_on(void);
+/* How many players the game has, on all its machines together: 0 when it isn't an online one. A recording says how many its game had. */
+int net_players(void);
 /* Before the game reads the pads, once a step: this machine's own go out, and it waits for everyone's for this step. */
 void net_step(void);
 /* The pads of the step being played, as platform_pad and its like give them. */

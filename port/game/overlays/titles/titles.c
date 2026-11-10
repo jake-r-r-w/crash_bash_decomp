@@ -871,6 +871,7 @@ void PlayersMenuUpdate(void) {
     s32 n;
     s32 i;
     u32 c;
+    s32 least = 1;
 
     s = GetEngineSlot(0)->sub;
     s++;
@@ -897,11 +898,19 @@ void PlayersMenuUpdate(void) {
     if (O69CV->maxPlayers < n) {
         n = O69CV->maxPlayers;
     }
-    for (i = 0; i < n; i++) {
+    /* PC: an online game is for everyone who's in it (the user's word, 2026-11-10): as many players as there are, or as many of
+       them as this kind of game takes, and no fewer can be chosen */
+    if (platform_online_players() != 0 && n > 0) {
+        least = n;
+    }
+    for (i = least - 1; i < n; i++) {
         s[i].unk7C = 0;
     }
     if (n < O69CV->players) {
         O69CV->players = n;
+    }
+    if (O69CV->players != 0 && O69CV->players < least) {
+        O69CV->players = least;
     }
     if (O69CV->players != 0) {
         s[O69CV->players - 1].unk7C = 2;
@@ -909,7 +918,7 @@ void PlayersMenuUpdate(void) {
         O69CV->players = n;
     }
     if (Pads[0].pressed & 0x10) {
-        if (O69CV->players >= 2) {
+        if (O69CV->players >= 2 && O69CV->players > least) {
             O69CV->players--;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }

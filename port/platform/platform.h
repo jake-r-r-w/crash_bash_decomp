@@ -69,6 +69,9 @@ int platform_pad(int port); /* the buttons held, or -1 with no pad */
 int platform_local_pad(int port);
 int platform_local_pad_sticks(int port, unsigned char sticks[4]);
 int platform_local_pad_rumbles(int port);
+/* How many players an online game has, on all its machines together, or 0 when the game isn't one: the same on every machine in it,
+   and in a recording of it played again. */
+int platform_online_players(void);
 /* Before the game reads the pads, once a step, and after the step with the game's fingerprint (game/main/fingerprint.c). */
 void platform_pad_step(void);
 void platform_step_done(uint32_t fingerprint);

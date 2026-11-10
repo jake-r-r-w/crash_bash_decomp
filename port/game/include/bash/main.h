@@ -710,6 +710,8 @@ void archive_open(void);
 int platform_pad(int port);
 int platform_pad_sticks(int port, unsigned char sticks[4]);
 int platform_pad_rumbles(int port);
+/* How many players an online game has, on all its machines together, or 0 when the game isn't one. */
+int platform_online_players(void);
 void platform_pad_step(void);
 void platform_step_done(u32 fingerprint);
 void pad_set_motors(int player, int small_on, int big);

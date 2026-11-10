@@ -979,8 +979,8 @@ function online_presses(machine, machines) {
     const args = [];
 
     if (machine === 0) {
-        /* Battle, and its players menu down to as many as there are */
-        args.push(...press(170, DOWN), ...press(230, CROSS), ...Array.from({ length: machines - 1 }, (_, i) => press(280 + i * 20, DOWN)).flat(), ...press(350, CROSS));
+        /* Battle, and its players menu: it's for everyone in the game and nobody fewer, so up, for one player less, does nothing */
+        args.push(...press(170, DOWN), ...press(230, CROSS), ...press(290, '10'), ...press(350, CROSS));
     }
     for (const v of [470, 590, 850, 1150, 1250, 1550, 1650, 1750, 2000]) {
         args.push(...press(v, CROSS));

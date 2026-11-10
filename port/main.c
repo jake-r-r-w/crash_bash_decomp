@@ -518,6 +518,10 @@ int platform_pad_rumbles(int port) {
     return net_on() ? net_pad_rumbles(port) : platform_local_pad_rumbles(port);
 }
 
+int platform_online_players(void) {
+    return net_players();
+}
+
 /* Before the game reads the pads, once a step, and after the step, with its fingerprint. */
 void platform_pad_step(void) {
     net_step();

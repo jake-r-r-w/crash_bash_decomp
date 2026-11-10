@@ -631,6 +631,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-10: Online tidying, the user's list as they play it. First: the players menu online offers only as many players as the
+  lobby has ("it should always only be selectable for the players in the lobby so 2 players = 2, 3 players = 3"), or as many of
+  them as the mode takes. `platform_online_players`, the same on every machine, and in a recording, which now says how many its
+  game had (older recordings don't, and play back as offline menus). `online`'s host presses up for one fewer and still gets them
+  all.
+
 - 2026-11-10: The user chose to keep online play serverless, a relay of our own turned down, and asked about "something like
   hamachi". That works as the game is, the tool's servers being in the middle; to make it need no typing, JOIN GAME looks for games
   on every network adapter, not only the main one. Tried with a game hosted on a Hyper-V adapter's address alone. The release's

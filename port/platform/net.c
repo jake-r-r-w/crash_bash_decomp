@@ -126,6 +126,7 @@ static Uint64 AnswerTill; /* a joiner: till then it does nothing but answer ping
 static int HostLeft; /* a joiner: the host has said goodbye, and what it sent before that is all there is */
 static int LeftOut;  /* a joiner: the host is playing on without waiting for this machine, till its pads arrive in time again */
 static FILE *Recording, *Replaying;
+static int ReplayPlayers; /* how many players a recording's game had */
 /* how it went, for a test run to say */
 static int Sent, Received, Lost, Waits, Quiets;
 static Uint64 Waited, Longest;
@@ -966,7 +967,7 @@ static void record_header(void) {
     uint8_t save[SAVES_MOST];
     int slot, size, i;
 
-    fprintf(Recording, "crashbash online %d\ndelay %d\nsettings %d %d %d\n", PROTOCOL, Delay, s->skip_intro, s->skip_loading, s->cheat_menu);
+    fprintf(Recording, "crashbash online %d\ndelay %d\nplayers %d\nsettings %d %d %d\n", PROTOCOL, Delay, net_players(), s->skip_intro, s->skip_loading, s->cheat_menu);
     for (slot = 0; slot < SAVES_SLOTS; slot++) {
         size = saves_get(slot, save, sizeof(save));
         if (size > 0) {
@@ -1106,6 +1107,7 @@ static void reset_session(void) {
     settings_return();
     saves_in_memory(0);
     Role = OFFLINE;
+    ReplayPlayers = 0;
     Session = 0;
     Delay = NumMachines = Me = Want = 0;
     memset(Machines, 0, sizeof(Machines));
@@ -1690,6 +1692,8 @@ static int start_replay(void) {
         }
         if (sscanf(line, "delay %d", &a) == 1) {
             Delay = a;
+        } else if (sscanf(line, "players %d", &a) == 1) {
+            ReplayPlayers = a;
         } else if (sscanf(line, "settings %d %d %d", &a, &b, &c) == 3) {
             settings_borrow(a, b, c, 0);
         } else if (sscanf(line, "save %d", &a) == 1 && strchr(line + 5, ' ') != NULL) {
@@ -1737,6 +1741,18 @@ void net_lobby_reset(void) {
 
 int net_on(void) {
     return Role != OFFLINE;
+}
+
+int net_players(void) {
+    int m, players = 0;
+
+    if (Role == REPLAY) {
+        return ReplayPlayers;
+    }
+    for (m = 0; (Role == HOST || Role == JOINER) && m < NumMachines; m++) {
+        players += Machines[m].pads;
+    }
+    return players;
 }
 
 /* --- playing --- */
