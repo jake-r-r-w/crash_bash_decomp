@@ -1358,8 +1358,127 @@ static void SettingsMenuInit(void) {
     show_screen();
 }
 
+/* --- the mouse (the user's word, 2026-11-10: "we should be able to click around the menu") ---
+ *
+ * Pointing at a row chooses it, as up and down would, but only when the mouse has moved, so one lying still never fights the keys or
+ * a controller; a click is Cross on it, a right click Triangle (back), and the wheel up and down. A row on the other panel of the
+ * settings is moved to first: a category clicked opens it, and a setting on a page that isn't open yet is chosen as it opens, for the
+ * next click to change. Where a screen's only press is START (HOST GAME's, the players screen's), it's the line at the foot that says
+ * so that's clicked, so a stray click doesn't start a game. What's clicked is in the same units the rows are laid out in
+ * (gfx_window_point). */
+static s32 MouseOption = -1; /* a setting clicked on a page that wasn't open: chosen once it is */
+
+/* The row of a list at top, step apart, that y is on: each row's text from its own top to the next's, a little higher. */
+static s32 row_at(float y, s32 top, s32 step, s32 rows) {
+    s32 i = (s32)floorf((y - top + 4) / step);
+
+    return y >= top - 4 && i >= 0 && i < rows ? i : -1;
+}
+
+static s32 mouse_presses(void) {
+    HostMouse m;
+    s32 out = 0, row = -1;
+    s32 point;
+
+    host_mouse(&m);
+    if (Screen == SCREEN_OPTIONS && Waiting >= 0) {
+        return 0; /* waiting for a key or a button: not the mouse's */
+    }
+    if (m.right) {
+        out |= 0x1000;
+    }
+    out |= m.wheel > 0 ? 0x10 : m.wheel < 0 ? 0x40 : 0;
+    if (!m.on) {
+        return out;
+    }
+    point = m.moved || m.left;
+    switch (Screen) {
+    case SCREEN_TOP:
+    case SCREEN_ONLINE:
+        if (m.x >= -0xA0 && m.x <= 0xA0) {
+            row = row_at(m.y, TOP_Y, TOP_STEP, Screen == SCREEN_TOP ? NUM_TOP : NUM_ONLINE);
+        }
+        if (row >= 0 && point) {
+            *(Screen == SCREEN_TOP ? &TopCursor : &OnlineCursor) = row;
+        }
+        if (row >= 0 && m.left) {
+            out |= 0x4000;
+        }
+        break;
+    case SCREEN_CATEGORIES:
+    case SCREEN_OPTIONS:
+        if (m.x >= CATEGORY_LEFT && m.x <= CATEGORY_RIGHT) {
+            row = row_at(m.y, OPTION_TOP, CATEGORY_STEP, NUM_CATEGORIES + 1);
+            if (row >= 0 && Screen == SCREEN_CATEGORIES && point && row != Category) {
+                Category = row;
+                FirstShown = 0;
+            }
+            if (row >= 0 && m.left) {
+                /* opens it, or BACK goes back, from this panel or the other */
+                if (Screen == SCREEN_OPTIONS) {
+                    go_to_screen(SCREEN_CATEGORIES);
+                }
+                Category = row;
+                FirstShown = 0;
+                out |= 0x4000;
+            }
+        } else if (m.x >= OPTION_LEFT && m.x <= OPTION_RIGHT && Category < NUM_CATEGORIES) {
+            const MenuCategory *c = &Categories[Category];
+            s32 n;
+
+            row = row_at(m.y, OPTION_TOP, OPTION_STEP, VISIBLE_OPTIONS);
+            n = row >= 0 ? FirstShown + row : -1;
+            if (n >= option_count(c) || (c->kind == KIND_CONTROLS && n == ROW_LINE)) {
+                n = -1;
+            }
+            if (n >= 0 && Screen == SCREEN_OPTIONS && point) {
+                Option = n;
+            }
+            if (n >= 0 && m.left) {
+                if (Screen == SCREEN_OPTIONS) {
+                    out |= 0x4000;
+                } else {
+                    /* the page opens with this one chosen */
+                    MouseOption = n;
+                    out |= 0x4000;
+                }
+            }
+        }
+        break;
+    case SCREEN_JOIN: {
+        char text[64];
+        s32 found = 0;
+
+        while (found < PLAYERS - 1 && net_lobby_found(found, text, sizeof(text)) != 0) {
+            found++;
+        }
+        if (m.x >= PLAYERS_LEFT && m.x <= PLAYERS_RIGHT) {
+            row = row_at(m.y, PLAYERS_TOP, PLAYERS_STEP, found + 1);
+        }
+        if (row >= 0 && point && !Typing) {
+            JoinCursor = row;
+            JoinMoved = 1;
+        }
+        if (row >= 0 && m.left) {
+            /* a game is joined, CODE typed in, and the code typed joined */
+            out |= Typing ? (row == found ? 8 : 0) : 0x4000;
+        }
+        break;
+    }
+    case SCREEN_HOST:
+    case SCREEN_PLAYERS:
+        if (m.left && m.y >= NAV_Y - 4 && m.y < NAV_Y + 0x14) {
+            out |= 8;
+        }
+        break;
+    default:
+        break;
+    }
+    return out;
+}
+
 static void SettingsMenuUpdate(void) {
-    s32 pressed = Pads[0].pressed;
+    s32 pressed = Pads[0].pressed | mouse_presses();
 
     GameFrameCount++;
     AnimateTitlesBackdrop();
@@ -1389,6 +1508,14 @@ static void SettingsMenuUpdate(void) {
     case SCREEN_JOINED:
         update_joined(pressed);
         break;
+    }
+    /* a setting clicked on a page that's open now */
+    if (MouseOption >= 0) {
+        if (Screen == SCREEN_OPTIONS) {
+            Option = MouseOption;
+            FirstShown = Option >= VISIBLE_OPTIONS ? Option - VISIBLE_OPTIONS + 1 : 0;
+        }
+        MouseOption = -1;
     }
     show_screen();
 }

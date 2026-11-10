@@ -36,7 +36,8 @@
  *   node port/tests/playtest.mjs menu
  *       From the title screen through the menus, by the pad alone, into the first game of a new Adventure's first room.
  *   node port/tests/playtest.mjs controls
- *       The launcher's CONTROLS page, with pretend keys and a pretend controller: new keys and buttons, swaps, Esc and the reset.
+ *       The launcher's CONTROLS page, with pretend keys and a pretend controller: new keys and buttons, swaps, Esc and the reset. And a
+ *       pretend mouse through the menus: rows pointed at and clicked, right clicks back, the wheel.
  *   node port/tests/playtest.mjs pads
  *       Couch play, with pretend controllers: the launcher's players screen, Battle, Adventure and Tournament offering as many players as
  *       there are controllers, each choosing its own hero, and controllers pulled out and plugged in without anyone else's player changing.
@@ -1420,6 +1421,20 @@ async function controls(args) {
                    ...Array.from({ length: 14 }, (_, i) => [390 + i * 12, DOWN]).flatMap(([v, b]) => ['--press', String(v), b]), ...press([580, CROSS]),
                    ...out(610), '--key-press', '700', 'Z', '--frames', '760'],
             want: ['CROSS is key J', 'keys and buttons as they were', 'play'],
+        },
+        /* the mouse, in the launcher's own units (a 640 x 480 picture's from its middle): rows are pointed at and clicked */
+        {
+            name: 'mouse: SETTINGS, CONTROLS and STICK DEADZONE clicked, back by two right clicks, and PLAY clicked',
+            args: ['--mouse', '100', '0', '22', 'click', '--mouse', '150', '-240', '-30', 'click', '--mouse', '200', '0', '-102', 'click',
+                   '--mouse', '240', '0', '-102', 'right', '--mouse', '270', '0', '-102', 'right', '--mouse', '300', '0', '-46', 'click', '--frames', '360'],
+            want: ['stick deadzone 10', 'play'],
+        },
+        {
+            name: 'mouse: CONTROLS pointed at, its STICK DEADZONE clicked to open it, clicked twice, and a click on nothing does nothing',
+            args: ['--mouse', '100', '0', '22', 'click', '--mouse', '150', '-240', '-30', 'move', '--mouse', '180', '0', '-102', 'click',
+                   '--mouse', '210', '0', '-102', 'click', '--mouse', '240', '0', '-102', 'click', '--mouse', '270', '-100', '200', 'down',
+                   '--mouse', '290', '-100', '200', 'up', '--mouse', '310', '-100', '200', 'click', '--frames', '360'],
+            want: ['stick deadzone 10', 'stick deadzone 20'],
         },
     ];
 

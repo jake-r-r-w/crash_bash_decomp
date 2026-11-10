@@ -222,7 +222,7 @@ static struct {
 static int NumPresses;
 
 /* What the pretend controllers do (--pretend-pads): a press held for a few vblanks as --press's are, or pulled out or plugged in */
-enum { PAD_PRESS, PAD_UNPLUG, PAD_PLUG, PAD_KEY, PAD_STICK };
+enum { PAD_PRESS, PAD_UNPLUG, PAD_PLUG, PAD_KEY, PAD_STICK, PAD_MOUSE };
 static struct {
     int pad, frame, buttons, kind; /* a pretend key's (--key-press) buttons is its scancode */
     int x, y;                      /* a stick's (--pad-stick), in percent */
@@ -241,6 +241,12 @@ static void pretend_pads_vblank(void) {
         } else if (PadEvents[i].kind == PAD_STICK) {
             if (PadEvents[i].frame == TEST_NOW) {
                 host_pretend_stick(PadEvents[i].pad, PadEvents[i].x, PadEvents[i].y);
+            }
+        } else if (PadEvents[i].kind == PAD_MOUSE) {
+            if (PadEvents[i].frame == TEST_NOW) {
+                int what = PadEvents[i].buttons;
+
+                host_pretend_mouse((float)PadEvents[i].x, (float)PadEvents[i].y, what == 1, what == 2, what == 3 ? 1 : what == 4 ? -1 : 0);
             }
         } else if (PadEvents[i].kind != PAD_PRESS && PadEvents[i].frame == TEST_NOW) {
             host_pretend_plug(PadEvents[i].pad, PadEvents[i].kind == PAD_PLUG);
@@ -706,6 +712,18 @@ int main(int argc, char **argv) {
             if (PadEvents[NumPadEvents - 1].pad < 0 || PadEvents[NumPadEvents - 1].pad > 3) {
                 NumPadEvents--;
             }
+        } else if (strcmp(argv[i], "--mouse") == 0 && i + 4 < argc && NumPadEvents < MAX_PRESSES) {
+            /* a test's pretend mouse at vblank N: to X, Y (a 640 x 480 picture's units from its middle, as the launcher lays out its
+               menus), and there: move, click, right (a right click), up or down (the wheel) */
+            const char *what;
+
+            PadEvents[NumPadEvents].kind = PAD_MOUSE;
+            PadEvents[NumPadEvents].frame = when(argv[++i]);
+            PadEvents[NumPadEvents].x = atoi(argv[++i]);
+            PadEvents[NumPadEvents].y = atoi(argv[++i]);
+            what = argv[++i];
+            PadEvents[NumPadEvents++].buttons = strcmp(what, "click") == 0 ? 1 : strcmp(what, "right") == 0 ? 2 : strcmp(what, "up") == 0 ? 3
+                                              : strcmp(what, "down") == 0 ? 4 : 0;
         } else if (strcmp(argv[i], "--stick-deadzone") == 0 && i + 1 < argc) {
             stick_deadzone = atoi(argv[++i]);
         } else if ((strcmp(argv[i], "--pad-unplug") == 0 || strcmp(argv[i], "--pad-plug") == 0) && i + 2 < argc && NumPadEvents < MAX_PRESSES) {

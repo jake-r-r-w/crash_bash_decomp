@@ -87,7 +87,9 @@ and mods that change the game's files are off online.
 
 SETTINGS
 
-The menu the game opens with has its settings, and the pause menu has the
+The menu the game opens with works with the mouse too: point at a row and click
+it, right-click to go back, and turn the wheel to go up and down. It has its
+settings, and the pause menu has the
 Video ones too. The new looks are all off at first, so the game looks as it
 always did until you turn them on:
 

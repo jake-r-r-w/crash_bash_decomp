@@ -646,6 +646,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-10: The mouse in the launcher (the user's "we should be able to click around the menu"): pointing chooses a row once it's
+  moved, a click is Cross, a right click back, the wheel up and down, across every launcher screen; `gfx_window_point` turns a window
+  point into the menus' units. `--mouse` for tests, two cases in `controls`, and a game joined by mouse alone by hand. The game's own
+  menus after PLAY don't take the mouse.
+
 - 2026-11-10: GitHub issue 1 ("Can we have option to adjust amount of deadzone on analog sticks? Currently I feel it's bit high"):
   STICK DEADZONE on the CONTROLS page, ORIGINAL or 10% to 60%. The deadzone was the game's own, an axis nearly three quarters of the
   way out before a stick's a direction, so it's done to each player's stick before the game has it (`controls_stick`), the same in an

@@ -8,6 +8,15 @@ const char *host_controller_name(int player); /* player's (0 to 3), or NULL if i
 int host_controller_pressed(int player);     /* the buttons its controller's pressed since this was last asked (PAD_ bits) */
 int host_controller_stick(int player, int *x, int *y); /* where its left stick is, as SDL has it (-32768 to 32767): 0 if it has none */
 void host_controllers_swap(int a, int b);    /* players a and b swap controllers */
+/* The mouse, for the launcher's menus: where it is on the picture, in a 640 x 480 picture's units from its middle (gfx_window_point),
+   whether it's there at all, and since this was last asked whether it's moved, its left and right clicks, and the wheel's turns (up
+   is more). A touch screen's taps aren't it: touch has buttons of its own (touch.c). A test's pretend mouse (--mouse) does the same. */
+typedef struct HostMouse {
+    float x, y;
+    int on, moved, left, right, wheel;
+} HostMouse;
+void host_mouse(HostMouse *out);
+void host_pretend_mouse(float x, float y, int left, int right, int wheel);
 void host_controllers_close_gaps(void);      /* before a game: those plugged in to players 1 on, in their order */
 void host_controller_buzz(int player);       /* a short rumble, so its player knows which it is */
 /* Several copies of the game on one PC (--controllers): this one uses all the controllers (-1), none (0), or only the Nth found, from 1,

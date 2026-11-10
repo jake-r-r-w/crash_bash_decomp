@@ -558,6 +558,36 @@ static void open_pads(void) {
 
 /* --- for the launcher's players screen (controllers.h) --- */
 
+/* --- the mouse --- */
+
+static HostMouse Mouse;
+
+static void mouse_at(float wx, float wy) {
+    float x, y;
+
+    Mouse.on = gfx_window_point(wx, wy, &x, &y);
+    if (Mouse.on && (x != Mouse.x || y != Mouse.y)) {
+        Mouse.moved = 1;
+    }
+    Mouse.x = x;
+    Mouse.y = y;
+}
+
+void host_mouse(HostMouse *out) {
+    *out = Mouse;
+    Mouse.moved = Mouse.left = Mouse.right = Mouse.wheel = 0;
+}
+
+void host_pretend_mouse(float x, float y, int left, int right, int wheel) {
+    Mouse.on = 1;
+    Mouse.moved |= x != Mouse.x || y != Mouse.y;
+    Mouse.x = x;
+    Mouse.y = y;
+    Mouse.left += left;
+    Mouse.right += right;
+    Mouse.wheel += wheel;
+}
+
 int host_controllers(void) {
     int i, n = 0;
 
@@ -698,6 +728,24 @@ int host_poll(void) {
         case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
             ButtonPressed = e.gbutton.button;
             UsingPad = 1;
+            break;
+        /* the mouse's, but not the ones SDL makes from touches */
+        case SDL_EVENT_MOUSE_MOTION:
+            if (e.motion.which != SDL_TOUCH_MOUSEID) {
+                mouse_at(e.motion.x, e.motion.y);
+            }
+            break;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            if (e.button.which != SDL_TOUCH_MOUSEID) {
+                mouse_at(e.button.x, e.button.y);
+                Mouse.left += e.button.button == SDL_BUTTON_LEFT;
+                Mouse.right += e.button.button == SDL_BUTTON_RIGHT;
+            }
+            break;
+        case SDL_EVENT_MOUSE_WHEEL:
+            if (e.wheel.which != SDL_TOUCH_MOUSEID) {
+                Mouse.wheel += e.wheel.integer_y * (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -1 : 1);
+            }
             break;
         default:
             break;

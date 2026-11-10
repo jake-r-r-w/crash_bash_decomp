@@ -114,6 +114,10 @@ const GfxTex *gfx_texture(uint64_t id, const void *pixels, int width_texels, int
 /* The ids are no longer good. What's decoded stays, for when the same pixels come back. */
 void gfx_forget_textures(void);
 
+/* Where a point in the window (SDL's window coordinates) is on the game's picture, in a 640 x 480 picture's units from its middle (a
+   wide view's sides past +-320): what the launcher lays its menus out in. 0 if it's off the picture. */
+int gfx_window_point(float wx, float wy, float *x, float *y);
+
 /* Saves the next frame as a PNG. */
 void gfx_screenshot(const char *path);
 

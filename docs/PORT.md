@@ -265,6 +265,15 @@ them (`\xFC` Cross, `\xFD` Circle, `\xFF` Square, `\xFE` Triangle), and so do a 
 buttons, were tried first and dropped by the user: the game's letters aren't one width, so a second column needs text records of its
 own, and slot 0's 32 are all taken. `playtest.mjs controls` checks it with pretend keys.
 
+**The mouse** works the launcher's menus (the user's word, 2026-11-10: "we should be able to click around the menu";
+`mouse_presses` in `settingsmenu.c`): pointing at a row chooses it, but only once the mouse has moved, so one lying still never fights
+the keys or a controller; a click is Cross on it, a right click Triangle (back), and the wheel up and down. A row on the settings'
+other panel is gone to first: a category clicked opens it, and a setting clicked on a page that isn't open yet opens it with that
+setting chosen, for the next click to change. Where a screen's only press is START (HOST GAME's, the players screen's), it's the line at
+the foot saying so that's clicked, so a stray click can't start a game. The window's point goes to the menus' units through how the
+picture's fitted to the window (`gfx_window_point`). Touches that SDL turns into a mouse aren't it, as touch has buttons of its own.
+The game's own menus, after PLAY, still take the keys and controllers only. `playtest.mjs controls` drives it with `--mouse`.
+
 **The sticks' deadzone** (GitHub issue 1, 2026-11-10: "Currently I feel it's bit high"). The game takes a stick for a d-pad direction,
 which is what moves a hero, only once one axis is past 0x24 or 0xDB, nearly three quarters of the way out (`pad_read`), as on the
 PlayStation; on a diagonal that's all the way. STICK DEADZONE, first on the CONTROLS page with a line under it (the user's word on
@@ -310,6 +319,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--pad-press P N BUTTONS` | hold pretend controller P's buttons (1 to 4; hex, `platform.h`) from vblank N for a few vblanks |
 | `--pad-stick P N X Y` | put pretend controller P's left stick at X, Y (percent of the way out, -100 to 100) from vblank N, till it's moved again |
 | `--stick-deadzone N` | the sticks' deadzone, in percent (0: the game's own) |
+| `--mouse N X Y WHAT` | a pretend mouse at vblank N: to X, Y (a 640 x 480 picture's units from its middle, as the launcher lays out its menus), and there `move`, `click`, `right` (a right click), `up` or `down` (the wheel) |
 | `--check-sticks` | check the deadzone's line is where it should be at every angle (a `ctest`) |
 | `--pad-unplug P N`, `--pad-plug P N` | pull pretend controller P out, or plug it in, at vblank N |
 | `--key-press N KEY` | hold a pretend key (SDL's name: `J`, `Escape`, `Right Shift`) from vblank N for a few vblanks, through the CONTROLS page's keys as a real one is |

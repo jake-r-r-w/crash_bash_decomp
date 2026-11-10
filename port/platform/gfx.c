@@ -1462,6 +1462,27 @@ static void fit_picture(Uint32 sw, Uint32 sh, SDL_GPUBlitRegion *r) {
     r->h = h;
 }
 
+int gfx_window_point(float wx, float wy, float *x, float *y) {
+    SDL_GPUBlitRegion r;
+    int pw = 0, ph = 0;
+    float density = Window != NULL ? SDL_GetWindowPixelDensity(Window) : 1.0f, fx, fy;
+
+    if (Window == NULL || !SDL_GetWindowSizeInPixels(Window, &pw, &ph) || pw <= 0 || ph <= 0 || TargetW <= 0 || TargetH <= 0) {
+        return 0;
+    }
+    SDL_zero(r);
+    fit_picture((Uint32)pw, (Uint32)ph, &r);
+    if (r.w == 0 || r.h == 0) {
+        return 0;
+    }
+    fx = (wx * density - r.x) / r.w;
+    fy = (wy * density - r.y) / r.h;
+    /* the game's screen units first, its sides past it in a wide view, then a 640 x 480 picture's from the middle */
+    *x = (fx * (ScreenW + ViewExtra * 2) - ViewExtra) * 640.0f / ScreenW - 320.0f;
+    *y = fy * 480.0f - 240.0f;
+    return fx >= 0.0f && fx <= 1.0f && fy >= 0.0f && fy <= 1.0f;
+}
+
 /* A blend for a depth-tested opaque triangle, past the others in Run.blend. */
 #define BLEND_DEPTH (-3)
 /* And for putting the last picture back, under anti-aliasing. */
