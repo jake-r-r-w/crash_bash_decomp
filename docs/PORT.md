@@ -294,6 +294,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--key-press N KEY` | hold a pretend key (SDL's name: `J`, `Escape`, `Right Shift`) from vblank N for a few vblanks, through the CONTROLS page's keys as a real one is |
 | `--depth-clip` | draw as a device without depth clamping does (some phones): a point outside the depth range is clipped, not drawn at its edge (gfx.c, `make_device`) |
 | `--draw-every N` | draw one frame in N, and any a shot needs, so a long test runs as fast as the game's logic can |
+| `--heroes A B C D` | with `--mode`, the four players' heroes, 1 to 8 (0: the demo's own): 1 Crash, 2 Coco, 3 Cortex, 4 Brio, 5 Tiny, 6 Koala Kong, 7 Dingodile, 8 Rilla Roo |
 | `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit. It's the game's demo, whose pause bit stops what waits on a pause; Polar Push's tilt doesn't wait on that bit (the game never demos its tilting levels). Mode 43, the tournament's podium, is as at a tournament's end: Crash, Coco, Cortex and Brio (or extra heroes in their places), player 1 first |
 | `--tile I N` | put this window in slot I of a grid of N on the screen, to watch several test runs at once |
 | `--wav FILE` | record a test run's sound (test runs are silent otherwise) |

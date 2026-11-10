@@ -688,6 +688,17 @@ void TitlesCheckIdle(void) {
         g->demoTimer = 0x7FFFFFFF;
         PauseTexts[PAUSE_TEXT_DEMO] = "TESTING";
         g->mode = (u16)settings()->test_mode;
+        /* --heroes: who plays, in place of the demo's four */
+        {
+            s32 i;
+
+            for (i = 0; i < 4; i++) {
+                if (settings()->test_heroes[i] != 0) {
+                    g->heroChoice[i] = (u8)settings()->test_heroes[i];
+                    g->heroes[i] = (u8)settings()->test_heroes[i];
+                }
+            }
+        }
         /* a challenge's for a person: with nobody playing, it's lost from the start */
         if (settings()->test_level_flags != 0) {
             g->levelFlags |= settings()->test_level_flags;

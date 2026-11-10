@@ -537,7 +537,7 @@ int main(int argc, char **argv) {
     int antialias = 0, smooth = 0, widescreen = 0, upscale = 0, level_flags = 0, sharp_icons = 0;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
-    int extra[4] = { 0 }, extra_heroes = 0;
+    int extra[4] = { 0 }, extra_heroes = 0, heroes[4] = { 0 };
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
     int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0;
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
@@ -612,6 +612,14 @@ int main(int argc, char **argv) {
                 fprintf(stderr, "--extra-hero: no extra hero called %s\n", argv[i + 2]);
             }
             i += 2;
+        } else if (strcmp(argv[i], "--heroes") == 0 && i + 4 < argc) {
+            int p;
+
+            for (p = 0; p < 4; p++) {
+                int hero = atoi(argv[++i]);
+
+                heroes[p] = hero >= 1 && hero <= 8 ? hero : 0;
+            }
         } else if (strcmp(argv[i], "--cheats") == 0 && i + 1 < argc) {
             cheats = (int)strtol(argv[++i], NULL, 16);
         } else if (strcmp(argv[i], "--boss-beat") == 0 && i + 1 < argc) {
@@ -842,6 +850,7 @@ int main(int argc, char **argv) {
         settings()->extra_heroes = 1;
     }
     memcpy(settings()->test_extra, extra, sizeof(extra));
+    memcpy(settings()->test_heroes, heroes, sizeof(heroes));
     /* the first time: the launcher's made of the game's own art, so this comes before it */
     if (Image != NULL) {
         const char *problem = disc_extract(Image, DataPath != NULL ? DataPath : own_data_path());

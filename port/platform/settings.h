@@ -49,6 +49,7 @@ typedef struct Settings {
     int test_sound;    /* a test run that's for watching: its sound plays (--sound) */
     int tile, tiles;   /* a test window's slot in a grid of them on the screen, if tiles isn't 0 */
     int test_extra[4]; /* a test run: a player's extra hero (EXTRA_, bash/extraheroes.h), or 0 */
+    int test_heroes[4]; /* a test run that goes straight to a mode (--mode): each player's hero, 1 to 8, or 0 for the game's own choice (--heroes) */
     int no_sound;      /* this copy of the game plays no sound: one of several on one PC (--no-sound) */
     int test_restart;  /* a test run: the launcher's PLAY starts the game again from its beginning, as an online game's START does */
     int fingerprints;  /* a test run: print the game's fingerprint every this many steps (game/main/fingerprint.c), or 0 */
