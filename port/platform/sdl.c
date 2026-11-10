@@ -2,6 +2,8 @@
 #define SDL_MAIN_HANDLED
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <stdio.h>
+#include "controllers.h"
 #include "platform.h"
 #include "gfx.h"
 #include "settings.h"
@@ -13,11 +15,23 @@
 
 static SDL_Window *Window;
 static SDL_AudioStream *Audio;
-static SDL_Gamepad *Pads[MAX_PADS];
 static Uint64 NextVblank;
 static bool Fullscreen;
 
+/* The controllers, a player's each: slot n is player n + 1's. One that's unplugged leaves its slot empty, so nobody else's player
+   changes, and it comes back to it when it's plugged in again; a new one takes the first empty slot, as one plugged into a free port
+   on the PlayStation does. The launcher's players screen puts them in another order (controllers.h). */
+typedef struct {
+    SDL_Gamepad *pad;
+    SDL_JoystickID id;
+    char key[160]; /* who it is, to know it again: its GUID, name and serial */
+    int held;      /* its buttons when last polled */
+    int pressed;   /* what it's pressed since that was last asked for */
+} Controller;
+static Controller Slots[MAX_PADS];
+
 static void open_pads(void);
+static int pad_buttons(SDL_Gamepad *c);
 
 /* A phone's game has the whole screen, its bars hidden, whatever the settings (made for a window on a PC) say */
 static int want_fullscreen(const Settings *s) {
@@ -292,27 +306,240 @@ void host_wait_vblank(void) {
     NextVblank += step;
 }
 
+/* --- pretend controllers, for test runs (--pretend-pads N): SDL's virtual gamepads, so they're plugged in, pressed and pulled out as
+   real ones are, and a run with them uses no others. N are plugged in at the start; any of the four can come and go later --- */
+
+#define MAX_PRETEND MAX_PADS
+static int NumPretend;
+static SDL_JoystickID PretendIds[MAX_PRETEND];
+static SDL_Joystick *PretendSticks[MAX_PRETEND];
+
+void host_pretend_pads(int count) {
+    NumPretend = count < 0 ? 0 : count > MAX_PRETEND ? MAX_PRETEND : count;
+    /* SDL drops a controller's presses while the window hasn't the focus, which a test run's never has */
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+}
+
+static void pretend_plug(int n) {
+    SDL_VirtualJoystickDesc d;
+    char name[32];
+
+    if (n < 0 || n >= MAX_PRETEND || PretendIds[n] != 0) {
+        return;
+    }
+    SDL_snprintf(name, sizeof(name), "Pretend pad %d", n + 1);
+    SDL_INIT_INTERFACE(&d);
+    d.type = SDL_JOYSTICK_TYPE_GAMEPAD;
+    d.vendor_id = 0x1209;
+    d.product_id = (Uint16)(0xC0 + n);
+    d.naxes = SDL_GAMEPAD_AXIS_COUNT;
+    d.nbuttons = SDL_GAMEPAD_BUTTON_COUNT;
+    d.button_mask = (1u << SDL_GAMEPAD_BUTTON_COUNT) - 1;
+    d.axis_mask = (1u << SDL_GAMEPAD_AXIS_COUNT) - 1;
+    d.name = name;
+    PretendIds[n] = SDL_AttachVirtualJoystick(&d);
+    PretendSticks[n] = PretendIds[n] != 0 ? SDL_OpenJoystick(PretendIds[n]) : NULL;
+    if (PretendIds[n] == 0) {
+        SDL_Log("pretend pad %d: %s", n + 1, SDL_GetError());
+    }
+    host_pretend_press(n, 0);
+}
+
+/* in or out (--pad-plug, --pad-unplug) */
+void host_pretend_plug(int n, int in) {
+    if (n < 0 || n >= MAX_PRETEND) {
+        return;
+    }
+    if (in) {
+        pretend_plug(n);
+    } else if (PretendIds[n] != 0) {
+        SDL_CloseJoystick(PretendSticks[n]);
+        SDL_DetachVirtualJoystick(PretendIds[n]);
+        PretendSticks[n] = NULL;
+        PretendIds[n] = 0;
+    }
+}
+
+/* what its buttons are now (--pad-press): the game's bits, as pad_buttons reads them back */
+void host_pretend_press(int n, int buttons) {
+    static const struct {
+        SDL_GamepadButton button;
+        int bit;
+    } map[] = {
+        { SDL_GAMEPAD_BUTTON_SOUTH, PAD_CROSS },        { SDL_GAMEPAD_BUTTON_EAST, PAD_CIRCLE },
+        { SDL_GAMEPAD_BUTTON_WEST, PAD_SQUARE },        { SDL_GAMEPAD_BUTTON_NORTH, PAD_TRIANGLE },
+        { SDL_GAMEPAD_BUTTON_START, PAD_START },        { SDL_GAMEPAD_BUTTON_BACK, PAD_SELECT },
+        { SDL_GAMEPAD_BUTTON_LEFT_SHOULDER, PAD_L1 },   { SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, PAD_R1 },
+        { SDL_GAMEPAD_BUTTON_DPAD_UP, PAD_UP },         { SDL_GAMEPAD_BUTTON_DPAD_DOWN, PAD_DOWN },
+        { SDL_GAMEPAD_BUTTON_DPAD_LEFT, PAD_LEFT },     { SDL_GAMEPAD_BUTTON_DPAD_RIGHT, PAD_RIGHT },
+    };
+    size_t i;
+
+    if (n < 0 || n >= MAX_PRETEND || PretendSticks[n] == NULL) {
+        return;
+    }
+    for (i = 0; i < SDL_arraysize(map); i++) {
+        SDL_SetJoystickVirtualButton(PretendSticks[n], map[i].button, (buttons & map[i].bit) != 0);
+    }
+    /* a trigger's at rest at the axis's bottom: its middle is half pulled */
+    SDL_SetJoystickVirtualAxis(PretendSticks[n], SDL_GAMEPAD_AXIS_LEFT_TRIGGER, (buttons & PAD_L2) ? SDL_JOYSTICK_AXIS_MAX : SDL_JOYSTICK_AXIS_MIN);
+    SDL_SetJoystickVirtualAxis(PretendSticks[n], SDL_GAMEPAD_AXIS_RIGHT_TRIGGER, (buttons & PAD_R2) ? SDL_JOYSTICK_AXIS_MAX : SDL_JOYSTICK_AXIS_MIN);
+}
+
+/* --- plugging in and pulling out --- */
+
+static void controller_log(const char *what, const Controller *c, int slot) {
+    if (settings()->no_save) {
+        printf("pads: %s %s player %d at vblank %d\n", SDL_GetGamepadNameForID(c->id) != NULL ? SDL_GetGamepadNameForID(c->id) : "?",
+               what, slot + 1, platform_vblanks());
+    }
+}
+
+static void plug(SDL_JoystickID id) {
+    char key[sizeof(Slots[0].key)];
+    SDL_GUID guid = SDL_GetGamepadGUIDForID(id);
+    SDL_Gamepad *pad;
+    int i, slot = -1;
+
+    if (NumPretend != 0 && !SDL_IsJoystickVirtual(id)) {
+        return;
+    }
+    for (i = 0; i < MAX_PADS; i++) {
+        if (Slots[i].pad != NULL && Slots[i].id == id) {
+            return;
+        }
+    }
+    pad = SDL_OpenGamepad(id);
+    if (pad == NULL) {
+        return;
+    }
+    SDL_GUIDToString(guid, key, sizeof(key));
+    SDL_strlcat(key, " ", sizeof(key));
+    SDL_strlcat(key, SDL_GetGamepadName(pad) != NULL ? SDL_GetGamepadName(pad) : "", sizeof(key));
+    SDL_strlcat(key, " ", sizeof(key));
+    SDL_strlcat(key, SDL_GetGamepadSerial(pad) != NULL ? SDL_GetGamepadSerial(pad) : "", sizeof(key));
+    /* its own slot if it had one, or the first that's free */
+    for (i = 0; i < MAX_PADS && slot < 0; i++) {
+        if (Slots[i].pad == NULL && SDL_strcmp(Slots[i].key, key) == 0) {
+            slot = i;
+        }
+    }
+    for (i = 0; i < MAX_PADS && slot < 0; i++) {
+        if (Slots[i].pad == NULL) {
+            slot = i;
+        }
+    }
+    if (slot < 0) {
+        SDL_CloseGamepad(pad);
+        return;
+    }
+    Slots[slot].pad = pad;
+    Slots[slot].id = id;
+    Slots[slot].held = pad_buttons(pad);
+    Slots[slot].pressed = 0;
+    SDL_strlcpy(Slots[slot].key, key, sizeof(Slots[slot].key));
+    controller_log("is", &Slots[slot], slot);
+}
+
+static void unplug(SDL_JoystickID id) {
+    int i;
+
+    for (i = 0; i < MAX_PADS; i++) {
+        if (Slots[i].pad != NULL && Slots[i].id == id) {
+            controller_log("is out: no controller for", &Slots[i], i);
+            SDL_CloseGamepad(Slots[i].pad);
+            Slots[i].pad = NULL;
+            Slots[i].held = Slots[i].pressed = 0;
+        }
+    }
+}
+
 static void open_pads(void) {
     SDL_JoystickID *ids;
     int i, count = 0;
 
-    for (i = 0; i < MAX_PADS; i++) {
-        if (Pads[i] != NULL) {
-            SDL_CloseGamepad(Pads[i]);
-            Pads[i] = NULL;
-        }
+    for (i = 0; i < NumPretend; i++) {
+        pretend_plug(i);
     }
     ids = SDL_GetGamepads(&count);
     if (ids != NULL) {
-        int n = 0;
-
-        for (i = 0; i < count && n < MAX_PADS; i++) {
-            Pads[n] = SDL_OpenGamepad(ids[i]);
-            if (Pads[n] != NULL) {
-                n++;
-            }
+        for (i = 0; i < count; i++) {
+            plug(ids[i]);
         }
         SDL_free(ids);
+    }
+}
+
+/* --- for the launcher's players screen (controllers.h) --- */
+
+int host_controllers(void) {
+    int i, n = 0;
+
+    for (i = 0; i < MAX_PADS; i++) {
+        n += Slots[i].pad != NULL;
+    }
+    return n;
+}
+
+const char *host_controller_name(int player) {
+    if (player < 0 || player >= MAX_PADS || Slots[player].pad == NULL) {
+        return NULL;
+    }
+    return SDL_GetGamepadName(Slots[player].pad) != NULL ? SDL_GetGamepadName(Slots[player].pad) : "CONTROLLER";
+}
+
+int host_controller_pressed(int player) {
+    int b;
+
+    if (player < 0 || player >= MAX_PADS || Slots[player].pad == NULL) {
+        return 0;
+    }
+    b = Slots[player].pressed;
+    Slots[player].pressed = 0;
+    return b;
+}
+
+void host_controllers_swap(int a, int b) {
+    Controller t;
+
+    if (a < 0 || b < 0 || a >= MAX_PADS || b >= MAX_PADS || a == b) {
+        return;
+    }
+    t = Slots[a];
+    Slots[a] = Slots[b];
+    Slots[b] = t;
+    if (Slots[a].pad != NULL) {
+        controller_log("is now", &Slots[a], a);
+    }
+    if (Slots[b].pad != NULL) {
+        controller_log("is now", &Slots[b], b);
+    }
+}
+
+/* Before a game: what's plugged in, in its order, to players 1 on, and the empty slots after, forgetting who they were */
+void host_controllers_close_gaps(void) {
+    int i, j;
+
+    for (i = 0; i < MAX_PADS; i++) {
+        if (Slots[i].pad == NULL) {
+            for (j = i + 1; j < MAX_PADS && Slots[j].pad == NULL; j++) {
+            }
+            if (j < MAX_PADS) {
+                host_controllers_swap(i, j);
+            }
+        }
+    }
+    for (i = 0; i < MAX_PADS; i++) {
+        if (Slots[i].pad == NULL) {
+            Slots[i].key[0] = '\0';
+        }
+    }
+}
+
+/* a short buzz, so its player knows which it is */
+void host_controller_buzz(int player) {
+    if (player >= 0 && player < MAX_PADS && Slots[player].pad != NULL) {
+        SDL_RumbleGamepad(Slots[player].pad, 0x5000, 0x5000, 150);
     }
 }
 
@@ -353,8 +580,10 @@ int host_poll(void) {
             }
             break;
         case SDL_EVENT_GAMEPAD_ADDED:
+            plug(e.gdevice.which);
+            break;
         case SDL_EVENT_GAMEPAD_REMOVED:
-            open_pads();
+            unplug(e.gdevice.which);
             break;
         case SDL_EVENT_FINGER_DOWN:
         case SDL_EVENT_FINGER_MOTION:
@@ -374,6 +603,14 @@ int host_poll(void) {
     }
     if (resized) {
         gfx_window_resized();
+    }
+    for (int i = 0; i < MAX_PADS; i++) {
+        if (Slots[i].pad != NULL) {
+            int now = pad_buttons(Slots[i].pad);
+
+            Slots[i].pressed |= now & ~Slots[i].held;
+            Slots[i].held = now;
+        }
     }
     return 1;
 }
@@ -456,8 +693,8 @@ int host_pad(int port) {
     if (port == 0) {
         int other = keyboard_buttons();
 
-        if (port < MAX_PADS && Pads[port] != NULL) {
-            other |= pad_buttons(Pads[port]);
+        if (port < MAX_PADS && Slots[port].pad != NULL) {
+            other |= pad_buttons(Slots[port].pad);
         }
         if (other != 0) {
             touch_other_input();
@@ -468,8 +705,8 @@ int host_pad(int port) {
         }
         return b;
     }
-    if (port < MAX_PADS && Pads[port] != NULL) {
-        b = pad_buttons(Pads[port]);
+    if (port < MAX_PADS && Slots[port].pad != NULL) {
+        b = pad_buttons(Slots[port].pad);
     }
     return b;
 }
@@ -479,7 +716,7 @@ static unsigned char stick_of(SDL_Gamepad *c, SDL_GamepadAxis axis) {
 }
 
 int host_pad_sticks(int port, unsigned char sticks[4]) {
-    SDL_Gamepad *c = port < MAX_PADS ? Pads[port] : NULL;
+    SDL_Gamepad *c = port < MAX_PADS ? Slots[port].pad : NULL;
 
     if (c == NULL) {
         return 0;
@@ -492,14 +729,14 @@ int host_pad_sticks(int port, unsigned char sticks[4]) {
 }
 
 int host_pad_rumbles(int port) {
-    SDL_Gamepad *c = port < MAX_PADS ? Pads[port] : NULL;
+    SDL_Gamepad *c = port < MAX_PADS ? Slots[port].pad : NULL;
 
     return c != NULL && SDL_GetBooleanProperty(SDL_GetGamepadProperties(c), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, false);
 }
 
 /* The big motor is the low rumble, in strengths, and the small one the high, on or off. */
 void host_rumble(int port, int small_on, int big) {
-    SDL_Gamepad *c = port < MAX_PADS ? Pads[port] : NULL;
+    SDL_Gamepad *c = port < MAX_PADS ? Slots[port].pad : NULL;
 
     if (c != NULL) {
         SDL_RumbleGamepad(c, (Uint16)(big * 0x101), small_on ? 0xFFFF : 0, 1000);

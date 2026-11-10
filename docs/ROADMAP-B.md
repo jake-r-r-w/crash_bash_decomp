@@ -21,5 +21,5 @@ Where it makes sense, each is optional: a setting in the launcher to turn it on 
 | # | Task | Notes | Done |
 |---|------|-------|------|
 | 7.12.6 | Extra heroes in Adventure | The warp rooms, teams and saves with Ripper Roo or Pinstripe: later, if at all | [ ] |
-| 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays | [ ] |
+| 7.9 | Online play | Rollback netcode. The game's fixed timing and repeatable runs make it more realistic than in most ports, and `same` already shows a run repeats exactly. It's still a big job: saving and restoring the whole game state each frame, including its heap, and keeping sound out of the replays. Couch play first, at the user's word (2026-11-10), as online players would come in as controllers 2 to 4: checked with pretend controllers (`playtest.mjs pads`), with a players screen after PLAY, not yet tried by the user with real ones | [ ] |
 

@@ -3,9 +3,11 @@
  * the settings a screen down: categories on the left, a scrolling list of options on the right.
  * Settings take effect as they change. To add one: a row in its category's table, a case in
  * change_setting and in show_value; a video one goes in main/videomenu.c, as other menus show those too.
- * The Mods page lists the mods (mods.c) to turn on and off and put in order. */
+ * The Mods page lists the mods (mods.c) to turn on and off and put in order. With two or more controllers, PLAY goes through the
+ * players screen first: each controller's player, put in order by pressing up or down on it. */
 #include <stdio.h>
 #include <string.h>
+#include "../../../platform/controllers.h"
 #include "../../../platform/mods.h"
 #include "../../../platform/settings.h"
 #include "common.h"
@@ -16,6 +18,7 @@
 #include "bash/videomenu.h"
 
 void platform_finish(int code);
+int platform_vblanks(void);
 
 enum {
     SET_SKIP_INTRO,
@@ -118,12 +121,23 @@ static camera_info_tag LogoCamera;
 #define LABEL_CHARS 18
 #define HELP_CHARS 48
 
+/* The players screen: a controller's name in its player's row, in the game's small letters */
+#define PLAYERS 4
+#define PLAYERS_TOP -0x50
+#define PLAYERS_STEP 0x22
+#define PLAYERS_LEFT -0x130
+#define PLAYERS_RIGHT 0x130
+#define PLAYER_X -0x118
+#define CONTROLLER_X -0x48
+#define LIT_FRAMES 40
+
 static PlaceRec Place[SUB_HELP_MORE + 2];
-static char Values[VISIBLE_OPTIONS][24];
+static char Values[VISIBLE_OPTIONS][32];
 static char Labels[VISIBLE_OPTIONS][LABEL_CHARS + 1];
 static char Help[2][HELP_CHARS + 1];
+static s32 PlayerLit[PLAYERS]; /* frames its row stays lit, after its controller was pressed or moved */
 
-enum { SCREEN_TOP, SCREEN_CATEGORIES, SCREEN_OPTIONS };
+enum { SCREEN_TOP, SCREEN_CATEGORIES, SCREEN_OPTIONS, SCREEN_PLAYERS };
 static s32 Screen;
 static s32 TopCursor;
 static s32 Category;  /* NUM_CATEGORIES is BACK */
@@ -352,6 +366,9 @@ static void place_screen(void) {
     if (Screen == SCREEN_TOP) {
         place_panel(&Place[SUB_PANEL], -0xA0, 0xA0, TOP_Y - 0x10, TOP_Y + NUM_TOP * TOP_STEP + 0xA);
         place_panel(&Place[SUB_PANEL + 1], 0, 0, -0x400, -0x400);
+    } else if (Screen == SCREEN_PLAYERS) {
+        place_panel(&Place[SUB_PANEL], PLAYERS_LEFT, PLAYERS_RIGHT, PLAYERS_TOP - 0x12, PLAYERS_TOP + PLAYERS * PLAYERS_STEP + 0x10);
+        place_panel(&Place[SUB_PANEL + 1], 0, 0, -0x400, -0x400);
     } else {
         place_panel(&Place[SUB_PANEL], CATEGORY_LEFT, CATEGORY_RIGHT, PANEL_TOP, PANEL_BOTTOM);
         place_panel(&Place[SUB_PANEL + 1], OPTION_LEFT, OPTION_RIGHT, PANEL_TOP, PANEL_BOTTOM);
@@ -369,8 +386,13 @@ static void place_screen(void) {
     for (i = 0; i < VISIBLE_OPTIONS; i++) {
         s32 y = OPTION_TOP + i * OPTION_STEP;
 
-        place_text(&Place[SUB_LABEL(i)], LABEL_X, y, "", 1);
-        place_text(&Place[SUB_VALUE(i)], VALUE_X, y, Values[i], 1);
+        if (Screen == SCREEN_PLAYERS && i < PLAYERS) {
+            place_text(&Place[SUB_LABEL(i)], PLAYER_X, PLAYERS_TOP + i * PLAYERS_STEP, "", 0);
+            place_text(&Place[SUB_VALUE(i)], CONTROLLER_X, PLAYERS_TOP + i * PLAYERS_STEP + 4, Values[i], 1);
+        } else {
+            place_text(&Place[SUB_LABEL(i)], LABEL_X, y, "", 1);
+            place_text(&Place[SUB_VALUE(i)], VALUE_X, y, Values[i], 1);
+        }
     }
     PlaceEngineSlot(0, Place);
 }
@@ -388,6 +410,27 @@ static void show_screen(void) {
     s32 i;
 
     set_row(&sub[SUB_HELP_MORE], "", TEXT_SMALL);
+    if (Screen == SCREEN_PLAYERS) {
+        for (i = 0; i < MAX_CATEGORIES + 1; i++) {
+            set_row(&sub[SUB_CATEGORY + i], "", TEXT_LARGE);
+        }
+        for (i = 0; i < VISIBLE_OPTIONS; i++) {
+            Values[i][0] = '\0';
+            if (i < PLAYERS) {
+                const char *name = host_controller_name(i);
+
+                snprintf(Labels[i], sizeof(Labels[i]), "PLAYER %d", i + 1);
+                set_row(&sub[SUB_LABEL(i)], Labels[i], PlayerLit[i] != 0 ? TEXT_LARGE_LIT : name != NULL ? TEXT_LARGE : TEXT_LARGE_DIM);
+                font_text(Values[i], sizeof(Values[i]), name != NULL ? name : "-");
+                sub[SUB_VALUE(i)].unk7C = PlayerLit[i] != 0 ? TEXT_SMALL_LIT : TEXT_SMALL;
+            } else {
+                set_row(&sub[SUB_LABEL(i)], "", TEXT_SMALL);
+            }
+        }
+        set_row(&sub[SUB_HELP], "PRESS UP OR DOWN ON A CONTROLLER TO MOVE IT", TEXT_SMALL);
+        set_row(&sub[SUB_NAV], "START TO PLAY, \xFE BACK", TEXT_SMALL);
+        return;
+    }
     if (Screen == SCREEN_TOP) {
         for (i = 0; i < MAX_CATEGORIES + 1; i++) {
             set_row(&sub[SUB_CATEGORY + i], i < NUM_TOP ? TopRows[i] : "", i == TopCursor ? TEXT_LARGE_LIT : TEXT_LARGE);
@@ -432,9 +475,13 @@ static void show_screen(void) {
     }
 }
 
-/* The top level and the settings lay out their rows differently. */
+/* The top level, the settings and the players screen lay out their rows differently. */
+static s32 layout(s32 screen) {
+    return screen == SCREEN_OPTIONS ? SCREEN_CATEGORIES : screen;
+}
+
 static void go_to_screen(s32 screen) {
-    s32 replace = (screen == SCREEN_TOP) != (Screen == SCREEN_TOP);
+    s32 replace = layout(screen) != layout(Screen);
 
     Screen = screen;
     if (replace) {
@@ -443,6 +490,9 @@ static void go_to_screen(s32 screen) {
 }
 
 static void start_game(void) {
+    if (settings()->no_save) {
+        printf("launcher: play at vblank %d\n", platform_vblanks());
+    }
     settings_save();
     settings()->launcher = 0;
     /* what the game reads from here on: textures took effect as they were chosen */
@@ -452,6 +502,70 @@ static void start_game(void) {
     } else {
         FirstBootDone = 1; /* what has the level load play the intro first, as at boot */
         ProcessControl.next_process = &LevelLoadProcess;
+    }
+}
+
+/* --- the players screen --- */
+
+static void light_player(s32 player) {
+    PlayerLit[player] = LIT_FRAMES;
+    host_controller_buzz(player);
+}
+
+static void open_players(void) {
+    s32 i;
+
+    host_controllers_close_gaps();
+    for (i = 0; i < PLAYERS; i++) {
+        host_controller_pressed(i); /* PLAY's own press, and anything before it */
+        PlayerLit[i] = 0;
+    }
+    if (settings()->no_save) {
+        printf("pads: the players screen\n");
+    }
+    go_to_screen(SCREEN_PLAYERS);
+}
+
+/* Up or down on a controller moves it up or down the players; START on any plays, Triangle on any goes back. The keyboard is player
+   1's with the first controller, as ever, so its keys only play or go back. */
+static void update_players(s32 pressed) {
+    s32 play = (pressed & 8) != 0, back = (pressed & 0x1000) != 0;
+    s32 i;
+
+    host_controllers_close_gaps();
+    for (i = 0; i < PLAYERS; i++) {
+        if (PlayerLit[i] > 0) {
+            PlayerLit[i]--;
+        }
+    }
+    for (i = 0; i < PLAYERS; i++) {
+        s32 p = host_controller_pressed(i);
+
+        if (p == 0) {
+            continue;
+        }
+        if ((p & 0x10) && i > 0 && host_controller_name(i - 1) != NULL) {
+            host_controllers_swap(i, i - 1);
+            light_player(i - 1);
+            PlayerLit[i] = 0;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        } else if ((p & 0x40) && i < PLAYERS - 1 && host_controller_name(i + 1) != NULL) {
+            host_controllers_swap(i, i + 1);
+            light_player(i + 1);
+            PlayerLit[i] = 0;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        } else if (!(p & (8 | 0x1000))) {
+            light_player(i);
+        }
+        play |= (p & 8) != 0;
+        back |= (p & 0x1000) != 0;
+    }
+    if (back) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        go_to_screen(SCREEN_TOP);
+    } else if (play) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        start_game();
     }
 }
 
@@ -468,7 +582,11 @@ static void update_top(s32 pressed) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         switch (TopCursor) {
         case TOP_PLAY:
-            start_game();
+            if (host_controllers() >= 2) {
+                open_players();
+            } else {
+                start_game();
+            }
             break;
         case TOP_SETTINGS:
             Category = 0;
@@ -616,6 +734,9 @@ static void SettingsMenuUpdate(void) {
         break;
     case SCREEN_OPTIONS:
         update_options(pressed);
+        break;
+    case SCREEN_PLAYERS:
+        update_players(pressed);
         break;
     }
     show_screen();

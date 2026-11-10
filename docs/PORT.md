@@ -139,8 +139,10 @@ Vulkan (lavapipe). From the repo's root:
 
 ```sh
 tools/dl sh -c "cd port && cmake --preset linux-clang && cmake --build --preset linux-clang"
-tools/dl xvfb-run -a -s "-screen 0 1920x1080x24" node port/tests/playtest.mjs modes
+tools/dl sh -c 'xvfb-run -a -s "-screen 0 1920x1080x24" node port/tests/playtest.mjs modes'
 ```
+
+(xvfb-run through `sh`: run straight by `tools/dl` it can wait for ever for its screen.)
 
 The play tests take `build/port/linux-clang/crashbash` there by default. Linux draws with Vulkan, whose shaders are GLSL compiled ahead
 to SPIR-V (`port/platform/shaders/`): a change to the HLSL in `gfx.c` gets made in `gfx.vert` or `gfx.frag` too, and
@@ -252,6 +254,15 @@ Keys: arrows, Z = Cross, X = Circle, A = Square, S = Triangle, Enter = Start, Q 
 The menu is PLAY, SETTINGS and QUIT, with the settings in categories; a new setting is a row in its category's table and a case in
 `change_setting` and `show_value`. The main menu's EXIT comes back to it.
 
+**Controllers.** Each controller is a player's, as each was plugged into a port on the PlayStation: player 1 has the keyboard, the
+first controller and on a phone the touch buttons, and each other controller is the next player, a third or fourth making the game
+see a multitap (`pads_read`). The game's own players menus offer as many players as there are controllers in a row from player 1, as
+the PlayStation's did. A controller pulled out leaves its player with none and nobody else's changes; plugged in again it's that
+player's again, and a new one takes the first player with none (`platform/sdl.c`, by each controller's GUID, name and serial). With two
+or more, PLAY opens the players screen first (the user's idea, 2026-11-10): each controller's name in its player's row, moved up or
+down by pressing up or down on that controller, its row lit and the controller buzzed so its player sees which it is; START plays and
+Triangle goes back (`settingsmenu.c`, `controllers.h`). `playtest.mjs pads` checks all of it with pretend controllers.
+
 For testing, any run with `--frames N` ignores the saved settings and skips the menu, and its window opens on a second monitor if there is one:
 
 | Option | What it does |
@@ -268,6 +279,9 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--skip-intro`, `--skip-loading` | the menu's two skips, for this run |
 | `--fps 30\|60\|120` | the frame rate, for this run |
 | `--turbo` | don't wait for the clock, to reach late moments quickly |
+| `--pretend-pads N` | plug in N pretend controllers (SDL's virtual gamepads, "Pretend pad 1" on), and use no real ones; up to four can come and go |
+| `--pad-press P N BUTTONS` | hold pretend controller P's buttons (1 to 4; hex, `platform.h`) from vblank N for a few vblanks |
+| `--pad-unplug P N`, `--pad-plug P N` | pull pretend controller P out, or plug it in, at vblank N |
 | `--depth-clip` | draw as a device without depth clamping does (some phones): a point outside the depth range is clipped, not drawn at its edge (gfx.c, `make_device`) |
 | `--draw-every N` | draw one frame in N, and any a shot needs, so a long test runs as fast as the game's logic can |
 | `--mode N` | go from the main menu straight to game mode N, played by the computer, with TESTING on screen and no time limit. It's the game's demo, whose pause bit stops what waits on a pause; Polar Push's tilt doesn't wait on that bit (the game never demos its tilting levels). Mode 43, the tournament's podium, is as at a tournament's end: Crash, Coco, Cortex and Brio (or extra heroes in their places), player 1 first |

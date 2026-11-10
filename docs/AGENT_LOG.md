@@ -163,6 +163,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Gotchas
 
 **Port test runs**
+- **Pretend controllers (`--pretend-pads`, 2026-11-10).** SDL drops a controller's presses while the window hasn't the focus, and a
+  test run's never has: `host_pretend_pads` sets `SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS` (real play keeps SDL's default). A
+  virtual gamepad's triggers rest at the axis's middle, which reads as half pulled (L2 and R2 held): they're set to its bottom. And
+  `tools/dl xvfb-run ...` run straight can wait for ever on its screen (node never started): run it through `sh -c`.
 - **The emulator isn't a phone.** Its Vulkan is the PC's GPU, with every feature, so it passed what the first real phone failed: SDL's
   Vulkan device by default needs depth clamping, clip distances, indirect draws' first instance and anisotropic filtering, which many
   phones haven't got (`make_device` in gfx.c turns off what the renderer doesn't use; `--depth-clip` draws as a phone without depth
@@ -564,6 +568,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: Couch play, before online play (the user's call): pretend controllers for tests (`--pretend-pads`, `--pad-press`,
+  `--pad-unplug`, `--pad-plug`: SDL's virtual gamepads) and `playtest.mjs pads`, 9 cases: the launcher's new players screen (the
+  user's idea: after PLAY with two or more controllers, each moved up or down its players by its own up and down, START plays),
+  Battle with one, two and four controllers (one: one player only, as on the PlayStation; four: the multitap), Adventure and
+  Tournament with two, and controllers pulled out and plugged in. That last found a bug: any controller plugged in or out renumbered
+  them all, so player 1's dropping out made player 2's player 1. Now each keeps its slot (`sdl.c`, by GUID, name and serial). It
+  passes on Windows, Linux and in Android's emulator; `same` (against a new baseline from the 0.4.1 release program), `menu` and `heroes` are unchanged.
 
 - 2026-11-10: The roadmap, at the user's word: 7.14 (Android) and 7.12.5 (the win screens and podium with the extra heroes) ticked;
   the Mac taken off (they have no Mac), so 7.13 is done as Linux; the bosses as heroes (7.12.4) and more heroes from other discs

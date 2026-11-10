@@ -162,6 +162,9 @@ static void test_run_update(void) {
     }
     if (GameMode != lastMode) {
         printf("mode %d at vblank %d\n", GameMode, platform_vblanks());
+        /* who's playing: how many people, which heroes the computer has, and who has which (the pads play test) */
+        printf("players %d, computer %d %d %d %d, heroes %d %d %d %d\n", GAME->players, GAME->heroCpu[0], GAME->heroCpu[1], GAME->heroCpu[2],
+               GAME->heroCpu[3], GAME->heroes[0], GAME->heroes[1], GAME->heroes[2], GAME->heroes[3]);
         lastMode = GameMode;
     }
     /* the guard: a fight that's got no further in this long stops the run, and says where it stuck */

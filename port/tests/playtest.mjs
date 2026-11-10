@@ -35,6 +35,9 @@
  *       pictures of one mode.
  *   node port/tests/playtest.mjs menu
  *       From the title screen through the menus, by the pad alone, into the first game of a new Adventure's first room.
+ *   node port/tests/playtest.mjs pads
+ *       Couch play, with pretend controllers: the launcher's players screen, Battle, Adventure and Tournament offering as many players as
+ *       there are controllers, each choosing its own hero, and controllers pulled out and plugged in without anyone else's player changing.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
@@ -43,7 +46,8 @@
  *
  * --exe FILE picks another build (by default windows-clang's, or linux-clang's on Linux). A crash's addresses become source lines if
  * llvm-symbolizer is on the PATH (Windows). On Linux they run in the port's container, on its virtual screen (docs/PORT.md, Linux):
- *   tools/dl xvfb-run -a -s "-screen 0 1920x1080x24" node port/tests/playtest.mjs modes */
+ *   tools/dl sh -c 'xvfb-run -a -s "-screen 0 1920x1080x24" node port/tests/playtest.mjs modes'
+ * (through sh: xvfb-run run straight by tools/dl can wait for ever on its screen, 2026-11-10). */
 import crypto from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -639,6 +643,106 @@ async function menu(args) {
     return report([['menu', { pass: crash == null && r.code === 0 && started, what: crash ?? (started ? 'reached a game' : `never reached a game (exit ${r.code})`) }]]);
 }
 
+/* Couch play, with pretend controllers (--pretend-pads: SDL's virtual gamepads, plugged in, pressed and pulled out as real ones are):
+   the launcher's players screen after PLAY with two or more, the game's own players menus offering as many players as there are
+   controllers, as the PlayStation's did, each controller choosing for its own player, and one pulled out and put back. From the log:
+   the controllers' players (sdl.c's "pads:" lines) and, as each game starts, who's playing (main.c's "players" line). */
+async function pads(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const dir = path.join(OUT, 'pads');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const UP = '10', TRIANGLE = '1000';
+    /* every controller's Cross on the menus' beat: player 1's by --press, the others by --pad-press */
+    const crosses = (count, at) => at.flatMap(v => ['--press', String(v), CROSS, ...Array.from({ length: count - 1 }, (_, p) => ['--pad-press', String(p + 2), String(v), CROSS]).flat()]);
+    const downs = (n, from) => Array.from({ length: n }, (_, i) => ['--press', String(from + i * 20), DOWN]).flat();
+    const BEAT = [470, 590, 850, 1150, 1250, 1550, 1650, 1750];
+    /* the main menu's Battle, its players menu set to as many as asked, then the character select and on into the first game */
+    const battle = (count, ask) => [...downs(1, 170), '--press', '230', CROSS, ...downs(ask - 1, 280), '--press', '350', CROSS, ...crosses(count, BEAT)];
+    /* who's playing as the first game starts, by main.c's line */
+    const playing = text => {
+        const m = [...text.matchAll(/^mode (\d+) at vblank \d+\r?\nplayers (\d+), computer (\d) (\d) (\d) (\d)/gm)].find(x => x[1] !== '40');
+        return m == null ? null : { players: Number(m[2]), computer: m.slice(3, 7).join('') };
+    };
+    const lines = (text, re) => text.split(/\r?\n/).filter(l => re.test(l));
+    const cases = [
+        {
+            name: 'one controller: PLAY goes straight to the game',
+            args: ['--launcher', '--pretend-pads', '1', '--press', '120', CROSS, '--frames', '260'],
+            check: t => /^launcher: play/m.test(t) && !/players screen/.test(t) ? null : 'a players screen, or no game',
+        },
+        {
+            name: 'two: the players screen, back, again, and pad 2 to player 1',
+            args: ['--launcher', '--pretend-pads', '2', '--press', '120', CROSS, '--pad-press', '1', '160', TRIANGLE, '--press', '200', CROSS,
+                   '--pad-press', '2', '240', UP, '--press', '290', START, '--frames', '400'],
+            check: t => lines(t, /players screen/).length !== 2 ? `the players screen ${lines(t, /players screen/).length} times, not 2`
+                : !/^pads: Pretend pad 2 is now player 1/m.test(t) || !/^pads: Pretend pad 1 is now player 2/m.test(t) ? 'pad 2 never moved up'
+                : !/^launcher: play/m.test(t) ? 'START never played' : null,
+        },
+        {
+            name: 'Battle, one controller: only one player, as on the PlayStation',
+            args: ['--pretend-pads', '1', ...battle(1, 2), '--frames', '1500'],
+            check: t => (p => p == null ? 'no game' : p.players !== 1 || p.computer !== '0111' ? `players ${p.players}, computer ${p.computer}` : null)(playing(t)),
+        },
+        {
+            name: 'Battle, two controllers: two players',
+            args: ['--pretend-pads', '2', ...battle(2, 2), '--frames', '1500'],
+            check: t => (p => p == null ? 'no game' : p.players !== 2 || p.computer !== '0011' ? `players ${p.players}, computer ${p.computer}` : null)(playing(t)),
+        },
+        {
+            name: 'Battle, four controllers: four players, through the multitap',
+            args: ['--pretend-pads', '4', ...battle(4, 4), '--frames', '1500'],
+            check: t => (p => p == null ? 'no game' : p.players !== 4 || p.computer !== '0000' ? `players ${p.players}, computer ${p.computer}` : null)(playing(t)),
+        },
+        {
+            name: 'Adventure, two controllers: two players',
+            args: ['--pretend-pads', '2', '--press', '230', CROSS, '--press', '350', CROSS, ...downs(1, 440), ...crosses(2, [470, 590, 710, 830, 950, 1070]), '--frames', '1300'],
+            check: t => (p => p == null ? 'no game' : p.players !== 2 || p.computer !== '0011' ? `players ${p.players}, computer ${p.computer}` : null)(playing(t)),
+        },
+        {
+            name: 'Tournament, two controllers: two players',
+            args: ['--pretend-pads', '2', ...downs(2, 160), '--press', '230', CROSS, ...downs(1, 320), ...crosses(2, [350, 470, 590, 710, 830, 950, 1070]), '--frames', '1300'],
+            check: t => (p => p == null ? 'no game' : p.players !== 2 || p.computer !== '0011' ? `players ${p.players}, computer ${p.computer}` : null)(playing(t)),
+        },
+        {
+            /* in the game pad 1 comes out and a new one, pad 3, goes in, taking the empty player 1; pad 1 goes back in as player 3 */
+            name: 'pulled out and put back: nobody else changes player',
+            args: ['--pretend-pads', '2', ...battle(2, 2), '--pad-unplug', '1', '1350', '--pad-plug', '3', '1400', '--pad-plug', '1', '1450', '--frames', '1500'],
+            check: t => {
+                const after = lines(t, /^pads: .* at vblank (1[3-4]\d\d)$/);
+                const want = ['Pretend pad 1 is out: no controller for player 1', 'Pretend pad 3 is player 1', 'Pretend pad 1 is player 3'];
+                const got = after.map(l => l.replace(/^pads: /, '').replace(/ at vblank \d+$/, ''));
+                return got.join('|') === want.join('|') && !/^pads: Pretend pad 2 is (now )?player [^2]/m.test(t) ? null : `pads: ${got.join(', ') || 'nothing'}`;
+            },
+        },
+        {
+            name: 'pulled out and plugged in again: its own player',
+            args: ['--pretend-pads', '2', ...battle(2, 2), '--pad-unplug', '2', '1350', '--pad-plug', '2', '1400', '--frames', '1450'],
+            check: t => {
+                const got = lines(t, /^pads: .* at vblank 1[3-4]\d\d$/).map(l => l.replace(/^pads: /, '').replace(/ at vblank \d+$/, ''));
+                return got.join('|') === 'Pretend pad 2 is out: no controller for player 2|Pretend pad 2 is player 2' ? null : `pads: ${got.join(', ') || 'nothing'}`;
+            },
+        },
+    ];
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    const slots = Math.min(AT_ONCE, cases.length);
+    const one = async (c, i) => {
+        const saves = ANDROID ? [] : ['--saves', rel(`saves${i}`)];
+        const r = await run(exe, ['--turbo', '--skip-intro', ...saves, '--tile', String(i % slots), String(slots), ...c.args],
+                            path.join(dir, `case${i}.txt`), { timeout: MODE_TIMEOUT });
+        const crash = crash_where(exe, r.text);
+        const wrong = crash ?? (r.code !== 0 ? `exit ${r.code}` : c.check(r.text));
+
+        return [c.name, { pass: wrong == null, what: wrong ?? `case${i}.txt` }];
+    };
+    const results = [];
+    for (let i = 0; i < cases.length; i += slots) {
+        results.push(...await Promise.all(cases.slice(i, i + slots).map((c, j) => one(c, i + j))));
+    }
+    return report(results);
+}
+
 async function shots(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const [first, step, count] = args.splice(0, 3).map(Number);
@@ -1000,9 +1104,9 @@ async function mods(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, shots, image, packs, mods };
+const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, shots, image, packs, mods };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|shots|image|packs|mods: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|shots|image|packs|mods: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));

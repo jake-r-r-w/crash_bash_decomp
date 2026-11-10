@@ -13,6 +13,7 @@
 
 #include <SDL3/SDL.h>
 #include "platform/platform.h"
+#include "platform/controllers.h"
 #include "platform/gfx.h"
 #include "platform/mods.h"
 #include "platform/texpack.h"
@@ -201,6 +202,39 @@ static struct {
 } Presses[MAX_PRESSES];
 static int NumPresses;
 
+/* What the pretend controllers do (--pretend-pads): a press held for a few vblanks as --press's are, or pulled out or plugged in */
+enum { PAD_PRESS, PAD_UNPLUG, PAD_PLUG };
+static struct {
+    int pad, frame, buttons, kind;
+} PadEvents[MAX_PRESSES];
+static int NumPadEvents;
+
+static void pretend_pads_vblank(void) {
+    static int held[4] = { -1, -1, -1, -1 };
+    int i, p;
+
+    for (i = 0; i < NumPadEvents; i++) {
+        if (PadEvents[i].kind != PAD_PRESS && PadEvents[i].frame == Vblanks) {
+            host_pretend_plug(PadEvents[i].pad, PadEvents[i].kind == PAD_PLUG);
+            held[PadEvents[i].pad] = -1;
+        }
+    }
+    for (p = 0; p < 4; p++) {
+        int buttons = 0;
+
+        for (i = 0; i < NumPadEvents; i++) {
+            if (PadEvents[i].kind == PAD_PRESS && PadEvents[i].pad == p && Vblanks >= PadEvents[i].frame &&
+                Vblanks < PadEvents[i].frame + PRESS_VBLANKS) {
+                buttons |= PadEvents[i].buttons;
+            }
+        }
+        if (buttons != held[p]) {
+            host_pretend_press(p, buttons);
+            held[p] = buttons;
+        }
+    }
+}
+
 void platform_vblank(void) {
     int i;
 
@@ -211,6 +245,9 @@ void platform_vblank(void) {
         }
     }
     if (!NoWindow) {
+        if (NumPadEvents != 0) {
+            pretend_pads_vblank();
+        }
         if (!host_poll()) {
             platform_finish(0);
         }
@@ -460,6 +497,23 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--shot") == 0 && i + 2 < argc && NumShots < MAX_SHOTS) {
             Shots[NumShots].frame = atoi(argv[++i]);
             Shots[NumShots++].path = argv[++i];
+        } else if (strcmp(argv[i], "--pretend-pads") == 0 && i + 1 < argc) {
+            host_pretend_pads(atoi(argv[++i]));
+        } else if (strcmp(argv[i], "--pad-press") == 0 && i + 3 < argc && NumPadEvents < MAX_PRESSES) {
+            PadEvents[NumPadEvents].kind = PAD_PRESS;
+            PadEvents[NumPadEvents].pad = atoi(argv[++i]) - 1;
+            PadEvents[NumPadEvents].frame = atoi(argv[++i]);
+            PadEvents[NumPadEvents++].buttons = (int)strtol(argv[++i], NULL, 16);
+            if (PadEvents[NumPadEvents - 1].pad < 0 || PadEvents[NumPadEvents - 1].pad > 3) {
+                NumPadEvents--;
+            }
+        } else if ((strcmp(argv[i], "--pad-unplug") == 0 || strcmp(argv[i], "--pad-plug") == 0) && i + 2 < argc && NumPadEvents < MAX_PRESSES) {
+            PadEvents[NumPadEvents].kind = strcmp(argv[i], "--pad-plug") == 0 ? PAD_PLUG : PAD_UNPLUG;
+            PadEvents[NumPadEvents].pad = atoi(argv[++i]) - 1;
+            PadEvents[NumPadEvents++].frame = atoi(argv[++i]);
+            if (PadEvents[NumPadEvents - 1].pad < 0 || PadEvents[NumPadEvents - 1].pad > 3) {
+                NumPadEvents--;
+            }
         } else if (strcmp(argv[i], "--press") == 0 && i + 2 < argc && NumPresses < MAX_PRESSES) {
             Presses[NumPresses].frame = atoi(argv[++i]);
             Presses[NumPresses++].buttons = (int)strtol(argv[++i], NULL, 16);
