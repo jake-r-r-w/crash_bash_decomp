@@ -33,6 +33,37 @@ A controller just works, with its sticks and rumble. On the keyboard:
   1 / 2         L2 / R2
 
 
+ONLINE
+
+ONLINE, in the menu the game opens with, plays the game with others on their own
+machines, up to four players in all. Everyone needs the same version of this
+program and their own copy of the game.
+
+  HOST GAME     Opens a game, and shows who's joined. Press START when they're
+                all there. The first time, Windows asks whether to let the game
+                through its firewall: say yes.
+  JOIN GAME     A game hosted on your own network shows up by itself. For one
+                anywhere else, choose CODE and type the code the host reads out
+                (eight letters and digits, as 94FM-4B2B), then press Start.
+
+To let players elsewhere in, the game asks the host's router to open a port for
+it, and shows the join code once it has. A code is the host's internet address
+in another form, so give it only to people you'd give that to.
+
+Some routers won't (the setting is called UPnP, and can be off), and some
+internet providers share one address between many homes, as phone networks do.
+The game says so if it meets either. Then someone else can host; or the host can
+open UDP port 47000 on the router by hand, and the others type the host's
+internet address where the code goes; or everyone can use a free virtual network
+such as Tailscale, and join by the address it gives the host.
+
+Each player's own machine runs the whole game, and only the button presses
+travel, each used a moment late so it reaches everyone in time. Player 1, the
+host, drives the menus. Picture settings are each player's own. Cheats, the two
+skips and the save are the host's; extra heroes and mods that change the game's
+files are off online.
+
+
 SETTINGS
 
 The menu the game opens with has its settings, and the pause menu has the

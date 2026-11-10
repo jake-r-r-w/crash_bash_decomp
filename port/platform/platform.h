@@ -118,7 +118,7 @@ void platform_online_stop(const char *why);
 const char *platform_launcher_message(void);
 /* Sound by the game's clock, or as the device asks (sdl.c): changed as an online game starts and ends. */
 void host_audio_by_clock(int by_clock);
-/* A character typed since this was last asked: a digit, a dot, 8 for backspace, or 0 for none. For an address. */
+/* A character typed since this was last asked: a capital letter, a digit, a dot, a dash, 8 for backspace, 27 for Esc, or 0 for none. */
 int host_typed(void);
 void host_quit(void);
 

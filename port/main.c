@@ -18,6 +18,7 @@
 #include "platform/gfx.h"
 #include "platform/mods.h"
 #include "platform/net.h"
+#include "platform/portmap.h"
 #include "platform/texpack.h"
 #include "platform/settings.h"
 #include "platform/saves.h"
@@ -196,6 +197,7 @@ const char *platform_data_path(void) {
 
 void platform_finish(int code) {
     net_end();
+    net_lobby_reset(); /* and the router's port is closed again, if a game here had it opened */
     audio_finish();
     if (!NoWindow) {
         host_quit();
@@ -561,7 +563,17 @@ int main(int argc, char **argv) {
     }
 #endif
     for (i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--version") == 0) {
+        if (strcmp(argv[i], "--make-code") == 0 && i + 2 < argc) {
+            /* a join code for an address and one of the eight ports from the usual one (0 to 7): what a test's joiner types */
+            char code[16];
+
+            printf("%s\n", net_code_make(argv[i + 1], NET_PORT + atoi(argv[i + 2]), code, sizeof(code)) ? code : "none");
+            return 0;
+        } else if (strcmp(argv[i], "--check-codes") == 0) {
+            /* the build's test of join codes (net.c) */
+            printf(net_code_check() ? "codes ok\n" : "codes wrong\n");
+            return 0;
+        } else if (strcmp(argv[i], "--version") == 0) {
             printf("crashbash %s\n", BASH_VERSION);
             return 0;
         } else if (strcmp(argv[i], "--check-sdl") == 0) {
@@ -747,6 +759,10 @@ int main(int argc, char **argv) {
             net.differ_at = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--online-local") == 0) {
             net.local = 1;
+        } else if (strcmp(argv[i], "--online-pretend-router") == 0 && i + 1 < argc) {
+            i++;
+            net.pretend_router = strcmp(argv[i], "open") == 0 ? PORTMAP_OPEN : strcmp(argv[i], "refused") == 0 ? PORTMAP_REFUSED
+                                 : strcmp(argv[i], "shared") == 0 ? PORTMAP_SHARED : PORTMAP_NO_ROUTER;
         } else if (strcmp(argv[i], "--online-port") == 0 && i + 1 < argc) {
             net.port = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--net-vanish") == 0 && i + 1 < argc) {

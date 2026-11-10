@@ -6,15 +6,18 @@
  * The Mods page lists the mods (mods.c) to turn on and off and put in order. With two or more controllers, PLAY goes through the
  * players screen first: each controller's player, put in order by pressing up or down on it.
  *
- * ONLINE (docs/PORT.md, Online play): HOST GAME opens a game for others to join and lists them as they do, and START begins it;
- * JOIN GAME lists the games being hosted on this network, and takes a host's address typed in for one that isn't. The game then starts
- * again from its very beginning on every machine (platform_online_start), and comes back here when it's over. */
+ * ONLINE (docs/PORT.md, Online play): HOST GAME opens a game for others to join and lists them as they do, and START begins it. It
+ * asks the router to let players elsewhere in, and shows the join code they need once it has, or says plainly that it couldn't and
+ * what can be done. JOIN GAME lists the games being hosted on this network, and takes a host's code typed in (or its address) for
+ * one that isn't. The game then starts again from its very beginning on every machine (platform_online_start), and comes back here
+ * when it's over. */
 #include <stdio.h>
 #include <string.h>
 #include "../../../platform/controllers.h"
 #include "../../../platform/controls.h"
 #include "../../../platform/mods.h"
 #include "../../../platform/net.h"
+#include "../../../platform/portmap.h"
 #include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/engine.h"
@@ -523,6 +526,45 @@ static void say_message(const char *text) {
     font_text(Message[1], sizeof(Message[1]), all + cut);
 }
 
+/* Under the host's lobby: how the others join. Players elsewhere need the router to let them in, which the game has asked of it
+   (portmap.c): the join code if it has, and if it hasn't, that it hasn't and what can be done, a page of each in turn. Players on
+   this network need neither: the game shows in their JOIN GAME by itself. */
+static void router_lines(void) {
+    static s32 said = -1;
+    s32 router = net_lobby_router(), second = (GameFrameCount / 300) & 1; /* a page for five seconds */
+    char text[2][96];
+
+    text[1][0] = '\0';
+    if (router == PORTMAP_OPEN) {
+        snprintf(text[0], sizeof(text[0]), "Players elsewhere join with the code %s", net_lobby_code());
+        snprintf(text[1], sizeof(text[1]), "On your network, the game shows by itself");
+    } else if (router == PORTMAP_WORKING) {
+        snprintf(text[0], sizeof(text[0]), "Asking your router to let players elsewhere in");
+        snprintf(text[1], sizeof(text[1]), "On your network, the game shows by itself");
+    } else if (router == PORTMAP_SHARED && !second) {
+        snprintf(text[0], sizeof(text[0]), "Your provider shares your address with others,");
+        snprintf(text[1], sizeof(text[1]), "so only players on your network can join");
+    } else if (router == PORTMAP_SHARED) {
+        snprintf(text[0], sizeof(text[0]), "Someone else could host, or you could all use");
+        snprintf(text[1], sizeof(text[1]), "a free virtual network such as Tailscale");
+    } else if ((router == PORTMAP_NO_ROUTER || router == PORTMAP_REFUSED) && !second) {
+        snprintf(text[0], sizeof(text[0]), "Your router won't let players elsewhere in.");
+        snprintf(text[1], sizeof(text[1]), "On your network, they join at %s", net_lobby_address());
+    } else if (router == PORTMAP_NO_ROUTER || router == PORTMAP_REFUSED) {
+        snprintf(text[0], sizeof(text[0]), "Someone else could host, or open UDP port %d", NET_PORT);
+        snprintf(text[1], sizeof(text[1]), "on it by hand, or all use a VPN like Tailscale");
+    } else {
+        snprintf(text[0], sizeof(text[0]), "The others join at %s", net_lobby_address());
+    }
+    font_text(Help[0], sizeof(Help[0]), text[0]);
+    font_text(Help[1], sizeof(Help[1]), text[1]);
+    if (settings()->no_save && router != said && router != PORTMAP_WORKING) {
+        said = router;
+        printf("launcher: router %s\n", router == PORTMAP_OPEN ? "open" : router == PORTMAP_SHARED ? "shared" : router == PORTMAP_REFUSED ? "refused"
+                                         : router == PORTMAP_NO_ROUTER ? "none" : "not asked");
+    }
+}
+
 /* The host's lobby, the games to join, and the wait once joined: rows in the players screen's places. */
 static void show_online(subengine *sub) {
     s32 state = net_lobby_poll(), found = 0, machines = net_lobby_machines(), first = 0, i;
@@ -556,10 +598,10 @@ static void show_online(subengine *sub) {
                 font_text(Values[i], sizeof(Values[i]), "Waiting for someone to join");
             }
         }
-        snprintf(text, sizeof(text), "The others join at %s", net_lobby_address());
-        font_text(Help[0], sizeof(Help[0]), text);
+        router_lines();
         if (Message[0][0] == '\0') {
             set_row(&sub[SUB_HELP], Help[0], TEXT_SMALL);
+            set_row(&sub[SUB_HELP_MORE], Help[1], TEXT_SMALL);
         }
         set_row(&sub[SUB_NAV], state == LOBBY_STARTING ? "STARTING" : machines >= 2 ? "START TO PLAY, \xFE BACK" : "\xFE BACK", TEXT_SMALL);
     } else if (Screen == SCREEN_JOIN) {
@@ -572,16 +614,16 @@ static void show_online(subengine *sub) {
             found++;
         }
         JoinCursor = JoinCursor > found ? found : JoinCursor;
-        snprintf(Labels[found], sizeof(Labels[found]), "ADDRESS");
-        snprintf(Values[found], sizeof(Values[found]), Typing && (GameFrameCount & 0x10) ? "%s." : "%s", Address);
+        snprintf(Labels[found], sizeof(Labels[found]), "CODE");
+        snprintf(Values[found], sizeof(Values[found]), Typing && (GameFrameCount & 0x10) ? "%s<" : "%s", Address);
         for (i = 0; i <= found; i++) {
             set_row(&sub[SUB_LABEL(i)], Labels[i], i == JoinCursor ? TEXT_LARGE_LIT : TEXT_LARGE);
             sub[SUB_VALUE(i)].unk7C = i == JoinCursor ? TEXT_SMALL_LIT : TEXT_SMALL;
         }
         if (Message[0][0] == '\0') {
-            set_row(&sub[SUB_HELP], found == 0 ? "A GAME HOSTED ON YOUR NETWORK SHOWS HERE BY ITSELF" : "", TEXT_SMALL);
+            set_row(&sub[SUB_HELP], Typing ? "THE HOST'S JOIN CODE, OR ITS ADDRESS" : found == 0 ? "A GAME ON YOUR NETWORK SHOWS HERE BY ITSELF" : "", TEXT_SMALL);
         }
-        set_row(&sub[SUB_NAV], Typing ? "TYPE THE HOST'S ADDRESS, \xFC JOIN, \xFE BACK" : "UP - DOWN CHOOSE, \xFC BUTTON TO JOIN, \xFE BACK", TEXT_SMALL);
+        set_row(&sub[SUB_NAV], Typing ? "TYPE IT, THEN START TO JOIN" : "UP - DOWN CHOOSE, \xFC BUTTON TO JOIN, \xFE BACK", TEXT_SMALL);
     } else {
         snprintf(Labels[0], sizeof(Labels[0]), "JOINED");
         font_text(Values[0], sizeof(Values[0]), Joining);
@@ -791,16 +833,6 @@ static void open_join(void) {
     JoinCursor = 0;
     JoinMoved = JoinFound = 0;
     Typing = 0;
-    if (Address[0] == '\0') {
-        /* most likely another machine on this one's network: its address as far as the last dot */
-        const char *here = net_lobby_address();
-        const char *dot = strrchr(here, '.');
-
-        if (dot != NULL && (size_t)(dot - here) < ADDRESS_CHARS && strcmp(here, "127.0.0.1") != 0) {
-            memcpy(Address, here, (size_t)(dot - here) + 1);
-            Address[dot - here + 1] = '\0';
-        }
-    }
     net_lobby_find();
     go_to_screen(SCREEN_JOIN);
 }
@@ -867,10 +899,13 @@ static void join(const char *where) {
     }
 }
 
-/* The games found, and under them an address to type: digits and dots from the keyboard, or with a controller up and down for the last
-   character, right for another and left to take one off. */
+/* The games found, and under them the host's join code to type, or its address: letters, digits and dots from the keyboard, or with
+   a controller up and down for the last character, right for another and left to take one off. While it's typed a key is a
+   character and not the button it's set to: START joins (Enter, by default) and Esc goes back, or a controller's own Cross and
+   Triangle. */
 static void update_join(s32 pressed) {
-    static const char pick[] = "0123456789.";
+    static const char pick[] = "0123456789ABCDEFGHJKMNPQRSTVWXYZ.";
+    s32 pad;
     size_t n = strlen(Address);
     char text[64];
     s32 found = 0, typed;
@@ -910,30 +945,34 @@ static void update_join(s32 pressed) {
             } else {
                 Typing = 1;
                 JoinMoved = 1;
-                host_typed(); /* not a key from before */
+                host_typed(); /* not a key from before, nor a controller's press */
+                host_controller_pressed(0);
             }
         }
         return;
     }
     typed = host_typed();
-    if (typed == 8 || (pressed & 0x80)) {
+    pad = host_controller_pressed(0);
+    if (typed == 27 || (pad & 0x1000)) {
+        Typing = 0;
+    } else if (typed == 8 || (typed == 0 && (pressed & 0x80))) {
         if (n > 0) {
             Address[n - 1] = '\0';
         }
-    } else if (typed != 0 && n < ADDRESS_CHARS) {
-        Address[n] = (char)typed;
-        Address[n + 1] = '\0';
+    } else if (typed != 0) {
+        if (n < ADDRESS_CHARS) {
+            Address[n] = (char)typed;
+            Address[n + 1] = '\0';
+        }
     } else if ((pressed & 0x20) && n < ADDRESS_CHARS) {
-        Address[n] = n > 0 && Address[n - 1] != '.' ? '.' : '1';
+        Address[n] = n > 0 ? Address[n - 1] : '0';
         Address[n + 1] = '\0';
     } else if ((pressed & (0x10 | 0x40)) && n > 0) {
         const char *at = strchr(pick, Address[n - 1]);
         s32 i = at != NULL ? (s32)(at - pick) : 0;
 
         Address[n - 1] = pick[(i + ((pressed & 0x10) ? 1 : (s32)sizeof(pick) - 2)) % ((s32)sizeof(pick) - 1)];
-    } else if (pressed & 0x1000) {
-        Typing = 0;
-    } else if ((pressed & (0x4000 | 8)) && n > 0) {
+    } else if (((pressed & 8) || (pad & 0x4000)) && n > 0) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         Typing = 0;
         join(Address);

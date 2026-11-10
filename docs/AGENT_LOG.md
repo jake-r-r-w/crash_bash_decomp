@@ -91,7 +91,9 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    Step 2, online by address from the command line, is done too (2026-11-10: `--host PORT`, `--join ADDRESS:PORT` over UDP,
    `platform/net.c`, `playtest.mjs online`), but for two real machines on a network, which is the user's to try.
    Step 4, ONLINE in the launcher, is done too, before 3 at the user's word (2026-11-10: "ONLINE screens first").
-   **Next: step 3**, join codes (miniupnpc and libnatpmp are a download, so the user's OK first), for games between homes.
+   Step 3, join codes, is written (2026-11-10, with the user's OK for miniupnpc and libnatpmp), and tested with a pretend
+   router. **Next: the user's own try**, hosting at home with a friend joining from elsewhere by the code, which is what the
+   plan calls done; then a release with it (their OK first, as for every release).
    What the review of the plan added is in PORT.md's Online play and the Open leads below.
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
@@ -118,9 +120,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   stops for differing leaves nothing to play again. Extra heroes and mods' files are off online till machines can compare what
   they have. Android has the permission in its manifest but hasn't been built or run with it. The options menu's volumes are in
   the game's record, so one player changing them in the pause menu changes them for everyone.
-- **Port, online play, for step 3:** the join code's 8 letters hold 40 bits, so an address and a check letter leave room for one
-  of 8 fixed ports, not any port. The host's Windows asks about the firewall the first time it hosts, which the screen should
-  say.
+- **Port, online play, left from step 3:** no real router has been asked for a port: `portmap.c`'s UPnP and NAT-PMP paths compile
+  and link on Windows and Linux and have never run (the tests' router is a pretend one, `--online-pretend-router`, and asking the
+  user's own router is theirs to do, by hosting). So unknown: whether miniupnpc finds their router from a PC with Docker's and
+  WSL's adapters (it's asked on the default one), how long it takes, and whether the port closes again. The port's asked for two
+  hours and isn't asked for again, so a lobby or game past that may stop letting new players in. NAT-PMP's gateway is read from
+  `/proc/net/route` on Linux, which Android doesn't let an app read. A host whose port was opened by hand has no code to show,
+  as the game can't know its outside address without asking someone (a STUN server would say; none is asked). The host's screen
+  doesn't mention Windows' firewall question; the release's README does.
 
 - **Port, the Windows zip's one backslash:** Windows PowerShell 5.1's `Compress-Archive` (`package.mjs`) names `mods\README.txt` with a
   backslash, against the zip format's forward slashes, in every Windows download since at least 0.3.2. Windows unpacks it right; Info-ZIP
@@ -600,6 +607,15 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: Online play, step 3 (7.9; PORT.md, Online play): join codes, with the user's OK for the two libraries ("ok back to
+  join codes"). miniupnpc 2.3.3 and libnatpmp (its April 2025 commit) are fetched from their GitHub by CMake, pinned by hash, and
+  built in; `platform/portmap.c` asks the router for a port on a thread of its own as HOST GAME opens, and closes it after. The
+  code is the host's address and one of eight ports in eight characters with a check (`net_code_*`, `--check-codes`); the host's
+  screen shows it, or says the router wouldn't or the address is shared and what can be done; JOIN GAME's CODE row takes a code or
+  an address, a key being a character there and not its button. Tested with a pretend router only (`--online-pretend-router`):
+  16 cases in `online`. No real router was asked anything. The release's README has an ONLINE section and its licence file the
+  two libraries' licences.
 
 - 2026-11-10: Online play, step 4 before step 3, at the user's word ("ONLINE screens first"; they'd played step 2 on one PC and
   it "feels good", and asked for a way to see that you're hosting and who's joined): ONLINE in the launcher, with HOST GAME and

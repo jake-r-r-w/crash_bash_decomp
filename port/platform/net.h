@@ -23,6 +23,7 @@ typedef struct NetOptions {
     int stall_at, stall_ms; /* a test: at this step the machine does nothing for that long, as a window being dragged, or -1 */
     int local;          /* a test: the launcher's games are this PC's alone: hosted at 127.0.0.1, and looked for there (--online-local) */
     int port;           /* the launcher's games' port, if not NET_PORT (--online-port) */
+    int pretend_router; /* a test: no router's asked for a port, and the answer's this (PORTMAP_, portmap.h; --online-pretend-router) */
 } NetOptions;
 
 /* What the command line asked of online play, for a game from there or from the launcher: before either. */
@@ -52,6 +53,15 @@ int net_lobby_poll(void);
 int net_lobby_machines(void);                          /* hosting: how many machines are here, this one too */
 int net_lobby_machine(int m, char *text, size_t room); /* its address and ping (nothing for this one), and how many players it brings */
 const char *net_lobby_address(void);                   /* this machine's address on its network, for the others to join */
+/* Hosting: whether the router has let the world in (PORTMAP_, portmap.h), and the code the others join with once it has ("" till then). */
+int net_lobby_router(void);
+const char *net_lobby_code(void);
+/* A join code: an address and one of the eight ports from the usual one, as eight letters and digits with a check, written
+   XXXX-XXXX. net_code_read gives "ADDRESS:PORT" for one typed in, however it's spaced or cased, or 0 if it isn't one. And a check
+   of both against each other, for the build's tests (--check-codes): 0 if they're wrong. */
+int net_code_make(const char *address, int port, char *text, size_t room);
+int net_code_read(const char *text, char *where, size_t room);
+int net_code_check(void);
 const char *net_lobby_problem(void);
 void net_lobby_leave(void); /* backing out: the others are told */
 void net_lobby_reset(void); /* a game that's over, put away: another can be hosted or joined */

@@ -39,6 +39,39 @@ if(ANDROID)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
+# Online play asks the player's router to let the others in (platform/portmap.c): by UPnP with miniupnpc, and by NAT-PMP with
+# libnatpmp. Both are small, BSD-licensed and by the same author; each is fetched at one version, checked by its hash, and built into
+# the program. Only their sources are taken (SOURCE_SUBDIR names nothing, so their own builds, with their tools and tests, aren't
+# run), and the targets are made here.
+include(FetchContent)
+FetchContent_Declare(miniupnp
+  URL https://github.com/miniupnp/miniupnp/archive/refs/tags/miniupnpc_2_3_3.tar.gz
+  URL_HASH SHA256=8cf2c833b3e76fc4893ff29c2a376e3394962449e5970e373c0a91421724d222
+  SOURCE_SUBDIR not-built-from-here)
+FetchContent_Declare(libnatpmp
+  URL https://github.com/miniupnp/libnatpmp/archive/134fc89e2781e154e40042641f4d8bcbe42579f1.tar.gz
+  URL_HASH SHA256=be1864ed4e54a122590fd2de3824b085386b6e4aa9a91738c277c280ab8bf188
+  SOURCE_SUBDIR not-built-from-here)
+FetchContent_MakeAvailable(miniupnp libnatpmp)
+set(UPNPC_BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(UPNPC_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(UPNPC_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(UPNPC_BUILD_SAMPLE OFF CACHE BOOL "" FORCE)
+set(UPNPC_NO_INSTALL ON CACHE BOOL "" FORCE)
+add_subdirectory(${miniupnp_SOURCE_DIR}/miniupnpc ${miniupnp_BINARY_DIR}/miniupnpc EXCLUDE_FROM_ALL)
+target_compile_options(libminiupnpc-static PRIVATE -w)
+set(natpmp_sources ${libnatpmp_SOURCE_DIR}/natpmp.c ${libnatpmp_SOURCE_DIR}/getgateway.c)
+if(WIN32)
+  list(APPEND natpmp_sources ${libnatpmp_SOURCE_DIR}/wingettimeofday.c)
+endif()
+add_library(natpmp STATIC ${natpmp_sources})
+target_include_directories(natpmp PUBLIC ${libnatpmp_SOURCE_DIR})
+target_compile_definitions(natpmp PUBLIC NATPMP_STATICLIB PRIVATE ENABLE_STRNATPMPERR)
+target_compile_options(natpmp PRIVATE -w)
+if(WIN32)
+  target_link_libraries(natpmp PUBLIC ws2_32 iphlpapi)
+endif()
+
 # The game's C, as it stands: this target is what 6.3 and 6.4 clean up (docs/ROADMAP-B.md).
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS game/main/*.c game/overlays/*.c)
 add_library(game OBJECT ${GAME_SOURCES} tests/bossbot.c tests/adventureplayer.c tests/pogoplayer.c tests/bashplayer.c)
@@ -73,7 +106,7 @@ set_property(SOURCE ${core_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAM
 
 set(PORT_SOURCES main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/zipread.c platform/bps.c platform/settings.c
-  platform/touch.c platform/controls.c platform/net.c)
+  platform/touch.c platform/controls.c platform/net.c platform/portmap.c)
 if(ANDROID)
   # Android loads the game as libmain.so, and SDL's Java side calls its main (port/android/, docs/PORT.md, Android)
   add_library(crashbash SHARED ${PORT_SOURCES} $<TARGET_OBJECTS:game>)
@@ -89,10 +122,11 @@ endif()
 # Mods are zips, which zlib unpacks (platform/zipread.c).
 find_package(ZLIB REQUIRED)
 target_link_libraries(crashbash PRIVATE ZLIB::ZLIB)
-# Online play is plain sockets (platform/net.c), which Windows keeps in a library of their own
+# Online play is plain sockets (platform/net.c), which Windows keeps in a library of their own, and the two libraries above
 if(WIN32)
   target_link_libraries(crashbash PRIVATE ws2_32)
 endif()
+target_link_libraries(crashbash PRIVATE libminiupnpc-static natpmp)
 # The maths library is its own on Linux and the Mac (Windows links it by itself)
 if(UNIX)
   target_link_libraries(crashbash PRIVATE m)
@@ -120,6 +154,8 @@ enable_testing()
 add_test(NAME version COMMAND crashbash --version)
 set_tests_properties(version PROPERTIES PASS_REGULAR_EXPRESSION "crashbash ${PROJECT_VERSION}")
 add_test(NAME sdl COMMAND crashbash --check-sdl)
+add_test(NAME codes COMMAND crashbash --check-codes)
+set_tests_properties(codes PROPERTIES PASS_REGULAR_EXPRESSION "codes ok")
 
 # Checks that need the user's own game data, from assets/ (dat.py extract).
 file(GLOB MODE_TEXT_FILES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/../assets/CRASHBSH/*.txt/data.bin)

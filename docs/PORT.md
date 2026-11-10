@@ -309,6 +309,8 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--then` | what follows is for the game's next start (an online game from the launcher starts it again): presses, shots, `--frames` and `--turbo` |
 | `--restart-on-play` | the launcher's PLAY starts the game again from its beginning, as an online game's START does |
 | `--online-local`, `--online-port N` | the launcher's online games are this PC's alone, and on that port |
+| `--online-pretend-router open\|refused\|none\|shared` | hosting asks no router for a port, and is told that |
+| `--make-code ADDRESS N`, `--check-codes` | print the join code for an address and port N of the eight; check codes are made and read right |
 | `--controllers none|N`, `--no-sound` | for several copies of the game on one PC: this copy uses no controller, or only the Nth found (from 1), read even when its window isn't in front; and plays no sound |
 | `--shot N FILE` | save vblank N as a PNG |
 | `--press N BUTTONS` | hold pad 1's buttons (hex, `platform.h`) from vblank N for a moment |
@@ -437,6 +439,39 @@ whose vblanks count from 0 again. `--turbo` after `--then` is flat out from that
 in real time, as finding and joining need, and then play fast. `--online-local` keeps the launcher's games to this PC (hosted at
 127.0.0.1 and looked for there, so Windows doesn't ask about the firewall), and `--online-port N` puts them on another port.
 
+### Join codes (step 3)
+
+For a game between homes. A home's router lets nothing in from outside that wasn't asked for from inside, so a game hosted at
+home can't be joined from another home until the router passes a port on to the host's machine.
+
+**The router's port** (`platform/portmap.c`). HOST GAME asks the router for it, by UPnP (most home routers, where it's turned
+on) and, failing that, NAT-PMP (Apple's and some others), through miniupnpc and libnatpmp: small BSD-licensed libraries, fetched
+at one version each and checked by hash as the build is set up (`CMakeLists.txt`), and built into the program. It asks on a
+thread of its own, as finding the router takes a couple of seconds and the launcher is still drawing. The port outside is the
+first free of eight in a row from 47000, for two hours, so a game that ends badly doesn't leave it open for good; it's closed
+when the game's over or the host backs out. The router says what its own address is, and that's the one the others join at.
+
+**The code** (`net_code_make`, `net_code_read`). The host's address and which of the eight ports are 35 bits, and with 5 more
+to catch a slip they're eight characters of 32, written `XXXX-XXXX`: the digits and the letters without I, L, O and U, so none
+is read as another (an O typed is taken as 0, an I or L as 1). Every one-character slip is caught. The bits are stirred first,
+so the codes of addresses that start alike don't. The host's screen shows it once the port's open, and JOIN GAME's CODE row
+takes it, typed, or picked with a controller (up and down for the last character, right for another, left to take one off). While
+it's typed a key is a character and not the button it's set to: START joins and Esc goes back. That row takes an address too. A
+code is the host's address in another form, so it's for people the host would give that to.
+
+**When it can't work**, the host's screen says which, and what can be done, a page of each in turn:
+
+- The router didn't answer or wouldn't (UPnP is turned off on some): players on the host's network can still join, at the
+  address shown, and someone else could host, or UDP port 47000 can be opened on the router by hand (the others then type the
+  host's address as the world sees it), or everyone can use a virtual network such as Tailscale.
+- The router's own address isn't one the world can reach (a private one): the provider shares one address between homes, as
+  phone networks and some broadband do, or there's a second router beyond this one. No port opened here would help, so someone
+  else has to host, or everyone uses a virtual network.
+
+**For tests** no router is ever asked: `--online-local` games don't, and `--online-pretend-router open|refused|none|shared` gives
+that answer after a moment. `--make-code ADDRESS N` prints the code for an address and port N of the eight, and `--check-codes`
+(a `ctest`) makes and reads codes and tries every slip in some.
+
 ### By address, from the command line (step 2)
 
 `platform/net.c`, plain UDP sockets. One machine hosts and the others join it by its address:
@@ -503,8 +538,8 @@ packets, a machine that vanishes and one that stalls and is back.
 
 The steps: 1, staying identical (done); 2, online by address from the command line (done on one PC and between Windows and Linux);
 4, ONLINE in the launcher (done before 3, at the user's word: hosting and joining need nothing but the launcher, on one network);
-3, join codes, is what's left: the router's port opened by the game (UPnP and NAT-PMP), a code in place of the address, and plain
-messages when hosting can't work, for games between homes. Not in the first version: rollback, joining a game already running,
+3, join codes (written, and tested with a pretend router: no real router has been asked for a port yet, which is the user's to
+try, hosting at home with a friend joining from elsewhere). Not in the first version: rollback, joining a game already running,
 spectators, hosting from behind a shared address, IPv6 codes, chat.
 
 ## What a pointer's size breaks

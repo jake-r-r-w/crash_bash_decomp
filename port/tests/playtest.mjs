@@ -1045,15 +1045,20 @@ async function online(args) {
     /* the launcher's presses: ONLINE, then HOST GAME and in time START; or JOIN GAME and the first game found, or down to ADDRESS
        and the host's typed. In real time, as finding and joining take as long as they take */
     const lobby = (m, typed) => m === 0 ? [...press(100, DOWN), ...press(130, CROSS), ...press(170, CROSS), ...press(720, START)]
-        : [...press(100, DOWN), ...press(130, CROSS), ...press(170, DOWN), ...press(200, CROSS), ...(!typed ? press(360, CROSS)
-            : [...press(330, DOWN), ...press(360, CROSS), ...[...'127.0.0.1'].flatMap((key, i) => ['--key-press', String(400 + i * 14), key]), ...press(560, CROSS)])];
+        : [...press(100, DOWN), ...press(130, CROSS), ...press(170, DOWN), ...press(200, CROSS), ...(typed == null ? press(360, CROSS)
+            : [...press(330, DOWN), ...press(360, CROSS), ...[...typed].flatMap((key, i) => ['--key-press', String(400 + i * 14), key]), ...press(560, START)])];
+    /* the join code of a game hosted on this PC, as the program makes it: what its pretend router gives the host to show */
+    const code = spawnSync(path.resolve(ROOT, exe), ['--make-code', '127.0.0.1', '0'], { encoding: 'utf8' }).stdout.trim();
     /* the game after it: the same Battle; or the main menu's EXIT, by the host; or nothing, till the host's gone */
     const after = (c, m) => c.launcher === 'exit' ? [...(m === 0 ? [300, 320, 340, 360].flatMap(v => press(v, DOWN)).concat(press(400, CROSS)) : []), '--then', '--frames', '200']
         : c.launcher === 'host leaves' ? ['--frames', m === 0 ? '600' : '100000', ...(m === 0 ? [] : ['--then', '--shot', '150', rel('left.png'), '--frames', '200'])]
         : [...online_presses(m, c.machines), '--frames', String(ONLINE_END)];
     const through = [
         { name: 'from the launcher: hosted, found and joined', machines: 2, launcher: 'play' },
-        { name: 'from the launcher: the host\'s address typed', machines: 2, launcher: 'play', typed: true },
+        { name: 'from the launcher: the host\'s address typed', machines: 2, launcher: 'play', typed: '127.0.0.1' },
+        /* the host's router "opens its port" (a pretend one: none is asked), the host shows the code, and the joiner types it: its
+           letters are also keys the game's buttons are set to, which mustn't act as them */
+        { name: `from the launcher: joined by the host's code, ${code}`, machines: 2, launcher: 'play', typed: code.replace('-', ''), router: 'open' },
         { name: 'from the launcher: EXIT brings each machine back to it', machines: 2, launcher: 'exit' },
         { name: 'from the launcher: the host leaving brings the joiner back to it', machines: 2, launcher: 'host leaves' },
     ];
@@ -1063,6 +1068,7 @@ async function online(args) {
     fs.mkdirSync(dir, { recursive: true });
     const play_through = (c, k, slot, slots) => Promise.all(Array.from({ length: c.machines }, (_, m) => run(exe, ['--launcher', '--online-local', '--online-port',
         String(47250 + k), '--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--draw-every', '60', '--tile', String(slot + m), String(slots),
+        ...(c.router != null && m === 0 ? ['--online-pretend-router', c.router] : []),
         '--saves', rel(`through${k}-${m}`), ...lobby(m, c.typed), '--then', '--turbo', ...after(c, m)],
         path.join(dir, `through${k}-machine${m + 1}.txt`), { timeout: MODE_TIMEOUT })));
     const judge_through = (c, runs) => {
@@ -1086,6 +1092,12 @@ async function online(args) {
         }
         if (wrong == null && c.launcher === 'host leaves' && !/^online: Online play: the host has left the game/m.test(runs[1].text)) {
             wrong = 'the joiner never said the host had left';
+        }
+        if (wrong == null && c.router === 'open' && !runs[0].text.includes(`the join code is ${code}`)) {
+            wrong = 'the host never had its code';
+        }
+        if (wrong == null && c.router === 'open' && !/^launcher: joining [0-9A-Z]{8}$/m.test(runs[1].text)) {
+            wrong = 'the joiner never joined by the code';
         }
         return [c.name, { pass: wrong == null, what: wrong ?? (c.launcher === 'play' ? `the same on both, ${prints[0].length} steps` : 'back in the launcher') }];
     };
@@ -1168,6 +1180,20 @@ async function online(args) {
 
             slot += c.machines;
             return play_through(c, k, from, slots).then(runs => judge_through(c, runs));
+        })));
+    }
+    /* a router that won't help, each way it can: the host's screen says which (a pretend router again), with a shot of each page */
+    {
+        const routers = { refused: 'a router that won\'t open a port', none: 'no router that opens ports', shared: 'an address shared between homes' };
+
+        results.push(...await Promise.all(Object.keys(routers).map(async (router, i) => {
+            const r = await run(exe, ['--launcher', '--online-local', '--online-port', String(47270 + i), '--online-pretend-router', router, '--skip-intro',
+                '--pretend-pads', '1', '--turbo', '--tile', String(i), '4', ...press(100, DOWN), ...press(130, CROSS), ...press(170, CROSS),
+                '--shot', '700', rel(`router-${router}-1.png`), '--shot', '1000', rel(`router-${router}-2.png`), '--frames', '1020'],
+                path.join(dir, `router-${router}.txt`), { timeout: MODE_TIMEOUT });
+            const said = new RegExp(`^launcher: router ${router}$`, 'm').test(r.text);
+
+            return [`hosting with ${routers[router]}`, { pass: r.code === 0 && said, what: crash_where(exe, r.text) ?? (said ? 'said so' : `not said (exit ${r.code})`) }];
         })));
     }
     /* the recorded game again, with nobody else */

@@ -751,11 +751,18 @@ static int keyboard_buttons(void) {
     return b;
 }
 
-/* What a just-pressed key types, of what an address is made of: the launcher's JOIN GAME. */
+/* What a just-pressed key types, of what a join code or an address is made of, for the launcher's JOIN GAME: a letter (a capital),
+   a digit, a dot or a dash, 8 for backspace and 27 for Esc. */
 int host_typed(void) {
     int key = KeyPressed;
 
-    if (key >= SDL_SCANCODE_1 && key <= SDL_SCANCODE_9) {
+    if (key >= SDL_SCANCODE_A && key <= SDL_SCANCODE_Z) {
+        key = 'A' + key - SDL_SCANCODE_A;
+    } else if (key == SDL_SCANCODE_MINUS || key == SDL_SCANCODE_KP_MINUS) {
+        key = '-';
+    } else if (key == SDL_SCANCODE_ESCAPE) {
+        key = 27;
+    } else if (key >= SDL_SCANCODE_1 && key <= SDL_SCANCODE_9) {
         key = '1' + key - SDL_SCANCODE_1;
     } else if (key >= SDL_SCANCODE_KP_1 && key <= SDL_SCANCODE_KP_9) {
         key = '1' + key - SDL_SCANCODE_KP_1;

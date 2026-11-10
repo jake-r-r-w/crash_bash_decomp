@@ -43,6 +43,7 @@ typedef int SOCKET;
 #include <SDL3/SDL.h>
 #include "net.h"
 #include "platform.h"
+#include "portmap.h"
 #include "saves.h"
 #include "settings.h"
 
@@ -975,8 +976,121 @@ static void record_header(void) {
     }
 }
 
+/* --- join codes ---
+ *
+ * What a player at another home needs to join is the host's address as the world sees it and the port its router has opened: six
+ * bytes, more than anyone wants to read out. The port is one of eight in a row (portmap.c), so the address and which port are 35
+ * bits, and with 5 more to catch a slip they're eight characters of 32, written XXXX-XXXX. The 32 are the digits and the letters
+ * without I, L, O and U, so none is read as another (an O typed is taken as 0, an I or L as 1). The 35 bits are stirred first, so
+ * that the codes of addresses that start alike don't. */
+static const char CodeLetters[] = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+#define CODE_BITS 35
+#define CODE_MASK ((1ULL << CODE_BITS) - 1)
+#define CODE_STIR 0x5DEECE66DULL /* odd, so multiplying by it loses nothing */
+#define CODE_ADD 0x2B992DDFAULL
+
+/* Five bits that change if any one character does. */
+static uint32_t code_sum(uint64_t v) {
+    uint32_t sum = 0x1F;
+    int i;
+
+    for (i = CODE_BITS - 1; i >= 0; i--) {
+        uint32_t top = ((sum >> 4) ^ (uint32_t)(v >> i)) & 1;
+
+        sum = ((sum << 1) & 0x1F) ^ (top ? 0x05 : 0);
+    }
+    return sum;
+}
+
+int net_code_make(const char *address, int port, char *text, size_t room) {
+    unsigned a, b, c, d;
+    uint64_t v;
+    int i, n = 0;
+
+    if (room < 10 || sscanf(address, "%u.%u.%u.%u", &a, &b, &c, &d) != 4 || a > 255 || b > 255 || c > 255 || d > 255 || port < default_port()
+        || port >= default_port() + 8) {
+        return 0;
+    }
+    v = ((uint64_t)(a << 24 | b << 16 | c << 8 | d) << 3) | (uint64_t)(port - default_port());
+    v = (v * CODE_STIR + CODE_ADD) & CODE_MASK;
+    v = v << 5 | code_sum(v);
+    for (i = 7; i >= 0; i--) {
+        if (i == 3) {
+            text[n++] = '-';
+        }
+        text[n++] = CodeLetters[(v >> (i * 5)) & 31];
+    }
+    text[n] = '\0';
+    return 1;
+}
+
+int net_code_read(const char *text, char *where, size_t room) {
+    uint64_t v = 0, unstir = CODE_STIR;
+    int n = 0, i;
+
+    for (; *text != '\0'; text++) {
+        char c = *text >= 'a' && *text <= 'z' ? (char)(*text - 'a' + 'A') : *text;
+        const char *at;
+
+        if (c == '-' || c == ' ') {
+            continue;
+        }
+        c = c == 'O' ? '0' : c == 'I' || c == 'L' ? '1' : c;
+        at = strchr(CodeLetters, c);
+        if (at == NULL || n == 8) {
+            return 0;
+        }
+        v = v << 5 | (uint64_t)(at - CodeLetters);
+        n++;
+    }
+    if (n != 8 || code_sum(v >> 5) != (v & 31)) {
+        return 0;
+    }
+    /* the stir undone: what CODE_STIR times gives 1, found by doubling the bits it's right for */
+    for (i = 0; i < 6; i++) {
+        unstir *= 2 - CODE_STIR * unstir;
+    }
+    v = (((v >> 5) - CODE_ADD) * unstir) & CODE_MASK;
+    SDL_snprintf(where, room, "%u.%u.%u.%u:%d", (unsigned)(v >> 27) & 255, (unsigned)(v >> 19) & 255, (unsigned)(v >> 11) & 255, (unsigned)(v >> 3) & 255,
+                 default_port() + (int)(v & 7));
+    return 1;
+}
+
+/* Codes made and read back, and every one-character slip in some caught. */
+int net_code_check(void) {
+    static const char *const addresses[] = { "0.0.0.0", "255.255.255.255", "192.168.1.20", "10.0.0.1", "203.0.113.7", "86.12.200.3", "1.2.3.4" };
+    char code[16], where[64], want[64];
+    size_t a;
+    int port, i, k;
+
+    for (a = 0; a < sizeof(addresses) / sizeof(addresses[0]); a++) {
+        for (port = default_port(); port < default_port() + 8; port++) {
+            SDL_snprintf(want, sizeof(want), "%s:%d", addresses[a], port);
+            if (!net_code_make(addresses[a], port, code, sizeof(code)) || !net_code_read(code, where, sizeof(where)) || strcmp(where, want) != 0) {
+                printf("codes: %s came back from %s as %s\n", want, code, where);
+                return 0;
+            }
+            for (i = 0; code[i] != '\0'; i++) {
+                char was = code[i];
+
+                for (k = 0; k < 32 && was != '-'; k++) {
+                    code[i] = CodeLetters[k];
+                    if (code[i] != was && net_code_read(code, where, sizeof(where))) {
+                        printf("codes: %s with a wrong character at %d was taken\n", code, i);
+                        return 0;
+                    }
+                }
+                code[i] = was;
+            }
+        }
+    }
+    return !net_code_make("192.168.1.20", default_port() + 8, code, sizeof(code)) && !net_code_read("KQ7M-2XP", where, sizeof(where))
+        && net_code_make("192.168.1.20", default_port(), code, sizeof(code)) && code[4] == '-' && strlen(code) == 9;
+}
+
 /* Everything of a game that's over, or never began, put away, so that another can start. */
 static void reset_session(void) {
+    portmap_close();
     close_socket();
     if (Recording != NULL) {
         fclose(Recording);
@@ -1035,6 +1149,10 @@ int net_lobby_host(const char *where) {
     prints_clear(Machines[0].prints);
     Lobby = LOBBY_OPEN;
     say("hosting on port %d", port);
+    /* and the router's asked to let the world in at it (portmap.c): not for a test's game on this PC alone, unless it pretends */
+    if (Options.pretend_router != 0 || (!Options.local && Options.host == NULL)) {
+        portmap_open(port, default_port(), Options.pretend_router);
+    }
     return 1;
 }
 
@@ -1124,8 +1242,18 @@ int net_lobby_join(const char *where) {
     struct sockaddr_in host;
     int port = default_port(), slot;
 
+    char from_code[64];
+
     reset_session();
     Problem[0] = '\0';
+    /* a join code, or an address */
+    if (strchr(where, '.') == NULL && strchr(where, ':') == NULL) {
+        if (!net_code_read(where, from_code, sizeof(from_code))) {
+            lobby_fail("That code isn't right: it's eight letters and digits, as KQ7M-2XPA");
+            return 0;
+        }
+        where = from_code;
+    }
     if (!split_address(where, address, sizeof(address), &port) || address[0] == '\0' || !open_socket(address, port, 0, &host)) {
         lobby_fail("That isn't an address: it's the host's, as 192.168.1.20");
         return 0;
@@ -1227,6 +1355,26 @@ const char *net_lobby_address(void) {
 
 const char *net_lobby_problem(void) {
     return Problem;
+}
+
+int net_lobby_router(void) {
+    return Lobby == LOBBY_OPEN || Lobby == LOBBY_STARTING ? portmap_state() : PORTMAP_OFF;
+}
+
+const char *net_lobby_code(void) {
+    static char code[16];
+    static int said;
+
+    code[0] = '\0';
+    if (net_lobby_router() != PORTMAP_OPEN || !net_code_make(portmap_address(), portmap_port(), code, sizeof(code))) {
+        said = 0;
+        return "";
+    }
+    if (!said) {
+        said = 1;
+        say("the router's port %d is open: the join code is %s", portmap_port(), code);
+    }
+    return code;
 }
 
 /* Backing out: the others are told. */
