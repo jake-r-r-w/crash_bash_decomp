@@ -471,6 +471,11 @@ code is the host's address in another form, so it's for people the host would gi
   phone networks and some broadband do, or there's a second router beyond this one. No port opened here would help, so someone
   else has to host, or everyone uses a virtual network.
 
+**No servers** is the user's choice, made at the start and again (2026-11-10) once they'd met the case it costs: other games' codes
+work from any network because everything goes through servers their makers run or rent, and here a host on a phone's hotspot or
+a shared address can't be reached at all. A relay of our own would fix that and was turned down; such a player joins, and someone
+else hosts.
+
 **For tests** no router is ever asked: `--online-local` games don't, and `--online-pretend-router open|refused|none|shared` gives
 that answer after a moment. `--make-code ADDRESS N` prints the code for an address and port N of the eight, and `--check-codes`
 (a `ctest`) makes and reads codes and tries every slip in some.

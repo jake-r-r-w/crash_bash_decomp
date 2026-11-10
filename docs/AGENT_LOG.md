@@ -133,7 +133,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   on it: "Other games like r.e.p.o let you join with codes etc and you dont need to mess around with settings". Those games send
   everything through servers their makers run or rent; this plan chose none (the plan's own "not in this version": hosting from
   behind shared addresses, which needs a relay server). Put to the user: a small relay of our own, which would also make codes
-  short and not the host's address, against staying as it is. Their answer decides what's next.
+  short and not the host's address, against staying as it is. **They chose to keep it serverless** (2026-11-10, "Keep it
+  serverless"), knowing it means a player on a hotspot or a shared address can join and not host: no relay, and no need to put it
+  to them again. So the router's side of hosting (`portmap.c`) can only be tried by someone with a home router hosting, with this
+  same build.
 - **Port, online play, left from step 3:** no real router has been asked for a port: `portmap.c`'s UPnP and NAT-PMP paths compile
   and link on Windows and Linux and have never run (the tests' router is a pretend one, `--online-pretend-router`, and asking the
   user's own router is theirs to do, by hosting). So unknown: whether miniupnpc finds their router from a PC with Docker's and
