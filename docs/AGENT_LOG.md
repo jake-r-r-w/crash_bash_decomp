@@ -120,6 +120,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   stops for differing leaves nothing to play again. Extra heroes and mods' files are off online till machines can compare what
   they have. Android builds with all of online play in it, both kinds of processor (`tools/da sh port/android/build.sh`, 2026-11-10), and has the permission in its manifest, but hasn't been run with it. The options menu's volumes are in
   the game's record, so one player changing them in the pause menu changes them for everyone.
+- **Port, online play, hardening, put off by the user (2026-11-10: "not now we will do it later"):** before a game is hosted for
+  real, the packet handlers in `net.c` fuzzed (the `linux-asan` build, malformed and random packets at a host and at a joiner), and
+  the host's save checked on a joiner before the game's own loading code has it. Asked about security, they were told what's
+  exposed: one UDP port while hosting, no password on a lobby, the code being the host's address, nothing encrypted. `online
+  --play --demo` shows a code at work with a pretend router; they then hosted and joined a second game by hand through the
+  screens, which worked.
 - **Port, online play, left from step 3:** no real router has been asked for a port: `portmap.c`'s UPnP and NAT-PMP paths compile
   and link on Windows and Linux and have never run (the tests' router is a pretend one, `--online-pretend-router`, and asking the
   user's own router is theirs to do, by hosting). So unknown: whether miniupnpc finds their router from a PC with Docker's and
