@@ -571,6 +571,26 @@ int main(int argc, char **argv) {
             /* why HOST GAME says the router won't: what each step of asking it finds (portmap.c) */
             net_say_networks();
             return portmap_check(NET_PORT, NET_PORT) ? 0 : 1;
+        } else if (strcmp(argv[i], "--check-save") == 0 && i + 1 < argc) {
+            /* whether a save file (saves.c's) is one the game could have made, as an online game's host's has to be (card_check) */
+            unsigned char save[16 + SAVES_MOST];
+            char why[64];
+            FILE *f = fopen(argv[i + 1], "rb");
+            size_t n = f != NULL ? fread(save, 1, sizeof(save), f) : 0;
+
+            if (f != NULL) {
+                fclose(f);
+            }
+            if (n < 16 || memcmp(save, "CBSV", 4) != 0) {
+                printf("save: not a save file\n");
+                return 1;
+            }
+            if (!card_check(save + 16, (int)(n - 16), why, sizeof(why))) {
+                printf("save wrong: %s\n", why);
+                return 1;
+            }
+            printf("save ok\n");
+            return 0;
         } else if (strcmp(argv[i], "--make-code") == 0 && i + 2 < argc) {
             /* a join code for an address and one of the eight ports from the usual one (0 to 7): what a test's joiner types */
             char code[16];

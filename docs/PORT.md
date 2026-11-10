@@ -311,6 +311,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--online-local`, `--online-port N` | the launcher's online games are this PC's alone, and on that port |
 | `--online-pretend-router open\|refused\|none\|shared` | hosting asks no router for a port, and is told that |
 | `--check-router` | list this PC's network adapters and what each is taken for, then ask the router for a port as HOST GAME does, a step at a time, saying what each step found, and close it again: for when hosting says the router won't, or doesn't offer a virtual network's address |
+| `--check-save FILE` | whether a save file is one the game could have made, as an online game's host's has to be (`card_check`; Online play, Hardening) |
 | `--online-pretend-network "NAME=ADDRESS"` | a test: this PC has one more network adapter, called that, with that address |
 | `--make-code ADDRESS N`, `--check-codes` | print the join code for an address and port N of the eight; check codes are made and read right |
 | `--controllers none|N`, `--no-sound` | for several copies of the game on one PC: this copy uses no controller, or only the Nth found (from 1), read even when its window isn't in front; and plays no sound |
@@ -473,6 +474,70 @@ answering, is back, or leaves. It's drawn with the game's own text and reads onl
 game goes by. How it looks is the user's choice of three designs drawn for them (2026-11-10), after a line of text that stayed
 was "abit in your face" and dots alone didn't say how many were connected; they asked for it fainter than drawn, and for the
 dot's three colours.
+
+### Hardening
+
+Done 2026-11-10, at the user's word, after they'd put it off till the rest was written. While a machine hosts or joins it has a UDP
+port open, and anything can come to it from anyone who can reach it. A lobby has no password, a join code is the host's address in
+another form, and nothing is encrypted. The aim is that whatever arrives can't make a machine read or write outside what's meant, or
+stop its window answering. A machine in the game can still spoil the game: it chooses its own presses, so it can pause everyone by
+"pulling out" its pad, or end the game by disagreeing. That's no worse than a player who won't play.
+
+**The packets** (`platform/net.c`). Every handler reads through `Reader`, which reads nothing past a packet's end, and every count
+and index in a packet is checked before it's used. A packet from an address that isn't one of the game's machines can only ask who's
+hosting or ask to join. Going through every handler turned up five things, now put right:
+- A forged ping reply could make the delay less than one step. A ping back that says it took less than nothing or over 10 seconds
+  is dropped now (`RTT_MOST_MS`), and the delay is at least 1.
+- Stray bits in a joiner's "ready" byte could stop the game from ever starting. Only the start's bits count now.
+- A host that kept timing pings could keep a joiner doing nothing but answer them, its window frozen. Timed pings only count in the
+  lobby now, and for 0.4 seconds at most at a time (`ANSWER_MOST_MS`).
+- `net_pad` worked out a pad's place before checking its number. That's undefined in C, though the game only asks for 0 to 3.
+- `wait_packet` put "no socket" in a set of sockets, which is undefined on Linux. It doesn't wait at all with no socket now.
+
+**The fuzzer** (`tests/netfuzz.c`) throws packets at a machine in each of its seven states:
+- looking for games;
+- hosting, with the lobby open, while starting, and in the game;
+- joining, while asking, in the lobby, and in the game.
+
+Each packet comes from the host, from a joiner, or from a stranger. It's framed (the fuzzer writes the magic number, and the session
+or nonce after the type, so that most of what's tried gets past them) or raw, and the machine plays frames and steps between packets.
+It starts from seeds made of the packets a real game sends in each state. It's libFuzzer with ASan and UBSan, coverage-guided, and
+reaches about 70% of the packet handlers.
+
+It builds on Windows (`cmake --build --preset windows-clang --target netfuzz`), as the toolchain's clang has libFuzzer. Its driver
+won't take `-fsanitize=fuzzer` for Windows, so `CMakeLists.txt` asks for the coverage and links libFuzzer by hand. The Linux
+container's clang 14 has no sanitizer runtimes at all. `playtest.mjs fuzz [--seconds N]` runs it and keeps what it's learnt in
+`build/port/playtest/fuzz/corpus`. Its first two seconds found the `net_pad` one. After the fix, ten minutes and 2.2 million inputs
+found nothing.
+
+**The host's saves.** A joiner plays with the host's save slots, and that was the real way in. Loading a slot copies it over the
+whole game state (`*GAME = state`), and the card screen draws every slot's name and heroes, so every number in a save is one the
+game takes as it is. A genuine save with only its game mode changed crashed the ASan build the moment it was loaded. The check is
+`card_check` (`game/main/card.c`). It comes from an audit of every field's uses: each number the game looks something up by has to
+be within the tables it's used for. Fields the game only adds up, compares, tests the bits of, or sets again as it loads aren't
+checked. Beyond that:
+- a name is the font's letters and ends (a 13 in it is a line break that reads on past the end);
+- the mode is a warp room's, as a save is only ever made in one;
+- the gateway the hero stands at is one that warp room has, or it would follow a null pointer.
+
+Where it's checked:
+- The host checks its own slots before it hosts. A slot that fails is said under the menu ("SAVE SLOT N CAN'T BE PLAYED ONLINE").
+- A joiner checks each slot it's sent, and leaves if one fails.
+- A recording's saves are checked as it's played again.
+
+`--check-save FILE` says what the check makes of a save file. Every genuine save on the user's PC passes: theirs, the Adventure
+test's, the end of the Adventure's, and two more. Then 36 saves that the check takes, a genuine one with its fields set at
+random, were loaded in the ASan build and played on into the Adventure, and none was reported. The checked fields were within the
+check's ranges, and the rest were anything at all. `playtest.mjs online` has a host with a save the game couldn't have made, which
+it refuses.
+
+One the audit found that the game does in genuine play: `HealthPickupAmounts[3 - aiSkill[0]]` (`heroes.c`) reads before the table
+when `aiSkill` is over 3. A save can hold that, as a warp room sets it from the byte past `modeSkill`'s end, which in the fifth is
+the music's volume. The PS1 read the bytes next to it. It's left as it is (AGENT_LOG.md, Open leads).
+
+Not done: a lobby password, and any check on who joins (anyone who can reach the port while a lobby is open can join it). The session
+number is no secret, as a host gives it to anyone who asks who's hosting, so it's no defence. Nothing is encrypted or signed. Reading
+the router's answers is miniupnpc's (2.3.3) and libnatpmp's.
 
 ### Join codes (step 3)
 

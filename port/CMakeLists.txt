@@ -157,6 +157,28 @@ add_test(NAME sdl COMMAND crashbash --check-sdl)
 add_test(NAME codes COMMAND crashbash --check-codes)
 set_tests_properties(codes PROPERTIES PASS_REGULAR_EXPRESSION "codes ok")
 
+# The fuzzer for online play's packets (tests/netfuzz.c; PORT.md, Online play, Hardening), with ASan and UBSan: built only when
+# asked for (cmake --build --preset windows-clang --target netfuzz), and only where the compiler has libFuzzer, as the Windows
+# toolchain's has. Its driver refuses -fsanitize=fuzzer for Windows, so the coverage is asked for and libFuzzer linked by hand.
+execute_process(COMMAND ${CMAKE_C_COMPILER} -print-resource-dir OUTPUT_VARIABLE BASH_CLANG_RESOURCES OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+set(BASH_LIBFUZZER "${BASH_CLANG_RESOURCES}/lib/$<IF:$<BOOL:${WIN32}>,windows,linux>/libclang_rt.fuzzer-x86_64.a")
+if(EXISTS "${BASH_CLANG_RESOURCES}/lib/windows/libclang_rt.fuzzer-x86_64.a" OR EXISTS "${BASH_CLANG_RESOURCES}/lib/linux/libclang_rt.fuzzer-x86_64.a")
+  add_executable(netfuzz EXCLUDE_FROM_ALL tests/netfuzz.c platform/net.c platform/saves.c)
+  target_compile_definitions(netfuzz PRIVATE NET_FUZZ BASH_VERSION="${PROJECT_VERSION}")
+  target_compile_options(netfuzz PRIVATE -std=gnu17 -fwrapv -g -O1 -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=all
+    -fsanitize-coverage=inline-8bit-counters,trace-cmp,pc-table)
+  target_link_options(netfuzz PRIVATE -fsanitize=address,undefined)
+  target_link_libraries(netfuzz PRIVATE "${BASH_LIBFUZZER}" c++)
+  if(WIN32)
+    target_link_libraries(netfuzz PRIVATE ws2_32 iphlpapi)
+  endif()
+  if(TARGET SDL3::SDL3-static)
+    target_link_libraries(netfuzz PRIVATE SDL3::SDL3-static)
+  else()
+    target_link_libraries(netfuzz PRIVATE SDL3::SDL3)
+  endif()
+endif()
+
 # Checks that need the user's own game data, from assets/ (dat.py extract).
 file(GLOB MODE_TEXT_FILES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/../assets/CRASHBSH/*.txt/data.bin)
 if(MODE_TEXT_FILES)

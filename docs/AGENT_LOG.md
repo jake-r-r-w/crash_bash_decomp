@@ -93,7 +93,8 @@ ROADMAP-B.md, Part 7, more for the PC port, in its order (2026-11-01, the user's
    Step 4, ONLINE in the launcher, is done too, before 3 at the user's word (2026-11-10: "ONLINE screens first").
    Step 3, join codes, is written (2026-11-10, with the user's OK for miniupnpc and libnatpmp), and tested with a pretend
    router. Since then, tidy-ups from the user's own play, as they give them (the session log): the players menu, the joiner's
-   lobby, virtual networks' addresses, each machine's own sound options, and tags that show who's connected. **Next: the user's own try**, a game between two real machines on different networks (theirs to arrange, 2026-11-10: "leave that with me"), which is what the
+   lobby, virtual networks' addresses, each machine's own sound options, and tags that show who's connected. And
+   hardening, done (2026-11-10: PORT.md, Online play, Hardening). **Next: the user's own try**, a game between two real machines on different networks (theirs to arrange, 2026-11-10: "leave that with me"), which is what the
    plan calls done; then a release with it (their OK first, as for every release).
    What the review of the plan added is in PORT.md's Online play and the Open leads below.
 
@@ -115,16 +116,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - **Port, online play, left from step 2:** not yet played between two real machines, nor with a real controller, nor by a person
   at all (how it feels at each delay, and whether a joiner kept a step behind the host judders, are unknown: `net_behind` and the
   delay's sum in `start_host` are the two things to tune). The delay is set once at the start and never changes. The host's
-  save reaches a joiner as bytes that go straight into the game's own slots (`card_init`), unchecked beyond their size: fine among
-  players who trust each other, not against a host that means harm. A game's records are only kept if asked (`--net-record`), so a real game that
+  saves are checked on a joiner before the game has them (`card_check`; the hardening lead below). A game's records are only kept if asked (`--net-record`), so a real game that
   stops for differing leaves nothing to play again. Extra heroes and mods' files are off online till machines can compare what
   they have. Android builds with all of online play in it, both kinds of processor (`tools/da sh port/android/build.sh`, 2026-11-10), and has the permission in its manifest, but hasn't been run with it.
-- **Port, online play, hardening, put off by the user (2026-11-10: "not now we will do it later"):** before a game is hosted for
-  real, the packet handlers in `net.c` fuzzed (the `linux-asan` build, malformed and random packets at a host and at a joiner), and
-  the host's save checked on a joiner before the game's own loading code has it. Asked about security, they were told what's
-  exposed: one UDP port while hosting, no password on a lobby, the code being the host's address, nothing encrypted. `online
-  --play --demo` shows a code at work with a pretend router; they then hosted and joined a second game by hand through the
-  screens, which worked.
+- **Port, online play, hardening (done 2026-11-10, PORT.md, Online play, Hardening):** what's left of it is what was chosen not to
+  do: no lobby password and no check on who joins, nothing encrypted or signed, and a machine in the game can still spoil it
+  (pausing everyone by "pulling out" its pad, ending it by disagreeing). The fuzzer only builds on Windows (`netfuzz`); the save
+  check (`card_check`) is only as good as the audit behind it, of every GameState field's uses, and is to be looked at again when
+  the game's reading of a slot changes. Found and left: `HealthPickupAmounts[3 - aiSkill[0]]` (`heroes.c`) reads before the table
+  when `aiSkill` is over 3, which genuine play allows (a warp room sets it from the byte past `modeSkill`, the music's volume in
+  the fifth); the PS1 read the bytes before it there, so the fix is the PS1's layout, as for the other reads past a table.
 - **Port, online play, the user's own network can't host (2026-11-10):** they're on a phone's mobile-internet hotspot, with no
   router. `--check-router` here: the way out is 10.112.155.113 (the phone), nothing answers UPnP, no other UPnP device answers,
   nothing answers NAT-PMP. A phone network also shares one address between its users, so no port opened anywhere on their side
@@ -232,6 +233,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   slerp table, whose shape is an array) and Polar's `ang[2]` (struct ._23, which nothing reads).
 
 ## Gotchas
+
+- **The Linux container's clang has no sanitizer runtimes** (2026-11-10): clang 14 in `tools/dl` links nothing with
+  `-fsanitize=address`, so the `linux-asan` preset doesn't build there, and there's no libFuzzer. GCC's ASan works in it. The
+  Windows toolchain's clang 22 has ASan, UBSan and libFuzzer (`build/port/asan`, and `netfuzz`, which links libFuzzer by hand as
+  the driver refuses `-fsanitize=fuzzer` for Windows); its sanitizer DLL is beside the compiler, which has to be on the PATH.
 
 **Port test runs**
 - **Pretend controllers (`--pretend-pads`, 2026-11-10).** SDL drops a controller's presses while the window hasn't the focus, and a
@@ -639,6 +645,17 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-10: Hardening online play, at the user's word ("Start hardening"). Reading every packet handler found five small holes
+  (a forged ping reply could make the delay nought, stray "ready" bits stall the start, a host keep a joiner's window frozen
+  answering pings, two undefined-behaviour slips); all put right. A libFuzzer harness, `tests/netfuzz.c` with `playtest.mjs fuzz`,
+  puts a machine in each of its seven states and throws packets at it: 2.2 million inputs in ten minutes, clean after its first
+  find. The real way in was the host's saves, which a joiner's game loads straight over its state: a genuine save with its mode
+  changed crashed the ASan build. `card_check`, from an audit of every field's uses (by a subagent, checked in the code), refuses
+  what the game couldn't have made; the host checks its own, a joiner what it's sent. Every genuine save here passes, and
+  36 saves it accepts, fields at random within its ranges, played on clean in the ASan build. That found two of its gaps
+  (coming back to no gateway, four players in an Adventure) and a port bug: the unplugged-controller message ran on into the next
+  list, as on the PS1, so the two are one list now.
 
 - 2026-11-10: Four more from the user's list. A joiner's lobby lists who's there (the host says with its pings). The host's
   screen says a virtual network's address to join at ("ON HAMACHI, THEY JOIN AT ..."), by the adapters' names;

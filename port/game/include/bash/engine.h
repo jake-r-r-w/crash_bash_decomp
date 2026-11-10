@@ -460,8 +460,10 @@ void PickCpuHeroes(void);
 
 s32 GravitateNas(NAS *nas);
 
-extern HudEntry PauseUnpluggedMenu[];
-extern HudEntry PausePadMessage[];
+/* PC: the controller message runs on into the unplugged players' rows, as on the PS1: one list (sfx.c) */
+extern HudEntry PausePadScreen[];
+#define PausePadMessage (PausePadScreen + 0)
+#define PauseUnpluggedMenu (PausePadScreen + 3)
 
 void CheckControllers(void);
 

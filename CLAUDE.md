@@ -32,7 +32,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   the same gate. Functions >= `--big-bytes` (600) go to resumable big-mode
   workers; `swarm.mjs stats` shows match rates by size to tune that. `--seg`
   is a prefix (`main/` covers every main.exe unit).
-- The port's play tests: `node port/tests/playtest.mjs bosses|modes|adventure|challenges|hero|menu|pads|controls|identical|online|shots` (host Node; PORT.md, Running it).
+- The port's play tests: `node port/tests/playtest.mjs bosses|modes|adventure|challenges|hero|menu|pads|controls|identical|online|fuzz|shots` (host Node; PORT.md, Running it).
+  `fuzz` is online play's packet fuzzer, for a change to `platform/net.c` (built apart: `cmake --build --preset windows-clang --target netfuzz`);
+  a change to what the game reads from a save slot needs `card_check` (`game/main/card.c`) looked at too (PORT.md, Online play, Hardening).
 - Online play (roadmap 7.9, in steps: PORT.md, Online play) needs the same presses to give the same game on every machine:
   `playtest.mjs identical [--all]` checks it by the game's fingerprint after every step (`port/game/main/fingerprint.c`), for a change
   to the game's logic, sound, heap or pads. Nothing a machine's own settings or timing decide may reach the game's state.

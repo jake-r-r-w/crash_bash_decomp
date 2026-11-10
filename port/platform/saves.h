@@ -1,6 +1,8 @@
 #ifndef SAVES_H
 #define SAVES_H
 
+#include <stddef.h>
+
 /* The folder saves go in: a given one, none (NULL: nothing is kept), or the player's own. */
 void saves_set_folder(const char *folder);
 void saves_use_default_folder(void);
@@ -17,5 +19,9 @@ int saves_write(int slot, const void *data, int size);
 void saves_in_memory(int on);
 void saves_put(int slot, const void *data, int size);
 int saves_get(int slot, void *data, int room);
+/* Whether a slot's bytes are a save the game could have made, and so one it can load (game/main/card.c): for a save from another
+   machine, an online game's host's, or a recording's, which the game would otherwise take as they are. Size 0 is an empty slot, and
+   fine. 0 if not, with what's wrong in why. */
+int card_check(const void *data, int size, char *why, size_t room);
 
 #endif

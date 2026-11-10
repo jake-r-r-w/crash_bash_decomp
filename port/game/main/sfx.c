@@ -679,12 +679,14 @@ HudEntry PauseEndAdventureMenu[17] = {
     { 2, -0x14, 0x14A, 0x14A, 0, 0, 0x80, 0 },
     { -1, 0, 0, 0, 0, 0, 0, 0 },
 };
-HudEntry PausePadMessage[3] = {
+/* PC: the controller message and the unplugged players' rows, one list in the PS1's order (0x8005A3A4 on): the message has no end of
+ * its own, and is drawn on into the rows, which end both (bash/engine.h names each one's start). */
+HudEntry PausePadScreen[10] = {
+    /* PausePadMessage, from 0 */
     { 2, -0xA, 0x140, 0x140, 0, 0, 0x8080, 0 },
     { 4, -0x8000, 0, 0, 0xD0FF, 0xFF, 0, 0 },
     { 6, 1, 0, 0, 0, 0, 0, 0 },
-};
-HudEntry PauseUnpluggedMenu[7] = {
+    /* PauseUnpluggedMenu, from 3 */
     { 5, -0x8000, 0x50, 0x1C, 0xD0FF, 0xFF, 0, 0 },
     { 5, -0x8000, 0x62, 0x1D, 0xD0FF, 0xFF, 0, 0 },
     { 5, -0x8000, 0x74, 0x1E, 0xD0FF, 0xFF, 0, 0 },

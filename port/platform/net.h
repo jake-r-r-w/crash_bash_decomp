@@ -106,4 +106,21 @@ int net_behind(void);
 /* As the game or the program ends: the others are told, and a test run says how it went. */
 void net_end(void);
 
+#ifdef NET_FUZZ
+/* For the fuzzer (tests/netfuzz.c): a machine in one of its states, with no socket; a packet taken as if from one of the game's
+   machines (0 the host, then each that's joined, by number) or from a stranger (NET_FUZZ_WHO - 1); and what it does each frame and
+   each step, with that step's fingerprint. A machine in one state is told by its packets into the next, as a real one is. */
+enum { NET_FUZZ_FINDING, NET_FUZZ_HOST_OPEN, NET_FUZZ_HOST_STARTING, NET_FUZZ_HOST_PLAYING, NET_FUZZ_JOINER_ASKING, NET_FUZZ_JOINER_IN,
+       NET_FUZZ_JOINER_PLAYING, NET_FUZZ_STATES };
+#define NET_FUZZ_WHO 5
+#define NET_FUZZ_SESSION 0x5E551011u
+#define NET_FUZZ_NONCE 0x0D0CE123u
+struct sockaddr_in;
+void net_fuzz_begin(int state, int machines);
+void net_fuzz_take(const uint8_t *bytes, size_t size, int who);
+void net_fuzz_tick(uint32_t fingerprint);
+const struct sockaddr_in *net_fuzz_from(int who);
+uint32_t net_fuzz_build(void);
+#endif
+
 #endif

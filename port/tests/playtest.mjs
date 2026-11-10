@@ -54,6 +54,11 @@
  *       Online play on this PC to try yourself: copies of the game side by side, each at its launcher, to host in one and join in the
  *       others. The first has the keyboard and each other a controller. --delay, --lag and --loss are for feeling what a game over
  *       the internet is like. --demo hosts in one and joins by its code in the other by itself, to watch, with a pretend router.
+ *   node port/tests/playtest.mjs fuzz [--seconds N]
+ *       Online play's packet fuzzer (tests/netfuzz.c), for a change to platform/net.c: packets of every kind, and of none, at a host and
+ *       a joiner in each of their states, with ASan and UBSan watching, for 2 minutes by default. It's built apart, first:
+ *       cmake --build --preset windows-clang --target netfuzz (Windows: the toolchain's libFuzzer). It keeps what it's learnt in
+ *       build/port/playtest/fuzz/corpus, so each run carries on from the last, and plays again whatever an earlier run found.
  *   node port/tests/playtest.mjs shots FROM STEP COUNT [crashbash options...]
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
@@ -1053,7 +1058,8 @@ async function online(args) {
     const late = ['--net-lag', '40', '--net-loss', '10'];
     /* flat out, a press has to be used many steps late for the steps to come as fast as they're played: a packet takes as long as ever */
     const cases = [
-        { name: 'two machines', machines: 2, save: true },
+        { name: 'two machines', machines: 2, save: 'good' },
+        { name: 'a save the game couldn\'t have made is refused', machines: 2, save: 'bad', want: 'refused' },
         { name: 'two machines, packets late and lost', machines: 2, all: late, host: ['--net-delay', '30', '--net-record', rel('late.txt')] },
         { name: 'four machines, packets late and lost', machines: 4, all: late, host: ['--net-delay', '30'] },
         { name: 'a machine that disagrees is caught', machines: 2, per: { 1: ['--net-differ', '600'] }, want: 'differs' },
@@ -1136,9 +1142,10 @@ async function online(args) {
     const play = async (c, k, slot, slots) => {
         const end = c.end ?? (c.real ? 2400 : ONLINE_END);
 
-        if (c.save) {
-            /* the host has a save, which the others are to play with: a slot's file as saves.c writes it */
-            const data = Buffer.alloc(0x194, 0x21);
+        if (c.save != null) {
+            /* the host has a save, which the others are to play with: a slot's file as saves.c writes it. One the game could have made
+               (an Adventure saved in its first warp room, with a few things won), or one it couldn't, which hosting refuses */
+            const data = c.save === 'bad' ? Buffer.alloc(0x194, 0x21) : adventure_save();
             const head = Buffer.alloc(16);
 
             head.write('CBSV');
@@ -1161,6 +1168,10 @@ async function online(args) {
         const how = runs[0].text.match(/^online: \d+ steps; waited.*$/m)?.[0].replace(/^online: /, '').replace(/; \d+ packets.*/, '') ?? '';
         let wrong = crash ?? null;
 
+        if (wrong == null && c.want === 'refused') {
+            wrong = /^online: save slot 2 isn't one the game could have made/m.test(runs[0].text) ? null : 'the host didn\'t refuse it';
+            return [c.name, { pass: wrong == null, what: wrong ?? 'the host said so, and didn\'t host' }];
+        }
         if (wrong == null && c.want === 'differs') {
             wrong = runs.every(r => /^online: the games differ at step 600/m.test(r.text)) ? null : 'not every machine said the games differ at step 600';
             return [c.name, { pass: wrong == null, what: wrong ?? 'caught at step 600, and both stopped' }];
@@ -1178,7 +1189,7 @@ async function online(args) {
             wrong = !said(1, /^own sound: music 55, fx 95, mono$/m) ? 'the joiner\'s own sound options didn\'t change as pressed'
                 : said(0, /^own sound:/m) ? 'the host\'s sound options changed with the joiner\'s' : null;
         }
-        if (wrong == null && c.save) {
+        if (wrong == null && c.save === 'good') {
             const saves = runs.map(r => r.text.match(/saves ([0-9A-F]{8})$/m)?.[1]);
 
             wrong = saves.some(s => s == null || s !== saves[0]) || saves[0] === '9AE73935' ? `the host's save didn't reach the others: ${saves.join(', ')}` : null;
@@ -1242,7 +1253,7 @@ async function online(args) {
         const r = await run(exe, ['--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--turbo', '--draw-every', '60', '--replay', rel('late.txt'),
             '--frames', String(ONLINE_END)], path.join(dir, 'again.txt'), { timeout: MODE_TIMEOUT });
         const parted = crash_where(exe, r.text) ?? (r.code !== 0 ? `exit ${r.code}`
-            : fingerprints_part(fingerprints(fs.readFileSync(path.join(dir, 'game1-machine1.txt'), 'latin1')), fingerprints(r.text)));
+            : fingerprints_part(fingerprints(fs.readFileSync(path.join(dir, `game${cases.findIndex(c => c.host?.includes(rel('late.txt')))}-machine1.txt`), 'latin1')), fingerprints(r.text)));
 
         results.push(['a recorded game played again', { pass: parted == null, what: parted == null ? 'the same game' : `differs: ${parted}` }]);
     }
@@ -1403,6 +1414,43 @@ async function image(args) {
 }
 
 /* The CRC that PNGs and zips have. */
+/* A save slot as the game makes one (main.h, CardSlot: the heroes' summary, then GameState, nas.h): an Adventure begun with Crash and
+   saved in its first warp room, with the first few things won. For the online test's host to have. */
+function adventure_save() {
+    const d = Buffer.alloc(0x194);
+    const s = 8; /* GameState, after the summary */
+
+    d.set([1, 2, 3, 4, 0, 1, 1, 1], 0);
+    d.writeUInt32LE(0x80000000, s + 0x04);              /* cheats: none */
+    d.write('A       ', s + 0x18, 'latin1');            /* name */
+    d.writeInt8(60, s + 0x21);                          /* fps */
+    d.set([1, 2], s + 0x26);                            /* players, maxPlayers */
+    d.writeUInt16LE(0x200, s + 0x30);                   /* exitFlags */
+    d.writeUInt16LE(0x214, s + 0x32);                   /* levelFlags */
+    d.writeInt16LE(33, s + 0x34);                       /* mode: the first warp room */
+    d.writeInt16LE(1, s + 0x38);                        /* aiLevel */
+    d.writeUInt16LE(3, s + 0x3A);                       /* battleWins */
+    d.writeInt16LE(206, s + 0x3C);                      /* levelLoadModel */
+    d.writeInt16LE(512, s + 0x3E);
+    d.writeInt16LE(-1, s + 0x42);                       /* cupLeader */
+    d.writeInt16LE(1, s + 0x44);                        /* teamSide */
+    d.writeInt16LE(2, s + 0x46);
+    d.writeInt16LE(0, s + 0x48);                        /* teamLeader */
+    d.writeInt16LE(2, s + 0x4A);
+    d.set([1, 2, 3, 4], s + 0x4C);                      /* heroChoice */
+    d.set([1, 9, 9, 9], s + 0x50);                      /* heroes */
+    d.fill(0xFF, s + 0x54, s + 0x5C);                   /* teammateChoice, teammates: none */
+    d.set([0, 1, 1, 1], s + 0x5C);                      /* heroCpu */
+    d.writeInt8(-1, s + 0x63);                          /* gateway */
+    d.set([0, 1, 2, 3], s + 0xA7);                      /* adventure.rank */
+    d.writeInt32LE(70, s + 0xD0);                       /* adventure.options: music, sfx, stereo, vibration */
+    d.writeInt32LE(100, s + 0xD4);
+    d.writeInt32LE(1, s + 0xD8);
+    d.set([1, 1, 1, 1], s + 0xDC);
+    d.set([1, 1, 0, 1], s + 0xE4);                      /* adventure.won: a trophy or two */
+    return d;
+}
+
 function crc32(b) {
     let c = 0xFFFFFFFF;
     for (const x of b) {
@@ -1658,9 +1706,50 @@ async function mods(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, controls, identical, online, shots, image, packs, mods };
+/* Online play's packet fuzzer, which is libFuzzer's program: the sanitizers' runtime is beside the compiler, so that's on the PATH. */
+async function fuzz(args) {
+    const seconds = Number(option(args, '--seconds', '120'));
+    const exe = path.join(ROOT, WINDOWS ? 'build/port/windows-clang/netfuzz.exe' : 'build/port/linux-clang/netfuzz');
+    const dir = path.join(OUT, 'fuzz');
+    const corpus = path.join(dir, 'corpus'), found = path.join(dir, 'found');
+    const cache = path.join(path.dirname(exe), 'CMakeCache.txt');
+    const compiler = fs.existsSync(cache) ? fs.readFileSync(cache, 'utf8').match(/^CMAKE_C_COMPILER:\w+=(.*)$/m)?.[1] : null;
+    /* (Windows has it as Path) */
+    const key = Object.keys(process.env).find(k => k.toUpperCase() === 'PATH') ?? 'PATH';
+    const env = { ...process.env, [key]: `${compiler != null ? path.dirname(compiler) : ''}${path.delimiter}${process.env[key]}`, NETFUZZ_SEEDS: corpus };
+    const results = [];
+
+    if (!fs.existsSync(exe)) {
+        console.log(`no fuzzer at ${path.relative(ROOT, exe)}: cmake --build --preset windows-clang --target netfuzz (it needs a compiler with libFuzzer)`);
+        return 2;
+    }
+    fs.mkdirSync(corpus, { recursive: true });
+    fs.mkdirSync(found, { recursive: true });
+    /* what earlier runs found, first: each has to be put right by now */
+    for (const name of fs.readdirSync(found).filter(n => /^(crash|timeout|oom|leak)-/.test(n))) {
+        const r = spawnSync(exe, [path.join(found, name)], { env, encoding: 'latin1' });
+        const what = (r.stdout + r.stderr).match(/^(SUMMARY: .*|.*runtime error: .*)$/m)?.[1] ?? `exit ${r.status}`;
+
+        results.push([`found before: ${name}`, { pass: r.status === 0, what: r.status === 0 ? 'fixed' : what }]);
+    }
+    const r = await run(exe, [corpus, `-artifact_prefix=${found}${path.sep}`, `-max_total_time=${seconds}`, '-timeout=3', '-rss_limit_mb=2048', '-print_final_stats=1'],
+        path.join(dir, 'run.txt'), { env });
+    const text = r.text;
+    const runs = text.match(/stat::number_of_executed_units:\s*(\d+)/)?.[1] ?? '?';
+    const cov = text.match(/^#\d+\s+DONE\s+cov: (\d+)/m)?.[1] ?? '?';
+    const problem = text.match(/^(SUMMARY: .*|.*runtime error: .*|==\d+== ERROR: libFuzzer: .*)$/m)?.[1];
+
+    results.push([`${seconds} seconds of packets`, { pass: r.code === 0 && problem == null, what: problem ?? (r.code !== 0 ? `exit ${r.code}`
+        : `${runs} inputs, ${cov} edges of code reached, nothing wrong`) }]);
+    if (problem != null) {
+        console.log(`what it found is in ${path.relative(ROOT, found)}; run.txt says where`);
+    }
+    return report(results);
+}
+
+const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, pads, controls, identical, online, fuzz, shots, image, packs, mods };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|controls|identical|online|shots|image|packs|mods: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|pads|controls|identical|online|fuzz|shots|image|packs|mods: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));
