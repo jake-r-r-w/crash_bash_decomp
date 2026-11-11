@@ -1,8 +1,8 @@
 /* On-screen buttons for a touch screen (touch.h): a d-pad on the left, the four face buttons on the right, the shoulder buttons in the
- * top corners, and Select and Start, sized by the screen's shorter side and kept clear of a notch (the window's safe area). They're drawn
- * thin and faint over the picture, and fainter still once nothing's touched them for a while, so they keep out of the game's way; what
- * a finger can press is bigger than what's drawn. Each finger holds what it's on, and slides: round the d-pad, or from one face button to
- * the next. */
+ * top corners, and Select and Start, sized by the screen's shorter side, up to a phone's, and kept clear of a notch (the window's safe
+ * area). They're drawn thin and faint over the picture, and fainter still once nothing's touched them for a while, so they keep out of
+ * the game's way; what a finger can press is bigger than what's drawn. Each finger holds what it's on, and slides: round the d-pad, or
+ * from one face button to the next. */
 #include <math.h>
 #include <SDL3/SDL.h>
 #include "platform.h"
@@ -53,13 +53,21 @@ static int shown(void) {
     return Shown;
 }
 
+/* The buttons are sized by the screen's short side, up to a phone's: this many of the units a screen's scale is in (Android's dp, 160
+   to the inch or so; 420 is the commonest phone's short side). A thumb's no bigger for the screen being so, so a tablet, or the inside
+   screen of a phone that folds, gets buttons the size a phone's are, not ones twice that. */
+#define PHONE_SHORT_SIDE 420.0f
+/* Taller than this for its width, a screen's held upright, with room under a 4:3 picture for the buttons. One nearer square (a folding
+   phone's inside screen, either way up) is laid out as one held sideways is. */
+#define UPRIGHT_FROM (4.0f / 3)
+
 static void layout(int w, int h, Layout *l) {
     SDL_Window *win = host_window();
     float left = 0, top = 0, right = (float)w, bottom = (float)h;
     SDL_Rect safe;
     int ww = 0, wh = 0;
-    float u = (float)(w < h ? w : h), m;
-    int i;
+    float u = (float)(w < h ? w : h), m, scale = win != NULL ? SDL_GetWindowDisplayScale(win) : 0;
+    int i, upright = h > w * UPRIGHT_FROM;
 
     /* the safe area is in the window's own units, which may not be its pixels */
     if (win != NULL && SDL_GetWindowSafeArea(win, &safe) && SDL_GetWindowSize(win, &ww, &wh) && ww > 0 && wh > 0) {
@@ -69,6 +77,14 @@ static void layout(int w, int h, Layout *l) {
         top = safe.y * sy;
         right = (safe.x + safe.w) * sx;
         bottom = (safe.y + safe.h) * sy;
+    }
+    if (scale > 0 && u > PHONE_SHORT_SIDE * scale) {
+        u = PHONE_SHORT_SIDE * scale;
+    }
+    /* sideways, the shoulder buttons are a phone's height above the bottom, where a phone has them, not up at the top of a big screen
+       out of the thumbs' reach */
+    if (!upright && bottom - u > top) {
+        top = bottom - u;
     }
     m = 0.025f * u;
     l->u = u;
@@ -92,7 +108,7 @@ static void layout(int w, int h, Layout *l) {
     for (i = 0; i < 2; i++) {
         float w_ = 0.085f * u, h_ = 0.04f * u, cx, y0;
 
-        if (w > h) {
+        if (!upright) {
             cx = (l->shoulder[i * 2 + 1][0] + l->shoulder[i * 2 + 1][2]) / 2;
             y0 = l->shoulder[i * 2 + 1][3] + 0.04f * u;
         } else {

@@ -190,9 +190,17 @@ What's Android's own:
 - On-screen buttons (`platform/touch.c`), drawn over the picture on the window itself, so never in a test run's shots: a d-pad, the face
   buttons, the shoulders, Select and Start, thin and see-through as phones' games have them (the user's word: "they should not get in
   the way of the game"), fading to under half after 4 seconds untouched. What a finger presses is bigger than what's drawn. Upright
-  they sit below the picture. They show from the start, go when a controller or keyboard is used, and come back at a touch (anywhere, a
+  they sit below the picture. They're sized by the screen's short side up to a phone's (420 dp, by the screen's scale), so a tablet's
+  or a folding phone's inside screen has buttons a phone's size, and a screen nearer square than 4:3 is laid out as one held sideways,
+  with the shoulder buttons a phone's height above the bottom, in reach. They show from the start, go when a controller or keyboard is used, and come back at a touch (anywhere, a
   PC's touch screen too).
 - The back button is Triangle.
+- Phones that fold (roadmap 7.15): Android moves the app between the outside screen and the inside one as the phone's closed or
+  opened. The manifest takes the change itself (`configChanges`), so the game isn't started again; it comes as a new window size, or
+  as the surface taken away and another given, as when the app's left and come back to. SDL makes its swapchain again by itself in both,
+  except when making one is what fails on the lost surface: then it never asks for a new surface, and the screen stays black with
+  Android's Vulkan saying "BufferQueue has been abandoned" every frame (seen once). After eight frames running with no picture from
+  the window, the renderer claims the window again, surface and all (`gfx.c`, `reclaim_window`).
 - The game ends its process at once (`_exit`): an `exit()` crashed in Android's UI thread on a lock it had torn down, and Android may
   start the app again in a process it kept, with all of the game's state as it was.
 
@@ -206,6 +214,14 @@ adb shell am start -n io.github.jakerrw.crashbash/.CrashBashActivity --esa args 
 ```
 
 In Git Bash `MSYS_NO_PATHCONV=1` has to be set, or it turns the `/sdcard` paths into Windows ones.
+
+A phone that folds is the virtual device `crashbash_fold` (`avdmanager create avd -n crashbash_fold -k "system-images;android-35;default;x86_64"
+-d pixel_fold`, then `hw.gpu.enabled=yes`, `hw.gpu.mode=host` and `hw.ramSize=4096` in its `config.ini`, as `crashbash` has): 2208x1840
+inside and 1080x2092 outside, closed and opened with `adb emu fold` and `adb emu unfold`. It has two displays, so a screenshot names one:
+`adb exec-out screencap -d ID -p` (ids from `adb shell dumpsys SurfaceFlinger --display-id`); without `-d` a warning comes out in front of
+the PNG. The emulator's folding isn't dependable: about a third of the switches leave a black screen, Android's home screen as often
+as the game, and a fold sometimes doesn't happen, so a black shot there says nothing about the game. What does: the game's own
+`log.txt`, and logcat's lines from its process.
 
 A release is signed with the release key, which signs every Android release after it too, as Android only installs an update over an
 app signed by the same key. It lives outside the repo (on the user's PC, `.android-keys/crash-bash/` in their home folder: `release.jks`,

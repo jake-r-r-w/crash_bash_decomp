@@ -448,6 +448,30 @@ static void set_target_size(int width, int height, int remake) {
     update_view_extra();
 }
 
+/* Android takes the window's surface away and gives it another: when the app's left and come back to, and sometimes when a phone
+   that folds is opened or closed onto its other screen. SDL makes its swapchain again on the new one by itself, when getting or
+   showing a picture is what tells it the surface is lost. When making a swapchain is what fails on the lost surface, SDL's Vulkan
+   code (3.4.18) asks for no new surface, and every frame after fails the same way, a black screen for good: seen once in the
+   emulator's folding phone (2026-11-11), Android's Vulkan saying "BufferQueue has been abandoned" every frame. So after a few frames
+   running that couldn't get the window's picture, the window's claimed again, surface and all, and again every few frames till that
+   works. */
+#define RECLAIM_AFTER 8
+
+static int AcquireFailed;
+
+static void reclaim_window(const char *why) {
+    fprintf(stderr, "gfx: no picture from the window (%s), so it's claimed again\n", why);
+    SDL_WaitForGPUIdle(Device);
+    SDL_ReleaseWindowFromGPUDevice(Device, Window);
+    if (!SDL_ClaimWindowForGPUDevice(Device, Window)) {
+        fprintf(stderr, "SDL_ClaimWindowForGPUDevice: %s\n", SDL_GetError());
+        return;
+    }
+    if (!VsyncOn) {
+        set_vsync(0);
+    }
+}
+
 void gfx_window_resized(void) {
     if (FollowsWindow && Device != NULL) {
         SDL_WaitForGPUIdle(Device);
@@ -1813,9 +1837,13 @@ static void draw_shown(float step) {
     }
 
     /* a picture the card has no room for yet is dropped, and the game's clock doesn't wait */
-    if ((Stepping ? SDL_AcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh)
-                  : SDL_WaitAndAcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh)) && swap != NULL) {
+    if (!(Stepping ? SDL_AcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh)
+                   : SDL_WaitAndAcquireGPUSwapchainTexture(cmd, Window, &swap, &sw, &sh))) {
+        AcquireFailed++;
+    } else if (swap != NULL) {
         SDL_GPUBlitInfo b;
+
+        AcquireFailed = 0;
 
         SDL_zero(b);
         b.source.texture = Target;
@@ -1847,6 +1875,10 @@ static void draw_shown(float step) {
         ShotPath = NULL;
     } else {
         SDL_SubmitGPUCommandBuffer(cmd);
+    }
+    if (AcquireFailed >= RECLAIM_AFTER) {
+        AcquireFailed = 0;
+        reclaim_window(SDL_GetError());
     }
 }
 
