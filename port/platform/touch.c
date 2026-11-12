@@ -2,10 +2,11 @@
  * top corners, and Select and Start, sized by the screen's shorter side, up to a phone's, and kept clear of a notch (the window's safe
  * area). They're drawn thin and faint over the picture, and fainter still once nothing's touched them for a while, so they keep out of
  * the game's way; what a finger can press is bigger than what's drawn. Each finger holds what it's on, and slides: round the d-pad, or
- * from one face button to the next. */
+ * from one face button to the next. Or they're apart from the picture, in a part of the screen of their own (buttons_apart, below). */
 #include <math.h>
 #include <SDL3/SDL.h>
 #include "platform.h"
+#include "settings.h"
 #include "touch.h"
 
 #define MAX_FINGERS 10
@@ -33,6 +34,7 @@ typedef struct {
     float button_r, spacing;  /* a face button's drawn size, and how far each is from that centre */
     float shoulder[4][4];     /* L1, L2, R1, R2: x0, y0, x1, y1 */
     float small[2][4];        /* Select, Start */
+    int apart;                /* in a part of the window of their own, not over the picture */
 } Layout;
 
 static const int ShoulderBits[4] = { PAD_L1, PAD_L2, PAD_R1, PAD_R2 };
@@ -61,29 +63,113 @@ static int shown(void) {
    phone's inside screen, either way up) is laid out as one held sideways is. */
 #define UPRIGHT_FROM (4.0f / 3)
 
-static void layout(int w, int h, Layout *l) {
+/* The buttons apart from the picture (the settings' buttons_apart, an option on Android: the user's word, 2026-11-12, for the inside
+   screen of a phone that folds): the picture has one part of the screen and the buttons the rest, with nothing of the game under a
+   thumb. The buttons are either all below the picture, the shoulder buttons over the d-pad and the face buttons, in a band this much
+   of their size (the shoulder buttons clear of the d-pad's reach for a finger); or at its sides, where they are anyway on a screen
+   held sideways, the d-pad's width to the left of it and the face buttons' to the right. Whichever leaves a 4:3 picture more room:
+   below on a screen that's upright or near square, at the sides on a wide one. */
+#define BAND_BELOW 0.66f
+#define BAND_SIDE 0.37f
+/* There they have no picture to keep out of the way of, so they are plain to see, and stay so */
+#define APART_BODY_ALPHA 0.30f
+#define APART_MARK_ALPHA 0.90f
+enum { BUTTONS_OVER, BUTTONS_BELOW, BUTTONS_SIDES };
+
+/* A window's edges inside its safe area, and the buttons' size, in its pixels */
+typedef struct {
+    float left, top, right, bottom, u;
+} Edges;
+
+static void edges(int w, int h, Edges *e) {
     SDL_Window *win = host_window();
-    float left = 0, top = 0, right = (float)w, bottom = (float)h;
     SDL_Rect safe;
     int ww = 0, wh = 0;
-    float u = (float)(w < h ? w : h), m, scale = win != NULL ? SDL_GetWindowDisplayScale(win) : 0;
-    int i, upright = h > w * UPRIGHT_FROM;
+    float scale = win != NULL ? SDL_GetWindowDisplayScale(win) : 0;
 
+    e->left = 0;
+    e->top = 0;
+    e->right = (float)w;
+    e->bottom = (float)h;
+    e->u = (float)(w < h ? w : h);
     /* the safe area is in the window's own units, which may not be its pixels */
     if (win != NULL && SDL_GetWindowSafeArea(win, &safe) && SDL_GetWindowSize(win, &ww, &wh) && ww > 0 && wh > 0) {
         float sx = (float)w / ww, sy = (float)h / wh;
 
-        left = safe.x * sx;
-        top = safe.y * sy;
-        right = (safe.x + safe.w) * sx;
-        bottom = (safe.y + safe.h) * sy;
+        e->left = safe.x * sx;
+        e->top = safe.y * sy;
+        e->right = (safe.x + safe.w) * sx;
+        e->bottom = (safe.y + safe.h) * sy;
     }
-    if (scale > 0 && u > PHONE_SHORT_SIDE * scale) {
-        u = PHONE_SHORT_SIDE * scale;
+    if (scale > 0 && e->u > PHONE_SHORT_SIDE * scale) {
+        e->u = PHONE_SHORT_SIDE * scale;
     }
-    /* sideways, the shoulder buttons are a phone's height above the bottom, where a phone has them, not up at the top of a big screen
-       out of the thumbs' reach */
-    if (!upright && bottom - u > top) {
+}
+
+static int apart(void) {
+    return shown() && settings()->buttons_apart;
+}
+
+/* Where the buttons are, and the part of the window that leaves the picture: x0, y0, x1, y1 */
+static int placing(int w, int h, const Edges *e, float area[4]) {
+    float below = e->bottom - BAND_BELOW * e->u, sides = e->right - e->left - 2 * BAND_SIDE * e->u;
+
+    area[0] = 0;
+    area[1] = 0;
+    area[2] = (float)w;
+    area[3] = (float)h;
+    if (!apart() || (below <= 0 && sides <= 0)) {
+        return BUTTONS_OVER;
+    }
+    /* by the height of the 4:3 picture that fits */
+    if (SDL_min(below, w * 0.75f) >= SDL_min((float)h, sides * 0.75f)) {
+        area[3] = below;
+        return BUTTONS_BELOW;
+    }
+    area[0] = e->left + BAND_SIDE * e->u;
+    area[2] = e->right - BAND_SIDE * e->u;
+    return BUTTONS_SIDES;
+}
+
+void touch_picture_area(int w, int h, int *x, int *y, int *area_w, int *area_h) {
+    Edges e;
+    float area[4];
+
+    edges(w, h, &e);
+    placing(w, h, &e, area);
+    *x = (int)area[0];
+    *y = (int)area[1];
+    *area_w = (int)area[2] - *x;
+    *area_h = (int)area[3] - *y;
+}
+
+int touch_area_changed(void) {
+    static int was = -1;
+    int now = apart(), changed = was >= 0 && now != was;
+
+    was = now;
+    return changed;
+}
+
+static void layout(int w, int h, Layout *l) {
+    Edges e;
+    float left, top, right, bottom, u, m, area[4];
+    int i, upright = h > w * UPRIGHT_FROM, placed, below;
+
+    edges(w, h, &e);
+    placed = placing(w, h, &e, area);
+    below = placed == BUTTONS_BELOW;
+    l->apart = placed != BUTTONS_OVER;
+    left = e.left;
+    top = e.top;
+    right = e.right;
+    bottom = e.bottom;
+    u = e.u;
+    if (below) {
+        top = area[3];
+    } else if (!upright && bottom - u > top) {
+        /* sideways, the shoulder buttons are a phone's height above the bottom, where a phone has them, not up at the top of a big
+           screen out of the thumbs' reach */
         top = bottom - u;
     }
     m = 0.025f * u;
@@ -103,12 +189,12 @@ static void layout(int w, int h, Layout *l) {
         l->shoulder[i][2] = x0 + w_;
         l->shoulder[i][3] = y0 + h_;
     }
-    /* Select and Start: on a screen held sideways, at the sides under L2 and R2; held upright, at the bottom between the d-pad and the
-       face buttons, below the picture */
+    /* Select and Start: on a screen held sideways, at the sides under L2 and R2; held upright, or with the buttons all below the
+       picture, at the bottom between the d-pad and the face buttons */
     for (i = 0; i < 2; i++) {
         float w_ = 0.085f * u, h_ = 0.04f * u, cx, y0;
 
-        if (!upright) {
+        if (!upright && !below) {
             cx = (l->shoulder[i * 2 + 1][0] + l->shoulder[i * 2 + 1][2]) / 2;
             y0 = l->shoulder[i * 2 + 1][3] + 0.04f * u;
         } else {
@@ -371,8 +457,8 @@ int touch_shapes(int w, int h, TouchVert *out, int max, int *bodies, float alpha
 
         share = 1 - (1 - IDLE_SHARE) * f;
     }
-    alpha[0] = TOUCH_BODY_ALPHA * share;
-    alpha[1] = TOUCH_MARK_ALPHA * share;
+    alpha[0] = l.apart ? APART_BODY_ALPHA : TOUCH_BODY_ALPHA * share;
+    alpha[1] = l.apart ? APART_MARK_ALPHA : TOUCH_MARK_ALPHA * share;
     u = l.u;
     o.v = out;
     o.n = 0;

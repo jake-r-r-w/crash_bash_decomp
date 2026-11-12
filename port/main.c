@@ -561,7 +561,7 @@ int platform_idle(void) {
 int main(int argc, char **argv) {
     const char *Image = NULL;
     const char *dump_files_to = NULL;
-    int antialias = 0, smooth = 0, widescreen = 0, upscale = 0, level_flags = 0, sharp_icons = 0;
+    int antialias = 0, smooth = 0, widescreen = 0, upscale = 0, level_flags = 0, sharp_icons = 0, buttons_apart = 0;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int extra[4] = { 0 }, extra_heroes = 0, heroes[4] = { 0 };
@@ -770,6 +770,8 @@ int main(int argc, char **argv) {
             widescreen = 1;
         } else if (strcmp(argv[i], "--sharp-icons") == 0) {
             sharp_icons = 1;
+        } else if (strcmp(argv[i], "--buttons-apart") == 0) {
+            buttons_apart = 1;
         } else if (strcmp(argv[i], "--upscale") == 0 && i + 1 < argc) {
             upscale = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--texture-pack") == 0 && i + 1 < argc) {
@@ -945,6 +947,9 @@ int main(int argc, char **argv) {
     }
     if (sharp_icons) {
         settings()->icons = 1;
+    }
+    if (buttons_apart) {
+        settings()->buttons_apart = 1;
     }
     if (extra_heroes) {
         settings()->extra_heroes = 1;

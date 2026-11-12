@@ -25,4 +25,10 @@ typedef struct TouchVert {
 } TouchVert;
 int touch_shapes(int w, int h, TouchVert *out, int max, int *bodies, float alpha[2]);
 
+/* The part of a window of w x h pixels that's the picture's: all of it, unless the buttons are shown and set apart from the picture
+ * (the settings' buttons_apart), when they have the rest. */
+void touch_picture_area(int w, int h, int *x, int *y, int *area_w, int *area_h);
+/* Whether the buttons have taken a part of the window, or given it back, since this was last asked: the picture's to be fitted again. */
+int touch_area_changed(void);
+
 #endif

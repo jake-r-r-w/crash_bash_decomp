@@ -753,7 +753,8 @@ int host_poll(void) {
             break;
         }
     }
-    if (resized) {
+    /* (or the touch buttons have taken a part of it from the picture, or given it back) */
+    if (touch_area_changed() || resized) {
         gfx_window_resized();
     }
     for (int i = 0; i < MAX_PADS; i++) {

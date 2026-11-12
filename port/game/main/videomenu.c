@@ -13,7 +13,13 @@ static const struct {
     const char *help;
 } Options[NUM_VIDEO] = {
     { "DISPLAY", "PLAY IN A WINDOW OR FULLSCREEN" },
+#ifdef __ANDROID__
+    /* A phone has no window to size, so on Android that row is the touch buttons' place instead (platform/touch.c; the user's word,
+       2026-11-12: an option only Android shows). The menus are laid out for this many rows, and this way they still are */
+    { "TOUCH BUTTONS", "OVER THE GAME, OR IN A SPACE OF THEIR OWN" },
+#else
     { "WINDOW SIZE", "THE SIZE OF THE WINDOW ON YOUR SCREEN" },
+#endif
     { "RESOLUTION", "THE SIZE THE GAME DRAWS AT" },
     { "FRAME RATE", "30 IS THE ORIGINAL, 60 AND 120 ARE SMOOTHER" },
     { "VSYNC", "MATCH YOUR SCREEN, TO STOP TEARING" },
@@ -28,8 +34,10 @@ typedef struct {
     s32 w, h;
 } VideoSize;
 
+#ifndef __ANDROID__
 static const VideoSize WindowSizes[] = { { 640, 480 }, { 960, 720 }, { 1280, 720 }, { 1280, 960 }, { 1600, 1200 }, { 1920, 1080 },
                                          { 1920, 1440 }, { 2560, 1440 }, { 3840, 2160 } };
+#endif
 static const VideoSize RenderSizes[] = { { 0, 0 }, { 640, 480 }, { 1280, 960 }, { 1920, 1440 }, { 2560, 1920 }, { 3840, 2880 } };
 
 #define NUM_OF(a) ((s32)(sizeof(a) / sizeof((a)[0])))
@@ -46,6 +54,7 @@ const char *video_option_help(s32 i) {
     return Options[i].help;
 }
 
+#ifndef __ANDROID__
 /* The window's sizes that fit on the screen, smallest first, then maximised, and round again. From a size that isn't one of them, the next one bigger or smaller. */
 static void step_window(Settings *s, s32 dir) {
     s32 area = s->maximized ? (dir > 0 ? -1 : 0x7FFFFFFF) : s->window_w * s->window_h;
@@ -73,6 +82,7 @@ static void step_window(Settings *s, s32 dir) {
     s->window_h = WindowSizes[best].h;
     s->maximized = 0;
 }
+#endif
 
 /* Moves through a list of sizes from the one in use, wrapping at the ends. */
 static void step_size(const VideoSize *sizes, s32 count, int *w, int *h, s32 dir) {
@@ -96,7 +106,11 @@ void video_option_change(s32 i, s32 dir) {
         s->fullscreen = !s->fullscreen;
         break;
     case VIDEO_WINDOW:
+#ifdef __ANDROID__
+        s->buttons_apart = !s->buttons_apart;
+#else
         step_window(s, dir);
+#endif
         break;
     case VIDEO_RENDER:
         step_size(RenderSizes, NUM_OF(RenderSizes), &s->render_w, &s->render_h, dir);
@@ -135,6 +149,10 @@ void video_option_value(s32 i, char *text, s32 size) {
         snprintf(text, size, "%s", s->fullscreen ? "FULLSCREEN" : "WINDOW");
         break;
     case VIDEO_WINDOW:
+#ifdef __ANDROID__
+        snprintf(text, size, "%s", s->buttons_apart ? "APART" : "OVER GAME");
+        break;
+#endif
         if (s->maximized) {
             snprintf(text, size, "MAXIMISED");
         } else {

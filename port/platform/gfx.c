@@ -392,9 +392,10 @@ static void set_vsync(int vsync) {
     VsyncOn = mode == SDL_GPU_PRESENTMODE_VSYNC;
 }
 
-/* A size of 0 x 0 asks for what the window can show of a 4:3 picture, pixel for pixel. */
+/* A size of 0 x 0 asks for what the window can show of a 4:3 picture, pixel for pixel: the window's part that's the picture's, where
+   the touch buttons have a part of their own (touch.h). */
 static void resolve_size(int *width, int *height) {
-    int w, h;
+    int w, h, x, y;
     int asked_h = *height;
 
     FollowsWindow = *width == 0 || *height == 0 || Wide;
@@ -402,6 +403,10 @@ static void resolve_size(int *width, int *height) {
         return;
     }
     SDL_GetWindowSizeInPixels(Window, &w, &h);
+    touch_picture_area(w, h, &x, &y, &w, &h);
+    if (w <= 0 || h <= 0) {
+        return;
+    }
     if (Wide && w * 3 > h * 4) {
         /* the window's shape, at the height asked for */
         if (asked_h != 0) {
@@ -1504,17 +1509,27 @@ typedef struct {
     short blend, textured, clip, sharp;
 } Run;
 
-/* The largest part of a window with the picture's shape, centred. */
+/* The largest part of a window with the picture's shape, centred: in the window's part that's the picture's, where the touch buttons
+   have a part of their own (touch.h). */
 static void fit_picture(Uint32 sw, Uint32 sh, SDL_GPUBlitRegion *r) {
-    Uint32 w = sw, h = sh;
+    int x = 0, y = 0, aw = (int)sw, ah = (int)sh;
+    Uint32 w, h;
 
-    if ((Uint64)sw * TargetH > (Uint64)sh * TargetW) {
-        w = (Uint32)((Uint64)sh * TargetW / TargetH);
-    } else {
-        h = (Uint32)((Uint64)sw * TargetH / TargetW);
+    touch_picture_area((int)sw, (int)sh, &x, &y, &aw, &ah);
+    if (aw <= 0 || ah <= 0) {
+        x = y = 0;
+        aw = (int)sw;
+        ah = (int)sh;
     }
-    r->x = (sw - w) / 2;
-    r->y = (sh - h) / 2;
+    w = (Uint32)aw;
+    h = (Uint32)ah;
+    if ((Uint64)aw * TargetH > (Uint64)ah * TargetW) {
+        w = (Uint32)((Uint64)ah * TargetW / TargetH);
+    } else {
+        h = (Uint32)((Uint64)aw * TargetH / TargetW);
+    }
+    r->x = (Uint32)x + ((Uint32)aw - w) / 2;
+    r->y = (Uint32)y + ((Uint32)ah - h) / 2;
     r->w = w;
     r->h = h;
 }
