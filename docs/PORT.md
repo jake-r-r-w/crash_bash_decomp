@@ -228,9 +228,9 @@ It has two displays, so a screenshot names one: `adb exec-out screencap -d ID -p
 --display-id`); without `-d` a warning comes out in front of the PNG. Keep it awake (`adb shell svc power stayon true`, and `adb shell
 input keyevent KEYCODE_WAKEUP` if it's gone to sleep): asleep, its screenshots are black and an app started on it is stopped at once.
 On this image 49 switches, on the home screen, in the launcher and in a minigame, left no black screen (2026-11-12). The first one
-tried, `crashbash_fold` on the bare AOSP Android 15 image the phone `crashbash` uses, isn't dependable: about a third of its switches
-leave a black screen, Android's home screen as often as the game, and a fold sometimes doesn't happen, so a black shot there says
-nothing about the game. What does, on either: the game's own `log.txt`, and logcat's lines from its process.
+tried, `crashbash_fold` on the bare AOSP Android 15 image the phone `crashbash` uses (deleted since), wasn't dependable: about a third
+of its switches left a black screen, Android's home screen as often as the game, and a fold sometimes didn't happen, so a black shot there said
+nothing about the game. What does, on any of them: the game's own `log.txt`, and logcat's lines from its process.
 
 A release is signed with the release key, which signs every Android release after it too, as Android only installs an update over an
 app signed by the same key. It lives outside the repo (on the user's PC, `.android-keys/crash-bash/` in their home folder: `release.jks`,
