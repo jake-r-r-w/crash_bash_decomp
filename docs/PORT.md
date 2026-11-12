@@ -201,6 +201,11 @@ What's Android's own:
   except when making one is what fails on the lost surface: then it never asks for a new surface, and the screen stays black with
   Android's Vulkan saying "BufferQueue has been abandoned" every frame (seen once). After eight frames running with no picture from
   the window, the renderer claims the window again, surface and all (`gfx.c`, `reclaim_window`).
+- Started with the phone asleep or locked, or as something else comes to the front, the app has no window yet: Android stops it and
+  takes its surface in its first tenth of a second. The game used to carry on with a device and no window, and crashed drawing its
+  first frame (found 2026-11-12, started by adb on a sleeping emulator). Now it waits for the window (`gfx.c`, `claim_window`: SDL holds
+  the game in its events while the app's stopped) and comes up when the phone's woken; and a renderer that can't be set up at all
+  leaves no device behind, so nothing's drawn rather than crashing.
 - The game ends its process at once (`_exit`): an `exit()` crashed in Android's UI thread on a lock it had torn down, and Android may
   start the app again in a process it kept, with all of the game's state as it was.
 
@@ -215,13 +220,17 @@ adb shell am start -n io.github.jakerrw.crashbash/.CrashBashActivity --esa args 
 
 In Git Bash `MSYS_NO_PATHCONV=1` has to be set, or it turns the `/sdcard` paths into Windows ones.
 
-A phone that folds is the virtual device `crashbash_fold` (`avdmanager create avd -n crashbash_fold -k "system-images;android-35;default;x86_64"
--d pixel_fold`, then `hw.gpu.enabled=yes`, `hw.gpu.mode=host` and `hw.ramSize=4096` in its `config.ini`, as `crashbash` has): 2208x1840
-inside and 1080x2092 outside, closed and opened with `adb emu fold` and `adb emu unfold`. It has two displays, so a screenshot names one:
-`adb exec-out screencap -d ID -p` (ids from `adb shell dumpsys SurfaceFlinger --display-id`); without `-d` a warning comes out in front of
-the PNG. The emulator's folding isn't dependable: about a third of the switches leave a black screen, Android's home screen as often
-as the game, and a fold sometimes doesn't happen, so a black shot there says nothing about the game. What does: the game's own
-`log.txt`, and logcat's lines from its process.
+A phone that folds is the virtual device `crashbash_fold36`, a Pixel Fold on the Android 16 Google APIs image (`sdkmanager
+"system-images/android-36/google_apis/x86_64"`, then `avdmanager create avd -n crashbash_fold36 -k
+"system-images;android-36;google_apis;x86_64" -d pixel_fold`, and `hw.gpu.enabled=yes`, `hw.gpu.mode=host` and `hw.ramSize=4096` in its
+`config.ini`, as `crashbash` has): 2208x1840 inside and 1080x2092 outside, closed and opened with `adb emu fold` and `adb emu unfold`.
+It has two displays, so a screenshot names one: `adb exec-out screencap -d ID -p` (ids from `adb shell dumpsys SurfaceFlinger
+--display-id`); without `-d` a warning comes out in front of the PNG. Keep it awake (`adb shell svc power stayon true`, and `adb shell
+input keyevent KEYCODE_WAKEUP` if it's gone to sleep): asleep, its screenshots are black and an app started on it is stopped at once.
+On this image 49 switches, on the home screen, in the launcher and in a minigame, left no black screen (2026-11-12). The first one
+tried, `crashbash_fold` on the bare AOSP Android 15 image the phone `crashbash` uses, isn't dependable: about a third of its switches
+leave a black screen, Android's home screen as often as the game, and a fold sometimes doesn't happen, so a black shot there says
+nothing about the game. What does, on either: the game's own `log.txt`, and logcat's lines from its process.
 
 A release is signed with the release key, which signs every Android release after it too, as Android only installs an update over an
 app signed by the same key. It lives outside the repo (on the user's PC, `.android-keys/crash-bash/` in their home folder: `release.jks`,

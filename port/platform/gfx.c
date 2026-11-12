@@ -666,6 +666,39 @@ static void vulkan_lacks(char *out, size_t size) {
 }
 #endif
 
+/* A phone can take the app's window away as it starts, when something else comes to the front: Android 16 did in the emulator
+   (2026-11-12), and the game, with a device and no window, crashed drawing its first frame. There's no window to claim till the
+   app's in front again, and SDL holds the game in its events till then, so the claim's tried again after them. */
+#define CLAIM_TRIES 100
+
+static int claim_window(void) {
+    int i;
+
+    for (i = 0; i < CLAIM_TRIES; i++) {
+        if (SDL_ClaimWindowForGPUDevice(Device, Window)) {
+            return 1;
+        }
+#ifndef SDL_PLATFORM_ANDROID
+        break;
+#else
+        if (i == 0) {
+            fprintf(stderr, "gfx: no window to claim yet (%s), so waiting for it\n", SDL_GetError());
+        }
+        SDL_PumpEvents();
+        SDL_Delay(50);
+#endif
+    }
+    return 0;
+}
+
+/* It couldn't be set up. With no device nothing's drawn, as in a run without a window; with one and nothing made for it, the first
+   frame crashed. */
+static int init_failed(void) {
+    SDL_DestroyGPUDevice(Device);
+    Device = NULL;
+    return 0;
+}
+
 int gfx_init(void *window, const GfxConfig *config) {
     int width = config->width, height = config->height;
     Wide = config->wide;
@@ -699,9 +732,9 @@ int gfx_init(void *window, const GfxConfig *config) {
     if (DepthClip) {
         fprintf(stderr, "gfx: the device has no depth clamping, so depth is clipped\n");
     }
-    if (!SDL_ClaimWindowForGPUDevice(Device, Window)) {
+    if (!claim_window()) {
         fprintf(stderr, "SDL_ClaimWindowForGPUDevice: %s\n", SDL_GetError());
-        return 0;
+        return init_failed();
     }
     if (!config->vsync) {
         set_vsync(0);
@@ -709,13 +742,13 @@ int gfx_init(void *window, const GfxConfig *config) {
     ShaderV = make_shader(VS_SRC, "vs_5_1", SDL_GPU_SHADERSTAGE_VERTEX, 0, 0);
     ShaderF = make_shader(FS_SRC, "ps_5_1", SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1);
     if (ShaderV == NULL || ShaderF == NULL) {
-        return 0;
+        return init_failed();
     }
     Samples = sample_count(config->antialias);
     Smooth = config->smooth;
     if (!make_pipelines()) {
         fprintf(stderr, "Pipeline: %s\n", SDL_GetError());
-        return 0;
+        return init_failed();
     }
     PipeOverlay = make_pipeline_for(ShaderV, ShaderF, SDL_GPU_BLENDFACTOR_SRC_ALPHA, SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
                                     SDL_GPU_BLENDOP_ADD, 1, 0, SDL_GetGPUSwapchainTextureFormat(Device, Window), SDL_GPU_SAMPLECOUNT_1, 0);

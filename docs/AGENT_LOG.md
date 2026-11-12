@@ -10,7 +10,7 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-11-11)
+## Current state (2026-11-12)
 
 - **The decomp is done.** Every game function matches: all 2537 in `main.exe`, the engine and the 14 slot overlays (100% of game
   code bytes, 2026-10-26). All 564 PsyQ functions are Sony's own objects (281, plus `2MBYTE.OBJ`), and so is their `.data`, except
@@ -653,6 +653,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-12: 7.15 on a better virtual phone, at the user's word ("Try another image"): `crashbash_fold36`, a Pixel Fold on the
+  Android 16 Google APIs image, which folds dependably (49 switches with no black screen: the home screen, the launcher and a
+  minigame; the user watched it and said it looked better). It found a crash: the game started with the phone asleep has no window,
+  and drew its first frame with a device and nothing made for it. `gfx.c` waits for the window now (`claim_window`) and leaves no
+  device behind when it can't be set up. Gotchas: keep the emulator awake (`svc power stayon true`), as a sleeping one gives black
+  shots and stops an app as it starts; `--mode N` needs `--no-launcher` on Android to start in a game; and Git Bash turns `\\n` in a
+  `node -e` script into a newline, so edit C strings with the Edit tool. Windows `menu` passes; not released.
 - 2026-11-11: 7.15, phones that fold, begun in the emulator's Pixel Fold (the virtual device `crashbash_fold`; PORT.md, Android).
   The game runs on through a fold and draws at each screen's size. `gfx.c` claims the window again after eight frames with no
   picture from it (`reclaim_window`): SDL 3.4.18's Vulkan code asks for no new surface when making a swapchain is what fails on a
