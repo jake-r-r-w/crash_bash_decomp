@@ -192,9 +192,9 @@ What's Android's own:
   the way of the game"), fading to under half after 4 seconds untouched. What a finger presses is bigger than what's drawn. Upright
   they sit below the picture. They're sized by the screen's short side up to a phone's (420 dp, by the screen's scale), so a tablet's
   or a folding phone's inside screen has buttons a phone's size, and a screen nearer square than 4:3 is laid out as one held sideways,
-  with the shoulder buttons a phone's height above the bottom, in reach. TOUCH BUTTONS in the video options, which only Android's
-  menus show, in the place of WINDOW SIZE, as a phone has no window to size (`main/videomenu.c`), is OVER GAME or APART (the user's
-  word, 2026-11-12, for a folding phone's inside screen; `settings.buttons_apart`, `--buttons-apart`). Apart, the picture has one
+  with the shoulder buttons a phone's height above the bottom, in reach. MOBILE FOLD in the video options, which only Android's
+  menus show, in the place of WINDOW SIZE, as a phone has no window to size (`main/videomenu.c`), sets them apart from the picture (the user's
+  word and name for it, 2026-11-12, for a folding phone's inside screen; `settings.buttons_apart`, `--buttons-apart`). On, the picture has one
   part of the screen and the buttons the rest (`touch_picture_area`, which `gfx.c` fits the picture in and sizes it by, so a wide
   view fills its part): the buttons all below the picture, in a band 0.66 of their size with the shoulder buttons over the d-pad
   and clear of its reach, or at its sides, the d-pad's width each, whichever leaves a 4:3 picture more room. That's below on the
@@ -354,7 +354,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | Option | What it does |
 |---|---|
 | `--image FILE` | copy the game's data from this disc image first, to `--data`'s path if it's given, and otherwise the user's folder |
-| `--antialias N`, `--smooth`, `--widescreen`, `--upscale N`, `--sharp-icons`, `--buttons-apart` | those settings, for this run (`--sharp-icons` is ICONS: CRISP, `--buttons-apart` Android's TOUCH BUTTONS: APART) |
+| `--antialias N`, `--smooth`, `--widescreen`, `--upscale N`, `--sharp-icons`, `--buttons-apart` | those settings, for this run (`--sharp-icons` is ICONS: CRISP, `--buttons-apart` Android's MOBILE FOLD) |
 | `--level-flags HEX` | with `--mode`, a challenge's flags as a door would set them, as a one-player game: `80` is a crystal's, on the level's other map. It opens on the rules, so press through them; `--bot` plays it |
 | `--mods-dir DIR`, `--mod NAME` | look for mods only in DIR, and turn one on (its zip's or folder's name), for this run |
 | `--texture-pack DIR` | a folder of PNGs as a mod that's on, a path or a name under `packs/`, for this run |

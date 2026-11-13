@@ -14,9 +14,10 @@ static const struct {
 } Options[NUM_VIDEO] = {
     { "DISPLAY", "PLAY IN A WINDOW OR FULLSCREEN" },
 #ifdef __ANDROID__
-    /* A phone has no window to size, so on Android that row is the touch buttons' place instead (platform/touch.c; the user's word,
-       2026-11-12: an option only Android shows). The menus are laid out for this many rows, and this way they still are */
-    { "TOUCH BUTTONS", "OVER THE GAME, OR IN A SPACE OF THEIR OWN" },
+    /* A phone has no window to size, so on Android that row is MOBILE FOLD instead, the user's name for it: the touch buttons apart
+       from the picture (platform/touch.c; the user's word, 2026-11-12: an option only Android shows). The menus are laid out for this
+       many rows, and this way they still are */
+    { "MOBILE FOLD", "THE GAME ON ONE SIDE, THE BUTTONS ON THE OTHER" },
 #else
     { "WINDOW SIZE", "THE SIZE OF THE WINDOW ON YOUR SCREEN" },
 #endif
@@ -150,7 +151,7 @@ void video_option_value(s32 i, char *text, s32 size) {
         break;
     case VIDEO_WINDOW:
 #ifdef __ANDROID__
-        snprintf(text, size, "%s", s->buttons_apart ? "APART" : "OVER GAME");
+        snprintf(text, size, "%s", s->buttons_apart ? "ON" : "OFF");
         break;
 #endif
         if (s->maximized) {
