@@ -421,18 +421,14 @@ static void data_value(char *text, size_t size, s32 n) {
     }
 }
 
-/* Two lines: what the row is, and the folder itself, its end if it's too long to show whole. */
+/* Two lines, kept short at the user's word (2026-11-13): what's kept, and the folder itself, its end if it's too long to show whole. */
 static void data_help(s32 n) {
-    static const char *const What[NUM_FOLDERS] = { "WHERE YOUR SAVED GAMES ARE KEPT", "WHERE THESE SETTINGS ARE KEPT", "WHERE THE GAME'S DATA FROM YOUR DISC IS KEPT" };
+    static const char *const What[NUM_FOLDERS] = { "SAVES ARE KEPT IN", "SETTINGS ARE KEPT IN", "GAME DATA IS KEPT IN" };
     const char *path = folders_path(n % NUM_FOLDERS);
     char shown[HELP_CHARS + 8];
     size_t length = strlen(path);
 
-    if (n >= ROW_CHOOSE) {
-        snprintf(Help[0], sizeof(Help[0]), "PICK ANY FOLDER FOR YOUR %s", DataNames[n % NUM_FOLDERS]);
-    } else {
-        snprintf(Help[0], sizeof(Help[0]), "%s", What[n]);
-    }
+    snprintf(Help[0], sizeof(Help[0]), "%s", What[n % NUM_FOLDERS]);
     snprintf(shown, sizeof(shown), "%s%s", length > HELP_CHARS - 8 ? "..." : "", length > HELP_CHARS - 8 ? path + length - (HELP_CHARS - 8) : path);
     font_text(Help[1], sizeof(Help[1]), shown);
 }
