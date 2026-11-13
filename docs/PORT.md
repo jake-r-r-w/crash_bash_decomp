@@ -294,7 +294,7 @@ can't be written to, when GAME FOLDER isn't offered. A move copies what the new 
 anything; the saves and settings are used there at once, and the game's data from the next start (a copy in the user's folder is
 still found, `platform_data_path`). A test run reads no `folders.ini`. Mods and discs are looked for beside the program and in the
 user's folder, as before. Tried on Windows in a copy of the program (2026-11-13): a first run, and a change in the page; the folder
-chooser wasn't, as it takes a person.
+chooser by the user, who called it fine.
 
 Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. It also looks for `CRASHBSH.DAT` in the current folder, next to the program and in the user's folder, where a disc image's copy goes the first time it runs (`platform/discimage.c`): an image next to the program or in the current folder is used with no questions, and otherwise it asks. A settings
 menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
