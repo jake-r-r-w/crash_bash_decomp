@@ -421,16 +421,32 @@ static void data_value(char *text, size_t size, s32 n) {
     }
 }
 
-/* Two lines, kept short at the user's word (2026-11-13): what's kept, and the folder itself, its end if it's too long to show whole. */
+/* One short line, at the user's word (2026-11-13: "short and simple"): the end of the folder's path, without its last slash. */
+#define DATA_PATH_CHARS 30
 static void data_help(s32 n) {
-    static const char *const What[NUM_FOLDERS] = { "SAVES ARE KEPT IN", "SETTINGS ARE KEPT IN", "GAME DATA IS KEPT IN" };
-    const char *path = folders_path(n % NUM_FOLDERS);
-    char shown[HELP_CHARS + 8];
-    size_t length = strlen(path);
+    char path[1024], shown[DATA_PATH_CHARS + 16];
+    size_t length, i;
 
-    snprintf(Help[0], sizeof(Help[0]), "%s", What[n % NUM_FOLDERS]);
-    snprintf(shown, sizeof(shown), "%s%s", length > HELP_CHARS - 8 ? "..." : "", length > HELP_CHARS - 8 ? path + length - (HELP_CHARS - 8) : path);
-    font_text(Help[1], sizeof(Help[1]), shown);
+    snprintf(path, sizeof(path), "%s", folders_path(n % NUM_FOLDERS));
+    length = strlen(path);
+    for (i = 0; i < length; i++) {
+        if (path[i] == 92) {
+            path[i] = '/';
+        }
+    }
+    if (length > 1) {
+        path[--length] = '\0';
+    }
+    /* from the start of a folder's name, not the middle of one */
+    if (length > DATA_PATH_CHARS) {
+        const char *tail = path + length - DATA_PATH_CHARS, *slash = strchr(tail, '/');
+
+        snprintf(shown, sizeof(shown), "IN ...%s", slash != NULL ? slash + 1 : tail);
+    } else {
+        snprintf(shown, sizeof(shown), "IN %s", path);
+    }
+    font_text(Help[0], sizeof(Help[0]), shown);
+    Help[1][0] = '\0';
 }
 
 /* --- rows --- */
