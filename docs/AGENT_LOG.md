@@ -39,8 +39,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   - Windows (Direct3D 12) builds on the host with CMake. Linux (Vulkan) builds and is tested in `tools/dl`'s container, on a virtual
     screen with software Vulkan: never yet on a real Linux desktop and graphics card. Android (Vulkan) builds in `tools/da`, is
     tested in the emulator, and works on the user's phone; a phone that folds has only been tried in the emulator (7.15), as has its MOBILE FOLD option. No Mac.
-  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.1.0 (2026-11-11, the sticks' deadzone and the mouse
-    in every menu; v1.0.0, 2026-11-10, brought online play and couch play), for
+  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.2.0 (2026-11-13, phones that fold and the DATA page;
+    v1.1.0, 2026-11-11, the sticks' deadzone and the mouse in every menu; v1.0.0, 2026-11-10, brought online play and couch play), for
     Windows, Linux and Android.
     `node port/package.mjs` makes them (PORT.md, A release).
   - Beyond the original: a launcher (PLAY, ONLINE, SETTINGS, QUIT); any window and render size, fullscreen, vsync and 30, 60 or
@@ -653,6 +653,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-13: v1.2.0 released, at the user's word ("cut a release"): phones that fold, MOBILE FOLD and the DATA page. The suites
+  pass on the packaged Windows and Linux programs (modes, bosses, menu, mouse on Windows, heroes, mods, image, online, identical,
+  pads, controls) and Android's (modes, heroes, and an online game with the packaged Windows program hosting). Gotcha: the
+  Android online check takes the PC's program as `--pc-exe`, not `--exe`; with the wrong one the phone joined the dev build, an
+  older version, and was rightly refused ("another version"). Start the emulator with `cmd //c start`, as one started as a
+  background task is closed when the turn ends.
 - 2026-11-13: the user called 7.15 done (its row is in ROADMAP-A), and asked for a DATA page in the launcher, done as 7.16: the
   saves, settings and the disc's copy of the data go in `saves/`, `settings/` and `data/` beside the program by default, or the
   user's folder as before, or a folder picked (`platform/folders.c`, `folders.ini`; PORT.md, Running it). First run copies a
