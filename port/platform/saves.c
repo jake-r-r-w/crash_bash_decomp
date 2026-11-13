@@ -28,16 +28,6 @@ void saves_set_folder(const char *folder) {
     }
 }
 
-void saves_use_default_folder(void) {
-    char *dir = SDL_GetPrefPath("CrashBash", "CrashBash");
-
-    if (dir != NULL) {
-        SDL_snprintf(Folder, sizeof(Folder), "%ssaves/", dir);
-        SDL_free(dir);
-        SDL_CreateDirectory(Folder);
-    }
-}
-
 const char *saves_folder(void) {
     return Folder;
 }

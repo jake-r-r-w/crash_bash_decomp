@@ -653,6 +653,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-13: the user called 7.15 done (its row is in ROADMAP-A), and asked for a DATA page in the launcher, done as 7.16: the
+  saves, settings and the disc's copy of the data go in `saves/`, `settings/` and `data/` beside the program by default, or the
+  user's folder as before, or a folder picked (`platform/folders.c`, `folders.ini`; PORT.md, Running it). First run copies a
+  player's old saves and settings over; nothing is deleted or written over. A build tree's exe (with `CMakeCache.txt`) keeps to
+  the user's folder, so the dev build behaves as before. Tried in a copy of the exe in `build/port/datatest/portable`: first run,
+  and SAVES switched in the page, the real AppData folder byte for byte as it was. Not tried: the folder chooser (it takes a
+  person), and Linux beyond compiling. Gotchas: a `--press` run without `--frames` isn't a test run, so it uses the real settings
+  and saves; an edit script through Git Bash turned `\0` and `\n` in C strings into the real characters, even in a quoted
+  heredoc, so build such text from `String.fromCharCode(92)`; the launcher's slot is now full, 32 rows of 32 (a fifth category).
+  Windows `menu` passes, Linux and Android build; not released.
 - 2026-11-12: 7.15, the user's word on what was left: no split screen, camera and crease or Flex mode, but an option only Android
   shows, with the game in one part of the screen and the controller in the other. MOBILE FOLD (the user's name; TOUCH BUTTONS: APART at first), in the video
   options in WINDOW SIZE's place on Android (`videomenu.c`, `__ANDROID__`), so in the launcher, the main menu and the pause menu;

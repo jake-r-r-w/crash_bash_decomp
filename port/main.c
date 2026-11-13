@@ -22,6 +22,7 @@
 #include "platform/texpack.h"
 #include "platform/settings.h"
 #include "platform/saves.h"
+#include "platform/folders.h"
 
 int extra_hero_named(const char *id); /* game/main/extraheroes.c: --extra-hero's names */
 
@@ -156,9 +157,17 @@ const char *platform_base_path(void) {
 #endif
 }
 
-/* Where a disc image's copy of the data goes: the user's own folder, as the program's may not be theirs to write to */
+/* Where a disc image's copy of the data goes: the folder the player has for it (folders.h) */
 static const char *own_data_path(void) {
-    static char path[1024];
+    static char path[1100];
+
+    SDL_snprintf(path, sizeof(path), "%sCRASHBSH.DAT", folders_path(FOLDER_DATA));
+    return path;
+}
+
+/* And where it went before there was a choice, the user's own folder: a copy made then is still found there */
+static const char *old_data_path(void) {
+    static char path[1100];
 
     if (path[0] == 0) {
         char *dir = SDL_GetPrefPath("CrashBash", "CrashBash");
@@ -176,6 +185,7 @@ const char *platform_data_path(void) {
         "CRASHBSH.DAT",
         beside_exe,
         own_data_path(),
+        old_data_path(),
         "build/disc/files/CRASHBSH/CRASHBSH.DAT",
         "../disc/files/CRASHBSH/CRASHBSH.DAT",
         "../../disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -872,6 +882,7 @@ int main(int argc, char **argv) {
     if (testing) {
         settings_defaults();
     } else {
+        folders_load();
         settings_load();
     }
     /* an online game starts at the game's own beginning on every machine, as a test run does, with its sound mixed by the game's
@@ -914,7 +925,11 @@ int main(int argc, char **argv) {
     if (SavesFolder != NULL) {
         saves_set_folder(SavesFolder);
     } else if (!testing) {
-        saves_use_default_folder();
+        char folder[1024];
+
+        SDL_strlcpy(folder, folders_path(FOLDER_SAVES), sizeof(folder));
+        folder[strlen(folder) - 1] = '\0';
+        saves_set_folder(folder);
     }
     settings()->test_mode = test_mode;
     settings()->test_level_flags = level_flags;

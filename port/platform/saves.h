@@ -3,9 +3,8 @@
 
 #include <stddef.h>
 
-/* The folder saves go in: a given one, none (NULL: nothing is kept), or the player's own. */
+/* The folder saves go in: a given one (the player's, folders.h, or a test run's), or none (NULL: nothing is kept). */
 void saves_set_folder(const char *folder);
-void saves_use_default_folder(void);
 /* The folder they go in, ending in its separator, or "" for none. */
 const char *saves_folder(void);
 /* Slot 0 to 3. 1: it's there and whole. */

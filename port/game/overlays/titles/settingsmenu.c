@@ -3,7 +3,8 @@
  * the settings a screen down: categories on the left, a scrolling list of options on the right.
  * Settings take effect as they change. To add one: a row in its category's table, a case in
  * change_setting and in show_value; a video one goes in main/videomenu.c, as other menus show those too.
- * The Mods page lists the mods (mods.c) to turn on and off and put in order. With two or more controllers, PLAY goes through the
+ * The Mods page lists the mods (mods.c) to turn on and off and put in order. The Data page (not on Android) is where the saves, the
+ * settings and the game's data are kept (platform/folders.h): beside the program, in the user's own folder, or in a folder picked. With two or more controllers, PLAY goes through the
  * players screen first: each controller's player, put in order by pressing up or down on it.
  *
  * ONLINE (docs/PORT.md, Online play): HOST GAME opens a game for others to join and lists them as they do, and START begins it. It
@@ -16,6 +17,7 @@
 #include <string.h>
 #include "../../../platform/controllers.h"
 #include "../../../platform/controls.h"
+#include "../../../platform/folders.h"
 #include "../../../platform/mods.h"
 #include "../../../platform/net.h"
 #include "../../../platform/portmap.h"
@@ -53,7 +55,11 @@ typedef struct {
 
 /* What a category's list is: options from its table, the video options, the mods, or the keys or controller buttons for the game's
    buttons (controls.h) */
-enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS, KIND_CONTROLS };
+enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS, KIND_CONTROLS, KIND_DATA };
+
+/* The DATA page's rows: where each kind is kept (FOLDER_, folders.h), then a row each to pick a folder for it */
+#define ROW_CHOOSE NUM_FOLDERS
+#define DATA_ROWS (NUM_FOLDERS * 2)
 
 /* The CONTROLS page's rows: STICK DEADZONE first, a line under it that the cursor passes over, one for each of the game's buttons, and
    RESET TO DEFAULTS (the user's word on where the deadzone goes, 2026-11-10) */
@@ -83,9 +89,13 @@ static const MenuCategory Categories[] = {
     { "VIDEO", NULL, NUM_VIDEO_OPTIONS, KIND_VIDEO },
     { "CONTROLS", NULL, ROW_RESET + 1, KIND_CONTROLS },
     { "MODS", NULL, 0, KIND_MODS },
+#ifndef __ANDROID__
+    /* a phone's app has no folder of its own to see, and Android says where its files go */
+    { "DATA", NULL, DATA_ROWS, KIND_DATA },
+#endif
 };
 #define NUM_CATEGORIES NUM_OF(Categories)
-#define MAX_CATEGORIES 4 /* and BACK */
+#define MAX_CATEGORIES 5 /* and BACK */
 
 /* The control waiting for its new key or button, and for how many more frames: the page gives up after a few seconds */
 #define WAIT_FRAMES 300
@@ -364,6 +374,69 @@ static void move_mod(s32 dir) {
     }
 }
 
+/* --- the Data page --- */
+
+static const char *const DataNames[NUM_FOLDERS] = { "SAVES", "SETTINGS", "GAME DATA" };
+static const char *const ChooseNames[NUM_FOLDERS] = { "CHOOSE SAVES FOLDER", "CHOOSE SETTINGS FOLDER", "CHOOSE GAME DATA FOLDER" };
+
+static void change_data(s32 n, s32 dir) {
+    s32 kind = n % NUM_FOLDERS, where = folders_where(kind), i;
+
+    if (n >= ROW_CHOOSE) {
+        if (dir > 0) {
+            folders_choose(kind);
+        }
+        return;
+    }
+    /* the next place it can be, either way round */
+    for (i = 0; i < NUM_WHERE; i++) {
+        where = (where + (dir > 0 ? 1 : NUM_WHERE - 1)) % NUM_WHERE;
+        if (folders_can(kind, where)) {
+            break;
+        }
+    }
+    if (where != folders_where(kind)) {
+        folders_set(kind, where);
+        if (settings()->no_save) {
+            printf("data: %s in %d\n", DataNames[kind], where);
+        }
+    }
+}
+
+static const char *data_label(s32 n, s32 i) {
+    if (n < ROW_CHOOSE) {
+        return DataNames[n];
+    }
+    (void)i;
+    return ChooseNames[n % NUM_FOLDERS];
+}
+
+static void data_value(char *text, size_t size, s32 n) {
+    static const char *const WhereNames[NUM_WHERE] = { "GAME FOLDER", "USER FOLDER", "YOUR FOLDER" };
+
+    if (n < ROW_CHOOSE) {
+        snprintf(text, size, "%s", WhereNames[folders_where(n)]);
+    } else {
+        text[0] = 0;
+    }
+}
+
+/* Two lines: what the row is, and the folder itself, its end if it's too long to show whole. */
+static void data_help(s32 n) {
+    static const char *const What[NUM_FOLDERS] = { "WHERE YOUR SAVED GAMES ARE KEPT", "WHERE THESE SETTINGS ARE KEPT", "WHERE THE GAME'S DATA FROM YOUR DISC IS KEPT" };
+    const char *path = folders_path(n % NUM_FOLDERS);
+    char shown[HELP_CHARS + 8];
+    size_t length = strlen(path);
+
+    if (n >= ROW_CHOOSE) {
+        snprintf(Help[0], sizeof(Help[0]), "PICK ANY FOLDER FOR YOUR %s", DataNames[n % NUM_FOLDERS]);
+    } else {
+        snprintf(Help[0], sizeof(Help[0]), "%s", What[n]);
+    }
+    snprintf(shown, sizeof(shown), "%s%s", length > HELP_CHARS - 8 ? "..." : "", length > HELP_CHARS - 8 ? path + length - (HELP_CHARS - 8) : path);
+    font_text(Help[1], sizeof(Help[1]), shown);
+}
+
 /* --- rows --- */
 
 static void change_setting(const MenuCategory *c, s32 n, s32 dir) {
@@ -371,6 +444,10 @@ static void change_setting(const MenuCategory *c, s32 n, s32 dir) {
 
     if (c->kind == KIND_VIDEO) {
         video_option_change(n, dir);
+        return;
+    }
+    if (c->kind == KIND_DATA) {
+        change_data(n, dir);
         return;
     }
     if (c->kind == KIND_MODS) {
@@ -411,6 +488,10 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
         control_value(text, size, n);
         return;
     }
+    if (c->kind == KIND_DATA) {
+        data_value(text, size, n);
+        return;
+    }
     switch (c->options[n].id) {
     case SET_SKIP_INTRO:
         snprintf(text, size, "%s", s->skip_intro ? "ON" : "OFF");
@@ -445,6 +526,9 @@ static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
     if (c->kind == KIND_CONTROLS) {
         return n == ROW_RESET ? "RESET TO DEFAULTS" : n == ROW_DEADZONE ? "STICK DEADZONE" : n == ROW_LINE ? CONTROLS_LINE : control_label(ROW_CONTROL(n));
     }
+    if (c->kind == KIND_DATA) {
+        return data_label(n, i);
+    }
     return c->options[n].label;
 }
 
@@ -463,6 +547,10 @@ static const char *option_help(const MenuCategory *c, s32 n) {
         }
         return n == ROW_RESET ? "EVERY KEY AND BUTTON BACK AS IT WAS" : n == ROW_DEADZONE ? "HOW FAR OUT A STICK GOES: GREEN MOVES YOU"
                : "\xFC THEN A KEY OR A BUTTON FOR IT";
+    }
+    if (c->kind == KIND_DATA) {
+        data_help(n);
+        return Help[0];
     }
     return c->options[n].help;
 }
@@ -735,6 +823,7 @@ static void show_screen(void) {
     const MenuCategory *c = Category < NUM_CATEGORIES ? &Categories[Category] : NULL;
     s32 mods = Screen == SCREEN_OPTIONS && c->kind == KIND_MODS;
     s32 controls = c != NULL && c->kind == KIND_CONTROLS;
+    s32 data = Screen == SCREEN_OPTIONS && c->kind == KIND_DATA;
     s32 i;
 
     /* the deadzone's box, while it's chosen (draw_deadzone) */
@@ -802,7 +891,7 @@ static void show_screen(void) {
         set_row(&sub[SUB_CATEGORY + i], i < NUM_CATEGORIES ? Categories[i].label : i == NUM_CATEGORIES ? "BACK" : "", colour);
     }
     set_row(&sub[SUB_NAV], mods && Option > 0 ? "\xFC ON OR OFF, L1 - R1 MOVE IT UP OR DOWN, \xFE BACK"
-                           : mods             ? "UP - DOWN CHOOSE, \xFC BUTTON TO OPEN, \xFE BACK"
+                           : mods || (data && Option >= ROW_CHOOSE) ? "UP - DOWN CHOOSE, \xFC BUTTON TO OPEN, \xFE BACK"
                            : controls && Waiting >= 0 ? ""
                            /* a CONTROLS row's own: the help over it says how (the user's word on what was there: "super cluttered") */
                            : controls && Screen == SCREEN_OPTIONS && Option == ROW_DEADZONE ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
@@ -811,7 +900,7 @@ static void show_screen(void) {
                            : Screen == SCREEN_OPTIONS ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
                                                       : "UP - DOWN TO CHOOSE, RIGHT OR \xFC BUTTON TO OPEN", TEXT_SMALL);
     set_row(&sub[SUB_HELP], Screen == SCREEN_OPTIONS ? option_help(c, Option) : "", TEXT_SMALL);
-    if (mods) {
+    if (mods || data) {
         set_row(&sub[SUB_HELP_MORE], Help[1], TEXT_SMALL);
     }
     for (i = 0; i < VISIBLE_OPTIONS; i++) {
@@ -826,7 +915,7 @@ static void show_screen(void) {
             value[0] = '\0';
             show_value(value, sizeof(value), c, n);
             /* left and right change an option's value; a key or button is changed by pressing the new one */
-            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && (!controls || n == ROW_DEADZONE) ? "< %s >" : "%s", value);
+            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && (!controls || n == ROW_DEADZONE) && !(data && n >= ROW_CHOOSE) ? "< %s >" : "%s", value);
             sub[SUB_VALUE(i)].unk7C = lit || (controls && Waiting >= 0 && Waiting == ROW_CONTROL(n)) ? TEXT_SMALL_LIT : TEXT_SMALL;
             /* (the deadzone's name is longer than a button's, so its value is further out) */
             sub[SUB_VALUE(i)].XYZ.x = controls ? (n == ROW_DEADZONE ? DEADZONE_VALUE_X : CONTROL_VALUE_X) : VALUE_X;
@@ -1284,6 +1373,10 @@ static void update_options(s32 pressed) {
                 Option = option_count(c) - 1;
             }
         }
+    }
+    /* a folder picked in the system's chooser, which the page shows as it's taken up */
+    if (c->kind == KIND_DATA && folders_poll()) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if ((pressed & 0x40) && Option < option_count(c) - 1) {
         Option++;

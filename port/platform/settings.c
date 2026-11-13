@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include "folders.h"
 #include "settings.h"
 
 static Settings Current;
@@ -45,15 +46,14 @@ void settings_defaults(void) {
     Current.test_mode = -1;
 }
 
-/* Fills path with where the settings file goes. Returns 0 if there's no such place. */
+/* Fills path with where the settings file goes (folders.h). Returns 0 if there's no such place. */
 static int settings_path(char *path, size_t size) {
-    char *dir = SDL_GetPrefPath("CrashBash", "CrashBash");
+    const char *dir = folders_path(FOLDER_SETTINGS);
 
-    if (dir == NULL) {
+    if (dir[0] == '\0') {
         return 0;
     }
     SDL_snprintf(path, size, "%ssettings.ini", dir);
-    SDL_free(dir);
     return 1;
 }
 
