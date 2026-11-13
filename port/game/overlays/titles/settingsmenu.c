@@ -421,11 +421,12 @@ static void data_value(char *text, size_t size, s32 n) {
     }
 }
 
-/* One short line, at the user's word (2026-11-13: "short and simple"): the end of the folder's path, without its last slash. */
-#define DATA_PATH_CHARS 30
+/* Only the folder's path, all of it (the user's word, 2026-11-13: no words, and never cut short with dots): over the help's two lines
+   when it's longer than one, broken after a folder's name. */
+#define DATA_PATH_CHARS 44
 static void data_help(s32 n) {
-    char path[1024], shown[DATA_PATH_CHARS + 16];
-    size_t length, i;
+    char path[1024];
+    size_t length, i, cut = 0;
 
     snprintf(path, sizeof(path), "%s", folders_path(n % NUM_FOLDERS));
     length = strlen(path);
@@ -437,16 +438,18 @@ static void data_help(s32 n) {
     if (length > 1) {
         path[--length] = '\0';
     }
-    /* from the start of a folder's name, not the middle of one */
-    if (length > DATA_PATH_CHARS) {
-        const char *tail = path + length - DATA_PATH_CHARS, *slash = strchr(tail, '/');
-
-        snprintf(shown, sizeof(shown), "IN ...%s", slash != NULL ? slash + 1 : tail);
-    } else {
-        snprintf(shown, sizeof(shown), "IN %s", path);
-    }
-    font_text(Help[0], sizeof(Help[0]), shown);
     Help[1][0] = '\0';
+    if (length > DATA_PATH_CHARS) {
+        for (i = 0; i < DATA_PATH_CHARS; i++) {
+            if (path[i] == '/') {
+                cut = i + 1;
+            }
+        }
+        cut = cut == 0 ? DATA_PATH_CHARS : cut;
+        font_text(Help[1], sizeof(Help[1]), path + cut);
+        path[cut] = '\0';
+    }
+    font_text(Help[0], sizeof(Help[0]), path);
 }
 
 /* --- rows --- */
