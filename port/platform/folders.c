@@ -1,8 +1,8 @@
 /* Where the game keeps what it writes (folders.h). The player's choices are in folders.ini beside the program, or in the user's own
  * folder when the program's can't be written to (one in Program Files, a Linux package): a line for each kind, game, user or custom,
- * and the folder picked for it. With no such file it's the first run of a version that has one: everything goes beside the program
- * if it can, and the saves and settings a player has in the user's own folder, from before, are copied over. Nothing is ever deleted
- * or written over by a move: the old place keeps what it had. */
+ * and the folder picked for it. With no such file everything is in the user's own folder, where it always was, so a player from
+ * before keeps their saves with nothing to do (the user's word, 2026-11-13). Nothing is ever deleted or written over by a move: the
+ * old place keeps what it had. */
 #include <stdio.h>
 #include <string.h>
 
@@ -66,14 +66,6 @@ static int game_writable(void) {
     }
     return known;
 #endif
-}
-
-/* A build's own folder is made again from nothing whenever the build is (`make clean`), so nobody's saves start out there. */
-static int game_is_a_build(void) {
-    char path[PATH_ROOM];
-
-    SDL_snprintf(path, sizeof(path), "%sCMakeCache.txt", platform_base_path() != NULL ? platform_base_path() : "");
-    return exists(path);
 }
 
 /* A kind's folder in a place. In the user's own folder it's where each always was: the settings and the data loose in it, and the saves
@@ -150,8 +142,8 @@ static void write_ini(void) {
     fclose(f);
 }
 
-/* 1 if there was one: the one beside the program first. */
-static int read_ini(void) {
+/* The one beside the program first. */
+static void read_ini(void) {
     char path[PATH_ROOM + 16], line[PATH_ROOM + 64];
     FILE *f;
     int i, w;
@@ -160,7 +152,7 @@ static int read_ini(void) {
     if (!game_writable() || (f = fopen(path, "r")) == NULL) {
         ini_path(path, sizeof(path), 0);
         if ((f = fopen(path, "r")) == NULL) {
-            return 0;
+            return;
         }
     }
     while (fgets(line, sizeof(line), f) != NULL) {
@@ -186,33 +178,17 @@ static int read_ini(void) {
         }
     }
     fclose(f);
-    return 1;
 }
 
 void folders_load(void) {
-    int i, first = !read_ini();
+    int i;
 
+    read_ini();
     Loaded = 1;
     for (i = 0; i < NUM_FOLDERS; i++) {
-        if (first) {
-            Where[i] = game_writable() && !game_is_a_build() ? WHERE_GAME : WHERE_USER;
-        }
         if (!folders_can(i, Where[i])) {
             Where[i] = WHERE_USER;
         }
-    }
-    if (first) {
-        /* a player from before has their saves and settings in the user's own folder. The game's data stays where it is, as it's
-           big and found there anyway (platform_data_path) */
-        for (i = 0; i < NUM_FOLDERS; i++) {
-            char old[PATH_ROOM];
-
-            path_in(i, WHERE_USER, old, sizeof(old));
-            if (i != FOLDER_DATA) {
-                copy_missing(i, old, folders_path(i));
-            }
-        }
-        write_ini();
     }
 }
 

@@ -285,20 +285,16 @@ runs. Its README says the oldest glibc it runs on, from what the program imports
 ## Running it
 
 **Where its files go** (`platform/folders.c`; the user's word, 2026-11-13): the saves, the settings and the copy of the game's data made
-from a disc image each have a folder beside the program, `saves/`, `settings/` and `data/`, and not the user's folder
-(`%APPDATA%\CrashBash\CrashBash`, or `~/.local/share/CrashBash/CrashBash`), where they all went before. The launcher's SETTINGS has a
-DATA page (`settingsmenu.c`, not on Android) with a row for each: GAME FOLDER, USER FOLDER, which is the old place and layout, or
-YOUR FOLDER, once one's been picked with the row under them that opens the system's folder chooser (`SDL_ShowOpenFolderDialog`).
-The choices are in `folders.ini` beside the program. Where the program's folder can't be written to, everything is in the user's
-folder, `folders.ini` too, and GAME FOLDER isn't offered. A build's own folder (one with a `CMakeCache.txt`) starts out with the
-user's folder, as `build/` is disposable. With no `folders.ini`, on the first run of a version that has one, the saves and settings
-in the user's folder are copied beside the program, so a player from before has theirs. A move copies what the new place hasn't
-got and never writes over or deletes anything; the saves and settings are used there at once, and the game's data from the next
-start (a copy from before is still found in the user's folder, `platform_data_path`). A test run reads no `folders.ini` and uses
-the user's folder for what it isn't given (`--saves`, `--data`). Mods and discs are looked for beside the program and in the
-user's folder, as before. A new version unzipped to a new folder starts from the user's folder's saves, not the last version's:
-the release's README says to copy the two folders across. Tried on Windows in a copy of the program (2026-11-13): the first run
-and a change in the page; the folder chooser wasn't, as it takes a person.
+from a disc image are in the user's folder (`%APPDATA%\CrashBash\CrashBash`, or `~/.local/share/CrashBash/CrashBash`), as they always
+were: that's the default, at the user's word, so nobody's saves from before are left behind. The launcher's SETTINGS has a DATA page
+(`settingsmenu.c`, not on Android) with a row for each: USER FOLDER; GAME FOLDER, a folder of its own beside the program (`saves/`,
+`settings/`, `data/`); or YOUR FOLDER, once one's been picked with the row under them that opens the system's folder chooser
+(`SDL_ShowOpenFolderDialog`). The choices are in `folders.ini` beside the program, or in the user's folder where the program's
+can't be written to, when GAME FOLDER isn't offered. A move copies what the new place hasn't got and never writes over or deletes
+anything; the saves and settings are used there at once, and the game's data from the next start (a copy in the user's folder is
+still found, `platform_data_path`). A test run reads no `folders.ini`. Mods and discs are looked for beside the program and in the
+user's folder, as before. Tried on Windows in a copy of the program (2026-11-13): a first run, and a change in the page; the folder
+chooser wasn't, as it takes a person.
 
 Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. It also looks for `CRASHBSH.DAT` in the current folder, next to the program and in the user's folder, where a disc image's copy goes the first time it runs (`platform/discimage.c`): an image next to the program or in the current folder is used with no questions, and otherwise it asks. A settings
 menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).

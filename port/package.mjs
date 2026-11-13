@@ -123,15 +123,15 @@ const SYSTEM = LINUX ? {
     RUN: './crashbash',
     NEEDS: `It needs 64-bit Linux with glibc ${glibc} or newer and a graphics card with Vulkan.\n` +
         'Asking for the disc image takes a file chooser: a desktop portal, or zenity.',
-    SAVES: 'They\'re kept beside the program, in its saves and settings folders, so to move to a\nnew version, copy those two folders into its folder (or unzip it over the old one).\n' +
-        'SETTINGS has a DATA page to keep them in your user folder instead, where they went\nbefore (~/.local/share/CrashBash/CrashBash), or in any folder you pick. Saves and\nsettings from an older version are copied over the first time this one runs.',
+    SAVES: 'They\'re kept in ~/.local/share/CrashBash/CrashBash, or in\n$XDG_DATA_HOME/CrashBash/CrashBash if that\'s set.\n' +
+        'SETTINGS has a DATA page to keep them beside the program instead, in its saves and\nsettings folders, or in any folder you pick.',
 } : {
     SYSTEM: 'Windows',
     PROGRAM: 'crashbash.exe',
     RUN: 'crashbash.exe',
     NEEDS: 'It needs 64-bit Windows 10 or 11 and a graphics card with Direct3D 12. Windows\nmay warn about an unrecognised program, as this one isn\'t signed.',
-    SAVES: 'They\'re kept beside the program, in its saves and settings folders, so to move to a\nnew version, copy those two folders into its folder (or unzip it over the old one).\n' +
-        'SETTINGS has a DATA page to keep them in your user folder instead, where they went\nbefore (%APPDATA%\\CrashBash\\CrashBash), or in any folder you pick. Saves and settings\nfrom an older version are copied over the first time this one runs.',
+    SAVES: 'They\'re kept in %APPDATA%\\CrashBash\\CrashBash.\n' +
+        'SETTINGS has a DATA page to keep them beside the program instead, in its saves and\nsettings folders, or in any folder you pick.',
 };
 
 fs.rmSync(dir, { recursive: true, force: true });

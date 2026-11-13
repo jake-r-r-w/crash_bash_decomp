@@ -1,7 +1,7 @@
 /* Where the game keeps what it writes (folders.c): its saves, its settings, and the copy of the game's data it makes from the player's
- * disc. Each has a folder of its own beside the program (saves/, settings/, data/), which is where they go unless the player says
- * otherwise (the launcher's DATA page), or in the user's own folder, where they all went before (%APPDATA%\CrashBash\CrashBash on
- * Windows), or in a folder the player picks. */
+ * disc. They're in the user's own folder (%APPDATA%\CrashBash\CrashBash on Windows), as they always were, unless the player says
+ * otherwise (the launcher's DATA page): then each can have a folder of its own beside the program (saves/, settings/, data/), or a
+ * folder the player picks. */
 #ifndef FOLDERS_H
 #define FOLDERS_H
 
@@ -9,9 +9,8 @@ enum { FOLDER_SAVES, FOLDER_SETTINGS, FOLDER_DATA, NUM_FOLDERS };
 /* Where one is: beside the program, in the user's own folder, or in a folder of the player's choosing */
 enum { WHERE_GAME, WHERE_USER, WHERE_CUSTOM, NUM_WHERE };
 
-/* Reads the player's choices, or makes them the first time: beside the program if that can be written to, with the saves and settings
-   from the user's own folder copied over, so a player from before has theirs. Not called, as in a test run, everything's in the user's
-   own folder, as before. */
+/* Reads the player's choices. With none made, and when it's not called, as in a test run, everything's in the user's own folder, as
+   before. */
 void folders_load(void);
 /* A kind's folder, ending in /, made if it wasn't there. */
 const char *folders_path(int kind);
