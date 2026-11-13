@@ -422,34 +422,48 @@ static void data_value(char *text, size_t size, s32 n) {
 }
 
 /* Only the folder's path, all of it (the user's word, 2026-11-13: no words, and never cut short with dots): over the help's two lines
-   when it's longer than one, broken after a folder's name. */
+   when it's longer than one, broken after a folder's name. Its slashes are the system's own, which the text drawing draws though the font
+   has none (DrawSysText); the rest is made the font's, as font_text makes it. */
 #define DATA_PATH_CHARS 44
+#ifdef _WIN32
+#define DATA_SLASH '\\'
+#else
+#define DATA_SLASH '/'
+#endif
+
 static void data_help(s32 n) {
     char path[1024];
     size_t length, i, cut = 0;
 
     snprintf(path, sizeof(path), "%s", folders_path(n % NUM_FOLDERS));
     length = strlen(path);
-    for (i = 0; i < length; i++) {
-        if (path[i] == 92) {
-            path[i] = '/';
-        }
-    }
     if (length > 1) {
         path[--length] = '\0';
+    }
+    for (i = 0; i < length; i++) {
+        char c = path[i];
+
+        if (c == '/' || c == '\\') {
+            c = DATA_SLASH;
+        } else if (c >= 'a' && c <= 'z') {
+            c = (char)(c - 'a' + 'A');
+        } else if (!((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || strchr(".,':!=+-?% ", c) != NULL)) {
+            c = ' ';
+        }
+        path[i] = c;
     }
     Help[1][0] = '\0';
     if (length > DATA_PATH_CHARS) {
         for (i = 0; i < DATA_PATH_CHARS; i++) {
-            if (path[i] == '/') {
+            if (path[i] == DATA_SLASH) {
                 cut = i + 1;
             }
         }
         cut = cut == 0 ? DATA_PATH_CHARS : cut;
-        font_text(Help[1], sizeof(Help[1]), path + cut);
+        snprintf(Help[1], sizeof(Help[1]), "%s", path + cut);
         path[cut] = '\0';
     }
-    font_text(Help[0], sizeof(Help[0]), path);
+    snprintf(Help[0], sizeof(Help[0]), "%s", path);
 }
 
 /* --- rows --- */

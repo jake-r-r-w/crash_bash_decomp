@@ -984,6 +984,44 @@ void TextFlashColour(u8 *a, u8 *b) {
     b[2] = bl;
 }
 
+/* PC: the font has no slash, and a folder's path has them (the launcher's DATA page; the user's word, 2026-11-13). So one is drawn: a
+   slanted stroke the size of a letter in the font's dash's cell, in the text's two colours top and bottom, on a black one a little wider, as the
+   font's letters have their outlines. back is the other way, a backslash. What's drawn later in a layer goes under what's before. */
+static void draw_slash(s32 xy, s32 back, u32 top, u32 bottom) {
+    s32 g = ((s16 (*)[256])&SysFontLookUp['-'])[FontPage][0], pass;
+    obj_texture *f;
+    GfxState *gs = &RenderState;
+    s16 x, y, w, h;
+
+    if (g == -1 || ScreenRect == NULL) {
+        return;
+    }
+    f = (obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF];
+    x = (s16)xy * ScreenRect->w / 640;
+    y = (s16)(xy >> 16) / 2;
+    w = f->w - 1;
+    h = (f->h - 1) / 2; /* a letter is the top half of its cell */
+    for (pass = 0; pass < 2; pass++) {
+        /* the stroke, 2 wide and leaning 4 across the middle of the cell; then its outline, 1 more each side */
+        s16 thick = pass == 0 ? 2 : 4, up = 0, mid = (w - thick) / 2;
+        s16 foot = back ? mid + 2 : mid - 2, head = back ? mid - 2 : mid + 2;
+        DVECTOR c[4];
+        u32 colour[4];
+
+        c[0].vx = x + head;
+        c[0].vy = y + up;
+        c[1].vx = x + head + thick;
+        c[1].vy = y + up;
+        c[2].vx = x + foot;
+        c[2].vy = y + h - up;
+        c[3].vx = x + foot + thick;
+        c[3].vy = y + h - up;
+        colour[0] = colour[1] = pass == 0 ? FadeColorGs(gs, (top >> 16) & 0xFF, (top >> 8) & 0xFF, top & 0xFF) : FadeColorGs(gs, 0, 0, 0);
+        colour[2] = colour[3] = pass == 0 ? FadeColorGs(gs, (bottom >> 16) & 0xFF, (bottom >> 8) & 0xFF, bottom & 0xFF) : colour[0];
+        draw_plain_quad(RenderState.layer, c, colour, GFX_OPAQUE);
+    }
+}
+
 void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     s32 xy;
     s32 col;
@@ -1054,6 +1092,10 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                 } else {
                     texture_draw_quad((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], xy, 0, arg3, arg3, arg4, arg4);
                 }
+            } else if (c == '/' || c == '\\') {
+                xy &= 0xFFFF0000;
+                xy |= (u16)(x0 + col * 640 / ScreenRect->w);
+                draw_slash(xy, c == '\\', arg3, arg4);
             }
             col += w;
         }

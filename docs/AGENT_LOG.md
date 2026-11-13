@@ -664,7 +664,8 @@ Newest first, a few lines each. Details are in the commits.
   heredoc, so build such text from `String.fromCharCode(92)`; the launcher's slot is now full, 32 rows of 32 (a fifth category).
   Windows `menu` passes, Linux and Android build; not released. Later the same day, at the user's word: the default is the user's
   folder after all, as it always was, so existing saves aren't broken, and beside the program is the choice (no first-run copy,
-  no build-tree rule); the page's help is one short line, the end of the folder's path.
+  no build-tree rule); the page's help is only the folder's whole path, over two lines when long, with the system's own slashes: the font has
+  none, so `DrawSysText` draws a slash or backslash itself (`draw_slash`, `main/nascalls.c`), for any text.
 - 2026-11-12: 7.15, the user's word on what was left: no split screen, camera and crease or Flex mode, but an option only Android
   shows, with the game in one part of the screen and the controller in the other. MOBILE FOLD (the user's name; TOUCH BUTTONS: APART at first), in the video
   options in WINDOW SIZE's place on Android (`videomenu.c`, `__ANDROID__`), so in the launcher, the main menu and the pause menu;
