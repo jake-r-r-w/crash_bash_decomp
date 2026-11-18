@@ -361,7 +361,9 @@ drawn in code): the first art the port ships, the 128-pixel ones it uses kept in
 built into the program as data (`embed.cmake`, run by CMake), so every build has them with nothing to package. Credited in the READMEs.
 A controller's is its button in that kind's own look, by its place (SDL's south, east, west and north): an Xbox's coloured A, B, X, Y, a
 PlayStation's coloured shapes, a Nintendo's B, A, Y, X (its A is on the right), a Steam Deck's; and its shoulders, triggers, d-pad and the
-rest. A key is its cap, and with the mouse in hand Cross and Triangle are its left and right buttons, as they are in the menus (not on the
+rest. A key is its cap; the keyboard's d-pad is the four keys bound to up, down, left and right, Kenney's own caps cut to their edges
+and set as an upside-down T (`load_keys`), as his picture of the arrow keys is blank caps, which at their size were white blocks (the
+user's ask). With the mouse in hand Cross and Triangle are its left and right buttons, as they are in the menus (not on the
 CONTROLS page, where keys are chosen). A key or button Kenney has no picture of keeps the game's own. Kenney's are white with the letter
 cut out, so as each is loaded the letter's hole is filled dark and a dark rim put round it, as the game's own letters have (`ink_in`),
 and it's made the size it's shown and given the original's 32 x 16 texels, so no text moves. PROMPTS, on the CONTROLS page under STICK

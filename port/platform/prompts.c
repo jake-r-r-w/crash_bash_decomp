@@ -172,7 +172,7 @@ static const char *prompt_name(int control, int style, char *buf, size_t size) {
     }
     /* the d-pad as a whole: the arrow keys, or the controller's d-pad */
     if (control == PROMPT_DPAD) {
-        return style == PROMPTS_KEYBOARD ? "keyboard_arrows" : style == PROMPTS_PLAYSTATION ? "playstation_dpad" : style == PROMPTS_NINTENDO ? "switch_dpad"
+        return style == PROMPTS_KEYBOARD ? "keys:" : style == PROMPTS_PLAYSTATION ? "playstation_dpad" : style == PROMPTS_NINTENDO ? "switch_dpad"
              : style == PROMPTS_STEAMDECK ? "steamdeck_dpad" : "xbox_dpad";
     }
     if (style == PROMPTS_KEYBOARD) {
@@ -198,8 +198,9 @@ extern const PromptPng PromptPngs[]; /* prompt_pngs.c, made by assets/prompts/em
 #define INK 0x1E1E22u /* a letter's hole and the rim: the game's letters are outlined in black */
 #define MAX_READY 24
 
+#define NAME_SIZE 128
 typedef struct {
-    const char *name;
+    char name[NAME_SIZE]; /* Kenney's file's, or for the arrow keys built from four, "keys:" and theirs */
     int w, h;
     uint32_t *px; /* 0xAABBGGRR, straight alpha */
 } Ready;
@@ -282,17 +283,13 @@ static void ink_in(uint32_t *px, int w, int h, int rim) {
     SDL_free(copy);
 }
 
-static const Ready *ready(const char *name) {
+/* One of Kenney's pictures as it is, or NULL: malloc'd, *w x *h */
+static uint32_t *load(const char *name, int *w, int *h) {
     const PromptPng *p;
     SDL_Surface *loaded, *rgba;
-    Ready *r;
-    int i, y;
+    uint32_t *px;
+    int y;
 
-    for (i = 0; i < MAX_READY; i++) {
-        if (Readies[i].name != NULL && SDL_strcmp(Readies[i].name, name) == 0) {
-            return &Readies[i];
-        }
-    }
     for (p = PromptPngs; p->name != NULL && SDL_strcmp(p->name, name) != 0; p++) {
     }
     if (p->name == NULL) {
@@ -304,29 +301,109 @@ static const Ready *ready(const char *name) {
     if (rgba == NULL) {
         return NULL;
     }
+    px = SDL_malloc(sizeof(uint32_t) * (size_t)rgba->w * rgba->h);
+    if (px != NULL) {
+        for (y = 0; y < rgba->h; y++) {
+            memcpy(px + (size_t)y * rgba->w, (const uint8_t *)rgba->pixels + (size_t)y * rgba->pitch, sizeof(uint32_t) * (size_t)rgba->w);
+        }
+        *w = rgba->w;
+        *h = rgba->h;
+    }
+    SDL_DestroySurface(rgba);
+    return px;
+}
+
+/* The four keys that move, as the arrow keys sit, in an upside-down T. Kenney's own picture of the arrow keys is blank caps, which the
+   size it's shown at leaves as white blocks, so it's made from the four keys bound to up, down, left and right, each with its own sign
+   (the user's ask, 2026-11-18). name is "keys:UP,DOWN,LEFT,RIGHT", each key's picture's name. NULL if one has none */
+static uint32_t *load_keys(const char *name, int *w, int *h) {
+    /* where each goes, in keys across and down: up over down, left and right beside it */
+    static const int At[4][2] = { { 1, 0 }, { 1, 1 }, { 0, 1 }, { 2, 1 } };
+    char one[NAME_SIZE];
+    uint32_t *keys[4] = { NULL, NULL, NULL, NULL }, *px = NULL;
+    int kw[4] = { 0 }, kh[4] = { 0 }, i, n = 0, y;
+    const char *s = name + 5;
+
+    for (i = 0; i < 4; i++) {
+        const char *end = SDL_strchr(s, ',');
+        size_t len = end != NULL ? (size_t)(end - s) : SDL_strlen(s);
+
+        SDL_strlcpy(one, s, len + 1 < NAME_SIZE ? len + 1 : NAME_SIZE);
+        s = end != NULL ? end + 1 : s + len;
+        keys[i] = load(one, &kw[i], &kh[i]);
+        n += keys[i] != NULL && kw[i] == kw[0] && kh[i] == kh[0];
+    }
+    if (n == 4) {
+        /* each key's square cut to the caps' own edges (the most of all four), with a little gap between, and a margin round the
+           whole for the rim */
+        int x0 = kw[0], y0 = kh[0], x1 = 0, y1 = 0, x, cw, ch, gap = kh[0] / 16, edge = kh[0] / 20;
+
+        for (i = 0; i < 4; i++) {
+            for (y = 0; y < kh[0]; y++) {
+                for (x = 0; x < kw[0]; x++) {
+                    if (keys[i][y * kw[0] + x] >> 24) {
+                        x0 = x < x0 ? x : x0;
+                        x1 = x > x1 ? x : x1;
+                        y0 = y < y0 ? y : y0;
+                        y1 = y > y1 ? y : y1;
+                    }
+                }
+            }
+        }
+        cw = x1 - x0 + 1 + gap;
+        ch = y1 - y0 + 1 + gap;
+        if (cw > gap && ch > gap) {
+            *w = cw * 3 - gap + edge * 2;
+            *h = ch * 2 - gap + edge * 2;
+            px = SDL_calloc((size_t)*w * *h, sizeof(uint32_t));
+            for (i = 0; px != NULL && i < 4; i++) {
+                for (y = y0; y <= y1; y++) {
+                    memcpy(px + (size_t)(edge + At[i][1] * ch + y - y0) * *w + edge + At[i][0] * cw, keys[i] + (size_t)y * kw[0] + x0,
+                           sizeof(uint32_t) * (size_t)(x1 - x0 + 1));
+                }
+            }
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        SDL_free(keys[i]);
+    }
+    return px;
+}
+
+static const Ready *ready(const char *name) {
+    Ready *r;
+    uint32_t *px;
+    int i, w = 0, h = 0;
+
+    for (i = 0; i < MAX_READY; i++) {
+        if (Readies[i].name[0] != '\0' && SDL_strcmp(Readies[i].name, name) == 0) {
+            return &Readies[i];
+        }
+    }
+    px = SDL_strncmp(name, "keys:", 5) == 0 ? load_keys(name, &w, &h) : load(name, &w, &h);
+    if (px == NULL) {
+        return NULL;
+    }
     r = &Readies[NextReady];
     NextReady = (NextReady + 1) % MAX_READY;
     SDL_free(r->px);
-    r->px = SDL_malloc(sizeof(uint32_t) * (size_t)rgba->w * rgba->h);
-    if (r->px == NULL) {
-        r->name = NULL;
-        SDL_DestroySurface(rgba);
-        return NULL;
+    r->px = px;
+    SDL_strlcpy(r->name, name, NAME_SIZE);
+    r->w = w;
+    r->h = h;
+    /* the rim by one key's height, so the four keys have the same as one */
+    {
+        int one = SDL_strncmp(name, "keys:", 5) == 0 ? r->h / 2 : r->h;
+
+        ink_in(r->px, r->w, r->h, one / 40 > 1 ? one / 40 : 1);
     }
-    for (y = 0; y < rgba->h; y++) {
-        memcpy(r->px + (size_t)y * rgba->w, (const uint8_t *)rgba->pixels + (size_t)y * rgba->pitch, sizeof(uint32_t) * (size_t)rgba->w);
-    }
-    r->name = p->name;
-    r->w = rgba->w;
-    r->h = rgba->h;
-    SDL_DestroySurface(rgba);
-    ink_in(r->px, r->w, r->h, r->w / 40 > 1 ? r->w / 40 : 1);
     return r;
 }
 
-/* The picture made smaller into out (out_w x out_h, cleared first): a square of side, its middle at cx, cy, each pixel the average of
-   4 x 4 samples, and alpha clear or opaque, which is all the drawing knows */
+/* The picture made smaller into out (out_w x out_h, cleared first): side high, as wide as its shape makes that, its middle at cx, cy,
+   each pixel the average of 4 x 4 samples, and alpha clear or opaque, which is all the drawing knows */
 static void shrink(const Ready *r, uint32_t *out, int out_w, int out_h, float cx, float cy, float side) {
+    float across = side * r->w / r->h;
     int x, y, sx, sy;
 
     memset(out, 0, sizeof(uint32_t) * (size_t)out_w * out_h);
@@ -336,7 +413,7 @@ static void shrink(const Ready *r, uint32_t *out, int out_w, int out_h, float cx
 
             for (sy = 0; sy < 4; sy++) {
                 for (sx = 0; sx < 4; sx++) {
-                    float u = ((x + (sx + 0.5f) / 4) - (cx - side / 2)) / side * r->w;
+                    float u = ((x + (sx + 0.5f) / 4) - (cx - across / 2)) / across * r->w;
                     float v = ((y + (sy + 0.5f) / 4) - (cy - side / 2)) / side * r->h;
                     int iu = (int)u, iv = (int)v;
                     uint32_t c, a;
@@ -362,10 +439,13 @@ static void shrink(const Ready *r, uint32_t *out, int out_w, int out_h, float cx
 /* Where in the font's texels the original has its picture, in texels across and rows down, and how many rows Kenney's square of it
    is, as his art has a margin round it: a face button's disc, 30 of its 32 across and 15 of its 16 down; L1's and R1's, the left 36 of
    their 64 and 13 of their 16; the d-pad's, the left 46 of its 64 and 30 of its 32 */
-static void place(int control, int art_w, int art_h, int w, int h, float *cx, float *cy, float *side) {
+static void place(int control, int keys, int art_w, int art_h, int w, int h, float *cx, float *cy, float *side) {
     float x = 15.0f, y = 7.5f, rows = 18.5f;
 
-    if (control == PROMPT_DPAD) {
+    /* the arrow keys, half as wide again as high, across the whole of the d-pad's 64 */
+    if (control == PROMPT_DPAD && keys) {
+        x = 32.0f, y = 15.0f, rows = 26.0f;
+    } else if (control == PROMPT_DPAD) {
         x = 22.5f, y = 14.5f, rows = 36.0f;
     } else if (control == CONTROL_L1 || control == CONTROL_R1) {
         x = 18.0f, y = 6.5f, rows = 24.0f;
@@ -377,18 +457,19 @@ static void place(int control, int art_w, int art_h, int w, int h, float *cx, fl
 
 /* Kept pictures: one for each of the four, made again when what it shows or its size changes */
 typedef struct {
-    const char *name;
+    char name[NAME_SIZE];
     int w, h, art_w, art_h;
     uint32_t *art;
 } Kept;
 static Kept Pictures[7]; /* the four face buttons, L1, R1 and the d-pad */
 
 const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w, int *art_h, uint64_t *id) {
-    char buf[32];
+    char buf[32], keys[NAME_SIZE];
     const char *name;
     const Ready *r;
     Kept *k;
-    int aw, ah;
+    int aw, ah, style = prompts_showing(), i;
+    uint64_t hash = 0xCBF29CE484222325ULL;
 
     int slot = control == PROMPT_DPAD ? 6 : control == CONTROL_L1 ? 4 : control == CONTROL_R1 ? 5 : control - CONTROL_CROSS;
 
@@ -396,7 +477,22 @@ const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w,
         w <= 0 || h <= 0 || target_h <= 0) {
         return NULL;
     }
-    name = prompt_name(control, prompts_showing(), buf, sizeof(buf));
+    name = prompt_name(control, style, buf, sizeof(buf));
+    /* the keyboard's d-pad: the four keys that move, whatever they are */
+    if (control == PROMPT_DPAD && style == PROMPTS_KEYBOARD) {
+        static const int Moves[4] = { CONTROL_UP, CONTROL_DOWN, CONTROL_LEFT, CONTROL_RIGHT };
+        char one[32];
+
+        SDL_strlcpy(keys, "keys:", sizeof(keys));
+        for (i = 0; i < 4 && name != NULL; i++) {
+            name = key_picture(settings()->keys[Moves[i]], one, sizeof(one));
+            if (name != NULL) {
+                SDL_strlcat(keys, name, sizeof(keys));
+                SDL_strlcat(keys, i < 3 ? "," : "", sizeof(keys));
+            }
+        }
+        name = name != NULL ? keys : NULL;
+    }
     r = name != NULL ? ready(name) : NULL;
     if (r == NULL) {
         return NULL;
@@ -407,7 +503,7 @@ const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w,
     ah = ah < h ? h : ah > 512 ? 512 : ah;
     aw = aw < w ? w : aw > 640 ? 640 : aw;
     k = &Pictures[slot];
-    if (k->art == NULL || k->name != r->name || k->w != w || k->h != h || k->art_w != aw || k->art_h != ah) {
+    if (k->art == NULL || SDL_strcmp(k->name, r->name) != 0 || k->w != w || k->h != h || k->art_w != aw || k->art_h != ah) {
         float cx, cy, side;
 
         SDL_free(k->art);
@@ -415,9 +511,9 @@ const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w,
         if (k->art == NULL) {
             return NULL;
         }
-        place(control, aw, ah, w, h, &cx, &cy, &side);
+        place(control, SDL_strncmp(r->name, "keys:", 5) == 0, aw, ah, w, h, &cx, &cy, &side);
         shrink(r, k->art, aw, ah, cx, cy, side);
-        k->name = r->name;
+        SDL_strlcpy(k->name, r->name, NAME_SIZE);
         k->w = w;
         k->h = h;
         k->art_w = aw;
@@ -425,8 +521,11 @@ const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w,
     }
     *art_w = aw;
     *art_h = ah;
-    /* the picture's name is its own: its address in the program's data */
-    *id = 0x50524F4D50000000ULL ^ ((uint64_t)(uintptr_t)r->name << 20) ^ ((uint64_t)aw << 10) ^ (uint64_t)ah;
+    /* the picture's name and size are its own */
+    for (i = 0; r->name[i] != 0; i++) {
+        hash = (hash ^ (unsigned char)r->name[i]) * 0x100000001B3ULL;
+    }
+    *id = 0x50524F4D50000000ULL ^ (hash << 20) ^ ((uint64_t)aw << 10) ^ (uint64_t)ah;
     return k->art;
 }
 
@@ -467,7 +566,7 @@ int prompts_sheet(const char *path) {
             if (r == NULL) {
                 continue;
             }
-            place(CONTROL_CROSS, cw, ch, 32, 16, &cx, &cy, &side);
+            place(CONTROL_CROSS, 0, cw, ch, 32, 16, &cx, &cy, &side);
             shrink(r, art, cw, ch, cx, cy, side);
             for (y = 0; y < ch; y++) {
                 for (x = 0; x < cw; x++) {

@@ -653,6 +653,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-18: Port, the keyboard's d-pad prompt is the four movement keys' own caps, each with its arrow, as an upside-down T
+  (`load_keys` in `platform/prompts.c`), in place of Kenney's blank-capped arrows picture. Checked on Ballistix's rules page.
+
 - 2026-11-18: Port, the rules pages' button pictures too (the user found L1 and the d-pad still the original's): they're the font's own
   images, 0x63 the d-pad and 0x67, 0x68 L1 and R1, now swapped with the face buttons (`main/draw.c`, `prompt_texture`), and Kenney's
   d-pads and arrow keys added. The CONTROLS page names the buttons in words in every style. Then every game's rules pages, with XBOX: modes 0 to 32 by
