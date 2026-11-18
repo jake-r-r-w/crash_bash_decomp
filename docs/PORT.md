@@ -365,8 +365,8 @@ and it's made the size it's shown and given the original's 32 x 16 texels, so no
 DEADZONE, is AUTO (the default), ORIGINAL, XBOX, PLAYSTATION, NINTENDO, STEAM DECK or KEYBOARD, kept as `button_prompts=auto`. AUTO goes
 by what player 1 pressed last (`host_prompt_device`, `sdl.c`): a key, the mouse (clicked, or moved a little way), or player 1's own
 controller, whose kind is what SDL calls its bottom button (A, Cross or B; `host_pad_prompts`), a Steam Deck by its USB ids, and others
-an Xbox's; before any press, a controller if player 1 has one; touch has the original's. With modern prompts the CONTROLS page names the
-face buttons in words, CROSS to TRIANGLE, and shows their pictures as their values. Only drawing changes, so online play is untouched: each
+an Xbox's; before any press, a controller if player 1 has one; touch has the original's. The CONTROLS page always names the
+face buttons in words, CROSS to TRIANGLE, and shows their pictures as their values, ORIGINAL too (the user's word). Only drawing changes, so online play is untouched: each
 machine shows its own player 1's. Test runs have ORIGINAL unless `--prompts` says, so their pictures are as they were; `--prompt-sheet FILE`
 draws every style's on one PNG. Not changed: words in the game's text (START, L1), and pictures of a controller that aren't the font's.
 

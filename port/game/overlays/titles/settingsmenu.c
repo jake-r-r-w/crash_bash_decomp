@@ -104,8 +104,7 @@ static const MenuCategory Categories[] = {
 static s32 Waiting = -1;
 static s32 WaitFrames;
 static s32 Settling; /* a key or button was just chosen: till everything's let go, as the one still held is a press of its new control */
-#define CONTROL_VALUE_X 0x18 /* past SELECT, with room for PRESS A KEY OR BUTTON */
-#define CONTROL_VALUE_X_WORDS 0x34 /* past TRIANGLE, when modern prompts have the rows in words */
+#define CONTROL_VALUE_X_WORDS 0x34 /* past TRIANGLE, the longest button's name */
 #define DEADZONE_VALUE_X 0x90 /* past STICK DEADZONE, with room for its arrows */
 
 static const char *const TopRows[] = { "PLAY", "ONLINE", "SETTINGS", "QUIT" };
@@ -259,25 +258,10 @@ static void font_text(char *out, size_t size, const char *in) {
     memcpy(out, clean, strlen(clean) + 1);
 }
 
-/* A game button as the CONTROLS page shows it: the face buttons as the font's own button pictures, as the game's
-   menus draw them ("PRESS \xFC BUTTON TO START"), and the rest by name. With modern button prompts those pictures are what plays
-   them (platform/prompts.c), so the rows name the game's buttons in words, and the pictures are their values (control_value) */
+/* A game button as the CONTROLS page names it: in words, CROSS to TRIANGLE and the rest, whatever the prompts (the user's word,
+   2026-11-18). The face buttons' pictures are their values (control_value) */
 static const char *control_label(s32 n) {
-    if (prompts_showing() != PROMPTS_ORIGINAL) {
-        return control_name(n);
-    }
-    switch (n) {
-    case CONTROL_CROSS:
-        return "\xFC";
-    case CONTROL_CIRCLE:
-        return "\xFD";
-    case CONTROL_SQUARE:
-        return "\xFF";
-    case CONTROL_TRIANGLE:
-        return "\xFE";
-    default:
-        return control_name(n);
-    }
+    return control_name(n);
 }
 
 /* A row of the CONTROLS page: what plays that button on what the player's using, the keyboard or a controller, whichever had the last
@@ -305,12 +289,12 @@ static void control_value(char *text, size_t size, s32 n) {
     }
     n = ROW_CONTROL(n);
     if (Waiting == n) {
-        /* (further out, with the rows in words, there is less room: the help under them says what to press) */
-        snprintf(text, size, "%s", prompts_showing() != PROMPTS_ORIGINAL ? "PRESS ONE NOW" : "PRESS A KEY OR BUTTON");
+        /* (past the rows' words there is less room: the help under them says what to press) */
+        snprintf(text, size, "%s", "PRESS ONE NOW");
         return;
     }
-    /* a face button's own picture, which modern prompts draw as its key or button */
-    if (prompts_showing() != PROMPTS_ORIGINAL && n <= CONTROL_TRIANGLE) {
+    /* a face button's own picture: the game's, or with modern prompts what plays it, its key or button (platform/prompts.c) */
+    if (n <= CONTROL_TRIANGLE) {
         snprintf(text, size, "%s", n == CONTROL_CROSS ? "\xFC" : n == CONTROL_CIRCLE ? "\xFD" : n == CONTROL_SQUARE ? "\xFF" : "\xFE");
         return;
     }
@@ -973,7 +957,7 @@ static void show_screen(void) {
             snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && (!controls || n == ROW_DEADZONE || n == ROW_PROMPTS) && !(data && n >= ROW_CHOOSE) ? "< %s >" : "%s", value);
             sub[SUB_VALUE(i)].unk7C = lit || (controls && Waiting >= 0 && Waiting == ROW_CONTROL(n)) ? TEXT_SMALL_LIT : TEXT_SMALL;
             /* (the deadzone's name is longer than a button's, so its value is further out; PROMPTS' longest value, PLAYSTATION, needs it in) */
-            sub[SUB_VALUE(i)].XYZ.x = controls ? (n == ROW_PROMPTS ? CONTROL_VALUE_X_WORDS : n == ROW_DEADZONE ? DEADZONE_VALUE_X : prompts_showing() != PROMPTS_ORIGINAL ? CONTROL_VALUE_X_WORDS : CONTROL_VALUE_X) : VALUE_X;
+            sub[SUB_VALUE(i)].XYZ.x = controls ? (n == ROW_PROMPTS ? CONTROL_VALUE_X_WORDS : n == ROW_DEADZONE ? DEADZONE_VALUE_X : CONTROL_VALUE_X_WORDS) : VALUE_X;
         } else {
             set_row(&sub[SUB_LABEL(i)], "", TEXT_SMALL);
         }
