@@ -572,7 +572,7 @@ static const char *option_help(const MenuCategory *c, s32 n) {
     }
     if (c->kind == KIND_CONTROLS) {
         if (Waiting >= 0) {
-            snprintf(Help[0], sizeof(Help[0]), "PRESS A KEY OR BUTTON FOR %s, OR ESC", control_label(Waiting));
+            snprintf(Help[0], sizeof(Help[0]), "A KEY, CLICK OR BUTTON FOR %s, OR ESC", control_label(Waiting));
             return Help[0];
         }
         if (n == ROW_PROMPTS) {
@@ -583,7 +583,7 @@ static const char *option_help(const MenuCategory *c, s32 n) {
             return settings()->button_prompts == PROMPTS_ORIGINAL ? "THE GAME'S OWN PLAYSTATION BUTTONS" : "THESE BUTTONS, WHATEVER PLAYER 1 PRESSES";
         }
         return n == ROW_RESET ? "EVERY KEY AND BUTTON BACK AS IT WAS" : n == ROW_DEADZONE ? "HOW FAR OUT A STICK GOES: GREEN MOVES YOU"
-               : "\xFC THEN A KEY OR A BUTTON FOR IT";
+               : "\xFC THEN A KEY, CLICK OR BUTTON FOR IT";
     }
     if (c->kind == KIND_DATA) {
         data_help(n);
@@ -1314,7 +1314,14 @@ static void update_waiting(void) {
     Settings *s = settings();
     s32 key = host_key_pressed_any();
     s32 button = host_button_pressed_any();
-    s32 keys = key >= 0;
+    s32 mouse = host_mouse_pressed_any();
+    s32 keys;
+
+    /* a mouse button takes a key's place (controls.h, KEY_MOUSE) */
+    if (key < 0 && mouse >= 0) {
+        key = mouse;
+    }
+    keys = key >= 0;
     s32 code = keys ? key : button;
 
     if (key == KEY_ESCAPE || --WaitFrames <= 0) {
@@ -1383,6 +1390,7 @@ static void update_controls(s32 pressed) {
     /* what was pressed to get here isn't the new one */
     host_key_pressed_any();
     host_button_pressed_any();
+    host_mouse_pressed_any();
     Waiting = ROW_CONTROL(Option);
     WaitFrames = WAIT_FRAMES;
     PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);

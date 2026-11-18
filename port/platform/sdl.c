@@ -40,6 +40,11 @@ static bool PretendKeys[SDL_SCANCODE_COUNT];
 /* What player 1 last pressed with, for the button prompts (prompts.h): PROMPT_DEVICE_, or -1 for nothing yet. A mouse moved this far, in
    the window's pixels, counts too, but not a nudge */
 static int P1Device = -1;
+/* The mouse's buttons held (bit n for SDL's button n), for the ones that play a control; the last pressed, for the CONTROLS page; a
+   test's pretend clicks, held for a few vblanks each; and whether a menu has the mouse (host_mouse_for_menus) */
+static int MouseHeld, MousePressed = -1, MouseMenus;
+static int PretendHeld[6];
+#define PRETEND_CLICK_VBLANKS 6
 static float MouseTravel;
 #define MOUSE_TRAVEL 48
 
@@ -597,6 +602,34 @@ void host_pretend_mouse(float x, float y, int left, int right, int wheel) {
     if (left || right || wheel) {
         P1Device = PROMPT_DEVICE_MOUSE;
     }
+    /* a pretend click is held a moment, as a real one is, and is the CONTROLS page's press as one is */
+    if (left || right) {
+        int button = left ? SDL_BUTTON_LEFT : SDL_BUTTON_RIGHT;
+
+        PretendHeld[button] = PRETEND_CLICK_VBLANKS;
+        MousePressed = KEY_MOUSE + button;
+        UsingPad = 0;
+    }
+}
+
+int host_mouse_pressed_any(void) {
+    int button = MousePressed;
+
+    MousePressed = -1;
+    return button;
+}
+
+void host_mouse_for_menus(int on) {
+    MouseMenus = on != 0;
+}
+
+/* A test's pretend clicks let go, a vblank at a time */
+static void pretend_clicks_age(void) {
+    int i;
+
+    for (i = 0; i < 6; i++) {
+        PretendHeld[i] -= PretendHeld[i] > 0;
+    }
 }
 
 int host_controllers(void) {
@@ -694,6 +727,8 @@ int host_poll(void) {
 
     int resized = 0;
 
+    pretend_clicks_age();
+
     while (SDL_PollEvent(&e)) {
         switch (e.type) {
         case SDL_EVENT_QUIT:
@@ -772,7 +807,20 @@ int host_poll(void) {
                 Mouse.left += e.button.button == SDL_BUTTON_LEFT;
                 Mouse.right += e.button.button == SDL_BUTTON_RIGHT;
                 P1Device = PROMPT_DEVICE_MOUSE;
+                if (e.button.button >= 1 && e.button.button <= 5) {
+                    MouseHeld |= 1 << e.button.button;
+                    MousePressed = KEY_MOUSE + e.button.button;
+                    UsingPad = 0;
+                }
             }
+            break;
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+            if (e.button.which != SDL_TOUCH_MOUSEID && e.button.button >= 1 && e.button.button <= 5) {
+                MouseHeld &= ~(1 << e.button.button);
+            }
+            break;
+        case SDL_EVENT_WINDOW_FOCUS_LOST:
+            MouseHeld = 0;
             break;
         case SDL_EVENT_MOUSE_WHEEL:
             if (e.wheel.which != SDL_TOUCH_MOUSEID && !Pretending) {
@@ -849,6 +897,10 @@ static int keyboard_buttons(void) {
         int key = bound[i];
 
         if (key > SDL_SCANCODE_UNKNOWN && key < SDL_SCANCODE_COUNT && (keys[key] || PretendKeys[key])) {
+            b |= control_bit(i);
+        }
+        /* a mouse button, where no menu is taking the mouse's clicks */
+        if (KEY_IS_MOUSE(key) && !MouseMenus && ((MouseHeld >> (key - KEY_MOUSE)) & 1 || PretendHeld[key - KEY_MOUSE] > 0)) {
             b |= control_bit(i);
         }
     }

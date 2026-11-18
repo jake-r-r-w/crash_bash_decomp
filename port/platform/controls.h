@@ -26,6 +26,10 @@ enum {
 #define BUTTON_RIGHT_TRIGGER 101
 /* Keys are SDL's scancodes. Escape is no control's: it keeps a key as it was, on the CONTROLS page */
 #define KEY_ESCAPE 41 /* SDL_SCANCODE_ESCAPE */
+/* A key's place can hold a mouse button instead (the user's ask, 2026-11-18): KEY_MOUSE + SDL's button, 1 the left, 2 the middle, 3 the
+   right, 4 and 5 the side ones */
+#define KEY_MOUSE 0x1000
+#define KEY_IS_MOUSE(k) ((k) > KEY_MOUSE && (k) <= KEY_MOUSE + 5)
 
 const char *control_name(int control); /* as the menus say it: CROSS, L1, UP */
 int control_bit(int control);          /* its PAD_ bit (platform.h) */
@@ -54,6 +58,10 @@ const char *control_file_id(int control);     /* cross, l1, up: key_cross and pa
 /* The key or controller button pressed since this was last asked, or -1 (sdl.c), for a page waiting for one */
 int host_key_pressed_any(void);
 int host_button_pressed_any(void);
+int host_mouse_pressed_any(void); /* KEY_MOUSE + the button */
+/* Whether a menu has the mouse this step (menumouse.c, and the launcher's): a click there chooses, so a mouse button that plays a
+   control doesn't play it there */
+void host_mouse_for_menus(int on);
 /* Whether the player's on a controller, not the keyboard: the last press was a controller's (the CONTROLS page shows its buttons) */
 int host_using_gamepad(void);
 

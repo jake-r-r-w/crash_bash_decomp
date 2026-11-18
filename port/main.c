@@ -20,6 +20,7 @@
 #include "platform/net.h"
 #include "platform/portmap.h"
 #include "platform/prompts.h"
+#include "platform/controls.h"
 #include "platform/texpack.h"
 #include "platform/settings.h"
 #include "platform/saves.h"
@@ -390,6 +391,10 @@ static void read_macro(const char *text) {
 }
 
 static int BotButtons, MouseButtons;
+/* --key-bind CONTROL NAME: cross and "Mouse Left", as the settings file has them */
+#define MAX_KEY_BINDS 16
+static const char *KeyBinds[MAX_KEY_BINDS][2];
+static int NumKeyBinds;
 
 void platform_mouse_buttons(int buttons) {
     MouseButtons = buttons;
@@ -750,6 +755,9 @@ int main(int argc, char **argv) {
             what = argv[++i];
             PadEvents[NumPadEvents++].buttons = strcmp(what, "click") == 0 ? 1 : strcmp(what, "right") == 0 ? 2 : strcmp(what, "up") == 0 ? 3
                                               : strcmp(what, "down") == 0 ? 4 : 0;
+        } else if (strcmp(argv[i], "--key-bind") == 0 && i + 2 < argc && NumKeyBinds < MAX_KEY_BINDS) {
+            KeyBinds[NumKeyBinds][0] = argv[++i];
+            KeyBinds[NumKeyBinds++][1] = argv[++i];
         } else if (strcmp(argv[i], "--stick-deadzone") == 0 && i + 1 < argc) {
             stick_deadzone = atoi(argv[++i]);
         } else if ((strcmp(argv[i], "--pad-unplug") == 0 || strcmp(argv[i], "--pad-plug") == 0) && i + 2 < argc && NumPadEvents < MAX_PRESSES) {
@@ -959,6 +967,16 @@ int main(int argc, char **argv) {
     }
     if (prompts >= 0) {
         settings()->button_prompts = prompts;
+    }
+    /* --key-bind: a control's key, or mouse button, for this run */
+    for (i = 0; i < NumKeyBinds; i++) {
+        int c, code = controls_key_from_id(KeyBinds[i][1]);
+
+        for (c = 0; c < NUM_CONTROLS; c++) {
+            if (SDL_strcasecmp(KeyBinds[i][0], control_file_id(c)) == 0 && code >= 0) {
+                controls_bind(settings()->keys, c, code);
+            }
+        }
     }
     if (stick_deadzone >= 0 && stick_deadzone <= 90) {
         settings()->stick_deadzone = stick_deadzone;

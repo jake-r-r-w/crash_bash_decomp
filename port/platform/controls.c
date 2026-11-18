@@ -67,12 +67,27 @@ void controls_bind(int binds[NUM_CONTROLS], int control, int code) {
     binds[control] = code;
 }
 
+/* The mouse's buttons, as the settings file and the CONTROLS page call them: SDL has no names of its own for them */
+static const char *const MouseIds[5] = { "Mouse Left", "Mouse Middle", "Mouse Right", "Mouse Back", "Mouse Forward" };
+static const char *const MouseLabels[5] = { "MOUSE LEFT", "MOUSE MID", "MOUSE RIGHT", "MOUSE BACK", "MOUSE FWD" };
+
 const char *controls_key_id(int key) {
+    if (KEY_IS_MOUSE(key)) {
+        return MouseIds[key - KEY_MOUSE - 1];
+    }
     return SDL_GetScancodeName((SDL_Scancode)key);
 }
 
 int controls_key_from_id(const char *id) {
-    SDL_Scancode key = SDL_GetScancodeFromName(id);
+    SDL_Scancode key;
+    int i;
+
+    for (i = 0; i < 5; i++) {
+        if (SDL_strcasecmp(id, MouseIds[i]) == 0) {
+            return KEY_MOUSE + 1 + i;
+        }
+    }
+    key = SDL_GetScancodeFromName(id);
 
     return key == SDL_SCANCODE_UNKNOWN ? -1 : (int)key;
 }
@@ -104,6 +119,9 @@ int controls_button_from_id(const char *id) {
 
 /* SDL's name, in 11 letters at most (a column of the CONTROLS page), and in words for the marks the game's letters haven't got */
 const char *controls_key_label(int key) {
+    if (KEY_IS_MOUSE(key)) {
+        return MouseLabels[key - KEY_MOUSE - 1];
+    }
     switch (key) {
     case SDL_SCANCODE_RETURN:
         return "ENTER";

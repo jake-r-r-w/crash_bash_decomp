@@ -653,6 +653,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-18: Port, mouse buttons can be bound on the CONTROLS page, in a key's place (`KEY_MOUSE`, `key_cross=Mouse Right`): they
+  play in the game through player 1's pad, but not while a menu has the mouse (`host_mouse_for_menus`). Prompts show Kenney's mouse
+  pictures for them. Checked: `controls` 7/7 (a click-to-bind case), `mouse` 4/4, and fingerprints of a Crate Crush challenge with
+  `--key-bind` (new): a bound right click changes the game, an unbound one doesn't.
+
 - 2026-11-18: Port, every prompt picture at one scale (`TILE_ROWS` in `platform/prompts.c`), so a key is the same size as a rules
   page's L1 or a face button's (the user's word: Q and W were bigger); a controller's d-pad keeps the original's size.
 

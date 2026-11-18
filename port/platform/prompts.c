@@ -102,6 +102,13 @@ static const char *pad_picture(int style, int button) {
 static const char *key_picture(int key, char *buf, size_t size) {
     const char *name = NULL;
 
+    /* a mouse button that plays a control (controls.h, KEY_MOUSE) */
+    if (KEY_IS_MOUSE(key)) {
+        static const char *const Mice[5] = { "mouse_left", "mouse_scroll", "mouse_right", "mouse_side_back", "mouse_side_forward" };
+
+        return Mice[key - KEY_MOUSE - 1];
+    }
+
     if (key >= SDL_SCANCODE_A && key <= SDL_SCANCODE_Z) {
         SDL_snprintf(buf, size, "keyboard_%c", 'a' + key - SDL_SCANCODE_A);
         return buf;

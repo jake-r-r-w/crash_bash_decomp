@@ -1445,6 +1445,12 @@ async function controls(args) {
                    ...out(330), '--press', '420', CROSS, '--frames', '480'],
             want: ['button prompts xbox', 'button prompts playstation', 'button prompts xbox', 'play'],
         },
+        {
+            /* a click while it waits is a mouse button for that control, in a key's place */
+            name: 'mouse button: a right click for Cross',
+            args: [...page(2), ...press([260, CROSS]), '--mouse', '300', '0', '0', 'right', ...out(330), '--press', '420', CROSS, '--frames', '480'],
+            want: ['CROSS is key Mouse Right', 'play'],
+        },
         /* the mouse, in the launcher's own units (a 640 x 480 picture's from its middle): rows are pointed at and clicked */
         {
             name: 'mouse: SETTINGS, CONTROLS and STICK DEADZONE clicked, back by two right clicks, and PLAY clicked',

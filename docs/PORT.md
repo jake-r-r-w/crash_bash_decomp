@@ -303,7 +303,12 @@ SETTINGS has a CONTROLS page to change them, and a controller's buttons (the sam
 (2026-11-10; as simple as it can be, also theirs): a row for each of the game's buttons, showing what plays it on what the player's
 using, its key or, once a controller's had the last press, its controller button (`host_using_gamepad`), as modern games' prompts
 follow the controller. A row, Cross, then whichever's pressed first, a key or a controller's button, is its new one; one another button
-had swaps with it, so each has one; Esc, or a few seconds with nothing, keeps it; RESET TO DEFAULTS puts them all back. They're kept in
+had swaps with it, so each has one; Esc, or a few seconds with nothing, keeps it; RESET TO DEFAULTS puts them all back. A key's place can hold a mouse button instead (the user's ask,
+2026-11-18): a click while a row waits is that button for it (left, right, middle and the two side ones), kept as `key_cross=Mouse Right`
+(`KEY_MOUSE` in `controls.h`). In the game it plays its control as a key does, through player 1's pad, so online it goes to the others
+as any press; but not while a menu has the mouse (the game's own menus, `menumouse.c`, and the launcher's: `host_mouse_for_menus`), where a
+click chooses a row. Unbound, a click does nothing to the game: the game's fingerprints with and without one are the same, and with Cross
+on the right button they part at the click. They're kept in
 the settings file by SDL's names (`key_cross=Z`, `pad_cross=a`; `platform/controls.c`). The face buttons show as the font's pictures of
 them (`\xFC` Cross, `\xFD` Circle, `\xFF` Square, `\xFE` Triangle), and so do a PlayStation controller's. Two columns, keys and
 buttons, were tried first and dropped by the user: the game's letters aren't one width, so a second column needs text records of its
@@ -409,6 +414,7 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--pad-stick P N X Y` | put pretend controller P's left stick at X, Y (percent of the way out, -100 to 100) from vblank N, till it's moved again |
 | `--prompts STYLE` | the button prompts, for this run: `auto`, `original` (a test run's own), `xbox`, `playstation`, `nintendo`, `steamdeck` or `keyboard` |
 | `--prompt-sheet FILE` | draw every style's button prompts on one PNG, and stop |
+| `--key-bind CONTROL NAME` | a control's key or mouse button for this run, as the settings file has them: `--key-bind cross "Mouse Right"` |
 | `--stick-deadzone N` | the sticks' deadzone, in percent (0: the game's own) |
 | `--mouse N X Y WHAT` | a pretend mouse at vblank N: to X, Y (a 640 x 480 picture's units from its middle, as the launcher lays out its menus), and there `move`, `click`, `right` (a right click), `up` or `down` (the wheel); in the launcher and the game's own menus alike, and the real mouse is left out |
 | `--check-sticks` | check the deadzone's line is where it should be at every angle (a `ctest`) |

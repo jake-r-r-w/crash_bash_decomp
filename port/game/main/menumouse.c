@@ -16,6 +16,7 @@
  * end) is given up on, and so is anything once the menu's gone or another's up. Only a menu this machine's first player chooses in
  * takes it: in an online game, another machine's player's menu is theirs. */
 #include <string.h>
+#include "../../platform/controls.h"
 #include "../../platform/net.h"
 #include "../../platform/platform.h"
 #include "common.h"
@@ -172,10 +173,15 @@ void menu_mouse_sub(s32 row, const void *sub, s32 flags) {
     }
 }
 
+/* The launcher took the mouse since the last step: its menus have it */
+static s32 LauncherTook;
+
 void menu_mouse_take(HostMouse *out) {
     *out = Mouse;
     Mouse.moved = Mouse.left = Mouse.right = Mouse.wheel = 0;
     Taken = 1;
+    LauncherTook = 1;
+    host_mouse_for_menus(1);
 }
 
 /* Whether the player at that pad is this machine's first (or anyone's, -1): the one the mouse is. */
@@ -270,6 +276,9 @@ void menu_mouse_step(void) {
             l = &Shown[i];
         }
     }
+    /* a mouse button that plays a control plays it only where no menu's clicks are the mouse's (controls.h) */
+    host_mouse_for_menus(l != NULL || LauncherTook);
+    LauncherTook = 0;
     if (l == NULL) {
         /* no menu of ours: what the mouse did is left for the launcher, if it's up */
         give_up();
