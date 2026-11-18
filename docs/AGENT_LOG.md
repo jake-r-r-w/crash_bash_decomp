@@ -653,6 +653,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-18: Port, every prompt picture at one scale (`TILE_ROWS` in `platform/prompts.c`), so a key is the same size as a rules
+  page's L1 or a face button's (the user's word: Q and W were bigger); a controller's d-pad keeps the original's size.
+
 - 2026-11-18: Port, the keyboard's d-pad prompt is the four movement keys' own caps, each with its arrow, as an upside-down T
   (`load_keys` in `platform/prompts.c`), in place of Kenney's blank-capped arrows picture. Checked on Ballistix's rules page.
 

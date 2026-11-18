@@ -366,7 +366,8 @@ and set as an upside-down T (`load_keys`), as his picture of the arrow keys is b
 user's ask). With the mouse in hand Cross and Triangle are its left and right buttons, as they are in the menus (not on the
 CONTROLS page, where keys are chosen). A key or button Kenney has no picture of keeps the game's own. Kenney's are white with the letter
 cut out, so as each is loaded the letter's hole is filled dark and a dark rim put round it, as the game's own letters have (`ink_in`),
-and it's made the size it's shown and given the original's 32 x 16 texels, so no text moves. PROMPTS, on the CONTROLS page under STICK
+every one at the same scale, so keys and buttons are one size wherever they are (`TILE_ROWS`; a controller's d-pad, a picture of
+the whole pad, the original's), and it's made the size it's shown and given the original's 32 x 16 texels, so no text moves. PROMPTS, on the CONTROLS page under STICK
 DEADZONE, is AUTO (the default), ORIGINAL, XBOX, PLAYSTATION, NINTENDO, STEAM DECK or KEYBOARD, kept as `button_prompts=auto`. AUTO goes
 by what player 1 pressed last (`host_prompt_device`, `sdl.c`): a key, the mouse (clicked, or moved a little way), or player 1's own
 controller, whose kind is what SDL calls its bottom button (A, Cross or B; `host_pad_prompts`), a Steam Deck by its USB ids, and others

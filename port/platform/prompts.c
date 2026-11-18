@@ -436,19 +436,24 @@ static void shrink(const Ready *r, uint32_t *out, int out_w, int out_h, float cx
     }
 }
 
-/* Where in the font's texels the original has its picture, in texels across and rows down, and how many rows Kenney's square of it
-   is, as his art has a margin round it: a face button's disc, 30 of its 32 across and 15 of its 16 down; L1's and R1's, the left 36 of
-   their 64 and 13 of their 16; the d-pad's, the left 46 of its 64 and 30 of its 32 */
-static void place(int control, int keys, int art_w, int art_h, int w, int h, float *cx, float *cy, float *side) {
-    float x = 15.0f, y = 7.5f, rows = 18.5f;
+/* Every one of Kenney's 128-pixel squares is this many of the game's rows high, so a key or a button is the same size wherever it is
+   (the user's word, 2026-11-18): the most the arrow keys' T, three keys across, can be in the d-pad's 64 texels */
+#define TILE_ROWS 17.0f
+#define TILE_PIXELS 128.0f
 
-    /* the arrow keys, half as wide again as high, across the whole of the d-pad's 64 */
+/* Where in the font's texels the original has its picture, its middle in texels across and rows down, and how many rows high Kenney's
+   picture is (pixels high, a tile or the arrow keys' two rows): a face button's disc, in 30 of its 32 across and 15 of its 16 down;
+   L1's and R1's, the left 36 of their 64 and 13 of their 16; the d-pad's, the left 46 of its 64 and 30 of its 32. A controller's d-pad
+   is a picture of the whole pad, so it's the original's size */
+static void place(int control, int keys, int pixels, int art_w, int art_h, int w, int h, float *cx, float *cy, float *side) {
+    float x = 15.0f, y = 7.5f, rows = TILE_ROWS * pixels / TILE_PIXELS;
+
     if (control == PROMPT_DPAD && keys) {
-        x = 32.0f, y = 15.0f, rows = 26.0f;
+        x = 32.0f, y = 15.0f;
     } else if (control == PROMPT_DPAD) {
         x = 22.5f, y = 14.5f, rows = 36.0f;
     } else if (control == CONTROL_L1 || control == CONTROL_R1) {
-        x = 18.0f, y = 6.5f, rows = 24.0f;
+        x = 18.0f, y = 7.0f;
     }
     *cx = x * art_w / w;
     *cy = y * art_h / h;
@@ -511,7 +516,7 @@ const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w,
         if (k->art == NULL) {
             return NULL;
         }
-        place(control, SDL_strncmp(r->name, "keys:", 5) == 0, aw, ah, w, h, &cx, &cy, &side);
+        place(control, SDL_strncmp(r->name, "keys:", 5) == 0, r->h, aw, ah, w, h, &cx, &cy, &side);
         shrink(r, k->art, aw, ah, cx, cy, side);
         SDL_strlcpy(k->name, r->name, NAME_SIZE);
         k->w = w;
@@ -566,7 +571,7 @@ int prompts_sheet(const char *path) {
             if (r == NULL) {
                 continue;
             }
-            place(CONTROL_CROSS, 0, cw, ch, 32, 16, &cx, &cy, &side);
+            place(CONTROL_CROSS, 0, r->h, cw, ch, 32, 16, &cx, &cy, &side);
             shrink(r, art, cw, ch, cx, cy, side);
             for (y = 0; y < ch; y++) {
                 for (x = 0; x < cw; x++) {
