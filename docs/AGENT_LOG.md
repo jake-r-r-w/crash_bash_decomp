@@ -655,8 +655,8 @@ Newest first, a few lines each. Details are in the commits.
 
 - 2026-11-18: Port, the rules pages' button pictures too (the user found L1 and the d-pad still the original's): they're the font's own
   images, 0x63 the d-pad and 0x67, 0x68 L1 and R1, now swapped with the face buttons (`main/draw.c`, `prompt_texture`), and Kenney's
-  d-pads and arrow keys added. The CONTROLS page names the buttons in words in every style. Checked on four games' rules pages; the
-  rest are locked in a test run's save, and the font has no L2 or R2. The whole `build/` was found deleted, so the port was set up
+  d-pads and arrow keys added. The CONTROLS page names the buttons in words in every style. Then every game's rules pages, with XBOX: modes 0 to 32 by
+  `--mode N --level-flags 1` (a trophy challenge, which opens on its rules), and none of the original's was left; the font has no L2 or R2. The whole `build/` was found deleted, so the port was set up
   again (CMAKE_PREFIX_PATH at the toolchain's `deps`); the decomp's own outputs are still to be made again.
 
 - 2026-11-18: Port, the button prompts are Kenney's Input Prompts (CC0), at the user's word, in place of the drawn ones, which are
