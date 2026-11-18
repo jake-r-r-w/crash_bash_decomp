@@ -39,7 +39,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   - Windows (Direct3D 12) builds on the host with CMake. Linux (Vulkan) builds and is tested in `tools/dl`'s container, on a virtual
     screen with software Vulkan: never yet on a real Linux desktop and graphics card. Android (Vulkan) builds in `tools/da`, is
     tested in the emulator, and works on the user's phone; a phone that folds has only been tried in the emulator (7.15), as has its MOBILE FOLD option. No Mac.
-  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.2.0 (2026-11-13, phones that fold and the DATA page;
+  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.3.0 (2026-11-18, button prompts and mouse buttons; v1.2.0, 2026-11-13, phones that fold and the DATA page;
     v1.1.0, 2026-11-11, the sticks' deadzone and the mouse in every menu; v1.0.0, 2026-11-10, brought online play and couch play), for
     Windows, Linux and Android.
     `node port/package.mjs` makes them (PORT.md, A release).
@@ -652,6 +652,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-18: v1.3.0 released, at the user's word ("cut a release"): button prompts (Kenney's, with AUTO by player 1's device) and
+  mouse buttons bound on the CONTROLS page. The suites pass on the packaged Windows and Linux programs (modes, bosses, menu, mouse on
+  Windows, heroes, mods, image, online, identical, pads, controls) and Android's (modes, heroes, and an online game with the packaged
+  Windows program hosting). The LICENSE.txt in a download now has Kenney's licence. Gotcha: with `build/` deleted, `package.mjs` skips
+  its archive check and `image` can't start: copy the user folder's CRASHBSH.DAT to `build/disc/files/CRASHBSH/` and `disc/CrashBash.bin`
+  with its cue to `build/` (or `make disc`).
 
 - 2026-11-18: Port, mouse buttons can be bound on the CONTROLS page, in a key's place (`KEY_MOUSE`, `key_cross=Mouse Right`): they
   play in the game through player 1's pad, but not while a menu has the mouse (`host_mouse_for_menus`). Prompts show Kenney's mouse
