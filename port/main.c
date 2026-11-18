@@ -19,6 +19,7 @@
 #include "platform/mods.h"
 #include "platform/net.h"
 #include "platform/portmap.h"
+#include "platform/prompts.h"
 #include "platform/texpack.h"
 #include "platform/settings.h"
 #include "platform/saves.h"
@@ -576,7 +577,7 @@ int main(int argc, char **argv) {
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int extra[4] = { 0 }, extra_heroes = 0, heroes[4] = { 0 };
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
-    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1;
+    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1, prompts = -1;
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
 #ifdef SDL_PLATFORM_ANDROID
@@ -633,6 +634,13 @@ int main(int argc, char **argv) {
             i = controls_check_sticks();
             printf(i ? "sticks ok\n" : "sticks wrong\n");
             return i ? 0 : 1;
+        } else if (strcmp(argv[i], "--prompt-sheet") == 0 && i + 1 < argc) {
+            /* every style's button prompts on one picture, to look at (prompts.c) */
+            i = prompts_sheet(argv[i + 1]);
+            printf(i ? "prompts drawn\n" : "prompts not drawn\n");
+            return i ? 0 : 1;
+        } else if (strcmp(argv[i], "--prompts") == 0 && i + 1 < argc) {
+            prompts = prompts_from_id(argv[++i]);
         } else if (strcmp(argv[i], "--check-codes") == 0) {
             /* the build's test of join codes (net.c) */
             printf(net_code_check() ? "codes ok\n" : "codes wrong\n");
@@ -944,6 +952,13 @@ int main(int argc, char **argv) {
     }
     if (fps == 30 || fps == 60 || fps == 120) {
         settings()->fps = fps;
+    }
+    /* a test run has the game's own button prompts, so its pictures are as they always were, unless it asks */
+    if (testing) {
+        settings()->button_prompts = PROMPTS_ORIGINAL;
+    }
+    if (prompts >= 0) {
+        settings()->button_prompts = prompts;
     }
     if (stick_deadzone >= 0 && stick_deadzone <= 90) {
         settings()->stick_deadzone = stick_deadzone;

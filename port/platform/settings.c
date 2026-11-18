@@ -3,6 +3,7 @@
 
 #include <SDL3/SDL.h>
 #include "folders.h"
+#include "prompts.h"
 #include "settings.h"
 
 static Settings Current;
@@ -39,6 +40,7 @@ void settings_defaults(void) {
     Current.online_stereo = 1;
     Current.buttons_apart = 0;
     Current.stick_deadzone = 0;
+    Current.button_prompts = PROMPTS_AUTO;
     controls_default_keys(Current.keys);
     controls_default_buttons(Current.buttons);
     Current.texture_pack[0] = 0;
@@ -86,6 +88,7 @@ void settings_load(void) {
     }
     while (fgets(line, sizeof(line), f) != NULL) {
         int a, b;
+        char word[16];
 
         if (sscanf(line, "skip_intro=%d", &a) == 1) {
             Current.skip_intro = a != 0;
@@ -121,6 +124,8 @@ void settings_load(void) {
             Current.extra_heroes = a != 0;
         } else if (sscanf(line, "buttons_apart=%d", &a) == 1) {
             Current.buttons_apart = a != 0;
+        } else if (sscanf(line, "button_prompts=%15s", word) == 1 && prompts_from_id(word) >= 0) {
+            Current.button_prompts = prompts_from_id(word);
         } else if (sscanf(line, "stick_deadzone=%d", &a) == 1 && a >= 0 && a <= 90) {
             Current.stick_deadzone = a;
         } else if (sscanf(line, "online_music=%d", &a) == 1 && a >= 0 && a <= 100) {
@@ -222,6 +227,7 @@ static void save_settings(void) {
     fprintf(f, "icons=%d\n", Current.icons);
     fprintf(f, "extra_heroes=%d\n", Current.extra_heroes);
     fprintf(f, "buttons_apart=%d\n", Current.buttons_apart);
+    fprintf(f, "button_prompts=%s\n", prompts_id(Current.button_prompts));
     fprintf(f, "stick_deadzone=%d\n", Current.stick_deadzone);
     fprintf(f, "online_music=%d\n", Current.online_music);
     fprintf(f, "online_sfx=%d\n", Current.online_sfx);

@@ -106,7 +106,7 @@ set_property(SOURCE ${core_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAM
 
 set(PORT_SOURCES main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c platform/folders.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/zipread.c platform/bps.c platform/settings.c
-  platform/touch.c platform/controls.c platform/net.c platform/portmap.c)
+  platform/touch.c platform/controls.c platform/prompts.c platform/net.c platform/portmap.c)
 if(ANDROID)
   # Android loads the game as libmain.so, and SDL's Java side calls its main (port/android/, docs/PORT.md, Android)
   add_library(crashbash SHARED ${PORT_SOURCES} $<TARGET_OBJECTS:game>)

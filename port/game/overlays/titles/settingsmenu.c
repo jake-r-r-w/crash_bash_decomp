@@ -21,6 +21,7 @@
 #include "../../../platform/mods.h"
 #include "../../../platform/net.h"
 #include "../../../platform/portmap.h"
+#include "../../../platform/prompts.h"
 #include "../../../platform/settings.h"
 #include "common.h"
 #include "bash/engine.h"
@@ -61,11 +62,12 @@ enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS, KIND_CONTROLS, KIND_DATA };
 #define ROW_CHOOSE NUM_FOLDERS
 #define DATA_ROWS (NUM_FOLDERS * 2)
 
-/* The CONTROLS page's rows: STICK DEADZONE first, a line under it that the cursor passes over, one for each of the game's buttons, and
-   RESET TO DEFAULTS (the user's word on where the deadzone goes, 2026-11-10) */
+/* The CONTROLS page's rows: STICK DEADZONE first (the user's word on where it goes, 2026-11-10), then BUTTON PROMPTS, a line under them
+   that the cursor passes over, one for each of the game's buttons, and RESET TO DEFAULTS */
 #define ROW_DEADZONE 0
-#define ROW_LINE 1
-#define ROW_CONTROLS 2 /* the first button's row: a button's row is ROW_CONTROLS + its CONTROL_ number */
+#define ROW_PROMPTS 1
+#define ROW_LINE 2
+#define ROW_CONTROLS 3 /* the first button's row: a button's row is ROW_CONTROLS + its CONTROL_ number */
 #define ROW_RESET (ROW_CONTROLS + NUM_CONTROLS)
 #define ROW_CONTROL(row) ((row) - ROW_CONTROLS)
 
@@ -103,6 +105,7 @@ static s32 Waiting = -1;
 static s32 WaitFrames;
 static s32 Settling; /* a key or button was just chosen: till everything's let go, as the one still held is a press of its new control */
 #define CONTROL_VALUE_X 0x18 /* past SELECT, with room for PRESS A KEY OR BUTTON */
+#define CONTROL_VALUE_X_WORDS 0x34 /* past TRIANGLE, when modern prompts have the rows in words */
 #define DEADZONE_VALUE_X 0x90 /* past STICK DEADZONE, with room for its arrows */
 
 static const char *const TopRows[] = { "PLAY", "ONLINE", "SETTINGS", "QUIT" };
@@ -257,8 +260,12 @@ static void font_text(char *out, size_t size, const char *in) {
 }
 
 /* A game button as the CONTROLS page shows it: the face buttons as the font's own button pictures, as the game's
-   menus draw them ("PRESS \xFC BUTTON TO START"), and the rest by name */
+   menus draw them ("PRESS \xFC BUTTON TO START"), and the rest by name. With modern button prompts those pictures are what plays
+   them (platform/prompts.c), so the rows name the game's buttons in words, and the pictures are their values (control_value) */
 static const char *control_label(s32 n) {
+    if (prompts_showing() != PROMPTS_ORIGINAL) {
+        return control_name(n);
+    }
     switch (n) {
     case CONTROL_CROSS:
         return "\xFC";
@@ -284,6 +291,10 @@ static void control_value(char *text, size_t size, s32 n) {
         text[0] = '\0';
         return;
     }
+    if (n == ROW_PROMPTS) {
+        snprintf(text, size, "%s", prompts_name(settings()->button_prompts));
+        return;
+    }
     if (n == ROW_DEADZONE) {
         if (settings()->stick_deadzone == 0) {
             snprintf(text, size, "ORIGINAL");
@@ -294,7 +305,13 @@ static void control_value(char *text, size_t size, s32 n) {
     }
     n = ROW_CONTROL(n);
     if (Waiting == n) {
-        snprintf(text, size, "%s", "PRESS A KEY OR BUTTON");
+        /* (further out, with the rows in words, there is less room: the help under them says what to press) */
+        snprintf(text, size, "%s", prompts_showing() != PROMPTS_ORIGINAL ? "PRESS ONE NOW" : "PRESS A KEY OR BUTTON");
+        return;
+    }
+    /* a face button's own picture, which modern prompts draw as its key or button */
+    if (prompts_showing() != PROMPTS_ORIGINAL && n <= CONTROL_TRIANGLE) {
+        snprintf(text, size, "%s", n == CONTROL_CROSS ? "\xFC" : n == CONTROL_CIRCLE ? "\xFD" : n == CONTROL_SQUARE ? "\xFF" : "\xFE");
         return;
     }
     if (!host_using_gamepad()) {
@@ -553,7 +570,7 @@ static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
         return Labels[i];
     }
     if (c->kind == KIND_CONTROLS) {
-        return n == ROW_RESET ? "RESET TO DEFAULTS" : n == ROW_DEADZONE ? "STICK DEADZONE" : n == ROW_LINE ? CONTROLS_LINE : control_label(ROW_CONTROL(n));
+        return n == ROW_RESET ? "RESET TO DEFAULTS" : n == ROW_DEADZONE ? "STICK DEADZONE" : n == ROW_PROMPTS ? "BUTTON PROMPTS" : n == ROW_LINE ? CONTROLS_LINE : control_label(ROW_CONTROL(n));
     }
     if (c->kind == KIND_DATA) {
         return data_label(n, i);
@@ -573,6 +590,13 @@ static const char *option_help(const MenuCategory *c, s32 n) {
         if (Waiting >= 0) {
             snprintf(Help[0], sizeof(Help[0]), "PRESS A KEY OR BUTTON FOR %s, OR ESC", control_label(Waiting));
             return Help[0];
+        }
+        if (n == ROW_PROMPTS) {
+            if (settings()->button_prompts == PROMPTS_AUTO) {
+                snprintf(Help[0], sizeof(Help[0]), "BY WHAT PLAYER 1 LAST PRESSED: NOW %s", prompts_name(prompts_showing()));
+                return Help[0];
+            }
+            return settings()->button_prompts == PROMPTS_ORIGINAL ? "THE GAME'S OWN PLAYSTATION BUTTONS" : "THESE BUTTONS, WHATEVER PLAYER 1 PRESSES";
         }
         return n == ROW_RESET ? "EVERY KEY AND BUTTON BACK AS IT WAS" : n == ROW_DEADZONE ? "HOW FAR OUT A STICK GOES: GREEN MOVES YOU"
                : "\xFC THEN A KEY OR A BUTTON FOR IT";
@@ -855,6 +879,8 @@ static void show_screen(void) {
     s32 data = Screen == SCREEN_OPTIONS && c->kind == KIND_DATA;
     s32 i;
 
+    /* the CONTROLS page is where keys are chosen, so its pictures are of keys, not of the mouse it's clicked with */
+    prompts_keys_only(controls && (Screen == SCREEN_OPTIONS || Screen == SCREEN_CATEGORIES));
     /* the deadzone's box, while it's chosen (draw_deadzone) */
     if (deadzone_shown()) {
         sub[SUB_STICK_BOX].flags |= 0x8000;
@@ -923,7 +949,7 @@ static void show_screen(void) {
                            : mods || (data && Option >= ROW_CHOOSE) ? "UP - DOWN CHOOSE, \xFC BUTTON TO OPEN, \xFE BACK"
                            : controls && Waiting >= 0 ? ""
                            /* a CONTROLS row's own: the help over it says how (the user's word on what was there: "super cluttered") */
-                           : controls && Screen == SCREEN_OPTIONS && Option == ROW_DEADZONE ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
+                           : controls && Screen == SCREEN_OPTIONS && (Option == ROW_DEADZONE || Option == ROW_PROMPTS) ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
                            : controls && Screen == SCREEN_OPTIONS && Option == ROW_RESET ? "UP - DOWN CHOOSE, \xFC BUTTON TO RESET, \xFE BACK"
                            : controls         ? "UP - DOWN CHOOSE, \xFE BACK"
                            : Screen == SCREEN_OPTIONS ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
@@ -944,10 +970,10 @@ static void show_screen(void) {
             value[0] = '\0';
             show_value(value, sizeof(value), c, n);
             /* left and right change an option's value; a key or button is changed by pressing the new one */
-            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && (!controls || n == ROW_DEADZONE) && !(data && n >= ROW_CHOOSE) ? "< %s >" : "%s", value);
+            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && (!controls || n == ROW_DEADZONE || n == ROW_PROMPTS) && !(data && n >= ROW_CHOOSE) ? "< %s >" : "%s", value);
             sub[SUB_VALUE(i)].unk7C = lit || (controls && Waiting >= 0 && Waiting == ROW_CONTROL(n)) ? TEXT_SMALL_LIT : TEXT_SMALL;
-            /* (the deadzone's name is longer than a button's, so its value is further out) */
-            sub[SUB_VALUE(i)].XYZ.x = controls ? (n == ROW_DEADZONE ? DEADZONE_VALUE_X : CONTROL_VALUE_X) : VALUE_X;
+            /* (the deadzone's and the prompts' names are longer than a button's, so their values are further out) */
+            sub[SUB_VALUE(i)].XYZ.x = controls ? (n == ROW_DEADZONE || n == ROW_PROMPTS ? DEADZONE_VALUE_X : prompts_showing() != PROMPTS_ORIGINAL ? CONTROL_VALUE_X_WORDS : CONTROL_VALUE_X) : VALUE_X;
         } else {
             set_row(&sub[SUB_LABEL(i)], "", TEXT_SMALL);
         }
@@ -1327,6 +1353,20 @@ static void update_waiting(void) {
 }
 
 static void update_controls(s32 pressed) {
+    if (Option == ROW_PROMPTS) {
+        /* AUTO, ORIGINAL, XBOX, PLAYSTATION, NINTENDO, KEYBOARD, round again either way */
+        Settings *s = settings();
+
+        if (pressed & (0x20 | 0x80 | 0x4000)) {
+            s->button_prompts = (s->button_prompts + ((pressed & 0x80) ? NUM_PROMPTS - 1 : 1)) % NUM_PROMPTS;
+            settings_save();
+            if (s->no_save) {
+                printf("controls: button prompts %s\n", prompts_id(s->button_prompts));
+            }
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        return;
+    }
     if (Option == ROW_DEADZONE) {
         /* ORIGINAL, the game's own, then 10% to 60% in tens, round again either way */
         Settings *s = settings();

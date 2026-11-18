@@ -7,6 +7,7 @@
 #include "controls.h"
 #include "platform.h"
 #include "gfx.h"
+#include "prompts.h"
 #include "settings.h"
 #include "touch.h"
 
@@ -36,6 +37,11 @@ static Controller Slots[MAX_PADS];
 static int KeyPressed = -1, ButtonPressed = -1;
 static int UsingPad = -1; /* the last press was on a controller (1) or the keyboard (0), or there's been none (-1) */
 static bool PretendKeys[SDL_SCANCODE_COUNT];
+/* What player 1 last pressed with, for the button prompts (prompts.h): PROMPT_DEVICE_, or -1 for nothing yet. A mouse moved this far, in
+   the window's pixels, counts too, but not a nudge */
+static int P1Device = -1;
+static float MouseTravel;
+#define MOUSE_TRAVEL 48
 
 static void open_pads(void);
 static int pad_buttons(SDL_Gamepad *c);
@@ -588,6 +594,9 @@ void host_pretend_mouse(float x, float y, int left, int right, int wheel) {
     Mouse.left += left;
     Mouse.right += right;
     Mouse.wheel += wheel;
+    if (left || right || wheel) {
+        P1Device = PROMPT_DEVICE_MOUSE;
+    }
 }
 
 int host_controllers(void) {
@@ -716,6 +725,9 @@ int host_poll(void) {
         case SDL_EVENT_FINGER_MOTION:
         case SDL_EVENT_FINGER_UP:
         case SDL_EVENT_FINGER_CANCELED:
+            if (e.type == SDL_EVENT_FINGER_DOWN) {
+                P1Device = PROMPT_DEVICE_TOUCH;
+            }
             touch_event(&e);
             break;
         case SDL_EVENT_KEY_DOWN:
@@ -725,16 +737,33 @@ int host_poll(void) {
             } else if (!e.key.repeat) {
                 KeyPressed = e.key.scancode;
                 UsingPad = 0;
+                P1Device = PROMPT_DEVICE_KEYS;
+                MouseTravel = 0;
             }
             break;
         case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
             ButtonPressed = e.gbutton.button;
             UsingPad = 1;
+            if (Slots[0].pad != NULL && e.gbutton.which == Slots[0].id) {
+                P1Device = PROMPT_DEVICE_PAD;
+                MouseTravel = 0;
+            }
+            break;
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+            /* player 1 moving with a stick only */
+            if (Slots[0].pad != NULL && e.gaxis.which == Slots[0].id && (e.gaxis.value > 20000 || e.gaxis.value < -20000)) {
+                P1Device = PROMPT_DEVICE_PAD;
+                MouseTravel = 0;
+            }
             break;
         /* the mouse's, but not the ones SDL makes from touches */
         case SDL_EVENT_MOUSE_MOTION:
             if (e.motion.which != SDL_TOUCH_MOUSEID && !Pretending) {
                 mouse_at(e.motion.x, e.motion.y);
+                MouseTravel += SDL_fabsf(e.motion.xrel) + SDL_fabsf(e.motion.yrel);
+                if (MouseTravel > MOUSE_TRAVEL) {
+                    P1Device = PROMPT_DEVICE_MOUSE;
+                }
             }
             break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -742,10 +771,12 @@ int host_poll(void) {
                 mouse_at(e.button.x, e.button.y);
                 Mouse.left += e.button.button == SDL_BUTTON_LEFT;
                 Mouse.right += e.button.button == SDL_BUTTON_RIGHT;
+                P1Device = PROMPT_DEVICE_MOUSE;
             }
             break;
         case SDL_EVENT_MOUSE_WHEEL:
             if (e.wheel.which != SDL_TOUCH_MOUSEID && !Pretending) {
+                P1Device = PROMPT_DEVICE_MOUSE;
                 Mouse.wheel += e.wheel.integer_y * (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -1 : 1);
             }
             break;
@@ -772,6 +803,9 @@ int host_poll(void) {
             if (triggers & ~Slots[i].triggers & 2) {
                 ButtonPressed = BUTTON_RIGHT_TRIGGER;
                 UsingPad = 1;
+            }
+            if (i == 0 && (triggers & ~Slots[i].triggers)) {
+                P1Device = PROMPT_DEVICE_PAD;
             }
             Slots[i].triggers = triggers;
         }
@@ -861,6 +895,50 @@ int host_using_gamepad(void) {
     return UsingPad >= 0 ? UsingPad : host_controllers() > 0;
 }
 
+/* With no press yet, player 1's controller if they have one, else the keyboard, or on a phone the touch buttons */
+int host_prompt_device(void) {
+    if (P1Device >= 0) {
+        return P1Device;
+    }
+    if (Slots[0].pad != NULL) {
+        return PROMPT_DEVICE_PAD;
+    }
+#ifdef SDL_PLATFORM_ANDROID
+    return PROMPT_DEVICE_TOUCH;
+#else
+    return PROMPT_DEVICE_KEYS;
+#endif
+}
+
+/* Player 1's controller's kind, by what SDL says its bottom face button is called: A on an Xbox's, and on most others, which copy
+   it; Cross on a PlayStation's; B on a Nintendo's. With none, the keyboard's */
+int host_pad_prompts(void) {
+    if (Slots[0].pad == NULL) {
+        return PROMPTS_KEYBOARD;
+    }
+    switch (SDL_GetGamepadButtonLabel(Slots[0].pad, SDL_GAMEPAD_BUTTON_SOUTH)) {
+    case SDL_GAMEPAD_BUTTON_LABEL_CROSS:
+        return PROMPTS_PLAYSTATION;
+    case SDL_GAMEPAD_BUTTON_LABEL_B:
+        return PROMPTS_NINTENDO;
+    default:
+        break;
+    }
+    switch (SDL_GetGamepadType(Slots[0].pad)) {
+    case SDL_GAMEPAD_TYPE_PS3:
+    case SDL_GAMEPAD_TYPE_PS4:
+    case SDL_GAMEPAD_TYPE_PS5:
+        return PROMPTS_PLAYSTATION;
+    case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+    case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+    case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
+    case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+        return PROMPTS_NINTENDO;
+    default:
+        return PROMPTS_XBOX;
+    }
+}
+
 int host_button_pressed_any(void) {
     int button = ButtonPressed;
 
@@ -873,6 +951,7 @@ void host_pretend_key(int key, int down) {
         if (down && !PretendKeys[key]) {
             KeyPressed = key;
             UsingPad = 0;
+            P1Device = PROMPT_DEVICE_KEYS;
         }
         PretendKeys[key] = down != 0;
     }

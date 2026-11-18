@@ -1412,8 +1412,10 @@ async function controls(args) {
     const dir = path.join(OUT, 'controls');
     const UP = '10', TRIANGLE = '1000', CIRCLE = '2000';
     const press = (...pairs) => pairs.flatMap(([v, b]) => ['--press', String(v), b]);
-    /* SETTINGS, then that many down the categories (CONTROLS is 2), into its rows, and down past STICK DEADZONE and the line to Cross's */
-    const page = n => press([85, DOWN], [100, DOWN], [130, CROSS], ...Array.from({ length: n }, (_, i) => [160 + i * 20, DOWN]), [230, CROSS], [245, DOWN]);
+    /* SETTINGS, then that many down the categories (CONTROLS is 2), into its rows, and down past STICK DEADZONE, BUTTON PROMPTS and the line
+       to Cross's */
+    const page = n => press([85, DOWN], [100, DOWN], [130, CROSS], ...Array.from({ length: n }, (_, i) => [160 + i * 20, DOWN]), [225, CROSS], [238, DOWN],
+                            [250, DOWN]);
     /* back out to the top and up onto PLAY */
     const out = from => press([from, TRIANGLE], [from + 30, TRIANGLE], [from + 60, UP], [from + 75, UP]);
     const cases = [
@@ -1435,6 +1437,13 @@ async function controls(args) {
                    ...Array.from({ length: 14 }, (_, i) => [390 + i * 12, DOWN]).flatMap(([v, b]) => ['--press', String(v), b]), ...press([580, CROSS]),
                    ...out(610), '--key-press', '700', 'Z', '--frames', '760'],
             want: ['CROSS is key J', 'keys and buttons as they were', 'play'],
+        },
+        {
+            /* a test run starts with the game's own prompts: right twice, then left */
+            name: 'BUTTON PROMPTS: ORIGINAL, right to XBOX and PLAYSTATION, and left back to XBOX',
+            args: [...press([85, DOWN], [100, DOWN], [130, CROSS], [160, DOWN], [180, DOWN], [225, CROSS], [238, DOWN], [260, '20'], [280, '20'], [300, '80']),
+                   ...out(330), '--press', '420', CROSS, '--frames', '480'],
+            want: ['button prompts xbox', 'button prompts playstation', 'button prompts xbox', 'play'],
         },
         /* the mouse, in the launcher's own units (a 640 x 480 picture's from its middle): rows are pointed at and clicked */
         {

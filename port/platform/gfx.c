@@ -428,6 +428,11 @@ static void update_view_extra(void) {
     ViewExtra = Wide && TargetW * 3 > TargetH * 4 ? ScreenW * ((float)TargetW * 3 / ((float)TargetH * 4) - 1) / 2 : 0;
 }
 
+/* What it draws at, in pixels high: the button prompts are drawn at the size they're shown (prompts.c) */
+int gfx_target_height(void) {
+    return TargetH;
+}
+
 int gfx_view_extra(void) {
     return (int)ceilf(ViewExtra);
 }

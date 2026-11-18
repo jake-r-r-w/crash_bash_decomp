@@ -349,6 +349,23 @@ trying out there: the d-pad and the keys change it and move off it. It's kept as
 checks the line's at the deadzone at every angle, through the game's own averaging of a stick, and that ORIGINAL is as it was;
 `playtest.mjs pads` has a Battle where a stick a third of the way out moves the hero at 20% and not at ORIGINAL.
 
+**Button prompts** (the user's word, 2026-11-18: modern prompts for Xbox, PlayStation and Nintendo controllers and the keyboard and
+mouse, following player 1's controller). The game's pictures of the face buttons are four images in its font (`\xFC` to `\xFF`), so they're
+swapped where the renderer picks their texture (`prompt_texture` in `main/draw.c`), whatever draws them: each is drawn as what plays that
+button now, by the player's own keys and buttons (`platform/prompts.c`). A controller's is its button in that kind's own look, by its place
+(SDL's south, east, west and north): an Xbox's A, B, X, Y in their colours, a PlayStation's shapes in theirs, a Nintendo's B, A, Y, X (its
+A is on the right); a shoulder or trigger is a pill (LB, L1, L), the d-pad a cross with an arm lit. A key is a cap with its name, and with
+the mouse in hand Cross and Triangle are its left and right buttons, as they are in the menus (not on the CONTROLS page, where keys are
+chosen). Nothing ships: each picture is drawn in code at the size it's shown (a dark disc with an outline, as the original's, and letters
+in a small stroke font of the file's own), so it's sharp at any size, and it takes the original's 32 x 16 texels, so no text moves.
+BUTTON PROMPTS, on the CONTROLS page under STICK DEADZONE, is AUTO (the default), ORIGINAL, XBOX, PLAYSTATION, NINTENDO or KEYBOARD,
+kept as `button_prompts=auto`. AUTO goes by what player 1 pressed last (`host_prompt_device`, `sdl.c`): a key, the mouse (clicked, or moved
+a little way), or player 1's own controller, whose kind is what SDL calls its bottom button (A, Cross or B; `host_pad_prompts`), and others
+an Xbox's; before any press, a controller if player 1 has one; touch has the original's. With modern prompts the CONTROLS page names the
+face buttons in words, CROSS to TRIANGLE, and shows their pictures as their values. Only drawing changes, so online play is untouched: each
+machine shows its own player 1's. Test runs have ORIGINAL unless `--prompts` says, so their pictures are as they were; `--prompt-sheet FILE`
+draws every style's on one PNG. Not changed: words in the game's text (START, L1), and pictures of a controller that aren't the font's.
+
 The menu is PLAY, SETTINGS and QUIT, with the settings in categories; a new setting is a row in its category's table and a case in
 `change_setting` and `show_value`. The main menu's EXIT comes back to it.
 
@@ -380,6 +397,8 @@ For testing, any run with `--frames N` ignores the saved settings and skips the 
 | `--pretend-pads N` | plug in N pretend controllers (SDL's virtual gamepads, "Pretend pad 1" on), and use no real ones; up to four can come and go |
 | `--pad-press P N BUTTONS` | hold pretend controller P's buttons (1 to 4; hex, `platform.h`) from vblank N for a few vblanks |
 | `--pad-stick P N X Y` | put pretend controller P's left stick at X, Y (percent of the way out, -100 to 100) from vblank N, till it's moved again |
+| `--prompts STYLE` | the button prompts, for this run: `auto`, `original` (a test run's own), `xbox`, `playstation`, `nintendo` or `keyboard` |
+| `--prompt-sheet FILE` | draw every style's button prompts on one PNG, and stop |
 | `--stick-deadzone N` | the sticks' deadzone, in percent (0: the game's own) |
 | `--mouse N X Y WHAT` | a pretend mouse at vblank N: to X, Y (a 640 x 480 picture's units from its middle, as the launcher lays out its menus), and there `move`, `click`, `right` (a right click), `up` or `down` (the wheel); in the launcher and the game's own menus alike, and the real mouse is left out |
 | `--check-sticks` | check the deadzone's line is where it should be at every angle (a `ctest`) |

@@ -2,6 +2,8 @@
 #include "bash/main.h"
 #include "bash/engine.h"
 #include "../../platform/gfx.h"
+#include "../../platform/controls.h"
+#include "../../platform/prompts.h"
 #include "bash/extraheroes.h"
 
 /* The game's drawing on the native renderer. image and palette are ids of the game's own data, and a uv is in the texture's own texels. */
@@ -308,6 +310,26 @@ static s32 is_text(const obj_textureset *ts, s32 index) {
            (ts == &HeroModelBank[DB_Interface].textures && index >= PANEL_DIGITS_FIRST && index <= PANEL_DIGITS_LAST);
 }
 
+/* PC: the font's pictures of the face buttons, drawn as what plays them on what player 1 is using (platform/prompts.c). By the image the
+   font gives each of the four, ü to ÿ, so whatever draws them, in text or in 3D, has them. NULL: the game's own. */
+static const GfxTex *prompt_texture(s32 index, s32 w, s32 h) {
+    static const s32 Controls[4] = { CONTROL_CROSS, CONTROL_CIRCLE, CONTROL_TRIANGLE, CONTROL_SQUARE };
+    s32 c;
+
+    for (c = 0; c < 4; c++) {
+        s32 g = SysFontLookUp[0xFC + c];
+
+        if (g != -1 && (g & 0xFFF) == index) {
+            int aw, ah;
+            uint64_t id;
+            const uint32_t *art = prompts_art(Controls[c], w, h, gfx_target_height(), &aw, &ah, &id);
+
+            return art != NULL ? gfx_texture_art(id, art, aw, ah, w, h) : NULL;
+        }
+    }
+    return NULL;
+}
+
 static const GfxTex *tex_of(u16 image, u16 palette) {
     ImageReg *im = &Images[image & (MAX_IMAGES - 1)];
     obj_textureset *ts = im->set;
@@ -351,6 +373,13 @@ static const GfxTex *tex_of(u16 image, u16 palette) {
     /* before text, as the panel's file has its eighth hero's icon among its digits */
     if (DrawingSprite && gfx_sharp_icons() && is_icon(ts, im->index)) {
         return gfx_texture_icon(TEX_ID(image, palette, t->pix) ^ ICON_ID, base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);
+    }
+    if (ts == &sysfont_dbase->textures) {
+        const GfxTex *prompt = prompt_texture(im->index, t->w, t->h);
+
+        if (prompt != NULL) {
+            return prompt;
+        }
     }
     if (is_text(ts, im->index)) {
         return gfx_texture_sharp(TEX_ID(image, palette, t->pix), base + t->pix, t->w, t->h, t->flag ? 8 : 4, pal);

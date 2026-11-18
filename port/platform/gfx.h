@@ -109,6 +109,7 @@ void gfx_configure(const GfxConfig *config);
 
 /* How far past each side of the game's screen the picture goes, in its units: 0 at 4:3. */
 int gfx_view_extra(void);
+int gfx_target_height(void); /* the picture's height in pixels */
 
 const GfxTex *gfx_texture(uint64_t id, const void *pixels, int width_texels, int height, int bpp, const void *palette);
 /* The ids are no longer good. What's decoded stays, for when the same pixels come back. */

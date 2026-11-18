@@ -653,6 +653,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-18: Port, modern button prompts (the user's ask): the font's four face-button pictures drawn as what plays them on what
+  player 1 uses, an Xbox, PlayStation or Nintendo controller's button, a key or the mouse's, drawn in code at the shown size
+  (`platform/prompts.c`, swapped in `main/draw.c`'s `prompt_texture`). BUTTON PROMPTS on the CONTROLS page: AUTO (default), ORIGINAL,
+  XBOX, PLAYSTATION, NINTENDO, KEYBOARD. Test runs keep ORIGINAL (`--prompts` to choose, `--prompt-sheet` to look). Checked: shots of
+  the launcher and the level select in each style, AUTO switching on a pretend controller and a key, `controls` (6/6, a new case for the
+  row) and `mouse` (4/4), and Linux builds. Not yet seen by the user, nor with a real PlayStation or Nintendo controller.
+
 - 2026-11-13: v1.2.0 released, at the user's word ("cut a release"): phones that fold, MOBILE FOLD and the DATA page. The suites
   pass on the packaged Windows and Linux programs (modes, bosses, menu, mouse on Windows, heroes, mods, image, online, identical,
   pads, controls) and Android's (modes, heroes, and an online game with the packaged Windows program hosting). Gotcha: the
