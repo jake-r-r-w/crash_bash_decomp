@@ -310,24 +310,36 @@ static s32 is_text(const obj_textureset *ts, s32 index) {
            (ts == &HeroModelBank[DB_Interface].textures && index >= PANEL_DIGITS_FIRST && index <= PANEL_DIGITS_LAST);
 }
 
-/* PC: the font's pictures of the face buttons, drawn as what plays them on what player 1 is using (platform/prompts.c). By the image the
-   font gives each of the four, ü to ÿ, so whatever draws them, in text or in 3D, has them. NULL: the game's own. */
+/* PC: the font's pictures of the PlayStation's buttons, drawn as what plays them on what player 1 is using (platform/prompts.c): the
+   face buttons, by the image the font gives each of \xFC to \xFF, and the d-pad, L1 and R1, which the rules pages draw by their own
+   numbers. By the font's image, so whatever draws them, in text, on a rules page or in 3D, has them. NULL: the game's own. */
+#define FONT_DPAD 0x63 /* 64 x 32 */
+#define FONT_L1 0x67   /* 64 x 16 */
+#define FONT_R1 0x68
 static const GfxTex *prompt_texture(s32 index, s32 w, s32 h) {
     static const s32 Controls[4] = { CONTROL_CROSS, CONTROL_CIRCLE, CONTROL_TRIANGLE, CONTROL_SQUARE };
-    s32 c;
+    s32 c, control = -1;
+    int aw, ah;
+    uint64_t id;
+    const uint32_t *art;
 
     for (c = 0; c < 4; c++) {
         s32 g = SysFontLookUp[0xFC + c];
 
         if (g != -1 && (g & 0xFFF) == index) {
-            int aw, ah;
-            uint64_t id;
-            const uint32_t *art = prompts_art(Controls[c], w, h, gfx_target_height(), &aw, &ah, &id);
-
-            return art != NULL ? gfx_texture_art(id, art, aw, ah, w, h) : NULL;
+            control = Controls[c];
         }
     }
-    return NULL;
+    if (index == FONT_DPAD && w == 64 && h == 32) {
+        control = PROMPT_DPAD;
+    } else if ((index == FONT_L1 || index == FONT_R1) && w == 64 && h == 16) {
+        control = index == FONT_L1 ? CONTROL_L1 : CONTROL_R1;
+    }
+    if (control < 0) {
+        return NULL;
+    }
+    art = prompts_art(control, w, h, gfx_target_height(), &aw, &ah, &id);
+    return art != NULL ? gfx_texture_art(id, art, aw, ah, w, h) : NULL;
 }
 
 static const GfxTex *tex_of(u16 image, u16 palette) {

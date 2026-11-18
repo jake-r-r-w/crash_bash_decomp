@@ -167,8 +167,13 @@ static const char *key_picture(int key, char *buf, size_t size) {
 static const char *prompt_name(int control, int style, char *buf, size_t size) {
     const Settings *s = settings();
 
-    if (style == PROMPTS_ORIGINAL || control < 0 || control >= NUM_CONTROLS) {
+    if (style == PROMPTS_ORIGINAL || (control != PROMPT_DPAD && (control < 0 || control >= NUM_CONTROLS))) {
         return NULL;
+    }
+    /* the d-pad as a whole: the arrow keys, or the controller's d-pad */
+    if (control == PROMPT_DPAD) {
+        return style == PROMPTS_KEYBOARD ? "keyboard_arrows" : style == PROMPTS_PLAYSTATION ? "playstation_dpad" : style == PROMPTS_NINTENDO ? "switch_dpad"
+             : style == PROMPTS_STEAMDECK ? "steamdeck_dpad" : "xbox_dpad";
     }
     if (style == PROMPTS_KEYBOARD) {
         /* clicking is Cross in the menus, and a right click Triangle (menumouse.c) */
@@ -354,12 +359,20 @@ static void shrink(const Ready *r, uint32_t *out, int out_w, int out_h, float cx
     }
 }
 
-/* Where in the font's texels the original has its disc: its middle 15 of its 32 across and 7.5 of its 16 down. Kenney's art has a
-   margin round it in its square, so the square is a little taller than the 16 rows, for the button to be the original's size */
-static void place(int art_w, int art_h, int w, int h, float *cx, float *cy, float *side) {
-    *cx = 15.0f * art_w / w;
-    *cy = 7.5f * art_h / h;
-    *side = 18.5f * art_h / h;
+/* Where in the font's texels the original has its picture, in texels across and rows down, and how many rows Kenney's square of it
+   is, as his art has a margin round it: a face button's disc, 30 of its 32 across and 15 of its 16 down; L1's and R1's, the left 36 of
+   their 64 and 13 of their 16; the d-pad's, the left 46 of its 64 and 30 of its 32 */
+static void place(int control, int art_w, int art_h, int w, int h, float *cx, float *cy, float *side) {
+    float x = 15.0f, y = 7.5f, rows = 18.5f;
+
+    if (control == PROMPT_DPAD) {
+        x = 22.5f, y = 14.5f, rows = 36.0f;
+    } else if (control == CONTROL_L1 || control == CONTROL_R1) {
+        x = 18.0f, y = 6.5f, rows = 24.0f;
+    }
+    *cx = x * art_w / w;
+    *cy = y * art_h / h;
+    *side = rows * art_h / h;
 }
 
 /* Kept pictures: one for each of the four, made again when what it shows or its size changes */
@@ -368,7 +381,7 @@ typedef struct {
     int w, h, art_w, art_h;
     uint32_t *art;
 } Kept;
-static Kept Pictures[4];
+static Kept Pictures[7]; /* the four face buttons, L1, R1 and the d-pad */
 
 const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w, int *art_h, uint64_t *id) {
     char buf[32];
@@ -377,7 +390,10 @@ const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w,
     Kept *k;
     int aw, ah;
 
-    if (control < CONTROL_CROSS || control > CONTROL_TRIANGLE || w <= 0 || h <= 0 || target_h <= 0) {
+    int slot = control == PROMPT_DPAD ? 6 : control == CONTROL_L1 ? 4 : control == CONTROL_R1 ? 5 : control - CONTROL_CROSS;
+
+    if (slot < 0 || (slot > CONTROL_TRIANGLE - CONTROL_CROSS && control != PROMPT_DPAD && control != CONTROL_L1 && control != CONTROL_R1) ||
+        w <= 0 || h <= 0 || target_h <= 0) {
         return NULL;
     }
     name = prompt_name(control, prompts_showing(), buf, sizeof(buf));
@@ -390,7 +406,7 @@ const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w,
     aw = (int)((float)w * target_h / 384 + 0.5f);
     ah = ah < h ? h : ah > 512 ? 512 : ah;
     aw = aw < w ? w : aw > 640 ? 640 : aw;
-    k = &Pictures[control - CONTROL_CROSS];
+    k = &Pictures[slot];
     if (k->art == NULL || k->name != r->name || k->w != w || k->h != h || k->art_w != aw || k->art_h != ah) {
         float cx, cy, side;
 
@@ -399,7 +415,7 @@ const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w,
         if (k->art == NULL) {
             return NULL;
         }
-        place(aw, ah, w, h, &cx, &cy, &side);
+        place(control, aw, ah, w, h, &cx, &cy, &side);
         shrink(r, k->art, aw, ah, cx, cy, side);
         k->name = r->name;
         k->w = w;
@@ -451,7 +467,7 @@ int prompts_sheet(const char *path) {
             if (r == NULL) {
                 continue;
             }
-            place(cw, ch, 32, 16, &cx, &cy, &side);
+            place(CONTROL_CROSS, cw, ch, 32, 16, &cx, &cy, &side);
             shrink(r, art, cw, ch, cx, cy, side);
             for (y = 0; y < ch; y++) {
                 for (x = 0; x < cw; x++) {

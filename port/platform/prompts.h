@@ -33,7 +33,11 @@ int prompts_showing(void);
 /* The launcher's CONTROLS page is where keys are chosen, with the mouse too: there a key's shown, not the mouse's buttons */
 void prompts_keys_only(int on);
 
-/* A face button's picture (CONTROL_CROSS to CONTROL_TRIANGLE, controls.h) in place of the font's, for a texture of w x h texels on a
+/* The d-pad's picture, for prompts_art: what moves, as one */
+#define PROMPT_DPAD 100
+
+/* A button's picture in place of the font's: a face button (CONTROL_CROSS to CONTROL_TRIANGLE, controls.h), L1 or R1 (CONTROL_L1,
+ * CONTROL_R1) or the d-pad (PROMPT_DPAD), for a texture of w x h texels on a
  * picture target_h pixels high: RGBA (0xAABBGGRR, alpha 0 or 255), *art_w x *art_h, kept here, and an id for it that changes when
  * it does. NULL: the game's own. */
 const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w, int *art_h, uint64_t *id);

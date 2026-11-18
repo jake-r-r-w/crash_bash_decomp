@@ -350,8 +350,11 @@ checks the line's at the deadzone at every angle, through the game's own averagi
 `playtest.mjs pads` has a Battle where a stick a third of the way out moves the hero at 20% and not at ORIGINAL.
 
 **Button prompts** (the user's word, 2026-11-18: modern prompts for Xbox, PlayStation and Nintendo controllers and the keyboard and
-mouse, following player 1's controller). The game's pictures of the face buttons are four images in its font (`\xFC` to `\xFF`), so they're
-swapped where the renderer picks their texture (`prompt_texture` in `main/draw.c`), whatever draws them: each is drawn as what plays that
+mouse, following player 1's controller). The game's pictures of its buttons are images in its font: the face buttons (`\xFC` to `\xFF`
+in its text), and the d-pad (0x63), L1 and R1 (0x67, 0x68), which the minigames' rules pages draw by number, as they do the face buttons
+and the arrows. So they're swapped where the renderer picks their texture (`prompt_texture` in `main/draw.c`), whatever draws them, in
+text, on a rules page or in 3D (the rules pages checked: Crate Crush's, Polar Push's, Pogo Painter's, Ballistix's, in each style; the
+others were locked in a test run's save). The font has no L2 or R2. Each is drawn as what plays that
 button now, by the player's own keys and buttons (`platform/prompts.c`). The pictures are [Kenney](https://www.kenney.nl)'s
 [Input Prompts](https://kenney.nl/assets/input-prompts) 1.5a, CC0, at the user's word (2026-11-18: "use Kenney's", in place of ones first
 drawn in code): the first art the port ships, the 128-pixel ones it uses kept in `port/assets/prompts/` with Kenney's `License.txt`, and
