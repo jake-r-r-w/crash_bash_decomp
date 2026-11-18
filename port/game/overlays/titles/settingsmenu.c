@@ -570,7 +570,7 @@ static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
         return Labels[i];
     }
     if (c->kind == KIND_CONTROLS) {
-        return n == ROW_RESET ? "RESET TO DEFAULTS" : n == ROW_DEADZONE ? "STICK DEADZONE" : n == ROW_PROMPTS ? "BUTTON PROMPTS" : n == ROW_LINE ? CONTROLS_LINE : control_label(ROW_CONTROL(n));
+        return n == ROW_RESET ? "RESET TO DEFAULTS" : n == ROW_DEADZONE ? "STICK DEADZONE" : n == ROW_PROMPTS ? "PROMPTS" : n == ROW_LINE ? CONTROLS_LINE : control_label(ROW_CONTROL(n));
     }
     if (c->kind == KIND_DATA) {
         return data_label(n, i);
@@ -972,8 +972,8 @@ static void show_screen(void) {
             /* left and right change an option's value; a key or button is changed by pressing the new one */
             snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && (!controls || n == ROW_DEADZONE || n == ROW_PROMPTS) && !(data && n >= ROW_CHOOSE) ? "< %s >" : "%s", value);
             sub[SUB_VALUE(i)].unk7C = lit || (controls && Waiting >= 0 && Waiting == ROW_CONTROL(n)) ? TEXT_SMALL_LIT : TEXT_SMALL;
-            /* (the deadzone's and the prompts' names are longer than a button's, so their values are further out) */
-            sub[SUB_VALUE(i)].XYZ.x = controls ? (n == ROW_DEADZONE || n == ROW_PROMPTS ? DEADZONE_VALUE_X : prompts_showing() != PROMPTS_ORIGINAL ? CONTROL_VALUE_X_WORDS : CONTROL_VALUE_X) : VALUE_X;
+            /* (the deadzone's name is longer than a button's, so its value is further out; PROMPTS' longest value, PLAYSTATION, needs it in) */
+            sub[SUB_VALUE(i)].XYZ.x = controls ? (n == ROW_PROMPTS ? CONTROL_VALUE_X_WORDS : n == ROW_DEADZONE ? DEADZONE_VALUE_X : prompts_showing() != PROMPTS_ORIGINAL ? CONTROL_VALUE_X_WORDS : CONTROL_VALUE_X) : VALUE_X;
         } else {
             set_row(&sub[SUB_LABEL(i)], "", TEXT_SMALL);
         }
@@ -1354,7 +1354,7 @@ static void update_waiting(void) {
 
 static void update_controls(s32 pressed) {
     if (Option == ROW_PROMPTS) {
-        /* AUTO, ORIGINAL, XBOX, PLAYSTATION, NINTENDO, KEYBOARD, round again either way */
+        /* AUTO, ORIGINAL, XBOX, PLAYSTATION, NINTENDO, STEAM DECK, KEYBOARD, round again either way */
         Settings *s = settings();
 
         if (pressed & (0x20 | 0x80 | 0x4000)) {

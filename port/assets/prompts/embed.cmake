@@ -1,0 +1,16 @@
+# Builds the button prompts' pictures (Kenney's Input Prompts, CC0: License.txt) into the program as data, so every build has them
+# with nothing beside it to ship (platform/prompts.c). Run by port/CMakeLists.txt: cmake -DDIR=this folder -DOUT=the .c -P embed.cmake
+file(GLOB pngs "${DIR}/*.png")
+list(SORT pngs)
+set(body "")
+set(table "")
+foreach(f ${pngs})
+  get_filename_component(n "${f}" NAME_WE)
+  file(READ "${f}" hex HEX)
+  string(REGEX REPLACE "(..)" "0x\\1," hex "${hex}")
+  string(APPEND body "static const unsigned char P_${n}[] = {${hex}};\n")
+  string(APPEND table "    { \"${n}\", P_${n}, sizeof(P_${n}) },\n")
+endforeach()
+file(WRITE "${OUT}.tmp" "/* Made by port/assets/prompts/embed.cmake from the PNGs beside it: not to be edited */\n#include <stddef.h>\n${body}\ntypedef struct { const char *name; const unsigned char *png; size_t size; } PromptPng;\nconst PromptPng PromptPngs[] = {\n${table}    { NULL, NULL, 0 }\n};\n")
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OUT}.tmp" "${OUT}")
+file(REMOVE "${OUT}.tmp")

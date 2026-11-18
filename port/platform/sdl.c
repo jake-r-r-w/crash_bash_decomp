@@ -911,10 +911,14 @@ int host_prompt_device(void) {
 }
 
 /* Player 1's controller's kind, by what SDL says its bottom face button is called: A on an Xbox's, and on most others, which copy
-   it; Cross on a PlayStation's; B on a Nintendo's. With none, the keyboard's */
+   it; Cross on a PlayStation's; B on a Nintendo's; and a Steam Deck's by its ids. With none, the keyboard's */
 int host_pad_prompts(void) {
     if (Slots[0].pad == NULL) {
         return PROMPTS_KEYBOARD;
+    }
+    /* a Steam Deck's own controls, by Valve's and the Deck's USB ids: its buttons are named as an Xbox's */
+    if (SDL_GetGamepadVendor(Slots[0].pad) == 0x28DE && SDL_GetGamepadProduct(Slots[0].pad) == 0x1205) {
+        return PROMPTS_STEAMDECK;
     }
     switch (SDL_GetGamepadButtonLabel(Slots[0].pad, SDL_GAMEPAD_BUTTON_SOUTH)) {
     case SDL_GAMEPAD_BUTTON_LABEL_CROSS:

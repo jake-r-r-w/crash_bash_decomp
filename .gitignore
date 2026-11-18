@@ -3,6 +3,8 @@ disc/
 protos/
 asm/
 assets/
+# but the port's own: Kenney's button prompts, CC0 (port/assets/prompts/License.txt)
+!port/assets/
 build/
 linkers/
 *.bin

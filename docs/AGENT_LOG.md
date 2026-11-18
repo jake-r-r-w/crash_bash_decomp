@@ -653,6 +653,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-18: Port, the button prompts are Kenney's Input Prompts (CC0), at the user's word, in place of the drawn ones, which are
+  gone: 185 of its 128-pixel PNGs in `port/assets/prompts/` with its licence, built into the program (`embed.cmake`), and credited in
+  the READMEs and the release's. A Steam Deck style too; the CONTROLS row is now PROMPTS, so PLAYSTATION fits. Checked: the sheet, the
+  CONTROLS page and the level select, `controls` 6/6, and the Windows and Linux builds. Not yet: Android's build, a real controller.
+
 - 2026-11-18: Port, modern button prompts (the user's ask): the font's four face-button pictures drawn as what plays them on what
   player 1 uses, an Xbox, PlayStation or Nintendo controller's button, a key or the mouse's, drawn in code at the shown size
   (`platform/prompts.c`, swapped in `main/draw.c`'s `prompt_texture`). BUTTON PROMPTS on the CONTROLS page: AUTO (default), ORIGINAL,

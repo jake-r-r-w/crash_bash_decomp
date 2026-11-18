@@ -8,6 +8,7 @@ what's next is in [docs/ROADMAP-B.md](../docs/ROADMAP-B.md).
 |---|---|
 | `game/` | The copy of the game's C, not under this project's licence ([LICENSE](../LICENSE)), with the port's own additions to it |
 | `platform/` | What the game runs on: the window and input (`sdl.c`, `pad.c`, `touch.c`), the renderer (`gfx.c`, Direct3D 12 and Vulkan), sound (`audio.c`), the disc image and archive, saves and settings, mods and texture packs, and online play (`net.c`, `portmap.c`) |
+| `assets/prompts/` | The button prompts' pictures: [Kenney](https://www.kenney.nl)'s [Input Prompts](https://kenney.nl/assets/input-prompts), CC0 (`License.txt`), the ones the game uses, built into the program (`embed.cmake`) |
 | `main.c` | The entry point and the command line's options |
 | `tests/` | The play tests (`playtest.mjs`), the computer players they use, and online play's packet fuzzer (`netfuzz.c`) |
 | `android/` | Android's app around the game, and its build (`build.sh`, in `tools/da`) |

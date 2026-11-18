@@ -25,7 +25,10 @@ A controller just works, with its sticks and rumble. If the stick has to go
 too far before you move, set STICK DEADZONE on the CONTROLS page, under
 Settings in the menu the game opens with: ORIGINAL is the PlayStation's, nearly
 three quarters of the way out, and 10% to 60% are less. The box beside it shows
-where your stick is, green once it would move you. On the keyboard:
+where your stick is, green once it would move you. The game's button pictures
+show what you're playing with: an Xbox, PlayStation, Nintendo or Steam Deck
+controller's buttons, or your keys, changing as you pick up the other. PROMPTS,
+under STICK DEADZONE, can keep them to one, or the game's own. On the keyboard:
 
   Arrows        Move
   Z             Cross
@@ -195,6 +198,11 @@ KNOWN LIMITS
 - Online play has been tested between copies on one PC, between Windows and
   Linux, and with Android's emulator, but not yet between two homes over the
   internet.
+
+
+CREDITS
+
+The button prompts are Kenney's Input Prompts (www.kenney.nl), CC0.
 
 
 LICENCE

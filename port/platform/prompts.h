@@ -1,7 +1,7 @@
 /* Button prompts (docs/PORT.md, Button prompts): the game's pictures of the PlayStation's face buttons in its font (\xFC Cross, \xFD
  * Circle, \xFE Triangle, \xFF Square) drawn instead as what plays that button on what player 1 is using, as modern games' prompts
- * are: an Xbox, PlayStation or Nintendo controller's button, a key, or the mouse's. The pictures are drawn here in code, at the size
- * they're shown, so nothing ships. Only the drawing changes: the game, its text's layout and an online game's state never see it. */
+ * are: an Xbox, PlayStation, Nintendo or Steam Deck controller's button, a key, or the mouse's. The pictures are Kenney's Input Prompts
+ * (CC0, port/assets/prompts/), built into the program. Only the drawing changes: the game, its text's layout and an online game's state never see it. */
 #ifndef PROMPTS_H
 #define PROMPTS_H
 
@@ -14,6 +14,7 @@ enum {
     PROMPTS_XBOX,
     PROMPTS_PLAYSTATION,
     PROMPTS_NINTENDO,
+    PROMPTS_STEAMDECK,
     PROMPTS_KEYBOARD,
     NUM_PROMPTS
 };
@@ -25,7 +26,7 @@ int prompts_from_id(const char *id); /* or -1 */
 /* What player 1 last pressed with (sdl.c), for AUTO, and what their controller is */
 enum { PROMPT_DEVICE_KEYS, PROMPT_DEVICE_MOUSE, PROMPT_DEVICE_PAD, PROMPT_DEVICE_TOUCH };
 int host_prompt_device(void);
-int host_pad_prompts(void); /* player 1's controller's kind, PROMPTS_XBOX, _PLAYSTATION or _NINTENDO, or PROMPTS_ORIGINAL with none */
+int host_pad_prompts(void); /* player 1's controller's kind, PROMPTS_XBOX, _PLAYSTATION, _NINTENDO or _STEAMDECK, or PROMPTS_KEYBOARD with none */
 
 /* What's drawn now, AUTO worked out: PROMPTS_ORIGINAL to PROMPTS_KEYBOARD */
 int prompts_showing(void);
@@ -37,7 +38,7 @@ void prompts_keys_only(int on);
  * it does. NULL: the game's own. */
 const uint32_t *prompts_art(int control, int w, int h, int target_h, int *art_w, int *art_h, uint64_t *id);
 
-/* A test run (--prompt-sheet FILE): every style's pictures of the four, and of a few other buttons and keys, side by side as a PNG */
+/* A test run (--prompt-sheet FILE): every style's pictures of the face buttons and a few others, and some keys, side by side as a PNG */
 int prompts_sheet(const char *path);
 
 #endif

@@ -127,6 +127,8 @@ GCC and binutils, the converted PsyQ 4.7 libraries
 [miniupnpc and libnatpmp](https://github.com/miniupnp/miniupnp), [LLVM and Clang](https://llvm.org) (and its libFuzzer),
 [llvm-mingw](https://github.com/mstorsjo/llvm-mingw), [CMake](https://cmake.org/), [Ninja](https://ninja-build.org/),
 [Node.js](https://nodejs.org/), the Android SDK and NDK, and [Mesa](https://www.mesa3d.org/)'s software Vulkan for testing on Linux.
+The button prompts are [Kenney](https://www.kenney.nl)'s [Input Prompts](https://kenney.nl/assets/input-prompts) (CC0;
+[port/assets/prompts/](port/assets/prompts/License.txt)).
 
 Written with [Claude](https://claude.com/claude-code) by Anthropic. And Eurocom, who made Crash Bash.
 
