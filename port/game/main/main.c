@@ -208,8 +208,58 @@ static void test_run_update(void) {
     }
 }
 
+void crashlog_time(char *out, int size);
+int platform_online_players(void);
+
+/* A mode's name, for the log: a level's or a warp room's, or its number */
+static const char *mode_name(s32 mode) {
+    static char number[16];
+    extern void *LevelNames[45];
+
+    if (mode >= 0 && mode < 45 && LevelNames[mode] != NULL && ((const char *)LevelNames[mode])[0] != 0) {
+        return LevelNames[mode];
+    }
+    sprintf(number, "mode %d", mode);
+    return number;
+}
+
+static s32 GameStepped; /* the game's had a step: its state means something */
+
+/* PC: a line in the log as each level starts, on every run, for a report to say where it was (docs/PORT.md, The log) */
+static void log_level(void) {
+    static s32 last = -1;
+    char when[32];
+
+    GameStepped = 1;
+    if (GameMode == last) {
+        return;
+    }
+    last = GameMode;
+    crashlog_time(when, sizeof(when));
+    printf("level: %s (mode %d) at %s: %d players%s, computer %d %d %d %d, heroes %d %d %d %d%s%s\n", mode_name(GameMode), GameMode, when,
+           GAME->players, GAME->teams ? " in teams" : "", GAME->heroCpu[0], GAME->heroCpu[1], GAME->heroCpu[2], GAME->heroCpu[3], GAME->heroes[0],
+           GAME->heroes[1], GAME->heroes[2], GAME->heroes[3], (GAME->levelFlags & 4) ? ", Adventure" : "",
+           platform_online_players() != 0 ? ", online" : "");
+}
+
+/* PC: what the game's doing, for a crash's report (platform/crashlog.c) */
+void game_log_state(void) {
+    GameState *g = GAME;
+
+    if (!GameStepped) {
+        printf("game: not started yet\n");
+        return;
+    }
+    printf("game: %s (mode %d), level flags %X, exit flags %X, pause %X, frame %d\n", mode_name(GameMode), GameMode, g->levelFlags, g->exitFlags,
+           g->pause, g->frames);
+    printf("game: %d players%s, computer %d %d %d %d, heroes %d %d %d %d, online players %d\n", g->players, g->teams ? " in teams" : "",
+           g->heroCpu[0], g->heroCpu[1], g->heroCpu[2], g->heroCpu[3], g->heroes[0], g->heroes[1], g->heroes[2], g->heroes[3],
+           platform_online_players());
+}
+
 void shell_update(void) {
     GAME->cheats = settings()->cheat_menu ? GAME->cheats | 0x80010000 : 0x80000000;
+    log_level();
     test_run_update();
     loader_update();
     pads_update();
@@ -2331,7 +2381,6 @@ u8 *load_file_to_wait(file *arg0, s32 arg1, s32 arg2) {
 s32 load_file_direct(file *a, u8 *b) {
     s32 r;
     s32 n;
-    printf("load file start\n");
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
@@ -2352,7 +2401,6 @@ s32 load_file_direct(file *a, u8 *b) {
         } while (r > 0);
     } while (r < 0);
     LoadDirectBusy = 1;
-    printf("done loading\n");
     return 0;
 }
 

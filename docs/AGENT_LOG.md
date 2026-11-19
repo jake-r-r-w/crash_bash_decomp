@@ -247,6 +247,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   the driver refuses `-fsanitize=fuzzer` for Windows); its sanitizer DLL is beside the compiler, which has to be on the PATH.
 
 **Port test runs**
+- **`const` in `port/game` is read-only memory (2026-11-19).** The PS1 could write its rodata and the game did (`CardSaveTitleFormat`,
+  `PanelDigits123`); on PC that's an access violation, in a path the suites hadn't reached (two players in teams). Anything new that
+  writes through a cast pointer: check its target isn't `const` (`-Wcast-qual` lists the casts; PORT.md, What the first attempt taught).
 - **Pretend controllers (`--pretend-pads`, 2026-11-10).** SDL drops a controller's presses while the window hasn't the focus, and a
   test run's never has: `host_pretend_pads` sets `SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS` (real play keeps SDL's default). A
   virtual gamepad's triggers rest at the axis's middle, which reads as half pulled (L2 and R2 held): they're set to its bottom. And
@@ -652,6 +655,15 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-19: Port, two reports of a crash at Pogo Painter's end in Adventure (online, two players): the team score's digits
+  (`PanelDigits123`/`456`) were `const`, so in read-only memory on PC, and `UpdateBigScore` writes the scores into them at a team
+  game's first round's end (the Pogo games, Mallet Mash, Keg Kaboom). Made writable in `port/game`; `-Wcast-qual` found no other write
+  through a const cast. Recreated with `--challenge 10 0 --pretend-pads 2` (the Adventure test player now takes as many players as
+  controllers), and kept as a `pads` case. The reported log's addresses fit 1.2.0, not 1.3.0: a release's own tag relinked with
+  `-Wl,-Map` maps them. And the log (PORT.md, The log): `log.txt` in the settings folder on a player's run, the version, commit, system
+  and GPU first, a line a level, and a crash report naming the function and the data it touched (the release keeps its symbol table,
+  read from its own file at the crash), the module of every frame, registers and the game's state; `--check-crash` to see one.
 
 - 2026-11-18: v1.3.0 released, at the user's word ("cut a release"): button prompts (Kenney's, with AUTO by player 1's device) and
   mouse buttons bound on the CONTROLS page. The suites pass on the packaged Windows and Linux programs (modes, bosses, menu, mouse on

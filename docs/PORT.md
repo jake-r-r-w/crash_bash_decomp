@@ -265,7 +265,7 @@ read as an s32), and what's left differs only in arguments of the same size, or 
 
 `node port/package.mjs`, with `TC` set to the toolchain, builds `build/port/release/crash-bash-port-VERSION-windows-x64.zip` (up to
 0.3.2 they were `crash-bash-pc-...`; renamed at the user's word, 2026-11-09, the published ones left as they are): the program
-with no console window and no symbols, its README (`port/release/README.txt`) and the licences. The version is the `project()` one in
+with no console window or debug information (its symbol table stays, for a crash's report: The log), its README (`port/release/README.txt`) and the licences. The version is the `project()` one in
 `port/CMakeLists.txt`. It fails if the program holds a sample of the game's archive or this machine's paths, and it publishes nothing. Try
 the zip with `playtest.mjs ... --exe`, and unzipped by itself, with and without `CRASHBSH.DAT`. The release's notes are in `port/release/`,
 `NOTES-VERSION.md`, and a GitHub release is called "Crash Bash Port VERSION", as its notes' heading (the user's name, 2026-11-09; the
@@ -480,6 +480,39 @@ user's word, 2026-11-09). `hero ID`, for work on that hero, plays it in every ga
 **Frame rates.** The game's logic runs at about 30 frames a second (2 vblanks a frame) and stays there, because its movement is per frame. At 60 and 120 the renderer keeps the game's last two frames and draws steps between them, so what's shown is one game frame behind. Triangles are matched by name: `draw_owner` says which object is drawing, and a face number or the order within that object does the rest (`gfx_mark`). What has no owner, like some 2D, just appears. A triangle that jumps more than a quarter of the screen isn't moved. The window keeps being maximised as `maximized=1` in the settings, not as its size, and the menu's WINDOW SIZE goes through the sizes that fit on the screen, then MAXIMISED (`step_window`). With vsync on, a picture past the screen's rate would wait for the screen and hold up the game's clock, which ran the game at half speed at 120 on a 60 Hz screen, so well above its rate a share of the pictures is left out (`picture_fits`).
 
 **Depth.** The game sorts by bucket, as a PS1 must. Solid parts of `draw_object`'s models also test real depth against each other, so a moving model's faces don't swap. The map, effects and anything semi-transparent or with a layer of its own stay in the game's order alone.
+
+## The log
+
+A player's run writes everything it says to `log.txt` in the settings folder (`%APPDATA%\CrashBash\CrashBash` by default, or where
+the DATA page put the settings), and keeps the run before as `log-previous.txt` (`platform/crashlog.c`). It's unbuffered, so what's
+there when the program dies is all it said, and the game says little: a line a level. Output sent to a file or a pipe already
+(`crashbash > out.txt`) stays there, and a test run's (`--frames`, `--no-window`) stays where it was, so play tests never touch the
+player's folder. Android has had its own `log.txt` in the app's folder since 0.4.0, and keeps it.
+
+What it says, so that a report needs nothing else (added after two reports of 1.3.0 crashing, 2026-11-19, whose log had none of it):
+
+- First, the version, the commit it was built from (`+` for changes not committed, from CMake's configure), the system and its build,
+  the CPU, the memory, the picture settings, and the GPU with its driver (`gfx:`).
+- A line as each level starts: its name and mode, the time, how many players and in teams, who the computer has, the heroes,
+  Adventure, online.
+- A crash (`crash:` lines): what it was (an access violation, a stack overflow, a signal) and whether it was reading, writing or
+  running an address; what's at the address that crashed and at the one it touched, as a module, a section (code, read-only data,
+  data) and the nearest symbol, so that a write into `const` data names the data; the thread; the memory in use; the stack, once as raw
+  addresses on the `stack:` line (`playtest.mjs` symbolizes those with llvm-symbolizer) and once a frame a line, each by its module, so a
+  crash in a GPU driver or a system DLL shows as one (those by their nearest export); the registers; and last the game's state
+  (`game_log_state` in `game/main/main.c`: its mode, flags, players and heroes), as reading that is what's likeliest to crash again. A
+  player then gets a message saying where the log is.
+- A run that gets no new picture for 20 seconds (`stuck:`) writes where the game's thread is, once each time it sticks, and carries
+  on; a test run stops there, as before (`crash: stuck`).
+
+The release keeps its symbol table for the names (`--strip-debug`, not `-s`: about 1.3 MB more on Windows), and a crash reads it from
+the program's own file (the COFF table on Windows, ELF's `.symtab` on Linux), so it costs nothing until then. `--check-crash` crashes on
+purpose as the game starts, writing to `const` data, to see the report on any system: tried on Windows, as a release and as a player's
+run (the message and `log.txt`), and in `tools/dl` (2026-11-19). The original's debug lines that filled the log (`empty prims`, `load
+file start`, `done loading`, `mode2`) are gone from the port's copy.
+
+A release from before 1.3.1 has only the crash's first line and raw addresses. Those are the release's own build: `cmake --preset
+windows-release` at its tag, linked again with `-Wl,-Map=FILE` (the same bytes, but for the timestamp), maps them to functions.
 
 ## Online play
 
@@ -846,7 +879,7 @@ Each of these cost time to find, and they all still apply:
 - **Known overruns.** `PolarAIFlags` is 7 words, not 4. `VramAreas` and `HeroSide` are labels inside larger arrays.
   `LevelUnused` is defined in both the exe and the engine. `N2OCameraFollow` redeclares its parameter.
   `N2OSpawnFirstMissile` spawns at whatever is on the stack.
-- **The game writes to a `const` string**: the completion figures, into `CardSaveTitleFormat`.
+- **The game writes to `const` data**: the completion figures, into `CardSaveTitleFormat`, and the team scores' digits, into `PanelDigits123` and `PanelDigits456` (`UpdateBigScore`), which crashed every team game with the big team score (the Pogo games, Mallet Mash and Keg Kaboom: an Adventure with two players, or a Battle in teams) at its first round's end, in every release up to 1.3.0 (fixed 2026-11-19). Every other cast that drops a `const` in `port/game` (clang's `-Wcast-qual`: 436 of them, 2026-11-19) only reads: menu and credits text, animation names, the keyboard's keys.
 - **`SsInit` has to close every sound bank**: the game never closes its music banks.
 - **The tables can be computed**, exactly as a retail exe has them: `rcossin_tbl` is `round(4096 sin)` and `round(4096
   cos)` over 4096 steps; `VectorNormal`'s is `floor(4096 sqrt(64 / (i + 64)))` for 192 entries; libsnd's pitch tables

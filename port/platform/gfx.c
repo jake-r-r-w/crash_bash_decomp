@@ -742,6 +742,20 @@ int gfx_init(void *window, const GfxConfig *config) {
     if (DepthClip) {
         fprintf(stderr, "gfx: the device has no depth clamping, so depth is clipped\n");
     }
+    /* the GPU and its driver, for the log (docs/PORT.md, The log): a crash in a driver is the driver's module in the report */
+    {
+        static int said;
+        SDL_PropertiesID p = SDL_GetGPUDeviceProperties(Device);
+
+        if (!said) {
+            said = 1;
+            const char *driver = SDL_GetStringProperty(p, SDL_PROP_GPU_DEVICE_DRIVER_NAME_STRING, "");
+
+            printf("gfx: %s on %s, driver %s%s%s\n", SDL_GetGPUDeviceDriver(Device), SDL_GetStringProperty(p, SDL_PROP_GPU_DEVICE_NAME_STRING, "a GPU"),
+                   driver, driver[0] ? " " : "",
+                   SDL_GetStringProperty(p, SDL_PROP_GPU_DEVICE_DRIVER_INFO_STRING, SDL_GetStringProperty(p, SDL_PROP_GPU_DEVICE_DRIVER_VERSION_STRING, "?")));
+        }
+    }
     if (!claim_window()) {
         fprintf(stderr, "SDL_ClaimWindowForGPUDevice: %s\n", SDL_GetError());
         return init_failed();

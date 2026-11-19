@@ -695,7 +695,6 @@ void primlist_reset(PrimList *arg0, s32 arg1) {
 void prims_empty(void) {
     PrimSet *set;
 
-    printf("empty prims\n");
     set = PrimSetList;
     if (set != NULL) {
         do {

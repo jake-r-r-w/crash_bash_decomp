@@ -25,72 +25,43 @@
 #include "platform/settings.h"
 #include "platform/saves.h"
 #include "platform/folders.h"
+#include "platform/crashlog.h"
 
 int extra_hero_named(const char *id); /* game/main/extraheroes.c: --extra-hero's names */
 
 static int Vblanks;
 static volatile int Alive; /* moves while the game waits on something outside it, as an online game does for the others */
+static int StopAt = -1;
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-/* The return addresses up the stack, for llvm-symbolizer. */
-static void print_stack(CONTEXT c) {
-    int i;
-
-                fprintf(stderr, "stack: %llX", (unsigned long long)c.Rip);
-    for (i = 0; i < 32; i++) {
-        DWORD64 base = 0, frame = 0;
-        PVOID handler = NULL;
-        PRUNTIME_FUNCTION fn = RtlLookupFunctionEntry(c.Rip, &base, NULL);
-
-        if (fn != NULL) {
-            RtlVirtualUnwind(UNW_FLAG_NHANDLER, base, c.Rip, fn, &c, &handler, &frame, NULL);
-        } else if (c.Rsp != 0 && !IsBadReadPtr((void *)c.Rsp, 8)) {
-            c.Rip = *(DWORD64 *)c.Rsp; /* a leaf function */
-            c.Rsp += 8;
-        } else {
-            break;
-        }
-        if (c.Rip == 0) {
-            break;
-        }
-        fprintf(stderr, " %llX", (unsigned long long)c.Rip);
-    }
-    fprintf(stderr, "\n");
-    fflush(stderr);
-}
-
-/* A crash says what and where. */
-static LONG WINAPI crash_report(EXCEPTION_POINTERS *e) {
-    uintptr_t image = (uintptr_t)GetModuleHandleA(NULL);
-
-    fflush(stdout); /* the log up to here: on Windows a line-buffered file is really fully buffered */
-    fprintf(stderr, "crash: code %08lX, reading %llX, image %llX\n", e->ExceptionRecord->ExceptionCode,
-            (unsigned long long)e->ExceptionRecord->ExceptionInformation[1], (unsigned long long)image);
-    print_stack(*e->ContextRecord);
-    return EXCEPTION_EXECUTE_HANDLER;
-}
-
-/* A test run that stops reaching vblanks is stuck, which says where. */
+/* A run that stops reaching vblanks is stuck, which says where. A test run ends there; a player's carries on, in case it was only slow,
+   with where it was in the log, once each time it sticks. */
 static DWORD WINAPI watchdog(LPVOID game_thread) {
-    int seen = -1;
+    int seen = -1, said = 0;
 
     for (;;) {
-        CONTEXT c;
-
         Sleep(20000);
         if (*(volatile int *)&Vblanks + Alive != seen) {
             seen = Vblanks + Alive;
+            said = 0;
             continue;
         }
-        c.ContextFlags = CONTEXT_FULL;
+        if (said) {
+            continue;
+        }
         SuspendThread(game_thread);
-        GetThreadContext(game_thread, &c);
-        fprintf(stderr, "crash: stuck at vblank %d, image %llX\n", seen, (unsigned long long)(uintptr_t)GetModuleHandleA(NULL));
-        print_stack(c);
-        ExitProcess(3);
+        if (StopAt >= 0) {
+            printf("crash: stuck at vblank %d, image %llX\n", seen, (unsigned long long)(uintptr_t)GetModuleHandleA(NULL));
+            crashlog_thread_stack(game_thread);
+            ExitProcess(3);
+        }
+        printf("stuck: no new picture for 20 seconds, at vblank %d, image %llX\n", seen, (unsigned long long)(uintptr_t)GetModuleHandleA(NULL));
+        crashlog_thread_stack(game_thread);
+        ResumeThread(game_thread);
+        said = 1;
     }
 }
 #endif
@@ -103,7 +74,6 @@ static const char *DataPath;
 static const char *SavesFolder;
 static int NoWindow;
 static int Turbo;
-static int StopAt = -1;
 
 /* The game can start again from its beginning in the same window (platform_restart), and a test's presses, shots and stop are for one
    start or another: those after --then on the command line are for the next. Each start's vblanks count from 0, and a test's clock
@@ -582,7 +552,7 @@ int main(int argc, char **argv) {
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int extra[4] = { 0 }, extra_heroes = 0, heroes[4] = { 0 };
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
-    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1, prompts = -1;
+    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1, prompts = -1, check_crash = 0;
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
 #ifdef SDL_PLATFORM_ANDROID
@@ -656,6 +626,8 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--check-sdl") == 0) {
             printf("SDL %d\n", SDL_GetVersion());
             return 0;
+        } else if (strcmp(argv[i], "--check-crash") == 0) {
+            check_crash = 1; /* a crash on purpose, as the game starts: what its report says (docs/PORT.md, The log) */
         } else if (strcmp(argv[i], "--data") == 0 && i + 1 < argc) {
             DataPath = argv[++i];
         } else if (strcmp(argv[i], "--image") == 0 && i + 1 < argc) {
@@ -888,19 +860,20 @@ int main(int argc, char **argv) {
             return 2;
         }
     }
+    crashlog_install();
 #ifdef _WIN32
-    SetUnhandledExceptionFilter(crash_report);
-    if (StopAt >= 0) {
-        CreateThread(NULL, 0, watchdog, OpenThread(THREAD_ALL_ACCESS, FALSE, GetCurrentThreadId()), 0, NULL);
-    }
+    CreateThread(NULL, 0, watchdog, OpenThread(THREAD_ALL_ACCESS, FALSE, GetCurrentThreadId()), 0, NULL);
 #endif
     /* a test run doesn't depend on what the player has chosen */
     if (testing) {
         settings_defaults();
     } else {
         folders_load();
+        /* a player's run has a log, beside the settings, for a report (docs/PORT.md, The log) */
+        crashlog_open(folders_path(FOLDER_SETTINGS), 0);
         settings_load();
     }
+    crashlog_system();
     /* an online game starts at the game's own beginning on every machine, as a test run does, with its sound mixed by the game's
        clock (docs/PORT.md, Online play) */
     online = net.host != NULL || net.join != NULL || net.replay != NULL;
@@ -1004,6 +977,19 @@ int main(int argc, char **argv) {
     }
     memcpy(settings()->test_extra, extra, sizeof(extra));
     memcpy(settings()->test_heroes, heroes, sizeof(heroes));
+    {
+        const Settings *s = settings();
+
+        printf("settings: %s %dx%d, render %dx%d, %d FPS, vsync %d, widescreen %d, antialias %d, smooth %d, upscale %d, icons %d, "
+               "extra heroes %d, mods %d\n", s->fullscreen ? "fullscreen" : s->maximized ? "maximised" : "window", s->window_w, s->window_h,
+               s->render_w, s->render_h, s->fps, s->vsync, s->widescreen, s->antialias, s->smooth, s->upscale, s->icons, s->extra_heroes,
+               s->num_mods);
+    }
+    if (check_crash) {
+        static const char read_only[] = "--check-crash writes to read-only data";
+
+        ((volatile char *)read_only)[2] = 'X';
+    }
     /* the first time: the launcher's made of the game's own art, so this comes before it */
     if (Image != NULL) {
         const char *problem = disc_extract(Image, DataPath != NULL ? DataPath : own_data_path());
@@ -1039,7 +1025,14 @@ int main(int argc, char **argv) {
     net_configure(&net);
     if (online && (i = net_start()) <= 0) {
         if (i == 0 && StopAt < 0) {
-            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crash Bash", "The online game couldn't start. What went wrong is in the program's output.", NULL);
+            char message[1300];
+
+            if (crashlog_path() != NULL) {
+                SDL_snprintf(message, sizeof(message), "The online game couldn't start. What went wrong is in the log:\n%s", crashlog_path());
+            } else {
+                SDL_strlcpy(message, "The online game couldn't start. What went wrong is in the program's output.", sizeof(message));
+            }
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crash Bash", message, NULL);
         }
         platform_finish(1);
     }

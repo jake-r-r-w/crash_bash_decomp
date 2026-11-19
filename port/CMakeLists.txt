@@ -10,10 +10,12 @@ if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
   message(FATAL_ERROR "The port is 64-bit: use a 64-bit compiler (docs/PORT.md, Building).")
 endif()
 
-# A release (node port/package.mjs) has no console window or symbols, and the optimisation everything's been tested at.
+# A release (node port/package.mjs) has no console window or debug information, and the optimisation everything's been tested at.
+# It keeps its symbol table, which a crash's report reads to name the functions and data it was in (platform/crashlog.c): on Windows
+# that's about 1.3 MB more. Android's library is stripped by its own build.
 option(BASH_RELEASE "A build for publishing" OFF)
 if(BASH_RELEASE)
-  add_link_options(-s)
+  add_link_options(-Wl,--strip-debug)
 else()
   add_compile_options(-g)
   add_link_options(-g)
@@ -106,7 +108,7 @@ set_property(SOURCE ${core_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAM
 
 set(PORT_SOURCES main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c platform/folders.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/zipread.c platform/bps.c platform/settings.c
-  platform/touch.c platform/controls.c platform/prompts.c platform/net.c platform/portmap.c ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c)
+  platform/touch.c platform/controls.c platform/prompts.c platform/net.c platform/portmap.c platform/crashlog.c ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c)
 # The button prompts' pictures, Kenney's Input Prompts (CC0, assets/prompts/License.txt), built in as data (platform/prompts.c)
 file(GLOB PROMPT_PNGS CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/assets/prompts/*.png)
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c
@@ -149,6 +151,17 @@ endif()
 target_compile_options(crashbash PRIVATE -std=gnu17 -fsigned-char -fwrapv -fno-strict-aliasing -w -Wno-error=int-conversion -Wno-incompatible-pointer-types)
 target_compile_options(crashbash PRIVATE -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Wno-missing-field-initializers)
 target_compile_definitions(crashbash PRIVATE BASH_VERSION="${PROJECT_VERSION}")
+# The commit it's built from, for the log's first line: a crash's addresses are this build's (+ when there were changes not committed)
+execute_process(COMMAND git rev-parse --short=8 HEAD WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} OUTPUT_VARIABLE BASH_COMMIT
+  OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET RESULT_VARIABLE commit_failed)
+execute_process(COMMAND git status --porcelain --untracked-files=no -- . WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  OUTPUT_VARIABLE commit_dirty OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+if(commit_failed OR BASH_COMMIT STREQUAL "")
+  set(BASH_COMMIT "unknown")
+elseif(NOT commit_dirty STREQUAL "")
+  string(APPEND BASH_COMMIT "+")
+endif()
+set_property(SOURCE platform/crashlog.c APPEND PROPERTY COMPILE_DEFINITIONS "BASH_COMMIT=\"${BASH_COMMIT}\"")
 if(BASH_RELEASE AND WIN32)
   set_target_properties(crashbash PROPERTIES WIN32_EXECUTABLE TRUE)
 endif()
