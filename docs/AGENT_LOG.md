@@ -656,6 +656,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-19: Port, achievements to 59 (775 points), at the user's word: each level's trophy, each warp room cleared (its trophies and
+  boss), and 10 and 20 of each award; counted over the 28 levels with doors only. Not RetroAchievements' set, which the user asked
+  about: Recomp Achievements takes no copied sets. `playtest.mjs achievements` now holds one award back and checks exactly its events
+  stay back. The user has claimed the recomp; the list still has to go in through the developer hub.
+
 - 2026-11-19: Port, Recomp Achievements (PORT.md, Achievements): its library fetched by hash (not on Android), an observer after each
   step that only reads the Adventure's awards and fires 17 events, save loads and Casual (cheat menu, replay) told, a "now playing"
   line, the list in `port/release/achievements.json` (to go in through RecompLauncher's developer hub), and `playtest.mjs achievements`

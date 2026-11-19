@@ -599,19 +599,24 @@ achievement. The game never talks to accounts or servers, only to the launcher o
 on Linux); started any other way, every call does nothing (`platform/achievements.c`).
 
 - **The events** come from `game/main/achievements.c`, which runs after each step of the game (`shell_update`) and only reads it, so
-  the game plays the same, online on every machine alike: from the Adventure's awards (`AdventureState.won`), the first and all 28
-  trophies, gems, crystals, gold relics and platinum relics, ten trophies, each of the four bosses (Papu Pummel, Bearminator, Big Bad
-  Fox, and Oxide Ride, the win), and 100% and 200% (worked out as `count_completion` does, without setting its `CompletionBcd`). Each
-  is fired once a run when reached, and again after a save's loaded; the launcher unlocks each once.
+  the game plays the same, online on every machine alike: from the Adventure's awards (`AdventureState.won`): the first, 10, 20 and
+  all 28 trophies, gems, crystals, gold relics and platinum relics, counted over the 28 levels with doors (the user's word, 2026-11-19:
+  some along the way to 28 of a thing); each level's trophy; each warp room cleared, every trophy in it and its boss (gameflow.c's
+  `WarpRoom1Items`..`WarpRoom5Items`; the secret room has no boss); each of the four bosses (Papu Pummel, Bearminator, Big Bad Fox,
+  and Oxide Ride, the win); and 100% and 200% (worked out as `count_completion` does, without setting its `CompletionBcd`). Each is
+  fired once a run when reached, and again after a save's loaded; the launcher unlocks each once.
 - **Fair play.** A loaded save (`gameflow.c`'s two `*GAME = ...state`) is told to the launcher, so a burst of unlocks after it counts
   as Casual by its rules. The cheat menu (which can set awards), any cheat flag, or a replayed online game (`--replay`) makes the
   session Casual, and the list voids `cheat_menu`.
 - **Now playing**: the level or warp room and the Adventure's percentage, a Battle's level, or online.
-- **The list** is `port/release/achievements.json` (SPEC.md's format, 17 achievements, 5 to 50 points; Beaten is the three bosses,
-  the first trophy and Oxide). RecompLauncher hosts it: it goes in through its developer hub (recompstore.com/hub, PC recomps,
+- **The list** is `port/release/achievements.json` (SPEC.md's format, 59 achievements, 5 to 50 points, 775 in all; Beaten is the
+  three bosses, the first trophy and Oxide). Its titles and descriptions are the port's own: Recomp Achievements takes no set copied from
+  another service, so RetroAchievements' Crash Bash set wasn't used (the user asked, 2026-11-19). RecompLauncher hosts it: it goes in through its developer hub (recompstore.com/hub, PC recomps,
   Achievements) once the recomp's claimed, and isn't in the download. Its `versions` is `>=1.3.1`, the first release with this.
 
-`playtest.mjs achievements` plays the launcher's side: every event from an Adventure with everything won, the presence line, Casual
+`playtest.mjs achievements` plays the launcher's side: from an Adventure with everything won but one award, every event in the list but
+the ones it holds back (Pogo Painter's trophy: its own, all the trophies' and Warp Room 1's; Jungle Bash's platinum: all the platinums'),
+and none of those; the presence line; Casual
 with the cheat menu on, and the game's fingerprint step for step the same with the launcher there as without. Passed on Windows and in
 `tools/dl` (2026-11-19). Not yet tried in RecompLauncher itself, nor the save-load path, nor a real Adventure's first unlock.
 

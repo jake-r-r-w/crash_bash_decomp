@@ -2005,19 +2005,17 @@ async function fuzz(args) {
 }
 
 /* Recomp Achievements (docs/PORT.md, Achievements), with this playing RecompLauncher's side of the channel: a pipe (a socket on Linux)
-   named in RL_SESSION, a JSON object a line. An Adventure with everything won (--challenge's setup) sends every event and a "now playing"
-   line; with the cheat menu on it's Casual first; and the game's fingerprint is the same with the launcher there as without, as the
+   named in RL_SESSION, a JSON object a line. An Adventure with everything won but one award (--challenge's setup) sends every event in
+   achievements.json but the ones that award holds back, and a "now playing" line: Pogo Painter's trophy (that level's, all the trophies
+   and Warp Room 1's), and Jungle Bash's platinum relic (all the platinums). With the cheat menu on it's Casual first; and the game's fingerprint is the same with the launcher there as without, as the
    events only look at the game. */
 async function achievements(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const dir = path.join(OUT, 'achievements');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const net = await import('node:net');
-    const EVENTS = ['first_trophy', 'trophies_10', 'all_trophies', 'first_gem', 'all_gems', 'first_crystal', 'all_crystals', 'first_gold_relic',
-        'all_gold_relics', 'first_platinum_relic', 'all_platinum_relics', 'beat_papu_pummel', 'beat_bearminator', 'beat_big_bad_fox',
-        'beat_oxide_ride', 'complete_100', 'complete_200'];
     const listed = JSON.parse(fs.readFileSync(path.join(ROOT, 'port/release/achievements.json'), 'utf8')).achievements.map(a => a.event);
-    const base = ['--challenge', '10', '0', '--turbo', '--skip-intro', '--skip-loading', '--draw-every', '60', '--frames', '1500'];
+    const base = ['--turbo', '--skip-intro', '--skip-loading', '--draw-every', '60', '--frames', '1500'];
     /* a run with the launcher's side listening: what it was sent */
     const with_launcher = async (name, extra) => {
         const pipe = WINDOWS ? `\\\\.\\pipe\\crashbash-test-${process.pid}-${name}` : `/tmp/crashbash-test-${process.pid}-${name}.sock`;
@@ -2035,7 +2033,7 @@ async function achievements(args) {
             sock.on('error', () => {});
         });
         await new Promise(resolve => server.listen(pipe, resolve));
-        const r = await run(exe, [...base, '--saves', rel(`saves-${name}`), ...extra], path.join(dir, `${name}.txt`),
+        const r = await run(exe, ['--challenge', ...(name === 'platinum' ? ['0', '4'] : ['10', '0']), ...base, '--saves', rel(`saves-${name}`), ...extra], path.join(dir, `${name}.txt`),
                             { timeout: MODE_TIMEOUT, env: { RL_SESSION: pipe } });
         server.close();
         return { ...r, got };
@@ -2044,25 +2042,32 @@ async function achievements(args) {
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
     const results = [];
-    const [plain, cheats, alone, launched] = await Promise.all([
+    const [plain, platinum, cheats, alone, launched] = await Promise.all([
         with_launcher('events', []),
+        with_launcher('platinum', []),
         with_launcher('cheats', ['--cheat-menu']),
-        run(exe, [...base, '--saves', rel('saves-alone'), '--fingerprints', '1'], path.join(dir, 'alone.txt'), { timeout: MODE_TIMEOUT }),
+        run(exe, ['--challenge', '10', '0', ...base, '--saves', rel('saves-alone'), '--fingerprints', '1'], path.join(dir, 'alone.txt'), { timeout: MODE_TIMEOUT }),
         with_launcher('fingerprints', ['--fingerprints', '1']),
     ]);
-    {
-        const events = plain.got.filter(m => m.t === 'event').map(m => m.name);
-        const missing = EVENTS.filter(e => !events.includes(e));
+    /* every listed event but the ones the missing award holds back, none of those, and none twice */
+    const check_events = (name, r, held) => {
+        const events = r.got.filter(m => m.t === 'event').map(m => m.name);
+        const missing = listed.filter(e => !held.includes(e) && !events.includes(e));
+        const early = held.filter(e => events.includes(e));
         const unlisted = events.filter(e => !listed.includes(e));
-        const hello = plain.got.find(m => m.t === 'hello');
-        const presence = plain.got.filter(m => m.t === 'presence').map(m => m.text);
-        const wrong = crash_where(exe, plain.text) ?? (hello?.game !== 'crash-bash-decomp' ? `hello ${JSON.stringify(hello)}`
-            : missing.length ? `missing ${missing.join(', ')}` : unlisted.length ? `not in achievements.json: ${unlisted.join(', ')}`
+        const hello = r.got.find(m => m.t === 'hello');
+        const presence = r.got.filter(m => m.t === 'presence').map(m => m.text);
+        const wrong = crash_where(exe, r.text) ?? (hello?.game !== 'crash-bash-decomp' ? `hello ${JSON.stringify(hello)}`
+            : missing.length ? `missing ${missing.join(', ')}` : early.length ? `sent though not reached: ${early.join(', ')}`
+            : unlisted.length ? `not in achievements.json: ${unlisted.join(', ')}`
             : events.length !== new Set(events).size ? 'an event sent twice' : !presence.some(p => /^Adventure: /.test(p)) ? `presence ${presence.join(' | ')}`
-            : plain.got.some(m => m.t === 'casual') ? 'Casual with no cheats' : null);
+            : r.got.some(m => m.t === 'casual') ? 'Casual with no cheats' : null);
 
-        results.push(['every event, and the "now playing" line', { pass: wrong == null, what: wrong ?? `${events.length} events; ${presence.at(-1)}` }]);
-    }
+        results.push([name, { pass: wrong == null, what: wrong ?? `${events.length} of ${listed.length} events; ${presence.at(-1)}` }]);
+    };
+    check_events("all but Pogo Painter's trophy: its, all the trophies' and Warp Room 1's held back", plain,
+                 ['trophy_pogo_painter', 'all_trophies', 'clear_warp_room_1']);
+    check_events("all but Jungle Bash's platinum relic: all the platinums' held back", platinum, ['all_platinum_relics']);
     {
         const at = cheats.got.findIndex(m => m.t === 'casual');
         const first = cheats.got.findIndex(m => m.t === 'event');
