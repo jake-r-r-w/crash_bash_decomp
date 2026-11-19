@@ -656,6 +656,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-19: Port, Recomp Achievements (PORT.md, Achievements): its library fetched by hash (not on Android), an observer after each
+  step that only reads the Adventure's awards and fires 17 events, save loads and Casual (cheat menu, replay) told, a "now playing"
+  line, the list in `port/release/achievements.json` (to go in through RecompLauncher's developer hub), and `playtest.mjs achievements`
+  (a fake launcher: events, Casual, and the fingerprint unchanged with it). Passed on Windows and Linux. Next: the user claims the
+  recomp and submits the list; a real Adventure's first unlock and a save load are untried.
+
 - 2026-11-19: Port, `--portable` (portable.txt from the launcher, and left there), passed by RecompLauncher to its setup and Play, so a
   launcher install keeps everything in its own folder on every system: `prepare.done` names `{install}/data/CRASHBSH.DAT`, and the
   Linux settings-path gap is gone. A launcher player from before gets their saves and data copied in at the first start.

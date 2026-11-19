@@ -587,6 +587,34 @@ a `settings.ini` written as the launcher writes it, read back; the start with an
 tried in RecompLauncher itself: its Developer tools (Settings, Developers) have "Add a build" for a folder with the program and the
 file, to see what it makes of it.
 
+## Achievements
+
+[Recomp Achievements](https://github.com/elripalda/RecompAchievements), RecompLauncher's: achievements for a game started from it,
+Beaten and Mastered on the player's profile, and leaderboards by points (the user's word, 2026-11-19). Its small C library is fetched
+at one commit and checked by its hash (`CMakeLists.txt`), with the rcheevos and cJSON it carries; its licence is free for any game, with
+its notice in the release's `LICENSE.txt` (`package.mjs`). It isn't built for Android, which has no RecompLauncher.
+
+It's the events kind, the one for decomps: the port's code fires a named event and a list RecompLauncher hosts maps each to an
+achievement. The game never talks to accounts or servers, only to the launcher over the local pipe it names in `RL_SESSION` (a socket
+on Linux); started any other way, every call does nothing (`platform/achievements.c`).
+
+- **The events** come from `game/main/achievements.c`, which runs after each step of the game (`shell_update`) and only reads it, so
+  the game plays the same, online on every machine alike: from the Adventure's awards (`AdventureState.won`), the first and all 28
+  trophies, gems, crystals, gold relics and platinum relics, ten trophies, each of the four bosses (Papu Pummel, Bearminator, Big Bad
+  Fox, and Oxide Ride, the win), and 100% and 200% (worked out as `count_completion` does, without setting its `CompletionBcd`). Each
+  is fired once a run when reached, and again after a save's loaded; the launcher unlocks each once.
+- **Fair play.** A loaded save (`gameflow.c`'s two `*GAME = ...state`) is told to the launcher, so a burst of unlocks after it counts
+  as Casual by its rules. The cheat menu (which can set awards), any cheat flag, or a replayed online game (`--replay`) makes the
+  session Casual, and the list voids `cheat_menu`.
+- **Now playing**: the level or warp room and the Adventure's percentage, a Battle's level, or online.
+- **The list** is `port/release/achievements.json` (SPEC.md's format, 17 achievements, 5 to 50 points; Beaten is the three bosses,
+  the first trophy and Oxide). RecompLauncher hosts it: it goes in through its developer hub (recompstore.com/hub, PC recomps,
+  Achievements) once the recomp's claimed, and isn't in the download. Its `versions` is `>=1.3.1`, the first release with this.
+
+`playtest.mjs achievements` plays the launcher's side: every event from an Adventure with everything won, the presence line, Casual
+with the cheat menu on, and the game's fingerprint step for step the same with the launcher there as without. Passed on Windows and in
+`tools/dl` (2026-11-19). Not yet tried in RecompLauncher itself, nor the save-load path, nor a real Adventure's first unlock.
+
 ## Online play
 
 Roadmap 7.9, begun 2026-11-10. The user's choices: one player hosts and the others join with a join code, with no servers of our own,
