@@ -609,7 +609,7 @@ on Linux); started any other way, every call does nothing (`platform/achievement
   as Casual by its rules. The cheat menu (which can set awards), any cheat flag, or a replayed online game (`--replay`) makes the
   session Casual, and the list voids `cheat_menu`.
 - **Now playing**: the level or warp room and the Adventure's percentage, a Battle's level, or online.
-- **The list** is `port/release/achievements.json` (SPEC.md's format, 59 achievements, 5 to 50 points, 775 in all; Beaten is the
+- **The list** is `port/release/achievements.json` (SPEC.md's format, 59 achievements, 5 to 50 points, 855 in all, each award climbing 5, 10, 25, 50 for 1, 10, 20 and all 28; Beaten is the
   three bosses, the first trophy and Oxide). Its titles and descriptions are the port's own: Recomp Achievements takes no set copied from
   another service, so RetroAchievements' Crash Bash set wasn't used (the user asked, 2026-11-19). RecompLauncher hosts it: it goes in through its developer hub (recompstore.com/hub, PC recomps,
   Achievements) once the recomp's claimed, and isn't in the download. Its `versions` is `>=1.3.1`, the first release with this.
