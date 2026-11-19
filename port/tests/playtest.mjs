@@ -1509,6 +1509,19 @@ async function mouse(args) {
             args: [...MOUSE_BATTLE, ...[2000, 2080, 2160, 2240].flatMap(v => ['--mouse', String(v), '100', '100', 'click']), '--press', '2700', START,
                    '--mouse', '2800', '0', '74', 'click', '--mouse', '2860', '100', '-36', 'move', '--mouse', '2920', '-100', '-36', 'click', '--frames', '3100'],
             want: [40, 0, 40],
+            /* the cursor's for the menus: hidden in play once the rules (clickable, so it shows for them) are clicked through, though the
+               mouse moves there, and back for the pause menu (sdl.c) */
+            extra: ['--mouse', '2500', '40', '40', 'move', '--mouse', '2600', '-40', '20', 'move'],
+            check: t => {
+                const start = /^mode 0 at vblank \d+/m.test(t) ? 2240 : -1;
+                const cursor = [...t.matchAll(/^cursor: (\w+) at vblank (\d+)/gm)].map(m => [m[1], Number(m[2])]);
+                const hid = cursor.find(([s, v]) => s === 'hidden' && v > start);
+                const back = hid && cursor.find(([s, v]) => s === 'shown' && v > hid[1]);
+
+                return start < 0 ? 'no Battle' : hid == null ? 'the cursor never hid in play'
+                    : cursor.some(([s, v]) => s === 'shown' && v > hid[1] && v < 2700) ? 'the cursor came back in play'
+                    : back == null ? 'the cursor never came back for the pause menu' : null;
+            },
         },
         {
             /* the arrow to the right of the tournament's name for the next (Polar Push's, whose first round is mode 19), then its name */
@@ -1537,10 +1550,11 @@ async function mouse(args) {
     fs.mkdirSync(dir, { recursive: true });
     const results = await Promise.all(cases.map(async (c, i) => {
         const r = await run(exe, ['--skip-intro', '--turbo', '--draw-every', '60', '--tile', String(i), String(cases.length), '--saves', rel(`saves${i}`),
-            ...c.args], path.join(dir, `case${i}.txt`), { timeout: MODE_TIMEOUT });
+            ...c.args, ...(c.extra ?? [])], path.join(dir, `case${i}.txt`), { timeout: MODE_TIMEOUT });
         const crash = crash_where(exe, r.text);
         const got = [...r.text.matchAll(/^mode (\d+) at vblank/gm)].map(m => Number(m[1]));
-        const wrong = crash ?? (r.code !== 0 ? `exit ${r.code}` : got.join(',') !== c.want.join(',') ? `modes ${got.join(', ') || 'none'}` : null);
+        const wrong = crash ?? (r.code !== 0 ? `exit ${r.code}` : got.join(',') !== c.want.join(',') ? `modes ${got.join(', ') || 'none'}`
+            : c.check != null ? c.check(r.text) : null);
 
         return [c.name, { pass: wrong == null, what: wrong ?? `modes ${got.join(', ')}, case${i}.txt` }];
     }));

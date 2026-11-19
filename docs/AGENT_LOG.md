@@ -656,6 +656,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-19: Port, the mouse cursor hides in play and shows in the menus (a player's request: fullscreen, keyboard and mouse), by
+  whether a menu has the mouse (`host_mouse_for_menus` in sdl.c), with half a second's grace before it hides. The `mouse` suite checks
+  it in its Battle; not yet seen on a real screen.
+
 - 2026-11-19: Port, two reports of a crash at Pogo Painter's end in Adventure (online, two players): the team score's digits
   (`PanelDigits123`/`456`) were `const`, so in read-only memory on PC, and `UpdateBigScore` writes the scores into them at a team
   game's first round's end (the Pogo games, Mallet Mash, Keg Kaboom). Made writable in `port/game`; `-Wcast-qual` found no other write

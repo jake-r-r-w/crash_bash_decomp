@@ -619,8 +619,29 @@ int host_mouse_pressed_any(void) {
     return button;
 }
 
+/* The cursor's for the menus: in play it's hidden, so a nudge of the mouse doesn't bring it back over the game (a player's request,
+   2026-11-19). It shows as soon as a menu has the mouse, and goes once none has had it for half a second (15 steps), so that the
+   step or two between one menu and the next doesn't make it flicker. */
+#define CURSOR_HIDE_STEPS 15
+
 void host_mouse_for_menus(int on) {
+    static int without, hidden;
+
     MouseMenus = on != 0;
+    without = MouseMenus ? 0 : without + (without < CURSOR_HIDE_STEPS);
+    if (MouseMenus && hidden) {
+        SDL_ShowCursor();
+        hidden = 0;
+    } else if (!hidden && without >= CURSOR_HIDE_STEPS) {
+        SDL_HideCursor();
+        hidden = 1;
+    } else {
+        return;
+    }
+    /* for the mouse play test */
+    if (settings()->no_save) {
+        printf("cursor: %s at vblank %d\n", hidden ? "hidden" : "shown", platform_vblanks());
+    }
 }
 
 /* A test's pretend clicks let go, a vblank at a time */

@@ -323,6 +323,13 @@ the foot saying so that's clicked, so a stray click can't start a game. The wind
 picture's fitted to the window (`gfx_window_point`). Touches that SDL turns into a mouse aren't it, as touch has buttons of its own.
 `playtest.mjs controls` drives it with `--mouse`.
 
+**The cursor is for the menus** (a player's request, 2026-11-19: in fullscreen with a keyboard and mouse, a nudge brought it back
+over the game). It shows as soon as a menu has the mouse (`host_mouse_for_menus`: the game's own menus, the rules' pages, the pause
+menu and the launcher), and hides once none has had it for half a second, so it doesn't flicker between one menu and the next; in
+play a moved mouse leaves it hidden. A test run logs each change (`cursor: hidden at vblank N`), and the `mouse` suite's Battle checks
+it hides in play and comes back for the pause menu. A pretend mouse can't see the system's own cursor, so that it really goes is the
+player's to see.
+
 **The mouse in the game's own menus** (the user's word, 2026-11-10: "the menu should be clickable in game too";
 `game/main/menumouse.c`). Online, every machine plays the same game from the same presses, so the mouse can't choose a row itself as
 the launcher's does: it presses this machine's first pad, as the keyboard does (`platform_mouse_buttons`, held with its own in
