@@ -869,7 +869,7 @@ int main(int argc, char **argv) {
         settings_defaults();
     } else {
         folders_load();
-        /* a player's run has a log, beside the settings, for a report (docs/PORT.md, The log) */
+        /* a player's run has a log, in logs/ beside the program, for a report (docs/PORT.md, The log) */
         crashlog_open(folders_path(FOLDER_SETTINGS), 0);
         settings_load();
     }

@@ -2,8 +2,9 @@
 #ifndef CRASHLOG_H
 #define CRASHLOG_H
 
-/* A player's run: the output goes to log.txt in FOLDER (ending in /), the last run's kept as log-previous.txt, unless it's been sent to
-   a file or a pipe already, as `crashbash > out.txt` does. A test run (testing) keeps its output where it is. */
+/* A player's run: the output goes to a file of its own in logs/ beside the program, or in FOLDER's logs/ (FOLDER ending in /) where
+   that can't be written, and logs there older than 14 days are deleted; unless the output's been sent to a file or a pipe already, as
+   `crashbash > out.txt` does. A test run (testing) keeps its output where it is. */
 void crashlog_open(const char *folder, int testing);
 /* log.txt's path, or NULL if the output isn't going there */
 const char *crashlog_path(void);

@@ -665,7 +665,7 @@ Newest first, a few lines each. Details are in the commits.
   game's first round's end (the Pogo games, Mallet Mash, Keg Kaboom). Made writable in `port/game`; `-Wcast-qual` found no other write
   through a const cast. Recreated with `--challenge 10 0 --pretend-pads 2` (the Adventure test player now takes as many players as
   controllers), and kept as a `pads` case. The reported log's addresses fit 1.2.0, not 1.3.0: a release's own tag relinked with
-  `-Wl,-Map` maps them. And the log (PORT.md, The log): `log.txt` in the settings folder on a player's run, the version, commit, system
+  `-Wl,-Map` maps them. And the log (PORT.md, The log): a file a run in `logs/` beside the program on a player's run (14 days kept), the version, commit, system
   and GPU first, a line a level, and a crash report naming the function and the data it touched (the release keeps its symbol table,
   read from its own file at the crash), the module of every frame, registers and the game's state; `--check-crash` to see one.
 

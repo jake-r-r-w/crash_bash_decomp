@@ -1,7 +1,8 @@
 /* The program's log, and what it says when the game crashes or sticks (docs/PORT.md, The log).
  *
- * A player's run writes its output to log.txt in the settings folder, keeping the run before as log-previous.txt, so there's always
- * something to send with a report. It starts with the version, the build and the machine. A crash says what it was (reading, writing
+ * A player's run writes its output to a file of its own in logs/ beside the program (crashbash-DATE-TIME.txt; in the settings folder's
+ * logs/ where the program's folder can't be written), and logs not written to in 14 days are deleted, so there's always something to
+ * send with a report. It starts with the version, the build and the machine. A crash says what it was (reading, writing
  * or running an address), what's at that address (which module, which section, the nearest symbol: a write to read-only data names
  * the data), every frame of the stack by module and function, the registers and the game's state, and on a player's run a message
  * says where the log is. The release keeps its symbol table for this, and the program reads its own file for it as it crashes: it
@@ -20,6 +21,7 @@
 
 #include <SDL3/SDL.h>
 #include "crashlog.h"
+#include "platform.h"
 
 void game_log_state(void); /* game/main/main.c: what the game's doing, for a crash */
 int platform_vblanks(void);
@@ -67,26 +69,97 @@ static int output_redirected(void) {
 }
 #endif
 
-void crashlog_open(const char *folder, int testing) {
-    char previous[1100];
-    FILE *f;
+/* Old logs: a run's file is crashbash-DATE-TIME.txt, and one not written to for this long goes as the next run starts */
+#define LOG_KEEP_DAYS 14
+#define LOG_PREFIX "crashbash-"
+#define MAX_OLD_LOGS 256
 
-    StartTicks = SDL_GetTicks();
-    PlayerRun = !testing;
-    if (testing || folder == NULL || output_redirected()) {
+typedef struct {
+    char names[MAX_OLD_LOGS][96];
+    int count;
+} LogList;
+
+static SDL_EnumerationResult list_log(void *data, const char *dir, const char *name) {
+    LogList *l = data;
+    size_t n = strlen(name);
+
+    (void)dir;
+    if (strncmp(name, LOG_PREFIX, strlen(LOG_PREFIX)) == 0 && n > 4 && strcmp(name + n - 4, ".txt") == 0 && n < sizeof(l->names[0])) {
+        SDL_strlcpy(l->names[l->count++], name, sizeof(l->names[0]));
+    }
+    return l->count < MAX_OLD_LOGS ? SDL_ENUM_CONTINUE : SDL_ENUM_SUCCESS;
+}
+
+static void clear_old_logs(const char *folder) {
+    static LogList l;
+    SDL_Time now;
+    int i;
+
+    l.count = 0;
+    if (!SDL_GetCurrentTime(&now) || !SDL_EnumerateDirectory(folder, list_log, &l)) {
         return;
     }
-    SDL_snprintf(LogPath, sizeof(LogPath), "%slog.txt", folder);
-    SDL_snprintf(previous, sizeof(previous), "%slog-previous.txt", folder);
-    SDL_RemovePath(previous);
-    SDL_RenamePath(LogPath, previous);
-    /* both streams append to the one file, so neither writes over the other */
+    for (i = 0; i < l.count; i++) {
+        char path[1200];
+        SDL_PathInfo info;
+
+        SDL_snprintf(path, sizeof(path), "%s%s", folder, l.names[i]);
+        if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE
+            && now - info.modify_time > (SDL_Time)LOG_KEEP_DAYS * 24 * 3600 * SDL_NS_PER_SECOND) {
+            SDL_RemovePath(path);
+        }
+    }
+}
+
+/* This run's log, crashbash-DATE-TIME.txt in a folder's logs/, made empty: 0 if it can't be written there */
+static int new_log(const char *folder) {
+    char dir[1100], stamp[32];
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    FILE *f;
+    int n;
+
+    /* in the folder's own separator, as the player's shown the path */
+    SDL_snprintf(dir, sizeof(dir), "%slogs%c", folder, strchr(folder, '\\') != NULL ? '\\' : '/');
+    SDL_CreateDirectory(dir);
+    if (t == NULL || strftime(stamp, sizeof(stamp), "%Y-%m-%d-%H%M%S", t) == 0) {
+        SDL_strlcpy(stamp, "now", sizeof(stamp));
+    }
+    /* two copies started in the same second (online play on one PC) each have their own */
+    for (n = 1; n < 100; n++) {
+        if (n == 1) {
+            SDL_snprintf(LogPath, sizeof(LogPath), "%s" LOG_PREFIX "%s.txt", dir, stamp);
+        } else {
+            SDL_snprintf(LogPath, sizeof(LogPath), "%s" LOG_PREFIX "%s-%d.txt", dir, stamp, n);
+        }
+        if (!SDL_GetPathInfo(LogPath, NULL)) {
+            break;
+        }
+    }
     f = fopen(LogPath, "w");
     if (f == NULL) {
         LogPath[0] = 0;
-        return;
+        return 0;
     }
     fclose(f);
+    clear_old_logs(dir);
+    return 1;
+}
+
+void crashlog_open(const char *folder, int testing) {
+    const char *base = platform_base_path();
+
+    StartTicks = SDL_GetTicks();
+    PlayerRun = !testing;
+    if (testing || output_redirected()) {
+        return;
+    }
+    /* beside the program, where a player looks first (the user's word, 2026-11-19), or where it can't be written, in the settings
+       folder */
+    if (!(base != NULL && new_log(base)) && !(folder != NULL && new_log(folder))) {
+        return;
+    }
+    /* both streams append to the one file, so neither writes over the other */
     if (freopen(LogPath, "a", stdout) == NULL || freopen(LogPath, "a", stderr) == NULL) {
         LogPath[0] = 0;
         return;

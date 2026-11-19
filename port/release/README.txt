@@ -188,6 +188,14 @@ There's no memory card to set up: save at the computer in a warp room, as in
 the game.
 
 
+IF IT CRASHES
+
+Each time it runs, the game writes a log in the logs folder beside it, named by
+the date and time it started. Logs older than 14 days are deleted. If it
+crashes, please send the newest log with your report (on Windows a message
+names it), and say what you were doing.
+
+
 KNOWN LIMITS
 
 - Only the USA version's data is supported.

@@ -490,11 +490,14 @@ user's word, 2026-11-09). `hero ID`, for work on that hero, plays it in every ga
 
 ## The log
 
-A player's run writes everything it says to `log.txt` in the settings folder (`%APPDATA%\CrashBash\CrashBash` by default, or where
-the DATA page put the settings), and keeps the run before as `log-previous.txt` (`platform/crashlog.c`). It's unbuffered, so what's
-there when the program dies is all it said, and the game says little: a line a level. Output sent to a file or a pipe already
-(`crashbash > out.txt`) stays there, and a test run's (`--frames`, `--no-window`) stays where it was, so play tests never touch the
-player's folder. Android has had its own `log.txt` in the app's folder since 0.4.0, and keeps it.
+A player's run writes everything it says to a file of its own in `logs/` beside the program, `crashbash-DATE-TIME.txt` (the
+user's word, 2026-11-19), or in the settings folder's `logs/` where the program's folder can't be written (`platform/crashlog.c`). Two
+copies started in the same second get `-2` and on. As a run starts, the logs there not written to in 14 days are deleted: only
+`crashbash-*.txt`, nothing else in the folder. It's unbuffered, so what's there when the program dies is all it said, and the game
+says little: a line a level. Output sent to a file or a pipe already (`crashbash > out.txt`) stays there, and a test run's
+(`--frames`, `--no-window`) stays where it was, so play tests never make logs. Android has had its own `log.txt` in the app's folder
+since 0.4.0, and keeps it. Tried on Windows and in `tools/dl` (2026-11-19): a player's run's file, and a 20-day-old log deleted while
+a 9-day-old one and another file stayed.
 
 What it says, so that a report needs nothing else (added after two reports of 1.3.0 crashing, 2026-11-19, whose log had none of it):
 
@@ -515,7 +518,7 @@ What it says, so that a report needs nothing else (added after two reports of 1.
 The release keeps its symbol table for the names (`--strip-debug`, not `-s`: about 1.3 MB more on Windows), and a crash reads it from
 the program's own file (the COFF table on Windows, ELF's `.symtab` on Linux), so it costs nothing until then. `--check-crash` crashes on
 purpose as the game starts, writing to `const` data, to see the report on any system: tried on Windows, as a release and as a player's
-run (the message and `log.txt`), and in `tools/dl` (2026-11-19). The original's debug lines that filled the log (`empty prims`, `load
+run (the message and its log file), and in `tools/dl` (2026-11-19). The original's debug lines that filled the log (`empty prims`, `load
 file start`, `done loading`, `mode2`) are gone from the port's copy.
 
 A release from before 1.3.1 has only the crash's first line and raw addresses. Those are the release's own build: `cmake --preset
