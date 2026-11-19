@@ -41,6 +41,10 @@
  *   node port/tests/playtest.mjs mouse
  *       The game's own menus by a pretend mouse alone (game/main/menumouse.c): a Battle set up from the title to its start, its rules
  *       clicked through, paused and quit by YES; a Tournament, its arrow clicked for the next; and the wheel. By the modes each starts.
+ *   node port/tests/playtest.mjs achievements
+ *       Recomp Achievements (docs/PORT.md, Achievements), with this as RecompLauncher's side of the channel: every event from an Adventure
+ *       with everything won, and its "now playing" line; Casual with the cheat menu on; and the same game, by its fingerprint, with the
+ *       launcher there as without. About half a minute.
  *   node port/tests/playtest.mjs pads
  *       Couch play, with pretend controllers: the launcher's players screen, Battle, Adventure and Tournament offering as many players as
  *       there are controllers, each choosing its own hero, and controllers pulled out and plugged in without anyone else's player changing.
@@ -2000,9 +2004,86 @@ async function fuzz(args) {
     return report(results);
 }
 
-const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, mouse, pads, controls, identical, online, fuzz, shots, image, packs, mods };
+/* Recomp Achievements (docs/PORT.md, Achievements), with this playing RecompLauncher's side of the channel: a pipe (a socket on Linux)
+   named in RL_SESSION, a JSON object a line. An Adventure with everything won (--challenge's setup) sends every event and a "now playing"
+   line; with the cheat menu on it's Casual first; and the game's fingerprint is the same with the launcher there as without, as the
+   events only look at the game. */
+async function achievements(args) {
+    const exe = option(args, '--exe', DEFAULT_EXE);
+    const dir = path.join(OUT, 'achievements');
+    const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
+    const net = await import('node:net');
+    const EVENTS = ['first_trophy', 'trophies_10', 'all_trophies', 'first_gem', 'all_gems', 'first_crystal', 'all_crystals', 'first_gold_relic',
+        'all_gold_relics', 'first_platinum_relic', 'all_platinum_relics', 'beat_papu_pummel', 'beat_bearminator', 'beat_big_bad_fox',
+        'beat_oxide_ride', 'complete_100', 'complete_200'];
+    const listed = JSON.parse(fs.readFileSync(path.join(ROOT, 'port/release/achievements.json'), 'utf8')).achievements.map(a => a.event);
+    const base = ['--challenge', '10', '0', '--turbo', '--skip-intro', '--skip-loading', '--draw-every', '60', '--frames', '1500'];
+    /* a run with the launcher's side listening: what it was sent */
+    const with_launcher = async (name, extra) => {
+        const pipe = WINDOWS ? `\\\\.\\pipe\\crashbash-test-${process.pid}-${name}` : `/tmp/crashbash-test-${process.pid}-${name}.sock`;
+        const got = [];
+        const server = net.createServer(sock => {
+            let buf = '';
+
+            sock.on('data', d => {
+                buf += d;
+                for (let nl = buf.indexOf('\n'); nl >= 0; nl = buf.indexOf('\n')) {
+                    got.push(JSON.parse(buf.slice(0, nl)));
+                    buf = buf.slice(nl + 1);
+                }
+            });
+            sock.on('error', () => {});
+        });
+        await new Promise(resolve => server.listen(pipe, resolve));
+        const r = await run(exe, [...base, '--saves', rel(`saves-${name}`), ...extra], path.join(dir, `${name}.txt`),
+                            { timeout: MODE_TIMEOUT, env: { RL_SESSION: pipe } });
+        server.close();
+        return { ...r, got };
+    };
+
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    const results = [];
+    const [plain, cheats, alone, launched] = await Promise.all([
+        with_launcher('events', []),
+        with_launcher('cheats', ['--cheat-menu']),
+        run(exe, [...base, '--saves', rel('saves-alone'), '--fingerprints', '1'], path.join(dir, 'alone.txt'), { timeout: MODE_TIMEOUT }),
+        with_launcher('fingerprints', ['--fingerprints', '1']),
+    ]);
+    {
+        const events = plain.got.filter(m => m.t === 'event').map(m => m.name);
+        const missing = EVENTS.filter(e => !events.includes(e));
+        const unlisted = events.filter(e => !listed.includes(e));
+        const hello = plain.got.find(m => m.t === 'hello');
+        const presence = plain.got.filter(m => m.t === 'presence').map(m => m.text);
+        const wrong = crash_where(exe, plain.text) ?? (hello?.game !== 'crash-bash-decomp' ? `hello ${JSON.stringify(hello)}`
+            : missing.length ? `missing ${missing.join(', ')}` : unlisted.length ? `not in achievements.json: ${unlisted.join(', ')}`
+            : events.length !== new Set(events).size ? 'an event sent twice' : !presence.some(p => /^Adventure: /.test(p)) ? `presence ${presence.join(' | ')}`
+            : plain.got.some(m => m.t === 'casual') ? 'Casual with no cheats' : null);
+
+        results.push(['every event, and the "now playing" line', { pass: wrong == null, what: wrong ?? `${events.length} events; ${presence.at(-1)}` }]);
+    }
+    {
+        const at = cheats.got.findIndex(m => m.t === 'casual');
+        const first = cheats.got.findIndex(m => m.t === 'event');
+        const wrong = crash_where(exe, cheats.text) ?? (at < 0 ? 'never Casual' : first >= 0 && first < at ? 'an event before it was Casual' : null);
+
+        results.push(['the cheat menu on: Casual before any event', { pass: wrong == null, what: wrong ?? `casual: ${cheats.got[at].reason}` }]);
+    }
+    {
+        const a = fingerprints(alone.text), b = fingerprints(launched.text);
+        const part = fingerprints_part(a, b);
+        const wrong = crash_where(exe, alone.text) ?? crash_where(exe, launched.text) ?? (a.length < 500 ? `only ${a.length} steps`
+            : part != null ? `a different game: ${part}` : launched.got.filter(m => m.t === 'event').length === 0 ? 'no events with the launcher' : null);
+
+        results.push(['the same game with the launcher as without', { pass: wrong == null, what: wrong ?? `${Math.min(a.length, b.length)} steps alike` }]);
+    }
+    return report(results);
+}
+
+const commands = { bosses, modes, adventure, challenges, same, hero, heroes, menu, mouse, pads, controls, identical, online, fuzz, shots, image, packs, mods, achievements };
 if (commands[command] == null) {
-    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|mouse|pads|controls|identical|online|fuzz|shots|image|packs|mods: see the top of this file');
+    console.log('node port/tests/playtest.mjs bosses|modes|adventure|challenges|same|hero|heroes|menu|mouse|pads|controls|identical|online|fuzz|shots|image|packs|mods|achievements: see the top of this file');
     process.exit(2);
 }
 process.exit(await commands[command](rest));
