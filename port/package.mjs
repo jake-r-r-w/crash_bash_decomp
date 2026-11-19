@@ -154,9 +154,15 @@ const rule = '\n----------------------------------------------------------------
 /* the two that open the router's port for online play, fetched as the build's set up (CMakeLists.txt) */
 const miniupnpc = fs.readFileSync(path.join(BUILD, '_deps/miniupnp-src/LICENSE'), 'utf8').trim();
 const natpmp = fs.readFileSync(path.join(BUILD, '_deps/libnatpmp-src/LICENSE'), 'utf8').trim();
+/* Recomp Achievements' library (platform/achievements.c), with the rcheevos and cJSON it carries: its licence asks for its notice to go
+   with it, and theirs are MIT */
+const achievements_dir = path.join(BUILD, '_deps/recompachievements-src');
+const achievements = fs.readFileSync(path.join(achievements_dir, 'LICENSE'), 'utf8').trim();
+const rcheevos = fs.readFileSync(path.join(achievements_dir, 'sdk/third_party/rcheevos/LICENSE'), 'utf8').trim();
+const cjson = fs.readFileSync(path.join(achievements_dir, 'sdk/third_party/cjson/LICENSE'), 'utf8').trim();
 /* the button prompts' pictures, Kenney's, built into the program (assets/prompts/) */
 const kenney = fs.readFileSync(path.join(PORT, 'assets/prompts/License.txt'), 'utf8').replace(/\r/g, '').replace(/^\t+/gm, '').trim();
-fs.writeFileSync(path.join(dir, 'LICENSE.txt'), eol(`${fs.readFileSync(path.join(ROOT, 'LICENSE'), 'utf8')}${rule}This program includes SDL3, under this licence:\n\n${sdl}${rule}This program includes zlib, under this licence:\n\n${zlib}\n${rule}This program includes miniupnpc, under this licence:\n\n${miniupnpc}\n${rule}This program includes libnatpmp, under this licence:\n\n${natpmp}\n${rule}This program includes Kenney's Input Prompts, the pictures of its button prompts, under this licence:\n\n${kenney}\n`));
+fs.writeFileSync(path.join(dir, 'LICENSE.txt'), eol(`${fs.readFileSync(path.join(ROOT, 'LICENSE'), 'utf8')}${rule}This program includes SDL3, under this licence:\n\n${sdl}${rule}This program includes zlib, under this licence:\n\n${zlib}\n${rule}This program includes miniupnpc, under this licence:\n\n${miniupnpc}\n${rule}This program includes libnatpmp, under this licence:\n\n${natpmp}\n${rule}This program includes Recomp Achievements, RecompLauncher's achievements library, under this licence:\n\n${achievements}\n${rule}Recomp Achievements includes rcheevos, under this licence:\n\n${rcheevos}\n${rule}Recomp Achievements includes cJSON, under this licence:\n\n${cjson}\n${rule}This program includes Kenney's Input Prompts, the pictures of its button prompts, under this licence:\n\n${kenney}\n`));
 /* RecompLauncher's file, beside the program at the top of the download (docs/PORT.md, RecompLauncher): how it sets the game up from the
    player's disc, starts it and shows its settings. It has to read as JSON. */
 const launcher_json = fs.readFileSync(path.join(PORT, 'release/recomplauncher.json'), 'utf8');
