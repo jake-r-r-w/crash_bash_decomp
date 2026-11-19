@@ -1,5 +1,7 @@
 # crash_bash_decomp
 
+<a href="https://recomplauncher.com/game/crash-bash-decomp"><picture><source media="(prefers-color-scheme: dark)" srcset="https://recomplauncher.com/assets/press/launcher/badge-light.svg"><img alt="Get it on RecompLauncher" src="https://recomplauncher.com/assets/press/launcher/badge-dark.svg" height="48"></picture></a>
+
 Crash Bash (USA, `SCUS_945.70`) for the PlayStation, decompiled to C. It gives you two things:
 
 - **A native port**: a 64-bit game for Windows, Linux and Android, with widescreen, mods, extra heroes and online play. Not an emulator.
@@ -12,6 +14,8 @@ You need your own copy of the game for either. None of its files are included.
 1. Download the zip for Windows or the `.tar.gz` for Linux from the [latest release](https://github.com/jake-r-r-w/crash_bash_decomp/releases/latest) and unpack it.
 2. Put the disc image of your legal copy of Crash Bash (USA) (a `.cue` with its `.bin`, a raw `.bin` or an `.iso`) next to `crashbash.exe` (`crashbash` on Linux), or copy `CRASHBSH.DAT` from the `CRASHBSH` folder on it there.
 3. Run `crashbash.exe` (`crashbash` on Linux).
+
+Or install it with [RecompLauncher](https://recomplauncher.com/game/crash-bash-decomp), which sets it up from your disc image, keeps it up to date and shows its settings.
 
 On Android, install the `.apk` from the same release, and the first time it asks for your disc image (the `.bin`, or an `.iso`). It has on-screen touch buttons, or takes a controller.
 
