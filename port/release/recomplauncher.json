@@ -14,13 +14,14 @@
   },
   "prepare": {
     "program": ["crashbash.exe", "crashbash"],
-    "args": ["--prepare", "--game", "{game}"],
+    "args": ["--prepare", "--portable", "--game", "{game}"],
     "label": "The game's data from your disc",
-    "timeout": 300
+    "timeout": 300,
+    "done": ["{install}/data/CRASHBSH.DAT"]
   },
   "start": {
     "program": ["crashbash.exe", "crashbash"],
-    "args": []
+    "args": ["--portable"]
   },
   "config": [
     {

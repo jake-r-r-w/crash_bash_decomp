@@ -558,17 +558,24 @@ follows RecompLauncher's agent guide (`https://recomplauncher.com/sdk-files/reco
 
 - **Setup.** The player picks their disc image; the launcher checks it's the USA disc (`SCUS_945.70` on it, serial SCUS-94570) and
   reads all of it, with a "verified" badge for Redump's dump (disc 512: 178,220,448 bytes, CRC-32 `69a6cd83`, the Original, Greatest
-  Hits and Collector's editions alike). Then it runs `crashbash --prepare --game IMAGE`, which copies `CRASHBSH.DAT` out of it to where
-  the game's own first run puts it (`own_data_path`), printing `progress 0.42 ...` lines, with no window, and exits 0 (2: no `--game`,
-  4: not a disc image it reads). `--game` is `--image` by another name. Play then starts the program with no arguments.
+  Hits and Collector's editions alike). Then it runs `crashbash --prepare --portable --game IMAGE`, which copies `CRASHBSH.DAT` out of it to
+  where the game's own first run puts it (`own_data_path`), printing `progress 0.42 ...` lines, with no window, and exits 0 (2: no
+  `--game`, 4: not a disc image it reads). `--game` is `--image` by another name. Play starts the program with `--portable`.
+- **One place for everything.** `--portable` is `portable.txt` from the launcher (Running it), and leaves one there: a launcher's
+  install keeps its saves, settings, data and logs in its own folder on every system, and a start from outside the launcher finds them
+  there too. So `prepare.done` can name the data, `{install}/data/CRASHBSH.DAT`: a player who already set the game up in that folder
+  (the game's own first run, or a build added in Developer tools) isn't asked for the disc again. A launcher player from before has
+  their saves, settings and data copied in from the user's folder at the first start, never over anything, and the user's folder is
+  left as it was. A player who had the game set up only outside the launcher (in the user's folder) is still asked for the disc once,
+  as `done` can only name files in one place on every system. A DATA page choice (`folders.ini` beside the program) still wins.
 - **Settings.** The launcher edits `settings.ini` line by line before each start: window, frame rate, V-Sync, widescreen,
   anti-aliasing, textures, upscaling, icons, the logos, the loading screens, button prompts, the stick's deadzone and the cheat menu,
   with the game's own defaults (`settings_defaults`). "Start in" passes `--no-launcher` to skip the port's own menu. Keys and
   Controller buttons are its key bindings, a key or button for each of the PlayStation's 14 (`key_*`, `pad_*`): RecompLauncher's
   names for them aren't documented, so the game takes the usual ones as well as SDL's (Running it, `settings.ini` is commented). The
-  file is looked for beside the program (`settings/`, with `portable.txt` or GAME FOLDER), then in `{local}/CrashBash/CrashBash` if that's there (Linux's
-  `~/.local/share`), then `{config}/CrashBash/CrashBash` (Windows' `%APPDATA%`). On Linux, a setting changed before the game's first
-  start goes to `~/.config` and is lost, as the launcher has no way to say the system; from the first start on it's the right file.
+  file is beside the program (`settings/`) once the setup's left `portable.txt` there, on every system. Before that, or for a folder
+  set otherwise on the DATA page, it's looked for in `{local}/CrashBash/CrashBash` if that's there (Linux's `~/.local/share`), then
+  `{config}/CrashBash/CrashBash` (Windows' `%APPDATA%`).
 - **Folders.** The saves (for its backups and cloud saves), the logs (it sends the newest `.log` in `logs/` with a crash report, which
   is why they're `.log`), buttons to open both, and exit code 1 (a start-up failure, which showed its own message) explained.
 - **Big Picture.** A start with `RECOMPLAUNCHER_MODE=bigpicture` (the launcher's full-screen view for a controller) is full screen.

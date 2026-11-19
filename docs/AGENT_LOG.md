@@ -656,6 +656,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-19: Port, `--portable` (portable.txt from the launcher, and left there), passed by RecompLauncher to its setup and Play, so a
+  launcher install keeps everything in its own folder on every system: `prepare.done` names `{install}/data/CRASHBSH.DAT`, and the
+  Linux settings-path gap is gone. A launcher player from before gets their saves and data copied in at the first start.
+
 - 2026-11-19: Port, four Recomp Standards from the RecompLauncher report: `portable.txt` keeps everything beside the program (copying
   the user folder's saves, settings and data the first time); `settings.ini` has a comment on every setting, and reads `key = value`
   and other programs' names for keys and buttons; the launcher's page has key and controller bindings (its names aren't documented,
