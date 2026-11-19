@@ -1,0 +1,192 @@
+{
+  "$schema": "https://recomplauncher.com/schema/recomplauncher.json",
+  "format": 1,
+  "name": "Crash Bash",
+  "repo": "jake-r-r-w/crash_bash_decomp",
+  "requires": ["start", "setup", "exit_codes", "settings.ini", "settings.args", "settings.choices", "settings.slider", "settings.groups"],
+  "game": {
+    "kind": "iso",
+    "label": "Your disc image of the USA PlayStation release of Crash Bash (SCUS-94570): its .bin, or an .iso.",
+    "check": { "iso9660": "SCUS_945.70", "ids": ["SCUS-94570"] },
+    "dumps": [
+      { "name": "USA", "size": 178220448, "crc32": "69a6cd83" }
+    ]
+  },
+  "prepare": {
+    "program": ["crashbash.exe", "crashbash"],
+    "args": ["--prepare", "--game", "{game}"],
+    "label": "The game's data from your disc",
+    "timeout": 300
+  },
+  "start": {
+    "program": ["crashbash.exe", "crashbash"],
+    "args": []
+  },
+  "config": [
+    {
+      "id": "main",
+      "format": "ini",
+      "file": [
+        { "path": "{install}/settings/settings.ini", "if": "{install}/settings/settings.ini" },
+        { "path": "{local}/CrashBash/CrashBash/settings.ini", "if": "{local}/CrashBash/CrashBash" },
+        { "path": "{config}/CrashBash/CrashBash/settings.ini" }
+      ]
+    }
+  ],
+  "folders": {
+    "saves": [
+      { "path": "{install}/saves", "if": "{install}/saves" },
+      { "path": "{local}/CrashBash/CrashBash/saves", "if": "{local}/CrashBash/CrashBash/saves" },
+      { "path": "{config}/CrashBash/CrashBash/saves" }
+    ],
+    "logs": [
+      { "path": "{install}/logs" }
+    ]
+  },
+  "saves": ["{install}/saves", "{local}/CrashBash/CrashBash/saves", "{config}/CrashBash/CrashBash/saves"],
+  "exit_codes": {
+    "1": "Crash Bash stopped before the game began. The message it showed says why, and so does its newest log."
+  },
+  "groups": [
+    { "id": "Picture" },
+    { "id": "Game" },
+    { "id": "Controls" }
+  ],
+  "settings": [
+    {
+      "id": "start", "label": "Start in", "in": "args", "group": "Game",
+      "help": "The game's own menu of PLAY, ONLINE and SETTINGS, or straight into the game. Online play starts from that menu.",
+      "choices": [
+        { "label": "Its menu", "args": [] },
+        { "label": "The game", "args": ["--no-launcher"] }
+      ]
+    },
+    {
+      "id": "window", "label": "Window", "group": "Picture",
+      "help": "Full screen, or a window you can size. Big Picture mode always starts full screen.",
+      "choices": [
+        { "label": "Windowed", "set": { "fullscreen": "0" } },
+        { "label": "Full screen", "set": { "fullscreen": "1" } }
+      ],
+      "defaults": { "fullscreen": "0" }
+    },
+    {
+      "id": "fps", "label": "Frame rate", "group": "Picture",
+      "help": "30 is the PlayStation's. 60 and 120 draw between its frames: smoother, and the game plays exactly the same.",
+      "choices": [
+        { "label": "30 FPS", "set": { "fps": "30" } },
+        { "label": "60 FPS", "set": { "fps": "60" } },
+        { "label": "120 FPS", "set": { "fps": "120" } }
+      ],
+      "defaults": { "fps": "30" }
+    },
+    {
+      "id": "vsync", "label": "V-Sync", "group": "Picture",
+      "help": "Waits for your screen's refresh, so the picture never tears.",
+      "choices": [
+        { "label": "On", "set": { "vsync": "1" } },
+        { "label": "Off", "set": { "vsync": "0" } }
+      ],
+      "defaults": { "vsync": "1" }
+    },
+    {
+      "id": "widescreen", "label": "Widescreen", "group": "Picture",
+      "help": "A wide screen shows more of each level at the sides, its own scenery carried on. Off keeps the PlayStation's 4:3.",
+      "choices": [
+        { "label": "Off", "set": { "widescreen": "0" } },
+        { "label": "On", "set": { "widescreen": "1" } }
+      ],
+      "defaults": { "widescreen": "0" }
+    },
+    {
+      "id": "antialias", "label": "Anti-aliasing", "group": "Picture",
+      "help": "Smooths the jagged edges of the 3D models. 8x needs the most from your graphics card.",
+      "choices": [
+        { "label": "Off", "set": { "antialias": "1" } },
+        { "label": "2x", "set": { "antialias": "2" } },
+        { "label": "4x", "set": { "antialias": "4" } },
+        { "label": "8x", "set": { "antialias": "8" } }
+      ],
+      "defaults": { "antialias": "1" }
+    },
+    {
+      "id": "smooth", "label": "Textures", "group": "Picture",
+      "help": "Sharp keeps the PlayStation's square texels. Smooth filters them.",
+      "choices": [
+        { "label": "Sharp", "set": { "smooth": "0" } },
+        { "label": "Smooth", "set": { "smooth": "1" } }
+      ],
+      "defaults": { "smooth": "0" }
+    },
+    {
+      "id": "upscale", "label": "Texture upscaling", "group": "Picture",
+      "help": "Textures made bigger with clean edges as they're first drawn. It adds no detail of its own, and the text stays as it was.",
+      "choices": [
+        { "label": "Off", "set": { "upscale": "1" } },
+        { "label": "2x", "set": { "upscale": "2" } },
+        { "label": "4x", "set": { "upscale": "4" } }
+      ],
+      "defaults": { "upscale": "1" }
+    },
+    {
+      "id": "icons", "label": "Hero icons", "group": "Picture",
+      "help": "The heroes' and bosses' pictures in the panel, as the game has them or made crisp.",
+      "choices": [
+        { "label": "Game's own", "set": { "icons": "0" } },
+        { "label": "Crisp", "set": { "icons": "1" } }
+      ],
+      "defaults": { "icons": "0" }
+    },
+    {
+      "id": "intro", "label": "Logos at start", "group": "Game",
+      "help": "The company logos before the title screen.",
+      "choices": [
+        { "label": "Show them", "set": { "skip_intro": "0" } },
+        { "label": "Skip them", "set": { "skip_intro": "1" } }
+      ],
+      "defaults": { "skip_intro": "0" }
+    },
+    {
+      "id": "loading", "label": "Loading screens", "group": "Game",
+      "help": "Load each level in one go, without the loading screen.",
+      "choices": [
+        { "label": "Show them", "set": { "skip_loading": "0" } },
+        { "label": "Skip them", "set": { "skip_loading": "1" } }
+      ],
+      "defaults": { "skip_loading": "0" }
+    },
+    {
+      "id": "prompts", "label": "Button prompts", "group": "Controls",
+      "help": "The buttons the game's text shows. Automatic follows what player 1 last pressed with.",
+      "choices": [
+        { "label": "Automatic", "set": { "button_prompts": "auto" } },
+        { "label": "PlayStation (original)", "set": { "button_prompts": "original" } },
+        { "label": "Xbox", "set": { "button_prompts": "xbox" } },
+        { "label": "PlayStation", "set": { "button_prompts": "playstation" } },
+        { "label": "Nintendo", "set": { "button_prompts": "nintendo" } },
+        { "label": "Steam Deck", "set": { "button_prompts": "steamdeck" } },
+        { "label": "Keyboard", "set": { "button_prompts": "keyboard" } }
+      ],
+      "defaults": { "button_prompts": "auto" }
+    },
+    {
+      "id": "deadzone", "label": "Stick deadzone", "group": "Controls", "advanced": true,
+      "help": "How far a stick has to move before it counts, in percent. 0 is the game's own.",
+      "slider": { "key": "stick_deadzone", "min": 0, "max": 90, "step": 5, "format": "%d" },
+      "defaults": { "stick_deadzone": "0" }
+    },
+    {
+      "id": "cheats", "label": "Cheat menu", "group": "Game", "advanced": true,
+      "help": "The original's hidden cheat menu, in the pause menu.",
+      "choices": [
+        { "label": "Hidden", "set": { "cheat_menu": "0" } },
+        { "label": "In the pause menu", "set": { "cheat_menu": "1" } }
+      ],
+      "defaults": { "cheat_menu": "0" }
+    }
+  ],
+  "actions": [
+    { "id": "saves", "label": "Saves", "help": "Your Adventure saves, and the last online game's presses.", "open": "saves" },
+    { "id": "logs", "label": "Logs", "help": "A log for each time the game ran, kept 14 days: send the newest with a report.", "open": "logs" }
+  ]
+}

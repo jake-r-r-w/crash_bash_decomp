@@ -498,10 +498,10 @@ user's word, 2026-11-09). `hero ID`, for work on that hero, plays it in every ga
 
 ## The log
 
-A player's run writes everything it says to a file of its own in `logs/` beside the program, `crashbash-DATE-TIME.txt` (the
+A player's run writes everything it says to a file of its own in `logs/` beside the program, `crashbash-DATE-TIME.log` (the
 user's word, 2026-11-19), or in the settings folder's `logs/` where the program's folder can't be written (`platform/crashlog.c`). Two
 copies started in the same second get `-2` and on. As a run starts, the logs there not written to in 14 days are deleted: only
-`crashbash-*.txt`, nothing else in the folder. It's unbuffered, so what's there when the program dies is all it said, and the game
+`crashbash-*.log`, nothing else in the folder. It's unbuffered, so what's there when the program dies is all it said, and the game
 says little: a line a level. Output sent to a file or a pipe already (`crashbash > out.txt`) stays there, and a test run's
 (`--frames`, `--no-window`) stays where it was, so play tests never make logs. Android is the same, with `logs/` in the app's folder
 that a PC reaches over USB, from the very start of `main`; its test runs still write `log.txt` there, which `playtest.mjs` reads. Its
@@ -533,6 +533,35 @@ file start`, `done loading`, `mode2`) are gone from the port's copy.
 
 A release from before 1.3.1 has only the crash's first line and raw addresses. Those are the release's own build: `cmake --preset
 windows-release` at its tag, linked again with `-Wl,-Map=FILE` (the same bytes, but for the timestamp), maps them to functions.
+
+## RecompLauncher
+
+[RecompLauncher](https://recomplauncher.com) installs PC recomps from their GitHub releases and keeps them up to date; the port is listed
+there as `crash-bash-decomp`, and players already run it from there (a crash report on 2026-11-19 came through it). Its file,
+`port/release/recomplauncher.json`, goes at the top of the Windows zip and the Linux tarball (`package.mjs`), next to the program. It
+follows RecompLauncher's agent guide (`https://recomplauncher.com/sdk-files/recomplauncher-agent.md`), all three of its levels:
+
+- **Setup.** The player picks their disc image; the launcher checks it's the USA disc (`SCUS_945.70` on it, serial SCUS-94570) and
+  reads all of it, with a "verified" badge for Redump's dump (disc 512: 178,220,448 bytes, CRC-32 `69a6cd83`, the Original, Greatest
+  Hits and Collector's editions alike). Then it runs `crashbash --prepare --game IMAGE`, which copies `CRASHBSH.DAT` out of it to where
+  the game's own first run puts it (`own_data_path`), printing `progress 0.42 ...` lines, with no window, and exits 0 (2: no `--game`,
+  4: not a disc image it reads). `--game` is `--image` by another name. Play then starts the program with no arguments.
+- **Settings.** The launcher edits `settings.ini` line by line before each start: window, frame rate, V-Sync, widescreen,
+  anti-aliasing, textures, upscaling, icons, the logos, the loading screens, button prompts, the stick's deadzone and the cheat menu,
+  with the game's own defaults (`settings_defaults`). "Start in" passes `--no-launcher` to skip the port's own menu. The file is looked
+  for beside the program (`settings/`, GAME FOLDER), then in `{local}/CrashBash/CrashBash` if that's there (Linux's
+  `~/.local/share`), then `{config}/CrashBash/CrashBash` (Windows' `%APPDATA%`). On Linux, a setting changed before the game's first
+  start goes to `~/.config` and is lost, as the launcher has no way to say the system; from the first start on it's the right file.
+- **Folders.** The saves (for its backups and cloud saves), the logs (it sends the newest `.log` in `logs/` with a crash report, which
+  is why they're `.log`), buttons to open both, and exit code 1 (a start-up failure, which showed its own message) explained.
+- **Big Picture.** A start with `RECOMPLAUNCHER_MODE=bigpicture` (the launcher's full-screen view for a controller) is full screen.
+  `RECOMPLAUNCHER_PAD` isn't read: the AUTO prompts already follow the controller SDL sees.
+
+Without the new arguments and the launcher's variable, nothing's different. Checked (2026-11-19): the file against the guide's schema;
+`--prepare` on Windows (the release's program too, whose lines reach a pipe though it has no console) and Linux, giving the same data;
+a `settings.ini` written as the launcher writes it, read back; the start with and without `RECOMPLAUNCHER_MODE`; and `same`. Not yet
+tried in RecompLauncher itself: its Developer tools (Settings, Developers) have "Add a build" for a folder with the program and the
+file, to see what it makes of it.
 
 ## Online play
 

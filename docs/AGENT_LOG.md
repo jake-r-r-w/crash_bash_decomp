@@ -656,6 +656,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-19: Port, RecompLauncher support (PORT.md, RecompLauncher), by its agent guide: `port/release/recomplauncher.json` at the top
+  of each download (Easy Setup from the USA disc with Redump's CRC, `--prepare --game IMAGE` copying the data with progress lines, 14
+  settings in `settings.ini`, saves, logs, exit code 1), a Big Picture start in full screen, logs renamed `.log` for its crash reports,
+  and the badge in the README. Not yet tried in RecompLauncher's own Developer tools.
+
 - 2026-11-19: Port, portable copies leave nothing behind: `SDL_GetPrefPath` makes the folder it names, so every start made an empty
   `%APPDATA%\CrashBash\CrashBash`; `folders_user` works it out without making it (equal to SDL's on Windows), and only `folders_path`
   makes it. Android's logs are a PC's now: one a run in `logs/` in the app's folder, kept 14 days (test runs still `log.txt`), checked
