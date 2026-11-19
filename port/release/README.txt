@@ -187,6 +187,14 @@ YOUR SAVES AND SETTINGS
 There's no memory card to set up: save at the computer in a warp room, as in
 the game.
 
+To keep everything beside the game instead (on a USB stick, say), put an empty
+file called portable.txt next to it. The saves, the settings and the game's
+data then go in saves, settings and data folders here, and the first time,
+whatever was in the folder above is copied over. A choice made on the DATA page
+(under Settings in the menu the game opens with) wins over portable.txt.
+
+The settings are in settings.ini, each with a line saying what it does.
+
 
 IF IT CRASHES
 

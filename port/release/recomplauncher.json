@@ -3,7 +3,7 @@
   "format": 1,
   "name": "Crash Bash",
   "repo": "jake-r-r-w/crash_bash_decomp",
-  "requires": ["start", "setup", "exit_codes", "settings.ini", "settings.args", "settings.choices", "settings.slider", "settings.groups"],
+  "requires": ["start", "setup", "exit_codes", "settings.ini", "settings.args", "settings.choices", "settings.slider", "settings.bindings", "settings.groups"],
   "game": {
     "kind": "iso",
     "label": "Your disc image of the USA PlayStation release of Crash Bash (SCUS-94570): its .bin, or an .iso.",
@@ -27,6 +27,7 @@
       "id": "main",
       "format": "ini",
       "file": [
+        { "path": "{install}/settings/settings.ini", "if": "{install}/portable.txt" },
         { "path": "{install}/settings/settings.ini", "if": "{install}/settings/settings.ini" },
         { "path": "{local}/CrashBash/CrashBash/settings.ini", "if": "{local}/CrashBash/CrashBash" },
         { "path": "{config}/CrashBash/CrashBash/settings.ini" }
@@ -35,6 +36,7 @@
   ],
   "folders": {
     "saves": [
+      { "path": "{install}/saves", "if": "{install}/portable.txt" },
       { "path": "{install}/saves", "if": "{install}/saves" },
       { "path": "{local}/CrashBash/CrashBash/saves", "if": "{local}/CrashBash/CrashBash/saves" },
       { "path": "{config}/CrashBash/CrashBash/saves" }
@@ -168,6 +170,38 @@
         { "label": "Keyboard", "set": { "button_prompts": "keyboard" } }
       ],
       "defaults": { "button_prompts": "auto" }
+    },
+    {
+      "id": "keys", "label": "Keys", "group": "Controls",
+      "help": "The key or mouse button for each of the PlayStation's buttons. The game's own CONTROLS page sets them too.",
+      "bindings": {
+        "max": 1,
+        "actions": [
+          { "label": "Cross", "key": "key_cross" }, { "label": "Circle", "key": "key_circle" },
+          { "label": "Square", "key": "key_square" }, { "label": "Triangle", "key": "key_triangle" },
+          { "label": "Start", "key": "key_start" }, { "label": "Select", "key": "key_select" },
+          { "label": "L1", "key": "key_l1" }, { "label": "R1", "key": "key_r1" },
+          { "label": "L2", "key": "key_l2" }, { "label": "R2", "key": "key_r2" },
+          { "label": "Up", "key": "key_up" }, { "label": "Down", "key": "key_down" },
+          { "label": "Left", "key": "key_left" }, { "label": "Right", "key": "key_right" }
+        ]
+      }
+    },
+    {
+      "id": "buttons", "label": "Controller buttons", "group": "Controls",
+      "help": "The controller button for each of the PlayStation's buttons.",
+      "bindings": {
+        "max": 1,
+        "actions": [
+          { "label": "Cross", "key": "pad_cross", "pad": true }, { "label": "Circle", "key": "pad_circle", "pad": true },
+          { "label": "Square", "key": "pad_square", "pad": true }, { "label": "Triangle", "key": "pad_triangle", "pad": true },
+          { "label": "Start", "key": "pad_start", "pad": true }, { "label": "Select", "key": "pad_select", "pad": true },
+          { "label": "L1", "key": "pad_l1", "pad": true }, { "label": "R1", "key": "pad_r1", "pad": true },
+          { "label": "L2", "key": "pad_l2", "pad": true }, { "label": "R2", "key": "pad_r2", "pad": true },
+          { "label": "Up", "key": "pad_up", "pad": true }, { "label": "Down", "key": "pad_down", "pad": true },
+          { "label": "Left", "key": "pad_left", "pad": true }, { "label": "Right", "key": "pad_right", "pad": true }
+        ]
+      }
     },
     {
       "id": "deadzone", "label": "Stick deadzone", "group": "Controls", "advanced": true,

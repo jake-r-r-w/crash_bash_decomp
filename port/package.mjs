@@ -179,7 +179,9 @@ fs.rmSync(archive, { force: true });
 if (LINUX) {
     run('tar', ['--sort=name', '--owner=0', '--group=0', '--numeric-owner', '-czf', archive, '-C', OUT, name]);
 } else {
-    run('powershell.exe', ['-NoProfile', '-Command', `Compress-Archive -Path '${dir}\\*' -DestinationPath '${archive}'`]);
+    /* Windows' own tar (bsdtar, in every Windows 10 and 11), which writes a zip's paths with /, as zips are meant to have them:
+       PowerShell's Compress-Archive wrote mods\README.txt, which some unzippers take as one file of that name */
+    run(path.join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'tar.exe'), ['-a', '-c', '-f', archive, '-C', dir, ...fs.readdirSync(dir).sort()]);
 }
 const sha = crypto.createHash('sha256').update(fs.readFileSync(archive)).digest('hex');
 fs.writeFileSync(`${archive}.sha256`, `${sha}  ${path.basename(archive)}\n`);
