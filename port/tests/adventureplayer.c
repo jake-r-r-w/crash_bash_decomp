@@ -15,6 +15,8 @@
 #include "bash/spin_ovl.h"
 #include "bash/hub_hubcore.h"
 #include "bash/gameflow.h"
+#include "bash/nas.h"
+#include "bash/titles_ovl.h"
 #include "../platform/settings.h"
 
 void platform_bot_buttons(int buttons);
@@ -530,6 +532,12 @@ void AdventurePlayerUpdate(void) {
     /* in play the computer has the pad, and Cross is a game's jump or flip: the taps are for the screens either side */
     if (GameMode < ROOM_FIRST && GAME->exitFlags == 0 && !(GAME->pause & 0x04000000)) {
         platform_bot_buttons(0);
+        return;
+    }
+    /* the players menu, there with more than one controller: as many players as controllers, as couch play has (each one after the
+       first stands still in a game, as nobody's holding it) */
+    if (MenuProcessControl.process == &PlayersMenu && GamePlayers < PadRunEnd) {
+        platform_bot_buttons((Ticks & 15) == 0 ? BTN_DOWN : 0);
         return;
     }
     platform_bot_buttons((Ticks & 31) < 3 ? BTN_CROSS : 0);

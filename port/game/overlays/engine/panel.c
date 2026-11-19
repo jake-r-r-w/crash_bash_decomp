@@ -1601,9 +1601,12 @@ s16 FindTeamLeader(void) {
     return r;
 }
 
-const char PanelDigits123[] = "123";
+/* The team scores' digits, which UpdateBigScore writes the scores into. The PlayStation's const data could be written, and on PC it
+   can't, so they aren't const here: every team game with this score (the Pogo games, Mallet Mash, Keg Kaboom) crashed at its first
+   round's end, up to 1.3.0 (docs/PORT.md, What the first attempt taught). */
+char PanelDigits123[] = "123";
 
-const char PanelDigits456[] = "456";
+char PanelDigits456[] = "456";
 
 void Cups_Update(void) {
     s32 key;
@@ -1701,7 +1704,6 @@ found:
         } else if (GAME->adventure.roundPoints[CupWinner] > GAME->adventure.roundPoints[GAME->cupLeader]) {
             GAME->cupLeader = CupWinner;
         }
-        printf("mode%x\n", mode);
         switch (mode) {
         case 2:
             if (GAME->adventure.roundPoints[CupWinner] < Trophy_Cups) {
@@ -2252,8 +2254,8 @@ DigitSrc CompletionDigitSrc[4][4] = {  /* per digit count - 1: each digit's x of
 u16 PanelHeroOrder[4] = { 1, 0, 3, 2 };
 s16 IconPos4[4][2] = { { 0x28, 0x18 }, { 0xA0, 0x18 }, { 0x190, 0x18 }, { 0x208, 0x18 } };
 s16 IconPos2[4][2] = { { 0x64, 0x18 }, { 0x1CC, 0x18 }, { -0x258, 0 }, { 0x258, 0 } };
-char *left_score = (void *)&PanelDigits123;
-char *right_score = (void *)&PanelDigits456;
+char *left_score = PanelDigits123;
+char *right_score = PanelDigits456;
 s16 IconPos[8] = { 0x64, 0x18, 0x1CC, 0x18, 0x190, 0x18, 0x208, 0x18 };
 u16 IconImage[10] = { 0, 0x3003, 0x3002, 0x3004, 0x3006, 0x3007, 0x3008, 0x3005, 0x3016, 0 };
 u16 HeroNameText[10] = { 0, 0x2008, 0x2007, 0x2009, 0x200B, 0x200C, 0x200D, 0x200A, 0x201D, 0 };

@@ -44,7 +44,7 @@
  *   node port/tests/playtest.mjs pads
  *       Couch play, with pretend controllers: the launcher's players screen, Battle, Adventure and Tournament offering as many players as
  *       there are controllers, each choosing its own hero, and controllers pulled out and plugged in without anyone else's player changing.
- *       And the stick's deadzone: a stick a third of the way out moves the hero with a deadzone of 20%, and not with the game's own.
+ *       A two-player Adventure's team game, Pogo Painter, past its first round (1.3.0 crashed there). And the stick's deadzone: a stick a third of the way out moves the hero with a deadzone of 20%, and not with the game's own.
  *   node port/tests/playtest.mjs identical [--all] [--against FILE]
  *       Whether the game repeats itself exactly, for online play: the same presses from two pretend controllers under each picture
  *       setting, flat out and in real time, with sound and without, compared by the game's fingerprint after every step. About two
@@ -226,7 +226,8 @@ function crash_where(exe, text) {
     if (image == null || stacks.length === 0) {
         return crash[0];
     }
-    const addrs = stacks.map(a => '0x' + (BigInt('0x' + a) - BigInt('0x' + image[1]) + 0x140000000n).toString(16));
+    /* Windows links the program at 0x140000000; Linux's is position-independent, its addresses from 0 */
+    const addrs = stacks.map(a => '0x' + (BigInt('0x' + a) - BigInt('0x' + image[1]) + (WINDOWS ? 0x140000000n : 0n)).toString(16));
     const sym = spawnSync('llvm-symbolizer', [`--obj=${path.resolve(ROOT, exe)}`, '--output-style=GNU', ...addrs], { encoding: 'utf8' });
     if (sym.status !== 0) {
         return crash[0];
@@ -736,6 +737,16 @@ async function pads(args) {
             name: 'Adventure, two controllers: two players',
             args: ['--pretend-pads', '2', '--press', '230', CROSS, '--press', '350', CROSS, ...downs(1, 440), ...crosses(2, [470, 590, 710, 830, 950, 1070]), '--frames', '1300'],
             check: t => (p => p == null ? 'no game' : p.players !== 2 || p.computer !== '0011' ? `players ${p.players}, computer ${p.computer}` : null)(playing(t)),
+        },
+        {
+            /* Adventure's test player takes as many players as controllers, and pad 2 presses through the hero select. Two players are
+               a team, and the team game's big score wrote into const data at the first round's end: 1.3.0's crash (PORT.md, What the
+               first attempt taught) */
+            name: 'Adventure, two controllers: Pogo Painter in teams, past its first round',
+            args: ['--challenge', '10', '0', '--pretend-pads', '2', '--skip-loading', '--draw-every', '120',
+                   ...Array.from({ length: 38 }, (_, i) => ['--pad-press', '2', String(200 + i * 64), CROSS]).flat(), '--frames', '7700'],
+            check: t => !/^level: POGO PAINTER .*2 players in teams/m.test(t) ? 'no team game of Pogo Painter'
+                : !/^round: vblank \d+ mode 10/m.test(t) ? 'its first round never ended' : null,
         },
         {
             name: 'Tournament, two controllers: two players',
