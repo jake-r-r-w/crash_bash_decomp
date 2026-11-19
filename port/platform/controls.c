@@ -1,4 +1,6 @@
 /* The game's buttons and what plays them (controls.h): their defaults, names, and choosing a new key or button for one. */
+#include <string.h>
+
 #include <SDL3/SDL.h>
 #include "controls.h"
 #include "platform.h"
@@ -78,17 +80,85 @@ const char *controls_key_id(int key) {
     return SDL_GetScancodeName((SDL_Scancode)key);
 }
 
+/* Other names for keys and mouse buttons, as another program editing the settings file may write them (RecompLauncher's key
+   bindings, docs/PORT.md): a browser's (Enter, ArrowUp, ShiftLeft, KeyZ, Digit1, Numpad1), short ones (Esc, LShift, LMB, Mouse1) and
+   others. Compared without case, spaces, - or _. The file's written with SDL's names. */
+static const struct {
+    const char *other, *sdl;
+} KeyAliases[] = {
+    { "enter", "Return" }, { "esc", "Escape" }, { "del", "Delete" }, { "ins", "Insert" }, { "pgup", "PageUp" }, { "pgdn", "PageDown" },
+    { "pagedown", "PageDown" }, { "spacebar", "Space" }, { "shift", "Left Shift" }, { "shiftleft", "Left Shift" },
+    { "lshift", "Left Shift" }, { "shiftright", "Right Shift" }, { "rshift", "Right Shift" }, { "ctrl", "Left Ctrl" },
+    { "control", "Left Ctrl" }, { "controlleft", "Left Ctrl" }, { "ctrlleft", "Left Ctrl" }, { "lctrl", "Left Ctrl" },
+    { "leftcontrol", "Left Ctrl" }, { "controlright", "Right Ctrl" }, { "ctrlright", "Right Ctrl" }, { "rctrl", "Right Ctrl" },
+    { "rightcontrol", "Right Ctrl" }, { "alt", "Left Alt" }, { "altleft", "Left Alt" }, { "lalt", "Left Alt" }, { "altright", "Right Alt" },
+    { "ralt", "Right Alt" }, { "altgr", "Right Alt" }, { "meta", "Left GUI" }, { "metaleft", "Left GUI" }, { "win", "Left GUI" },
+    { "super", "Left GUI" }, { "metaright", "Right GUI" }, { "backquote", "`" }, { "minus", "-" }, { "equal", "=" }, { "bracketleft", "[" },
+    { "bracketright", "]" }, { "backslash", "\\" }, { "semicolon", ";" }, { "quote", "'" }, { "comma", "," }, { "period", "." },
+    { "slash", "/" }, { "numpadenter", "Keypad Enter" }, { "numpadadd", "Keypad +" }, { "numpadsubtract", "Keypad -" },
+    { "numpadmultiply", "Keypad *" }, { "numpaddivide", "Keypad /" }, { "numpaddecimal", "Keypad ." },
+};
+static const struct {
+    const char *other;
+    int button; /* 0 left, 1 middle, 2 right, 3 back, 4 forward */
+} MouseAliases[] = {
+    { "mouse1", 0 }, { "mouseleft", 0 }, { "leftmouse", 0 }, { "lmb", 0 }, { "leftclick", 0 }, { "mousebutton1", 0 },
+    { "mouse3", 1 }, { "mousemiddle", 1 }, { "middlemouse", 1 }, { "mmb", 1 }, { "mousebutton3", 1 }, { "mouse2", 2 },
+    { "mouseright", 2 }, { "rightmouse", 2 }, { "rmb", 2 }, { "rightclick", 2 }, { "mousebutton2", 2 }, { "mouse4", 3 },
+    { "mousex1", 3 }, { "xbutton1", 3 }, { "mouseback", 3 }, { "mousebutton4", 3 }, { "mouse5", 4 }, { "mousex2", 4 },
+    { "xbutton2", 4 }, { "mouseforward", 4 }, { "mousebutton5", 4 },
+};
+
+/* A name without case, spaces, - or _, for comparing */
+static void squash(const char *in, char *out, size_t size) {
+    size_t n = 0;
+
+    for (; *in != '\0' && n + 1 < size; in++) {
+        if (*in != ' ' && *in != '-' && *in != '_') {
+            out[n++] = (char)SDL_tolower((unsigned char)*in);
+        }
+    }
+    out[n] = '\0';
+}
+
 int controls_key_from_id(const char *id) {
     SDL_Scancode key;
-    int i;
+    char s[64], name[32];
+    size_t i;
 
     for (i = 0; i < 5; i++) {
         if (SDL_strcasecmp(id, MouseIds[i]) == 0) {
-            return KEY_MOUSE + 1 + i;
+            return KEY_MOUSE + 1 + (int)i;
         }
     }
     key = SDL_GetScancodeFromName(id);
-
+    if (key != SDL_SCANCODE_UNKNOWN) {
+        return (int)key;
+    }
+    squash(id, s, sizeof(s));
+    for (i = 0; i < SDL_arraysize(MouseAliases); i++) {
+        if (strcmp(s, MouseAliases[i].other) == 0) {
+            return KEY_MOUSE + 1 + MouseAliases[i].button;
+        }
+    }
+    for (i = 0; i < SDL_arraysize(KeyAliases); i++) {
+        if (strcmp(s, KeyAliases[i].other) == 0) {
+            return (int)SDL_GetScancodeFromName(KeyAliases[i].sdl);
+        }
+    }
+    /* KeyZ, Digit1, Numpad1, ArrowUp */
+    if (strncmp(s, "key", 3) == 0 && s[3] != '\0' && s[4] == '\0') {
+        SDL_snprintf(name, sizeof(name), "%c", s[3]);
+    } else if (strncmp(s, "digit", 5) == 0 && s[5] != '\0' && s[6] == '\0') {
+        SDL_snprintf(name, sizeof(name), "%c", s[5]);
+    } else if (strncmp(s, "numpad", 6) == 0 && s[6] != '\0') {
+        SDL_snprintf(name, sizeof(name), "Keypad %s", s + 6);
+    } else if (strncmp(s, "arrow", 5) == 0 && s[5] != '\0') {
+        SDL_snprintf(name, sizeof(name), "%s", s + 5);
+    } else {
+        return -1;
+    }
+    key = SDL_GetScancodeFromName(name);
     return key == SDL_SCANCODE_UNKNOWN ? -1 : (int)key;
 }
 
@@ -102,11 +172,33 @@ const char *controls_button_id(int button) {
     return SDL_GetGamepadStringForButton((SDL_GamepadButton)button);
 }
 
+/* Other names for a controller's buttons, as the keys' (an Xbox pad's, a PlayStation's, by place): to SDL's */
+static const struct {
+    const char *other, *sdl;
+} ButtonAliases[] = {
+    { "south", "a" }, { "cross", "a" }, { "east", "b" }, { "circle", "b" }, { "west", "x" }, { "square", "x" }, { "north", "y" },
+    { "triangle", "y" }, { "lb", "leftshoulder" }, { "l1", "leftshoulder" }, { "leftbumper", "leftshoulder" }, { "rb", "rightshoulder" },
+    { "r1", "rightshoulder" }, { "rightbumper", "rightshoulder" }, { "lt", "lefttrigger" }, { "l2", "lefttrigger" }, { "zl", "lefttrigger" },
+    { "rt", "righttrigger" }, { "r2", "righttrigger" }, { "zr", "righttrigger" }, { "options", "start" }, { "menu", "start" },
+    { "plus", "start" }, { "select", "back" }, { "view", "back" }, { "share", "back" }, { "create", "back" }, { "minus", "back" },
+    { "ls", "leftstick" }, { "l3", "leftstick" }, { "rs", "rightstick" }, { "r3", "rightstick" }, { "dpadup", "dpup" }, { "up", "dpup" },
+    { "dpaddown", "dpdown" }, { "down", "dpdown" }, { "dpadleft", "dpleft" }, { "left", "dpleft" }, { "dpadright", "dpright" },
+    { "right", "dpright" }, { "home", "guide" }, { "ps", "guide" },
+};
+
 int controls_button_from_id(const char *id) {
     SDL_GamepadButton button = SDL_GetGamepadButtonFromString(id);
+    char s[64];
+    size_t i;
 
     if (button != SDL_GAMEPAD_BUTTON_INVALID) {
         return (int)button;
+    }
+    squash(id, s, sizeof(s));
+    for (i = 0; i < SDL_arraysize(ButtonAliases); i++) {
+        if (strcmp(s, ButtonAliases[i].other) == 0) {
+            return controls_button_from_id(ButtonAliases[i].sdl);
+        }
     }
     if (SDL_GetGamepadAxisFromString(id) == SDL_GAMEPAD_AXIS_LEFT_TRIGGER) {
         return BUTTON_LEFT_TRIGGER;

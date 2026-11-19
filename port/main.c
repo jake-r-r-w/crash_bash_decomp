@@ -1022,6 +1022,13 @@ int main(int argc, char **argv) {
                "extra heroes %d, mods %d\n", s->fullscreen ? "fullscreen" : s->maximized ? "maximised" : "window", s->window_w, s->window_h,
                s->render_w, s->render_h, s->fps, s->vsync, s->widescreen, s->antialias, s->smooth, s->upscale, s->icons, s->extra_heroes,
                s->num_mods);
+        /* where everything's kept, for a report: beside the program (portable.txt or the DATA page) or in the user's folder */
+        if (!testing) {
+            static const char *const where[NUM_WHERE] = { "beside the program", "in the user's folder", "in a folder of the player's" };
+
+            printf("folders: saves %s, settings %s, data %s%s\n", where[folders_where(FOLDER_SAVES)],
+                   where[folders_where(FOLDER_SETTINGS)], where[folders_where(FOLDER_DATA)], folders_portable() ? " (portable.txt)" : "");
+        }
     }
     if (check_crash) {
         static const char read_only[] = "--check-crash writes to read-only data";

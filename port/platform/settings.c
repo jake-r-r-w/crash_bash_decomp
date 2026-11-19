@@ -89,6 +89,22 @@ void settings_load(void) {
     while (fgets(line, sizeof(line), f) != NULL) {
         int a, b;
         char word[16];
+        char *eq = strchr(line, '=');
+
+        /* "key = value", as another program editing it may write it, is "key=value"; a line starting ; or # is a comment, which
+           matches nothing below */
+        if (eq != NULL) {
+            char *from = eq + 1, *to = eq;
+
+            while (to > line && (to[-1] == ' ' || to[-1] == '\t')) {
+                to--;
+            }
+            while (*from == ' ' || *from == '\t') {
+                from++;
+            }
+            *to++ = '=';
+            memmove(to, from, strlen(from) + 1);
+        }
 
         if (sscanf(line, "skip_intro=%d", &a) == 1) {
             Current.skip_intro = a != 0;
@@ -211,32 +227,46 @@ static void save_settings(void) {
     if (!settings_path(path, sizeof(path)) || (f = fopen(path, "w")) == NULL) {
         return;
     }
-    fprintf(f, "skip_intro=%d\n", Current.skip_intro);
-    fprintf(f, "skip_loading=%d\n", Current.skip_loading);
-    fprintf(f, "fullscreen=%d\n", Current.fullscreen);
-    fprintf(f, "window=%dx%d\n", Current.window_w, Current.window_h);
-    fprintf(f, "maximized=%d\n", Current.maximized);
-    fprintf(f, "render=%dx%d\n", Current.render_w, Current.render_h);
-    fprintf(f, "cheat_menu=%d\n", Current.cheat_menu);
-    fprintf(f, "vsync=%d\n", Current.vsync);
-    fprintf(f, "fps=%d\n", Current.fps);
-    fprintf(f, "antialias=%d\n", Current.antialias);
-    fprintf(f, "smooth=%d\n", Current.smooth);
-    fprintf(f, "widescreen=%d\n", Current.widescreen);
-    fprintf(f, "upscale=%d\n", Current.upscale);
-    fprintf(f, "icons=%d\n", Current.icons);
-    fprintf(f, "extra_heroes=%d\n", Current.extra_heroes);
-    fprintf(f, "buttons_apart=%d\n", Current.buttons_apart);
-    fprintf(f, "button_prompts=%s\n", prompts_id(Current.button_prompts));
-    fprintf(f, "stick_deadzone=%d\n", Current.stick_deadzone);
-    fprintf(f, "online_music=%d\n", Current.online_music);
-    fprintf(f, "online_sfx=%d\n", Current.online_sfx);
-    fprintf(f, "online_stereo=%d\n", Current.online_stereo);
+    /* every option written out, each with what it does (RecompLauncher's Recomp Standards): the game writes the file again whenever a
+       setting changes in its menus, so a line added by hand goes then, but a value changed here stays */
+    fprintf(f, "; Crash Bash's settings, as its SETTINGS menu sets them. Each can be changed here too, while the game isn't running.\n"
+               "; 1 is on and 0 off, unless a line says otherwise.\n\n");
+    fprintf(f, "; Start at the main menu, without the logos\nskip_intro=%d\n", Current.skip_intro);
+    fprintf(f, "; Load each level in one go, without the loading screen\nskip_loading=%d\n", Current.skip_loading);
+    fprintf(f, "; The original's hidden cheat menu, in the pause menu\ncheat_menu=%d\n", Current.cheat_menu);
+    fprintf(f, "; Ripper Roo and Pinstripe as heroes too, from your Crash Bandicoot disc\nextra_heroes=%d\n\n", Current.extra_heroes);
+    fprintf(f, "; Full screen, or a window\nfullscreen=%d\n", Current.fullscreen);
+    fprintf(f, "; The window's size, width x height, when it's neither full screen nor maximised\nwindow=%dx%d\n", Current.window_w,
+            Current.window_h);
+    fprintf(f, "; The window maximised\nmaximized=%d\n", Current.maximized);
+    fprintf(f, "; What the game draws at, width x height: 0x0 is as sharp as the window can show\nrender=%dx%d\n", Current.render_w,
+            Current.render_h);
+    fprintf(f, "; Wait for the screen's refresh, so the picture never tears\nvsync=%d\n", Current.vsync);
+    fprintf(f, "; Frames a second: 30 is the PlayStation's; 60 and 120 draw between its frames, and the game plays the same\nfps=%d\n",
+            Current.fps);
+    fprintf(f, "; Anti-aliasing: 1 is off, or 2, 4 or 8 samples a pixel\nantialias=%d\n", Current.antialias);
+    fprintf(f, "; Textures filtered, rather than the original's square texels\nsmooth=%d\n", Current.smooth);
+    fprintf(f, "; A wide screen shows more of each level at the sides\nwidescreen=%d\n", Current.widescreen);
+    fprintf(f, "; Textures made bigger with clean edges: 1 is off, or 2 or 4 times\nupscale=%d\n", Current.upscale);
+    fprintf(f, "; The heroes' and bosses' icons made crisp\nicons=%d\n\n", Current.icons);
+    fprintf(f, "; Android: the touch buttons in a part of the screen of their own, not over the picture\nbuttons_apart=%d\n",
+            Current.buttons_apart);
+    fprintf(f, "; The buttons the game's text shows: auto (what player 1 last pressed with), original, xbox, playstation, nintendo, "
+               "steamdeck or keyboard\nbutton_prompts=%s\n", prompts_id(Current.button_prompts));
+    fprintf(f, "; How far a stick has to move to count, in percent, up to 90: 0 is the game's own\nstick_deadzone=%d\n\n",
+            Current.stick_deadzone);
+    fprintf(f, "; Online games: music and effects volumes, 0 to 100, and stereo\nonline_music=%d\nonline_sfx=%d\nonline_stereo=%d\n\n",
+            Current.online_music, Current.online_sfx, Current.online_stereo);
+    fprintf(f, "; Each game button's key (SDL's name for it, or Mouse Left, Mouse Middle, Mouse Right, Mouse Back or Mouse Forward)\n");
     for (i = 0; i < NUM_CONTROLS; i++) {
         fprintf(f, "key_%s=%s\n", control_file_id(i), controls_key_id(Current.keys[i]));
     }
+    fprintf(f, "\n; Each game button's controller button (SDL's name for it, or lefttrigger and righttrigger)\n");
     for (i = 0; i < NUM_CONTROLS; i++) {
         fprintf(f, "pad_%s=%s\n", control_file_id(i), controls_button_id(Current.buttons[i]));
+    }
+    if (Current.num_mods != 0) {
+        fprintf(f, "\n; Mods, on or off, in the order they're applied (the Mods page)\n");
     }
     for (i = 0; i < Current.num_mods; i++) {
         fprintf(f, "mod=%s %s\n", Current.mods[i].on ? "on" : "off", Current.mods[i].id);

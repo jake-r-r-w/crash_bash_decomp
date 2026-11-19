@@ -228,11 +228,46 @@ static void read_ini(void) {
     fclose(f);
 }
 
+/* portable.txt beside the program, and no choices made there on the DATA page (which win once made): everything's kept beside the
+   program, as launchers and players expect of a recomp (RecompLauncher's Recomp Standards). */
+static int portable(void) {
+    char path[PATH_ROOM + 16];
+    const char *base = platform_base_path();
+
+    if (base == NULL || !game_writable()) {
+        return 0;
+    }
+    SDL_snprintf(path, sizeof(path), "%sportable.txt", base);
+    if (!exists(path)) {
+        return 0;
+    }
+    ini_path(path, sizeof(path), 1);
+    return !exists(path);
+}
+
+int folders_portable(void) {
+    return Loaded && portable();
+}
+
 void folders_load(void) {
     int i;
 
     read_ini();
     Loaded = 1;
+    if (portable()) {
+        for (i = 0; i < NUM_FOLDERS; i++) {
+            char from[PATH_ROOM], to[PATH_ROOM];
+
+            /* what the user's folder had and this hasn't, as a move on the DATA page does: so a player's saves come along the first
+               time, and nothing's taken from there */
+            path_in(i, WHERE_USER, from, sizeof(from));
+            path_in(i, WHERE_GAME, to, sizeof(to));
+            if (user_root()[0] != '\0') {
+                copy_missing(i, from, to);
+            }
+            Where[i] = WHERE_GAME;
+        }
+    }
     for (i = 0; i < NUM_FOLDERS; i++) {
         if (!folders_can(i, Where[i])) {
             Where[i] = WHERE_USER;

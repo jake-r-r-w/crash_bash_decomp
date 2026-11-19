@@ -17,6 +17,8 @@ const char *folders_path(int kind);
 /* The user's own folder, ending in /, where it'd be: not made, as a copy with everything beside it never needs it. To look in, as for
    mods and discs; folders_path makes it when something's kept there. */
 const char *folders_user(void);
+/* Whether portable.txt beside the program put everything there (folders.c) */
+int folders_portable(void);
 int folders_where(int kind);
 /* Whether a kind can be there: beside the program only if that can be written to, and a folder of the player's only once picked. */
 int folders_can(int kind, int where);
