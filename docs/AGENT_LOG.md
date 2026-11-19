@@ -656,6 +656,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-19: Port, four Recomp Standards from the RecompLauncher report: `portable.txt` keeps everything beside the program (copying
+  the user folder's saves, settings and data the first time); `settings.ini` has a comment on every setting, and reads `key = value`
+  and other programs' names for keys and buttons; the launcher's page has key and controller bindings (its names aren't documented,
+  so the aliases are the guard); and the Windows zip is made by Windows' `tar.exe`, with `/` in its paths. Not yet tried in
+  RecompLauncher's Developer tools.
+
 - 2026-11-19: Port, RecompLauncher support (PORT.md, RecompLauncher), by its agent guide: `port/release/recomplauncher.json` at the top
   of each download (Easy Setup from the USA disc with Redump's CRC, `--prepare --game IMAGE` copying the data with progress lines, 14
   settings in `settings.ini`, saves, logs, exit code 1), a Big Picture start in full screen, logs renamed `.log` for its crash reports,

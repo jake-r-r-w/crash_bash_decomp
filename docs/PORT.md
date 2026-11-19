@@ -266,7 +266,7 @@ read as an s32), and what's left differs only in arguments of the same size, or 
 
 `node port/package.mjs`, with `TC` set to the toolchain, builds `build/port/release/crash-bash-port-VERSION-windows-x64.zip` (up to
 0.3.2 they were `crash-bash-pc-...`; renamed at the user's word, 2026-11-09, the published ones left as they are): the program
-with no console window or debug information (its symbol table stays, for a crash's report: The log), its README (`port/release/README.txt`) and the licences. The version is the `project()` one in
+with no console window or debug information (its symbol table stays, for a crash's report: The log), its README (`port/release/README.txt`), `recomplauncher.json` (RecompLauncher) and the licences, zipped by Windows' own `tar.exe` so the paths in the zip have `/` (PowerShell's `Compress-Archive`, used up to 1.3.0, wrote `mods\README.txt`). The version is the `project()` one in
 `port/CMakeLists.txt`. It fails if the program holds a sample of the game's archive or this machine's paths, and it publishes nothing. Try
 the zip with `playtest.mjs ... --exe`, and unzipped by itself, with and without `CRASHBSH.DAT`. The release's notes are in `port/release/`,
 `NOTES-VERSION.md`, and a GitHub release is called "Crash Bash Port VERSION", as its notes' heading (the user's name, 2026-11-09; the
@@ -303,6 +303,21 @@ folder it names, so until 2026-11-19 every start left an empty `%APPDATA%\CrashB
 `folders_user` (`folders.c`) works out the same path (checked equal to SDL's on Windows) without making it, and `folders_path`
 makes it when something's kept there. `CRASHBASH_USER_FOLDER` points it elsewhere, for a test: a portable copy on Windows and Linux
 left one that didn't exist alone, and one with no `folders.ini` made it and found its data there (2026-11-19).
+
+**`portable.txt`** beside the program, with no `folders.ini` there, keeps all three beside it, without a visit to the DATA page (the
+user's word, 2026-11-19, from RecompLauncher's Recomp Standards: what launchers and players expect of a recomp). As a move on the page
+does, each start copies what the user's folder has that the program's hasn't (saves, `settings.ini`, `CRASHBSH.DAT`), never over
+anything and taking nothing, so a player's saves come along the first time. A choice made on the DATA page writes `folders.ini`
+beside the program, and wins from then on. The log's `folders:` line says where each is, and `(portable.txt)`. Tried on Windows
+(2026-11-19): a copy with only the program and `portable.txt` took the user folder's save, settings and data beside itself.
+
+**`settings.ini` is commented**: a line before each setting saying what it does and what it takes, as RecompLauncher's standards ask
+("every option written out and commented"). The game writes the whole file again when a setting changes, so a line added by hand goes
+then, but a value changed by hand stays. Reading it, `;` and `#` lines are skipped (as they always were: they match no setting),
+`key = value` is `key=value`, and a key or controller button can have another program's name for it (`controls_key_from_id`,
+`controls_button_from_id`): a browser's (`Enter`, `ArrowUp`, `KeyZ`, `ShiftLeft`, `Numpad1`), short ones (`Esc`, `LShift`, `LMB`,
+`Mouse1`) and a pad's by its shape or place (`Cross`, `South`, `LB`, `L1`, `RT`, `Options`, `DPad Up`), as well as SDL's. The file's
+always written with SDL's. A name it doesn't know (`WheelUp`) leaves that button as it was.
 
 Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. It also looks for `CRASHBSH.DAT` in the current folder, next to the program and in the user's folder, where a disc image's copy goes the first time it runs (`platform/discimage.c`): an image next to the program or in the current folder is used with no questions, and otherwise it asks. A settings
 menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
@@ -548,8 +563,10 @@ follows RecompLauncher's agent guide (`https://recomplauncher.com/sdk-files/reco
   4: not a disc image it reads). `--game` is `--image` by another name. Play then starts the program with no arguments.
 - **Settings.** The launcher edits `settings.ini` line by line before each start: window, frame rate, V-Sync, widescreen,
   anti-aliasing, textures, upscaling, icons, the logos, the loading screens, button prompts, the stick's deadzone and the cheat menu,
-  with the game's own defaults (`settings_defaults`). "Start in" passes `--no-launcher` to skip the port's own menu. The file is looked
-  for beside the program (`settings/`, GAME FOLDER), then in `{local}/CrashBash/CrashBash` if that's there (Linux's
+  with the game's own defaults (`settings_defaults`). "Start in" passes `--no-launcher` to skip the port's own menu. Keys and
+  Controller buttons are its key bindings, a key or button for each of the PlayStation's 14 (`key_*`, `pad_*`): RecompLauncher's
+  names for them aren't documented, so the game takes the usual ones as well as SDL's (Running it, `settings.ini` is commented). The
+  file is looked for beside the program (`settings/`, with `portable.txt` or GAME FOLDER), then in `{local}/CrashBash/CrashBash` if that's there (Linux's
   `~/.local/share`), then `{config}/CrashBash/CrashBash` (Windows' `%APPDATA%`). On Linux, a setting changed before the game's first
   start goes to `~/.config` and is lost, as the launcher has no way to say the system; from the first start on it's the right file.
 - **Folders.** The saves (for its backups and cloud saves), the logs (it sends the newest `.log` in `logs/` with a crash report, which
