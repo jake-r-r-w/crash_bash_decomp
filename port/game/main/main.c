@@ -210,6 +210,7 @@ static void test_run_update(void) {
 
 void crashlog_time(char *out, int size);
 int platform_online_players(void);
+void achievements_step(void);
 
 /* A mode's name, for the log: a level's or a warp room's, or its number */
 static const char *mode_name(s32 mode) {
@@ -267,6 +268,7 @@ void shell_update(void) {
     sfx_update_all();
     music_update();
     EngineModule->update();
+    achievements_step(); /* PC: only looks at the game, for RecompLauncher's achievements (achievements.c) */
     platform_step_done(fingerprint_step());
 }
 

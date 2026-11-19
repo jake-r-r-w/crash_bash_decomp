@@ -11,6 +11,8 @@
 #include "bash/shell.h"
 #include "bash/menumouse.h"
 
+void achievements_loaded(void); /* PC: game/main/achievements.c */
+
 void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     s32 id;
     NAS *obj;
@@ -878,6 +880,7 @@ void UpdateCardPrompt(void) {
                         q->heroCpu[3] = src[7];
                     }
                     *GAME = ((CardSlot *)src)->state;
+                    achievements_loaded(); /* PC: RecompLauncher's achievements are told (achievements.c) */
                     {
                         GameOptionSet *d = &GameOptions;
                         GameState *s = GAME;
@@ -1370,6 +1373,7 @@ void RestoreHeroChoice(CardSlot *src) {
     g->heroCpu[2] = src->summary[6];
     g->heroCpu[3] = src->summary[7];
     *GAME = src->state;
+    achievements_loaded(); /* PC: RecompLauncher's achievements are told (achievements.c) */
     {
         GameOptionSet *d = &GameOptions;
         GameState *s = GAME;

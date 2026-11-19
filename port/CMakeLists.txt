@@ -66,6 +66,18 @@ set(natpmp_sources ${libnatpmp_SOURCE_DIR}/natpmp.c ${libnatpmp_SOURCE_DIR}/getg
 if(WIN32)
   list(APPEND natpmp_sources ${libnatpmp_SOURCE_DIR}/wingettimeofday.c)
 endif()
+# Recomp Achievements, RecompLauncher's achievements (platform/achievements.c, docs/PORT.md, Achievements): its small C library, with the
+# rcheevos and cJSON it carries, at one commit, checked by its hash. Free for any game under its own licence (in the release's
+# LICENSE.txt). Not on Android, where there's no RecompLauncher.
+if(NOT ANDROID)
+  FetchContent_Declare(recompachievements
+    URL https://github.com/elripalda/RecompAchievements/archive/faf094acdf1efb57d8db7c8187b4b47aa1501805.tar.gz
+    URL_HASH SHA256=a1f00f193436e060a8a7fd38d6614a7c07742e451184c0244c31034bb80cba31
+    SOURCE_SUBDIR not-built-from-here)
+  FetchContent_MakeAvailable(recompachievements)
+  add_subdirectory(${recompachievements_SOURCE_DIR}/sdk ${recompachievements_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
+  target_compile_options(rl_achievements PRIVATE -w)
+endif()
 add_library(natpmp STATIC ${natpmp_sources})
 target_include_directories(natpmp PUBLIC ${libnatpmp_SOURCE_DIR})
 target_compile_definitions(natpmp PUBLIC NATPMP_STATICLIB PRIVATE ENABLE_STRNATPMPERR)
@@ -108,7 +120,7 @@ set_property(SOURCE ${core_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAM
 
 set(PORT_SOURCES main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c platform/folders.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/zipread.c platform/bps.c platform/settings.c
-  platform/touch.c platform/controls.c platform/prompts.c platform/net.c platform/portmap.c platform/crashlog.c ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c)
+  platform/touch.c platform/controls.c platform/prompts.c platform/net.c platform/portmap.c platform/crashlog.c platform/achievements.c ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c)
 # The button prompts' pictures, Kenney's Input Prompts (CC0, assets/prompts/License.txt), built in as data (platform/prompts.c)
 file(GLOB PROMPT_PNGS CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/assets/prompts/*.png)
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c
@@ -135,6 +147,10 @@ if(WIN32)
   target_link_libraries(crashbash PRIVATE ws2_32)
 endif()
 target_link_libraries(crashbash PRIVATE libminiupnpc-static natpmp)
+if(TARGET rl_achievements)
+  target_link_libraries(crashbash PRIVATE rl_achievements)
+  set_property(SOURCE platform/achievements.c APPEND PROPERTY COMPILE_DEFINITIONS BASH_ACHIEVEMENTS)
+endif()
 # The maths library is its own on Linux and the Mac (Windows links it by itself)
 if(UNIX)
   target_link_libraries(crashbash PRIVATE m)

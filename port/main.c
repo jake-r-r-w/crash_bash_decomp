@@ -26,6 +26,7 @@
 #include "platform/saves.h"
 #include "platform/folders.h"
 #include "platform/crashlog.h"
+#include "platform/achievements.h"
 
 int extra_hero_named(const char *id); /* game/main/extraheroes.c: --extra-hero's names */
 
@@ -531,6 +532,13 @@ int platform_online_players(void) {
     return net_players();
 }
 
+/* --replay: a kept online game played again, whose achievements aren't the player's own (game/main/achievements.c) */
+static int Replaying;
+
+int platform_replaying(void) {
+    return Replaying;
+}
+
 /* Before the game reads the pads, once a step, and after the step, with its fingerprint. */
 void platform_pad_step(void) {
     net_step();
@@ -917,6 +925,9 @@ int main(int argc, char **argv) {
     /* an online game starts at the game's own beginning on every machine, as a test run does, with its sound mixed by the game's
        clock (docs/PORT.md, Online play) */
     online = net.host != NULL || net.join != NULL || net.replay != NULL;
+    Replaying = net.replay != NULL;
+    /* RecompLauncher's achievements, when it started the game (docs/PORT.md, Achievements) */
+    achievements_start();
     if (online) {
         launcher = 0;
         no_launcher = 1;
