@@ -42,6 +42,8 @@ void platform_wait_vblanks(int count);
 void platform_fatal(const char *message);
 /* The game's archive from a disc image: what went wrong, or NULL with it at out (discimage.c). */
 const char *disc_extract(const char *image, const char *out);
+/* And with how far it's got, from 0 to 1, every 2 MB (--prepare) */
+const char *disc_extract_progress(const char *image, const char *out, void (*progress)(double done));
 /* Looks for a disc image next to the program and in the current folder. 1: the data's in place. Otherwise problem says what was wrong, if
    anything was found. */
 int disc_find_beside(const char *out, const char **problem);

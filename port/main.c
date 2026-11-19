@@ -130,6 +130,11 @@ const char *platform_base_path(void) {
 }
 
 /* Where a disc image's copy of the data goes: the folder the player has for it (folders.h) */
+/* --prepare's lines, as RecompLauncher reads them: how far, from 0 to 1, and what */
+static void prepare_progress(double done) {
+    printf("progress %.2f Copying the game's data from your disc\n", done);
+}
+
 static const char *own_data_path(void) {
     static char path[1100];
 
@@ -550,6 +555,7 @@ int main(int argc, char **argv) {
     int extra[4] = { 0 }, extra_heroes = 0, heroes[4] = { 0 };
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
     int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1, prompts = -1, check_crash = 0;
+    int prepare = 0;
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
 #ifdef SDL_PLATFORM_ANDROID
@@ -636,8 +642,10 @@ int main(int argc, char **argv) {
             check_crash = 1; /* a crash on purpose, as the game starts: what its report says (docs/PORT.md, The log) */
         } else if (strcmp(argv[i], "--data") == 0 && i + 1 < argc) {
             DataPath = argv[++i];
-        } else if (strcmp(argv[i], "--image") == 0 && i + 1 < argc) {
-            Image = argv[++i];
+        } else if ((strcmp(argv[i], "--image") == 0 || strcmp(argv[i], "--game") == 0) && i + 1 < argc) {
+            Image = argv[++i]; /* --game is the name launchers know it by (RecompLauncher's Recomp Standards) */
+        } else if (strcmp(argv[i], "--prepare") == 0) {
+            prepare = 1;
         } else if (strcmp(argv[i], "--stick") == 0 && i + 3 < argc && NumSticks < MAX_STICKS) {
             Sticks[NumSticks].frame = when(argv[++i]);
             Sticks[NumSticks].x = (unsigned char)strtol(argv[++i], NULL, 16);
@@ -875,11 +883,35 @@ int main(int argc, char **argv) {
         settings_defaults();
     } else {
         folders_load();
-        /* a player's run has a log, in logs/ beside the program, for a report (docs/PORT.md, The log) */
-        crashlog_open(folders_path(FOLDER_SETTINGS), 0);
+        /* a player's run has a log, in logs/ beside the program, for a report (docs/PORT.md, The log); --prepare's lines are for the
+           launcher that started it */
+        crashlog_open(folders_path(FOLDER_SETTINGS), prepare);
         settings_load();
+        /* started from RecompLauncher's Big Picture mode, for a controller on the couch: full screen (docs/PORT.md, RecompLauncher) */
+        if (SDL_getenv("RECOMPLAUNCHER_MODE") != NULL && strcmp(SDL_getenv("RECOMPLAUNCHER_MODE"), "bigpicture") == 0) {
+            settings()->fullscreen = 1;
+        }
     }
     crashlog_system();
+    /* --prepare, RecompLauncher's setup step (docs/PORT.md, RecompLauncher): the game's data from --game's disc image, where the game's
+       own first run puts it, with how far it's got in "progress" lines, and no window. 0 when it's done. */
+    if (prepare) {
+        const char *problem;
+
+        setvbuf(stdout, NULL, _IONBF, 0);
+        if (Image == NULL) {
+            printf("progress 1 No disc image: --prepare needs --game PATH\n");
+            return 2;
+        }
+        printf("progress 0 Copying the game's data from your disc\n");
+        problem = disc_extract_progress(Image, DataPath != NULL ? DataPath : own_data_path(), prepare_progress);
+        if (problem != NULL) {
+            printf("progress 1 %s\n", problem);
+            return 4;
+        }
+        printf("progress 1 The game's data is in place\n");
+        return 0;
+    }
     /* an online game starts at the game's own beginning on every machine, as a test run does, with its sound mixed by the game's
        clock (docs/PORT.md, Online play) */
     online = net.host != NULL || net.join != NULL || net.replay != NULL;

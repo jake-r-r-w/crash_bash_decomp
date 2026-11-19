@@ -134,6 +134,10 @@ static char *image_file(const char *image) {
 }
 
 const char *disc_extract(const char *image, const char *out) {
+    return disc_extract_progress(image, out, NULL);
+}
+
+const char *disc_extract_progress(const char *image, const char *out, void (*progress)(double done)) {
     uint8_t volume[SECTOR_BYTES], buf[SECTOR_BYTES];
     const char *problem = NULL;
     char *file = image_file(image);
@@ -176,6 +180,10 @@ const char *disc_extract(const char *image, const char *out) {
     }
     for (done = 0; done < dat.size; done += SECTOR_BYTES) {
         size_t want = dat.size - done < SECTOR_BYTES ? dat.size - done : SECTOR_BYTES;
+
+        if (progress != NULL && done % (SECTOR_BYTES * 1024) == 0) {
+            progress((double)done / dat.size);
+        }
 
         if (!read_sector(&d, dat.sector + done / SECTOR_BYTES, buf)) {
             problem = "The disc image ends early: it may be damaged.";
