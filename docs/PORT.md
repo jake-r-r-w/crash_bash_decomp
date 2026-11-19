@@ -546,7 +546,7 @@ purpose as the game starts, writing to `const` data, to see the report on any sy
 run (the message and its log file), and in `tools/dl` (2026-11-19). The original's debug lines that filled the log (`empty prims`, `load
 file start`, `done loading`, `mode2`) are gone from the port's copy.
 
-A release from before 1.3.1 has only the crash's first line and raw addresses. Those are the release's own build: `cmake --preset
+A release from before 1.4.0 has only the crash's first line and raw addresses. Those are the release's own build: `cmake --preset
 windows-release` at its tag, linked again with `-Wl,-Map=FILE` (the same bytes, but for the timestamp), maps them to functions.
 
 ## RecompLauncher
@@ -612,7 +612,7 @@ on Linux); started any other way, every call does nothing (`platform/achievement
 - **The list** is `port/release/achievements.json` (SPEC.md's format, 59 achievements, 5 to 50 points, 855 in all, each award climbing 5, 10, 25, 50 for 1, 10, 20 and all 28; Beaten is the
   three bosses, the first trophy and Oxide). Its titles and descriptions are the port's own: Recomp Achievements takes no set copied from
   another service, so RetroAchievements' Crash Bash set wasn't used (the user asked, 2026-11-19). RecompLauncher hosts it: it goes in through its developer hub (recompstore.com/hub, PC recomps,
-  Achievements) once the recomp's claimed, and isn't in the download. Its `versions` is `>=1.3.1`, the first release with this.
+  Achievements) once the recomp's claimed, and isn't in the download. Its `versions` is `>=1.4.0`, the first release with this.
 
 `playtest.mjs achievements` plays the launcher's side: from an Adventure with everything won but one award, every event in the list but
 the ones it holds back (Pogo Painter's trophy: its own, all the trophies' and Warp Room 1's; Jungle Bash's platinum: all the platinums'),

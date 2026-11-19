@@ -168,7 +168,9 @@ async function run_android(args, logfile, timeout) {
     adb(['shell', 'am', 'force-stop', ANDROID_APP]);
     adb(['shell', 'rm', '-rf', `${ANDROID_DIR}/out`, `${ANDROID_DIR}/out-*`, `${ANDROID_DIR}/log.txt`]);
     adb(['logcat', '-c']);
-    adb(['shell', 'am', 'start', '-n', `${ANDROID_APP}/.CrashBashActivity`, '--esa', 'args', sent.join(',')]);
+    /* in quotes, as adb shell hands the line to the device's shell, where a macro's semicolons would end the command and lose every
+       argument after them (--frames too, so the run was a player's) */
+    adb(['shell', 'am', 'start', '-n', `${ANDROID_APP}/.CrashBashActivity`, '--esa', 'args', `'${sent.join(',').replaceAll("'", "'\\''")}'`]);
     const started = Date.now();
     await sleep(2000);
     while (adb(['shell', 'pidof', ANDROID_APP]).stdout.trim() !== '') {
@@ -1116,8 +1118,8 @@ async function online_play(args, exe) {
 /* online --android: a game between this PC, hosting, and Android's emulator, joining it at 10.0.2.2 (the emulator's way to the PC): the
    online test's two-machine Battle, matched step for step by fingerprint. The PC's copy hosts on 127.0.0.1, so Windows doesn't ask about
    its firewall, and is stopped if the phone hasn't joined in a minute and a half, as a host's window is black till someone does. The
-   phone plays on past its own --frames: catching up with the host, it plays steps without waiting for vblanks (net_behind), and the
-   emulator is slow enough to be catching up most of the time. So its game ends with the host's last step, as "the host has left". */
+   phone's --frames is past the host's, so its game ends with the host's last step, as "the host has left", however fast the emulator
+   runs (catching up with the host it plays steps without waiting for vblanks, net_behind). */
 async function online_android(args) {
     const pc = option(args, '--pc-exe', WINDOWS ? 'build/port/windows-clang/crashbash.exe' : 'build/port/linux-clang/crashbash');
     const dir = path.join(OUT, 'online');
@@ -1129,7 +1131,7 @@ async function online_android(args) {
     const host = run(pc, [...common, '--tile', '0', '4', '--no-sound', '--saves', path.relative(ROOT, path.join(dir, 'saves')).replaceAll('\\', '/'),
         '--host', `127.0.0.1:${port}`, '--net-joiners', '1', ...online_presses(0, 2), '--frames', String(ONLINE_END + 200)],
         path.join(dir, 'pc.txt'), { timeout: MODE_TIMEOUT, here: true });
-    const phone = run('android', [...common, '--join', `10.0.2.2:${port}`, ...online_presses(1, 2), '--frames', String(ONLINE_END)], path.join(dir, 'phone.txt'),
+    const phone = run('android', [...common, '--join', `10.0.2.2:${port}`, ...online_presses(1, 2), '--frames', String(ONLINE_END + 400)], path.join(dir, 'phone.txt'),
         { timeout: MODE_TIMEOUT });
     const guard = setTimeout(() => {
         if (!/has joined/.test(fs.readFileSync(path.join(dir, 'pc.txt'), 'latin1'))) {

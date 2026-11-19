@@ -39,7 +39,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   - Windows (Direct3D 12) builds on the host with CMake. Linux (Vulkan) builds and is tested in `tools/dl`'s container, on a virtual
     screen with software Vulkan: never yet on a real Linux desktop and graphics card. Android (Vulkan) builds in `tools/da`, is
     tested in the emulator, and works on the user's phone; a phone that folds has only been tried in the emulator (7.15), as has its MOBILE FOLD option. No Mac.
-  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.3.0 (2026-11-18, button prompts and mouse buttons; v1.2.0, 2026-11-13, phones that fold and the DATA page;
+  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.4.0 (2026-11-20, the team games' crash fixed, logs, RecompLauncher and achievements; v1.3.0, 2026-11-18, button prompts and mouse buttons; v1.2.0, 2026-11-13, phones that fold and the DATA page;
     v1.1.0, 2026-11-11, the sticks' deadzone and the mouse in every menu; v1.0.0, 2026-11-10, brought online play and couch play), for
     Windows, Linux and Android.
     `node port/package.mjs` makes them (PORT.md, A release).
@@ -656,6 +656,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-20: v1.4.0 released, at the user's word ("cut a release but number is 1.4.0"; there was no 1.3.1): the team games'
+  crash fixed, logs, the cursor hiding in play, portable.txt, RecompLauncher and 59 achievements (855 points: each award's milestones
+  5, 10, 25, 50, as the user noticed 20 and all 28 were both 25). Every suite passed on the packaged builds, Windows, Linux and
+  Android. Gotcha: Android's launch line goes through the device's shell, where a macro's `;` cut off every argument after it
+  (`--frames` too); quoted now in `run_android`, and the online test's phone stops after the host. The emulator had a debug-signed
+  1.3.0 again: uninstalling for the release APK empties its folder, so CRASHBSH.DAT and the Crash Bandicoot disc go back by adb push.
 - 2026-11-19: Port, achievements to 59 (775 points), at the user's word: each level's trophy, each warp room cleared (its trophies and
   boss), and 10 and 20 of each award; counted over the 28 levels with doors only. Not RetroAchievements' set, which the user asked
   about: Recomp Achievements takes no copied sets. `playtest.mjs achievements` now holds one award back and checks exactly its events
