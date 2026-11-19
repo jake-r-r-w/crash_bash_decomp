@@ -181,7 +181,8 @@ What's Android's own:
   are the same either way on Windows and Linux. With still no device, the message and `log.txt` name each GPU and what it lacks of what
   SDL still needs (`vulkan_lacks`).
 - The program's folder (`platform_base_path`) is the app's in shared storage, `Android/data/io.github.jakerrw.crashbash/files/`, which a
-  PC reaches over USB: `CRASHBSH.DAT`, a disc image, `discs/` and `mods/` go there, and the game writes its output to `log.txt` there.
+  PC reaches over USB: `CRASHBSH.DAT`, a disc image, `discs/` and `mods/` go there, and the game writes its logs to `logs/` there (a test
+  run's to `log.txt`; The log).
   The game makes `discs/` and `mods/` itself at startup: Android doesn't let an app look in a folder something else made in its own
   storage (one adb made was "No such directory" to it), though it can read the files in it. Saves and settings are in the app's private
   storage.
@@ -295,6 +296,13 @@ anything; the saves and settings are used there at once, and the game's data fro
 still found, `platform_data_path`). A test run reads no `folders.ini`. Mods and discs are looked for beside the program and in the
 user's folder, as before. Tried on Windows in a copy of the program (2026-11-13): a first run, and a change in the page; the folder
 chooser by the user, who called it fine.
+
+**A copy that keeps everything beside it** (GAME FOLDER for all three, with `logs/` there too) writes nothing outside its folder. It
+still looks in the user's folder for discs, mods and an old `CRASHBSH.DAT`, but doesn't make it: SDL's `SDL_GetPrefPath` makes the
+folder it names, so until 2026-11-19 every start left an empty `%APPDATA%\CrashBash\CrashBash` on any PC a copy ran on.
+`folders_user` (`folders.c`) works out the same path (checked equal to SDL's on Windows) without making it, and `folders_path`
+makes it when something's kept there. `CRASHBASH_USER_FOLDER` points it elsewhere, for a test: a portable copy on Windows and Linux
+left one that didn't exist alone, and one with no `folders.ini` made it and found its data there (2026-11-19).
 
 Run `build/port/windows-clang/crashbash.exe` from the repo's root, where it finds the game's data in `build/disc/`. It also looks for `CRASHBSH.DAT` in the current folder, next to the program and in the user's folder, where a disc image's copy goes the first time it runs (`platform/discimage.c`): an image next to the program or in the current folder is used with no questions, and otherwise it asks. A settings
 menu opens first, one of the game's own menus (`game/overlays/titles/settingsmenu.c`), and what's chosen is kept in the user's folder (`platform/settings.c`).
@@ -495,9 +503,11 @@ user's word, 2026-11-19), or in the settings folder's `logs/` where the program'
 copies started in the same second get `-2` and on. As a run starts, the logs there not written to in 14 days are deleted: only
 `crashbash-*.txt`, nothing else in the folder. It's unbuffered, so what's there when the program dies is all it said, and the game
 says little: a line a level. Output sent to a file or a pipe already (`crashbash > out.txt`) stays there, and a test run's
-(`--frames`, `--no-window`) stays where it was, so play tests never make logs. Android has had its own `log.txt` in the app's folder
-since 0.4.0, and keeps it. Tried on Windows and in `tools/dl` (2026-11-19): a player's run's file, and a 20-day-old log deleted while
-a 9-day-old one and another file stayed.
+(`--frames`, `--no-window`) stays where it was, so play tests never make logs. Android is the same, with `logs/` in the app's folder
+that a PC reaches over USB, from the very start of `main`; its test runs still write `log.txt` there, which `playtest.mjs` reads. Its
+library keeps its symbols too, and the crash report reads them from it. Tried on Windows, in `tools/dl` and in Android's emulator
+(2026-11-19): a player's run's file, a crash's report (`--check-crash`), and a 20-day-old log deleted while a 9-day-old one and
+another file stayed.
 
 What it says, so that a report needs nothing else (added after two reports of 1.3.0 crashing, 2026-11-19, whose log had none of it):
 

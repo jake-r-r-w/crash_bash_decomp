@@ -19,6 +19,7 @@
 #include "bps.h"
 #include "mods.h"
 #include "platform.h"
+#include "folders.h"
 #include "settings.h"
 #include "zipread.h"
 
@@ -124,15 +125,14 @@ static void add_root(const char *path, int packs) {
 /* The places a folder of them is kept: beside the program, in the user's own folder, and here, each with / at the end. */
 static int standard_places(char places[3][1024], const char *folder) {
     const char *base = platform_base_path();
-    char *pref = SDL_GetPrefPath("CrashBash", "CrashBash");
+    const char *pref = folders_user(); /* looked in, not made */
     int n = 0;
 
     if (base != NULL) {
         SDL_snprintf(places[n++], 1024, "%s%s/", base, folder);
     }
-    if (pref != NULL) {
+    if (pref[0] != '\0') {
         SDL_snprintf(places[n++], 1024, "%s%s/", pref, folder);
-        SDL_free(pref);
     }
     SDL_snprintf(places[n++], 1024, "%s/", folder);
     return n;

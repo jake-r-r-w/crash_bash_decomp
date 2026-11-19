@@ -656,6 +656,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-19: Port, portable copies leave nothing behind: `SDL_GetPrefPath` makes the folder it names, so every start made an empty
+  `%APPDATA%\CrashBash\CrashBash`; `folders_user` works it out without making it (equal to SDL's on Windows), and only `folders_path`
+  makes it. Android's logs are a PC's now: one a run in `logs/` in the app's folder, kept 14 days (test runs still `log.txt`), checked
+  in the emulator with a crash report that names its symbols. Gotcha: the emulator had the release-signed 1.3.0, so a debug build
+  needed `adb uninstall` and `CRASHBSH.DAT` pushed again.
+
 - 2026-11-19: Port, the mouse cursor hides in play and shows in the menus (a player's request: fullscreen, keyboard and mouse), by
   whether a menu has the mouse (`host_mouse_for_menus` in sdl.c), with half a second's grace before it hides. The `mouse` suite checks
   it in its Battle; not yet seen on a real screen.

@@ -142,10 +142,7 @@ static const char *old_data_path(void) {
     static char path[1100];
 
     if (path[0] == 0) {
-        char *dir = SDL_GetPrefPath("CrashBash", "CrashBash");
-
-        SDL_snprintf(path, sizeof(path), "%sCRASHBSH.DAT", dir != NULL ? dir : "");
-        SDL_free(dir);
+        SDL_snprintf(path, sizeof(path), "%sCRASHBSH.DAT", folders_user()); /* looked for, not made */
     }
     return path;
 }
@@ -556,12 +553,21 @@ int main(int argc, char **argv) {
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
 #ifdef SDL_PLATFORM_ANDROID
-    /* Android sends a program's output nowhere: it goes in log.txt in its folder, for test runs and for anyone to send with a report */
+    /* Android sends a program's output nowhere. A player's goes in a log of its own in logs/ in the app's folder, kept 14 days, as on a
+       PC (crashlog.c), from the very start; a test run's in log.txt there, where playtest.mjs reads it (a test run is what --frames or
+       --no-window makes one, as below) */
     if (platform_base_path() != NULL) {
         char log[1100];
+        int test_run = 0;
 
+        for (i = 1; i < argc; i++) {
+            test_run |= strcmp(argv[i], "--frames") == 0 || strcmp(argv[i], "--no-window") == 0;
+        }
+        if (!test_run) {
+            crashlog_open(NULL, 0);
+        }
         SDL_snprintf(log, sizeof(log), "%slog.txt", platform_base_path());
-        if (freopen(log, "w", stdout) != NULL) {
+        if (crashlog_path() == NULL && freopen(log, "w", stdout) != NULL) {
             setvbuf(stdout, NULL, _IOLBF, 0);
             dup2(fileno(stdout), fileno(stderr));
         }

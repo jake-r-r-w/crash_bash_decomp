@@ -14,6 +14,9 @@ enum { WHERE_GAME, WHERE_USER, WHERE_CUSTOM, NUM_WHERE };
 void folders_load(void);
 /* A kind's folder, ending in /, made if it wasn't there. */
 const char *folders_path(int kind);
+/* The user's own folder, ending in /, where it'd be: not made, as a copy with everything beside it never needs it. To look in, as for
+   mods and discs; folders_path makes it when something's kept there. */
+const char *folders_user(void);
 int folders_where(int kind);
 /* Whether a kind can be there: beside the program only if that can be written to, and a folder of the player's only once picked. */
 int folders_can(int kind, int where);

@@ -7,6 +7,11 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <shlobj.h>
+#endif
 #include "folders.h"
 #include "platform.h"
 #include "saves.h"
@@ -25,16 +30,56 @@ static char Picked[PATH_ROOM];
 static int PickedKind;
 static SDL_AtomicInt PickedReady;
 
-static const char *user_root(void) {
+/* The user's own folder, where SDL_GetPrefPath has it (%APPDATA%\CrashBash\CrashBash\, ~/.local/share/CrashBash/CrashBash/), but not
+   made: SDL's makes it, so a copy kept with everything beside it left an empty one on every PC it ran on. It's made when something's
+   written there (folders_path, write_ini). CRASHBASH_USER_FOLDER, for a test, says where it is instead. */
+const char *folders_user(void) {
     static char root[PATH_ROOM];
 
-    if (root[0] == '\0') {
+    if (root[0] != '\0') {
+        return root;
+    }
+    if (SDL_getenv("CRASHBASH_USER_FOLDER") != NULL) {
+        SDL_snprintf(root, sizeof(root), "%s/", SDL_getenv("CRASHBASH_USER_FOLDER"));
+        return root;
+    }
+#if defined(SDL_PLATFORM_ANDROID)
+    {
+        /* the app's own private folder, which is always there */
         char *dir = SDL_GetPrefPath("CrashBash", "CrashBash");
 
         SDL_strlcpy(root, dir != NULL ? dir : "", sizeof(root));
         SDL_free(dir);
     }
+#elif defined(_WIN32)
+    {
+        /* the folder SDL's is in: Roaming, as CSIDL_APPDATA */
+        PWSTR wide = NULL;
+        char appdata[PATH_ROOM];
+
+        if (SHGetKnownFolderPath(&FOLDERID_RoamingAppData, KF_FLAG_DONT_VERIFY, NULL, &wide) == S_OK
+            && WideCharToMultiByte(CP_UTF8, 0, wide, -1, appdata, sizeof(appdata), NULL, NULL) != 0) {
+            SDL_snprintf(root, sizeof(root), "%s\\CrashBash\\CrashBash\\", appdata);
+        }
+        CoTaskMemFree(wide);
+    }
+#else
+    {
+        /* as SDL has it: $XDG_DATA_HOME, or ~/.local/share */
+        const char *data = SDL_getenv("XDG_DATA_HOME"), *home = SDL_getenv("HOME");
+
+        if (data != NULL && data[0] != '\0') {
+            SDL_snprintf(root, sizeof(root), "%s/CrashBash/CrashBash/", data);
+        } else if (home != NULL) {
+            SDL_snprintf(root, sizeof(root), "%s/.local/share/CrashBash/CrashBash/", home);
+        }
+    }
+#endif
     return root;
+}
+
+static const char *user_root(void) {
+    return folders_user();
 }
 
 static int exists(const char *path) {
@@ -129,6 +174,9 @@ static void write_ini(void) {
     FILE *f;
     int i;
 
+    if (!game_writable()) {
+        SDL_CreateDirectory(user_root());
+    }
     ini_path(path, sizeof(path), game_writable());
     if ((f = fopen(path, "w")) == NULL) {
         return;

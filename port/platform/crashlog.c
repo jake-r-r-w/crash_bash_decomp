@@ -288,7 +288,7 @@ void crashlog_system(void) {
     crashlog_time(when, sizeof(when));
     system_text(os, sizeof(os));
     cpu_text(cpu, sizeof(cpu));
-    printf("Crash Bash PC port %s (commit %s, built %s), started %s\n", BASH_VERSION, BASH_COMMIT, __DATE__, when);
+    printf("Crash Bash port %s (commit %s, built %s), started %s\n", BASH_VERSION, BASH_COMMIT, __DATE__, when);
     printf("system: %s\n", os);
     printf("cpu: %s, %d threads; memory: %d MB\n", cpu, SDL_GetNumLogicalCPUCores(), SDL_GetSystemRAM());
     if (LogPath[0] != 0) {

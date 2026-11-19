@@ -12,7 +12,7 @@ endif()
 
 # A release (node port/package.mjs) has no console window or debug information, and the optimisation everything's been tested at.
 # It keeps its symbol table, which a crash's report reads to name the functions and data it was in (platform/crashlog.c): on Windows
-# that's about 1.3 MB more. Android's library is stripped by its own build.
+# that's about 1.3 MB more. Android's library keeps it too.
 option(BASH_RELEASE "A build for publishing" OFF)
 if(BASH_RELEASE)
   add_link_options(-Wl,--strip-debug)

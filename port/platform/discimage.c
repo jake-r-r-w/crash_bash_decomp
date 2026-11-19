@@ -6,6 +6,7 @@
 
 #include <SDL3/SDL.h>
 #include "platform.h"
+#include "folders.h"
 
 #define SECTOR_BYTES 2048
 #define RAW_SECTOR_BYTES 2352
@@ -342,7 +343,7 @@ static DiscImage *find_volume_in(const char *folder, const char *volume, int dep
 
 DiscImage *disc_image_find(const char *volume) {
     const char *base = platform_base_path();
-    char *pref = SDL_GetPrefPath("CrashBash", "CrashBash");
+    const char *pref = folders_user()[0] != '\0' ? folders_user() : NULL; /* looked in, not made */
     char places[9][1024];
     int depth[9];
     DiscImage *found = NULL;
@@ -356,7 +357,6 @@ DiscImage *disc_image_find(const char *volume) {
     if (pref != NULL) {
         depth[n] = 1;
         SDL_snprintf(places[n++], sizeof(places[0]), "%sdiscs/", pref);
-        SDL_free(pref);
     }
     depth[n] = 1;
     SDL_snprintf(places[n++], sizeof(places[0]), "discs/");
