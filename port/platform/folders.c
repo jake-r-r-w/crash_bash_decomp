@@ -230,6 +230,8 @@ static void read_ini(void) {
 
 /* portable.txt beside the program, and no choices made there on the DATA page (which win once made): everything's kept beside the
    program, as launchers and players expect of a recomp (RecompLauncher's Recomp Standards). */
+static int ForcePortable;
+
 static int portable(void) {
     char path[PATH_ROOM + 16];
     const char *base = platform_base_path();
@@ -237,12 +239,25 @@ static int portable(void) {
     if (base == NULL || !game_writable()) {
         return 0;
     }
-    SDL_snprintf(path, sizeof(path), "%sportable.txt", base);
-    if (!exists(path)) {
+    ini_path(path, sizeof(path), 1);
+    if (exists(path)) {
         return 0;
     }
-    ini_path(path, sizeof(path), 1);
-    return !exists(path);
+    SDL_snprintf(path, sizeof(path), "%sportable.txt", base);
+    /* --portable leaves the file, so a start that's not from the launcher keeps everything there too */
+    if (ForcePortable && !exists(path)) {
+        FILE *f = fopen(path, "w");
+
+        if (f != NULL) {
+            fputs("Keeps the saves, settings and the game's data beside the program (docs/PORT.md, Running it).\n", f);
+            fclose(f);
+        }
+    }
+    return exists(path);
+}
+
+void folders_force_portable(void) {
+    ForcePortable = 1;
 }
 
 int folders_portable(void) {

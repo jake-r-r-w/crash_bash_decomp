@@ -646,6 +646,8 @@ int main(int argc, char **argv) {
             Image = argv[++i]; /* --game is the name launchers know it by (RecompLauncher's Recomp Standards) */
         } else if (strcmp(argv[i], "--prepare") == 0) {
             prepare = 1;
+        } else if (strcmp(argv[i], "--portable") == 0) {
+            folders_force_portable(); /* everything beside the program, and portable.txt left there (folders.h) */
         } else if (strcmp(argv[i], "--stick") == 0 && i + 3 < argc && NumSticks < MAX_STICKS) {
             Sticks[NumSticks].frame = when(argv[++i]);
             Sticks[NumSticks].x = (unsigned char)strtol(argv[++i], NULL, 16);

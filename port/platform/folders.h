@@ -19,6 +19,9 @@ const char *folders_path(int kind);
 const char *folders_user(void);
 /* Whether portable.txt beside the program put everything there (folders.c) */
 int folders_portable(void);
+/* --portable, before folders_load: as if portable.txt were there, and it's left there. RecompLauncher passes it, so its installs keep
+   everything in the install's folder, the data at a path it can look for on every system. */
+void folders_force_portable(void);
 int folders_where(int kind);
 /* Whether a kind can be there: beside the program only if that can be written to, and a folder of the player's only once picked. */
 int folders_can(int kind, int where);
