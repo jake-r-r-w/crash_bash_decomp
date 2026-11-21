@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /* The example hero pack, Bobby: the user's long-haired black-and-tan miniature dachshund, stood up as a cartoon hero. His model is
- * the user's own, made from photos of him (port/mods/bobby-source/bobby-model.glb: 1367 triangles, one 2048 texture, no
- * skeleton). This script makes it a pack, as the hero tool will: it writes port/mods/bobby/, a mod.json and heroes/bobby/ with its
+ * the user's own, made from photos of him (port/mods/bobby-model.glb, beside this script, as a folder there would be a mod of its
+ * own: 1367 triangles, one 2048 texture, no skeleton). This script makes it a pack, as the hero tool will: it writes port/mods/bobby/, a mod.json and heroes/bobby/ with its
  * hero.json and hero.glb (docs/HERO_PACKS.md). Copy the folder into the game's mods folder, or zip it, to use it.
  *
  * What it does to the model:
  * - its two smallest triangles go, for the game's 1365;
- * - its texture, pieces scattered over black, has each piece's colours spread out over the black round it, then is made 256 x 256
- *   (the game's most), so shrinking doesn't bleed the black into his patches' edges;
+ * - its texture is laid out again at 256 x 256 (the game's most), each of its pieces with a border of its own colours, as the game
+ *   moves each corner to a whole texel (texture());
  * - a skeleton of 25 bones is fitted to him by hand (BONES: measured off front and side views of him on a grid), and each corner
  *   given its bones: by the part of him it's in (PARTS), then smoothed over his surface so the joins bend softly;
  * - his ten moves (CLIPS), each a pose for every 30th of a second, as before he had a model of his own.
@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(HERE, 'bobby');
-const SOURCE = path.join(HERE, 'bobby-source', 'bobby-model.glb');
+const SOURCE = path.join(HERE, 'bobby-model.glb');
 const FPS = 30;
 const MAX_TRIS = 1365;
 const TEX = 256;
@@ -152,48 +152,118 @@ const NV = SRC.pos.length / 3;
 const POS = Array.from({ length: NV }, (_, v) => [SRC.pos[v * 3], SRC.pos[v * 3 + 1], SRC.pos[v * 3 + 2]]);
 const UV = Array.from({ length: NV }, (_, v) => [SRC.uv[v * 2], SRC.uv[v * 2 + 1]]);
 
-/* --- his texture: each piece spread out over the black round it, then 256 x 256 --- */
+/* --- his texture: laid out again, 256 x 256, each piece with a border of its own colours round it ---
+ * The game keeps a corner's place in its image as whole texels, so each corner moves up to half a texel; the model's pieces lie up
+ * against each other, black between, and at 256 a corner moved so showed its neighbour's colour (orange flecks all over his coat). So
+ * each piece (triangles joined by their corners) gets a place of its own, as big as they can all be at once, PAD texels clear all
+ * round and filled with its edge's colours. */
+const PAD = 2;
 
 function texture() {
-    const src = png_read(SRC.png), { w, h } = src, used = new Uint8Array(w * h);
-    /* the texels his faces cover, a texel round them */
+    const src = png_read(SRC.png), { w, h } = src;
+    /* the pieces */
+    const parent = Int32Array.from({ length: NV }, (_, i) => i);
+    const root = (a) => {
+        while (parent[a] !== a) a = parent[a] = parent[parent[a]];
+        return a;
+    };
     for (const t of tris) {
-        const q = t.map((v) => [UV[v][0] * w, UV[v][1] * h]);
-        const x0 = Math.max(0, Math.floor(Math.min(...q.map((p) => p[0]))) - 1), x1 = Math.min(w - 1, Math.ceil(Math.max(...q.map((p) => p[0]))) + 1);
-        const y0 = Math.max(0, Math.floor(Math.min(...q.map((p) => p[1]))) - 1), y1 = Math.min(h - 1, Math.ceil(Math.max(...q.map((p) => p[1]))) + 1);
-        const d = (q[1][0] - q[0][0]) * (q[2][1] - q[0][1]) - (q[2][0] - q[0][0]) * (q[1][1] - q[0][1]);
-        if (Math.abs(d) < 1e-9) continue;
-        for (let y = y0; y <= y1; y++) {
-            for (let x = x0; x <= x1; x++) {
-                const px = x + 0.5, py = y + 0.5;
-                const a = ((q[1][0] - px) * (q[2][1] - py) - (q[2][0] - px) * (q[1][1] - py)) / d;
-                const b = ((q[2][0] - px) * (q[0][1] - py) - (q[0][0] - px) * (q[2][1] - py)) / d;
-                const e = 1.5 / Math.max(1, Math.abs(d) ** 0.5);
-                if (a >= -e && b >= -e && 1 - a - b >= -e) used[y * w + x] = 1;
-            }
-        }
+        parent[root(t[1])] = root(t[0]);
+        parent[root(t[2])] = root(t[0]);
     }
-    /* each of the 256's texels the mean of the covered ones under it; then the empty ones filled from their neighbours */
-    const k = w / TEX, rgb = new Float32Array(TEX * TEX * 3), have = new Uint8Array(TEX * TEX);
-    for (let y = 0; y < TEX; y++) {
-        for (let x = 0; x < TEX; x++) {
-            let n = 0;
-            const s = [0, 0, 0];
-            for (let sy = y * k; sy < (y + 1) * k; sy++) {
-                for (let sx = x * k; sx < (x + 1) * k; sx++) {
-                    if (!used[sy * w + sx]) continue;
-                    for (let c = 0; c < 3; c++) s[c] += src.rgba[(sy * w + sx) * 4 + c];
-                    n++;
+    const byRoot = new Map();
+    for (const t of tris) {
+        const r = root(t[0]);
+        if (!byRoot.has(r)) byRoot.set(r, { tris: [], verts: new Set() });
+        byRoot.get(r).tris.push(t);
+        t.forEach((v) => byRoot.get(r).verts.add(v));
+    }
+    const pieces = [...byRoot.values()];
+    for (const p of pieces) {
+        const us = [...p.verts].map((v) => UV[v][0] * w), vs = [...p.verts].map((v) => UV[v][1] * h);
+        p.x0 = Math.min(...us);
+        p.x1 = Math.max(...us);
+        p.y0 = Math.min(...vs);
+        p.y1 = Math.max(...vs);
+    }
+    /* shelves, tallest first, at k texels a source pixel: whether they all fit */
+    const place = (k) => {
+        const order = [...pieces].sort((a, b) => b.y1 - b.y0 - (a.y1 - a.y0));
+        let x = 0, y = 0, row = 0;
+        for (const p of order) {
+            const pw = Math.ceil((p.x1 - p.x0) * k) + 1 + 2 * PAD, ph = Math.ceil((p.y1 - p.y0) * k) + 1 + 2 * PAD;
+            if (pw > TEX) return false;
+            if (x + pw > TEX) {
+                x = 0;
+                y += row;
+                row = 0;
+            }
+            p.ox = x;
+            p.oy = y;
+            p.pw = pw;
+            p.ph = ph;
+            x += pw;
+            row = Math.max(row, ph);
+        }
+        return y + row <= TEX;
+    };
+    let lo = 0.001, hi = 1;
+    for (let i = 0; i < 30; i++) {
+        const mid = (lo + hi) / 2;
+        if (place(mid)) lo = mid;
+        else hi = mid;
+    }
+    const k = lo;
+    place(k);
+    /* each piece's texels: the mean of the source pixels under each that its own triangles cover */
+    const rgb = new Float32Array(TEX * TEX * 3), have = new Uint8Array(TEX * TEX);
+    for (const p of pieces) {
+        const bx = Math.max(0, Math.floor(p.x0) - 1), by = Math.max(0, Math.floor(p.y0) - 1);
+        const bw = Math.min(w, Math.ceil(p.x1) + 2) - bx, bh = Math.min(h, Math.ceil(p.y1) + 2) - by;
+        const mine = new Uint8Array(bw * bh);
+        for (const t of p.tris) {
+            const q = t.map((v) => [UV[v][0] * w - bx, UV[v][1] * h - by]);
+            const d = (q[1][0] - q[0][0]) * (q[2][1] - q[0][1]) - (q[2][0] - q[0][0]) * (q[1][1] - q[0][1]);
+            if (Math.abs(d) < 1e-9) continue;
+            const e = 1 / Math.max(1, Math.abs(d) ** 0.5);
+            for (let y = 0; y < bh; y++) {
+                for (let x = 0; x < bw; x++) {
+                    const px = x + 0.5, py = y + 0.5;
+                    const a = ((q[1][0] - px) * (q[2][1] - py) - (q[2][0] - px) * (q[1][1] - py)) / d;
+                    const b = ((q[2][0] - px) * (q[0][1] - py) - (q[0][0] - px) * (q[2][1] - py)) / d;
+                    if (a >= -e && b >= -e && 1 - a - b >= -e) mine[y * bw + x] = 1;
                 }
             }
-            if (n > 0) {
-                for (let c = 0; c < 3; c++) rgb[(y * TEX + x) * 3 + c] = s[c] / n;
-                have[y * TEX + x] = 1;
+        }
+        for (let ty = p.oy; ty < p.oy + p.ph; ty++) {
+            for (let tx = p.ox; tx < p.ox + p.pw; tx++) {
+                /* the source pixels under this texel */
+                const sx0 = p.x0 + (tx - p.ox - PAD) / k, sy0 = p.y0 + (ty - p.oy - PAD) / k;
+                let n = 0;
+                const s = [0, 0, 0];
+                for (let sy = Math.floor(sy0); sy < Math.ceil(sy0 + 1 / k); sy++) {
+                    for (let sx = Math.floor(sx0); sx < Math.ceil(sx0 + 1 / k); sx++) {
+                        const mx = sx - bx, my = sy - by;
+                        if (mx < 0 || my < 0 || mx >= bw || my >= bh || !mine[my * bw + mx]) continue;
+                        for (let c = 0; c < 3; c++) s[c] += src.rgba[(sy * w + sx) * 4 + c];
+                        n++;
+                    }
+                }
+                if (n > 0) {
+                    for (let c = 0; c < 3; c++) rgb[(ty * TEX + tx) * 3 + c] = s[c] / n;
+                    have[ty * TEX + tx] = 1;
+                }
             }
         }
+        /* its corners where it now is (the game rounds them to a texel: within its border) */
+        for (const v of p.verts) {
+            UV[v] = [(p.ox + PAD + (UV[v][0] * w - p.x0) * k) / TEX, (p.oy + PAD + (UV[v][1] * h - p.y0) * k) / TEX];
+        }
     }
-    for (let pass = 0; pass < 32; pass++) {
+    /* the borders and what's between filled from their neighbours */
+    for (let pass = 0; pass < 64; pass++) {
         const next = have.slice();
+        let any = false;
         for (let y = 0; y < TEX; y++) {
             for (let x = 0; x < TEX; x++) {
                 if (have[y * TEX + x]) continue;
@@ -208,11 +278,14 @@ function texture() {
                 if (n > 0) {
                     for (let c = 0; c < 3; c++) rgb[(y * TEX + x) * 3 + c] = s[c] / n;
                     next[y * TEX + x] = 1;
+                    any = true;
                 }
             }
         }
         have.set(next);
+        if (!any) break;
     }
+    console.log(`bobby: his texture's ${pieces.length} pieces laid out again at ${(k * w / TEX).toFixed(2)} of the size they'd be shrunk to whole`);
     return png_write(TEX, TEX, Buffer.from(Array.from(rgb, (v) => Math.round(Math.min(255, Math.max(0, v))))));
 }
 
@@ -288,6 +361,12 @@ function weigh() {
             for (const u of near[v]) for (const [b, w] of W[u]) m.set(b, (m.get(b) || 0) + (w * 0.5) / n);
             return m;
         });
+    }
+    /* the copies of a corner at one place (across the texture's seams) all the same, or they'd come apart as he moves: cracks */
+    for (const group of same.values()) {
+        const m = new Map();
+        for (const v of group) for (const [b, w] of W[v]) m.set(b, (m.get(b) || 0) + w / group.length);
+        for (const v of group) W[v] = m;
     }
     return W.map((m) => {
         const l = [...m].sort((a, b) => b[1] - a[1]).slice(0, 4), sum = l.reduce((s, [, w]) => s + w, 0);

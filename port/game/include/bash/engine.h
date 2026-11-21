@@ -49,7 +49,10 @@ extern s32 CardBufferStamp;
 extern s32 SaveMenuStage;
 extern PlaceRec SaveMenuPanel[];
 extern PlaceRec CardPromptPanel[];
-extern subengine EngineSlotSubs[][32]; /* 32 subengines per EnginePool slot */
+/* Subengines per EnginePool slot: the PS1's 32, and room for the character select's four extra heroes' cards (PC: its 26, two a card and their
+ * row's band, titles.c; a third card spilt into the next slot's first, the menus' backdrop) */
+#define ENGINE_SLOT_SUBS 40
+extern subengine EngineSlotSubs[][ENGINE_SLOT_SUBS];
 
 typedef struct { u16 a, b; } U16Pair;
 extern ScoreInfo Score[4];

@@ -1757,4 +1757,4 @@ sub_string_info TextTemplates[13] = {
     { 0x8001, 0x0048C0, 0x8000, 0x0048C0, 4, 0, 4, 0, 0x180, 0 },
 };
 EXTengine EnginePool[9] = {0};
-subengine EngineSlotSubs[9][32] = {0};
+subengine EngineSlotSubs[9][ENGINE_SLOT_SUBS] = {0};

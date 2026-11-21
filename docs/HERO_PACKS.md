@@ -8,6 +8,10 @@ clips, sounds and card, and the game makes it into Crash Bash's models as it loa
 **Where it stands (phase 1):** a pack's model on foot and on the podium, from its own clips. Its other kinds play on foot. Its
 sounds are its base's. Bobby, the example, plays in Crate Crush and Ring Ding.
 
+**The character select's room.** Each of its slots of drawn pieces (`EngineSlotSubs`) held the PS1's 32, and the select's own 26
+with two a card and their row's band left room for two cards: a third (the first pack's, beside Roo and Pinstripe) spilt into the
+next slot, the menus' backdrop, which went black after the select. They hold `ENGINE_SLOT_SUBS` (40) now, room for all four.
+
 ## A pack
 
 A folder `heroes/<id>/` in an ordinary mod (a zip or folder in `mods/`, [MODDING.md](MODDING.md)); `platform/mods.c` finds it, and a mod
@@ -69,15 +73,17 @@ build/port/windows-clang/crashbash.exe --mode 0 --skip-intro --skip-loading --wi
 ## Bobby, the example
 
 `port/mods/bobby/` is made by `node port/mods/bobby.mjs`: the user's dog, a long-haired black-and-tan miniature dachshund, stood up
-as a cartoon hero. His model is the user's own, made from photos of him (`port/mods/bobby-source/bobby-model.glb`, its texture saved again losslessly to fit the repo's 2 MB; 1367
+as a cartoon hero. His model is the user's own, made from photos of him (`port/mods/bobby-model.glb`, its texture saved again losslessly to fit the repo's 2 MB; 1367
 triangles, one 2048 texture, no skeleton); the photos aren't in the repo. The script does to it what the hero tool will do to any
 model (phase 3), by hand:
 
 - its two smallest triangles go, for the game's 1365;
-- its texture, pieces scattered over black, has each piece spread out over the black round it and is made 256 x 256, so the game's
-  shrinking doesn't bleed black into his patches' edges;
+- its texture laid out again at 256 x 256, each of its 223 pieces with a border of two texels of its own colours: the game keeps a
+  corner's place in its image as whole texels, so each moves up to half of one, and with the pieces up against each other as the
+  model has them, that showed the neighbouring piece's colour (orange flecks over his black coat);
 - a skeleton of 25 bones (`BONES`), placed from front and side views of him on a grid, and each corner's bones by the part of him
-  it's in (`part`: ears, head and jaw, arms, legs, tail, body), the nearest two of them, smoothed three times over his surface;
+  it's in (`part`: ears, head and jaw, arms, legs, tail, body), the nearest two of them, smoothed three times over his surface, and
+  every copy of a corner at one place (the texture's seams) given the same, or they come apart as he moves (cracks you see through);
 - ten clips of his own on foot: a panting BREATHE with his tail wagging, a scampering RUN, a JUMP, his zoomies as he ATTACKs and
   WINs, a HIT, a TAUNT (his back to them, wiggling, then a bark), PICKUP, HOLD_SLOW and HOLD_THROW.
 

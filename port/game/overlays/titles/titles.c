@@ -395,7 +395,9 @@ static PlaceRec *char_select_place(void) {
     static const PlaceRec Band = { 4, 0, 0x2BC, 0xF0, 0x136, 0xC, 0, 0, 0, 0, 0, 0, 0, 0 };
     s32 n = CountPlaceRecs(CharSelectPlace), cards = extra_cards(), i;
 
-    if (cards == 0 || n + 2 * cards + 2 > (s32)(sizeof(CharSelectPlaceMore) / sizeof(CharSelectPlaceMore[0]))) {
+    /* its pieces are the slot's subengines, which they mustn't run past (engine.h's ENGINE_SLOT_SUBS) */
+    if (cards == 0 || n + 2 * cards + 2 > (s32)(sizeof(CharSelectPlaceMore) / sizeof(CharSelectPlaceMore[0]))
+        || n + 2 * cards + 1 > ENGINE_SLOT_SUBS) {
         return CharSelectPlace;
     }
     memcpy(CharSelectPlaceMore, CharSelectPlace, sizeof(PlaceRec) * (size_t)n);

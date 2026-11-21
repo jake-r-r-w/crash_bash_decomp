@@ -606,8 +606,8 @@ static s32 make_pack(s32 slot, HeroMade *out) {
         }
         free(png);
     }
-    printf("hero packs: %s made, %d triangles, %d vertices, %d bones, %d clips, %d textures%s\n", s->info.id, pm.ntri, pm.nvert,
-           pm.nbones, nanims, nimages, out->card != NULL ? ", its card" : "");
+    printf("hero packs: %s made, %d triangles, %d vertices, %d bones, %d clips, %d textures, %d bytes on foot%s\n", s->info.id, pm.ntri,
+           pm.nvert, pm.nbones, nanims, nimages, out->mdl_size[KIND_FOOT], out->card != NULL ? ", its card" : "");
     ok = 1;
 done:
     made_images_free(images, nimages);
