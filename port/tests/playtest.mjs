@@ -1550,6 +1550,18 @@ async function mouse(args) {
                    '--mouse', '1760', '0', '172', 'click', '--frames', '1960'],
             want: [40, 0],
         },
+        {
+            /* a mouse button bound to a control plays it on a screen with no cursor, where the click's on nothing: Cross the left click,
+               on the game options above their panels (a player's report, 2026-11-21: Square on the left click didn't save over a game) */
+            name: 'Cross on the left click: a click above the game options starts the Battle',
+            args: ['--key-bind', 'cross', 'mouse1', ...MOUSE_BATTLE.slice(0, -5), '--mouse', '1620', '0', '-200', 'click', '--frames', '1800'],
+            want: [40, 0],
+        },
+        {
+            name: 'and with no control on the left click, the same click does nothing',
+            args: [...MOUSE_BATTLE.slice(0, -5), '--mouse', '1620', '0', '-200', 'click', '--frames', '1800'],
+            want: [40],
+        },
     ];
 
     fs.rmSync(dir, { recursive: true, force: true });

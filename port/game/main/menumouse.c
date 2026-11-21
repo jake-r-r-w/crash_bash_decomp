@@ -181,7 +181,7 @@ void menu_mouse_take(HostMouse *out) {
     Mouse.moved = Mouse.left = Mouse.right = Mouse.wheel = 0;
     Taken = 1;
     LauncherTook = 1;
-    host_mouse_for_menus(1);
+    host_mouse_for_menus(MOUSE_MENU_LAUNCHER);
 }
 
 /* Whether the player at that pad is this machine's first (or anyone's, -1): the one the mouse is. */
@@ -220,6 +220,18 @@ static const MenuRow *row_at(const MenuList *l) {
         }
     }
     return NULL;
+}
+
+/* Whether a menu has rows its cursor goes to, not only buttons */
+static s32 has_cursor(const MenuList *l) {
+    s32 i;
+
+    for (i = 0; i < l->rows; i++) {
+        if (l->row[i].row >= 0) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 /* Which half of a row the mouse is on: the left (1) or the right (0). */
@@ -277,7 +289,7 @@ void menu_mouse_step(void) {
         }
     }
     /* a mouse button that plays a control plays it only where no menu's clicks are the mouse's (controls.h) */
-    host_mouse_for_menus(l != NULL || LauncherTook);
+    host_mouse_for_menus(LauncherTook ? MOUSE_MENU_LAUNCHER : l != NULL ? MOUSE_MENU_GAME : 0);
     LauncherTook = 0;
     if (l == NULL) {
         /* no menu of ours: what the mouse did is left for the launcher, if it's up */
@@ -306,6 +318,11 @@ void menu_mouse_step(void) {
             Button = left_half(on) ? on->less : on->more;
             give_up();
         }
+    } else if (on == NULL && Mouse.left && !has_cursor(l)) {
+        /* a screen with no cursor (a question, Square to save over a game): a left click on nothing plays what it's bound to, if
+           anything, as it would out of a menu (a player's report, 2026-11-21) */
+        Button = host_mouse_controls(1);
+        give_up();
     } else if (on != NULL && (Mouse.moved || Mouse.left)) {
         Target = on->row;
         Then = 0;

@@ -60,8 +60,13 @@ int host_key_pressed_any(void);
 int host_button_pressed_any(void);
 int host_mouse_pressed_any(void); /* KEY_MOUSE + the button */
 /* Whether a menu has the mouse this step (menumouse.c, and the launcher's): a click there chooses, so a mouse button that plays a
-   control doesn't play it there */
+   control doesn't play it there. A game's menu takes only the left and right clicks, which it uses (the middle and side buttons
+   still play theirs: a player's report, 2026-11-21); the launcher takes them all. */
+#define MOUSE_MENU_GAME 1
+#define MOUSE_MENU_LAUNCHER 2
 void host_mouse_for_menus(int on);
+/* The controls a mouse button plays (their PAD_ bits), 1 the left: for a game's menu to play them where its click chooses nothing */
+int host_mouse_controls(int button);
 /* Whether the player's on a controller, not the keyboard: the last press was a controller's (the CONTROLS page shows its buttons) */
 int host_using_gamepad(void);
 

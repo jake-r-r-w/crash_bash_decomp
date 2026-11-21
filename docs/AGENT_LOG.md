@@ -656,6 +656,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-21: a player's report: Square on the left click couldn't save over a game. A game menu switched off every mouse button bound
+  to a control, and CONFIRM OVERWRITE's only click is its first line. Now a game's menu takes only the left and right clicks (the
+  launcher still takes them all), and on a screen with no cursor a left click on nothing plays what it's bound to (menumouse.c,
+  `host_mouse_controls`). Two new `playtest.mjs mouse` cases; mouse 6/6 and controls 7/7.
+
 - 2026-11-20: v1.4.0 released, at the user's word ("cut a release but number is 1.4.0"; there was no 1.3.1): the team games'
   crash fixed, logs, the cursor hiding in play, portable.txt, RecompLauncher and 59 achievements (855 points: each award's milestones
   5, 10, 25, 50, as the user noticed 20 and all 28 were both 25). Every suite passed on the packaged builds, Windows, Linux and

@@ -627,7 +627,7 @@ int host_mouse_pressed_any(void) {
 void host_mouse_for_menus(int on) {
     static int without, hidden;
 
-    MouseMenus = on != 0;
+    MouseMenus = on;
     without = MouseMenus ? 0 : without + (without < CURSOR_HIDE_STEPS);
     if (MouseMenus && hidden) {
         SDL_ShowCursor();
@@ -906,6 +906,23 @@ static int pad_buttons(SDL_Gamepad *c) {
     return b;
 }
 
+/* Whether a menu takes that mouse button's clicks (1 the left), so it doesn't play its control (host_mouse_for_menus) */
+static int mouse_taken(int button) {
+    return MouseMenus == MOUSE_MENU_LAUNCHER || (MouseMenus == MOUSE_MENU_GAME && (button == SDL_BUTTON_LEFT || button == SDL_BUTTON_RIGHT));
+}
+
+int host_mouse_controls(int button) {
+    const int *bound = settings()->keys;
+    int b = 0, i;
+
+    for (i = 0; i < NUM_CONTROLS; i++) {
+        if (bound[i] == KEY_MOUSE + button) {
+            b |= control_bit(i);
+        }
+    }
+    return b;
+}
+
 static int keyboard_buttons(void) {
     const bool *keys = SDL_GetKeyboardState(NULL);
     const int *bound = settings()->keys;
@@ -920,8 +937,8 @@ static int keyboard_buttons(void) {
         if (key > SDL_SCANCODE_UNKNOWN && key < SDL_SCANCODE_COUNT && (keys[key] || PretendKeys[key])) {
             b |= control_bit(i);
         }
-        /* a mouse button, where no menu is taking the mouse's clicks */
-        if (KEY_IS_MOUSE(key) && !MouseMenus && ((MouseHeld >> (key - KEY_MOUSE)) & 1 || PretendHeld[key - KEY_MOUSE] > 0)) {
+        /* a mouse button, where no menu is taking its clicks (controls.h) */
+        if (KEY_IS_MOUSE(key) && !mouse_taken(key - KEY_MOUSE) && ((MouseHeld >> (key - KEY_MOUSE)) & 1 || PretendHeld[key - KEY_MOUSE] > 0)) {
             b |= control_bit(i);
         }
     }
