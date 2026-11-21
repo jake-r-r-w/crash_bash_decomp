@@ -881,7 +881,7 @@ static s32 map_foot(V3 p) {
 /* A marker's reach on the model: out to its MAP_NEAREST nearest corners (of its body, or of the prop for a grip or a peg), at least
  * the map's r and at most MAP_FARTHEST times it (on_prop 2: of either). A marker inside a big body still finds the corners round it. */
 #define MAP_NEAREST 6
-#define MAP_FARTHEST 3.0f
+#define MAP_FARTHEST 5.0f
 static float map_reach(const Follow *c, TmplPoint m, s32 on_prop, s32 side) {
     float best[MAP_NEAREST];
     s32 k, i, n = 0;
