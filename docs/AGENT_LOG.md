@@ -660,10 +660,9 @@ Newest first, a few lines each. Details are in the commits.
   borders, markers or a rig mapped by bone names, surface-distance weights, standard moves aimed per limb, `--card`, `--voice`),
   pack sounds (WAV to PS1 ADPCM at load), the launcher's CUSTOM HEROES, and phase 2's first kind: any pack rides the polar bear
   (`pack_ride`, via `ride_make`; made models may now hold 2730 faces, MorphVerts 8192, `shared_colours` for big riders). Also fixed:
-  pack winding, the select's room for 4 cards (black menus), panel faces. Open: a pack with no card shows its base's panel face in
-  a game whose foot model isn't loaded (Polar Push first): `face_of` needs the foot textures; draw from the made tex file instead.
-  Next: that, then the other kinds (pinstripe.c's follow_make made generic), the tool's window, online, removal. Bobby's model is
-  1367 tris: the user is to re-export it at about 1250, then make his pack with the tool.
+  pack winding, the select's room for 4 cards (black menus), panel faces. Then: Bobby's model is 1365 tris (two slivers out, the user's
+  word) and his pack is the tool's (bobby.mjs gone); a pack's panel face is drawn from its foot texture file when that model isn't
+  loaded. Next: the other kinds (pinstripe.c's follow_make made generic), the tool's window, online, removal.
 - 2026-11-21: hero packs, phase 1 of 6 (docs/HERO_PACKS.md). The user's plan: extra heroes become packs of glTF in mods, made by a
   hero tool of their own (C/C++, SDL3 + ImGui, its own folder, opened from the launcher), shareable and online; Roo and Pinstripe
   to be removed with the disc reading, the example an original mascot, Bobby (the user's dachshund, from their photos, not in the

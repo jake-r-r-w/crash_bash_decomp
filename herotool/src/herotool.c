@@ -14,6 +14,7 @@
 static void usage(void) {
     fprintf(stderr, "herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--height N]\n"
                     "                [--face-head SHARE] [--author NAME] [--card CARD.png] [--voice JOB=FILE.wav ...]\n"
+                    "                [--mod-name NAME]\n"
                     "  HERO: crash, coco, cortex, brio, tiny, kong, dingodile or rilla, whose place it takes if it's free\n"
                     "  MARKERS: where its joints are, for a model with no rig of its own (a rigged one's are its bones)\n"
                     "  JOB: the sound's job: name (the announcer's, short), laugh (taunt, win), yelp (hurt), jump, land, thud (a fall),\n"
@@ -71,6 +72,8 @@ int main(int argc, char **argv) {
             p.face_head = (float)atof(v);
         } else if (strcmp(a, "--author") == 0) {
             p.author = v;
+        } else if (strcmp(a, "--mod-name") == 0) {
+            p.mod_name = v;
         } else if (strcmp(a, "--card") == 0) {
             p.card = v;
         } else if (strcmp(a, "--voice") == 0) {
@@ -103,7 +106,7 @@ int main(int argc, char **argv) {
         name[i] = 0;
         p.name = name;
     }
-    p.mod_name = p.name;
+    p.mod_name = p.mod_name != NULL ? p.mod_name : p.name;
     /* its skeleton from its markers if it has them, else from its own rig */
     if (!kit_read(model, &m, why, sizeof(why)) || !kit_atlas(&m, why, sizeof(why))
         || (markers != NULL ? !kit_markers(&m, markers, why, sizeof(why)) : !kit_map_rig(&m, why, sizeof(why)))) {

@@ -1353,7 +1353,9 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
     s32 px, py, i, j, k, cw, ch, head;
     u32 *big, *out;
     const u32 *card = bonus_heroes_card(extra, &cw, &ch, &head);
-    u8 *file;
+    const obj_textureset *ts;
+    obj_textureset own;
+    u8 *file, *texfile = NULL;
 
     if (card != NULL) {
         fw = w;
@@ -1369,19 +1371,45 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
         card_face(card, cw, ch, out, fw, fw, fh, 0, CARD_FACE_ROWS * h / 32 / (head > 0 ? head : ch), CARD_TOP * h / 32, CARD_BAR * h / 32);
         goto made;
     }
-    if (bank->textures.base == NULL || bank->textures.tex == NULL || (file = foot_file(extra)) == NULL) {
-        return NULL;
+    /* its textures: its model on foot's, if that's loaded; else read from its file (a game where it rides, and loads only that model) */
+    memset(&own, 0, sizeof(own));
+    ts = &bank->textures;
+    if (bank->textures.base == NULL || bank->textures.tex == NULL) {
+        s32 size = 0;
+
+        if ((texfile = bonus_heroes_texture(extra, KIND_FOOT, &size)) == NULL || size < 0x20) {
+            free(texfile);
+            return NULL;
+        }
+        own.base = (TexFile *)texfile;
+        own.nTex = texfile[8] | texfile[9] << 8;
+        own.nEnt = texfile[10] | texfile[11] << 8;
+        own.tex = calloc((size_t)(own.nTex > 0 ? own.nTex : 1), sizeof(obj_texture));
+        own.ent = calloc((size_t)(own.nEnt > 0 ? own.nEnt : 1), sizeof(TexClut));
+        if (own.tex == NULL || own.ent == NULL) {
+            free(own.tex);
+            free(own.ent);
+            free(texfile);
+            return NULL;
+        }
+        texture_init_mem_textureset(&own);
+        ts = &own;
     }
     big = malloc(sizeof(u32) * (size_t)bw * bh);
     out = malloc(sizeof(u32) * (size_t)fw * fh);
-    if (big == NULL || out == NULL) {
+    if (big == NULL || out == NULL || (file = foot_file(extra)) == NULL) {
         free(big);
         free(out);
-        free(file);
+        free(own.tex);
+        free(own.ent);
+        free(texfile);
         return NULL;
     }
-    draw_face(x, file, &bank->textures, big, bw, bh, FACE_ASPECT, FACE_ROOM, 1);
+    draw_face(x, file, ts, big, bw, bh, FACE_ASPECT, FACE_ROOM, 1);
     free(file);
+    free(own.tex);
+    free(own.ent);
+    free(texfile);
     /* each pixel the mean of its samples, its colour weighed by how solid each is */
     for (py = 0; py < fh; py++) {
         for (px = 0; px < fw; px++) {

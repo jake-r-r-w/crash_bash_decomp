@@ -82,23 +82,17 @@ build/port/windows-clang/crashbash.exe --mode 0 --skip-intro --skip-loading --wi
 
 ## Bobby, the example
 
-`port/mods/bobby/` is made by `node port/mods/bobby.mjs`: the user's dog, a long-haired black-and-tan miniature dachshund, stood up
-as a cartoon hero. His model is the user's own, made from photos of him (`port/mods/bobby-model.glb`, its texture saved again losslessly to fit the repo's 2 MB; 1367
-triangles, one 2048 texture, no skeleton); the photos aren't in the repo. The script does to it what the hero tool will do to any
-model (phase 3), by hand:
+`port/mods/bobby/` is made by the hero tool, as anyone's hero is:
 
-- its two smallest triangles go, for the game's 1365;
-- its texture laid out again at 256 x 256, each of its 223 pieces with a border of two texels of its own colours: the game keeps a
-  corner's place in its image as whole texels, so each moves up to half of one, and with the pieces up against each other as the
-  model has them, that showed the neighbouring piece's colour (orange flecks over his black coat);
-- a skeleton of 25 bones (`BONES`), placed from front and side views of him on a grid, and each corner's bones by the part of him
-  it's in (`part`: ears, head and jaw, arms, legs, tail, body), the nearest two of them, smoothed three times over his surface, and
-  every copy of a corner at one place (the texture's seams) given the same, or they come apart as he moves (cracks you see through);
-- ten clips of his own on foot: a panting BREATHE with his tail wagging, a scampering RUN, a JUMP, his zoomies as he ATTACKs and
-  WINs, a HIT, a TAUNT (his back to them, wiggling, then a bark), PICKUP, HOLD_SLOW and HOLD_THROW.
+```bash
+build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobby --name BOBBY --mod-name Bobby     --author "Crash Bash PC" --markers port/mods/bobby-markers.json --out port/mods/bobby --height 540 --face-head 0.26 --prefer crash
+```
 
-He rests begging, his forearms held up in front, and his arms are short against his big head: raised further than his chin, his paws
-went inside his muzzle or ears (`arm`), so a crate he carries balances on his head.
+He's the user's dog, a long-haired black-and-tan miniature dachshund, stood up as a cartoon hero. His model is the user's own, made
+from photos of him (`port/mods/bobby-model.glb`, beside the markers, as a folder there would be a mod of its own): 1365 triangles,
+the two smallest of its first export's 1367 taken out at the user's word, one texture, no rig, so the markers
+(`bobby-markers.json`) place his skeleton, ears, jaw and tail too, and `arm_raise` keeps his short arms from going into his big
+head. The photos aren't in the repo.
 
 ## The hero tool
 
@@ -136,9 +130,6 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
    in a T-pose, hanging or begging moves the same.
 6. **Writes the pack** (`write.c`): `heroes/ID/hero.glb` and `hero.json`, and `mod.json`; with `--card CARD.png` its card and
    `--voice JOB=FILE.wav` (as many as it has) its sounds, each checked to be a PNG or WAV the game reads.
-
-Bobby's model has 1367 triangles, 2 over: the tool refuses it, and his pack is still made by `port/mods/bobby.mjs` until he's
-exported again with fewer. A copy with two slivers taken out (in `scratch/`, never the repo) checks the tool end to end.
 
 Checked: Bobby's model with its markers, and his first, shapes-built model with its bones renamed as Mixamo names them and no
 markers, each four of him in Crate Crush.

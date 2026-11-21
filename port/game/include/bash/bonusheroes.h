@@ -15,8 +15,9 @@ s32 bonus_heroes_have(s32 extra);
 s32 bonus_heroes_bank(s32 extra, s32 kind);
 /* Whether it has a model of its own of a kind (not its model on foot in its place). */
 s32 bonus_heroes_made(s32 extra, s32 kind);
-/* Its model file of a kind, whole, to free. */
+/* Its model file of a kind, whole, to free; and its texture file. */
 u8 *bonus_heroes_model(s32 extra, s32 kind);
+u8 *bonus_heroes_texture(s32 extra, s32 kind, s32 *size);
 /* Its face from its game, if that has one: w x h pixels (red | green << 8 | blue << 16 | alpha << 24), its head the top `head` rows,
  * what hangs from it (Roo's tongue) the rest; NULL for none. */
 const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, s32 *head);

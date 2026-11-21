@@ -2682,6 +2682,22 @@ s32 bonus_heroes_made(s32 extra, s32 kind) {
     return bonus_heroes_have(extra) && kind >= 0 && kind < NUM_KINDS && Made[extra].mdl[kind] != NULL;
 }
 
+u8 *bonus_heroes_texture(s32 extra, s32 kind, s32 *size) {
+    u8 *copy;
+
+    if (!bonus_heroes_have(extra) || kind < 0 || kind >= NUM_KINDS) {
+        return NULL;
+    }
+    if (Made[extra].tex[kind] == NULL) {
+        kind = KIND_FOOT;
+    }
+    if ((copy = malloc((size_t)Made[extra].tex_size[kind])) != NULL) {
+        memcpy(copy, Made[extra].tex[kind], (size_t)Made[extra].tex_size[kind]);
+        *size = Made[extra].tex_size[kind];
+    }
+    return copy;
+}
+
 u8 *bonus_heroes_model(s32 extra, s32 kind) {
     u8 *copy;
 
