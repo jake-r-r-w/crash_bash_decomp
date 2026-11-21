@@ -39,7 +39,7 @@ struct Tool {
     // the pack
     char id[32] = "myhero", name[32] = "MY HERO", mod_name[64] = "My hero", author[64] = "", card[1024] = "";
     char voice[PACK_VOICE_JOBS][1024] = {};
-    int height = 560, prefer = 0, voice_job = 1, mode = 0;
+    int height = 560, prefer = 0, voice_job = 1, mode = 0, template_hero = 0;
     float face_head = 0;
     char out[1024] = "", game[1024] = "";
     // a marker being dragged: its bone, whether it's the bone's end, and in which view
@@ -315,6 +315,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     p.mod_name = T.mod_name;
     p.author = T.author;
     p.prefer = Heroes[T.prefer];
+    p.template_hero = Heroes[T.template_hero];
     p.height = T.height;
     p.face_head = T.face_head;
     p.card = T.card[0] ? T.card : nullptr;
@@ -647,6 +648,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         printf("herotool: %s\n", T.status);
     }
     /* a test's: HEROTOOL_MAKE=KIND has the game make it in every game once it's open, and shows that kind (heropack.c's name) */
+    if (SDL_getenv("HEROTOOL_TEMPLATE") != nullptr) {
+        for (int h = 0; h < 8; h++) {
+            T.template_hero = SDL_strcasecmp(SDL_getenv("HEROTOOL_TEMPLATE"), Heroes[h]) == 0 ? h : T.template_hero;
+        }
+    }
     if (SDL_getenv("HEROTOOL_MAKE") != nullptr && T.m != nullptr) {
         T.kind = pack_kind_named(SDL_getenv("HEROTOOL_MAKE")) >= 0 ? pack_kind_named(SDL_getenv("HEROTOOL_MAKE")) : 0;
         make_in_game(T);
@@ -856,6 +862,8 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             T.height = T.height < 200 ? 200 : T.height > 900 ? 900 : T.height;
             ImGui::TextDisabled("Crash stands 452, most heroes about 650");
             ImGui::Combo("Takes the place of", &T.prefer, Heroes, 8);
+            ImGui::Combo("Template", &T.template_hero, Heroes, 8);
+            ImGui::TextDisabled("whose moves it makes, and what it rides and holds, in each game");
             ImGui::SliderFloat("Head for its face", &T.face_head, 0, 0.6f, T.face_head > 0 ? "%.2f of it" : "the game's own");
             ImGui::Separator();
             ImGui::Text("Card (.png)");

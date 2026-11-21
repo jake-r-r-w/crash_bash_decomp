@@ -95,6 +95,7 @@ int kit_clip_pose(const KitModel *m, int clip, float t, float rot[KB_COUNT][4], 
 /* write.c: the pack, heroes/<id>/ in a mod folder, with its mod.json */
 typedef struct {
     const char *id, *name, *prefer, *mod_name, *author;
+    const char *template_hero;          /* the original hero it follows in every game, its moves and what it rides or holds (NULL Crash) */
     int height;
     float face_head;
     const char *voice[PACK_VOICE_JOBS]; /* each job's sound (PackVoiceJobs: name, laugh, yelp, ...), a WAV, or NULL for its base's */

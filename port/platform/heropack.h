@@ -32,6 +32,8 @@ typedef struct {
     int keep_lift;                  /* of a frame's lift off the ground, the share drawn (0x1000 all) */
     int like;                       /* the original hero (1 Crash to 8 Rilla Roo) whose weight and speeds it has, 0 its base's */
     int subframes;                  /* its frames to each tick of its clips' (1 to 4) */
+    int template_hero;              /* the original hero whose model of this kind it follows, its moves and what it rides or holds
+                                     * (1 Crash to 8 Rilla Roo; PackInfo.template_hero if 0): docs/HERO_PACKS.md, Templates */
 } PackKind;
 
 typedef struct {
@@ -40,6 +42,8 @@ typedef struct {
     int format;                /* hero.json's format, 1 */
     int prefer;                /* the original hero it borrows if nobody's playing that one, 1 Crash to 8 Rilla Roo */
     int height;                /* standing, in the game's units (Crash 452, most about 650) */
+    int template_hero;         /* the original hero it follows in every kind ("template"; 1 Crash, the first, to 8 Rilla Roo), each move
+                                * of its own clips (KIND/MOVE) in that move's place */
     PackKind kinds[PACK_KINDS];
     int voices[PACK_SOUNDS];   /* each of its base's sound offsets: PACK_VOICE_ (its own sound for a job, its base's, none, or not said) */
     char face[PACK_ANIM_NAME]; /* the clip its face is drawn from if it has no card */

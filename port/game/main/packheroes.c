@@ -48,7 +48,7 @@ static PackSlot Slots[EXTRA_PACKS];
 OVL_HERE
 
 void pack_follow_all(const char *id, const PackModel *pm, float k, float ground, const MadeFace *faces, s32 nfaces, const MadeImage *images,
-                     s32 nimages, HeroMade *out);
+                     s32 nimages, const s32 *templates, HeroMade *out);
 
 /* Each job of a pack's sounds as the game's voices (herodef.h's VOICE_), and the job each of a base's sound offsets does for the game's
  * own heroes (EXTRA_HEROES.md, His sounds): an offset a pack doesn't name plays it, if the pack has that job's file */
@@ -762,8 +762,16 @@ static s32 make_pack(s32 slot, HeroMade *out) {
     }
     /* riding a polar bear, sat on Crash's (Polar Push) */
     pack_ride(s, &pm, faces, pm.ntri, images, nimages, out);
-    /* and the kinds where the heroes ride or hold something else, following Crash in each (packfollow.c) */
-    pack_follow_all(s->info.id, &pm, TheFoot.k, TheFoot.ground, faces, pm.ntri, images, nimages, out);
+    /* and the kinds where the heroes ride or hold something else, following its template in each, Crash or another (packfollow.c;
+       docs/HERO_PACKS.md, Templates) */
+    {
+        s32 templates[NUM_KINDS];
+
+        for (i = 0; i < NUM_KINDS; i++) {
+            templates[i] = s->info.kinds[i].template_hero > 0 ? s->info.kinds[i].template_hero : s->info.template_hero;
+        }
+        pack_follow_all(s->info.id, &pm, TheFoot.k, TheFoot.ground, faces, pm.ntri, images, nimages, templates, out);
+    }
     /* its card */
     {
         u8 *png = mods_hero_file(s->index, "card.png", PACK_CARD_BYTES, &size);

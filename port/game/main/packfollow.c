@@ -19,6 +19,7 @@
 #include "bash/modelbank.h"
 #include "bash/herodef.h"
 #include "bash/heromake.h"
+#include "bash/packtemplate.h"
 #include "../../platform/heropack.h"
 
 #define FOLLOW_PART_MAX 128
@@ -819,6 +820,157 @@ static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out) {
 
 static const FollowKind *const PackKinds[] = { &PogoKind, &CarKind, &TankKind, &RaceKind, &FishKind, &MalletKind, &DinoKind, &KegKind };
 
+/* --- following another hero (a template; docs/HERO_PACKS.md, Templates) ---
+ * Crash's kind as it is, but that hero's model of it, its parts found by its map's markers (packtemplates.c): a joint's corners
+ * within the map's r of its marker, the prop the strips away from its body, what it rides or holds as that hero's (not painted), and
+ * the pack at that hero's size on it. */
+#define CRASH_HEIGHT 452.0f /* Crash standing, whose kinds' sizes are for him */
+static const TemplateMap *Map;
+static FollowKind MapKind;
+static FollowLegs MapLegs;
+
+static s32 map_has(TmplPoint m) {
+    return m.x != 0 || m.y != 0 || m.z != 0;
+}
+static V3 map_v(TmplPoint m) {
+    return v3(m.x, m.y, m.z);
+}
+/* Each marker's reach, as map_fit finds it: hips, chest, each foot, grip and peg */
+enum { MR_HIPS, MR_CHEST, MR_FOOT, MR_GRIP = MR_FOOT + 2, MR_PEG = MR_GRIP + 2, MR_COUNT = MR_PEG + 2 };
+static float MapReach[MR_COUNT];
+static s32 map_near(V3 p, TmplPoint m, s32 which) {
+    return map_has(m) && vlen(vsub(p, map_v(m))) < MapReach[which];
+}
+static s32 map_in(V3 p, const TmplBox *b) {
+    float x = b->sym ? fabsf(p.x) : p.x;
+
+    return (b->lo.x != 0 || b->hi.x != 0 || b->lo.y != 0 || b->hi.y != 0) && x >= b->lo.x && x <= b->hi.x && p.y >= b->lo.y
+           && p.y <= b->hi.y && p.z >= b->lo.z && p.z <= b->hi.z;
+}
+static s32 map_prop(const V3 *at, s32 n, s32 textured, s32 strip) {
+    s32 k, i, in = 0;
+
+    (void)textured, (void)strip;
+    for (k = 0; k < n; k++) {
+        for (i = 0; i < TMPL_BOXES && !map_in(at[k], &Map->prop[i]); i++) {
+        }
+        in += i < TMPL_BOXES;
+    }
+    return in * 2 > n;
+}
+static s32 map_frame(V3 p) {
+    (void)p;
+    return 1;
+}
+static s32 map_grip(V3 p) {
+    return map_near(p, Map->grip[p.x > 0], MR_GRIP + (p.x > 0));
+}
+static s32 map_peg(V3 p) {
+    return map_near(p, Map->peg[p.x > 0], MR_PEG + (p.x > 0));
+}
+static s32 map_hips(V3 p) {
+    return map_near(p, Map->hips, MR_HIPS);
+}
+static s32 map_chest(V3 p) {
+    return map_near(p, Map->chest, MR_CHEST);
+}
+static s32 map_foot(V3 p) {
+    return map_near(p, Map->foot[p.x > 0], MR_FOOT + (p.x > 0));
+}
+
+/* A marker's reach on the model: out to its MAP_NEAREST nearest corners (of its body, or of the prop for a grip or a peg), at least
+ * the map's r and at most MAP_FARTHEST times it. A marker inside a big body still finds the corners round it. */
+#define MAP_NEAREST 6
+#define MAP_FARTHEST 3.0f
+static float map_reach(const Follow *c, TmplPoint m, s32 on_prop, s32 side) {
+    float best[MAP_NEAREST];
+    s32 k, i, n = 0;
+
+    if (!map_has(m)) {
+        return 0;
+    }
+    for (k = 0; k < c->prop.corners; k++) {
+        float d;
+
+        if ((c->kind->prop != NULL && c->prop.in_part[k]) != on_prop || (side < 0 && c->ref[k].x > -10) || (side > 0 && c->ref[k].x < 10)) {
+            continue;
+        }
+        d = vlen(vsub(c->ref[k], map_v(m)));
+        if (n < MAP_NEAREST) {
+            i = n++;
+        } else if (d >= best[MAP_NEAREST - 1]) {
+            continue;
+        } else {
+            i = MAP_NEAREST - 1;
+        }
+        for (; i > 0 && best[i - 1] > d; i--) {
+            best[i] = best[i - 1];
+        }
+        best[i] = d;
+    }
+    if (n == 0) {
+        return Map->r;
+    }
+    return fminf(fmaxf(best[n - 1] + 1, Map->r), Map->r * MAP_FARTHEST);
+}
+
+/* each marker's reach on the model as it first moves, before its parts are found by them */
+static void map_fit(Follow *c) {
+    const TemplateMap *m = Map;
+    s32 i;
+
+    MapReach[MR_HIPS] = map_reach(c, m->hips, 0, 0);
+    /* the chest's corners either side of its middle too, for its line across (FollowKind.across_chest) */
+    MapReach[MR_CHEST] = fmaxf(map_reach(c, m->chest, 0, 0), fmaxf(map_reach(c, m->chest, 0, -1), map_reach(c, m->chest, 0, 1)));
+    MapKind.shoulder_r = MapKind.elbow_r = MapKind.hand_r = MapLegs.r = m->r;
+    for (i = 0; i < 2; i++) {
+        MapReach[MR_FOOT + i] = map_reach(c, m->foot[i], 0, 0);
+        MapReach[MR_GRIP + i] = map_reach(c, m->grip[i], 1, 0);
+        MapReach[MR_PEG + i] = map_reach(c, m->peg[i], 1, 0);
+        MapKind.shoulder_r = fmaxf(MapKind.shoulder_r, map_reach(c, m->shoulder[i], 0, 0));
+        MapKind.elbow_r = fmaxf(MapKind.elbow_r, map_reach(c, m->elbow[i], 0, 0));
+        MapKind.hand_r = fmaxf(MapKind.hand_r, map_reach(c, m->hand[i], 0, 0));
+        MapLegs.r = fmaxf(MapLegs.r, fmaxf(map_reach(c, m->hip[i], 0, 0), fmaxf(map_reach(c, m->knee[i], 0, 0), map_reach(c, m->ankle[i], 0, 0))));
+    }
+}
+
+/* Crash's kind made the map's hero's: NULL if it can't be (no map, or a part Crash's kind needs that the map hasn't) */
+static const FollowKind *map_kind(const FollowKind *crash, s32 hero) {
+    const TemplateMap *m = pack_template_map(hero, crash->kind);
+    s32 i;
+
+    if (m == NULL || !map_has(m->hips) || !map_has(m->chest)) {
+        return NULL;
+    }
+    Map = m;
+    MapKind = *crash;
+    MapKind.bank = m->bank;
+    MapKind.prop = crash->prop != NULL ? map_prop : NULL;
+    MapKind.frame = crash->frame != NULL ? map_frame : NULL;
+    MapKind.grip = crash->grip != NULL && map_has(m->grip[0]) ? map_grip : NULL;
+    MapKind.peg = crash->peg != NULL && map_has(m->peg[0]) ? map_peg : NULL;
+    MapKind.hips = map_hips;
+    MapKind.chest = map_chest;
+    MapKind.foot = crash->foot != NULL && map_has(m->foot[0]) ? map_foot : NULL;
+    for (i = 0; i < 2; i++) {
+        MapKind.shoulder[i] = map_v(m->shoulder[i]);
+        MapKind.elbow[i] = map_v(m->elbow[i]);
+        MapKind.hand[i] = map_v(m->hand[i]);
+        MapLegs.hip[i] = map_v(m->hip[i]);
+        MapLegs.knee[i] = map_v(m->knee[i]);
+        MapLegs.ankle[i] = map_v(m->ankle[i]);
+    }
+    MapKind.shoulder_r = MapKind.elbow_r = m->r;
+    MapKind.hand_r = m->r * 1.3f;
+    MapKind.hand_back = 1e9f;
+    MapLegs.r = m->r;
+    MapKind.legs = crash->legs != NULL ? &MapLegs : NULL;
+    MapKind.paint = NULL;
+    MapKind.mesh = m->mesh1 > 0 ? m->mesh1 - 1 : crash->mesh;
+    MapKind.scale = crash->scale * PackTemplateHeight[hero] / CRASH_HEIGHT * (m->scale > 0 ? m->scale : 1);
+    return &MapKind;
+}
+
 static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *faces, s32 nfaces, const MadeImage *images, s32 nimages,
                            HeroMade *out) {
     Follow *c = &p->c;
@@ -864,6 +1016,9 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     }
     if (!hm_model_at(&c->prop, c->anim[0], 0, c->ref)) {
         goto done;
+    }
+    if (fk == &MapKind) {
+        map_fit(c);
     }
     /* Crash's parts, by where they are as he first moves (as Pinstripe's are found) */
     for (k = 0; k < c->prop.corners; k++) {
@@ -931,7 +1086,10 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     }
     if (c->nhips < 4 || c->nchest < 4 || c->nshoulder[0] < 2 || c->nshoulder[1] < 2 || c->nelbow[0] < 2 || c->nelbow[1] < 2
         || c->nhand[0] < 2 || c->nhand[1] < 2 || (fk->frame != NULL && c->nframe < 8)) {
-        printf("hero packs: Crash isn't with his %s as he was\n", fk->what);
+        /* (each part's corners: a template's map is checked by this) */
+        printf("hero packs: the hero followed isn't with its %s as it was (corners: hips %d, chest %d, shoulders %d %d, elbows %d %d, hands "
+               "%d %d, frame %d; prop %d of %d)\n", fk->what, c->nhips, c->nchest, c->nshoulder[0], c->nshoulder[1], c->nelbow[0],
+               c->nelbow[1], c->nhand[0], c->nhand[1], c->nframe, c->prop.corners, c->prop.corners);
         goto done;
     }
     /* where his feet first are, and his hips' height above them */
@@ -986,7 +1144,7 @@ done:
 /* Its models of each kind where the game's heroes ride or hold something, followed as Crash's are (the top of this file): its rest pose
  * from its pack (pm, in glTF's axes), k its units to Crash Bash's on foot, and its feet's height there (ground) */
 void pack_follow_all(const char *id, const PackModel *pm, float k, float ground, const MadeFace *faces, s32 nfaces, const MadeImage *images,
-                     s32 nimages, HeroMade *out) {
+                     s32 nimages, const s32 *templates, HeroMade *out) {
     static PackTrs local[PACK_MAX_BONES];
     static float world[PACK_MAX_BONES][16], skinned[PF_MAX_VERTS * 3];
     Packed *p = &ThePack;
@@ -1020,7 +1178,17 @@ void pack_follow_all(const char *id, const PackModel *pm, float k, float ground,
     pack_skin(pm, (const float(*)[16])world, skinned);
     for (kind = 0; kind < sizeof(PackKinds) / sizeof(PackKinds[0]); kind++) {
         const FollowKind *fk = PackKinds[kind];
-        V3 hips = v3(world[p->pb[PB_HIPS]][12] * k, -(world[p->pb[PB_HIPS]][13] - ground) * k, -world[p->pb[PB_HIPS]][14] * k);
+        s32 hero = templates != NULL ? templates[fk->kind] : 1;
+        V3 hips;
+
+        /* its template's kind (another hero's, by its map), else Crash's */
+        if (hero > 1 && map_kind(fk, hero) != NULL) {
+            fk = &MapKind;
+            printf("hero packs: %s follows hero %d %s\n", id, hero, fk->what);
+        } else if (hero > 1) {
+            printf("hero packs: %s follows Crash %s: there's no map of hero %d's model of it yet\n", id, fk->what, hero);
+        }
+        hips = v3(world[p->pb[PB_HIPS]][12] * k, -(world[p->pb[PB_HIPS]][13] - ground) * k, -world[p->pb[PB_HIPS]][14] * k);
 
         /* in Crash Bash's axes and units at its size on this, about its hips */
         for (v = 0; v < pm->nvert; v++) {

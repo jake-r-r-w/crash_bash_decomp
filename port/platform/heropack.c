@@ -303,6 +303,10 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
     if (out->prefer == 0) {
         out->prefer = 1;
     }
+    out->template_hero = hero_number(jget(root, "template"));
+    if (out->template_hero == 0) {
+        out->template_hero = 1;
+    }
     out->height = jint(jget(root, "height"), 600);
     out->height = out->height < 200 ? 200 : out->height > 900 ? 900 : out->height;
     copy_name(out->face, sizeof(out->face), jstr(jget(root, "face")), 0);
@@ -329,6 +333,7 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
         pk->keep_lift = jint(jget(kind, "keep_lift"), 0x1000);
         pk->keep_lift = pk->keep_lift < 0 ? 0 : pk->keep_lift > 0x1000 ? 0x1000 : pk->keep_lift;
         pk->like = hero_number(jget(kind, "like"));
+        pk->template_hero = hero_number(jget(kind, "template"));
         pk->subframes = jint(jget(kind, "subframes"), 1);
         pk->subframes = pk->subframes < 1 ? 1 : pk->subframes > 4 ? 4 : pk->subframes;
         copy_name(pk->otherwise, sizeof(pk->otherwise), jstr(jget(kind, "otherwise")), 0);
