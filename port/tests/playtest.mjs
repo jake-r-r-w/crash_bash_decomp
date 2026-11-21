@@ -633,11 +633,13 @@ async function hero(args) {
 
 /* Whether the extra heroes load, which is all a release or a change elsewhere needs to know of them (the user's word, 2026-11-09):
    one short game with each of them a player, four at a time, each made from the player's disc and drawn as itself, and nothing
-   crashed. `hero ID` plays one in every game, for work on that hero. The heroes are herolist.h's, by its names. */
+   crashed. `hero ID` plays one in every game, for work on that hero. The heroes are herolist.h's, by its names, and the hero packs'
+   in the repo's own mods (port/mods/<mod>/heroes/<id>/, docs/HERO_PACKS.md), all those mods on. */
 async function heroes(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
     const list = fs.readFileSync(path.join(ROOT, 'port/game/include/bash/herolist.h'), 'utf8');
-    const ids = args.length !== 0 ? args : [...list.matchAll(/^\s*X\((\w+), \w+\)/gm)].map(m => m[1].toLowerCase());
+    const packs = pack_mods();
+    const ids = args.length !== 0 ? args : [...packs.ids, ...[...list.matchAll(/^\s*X\((\w+), \w+\)/gm)].map(m => m[1].toLowerCase())];
     const dir = path.join(OUT, 'heroes');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const results = [];
@@ -648,7 +650,7 @@ async function heroes(args) {
         const group = ids.slice(i, i + 4);
         const name = `game${i / 4 + 1}`;
         const r = await run(exe, ['--mode', String(HERO_GAMES[0].mode), '--skip-intro', '--skip-loading', '--turbo', '--frames', '600',
-            '--shot', '590', rel(`${name}.png`), ...group.flatMap((id, p) => ['--extra-hero', String(p), id])],
+            '--shot', '590', rel(`${name}.png`), ...packs.args, ...group.flatMap((id, p) => ['--extra-hero', String(p), id])],
             path.join(dir, `${name}.txt`), { timeout: MODE_TIMEOUT });
         const crash = crash_where(exe, r.text);
 
@@ -659,16 +661,37 @@ async function heroes(args) {
 
             if (crash != null || r.code !== 0) {
                 results.push([id, { pass: false, what: crash ?? `exit ${r.code}` }]);
-            } else if (made == null || !made.startsWith('is made') || made.includes('; none ')) {
+            } else if (made == null || !made.startsWith('is made') || (!packs.ids.includes(id) && made.includes('; none '))) {
                 results.push([id, { pass: false, what: made ?? 'not made: no log line (is its disc there?)' }]);
             } else if (drawn == null || /no model/.test(drawn)) {
                 results.push([id, { pass: false, what: `player ${p + 1}: ${drawn ?? 'not this hero'}` }]);
             } else {
-                results.push([id, { pass: true, what: `made from its disc, player ${p + 1} ${drawn} in ${HERO_GAMES[0].game}` }]);
+                results.push([id, { pass: true, what: `made from its ${packs.ids.includes(id) ? 'pack' : 'disc'}, player ${p + 1} ${drawn} in ${HERO_GAMES[0].game}` }]);
             }
         });
     }
     return report(results);
+}
+
+/* The repo's own mods with hero packs in them (port/mods/<mod>/heroes/<id>/hero.json): their heroes' ids, and the arguments that turn
+   those mods on for a run */
+function pack_mods() {
+    const mods = path.join(ROOT, 'port/mods'), ids = [], on = [];
+
+    for (const mod of fs.readdirSync(mods, { withFileTypes: true }).filter(d => d.isDirectory())) {
+        const heroes = path.join(mods, mod.name, 'heroes');
+
+        if (!fs.existsSync(heroes)) {
+            continue;
+        }
+        for (const hero of fs.readdirSync(heroes, { withFileTypes: true }).filter(d => d.isDirectory())) {
+            if (fs.existsSync(path.join(heroes, hero.name, 'hero.json'))) {
+                ids.push(hero.name.toLowerCase());
+            }
+        }
+        on.push('--mod', mod.name);
+    }
+    return { ids, args: on.length !== 0 ? ['--mods-dir', path.relative(ROOT, mods).replaceAll('\\', '/'), ...on] : [] };
 }
 
 async function menu(args) {
@@ -1950,7 +1973,7 @@ async function mods(args) {
     same('deflated zip', 'deflated', 'folder');
     same('stored zip', 'stored', 'folder');
     same('a zipped folder', 'zipped-folder', 'folder');
-    results.push(['mod.json', { pass: /mod Pink Pack\.zip \(Pink "Things" by The tests\): on, \d+ textures, 0 files\r?\n/.test(runs['zipped-folder'].text), what: 'read past what it doesn\'t know' }]);
+    results.push(['mod.json', { pass: /mod Pink Pack\.zip \(Pink "Things" by The tests\): on, \d+ textures, 0 files, 0 heroes\r?\n/.test(runs['zipped-folder'].text), what: 'read past what it doesn\'t know' }]);
     same('higher wins', 'order', 'green');
     results.push(['green differs', { pass: fine('green', runs.green) && sha('green') !== sha('folder'), what: 'from pink' }]);
     same('bad CRC', 'bad-crc', 'idle');

@@ -83,7 +83,7 @@ typedef struct HeroDef {
     s32 (*make)(HeroMade *out);
 } HeroDef;
 
-/* The heroes there are (bonusheroes.c), by EXTRA_ number: [0] is none. */
-extern const HeroDef *const HeroDefs[];
+/* The heroes there are (bonusheroes.c), by EXTRA_ number: [0] is none, and a pack's slot with no pack in it NULL. */
+extern const HeroDef *HeroDefs[];
 
 #endif

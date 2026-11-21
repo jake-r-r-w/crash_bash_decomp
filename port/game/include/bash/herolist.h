@@ -6,7 +6,13 @@
  * its own file: from it come its number (extraheroes.h's EXTRA_), its place in HeroDefs (bonusheroes.c), its card, and for each kind of
  * model an archive entry for its textures and one for its model (main.c's DatIndex), a file group of the two (FileGroups), a bank
  * (modelbank.h's DB_Bonus, dbase.c's HeroModelBank) and its loading (levelload.c's ModeDbaseLists), all by the numbers below. */
-#define EXTRA_HERO_LIST(X) \
+#define EXTRA_HERO_LIST(X) EXTRA_PACK_LIST(X) EXTRA_DISC_LIST(X)
+/* The heroes of the mods that are on (main/packheroes.c, docs/HERO_PACKS.md): slots their HeroDefs go in as the mods are read, the
+ * first EXTRA_PACKS in the mods' order, so their cards come first. There's no def till then. */
+#define EXTRA_PACK_LIST(X) X(PACK1, none) X(PACK2, none) X(PACK3, none) X(PACK4, none)
+#define EXTRA_PACKS 4
+/* The heroes made from the player's other discs, each with its file in main/heroes/ */
+#define EXTRA_DISC_LIST(X) \
     X(ROO, HeroRoo) \
     X(PINSTRIPE, HeroPinstripe)
 

@@ -24,5 +24,11 @@ const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, s32 *head);
 float bonus_heroes_card_aspect(s32 extra);
 /* One of its sounds (VOICE_), as it plays in place of its base's: its laugh one at a time, a new one starting it again. */
 void bonus_heroes_voice(s32 extra, s32 voice);
+/* What was made of it let go, to be made again (a pack's slot when the packs in it change). */
+void bonus_heroes_forget(s32 extra);
+
+/* The heroes of the mods that are on (main/packheroes.c, docs/HERO_PACKS.md) into the pack slots (EXTRA_PACK1 on), each made from
+ * its pack as bonus_heroes_files makes it: done again each time it's called, and a slot whose pack changed made again. */
+void pack_heroes_scan(void);
 
 #endif

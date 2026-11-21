@@ -129,14 +129,14 @@ void extra_hero_pick(s32 player, s32 extra) {
 }
 
 const char *extra_hero_name(s32 extra) {
-    return extra > EXTRA_NONE && extra < NUM_EXTRA ? HeroDefs[extra]->name : "";
+    return extra > EXTRA_NONE && extra < NUM_EXTRA && HeroDefs[extra] != NULL ? HeroDefs[extra]->name : "";
 }
 
 s32 extra_hero_named(const char *id) {
     s32 x;
 
     for (x = EXTRA_NONE + 1; x < NUM_EXTRA; x++) {
-        if (strcmp(HeroDefs[x]->id, id) == 0) {
+        if (HeroDefs[x] != NULL && strcmp(HeroDefs[x]->id, id) == 0) {
             return x;
         }
     }
@@ -149,7 +149,7 @@ s32 extra_hero_available(s32 extra) {
 }
 
 s32 extra_hero_prefer(s32 extra) {
-    return extra > EXTRA_NONE && extra < NUM_EXTRA ? HeroDefs[extra]->prefer : 0;
+    return extra > EXTRA_NONE && extra < NUM_EXTRA && HeroDefs[extra] != NULL ? HeroDefs[extra]->prefer : 0;
 }
 
 s32 extra_heroes_cards(s32 *heroes) {
@@ -238,7 +238,8 @@ void extra_heroes_assign(void) {
         }
         if (!extra_heroes_on() || (PlayerExtra[i] != EXTRA_NONE && !extra_hero_available(PlayerExtra[i]))) {
             if (PlayerExtra[i] != EXTRA_NONE && settings()->test_extra[i] != 0) {
-                printf("extra heroes: %s needs your copy of his game beside the program or in a discs folder\n", HeroDefs[PlayerExtra[i]]->name);
+                printf("extra heroes: %s isn't there: its pack is in no mod that's on, or its game's disc is missing\n",
+                       extra_hero_name(PlayerExtra[i]));
             }
             PlayerExtra[i] = EXTRA_NONE;
         }

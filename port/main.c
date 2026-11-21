@@ -561,6 +561,7 @@ int main(int argc, char **argv) {
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
     int extra[4] = { 0 }, extra_heroes = 0, heroes[4] = { 0 };
+    const char *extra_names[4] = { NULL, NULL, NULL, NULL };
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
     int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1, prompts = -1, check_crash = 0;
     int prepare = 0;
@@ -693,8 +694,10 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--extra-hero") == 0 && i + 2 < argc) {
             int player = atoi(argv[i + 1]);
 
-            if (player >= 0 && player < 4 && (extra[player] = extra_hero_named(argv[i + 2])) == 0) {
-                fprintf(stderr, "--extra-hero: no extra hero called %s\n", argv[i + 2]);
+            /* named once the mods are read, as a pack's hero is one of theirs; the extra heroes on till then, so they're made */
+            if (player >= 0 && player < 4) {
+                extra_names[player] = argv[i + 2];
+                extra_heroes = 1;
             }
             i += 2;
         } else if (strcmp(argv[i], "--heroes") == 0 && i + 4 < argc) {
@@ -1074,6 +1077,11 @@ int main(int argc, char **argv) {
         archive_replace_none();
     } else {
         mods_apply_files();
+    }
+    for (i = 0; i < 4; i++) {
+        if (extra_names[i] != NULL && (settings()->test_extra[i] = extra_hero_named(extra_names[i])) == 0) {
+            fprintf(stderr, "--extra-hero: no extra hero called %s\n", extra_names[i]);
+        }
     }
     if (!NoWindow && !host_init()) {
         fprintf(stderr, "No window; running without one.\n");

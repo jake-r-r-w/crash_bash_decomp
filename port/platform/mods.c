@@ -9,6 +9,8 @@
  *   files/<NNN>.bin  an archive file in place of entry NNN, in hex, as tools/scripts/dat.py and --dump-files name them (archive.c)
  *   files/<NNN>.bps  or a patch to the game's own entry NNN (bps.c), which has only what it changes, so a mod needn't have the game's
  *                    files to change them
+ *   heroes/<id>/     a hero of its own, hero.json and hero.glb with its sounds and card beside them, as the hero tool writes it
+ *                    (docs/HERO_PACKS.md; platform/heropack.c reads it)
  * A zip with its things in one folder, as zipping a folder makes it, is read from inside that folder. Texture packs from before mods,
  * folders of PNGs in packs/, are mods too. */
 #include <stdio.h>
@@ -52,6 +54,11 @@ typedef struct {
     int patch;  /* a patch to the game's own, rather than the file itself */
 } ModFile;
 
+/* A hero of its own (heroes/<id>/hero.json) */
+typedef struct {
+    char id[MOD_HERO_ID];
+} ModHero;
+
 typedef struct {
     ModInfo info;
     int wanted;         /* on, as the player has it: it's only on if it can be used too */
@@ -63,6 +70,8 @@ typedef struct {
     int num_tex, tex_cap;
     ModFile *files;
     int num_files, file_cap;
+    ModHero *heroes;
+    int num_heroes, hero_cap;
 } Mod;
 
 /* A texture in use, and which mod has it */
@@ -322,7 +331,7 @@ static size_t things_start(const Mod *m) {
         return 0;
     }
     length = (size_t)(slash - first) + 1;
-    if (length == 6 && SDL_strncasecmp(first, "files/", 6) == 0) {
+    if ((length == 6 && SDL_strncasecmp(first, "files/", 6) == 0) || (length == 7 && SDL_strncasecmp(first, "heroes/", 7) == 0)) {
         return 0;
     }
     for (i = 1; i < m->count; i++) {
@@ -554,6 +563,39 @@ static void add_file(Mod *m, int entry, int thing, int patch) {
     }
 }
 
+/* heroes/<id>/hero.json: the hero's id, if it's one; ids are letters, digits, - and _ */
+static int hero_named(const char *name, char *id, size_t size) {
+    const char *at = name + 7, *slash;
+    size_t n;
+
+    if (SDL_strncasecmp(name, "heroes/", 7) != 0 || (slash = strchr(at, '/')) == NULL || SDL_strcasecmp(slash, "/hero.json") != 0) {
+        return 0;
+    }
+    n = (size_t)(slash - at);
+    if (n == 0 || n >= size) {
+        return 0;
+    }
+    for (size_t i = 0; i < n; i++) {
+        char c = at[i];
+
+        if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '_')) {
+            return 0;
+        }
+        id[i] = c >= 'A' && c <= 'Z' ? (char)(c - 'A' + 'a') : c;
+    }
+    id[n] = 0;
+    return 1;
+}
+
+static void add_hero(Mod *m, const char *id) {
+    ModHero *h = room_for_one(m->heroes, m->num_heroes, &m->hero_cap, sizeof(ModHero));
+
+    if (h != NULL) {
+        m->heroes = h;
+        SDL_strlcpy(h[m->num_heroes++].id, id, MOD_HERO_ID);
+    }
+}
+
 /* What it has: its mod.json, its textures and its files, the first of each entry's. */
 static void sort_things(Mod *m) {
     unsigned char *seen = calloc((size_t)archive_entries() + 1, 1);
@@ -561,10 +603,13 @@ static void sort_things(Mod *m) {
 
     for (i = 0; i < m->count; i++) {
         const char *name = m->things[i].name, *base = base_name(name);
+        char hero[MOD_HERO_ID];
         uint64_t hash;
         int entry;
 
-        if (SDL_strcasecmp(name, "mod.json") == 0) {
+        if (hero_named(name, hero, sizeof(hero))) {
+            add_hero(m, hero);
+        } else if (SDL_strcasecmp(name, "mod.json") == 0) {
             const char *problem;
             size_t size;
             uint8_t *text = read_thing(m, i, MAX_MANIFEST_BYTES, &size, &problem);
@@ -593,10 +638,11 @@ static void sort_things(Mod *m) {
     free(seen);
     m->info.textures = m->num_tex;
     m->info.files = m->num_files;
+    m->info.heroes = m->num_heroes;
 }
 
 static int usable(const Mod *m) {
-    return m->num_tex != 0 || m->num_files != 0;
+    return m->num_tex != 0 || m->num_files != 0 || m->num_heroes != 0;
 }
 
 static void free_mod(Mod *m) {
@@ -608,6 +654,7 @@ static void free_mod(Mod *m) {
     free(m->things);
     free(m->textures);
     free(m->files);
+    free(m->heroes);
     zip_close(m->zip);
     memset(m, 0, sizeof(*m));
 }
@@ -646,7 +693,7 @@ static void load_mod(Mod *m, const char *path, const char *id, int folder, int p
     strip_start(m);
     sort_things(m);
     if (!usable(m)) {
-        set_problem(m, "NO TEXTURES OR FILES IN IT");
+        set_problem(m, "NO TEXTURES, FILES OR HEROES IN IT");
     }
 }
 
@@ -800,9 +847,9 @@ void mods_scan(void) {
                 set_wanted(&Mods[i], 1);
             }
         }
-        printf("mod %s (%s%s%s): %s, %d textures, %d files%s%s\n", Mods[i].info.id, Mods[i].info.name, Mods[i].info.author[0] != 0 ? " by " : "",
-               Mods[i].info.author, Mods[i].info.on ? "on" : "off", Mods[i].info.textures, Mods[i].info.files,
-               Mods[i].info.problem[0] != 0 ? ", " : "", Mods[i].info.problem);
+        printf("mod %s (%s%s%s): %s, %d textures, %d files, %d heroes%s%s\n", Mods[i].info.id, Mods[i].info.name,
+               Mods[i].info.author[0] != 0 ? " by " : "", Mods[i].info.author, Mods[i].info.on ? "on" : "off", Mods[i].info.textures,
+               Mods[i].info.files, Mods[i].info.heroes, Mods[i].info.problem[0] != 0 ? ", " : "", Mods[i].info.problem);
     }
     remember_order();
     mods_apply_textures();
@@ -1033,4 +1080,81 @@ void mods_apply_files(void) {
     if (replaced != 0) {
         printf("mods: %d of the archive's files replaced\n", replaced);
     }
+}
+
+/* --- heroes of their own --- */
+
+/* The mods that are on, in their order, and each one's heroes: an id the higher has, the lower's is left out. */
+static int hero_at(int i, const Mod **mod, const ModHero **hero) {
+    int k, n = 0, a, b, seen;
+
+    for (k = 0; k < NumMods; k++) {
+        if (!Mods[k].info.on) {
+            continue;
+        }
+        for (a = 0; a < Mods[k].num_heroes; a++) {
+            seen = 0;
+            for (b = 0; b < k && !seen; b++) {
+                for (int c = 0; Mods[b].info.on && c < Mods[b].num_heroes && !seen; c++) {
+                    seen = strcmp(Mods[b].heroes[c].id, Mods[k].heroes[a].id) == 0;
+                }
+            }
+            for (b = 0; b < a && !seen; b++) {
+                seen = strcmp(Mods[k].heroes[b].id, Mods[k].heroes[a].id) == 0;
+            }
+            if (seen) {
+                continue;
+            }
+            if (n++ == i) {
+                *mod = &Mods[k];
+                *hero = &Mods[k].heroes[a];
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+int mods_heroes_count(void) {
+    const Mod *m;
+    const ModHero *h;
+    int n = 0;
+
+    while (hero_at(n, &m, &h)) {
+        n++;
+    }
+    return n;
+}
+
+const char *mods_hero_id(int i) {
+    const Mod *m;
+    const ModHero *h;
+
+    return hero_at(i, &m, &h) ? h->id : NULL;
+}
+
+const char *mods_hero_mod(int i) {
+    const Mod *m;
+    const ModHero *h;
+
+    return hero_at(i, &m, &h) ? m->info.id : NULL;
+}
+
+uint8_t *mods_hero_file(int i, const char *file, size_t limit, size_t *size) {
+    const Mod *m;
+    const ModHero *h;
+    const char *problem;
+    char name[256];
+    int k;
+
+    if (!hero_at(i, &m, &h)) {
+        return NULL;
+    }
+    SDL_snprintf(name, sizeof(name), "heroes/%s/%s", h->id, file);
+    for (k = 0; k < m->count; k++) {
+        if (SDL_strcasecmp(m->things[k].name, name) == 0) {
+            return read_thing(m, k, limit, size, &problem);
+        }
+    }
+    return NULL;
 }

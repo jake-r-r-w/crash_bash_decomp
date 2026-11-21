@@ -1,0 +1,118 @@
+{
+  "format": 1,
+  "id": "bobby",
+  "name": "BOBBY",
+  "prefer": "crash",
+  "height": 520,
+  "face": "BREATHE",
+  "face_turn": 20,
+  "kinds": {
+    "foot": {
+      "subframes": 2,
+      "otherwise": "BREATHE",
+      "stands": [
+        [
+          "MEDIUM",
+          "RUN"
+        ],
+        [
+          "SKATE",
+          "RUN"
+        ],
+        [
+          "SLIDE",
+          "RUN"
+        ],
+        [
+          "SWIM",
+          "RUN"
+        ],
+        [
+          "FLIP",
+          "JUMP"
+        ],
+        [
+          "FALL",
+          "JUMP"
+        ],
+        [
+          "PUSH",
+          "RUN"
+        ],
+        [
+          "TRANS",
+          "RUN"
+        ],
+        [
+          "BARGE",
+          "RUN"
+        ],
+        [
+          "BANK",
+          "BREATHE"
+        ],
+        [
+          "KICK",
+          "ATTACK"
+        ],
+        [
+          "WIN",
+          "WIN",
+          "loop"
+        ],
+        [
+          "WIN2",
+          "WIN",
+          "loop"
+        ],
+        [
+          "TAUNT_A",
+          "TAUNT"
+        ],
+        [
+          "FIRE1",
+          "HOLD_THROW"
+        ],
+        [
+          "FIRE2",
+          "HOLD_THROW"
+        ],
+        [
+          "FIRE3",
+          "HOLD_THROW"
+        ],
+        [
+          "MINE",
+          "PICKUP"
+        ],
+        [
+          "RECOIL",
+          "HIT"
+        ],
+        [
+          "TAZING",
+          "ATTACK"
+        ],
+        [
+          "LIGHT",
+          "TAUNT"
+        ],
+        [
+          "HIT",
+          "HIT",
+          "once"
+        ],
+        [
+          "DAZED",
+          "HIT",
+          "once"
+        ],
+        [
+          "DIE",
+          "HIT",
+          "once"
+        ]
+      ]
+    }
+  }
+}

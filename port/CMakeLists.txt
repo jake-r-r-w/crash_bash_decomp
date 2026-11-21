@@ -78,6 +78,12 @@ if(NOT ANDROID)
   add_subdirectory(${recompachievements_SOURCE_DIR}/sdk ${recompachievements_BINARY_DIR}/sdk EXCLUDE_FROM_ALL)
   target_compile_options(rl_achievements PRIVATE -w)
 endif()
+# Hero packs are glTF (platform/heropack.c, docs/HERO_PACKS.md): cgltf, one header, MIT, at one version checked by its hash.
+FetchContent_Declare(cgltf
+  URL https://github.com/jkuhlmann/cgltf/archive/refs/tags/v1.15.tar.gz
+  URL_HASH SHA256=84e352092e5cd6aab7f66de62ddb66beb5e6f18d412ca9d12950d7a55bfef25a
+  SOURCE_SUBDIR not-built-from-here)
+FetchContent_MakeAvailable(cgltf)
 add_library(natpmp STATIC ${natpmp_sources})
 target_include_directories(natpmp PUBLIC ${libnatpmp_SOURCE_DIR})
 target_compile_definitions(natpmp PUBLIC NATPMP_STATICLIB PRIVATE ENABLE_STRNATPMPERR)
@@ -119,7 +125,7 @@ set_property(SOURCE ${core_sources} APPEND PROPERTY COMPILE_OPTIONS "-include;${
 set_property(SOURCE ${core_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAME=game")
 
 set(PORT_SOURCES main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c platform/folders.c
-  platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/zipread.c platform/bps.c platform/settings.c
+  platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/heropack.c platform/zipread.c platform/bps.c platform/settings.c
   platform/touch.c platform/controls.c platform/prompts.c platform/net.c platform/portmap.c platform/crashlog.c platform/achievements.c ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c)
 # The button prompts' pictures, Kenney's Input Prompts (CC0, assets/prompts/License.txt), built in as data (platform/prompts.c)
 file(GLOB PROMPT_PNGS CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/assets/prompts/*.png)
@@ -142,6 +148,7 @@ endif()
 # Mods are zips, which zlib unpacks (platform/zipread.c).
 find_package(ZLIB REQUIRED)
 target_link_libraries(crashbash PRIVATE ZLIB::ZLIB)
+target_include_directories(crashbash PRIVATE ${cgltf_SOURCE_DIR})
 # Online play is plain sockets (platform/net.c), which Windows keeps in a library of their own, and the two libraries above
 if(WIN32)
   target_link_libraries(crashbash PRIVATE ws2_32)

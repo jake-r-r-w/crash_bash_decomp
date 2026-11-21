@@ -28,8 +28,9 @@ void SDL_free(void *mem);
  * by its place in the list (BONUS_TEX, BONUS_MDL, DB_Bonus + BONUS_SLOT; main.c, dbase.c, levelload.c's ModeDbaseLists). */
 #define HERO_DEF_EXTERN(name, def) extern const HeroDef def;
 #define HERO_DEF_OF(name, def) &def,
-EXTRA_HERO_LIST(HERO_DEF_EXTERN)
-const HeroDef *const HeroDefs[NUM_EXTRA] = { NULL, EXTRA_HERO_LIST(HERO_DEF_OF) };
+#define HERO_DEF_NONE(name, def) NULL,
+EXTRA_DISC_LIST(HERO_DEF_EXTERN)
+const HeroDef *HeroDefs[NUM_EXTRA] = { NULL, EXTRA_PACK_LIST(HERO_DEF_NONE) EXTRA_DISC_LIST(HERO_DEF_OF) };
 
 static HeroMade Made[NUM_EXTRA];
 static s32 Tried[NUM_EXTRA], Have[NUM_EXTRA];
@@ -2596,8 +2597,10 @@ static void make_hero(s32 extra) {
             free(m->mdl[k]);
         }
         memset(m, 0, sizeof(*m));
-        if (d != NULL) {
+        if (d != NULL && d->disc != NULL) {
             printf("bonus heroes: %s isn't made (its disc, %s)\n", d->id, d->disc);
+        } else if (d != NULL) {
+            printf("bonus heroes: %s isn't made (its pack)\n", d->id);
         }
         return;
     }
@@ -2617,12 +2620,28 @@ static void make_hero(s32 extra) {
     printf("\n");
 }
 
+void bonus_heroes_forget(s32 extra) {
+    s32 k;
+
+    if (extra <= EXTRA_NONE || extra >= NUM_EXTRA) {
+        return;
+    }
+    for (k = 0; k < NUM_KINDS; k++) {
+        free(Made[extra].tex[k]);
+        free(Made[extra].mdl[k]);
+    }
+    memset(&Made[extra], 0, sizeof(Made[extra]));
+    Tried[extra] = Have[extra] = 0;
+}
+
 void bonus_heroes_files(void) {
     s32 x, k;
 
     if (!extra_heroes_on()) {
         return;
     }
+    /* the packs' heroes into their slots, the mods that are on being what they are now */
+    pack_heroes_scan();
     for (x = EXTRA_NONE + 1; x < NUM_EXTRA; x++) {
         if (!Tried[x]) {
             make_hero(x);

@@ -7,6 +7,7 @@
 
 #define MOD_ID 128
 #define MOD_TEXT 128
+#define MOD_HERO_ID 32
 
 typedef struct ModInfo {
     char id[MOD_ID];       /* its zip's or folder's name, which the settings know it by */
@@ -16,7 +17,8 @@ typedef struct ModInfo {
     char description[256];
     int on;
     int textures;          /* how many textures it has in place of the game's */
-    int files;             /* and archive files: with neither, it can't be used */
+    int files;             /* and archive files, */
+    int heroes;            /* and heroes of its own (heroes/<id>/): with none of the three, it can't be used */
     int pack;              /* a texture pack from before mods: a folder in packs/ */
     char problem[96];      /* why it can't be used, or what of it couldn't be; empty if all's well. In capitals, for the game's font */
 } ModInfo;
@@ -50,5 +52,12 @@ int mods_texture_has(uint64_t hash);
 uint8_t *mods_texture_read(uint64_t hash, size_t *size);
 void mods_texture_drop(uint64_t hash);
 unsigned mods_textures_generation(void);
+
+/* The heroes of the mods that are on (heroes/<id>/, docs/HERO_PACKS.md), in the mods' order, an id only once (the higher mod's): how
+   many, each one's id and its mod's, and one of its files (hero.json, hero.glb, ...) to free, up to limit bytes; NULL if it has none. */
+int mods_heroes_count(void);
+const char *mods_hero_id(int i);
+const char *mods_hero_mod(int i);
+uint8_t *mods_hero_file(int i, const char *file, size_t limit, size_t *size);
 
 #endif
