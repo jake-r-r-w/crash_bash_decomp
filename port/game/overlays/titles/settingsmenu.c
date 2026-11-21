@@ -45,8 +45,7 @@ enum {
     SET_SKIP_INTRO,
     SET_SKIP_LOADING,
     SET_CHEAT_MENU,
-    SET_EXTRA_HEROES,
-    SET_HERO_TOOL
+    SET_EXTRA_HEROES
 };
 
 typedef struct {
@@ -85,10 +84,6 @@ static const MenuOption GameOptionsList[] = {
     { "CHEAT MENU", "THE ORIGINAL'S HIDDEN CHEATS, IN THE PAUSE MENU", SET_CHEAT_MENU },
     /* PC: the heroes of the mods that are on (docs/HERO_PACKS.md) */
     { "CUSTOM HEROES", "HEROES OF YOUR OWN, FROM YOUR MODS", SET_EXTRA_HEROES },
-#ifndef __ANDROID__
-    /* PC: the hero tool, beside the program (herotool/, docs/HERO_PACKS.md) */
-    { "HERO TOOL", "MAKE A HERO OF YOUR OWN FROM A 3D MODEL, AS A MOD", SET_HERO_TOOL },
-#endif
 };
 #define NUM_OF(a) ((s32)(sizeof(a) / sizeof((a)[0])))
 
@@ -318,10 +313,19 @@ static void control_value(char *text, size_t size, s32 n) {
     }
 }
 
-/* --- the Mods page: OPEN MODS FOLDER, then the mods in their order --- */
+/* --- the Mods page: OPEN MODS FOLDER, HERO TOOL (the tool beside the program that makes a hero mod, herotool/, docs/HERO_PACKS.md;
+   not on Android), then the mods in their order, mod n - MODS_ROWS in row n --- */
+#define ROW_FOLDER 0
+#ifndef __ANDROID__
+#define ROW_HERO_TOOL 1
+#define MODS_ROWS 2
+#else
+#define ROW_HERO_TOOL (-1)
+#define MODS_ROWS 1
+#endif
 
 static s32 option_count(const MenuCategory *c) {
-    return c->kind == KIND_MODS ? mods_count() + 1 : c->count;
+    return c->kind == KIND_MODS ? mods_count() + MODS_ROWS : c->count;
 }
 
 static s32 mod_usable(const ModInfo *m) {
@@ -330,9 +334,14 @@ static s32 mod_usable(const ModInfo *m) {
 
 /* Two lines: what it does, or what's wrong with it; and who made it. */
 static void mod_help(s32 n) {
-    const ModInfo *m = mods_info(n - 1);
+    const ModInfo *m = mods_info(n - MODS_ROWS);
     char text[512];
 
+    if (n == ROW_HERO_TOOL) {
+        font_text(Help[0], sizeof(Help[0]), "MAKE A HERO FROM A 3D MODEL, AS A MOD");
+        font_text(Help[1], sizeof(Help[1]), mods_hero_tool_there() ? "A HERO IT EXPORTS SHOWS UP BELOW AS A MOD" : "NOT FOUND BESIDE THE GAME");
+        return;
+    }
     if (m == NULL) {
         font_text(Help[0], sizeof(Help[0]), "PUT MOD ZIPS IN IT, AND THEY SHOW UP HERE");
         font_text(Help[1], sizeof(Help[1]), "WHERE TWO CHANGE ONE THING, THE HIGHER ONE WINS");
@@ -360,22 +369,26 @@ static void mod_help(s32 n) {
 }
 
 static void change_mod(s32 n, s32 dir) {
-    const ModInfo *m = mods_info(n - 1);
+    const ModInfo *m = mods_info(n - MODS_ROWS);
 
-    if (n == 0) {
+    if (n == ROW_FOLDER) {
         if (dir > 0) {
             mods_open_folder();
         }
+    } else if (n == ROW_HERO_TOOL) {
+        if (dir > 0) {
+            mods_open_hero_tool();
+        }
     } else if (mod_usable(m)) {
-        mods_set_on(n - 1, !m->on);
+        mods_set_on(n - MODS_ROWS, !m->on);
         mods_apply_textures();
     }
 }
 
 /* A mod up or down the list, and the cursor with it. */
 static void move_mod(s32 dir) {
-    if (Option + dir >= 1 && Option + dir <= mods_count()) {
-        mods_move(Option - 1, dir);
+    if (Option + dir >= MODS_ROWS && Option + dir < mods_count() + MODS_ROWS) {
+        mods_move(Option - MODS_ROWS, dir);
         Option += dir;
         mods_apply_textures();
         settings_apply();
@@ -504,11 +517,6 @@ static void change_setting(const MenuCategory *c, s32 n, s32 dir) {
         case SET_EXTRA_HEROES:
             s->extra_heroes = !s->extra_heroes;
             break;
-        case SET_HERO_TOOL:
-            if (dir > 0) {
-                mods_open_hero_tool();
-            }
-            break;
         }
     }
     settings_apply();
@@ -522,9 +530,13 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
         return;
     }
     if (c->kind == KIND_MODS) {
-        const ModInfo *m = mods_info(n - 1);
+        const ModInfo *m = mods_info(n - MODS_ROWS);
 
-        snprintf(text, size, "%s", m == NULL ? "" : !mod_usable(m) ? "BROKEN" : m->on ? "ON" : "OFF");
+        if (n == ROW_HERO_TOOL) {
+            snprintf(text, size, "%s", mods_hero_tool_there() ? "OPEN" : "NOT HERE");
+            return;
+        }
+        snprintf(text, size, "%s", n < MODS_ROWS || m == NULL ? "" : !mod_usable(m) ? "BROKEN" : m->on ? "ON" : "OFF");
         return;
     }
     if (c->kind == KIND_CONTROLS) {
@@ -548,9 +560,6 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
     case SET_EXTRA_HEROES:
         snprintf(text, size, "%s", s->extra_heroes ? "ON" : "OFF");
         break;
-    case SET_HERO_TOOL:
-        snprintf(text, size, "%s", mods_hero_tool_there() ? "OPEN" : "NOT HERE");
-        break;
     }
 }
 
@@ -563,10 +572,13 @@ static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
         return video_option_label(n);
     }
     if (c->kind == KIND_MODS) {
-        if (n == 0) {
+        if (n == ROW_FOLDER) {
             return "OPEN MODS FOLDER";
         }
-        font_text(Labels[i], sizeof(Labels[i]), mods_info(n - 1)->name);
+        if (n == ROW_HERO_TOOL) {
+            return "HERO TOOL";
+        }
+        font_text(Labels[i], sizeof(Labels[i]), mods_info(n - MODS_ROWS)->name);
         return Labels[i];
     }
     if (c->kind == KIND_CONTROLS) {
@@ -945,7 +957,7 @@ static void show_screen(void) {
 
         set_row(&sub[SUB_CATEGORY + i], i < NUM_CATEGORIES ? Categories[i].label : i == NUM_CATEGORIES ? "BACK" : "", colour);
     }
-    set_row(&sub[SUB_NAV], mods && Option > 0 ? "\xFC ON OR OFF, L1 - R1 MOVE IT UP OR DOWN, \xFE BACK"
+    set_row(&sub[SUB_NAV], mods && Option >= MODS_ROWS ? "\xFC ON OR OFF, L1 - R1 MOVE IT UP OR DOWN, \xFE BACK"
                            : mods || (data && Option >= ROW_CHOOSE) ? "UP - DOWN CHOOSE, \xFC BUTTON TO OPEN, \xFE BACK"
                            : controls && Waiting >= 0 ? ""
                            /* a CONTROLS row's own: the help over it says how (the user's word on what was there: "super cluttered") */
@@ -1434,7 +1446,7 @@ static void update_options(s32 pressed) {
     }
     /* a mod put in the folder shows up in a second or so, with the cursor still on the mod it was on */
     if (c->kind == KIND_MODS && ++updates % 30 == 0) {
-        const ModInfo *at = mods_info(Option - 1);
+        const ModInfo *at = mods_info(Option - MODS_ROWS);
         char id[MOD_ID];
         s32 i;
 
@@ -1443,7 +1455,7 @@ static void update_options(s32 pressed) {
             settings_apply();
             for (i = 0; i < mods_count(); i++) {
                 if (id[0] != '\0' && strcmp(mods_info(i)->id, id) == 0) {
-                    Option = i + 1;
+                    Option = i + MODS_ROWS;
                 }
             }
             if (Option >= option_count(c)) {
@@ -1466,7 +1478,7 @@ static void update_options(s32 pressed) {
         Option -= controls && Option == ROW_LINE;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if (c->kind == KIND_MODS && Option > 0 && (pressed & (PAD_L1 | PAD_R1))) {
+    if (c->kind == KIND_MODS && Option >= MODS_ROWS && (pressed & (PAD_L1 | PAD_R1))) {
         move_mod(pressed & PAD_L1 ? -1 : 1);
     }
     if (Option < FirstShown) {
