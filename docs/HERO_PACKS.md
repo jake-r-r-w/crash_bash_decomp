@@ -136,13 +136,17 @@ saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it 
    ear goes with the ear even hanging beside a chest; smoothed a little, and every copy of a corner at one place (the texture's
    seams) the same, so it doesn't crack as it moves. Only its own side's limbs: a corner of its left half never goes with its right
    arm.
-5. **Makes the standard moves** (`moves.c`): BREATHE, RUN, JUMP, ATTACK, WIN, HIT, TAUNT, PICKUP, HOLD_SLOW and HOLD_THROW, a pose
+5. **Its own clips** (`kit_clip_pose`), for a rigged model: a clip named as a move (or `foot/` and the name, any case) is that move,
+   each standard bone turning in the world as its bone in the model's rig turns from its rest, and the hips moving as its hips do;
+   its other clips go in too, by their own names, so a clip named as one of the game's own animations (`MEDIUM`, `KICK`, a kind's
+   `ball/BANK`) is the hero's for it. Checked: the first, shapes-built Bobby's ten clips come out as they went in.
+6. **Makes the standard moves** (`moves.c`), the ones it has no clip of: BREATHE, RUN, JUMP, ATTACK, WIN, HIT, TAUNT, PICKUP, HOLD_SLOW and HOLD_THROW, a pose
    each 30th of a second. The trunk's bones turn from rest; the limbs are aimed (where each points, from hanging), so a model made
    in a T-pose, hanging or begging moves the same.
-6. **Writes the pack** (`write.c`): `heroes/ID/hero.glb` and `hero.json`, and `mod.json`; with `--card CARD.png` its card and
+7. **Writes the pack** (`write.c`): `heroes/ID/hero.glb` and `hero.json`, and `mod.json`; with `--card CARD.png` its card and
    `--voice JOB=FILE.wav` (as many as it has) its sounds, each checked to be a PNG or WAV the game reads.
 
 Checked: Bobby's model with its markers, and his first, shapes-built model with its bones renamed as Mixamo names them and no
 markers, each four of him in Crate Crush.
 
-Still to come: its own clips for moves by name, and guessing the markers for a model that has none.
+Still to come: guessing the markers for a model that has none.

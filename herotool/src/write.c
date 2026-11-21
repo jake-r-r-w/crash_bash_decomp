@@ -68,6 +68,20 @@ static int add(Buf *bin, const void *p, size_t bytes, int ctype, int count, cons
     return accessors++;
 }
 
+/* the model's own clip for a move, by its name, or foot/ and its name (any case); -1 none */
+static int own_clip(const KitModel *m, const char *move) {
+    int c;
+
+    for (c = 0; m->src != NULL && m->src_of[KB_HIPS] >= 0 && c < m->src->nclips; c++) {
+        const char *n = m->src->clips[c].name;
+
+        if (SDL_strcasecmp(n, move) == 0 || (SDL_strncasecmp(n, "foot/", 5) == 0 && SDL_strcasecmp(n + 5, move) == 0)) {
+            return c;
+        }
+    }
+    return -1;
+}
+
 static int write_file(const char *path, const void *p, size_t n) {
     SDL_IOStream *io = SDL_IOFromFile(path, "wb");
     int ok = io != NULL && SDL_WriteIO(io, p, n) == n;
@@ -128,18 +142,46 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
         memcpy(&ibm[k++ * 16], mat, sizeof(mat));
     }
     ibm_a = add(&bin, ibm, sizeof(float) * 16 * nb, 5126, nb, "MAT4", NULL);
-    /* the moves */
-    for (mv = 0; mv < KitMoveCount; mv++) {
-        int frames = (int)(KitMoves[mv].length * KIT_FPS + 0.5f) + 1, f, time_a, channels = 0;
+    /* the moves: the standard ones, each the model's own clip of that name if it has one (a rigged model's), then its other clips */
+    int nmoves = 0, own = 0;
+    for (mv = 0; mv < KitMoveCount + (m->src != NULL ? m->src->nclips : 0) && nmoves < 64; mv++) {
+        const char *mname;
+        float mlen;
+        int clip = -1, f, time_a, channels = 0, frames;
+
+        if (mv < KitMoveCount) {
+            mname = KitMoves[mv].name;
+            mlen = KitMoves[mv].length;
+            clip = own_clip(m, mname);
+            if (clip >= 0) {
+                mlen = m->src->clips[clip].length;
+            }
+        } else {
+            int c = mv - KitMoveCount, k;
+
+            mname = m->src->clips[c].name;
+            mlen = m->src->clips[c].length;
+            for (k = 0; k < KitMoveCount && own_clip(m, KitMoves[k].name) != c; k++) {
+            }
+            if (k < KitMoveCount || m->src_of[KB_HIPS] < 0 || mlen <= 0 || mname[0] == 0) {
+                continue;
+            }
+            clip = c;
+        }
+        own += clip >= 0;
+        frames = (int)(mlen * KIT_FPS + 0.5f) + 1;
+        frames = frames < 2 ? 2 : frames;
         float *times = malloc(sizeof(float) * frames), (*rot)[KB_COUNT][4] = malloc(sizeof(*rot) * frames), (*hips)[3] = malloc(sizeof(*hips) * frames);
         Text ch = { 0 }, sm = { 0 };
         char tm[96];
 
         for (f = 0; f < frames; f++) {
-            times[f] = KitMoves[mv].length * f / (frames - 1);
-            kit_pose(m, mv, times[f], rot[f], hips[f]);
+            times[f] = mlen * f / (frames - 1);
+            if (clip < 0 || !kit_clip_pose(m, clip, times[f], rot[f], hips[f])) {
+                kit_pose(m, mv < KitMoveCount ? mv : 0, times[f], rot[f], hips[f]);
+            }
         }
-        snprintf(tm, sizeof(tm), ",\"min\":[0],\"max\":[%g]", KitMoves[mv].length);
+        snprintf(tm, sizeof(tm), ",\"min\":[0],\"max\":[%g]", mlen);
         time_a = add(&bin, times, sizeof(float) * frames, 5126, frames, "SCALAR", tm);
         for (b = 0; b < KB_COUNT; b++) {
             float *v = malloc(sizeof(float) * 4 * frames);
@@ -169,7 +211,8 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
             }
             free(v);
         }
-        say(&anims, "%s{\"name\":\"%s\",\"channels\":[%s],\"samplers\":[%s]}", mv ? "," : "", KitMoves[mv].name, ch.s, sm.s);
+        say(&anims, "%s{\"name\":\"%s\",\"channels\":[%s],\"samplers\":[%s]}", nmoves ? "," : "", mname, ch.s, sm.s);
+        nmoves++;
         free(ch.s);
         free(sm.s);
         free(times);
@@ -309,7 +352,8 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
         SDL_free(wav);
         printf("herotool: its %s sound, %.2f s\n", PackVoiceJobs[i], (double)len / (SDL_AUDIO_FRAMESIZE(spec) * spec.freq));
     }
-    printf("herotool: wrote %s/heroes/%s: %d bones, %d moves, %zu bytes\n", out, p->id, nb, KitMoveCount, 12 + 8 + json.n + 8 + bin.n);
+    printf("herotool: wrote %s/heroes/%s: %d bones, %d moves (%d its own clips), %zu bytes\n", out, p->id, nb, nmoves, own,
+           12 + 8 + json.n + 8 + bin.n);
     free(json.s);
     free(anims.s);
     free(bin.b);

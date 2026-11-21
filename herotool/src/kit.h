@@ -64,6 +64,9 @@ typedef struct {
     uint8_t (*src_joint)[4];
     float (*src_weight)[4];
     int skinned;
+    /* the model as read, for its own clips (kit_clip_pose), and each standard bone's bone in its rig (-1 none) once mapped */
+    PackModel *src;
+    int src_of[KB_COUNT];
 } KitModel;
 
 /* model.c: the model read from its GLB, and checked; 0 and why (said to the person) if it can't be used */
@@ -86,6 +89,9 @@ extern const KitMove KitMoves[];
 extern const int KitMoveCount;
 /* move m's pose at t seconds: each bone's turn from its rest (a quaternion, x y z w) and the hips' move (model units) */
 void kit_pose(const KitModel *model, int m, float t, float rot[KB_COUNT][4], float hips[3]);
+/* rig.c: a model's own clip, as turns of the standard bones from their rest (as kit_pose gives) and the hips' move: for a rigged
+ * model, its rig mapped (kit_map_rig) */
+int kit_clip_pose(const KitModel *m, int clip, float t, float rot[KB_COUNT][4], float hips[3]);
 /* write.c: the pack, heroes/<id>/ in a mod folder, with its mod.json */
 typedef struct {
     const char *id, *name, *prefer, *mod_name, *author;

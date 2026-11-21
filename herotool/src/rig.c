@@ -395,6 +395,7 @@ int kit_map_rig(KitModel *m, char *why, size_t why_size) {
             for (j = 0; j < m->nsrc; j++) {
                 if (map[j] < 0 && strcmp(plain[j], Aliases[b][k]) == 0) {
                     map[j] = b;
+                    m->src_of[b] = j;
                     m->bones[b].have = 1;
                     memcpy(m->bones[b].at, m->src_at[j], sizeof(m->bones[b].at));
                     break;
@@ -552,4 +553,85 @@ void kit_guess_markers(KitModel *m) {
         m->bones[up].have = m->bones[fo].have = m->bones[ha].have = 1;
         m->bones[th].have = m->bones[sh].have = m->bones[ft].have = 1;
     }
+}
+
+/* --- a model's own clips, on the standard skeleton --- */
+
+/* the turn in a matrix, its scale taken out (column-major, as glTF's) */
+static void mat_quat(const float m[16], float q[4]) {
+    float r[3][3], tr, s;
+    int c, i;
+
+    for (c = 0; c < 3; c++) {
+        float len = sqrtf(m[c * 4] * m[c * 4] + m[c * 4 + 1] * m[c * 4 + 1] + m[c * 4 + 2] * m[c * 4 + 2]);
+
+        for (i = 0; i < 3; i++) {
+            r[i][c] = len > 0 ? m[c * 4 + i] / len : (i == c);
+        }
+    }
+    tr = r[0][0] + r[1][1] + r[2][2];
+    if (tr > 0) {
+        s = sqrtf(tr + 1) * 2;
+        q[3] = s / 4, q[0] = (r[2][1] - r[1][2]) / s, q[1] = (r[0][2] - r[2][0]) / s, q[2] = (r[1][0] - r[0][1]) / s;
+    } else if (r[0][0] > r[1][1] && r[0][0] > r[2][2]) {
+        s = sqrtf(1 + r[0][0] - r[1][1] - r[2][2]) * 2;
+        q[3] = (r[2][1] - r[1][2]) / s, q[0] = s / 4, q[1] = (r[0][1] + r[1][0]) / s, q[2] = (r[0][2] + r[2][0]) / s;
+    } else if (r[1][1] > r[2][2]) {
+        s = sqrtf(1 + r[1][1] - r[0][0] - r[2][2]) * 2;
+        q[3] = (r[0][2] - r[2][0]) / s, q[0] = (r[0][1] + r[1][0]) / s, q[1] = s / 4, q[2] = (r[1][2] + r[2][1]) / s;
+    } else {
+        s = sqrtf(1 + r[2][2] - r[0][0] - r[1][1]) * 2;
+        q[3] = (r[1][0] - r[0][1]) / s, q[0] = (r[0][2] + r[2][0]) / s, q[1] = (r[1][2] + r[2][1]) / s, q[2] = s / 4;
+    }
+}
+
+static void qmul4(const float a[4], const float b[4], float o[4]) {
+    float r[4] = { a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1], a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
+                   a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3], a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2] };
+
+    memcpy(o, r, sizeof(r));
+}
+
+/* Each standard bone turns in the world as its bone in the model's rig turns from its rest (the standard bones rest unturned at
+ * its joints): so its local turn is its parent's world turn undone, then its own. A standard bone the rig hasn't turns with its
+ * parent. */
+int kit_clip_pose(const KitModel *m, int clip, float t, float rot[KB_COUNT][4], float hips[3]) {
+    static PackTrs local[PACK_MAX_BONES];
+    static float world[PACK_MAX_BONES][16];
+    float d[KB_COUNT][4];
+    int b, i;
+
+    if (m->src == NULL || clip < 0 || clip >= m->src->nclips || m->src_of[KB_HIPS] < 0) {
+        return 0;
+    }
+    pack_pose_local(m->src, clip, t, local);
+    pack_pose_world(m->src, local, world);
+    for (b = 0; b < KB_COUNT; b++) {
+        int j = m->src_of[b], p = KitBoneParent[b];
+        float qw[4], qr[4];
+
+        if (j < 0) {
+            if (p >= 0) {
+                memcpy(d[b], d[p], sizeof(d[b]));
+            } else {
+                d[b][0] = d[b][1] = d[b][2] = 0, d[b][3] = 1;
+            }
+        } else {
+            mat_quat(world[j], qw);
+            mat_quat(m->src->bones[j].rest_world, qr);
+            qr[0] = -qr[0], qr[1] = -qr[1], qr[2] = -qr[2];
+            qmul4(qw, qr, d[b]);
+        }
+        if (p < 0) {
+            memcpy(rot[b], d[b], sizeof(rot[b]));
+        } else {
+            float inv[4] = { -d[p][0], -d[p][1], -d[p][2], d[p][3] };
+
+            qmul4(inv, d[b], rot[b]);
+        }
+    }
+    for (i = 0; i < 3; i++) {
+        hips[i] = world[m->src_of[KB_HIPS]][12 + i] - m->src->bones[m->src_of[KB_HIPS]].rest_world[12 + i];
+    }
+    return 1;
 }

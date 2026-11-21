@@ -101,7 +101,17 @@ int kit_read(const char *path, KitModel *m, char *why, size_t why_size) {
         pm.images[i].rgba = NULL;
     }
     pm.nimages = 0;
-    pack_model_free(&pm);
+    /* kept, for its clips */
+    m->src = malloc(sizeof(PackModel));
+    if (m->src != NULL) {
+        *m->src = pm;
+    } else {
+        pack_model_free(&pm);
+    }
+    memset(&pm, 0, sizeof(pm));
+    for (i = 0; i < KB_COUNT; i++) {
+        m->src_of[i] = -1;
+    }
     printf("herotool: %s: %d triangles, %d vertices, %d textures, %.3f tall\n", path, m->ntri, m->nvert, m->nimages, m->hi[1] - m->lo[1]);
     return 1;
 }
@@ -119,6 +129,10 @@ void kit_free(KitModel *m) {
     free(m->weight);
     free(m->src_joint);
     free(m->src_weight);
+    if (m->src != NULL) {
+        pack_model_free(m->src);
+        free(m->src);
+    }
     free(m->atlas);
     SDL_free(m->png);
     for (i = 0; i < m->nimages; i++) {
