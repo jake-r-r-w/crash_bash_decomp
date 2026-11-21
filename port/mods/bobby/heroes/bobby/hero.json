@@ -6,6 +6,7 @@
   "height": 540,
   "face": "BREATHE",
   "face_turn": 20,
+  "face_head": 0.26,
   "kinds": {
     "foot": {
       "subframes": 2,

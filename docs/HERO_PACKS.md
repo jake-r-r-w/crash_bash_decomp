@@ -44,6 +44,9 @@ one's.
 - `kinds`: by name, `foot`, `polar`, `pogo`, `ball`, `tank`, `race`, `splash`, `mallet`, `dino`, `kegs`, `warp`. Each has its
   stand-ins for its base's animations (`[from, to, pace]`, pace `stretch`, `loop` or `once`: `HeroKind` in `herodef.h`, and
   EXTRA_HEROES.md, How one plays), `otherwise`, `keep_lift` (0 to 4096), `like` (a hero's name) and `subframes` (1 to 4).
+- `face_head`: the share of its model, from the top, that's its head, for a face drawn from it on the panel and in the select
+  (0.36 if it's left out); Bobby's is 0.26, as his long ears hang past his chin. A face drawn so stops where the panel's health bar
+  starts.
 - `voices`: each of its base's 26 sound offsets (EXTRA_HEROES.md, His sounds) `base` (the default) or `none`. `own` is for its own
   `voice_NN.wav`, still to come.
 

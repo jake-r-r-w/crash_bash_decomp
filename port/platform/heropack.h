@@ -44,6 +44,7 @@ typedef struct {
     int voices[PACK_SOUNDS];   /* each of its base's sound offsets: its own (voice_NN.wav, NN this offset), 1 its base's, 0 none */
     char face[PACK_ANIM_NAME]; /* the clip its face is drawn from if it has no card */
     float face_turn;
+    float face_head;           /* the share of its model, from the top, that's its head, for that face (0: the game's own share) */
 } PackInfo;
 
 /* hero.json's text into out; 0 and why (in capitals) if it isn't one. */

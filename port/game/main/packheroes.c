@@ -120,6 +120,7 @@ static void slot_def(PackSlot *s, s32 slot) {
     d->voices = s->voices;
     d->face = s->info.face;
     d->face_turn = s->info.face_turn;
+    d->face_head = s->info.face_head;
     d->make = PackMakes[slot];
 }
 

@@ -730,6 +730,8 @@ const hero = {
     height: 540,
     face: 'BREATHE',
     face_turn: 20,
+    /* his head without his long ears' ends, so his face fills the panel's picture as the others' do */
+    face_head: 0.26,
     kinds: {
         foot: {
             subframes: 2,

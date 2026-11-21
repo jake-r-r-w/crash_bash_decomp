@@ -81,6 +81,7 @@ typedef struct HeroDef {
     float face_turn;     /* and how far round it's turned, in degrees */
     /* Makes it from its game's disc into out; 0 if it can't (and out's left empty). */
     s32 (*make)(HeroMade *out);
+    float face_head;     /* the share of its model, from the top, that's its head, for a face drawn from it (0: extraheroes.c's FACE_HEAD) */
 } HeroDef;
 
 /* The heroes there are (bonusheroes.c), by EXTRA_ number: [0] is none, and a pack's slot with no pack in it NULL. */

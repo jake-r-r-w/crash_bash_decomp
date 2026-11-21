@@ -1169,7 +1169,10 @@ static u32 texel_of(const obj_textureset *ts, s32 image, s32 clut, s32 u, s32 v)
 }
 
 /* Its model's face frame, drawn: w x h, with depth. */
-static void draw_face(const HeroDef *x, const u8 *file, const obj_textureset *ts, u32 *rgba, s32 w, s32 h, float aspect, float room) {
+/* cut: nothing below `room` of the picture drawn (the panel's, whose health bar is there: what of the model hangs below its head, a
+ * pack's hero's paws, went over the bar's end) */
+static void draw_face(const HeroDef *x, const u8 *file, const obj_textureset *ts, u32 *rgba, s32 w, s32 h, float aspect, float room,
+                      s32 cut) {
     const ModelFile *m = (const ModelFile *)file;
     Frame fr;
     float *depth, *sx, *sy, *sz;
@@ -1201,7 +1204,7 @@ static void draw_face(const HeroDef *x, const u8 *file, const obj_textureset *ts
         bottom = sy[k] > bottom ? sy[k] : bottom;
     }
     for (k = 0; k < fr.count; k++) {
-        if (sy[k] <= top + (bottom - top) * FACE_HEAD) {
+        if (sy[k] <= top + (bottom - top) * (x->face_head > 0 ? x->face_head : FACE_HEAD)) {
             minx = sx[k] < minx ? sx[k] : minx;
             maxx = sx[k] > maxx ? sx[k] : maxx;
             miny = sy[k] < miny ? sy[k] : miny;
@@ -1263,6 +1266,7 @@ static void draw_face(const HeroDef *x, const u8 *file, const obj_textureset *ts
             cy0 = cy0 < 0 ? 0 : cy0;
             cx1 = cx1 > w - 1 ? w - 1 : cx1;
             cy1 = cy1 > h - 1 ? h - 1 : cy1;
+            cy1 = cut && cy1 > (s32)(h * room) - 1 ? (s32)(h * room) - 1 : cy1;
             for (py = cy0; py <= cy1; py++) {
                 for (px = cx0; px <= cx1; px++) {
                     float qx = px + 0.5f, qy = py + 0.5f;
@@ -1376,7 +1380,7 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
         free(file);
         return NULL;
     }
-    draw_face(x, file, &bank->textures, big, bw, bh, FACE_ASPECT, FACE_ROOM);
+    draw_face(x, file, &bank->textures, big, bw, bh, FACE_ASPECT, FACE_ROOM, 1);
     free(file);
     /* each pixel the mean of its samples, its colour weighed by how solid each is */
     for (py = 0; py < fh; py++) {
@@ -1602,7 +1606,7 @@ static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
 
         memset(face, 0, sizeof(u32) * (size_t)fw * ph);
         if (big != NULL && file != NULL) {
-            draw_face(HeroDefs[extra], file, &bank->textures, big, bw, bh, SELECT_ASPECT, SELECT_ROOM);
+            draw_face(HeroDefs[extra], file, &bank->textures, big, bw, bh, SELECT_ASPECT, SELECT_ROOM, 0);
             for (y = 0; y < ph; y++) {
                 for (x = 0; x < pw; x++) {
                     u32 r = 0, g = 0, b = 0, a = 0;
