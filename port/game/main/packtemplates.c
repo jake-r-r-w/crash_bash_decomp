@@ -171,6 +171,57 @@ static const TemplateMap Maps[] = {
       PAIR(60, -280, -20), { P(-80, -200, -20), P(90, -230, -20) }, { P(-60, -140, -30), P(110, -200, -40) },
       PAIR(20, -160, 0), PAIR(25, -90, 0), PAIR(30, -15, 0), PAIR(40, -5, -30),
       NONE, NONE, { BOX(70, -360, -240, 280, -30, 80) }, 1, 1, 2 },
+
+    /* -- Brio (4) -- */
+    /* his pogo: him alone, on what the game draws */
+    { 4, KIND_POGO, DB_CharsPogoBrio, 25,
+      P(0, -270, 0), P(0, -370, -20), P(0, -600, -190),
+      PAIR(60, -400, -10), PAIR(100, -330, 30), PAIR(120, -270, 40),
+      PAIR(40, -260, 0), PAIR(80, -180, 30), PAIR(100, -100, 10), PAIR(105, -70, 0),
+      NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 },
+    /* his car: sat, his arms out to its levers' inner ends */
+    { 4, KIND_BALL, DB_CharsBallBrio, 30,
+      P(0, -150, 180), P(0, -260, 170), P(0, -480, 110),
+      PAIR(50, -260, 170), PAIR(140, -220, 150), PAIR(230, -215, 130),
+      NONE, NONE, NONE, NONE,
+      PAIR(290, -210, 120), NONE, { BOTH(260, -240, -100, 420, 20, 260) }, 1, 0 },
+    /* his tank: in its hatch, reaching forward and down */
+    { 4, KIND_TANK, DB_CharsTankBrio, 25,
+      P(0, -330, 0), P(0, -420, -10), P(0, -660, -90),
+      PAIR(50, -450, -20), PAIR(90, -380, -40), PAIR(100, -310, -90),
+      NONE, NONE, NONE, NONE,
+      NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 },
+    /* his race cart: his head, neck and small hands above it */
+    { 4, KIND_RACE, DB_CharsRaceBrio, 25,
+      P(0, -130, 20), P(0, -170, 20), P(0, -330, -30),
+      PAIR(40, -180, 10), PAIR(60, -150, -30), PAIR(60, -140, -70),
+      NONE, NONE, NONE, NONE,
+      PAIR(80, -115, -80), NONE, { BOX(-260, -120, -260, 260, 80, 300) }, 1, 0 },
+    /* his fish: sat on it, holding on behind him */
+    { 4, KIND_SPLASH, DB_CharsSplashBrio, 25,
+      P(0, -160, 20), P(0, -230, 0), P(0, -450, -60),
+      PAIR(40, -260, 0), PAIR(70, -200, 60), PAIR(70, -110, 60),
+      PAIR(30, -150, 20), PAIR(60, -120, -30), PAIR(80, -90, -60), NONE,
+      NONE, NONE, { BOX(-300, -95, -320, 300, 130, 300), BOX(-40, -140, -320, 40, 130, 300) }, 1, 0 },
+    /* his mallet: in his right hand, its head behind him */
+    { 4, KIND_MALLET, DB_CharsMalletBrio, 25,
+      P(0, -160, 0), P(0, -280, 0), P(0, -520, -40),
+      PAIR(50, -330, 0), { P(-80, -270, -20), P(90, -300, 60) }, { P(-100, -200, -20), P(110, -180, 150) },
+      PAIR(25, -150, 0), PAIR(25, -80, 0), PAIR(25, -15, 0), PAIR(30, -5, -60),
+      { P(0, 0, 0), P(115, -200, 150) }, NONE, { BOX(0, -500, 60, 230, -140, 360) }, 1, 0, 2 },
+    /* his dino: sat on its back */
+    { 4, KIND_DINO, DB_CharsDinoBrio, 25,
+      P(0, -420, 0), P(0, -500, 0), P(0, -770, -60),
+      PAIR(60, -540, 0), PAIR(110, -470, -30), PAIR(110, -420, -80),
+      PAIR(40, -410, 0), PAIR(100, -330, -40), PAIR(130, -270, -60), NONE,
+      NONE, NONE, { BOX(-95, -370, -520, 95, 10, 420), BOX(-130, -600, -520, 130, -330, -200), BOTH(95, -150, -300, 170, 10, 300) },
+      1, 0 },
+    /* his keg: in front of him, more to his right; it's in his model's third mesh */
+    { 4, KIND_KEGS, DB_CharsKegsBrio, 25,
+      P(0, -130, 20), P(0, -260, 40), P(0, -500, -30),
+      PAIR(40, -300, 30), { P(-60, -220, 10), P(80, -240, -20) }, { P(-60, -150, -20), P(220, -180, -60) },
+      PAIR(25, -120, 20), PAIR(25, -60, 20), PAIR(25, -15, 20), PAIR(30, -5, -50),
+      NONE, NONE, { BOX(-25, -375, -215, 215, -110, 5) }, 1, 3, 2 },
 };
 
 const TemplateMap *pack_template_map(s32 hero, s32 kind) {

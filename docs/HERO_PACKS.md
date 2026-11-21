@@ -14,7 +14,7 @@ his hand, on the grip where there's one, its legs astride as his, on the pegs or
 a tank's hatch or a race cart; the prop (painted gunmetal where Pinstripe's was) as it moves, or in its hand where he carries it.
 Bobby, the example, plays in every game (each checked with four of him), and online where everyone has him (Online, below). The
 hero tool (below) makes a pack of any standing two-legged model, rigged or not. A pack can take
-another hero as its template, its moves and props in every game (Tiny, Coco and Cortex so far; Templates, below).
+another hero as its template, its moves and props in every game (Tiny, Coco, Cortex and Brio so far; Templates, below).
 
 **The character select's room.** Each of its slots of drawn pieces (`EngineSlotSubs`) held the PS1's 32, and the select's own 26
 with two a card and their row's band left room for two cards: a third (the first pack's, beside Roo and Pinstripe then) spilt into the
@@ -117,12 +117,13 @@ for either side). Where a hero has no map of a kind yet the pack follows Crash's
    `crashbash --mods-dir THERE --mod bobby --dump-hero bobby DUMP`. The log says `follows hero 5 pogo stick`, or which parts found
    too few corners (`hips 0, chest 1, ...`: move those markers onto it).
 4. Look at it: `tools/dk python3 tools/scripts/hpv_sheet.py DUMP bobby pogo ball ...` (`--turn 90` from the side) draws each kind a
-   row, a few frames of two moves. A part of the hero left on the prop is a box too big; a pack stretched thin is a part found on
+   row, a few frames of two moves, each face the colour of its texture's middle texel (a face whose middle is clear isn't drawn:
+   the tool's preview, which draws every texel, settles it). A part of the hero left on the prop is a box too big; a pack stretched thin is a part found on
    one side only.
 
-**Where it stands (2026-11-21):** Tiny's, Coco's and Cortex's eight (pogo, car, tank, race cart, fish, mallet, dino, keg), each looked at in a
-sheet as above (Coco's pogo handle isn't kept, and a little of her jeans stays on her dino). Brio, Kong, Dingodile and Rilla Roo are
-next. Cortex's pogo model is him alone (the game draws his hover board): a map with no prop boxes has no prop. He carries his
+**Where it stands (2026-11-21):** Tiny's, Coco's, Cortex's and Brio's eight (pogo, car, tank, race cart, fish, mallet, dino, keg), each looked at in a
+sheet as above (Coco's pogo handle isn't kept, and a little of her jeans stays on her dino). Kong, Dingodile and Rilla Roo are next.
+Brio's pogo is him alone too, and he has his mallet and keg on his right. Cortex's pogo model is him alone (the game draws his hover board): a map with no prop boxes has no prop. He carries his
 keg on his right (`carry` 2). A model may have only part of its hero, as Coco's race cart has her head and neck: a hand marker there takes the
 prop's corners (the cart where her hands would be). The keg is in Coco's model's third mesh (`mesh1` 3). A pack on foot, on the podium and on the polar bear
 is still its own moves and Crash's bear: those kinds aren't followed for any template yet.
