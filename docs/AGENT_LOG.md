@@ -123,8 +123,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   command line; a real phone (arm64) hasn't played online yet.
 - **Port, hero packs (2026-11-21, HERO_PACKS.md):** phases 1 to 5 of the plan are done: packs in mods, made at load into every kind
   of model, the hero tool (window and CLI, rigged or markers, 1365 triangles a hard limit), the launcher's CUSTOM HEROES and HERO
-  TOOL, online play (`online --heroes`), and Roo, Pinstripe and the disc reading removed. Left: phase 6, the other seven heroes'
-  moves to borrow (only Crash's are measured); models of other shapes than Bobby through the tool (a Mixamo-named rig was tried);
+  TOOL, online play (`online --heroes`), and Roo, Pinstripe and the disc reading removed. Phase 6 too: every hero is a template
+  (`"template"`, packtemplates.c's maps; the user's design: a template per game, its own moves overriding), the tool previews the
+  hero in every game (`--dump-hero`), and `--own GAME/MOVE=MOVE` overrides. Left: templates on foot, the podium and the polar bear
+  (still its own moves and Crash's bear); a few slivers of heroes kept with props; models of other shapes than Bobby through the tool;
   the hero tool's window on Linux (built and its CLI run, 2026-11-21, not looked at). Fixes go in the loader or the tool, never one
   hero's. The tool's output differs between Windows and Linux in a few float bits (each system's maths library), so a pack is
   shared as its files, and the same files match online whoever made them.
@@ -663,6 +665,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-21 (night, the user AFK): hero packs' phase 6 as the user put it, templates. The tool's preview: `--dump-hero ID DIR` makes
+  a pack and writes each kind's model (made_dump, HPV1), the tool's In the games tab shows them. Templates: `"template": HERO`, each
+  other hero's kinds by marker maps (packtemplates.c) fed to Crash's follower (map_kind, map_fit: a marker's 6 nearest corners; prop
+  by boxes; no-prop, other-mesh, other-hand, thin-prop cases), all 56 mapped and looked at (`hero_view.py`, `hpv_sheet.py`,
+  `hero_strips.py`). A clip named GAME/MOVE plays in place of the template's (`own_frame`; tool `--own`). Gotcha: hero_view must
+  draw BREATHE (the follower's pose), not the file's first move.
 
 - 2026-11-21 (the last of the day, the user AFK): hero packs' phases 5 and 4. Removed roo.c, pinstripe.c, the Crash Bandicoot
   readers and the disc image reader; README's CUSTOM HEROES section, Bobby shipped in a release's mods folder, the hero tests on
