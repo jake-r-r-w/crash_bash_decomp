@@ -97,3 +97,43 @@ model (phase 3), by hand:
 
 He rests begging, his forearms held up in front, and his arms are short against his big head: raised further than his chin, his paws
 went inside his muzzle or ears (`arm`), so a crate he carries balances on his head.
+
+## The hero tool
+
+`herotool/` at the repo's top, its own CMake project (C, SDL3, cgltf), sharing the game's pack reader (`port/platform/heropack.c`),
+so a pack it writes is one the game reads. It makes anyone's model a hero:
+
+```bash
+cd herotool && cmake --preset windows-clang -DCMAKE_PREFIX_PATH=<SDL3's install> && cmake --build --preset windows-clang
+build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS.json --out FOLDER [--name NAME] [--prefer HERO]
+                                       [--height N] [--face-head SHARE] [--author NAME]
+```
+
+`FOLDER` is a mod: put it in the game's mods folder. What it does, each step for any model (`src/`):
+
+1. **Reads it** (`model.c`), and **refuses** one over the game's limits, 1365 triangles and 4096 vertices, saying how many it has:
+   the tool never changes anyone's model (the user's rule, 2026-11-21), so its maker takes out what they choose.
+2. **Lays out its texture** (`atlas.c`): every piece of every image (triangles joined by their corners) in one 256 x 256 image, as
+   big as they all fit, with a border of its own colours two texels wide, as the game moves each corner to a whole texel; triangles
+   with no texture share a white piece, their corners' colours on it. The look's the same; only where the corners are in the
+   texture changes.
+3. **Fits the standard skeleton from markers** (`rig.c`): a JSON file of where each bone starts, by name (hips, spine, chest, neck,
+   head, both arms' upperarm, forearm and hand, both legs' thigh, shin and foot; a jaw, ears and a tail if it has them), with
+   `NAME_tip` for a chain's end and `arm_raise`, how many degrees its arms can lift before its paws are in its head. Bobby's is
+   `port/mods/bobby-markers.json`. The tool's window will let them be dragged onto the model.
+4. **Weighs each corner** (`rig.c`): each place on its surface starts with the bone it's nearest (a trunk bone's distance counted
+   for less, as a trunk is wide round its bones), and every place goes with the two it's nearest over the surface from those, so an
+   ear goes with the ear even hanging beside a chest; smoothed a little, and every copy of a corner at one place (the texture's
+   seams) the same, so it doesn't crack as it moves. Only its own side's limbs: a corner of its left half never goes with its right
+   arm.
+5. **Makes the standard moves** (`moves.c`): BREATHE, RUN, JUMP, ATTACK, WIN, HIT, TAUNT, PICKUP, HOLD_SLOW and HOLD_THROW, a pose
+   each 30th of a second. The trunk's bones turn from rest; the limbs are aimed (where each points, from hanging), so a model made
+   in a T-pose, hanging or begging moves the same.
+6. **Writes the pack** (`write.c`): `heroes/ID/hero.glb` and `hero.json`, and `mod.json`.
+
+Bobby's model has 1367 triangles, 2 over: the tool refuses it, and his pack is still made by `port/mods/bobby.mjs` until he's
+exported again with fewer. A copy with two slivers taken out (in `scratch/`, never the repo) checks the tool end to end.
+
+Still to come: the window (an ImGui front end on the same steps: the model turning, markers dragged, the moves played, the
+pack tried in the game), a model's own rig mapped by bone names (Mixamo, VRM, Blender's), its own clips for moves by name, sounds,
+a card, and guessing the markers for a model that has none.

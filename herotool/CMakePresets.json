@@ -1,0 +1,31 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/herotool/${presetName}",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo", "CMAKE_EXPORT_COMPILE_COMMANDS": "ON" }
+    },
+    {
+      "name": "windows-clang",
+      "displayName": "Windows x86-64, Clang (llvm-mingw)",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "cacheVariables": { "CMAKE_C_COMPILER": "x86_64-w64-mingw32-clang" }
+    },
+    {
+      "name": "linux-clang",
+      "displayName": "Linux x86-64, Clang",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
+      "cacheVariables": { "CMAKE_C_COMPILER": "clang" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "windows-clang", "configurePreset": "windows-clang" },
+    { "name": "linux-clang", "configurePreset": "linux-clang" }
+  ]
+}
