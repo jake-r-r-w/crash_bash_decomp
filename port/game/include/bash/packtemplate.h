@@ -29,6 +29,7 @@ typedef struct {
     TmplBox prop[TMPL_BOXES]; /* what it rides or holds: the strips with most of their corners in one of these */
     float scale;   /* the pack's size on it against Crash's kind's for this hero's height (PackTemplateHeight), 1 as it is */
     s32 mesh1;     /* the mesh of the model it follows, plus 1 (0: Crash's kind's: a hero's model may have fewer) */
+    s32 carry;     /* the hand it carries its prop in, 1 its left, 2 its right (0: Crash's kind's: Cortex has his keg on his right) */
 } TemplateMap;
 
 /* Each original hero's height on foot (its model of it, crate2), 1 Crash to 8 Rilla Roo */

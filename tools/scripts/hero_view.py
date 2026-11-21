@@ -1,6 +1,6 @@
 """A hero model's frame drawn front (x, y) and side (z, y) on a grid of the game's units (y down, as the game has it), each strip its
 own colour, for placing a template's markers (docs/HERO_PACKS.md, Templates). With a map (JSON: {"joints": {NAME: [x, y, z], ...}}),
-its joints drawn on it. tools/dk python3 tools/scripts/hero_view.py HERO KIND [--anim N] [--frame F] [--mesh M] [--map FILE] [--out FILE]"""
+its joints drawn on it. tools/dk python3 tools/scripts/hero_view.py HERO KIND [--move NAME (BREATHE)] [--anim N] [--frame F] [--mesh M] [--map FILE] [--out FILE]"""
 import colorsys
 import json
 import struct
@@ -24,7 +24,8 @@ def opt(name, default):
     return default
 
 
-anim_i = int(opt("--anim", "0"))
+move = opt("--move", "BREATHE")
+anim_i = opt("--anim", None)
 frame_i = int(opt("--frame", "0"))
 mesh_i = int(opt("--mesh", "0"))
 map_file = opt("--map", None)
@@ -60,7 +61,17 @@ def frame_points(a, f):
 
 
 mine = [i for i, a in enumerate(anims) if a[0] == mesh_i]
-pts = frame_points(mine[anim_i], frame_i) if mine else [struct.unpack_from("<hhh", d, vp + 8 * i) for i in range(nv)]
+
+
+def string_hash(s):
+    return sum(ord(c) * (i + 1) for i, c in enumerate(s)) & 0xFFFFFFFF
+
+
+# the move the follower takes its markers from (packfollow.c: its kind's first, BREATHE), else --anim N in the file's order
+base = 0x44 + struct.unpack_from("<i", d, 0x44)[0]
+hashes = [struct.unpack_from("<I", d, base + 0x18 * k + 0x10)[0] for k in range(struct.unpack_from("<I", d, 0x40)[0])]
+pick = int(anim_i) if anim_i is not None else next((j for j, k in enumerate(mine) if k < len(hashes) and hashes[k] == string_hash(move)), 0)
+pts = frame_points(mine[pick], frame_i) if mine else [struct.unpack_from("<hhh", d, vp + 8 * i) for i in range(nv)]
 faces, cur = [], 0
 for si, s in enumerate(strips):
     for i in range(s >> 8):

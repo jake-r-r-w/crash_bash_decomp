@@ -946,10 +946,13 @@ static const FollowKind *map_kind(const FollowKind *crash, s32 hero) {
     Map = m;
     MapKind = *crash;
     MapKind.bank = m->bank;
-    MapKind.prop = crash->prop != NULL ? map_prop : NULL;
-    MapKind.frame = crash->frame != NULL ? map_frame : NULL;
-    MapKind.grip = crash->grip != NULL && map_has(m->grip[0]) ? map_grip : NULL;
-    MapKind.peg = crash->peg != NULL && map_has(m->peg[0]) ? map_peg : NULL;
+    /* a map with no prop boxes has none: its model is the hero alone, what it rides drawn by the game (Cortex's hover pogo) */
+    for (i = 0; i < TMPL_BOXES && !map_has(m->prop[i].lo) && !map_has(m->prop[i].hi); i++) {
+    }
+    MapKind.prop = crash->prop != NULL && i < TMPL_BOXES ? map_prop : NULL;
+    MapKind.frame = MapKind.prop != NULL && crash->frame != NULL ? map_frame : NULL;
+    MapKind.grip = MapKind.prop != NULL && crash->grip != NULL && map_has(m->grip[0]) ? map_grip : NULL;
+    MapKind.peg = MapKind.prop != NULL && crash->peg != NULL && map_has(m->peg[0]) ? map_peg : NULL;
     MapKind.hips = map_hips;
     MapKind.chest = map_chest;
     MapKind.foot = crash->foot != NULL && map_has(m->foot[0]) ? map_foot : NULL;
@@ -968,6 +971,7 @@ static const FollowKind *map_kind(const FollowKind *crash, s32 hero) {
     MapKind.legs = crash->legs != NULL ? &MapLegs : NULL;
     MapKind.paint = NULL;
     MapKind.mesh = m->mesh1 > 0 ? m->mesh1 - 1 : crash->mesh;
+    MapKind.carry = crash->carry != 0 && m->carry != 0 ? m->carry : crash->carry;
     MapKind.scale = crash->scale * PackTemplateHeight[hero] / CRASH_HEIGHT * (m->scale > 0 ? m->scale : 1);
     return &MapKind;
 }

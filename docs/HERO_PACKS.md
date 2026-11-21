@@ -14,7 +14,7 @@ his hand, on the grip where there's one, its legs astride as his, on the pegs or
 a tank's hatch or a race cart; the prop (painted gunmetal where Pinstripe's was) as it moves, or in its hand where he carries it.
 Bobby, the example, plays in every game (each checked with four of him), and online where everyone has him (Online, below). The
 hero tool (below) makes a pack of any standing two-legged model, rigged or not. A pack can take
-another hero as its template, its moves and props in every game (Tiny and Coco so far; Templates, below).
+another hero as its template, its moves and props in every game (Tiny, Coco and Cortex so far; Templates, below).
 
 **The character select's room.** Each of its slots of drawn pieces (`EngineSlotSubs`) held the PS1's 32, and the select's own 26
 with two a card and their row's band left room for two cards: a third (the first pack's, beside Roo and Pinstripe then) spilt into the
@@ -110,8 +110,8 @@ for either side). Where a hero has no map of a kind yet the pack follows Crash's
 **Making a hero's maps**, a kind at a time:
 
 1. Look at its model: `tools/dk python3 tools/scripts/hero_view.py tiny pogo` draws it front (x, y) and side (z, y) on a grid of
-   the game's units, each strip a colour (`scratch/hero-view-tiny-pogo.png`; `--anim N --frame F` another pose). The heroes face
-   -z. Read off where its joints are and what its prop is.
+   the game's units, each strip a colour (`scratch/hero-view-tiny-pogo.png`), in its BREATHE's first frame, the pose the follower
+   takes the markers from (`--move NAME`, `--frame F` another; the file's order isn't BREATHE first in every model). The heroes face -z. Read off where its joints are and what its prop is.
 2. Write its map in `packtemplates.c` (its kind's Crash table in `packfollow.c` says what's needed: a grip, pegs, legs astride).
 3. Make a pack with it: copy `port/mods/bobby` somewhere, add `"template": "tiny"` to its hero.json, and
    `crashbash --mods-dir THERE --mod bobby --dump-hero bobby DUMP`. The log says `follows hero 5 pogo stick`, or which parts found
@@ -120,9 +120,10 @@ for either side). Where a hero has no map of a kind yet the pack follows Crash's
    row, a few frames of two moves. A part of the hero left on the prop is a box too big; a pack stretched thin is a part found on
    one side only.
 
-**Where it stands (2026-11-21):** Tiny's and Coco's eight (pogo, car, tank, race cart, fish, mallet, dino, keg), each looked at in a
-sheet as above (Coco's pogo handle isn't kept, and a little of her jeans stays on her dino). Cortex, Brio, Kong, Dingodile and Rilla
-Roo are next. A model may have only part of its hero, as Coco's race cart has her head and neck: a hand marker there takes the
+**Where it stands (2026-11-21):** Tiny's, Coco's and Cortex's eight (pogo, car, tank, race cart, fish, mallet, dino, keg), each looked at in a
+sheet as above (Coco's pogo handle isn't kept, and a little of her jeans stays on her dino). Brio, Kong, Dingodile and Rilla Roo are
+next. Cortex's pogo model is him alone (the game draws his hover board): a map with no prop boxes has no prop. He carries his
+keg on his right (`carry` 2). A model may have only part of its hero, as Coco's race cart has her head and neck: a hand marker there takes the
 prop's corners (the cart where her hands would be). The keg is in Coco's model's third mesh (`mesh1` 3). A pack on foot, on the podium and on the polar bear
 is still its own moves and Crash's bear: those kinds aren't followed for any template yet.
 

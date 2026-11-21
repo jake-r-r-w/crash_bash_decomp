@@ -120,6 +120,57 @@ static const TemplateMap Maps[] = {
       { P(-30, -370, -20), P(40, -370, 10) }, { P(-40, -310, -60), P(60, -310, 20) }, { P(-20, -280, -110), P(30, -280, 10) },
       PAIR(25, -220, 0), PAIR(30, -120, -10), PAIR(40, -20, -10), PAIR(40, -10, -60),
       NONE, NONE, { BOX(-200, -415, -260, -10, -145, 10) }, 1, 3 },
+
+    /* -- Cortex (3) -- */
+    /* his pogo: crouched on his hover board, which the game draws: his model is him alone */
+    { 3, KIND_POGO, DB_CharsPogoCortex, 25,
+      P(0, -200, 0), P(0, -270, -30), P(0, -430, -90),
+      PAIR(60, -280, -10), PAIR(110, -240, 20), PAIR(150, -200, 60),
+      PAIR(40, -180, 0), PAIR(60, -120, -40), PAIR(80, -80, -60), PAIR(90, -60, -80),
+      NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 },
+    /* his car: sat, his arms out to its levers' inner ends */
+    { 3, KIND_BALL, DB_CharsBallCortex, 30,
+      P(0, -140, 100), P(0, -250, 90), P(0, -430, 0),
+      PAIR(70, -265, 90), PAIR(150, -245, 90), PAIR(240, -225, 90),
+      NONE, NONE, NONE, NONE,
+      PAIR(290, -215, 90), NONE, { BOTH(260, -240, -100, 420, 20, 250) }, 1, 0 },
+    /* his tank: in its hatch, his arms down by his sides */
+    { 3, KIND_TANK, DB_CharsTankCortex, 25,
+      P(0, -310, 30), P(0, -410, 20), P(0, -600, -60),
+      PAIR(60, -440, 30), PAIR(80, -380, 60), PAIR(85, -310, 0),
+      NONE, NONE, NONE, NONE,
+      NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 },
+    /* his race cart: sat in it, reaching forward to its rim */
+    { 3, KIND_RACE, DB_CharsRaceCortex, 25,
+      P(0, -140, 50), P(0, -180, 40), P(0, -320, -30),
+      PAIR(50, -200, 30), PAIR(60, -170, 0), PAIR(50, -155, -60),
+      NONE, NONE, NONE, NONE,
+      PAIR(80, -120, -80), NONE, { BOX(-260, -125, -260, 260, 80, 300) }, 1, 0 },
+    /* his fish: sat on it, his hands down at its sides */
+    { 3, KIND_SPLASH, DB_CharsSplashCortex, 25,
+      P(0, -150, 40), P(0, -210, 20), P(0, -380, -60),
+      PAIR(50, -230, 20), PAIR(90, -190, 20), PAIR(100, -130, 20),
+      PAIR(30, -140, 40), PAIR(60, -120, 0), PAIR(70, -100, -30), NONE,
+      NONE, NONE, { BOX(-300, -140, -320, 300, 130, 300) }, 1, 0 },
+    /* his mallet: across his front, his left hand on its handle */
+    { 3, KIND_MALLET, DB_CharsMalletCortex, 25,
+      P(0, -110, 0), P(0, -200, -10), P(0, -380, -60),
+      PAIR(50, -230, 0), { P(-60, -190, -60), P(60, -190, -50) }, { P(-30, -160, -100), P(40, -150, -90) },
+      PAIR(15, -100, 0), PAIR(15, -50, 10), PAIR(20, -10, 0), PAIR(30, -5, -30),
+      { P(-40, -150, -110), P(0, 0, 0) }, NONE, { BOX(-340, -240, -280, 130, -90, -60) }, 1, 0 },
+    /* his dino: sat on its back, behind its head, his hands up at his sides */
+    { 3, KIND_DINO, DB_CharsDinoCortex, 25,
+      P(0, -420, 40), P(0, -520, 40), P(0, -710, 40),
+      PAIR(60, -560, 40), PAIR(100, -470, 0), PAIR(130, -410, -30),
+      PAIR(40, -410, 40), PAIR(100, -330, 0), PAIR(120, -280, -20), NONE,
+      NONE, NONE, { BOX(-95, -370, -520, 95, 10, 420), BOX(-130, -620, -520, 130, -380, -170), BOTH(95, -150, -300, 160, 10, 300) },
+      1, 0 },
+    /* his keg: on his right; his model has one mesh */
+    { 3, KIND_KEGS, DB_CharsKegsCortex, 25,
+      P(0, -170, -20), P(0, -240, -40), P(0, -380, -60),
+      PAIR(60, -280, -20), { P(-80, -200, -20), P(90, -230, -20) }, { P(-60, -140, -30), P(110, -200, -40) },
+      PAIR(20, -160, 0), PAIR(25, -90, 0), PAIR(30, -15, 0), PAIR(40, -5, -30),
+      NONE, NONE, { BOX(70, -360, -240, 280, -30, 80) }, 1, 1, 2 },
 };
 
 const TemplateMap *pack_template_map(s32 hero, s32 kind) {
