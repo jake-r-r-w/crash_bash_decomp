@@ -28,7 +28,7 @@ struct View {
 struct Tool {
     KitModel *m = nullptr;
     char model[1024] = "";
-    char status[512] = "Drop a .glb model on this window, or type its path and Open.";
+    char status[2400] = "Drop a .glb model on this window, or type its path and Open.";
     bool rigged = false, mirror = true, playing = true;
     int move = 0;
     float t = 0, turn = 30;

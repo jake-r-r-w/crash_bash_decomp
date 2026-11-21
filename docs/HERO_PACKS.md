@@ -99,6 +99,9 @@ are in the select and the computer picks the same. A pack a machine lacks just i
 (`bobby isn't played: machine 2 hasn't its pack, or has another`). A game's record (`--net-record`) names its packs by hash
 (`hero ...`), and `--replay` needs them in a mod that's on.
 
+The hero tool's export of the same model differs between Windows and Linux in a few float bits (each system's maths library), so
+packs are shared as their files: the same files match whatever made them.
+
 What they change of the game's state is the same on every machine: its whole numbers from hero.json, and models, sounds and their
 sizes made by the same program from the same files and the same game data. `playtest.mjs online --heroes` plays a Battle with
 Bobby as player 1 on two machines, from the command line and from the launcher, one where the joiner hasn't him, and the record
