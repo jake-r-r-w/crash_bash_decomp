@@ -108,29 +108,26 @@ always did until you turn them on:
   FRAME RATE    30 is the original, 60 and 120 are smoother
 
 
-EXTRA HEROES
+CUSTOM HEROES
 
-With your own copy of Crash Bandicoot (USA) too, Ripper Roo and Pinstripe from
-its boss fights can play, as they looked there, with their own laughs. Put that
-disc image (a .cue with its .bin, a raw .bin or an .iso) in the same folder as
-@PROGRAM@, or in a folder called discs next to it, and turn on EXTRA HEROES
-on the Game page, under Settings in the menu the game opens with. Each has a
-card of his own in the character select, in a third row under the others, and
-the computer players can pick them too.
+Heroes of your own can play, made from a 3D model. Each is in a mod, as a hero
+pack, and Bobby, a dachshund, comes in the mods folder as an example. Turn on
+CUSTOM HEROES on the Game page, under Settings in the menu the game opens with;
+a hero's mod is on as soon as it's in the mods folder. Up to four have a card
+each in the character select, in a third row under the others, and the computer
+players can pick them too. Each plays in every game, doing as Crash does: riding
+the polar bear, bouncing on the pogo stick, in the Ballistix car, the tank and
+the race cart, riding the dolphin and the dino, swinging the mallet and carrying
+a keg.
 
-They're made from the image each time the game starts, so keep it there: nothing
-of it is copied or kept. Roo's made for every game: Crate Crush and the others on
-foot, Polar Push, where he rides a polar bear as the others do, Pogo, where he
-bounces on the cane he has as its boss, Ballistix, where he drives his car with
-his head, Tank, where he has Dingodile's flamethrower, Crash Dash, in a red race
-cart of his own, or on the water track riding a red fish, holding on with his
-tongue, the mallet game, where he swings his mallet with it in his mouth, the
-gem game, riding a red dino, and the kegs game, with his keg balanced on his
-head. Pinstripe's made for every game too, doing as Crash does: on foot, his
-tommy gun out as he attacks and as he wins, riding Crash's polar bear, bouncing
-on Crash's pogo stick, in Crash's Ballistix car and tank, in a gunmetal race
-cart of his own, riding a gunmetal dolphin and dino, swinging Crash's mallet and
-carrying a keg under his arm. Both stand on the tournament's podium as themselves.
+To make one, open HERO TOOL on the Mods page (or run @TOOL@ beside the game).
+Give it a model as a .glb (glTF's one-file form): a standing two-legged
+character of up to 1365 triangles, rigged or not. Drag the markers onto its
+joints if it hasn't a skeleton, look at its moves, give it a name, a card
+picture (.png) and sounds (.wav) if you like, and export it. It goes in the
+mods folder as a mod, and "Export and test in game" starts the game with it.
+Mods with heroes can be shared like any other: every player online needs the
+same one to play its hero.
 
 
 MODS

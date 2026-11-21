@@ -1,7 +1,7 @@
 #ifndef BASH_HEROLIST_H
 #define BASH_HEROLIST_H
 
-/* The extra heroes (PC only; docs/EXTRA_HEROES.md), a line each: its EXTRA_ name and the HeroDef its file in main/heroes/ defines. Their
+/* The extra heroes (PC only; docs/HERO_PACKS.md), a line each: its EXTRA_ name and the HeroDef that's its (none: a pack's, filled in). Their
  * order is their cards' in the character select's third row, which has room for EXTRA_CARDS_MAX. A hero's line is all it needs outside
  * its own file: from it come its number (extraheroes.h's EXTRA_), its place in HeroDefs (bonusheroes.c), its card, and for each kind of
  * model an archive entry for its textures and one for its model (main.c's DatIndex), a file group of the two (FileGroups), a bank
@@ -11,10 +11,9 @@
  * first EXTRA_PACKS in the mods' order, so their cards come first. There's no def till then. */
 #define EXTRA_PACK_LIST(X) X(PACK1, none) X(PACK2, none) X(PACK3, none) X(PACK4, none)
 #define EXTRA_PACKS 4
-/* The heroes made from the player's other discs, each with its file in main/heroes/ */
-#define EXTRA_DISC_LIST(X) \
-    X(ROO, HeroRoo) \
-    X(PINSTRIPE, HeroPinstripe)
+/* Heroes compiled in, each with its file in main/heroes/: none, since Ripper Roo and Pinstripe, made from the player's Crash Bandicoot
+ * disc, went for hero packs (2026-11-21; docs/HERO_PACKS.md) */
+#define EXTRA_DISC_LIST(X)
 
 #define EXTRA_COUNT_ONE(name, def) +1
 enum { EXTRA_HERO_COUNT = 0 EXTRA_HERO_LIST(EXTRA_COUNT_ONE) };

@@ -51,9 +51,12 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   after a change, and HLSL in `gfx.c` for Direct3D: a change goes in both.
 - The port on Android: `tools/da sh port/android/build.sh` makes the APK in its own container, and it's tested in Android's emulator on
   Windows with adb (PORT.md, Android; `MSYS_NO_PATHCONV=1` in Git Bash). Touch buttons are `port/platform/touch.c`.
-- The port's extra heroes (Ripper Roo from the player's Crash Bandicoot disc): a line each in `port/game/include/bash/herolist.h`
-  and a file each in `port/game/main/heroes/`, Roo's (`roo.c`) the template. Adding one follows the checklist at the top of
-  [docs/EXTRA_HEROES.md](docs/EXTRA_HEROES.md); `playtest.mjs hero ID` checks it in every game, for work on that hero. Releases and
+- The port's custom heroes are hero packs ([docs/HERO_PACKS.md](docs/HERO_PACKS.md)): a glTF model in a mod's `heroes/<id>/`, made
+  into the game's models as it loads (`port/game/main/packheroes.c`, `packfollow.c`), from a pack the hero tool writes (`herotool/`,
+  its own CMake project, opened from the launcher's HERO TOOL). Bobby, the example, is `port/mods/bobby/`, exported by the tool from
+  `port/mods/bobby-model.glb`. Fixes go in the loader or the tool, for any model, never one hero's; 1365 triangles is a hard limit
+  (the user's word). Ripper Roo and Pinstripe, from the Crash Bandicoot disc, were removed for them (2026-11-21; EXTRA_HEROES.md
+  is their record). `playtest.mjs hero ID` checks a pack in every game, for work on that hero or the packs' code; releases and
   other changes only check that they load, `playtest.mjs heroes` (a few seconds; the user's word, 2026-11-09).
 - Playing/testing a build: `tools/dk make disc` (bootable `build/CrashBash.cue`),
   `make disc-check` (byte-identical to retail), `make shift OVL=tank PAD=0x40`

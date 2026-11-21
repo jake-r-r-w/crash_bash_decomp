@@ -83,8 +83,8 @@ static const MenuOption GameOptionsList[] = {
     { "SKIP INTRO", "START AT THE MAIN MENU, WITHOUT THE LOGOS", SET_SKIP_INTRO },
     { "SKIP LOADING", "LOAD IN ONE GO, WITHOUT THE LOADING SCREENS", SET_SKIP_LOADING },
     { "CHEAT MENU", "THE ORIGINAL'S HIDDEN CHEATS, IN THE PAUSE MENU", SET_CHEAT_MENU },
-    /* PC: the heroes of the mods that are on (docs/HERO_PACKS.md), and those made from the player's other discs */
-    { "CUSTOM HEROES", "HEROES FROM YOUR MODS, AND ROO AND PINSTRIPE FROM A DISC", SET_EXTRA_HEROES },
+    /* PC: the heroes of the mods that are on (docs/HERO_PACKS.md) */
+    { "CUSTOM HEROES", "HEROES OF YOUR OWN, FROM YOUR MODS", SET_EXTRA_HEROES },
 #ifndef __ANDROID__
     /* PC: the hero tool, beside the program (herotool/, docs/HERO_PACKS.md) */
     { "HERO TOOL", "MAKE A HERO OF YOUR OWN FROM A 3D MODEL, AS A MOD", SET_HERO_TOOL },

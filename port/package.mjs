@@ -125,6 +125,7 @@ const glibc = LINUX ? run('objdump', ['-T', exe]).match(/GLIBC_[0-9.]+/g).map(v 
 const SYSTEM = LINUX ? {
     SYSTEM: 'Linux',
     PROGRAM: 'crashbash',
+    TOOL: 'herotool',
     RUN: './crashbash',
     NEEDS: `It needs 64-bit Linux with glibc ${glibc} or newer and a graphics card with Vulkan.\n` +
         'Asking for the disc image takes a file chooser: a desktop portal, or zenity.',
@@ -133,6 +134,7 @@ const SYSTEM = LINUX ? {
 } : {
     SYSTEM: 'Windows',
     PROGRAM: 'crashbash.exe',
+    TOOL: 'herotool.exe',
     RUN: 'crashbash.exe',
     NEEDS: 'It needs 64-bit Windows 10 or 11 and a graphics card with Direct3D 12. Windows\nmay warn about an unrecognised program, as this one isn\'t signed.',
     SAVES: 'They\'re kept in %APPDATA%\\CrashBash\\CrashBash.\n' +
@@ -181,6 +183,8 @@ JSON.parse(launcher_json);
 fs.writeFileSync(path.join(dir, 'recomplauncher.json'), launcher_json);
 /* where mods go, so it's there to drop them in */
 fs.mkdirSync(path.join(dir, 'mods'));
+/* Bobby, the hero packs' example (docs/HERO_PACKS.md), as the folder the tool exports */
+fs.cpSync(path.join(PORT, 'mods/bobby'), path.join(dir, 'mods/bobby'), { recursive: true });
 fs.writeFileSync(path.join(dir, 'mods', 'README.txt'), eol('Put mods here, as their zips. They show up on the Mods page, under Settings in\nthe menu the game opens with.\n'));
 
 check_program(fs.readFileSync(exe), 'the program');

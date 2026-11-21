@@ -1,5 +1,11 @@
 # Extra heroes
 
+**Retired (2026-11-21).** Ripper Roo and Pinstripe, and the disc reading they were made from, were removed for hero packs:
+heroes of anyone's own, made with the hero tool and loaded from mods, needing nothing of another game. The current guide is
+[HERO_PACKS.md](HERO_PACKS.md). This page stays as the record of how the extra heroes were worked out, since the packs' code
+came from theirs (`packfollow.c` is Pinstripe's following, `ride_make` and the warps are as they were), and HERO_PACKS.md points
+to its sections on how a hero plays and its sounds. The files it names under `main/heroes/` are in the git history.
+
 The PC port's extra heroes (ROADMAP-B.md, 7.12): characters from the player's own copies of other
 Crash games, playing as heroes of their own when EXTRA HEROES is on. Ripper Roo, from Crash
 Bandicoot (USA), is the first, and his file, `port/game/main/heroes/roo.c`, is the template:

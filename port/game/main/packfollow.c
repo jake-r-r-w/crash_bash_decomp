@@ -1,7 +1,7 @@
 /* A hero pack's models of the kinds where the game's heroes ride or hold something (Pogo, Ballistix, Tank, Crash Dash, Splash Dash,
- * the mallet, the dino and the kegs games; docs/HERO_PACKS.md): Crash's model of that kind followed frame by frame, as Pinstripe's are
- * made (heroes/pinstripe.c, whose tables of where Crash and his prop are in each kind's model are copied here), but with the pack's own
- * skeleton:
+ * the mallet, the dino and the kegs games; docs/HERO_PACKS.md): Crash's model of that kind followed frame by frame, as Pinstripe's were
+ * made (heroes/pinstripe.c, now in the git history, whose tables of where Crash and his prop are in each kind's model are copied
+ * here), but with the pack's own skeleton:
  * - Crash measured in each frame: his hips, chest and shoulders (his body's turn), each arm's shoulder, elbow and hand, his feet, and
  *   where he rides astride his legs' hips, knees and ankles, all in the prop's own frame;
  * - the pack's hips on his, its trunk turned as his is, each arm reaching (two-bone) for his hand (on the grip, where the kind has grips;

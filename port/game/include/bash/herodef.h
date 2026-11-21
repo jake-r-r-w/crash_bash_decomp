@@ -1,9 +1,9 @@
 #ifndef BASH_HERODEF_H
 #define BASH_HERODEF_H
 
-/* An extra hero, as its own file in main/heroes/ defines it (PC only): how it plays (extraheroes.c), and how it's made from the player's
- * own copy of its game into Crash Bash's models, sounds and picture (its make, with bash/heromake.h's help). Ripper Roo (heroes/roo.c)
- * is the one the others follow: docs/EXTRA_HEROES.md goes through him, a part at a time. */
+/* An extra hero (PC only): how it plays (extraheroes.c), and how it's made into Crash Bash's models, sounds and picture (its make,
+ * with bash/heromake.h's help). Each is a hero pack's, its def filled in from the pack as the mods are read (main/packheroes.c,
+ * docs/HERO_PACKS.md). Ripper Roo and Pinstripe, made from the Crash Bandicoot disc, were the first (docs/EXTRA_HEROES.md). */
 
 #include "common.h"
 #include "bash/herolist.h"
@@ -73,13 +73,12 @@ typedef struct {
 typedef struct HeroDef {
     const char *name;    /* in the game's capitals */
     const char *id;      /* for a test run's --extra-hero */
-    const char *disc;    /* its game's disc, by its serial (disc_image_find) */
     s32 prefer;          /* the original hero it borrows, if nobody's playing that one */
     HeroKind kinds[NUM_KINDS];
     const Voice *voices; /* ended by offset -1 */
     const char *face;    /* the animation its face on the panel and the select is drawn from (frame 0), if it has no card */
     float face_turn;     /* and how far round it's turned, in degrees */
-    /* Makes it from its game's disc into out; 0 if it can't (and out's left empty). */
+    /* Makes it into out (a pack's, packheroes.c); 0 if it can't (and out's left empty). */
     s32 (*make)(HeroMade *out);
     float face_head;     /* the share of its model, from the top, that's its head, for a face drawn from it (0: extraheroes.c's FACE_HEAD) */
 } HeroDef;

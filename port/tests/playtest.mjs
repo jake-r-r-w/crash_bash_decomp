@@ -24,12 +24,12 @@
  *       anything didn't. Between big steps of cleaning up, in place of the long tests. --hero ID plays the hero check's games with
  *       four of that extra hero instead, against a baseline of its own: for a change to its making or to extra heroes' code.
  *   node port/tests/playtest.mjs hero ID [--one]
- *       An extra hero (docs/EXTRA_HEROES.md) in every game, four of it at once, each borrowing another base (--one: only player 1):
+ *       A pack's hero (docs/HERO_PACKS.md) in every game, four of it at once, each borrowing another base (--one: only player 1):
  *       its model of every kind made, each game drawing it in its own kind, none on foot for want of one, nothing crashed, and three
  *       shots of each game on a contact sheet to look over. The checklist's automatic part, for work on that hero.
  *   node port/tests/playtest.mjs heroes [ID ...]
- *       Whether the extra heroes load (all of herolist.h's by default), in a few seconds: one short game with them as the players, each
- *       made from its disc and drawn as itself. What a release or a change elsewhere checks of them, in place of `hero ID`.
+ *       Whether the hero packs load (all of the repo's mods' by default), in a few seconds: one short game with them as the players,
+ *       each made from its pack and drawn as itself. What a release or a change elsewhere checks of them, in place of `hero ID`.
  *   node port/tests/playtest.mjs mods
  *       Mods from a mods folder: zips of textures, of archive files and of patches to them, broken ones, and which wins, by the
  *       pictures of one mode.
@@ -74,7 +74,7 @@
  *       One run, a shot every STEP vblanks, on a contact sheet (Windows).
  *
  * For bosses, --no-cheats leaves NO HARM HERO off, --vblanks N lets it try for that long, --shots FROM STEP COUNT takes those shots instead of eight spread over the run,
- * and --hero ID plays it as that extra hero (roo: --extra-hero 0 ID, docs/EXTRA_HEROES.md).
+ * and --hero ID plays it as that pack's hero (bobby: --extra-hero 0 ID with the repo's mods on, docs/HERO_PACKS.md).
  *
  * --exe FILE picks another build (by default windows-clang's, or linux-clang's on Linux). A crash's addresses become source lines if
  * llvm-symbolizer is on the PATH (Windows). On Linux they run in the port's container, on its virtual screen (docs/PORT.md, Linux):
@@ -311,7 +311,7 @@ async function play_boss(name, exe, watch, tile, cheats, shot_at, vblanks, hero)
     fs.mkdirSync(dir, { recursive: true });
     const args = ['--cheat-menu', ...(cheats ? ['--cheats', '1'] : []), '--aim', '--skip-intro', '--skip-loading', '--saves', rel('saves'), ...route_to_boss(boss.mode)];
     if (hero != null) {
-        args.push('--extra-hero', '0', hero);
+        args.push(...pack_mods().args, '--extra-hero', '0', hero);
     }
     if (watch) {
         args.push('--sound', '--window', '1280', '960');
@@ -487,7 +487,7 @@ async function same(args) {
     const dir = path.join(OUT, 'same', ...(hero != null ? [`hero-${hero}`] : []));
     /* one for each system, as their GPU APIs draw a pixel here and there differently: the sound is the same on both */
     const base = path.join(dir, `baseline${all ? '-all' : ''}${WINDOWS ? '' : `-${process.platform}`}.json`);
-    const extra = hero != null ? [0, 1, 2, 3].flatMap(p => ['--extra-hero', String(p), hero]) : [];
+    const extra = hero != null ? [...pack_mods().args, ...[0, 1, 2, 3].flatMap(p => ['--extra-hero', String(p), hero])] : [];
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
     const old = !save && fs.existsSync(base) ? JSON.parse(fs.readFileSync(base, 'utf8')) : null;
@@ -537,7 +537,7 @@ async function same(args) {
     return report(results);
 }
 
-/* An extra hero in every game (docs/EXTRA_HEROES.md, The checklist): a game of each kind of model the games' heroes have, and the
+/* A pack's hero in every game (docs/HERO_PACKS.md): a game of each kind of model the games' heroes have, and the
    games with something of their own (Ring Ding on foot, Manic Panic on foot and on the bear, the swamp's hover tanks). */
 const HERO_GAMES = [
     { mode: 0, game: 'Jungle Bash' }, { mode: 27, game: 'Ring Ding' }, { mode: 18, game: 'Tilt Panic' }, { mode: 21, game: 'Manic Panic' },
@@ -561,13 +561,13 @@ async function hero(args) {
     const dir = path.join(OUT, 'hero', id ?? '');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const players = one ? [1] : [1, 2, 3, 4];
-    const extra = players.flatMap(p => ['--extra-hero', String(p - 1), id]);
+    const extra = [...pack_mods().args, ...players.flatMap(p => ['--extra-hero', String(p - 1), id])];
     const results = [];
     const played = new Set();
     let made = null;
 
     if (id == null) {
-        console.log('node port/tests/playtest.mjs hero ID [--one]: which extra hero? (roo)');
+        console.log("node port/tests/playtest.mjs hero ID [--one]: which pack's hero? (bobby)");
         return 2;
     }
     fs.rmSync(dir, { recursive: true, force: true });
@@ -619,7 +619,7 @@ async function hero(args) {
     const has = made?.startsWith('is made') ? made.replace(/^is made: a model /, '').split('; none ')[0].split(', ') : [];
     const none = made?.includes('; none ') ? made.split('; none ')[1] : null;
     results.unshift(['made', { pass: made?.startsWith('is made') === true && none == null,
-        what: made == null ? 'no log line: is EXTRA HEROES there?' : none != null ? `no model ${none}` : made }]);
+        what: made == null ? 'no log line: is its mod there?' : none != null ? `no model ${none}` : made }]);
     const unplayed = has.filter(k => !played.has(k));
     results.push(['every kind played', { pass: has.length > 0 && unplayed.length === 0, what: unplayed.length === 0 ? `${has.length} kinds` : `not: ${unplayed.join(', ')}` }]);
     if (process.platform === 'win32') {
@@ -632,14 +632,13 @@ async function hero(args) {
 }
 
 /* Whether the extra heroes load, which is all a release or a change elsewhere needs to know of them (the user's word, 2026-11-09):
-   one short game with each of them a player, four at a time, each made from the player's disc and drawn as itself, and nothing
-   crashed. `hero ID` plays one in every game, for work on that hero. The heroes are herolist.h's, by its names, and the hero packs'
-   in the repo's own mods (port/mods/<mod>/heroes/<id>/, docs/HERO_PACKS.md), all those mods on. */
+   one short game with each of them a player, four at a time, each made from its pack and drawn as itself, and nothing crashed.
+   `hero ID` plays one in every game, for work on that hero. The heroes are the hero packs' in the repo's own mods
+   (port/mods/<mod>/heroes/<id>/, docs/HERO_PACKS.md), all those mods on. */
 async function heroes(args) {
     const exe = option(args, '--exe', DEFAULT_EXE);
-    const list = fs.readFileSync(path.join(ROOT, 'port/game/include/bash/herolist.h'), 'utf8');
     const packs = pack_mods();
-    const ids = args.length !== 0 ? args : [...packs.ids, ...[...list.matchAll(/^\s*X\((\w+), \w+\)/gm)].map(m => m[1].toLowerCase())];
+    const ids = args.length !== 0 ? args : packs.ids;
     const dir = path.join(OUT, 'heroes');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const results = [];
@@ -661,12 +660,12 @@ async function heroes(args) {
 
             if (crash != null || r.code !== 0) {
                 results.push([id, { pass: false, what: crash ?? `exit ${r.code}` }]);
-            } else if (made == null || !made.startsWith('is made') || (!packs.ids.includes(id) && made.includes('; none '))) {
-                results.push([id, { pass: false, what: made ?? 'not made: no log line (is its disc there?)' }]);
+            } else if (made == null || !made.startsWith('is made')) {
+                results.push([id, { pass: false, what: made ?? 'not made: no log line (is its mod there?)' }]);
             } else if (drawn == null || /no model/.test(drawn)) {
                 results.push([id, { pass: false, what: `player ${p + 1}: ${drawn ?? 'not this hero'}` }]);
             } else {
-                results.push([id, { pass: true, what: `made from its ${packs.ids.includes(id) ? 'pack' : 'disc'}, player ${p + 1} ${drawn} in ${HERO_GAMES[0].game}` }]);
+                results.push([id, { pass: true, what: `made from its pack, player ${p + 1} ${drawn} in ${HERO_GAMES[0].game}` }]);
             }
         });
     }

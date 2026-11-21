@@ -1,20 +1,21 @@
 # Hero packs
 
-A hero of your own in the PC port: a glTF model in a mod, playing in an original hero's place as Ripper Roo and Pinstripe do
-([EXTRA_HEROES.md](EXTRA_HEROES.md)). Unlike them it needs nothing of another game: the pack holds only its creator's model,
+A hero of your own in the PC port: a glTF model in a mod, playing in an original hero's place as Ripper Roo and Pinstripe did
+([EXTRA_HEROES.md](EXTRA_HEROES.md), retired: they were removed for packs on 2026-11-21, with the disc reading they were made
+from). Unlike them it needs nothing of another game: the pack holds only its creator's model,
 clips, sounds and card, and the game makes it into Crash Bash's models as it loads. The plan, in phases, is in the session plan of
 2026-11-21 (the hero tool, every kind of model, borrowed moves, online), and this page grows with it.
 
 **Where it stands:** a pack's hero has a model of every kind the game's heroes have: on foot and on the podium from its own moves,
 riding the polar bear (`pack_ride`, through `ride_make`), and in the eight kinds where the heroes ride or hold something else
-(`packfollow.c`): Crash's model of that kind followed frame by frame, as Pinstripe's are made, his tables of where Crash and his
+(`packfollow.c`): Crash's model of that kind followed frame by frame, as Pinstripe's were made, his tables of where Crash and his
 prop are copied, but posing the pack's own skeleton: its hips on Crash's, its trunk turned as his, each arm reaching (two-bone) for
 his hand, on the grip where there's one, its legs astride as his, on the pegs or the floor where he stands, else sat, and hidden in
-a tank's hatch or a race cart; the prop (painted gunmetal where Pinstripe's is) as it moves, or in its hand where he carries it.
+a tank's hatch or a race cart; the prop (painted gunmetal where Pinstripe's was) as it moves, or in its hand where he carries it.
 Bobby, the example, plays in every game (each checked with four of him).
 
 **The character select's room.** Each of its slots of drawn pieces (`EngineSlotSubs`) held the PS1's 32, and the select's own 26
-with two a card and their row's band left room for two cards: a third (the first pack's, beside Roo and Pinstripe) spilt into the
+with two a card and their row's band left room for two cards: a third (the first pack's, beside Roo and Pinstripe then) spilt into the
 next slot, the menus' backdrop, which went black after the select. They hold `ENGINE_SLOT_SUBS` (40) now, room for all four.
 
 ## A pack
@@ -83,7 +84,7 @@ build/port/windows-clang/crashbash.exe --mode 0 --skip-intro --skip-loading --wi
 ```
 
 `--extra-hero` names a pack's hero by its id once the mods are read. `node port/tests/playtest.mjs heroes` loads the packs in
-`port/mods/` with Roo and Pinstripe. The log says what was made: `hero packs: bobby made, 1318 triangles, ...`.
+`port/mods/`, and `hero ID` plays one in every game. The log says what was made: `hero packs: bobby made, 1318 triangles, ...`.
 
 ## Bobby, the example
 
@@ -154,4 +155,4 @@ saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it 
 Checked: Bobby's model with its markers, and his first, shapes-built model with its bones renamed as Mixamo names them and no
 markers, each four of him in Crate Crush.
 
-Still to come: guessing the markers for a model that has none.
+A model with no markers and no rig starts from the guess (`kit_guess_markers`, above), to drag where they belong.

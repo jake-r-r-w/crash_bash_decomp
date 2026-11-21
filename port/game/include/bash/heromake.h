@@ -1,8 +1,8 @@
 #ifndef BASH_HEROMAKE_H
 #define BASH_HEROMAKE_H
 
-/* Making an extra hero (PC only; bonusheroes.c): what a hero's file (main/heroes/) uses to read its game's disc, and to make what it
- * finds there into Crash Bash's models, on foot and riding a polar bear. docs/EXTRA_HEROES.md shows Ripper Roo's use of each part. */
+/* Making an extra hero (PC only; bonusheroes.c): what the hero packs' making (main/packheroes.c, packfollow.c) uses to write Crash
+ * Bash's models, on foot, riding a polar bear and the rest, and to fit and paint them. docs/HERO_PACKS.md. */
 
 #include "common.h"
 #include "bash/herodef.h"
@@ -33,37 +33,6 @@ V3 hm_mix(V3 a, V3 b, float t);
 V3 hm_turn_x(V3 p, V3 c, float a); /* a radians about the axis through c along x, y or z */
 V3 hm_turn_y(V3 p, V3 c, float a);
 V3 hm_turn_z(V3 p, V3 c, float a);
-
-/* --- Crash Bandicoot (1996)'s levels, as CrashEdit (the cbhacks project) reads them ---
- * A level's NSF is 64 KB pages, each raw (magic 0x1234) or compressed (0x1235: runs and repeats for its first `length` bytes, `skip`
- * bytes to pass, the rest raw). A page of entries lists them, and each entry its items; a texture page is 256 x 128 16-bit units of
- * VRAM. An animation's items are its frames: a 56-byte header (vertex count, model, x, y, z offsets, collision) and 6 bytes a vertex
- * (x, y, z unsigned, a normal signed), each at (xyz + offset - 128) * the model's scale. A model's first item has its triangle count,
- * its scale and its colours (4-byte slots: r, g, b, flags) and textures (3 slots: the colour with byte 3's top bit, the texture page,
- * and where in it), its second 8 bytes a triangle: three vertices' byte offsets and its slot. */
-#define C1_PAGE_BYTES 65536
-typedef struct {
-    u8 *pages; /* count of C1_PAGE_BYTES */
-    s32 count;
-} C1Level;
-typedef struct {
-    s32 type, count;
-    const u8 *item[128];
-    s32 size[128];
-} C1Entry;
-s32 c1_level_read(DiscImage *disc, const char *path, C1Level *out); /* free(out->pages) after */
-s32 c1_entry_find(const C1Level *l, const char *name, C1Entry *out);
-const u8 *c1_texture_page(const C1Level *l, u32 eid);
-/* A model's scale (its first item's), and a frame's vertices in Crash Bash's axes (y down, z the other way), not scaled to its units
- * yet; with their normals, if `normals` isn't NULL. The count, or 0. */
-void c1_model_scale(const C1Entry *model, s32 scale[3]);
-s32 c1_frame_verts(const u8 *frame, s32 size, const s32 scale[3], V3 *out, V3 *normals, s32 max);
-/* A sound entry's ADPCM (11025 Hz, PS1's), to free, and its size. */
-u8 *c1_sound(const C1Level *l, const char *name, s32 *size);
-/* The 64 x 64 sprite an object's item `item` shows first (its HUD face, for one), into out; 0 if there's none. */
-s32 c1_sprite64(const C1Level *l, const char *object, s32 item, u32 out[64 * 64]);
-/* The same of the first sprite of its that's w x h (out w x h, a power of two each, 4 to 256) */
-s32 c1_sprite(const C1Level *l, const char *object, s32 item, s32 w, s32 h, u32 *out);
 
 /* --- a made model: its faces, images and animations, written as Crash Bash's (docs/ASSETS.md) --- */
 #define MADE_MAX_IMAGES 32
@@ -112,23 +81,6 @@ typedef struct {
  * written as keyframes with the frames between blended. */
 s32 made_write(const MadeModel *m, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size);
 void made_images_free(MadeImage *images, s32 n);
-
-/* How a Crash Bandicoot model's faces are lit as they stand (c1_model_faces): from `dir` (Crash Bash's axes, y down), each corner's
- * colour times base + gain of its light, the share of its normal toward dir, none from behind (C1LightPlain, Roo's); or, wrapped,
- * gain of ((1 + that share) / 2) squared, so the side away from the light still shades and isn't all one colour. */
-typedef struct {
-    V3 dir;
-    float base, gain;
-    s32 wrap;
-} C1Light;
-extern const C1Light C1LightPlain;
-
-/* A Crash Bandicoot model's triangles as made faces, lit as they'd stand by normals (frame `normals` of its standing animation) by
- * `light` (NULL for C1LightPlain), and their textures as made images; 0 if it couldn't. Each is drawn as its game drew it: blended if
- * its slot's blend mode (its fourth byte's bits 5 and 6) isn't 3, the solid one, and unlit if that byte's bit 4 is set (Pinstripe's
- * muzzle flash is both, added to what's behind it). */
-s32 c1_model_faces(const C1Level *l, const C1Entry *model, const V3 *normals, s32 nvert, MadeFace *faces, s32 max, s32 *nfaces,
-                   MadeImage *images, s32 *nimages, const C1Light *light);
 
 /* --- part of one of the game's own models, as the player's archive has it ---
  * The strips of a model bank's first mesh that `keep` picks, from where each one's corners are as the model rests (Crash Bash's axes,

@@ -36,7 +36,7 @@
 
 int overlay_is_code(int entry);
 int mode_text_room(int entry);
-/* game/main/bonusheroes.c: the bonus heroes' files, from the player's other discs */
+/* game/main/bonusheroes.c: the hero packs' heroes' files */
 void bonus_heroes_files(void);
 
 typedef struct {

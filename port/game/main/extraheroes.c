@@ -1,6 +1,6 @@
-/* Extra heroes (bash/extraheroes.h, PC only): characters from the player's own copies of other Crash games, as heroes of their own:
- * Ripper Roo, from Crash Bandicoot, when that disc is beside the program or in a discs folder. Each is a file of its own in heroes/
- * (bash/herodef.h: how it plays, and how bonusheroes.c makes its models), and without its disc there's none.
+/* Extra heroes (bash/extraheroes.h, PC only): heroes of the player's own, from the hero packs of the mods that are on
+ * (docs/HERO_PACKS.md; bash/herodef.h: how each plays, and how bonusheroes.c and packheroes.c make its models). Ripper Roo and
+ * Pinstripe, from the Crash Bandicoot disc, were the first, till 2026-11-21 (docs/EXTRA_HEROES.md).
  *
  * The game keeps a great deal by hero number, 1 to 8: speeds, the computer's play, sounds, shadows, the moves, which model each game
  * loads. So an extra hero borrows, inside, the number of an original hero nobody's playing that match (at most four of the eight are),
@@ -238,7 +238,7 @@ void extra_heroes_assign(void) {
         }
         if (!extra_heroes_on() || (PlayerExtra[i] != EXTRA_NONE && !extra_hero_available(PlayerExtra[i]))) {
             if (PlayerExtra[i] != EXTRA_NONE && settings()->test_extra[i] != 0) {
-                printf("extra heroes: %s isn't there: its pack is in no mod that's on, or its game's disc is missing\n",
+                printf("extra heroes: %s isn't there: its pack is in no mod that's on\n",
                        extra_hero_name(PlayerExtra[i]));
             }
             PlayerExtra[i] = EXTRA_NONE;

@@ -106,7 +106,6 @@ static void slot_def(PackSlot *s, s32 slot) {
     memset(d, 0, sizeof(*d));
     d->name = s->info.name;
     d->id = s->info.id;
-    d->disc = NULL;
     d->prefer = s->info.prefer;
     for (k = 0; k < NUM_KINDS; k++) {
         const PackKind *pk = &s->info.kinds[k];

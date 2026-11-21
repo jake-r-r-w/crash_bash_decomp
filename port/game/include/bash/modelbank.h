@@ -328,7 +328,7 @@ enum DbaseIds {
     DB_CutsceneAkuData, /* 280: models\cutscene\aku\data.mdl */
     DB_CutsceneAkuUkaData2, /* 281: models\cutscene\aku_uka\data2.mdl */
     DB_CutsceneAkuUkaData, /* 282: models\cutscene\aku_uka\data.mdl */
-    /* 283, PC: the extra heroes' models, made from the player's own discs (main/bonusheroes.c, main/heroes/): HERO_KINDS of each, in
+    /* 283, PC: the extra heroes' models, made from their hero packs (main/bonusheroes.c, main/packheroes.c): HERO_KINDS of each, in
      * bash/herolist.h's order, DB_Bonus + BONUS_SLOT(EXTRA_ number, KIND_) */
     DB_Bonus,
     DB_COUNT = DB_Bonus + BONUS_SLOTS
