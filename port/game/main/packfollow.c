@@ -879,7 +879,7 @@ static s32 map_foot(V3 p) {
 }
 
 /* A marker's reach on the model: out to its MAP_NEAREST nearest corners (of its body, or of the prop for a grip or a peg), at least
- * the map's r and at most MAP_FARTHEST times it. A marker inside a big body still finds the corners round it. */
+ * the map's r and at most MAP_FARTHEST times it (on_prop 2: of either). A marker inside a big body still finds the corners round it. */
 #define MAP_NEAREST 6
 #define MAP_FARTHEST 3.0f
 static float map_reach(const Follow *c, TmplPoint m, s32 on_prop, s32 side) {
@@ -892,7 +892,7 @@ static float map_reach(const Follow *c, TmplPoint m, s32 on_prop, s32 side) {
     for (k = 0; k < c->prop.corners; k++) {
         float d;
 
-        if ((c->kind->prop != NULL && c->prop.in_part[k]) != on_prop || (side < 0 && c->ref[k].x > -10) || (side > 0 && c->ref[k].x < 10)) {
+        if ((on_prop != 2 && (c->kind->prop != NULL && c->prop.in_part[k]) != on_prop) || (side < 0 && c->ref[k].x > -10) || (side > 0 && c->ref[k].x < 10)) {
             continue;
         }
         d = vlen(vsub(c->ref[k], map_v(m)));
@@ -929,7 +929,8 @@ static void map_fit(Follow *c) {
         MapReach[MR_PEG + i] = map_reach(c, m->peg[i], 1, 0);
         MapKind.shoulder_r = fmaxf(MapKind.shoulder_r, map_reach(c, m->shoulder[i], 0, 0));
         MapKind.elbow_r = fmaxf(MapKind.elbow_r, map_reach(c, m->elbow[i], 0, 0));
-        MapKind.hand_r = fmaxf(MapKind.hand_r, map_reach(c, m->hand[i], 0, 0));
+        /* (a hand on what it holds, or where a model has none, as Coco in her cart: the corners there, of the prop too) */
+        MapKind.hand_r = fmaxf(MapKind.hand_r, map_reach(c, m->hand[i], 2, 0));
         MapLegs.r = fmaxf(MapLegs.r, fmaxf(map_reach(c, m->hip[i], 0, 0), fmaxf(map_reach(c, m->knee[i], 0, 0), map_reach(c, m->ankle[i], 0, 0))));
     }
 }
@@ -1073,10 +1074,11 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     for (k = 0; k < c->prop.corners; k++) {
         V3 q = c->ref[k];
 
-        for (i = 0; i < 2 && !(fk->prop != NULL && c->prop.in_part[k]); i++) {
+        for (i = 0; i < 2 && (fk == &MapKind || !(fk->prop != NULL && c->prop.in_part[k])); i++) {
             V3 at = fk->hand[i];
 
-            if (fk->grip != NULL && !fk->carry && c->ngrips[i] > 0) {
+            /* (a template's hands are where its map says, whatever they hold) */
+            if (fk->grip != NULL && !fk->carry && c->ngrips[i] > 0 && fk != &MapKind) {
                 at = mid_of(c->ref, c->grips[i], c->ngrips[i]);
             }
             if (vlen(vsub(q, at)) < fk->hand_r && q.z < fk->hand_back && c->nhand[i] < FOLLOW_PART_MAX) {

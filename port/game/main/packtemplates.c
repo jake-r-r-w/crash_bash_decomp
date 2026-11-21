@@ -68,6 +68,58 @@ static const TemplateMap Maps[] = {
       { P(-200, -500, 30), P(200, -490, 30) }, { P(-360, -420, 0), P(270, -340, 60) }, { P(-350, -290, 20), P(250, -200, 0) },
       PAIR(80, -250, 0), PAIR(90, -170, -30), PAIR(110, -60, -20), PAIR(150, -20, -180),
       NONE, NONE, { BOX(-330, -440, -110, -150, -210, 110) }, 1, 1 },
+
+    /* -- Coco (2) -- */
+    /* her pogo: hands on its handlebar, feet on its pegs */
+    { 2, KIND_POGO, DB_CharsPogoCoco, 25,
+      P(0, -210, 30), P(0, -300, -20), P(0, -420, -150),
+      PAIR(45, -330, -40), PAIR(75, -300, -90), PAIR(85, -345, -150),
+      PAIR(30, -200, 30), PAIR(40, -160, 80), PAIR(45, -100, 0), PAIR(50, -75, -40),
+      PAIR(95, -345, -150), PAIR(55, -65, -30),
+      { BOX(-10, -370, -220, 10, 10, 60), BOX(-120, -360, -180, 120, -330, -120), BOTH(20, -80, -80, 100, -50, 20) }, 1, 0 },
+    /* her car: sat, her arms out to its levers' inner ends */
+    { 2, KIND_BALL, DB_CharsBallCoco, 30,
+      P(0, -170, 100), P(0, -250, 80), P(0, -330, 40),
+      PAIR(60, -240, 80), PAIR(150, -230, 60), PAIR(240, -225, 30),
+      NONE, NONE, NONE, NONE,
+      PAIR(300, -230, 30), NONE, { BOTH(260, -260, -100, 420, 20, 120) }, 1, 0 },
+    /* her tank: her head and shoulders in its hatch, her hands low */
+    { 2, KIND_TANK, DB_CharsTankCoco, 25,
+      P(0, -320, 10), P(0, -380, 0), P(0, -480, -40),
+      PAIR(50, -390, -10), PAIR(60, -360, 20), PAIR(45, -340, -40),
+      NONE, NONE, NONE, NONE,
+      NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 },
+    /* her race cart: sat in it, her hands on the cockpit's front */
+    { 2, KIND_RACE, DB_CharsRaceCoco, 25,
+      P(0, -120, 40), P(0, -170, 30), P(0, -260, -20),
+      PAIR(50, -175, 20), PAIR(70, -140, -20), PAIR(60, -125, -60),
+      NONE, NONE, NONE, NONE,
+      PAIR(80, -110, -80), NONE, { BOX(-260, -112, -260, 260, 80, 300) }, 1, 0 },
+    /* her fish: astride it, reaching forward */
+    { 2, KIND_SPLASH, DB_CharsSplashCoco, 25,
+      P(0, -170, -20), P(0, -240, 0), P(0, -380, -30),
+      PAIR(40, -260, 0), PAIR(60, -230, -60), PAIR(60, -210, -120),
+      PAIR(30, -160, -20), PAIR(70, -100, -70), PAIR(90, -30, -80), NONE,
+      NONE, NONE, { BOX(-30, -150, -260, 30, 100, 300), BOX(-230, -20, -260, 230, 100, 300), BOTH(110, -150, -260, 230, 100, 300) }, 1, 0 },
+    /* her mallet: its head at her left side in her left hand, her right on her hip */
+    { 2, KIND_MALLET, DB_CharsMalletCoco, 25,
+      P(0, -230, 0), P(0, -330, 0), P(0, -470, -20),
+      PAIR(35, -370, 10), { P(-60, -330, -40), P(80, -300, 40) }, { P(-90, -300, -80), P(40, -280, 20) },
+      PAIR(25, -220, 0), PAIR(30, -120, 0), PAIR(40, -20, -10), PAIR(40, -10, -50),
+      { P(-120, -320, -90), P(0, 0, 0) }, NONE, { BOX(-340, -620, -200, -100, -270, 300) }, 1, 0 },
+    /* her dino: sat on its back, her feet at its sides, the reins in front */
+    { 2, KIND_DINO, DB_CharsDinoCoco, 25,
+      P(0, -410, 30), P(0, -450, 20), P(0, -560, -20),
+      PAIR(40, -470, 0), PAIR(60, -430, -40), PAIR(30, -405, -80),
+      PAIR(30, -400, 0), PAIR(110, -330, -40), PAIR(120, -290, -60), NONE,
+      NONE, NONE, { BOX(-95, -370, -520, 95, 10, 420), BOX(-130, -620, -520, 130, -380, -170), BOTH(95, -150, -300, 160, 10, 300) },
+      1, 0 },
+    /* her keg: hugged at her left, her right hand on her hip; it's in her model's third mesh */
+    { 2, KIND_KEGS, DB_CharsKegsCoco, 25,
+      P(0, -230, -10), P(10, -330, 0), P(0, -470, -20),
+      { P(-30, -370, -20), P(40, -370, 10) }, { P(-40, -310, -60), P(60, -310, 20) }, { P(-20, -280, -110), P(30, -280, 10) },
+      PAIR(25, -220, 0), PAIR(30, -120, -10), PAIR(40, -20, -10), PAIR(40, -10, -60),
+      NONE, NONE, { BOX(-200, -415, -260, -10, -145, 10) }, 1, 3 },
 };
 
 const TemplateMap *pack_template_map(s32 hero, s32 kind) {
