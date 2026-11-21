@@ -671,7 +671,8 @@ Newest first, a few lines each. Details are in the commits.
   it's taken face by face by its fur's colour (`bear_cut`, packfollow.c; map_rider is gone), black only where drawn as its nose,
   eyes and soles; the boxes are ±90. ride_make's fill became `hm_fill_make`/`hm_fill_at` (heromake.h), fitted to each bear's box;
   Crash's bear is byte-identical (Bobby's dumps compared). Checked with all seven bears alone from four sides, `heroes`, and
-  `hero bobby` with Tiny as template (16/16).
+  `hero bobby` with Tiny as template (16/16). Then: a slit by the rump (the fill kept under its faces, `under`), and Coco's,
+  Cortex's and Dingodile's eyes untextured: a part held 8 images and the rider's came first (PART_MAX_IMAGES 16, unused dropped).
 - 2026-11-21 (late): templates on foot (FootKind, crate2 maps for all eight incl. Crash; only for packs whose hero.json says a
   template, so Bobby's is unchanged; foot/MOVE clips override), the podium with them (made from the foot), and the polar bear
   (PolarKind on polar2, a charred LIGHT mesh, rider bits kept off the bear by map_rider). pack_follow_all split into pack_bind and

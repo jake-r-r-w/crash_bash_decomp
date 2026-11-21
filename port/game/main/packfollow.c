@@ -1020,6 +1020,7 @@ static void bear_cut(Follow *c) {
     static s16 new_of[FOLLOW_CORNERS], was[FOLLOW_CORNERS];
     static s8 fur[MADE_MAX_FACES];
     s8 fur_image[PART_MAX_IMAGES];
+    s16 img_of[PART_MAX_IMAGES];
     GamePart *g = &c->prop;
     V3 lo = { 1e9f, 1e9f, 1e9f }, hi = { -1e9f, -1e9f, -1e9f };
     HmFillShape sh;
@@ -1076,6 +1077,28 @@ static void bear_cut(Follow *c) {
     }
     g->nfaces = n;
     g->nvert = nv;
+    /* only the images its faces use (a rider's take room in the model's texture set) */
+    for (i = 0; i < g->nimages; i++) {
+        img_of[i] = -1;
+    }
+    for (i = 0; i < n; i++) {
+        if (g->faces[i].image >= 0) {
+            img_of[g->faces[i].image] = 0;
+        }
+    }
+    for (i = 0, j = 0; i < g->nimages; i++) {
+        if (img_of[i] < 0) {
+            made_images_free(&g->images[i], 1);
+            continue;
+        }
+        g->images[j] = g->images[i];
+        g->image_of[j] = g->image_of[i];
+        img_of[i] = (s16)j++;
+    }
+    g->nimages = j;
+    for (i = 0; i < n; i++) {
+        g->faces[i].image = g->faces[i].image >= 0 ? img_of[g->faces[i].image] : -1;
+    }
     BearFills = 0;
     BearFill.nvert = BearFill.nfaces = 0;
     if (n == 0 || body < 8) {

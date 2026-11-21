@@ -86,7 +86,7 @@ void made_images_free(MadeImage *images, s32 n);
  * The strips of a model bank's first mesh that `keep` picks, from where each one's corners are as the model rests (Crash Bash's axes,
  * y down) and whether it's textured: their faces as made faces, each on its strip's own corners and drawn the same way round, their
  * images, and where its corners are in any frame of the model's animations (hm_model_at, then corner_of). */
-#define PART_MAX_IMAGES 8
+#define PART_MAX_IMAGES 16
 typedef struct {
     u8 *mdl;          /* the model's file */
     s32 corners;      /* its first mesh's corners, */
