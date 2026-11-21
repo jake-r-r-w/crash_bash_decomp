@@ -148,8 +148,8 @@ Dingodile and Rilla Roo each by eight maps (pogo, car, tank, race cart, fish, ma
 their heroes left on them: Coco's pogo has its handlebar, Tiny's, Kong's and Rilla Roo's mallets their handles, Dingodile's pogo its
 whole rocket, and the dinos their arms. What differs between them, all in the maps:
 
-- **No prop**: Cortex's and Brio's pogo models are them alone (the game draws what they're on): a map with no prop boxes has none.
-  The game draws their hover pogo's jets (pogo.c, `PostMovePOGO`) for a pack whose pogo template is theirs, in any hero's place
+- **A jetpack**: Cortex's and Brio's pogo models are them and their jetpacks; the game draws the hover board under them from its
+  jets. Their maps' prop is the jetpack, its faces behind their backs (`FBOX`, z from 25). The game draws the jets (pogo.c, `PostMovePOGO`) for a pack whose pogo template is theirs, in any hero's place
   (`extra_hero_looks`), at the point on its frame where theirs are (0x200): a template's model carries its frames' points, carried
   as its prop is (`MadeModel.points`), and the game finds a pack's own where its base's frame has none (`extra_hero_points`).
 - **No hands**: Coco's and Brio's race carts have only their heads, necks (and Brio's small hands): a hand marker takes the prop's

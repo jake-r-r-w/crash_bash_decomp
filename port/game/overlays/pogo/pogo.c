@@ -1518,6 +1518,9 @@ void PreMovePOGO(u32 arg0) {
     }
 }
 
+/* PC: each player's jump frame, as CortexSmokeFrame and BrioSmokeFrame are theirs: the jets' for a hero in another's place */
+static s32 PogoJetFrame[4];
+
 void PostMovePOGO(u32 i) {
     VECTOR v;
     subengine *sub;
@@ -1576,13 +1579,13 @@ void PostMovePOGO(u32 i) {
                 sub->entity = 0;
             } else if (own) {
                 sub->entity = 0x2021;
-                n = 1 + ((GameFrameCount + i * 5) & 15);
+                n = PogoJetFrame[i];
             }
             if (n > 20) {
                 n = 0;
             }
-            if (n != 20 && n != 0 && !own) {
-                n = Random(16);
+            if (n != 20 && n != 0) {
+                n = own ? (GameFrameCount + i * 5) & 15 : Random(16);
             }
             sub->xform.hasScale = 1;
             sub->xform.scale.vx = 0x1000;
@@ -1656,6 +1659,7 @@ void HeroPogo(u32 arg0) {
     if (h->hero_name == 3) {
         CortexSmokeFrame = 0;
     }
+    PogoJetFrame[arg0] = 0;
     if (TestHeroPogoDazed(arg0) != 0) {
         return;
     }
@@ -1712,6 +1716,7 @@ void HeroPogo(u32 arg0) {
         }
         SetHeroAction(arg0, 0x39);
     }
+    PogoJetFrame[arg0] = n; /* PC: its jump's frame, as Cortex's and Brio's jets have it, for any hero's (PostMovePOGO) */
     switch (Heroes[arg0].hero_name) {
     case 1:
         n = PogoFramesCrash[n];

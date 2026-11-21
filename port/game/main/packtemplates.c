@@ -169,12 +169,12 @@ static const TemplateMap Maps[] = {
       NONE, NONE, { BOX(-200, -415, -260, -10, -145, 10) }, 1, 3 },
 
     /* -- Cortex (3) -- */
-    /* his pogo: crouched on his hover board, which the game draws: his model is him alone */
+    /* his pogo: crouched on the hover board the game draws from his jetpack's jets: the jetpack is its prop, its faces behind his back */
     { 3, KIND_POGO, DB_CharsPogoCortex, 25,
       P(0, -200, 0), P(0, -270, -30), P(0, -430, -90),
       PAIR(60, -280, -10), PAIR(110, -240, 20), PAIR(150, -200, 60),
       PAIR(40, -180, 0), PAIR(60, -120, -40), PAIR(80, -80, -60), PAIR(90, -60, -80),
-      NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 },
+      NONE, NONE, { FBOX(-110, -335, 25, 110, -130, 115) }, 1, 0 },
     /* his car: sat, his arms out to its levers' inner ends */
     { 3, KIND_BALL, DB_CharsBallCortex, 30,
       P(0, -140, 100), P(0, -250, 90), P(0, -430, 0),
@@ -222,12 +222,12 @@ static const TemplateMap Maps[] = {
       NONE, NONE, { BOX(70, -360, -240, 280, -30, 80), NOTBOX(80, -232, 26, 232, -172, 90) }, 1, 1, 2 },
 
     /* -- Brio (4) -- */
-    /* his pogo: him alone, on what the game draws */
+    /* his pogo: him and his jetpack, whose jets the game draws: the jetpack is its prop, its faces behind his back */
     { 4, KIND_POGO, DB_CharsPogoBrio, 25,
       P(0, -270, 0), P(0, -370, -20), P(0, -600, -190),
       PAIR(60, -400, -10), PAIR(100, -330, 30), PAIR(120, -270, 40),
       PAIR(40, -260, 0), PAIR(80, -180, 30), PAIR(100, -100, 10), PAIR(105, -70, 0),
-      NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 },
+      NONE, NONE, { FBOX(-110, -480, 25, 110, -280, 120) }, 1, 0 },
     /* his car: sat, his arms out to its levers' inner ends */
     { 4, KIND_BALL, DB_CharsBallBrio, 30,
       P(0, -150, 180), P(0, -260, 170), P(0, -480, 110),
