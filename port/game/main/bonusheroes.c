@@ -18,6 +18,7 @@
 #include "bash/heromake.h"
 #include "bash/online.h"
 #include "../../platform/audio.h"
+#include "../../platform/heropack.h"
 
 void archive_replace(int entry, unsigned char *bytes, int size);
 unsigned char *archive_own_file(int entry, int *size);
@@ -252,6 +253,137 @@ static s32 key_step(s32 frames, s32 nvert, s32 at_least) {
     return step;
 }
 
+/* --- what's made, for the hero tool's preview (bonus_heroes_dump_to) ---
+ *
+ * HPV1, little-endian: "HPV1", u32 images, each u16 width and height in texels and its RGBA (its CLUT's colours, 0 clear); u32 faces,
+ * each s32 corners x 3, s32 image (-1 none), u8 u, v x 3, u8 r, g, b x 3, u8 semi-transparent; u32 vertices a frame, u32 animations,
+ * each 32 bytes of its name, u32 frames, then each frame's vertices as s16 x, y, z (Crash Bash's units and axes, y down). */
+static const char *DumpFolder;
+static s32 DumpCount;
+#define DUMPS 64
+static struct {
+    const u8 *mdl;
+    char path[512];
+} Dumps[DUMPS];
+
+void bonus_heroes_dump_to(const char *folder) {
+    DumpFolder = folder;
+}
+
+static void dump_u32(FILE *f, u32 v) {
+    u8 b[4];
+
+    hm_wr32(b, v);
+    fwrite(b, 1, 4, f);
+}
+
+static void dump_u16(FILE *f, u32 v) {
+    u8 b[2];
+
+    hm_wr16(b, v);
+    fwrite(b, 1, 2, f);
+}
+
+static void made_dump(const MadeModel *m, const u8 *mdl) {
+    s32 i, j, k, x, y;
+    V3 *fv;
+    FILE *f;
+
+    if (DumpFolder == NULL || DumpCount >= DUMPS) {
+        return;
+    }
+    snprintf(Dumps[DumpCount].path, sizeof(Dumps[DumpCount].path), "%s/made%d.hpv", DumpFolder, DumpCount);
+    if ((f = fopen(Dumps[DumpCount].path, "wb")) == NULL) {
+        return;
+    }
+    Dumps[DumpCount++].mdl = mdl;
+    fwrite("HPV1", 1, 4, f);
+    dump_u32(f, (u32)m->nimages);
+    for (i = 0; i < m->nimages; i++) {
+        const MadeImage *im = &m->images[i];
+        s32 w = im->units * (im->bpp8 ? 2 : 4);
+
+        dump_u16(f, (u32)w);
+        dump_u16(f, (u32)im->h);
+        for (y = 0; y < im->h; y++) {
+            for (x = 0; x < w; x++) {
+                const u8 *row = im->pixels + (size_t)y * im->units * 2;
+                s32 index = im->bpp8 ? row[x] : (row[x >> 1] >> ((x & 1) * 4)) & 15;
+                u16 c = index < im->colours ? im->clut[index] : 0;
+                u8 px[4] = { (u8)((c & 31) * 255 / 31), (u8)((c >> 5 & 31) * 255 / 31), (u8)((c >> 10 & 31) * 255 / 31), c != 0 ? 255 : 0 };
+
+                fwrite(px, 1, 4, f);
+            }
+        }
+    }
+    dump_u32(f, (u32)m->nfaces);
+    for (i = 0; i < m->nfaces; i++) {
+        const MadeFace *fc = &m->faces[i];
+        u8 b[16];
+
+        for (k = 0; k < 3; k++) {
+            dump_u32(f, (u32)fc->v[k]);
+        }
+        dump_u32(f, (u32)fc->image);
+        for (k = 0; k < 3; k++) {
+            b[k * 2] = fc->uv[k][0];
+            b[k * 2 + 1] = fc->uv[k][1];
+        }
+        for (k = 0; k < 9; k++) {
+            b[6 + k] = fc->rgb[0][k / 3][k % 3];
+        }
+        b[15] = (fc->blend & 0x8000) != 0;
+        fwrite(b, 1, 16, f);
+    }
+    dump_u32(f, (u32)m->nvert);
+    dump_u32(f, (u32)m->nanims);
+    fv = malloc(sizeof(V3) * (size_t)(m->nvert > 0 ? m->nvert : 1));
+    for (j = 0; fv != NULL && j < m->nanims; j++) {
+        char name[32] = { 0 };
+
+        snprintf(name, sizeof(name), "%s", m->anims[j].name);
+        fwrite(name, 1, sizeof(name), f);
+        dump_u32(f, (u32)m->anims[j].frames);
+        for (k = 0; k < m->anims[j].frames; k++) {
+            m->frame(m->ctx, j, k, fv);
+            for (i = 0; i < m->nvert; i++) {
+                dump_u16(f, (u32)(s16)lrintf(fv[i].x));
+                dump_u16(f, (u32)(s16)lrintf(fv[i].y));
+                dump_u16(f, (u32)(s16)lrintf(fv[i].z));
+            }
+        }
+    }
+    free(fv);
+    fclose(f);
+}
+
+/* A made hero's dumps named by their kinds: FOLDER/<id>_<KIND>.hpv */
+static void dump_name(const HeroDef *d, const HeroMade *m) {
+    char path[600];
+    s32 k, i;
+
+    if (DumpFolder == NULL || d == NULL) {
+        return;
+    }
+    for (k = 0; k < NUM_KINDS; k++) {
+        for (i = 0; m->mdl[k] != NULL && i < DumpCount; i++) {
+            if (Dumps[i].mdl == m->mdl[k]) {
+                snprintf(path, sizeof(path), "%s/%s_%s.hpv", DumpFolder, d->id, pack_kind_name(k));
+                remove(path);
+                rename(Dumps[i].path, path);
+                Dumps[i].mdl = NULL;
+            }
+        }
+    }
+    /* what's left wasn't kept as any kind's */
+    for (i = 0; i < DumpCount; i++) {
+        if (Dumps[i].mdl != NULL) {
+            remove(Dumps[i].path);
+        }
+    }
+    DumpCount = 0;
+}
+
 s32 made_write(const MadeModel *m, u8 **tex_out, s32 *tex_size, u8 **mdl_out, s32 *mdl_size) {
     Bytes tex = { 0 }, mdl = { 0 };
     V3 *fv = malloc(sizeof(V3) * (size_t)(m->nvert > 0 ? m->nvert : 1)), *corners = malloc(sizeof(V3) * (size_t)m->nfaces * 3);
@@ -468,6 +600,7 @@ s32 made_write(const MadeModel *m, u8 **tex_out, s32 *tex_size, u8 **mdl_out, s3
     *tex_size = (s32)tex.n;
     *mdl_out = mdl.b;
     *mdl_size = (s32)mdl.n;
+    made_dump(m, mdl.b);
     return 1;
 }
 
@@ -2220,6 +2353,7 @@ static void make_hero(s32 extra) {
         return;
     }
     Have[extra] = 1;
+    dump_name(d, m);
     /* for the log, which a hero's checks read (port/tests/playtest.mjs hero) */
     printf("bonus heroes: %s is made: a model", d->id);
     for (k = 0, n = 0; k < NUM_KINDS; k++) {

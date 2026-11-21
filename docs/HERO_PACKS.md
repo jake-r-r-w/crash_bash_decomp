@@ -149,6 +149,15 @@ sounds and the mod's name, and **Export** writes the mod to the mods folder (bes
 there), or **Export and test in game** starts the game too, with it as player 1 in the game picked. `HEROTOOL_SHOT=FILE.png`
 saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it opens, for tests.
 
+**The preview** (the window's **In the games** tab): **Make it in every game** exports the hero to the tool's own folder (SDL's pref
+path, `CrashBashPC/herotool/preview`) and starts the game with `--dump-hero ID FOLDER`: it reads the player's own settings, so it
+finds their game data, makes the hero as it does when it loads a pack, writes what it made and ends, in about a second, with no
+window. Each kind's model goes to `FOLDER/ID_KIND.hpv` as `made_write` writes it to the archive (`bonusheroes.c`, `made_dump`:
+its images in RGBA, its faces, every frame of every move), so what the tool shows is what the game draws: the hero with each game's
+ride or prop, any move it has there, turned and slowed at will (`src/preview.c` reads them, `draw_made` draws them textured as the
+PS1 does). Where the game draws part of a ride itself (the tank's hull) that part isn't in the hero's model, so it isn't shown.
+`HEROTOOL_MAKE=KIND` (heropack.c's names: foot, polar, pogo, ...) makes it as the window opens and shows that kind, for tests.
+
 **The command line**: `FOLDER` is a mod: put it in the game's mods folder. What it does, each step for any model (`src/`):
 
 1. **Reads it** (`model.c`), and **refuses** one over the game's limits, 1365 triangles and 4096 vertices, saying how many it has:

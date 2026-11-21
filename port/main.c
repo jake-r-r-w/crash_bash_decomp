@@ -29,6 +29,8 @@
 #include "platform/achievements.h"
 
 int extra_hero_named(const char *id); /* game/main/extraheroes.c: --extra-hero's names */
+void bonus_heroes_dump_to(const char *folder); /* game/main/bonusheroes.c: --dump-hero */
+int bonus_heroes_have(int extra);
 
 static int Vblanks;
 static volatile int Alive; /* moves while the game waits on something outside it, as an online game does for the others */
@@ -556,6 +558,7 @@ int platform_idle(void) {
 int main(int argc, char **argv) {
     const char *Image = NULL;
     const char *dump_files_to = NULL;
+    const char *dump_hero = NULL, *dump_hero_to = NULL;
     int antialias = 0, smooth = 0, widescreen = 0, upscale = 0, level_flags = 0, sharp_icons = 0, buttons_apart = 0;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
@@ -806,6 +809,10 @@ int main(int argc, char **argv) {
             texpack_dump_to(argv[++i]);
         } else if (strcmp(argv[i], "--dump-files") == 0 && i + 1 < argc) {
             dump_files_to = argv[++i];
+        } else if (strcmp(argv[i], "--dump-hero") == 0 && i + 2 < argc) {
+            /* the hero tool's preview (docs/HERO_PACKS.md, The preview): a pack's hero made, what's made written out, and no game */
+            dump_hero = argv[++i];
+            dump_hero_to = argv[++i];
         } else if (strcmp(argv[i], "--log-files") == 0) {
             archive_log_reads();
         } else if (strcmp(argv[i], "--mode") == 0 && i + 1 < argc) {
@@ -1068,6 +1075,16 @@ int main(int argc, char **argv) {
     }
     /* before the renderer, which makes room for the textures they have */
     mods_scan();
+    if (dump_hero != NULL) {
+        int x;
+
+        settings()->extra_heroes = 1;
+        bonus_heroes_dump_to(dump_hero_to);
+        mods_apply_files();
+        x = extra_hero_named(dump_hero);
+        printf("dump-hero: %s %s\n", dump_hero, x != 0 && bonus_heroes_have(x) ? "made" : "not made");
+        return x != 0 && bonus_heroes_have(x) ? 0 : 1;
+    }
     if (online) {
         /* everyone has to play the same game: no mod's files or bonus hero's, which other machines mightn't have, till the lobby's
            said which heroes they all have (below). Textures are each player's own */

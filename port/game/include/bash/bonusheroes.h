@@ -1,9 +1,8 @@
 #ifndef BASH_BONUSHEROES_H
 #define BASH_BONUSHEROES_H
 
-/* Bonus heroes (main/bonusheroes.c, PC only): the extra heroes' models, sounds and pictures, made from the player's own copies of other
- * Crash games by each hero's own file (main/heroes/, bash/herodef.h) and put in the archive, so an extra hero (extraheroes.c) looks and
- * sounds as it did there. Without the disc, there's none. */
+/* Bonus heroes (main/bonusheroes.c, PC only): the extra heroes' models, sounds and pictures, made from the hero packs of the mods that
+ * are on (main/packheroes.c, docs/HERO_PACKS.md) and put in the archive. */
 
 #include "common.h"
 
@@ -31,5 +30,9 @@ void bonus_heroes_forget(s32 extra);
 /* The heroes of the mods that are on (main/packheroes.c, docs/HERO_PACKS.md) into the pack slots (EXTRA_PACK1 on), each made from
  * its pack as bonus_heroes_files makes it: done again each time it's called, and a slot whose pack changed made again. */
 void pack_heroes_scan(void);
+
+/* What's made written to FOLDER/<hero id>_<KIND>.hpv as it's made, for the hero tool's preview (--dump-hero; docs/HERO_PACKS.md, The
+ * preview): every model of every kind, its faces, images and every frame, as herotool/src/preview.c reads them. */
+void bonus_heroes_dump_to(const char *folder);
 
 #endif

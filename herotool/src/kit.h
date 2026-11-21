@@ -105,6 +105,32 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
  * proportions, in its box), for the window to start from */
 int kit_save_markers(const KitModel *m, const char *path);
 void kit_guess_markers(KitModel *m);
+/* preview.c: what the game made of a pack, a kind's model as --dump-hero writes it (port/game/main/bonusheroes.c, made_dump): its
+ * images, its faces (corners, image or -1, each corner's texel and colour, semi-transparent) and each move's frames, nvert vertices a
+ * frame in the game's units and axes (y down). The file is little-endian, so it's read as it lies. */
+typedef struct {
+    int w, h;
+    uint8_t *rgba;
+} KitMadeImage;
+typedef struct {
+    int v[3], image;
+    uint8_t uv[3][2], rgb[3][3], semi;
+} KitMadeFace;
+typedef struct {
+    char name[32];
+    int frames;
+    int16_t *verts;
+} KitMadeAnim;
+typedef struct {
+    KitMadeImage *images;
+    int nimages;
+    KitMadeFace *faces;
+    int nfaces, nvert;
+    KitMadeAnim *anims;
+    int nanims;
+} KitMade;
+int kit_made_read(const char *path, KitMade *m);
+void kit_made_free(KitMade *m);
 /* gui.cpp: the window, a model to open, the mods folder to write to and the game to test in (each NULL for none, or beside it) */
 int kit_gui(const char *model, const char *mods, const char *game);
 

@@ -39,7 +39,7 @@ set(IMGUI_SOURCES ${imgui_SOURCE_DIR}/imgui.cpp ${imgui_SOURCE_DIR}/imgui_draw.c
   ${imgui_SOURCE_DIR}/imgui_widgets.cpp ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp)
 
 set(PORT ${CMAKE_CURRENT_SOURCE_DIR}/../port)
-add_executable(herotool src/herotool.c src/model.c src/atlas.c src/rig.c src/moves.c src/write.c src/gui.cpp ${IMGUI_SOURCES}
+add_executable(herotool src/herotool.c src/model.c src/atlas.c src/rig.c src/moves.c src/write.c src/preview.c src/gui.cpp ${IMGUI_SOURCES}
   ${PORT}/platform/heropack.c)
 target_include_directories(herotool PRIVATE src ${PORT}/platform ${cgltf_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
 target_compile_options(herotool PRIVATE $<$<COMPILE_LANGUAGE:C>:-std=gnu17> $<$<COMPILE_LANGUAGE:CXX>:-std=gnu++17>

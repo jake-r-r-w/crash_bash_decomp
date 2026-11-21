@@ -3,7 +3,8 @@
 // Drop a model (.glb) on it, or open one. A rigged model's own bones are found by their names; an unrigged one gets markers guessed
 // from its shape, to be dragged onto its joints in the front and side views (its left side's mirror its right's unless that's turned
 // off). The moves play on it as the game will play them. Set its name, height and the rest, add a card and sounds (drop a .png or a
-// .wav on it), then Export writes the mod, and Test in game starts the game with the hero in it.
+// .wav on it), then Export writes the mod, and Test in game starts the game with the hero in it. "Make it in every game" has the game
+// make it, as it does when it loads, and shows each game's model: what it rides or holds, and every move it has there.
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,6 +17,7 @@
 namespace {
 
 const int ViewW = 300, ViewH = 420;
+const int PrevW = 600, PrevH = 560; // the view of what the game made
 
 struct View {
     SDL_Texture *tex = nullptr;
@@ -42,7 +44,21 @@ struct Tool {
     char out[1024] = "", game[1024] = "";
     // a marker being dragged: its bone, whether it's the bone's end, and in which view
     int drag_bone = -1, drag_end = 0, drag_view = 0;
+    // what the game made of it (the preview): each kind's model, the game making it, and what's shown
+    KitMade made[PACK_KINDS] = {};
+    bool have_made[PACK_KINDS] = {};
+    SDL_Process *maker = nullptr;
+    char made_dir[1100] = "";
+    int kind = 0, anim = 0;
+    float made_t = 0, made_turn = 30, made_speed = 1;
+    View game_view;
+    bool show_games = false; // the tab brought forward once (the preview's test)
 };
+
+// The kinds of model the game makes (heropack.c's names), as the games call them
+const char *const KindTitles[PACK_KINDS] = { "On foot (Crate Crush, Ring Ding and the others)", "Polar Push: the polar bear", "Pogo",
+                                             "Ballistix: the car", "Tank", "Crash Dash: the race cart", "Splash Dash: the fish",
+                                             "Mallet Mash: the mallet", "Dragon Drop: the dino", "Keg Kaboom: the keg", "The podium" };
 
 const char *const Heroes[] = { "crash", "coco", "cortex", "brio", "tiny", "kong", "dingodile", "rilla" };
 const struct {
@@ -266,18 +282,23 @@ void open_model(Tool &T, const char *path) {
                       : "No rig: drag the markers onto its joints in the front and side views.");
 }
 
-void export_pack(Tool &T, bool test) {
+bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     char why[512], markers[1100];
     KitModel *t = new KitModel();
     KitPack p = {};
+    bool ok = false;
 
     if (T.m == nullptr) {
-        return;
+        delete t;
+        return false;
+    }
+    if (out == nullptr) {
+        out = T.out;
     }
     if (!kit_read(T.model, t, why, sizeof(why))) {
         snprintf(T.status, sizeof(T.status), "%s", why);
         delete t;
-        return;
+        return false;
     }
     if (T.rigged) {
         kit_map_rig(t, why, sizeof(why));
@@ -301,11 +322,12 @@ void export_pack(Tool &T, bool test) {
         p.voice[j] = T.voice[j][0] ? T.voice[j] : nullptr;
     }
     char folder[1100];
-    snprintf(folder, sizeof(folder), "%s/%s", T.out, T.id);
+    snprintf(folder, sizeof(folder), "%s/%s", out, T.id);
     SDL_CreateDirectory(folder);
     if (!kit_atlas(t, why, sizeof(why)) || !kit_write(t, &p, folder, why, sizeof(why))) {
         snprintf(T.status, sizeof(T.status), "%s", why);
     } else {
+        ok = true;
         snprintf(T.status, sizeof(T.status), "Exported to %s: put that folder in the game's mods folder (it's there if this is it).", folder);
         if (test) {
             char mode[16];
@@ -323,6 +345,167 @@ void export_pack(Tool &T, bool test) {
     }
     kit_free(t);
     delete t;
+    return ok;
+}
+
+// --- what the game makes of it: exported to the tool's own folder, the game started to make it and write it out (--dump-hero), and
+// each kind's model read back ---
+
+void made_forget(Tool &T) {
+    for (int k = 0; k < PACK_KINDS; k++) {
+        if (T.have_made[k]) {
+            kit_made_free(&T.made[k]);
+        }
+        T.have_made[k] = false;
+    }
+}
+
+void make_in_game(Tool &T) {
+    char mods[1100];
+    const char *pref = SDL_GetPrefPath("CrashBashPC", "herotool");
+
+    if (T.m == nullptr || T.maker != nullptr || pref == nullptr) {
+        return;
+    }
+    snprintf(mods, sizeof(mods), "%spreview", pref);
+    SDL_CreateDirectory(mods);
+    snprintf(T.made_dir, sizeof(T.made_dir), "%spreview-made", pref);
+    SDL_CreateDirectory(T.made_dir);
+    SDL_free((void *)pref);
+    if (!export_pack(T, false, mods)) {
+        return;
+    }
+    const char *args[] = { T.game, "--mods-dir", mods, "--mod", T.id, "--dump-hero", T.id, T.made_dir, nullptr };
+    T.maker = SDL_CreateProcess(args, false);
+    snprintf(T.status, sizeof(T.status), T.maker != nullptr ? "The game's making it in every game..." : "The game didn't start (%s): is it at %s?",
+             SDL_GetError(), T.game);
+}
+
+void made_check(Tool &T) {
+    int code = 0;
+
+    if (T.maker == nullptr || !SDL_WaitProcess(T.maker, false, &code)) {
+        return;
+    }
+    SDL_DestroyProcess(T.maker);
+    T.maker = nullptr;
+    made_forget(T);
+    int have = 0;
+    for (int k = 0; k < PACK_KINDS; k++) {
+        char path[1300];
+
+        snprintf(path, sizeof(path), "%s/%s_%s.hpv", T.made_dir, T.id, pack_kind_name(k));
+        T.have_made[k] = kit_made_read(path, &T.made[k]);
+        have += T.have_made[k];
+    }
+    T.anim = 0;
+    T.made_t = 0;
+    snprintf(T.status, sizeof(T.status), have != 0 ? "The game made it in %d of its %d kinds of game: pick one under In the games."
+                                                   : "The game didn't make it (it said %d): does it find its data when you start it yourself?",
+             have != 0 ? have : code, PACK_KINDS);
+}
+
+// A made model's frame drawn: its faces textured as the PS1 does (the texel times its corner's colour, 128 as it is), clear texels
+// left out, semi-transparent ones half over what's there. The game's axes are y down, so it's turned up the tool's way.
+void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren) {
+    if (v.rgba == nullptr) {
+        v.rgba = new unsigned[PrevW * PrevH];
+        v.depth = new float[PrevW * PrevH];
+        v.tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, PrevW, PrevH);
+    }
+    for (int i = 0; i < PrevW * PrevH; i++) {
+        v.rgba[i] = 0xFF3A3434;
+        v.depth[i] = 1e30f;
+    }
+    if (m->nanims == 0) {
+        SDL_UpdateTexture(v.tex, nullptr, v.rgba, PrevW * 4);
+        return;
+    }
+    const KitMadeAnim *a = &m->anims[anim < m->nanims ? anim : 0];
+    const int16_t *vs = a->verts + (size_t)(frame % a->frames) * m->nvert * 3;
+    // fitted to its first move's first frame, so it doesn't jump about as it moves
+    float lo[3] = { 1e9f, 1e9f, 1e9f }, hi[3] = { -1e9f, -1e9f, -1e9f };
+    for (int i = 0; i < m->nvert; i++) {
+        float q[3] = { (float)m->anims[0].verts[i * 3], -(float)m->anims[0].verts[i * 3 + 1], -(float)m->anims[0].verts[i * 3 + 2] };
+        for (int c = 0; c < 3; c++) {
+            lo[c] = fminf(lo[c], q[c]);
+            hi[c] = fmaxf(hi[c], q[c]);
+        }
+    }
+    float h = hi[1] - lo[1], w = sqrtf((hi[0] - lo[0]) * (hi[0] - lo[0]) + (hi[2] - lo[2]) * (hi[2] - lo[2]));
+    v.scale = fminf(PrevH * 0.8f / (h > 0 ? h : 1), PrevW * 0.8f / (w > 0 ? w : 1));
+    float cx = (lo[0] + hi[0]) / 2, cz = (lo[2] + hi[2]) / 2;
+    v.ox = PrevW / 2.0f;
+    v.oy = PrevH * 0.9f + lo[1] * v.scale;
+    for (int t = 0; t < m->nfaces; t++) {
+        const KitMadeFace *f = &m->faces[t];
+        const KitMadeImage *im = f->image >= 0 && f->image < m->nimages ? &m->images[f->image] : nullptr;
+        float p[3][3], sx[3], sy[3], sz[3];
+
+        for (int j = 0; j < 3; j++) {
+            const int16_t *q = vs + (size_t)f->v[j] * 3;
+            p[j][0] = q[0] - cx, p[j][1] = -q[1], p[j][2] = -q[2] - cz;
+            to_screen(v, p[j], sx[j], sy[j], sz[j]);
+        }
+        float e1[3], e2[3], n[3];
+        for (int i = 0; i < 3; i++) {
+            e1[i] = p[1][i] - p[0][i];
+            e2[i] = p[2][i] - p[0][i];
+        }
+        n[0] = e1[1] * e2[2] - e1[2] * e2[1];
+        n[1] = e1[2] * e2[0] - e1[0] * e2[2];
+        n[2] = e1[0] * e2[1] - e1[1] * e2[0];
+        float area = (sx[1] - sx[0]) * (sy[2] - sy[0]) - (sx[2] - sx[0]) * (sy[1] - sy[0]);
+        if (fabsf(area) < 1e-6f) {
+            continue;
+        }
+        float ln = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]), c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
+        // its own light's baked in its colours: only a touch of the view's, so its shape reads
+        float facing = ln > 0 ? fabsf(n[0] * s + n[2] * c) / ln : 1, lit = 0.8f + 0.25f * facing;
+        int x0 = (int)fmaxf(0, floorf(fminf(sx[0], fminf(sx[1], sx[2])))), x1 = (int)fminf(PrevW - 1, ceilf(fmaxf(sx[0], fmaxf(sx[1], sx[2]))));
+        int y0 = (int)fmaxf(0, floorf(fminf(sy[0], fminf(sy[1], sy[2])))), y1 = (int)fminf(PrevH - 1, ceilf(fmaxf(sy[0], fmaxf(sy[1], sy[2]))));
+        for (int y = y0; y <= y1; y++) {
+            for (int x = x0; x <= x1; x++) {
+                float px = x + 0.5f, py = y + 0.5f;
+                float a0 = ((sx[1] - px) * (sy[2] - py) - (sx[2] - px) * (sy[1] - py)) / area;
+                float b0 = ((sx[2] - px) * (sy[0] - py) - (sx[0] - px) * (sy[2] - py)) / area, d0 = 1 - a0 - b0;
+
+                if (a0 < 0 || b0 < 0 || d0 < 0) {
+                    continue;
+                }
+                float z = a0 * sz[0] + b0 * sz[1] + d0 * sz[2];
+                if (z >= v.depth[y * PrevW + x]) {
+                    continue;
+                }
+                float col[3];
+                for (int ch = 0; ch < 3; ch++) {
+                    col[ch] = a0 * f->rgb[0][ch] + b0 * f->rgb[1][ch] + d0 * f->rgb[2][ch];
+                }
+                if (im != nullptr) {
+                    int tx = (int)(a0 * f->uv[0][0] + b0 * f->uv[1][0] + d0 * f->uv[2][0]);
+                    int ty = (int)(a0 * f->uv[0][1] + b0 * f->uv[1][1] + d0 * f->uv[2][1]);
+                    tx = tx < 0 ? 0 : tx >= im->w ? im->w - 1 : tx;
+                    ty = ty < 0 ? 0 : ty >= im->h ? im->h - 1 : ty;
+                    const uint8_t *tex = im->rgba + ((size_t)ty * im->w + tx) * 4;
+                    if (tex[3] == 0) {
+                        continue;
+                    }
+                    for (int ch = 0; ch < 3; ch++) {
+                        col[ch] = col[ch] * tex[ch] / 128;
+                    }
+                }
+                unsigned r = (unsigned)fminf(255, col[0] * lit), g = (unsigned)fminf(255, col[1] * lit), bl = (unsigned)fminf(255, col[2] * lit);
+                unsigned was = v.rgba[y * PrevW + x];
+                if (f->semi) {
+                    r = (r + (was & 255)) / 2, g = (g + (was >> 8 & 255)) / 2, bl = (bl + (was >> 16 & 255)) / 2;
+                } else {
+                    v.depth[y * PrevW + x] = z;
+                }
+                v.rgba[y * PrevW + x] = 0xFF000000u | bl << 16 | g << 8 | r;
+            }
+        }
+    }
+    SDL_UpdateTexture(v.tex, nullptr, v.rgba, PrevW * 4);
 }
 
 // --- the views, with their markers ---
@@ -463,6 +646,12 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         export_pack(T, false);
         printf("herotool: %s\n", T.status);
     }
+    /* a test's: HEROTOOL_MAKE=KIND has the game make it in every game once it's open, and shows that kind (heropack.c's name) */
+    if (SDL_getenv("HEROTOOL_MAKE") != nullptr && T.m != nullptr) {
+        T.kind = pack_kind_named(SDL_getenv("HEROTOOL_MAKE")) >= 0 ? pack_kind_named(SDL_getenv("HEROTOOL_MAKE")) : 0;
+        make_in_game(T);
+        T.show_games = true;
+    }
     Uint64 last = SDL_GetTicks();
     bool done = false;
     /* a test's picture of it: HEROTOOL_SHOT=FILE.png saves the window after a moment, and closes it */
@@ -502,6 +691,16 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             }
         }
         last = now;
+        made_check(T);
+        if (T.have_made[T.kind]) {
+            const KitMade *mk = &T.made[T.kind];
+            int a = T.anim < mk->nanims ? T.anim : 0;
+
+            T.made_t += (now - last) / 1000.0f * T.made_speed;
+            T.game_view.yaw = T.made_turn;
+            // 30 frames a second, as the game plays a move a frame a tick; a kind made with more frames a tick has as many more
+            draw_made(mk, a, mk->nanims > 0 ? (int)(T.made_t * 30) % mk->anims[a].frames : 0, T.game_view, ren);
+        }
         if (T.m != nullptr) {
             // the front and side views at rest, the third playing the move
             draw(T.m, T.m->pos, T.front, ren);
@@ -521,7 +720,8 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         if (ImGui::BeginTable("main", 2, ImGuiTableFlags_Resizable)) {
             ImGui::TableSetupColumn("views", ImGuiTableColumnFlags_WidthFixed, ViewW * 3 + 40);
             ImGui::TableNextColumn();
-            if (T.m != nullptr) {
+            if (T.m != nullptr && ImGui::BeginTabBar("tabs")) {
+                if (ImGui::BeginTabItem("The model and its moves")) {
                 ImGui::Text("Front");
                 ImGui::SameLine(ViewW + 16);
                 ImGui::Text("Side");
@@ -581,6 +781,64 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(200);
                 ImGui::SliderFloat("Turn", &T.turn, -180, 180, "%.0f");
+                ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem("In the games", nullptr, T.show_games ? ImGuiTabItemFlags_SetSelected : 0)) {
+                T.show_games = false;
+                ImGui::BeginDisabled(T.maker != nullptr);
+                if (ImGui::Button(T.maker != nullptr ? "Making it..." : "Make it in every game")) {
+                    make_in_game(T);
+                }
+                ImGui::EndDisabled();
+                ImGui::SameLine();
+                ImGui::TextDisabled("the game makes it as it will when it loads it, with each game's ride or prop");
+                if (T.have_made[T.kind] || T.maker == nullptr) {
+                    bool any = false;
+                    for (int k = 0; k < PACK_KINDS; k++) {
+                        any |= T.have_made[k];
+                    }
+                    if (any) {
+                        ImGui::BeginGroup();
+                        if (T.have_made[T.kind]) {
+                            ImGui::Image((ImTextureID)(intptr_t)T.game_view.tex, ImVec2(PrevW, PrevH));
+                        } else {
+                            ImGui::Dummy(ImVec2(PrevW, PrevH));
+                        }
+                        ImGui::EndGroup();
+                        ImGui::SameLine();
+                        ImGui::BeginGroup();
+                        for (int k = 0; k < PACK_KINDS; k++) {
+                            ImGui::BeginDisabled(!T.have_made[k]);
+                            if (ImGui::RadioButton(KindTitles[k], T.kind == k)) {
+                                T.kind = k;
+                                T.anim = 0;
+                                T.made_t = 0;
+                            }
+                            ImGui::EndDisabled();
+                        }
+                        if (T.have_made[T.kind]) {
+                            const KitMade *mk = &T.made[T.kind];
+                            ImGui::SetNextItemWidth(200);
+                            if (ImGui::BeginCombo("Its move", T.anim < mk->nanims ? mk->anims[T.anim].name : "")) {
+                                for (int a = 0; a < mk->nanims; a++) {
+                                    if (ImGui::Selectable(mk->anims[a].name, a == T.anim)) {
+                                        T.anim = a;
+                                        T.made_t = 0;
+                                    }
+                                }
+                                ImGui::EndCombo();
+                            }
+                            ImGui::SetNextItemWidth(200);
+                            ImGui::SliderFloat("Turn##game", &T.made_turn, -180, 180, "%.0f");
+                            ImGui::SetNextItemWidth(200);
+                            ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
+                        }
+                        ImGui::EndGroup();
+                    }
+                }
+                ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
             }
             ImGui::TableNextColumn();
             ImGui::Text("Model (.glb)");
@@ -633,7 +891,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         SDL_SetRenderDrawColor(ren, 30, 30, 34, 255);
         SDL_RenderClear(ren);
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), ren);
-        if (shot != nullptr && ++frames == 40) {
+        if (shot != nullptr && T.maker == nullptr && ++frames == 40) {
             SDL_Surface *grab = SDL_RenderReadPixels(ren, nullptr);
 
             if (grab != nullptr) {
