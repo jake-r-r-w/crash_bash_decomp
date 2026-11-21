@@ -69,7 +69,7 @@ build/port/windows-clang/crashbash.exe --mode 0 --skip-intro --skip-loading --wi
 ## Bobby, the example
 
 `port/mods/bobby/` is made by `node port/mods/bobby.mjs`: the user's dog, a long-haired black-and-tan miniature dachshund, stood up
-as a cartoon hero. His model is the user's, made with Meshy from photos of him (`port/mods/bobby-source/bobby-meshy.glb`, its texture saved again losslessly to fit the repo's 2 MB; 1367
+as a cartoon hero. His model is the user's own, made from photos of him (`port/mods/bobby-source/bobby-model.glb`, its texture saved again losslessly to fit the repo's 2 MB; 1367
 triangles, one 2048 texture, no skeleton); the photos aren't in the repo. The script does to it what the hero tool will do to any
 model (phase 3), by hand:
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* The example hero pack, Bobby: the user's long-haired black-and-tan miniature dachshund, stood up as a cartoon hero. His model is
- * the user's own, made with Meshy from photos of him (port/mods/bobby-source/bobby-meshy.glb: 1367 triangles, one 2048 texture, no
+ * the user's own, made from photos of him (port/mods/bobby-source/bobby-model.glb: 1367 triangles, one 2048 texture, no
  * skeleton). This script makes it a pack, as the hero tool will: it writes port/mods/bobby/, a mod.json and heroes/bobby/ with its
  * hero.json and hero.glb (docs/HERO_PACKS.md). Copy the folder into the game's mods folder, or zip it, to use it.
  *
@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(HERE, 'bobby');
-const SOURCE = path.join(HERE, 'bobby-source', 'bobby-meshy.glb');
+const SOURCE = path.join(HERE, 'bobby-source', 'bobby-model.glb');
 const FPS = 30;
 const MAX_TRIS = 1365;
 const TEX = 256;
@@ -113,7 +113,7 @@ function png_write(w, h, rgb) {
     return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw, { level: 9 })), chunk('IEND', Buffer.alloc(0))]);
 }
 
-/* --- his model, as Meshy made it --- */
+/* --- his model, as the user gave it --- */
 
 function glb_read(file) {
     const b = fs.readFileSync(file), jl = b.readUInt32LE(12), json = JSON.parse(b.toString('utf8', 20, 20 + jl)), bin = b.subarray(20 + jl + 8);
@@ -611,7 +611,7 @@ function glb(png) {
     }
 
     const json = {
-        asset: { version: '2.0', generator: 'port/mods/bobby.mjs, from a model made with Meshy' },
+        asset: { version: '2.0', generator: 'port/mods/bobby.mjs' },
         scene: 0,
         scenes: [{ nodes: [0, meshNode] }],
         nodes,
@@ -673,7 +673,7 @@ fs.writeFileSync(path.join(OUT, 'mod.json'), JSON.stringify({
     name: 'Bobby',
     author: 'Crash Bash PC',
     version: '1.1',
-    description: 'Bobby the dachshund as a hero of his own: the example hero pack. His model was made with Meshy.',
+    description: 'Bobby the dachshund as a hero of his own: the example hero pack',
 }, null, 2) + '\n');
 fs.writeFileSync(path.join(OUT, 'heroes', 'bobby', 'hero.json'), JSON.stringify(hero, null, 2) + '\n');
 const made = glb(texture());
