@@ -1,34 +1,29 @@
 #!/usr/bin/env node
-/* The example hero pack, Bobby: a long-haired black-and-tan miniature dachshund stood up as a cartoon hero, made here from shapes, so
- * none of it is anyone's art but this script's. It writes port/mods/bobby/: a mod.json, and heroes/bobby/ with its hero.json and
- * hero.glb (docs/HERO_PACKS.md), as the hero tool writes a pack. Copy the folder into the game's mods folder, or zip it, to use it.
+/* The example hero pack, Bobby: the user's long-haired black-and-tan miniature dachshund, stood up as a cartoon hero. His model is
+ * the user's own, made with Meshy from photos of him (port/mods/bobby-source/bobby-meshy.glb: 1367 triangles, one 2048 texture, no
+ * skeleton). This script makes it a pack, as the hero tool will: it writes port/mods/bobby/, a mod.json and heroes/bobby/ with its
+ * hero.json and hero.glb (docs/HERO_PACKS.md). Copy the folder into the game's mods folder, or zip it, to use it.
  *
- * The GLB is a skinned mesh on a skeleton of 25 bones, coloured by its corners (no textures), and its clips, each a pose worked out
- * for every 30th of a second: his own moves on foot (a panting BREATHE with his tail wagging, a scampering RUN, his zoomies as he
- * attacks and wins, and the rest). What he hasn't got, hero.json's stand-ins give him from his own.
+ * What it does to the model:
+ * - its two smallest triangles go, for the game's 1365;
+ * - its texture, pieces scattered over black, has each piece's colours spread out over the black round it, then is made 256 x 256
+ *   (the game's most), so shrinking doesn't bleed the black into his patches' edges;
+ * - a skeleton of 25 bones is fitted to him by hand (BONES: measured off front and side views of him on a grid), and each corner
+ *   given its bones: by the part of him it's in (PARTS), then smoothed over his surface so the joins bend softly;
+ * - his ten moves (CLIPS), each a pose for every 30th of a second, as before he had a model of his own.
  *
  *   node port/mods/bobby.mjs */
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(HERE, 'bobby');
+const SOURCE = path.join(HERE, 'bobby-source', 'bobby-meshy.glb');
 const FPS = 30;
-
-/* --- his colours (linear 0..1, as glTF's are), from photos of him --- */
-const BLACK = [0.12, 0.11, 0.13];
-const SHEEN = [0.3, 0.28, 0.36];      /* his coat where it catches the light */
-const TAN = [0.72, 0.38, 0.13];
-const TAN_LIGHT = [0.85, 0.52, 0.22];
-const NOSE = [0.03, 0.03, 0.035];
-const MOUTH = [0.32, 0.05, 0.07];
-const TONGUE = [0.93, 0.42, 0.48];
-const WHITE = [1, 1, 1];
-const HARNESS = [0.16, 0.36, 0.92];
-const HARNESS_RIM = [0.62, 0.68, 0.78];
-const COLLAR = [0.1, 0.7, 0.78];
-const TAG = [0.82, 0.84, 0.86];
+const MAX_TRIS = 1365;
+const TEX = 256;
 
 const mix = (a, b, t) => a.map((x, i) => x + (b[i] - x) * t);
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
@@ -58,267 +53,253 @@ const qmul = (a, b) => [
 /* turns about x (pitch: + tips its end back), y (yaw: + turns to his left), z (roll: + tips to his right), in that order */
 const euler = (x = 0, y = 0, z = 0) => qmul(qmul(quat([0, 1, 0], y), quat([1, 0, 0], x)), quat([0, 0, 1], z));
 
-/* --- the skeleton: glTF's axes, y up, metres, facing +z; his left is +x. Every bone rests unturned, at its place from its parent --- */
+/* --- PNG, enough for the model's texture: 8 bits, RGB or RGBA, not interlaced --- */
+
+function png_read(buf) {
+    let at = 8, w = 0, h = 0, type = 0;
+    const idat = [];
+    while (at + 8 <= buf.length) {
+        const n = buf.readUInt32BE(at), kind = buf.toString('latin1', at + 4, at + 8), data = buf.subarray(at + 8, at + 8 + n);
+        if (kind === 'IHDR') {
+            w = data.readUInt32BE(0);
+            h = data.readUInt32BE(4);
+            type = data[9];
+            if (data[8] !== 8 || (type !== 2 && type !== 6) || data[12] !== 0) throw new Error('the texture is a PNG this script can\'t read');
+        } else if (kind === 'IDAT') idat.push(data);
+        else if (kind === 'IEND') break;
+        at += 12 + n;
+    }
+    const bpp = type === 6 ? 4 : 3, raw = zlib.inflateSync(Buffer.concat(idat)), out = Buffer.alloc(w * h * 4), row = w * bpp;
+    let prev = Buffer.alloc(row);
+    for (let y = 0; y < h; y++) {
+        const f = raw[y * (row + 1)], line = Buffer.from(raw.subarray(y * (row + 1) + 1, (y + 1) * (row + 1)));
+        for (let i = 0; i < row; i++) {
+            const a = i >= bpp ? line[i - bpp] : 0, b = prev[i], c = i >= bpp ? prev[i - bpp] : 0;
+            const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);
+            line[i] = (line[i] + [0, a, b, (a + b) >> 1, pa <= pb && pa <= pc ? a : pb <= pc ? b : c][f]) & 255;
+        }
+        for (let x = 0; x < w; x++) {
+            for (let k = 0; k < 3; k++) out[(y * w + x) * 4 + k] = line[x * bpp + k];
+            out[(y * w + x) * 4 + 3] = bpp === 4 ? line[x * bpp + 3] : 255;
+        }
+        prev = line;
+    }
+    return { w, h, rgba: out };
+}
+
+function crc32(buf) {
+    let c = ~0;
+    for (const b of buf) {
+        c ^= b;
+        for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xEDB88320 & -(c & 1));
+    }
+    return ~c >>> 0;
+}
+
+function png_write(w, h, rgb) {
+    const raw = Buffer.alloc(h * (w * 3 + 1));
+    for (let y = 0; y < h; y++) rgb.copy(raw, y * (w * 3 + 1) + 1, y * w * 3, (y + 1) * w * 3);
+    const chunk = (kind, data) => {
+        const head = Buffer.alloc(8), tail = Buffer.alloc(4);
+        head.writeUInt32BE(data.length, 0);
+        head.write(kind, 4, 'latin1');
+        tail.writeUInt32BE(crc32(Buffer.concat([Buffer.from(kind, 'latin1'), data])), 0);
+        return Buffer.concat([head, data, tail]);
+    };
+    const ihdr = Buffer.alloc(13);
+    ihdr.writeUInt32BE(w, 0);
+    ihdr.writeUInt32BE(h, 4);
+    ihdr.set([8, 2, 0, 0, 0], 8);
+    return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw, { level: 9 })), chunk('IEND', Buffer.alloc(0))]);
+}
+
+/* --- his model, as Meshy made it --- */
+
+function glb_read(file) {
+    const b = fs.readFileSync(file), jl = b.readUInt32LE(12), json = JSON.parse(b.toString('utf8', 20, 20 + jl)), bin = b.subarray(20 + jl + 8);
+    const view = (i) => {
+        const v = json.bufferViews[i];
+        return bin.subarray(v.byteOffset || 0, (v.byteOffset || 0) + v.byteLength);
+    };
+    const read = (i) => {
+        const a = json.accessors[i], v = view(a.bufferView).subarray(a.byteOffset || 0), size = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4 }[a.type];
+        const out = [];
+        for (let k = 0; k < a.count * size; k++) {
+            out.push(a.componentType === 5126 ? v.readFloatLE(k * 4) : a.componentType === 5125 ? v.readUInt32LE(k * 4) : a.componentType === 5123 ? v.readUInt16LE(k * 2) : v[k]);
+        }
+        return out;
+    };
+    if (json.meshes.length !== 1 || json.meshes[0].primitives.length !== 1 || (json.nodes || []).some((n) => n.matrix || n.rotation || n.scale || n.translation)) {
+        throw new Error('the model has more than one mesh, or a moved node: this script reads only the one it was made for');
+    }
+    const p = json.meshes[0].primitives[0];
+    const pos = read(p.attributes.POSITION), uv = read(p.attributes.TEXCOORD_0), idx = read(p.indices);
+    const img = json.images[json.textures[json.materials[p.material].pbrMetallicRoughness.baseColorTexture.index].source];
+    return { pos, uv, idx, png: view(img.bufferView) };
+}
+
+const SRC = glb_read(SOURCE);
+
+/* the triangles, but the two smallest (slivers), for the game's most */
+let tris = [];
+for (let i = 0; i < SRC.idx.length; i += 3) tris.push([SRC.idx[i], SRC.idx[i + 1], SRC.idx[i + 2]]);
+{
+    const P = (v) => [SRC.pos[v * 3], SRC.pos[v * 3 + 1], SRC.pos[v * 3 + 2]];
+    const area = ([a, b, c]) => len(cross(sub(P(b), P(a)), sub(P(c), P(a)))) / 2;
+    tris = tris.map((t) => [t, area(t)]).sort((x, y) => y[1] - x[1]).slice(0, MAX_TRIS).map(([t]) => t);
+}
+const NV = SRC.pos.length / 3;
+const POS = Array.from({ length: NV }, (_, v) => [SRC.pos[v * 3], SRC.pos[v * 3 + 1], SRC.pos[v * 3 + 2]]);
+const UV = Array.from({ length: NV }, (_, v) => [SRC.uv[v * 2], SRC.uv[v * 2 + 1]]);
+
+/* --- his texture: each piece spread out over the black round it, then 256 x 256 --- */
+
+function texture() {
+    const src = png_read(SRC.png), { w, h } = src, used = new Uint8Array(w * h);
+    /* the texels his faces cover, a texel round them */
+    for (const t of tris) {
+        const q = t.map((v) => [UV[v][0] * w, UV[v][1] * h]);
+        const x0 = Math.max(0, Math.floor(Math.min(...q.map((p) => p[0]))) - 1), x1 = Math.min(w - 1, Math.ceil(Math.max(...q.map((p) => p[0]))) + 1);
+        const y0 = Math.max(0, Math.floor(Math.min(...q.map((p) => p[1]))) - 1), y1 = Math.min(h - 1, Math.ceil(Math.max(...q.map((p) => p[1]))) + 1);
+        const d = (q[1][0] - q[0][0]) * (q[2][1] - q[0][1]) - (q[2][0] - q[0][0]) * (q[1][1] - q[0][1]);
+        if (Math.abs(d) < 1e-9) continue;
+        for (let y = y0; y <= y1; y++) {
+            for (let x = x0; x <= x1; x++) {
+                const px = x + 0.5, py = y + 0.5;
+                const a = ((q[1][0] - px) * (q[2][1] - py) - (q[2][0] - px) * (q[1][1] - py)) / d;
+                const b = ((q[2][0] - px) * (q[0][1] - py) - (q[0][0] - px) * (q[2][1] - py)) / d;
+                const e = 1.5 / Math.max(1, Math.abs(d) ** 0.5);
+                if (a >= -e && b >= -e && 1 - a - b >= -e) used[y * w + x] = 1;
+            }
+        }
+    }
+    /* each of the 256's texels the mean of the covered ones under it; then the empty ones filled from their neighbours */
+    const k = w / TEX, rgb = new Float32Array(TEX * TEX * 3), have = new Uint8Array(TEX * TEX);
+    for (let y = 0; y < TEX; y++) {
+        for (let x = 0; x < TEX; x++) {
+            let n = 0;
+            const s = [0, 0, 0];
+            for (let sy = y * k; sy < (y + 1) * k; sy++) {
+                for (let sx = x * k; sx < (x + 1) * k; sx++) {
+                    if (!used[sy * w + sx]) continue;
+                    for (let c = 0; c < 3; c++) s[c] += src.rgba[(sy * w + sx) * 4 + c];
+                    n++;
+                }
+            }
+            if (n > 0) {
+                for (let c = 0; c < 3; c++) rgb[(y * TEX + x) * 3 + c] = s[c] / n;
+                have[y * TEX + x] = 1;
+            }
+        }
+    }
+    for (let pass = 0; pass < 32; pass++) {
+        const next = have.slice();
+        for (let y = 0; y < TEX; y++) {
+            for (let x = 0; x < TEX; x++) {
+                if (have[y * TEX + x]) continue;
+                let n = 0;
+                const s = [0, 0, 0];
+                for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+                    const nx = x + dx, ny = y + dy;
+                    if (nx < 0 || ny < 0 || nx >= TEX || ny >= TEX || !have[ny * TEX + nx]) continue;
+                    for (let c = 0; c < 3; c++) s[c] += rgb[(ny * TEX + nx) * 3 + c];
+                    n++;
+                }
+                if (n > 0) {
+                    for (let c = 0; c < 3; c++) rgb[(y * TEX + x) * 3 + c] = s[c] / n;
+                    next[y * TEX + x] = 1;
+                }
+            }
+        }
+        have.set(next);
+    }
+    return png_write(TEX, TEX, Buffer.from(Array.from(rgb, (v) => Math.round(Math.min(255, Math.max(0, v))))));
+}
+
+/* --- his skeleton: glTF's axes, y up, facing +z, his left +x; every bone rests unturned, at its place in his model --- */
 const BONES = [];
-const bone = (name, parent, at) => {
-    BONES.push({ name, parent: parent == null ? -1 : BONES.findIndex((b) => b.name === parent), at });
+const bone = (name, parent, at, tip = null) => {
+    BONES.push({ name, parent: parent == null ? -1 : BONES.findIndex((b) => b.name === parent), at, tip });
     return BONES.length - 1;
 };
-bone('hips', null, [0, 0.24, 0]);
-bone('spine', 'hips', [0, 0.35, 0]);
-bone('chest', 'spine', [0, 0.49, 0]);
-bone('neck', 'chest', [0, 0.61, 0.02]);
-bone('head', 'neck', [0, 0.69, 0.03]);
-bone('jaw', 'head', [0, 0.705, 0.11]);
+bone('hips', null, [0, -0.21, -0.03]);
+bone('spine', 'hips', [0, -0.07, 0.0]);
+bone('chest', 'spine', [0, 0.07, 0.04]);
+bone('neck', 'chest', [0, 0.17, 0.05]);
+bone('head', 'neck', [0, 0.24, 0.06], [0, 0.42, 0.06]);
+bone('jaw', 'head', [0, 0.27, 0.17], [0, 0.24, 0.34]);
 for (const [s, x] of [['l', 1], ['r', -1]]) {
-    bone(`ear_${s}1`, 'head', [0.1 * x, 0.83, 0.01]);
-    bone(`ear_${s}2`, `ear_${s}1`, [0.135 * x, 0.69, 0.0]);
-    bone(`upperarm_${s}`, 'chest', [0.13 * x, 0.555, 0.02]);
-    bone(`forearm_${s}`, `upperarm_${s}`, [0.16 * x, 0.455, 0.04]);
-    bone(`hand_${s}`, `forearm_${s}`, [0.17 * x, 0.37, 0.06]);
-    bone(`thigh_${s}`, 'hips', [0.075 * x, 0.215, 0]);
-    bone(`shin_${s}`, `thigh_${s}`, [0.08 * x, 0.125, 0.02]);
-    bone(`foot_${s}`, `shin_${s}`, [0.08 * x, 0.045, 0.0]);
+    bone(`ear_${s}1`, 'head', [0.13 * x, 0.38, 0.0]);
+    bone(`ear_${s}2`, `ear_${s}1`, [0.17 * x, 0.26, 0.0], [0.19 * x, 0.14, 0.0]);
+    bone(`upperarm_${s}`, 'chest', [0.14 * x, 0.12, 0.07]);
+    bone(`forearm_${s}`, `upperarm_${s}`, [0.17 * x, 0.02, 0.13]);
+    bone(`hand_${s}`, `forearm_${s}`, [0.12 * x, 0.05, 0.23], [0.11 * x, 0.01, 0.33]);
+    bone(`thigh_${s}`, 'hips', [0.1 * x, -0.24, -0.03]);
+    bone(`shin_${s}`, `thigh_${s}`, [0.12 * x, -0.34, -0.05]);
+    bone(`foot_${s}`, `shin_${s}`, [0.12 * x, -0.43, -0.04], [0.12 * x, -0.46, 0.07]);
 }
-bone('tail1', 'hips', [0, 0.22, -0.1]);
-bone('tail2', 'tail1', [0, 0.27, -0.19]);
-bone('tail3', 'tail2', [0, 0.34, -0.245]);
+bone('tail1', 'hips', [0, -0.17, -0.14]);
+bone('tail2', 'tail1', [0, -0.12, -0.24]);
+bone('tail3', 'tail2', [0, -0.06, -0.3], [0, 0.0, -0.335]);
 const B = Object.fromEntries(BONES.map((b, i) => [b.name, i]));
+/* each bone's line: from it to its first child, or its tip */
+for (const b of BONES) {
+    const child = BONES.find((c) => c.parent === BONES.indexOf(b));
+    b.end = b.tip || (child ? child.at : add(b.at, [0, 0.05, 0]));
+}
 
-/* --- the mesh: shapes, each corner coloured and given its bones --- */
-const verts = []; /* { p, c, j: [4], w: [4] } */
-const tris = [];
+/* --- his weights: each corner's bones, by the part of him it's in, then smoothed over his surface --- */
 
-/* weights from a list of [bone, weight] */
-const bind = (list) => {
-    const l = list.filter(([, w]) => w > 1e-4).sort((a, b) => b[1] - a[1]).slice(0, 4);
-    const sum = l.reduce((s, [, w]) => s + w, 0) || 1;
-    const j = [0, 0, 0, 0], w = [0, 0, 0, 0];
-    l.forEach(([b, x], i) => {
-        j[i] = b;
-        w[i] = x / sum;
+/* the bones a corner at p can go with */
+function part(p) {
+    const [x, y, z] = p, s = x >= 0 ? 'l' : 'r', ax = Math.abs(x);
+    if ((ax > 0.105 && y > 0.2 && y < 0.44 && z < 0.2) || (ax > 0.12 && y > 0.13 && y <= 0.2 && z < 0.16)) return [`ear_${s}1`, `ear_${s}2`];
+    if (y > 0.19) return z > 0.2 && y < 0.27 ? ['jaw', 'head'] : ['head', 'neck'];
+    if (y > -0.1 && y < 0.17 && (z > 0.12 || ax > 0.16)) return [`upperarm_${s}`, `forearm_${s}`, `hand_${s}`];
+    if (y < -0.26 && ax > 0.03) return [`thigh_${s}`, `shin_${s}`, `foot_${s}`];
+    if (z < -0.12 && y > -0.28 && ax < 0.09) return ['hips', 'tail1', 'tail2', 'tail3'];
+    return ['hips', 'spine', 'chest', 'neck'];
+}
+
+function seg_dist(p, a, b) {
+    const ab = sub(b, a), t = Math.min(1, Math.max(0, (sub(p, a)[0] * ab[0] + sub(p, a)[1] * ab[1] + sub(p, a)[2] * ab[2]) / (ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2 || 1)));
+    return len(sub(p, add(a, mul(ab, t))));
+}
+
+function weigh() {
+    /* first, by the nearest of its part's bones */
+    let W = POS.map((p) => {
+        const near = part(p).map((n) => [B[n], 1 / (seg_dist(p, BONES[B[n]].at, BONES[B[n]].end) + 0.01) ** 4]).sort((a, b) => b[1] - a[1]).slice(0, 2);
+        const sum = near.reduce((s, [, w]) => s + w, 0);
+        return new Map(near.map(([b, w]) => [b, w / sum]));
     });
-    return { j, w };
-};
-const vert = (p, c, weights) => {
-    const { j, w } = bind(weights);
-    verts.push({ p, c, j, w });
-    return verts.length - 1;
-};
-/* a face, its corners round counter-clockwise as it's seen from outside */
-const tri = (a, b, c) => tris.push([a, b, c]);
-
-/* An ellipsoid: `rings` from top to bottom, `segs` round; turned by the frame (right, up, forward) */
-function ellipsoid({ at, r, rings, segs, colour, weights, frame = null }) {
-    const [rx, ry, rz] = r;
-    const X = frame ? frame[0] : [1, 0, 0], Y = frame ? frame[1] : [0, 1, 0], Z = frame ? frame[2] : [0, 0, 1];
-    const point = (u, v) => {
-        const lat = Math.PI * (0.5 - v / rings), lon = (2 * Math.PI * u) / segs;
-        const lx = Math.cos(lat) * Math.sin(lon) * rx, ly = Math.sin(lat) * ry, lz = Math.cos(lat) * Math.cos(lon) * rz;
-        const local = [lx / rx, ly / ry, lz / rz];
-        return { p: add(at, add(add(mul(X, lx), mul(Y, ly)), mul(Z, lz))), local };
-    };
-    const top = point(0, 0), bottom = point(0, rings);
-    const ti = vert(top.p, colour(top.p, top.local), weights(top.p, top.local));
-    const rows = [];
-    for (let v = 1; v < rings; v++) {
-        const row = [];
-        for (let u = 0; u < segs; u++) {
-            const q = point(u, v);
-            row.push(vert(q.p, colour(q.p, q.local), weights(q.p, q.local)));
-        }
-        rows.push(row);
+    /* his surface: corners joined by an edge, or at the same place (across the texture's seams) */
+    const key = (p) => p.map((v) => Math.round(v * 1e4)).join(',');
+    const same = new Map();
+    POS.forEach((p, v) => same.set(key(p), [...(same.get(key(p)) || []), v]));
+    const near = POS.map(() => new Set());
+    for (const t of tris) for (const a of t) for (const b of t) if (a !== b) near[a].add(b);
+    for (const group of same.values()) for (const a of group) for (const b of group) if (a !== b) near[a].add(b);
+    for (let pass = 0; pass < 3; pass++) {
+        W = W.map((own, v) => {
+            const m = new Map();
+            for (const [b, w] of own) m.set(b, w * 0.5);
+            const n = near[v].size || 1;
+            for (const u of near[v]) for (const [b, w] of W[u]) m.set(b, (m.get(b) || 0) + (w * 0.5) / n);
+            return m;
+        });
     }
-    const bi = vert(bottom.p, colour(bottom.p, bottom.local), weights(bottom.p, bottom.local));
-    for (let u = 0; u < segs; u++) {
-        const u1 = (u + 1) % segs;
-        tri(ti, rows[0][u], rows[0][u1]);
-        for (let v = 0; v + 1 < rows.length; v++) {
-            tri(rows[v][u], rows[v + 1][u], rows[v + 1][u1]);
-            tri(rows[v][u], rows[v + 1][u1], rows[v][u1]);
-        }
-        tri(rows[rows.length - 1][u], bi, rows[rows.length - 1][u1]);
-    }
-}
-
-/* A tube along a path of points, `segs` round, each point with its radii across (x-ish) and through; its ends closed. `side` is the
- * way its first radius points at each point (else across the path from +x). */
-function tube({ path: pts, radii, segs, colour, weights, side = null }) {
-    const rows = [];
-    for (let i = 0; i < pts.length; i++) {
-        const dir = norm(sub(pts[Math.min(i + 1, pts.length - 1)], pts[Math.max(i - 1, 0)]));
-        let a = side ? side(i) : [1, 0, 0];
-        a = norm(sub(a, mul(dir, a[0] * dir[0] + a[1] * dir[1] + a[2] * dir[2])));
-        const b = cross(dir, a);
-        const row = [];
-        for (let u = 0; u < segs; u++) {
-            const ang = (2 * Math.PI * u) / segs;
-            const off = add(mul(a, Math.cos(ang) * radii[i][0]), mul(b, Math.sin(ang) * radii[i][1]));
-            const p = add(pts[i], off);
-            row.push(vert(p, colour(p, i / (pts.length - 1), [Math.cos(ang), Math.sin(ang)]), weights(p, i / (pts.length - 1))));
-        }
-        rows.push(row);
-    }
-    for (let i = 0; i + 1 < rows.length; i++) {
-        for (let u = 0; u < segs; u++) {
-            const u1 = (u + 1) % segs;
-            tri(rows[i][u], rows[i][u1], rows[i + 1][u1]);
-            tri(rows[i][u], rows[i + 1][u1], rows[i + 1][u]);
-        }
-    }
-    /* the ends, fans about their middles */
-    for (const [k, flip] of [[0, true], [rows.length - 1, false]]) {
-        const p = pts[k];
-        const c = vert(p, colour(p, k / (pts.length - 1), [0, 0]), weights(p, k / (pts.length - 1)));
-        for (let u = 0; u < segs; u++) {
-            const u1 = (u + 1) % segs;
-            if (flip) tri(c, rows[k][u1], rows[k][u]);
-            else tri(c, rows[k][u], rows[k][u1]);
-        }
-    }
-}
-
-/* the way two bones share a point between where they start (a) and the next starts (b): all the first's at a, half each at b */
-const along = (b1, b2, t, from = 0.6) => {
-    const s = smooth(from, 1, t);
-    return [[b1, 1 - s * 0.5], [b2, s * 0.5]];
-};
-
-/* His body: his chest and belly, and his hips. Black, his chest's front tan where it shows above the harness, his coat's sheen on top */
-const coat = (p, local) => mix(BLACK, SHEEN, smooth(0.2, 0.9, local[1]) * 0.6);
-ellipsoid({
-    at: [0, 0.455, 0], r: [0.13, 0.165, 0.12], rings: 8, segs: 10,
-    colour: (p, l) => (l[2] > 0.55 && p[1] > 0.535 ? mix(coat(p, l), TAN, smooth(0.55, 0.8, l[2])) : coat(p, l)),
-    weights: (p) => [[B.spine, 1 - smooth(0.4, 0.55, p[1])], [B.chest, smooth(0.4, 0.55, p[1])]],
-});
-ellipsoid({
-    at: [0, 0.27, -0.01], r: [0.12, 0.1, 0.11], rings: 6, segs: 10,
-    colour: coat, weights: (p) => [[B.hips, 1 - smooth(0.28, 0.36, p[1])], [B.spine, smooth(0.28, 0.36, p[1])]],
-});
-/* his harness: a band round his chest, just outside it, its edges a light trim */
-{
-    const ys = [0.395, 0.41, 0.53, 0.545];
-    const rows = ys.map((y, k) => {
-        const e = 1 - ((y - 0.455) / 0.165) ** 2, sx = 0.13 * Math.sqrt(Math.max(e, 0.05)) * 1.06, sz = 0.12 * Math.sqrt(Math.max(e, 0.05)) * 1.06;
-        const row = [];
-        for (let u = 0; u < 12; u++) {
-            const a = (2 * Math.PI * u) / 12;
-            const p = [Math.sin(a) * sx, y, Math.cos(a) * sz];
-            row.push(vert(p, k === 0 || k === 3 ? HARNESS_RIM : HARNESS, [[B.spine, y < 0.47 ? 1 : 0.3], [B.chest, y < 0.47 ? 0 : 0.7]]));
-        }
-        return row;
+    return W.map((m) => {
+        const l = [...m].sort((a, b) => b[1] - a[1]).slice(0, 4), sum = l.reduce((s, [, w]) => s + w, 0);
+        const j = [0, 0, 0, 0], w = [0, 0, 0, 0];
+        l.forEach(([b, x], i) => {
+            j[i] = b;
+            w[i] = x / sum;
+        });
+        return { j, w };
     });
-    for (let k = 0; k + 1 < rows.length; k++) {
-        for (let u = 0; u < 12; u++) {
-            const u1 = (u + 1) % 12;
-            tri(rows[k][u], rows[k + 1][u1], rows[k][u1]);
-            tri(rows[k][u], rows[k + 1][u], rows[k + 1][u1]);
-        }
-    }
 }
-/* his collar, and its tag */
-{
-    const segs = 10, rings = 3, R = 0.07, r = 0.013, c = [0, 0.6, 0.025];
-    const rows = [];
-    for (let v = 0; v < rings; v++) {
-        const row = [];
-        for (let u = 0; u < segs; u++) {
-            const a = (2 * Math.PI * u) / segs, b = (2 * Math.PI * v) / rings;
-            const p = [c[0] + Math.sin(a) * (R + Math.cos(b) * r), c[1] + Math.sin(b) * r, c[2] + Math.cos(a) * (R + Math.cos(b) * r)];
-            row.push(vert(p, COLLAR, [[B.neck, 0.7], [B.chest, 0.3]]));
-        }
-        rows.push(row);
-    }
-    for (let v = 0; v < rings; v++) {
-        for (let u = 0; u < segs; u++) {
-            const v1 = (v + 1) % rings, u1 = (u + 1) % segs;
-            tri(rows[v][u], rows[v1][u], rows[v1][u1]);
-            tri(rows[v][u], rows[v1][u1], rows[v][u1]);
-        }
-    }
-    /* the tag: a little bone shape, flat, hanging at the front */
-    const t = [0, 0.565, 0.1], w = 0.022, h = 0.012;
-    const tag = [[-w, 0], [-w * 0.6, h], [w * 0.6, h], [w, 0], [w * 0.6, -h], [-w * 0.6, -h]].map(([x, y]) =>
-        vert([t[0] + x, t[1] + y, t[2]], TAG, [[B.neck, 1]]));
-    const mid = vert(t, WHITE, [[B.neck, 1]]);
-    for (let i = 0; i < tag.length; i++) tri(mid, tag[i], tag[(i + 1) % tag.length]);
-}
-
-/* His head: a big round skull, his long muzzle, black nose, open mouth and tongue; tan over his eyes and on his muzzle */
-ellipsoid({
-    at: [0, 0.78, 0.015], r: [0.12, 0.11, 0.115], rings: 8, segs: 10,
-    colour: (p, l) => {
-        const cheek = l[2] > 0.3 && l[1] < -0.1 ? smooth(0.3, 0.7, l[2]) * smooth(-0.1, -0.45, l[1]) : 0;
-        return mix(coat(p, l), TAN, cheek);
-    },
-    weights: () => [[B.head, 1]],
-});
-tube({
-    path: [[0, 0.765, 0.08], [0, 0.75, 0.17], [0, 0.738, 0.255]],
-    radii: [[0.075, 0.06], [0.06, 0.048], [0.042, 0.036]],
-    segs: 8,
-    /* black along his bridge, tan below and at his sides */
-    colour: (p, t, [ca, sa]) => mix(TAN, BLACK, smooth(0.35, 0.85, sa) * (1 - t * 0.4)),
-    weights: () => [[B.head, 1]],
-    side: () => [1, 0, 0],
-});
-ellipsoid({ at: [0, 0.745, 0.27], r: [0.032, 0.026, 0.024], rings: 4, segs: 6, colour: () => NOSE, weights: () => [[B.head, 1]] });
-/* his lower jaw, the mouth's inside, and his tongue: they go with his jaw */
-ellipsoid({ at: [0, 0.685, 0.175], r: [0.045, 0.02, 0.075], rings: 4, segs: 8, colour: () => TAN, weights: () => [[B.jaw, 1]] });
-ellipsoid({ at: [0, 0.703, 0.17], r: [0.043, 0.016, 0.07], rings: 3, segs: 6, colour: () => MOUTH, weights: () => [[B.jaw, 0.5], [B.head, 0.5]] });
-ellipsoid({ at: [0, 0.69, 0.225], r: [0.028, 0.009, 0.05], rings: 3, segs: 6, colour: () => TONGUE, weights: () => [[B.jaw, 1]] });
-for (const x of [1, -1]) {
-    /* his eyes, dark and shining, and the tan spots over them */
-    ellipsoid({ at: [0.055 * x, 0.8, 0.105], r: [0.027, 0.03, 0.02], rings: 4, segs: 6, colour: () => NOSE, weights: () => [[B.head, 1]] });
-    ellipsoid({ at: [0.05 * x, 0.812, 0.123], r: [0.008, 0.008, 0.004], rings: 3, segs: 4, colour: () => WHITE, weights: () => [[B.head, 1]] });
-    ellipsoid({ at: [0.055 * x, 0.845, 0.095], r: [0.021, 0.012, 0.012], rings: 3, segs: 6, colour: () => TAN, weights: () => [[B.head, 1]] });
-    const s = x > 0 ? 'l' : 'r';
-    /* his long feathered ears, hanging and flaring at their ends */
-    tube({
-        path: [[0.095 * x, 0.85, 0.01], [0.13 * x, 0.77, 0.0], [0.145 * x, 0.69, -0.005], [0.155 * x, 0.61, -0.01], [0.15 * x, 0.565, -0.01]],
-        radii: [[0.035, 0.018], [0.05, 0.022], [0.06, 0.022], [0.07, 0.02], [0.04, 0.012]],
-        segs: 6,
-        colour: (p, t) => mix(BLACK, SHEEN, (1 - t) * 0.4),
-        weights: (p, t) => [[B[`ear_${s}1`], 1 - smooth(0.2, 0.6, t)], [B[`ear_${s}2`], smooth(0.2, 0.6, t)]],
-        side: () => [0, 0, 1],
-    });
-    /* his arms, black above and tan below the elbow, and his paws */
-    tube({
-        path: [[0.12 * x, 0.565, 0.02], [0.16 * x, 0.455, 0.04], [0.17 * x, 0.375, 0.06]],
-        radii: [[0.042, 0.042], [0.034, 0.034], [0.03, 0.03]],
-        segs: 6,
-        colour: (p, t) => mix(BLACK, TAN, smooth(0.45, 0.8, t)),
-        weights: (p, t) => (t < 0.5 ? along(B[`upperarm_${s}`], B[`forearm_${s}`], t * 2) : along(B[`forearm_${s}`], B[`hand_${s}`], t * 2 - 1, 0.8))
-            .concat(t >= 0.5 ? [[B[`upperarm_${s}`], 0]] : []),
-    });
-    ellipsoid({ at: [0.172 * x, 0.35, 0.07], r: [0.036, 0.03, 0.042], rings: 4, segs: 6, colour: () => TAN_LIGHT, weights: () => [[B[`hand_${s}`], 1]] });
-    /* his short legs, and his feet */
-    tube({
-        path: [[0.075 * x, 0.25, 0], [0.08 * x, 0.125, 0.02], [0.08 * x, 0.05, 0.0]],
-        radii: [[0.058, 0.058], [0.044, 0.044], [0.034, 0.034]],
-        segs: 6,
-        colour: (p, t) => mix(BLACK, TAN, smooth(0.4, 0.75, t)),
-        weights: (p, t) => (t < 0.5 ? along(B[`thigh_${s}`], B[`shin_${s}`], t * 2) : along(B[`shin_${s}`], B[`foot_${s}`], t * 2 - 1, 0.8)),
-    });
-    ellipsoid({ at: [0.082 * x, 0.028, 0.035], r: [0.045, 0.028, 0.07], rings: 4, segs: 6, colour: () => TAN_LIGHT, weights: () => [[B[`foot_${s}`], 1]] });
-}
-/* his feathered tail */
-tube({
-    path: [[0, 0.23, -0.09], [0, 0.265, -0.18], [0, 0.33, -0.24], [0, 0.4, -0.265], [0, 0.445, -0.27]],
-    radii: [[0.028, 0.028], [0.038, 0.034], [0.034, 0.03], [0.022, 0.02], [0.008, 0.008]],
-    segs: 6,
-    colour: (p, t, [ca, sa]) => mix(BLACK, TAN, ca < -0.5 && t < 0.6 ? 0.5 : 0),
-    weights: (p, t) =>
-        t < 0.33 ? along(B.tail1, B.tail2, t * 3) : t < 0.66 ? along(B.tail2, B.tail3, (t - 0.33) * 3) : [[B.tail3, 1]],
-    side: () => [1, 0, 0],
-});
-
-/* the soles of his feet at 0 */
-{
-    const lo = Math.min(...verts.map((v) => v.p[1]));
-    for (const v of verts) v.p[1] -= lo;
-    for (const b of BONES) b.at = [b.at[0], b.at[1] - lo, b.at[2]];
-}
+const WEIGHTS = weigh();
 
 /* --- his moves: each bone's turn (and his hips' move) at time t; a bone not named rests --- */
 
@@ -339,12 +320,17 @@ const wag = (t, period, deg, lift = 20) => ({
 });
 const pant = (t, period, open = 12) => ({ jaw: euler(open * 0.5 + open * 0.5 * (0.5 + 0.5 * wave(t, period)), 0, 0) });
 /* his arms hanging a little out from his sides: x forward (+ back), z out */
-const arms = (l, r, out = 10) => ({
-    upperarm_l: euler(l[0], 0, -out + (l[1] || 0)),
-    forearm_l: euler(l[2] || 0, 0, 0),
-    upperarm_r: euler(r[0], 0, out - (r[1] || 0)),
-    forearm_r: euler(r[2] || 0, 0, 0),
+/* His arms are short against his big head, and rest held forward, begging: one raised over his head (a crate, a cheer) goes up no
+ * further than up at his chin, begging as he rests, a little out (up any further his paws went inside his muzzle or ears); a crate he carries balances on his head */
+const raised = (up) => smooth(-60, -150, up);
+const arm = (a, side) => ({
+    up: euler(Math.max(a[0], -40), 0, side * (-(a.out) + (a[1] || 0) - 20 * raised(a[0]))),
+    fore: euler((a[2] || 0) * (1 - raised(a[0])) - 25 * raised(a[0]) + 12 * Math.sin(a[0] * 0.2) * raised(a[0]), 0, 0),
 });
+const arms = (l, r, out = 10) => {
+    const L = arm(Object.assign([...l], { out }), 1), R = arm(Object.assign([...r], { out }), -1);
+    return { upperarm_l: L.up, forearm_l: L.fore, upperarm_r: R.up, forearm_r: R.fore };
+};
 const legs = (l, r) => ({
     thigh_l: euler(l[0], 0, 0),
     shin_l: euler(l[1] || 0, 0, 0),
@@ -530,6 +516,7 @@ const CLIPS = {
         },
     },
 };
+
 /* a pose's turns as { bone: { r } } */
 function wrap(turns) {
     return Object.fromEntries(Object.entries(turns).map(([k, r]) => [k, { r }]));
@@ -544,9 +531,8 @@ class Bin {
         this.views = [];
         this.accessors = [];
     }
-    /* typed data as a buffer view and an accessor */
-    add(array, type, componentType, count, extra = {}) {
-        const bytes = Buffer.from(array.buffer, array.byteOffset, array.byteLength);
+    /* bytes as a buffer view */
+    view(bytes) {
         const pad = (4 - (this.size % 4)) % 4;
         if (pad) {
             this.parts.push(Buffer.alloc(pad));
@@ -555,28 +541,35 @@ class Bin {
         this.views.push({ buffer: 0, byteOffset: this.size, byteLength: bytes.length });
         this.parts.push(bytes);
         this.size += bytes.length;
-        this.accessors.push({ bufferView: this.views.length - 1, componentType, count, type, ...extra });
+        return this.views.length - 1;
+    }
+    /* typed data as a buffer view and an accessor */
+    add(array, type, componentType, count, extra = {}) {
+        const v = this.view(Buffer.from(array.buffer, array.byteOffset, array.byteLength));
+        this.accessors.push({ bufferView: v, componentType, count, type, ...extra });
         return this.accessors.length - 1;
     }
 }
 
-function glb() {
+function glb(png) {
     const bin = new Bin();
-    const n = verts.length;
-    const pos = new Float32Array(n * 3), col = new Float32Array(n * 4), joints = new Uint16Array(n * 4), weights = new Float32Array(n * 4);
-    verts.forEach((v, i) => {
-        pos.set(v.p, i * 3);
-        col.set([...v.c, 1], i * 4);
-        joints.set(v.j, i * 4);
-        weights.set(v.w, i * 4);
+    const used = [...new Set(tris.flat())].sort((a, b) => a - b), at = new Map(used.map((v, i) => [v, i]));
+    const n = used.length;
+    const pos = new Float32Array(n * 3), uv = new Float32Array(n * 2), joints = new Uint16Array(n * 4), weights = new Float32Array(n * 4);
+    used.forEach((v, i) => {
+        pos.set(POS[v], i * 3);
+        uv.set(UV[v], i * 2);
+        joints.set(WEIGHTS[v].j, i * 4);
+        weights.set(WEIGHTS[v].w, i * 4);
     });
-    const lo = [0, 1, 2].map((k) => Math.min(...verts.map((v) => v.p[k]))), hi = [0, 1, 2].map((k) => Math.max(...verts.map((v) => v.p[k])));
-    const idx = new Uint16Array(tris.flat());
+    const lo = [0, 1, 2].map((k) => Math.min(...used.map((v) => POS[v][k]))), hi = [0, 1, 2].map((k) => Math.max(...used.map((v) => POS[v][k])));
+    const idx = new Uint16Array(tris.flat().map((v) => at.get(v)));
     const aPos = bin.add(pos, 'VEC3', 5126, n, { min: lo, max: hi });
-    const aCol = bin.add(col, 'VEC4', 5126, n);
+    const aUv = bin.add(uv, 'VEC2', 5126, n);
     const aJoint = bin.add(joints, 'VEC4', 5123, n);
     const aWeight = bin.add(weights, 'VEC4', 5126, n);
     const aIdx = bin.add(idx, 'SCALAR', 5123, idx.length);
+    const image = bin.view(png);
     /* each bone rests unturned, so its inverse bind is a move back from where it is */
     const ibm = new Float32Array(BONES.length * 16);
     BONES.forEach((b, i) => ibm.set([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -b.at[0], -b.at[1], -b.at[2], 1], i * 16));
@@ -618,12 +611,15 @@ function glb() {
     }
 
     const json = {
-        asset: { version: '2.0', generator: 'port/mods/bobby.mjs' },
+        asset: { version: '2.0', generator: 'port/mods/bobby.mjs, from a model made with Meshy' },
         scene: 0,
         scenes: [{ nodes: [0, meshNode] }],
         nodes,
-        meshes: [{ name: 'bobby', primitives: [{ attributes: { POSITION: aPos, COLOR_0: aCol, JOINTS_0: aJoint, WEIGHTS_0: aWeight }, indices: aIdx, material: 0 }] }],
-        materials: [{ name: 'coat', pbrMetallicRoughness: { baseColorFactor: [1, 1, 1, 1], metallicFactor: 0, roughnessFactor: 1 } }],
+        meshes: [{ name: 'bobby', primitives: [{ attributes: { POSITION: aPos, TEXCOORD_0: aUv, JOINTS_0: aJoint, WEIGHTS_0: aWeight }, indices: aIdx, material: 0 }] }],
+        materials: [{ name: 'bobby', pbrMetallicRoughness: { baseColorTexture: { index: 0 }, metallicFactor: 0, roughnessFactor: 1 } }],
+        textures: [{ source: 0, sampler: 0 }],
+        samplers: [{ magFilter: 9728, minFilter: 9728 }],
+        images: [{ bufferView: image, mimeType: 'image/png' }],
         skins: [{ joints: BONES.map((_, i) => i), inverseBindMatrices: aIbm, skeleton: 0 }],
         animations,
         buffers: [{ byteLength: bin.size }],
@@ -642,7 +638,7 @@ function glb() {
     th.write('JSON', 4);
     dh.writeUInt32LE(data.length, 0);
     dh.write('BIN\0', 4);
-    return Buffer.concat([head, th, text, dh, data]);
+    return { file: Buffer.concat([head, th, text, dh, data]), verts: n };
 }
 
 /* --- how he plays: hero.json --- */
@@ -652,7 +648,7 @@ const hero = {
     name: 'BOBBY',
     /* Crash's place if nobody has it: a small, quick hero */
     prefer: 'crash',
-    height: 520,
+    height: 540,
     face: 'BREATHE',
     face_turn: 20,
     kinds: {
@@ -676,10 +672,10 @@ fs.mkdirSync(path.join(OUT, 'heroes', 'bobby'), { recursive: true });
 fs.writeFileSync(path.join(OUT, 'mod.json'), JSON.stringify({
     name: 'Bobby',
     author: 'Crash Bash PC',
-    version: '1.0',
-    description: 'Bobby the dachshund as a hero of his own: the example hero pack',
+    version: '1.1',
+    description: 'Bobby the dachshund as a hero of his own: the example hero pack. His model was made with Meshy.',
 }, null, 2) + '\n');
 fs.writeFileSync(path.join(OUT, 'heroes', 'bobby', 'hero.json'), JSON.stringify(hero, null, 2) + '\n');
-const file = glb();
-fs.writeFileSync(path.join(OUT, 'heroes', 'bobby', 'hero.glb'), file);
-console.log(`bobby: ${verts.length} vertices, ${tris.length} triangles, ${BONES.length} bones, ${Object.keys(CLIPS).length} clips, ${file.length} bytes`);
+const made = glb(texture());
+fs.writeFileSync(path.join(OUT, 'heroes', 'bobby', 'hero.glb'), made.file);
+console.log(`bobby: ${made.verts} vertices, ${tris.length} triangles, ${BONES.length} bones, ${Object.keys(CLIPS).length} clips, ${made.file.length} bytes`);

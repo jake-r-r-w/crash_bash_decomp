@@ -69,7 +69,17 @@ build/port/windows-clang/crashbash.exe --mode 0 --skip-intro --skip-loading --wi
 ## Bobby, the example
 
 `port/mods/bobby/` is made by `node port/mods/bobby.mjs`: the user's dog, a long-haired black-and-tan miniature dachshund, stood up
-as a cartoon hero, built from shapes in the script (no one's art but its own), coloured by his corners, on 25 bones, with ten clips
-of his own on foot: a panting BREATHE with his tail wagging, a scampering RUN, a JUMP, his zoomies as he ATTACKs and WINs, a HIT,
-a TAUNT (his back to them, wiggling, then a bark), PICKUP, HOLD_SLOW and HOLD_THROW. The photos he's drawn from are the user's and
-aren't in the repo.
+as a cartoon hero. His model is the user's, made with Meshy from photos of him (`port/mods/bobby-source/bobby-meshy.glb`, its texture saved again losslessly to fit the repo's 2 MB; 1367
+triangles, one 2048 texture, no skeleton); the photos aren't in the repo. The script does to it what the hero tool will do to any
+model (phase 3), by hand:
+
+- its two smallest triangles go, for the game's 1365;
+- its texture, pieces scattered over black, has each piece spread out over the black round it and is made 256 x 256, so the game's
+  shrinking doesn't bleed black into his patches' edges;
+- a skeleton of 25 bones (`BONES`), placed from front and side views of him on a grid, and each corner's bones by the part of him
+  it's in (`part`: ears, head and jaw, arms, legs, tail, body), the nearest two of them, smoothed three times over his surface;
+- ten clips of his own on foot: a panting BREATHE with his tail wagging, a scampering RUN, a JUMP, his zoomies as he ATTACKs and
+  WINs, a HIT, a TAUNT (his back to them, wiggling, then a bark), PICKUP, HOLD_SLOW and HOLD_THROW.
+
+He rests begging, his forearms held up in front, and his arms are short against his big head: raised further than his chin, his paws
+went inside his muzzle or ears (`arm`), so a crate he carries balances on his head.
