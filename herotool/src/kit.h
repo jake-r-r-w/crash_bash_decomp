@@ -105,8 +105,8 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
  * proportions, in its box), for the window to start from */
 int kit_save_markers(const KitModel *m, const char *path);
 void kit_guess_markers(KitModel *m);
-/* gui.cpp: the window, its argument a model to open (or NULL) */
-int kit_gui(const char *model);
+/* gui.cpp: the window, a model to open, the mods folder to write to and the game to test in (each NULL for none, or beside it) */
+int kit_gui(const char *model, const char *mods, const char *game);
 
 #ifdef __cplusplus
 }

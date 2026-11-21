@@ -935,6 +935,60 @@ void mods_open_folder(void) {
     }
 }
 
+/* --- the hero tool --- */
+
+static void hero_tool_path(char *out, size_t size, const char *name) {
+    const char *base = platform_base_path();
+
+    SDL_snprintf(out, size, "%s%s%s", base != NULL ? base : "", name,
+#ifdef _WIN32
+                 ".exe"
+#else
+                 ""
+#endif
+    );
+}
+
+int mods_hero_tool_there(void) {
+    char path[1100];
+    SDL_PathInfo info;
+
+    hero_tool_path(path, sizeof(path), "herotool");
+    return SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE;
+}
+
+void mods_open_hero_tool(void) {
+    char tool[1100], game[1100], places[3][1024];
+    const char *mods = NULL, *args[6];
+    int n = standard_places(places, "mods"), i;
+    SDL_Process *proc;
+
+    if (!mods_hero_tool_there()) {
+        return;
+    }
+    for (i = 0; i < n - 1 && mods == NULL; i++) {
+        SDL_PathInfo info;
+
+        if ((SDL_GetPathInfo(places[i], &info) && info.type == SDL_PATHTYPE_DIRECTORY) || SDL_CreateDirectory(places[i])) {
+            mods = places[i];
+        }
+    }
+    hero_tool_path(tool, sizeof(tool), "herotool");
+    hero_tool_path(game, sizeof(game), "crashbash");
+    args[0] = tool;
+    args[1] = "--mods";
+    args[2] = mods != NULL ? mods : places[0];
+    args[3] = "--game";
+    args[4] = game;
+    args[5] = NULL;
+    proc = SDL_CreateProcess(args, false);
+    if (proc == NULL) {
+        fprintf(stderr, "hero tool %s: %s\n", tool, SDL_GetError());
+        return;
+    }
+    SDL_DestroyProcess(proc);
+}
+
 /* --- textures --- */
 
 static int by_hash_then_order(const void *a, const void *b) {

@@ -45,7 +45,8 @@ enum {
     SET_SKIP_INTRO,
     SET_SKIP_LOADING,
     SET_CHEAT_MENU,
-    SET_EXTRA_HEROES
+    SET_EXTRA_HEROES,
+    SET_HERO_TOOL
 };
 
 typedef struct {
@@ -84,6 +85,10 @@ static const MenuOption GameOptionsList[] = {
     { "CHEAT MENU", "THE ORIGINAL'S HIDDEN CHEATS, IN THE PAUSE MENU", SET_CHEAT_MENU },
     /* PC: the heroes of the mods that are on (docs/HERO_PACKS.md), and those made from the player's other discs */
     { "CUSTOM HEROES", "HEROES FROM YOUR MODS, AND ROO AND PINSTRIPE FROM A DISC", SET_EXTRA_HEROES },
+#ifndef __ANDROID__
+    /* PC: the hero tool, beside the program (herotool/, docs/HERO_PACKS.md) */
+    { "HERO TOOL", "MAKE A HERO OF YOUR OWN FROM A 3D MODEL, AS A MOD", SET_HERO_TOOL },
+#endif
 };
 #define NUM_OF(a) ((s32)(sizeof(a) / sizeof((a)[0])))
 
@@ -320,7 +325,7 @@ static s32 option_count(const MenuCategory *c) {
 }
 
 static s32 mod_usable(const ModInfo *m) {
-    return m != NULL && m->textures + m->files != 0;
+    return m != NULL && m->textures + m->files + m->heroes != 0;
 }
 
 /* Two lines: what it does, or what's wrong with it; and who made it. */
@@ -337,6 +342,8 @@ static void mod_help(s32 n) {
         snprintf(text, sizeof(text), "%s", m->problem);
     } else if (m->description[0] != 0) {
         snprintf(text, sizeof(text), "%s", m->description);
+    } else if (m->heroes != 0 && m->textures + m->files == 0) {
+        snprintf(text, sizeof(text), "%d %s OF ITS OWN", m->heroes, m->heroes == 1 ? "HERO" : "HEROES");
     } else if (m->textures != 0 && m->files != 0) {
         snprintf(text, sizeof(text), "%d TEXTURES AND %d FILES", m->textures, m->files);
     } else {
@@ -497,6 +504,11 @@ static void change_setting(const MenuCategory *c, s32 n, s32 dir) {
         case SET_EXTRA_HEROES:
             s->extra_heroes = !s->extra_heroes;
             break;
+        case SET_HERO_TOOL:
+            if (dir > 0) {
+                mods_open_hero_tool();
+            }
+            break;
         }
     }
     settings_apply();
@@ -535,6 +547,9 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
         break;
     case SET_EXTRA_HEROES:
         snprintf(text, size, "%s", s->extra_heroes ? "ON" : "OFF");
+        break;
+    case SET_HERO_TOOL:
+        snprintf(text, size, "%s", mods_hero_tool_there() ? "OPEN" : "NOT HERE");
         break;
     }
 }

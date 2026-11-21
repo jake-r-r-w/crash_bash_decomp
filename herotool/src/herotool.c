@@ -46,9 +46,20 @@ int main(int argc, char **argv) {
     p.prefer = "crash";
     p.height = 560;
     p.author = "";
-    /* no arguments, or a model alone: the window */
-    if (argc < 2 || (argc == 2 && strlen(argv[1]) > 4 && SDL_strcasecmp(argv[1] + strlen(argv[1]) - 4, ".glb") == 0)) {
-        return kit_gui(argc == 2 ? argv[1] : NULL);
+    /* not import: the window, with a model to open, --mods FOLDER and --game PROGRAM (as the game's launcher starts it) */
+    if (argc < 2 || strcmp(argv[1], "import") != 0) {
+        const char *open = NULL, *mods = NULL, *game = NULL;
+
+        for (i = 1; i < argc; i++) {
+            if (strcmp(argv[i], "--mods") == 0 && i + 1 < argc) {
+                mods = argv[++i];
+            } else if (strcmp(argv[i], "--game") == 0 && i + 1 < argc) {
+                game = argv[++i];
+            } else {
+                open = argv[i];
+            }
+        }
+        return kit_gui(open, mods, game);
     }
     if (argc < 3 || strcmp(argv[1], "import") != 0) {
         usage();

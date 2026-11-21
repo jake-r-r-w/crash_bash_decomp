@@ -35,6 +35,9 @@ void mods_set_on(int i, int on);
 void mods_move(int i, int dir);
 /* Opens the mods folder for the player to put mods in. */
 void mods_open_folder(void);
+/* Whether the hero tool is beside the program (herotool/, docs/HERO_PACKS.md), and starting it, its mods folder the game's own */
+int mods_hero_tool_there(void);
+void mods_open_hero_tool(void);
 /* The mods that are on, in their order, take effect: their textures at once, and their files for what the game reads from now on. */
 void mods_apply_textures(void);
 void mods_apply_files(void);

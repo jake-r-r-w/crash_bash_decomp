@@ -422,7 +422,7 @@ void path_field(const char *label, char *buf, size_t size) {
 
 } // namespace
 
-extern "C" int kit_gui(const char *start) {
+extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     static Tool T;
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -448,6 +448,12 @@ extern "C" int kit_gui(const char *start) {
              ""
 #endif
     );
+    if (mods != nullptr) {
+        SDL_strlcpy(T.out, mods, sizeof(T.out));
+    }
+    if (game != nullptr) {
+        SDL_strlcpy(T.game, game, sizeof(T.game));
+    }
     if (start != nullptr) {
         open_model(T, start);
     }
