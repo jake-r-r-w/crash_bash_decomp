@@ -15,7 +15,8 @@
  * differ, as from then on they'd be playing different games.
  *
  * Every machine starts the game from the very beginning, with the host's saves and the host's settings where those change the game
- * (settings_borrow), so they start the same.
+ * (settings_borrow), so they start the same. Its heroes of its own (hero packs, docs/HERO_PACKS.md) are only those every machine has,
+ * by a hash of each pack: a joiner says which it has, and the host which are played, in its order (mods_heroes_only).
  *
  * For tests: packets can be made late and lost (--net-lag, --net-loss), a game's records kept (--net-record) and played again with
  * nobody else (--replay).
@@ -49,6 +50,7 @@ typedef int SOCKET;
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include "mods.h"
 #include "net.h"
 #include "platform.h"
 #include "portmap.h"
@@ -56,9 +58,11 @@ typedef int SOCKET;
 #include "settings.h"
 
 #define MAGIC 0x314E4243u /* "CBN1" */
-#define PROTOCOL 2
+#define PROTOCOL 3
 #define MACHINES 4
 #define PADS 4
+#define HEROES_SAID 16 /* a joiner's hero packs it says it has, at most */
+#define HEROES MODS_HEROES_ONLY /* and the most a game plays */
 #define PAD_BYTES 7 /* what's there, the buttons, the sticks */
 #define RECORD_BYTES (PADS * PAD_BYTES)
 #define HISTORY 2048   /* steps kept to send again: over a minute */
@@ -108,6 +112,8 @@ typedef struct {
     Uint64 pinged;   /* when it was last pinged, in the lobby */
     uint8_t last[PADS]; /* what each of its pads was (PAD_ bits) when it last sent any */
     Print prints[PRINTS]; /* its fingerprints, as it's sent them */
+    uint64_t heroes[HEROES_SAID]; /* the host: its hero packs, by their hashes */
+    int num_heroes;
     uint8_t in[HISTORY][RECORD_BYTES];
 } Machine;
 
@@ -126,6 +132,10 @@ static uint8_t Now[RECORD_BYTES]; /* the step being played */
 static Print Mine[PRINTS];
 static int Welcomed, Refused, Ready, Ended, Differed;
 static int Lobby; /* where hosting or joining has got to (LOBBY_, net.h) */
+/* The hero packs played: on the host the first HEROES of its own that every machine has, on a joiner as the host says, each by its
+   hash and its place in this machine's list (mods_hero_hash); and a joiner's own, as it says it has them */
+static int NumPlayed, PlayedAt[HEROES], NumOwn;
+static uint64_t Played[HEROES], Own[HEROES_SAID];
 static int Timing; /* the host: pings are being timed (time_pings) */
 static void lobby_fail(const char *why);
 /* Games found on this network, by asking everyone on it (T_FIND) */
@@ -628,7 +638,18 @@ static void host_takes(int type, Reader *r, const struct sockaddr_in *from) {
             mc->nonce = nonce;
             mc->pads = pads < 1 ? 1 : pads > PADS ? PADS : (int)pads;
             mc->heard = SDL_GetTicks();
-            say("%s has joined, with %d controller%s: %d here", address_text(from), mc->pads, mc->pads == 1 ? "" : "s", NumMachines + 1);
+            {
+                uint32_t n = get(r, 1), k;
+
+                for (k = 0; !r->bad && k < n && k < HEROES_SAID; k++) {
+                    uint64_t lo = get(r, 4), hi = get(r, 4);
+
+                    mc->heroes[mc->num_heroes] = lo | hi << 32;
+                    mc->num_heroes += !r->bad;
+                }
+            }
+            say("%s has joined, with %d controller%s and %d hero pack%s: %d here", address_text(from), mc->pads, mc->pads == 1 ? "" : "s",
+                mc->num_heroes, mc->num_heroes == 1 ? "" : "s", NumMachines + 1);
             send_welcome(from, nonce, 0, NumMachines++);
         }
         return;
@@ -807,9 +828,34 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
                 Machines[m].first = (int)first;
                 Machines[m].pads = (int)pads;
             }
+            {
+                uint32_t n = get(r, 1), k;
+                int j;
+
+                if (r->bad || n > HEROES) {
+                    return;
+                }
+                for (k = 0; k < n; k++) {
+                    uint64_t lo = get(r, 4), hi = get(r, 4);
+
+                    if (r->bad) {
+                        return;
+                    }
+                    Played[k] = lo | hi << 32;
+                    for (j = 0; j < NumOwn && Own[j] != Played[k]; j++) {
+                    }
+                    if (j >= NumOwn) {
+                        /* it said it had it when it joined, so the host was told wrong */
+                        return;
+                    }
+                    PlayedAt[k] = j;
+                }
+                NumPlayed = (int)n;
+            }
             Delay = (int)delay;
             NumMachines = (int)machines;
-            settings_borrow(flags & 1, (flags >> 1) & 1, (flags >> 2) & 1, 0);
+            settings_borrow(flags & 1, (flags >> 1) & 1, (flags >> 2) & 1, (flags >> 3) & 1);
+            mods_heroes_only(PlayedAt, NumPlayed);
             Ready |= READY_START;
         }
         p = put(p, Session, 4);
@@ -1066,7 +1112,11 @@ static void record_header(void) {
     uint8_t save[SAVES_MOST];
     int slot, size, i;
 
-    fprintf(Recording, "crashbash online %d\ndelay %d\nplayers %d\nsettings %d %d %d\n", PROTOCOL, Delay, net_players(), s->skip_intro, s->skip_loading, s->cheat_menu);
+    fprintf(Recording, "crashbash online %d\ndelay %d\nplayers %d\nsettings %d %d %d %d\n", PROTOCOL, Delay, net_players(), s->skip_intro,
+            s->skip_loading, s->cheat_menu, s->extra_heroes);
+    for (i = 0; i < NumPlayed; i++) {
+        fprintf(Recording, "hero %016llX\n", (unsigned long long)Played[i]);
+    }
     for (slot = 0; slot < SAVES_SLOTS; slot++) {
         size = saves_get(slot, save, sizeof(save));
         if (size > 0) {
@@ -1205,6 +1255,8 @@ static void reset_session(void) {
     }
     settings_return();
     saves_in_memory(0);
+    mods_heroes_only(NULL, -1);
+    NumPlayed = NumOwn = 0;
     Role = OFFLINE;
     ReplayPlayers = 0;
     Session = 0;
@@ -1247,6 +1299,40 @@ static int own_saves_fine(void) {
         }
     }
     return 1;
+}
+
+/* This machine's own hero packs, by their hashes: what a joiner says it has. None unless its CUSTOM HEROES is on: a player who's
+   turned them off doesn't want them, though it's the host's setting that's played. */
+static void heroes_own(void) {
+    int n = settings()->extra_heroes ? mods_heroes_all() : 0, i;
+
+    for (NumOwn = 0, i = 0; i < n && NumOwn < HEROES_SAID; i++) {
+        Own[NumOwn++] = mods_hero_hash(i);
+    }
+}
+
+/* The host: the first HEROES of its own hero packs that every machine has the same of; the others aren't played this game */
+static void heroes_agree(void) {
+    int n = settings()->extra_heroes ? mods_heroes_all() : 0, i, m, k;
+
+    for (NumPlayed = 0, i = 0; i < n && NumPlayed < HEROES; i++) {
+        uint64_t h = mods_hero_hash(i);
+        int all = 1;
+
+        for (m = 1; m < NumMachines && all; m++) {
+            for (k = 0; k < Machines[m].num_heroes && Machines[m].heroes[k] != h; k++) {
+            }
+            if (k >= Machines[m].num_heroes) {
+                say("%s isn't played: machine %d hasn't its pack, or has another", mods_hero_id(i), m + 1);
+                all = 0;
+            }
+        }
+        if (all) {
+            Played[NumPlayed] = h;
+            PlayedAt[NumPlayed++] = i;
+        }
+    }
+    say("%d hero pack%s played", NumPlayed, NumPlayed == 1 ? "" : "s");
 }
 
 int net_lobby_host(const char *where) {
@@ -1370,6 +1456,7 @@ void net_lobby_start(void) {
         Machines[m].ready = 0;
         next_pad += Machines[m].pads;
     }
+    heroes_agree();
     LobbyBegan = SDL_GetTicks();
     LobbySent = 0;
     Lobby = LOBBY_STARTING;
@@ -1403,6 +1490,7 @@ int net_lobby_join(const char *where) {
     Random ^= (uint32_t)SDL_GetPerformanceCounter() * 2654435761u;
     Machines[1].nonce = random_next();
     OwnPads = own_pads();
+    heroes_own();
     for (slot = 0; slot < SAVES_SLOTS; slot++) {
         saves_put(slot, "", 0);
     }
@@ -1829,8 +1917,9 @@ int net_lobby_poll(void) {
             ready &= Machines[m].ready == READY_ALL;
         }
         if (ready) {
-            /* extra heroes come from each player's own disc, and there's no telling yet that everyone has them */
-            settings_borrow(s->skip_intro, s->skip_loading, s->cheat_menu, 0);
+            /* and the heroes of its own every machine has (heroes_agree) */
+            settings_borrow(s->skip_intro, s->skip_loading, s->cheat_menu, s->extra_heroes);
+            mods_heroes_only(PlayedAt, NumPlayed);
             first_steps();
             Role = HOST;
             for (m = 0; m < NumMachines; m++) {
@@ -1866,10 +1955,15 @@ int net_lobby_poll(void) {
                     p = put(p, (uint32_t)Delay, 1);
                     p = put(p, (uint32_t)NumMachines, 1);
                     p = put(p, (uint32_t)m, 1);
-                    p = put(p, (uint32_t)(s->skip_intro | s->skip_loading << 1 | s->cheat_menu << 2), 1);
+                    p = put(p, (uint32_t)(s->skip_intro | s->skip_loading << 1 | s->cheat_menu << 2 | (s->extra_heroes != 0) << 3), 1);
                     for (k = 0; k < NumMachines; k++) {
                         p = put(p, (uint32_t)Machines[k].first, 1);
                         p = put(p, (uint32_t)Machines[k].pads, 1);
+                    }
+                    p = put(p, (uint32_t)NumPlayed, 1);
+                    for (k = 0; k < NumPlayed; k++) {
+                        p = put(p, (uint32_t)Played[k], 4);
+                        p = put(p, (uint32_t)(Played[k] >> 32), 4);
                     }
                     send_packet(&mc->addr, buf, p);
                 }
@@ -1885,7 +1979,8 @@ int net_lobby_poll(void) {
         } else if (now - LobbyBegan > (Uint64)AskFor) {
             lobby_fail("Nobody's hosting a game at that address");
         } else if (now - LobbySent >= 250 || LobbySent == 0) {
-            uint8_t buf[64], *p = begin(buf, T_JOIN);
+            uint8_t buf[64 + HEROES_SAID * 8], *p = begin(buf, T_JOIN);
+            int k;
 
             LobbySent = now;
             p = put(p, PROTOCOL, 2);
@@ -1893,6 +1988,11 @@ int net_lobby_poll(void) {
             p = put(p, data_hash(), 4);
             p = put(p, (uint32_t)OwnPads, 1);
             p = put(p, Machines[1].nonce, 4);
+            p = put(p, (uint32_t)NumOwn, 1);
+            for (k = 0; k < NumOwn; k++) {
+                p = put(p, (uint32_t)Own[k], 4);
+                p = put(p, (uint32_t)(Own[k] >> 32), 4);
+            }
             send_packet(&Machines[0].addr, buf, p);
         }
     } else if (Lobby == LOBBY_IN) {
@@ -1975,7 +2075,8 @@ static int hex_bytes(const char *text, uint8_t *out, int most) {
 
 static int start_replay(void) {
     static char line[SAVES_MOST * 2 + 64];
-    int a, b, c;
+    int a, b, c, d;
+    unsigned long long hero;
 
     reset_session();
     Replaying = fopen(Options.replay, "r");
@@ -1997,8 +2098,20 @@ static int start_replay(void) {
             Delay = a;
         } else if (sscanf(line, "players %d", &a) == 1) {
             ReplayPlayers = a;
-        } else if (sscanf(line, "settings %d %d %d", &a, &b, &c) == 3) {
-            settings_borrow(a, b, c, 0);
+        } else if (sscanf(line, "settings %d %d %d %d", &a, &b, &c, &d) == 4) {
+            settings_borrow(a, b, c, d);
+        } else if (sscanf(line, "hero %llX", &hero) == 1 && NumPlayed < HEROES) {
+            int n = mods_heroes_all(), k;
+
+            for (k = 0; k < n && mods_hero_hash(k) != (uint64_t)hero; k++) {
+            }
+            if (k >= n) {
+                say("%s needs a hero pack that isn't in a mod that's on here (%016llX)", Options.replay, hero);
+                return 0;
+            }
+            Played[NumPlayed] = (uint64_t)hero;
+            PlayedAt[NumPlayed++] = k;
+            mods_heroes_only(PlayedAt, NumPlayed);
         } else if (sscanf(line, "save %d", &a) == 1 && strchr(line + 5, ' ') != NULL) {
             uint8_t save[SAVES_MOST];
             char why[64];
@@ -2412,6 +2525,7 @@ void net_fuzz_begin(int state, int machines) {
         Lobby = LOBBY_OPEN;
         if (state != NET_FUZZ_HOST_OPEN) {
             Delay = 2;
+            heroes_agree();
             Lobby = LOBBY_STARTING;
         }
         if (state == NET_FUZZ_HOST_PLAYING) {
@@ -2423,6 +2537,7 @@ void net_fuzz_begin(int state, int machines) {
     default:
         Me = 1;
         Machines[1].nonce = NET_FUZZ_NONCE;
+        heroes_own();
         Lobby = LOBBY_ASKING;
         if (state != NET_FUZZ_JOINER_ASKING) {
             Welcomed = 1;

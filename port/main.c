@@ -447,7 +447,7 @@ int platform_local_pad(int port) {
 /* The game again from its very beginning, in this window, as if the program had just started. The game's own data is put back as it
    was then and its heap emptied (overlays.c), the sound, the clock and the pads are as they were then, and the game's first function
    is called again. What the game has drawn textures from is forgotten, as it will load them again. Online, the game's own files are
-   all it has: no mod's, which other machines mightn't have. */
+   all it has, no mod's, which other machines mightn't have, but the heroes of their own every machine has (mods_apply_online). */
 void platform_restart(int online) {
     audio_restart();
     clock_restart();
@@ -455,8 +455,7 @@ void platform_restart(int online) {
     gfx_forget_textures();
     overlays_restart();
     if (online) {
-        archive_replace_none();
-        archive_lay_out();
+        mods_apply_online();
     } else {
         mods_apply_files();
     }
@@ -1070,16 +1069,11 @@ int main(int argc, char **argv) {
     /* before the renderer, which makes room for the textures they have */
     mods_scan();
     if (online) {
-        /* everyone has to play the same game: no mod's files or bonus hero's, which other machines mightn't have. Textures are
-           each player's own */
+        /* everyone has to play the same game: no mod's files or bonus hero's, which other machines mightn't have, till the lobby's
+           said which heroes they all have (below). Textures are each player's own */
         archive_replace_none();
     } else {
         mods_apply_files();
-    }
-    for (i = 0; i < 4; i++) {
-        if (extra_names[i] != NULL && (settings()->test_extra[i] = extra_hero_named(extra_names[i])) == 0) {
-            fprintf(stderr, "--extra-hero: no extra hero called %s\n", extra_names[i]);
-        }
     }
     if (!NoWindow && !host_init()) {
         fprintf(stderr, "No window; running without one.\n");
@@ -1099,6 +1093,15 @@ int main(int argc, char **argv) {
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crash Bash", message, NULL);
         }
         platform_finish(1);
+    }
+    if (online) {
+        /* the heroes of their own every machine has, as the lobby's said (net.c) */
+        mods_apply_online();
+    }
+    for (i = 0; i < 4; i++) {
+        if (extra_names[i] != NULL && (settings()->test_extra[i] = extra_hero_named(extra_names[i])) == 0) {
+            fprintf(stderr, "--extra-hero: no extra hero called %s\n", extra_names[i]);
+        }
     }
     gfx_draw_every(draw_every);
     overlays_init();

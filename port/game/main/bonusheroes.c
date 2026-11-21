@@ -29,10 +29,14 @@ void SDL_free(void *mem);
 #define HERO_DEF_OF(name, def) &def,
 #define HERO_DEF_NONE(name, def) NULL,
 EXTRA_DISC_LIST(HERO_DEF_EXTERN)
+/* These, and what's made, are kept over a restart (OVL_KEEP): the packs' heroes are made of the player's files, not the game's state, and
+ * what they point to is freed and made again as those change */
+OVL_KEEP
 const HeroDef *HeroDefs[NUM_EXTRA] = { NULL, EXTRA_PACK_LIST(HERO_DEF_NONE) EXTRA_DISC_LIST(HERO_DEF_OF) };
 
 static HeroMade Made[NUM_EXTRA];
 static s32 Tried[NUM_EXTRA], Have[NUM_EXTRA];
+OVL_HERE
 
 /* --- bytes --- */
 
@@ -1008,8 +1012,10 @@ typedef struct {
     s16 c_hips[CRASH_PART_MAX], c_chest[CRASH_PART_MAX], c_joint[2][3][CRASH_PART_MAX];
 } Bear;
 
+OVL_KEEP /* (read from the game's own files once: kept over a restart) */
 static Bear TheBear;
 static s32 BearTried;
+OVL_HERE
 
 static V3 unit(V3 v);
 
@@ -2241,6 +2247,7 @@ void bonus_heroes_forget(s32 extra) {
     }
     memset(&Made[extra], 0, sizeof(Made[extra]));
     Tried[extra] = Have[extra] = 0;
+    extra_hero_forget_pictures(extra);
 }
 
 void bonus_heroes_files(void) {

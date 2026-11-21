@@ -45,8 +45,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
     `node port/package.mjs` makes them (PORT.md, A release).
   - Beyond the original: a launcher (PLAY, ONLINE, SETTINGS, QUIT); any window and render size, fullscreen, vsync and 30, 60 or
     120 FPS; widescreen, with each level's own scenery carried on at the sides; anti-aliasing, smooth textures, upscaling and crisp
-    icons; mods of textures, files and BPS patches (MODDING.md); Ripper Roo and Pinstripe from the player's own Crash Bandicoot
-    disc (EXTRA_HEROES.md); couch play for up to four, with a players screen; every key and button rebindable; saves in files;
+    icons; mods of textures, files and BPS patches (MODDING.md); custom heroes, hero packs of glTF models in mods made with
+    the hero tool (`herotool/`, HERO_PACKS.md; Ripper Roo and Pinstripe from the Crash Bandicoot disc were removed for them,
+    2026-11-21); couch play for up to four, with a players screen; every key and button rebindable; saves in files;
     skipping the logos and loading; the cheat menu; touch buttons on Android.
   - Online play (PORT.md, Online play): every machine runs the whole game and only presses travel, a few steps late, over UDP with
     no servers. The launcher's ONLINE hosts and joins; games on the same network show by themselves, on every adapter; a join code
@@ -117,9 +118,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   at all (how it feels at each delay, and whether a joiner kept a step behind the host judders, are unknown: `net_behind` and the
   delay's sum in `start_host` are the two things to tune). The delay is set once at the start and never changes. The host's
   saves are checked on a joiner before the game has them (`card_check`; the hardening lead below). Every game's presses are kept beside the saves (`last-online-game.txt`), so a
-  game that stops for differing can be played again. Extra heroes and mods' files are off online till machines can compare what
-  they have. Android plays online: `online --android`, this PC hosting and the emulator joining, played the same game (2026-11-10), from the
+  game that stops for differing can be played again. Mods' files are off online till machines can compare what they have; hero
+  packs are compared by hash and played where everyone has them (2026-11-21, HERO_PACKS.md, Online). Android plays online: `online --android`, this PC hosting and the emulator joining, played the same game (2026-11-10), from the
   command line; a real phone (arm64) hasn't played online yet.
+- **Port, hero packs (2026-11-21, HERO_PACKS.md):** phases 1 to 5 of the plan are done: packs in mods, made at load into every kind
+  of model, the hero tool (window and CLI, rigged or markers, 1365 triangles a hard limit), the launcher's CUSTOM HEROES and HERO
+  TOOL, online play (`online --heroes`), and Roo, Pinstripe and the disc reading removed. Left: phase 6, the other seven heroes'
+  moves to borrow (only Crash's are measured); the Linux build of the hero tool and a whole `package.mjs` run; models of other
+  shapes than Bobby through the tool (a Mixamo-named rig was tried). Fixes go in the loader or the tool, never one hero's.
 - **Port, online play, hardening (done 2026-11-10, PORT.md, Online play, Hardening):** what's left of it is what was chosen not to
   do: no lobby password and no check on who joins, nothing encrypted or signed, and a machine in the game can still spoil it
   (pausing everyone by "pulling out" its pad, ending it by disagreeing). The fuzzer only builds on Windows (`netfuzz`); the save
@@ -655,6 +661,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-21 (the last of the day, the user AFK): hero packs' phases 5 and 4. Removed roo.c, pinstripe.c, the Crash Bandicoot
+  readers and the disc image reader; README's CUSTOM HEROES section, Bobby shipped in a release's mods folder, the hero tests on
+  packs only. Online: joiners send their packs' hashes (`mods_hero_hash`), the host plays the first four everyone has
+  (`mods_heroes_only`, PROTOCOL 3), records name them; `online --heroes` 4/4, fuzz clean. Found and fixed on the way: a restart put
+  back the made heroes' pointers as they were at the start (freed memory after a mods change); they're `OVL_KEEP` now (ovlsection.h).
 
 - 2026-11-21 (later, the user AFK): the hero tool (`herotool/`, CLI: import, refuse over 1365 tris, texture laid out with
   borders, markers or a rig mapped by bone names, surface-distance weights, standard moves aimed per limb, `--card`, `--voice`),

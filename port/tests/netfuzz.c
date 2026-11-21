@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include "../platform/mods.h"
 #include "../platform/net.h"
 #include "../platform/platform.h"
 #include "../platform/portmap.h"
@@ -23,7 +24,7 @@
 
 /* the packets' magic and types, as net.c has them */
 #define MAGIC 0x314E4243u
-#define PROTOCOL 2
+#define PROTOCOL 3
 enum { T_JOIN = 1, T_WELCOME, T_PING, T_PONG, T_SAVE, T_START, T_READY, T_INPUT, T_RECORD, T_BYE, T_FIND, T_HERE };
 
 static jmp_buf Back;
@@ -45,6 +46,25 @@ void settings_borrow(int skip_intro, int skip_loading, int cheat_menu, int extra
 }
 
 void settings_return(void) {
+}
+
+/* two hero packs, as if this machine had them on (mods.c) */
+#define FUZZ_HERO(i) (0x1234567890ABCDEFULL + (uint64_t)(i))
+int mods_heroes_all(void) {
+    return 2;
+}
+
+uint64_t mods_hero_hash(int i) {
+    return i >= 0 && i < 2 ? FUZZ_HERO(i) : 0;
+}
+
+const char *mods_hero_id(int i) {
+    return i >= 0 && i < 2 ? "fuzz" : NULL;
+}
+
+void mods_heroes_only(const int *which, int n) {
+    (void)which;
+    (void)n;
 }
 
 int platform_local_pad(int port) {
@@ -127,6 +147,9 @@ static void run(const uint8_t *data, size_t size) {
     static uint8_t packet[2048];
     size_t at = 2;
 
+    /* custom heroes on, so a joiner says it has the two (mods_heroes_all) and a host looks for them */
+    memset(&Fake, 0, sizeof(Fake));
+    Fake.extra_heroes = 1;
     net_fuzz_begin(data[0] % NET_FUZZ_STATES, 2 + data[1] % 3);
     while (at < size) {
         uint8_t op = data[at++];
@@ -277,6 +300,10 @@ static void write_seeds(const char *folder) {
         word(&b, 0, 4);
         byte(&b, 1);
         word(&b, 0x1000u + (uint32_t)m, 4);
+        /* the hero packs it has: the first of the host's */
+        byte(&b, 1);
+        word(&b, (uint32_t)FUZZ_HERO(0), 4);
+        word(&b, (uint32_t)(FUZZ_HERO(0) >> 32), 4);
         packet(&s, m, 0x08, &b);
         tick(&s);
         memset(&b, 0, sizeof(b));
@@ -389,6 +416,10 @@ static void write_seeds(const char *folder) {
         byte(&b, (uint32_t)m);
         byte(&b, 1);
     }
+    /* the hero packs played: its second */
+    byte(&b, 1);
+    word(&b, (uint32_t)FUZZ_HERO(1), 4);
+    word(&b, (uint32_t)(FUZZ_HERO(1) >> 32), 4);
     packet(&s, 0, 0x10, &b);
     tick(&s);
     tick(&s);

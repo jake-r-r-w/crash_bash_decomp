@@ -11,10 +11,18 @@
 #define OVL_SECTION(name) OVL_PRAGMA(clang section data = name)
 #if !defined(__clang__)
 /* GCC has no pragma for it (overlays.c) */
+#define OVL_HERE
+#define OVL_KEEP
 #elif defined(_WIN32)
-OVL_SECTION(".ov" OVL_STR(OVL_NAME) "$b")
+#define OVL_HERE OVL_SECTION(".ov" OVL_STR(OVL_NAME) "$b")
 #elif defined(__APPLE__)
-OVL_SECTION("__DATA,__ov" OVL_STR(OVL_NAME))
+#define OVL_HERE OVL_SECTION("__DATA,__ov" OVL_STR(OVL_NAME))
 #else
-OVL_SECTION("ovl_" OVL_STR(OVL_NAME))
+#define OVL_HERE OVL_SECTION("ovl_" OVL_STR(OVL_NAME))
 #endif
+#ifndef OVL_KEEP
+/* Data between OVL_KEEP and OVL_HERE is the program's ordinary data, which a restart doesn't put back: what's made of the player's
+ * own files (the hero packs' models, bonusheroes.c), and not the game's state, whose memory is freed and made again as they change */
+#define OVL_KEEP OVL_SECTION("")
+#endif
+OVL_HERE

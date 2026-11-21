@@ -43,7 +43,9 @@ typedef struct {
     u8 *sound[PACK_VOICE_JOBS];   /* and each made the game's (ADPCM) */
 } PackSlot;
 
+OVL_KEEP /* kept over a restart, with what bonusheroes.c has made of them (ovlsection.h) */
 static PackSlot Slots[EXTRA_PACKS];
+OVL_HERE
 
 void pack_follow_all(const char *id, const PackModel *pm, float k, float ground, const MadeFace *faces, s32 nfaces, const MadeImage *images,
                      s32 nimages, HeroMade *out);

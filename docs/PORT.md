@@ -501,8 +501,8 @@ node port/tests/playtest.mjs hero roo
 node port/tests/playtest.mjs identical
 ```
 
-`bosses` beats every boss from a real Adventure, by each fight's own rules, and back to the warp room; `--watch` shows them at normal speed with sound, and `--hero roo` plays them as an extra hero (`--extra-hero 0 roo`). `modes` runs every game mode, played by the
-computer, with `--asan` for the AddressSanitizer build. `adventure` plays a new Adventure with no cheat flags, door by door, until there's nothing left to win, saves at the computer, loads that save in a new run, and passes at 200%. A challenge it keeps losing gets weaker computer heroes and in the end ones that stand still, and the log says which. `--resume` carries on from its last save, and `challenges` plays any challenge alone. `menu` goes from the title screen into a game by the pad alone. `packs` and `mods` check textures and files from mods by the pictures of one mode: zips stored and deflated, a zipped folder, which of two wins, broken zips, and archive files at the same size, bigger and moving the rest. `shots FROM STEP COUNT` makes a contact sheet of one run. `heroes` checks in a few seconds that the extra heroes load: one short game
+`bosses` beats every boss from a real Adventure, by each fight's own rules, and back to the warp room; `--watch` shows them at normal speed with sound, and `--hero bobby` plays them as a hero pack's hero (`--extra-hero 0 bobby`, the repo's mods on). `modes` runs every game mode, played by the
+computer, with `--asan` for the AddressSanitizer build. `adventure` plays a new Adventure with no cheat flags, door by door, until there's nothing left to win, saves at the computer, loads that save in a new run, and passes at 200%. A challenge it keeps losing gets weaker computer heroes and in the end ones that stand still, and the log says which. `--resume` carries on from its last save, and `challenges` plays any challenge alone. `menu` goes from the title screen into a game by the pad alone. `packs` and `mods` check textures and files from mods by the pictures of one mode: zips stored and deflated, a zipped folder, which of two wins, broken zips, and archive files at the same size, bigger and moving the rest. `shots FROM STEP COUNT` makes a contact sheet of one run. `heroes` checks in a few seconds that the hero packs load: one short game
 with them as the players, each made from its disc and drawn as itself. That's all a release or a change elsewhere checks of them (the
 user's word, 2026-11-09). `hero ID`, for work on that hero, plays it in every game, four of it at once, and checks from the log that each game draws it in a model of its own of that game's kind, with a contact sheet of them (docs/EXTRA_HEROES.md, the checklist); `same --hero ID` compares its pictures and sound with a baseline of its own. `identical` checks that the game repeats itself exactly, for online play (Online play, below): the same presses under each picture setting, by the game's fingerprint after every step, in about two minutes, with `--all` for every game mode too and `--against FILE` for another system's fingerprints. `online` plays whole online games with every machine a copy of the game on this PC (Online play, below). What they leave is in
 `build/port/playtest/`.
@@ -643,9 +643,9 @@ pretend controllers through the menus into a Battle under each, and its `--all` 
 real time with the sound played: every step's fingerprint matches. Windows's and Linux's match each other too (`--against`).
 
 **What has to be the same for everyone**, as it does change the game (the test says what each does): the cheat menu
-(`GameState.cheats`), SKIP LOADING and SKIP INTRO (the steps a load or the logos take), EXTRA HEROES (a ninth card, and what's
-loaded) and mods that change the game's files. Online these are the host's. Mods and extra heroes are files, and an extra hero comes
-from each player's own disc, so they're to be compared at joining, not sent.
+(`GameState.cheats`), SKIP LOADING and SKIP INTRO (the steps a load or the logos take), CUSTOM HEROES (a third row of cards, and
+what's loaded) and mods that change the game's files. Online these are the host's. Mods and hero packs are files, so they're
+compared at joining, not sent: a hero pack by a hash of all its files (HERO_PACKS.md, Online).
 
 Two things had to change for it:
 
@@ -905,8 +905,9 @@ over), and is the same for everyone, the host too: 1 step on one PC or a home ne
 everyone's first pads are in, so they start together. Before it, a joiner is checked (the same version of the program, the same
 game data, by its size and first part) and sent the host's four save slots, which it plays with in memory, its own files left alone
 (`saves_in_memory`), and the host's settings that change the game, for this game only (`settings_borrow`: the player's own are still
-what's saved). Extra heroes and mods' files are off for everyone online for now, as there's no telling yet that everyone has them;
-mods' textures are each player's own.
+what's saved). Mods' files are off for everyone online, as there's no telling yet that everyone has them; mods' textures are each
+player's own. Hero packs are played where every machine has the same (HERO_PACKS.md, Online): a joiner's ask says which it has,
+by a hash of each, and the host's start which are played, the first four of its own that everyone has, in its order.
 
 **Checking.** Once a second the machines swap the game's fingerprint, and if a joiner's and the host's differ the game stops on
 every machine and says so, as from then on they'd be playing different games.

@@ -78,5 +78,7 @@ s32 extra_hero_select_scale(s32 extra);
 const struct GfxTex *extra_hero_portrait(const subengine *sub, s32 w, s32 h);
 /* The menus after it, which show the heroes' portraits by number (DB_MainmenuModels' image index): an extra hero's in its base's place. */
 const struct GfxTex *extra_hero_menu_portrait(s32 index, s32 w, s32 h);
+/* Its pictures forgotten, as its slot's hero is no longer what they were drawn of (bonusheroes.c's bonus_heroes_forget) */
+void extra_hero_forget_pictures(s32 extra);
 
 #endif

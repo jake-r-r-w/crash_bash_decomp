@@ -1129,8 +1129,10 @@ s32 extra_hero_anim_key(const obj_dbase *db, s32 key) {
 #define FACE_HEAD 0.36f     /* the share of the model, from the top, that's its head */
 #define FACE_ROOM 0.78f     /* and of the picture, from the top, it fills: the panel draws the health bar over the rest */
 
+OVL_KEEP /* pictures made of the packs, kept over a restart as they are (bonusheroes.c) */
 static u32 *Face[NUM_EXTRA];
 static s32 FaceW[NUM_EXTRA], FaceH[NUM_EXTRA], FaceBank[NUM_EXTRA];
+OVL_HERE
 
 /* A texel of image `image` with clut `clut` (or its own, if -1), as red | green << 8 | blue << 16, and alpha 0 if it's clear. */
 static u32 texel_of(const obj_textureset *ts, s32 image, s32 clut, s32 u, s32 v) {
@@ -1503,8 +1505,10 @@ const GfxTex *extra_hero_face(s32 index, s32 w, s32 h) {
 static const subengine *SelectPortrait[EXTRA_CARDS_MAX]; /* each card's portrait, while the select's up */
 static s32 SelectHero[EXTRA_CARDS_MAX], SelectCards;
 static s32 SelectBank[EXTRA_CARDS_MAX], SelectBanks;      /* the models loaded for their stands, while the select's up */
+OVL_KEEP
 static u32 *Portrait[NUM_EXTRA];
 static s32 PortraitW[NUM_EXTRA], PortraitH[NUM_EXTRA];
+OVL_HERE
 static s16 SelectSteps[NUM_EXTRA][136];
 
 /* A portrait's texture's key: its hero's, by its model's bank */
@@ -1595,6 +1599,18 @@ static void select_picture(u32 *out, s32 fw, s32 fh, s32 pw, s32 ph, const u32 *
             out[y * fw + x] = y < ph && x < pw ? mixed : 0;
         }
     }
+}
+
+void extra_hero_forget_pictures(s32 extra) {
+    if (extra <= EXTRA_NONE || extra >= NUM_EXTRA) {
+        return;
+    }
+    free(Face[extra]);
+    free(Portrait[extra]);
+    Face[extra] = Portrait[extra] = NULL;
+    FaceW[extra] = FaceH[extra] = PortraitW[extra] = PortraitH[extra] = 0;
+    /* and the drawn textures it found by its key: they're looked for again by what they show */
+    gfx_forget_textures();
 }
 
 /* Its portrait, w x h texels: its face on the gradient, its own game's at the select's texels as the others' are, or else drawn from

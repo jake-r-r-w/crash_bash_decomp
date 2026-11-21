@@ -12,7 +12,9 @@ riding the polar bear (`pack_ride`, through `ride_make`), and in the eight kinds
 prop are copied, but posing the pack's own skeleton: its hips on Crash's, its trunk turned as his, each arm reaching (two-bone) for
 his hand, on the grip where there's one, its legs astride as his, on the pegs or the floor where he stands, else sat, and hidden in
 a tank's hatch or a race cart; the prop (painted gunmetal where Pinstripe's was) as it moves, or in its hand where he carries it.
-Bobby, the example, plays in every game (each checked with four of him).
+Bobby, the example, plays in every game (each checked with four of him), and online where everyone has him (Online, below). The
+hero tool (below) makes a pack of any standing two-legged model, rigged or not. Still to come: the other seven heroes' moves to borrow
+(only Crash's yet).
 
 **The character select's room.** Each of its slots of drawn pieces (`EngineSlotSubs`) held the PS1's 32, and the select's own 26
 with two a card and their row's band left room for two cards: a third (the first pack's, beside Roo and Pinstripe then) spilt into the
@@ -85,6 +87,28 @@ build/port/windows-clang/crashbash.exe --mode 0 --skip-intro --skip-loading --wi
 
 `--extra-hero` names a pack's hero by its id once the mods are read. `node port/tests/playtest.mjs heroes` loads the packs in
 `port/mods/`, and `hero ID` plays one in every game. The log says what was made: `hero packs: bobby made, 1318 triangles, ...`.
+
+## Online
+
+A pack's hero plays online where every machine has the same pack (`platform/net.c`; PORT.md, Online play). Packs are files, so
+they're compared, not sent: `mods_hero_hash` hashes a hero's id and every file of its folder, by name and bytes, added up so the
+order a folder or zip lists them in doesn't matter. A joiner's ask (T_JOIN) carries the hashes of its heroes, if its CUSTOM HEROES is
+on; the host's start (T_START) carries the first four of its own that every machine has, in its order, and CUSTOM HEROES as the
+host has it. Every machine then makes only those (`mods_heroes_only`; `mods_apply_online`), in the same slots, so the same cards
+are in the select and the computer picks the same. A pack a machine lacks just isn't played, and the host's log says why
+(`bobby isn't played: machine 2 hasn't its pack, or has another`). A game's record (`--net-record`) names its packs by hash
+(`hero ...`), and `--replay` needs them in a mod that's on.
+
+What they change of the game's state is the same on every machine: its whole numbers from hero.json, and models, sounds and their
+sizes made by the same program from the same files and the same game data. `playtest.mjs online --heroes` plays a Battle with
+Bobby as player 1 on two machines, from the command line and from the launcher, one where the joiner hasn't him, and the record
+played again; all four match step for step.
+
+**A restart keeps them.** An online game starts the game again from its beginning (`platform_restart`), which puts the game's data
+back as it was at the start (`overlays_restart`). The packs' slots, `HeroDefs`, what's made of them and their pictures' caches
+(`packheroes.c`, `bonusheroes.c`, `extraheroes.c`) are between `OVL_KEEP` and `OVL_HERE` (`ovlsection.h`): ordinary data, not
+put back, as they point to memory that's freed and made again when the packs change. A slot whose hero changes forgets its pictures
+(`extra_hero_forget_pictures`).
 
 ## Bobby, the example
 

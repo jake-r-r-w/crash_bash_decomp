@@ -1062,7 +1062,10 @@ async function identical(args) {
    And through the launcher's ONLINE screens, as players start it: one copy hosts (HOST GAME), another finds its game and joins it
    (JOIN GAME), or types its address, and the host's START starts the game again from its beginning on both, where the same Battle
    is played. The main menu's EXIT, and the host leaving, each bring a machine back to its launcher. Those copies' games are this
-   PC's alone (--online-local), each on a port of its own (--online-port). */
+   PC's alone (--online-local), each on a port of its own (--online-port).
+
+   And hero packs (docs/HERO_PACKS.md, Online), with the repo's mods: one every machine has is played, player 1 as it, and one a
+   joiner hasn't isn't, on any machine. --heroes plays only those. */
 const ONLINE_END = 7700;
 const ONLINE_MACROS = ['10:40,4010:6,20:50,8020:6,40:30,2040:6,80:60,4000:6,0:20', '80:35,4080:6,10:45,8010:6,20:55,4000:6,40:25,2040:6,0:14',
     '40:50,8040:6,80:30,4000:6,10:40,2010:6,20:44,4020:6,0:10', '20:30,4020:6,40:56,8040:6,10:36,4000:6,80:48,2080:6,0:26'];
@@ -1181,9 +1184,12 @@ async function online(args) {
     if (ANDROID) {
         return online_android(args);
     }
+    const only_heroes = flag(args, '--heroes');
     const dir = path.join(OUT, 'online');
     const rel = p => path.relative(ROOT, path.join(dir, p)).replaceAll('\\', '/');
     const late = ['--net-lag', '40', '--net-loss', '10'];
+    const packs = pack_mods();
+    const pack = packs.ids[0] ?? 'bobby';
     /* flat out, a press has to be used many steps late for the steps to come as fast as they're played: a packet takes as long as ever */
     const cases = [
         { name: 'two machines', machines: 2, save: 'good' },
@@ -1208,6 +1214,9 @@ async function online(args) {
             '--mouse', '200', '134', '2', 'click', '--mouse', '340', '134', '-16', 'click',
             ...[470, 590, 850, 1150, 1250, 1550, 1650, 1750, 2000].flatMap(v => press(v, CROSS)), '--macro', '2100', ONLINE_MACROS[0], '--macro-until', '6900',
             ...press(7000, START), '--mouse', '7060', '0', '74', 'click', '--mouse', '7250', '-100', '-36', 'click'] },
+        /* hero packs, a lot of their own */
+        { name: `a hero pack every machine has is played (${pack})`, machines: 2, lot: 'heroes', all: [...packs.args, '--extra-hero', '0', pack], host: ['--net-record', rel('pack.txt')], want: 'pack' },
+        { name: 'a hero pack a joiner hasn\'t isn\'t played', machines: 2, lot: 'heroes', per: { 0: [...packs.args, '--extra-heroes'] }, want: 'no pack' },
     ];
     const press = (v, b) => ['--press', String(v), b];
     /* the launcher's presses: ONLINE, then HOST GAME and in time START; or JOIN GAME and the first game found, or down to ADDRESS
@@ -1254,6 +1263,8 @@ async function online(args) {
         { name: 'from the launcher: EXIT brings each machine back to it', machines: 2, launcher: 'exit' },
         { name: 'from the launcher: a second game after the first, in the same run', machines: 2, launcher: 'second' },
         { name: 'from the launcher: the host leaving brings the joiner back to it', machines: 2, launcher: 'host leaves' },
+        /* the game started again from the launcher makes the pack everyone has, and player 1 plays as it */
+        { name: `from the launcher: a hero pack played (${pack})`, machines: 2, launcher: 'play', pack: true },
     ];
     const results = [];
 
@@ -1261,7 +1272,7 @@ async function online(args) {
     fs.mkdirSync(dir, { recursive: true });
     const play_through = (c, k, slot, slots) => Promise.all(Array.from({ length: c.machines }, (_, m) => run(exe, ['--launcher', '--online-local', '--online-port',
         String(47250 + k), '--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--draw-every', '60', '--tile', String(slot + m), String(slots),
-        ...(c.router != null && m === 0 ? ['--online-pretend-router', c.router] : []),
+        ...(c.router != null && m === 0 ? ['--online-pretend-router', c.router] : []), ...(c.pack ? [...packs.args, '--extra-hero', '0', pack] : []),
         '--saves', rel(`through${k}-${m}`), ...lobby(m, c.typed, c.pad, c.pad ? typing_ends(c.typed) + 200 : 720), '--then', '--turbo', ...after(c, m)],
         path.join(dir, `through${k}-machine${m + 1}.txt`), { timeout: MODE_TIMEOUT })));
     const judge_through = (c, runs) => {
@@ -1290,6 +1301,12 @@ async function online(args) {
                 /* back in the launcher: the game started again a second time, offline */
                 wrong = count(m, /^restart: the game from its beginning/gm) !== 2 ? `machine ${m + 1} never came back to its launcher` : null;
             }
+        }
+        if (wrong == null && c.pack) {
+            const played = runs.map(r => new RegExp(`^extra heroes: player 1 is ${pack}, in hero \\d+'s place: on foot`, 'm').test(r.text));
+
+            wrong = !/^online: 1 hero pack played$/m.test(runs[0].text) ? 'the host didn\'t play the pack'
+                : played.some(x => !x) ? `player 1 isn't ${pack} on machine ${played.indexOf(false) + 1}` : null;
         }
         if (wrong == null && c.launcher === 'host leaves' && !/^online: Online play: the host has left the game/m.test(runs[1].text)) {
             wrong = 'the joiner never said the host had left';
@@ -1357,6 +1374,19 @@ async function online(args) {
 
             wrong = back.some(n => n !== 2) ? `not every machine was back at the title at the end: ${back.join(', ')}` : null;
         }
+        if (wrong == null && c.want === 'pack') {
+            const made = runs.map(r => new RegExp(`^bonus heroes: ${pack} is made`, 'm').test(r.text));
+            const played = runs.map(r => new RegExp(`^extra heroes: player 1 is ${pack}, in hero \\d+'s place: on foot`, 'm').test(r.text));
+
+            wrong = !said(0, /^online: 1 hero pack played$/m) ? 'the host didn\'t play the pack'
+                : made.some(x => !x) ? `not made on machine ${made.indexOf(false) + 1}`
+                : played.some(x => !x) ? `player 1 isn't ${pack} on machine ${played.indexOf(false) + 1}` : null;
+        }
+        if (wrong == null && c.want === 'no pack') {
+            wrong = !said(0, new RegExp(`^online: ${pack} isn't played: machine 2 hasn't its pack`, 'm')) ? 'the host didn\'t say the joiner hasn\'t it'
+                : !said(0, /^online: 0 hero packs played$/m) ? 'the host played a pack'
+                : runs.some(r => new RegExp(`^bonus heroes: ${pack} is made`, 'm').test(r.text)) ? 'a machine made it' : null;
+        }
         if (wrong == null && c.want === 'own sound') {
             wrong = !said(1, /^own sound: music 55, fx 95, mono$/m) ? 'the joiner\'s own sound options didn\'t change as pressed'
                 : said(0, /^own sound:/m) ? 'the host\'s sound options changed with the joiner\'s' : null;
@@ -1376,9 +1406,9 @@ async function online(args) {
         }
         return [c.name, { pass: wrong == null, what: wrong ?? `the same on all ${c.machines}, ${prints[0].length} steps; ${how}` }];
     };
-    /* flat out first, then the ones in real time: each lot together, in a grid */
-    for (const real of [false, true]) {
-        const lot = cases.map((c, k) => [c, k]).filter(([c]) => !!c.real === real);
+    /* flat out first, then the ones in real time, then hero packs': each lot together, in a grid */
+    for (const which of only_heroes ? ['heroes'] : ['fast', 'real', 'heroes']) {
+        const lot = cases.map((c, k) => [c, k]).filter(([c]) => (c.lot ?? (c.real ? 'real' : 'fast')) === which);
         const slots = lot.reduce((n, [c]) => n + c.machines, 0);
         let slot = 0;
 
@@ -1389,17 +1419,32 @@ async function online(args) {
             return play(c, k, from, slots).then(runs => judge(c, k, runs));
         })));
     }
+    /* the pack's game again, with nobody else: its record names the pack, which has to be in a mod that's on here too */
+    {
+        const r = await run(exe, ['--skip-intro', '--pretend-pads', '1', '--fingerprints', '1', '--turbo', '--draw-every', '60', '--replay', rel('pack.txt'),
+            ...packs.args, '--extra-hero', '0', pack, '--frames', String(ONLINE_END)], path.join(dir, 'pack-again.txt'), { timeout: MODE_TIMEOUT });
+        const parted = crash_where(exe, r.text) ?? (r.code !== 0 ? `exit ${r.code}`
+            : !new RegExp(`^bonus heroes: ${pack} is made`, 'm').test(r.text) ? 'the pack was not made'
+            : fingerprints_part(fingerprints(fs.readFileSync(path.join(dir, `game${cases.findIndex(c => c.host?.includes(rel('pack.txt')))}-machine1.txt`), 'latin1')), fingerprints(r.text)));
+
+        results.push(['a hero pack\'s recorded game played again', { pass: parted == null, what: parted == null ? 'the same game' : `differs: ${parted}` }]);
+    }
     /* through the launcher: all together, its screens in real time and the games flat out */
     {
-        const slots = through.reduce((n, c) => n + c.machines, 0);
+        const lot = through.filter(c => !only_heroes || c.pack);
+        const slots = lot.reduce((n, c) => n + c.machines, 0);
         let slot = 0;
 
-        results.push(...await Promise.all(through.map((c, k) => {
+        results.push(...await Promise.all(lot.map(c => {
+            const k = through.indexOf(c);
             const from = slot;
 
             slot += c.machines;
             return play_through(c, k, from, slots).then(runs => judge_through(c, runs));
         })));
+    }
+    if (only_heroes) {
+        return report(results);
     }
     /* a router that won't help, each way it can: the host's screen says which (a pretend router again), with a shot of each page.
        And the same PC on a virtual network (a pretend adapter, called as Radmin VPN's is): the screen says the address to join at there */

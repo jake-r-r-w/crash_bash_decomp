@@ -41,6 +41,8 @@ void mods_open_hero_tool(void);
 /* The mods that are on, in their order, take effect: their textures at once, and their files for what the game reads from now on. */
 void mods_apply_textures(void);
 void mods_apply_files(void);
+/* And online: no mod's files, which other machines mightn't have, but the heroes of their own every machine has (mods_heroes_only) */
+void mods_apply_online(void);
 
 /* Test runs, and someone making a mod: only this folder is looked in (--mods-dir); a folder of PNGs, by its path or its name in
    packs/, is a texture pack that's on (--texture-pack); a mod's on whatever the settings say (--mod). Before mods_scan. */
@@ -62,5 +64,13 @@ int mods_heroes_count(void);
 const char *mods_hero_id(int i);
 const char *mods_hero_mod(int i);
 uint8_t *mods_hero_file(int i, const char *file, size_t limit, size_t *size);
+
+/* Online (net.c, docs/HERO_PACKS.md, Online): the heroes every machine has, played in the host's order, as places in the list above
+   when nothing's restricted (mods_heroes_all), so that list is just those; or every one again (n < 0). Each of the whole list's hashed
+   by its id and every file it has, so machines can tell they have the same pack (0: none there). */
+#define MODS_HEROES_ONLY 4
+int mods_heroes_all(void);
+uint64_t mods_hero_hash(int i);
+void mods_heroes_only(const int *which, int n);
 
 #endif

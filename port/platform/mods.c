@@ -1136,10 +1136,19 @@ void mods_apply_files(void) {
     }
 }
 
+void mods_apply_online(void) {
+    archive_replace_none();
+    bonus_heroes_files();
+    archive_lay_out();
+}
+
 /* --- heroes of their own --- */
 
+/* Online, the heroes every machine has (mods_heroes_only): their places in the whole list, in the host's order; or -1, all of them */
+static int OnlyCount = -1, Only[MODS_HEROES_ONLY];
+
 /* The mods that are on, in their order, and each one's heroes: an id the higher has, the lower's is left out. */
-static int hero_at(int i, const Mod **mod, const ModHero **hero) {
+static int hero_listed(int i, const Mod **mod, const ModHero **hero) {
     int k, n = 0, a, b, seen;
 
     for (k = 0; k < NumMods; k++) {
@@ -1167,6 +1176,87 @@ static int hero_at(int i, const Mod **mod, const ModHero **hero) {
         }
     }
     return 0;
+}
+
+/* And as the game sees it: online, only those everyone has */
+static int hero_at(int i, const Mod **mod, const ModHero **hero) {
+    if (OnlyCount >= 0) {
+        if (i < 0 || i >= OnlyCount) {
+            return 0;
+        }
+        i = Only[i];
+    }
+    return hero_listed(i, mod, hero);
+}
+
+void mods_heroes_only(const int *which, int n) {
+    int i;
+
+    OnlyCount = which == NULL || n < 0 ? -1 : n > MODS_HEROES_ONLY ? MODS_HEROES_ONLY : n;
+    for (i = 0; i < OnlyCount; i++) {
+        Only[i] = which[i];
+    }
+}
+
+int mods_heroes_all(void) {
+    const Mod *m;
+    const ModHero *h;
+    int n = 0;
+
+    while (hero_listed(n, &m, &h)) {
+        n++;
+    }
+    return n;
+}
+
+/* FNV-1a, 64 bits */
+static uint64_t fnv64(uint64_t h, const void *bytes, size_t n) {
+    const uint8_t *p = bytes;
+
+    while (n-- > 0) {
+        h = (h ^ *p++) * 0x100000001B3ULL;
+    }
+    return h;
+}
+
+uint64_t mods_hero_hash(int i) {
+    const Mod *m;
+    const ModHero *h;
+    char folder[256];
+    size_t at;
+    uint64_t sum;
+    int k;
+
+    if (!hero_listed(i, &m, &h)) {
+        return 0;
+    }
+    SDL_snprintf(folder, sizeof(folder), "heroes/%s/", h->id);
+    at = strlen(folder);
+    sum = fnv64(0xCBF29CE484222325ULL, h->id, strlen(h->id) + 1);
+    /* each of its files by its name and bytes, added, so the order a folder or zip lists them in doesn't matter */
+    for (k = 0; k < m->count; k++) {
+        const char *name = m->things[k].name, *problem;
+        size_t size = 0;
+        uint8_t *bytes;
+        uint64_t f = 0xCBF29CE484222325ULL;
+        size_t c;
+
+        if (SDL_strncasecmp(name, folder, at) != 0) {
+            continue;
+        }
+        for (c = at; name[c] != 0; c++) {
+            char lower = (char)SDL_tolower((unsigned char)name[c]);
+
+            f = fnv64(f, &lower, 1);
+        }
+        f = fnv64(f, "", 1);
+        if ((bytes = read_thing(m, k, MAX_FILE_BYTES, &size, &problem)) != NULL) {
+            f = fnv64(fnv64(f, &size, sizeof(size)), bytes, size);
+            free(bytes);
+        }
+        sum += f;
+    }
+    return sum != 0 ? sum : 1;
 }
 
 int mods_heroes_count(void) {

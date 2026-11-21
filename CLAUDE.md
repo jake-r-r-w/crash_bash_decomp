@@ -56,8 +56,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   its own CMake project, opened from the launcher's HERO TOOL). Bobby, the example, is `port/mods/bobby/`, exported by the tool from
   `port/mods/bobby-model.glb`. Fixes go in the loader or the tool, for any model, never one hero's; 1365 triangles is a hard limit
   (the user's word). Ripper Roo and Pinstripe, from the Crash Bandicoot disc, were removed for them (2026-11-21; EXTRA_HEROES.md
-  is their record). `playtest.mjs hero ID` checks a pack in every game, for work on that hero or the packs' code; releases and
-  other changes only check that they load, `playtest.mjs heroes` (a few seconds; the user's word, 2026-11-09).
+  is their record). `playtest.mjs hero ID` checks a pack in every game, for work on that hero or the packs' code, and `online --heroes`
+  online play with them (packs compared by hash, HERO_PACKS.md, Online); releases and other changes only check that they load,
+  `playtest.mjs heroes` (a few seconds; the user's word, 2026-11-09).
 - Playing/testing a build: `tools/dk make disc` (bootable `build/CrashBash.cue`),
   `make disc-check` (byte-identical to retail), `make shift OVL=tank PAD=0x40`
   (a disc with that overlay's addresses all moved, `build/shift/CrashBash.cue`), `make shift-all PAD=0x40`
