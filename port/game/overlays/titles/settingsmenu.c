@@ -82,7 +82,8 @@ static const MenuOption GameOptionsList[] = {
     { "SKIP INTRO", "START AT THE MAIN MENU, WITHOUT THE LOGOS", SET_SKIP_INTRO },
     { "SKIP LOADING", "LOAD IN ONE GO, WITHOUT THE LOADING SCREENS", SET_SKIP_LOADING },
     { "CHEAT MENU", "THE ORIGINAL'S HIDDEN CHEATS, IN THE PAUSE MENU", SET_CHEAT_MENU },
-    { "EXTRA HEROES", "RIPPER ROO AND PINSTRIPE, FROM YOUR OWN CRASH BANDICOOT DISC", SET_EXTRA_HEROES },
+    /* PC: the heroes of the mods that are on (docs/HERO_PACKS.md), and those made from the player's other discs */
+    { "CUSTOM HEROES", "HEROES FROM YOUR MODS, AND ROO AND PINSTRIPE FROM A DISC", SET_EXTRA_HEROES },
 };
 #define NUM_OF(a) ((s32)(sizeof(a) / sizeof((a)[0])))
 

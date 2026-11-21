@@ -234,7 +234,7 @@ static void save_settings(void) {
     fprintf(f, "; Start at the main menu, without the logos\nskip_intro=%d\n", Current.skip_intro);
     fprintf(f, "; Load each level in one go, without the loading screen\nskip_loading=%d\n", Current.skip_loading);
     fprintf(f, "; The original's hidden cheat menu, in the pause menu\ncheat_menu=%d\n", Current.cheat_menu);
-    fprintf(f, "; Ripper Roo and Pinstripe as heroes too, from your Crash Bandicoot disc\nextra_heroes=%d\n\n", Current.extra_heroes);
+    fprintf(f, "; Heroes of your own from your mods (hero packs), and Ripper Roo and Pinstripe from your Crash Bandicoot disc\nextra_heroes=%d\n\n", Current.extra_heroes);
     fprintf(f, "; Full screen, or a window\nfullscreen=%d\n", Current.fullscreen);
     fprintf(f, "; The window's size, width x height, when it's neither full screen nor maximised\nwindow=%dx%d\n", Current.window_w,
             Current.window_h);
