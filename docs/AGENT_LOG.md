@@ -39,7 +39,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   - Windows (Direct3D 12) builds on the host with CMake. Linux (Vulkan) builds and is tested in `tools/dl`'s container, on a virtual
     screen with software Vulkan: never yet on a real Linux desktop and graphics card. Android (Vulkan) builds in `tools/da`, is
     tested in the emulator, and works on the user's phone; a phone that folds has only been tried in the emulator (7.15), as has its MOBILE FOLD option. No Mac.
-  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.4.0 (2026-11-20, the team games' crash fixed, logs, RecompLauncher and achievements; v1.3.0, 2026-11-18, button prompts and mouse buttons; v1.2.0, 2026-11-13, phones that fold and the DATA page;
+  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.4.1 (2026-11-21, mouse buttons bound to controls work in the game's menus; v1.4.0, 2026-11-20, the team games' crash fixed, logs, RecompLauncher and achievements; v1.3.0, 2026-11-18, button prompts and mouse buttons; v1.2.0, 2026-11-13, phones that fold and the DATA page;
     v1.1.0, 2026-11-11, the sticks' deadzone and the mouse in every menu; v1.0.0, 2026-11-10, brought online play and couch play), for
     Windows, Linux and Android.
     `node port/package.mjs` makes them (PORT.md, A release).
@@ -656,6 +656,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-21: v1.4.1 released, at the user's word ("cut a patch release with this fix"), for the fix below. The packaged builds:
+  modes and heroes on Windows, Linux and Android, mouse and controls on Windows; the APK installs over 1.4.0 (same key). Online play
+  checks the version string, so 1.4.1 and 1.4.0 can't play together.
 - 2026-11-21: a player's report: Square on the left click couldn't save over a game. A game menu switched off every mouse button bound
   to a control, and CONFIRM OVERWRITE's only click is its first line. Now a game's menu takes only the left and right clicks (the
   launcher still takes them all), and on a screen with no cursor a left click on nothing plays what it's bound to (menumouse.c,
