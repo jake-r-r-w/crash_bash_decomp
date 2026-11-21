@@ -5,8 +5,13 @@ A hero of your own in the PC port: a glTF model in a mod, playing in an original
 clips, sounds and card, and the game makes it into Crash Bash's models as it loads. The plan, in phases, is in the session plan of
 2026-11-21 (the hero tool, every kind of model, borrowed moves, online), and this page grows with it.
 
-**Where it stands (phase 1):** a pack's model on foot and on the podium, from its own clips. Its other kinds play on foot. Its
-sounds are its base's. Bobby, the example, plays in Crate Crush and Ring Ding.
+**Where it stands:** a pack's hero has a model of every kind the game's heroes have: on foot and on the podium from its own moves,
+riding the polar bear (`pack_ride`, through `ride_make`), and in the eight kinds where the heroes ride or hold something else
+(`packfollow.c`): Crash's model of that kind followed frame by frame, as Pinstripe's are made, his tables of where Crash and his
+prop are copied, but posing the pack's own skeleton: its hips on Crash's, its trunk turned as his, each arm reaching (two-bone) for
+his hand, on the grip where there's one, its legs astride as his, on the pegs or the floor where he stands, else sat, and hidden in
+a tank's hatch or a race cart; the prop (painted gunmetal where Pinstripe's is) as it moves, or in its hand where he carries it.
+Bobby, the example, plays in every game (each checked with four of him).
 
 **The character select's room.** Each of its slots of drawn pieces (`EngineSlotSubs`) held the PS1's 32, and the select's own 26
 with two a card and their row's band left room for two cards: a third (the first pack's, beside Roo and Pinstripe) spilt into the
