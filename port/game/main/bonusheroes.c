@@ -646,7 +646,8 @@ s32 made_write(const MadeModel *m, u8 **tex_out, s32 *tex_size, u8 **mdl_out, s3
     s32 i, j, k, n, mesh;
 
     *tex_out = *mdl_out = NULL;
-    if (fv == NULL || corners == NULL || m->nfaces <= 0 || m->nvert <= 0 || m->nvert > INDEX_LIMIT / 2 || m->nfaces > MADE_MAX_FACES) {
+    if (fv == NULL || corners == NULL || m->nfaces <= 0 || m->nvert <= 0 || m->nvert > INDEX_LIMIT / 2 || m->nfaces > MADE_MAX_FACES
+        || (m->shared_colours ? 1 : m->meshes) * m->nfaces * 3 > 0x1FFF) {
         free(fv);
         free(corners);
         return 0;
@@ -712,14 +713,14 @@ s32 made_write(const MadeModel *m, u8 **tex_out, s32 *tex_size, u8 **mdl_out, s3
         for (i = 0; i < m->nfaces; i++) {
             u8 s[2];
 
-            hm_wr16(s, (u32)((mesh * m->nfaces + i) * 3 | m->faces[i].blend));
+            hm_wr16(s, (u32)(((m->shared_colours ? 0 : mesh * m->nfaces) + i) * 3 | m->faces[i].blend));
             hm_put(&mdl, s, 2);
         }
         hm_align(&mdl, 4);
     }
     end = mdl.n;
     colours = mdl.n;
-    for (mesh = 0; mesh < m->meshes; mesh++) {
+    for (mesh = 0; mesh < (m->shared_colours ? 1 : m->meshes); mesh++) {
         for (i = 0; i < m->nfaces; i++) {
             for (j = 0; j < 3; j++) {
                 u8 c[4];
@@ -2489,6 +2490,7 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size) 
     mm.faces = faces;
     mm.nfaces = r->nfaces + b->nfaces + nfill;
     mm.meshes = 2;
+    mm.shared_colours = mm.nfaces * 3 * 2 > 0x1FFF;
     mm.images = images;
     mm.nimages = r->nimages + b->nimages;
     mm.anims = Ride.anims;

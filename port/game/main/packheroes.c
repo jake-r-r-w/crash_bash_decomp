@@ -21,7 +21,8 @@
 #define PACK_GLB_BYTES (32 * 1024 * 1024)
 #define PACK_CARD_BYTES (4 * 1024 * 1024)
 #define PACK_MAX_ANIMS 64
-#define PACK_MAX_VERTS 4096     /* extraheroes.c's MORPH_VERTS: a frame's corners as they're drawn */
+#define PACK_MAX_VERTS 4096     /* a hero's vertices at most */
+#define PACK_MAX_TRIS 1365      /* and its triangles: a hard limit (the user's word), so all it rides or holds fits with it (MADE_MAX_FACES) */
 #define PACK_IMAGE_MAX 256      /* an image's texels across or down at most: a corner's place in it is a byte */
 /* How a pack's faces are lit as it stands, its light baked in its colours as the game's heroes' are: wrapped, so the side away from the
  * light still shades (Pinstripe's, docs/EXTRA_HEROES.md: the game's heroes are bright and soft) */
@@ -417,6 +418,137 @@ static void foot_frame(void *ctx, s32 anim, s32 f, V3 *out) {
     }
 }
 
+/* --- riding a polar bear (Polar Push): ride_make (bonusheroes.c) seats any hero on Crash's bear, given the hero sat astride it --- */
+
+#define RIDE_SCALE 0.8f      /* of its size on foot: on the bear, as Pinstripe rides (a hero's legs would reach the floor beside it) */
+#define RIDE_HIP_UP 5.0f     /* its hips this far above the bear's back, and forward of its middle (Roo's) */
+#define RIDE_HIP_FORWARD 5.0f
+
+static s32 bone_named(const PackModel *pm, const char *name) {
+    s32 b;
+
+    for (b = 0; b < pm->nbones; b++) {
+        if (same(pm->bones[b].name, name)) {
+            return b;
+        }
+    }
+    return -1;
+}
+
+/* a bone turned from its rest: about x (+ tips its end back), then y, z first (as the hero tool's moves turn them), in glTF's axes */
+static void turn_bone(const PackModel *pm, PackTrs *local, const char *name, float x, float y, float z) {
+    s32 b = bone_named(pm, name);
+    float d = 3.14159265f / 360, q[3][4] = { { 0, sinf(y * d), 0, cosf(y * d) }, { sinf(x * d), 0, 0, cosf(x * d) }, { 0, 0, sinf(z * d), cosf(z * d) } };
+    float r[4], *a = local[b < 0 ? 0 : b].r, t[4];
+    s32 i;
+
+    if (b < 0) {
+        return;
+    }
+    /* r = y * x * z, then onto its rest turn */
+    r[0] = q[0][3] * q[1][0] + q[0][0] * q[1][3] + q[0][1] * q[1][2] - q[0][2] * q[1][1];
+    r[1] = q[0][3] * q[1][1] - q[0][0] * q[1][2] + q[0][1] * q[1][3] + q[0][2] * q[1][0];
+    r[2] = q[0][3] * q[1][2] + q[0][0] * q[1][1] - q[0][1] * q[1][0] + q[0][2] * q[1][3];
+    r[3] = q[0][3] * q[1][3] - q[0][0] * q[1][0] - q[0][1] * q[1][1] - q[0][2] * q[1][2];
+    for (i = 0; i < 4; i++) {
+        t[i] = r[i];
+    }
+    r[0] = t[3] * q[2][0] + t[0] * q[2][3] + t[1] * q[2][2] - t[2] * q[2][1];
+    r[1] = t[3] * q[2][1] - t[0] * q[2][2] + t[1] * q[2][3] + t[2] * q[2][0];
+    r[2] = t[3] * q[2][2] + t[0] * q[2][1] - t[1] * q[2][0] + t[2] * q[2][3];
+    r[3] = t[3] * q[2][3] - t[0] * q[2][0] - t[1] * q[2][1] - t[2] * q[2][2];
+    t[0] = a[3] * r[0] + a[0] * r[3] + a[1] * r[2] - a[2] * r[1];
+    t[1] = a[3] * r[1] - a[0] * r[2] + a[1] * r[3] + a[2] * r[0];
+    t[2] = a[3] * r[2] + a[0] * r[1] - a[1] * r[0] + a[2] * r[3];
+    t[3] = a[3] * r[3] - a[0] * r[0] - a[1] * r[1] - a[2] * r[2];
+    memcpy(a, t, sizeof(t));
+}
+
+/* Whether a bone's name is one of a set (each name, or each that starts with it: "thigh" is thigh_l and thigh_r) */
+static s32 named_in(const char *name, const char *const *set) {
+    for (; *set != NULL; set++) {
+        size_t n = strlen(*set);
+
+        if (same_n(name, *set, n)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static const char *const RideLower[] = { "hips", "thigh", "shin", "foot", "tail", NULL };
+static const char *const RideNeck[] = { "neck", "head", "jaw", "ear", NULL };
+
+static void pack_ride(PackSlot *s, const PackModel *pm, MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, HeroMade *out) {
+    static PackTrs local[PACK_MAX_BONES];
+    static float world[PACK_MAX_BONES][16], skinned[PACK_MAX_VERTS * 3], waist_share[PACK_MAX_VERTS], neck_share[PACK_MAX_VERTS];
+    static V3 seat[PACK_MAX_VERTS];
+    float back_y, seat_z, k = TheFoot.k * RIDE_SCALE, at[3], d[3];
+    s32 hips = bone_named(pm, "hips"), spine = bone_named(pm, "spine"), neck = bone_named(pm, "neck"), v, j;
+    Rider rider;
+
+    if (hips < 0 || spine < 0 || neck < 0 || !ride_seat(&back_y, &seat_z)) {
+        return;
+    }
+    /* sat astride: thighs forward and out over its sides, shins back down, feet tipped down; hands forward to its neck */
+    pack_pose_local(pm, -1, 0, local);
+    turn_bone(pm, local, "thigh_l", -75, 0, 35);
+    turn_bone(pm, local, "thigh_r", -75, 0, -35);
+    turn_bone(pm, local, "shin_l", 85, 0, 0);
+    turn_bone(pm, local, "shin_r", 85, 0, 0);
+    turn_bone(pm, local, "foot_l", -25, 0, 0);
+    turn_bone(pm, local, "foot_r", -25, 0, 0);
+    turn_bone(pm, local, "upperarm_l", -30, 0, 0);
+    turn_bone(pm, local, "upperarm_r", -30, 0, 0);
+    pack_pose_world(pm, local, world);
+    pack_skin(pm, (const float(*)[16])world, skinned);
+    /* in Crash Bash's axes and units, its hips on the bear's back */
+    at[0] = world[hips][12], at[1] = world[hips][13], at[2] = world[hips][14];
+    d[0] = 0 - at[0] * k;
+    d[1] = back_y - RIDE_HIP_UP + at[1] * k;
+    d[2] = seat_z + RIDE_HIP_FORWARD + at[2] * k;
+    for (v = 0; v < pm->nvert; v++) {
+        float lower = 0, up = 0;
+
+        seat[v].x = skinned[v * 3] * k + d[0];
+        seat[v].y = -skinned[v * 3 + 1] * k + d[1];
+        seat[v].z = -skinned[v * 3 + 2] * k + d[2];
+        /* what bends at its waist (all but its hips, legs and tail) and at its neck, by its bones */
+        for (j = 0; j < 4; j++) {
+            const char *name = pm->bones[pm->joint[v * 4 + j]].name;
+            float w = pm->weight[v * 4 + j];
+
+            lower += named_in(name, RideLower) ? w : 0;
+            up += named_in(name, RideNeck) ? w : 0;
+        }
+        waist_share[v] = 1 - lower;
+        neck_share[v] = up;
+    }
+    memset(&rider, 0, sizeof(rider));
+    rider.seat = seat;
+    rider.nvert = pm->nvert;
+    rider.waist_share = waist_share;
+    rider.neck_share = neck_share;
+    rider.waist.x = world[spine][12] * k + d[0];
+    rider.waist.y = -world[spine][13] * k + d[1];
+    rider.waist.z = -world[spine][14] * k + d[2];
+    rider.neck.x = world[neck][12] * k + d[0];
+    rider.neck.y = -world[neck][13] * k + d[1];
+    rider.neck.z = -world[neck][14] * k + d[2];
+    rider.lean_waist = 0.8f;
+    rider.lean_neck = 0.2f;
+    rider.steady = 0.3f;
+    rider.match_bank = -1;
+    rider.faces = faces;
+    rider.nfaces = nfaces;
+    rider.images = images;
+    rider.nimages = nimages;
+    rider.charred = 0.35f;
+    if (!ride_make(&rider, &out->tex[KIND_POLAR], &out->tex_size[KIND_POLAR], &out->mdl[KIND_POLAR], &out->mdl_size[KIND_POLAR])) {
+        printf("hero packs: %s has no polar bear to ride\n", s->info.id);
+    }
+}
+
 /* A clip's animation name for a kind: KIND/MOVE, or for on foot MOVE alone too; NULL if it's another kind's */
 static const char *clip_move(const char *clip, s32 kind) {
     const char *slash = strchr(clip, '/');
@@ -456,9 +588,9 @@ static s32 make_pack(s32 slot, HeroMade *out) {
         return 0;
     }
     free(glb);
-    if (pm.nvert > PACK_MAX_VERTS || pm.ntri > MADE_MAX_FACES) {
+    if (pm.nvert > PACK_MAX_VERTS || pm.ntri > PACK_MAX_TRIS) {
         printf("hero packs: %s has %d vertices and %d triangles: the game draws %d and %d at most\n", s->info.id, pm.nvert, pm.ntri,
-               PACK_MAX_VERTS, MADE_MAX_FACES);
+               PACK_MAX_VERTS, PACK_MAX_TRIS);
         goto done;
     }
 
@@ -624,6 +756,8 @@ static s32 make_pack(s32 slot, HeroMade *out) {
             printf("hero packs: %s has no podium model\n", s->info.id);
         }
     }
+    /* riding a polar bear, sat on Crash's (Polar Push) */
+    pack_ride(s, &pm, faces, pm.ntri, images, nimages, out);
     /* its card */
     {
         u8 *png = mods_hero_file(s->index, "card.png", PACK_CARD_BYTES, &size);

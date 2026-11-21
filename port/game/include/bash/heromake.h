@@ -70,8 +70,9 @@ s32 c1_sprite(const C1Level *l, const char *object, s32 item, s32 w, s32 h, u32 
 /* The most frames an animation can have: the games name a frame 0x4000 | animation << 7 | frame, so a frame past 127 would be another
  * animation's (or none, and the model isn't drawn). made_write refuses a longer one. */
 #define MADE_MAX_FRAMES 128
-/* The most faces it can have: made_write's corners, three a face, are 4096 at most */
-#define MADE_MAX_FACES (4096 / 3)
+/* The most faces it can have, a hero and what it rides or holds: its corners, three a face, as many as prims.c's MorphVerts, and each
+ * face's first colour's index is 13 bits (with two meshes' colours, half as many: MadeModel.shared_colours) */
+#define MADE_MAX_FACES (8192 / 3)
 typedef struct {
     s32 v[3];          /* its corners: vertices of each frame */
     s32 image;         /* in the made texture set, -1 untextured */
@@ -104,6 +105,8 @@ typedef struct {
     /* Frame f of animation `anim`: nvert vertices, in Crash Bash's units and axes (y down, its feet at 0). */
     void (*frame)(void *ctx, s32 anim, s32 f, V3 *out);
     void *ctx;
+    /* the second mesh's faces with the first's colours: too many faces for two sets (a big hero riding a bear won't char) */
+    s32 shared_colours;
 } MadeModel;
 /* The model and its texture set, to free; 0 if it couldn't. An animation whose frames' vertices are more than an index can reach is
  * written as keyframes with the frames between blended. */

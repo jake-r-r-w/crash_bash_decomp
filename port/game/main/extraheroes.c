@@ -40,7 +40,7 @@ unsigned char *archive_own_file(int entry, int *size);
 #define MAX_POINTS 512 /* bytes of a frame's points and boxes */
 #define HELD_FLAGS 0x31 /* the points a held crate goes between (0x10, 0x20) or at (1): xtras.c, CrateFux */
 #define HEAD_FLAG 0x80  /* the top of a hero's head */
-#define MORPH_VERTS 4096 /* prims.c's MorphVerts, a frame's vertices as they're drawn: all of a mesh's (Roo's are 3435, 3 a triangle) */
+#define MORPH_VERTS 8192 /* prims.c's MorphVerts, a frame's vertices as they're drawn: all of a mesh's (Roo's are 3435, 3 a triangle) */
 #define HIT_FIRST 2     /* a hero's hit voices, in its block of sounds (HeroHitSfx: the first of them) */
 
 /* The heroes' sequences (HeroSeqTables, each hero's in the same order, by HeroInfo.hero_aseq): the moves every game shares, then Crate

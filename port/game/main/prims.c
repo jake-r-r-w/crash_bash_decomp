@@ -3107,8 +3107,9 @@ PosEntry PosFlashes[9] = {
 };
 GfxState RenderState = {0};
 s32 PrimDepthLimit = 0;
-/* PC: 4096, from the PS1's 1024, for the bonus heroes' meshes (bonusheroes.c), a strip a triangle */
-SVECTOR MorphVerts[4096] = {0};
+/* PC: 8192, from the PS1's 1024, for the bonus heroes' meshes (bonusheroes.c), a strip a triangle: a hero pack's 1365 triangles and
+ * what it rides or holds (heromake.h's MADE_MAX_FACES) */
+SVECTOR MorphVerts[8192] = {0};
 void *SubPool = 0;
 subengine *next_sub = 0;
 map_enviroment *MapScene = 0;
