@@ -103,6 +103,10 @@ typedef struct {
 s32 hm_game_part(s32 bank, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s32 textured), void *ctx, GamePart *out);
 /* The same of its mesh `mesh` (0 the first), for a model whose animations move another (the kegs game's move its second) */
 s32 hm_game_part_of(s32 bank, s32 mesh, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s32 textured), void *ctx, GamePart *out);
+/* The same, where keep may say 2 or more for a strip: then each of its faces is the part's only if keep_face says so (its corners'
+ * numbers) */
+s32 hm_game_part_faces(s32 bank, s32 mesh, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s32 textured),
+                       s32 (*keep_face)(void *ctx, s32 a, s32 b, s32 c), void *ctx, GamePart *out);
 void hm_part_free(GamePart *p);
 /* The model's animation by name, and its frames; -1 if it has none. */
 s32 hm_model_anim(const GamePart *p, const char *name, s32 *frames);

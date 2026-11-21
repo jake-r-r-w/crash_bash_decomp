@@ -11,12 +11,15 @@ typedef struct {
     float x, y, z; /* Crash Bash's units and axes, y down, as the model first moves (its first move's first frame) */
 } TmplPoint;
 
-/* A box of the model, lo to hi; sym: its x is either side (lo.x to hi.x out from the middle, left or right) */
+/* A box of the model, lo to hi; sym: its x is either side (lo.x to hi.x out from the middle, left or right). A prop's box takes the
+ * strips with most of their corners in it; with faces 1, the faces all in it (a strip that runs on from a prop into its hero: Coco's
+ * pogo's grips into her arms); with faces 2 it leaves out the faces all in it, whatever took them (her hands in her race cart); with 3
+ * the strips mostly in it (Tiny's legs down his dino's sides, where its own faces are within theirs) */
 typedef struct {
     TmplPoint lo, hi;
-    s32 sym;
+    s32 sym, faces;
 } TmplBox;
-#define TMPL_BOXES 4
+#define TMPL_BOXES 8
 
 /* Each pair is its left first (x below 0). A point left at 0, 0, 0 isn't there. */
 typedef struct {
@@ -30,6 +33,8 @@ typedef struct {
     float scale;   /* the pack's size on it against Crash's kind's for this hero's height (PackTemplateHeight), 1 as it is */
     s32 mesh1;     /* the mesh of the model it follows, plus 1 (0: Crash's kind's: a hero's model may have fewer) */
     s32 carry;     /* the hand it carries its prop in, 1 its left, 2 its right (0: Crash's kind's: Cortex has his keg on his right) */
+    const s16 *skip; /* strips left out whatever box takes them, ended by -1 (NULL: none): a hero's its prop's own are among (Kong's
+                      * legs about his dino's back) */
 } TemplateMap;
 
 /* The moves on foot a template gives (the crate games' heroes', the same for all eight) */

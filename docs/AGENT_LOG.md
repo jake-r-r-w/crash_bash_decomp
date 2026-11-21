@@ -126,8 +126,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   TOOL, online play (`online --heroes`), and Roo, Pinstripe and the disc reading removed. Phase 6 too: every hero is a template
   (`"template"`, packtemplates.c's maps; the user's design: a template per game, its own moves overriding), the tool previews the
   hero in every game (`--dump-hero`), and `--own GAME/MOVE=MOVE` overrides; on foot, the podium and the polar bear follow templates too
-  (a pack that says one); every template's polar bear is cut from its rider by colour and its holes filled. Left: a few slivers of
-  heroes kept with props (not bears), Coco's pogo has no handle; models of other shapes than Bobby through the tool;
+  (a pack that says one); every template's polar bear is cut from its rider by colour and its holes filled, and every template's
+  prop has none of its hero left on it (2026-11-22, `prop_view.py`). Left: models of other shapes than Bobby through the tool;
   the hero tool's window on Linux (built and its CLI run, 2026-11-21, not looked at). Fixes go in the loader or the tool, never one
   hero's. The tool's output differs between Windows and Linux in a few float bits (each system's maths library), so a pack is
   shared as its files, and the same files match online whoever made them.
@@ -667,6 +667,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: template props cleaned, at the user's word ("fix coco's pogo handle and the prop slivers"). `prop_view.py` draws a
+  map's prop in the model's own colours; with it every one of the 56 maps was looked at, and its face counts match `--dump-hero`'s.
+  New in the maps: face boxes, NOT boxes (faces out), SKIP boxes (strips out) and `.skip` strip lists (HERO_PACKS.md, A prop's
+  boxes); `TMPL_BOXES` 8. Coco's pogo handlebar was 40 units off its box; mallets' handles and Dingodile's pogo were missing,
+  dinos' arms too. Gotcha: `hm_game_part_of`'s `take = ok && keep()` made keep's 2 a 1 (now `ok ? keep() : 0`). `hero bobby` with
+  Dingodile as template 16/16; plain Bobby byte-identical.
 - 2026-11-21 (night): template polar bears cleaned and filled, at the user's word. The bear is the same in every polar2 model, so
   it's taken face by face by its fur's colour (`bear_cut`, packfollow.c; map_rider is gone), black only where drawn as its nose,
   eyes and soles; the boxes are ±90. ride_make's fill became `hm_fill_make`/`hm_fill_at` (heromake.h), fitted to each bear's box;

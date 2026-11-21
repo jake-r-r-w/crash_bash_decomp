@@ -110,12 +110,25 @@ struct Follow {
 typedef struct {
     const FollowKind *kind;
     const V3 *ref;
-    s32 at, strip;
+    s32 at, strip, take;
 } PropPick;
 
 static s32 keep_all(void *ctx, const V3 *rest, s32 n, s32 textured) {
     (void)ctx, (void)rest, (void)n, (void)textured;
     return 1;
+}
+
+static s32 map_in_kind(V3 p, s32 faces);
+
+/* a face of a strip keep_prop said 2 or 3 for (map_prop): for 2 its corners all in one of the map's boxes that take faces; and not all in
+ * one that leaves them out */
+static s32 keep_prop_face(void *ctx, s32 a, s32 b, s32 c) {
+    const PropPick *pick = ctx;
+
+    if (pick->take == 2 && !(map_in_kind(pick->ref[a], 1) && map_in_kind(pick->ref[b], 1) && map_in_kind(pick->ref[c], 1))) {
+        return 0;
+    }
+    return !(map_in_kind(pick->ref[a], 2) && map_in_kind(pick->ref[b], 2) && map_in_kind(pick->ref[c], 2));
 }
 
 static s32 keep_prop(void *ctx, const V3 *rest, s32 n, s32 textured) {
@@ -124,7 +137,7 @@ static s32 keep_prop(void *ctx, const V3 *rest, s32 n, s32 textured) {
 
     (void)rest;
     pick->at += n;
-    return pick->kind->prop(p, n, textured, pick->strip++);
+    return pick->take = pick->kind->prop(p, n, textured, pick->strip++);
 }
 
 static V3 mid_of(const V3 *at, const s16 *ids, s32 n) {
@@ -939,22 +952,42 @@ static s32 map_in(V3 p, const TmplBox *b) {
     return (b->lo.x != 0 || b->hi.x != 0 || b->lo.y != 0 || b->hi.y != 0) && x >= b->lo.x && x <= b->hi.x && p.y >= b->lo.y
            && p.y <= b->hi.y && p.z >= b->lo.z && p.z <= b->hi.z;
 }
-static s32 map_in_any(V3 p) {
+/* whether p is in one of the prop's boxes that take strips (faces 0) or faces (1), or leave faces (2) or strips (3) out */
+static s32 map_in_kind(V3 p, s32 faces) {
     s32 i;
 
-    for (i = 0; i < TMPL_BOXES && !map_in(p, &Map->prop[i]); i++) {
+    for (i = 0; i < TMPL_BOXES && !(Map->prop[i].faces == faces && map_in(p, &Map->prop[i])); i++) {
     }
     return i < TMPL_BOXES;
 }
-/* a strip mostly in the prop's boxes; for the polar bear, any strip in its box, its faces sorted after (bear_cut) */
+static s32 map_in_any(V3 p) {
+    return map_in_kind(p, 0) || map_in_kind(p, 1);
+}
+/* a strip mostly in the prop's boxes (1, or 3 with a corner in a box that leaves faces out: its faces then checked, keep_prop_face);
+ * else, with a corner in a box that takes faces, its faces all in one (2); none mostly in a box that leaves strips out; for the polar
+ * bear, any strip in its box, its faces sorted after (bear_cut) */
 static s32 map_prop(const V3 *at, s32 n, s32 textured, s32 strip) {
-    s32 k, in = 0;
+    s32 k, in = 0, face = 0, out = 0, skip = 0;
 
-    (void)textured, (void)strip;
+    (void)textured;
     for (k = 0; k < n; k++) {
-        in += map_in_any(at[k]);
+        in += map_in_kind(at[k], 0);
+        face |= map_in_kind(at[k], 1);
+        out |= map_in_kind(at[k], 2);
+        skip += map_in_kind(at[k], 3);
     }
-    return MapKind.lit ? in > 0 : in * 2 > n;
+    if (MapKind.lit) {
+        return in > 0;
+    }
+    if (skip * 2 > n) {
+        return 0;
+    }
+    for (k = 0; Map->skip != NULL && Map->skip[k] >= 0; k++) {
+        if (Map->skip[k] == strip) {
+            return 0;
+        }
+    }
+    return in * 2 > n ? (out ? 3 : 1) : face ? 2 : 0;
 }
 
 /* --- the polar bear out of its rider's model ---
@@ -1278,8 +1311,8 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
         hm_part_free(&whole);
         pick.kind = fk;
         pick.ref = c->ref;
-        pick.at = pick.strip = 0;
-        if (!got || !hm_game_part_of(fk->bank, fk->mesh, keep_prop, &pick, &c->prop)) {
+        pick.at = pick.strip = pick.take = 0;
+        if (!got || !hm_game_part_faces(fk->bank, fk->mesh, keep_prop, keep_prop_face, &pick, &c->prop)) {
             return 0;
         }
     }
@@ -1387,7 +1420,7 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
                c->nelbow[1], c->nhand[0], c->nhand[1], c->nframe, c->prop.corners, c->prop.corners);
         goto done;
     }
-    /* a template's prop too small to fit a frame to (Dingodile's thin pogo stick): the model's own frame */
+    /* a template's prop too small to fit a frame to (fewer than 8 corners): the model's own frame */
     if (fk == &MapKind && fk->frame != NULL && c->nframe < 8) {
         MapKind.frame = NULL;
     }

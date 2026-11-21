@@ -756,6 +756,11 @@ s32 hm_game_part(s32 bank, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s
 }
 
 s32 hm_game_part_of(s32 bank, s32 mesh, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s32 textured), void *ctx, GamePart *out) {
+    return hm_game_part_faces(bank, mesh, keep, NULL, ctx, out);
+}
+
+s32 hm_game_part_faces(s32 bank, s32 mesh, s32 (*keep)(void *ctx, const V3 *rest, s32 corners, s32 textured),
+                       s32 (*keep_face)(void *ctx, s32 a, s32 b, s32 c), void *ctx, GamePart *out) {
     const obj_dbase *db = &HeroModelBank[bank];
     const ModelFile *m;
     const MeshHeader *h;
@@ -808,7 +813,7 @@ s32 hm_game_part_of(s32 bank, s32 mesh, s32 (*keep)(void *ctx, const V3 *rest, s
     for (s = 0, face = 0, corner = 0; runs[s] != 0xFFFF; corner += (runs[s] >> 8) + 2, s++) {
         s32 n = runs[s] >> 8, flip0 = (runs[s] & 8) != 0, textured = !(runs[s] & 1), take, j;
 
-        take = corner + n + 2 <= out->corners && keep(ctx, out->rest + corner, n + 2, textured);
+        take = corner + n + 2 <= out->corners ? keep(ctx, out->rest + corner, n + 2, textured) : 0;
         for (j = 0; j < n; j++, face++) {
             /* a strip's first face is drawn a, c, b, so one drawn a, b, c in its own strip has its last two the other way */
             s32 order[3], q;
@@ -819,7 +824,7 @@ s32 hm_game_part_of(s32 bank, s32 mesh, s32 (*keep)(void *ctx, const V3 *rest, s
                 texs++;
                 left = (t >> 9) & 0x3F;
             }
-            if (!take) {
+            if (!take || (take > 1 && (keep_face == NULL || !keep_face(ctx, corner + j, corner + j + 1, corner + j + 2)))) {
                 continue;
             }
             order[0] = 0;

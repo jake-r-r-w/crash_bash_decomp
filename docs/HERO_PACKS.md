@@ -125,12 +125,28 @@ for either side). Where a hero has no map of a kind yet the pack follows Crash's
    the tool's preview, which draws every texel, settles it). A part of the hero left on the prop is a box too big; a pack stretched thin is a part found on
    one side only. `tools/dk python3 tools/scripts/hero_strips.py ENTRY MESH X` lists the strips whose middle is left of x X, each
    with its box, for a prop a box misses (most of a strip's corners have to be in it: Dingodile's keg reaches in to his body).
+5. Look at the prop as the map takes it: `tools/dk python3 tools/scripts/prop_view.py tiny pogo` draws the model in its own colours
+   (texel times corner colours), the strips the map keeps bright and the rest dim, its boxes outlined and every strip numbered
+   (`--only` the kept alone; `--box x0,y0,z0,x1,y1,z1[,sym][,faces|not|skip]` and `--skip N,...` to try others before writing them). It
+   prints the strips kept and the faces, which are the faces the game makes of it (all 56 maps checked against `--dump-hero`).
 
-**Where it stands (2026-11-21):** every hero is a template: Crash by his own tables, and Coco, Cortex, Brio, Tiny, Koala Kong,
-Dingodile and Rilla Roo each by eight maps (pogo, car, tank, race cart, fish, mallet, dino, keg), each looked at in a sheet as above,
-the props their own (Tiny's purple cart and orca, Coco's pink dolphin and raptor, Cortex's shark ...). Left: a few slivers of a hero
-kept with its prop here and there (Coco's jeans on her dino, Kong's or Rilla's bits by their fish), and no pogo handle for Coco.
-What differs between them, all in the maps:
+**A prop's boxes** (`TmplBox`, up to 8; packtemplate.h): `BOX`/`BOTH` take the strips with most of their corners in them. Where a
+hero's strip runs on into its prop, or lies over it, there's more:
+
+- `FBOX`/`FBOTH` take the faces all in them, of strips with a corner in them: Coco's pogo grips run on into her arms, and Tiny's and
+  Kong's pogo plates have their toes' strips touching them.
+- `NOTBOX`/`NOTBOTH` leave out the faces all in them, whatever took them: Coco's hands in her race cart, her shoes on her dolphin,
+  Cortex's trousers on his shark.
+- `SKIPBOX`/`SKIPBOTH` leave out the strips mostly in them: Tiny's legs and tail on his dino, where its own back's faces are within
+  his legs' box.
+- `.skip`, a list of strip numbers ended by -1 after the map's last field, leaves those strips out: where the hero's and the prop's
+  strips are too mixed for boxes (Kong's legs and feet about his dino's neck and arms; most of Dingodile's and Rilla Roo's).
+
+**Where it stands (2026-11-22):** every hero is a template: Crash by his own tables, and Coco, Cortex, Brio, Tiny, Koala Kong,
+Dingodile and Rilla Roo each by eight maps (pogo, car, tank, race cart, fish, mallet, dino, keg), each looked at prop by prop in
+`prop_view.py`, the props their own (Tiny's purple cart and orca, Coco's pink dolphin and raptor, Cortex's shark ...), with none of
+their heroes left on them: Coco's pogo has its handlebar, Tiny's, Kong's and Rilla Roo's mallets their handles, Dingodile's pogo its
+whole rocket, and the dinos their arms. What differs between them, all in the maps:
 
 - **No prop**: Cortex's and Brio's pogo models are them alone (the game draws what they're on): a map with no prop boxes has none.
 - **No hands**: Coco's and Brio's race carts have only their heads, necks (and Brio's small hands): a hand marker takes the prop's
@@ -138,7 +154,7 @@ What differs between them, all in the maps:
 - **Another mesh**: the keg is in the second or third mesh of some heroes' models (`mesh1`: Coco's 3, Brio's 3, Kong's 2, Rilla's 2;
   Tiny's, Cortex's and Dingodile's models have one).
 - **The other hand**: Cortex and Brio carry the keg on the right, and Brio his mallet (`carry` 2).
-- **A thin prop**: one too small to fit a frame to (Dingodile's pogo stick) takes the model's own frame.
+- **A thin prop**: one too small to fit a frame to (fewer than 8 corners) takes the model's own frame.
 
 **On foot, the podium and the polar bear** (2026-11-21, later):
 
