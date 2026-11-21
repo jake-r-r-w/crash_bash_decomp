@@ -30,6 +30,7 @@
 #include "bash/herodef.h"
 #include "bash/extraheroes.h"
 #include "bash/bonusheroes.h"
+#include "bash/heromake.h"
 #include "../../platform/settings.h"
 #include "../../platform/gfx.h"
 
@@ -1065,10 +1066,12 @@ s32 extra_hero_points(const subengine *sub, PointList **list) {
         return 0;
     }
     if (from == NULL) {
-        return 1;
+        static const PointList none = { 0, 0, { { 0, 0, 0, 0 } } };
+
+        from = &none;
     }
     if (from->count < 0 || from->nRecs < 0
-        || 4 + (from->count + 1) * (s32)sizeof(FlagPoint) + from->nRecs * (s32)sizeof(FlagRecord) > MAX_POINTS) {
+        || 4 + (from->count + 1 + MADE_MAX_POINTS) * (s32)sizeof(FlagPoint) + from->nRecs * (s32)sizeof(FlagRecord) > MAX_POINTS) {
         return 1;
     }
     /* the top of its head, in the frame it's drawn in */
@@ -1105,6 +1108,21 @@ s32 extra_hero_points(const subengine *sub, PointList **list) {
     if (held) {
         head.flags = 1;
         out->pts[out->count++] = head;
+    }
+    /* and its own frame's, of what the base's hasn't (a pack's template's: where Cortex's pogo jets go, extra_hero_looks) */
+    if ((drawn & 0x7000) == 0x4000) {
+        FlagPoint own[MADE_MAX_POINTS];
+        s32 no = hm_file_points(v->own, (drawn >> 7) & 0x1F, drawn & 0x7F, own, MADE_MAX_POINTS);
+        u16 had = 0;
+
+        for (k = 0; k < out->count; k++) {
+            had |= out->pts[k].flags;
+        }
+        for (k = 0; k < no; k++) {
+            if ((own[k].flags & ~had) == own[k].flags && own[k].flags != 0) {
+                out->pts[out->count++] = own[k];
+            }
+        }
     }
     /* the boxes it collides with stay the base's */
     out->nRecs = from->nRecs;

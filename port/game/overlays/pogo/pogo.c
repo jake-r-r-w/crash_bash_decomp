@@ -1523,11 +1523,22 @@ void PostMovePOGO(u32 i) {
     subengine *sub;
     s32 name;
     s32 n;
+    s32 look, own;
 
     name = Heroes[i].hero_name;
-    if ((u32)(name - 3) < 2) {
+    /* PC: the jets go with the look of the hero's pogo (an extra hero's template's, extraheroes.c): Cortex's or Brio's hover one, in
+     * any hero's place; own: on a hero but theirs, whose jet frames the game doesn't keep, so they flicker by the frame count and draw
+     * no random numbers (the game plays the same), at the point on its frame they're at, or its feet */
+    look = extra_hero_looks(i, name);
+    own = (u32)(look - 3) < 2 && (u32)(name - 3) >= 2;
+    if ((u32)(name - 3) < 2 || own) {
         sub = Heroes[i].hero_fx->sub;
-        if (sub != NULL && sub_find_point(Heroes[i].hero_eng, Heroes[i].hero_sub, 0x200, &v) != NULL) {
+        if (sub != NULL && own && sub_find_point(Heroes[i].hero_eng, Heroes[i].hero_sub, 0x200, &v) == NULL) {
+            v.vx = Heroes[i].hero_eng->XYZ.x;
+            v.vy = Heroes[i].hero_eng->XYZ.y;
+            v.vz = Heroes[i].hero_eng->XYZ.z;
+        }
+        if (sub != NULL && (own || sub_find_point(Heroes[i].hero_eng, Heroes[i].hero_sub, 0x200, &v) != NULL)) {
             sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
             sub->xform.hasScale = 1;
             sub->flags |= 0x8000;
@@ -1561,14 +1572,16 @@ void PostMovePOGO(u32 i) {
                 n = 0;
                 break;
             }
-            /* PC: an extra hero on another's pogo than its base's hover one has none of its jets (its frames' as they were) */
-            if ((u32)(extra_hero_looks(i, name) - 3) >= 2) {
+            if ((u32)(look - 3) >= 2) {
                 sub->entity = 0;
+            } else if (own) {
+                sub->entity = 0x2021;
+                n = 1 + ((GameFrameCount + i * 5) & 15);
             }
             if (n > 20) {
                 n = 0;
             }
-            if (n != 20 && n != 0) {
+            if (n != 20 && n != 0 && !own) {
                 n = Random(16);
             }
             sub->xform.hasScale = 1;

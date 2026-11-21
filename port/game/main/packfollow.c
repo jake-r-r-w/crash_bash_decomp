@@ -736,6 +736,7 @@ static void own_frame(Packed *p, s32 a, float f, const Moved *mv, V3 hips_at, co
 }
 
 static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out);
+static s32 pack_points_at(void *ctx, s32 a, s32 f, FlagPoint *out, s32 max);
 
 static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     static V3 F[FOLLOW_CORNERS], L[FOLLOW_CORNERS];
@@ -1479,6 +1480,7 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     mm.nvert = p->n + c->prop.nvert + BearFills;
     mm.rest_anim = 0;
     mm.frame = pack_frame_at;
+    mm.points = fk == &MapKind ? pack_points_at : NULL;
     mm.ctx = p;
     if (fk->lit) {
         /* the second mesh the same faces charred, its LIGHT on it (as ride_make's) */
@@ -1505,6 +1507,37 @@ done:
  * from its pack (pm, in glTF's axes), k its units to Crash Bash's on foot, and its feet's height there (ground) */
 static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out) {
     frame_at(ctx, a, (float)f, out);
+}
+
+/* Its points in frame f of move a: its template's frame's (where Cortex's pogo jets go), carried as the prop is (frame_at) */
+static s32 pack_points_at(void *ctx, s32 a, s32 f, FlagPoint *out, s32 max) {
+    static V3 F[FOLLOW_CORNERS];
+    const Packed *p = ctx;
+    const Follow *c = &p->c;
+    const FollowKind *fk = c->kind;
+    Moved mv;
+    s32 n = hm_file_points(c->prop.mdl, c->anim[a], f, out, max), k;
+
+    if (n <= 0) {
+        return 0;
+    }
+    memset(&mv, 0, sizeof(mv));
+    mv.m[0][0] = mv.m[1][1] = mv.m[2][2] = 1;
+    if (fk->frame != NULL && hm_model_at(&c->prop, c->anim[a], (float)f, F)) {
+        hm_fit(c->ref, F, c->frame, c->nframe, &mv);
+    }
+    for (k = 0; k < n; k++) {
+        V3 q = v3(out[k].vx, out[k].vy, out[k].vz);
+
+        if (fk->frame != NULL) {
+            q = vadd(mv.from, hm_unturned(&mv, vsub(q, mv.to)));
+        }
+        q = hm_moved(&mv, q);
+        out[k].vx = (s16)floorf(q.x + 0.5f);
+        out[k].vy = (s16)floorf(q.y + 0.5f);
+        out[k].vz = (s16)floorf(q.z + 0.5f);
+    }
+    return n;
 }
 
 /* The pack's rest pose and the bones the posing moves, found by their names: 0 if it hasn't them */

@@ -36,6 +36,7 @@ V3 hm_turn_z(V3 p, V3 c, float a);
 
 /* --- a made model: its faces, images and animations, written as Crash Bash's (docs/ASSETS.md) --- */
 #define MADE_MAX_IMAGES 32
+#define MADE_MAX_POINTS 8 /* a frame's points */
 /* The most frames an animation can have: the games name a frame 0x4000 | animation << 7 | frame, so a frame past 127 would be another
  * animation's (or none, and the model isn't drawn). made_write refuses a longer one. */
 #define MADE_MAX_FRAMES 128
@@ -76,7 +77,12 @@ typedef struct {
     void *ctx;
     /* the second mesh's faces with the first's colours: too many faces for two sets (a big hero riding a bear won't char) */
     s32 shared_colours;
+    /* Frame f of animation `anim`'s points, as a model's frames have them for the game to find (sub_find_point: where Cortex's pogo
+     * jets go), at most max into out; how many. NULL: none. */
+    s32 (*points)(void *ctx, s32 anim, s32 f, FlagPoint *out, s32 max);
 } MadeModel;
+/* A model file's frame f of animation n's points, at most max into out (as they are in the file); how many */
+s32 hm_file_points(const u8 *file, s32 n, s32 f, FlagPoint *out, s32 max);
 /* The model and its texture set, to free; 0 if it couldn't. An animation whose frames' vertices are more than an index can reach is
  * written as keyframes with the frames between blended. */
 s32 made_write(const MadeModel *m, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size);

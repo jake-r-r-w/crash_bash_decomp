@@ -149,6 +149,9 @@ their heroes left on them: Coco's pogo has its handlebar, Tiny's, Kong's and Ril
 whole rocket, and the dinos their arms. What differs between them, all in the maps:
 
 - **No prop**: Cortex's and Brio's pogo models are them alone (the game draws what they're on): a map with no prop boxes has none.
+  The game draws their hover pogo's jets (pogo.c, `PostMovePOGO`) for a pack whose pogo template is theirs, in any hero's place
+  (`extra_hero_looks`), at the point on its frame where theirs are (0x200): a template's model carries its frames' points, carried
+  as its prop is (`MadeModel.points`), and the game finds a pack's own where its base's frame has none (`extra_hero_points`).
 - **No hands**: Coco's and Brio's race carts have only their heads, necks (and Brio's small hands): a hand marker takes the prop's
   corners too, so the pack's hands go where theirs would be.
 - **Another mesh**: the keg is in the second or third mesh of some heroes' models (`mesh1`: Coco's 3, Brio's 3, Kong's 2, Rilla's 2;

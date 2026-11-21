@@ -582,6 +582,28 @@ s32 made_write(const MadeModel *m, u8 **tex_out, s32 *tex_size, u8 **mdl_out, s3
                 hm_put(&mdl, v, sizeof(v));
             }
         }
+        /* each frame's points, if it has any: a list (its count, no boxes, the points) its record's fourth word leads to */
+        for (f = 0; m->points != NULL && f < frames; f++) {
+            FlagPoint pts[MADE_MAX_POINTS];
+            s32 np = m->points(m->ctx, j, f, pts, MADE_MAX_POINTS);
+            size_t at;
+            u8 w[8];
+
+            if (np <= 0) {
+                continue;
+            }
+            hm_wr16(w, (u32)np);
+            hm_wr16(w + 2, 0);
+            at = hm_put(&mdl, w, 4);
+            for (k = 0; k < np; k++) {
+                hm_wr16(w, (u32)pts[k].vx);
+                hm_wr16(w + 2, (u32)pts[k].vy);
+                hm_wr16(w + 4, (u32)pts[k].vz);
+                hm_wr16(w + 6, pts[k].flags);
+                hm_put(&mdl, w, 8);
+            }
+            hm_self(&mdl, start + 4 + (size_t)f * 16 + 12, at);
+        }
         hm_align(&mdl, 4);
         hm_wr32(mdl.b + e, (u32)start);
         hm_wr32(mdl.b + e + 4, (u32)mdl.n);
@@ -650,6 +672,26 @@ static s32 file_frame(const u8 *file, s32 n, s32 f, V3 *out, s32 max) {
         out[k].z = (float)(pa[2] + ((pb[2] - pa[2]) * blend >> 12));
     }
     return count;
+}
+
+s32 hm_file_points(const u8 *file, s32 n, s32 f, FlagPoint *out, s32 max) {
+    const ModelFile *m = (const ModelFile *)file;
+    const MeshAnimFrame *fr;
+    const PointList *list;
+    s32 k;
+
+    if (file == NULL || n < 0 || n >= m->nMeshAnims || f < 0 || f >= file_anims(m)[n].frames) {
+        return 0;
+    }
+    fr = (const MeshAnimFrame *)(file + file_anims(m)[n].start + 4) + f;
+    if (fr->points == 0) {
+        return 0;
+    }
+    list = (const PointList *)((const u8 *)&fr->points + fr->points);
+    for (k = 0; k < list->count && k < max; k++) {
+        out[k] = list->pts[k];
+    }
+    return k;
 }
 
 static s32 file_anim_named(const u8 *file, const char *name) {
