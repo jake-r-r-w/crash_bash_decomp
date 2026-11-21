@@ -456,3 +456,100 @@ int kit_map_rig(KitModel *m, char *why, size_t why_size) {
     printf("herotool: its own rig, %d bones, mapped onto %d of the standard skeleton's, its weights kept\n", m->nsrc, k);
     return 1;
 }
+
+/* --- markers: saved, and a first guess --- */
+
+int kit_save_markers(const KitModel *m, const char *path) {
+    SDL_IOStream *io = SDL_IOFromFile(path, "w");
+    int b, first = 1;
+
+    if (io == NULL) {
+        return 0;
+    }
+    SDL_IOprintf(io, "{\n");
+    for (b = 0; b < KB_COUNT; b++) {
+        const KitBone *k = &m->bones[b];
+
+        if (!k->have) {
+            continue;
+        }
+        SDL_IOprintf(io, "%s  \"%s\": [%.4f, %.4f, %.4f], \"%s_tip\": [%.4f, %.4f, %.4f]", first ? "" : ",\n", KitBoneNames[b], k->at[0],
+                     k->at[1], k->at[2], KitBoneNames[b], k->end[0], k->end[1], k->end[2]);
+        first = 0;
+    }
+    SDL_IOprintf(io, ",\n  \"arm_raise\": %.0f\n}\n", m->arm_raise);
+    SDL_CloseIO(io);
+    return 1;
+}
+
+/* the middle of the model across and through at a height (its corners within a slab there), for a joint down its middle */
+static void middle_at(const KitModel *m, float y, float slab, float *x, float *z) {
+    float sx = 0, sz = 0;
+    int n = 0, v;
+
+    for (v = 0; v < m->nvert; v++) {
+        if (fabsf(m->pos[v][1] - y) < slab) {
+            sx += m->pos[v][0];
+            sz += m->pos[v][2];
+            n++;
+        }
+    }
+    *x = n > 0 ? sx / n : (m->lo[0] + m->hi[0]) / 2;
+    *z = n > 0 ? sz / n : (m->lo[2] + m->hi[2]) / 2;
+}
+
+void kit_guess_markers(KitModel *m) {
+    float h = m->hi[1] - m->lo[1], y0 = m->lo[1], w = m->hi[0] - m->lo[0], cx, cz, x, z;
+    int tpose = w > 0.75f * h, b, s;
+    /* a standing humanoid's joints, as shares of its height up from its feet, and out from its middle */
+    static const struct {
+        int bone;
+        float y, x, end_y, end_x, end_z;
+    } Body[] = {
+        { KB_HIPS, 0.50f, 0, 0.60f, 0, 0 }, { KB_SPINE, 0.60f, 0, 0.70f, 0, 0 }, { KB_CHEST, 0.70f, 0, 0.82f, 0, 0 },
+        { KB_NECK, 0.82f, 0, 0.87f, 0, 0 }, { KB_HEAD, 0.87f, 0, 1.0f, 0, 0 },
+    };
+
+    memset(m->bones, 0, sizeof(m->bones));
+    m->arm_raise = 160;
+    for (b = 0; b < (int)(sizeof(Body) / sizeof(Body[0])); b++) {
+        KitBone *k = &m->bones[Body[b].bone];
+
+        middle_at(m, y0 + Body[b].y * h, h * 0.04f, &x, &z);
+        k->at[0] = x, k->at[1] = y0 + Body[b].y * h, k->at[2] = z;
+        middle_at(m, y0 + Body[b].end_y * h, h * 0.04f, &x, &z);
+        k->end[0] = x, k->end[1] = y0 + Body[b].end_y * h, k->end[2] = z;
+        k->have = 1;
+    }
+    middle_at(m, y0 + 0.8f * h, h * 0.04f, &cx, &cz);
+    for (s = 0; s < 2; s++) {
+        float side = s == 0 ? 1.0f : -1.0f;
+        int up = s ? KB_UPPERARM_R : KB_UPPERARM_L, fo = s ? KB_FOREARM_R : KB_FOREARM_L, ha = s ? KB_HAND_R : KB_HAND_L;
+        int th = s ? KB_THIGH_R : KB_THIGH_L, sh = s ? KB_SHIN_R : KB_SHIN_L, ft = s ? KB_FOOT_R : KB_FOOT_L;
+        float sy = y0 + 0.80f * h, ax = 0.11f * h;
+        /* the arms out in a T, or hanging */
+        float elbow[3] = { cx + side * (tpose ? 0.28f : 0.15f) * h, tpose ? sy : y0 + 0.64f * h, cz };
+        float hand[3] = { cx + side * (tpose ? 0.42f : 0.16f) * h, tpose ? sy : y0 + 0.50f * h, cz };
+        float tip[3] = { cx + side * (tpose ? 0.50f : 0.16f) * h, tpose ? sy : y0 + 0.42f * h, cz };
+        float hip[3], knee[3], ankle[3];
+
+        m->bones[up].at[0] = cx + side * ax, m->bones[up].at[1] = sy, m->bones[up].at[2] = cz;
+        memcpy(m->bones[up].end, elbow, sizeof(elbow));
+        memcpy(m->bones[fo].at, elbow, sizeof(elbow));
+        memcpy(m->bones[fo].end, hand, sizeof(hand));
+        memcpy(m->bones[ha].at, hand, sizeof(hand));
+        memcpy(m->bones[ha].end, tip, sizeof(tip));
+        middle_at(m, y0 + 0.48f * h, h * 0.03f, &x, &z);
+        hip[0] = x + side * 0.06f * h, hip[1] = y0 + 0.48f * h, hip[2] = z;
+        knee[0] = x + side * 0.065f * h, knee[1] = y0 + 0.27f * h, knee[2] = z;
+        ankle[0] = x + side * 0.065f * h, ankle[1] = y0 + 0.05f * h, ankle[2] = z;
+        memcpy(m->bones[th].at, hip, sizeof(hip));
+        memcpy(m->bones[th].end, knee, sizeof(knee));
+        memcpy(m->bones[sh].at, knee, sizeof(knee));
+        memcpy(m->bones[sh].end, ankle, sizeof(ankle));
+        memcpy(m->bones[ft].at, ankle, sizeof(ankle));
+        m->bones[ft].end[0] = ankle[0], m->bones[ft].end[1] = y0, m->bones[ft].end[2] = ankle[2] + 0.08f * h;
+        m->bones[up].have = m->bones[fo].have = m->bones[ha].have = 1;
+        m->bones[th].have = m->bones[sh].have = m->bones[ft].have = 1;
+    }
+}

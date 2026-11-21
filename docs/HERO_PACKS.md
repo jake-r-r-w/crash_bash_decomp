@@ -85,13 +85,13 @@ build/port/windows-clang/crashbash.exe --mode 0 --skip-intro --skip-loading --wi
 `port/mods/bobby/` is made by the hero tool, as anyone's hero is:
 
 ```bash
-build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobby --name BOBBY --mod-name Bobby     --author "Crash Bash PC" --markers port/mods/bobby-markers.json --out port/mods/bobby --height 540 --face-head 0.26 --prefer crash
+build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobby --name BOBBY --mod-name Bobby     --author "Crash Bash PC" --markers port/mods/bobby-model.glb.markers.json --out port/mods/bobby --height 540 --face-head 0.26 --prefer crash
 ```
 
 He's the user's dog, a long-haired black-and-tan miniature dachshund, stood up as a cartoon hero. His model is the user's own, made
 from photos of him (`port/mods/bobby-model.glb`, beside the markers, as a folder there would be a mod of its own): 1365 triangles,
 the two smallest of its first export's 1367 taken out at the user's word, one texture, no rig, so the markers
-(`bobby-markers.json`) place his skeleton, ears, jaw and tail too, and `arm_raise` keeps his short arms from going into his big
+(`bobby-model.glb.markers.json`) place his skeleton, ears, jaw and tail too, and `arm_raise` keeps his short arms from going into his big
 head. The photos aren't in the repo.
 
 ## The hero tool
@@ -105,7 +105,18 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
                                        [--height N] [--face-head SHARE] [--author NAME]
 ```
 
-`FOLDER` is a mod: put it in the game's mods folder. What it does, each step for any model (`src/`):
+**The window**: `herotool` with no arguments, or a model alone (`herotool MODEL.glb`), opens it (`src/gui.cpp`, Dear ImGui on
+SDL3's renderer, the model drawn by a little software renderer of its own). Drop a `.glb` on it (or a `.png` for its card, a `.wav`
+for the sound job picked, a markers `.json`). Its front and side views show the model at rest with its markers, to drag onto its
+joints (its left's mirror its right's, a bone's end is the next one's start, and its weights are worked out again on letting go);
+the third plays the move picked, turning. A model with no markers beside it (`MODEL.glb.markers.json`, saved there on each
+export) starts from a guess (`kit_guess_markers`: a standing humanoid's proportions in its box, arms out if it's as wide as a
+T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, no markers. Then its name, height, whose place, card,
+sounds and the mod's name, and **Export** writes the mod to the mods folder (beside the tool by default, the game's if it's
+there), or **Export and test in game** starts the game too, with it as player 1 in the game picked. `HEROTOOL_SHOT=FILE.png`
+saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it opens, for tests.
+
+**The command line**: `FOLDER` is a mod: put it in the game's mods folder. What it does, each step for any model (`src/`):
 
 1. **Reads it** (`model.c`), and **refuses** one over the game's limits, 1365 triangles and 4096 vertices, saying how many it has:
    the tool never changes anyone's model (the user's rule, 2026-11-21), so its maker takes out what they choose.
@@ -119,7 +130,7 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
    else **from markers** (`rig.c`, `--markers`): a JSON file of where each bone starts, by name (hips, spine, chest, neck,
    head, both arms' upperarm, forearm and hand, both legs' thigh, shin and foot; a jaw, ears and a tail if it has them), with
    `NAME_tip` for a chain's end and `arm_raise`, how many degrees its arms can lift before its paws are in its head. Bobby's is
-   `port/mods/bobby-markers.json`. The tool's window will let them be dragged onto the model.
+   `port/mods/bobby-model.glb.markers.json`. The tool's window will let them be dragged onto the model.
 4. **Weighs each corner** (`rig.c`): each place on its surface starts with the bone it's nearest (a trunk bone's distance counted
    for less, as a trunk is wide round its bones), and every place goes with the two it's nearest over the surface from those, so an
    ear goes with the ear even hanging beside a chest; smoothed a little, and every copy of a corner at one place (the texture's
@@ -134,5 +145,4 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
 Checked: Bobby's model with its markers, and his first, shapes-built model with its bones renamed as Mixamo names them and no
 markers, each four of him in Crate Crush.
 
-Still to come: the window (an ImGui front end on the same steps: the model turning, markers dragged, the moves played, the
-pack tried in the game), its own clips for moves by name, and guessing the markers for a model that has none.
+Still to come: its own clips for moves by name, and guessing the markers for a model that has none.

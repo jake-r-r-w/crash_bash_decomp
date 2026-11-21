@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "heropack.h"
 
 /* The game's own limits on a hero (port/game/include/bash/heromake.h, MADE_MAX_FACES; extraheroes.c's MORPH_VERTS) */
@@ -92,5 +95,15 @@ typedef struct {
     const char *card;                   /* its card in the character select, a PNG, or NULL for its face drawn from it */
 } KitPack;
 int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, size_t why_size);
+/* rig.c: the markers as a JSON file kit_markers reads, and a first guess at them from the model's shape (a standing humanoid's
+ * proportions, in its box), for the window to start from */
+int kit_save_markers(const KitModel *m, const char *path);
+void kit_guess_markers(KitModel *m);
+/* gui.cpp: the window, its argument a model to open (or NULL) */
+int kit_gui(const char *model);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

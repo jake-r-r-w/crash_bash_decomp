@@ -3,6 +3,8 @@
  *   herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--height N]
  *                                                               [--face-head SHARE] [--author NAME]
  *
+ * With no arguments, or a model alone, it opens its window (gui.cpp) instead.
+ *
  * FOLDER becomes a mod (mod.json, heroes/ID/): put it in the game's mods folder. The model is never changed: one the game can't draw
  * (over its triangles or vertices) is refused, saying why. */
 #include <stdio.h>
@@ -44,6 +46,10 @@ int main(int argc, char **argv) {
     p.prefer = "crash";
     p.height = 560;
     p.author = "";
+    /* no arguments, or a model alone: the window */
+    if (argc < 2 || (argc == 2 && strlen(argv[1]) > 4 && SDL_strcasecmp(argv[1] + strlen(argv[1]) - 4, ".glb") == 0)) {
+        return kit_gui(argc == 2 ? argv[1] : NULL);
+    }
     if (argc < 3 || strcmp(argv[1], "import") != 0) {
         usage();
         return 2;
