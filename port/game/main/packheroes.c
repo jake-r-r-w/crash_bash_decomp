@@ -38,9 +38,22 @@ typedef struct {
     s32 index;     /* its place among the mods' heroes (mods_hero_file) */
     u32 *card;
     s32 card_w, card_h;
+    s32 has_job[PACK_VOICE_JOBS]; /* which of its sounds' files it has */
+    u8 *sound[PACK_VOICE_JOBS];   /* and each made the game's (ADPCM) */
 } PackSlot;
 
 static PackSlot Slots[EXTRA_PACKS];
+
+/* Each job of a pack's sounds as the game's voices (herodef.h's VOICE_), and the job each of a base's sound offsets does for the game's
+ * own heroes (EXTRA_HEROES.md, His sounds): an offset a pack doesn't name plays it, if the pack has that job's file */
+static const s32 JobVoice[PACK_VOICE_JOBS] = { VOICE_NAME, VOICE_LAUGH, VOICE_YELP, VOICE_JUMP, VOICE_LAND, VOICE_THUD, VOICE_THROW, VOICE_FIRE };
+enum { JOB_NAME, JOB_LAUGH, JOB_YELP, JOB_JUMP, JOB_LAND, JOB_THUD, JOB_THROW, JOB_FIRE, JOB_NONE = -1 };
+static const s8 OffsetJob[HERO_SOUNDS] = {
+    JOB_NAME, JOB_LAUGH, JOB_YELP, JOB_YELP, JOB_YELP, JOB_YELP, JOB_LAUGH, JOB_NONE, JOB_NONE, JOB_NONE, JOB_NONE, JOB_JUMP,
+    JOB_THUD, JOB_JUMP, JOB_NONE, JOB_THROW, JOB_NONE, JOB_NONE, JOB_NONE, JOB_NONE, JOB_NONE, JOB_JUMP, JOB_NONE, JOB_NONE,
+    JOB_LAUGH, JOB_NONE,
+};
+#define PACK_WAV_BYTES (8 * 1024 * 1024)
 
 static s32 make_pack(s32 slot, HeroMade *out);
 static s32 make_pack1(HeroMade *out) { return make_pack(0, out); }
@@ -108,12 +121,15 @@ static void slot_def(PackSlot *s, s32 slot) {
         d->kinds[k].like = pk->like;
         d->kinds[k].subframes = pk->subframes;
     }
-    /* its base's sounds where it says so, none where it says none; its own (voice_NN.wav) are its base's until they're read */
+    /* each of its base's sound offsets: its own sound for a job it has the file of, its base's, or none */
     for (k = 0, n = 0; k < HERO_SOUNDS; k++) {
-        if (s->info.voices[k] != 0) {
-            s->voices[n].offset = k;
-            s->voices[n++].voice = VOICE_BASE;
+        s32 said = s->info.voices[k], job = said >= PACK_VOICE_JOB ? said - PACK_VOICE_JOB : said == PACK_VOICE_UNSAID ? OffsetJob[k] : JOB_NONE;
+
+        if (said == PACK_VOICE_NONE) {
+            continue;
         }
+        s->voices[n].offset = k;
+        s->voices[n++].voice = job >= 0 && s->has_job[job] ? JobVoice[job] : VOICE_BASE;
     }
     s->voices[n].offset = -1;
     s->voices[n].voice = VOICE_NONE;
@@ -125,7 +141,7 @@ static void slot_def(PackSlot *s, s32 slot) {
 }
 
 void pack_heroes_scan(void) {
-    s32 n = mods_heroes_count(), slot;
+    s32 n = mods_heroes_count(), slot, k;
 
     for (slot = 0; slot < EXTRA_PACKS; slot++) {
         PackSlot *s = &Slots[slot];
@@ -153,6 +169,9 @@ void pack_heroes_scan(void) {
         bonus_heroes_forget(x);
         HeroDefs[x] = NULL;
         free(s->card);
+        for (k = 0; k < PACK_VOICE_JOBS; k++) {
+            free(s->sound[k]);
+        }
         memset(s, 0, sizeof(*s));
         s->sig = sig;
         if (slot >= n) {
@@ -168,6 +187,17 @@ void pack_heroes_scan(void) {
         /* its folder's name is its id, whatever hero.json says */
         snprintf(s->info.id, sizeof(s->info.id), "%s", mods_hero_id(slot));
         s->index = slot;
+        for (k = 0; k < PACK_VOICE_JOBS; k++) {
+            char file[32];
+            size_t bytes;
+            u8 *wav;
+
+            snprintf(file, sizeof(file), "voice_%s.wav", PackVoiceJobs[k]);
+            if ((wav = mods_hero_file(slot, file, PACK_WAV_BYTES, &bytes)) != NULL) {
+                s->has_job[k] = 1;
+                free(wav);
+            }
+        }
         slot_def(s, slot);
         HeroDefs[x] = &s->def;
         printf("hero packs: %s (%s), in %s, in slot %d\n", s->info.id, s->info.name, mods_hero_mod(slot), slot + 1);
@@ -608,6 +638,36 @@ static s32 make_pack(s32 slot, HeroMade *out) {
             out->card_head = h;
         }
         free(png);
+    }
+    /* its sounds, made the game's */
+    for (i = 0; i < PACK_VOICE_JOBS; i++) {
+        char file[32];
+        u8 *wav;
+        s16 *pcm;
+        int frames = 0, bytes = 0;
+
+        snprintf(file, sizeof(file), "voice_%s.wav", PackVoiceJobs[i]);
+        if (!s->has_job[i] || (wav = mods_hero_file(s->index, file, PACK_WAV_BYTES, &size)) == NULL) {
+            continue;
+        }
+        pcm = pack_wav_read(wav, size, &frames);
+        free(wav);
+        if (pcm == NULL) {
+            printf("hero packs: %s's %s isn't a WAV the game reads\n", s->info.id, file);
+            continue;
+        }
+        free(s->sound[i]);
+        s->sound[i] = pack_adpcm_encode(pcm, frames, &bytes);
+        pack_samples_free(pcm);
+        if (s->sound[i] != NULL) {
+            out->sound[JobVoice[i]].adpcm = s->sound[i];
+            out->sound[JobVoice[i]].bytes = bytes;
+            out->sound[JobVoice[i]].pitch = PACK_SOUND_RATE * 0x1000 / 44100;
+            if (i == JOB_NAME && frames > PACK_SOUND_RATE * 7 / 10) {
+                printf("hero packs: %s's name is %.2f s, and the announcer's \"wins!\" comes 0.77 s after it starts\n", s->info.id,
+                       (double)frames / PACK_SOUND_RATE);
+            }
+        }
     }
     printf("hero packs: %s made, %d triangles, %d vertices, %d bones, %d clips, %d textures, %d bytes on foot%s\n", s->info.id, pm.ntri,
            pm.nvert, pm.nbones, nanims, nimages, out->mdl_size[KIND_FOOT], out->card != NULL ? ", its card" : "");

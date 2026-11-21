@@ -272,6 +272,43 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
         write_file(path, hero.s, hero.n);
         free(hero.s);
     }
+    /* its card and sounds, each checked the game can read it */
+    if (p->card != NULL) {
+        size_t n;
+        void *png = SDL_LoadFile(p->card, &n);
+        SDL_Surface *s = png != NULL ? SDL_LoadPNG_IO(SDL_IOFromConstMem(png, n), true) : NULL;
+
+        snprintf(path, sizeof(path), "%s/heroes/%s/card.png", out, p->id);
+        if (s == NULL || !write_file(path, png, n)) {
+            snprintf(why, why_size, "its card %s isn't a PNG", p->card);
+            SDL_free(png);
+            return 0;
+        }
+        SDL_DestroySurface(s);
+        SDL_free(png);
+    }
+    for (i = 0; i < PACK_VOICE_JOBS; i++) {
+        size_t n;
+        void *wav;
+        SDL_AudioSpec spec;
+        Uint8 *buf;
+        Uint32 len;
+
+        if (p->voice[i] == NULL) {
+            continue;
+        }
+        wav = SDL_LoadFile(p->voice[i], &n);
+        if (wav == NULL || !SDL_LoadWAV_IO(SDL_IOFromConstMem(wav, n), true, &spec, &buf, &len)) {
+            snprintf(why, why_size, "its %s sound %s isn't a WAV", PackVoiceJobs[i], p->voice[i]);
+            SDL_free(wav);
+            return 0;
+        }
+        SDL_free(buf);
+        snprintf(path, sizeof(path), "%s/heroes/%s/voice_%s.wav", out, p->id, PackVoiceJobs[i]);
+        write_file(path, wav, n);
+        SDL_free(wav);
+        printf("herotool: its %s sound, %.2f s\n", PackVoiceJobs[i], (double)len / (SDL_AUDIO_FRAMESIZE(spec) * spec.freq));
+    }
     printf("herotool: wrote %s/heroes/%s: %d bones, %d moves, %zu bytes\n", out, p->id, nb, KitMoveCount, 12 + 8 + json.n + 8 + bin.n);
     free(json.s);
     free(anims.s);

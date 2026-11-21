@@ -224,6 +224,7 @@ static const JVal *jat(const JVal *array, int i) {
 
 /* --- hero.json --- */
 
+const char *const PackVoiceJobs[PACK_VOICE_JOBS] = { "name", "laugh", "yelp", "jump", "land", "thud", "throw", "fire" };
 static const char *const KindNames[PACK_KINDS] = { "foot", "polar", "pogo", "ball", "tank", "race", "splash", "mallet", "dino", "kegs", "warp" };
 static const char *const HeroNames[] = { "", "crash", "coco", "cortex", "brio", "tiny", "kong", "dingodile", "rilla" };
 
@@ -344,9 +345,9 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             pk->nstands++;
         }
     }
-    /* every offset its base's, but those it says */
+    /* every offset not said, but those it says */
     for (k = 0; k < PACK_SOUNDS; k++) {
-        out->voices[k] = 1;
+        out->voices[k] = PACK_VOICE_UNSAID;
     }
     voices = jget(root, "voices");
     for (v = voices != NULL && voices->type == J_OBJECT ? voices->first : NULL; v != NULL; v = v->next) {
@@ -356,7 +357,12 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
         if (offset < 0 || offset >= PACK_SOUNDS || what == NULL) {
             continue;
         }
-        out->voices[offset] = SDL_strcasecmp(what, "own") == 0 ? 2 : SDL_strcasecmp(what, "none") == 0 ? 0 : 1;
+        out->voices[offset] = SDL_strcasecmp(what, "none") == 0 ? PACK_VOICE_NONE : PACK_VOICE_BASE;
+        for (int j = 0; j < PACK_VOICE_JOBS; j++) {
+            if (SDL_strcasecmp(what, PackVoiceJobs[j]) == 0) {
+                out->voices[offset] = PACK_VOICE_JOB + j;
+            }
+        }
     }
     jfree(root);
     if (out->id[0] == 0) {
@@ -977,4 +983,92 @@ uint32_t *pack_png_read(const uint8_t *png, size_t size, int *w, int *h) {
     *h = im.h;
     /* RGBA bytes are red | green << 8 | blue << 16 | alpha << 24 as a little-endian word */
     return (uint32_t *)im.rgba;
+}
+
+/* --- its sounds --- */
+
+int16_t *pack_wav_read(const uint8_t *wav, size_t size, int *frames) {
+    SDL_AudioSpec spec, want = { SDL_AUDIO_S16LE, 1, PACK_SOUND_RATE };
+    Uint8 *buf = NULL, *out = NULL;
+    Uint32 len = 0;
+    int out_len = 0;
+
+    if (!SDL_LoadWAV_IO(SDL_IOFromConstMem(wav, size), true, &spec, &buf, &len)) {
+        return NULL;
+    }
+    if (!SDL_ConvertAudioSamples(&spec, buf, (int)len, &want, &out, &out_len)) {
+        SDL_free(buf);
+        return NULL;
+    }
+    SDL_free(buf);
+    *frames = out_len / 2;
+    return (int16_t *)out;
+}
+
+void pack_samples_free(int16_t *pcm) {
+    SDL_free(pcm);
+}
+
+/* PS1 ADPCM, as the game's player decodes it (platform/audio.c): 16-byte blocks of 28 samples, each block's filter and shift the
+ * ones that come nearest */
+static const int Filter0[5] = { 0, 60, 115, 98, 122 }, Filter1[5] = { 0, 0, -52, -55, -60 };
+
+static int encode_block(const int16_t *x, int filter, int shift, int *s1, int *s2, uint8_t *out, long long *err) {
+    int i, p1 = *s1, p2 = *s2;
+    long long e = 0;
+
+    for (i = 0; i < 28; i++) {
+        int pred = (p1 * Filter0[filter] + p2 * Filter1[filter] + 32) >> 6, step = 1 << (12 - shift), d = x[i] - pred, q, dec;
+
+        q = d >= 0 ? (d + step / 2) / step : -((-d + step / 2) / step);
+        q = q < -8 ? -8 : q > 7 ? 7 : q;
+        dec = (int)((uint32_t)(q & 15) << 28) >> (16 + shift);
+        dec += pred;
+        dec = dec < -32768 ? -32768 : dec > 32767 ? 32767 : dec;
+        e += (long long)(x[i] - dec) * (x[i] - dec);
+        p2 = p1;
+        p1 = dec;
+        if (out != NULL) {
+            out[2 + i / 2] |= (uint8_t)((q & 15) << ((i & 1) * 4));
+        }
+    }
+    if (out != NULL) {
+        *s1 = p1;
+        *s2 = p2;
+    }
+    *err = e;
+    return 1;
+}
+
+uint8_t *pack_adpcm_encode(const int16_t *pcm, int frames, int *bytes) {
+    int blocks = (frames + 27) / 28, b, s1 = 0, s2 = 0;
+    uint8_t *out = calloc((size_t)(blocks > 0 ? blocks : 1), 16);
+
+    if (out == NULL) {
+        return NULL;
+    }
+    for (b = 0; b < blocks; b++) {
+        int16_t x[28];
+        int i, f, s, best_f = 0, best_s = 12;
+        long long best = -1, e;
+
+        for (i = 0; i < 28; i++) {
+            x[i] = b * 28 + i < frames ? pcm[b * 28 + i] : 0;
+        }
+        for (f = 0; f < 5; f++) {
+            for (s = 0; s <= 12; s++) {
+                encode_block(x, f, s, &s1, &s2, NULL, &e);
+                if (best < 0 || e < best) {
+                    best = e;
+                    best_f = f;
+                    best_s = s;
+                }
+            }
+        }
+        out[b * 16] = (uint8_t)(best_s | best_f << 4);
+        out[b * 16 + 1] = (uint8_t)(b == blocks - 1 ? 1 : 0); /* the last: stop after it */
+        encode_block(x, best_f, best_s, &s1, &s2, &out[b * 16], &e);
+    }
+    *bytes = blocks * 16;
+    return out;
 }

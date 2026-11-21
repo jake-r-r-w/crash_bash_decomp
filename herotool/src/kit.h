@@ -88,6 +88,8 @@ typedef struct {
     const char *id, *name, *prefer, *mod_name, *author;
     int height;
     float face_head;
+    const char *voice[PACK_VOICE_JOBS]; /* each job's sound (PackVoiceJobs: name, laugh, yelp, ...), a WAV, or NULL for its base's */
+    const char *card;                   /* its card in the character select, a PNG, or NULL for its face drawn from it */
 } KitPack;
 int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, size_t why_size);
 

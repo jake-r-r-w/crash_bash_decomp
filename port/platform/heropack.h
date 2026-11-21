@@ -41,11 +41,24 @@ typedef struct {
     int prefer;                /* the original hero it borrows if nobody's playing that one, 1 Crash to 8 Rilla Roo */
     int height;                /* standing, in the game's units (Crash 452, most about 650) */
     PackKind kinds[PACK_KINDS];
-    int voices[PACK_SOUNDS];   /* each of its base's sound offsets: its own (voice_NN.wav, NN this offset), 1 its base's, 0 none */
+    int voices[PACK_SOUNDS];   /* each of its base's sound offsets: PACK_VOICE_ (its own sound for a job, its base's, none, or not said) */
     char face[PACK_ANIM_NAME]; /* the clip its face is drawn from if it has no card */
     float face_turn;
     float face_head;           /* the share of its model, from the top, that's its head, for that face (0: the game's own share) */
 } PackInfo;
+
+/* Its sounds: a file for each job the game has a hero's sound do (voice_<job>.wav, PackVoiceJobs), and for each of its base's 26
+ * sound offsets which plays: hero.json's "voices", {"offset": "job", "base" or "none"}; an offset it doesn't name plays the job
+ * it does for the game's own heroes, if the pack has that file, else its base's */
+enum { PACK_VOICE_UNSAID = -1, PACK_VOICE_NONE, PACK_VOICE_BASE, PACK_VOICE_JOB };
+#define PACK_VOICE_JOBS 8
+extern const char *const PackVoiceJobs[PACK_VOICE_JOBS]; /* name, laugh, yelp, jump, land, thud, throw, fire */
+#define PACK_SOUND_RATE 22050
+/* A WAV as mono 16-bit samples at PACK_SOUND_RATE (pack_samples_free them), and how many; NULL if it isn't one */
+int16_t *pack_wav_read(const uint8_t *wav, size_t size, int *frames);
+/* Samples as PS1 ADPCM, as the game plays its own (to free), and its bytes */
+uint8_t *pack_adpcm_encode(const int16_t *pcm, int frames, int *bytes);
+void pack_samples_free(int16_t *pcm);
 
 /* hero.json's text into out; 0 and why (in capitals) if it isn't one. */
 int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, size_t problem_size);

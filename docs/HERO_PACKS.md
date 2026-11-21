@@ -24,6 +24,7 @@ one's.
 | `hero.json` | How it plays (below) |
 | `hero.glb` | Its mesh, skeleton, clips and textures |
 | `card.png` | Its card in the character select, any size; without one, a face drawn from its model (`face`) |
+| `voice_JOB.wav` | Its sound for a job, any WAV: `name` (the announcer's, short enough for "wins!" 0.77 s after), `laugh` (taunting, winning), `yelp` (hurt), `jump`, `land`, `thud` (a fall), `throw` and `fire` (an attack's own sound). The game makes each PS1 ADPCM at 22050 Hz as it loads the pack (`pack_adpcm_encode`). |
 
 ### hero.json
 
@@ -47,8 +48,9 @@ one's.
 - `face_head`: the share of its model, from the top, that's its head, for a face drawn from it on the panel and in the select
   (0.36 if it's left out); Bobby's is 0.26, as his long ears hang past his chin. A face drawn so stops where the panel's health bar
   starts.
-- `voices`: each of its base's 26 sound offsets (EXTRA_HEROES.md, His sounds) `base` (the default) or `none`. `own` is for its own
-  `voice_NN.wav`, still to come.
+- `voices`: each of its base's 26 sound offsets (EXTRA_HEROES.md, His sounds): a job (`"1": "laugh"`), `base` or `none`. An offset
+  it doesn't name plays the job it does for the game's own heroes if the pack has that job's sound (0 name, 1 and 6 and 24 laugh, 2 to
+  5 yelp, 11, 13 and 21 jump, 12 thud, 15 throw), else its base's.
 
 ### hero.glb
 
@@ -132,7 +134,8 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
 5. **Makes the standard moves** (`moves.c`): BREATHE, RUN, JUMP, ATTACK, WIN, HIT, TAUNT, PICKUP, HOLD_SLOW and HOLD_THROW, a pose
    each 30th of a second. The trunk's bones turn from rest; the limbs are aimed (where each points, from hanging), so a model made
    in a T-pose, hanging or begging moves the same.
-6. **Writes the pack** (`write.c`): `heroes/ID/hero.glb` and `hero.json`, and `mod.json`.
+6. **Writes the pack** (`write.c`): `heroes/ID/hero.glb` and `hero.json`, and `mod.json`; with `--card CARD.png` its card and
+   `--voice JOB=FILE.wav` (as many as it has) its sounds, each checked to be a PNG or WAV the game reads.
 
 Bobby's model has 1367 triangles, 2 over: the tool refuses it, and his pack is still made by `port/mods/bobby.mjs` until he's
 exported again with fewer. A copy with two slivers taken out (in `scratch/`, never the repo) checks the tool end to end.
@@ -141,5 +144,4 @@ Checked: Bobby's model with its markers, and his first, shapes-built model with 
 markers, each four of him in Crate Crush.
 
 Still to come: the window (an ImGui front end on the same steps: the model turning, markers dragged, the moves played, the
-pack tried in the game), its own clips for moves by name, sounds,
-a card, and guessing the markers for a model that has none.
+pack tried in the game), its own clips for moves by name, and guessing the markers for a model that has none.
