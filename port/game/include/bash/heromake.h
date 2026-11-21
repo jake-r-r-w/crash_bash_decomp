@@ -197,6 +197,7 @@ s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size);
 typedef struct {
     V3 mid, half;
     float legs, light;
+    s32 under; /* kept under the bear's faces too (only dropped where one's inside it): no gap where its own faces end near one */
 } HmFillShape;
 typedef struct {
     s32 nvert, nfaces; /* its corners (after the bear's in a model) as the bear first breathes, and its faces */

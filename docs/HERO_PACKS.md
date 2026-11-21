@@ -156,7 +156,8 @@ What differs between them, all in the maps:
   is warm and greyish: not bluer than its red or green, not greener than its red, its red at most 0.3 over its green, its channels
   close. Black is the bear's (its nose, eyes and soles) only below its back and drawn as they are, untextured or in an image its pale
   fur uses too; a rider's shoes are black as well. Then its holes, where its rider covered it, are filled as Crash's are
-  (`hm_fill_make`, ride_make's fill for his): the same rounded body, fitted to the bear's box as his is to his, and lit as much
+  (`hm_fill_make`, ride_make's fill for his): the same rounded body, kept under the bear's own faces too (`under`: dropped only
+  where one is just inside it, else a slit opens across its back by its rump), fitted to the bear's box as his is to his, and lit as much
   darker as its own colours are (Brio's bear is dark). Seen alone from four sides (`tools/scripts/hpv_bear.py` on a `--dump-hero`
   folder), all seven bears are whole, with none of their riders left on them (2026-11-21).
 

@@ -1087,6 +1087,7 @@ static void bear_cut(Follow *c) {
                  (hi.z - lo.z) / 2 * HmCrashFill.half.z / BearBoxHalf.z);
     sh.legs = sh.mid.y + (HmCrashFill.legs - HmCrashFill.mid.y) * sh.half.y / HmCrashFill.half.y;
     sh.light = light / (3 * n) / BEAR_LIGHT;
+    sh.under = 1;
     hm_fill_make(&BearFill, &sh, c->ref, g->corner_of, g->nvert, g->faces, g->nfaces);
     printf("hero packs: the polar bear %d faces, its box (%.0f %.0f %.0f) to (%.0f %.0f %.0f), lit %.2f, filled with %d\n", n, lo.x,
            lo.y, lo.z, hi.x, hi.y, hi.z, light / (3 * n), BearFill.nfaces);

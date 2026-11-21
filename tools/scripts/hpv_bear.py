@@ -56,6 +56,19 @@ def main():
         i = args.index("--label")
         label = args[i + 1]
         del args[i:i + 2]
+    global CULL
+    CULL = 0
+    if "--cull" in args:
+        i = args.index("--cull")
+        CULL = int(args[i + 1])
+        del args[i:i + 2]
+    global PC, PS
+    pitch = 0.0
+    if "--pitch" in args:
+        i = args.index("--pitch")
+        pitch = float(args[i + 1])
+        del args[i:i + 2]
+    PC, PS = math.cos(math.radians(pitch)), math.sin(math.radians(pitch))
     folder, hid = args
     _, foot, _, _ = read(os.path.join(folder, f"{hid}_foot.hpv"))
     images, faces, nv, anims = read(os.path.join(folder, f"{hid}_polar.hpv"))
@@ -73,9 +86,14 @@ def main():
             def to(i):
                 x = v[i * 3] * c - v[i * 3 + 2] * s
                 z = v[i * 3] * s + v[i * 3 + 2] * c
-                return ox + cell / 2 + x * 0.55, oy + cell - 30 + v[i * 3 + 1] * 0.55, z
+                y = v[i * 3 + 1] * PC - z * PS
+                z = v[i * 3 + 1] * PS + z * PC
+                return ox + cell / 2 + x * 0.55, oy + cell - 60 + y * 0.55, z
             pts = {i: to(i) for i in used}
             for vs, im, uv, rgb in sorted(bear, key=lambda f: -sum(pts[k][2] for k in f[0])):
+                (ax, ay, _), (bx, by, _), (cx, cy, _) = (pts[k] for k in vs)
+                if CULL and ((bx - ax) * (cy - ay) - (by - ay) * (cx - ax)) * CULL < 0:
+                    continue
                 col3 = [sum(rgb[k][j] for k in range(3)) / 3 for j in range(3)]
                 if 0 <= im < len(images):
                     w, h, px = images[im]

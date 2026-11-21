@@ -1092,8 +1092,9 @@ void hm_paint(MadeFace *faces, s32 nfaces, MadeImage *images, s32 nimages, float
  * FillSide across, FillUnder down, and charred FILL_BURN darker, as the bear's charred colours are its own. */
 #define FILL_SQUARE 2.5f
 #define FILL_REACH 45.0f
+#define FILL_UNDER 10.0f /* a template's (HmFillShape.under): dropped only where a face is this far inside it, so no gap opens */
 #define FILL_BURN 100
-const HmFillShape HmCrashFill = { { 0, -112.0f, -30.0f }, { 70.0f, 68.0f, 130.0f }, -60.0f, 1.0f };
+const HmFillShape HmCrashFill = { { 0, -112.0f, -30.0f }, { 70.0f, 68.0f, 130.0f }, -60.0f, 1.0f, 0 };
 static const u8 FillTop[3] = { 255, 250, 222 }, FillSide[3] = { 195, 182, 158 }, FillUnder[3] = { 115, 90, 74 };
 /* Crash himself as he first breathes, for a rider that follows his body (ride_crash_body): each arm's shoulder, elbow and hand (his
  * left's first, x below 0; his hands rest on his hips, not quite each other's mirror), each the middle of his corners within
@@ -1170,8 +1171,9 @@ static V3 fill_point(const HmFillShape *sh, V3 d, V3 *out) {
     return v3(q[0] + sh->mid.x, q[1] + sh->mid.y, q[2] + sh->mid.z);
 }
 
-/* Whether one of the bear's faces crosses the line through p along n within FILL_REACH either way */
-static s32 fill_covered(const V3 *ref, const s16 *corner_of, const MadeFace *faces, s32 nfaces, V3 p, V3 n) {
+/* Whether one of the bear's faces crosses the line through p along n within FILL_REACH either way (inside it only, under) */
+static s32 fill_covered(const V3 *ref, const s16 *corner_of, const MadeFace *faces, s32 nfaces, V3 p, V3 n,
+                        s32 under) {
     s32 i;
 
     for (i = 0; i < nfaces; i++) {
@@ -1195,7 +1197,7 @@ static s32 fill_covered(const V3 *ref, const s16 *corner_of, const MadeFace *fac
             continue;
         }
         t = (e2.x * q.x + e2.y * q.y + e2.z * q.z) / det;
-        if (fabsf(t) <= FILL_REACH) {
+        if (under ? t <= 0 && t >= -FILL_UNDER : fabsf(t) <= FILL_REACH) {
             return 1;
         }
     }
@@ -1256,9 +1258,9 @@ void hm_fill_make(HmFill *fl, const HmFillShape *sh, const V3 *ref, const s16 *c
                e2 = v3(at[v[2]].x - at[v[0]].x, at[v[2]].y - at[v[0]].y, at[v[2]].z - at[v[0]].z);
             MadeFace *f;
 
-            open = !fill_covered(ref, corner_of, faces, nfaces, mid, out);
+            open = !fill_covered(ref, corner_of, faces, nfaces, mid, out, sh->under);
             for (j = 0; j < 3 && !open; j++) {
-                open = !fill_covered(ref, corner_of, faces, nfaces, at[v[j]], facing[v[j]]);
+                open = !fill_covered(ref, corner_of, faces, nfaces, at[v[j]], facing[v[j]], sh->under);
             }
             if (!open || fl->nfaces == HM_FILL_FACES) {
                 continue;
