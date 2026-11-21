@@ -676,6 +676,7 @@ Newest first, a few lines each. Details are in the commits.
   with that base; now only for their look (`extra_hero_looks`, HeroKind.template_hero), on any base: a template's model carries its
   frames' points (`MadeModel.points`, written as the game's own frames have them), and `extra_hero_points` adds the extra hero's own
   for a flag its base's frame lacks (0x200, where the jets go). Their pogo maps keep the jetpack the jets come from (FBOX).
+  Open (the user, for later): on those pogos the pack's arms look a little stiff.
 - 2026-11-21 (night): template polar bears cleaned and filled, at the user's word. The bear is the same in every polar2 model, so
   it's taken face by face by its fur's colour (`bear_cut`, packfollow.c; map_rider is gone), black only where drawn as its nose,
   eyes and soles; the boxes are ±90. ride_make's fill became `hm_fill_make`/`hm_fill_at` (heromake.h), fitted to each bear's box;
