@@ -874,6 +874,18 @@ s32 extra_hero_like(s32 player, s32 name) {
     return like > 0 ? like : name;
 }
 
+s32 extra_hero_looks(s32 player, s32 name) {
+    s32 kind, t;
+
+    if (player < 0 || player >= 4 || PlayerExtra[player] == EXTRA_NONE || ModelsFrom == NULL || (u32)(PlayerBase[player] - 1) >= 8
+        || name != PlayerBase[player]) {
+        return name;
+    }
+    kind = kind_of(FlagFrom != NULL ? FlagFrom[PlayerBase[player]] : ModelsFrom[PlayerBase[player]]);
+    t = HeroDefs[PlayerExtra[player]]->kinds[kind].template_hero;
+    return t > 0 ? t : 1;
+}
+
 s32 extra_hero_bank(s32 player, s32 bank) {
     s32 base;
 

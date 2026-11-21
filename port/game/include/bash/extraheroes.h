@@ -55,6 +55,9 @@ const obj_dbase *extra_hero_dbase(const subengine *sub, const obj_dbase *db);
 /* The hero whose weight and speeds a player's hero `name` has in this game: an extra hero's kind can be another's (Roo's on his bear,
  * Crash's), and anyone else is themselves. */
 s32 extra_hero_like(s32 player, s32 name);
+/* The hero whose look a player's hero `name` has in this game, for what the game draws by hero beside its model (Cortex's and Brio's
+ * hover pogos' jets): an extra hero's kind follows its template (Crash's tables, 1, if it has none); anyone else is themselves. */
+s32 extra_hero_looks(s32 player, s32 name);
 /* Any sound (PlaySfx): 1 if it's one of an extra hero's base's own (its block: its moves', hits', taunt's and cheers', and the announcer
  * naming it as it wins) and the extra hero's own has played instead, or none. */
 s32 extra_hero_sound(s32 sfx);

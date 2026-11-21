@@ -47,6 +47,7 @@ typedef struct {
     const char *otherwise; /* its stand-in for any other */
     s32 keep_lift;         /* of a frame's lift off the ground, the share it's drawn with: 0x1000 all */
     s32 like;              /* the original hero whose weight and speeds it has, 0 for its base's */
+    s32 template_hero;     /* the original hero whose model of this kind it follows, its look (a pack's template; 0 Crash's tables) */
     s32 subframes;         /* its model's frames to each of its game's (blended between): its stand-ins at their own speed play this
                             * many a tick, and a stand-in's range (NAME:first-last) is in its game's frames */
 } HeroKind;

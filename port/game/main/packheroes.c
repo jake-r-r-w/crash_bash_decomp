@@ -147,6 +147,7 @@ static void slot_def(PackSlot *s, s32 slot) {
         d->kinds[k].otherwise = pk->otherwise[0] != 0 ? pk->otherwise : "BREATHE";
         d->kinds[k].keep_lift = pk->keep_lift;
         d->kinds[k].like = pk->like;
+        d->kinds[k].template_hero = pk->template_hero > 0 ? pk->template_hero : s->info.template_hero;
         d->kinds[k].subframes = pk->subframes;
     }
     /* each of its base's sound offsets: its own sound for a job it has the file of, its base's, or none */

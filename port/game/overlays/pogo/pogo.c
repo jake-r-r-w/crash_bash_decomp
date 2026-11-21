@@ -3,6 +3,7 @@
 #include "bash/main.h"
 #include "bash/pogo_ovl.h"
 #include "bash/pogo.h"
+#include "bash/extraheroes.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
 
@@ -1559,6 +1560,10 @@ void PostMovePOGO(u32 i) {
                 sub->entity = 0;
                 n = 0;
                 break;
+            }
+            /* PC: an extra hero on another's pogo than its base's hover one has none of its jets (its frames' as they were) */
+            if ((u32)(extra_hero_looks(i, name) - 3) >= 2) {
+                sub->entity = 0;
             }
             if (n > 20) {
                 n = 0;
