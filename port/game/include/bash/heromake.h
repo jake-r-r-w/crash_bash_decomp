@@ -184,6 +184,30 @@ typedef struct {
 /* Where the hero sits: the top of the bear's back under its middle, and that middle (Crash Bash's axes). 0 if there's no bear. */
 s32 ride_seat(float *back_y, float *seat_z);
 s32 ride_make(const Rider *r, u8 **tex, s32 *tex_size, u8 **mdl, s32 *mdl_size);
+
+/* A bear's fur where its rider covered it (the artist left out what a rider hid): a rounded body just inside the bear's own, half
+ * either way of mid, kept where none of the bear's faces is near along its facing; each corner moves as the bear's nearest do (not
+ * its legs', y beyond legs), lit as its fur is times light. ride_make's bear has Crash's; a template's polar bear its own
+ * (packfollow.c, bear_cut). */
+#define HM_FILL_RINGS 12 /* along it */
+#define HM_FILL_SEGS 16  /* around it */
+#define HM_FILL_NEAR 4
+#define HM_FILL_VERTS (2 + (HM_FILL_RINGS - 1) * HM_FILL_SEGS)
+#define HM_FILL_FACES (2 * HM_FILL_SEGS * (HM_FILL_RINGS - 1))
+typedef struct {
+    V3 mid, half;
+    float legs, light;
+} HmFillShape;
+typedef struct {
+    s32 nvert, nfaces; /* its corners (after the bear's in a model) as the bear first breathes, and its faces */
+    V3 at[HM_FILL_VERTS];
+    s16 near[HM_FILL_VERTS][HM_FILL_NEAR]; /* the bear's vertices that move each, and how much */
+    float w[HM_FILL_VERTS][HM_FILL_NEAR];
+    MadeFace faces[HM_FILL_FACES];
+} HmFill;
+extern const HmFillShape HmCrashFill; /* Crash's bear's (bonusheroes.c) */
+void hm_fill_make(HmFill *fl, const HmFillShape *sh, const V3 *ref, const s16 *corner_of, s32 nvert, const MadeFace *faces, s32 nfaces);
+V3 hm_fill_at(const HmFill *fl, s32 k, const V3 *ref, const V3 *now, const s16 *corner_of);
 /* Crash's body on his bear in frame f of RIDE_ animation `anim`, as the rider's own motion is in (the bear's back's frame, before the
  * riding moves it with the back), from his first breathing frame: how far his hips have moved; his body's turn (his spine's, hips to
  * chest, and his shoulders' line across it); and each arm's upper arm and forearm (0 his left, x below 0), as directions in his body's

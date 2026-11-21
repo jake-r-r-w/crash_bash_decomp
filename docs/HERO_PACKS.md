@@ -150,10 +150,15 @@ What differs between them, all in the maps:
   Crash has a foot map like the others (`FOOT(1, ...)`): his tables never had on foot.
 - **The podium** is made from its model on foot (its WIN, its rest, HIT as it loses), so it's its template's win.
 - **The polar bear**: another hero's template follows that hero's polar2 model (`PolarKind`, its LIGHT on a second, charred mesh as
-  ride_make's has it); Crash's is still `ride_make` on his bear. Each hero's bear is a box (`POLAR`: ±105 across, below its back),
-  less any corner near the rider's legs, arms, feet, fists or seat (`map_rider`), as they sit astride it. Left: a few of the riders'
-  bits still kept (Tiny's and Rilla Roo's red, a dark wedge on Kong's, some of which may be the bears' own mouths), and the holes in
-  a bear where its rider covered it, which ride_make fills on Crash's (`bear_fill`), aren't filled.
+  ride_make's has it); Crash's is still `ride_make` on his bear. The bear is the same bear in every hero's model, and its rider's
+  strips run into it, so it's taken face by face (`bear_cut`): all three corners in its box (`POLAR`: ±90 across, below its back;
+  every bear's body is 83 either side) and the colour of its fur, the texel at the face's middle times its corners' colours. Its fur
+  is warm and greyish: not bluer than its red or green, not greener than its red, its red at most 0.3 over its green, its channels
+  close. Black is the bear's (its nose, eyes and soles) only below its back and drawn as they are, untextured or in an image its pale
+  fur uses too; a rider's shoes are black as well. Then its holes, where its rider covered it, are filled as Crash's are
+  (`hm_fill_make`, ride_make's fill for his): the same rounded body, fitted to the bear's box as his is to his, and lit as much
+  darker as its own colours are (Brio's bear is dark). Seen alone from four sides (`tools/scripts/hpv_bear.py` on a `--dump-hero`
+  folder), all seven bears are whole, with none of their riders left on them (2026-11-21).
 
 ## Online
 

@@ -126,7 +126,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   TOOL, online play (`online --heroes`), and Roo, Pinstripe and the disc reading removed. Phase 6 too: every hero is a template
   (`"template"`, packtemplates.c's maps; the user's design: a template per game, its own moves overriding), the tool previews the
   hero in every game (`--dump-hero`), and `--own GAME/MOVE=MOVE` overrides; on foot, the podium and the polar bear follow templates too
-  (a pack that says one). Left: a few slivers of heroes kept with props and bears, unfilled holes in other heroes' bears; models of other shapes than Bobby through the tool;
+  (a pack that says one); every template's polar bear is cut from its rider by colour and its holes filled. Left: a few slivers of
+  heroes kept with props (not bears), Coco's pogo has no handle; models of other shapes than Bobby through the tool;
   the hero tool's window on Linux (built and its CLI run, 2026-11-21, not looked at). Fixes go in the loader or the tool, never one
   hero's. The tool's output differs between Windows and Linux in a few float bits (each system's maths library), so a pack is
   shared as its files, and the same files match online whoever made them.
@@ -305,7 +306,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 - **A game starts its heroes more than once** (`extra_heroes_start` runs two or three times, first with the on-foot table): read a player's last `extra heroes:` line for what the game draws it as.
 - **A crash in `dbase_setup_blocks` as a level loads** is the loader's small nodes running out (one for each animation of each model loaded; the PS1 had 64). An extra hero's models keep all their animations: Pinstripe's on foot and on his bear in Manic Panic did it. The port has `SMALL_NODES` (512) now; a crash there again means something else.
 - **Every `same` picture differs at once** (sound the same): the test windows are sized from the screen's usable area (`place_tile`), so a change of the screen's scaling or resolution changes them all. Check the committed build differs the same way, re-save from it, then compare the change.
-- **Crash's polar bear has holes** where his body covered it (its back, its left side from neck to rump): any part of a game's own model taken out from under its hero does. `bear_fill` closes the bear's; models draw with real depth (prims.c `draw_depth`), so a fill just inside the model stays hidden where its own faces are. An extra hero in a base whose script loops part of a move (Cortex's polar push, his jetpack) replays that part of the hero's own frames: a `"@SEQ"` stand-in plays the hero's move once.
+- **Crash's polar bear has holes** where his body covered it (its back, its left side from neck to rump): any part of a game's own model taken out from under its hero does. `hm_fill_make` (heromake.h) closes the bear's, and any template's polar bear (`bear_cut`); models draw with real depth (prims.c `draw_depth`), so a fill just inside the model stays hidden where its own faces are. An extra hero in a base whose script loops part of a move (Cortex's polar push, his jetpack) replays that part of the hero's own frames: a `"@SEQ"` stand-in plays the hero's move once.
 - **An extra hero isn't always in its own base's place:** a `--mode` run's player 1 has Crash's (so a launch with `--extra-hero 0 ID` plays it as Crash), and in a game it has another's when someone has its own. Each hero's moves are its own scripts (`HeroSeqTables`): Crash's jump, fall and landing are other parts of his JUMP than Cortex's, he lands after a throw, and his spin is a still mesh. A stand-in by the base's frames plays its parts out of order there (Pinstripe jumped after every throw and had no gun in his attack); a sequence stand-in (`"@LAND"`, EXTRA_HEROES.md, 2) doesn't. To see what a base plays, a print in `extra_hero_frame` of `GameFrameCount`, `Heroes[i].hero_aseq` and the entity in and out, for one player, is enough.
 - **A rider's lean smoothed in the bear's frame comes loose from its gallop:** Crash leans against every pitch of his bear's run to stay upright, so his lean measured against the bear swings each frame, and smoothing that blurs it out of step and leaves a tall rider rocking with the bear. Smooth where his spine points as the world sees it, then turn it into the bear's frame each frame (`ride_steps`).
 - **A frame's index list holds a vertex << 2 in 16 bits,** so one animation's vertices over all its frames can't pass 16,384 (Roo's JUMP was 28 x 592 = 16,576: on its last frame the tornado's vertices wrapped round onto others). `made_write` writes such an animation as keyframes with the frames between blended, as the game's own models are.
@@ -666,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-21 (night): template polar bears cleaned and filled, at the user's word. The bear is the same in every polar2 model, so
+  it's taken face by face by its fur's colour (`bear_cut`, packfollow.c; map_rider is gone), black only where drawn as its nose,
+  eyes and soles; the boxes are ±90. ride_make's fill became `hm_fill_make`/`hm_fill_at` (heromake.h), fitted to each bear's box;
+  Crash's bear is byte-identical (Bobby's dumps compared). Checked with all seven bears alone from four sides, `heroes`, and
+  `hero bobby` with Tiny as template (16/16).
 - 2026-11-21 (late): templates on foot (FootKind, crate2 maps for all eight incl. Crash; only for packs whose hero.json says a
   template, so Bobby's is unchanged; foot/MOVE clips override), the podium with them (made from the foot), and the polar bear
   (PolarKind on polar2, a charred LIGHT mesh, rider bits kept off the bear by map_rider). pack_follow_all split into pack_bind and

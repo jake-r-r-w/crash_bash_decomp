@@ -23,21 +23,21 @@ const char *const PackFootMoves[PACK_FOOT_MOVES] = { "BREATHE", "HIT", "SKATE", 
     { hero, KIND_FOOT, bank, r, P(0, hy, 0), P(0, cy, 0), hd, PAIR(sx, sy, 0), PAIR(ex, ey, ez), PAIR(ax, ay, az), \
       NONE, NONE, NONE, PAIR(fx, -15, fz), NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 }
 
-/* a hero on its polar bear (polar2, its BREATHE): sat on its back, its legs down its sides; the bear the corners in its box but the
- * rider's legs' and forearms' (packfollow.c, map_rider) */
+/* a hero on its polar bear (polar2, its BREATHE): sat on its back, its legs down its sides; the bear the faces in its box (each bear's
+ * body is 83 either side) of its fur's colour (packfollow.c, bear_cut) */
 #define POLAR(hero, bank, r, hy, cy, hd, sx, sy, sz, ex, ey, ez, ax, ay, az, hx, kx, ky, kz, nx, ny, nz, bx) \
     { hero, KIND_POLAR, bank, r, P(0, hy, 20), P(0, cy, 10), hd, PAIR(sx, sy, sz), PAIR(ex, ey, ez), PAIR(ax, ay, az), \
       PAIR(hx, hy + 20, 20), PAIR(kx, ky, kz), PAIR(nx, ny, nz), NONE, NONE, NONE, { BOX(-(bx), -240, -330, bx, 15, 160) }, 1, 0 }
 
 static const TemplateMap Maps[] = {
     /* -- on the polar bear, every hero but Crash (his is ride_make's) -- */
-    POLAR(2, DB_CharsPolar2Coco, 25, -240, -330, P(0, -470, 0), 35, -330, 10, 60, -270, -30, 40, -230, -80, 40, 90, -190, 20, 115, -110, 0, 105),
-    POLAR(3, DB_CharsPolar2Cortex, 25, -220, -290, P(0, -440, -60), 60, -300, 20, 100, -220, 0, 120, -150, -20, 40, 90, -170, 0, 110, -110, 0, 105),
-    POLAR(4, DB_CharsPolar2Brio, 25, -230, -330, P(0, -580, -120), 50, -370, 0, 110, -260, 0, 80, -150, -40, 40, 90, -170, -20, 100, -100, -20, 105),
-    POLAR(5, DB_CharsPolar2Tiny, 45, -260, -400, P(0, -580, -150), 200, -480, 40, 270, -330, 40, 240, -150, 0, 80, 150, -190, -40, 180, -110, -60, 105),
-    POLAR(6, DB_CharsPolar2Kong, 45, -260, -420, P(0, -590, -120), 230, -500, 0, 320, -320, 0, 300, -130, -20, 80, 170, -160, -40, 200, -90, -80, 105),
-    POLAR(7, DB_CharsPolar2Dingo, 35, -230, -400, P(0, -620, -150), 110, -480, -20, 140, -330, -20, 130, -230, -40, 60, 120, -160, -40, 140, -100, -60, 105),
-    POLAR(8, DB_CharsPolar2Rilla, 40, -250, -420, P(0, -620, -150), 170, -480, -20, 220, -330, -20, 200, -200, -40, 80, 160, -160, -40, 180, -100, -60, 105),
+    POLAR(2, DB_CharsPolar2Coco, 25, -240, -330, P(0, -470, 0), 35, -330, 10, 60, -270, -30, 40, -230, -80, 40, 90, -190, 20, 115, -110, 0, 90),
+    POLAR(3, DB_CharsPolar2Cortex, 25, -220, -290, P(0, -440, -60), 60, -300, 20, 100, -220, 0, 120, -150, -20, 40, 90, -170, 0, 110, -110, 0, 90),
+    POLAR(4, DB_CharsPolar2Brio, 25, -230, -330, P(0, -580, -120), 50, -370, 0, 110, -260, 0, 80, -150, -40, 40, 90, -170, -20, 100, -100, -20, 90),
+    POLAR(5, DB_CharsPolar2Tiny, 45, -260, -400, P(0, -580, -150), 200, -480, 40, 270, -330, 40, 240, -150, 0, 80, 150, -190, -40, 180, -110, -60, 90),
+    POLAR(6, DB_CharsPolar2Kong, 45, -260, -420, P(0, -590, -120), 230, -500, 0, 320, -320, 0, 300, -130, -20, 80, 170, -160, -40, 200, -90, -80, 90),
+    POLAR(7, DB_CharsPolar2Dingo, 35, -230, -400, P(0, -620, -150), 110, -480, -20, 140, -330, -20, 130, -230, -40, 60, 120, -160, -40, 140, -100, -60, 90),
+    POLAR(8, DB_CharsPolar2Rilla, 40, -250, -420, P(0, -620, -150), 170, -480, -20, 220, -330, -20, 200, -200, -40, 80, 160, -160, -40, 180, -100, -60, 90),
 
     /* -- on foot, every hero (Crash's too: his tables never had it) -- */
     FOOT(1, DB_CharsCrate2Crash, 20, -170, -260, P(0, -380, -60), 60, -300, 100, -210, 10, 110, -120, 0, 55, -40),

@@ -682,6 +682,8 @@ static s32 same_ci(const char *a, const char *b, size_t n) {
     return 1;
 }
 
+static void bear_fill_at(const Packed *p, const Moved *mv, const V3 *L, V3 *out);
+
 /* A move of its own clip (KIND/MOVE in its glTF) in place of the one it follows: its skeleton posed by that clip, across the length of
  * the move it's in place of, its hips on the followed hero's hips, at its size on the prop; the prop still as the followed hero's
  * move has it, or in its own hand where it carries it (docs/HERO_PACKS.md, Templates) */
@@ -717,6 +719,7 @@ static void own_frame(Packed *p, s32 a, float f, const Moved *mv, V3 hips_at, co
     for (k = 0; k < c->prop.nvert; k++) {
         out[p->n + k] = hm_moved(mv, L[c->prop.corner_of[k]]);
     }
+    bear_fill_at(p, mv, L, out);
 }
 
 static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out);
@@ -879,6 +882,7 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     for (k = 0; k < c->prop.nvert; k++) {
         out[p->n + k] = hm_moved(&mv, L[c->prop.corner_of[k]]);
     }
+    bear_fill_at(p, &mv, L, out);
 }
 
 static const FollowKind *const PackKinds[] = { &PogoKind, &CarKind, &TankKind, &RaceKind, &FishKind, &MalletKind, &DinoKind, &KegKind };
@@ -935,46 +939,167 @@ static s32 map_in(V3 p, const TmplBox *b) {
     return (b->lo.x != 0 || b->hi.x != 0 || b->lo.y != 0 || b->hi.y != 0) && x >= b->lo.x && x <= b->hi.x && p.y >= b->lo.y
            && p.y <= b->hi.y && p.z >= b->lo.z && p.z <= b->hi.z;
 }
-/* whether p is within r of the bone from a to b (both there) */
-static s32 near_bone(V3 p, TmplPoint a, TmplPoint b, float r) {
-    V3 ab, ap;
-    float t;
-
-    if (!map_has(a) || !map_has(b)) {
-        return 0;
-    }
-    ab = vsub(map_v(b), map_v(a));
-    ap = vsub(p, map_v(a));
-    t = vdot(ab, ab) > 1e-6f ? vdot(ap, ab) / vdot(ab, ab) : 0;
-    t = t < 0 ? 0 : t > 1 ? 1 : t;
-    return vlen(vsub(ap, vmul(ab, t))) < r;
-}
-/* a corner of the rider's legs or forearms, where it sits astride what it rides (the polar bear: its legs down the bear's sides) */
-static s32 map_rider(V3 p) {
-    const TemplateMap *m = Map;
+static s32 map_in_any(V3 p) {
     s32 i;
 
-    for (i = 0; i < 2; i++) {
-        /* its legs and arms, and round its feet and fists, which stick out further, and its seat */
-        if (near_bone(p, m->hip[i], m->knee[i], m->r * 1.5f) || near_bone(p, m->knee[i], m->ankle[i], m->r * 1.5f)
-            || near_bone(p, m->shoulder[i], m->elbow[i], m->r * 1.5f) || near_bone(p, m->elbow[i], m->hand[i], m->r * 1.5f)
-            || near_bone(p, m->ankle[i], m->ankle[i], m->r * 2.5f) || near_bone(p, m->hand[i], m->hand[i], m->r * 2.5f)
-            || near_bone(p, m->hips, m->hip[i], m->r * 2.0f)) {
-            return 1;
-        }
+    for (i = 0; i < TMPL_BOXES && !map_in(p, &Map->prop[i]); i++) {
     }
-    return 0;
+    return i < TMPL_BOXES;
 }
+/* a strip mostly in the prop's boxes; for the polar bear, any strip in its box, its faces sorted after (bear_cut) */
 static s32 map_prop(const V3 *at, s32 n, s32 textured, s32 strip) {
-    s32 k, i, in = 0;
+    s32 k, in = 0;
 
     (void)textured, (void)strip;
     for (k = 0; k < n; k++) {
-        for (i = 0; i < TMPL_BOXES && !map_in(at[k], &Map->prop[i]); i++) {
-        }
-        in += i < TMPL_BOXES && !(MapKind.lit && map_rider(at[k]));
+        in += map_in_any(at[k]);
     }
-    return in * 2 > n;
+    return MapKind.lit ? in > 0 : in * 2 > n;
+}
+
+/* --- the polar bear out of its rider's model ---
+ * A hero's polar2 model is the hero and its bear in one mesh, and the bear is the same bear in each (Crash's, ride_make's, too), its
+ * fur pale and greyish, its nose, eyes and soles black; a rider's strips run into it. So the bear is the faces with all three corners
+ * in the map's box whose colour (the texel at the face's middle times its corners' colours, as the PlayStation draws it) is its fur's:
+ * warm (not bluer than its red or green, nor greener than its red, its red at most BEAR_RED over its green) and its channels within
+ * BEAR_GREY of each other. Black (darker than BEAR_BLACK) is a rider's shoes as often as the bear's nose, eyes and soles, so a black
+ * face is the bear's only below BEAR_BLACK_TOP, its back's height, and where it's drawn as they are: untextured (its nose) or in an
+ * image its pale fur has too (its eyes and soles). Then the fill (heromake.h) closes it where its rider covered it, fitted to it as
+ * Crash's (HmCrashFill) is to his: BearBoxMid and BearBoxHalf are his bear's box by this rule (its body, above BEAR_BODY), and its
+ * fur lit as much brighter or darker than his as its corners' colours are than BEAR_LIGHT (Coco's bear's, whose box is his). */
+#define BEAR_GREY 0.36f
+#define BEAR_RED 0.3f
+#define BEAR_BLACK 30.0f
+#define BEAR_BLACK_TOP -170.0f
+#define BEAR_BODY -60.0f
+#define BEAR_LIGHT 0.85f
+static const V3 BearBoxMid = { 0, -136.5f, -43.5f }, BearBoxHalf = { 83, 73.5f, 197.5f };
+static HmFill BearFill;
+static s32 BearFills; /* its corners in the model being made, after the bear's (0: none) */
+
+static void face_colour(const GamePart *g, const MadeFace *f, float rgb[3]) {
+    float t[3] = { 128, 128, 128 };
+    s32 j;
+
+    if (f->image >= 0 && f->image < g->nimages && g->images[f->image].pixels != NULL) {
+        const MadeImage *im = &g->images[f->image];
+        s32 u = (f->uv[0][0] + f->uv[1][0] + f->uv[2][0]) / 3, v = (f->uv[0][1] + f->uv[1][1] + f->uv[2][1]) / 3;
+        s32 row = im->units * 2, i;
+
+        if (v >= 0 && v < im->h && u >= 0 && u < row * (im->bpp8 ? 1 : 2)) {
+            u16 w;
+
+            i = im->bpp8 ? im->pixels[v * row + u] : (im->pixels[v * row + u / 2] >> ((u & 1) * 4)) & 15;
+            w = im->clut[i];
+            t[0] = (w & 31) * 255 / 31.0f;
+            t[1] = (w >> 5 & 31) * 255 / 31.0f;
+            t[2] = (w >> 10 & 31) * 255 / 31.0f;
+        }
+    }
+    for (j = 0; j < 3; j++) {
+        float c = (f->rgb[0][0][j] + f->rgb[0][1][j] + f->rgb[0][2][j]) / 3.0f * t[j] / 128;
+
+        rgb[j] = c > 255 ? 255 : c;
+    }
+}
+
+/* 1 its fur's colour, 2 black (the bear's only by how it's drawn), 0 neither */
+static s32 bear_fur(const float c[3]) {
+    float hi = c[0] > c[1] ? c[0] : c[1], lo = c[0] < c[1] ? c[0] : c[1];
+
+    hi = c[2] > hi ? c[2] : hi;
+    lo = c[2] < lo ? c[2] : lo;
+    if (!(c[0] + 8 >= c[2] && c[1] + 2 >= c[2] && c[1] <= c[0] + 10 && c[0] - c[1] <= BEAR_RED * c[0] && hi - lo <= BEAR_GREY * hi + 8)) {
+        return 0;
+    }
+    return hi < BEAR_BLACK ? 2 : 1;
+}
+
+/* The bear's faces kept, on the corners they use, and its fill made */
+static void bear_cut(Follow *c) {
+    static s16 new_of[FOLLOW_CORNERS], was[FOLLOW_CORNERS];
+    static s8 fur[MADE_MAX_FACES];
+    s8 fur_image[PART_MAX_IMAGES];
+    GamePart *g = &c->prop;
+    V3 lo = { 1e9f, 1e9f, 1e9f }, hi = { -1e9f, -1e9f, -1e9f };
+    HmFillShape sh;
+    float light = 0;
+    s32 i, j, n = 0, nv = 0, body = 0;
+
+    for (i = 0; i < g->nvert; i++) {
+        new_of[i] = -1;
+        was[i] = g->corner_of[i];
+    }
+    memset(g->in_part, 0, (size_t)g->corners);
+    memset(fur_image, 0, sizeof(fur_image));
+    for (i = 0; i < g->nfaces && i < MADE_MAX_FACES; i++) {
+        const MadeFace *f = &g->faces[i];
+        float rgb[3];
+        s32 in = 1;
+
+        for (j = 0; j < 3; j++) {
+            in &= map_in_any(c->ref[was[f->v[j]]]);
+        }
+        face_colour(g, f, rgb);
+        fur[i] = (s8)(in ? bear_fur(rgb) : 0);
+        if (fur[i] == 1 && f->image >= 0 && f->image < PART_MAX_IMAGES) {
+            fur_image[f->image] = 1;
+        }
+    }
+    for (i = 0; i < g->nfaces && i < MADE_MAX_FACES; i++) {
+        MadeFace f = g->faces[i];
+        float y = (c->ref[was[f.v[0]]].y + c->ref[was[f.v[1]]].y + c->ref[was[f.v[2]]].y) / 3;
+
+        if (fur[i] == 0
+            || (fur[i] == 2 && (y < BEAR_BLACK_TOP || (f.image >= 0 && (f.image >= PART_MAX_IMAGES || !fur_image[f.image]))))) {
+            continue;
+        }
+        for (j = 0; j < 3; j++) {
+            s32 o = f.v[j];
+
+            if (new_of[o] < 0) {
+                V3 q = c->ref[was[o]];
+
+                new_of[o] = (s16)nv;
+                g->corner_of[nv++] = was[o];
+                g->in_part[was[o]] = 1;
+                if (q.y < BEAR_BODY) {
+                    lo = v3(q.x < lo.x ? q.x : lo.x, q.y < lo.y ? q.y : lo.y, q.z < lo.z ? q.z : lo.z);
+                    hi = v3(q.x > hi.x ? q.x : hi.x, q.y > hi.y ? q.y : hi.y, q.z > hi.z ? q.z : hi.z);
+                    body++;
+                }
+            }
+            f.v[j] = new_of[o];
+            light += (f.rgb[0][j][0] + f.rgb[0][j][1] + f.rgb[0][j][2]) / (3 * 128.0f);
+        }
+        g->faces[n++] = f;
+    }
+    g->nfaces = n;
+    g->nvert = nv;
+    BearFills = 0;
+    BearFill.nvert = BearFill.nfaces = 0;
+    if (n == 0 || body < 8) {
+        return;
+    }
+    sh.mid = v3((lo.x + hi.x) / 2 + HmCrashFill.mid.x - BearBoxMid.x, (lo.y + hi.y) / 2 + HmCrashFill.mid.y - BearBoxMid.y,
+                (lo.z + hi.z) / 2 + HmCrashFill.mid.z - BearBoxMid.z);
+    sh.half = v3((hi.x - lo.x) / 2 * HmCrashFill.half.x / BearBoxHalf.x, (hi.y - lo.y) / 2 * HmCrashFill.half.y / BearBoxHalf.y,
+                 (hi.z - lo.z) / 2 * HmCrashFill.half.z / BearBoxHalf.z);
+    sh.legs = sh.mid.y + (HmCrashFill.legs - HmCrashFill.mid.y) * sh.half.y / HmCrashFill.half.y;
+    sh.light = light / (3 * n) / BEAR_LIGHT;
+    hm_fill_make(&BearFill, &sh, c->ref, g->corner_of, g->nvert, g->faces, g->nfaces);
+    printf("hero packs: the polar bear %d faces, its box (%.0f %.0f %.0f) to (%.0f %.0f %.0f), lit %.2f, filled with %d\n", n, lo.x,
+           lo.y, lo.z, hi.x, hi.y, hi.z, light / (3 * n), BearFill.nfaces);
+}
+
+/* Its fill's corners in a frame, after the bear's, as the bear's L have moved */
+static void bear_fill_at(const Packed *p, const Moved *mv, const V3 *L, V3 *out) {
+    const Follow *c = &p->c;
+    s32 k;
+
+    for (k = 0; k < BearFills; k++) {
+        out[p->n + c->prop.nvert + k] = hm_moved(mv, hm_fill_at(&BearFill, k, c->ref, L, c->prop.corner_of));
+    }
 }
 static s32 map_frame(V3 p) {
     (void)p;
@@ -1109,7 +1234,7 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     MadeImage *imgs = NULL;
     MadeModel mm;
     float top = 0, sole = -1e9f;
-    s32 i, k, ok = 0;
+    s32 i, k, ok = 0, nfill = 0;
 
     memset(c, 0, sizeof(*c));
     c->kind = fk;
@@ -1160,6 +1285,10 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     }
     if (fk == &MapKind) {
         map_fit(c);
+    }
+    BearFills = 0;
+    if (fk->lit) {
+        bear_cut(c);
     }
     /* Crash's parts, by where they are as he first moves (as Pinstripe's are found) */
     for (k = 0; k < c->prop.corners; k++) {
@@ -1255,10 +1384,20 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     if (fk->paint != NULL) {
         fk->paint(c);
     }
-    all = malloc(sizeof(MadeFace) * (size_t)(nfaces + c->prop.nfaces));
+    nfill = fk->lit && nfaces + c->prop.nfaces + BearFill.nfaces <= MADE_MAX_FACES ? BearFill.nfaces : 0;
+    BearFills = nfill > 0 ? BearFill.nvert : 0;
+    all = malloc(sizeof(MadeFace) * (size_t)(nfaces + c->prop.nfaces + nfill));
     imgs = malloc(sizeof(MadeImage) * (size_t)(nimages + c->prop.nimages + 1));
     if (all == NULL || imgs == NULL || nfaces + c->prop.nfaces > MADE_MAX_FACES) {
         goto done;
+    }
+    for (k = 0; k < nfill; k++) {
+        MadeFace *f = &all[nfaces + c->prop.nfaces + k];
+
+        *f = BearFill.faces[k];
+        for (i = 0; i < 3; i++) {
+            f->v[i] += p->n + c->prop.nvert;
+        }
     }
     memcpy(all, faces, sizeof(MadeFace) * (size_t)nfaces);
     for (k = 0; k < c->prop.nfaces; k++) {
@@ -1274,13 +1413,13 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     memcpy(imgs + nimages, c->prop.images, sizeof(MadeImage) * (size_t)c->prop.nimages);
     memset(&mm, 0, sizeof(mm));
     mm.faces = all;
-    mm.nfaces = nfaces + c->prop.nfaces;
+    mm.nfaces = nfaces + c->prop.nfaces + nfill;
     mm.meshes = 1;
     mm.images = imgs;
     mm.nimages = nimages + c->prop.nimages;
     mm.anims = c->anims;
     mm.nanims = fk->nmoves;
-    mm.nvert = p->n + c->prop.nvert;
+    mm.nvert = p->n + c->prop.nvert + BearFills;
     mm.rest_anim = 0;
     mm.frame = pack_frame_at;
     mm.ctx = p;
