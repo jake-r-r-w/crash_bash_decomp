@@ -92,8 +92,12 @@ build/port/windows-clang/crashbash.exe --mode 0 --skip-intro --skip-loading --wi
 
 A pack's **template** is the original hero whose model of each kind it follows: that hero's moves there, and what it rides or holds
 (its pogo, car, cart, fish, mallet, dino, keg), the pack's own body in that hero's place, at that hero's size. `"template": "tiny"` in
-hero.json for every kind (Crash if it's not said), or `"template"` in a kind's own entry for that kind alone; a move of its own clips
-named for a kind (`KIND/MOVE`) is still its own. The tool's **Template** list writes it, and its preview shows what it gives. The
+hero.json for every kind (Crash if it's not said), or `"template"` in a kind's own entry for that kind alone. **Its own moves** take the
+template's place move by move: a clip in its glTF named for a game's move (`ball/BANK`, heropack.c's kind names) is played there in
+place of following (`own_frame`: its skeleton posed by that clip across the length of the move it replaces, its hips on the template's,
+the prop moving as the template's move has it, or in its own hand where it's carried). A rigged model's clips keep their names, so a
+clip named so in Blender does it; the tool writes one of its standard moves under that name (`--own ball/BANK=WIN`, or the window's
+**Its own moves in the games** list, by game, move and which of its own). The tool's **Template** list writes it, and its preview shows what it gives. The
 heroes have the same moves by name in each kind (`BREATHE`, `JUMP` ... on a pogo for all eight), so a template changes how a move
 looks, never which moves there are.
 

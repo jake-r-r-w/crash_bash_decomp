@@ -53,6 +53,9 @@ struct Tool {
     float made_t = 0, made_turn = 30, made_speed = 1;
     View game_view;
     bool show_games = false; // the tab brought forward once (the preview's test)
+    // its own moves in the games' places (KIND/MOVE=OURS), and the one being added
+    char own[KIT_OWN_MOST][48] = {};
+    int nown = 0, own_game = 0, own_move = 1, own_ours = 0;
 };
 
 // The kinds of model the game makes (heropack.c's names), as the games call them
@@ -316,6 +319,9 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     p.author = T.author;
     p.prefer = Heroes[T.prefer];
     p.template_hero = Heroes[T.template_hero];
+    for (int o = 0; o < T.nown; o++) {
+        p.own[o] = T.own[o];
+    }
     p.height = T.height;
     p.face_head = T.face_head;
     p.card = T.card[0] ? T.card : nullptr;
@@ -798,6 +804,40 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 ImGui::EndDisabled();
                 ImGui::SameLine();
                 ImGui::TextDisabled("the game makes it as it will when it loads it, with each game's ride or prop");
+                // its own moves in place of its template's, in a game: then made again to see them
+                ImGui::Text("Its own moves in the games, in place of %s's:", Heroes[T.template_hero]);
+                for (int o = 0; o < T.nown; o++) {
+                    ImGui::PushID(o);
+                    ImGui::BulletText("%s", T.own[o]);
+                    ImGui::SameLine();
+                    if (ImGui::SmallButton("Remove")) {
+                        memmove(T.own[o], T.own[o + 1], sizeof(T.own[0]) * (size_t)(T.nown - o - 1));
+                        T.nown--;
+                    }
+                    ImGui::PopID();
+                }
+                if (T.nown < KIT_OWN_MOST) {
+                    const KitGameMoves &g = KitGames[T.own_game];
+                    int gm = 0;
+                    while (gm < 8 && g.moves[gm] != nullptr) {
+                        gm++;
+                    }
+                    T.own_move = T.own_move < gm ? T.own_move : 0;
+                    ImGui::SetNextItemWidth(110);
+                    ImGui::Combo("##game", &T.own_game, [](void *, int i) { return KitGames[i].kind; }, nullptr, KitGameCount);
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(110);
+                    ImGui::Combo("##its", &T.own_move, [](void *d, int i) { return ((const KitGameMoves *)d)->moves[i]; }, (void *)&g, gm);
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted("as");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(130);
+                    ImGui::Combo("##ours", &T.own_ours, [](void *, int i) { return KitMoves[i].name; }, nullptr, KitMoveCount);
+                    ImGui::SameLine();
+                    if (ImGui::Button("Add")) {
+                        snprintf(T.own[T.nown++], sizeof(T.own[0]), "%s/%s=%s", g.kind, g.moves[T.own_move], KitMoves[T.own_ours].name);
+                    }
+                }
                 if (T.have_made[T.kind] || T.maker == nullptr) {
                     bool any = false;
                     for (int k = 0; k < PACK_KINDS; k++) {

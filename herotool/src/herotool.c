@@ -1,6 +1,6 @@
 /* The hero tool (docs/HERO_PACKS.md, The hero tool): anyone's glTF model made a hero pack the game plays.
  *
- *   herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--template HERO] [--height N]
+ *   herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--template HERO] [--own GAME/MOVE=MOVE] [--height N]
  *                                                               [--face-head SHARE] [--author NAME]
  *
  * With no arguments, or a model alone, it opens its window (gui.cpp) instead.
@@ -14,7 +14,7 @@
 #include "kit.h"
 
 static void usage(void) {
-    fprintf(stderr, "herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--template HERO] [--height N]\n"
+    fprintf(stderr, "herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--template HERO] [--own GAME/MOVE=MOVE] [--height N]\n"
                     "                [--face-head SHARE] [--author NAME] [--card CARD.png] [--voice JOB=FILE.wav ...]\n"
                     "                [--mod-name NAME]\n"
                     "  HERO: crash, coco, cortex, brio, tiny, kong, dingodile or rilla, whose place it takes if it's free\n"
@@ -83,6 +83,15 @@ int main(int argc, char **argv) {
             p.name = v;
         } else if (strcmp(a, "--template") == 0) {
             p.template_hero = v;
+        } else if (strcmp(a, "--own") == 0) {
+            int n = 0;
+
+            while (n < KIT_OWN_MOST && p.own[n] != NULL) {
+                n++;
+            }
+            if (n < KIT_OWN_MOST) {
+                p.own[n] = v;
+            }
         } else if (strcmp(a, "--prefer") == 0) {
             p.prefer = v;
         } else if (strcmp(a, "--height") == 0) {

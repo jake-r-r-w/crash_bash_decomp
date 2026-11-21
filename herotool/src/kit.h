@@ -92,10 +92,22 @@ void kit_pose(const KitModel *model, int m, float t, float rot[KB_COUNT][4], flo
 /* rig.c: a model's own clip, as turns of the standard bones from their rest (as kit_pose gives) and the hips' move: for a rigged
  * model, its rig mapped (kit_map_rig) */
 int kit_clip_pose(const KitModel *m, int clip, float t, float rot[KB_COUNT][4], float hips[3]);
+/* The games' moves where a pack follows its template (port/game/main/packfollow.c's kinds: the same names for every hero), which its
+   own moves can take the place of: each kind's name (heropack.c's) and its moves, NULL ended */
+#define KIT_OWN_MOST 16
+typedef struct {
+    const char *kind;
+    const char *moves[8];
+} KitGameMoves;
+extern const KitGameMoves KitGames[];
+extern const int KitGameCount;
 /* write.c: the pack, heroes/<id>/ in a mod folder, with its mod.json */
 typedef struct {
     const char *id, *name, *prefer, *mod_name, *author;
     const char *template_hero;          /* the original hero it follows in every game, its moves and what it rides or holds (NULL Crash) */
+    /* its own moves in a game in place of its template's: "KIND/MOVE=OURS", one of the standard moves (KitMoves) written as that game's
+       move (a clip named KIND/MOVE, which the game plays in place of following there); NULL ends the list */
+    const char *own[KIT_OWN_MOST + 1];
     int height;
     float face_head;
     const char *voice[PACK_VOICE_JOBS]; /* each job's sound (PackVoiceJobs: name, laugh, yelp, ...), a WAV, or NULL for its base's */

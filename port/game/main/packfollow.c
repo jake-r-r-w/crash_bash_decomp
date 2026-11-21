@@ -643,6 +643,8 @@ typedef struct {
     s8 role[PACK_MAX_BONES];     /* which of PB_ a bone of its is, else -1 (it goes with its trunk, or the posed bone it hangs from) */
     Mat across;                  /* its trunk's frame as it rests (body_lie's columns) */
     float hip_height, crash_hip_height, sole;
+    float k, ground, scale;      /* its rest pose to the game's units (k, ground), and its size on the prop */
+    s32 own[FOLLOW_MOVES];       /* each move's clip of its own (KIND/MOVE), which it plays in place of following, or -1 */
     V3 feet_ref[2];
 } Packed;
 
@@ -660,6 +662,60 @@ static Mat pack_frame(const Packed *p) {
     m.m[1][0] = across.y, m.m[1][1] = up.y, m.m[1][2] = fwd.y;
     m.m[2][0] = across.z, m.m[2][1] = up.z, m.m[2][2] = fwd.z;
     return m;
+}
+
+/* whether a and b are the same in their first n characters, big or small (a shorter one ends at its 0) */
+static s32 same_ci(const char *a, const char *b, size_t n) {
+    size_t i;
+
+    for (i = 0; i < n; i++) {
+        char x = (char)(a[i] >= 'a' && a[i] <= 'z' ? a[i] - 32 : a[i]), y = (char)(b[i] >= 'a' && b[i] <= 'z' ? b[i] - 32 : b[i]);
+
+        if (x != y) {
+            return 0;
+        }
+        if (x == 0) {
+            return 1;
+        }
+    }
+    return 1;
+}
+
+/* A move of its own clip (KIND/MOVE in its glTF) in place of the one it follows: its skeleton posed by that clip, across the length of
+ * the move it's in place of, its hips on the followed hero's hips, at its size on the prop; the prop still as the followed hero's
+ * move has it, or in its own hand where it carries it (docs/HERO_PACKS.md, Templates) */
+static void own_frame(Packed *p, s32 a, s32 f, const Moved *mv, V3 hips_at, const V3 *L, V3 *out) {
+    static PackTrs local[PACK_MAX_BONES];
+    static float world[PACK_MAX_BONES][16], skinned[PF_MAX_VERTS * 3];
+    const Follow *c = &p->c;
+    const PackClip *clip = &p->pm->clips[p->own[a]];
+    s32 frames = c->anims[a].frames, k, hb = p->pb[PB_HIPS];
+    float t = frames > 1 ? clip->length * (float)f / (float)(frames - 1) : 0;
+    V3 hips;
+
+    pack_pose_local(p->pm, p->own[a], t, local);
+    pack_pose_world(p->pm, local, world);
+    pack_skin(p->pm, (const float(*)[16])world, skinned);
+    hips = v3(world[hb][12] * p->k, -(world[hb][13] - p->ground) * p->k, -world[hb][14] * p->k);
+    for (k = 0; k < p->n; k++) {
+        V3 at = v3(skinned[k * 3] * p->k, -(skinned[k * 3 + 1] - p->ground) * p->k, -skinned[k * 3 + 2] * p->k);
+
+        out[k] = hm_moved(mv, vadd(hips_at, vmul(vsub(at, hips), p->scale)));
+    }
+    if (c->kind->carry) {
+        s32 ci = c->kind->carry - 1, hand = p->pb[ci == 1 ? PB_HAND_R : PB_HAND_L];
+        V3 Hd = mid_of(L, c->hand[ci], c->nhand[ci]);
+        V3 at = v3(world[hand][12] * p->k, -(world[hand][13] - p->ground) * p->k, -world[hand][14] * p->k);
+
+        at = vadd(hips_at, vmul(vsub(at, hips), p->scale));
+        for (k = 0; k < c->prop.nvert; k++) {
+            out[p->n + k] = hm_moved(mv, vadd(at, vsub(L[c->prop.corner_of[k]], Hd)));
+        }
+        return;
+    }
+    for (k = 0; k < c->prop.nvert; k++) {
+        out[p->n + k] = hm_moved(mv, L[c->prop.corner_of[k]]);
+    }
 }
 
 static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out) {
@@ -701,6 +757,10 @@ static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out) {
     hips_at = H;
     if (fk->peg != NULL || fk->stand) {
         hips_at = vadd(H, vmul(up_world, p->hip_height - p->crash_hip_height));
+    }
+    if (p->own[a] >= 0) {
+        own_frame(p, a, f, &mv, hips_at, L, out);
+        return;
     }
     for (k = 0; k < p->pm->nbones; k++) {
         Q[k] = R;
@@ -1018,6 +1078,16 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
         c->anims[i].name = fk->moves[i];
         c->anims[i].mesh = 0;
         c->anims[i].step = 1;
+        /* a clip of its own for this kind's move, KIND/MOVE (heropack.c's kind names) */
+        p->own[i] = -1;
+        for (k = 0; k < p->pm->nclips && p->own[i] < 0; k++) {
+            const char *name = p->pm->clips[k].name, *kn = pack_kind_name(fk->kind);
+            size_t kl = strlen(kn);
+
+            if (same_ci(name, kn, kl) && name[kl] == '/' && same_ci(name + kl + 1, fk->moves[i], strlen(fk->moves[i]) + 1)) {
+                p->own[i] = k;
+            }
+        }
     }
     if (!hm_model_at(&c->prop, c->anim[0], 0, c->ref)) {
         goto done;
@@ -1182,6 +1252,8 @@ void pack_follow_all(const char *id, const PackModel *pm, float k, float ground,
         }
     }
     p->pm = pm;
+    p->k = k;
+    p->ground = ground;
     p->n = pm->nvert;
     pack_pose_local(pm, -1, 0, local);
     pack_pose_world(pm, local, world);
@@ -1205,6 +1277,7 @@ void pack_follow_all(const char *id, const PackModel *pm, float k, float ground,
             V3 at = v3(skinned[v * 3] * k, -(skinned[v * 3 + 1] - ground) * k, -skinned[v * 3 + 2] * k);
 
             p->rest[v] = vadd(hips, vmul(vsub(at, hips), fk->scale));
+            p->scale = fk->scale;
         }
         for (b = 0; b < pm->nbones; b++) {
             V3 at = v3(world[b][12] * k, -(world[b][13] - ground) * k, -world[b][14] * k);

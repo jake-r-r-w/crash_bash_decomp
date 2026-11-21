@@ -143,13 +143,41 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
     }
     ibm_a = add(&bin, ibm, sizeof(float) * 16 * nb, 5126, nb, "MAT4", NULL);
     /* the moves: the standard ones, each the model's own clip of that name if it has one (a rigged model's), then its other clips */
-    int nmoves = 0, own = 0;
-    for (mv = 0; mv < KitMoveCount + (m->src != NULL ? m->src->nclips : 0) && nmoves < 64; mv++) {
+    int nmoves = 0, own = 0, nown = 0;
+    char ownname[KIT_OWN_MOST][48];
+    int ownstd[KIT_OWN_MOST];
+
+    /* its own moves in the games' places: KIND/MOVE=OURS, OURS one of the standard moves */
+    for (b = 0; b < KIT_OWN_MOST && p->own[b] != NULL; b++) {
+        const char *eq = strchr(p->own[b], '=');
+        int s;
+
+        for (s = 0; eq != NULL && s < KitMoveCount && SDL_strcasecmp(eq + 1, KitMoves[s].name) != 0; s++) {
+        }
+        if (eq == NULL || s >= KitMoveCount || (size_t)(eq - p->own[b]) >= sizeof(ownname[0])) {
+            snprintf(why, why_size, "%s isn't GAME/MOVE=ONE OF ITS MOVES", p->own[b]);
+            return 0;
+        }
+        memcpy(ownname[nown], p->own[b], (size_t)(eq - p->own[b]));
+        ownname[nown][eq - p->own[b]] = 0;
+        ownstd[nown++] = s;
+    }
+    for (mv = 0; mv < KitMoveCount + (m->src != NULL ? m->src->nclips : 0) + nown && nmoves < 64; mv++) {
         const char *mname;
         float mlen;
-        int clip = -1, f, time_a, channels = 0, frames;
+        int clip = -1, f, time_a, channels = 0, frames, std = mv < KitMoveCount ? mv : 0;
 
-        if (mv < KitMoveCount) {
+        if (mv >= KitMoveCount + (m->src != NULL ? m->src->nclips : 0)) {
+            int o = mv - KitMoveCount - (m->src != NULL ? m->src->nclips : 0);
+
+            std = ownstd[o];
+            mname = ownname[o];
+            mlen = KitMoves[std].length;
+            clip = own_clip(m, KitMoves[std].name);
+            if (clip >= 0) {
+                mlen = m->src->clips[clip].length;
+            }
+        } else if (mv < KitMoveCount) {
             mname = KitMoves[mv].name;
             mlen = KitMoves[mv].length;
             clip = own_clip(m, mname);
@@ -178,7 +206,7 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
         for (f = 0; f < frames; f++) {
             times[f] = mlen * f / (frames - 1);
             if (clip < 0 || !kit_clip_pose(m, clip, times[f], rot[f], hips[f])) {
-                kit_pose(m, mv < KitMoveCount ? mv : 0, times[f], rot[f], hips[f]);
+                kit_pose(m, std, times[f], rot[f], hips[f]);
             }
         }
         snprintf(tm, sizeof(tm), ",\"min\":[0],\"max\":[%g]", mlen);

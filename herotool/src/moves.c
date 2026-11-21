@@ -149,6 +149,18 @@ const KitMove KitMoves[] = {
 };
 const int KitMoveCount = sizeof(KitMoves) / sizeof(KitMoves[0]);
 
+const KitGameMoves KitGames[] = {
+    { "pogo", { "BREATHE", "JUMP", "DAZED", "WIN", "TAZING", NULL } },
+    { "ball", { "BREATHE", "BANK", "IDLE_A", "TAUNT_A", "DIE", "WIN", NULL } },
+    { "tank", { "BREATHE", "IDLE1", "MINE", "HIT", "DIE", "WIN", NULL } },
+    { "race", { "BREATHE", "RUN", "HIT", "FALL", "WIN", NULL } },
+    { "splash", { "BREATHE", "SWIM", "TRANS", "WIN", "FALL", NULL } },
+    { "mallet", { "BREATHE", "MEDIUM", "ATTACK", "HIT", "WIN", NULL } },
+    { "dino", { "BREATHE", "RUN", "SLIDE", "WIN", "RECOIL", NULL } },
+    { "kegs", { "BREATHE", "MEDIUM", "JUMP", "WIN", "HIT", NULL } },
+};
+const int KitGameCount = sizeof(KitGames) / sizeof(KitGames[0]);
+
 static void moves(int m, float t, Pose *p) {
     float s, k;
 
