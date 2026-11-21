@@ -106,6 +106,11 @@ if (ANDROID) {
 
 run('cmake', ['--preset', PRESET, ...(LINUX ? [] : [`-DCMAKE_PREFIX_PATH=${sdl_dir}`])], PORT);
 run('cmake', ['--build', '--preset', PRESET], PORT);
+/* the hero tool (herotool/, docs/HERO_PACKS.md), beside the program: the launcher's HERO TOOL starts it */
+const TOOL = path.join(ROOT, 'herotool'), TOOL_PRESET = LINUX ? 'linux-clang' : 'windows-clang';
+const TOOL_BUILD = path.join(ROOT, 'build/herotool', TOOL_PRESET);
+run('cmake', ['--preset', TOOL_PRESET, ...(LINUX ? [] : [`-DCMAKE_PREFIX_PATH=${sdl_dir}`])], TOOL);
+run('cmake', ['--build', '--preset', TOOL_PRESET], TOOL);
 
 const program_name = LINUX ? 'crashbash' : 'crashbash.exe';
 const exe = path.join(BUILD, program_name);
@@ -138,6 +143,9 @@ fs.rmSync(dir, { recursive: true, force: true });
 fs.mkdirSync(dir, { recursive: true });
 fs.copyFileSync(exe, path.join(dir, program_name));
 fs.chmodSync(path.join(dir, program_name), 0o755);
+const tool_name = LINUX ? 'herotool' : 'herotool.exe';
+fs.copyFileSync(path.join(TOOL_BUILD, tool_name), path.join(dir, tool_name));
+fs.chmodSync(path.join(dir, tool_name), 0o755);
 let readme = fs.readFileSync(path.join(PORT, 'release/README.txt'), 'utf8').replaceAll('@VERSION@', version);
 for (const [key, text] of Object.entries(SYSTEM)) {
     readme = readme.replaceAll(`@${key}@`, text);
@@ -161,8 +169,11 @@ const achievements = fs.readFileSync(path.join(achievements_dir, 'LICENSE'), 'ut
 const rcheevos = fs.readFileSync(path.join(achievements_dir, 'sdk/third_party/rcheevos/LICENSE'), 'utf8').trim();
 const cjson = fs.readFileSync(path.join(achievements_dir, 'sdk/third_party/cjson/LICENSE'), 'utf8').trim();
 /* the button prompts' pictures, Kenney's, built into the program (assets/prompts/) */
+/* hero packs' glTF reader, in the program and the tool, and the tool's window */
+const cgltf = fs.readFileSync(path.join(BUILD, '_deps/cgltf-src/LICENSE'), 'utf8').trim();
+const imgui = fs.readFileSync(path.join(TOOL_BUILD, '_deps/imgui-src/LICENSE.txt'), 'utf8').trim();
 const kenney = fs.readFileSync(path.join(PORT, 'assets/prompts/License.txt'), 'utf8').replace(/\r/g, '').replace(/^\t+/gm, '').trim();
-fs.writeFileSync(path.join(dir, 'LICENSE.txt'), eol(`${fs.readFileSync(path.join(ROOT, 'LICENSE'), 'utf8')}${rule}This program includes SDL3, under this licence:\n\n${sdl}${rule}This program includes zlib, under this licence:\n\n${zlib}\n${rule}This program includes miniupnpc, under this licence:\n\n${miniupnpc}\n${rule}This program includes libnatpmp, under this licence:\n\n${natpmp}\n${rule}This program includes Recomp Achievements, RecompLauncher's achievements library, under this licence:\n\n${achievements}\n${rule}Recomp Achievements includes rcheevos, under this licence:\n\n${rcheevos}\n${rule}Recomp Achievements includes cJSON, under this licence:\n\n${cjson}\n${rule}This program includes Kenney's Input Prompts, the pictures of its button prompts, under this licence:\n\n${kenney}\n`));
+fs.writeFileSync(path.join(dir, 'LICENSE.txt'), eol(`${fs.readFileSync(path.join(ROOT, 'LICENSE'), 'utf8')}${rule}This program includes SDL3, under this licence:\n\n${sdl}${rule}This program includes zlib, under this licence:\n\n${zlib}\n${rule}This program includes miniupnpc, under this licence:\n\n${miniupnpc}\n${rule}This program includes libnatpmp, under this licence:\n\n${natpmp}\n${rule}This program includes Recomp Achievements, RecompLauncher's achievements library, under this licence:\n\n${achievements}\n${rule}Recomp Achievements includes rcheevos, under this licence:\n\n${rcheevos}\n${rule}Recomp Achievements includes cJSON, under this licence:\n\n${cjson}\n${rule}This program includes Kenney's Input Prompts, the pictures of its button prompts, under this licence:\n\n${kenney}\n${rule}This program and the hero tool include cgltf, under this licence:\n\n${cgltf}\n${rule}The hero tool includes Dear ImGui, under this licence:\n\n${imgui}\n`));
 /* RecompLauncher's file, beside the program at the top of the download (docs/PORT.md, RecompLauncher): how it sets the game up from the
    player's disc, starts it and shows its settings. It has to read as JSON. */
 const launcher_json = fs.readFileSync(path.join(PORT, 'release/recomplauncher.json'), 'utf8');
