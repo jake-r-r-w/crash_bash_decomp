@@ -656,6 +656,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-21: hero packs, phase 1 of 6 (docs/HERO_PACKS.md). The user's plan: extra heroes become packs of glTF in mods, made by a
+  hero tool of their own (C/C++, SDL3 + ImGui, its own folder, opened from the launcher), shareable and online; Roo and Pinstripe
+  to be removed with the disc reading, the example an original mascot, Bobby (the user's dachshund, from their photos, not in the
+  repo); borrowed moves Crash's first, then the other seven. Done: the loader (cgltf), four pack slots before Roo's, the model on
+  foot and on the podium from a pack's own clips, `--extra-hero` named after the mods are read, Bobby (`port/mods/bobby.mjs`),
+  `heroes` loading the repo's packs. Checked: Bobby in Crate Crush (four of him, a crate held) and Ring Ding, `heroes` 3/3,
+  `mods` 29/29. Not yet: moves borrowed from Crash (retargeting), the other kinds, sounds, the tool, online, the removal; Linux
+  and Android not built with it yet. Next: the user plays Bobby on foot, then phase 2.
 - 2026-11-21: v1.4.1 released, at the user's word ("cut a patch release with this fix"), for the fix below. The packaged builds:
   modes and heroes on Windows, Linux and Android, mouse and controls on Windows; the APK installs over 1.4.0 (same key). Online play
   checks the version string, so 1.4.1 and 1.4.0 can't play together.
