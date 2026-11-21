@@ -1240,9 +1240,12 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
                     view_set_translation_vector(s.trans);
                 }
                 view_set_rotation(s.rot);
-                /* an object with a layer of its own stays in the game's order; the rest are real solid things */
+                /* an object with a layer of its own stays in the game's order; the rest are real solid things. A hero pack's model is
+                 * always one (docs/HERO_PACKS.md): the game's own were made to be drawn back to front face by face, and a model made
+                 * anywhere else, sorted so on the character select's stands, drew the back of its head over its face */
                 draw_owner(arg0);
-                draw_depth(!(arg0->flags & 0x02000000));
+                draw_depth(!(arg0->flags & 0x02000000)
+                           || (model >= &HeroModelBank[DB_Bonus] && model < &HeroModelBank[DB_Bonus + EXTRA_PACKS * HERO_KINDS]));
                 draw_object_model(n, (u8 *)colors, arg0->flags | arg2, arg0);
                 draw_depth(0);
                 draw_owner(NULL);

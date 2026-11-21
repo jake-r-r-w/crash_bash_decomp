@@ -536,7 +536,9 @@ static s32 make_pack(s32 slot, HeroMade *out) {
         f->image = im;
         f->blend = pm.tri_blend[i] ? 0x8000 : 0;
         for (j = 0; j < 3; j++) {
-            s32 v = pm.tri[i * 3 + j];
+            /* its corners the other way round: the game draws a face whose corners go round the other way to glTF's front, as
+             * Crash Bash's axes have it (drawn as glTF has them, it showed the inside of its far side and none of its near) */
+            s32 v = pm.tri[i * 3 + (3 - j) % 3];
             const float *nn = &rest[v * 3];
             float len = sqrtf(nn[0] * nn[0] + nn[1] * nn[1] + nn[2] * nn[2]), ll = sqrtf(PackLight.x * PackLight.x
                           + PackLight.y * PackLight.y + PackLight.z * PackLight.z), lit = 0;

@@ -60,6 +60,11 @@ glTF 2.0, binary. The platform reads it with cgltf (`platform/heropack.c`) into 
 - Materials: the base colour (factor, `COLOR_0` and texture, PNG only, made a power of two up to 256 texels and 255 colours), alpha
   mode BLEND for a half-see-through face, `KHR_materials_unlit` for an unlit one. Its light is baked into its corners' colours as
   the game's heroes' is (a soft wrapped light, `PackLight`).
+- Winding: glTF's front faces (counter-clockwise) are drawn the other way round, as the game's front is the other winding once a
+  model's in its axes. Drawn as glTF has them, a pack's hero showed the inside of its far side and none of its near: its face and
+  chest missing, see-through, everywhere (worst on the character select's stands, seen close).
+- Depth: a pack's model is always drawn with a real depth test (`prims.c`), where the game draws one with a layer of its own (the
+  character select's stands) back to front face by face, which its own models were made for and others aren't.
 
 ## Trying one
 
