@@ -53,6 +53,14 @@ typedef struct {
     size_t png_size;
     /* how high it may raise its arms: degrees from hanging (160 all the way up; less for short arms and a big head) */
     float arm_raise;
+    /* its own rig, if it has one (a skinned mesh): its bones' names, parents and places as it rests, and each vertex's bones in it */
+    int nsrc;
+    char src_name[PACK_MAX_BONES][PACK_ANIM_NAME];
+    int src_parent[PACK_MAX_BONES];
+    float src_at[PACK_MAX_BONES][3];
+    uint8_t (*src_joint)[4];
+    float (*src_weight)[4];
+    int skinned;
 } KitModel;
 
 /* model.c: the model read from its GLB, and checked; 0 and why (said to the person) if it can't be used */
@@ -63,6 +71,9 @@ int kit_atlas(KitModel *m, char *why, size_t why_size);
 /* rig.c: the skeleton from markers (a JSON file of the bones' places, KitBoneNames; docs/HERO_PACKS.md), and each corner's bones */
 int kit_markers(KitModel *m, const char *path, char *why, size_t why_size);
 void kit_weigh(KitModel *m);
+/* rig.c: its own rig, if it has one, mapped onto the standard skeleton by its bones' names (Mixamo's, VRM's, Blender's and the like),
+ * its own weights kept; 0 and why if it has none, or not the bones the standard skeleton needs */
+int kit_map_rig(KitModel *m, char *why, size_t why_size);
 /* moves.c: the standard moves, for any model on the standard skeleton */
 typedef struct {
     const char *name;

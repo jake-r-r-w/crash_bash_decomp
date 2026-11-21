@@ -79,6 +79,22 @@ int kit_read(const char *path, KitModel *m, char *why, size_t why_size) {
         }
     }
     /* its images are the tool's now */
+    /* its own rig, if its mesh is skinned to one: a vertex going with more than one bone, or with a bone that isn't its mesh's node */
+    m->nsrc = pm.nbones;
+    m->src_joint = malloc(sizeof(*m->src_joint) * pm.nvert);
+    m->src_weight = malloc(sizeof(*m->src_weight) * pm.nvert);
+    for (i = 0; i < pm.nbones; i++) {
+        snprintf(m->src_name[i], sizeof(m->src_name[i]), "%s", pm.bones[i].name);
+        m->src_parent[i] = pm.bones[i].parent;
+        m->src_at[i][0] = pm.bones[i].rest_world[12];
+        m->src_at[i][1] = pm.bones[i].rest_world[13];
+        m->src_at[i][2] = pm.bones[i].rest_world[14];
+    }
+    for (i = 0; m->src_joint != NULL && m->src_weight != NULL && i < pm.nvert; i++) {
+        memcpy(m->src_joint[i], &pm.joint[i * 4], 4);
+        memcpy(m->src_weight[i], &pm.weight[i * 4], sizeof(float) * 4);
+        m->skinned |= pm.weight[i * 4 + 1] > 0 || pm.joint[i * 4] != pm.joint[0];
+    }
     m->nimages = pm.nimages;
     for (i = 0; i < pm.nimages; i++) {
         m->images[i] = pm.images[i];
@@ -101,6 +117,8 @@ void kit_free(KitModel *m) {
     free(m->tri_image);
     free(m->joint);
     free(m->weight);
+    free(m->src_joint);
+    free(m->src_weight);
     free(m->atlas);
     SDL_free(m->png);
     for (i = 0; i < m->nimages; i++) {

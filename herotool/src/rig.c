@@ -298,3 +298,161 @@ void kit_weigh(KitModel *m) {
     free(nn);
     free(nb);
 }
+
+/* --- a model's own rig, by its bones' names --- */
+
+/* Each standard bone's names in the rigs people make (Mixamo's, VRM's, Blender's and Rigify's, Unity's humanoid), as compared: small
+ * letters, digits only, anything before a ':' dropped ("mixamorig:LeftArm" is "leftarm", "upper_arm.L" "upperarml"). The first a model
+ * has is the one. */
+static const char *const Aliases[KB_COUNT][8] = {
+    { "hips", "pelvis", "hip" },
+    { "spine", "spine01", "abdomen" },
+    { "spine2", "upperchest", "chest", "spine02", "spine1", "spine003", "spine002" },
+    { "neck", "neck01", "neck1" },
+    { "head" },
+    { "leftarm", "upperarml", "leftupperarm", "upperarmleft", "luparm", "lupperarm", "armupperl" },
+    { "leftforearm", "forearml", "leftlowerarm", "lowerarml", "lforearm", "lowerarmleft", "armlowerl" },
+    { "lefthand", "handl", "lhand", "handleft" },
+    { "rightarm", "upperarmr", "rightupperarm", "upperarmright", "ruparm", "rupperarm", "armupperr" },
+    { "rightforearm", "forearmr", "rightlowerarm", "lowerarmr", "rforearm", "lowerarmright", "armlowerr" },
+    { "righthand", "handr", "rhand", "handright" },
+    { "leftupleg", "thighl", "leftupperleg", "upperlegl", "lthigh", "upperlegleft", "legupperl" },
+    { "leftleg", "shinl", "leftlowerleg", "lowerlegl", "calfl", "lshin", "lowerlegleft", "leglowerl" },
+    { "leftfoot", "footl", "lfoot", "footleft" },
+    { "rightupleg", "thighr", "rightupperleg", "upperlegr", "rthigh", "upperlegright", "legupperr" },
+    { "rightleg", "shinr", "rightlowerleg", "lowerlegr", "calfr", "rshin", "lowerlegright", "leglowerr" },
+    { "rightfoot", "footr", "rfoot", "footright" },
+    { "jaw", "jaw01", "lowerjaw" },
+    { "earl1", "earl", "leftear", "ear1l", "earleft" },
+    { "earl2", "ear2l", "leftear2", "earl001" },
+    { "earr1", "earr", "rightear", "ear1r", "earright" },
+    { "earr2", "ear2r", "rightear2", "earr001" },
+    { "tail1", "tail", "tail01", "tail0" },
+    { "tail2", "tail02", "tail001" },
+    { "tail3", "tail03", "tail002" },
+};
+
+static void plain_name(const char *name, char *out, size_t size) {
+    const char *at = strrchr(name, ':');
+    size_t n = 0;
+
+    for (at = at != NULL ? at + 1 : name; *at != 0 && n + 1 < size; at++) {
+        char c = (char)SDL_tolower((unsigned char)*at);
+
+        if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+            out[n++] = c;
+        }
+    }
+    out[n] = 0;
+}
+
+/* whether bone c carries on from b (the bone after it in its chain), not one that branches off it */
+static int carries_on(int b, int c) {
+    return KitBoneParent[c] == b && c != KB_UPPERARM_L && c != KB_UPPERARM_R && c != KB_JAW && c != KB_EAR_L1 && c != KB_EAR_R1
+        && c != KB_THIGH_L && c != KB_THIGH_R && c != KB_TAIL1;
+}
+
+/* each bone's end: the start of the one after it, else on along its parent's line by half (a hand past its forearm), else up a little */
+static void ends(KitModel *m) {
+    int b, c, i;
+
+    for (b = 0; b < KB_COUNT; b++) {
+        int par = KitBoneParent[b];
+
+        if (!m->bones[b].have) {
+            continue;
+        }
+        for (c = 0; c < KB_COUNT && !(m->bones[c].have && carries_on(b, c)); c++) {
+        }
+        if (c < KB_COUNT) {
+            memcpy(m->bones[b].end, m->bones[c].at, sizeof(m->bones[b].end));
+        } else if (par >= 0 && b != KB_HEAD) {
+            for (i = 0; i < 3; i++) {
+                m->bones[b].end[i] = m->bones[b].at[i] + (m->bones[b].at[i] - m->bones[par].at[i]) * 0.5f;
+            }
+        } else {
+            memcpy(m->bones[b].end, m->bones[b].at, sizeof(m->bones[b].end));
+            m->bones[b].end[1] += (m->hi[1] - m->lo[1]) * 0.1f;
+        }
+    }
+}
+
+int kit_map_rig(KitModel *m, char *why, size_t why_size) {
+    int map[PACK_MAX_BONES], b, j, k, v;
+    char plain[PACK_MAX_BONES][PACK_ANIM_NAME];
+
+    if (!m->skinned) {
+        snprintf(why, why_size, "the model has no rig of its own: give it markers (--markers), where its joints are");
+        return 0;
+    }
+    for (j = 0; j < m->nsrc; j++) {
+        plain_name(m->src_name[j], plain[j], sizeof(plain[j]));
+        map[j] = -1;
+    }
+    for (b = 0; b < KB_COUNT; b++) {
+        m->bones[b].have = 0;
+        for (k = 0; k < 8 && Aliases[b][k] != NULL && !m->bones[b].have; k++) {
+            for (j = 0; j < m->nsrc; j++) {
+                if (map[j] < 0 && strcmp(plain[j], Aliases[b][k]) == 0) {
+                    map[j] = b;
+                    m->bones[b].have = 1;
+                    memcpy(m->bones[b].at, m->src_at[j], sizeof(m->bones[b].at));
+                    break;
+                }
+            }
+        }
+        if (!m->bones[b].have && b < KB_NEEDED) {
+            snprintf(why, why_size,
+                     "its rig has no bone the tool knows as the %s (it knows Mixamo's, VRM's, Blender's and Unity's names): rename it, or "
+                     "give markers (--markers)",
+                     KitBoneNames[b]);
+            return 0;
+        }
+    }
+    ends(m);
+    /* each vertex's weights onto the standard bones: a bone of its rig that isn't one (a finger, a twist) gives its weight to the
+     * nearest one it hangs from */
+    for (v = 0; v < m->nvert; v++) {
+        float w[KB_COUNT] = { 0 }, sum = 0;
+        int took[KB_COUNT] = { 0 };
+
+        for (k = 0; k < 4; k++) {
+            int s = m->src_joint[v][k];
+
+            if (m->src_weight[v][k] <= 0) {
+                continue;
+            }
+            while (s >= 0 && s < m->nsrc && map[s] < 0) {
+                s = m->src_parent[s];
+            }
+            w[s >= 0 && s < m->nsrc ? map[s] : KB_HIPS] += m->src_weight[v][k];
+        }
+        for (k = 0; k < 4; k++) {
+            int best = -1;
+
+            for (b = 0; b < KB_COUNT; b++) {
+                if (!took[b] && w[b] > 0 && (best < 0 || w[b] > w[best])) {
+                    best = b;
+                }
+            }
+            m->joint[v][k] = (uint8_t)(best < 0 ? 0 : best);
+            m->weight[v][k] = best < 0 ? 0 : w[best];
+            if (best >= 0) {
+                took[best] = 1;
+                sum += w[best];
+            }
+        }
+        for (k = 0; k < 4 && sum > 0; k++) {
+            m->weight[v][k] /= sum;
+        }
+        if (sum <= 0) {
+            m->joint[v][0] = KB_HIPS;
+            m->weight[v][0] = 1;
+        }
+    }
+    for (b = 0, k = 0; b < KB_COUNT; b++) {
+        k += m->bones[b].have;
+    }
+    printf("herotool: its own rig, %d bones, mapped onto %d of the standard skeleton's, its weights kept\n", m->nsrc, k);
+    return 1;
+}

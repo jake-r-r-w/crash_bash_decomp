@@ -1,6 +1,6 @@
 /* The hero tool (docs/HERO_PACKS.md, The hero tool): anyone's glTF model made a hero pack the game plays.
  *
- *   herotool import MODEL.glb --id ID --markers MARKERS.json --out FOLDER [--name NAME] [--prefer HERO] [--height N]
+ *   herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--height N]
  *                                                               [--face-head SHARE] [--author NAME]
  *
  * FOLDER becomes a mod (mod.json, heroes/ID/): put it in the game's mods folder. The model is never changed: one the game can't draw
@@ -12,9 +12,10 @@
 #include "kit.h"
 
 static void usage(void) {
-    fprintf(stderr, "herotool import MODEL.glb --id ID --markers MARKERS.json --out FOLDER [--name NAME] [--prefer HERO] [--height N]\n"
+    fprintf(stderr, "herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--height N]\n"
                     "                [--face-head SHARE] [--author NAME]\n"
                     "  HERO: crash, coco, cortex, brio, tiny, kong, dingodile or rilla, whose place it takes if it's free\n"
+                    "  MARKERS: where its joints are, for a model with no rig of its own (a rigged one's are its bones)\n"
                     "  N: its height standing, in the game's units (Crash 452, most heroes about 650)\n");
 }
 
@@ -73,8 +74,8 @@ int main(int argc, char **argv) {
             return 2;
         }
     }
-    if (p.id == NULL || markers == NULL || out == NULL || !id_ok(p.id)) {
-        fprintf(stderr, "herotool: it needs --id (small letters, digits, - and _), --markers and --out\n");
+    if (p.id == NULL || out == NULL || !id_ok(p.id)) {
+        fprintf(stderr, "herotool: it needs --id (small letters, digits, - and _) and --out\n");
         usage();
         return 2;
     }
@@ -86,12 +87,16 @@ int main(int argc, char **argv) {
         p.name = name;
     }
     p.mod_name = p.name;
-    if (!kit_read(model, &m, why, sizeof(why)) || !kit_markers(&m, markers, why, sizeof(why)) || !kit_atlas(&m, why, sizeof(why))) {
+    /* its skeleton from its markers if it has them, else from its own rig */
+    if (!kit_read(model, &m, why, sizeof(why)) || !kit_atlas(&m, why, sizeof(why))
+        || (markers != NULL ? !kit_markers(&m, markers, why, sizeof(why)) : !kit_map_rig(&m, why, sizeof(why)))) {
         fprintf(stderr, "herotool: %s\n", why);
         kit_free(&m);
         return 1;
     }
-    kit_weigh(&m);
+    if (markers != NULL) {
+        kit_weigh(&m);
+    }
     SDL_CreateDirectory(out);
     if (!kit_write(&m, &p, out, why, sizeof(why))) {
         fprintf(stderr, "herotool: %s\n", why);

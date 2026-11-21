@@ -117,7 +117,10 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
    big as they all fit, with a border of its own colours two texels wide, as the game moves each corner to a whole texel; triangles
    with no texture share a white piece, their corners' colours on it. The look's the same; only where the corners are in the
    texture changes.
-3. **Fits the standard skeleton from markers** (`rig.c`): a JSON file of where each bone starts, by name (hips, spine, chest, neck,
+3. **Fits the standard skeleton**: from **its own rig**, if it has one (`kit_map_rig`), its bones found by their names (Mixamo's
+   `mixamorig:LeftArm`, VRM's `leftUpperArm`, Blender's `upper_arm.L`, Unity's and the like; any case, `_`, `.` and spaces
+   ignored), its own weights kept, a bone it has that the game hasn't (fingers, twists) giving its weight to the one it hangs from;
+   else **from markers** (`rig.c`, `--markers`): a JSON file of where each bone starts, by name (hips, spine, chest, neck,
    head, both arms' upperarm, forearm and hand, both legs' thigh, shin and foot; a jaw, ears and a tail if it has them), with
    `NAME_tip` for a chain's end and `arm_raise`, how many degrees its arms can lift before its paws are in its head. Bobby's is
    `port/mods/bobby-markers.json`. The tool's window will let them be dragged onto the model.
@@ -134,6 +137,9 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
 Bobby's model has 1367 triangles, 2 over: the tool refuses it, and his pack is still made by `port/mods/bobby.mjs` until he's
 exported again with fewer. A copy with two slivers taken out (in `scratch/`, never the repo) checks the tool end to end.
 
+Checked: Bobby's model with its markers, and his first, shapes-built model with its bones renamed as Mixamo names them and no
+markers, each four of him in Crate Crush.
+
 Still to come: the window (an ImGui front end on the same steps: the model turning, markers dragged, the moves played, the
-pack tried in the game), a model's own rig mapped by bone names (Mixamo, VRM, Blender's), its own clips for moves by name, sounds,
+pack tried in the game), its own clips for moves by name, sounds,
 a card, and guessing the markers for a model that has none.
