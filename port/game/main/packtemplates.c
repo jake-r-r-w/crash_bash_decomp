@@ -273,6 +273,57 @@ static const TemplateMap Maps[] = {
       PAIR(200, -600, -60), { P(-380, -480, -40), P(290, -440, -40) }, { P(-420, -320, -20), P(240, -200, -120) },
       PAIR(70, -300, -40), PAIR(80, -180, -30), PAIR(90, -60, -20), PAIR(100, -20, -100),
       NONE, NONE, { BOX(-375, -465, -300, -165, -245, 300) }, 1, 2 },
+
+    /* -- Dingodile (7) -- */
+    /* his pogo: a thin stick and its handle, his tail out behind */
+    { 7, KIND_POGO, DB_CharsPogoDingo, 30,
+      P(0, -220, 0), P(0, -350, -30), P(0, -480, -130),
+      PAIR(70, -390, -60), PAIR(90, -340, -120), PAIR(60, -335, -160),
+      PAIR(50, -200, -20), PAIR(60, -130, -80), PAIR(50, -50, -100), PAIR(40, -20, -120),
+      PAIR(70, -335, -175), NONE, { BOX(-25, -360, -320, 25, 10, 60), BOX(-100, -360, -240, 100, -310, -120) }, 1, 0 },
+    /* his car: sat, his arms out to its levers' inner ends */
+    { 7, KIND_BALL, DB_CharsBallDingo, 35,
+      P(0, -140, 220), P(0, -260, 220), P(0, -380, 80),
+      PAIR(80, -300, 200), PAIR(160, -240, 180), PAIR(240, -215, 150),
+      NONE, NONE, NONE, NONE,
+      PAIR(290, -210, 120), NONE, { BOTH(265, -240, -100, 420, 20, 260) }, 1, 0 },
+    /* his tank: in its hatch, his hands down in front */
+    { 7, KIND_TANK, DB_CharsTankDingo, 30,
+      P(0, -330, 0), P(0, -430, -20), P(0, -540, -180),
+      PAIR(100, -470, -40), PAIR(120, -380, -60), PAIR(100, -290, -110),
+      NONE, NONE, NONE, NONE,
+      NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 },
+    /* his race cart: his hands on its rim */
+    { 7, KIND_RACE, DB_CharsRaceDingo, 30,
+      P(0, -130, 60), P(0, -190, 40), P(0, -280, -120),
+      PAIR(90, -210, 40), PAIR(110, -150, 20), PAIR(110, -110, -30),
+      NONE, NONE, NONE, NONE,
+      PAIR(120, -100, -60), NONE, { BOX(-260, -105, -260, 260, 80, 300) }, 1, 0 },
+    /* his fish: astride it, his tail up behind */
+    { 7, KIND_SPLASH, DB_CharsSplashDingo, 30,
+      P(0, -200, 100), P(0, -350, 40), P(0, -560, -60),
+      PAIR(80, -420, 40), PAIR(100, -320, 0), PAIR(70, -230, -40),
+      PAIR(60, -180, 80), PAIR(150, -150, 0), PAIR(220, -100, -60), NONE,
+      NONE, NONE, { BOX(-150, -150, -420, 150, 130, 330), BOTH(150, -20, -420, 300, 130, 330) }, 1, 0 },
+    /* his mallet: across him up to his left shoulder, his right fist hanging */
+    { 7, KIND_MALLET, DB_CharsMalletDingo, 30,
+      P(0, -250, 0), P(0, -450, -20), P(0, -600, -120),
+      PAIR(80, -520, 0), { P(-120, -460, -80), P(110, -400, 0) }, { P(-150, -480, -140), P(110, -280, -20) },
+      PAIR(60, -230, 0), PAIR(80, -120, -20), PAIR(90, -30, -20), PAIR(100, -10, -80),
+      { P(-150, -500, -150), P(0, 0, 0) }, NONE, { BOX(-320, -920, -200, 160, -640, 180), BOX(-320, -640, -200, -170, -380, 0) }, 1, 0 },
+    /* his dino: sat on its back, his fists out at its sides */
+    { 7, KIND_DINO, DB_CharsDinoDingo, 30,
+      P(0, -420, 0), P(0, -560, 0), P(0, -740, -100),
+      PAIR(100, -620, 0), PAIR(180, -520, -30), PAIR(220, -450, -60),
+      PAIR(60, -410, 0), PAIR(140, -330, -40), PAIR(160, -250, -60), NONE,
+      NONE, NONE, { BOX(-120, -400, -480, 120, 10, 420), BOX(-130, -620, -480, 130, -380, -170), BOTH(100, -150, -300, 170, 10, 300) },
+      1, 0 },
+    /* his keg: under his left arm, his right fist hanging; one mesh */
+    { 7, KIND_KEGS, DB_CharsKegsDingo, 30,
+      P(0, -250, 0), P(0, -430, -20), P(0, -600, -120),
+      PAIR(90, -520, 0), { P(-200, -500, -40), P(120, -400, 0) }, { P(-320, -420, -40), P(130, -280, -20) },
+      PAIR(60, -230, 0), PAIR(80, -120, -20), PAIR(90, -30, -20), PAIR(100, -10, -80),
+      NONE, NONE, { BOX(-345, -520, -230, -50, -250, 170) }, 1, 1 },
 };
 
 const TemplateMap *pack_template_map(s32 hero, s32 kind) {

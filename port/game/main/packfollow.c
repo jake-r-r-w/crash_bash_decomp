@@ -1091,12 +1091,16 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
         }
     }
     if (c->nhips < 4 || c->nchest < 4 || c->nshoulder[0] < 2 || c->nshoulder[1] < 2 || c->nelbow[0] < 2 || c->nelbow[1] < 2
-        || c->nhand[0] < 2 || c->nhand[1] < 2 || (fk->frame != NULL && c->nframe < 8)) {
+        || c->nhand[0] < 2 || c->nhand[1] < 2 || (fk->frame != NULL && c->nframe < 8 && fk != &MapKind)) {
         /* (each part's corners: a template's map is checked by this) */
         printf("hero packs: the hero followed isn't with its %s as it was (corners: hips %d, chest %d, shoulders %d %d, elbows %d %d, hands "
                "%d %d, frame %d; prop %d of %d)\n", fk->what, c->nhips, c->nchest, c->nshoulder[0], c->nshoulder[1], c->nelbow[0],
                c->nelbow[1], c->nhand[0], c->nhand[1], c->nframe, c->prop.corners, c->prop.corners);
         goto done;
+    }
+    /* a template's prop too small to fit a frame to (Dingodile's thin pogo stick): the model's own frame */
+    if (fk == &MapKind && fk->frame != NULL && c->nframe < 8) {
+        MapKind.frame = NULL;
     }
     /* where his feet first are, and his hips' height above them */
     for (i = 0; i < 2; i++) {
