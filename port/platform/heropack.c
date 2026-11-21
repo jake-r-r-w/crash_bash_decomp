@@ -304,6 +304,7 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
         out->prefer = 1;
     }
     out->template_hero = hero_number(jget(root, "template"));
+    out->template_said = out->template_hero != 0;
     if (out->template_hero == 0) {
         out->template_hero = 1;
     }

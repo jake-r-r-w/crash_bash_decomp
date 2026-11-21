@@ -90,6 +90,7 @@ typedef struct {
     s32 mesh;                /* the mesh of Crash's model his moves move (the kegs game's: the second, with his keg) */
     s32 carry_kept;          /* what he carries kept Crash's size (a keg, as big as the game's others), where it'd be for his size
                               * against his shoulder, his hand reaching round it as Crash's does */
+    s32 lit;                 /* its LIGHT on a second mesh, charred (Polar Push's lightning, as ride_make's bear has it) */
 } FollowKind;
 
 struct Follow {
@@ -684,13 +685,13 @@ static s32 same_ci(const char *a, const char *b, size_t n) {
 /* A move of its own clip (KIND/MOVE in its glTF) in place of the one it follows: its skeleton posed by that clip, across the length of
  * the move it's in place of, its hips on the followed hero's hips, at its size on the prop; the prop still as the followed hero's
  * move has it, or in its own hand where it carries it (docs/HERO_PACKS.md, Templates) */
-static void own_frame(Packed *p, s32 a, s32 f, const Moved *mv, V3 hips_at, const V3 *L, V3 *out) {
+static void own_frame(Packed *p, s32 a, float f, const Moved *mv, V3 hips_at, const V3 *L, V3 *out) {
     static PackTrs local[PACK_MAX_BONES];
     static float world[PACK_MAX_BONES][16], skinned[PF_MAX_VERTS * 3];
     const Follow *c = &p->c;
     const PackClip *clip = &p->pm->clips[p->own[a]];
     s32 frames = c->anims[a].frames, k, hb = p->pb[PB_HIPS];
-    float t = frames > 1 ? clip->length * (float)f / (float)(frames - 1) : 0;
+    float t = frames > 1 ? clip->length * f / (float)(frames - 1) : 0;
     V3 hips;
 
     pack_pose_local(p->pm, p->own[a], t, local);
@@ -718,7 +719,9 @@ static void own_frame(Packed *p, s32 a, s32 f, const Moved *mv, V3 hips_at, cons
     }
 }
 
-static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out) {
+static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out);
+
+static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     static V3 F[FOLLOW_CORNERS], L[FOLLOW_CORNERS];
     static Mat Q[PACK_MAX_BONES];
     static V3 P[PACK_MAX_BONES];
@@ -731,7 +734,7 @@ static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out) {
     V3 H, hips_at, up_world = { 0, -1, 0 };
     s32 i, j, k, side;
 
-    if (!hm_model_at(&c->prop, c->anim[a], (float)f, F)) {
+    if (!hm_model_at(&c->prop, c->anim[a], f, F)) {
         memcpy(F, c->ref, sizeof(V3) * (size_t)c->prop.corners);
     }
     if (fk->frame != NULL) {
@@ -880,6 +883,31 @@ static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out) {
 
 static const FollowKind *const PackKinds[] = { &PogoKind, &CarKind, &TankKind, &RaceKind, &FishKind, &MalletKind, &DinoKind, &KegKind };
 
+/* -- kinds only a template's map fills in (docs/HERO_PACKS.md, Templates) --
+ * On foot, as the crate games have their heroes (models\chars\crate2\: the same moves for all eight), stood as the template stands, at
+ * the pack's own size; and riding the polar bear (models\chars\polar2\, as ride_make's is), its LIGHT on a charred second mesh.
+ * Crash's on foot is a map too (his tables never had it); his bear is still ride_make's. Their parts' tests are the map's: these are
+ * only there to say a kind has hips, feet, a prop, legs. */
+static s32 map_any(V3 p);
+static s32 map_any_prop(const V3 *at, s32 n, s32 textured, s32 strip);
+#define FootNames PackFootMoves
+static const FollowLegs AnyLegs;
+static const FollowKind FootKind = {
+    DB_CharsCrate2Crash, KIND_FOOT, "feet", FootNames, 5,
+    NULL, NULL, NULL, NULL, map_any, map_any, map_any,
+    { { 0, 0, 0 }, { 0, 0, 0 } }, { { 0, 0, 0 }, { 0, 0, 0 } }, 25.0f, 25.0f,
+    25.0f, 1e9f, { { 0, 0, 0 }, { 0, 0, 0 } },
+    1.0f, 0, 0, 1, 0, 0, 1, NULL, 0, NULL, 1, 1, 0,
+};
+static const char *const PolarNames[] = { "BREATHE", "FALL", "RUN", "PUSH", "TAUNT", "LIGHT", "WIN" };
+static const FollowKind PolarKind = {
+    DB_CharsPolar2Crash, KIND_POLAR, "polar bear", PolarNames, 7,
+    map_any_prop, map_any, NULL, NULL, map_any, map_any, NULL,
+    { { 0, 0, 0 }, { 0, 0, 0 } }, { { 0, 0, 0 }, { 0, 0, 0 } }, 25.0f, 25.0f,
+    25.0f, 1e9f, { { 0, 0, 0 }, { 0, 0, 0 } },
+    0.8f, 0, 0, 1, 0, 0, 1, NULL, 0, &AnyLegs, 1, 0, 0, 0, 0, 1,
+};
+
 /* --- following another hero (a template; docs/HERO_PACKS.md, Templates) ---
  * Crash's kind as it is, but that hero's model of it, its parts found by its map's markers (packtemplates.c): a joint's corners
  * within the map's r of its marker, the prop the strips away from its body, what it rides or holds as that hero's (not painted), and
@@ -907,6 +935,36 @@ static s32 map_in(V3 p, const TmplBox *b) {
     return (b->lo.x != 0 || b->hi.x != 0 || b->lo.y != 0 || b->hi.y != 0) && x >= b->lo.x && x <= b->hi.x && p.y >= b->lo.y
            && p.y <= b->hi.y && p.z >= b->lo.z && p.z <= b->hi.z;
 }
+/* whether p is within r of the bone from a to b (both there) */
+static s32 near_bone(V3 p, TmplPoint a, TmplPoint b, float r) {
+    V3 ab, ap;
+    float t;
+
+    if (!map_has(a) || !map_has(b)) {
+        return 0;
+    }
+    ab = vsub(map_v(b), map_v(a));
+    ap = vsub(p, map_v(a));
+    t = vdot(ab, ab) > 1e-6f ? vdot(ap, ab) / vdot(ab, ab) : 0;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    return vlen(vsub(ap, vmul(ab, t))) < r;
+}
+/* a corner of the rider's legs or forearms, where it sits astride what it rides (the polar bear: its legs down the bear's sides) */
+static s32 map_rider(V3 p) {
+    const TemplateMap *m = Map;
+    s32 i;
+
+    for (i = 0; i < 2; i++) {
+        /* its legs and arms, and round its feet and fists, which stick out further, and its seat */
+        if (near_bone(p, m->hip[i], m->knee[i], m->r * 1.5f) || near_bone(p, m->knee[i], m->ankle[i], m->r * 1.5f)
+            || near_bone(p, m->shoulder[i], m->elbow[i], m->r * 1.5f) || near_bone(p, m->elbow[i], m->hand[i], m->r * 1.5f)
+            || near_bone(p, m->ankle[i], m->ankle[i], m->r * 2.5f) || near_bone(p, m->hand[i], m->hand[i], m->r * 2.5f)
+            || near_bone(p, m->hips, m->hip[i], m->r * 2.0f)) {
+            return 1;
+        }
+    }
+    return 0;
+}
 static s32 map_prop(const V3 *at, s32 n, s32 textured, s32 strip) {
     s32 k, i, in = 0;
 
@@ -914,12 +972,20 @@ static s32 map_prop(const V3 *at, s32 n, s32 textured, s32 strip) {
     for (k = 0; k < n; k++) {
         for (i = 0; i < TMPL_BOXES && !map_in(at[k], &Map->prop[i]); i++) {
         }
-        in += i < TMPL_BOXES;
+        in += i < TMPL_BOXES && !(MapKind.lit && map_rider(at[k]));
     }
     return in * 2 > n;
 }
 static s32 map_frame(V3 p) {
     (void)p;
+    return 1;
+}
+static s32 map_any(V3 p) {
+    (void)p;
+    return 1;
+}
+static s32 map_any_prop(const V3 *at, s32 n, s32 textured, s32 strip) {
+    (void)at, (void)n, (void)textured, (void)strip;
     return 1;
 }
 static s32 map_grip(V3 p) {
@@ -1032,7 +1098,7 @@ static const FollowKind *map_kind(const FollowKind *crash, s32 hero) {
     MapKind.paint = NULL;
     MapKind.mesh = m->mesh1 > 0 ? m->mesh1 - 1 : crash->mesh;
     MapKind.carry = crash->carry != 0 && m->carry != 0 ? m->carry : crash->carry;
-    MapKind.scale = crash->scale * PackTemplateHeight[hero] / CRASH_HEIGHT * (m->scale > 0 ? m->scale : 1);
+    MapKind.scale = crash->kind == KIND_FOOT ? 1 : crash->scale * PackTemplateHeight[hero] / CRASH_HEIGHT * (m->scale > 0 ? m->scale : 1);
     return &MapKind;
 }
 
@@ -1177,12 +1243,17 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
         p->feet_ref[i] = c->nfeet[i] > 0 ? mid_of(c->ref, c->feet[i], c->nfeet[i]) : v3(0, sole, 0);
     }
     p->crash_hip_height = vmul(vadd(p->feet_ref[0], p->feet_ref[1]), 0.5f).y - mid_of(c->ref, c->hips, c->nhips).y;
-    if (fk->paint != NULL) {
-        fk->paint(c);
-    }
     if (fk->prop == NULL) {
+        /* none: its frames are the pack's alone (the part's corners still measure the hero) */
         made_images_free(c->prop.images, c->prop.nimages);
         c->prop.nfaces = c->prop.nimages = c->prop.nvert = 0;
+    }
+    if (out == NULL) {
+        /* only made ready, for its frames (pack_follow_foot): its part kept till pack_follow_foot_end */
+        return 1;
+    }
+    if (fk->paint != NULL) {
+        fk->paint(c);
     }
     all = malloc(sizeof(MadeFace) * (size_t)(nfaces + c->prop.nfaces));
     imgs = malloc(sizeof(MadeImage) * (size_t)(nimages + c->prop.nimages + 1));
@@ -1213,6 +1284,19 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     mm.rest_anim = 0;
     mm.frame = pack_frame_at;
     mm.ctx = p;
+    if (fk->lit) {
+        /* the second mesh the same faces charred, its LIGHT on it (as ride_make's) */
+        for (k = 0; k < mm.nfaces; k++) {
+            for (i = 0; i < 9; i++) {
+                all[k].rgb[1][i / 3][i % 3] = (u8)(all[k].rgb[0][i / 3][i % 3] * 0.3f);
+            }
+        }
+        for (i = 0; i < fk->nmoves; i++) {
+            c->anims[i].mesh = strcmp(fk->moves[i], "LIGHT") == 0;
+        }
+        mm.meshes = 2;
+        mm.shared_colours = mm.nfaces * 3 * 2 > 0x1FFF;
+    }
     ok = made_write(&mm, &out->tex[fk->kind], &out->tex_size[fk->kind], &out->mdl[fk->kind], &out->mdl_size[fk->kind]);
 done:
     free(all);
@@ -1223,16 +1307,19 @@ done:
 
 /* Its models of each kind where the game's heroes ride or hold something, followed as Crash's are (the top of this file): its rest pose
  * from its pack (pm, in glTF's axes), k its units to Crash Bash's on foot, and its feet's height there (ground) */
-void pack_follow_all(const char *id, const PackModel *pm, float k, float ground, const MadeFace *faces, s32 nfaces, const MadeImage *images,
-                     s32 nimages, const s32 *templates, HeroMade *out) {
-    static PackTrs local[PACK_MAX_BONES];
-    static float world[PACK_MAX_BONES][16], skinned[PF_MAX_VERTS * 3];
-    Packed *p = &ThePack;
-    s32 b, i, v, made = 0;
-    size_t kind;
+static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out) {
+    frame_at(ctx, a, (float)f, out);
+}
+
+/* The pack's rest pose and the bones the posing moves, found by their names: 0 if it hasn't them */
+static PackTrs BindLocal[PACK_MAX_BONES];
+static float BindWorld[PACK_MAX_BONES][16], BindSkinned[PF_MAX_VERTS * 3];
+static s32 pack_bind(Packed *p, const char *id, const PackModel *pm, float k, float ground) {
+    float (*world)[16] = BindWorld;
+    s32 b, i;
 
     if (pm->nvert > PF_MAX_VERTS) {
-        return;
+        return 0;
     }
     for (i = 0; i < PB_COUNT; i++) {
         p->pb[i] = -1;
@@ -1248,55 +1335,83 @@ void pack_follow_all(const char *id, const PackModel *pm, float k, float ground,
         }
         if (p->pb[i] < 0) {
             printf("hero packs: %s has no %s bone, so it plays on foot where others ride\n", id, PbNames[i]);
-            return;
+            return 0;
         }
     }
     p->pm = pm;
     p->k = k;
     p->ground = ground;
     p->n = pm->nvert;
-    pack_pose_local(pm, -1, 0, local);
-    pack_pose_world(pm, local, world);
-    pack_skin(pm, (const float(*)[16])world, skinned);
-    for (kind = 0; kind < sizeof(PackKinds) / sizeof(PackKinds[0]); kind++) {
-        const FollowKind *fk = PackKinds[kind];
-        s32 hero = templates != NULL ? templates[fk->kind] : 1;
-        V3 hips;
+    pack_pose_local(pm, -1, 0, BindLocal);
+    pack_pose_world(pm, BindLocal, world);
+    pack_skin(pm, (const float(*)[16])world, BindSkinned);
+    return 1;
+}
 
+/* The pack as it rests, at its size on a kind, about its hips, and its bones' roles there */
+static void pack_prep(Packed *p, const FollowKind *fk) {
+    const PackModel *pm = p->pm;
+    float (*world)[16] = BindWorld, *skinned = BindSkinned, k = p->k, ground = p->ground;
+    s32 b, i, v;
+    V3 hips;
+
+    p->scale = fk->scale;
+    hips = v3(world[p->pb[PB_HIPS]][12] * k, -(world[p->pb[PB_HIPS]][13] - ground) * k, -world[p->pb[PB_HIPS]][14] * k);
+
+    /* in Crash Bash's axes and units at its size on this, about its hips */
+    for (v = 0; v < pm->nvert; v++) {
+        V3 at = v3(skinned[v * 3] * k, -(skinned[v * 3 + 1] - ground) * k, -skinned[v * 3 + 2] * k);
+
+        p->rest[v] = vadd(hips, vmul(vsub(at, hips), fk->scale));
+    }
+    for (b = 0; b < pm->nbones; b++) {
+        V3 at = v3(world[b][12] * k, -(world[b][13] - ground) * k, -world[b][14] * k);
+        const char *n = pm->bones[b].name;
+        char c0 = (char)(n[0] | 32), c1 = (char)(n[0] != 0 ? n[1] | 32 : 0);
+
+        p->bone[b] = vadd(hips, vmul(vsub(at, hips), fk->scale));
+        p->lower[b] = (s8)((c0 == 't' && c1 == 'h') || (c0 == 's' && c1 == 'h') || (c0 == 'f' && c1 == 'o'));
+        p->role[b] = -1;
+    }
+    for (i = 0; i < PB_COUNT; i++) {
+        p->role[p->pb[i]] = (s8)i;
+    }
+    p->sole = -1e9f;
+    for (v = 0; v < pm->nvert; v++) {
+        p->sole = p->rest[v].y > p->sole ? p->rest[v].y : p->sole;
+    }
+    p->across = pack_frame(p);
+    p->hip_height = (p->bone[p->pb[PB_FOOT_L]].y + p->bone[p->pb[PB_FOOT_R]].y) / 2 - p->bone[p->pb[PB_HIPS]].y;
+}
+
+void pack_follow_all(const char *id, const PackModel *pm, float k, float ground, const MadeFace *faces, s32 nfaces, const MadeImage *images,
+                     s32 nimages, const s32 *templates, HeroMade *out) {
+    Packed *p = &ThePack;
+    s32 made = 0;
+    size_t kind;
+
+    if (!pack_bind(p, id, pm, k, ground)) {
+        return;
+    }
+    /* each kind Crash's tables have, then the polar bear where its template isn't Crash (his is ride_make's) */
+    for (kind = 0; kind <= sizeof(PackKinds) / sizeof(PackKinds[0]); kind++) {
+        const FollowKind *fk = kind < sizeof(PackKinds) / sizeof(PackKinds[0]) ? PackKinds[kind] : &PolarKind;
+        s32 hero = templates != NULL ? templates[fk->kind] : 1;
+
+        if (fk == &PolarKind && hero <= 1) {
+            continue;
+        }
         /* its template's kind (another hero's, by its map), else Crash's */
         if (hero > 1 && map_kind(fk, hero) != NULL) {
             fk = &MapKind;
             printf("hero packs: %s follows hero %d %s\n", id, hero, fk->what);
         } else if (hero > 1) {
             printf("hero packs: %s follows Crash %s: there's no map of hero %d's model of it yet\n", id, fk->what, hero);
+            if (fk == &PolarKind) {
+                continue;
+            }
         }
-        hips = v3(world[p->pb[PB_HIPS]][12] * k, -(world[p->pb[PB_HIPS]][13] - ground) * k, -world[p->pb[PB_HIPS]][14] * k);
-
-        /* in Crash Bash's axes and units at its size on this, about its hips */
-        for (v = 0; v < pm->nvert; v++) {
-            V3 at = v3(skinned[v * 3] * k, -(skinned[v * 3 + 1] - ground) * k, -skinned[v * 3 + 2] * k);
-
-            p->rest[v] = vadd(hips, vmul(vsub(at, hips), fk->scale));
-            p->scale = fk->scale;
-        }
-        for (b = 0; b < pm->nbones; b++) {
-            V3 at = v3(world[b][12] * k, -(world[b][13] - ground) * k, -world[b][14] * k);
-            const char *n = pm->bones[b].name;
-            char c0 = (char)(n[0] | 32), c1 = (char)(n[0] != 0 ? n[1] | 32 : 0);
-
-            p->bone[b] = vadd(hips, vmul(vsub(at, hips), fk->scale));
-            p->lower[b] = (s8)((c0 == 't' && c1 == 'h') || (c0 == 's' && c1 == 'h') || (c0 == 'f' && c1 == 'o'));
-            p->role[b] = -1;
-        }
-        for (i = 0; i < PB_COUNT; i++) {
-            p->role[p->pb[i]] = (s8)i;
-        }
-        p->sole = -1e9f;
-        for (v = 0; v < pm->nvert; v++) {
-            p->sole = p->rest[v].y > p->sole ? p->rest[v].y : p->sole;
-        }
-        p->across = pack_frame(p);
-        p->hip_height = (p->bone[p->pb[PB_FOOT_L]].y + p->bone[p->pb[PB_FOOT_R]].y) / 2 - p->bone[p->pb[PB_HIPS]].y;
+        pack_prep(p, fk);
         if (pack_follow_one(p, fk, faces, nfaces, images, nimages, out)) {
             made++;
         } else {
@@ -1304,4 +1419,39 @@ void pack_follow_all(const char *id, const PackModel *pm, float k, float ground,
         }
     }
     printf("hero packs: %s rides and holds things in %d of the games' kinds\n", id, made);
+}
+
+/* On foot, as its template stands (packheroes.c's model on foot): made ready to give frames, the template's moves on foot, and let go */
+s32 pack_follow_foot(const char *id, const PackModel *pm, float k, float ground, s32 hero) {
+    Packed *p = &ThePack;
+
+    if (!pack_bind(p, id, pm, k, ground) || map_kind(&FootKind, hero) == NULL) {
+        return 0;
+    }
+    pack_prep(p, &MapKind);
+    if (!pack_follow_one(p, &MapKind, NULL, 0, NULL, 0, NULL)) {
+        hm_part_free(&p->c.prop);
+        return 0;
+    }
+    printf("hero packs: %s stands as hero %d does\n", id, hero);
+    return 1;
+}
+
+/* Its moves on foot (FootNames), each with its frames, or 0 frames if the template's model hasn't it */
+s32 pack_follow_foot_moves(const char *const **names, s32 *frames) {
+    s32 i;
+
+    for (i = 0; i < 5; i++) {
+        frames[i] = ThePack.c.anims[i].frames;
+    }
+    *names = FootNames;
+    return 5;
+}
+
+void pack_follow_foot_frame(s32 move, float f, V3 *out) {
+    frame_at(&ThePack, move, f, out);
+}
+
+void pack_follow_foot_end(void) {
+    hm_part_free(&ThePack.c.prop);
 }

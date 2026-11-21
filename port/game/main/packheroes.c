@@ -13,6 +13,7 @@
 #include "bash/extraheroes.h"
 #include "bash/bonusheroes.h"
 #include "bash/heromake.h"
+#include "bash/packtemplate.h"
 #include "../../platform/heropack.h"
 #include "../../platform/mods.h"
 
@@ -49,6 +50,17 @@ OVL_HERE
 
 void pack_follow_all(const char *id, const PackModel *pm, float k, float ground, const MadeFace *faces, s32 nfaces, const MadeImage *images,
                      s32 nimages, const s32 *templates, HeroMade *out);
+s32 pack_follow_foot(const char *id, const PackModel *pm, float k, float ground, s32 hero);
+s32 pack_follow_foot_moves(const char *const **names, s32 *frames);
+void pack_follow_foot_frame(s32 move, float f, V3 *out);
+void pack_follow_foot_end(void);
+
+/* The template it follows on foot, or 0: its kind's own, or the pack's if hero.json says one, where there's a map of that hero on foot */
+static s32 foot_template(const PackInfo *info) {
+    s32 h = info->kinds[KIND_FOOT].template_hero > 0 ? info->kinds[KIND_FOOT].template_hero : info->template_said ? info->template_hero : 0;
+
+    return h > 0 && pack_template_map(h, KIND_FOOT) != NULL ? h : 0;
+}
 
 /* Each job of a pack's sounds as the game's voices (herodef.h's VOICE_), and the job each of a base's sound offsets does for the game's
  * own heroes (EXTRA_HEROES.md, His sounds): an offset a pack doesn't name plays it, if the pack has that job's file */
@@ -112,14 +124,25 @@ static void slot_def(PackSlot *s, s32 slot) {
     for (k = 0; k < NUM_KINDS; k++) {
         const PackKind *pk = &s->info.kinds[k];
 
-        for (i = 0; i < pk->nstands; i++) {
-            s->stands[k][i].from = pk->stands[i].from;
-            s->stands[k][i].to = pk->stands[i].to;
-            s->stands[k][i].pace = pk->stands[i].pace == 1 ? LOOP : pk->stands[i].pace == 2 ? ONCE : STRETCH;
+        for (i = 0, n = 0; i < pk->nstands; i++) {
+            s32 m;
+
+            for (m = 0; k == KIND_FOOT && foot_template(&s->info) && m < PACK_FOOT_MOVES; m++) {
+                if (same(pk->stands[i].from, PackFootMoves[m]) && !same(pk->stands[i].to, PackFootMoves[m])) {
+                    break;
+                }
+            }
+            if (k == KIND_FOOT && foot_template(&s->info) && m < PACK_FOOT_MOVES) {
+                continue;
+            }
+            s->stands[k][n].from = pk->stands[i].from;
+            s->stands[k][n].to = pk->stands[i].to;
+            s->stands[k][n].pace = pk->stands[i].pace == 1 ? LOOP : pk->stands[i].pace == 2 ? ONCE : STRETCH;
+            n++;
         }
-        s->stands[k][i].from = NULL;
-        s->stands[k][i].to = NULL;
-        s->stands[k][i].pace = STRETCH;
+        s->stands[k][n].from = NULL;
+        s->stands[k][n].to = NULL;
+        s->stands[k][n].pace = STRETCH;
         d->kinds[k].stands = s->stands[k];
         d->kinds[k].otherwise = pk->otherwise[0] != 0 ? pk->otherwise : "BREATHE";
         d->kinds[k].keep_lift = pk->keep_lift;
@@ -398,6 +421,8 @@ typedef struct {
     float length[PACK_MAX_ANIMS];
     s32 frames[PACK_MAX_ANIMS];
     float k, ground;          /* glTF's metres to Crash Bash's units, and its feet's height as it rests */
+    s32 follow[PACK_MAX_ANIMS]; /* each animation's move of its template on foot (packfollow.c), or -1 its clip */
+    s32 sub;                  /* its frames to each of the template's */
 } Foot;
 
 static Foot TheFoot;
@@ -412,6 +437,10 @@ static void foot_frame(void *ctx, s32 anim, s32 f, V3 *out) {
     float t = ft->frames[anim] > 1 ? ft->length[anim] * (float)f / (float)(ft->frames[anim] - 1) : 0;
     s32 v;
 
+    if (ft->follow[anim] >= 0) {
+        pack_follow_foot_frame(ft->follow[anim], (float)f / (float)ft->sub, out);
+        return;
+    }
     pack_pose_local(pm, ft->clip[anim], t, local);
     pack_pose_world(pm, local, world);
     pack_skin(pm, (const float(*)[16])world, skinned);
@@ -575,7 +604,7 @@ static s32 make_pack(s32 slot, HeroMade *out) {
     static PackTrs local[PACK_MAX_BONES];
     static float world[PACK_MAX_BONES][16];
     PackSlot *s = &Slots[slot];
-    s32 image_of[PACK_MAX_IMAGES], nimages = 0, nanims = 0, rest_anim = -1, i, j, c, ok = 0;
+    s32 image_of[PACK_MAX_IMAGES], nimages = 0, nanims = 0, rest_anim = -1, i, j, c, ok = 0, followed = 0;
     float lo = 1e9f, hi = -1e9f;
     size_t size = 0;
     u8 *glb = mods_hero_file(s->index, "hero.glb", PACK_GLB_BYTES, &size);
@@ -619,12 +648,47 @@ static s32 make_pack(s32 slot, HeroMade *out) {
         image_of[i] = nimages < MADE_MAX_IMAGES && made_image(&pm.images[i], &images[nimages]) ? nimages++ : -1;
     }
 
-    /* its animations on foot: its clips for it, at their own length, and BREATHE as it rests if it has no clip of that */
-    for (i = 0; i < pm.nclips && nanims < PACK_MAX_ANIMS; i++) {
-        const char *move = clip_move(pm.clips[i].name, KIND_FOOT);
+    /* its animations on foot: its template's moves there (packfollow.c), but for any it has a clip of its own for, foot/MOVE; then
+       its clips, at their own length, those named foot/ first, a plain one of a move already there left out; and BREATHE as it rests
+       if it has none of that */
+    for (i = 0; i < PACK_MAX_ANIMS; i++) {
+        TheFoot.follow[i] = -1;
+    }
+    TheFoot.sub = s->info.kinds[KIND_FOOT].subframes;
+    followed = foot_template(&s->info) > 0 && pack_follow_foot(s->info.id, &pm, TheFoot.k, TheFoot.ground, foot_template(&s->info));
+    if (followed) {
+        const char *const *fnames;
+        s32 fframes[PACK_FOOT_MOVES], nf = pack_follow_foot_moves(&fnames, fframes), m;
+
+        for (m = 0; m < nf && nanims < PACK_MAX_ANIMS; m++) {
+            char own[PACK_ANIM_NAME + 8];
+
+            snprintf(own, sizeof(own), "foot/%s", fnames[m]);
+            for (j = 0; j < pm.nclips && !same(pm.clips[j].name, own); j++) {
+            }
+            if (j < pm.nclips || fframes[m] <= 0) {
+                continue;
+            }
+            snprintf(names[nanims], sizeof(names[nanims]), "%s", fnames[m]);
+            TheFoot.follow[nanims] = m;
+            TheFoot.clip[nanims] = -1;
+            TheFoot.frames[nanims] = fframes[m] * TheFoot.sub;
+            TheFoot.frames[nanims] = TheFoot.frames[nanims] > MADE_MAX_FRAMES ? MADE_MAX_FRAMES : TheFoot.frames[nanims];
+            anims[nanims].name = names[nanims];
+            anims[nanims].frames = TheFoot.frames[nanims];
+            anims[nanims].mesh = 0;
+            anims[nanims].step = TheFoot.sub;
+            rest_anim = strcmp(names[nanims], "BREATHE") == 0 ? nanims : rest_anim;
+            nanims++;
+        }
+    }
+    for (i = 0; i < pm.nclips * 2 && nanims < PACK_MAX_ANIMS; i++) {
+        const PackClip *cl = &pm.clips[i % pm.nclips];
+        const char *move = clip_move(cl->name, KIND_FOOT);
         s32 sub = s->info.kinds[KIND_FOOT].subframes, frames;
 
-        if (move == NULL || move[0] == 0) {
+        /* (those named foot/ in the first pass, the plain ones in the second) */
+        if (move == NULL || move[0] == 0 || (i < pm.nclips) != (move != cl->name)) {
             continue;
         }
         for (j = 0; j < nanims && !same(names[j], move); j++) {
@@ -636,10 +700,10 @@ static s32 make_pack(s32 slot, HeroMade *out) {
             names[nanims][c] = (char)(move[c] >= 'a' && move[c] <= 'z' ? move[c] - 'a' + 'A' : move[c]);
         }
         names[nanims][c] = 0;
-        frames = (s32)(pm.clips[i].length * PACK_TICKS * sub + 0.5f) + 1;
+        frames = (s32)(cl->length * PACK_TICKS * sub + 0.5f) + 1;
         frames = frames < 2 ? 2 : frames > MADE_MAX_FRAMES ? MADE_MAX_FRAMES : frames;
-        TheFoot.clip[nanims] = i;
-        TheFoot.length[nanims] = pm.clips[i].length;
+        TheFoot.clip[nanims] = i % pm.nclips;
+        TheFoot.length[nanims] = cl->length;
         TheFoot.frames[nanims] = frames;
         anims[nanims].name = names[nanims];
         anims[nanims].frames = frames;
@@ -760,8 +824,18 @@ static s32 make_pack(s32 slot, HeroMade *out) {
             printf("hero packs: %s has no podium model\n", s->info.id);
         }
     }
-    /* riding a polar bear, sat on Crash's (Polar Push) */
-    pack_ride(s, &pm, faces, pm.ntri, images, nimages, out);
+    if (followed) {
+        pack_follow_foot_end();
+        followed = 0;
+    }
+    /* riding a polar bear, sat on Crash's (Polar Push), unless it follows another hero on its own bear (packfollow.c) */
+    {
+        s32 ph = s->info.kinds[KIND_POLAR].template_hero > 0 ? s->info.kinds[KIND_POLAR].template_hero : s->info.template_hero;
+
+        if (ph <= 1 || pack_template_map(ph, KIND_POLAR) == NULL) {
+            pack_ride(s, &pm, faces, pm.ntri, images, nimages, out);
+        }
+    }
     /* and the kinds where the heroes ride or hold something else, following its template in each, Crash or another (packfollow.c;
        docs/HERO_PACKS.md, Templates) */
     {
@@ -821,6 +895,9 @@ static s32 make_pack(s32 slot, HeroMade *out) {
            pm.nvert, pm.nbones, nanims, nimages, out->mdl_size[KIND_FOOT], out->card != NULL ? ", its card" : "");
     ok = 1;
 done:
+    if (followed) {
+        pack_follow_foot_end();
+    }
     made_images_free(images, nimages);
     pack_model_free(&pm);
     return ok;

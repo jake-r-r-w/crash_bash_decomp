@@ -9,6 +9,7 @@
 
 /* Each hero standing: its model on foot's height (crate2), 1 Crash to 8 Rilla Roo */
 const float PackTemplateHeight[9] = { 452, 452, 627, 440, 606, 724, 666, 697, 733 };
+const char *const PackFootMoves[PACK_FOOT_MOVES] = { "BREATHE", "HIT", "SKATE", "SLIDE", "WIN" };
 
 #define P(x, y, z) { x, y, z }
 #define PAIR(x, y, z) { P(-(x), y, z), P(x, y, z) }
@@ -17,7 +18,37 @@ const float PackTemplateHeight[9] = { 452, 452, 627, 440, 606, 724, 666, 697, 73
 #define BOTH(x0, y0, z0, x1, y1, z1) { P(x0, y0, z0), P(x1, y1, z1), 1 }
 #define BOX(x0, y0, z0, x1, y1, z1) { P(x0, y0, z0), P(x1, y1, z1), 0 }
 
+/* a hero standing (crate2, its BREATHE): hips, chest, head, its arms and its feet; no prop */
+#define FOOT(hero, bank, r, hy, cy, hd, sx, sy, ex, ey, ez, ax, ay, az, fx, fz) \
+    { hero, KIND_FOOT, bank, r, P(0, hy, 0), P(0, cy, 0), hd, PAIR(sx, sy, 0), PAIR(ex, ey, ez), PAIR(ax, ay, az), \
+      NONE, NONE, NONE, PAIR(fx, -15, fz), NONE, NONE, { { P(0, 0, 0), P(0, 0, 0), 0 } }, 1, 0 }
+
+/* a hero on its polar bear (polar2, its BREATHE): sat on its back, its legs down its sides; the bear the corners in its box but the
+ * rider's legs' and forearms' (packfollow.c, map_rider) */
+#define POLAR(hero, bank, r, hy, cy, hd, sx, sy, sz, ex, ey, ez, ax, ay, az, hx, kx, ky, kz, nx, ny, nz, bx) \
+    { hero, KIND_POLAR, bank, r, P(0, hy, 20), P(0, cy, 10), hd, PAIR(sx, sy, sz), PAIR(ex, ey, ez), PAIR(ax, ay, az), \
+      PAIR(hx, hy + 20, 20), PAIR(kx, ky, kz), PAIR(nx, ny, nz), NONE, NONE, NONE, { BOX(-(bx), -240, -330, bx, 15, 160) }, 1, 0 }
+
 static const TemplateMap Maps[] = {
+    /* -- on the polar bear, every hero but Crash (his is ride_make's) -- */
+    POLAR(2, DB_CharsPolar2Coco, 25, -240, -330, P(0, -470, 0), 35, -330, 10, 60, -270, -30, 40, -230, -80, 40, 90, -190, 20, 115, -110, 0, 105),
+    POLAR(3, DB_CharsPolar2Cortex, 25, -220, -290, P(0, -440, -60), 60, -300, 20, 100, -220, 0, 120, -150, -20, 40, 90, -170, 0, 110, -110, 0, 105),
+    POLAR(4, DB_CharsPolar2Brio, 25, -230, -330, P(0, -580, -120), 50, -370, 0, 110, -260, 0, 80, -150, -40, 40, 90, -170, -20, 100, -100, -20, 105),
+    POLAR(5, DB_CharsPolar2Tiny, 45, -260, -400, P(0, -580, -150), 200, -480, 40, 270, -330, 40, 240, -150, 0, 80, 150, -190, -40, 180, -110, -60, 105),
+    POLAR(6, DB_CharsPolar2Kong, 45, -260, -420, P(0, -590, -120), 230, -500, 0, 320, -320, 0, 300, -130, -20, 80, 170, -160, -40, 200, -90, -80, 105),
+    POLAR(7, DB_CharsPolar2Dingo, 35, -230, -400, P(0, -620, -150), 110, -480, -20, 140, -330, -20, 130, -230, -40, 60, 120, -160, -40, 140, -100, -60, 105),
+    POLAR(8, DB_CharsPolar2Rilla, 40, -250, -420, P(0, -620, -150), 170, -480, -20, 220, -330, -20, 200, -200, -40, 80, 160, -160, -40, 180, -100, -60, 105),
+
+    /* -- on foot, every hero (Crash's too: his tables never had it) -- */
+    FOOT(1, DB_CharsCrate2Crash, 20, -170, -260, P(0, -380, -60), 60, -300, 100, -210, 10, 110, -120, 0, 55, -40),
+    FOOT(2, DB_CharsCrate2Coco, 20, -250, -350, P(0, -480, -30), 40, -380, 70, -285, 5, 70, -230, 10, 30, -40),
+    FOOT(3, DB_CharsCrate2Cortex, 25, -150, -220, P(0, -380, -60), 60, -230, 100, -170, 20, 110, -100, 30, 40, -30),
+    FOOT(4, DB_CharsCrate2Brio, 25, -170, -260, P(0, -500, -70), 50, -300, 90, -200, 20, 120, -90, 20, 40, -40),
+    FOOT(5, DB_CharsCrate2Tiny, 50, -270, -430, P(0, -580, -150), 190, -500, 270, -360, 40, 260, -160, 40, 150, -180),
+    FOOT(6, DB_CharsCrate2Kong, 50, -330, -500, P(0, -680, -140), 220, -620, 290, -460, -40, 270, -230, -60, 110, -110),
+    FOOT(7, DB_CharsCrate2Dingo, 35, -230, -430, P(0, -610, -160), 100, -520, 120, -400, -40, 130, -280, -60, 90, -120),
+    FOOT(8, DB_CharsCrate2Rilla, 40, -250, -420, P(0, -600, -150), 170, -500, 240, -380, -20, 240, -230, -40, 110, -110),
+
     /* -- Tiny (5) -- */
     /* his pogo: he stands on its pegs, nothing to hold, his arms hanging */
     { 5, KIND_POGO, DB_CharsPogoTiny, 60,

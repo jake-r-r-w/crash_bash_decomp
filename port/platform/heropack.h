@@ -44,6 +44,7 @@ typedef struct {
     int height;                /* standing, in the game's units (Crash 452, most about 650) */
     int template_hero;         /* the original hero it follows in every kind ("template"; 1 Crash, the first, to 8 Rilla Roo), each move
                                 * of its own clips (KIND/MOVE) in that move's place */
+    int template_said;         /* whether hero.json says so: only then does it follow it on foot too (a pack from before keeps its own) */
     PackKind kinds[PACK_KINDS];
     int voices[PACK_SOUNDS];   /* each of its base's sound offsets: PACK_VOICE_ (its own sound for a job, its base's, none, or not said) */
     char face[PACK_ANIM_NAME]; /* the clip its face is drawn from if it has no card */

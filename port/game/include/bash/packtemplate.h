@@ -32,6 +32,9 @@ typedef struct {
     s32 carry;     /* the hand it carries its prop in, 1 its left, 2 its right (0: Crash's kind's: Cortex has his keg on his right) */
 } TemplateMap;
 
+/* The moves on foot a template gives (the crate games' heroes', the same for all eight) */
+#define PACK_FOOT_MOVES 5
+extern const char *const PackFootMoves[PACK_FOOT_MOVES];
 /* Each original hero's height on foot (its model of it, crate2), 1 Crash to 8 Rilla Roo */
 extern const float PackTemplateHeight[9];
 /* The map of a hero's model of a kind, or NULL if there's none yet (the pack follows Crash's there) */

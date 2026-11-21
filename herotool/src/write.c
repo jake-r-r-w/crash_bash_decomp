@@ -320,7 +320,8 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
         say(&hero, "{\n  \"format\": 1,\n  \"id\": \"%s\",\n  \"name\": \"%s\",\n  \"prefer\": \"%s\",\n  \"height\": %d,\n  \"face\": \"BREATHE\",\n"
                    "  \"face_turn\": 20,\n",
             p->id, p->name, p->prefer, p->height);
-        if (p->template_hero != NULL && SDL_strcasecmp(p->template_hero, "crash") != 0) {
+        /* said, Crash too: a pack that says its template follows it on foot as well (one that doesn't keeps its own moves there) */
+        if (p->template_hero != NULL) {
             say(&hero, "  \"template\": \"%s\",\n", p->template_hero);
         }
         if (p->face_head > 0) {

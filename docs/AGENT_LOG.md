@@ -125,8 +125,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   of model, the hero tool (window and CLI, rigged or markers, 1365 triangles a hard limit), the launcher's CUSTOM HEROES and HERO
   TOOL, online play (`online --heroes`), and Roo, Pinstripe and the disc reading removed. Phase 6 too: every hero is a template
   (`"template"`, packtemplates.c's maps; the user's design: a template per game, its own moves overriding), the tool previews the
-  hero in every game (`--dump-hero`), and `--own GAME/MOVE=MOVE` overrides. Left: templates on foot, the podium and the polar bear
-  (still its own moves and Crash's bear); a few slivers of heroes kept with props; models of other shapes than Bobby through the tool;
+  hero in every game (`--dump-hero`), and `--own GAME/MOVE=MOVE` overrides; on foot, the podium and the polar bear follow templates too
+  (a pack that says one). Left: a few slivers of heroes kept with props and bears, unfilled holes in other heroes' bears; models of other shapes than Bobby through the tool;
   the hero tool's window on Linux (built and its CLI run, 2026-11-21, not looked at). Fixes go in the loader or the tool, never one
   hero's. The tool's output differs between Windows and Linux in a few float bits (each system's maths library), so a pack is
   shared as its files, and the same files match online whoever made them.
@@ -665,6 +665,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-21 (late): templates on foot (FootKind, crate2 maps for all eight incl. Crash; only for packs whose hero.json says a
+  template, so Bobby's is unchanged; foot/MOVE clips override), the podium with them (made from the foot), and the polar bear
+  (PolarKind on polar2, a charred LIGHT mesh, rider bits kept off the bear by map_rider). pack_follow_all split into pack_bind and
+  pack_prep. Gotcha: a follower set up for frames only must still zero a prop-less kind's prop vertices (it overran the foot model).
 
 - 2026-11-21 (night, the user AFK): hero packs' phase 6 as the user put it, templates. The tool's preview: `--dump-hero ID DIR` makes
   a pack and writes each kind's model (made_dump, HPV1), the tool's In the games tab shows them. Templates: `"template": HERO`, each

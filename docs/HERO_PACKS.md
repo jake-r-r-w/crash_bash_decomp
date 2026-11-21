@@ -140,8 +140,20 @@ What differs between them, all in the maps:
 - **The other hand**: Cortex and Brio carry the keg on the right, and Brio his mallet (`carry` 2).
 - **A thin prop**: one too small to fit a frame to (Dingodile's pogo stick) takes the model's own frame.
 
-A pack on foot, on the podium and on the polar bear is still its own moves and Crash's bear: those kinds aren't followed for any
-template yet.
+**On foot, the podium and the polar bear** (2026-11-21, later):
+
+- **On foot**, a pack that says its template (`"template"` in hero.json, Crash too; the tool's window always writes it) stands and
+  moves as that hero does in the crate games: its BREATHE, HIT, SKATE, SLIDE and WIN (`PackFootMoves`) followed from that hero's
+  crate2 model (`FootKind`, at the pack's own size, its feet on the floor), each at the pack's subframes. A clip `foot/MOVE` of its own
+  takes one's place; its plain clips (the tool's standard moves) are its other moves on foot (RUN, JUMP, ATTACK ...), and a stand-in
+  that would send a followed move to another is left out. A pack that doesn't say one (Bobby's, from before) keeps its own moves.
+  Crash has a foot map like the others (`FOOT(1, ...)`): his tables never had on foot.
+- **The podium** is made from its model on foot (its WIN, its rest, HIT as it loses), so it's its template's win.
+- **The polar bear**: another hero's template follows that hero's polar2 model (`PolarKind`, its LIGHT on a second, charred mesh as
+  ride_make's has it); Crash's is still `ride_make` on his bear. Each hero's bear is a box (`POLAR`: ±105 across, below its back),
+  less any corner near the rider's legs, arms, feet, fists or seat (`map_rider`), as they sit astride it. Left: a few of the riders'
+  bits still kept (Tiny's and Rilla Roo's red, a dark wedge on Kong's, some of which may be the bears' own mouths), and the holes in
+  a bear where its rider covered it, which ride_make fills on Crash's (`bear_fill`), aren't filled.
 
 ## Online
 
