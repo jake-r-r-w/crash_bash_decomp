@@ -8,6 +8,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <SDL3/SDL.h>
@@ -41,6 +42,8 @@ struct View {
     float pitch = 0, zoom = 1, zx = 0, zy = 0;
     // the game's x and z at the middle of what draw_made drew (its model's middle, which it's turned about)
     float cx = 0, cz = 0;
+    // a floor's grid under it, as Blender's (draw_made's: floor_grid)
+    bool grid = false;
 };
 
 enum { OWN_TEMPLATE = -1, OWN_CLIP = -2, OWN_MADE = -3 };
@@ -256,7 +259,7 @@ void look_around(View &v, float &yaw, int button = 0) {
         // back to front)
         yaw -= io.MouseDelta.x * 0.5f;
         yaw = yaw > 180 ? yaw - 360 : yaw < -180 ? yaw + 360 : yaw;
-        v.pitch = fmaxf(-60, fminf(80, v.pitch + io.MouseDelta.y * 0.4f));
+        v.pitch = fmaxf(-90, fminf(90, v.pitch + io.MouseDelta.y * 0.4f));
     }
     if (io.MouseWheel != 0) {
         v.zoom = fmaxf(0.4f, fminf(6, v.zoom * powf(1.15f, io.MouseWheel)));
@@ -662,6 +665,47 @@ void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &
 
 // With what the game draws beside it (rides, still: their one frame), fitted to them all; its frame's vertices from live if given (made
 // again with its adjustments, adjusted_frame)
+// The floor under a game's model, as Blender's (the user's word, 2026-11-22: "a direction grid like blender"): the ground at ground (up
+// from the game's y 0, as the picture's y is) in squares of 50 of the game's units, fading out from its middle (the game's x 0, z 0),
+// its line across red (Blender's X, the hero's left and right) and its line front to back green (Y), drawn where the model doesn't hide it
+void floor_grid(View &v, int PW, int PH, float cx, float cz, float ground) {
+    const int N = 10;
+    const float Step = 50, Far = N * Step;
+
+    // a line on the ground, from the game's (x0, z0) to (x1, z1), wide pixels wide (as the picture's made bigger on a bigger screen)
+    auto line = [&](float x0, float z0, float x1, float z1, int r, int g, int b, float strength, int wide) {
+        float p0[3] = { x0 - cx, ground, -z0 - cz }, p1[3] = { x1 - cx, ground, -z1 - cz }, ax, ay, az, bx, by, bz;
+        to_screen(v, p0, ax, ay, az);
+        to_screen(v, p1, bx, by, bz);
+        bool across = fabsf(bx - ax) >= fabsf(by - ay); // a step a column, its width down it, or a step a row, its width along it
+        int n = (int)fminf(8192, fmaxf(fabsf(bx - ax), fabsf(by - ay))) + 1;
+        for (int k = 0; k <= n; k++) {
+            float t = (float)k / n, gx = x0 + (x1 - x0) * t, gz = z0 + (z1 - z0) * t, z = az + (bz - az) * t;
+            float al = strength * (1 - (gx * gx + gz * gz) / (Far * Far));
+            int x0p = (int)(ax + (bx - ax) * t) - (across ? 0 : wide / 2), y0p = (int)(ay + (by - ay) * t) - (across ? wide / 2 : 0);
+            for (int w = 0; w < wide && al > 0; w++) {
+                int x = x0p + (across ? 0 : w), y = y0p + (across ? w : 0);
+                if (x < 0 || y < 0 || x >= PW || y >= PH || z >= v.depth[y * PW + x]) {
+                    continue;
+                }
+                unsigned was = v.rgba[y * PW + x];
+                unsigned R = (unsigned)((was & 255) * (1 - al) + r * al), G = (unsigned)((was >> 8 & 255) * (1 - al) + g * al);
+                unsigned B = (unsigned)((was >> 16 & 255) * (1 - al) + b * al);
+                v.rgba[y * PW + x] = 0xFF000000u | B << 16 | G << 8 | R;
+            }
+        }
+    };
+    int wide = PW / 500 > 1 ? PW / 500 : 1;
+    for (int i = -N; i <= N; i++) {
+        if (i != 0) {
+            line(i * Step, -Far, i * Step, Far, 160, 160, 172, 0.55f, wide);
+            line(-Far, i * Step, Far, i * Step, 160, 160, 172, 0.55f, wide);
+        }
+    }
+    line(-Far, 0, Far, 0, 240, 80, 80, 1, wide + 1);
+    line(0, -Far, 0, Far, 130, 220, 80, 1, wide + 1);
+}
+
 void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren, const KitMade *rides = nullptr, int nrides = 0,
                const int16_t *live = nullptr) {
     const int PW = v.w > 0 ? v.w : PrevW, PH = v.h > 0 ? v.h : PrevH;
@@ -695,12 +739,14 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
         }
     }
     float h = hi[1] - lo[1], w = sqrtf((hi[0] - lo[0]) * (hi[0] - lo[0]) + (hi[2] - lo[2]) * (hi[2] - lo[2]));
-    v.scale = fminf(PH * 0.8f / (h > 0 ? h : 1), PW * 0.8f / (w > 0 ? w : 1));
+    // as tall as it looks from the view's tilt (from above, as deep as it is), and its middle in the picture's
+    float pc = cosf(v.pitch * 3.14159265f / 180), tall = fmaxf(h * fabsf(pc), w * fabsf(sinf(v.pitch * 3.14159265f / 180)));
+    v.scale = fminf(PH * 0.8f / (tall > 0 ? tall : 1), PW * 0.8f / (w > 0 ? w : 1));
     float cx = (lo[0] + hi[0]) / 2, cz = (lo[2] + hi[2]) / 2;
     v.cx = cx;
     v.cz = cz;
     v.ox = PW / 2.0f;
-    v.oy = PH * 0.9f + lo[1] * v.scale;
+    v.oy = PH * 0.5f + (lo[1] + hi[1]) / 2 * pc * v.scale;
     v.zx = PW / 2.0f;
     v.zy = PH / 2.0f;
     raster_made(m, vs, cx, cz, v, PW, PH);
@@ -708,6 +754,10 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
         if (rides[r].nanims > 0) {
             raster_made(&rides[r], rides[r].anims[0].verts, cx, cz, v, PW, PH);
         }
+    }
+    if (v.grid) {
+        // on the game's ground (its y 0), or where the move's lowest is if that's far from it
+        floor_grid(v, PW, PH, cx, cz, fabsf(lo[1]) > h * 0.25f ? lo[1] : 0);
     }
     SDL_UpdateTexture(v.tex, nullptr, v.rgba, PW * 4);
 }
@@ -1239,16 +1289,81 @@ float seg_px(ImVec2 m, ImVec2 a, ImVec2 b) {
     return sqrtf((m.x - a.x - dx * t) * (m.x - a.x - dx * t) + (m.y - a.y - dy * t) * (m.y - a.y - dy * t));
 }
 
-// Whether a bone is moved with the move gizmo: the hips (all of it), a root, a hand or a foot (its arm or leg bending to reach)
-bool can_move(const KitPose *po, int b) {
-    return b >= 0 && (reach_bone(po->names[b]) || po->parent[b] < 0);
+// The view turned to look from one side (as Blender's keypad or its axes in a corner): 0 its left (X), 1 its back (Y), 2 above (Z),
+// 3 to 5 the other sides (its right, its front, below), its front at the bottom from above or below
+void view_from(View &v, float &yaw, int side) {
+    static const float Yaw[6] = { 90, 180, 0, -90, 0, 0 }, Pitch[6] = { 0, 0, 90, 0, 0, -90 };
+
+    yaw = Yaw[side];
+    v.pitch = Pitch[side];
+}
+
+// The view's axes in the picture's top right corner, as Blender's (the user's word, 2026-11-22: "a direction grid like blender"): X red
+// to the hero's left, Y green to its back (it faces -Y, as a character does in Blender's front view), Z blue up, each lettered at its
+// end and plain at its other. Clicking one looks from there (view_from). True if the mouse is over it, so a click there is its.
+bool view_axes(View &v, float &yaw, ImVec2 im, float w, bool hovered) {
+    static const char *const Letter[3] = { "X", "Y", "Z" };
+    static const char *const Says[6] = { "its left side (X)", "its back (Y)", "above (Z)", "its right side (-X)", "its front (-Y)", "below (-Z)" };
+    static const ImU32 Col[3] = { IM_COL32(235, 75, 75, 255), IM_COL32(120, 210, 70, 255), IM_COL32(80, 140, 245, 255) };
+    static const float Way[3][3] = { { 1, 0, 0 }, { 0, 0, 1 }, { 0, -1, 0 } }; // each in the game's axes
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    ImVec2 c(im.x + w - U(56), im.y + U(56)), m = ImGui::GetIO().MousePos;
+    float r = U(38), ball = U(10);
+    struct End {
+        float x, y, z;
+        int side;
+    } ends[6];
+    for (int i = 0; i < 3; i++) {
+        float s[3];
+        view_turn(v, Way[i], s);
+        ends[i] = { c.x + s[0] * r, c.y - s[1] * r, s[2], i };
+        ends[i + 3] = { c.x - s[0] * r, c.y + s[1] * r, -s[2], i + 3 };
+    }
+    // drawn from the far ones to the near, and the one under the mouse the nearest under it
+    std::sort(ends, ends + 6, [](const End &a, const End &b) { return a.z < b.z; });
+    bool near = hovered && (m.x - c.x) * (m.x - c.x) + (m.y - c.y) * (m.y - c.y) < (r + ball) * (r + ball);
+    int over = -1;
+    for (int e = 0; e < 6 && near; e++) {
+        if ((m.x - ends[e].x) * (m.x - ends[e].x) + (m.y - ends[e].y) * (m.y - ends[e].y) < ball * ball) {
+            over = e;
+        }
+    }
+    if (near) {
+        dl->AddCircleFilled(c, r + ball + U(4), IM_COL32(255, 255, 255, 28));
+    }
+    for (int e = 0; e < 6; e++) {
+        const End &d = ends[e];
+        int axis = d.side % 3;
+        ImVec2 at(d.x, d.y);
+        if (d.side < 3) {
+            dl->AddLine(c, at, Col[axis], U(2));
+            dl->AddCircleFilled(at, ball, Col[axis]);
+            ImVec2 ts = ImGui::CalcTextSize(Letter[axis]);
+            dl->AddText(ImVec2(at.x - ts.x / 2, at.y - ts.y / 2), IM_COL32(20, 20, 24, 255), Letter[axis]);
+        } else {
+            dl->AddCircleFilled(at, ball * 0.8f, (Col[axis] & 0x00FFFFFFu) | 0x70000000u);
+            dl->AddCircle(at, ball * 0.8f, Col[axis], 0, U(1.5f));
+        }
+        if (e == over) {
+            dl->AddCircle(at, ball + U(2), IM_COL32(255, 255, 255, 255), 0, U(2));
+        }
+    }
+    if (over >= 0) {
+        ImGui::SetTooltip("Look from %s", Says[ends[over].side]);
+        if (ImGui::IsMouseClicked(0)) {
+            view_from(v, yaw, ends[over].side);
+        }
+    } else if (near) {
+        ImGui::SetTooltip("Its axes, as Blender's: click one to look from there (the keypad's 1 front, 3 side, 7 above; Ctrl: the other side)");
+    }
+    return near;
 }
 
 // Over the picture while adjusting: which gizmo it has, Turn (R), Move (G) or Size (S), the one on lit
 void gizmo_buttons(Tool &T) {
     static const char *const Says[3] = { "Turn (R)", "Move (G)", "Size (S)" };
     static const char *const Tips[3] = { "Turn the joint picked, and all on it: drag a ring, or its middle to point it at the mouse",
-                                         "Move the joint picked along an arrow, or with the mouse by its middle: the hips, hands and feet",
+                                         "Move the joint picked, and all on it, along an arrow, or with the mouse by its middle (a hand or foot: its arm or leg bends to follow)",
                                          "Make the joint picked, and all on it, bigger or smaller along a handle, or all over by its middle" };
     for (int i = 0; i < 3; i++) {
         bool on = T.gizmo == i;
@@ -1269,8 +1384,9 @@ void gizmo_buttons(Tool &T) {
 
 void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     static Posed ps;
-    static const ImU32 Axis[3] = { IM_COL32(235, 75, 75, 255), IM_COL32(120, 210, 70, 255), IM_COL32(80, 140, 245, 255) };
-    static const char *const AxisSays[3] = { "across (its left and right)", "up and down", "front to back" };
+    // the hero's own x (across), y (up and down) and z (front to back): Blender's X red, Z blue and Y green
+    static const ImU32 Axis[3] = { IM_COL32(235, 75, 75, 255), IM_COL32(80, 140, 245, 255), IM_COL32(120, 210, 70, 255) };
+    static const char *const AxisSays[3] = { "across (X: its left and right)", "up and down (Z)", "front to back (Y)" };
     const KitMade *mk = &T.made[T.kind];
     const KitPose *po = &T.poses[T.kind];
     int a = T.anim < mk->nanims ? T.anim : 0;
@@ -1295,8 +1411,9 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     }
     float pp = v.scale * v.zoom * disp, R = U(70);
     // the gizmo's handles on the screen: each axis's direction there (per unit, and as seen), and whether it's towards the viewer. Its
-    // axes point as the panel's values say them, to its left, up and forward (Way: the hero's own y is down and its z to its back)
-    static const float Way[3] = { 1, -1, -1 };
+    // axes point as Blender's would on a character facing -Y, and as the panel's values say them: X to its left, Z up, Y to its back
+    // (Way: the hero's own y is down)
+    static const float Way[3] = { 1, -1, 1 };
     float ax2[3][2], axlen[3], axz[3];
     for (int i = 0; i < 3; i++) {
         float g[3], s[3];
@@ -1342,7 +1459,7 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             }
         } else {
             for (int i = 0; i < 3; i++) {
-                if (axlen[i] < 0.15f || (T.gizmo == GIZMO_MOVE && !can_move(po, T.sel))) {
+                if (axlen[i] < 0.15f) {
                     continue;
                 }
                 float d = seg_px(mouse, ImVec2(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14)), ImVec2(c.x + ax2[i][0] * R, c.y + ax2[i][1] * R));
@@ -1387,7 +1504,7 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             dl->AddCircle(c, U(9), IM_COL32(255, 255, 255, 255), 0, U(2));
         } else {
             for (int i = 0; i < 3; i++) {
-                if (axlen[i] < 0.15f || (T.gizmo == GIZMO_MOVE && !can_move(po, T.sel))) {
+                if (axlen[i] < 0.15f) {
                     continue;
                 }
                 ImVec2 e(c.x + ax2[i][0] * R, c.y + ax2[i][1] * R), s(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14));
@@ -1402,13 +1519,8 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
                 }
             }
             bool mid = T.dragging && (T.handle == H_MOVE_FREE || T.handle == H_SIZE_ALL);
-            if (T.gizmo == GIZMO_SIZE || can_move(po, T.sel)) {
-                dl->AddCircle(c, U(12), mid ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 170), 0, mid ? U(3) : U(2));
-            }
+            dl->AddCircle(c, U(12), mid ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 170), 0, mid ? U(3) : U(2));
         }
-    }
-    if (T.sel >= 0 && T.gizmo == GIZMO_MOVE && !can_move(po, T.sel)) {
-        dl->AddText(ImVec2(c.x + U(14), c.y + U(10)), IM_COL32(255, 255, 255, 200), "turns only (R): the hips, hands and feet move");
     }
     if (!T.dragging) {
         if (over >= H_TURN && over < H_TURN + 3) {
@@ -1429,7 +1541,7 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     if (hovered && ImGui::IsMouseClicked(0)) {
         int take = over;
         if (take == H_NONE && hover >= 0 && hover == T.sel) {
-            take = T.gizmo == GIZMO_TURN ? H_TURN_FREE : T.gizmo == GIZMO_MOVE ? (can_move(po, T.sel) ? H_MOVE_FREE : H_TURN_FREE) : H_SIZE_ALL;
+            take = T.gizmo == GIZMO_TURN ? H_TURN_FREE : T.gizmo == GIZMO_MOVE ? H_MOVE_FREE : H_SIZE_ALL;
         } else if (take == H_NONE && hover >= 0) {
             T.sel = hover;
         }
@@ -2223,9 +2335,10 @@ void editor_middle(Tool &T) {
     ImVec2 im = ImGui::GetItemRectMin();
     bool hovered = ImGui::IsItemHovered();
     look_around(T.game_view, T.made_turn, adjusting ? 1 : 0);
+    bool on_axes = view_axes(T.game_view, T.made_turn, im, w, hovered);
     const KitMade *mk = &T.made[T.kind];
     if (adjusting) {
-        adjust_view(T, im, w / PrevW, hovered);
+        adjust_view(T, im, w / PrevW, hovered && !on_axes);
         if (hovered && !T.dragging) {
             ImGui::SetItemTooltip("Click a joint to pick it, then drag its gizmo. The right mouse button turns the view; scroll to zoom.");
         }
@@ -2389,13 +2502,15 @@ void adjust_panel(Tool &T) {
         T.frame = mk->anims[a].frames > 0 ? (int)(T.made_t * 30) % mk->anims[a].frames : 0;
         T.adj_playing = false;
     }
-    hint("In the picture, click a joint to pick it: on it is a gizmo, as Blender's. Turn (R): drag a ring to turn it about that axis "
-         "(red across, green up and down, blue front to back), the white one to turn it as you look at it, or its middle to point it at "
-         "the mouse. Move (G): drag an arrow to move it along that axis, or its middle to move it with the mouse (the hips, hands and "
-         "feet, the squares; an arm or leg bends to follow). Size (S): drag a handle to make it bigger or smaller that way, or its middle "
-         "for all over. Turn the view with the right mouse button. Under the picture, its keys: click one to go to it, drag it to "
-         "another frame, right-click it or press Delete to take it away. The values below set it exactly. Keys: Space plays, the "
-         "arrows step a frame, Ctrl+Z undoes, Ctrl+Y does it again.");
+    hint("In the picture, click a joint to pick it: on it is a gizmo, as Blender's, in Blender's axes for a character facing -Y: X red "
+         "(its left), Y green (its back), Z blue (up), as on the floor's grid. Turn (R): drag a ring to turn it about that axis, the "
+         "white one to turn it as you look at it, or its middle to point it at the mouse. Move (G): drag an arrow to move it along that "
+         "axis, or its middle to move it with the mouse: any joint moves with all on it (an ear, its tail), a hand or a foot bends its "
+         "arm or leg to follow, and the hips move all of it (the squares). Size (S): drag a handle to make it bigger or smaller that "
+         "way, or its middle for all over. Turn the view with the right mouse button, or click the axes in the picture's corner to look "
+         "from that side (the keypad's 1, 3 and 7 too, with Ctrl from the other side). Under the picture, its keys: click one to go to "
+         "it, drag it to another frame, right-click it or press Delete to take it away. The values below set it exactly. Keys: Space "
+         "plays, the arrows step a frame, Ctrl+Z undoes, Ctrl+Y does it again.");
     // whose the move is: its own stays as it's made whoever it's based on; its template's becomes its own when it's first changed
     const BakedMove *copied = baked_of(T, T.kind, move);
     bool own = T.poses[T.kind].anims[a].own || copied != nullptr;
@@ -2442,33 +2557,39 @@ void adjust_panel(Tool &T) {
             }
         }
         ImGui::SeparatorText(bone_title(bone));
-        // its own axes as it stands: x to its left, y down, z to its back (turns about them; shown as a person would say them)
-        static const char *const Turns[3] = { "Tip forward", "Turn to its right", "Lean to its left" };
+        // its own axes as it stands: x to its left, y down, z to its back (turns about them; shown as a person would say them, with
+        // Blender's letters for them, in its order: X, Y, Z)
+        static const int Order[3] = { 0, 2, 1 };
+        static const char *const Turns[3] = { "Tip forward (X)", "Turn to its right (Z)", "Lean to its left (Y)" };
         bool changed = false;
-        for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            int i = Order[j];
             ImGui::SetNextItemWidth(U(200));
             changed |= ImGui::DragFloat(Turns[i], &turn[i], 0.5f, -180, 180, "%.1f deg");
             if (ImGui::IsItemActivated()) {
                 adj_snapshot(T);
             }
         }
-        if (reach_bone(bone)) {
-            static const char *const Moves[3] = { "To its left", "Up", "Forward" };
-            static const float Way[3] = { 1, -1, -1 };
-            for (int i = 0; i < 3; i++) {
-                float shown = reach[i] * Way[i];
-                ImGui::SetNextItemWidth(U(200));
-                if (ImGui::DragFloat(Moves[i], &shown, 0.5f, -500, 500, "%.1f")) {
-                    reach[i] = shown * Way[i];
-                    changed = true;
-                }
-                if (ImGui::IsItemActivated()) {
-                    adj_snapshot(T);
-                }
+        // moved: a hand or foot its arm or leg bending to it, the hips all of it, any other joint it and all on it
+        static const char *const Moves[3] = { "To its left (X)", "Up (Z)", "To its back (Y)" };
+        static const float Way[3] = { 1, -1, 1 };
+        for (int j = 0; j < 3; j++) {
+            int i = Order[j];
+            float shown = reach[i] * Way[i] + 0.0f; // (no -0)
+            ImGui::SetNextItemWidth(U(200));
+            if (ImGui::DragFloat(Moves[i], &shown, 0.5f, -500, 500, "%.1f")) {
+                reach[i] = shown * Way[i];
+                changed = true;
             }
+            if (ImGui::IsItemActivated()) {
+                adj_snapshot(T);
+            }
+            ImGui::SetItemTooltip(reach_bone(bone) ? SDL_strcasecmp(bone, "hips") == 0 ? "All of it moved" : "Its arm or leg bends to reach there"
+                                                   : "Moved with all on it");
         }
-        static const char *const Sizes[3] = { "Wider", "Taller", "Deeper" };
-        for (int i = 0; i < 3; i++) {
+        static const char *const Sizes[3] = { "Wider (X)", "Taller (Z)", "Deeper (Y)" };
+        for (int j = 0; j < 3; j++) {
+            int i = Order[j];
             ImGui::SetNextItemWidth(U(200));
             changed |= ImGui::DragFloat(Sizes[i], &size[i], 0.01f, 0.1f, 10, "x%.2f");
             if (ImGui::IsItemActivated()) {
@@ -2880,6 +3001,14 @@ void editor_window(Tool &T, SDL_Window *win) {
                     : ImGui::IsKeyPressed(ImGuiKey_S, false) ? GIZMO_SIZE : T.gizmo;
         }
     }
+    // a game shown: the keypad looks from a side, as Blender's (1 its front, 3 its left side, 7 above; Ctrl from the other side)
+    if (T.page >= 0 && !io.WantTextInput) {
+        int from = ImGui::IsKeyPressed(ImGuiKey_Keypad1, false) ? 4 : ImGui::IsKeyPressed(ImGuiKey_Keypad3, false) ? 0
+                 : ImGui::IsKeyPressed(ImGuiKey_Keypad7, false) ? 2 : -1;
+        if (from >= 0) {
+            view_from(T.game_view, T.made_turn, io.KeyCtrl ? (from + 3) % 6 : from);
+        }
+    }
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
     ImGui::Begin("Hero tool", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
@@ -3077,6 +3206,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         SDL_strlcpy(T.out, mods, sizeof(T.out));
     }
     T.game_view.pitch = 12;
+    T.game_view.grid = true;
     T.play.pitch = 8;
     if (game != nullptr) {
         SDL_strlcpy(T.game, game, sizeof(T.game));

@@ -30,8 +30,8 @@ float pack_adjust_share(const PackAdjust *a, int frame);
 /* A bone by name (any case), or -1 */
 int pack_bone_named(const PackBones *bones, const char *name);
 /* The adjustments for a kind's move applied at a frame of it, to a pose (P, Q), the hero's trunk turned by trunk from its rest (its
- * hips' turn before them): first the hips' reach (all of it moved), then each bone's turn, those nearest the hips first (each one
- * with all on it, about its joint), then each hand's and foot's reach (its arm or leg bent to it). 0 if none were there. */
+ * hips' turn before them): first the hips' reach (all of it moved), then each bone's move, turn and size, those nearest the hips first
+ * (each one with all on it, about its joint), then each hand's and foot's reach (its arm or leg bent to it). 0 if none were there. */
 int pack_adjust_pose(const PackAdjust *adj, int nadj, int kind, const char *move, int frame, const PackBones *bones,
                      const float trunk[9], float (*P)[3], float (*Q)[9]);
 /* A bone and all on it turned (and made bigger, if M does) by M (row-major) about where its joint is */

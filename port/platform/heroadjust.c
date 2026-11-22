@@ -124,6 +124,11 @@ int pack_bone_named(const PackBones *bones, const char *name) {
     return -1;
 }
 
+/* whether a bone is a limb's end, that its reach bends its arm or leg to (a hand or a foot, by the tool's names) */
+static int limb_end(const char *name) {
+    return name != NULL && (SDL_strncasecmp(name, "hand", 4) == 0 || SDL_strncasecmp(name, "foot", 4) == 0);
+}
+
 /* whether bone d is under (or is) bone b */
 static int under(const PackBones *bones, int d, int b) {
     int n;
@@ -206,14 +211,33 @@ int pack_adjust_pose(const PackAdjust *adj, int nadj, int kind, const char *move
             }
         }
     }
-    /* each bone's turn and size, those nearest the hips first: its axes are the hero's own (trunk), so it's trunk turn size trunk' (made
-       bigger along its axes, then turned) */
+    /* each bone's move, turn and size, those nearest the hips first. Its move (any bone but the hips, a root, a hand or a foot): it and
+       all on it moved. Its axes are the hero's own (trunk), so its turn and size are trunk turn size trunk' (made bigger along its axes,
+       then turned), about its joint where it's moved to */
     for (i = 0; i <= deepest; i++) {
         for (b = 0; b < bones->nbones; b++) {
             float len = v_len(turn[b]), ax[3], M[9] = { 1, 0, 0, 0, 1, 0, 0, 0, 1 }, S[9], tt[9];
             int sized = size[b][0] != 1 || size[b][1] != 1 || size[b][2] != 1;
 
-            if (depth[b] != i || (len <= 1e-4f && !sized)) {
+            if (depth[b] != i) {
+                continue;
+            }
+            if (bones->parent[b] >= 0 && SDL_strcasecmp(bones->name[b], "hips") != 0 && !limb_end(bones->name[b]) && v_len(reach[b]) > 0) {
+                float d[3];
+
+                m_apply(trunk, reach[b], d);
+                for (k = 0; k < bones->nbones; k++) {
+                    int c;
+
+                    if (!under(bones, k, b)) {
+                        continue;
+                    }
+                    for (c = 0; c < 3; c++) {
+                        P[k][c] += d[c];
+                    }
+                }
+            }
+            if (len <= 1e-4f && !sized) {
                 continue;
             }
             if (len > 1e-4f) {
@@ -240,12 +264,12 @@ int pack_adjust_pose(const PackAdjust *adj, int nadj, int kind, const char *move
             pack_turn_under(bones, b, M, P, Q);
         }
     }
-    /* each hand's and foot's reach (any bone two down from another): its arm or leg bent to reach there */
+    /* each hand's and foot's reach: its arm or leg (the two bones above it) bent to reach there */
     for (b = 0; b < bones->nbones; b++) {
         int mid = bones->parent[b], root = mid >= 0 ? bones->parent[mid] : -1;
         float target[3], hint[3], l1, l2, d1[3], d2[3], knee[3], M[9];
 
-        if (root < 0 || v_len(reach[b]) <= 0 || SDL_strcasecmp(bones->name[b], "hips") == 0) {
+        if (root < 0 || v_len(reach[b]) <= 0 || !limb_end(bones->name[b])) {
             continue;
         }
         m_apply(trunk, reach[b], target);

@@ -356,11 +356,13 @@ at a time, and the change is kept in its hero.json (`adjust`) and made by the ga
 tool's list; `"*"` every move of that game): at one frame (`"at"`), all of it there and fading to none over `"spread"` frames each
 side (a cosine), or without `"at"` at every frame. Several at a frame add up. Its `turn` turns the bone and all on it about its joint
 (degrees about the hero's own axes as it stands at rest, in the game's: x to its left, y down, z to its back; an axis times its
-angle); its `reach` (the game's units, the same axes) moves a hand or foot, its arm or leg bent to reach it (two-bone, its elbow or
-knee bent the way it was), or the hips, all of it; its `scale` (1 as it is, 0.1 to 10; kept as `grow`, the scale less 1) makes the
+angle); its `reach` (the game's units, the same axes) moves a hand or foot (a bone named hand... or foot...), its arm or leg bent to
+reach it (two-bone, its elbow or knee bent the way it was), the hips (or a root), all of it, or any other bone, it and all on it (an
+ear, the tail, the head: the user's word, 2026-11-22, "why cant i move the ears?"; as Blender's G moves a bone that isn't connected,
+what joins it to the bone it hangs from stretching); its `scale` (1 as it is, 0.1 to 10; kept as `grow`, the scale less 1) makes the
 bone and all on it bigger or smaller along the same axes, about its joint, before its turn (the turn made on the hero's axes:
-trunk, turn, size, trunk'). Sizes at a frame multiply, each faded as a turn is. They're made in that order: the hips' reach, the
-turns and sizes (those nearest the hips first), the hands' and feet's reach. A hand that carries something (the mallet, the keg)
+trunk, turn, size, trunk'). Sizes at a frame multiply, each faded as a turn is. They're made in that order: the hips' reach, each
+bone's move, turn and size (those nearest the hips first, a bone moved before it's turned), the hands' and feet's reach. A hand that carries something (the mallet, the keg)
 takes it with it, made bigger with it.
 
 **One code for both** (`port/platform/heroadjust.c`, built into the game and the tool): `pack_adjust_pose` makes a pose's changes
@@ -377,7 +379,7 @@ trunk turn and how it moves with what it rides. The tool's preview is exported w
 itself on those poses, as the game would, so a change shows as it's made, with no waiting for the game. Checked: the tool's frame
 and the game's (from hero.json with the same change) the same to a unit, on the pogo, the tank, the mallet (its carrying hand) and
 on foot (an own clip); with a scale (Bobby's head x1.6, x1.3, x1.6 and turned 20 degrees at BREATHE's frame 10, 107 units moved),
-the same exactly.
+an ear moved (his left ear's root 60 out and 40 up) and a hand's reach, the same exactly.
 
 **Its own moves, kept whoever it's based on** (the user's word, 2026-11-22: "if you make a new animation for something ... it will
 over ride the template one ... if you change the template that wont overide your custom animation"). A change is made on a move, so a
@@ -402,20 +404,27 @@ copy"), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_
 
 **In the tool**, each game's page has **Adjust its moves**: **Show its joints, to adjust it** puts a dot on every joint over the
 picture (squares for the hips, hands and feet) and stops the move. Click a joint to pick it: on it is a **gizmo**, as Blender's (the
-user's word, 2026-11-22: "a proper gizmo tool like blender has so we can rotate, move and scale"), in the hero's own axes pointing as
-the values below say them: red to its left, green up, blue forward (`Way` in `adjust_view`, gui.cpp: the game's y is down and z
-to its back). Over the picture, **Turn (R)**, **Move (G)** and **Size (S)** pick which, as do those keys:
+user's word, 2026-11-22: "a proper gizmo tool like blender has so we can rotate, move and scale"), in the hero's own axes as Blender's
+are for a character facing -Y: X red to its left, Y green to its back, Z blue up (`Way` in `adjust_view`, gui.cpp: the game's y is
+down), the panel's values lettered the same. Over the picture, **Turn (R)**, **Move (G)** and **Size (S)** pick which, as do those
+keys:
 - **Turn**: a ring about each axis, dragged round to turn it about that axis (a ring seen almost edge on, as far as the mouse goes
   along it, its near side following the mouse); a white ring about the line towards whoever's looking; its middle, dragged, points
   what's on it at the mouse (its end, the joints on it, turned about that line).
-- **Move**: an arrow along each axis, dragged along it; its middle, dragged, moves it across the view with the mouse. Only the hips,
-  a hand or a foot move (an arm or leg bending to follow); on another joint the move gizmo says it turns only.
+- **Move**: an arrow along each axis, dragged along it; its middle, dragged, moves it across the view with the mouse. Any joint moves,
+  with all on it; a hand or foot bends its arm or leg to follow, and the hips move all of it.
 - **Size**: a handle along each axis, dragged out to make it bigger that way (in to make it smaller); its middle, dragged right or up,
   bigger all over.
 
-The right mouse button turns the view, so an arrow or ring can be had from any side. A change is made to **this frame** (fading over
-the frames picked), **the whole move**, or **every move here**. The picked joint's values set it exactly (tip forward, turn to its
-right, lean to its left; to its left, up, forward for what moves; wider, taller, deeper as x1 as it is); **Mirror to its other side**
+The picture has a **floor grid**, as Blender's (the user's word, 2026-11-22: "a direction grid like blender"; `floor_grid`): on the
+game's ground (y 0, or the move's lowest if that's far from it), squares of 50 of the game's units fading out from the middle, its X
+line red and its Y line green, drawn where the model doesn't hide it. In its top right corner are **its axes**, as Blender's
+(`view_axes`): each axis lettered at its end, plain at the other; clicking one looks from there (the keypad's 1 from its front, 3
+from its left side, 7 from above, with Ctrl from the other side; `view_from`), its front at the bottom from above. The picture is
+fitted to how tall the model looks from the view's tilt, its middle in the picture's. The right mouse button turns the view (to
+straight above or below), so an arrow or ring can be had from any side. A change is made to **this frame** (fading over the frames
+picked), **the whole move**, or **every move here**. The picked joint's values set it exactly, in X, Y, Z order (tip forward, lean
+to its left, turn to its right; to its left, to its back, up; wider, deeper, taller as x1 as it is); **Mirror to its other side**
 gives its changes in this move to its other side the other way round (its size as it is); **Reset this joint**, **Reset this move**,
 **Undo**, **Redo**, and the list of its changes in the move (picking one goes to it).
 
