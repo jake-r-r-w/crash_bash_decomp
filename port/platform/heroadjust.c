@@ -100,6 +100,85 @@ int pack_adjust_for(const PackAdjust *a, int kind, const char *move) {
     return a->kind == kind && move != NULL && (strcmp(a->move, "*") == 0 || SDL_strcasecmp(a->move, move) == 0);
 }
 
+/* An ease's curve at u from 0 to 1: 0 at 0, 1 at 1 (sudden: 0 until 1) */
+static float ease_curve(int ease, float u) {
+    float v;
+
+    u = u < 0 ? 0 : u > 1 ? 1 : u;
+    v = u - 1;
+    switch (ease) {
+    case PACK_EASE_LINEAR:
+        return u;
+    case PACK_EASE_SLOW_START:
+        return u * u;
+    case PACK_EASE_SLOW_FINISH:
+        return 1 - v * v;
+    case PACK_EASE_SUDDEN:
+        return u >= 1 ? 1.0f : 0.0f;
+    case PACK_EASE_OVERSHOOT:
+        return 1 + 2.70158f * v * v * v + 1.70158f * v * v;
+    case PACK_EASE_BOUNCE: {
+        float n = 7.5625f, w = 2.75f;
+
+        if (u < 1 / w) {
+            return n * u * u;
+        } else if (u < 2 / w) {
+            u -= 1.5f / w;
+            return n * u * u + 0.75f;
+        } else if (u < 2.5f / w) {
+            u -= 2.25f / w;
+            return n * u * u + 0.9375f;
+        }
+        u -= 2.625f / w;
+        return n * u * u + 0.984375f;
+    }
+    case PACK_EASE_WOBBLE:
+        return u <= 0 ? 0.0f : powf(2, -10 * u) * sinf((10 * u - 0.75f) * 2.0943951f) + 1;
+    default:
+        return 0.5f - 0.5f * cosf(3.14159265f * u);
+    }
+}
+
+/* Whether adjustments a and b are of one chain: the same kind, move and bone, each at a frame */
+static int same_chain(const PackAdjust *a, const PackAdjust *b) {
+    return a->kind == b->kind && a->at >= 0 && b->at >= 0 && SDL_strcasecmp(a->move, b->move) == 0 && SDL_strcasecmp(a->bone, b->bone) == 0;
+}
+
+static int last_of(const PackAdjust *a) {
+    return a->until > a->at ? a->until : a->at;
+}
+
+float pack_adjust_share_among(const PackAdjust *adj, int nadj, int i, int frame) {
+    const PackAdjust *a = &adj[i];
+    int j, next = -1, before = -1, last = last_of(a);
+
+    if (a->at < 0) {
+        return 1;
+    }
+    /* the next key of its bone in the move (the first after its last frame), and the one before it (the last ending before it) */
+    for (j = 0; j < nadj; j++) {
+        if (j == i || !same_chain(a, &adj[j])) {
+            continue;
+        }
+        if (adj[j].at > last && (next < 0 || adj[j].at < adj[next].at)) {
+            next = j;
+        }
+        if (last_of(&adj[j]) < a->at && (before < 0 || last_of(&adj[j]) > last_of(&adj[before]))) {
+            before = j;
+        }
+    }
+    /* after it, blended into the next: less of it as more of that (none at its frame) */
+    if (frame > last && a->blend && next >= 0) {
+        return frame >= adj[next].at ? 0.0f : 1 - ease_curve(a->ease, (float)(frame - last) / (float)(adj[next].at - last));
+    }
+    /* before it, the one before blended into it: more of it as less of that */
+    if (frame < a->at && before >= 0 && adj[before].blend) {
+        int pl = last_of(&adj[before]);
+        return frame <= pl ? 0.0f : ease_curve(adj[before].ease, (float)(frame - pl) / (float)(a->at - pl));
+    }
+    return pack_adjust_share(a, frame);
+}
+
 float pack_adjust_share(const PackAdjust *a, int frame) {
     int d, last;
 
@@ -216,7 +295,8 @@ int pack_adjust_pose(const PackAdjust *adj, int nadj, int kind, const char *move
     for (i = 0; i < nadj; i++) {
         float w;
 
-        if (!pack_adjust_for(&adj[i], kind, move) || (w = pack_adjust_share(&adj[i], frame)) <= 0
+        /* (blended past one and back, a share can be less than none) */
+        if (!pack_adjust_for(&adj[i], kind, move) || (w = pack_adjust_share_among(adj, nadj, i, frame)) == 0
             || (b = pack_bone_named(bones, adj[i].bone)) < 0) {
             continue;
         }

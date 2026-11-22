@@ -65,7 +65,7 @@ one's.
 - `voices`: each of its base's 26 sound offsets (EXTRA_HEROES.md, His sounds): a job (`"1": "laugh"`), `base` or `none`. An offset
   it doesn't name plays the job it does for the game's own heroes if the pack has that job's sound (0 name, 1 and 6 and 24 laugh, 2 to
   5 yelp, 11, 13 and 21 jump, 12 thud, 15 throw), else its base's.
-- `adjust`: its moves adjusted by hand (Adjusting its moves, below), each `{"kind", "move", "bone", "at", "until", "spread", "ease", "turn": [x, y,
+- `adjust`: its moves adjusted by hand (Adjusting its moves, below), each `{"kind", "move", "bone", "at", "until", "spread", "ease", "blend", "turn": [x, y,
   z], "reach": [x, y, z], "scale": [x, y, z]}`.
 
 ### hero.glb
@@ -371,7 +371,12 @@ over `"spread"` frames each side, or without `"at"` at every frame. How it fades
 transion effect should be chooseable"; `PACK_EASE_`, `pack_ease_name`): `smooth` (a cosine, as keys always did, and what one with
 none has), `linear`, `slow-start`, `slow-finish`, `sudden` (all of it on its frames, none either side, its spread not counted),
 `overshoot` (a little past all of it and back, an ease-out "back"), `bounce` and `wobble` (an ease-out elastic), each by how near
-its frames a frame is (`pack_adjust_share`). Several at a frame add up. Its `turn` turns the bone and all on it about its joint
+its frames a frame is (`pack_adjust_share`). A key with `"blend": true` flows into its bone's next key in the move instead of
+fading out (the user's word, 2026-11-22: blending between keys): over the frames between them less of it as more of that, by its ease
+(sudden holds it to that key's frame, overshoot and the rest go past and back), none of it at that key's frame, the two adding up to
+all of the change between them; that key then fades in from it, not over its spread (`pack_adjust_share_among`, what the game's
+`pack_adjust_pose` and the tool's timeline use). Checked: a head turned 40 degrees at frame 10 blending into -40 at frame 50 is as it
+was at frame 30, and the tool's frames and the game's the same exactly. Several at a frame add up. Its `turn` turns the bone and all on it about its joint
 (degrees about the hero's own axes as it stands at rest, in the game's: x to its left, y down, z to its back; an axis times its
 angle); its `reach` (the game's units, the same axes) moves a hand or foot (a bone named hand... or foot...), its arm or leg bent to
 reach it (two-bone, its elbow or knee bent the way it was), the hips (or a root), all of it, or any other bone, it and all on it (an
@@ -465,7 +470,8 @@ key by its bar) to move it to other frames. To hold one over more frames or fewe
 mirrored**, **Fade**, **Stretch to end**, **Stretch to start**, **Stretch to whole move**, **Single frame** and **Delete** (or press
 Delete). The panel's **Frames** row says a held key's first and last frames (to type or drag) with **All**; a change made at any
 frame it's held over is made to it (`adj_key`), so its head made bigger anywhere there is bigger all the way. The fade picked
-(**Fade**: its frames, and its curve: Smooth, Steady, Slow start, Slow finish, Sudden, Overshoot, Bounce, Wobble) is the picked
+(**Fade**: its frames, its curve: Smooth, Steady, Slow start, Slow finish, Sudden, Overshoot, Bounce, Wobble, and **Blend**: into
+the joint's next key, a blue line to it in the timeline; right-click a key for **Blend into next** too) is the picked
 joint's key's there (or a new key's), and right-clicking a key has **Fade** too. Each key's row draws its fade as it is, how much of
 it there is each frame (a bounce's bumps, an overshoot's rise past it).
 

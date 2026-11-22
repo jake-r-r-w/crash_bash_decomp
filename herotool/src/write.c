@@ -398,6 +398,9 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
                     if (a->ease != PACK_EASE_SMOOTH) {
                         say(&hero, ", \"ease\": \"%s\"", pack_ease_name(a->ease));
                     }
+                    if (a->blend) {
+                        say(&hero, ", \"blend\": true");
+                    }
                 }
                 if (turn) {
                     /* (+ 0: a value turned the other way from 0 written 0, not -0) */

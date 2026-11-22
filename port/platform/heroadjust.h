@@ -30,6 +30,11 @@ int pack_adjust_for(const PackAdjust *a, int kind, const char *move);
 float pack_adjust_share(const PackAdjust *a, int frame);
 /* A bone by name (any case), or -1 */
 int pack_bone_named(const PackBones *bones, const char *name);
+/* How much of adj[i] there is at a frame, among the rest: as pack_adjust_share, but blended into its bone's next key in the move
+ * instead of fading out, if it blends (PackAdjust.blend: less of it as more of that, by its ease, none at that key's frame), and
+ * blended into from the key before it that blends into it instead of fading in (the user's word, 2026-11-22: keys flowing from one
+ * pose into the next). What pack_adjust_pose uses. */
+float pack_adjust_share_among(const PackAdjust *adj, int nadj, int i, int frame);
 /* The adjustments for a kind's move applied at a frame of it, to a pose (P, Q), the hero's trunk turned by trunk from its rest (its
  * hips' turn before them): first the hips' reach (all of it moved), then each bone's move, turn and size, those nearest the hips first
  * (each one with all on it, about its joint), then each hand's and foot's reach (its arm or leg bent to it). 0 if none were there. */

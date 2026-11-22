@@ -50,6 +50,7 @@ typedef struct {
     int until;                      /* held there to this frame, all of it from at to until ("until"; at or before at: at alone) */
     int spread;                     /* the frames either side it fades out over (0: those frames alone) */
     int ease;                       /* how it fades in and out there, PACK_EASE_ ("ease"; 0 smooth) */
+    int blend;                      /* blended into its bone's next key in the move by its ease, not faded out ("blend": true) */
     float turn[3];                  /* that bone and all on it turned about those axes (degrees, a turn's axis times its angle) */
     float reach[3];                 /* moved (the game's units): a hand or foot, its arm or leg bent to it; the hips, all of it; any
                                      * other bone, it and all on it */

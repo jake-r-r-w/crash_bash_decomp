@@ -1146,6 +1146,21 @@ void keys_toggle(Tool &T, int i) {
     }
 }
 
+// The key after key i on its bone in its move (the first whose frame is after i's last), which i blends into if it blends; or -1
+int key_next(const Tool &T, int i) {
+    const PackAdjust &a = T.adj[i];
+    int next = -1, last = a.until > a.at ? a.until : a.at;
+
+    for (int j = 0; a.at >= 0 && j < (int)T.adj.size(); j++) {
+        const PackAdjust &b = T.adj[j];
+        if (j != i && b.kind == a.kind && b.at > last && SDL_strcasecmp(b.move, a.move) == 0 && SDL_strcasecmp(b.bone, a.bone) == 0
+            && (next < 0 || b.at < T.adj[next].at)) {
+            next = j;
+        }
+    }
+    return next;
+}
+
 // Every key of this kind's move picked (Ctrl+A)
 void keys_all(Tool &T, const char *move) {
     keys_only(T, -1);
@@ -2169,17 +2184,35 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             int last = key_last(k);
             float xa = fx((float)k.at), xb = fx((float)last);
             ImU32 col = picked ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 200, 60, 255);
-            if (k.spread > 0 && k.ease != PACK_EASE_SUDDEN) {
-                // its fade either side as its ease makes it: how much of it there is each frame, up from the row's foot
+            {
+                // how much of it there is each frame as the game makes it (its fade, its blend into the next or from the one before),
+                // up from the row's foot, where there's any
                 std::vector<ImVec2> pts;
                 float foot = y + row - U(2);
-                for (int g = std::max(0, k.at - k.spread - 1); g <= std::min(frames - 1, last + k.spread + 1); g++) {
-                    pts.push_back(ImVec2(fx((float)g), foot - pack_adjust_share(&k, g) * (row - U(5))));
+                auto flush = [&]() {
+                    for (size_t p = 0; p + 1 < pts.size(); p++) {
+                        dl->AddQuadFilled(ImVec2(pts[p].x, foot), pts[p], pts[p + 1], ImVec2(pts[p + 1].x, foot), IM_COL32(255, 200, 60, 35));
+                    }
+                    if (pts.size() > 1) {
+                        dl->AddPolyline(pts.data(), (int)pts.size(), IM_COL32(255, 200, 60, 140), 0, U(1.5f));
+                    }
+                    pts.clear();
+                };
+                for (int g = 0; g < frames; g++) {
+                    float sh = pack_adjust_share_among(T.adj.data(), (int)T.adj.size(), i, g);
+                    if (sh != 0 || (g + 1 < frames && pack_adjust_share_among(T.adj.data(), (int)T.adj.size(), i, g + 1) != 0) || !pts.empty()) {
+                        pts.push_back(ImVec2(fx((float)g), fmaxf(y + U(1), fminf(y + row, foot - sh * (row - U(5))))));
+                    }
+                    if (sh == 0 && pts.size() > 1) {
+                        flush();
+                    }
                 }
-                for (size_t p = 0; p + 1 < pts.size(); p++) {
-                    dl->AddQuadFilled(ImVec2(pts[p].x, foot), pts[p], pts[p + 1], ImVec2(pts[p + 1].x, foot), IM_COL32(255, 200, 60, 35));
-                }
-                dl->AddPolyline(pts.data(), (int)pts.size(), IM_COL32(255, 200, 60, 140), 0, U(1.5f));
+                flush();
+            }
+            int to = k.blend ? key_next(T, i) : -1;
+            if (to >= 0) {
+                // its blend into the next: a line to it
+                dl->AddLine(ImVec2(fx((float)last), my), ImVec2(fx((float)T.adj[to].at), my), IM_COL32(120, 190, 255, 200), U(2));
             }
             auto diamond = [&](float x) {
                 dl->AddQuadFilled(ImVec2(x, my - s), ImVec2(x + s, my), ImVec2(x, my + s), ImVec2(x - s, my), col);
@@ -2370,9 +2403,10 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         if (k.at >= 0 && part != KEY_BODY) {
             ImGui::SetTooltip("Stretch");
         } else if (k.at >= 0 && key_last(k) > k.at) {
-            ImGui::SetTooltip("%s  %d-%d  %s %d", bone_title(k.bone), k.at, key_last(k), EaseSays[k.ease], k.spread);
+            ImGui::SetTooltip("%s  %d-%d  %s %d%s", bone_title(k.bone), k.at, key_last(k), EaseSays[k.ease], k.spread, k.blend ? "  blend" : "");
         } else if (k.at >= 0) {
-            ImGui::SetTooltip("%s  %d  %s %d\nShift-drag: stretch   Ctrl-click: pick more", bone_title(k.bone), k.at, EaseSays[k.ease], k.spread);
+            ImGui::SetTooltip("%s  %d  %s %d%s\nShift-drag: stretch   Ctrl-click: pick more", bone_title(k.bone), k.at, EaseSays[k.ease], k.spread,
+                              k.blend ? "  blend" : "");
         } else {
             ImGui::SetTooltip("%s  %s", bone_title(k.bone), strcmp(k.move, "*") == 0 ? "all moves" : "whole move");
         }
@@ -2455,6 +2489,14 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                 }
                 ImGui::EndMenu();
             }
+            if (!fk.empty() && ImGui::MenuItem("Blend into next", nullptr, k.blend)) {
+                bool on = !k.blend;
+                adj_snapshot(T, on ? "Blended %s into the next" : "Stopped %s blending", who);
+                for (PackAdjust *x : fk) {
+                    x->blend = on;
+                }
+            }
+            ImGui::SetItemTooltip("Flow into the joint's next key instead of fading out");
             if (paste != 0) {
                 key_paste(T, pack_bone_index(po, k.bone), k.at >= 0 ? k.at : T.frame, paste == 2);
             } else if (!fk.empty()) {
@@ -3284,6 +3326,17 @@ void adjust_panel(Tool &T) {
             ImGui::EndCombo();
         }
         ImGui::SetItemTooltip("How it fades in and out");
+        ImGui::SameLine();
+        bool blend = !fades.empty() && fades[0]->blend;
+        ImGui::BeginDisabled(fades.empty());
+        if (ImGui::Checkbox("Blend", &blend)) {
+            adj_snapshot(T, blend ? "Blended %s into the next" : "Stopped %s blending", whose);
+            for (PackAdjust *x : fades) {
+                x->blend = blend;
+            }
+        }
+        ImGui::EndDisabled();
+        ImGui::SetItemTooltip("Flow into the joint's next key instead of fading out");
     }
     if (T.sel >= 0 && T.sel < po->nbones) {
         const char *bone = po->names[T.sel];
@@ -4238,10 +4291,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 /* (HEROTOOL_ADJUST_FADE=EASE,N: its fade, hero.json's name for it, over N frames) */
                 if (SDL_getenv("HEROTOOL_ADJUST_FADE") != nullptr) {
                     char e[32] = "";
-                    int n = k->spread;
-                    SDL_sscanf(SDL_getenv("HEROTOOL_ADJUST_FADE"), "%31[^,],%d", e, &n);
+                    int n = k->spread, blend = 0;
+                    SDL_sscanf(SDL_getenv("HEROTOOL_ADJUST_FADE"), "%31[^,],%d,%d", e, &n, &blend);
                     k->ease = pack_ease_named(e) >= 0 ? pack_ease_named(e) : k->ease;
                     k->spread = n;
+                    k->blend = blend != 0; /* (EASE,N,1: blended into the next) */
                 }
                 keys_only(T, (int)(k - T.adj.data()));
                 /* and HEROTOOL_PASTE=FRAME[,M[,BONE]] copies it and pastes it there (M: mirrored; onto BONE, else its own), as Ctrl+C and

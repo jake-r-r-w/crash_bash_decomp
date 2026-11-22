@@ -372,7 +372,7 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             pk->nstands++;
         }
     }
-    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "until" (held to that frame), "spread", "ease",
+    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "until" (held to that frame), "spread", "ease", "blend",
        "turn": [x, y, z], "reach": [x, y, z], "scale": [x, y, z]}] */
     {
         const JVal *list = jget(root, "adjust"), *a;
@@ -399,6 +399,7 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             d->spread = d->spread < 0 ? 0 : d->spread > 200 ? 200 : d->spread;
             d->ease = pack_ease_named(jstr(jget(a, "ease")));
             d->ease = d->ease < 0 ? PACK_EASE_SMOOTH : d->ease;
+            d->blend = jget(a, "blend") != NULL && jget(a, "blend")->type == J_TRUE;
             for (j = 0; j < 3; j++) {
                 const JVal *t = jat(turn, j), *r = jat(reach, j);
 
