@@ -576,7 +576,14 @@ static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
         if (n == ROW_MODS_LINE) {
             return MODS_LINE;
         }
-        font_text(Labels[i], sizeof(Labels[i]), mods_info(n - MODS_ROWS)->name);
+        {
+            /* a mod with heroes of its own is tagged so (the user's word, 2026-11-22; the font has no brackets) */
+            const ModInfo *m = mods_info(n - MODS_ROWS);
+            char named[sizeof(Labels[i])];
+
+            snprintf(named, sizeof(named), "%s%s", m->heroes != 0 ? "HERO: " : "", m->name);
+            font_text(Labels[i], sizeof(Labels[i]), named);
+        }
         return Labels[i];
     }
     if (c->kind == KIND_CONTROLS) {
