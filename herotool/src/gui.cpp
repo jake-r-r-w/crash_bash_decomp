@@ -30,7 +30,7 @@ struct View {
 struct Tool {
     KitModel *m = nullptr;
     char model[1024] = "";
-    char status[2400] = "Drop a .glb model on this window, or type its path and Open.";
+    char status[2400] = "";
     bool rigged = false, mirror = true, playing = true;
     int move = 0;
     float t = 0, turn = 30;
@@ -56,6 +56,9 @@ struct Tool {
     // its own moves in the games' places (KIND/MOVE=OURS), and the one being added
     char own[KIT_OWN_MOST][48] = {};
     int nown = 0, own_game = 0, own_move = 1, own_ours = 0;
+    // the start screen, till a model's opened or a hero loaded; a loaded hero's mod folder, which Export writes back to
+    bool home = true;
+    char loaded_mod[1100] = "";
 };
 
 // The kinds of model the game makes (heropack.c's names), as the games call them
@@ -329,7 +332,12 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
         p.voice[j] = T.voice[j][0] ? T.voice[j] : nullptr;
     }
     char folder[1100];
-    snprintf(folder, sizeof(folder), "%s/%s", out, T.id);
+    // a hero loaded from a mod goes back into it; a new one is a mod of its own, named by its id
+    if (T.loaded_mod[0] != 0 && out == T.out) {
+        SDL_strlcpy(folder, T.loaded_mod, sizeof(folder));
+    } else {
+        snprintf(folder, sizeof(folder), "%s/%s", out, T.id);
+    }
     SDL_CreateDirectory(folder);
     if (!kit_atlas(t, why, sizeof(why)) || !kit_write(t, &p, folder, why, sizeof(why))) {
         snprintf(T.status, sizeof(T.status), "%s", why);
@@ -610,6 +618,206 @@ void path_field(const char *label, char *buf, size_t size) {
     ImGui::InputText(label, buf, size);
 }
 
+// --- the start screen: make a new hero from a model, or change one in the mods folder (the user's word, 2026-11-22) ---
+
+// The heroes in the mods folder's mod folders (heroes/<id>/hero.json): a zipped mod's aren't listed, as it's changed by unzipping it
+struct Found {
+    char mod[1100], id[64], name[64];
+};
+const int MaxFound = 64;
+Found Founds[MaxFound];
+int NumFound = 0;
+
+struct FindCtx {
+    const char *mod;
+};
+
+SDL_EnumerationResult SDLCALL found_hero(void *ctx, const char *dir, const char *name) {
+    const char *mod = (const char *)ctx;
+    char path[1400];
+    size_t n = 0;
+
+    snprintf(path, sizeof(path), "%s%s/hero.json", dir, name);
+    void *text = SDL_LoadFile(path, &n);
+    if (text != nullptr && NumFound < MaxFound) {
+        PackInfo info;
+        char why[256];
+
+        if (pack_info_read((const char *)text, n, &info, why, sizeof(why))) {
+            Found &f = Founds[NumFound++];
+            SDL_strlcpy(f.mod, mod, sizeof(f.mod));
+            SDL_strlcpy(f.id, info.id[0] ? info.id : name, sizeof(f.id));
+            SDL_strlcpy(f.name, info.name[0] ? info.name : name, sizeof(f.name));
+        }
+    }
+    SDL_free(text);
+    return SDL_ENUM_CONTINUE;
+}
+
+SDL_EnumerationResult SDLCALL found_mod(void *, const char *dir, const char *name) {
+    char mod[1100], heroes[1200];
+    SDL_PathInfo info;
+
+    snprintf(mod, sizeof(mod), "%s%s", dir, name);
+    snprintf(heroes, sizeof(heroes), "%s/heroes", mod);
+    if (SDL_GetPathInfo(heroes, &info) && info.type == SDL_PATHTYPE_DIRECTORY) {
+        SDL_EnumerateDirectory(heroes, found_hero, mod);
+    }
+    return SDL_ENUM_CONTINUE;
+}
+
+void find_heroes(const Tool &T) {
+    NumFound = 0;
+    SDL_EnumerateDirectory(T.out, found_mod, nullptr);
+}
+
+// A string of a JSON file's top object, by its key (mod.json's name and author), or empty
+void json_string(const char *text, const char *key, char *out, size_t size) {
+    char want[80];
+    const char *at;
+
+    out[0] = 0;
+    snprintf(want, sizeof(want), "\"%s\"", key);
+    if (text == nullptr || (at = SDL_strstr(text, want)) == nullptr || (at = SDL_strchr(at + strlen(want), '"')) == nullptr) {
+        return;
+    }
+    size_t n = 0;
+    for (at++; *at != 0 && *at != '"' && n + 1 < size; at++) {
+        out[n++] = *at == '\\' && at[1] != 0 ? *++at : *at;
+    }
+    out[n] = 0;
+}
+
+// A hero pack loaded to change: its model (the pack's own, rigged on the standard skeleton, its moves its clips), and what hero.json,
+// mod.json, card.png and the voices say. Export writes it back into the same mod.
+void load_pack(Tool &T, const Found &f) {
+    char path[1400], why[256];
+    size_t n = 0;
+
+    snprintf(path, sizeof(path), "%s/heroes/%s/hero.glb", f.mod, f.id);
+    open_model(T, path);
+    if (T.m == nullptr || SDL_strcmp(T.model, path) != 0) {
+        return;
+    }
+    snprintf(path, sizeof(path), "%s/heroes/%s/hero.json", f.mod, f.id);
+    void *text = SDL_LoadFile(path, &n);
+    PackInfo info;
+    if (text != nullptr && pack_info_read((const char *)text, n, &info, why, sizeof(why))) {
+        SDL_strlcpy(T.id, info.id, sizeof(T.id));
+        SDL_strlcpy(T.name, info.name, sizeof(T.name));
+        T.height = info.height > 0 ? info.height : T.height;
+        T.prefer = info.prefer >= 1 && info.prefer <= 8 ? info.prefer - 1 : 0;
+        T.template_hero = info.template_hero >= 1 && info.template_hero <= 8 ? info.template_hero - 1 : 0;
+        T.face_head = info.face_head;
+    }
+    SDL_free(text);
+    snprintf(path, sizeof(path), "%s/mod.json", f.mod);
+    text = SDL_LoadFile(path, &n);
+    json_string((const char *)text, "name", T.mod_name, sizeof(T.mod_name));
+    json_string((const char *)text, "author", T.author, sizeof(T.author));
+    SDL_free(text);
+    // its card and sounds, as it has them; its own moves are already its clips (KIND/MOVE), so none are added
+    SDL_PathInfo pi;
+    snprintf(path, sizeof(path), "%s/heroes/%s/card.png", f.mod, f.id);
+    SDL_strlcpy(T.card, SDL_GetPathInfo(path, &pi) ? path : "", sizeof(T.card));
+    for (int j = 0; j < PACK_VOICE_JOBS; j++) {
+        snprintf(path, sizeof(path), "%s/heroes/%s/voice_%s.wav", f.mod, f.id, PackVoiceJobs[j]);
+        SDL_strlcpy(T.voice[j], SDL_GetPathInfo(path, &pi) ? path : "", sizeof(T.voice[0]));
+    }
+    T.nown = 0;
+    SDL_strlcpy(T.loaded_mod, f.mod, sizeof(T.loaded_mod));
+    T.home = false;
+    snprintf(T.status, sizeof(T.status), "%s loaded from %s: change it, then Export to save it back there.", T.name, f.mod);
+}
+
+// The system's file chooser's pick, from whatever thread it answers on, for the main loop to open
+SDL_AtomicInt Picked;
+char PickedPath[1024];
+
+void SDLCALL picked(void *, const char *const *files, int) {
+    if (files != nullptr && files[0] != nullptr) {
+        SDL_strlcpy(PickedPath, files[0], sizeof(PickedPath));
+        SDL_SetAtomicInt(&Picked, 1);
+    }
+}
+
+void start_screen(Tool &T, SDL_Window *win) {
+    static const SDL_DialogFileFilter Glb[] = { { "3D model (glTF binary)", "glb" } };
+    static bool looked = false;
+
+    if (!looked) {
+        find_heroes(T);
+        looked = true;
+    }
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+    ImGui::Begin("Start", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+    float w = 620, x = (ImGui::GetIO().DisplaySize.x - w) / 2;
+    ImGui::SetCursorPos(ImVec2(x, 60));
+    ImGui::BeginChild("panel", ImVec2(w, 0), ImGuiChildFlags_AutoResizeY);
+    ImGui::SetWindowFontScale(1.6f);
+    ImGui::Text("Hero tool");
+    ImGui::SetWindowFontScale(1.0f);
+    ImGui::TextDisabled("Make a hero of your own for Crash Bash PC, as a mod, from a 3D model.");
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ImGui::SetWindowFontScale(1.25f);
+    ImGui::Text("Create a new hero");
+    ImGui::SetWindowFontScale(1.0f);
+    ImGui::TextDisabled("Pick its 3D model, a .glb file (or drop one on this window).");
+    if (ImGui::Button("Browse for a model...", ImVec2(200, 0))) {
+        SDL_ShowOpenFileDialog(picked, nullptr, win, Glb, 1, nullptr, false);
+    }
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(w - 300);
+    ImGui::InputTextWithHint("##newmodel", "or type its path", T.model, sizeof(T.model));
+    ImGui::SameLine();
+    if (ImGui::Button("Create", ImVec2(-1, 0)) && T.model[0] != 0) {
+        T.loaded_mod[0] = 0;
+        open_model(T, T.model);
+        T.home = T.m == nullptr;
+    }
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ImGui::SetWindowFontScale(1.25f);
+    ImGui::Text("Edit a hero");
+    ImGui::SetWindowFontScale(1.0f);
+    ImGui::TextDisabled("The heroes in the mods folder: pick one to change it.");
+    ImGui::BeginChild("found", ImVec2(0, 220), ImGuiChildFlags_Borders);
+    if (NumFound == 0) {
+        ImGui::TextDisabled("No heroes here yet (a zipped mod's are changed by unzipping it).");
+    }
+    for (int i = 0; i < NumFound; i++) {
+        char label[256];
+        const char *mod = Founds[i].mod;
+        for (const char *c = Founds[i].mod; *c != 0; c++) {
+            mod = *c == '/' || *c == '\\' ? c + 1 : mod;
+        }
+        snprintf(label, sizeof(label), "%s   (%s, in the mod %s)##%d", Founds[i].name, Founds[i].id, mod, i);
+        if (ImGui::Selectable(label, false, 0, ImVec2(0, 26))) {
+            load_pack(T, Founds[i]);
+        }
+    }
+    ImGui::EndChild();
+    ImGui::Text("Mods folder");
+    ImGui::SetNextItemWidth(w - 110);
+    ImGui::InputText("##mods", T.out, sizeof(T.out));
+    ImGui::SameLine();
+    if (ImGui::Button("Look again", ImVec2(-1, 0))) {
+        find_heroes(T);
+    }
+    ImGui::Spacing();
+    if (T.status[0] != 0 && T.m == nullptr) {
+        ImGui::TextWrapped("%s", T.status);
+    }
+    ImGui::EndChild();
+    ImGui::End();
+}
+
 } // namespace
 
 extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
@@ -646,6 +854,16 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     }
     if (start != nullptr) {
         open_model(T, start);
+        T.home = T.m == nullptr;
+    }
+    /* a test's: HEROTOOL_LOAD=ID loads that hero from the mods folder, as the start screen's list does */
+    if (SDL_getenv("HEROTOOL_LOAD") != nullptr) {
+        find_heroes(T);
+        for (int i = 0; i < NumFound; i++) {
+            if (SDL_strcmp(Founds[i].id, SDL_getenv("HEROTOOL_LOAD")) == 0) {
+                load_pack(T, Founds[i]);
+            }
+        }
     }
     /* a test's: HEROTOOL_EXPORT=FOLDER exports to it once the model's open */
     if (SDL_getenv("HEROTOOL_EXPORT") != nullptr && T.m != nullptr) {
@@ -679,7 +897,9 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 const char *f = e.drop.data;
                 size_t n = strlen(f);
                 if (n > 4 && SDL_strcasecmp(f + n - 4, ".glb") == 0) {
+                    T.loaded_mod[0] = 0;
                     open_model(T, f);
+                    T.home = T.home && T.m == nullptr;
                 } else if (n > 4 && SDL_strcasecmp(f + n - 4, ".png") == 0) {
                     SDL_strlcpy(T.card, f, sizeof(T.card));
                 } else if (n > 4 && SDL_strcasecmp(f + n - 4, ".wav") == 0) {
@@ -694,6 +914,14 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                     }
                 }
             }
+        }
+        // a model picked in the system's chooser, from the start screen
+        if (SDL_GetAtomicInt(&Picked)) {
+            SDL_SetAtomicInt(&Picked, 0);
+            SDL_strlcpy(T.model, PickedPath, sizeof(T.model));
+            T.loaded_mod[0] = 0;
+            open_model(T, T.model);
+            T.home = T.m == nullptr;
         }
         Uint64 now = SDL_GetTicks();
         if (T.m != nullptr && T.playing) {
@@ -724,9 +952,17 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
+        if (T.home) {
+            start_screen(T, win);
+        } else {
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
         ImGui::Begin("Hero tool", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+        if (ImGui::Button("< Start screen")) {
+            T.home = true;
+            find_heroes(T);
+        }
+        ImGui::SameLine();
         ImGui::TextWrapped("%s", T.status);
         ImGui::Separator();
         if (ImGui::BeginTable("main", 2, ImGuiTableFlags_Resizable)) {
@@ -935,6 +1171,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             ImGui::EndTable();
         }
         ImGui::End();
+        }
         ImGui::Render();
         SDL_SetRenderDrawColor(ren, 30, 30, 34, 255);
         SDL_RenderClear(ren);

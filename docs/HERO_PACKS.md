@@ -231,7 +231,13 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
 ```
 
 **The window**: `herotool` with no arguments, or a model alone (`herotool MODEL.glb`), opens it (`src/gui.cpp`, Dear ImGui on
-SDL3's renderer, the model drawn by a little software renderer of its own). Drop a `.glb` on it (or a `.png` for its card, a `.wav`
+SDL3's renderer, the model drawn by a little software renderer of its own). With no model it starts on its **start screen**
+(2026-11-22, the user's word): **Create a new hero** (Browse, the system's file chooser; a path; or a `.glb` dropped on it), or
+**Edit a hero**, a list of every hero in the mods folder's unzipped mods (`heroes/<id>/hero.json`). Editing one opens the pack's
+own `hero.glb` (rigged on the standard skeleton, its moves its clips, so anyone's shared pack can be changed without its first
+model) and takes its name, height, whose place, template and face from hero.json, the mod's name and author from mod.json, and its
+card and sounds from its files; **Export** writes it back into that mod. `< Start screen` goes back to it (`HEROTOOL_LOAD=ID`
+loads a hero, for a test). Drop a `.glb` on it (or a `.png` for its card, a `.wav`
 for the sound job picked, a markers `.json`). Its front and side views show the model at rest with its markers, to drag onto its
 joints (its left's mirror its right's, a bone's end is the next one's start, and its weights are worked out again on letting go);
 the third plays the move picked, turning. A model with no markers beside it (`MODEL.glb.markers.json`, saved there on each
