@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's "Play in GAME" is now **Preview in GAME**, and it starts the game straight into that game
+  (`--no-launcher`: before, the launcher waited for PLAY).
 - 2026-11-22: the hero tool's gizmo a little see-through (solid under the mouse or dragged); its pop-ups (toasts) in the picture's top
   right under its buttons, on every page; no pop-up for a move made its own, nor its last step on the History bar ("Applied ...").
 - 2026-11-22: the hero tool's bone dots back to their colours by part (the user: "worked realy well before"); the gizmo steady as

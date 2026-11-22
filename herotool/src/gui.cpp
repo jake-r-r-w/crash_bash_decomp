@@ -1097,8 +1097,10 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
         if (test) {
             char mode[16];
             snprintf(mode, sizeof(mode), "%d", Modes[T.mode].mode);
+            // (straight into the game, its launcher skipped: the user's word, 2026-11-22, "open the mini game directly rather than
+            // needing the user to click play")
             const char *args[] = { T.game, "--mods-dir", T.out, "--mod", T.id, "--extra-hero", "0", T.id, "--mode", mode, "--skip-intro",
-                                   "--skip-loading", nullptr };
+                                   "--skip-loading", "--no-launcher", nullptr };
             SDL_Process *proc = SDL_CreateProcess(args, false);
 
             if (proc == nullptr) {
@@ -3891,7 +3893,7 @@ void view_free(View &v) {
 }
 
 // --- the window (Graphite, the user's pick, 2026-11-22; docs/HERO_PACKS.md, The look): a top bar (back, the hero, the status, undo and
-// redo, sounds, play it in a game, save), a strip of the games with the hero in each, and the page: a game's (its picture, its timeline,
+// redo, sounds, preview it in a game, save), a strip of the games with the hero in each, and the page: a game's (its picture, its timeline,
 // its cards), the hero's own (its model, card and sounds, details), or every game at a glance ---
 
 // each game's name in the strip, and the chips' tints in turn
@@ -3965,9 +3967,9 @@ void top_bar(Tool &T) {
     bool busy = T.maker != nullptr, stale = T.dirty && T.made_asked, warn = busy || stale || T.unsaved;
     tag(busy ? "Making..." : stale ? "Preview out of date" : T.unsaved ? "Not saved yet" : "All saved", warn ? TINT_PERI : TINT_MINT,
         warn ? PERI_LIGHT : MINT_LIGHT, warn ? PERI : MINT);
-    // on the right: undo, redo, sounds, play it in a game (and which), save
+    // on the right: undo, redo, sounds, preview it in a game (and which), save
     char play[64];
-    snprintf(play, sizeof(play), "Play in %s##play", Modes[T.mode].name);
+    snprintf(play, sizeof(play), "Preview in %s##play", Modes[T.mode].name);
     float rw = 3 * (bh + sp) + button_w(play, true) + U(36) + sp + U(100);
     ImGui::SameLine(ImGui::GetWindowWidth() - st.WindowPadding.x - rw);
     mid(bh);
@@ -3993,12 +3995,12 @@ void top_bar(Tool &T) {
     if (button(play, TINT_MINT, MINT_LIGHT, 0, IC_GAMEPAD, CUE_SAVE)) {
         export_pack(T, true);
     }
-    ImGui::SetItemTooltip("Save, then play it in %s", Modes[T.mode].name);
+    ImGui::SetItemTooltip("Save, then see it in %s", Modes[T.mode].name);
     ImGui::SameLine(0, U(2));
     if (button("##modes", TINT_MINT, MINT_LIGHT, U(36), IC_DOWN, CUE_OPEN)) {
         ImGui::OpenPopup("##playin");
     }
-    ImGui::SetItemTooltip("Pick the game to play it in");
+    ImGui::SetItemTooltip("Pick the game to preview it in");
     if (ImGui::BeginPopup("##playin")) {
         for (int i = 0; i < (int)(sizeof(Modes) / sizeof(Modes[0])); i++) {
             if (menu_item(Modes[i].name, T.mode == i)) {

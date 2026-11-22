@@ -277,7 +277,9 @@ the third plays the move picked, turning. A model with no markers beside it (`MO
 export) starts from a guess (`kit_guess_markers`: a standing humanoid's proportions in its box, arms out if it's as wide as a
 T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, no markers. Then its name, height, who it's based on, card,
 sounds and the mod's name, and **Save** writes the mod to the mods folder (beside the tool by default, the game's if it's
-there), or **Save and play** starts the game too, with it as player 1 in the game picked. `HEROTOOL_SHOT=FILE.png`
+there), or **Preview in GAME** saves and starts the game too, straight into the game picked (no launcher: `--no-launcher` with
+`--mode`; the user's word, 2026-11-22, "open the mini game directly rather than needing the user to click play"), with it as player 1
+and the computer playing everyone (the game's TESTING demo). `HEROTOOL_SHOT=FILE.png`
 saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it opens, for tests.
 
 **Its pictures** are drawn by the tool itself, on the processor (`draw`, `draw_made`), so drawing them is kept down (the user's
@@ -293,7 +295,7 @@ previews and zoom in a folder of its own (not the open tool's).
 
 **The editor** (2026-11-22, the user's word: one window, simple; Graphite's layout since, The look below): a **top bar** (back to the
 heroes, the hero's name, **All games at a glance** on a grid button beside it, a status pill: All saved, Not saved yet, Preview out of
-date or Making..., then undo, redo, sounds on or off, **Play in GAME** with an arrow to pick the game, and **Save**), the **strip** of
+date or Making..., then undo, redo, sounds on or off, **Preview in GAME** with an arrow to pick the game, and **Save**), the **strip** of
 games under it (**Your hero** first, then each game as a chip with the hero in it, a still of its first animation; the page shown
 periwinkle and lifted), and the page. **Your hero** is the model's own page: its picture (**Joints**, the dots to place on its front
 and side, or **Preview**, the tool's own moves on it; Joints only for a model without a rig), under it its **Card** (Browse, the
