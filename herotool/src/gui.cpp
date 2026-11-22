@@ -59,6 +59,9 @@ struct Tool {
     char id[32] = "myhero", name[32] = "MY HERO", mod_name[64] = "My hero", author[64] = "", card[1024] = "";
     char voice[PACK_VOICE_JOBS][1024] = {};
     int height = 560, voice_job = 1, mode = 0, template_hero = 0; // template_hero: who it's based on (its template and its place)
+    // on foot its own moves (its model's clips, and the tool's moves for the rest), not those of who it's based on: a pack that says no
+    // template (Bobby) is so, and is saved so, as it was (the user's word, 2026-11-22)
+    bool foot_own = false;
     float face_head = 0;
     char out[1024] = "", game[1024] = "";
     // a marker being dragged: its bone, whether it's the bone's end, and in which view
@@ -423,6 +426,11 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     p.template_hero = Heroes[T.template_hero];
     for (int k = 0; k < PACK_KINDS; k++) {
         p.kind_template[k] = T.kind_template[k] >= 0 && T.kind_template[k] < 8 ? Heroes[T.kind_template[k]] : nullptr;
+    }
+    // its own moves on foot: based on Crash, it says no template (as a pack that never did, so one is saved as it was); else on foot "own"
+    if (T.foot_own) {
+        p.template_hero = T.template_hero == 0 ? nullptr : p.template_hero;
+        p.kind_template[0] = T.template_hero == 0 ? nullptr : "own";
     }
     // each game's moves: one of the tool's written as GAME/MOVE; a model's own GAME/MOVE clip kept only where it's chosen
     static char owns[KIT_OWN_MOST][64], drops[KIT_DROP_MOST][64];
@@ -1328,6 +1336,7 @@ void load_pack(Tool &T, const Found &f) {
             int th = info.kinds[k].template_hero;
             T.kind_template[k] = th >= 1 && th <= 8 && th - 1 != T.template_hero ? th - 1 : -1;
         }
+        T.foot_own = !info.template_said || info.kinds[0].template_hero < 0;
     }
     SDL_free(text);
     snprintf(path, sizeof(path), "%s/mod.json", f.mod);
@@ -1911,18 +1920,30 @@ void editor_right(Tool &T, SDL_Window *win) {
             ImGui::Text(k == 0 ? "Stands like" : k == 1 ? "Rides the bear of" : "Prop from");
             ImGui::SameLine(U(130));
             ImGui::SetNextItemWidth(-1);
-            if (ImGui::BeginCombo("##from", T.kind_template[k] < 0 ? now : HeroNames[T.kind_template[k]])) {
-                if (ImGui::Selectable(now, T.kind_template[k] < 0)) {
+            bool own = k == 0 && T.foot_own;
+            if (ImGui::BeginCombo("##from", own ? "itself: its own moves" : T.kind_template[k] < 0 ? now : HeroNames[T.kind_template[k]])) {
+                // on foot, its own moves: its model's clips, and the tool's for the rest
+                if (k == 0 && ImGui::Selectable("itself: its own moves", own)) {
+                    T.foot_own = true;
+                    make_in_game(T);
+                }
+                if (ImGui::Selectable(now, !own && T.kind_template[k] < 0)) {
                     T.kind_template[k] = -1;
+                    T.foot_own = k == 0 ? false : T.foot_own;
                     make_in_game(T);
                 }
                 for (int h = 0; h < 8; h++) {
-                    if (h != T.template_hero && ImGui::Selectable(HeroNames[h], T.kind_template[k] == h)) {
+                    if (h != T.template_hero && ImGui::Selectable(HeroNames[h], !own && T.kind_template[k] == h)) {
                         T.kind_template[k] = h;
+                        T.foot_own = k == 0 ? false : T.foot_own;
                         make_in_game(T);
                     }
                 }
                 ImGui::EndCombo();
+            }
+            if (k == 0) {
+                hint("Itself: on foot it plays its own moves (its model's clips, and the tool's moves on it for the rest: see Model and "
+                     "joints). A hero: it stands and moves as that hero does.");
             }
         } else {
             ImGui::TextWrapped("The podium is made from its moves on foot.");
@@ -1972,7 +1993,11 @@ void editor_right(Tool &T, SDL_Window *win) {
                 ImGui::PopID();
             }
         } else {
-            ImGui::TextWrapped("Its moves here are %s's.", HeroNames[T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero]);
+            if (k == 0 && T.foot_own) {
+                ImGui::TextWrapped("Its moves here are its own: its model's clips, and the tool's moves on it for the rest.");
+            } else {
+                ImGui::TextWrapped("Its moves here are %s's.", HeroNames[T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero]);
+            }
         }
     }
     if (T.page >= 0) {

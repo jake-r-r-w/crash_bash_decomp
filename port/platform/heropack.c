@@ -335,6 +335,9 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
         pk->keep_lift = pk->keep_lift < 0 ? 0 : pk->keep_lift > 0x1000 ? 0x1000 : pk->keep_lift;
         pk->like = hero_number(jget(kind, "like"));
         pk->template_hero = hero_number(jget(kind, "template"));
+        if (jstr(jget(kind, "template")) != NULL && SDL_strcasecmp(jstr(jget(kind, "template")), "own") == 0) {
+            pk->template_hero = -1;
+        }
         pk->subframes = jint(jget(kind, "subframes"), 1);
         pk->subframes = pk->subframes < 1 ? 1 : pk->subframes > 4 ? 4 : pk->subframes;
         copy_name(pk->otherwise, sizeof(pk->otherwise), jstr(jget(kind, "otherwise")), 0);

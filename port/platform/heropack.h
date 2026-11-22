@@ -33,7 +33,8 @@ typedef struct {
     int like;                       /* the original hero (1 Crash to 8 Rilla Roo) whose weight and speeds it has, 0 its base's */
     int subframes;                  /* its frames to each tick of its clips' (1 to 4) */
     int template_hero;              /* the original hero whose model of this kind it follows, its moves and what it rides or holds
-                                     * (1 Crash to 8 Rilla Roo; PackInfo.template_hero if 0): docs/HERO_PACKS.md, Templates */
+                                     * (1 Crash to 8 Rilla Roo; PackInfo.template_hero if 0): docs/HERO_PACKS.md, Templates. -1
+                                     * ("own"): none, its own moves there, though it says a template (on foot) */
 } PackKind;
 
 /* A change to its pose in a game's move, on top of what the game makes of it there (hero.json's "adjust", made with the hero tool's

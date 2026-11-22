@@ -62,7 +62,11 @@ void pack_follow_foot_end(void);
 
 /* The template it follows on foot, or 0: its kind's own, or the pack's if hero.json says one, where there's a map of that hero on foot */
 static s32 foot_template(const PackInfo *info) {
-    s32 h = info->kinds[KIND_FOOT].template_hero > 0 ? info->kinds[KIND_FOOT].template_hero : info->template_said ? info->template_hero : 0;
+    /* its own on foot ("own"), or a hero's, or its template's if it says one */
+    s32 h = info->kinds[KIND_FOOT].template_hero > 0   ? info->kinds[KIND_FOOT].template_hero
+          : info->kinds[KIND_FOOT].template_hero < 0 ? 0
+          : info->template_said                      ? info->template_hero
+                                                     : 0;
 
     return h > 0 && pack_template_map(h, KIND_FOOT) != NULL ? h : 0;
 }
