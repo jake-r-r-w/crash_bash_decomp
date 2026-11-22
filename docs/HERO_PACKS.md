@@ -458,6 +458,12 @@ frame it's held over is made to it (`adj_key`), so its head made bigger anywhere
 joint's key's there (or a new key's), and right-clicking a key has **Fade** too. Each key's row draws its fade as it is, how much of
 it there is each frame (a bounce's bumps, an overshoot's rise past it).
 
+**As it plays** the panel keeps to the key picked (`panel_key`): stopped, it's the picked joint's key at the frame shown (and that's
+the one picked); playing, it's the one picked whatever frame's shown, so its fade (or its values) can be changed as it plays and seen
+at once (the user's word, 2026-11-22: changing the fade as it played went to another key or none, as the frame shown moved on).
+Clicking a key as it plays picks it and leaves it playing (moving a key wants it stopped). With none of that joint's picked, the
+panel says to click one; a value changed then stops it and makes a key at the frame shown. `HEROTOOL_PLAY=1` plays it, for a test.
+
 **Copy and paste** (the user's word, 2026-11-22: "add keyframe copy and paste in the timeline"): Ctrl+C (or right-click, **Copy**)
 copies the key picked (else the picked joint's at the frame shown); Ctrl+V pastes it at the frame shown onto the joint picked, with
 its change, its fade and the frames it's held over, and Ctrl+Shift+V mirrored, its other side's way (as **Mirror to its other side**:

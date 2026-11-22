@@ -667,6 +667,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: a key's fade changed as its move played went to another key or none (the panel followed the frame shown). Now the
+  panel keeps to the key picked while it plays (`panel_key`), and clicking a key as it plays picks it without stopping it.
+
 - 2026-11-22: hero tool keys copy and paste (Ctrl+C, Ctrl+V, Ctrl+Shift+V mirrored, and the timeline's menus), and each key's fade
   is chosen (`"ease"`, `PackAdjust.ease`: smooth, linear, slow-start, slow-finish, sudden, overshoot, bounce, wobble; heroadjust.c's
   share), drawn in its timeline row. Tool and game the same exactly with a bounce fade and a pasted key.

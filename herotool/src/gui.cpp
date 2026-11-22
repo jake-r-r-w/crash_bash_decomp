@@ -1377,6 +1377,27 @@ PackAdjust *adj_key(Tool &T, const char *move, const char *bone, bool make) {
     return &T.adj.back();
 }
 
+// The key the panel shows and changes for a joint in this move. Stopped, the one at the frame shown (made the one picked, lit in the
+// timeline); playing, the one picked, whatever frame's shown, so its fade can be changed as it plays and a change goes to it, not to
+// whichever key the frames pass (the user's word, 2026-11-22: "if you change the fade while the animation is playing another one it
+// will disregard your change"); none if the one picked isn't that joint's.
+PackAdjust *panel_key(Tool &T, const char *move, const char *bone) {
+    if (T.adj_playing) {
+        if (T.key_sel >= 0 && T.key_sel < (int)T.adj.size()) {
+            PackAdjust &k = T.adj[T.key_sel];
+            if (pack_adjust_for(&k, T.kind, move) && SDL_strcasecmp(k.bone, bone) == 0) {
+                return &k;
+            }
+        }
+        return nullptr;
+    }
+    PackAdjust *k = adj_key(T, move, bone, false);
+    if (k != nullptr) {
+        T.key_sel = (int)(k - T.adj.data());
+    }
+    return k;
+}
+
 // The key picked in the timeline (else the picked joint's at the frame shown) copied, to paste (the user's word, 2026-11-22: "add
 // keyframe copy and paste in the timeline")
 void key_copy(Tool &T) {
@@ -2089,14 +2110,20 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         }
     }
     if (over && ImGui::IsMouseClicked(0)) {
+        bool playing = T.adj_playing;
         T.adj_playing = false;
         if (under >= 0) {
-            // a key picked: its joint, its frame, and the change it makes; taken to drag
+            // a key picked: its joint, its frame, and the change it makes; taken to drag. While it plays, picked and left playing (to
+            // change it, its fade, as it plays: panel_key), not moved
             const PackAdjust &k = T.adj[under];
             T.key_sel = under;
             T.sel = pack_bone_index(po, k.bone);
             T.key_mode = k.at >= 0 ? KEY_FRAME : strcmp(k.move, "*") == 0 ? KEY_GAME : KEY_MOVE;
-            if (k.at >= 0) {
+            if (k.at >= 0 && playing) {
+                T.spread = k.spread;
+                T.ease = k.ease;
+                T.adj_playing = true;
+            } else if (k.at >= 0) {
                 T.spread = k.spread;
                 T.ease = k.ease;
                 T.key_drag = true;
@@ -2964,7 +2991,7 @@ void adjust_panel(Tool &T) {
     ImGui::RadioButton("every move here", &T.key_mode, KEY_GAME);
     if (T.key_mode == KEY_FRAME) {
         // the picked joint's key here: its fade shown, and changed with these (else they're what a new key gets)
-        PackAdjust *here_key = T.sel >= 0 && T.sel < po->nbones ? adj_key(T, move, po->names[T.sel], false) : nullptr;
+        PackAdjust *here_key = T.sel >= 0 && T.sel < po->nbones ? panel_key(T, move, po->names[T.sel]) : nullptr;
         if (here_key != nullptr && here_key->at >= 0) {
             T.spread = here_key->spread;
             T.ease = here_key->ease;
@@ -3006,7 +3033,7 @@ void adjust_panel(Tool &T) {
     ImGui::Spacing();
     if (T.sel >= 0 && T.sel < po->nbones) {
         const char *bone = po->names[T.sel];
-        PackAdjust *k = adj_key(T, move, bone, false);
+        PackAdjust *k = panel_key(T, move, bone);
         float turn[3] = { 0, 0, 0 }, reach[3] = { 0, 0, 0 }, size[3] = { 1, 1, 1 };
         if (k != nullptr) {
             memcpy(turn, k->turn, sizeof(turn));
@@ -3056,14 +3083,19 @@ void adjust_panel(Tool &T) {
             }
             ImGui::SetItemTooltip("Made bigger or smaller (x1 as it is), with all on it, about its joint");
         }
-        if (changed && (k = adj_key(T, move, bone, true)) != nullptr) {
+        // made to the key it shows; with none, a new one at the frame shown (stopped there, if it was playing)
+        if (changed && (k = panel_key(T, move, bone)) == nullptr) {
+            T.adj_playing = false;
+            k = adj_key(T, move, bone, true);
+        }
+        if (changed && k != nullptr) {
             memcpy(k->turn, turn, sizeof(turn));
             memcpy(k->reach, reach, sizeof(reach));
             for (int i = 0; i < 3; i++) {
                 k->grow[i] = fmaxf(0.1f, fminf(10, size[i])) - 1;
             }
         }
-        if (T.key_mode == KEY_FRAME && (k = adj_key(T, move, bone, false)) != nullptr && k->at >= 0) {
+        if (T.key_mode == KEY_FRAME && (k = panel_key(T, move, bone)) != nullptr && k->at >= 0) {
             // the frames it's held over: from, to (the same: that frame alone)
             int from = k->at, to = key_last(*k), frames = mk->anims[a].frames;
             ImGui::SetNextItemWidth(U(110));
@@ -3091,6 +3123,8 @@ void adjust_panel(Tool &T) {
                 k->until = frames - 1;
             }
             ImGui::SetItemTooltip("Its change all there in every frame of %s (drag its ends in the timeline to hold it over fewer)", move);
+        } else if (T.key_mode == KEY_FRAME && T.adj_playing) {
+            ImGui::TextWrapped("Playing: click one of its keys in the timeline to change it as it plays (its fade too).");
         } else if (T.key_mode == KEY_FRAME) {
             ImGui::TextDisabled("At frame %d of %s.", T.frame, move);
         } else {
@@ -3982,6 +4016,8 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             if (SDL_getenv("HEROTOOL_SHOW_FRAME") != nullptr) {
                 T.frame = SDL_atoi(SDL_getenv("HEROTOOL_SHOW_FRAME"));
             }
+            /* and HEROTOOL_PLAY=1 plays it (as Space does) */
+            T.adj_playing = SDL_getenv("HEROTOOL_PLAY") != nullptr ? true : T.adj_playing;
         }
         lap(-1);
         if (T.page == PAGE_ALL) {
