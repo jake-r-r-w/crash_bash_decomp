@@ -291,11 +291,18 @@ Now (on a 16-thread machine, its pictures at 2.2 times): a game's page still 0.3
 the model's page 4.6. `HEROTOOL_PROFILE=1` prints a frame's parts every 60 frames, and `HEROTOOL_PREF=FOLDER/` keeps a test's
 previews and zoom in a folder of its own (not the open tool's).
 
-**The editor** (2026-11-22, the user's word: one window, simple; a UX pass): three columns. On the left the hero's pages: **Model
-and joints** (its rig, or the dots to place on its joints, and the tool's own moves on it), **All games at a glance** (every kind of
-model at once, each playing), and each game. In the middle the page's picture; on the right its choices, then **Hero details**
-(name, id, height, **Based on**: its template and whose place it takes, one choice), **Card and sounds** (Browse, the system's file
-chooser; **Face**, how much of it from the top is its head for its face, shown only with no card) and **Save** (**Save**, **Save and play** in a game picked). A game's page has **Prop from** (that game's
+**The editor** (2026-11-22, the user's word: one window, simple; Graphite's layout since, The look below): a **top bar** (back to the
+heroes, the hero's name, **All games at a glance** on a grid button beside it, a status pill: All saved, Not saved yet, Preview out of
+date or Making..., then undo, redo, sounds on or off, **Play in GAME** with an arrow to pick the game, and **Save**), the **strip** of
+games under it (**Your hero** first, then each game as a chip with the hero in it, a still of its first animation; the page shown
+periwinkle and lifted), and the page. **Your hero** is the model's own page: its picture (**Joints**, the dots to place on its front
+and side, or **Preview**, the tool's own moves on it; Joints only for a model without a rig), under it its **Card** (Browse, the
+system's file chooser; **Face**, how much of it from the top is its head, with no card) and **Sounds** (a WAV for each, played with its
+button; else its base's), and on the right its **Model** (Open, Guess joints, Mirror, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
+id, height, **Based on**: its template and whose place it takes, one choice) and **Mod** (its name and author, the folders) cards.
+**All games** is a tile for each game: the hero in it on the floor grid, turned as the slider says, what's its own there and whether
+it's squeezed in to sit. A game's page is its picture and timeline, and on the right its cards: the game's, Fade, the bone's and
+History. The game's card has **Prop from** (that game's
 ride or prop and moves from another hero than its template) and **Own animations**: only the game's moves (KitGames) that are its own
 there, its own copy of its template's (once it's changed: **from Crash**) or its clip (`GAME/MOVE`, a pack loaded to change; one given
 up is left out, `KitPack.drop`), each with **Use Crash's**; with none, a line says it has its template's (the user's word,
@@ -424,15 +431,18 @@ body's shape (1% to 2%, any turn or size aside, against 50% for a move still Cor
 In the tool a game's **Own animations** lists its own there: **from Crash** (such a copy) or **its clip** (a clip it has, such a copy once
 it's saved). Giving one of its own back asks first (**Replace its own animation?**: **Keep mine** or **Use
 Crash's**), and takes its changes with it. On foot, where it follows a hero, **Own animations** lists them, each with **Use Crash's**
-(asked the same). The page's **Animation** says whose the move is with a tag beside **Edit pose** (**Own animation (from Crash)**, green,
+(asked the same). The timeline's header says whose the move is with a tag beside its name (**Own animation (from Crash)**, mint,
 or **Crash's animation**; its tooltip says the rest), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change (and after `HEROTOOL_DRAG`'s drag, once it's let go)
 (the game having made it again), and `HEROTOOL_ASK=MOVE` picks a move's template's, for tests.
 
-**In the tool**, each game's page has **Animation**: **Edit pose** puts a dot on every joint over the picture (squares for the
-hips, hands and feet) and stops the move; its (?) is a card of the controls and keys. Click a joint to pick it: on it is a **gizmo**, as Blender's (the
+**In the tool**, a game's page is posed from the start: a dot on every bone over the picture (grey, the picked one periwinkle; rounded
+squares for the hips, hands and feet), and **Bones** (top left, or Tab) hides them, the gizmo and the tools for a clean view of the hero
+(the user's word, 2026-11-22: "should there be a option to toggle the bone selection?"). A click on an empty part of the picture, or
+Esc, lets go of the bone picked, and the bone card says **Click a bone**. The (?) in the picture's bottom left is a card of the keys
+and mouse. Click a joint to pick it: on it is a **gizmo**, as Blender's (the
 user's word, 2026-11-22: "a proper gizmo tool like blender has so we can rotate, move and scale"), in the hero's own axes as Blender's
-are for a character facing -Y: X red to its left, Y green to its back, Z blue up (`Way` in `adjust_view`, gui.cpp: the game's y is
-down), the panel's values lettered the same. Over the picture, **Rotate (R)**, **Move (G)** and **Scale (S)** pick which, as do those
+are for a character facing -Y: X (coral) to its left, Y (mint) to its back, Z (periwinkle) up (`Way` in `adjust_view`, gui.cpp: the game's y is
+down), the panel's values lettered the same. In a column on the picture under **Bones**, **Rotate (R)**, **Move (G)** and **Scale (S)** pick which, as do those
 keys:
 - **Rotate**: a ring about each axis, dragged round to turn it about that axis (a ring seen almost edge on, as far as the mouse goes
   along it, its near side following the mouse); a white ring about the line towards whoever's looking; its middle, dragged, points
@@ -478,8 +488,27 @@ is what's posed (its dot at its joint; **joints** only where the model's page pl
 **Blend** how a key comes and goes. The history's steps say the same: Rotated, Moved, Scaled, Stretched, Deleted, Pasted, Faded.
 
 The tool says as little as it can (the user's word, 2026-11-22: "its very wordy for a visual tool"): a word or two for a control,
-what it does in its tooltip, one (?) (the animation's controls card), short messages on the top bar, and no paragraphs; the right's
-fields leave room for their labels at the window's scale.
+what it does in its tooltip, one (?) (the keys and mouse card), short messages floating over the picture a moment (a toast: the
+status, said once), and no paragraphs; the right's fields leave room for their labels at the window's scale.
+
+**The look: Graphite** (the user's pick, 2026-11-22, from a design canvas of mocks: five warm, soft directions, then Sorbet's layout
+in three dark palettes; "graphite"). Neutral charcoal with soft round shapes and two pastels: **coral** (#F59E8B) for what does something
+when pressed (Save, Play), **periwinkle** (#A9B8F5) for whatever is picked or on (the game's chip, a toggle, the tool, a bone, a key,
+a switch's track: "when things are selected they should change colour"), mint (#9ED8BE) for all's well, lilac (#C3B1EE) for Hide.
+Ground #19191B, cards #242427 (the game's card mint-tinted #333A39, Fade sand #3B3937, the bone's periwinkle #343640), raised #2E2E32,
+the picture #1E1E21, words #EDEBEF and #BEBBC4. The gizmo's and values' axes are X coral, Y mint, Z periwinkle; the floor grid's lines
+faint, its X and Y lines coral and mint. The words are **Fredoka**, a rounded font (SIL Open Font License), which herotool/CMakeLists.txt
+fetches from google/fonts at one commit, checked by its hash, and builds into the tool as bytes (its licence beside the tool and in the
+release's LICENSE.txt; its variable font's default weight is light, so it's rasterised a little brighter). Buttons are round with a
+shadow under them like a key's, lift a little under the mouse and squash when pressed; toggles fade to periwinkle, switches' knobs
+slide, the tool's highlight slides to the tool, the history opens and shuts. **Sounds** (src/sound.c, the user's word: "soft audio
+cues"): a felt-piano note or two for each action, made as they play (a triangle and a sine an octave under it, a soft start, gone in
+half a second, low-passed), through SDL3: a tap, a page, on (two notes up) and off (down), picked, let go, a menu opened, Hide (a
+fall) and Show (a rise), play and stop, Save (four notes up), made again, another view, a step up or down, joints guessed (a run). The
+speaker in the top bar mutes them (kept in sounds.txt beside the zoom's); a test run (any of HEROTOOL_SHOT, _SAVE_TO, _LIVE) has none.
+All of it is gui.cpp's Graphite section (`graphite_style`, `button`, `toggle`, `switch_`, `card`, `icon`'s drawn line icons,
+`toast`) and the pages after it (`top_bar`, `games_strip`, `picture_overlays`, `game_page`, `model_page`, `all_games_page`,
+`start_screen`).
 
 Under the picture is its **timeline** (the user's word: "a key frame time line below the animation"): play or stop, the key before
 and after, the frame, the speed, and a sheet of the move's frames: a ruler (click or drag it to go to a frame) with the frame shown

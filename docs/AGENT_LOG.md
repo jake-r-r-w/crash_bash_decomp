@@ -667,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool restyled as Graphite (picked by the user from a design canvas of mocks): neutral charcoal, round shapes,
+  coral for actions and periwinkle for what's picked, Fredoka (fetched by its hash, built in, OFL in the release), soft synthesised
+  sounds (src/sound.c, muteable), a top bar, a strip of the games with the hero in each, Bones (Tab) and Esc/click to let go, round
+  timeline, cards on the right, new Your hero, All games and start screens. Tool against game still 0 apart. HERO_PACKS.md, The look.
+
 - 2026-11-22: the tank's and race cart's squeeze is the pack's choice (the user: fitting a hero in "needs to be done in tool"):
   **Fit in seat** on those pages (on by default; hero.json's kind `"fit": false` off, honoured by packfollow.c's `pose_finish`), and
   **Hide** / **Show** in the posing panel: a key in all animations with Scale 0 (Scale goes to 0 now), grey in the timeline, X-Mirror

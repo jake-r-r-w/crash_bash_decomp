@@ -35,12 +35,28 @@ FetchContent_Declare(imgui
   URL_HASH SHA256=8e1bbc76c71d74fef2fb85db7e7ca8eba13d6a86623c54992b60162db554ffdb
   SOURCE_SUBDIR not-built-from-here)
 FetchContent_MakeAvailable(imgui)
+# Fredoka, the window's font (gui.cpp, ui_scale; the user's pick, 2026-11-22): SIL Open Font License 1.1, from google/fonts at one
+# commit, checked by its hash, built into the tool as bytes (no file beside it); its licence goes beside the tool and in the release
+set(FREDOKA_URL https://raw.githubusercontent.com/google/fonts/a60a77e14f28abd4ef243a1b5dfc48df0cec5205/ofl/fredoka)
+set(FONT_DIR ${CMAKE_CURRENT_BINARY_DIR}/font)
+file(DOWNLOAD "${FREDOKA_URL}/Fredoka%5Bwdth%2Cwght%5D.ttf" ${FONT_DIR}/Fredoka.ttf
+  EXPECTED_HASH SHA256=2ba02e68b152868aef9ba28e24b3648c7d457fe6f25c761f2c2c53fb61a73fc8)
+file(DOWNLOAD ${FREDOKA_URL}/OFL.txt ${FONT_DIR}/Fredoka-OFL.txt
+  EXPECTED_HASH SHA256=5c9e7eee5c6b25f4b05b8d53b2e470ea4962f9ced742d044a98f7d95d1375bab)
+if(NOT EXISTS ${FONT_DIR}/fredoka.c)
+  file(READ ${FONT_DIR}/Fredoka.ttf FREDOKA_HEX HEX)
+  string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," FREDOKA_BYTES "${FREDOKA_HEX}")
+  file(WRITE ${FONT_DIR}/fredoka.c "/* Fredoka (SIL Open Font License 1.1, Fredoka-OFL.txt), made by CMakeLists.txt */\n"
+    "const unsigned char FredokaTtf[] = {${FREDOKA_BYTES}};\nconst unsigned int FredokaTtfSize = sizeof(FredokaTtf);\n")
+endif()
 set(IMGUI_SOURCES ${imgui_SOURCE_DIR}/imgui.cpp ${imgui_SOURCE_DIR}/imgui_draw.cpp ${imgui_SOURCE_DIR}/imgui_tables.cpp
   ${imgui_SOURCE_DIR}/imgui_widgets.cpp ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp)
 
 set(PORT ${CMAKE_CURRENT_SOURCE_DIR}/../port)
-add_executable(herotool src/herotool.c src/model.c src/atlas.c src/rig.c src/moves.c src/write.c src/preview.c src/pose.c src/gui.cpp ${IMGUI_SOURCES}
-  ${PORT}/platform/heropack.c ${PORT}/platform/heroadjust.c)
+add_executable(herotool src/herotool.c src/model.c src/atlas.c src/rig.c src/moves.c src/write.c src/preview.c src/pose.c src/gui.cpp
+  src/sound.c ${FONT_DIR}/fredoka.c ${IMGUI_SOURCES} ${PORT}/platform/heropack.c ${PORT}/platform/heroadjust.c)
+add_custom_command(TARGET herotool POST_BUILD COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+  "${FONT_DIR}/Fredoka-OFL.txt" "$<TARGET_FILE_DIR:herotool>/Fredoka-OFL.txt")
 target_include_directories(herotool PRIVATE src ${PORT}/platform ${cgltf_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
 target_compile_options(herotool PRIVATE $<$<COMPILE_LANGUAGE:C>:-std=gnu17> $<$<COMPILE_LANGUAGE:CXX>:-std=gnu++17>
   -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Wno-missing-field-initializers)

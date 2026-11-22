@@ -19,6 +19,10 @@
 #include "imgui_impl_sdlrenderer3.h"
 #include "kit.h"
 #include "heroadjust.h"
+#include "sound.h"
+
+extern "C" const unsigned char FredokaTtf[];
+extern "C" const unsigned int FredokaTtfSize;
 
 namespace {
 
@@ -29,6 +33,90 @@ float Ui = 1;
 inline float U(float px) {
     return px * Ui;
 }
+// --- the look: Graphite (the user's pick, 2026-11-22; docs/HERO_PACKS.md, The look): neutral charcoal, soft round shapes, coral for what
+// does something when pressed, periwinkle for whatever is picked or on, Fredoka for the words, a soft note for each action (sound.c) ---
+
+const ImU32 GROUND = IM_COL32(0x19, 0x19, 0x1B, 255), CARD = IM_COL32(0x24, 0x24, 0x27, 255), RAISED = IM_COL32(0x2E, 0x2E, 0x32, 255);
+const ImU32 DEEP = IM_COL32(0x1F, 0x1F, 0x22, 255), PICTURE = IM_COL32(0x1E, 0x1E, 0x21, 255), SHADOW = IM_COL32(0x0F, 0x0F, 0x11, 255);
+const ImU32 HOVER = IM_COL32(0x3A, 0x3A, 0x40, 255);
+const ImU32 INK = IM_COL32(0xED, 0xEB, 0xEF, 255), MUTED = IM_COL32(0xBE, 0xBB, 0xC4, 255), DIM = IM_COL32(0x9A, 0x97, 0xA1, 255);
+const ImU32 CORAL = IM_COL32(0xF5, 0x9E, 0x8B, 255), CORAL_INK = IM_COL32(0x2A, 0x15, 0x12, 255);
+const ImU32 PERI = IM_COL32(0xA9, 0xB8, 0xF5, 255), PERI_INK = IM_COL32(0x16, 0x1B, 0x33, 255), PERI_LIGHT = IM_COL32(0xC9, 0xD3, 0xFA, 255);
+const ImU32 PERI_DEEP = IM_COL32(0x71, 0x83, 0xC9, 255);
+const ImU32 MINT = IM_COL32(0x9E, 0xD8, 0xBE, 255), MINT_LIGHT = IM_COL32(0xB6, 0xE2, 0xC6, 255);
+const ImU32 LILAC = IM_COL32(0xC3, 0xB1, 0xEE, 255), LILAC_INK = IM_COL32(0x1F, 0x17, 0x33, 255);
+const ImU32 TINT_CORAL = IM_COL32(0x3D, 0x33, 0x33, 255), TINT_PERI = IM_COL32(0x34, 0x36, 0x40, 255);
+const ImU32 TINT_MINT = IM_COL32(0x33, 0x3A, 0x39, 255), TINT_SAND = IM_COL32(0x3B, 0x39, 0x37, 255);
+const ImU32 GREY_DOT = IM_COL32(0x8E, 0x8B, 0x96, 255);
+// the axes' colours, softened: X coral, Y mint, Z periwinkle
+const ImU32 AXIS_X = CORAL, AXIS_Y = MINT, AXIS_Z = PERI;
+
+inline ImVec4 V4(ImU32 c) {
+    return ImGui::ColorConvertU32ToFloat4(c);
+}
+
+// the words: Fredoka at a size for each use (ui_scale makes them at the window's scale)
+ImFont *FontBody, *FontSmall, *FontTitle, *FontBig;
+
+// Graphite's style at scale 1 (ui_scale scales it)
+void graphite_style(ImGuiStyle &s) {
+    ImGui::StyleColorsDark(&s);
+    s.WindowPadding = ImVec2(18, 14);
+    s.FramePadding = ImVec2(12, 7);
+    s.ItemSpacing = ImVec2(10, 9);
+    s.ItemInnerSpacing = ImVec2(8, 6);
+    s.CellPadding = ImVec2(6, 4);
+    s.ScrollbarSize = 10;
+    s.GrabMinSize = 10;
+    s.WindowBorderSize = s.ChildBorderSize = s.PopupBorderSize = s.FrameBorderSize = s.TabBorderSize = 0;
+    s.WindowRounding = 0;
+    s.ChildRounding = 24;
+    s.FrameRounding = 14;
+    s.PopupRounding = 18;
+    s.ScrollbarRounding = s.GrabRounding = s.TabRounding = 12;
+    s.SeparatorTextBorderSize = 2;
+    s.WindowMenuButtonPosition = ImGuiDir_None;
+    ImVec4 *c = s.Colors;
+    c[ImGuiCol_Text] = V4(INK);
+    c[ImGuiCol_TextDisabled] = V4(DIM);
+    c[ImGuiCol_WindowBg] = V4(GROUND);
+    c[ImGuiCol_ChildBg] = ImVec4(0, 0, 0, 0);
+    c[ImGuiCol_PopupBg] = V4(RAISED);
+    c[ImGuiCol_Border] = V4(RAISED);
+    c[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
+    c[ImGuiCol_FrameBg] = V4(DEEP);
+    c[ImGuiCol_FrameBgHovered] = V4(IM_COL32(0x2A, 0x2A, 0x30, 255));
+    c[ImGuiCol_FrameBgActive] = V4(TINT_PERI);
+    c[ImGuiCol_TitleBg] = c[ImGuiCol_TitleBgActive] = c[ImGuiCol_TitleBgCollapsed] = c[ImGuiCol_MenuBarBg] = V4(CARD);
+    c[ImGuiCol_ScrollbarBg] = ImVec4(0, 0, 0, 0);
+    c[ImGuiCol_ScrollbarGrab] = V4(RAISED);
+    c[ImGuiCol_ScrollbarGrabHovered] = V4(HOVER);
+    c[ImGuiCol_ScrollbarGrabActive] = V4(PERI);
+    c[ImGuiCol_CheckMark] = V4(PERI);
+    c[ImGuiCol_SliderGrab] = V4(PERI);
+    c[ImGuiCol_SliderGrabActive] = V4(PERI_LIGHT);
+    c[ImGuiCol_Button] = V4(RAISED);
+    c[ImGuiCol_ButtonHovered] = V4(HOVER);
+    c[ImGuiCol_ButtonActive] = V4(TINT_PERI);
+    c[ImGuiCol_Header] = V4(TINT_PERI);
+    c[ImGuiCol_HeaderHovered] = V4(HOVER);
+    c[ImGuiCol_HeaderActive] = V4(TINT_PERI);
+    c[ImGuiCol_Separator] = c[ImGuiCol_SeparatorHovered] = V4(RAISED);
+    c[ImGuiCol_SeparatorActive] = V4(PERI);
+    c[ImGuiCol_ResizeGrip] = c[ImGuiCol_ResizeGripHovered] = c[ImGuiCol_ResizeGripActive] = ImVec4(0, 0, 0, 0);
+    c[ImGuiCol_Tab] = c[ImGuiCol_TabDimmed] = V4(RAISED);
+    c[ImGuiCol_TabHovered] = V4(HOVER);
+    c[ImGuiCol_TabSelected] = c[ImGuiCol_TabDimmedSelected] = V4(TINT_PERI);
+    c[ImGuiCol_TableHeaderBg] = V4(CARD);
+    c[ImGuiCol_TableBorderStrong] = c[ImGuiCol_TableBorderLight] = V4(RAISED);
+    c[ImGuiCol_TableRowBg] = ImVec4(0, 0, 0, 0);
+    c[ImGuiCol_TableRowBgAlt] = ImVec4(1, 1, 1, 0.02f);
+    c[ImGuiCol_TextLink] = V4(PERI);
+    c[ImGuiCol_TextSelectedBg] = ImVec4(0.66f, 0.72f, 0.96f, 0.35f);
+    c[ImGuiCol_DragDropTarget] = c[ImGuiCol_NavCursor] = V4(PERI);
+    c[ImGuiCol_ModalWindowDimBg] = ImVec4(0, 0, 0, 0.5f);
+}
+
 int ViewW = 300, ViewH = 420;
 int PrevW = 600, PrevH = 560; // the view of what the game made
 int ThumbW = 220, ThumbH = 180; // each game's in the gallery of them all
@@ -40,6 +128,7 @@ struct View {
     // model to screen: x across (from its axes, turned by yaw), y up, both scaled and moved to fit
     float yaw = 0, scale = 1, ox = 0, oy = 0;
     int w = 0, h = 0; // its size, if not the preview's (PrevW x PrevH): draw_made's only
+    unsigned bg = 0xFF211E1Eu; // what's behind the hero (draw_made's; Graphite's picture, #1E1E21), see-through for the strip's
     // looked at from above by pitch degrees, and zoomed about (zx, zy): dragged and scrolled in the views that allow it (look_around)
     float pitch = 0, zoom = 1, zx = 0, zy = 0;
     // the game's x and z at the middle of what draw_made drew (its model's middle, which it's turned about)
@@ -275,10 +364,344 @@ struct Tool {
     int ask_kind = -1, ask_move = -1, ask_to = OWN_TEMPLATE;
     char ask_name[32] = "";
     bool ask_open = false;
+    // Graphite (the user's pick, 2026-11-22): the bones shown on the picture (Bones, Tab; off, a clean view of the hero), the keys and
+    // mouse card open, a short message over the picture (toast) and the time it was said, the status last made one, whether anything's
+    // changed since it was saved, and each game's picture in the strip of them (a still of its first animation)
+    bool bones = true, help = false, unsaved = false;
+    char toast[400] = "", toasted[2400] = "";
+    double toast_at = -10;
+    View strip[PACK_KINDS], face_view;
 };
 enum { KEY_FRAME, KEY_MOVE, KEY_GAME };
 enum { GIZMO_TURN, GIZMO_MOVE, GIZMO_SIZE };
 enum { KEY_BODY, KEY_START, KEY_END, KEY_EITHER };
+
+// --- Graphite's widgets: line icons, round buttons that lift when the mouse is on them and squash when pressed, toggles that turn
+// periwinkle when on, switches whose knob slides, cards, and a short message that fades in and out; each pressed makes its sound ---
+
+// a and b mixed, t of the way to b
+ImU32 mix(ImU32 a, ImU32 b, float t) {
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    ImU32 out = 0;
+    for (int sh = 0; sh < 32; sh += 8) {
+        float x = (float)(a >> sh & 255), y = (float)(b >> sh & 255);
+        out |= (ImU32)(x + (y - x) * t + 0.5f) << sh;
+    }
+    return out;
+}
+
+// a value kept for an id that eases towards to (a slide, a fade), rate an inverse time
+float ease_to(ImGuiID id, float to, float rate = 14) {
+    float *v = ImGui::GetStateStorage()->GetFloatRef(id, to);
+    *v += (to - *v) * (1 - expf(-rate * ImGui::GetIO().DeltaTime));
+    *v = fabsf(*v - to) < 0.002f ? to : *v;
+    return *v;
+}
+
+enum {
+    IC_BACK, IC_UNDO, IC_REDO, IC_SOUND, IC_MUTE, IC_GRID, IC_PLAY, IC_PAUSE, IC_PREV, IC_NEXT, IC_EYE, IC_EYE_OFF, IC_BONES,
+    IC_ROTATE, IC_MOVE, IC_SCALE, IC_MIRROR, IC_ONION, IC_CLIP, IC_GAMEPAD, IC_HISTORY, IC_DOWN, IC_PERSON, IC_CUBE, IC_FOLDER,
+    IC_REFRESH, IC_CHECK, IC_SPARK, IC_CURSOR, IC_RIGHT, IC_NONE = -1
+};
+
+// An icon, as the mocks' line icons: drawn in a 24-square (as an SVG's), s across, about c
+void icon(ImDrawList *dl, int which, ImVec2 c, float s, ImU32 col) {
+    float k = s / 24, w = fmaxf(1.2f, s * 0.085f);
+    auto P = [&](float x, float y) { return ImVec2(c.x + (x - 12) * k, c.y + (y - 12) * k); };
+    auto L = [&](float x0, float y0, float x1, float y1) { dl->AddLine(P(x0, y0), P(x1, y1), col, w); };
+    auto poly = [&](std::initializer_list<float> xy, bool closed = false) {
+        ImVec2 pts[16];
+        int n = 0;
+        for (auto it = xy.begin(); it != xy.end() && n < 16; it += 2) {
+            pts[n++] = P(*it, *(it + 1));
+        }
+        dl->AddPolyline(pts, n, col, closed ? ImDrawFlags_Closed : 0, w);
+    };
+    auto ring = [&](float x, float y, float r) { dl->AddCircle(P(x, y), r * k, col, 0, w); };
+    auto arc = [&](float x, float y, float r, float a0, float a1) {
+        dl->PathArcTo(P(x, y), r * k, a0 * 3.14159265f / 180, a1 * 3.14159265f / 180, 24);
+        dl->PathStroke(col, 0, w);
+    };
+    switch (which) {
+    case IC_BACK: poly({ 15, 18, 9, 12, 15, 6 }); break;
+    case IC_RIGHT: poly({ 9, 6, 15, 12, 9, 18 }); break;
+    case IC_DOWN: poly({ 6, 9, 12, 15, 18, 9 }); break;
+    case IC_UNDO: poly({ 9, 14, 4, 9, 9, 4 }); L(4, 9, 14, 9); arc(14, 15, 6, -90, 90); L(14, 21, 11, 21); break;
+    case IC_REDO: poly({ 15, 14, 20, 9, 15, 4 }); L(20, 9, 10, 9); arc(10, 15, 6, 270, 90); L(10, 21, 13, 21); break;
+    case IC_SOUND:
+    case IC_MUTE:
+        poly({ 4, 9, 8, 9, 13, 5, 13, 19, 8, 15, 4, 15 }, true);
+        if (which == IC_SOUND) {
+            arc(13.4f, 12, 4, -48, 48);
+            arc(12.7f, 12, 8, -43, 43);
+        } else {
+            L(17, 9, 22, 15);
+            L(22, 9, 17, 15);
+        }
+        break;
+    case IC_GRID:
+        for (int i = 0; i < 4; i++) {
+            float x = i % 2 ? 13 : 4, y = i / 2 ? 13 : 4;
+            dl->AddRect(P(x, y), P(x + 7, y + 7), col, 2 * k, 0, w);
+        }
+        break;
+    case IC_PLAY: dl->AddTriangleFilled(P(7, 5), P(19, 12), P(7, 19), col); break;
+    case IC_PAUSE: dl->AddRectFilled(P(6.5f, 5), P(10, 19), col, 1.5f * k); dl->AddRectFilled(P(14, 5), P(17.5f, 19), col, 1.5f * k); break;
+    case IC_PREV: poly({ 18, 6, 10, 12, 18, 18 }); L(6, 6, 6, 18); break;
+    case IC_NEXT: poly({ 6, 6, 14, 12, 6, 18 }); L(18, 6, 18, 18); break;
+    case IC_EYE:
+    case IC_EYE_OFF:
+        dl->AddBezierQuadratic(P(2, 12), P(12, 2), P(22, 12), col, w);
+        dl->AddBezierQuadratic(P(2, 12), P(12, 22), P(22, 12), col, w);
+        ring(12, 12, 3);
+        if (which == IC_EYE_OFF) {
+            L(3, 3, 21, 21);
+        }
+        break;
+    case IC_BONES:
+        L(12, 6.5f, 12, 10);
+        L(10.6f, 13.4f, 7.2f, 17.8f);
+        L(13.4f, 13.4f, 16.8f, 17.8f);
+        ring(12, 4.5f, 2);
+        ring(12, 12, 2);
+        ring(6, 19.5f, 2);
+        ring(18, 19.5f, 2);
+        break;
+    case IC_ROTATE:
+    case IC_REFRESH: arc(12, 12, 8, 0, 315); poly({ 20, 4, 20, 9, 15, 9 }); break;
+    case IC_MOVE:
+        L(12, 3, 12, 21);
+        L(3, 12, 21, 12);
+        poly({ 9, 6, 12, 3, 15, 6 });
+        poly({ 9, 18, 12, 21, 15, 18 });
+        poly({ 6, 9, 3, 12, 6, 15 });
+        poly({ 18, 9, 21, 12, 18, 15 });
+        break;
+    case IC_SCALE: poly({ 4, 14, 4, 20, 10, 20 }); poly({ 20, 10, 20, 4, 14, 4 }); L(4, 20, 11, 13); L(20, 4, 13, 11); break;
+    case IC_MIRROR: L(12, 3, 12, 21); poly({ 8, 7, 3, 12, 8, 17 }); poly({ 16, 7, 21, 12, 16, 17 }); break;
+    case IC_ONION: poly({ 12, 4, 20, 8, 12, 12, 4, 8 }, true); poly({ 4, 12, 12, 16, 20, 12 }); poly({ 4, 16, 12, 20, 20, 16 }); break;
+    case IC_CLIP: ring(9, 12, 5); ring(15, 12, 5); break;
+    case IC_GAMEPAD:
+        dl->AddRect(P(2, 6), P(22, 17), col, 5 * k, 0, w);
+        L(6, 11.5f, 10, 11.5f);
+        L(8, 9.5f, 8, 13.5f);
+        dl->AddCircleFilled(P(16, 10.5f), 1.2f * k, col);
+        dl->AddCircleFilled(P(18, 12.5f), 1.2f * k, col);
+        break;
+    case IC_HISTORY: arc(12, 12, 9, 180, -132); poly({ 3, 4, 3, 9, 8, 9 }); poly({ 12, 8, 12, 12, 15, 14 }); break;
+    case IC_PERSON: ring(12, 8, 4); arc(12, 21, 8, 180, 360); break;
+    case IC_CUBE:
+        poly({ 12, 3, 20, 7.5f, 20, 16.5f, 12, 21, 4, 16.5f, 4, 7.5f }, true);
+        L(12, 12, 20, 7.5f);
+        L(12, 12, 12, 21);
+        L(12, 12, 4, 7.5f);
+        break;
+    case IC_FOLDER: poly({ 3, 7, 3, 18, 21, 18, 21, 9, 11, 9, 9, 6, 3, 6 }, true); break;
+    case IC_CHECK: poly({ 5, 12, 10, 17, 19, 7 }); break;
+    case IC_SPARK: poly({ 13, 3, 15, 9, 21, 11, 15, 13, 13, 19, 11, 13, 5, 11, 11, 9 }, true); break;
+    case IC_CURSOR: poly({ 5, 3, 19, 11, 13, 12.5f, 10, 19 }, true); break;
+    }
+}
+
+// the text of a label (to its ##, if any)
+const char *label_end(const char *label) {
+    const char *e = strstr(label, "##");
+    return e != nullptr ? e : label + strlen(label);
+}
+
+// A round button: its colours, an icon before its words (or alone), w wide (0: as its words); with a shadow under it like a key's
+bool button(const char *label, ImU32 bg = RAISED, ImU32 ink = INK, float w = 0, int ic = IC_NONE, int cue = CUE_TAP, float h = 0) {
+    const char *end = label_end(label);
+    ImVec2 ts = ImGui::CalcTextSize(label, end);
+    float icon_w = ic != IC_NONE ? U(18) : 0, gap = ic != IC_NONE && end > label ? U(8) : 0;
+    h = h > 0 ? h : ImGui::GetFrameHeight() + U(6);
+    w = w > 0 ? w : ts.x + icon_w + gap + (end > label ? U(32) : 0) + (end == label ? h : 0);
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    bool pressed = ImGui::InvisibleButton(label, ImVec2(w, h));
+    bool hov = ImGui::IsItemHovered(), held = ImGui::IsItemActive();
+    ImGuiID id = ImGui::GetItemID();
+    float lift = ease_to(id, hov && !held ? 1 : 0, 18), squash = ease_to(id + 1, held ? 1 : 0, 30);
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    ImVec2 a(p.x + squash * U(2), p.y - lift * U(2) + squash * U(2)), b(p.x + w - squash * U(2), p.y + h - lift * U(2) - squash * U(1));
+    // (its colours through the style, so a disabled one fades)
+    dl->AddRectFilled(ImVec2(a.x, a.y + U(3)), ImVec2(b.x, b.y + U(3)), ImGui::GetColorU32(mix(bg, SHADOW, 0.6f)), h / 2);
+    dl->AddRectFilled(a, b, ImGui::GetColorU32(hov ? mix(bg, INK, 0.08f) : bg), h / 2);
+    float x = (a.x + b.x) / 2 - (ts.x + icon_w + gap) / 2, my = (a.y + b.y) / 2;
+    if (ic != IC_NONE) {
+        icon(dl, ic, ImVec2(x + icon_w / 2, my), U(18), ImGui::GetColorU32(ink));
+    }
+    dl->AddText(ImVec2(x + icon_w + gap, my - ts.y / 2), ImGui::GetColorU32(ink), label, end);
+    if (pressed) {
+        sound_cue(cue);
+    }
+    return pressed;
+}
+
+// A round button that's only an icon (its words its tooltip)
+bool icon_button(const char *id, int ic, const char *tip, ImU32 bg = CARD, ImU32 ink = INK, float size = 0, int cue = CUE_TAP) {
+    size = size > 0 ? size : ImGui::GetFrameHeight() + U(6);
+    bool pressed = button(id, bg, ink, size, ic, cue, size);
+    if (tip != nullptr) {
+        ImGui::SetItemTooltip("%s", tip);
+    }
+    return pressed;
+}
+
+// A toggle: periwinkle when on (fading to it), plain when off; pressed, it turns over (two notes up, or down)
+bool toggle(const char *label, bool *on, int ic, const char *tip, float w = 0, ImU32 off_bg = RAISED) {
+    ImGuiID id = ImGui::GetID(label);
+    float t = ease_to(id + 7, *on ? 1 : 0, 16);
+    bool pressed = button(label, mix(off_bg, PERI, t), mix(INK, PERI_INK, t), w, ic, *on ? CUE_OFF : CUE_ON);
+    if (tip != nullptr) {
+        ImGui::SetItemTooltip("%s", tip);
+    }
+    if (pressed) {
+        *on = !*on;
+    }
+    return pressed;
+}
+
+// A switch: its knob slides across, its track periwinkle when on
+bool switch_(const char *id, bool *on, const char *tip) {
+    float w = U(50), h = U(30);
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    bool pressed = ImGui::InvisibleButton(id, ImVec2(w, h));
+    if (pressed) {
+        *on = !*on;
+        sound_cue(*on ? CUE_ON : CUE_OFF);
+    }
+    float t = ease_to(ImGui::GetItemID(), *on ? 1 : 0, 16);
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    dl->AddRectFilled(p, ImVec2(p.x + w, p.y + h), mix(CARD, PERI, t), h / 2);
+    dl->AddCircleFilled(ImVec2(p.x + h / 2 + t * (w - h), p.y + h / 2), h / 2 - U(4), mix(INK, PERI_INK, t));
+    if (tip != nullptr) {
+        ImGui::SetItemTooltip("%s", tip);
+    }
+    return pressed;
+}
+
+// A card: a rounded block of its colour holding what's put in it till card_end (as high as that)
+void card(const char *id, ImU32 bg, float w = 0) {
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, V4(bg));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(U(18), U(16)));
+    ImGui::BeginChild(id, ImVec2(w, 0), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar);
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor();
+}
+
+void card_end() {
+    ImGui::EndChild();
+}
+
+// A card's title (a dot before it, if dot isn't 0)
+void heading(const char *text, ImU32 dot = 0) {
+    ImGui::PushFont(FontTitle);
+    if (dot != 0) {
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        float h = ImGui::GetTextLineHeight();
+        ImGui::GetWindowDrawList()->AddCircleFilled(ImVec2(p.x + U(5), p.y + h / 2), U(5), dot);
+        ImGui::Dummy(ImVec2(U(10), h));
+        ImGui::SameLine(0, U(8));
+    }
+    ImGui::TextUnformatted(text);
+    ImGui::PopFont();
+}
+
+// A menu's item: periwinkle with dark words when it's the one picked
+bool menu_item(const char *label, bool picked) {
+    if (picked) {
+        ImGui::PushStyleColor(ImGuiCol_Header, V4(PERI));
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, V4(PERI));
+        ImGui::PushStyleColor(ImGuiCol_Text, V4(PERI_INK));
+    }
+    bool hit = ImGui::Selectable(label, picked);
+    if (picked) {
+        ImGui::PopStyleColor(3);
+    }
+    if (hit) {
+        sound_cue(CUE_PICK);
+    }
+    return hit;
+}
+
+// A drop-down's box: round, dark, its arrow in it
+bool menu_begin(const char *id, const char *shown, float w = 0, ImU32 bg = DEEP) {
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(bg));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, V4(mix(bg, INK, 0.08f)));
+    ImGui::PushStyleColor(ImGuiCol_Button, V4(bg));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, V4(mix(bg, INK, 0.08f)));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(U(14), U(9)));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(U(8), U(8)));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(U(4), U(4)));
+    if (w != 0) {
+        ImGui::SetNextItemWidth(w);
+    }
+    bool open = ImGui::BeginCombo(id, shown);
+    ImGui::PopStyleVar(2);
+    if (open) {
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(4);
+        static ImGuiID last;
+        if (last != ImGui::GetID(id)) {
+            sound_cue(CUE_OPEN);
+            last = ImGui::GetID(id);
+        }
+        return true;
+    }
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor(4);
+    return false;
+}
+
+// A label's pill that isn't pressed: its colours, a dot before it
+void tag(const char *text, ImU32 bg, ImU32 ink, ImU32 dot = 0, float h = 0) {
+    ImGui::PushFont(FontSmall);
+    ImVec2 ts = ImGui::CalcTextSize(text), p = ImGui::GetCursorScreenPos();
+    h = h > 0 ? h : U(28);
+    float w = ts.x + (dot != 0 ? U(34) : U(24));
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    dl->AddRectFilled(p, ImVec2(p.x + w, p.y + h), bg, h / 2);
+    if (dot != 0) {
+        dl->AddCircleFilled(ImVec2(p.x + U(15), p.y + h / 2), U(4), dot);
+    }
+    dl->AddText(ImVec2(p.x + (dot != 0 ? U(24) : U(12)), p.y + (h - ts.y) / 2), ink, text);
+    ImGui::Dummy(ImVec2(w, h));
+    ImGui::PopFont();
+}
+
+// the width a button() of these words (and an icon) takes
+float button_w(const char *label, bool has_icon) {
+    return ImGui::CalcTextSize(label, label_end(label)).x + (has_icon ? U(26) : 0) + U(32);
+}
+
+// A short message over the picture (the status said once: saved, made, what went wrong), fading in and out
+void toast(Tool &T, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(T.toast, sizeof(T.toast), fmt, ap);
+    va_end(ap);
+    T.toast_at = ImGui::GetTime();
+}
+
+void draw_toast(Tool &T, ImVec2 bottom_middle, float wrap) {
+    double age = ImGui::GetTime() - T.toast_at, last = 2.6 + strlen(T.toast) * 0.02;
+    if (T.toast[0] == 0 || age > last + 0.3) {
+        return;
+    }
+    float a = (float)(age < 0.25 ? age / 0.25 : age > last ? 1 - (age - last) / 0.3 : 1), rise = (1 - a) * U(12);
+    ImDrawList *dl = ImGui::GetForegroundDrawList();
+    ImVec2 ts = ImGui::CalcTextSize(T.toast, nullptr, false, wrap);
+    float w = ts.x + U(64), h = ts.y + U(22);
+    ImVec2 lo(bottom_middle.x - w / 2, bottom_middle.y - h + rise), hi(bottom_middle.x + w / 2, bottom_middle.y + rise);
+    auto al = [&](ImU32 c) { return (c & 0x00FFFFFFu) | (ImU32)(a * ((c >> 24) & 255)) << 24; };
+    dl->AddRectFilled(ImVec2(lo.x, lo.y + U(4)), ImVec2(hi.x, hi.y + U(4)), al(SHADOW), h / 2 < U(24) ? h / 2 : U(24));
+    dl->AddRectFilled(lo, hi, al(INK), h / 2 < U(24) ? h / 2 : U(24));
+    ImVec2 c(lo.x + U(26), (lo.y + hi.y) / 2);
+    dl->AddCircleFilled(c, U(13), al(MINT));
+    icon(dl, IC_CHECK, c, U(16), al(IM_COL32(0x17, 0x3A, 0x2C, 255)));
+    dl->AddText(nullptr, 0, ImVec2(lo.x + U(48), lo.y + U(11)), al(PERI_INK), T.toast, nullptr, wrap);
+}
 
 // Each way a key can fade in and out (PACK_EASE_), as the tool says it, and what it does
 const char *const EaseSays[PACK_EASES] = { "Smooth", "Steady", "Slow start", "Slow finish", "Sudden", "Overshoot", "Bounce", "Wobble" };
@@ -299,9 +722,6 @@ const char *const KindTitles[PACK_KINDS] = { "On foot (Crate Crush, Ring Ding an
                                              "Mallet Mash: the mallet", "Dragon Drop: the dino", "Keg Kaboom: the keg", "The podium" };
 
 const int KIND_WARP_TOOL = PACK_KINDS - 1; // the podium: its model on foot's, nothing of its own to pick
-const char *const KindShort[PACK_KINDS] = { "On foot", "Polar Push: bear", "Pogo Painter: pogo", "Ballistix: car", "Tank",
-                                            "Crash Dash: cart", "Splash Dash: fish", "Mallet Mash: mallet", "Dragon Drop: dino",
-                                            "Keg Kaboom: keg", "The podium" };
 
 const char *const HeroNames[] = { "Crash", "Coco", "Cortex", "Brio", "Tiny", "Koala Kong", "Dingodile", "Rilla Roo" };
 const char *const Heroes[] = { "crash", "coco", "cortex", "brio", "tiny", "kong", "dingodile", "rilla" };
@@ -456,7 +876,7 @@ void draw(const KitModel *m, const float (*pos)[3], View &v, SDL_Renderer *ren) 
     }
     float c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
     in_bands(ViewW, ViewH, [&](int ya, int yb) {
-    std::fill(v.rgba + ya * ViewW, v.rgba + yb * ViewW, 0xFF3A3434u);
+    std::fill(v.rgba + ya * ViewW, v.rgba + yb * ViewW, 0xFF262222u); // (Graphite: #222226)
     std::fill(v.depth + ya * ViewW, v.depth + yb * ViewW, 1e30f);
     for (int t = 0; t < m->ntri; t++) {
         float sx[3], sy[3], sz[3], n[3], e1[3], e2[3];
@@ -673,6 +1093,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
         snprintf(T.status, sizeof(T.status), "%s", why);
     } else {
         ok = true;
+        T.unsaved = false;
         snprintf(T.status, sizeof(T.status), "Saved to %s", folder);
         if (test) {
             char mode[16];
@@ -888,12 +1309,12 @@ void floor_grid(View &v, int PW, int PH, float cx, float cz, float ground) {
     int wide = PW / 500 > 1 ? PW / 500 : 1;
     for (int i = -N; i <= N; i++) {
         if (i != 0) {
-            line(i * Step, -Far, i * Step, Far, 160, 160, 172, 0.55f, wide);
-            line(-Far, i * Step, Far, i * Step, 160, 160, 172, 0.55f, wide);
+            line(i * Step, -Far, i * Step, Far, 237, 235, 239, 0.2f, wide);
+            line(-Far, i * Step, Far, i * Step, 237, 235, 239, 0.2f, wide);
         }
     }
-    line(-Far, 0, Far, 0, 240, 80, 80, 1, wide + 1);
-    line(0, -Far, 0, Far, 130, 220, 80, 1, wide + 1);
+    line(-Far, 0, Far, 0, 245, 158, 139, 0.85f, wide + 1); // (X coral, Y mint: Graphite's axes)
+    line(0, -Far, 0, Far, 158, 216, 190, 0.85f, wide + 1);
 }
 
 // (ghost_before and ghost_after: onion skin's frames, as ghosts where they stick out past it, blue and orange)
@@ -905,6 +1326,7 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
         v.rgba = new unsigned[PW * PH];
         v.depth = new float[PW * PH];
         v.tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, PW, PH);
+        SDL_SetTextureBlendMode(v.tex, (v.bg >> 24) == 0xFF ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
     }
     const KitMadeAnim *a = m->nanims > 0 ? &m->anims[anim < m->nanims ? anim : 0] : nullptr;
     const int16_t *vs = a == nullptr ? nullptr : live != nullptr ? live : a->verts + (size_t)(frame % a->frames) * m->nvert * 3;
@@ -923,7 +1345,7 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
         return;
     }
     if (a == nullptr) {
-        std::fill(v.rgba, v.rgba + PW * PH, 0xFF3A3434u);
+        std::fill(v.rgba, v.rgba + PW * PH, v.bg);
         SDL_UpdateTexture(v.tex, nullptr, v.rgba, PW * 4);
         return;
     }
@@ -963,7 +1385,7 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
         gl.resize((size_t)PW * PH);
     }
     in_bands(PW, PH, [&](int ya, int yb) {
-        std::fill(v.rgba + ya * PW, v.rgba + yb * PW, 0xFF3A3434u);
+        std::fill(v.rgba + ya * PW, v.rgba + yb * PW, v.bg);
         std::fill(v.depth + ya * PW, v.depth + yb * PW, 1e30f);
         raster_made(m, vs, cx, cz, v, PW, PH, ya, yb);
         for (int r = 0; r < nrides; r++) {
@@ -1317,6 +1739,7 @@ void adj_snapshot(Tool &T, const char *says, ...) {
     vsnprintf(line, sizeof(line), says, ap);
     va_end(ap);
     T.undo.push_back({ T.adj, line });
+    T.unsaved = true;
     if (T.undo.size() > 300) {
         T.undo.erase(T.undo.begin());
     }
@@ -1929,14 +2352,14 @@ void view_from(View &v, float &yaw, int side) {
 // The view's axes in the picture's top right corner, as Blender's (the user's word, 2026-11-22: "a direction grid like blender"): X red
 // to the hero's left, Y green to its back (it faces -Y, as a character does in Blender's front view), Z blue up, each lettered at its
 // end and plain at its other. Clicking one looks from there (view_from). True if the mouse is over it, so a click there is its.
-bool view_axes(View &v, float &yaw, ImVec2 im, float w, bool hovered) {
+bool view_axes(View &v, float &yaw, ImVec2 c, bool hovered) {
     static const char *const Letter[3] = { "X", "Y", "Z" };
     static const char *const Says[6] = { "Left (X)", "Back (Y)", "Top (Z)", "Right (-X)", "Front (-Y)", "Bottom (-Z)" };
-    static const ImU32 Col[3] = { IM_COL32(235, 75, 75, 255), IM_COL32(120, 210, 70, 255), IM_COL32(80, 140, 245, 255) };
+    const ImU32 Col[3] = { AXIS_X, AXIS_Y, AXIS_Z };
     static const float Way[3][3] = { { 1, 0, 0 }, { 0, 0, 1 }, { 0, -1, 0 } }; // each in the game's axes
     ImDrawList *dl = ImGui::GetWindowDrawList();
-    ImVec2 c(im.x + w - U(56), im.y + U(56)), m = ImGui::GetIO().MousePos;
-    float r = U(38), ball = U(10);
+    ImVec2 m = ImGui::GetIO().MousePos;
+    float r = U(36), ball = U(11);
     struct End {
         float x, y, z;
         int side;
@@ -1956,9 +2379,8 @@ bool view_axes(View &v, float &yaw, ImVec2 im, float w, bool hovered) {
             over = e;
         }
     }
-    if (near) {
-        dl->AddCircleFilled(c, r + ball + U(4), IM_COL32(255, 255, 255, 28));
-    }
+    // (on a round of its own, lighter with the mouse on it)
+    dl->AddCircleFilled(c, r + ball + U(6), near ? HOVER : (RAISED & 0x00FFFFFFu) | 0xE6000000u);
     for (int e = 0; e < 6; e++) {
         const End &d = ends[e];
         int axis = d.side % 3;
@@ -1967,19 +2389,20 @@ bool view_axes(View &v, float &yaw, ImVec2 im, float w, bool hovered) {
             dl->AddLine(c, at, Col[axis], U(2));
             dl->AddCircleFilled(at, ball, Col[axis]);
             ImVec2 ts = ImGui::CalcTextSize(Letter[axis]);
-            dl->AddText(ImVec2(at.x - ts.x / 2, at.y - ts.y / 2), IM_COL32(20, 20, 24, 255), Letter[axis]);
+            dl->AddText(ImVec2(at.x - ts.x / 2, at.y - ts.y / 2), PERI_INK, Letter[axis]);
         } else {
             dl->AddCircleFilled(at, ball * 0.8f, (Col[axis] & 0x00FFFFFFu) | 0x70000000u);
             dl->AddCircle(at, ball * 0.8f, Col[axis], 0, U(1.5f));
         }
         if (e == over) {
-            dl->AddCircle(at, ball + U(2), IM_COL32(255, 255, 255, 255), 0, U(2));
+            dl->AddCircle(at, ball + U(2), INK, 0, U(2.5f));
         }
     }
     if (over >= 0) {
         ImGui::SetTooltip("%s", Says[ends[over].side]);
         if (ImGui::IsMouseClicked(0)) {
             view_from(v, yaw, ends[over].side);
+            sound_cue(CUE_VIEW);
         }
     } else if (near) {
         ImGui::SetTooltip("Click an axis to view from it");
@@ -2181,78 +2604,10 @@ void clip_scan(Tool &T, int kind, int anim) {
 }
 
 // Over the picture while adjusting: which gizmo it has, Turn (R), Move (G) or Size (S), the one on lit
-void gizmo_buttons(Tool &T) {
-    static const char *const Says[3] = { "Rotate (R)", "Move (G)", "Scale (S)" };
-    static const char *const Tips[3] = { "Rings rotate, the middle aims", "Arrows move, the middle drags", "Handles scale, the middle scales all" };
-    for (int i = 0; i < 3; i++) {
-        bool on = T.gizmo == i;
-        if (on) {
-            ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
-        }
-        if (ImGui::Button(Says[i], ImVec2(U(90), 0))) {
-            T.gizmo = i;
-        }
-        if (on) {
-            ImGui::PopStyleColor();
-        }
-        ImGui::SetItemTooltip("%s", Tips[i]);
-        ImGui::SameLine();
-    }
-    ImGui::SameLine(0, U(16));
-    bool on = T.xmirror;
-    if (on) {
-        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
-    }
-    if (ImGui::Button("X-Mirror", ImVec2(U(90), 0))) {
-        T.xmirror = !T.xmirror;
-    }
-    if (on) {
-        ImGui::PopStyleColor();
-    }
-    ImGui::SetItemTooltip("Changes copy to the other side, flipped");
-    ImGui::SameLine();
-    on = T.onion;
-    if (on) {
-        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
-    }
-    if (ImGui::Button("Onion", ImVec2(U(70), 0))) {
-        T.onion = !T.onion;
-    }
-    if (on) {
-        ImGui::PopStyleColor();
-    }
-    ImGui::SetItemTooltip("Ghosts of the frames before (blue) and after (orange)");
-    if (T.onion) {
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(U(90));
-        ImGui::SliderInt("##onion", &T.onion_step, 1, 15, "%d apart");
-        ImGui::SetItemTooltip("Frames between the ghosts and the frame shown");
-    }
-    ImGui::SameLine();
-    on = T.clipping;
-    if (on) {
-        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
-    }
-    if (ImGui::Button("Clipping", ImVec2(U(90), 0))) {
-        T.clipping = !T.clipping;
-    }
-    if (on) {
-        ImGui::PopStyleColor();
-    }
-    ImGui::SetItemTooltip("Points of it inside another part (red), and the frames where (the timeline's red)");
-    if (T.clipping && Clips.kind == T.kind && T.frame >= 0 && T.frame < (int)Clips.count.size()) {
-        ImGui::SameLine();
-        ImGui::TextColored(Clips.count[T.frame] > 0 ? ImVec4(1, 0.4f, 0.4f, 1) : ImVec4(0.5f, 0.8f, 0.5f, 1), "%d", Clips.count[T.frame]);
-        ImGui::SetItemTooltip("Points clipping at this frame");
-    }
-    ImGui::SameLine();
-    ImGui::NewLine();
-}
-
 void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     static Posed ps;
     // the hero's own x (across), y (up and down) and z (front to back): Blender's X red, Z blue and Y green
-    static const ImU32 Axis[3] = { IM_COL32(235, 75, 75, 255), IM_COL32(80, 140, 245, 255), IM_COL32(120, 210, 70, 255) };
+    const ImU32 Axis[3] = { AXIS_X, AXIS_Z, AXIS_Y };
     static const char *const AxisSays[3] = { "X", "Z", "Y" };
     const KitMade *mk = &T.made[T.kind];
     const KitPose *po = &T.poses[T.kind];
@@ -2284,8 +2639,12 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
         for (int pv : pts) {
             float q[3] = { scratch[pv * 3] - v.cx, -(float)scratch[pv * 3 + 1], -(float)scratch[pv * 3 + 2] - v.cz }, x, y, z;
             to_screen(v, q, x, y, z);
-            dl->AddCircleFilled(ImVec2(im.x + x * disp, im.y + y * disp), U(2.5f), IM_COL32(255, 50, 50, 230));
+            dl->AddCircleFilled(ImVec2(im.x + x * disp, im.y + y * disp), U(2.5f), CORAL);
         }
+    }
+    // Bones off: a clean view of the hero (Tab)
+    if (!T.bones) {
+        return;
     }
     float pp = v.scale * v.zoom * disp, R = U(70);
     // the gizmo's handles on the screen: each axis's direction there (per unit, and as seen), and whether it's towards the viewer. Its
@@ -2354,25 +2713,32 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             best = d2, hover = b;
         }
         if (po->parent[b] >= 0) {
-            dl->AddLine(ImVec2(sx[po->parent[b]], sy[po->parent[b]]), ImVec2(sx[b], sy[b]), IM_COL32(255, 255, 255, 90), U(1.5f));
+            dl->AddLine(ImVec2(sx[po->parent[b]], sy[po->parent[b]]), ImVec2(sx[b], sy[b]), (INK & 0x00FFFFFFu) | 0x80000000u, U(2));
         }
     }
+    // each bone's dot: grey, the one picked periwinkle (a halo round it), the one under the mouse bigger; a hand's or foot's (which
+    // reach, and bend the arm or leg to follow) a rounded square
     for (int b = 0; b < po->nbones; b++) {
-        const char *n = po->names[b];
-        ImU32 col = po->part[b] == 3 ? IM_COL32(80, 200, 255, 255) : po->part[b] == 1 ? IM_COL32(120, 255, 120, 255)
-                  : po->part[b] == 2 || SDL_strncasecmp(n, "ear", 3) == 0 || SDL_strncasecmp(n, "jaw", 3) == 0 ? IM_COL32(255, 160, 40, 255)
-                                                                                                                 : IM_COL32(255, 230, 80, 255);
-        if (reach_bone(n)) {
-            dl->AddRectFilled(ImVec2(sx[b] - U(4), sy[b] - U(4)), ImVec2(sx[b] + U(4), sy[b] + U(4)), col);
+        bool on = b == T.sel;
+        float r = on ? U(7) : b == hover ? U(7) : U(5.5f);
+        ImU32 col = on ? PERI : b == hover ? mix(GREY_DOT, INK, 0.4f) : GREY_DOT;
+        ImVec2 at(sx[b], sy[b]);
+        if (on) {
+            dl->AddCircleFilled(at, r + U(5), (PERI & 0x00FFFFFFu) | 0x55000000u);
+        }
+        if (reach_bone(po->names[b])) {
+            dl->AddRectFilled(ImVec2(at.x - r - U(2), at.y - r - U(2)), ImVec2(at.x + r + U(2), at.y + r + U(2)), GROUND, U(4));
+            dl->AddRectFilled(ImVec2(at.x - r, at.y - r), ImVec2(at.x + r, at.y + r), col, U(3));
         } else {
-            dl->AddCircleFilled(ImVec2(sx[b], sy[b]), b == hover ? U(6) : U(4.5f), col);
+            dl->AddCircleFilled(at, r + U(2), GROUND);
+            dl->AddCircleFilled(at, r, col);
         }
     }
     // X-Mirror: the other side's joint ringed
     if (T.sel >= 0 && T.xmirror && other_side(po->names[T.sel])[0] != 0) {
         int ob = pack_bone_index(po, other_side(po->names[T.sel]));
         if (ob >= 0) {
-            dl->AddCircle(ImVec2(sx[ob], sy[ob]), U(11), IM_COL32(200, 150, 255, 230), 0, U(2));
+            dl->AddCircle(ImVec2(sx[ob], sy[ob]), U(12), LILAC, 0, U(2.5f));
         }
     }
     // the gizmo
@@ -2380,31 +2746,31 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
         int lit = T.dragging ? T.handle : over;
         if (T.gizmo == GIZMO_TURN) {
             ImVec2 pts[48];
-            dl->AddCircle(c, R * 1.25f, lit == H_TURN_VIEW ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 140), 64,
-                          lit == H_TURN_VIEW ? U(3) : U(1.5f));
+            dl->AddCircle(c, R * 1.25f, lit == H_TURN_VIEW ? INK : (INK & 0x00FFFFFFu) | 0x8C000000u, 64, lit == H_TURN_VIEW ? U(3.5f) : U(2));
             for (int i = 0; i < 3; i++) {
                 ring(i, pts, 48);
-                dl->AddPolyline(pts, 48, Axis[i], ImDrawFlags_Closed, lit == H_TURN + i ? U(3.5f) : U(2));
+                dl->AddPolyline(pts, 48, Axis[i], ImDrawFlags_Closed, lit == H_TURN + i ? U(5) : U(3));
             }
-            dl->AddCircle(c, U(9), IM_COL32(255, 255, 255, 255), 0, U(2));
+            dl->AddCircleFilled(c, U(9), PERI);
+            dl->AddCircle(c, U(9), PERI_INK, 0, U(2.5f));
         } else {
             for (int i = 0; i < 3; i++) {
                 if (axlen[i] < 0.15f) {
                     continue;
                 }
                 ImVec2 e(c.x + ax2[i][0] * R, c.y + ax2[i][1] * R), s(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14));
-                float t = lit == (T.gizmo == GIZMO_MOVE ? H_MOVE : H_SIZE) + i ? U(3.5f) : U(2);
+                float t = lit == (T.gizmo == GIZMO_MOVE ? H_MOVE : H_SIZE) + i ? U(5) : U(3);
                 dl->AddLine(s, e, Axis[i], t);
                 if (T.gizmo == GIZMO_MOVE) {
                     ImVec2 nrm(-ax2[i][1], ax2[i][0]);
                     dl->AddTriangleFilled(ImVec2(e.x + ax2[i][0] * U(12), e.y + ax2[i][1] * U(12)), ImVec2(e.x + nrm.x * U(6), e.y + nrm.y * U(6)),
                                           ImVec2(e.x - nrm.x * U(6), e.y - nrm.y * U(6)), Axis[i]);
                 } else {
-                    dl->AddRectFilled(ImVec2(e.x - U(5), e.y - U(5)), ImVec2(e.x + U(5), e.y + U(5)), Axis[i]);
+                    dl->AddRectFilled(ImVec2(e.x - U(6), e.y - U(6)), ImVec2(e.x + U(6), e.y + U(6)), Axis[i], U(3));
                 }
             }
             bool mid = T.dragging && (T.handle == H_MOVE_FREE || T.handle == H_SIZE_ALL);
-            dl->AddCircle(c, U(12), mid ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 170), 0, mid ? U(3) : U(2));
+            dl->AddCircle(c, U(12), mid ? INK : (INK & 0x00FFFFFFu) | 0xAA000000u, 0, mid ? U(3.5f) : U(2.5f));
         }
     }
     if (!T.dragging) {
@@ -2427,6 +2793,11 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             take = T.gizmo == GIZMO_TURN ? H_TURN_FREE : T.gizmo == GIZMO_MOVE ? H_MOVE_FREE : H_SIZE_ALL;
         } else if (take == H_NONE && hover >= 0) {
             T.sel = hover;
+            sound_cue(CUE_PICK);
+        } else if (take == H_NONE && T.sel >= 0) {
+            // an empty part of the picture: let go of the bone picked (as Esc)
+            T.sel = -1;
+            sound_cue(CUE_DROP);
         }
         if (take != H_NONE) {
             const char *b = bone_title(po->names[T.sel]);
@@ -2563,10 +2934,37 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         && SDL_strcasecmp(T.adj[T.key_sel].bone, po->names[T.sel]) == 0) {
         T.key_mode = strcmp(T.adj[T.key_sel].move, "*") == 0 ? KEY_GAME : KEY_MOVE;
     }
-    if (ImGui::Button(T.adj_playing ? "Stop" : "Play", ImVec2(U(50), 0))) {
-        T.adj_playing = !T.adj_playing;
+    // its header: the animation shown (and whose it is), then the key before, play, the key after, the frame and the speed
+    float x_start = ImGui::GetCursorPosX(), top = ImGui::GetCursorPosY(), H = U(42);
+    auto mid = [&](float h) { ImGui::SetCursorPosY(top + (H - h) / 2); };
+    mid(ImGui::GetFontSize() + U(18));
+    if (menu_begin("##watching", move, U(190))) {
+        for (int i = 0; i < mk->nanims; i++) {
+            if (menu_item(mk->anims[i].name, i == a)) {
+                T.anim = i;
+                T.made_t = 0;
+                T.frame = 0;
+            }
+        }
+        ImGui::EndCombo();
     }
-    ImGui::SetItemTooltip("Space");
+    {
+        // whose it is: its own stays as it's made whoever it's based on; its template's becomes its own when it's first changed
+        const BakedMove *copied = baked_of(T, T.kind, move);
+        bool own = T.poses[T.kind].anims[a].own || copied != nullptr;
+        char says[80];
+        if (own) {
+            snprintf(says, sizeof(says), copied != nullptr ? "Own animation (from %s)" : "Own animation", HeroNames[copied != nullptr ? copied->from : 0]);
+        } else {
+            snprintf(says, sizeof(says), "%s's animation", HeroNames[template_of(T, T.kind)]);
+        }
+        ImGui::SameLine(0, U(12));
+        mid(U(28));
+        tag(says, own ? TINT_MINT : RAISED, own ? MINT_LIGHT : MUTED, own ? MINT : DIM);
+        ImGui::SetItemTooltip(own ? "This hero's own %s: it stays as you make it, whoever it's based on" : "Changing %s makes it this hero's own copy", move);
+    }
+    float bh = ImGui::GetFrameHeight() + U(6), right_w = bh * 2 + H + U(8) * 4 + U(76) + U(110);
+    ImGui::SameLine(x_start + width - right_w);
     std::vector<int> keys;
     for (auto &k : T.adj) {
         if (k.kind == T.kind && k.at >= 0 && SDL_strcasecmp(k.move, move) == 0) {
@@ -2574,8 +2972,8 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             keys.push_back(key_last(k));
         }
     }
-    ImGui::SameLine();
-    if (ImGui::ArrowButton("##before", ImGuiDir_Left)) {
+    mid(bh);
+    if (icon_button("##before", IC_PREV, "The key before", RAISED, INK, bh)) {
         int to = -1;
         for (int f : keys) {
             to = f < T.frame && f > to ? f : to;
@@ -2583,9 +2981,15 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         T.frame = to >= 0 ? to : T.frame;
         T.adj_playing = false;
     }
-    ImGui::SetItemTooltip("Previous key");
-    ImGui::SameLine();
-    if (ImGui::ArrowButton("##after", ImGuiDir_Right)) {
+    ImGui::SameLine(0, U(8));
+    mid(H);
+    if (button("##play", CORAL, CORAL_INK, H, T.adj_playing ? IC_PAUSE : IC_PLAY, T.adj_playing ? CUE_STOP : CUE_PLAY, H)) {
+        T.adj_playing = !T.adj_playing;
+    }
+    ImGui::SetItemTooltip("%s (Space)", T.adj_playing ? "Pause" : "Play");
+    ImGui::SameLine(0, U(8));
+    mid(bh);
+    if (icon_button("##after", IC_NEXT, "The key after", RAISED, INK, bh)) {
         int to = frames;
         for (int f : keys) {
             to = f > T.frame && f < to ? f : to;
@@ -2593,13 +2997,26 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         T.frame = to < frames ? to : T.frame;
         T.adj_playing = false;
     }
-    ImGui::SetItemTooltip("Next key");
-    ImGui::SameLine();
-    ImGui::Text("%d / %d", T.frame, frames);
-    ImGui::SameLine();
+    ImGui::SameLine(0, U(8));
+    {
+        char fr[24];
+        snprintf(fr, sizeof(fr), "%d / %d", T.frame, frames);
+        mid(ImGui::GetTextLineHeight());
+        ImVec2 tp = ImGui::GetCursorScreenPos(), ts = ImGui::CalcTextSize(fr);
+        ImGui::GetWindowDrawList()->AddText(ImVec2(tp.x + (U(76) - ts.x) / 2, tp.y), INK, fr);
+        ImGui::Dummy(ImVec2(U(76), ts.y));
+        ImGui::SameLine(0, U(8));
+    }
+    mid(ImGui::GetFontSize() + U(14));
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(RAISED));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, V4(HOVER));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
     ImGui::SetNextItemWidth(U(110));
     ImGui::SliderFloat("##speed", &T.made_speed, 0, 2, "%.2fx");
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor(2);
     ImGui::SetItemTooltip("Speed");
+    ImGui::SetCursorPosY(top + H + U(10));
 
     // its rows: each joint with a change in this move (or every move here), and the one picked
     std::vector<int> rows;
@@ -2612,7 +3029,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             rows.push_back(b);
         }
     }
-    const float label = U(130), ruler = U(22), row = U(20), strip = T.clipping ? U(8) : 0;
+    const float label = U(130), ruler = U(24), row = U(36), strip = T.clipping ? U(14) : 0;
     float h = ruler + strip + row * (rows.empty() ? 1 : (float)rows.size());
     if (T.clipping) {
         clip_scan(T, T.kind, a);
@@ -2647,20 +3064,20 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     float cw = frames > 0 ? span / shown : 1;
     auto fx = [&](float f) { return x0 + (f - T.tl_first + 0.5f) * cw; };
     auto xf = [&](float x) { int f = (int)floorf((x - x0) / cw + T.tl_first); return f < 0 ? 0 : f >= frames ? frames - 1 : f; };
-    dl->AddRectFilled(o, ImVec2(o.x + width, o.y + h), IM_COL32(30, 30, 36, 255));
-    dl->AddRectFilled(ImVec2(x0, o.y), ImVec2(o.x + width, o.y + ruler), IM_COL32(45, 45, 54, 255));
-    // the ruler: a tick each frame, a number every so many
+    // the ruler: a dot each frame, a number every so many
     int every = cw >= U(28) ? 1 : cw >= U(12) ? 5 : 10;
     dl->PushClipRect(ImVec2(x0, o.y), ImVec2(o.x + width, o.y + h), true);
     for (int f = std::max(0, (int)T.tl_first - 1); f < std::min(frames, (int)(T.tl_first + shown) + 2); f++) {
         float x = fx((float)f);
         bool big = f % every == 0;
-        dl->AddLine(ImVec2(x, o.y + ruler - (big ? U(8) : U(4))), ImVec2(x, o.y + ruler), IM_COL32(150, 150, 160, 255));
+        dl->AddCircleFilled(ImVec2(x, o.y + ruler - U(5)), big ? U(3.5f) : U(2), big ? HOVER : (HOVER & 0x00FFFFFFu) | 0xB0000000u);
         char n[8];
         snprintf(n, sizeof(n), "%d", f);
+        ImGui::PushFont(FontSmall);
         if (big && x + U(2) + ImGui::CalcTextSize(n).x <= o.x + width) {
-            dl->AddText(ImVec2(x + U(2), o.y + U(1)), IM_COL32(170, 170, 180, 255), n);
+            dl->AddText(ImVec2(x - ImGui::CalcTextSize(n).x / 2, o.y - U(2)), DIM, n);
         }
+        ImGui::PopFont();
     }
     if (T.clipping && Clips.kind == T.kind && Clips.anim == a) {
         // the clipping finder: each frame's clipping, redder for more
@@ -2671,15 +3088,15 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         for (int g = 0; g < frames && g < (int)Clips.count.size(); g++) {
             if (Clips.count[g] > 0) {
                 int al = 90 + 165 * Clips.count[g] / most;
-                dl->AddRectFilled(ImVec2(fx((float)g) - cw / 2, o.y + ruler + U(1)), ImVec2(fx((float)g) + cw / 2, o.y + ruler + strip - U(1)),
-                                  IM_COL32(255, 60, 60, al));
+                dl->AddRectFilled(ImVec2(fx((float)g) - cw / 2 + U(1), o.y + ruler + U(2)), ImVec2(fx((float)g) + cw / 2 - U(1), o.y + ruler + strip - U(3)),
+                                  (CORAL & 0x00FFFFFFu) | (ImU32)al << 24, U(4));
             }
         }
     }
     if (T.tl_zoom > 1) {
         // the part of the move shown, under the ruler
         dl->AddRectFilled(ImVec2(x0 + T.tl_first / frames * span, o.y + ruler - U(3)), ImVec2(x0 + (T.tl_first + shown) / frames * span, o.y + ruler),
-                          IM_COL32(110, 160, 255, 200));
+                          PERI, U(2));
     }
     dl->PopClipRect();
     // the rows: a joint's name, its keys, and each key's parts the mouse can take (later ones over earlier)
@@ -2692,13 +3109,17 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     for (size_t r = 0; r < rows.size(); r++) {
         int b = rows[r];
         float y = o.y + ruler + strip + row * r, my = y + row / 2;
-        if (r % 2 == 1) {
-            dl->AddRectFilled(ImVec2(o.x, y), ImVec2(o.x + width, y + row), IM_COL32(36, 36, 44, 255));
+        // its track (the bone picked's a periwinkle tint) and its name (the bone picked's a periwinkle pill)
+        dl->AddRectFilled(ImVec2(x0, y + U(2)), ImVec2(o.x + width, y + row - U(2)), b == T.sel ? IM_COL32(0x27, 0x2A, 0x3A, 255) : DEEP, (row - U(4)) / 2);
+        {
+            const char *bt = bone_title(po->names[b]);
+            ImVec2 ts = ImGui::CalcTextSize(bt);
+            if (b == T.sel) {
+                dl->AddRectFilled(ImVec2(o.x, y + (row - ts.y) / 2 - U(4)), ImVec2(o.x + ts.x + U(20), y + (row + ts.y) / 2 + U(4)),
+                                  (PERI & 0x00FFFFFFu) | 0x38000000u, ts.y);
+            }
+            dl->AddText(ImVec2(o.x + U(10), y + (row - ts.y) / 2), b == T.sel ? PERI_LIGHT : MUTED, bt);
         }
-        if (b == T.sel) {
-            dl->AddRectFilled(ImVec2(o.x, y), ImVec2(o.x + label - U(4), y + row), IM_COL32(60, 80, 120, 255));
-        }
-        dl->AddText(ImVec2(o.x + U(4), y + U(3)), IM_COL32(220, 220, 225, 255), bone_title(po->names[b]));
         dl->PushClipRect(ImVec2(x0, y), ImVec2(o.x + width, y + row), true);
         for (int i = 0; i < (int)T.adj.size(); i++) {
             const PackAdjust &k = T.adj[i];
@@ -2708,17 +3129,17 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             bool picked = key_picked(T, i);
             if (k.at < 0) {
                 // the whole move (green) or every move here (blue): a bar; grey, one that hides its bone
-                ImU32 col = key_hides(k)               ? IM_COL32(130, 130, 140, picked ? 255 : 150)
-                            : strcmp(k.move, "*") == 0 ? IM_COL32(90, 140, 230, picked ? 255 : 150)
-                                                       : IM_COL32(110, 200, 110, picked ? 255 : 150);
-                ImVec2 lo(x0, y + row * 0.35f), hi(o.x + width - U(2), y + row * 0.65f);
-                dl->AddRectFilled(lo, hi, col, U(3));
+                ImU32 col = key_hides(k)               ? (picked ? mix(IM_COL32(0x46, 0x45, 0x4B, 255), INK, 0.3f) : IM_COL32(0x46, 0x45, 0x4B, 255))
+                            : strcmp(k.move, "*") == 0 ? (picked ? PERI : mix(TINT_PERI, PERI, 0.45f))
+                                                       : (picked ? MINT : mix(TINT_MINT, MINT, 0.45f));
+                ImVec2 lo(x0 + U(5), y + row * 0.32f), hi(o.x + width - U(5), y + row * 0.68f);
+                dl->AddRectFilled(lo, hi, col, (hi.y - lo.y) / 2);
                 hits.push_back({ i, KEY_BODY, lo, hi });
                 continue;
             }
             int last = key_last(k);
             float xa = fx((float)k.at), xb = fx((float)last);
-            ImU32 col = picked ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 200, 60, 255);
+            ImU32 col = picked ? PERI : GREY_DOT;
             {
                 // how much of it there is each frame as the game makes it (its fade, its blend into the next or from the one before),
                 // up from the row's foot, where there's any
@@ -2726,10 +3147,10 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                 float foot = y + row - U(2);
                 auto flush = [&]() {
                     for (size_t p = 0; p + 1 < pts.size(); p++) {
-                        dl->AddQuadFilled(ImVec2(pts[p].x, foot), pts[p], pts[p + 1], ImVec2(pts[p + 1].x, foot), IM_COL32(255, 200, 60, 35));
+                        dl->AddQuadFilled(ImVec2(pts[p].x, foot), pts[p], pts[p + 1], ImVec2(pts[p + 1].x, foot), (PERI & 0x00FFFFFFu) | 0x22000000u);
                     }
                     if (pts.size() > 1) {
-                        dl->AddPolyline(pts.data(), (int)pts.size(), IM_COL32(255, 200, 60, 140), 0, U(1.5f));
+                        dl->AddPolyline(pts.data(), (int)pts.size(), (PERI & 0x00FFFFFFu) | 0x70000000u, 0, U(1.5f));
                     }
                     pts.clear();
                 };
@@ -2747,14 +3168,15 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             int to = k.blend ? key_next(T, i) : -1;
             if (to >= 0) {
                 // its blend into the next: a line to it
-                dl->AddLine(ImVec2(fx((float)last), my), ImVec2(fx((float)T.adj[to].at), my), IM_COL32(120, 190, 255, 200), U(2));
+                dl->AddLine(ImVec2(fx((float)last), my), ImVec2(fx((float)T.adj[to].at), my), PERI_LIGHT, U(2.5f));
             }
             auto diamond = [&](float x) {
-                dl->AddQuadFilled(ImVec2(x, my - s), ImVec2(x + s, my), ImVec2(x, my + s), ImVec2(x - s, my), col);
+                dl->AddCircleFilled(ImVec2(x, my), s + U(2), DEEP);
+                dl->AddCircleFilled(ImVec2(x, my), s, col);
             };
             if (last > k.at) {
                 // held: a bar from its first frame to its last, a diamond each end (the ends held over more frames or fewer)
-                dl->AddRectFilled(ImVec2(xa, my - row * 0.2f), ImVec2(xb, my + row * 0.2f), picked ? IM_COL32(255, 255, 255, 170) : IM_COL32(255, 200, 60, 150));
+                dl->AddRectFilled(ImVec2(xa - s, my - s), ImVec2(xb + s, my + s), col, s);
                 if (xb - xa > 2 * s) {
                     hits.push_back({ i, KEY_BODY, ImVec2(xa + s, my - s), ImVec2(xb - s, my + s) });
                 }
@@ -2770,8 +3192,8 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                 // grips either side, to hold it over more frames
                 ImVec2 g0(xa - s - U(3) - grip, my - row * 0.32f), g1(xa - s - U(3), my + row * 0.32f);
                 ImVec2 h0(xb + s + U(3), my - row * 0.32f), h1(xb + s + U(3) + grip, my + row * 0.32f);
-                dl->AddRectFilled(g0, g1, IM_COL32(255, 255, 255, 210), U(2));
-                dl->AddRectFilled(h0, h1, IM_COL32(255, 255, 255, 210), U(2));
+                dl->AddRectFilled(g0, g1, INK, U(3));
+                dl->AddRectFilled(h0, h1, INK, U(3));
                 hits.push_back({ i, KEY_START, g0, g1 });
                 hits.push_back({ i, KEY_END, h0, h1 });
             }
@@ -2779,16 +3201,16 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         dl->PopClipRect();
     }
     if (rows.empty()) {
-        dl->AddText(ImVec2(o.x + U(4), o.y + ruler + strip + U(3)), IM_COL32(150, 150, 160, 255), "Click a bone");
+        dl->AddText(ImVec2(o.x + U(10), o.y + ruler + strip + (row - ImGui::GetTextLineHeight()) / 2), MUTED, "Click a bone");
     }
     // the frame shown, across it all
     float px = fx((float)T.frame);
     dl->PushClipRect(ImVec2(x0, o.y), ImVec2(o.x + width, o.y + h), true);
-    dl->AddRectFilled(ImVec2(px - cw / 2, o.y), ImVec2(px + cw / 2, o.y + ruler), IM_COL32(70, 110, 190, 255));
-    dl->AddLine(ImVec2(px, o.y), ImVec2(px, o.y + h), IM_COL32(110, 160, 255, 255), U(2));
+    dl->AddLine(ImVec2(px, o.y + U(4)), ImVec2(px, o.y + h - U(2)), CORAL, U(3));
+    dl->AddCircleFilled(ImVec2(px, o.y + ruler - U(5)), U(6), CORAL);
     if (T.key_drag && T.snapped >= 0) {
         // the frame a dragged key's snapped to
-        dl->AddLine(ImVec2(fx((float)T.snapped), o.y), ImVec2(fx((float)T.snapped), o.y + h), IM_COL32(255, 255, 255, 150), U(1));
+        dl->AddLine(ImVec2(fx((float)T.snapped), o.y), ImVec2(fx((float)T.snapped), o.y + h), (INK & 0x00FFFFFFu) | 0x96000000u, U(1.5f));
     }
     dl->PopClipRect();
     // what's under the mouse, and what a click or a drag does
@@ -2856,8 +3278,8 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     }
     if (T.box) {
         ImVec2 lo(fminf(T.box_x, io.MousePos.x), fminf(T.box_y, io.MousePos.y)), hi(fmaxf(T.box_x, io.MousePos.x), fmaxf(T.box_y, io.MousePos.y));
-        dl->AddRectFilled(lo, hi, IM_COL32(110, 160, 255, 40));
-        dl->AddRect(lo, hi, IM_COL32(110, 160, 255, 170));
+        dl->AddRectFilled(lo, hi, (PERI & 0x00FFFFFFu) | 0x28000000u, U(6));
+        dl->AddRect(lo, hi, (PERI & 0x00FFFFFFu) | 0xAA000000u, U(6), 0, U(1.5f));
         if (!ImGui::IsMouseDown(0)) {
             // the keys the box was over picked
             for (auto &ht : hits) {
@@ -3166,10 +3588,11 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
 
 void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     // (a view's drawn only while its page shows it, so the first time it's shown its picture comes a frame later)
-    if (v.tex == nullptr) {
-        ImGui::Dummy(ImVec2(ViewW, ViewH));
-    } else {
-        ImGui::Image((ImTextureID)(intptr_t)v.tex, ImVec2(ViewW, ViewH));
+    ImVec2 p0 = ImGui::GetCursorScreenPos();
+    ImGui::Dummy(ImVec2(ViewW, ViewH));
+    if (v.tex != nullptr) {
+        ImGui::GetWindowDrawList()->AddImageRounded((ImTextureID)(intptr_t)v.tex, p0, ImVec2(p0.x + ViewW, p0.y + ViewH), ImVec2(0, 0), ImVec2(1, 1),
+                                                    IM_COL32_WHITE, U(24));
     }
     ImVec2 at = ImGui::GetItemRectMin();
     if (!markers || T.rigged) {
@@ -3185,12 +3608,12 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
         float sx[2], sy[2], sz;
         to_screen(v, k.at, sx[0], sy[0], sz);
         to_screen(v, k.end, sx[1], sy[1], sz);
-        ImU32 col = b >= KB_JAW ? IM_COL32(255, 160, 40, 255) : (b >= KB_UPPERARM_L && b <= KB_HAND_R) ? IM_COL32(80, 200, 255, 255)
-                  : b >= KB_THIGH_L ? IM_COL32(120, 255, 120, 255) : IM_COL32(255, 230, 80, 255);
+        ImU32 col = b >= KB_JAW ? CORAL : (b >= KB_UPPERARM_L && b <= KB_HAND_R) ? PERI : b >= KB_THIGH_L ? MINT : IM_COL32(0xF2, 0xD5, 0x8A, 255);
         dl->AddLine(ImVec2(at.x + sx[0], at.y + sy[0]), ImVec2(at.x + sx[1], at.y + sy[1]), col, U(2));
         for (int e = 0; e < 2; e++) {
             ImVec2 c(at.x + sx[e], at.y + sy[e]);
-            dl->AddCircleFilled(c, e ? U(3) : U(5), col);
+            dl->AddCircleFilled(c, e ? U(4) : U(7), GROUND);
+            dl->AddCircleFilled(c, e ? U(3) : U(5.5f), col);
             if (T.drag_bone < 0 && ImGui::IsMouseClicked(0) && (mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < U(7) * U(7)) {
                 T.drag_bone = b, T.drag_end = e, T.drag_view = which;
             }
@@ -3401,82 +3824,6 @@ void SDLCALL picked(void *what, const char *const *files, int) {
     }
 }
 
-void start_screen(Tool &T, SDL_Window *win) {
-    static const SDL_DialogFileFilter Glb[] = { { "3D model (glTF binary)", "glb" } };
-    static bool looked = false;
-
-    if (!looked) {
-        find_heroes(T);
-        looked = true;
-    }
-    ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
-    ImGui::Begin("Start", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-    float w = U(620), x = (ImGui::GetIO().DisplaySize.x - w) / 2;
-    ImGui::SetCursorPos(ImVec2(x, U(60)));
-    ImGui::BeginChild("panel", ImVec2(w, 0), ImGuiChildFlags_AutoResizeY);
-    ImGui::SetWindowFontScale(1.6f);
-    ImGui::Text("Hero tool");
-    ImGui::SetWindowFontScale(1.0f);
-    ImGui::TextDisabled("Custom heroes for Crash Bash PC");
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
-    ImGui::SetWindowFontScale(1.25f);
-    ImGui::Text("Create a new hero");
-    ImGui::SetWindowFontScale(1.0f);
-    ImGui::TextDisabled("A .glb model, or drop one on the window");
-    if (ImGui::Button("Browse...", ImVec2(U(200), 0))) {
-        SDL_ShowOpenFileDialog(picked, (void *)(intptr_t)PICK_MODEL, win, Glb, 1, nullptr, false);
-    }
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(w - U(200) - U(110) - 2 * ImGui::GetStyle().ItemSpacing.x);
-    ImGui::InputTextWithHint("##newmodel", "or type its path", T.model, sizeof(T.model));
-    ImGui::SameLine();
-    if (ImGui::Button("Create", ImVec2(-1, 0)) && T.model[0] != 0) {
-        T.loaded_mod[0] = 0;
-        open_model(T, T.model);
-        T.home = T.m == nullptr;
-    }
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
-    ImGui::SetWindowFontScale(1.25f);
-    ImGui::Text("Edit a hero");
-    ImGui::SetWindowFontScale(1.0f);
-    ImGui::BeginChild("found", ImVec2(0, U(220)), ImGuiChildFlags_Borders);
-    if (NumFound == 0) {
-        ImGui::TextDisabled("None yet (unzip a zipped mod to edit it)");
-    }
-    for (int i = 0; i < NumFound; i++) {
-        char label[256];
-        const char *mod = Founds[i].mod;
-        for (const char *c = Founds[i].mod; *c != 0; c++) {
-            mod = *c == '/' || *c == '\\' ? c + 1 : mod;
-        }
-        snprintf(label, sizeof(label), "%s   (%s)##%d", Founds[i].name, mod, i);
-        if (ImGui::Selectable(label, false, 0, ImVec2(0, U(26)))) {
-            load_pack(T, Founds[i]);
-        }
-    }
-    ImGui::EndChild();
-    ImGui::Text("Mods folder");
-    ImGui::SetNextItemWidth(w - U(110) - ImGui::GetStyle().ItemSpacing.x);
-    ImGui::InputText("##mods", T.out, sizeof(T.out));
-    ImGui::SameLine();
-    if (ImGui::Button("Refresh", ImVec2(-1, 0))) {
-        find_heroes(T);
-    }
-    ImGui::Spacing();
-    ImGui::TextDisabled("Ctrl + / - zoom    Ctrl 0 reset");
-    if (T.status[0] != 0 && T.m == nullptr) {
-        ImGui::TextWrapped("%s", T.status);
-    }
-    ImGui::EndChild();
-    ImGui::End();
-}
 
 // --- the editor (the user's word, 2026-11-22: one window, simple): the hero's pages down the left (its model and joints, every game
 // at a glance, each game), the page's picture in the middle, and its choices on the right, with the hero's details and saving under
@@ -3528,153 +3875,332 @@ const char *short_path(const char *path) {
     return s;
 }
 
-void hint(const char *text) {
-    ImGui::SameLine();
-    ImGui::TextDisabled("(?)");
-    ImGui::SetItemTooltip("%s", text);
+
+// A view's picture let go, to be made again at its new size
+void view_free(View &v) {
+    delete[] v.rgba;
+    delete[] v.depth;
+    if (v.tex != nullptr) {
+        SDL_DestroyTexture(v.tex);
+    }
+    v.rgba = nullptr;
+    v.depth = nullptr;
+    v.tex = nullptr;
+    v.drawn.clear();
 }
 
-void editor_left(Tool &T) {
-    ImGui::TextDisabled("YOUR HERO");
-    if (ImGui::Selectable("Model and joints", T.page == PAGE_MODEL)) {
-        T.page = PAGE_MODEL;
+// --- the window (Graphite, the user's pick, 2026-11-22; docs/HERO_PACKS.md, The look): a top bar (back, the hero, the status, undo and
+// redo, sounds, play it in a game, save), a strip of the games with the hero in each, and the page: a game's (its picture, its timeline,
+// its cards), the hero's own (its model, card and sounds, details), or every game at a glance ---
+
+// each game's name in the strip, and the chips' tints in turn
+const char *const KindChip[PACK_KINDS] = { "On foot",    "Polar Push",  "Pogo Painter", "Ballistix",  "Tank",  "Crash Dash",
+                                           "Splash Dash", "Mallet Mash", "Dragon Drop",  "Keg Kaboom", "Podium" };
+const ImU32 ChipTint[4] = { TINT_CORAL, TINT_PERI, TINT_MINT, TINT_SAND };
+
+// Sounds on or off, kept for next time (sounds.txt beside the zoom's)
+void sound_keep() {
+    char *pref = pref_path(), path[1100];
+    if (pref == nullptr) {
+        return;
     }
-    ImGui::Spacing();
-    ImGui::TextDisabled("IN THE GAMES");
-    if (ImGui::Selectable("All games at a glance", T.page == PAGE_ALL)) {
-        T.page = PAGE_ALL;
+    snprintf(path, sizeof(path), "%ssounds.txt", pref);
+    SDL_free(pref);
+    SDL_SaveFile(path, sound_muted() ? "off\n" : "on\n", sound_muted() ? 4 : 3);
+}
+
+void sound_load() {
+    char *pref = pref_path(), path[1100];
+    size_t n = 0;
+    if (pref == nullptr) {
+        return;
     }
-    for (int k = 0; k < PACK_KINDS; k++) {
-        char label[96];
-        snprintf(label, sizeof(label), "%s%s##page%d", KindShort[k], !T.have_made[k] && T.made_asked && T.maker == nullptr ? "  (not made)" : "", k);
-        if (ImGui::Selectable(label, T.page == k)) {
-            T.page = k;
-            T.kind = k;
-            T.anim = T.have_made[k] ? breathe_of(&T.made[k]) : 0;
-            T.made_t = 0;
-        }
-    }
-    ImGui::Spacing();
-    ImGui::Separator();
-    if (T.maker != nullptr) {
-        ImGui::TextDisabled("Making...");
-    } else if (T.dirty && T.made_asked) {
-        if (ImGui::Button("Update preview", ImVec2(-1, 0))) {
-            make_in_game(T);
-        }
-        ImGui::SetItemTooltip("Make it again in the games, with your changes");
+    snprintf(path, sizeof(path), "%ssounds.txt", pref);
+    SDL_free(pref);
+    char *text = (char *)SDL_LoadFile(path, &n);
+    if (text != nullptr) {
+        sound_mute(strncmp(text, "off", 3) == 0);
+        SDL_free(text);
     }
 }
 
-void editor_middle(Tool &T) {
-    float avail = ImGui::GetContentRegionAvail().x;
+// To a page: a game's (a kind), the hero's own (PAGE_MODEL) or every game's (PAGE_ALL)
+void go_page(Tool &T, int page) {
+    if (page == T.page) {
+        return;
+    }
+    sound_cue(CUE_NAV);
+    T.page = page;
+    if (page >= 0) {
+        T.kind = page;
+        T.anim = T.have_made[page] ? breathe_of(&T.made[page]) : 0;
+        T.made_t = 0;
+        T.frame = 0;
+    }
+}
 
-    if (T.page == PAGE_MODEL) {
-        if (!T.rigged) {
-            if (ImGui::RadioButton("Joints", T.model_view == 0)) {
-                T.model_view = 0;
-            }
-            ImGui::SameLine();
-            if (ImGui::RadioButton("Preview", T.model_view == 1)) {
-                T.model_view = 1;
-            }
-        }
-        if (!T.rigged && T.model_view == 0) {
-            ImGui::Text("Front");
-            ImGui::SameLine(ViewW + U(16));
-            ImGui::Text("Side");
-            view_window(T, T.front, "front", true, 0);
-            ImGui::SameLine();
-            view_window(T, T.side, "side", true, 1);
-            ImGui::TextDisabled("Drag the dots onto its joints: yellow body, blue arms, green legs, orange jaw, ears and tail");
-        } else {
-            view_window(T, T.play, "move", false, 2);
-            T.play.zx = ViewW / 2.0f;
-            T.play.zy = ViewH / 2.0f;
-            look_around(T.play, T.turn);
-            ImGui::SetNextItemWidth(U(180));
-            ImGui::Combo("Animation", &T.move, [](void *, int i) { return KitMoves[i].name; }, nullptr, KitMoveCount);
-            ImGui::SetItemTooltip("The tool's built-in animations on your model (on foot, its own uses them for any it hasn't got)");
-            ImGui::SameLine();
-            ImGui::Checkbox("Play", &T.playing);
-        }
-        return;
+void top_bar(Tool &T) {
+    ImGuiStyle &st = ImGui::GetStyle();
+    float bh = ImGui::GetFrameHeight() + U(6), top = ImGui::GetCursorPosY(), sp = U(10);
+    auto mid = [&](float h) { ImGui::SetCursorPosY(top + (bh - h) / 2); };
+    if (icon_button("##back", IC_BACK, "Back to your heroes", CARD)) {
+        T.home = true;
+        find_heroes(T);
     }
-    bool any = false;
+    ImGui::SameLine(0, U(12));
+    ImGui::PushFont(FontBig);
+    mid(ImGui::GetTextLineHeight());
+    ImGui::TextUnformatted(T.name);
+    ImGui::PopFont();
+    ImGui::SameLine(0, U(10));
+    mid(U(36));
+    bool all = T.page == PAGE_ALL;
+    if (button("##all", all ? PERI : CARD, all ? PERI_INK : INK, U(36), IC_GRID, CUE_NAV, U(36))) {
+        go_page(T, all ? (T.have_made[T.kind] ? T.kind : PAGE_MODEL) : PAGE_ALL);
+    }
+    ImGui::SetItemTooltip("All games at a glance");
+    ImGui::SameLine(0, U(10));
+    mid(U(28));
+    bool busy = T.maker != nullptr, stale = T.dirty && T.made_asked, warn = busy || stale || T.unsaved;
+    tag(busy ? "Making..." : stale ? "Preview out of date" : T.unsaved ? "Not saved yet" : "All saved", warn ? TINT_PERI : TINT_MINT,
+        warn ? PERI_LIGHT : MINT_LIGHT, warn ? PERI : MINT);
+    // on the right: undo, redo, sounds, play it in a game (and which), save
+    char play[64];
+    snprintf(play, sizeof(play), "Play in %s##play", Modes[T.mode].name);
+    float rw = 3 * (bh + sp) + button_w(play, true) + U(36) + sp + U(100);
+    ImGui::SameLine(ImGui::GetWindowWidth() - st.WindowPadding.x - rw);
+    mid(bh);
+    ImGui::BeginDisabled(T.undo.empty());
+    if (icon_button("##undo", IC_UNDO, "Undo (Ctrl+Z)", CARD, INK, bh, CUE_OFF)) {
+        adj_undo(T);
+    }
+    ImGui::EndDisabled();
+    ImGui::SameLine(0, sp);
+    ImGui::BeginDisabled(T.redo.empty());
+    if (icon_button("##redo", IC_REDO, "Redo (Ctrl+Y)", CARD, INK, bh, CUE_ON)) {
+        adj_redo(T);
+    }
+    ImGui::EndDisabled();
+    ImGui::SameLine(0, sp);
+    bool muted = sound_muted();
+    if (icon_button("##sound", muted ? IC_MUTE : IC_SOUND, muted ? "Sounds off" : "Sounds on", CARD)) {
+        sound_mute(!muted);
+        sound_cue(CUE_ON);
+        sound_keep();
+    }
+    ImGui::SameLine(0, sp);
+    if (button(play, TINT_MINT, MINT_LIGHT, 0, IC_GAMEPAD, CUE_SAVE)) {
+        export_pack(T, true);
+    }
+    ImGui::SetItemTooltip("Save, then play it in %s", Modes[T.mode].name);
+    ImGui::SameLine(0, U(2));
+    if (button("##modes", TINT_MINT, MINT_LIGHT, U(36), IC_DOWN, CUE_OPEN)) {
+        ImGui::OpenPopup("##playin");
+    }
+    ImGui::SetItemTooltip("Pick the game to play it in");
+    if (ImGui::BeginPopup("##playin")) {
+        for (int i = 0; i < (int)(sizeof(Modes) / sizeof(Modes[0])); i++) {
+            if (menu_item(Modes[i].name, T.mode == i)) {
+                T.mode = i;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::SameLine(0, sp);
+    if (button("Save", CORAL, CORAL_INK, U(100), IC_NONE, CUE_SAVE)) {
+        export_pack(T, false);
+    }
+    ImGui::SetItemTooltip("%s", T.loaded_mod[0] ? T.loaded_mod : T.out);
+    ImGui::SetCursorPosY(top + bh + U(10));
+}
+
+// A game's chip in the strip (or the hero's own, PAGE_MODEL): the hero in it, its name; the page shown periwinkle and lifted
+void chip(Tool &T, int page, const char *name, SDL_Texture *tex, ImU32 tint, bool made) {
+    ImGui::PushID(page + 10);
+    float w = U(92), h = U(104);
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    bool hit = ImGui::InvisibleButton("##chip", ImVec2(w, h));
+    bool hov = ImGui::IsItemHovered(), on = T.page == page;
+    ImGuiID id = ImGui::GetItemID();
+    float t = ease_to(id, on ? 1 : 0, 16), lift = ease_to(id + 1, hov || on ? 1 : 0, 18), squash = ease_to(id + 2, ImGui::IsItemActive() ? 1 : 0, 30);
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    ImVec2 a(p.x + squash * U(3), p.y + U(5) - lift * U(5)), b(p.x + w - squash * U(3), p.y + h - lift * U(5));
+    if (t > 0) {
+        dl->AddRectFilled(ImVec2(a.x - U(4), a.y - U(4)), ImVec2(b.x + U(4), b.y + U(4)), (PERI & 0x00FFFFFFu) | (ImU32)(t * 70) << 24, U(26));
+    }
+    dl->AddRectFilled(a, b, mix(tint, PERI, t), U(22));
+    ImU32 ink = mix(made ? INK : DIM, PERI_INK, t);
+    if (tex != nullptr) {
+        dl->AddImage((ImTextureID)(intptr_t)tex, ImVec2((a.x + b.x) / 2 - U(36), a.y + U(4)), ImVec2((a.x + b.x) / 2 + U(36), a.y + U(76)));
+    } else {
+        icon(dl, page == PAGE_MODEL ? IC_PERSON : IC_CUBE, ImVec2((a.x + b.x) / 2, a.y + U(40)), U(30), ink);
+    }
+    ImGui::PushFont(FontSmall);
+    ImVec2 ts = ImGui::CalcTextSize(name);
+    dl->AddText(ImVec2((a.x + b.x) / 2 - ts.x / 2, b.y - U(10) - ts.y), ink, name);
+    ImGui::PopFont();
+    if (!made) {
+        ImGui::SetItemTooltip("Not made yet");
+    }
+    if (hit) {
+        go_page(T, page);
+    }
+    ImGui::PopID();
+    ImGui::SameLine(0, U(10));
+}
+
+// The strip of the games: the hero's own first, then each game, the hero in it (a still of its first animation)
+void games_strip(Tool &T) {
+    ImGui::BeginChild("##strip", ImVec2(0, U(118)), 0, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseWheel != 0) {
+        ImGui::SetScrollX(ImGui::GetScrollX() - ImGui::GetIO().MouseWheel * U(90));
+    }
+    chip(T, PAGE_MODEL, "Your hero", nullptr, TINT_PERI, true);
     for (int k = 0; k < PACK_KINDS; k++) {
-        any |= T.have_made[k];
+        chip(T, k, KindChip[k], T.have_made[k] ? T.strip[k].tex : nullptr, ChipTint[k % 4], T.have_made[k]);
     }
-    if (!any) {
-        ImGui::TextDisabled(T.maker != nullptr ? "Making..." : "Not made yet");
-        if (T.maker == nullptr && ImGui::Button("Make it")) {
-            make_in_game(T);
+    ImGui::EndChild();
+}
+
+// How many rows the timeline has: each bone with a change in this animation (or all of this game's), and the one picked
+int timeline_rows(Tool &T, const char *move) {
+    const KitPose *po = &T.poses[T.kind];
+    int n = 0;
+    for (int b = 0; b < po->nbones; b++) {
+        bool has = b == T.sel;
+        for (auto &k : T.adj) {
+            has |= pack_adjust_for(&k, T.kind, move) && SDL_strcasecmp(k.bone, po->names[b]) == 0;
         }
-        return;
+        n += has;
     }
-    if (T.page == PAGE_ALL) {
-        int cols = (int)(avail / (ThumbW + 16)) < 1 ? 1 : (int)(avail / (ThumbW + 16));
-        for (int k = 0; k < PACK_KINDS; k++) {
-            ImGui::PushID(k);
-            ImGui::BeginGroup();
-            if (T.have_made[k] && T.thumbs[k].tex != nullptr) {
-                if (ImGui::ImageButton("thumb", (ImTextureID)(intptr_t)T.thumbs[k].tex, ImVec2(ThumbW, ThumbH))) {
-                    T.page = k;
-                    T.kind = k;
-                    T.anim = breathe_of(&T.made[k]);
-                    T.made_t = 0;
-                }
-                ImGui::SetItemTooltip("Edit %s", KindShort[k]);
-            } else {
-                ImGui::Dummy(ImVec2(ThumbW + U(8), ThumbH + U(8)));
+    return n;
+}
+
+// The keys and mouse, a card over the picture's corner (?)
+void help_card(Tool &T, ImVec2 at) {
+    static const char *const Rows[][2] = {
+        { "Click", "pick a bone" }, { "Esc", "let go of it" }, { "R  G  S", "rotate, move, scale" }, { "Tab", "bones on or off" },
+        { "Right-drag", "orbit" }, { "Wheel", "zoom" }, { "Home", "the view back" }, { "1  3  7", "front, side, above (keypad)" },
+        { "Space", "play" }, { "Left  Right", "step a frame" }, { "Ctrl+C  Ctrl+V", "copy, paste a key" }, { "Delete", "remove a key" },
+        { "Ctrl+Z  Ctrl+Y", "undo, redo" },
+    };
+    const int n = (int)(sizeof(Rows) / sizeof(Rows[0]));
+    ImGui::PushFont(FontSmall);
+    float line = ImGui::GetTextLineHeight() + U(9), w = U(330), h = n * line + U(26);
+    ImVec2 lo(at.x, at.y - h), hi(at.x + w, at.y);
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    dl->AddRectFilled(ImVec2(lo.x, lo.y + U(4)), ImVec2(hi.x, hi.y + U(4)), SHADOW, U(20));
+    dl->AddRectFilled(lo, hi, RAISED, U(20));
+    for (int i = 0; i < n; i++) {
+        float y = lo.y + U(13) + i * line;
+        ImVec2 ks = ImGui::CalcTextSize(Rows[i][0]);
+        dl->AddRectFilled(ImVec2(lo.x + U(14), y - U(2)), ImVec2(lo.x + U(30) + ks.x, y + ks.y + U(2)), HOVER, U(8));
+        dl->AddText(ImVec2(lo.x + U(22), y), INK, Rows[i][0]);
+        dl->AddText(ImVec2(lo.x + U(140), y), MUTED, Rows[i][1]);
+    }
+    ImGui::PopFont();
+    (void)T;
+}
+
+// The picture's own buttons, over it: Bones and the tools (its top left), X-Mirror, Onion and Clipping (top right), the keys and mouse
+// (bottom left; the axes are bottom right, view_axes)
+void picture_overlays(Tool &T, ImVec2 p, ImVec2 size) {
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    ImVec2 keep = ImGui::GetCursorScreenPos();
+    // Bones: shown to pose, or not, a clean view of the hero (Tab)
+    ImGui::SetCursorScreenPos(ImVec2(p.x + U(16), p.y + U(16)));
+    {
+        float w = U(64), h = U(56);
+        ImVec2 q = ImGui::GetCursorScreenPos();
+        if (ImGui::InvisibleButton("##bones", ImVec2(w, h))) {
+            T.bones = !T.bones;
+            sound_cue(T.bones ? CUE_ON : CUE_OFF);
+        }
+        ImGui::SetItemTooltip("Bones (Tab): shown to pose; off, a clean view of the hero");
+        float t = ease_to(ImGui::GetItemID(), T.bones ? 1 : 0, 16), lift = ease_to(ImGui::GetItemID() + 1, ImGui::IsItemHovered() ? 1 : 0, 18);
+        ImVec2 a(q.x, q.y - lift * U(2)), b(q.x + w, q.y + h - lift * U(2));
+        dl->AddRectFilled(ImVec2(a.x, a.y + U(3)), ImVec2(b.x, b.y + U(3)), SHADOW, U(20));
+        dl->AddRectFilled(a, b, mix(RAISED, PERI, t), U(20));
+        ImU32 ink = mix(INK, PERI_INK, t);
+        icon(dl, IC_BONES, ImVec2((a.x + b.x) / 2, a.y + U(21)), U(22), ink);
+        ImGui::PushFont(FontSmall);
+        ImVec2 ts = ImGui::CalcTextSize("Bones");
+        dl->AddText(ImVec2((a.x + b.x) / 2 - ts.x / 2, b.y - U(6) - ts.y), ink, "Bones");
+        ImGui::PopFont();
+    }
+    // the tools, a column: the one in use periwinkle, sliding to it
+    {
+        static const char *const Tips[3] = { "Rotate (R): rings rotate, the middle aims", "Move (G): arrows move, the middle drags",
+                                             "Scale (S): handles scale, the middle scales all" };
+        static const int Icons[3] = { IC_ROTATE, IC_MOVE, IC_SCALE };
+        float s = U(52), pad = U(6);
+        ImVec2 q(p.x + U(16) + U(32) - s / 2 - pad, p.y + U(16) + U(56) + U(12));
+        ImGui::BeginDisabled(!T.bones);
+        dl->AddRectFilled(ImVec2(q.x, q.y + U(3)), ImVec2(q.x + s + 2 * pad, q.y + 3 * s + 2 * pad + U(3)), ImGui::GetColorU32(SHADOW), U(26));
+        dl->AddRectFilled(q, ImVec2(q.x + s + 2 * pad, q.y + 3 * s + 2 * pad), ImGui::GetColorU32(RAISED), U(26));
+        float y = ease_to(ImGui::GetID("##toolthumb"), (float)T.gizmo, 14);
+        dl->AddRectFilled(ImVec2(q.x + pad, q.y + pad + y * s), ImVec2(q.x + pad + s, q.y + pad + (y + 1) * s), ImGui::GetColorU32(PERI), U(20));
+        for (int i = 0; i < 3; i++) {
+            ImGui::SetCursorScreenPos(ImVec2(q.x + pad, q.y + pad + i * s));
+            ImGui::PushID(i);
+            if (ImGui::InvisibleButton("##tool", ImVec2(s, s)) && T.gizmo != i) {
+                T.gizmo = i;
+                sound_cue(CUE_TAP);
             }
-            ImGui::TextUnformatted(KindShort[k]);
-            ImGui::EndGroup();
+            ImGui::SetItemTooltip("%s", Tips[i]);
             ImGui::PopID();
-            if ((k + 1) % cols != 0 && k + 1 < PACK_KINDS) {
-                ImGui::SameLine();
-            }
+            icon(dl, Icons[i], ImVec2(q.x + pad + s / 2, q.y + pad + i * s + s / 2), U(22), ImGui::GetColorU32(T.gizmo == i ? PERI_INK : INK));
         }
-        ImGui::SetNextItemWidth(U(200));
-        ImGui::SliderFloat("Rotate##all", &T.made_turn, -180, 180, "%.0f");
-        return;
+        ImGui::EndDisabled();
     }
-    if (!T.have_made[T.kind]) {
-        ImGui::TextDisabled(T.maker != nullptr ? "Making..." : "Not made (see the top bar)");
-        return;
-    }
-    float w = avail < PrevW ? avail : PrevW;
-    bool adjusting = T.adjusting && T.have_pose[T.kind];
-    if (adjusting) {
-        gizmo_buttons(T);
-    }
-    ImGui::Image((ImTextureID)(intptr_t)T.game_view.tex, ImVec2(w, w * PrevH / PrevW));
-    ImVec2 im = ImGui::GetItemRectMin();
-    bool hovered = ImGui::IsItemHovered();
-    look_around(T.game_view, T.made_turn, !adjusting);
-    bool on_axes = view_axes(T.game_view, T.made_turn, im, w, hovered);
-    const KitMade *mk = &T.made[T.kind];
-    if (adjusting) {
-        adjust_view(T, im, w / PrevW, hovered && !on_axes);
-
-    }
-    ImGui::SetNextItemWidth(U(200));
-    if (ImGui::BeginCombo("##watching", T.anim < mk->nanims ? mk->anims[T.anim].name : "")) {
-        for (int a = 0; a < mk->nanims; a++) {
-            if (ImGui::Selectable(mk->anims[a].name, a == T.anim)) {
-                T.anim = a;
-                T.made_t = 0;
-                T.frame = 0;
-            }
+    // X-Mirror, Onion and Clipping, top right (Onion's frames apart, and the points clipping here, under them while they're on)
+    {
+        const char *names[3] = { "X-Mirror", "Onion", "Clipping" };
+        const char *tips[3] = { "Changes to one side made to the other too, flipped", "Ghosts of the frames before (blue) and after (orange)",
+                                "Points of it inside another part (red), and the frames where (the timeline's red)" };
+        bool *flags[3] = { &T.xmirror, &T.onion, &T.clipping };
+        const int icons[3] = { IC_MIRROR, IC_ONION, IC_CLIP };
+        float total = 0;
+        for (int i = 0; i < 3; i++) {
+            total += button_w(names[i], true) + (i > 0 ? U(8) : 0);
         }
-        ImGui::EndCombo();
+        ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - total, p.y + U(16)));
+        for (int i = 0; i < 3; i++) {
+            if (i > 0) {
+                ImGui::SameLine(0, U(8));
+            }
+            toggle(names[i], flags[i], icons[i], tips[i]);
+        }
+        float y = p.y + U(16) + ImGui::GetFrameHeight() + U(18);
+        if (T.onion) {
+            ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - U(130), y));
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(RAISED));
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+            ImGui::SetNextItemWidth(U(130));
+            ImGui::SliderInt("##onion", &T.onion_step, 1, 15, "ghosts %d apart");
+            ImGui::PopStyleVar();
+            ImGui::PopStyleColor();
+            ImGui::SetItemTooltip("Frames between the ghosts and the frame shown");
+            y += ImGui::GetFrameHeight() + U(8);
+        }
+        if (T.clipping && Clips.kind == T.kind && T.frame >= 0 && T.frame < (int)Clips.count.size()) {
+            char says[48];
+            snprintf(says, sizeof(says), "%d clipping here", Clips.count[T.frame]);
+            float w = ImGui::CalcTextSize(says).x + U(40);
+            ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - w, y));
+            bool any = Clips.count[T.frame] > 0;
+            tag(says, any ? TINT_CORAL : TINT_MINT, any ? CORAL : MINT_LIGHT, any ? CORAL : MINT);
+        }
     }
-    if (adjusting && mk->nanims > 0) {
-        timeline(T, mk, T.anim < mk->nanims ? T.anim : 0, w);
-        return;
+    // the keys and mouse (?), bottom left
+    ImGui::SetCursorScreenPos(ImVec2(p.x + U(16), p.y + size.y - U(16) - U(40)));
+    ImGui::PushFont(FontTitle);
+    toggle("?##help", &T.help, IC_NONE, "Keys and mouse", U(40));
+    ImGui::PopFont();
+    if (T.help) {
+        help_card(T, ImVec2(p.x + U(16), p.y + size.y - U(16) - U(40) - U(10)));
     }
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(U(120));
-    ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
+    ImGui::SetCursorScreenPos(keep);
 }
 
 // A game's move's choice changed (Its moves here): one of its own given up only on the user's yes (ask_back), as it's work of theirs
@@ -3788,163 +4314,162 @@ void foot_own_moves(Tool &T) {
 // *taken set when one's taken (for its undo step). The panel's turns, moves and sizes (the user's word, 2026-11-22: "its very wordy for
 // a visual tool": what each does is its tooltip)
 bool xyz_row(const char *label, float v[3], float speed, float lo, float hi, const char *fmt, const char *const tips[3], bool *taken) {
-    static const ImVec4 Tint[3] = { ImVec4(0.42f, 0.15f, 0.15f, 1), ImVec4(0.18f, 0.34f, 0.13f, 1), ImVec4(0.15f, 0.22f, 0.45f, 1) };
+    const ImU32 Axis[3] = { AXIS_X, AXIS_Y, AXIS_Z };
+    const ImU32 Words[3] = { IM_COL32(0xF7, 0xB4, 0xA6, 255), MINT_LIGHT, IM_COL32(0xB9, 0xC7, 0xF7, 255) };
     static const char *const Letter[3] = { "X", "Y", "Z" };
     bool changed = false;
 
     ImGui::PushID(label);
     ImGui::AlignTextToFramePadding();
-    ImGui::TextUnformatted(label);
+    ImGui::TextColored(V4(MUTED), "%s", label);
     float w = (ImGui::GetContentRegionAvail().x - U(60)) / 3 - ImGui::GetStyle().ItemSpacing.x;
     for (int i = 0; i < 3; i++) {
         char f[24];
         snprintf(f, sizeof(f), "%s %s", Letter[i], fmt);
         ImGui::SameLine(i == 0 ? U(60) : 0);
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, Tint[i]);
-        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(Tint[i].x * 1.4f, Tint[i].y * 1.4f, Tint[i].z * 1.4f, 1));
-        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(Tint[i].x * 1.7f, Tint[i].y * 1.7f, Tint[i].z * 1.7f, 1));
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(mix(TINT_PERI, Axis[i], 0.18f)));
+        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, V4(mix(TINT_PERI, Axis[i], 0.28f)));
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, V4(mix(TINT_PERI, Axis[i], 0.38f)));
+        ImGui::PushStyleColor(ImGuiCol_Text, V4(Words[i]));
         ImGui::SetNextItemWidth(w);
         ImGui::PushID(i);
         changed |= ImGui::DragFloat("##v", &v[i], speed, lo, hi, f);
         ImGui::PopID();
         *taken |= ImGui::IsItemActivated();
-        ImGui::PopStyleColor(3);
+        ImGui::PopStyleColor(4);
         ImGui::SetItemTooltip("%s", tips[i]);
     }
     ImGui::PopID();
     return changed;
 }
 
-void adjust_panel(Tool &T) {
-    if (!ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen)) {
+// The animation's place, and the key picked's: the move shown, its frames, the key the panel's for (adjust's cards share these)
+struct Posing {
+    const KitMade *mk;
+    const KitPose *po;
+    int a, frames;
+    const char *move;
+};
+
+bool posing(Tool &T, Posing &P) {
+    if (T.kind < 0 || T.kind >= PACK_KINDS || !T.have_pose[T.kind] || !T.have_made[T.kind] || T.made[T.kind].nanims == 0) {
+        return false;
+    }
+    P.mk = &T.made[T.kind];
+    P.po = &T.poses[T.kind];
+    P.a = T.anim < P.mk->nanims ? T.anim : 0;
+    P.frames = P.mk->anims[P.a].frames;
+    P.move = P.mk->anims[P.a].name;
+    return true;
+}
+
+// The Fade card: how the key picked (or each of those picked) fades in and out, over how many frames each side, and whether it flows
+// into the bone's next key (the user's word, 2026-11-22: "the transion effect should be chooseable")
+void fade_card(Tool &T) {
+    Posing P;
+    if (T.kind == KIND_WARP_TOOL || !posing(T, P) || T.key_mode != KEY_FRAME) {
         return;
     }
-    if (T.kind == KIND_WARP_TOOL) {
-        ImGui::TextDisabled("Made from On foot's animations");
-        return;
-    }
-    if (!T.have_pose[T.kind]) {
-        ImGui::TextDisabled(T.kind == 1 ? "Crash's bear seats its rider itself" : T.maker != nullptr ? "Making..." : "Update the preview first");
-        if (T.kind == 1) {
-            ImGui::SetItemTooltip("Pick another hero's bear (Prop from) to pose it");
-        }
-        return;
-    }
-    const KitMade *mk = &T.made[T.kind];
-    const KitPose *po = &T.poses[T.kind];
-    int a = T.anim < mk->nanims ? T.anim : 0, frames = mk->anims[a].frames;
-    const char *move = mk->anims[a].name;
-    int here = 0;
-    for (auto &k : T.adj) {
-        here += k.kind == T.kind;
-    }
-    if (ImGui::Checkbox("Edit pose", &T.adjusting) && T.adjusting) {
-        T.frame = frames > 0 ? (int)(T.made_t * 30) % frames : 0;
-        T.adj_playing = false;
-    }
-    hint("Click a bone, then drag its gizmo\n"
-         "R rotate   G move   S scale\n"
-         "Right-drag orbit   Wheel zoom   Home reset   Keypad 1 3 7 views\n"
-         "Space play   Left/Right step a frame\n"
-         "Ctrl+C / Ctrl+V copy and paste a key   Delete remove it\n"
-         "Ctrl+Z undo   Ctrl+Y redo");
-    // whose the move is: its own stays as it's made whoever it's based on; its template's becomes its own when it's first changed
-    const BakedMove *copied = baked_of(T, T.kind, move);
-    bool own = T.poses[T.kind].anims[a].own || copied != nullptr;
-    ImGui::SameLine();
-    if (own) {
-        ImGui::TextColored(ImVec4(0.55f, 0.9f, 0.55f, 1), copied != nullptr ? "Own animation (from %s)" : "Own animation", HeroNames[copied != nullptr ? copied->from : 0]);
-        ImGui::SetItemTooltip("This hero's own %s: it stays as you make it, whoever it's based on", move);
-    } else {
-        ImGui::TextDisabled("%s's animation", HeroNames[template_of(T, T.kind)]);
-        ImGui::SetItemTooltip("Changing it makes it this hero's own copy");
-    }
-    if (!T.adjusting) {
-        if (here > 0) {
-            ImGui::TextDisabled("%d key%s", here, here == 1 ? "" : "s");
-        }
-        return;
-    }
-    if (T.key_mode == KEY_FRAME) {
-        // the picked joint's key here: its fade shown, and changed with these (else they're what a new key gets)
-        PackAdjust *here_key = T.sel >= 0 && T.sel < po->nbones ? panel_key(T, move, po->names[T.sel]) : nullptr;
-        // what the fade's made to: every frame key picked if several are, else that key
-        std::vector<PackAdjust *> fades;
-        if (T.keys_sel.size() > 1) {
-            for (int i : T.keys_sel) {
-                if (T.adj[i].at >= 0) {
-                    fades.push_back(&T.adj[i]);
-                }
+    // the picked bone's key here: its fade shown, and changed with these (else they're what a new key gets); several picked, all of them
+    PackAdjust *here_key = T.sel >= 0 && T.sel < P.po->nbones ? panel_key(T, P.move, P.po->names[T.sel]) : nullptr;
+    std::vector<PackAdjust *> fades;
+    if (T.keys_sel.size() > 1) {
+        for (int i : T.keys_sel) {
+            if (T.adj[i].at >= 0) {
+                fades.push_back(&T.adj[i]);
             }
-        } else if (here_key != nullptr && here_key->at >= 0) {
-            fades.push_back(here_key);
         }
-        char whose[64] = "";
-        if (fades.size() > 1) {
-            snprintf(whose, sizeof(whose), "%d keys", (int)fades.size());
-        } else if (!fades.empty()) {
-            snprintf(whose, sizeof(whose), "%s's key", bone_title(fades[0]->bone));
+    } else if (here_key != nullptr && here_key->at >= 0) {
+        fades.push_back(here_key);
+    }
+    char whose[64] = "";
+    if (fades.size() > 1) {
+        snprintf(whose, sizeof(whose), "%d keys", (int)fades.size());
+    } else if (!fades.empty()) {
+        snprintf(whose, sizeof(whose), "%s's key", bone_title(fades[0]->bone));
+    }
+    if (!fades.empty()) {
+        T.spread = fades[0]->spread;
+        T.ease = fades[0]->ease;
+    }
+    card("##fade", TINT_SAND);
+    heading("Fade");
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(CARD));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, V4(RAISED));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(U(14), U(9)));
+    ImGui::SetNextItemWidth(U(108));
+    bool faded = ImGui::SliderInt("##fade", &T.spread, 0, 30, "%d frames");
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor(2);
+    ImGui::SetItemTooltip("Frames it fades over, either side");
+    if (ImGui::IsItemActivated()) {
+        T.fade_step = false;
+    }
+    if (faded && !fades.empty()) {
+        if (!T.fade_step) {
+            adj_snapshot(T, "%s's fade", whose);
+            T.fade_step = true;
         }
-        if (!fades.empty()) {
-            T.spread = fades[0]->spread;
-            T.ease = fades[0]->ease;
+        for (PackAdjust *x : fades) {
+            x->spread = T.spread;
         }
-        ImGui::AlignTextToFramePadding();
-        ImGui::TextUnformatted("Fade");
-        ImGui::SameLine(U(60));
-        ImGui::SetNextItemWidth(U(120));
-        bool faded = ImGui::SliderInt("##fade", &T.spread, 0, 30, "%d frames");
-        ImGui::SetItemTooltip("Frames it fades over, either side");
-        if (ImGui::IsItemActivated()) {
-            T.fade_step = false;
-        }
-        if (faded && !fades.empty()) {
-            if (!T.fade_step) {
-                adj_snapshot(T, "%s's fade", whose);
-                T.fade_step = true;
-            }
-            for (PackAdjust *x : fades) {
-                x->spread = T.spread;
-            }
-            adj_step_says(T, "Faded %s over %d frames", whose, T.spread);
-            mirror_all(T, fades);
-        }
-        // how it fades in and out (the user's word, 2026-11-22: "the transion effect should be chooseable")
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(U(130));
-        if (ImGui::BeginCombo("##ease", EaseSays[T.ease >= 0 && T.ease < PACK_EASES ? T.ease : 0])) {
-            for (int e = 0; e < PACK_EASES; e++) {
-                if (ImGui::Selectable(EaseSays[e], e == T.ease) && e != T.ease) {
-                    T.ease = e;
-                    if (!fades.empty()) {
-                        adj_snapshot(T, "Made %s fade: %s", whose, EaseSays[e]);
-                        for (PackAdjust *x : fades) {
-                            x->ease = e;
-                        }
-                        mirror_all(T, fades);
+        adj_step_says(T, "Faded %s over %d frames", whose, T.spread);
+        mirror_all(T, fades);
+    }
+    ImGui::SameLine(0, U(6));
+    if (menu_begin("##ease", EaseSays[T.ease >= 0 && T.ease < PACK_EASES ? T.ease : 0], U(118))) {
+        for (int e = 0; e < PACK_EASES; e++) {
+            if (menu_item(EaseSays[e], e == T.ease) && e != T.ease) {
+                T.ease = e;
+                if (!fades.empty()) {
+                    adj_snapshot(T, "Made %s fade: %s", whose, EaseSays[e]);
+                    for (PackAdjust *x : fades) {
+                        x->ease = e;
                     }
+                    mirror_all(T, fades);
                 }
-                ImGui::SetItemTooltip("%s", EaseTips[e]);
             }
-            ImGui::EndCombo();
+            ImGui::SetItemTooltip("%s", EaseTips[e]);
         }
-        ImGui::SetItemTooltip("How it fades in and out");
-        ImGui::SameLine();
-        bool blend = !fades.empty() && fades[0]->blend;
-        ImGui::BeginDisabled(fades.empty());
-        if (ImGui::Checkbox("Blend", &blend)) {
-            adj_snapshot(T, blend ? "Blended %s into the next" : "Stopped %s blending", whose);
-            for (PackAdjust *x : fades) {
-                x->blend = blend;
-            }
-            mirror_all(T, fades);
-        }
-        ImGui::EndDisabled();
-        ImGui::SetItemTooltip("Flow into the bone's next key instead of fading out");
+        ImGui::EndCombo();
     }
-    if (T.sel >= 0 && T.sel < po->nbones) {
-        const char *bone = po->names[T.sel];
-        PackAdjust *k = panel_key(T, move, bone);
+    ImGui::SetItemTooltip("How it fades in and out");
+    ImGui::SameLine(0, U(6));
+    bool blend = !fades.empty() && fades[0]->blend;
+    ImGui::BeginDisabled(fades.empty());
+    if (toggle("Blend", &blend, IC_NONE, "Flow into the bone's next key instead of fading out", 0, CARD)) {
+        adj_snapshot(T, blend ? "Blended %s into the next" : "Stopped %s blending", whose);
+        for (PackAdjust *x : fades) {
+            x->blend = blend;
+        }
+        mirror_all(T, fades);
+    }
+    ImGui::EndDisabled();
+    card_end();
+}
+
+// The bone card: the bone picked, its Rotate, Move and Scale, Hide (or Show), and its keys or the animation's all taken away; with
+// none picked, a word on picking one
+void bone_card(Tool &T) {
+    Posing P;
+    card("##bone", TINT_PERI);
+    if (T.kind == KIND_WARP_TOOL) {
+        heading("The podium");
+        ImGui::TextDisabled("Made from On foot's animations");
+        card_end();
+        return;
+    }
+    if (!posing(T, P)) {
+        heading("Pose");
+        ImGui::TextWrapped("%s", T.kind == 1 ? "Crash's bear seats its rider itself: pick another hero's bear (Prop from) to pose it"
+                                 : T.maker != nullptr ? "Making it in the games..." : "Update the preview first");
+        card_end();
+        return;
+    }
+    if (T.sel >= 0 && T.sel < P.po->nbones) {
+        const char *bone = P.po->names[T.sel];
+        PackAdjust *k = panel_key(T, P.move, bone);
         float turn[3] = { 0, 0, 0 }, reach[3] = { 0, 0, 0 }, size[3] = { 1, 1, 1 };
         if (k != nullptr) {
             memcpy(turn, k->turn, sizeof(turn));
@@ -3953,10 +4478,19 @@ void adjust_panel(Tool &T) {
                 size[i] = 1 + k->grow[i];
             }
         }
-        // (its heading says when its change goes to a bar picked: every move here, or its whole move)
-        char heading[96];
-        snprintf(heading, sizeof(heading), "%s%s", bone_title(bone), T.key_mode == KEY_GAME ? ", all animations" : T.key_mode == KEY_MOVE ? ", whole animation" : "");
-        ImGui::SeparatorText(heading);
+        // (hidden, by its own key or one on a bone it's on: its values change nothing that shows, so they're greyed)
+        bool hidden = game_key(T, bone, true) >= 0, unseen = hidden || hidden_bones(T, T.kind)[T.sel];
+        heading(bone_title(bone), PERI);
+        char note[64];
+        snprintf(note, sizeof(note), "%s", unseen ? "Hidden everywhere here" : T.key_mode == KEY_GAME ? "All animations"
+                                                       : T.key_mode == KEY_MOVE                    ? "Whole animation"
+                                                                                                   : "");
+        if (note[0] == 0) {
+            snprintf(note, sizeof(note), "Frame %d", T.frame);
+        }
+        ImGui::SameLine(ImGui::GetContentRegionMax().x - ImGui::CalcTextSize(note).x);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + U(3));
+        ImGui::TextDisabled("%s", note);
         // its own axes as it stands: x to its left, y down, z to its back, shown in Blender's order X, Y, Z (its x, z, y) and ways (Z
         // up: its y the other way for a move); what each does its tooltip
         static const char *const TurnSays[3] = { "Tip forward", "Lean to its left", "Turn to its right" };
@@ -3966,11 +4500,6 @@ void adjust_panel(Tool &T) {
                                                  "Up (its arm or leg bends to follow)" };
         float t3[3] = { turn[0], turn[2], turn[1] }, m3[3] = { reach[0], reach[2], -reach[1] + 0.0f }, s3[3] = { size[0], size[2], size[1] };
         bool taken_t = false, taken_m = false, taken_s = false;
-        // (hidden, by its own key or one on a bone it's on: its values change nothing that shows, so they're greyed)
-        bool hidden = game_key(T, bone, true) >= 0, unseen = hidden;
-        if (T.sel >= 0 && T.sel < T.poses[T.kind].nbones) {
-            unseen = unseen || hidden_bones(T, T.kind)[T.sel];
-        }
         ImGui::BeginDisabled(unseen);
         bool changed_t = xyz_row("Rotate", t3, 0.5f, -180, 180, "%.1f", TurnSays, &taken_t);
         bool hand = reach_bone(bone) && SDL_strcasecmp(bone, "hips") != 0;
@@ -3991,9 +4520,9 @@ void adjust_panel(Tool &T) {
         reach[0] = m3[0], reach[2] = m3[1], reach[1] = -m3[2];
         size[0] = s3[0], size[2] = s3[1], size[1] = s3[2];
         // made to the key it shows; with none, a new one at the frame shown (stopped there, if it was playing)
-        if (changed && (k = panel_key(T, move, bone)) == nullptr) {
+        if (changed && (k = panel_key(T, P.move, bone)) == nullptr) {
             T.adj_playing = false;
-            k = adj_key(T, move, bone, true);
+            k = adj_key(T, P.move, bone, true);
         }
         if (changed && k != nullptr) {
             memcpy(k->turn, turn, sizeof(turn));
@@ -4003,57 +4532,97 @@ void adjust_panel(Tool &T) {
             }
             mirror_edit(T, (int)(k - T.adj.data()), k->at);
         }
-        if (T.key_mode == KEY_FRAME && T.adj_playing && panel_key(T, move, bone) == nullptr) {
+        if (T.key_mode == KEY_FRAME && T.adj_playing && panel_key(T, P.move, bone) == nullptr) {
             ImGui::TextDisabled("Click one of its keys to edit it as it plays");
         }
-        if (ImGui::Button("Reset bone")) {
+        ImGui::Dummy(ImVec2(0, U(2)));
+        if (button(hidden ? "Show" : "Hide", LILAC, LILAC_INK, 0, hidden ? IC_EYE : IC_EYE_OFF, hidden ? CUE_SHOW : CUE_HIDE)) {
+            bone_hide(T, bone, !hidden);
+        }
+        ImGui::SetItemTooltip(hidden ? "Show it again" : "Hide it, and all on it, in every animation of this game");
+        ImGui::SameLine(0, U(8));
+        if (button("Reset bone", CARD, INK, 0, IC_NONE, CUE_DROP)) {
             adj_snapshot(T, "Reset %s", bone_title(bone));
             std::vector<PackAdjust> keep;
             for (auto &x : T.adj) {
-                if (!(x.kind == T.kind && pack_adjust_for(&x, T.kind, move) && SDL_strcasecmp(x.bone, bone) == 0)) {
+                if (!(x.kind == T.kind && pack_adjust_for(&x, T.kind, P.move) && SDL_strcasecmp(x.bone, bone) == 0)) {
                     keep.push_back(x);
                 }
             }
             T.adj = keep;
             keys_only(T, -1);
         }
-        ImGui::SetItemTooltip("Remove this bone's keys in %s", move);
-        ImGui::SameLine();
-        if (ImGui::Button(hidden ? "Show" : "Hide")) {
-            bone_hide(T, bone, !hidden);
-        }
-        ImGui::SetItemTooltip(hidden ? "Show it again" : "Hide it, and all on it, in every animation of this game");
-        ImGui::SameLine();
+        ImGui::SetItemTooltip("Remove this bone's keys in %s", P.move);
     } else {
-        ImGui::TextDisabled("Click a bone in the picture");
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        ImDrawList *dl = ImGui::GetWindowDrawList();
+        dl->AddCircleFilled(ImVec2(p.x + U(22), p.y + U(22)), U(22), CARD);
+        icon(dl, IC_CURSOR, ImVec2(p.x + U(22), p.y + U(22)), U(20), PERI);
+        ImGui::SetCursorScreenPos(ImVec2(p.x + U(56), p.y + U(1)));
+        ImGui::PushFont(FontTitle);
+        ImGui::TextUnformatted("Click a bone");
+        ImGui::PopFont();
+        ImGui::SetCursorScreenPos(ImVec2(p.x + U(56), ImGui::GetCursorScreenPos().y - U(4)));
+        ImGui::TextDisabled("%s", T.bones ? "on the picture to pose it" : "Turn Bones on to pose");
+        ImGui::Dummy(ImVec2(0, U(4)));
     }
-    if (ImGui::Button("Reset animation")) {
-        adj_snapshot(T, "Reset %s", move);
+    if (button("Reset animation", CARD, INK, 0, IC_NONE, CUE_DROP)) {
+        adj_snapshot(T, "Reset %s", P.move);
         std::vector<PackAdjust> keep;
         for (auto &x : T.adj) {
-            if (!(x.kind == T.kind && SDL_strcasecmp(x.move, move) == 0)) {
+            if (!(x.kind == T.kind && SDL_strcasecmp(x.move, P.move) == 0)) {
                 keep.push_back(x);
             }
         }
         T.adj = keep;
         keys_only(T, -1);
     }
-    ImGui::SetItemTooltip("Remove every key in %s", move);
-    // the undo history: each step, the one it's at lit; clicked, gone back (or on) to it
-    if (ImGui::TreeNodeEx("History", ImGuiTreeNodeFlags_DefaultOpen)) {
+    ImGui::SetItemTooltip("Remove every key in %s", P.move);
+    card_end();
+}
+
+// The History card: the last step, and opened, every step (the one it's at lit; clicked, gone back or on to it)
+void history_card(Tool &T) {
+    card("##history", CARD);
+    bool *open = ImGui::GetStateStorage()->GetBoolRef(ImGui::GetID("##histopen"), false);
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    float w = ImGui::GetContentRegionAvail().x, h = U(30);
+    if (ImGui::InvisibleButton("##histhead", ImVec2(w, h))) {
+        *open = !*open;
+        sound_cue(*open ? CUE_OPEN : CUE_TAP);
+    }
+    ImGui::SetItemTooltip(*open ? "Close the history" : "Every step: click one to go back to it");
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    icon(dl, IC_HISTORY, ImVec2(p.x + U(10), p.y + h / 2), U(20), INK);
+    ImGui::PushFont(FontTitle);
+    float th = ImGui::GetTextLineHeight();
+    dl->AddText(ImVec2(p.x + U(30), p.y + (h - th) / 2), INK, "History");
+    float hw = ImGui::CalcTextSize("History").x;
+    ImGui::PopFont();
+    const char *last = T.undo.empty() ? "(start)" : T.undo.back().says.c_str();
+    ImVec2 ls = ImGui::CalcTextSize(last);
+    float room = w - U(30) - hw - U(16) - U(30);
+    ImGui::PushClipRect(ImVec2(p.x + U(40) + hw, p.y), ImVec2(p.x + w - U(28), p.y + h), true);
+    dl->AddText(ImVec2(p.x + w - U(30) - fminf(ls.x, room), p.y + (h - ls.y) / 2), MUTED, last);
+    ImGui::PopClipRect();
+    float turn = ease_to(ImGui::GetID("##histturn"), *open ? 1 : 0, 16);
+    icon(dl, turn > 0.5f ? IC_DOWN : IC_RIGHT, ImVec2(p.x + w - U(10), p.y + h / 2), U(18), MUTED);
+    if (*open) {
         int at = (int)T.undo.size(), all = at + (int)T.redo.size();
         static int shown_at = -1;
-        float line = ImGui::GetTextLineHeightWithSpacing(), pad = ImGui::GetStyle().WindowPadding.y * 2;
-        ImGui::BeginChild("##history", ImVec2(0, fminf((float)(all + 1), 6.0f) * line + pad), ImGuiChildFlags_Borders);
+        float line = ImGui::GetTextLineHeightWithSpacing();
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, V4(DEEP));
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, U(16));
+        ImGui::BeginChild("##steps", ImVec2(0, fminf((float)(all + 1), 7.0f) * line + U(16)), ImGuiChildFlags_AlwaysUseWindowPadding);
         for (int i = 0; i <= all; i++) {
             const char *says = i == 0 ? T.undo.size() >= 300 ? "(as far back as it goes)" : "(start)"
                              : i <= at ? T.undo[i - 1].says.c_str()
                                        : T.redo[T.redo.size() - (size_t)(i - at)].says.c_str();
             ImGui::PushID(i);
             if (i > at) {
-                ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+                ImGui::PushStyleColor(ImGuiCol_Text, V4(DIM));
             }
-            if (ImGui::Selectable(says, i == at)) {
+            if (menu_item(says, i == at)) {
                 adj_go(T, i);
             }
             if (i > at) {
@@ -4066,271 +4635,902 @@ void adjust_panel(Tool &T) {
         }
         shown_at = at;
         ImGui::EndChild();
-        ImGui::TreePop();
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
     }
-    ImGui::SetItemTooltip("Click a step to go back to it");
+    card_end();
 }
 
-void editor_right(Tool &T, SDL_Window *win) {
-    static const SDL_DialogFileFilter Glb[] = { { "3D model (glTF binary)", "glb" } };
-    static const SDL_DialogFileFilter Png[] = { { "Picture (PNG)", "png" } };
-    static const SDL_DialogFileFilter Wav[] = { { "Sound (WAV)", "wav" } };
+// A row of a card: its label (muted) on the left, then the cursor where its control goes, right-aligned to w wide
+void row_label(const char *label, float control_w) {
+    float right = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
+    ImGui::AlignTextToFramePadding();
+    ImGui::PushStyleColor(ImGuiCol_Text, V4(MUTED));
+    ImGui::TextUnformatted(label);
+    ImGui::PopStyleColor();
+    ImGui::SameLine(right - control_w);
+}
 
-    // the fields leave room for their labels
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Mod's name").x - 2 * ImGui::GetStyle().ItemInnerSpacing.x);
+// A thin bar that goes back and forth while the games make it again
+void making_bar() {
+    ImGui::TextColored(V4(PERI_LIGHT), "Making it in the games...");
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    float w = ImGui::GetContentRegionAvail().x, h = U(8), t = (sinf((float)ImGui::GetTime() * 3) + 1) / 2;
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    dl->AddRectFilled(p, ImVec2(p.x + w, p.y + h), CARD, h / 2);
+    dl->AddRectFilled(ImVec2(p.x + t * w * 0.7f, p.y), ImVec2(p.x + t * w * 0.7f + w * 0.3f, p.y + h), PERI, h / 2);
+    ImGui::Dummy(ImVec2(w, h));
+}
 
-    // the page's own choices
-    if (T.page == PAGE_MODEL) {
-        ImGui::SeparatorText("Model");
-        ImGui::TextWrapped("%s", short_path(T.model));
-        if (ImGui::Button("Open...")) {
-            browse(win, PICK_MODEL, Glb);
-        }
-        ImGui::Spacing();
-        if (T.rigged) {
-            ImGui::TextDisabled("Rigged (its own bones)");
-        } else {
-            ImGui::TextDisabled("No rig: place its joints");
-            ImGui::Checkbox("Mirror##dots", &T.mirror);
-            ImGui::SetItemTooltip("Moving one side's dot moves the other's");
-            ImGui::SameLine();
-            if (ImGui::Button("Guess joints")) {
-                kit_guess_markers(T.m);
-                reweigh(T);
+// The game's card: whose ride or prop (or on foot, whose animations), Fit in seat where it sits in something, its own animations here
+// (each with its base's to go back to), and Update preview when a change wants the games to make it again
+void game_card(Tool &T) {
+    int k = T.kind, g = game_of(k);
+    card("##game", TINT_MINT);
+    ImGui::PushTextWrapPos(0);
+    heading(KindTitles[k]);
+    ImGui::PopTextWrapPos();
+    if (k != KIND_WARP_TOOL) {
+        char now[64];
+        snprintf(now, sizeof(now), "%s's (base)", HeroNames[T.template_hero]);
+        bool own = k == 0 && T.foot_own;
+        row_label(k == 0 ? "Animations" : k == 1 ? "Bear from" : "Prop from", U(170));
+        if (menu_begin("##from", own ? "Its own" : T.kind_template[k] < 0 ? now : HeroNames[T.kind_template[k]], U(170))) {
+            // on foot, its own moves: its model's clips, and the tool's for the rest
+            if (k == 0 && menu_item("Its own", own)) {
+                T.foot_own = true;
+                make_in_game(T);
             }
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Has");
-            ImGui::SameLine();
-            const char *opt[] = { "Jaw", "Ears", "Tail" };
-            const int first[] = { KB_JAW, KB_EAR_L1, KB_TAIL1 }, count[] = { 1, 4, 3 };
-            for (int o = 0; o < 3; o++) {
-                bool has = T.m->bones[first[o]].have;
-                if (o > 0) {
-                    ImGui::SameLine();
-                }
-                if (ImGui::Checkbox(opt[o], &has)) {
-                    float h = T.m->hi[1] - T.m->lo[1];
-                    for (int c = 0; c < count[o]; c++) {
-                        KitBone &k = T.m->bones[first[o] + c];
-                        k.have = has;
-                        if (has) {
-                            const KitBone &head = T.m->bones[KB_HEAD], &hips = T.m->bones[KB_HIPS];
-                            float side = (c == 2 || c == 3) && o == 1 ? -1.0f : 1.0f;
-                            if (o == 0) {
-                                k.at[0] = head.at[0], k.at[1] = head.at[1] + 0.02f * h, k.at[2] = head.at[2] + 0.04f * h;
-                                k.end[0] = k.at[0], k.end[1] = k.at[1] - 0.02f * h, k.end[2] = k.at[2] + 0.08f * h;
-                            } else if (o == 1) {
-                                float lower = (c == 1 || c == 3) ? 1.0f : 0.0f;
-                                k.at[0] = side * (0.07f + 0.02f * lower) * h, k.at[1] = head.end[1] - (0.04f + 0.08f * lower) * h;
-                                k.at[2] = head.at[2];
-                                k.end[0] = side * (0.09f + 0.02f * lower) * h, k.end[1] = k.at[1] - 0.08f * h, k.end[2] = head.at[2];
-                            } else {
-                                k.at[0] = 0, k.at[1] = hips.at[1] + 0.02f * h * c, k.at[2] = hips.at[2] - (0.08f + 0.07f * c) * h;
-                                k.end[0] = 0, k.end[1] = k.at[1] + 0.02f * h, k.end[2] = k.at[2] - 0.07f * h;
-                            }
-                        }
-                    }
-                    reweigh(T);
-                    T.dirty = true;
-                }
+            if (menu_item(now, !own && T.kind_template[k] < 0)) {
+                T.kind_template[k] = -1;
+                T.foot_own = k == 0 ? false : T.foot_own;
+                make_in_game(T);
             }
-            ImGui::SetNextItemWidth(U(160));
-            if (ImGui::SliderFloat("Arm lift", &T.m->arm_raise, 20, 160, "%.0f deg")) {
-                T.dirty = true;
-            }
-            ImGui::SetItemTooltip("How high it can raise its arms (less for short arms or a big head)");
-        }
-    } else if (T.page == PAGE_ALL) {
-        ImGui::SeparatorText("All games");
-        ImGui::TextDisabled("Click one to edit it");
-    } else {
-        int k = T.kind, g = game_of(k);
-        ImGui::SeparatorText(KindTitles[k]);
-        if (k != KIND_WARP_TOOL) {
-            char now[64];
-            snprintf(now, sizeof(now), "%s's (base)", HeroNames[T.template_hero]);
-            ImGui::Text(k == 0 ? "Animations" : k == 1 ? "Rides the bear of" : "Prop from");
-            ImGui::SameLine(U(130));
-            ImGui::SetNextItemWidth(-1);
-            bool own = k == 0 && T.foot_own;
-            if (ImGui::BeginCombo("##from", own ? "Its own" : T.kind_template[k] < 0 ? now : HeroNames[T.kind_template[k]])) {
-                // on foot, its own moves: its model's clips, and the tool's for the rest
-                if (k == 0 && ImGui::Selectable("Its own", own)) {
-                    T.foot_own = true;
-                    make_in_game(T);
-                }
-                if (ImGui::Selectable(now, !own && T.kind_template[k] < 0)) {
-                    T.kind_template[k] = -1;
+            for (int h = 0; h < 8; h++) {
+                if (h != T.template_hero && menu_item(HeroNames[h], !own && T.kind_template[k] == h)) {
+                    T.kind_template[k] = h;
                     T.foot_own = k == 0 ? false : T.foot_own;
                     make_in_game(T);
                 }
-                for (int h = 0; h < 8; h++) {
-                    if (h != T.template_hero && ImGui::Selectable(HeroNames[h], !own && T.kind_template[k] == h)) {
-                        T.kind_template[k] = h;
-                        T.foot_own = k == 0 ? false : T.foot_own;
-                        make_in_game(T);
-                    }
-                }
-                ImGui::EndCombo();
             }
-            if (k == 0) {
-                ImGui::SetItemTooltip("Its own: its clips, and the tool's for any it hasn't got. A hero: animated as they are");
-            }
-        } else {
-            ImGui::TextDisabled("Made from On foot's animations");
+            ImGui::EndCombo();
         }
-        // where it sits in something (a tank's hatch, a race cart): drawn in to fit, as the game's heroes are, or as it's posed
-        if (T.have_pose[k] && T.poses[k].cut) {
-            bool fit = !T.no_fit[k];
-            if (ImGui::Checkbox("Fit in seat", &fit)) {
-                T.no_fit[k] = !fit;
-            }
-            ImGui::SetItemTooltip("Squeezed in to sit, as the game's heroes are. Off: as you pose it (Hide bones to fit it)");
+        if (k == 0) {
+            ImGui::SetItemTooltip("Its own: its clips, and the tool's for any it hasn't got. A hero: animated as they are");
         }
-        ImGui::Spacing();
-        if (g >= 0) {
-            // its own moves here, each with its base's to go back to; its base's aren't listed (the user's word, 2026-11-22: "less is
-            // more": a row a move, most of them its base's, said nothing)
-            int from = T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero;
-            bool any = false;
-            for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
-                int sel = T.ownmap[g][m];
-                if (sel == OWN_TEMPLATE) {
-                    continue;
-                }
-                char now[80], use[64];
-                if (sel == OWN_CLIP) {
-                    snprintf(now, sizeof(now), "its clip");
-                } else if (sel == OWN_MADE) {
-                    const BakedMove *bm = baked_of(T, k, KitGames[g].moves[m]);
-                    snprintf(now, sizeof(now), "from %s", HeroNames[bm != nullptr ? bm->from : from]);
-                } else {
-                    snprintf(now, sizeof(now), "my %s", KitMoves[sel].name);
-                }
-                if (!any) {
-                    ImGui::TextDisabled("Own animations");
-                    ImGui::SetItemTooltip("Kept whoever it's based on; the rest are %s's", HeroNames[from]);
-                    any = true;
-                }
-                ImGui::PushID(m);
-                ImGui::AlignTextToFramePadding();
-                ImGui::TextUnformatted(KitGames[g].moves[m]);
-                ImGui::SameLine(U(130));
-                ImGui::TextDisabled("%s", now);
-                ImGui::SameLine();
-                snprintf(use, sizeof(use), "Use %s's", HeroNames[from]);
-                if (ImGui::SmallButton(use)) {
-                    own_change(T, k, g, m, OWN_TEMPLATE);
-                }
-                ImGui::PopID();
+    } else {
+        ImGui::TextDisabled("Made from On foot's animations");
+    }
+    // where it sits in something (a tank's hatch, a race cart): drawn in to fit, as the game's heroes are, or as it's posed
+    if (T.have_pose[k] && T.poses[k].cut) {
+        bool fit = !T.no_fit[k];
+        row_label("Fit in seat", U(50));
+        if (switch_("##fit", &fit, "Squeezed in to sit, as the game's heroes are. Off: as you pose it (Hide bones to fit it)")) {
+            T.no_fit[k] = !fit;
+            T.unsaved = true;
+        }
+    }
+    if (g >= 0) {
+        // its own animations here, each with its base's to go back to; its base's aren't listed (the user's word, 2026-11-22: "less is
+        // more": a row a move, most of them its base's, said nothing)
+        int from = T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero;
+        bool any = false;
+        for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+            int sel = T.ownmap[g][m];
+            if (sel == OWN_TEMPLATE) {
+                continue;
+            }
+            char now[80], use[64];
+            if (sel == OWN_CLIP) {
+                snprintf(now, sizeof(now), "its clip");
+            } else if (sel == OWN_MADE) {
+                const BakedMove *bm = baked_of(T, k, KitGames[g].moves[m]);
+                snprintf(now, sizeof(now), "from %s", HeroNames[bm != nullptr ? bm->from : from]);
+            } else {
+                snprintf(now, sizeof(now), "my %s", KitMoves[sel].name);
             }
             if (!any) {
-                ImGui::TextDisabled("%s's animations", HeroNames[from]);
-                ImGui::SetItemTooltip("Change one and it becomes its own");
+                ImGui::PushFont(FontSmall);
+                ImGui::TextColored(V4(DIM), "OWN ANIMATIONS");
+                ImGui::PopFont();
+                ImGui::SetItemTooltip("Kept whoever it's based on; the rest are %s's", HeroNames[from]);
+                any = true;
             }
-        } else {
-            if (k == 0 && !T.foot_own) {
-                foot_own_moves(T);
+            ImGui::PushID(m);
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            float w = ImGui::GetContentRegionAvail().x, h = U(40);
+            ImDrawList *dl = ImGui::GetWindowDrawList();
+            dl->AddRectFilled(p, ImVec2(p.x + w, p.y + h), CARD, U(14));
+            dl->AddCircleFilled(ImVec2(p.x + U(14), p.y + h / 2), U(4), MINT);
+            float lh = ImGui::GetTextLineHeight();
+            dl->AddText(ImVec2(p.x + U(26), p.y + (h - lh) / 2), INK, KitGames[g].moves[m]);
+            float nw = ImGui::CalcTextSize(KitGames[g].moves[m]).x;
+            ImGui::PushFont(FontSmall);
+            dl->AddText(ImVec2(p.x + U(34) + nw, p.y + (h - ImGui::GetTextLineHeight()) / 2), DIM, now);
+            ImGui::PopFont();
+            snprintf(use, sizeof(use), "Use %s's", HeroNames[from]);
+            ImGui::PushFont(FontSmall);
+            float bw = button_w(use, false);
+            ImGui::SetCursorScreenPos(ImVec2(p.x + w - bw - U(6), p.y + U(6)));
+            if (button(use, RAISED, INK, bw, IC_NONE, CUE_DROP, h - U(12))) {
+                own_change(T, k, g, m, OWN_TEMPLATE);
             }
-        }
-    }
-    if (T.page >= 0) {
-        adjust_panel(T);
-    }
-    ImGui::Spacing();
-
-    // the hero, whatever page
-    if (ImGui::CollapsingHeader("Hero details", ImGuiTreeNodeFlags_DefaultOpen)) {
-        ImGui::InputText("Name", T.name, sizeof(T.name), ImGuiInputTextFlags_CharsUppercase);
-        ImGui::SetItemTooltip("As the game shows it");
-        ImGui::InputText("Id", T.id, sizeof(T.id), ImGuiInputTextFlags_CharsNoBlank);
-        ImGui::SetItemTooltip("Short name for files and online");
-        if (ImGui::InputInt("Height", &T.height, 10, 50)) {
-            T.height = T.height < 200 ? 200 : T.height > 900 ? 900 : T.height;
-            T.dirty = true;
-        }
-        ImGui::SetItemTooltip("Crash is 452, most heroes about 650");
-        if (ImGui::Combo("Based on", &T.template_hero, HeroNames, 8)) {
-            T.dirty = true;
-            int mine = (int)T.baked.size();
-            for (int g = 0; g < KitGameCount && g < 8; g++) {
-                for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
-                    mine += T.ownmap[g][m] == OWN_CLIP || T.ownmap[g][m] >= 0;
-                }
-            }
-            if (mine > 0) {
-                snprintf(T.status, sizeof(T.status), "Based on %s: its %d own animations stay. Update the preview to see it.", HeroNames[T.template_hero],
-                         mine);
-            }
-        }
-        ImGui::SetItemTooltip("Plays as this hero: their animations, speed, ride or prop, and sounds it hasn't got");
-    }
-    if (ImGui::CollapsingHeader("Card and sounds")) {
-        ImGui::Text("Card");
-        ImGui::SetItemTooltip("Character select picture (PNG)");
-        ImGui::SameLine(U(110));
-        ImGui::TextUnformatted(T.card[0] ? short_path(T.card) : "from the model");
-        ImGui::SameLine();
-        if (ImGui::SmallButton("Browse##card")) {
-            browse(win, PICK_CARD, Png);
-        }
-        if (T.card[0]) {
-            ImGui::SameLine();
-            if (ImGui::SmallButton("Clear##card")) {
-                T.card[0] = 0;
-            }
-        }
-        if (T.card[0] == 0) {
-            // its face drawn from the model, with no card: how much of it from the top is its head
-            if (ImGui::SliderFloat("Face", &T.face_head, 0, 0.6f, T.face_head > 0 ? "top %.2f" : "auto")) {
-                T.dirty = true;
-            }
-            ImGui::SetItemTooltip("How much of it, from the top, is its head (its face, without a card)");
-        }
-        ImGui::Spacing();
-        ImGui::Text("Sounds");
-        ImGui::SetItemTooltip("A WAV for each; without one, its base's");
-        for (int j = 0; j < PACK_VOICE_JOBS; j++) {
-            ImGui::PushID(j);
-            ImGui::TextUnformatted(PackVoiceJobs[j]);
-            ImGui::SameLine(U(110));
-            ImGui::TextUnformatted(T.voice[j][0] ? short_path(T.voice[j]) : "-");
-            ImGui::SameLine();
-            if (ImGui::SmallButton("Browse")) {
-                browse(win, PICK_VOICE + j, Wav);
-            }
-            if (T.voice[j][0]) {
-                ImGui::SameLine();
-                if (ImGui::SmallButton("Clear")) {
-                    T.voice[j][0] = 0;
-                }
-            }
+            ImGui::PopFont();
+            ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + h + U(6)));
+            ImGui::Dummy(ImVec2(w, 0));
             ImGui::PopID();
         }
+        if (!any) {
+            ImGui::TextDisabled("All %s's animations", HeroNames[from]);
+            ImGui::SetItemTooltip("Change one and it becomes its own");
+        }
+    } else if (k == 0 && !T.foot_own) {
+        foot_own_moves(T);
     }
-    if (ImGui::CollapsingHeader("Save", ImGuiTreeNodeFlags_DefaultOpen)) {
-        ImGui::InputText("Mod's name", T.mod_name, sizeof(T.mod_name));
-        ImGui::InputText("Author", T.author, sizeof(T.author));
-        if (ImGui::Button("Save##mod", ImVec2(-1, U(30)))) {
-            export_pack(T, false);
+    if (T.maker != nullptr) {
+        making_bar();
+    } else if (T.dirty && T.made_asked) {
+        if (button("Update preview", TINT_PERI, PERI_LIGHT, ImGui::GetContentRegionAvail().x, IC_REFRESH, CUE_TAP)) {
+            make_in_game(T);
         }
-        ImGui::SetItemTooltip("%s", T.loaded_mod[0] ? T.loaded_mod : T.out);
-        ImGui::SetNextItemWidth(U(160));
-        ImGui::Combo("##mode", &T.mode, [](void *, int i) { return Modes[i].name; }, nullptr, (int)(sizeof(Modes) / sizeof(Modes[0])));
-        ImGui::SameLine();
-        if (ImGui::Button("Save and play", ImVec2(-1, 0))) {
-            export_pack(T, true);
+        ImGui::SetItemTooltip("Make it again in the games, with your changes");
+    }
+    card_end();
+}
+
+// The model's card: its file (and another opened), its rig, and for one placed by hand: guess its joints, Mirror, what it has
+// (a jaw, ears, a tail) and how high it raises its arms
+void model_card(Tool &T, SDL_Window *win) {
+    static const SDL_DialogFileFilter Glb[] = { { "3D model (glTF binary)", "glb" } };
+    card("##model", TINT_PERI);
+    heading("Model");
+    {
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        float w = ImGui::GetContentRegionAvail().x, h = U(46);
+        ImDrawList *dl = ImGui::GetWindowDrawList();
+        dl->AddRectFilled(p, ImVec2(p.x + w, p.y + h), CARD, U(16));
+        icon(dl, IC_CUBE, ImVec2(p.x + U(20), p.y + h / 2), U(20), PERI);
+        float bw = button_w("Open...", false);
+        ImGui::PushClipRect(p, ImVec2(p.x + w - bw - U(12), p.y + h), true);
+        dl->AddText(ImVec2(p.x + U(38), p.y + (h - ImGui::GetTextLineHeight()) / 2), INK, short_path(T.model));
+        ImGui::PopClipRect();
+        ImGui::SetCursorScreenPos(ImVec2(p.x + w - bw - U(6), p.y + U(5)));
+        if (button("Open...", RAISED, INK, bw, IC_NONE, CUE_OPEN, h - U(10))) {
+            browse(win, PICK_MODEL, Glb);
         }
-        ImGui::SetItemTooltip("Save, then play it in this game");
-        if (ImGui::TreeNode("Folders")) {
-            ImGui::Text("Mods folder");
-            path_field("##out", T.out, sizeof(T.out));
-            ImGui::Text("The game");
-            path_field("##game", T.game, sizeof(T.game));
-            ImGui::TreePop();
+        ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + h + U(8)));
+    }
+    if (T.rigged) {
+        tag("Rigged (its own bones)", TINT_MINT, MINT_LIGHT, MINT);
+    } else {
+        tag("No rig: place its joints", CARD, PERI_LIGHT, PERI);
+        if (button("Guess joints", PERI, PERI_INK, 0, IC_SPARK, CUE_GUESS)) {
+            kit_guess_markers(T.m);
+            reweigh(T);
+            T.unsaved = true;
+        }
+        ImGui::SetItemTooltip("Put the dots where its shape says its joints are");
+        ImGui::SameLine(0, U(8));
+        toggle("Mirror##dots", &T.mirror, IC_MIRROR, "Moving one side's dot moves the other's", 0, CARD);
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextColored(V4(MUTED), "Has");
+        const char *opt[] = { "Jaw", "Ears", "Tail" };
+        const int first[] = { KB_JAW, KB_EAR_L1, KB_TAIL1 }, count[] = { 1, 4, 3 };
+        for (int o = 0; o < 3; o++) {
+            bool has = T.m->bones[first[o]].have;
+            ImGui::SameLine(0, U(8));
+            if (toggle(opt[o], &has, IC_NONE, nullptr, 0, CARD)) {
+                float h = T.m->hi[1] - T.m->lo[1];
+                for (int c = 0; c < count[o]; c++) {
+                    KitBone &k = T.m->bones[first[o] + c];
+                    k.have = has;
+                    if (has) {
+                        const KitBone &head = T.m->bones[KB_HEAD], &hips = T.m->bones[KB_HIPS];
+                        float side = (c == 2 || c == 3) && o == 1 ? -1.0f : 1.0f;
+                        if (o == 0) {
+                            k.at[0] = head.at[0], k.at[1] = head.at[1] + 0.02f * h, k.at[2] = head.at[2] + 0.04f * h;
+                            k.end[0] = k.at[0], k.end[1] = k.at[1] - 0.02f * h, k.end[2] = k.at[2] + 0.08f * h;
+                        } else if (o == 1) {
+                            float lower = (c == 1 || c == 3) ? 1.0f : 0.0f;
+                            k.at[0] = side * (0.07f + 0.02f * lower) * h, k.at[1] = head.end[1] - (0.04f + 0.08f * lower) * h;
+                            k.at[2] = head.at[2];
+                            k.end[0] = side * (0.09f + 0.02f * lower) * h, k.end[1] = k.at[1] - 0.08f * h, k.end[2] = head.at[2];
+                        } else {
+                            k.at[0] = 0, k.at[1] = hips.at[1] + 0.02f * h * c, k.at[2] = hips.at[2] - (0.08f + 0.07f * c) * h;
+                            k.end[0] = 0, k.end[1] = k.at[1] + 0.02f * h, k.end[2] = k.at[2] - 0.07f * h;
+                        }
+                    }
+                }
+                reweigh(T);
+                T.dirty = true;
+                T.unsaved = true;
+            }
+        }
+        row_label("Arm lift", U(190));
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(CARD));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+        ImGui::SetNextItemWidth(U(190));
+        if (ImGui::SliderFloat("##armlift", &T.m->arm_raise, 20, 160, "%.0f deg")) {
+            T.dirty = true;
+            T.unsaved = true;
+        }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
+        ImGui::SetItemTooltip("How high it can raise its arms (less for short arms or a big head)");
+    }
+    card_end();
+}
+
+// A text field in a card: dark, round
+bool field(const char *id, char *buf, size_t size, float w, ImGuiInputTextFlags flags = 0, ImU32 bg = CARD) {
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(bg));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(14));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(U(14), U(9)));
+    ImGui::SetNextItemWidth(w);
+    bool changed = ImGui::InputText(id, buf, size, flags);
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor();
+    return changed;
+}
+
+// The hero's card: its name, id, height and who it's based on
+void hero_card(Tool &T) {
+    card("##hero", TINT_MINT);
+    heading("Hero");
+    float cw = ImGui::GetContentRegionAvail().x - U(90);
+    row_label("Name", cw);
+    if (field("##name", T.name, sizeof(T.name), cw, ImGuiInputTextFlags_CharsUppercase)) {
+        T.unsaved = true;
+    }
+    ImGui::SetItemTooltip("As the game shows it");
+    row_label("Id", cw);
+    if (field("##id", T.id, sizeof(T.id), cw, ImGuiInputTextFlags_CharsNoBlank)) {
+        T.unsaved = true;
+    }
+    ImGui::SetItemTooltip("Short name for files and online");
+    row_label("Height", cw);
+    {
+        float b = ImGui::GetFrameHeight() + U(6);
+        if (button("-##shorter", CARD, INK, b, IC_NONE, CUE_DOWN, b)) {
+            T.height = T.height - 10 < 200 ? 200 : T.height - 10;
+            T.dirty = T.unsaved = true;
+        }
+        ImGui::SameLine(0, U(6));
+        char hs[16];
+        snprintf(hs, sizeof(hs), "%d", T.height);
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        float w = cw - 2 * b - U(12);
+        ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + w, p.y + b), CARD, U(14));
+        ImVec2 ts = ImGui::CalcTextSize(hs);
+        ImGui::GetWindowDrawList()->AddText(ImVec2(p.x + (w - ts.x) / 2, p.y + (b - ts.y) / 2), INK, hs);
+        ImGui::Dummy(ImVec2(w, b));
+        ImGui::SetItemTooltip("Crash is 452, most heroes about 650");
+        ImGui::SameLine(0, U(6));
+        if (button("+##taller", CARD, INK, b, IC_NONE, CUE_UP, b)) {
+            T.height = T.height + 10 > 900 ? 900 : T.height + 10;
+            T.dirty = T.unsaved = true;
         }
     }
-    ImGui::PopItemWidth();
+    row_label("Based on", cw);
+    if (menu_begin("##base", HeroNames[T.template_hero], cw)) {
+        for (int h = 0; h < 8; h++) {
+            if (menu_item(HeroNames[h], T.template_hero == h) && h != T.template_hero) {
+                T.template_hero = h;
+                T.dirty = T.unsaved = true;
+                int mine = (int)T.baked.size();
+                for (int g = 0; g < KitGameCount && g < 8; g++) {
+                    for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+                        mine += T.ownmap[g][m] == OWN_CLIP || T.ownmap[g][m] >= 0;
+                    }
+                }
+                if (mine > 0) {
+                    snprintf(T.status, sizeof(T.status), "Based on %s: its %d own animations stay. Update the preview to see it.",
+                             HeroNames[T.template_hero], mine);
+                }
+            }
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::SetItemTooltip("Plays as this hero: their animations, speed, ride or prop, and sounds it hasn't got");
+    card_end();
+}
+
+// The card's card: the picture for the character select (a PNG, or its face from the model, so much of it from the top)
+void face_card(Tool &T, SDL_Window *win, float w) {
+    static const SDL_DialogFileFilter Png[] = { { "Picture (PNG)", "png" } };
+    card("##face", CARD, w);
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    float pw = U(108), ph = U(136);
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    dl->AddRectFilled(p, ImVec2(p.x + pw, p.y + ph), TINT_PERI, U(20));
+    if (T.card[0] == 0 && T.have_made[0] && T.face_view.tex != nullptr) {
+        // its face from the model: the top of it from the front, on foot (as much as Face says: 0.36 if it's left to the game)
+        float top = T.face_head > 0 ? T.face_head : 0.36f, half = top * 0.5f * pw / ph * 0.94f / 0.94f;
+        dl->AddImageRounded((ImTextureID)(intptr_t)T.face_view.tex, ImVec2(p.x + U(4), p.y + U(4)), ImVec2(p.x + pw - U(4), p.y + ph - U(4)),
+                            ImVec2(0.5f - half * 0.94f, 0.03f), ImVec2(0.5f + half * 0.94f, 0.03f + top * 0.94f), IM_COL32_WHITE, U(17));
+    } else {
+        icon(dl, T.card[0] ? IC_CHECK : IC_PERSON, ImVec2(p.x + pw / 2, p.y + ph / 2), U(34), PERI);
+    }
+    dl->AddRect(p, ImVec2(p.x + pw, p.y + ph), PERI, U(20), 0, U(3));
+    ImGui::SetCursorScreenPos(ImVec2(p.x + pw + U(16), p.y));
+    ImGui::BeginGroup();
+    heading("Card");
+    ImGui::TextColored(V4(MUTED), "%s", T.card[0] ? short_path(T.card) : "From the model");
+    if (button("Browse##card", RAISED, INK, 0, IC_FOLDER, CUE_OPEN)) {
+        browse(win, PICK_CARD, Png);
+    }
+    ImGui::SetItemTooltip("A PNG for the character select");
+    if (T.card[0]) {
+        ImGui::SameLine(0, U(8));
+        if (button("Clear##card", RAISED, INK, 0, IC_NONE, CUE_DROP)) {
+            T.card[0] = 0;
+            T.unsaved = true;
+        }
+    } else {
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+        ImGui::SetNextItemWidth(U(170));
+        if (ImGui::SliderFloat("##face", &T.face_head, 0, 0.6f, T.face_head > 0 ? "face: top %.2f" : "face: auto")) {
+            T.dirty = T.unsaved = true;
+        }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
+        ImGui::SetItemTooltip("How much of it, from the top, is its head (its face, without a card)");
+    }
+    ImGui::EndGroup();
+    ImGui::SetCursorScreenPos(ImVec2(p.x, fmaxf(p.y + ph, ImGui::GetCursorScreenPos().y)));
+    ImGui::Dummy(ImVec2(0, 0));
+    card_end();
+}
+
+// The sounds' card: a WAV for each of its sounds (played to hear it), else its base's
+void sounds_card(Tool &T, SDL_Window *win, float w) {
+    static const SDL_DialogFileFilter Wav[] = { { "Sound (WAV)", "wav" } };
+    card("##sounds", CARD, w);
+    heading("Sounds");
+    ImGui::SameLine(0, U(12));
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + U(4));
+    ImGui::PushFont(FontSmall);
+    ImGui::TextColored(V4(DIM), "a WAV for each; without one, %s's", HeroNames[T.template_hero]);
+    ImGui::PopFont();
+    float cw = (ImGui::GetContentRegionAvail().x - U(8)) / 2, h = U(40);
+    ImVec2 base = ImGui::GetCursorScreenPos();
+    char from[64];
+    snprintf(from, sizeof(from), "%s's", HeroNames[T.template_hero]);
+    for (int j = 0; j < PACK_VOICE_JOBS; j++) {
+        ImGui::PushID(j);
+        ImVec2 p(base.x + (j % 2) * (cw + U(8)), base.y + (j / 2) * (h + U(6)));
+        ImDrawList *dl = ImGui::GetWindowDrawList();
+        dl->AddRectFilled(p, ImVec2(p.x + cw, p.y + h), DEEP, U(16));
+        ImGui::SetCursorScreenPos(ImVec2(p.x + U(5), p.y + U(5)));
+        ImGui::BeginDisabled(T.voice[j][0] == 0);
+        if (icon_button("##play", IC_PLAY, T.voice[j][0] ? "Play it" : "Its base's (in the game)", TINT_PERI, PERI, h - U(10), CUE_N)) {
+            sound_wav(T.voice[j]);
+        }
+        ImGui::EndDisabled();
+        float lh = ImGui::GetTextLineHeight(), nw = ImGui::CalcTextSize(PackVoiceJobs[j]).x;
+        dl->AddText(ImVec2(p.x + h + U(4), p.y + (h - lh) / 2), INK, PackVoiceJobs[j]);
+        ImGui::PushFont(FontSmall);
+        ImGui::PushClipRect(p, ImVec2(p.x + cw - U(46), p.y + h), true);
+        dl->AddText(ImVec2(p.x + h + U(12) + nw, p.y + (h - ImGui::GetTextLineHeight()) / 2), T.voice[j][0] ? MINT_LIGHT : DIM,
+                    T.voice[j][0] ? short_path(T.voice[j]) : from);
+        ImGui::PopClipRect();
+        ImGui::PopFont();
+        ImGui::SetCursorScreenPos(ImVec2(p.x + cw - U(38), p.y + U(6)));
+        if (T.voice[j][0]) {
+            if (icon_button("##clear", IC_EYE_OFF, "Back to its base's", RAISED, INK, h - U(12), CUE_DROP)) {
+                T.voice[j][0] = 0;
+                T.unsaved = true;
+            }
+        } else if (icon_button("##browse", IC_FOLDER, "Pick a WAV", RAISED, INK, h - U(12), CUE_OPEN)) {
+            browse(win, PICK_VOICE + j, Wav);
+        }
+        ImGui::PopID();
+    }
+    ImGui::SetCursorScreenPos(ImVec2(base.x, base.y + ((PACK_VOICE_JOBS + 1) / 2) * (h + U(6)) - U(6)));
+    ImGui::Dummy(ImVec2(2 * cw + U(8), 0));
+    card_end();
+}
+
+// The mod's card: what the mod it's saved in is called, who made it, and its folders
+void mod_card(Tool &T) {
+    card("##mod", CARD);
+    heading("Mod");
+    float cw = ImGui::GetContentRegionAvail().x - U(90);
+    row_label("Name", cw);
+    if (field("##modname", T.mod_name, sizeof(T.mod_name), cw, 0, DEEP)) {
+        T.unsaved = true;
+    }
+    row_label("Author", cw);
+    if (field("##author", T.author, sizeof(T.author), cw, 0, DEEP)) {
+        T.unsaved = true;
+    }
+    ImGui::PushStyleColor(ImGuiCol_Text, V4(MUTED));
+    if (ImGui::TreeNode("Folders")) {
+        ImGui::PopStyleColor();
+        ImGui::TextColored(V4(MUTED), "Mods folder");
+        path_field("##out", T.out, sizeof(T.out));
+        ImGui::TextColored(V4(MUTED), "The game");
+        path_field("##game", T.game, sizeof(T.game));
+        ImGui::TreePop();
+    } else {
+        ImGui::PopStyleColor();
+    }
+    card_end();
+}
+
+// A space between cards
+void card_gap() {
+    ImGui::Dummy(ImVec2(0, U(4)));
+}
+
+// Under the picture without its timeline (a game it can't be posed in): the animation shown, and how fast
+void player_bar(Tool &T, const KitMade *mk) {
+    card("##player", CARD);
+    if (menu_begin("##watching", T.anim < mk->nanims ? mk->anims[T.anim].name : "", U(200))) {
+        for (int a = 0; a < mk->nanims; a++) {
+            if (menu_item(mk->anims[a].name, a == T.anim)) {
+                T.anim = a;
+                T.made_t = 0;
+                T.frame = 0;
+            }
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::SameLine(0, U(10));
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+    ImGui::SetNextItemWidth(U(140));
+    ImGui::SliderFloat("##speed", &T.made_speed, 0, 2, "%.2fx");
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor();
+    ImGui::SetItemTooltip("Speed");
+    card_end();
+}
+
+// A game's page: its picture (the bones and tools over it) and timeline, and its cards on the right
+void game_page(Tool &T) {
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    float right_w = U(356), gap = U(16), main_w = avail.x - right_w - gap;
+    ImGui::BeginChild("##main", ImVec2(main_w, avail.y), 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    if (!T.have_made[T.kind]) {
+        card("##notmade", CARD);
+        heading(T.maker != nullptr ? "Making it in the games..." : "Not made yet");
+        if (T.maker == nullptr && button("Make it", CORAL, CORAL_INK, 0, IC_REFRESH, CUE_TAP)) {
+            make_in_game(T);
+        }
+        card_end();
+    } else {
+        const KitMade *mk = &T.made[T.kind];
+        int a = T.anim < mk->nanims ? T.anim : 0;
+        bool posable = T.have_pose[T.kind] && mk->nanims > 0;
+        T.adjusting = posable;
+        // the timeline's height: its header, ruler and a row a bone (a third of the page at most; it scrolls past that)
+        int rows = posable ? std::max(1, timeline_rows(T, mk->anims[a].name)) : 0;
+        float tl_h = posable ? U(32) + U(50) + U(26) + (T.clipping ? U(14) : 0) + rows * U(36) : U(80);
+        tl_h = fminf(tl_h, avail.y * 0.38f);
+        ImVec2 p = ImGui::GetCursorScreenPos(), size(main_w, avail.y - tl_h - gap);
+        View &v = T.game_view;
+        if (v.w != (int)size.x || v.h != (int)size.y) {
+            view_free(v);
+            v.w = (int)size.x, v.h = (int)size.y;
+        }
+        ImDrawList *dl = ImGui::GetWindowDrawList();
+        dl->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), PICTURE, U(30));
+        ImGui::SetNextItemAllowOverlap();
+        ImGui::InvisibleButton("##picture", size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+        bool hovered = ImGui::IsItemHovered();
+        if (v.tex != nullptr) {
+            ImVec2 in(0.5f / v.w, 0.5f / v.h);
+            dl->AddImageRounded((ImTextureID)(intptr_t)v.tex, p, ImVec2(p.x + size.x, p.y + size.y), in, ImVec2(1 - in.x, 1 - in.y), IM_COL32_WHITE, U(30));
+        }
+        look_around(v, T.made_turn, false);
+        bool on_axes = view_axes(v, T.made_turn, ImVec2(p.x + size.x - U(70), p.y + size.y - U(70)), hovered);
+        if (posable) {
+            adjust_view(T, p, 1, hovered && !on_axes && T.bones);
+            picture_overlays(T, p, size);
+        }
+        draw_toast(T, ImVec2(p.x + size.x / 2, p.y + size.y - U(22)), U(560));
+        ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + size.y + gap));
+        if (posable) {
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, V4(CARD));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(U(16), U(14)));
+            ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, U(26));
+            ImGui::BeginChild("##timeline", ImVec2(main_w, tl_h), ImGuiChildFlags_AlwaysUseWindowPadding);
+            timeline(T, mk, a, ImGui::GetContentRegionAvail().x);
+            ImGui::EndChild();
+            ImGui::PopStyleVar(2);
+            ImGui::PopStyleColor();
+        } else {
+            player_bar(T, mk);
+        }
+    }
+    ImGui::EndChild();
+    ImGui::SameLine(0, gap);
+    ImGui::BeginChild("##cards", ImVec2(right_w, avail.y));
+    game_card(T);
+    card_gap();
+    fade_card(T);
+    card_gap();
+    bone_card(T);
+    card_gap();
+    history_card(T);
+    ImGui::EndChild();
+}
+
+// The hero's own page: its model (Joints: its dots placed on its front and side; Preview: the tool's animations on it), its card and
+// sounds under it, and its model, details and mod on the right
+// The model's views at w by h (made again at that size, and the model fitted to them, when it changes)
+void model_views_fit(Tool &T, int w, int h) {
+    if (w == ViewW && h == ViewH) {
+        return;
+    }
+    ViewW = w, ViewH = h;
+    View *vs[3] = { &T.front, &T.side, &T.play };
+    for (View *v : vs) {
+        view_free(*v);
+        if (T.m != nullptr) {
+            fit(T.m, *v);
+        }
+    }
+}
+
+void model_page(Tool &T, SDL_Window *win) {
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    float right_w = U(356), gap = U(16), main_w = avail.x - right_w - gap;
+    float lower = U(16) * 2 + FontTitle->FontSize + U(12) + ((PACK_VOICE_JOBS + 1) / 2) * U(46);
+    ImGui::BeginChild("##main", ImVec2(main_w, avail.y), 0, ImGuiWindowFlags_NoScrollWithMouse);
+    main_w -= avail.y - lower - gap < U(300) ? ImGui::GetStyle().ScrollbarSize + U(4) : 0;
+    ImVec2 p = ImGui::GetCursorScreenPos(), size(main_w, fmaxf(U(300), avail.y - lower - gap));
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    dl->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), PICTURE, U(30));
+    bool joints = !T.rigged && T.model_view == 0;
+    {
+        // the views as big as the picture has room for: two side by side (Joints), or one (Preview)
+        int h = (int)fminf(U(600), size.y - (joints ? U(130) : U(40))), w = (int)fminf(h * 0.72f, joints ? (size.x - U(60)) / 2 : size.x - U(520));
+        model_views_fit(T, std::max(w, 60), std::max(h, 80));
+    }
+    if (joints) {
+        // the front and the side, its dots on each, in the middle of the picture
+        float vg = U(14), x0 = p.x + (size.x - 2 * ViewW - vg) / 2, y0 = p.y + U(70);
+        const char *names[2] = { "Front", "Side" };
+        View *views[2] = { &T.front, &T.side };
+        for (int i = 0; i < 2; i++) {
+            ImGui::SetCursorScreenPos(ImVec2(x0 + i * (ViewW + vg), y0));
+            view_window(T, *views[i], names[i], true, i);
+            ImGui::SetCursorScreenPos(ImVec2(x0 + i * (ViewW + vg) + U(12), y0 + U(12)));
+            tag(names[i], RAISED, MUTED);
+        }
+        ImGui::SetCursorScreenPos(ImVec2(p.x + U(18), p.y + size.y - U(16) - U(28)));
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextColored(V4(MUTED), "Drag the dots onto its joints:");
+        static const char *const Parts[4] = { "body", "arms", "legs", "jaw, ears, tail" };
+        const ImU32 Cols[4] = { IM_COL32(0xF2, 0xD5, 0x8A, 255), PERI, MINT, CORAL };
+        for (int i = 0; i < 4; i++) {
+            ImGui::SameLine(0, U(8));
+            tag(Parts[i], RAISED, INK, Cols[i]);
+        }
+    } else {
+        float x0 = p.x + (size.x - ViewW) / 2, y0 = p.y + (size.y - ViewH) / 2;
+        ImGui::SetCursorScreenPos(ImVec2(x0, y0));
+        view_window(T, T.play, "move", false, 2);
+        T.play.zx = ViewW / 2.0f;
+        T.play.zy = ViewH / 2.0f;
+        look_around(T.play, T.turn);
+        ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - U(200) - U(10) - button_w("Play", true), p.y + U(16)));
+        if (menu_begin("##preview", KitMoves[T.move].name, U(200), RAISED)) {
+            for (int i = 0; i < KitMoveCount; i++) {
+                if (menu_item(KitMoves[i].name, T.move == i)) {
+                    T.move = i;
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::SetItemTooltip("The tool's built-in animations on your model (on foot, its own uses them for any it hasn't got)");
+        ImGui::SameLine(0, U(10));
+        toggle("Play##model", &T.playing, IC_PLAY, nullptr);
+    }
+    if (!T.rigged) {
+        // Joints or Preview: a pill, its picked half sliding to it
+        ImVec2 q(p.x + U(16), p.y + U(16));
+        float w = U(104), h = U(38), pad = U(5);
+        dl->AddRectFilled(ImVec2(q.x, q.y + U(3)), ImVec2(q.x + 2 * w + 2 * pad, q.y + h + 2 * pad + U(3)), SHADOW, (h + 2 * pad) / 2);
+        dl->AddRectFilled(q, ImVec2(q.x + 2 * w + 2 * pad, q.y + h + 2 * pad), RAISED, (h + 2 * pad) / 2);
+        float x = ease_to(ImGui::GetID("##mvthumb"), (float)T.model_view, 14);
+        dl->AddRectFilled(ImVec2(q.x + pad + x * w, q.y + pad), ImVec2(q.x + pad + (x + 1) * w, q.y + pad + h), PERI, h / 2);
+        const char *tabs[2] = { "Joints", "Preview" };
+        for (int i = 0; i < 2; i++) {
+            ImGui::SetCursorScreenPos(ImVec2(q.x + pad + i * w, q.y + pad));
+            ImGui::PushID(i);
+            if (ImGui::InvisibleButton("##mv", ImVec2(w, h)) && T.model_view != i) {
+                T.model_view = i;
+                sound_cue(CUE_TAP);
+            }
+            ImGui::PopID();
+            ImVec2 ts = ImGui::CalcTextSize(tabs[i]);
+            dl->AddText(ImVec2(q.x + pad + i * w + (w - ts.x) / 2, q.y + pad + (h - ts.y) / 2), T.model_view == i ? PERI_INK : INK, tabs[i]);
+        }
+    }
+    draw_toast(T, ImVec2(p.x + size.x / 2, p.y + size.y - U(70)), U(560));
+    ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + size.y + gap));
+    float half = (main_w - gap) * 0.42f;
+    face_card(T, win, half);
+    ImGui::SameLine(0, gap);
+    sounds_card(T, win, main_w - half - gap);
+    ImGui::EndChild();
+    ImGui::SameLine(0, gap);
+    ImGui::BeginChild("##cards", ImVec2(right_w, avail.y));
+    model_card(T, win);
+    card_gap();
+    hero_card(T);
+    card_gap();
+    mod_card(T);
+    ImGui::EndChild();
+}
+
+// Every game at a glance: a tile each, the hero in it on the floor grid (turned as the pictures are), what's its own there, and
+// whether it's squeezed in to sit; click one to edit it
+void all_games_page(Tool &T) {
+    heading("All games");
+    ImGui::SameLine(0, U(14));
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + U(3));
+    ImGui::TextColored(V4(MUTED), "%s in every one. Click one to edit it.", T.name);
+    ImGui::SameLine(ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x - U(200));
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(CARD));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+    ImGui::SetNextItemWidth(U(200));
+    ImGui::SliderFloat("##turnall", &T.made_turn, -180, 180, "turned %.0f deg");
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor();
+    ImGui::BeginChild("##tiles", ImVec2(0, 0), 0, 0);
+    float gap = U(16), tw = (float)ThumbW, th = (float)ThumbH, foot = U(76);
+    int cols = std::max(1, (int)((ImGui::GetContentRegionAvail().x + gap) / (tw + gap)));
+    ImVec2 origin = ImGui::GetCursorScreenPos();
+    origin.y += U(8);
+    for (int k = 0; k < PACK_KINDS; k++) {
+        ImGui::PushID(k);
+        ImVec2 p(origin.x + (k % cols) * (tw + gap), origin.y + (k / cols) * (th + foot + gap));
+        ImGui::SetCursorScreenPos(p);
+        bool hit = ImGui::InvisibleButton("##tile", ImVec2(tw, th + foot));
+        bool hov = ImGui::IsItemHovered();
+        float lift = ease_to(ImGui::GetItemID(), hov ? 1 : 0, 18);
+        ImDrawList *dl = ImGui::GetWindowDrawList();
+        ImVec2 a(p.x, p.y - lift * U(5)), b(p.x + tw, p.y + th + foot - lift * U(5));
+        if (lift > 0) {
+            dl->AddRectFilled(ImVec2(a.x - U(3), a.y - U(3)), ImVec2(b.x + U(3), b.y + U(3)), (PERI & 0x00FFFFFFu) | (ImU32)(lift * 120) << 24, U(28));
+        }
+        dl->AddRectFilled(ImVec2(a.x, a.y + U(3)), ImVec2(b.x, b.y + U(3)), SHADOW, U(26));
+        dl->AddRectFilled(a, ImVec2(b.x, a.y + th), PICTURE, U(26), ImDrawFlags_RoundCornersTop);
+        if (T.have_made[k] && T.thumbs[k].tex != nullptr) {
+            ImVec2 in(0.5f / tw, 0.5f / th);
+            dl->AddImageRounded((ImTextureID)(intptr_t)T.thumbs[k].tex, a, ImVec2(b.x, a.y + th), in, ImVec2(1 - in.x, 1 - in.y), IM_COL32_WHITE,
+                                U(26), ImDrawFlags_RoundCornersTop);
+        } else {
+            icon(dl, IC_CUBE, ImVec2((a.x + b.x) / 2, a.y + th / 2), U(34), DIM);
+        }
+        dl->AddRectFilled(ImVec2(a.x, a.y + th), b, CARD, U(26), ImDrawFlags_RoundCornersBottom);
+        ImGui::PushFont(FontTitle);
+        dl->AddText(ImVec2(a.x + U(14), a.y + th + U(10)), INK, KindChip[k]);
+        ImGui::PopFont();
+        // what's its own there
+        int g = game_of(k), mine = 0, moves = 0;
+        for (int m = 0; g >= 0 && m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+            moves++;
+            mine += T.ownmap[g][m] != OWN_TEMPLATE;
+        }
+        char says[64];
+        int from = T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero;
+        if (k == KIND_WARP_TOOL) {
+            snprintf(says, sizeof(says), "from On foot");
+        } else if (k == 0) {
+            snprintf(says, sizeof(says), T.foot_own ? "its own" : "%s's", HeroNames[from]);
+        } else if (mine > 0) {
+            snprintf(says, sizeof(says), "%d of %d its own", mine, moves);
+        } else {
+            snprintf(says, sizeof(says), "%s's", HeroNames[from]);
+        }
+        ImGui::SetCursorScreenPos(ImVec2(a.x + U(14), a.y + th + U(42)));
+        bool own = mine > 0 || (k == 0 && T.foot_own);
+        tag(says, own ? TINT_MINT : RAISED, own ? MINT_LIGHT : MUTED, 0, U(24));
+        if (T.have_pose[k] && T.poses[k].cut && !T.no_fit[k]) {
+            ImGui::SameLine(0, U(6));
+            tag("Fit in seat", TINT_PERI, PERI_LIGHT, 0, U(24));
+        }
+        if (hit) {
+            go_page(T, k);
+        }
+        ImGui::PopID();
+    }
+    ImGui::SetCursorScreenPos(ImVec2(origin.x, origin.y + ((PACK_KINDS + cols - 1) / cols) * (th + foot + gap)));
+    ImGui::Dummy(ImVec2(0, 0));
+    ImGui::EndChild();
+}
+
+void start_screen(Tool &T, SDL_Window *win) {
+    static const SDL_DialogFileFilter Glb[] = { { "3D model (glTF binary)", "glb" } };
+    static bool looked = false;
+
+    if (!looked) {
+        find_heroes(T);
+        looked = true;
+    }
+    if (T.status[0] != 0 && strcmp(T.status, T.toasted) != 0) {
+        SDL_strlcpy(T.toasted, T.status, sizeof(T.toasted));
+        toast(T, "%s", T.status);
+    }
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(io.DisplaySize);
+    ImGui::Begin("Start", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar);
+    float w = fminf(U(1080), io.DisplaySize.x - U(40)), x = (io.DisplaySize.x - w) / 2, gap = U(20);
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    // the tool's name, its mark before it; sounds on or off on the right
+    ImGui::SetCursorPos(ImVec2(x, U(40)));
+    {
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        float s = U(64);
+        dl->AddRectFilled(ImVec2(p.x, p.y + U(4)), ImVec2(p.x + s, p.y + s + U(4)), PERI_DEEP, U(22));
+        dl->AddRectFilled(p, ImVec2(p.x + s, p.y + s), PERI, U(22));
+        icon(dl, IC_BONES, ImVec2(p.x + s / 2, p.y + s / 2), U(34), PERI_INK);
+        ImGui::SetCursorScreenPos(ImVec2(p.x + s + U(16), p.y + U(2)));
+        ImGui::BeginGroup();
+        ImGui::PushFont(FontBig);
+        ImGui::TextUnformatted("Hero tool");
+        ImGui::PopFont();
+        ImGui::TextColored(V4(MUTED), "Custom heroes for Crash Bash PC");
+        ImGui::EndGroup();
+        ImGui::SetCursorScreenPos(ImVec2(x + w - ImGui::GetFrameHeight() - U(6), p.y + U(10)));
+        bool muted = sound_muted();
+        if (icon_button("##sound", muted ? IC_MUTE : IC_SOUND, muted ? "Sounds off" : "Sounds on", CARD)) {
+            sound_mute(!muted);
+            sound_cue(CUE_ON);
+            sound_keep();
+        }
+        ImGui::SetCursorScreenPos(ImVec2(x, p.y + s + U(28)));
+    }
+    float cw = (w - gap) / 2, ch = U(430), top = ImGui::GetCursorScreenPos().y;
+    // a new hero: a model dropped on the window, browsed for or its path typed
+    ImGui::SetCursorScreenPos(ImVec2(x, top));
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, V4(CARD));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(U(24), U(22)));
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, U(30));
+    ImGui::BeginChild("##create", ImVec2(cw, ch), ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar);
+    heading("Create a new hero");
+    {
+        ImDrawList *cl = ImGui::GetWindowDrawList();
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        float dw = ImGui::GetContentRegionAvail().x, dh = U(240);
+        if (ImGui::InvisibleButton("##drop", ImVec2(dw, dh))) {
+            sound_cue(CUE_OPEN);
+            SDL_ShowOpenFileDialog(picked, (void *)(intptr_t)PICK_MODEL, win, Glb, 1, nullptr, false);
+        }
+        ImGui::SetItemTooltip("Drop a .glb on the window, or click to browse for one");
+        float t = ease_to(ImGui::GetItemID(), ImGui::IsItemHovered() ? 1 : 0, 14);
+        cl->AddRectFilled(p, ImVec2(p.x + dw, p.y + dh), mix(DEEP, IM_COL32(0x20, 0x22, 0x30, 255), t), U(24));
+        cl->AddRect(p, ImVec2(p.x + dw, p.y + dh), mix(IM_COL32(0x46, 0x45, 0x4B, 255), PERI, t), U(24), 0, U(2));
+        ImVec2 c(p.x + dw / 2, p.y + U(62));
+        cl->AddRectFilled(ImVec2(c.x - U(32), c.y - U(32)), ImVec2(c.x + U(32), c.y + U(32)), TINT_PERI, U(22));
+        icon(cl, IC_CUBE, c, U(32), PERI);
+        const char *l1 = "Drop a model here", *l2 = "a .glb model, rigged or not", *l3 = "Browse...";
+        ImGui::PushFont(FontTitle);
+        ImVec2 s1 = ImGui::CalcTextSize(l1);
+        cl->AddText(ImVec2(c.x - s1.x / 2, p.y + U(110)), INK, l1);
+        ImGui::PopFont();
+        ImVec2 s2 = ImGui::CalcTextSize(l2), s3 = ImGui::CalcTextSize(l3);
+        cl->AddText(ImVec2(c.x - s2.x / 2, p.y + U(142)), MUTED, l2);
+        float bw = s3.x + U(36), by = p.y + U(178);
+        cl->AddRect(ImVec2(c.x - bw / 2, by), ImVec2(c.x + bw / 2, by + U(38)), PERI, U(19), 0, U(2));
+        cl->AddText(ImVec2(c.x - s3.x / 2, by + (U(38) - s3.y) / 2), PERI_LIGHT, l3);
+        ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + dh + U(16)));
+    }
+    {
+        float bw = U(110), fw = ImGui::GetContentRegionAvail().x - bw - U(10);
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(U(16), U(11)));
+        ImGui::SetNextItemWidth(fw);
+        ImGui::InputTextWithHint("##newmodel", "or type its path", T.model, sizeof(T.model));
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor();
+        ImGui::SameLine(0, U(10));
+        if (button("Create", CORAL, CORAL_INK, bw, IC_NONE, T.model[0] != 0 ? CUE_MADE : CUE_DROP, ImGui::GetFontSize() + U(22))) {
+            if (T.model[0] != 0) {
+                T.loaded_mod[0] = 0;
+                open_model(T, T.model);
+                T.home = T.m == nullptr;
+            } else {
+                toast(T, "Drop, browse for or type a model first");
+            }
+        }
+    }
+    ImGui::EndChild();
+    // the heroes made: open one to edit it
+    ImGui::SetCursorScreenPos(ImVec2(x + cw + gap, top));
+    ImGui::BeginChild("##edit", ImVec2(cw, ch), ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar);
+    heading("Edit a hero");
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, U(4)));
+    ImGui::BeginChild("##found", ImVec2(0, ImGui::GetContentRegionAvail().y - U(64)), ImGuiChildFlags_AlwaysUseWindowPadding);
+    for (int i = 0; i < NumFound; i++) {
+        const char *mod = Founds[i].mod;
+        for (const char *c = Founds[i].mod; *c != 0; c++) {
+            mod = *c == '/' || *c == '\\' ? c + 1 : mod;
+        }
+        ImGui::PushID(i);
+        ImDrawList *fl = ImGui::GetWindowDrawList();
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        float rw = ImGui::GetContentRegionAvail().x, rh = U(80);
+        bool hit = ImGui::InvisibleButton("##hero", ImVec2(rw, rh));
+        float t = ease_to(ImGui::GetItemID(), ImGui::IsItemHovered() ? 1 : 0, 16);
+        ImVec2 a(p.x + t * U(4), p.y), b(p.x + rw, p.y + rh);
+        fl->AddRectFilled(a, b, mix(DEEP, RAISED, t), U(24));
+        ImVec2 c(a.x + U(42), a.y + rh / 2);
+        fl->AddRectFilled(ImVec2(c.x - U(30), c.y - U(30)), ImVec2(c.x + U(30), c.y + U(30)), ChipTint[i % 4], U(20));
+        char first[8] = { Founds[i].name[0] != 0 ? Founds[i].name[0] : '?', 0 };
+        ImGui::PushFont(FontBig);
+        ImVec2 fs = ImGui::CalcTextSize(first);
+        fl->AddText(ImVec2(c.x - fs.x / 2, c.y - fs.y / 2), INK, first);
+        ImGui::PopFont();
+        ImGui::PushFont(FontTitle);
+        fl->AddText(ImVec2(a.x + U(86), a.y + U(16)), INK, Founds[i].name);
+        ImGui::PopFont();
+        fl->AddText(ImVec2(a.x + U(86), a.y + U(46)), MUTED, mod);
+        icon(fl, IC_RIGHT, ImVec2(b.x - U(24), a.y + rh / 2), U(20), MUTED);
+        if (hit) {
+            sound_cue(CUE_OPEN);
+            load_pack(T, Founds[i]);
+        }
+        ImGui::Dummy(ImVec2(0, U(2)));
+        ImGui::PopID();
+    }
+    if (NumFound == 0) {
+        ImGui::TextColored(V4(MUTED), "None yet: make one on the left");
+    }
+    ImGui::EndChild();
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor();
+    {
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        float iw = ImGui::GetContentRegionAvail().x, ih = U(54);
+        ImDrawList *il = ImGui::GetWindowDrawList();
+        il->AddRectFilled(p, ImVec2(p.x + iw, p.y + ih), DEEP, U(20));
+        ImGui::PushFont(FontSmall);
+        il->AddCircle(ImVec2(p.x + U(24), p.y + ih / 2), U(9), MUTED, 0, U(1.8f));
+        il->AddText(ImVec2(p.x + U(21), p.y + ih / 2 - ImGui::GetTextLineHeight() / 2), MUTED, "i");
+        il->AddText(ImVec2(p.x + U(44), p.y + ih / 2 - ImGui::GetTextLineHeight() / 2), MUTED,
+                    "A zipped mod? Unzip it into the mods folder to edit it here.");
+        ImGui::PopFont();
+        ImGui::Dummy(ImVec2(iw, ih));
+    }
+    ImGui::EndChild();
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor();
+    // the mods folder, out of the way at the bottom
+    {
+        float bh = U(58), y = fmaxf(top + ch + U(24), io.DisplaySize.y - bh - U(28));
+        ImVec2 p(x, y);
+        dl->AddRectFilled(p, ImVec2(p.x + w, p.y + bh), CARD, U(22));
+        icon(dl, IC_FOLDER, ImVec2(p.x + U(28), p.y + bh / 2), U(20), MUTED);
+        dl->AddText(ImVec2(p.x + U(48), p.y + (bh - ImGui::GetTextLineHeight()) / 2), MUTED, "Mods folder");
+        float lw = U(48) + ImGui::CalcTextSize("Mods folder").x + U(14), hint_w = ImGui::CalcTextSize("Ctrl + / - zoom   Ctrl 0 reset").x;
+        ImGui::SetCursorScreenPos(ImVec2(p.x + lw, p.y + (bh - ImGui::GetFontSize() - U(16)) / 2));
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(U(14), U(8)));
+        ImGui::SetNextItemWidth(w - lw - hint_w - U(100));
+        ImGui::InputText("##mods", T.out, sizeof(T.out));
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor();
+        ImGui::SameLine(0, U(8));
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - U(3));
+        if (icon_button("##refresh", IC_REFRESH, "Look for heroes again", RAISED, INK, ImGui::GetFontSize() + U(22))) {
+            find_heroes(T);
+            toast(T, "%d hero%s found", NumFound, NumFound == 1 ? "" : "es");
+        }
+        dl->AddText(ImVec2(p.x + w - U(20) - hint_w, p.y + (bh - ImGui::GetTextLineHeight()) / 2), DIM, "Ctrl + / - zoom   Ctrl 0 reset");
+    }
+    draw_toast(T, ImVec2(io.DisplaySize.x / 2, io.DisplaySize.y - U(110)), U(560));
+    ImGui::End();
 }
 
 void editor_window(Tool &T, SDL_Window *win) {
@@ -4338,11 +5538,23 @@ void editor_window(Tool &T, SDL_Window *win) {
     if (T.page != PAGE_MODEL && !T.made_asked && T.maker == nullptr) {
         make_in_game(T);
     }
-    // adjusting a move: Space plays or stops it, the arrows step a frame, Ctrl+Z undoes and Ctrl+Y (or Ctrl+Shift+Z) does it again
+    // the status said once, as a message over the picture; and the games' making done, its sound
+    if (T.status[0] != 0 && strcmp(T.status, T.toasted) != 0) {
+        SDL_strlcpy(T.toasted, T.status, sizeof(T.toasted));
+        toast(T, "%s", T.status);
+    }
+    static bool making = false;
+    if (making && T.maker == nullptr) {
+        sound_cue(CUE_MADE);
+    }
+    making = T.maker != nullptr;
+    // adjusting a move: Space plays or stops it, the arrows step a frame, Ctrl+Z undoes and Ctrl+Y (or Ctrl+Shift+Z) does it again;
+    // Tab shows the bones or hides them, Esc lets go of the bone picked
     ImGuiIO &io = ImGui::GetIO();
     if (T.adjusting && T.page >= 0 && T.have_pose[T.kind] && !io.WantTextInput) {
         if (ImGui::IsKeyPressed(ImGuiKey_Space, false)) {
             T.adj_playing = !T.adj_playing;
+            sound_cue(T.adj_playing ? CUE_PLAY : CUE_STOP);
         }
         if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) {
             T.frame--;
@@ -4352,26 +5564,44 @@ void editor_window(Tool &T, SDL_Window *win) {
             T.frame++;
             T.adj_playing = false;
         }
+        if (ImGui::IsKeyPressed(ImGuiKey_Tab, false)) {
+            T.bones = !T.bones;
+            sound_cue(T.bones ? CUE_ON : CUE_OFF);
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) && (T.sel >= 0 || T.help)) {
+            T.sel = -1;
+            T.help = false;
+            sound_cue(CUE_DROP);
+        }
         if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
             io.KeyShift ? adj_redo(T) : adj_undo(T);
+            sound_cue(io.KeyShift ? CUE_ON : CUE_OFF);
         }
         if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false)) {
             adj_redo(T);
+            sound_cue(CUE_ON);
         }
         // Ctrl+C copies a key, Ctrl+V pastes it at the frame shown on the joint picked (Ctrl+Shift+V mirrored)
         if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_C, false)) {
             key_copy(T);
+            sound_cue(CUE_TAP);
         }
         if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_A, false) && T.made[T.kind].nanims > 0) {
             keys_all(T, T.made[T.kind].anims[T.anim < T.made[T.kind].nanims ? T.anim : 0].name);
+            sound_cue(CUE_PICK);
         }
         if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_V, false)) {
             key_paste(T, T.sel, T.frame, io.KeyShift);
+            sound_cue(CUE_PICK);
         }
         // R, G and S pick the gizmo, as Blender's
-        if (!io.KeyCtrl && !T.dragging) {
+        if (!io.KeyCtrl && !T.dragging && T.bones) {
+            int was = T.gizmo;
             T.gizmo = ImGui::IsKeyPressed(ImGuiKey_R, false) ? GIZMO_TURN : ImGui::IsKeyPressed(ImGuiKey_G, false) ? GIZMO_MOVE
                     : ImGui::IsKeyPressed(ImGuiKey_S, false) ? GIZMO_SIZE : T.gizmo;
+            if (T.gizmo != was) {
+                sound_cue(CUE_TAP);
+            }
         }
     }
     // a game shown: the keypad looks from a side, as Blender's (1 its front, 3 its left side, 7 above; Ctrl from the other side)
@@ -4380,64 +5610,37 @@ void editor_window(Tool &T, SDL_Window *win) {
                  : ImGui::IsKeyPressed(ImGuiKey_Keypad7, false) ? 2 : -1;
         if (from >= 0) {
             view_from(T.game_view, T.made_turn, io.KeyCtrl ? (from + 3) % 6 : from);
+            sound_cue(CUE_VIEW);
         }
     }
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
-    ImGui::Begin("Hero tool", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-    if (ImGui::Button("< Start")) {
-        T.home = true;
-        find_heroes(T);
-    }
-    ImGui::SameLine();
-    ImGui::SetWindowFontScale(1.3f);
-    ImGui::TextUnformatted(T.name);
-    ImGui::SetWindowFontScale(1.0f);
-    ImGui::SameLine();
-    bool bad = SDL_strstr(T.status, "n't") != nullptr || SDL_strstr(T.status, "can't") != nullptr || SDL_strstr(T.status, "not ") != nullptr;
-    ImGui::PushStyleColor(ImGuiCol_Text, bad ? ImVec4(1.0f, 0.55f, 0.5f, 1) : ImVec4(0.65f, 0.65f, 0.7f, 1));
-    ImGui::TextWrapped("%s", T.status);
-    ImGui::PopStyleColor();
-    ImGui::Separator();
-    if (ImGui::BeginTable("editor", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV)) {
-        ImGui::TableSetupColumn("pages", ImGuiTableColumnFlags_WidthFixed, U(190));
-        ImGui::TableSetupColumn("view", ImGuiTableColumnFlags_WidthStretch);
-        ImGui::TableSetupColumn("choices", ImGuiTableColumnFlags_WidthFixed, U(410));
-        ImGui::TableNextColumn();
-        editor_left(T);
-        ImGui::TableNextColumn();
-        ImGui::BeginChild("middle", ImVec2(0, ImGui::GetContentRegionAvail().y), 0,
-                          T.page != PAGE_ALL ? ImGuiWindowFlags_NoScrollWithMouse : 0);
-        editor_middle(T);
-        ImGui::EndChild();
-        ImGui::TableNextColumn();
-        ImGui::BeginChild("right", ImVec2(0, ImGui::GetContentRegionAvail().y));
-        editor_right(T, win);
-        ImGui::EndChild();
-        ImGui::EndTable();
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(U(18), U(14)));
+    ImGui::Begin("Hero tool", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                                       ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoBringToFrontOnFocus);
+    ImGui::PopStyleVar();
+    top_bar(T);
+    games_strip(T);
+    if (T.page == PAGE_MODEL) {
+        model_page(T, win);
+    } else if (T.page == PAGE_ALL) {
+        all_games_page(T);
+    } else {
+        game_page(T);
     }
     if (T.ask_open) {
         ImGui::OpenPopup("Replace its own animation?");
         T.ask_open = false;
     }
     ask_back(T);
+    if (T.page == PAGE_ALL) {
+        draw_toast(T, ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y - U(30)), U(560));
+    }
     ImGui::End();
 }
 
 } // namespace
 
-// A view's picture let go, to be made again at its new size
-void view_free(View &v) {
-    delete[] v.rgba;
-    delete[] v.depth;
-    if (v.tex != nullptr) {
-        SDL_DestroyTexture(v.tex);
-    }
-    v.rgba = nullptr;
-    v.depth = nullptr;
-    v.tex = nullptr;
-    v.drawn.clear();
-}
 
 // The window at scale s (Ui): its font made at that size, its style's sizes from the plain one (base), and its pictures that big
 void ui_scale(Tool &T, const ImGuiStyle &base, float s) {
@@ -4446,8 +5649,18 @@ void ui_scale(Tool &T, const ImGuiStyle &base, float s) {
 
     Ui = s < 0.75f ? 0.75f : s > 4 ? 4 : s;
     io.Fonts->Clear();
-    cfg.SizePixels = floorf(13 * Ui + 0.5f);
-    io.Fonts->AddFontDefault(&cfg);
+    // Fredoka at each size it's used at (its default weight is light: brightened a little to read as regular on the dark)
+    static const ImWchar Ranges[] = { 0x0020, 0x00FF, 0x2013, 0x2026, 0x2212, 0x2212, 0 };
+    cfg.FontDataOwnedByAtlas = false;
+    cfg.RasterizerMultiply = 1.35f;
+    cfg.OversampleH = 2;
+    auto at = [&](float px) {
+        return io.Fonts->AddFontFromMemoryTTF((void *)FredokaTtf, (int)FredokaTtfSize, floorf(px * Ui + 0.5f), &cfg, Ranges);
+    };
+    FontBody = at(16);
+    FontSmall = at(13);
+    FontTitle = at(19);
+    FontBig = at(26);
     ImGui_ImplSDLRenderer3_DestroyFontsTexture();
     ImGui::GetStyle() = base;
     ImGui::GetStyle().ScaleAllSizes(Ui);
@@ -4462,7 +5675,14 @@ void ui_scale(Tool &T, const ImGuiStyle &base, float s) {
         view_free(T.thumbs[k]);
         T.thumbs[k].w = ThumbW;
         T.thumbs[k].h = ThumbH;
+        T.thumbs[k].grid = true;
+        view_free(T.strip[k]);
+        T.strip[k].w = T.strip[k].h = (int)U(144);
+        T.strip[k].bg = 0;
     }
+    view_free(T.face_view);
+    T.face_view.w = T.face_view.h = (int)U(320);
+    T.face_view.bg = 0;
     // the model's views fitted again to their new size (they kept the old one's: the model small in a corner)
     if (T.m != nullptr) {
         fit(T.m, T.front);
@@ -4543,7 +5763,12 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::GetIO().IniFilename = nullptr;
-    ImGui::StyleColorsDark();
+    graphite_style(ImGui::GetStyle());
+    // its sounds, but none while a test drives it (the test's own hooks are set)
+    if (SDL_getenv("HEROTOOL_SHOT") == nullptr && SDL_getenv("HEROTOOL_SAVE_TO") == nullptr && SDL_getenv("HEROTOOL_LIVE") == nullptr) {
+        sound_init();
+        sound_load();
+    }
     ImGui_ImplSDL3_InitForSDLRenderer(win, ren);
     ImGui_ImplSDLRenderer3_Init(ren);
     // on the screen the mouse is on (where the game's launcher was clicked), as big as that screen's scale wants, the window too
@@ -4908,6 +6133,18 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 }
             }
         }
+        for (int k = 0; k < PACK_KINDS && !T.home; k++) {
+            if (T.have_made[k] && T.made[k].nanims > 0 && T.strip[k].w > 0) {
+                T.strip[k].yaw = 25;
+                T.strip[k].pitch = 8;
+                draw_made(&T.made[k], breathe_of(&T.made[k]), 0, T.strip[k], ren, T.rides[k], T.nrides[k]);
+            }
+        }
+        if (!T.home && T.page == PAGE_MODEL && T.have_made[0] && T.made[0].nanims > 0 && T.face_view.w > 0) {
+            T.face_view.yaw = 0;
+            T.face_view.pitch = 0;
+            draw_made(&T.made[0], breathe_of(&T.made[0]), 0, T.face_view, ren);
+        }
         lap(PR_THUMBS);
         if (T.page >= 0 && T.have_made[T.kind]) {
             const KitMade *mk = &T.made[T.kind];
@@ -4993,7 +6230,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         ImGui::Render();
         lap(PR_UI);
-        SDL_SetRenderDrawColor(ren, 30, 30, 34, 255);
+        SDL_SetRenderDrawColor(ren, 0x19, 0x19, 0x1B, 255);
         SDL_RenderClear(ren);
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), ren);
         lap(PR_DRAW);
@@ -5026,6 +6263,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             pr_frames = 0;
         }
     }
+    sound_quit();
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
