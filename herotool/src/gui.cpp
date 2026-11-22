@@ -18,9 +18,16 @@
 
 namespace {
 
-const int ViewW = 300, ViewH = 420;
-const int PrevW = 600, PrevH = 560; // the view of what the game made
-const int ThumbW = 220, ThumbH = 180; // each game's in the gallery of them all
+// The window's scale (ui_scale): its screen's, from its display scale or its height against a 1080-line screen's (the user's word,
+// 2026-11-22: far too small on a high resolution screen), and Ctrl with + and - on top. Sizes in the window are written as they are at
+// 1, through U.
+float Ui = 1;
+inline float U(float px) {
+    return px * Ui;
+}
+int ViewW = 300, ViewH = 420;
+int PrevW = 600, PrevH = 560; // the view of what the game made
+int ThumbW = 220, ThumbH = 180; // each game's in the gallery of them all
 
 struct View {
     SDL_Texture *tex = nullptr;
@@ -788,7 +795,17 @@ bool reach_bone(const char *name) {
     return SDL_strcasecmp(name, "hips") == 0 || SDL_strncasecmp(name, "hand", 4) == 0 || SDL_strncasecmp(name, "foot", 4) == 0;
 }
 
-// A bone's name as a person would say it: upperarm_l "Left upper arm"
+// Where a bone's name says its side: the l or r of a "_l" or "_r" at its end, or before the digits there (ear_l1), else -1
+int side_letter(const char *name) {
+    int n = (int)strlen(name), i = n;
+
+    while (i > 0 && name[i - 1] >= '0' && name[i - 1] <= '9') {
+        i--;
+    }
+    return i >= 2 && name[i - 2] == '_' && (name[i - 1] == 'l' || name[i - 1] == 'L' || name[i - 1] == 'r' || name[i - 1] == 'R') ? i - 1 : -1;
+}
+
+// A bone's name as a person would say it: upperarm_l "Left upper arm", ear_l1 "Left ear 1"
 const char *bone_title(const char *name) {
     static char out[80];
     static const struct {
@@ -796,13 +813,11 @@ const char *bone_title(const char *name) {
     } Says[] = { { "upperarm", "upper arm" }, { "forearm", "forearm" }, { "hand", "hand" }, { "thigh", "thigh" }, { "shin", "shin" },
                  { "foot", "foot" }, { "toe", "toes" }, { "ear", "ear" }, { "eye", "eye" } };
     char base[64];
-    size_t n = strlen(name);
-    const char *side = n > 2 && name[n - 2] == '_' && (name[n - 1] == 'l' || name[n - 1] == 'L') ? "Left "
-                     : n > 2 && name[n - 2] == '_' && (name[n - 1] == 'r' || name[n - 1] == 'R') ? "Right "
-                                                                                                   : "";
+    int at = side_letter(name);
+    const char *side = at < 0 ? "" : (name[at] | 32) == 'l' ? "Left " : "Right ", *digits = at < 0 ? "" : name + at + 1;
     SDL_strlcpy(base, name, sizeof(base));
-    if (side[0] != 0) {
-        base[n - 2] = 0;
+    if (at >= 1 && at - 1 < (int)sizeof(base)) {
+        base[at - 1] = 0;
     }
     const char *says = nullptr;
     for (auto &s : Says) {
@@ -814,7 +829,7 @@ const char *bone_title(const char *name) {
         }
         says = base;
     }
-    snprintf(out, sizeof(out), "%s%s", side, says);
+    snprintf(out, sizeof(out), "%s%s%s%s", side, says, digits[0] != 0 ? " " : "", digits);
     if (side[0] == 0 && out[0] >= 'a' && out[0] <= 'z') {
         out[0] = (char)(out[0] - 'a' + 'A');
     }
@@ -877,16 +892,16 @@ PackAdjust *adj_key(Tool &T, const char *move, const char *bone, bool make) {
     return &T.adj.back();
 }
 
-// A bone's other side (upperarm_l's upperarm_r), or "" if it has none
+// A bone's other side (upperarm_l's upperarm_r, ear_l1's ear_r1), or "" if it has none
 const char *other_side(const char *name) {
     static char out[PACK_ADJUST_NAME];
-    size_t n = strlen(name);
+    int at = side_letter(name);
 
-    if (n < 3 || n >= sizeof(out) || name[n - 2] != '_' || (name[n - 1] != 'l' && name[n - 1] != 'r')) {
+    if (at < 0 || strlen(name) >= sizeof(out)) {
         return "";
     }
     SDL_strlcpy(out, name, sizeof(out));
-    out[n - 1] = name[n - 1] == 'l' ? 'r' : 'l';
+    out[at] = name[at] == 'l' ? 'r' : name[at] == 'L' ? 'R' : name[at] == 'r' ? 'l' : 'L';
     return out;
 }
 
@@ -968,14 +983,14 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
         T.sel = -1;
     }
     int hover = -1;
-    float best = 64;
+    float best = U(8) * U(8);
     for (int b = 0; b < po->nbones; b++) {
         float d2 = (mouse.x - sx[b]) * (mouse.x - sx[b]) + (mouse.y - sy[b]) * (mouse.y - sy[b]);
         if (hovered && d2 < best) {
             best = d2, hover = b;
         }
         if (po->parent[b] >= 0) {
-            dl->AddLine(ImVec2(sx[po->parent[b]], sy[po->parent[b]]), ImVec2(sx[b], sy[b]), IM_COL32(255, 255, 255, 90), 1.5f);
+            dl->AddLine(ImVec2(sx[po->parent[b]], sy[po->parent[b]]), ImVec2(sx[b], sy[b]), IM_COL32(255, 255, 255, 90), U(1.5f));
         }
     }
     for (int b = 0; b < po->nbones; b++) {
@@ -985,12 +1000,12 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
                                                                                                                  : IM_COL32(255, 230, 80, 255);
         bool moved = reach_bone(n);
         if (b == T.sel) {
-            dl->AddCircle(ImVec2(sx[b], sy[b]), 9, IM_COL32(255, 255, 255, 255), 0, 2.5f);
+            dl->AddCircle(ImVec2(sx[b], sy[b]), U(9), IM_COL32(255, 255, 255, 255), 0, U(2.5f));
         }
         if (moved) {
-            dl->AddRectFilled(ImVec2(sx[b] - 4, sy[b] - 4), ImVec2(sx[b] + 4, sy[b] + 4), col);
+            dl->AddRectFilled(ImVec2(sx[b] - U(4), sy[b] - U(4)), ImVec2(sx[b] + U(4), sy[b] + U(4)), col);
         } else {
-            dl->AddCircleFilled(ImVec2(sx[b], sy[b]), b == hover ? 6.0f : 4.5f, col);
+            dl->AddCircleFilled(ImVec2(sx[b], sy[b]), b == hover ? U(6) : U(4.5f), col);
         }
     }
     if (hover >= 0 && !T.dragging) {
@@ -1045,11 +1060,11 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             ex = jx + (jx - sx[po->parent[T.sel]]) * 0.5f, ey = jy + (jy - sy[po->parent[T.sel]]) * 0.5f;
         }
         float mx = mouse.x - jx, my = mouse.y - jy, px = mx - io.MouseDelta.x, py = my - io.MouseDelta.y;
-        if (mx * mx + my * my < 144) {
+        if (mx * mx + my * my < U(12) * U(12)) {
             return;
         }
-        bool aim = !io.KeyShift && n + (po->parent[T.sel] >= 0) > 0 && (ex - jx) * (ex - jx) + (ey - jy) * (ey - jy) >= 36;
-        if (!aim && px * px + py * py < 144) {
+        bool aim = !io.KeyShift && n + (po->parent[T.sel] >= 0) > 0 && (ex - jx) * (ex - jx) + (ey - jy) * (ey - jy) >= U(6) * U(6);
+        if (!aim && px * px + py * py < U(12) * U(12)) {
             return;
         }
         float da = atan2f(-my, mx) - (aim ? atan2f(-(ey - jy), ex - jx) : atan2f(-py, px));
@@ -1069,7 +1084,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     const char *move = mk->anims[a].name;
 
     T.frame = frames > 0 ? (T.frame % frames + frames) % frames : 0;
-    if (ImGui::Button(T.adj_playing ? "Stop" : "Play", ImVec2(50, 0))) {
+    if (ImGui::Button(T.adj_playing ? "Stop" : "Play", ImVec2(U(50), 0))) {
         T.adj_playing = !T.adj_playing;
     }
     ImGui::SetItemTooltip("Space");
@@ -1093,7 +1108,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     }
     ImGui::SetItemTooltip("The change before this frame");
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(width - 200 > 100 ? width - 200 : 100);
+    ImGui::SetNextItemWidth(width - U(200) > U(100) ? width - U(200) : U(100));
     if (ImGui::SliderInt("##frame", &T.frame, 0, frames - 1, "frame %d")) {
         T.adj_playing = false;
     }
@@ -1101,7 +1116,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     float grab = ImGui::GetStyle().GrabMinSize, x0 = lo.x + grab / 2 + 2, x1 = hi.x - grab / 2 - 2;
     for (int f : keys) {
         float x = frames > 1 ? x0 + (x1 - x0) * f / (frames - 1) : x0;
-        ImGui::GetWindowDrawList()->AddTriangleFilled(ImVec2(x - 4, lo.y - 1), ImVec2(x + 4, lo.y - 1), ImVec2(x, lo.y + 5),
+        ImGui::GetWindowDrawList()->AddTriangleFilled(ImVec2(x - U(4), lo.y - 1), ImVec2(x + U(4), lo.y - 1), ImVec2(x, lo.y + U(5)),
                                                       IM_COL32(255, 200, 60, 255));
     }
     ImGui::SameLine();
@@ -1138,18 +1153,18 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
         to_screen(v, k.end, sx[1], sy[1], sz);
         ImU32 col = b >= KB_JAW ? IM_COL32(255, 160, 40, 255) : (b >= KB_UPPERARM_L && b <= KB_HAND_R) ? IM_COL32(80, 200, 255, 255)
                   : b >= KB_THIGH_L ? IM_COL32(120, 255, 120, 255) : IM_COL32(255, 230, 80, 255);
-        dl->AddLine(ImVec2(at.x + sx[0], at.y + sy[0]), ImVec2(at.x + sx[1], at.y + sy[1]), col, 2);
+        dl->AddLine(ImVec2(at.x + sx[0], at.y + sy[0]), ImVec2(at.x + sx[1], at.y + sy[1]), col, U(2));
         for (int e = 0; e < 2; e++) {
             ImVec2 c(at.x + sx[e], at.y + sy[e]);
-            dl->AddCircleFilled(c, e ? 3.0f : 5.0f, col);
-            if (T.drag_bone < 0 && ImGui::IsMouseClicked(0) && (mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < 49) {
+            dl->AddCircleFilled(c, e ? U(3) : U(5), col);
+            if (T.drag_bone < 0 && ImGui::IsMouseClicked(0) && (mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < U(7) * U(7)) {
                 T.drag_bone = b, T.drag_end = e, T.drag_view = which;
             }
         }
         if (ImGui::IsItemHovered()) {
             for (int e = 0; e < 2; e++) {
                 ImVec2 c(at.x + sx[e], at.y + sy[e]);
-                if ((mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < 49) {
+                if ((mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < U(7) * U(7)) {
                     ImGui::SetTooltip("%s%s", KitBoneNames[b], e ? " (its end)" : "");
                 }
             }
@@ -1356,8 +1371,8 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
     ImGui::Begin("Start", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-    float w = 620, x = (ImGui::GetIO().DisplaySize.x - w) / 2;
-    ImGui::SetCursorPos(ImVec2(x, 60));
+    float w = U(620), x = (ImGui::GetIO().DisplaySize.x - w) / 2;
+    ImGui::SetCursorPos(ImVec2(x, U(60)));
     ImGui::BeginChild("panel", ImVec2(w, 0), ImGuiChildFlags_AutoResizeY);
     ImGui::SetWindowFontScale(1.6f);
     ImGui::Text("Hero tool");
@@ -1371,7 +1386,7 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::Text("Create a new hero");
     ImGui::SetWindowFontScale(1.0f);
     ImGui::TextDisabled("Pick its 3D model, a .glb file (or drop one on this window).");
-    if (ImGui::Button("Browse for a model...", ImVec2(200, 0))) {
+    if (ImGui::Button("Browse for a model...", ImVec2(U(200), 0))) {
         SDL_ShowOpenFileDialog(picked, (void *)(intptr_t)PICK_MODEL, win, Glb, 1, nullptr, false);
     }
     ImGui::SameLine();
@@ -1391,7 +1406,7 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::Text("Edit a hero");
     ImGui::SetWindowFontScale(1.0f);
     ImGui::TextDisabled("The heroes in the mods folder: pick one to change it.");
-    ImGui::BeginChild("found", ImVec2(0, 220), ImGuiChildFlags_Borders);
+    ImGui::BeginChild("found", ImVec2(0, U(220)), ImGuiChildFlags_Borders);
     if (NumFound == 0) {
         ImGui::TextDisabled("No heroes here yet (a zipped mod's are changed by unzipping it).");
     }
@@ -1402,7 +1417,7 @@ void start_screen(Tool &T, SDL_Window *win) {
             mod = *c == '/' || *c == '\\' ? c + 1 : mod;
         }
         snprintf(label, sizeof(label), "%s   (%s, in the mod %s)##%d", Founds[i].name, Founds[i].id, mod, i);
-        if (ImGui::Selectable(label, false, 0, ImVec2(0, 26))) {
+        if (ImGui::Selectable(label, false, 0, ImVec2(0, U(26)))) {
             load_pack(T, Founds[i]);
         }
     }
@@ -1415,6 +1430,7 @@ void start_screen(Tool &T, SDL_Window *win) {
         find_heroes(T);
     }
     ImGui::Spacing();
+    ImGui::TextDisabled("Ctrl and + or - make everything bigger or smaller, kept for next time (Ctrl and 0: as your screen has it).");
     if (T.status[0] != 0 && T.m == nullptr) {
         ImGui::TextWrapped("%s", T.status);
     }
@@ -1525,7 +1541,7 @@ void editor_middle(Tool &T) {
         }
         if (!T.rigged && T.model_view == 0) {
             ImGui::Text("Front");
-            ImGui::SameLine(ViewW + 16);
+            ImGui::SameLine(ViewW + U(16));
             ImGui::Text("Side");
             view_window(T, T.front, "front", true, 0);
             ImGui::SameLine();
@@ -1537,11 +1553,11 @@ void editor_middle(Tool &T) {
             T.play.zx = ViewW / 2.0f;
             T.play.zy = ViewH / 2.0f;
             look_around(T.play, T.turn);
-            ImGui::SetNextItemWidth(180);
+            ImGui::SetNextItemWidth(U(180));
             ImGui::Combo("Move", &T.move, [](void *, int i) { return KitMoves[i].name; }, nullptr, KitMoveCount);
             ImGui::SameLine();
             ImGui::Checkbox("Play", &T.playing);
-            ImGui::SetNextItemWidth(180);
+            ImGui::SetNextItemWidth(U(180));
             ImGui::SliderFloat("Turn", &T.turn, -180, 180, "%.0f");
             ImGui::TextDisabled("The tool's own moves on your model, which a game's moves can use (on the right of a game's page).");
         }
@@ -1573,7 +1589,7 @@ void editor_middle(Tool &T) {
                 }
                 ImGui::SetItemTooltip("Open %s: its prop and moves", KindShort[k]);
             } else {
-                ImGui::Dummy(ImVec2(ThumbW + 8, ThumbH + 8));
+                ImGui::Dummy(ImVec2(ThumbW + U(8), ThumbH + U(8)));
             }
             ImGui::TextUnformatted(KindShort[k]);
             ImGui::EndGroup();
@@ -1582,7 +1598,7 @@ void editor_middle(Tool &T) {
                 ImGui::SameLine();
             }
         }
-        ImGui::SetNextItemWidth(200);
+        ImGui::SetNextItemWidth(U(200));
         ImGui::SliderFloat("Turn##all", &T.made_turn, -180, 180, "%.0f");
         return;
     }
@@ -1603,7 +1619,7 @@ void editor_middle(Tool &T) {
             ImGui::SetItemTooltip("Click a joint to pick it, then drag. The right mouse button turns the view; scroll to zoom.");
         }
     }
-    ImGui::SetNextItemWidth(200);
+    ImGui::SetNextItemWidth(U(200));
     if (ImGui::BeginCombo("Watching", T.anim < mk->nanims ? mk->anims[T.anim].name : "")) {
         for (int a = 0; a < mk->nanims; a++) {
             if (ImGui::Selectable(mk->anims[a].name, a == T.anim)) {
@@ -1616,16 +1632,16 @@ void editor_middle(Tool &T) {
     }
     if (adjusting && mk->nanims > 0) {
         ImGui::SameLine();
-        ImGui::SetNextItemWidth(120);
+        ImGui::SetNextItemWidth(U(120));
         ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
         timeline(T, mk, T.anim < mk->nanims ? T.anim : 0, w);
         return;
     }
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(160);
+    ImGui::SetNextItemWidth(U(160));
     ImGui::SliderFloat("Turn##game", &T.made_turn, -180, 180, "%.0f");
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(120);
+    ImGui::SetNextItemWidth(U(120));
     ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
 }
 
@@ -1675,7 +1691,7 @@ void adjust_panel(Tool &T) {
     ImGui::SameLine();
     ImGui::RadioButton("every move here", &T.key_mode, KEY_GAME);
     if (T.key_mode == KEY_FRAME) {
-        ImGui::SetNextItemWidth(160);
+        ImGui::SetNextItemWidth(U(160));
         ImGui::SliderInt("Fades over", &T.spread, 0, 30, "%d frames");
         hint("Either side of the frame: its change is all there at that frame and fades to none this many frames away.");
     }
@@ -1693,7 +1709,7 @@ void adjust_panel(Tool &T) {
         static const char *const Turns[3] = { "Tip forward", "Turn to its right", "Lean to its left" };
         bool changed = false;
         for (int i = 0; i < 3; i++) {
-            ImGui::SetNextItemWidth(200);
+            ImGui::SetNextItemWidth(U(200));
             changed |= ImGui::DragFloat(Turns[i], &turn[i], 0.5f, -180, 180, "%.1f deg");
             if (ImGui::IsItemActivated()) {
                 adj_snapshot(T);
@@ -1704,7 +1720,7 @@ void adjust_panel(Tool &T) {
             static const float Way[3] = { 1, -1, -1 };
             for (int i = 0; i < 3; i++) {
                 float shown = reach[i] * Way[i];
-                ImGui::SetNextItemWidth(200);
+                ImGui::SetNextItemWidth(U(200));
                 if (ImGui::DragFloat(Moves[i], &shown, 0.5f, -500, 500, "%.1f")) {
                     reach[i] = shown * Way[i];
                     changed = true;
@@ -1876,7 +1892,7 @@ void editor_right(Tool &T, SDL_Window *win) {
                     T.dirty = true;
                 }
             }
-            ImGui::SetNextItemWidth(160);
+            ImGui::SetNextItemWidth(U(160));
             if (ImGui::SliderFloat("Arm lift", &T.m->arm_raise, 20, 160, "%.0f degrees")) {
                 T.dirty = true;
             }
@@ -1893,7 +1909,7 @@ void editor_right(Tool &T, SDL_Window *win) {
             char now[64];
             snprintf(now, sizeof(now), "%s's (who it's based on)", HeroNames[T.template_hero]);
             ImGui::Text(k == 0 ? "Stands like" : k == 1 ? "Rides the bear of" : "Prop from");
-            ImGui::SameLine(130);
+            ImGui::SameLine(U(130));
             ImGui::SetNextItemWidth(-1);
             if (ImGui::BeginCombo("##from", T.kind_template[k] < 0 ? now : HeroNames[T.kind_template[k]])) {
                 if (ImGui::Selectable(now, T.kind_template[k] < 0)) {
@@ -1930,7 +1946,7 @@ void editor_right(Tool &T, SDL_Window *win) {
                 }
                 ImGui::PushID(m);
                 ImGui::TextUnformatted(KitGames[g].moves[m]);
-                ImGui::SameLine(130);
+                ImGui::SameLine(U(130));
                 ImGui::SetNextItemWidth(-1);
                 if (ImGui::BeginCombo("##move", now)) {
                     char t[64];
@@ -1989,7 +2005,7 @@ void editor_right(Tool &T, SDL_Window *win) {
     if (ImGui::CollapsingHeader("Card and sounds")) {
         ImGui::Text("Card");
         hint("A picture for the character select (PNG). Without one, its face is drawn from the model.");
-        ImGui::SameLine(110);
+        ImGui::SameLine(U(110));
         ImGui::TextUnformatted(T.card[0] ? short_path(T.card) : "drawn from the model");
         ImGui::SameLine();
         if (ImGui::SmallButton("Browse##card")) {
@@ -2007,7 +2023,7 @@ void editor_right(Tool &T, SDL_Window *win) {
         for (int j = 0; j < PACK_VOICE_JOBS; j++) {
             ImGui::PushID(j);
             ImGui::TextUnformatted(PackVoiceJobs[j]);
-            ImGui::SameLine(110);
+            ImGui::SameLine(U(110));
             ImGui::TextUnformatted(T.voice[j][0] ? short_path(T.voice[j]) : "-");
             ImGui::SameLine();
             if (ImGui::SmallButton("Browse")) {
@@ -2025,11 +2041,11 @@ void editor_right(Tool &T, SDL_Window *win) {
     if (ImGui::CollapsingHeader("Save", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::InputText("Mod's name", T.mod_name, sizeof(T.mod_name));
         ImGui::InputText("Author", T.author, sizeof(T.author));
-        if (ImGui::Button("Save to mods folder", ImVec2(-1, 30))) {
+        if (ImGui::Button("Save to mods folder", ImVec2(-1, U(30)))) {
             export_pack(T, false);
         }
         ImGui::SetItemTooltip("%s", T.loaded_mod[0] ? T.loaded_mod : T.out);
-        ImGui::SetNextItemWidth(160);
+        ImGui::SetNextItemWidth(U(160));
         ImGui::Combo("##mode", &T.mode, [](void *, int i) { return Modes[i].name; }, nullptr, (int)(sizeof(Modes) / sizeof(Modes[0])));
         ImGui::SameLine();
         if (ImGui::Button("Save and play", ImVec2(-1, 0))) {
@@ -2091,9 +2107,9 @@ void editor_window(Tool &T, SDL_Window *win) {
     ImGui::PopStyleColor();
     ImGui::Separator();
     if (ImGui::BeginTable("editor", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV)) {
-        ImGui::TableSetupColumn("pages", ImGuiTableColumnFlags_WidthFixed, 190);
+        ImGui::TableSetupColumn("pages", ImGuiTableColumnFlags_WidthFixed, U(190));
         ImGui::TableSetupColumn("view", ImGuiTableColumnFlags_WidthStretch);
-        ImGui::TableSetupColumn("choices", ImGuiTableColumnFlags_WidthFixed, 410);
+        ImGui::TableSetupColumn("choices", ImGuiTableColumnFlags_WidthFixed, U(410));
         ImGui::TableNextColumn();
         editor_left(T);
         ImGui::TableNextColumn();
@@ -2112,6 +2128,103 @@ void editor_window(Tool &T, SDL_Window *win) {
 
 } // namespace
 
+// A view's picture let go, to be made again at its new size
+void view_free(View &v) {
+    delete[] v.rgba;
+    delete[] v.depth;
+    if (v.tex != nullptr) {
+        SDL_DestroyTexture(v.tex);
+    }
+    v.rgba = nullptr;
+    v.depth = nullptr;
+    v.tex = nullptr;
+}
+
+// The window at scale s (Ui): its font made at that size, its style's sizes from the plain one (base), and its pictures that big
+void ui_scale(Tool &T, const ImGuiStyle &base, float s) {
+    ImGuiIO &io = ImGui::GetIO();
+    ImFontConfig cfg;
+
+    Ui = s < 0.75f ? 0.75f : s > 4 ? 4 : s;
+    io.Fonts->Clear();
+    cfg.SizePixels = floorf(13 * Ui + 0.5f);
+    io.Fonts->AddFontDefault(&cfg);
+    ImGui_ImplSDLRenderer3_DestroyFontsTexture();
+    ImGui::GetStyle() = base;
+    ImGui::GetStyle().ScaleAllSizes(Ui);
+    ViewW = (int)U(300), ViewH = (int)U(420);
+    PrevW = (int)U(600), PrevH = (int)U(560);
+    ThumbW = (int)U(220), ThumbH = (int)U(180);
+    view_free(T.front);
+    view_free(T.side);
+    view_free(T.play);
+    view_free(T.game_view);
+    for (int k = 0; k < PACK_KINDS; k++) {
+        view_free(T.thumbs[k]);
+        T.thumbs[k].w = ThumbW;
+        T.thumbs[k].h = ThumbH;
+    }
+}
+
+// The scale for a screen: its display scale (Windows' 150%, 200%), or its height against an 800-line screen's if that's more (1.25 on a
+// 1080-line screen; a high resolution screen left at 100% more), in quarters
+float screen_scale(SDL_DisplayID d) {
+    float s = SDL_GetDisplayContentScale(d);
+    SDL_Rect r;
+
+    if (SDL_GetDisplayUsableBounds(d, &r)) {
+        s = fmaxf(s, floorf(r.h / 800.0f * 4) / 4);
+    }
+    return s < 1 ? 1 : s > 4 ? 4 : s;
+}
+
+// The user's share of a screen's scale (Ctrl with + and -), kept in the tool's own folder (SDL's pref path, zoom.txt) for next time
+float Zoom = 1;
+
+void zoom_load() {
+    char *pref = SDL_GetPrefPath("CrashBashPC", "herotool"), path[1100];
+    size_t n = 0;
+
+    if (pref == nullptr) {
+        return;
+    }
+    snprintf(path, sizeof(path), "%szoom.txt", pref);
+    SDL_free(pref);
+    char *text = (char *)SDL_LoadFile(path, &n);
+    if (text != nullptr) {
+        float z = (float)SDL_atof(text);
+        Zoom = z >= 0.5f && z <= 3 ? z : 1;
+        SDL_free(text);
+    }
+}
+
+void zoom_keep() {
+    char *pref = SDL_GetPrefPath("CrashBashPC", "herotool"), path[1100], text[32];
+
+    if (pref == nullptr) {
+        return;
+    }
+    snprintf(path, sizeof(path), "%szoom.txt", pref);
+    SDL_free(pref);
+    snprintf(text, sizeof(text), "%.2f\n", Zoom);
+    SDL_SaveFile(path, text, strlen(text));
+}
+
+// The window as big as the scale wants (U(1360) by U(900)), within its screen; centred on it if centre
+void fit_window(SDL_Window *win, SDL_DisplayID d, bool centre) {
+    SDL_Rect r;
+    int w = (int)U(1360), h = (int)U(900);
+
+    if (SDL_GetDisplayUsableBounds(d, &r)) {
+        w = w > r.w * 95 / 100 ? r.w * 95 / 100 : w;
+        h = h > r.h * 92 / 100 ? r.h * 92 / 100 : h;
+    }
+    SDL_SetWindowSize(win, w, h);
+    if (centre) {
+        SDL_SetWindowPosition(win, SDL_WINDOWPOS_CENTERED_DISPLAY(d), SDL_WINDOWPOS_CENTERED_DISPLAY(d));
+    }
+}
+
 extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     static Tool T;
 
@@ -2128,6 +2241,32 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     ImGui::StyleColorsDark();
     ImGui_ImplSDL3_InitForSDLRenderer(win, ren);
     ImGui_ImplSDLRenderer3_Init(ren);
+    // on the screen the mouse is on (where the game's launcher was clicked), as big as that screen's scale wants, the window too
+    const ImGuiStyle base_style = ImGui::GetStyle();
+    SDL_DisplayID screen;
+    {
+        float mx = 0, my = 0;
+        SDL_GetGlobalMouseState(&mx, &my);
+        SDL_Point at = { (int)mx, (int)my };
+        screen = SDL_GetDisplayForPoint(&at);
+        screen = screen != 0 ? screen : SDL_GetPrimaryDisplay();
+    }
+    zoom_load();
+    float want_scale = SDL_getenv("HEROTOOL_SCALE") != nullptr ? (float)SDL_atof(SDL_getenv("HEROTOOL_SCALE")) : screen_scale(screen) * Zoom;
+    ui_scale(T, base_style, want_scale);
+    fit_window(win, screen, true);
+    {
+        int n = 0;
+        SDL_DisplayID *all = SDL_GetDisplays(&n);
+        for (int i = 0; all != nullptr && i < n; i++) {
+            SDL_Rect r = {};
+            SDL_GetDisplayUsableBounds(all[i], &r);
+            printf("herotool: screen %u, %dx%d, its scale %.2f%s\n", (unsigned)all[i], r.w, r.h, SDL_GetDisplayContentScale(all[i]),
+                   all[i] == screen ? ": the window's, at its scale " : "");
+        }
+        SDL_free(all);
+        printf("herotool: the window at %.2f\n", Ui);
+    }
     // where it writes and what it starts: beside it, if it's beside the game
     const char *base = SDL_GetBasePath();
     snprintf(T.out, sizeof(T.out), "%smods", base != nullptr ? base : "");
@@ -2143,10 +2282,6 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     }
     T.game_view.pitch = 12;
     T.play.pitch = 8;
-    for (int k = 0; k < PACK_KINDS; k++) {
-        T.thumbs[k].w = ThumbW;
-        T.thumbs[k].h = ThumbH;
-    }
     if (game != nullptr) {
         SDL_strlcpy(T.game, game, sizeof(T.game));
     }
@@ -2215,6 +2350,31 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             ImGui_ImplSDL3_ProcessEvent(&e);
+            if (e.type == SDL_EVENT_KEY_DOWN && (e.key.mod & SDL_KMOD_CTRL) != 0) {
+                SDL_Keycode k = e.key.key;
+                bool bigger = k == SDLK_EQUALS || k == SDLK_PLUS || k == SDLK_KP_PLUS, smaller = k == SDLK_MINUS || k == SDLK_KP_MINUS;
+                if (bigger || smaller || k == SDLK_0 || k == SDLK_KP_0) {
+                    // as a share of its screen's, kept for next time
+                    Zoom = bigger ? Zoom + 0.1f : smaller ? Zoom - 0.1f : 1;
+                    Zoom = Zoom < 0.5f ? 0.5f : Zoom > 3 ? 3 : Zoom;
+                    want_scale = screen_scale(SDL_GetDisplayForWindow(win)) * Zoom;
+                    zoom_keep();
+                }
+            } else if (e.type == SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED || e.type == SDL_EVENT_WINDOW_DISPLAY_CHANGED) {
+                // moved to another screen: its scale, and the window grown or shrunk with it (as far as it was the size it started)
+                float was = Ui, now = screen_scale(SDL_GetDisplayForWindow(win)) * Zoom;
+                if (fabsf(now - was) > 0.01f) {
+                    int w = 0, h = 0;
+                    SDL_GetWindowSize(win, &w, &h);
+                    SDL_Rect r;
+                    if (SDL_GetDisplayUsableBounds(SDL_GetDisplayForWindow(win), &r)) {
+                        w = (int)fminf(w * now / was, r.w * 0.95f);
+                        h = (int)fminf(h * now / was, r.h * 0.92f);
+                        SDL_SetWindowSize(win, w, h);
+                    }
+                    want_scale = now;
+                }
+            }
             if (e.type == SDL_EVENT_QUIT) {
                 done = true;
             } else if (e.type == SDL_EVENT_DROP_FILE && e.drop.data != nullptr) {
@@ -2332,6 +2492,10 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             pose(T);
             T.play.yaw = T.turn;
             draw(T.m, T.posed, T.play, ren);
+        }
+        if (fabsf(want_scale - Ui) > 0.01f) {
+            ui_scale(T, base_style, want_scale);
+            want_scale = Ui;
         }
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();

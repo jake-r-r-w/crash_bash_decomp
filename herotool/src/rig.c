@@ -38,7 +38,7 @@ static const int Side[KB_COUNT] = {
  * its; so where a corner is nearest straight, a trunk bone's distance counts for this much of a limb's (a chest's skin is further from
  * the chest's bone than from a jaw beside it, but it's the chest's) */
 static const float Wide[KB_COUNT] = {
-    2.5f, 2.5f, 2.5f, 1.5f, 1.6f, 1, 1, 1, 1, 1, 1, 1.2f, 1, 1, 1.2f, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    2.5f, 2.5f, 2.5f, 1.5f, 1.6f, 1, 1, 1, 1, 1, 1, 1.2f, 1, 1, 1.2f, 1, 1, 1, 1.6f, 1.6f, 1.6f, 1.6f, 1, 1, 1,
 };
 
 /* "name": [x, y, z] in the JSON, into out; whether it's there */

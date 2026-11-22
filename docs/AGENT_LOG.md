@@ -667,6 +667,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: Bobby's ears wired up ("i cant move them"): their markers ran down the back of his head, so the long flaps went with his
+  head and chest; now down each flap's middle, and the tool counts ears as wide as a head (rig.c `Wide`). His pack made again from his
+  markers (no template, as ever: byte for byte the repo's with the old markers). The hero tool scales for its screen (`ui_scale`:
+  display scale or height, Ctrl + and - kept in zoom.txt), opening on the screen the mouse is on. Ear names in the animation tools
+  ("Left ear 1") and their mirror.
+
 - 2026-11-22: the hero tool's animation tools, at the user's word ("a full animation tool suite ... to fix issues like clipping").
   hero.json's `adjust` (PackAdjust): a bone's turn or reach in a game's move, at a frame fading over a spread, the whole move or every
   move. `port/platform/heroadjust.c` makes them and skins the mesh, shared by the game (every pose path through packfollow.c's

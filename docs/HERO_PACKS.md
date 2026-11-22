@@ -218,14 +218,21 @@ put back, as they point to memory that's freed and made again when the packs cha
 `port/mods/bobby/` is made by the hero tool, as anyone's hero is:
 
 ```bash
-build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobby --name BOBBY --mod-name Bobby     --author "Crash Bash PC" --markers port/mods/bobby-model.glb.markers.json --out port/mods/bobby --height 540 --face-head 0.26 --based-on crash
+build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobby --name BOBBY --mod-name Bobby     --author "Crash Bash PC" --markers port/mods/bobby-model.glb.markers.json --out port/mods/bobby --height 540 --face-head 0.26
 ```
 
 He's the user's dog, a long-haired black-and-tan miniature dachshund, stood up as a cartoon hero. His model is the user's own, made
 from photos of him (`port/mods/bobby-model.glb`, beside the markers, as a folder there would be a mod of its own): 1365 triangles,
 the two smallest of its first export's 1367 taken out at the user's word, one texture, no rig, so the markers
 (`bobby-model.glb.markers.json`) place his skeleton, ears, jaw and tail too, and `arm_raise` keeps his short arms from going into his big
-head. The photos aren't in the repo.
+head. The photos aren't in the repo. Its command says no template (no `--based-on`): his pack never has, so on foot he plays his own
+moves; made again so, the pack is the one in the repo byte for byte.
+
+His ears (2026-11-22, the user's word: "his ears are not wired up correctly i cant move them"): their markers ran down the back of
+his head, behind the flaps and short of their ends, so most of each long flap went with his head and its lower half with his chest.
+Now each ear's two bones run down the middle of its flap, from its root on his head to its end beside his cheek, and the tool counts an
+ear as wide as a head (`Wide`, rig.c: a flap is wide, its corners far from its bone), so each flap goes with its own ear, the top half
+with the first bone and the lower half with the second.
 
 ## The hero tool
 
@@ -239,7 +246,11 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
 ```
 
 **The window**: `herotool` with no arguments, or a model alone (`herotool MODEL.glb`), opens it (`src/gui.cpp`, Dear ImGui on
-SDL3's renderer, the model drawn by a little software renderer of its own). With no model it starts on its **start screen**
+SDL3's renderer, the model drawn by a little software renderer of its own). It's as big as its screen wants (`ui_scale`, the user's
+word, 2026-11-22: far too small on a high resolution screen), on the screen the mouse is on: its display scale, or its height against
+an 800-line screen's if that's more (1.25 on a 1080-line screen), in quarters; its font made at that size, its style's sizes, the
+window and its pictures with it, and again as it's moved to another screen. Ctrl and + or - make it a tenth bigger or smaller, a
+share of the screen's kept for next time (zoom.txt in its own folder), Ctrl and 0 sets it back (`HEROTOOL_SCALE=S` for a test). With no model it starts on its **start screen**
 (2026-11-22, the user's word): **Create a new hero** (Browse, the system's file chooser; a path; or a `.glb` dropped on it), or
 **Edit a hero**, a list of every hero in the mods folder's unzipped mods (`heroes/<id>/hero.json`). Editing one opens the pack's
 own `hero.glb` (rigged on the standard skeleton, its moves its clips, so anyone's shared pack can be changed without its first
