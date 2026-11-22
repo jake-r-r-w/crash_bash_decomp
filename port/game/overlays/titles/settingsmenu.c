@@ -44,8 +44,7 @@ int platform_vblanks(void);
 enum {
     SET_SKIP_INTRO,
     SET_SKIP_LOADING,
-    SET_CHEAT_MENU,
-    SET_EXTRA_HEROES
+    SET_CHEAT_MENU
 };
 
 typedef struct {
@@ -82,8 +81,6 @@ static const MenuOption GameOptionsList[] = {
     { "SKIP INTRO", "START AT THE MAIN MENU, WITHOUT THE LOGOS", SET_SKIP_INTRO },
     { "SKIP LOADING", "LOAD IN ONE GO, WITHOUT THE LOADING SCREENS", SET_SKIP_LOADING },
     { "CHEAT MENU", "THE ORIGINAL'S HIDDEN CHEATS, IN THE PAUSE MENU", SET_CHEAT_MENU },
-    /* PC: the heroes of the mods that are on (docs/HERO_PACKS.md) */
-    { "CUSTOM HEROES", "HEROES OF YOUR OWN, FROM YOUR MODS", SET_EXTRA_HEROES },
 };
 #define NUM_OF(a) ((s32)(sizeof(a) / sizeof((a)[0])))
 
@@ -522,9 +519,6 @@ static void change_setting(const MenuCategory *c, s32 n, s32 dir) {
         case SET_CHEAT_MENU:
             s->cheat_menu = !s->cheat_menu;
             break;
-        case SET_EXTRA_HEROES:
-            s->extra_heroes = !s->extra_heroes;
-            break;
         }
     }
     settings_apply();
@@ -560,9 +554,6 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
         break;
     case SET_CHEAT_MENU:
         snprintf(text, size, "%s", s->cheat_menu ? "ON" : "OFF");
-        break;
-    case SET_EXTRA_HEROES:
-        snprintf(text, size, "%s", s->extra_heroes ? "ON" : "OFF");
         break;
     }
 }

@@ -643,8 +643,8 @@ pretend controllers through the menus into a Battle under each, and its `--all` 
 real time with the sound played: every step's fingerprint matches. Windows's and Linux's match each other too (`--against`).
 
 **What has to be the same for everyone**, as it does change the game (the test says what each does): the cheat menu
-(`GameState.cheats`), SKIP LOADING and SKIP INTRO (the steps a load or the logos take), CUSTOM HEROES (a third row of cards, and
-what's loaded) and mods that change the game's files. Online these are the host's. Mods and hero packs are files, so they're
+(`GameState.cheats`), SKIP LOADING and SKIP INTRO (the steps a load or the logos take), the custom heroes (a third row of cards, and what's loaded: on when a hero mod is, online only those every
+machine has) and mods that change the game's files. Online these are the host's. Mods and hero packs are files, so they're
 compared at joining, not sent: a hero pack by a hash of all its files (HERO_PACKS.md, Online).
 
 Two things had to change for it:

@@ -969,7 +969,6 @@ async function identical(args) {
         /* what changes the game: the host's, online */
         { name: 'the cheat menu on', args: ['--turbo', '--cheat-menu', ...presses], want: 'said' },
         { name: 'loading skipped', args: ['--turbo', '--skip-loading', ...presses], want: 'said' },
-        { name: 'extra heroes on', args: ['--turbo', '--extra-heroes', ...presses], want: 'said' },
         /* and why the sound's mixed by the game's clock */
         { name: 'sound mixed by the sound device, as offline', args: ['--sound', ...presses], device_sound: true, want: 'said' },
     ];

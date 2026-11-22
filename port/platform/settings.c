@@ -136,8 +136,6 @@ void settings_load(void) {
             Current.upscale = a;
         } else if (sscanf(line, "icons=%d", &a) == 1) {
             Current.icons = a != 0;
-        } else if (sscanf(line, "extra_heroes=%d", &a) == 1) {
-            Current.extra_heroes = a != 0;
         } else if (sscanf(line, "buttons_apart=%d", &a) == 1) {
             Current.buttons_apart = a != 0;
         } else if (sscanf(line, "button_prompts=%15s", word) == 1 && prompts_from_id(word) >= 0) {
@@ -233,8 +231,7 @@ static void save_settings(void) {
                "; 1 is on and 0 off, unless a line says otherwise.\n\n");
     fprintf(f, "; Start at the main menu, without the logos\nskip_intro=%d\n", Current.skip_intro);
     fprintf(f, "; Load each level in one go, without the loading screen\nskip_loading=%d\n", Current.skip_loading);
-    fprintf(f, "; The original's hidden cheat menu, in the pause menu\ncheat_menu=%d\n", Current.cheat_menu);
-    fprintf(f, "; Heroes of your own from your mods (hero packs)\nextra_heroes=%d\n\n", Current.extra_heroes);
+    fprintf(f, "; The original's hidden cheat menu, in the pause menu\ncheat_menu=%d\n\n", Current.cheat_menu);
     fprintf(f, "; Full screen, or a window\nfullscreen=%d\n", Current.fullscreen);
     fprintf(f, "; The window's size, width x height, when it's neither full screen nor maximised\nwindow=%dx%d\n", Current.window_w,
             Current.window_h);

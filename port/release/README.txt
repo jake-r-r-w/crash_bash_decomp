@@ -84,8 +84,7 @@ travel, each used a moment late so it reaches everyone in time. The last online
 game's presses are kept beside your saves, in last-online-game.txt: if a game
 stops because the players' games are no longer the same, that file is what
 shows why. Player 1, the host, drives the menus. Picture settings are each
-player's own. Cheats, the two skips, CUSTOM HEROES and the save are the
-host's. Mods that change the game's files are off online, and a custom hero is
+player's own. Cheats, the two skips and the save are the host's. Mods that change the game's files are off online, and a custom hero is
 played only if every player has the same mod for it.
 
 
@@ -112,9 +111,9 @@ always did until you turn them on:
 CUSTOM HEROES
 
 Heroes of your own can play, made from a 3D model. Each is in a mod, as a hero
-pack, and Bobby, a dachshund, comes in the mods folder as an example. Turn on
-CUSTOM HEROES on the Game page, under Settings in the menu the game opens with;
-a hero's mod is on as soon as it's in the mods folder. Up to four have a card
+pack, and Bobby, a dachshund, comes in the mods folder as an example. A hero
+mod that's on puts its hero in the character select: turn it on or off on the
+Mods page, under Settings in the menu the game opens with. Up to four have a card
 each in the character select, in a third row under the others, and the computer
 players can pick them too. Each plays in every game, doing as Crash does: riding
 the polar bear, bouncing on the pogo stick, in the Ballistix car, the tank and

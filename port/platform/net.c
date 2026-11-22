@@ -1301,10 +1301,9 @@ static int own_saves_fine(void) {
     return 1;
 }
 
-/* This machine's own hero packs, by their hashes: what a joiner says it has. None unless its CUSTOM HEROES is on: a player who's
-   turned them off doesn't want them, though it's the host's setting that's played. */
+/* This machine's own hero packs, by their hashes: what a joiner says it has (those of the mods it has on) */
 static void heroes_own(void) {
-    int n = settings()->extra_heroes ? mods_heroes_all() : 0, i;
+    int n = mods_heroes_all(), i;
 
     for (NumOwn = 0, i = 0; i < n && NumOwn < HEROES_SAID; i++) {
         Own[NumOwn++] = mods_hero_hash(i);
@@ -1313,7 +1312,7 @@ static void heroes_own(void) {
 
 /* The host: the first HEROES of its own hero packs that every machine has the same of; the others aren't played this game */
 static void heroes_agree(void) {
-    int n = settings()->extra_heroes ? mods_heroes_all() : 0, i, m, k;
+    int n = mods_heroes_all(), i, m, k;
 
     for (NumPlayed = 0, i = 0; i < n && NumPlayed < HEROES; i++) {
         uint64_t h = mods_hero_hash(i);

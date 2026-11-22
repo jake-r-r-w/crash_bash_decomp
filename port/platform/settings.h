@@ -28,7 +28,8 @@ typedef struct Settings {
     int widescreen;    /* a wider window shows more of the world */
     int upscale;       /* textures made this many times bigger, on the player's machine: 1 is off, or 2 or 4 */
     int icons;         /* the heroes' and bosses' icons made sharp, on the player's machine */
-    int extra_heroes;  /* Ripper Roo and the bosses as heroes too, with cards of their own (game/main/extraheroes.c) */
+    int extra_heroes;  /* the custom heroes on without a hero mod (a test run's --extra-heroes; the host's, online): a hero mod that's on
+                        * turns them on anyway (game/main/extraheroes.c, extra_heroes_on). Not kept in settings.ini */
     /* an online game's sound options, which are each machine's own there (game/main/online.c): the volumes, 0 to 100 as the game has
        them, and stereo or mono. Offline they're the game's, kept in its saves */
     int online_music, online_sfx, online_stereo;

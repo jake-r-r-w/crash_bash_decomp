@@ -184,9 +184,9 @@ whole rocket, and the dinos their arms. What differs between them, all in the ma
 
 A pack's hero plays online where every machine has the same pack (`platform/net.c`; PORT.md, Online play). Packs are files, so
 they're compared, not sent: `mods_hero_hash` hashes a hero's id and every file of its folder, by name and bytes, added up so the
-order a folder or zip lists them in doesn't matter. A joiner's ask (T_JOIN) carries the hashes of its heroes, if its CUSTOM HEROES is
-on; the host's start (T_START) carries the first four of its own that every machine has, in its order, and CUSTOM HEROES as the
-host has it. Every machine then makes only those (`mods_heroes_only`; `mods_apply_online`), in the same slots, so the same cards
+order a folder or zip lists them in doesn't matter. A joiner's ask (T_JOIN) carries the hashes of the heroes of the mods it has on;
+the host's start (T_START) carries the first four of its own that every machine has, in its order (there's no switch: a hero mod
+that's on puts its heroes in the select, `extra_heroes_on`, and online only those every machine has count, so all agree). Every machine then makes only those (`mods_heroes_only`; `mods_apply_online`), in the same slots, so the same cards
 are in the select and the computer picks the same. A pack a machine lacks just isn't played, and the host's log says why
 (`bobby isn't played: machine 2 hasn't its pack, or has another`). A game's record (`--net-record`) names its packs by hash
 (`hero ...`), and `--replay` needs them in a mod that's on.

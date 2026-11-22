@@ -32,6 +32,7 @@
 #include "bash/bonusheroes.h"
 #include "bash/heromake.h"
 #include "../../platform/settings.h"
+#include "../../platform/mods.h"
 #include "../../platform/gfx.h"
 
 unsigned char *archive_own_file(int entry, int *size);
@@ -107,6 +108,8 @@ static u16 *ModelsFrom, *FlagFrom;
 static Playing Play[4];
 static s32 AnyPlaying;
 
+/* On when a mod that's on has a hero (online, one every machine has: mods_heroes_count is just those), or a test run names one. There's
+   no switch of its own: a hero mod that's on puts its heroes in the select (the user's word, 2026-11-22) */
 s32 extra_heroes_on(void) {
     s32 i;
 
@@ -115,7 +118,7 @@ s32 extra_heroes_on(void) {
             return 1;
         }
     }
-    return settings()->extra_heroes;
+    return settings()->extra_heroes || mods_heroes_count() > 0;
 }
 
 s32 extra_hero_of(s32 player) {
