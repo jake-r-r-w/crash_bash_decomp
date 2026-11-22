@@ -435,14 +435,18 @@ Crash's**), and takes its changes with it. On foot, where it follows a hero, **O
 or **Crash's animation**; its tooltip says the rest), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change (and after `HEROTOOL_DRAG`'s drag, once it's let go)
 (the game having made it again), and `HEROTOOL_ASK=MOVE` picks a move's template's, for tests.
 
-**In the tool**, a game's page is posed from the start: a dot on every bone over the picture (grey, the picked one periwinkle; rounded
-squares for the hips, hands and feet), and **Bones** (top left, or Tab) hides them, the gizmo and the tools for a clean view of the hero
+**In the tool**, a game's page is posed from the start: a dot on every bone over the picture (in its part's colour, yellow the body, blue the arms, green
+the legs, orange the tail, ears and jaw; squares for the hips, hands and feet: as before Graphite, the user's word, 2026-11-22: "that
+worked realy well before"), and **Bones** (top left, or Tab) hides them, the gizmo and the tools for a clean view of the hero
 (the user's word, 2026-11-22: "should there be a option to toggle the bone selection?"). A click on an empty part of the picture, or
 Esc, lets go of the bone picked, and the bone card says **Click a bone**. The (?) in the picture's bottom left is a card of the keys
 and mouse. Click a joint to pick it: on it is a **gizmo**, as Blender's (the
 user's word, 2026-11-22: "a proper gizmo tool like blender has so we can rotate, move and scale"), in the hero's own axes as Blender's
 are for a character facing -Y: X (coral) to its left, Y (mint) to its back, Z (periwinkle) up (`Way` in `adjust_view`, gui.cpp: the game's y is
-down), the panel's values lettered the same. In a column on the picture under **Bones**, **Rotate (R)**, **Move (G)** and **Scale (S)** pick which, as do those
+down), the panel's values lettered the same. In a column on the picture under **Bones**, **Rotate (R)**, **Move (G)** and **Scale (S)** pick which (the gizmo the same size whatever the view, its
+arrows and handles as long as their axis looks, shorter as it points at you and faded nearly end on, each lettered: the user's word,
+2026-11-22, "it sort of moves as you tilt the camera"; tilting doesn't change the picture's size, and the bones and gizmo are worked
+out from the view the picture was drawn with), as do those
 keys:
 - **Rotate**: a ring about each axis, dragged round to turn it about that axis (a ring seen almost edge on, as far as the mouse goes
   along it, its near side following the mouse); a white ring about the line towards whoever's looking; its middle, dragged, points

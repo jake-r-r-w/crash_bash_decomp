@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's bone dots back to their colours by part (the user: "worked realy well before"); the gizmo steady as
+  the view tilts: its arrows foreshortened and lettered (not stretched full length end on), the picture's fit no longer changes with
+  its tilt, and the bones and gizmo drawn from the view the picture was (they ran a frame ahead of it while tilting).
+
 - 2026-11-22: the hero tool restyled as Graphite (picked by the user from a design canvas of mocks): neutral charcoal, round shapes,
   coral for actions and periwinkle for what's picked, Fredoka (fetched by its hash, built in, OFL in the release), soft synthesised
   sounds (src/sound.c, muteable), a top bar, a strip of the games with the hero in each, Bones (Tab) and Esc/click to let go, round

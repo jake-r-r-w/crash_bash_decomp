@@ -1369,8 +1369,9 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     }
     const float *lo = v.fit_lo, *hi = v.fit_hi;
     float h = hi[1] - lo[1], w = sqrtf((hi[0] - lo[0]) * (hi[0] - lo[0]) + (hi[2] - lo[2]) * (hi[2] - lo[2]));
-    // as tall as it looks from the view's tilt (from above, as deep as it is), and its middle in the picture's
-    float pc = cosf(v.pitch * 3.14159265f / 180), tall = fmaxf(h * fabsf(pc), w * fabsf(sinf(v.pitch * 3.14159265f / 180)));
+    // as tall as it looks from a little above (12 degrees, the view's own tilt to start: tilted further, it's the same size, so what's
+    // drawn over it keeps to it), and its middle in the picture's
+    float pc = cosf(v.pitch * 3.14159265f / 180), tall = fmaxf(h * 0.978f, w * 0.208f);
     v.scale = fminf(PH * 0.8f / (tall > 0 ? tall : 1), PW * 0.8f / (w > 0 ? w : 1));
     float cx = (lo[0] + hi[0]) / 2, cz = (lo[2] + hi[2]) / 2;
     v.cx = cx;
@@ -2696,10 +2697,10 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             }
         } else {
             for (int i = 0; i < 3; i++) {
-                if (axlen[i] < 0.15f) {
+                if (axlen[i] < 0.25f) {
                     continue;
                 }
-                float d = seg_px(mouse, ImVec2(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14)), ImVec2(c.x + ax2[i][0] * R, c.y + ax2[i][1] * R));
+                float d = seg_px(mouse, ImVec2(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14)), ImVec2(c.x + ax2[i][0] * R * axlen[i], c.y + ax2[i][1] * R * axlen[i]));
                 if (d < near) {
                     near = d, over = (T.gizmo == GIZMO_MOVE ? H_MOVE : H_SIZE) + i;
                 }
@@ -2713,32 +2714,28 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             best = d2, hover = b;
         }
         if (po->parent[b] >= 0) {
-            dl->AddLine(ImVec2(sx[po->parent[b]], sy[po->parent[b]]), ImVec2(sx[b], sy[b]), (INK & 0x00FFFFFFu) | 0x80000000u, U(2));
+            dl->AddLine(ImVec2(sx[po->parent[b]], sy[po->parent[b]]), ImVec2(sx[b], sy[b]), IM_COL32(255, 255, 255, 90), U(1.5f));
         }
     }
-    // each bone's dot: grey, the one picked periwinkle (a halo round it), the one under the mouse bigger; a hand's or foot's (which
-    // reach, and bend the arm or leg to follow) a rounded square
+    // each bone's dot in its part's colour (yellow the body, blue arms, green legs, orange the tail, ears and jaw), the one under the mouse
+    // bigger; a hand's or foot's (which reach, and bend the arm or leg to follow) a square (as they were before Graphite: the user's word,
+    // 2026-11-22, "that worked realy well before")
     for (int b = 0; b < po->nbones; b++) {
-        bool on = b == T.sel;
-        float r = on ? U(7) : b == hover ? U(7) : U(5.5f);
-        ImU32 col = on ? PERI : b == hover ? mix(GREY_DOT, INK, 0.4f) : GREY_DOT;
-        ImVec2 at(sx[b], sy[b]);
-        if (on) {
-            dl->AddCircleFilled(at, r + U(5), (PERI & 0x00FFFFFFu) | 0x55000000u);
-        }
-        if (reach_bone(po->names[b])) {
-            dl->AddRectFilled(ImVec2(at.x - r - U(2), at.y - r - U(2)), ImVec2(at.x + r + U(2), at.y + r + U(2)), GROUND, U(4));
-            dl->AddRectFilled(ImVec2(at.x - r, at.y - r), ImVec2(at.x + r, at.y + r), col, U(3));
+        const char *n = po->names[b];
+        ImU32 col = po->part[b] == 3 ? IM_COL32(80, 200, 255, 255) : po->part[b] == 1 ? IM_COL32(120, 255, 120, 255)
+                  : po->part[b] == 2 || SDL_strncasecmp(n, "ear", 3) == 0 || SDL_strncasecmp(n, "jaw", 3) == 0 ? IM_COL32(255, 160, 40, 255)
+                                                                                                                 : IM_COL32(255, 230, 80, 255);
+        if (reach_bone(n)) {
+            dl->AddRectFilled(ImVec2(sx[b] - U(4), sy[b] - U(4)), ImVec2(sx[b] + U(4), sy[b] + U(4)), col);
         } else {
-            dl->AddCircleFilled(at, r + U(2), GROUND);
-            dl->AddCircleFilled(at, r, col);
+            dl->AddCircleFilled(ImVec2(sx[b], sy[b]), b == hover ? U(6) : U(4.5f), col);
         }
     }
     // X-Mirror: the other side's joint ringed
     if (T.sel >= 0 && T.xmirror && other_side(po->names[T.sel])[0] != 0) {
         int ob = pack_bone_index(po, other_side(po->names[T.sel]));
         if (ob >= 0) {
-            dl->AddCircle(ImVec2(sx[ob], sy[ob]), U(12), LILAC, 0, U(2.5f));
+            dl->AddCircle(ImVec2(sx[ob], sy[ob]), U(11), IM_COL32(200, 150, 255, 230), 0, U(2));
         }
     }
     // the gizmo
@@ -2751,23 +2748,31 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
                 ring(i, pts, 48);
                 dl->AddPolyline(pts, 48, Axis[i], ImDrawFlags_Closed, lit == H_TURN + i ? U(5) : U(3));
             }
-            dl->AddCircleFilled(c, U(9), PERI);
-            dl->AddCircle(c, U(9), PERI_INK, 0, U(2.5f));
+            dl->AddCircle(c, U(9), INK, 0, U(2));
         } else {
             for (int i = 0; i < 3; i++) {
-                if (axlen[i] < 0.15f) {
+                if (axlen[i] < 0.12f) {
                     continue;
                 }
-                ImVec2 e(c.x + ax2[i][0] * R, c.y + ax2[i][1] * R), s(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14));
+                // (nearly end on: faded, and not taken)
+                float fade = axlen[i] < 0.25f ? (axlen[i] - 0.12f) / 0.13f : 1, len = R * axlen[i];
+                ImU32 col = (Axis[i] & 0x00FFFFFFu) | (ImU32)(255 * (0.25f + 0.75f * fade)) << 24;
+                ImVec2 e(c.x + ax2[i][0] * len, c.y + ax2[i][1] * len), s(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14));
                 float t = lit == (T.gizmo == GIZMO_MOVE ? H_MOVE : H_SIZE) + i ? U(5) : U(3);
-                dl->AddLine(s, e, Axis[i], t);
+                if (len > U(16)) {
+                    dl->AddLine(s, e, col, t);
+                }
                 if (T.gizmo == GIZMO_MOVE) {
                     ImVec2 nrm(-ax2[i][1], ax2[i][0]);
                     dl->AddTriangleFilled(ImVec2(e.x + ax2[i][0] * U(12), e.y + ax2[i][1] * U(12)), ImVec2(e.x + nrm.x * U(6), e.y + nrm.y * U(6)),
-                                          ImVec2(e.x - nrm.x * U(6), e.y - nrm.y * U(6)), Axis[i]);
+                                          ImVec2(e.x - nrm.x * U(6), e.y - nrm.y * U(6)), col);
                 } else {
-                    dl->AddRectFilled(ImVec2(e.x - U(6), e.y - U(6)), ImVec2(e.x + U(6), e.y + U(6)), Axis[i], U(3));
+                    dl->AddRectFilled(ImVec2(e.x - U(6), e.y - U(6)), ImVec2(e.x + U(6), e.y + U(6)), col, U(3));
                 }
+                ImGui::PushFont(FontSmall);
+                ImVec2 ls = ImGui::CalcTextSize(AxisSays[i]), lp(e.x + ax2[i][0] * U(26) - ls.x / 2, e.y + ax2[i][1] * U(26) - ls.y / 2);
+                dl->AddText(lp, col, AxisSays[i]);
+                ImGui::PopFont();
             }
             bool mid = T.dragging && (T.handle == H_MOVE_FREE || T.handle == H_SIZE_ALL);
             dl->AddCircle(c, U(12), mid ? INK : (INK & 0x00FFFFFFu) | 0xAA000000u, 0, mid ? U(3.5f) : U(2.5f));
@@ -5124,10 +5129,16 @@ void game_page(Tool &T) {
             ImVec2 in(0.5f / v.w, 0.5f / v.h);
             dl->AddImageRounded((ImTextureID)(intptr_t)v.tex, p, ImVec2(p.x + size.x, p.y + size.y), in, ImVec2(1 - in.x, 1 - in.y), IM_COL32_WHITE, U(30));
         }
-        look_around(v, T.made_turn, false);
-        bool on_axes = view_axes(v, T.made_turn, ImVec2(p.x + size.x - U(70), p.y + size.y - U(70)), hovered);
+        // the bones and gizmo from the view the picture was drawn with this frame, then the axes, then the mouse turning or tilting it
+        // (for the next: worked out after a tilt, they were a frame ahead of the picture, and slid off it as it tilted)
+        ImVec2 axes(p.x + size.x - U(70), p.y + size.y - U(70)), m = ImGui::GetIO().MousePos;
+        bool on_axes = hovered && (m.x - axes.x) * (m.x - axes.x) + (m.y - axes.y) * (m.y - axes.y) < U(53) * U(53);
         if (posable) {
             adjust_view(T, p, 1, hovered && !on_axes && T.bones);
+        }
+        view_axes(v, T.made_turn, axes, hovered);
+        look_around(v, T.made_turn, false);
+        if (posable) {
             picture_overlays(T, p, size);
         }
         draw_toast(T, ImVec2(p.x + size.x / 2, p.y + size.y - U(22)), U(560));
@@ -6030,6 +6041,9 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             const char *turn = SDL_getenv("HEROTOOL_ADJUST_TURN"), *reach = SDL_getenv("HEROTOOL_ADJUST_REACH");
             const char *size = SDL_getenv("HEROTOOL_ADJUST_SCALE");
             T.gizmo = SDL_getenv("HEROTOOL_GIZMO") != nullptr ? SDL_atoi(SDL_getenv("HEROTOOL_GIZMO")) : T.gizmo;
+            /* (HEROTOOL_PITCH=DEG / HEROTOOL_YAW=DEG: the picture tilted and turned so) */
+            T.game_view.pitch = SDL_getenv("HEROTOOL_PITCH") != nullptr ? (float)SDL_atof(SDL_getenv("HEROTOOL_PITCH")) : T.game_view.pitch;
+            T.made_turn = SDL_getenv("HEROTOOL_YAW") != nullptr ? (float)SDL_atof(SDL_getenv("HEROTOOL_YAW")) : T.made_turn;
             PackAdjust *k = T.sel >= 0 && (turn != nullptr || reach != nullptr || size != nullptr)
                                 ? adj_key(T, T.made[T.kind].anims[T.anim].name, T.poses[T.kind].names[T.sel], true)
                                 : nullptr;
