@@ -72,7 +72,9 @@ typedef struct {
     float hand_r, hand_back; /* and his hands: his corners within hand_r of a grip (or of hand, without grips), in front of hand_back (z) */
     V3 hand[2];
     float scale;             /* his size on it */
-    float lean;              /* his body leant forward over it, radians */
+    float lean;              /* how far (radians) his trunk leans from the prop's up before the rest of his lean is eased (LEAN_EASE of
+                              * it), or 0 as his: Crash leans far over his pogo stick as he bounces (47 degrees), and a pack's bigger
+                              * body and head went out past it (the user's word, 2026-11-22) */
     float squat;             /* his hips lower than he stands (his rig's units), standing */
     float tube;              /* the prop's length above its pegs against Crash's (1 as it is) */
     float grip_in;           /* his hand's hole this far out along a grip's bar from its grip's middle (Crash's fist covers its end) */
@@ -312,7 +314,7 @@ static const FollowKind CarKind = {
     car_prop, NULL, car_grip, NULL, car_hips, car_chest, NULL,
     { { -65, -226, 150 }, { 65, -226, 150 } }, { { -172, -208, 192 }, { 172, -208, 192 } }, 25.0f, 30.0f,
     70.0f, 1e9f, { { 0, 0, 0 }, { 0, 0, 0 } },
-    1.0f, 0.1f, 0, 1, CAR_HAND_IN, 0, 0, NULL,
+    1.0f, 0, 0, 1, CAR_HAND_IN, 0, 0, NULL,
 };
 
 /* -- in a tank --
@@ -409,7 +411,7 @@ static const FollowKind RaceKind = {
     race_prop, race_frame, race_grip, NULL, race_hips, race_chest, NULL,
     { { -48, -205, 18 }, { 48, -205, 18 } }, { { -90, -115, 35 }, { 90, -115, 35 } }, 25.0f, 25.0f,
     80.0f, -5.0f, { { 0, 0, 0 }, { 0, 0, 0 } },
-    1.0f, 0.1f, 0, 1, -RACE_HAND_IN, FOLLOW_CUT, 1, cart_gunmetal, 1,
+    1.0f, 0, 0, 1, -RACE_HAND_IN, FOLLOW_CUT, 1, cart_gunmetal, 1,
 };
 
 /* -- riding a fish (Splash Dash) --
@@ -744,6 +746,8 @@ static s32 pack_points_at(void *ctx, s32 a, s32 f, FlagPoint *out, s32 max);
 #define HATCH_HALF 55.0f
 /* How much of its legs' length its hips are kept within of the pegs (a little bend left at the knee) */
 #define PEG_REACH 0.95f
+/* How much of a trunk's lean past its kind's lean is kept */
+#define LEAN_EASE 0.25f
 /* How much of its head's corners its head's ball holds, and how far (radians, in steps) what it carries can be turned out of it */
 #define HEAD_KEEP 0.85f
 #define CARRY_TURN_MOST 1.2f
@@ -888,6 +892,25 @@ static V3 carry_push(const Packed *p, const Follow *c, const V3 *L, V3 Hd, V3 at
     return vmul(d, body - (out - in) * CARRY_SNUG - in);
 }
 
+/* A trunk's frame (body_lie's) leaning more than most from the prop's up (-y) brought back towards it, by all but LEAN_EASE of the
+ * rest of its lean, turned about its hips */
+static void lean_ease(float m[3][3], float most) {
+    V3 up = v3(m[0][1], m[1][1], m[2][1]), prop_up = { 0, -1, 0 }, h, to;
+    float lean = acosf(fmaxf(-1, fminf(1, vdot(up, prop_up)))), want;
+    Mat r, was, now;
+
+    h = vsub(up, vmul(prop_up, vdot(up, prop_up)));
+    if (lean <= most || vlen(h) < 1e-4f) {
+        return;
+    }
+    want = most + (lean - most) * LEAN_EASE;
+    to = vadd(vmul(prop_up, cosf(want)), vmul(vnorm(h), sinf(want)));
+    r = mat_arc(up, to);
+    memcpy(was.m, m, sizeof(was.m));
+    now = mat_mul(&r, &was);
+    memcpy(m, now.m, sizeof(now.m));
+}
+
 static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     static V3 F[FOLLOW_CORNERS], L[FOLLOW_CORNERS];
     static Mat Q[PACK_MAX_BONES];
@@ -917,6 +940,9 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     }
     /* its trunk turned as Crash's is, its hips on his (stood, as much higher as its legs are longer) */
     body_lie(c, L, now);
+    if (fk->lean > 0) {
+        lean_ease(now, fk->lean);
+    }
     memcpy(body.m, now, sizeof(now));
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
