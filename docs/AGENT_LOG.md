@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: Bobby's ear fin: his model welded each ear flap's bottom to his shoulder (13 faces a side); fixed in Blender at the
+  user's word (`port/mods/bobby_ears.py`, Blender 5.2 headless), and the tool keeps each bone's seed places in one patch (rig.c). His
+  pack made again; an ear turned hard moves nothing of his body.
+
 - 2026-11-22: Bobby's ears off his shoulders: an ear's corners had his chest (and arms) as their second bone; now what hangs off a
   hero (ears, jaw, tail) goes only with its own bones and what it hangs from (rig.c `Hanging`), his pack made again. The previews
   turn the way they're dragged (they went back to front).

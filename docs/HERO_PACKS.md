@@ -238,6 +238,13 @@ Then still "his ears are attached to his shoulders": a corner goes with the two 
 most of an ear's that second was his chest (an arm's for some), so as his arms or chest moved the flaps' ends went with them. Now what
 hangs off a hero (each ear, the jaw, the tail; `Hanging`, rig.c) goes only with its own bones and the one it hangs from (the head,
 the hips for a tail), and nothing else with them but that one, where they join.
+Then "look at the ear": turned in the tool, the left ear pulled a fin of faces down to his shoulder. The fault was in his model: the
+bottom edge of each ear flap was welded to his chest and upper arm, 13 faces a side, so no weights could free it. At the user's word
+("if it's a problem from the model itself, fix the model in blender then re-import") `port/mods/bobby_ears.py` cut each ear's corners
+shared with his body free in Blender (headless, the faces as ear or body from `bobby_ears.json`), moving them 2 mm into the ear: the
+same 1365 triangles, 20 more corners, nothing else moved. And the tool keeps each bone's nearest places in one patch (in each piece
+of a model only its biggest patch; the rest go with whatever's nearest over the surface), so a shoulder's place nearer an ear's bone
+isn't the ear's, nor an ear's end nearer the shoulder the shoulder's. Turned hard now, his ear moves and nothing of his body does.
 
 ## The hero tool
 

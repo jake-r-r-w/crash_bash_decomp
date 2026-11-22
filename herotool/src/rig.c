@@ -193,6 +193,98 @@ void kit_weigh(KitModel *m) {
             }
         }
     }
+    /* each bone's places nearest it in one patch: in each piece of the model (its places joined over its surface), only its biggest
+     * patch of them (joined among themselves) is kept, and the rest go with whatever's nearest over the surface. A place on the end
+     * of an ear hanging by a shoulder is nearer the shoulder's bones straight than its ear's, and one on the shoulder nearer the ear's,
+     * so the ear went with the shoulder and the shoulder with the ear (the user's word, 2026-11-22) */
+    {
+        int *piece = malloc(sizeof(int) * m->nvert), *patch = malloc(sizeof(int) * m->nvert), *stack = malloc(sizeof(int) * m->nvert);
+        int *size = calloc((size_t)m->nvert + 1, sizeof(int)), *best = malloc(sizeof(int) * m->nvert * 2), np = 0, top;
+
+        for (v = 0; v < m->nvert; v++) {
+            piece[v] = patch[v] = -1;
+        }
+        /* the model's pieces */
+        for (v = 0; v < m->nvert; v++) {
+            if (same[v] != v || piece[v] >= 0) {
+                continue;
+            }
+            piece[v] = v, stack[0] = v, top = 1;
+            while (top > 0) {
+                int at = stack[--top];
+
+                for (j = 0; j < nn[at]; j++) {
+                    if (piece[nb[at][j]] < 0) {
+                        piece[nb[at][j]] = v, stack[top++] = nb[at][j];
+                    }
+                }
+            }
+        }
+        /* each bone's patches, and their sizes */
+        for (v = 0; v < m->nvert; v++) {
+            if (same[v] != v || patch[v] >= 0) {
+                continue;
+            }
+            patch[v] = np, stack[0] = v, top = 1, size[np] = 0;
+            while (top > 0) {
+                int at = stack[--top];
+
+                size[np]++;
+                for (j = 0; j < nn[at]; j++) {
+                    int u = nb[at][j];
+
+                    if (patch[u] < 0 && nearest[u] == nearest[v]) {
+                        patch[u] = np, stack[top++] = u;
+                    }
+                }
+            }
+            np++;
+        }
+        /* the biggest patch of each bone in each piece (a piece's first place stands for it): its index in best, by piece and bone */
+        for (i = 0; i < m->nvert * 2; i++) {
+            best[i] = -1;
+        }
+        for (v = 0; v < m->nvert; v++) {
+            int *slot;
+
+            if (same[v] != v) {
+                continue;
+            }
+            /* (a piece, a bone: hashed into best's 2n slots, linearly probed; each slot holds the place whose patch is biggest) */
+            {
+                unsigned h = (unsigned)(piece[v] * 31 + nearest[v] * 7) % (unsigned)(m->nvert * 2);
+
+                for (;;) {
+                    slot = &best[h];
+                    if (*slot < 0 || (piece[*slot] == piece[v] && nearest[*slot] == nearest[v])) {
+                        break;
+                    }
+                    h = (h + 1) % (unsigned)(m->nvert * 2);
+                }
+            }
+            if (*slot < 0 || size[patch[v]] > size[patch[*slot]]) {
+                *slot = v;
+            }
+        }
+        for (v = 0; v < m->nvert; v++) {
+            unsigned h;
+
+            if (same[v] != v) {
+                continue;
+            }
+            for (h = (unsigned)(piece[v] * 31 + nearest[v] * 7) % (unsigned)(m->nvert * 2);
+                 !(piece[best[h]] == piece[v] && nearest[best[h]] == nearest[v]); h = (h + 1) % (unsigned)(m->nvert * 2)) {
+            }
+            if (patch[best[h]] != patch[v]) {
+                nearest[v] = -1;
+            }
+        }
+        free(piece);
+        free(patch);
+        free(stack);
+        free(size);
+        free(best);
+    }
     /* how far each place is from each bone over the surface, from the places nearest it (Dijkstra: few places, so the plain way) */
     for (b = 0; b < KB_COUNT; b++) {
         for (v = 0; v < m->nvert; v++) {
