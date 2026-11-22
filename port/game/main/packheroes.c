@@ -56,7 +56,7 @@ void pack_follow_foot_frame(s32 move, float f, const char *name, s32 frame, V3 *
 void pack_follow_adjusts(const PackAdjust *adj, s32 n);
 s32 pack_follow_foot_bind(const char *id, const PackModel *pm, float k, float ground);
 void pack_follow_clip_frame(s32 clip, float t, const char *name, s32 frame, V3 *out);
-s32 pack_follow_foot_dump_begin(const MadeAnim *anims, s32 nanims);
+s32 pack_follow_foot_dump_begin(const MadeAnim *anims, s32 nanims, const s8 *own);
 void pack_follow_foot_dump_end(s32 frames);
 void pack_follow_foot_end(void);
 
@@ -623,6 +623,7 @@ static s32 make_pack(s32 slot, HeroMade *out) {
     static V3 normal[PACK_MAX_VERTS];
     static PackTrs local[PACK_MAX_BONES];
     static float world[PACK_MAX_BONES][16];
+    static s8 own_moves[PACK_MAX_ANIMS];
     PackSlot *s = &Slots[slot];
     s32 image_of[PACK_MAX_IMAGES], nimages = 0, nanims = 0, rest_anim = -1, i, j, c, ok = 0, followed = 0;
     float lo = 1e9f, hi = -1e9f;
@@ -838,7 +839,10 @@ static s32 make_pack(s32 slot, HeroMade *out) {
         goto done;
     }
     /* for the hero tool: each frame's pose on foot (--dump-hero) */
-    if (TheFoot.bound && pack_follow_foot_dump_begin(anims, nanims)) {
+    for (i = 0; i < nanims; i++) {
+        own_moves[i] = (s8)(TheFoot.follow[i] < 0);
+    }
+    if (TheFoot.bound && pack_follow_foot_dump_begin(anims, nanims, own_moves)) {
         static V3 game[PACK_MAX_VERTS];
         s32 frames = 0;
 

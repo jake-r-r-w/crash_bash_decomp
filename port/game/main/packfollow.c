@@ -725,6 +725,7 @@ static void bear_fill_at(const Packed *p, const Moved *mv, const V3 *L, V3 *out)
 static void pose_finish(Packed *p, const Moved *mv, V3 hips_at, s32 cut, const Mat *trunk, V3 *P, Mat *Q, V3 *out, s32 hand,
                         Mat *hand_turn, V3 *hand_was);
 static void pose_from_world(const Packed *p, const float (*world)[16], V3 anchor, float scale, V3 *P, Mat *Q);
+static Mat carry_clear(const Packed *p, const Follow *c, const V3 *L, V3 Hd, V3 at, V3 head);
 
 static void own_frame(Packed *p, s32 a, float f, const Moved *mv, V3 hips_at, const V3 *L, V3 *out) {
     static PackTrs local[PACK_MAX_BONES];
@@ -735,19 +736,26 @@ static void own_frame(Packed *p, s32 a, float f, const Moved *mv, V3 hips_at, co
     const FollowKind *fk = c->kind;
     s32 frames = c->anims[a].frames, k, ci = fk->carry - 1, hand = fk->carry ? p->pb[ci == 1 ? PB_HAND_L : PB_HAND_R] : -1;
     float t = frames > 1 ? p->pm->clips[p->own[a]].length * f / (float)(frames - 1) : 0;
-    Mat trunk, hand_turn;
+    Mat trunk, hand_turn, carry;
     V3 hand_was;
 
     pack_pose_local(p->pm, p->own[a], t, local);
     pack_pose_world(p->pm, local, world);
     pose_from_world(p, (const float(*)[16])world, hips_at, p->scale, P, Q);
     trunk = Q[p->pb[PB_HIPS]];
+    /* what it carries turned out of its head, as when it follows (a move of its own made from its template's keeps its mallet so) */
+    if (fk->carry) {
+        V3 Hd = mid_of(L, c->hand[ci], c->nhand[ci]), head = vadd(hips_at, mat_apply(&trunk, vsub(p->head_mid, p->bone[p->pb[PB_HIPS]])));
+
+        carry = carry_clear(p, c, L, Hd, P[hand], head);
+    }
     pose_finish(p, mv, hips_at, fk->cut > 0, &trunk, P, Q, out, hand, &hand_turn, &hand_was);
     if (fk->carry) {
         V3 Hd = mid_of(L, c->hand[ci], c->nhand[ci]);
+        Mat turn = mat_mul(&hand_turn, &carry);
 
         for (k = 0; k < c->prop.nvert; k++) {
-            out[p->n + k] = hm_moved(mv, vadd(P[hand], mat_apply(&hand_turn, vsub(L[c->prop.corner_of[k]], Hd))));
+            out[p->n + k] = hm_moved(mv, vadd(P[hand], mat_apply(&turn, vsub(L[c->prop.corner_of[k]], Hd))));
         }
         return;
     }
@@ -930,9 +938,10 @@ static void pose_from_world(const Packed *p, const float (*world)[16], V3 anchor
  * its moves), little-endian: "HPP1", u32 bones, u32 its vertices, u32 the prop's after them, s32 the bone of the hand that carries
  * the prop (-1 none), s32 whether it's cut (in a tank's hatch or a race cart), u32 moves; each bone's name (48 bytes), s32 parent,
  * f32 x 3 its joint as it rests, s32 its part (1 leg, 2 tail, 3 arm); each vertex's f32 x 3 as it rests, u8 x 4 bones, f32 x 4
- * weights; each move's name (32 bytes) and u32 frames; then each frame of each move, its pose before its adjustments (pose_record):
+ * weights; each move's name (32 bytes), u32 frames and u32 whether it's the pack's own (its clip, not its template's move followed);
+ * then each frame of each move, its pose before its adjustments (pose_record):
  * f32 x 3 hips, x 9 trunk, x 9 and x 3 its move (out = A at + b), and each bone's f32 x 3 joint and x 9 turn. */
-static s32 pose_dump_begin(Packed *p, s32 kind, s32 nprop, s32 hand, s32 cut, const MadeAnim *anims, s32 nanims) {
+static s32 pose_dump_begin(Packed *p, s32 kind, s32 nprop, s32 hand, s32 cut, const MadeAnim *anims, s32 nanims, const s8 *own) {
     const char *folder = bonus_heroes_dump_folder();
     char path[600], name[48];
     u32 u[6];
@@ -965,12 +974,13 @@ static s32 pose_dump_begin(Packed *p, s32 kind, s32 nprop, s32 hand, s32 cut, co
         fwrite(&p->pm->weight[v * 4], sizeof(float), 4, p->rec);
     }
     for (a = 0; a < nanims; a++) {
-        u32 frames = (u32)anims[a].frames;
+        u32 frames = (u32)anims[a].frames, mine = own[a] != 0;
 
         memset(name, 0, sizeof(name));
         snprintf(name, 32, "%s", anims[a].name);
         fwrite(name, 1, 32, p->rec);
         fwrite(&frames, 4, 1, p->rec);
+        fwrite(&mine, 4, 1, p->rec);
     }
     snprintf(p->rec_path, sizeof(p->rec_path), "%s", path);
     return 1;
@@ -1123,10 +1133,6 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     if (fk->peg != NULL || fk->stand) {
         hips_at = vadd(H, vmul(up_world, p->hip_height - p->crash_hip_height));
     }
-    if (p->own[a] >= 0) {
-        own_frame(p, a, f, &mv, hips_at, L, out);
-        return;
-    }
     /* its feet kept on the pegs: Crash's legs stretch as he bounces (the user's word, 2026-11-22: off the pogo's pegs, at its handle),
      * so where its legs can't reach his feet from his hips, its hips come down until they do */
     if (fk->peg != NULL) {
@@ -1150,6 +1156,12 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
             }
         }
         hips_at.y += drop;
+    }
+    /* a clip of its own there (KIND/MOVE): its hips on the template's as they are here (on the pegs, come down as its legs need), so a
+     * move of its own copied from its template's (the hero tool) plays as it did */
+    if (p->own[a] >= 0) {
+        own_frame(p, a, f, &mv, hips_at, L, out);
+        return;
     }
     for (k = 0; k < p->pm->nbones; k++) {
         Q[k] = R;
@@ -1650,6 +1662,7 @@ static const FollowKind *map_kind(const FollowKind *crash, s32 hero) {
 
 static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *faces, s32 nfaces, const MadeImage *images, s32 nimages,
                            HeroMade *out) {
+    static s8 own_moves[FOLLOW_MOVES];
     Follow *c = &p->c;
     MadeFace *all = NULL;
     MadeImage *imgs = NULL;
@@ -1860,8 +1873,11 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
     }
     ok = made_write(&mm, &out->tex[fk->kind], &out->tex_size[fk->kind], &out->mdl[fk->kind], &out->mdl_size[fk->kind]);
     /* for the hero tool: each frame's pose (--dump-hero) */
+    for (i = 0; i < fk->nmoves; i++) {
+        own_moves[i] = (s8)(p->own[i] >= 0);
+    }
     if (ok && pose_dump_begin(p, fk->kind, c->prop.nvert, fk->carry ? p->pb[fk->carry - 1 == 1 ? PB_HAND_L : PB_HAND_R] : -1, fk->cut > 0,
-                              c->anims, fk->nmoves)) {
+                              c->anims, fk->nmoves, own_moves)) {
         static V3 tmp[PF_MAX_VERTS + FOLLOW_CORNERS + 512];
         s32 frames = 0;
 
@@ -2161,8 +2177,8 @@ void pack_follow_clip_frame(s32 clip, float t, const char *name, s32 frame, V3 *
 }
 
 /* Its poses on foot for the hero tool, as packheroes.c makes its frames: begun, then each frame made, then ended */
-s32 pack_follow_foot_dump_begin(const MadeAnim *anims, s32 nanims) {
-    return pose_dump_begin(&ThePack, KIND_FOOT, 0, -1, 0, anims, nanims);
+s32 pack_follow_foot_dump_begin(const MadeAnim *anims, s32 nanims, const s8 *own) {
+    return pose_dump_begin(&ThePack, KIND_FOOT, 0, -1, 0, anims, nanims, own);
 }
 
 void pack_follow_foot_dump_end(s32 frames) {

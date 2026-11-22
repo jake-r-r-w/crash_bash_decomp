@@ -102,6 +102,16 @@ typedef struct {
 } KitGameMoves;
 extern const KitGameMoves KitGames[];
 extern const int KitGameCount;
+/* A move of its own made from what the game made of its template's (the animation tools: a move of its template's is copied as it is
+   when it's first changed, so a change of template doesn't change it): a clip named KIND/MOVE (foot/MOVE on foot), frames as the game
+   plays them 30 a second, each frame's turns of the standard bones and the hips' move (as kit_pose gives them) */
+typedef struct {
+    char name[48];
+    int frames;
+    float length;
+    const float (*rot)[KB_COUNT][4];
+    const float (*hips)[3];
+} KitBaked;
 /* write.c: the pack, heroes/<id>/ in a mod folder, with its mod.json */
 typedef struct {
     const char *id, *name, *prefer, *mod_name, *author;
@@ -119,6 +129,8 @@ typedef struct {
     const char *card;                   /* its card in the character select, a PNG, or NULL for its face drawn from it */
     const PackAdjust *adjust;           /* its moves adjusted in the games (hero.json's "adjust": the animation tools) */
     int nadjust;
+    const KitBaked *baked;              /* moves of its own copied from its template's (the animation tools), written as clips */
+    int nbaked;
 } KitPack;
 int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, size_t why_size);
 /* rig.c: the markers as a JSON file kit_markers reads, and a first guess at them from the model's shape (a standing humanoid's
@@ -158,6 +170,7 @@ void kit_made_free(KitMade *m);
 typedef struct {
     char name[32];
     int frames;
+    int own;     /* the pack's own move (its clip), not its template's followed */
     float *pose; /* frames x (KIT_POSE_HEAD + bones x 12): each bone's joint (3) and turn (9, row-major) after the head */
 } KitPoseAnim;
 typedef struct {

@@ -82,6 +82,18 @@ static int own_clip(const KitModel *m, const char *move) {
     return -1;
 }
 
+/* whether a name is one of the pack's moves copied from its template's (KitPack.baked) */
+static int baked_named(const KitPack *p, const char *name) {
+    int i;
+
+    for (i = 0; i < p->nbaked; i++) {
+        if (SDL_strcasecmp(p->baked[i].name, name) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 static int write_file(const char *path, const void *p, size_t n) {
     SDL_IOStream *io = SDL_IOFromFile(path, "wb");
     int ok = io != NULL && SDL_WriteIO(io, p, n) == n;
@@ -162,16 +174,26 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
         ownname[nown][eq - p->own[b]] = 0;
         ownstd[nown++] = s;
     }
-    for (mv = 0; mv < KitMoveCount + (m->src != NULL ? m->src->nclips : 0) + nown && nmoves < 64; mv++) {
+    /* a move's name that's one of its moves copied from its template's (those are written last, in place of any other of that name) */
+#define BAKED(name) baked_named(p, name)
+    for (mv = 0; mv < KitMoveCount + (m->src != NULL ? m->src->nclips : 0) + nown + p->nbaked && nmoves < 64; mv++) {
         const char *mname;
         float mlen;
         int clip = -1, f, time_a, channels = 0, frames, std = mv < KitMoveCount ? mv : 0;
+        const KitBaked *bk = NULL;
 
-        if (mv >= KitMoveCount + (m->src != NULL ? m->src->nclips : 0)) {
+        if (mv >= KitMoveCount + (m->src != NULL ? m->src->nclips : 0) + nown) {
+            bk = &p->baked[mv - KitMoveCount - (m->src != NULL ? m->src->nclips : 0) - nown];
+            mname = bk->name;
+            mlen = bk->length;
+        } else if (mv >= KitMoveCount + (m->src != NULL ? m->src->nclips : 0)) {
             int o = mv - KitMoveCount - (m->src != NULL ? m->src->nclips : 0);
 
             std = ownstd[o];
             mname = ownname[o];
+            if (BAKED(mname)) {
+                continue;
+            }
             mlen = KitMoves[std].length;
             clip = own_clip(m, KitMoves[std].name);
             if (clip >= 0) {
@@ -196,13 +218,13 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
             }
             for (k = 0; k < KIT_DROP_MOST && p->drop[k] != NULL && SDL_strcasecmp(p->drop[k], mname) != 0; k++) {
             }
-            if (k < KIT_DROP_MOST && p->drop[k] != NULL) {
+            if ((k < KIT_DROP_MOST && p->drop[k] != NULL) || BAKED(mname)) {
                 continue;
             }
             clip = c;
         }
-        own += clip >= 0;
-        frames = (int)(mlen * KIT_FPS + 0.5f) + 1;
+        own += clip >= 0 || bk != NULL;
+        frames = bk != NULL ? bk->frames : (int)(mlen * KIT_FPS + 0.5f) + 1;
         frames = frames < 2 ? 2 : frames;
         float *times = malloc(sizeof(float) * frames), (*rot)[KB_COUNT][4] = malloc(sizeof(*rot) * frames), (*hips)[3] = malloc(sizeof(*hips) * frames);
         Text ch = { 0 }, sm = { 0 };
@@ -210,7 +232,10 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
 
         for (f = 0; f < frames; f++) {
             times[f] = mlen * f / (frames - 1);
-            if (clip < 0 || !kit_clip_pose(m, clip, times[f], rot[f], hips[f])) {
+            if (bk != NULL) {
+                memcpy(rot[f], bk->rot[f < bk->frames ? f : bk->frames - 1], sizeof(rot[f]));
+                memcpy(hips[f], bk->hips[f < bk->frames ? f : bk->frames - 1], sizeof(hips[f]));
+            } else if (clip < 0 || !kit_clip_pose(m, clip, times[f], rot[f], hips[f])) {
                 kit_pose(m, std, times[f], rot[f], hips[f]);
             }
         }

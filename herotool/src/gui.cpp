@@ -8,6 +8,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <vector>
 #include <SDL3/SDL.h>
 #include "imgui.h"
@@ -42,7 +43,16 @@ struct View {
     float cx = 0, cz = 0;
 };
 
-enum { OWN_TEMPLATE = -1, OWN_CLIP = -2 };
+enum { OWN_TEMPLATE = -1, OWN_CLIP = -2, OWN_MADE = -3 };
+
+// A move of its own copied from its template's (the animation tools, bake_move): as the game made it then, kept whatever it's based on
+struct BakedMove {
+    int kind, from;           // the game (PACK_KINDS'), and the hero it was copied from (HeroNames')
+    char move[32], name[48];  // its move, and its clip's name (KIND/MOVE, foot/MOVE on foot)
+    int frames;
+    float length;
+    std::vector<float> rot, hips; // each frame's turns of the standard bones (KB_COUNT x 4) and the hips' move (3), as kit_pose gives
+};
 const int PAGE_MODEL = -2, PAGE_ALL = -1;
 enum { PICK_MODEL, PICK_CARD, PICK_VOICE };
 
@@ -104,6 +114,16 @@ struct Tool {
     float adj_t = 0;
     // the frame shown made again with its adjustments, and the picked bone's joint and each bone's on the screen
     std::vector<int16_t> live;
+    // its moves of its own copied from its template's (OWN_MADE), its moves on foot of its own given back to its template (their clips
+    // left out), what was last made its own (said on the page), and a preview asked for while one was being made
+    std::vector<BakedMove> baked;
+    std::vector<std::string> foot_back;
+    char own_note[200] = "", watching[32] = ""; // (and the move watched, kept as it's made again)
+    bool remake = false;
+    // a change to a move of its own waiting on the user's yes (confirm_back): the game, its move and what it's to be
+    int ask_kind = -1, ask_move = -1, ask_to = OWN_TEMPLATE;
+    char ask_name[32] = "";
+    bool ask_open = false;
 };
 enum { KEY_FRAME, KEY_MOVE, KEY_GAME };
 
@@ -356,6 +376,9 @@ void open_model(Tool &T, const char *path) {
     T.dirty = false;
     T.page = PAGE_ALL;
     T.model_view = 0;
+    T.baked.clear();
+    T.foot_back.clear();
+    T.own_note[0] = 0;
     own_init(T);
     SDL_strlcpy(T.model, path, sizeof(T.model));
     T.rigged = m->skinned && kit_map_rig(m, why, sizeof(why));
@@ -457,6 +480,28 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     // its adjustments, but not in what the preview's made from: the preview makes them itself, on the game's poses before them
     p.adjust = T.adj.empty() || T.bare ? nullptr : T.adj.data();
     p.nadjust = T.bare ? 0 : (int)T.adj.size();
+    // its moves of its own copied from its template's, as clips (in the preview too: they're its moves, not changes made on them)
+    static std::vector<KitBaked> bk;
+    bk.clear();
+    for (auto &b : T.baked) {
+        KitBaked k = {};
+        SDL_strlcpy(k.name, b.name, sizeof(k.name));
+        k.frames = b.frames;
+        k.length = b.length;
+        k.rot = (const float(*)[KB_COUNT][4])b.rot.data();
+        k.hips = (const float(*)[3])b.hips.data();
+        bk.push_back(k);
+    }
+    p.baked = bk.empty() ? nullptr : bk.data();
+    p.nbaked = (int)bk.size();
+    // its moves on foot of its own given back to its template: their clips left out
+    for (auto &n : T.foot_back) {
+        if (nd < KIT_DROP_MOST) {
+            snprintf(drops[nd], sizeof(drops[0]), "%s", n.c_str());
+            p.drop[nd] = drops[nd];
+            nd++;
+        }
+    }
     for (int j = 0; j < PACK_VOICE_JOBS; j++) {
         p.voice[j] = T.voice[j][0] ? T.voice[j] : nullptr;
     }
@@ -517,9 +562,12 @@ void make_in_game(Tool &T) {
     const char *pref = SDL_GetPrefPath("CrashBashPC", "herotool");
 
     if (T.m == nullptr || T.maker != nullptr || pref == nullptr) {
+        T.remake = T.m != nullptr && T.maker != nullptr;
+        SDL_free((void *)pref);
         return;
     }
     T.made_asked = true;
+    T.remake = false;
     T.dirty = false;
     /* a mods folder of its own for each hero, so the game makes only this one (one left by another hero isn't made again with it) */
     snprintf(mods, sizeof(mods), "%spreviews/%s", pref, T.id);
@@ -547,7 +595,15 @@ void made_check(Tool &T) {
     }
     SDL_DestroyProcess(T.maker);
     T.maker = nullptr;
+    T.watching[0] = 0;
+    if (T.have_made[T.kind] && T.anim >= 0 && T.anim < T.made[T.kind].nanims) {
+        SDL_strlcpy(T.watching, T.made[T.kind].anims[T.anim].name, sizeof(T.watching));
+    }
     made_forget(T);
+    if (T.remake) {
+        // asked for again while it was being made (a move made its own): made again with that, and this one's used meanwhile
+        make_in_game(T);
+    }
     int have = 0;
     for (int k = 0; k < PACK_KINDS; k++) {
         char path[1300];
@@ -575,11 +631,23 @@ void made_check(Tool &T) {
             }
         }
     }
+    // the move watched kept (made again as it's changed), else its breathing
+    int was = T.anim;
     T.anim = T.have_made[T.kind] ? breathe_of(&T.made[T.kind]) : 0;
-    T.made_t = 0;
+    for (int a = 0; T.have_made[T.kind] && a < T.made[T.kind].nanims; a++) {
+        T.anim = SDL_strcasecmp(T.made[T.kind].anims[a].name, T.watching) == 0 ? a : T.anim;
+    }
+    if (T.anim != was) {
+        T.made_t = 0;
+    }
     snprintf(T.status, sizeof(T.status), have != 0 ? "The game made it in %d of its %d games: pick one on the left to choose its prop and moves."
                                                    : "The game didn't make it (it said %d): does it find its data when you start it yourself?",
              have != 0 ? have : code, PACK_KINDS);
+    // a move just made its own said so
+    if (T.own_note[0] != 0) {
+        snprintf(T.status, sizeof(T.status), "%s", T.own_note);
+        T.own_note[0] = 0;
+    }
 }
 
 // A made model's frame drawn: its faces textured as the PS1 does (the texel times its corner's colour, 128 as it is), clear texels
@@ -869,6 +937,160 @@ void adj_redo(Tool &T) {
     }
 }
 
+int game_of(int kind);
+void make_in_game(Tool &T);
+
+// Who a game's moves follow: its own choice there (Prop from, Stands like), else who it's based on
+int template_of(const Tool &T, int kind) {
+    return T.kind_template[kind] >= 0 ? T.kind_template[kind] : T.template_hero;
+}
+
+// A game's move's own copy (made from its template's), or null
+BakedMove *baked_of(Tool &T, int kind, const char *move) {
+    for (auto &b : T.baked) {
+        if (b.kind == kind && SDL_strcasecmp(b.move, move) == 0) {
+            return &b;
+        }
+    }
+    return nullptr;
+}
+
+// The protection (the user's word, 2026-11-22: "if you make a new animation for something ... it will override the template one ...
+// if you change the template that won't override your custom animation"): a move of its template's, the first time it's changed, is
+// copied as the game makes it now (its pose before any change, the game's .pose) into a move of its own, a clip (KIND/MOVE) the game
+// plays in place of following, which its changes are then made on. Changing who it's based on, or its prop, doesn't change it after.
+// Each standard bone's turn from its rest is the game's in glTF's axes (C Q C, C = y and z the other way), made a turn from the bone
+// it hangs from; on foot (where a clip's hips are its own, not put on its template's) the hips' move too, in the model's units.
+bool bake_move(Tool &T, int kind, int anim) {
+    if (kind < 0 || kind >= PACK_KINDS || !T.have_pose[kind] || T.m == nullptr || anim < 0 || anim >= T.poses[kind].nanims) {
+        return false;
+    }
+    const KitPose *po = &T.poses[kind];
+    const KitPoseAnim *pa = &po->anims[anim];
+    if (pa->own || baked_of(T, kind, pa->name) != nullptr) {
+        return false;
+    }
+    int of[KB_COUNT];
+    for (int b = 0; b < KB_COUNT; b++) {
+        of[b] = -1;
+        for (int j = 0; j < po->nbones; j++) {
+            of[b] = SDL_strcasecmp(po->names[j], KitBoneNames[b]) == 0 ? j : of[b];
+        }
+    }
+    if (of[KB_HIPS] < 0) {
+        return false;
+    }
+    // the game's units to the model's: its rest hips to head in each
+    float k = 0;
+    if (of[KB_HEAD] >= 0 && T.m->bones[KB_HEAD].have) {
+        float dg = 0, dm = 0;
+        for (int i = 0; i < 3; i++) {
+            float a = po->bone[of[KB_HEAD] * 3 + i] - po->bone[of[KB_HIPS] * 3 + i], c = T.m->bones[KB_HEAD].at[i] - T.m->bones[KB_HIPS].at[i];
+            dg += a * a, dm += c * c;
+        }
+        k = dm > 0 ? sqrtf(dg / dm) : 0;
+    }
+    BakedMove bm;
+    bm.kind = kind;
+    bm.from = template_of(T, kind);
+    SDL_strlcpy(bm.move, pa->name, sizeof(bm.move));
+    snprintf(bm.name, sizeof(bm.name), "%s/%s", pack_kind_name(kind), pa->name);
+    bm.frames = pa->frames;
+    // as many frames as the game made of it: 30 a second, and on foot as many more as its subframes (2, as the tool writes them)
+    bm.length = (pa->frames - 1) / (kind == 0 ? 60.0f : 30.0f);
+    bm.rot.assign((size_t)pa->frames * KB_COUNT * 4, 0);
+    bm.hips.assign((size_t)pa->frames * 3, 0);
+    static const float C[3] = { 1, -1, -1 };
+    for (int f = 0; f < pa->frames; f++) {
+        const float *rec = pa->pose + (size_t)f * (KIT_POSE_HEAD + (size_t)po->nbones * 12), *A = rec + 12;
+        float W[KB_COUNT][9];
+        for (int b = 0; b < KB_COUNT; b++) {
+            float Q[9] = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+            if (of[b] >= 0) {
+                memcpy(Q, rec + KIT_POSE_HEAD + of[b] * 12 + 3, sizeof(Q));
+            }
+            // on foot it's as it's shown (its clip isn't moved with anything), so its move's turn is in it
+            if (kind == 0) {
+                float AQ[9];
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        AQ[i * 3 + j] = A[i * 3] * Q[j] + A[i * 3 + 1] * Q[3 + j] + A[i * 3 + 2] * Q[6 + j];
+                    }
+                }
+                memcpy(Q, AQ, sizeof(Q));
+            }
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    W[b][i * 3 + j] = C[i] * C[j] * Q[i * 3 + j];
+                }
+            }
+        }
+        for (int b = 0; b < KB_COUNT; b++) {
+            // its turn from the bone it hangs from: parent' W
+            float Lm[9], *q = &bm.rot[((size_t)f * KB_COUNT + b) * 4];
+            int par = KitBoneParent[b];
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    Lm[i * 3 + j] = par < 0 ? W[b][i * 3 + j]
+                                            : W[par][i] * W[b][j] + W[par][3 + i] * W[b][3 + j] + W[par][6 + i] * W[b][6 + j];
+                }
+            }
+            // a turn as a quaternion (x y z w)
+            float tr = Lm[0] + Lm[4] + Lm[8];
+            if (tr > 0) {
+                float r = sqrtf(1 + tr) * 2;
+                q[3] = r / 4, q[0] = (Lm[7] - Lm[5]) / r, q[1] = (Lm[2] - Lm[6]) / r, q[2] = (Lm[3] - Lm[1]) / r;
+            } else if (Lm[0] > Lm[4] && Lm[0] > Lm[8]) {
+                float r = sqrtf(1 + Lm[0] - Lm[4] - Lm[8]) * 2;
+                q[3] = (Lm[7] - Lm[5]) / r, q[0] = r / 4, q[1] = (Lm[1] + Lm[3]) / r, q[2] = (Lm[2] + Lm[6]) / r;
+            } else if (Lm[4] > Lm[8]) {
+                float r = sqrtf(1 + Lm[4] - Lm[0] - Lm[8]) * 2;
+                q[3] = (Lm[2] - Lm[6]) / r, q[0] = (Lm[1] + Lm[3]) / r, q[1] = r / 4, q[2] = (Lm[5] + Lm[7]) / r;
+            } else {
+                float r = sqrtf(1 + Lm[8] - Lm[0] - Lm[4]) * 2;
+                q[3] = (Lm[3] - Lm[1]) / r, q[0] = (Lm[2] + Lm[6]) / r, q[1] = (Lm[5] + Lm[7]) / r, q[2] = r / 4;
+            }
+        }
+        // on foot the hips' move from their rest, in the model's units and axes
+        if (kind == 0 && k > 0) {
+            const float *P = rec + KIT_POSE_HEAD + of[KB_HIPS] * 12, *b = rec + 21;
+            for (int i = 0; i < 3; i++) {
+                float shown = A[i * 3] * P[0] + A[i * 3 + 1] * P[1] + A[i * 3 + 2] * P[2] + b[i];
+                bm.hips[(size_t)f * 3 + i] = C[i] * (shown - po->bone[of[KB_HIPS] * 3 + i]) / k;
+            }
+        }
+    }
+    T.baked.push_back(std::move(bm));
+    int g = game_of(kind);
+    if (g >= 0) {
+        for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+            T.ownmap[g][m] = SDL_strcasecmp(KitGames[g].moves[m], pa->name) == 0 ? OWN_MADE : T.ownmap[g][m];
+        }
+    }
+    for (size_t i = 0; i < T.foot_back.size(); i++) {
+        if (SDL_strcasecmp(T.foot_back[i].c_str(), T.baked.back().name) == 0) {
+            T.foot_back.erase(T.foot_back.begin() + (long)i);
+            break;
+        }
+    }
+    snprintf(T.own_note, sizeof(T.own_note), "%s here is now its own move, copied from %s's: whoever it's based on, it stays as you make it.",
+             pa->name, HeroNames[T.baked.back().from]);
+    make_in_game(T);
+    return true;
+}
+
+// Before a change to a game's move (or every move there): each of its template's made its own first
+void own_before_change(Tool &T, const char *move) {
+    if (T.kind < 0 || T.kind >= PACK_KINDS || !T.have_pose[T.kind]) {
+        return;
+    }
+    for (int a = 0; a < T.poses[T.kind].nanims; a++) {
+        if (strcmp(move, "*") == 0 || SDL_strcasecmp(T.poses[T.kind].anims[a].name, move) == 0) {
+            bake_move(T, T.kind, a);
+        }
+    }
+}
+
 // The adjustment a change of a bone in this move is made to, as T.key_mode says (this frame, the whole move, every move in this game):
 // the one there, else a new one if make (none if there are as many as a pack has room for)
 PackAdjust *adj_key(Tool &T, const char *move, const char *bone, bool make) {
@@ -886,6 +1108,7 @@ PackAdjust *adj_key(Tool &T, const char *move, const char *bone, bool make) {
     if (!make) {
         return nullptr;
     }
+    own_before_change(T, mv);
     if (T.adj.size() >= PACK_MAX_ADJUSTS) {
         snprintf(T.status, sizeof(T.status), "That's as many changes as a hero has room for (%d): take some away first.", PACK_MAX_ADJUSTS);
         return nullptr;
@@ -1332,6 +1555,9 @@ void load_pack(Tool &T, const Found &f) {
         T.adj.assign(info.adjust, info.adjust + info.nadjust);
         T.undo.clear();
         T.redo.clear();
+        T.baked.clear();
+        T.foot_back.clear();
+        T.own_note[0] = 0;
         for (int k = 0; k < PACK_KINDS; k++) {
             int th = info.kinds[k].template_hero;
             T.kind_template[k] = th >= 1 && th <= 8 && th - 1 != T.template_hero ? th - 1 : -1;
@@ -1654,6 +1880,113 @@ void editor_middle(Tool &T) {
     ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
 }
 
+// A game's move's choice changed (Its moves here): one of its own given up only on the user's yes (ask_back), as it's work of theirs
+void own_change(Tool &T, int kind, int g, int m, int to) {
+    int sel = T.ownmap[g][m];
+
+    if (sel == OWN_MADE || sel == OWN_CLIP) {
+        T.ask_kind = kind, T.ask_move = m, T.ask_to = to;
+        SDL_strlcpy(T.ask_name, KitGames[g].moves[m], sizeof(T.ask_name));
+        T.ask_open = true;
+        return;
+    }
+    T.ownmap[g][m] = to;
+    make_in_game(T);
+}
+
+// A move of its own given up: its copy, and its changes there, gone; its choice made what the user picked
+void own_give_up(Tool &T, int kind, const char *move, int g, int m, int to) {
+    for (size_t i = 0; i < T.baked.size(); i++) {
+        if (T.baked[i].kind == kind && SDL_strcasecmp(T.baked[i].move, move) == 0) {
+            T.baked.erase(T.baked.begin() + (long)i);
+            break;
+        }
+    }
+    if (kind == 0) {
+        T.foot_back.push_back(std::string("foot/") + move);
+    }
+    std::vector<PackAdjust> keep;
+    for (auto &a : T.adj) {
+        if (!(a.kind == kind && SDL_strcasecmp(a.move, move) == 0)) {
+            keep.push_back(a);
+        }
+    }
+    T.adj = keep;
+    if (g >= 0 && m >= 0) {
+        T.ownmap[g][m] = to;
+    }
+    T.own_note[0] = 0;
+    make_in_game(T);
+}
+
+// The yes asked before a move of its own is given up (own_change), as a window over the rest
+void ask_back(Tool &T) {
+    if (!ImGui::BeginPopupModal("Give up its own move?", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        return;
+    }
+    int g = game_of(T.ask_kind);
+    char to[80];
+    if (T.ask_to == OWN_TEMPLATE) {
+        snprintf(to, sizeof(to), "%s's", HeroNames[template_of(T, T.ask_kind)]);
+    } else if (T.ask_to == OWN_CLIP) {
+        snprintf(to, sizeof(to), "its own clip");
+    } else {
+        snprintf(to, sizeof(to), "my %s", T.ask_to >= 0 && T.ask_to < KitMoveCount ? KitMoves[T.ask_to].name : "");
+    }
+    ImGui::Text("%s here is its own move: you made it, or changed it.", T.ask_name);
+    ImGui::Text("Play %s in its place? Its own %s, and your changes to it, will be gone.", to, T.ask_name);
+    ImGui::Spacing();
+    if (ImGui::Button("Keep mine", ImVec2(U(160), 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+        ImGui::CloseCurrentPopup();
+    }
+    ImGui::SameLine();
+    char use[100];
+    snprintf(use, sizeof(use), "Use %s", to);
+    if (ImGui::Button(use, ImVec2(U(220), 0))) {
+        own_give_up(T, T.ask_kind, T.ask_name, g, T.ask_move, T.ask_to);
+        ImGui::CloseCurrentPopup();
+    }
+    ImGui::EndPopup();
+}
+
+// On foot, where it follows a hero: its moves of its own there (made from that hero's, or its clips), each to give back
+void foot_own_moves(Tool &T) {
+    std::vector<std::string> mine;
+    for (auto &b : T.baked) {
+        if (b.kind == 0) {
+            mine.push_back(b.move);
+        }
+    }
+    for (int c = 0; T.m != nullptr && T.m->src != nullptr && c < T.m->src->nclips; c++) {
+        const char *n = T.m->src->clips[c].name;
+        bool back = false;
+        for (auto &fb : T.foot_back) {
+            back |= SDL_strcasecmp(fb.c_str(), n) == 0;
+        }
+        if (SDL_strncasecmp(n, "foot/", 5) == 0 && !back && baked_of(T, 0, n + 5) == nullptr) {
+            mine.push_back(n + 5);
+        }
+    }
+    if (mine.empty()) {
+        ImGui::TextDisabled("Change one of its moves here and it becomes its own, kept whoever it's based on.");
+        return;
+    }
+    ImGui::Text("Its own moves here (kept whoever it's based on):");
+    for (size_t i = 0; i < mine.size(); i++) {
+        ImGui::PushID((int)i);
+        ImGui::BulletText("%s", mine[i].c_str());
+        ImGui::SameLine();
+        char t[80];
+        snprintf(t, sizeof(t), "Use %s's", HeroNames[template_of(T, 0)]);
+        if (ImGui::SmallButton(t)) {
+            T.ask_kind = 0, T.ask_move = -1, T.ask_to = OWN_TEMPLATE;
+            SDL_strlcpy(T.ask_name, mine[i].c_str(), sizeof(T.ask_name));
+            T.ask_open = true;
+        }
+        ImGui::PopID();
+    }
+}
+
 // A game's page, on the right: Adjust its moves (the animation tools), for fixing what the game makes of it there by hand
 void adjust_panel(Tool &T) {
     if (!ImGui::CollapsingHeader("Adjust its moves", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -1687,6 +2020,22 @@ void adjust_panel(Tool &T) {
          "leg bending to follow; from any other joint, drag the way you want what's on it to point (Shift: drag round it to turn it). "
          "Turn the view with the right mouse button to move it forward or back. The values below set it exactly. Keys: Space plays, "
          "the arrows step a frame, Ctrl+Z undoes, Ctrl+Y does it again.");
+    // whose the move is: its own stays as it's made whoever it's based on; its template's becomes its own when it's first changed
+    const BakedMove *copied = baked_of(T, T.kind, move);
+    bool own = T.poses[T.kind].anims[a].own || copied != nullptr;
+    if (own) {
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.55f, 0.9f, 0.55f, 1));
+        if (copied != nullptr) {
+            ImGui::TextWrapped("%s here is its own move, copied from %s's: whoever it's based on, it stays as you make it.", move,
+                               HeroNames[copied->from]);
+        } else {
+            ImGui::TextWrapped("%s here is its own move: whoever it's based on, it stays as you make it.", move);
+        }
+        ImGui::PopStyleColor();
+    } else {
+        ImGui::TextWrapped("%s here is %s's. Change it and it becomes its own copy, kept as you make it whoever it's based on.", move,
+                           HeroNames[template_of(T, T.kind)]);
+    }
     if (!T.adjusting) {
         if (here > 0) {
             ImGui::TextDisabled("%d change%s in this game.", here, here == 1 ? "" : "s");
@@ -1751,6 +2100,7 @@ void adjust_panel(Tool &T) {
         if (ImGui::Button(other_side(bone)[0] != 0 ? "Mirror to its other side" : "Mirror (it has no other side)")
             && other_side(bone)[0] != 0) {
             adj_snapshot(T);
+            own_before_change(T, move);
             adj_mirror(T, move, bone);
         }
         ImGui::SetItemTooltip("Its changes in this move given to its other side, the other way round");
@@ -1951,8 +2301,9 @@ void editor_right(Tool &T, SDL_Window *win) {
         ImGui::Spacing();
         if (g >= 0) {
             ImGui::Text("Its moves here");
-            hint("What it plays for each of this game's moves: the hero it follows, its model's own clip if it came with one, or "
-                 "one of the tool's moves on your model (see Model and joints).");
+            hint("What it plays for each of this game's moves: the hero it follows, its own (a move you've changed is its own, "
+                 "copied from the hero it followed, and stays so whoever it's based on), or one of the tool's moves on your model "
+                 "(see Model and joints).");
             int from = T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero;
             for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
                 char now[80];
@@ -1961,7 +2312,10 @@ void editor_right(Tool &T, SDL_Window *win) {
                 if (sel == OWN_TEMPLATE) {
                     snprintf(now, sizeof(now), "%s's", HeroNames[from]);
                 } else if (sel == OWN_CLIP) {
-                    snprintf(now, sizeof(now), "its own clip");
+                    snprintf(now, sizeof(now), "its own");
+                } else if (sel == OWN_MADE) {
+                    const BakedMove *bm = baked_of(T, k, KitGames[g].moves[m]);
+                    snprintf(now, sizeof(now), "its own (from %s's)", HeroNames[bm != nullptr ? bm->from : from]);
                 } else {
                     snprintf(now, sizeof(now), "my %s", KitMoves[sel].name);
                 }
@@ -1972,20 +2326,20 @@ void editor_right(Tool &T, SDL_Window *win) {
                 if (ImGui::BeginCombo("##move", now)) {
                     char t[64];
                     snprintf(t, sizeof(t), "%s's", HeroNames[from]);
-                    if (ImGui::Selectable(t, sel == OWN_TEMPLATE)) {
-                        T.ownmap[g][m] = OWN_TEMPLATE;
-                        make_in_game(T);
+                    if (ImGui::Selectable(t, sel == OWN_TEMPLATE) && sel != OWN_TEMPLATE) {
+                        own_change(T, k, g, m, OWN_TEMPLATE);
                     }
-                    if (clip && ImGui::Selectable("its own clip", sel == OWN_CLIP)) {
-                        T.ownmap[g][m] = OWN_CLIP;
-                        make_in_game(T);
+                    if (sel == OWN_MADE) {
+                        ImGui::Selectable(now, true);
+                    }
+                    if (clip && ImGui::Selectable("its own", sel == OWN_CLIP) && sel != OWN_CLIP) {
+                        own_change(T, k, g, m, OWN_CLIP);
                     }
                     ImGui::Separator();
                     for (int s = 0; s < KitMoveCount; s++) {
                         snprintf(t, sizeof(t), "my %s", KitMoves[s].name);
-                        if (ImGui::Selectable(t, sel == s)) {
-                            T.ownmap[g][m] = s;
-                            make_in_game(T);
+                        if (ImGui::Selectable(t, sel == s) && sel != s) {
+                            own_change(T, k, g, m, s);
                         }
                     }
                     ImGui::EndCombo();
@@ -1996,7 +2350,10 @@ void editor_right(Tool &T, SDL_Window *win) {
             if (k == 0 && T.foot_own) {
                 ImGui::TextWrapped("Its moves here are its own: its model's clips, and the tool's moves on it for the rest.");
             } else {
-                ImGui::TextWrapped("Its moves here are %s's.", HeroNames[T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero]);
+                ImGui::TextWrapped("Its moves here are %s's, but those of its own.", HeroNames[template_of(T, k)]);
+                if (k == 0) {
+                    foot_own_moves(T);
+                }
             }
         }
     }
@@ -2018,6 +2375,16 @@ void editor_right(Tool &T, SDL_Window *win) {
         hint("Standing, in the game's units: Crash is 452, most heroes about 650.");
         if (ImGui::Combo("Based on", &T.template_hero, HeroNames, 8)) {
             T.dirty = true;
+            int mine = (int)T.baked.size();
+            for (int g = 0; g < KitGameCount && g < 8; g++) {
+                for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+                    mine += T.ownmap[g][m] == OWN_CLIP || T.ownmap[g][m] >= 0;
+                }
+            }
+            if (mine > 0) {
+                snprintf(T.status, sizeof(T.status), "Based on %s now. Its own moves (%d) stay as they are: only %s's are played in place of "
+                         "the rest. Update the preview to see it.", HeroNames[T.template_hero], mine, HeroNames[T.template_hero]);
+            }
         }
         hint("The hero it plays as: their moves, speed and reach, and their ride or prop in every game (each game can pick another "
              "prop). It takes their place in the game, or the first free hero's if someone's playing them, and uses their sound "
@@ -2148,6 +2515,11 @@ void editor_window(Tool &T, SDL_Window *win) {
         ImGui::EndChild();
         ImGui::EndTable();
     }
+    if (T.ask_open) {
+        ImGui::OpenPopup("Give up its own move?");
+        T.ask_open = false;
+    }
+    ask_back(T);
     ImGui::End();
 }
 
@@ -2451,8 +2823,26 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         last = now;
         made_check(T);
+        /* a test's: HEROTOOL_ASK=MOVE picks its template's for that move of the game shown, as its list would (asking first if it's
+           its own) */
+        static bool asked = false;
+        if (!asked && SDL_getenv("HEROTOOL_ASK") != nullptr && T.page >= 0 && T.have_pose[T.kind] && T.maker == nullptr) {
+            int g = game_of(T.kind);
+            for (int m = 0; g >= 0 && m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+                if (SDL_strcasecmp(KitGames[g].moves[m], SDL_getenv("HEROTOOL_ASK")) == 0) {
+                    own_change(T, T.kind, g, m, OWN_TEMPLATE);
+                }
+            }
+            asked = true;
+        }
+        /* a test's: HEROTOOL_SAVE_TO=FOLDER saves it there once HEROTOOL_ADJUST's change is made and the game's made it again */
+        static bool adjust_set = false, adjust_saved = false;
+        if (adjust_set && !adjust_saved && SDL_getenv("HEROTOOL_SAVE_TO") != nullptr && T.maker == nullptr && !T.remake) {
+            export_pack(T, false, SDL_getenv("HEROTOOL_SAVE_TO"));
+            printf("herotool: %s\n", T.status);
+            adjust_saved = true;
+        }
         /* a test's: HEROTOOL_ADJUST=BONE@FRAME adjusts the game shown once it's made, that bone picked at that frame */
-        static bool adjust_set = false;
         if (!adjust_set && SDL_getenv("HEROTOOL_ADJUST") != nullptr && T.page >= 0 && T.have_pose[T.kind]) {
             char bone[64];
             const char *at = strchr(SDL_getenv("HEROTOOL_ADJUST"), '@');

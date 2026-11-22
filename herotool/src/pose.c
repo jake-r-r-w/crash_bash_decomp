@@ -72,13 +72,14 @@ int kit_pose_read(const char *path, KitPose *p) {
         }
     }
     for (a = 0; a < p->nanims; a++) {
-        uint32_t frames;
+        uint32_t frames, own;
 
-        if (!rd(f, p->anims[a].name, 32) || !rd(f, &frames, 4) || frames > 4096) {
+        if (!rd(f, p->anims[a].name, 32) || !rd(f, &frames, 4) || !rd(f, &own, 4) || frames > 4096) {
             goto done;
         }
         p->anims[a].name[31] = 0;
         p->anims[a].frames = (int)frames;
+        p->anims[a].own = own != 0;
     }
     for (a = 0; a < p->nanims; a++) {
         size_t n = (size_t)p->anims[a].frames * (KIT_POSE_HEAD + (size_t)p->nbones * 12);

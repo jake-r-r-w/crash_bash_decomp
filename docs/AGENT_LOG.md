@@ -667,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: a hero's own moves protected from template changes (the user's word). The first change to a template's move copies it
+  (the hero tool's `bake_move`, from the game's .pose) into a move of its own, a `KIND/MOVE` clip, which the change is made on; giving
+  one up asks first. The game: a clip's hips come down on the pegs and its carried prop turns out of its head, as a followed move's,
+  so a copy is the move to the unit. Pack saved from the window with no template (Bobby's own moves on foot) the same day.
+
 - 2026-11-22: Bobby's ears wired up ("i cant move them"): their markers ran down the back of his head, so the long flaps went with his
   head and chest; now down each flap's middle, and the tool counts ears as wide as a head (rig.c `Wide`). His pack made again from his
   markers (no template, as ever: byte for byte the repo's with the old markers). The hero tool scales for its screen (`ui_scale`:

@@ -363,6 +363,27 @@ itself on those poses, as the game would, so a change shows as it's made, with n
 and the game's (from hero.json with the same change) the same to a unit, on the pogo, the tank, the mallet (its carrying hand) and
 on foot (an own clip).
 
+**Its own moves, kept whoever it's based on** (the user's word, 2026-11-22: "if you make a new animation for something ... it will
+over ride the template one ... if you change the template that wont overide your custom animation"). A change is made on a move, so a
+change made on its template's would land on another hero's move if the template changed. So the first change to a move of its
+template's (`bake_move`, gui.cpp) copies that move as the game makes it now (the .pose says which moves are its template's) into a
+move of its own: each frame's turns of the standard bones (the game's turns in glTF's axes, each made a turn from the bone it hangs
+from), and on foot the hips' move too, written as a clip `KIND/MOVE` (`foot/MOVE`; `KitBaked`, write.c), which the game plays in
+place of following (`own_frame`; on foot before its template's). The change is then made on that copy. A template changed after,
+for the kind or the whole hero, doesn't change it: its hips go on the new template's, as a clip's do, and it plays over that hero's
+length of the move, but its body moves as it was made. For the copy to be the move exactly, a clip's hips come down onto the pegs as a
+followed move's do, and what it carries is turned out of its head (`carry_clear`) as when it follows. Checked: a copy is the move it
+was made from to the unit (the pogo's BREATHE, from Crash's; on foot, from Cortex's), and on Cortex's pogo the same BREATHE keeps its
+body's shape (1% to 2%, any turn or size aside, against 50% for a move still Cortex's).
+
+In the tool a game's **Its moves here** says each move's: its template's, **its own (from Crash's)**, **its own** (a clip it has,
+such a copy once it's saved), or one of the tool's. Giving one of its own up for anything else asks first (**Give up its own move?**:
+**Keep mine** or **Use Crash's**), and takes its changes with it. On foot, where it follows a hero, **Its own moves here** lists them,
+each with **Use Crash's** (asked the same). The page's **Adjust its moves** says whose the move is ("BREATHE here is its own move,
+copied from Crash's: whoever it's based on, it stays as you make it", or "BREATHE here is Crash's. Change it and it becomes its own
+copy"), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change
+(the game having made it again), and `HEROTOOL_ASK=MOVE` picks a move's template's, for tests.
+
 **In the tool**, each game's page has **Adjust its moves**: **Show its joints, to adjust it** puts a dot on every joint over the
 picture (squares for the hips, hands and feet), stops the move, and a timeline goes under it (play or stop, the frame, a mark at each
 change, the change before and after). Click a joint to pick it, then drag: a hand, foot or the hips moves with the mouse across the
