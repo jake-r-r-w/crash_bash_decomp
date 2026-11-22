@@ -877,8 +877,9 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
             s = vadd(s, vmul(vadd(P[b], mat_apply(&Q[b], vsub(p->rest[k], p->bone[b]))), w));
             lower += p->lower[b] ? w : 0;
         }
-        /* in a tank's hatch or a race cart, its legs hidden at one point just below its hips */
-        if (fk->cut > 0 && lower > 0.5f) {
+        /* in a tank's hatch or a race cart, its legs and tail, and all of it below its hips, hidden at one point just below them (else
+           they show through the tank: the user's word, 2026-11-22) */
+        if (fk->cut > 0 && (lower > 0.5f || s.y > hips_at.y + 4)) {
             s = vadd(hips_at, v3(0, 8, 0));
         }
         out[k] = hm_moved(&mv, s);
@@ -1599,7 +1600,8 @@ static void pack_prep(Packed *p, const FollowKind *fk) {
         char c0 = (char)(n[0] | 32), c1 = (char)(n[0] != 0 ? n[1] | 32 : 0);
 
         p->bone[b] = vadd(hips, vmul(vsub(at, hips), fk->scale));
-        p->lower[b] = (s8)((c0 == 't' && c1 == 'h') || (c0 == 's' && c1 == 'h') || (c0 == 'f' && c1 == 'o'));
+        /* its legs' bones and its tail's (thigh, shin, foot, tail: the hero tool's names), hidden where it sits in something */
+        p->lower[b] = (s8)((c0 == 't' && c1 == 'h') || (c0 == 's' && c1 == 'h') || (c0 == 'f' && c1 == 'o') || (c0 == 't' && c1 == 'a'));
         p->role[b] = -1;
     }
     for (i = 0; i < PB_COUNT; i++) {
