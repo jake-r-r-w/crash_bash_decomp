@@ -667,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool says much less (the user: "its very wordy for a visual tool"): a word or two a control, the rest in
+  tooltips, one (?) (the animation's controls), Turn/Move/Size as X Y Z rows tinted as Blender's (`xyz_row`), short top-bar messages,
+  the key list folded away. The right's fields and the start screen's leave room for their labels and buttons at any scale (Based on,
+  Mod's name, Create and Refresh were cut off).
+
 - 2026-11-22: a key's fade changed as its move played went to another key or none (the panel followed the frame shown). Now the
   panel keeps to the key picked while it plays (`panel_key`), and clicking a key as it plays picks it without stopping it.
 

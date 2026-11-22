@@ -267,15 +267,15 @@ share of the screen's kept for next time (zoom.txt in its own folder), Ctrl and 
 **Edit a hero**, a list of every hero in the mods folder's unzipped mods (`heroes/<id>/hero.json`). Editing one opens the pack's
 own `hero.glb` (rigged on the standard skeleton, its moves its clips, so anyone's shared pack can be changed without its first
 model) and takes its name, height, who it's based on (its template, else whose place it takes) and face from hero.json, the mod's name and author from mod.json, and its
-card and sounds from its files; **Export** writes it back into that mod. `< Start screen` goes back to it (`HEROTOOL_LOAD=ID`
+card and sounds from its files; **Save** writes it back into that mod. `< Start screen` goes back to it (`HEROTOOL_LOAD=ID`
 loads a hero, for a test). Drop a `.glb` on it (or a `.png` for its card, a `.wav`
 for the sound job picked, a markers `.json`). Its front and side views show the model at rest with its markers, to drag onto its
 joints (its left's mirror its right's, a bone's end is the next one's start, and its weights are worked out again on letting go);
 the third plays the move picked, turning. A model with no markers beside it (`MODEL.glb.markers.json`, saved there on each
 export) starts from a guess (`kit_guess_markers`: a standing humanoid's proportions in its box, arms out if it's as wide as a
 T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, no markers. Then its name, height, who it's based on, card,
-sounds and the mod's name, and **Export** writes the mod to the mods folder (beside the tool by default, the game's if it's
-there), or **Export and test in game** starts the game too, with it as player 1 in the game picked. `HEROTOOL_SHOT=FILE.png`
+sounds and the mod's name, and **Save** writes the mod to the mods folder (beside the tool by default, the game's if it's
+there), or **Save and play** starts the game too, with it as player 1 in the game picked. `HEROTOOL_SHOT=FILE.png`
 saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it opens, for tests.
 
 **Its pictures** are drawn by the tool itself, on the processor (`draw`, `draw_made`), so drawing them is kept down (the user's
@@ -293,11 +293,11 @@ previews and zoom in a folder of its own (not the open tool's).
 and joints** (its rig, or the dots to place on its joints, and the tool's own moves on it), **All games at a glance** (every kind of
 model at once, each playing), and each game. In the middle the page's picture; on the right its choices, then **Hero details**
 (name, id, height, **Based on**: its template and whose place it takes, one choice, its face), **Card and sounds** (Browse, the system's file
-chooser) and **Save** (**Save to mods folder**, **Save and play** in a game picked). A game's page has **Prop from** (that game's
-ride or prop and moves from another hero than its template) and **Its moves here**: for each of the game's moves (KitGames) its
-template's, **its own clip** if the model has one (`GAME/MOVE`, a pack loaded to change), or **my MOVE**, one of the tool's moves
+chooser) and **Save** (**Save**, **Save and play** in a game picked). A game's page has **Prop from** (that game's
+ride or prop and moves from another hero than its template) and **Moves**: for each of the game's moves (KitGames) its
+template's, **own clip** if the model has one (`GAME/MOVE`, a pack loaded to change), or **my MOVE**, one of the tool's moves
 (written as a `GAME/MOVE` clip; a model's own such clip not chosen is left out, `KitPack.drop`). A change of prop or move makes the
-preview again by itself; other changes show **Update the preview**. Its tests' settings: `HEROTOOL_PAGE=N` (-2 the model's, -1 all,
+preview again by itself; other changes show **Update preview**. Its tests' settings: `HEROTOOL_PAGE=N` (-2 the model's, -1 all,
 a kind), `HEROTOOL_OWN=GAME/MOVE=MOVE`.
 
 **The preview**: the first time a game's page is open for a model it's made by itself. Making it
@@ -316,7 +316,7 @@ tank's turret and weapon) unless its kind says `"like"`; one that says no templa
 double-clicked to set back, and show BREATHE first.
 Under each game in the gallery a choice of **whose ride or prop** it has there: its template's, or another hero's (the pogo stick
 or Cortex's jetpack, Tiny's keg ...), written as that kind's `"template"` in hero.json (`--template-in GAME=HERO` from the command
-line); picking one makes it again. On foot it's **Stands like**, which also has **itself: its own moves** (its model's clips, and the
+line); picking one makes it again. On foot it's **Stands like**, which also has **Own moves** (its model's clips, and the
 tool's moves on it for the rest): a pack loaded that says no template (Bobby) is so, and is saved as it was, with no template, if
 it's based on Crash, else with `"own"` on foot (the user's word, 2026-11-22: the tool saved a template for Bobby, so on foot he
 followed Crash's moves). Cortex's and Brio's hover board is the game's jets, drawn in the game, not shown here.
@@ -410,16 +410,15 @@ followed move's do, and what it carries is turned out of its head (`carry_clear`
 was made from to the unit (the pogo's BREATHE, from Crash's; on foot, from Cortex's), and on Cortex's pogo the same BREATHE keeps its
 body's shape (1% to 2%, any turn or size aside, against 50% for a move still Cortex's).
 
-In the tool a game's **Its moves here** says each move's: its template's, **its own (from Crash's)**, **its own** (a clip it has,
-such a copy once it's saved), or one of the tool's. Giving one of its own up for anything else asks first (**Give up its own move?**:
-**Keep mine** or **Use Crash's**), and takes its changes with it. On foot, where it follows a hero, **Its own moves here** lists them,
-each with **Use Crash's** (asked the same). The page's **Adjust its moves** says whose the move is ("BREATHE here is its own move,
-copied from Crash's: whoever it's based on, it stays as you make it", or "BREATHE here is Crash's. Change it and it becomes its own
-copy"), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change
+In the tool a game's **Moves** says each move's: its template's, **own (from Crash)**, **own clip** (a clip it has, such a copy
+once it's saved), or one of the tool's. Replacing one of its own asks first (**Replace its own move?**: **Keep mine** or **Use
+Crash's**), and takes its changes with it. On foot, where it follows a hero, **Own moves** lists them, each with **Use Crash's**
+(asked the same). The page's **Animation** says whose the move is with a tag beside **Edit joints** (**Own move (from Crash)**, green,
+or **Crash's move**; its tooltip says the rest), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change
 (the game having made it again), and `HEROTOOL_ASK=MOVE` picks a move's template's, for tests.
 
-**In the tool**, each game's page has **Adjust its moves**: **Show its joints, to adjust it** puts a dot on every joint over the
-picture (squares for the hips, hands and feet) and stops the move. Click a joint to pick it: on it is a **gizmo**, as Blender's (the
+**In the tool**, each game's page has **Animation**: **Edit joints** puts a dot on every joint over the picture (squares for the
+hips, hands and feet) and stops the move; its (?) is a card of the controls and keys. Click a joint to pick it: on it is a **gizmo**, as Blender's (the
 user's word, 2026-11-22: "a proper gizmo tool like blender has so we can rotate, move and scale"), in the hero's own axes as Blender's
 are for a character facing -Y: X red to its left, Y green to its back, Z blue up (`Way` in `adjust_view`, gui.cpp: the game's y is
 down), the panel's values lettered the same. Over the picture, **Turn (R)**, **Move (G)** and **Size (S)** pick which, as do those
@@ -438,11 +437,17 @@ line red and its Y line green, drawn where the model doesn't hide it. In its top
 (`view_axes`): each axis lettered at its end, plain at the other; clicking one looks from there (the keypad's 1 from its front, 3
 from its left side, 7 from above, with Ctrl from the other side; `view_from`), its front at the bottom from above. The picture is
 fitted to how tall the model looks from the view's tilt, its middle in the picture's. The right mouse button turns the view (to
-straight above or below), so an arrow or ring can be had from any side. A change is made to **this frame** (fading over the frames
-picked), **the whole move**, or **every move here**. The picked joint's values set it exactly, in X, Y, Z order (tip forward, lean
-to its left, turn to its right; to its left, to its back, up; wider, deeper, taller as x1 as it is); **Mirror to its other side**
-gives its changes in this move to its other side the other way round (its size as it is); **Reset this joint**, **Reset this move**,
-**Undo**, **Redo**, and the list of its changes in the move (picking one goes to it).
+straight above or below), so an arrow or ring can be had from any side. **Key** says what a change is made to: **Frame** (fading
+over the frames picked), **Move** (the whole move) or **All moves** (every move in the game). Under the joint's name, its values set
+it exactly: **Turn**, **Move** and **Size** rows of X, Y and Z, each field tinted its axis's colour as Blender's (`xyz_row`; X tips it
+forward, Y leans it to its left, Z turns it to its right; to its left, to its back, up; wider, deeper, taller, 1 as it is: each
+field's tooltip says it); **Mirror** gives its changes in this move to its other side the other way round (its size as it is);
+**Reset joint**, **Undo**, **Redo**, **Reset move**, the history, and **Keys (N)**, its keys in the move, folded away (picking one
+goes to it).
+
+The tool says as little as it can (the user's word, 2026-11-22: "its very wordy for a visual tool"): a word or two for a control,
+what it does in its tooltip, one (?) (the animation's controls card), short messages on the top bar, and no paragraphs; the right's
+fields leave room for their labels at the window's scale.
 
 Under the picture is its **timeline** (the user's word: "a key frame time line below the animation"): play or stop, the key before
 and after, the frame, the speed, and a sheet of the move's frames: a ruler (click or drag it to go to a frame) with the frame shown
@@ -450,11 +455,11 @@ across it all, and a row for each joint with a change in the move (and the joint
 at a frame is a diamond; one **held** over frames a bar between two diamonds; its fade a band either side; one to the whole move a
 green bar, to every move here a blue one. Click a key to pick it and go to it (its joint, its frame and fade). Drag a diamond (a held
 key by its bar) to move it to other frames. To hold one over more frames or fewer: drag a held key's end, or a picked key's grips
-(the white bars either side), or Shift and drag a key the way it's to go. Right-click a key for **Hold it to the end of the move**,
-**from the start**, **all through the move**, **Just its own frame again**, and **Take this key away** (or press Delete). The panel
-says a held key's frames (**from frame**, **to frame**, to type or drag) with **Hold it all through the move**; a change made at any
+(the white bars either side), or Shift and drag a key the way it's to go. Right-click a key for **Copy**, **Paste**, **Paste
+mirrored**, **Fade**, **Stretch to end**, **Stretch to start**, **Stretch to whole move**, **Single frame** and **Delete** (or press
+Delete). The panel's **Frames** row says a held key's first and last frames (to type or drag) with **All**; a change made at any
 frame it's held over is made to it (`adj_key`), so its head made bigger anywhere there is bigger all the way. The fade picked
-(**Fades over**, and **Fades like**: Smooth, Steady, Slow start, Slow finish, Sudden, Overshoot, Bounce, Wobble) is the picked
+(**Fade**: its frames, and its curve: Smooth, Steady, Slow start, Slow finish, Sudden, Overshoot, Bounce, Wobble) is the picked
 joint's key's there (or a new key's), and right-clicking a key has **Fade** too. Each key's row draws its fade as it is, how much of
 it there is each frame (a bounce's bumps, an overshoot's rise past it).
 
@@ -466,9 +471,9 @@ panel says to click one; a value changed then stops it and makes a key at the fr
 
 **Copy and paste** (the user's word, 2026-11-22: "add keyframe copy and paste in the timeline"): Ctrl+C (or right-click, **Copy**)
 copies the key picked (else the picked joint's at the frame shown); Ctrl+V pastes it at the frame shown onto the joint picked, with
-its change, its fade and the frames it's held over, and Ctrl+Shift+V mirrored, its other side's way (as **Mirror to its other side**:
-across, and its turns about up and front to back, the other way). Right-click an empty place in a joint's row for **Paste here** (or
-mirrored) at that frame, or a key for **Paste over it**. A key there already (at that frame, or to the whole move) is replaced; a
+its change, its fade and the frames it's held over, and Ctrl+Shift+V mirrored, its other side's way (as **Mirror**: across, and its
+turns about up and front to back, the other way). Right-click an empty place in a joint's row for **Paste here** (or **Paste
+mirrored**) at that frame, or a key for **Paste** over it. A key there already (at that frame, or to the whole move) is replaced; a
 key to the whole move or every move here pastes as that (`key_copy`, `key_paste`).
 
 **The undo history** (the user's word, 2026-11-22: "add undo history for keyframe moves in the timeline"): every change is a step

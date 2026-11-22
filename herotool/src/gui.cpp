@@ -260,17 +260,16 @@ enum { GIZMO_TURN, GIZMO_MOVE, GIZMO_SIZE };
 enum { KEY_BODY, KEY_START, KEY_END, KEY_EITHER };
 
 // Each way a key can fade in and out (PACK_EASE_), as the tool says it, and what it does
-const char *const EaseSays[PACK_EASES] = { "Smooth", "Steady", "Slow start", "Slow finish", "Sudden (no fade)", "Overshoot", "Bounce",
-                                           "Wobble" };
+const char *const EaseSays[PACK_EASES] = { "Smooth", "Steady", "Slow start", "Slow finish", "Sudden", "Overshoot", "Bounce", "Wobble" };
 const char *const EaseTips[PACK_EASES] = {
-    "Eases in and out of its change (as keys always did)",
-    "Fades in and out at an even rate",
-    "Barely changes at first, then quickly into its change",
-    "Changes quickly at first, then settles gently into its change",
-    "All of its change at once on its frames and none either side (its fade's frames don't count)",
-    "Goes a little past its change and back as it arrives",
-    "Bounces into its change",
-    "Springs past its change and back, less each time",
+    "Eases in and out",
+    "Even rate",
+    "Slow, then quick",
+    "Quick, then settles",
+    "No fade",
+    "Goes past and back",
+    "Bounces in",
+    "Springs past and back",
 };
 
 // The kinds of model the game makes (heropack.c's names), as the games call them
@@ -407,7 +406,7 @@ void look_around(View &v, float &yaw, int button = 0) {
         v.pitch = 12, v.zoom = 1, yaw = 30;
     }
     if (button == 0) {
-        ImGui::SetItemTooltip("Drag to turn it, scroll to zoom, double-click to set it back");
+        ImGui::SetItemTooltip("Drag: turn   Wheel: zoom   Double-click: reset");
     }
 }
 
@@ -543,9 +542,8 @@ void open_model(Tool &T, const char *path) {
         T.name[i] = (char)SDL_toupper((unsigned char)T.id[i]);
     }
     snprintf(T.mod_name, sizeof(T.mod_name), "%s", T.id);
-    snprintf(T.status, sizeof(T.status), "%s: %d triangles, %d vertices. %s", base, m->ntri, m->nvert,
-             T.rigged ? "Its own rig is used: its bones were found by their names."
-                      : "It has no rig: place the dots on its joints under Model and joints.");
+    snprintf(T.status, sizeof(T.status), "%s: %d triangles, %d vertices, %s", base, m->ntri, m->nvert,
+             T.rigged ? "rigged" : "no rig (place its joints)");
 }
 
 bool export_pack(Tool &T, bool test, const char *out = nullptr) {
@@ -652,7 +650,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
         snprintf(T.status, sizeof(T.status), "%s", why);
     } else {
         ok = true;
-        snprintf(T.status, sizeof(T.status), "Saved to %s. It's in the game when that's the game's mods folder.", folder);
+        snprintf(T.status, sizeof(T.status), "Saved to %s", folder);
         if (test) {
             char mode[16];
             snprintf(mode, sizeof(mode), "%d", Modes[T.mode].mode);
@@ -661,7 +659,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
             SDL_Process *proc = SDL_CreateProcess(args, false);
 
             if (proc == nullptr) {
-                snprintf(T.status, sizeof(T.status), "Exported, but the game didn't start (%s): is it at %s?", SDL_GetError(), T.game);
+                snprintf(T.status, sizeof(T.status), "Saved, but the game didn't start (%s): is it at %s?", SDL_GetError(), T.game);
             } else {
                 SDL_DestroyProcess(proc);
             }
@@ -731,7 +729,7 @@ void make_in_game(Tool &T) {
     }
     const char *args[] = { T.game, "--mods-dir", mods, "--mod", T.id, "--dump-hero", T.id, T.made_dir, nullptr };
     T.maker = SDL_CreateProcess(args, false);
-    snprintf(T.status, sizeof(T.status), T.maker != nullptr ? "The game's making it in every game..." : "The game didn't start (%s): is it at %s?",
+    snprintf(T.status, sizeof(T.status), T.maker != nullptr ? "Making..." : "The game didn't start (%s): is it at %s?",
              SDL_GetError(), T.game);
 }
 
@@ -789,7 +787,7 @@ void made_check(Tool &T) {
     if (T.anim != was) {
         T.made_t = 0;
     }
-    snprintf(T.status, sizeof(T.status), have != 0 ? "The game made it in %d of its %d games: pick one on the left to choose its prop and moves."
+    snprintf(T.status, sizeof(T.status), have != 0 ? "Made in %d of %d games"
                                                    : "The game didn't make it (it said %d): does it find its data when you start it yourself?",
              have != 0 ? have : code, PACK_KINDS);
     // a move just made its own said so
@@ -1314,7 +1312,7 @@ bool bake_move(Tool &T, int kind, int anim) {
             break;
         }
     }
-    snprintf(T.own_note, sizeof(T.own_note), "%s here is now its own move, copied from %s's: whoever it's based on, it stays as you make it.",
+    snprintf(T.own_note, sizeof(T.own_note), "%s is now its own move (from %s)",
              pa->name, HeroNames[T.baked.back().from]);
     make_in_game(T);
     return true;
@@ -1363,7 +1361,7 @@ PackAdjust *adj_key(Tool &T, const char *move, const char *bone, bool make) {
     }
     own_before_change(T, mv);
     if (T.adj.size() >= PACK_MAX_ADJUSTS) {
-        snprintf(T.status, sizeof(T.status), "That's as many changes as a hero has room for (%d): take some away first.", PACK_MAX_ADJUSTS);
+        snprintf(T.status, sizeof(T.status), "No room for more keys (%d)", PACK_MAX_ADJUSTS);
         return nullptr;
     }
     PackAdjust a = {};
@@ -1409,12 +1407,11 @@ void key_copy(Tool &T) {
         k = adj_key(T, mk->anims[T.anim < mk->nanims ? T.anim : 0].name, po->names[T.sel], false);
     }
     if (k == nullptr) {
-        snprintf(T.status, sizeof(T.status), "Pick a key in the timeline to copy it.");
+        snprintf(T.status, sizeof(T.status), "Pick a key to copy");
         return;
     }
     T.clip.assign(1, *k);
-    snprintf(T.status, sizeof(T.status), "Copied %s's key: Ctrl+V pastes it at the frame shown on the joint picked (Ctrl+Shift+V mirrored, "
-             "for its other side).", bone_title(k->bone));
+    snprintf(T.status, sizeof(T.status), "Copied %s's key", bone_title(k->bone));
 }
 
 // The key copied pasted onto bone b at frame (a key to the whole move, or every move here, as that): what it changes, its fade, and
@@ -1425,7 +1422,7 @@ void key_paste(Tool &T, int b, int frame, bool mirrored) {
     const KitPose *po = &T.poses[T.kind];
 
     if (T.clip.empty() || b < 0 || b >= po->nbones || mk->nanims == 0) {
-        snprintf(T.status, sizeof(T.status), T.clip.empty() ? "Copy a key first (pick it in the timeline, then Ctrl+C)." : "Pick a joint to paste onto.");
+        snprintf(T.status, sizeof(T.status), T.clip.empty() ? "Nothing copied" : "Pick a joint to paste onto");
         return;
     }
     int a = T.anim < mk->nanims ? T.anim : 0, frames = mk->anims[a].frames;
@@ -1454,7 +1451,7 @@ void key_paste(Tool &T, int b, int frame, bool mirrored) {
         }
     }
     if (there < 0 && T.adj.size() >= PACK_MAX_ADJUSTS) {
-        snprintf(T.status, sizeof(T.status), "That's as many changes as a hero has room for (%d): take some away first.", PACK_MAX_ADJUSTS);
+        snprintf(T.status, sizeof(T.status), "No room for more keys (%d)", PACK_MAX_ADJUSTS);
         return;
     }
     char at[40] = "";
@@ -1592,7 +1589,7 @@ void view_from(View &v, float &yaw, int side) {
 // end and plain at its other. Clicking one looks from there (view_from). True if the mouse is over it, so a click there is its.
 bool view_axes(View &v, float &yaw, ImVec2 im, float w, bool hovered) {
     static const char *const Letter[3] = { "X", "Y", "Z" };
-    static const char *const Says[6] = { "its left side (X)", "its back (Y)", "above (Z)", "its right side (-X)", "its front (-Y)", "below (-Z)" };
+    static const char *const Says[6] = { "Left (X)", "Back (Y)", "Top (Z)", "Right (-X)", "Front (-Y)", "Bottom (-Z)" };
     static const ImU32 Col[3] = { IM_COL32(235, 75, 75, 255), IM_COL32(120, 210, 70, 255), IM_COL32(80, 140, 245, 255) };
     static const float Way[3][3] = { { 1, 0, 0 }, { 0, 0, 1 }, { 0, -1, 0 } }; // each in the game's axes
     ImDrawList *dl = ImGui::GetWindowDrawList();
@@ -1638,12 +1635,12 @@ bool view_axes(View &v, float &yaw, ImVec2 im, float w, bool hovered) {
         }
     }
     if (over >= 0) {
-        ImGui::SetTooltip("Look from %s", Says[ends[over].side]);
+        ImGui::SetTooltip("%s", Says[ends[over].side]);
         if (ImGui::IsMouseClicked(0)) {
             view_from(v, yaw, ends[over].side);
         }
     } else if (near) {
-        ImGui::SetTooltip("Its axes, as Blender's: click one to look from there (the keypad's 1 front, 3 side, 7 above; Ctrl: the other side)");
+        ImGui::SetTooltip("Click an axis to view from it");
     }
     return near;
 }
@@ -1651,9 +1648,7 @@ bool view_axes(View &v, float &yaw, ImVec2 im, float w, bool hovered) {
 // Over the picture while adjusting: which gizmo it has, Turn (R), Move (G) or Size (S), the one on lit
 void gizmo_buttons(Tool &T) {
     static const char *const Says[3] = { "Turn (R)", "Move (G)", "Size (S)" };
-    static const char *const Tips[3] = { "Turn the joint picked, and all on it: drag a ring, or its middle to point it at the mouse",
-                                         "Move the joint picked, and all on it, along an arrow, or with the mouse by its middle (a hand or foot: its arm or leg bends to follow)",
-                                         "Make the joint picked, and all on it, bigger or smaller along a handle, or all over by its middle" };
+    static const char *const Tips[3] = { "Rings turn, the middle aims", "Arrows move, the middle drags", "Handles scale, the middle scales all" };
     for (int i = 0; i < 3; i++) {
         bool on = T.gizmo == i;
         if (on) {
@@ -1675,7 +1670,7 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     static Posed ps;
     // the hero's own x (across), y (up and down) and z (front to back): Blender's X red, Z blue and Y green
     static const ImU32 Axis[3] = { IM_COL32(235, 75, 75, 255), IM_COL32(80, 140, 245, 255), IM_COL32(120, 210, 70, 255) };
-    static const char *const AxisSays[3] = { "across (X: its left and right)", "up and down (Z)", "front to back (Y)" };
+    static const char *const AxisSays[3] = { "X", "Z", "Y" };
     const KitMade *mk = &T.made[T.kind];
     const KitPose *po = &T.poses[T.kind];
     int a = T.anim < mk->nanims ? T.anim : 0;
@@ -1813,17 +1808,15 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     }
     if (!T.dragging) {
         if (over >= H_TURN && over < H_TURN + 3) {
-            ImGui::SetTooltip("Drag round it to turn %s %s", bone_title(po->names[T.sel]), AxisSays[over - H_TURN]);
+            ImGui::SetTooltip("%s: turn %s", bone_title(po->names[T.sel]), AxisSays[over - H_TURN]);
         } else if (over == H_TURN_VIEW) {
-            ImGui::SetTooltip("Drag round it to turn %s as you look at it", bone_title(po->names[T.sel]));
+            ImGui::SetTooltip("%s: turn (view)", bone_title(po->names[T.sel]));
         } else if (over >= H_MOVE && over < H_MOVE + 3) {
-            ImGui::SetTooltip("Drag along it to move %s %s", bone_title(po->names[T.sel]), AxisSays[over - H_MOVE]);
+            ImGui::SetTooltip("%s: move %s", bone_title(po->names[T.sel]), AxisSays[over - H_MOVE]);
         } else if (over >= H_SIZE && over < H_SIZE + 3) {
-            ImGui::SetTooltip("Drag along it to make %s bigger or smaller %s", bone_title(po->names[T.sel]), AxisSays[over - H_SIZE]);
+            ImGui::SetTooltip("%s: size %s", bone_title(po->names[T.sel]), AxisSays[over - H_SIZE]);
         } else if (hover >= 0) {
-            ImGui::SetTooltip(hover == T.sel ? "%s: drag it to %s" : "%s: click to pick it", bone_title(po->names[hover]),
-                              T.gizmo == GIZMO_TURN ? "point what's on it at the mouse" : T.gizmo == GIZMO_MOVE ? "move it across the view"
-                                                                                                : "make it bigger or smaller all over");
+            ImGui::SetTooltip("%s", bone_title(po->names[hover]));
         }
     }
     // a click: a handle of the gizmo taken, or a joint picked (its middle taken, if it's the one picked already)
@@ -1970,7 +1963,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         T.frame = to >= 0 ? to : T.frame;
         T.adj_playing = false;
     }
-    ImGui::SetItemTooltip("The key before this frame");
+    ImGui::SetItemTooltip("Previous key");
     ImGui::SameLine();
     if (ImGui::ArrowButton("##after", ImGuiDir_Right)) {
         int to = frames;
@@ -1980,12 +1973,13 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         T.frame = to < frames ? to : T.frame;
         T.adj_playing = false;
     }
-    ImGui::SetItemTooltip("The key after this frame");
+    ImGui::SetItemTooltip("Next key");
     ImGui::SameLine();
-    ImGui::Text("frame %d of %d", T.frame, frames);
+    ImGui::Text("%d / %d", T.frame, frames);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(U(110));
-    ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2fx");
+    ImGui::SliderFloat("##speed", &T.made_speed, 0, 2, "%.2fx");
+    ImGui::SetItemTooltip("Speed");
 
     // its rows: each joint with a change in this move (or every move here), and the one picked
     std::vector<int> rows;
@@ -2096,7 +2090,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         }
     }
     if (rows.empty()) {
-        dl->AddText(ImVec2(o.x + U(4), o.y + ruler + U(3)), IM_COL32(150, 150, 160, 255), "Pick a joint in the picture to see its keys.");
+        dl->AddText(ImVec2(o.x + U(4), o.y + ruler + U(3)), IM_COL32(150, 150, 160, 255), "Click a joint");
     }
     // the frame shown, across it all
     float px = fx((float)T.frame);
@@ -2188,15 +2182,13 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     if (over && under >= 0 && !T.key_drag) {
         const PackAdjust &k = T.adj[under];
         if (k.at >= 0 && part != KEY_BODY) {
-            ImGui::SetTooltip("Drag to hold %s's key over more frames or fewer", bone_title(k.bone));
+            ImGui::SetTooltip("Stretch");
         } else if (k.at >= 0 && key_last(k) > k.at) {
-            ImGui::SetTooltip("%s, held from frame %d to %d (fading over %d): drag it to move it, its ends to hold it longer or shorter; "
-                              "right-click for more", bone_title(k.bone), k.at, key_last(k), k.spread);
+            ImGui::SetTooltip("%s  %d-%d  %s %d", bone_title(k.bone), k.at, key_last(k), EaseSays[k.ease], k.spread);
         } else if (k.at >= 0) {
-            ImGui::SetTooltip("%s, frame %d (fading over %d): drag it to move it; Shift and drag it (or once it's picked, its grips) to "
-                              "hold it over more frames; right-click for more", bone_title(k.bone), k.at, k.spread);
+            ImGui::SetTooltip("%s  %d  %s %d\nShift-drag to stretch", bone_title(k.bone), k.at, EaseSays[k.ease], k.spread);
         } else {
-            ImGui::SetTooltip("%s, %s: right-click to take it away", bone_title(k.bone), strcmp(k.move, "*") == 0 ? "every move here" : "the whole move");
+            ImGui::SetTooltip("%s  %s", bone_title(k.bone), strcmp(k.move, "*") == 0 ? "all moves" : "whole move");
         }
     }
     if (over && under >= 0 && ImGui::IsMouseClicked(1)) {
@@ -2214,15 +2206,15 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         }
     }
     if (ImGui::BeginPopup("here")) {
-        ImGui::TextDisabled("%s, frame %d", T.sel >= 0 ? bone_title(po->names[T.sel]) : "", T.frame);
+        ImGui::TextDisabled("%s  %d", T.sel >= 0 ? bone_title(po->names[T.sel]) : "", T.frame);
         if (ImGui::MenuItem("Paste here", "Ctrl+V", false, !T.clip.empty())) {
             key_paste(T, T.sel, T.frame, false);
         }
-        if (ImGui::MenuItem("Paste here mirrored", "Ctrl+Shift+V", false, !T.clip.empty())) {
+        if (ImGui::MenuItem("Paste mirrored", "Ctrl+Shift+V", false, !T.clip.empty())) {
             key_paste(T, T.sel, T.frame, true);
         }
         if (T.clip.empty()) {
-            ImGui::TextDisabled("(copy a key first: right-click it, or pick it and Ctrl+C)");
+            ImGui::TextDisabled("(nothing copied)");
         }
         ImGui::EndPopup();
     }
@@ -2236,10 +2228,10 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             if (ImGui::MenuItem("Copy", "Ctrl+C")) {
                 key_copy(T);
             }
-            if (ImGui::MenuItem("Paste over it", nullptr, false, !T.clip.empty())) {
+            if (ImGui::MenuItem("Paste", nullptr, false, !T.clip.empty())) {
                 paste = 1;
             }
-            if (ImGui::MenuItem("Paste over it mirrored", nullptr, false, !T.clip.empty())) {
+            if (ImGui::MenuItem("Paste mirrored", nullptr, false, !T.clip.empty())) {
                 paste = 2;
             }
             ImGui::Separator();
@@ -2259,27 +2251,27 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                 key_paste(T, pack_bone_index(po, k.bone), k.at >= 0 ? k.at : T.frame, paste == 2);
             } else if (k.at >= 0) {
                 // held over more of the move: to its end, from its start, all through it; or its own frame again
-                if (ImGui::MenuItem("Hold it to the end of the move", nullptr, false, last < frames - 1)) {
+                if (ImGui::MenuItem("Stretch to end", nullptr, false, last < frames - 1)) {
                     adj_snapshot(T, "Held %s's key from frame %d to %d", b, k.at, frames - 1);
                     k.until = frames - 1;
                 }
-                if (ImGui::MenuItem("Hold it from the start of the move", nullptr, false, k.at > 0)) {
+                if (ImGui::MenuItem("Stretch to start", nullptr, false, k.at > 0)) {
                     adj_snapshot(T, "Held %s's key from frame 0 to %d", b, last);
                     k.until = last;
                     k.at = 0;
                 }
-                if (ImGui::MenuItem("Hold it all through the move", nullptr, false, k.at > 0 || last < frames - 1)) {
+                if (ImGui::MenuItem("Stretch to whole move", nullptr, false, k.at > 0 || last < frames - 1)) {
                     adj_snapshot(T, "Held %s's key all through %s", b, move);
                     k.at = 0;
                     k.until = frames - 1;
                 }
-                if (ImGui::MenuItem("Just its own frame again", nullptr, false, last > k.at)) {
+                if (ImGui::MenuItem("Single frame", nullptr, false, last > k.at)) {
                     adj_snapshot(T, "Made %s's key frame %d alone", b, k.at);
                     k.until = k.at;
                 }
                 ImGui::Separator();
             }
-            if (ImGui::MenuItem("Take this key away", "Delete")) {
+            if (ImGui::MenuItem("Delete", "Delete")) {
                 adj_snapshot(T, "Took away %s's key", b);
                 T.adj.erase(T.adj.begin() + T.key_sel);
                 T.key_sel = -1;
@@ -2464,6 +2456,8 @@ void json_string(const char *text, const char *key, char *out, size_t size) {
     out[n] = 0;
 }
 
+const char *short_path(const char *path);
+
 // A hero pack loaded to change: its model (the pack's own, rigged on the standard skeleton, its moves its clips), and what hero.json,
 // mod.json, card.png and the voices say. Export writes it back into the same mod.
 void load_pack(Tool &T, const Found &f) {
@@ -2515,7 +2509,7 @@ void load_pack(Tool &T, const Found &f) {
     }
     SDL_strlcpy(T.loaded_mod, f.mod, sizeof(T.loaded_mod));
     T.home = false;
-    snprintf(T.status, sizeof(T.status), "%s, from %s: change what you like, then Save to mods folder puts it back there.", T.name, f.mod);
+    snprintf(T.status, sizeof(T.status), "Editing %s (%s)", T.name, short_path(f.mod));
 }
 
 // The system's file chooser's pick, from whatever thread it answers on, for the main loop to open
@@ -2547,7 +2541,7 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::SetWindowFontScale(1.6f);
     ImGui::Text("Hero tool");
     ImGui::SetWindowFontScale(1.0f);
-    ImGui::TextDisabled("Make a hero of your own for Crash Bash PC, as a mod, from a 3D model.");
+    ImGui::TextDisabled("Custom heroes for Crash Bash PC");
     ImGui::Spacing();
     ImGui::Separator();
     ImGui::Spacing();
@@ -2555,12 +2549,12 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::SetWindowFontScale(1.25f);
     ImGui::Text("Create a new hero");
     ImGui::SetWindowFontScale(1.0f);
-    ImGui::TextDisabled("Pick its 3D model, a .glb file (or drop one on this window).");
-    if (ImGui::Button("Browse for a model...", ImVec2(U(200), 0))) {
+    ImGui::TextDisabled("A .glb model, or drop one on the window");
+    if (ImGui::Button("Browse...", ImVec2(U(200), 0))) {
         SDL_ShowOpenFileDialog(picked, (void *)(intptr_t)PICK_MODEL, win, Glb, 1, nullptr, false);
     }
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(w - 300);
+    ImGui::SetNextItemWidth(w - U(200) - U(110) - 2 * ImGui::GetStyle().ItemSpacing.x);
     ImGui::InputTextWithHint("##newmodel", "or type its path", T.model, sizeof(T.model));
     ImGui::SameLine();
     if (ImGui::Button("Create", ImVec2(-1, 0)) && T.model[0] != 0) {
@@ -2575,10 +2569,9 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::SetWindowFontScale(1.25f);
     ImGui::Text("Edit a hero");
     ImGui::SetWindowFontScale(1.0f);
-    ImGui::TextDisabled("The heroes in the mods folder: pick one to change it.");
     ImGui::BeginChild("found", ImVec2(0, U(220)), ImGuiChildFlags_Borders);
     if (NumFound == 0) {
-        ImGui::TextDisabled("No heroes here yet (a zipped mod's are changed by unzipping it).");
+        ImGui::TextDisabled("None yet (unzip a zipped mod to edit it)");
     }
     for (int i = 0; i < NumFound; i++) {
         char label[256];
@@ -2586,21 +2579,21 @@ void start_screen(Tool &T, SDL_Window *win) {
         for (const char *c = Founds[i].mod; *c != 0; c++) {
             mod = *c == '/' || *c == '\\' ? c + 1 : mod;
         }
-        snprintf(label, sizeof(label), "%s   (%s, in the mod %s)##%d", Founds[i].name, Founds[i].id, mod, i);
+        snprintf(label, sizeof(label), "%s   (%s)##%d", Founds[i].name, mod, i);
         if (ImGui::Selectable(label, false, 0, ImVec2(0, U(26)))) {
             load_pack(T, Founds[i]);
         }
     }
     ImGui::EndChild();
     ImGui::Text("Mods folder");
-    ImGui::SetNextItemWidth(w - 110);
+    ImGui::SetNextItemWidth(w - U(110) - ImGui::GetStyle().ItemSpacing.x);
     ImGui::InputText("##mods", T.out, sizeof(T.out));
     ImGui::SameLine();
-    if (ImGui::Button("Look again", ImVec2(-1, 0))) {
+    if (ImGui::Button("Refresh", ImVec2(-1, 0))) {
         find_heroes(T);
     }
     ImGui::Spacing();
-    ImGui::TextDisabled("Ctrl and + or - make everything bigger or smaller, kept for next time (Ctrl and 0: as your screen has it).");
+    ImGui::TextDisabled("Ctrl + / - zoom    Ctrl 0 reset");
     if (T.status[0] != 0 && T.m == nullptr) {
         ImGui::TextWrapped("%s", T.status);
     }
@@ -2687,12 +2680,12 @@ void editor_left(Tool &T) {
     ImGui::Spacing();
     ImGui::Separator();
     if (T.maker != nullptr) {
-        ImGui::TextWrapped("Making it in the games...");
+        ImGui::TextDisabled("Making...");
     } else if (T.dirty && T.made_asked) {
-        if (ImGui::Button("Update the preview", ImVec2(-1, 0))) {
+        if (ImGui::Button("Update preview", ImVec2(-1, 0))) {
             make_in_game(T);
         }
-        ImGui::TextDisabled("after your changes");
+        ImGui::SetItemTooltip("Make it again in the games, with your changes");
     }
 }
 
@@ -2701,11 +2694,11 @@ void editor_middle(Tool &T) {
 
     if (T.page == PAGE_MODEL) {
         if (!T.rigged) {
-            if (ImGui::RadioButton("Place its joints", T.model_view == 0)) {
+            if (ImGui::RadioButton("Joints", T.model_view == 0)) {
                 T.model_view = 0;
             }
             ImGui::SameLine();
-            if (ImGui::RadioButton("Watch its moves", T.model_view == 1)) {
+            if (ImGui::RadioButton("Moves", T.model_view == 1)) {
                 T.model_view = 1;
             }
         }
@@ -2716,8 +2709,7 @@ void editor_middle(Tool &T) {
             view_window(T, T.front, "front", true, 0);
             ImGui::SameLine();
             view_window(T, T.side, "side", true, 1);
-            ImGui::TextWrapped("Drag each dot onto its joint in both views: yellow its body, blue its arms, green its legs, orange its jaw, "
-                               "ears and tail. A small dot is a bone's end.");
+            ImGui::TextDisabled("Drag the dots onto its joints: yellow body, blue arms, green legs, orange jaw, ears and tail");
         } else {
             view_window(T, T.play, "move", false, 2);
             T.play.zx = ViewW / 2.0f;
@@ -2725,11 +2717,11 @@ void editor_middle(Tool &T) {
             look_around(T.play, T.turn);
             ImGui::SetNextItemWidth(U(180));
             ImGui::Combo("Move", &T.move, [](void *, int i) { return KitMoves[i].name; }, nullptr, KitMoveCount);
+            ImGui::SetItemTooltip("The tool's own moves, which a game's moves can use");
             ImGui::SameLine();
             ImGui::Checkbox("Play", &T.playing);
             ImGui::SetNextItemWidth(U(180));
             ImGui::SliderFloat("Turn", &T.turn, -180, 180, "%.0f");
-            ImGui::TextDisabled("The tool's own moves on your model, which a game's moves can use (on the right of a game's page).");
         }
         return;
     }
@@ -2738,8 +2730,7 @@ void editor_middle(Tool &T) {
         any |= T.have_made[k];
     }
     if (!any) {
-        ImGui::TextWrapped(T.maker != nullptr ? "The game's making your hero in every game: a moment..."
-                                              : "Not made yet. The game makes it as it will when it loads it.");
+        ImGui::TextDisabled(T.maker != nullptr ? "Making..." : "Not made yet");
         if (T.maker == nullptr && ImGui::Button("Make it")) {
             make_in_game(T);
         }
@@ -2757,7 +2748,7 @@ void editor_middle(Tool &T) {
                     T.anim = breathe_of(&T.made[k]);
                     T.made_t = 0;
                 }
-                ImGui::SetItemTooltip("Open %s: its prop and moves", KindShort[k]);
+                ImGui::SetItemTooltip("Edit %s", KindShort[k]);
             } else {
                 ImGui::Dummy(ImVec2(ThumbW + U(8), ThumbH + U(8)));
             }
@@ -2773,7 +2764,7 @@ void editor_middle(Tool &T) {
         return;
     }
     if (!T.have_made[T.kind]) {
-        ImGui::TextWrapped(T.maker != nullptr ? "Making it..." : "The game didn't make this one: see the message at the top.");
+        ImGui::TextDisabled(T.maker != nullptr ? "Making..." : "Not made (see the top bar)");
         return;
     }
     float w = avail < PrevW ? avail : PrevW;
@@ -2789,12 +2780,10 @@ void editor_middle(Tool &T) {
     const KitMade *mk = &T.made[T.kind];
     if (adjusting) {
         adjust_view(T, im, w / PrevW, hovered && !on_axes);
-        if (hovered && !T.dragging) {
-            ImGui::SetItemTooltip("Click a joint to pick it, then drag its gizmo. The right mouse button turns the view; scroll to zoom.");
-        }
+
     }
     ImGui::SetNextItemWidth(U(200));
-    if (ImGui::BeginCombo("Watching", T.anim < mk->nanims ? mk->anims[T.anim].name : "")) {
+    if (ImGui::BeginCombo("##watching", T.anim < mk->nanims ? mk->anims[T.anim].name : "")) {
         for (int a = 0; a < mk->nanims; a++) {
             if (ImGui::Selectable(mk->anims[a].name, a == T.anim)) {
                 T.anim = a;
@@ -2857,7 +2846,7 @@ void own_give_up(Tool &T, int kind, const char *move, int g, int m, int to) {
 
 // The yes asked before a move of its own is given up (own_change), as a window over the rest
 void ask_back(Tool &T) {
-    if (!ImGui::BeginPopupModal("Give up its own move?", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (!ImGui::BeginPopupModal("Replace its own move?", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         return;
     }
     int g = game_of(T.ask_kind);
@@ -2869,8 +2858,7 @@ void ask_back(Tool &T) {
     } else {
         snprintf(to, sizeof(to), "my %s", T.ask_to >= 0 && T.ask_to < KitMoveCount ? KitMoves[T.ask_to].name : "");
     }
-    ImGui::Text("%s here is its own move: you made it, or changed it.", T.ask_name);
-    ImGui::Text("Play %s in its place? Its own %s, and your changes to it, will be gone.", to, T.ask_name);
+    ImGui::Text("Replace its own %s with %s? Your changes to it go too.", T.ask_name, to);
     ImGui::Spacing();
     if (ImGui::Button("Keep mine", ImVec2(U(160), 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
         ImGui::CloseCurrentPopup();
@@ -2904,10 +2892,10 @@ void foot_own_moves(Tool &T) {
         }
     }
     if (mine.empty()) {
-        ImGui::TextDisabled("Change one of its moves here and it becomes its own, kept whoever it's based on.");
         return;
     }
-    ImGui::Text("Its own moves here (kept whoever it's based on):");
+    ImGui::TextDisabled("Own moves");
+    ImGui::SetItemTooltip("Kept whoever it's based on");
     for (size_t i = 0; i < mine.size(); i++) {
         ImGui::PushID((int)i);
         ImGui::BulletText("%s", mine[i].c_str());
@@ -2924,71 +2912,99 @@ void foot_own_moves(Tool &T) {
 }
 
 // A game's page, on the right: Adjust its moves (the animation tools), for fixing what the game makes of it there by hand
+// A row of three values, X, Y and Z in Blender's order and its colours (red, green, blue), after its label: true if one changed, and
+// *taken set when one's taken (for its undo step). The panel's turns, moves and sizes (the user's word, 2026-11-22: "its very wordy for
+// a visual tool": what each does is its tooltip)
+bool xyz_row(const char *label, float v[3], float speed, float lo, float hi, const char *fmt, const char *const tips[3], bool *taken) {
+    static const ImVec4 Tint[3] = { ImVec4(0.42f, 0.15f, 0.15f, 1), ImVec4(0.18f, 0.34f, 0.13f, 1), ImVec4(0.15f, 0.22f, 0.45f, 1) };
+    static const char *const Letter[3] = { "X", "Y", "Z" };
+    bool changed = false;
+
+    ImGui::PushID(label);
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextUnformatted(label);
+    float w = (ImGui::GetContentRegionAvail().x - U(60)) / 3 - ImGui::GetStyle().ItemSpacing.x;
+    for (int i = 0; i < 3; i++) {
+        char f[24];
+        snprintf(f, sizeof(f), "%s %s", Letter[i], fmt);
+        ImGui::SameLine(i == 0 ? U(60) : 0);
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, Tint[i]);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(Tint[i].x * 1.4f, Tint[i].y * 1.4f, Tint[i].z * 1.4f, 1));
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(Tint[i].x * 1.7f, Tint[i].y * 1.7f, Tint[i].z * 1.7f, 1));
+        ImGui::SetNextItemWidth(w);
+        ImGui::PushID(i);
+        changed |= ImGui::DragFloat("##v", &v[i], speed, lo, hi, f);
+        ImGui::PopID();
+        *taken |= ImGui::IsItemActivated();
+        ImGui::PopStyleColor(3);
+        ImGui::SetItemTooltip("%s", tips[i]);
+    }
+    ImGui::PopID();
+    return changed;
+}
+
 void adjust_panel(Tool &T) {
-    if (!ImGui::CollapsingHeader("Adjust its moves", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if (!ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen)) {
         return;
     }
     if (T.kind == KIND_WARP_TOOL) {
-        ImGui::TextWrapped("The podium is made from its moves on foot: adjust them on On foot (they show here once it's saved and "
-                           "made again).");
+        ImGui::TextDisabled("Made from On foot's moves");
         return;
     }
     if (!T.have_pose[T.kind]) {
-        ImGui::TextWrapped(T.kind == 1 ? "Riding Crash's polar bear, it's sat on the bear by the game itself, so it can't be adjusted "
-                                         "here. It can on another hero's bear (Prop from, above)."
-                         : T.maker != nullptr ? "Making it..."
-                                              : "Not ready to adjust: Update the preview.");
+        ImGui::TextDisabled(T.kind == 1 ? "Crash's bear seats its rider itself" : T.maker != nullptr ? "Making..." : "Update the preview first");
+        if (T.kind == 1) {
+            ImGui::SetItemTooltip("Pick another hero's bear (Prop from) to pose it");
+        }
         return;
     }
     const KitMade *mk = &T.made[T.kind];
     const KitPose *po = &T.poses[T.kind];
-    int a = T.anim < mk->nanims ? T.anim : 0;
+    int a = T.anim < mk->nanims ? T.anim : 0, frames = mk->anims[a].frames;
     const char *move = mk->anims[a].name;
     int here = 0;
     for (auto &k : T.adj) {
         here += k.kind == T.kind;
     }
-    if (ImGui::Checkbox("Show its joints, to adjust it", &T.adjusting) && T.adjusting) {
-        T.frame = mk->anims[a].frames > 0 ? (int)(T.made_t * 30) % mk->anims[a].frames : 0;
+    if (ImGui::Checkbox("Edit joints", &T.adjusting) && T.adjusting) {
+        T.frame = frames > 0 ? (int)(T.made_t * 30) % frames : 0;
         T.adj_playing = false;
     }
-    hint("In the picture, click a joint to pick it: on it is a gizmo, as Blender's, in Blender's axes for a character facing -Y: X red "
-         "(its left), Y green (its back), Z blue (up), as on the floor's grid. Turn (R): drag a ring to turn it about that axis, the "
-         "white one to turn it as you look at it, or its middle to point it at the mouse. Move (G): drag an arrow to move it along that "
-         "axis, or its middle to move it with the mouse: any joint moves with all on it (an ear, its tail), a hand or a foot bends its "
-         "arm or leg to follow, and the hips move all of it (the squares). Size (S): drag a handle to make it bigger or smaller that "
-         "way, or its middle for all over. Turn the view with the right mouse button, or click the axes in the picture's corner to look "
-         "from that side (the keypad's 1, 3 and 7 too, with Ctrl from the other side). Under the picture, its keys: click one to go to "
-         "it, drag it to another frame, right-click it or press Delete to take it away. The values below set it exactly. Keys: Space "
-         "plays, the arrows step a frame, Ctrl+Z undoes, Ctrl+Y does it again.");
+    hint("Click a joint, then drag its gizmo\n"
+         "R turn   G move   S size\n"
+         "Right-drag orbit   Wheel zoom   Keypad 1 3 7 views\n"
+         "Space play   Left/Right step a frame\n"
+         "Ctrl+C / Ctrl+V copy and paste a key   Delete remove it\n"
+         "Ctrl+Z undo   Ctrl+Y redo");
     // whose the move is: its own stays as it's made whoever it's based on; its template's becomes its own when it's first changed
     const BakedMove *copied = baked_of(T, T.kind, move);
     bool own = T.poses[T.kind].anims[a].own || copied != nullptr;
+    ImGui::SameLine();
     if (own) {
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.55f, 0.9f, 0.55f, 1));
-        if (copied != nullptr) {
-            ImGui::TextWrapped("%s here is its own move, copied from %s's: whoever it's based on, it stays as you make it.", move,
-                               HeroNames[copied->from]);
-        } else {
-            ImGui::TextWrapped("%s here is its own move: whoever it's based on, it stays as you make it.", move);
-        }
-        ImGui::PopStyleColor();
+        ImGui::TextColored(ImVec4(0.55f, 0.9f, 0.55f, 1), copied != nullptr ? "Own move (from %s)" : "Own move", HeroNames[copied != nullptr ? copied->from : 0]);
+        ImGui::SetItemTooltip("This hero's own %s: it stays as you make it, whoever it's based on", move);
     } else {
-        ImGui::TextWrapped("%s here is %s's. Change it and it becomes its own copy, kept as you make it whoever it's based on.", move,
-                           HeroNames[template_of(T, T.kind)]);
+        ImGui::TextDisabled("%s's move", HeroNames[template_of(T, T.kind)]);
+        ImGui::SetItemTooltip("Changing it makes it this hero's own copy");
     }
     if (!T.adjusting) {
         if (here > 0) {
-            ImGui::TextDisabled("%d change%s in this game.", here, here == 1 ? "" : "s");
+            ImGui::TextDisabled("%d key%s", here, here == 1 ? "" : "s");
         }
         return;
     }
-    ImGui::Text("A change is made to");
-    ImGui::RadioButton("this frame", &T.key_mode, KEY_FRAME);
+    // what a change is made to: this frame (fading either side), the whole move, every move in this game
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextUnformatted("Key");
+    ImGui::SameLine(U(60));
+    ImGui::RadioButton("Frame", &T.key_mode, KEY_FRAME);
+    ImGui::SetItemTooltip("This frame, fading either side");
     ImGui::SameLine();
-    ImGui::RadioButton("the whole move", &T.key_mode, KEY_MOVE);
+    ImGui::RadioButton("Move", &T.key_mode, KEY_MOVE);
+    ImGui::SetItemTooltip("All of %s", move);
     ImGui::SameLine();
-    ImGui::RadioButton("every move here", &T.key_mode, KEY_GAME);
+    ImGui::RadioButton("All moves", &T.key_mode, KEY_GAME);
+    ImGui::SetItemTooltip("Every move in this game");
     if (T.key_mode == KEY_FRAME) {
         // the picked joint's key here: its fade shown, and changed with these (else they're what a new key gets)
         PackAdjust *here_key = T.sel >= 0 && T.sel < po->nbones ? panel_key(T, move, po->names[T.sel]) : nullptr;
@@ -2996,8 +3012,12 @@ void adjust_panel(Tool &T) {
             T.spread = here_key->spread;
             T.ease = here_key->ease;
         }
-        ImGui::SetNextItemWidth(U(160));
-        bool faded = ImGui::SliderInt("Fades over", &T.spread, 0, 30, "%d frames");
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Fade");
+        ImGui::SameLine(U(60));
+        ImGui::SetNextItemWidth(U(120));
+        bool faded = ImGui::SliderInt("##fade", &T.spread, 0, 30, "%d frames");
+        ImGui::SetItemTooltip("Frames it fades over, either side");
         if (ImGui::IsItemActivated()) {
             T.fade_step = false;
         }
@@ -3009,11 +3029,10 @@ void adjust_panel(Tool &T) {
             here_key->spread = T.spread;
             adj_step_says(T, "Faded %s's key over %d frames", bone_title(here_key->bone), T.spread);
         }
-        hint("Either side of the frame (or the frames it's held over): its change is all there there and fades to none this many frames "
-             "away.");
         // how it fades in and out (the user's word, 2026-11-22: "the transion effect should be chooseable")
-        ImGui::SetNextItemWidth(U(160));
-        if (ImGui::BeginCombo("Fades like", EaseSays[T.ease >= 0 && T.ease < PACK_EASES ? T.ease : 0])) {
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(U(130));
+        if (ImGui::BeginCombo("##ease", EaseSays[T.ease >= 0 && T.ease < PACK_EASES ? T.ease : 0])) {
             for (int e = 0; e < PACK_EASES; e++) {
                 if (ImGui::Selectable(EaseSays[e], e == T.ease) && e != T.ease) {
                     T.ease = e;
@@ -3026,11 +3045,8 @@ void adjust_panel(Tool &T) {
             }
             ImGui::EndCombo();
         }
-        hint("How its change comes and goes over those frames: Smooth eases in and out; Steady at an even rate; Slow start or Slow "
-             "finish; Sudden all at once (no fade); Overshoot goes a little past it and back; Bounce bounces into it; Wobble springs "
-             "past it and back. The timeline draws each key's fade as it is.");
+        ImGui::SetItemTooltip("How it fades in and out");
     }
-    ImGui::Spacing();
     if (T.sel >= 0 && T.sel < po->nbones) {
         const char *bone = po->names[T.sel];
         PackAdjust *k = panel_key(T, move, bone);
@@ -3043,46 +3059,32 @@ void adjust_panel(Tool &T) {
             }
         }
         ImGui::SeparatorText(bone_title(bone));
-        // its own axes as it stands: x to its left, y down, z to its back (turns about them; shown as a person would say them, with
-        // Blender's letters for them, in its order: X, Y, Z)
-        static const int Order[3] = { 0, 2, 1 };
-        static const char *const Turns[3] = { "Tip forward (X)", "Turn to its right (Z)", "Lean to its left (Y)" };
-        bool changed = false;
-        for (int j = 0; j < 3; j++) {
-            int i = Order[j];
-            ImGui::SetNextItemWidth(U(200));
-            changed |= ImGui::DragFloat(Turns[i], &turn[i], 0.5f, -180, 180, "%.1f deg");
-            if (ImGui::IsItemActivated()) {
-                adj_snapshot(T, "Turned %s (its values)", bone_title(bone));
-            }
+        // its own axes as it stands: x to its left, y down, z to its back, shown in Blender's order X, Y, Z (its x, z, y) and ways (Z
+        // up: its y the other way for a move); what each does its tooltip
+        static const char *const TurnSays[3] = { "Tip forward", "Lean to its left", "Turn to its right" };
+        static const char *const MoveSays[3] = { "To its left", "To its back", "Up" };
+        static const char *const SizeSays[3] = { "Wider", "Deeper", "Taller" };
+        static const char *const HandSays[3] = { "To its left (its arm or leg bends to follow)", "To its back (its arm or leg bends to follow)",
+                                                 "Up (its arm or leg bends to follow)" };
+        float t3[3] = { turn[0], turn[2], turn[1] }, m3[3] = { reach[0], reach[2], -reach[1] + 0.0f }, s3[3] = { size[0], size[2], size[1] };
+        bool taken_t = false, taken_m = false, taken_s = false;
+        bool changed_t = xyz_row("Turn", t3, 0.5f, -180, 180, "%.1f", TurnSays, &taken_t);
+        bool hand = reach_bone(bone) && SDL_strcasecmp(bone, "hips") != 0;
+        bool changed_m = xyz_row("Move", m3, 0.5f, -500, 500, "%.1f", hand ? HandSays : MoveSays, &taken_m);
+        bool changed_s = xyz_row("Size", s3, 0.01f, 0.1f, 10, "%.2f", SizeSays, &taken_s);
+        if (taken_t) {
+            adj_snapshot(T, "Turned %s (its values)", bone_title(bone));
         }
-        // moved: a hand or foot its arm or leg bending to it, the hips all of it, any other joint it and all on it
-        static const char *const Moves[3] = { "To its left (X)", "Up (Z)", "To its back (Y)" };
-        static const float Way[3] = { 1, -1, 1 };
-        for (int j = 0; j < 3; j++) {
-            int i = Order[j];
-            float shown = reach[i] * Way[i] + 0.0f; // (no -0)
-            ImGui::SetNextItemWidth(U(200));
-            if (ImGui::DragFloat(Moves[i], &shown, 0.5f, -500, 500, "%.1f")) {
-                reach[i] = shown * Way[i];
-                changed = true;
-            }
-            if (ImGui::IsItemActivated()) {
-                adj_snapshot(T, "Moved %s (its values)", bone_title(bone));
-            }
-            ImGui::SetItemTooltip(reach_bone(bone) ? SDL_strcasecmp(bone, "hips") == 0 ? "All of it moved" : "Its arm or leg bends to reach there"
-                                                   : "Moved with all on it");
+        if (taken_m) {
+            adj_snapshot(T, "Moved %s (its values)", bone_title(bone));
         }
-        static const char *const Sizes[3] = { "Wider (X)", "Taller (Z)", "Deeper (Y)" };
-        for (int j = 0; j < 3; j++) {
-            int i = Order[j];
-            ImGui::SetNextItemWidth(U(200));
-            changed |= ImGui::DragFloat(Sizes[i], &size[i], 0.01f, 0.1f, 10, "x%.2f");
-            if (ImGui::IsItemActivated()) {
-                adj_snapshot(T, "Made %s bigger or smaller (its values)", bone_title(bone));
-            }
-            ImGui::SetItemTooltip("Made bigger or smaller (x1 as it is), with all on it, about its joint");
+        if (taken_s) {
+            adj_snapshot(T, "Made %s bigger or smaller (its values)", bone_title(bone));
         }
+        bool changed = changed_t || changed_m || changed_s;
+        turn[0] = t3[0], turn[2] = t3[1], turn[1] = t3[2];
+        reach[0] = m3[0], reach[2] = m3[1], reach[1] = -m3[2];
+        size[0] = s3[0], size[2] = s3[1], size[1] = s3[2];
         // made to the key it shows; with none, a new one at the frame shown (stopped there, if it was playing)
         if (changed && (k = panel_key(T, move, bone)) == nullptr) {
             T.adj_playing = false;
@@ -3096,20 +3098,25 @@ void adjust_panel(Tool &T) {
             }
         }
         if (T.key_mode == KEY_FRAME && (k = panel_key(T, move, bone)) != nullptr && k->at >= 0) {
-            // the frames it's held over: from, to (the same: that frame alone)
-            int from = k->at, to = key_last(*k), frames = mk->anims[a].frames;
-            ImGui::SetNextItemWidth(U(110));
-            bool held = ImGui::DragInt("##from", &from, 0.2f, 0, frames - 1, "from frame %d");
+            // the frames it's held over: from, to (the same: that frame alone), or all of them
+            int from = k->at, to = key_last(*k);
+            float w = (ImGui::GetContentRegionAvail().x - U(60) - U(50)) / 2 - ImGui::GetStyle().ItemSpacing.x;
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Frames");
+            ImGui::SameLine(U(60));
+            ImGui::SetNextItemWidth(w);
+            bool held = ImGui::DragInt("##from", &from, 0.2f, 0, frames - 1, "%d");
+            ImGui::SetItemTooltip("First frame it's all there");
             if (ImGui::IsItemActivated()) {
                 adj_snapshot(T, "Held %s's key", bone_title(bone));
             }
             ImGui::SameLine();
-            ImGui::SetNextItemWidth(U(110));
-            held |= ImGui::DragInt("Held##to", &to, 0.2f, 0, frames - 1, "to frame %d");
+            ImGui::SetNextItemWidth(w);
+            held |= ImGui::DragInt("##to", &to, 0.2f, 0, frames - 1, "%d");
+            ImGui::SetItemTooltip("Last frame it's all there");
             if (ImGui::IsItemActivated()) {
                 adj_snapshot(T, "Held %s's key", bone_title(bone));
             }
-            ImGui::SetItemTooltip("The frames its change is all there over (the same: that frame alone), fading either side");
             if (held) {
                 k->at = std::max(0, std::min(from, to));
                 k->until = std::min(frames - 1, std::max(from, to));
@@ -3117,28 +3124,26 @@ void adjust_panel(Tool &T) {
                 adj_step_says(T, k->until > k->at ? "Held %s's key from frame %d to %d" : "Made %s's key frame %d alone", bone_title(bone), k->at,
                               k->until);
             }
-            if (ImGui::SmallButton("Hold it all through the move")) {
+            ImGui::SameLine();
+            if (ImGui::Button("All", ImVec2(U(46), 0))) {
                 adj_snapshot(T, "Held %s's key all through %s", bone_title(bone), move);
                 k->at = 0;
                 k->until = frames - 1;
             }
-            ImGui::SetItemTooltip("Its change all there in every frame of %s (drag its ends in the timeline to hold it over fewer)", move);
+            ImGui::SetItemTooltip("Hold it through the whole move");
         } else if (T.key_mode == KEY_FRAME && T.adj_playing) {
-            ImGui::TextWrapped("Playing: click one of its keys in the timeline to change it as it plays (its fade too).");
-        } else if (T.key_mode == KEY_FRAME) {
-            ImGui::TextDisabled("At frame %d of %s.", T.frame, move);
-        } else {
-            ImGui::TextDisabled(T.key_mode == KEY_MOVE ? "In all of %s." : "In every move here%s.", T.key_mode == KEY_MOVE ? move : "");
+            ImGui::TextDisabled("Click one of its keys to edit it as it plays");
         }
-        if (ImGui::Button(other_side(bone)[0] != 0 ? "Mirror to its other side" : "Mirror (it has no other side)")
-            && other_side(bone)[0] != 0) {
+        ImGui::BeginDisabled(other_side(bone)[0] == 0);
+        if (ImGui::Button("Mirror")) {
             adj_snapshot(T, "Mirrored %s to its other side", bone_title(bone));
             own_before_change(T, move);
             adj_mirror(T, move, bone);
         }
-        ImGui::SetItemTooltip("Its changes in this move given to its other side, the other way round");
+        ImGui::EndDisabled();
+        ImGui::SetItemTooltip("Copy this joint's changes to its other side, flipped");
         ImGui::SameLine();
-        if (ImGui::Button("Reset this joint")) {
+        if (ImGui::Button("Reset joint")) {
             adj_snapshot(T, "Reset %s", bone_title(bone));
             std::vector<PackAdjust> keep;
             for (auto &x : T.adj) {
@@ -3149,9 +3154,9 @@ void adjust_panel(Tool &T) {
             T.adj = keep;
             T.key_sel = -1;
         }
-        ImGui::SetItemTooltip("Its changes in this move taken away (and those to every move here)");
+        ImGui::SetItemTooltip("Remove this joint's keys in %s", move);
     } else {
-        ImGui::TextDisabled("Pick a joint in the picture.");
+        ImGui::TextDisabled("Click a joint in the picture");
     }
     ImGui::Spacing();
     ImGui::BeginDisabled(T.undo.empty());
@@ -3166,7 +3171,7 @@ void adjust_panel(Tool &T) {
     }
     ImGui::EndDisabled();
     ImGui::SameLine();
-    if (ImGui::Button("Reset this move")) {
+    if (ImGui::Button("Reset move")) {
         adj_snapshot(T, "Reset %s", move);
         std::vector<PackAdjust> keep;
         for (auto &x : T.adj) {
@@ -3177,14 +3182,15 @@ void adjust_panel(Tool &T) {
         T.adj = keep;
         T.key_sel = -1;
     }
-    ImGui::SetItemTooltip("All its changes in %s taken away", move);
+    ImGui::SetItemTooltip("Remove every key in %s", move);
     // the undo history: each step, the one it's at lit; clicked, gone back (or on) to it
     if (ImGui::TreeNodeEx("History", ImGuiTreeNodeFlags_DefaultOpen)) {
         int at = (int)T.undo.size(), all = at + (int)T.redo.size();
         static int shown_at = -1;
-        ImGui::BeginChild("##history", ImVec2(0, U(130)), ImGuiChildFlags_Borders);
+        float line = ImGui::GetTextLineHeightWithSpacing(), pad = ImGui::GetStyle().WindowPadding.y * 2;
+        ImGui::BeginChild("##history", ImVec2(0, fminf((float)(all + 1), 6.0f) * line + pad), ImGuiChildFlags_Borders);
         for (int i = 0; i <= all; i++) {
-            const char *says = i == 0 ? T.undo.size() >= 300 ? "(as far back as it goes)" : "(as it was)"
+            const char *says = i == 0 ? T.undo.size() >= 300 ? "(as far back as it goes)" : "(start)"
                              : i <= at ? T.undo[i - 1].says.c_str()
                                        : T.redo[T.redo.size() - (size_t)(i - at)].says.c_str();
             ImGui::PushID(i);
@@ -3206,56 +3212,57 @@ void adjust_panel(Tool &T) {
         ImGui::EndChild();
         ImGui::TreePop();
     }
-    ImGui::SetItemTooltip("Each change made here: click one to go back to just after it (or on again, the greyed ones)");
-    // its changes in this move: each picked to go to it, or taken away
-    ImGui::SeparatorText("Its changes in this move");
+    ImGui::SetItemTooltip("Click a step to go back to it");
+    // its keys in this move, folded away (the timeline shows them): each picked to go to it, or removed
     int shown = 0, gone = -1;
-    for (int i = 0; i < (int)T.adj.size(); i++) {
-        PackAdjust &x = T.adj[i];
-        if (!pack_adjust_for(&x, T.kind, move)) {
-            continue;
-        }
-        char line[160];
-        int b = -1;
-        for (int j = 0; j < po->nbones; j++) {
-            b = SDL_strcasecmp(po->names[j], x.bone) == 0 ? j : b;
-        }
-        snprintf(line, sizeof(line), "%s: %s%s##%d", bone_title(x.bone),
-                 x.at >= 0 ? "" : strcmp(x.move, "*") == 0 ? "every move here" : "the whole move", "", i);
-        if (x.at >= 0 && key_last(x) > x.at) {
-            snprintf(line, sizeof(line), "%s: frames %d to %d, fading over %d##%d", bone_title(x.bone), x.at, key_last(x), x.spread, i);
-        } else if (x.at >= 0) {
-            snprintf(line, sizeof(line), "%s: frame %d, fading over %d##%d", bone_title(x.bone), x.at, x.spread, i);
-        }
-        ImGui::PushID(i);
-        if (ImGui::SmallButton("x")) {
-            gone = i;
-        }
-        ImGui::SetItemTooltip("Take it away");
-        ImGui::PopID();
-        ImGui::SameLine();
-        if (ImGui::Selectable(line, b == T.sel && (x.at < 0 || (x.at <= T.frame && T.frame <= key_last(x))))) {
-            T.sel = b;
-            if (x.at >= 0) {
-                T.frame = x.at;
-                T.key_mode = KEY_FRAME;
-                T.spread = x.spread;
-            } else {
-                T.key_mode = strcmp(x.move, "*") == 0 ? KEY_GAME : KEY_MOVE;
+    for (auto &x : T.adj) {
+        shown += pack_adjust_for(&x, T.kind, move);
+    }
+    char head[48];
+    snprintf(head, sizeof(head), "Keys (%d)###keys", shown);
+    if (shown > 0 && ImGui::TreeNode(head)) {
+        for (int i = 0; i < (int)T.adj.size(); i++) {
+            PackAdjust &x = T.adj[i];
+            if (!pack_adjust_for(&x, T.kind, move)) {
+                continue;
             }
-            T.adj_playing = false;
+            char line[160];
+            int b = pack_bone_index(po, x.bone);
+            if (x.at < 0) {
+                snprintf(line, sizeof(line), "%s  %s##%d", bone_title(x.bone), strcmp(x.move, "*") == 0 ? "all moves" : "whole move", i);
+            } else if (key_last(x) > x.at) {
+                snprintf(line, sizeof(line), "%s  %d-%d##%d", bone_title(x.bone), x.at, key_last(x), i);
+            } else {
+                snprintf(line, sizeof(line), "%s  %d##%d", bone_title(x.bone), x.at, i);
+            }
+            ImGui::PushID(i);
+            if (ImGui::SmallButton("x")) {
+                gone = i;
+            }
+            ImGui::SetItemTooltip("Remove it");
+            ImGui::PopID();
+            ImGui::SameLine();
+            if (ImGui::Selectable(line, b == T.sel && (x.at < 0 || (x.at <= T.frame && T.frame <= key_last(x))))) {
+                T.sel = b;
+                T.key_sel = i;
+                if (x.at >= 0) {
+                    T.frame = x.at;
+                    T.key_mode = KEY_FRAME;
+                    T.spread = x.spread;
+                    T.ease = x.ease;
+                } else {
+                    T.key_mode = strcmp(x.move, "*") == 0 ? KEY_GAME : KEY_MOVE;
+                }
+                T.adj_playing = false;
+            }
         }
-        shown++;
+        ImGui::TreePop();
     }
     if (gone >= 0) {
         adj_snapshot(T, "Took away %s's change", bone_title(T.adj[gone].bone));
         T.adj.erase(T.adj.begin() + gone);
         T.key_sel = -1;
     }
-    if (shown == 0) {
-        ImGui::TextDisabled("None yet.");
-    }
-    ImGui::TextDisabled("They're saved with the hero (Save to mods folder).");
 }
 
 void editor_right(Tool &T, SDL_Window *win) {
@@ -3264,28 +3271,31 @@ void editor_right(Tool &T, SDL_Window *win) {
     static const SDL_DialogFileFilter Wav[] = { { "Sound (WAV)", "wav" } };
 
     // the fields leave room for their labels
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 140);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Mod's name").x - 2 * ImGui::GetStyle().ItemInnerSpacing.x);
 
     // the page's own choices
     if (T.page == PAGE_MODEL) {
-        ImGui::SeparatorText("Your model");
+        ImGui::SeparatorText("Model");
         ImGui::TextWrapped("%s", short_path(T.model));
-        if (ImGui::Button("Open another model...")) {
+        if (ImGui::Button("Open...")) {
             browse(win, PICK_MODEL, Glb);
         }
         ImGui::Spacing();
         if (T.rigged) {
-            ImGui::TextWrapped("It has a rig of its own: its bones were found by their names and are used as they are.");
+            ImGui::TextDisabled("Rigged (its own bones)");
         } else {
-            ImGui::TextWrapped("It has no rig, so it gets one from the dots you place on its joints.");
-            ImGui::Checkbox("Left and right the same", &T.mirror);
-            hint("Moving one side's dot moves the other side's to match.");
-            if (ImGui::Button("Guess the joints again")) {
+            ImGui::TextDisabled("No rig: place its joints");
+            ImGui::Checkbox("Mirror", &T.mirror);
+            ImGui::SetItemTooltip("Moving one side's dot moves the other's");
+            ImGui::SameLine();
+            if (ImGui::Button("Guess joints")) {
                 kit_guess_markers(T.m);
                 reweigh(T);
             }
-            ImGui::Text("It also has:");
-            const char *opt[] = { "A jaw", "Ears", "A tail" };
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Has");
+            ImGui::SameLine();
+            const char *opt[] = { "Jaw", "Ears", "Tail" };
             const int first[] = { KB_JAW, KB_EAR_L1, KB_TAIL1 }, count[] = { 1, 4, 3 };
             for (int o = 0; o < 3; o++) {
                 bool has = T.m->bones[first[o]].have;
@@ -3319,28 +3329,27 @@ void editor_right(Tool &T, SDL_Window *win) {
                 }
             }
             ImGui::SetNextItemWidth(U(160));
-            if (ImGui::SliderFloat("Arm lift", &T.m->arm_raise, 20, 160, "%.0f degrees")) {
+            if (ImGui::SliderFloat("Arm lift", &T.m->arm_raise, 20, 160, "%.0f deg")) {
                 T.dirty = true;
             }
-            hint("How high it can raise its arms: less for short arms or a big head.");
+            ImGui::SetItemTooltip("How high it can raise its arms (less for short arms or a big head)");
         }
     } else if (T.page == PAGE_ALL) {
         ImGui::SeparatorText("All games");
-        ImGui::TextWrapped("Your hero as the game makes it in each game, with that game's ride or prop. Pick one to choose its prop and "
-                           "moves.");
+        ImGui::TextDisabled("Click one to edit it");
     } else {
         int k = T.kind, g = game_of(k);
         ImGui::SeparatorText(KindTitles[k]);
         if (k != KIND_WARP_TOOL) {
             char now[64];
-            snprintf(now, sizeof(now), "%s's (who it's based on)", HeroNames[T.template_hero]);
+            snprintf(now, sizeof(now), "%s's (base)", HeroNames[T.template_hero]);
             ImGui::Text(k == 0 ? "Stands like" : k == 1 ? "Rides the bear of" : "Prop from");
             ImGui::SameLine(U(130));
             ImGui::SetNextItemWidth(-1);
             bool own = k == 0 && T.foot_own;
-            if (ImGui::BeginCombo("##from", own ? "itself: its own moves" : T.kind_template[k] < 0 ? now : HeroNames[T.kind_template[k]])) {
+            if (ImGui::BeginCombo("##from", own ? "Own moves" : T.kind_template[k] < 0 ? now : HeroNames[T.kind_template[k]])) {
                 // on foot, its own moves: its model's clips, and the tool's for the rest
-                if (k == 0 && ImGui::Selectable("itself: its own moves", own)) {
+                if (k == 0 && ImGui::Selectable("Own moves", own)) {
                     T.foot_own = true;
                     make_in_game(T);
                 }
@@ -3359,18 +3368,15 @@ void editor_right(Tool &T, SDL_Window *win) {
                 ImGui::EndCombo();
             }
             if (k == 0) {
-                hint("Itself: on foot it plays its own moves (its model's clips, and the tool's moves on it for the rest: see Model and "
-                     "joints). A hero: it stands and moves as that hero does.");
+                ImGui::SetItemTooltip("Own moves: its clips, and the tool's moves for the rest. A hero: moves as they do");
             }
         } else {
-            ImGui::TextWrapped("The podium is made from its moves on foot.");
+            ImGui::TextDisabled("Made from On foot's moves");
         }
         ImGui::Spacing();
         if (g >= 0) {
-            ImGui::Text("Its moves here");
-            hint("What it plays for each of this game's moves: the hero it follows, its own (a move you've changed is its own, "
-                 "copied from the hero it followed, and stays so whoever it's based on), or one of the tool's moves on your model "
-                 "(see Model and joints).");
+            ImGui::TextDisabled("Moves");
+            ImGui::SetItemTooltip("What it plays for each of this game's moves: a hero's, its own, or one of the tool's");
             int from = T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero;
             for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
                 char now[80];
@@ -3379,10 +3385,10 @@ void editor_right(Tool &T, SDL_Window *win) {
                 if (sel == OWN_TEMPLATE) {
                     snprintf(now, sizeof(now), "%s's", HeroNames[from]);
                 } else if (sel == OWN_CLIP) {
-                    snprintf(now, sizeof(now), "its own");
+                    snprintf(now, sizeof(now), "own clip");
                 } else if (sel == OWN_MADE) {
                     const BakedMove *bm = baked_of(T, k, KitGames[g].moves[m]);
-                    snprintf(now, sizeof(now), "its own (from %s's)", HeroNames[bm != nullptr ? bm->from : from]);
+                    snprintf(now, sizeof(now), "own (from %s)", HeroNames[bm != nullptr ? bm->from : from]);
                 } else {
                     snprintf(now, sizeof(now), "my %s", KitMoves[sel].name);
                 }
@@ -3399,7 +3405,7 @@ void editor_right(Tool &T, SDL_Window *win) {
                     if (sel == OWN_MADE) {
                         ImGui::Selectable(now, true);
                     }
-                    if (clip && ImGui::Selectable("its own", sel == OWN_CLIP) && sel != OWN_CLIP) {
+                    if (clip && ImGui::Selectable("own clip", sel == OWN_CLIP) && sel != OWN_CLIP) {
                         own_change(T, k, g, m, OWN_CLIP);
                     }
                     ImGui::Separator();
@@ -3414,13 +3420,8 @@ void editor_right(Tool &T, SDL_Window *win) {
                 ImGui::PopID();
             }
         } else {
-            if (k == 0 && T.foot_own) {
-                ImGui::TextWrapped("Its moves here are its own: its model's clips, and the tool's moves on it for the rest.");
-            } else {
-                ImGui::TextWrapped("Its moves here are %s's, but those of its own.", HeroNames[template_of(T, k)]);
-                if (k == 0) {
-                    foot_own_moves(T);
-                }
+            if (k == 0 && !T.foot_own) {
+                foot_own_moves(T);
             }
         }
     }
@@ -3432,14 +3433,14 @@ void editor_right(Tool &T, SDL_Window *win) {
     // the hero, whatever page
     if (ImGui::CollapsingHeader("Hero details", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::InputText("Name", T.name, sizeof(T.name), ImGuiInputTextFlags_CharsUppercase);
-        hint("As the game shows it, in capitals.");
+        ImGui::SetItemTooltip("As the game shows it");
         ImGui::InputText("Id", T.id, sizeof(T.id), ImGuiInputTextFlags_CharsNoBlank);
-        hint("Its short name in files and online: small letters and digits.");
+        ImGui::SetItemTooltip("Short name for files and online");
         if (ImGui::InputInt("Height", &T.height, 10, 50)) {
             T.height = T.height < 200 ? 200 : T.height > 900 ? 900 : T.height;
             T.dirty = true;
         }
-        hint("Standing, in the game's units: Crash is 452, most heroes about 650.");
+        ImGui::SetItemTooltip("Crash is 452, most heroes about 650");
         if (ImGui::Combo("Based on", &T.template_hero, HeroNames, 8)) {
             T.dirty = true;
             int mine = (int)T.baked.size();
@@ -3449,23 +3450,21 @@ void editor_right(Tool &T, SDL_Window *win) {
                 }
             }
             if (mine > 0) {
-                snprintf(T.status, sizeof(T.status), "Based on %s now. Its own moves (%d) stay as they are: only %s's are played in place of "
-                         "the rest. Update the preview to see it.", HeroNames[T.template_hero], mine, HeroNames[T.template_hero]);
+                snprintf(T.status, sizeof(T.status), "Based on %s: its %d own moves stay. Update the preview to see it.", HeroNames[T.template_hero],
+                         mine);
             }
         }
-        hint("The hero it plays as: their moves, speed and reach, and their ride or prop in every game (each game can pick another "
-             "prop). It takes their place in the game, or the first free hero's if someone's playing them, and uses their sound "
-             "for any it hasn't one of.");
-        if (ImGui::SliderFloat("Face", &T.face_head, 0, 0.6f, T.face_head > 0 ? "top %.2f" : "the game's choice")) {
+        ImGui::SetItemTooltip("Plays as this hero: their moves, speed, ride or prop, and sounds it hasn't got");
+        if (ImGui::SliderFloat("Face", &T.face_head, 0, 0.6f, T.face_head > 0 ? "top %.2f" : "auto")) {
             T.dirty = true;
         }
-        hint("How much of the model, from the top, is its head: its face on the panel is drawn from that, if it has no card.");
+        ImGui::SetItemTooltip("How much of it, from the top, is its head (its face, without a card)");
     }
     if (ImGui::CollapsingHeader("Card and sounds")) {
         ImGui::Text("Card");
-        hint("A picture for the character select (PNG). Without one, its face is drawn from the model.");
+        ImGui::SetItemTooltip("Character select picture (PNG)");
         ImGui::SameLine(U(110));
-        ImGui::TextUnformatted(T.card[0] ? short_path(T.card) : "drawn from the model");
+        ImGui::TextUnformatted(T.card[0] ? short_path(T.card) : "from the model");
         ImGui::SameLine();
         if (ImGui::SmallButton("Browse##card")) {
             browse(win, PICK_CARD, Png);
@@ -3478,7 +3477,7 @@ void editor_right(Tool &T, SDL_Window *win) {
         }
         ImGui::Spacing();
         ImGui::Text("Sounds");
-        hint("A WAV for each job. A job without one uses the sound of the hero it's based on.");
+        ImGui::SetItemTooltip("A WAV for each; without one, its base's");
         for (int j = 0; j < PACK_VOICE_JOBS; j++) {
             ImGui::PushID(j);
             ImGui::TextUnformatted(PackVoiceJobs[j]);
@@ -3500,7 +3499,7 @@ void editor_right(Tool &T, SDL_Window *win) {
     if (ImGui::CollapsingHeader("Save", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::InputText("Mod's name", T.mod_name, sizeof(T.mod_name));
         ImGui::InputText("Author", T.author, sizeof(T.author));
-        if (ImGui::Button("Save to mods folder", ImVec2(-1, U(30)))) {
+        if (ImGui::Button("Save", ImVec2(-1, U(30)))) {
             export_pack(T, false);
         }
         ImGui::SetItemTooltip("%s", T.loaded_mod[0] ? T.loaded_mod : T.out);
@@ -3510,7 +3509,7 @@ void editor_right(Tool &T, SDL_Window *win) {
         if (ImGui::Button("Save and play", ImVec2(-1, 0))) {
             export_pack(T, true);
         }
-        ImGui::SetItemTooltip("Saves it, then starts the game with you as it in the game picked.");
+        ImGui::SetItemTooltip("Save, then play it in this game");
         if (ImGui::TreeNode("Folders")) {
             ImGui::Text("Mods folder");
             path_field("##out", T.out, sizeof(T.out));
@@ -3603,7 +3602,7 @@ void editor_window(Tool &T, SDL_Window *win) {
         ImGui::EndTable();
     }
     if (T.ask_open) {
-        ImGui::OpenPopup("Give up its own move?");
+        ImGui::OpenPopup("Replace its own move?");
         T.ask_open = false;
     }
     ask_back(T);
