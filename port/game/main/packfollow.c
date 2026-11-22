@@ -738,6 +738,9 @@ static void own_frame(Packed *p, s32 a, float f, const Moved *mv, V3 hips_at, co
 static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out);
 static s32 pack_points_at(void *ctx, s32 a, s32 f, FlagPoint *out, s32 max);
 
+/* How far either side of its hips what's below a hatch is drawn in to (the game's units), so it stays down inside the tank */
+#define HATCH_HALF 55.0f
+
 static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     static V3 F[FOLLOW_CORNERS], L[FOLLOW_CORNERS];
     static Mat Q[PACK_MAX_BONES];
@@ -865,7 +868,7 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     /* the mesh with its bones */
     for (k = 0; k < p->n; k++) {
         V3 s = { 0, 0, 0 };
-        float lower = 0;
+        float lower = 0, tail = 0;
 
         for (j = 0; j < 4; j++) {
             s32 b = p->pm->joint[k * 4 + j];
@@ -875,12 +878,22 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
                 continue;
             }
             s = vadd(s, vmul(vadd(P[b], mat_apply(&Q[b], vsub(p->rest[k], p->bone[b]))), w));
-            lower += p->lower[b] ? w : 0;
+            lower += p->lower[b] == 1 ? w : 0;
+            tail += p->lower[b] == 2 ? w : 0;
         }
-        /* in a tank's hatch or a race cart, its legs and tail, and all of it below its hips, hidden at one point just below them (else
-           they show through the tank: the user's word, 2026-11-22) */
-        if (fk->cut > 0 && (lower > 0.5f || s.y > hips_at.y + 4)) {
+        /* in a tank's hatch or a race cart (the user's word, 2026-11-22: what's below showed through the tank, and then came to a
+           point): its tail folded away into its hips, and its legs and all of it below its hips drawn in to the hatch's width where
+           they are, down inside what it sits in, so nothing above changes shape */
+        if (fk->cut > 0 && tail > 0.5f) {
             s = vadd(hips_at, v3(0, 8, 0));
+        } else if (fk->cut > 0 && (lower > 0.5f || s.y > hips_at.y + 4)) {
+            float dx = s.x - hips_at.x, dz = s.z - hips_at.z, d = sqrtf(dx * dx + dz * dz);
+
+            if (d > HATCH_HALF) {
+                s.x = hips_at.x + dx * HATCH_HALF / d;
+                s.z = hips_at.z + dz * HATCH_HALF / d;
+            }
+            s.y = s.y > hips_at.y + 4 ? s.y : hips_at.y + 4;
         }
         out[k] = hm_moved(&mv, s);
     }
@@ -1600,8 +1613,8 @@ static void pack_prep(Packed *p, const FollowKind *fk) {
         char c0 = (char)(n[0] | 32), c1 = (char)(n[0] != 0 ? n[1] | 32 : 0);
 
         p->bone[b] = vadd(hips, vmul(vsub(at, hips), fk->scale));
-        /* its legs' bones and its tail's (thigh, shin, foot, tail: the hero tool's names), hidden where it sits in something */
-        p->lower[b] = (s8)((c0 == 't' && c1 == 'h') || (c0 == 's' && c1 == 'h') || (c0 == 'f' && c1 == 'o') || (c0 == 't' && c1 == 'a'));
+        /* its legs' bones (1) and its tail's (2) (thigh, shin, foot, tail: the hero tool's names), hidden where it sits in something */
+        p->lower[b] = (s8)((c0 == 't' && c1 == 'h') || (c0 == 's' && c1 == 'h') || (c0 == 'f' && c1 == 'o') ? 1 : c0 == 't' && c1 == 'a' ? 2 : 0);
         p->role[b] = -1;
     }
     for (i = 0; i < PB_COUNT; i++) {
