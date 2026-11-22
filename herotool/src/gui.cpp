@@ -264,6 +264,8 @@ struct Tool {
     bool onion = false;
     int onion_step = 4;
     std::vector<int16_t> ghost[2];
+    // the clipping finder on: its points on the picture, its frames in the timeline
+    bool clipping = false;
     // how a new key fades (PACK_EASE_), and the key copied (Ctrl+C; empty none)
     int ease = PACK_EASE_SMOOTH;
     std::vector<PackAdjust> clip;
@@ -1889,6 +1891,196 @@ bool view_axes(View &v, float &yaw, ImVec2 im, float w, bool hovered) {
     return near;
 }
 
+// --- the clipping finder (the user's word, 2026-11-22: clipping, what the animation tools are for) ---
+
+// A part's core: a capsule from a bone's joint to a bone on it (to -1: on past its joint from its parent's), r its radius
+struct Capsule {
+    int bone, to;
+    float r;
+};
+
+// The distance from p to the segment a b
+float seg_dist(const float p[3], const float a[3], const float b[3]) {
+    float ab[3] = { b[0] - a[0], b[1] - a[1], b[2] - a[2] }, ap[3] = { p[0] - a[0], p[1] - a[1], p[2] - a[2] };
+    float l = ab[0] * ab[0] + ab[1] * ab[1] + ab[2] * ab[2], t = l > 0 ? (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / l : 0;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    float d[3] = { ap[0] - ab[0] * t, ap[1] - ab[1] * t, ap[2] - ab[2] * t };
+    return sqrtf(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]);
+}
+
+// A capsule's ends, from joints J (3 a bone)
+void capsule_ends(const KitPose *po, const Capsule &c, const float *J, float A[3], float B[3]) {
+    for (int i = 0; i < 3; i++) {
+        A[i] = J[c.bone * 3 + i];
+        B[i] = c.to >= 0 ? J[c.to * 3 + i] : A[i] + (A[i] - J[po->parent[c.bone] * 3 + i]) * 0.6f;
+    }
+}
+
+// What a kind's clipping is found with: its parts' cores (from its rest), each vertex's bone (the most of it), how far apart (bones
+// between) each two bones are; and for the move it was last found in (its changes then, MadeGen's count), each frame's clipping
+// points' count
+struct ClipFinder {
+    int kind = -1;
+    unsigned gen = 0;
+    std::vector<Capsule> caps;
+    std::vector<int> dom;
+    std::vector<unsigned char> gap;
+    int anim = -1;
+    uint64_t said = 0;
+    std::vector<int> count;
+};
+ClipFinder Clips;
+
+// The cores made for a kind (again if its model's been made again)
+void clip_prepare(Tool &T, int kind) {
+    const KitPose *po = &T.poses[kind];
+    if (Clips.kind == kind && Clips.gen == MadeGen) {
+        return;
+    }
+    Clips.kind = kind, Clips.gen = MadeGen, Clips.anim = -1;
+    int nb = po->nbones;
+    // bones apart: up from each to where they meet
+    std::vector<int> depth(nb, 0);
+    for (int b = 0; b < nb; b++) {
+        for (int p = po->parent[b]; p >= 0 && depth[b] < 255; p = po->parent[p]) {
+            depth[b]++;
+        }
+    }
+    Clips.gap.assign((size_t)nb * nb, 0);
+    for (int a = 0; a < nb; a++) {
+        for (int b = 0; b < nb; b++) {
+            int x = a, y = b, n = 0;
+            while (depth[x] > depth[y] && x >= 0) {
+                x = po->parent[x], n++;
+            }
+            while (depth[y] > depth[x] && y >= 0) {
+                y = po->parent[y], n++;
+            }
+            while (x != y && x >= 0 && y >= 0) {
+                x = po->parent[x], y = po->parent[y], n += 2;
+            }
+            Clips.gap[(size_t)a * nb + b] = (unsigned char)std::min(n, 255);
+        }
+    }
+    // each vertex's bone
+    Clips.dom.assign(po->nvert, 0);
+    for (int v = 0; v < po->nvert; v++) {
+        float best = -1;
+        for (int j = 0; j < 4; j++) {
+            if (po->weight[v * 4 + j] > best) {
+                best = po->weight[v * 4 + j], Clips.dom[v] = po->joint[v * 4 + j];
+            }
+        }
+    }
+    // the cores: a capsule from each bone along its part, to the bone on it that most hangs from it (the chest's to its neck, not its
+    // shoulders: one to a shoulder reached up under the ears), an end bone's on past it; its radius three quarters of the way out to
+    // its part's nearest third (well inside it, so parts that only touch don't count)
+    std::vector<int> under(nb, 0);
+    for (int b = 0; b < nb; b++) {
+        for (int p = po->parent[b]; p >= 0; p = po->parent[p]) {
+            under[p]++;
+        }
+    }
+    Clips.caps.clear();
+    for (int b = 0; b < nb; b++) {
+        int to = -1;
+        for (int c = 0; c < nb; c++) {
+            if (po->parent[c] == b && (to < 0 || under[c] > under[to])) {
+                to = c;
+            }
+        }
+        if (to >= 0 || po->parent[b] >= 0) {
+            Clips.caps.push_back({ b, to, 0 });
+        }
+    }
+    std::vector<std::vector<float>> near(Clips.caps.size());
+    for (int v = 0; v < po->nvert; v++) {
+        int best = -1;
+        float bd = 1e30f;
+        for (size_t c = 0; c < Clips.caps.size(); c++) {
+            if (Clips.caps[c].bone != Clips.dom[v]) {
+                continue;
+            }
+            float A[3], B[3];
+            capsule_ends(po, Clips.caps[c], po->bone, A, B);
+            float d = seg_dist(&po->rest[v * 3], A, B);
+            if (d < bd) {
+                bd = d, best = (int)c;
+            }
+        }
+        if (best >= 0) {
+            near[best].push_back(bd);
+        }
+    }
+    for (size_t c = 0; c < Clips.caps.size(); c++) {
+        if (near[c].size() >= 4) {
+            std::sort(near[c].begin(), near[c].end());
+            Clips.caps[c].r = near[c][near[c].size() * 3 / 10] * 0.75f;
+        }
+    }
+}
+
+// The points clipping in a frame of a kind (its vertices vs, its joints J, both in the game's axes): each vertex inside a core of a
+// part more than two bones from its own, and each of what it holds inside one more than two from its hand
+void clip_points(Tool &T, int kind, const int16_t *vs, const float *J, std::vector<int> &out) {
+    const KitPose *po = &T.poses[kind];
+    const KitMade *m = &T.made[kind];
+    int nb = po->nbones, nprop = std::min(po->nprop, m->nvert - po->nvert);
+    std::vector<float> A(Clips.caps.size() * 3), B(Clips.caps.size() * 3);
+    for (size_t c = 0; c < Clips.caps.size(); c++) {
+        capsule_ends(po, Clips.caps[c], J, &A[c * 3], &B[c * 3]);
+    }
+    out.clear();
+    for (int v = 0; v < po->nvert + std::max(0, nprop); v++) {
+        int own = v < po->nvert ? Clips.dom[v] : po->hand;
+        if (own < 0 || own >= nb) {
+            continue;
+        }
+        float p[3] = { (float)vs[v * 3], (float)vs[v * 3 + 1], (float)vs[v * 3 + 2] };
+        for (size_t c = 0; c < Clips.caps.size(); c++) {
+            const Capsule &k = Clips.caps[c];
+            if (k.r <= 0 || Clips.gap[(size_t)own * nb + k.bone] <= 2) {
+                continue;
+            }
+            if (seg_dist(p, &A[c * 3], &B[c * 3]) < k.r) {
+                out.push_back(v);
+                break;
+            }
+        }
+    }
+}
+
+// Each frame's clipping points counted for a kind's move, again only when its changes (or its model) have changed, and not while
+// something's being dragged (then the frame shown's alone, clip_points)
+void clip_scan(Tool &T, int kind, int anim) {
+    if (kind < 0 || !T.have_pose[kind] || !T.have_made[kind] || anim < 0 || anim >= T.made[kind].nanims || T.dragging || T.key_drag) {
+        return;
+    }
+    clip_prepare(T, kind);
+    uint64_t said = 1469598103934665603ull;
+    for (const PackAdjust &a : T.adj) {
+        const unsigned char *b = (const unsigned char *)&a;
+        for (size_t i = 0; i < sizeof(a); i++) {
+            said = (said ^ b[i]) * 1099511628211ull;
+        }
+    }
+    if (Clips.anim == anim && Clips.said == said && (int)Clips.count.size() == T.made[kind].anims[anim].frames) {
+        return;
+    }
+    Clips.anim = anim, Clips.said = said;
+    int frames = T.made[kind].anims[anim].frames;
+    Clips.count.assign(frames, 0);
+    std::vector<int16_t> vs;
+    std::vector<int> pts;
+    Posed p;
+    for (int f = 0; f < frames; f++) {
+        if (adjusted_frame(T, kind, anim, f, vs, &p)) {
+            clip_points(T, kind, vs.data(), &p.shown[0][0], pts);
+            Clips.count[f] = (int)pts.size();
+        }
+    }
+}
+
 // Over the picture while adjusting: which gizmo it has, Turn (R), Move (G) or Size (S), the one on lit
 void gizmo_buttons(Tool &T) {
     static const char *const Says[3] = { "Turn (R)", "Move (G)", "Size (S)" };
@@ -1938,6 +2130,23 @@ void gizmo_buttons(Tool &T) {
         ImGui::SetItemTooltip("Frames between the ghosts and the frame shown");
     }
     ImGui::SameLine();
+    on = T.clipping;
+    if (on) {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+    }
+    if (ImGui::Button("Clipping", ImVec2(U(90), 0))) {
+        T.clipping = !T.clipping;
+    }
+    if (on) {
+        ImGui::PopStyleColor();
+    }
+    ImGui::SetItemTooltip("Points of it inside another part (red), and the frames where (the timeline's red)");
+    if (T.clipping && Clips.kind == T.kind && T.frame >= 0 && T.frame < (int)Clips.count.size()) {
+        ImGui::SameLine();
+        ImGui::TextColored(Clips.count[T.frame] > 0 ? ImVec4(1, 0.4f, 0.4f, 1) : ImVec4(0.5f, 0.8f, 0.5f, 1), "%d", Clips.count[T.frame]);
+        ImGui::SetItemTooltip("Points clipping at this frame");
+    }
+    ImGui::SameLine();
     ImGui::NewLine();
 }
 
@@ -1967,6 +2176,17 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     }
     if (T.sel >= po->nbones) {
         T.sel = -1;
+    }
+    // the clipping finder: the frame's points inside another part, red
+    if (T.clipping) {
+        static std::vector<int> pts;
+        clip_prepare(T, T.kind);
+        clip_points(T, T.kind, scratch.data(), &ps.shown[0][0], pts);
+        for (int pv : pts) {
+            float q[3] = { scratch[pv * 3] - v.cx, -(float)scratch[pv * 3 + 1], -(float)scratch[pv * 3 + 2] - v.cz }, x, y, z;
+            to_screen(v, q, x, y, z);
+            dl->AddCircleFilled(ImVec2(im.x + x * disp, im.y + y * disp), U(2.5f), IM_COL32(255, 50, 50, 230));
+        }
     }
     float pp = v.scale * v.zoom * disp, R = U(70);
     // the gizmo's handles on the screen: each axis's direction there (per unit, and as seen), and whether it's towards the viewer. Its
@@ -2287,8 +2507,11 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             rows.push_back(b);
         }
     }
-    const float label = U(130), ruler = U(22), row = U(20);
-    float h = ruler + row * (rows.empty() ? 1 : (float)rows.size());
+    const float label = U(130), ruler = U(22), row = U(20), strip = T.clipping ? U(8) : 0;
+    float h = ruler + strip + row * (rows.empty() ? 1 : (float)rows.size());
+    if (T.clipping) {
+        clip_scan(T, T.kind, a);
+    }
     ImVec2 o = ImGui::GetCursorScreenPos();
     ImGui::InvisibleButton("##sheet", ImVec2(width, h), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
     bool over = ImGui::IsItemHovered();
@@ -2334,6 +2557,20 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             dl->AddText(ImVec2(x + U(2), o.y + U(1)), IM_COL32(170, 170, 180, 255), n);
         }
     }
+    if (T.clipping && Clips.kind == T.kind && Clips.anim == a) {
+        // the clipping finder: each frame's clipping, redder for more
+        int most = 1;
+        for (int c : Clips.count) {
+            most = std::max(most, c);
+        }
+        for (int g = 0; g < frames && g < (int)Clips.count.size(); g++) {
+            if (Clips.count[g] > 0) {
+                int al = 90 + 165 * Clips.count[g] / most;
+                dl->AddRectFilled(ImVec2(fx((float)g) - cw / 2, o.y + ruler + U(1)), ImVec2(fx((float)g) + cw / 2, o.y + ruler + strip - U(1)),
+                                  IM_COL32(255, 60, 60, al));
+            }
+        }
+    }
     if (T.tl_zoom > 1) {
         // the part of the move shown, under the ruler
         dl->AddRectFilled(ImVec2(x0 + T.tl_first / frames * span, o.y + ruler - U(3)), ImVec2(x0 + (T.tl_first + shown) / frames * span, o.y + ruler),
@@ -2349,7 +2586,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     const float s = U(6), grip = U(6);
     for (size_t r = 0; r < rows.size(); r++) {
         int b = rows[r];
-        float y = o.y + ruler + row * r, my = y + row / 2;
+        float y = o.y + ruler + strip + row * r, my = y + row / 2;
         if (r % 2 == 1) {
             dl->AddRectFilled(ImVec2(o.x, y), ImVec2(o.x + width, y + row), IM_COL32(36, 36, 44, 255));
         }
@@ -2435,7 +2672,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         dl->PopClipRect();
     }
     if (rows.empty()) {
-        dl->AddText(ImVec2(o.x + U(4), o.y + ruler + U(3)), IM_COL32(150, 150, 160, 255), "Click a joint");
+        dl->AddText(ImVec2(o.x + U(4), o.y + ruler + strip + U(3)), IM_COL32(150, 150, 160, 255), "Click a joint");
     }
     // the frame shown, across it all
     float px = fx((float)T.frame);
@@ -2455,7 +2692,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             under = ht.key, part = ht.part;
         }
     }
-    int at_row = (int)floorf((io.MousePos.y - o.y - ruler) / row);
+    int at_row = (int)floorf((io.MousePos.y - o.y - ruler - strip) / row);
     if (over && ImGui::IsMouseClicked(0)) {
         bool playing = T.adj_playing;
         T.adj_playing = false;
@@ -2496,7 +2733,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                 }
                 T.frame = part == KEY_END ? T.key_to : k.at;
             }
-        } else if (io.MousePos.x >= x0 && io.MousePos.y < o.y + ruler) {
+        } else if (io.MousePos.x >= x0 && io.MousePos.y < o.y + ruler + strip) {
             T.scrub = true;
         } else if (io.MousePos.x >= x0 && at_row >= 0 && at_row < (int)rows.size()) {
             // an empty place in the rows: a box to pick the keys in (Ctrl: as well as those picked), or nothing picked
@@ -2648,6 +2885,13 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     }
     if ((over && under >= 0 && part != KEY_BODY) || (T.key_drag && (T.key_part == KEY_START || T.key_part == KEY_END))) {
         ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+    }
+    if (over && T.clipping && io.MousePos.x >= x0 && io.MousePos.y >= o.y + ruler && io.MousePos.y < o.y + ruler + strip
+        && Clips.kind == T.kind && Clips.anim == a) {
+        int g = xf(io.MousePos.x);
+        if (g < (int)Clips.count.size()) {
+            ImGui::SetTooltip("Frame %d: %d points clipping", g, Clips.count[g]);
+        }
     }
     if (over && under >= 0 && !T.key_drag) {
         const PackAdjust &k = T.adj[under];
@@ -4594,6 +4838,24 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             if (SDL_getenv("HEROTOOL_ONION") != nullptr) {
                 T.onion = true;
                 T.onion_step = SDL_atoi(SDL_getenv("HEROTOOL_ONION"));
+            }
+            /* and HEROTOOL_CLIPPING=1 turns the clipping finder on, printing each move's frames with any and its most */
+            if (SDL_getenv("HEROTOOL_CLIPPING") != nullptr) {
+                T.clipping = true;
+                for (int m = 0; m < T.made[T.kind].nanims; m++) {
+                    clip_scan(T, T.kind, m);
+                    int any = 0, most = 0, at = 0;
+                    for (int g = 0; g < (int)Clips.count.size(); g++) {
+                        any += Clips.count[g] > 0;
+                        if (Clips.count[g] > most) {
+                            most = Clips.count[g], at = g;
+                        }
+                    }
+                    printf("herotool: clipping in %s: %d of %d frames, most %d at frame %d\n", T.made[T.kind].anims[m].name, any,
+                           (int)Clips.count.size(), most, at);
+                }
+                fflush(stdout);
+                Clips.anim = -1;
             }
             /* and HEROTOOL_PLAY=1 plays it (as Space does) */
             T.adj_playing = SDL_getenv("HEROTOOL_PLAY") != nullptr ? true : T.adj_playing;
