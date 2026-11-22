@@ -385,14 +385,15 @@ void to_screen(const View &v, const float p[3], float &sx, float &sy, float &sz)
     sz = -z;
 }
 
-// A view's picture dragged to turn and tilt it, and scrolled to zoom it (the item just drawn); yaw the turn it's drawn with. button: the
-// mouse button that turns it (the right one while adjusting a move, whose left one picks and moves joints)
-void look_around(View &v, float &yaw, int button = 0) {
+// A view's picture (the item just drawn) dragged with the right mouse button to turn and tilt it, scrolled to zoom it, and set back by
+// double-clicking it with the right one (or Home); yaw the turn it's drawn with. The same in every view, watched or edited (the user's
+// word, 2026-11-22: the buttons swapped between them), the left one free to pick and drag joints. tip: says so as it's hovered.
+void look_around(View &v, float &yaw, bool tip = true) {
     if (!ImGui::IsItemHovered() && !(ImGui::IsItemActive())) {
         return;
     }
     ImGuiIO &io = ImGui::GetIO();
-    if (ImGui::IsMouseDragging(button)) {
+    if (ImGui::IsMouseDragging(ImGuiMouseButton_Right)) {
         // turned as the hand goes, as if it were held: its front goes the way the mouse does (the user's word, 2026-11-22: it went
         // back to front)
         yaw -= io.MouseDelta.x * 0.5f;
@@ -402,11 +403,11 @@ void look_around(View &v, float &yaw, int button = 0) {
     if (io.MouseWheel != 0) {
         v.zoom = fmaxf(0.4f, fminf(6, v.zoom * powf(1.15f, io.MouseWheel)));
     }
-    if (ImGui::IsMouseDoubleClicked(button)) {
+    if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Right) || ImGui::IsKeyPressed(ImGuiKey_Home, false)) {
         v.pitch = 12, v.zoom = 1, yaw = 30;
     }
-    if (button == 0) {
-        ImGui::SetItemTooltip("Drag: turn   Wheel: zoom   Double-click: reset");
+    if (tip) {
+        ImGui::SetItemTooltip("Right-drag: turn   Wheel: zoom   Home: reset");
     }
 }
 
@@ -2775,7 +2776,7 @@ void editor_middle(Tool &T) {
     ImGui::Image((ImTextureID)(intptr_t)T.game_view.tex, ImVec2(w, w * PrevH / PrevW));
     ImVec2 im = ImGui::GetItemRectMin();
     bool hovered = ImGui::IsItemHovered();
-    look_around(T.game_view, T.made_turn, adjusting ? 1 : 0);
+    look_around(T.game_view, T.made_turn, !adjusting);
     bool on_axes = view_axes(T.game_view, T.made_turn, im, w, hovered);
     const KitMade *mk = &T.made[T.kind];
     if (adjusting) {
@@ -2972,7 +2973,7 @@ void adjust_panel(Tool &T) {
     }
     hint("Click a joint, then drag its gizmo\n"
          "R turn   G move   S size\n"
-         "Right-drag orbit   Wheel zoom   Keypad 1 3 7 views\n"
+         "Right-drag orbit   Wheel zoom   Home reset   Keypad 1 3 7 views\n"
          "Space play   Left/Right step a frame\n"
          "Ctrl+C / Ctrl+V copy and paste a key   Delete remove it\n"
          "Ctrl+Z undo   Ctrl+Y redo");
@@ -4071,20 +4072,21 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
-        /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT] presses the left button at (X0, Y0) in the window once a game's shown, moves
+        /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT[,BUTTON]] presses the left button (or the right) at (X0, Y0) in the window once a game's shown, moves
            to (X1, Y1) over ten frames and lets go (Shift held if SHIFT is 1), as a person's mouse would, and keeps it there after (the
            real mouse left out: the SDL backend gives where it is on the screen while the window has the focus) */
         static int drag_step = -1;
         if (SDL_getenv("HEROTOOL_DRAG") != nullptr && (drag_step >= 0 || T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr))) {
-            float d[5] = { 0, 0, 0, 0, 0 };
-            SDL_sscanf(SDL_getenv("HEROTOOL_DRAG"), "%f,%f,%f,%f,%f", &d[0], &d[1], &d[2], &d[3], &d[4]);
+            /* (a sixth, BUTTON: 0 the left, 1 the right) */
+            float d[6] = { 0, 0, 0, 0, 0, 0 };
+            SDL_sscanf(SDL_getenv("HEROTOOL_DRAG"), "%f,%f,%f,%f,%f,%f", &d[0], &d[1], &d[2], &d[3], &d[4], &d[5]);
             ImGuiIO &dio = ImGui::GetIO();
             // Shift down the frame before the press and up the frame after the release, and the mouse before it each frame: ImGui
             // keeps a mouse move or press queued after a key's change for the frame after (its input trickling)
             drag_step = drag_step < 100 ? drag_step + 1 : drag_step;
             float t = drag_step < 3 ? 0 : drag_step > 12 ? 1 : (drag_step - 2) / 10.0f;
             dio.AddMousePosEvent(d[0] + (d[2] - d[0]) * t, d[1] + (d[3] - d[1]) * t);
-            dio.AddMouseButtonEvent(0, drag_step >= 2 && drag_step <= 12);
+            dio.AddMouseButtonEvent(d[5] != 0 ? 1 : 0, drag_step >= 2 && drag_step <= 12);
             dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && drag_step >= 1 && drag_step <= 13);
         }
         ImGui::NewFrame();

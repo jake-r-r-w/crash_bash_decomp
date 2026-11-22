@@ -667,6 +667,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's views turn with the right mouse button in every view (watching one turned with the left, editing with
+  the right: the user's word); right double-click or Home sets one back. `HEROTOOL_DRAG`'s sixth value drags with the right button.
+
 - 2026-11-22: the hero tool says much less (the user: "its very wordy for a visual tool"): a word or two a control, the rest in
   tooltips, one (?) (the animation's controls), Turn/Move/Size as X Y Z rows tinted as Blender's (`xyz_row`), short top-bar messages,
   the key list folded away. The right's fields and the start screen's leave room for their labels and buttons at any scale (Based on,

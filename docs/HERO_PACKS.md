@@ -312,8 +312,9 @@ PS1 does). What the game draws beside the hero's model, the Ballistix car round 
 the tank as every tank game but Swamp Fox has it, its hull and the turret of the hero it plays like (Crash's and Coco's swirly gun,
 Dingodile's and Rilla Roo's flamer, the others' laser). A pack plays like its template in each game (its weight and speeds, the
 tank's turret and weapon) unless its kind says `"like"`; one that says no template, as the hero whose place it takes
-(packheroes.c). The previews are dragged to turn and tilt (as if held: its front goes the way the mouse does), scrolled to zoom,
-double-clicked to set back, and show BREATHE first.
+(packheroes.c). The previews are dragged with the right mouse button to turn and tilt (as if held: its front goes the way the mouse
+does), scrolled to zoom, set back by a right double-click or Home, and show BREATHE first: the same in every view, watched or edited,
+the left button left to pick and drag joints (the user's word, 2026-11-22: the buttons swapped between watching and animating).
 Under each game in the gallery a choice of **whose ride or prop** it has there: its template's, or another hero's (the pogo stick
 or Cortex's jetpack, Tiny's keg ...), written as that kind's `"template"` in hero.json (`--template-in GAME=HERO` from the command
 line); picking one makes it again. On foot it's **Stands like**, which also has **Own moves** (its model's clips, and the
@@ -488,7 +489,7 @@ Its tests' settings: `HEROTOOL_ADJUST=BONE@FRAME` (or `@FROM-TO`, held) adjusts 
 (and `HEROTOOL_SHOW_FRAME=N` shows that frame after; `HEROTOOL_ADJUST_FADE=EASE,N` its fade, hero.json's name, over N frames;
 `HEROTOOL_PASTE=FRAME[,1]` copies it and pastes it at FRAME, mirrored with 1);
 `HEROTOOL_ADJUST_TURN` / `_REACH` / `_SCALE=X,Y,Z` changes it; `HEROTOOL_GIZMO=N` picks the gizmo (0 turn, 1 move, 2 size);
-`HEROTOOL_DRAG=X0,Y0,X1,Y1[,1]` drags the mouse in the window (Shift with 1, down the frame before the press and up the frame after, as
+`HEROTOOL_DRAG=X0,Y0,X1,Y1[,1[,1]]` drags the mouse in the window (the right button with the second 1; Shift with the first, down the frame before the press and up the frame after, as
 ImGui holds a press queued after a key's change for the next frame; the window's pixels, as `HEROTOOL_SHOT`'s picture's), and keeps
 it there after, the real mouse left out (ImGui's SDL backend gives the real one's place while the window has the focus);
 `HEROTOOL_LIVE=FILE` writes the frame shown as the tool made it (s16 x, y, z a vertex), and FILE.txt its move and frame, to set
