@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: Bobby's shoulder holes (the user: "in his top right arm he has holes in his mesh") were the ear cut's: bobby_ears.py had
+  taken a few shoulder faces (ear-weighted, touching only his body) with each ear, leaving 47 open edges. The fin it was for is the
+  tool's patches' job, done; his model is the uncut one again (4ff65709^), the script and its json gone, his pack made again (11 open
+  edges, his own; no face stretched by an ear). A check for a mesh: open edges by position (a hole's rim), not by Blender vertex.
 - 2026-11-22: the hero tool's Preview in follows the page opened (each game's page its own game; every game in its arrow now).
 - 2026-11-22: the hero tool's start screen: no path to type, What the model needs (the game's limits), no zoom or zip notes, and each
   hero's picture (its card, else its face from its last made model). The mod's name is the hero's (no field). The card: Take a photo

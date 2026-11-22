@@ -240,11 +240,15 @@ Then still "his ears are attached to his shoulders": a corner goes with the two 
 most of an ear's that second was his chest (an arm's for some), so as his arms or chest moved the flaps' ends went with them. Now what
 hangs off a hero (each ear, the jaw, the tail; `Hanging`, rig.c) goes only with its own bones and the one it hangs from (the head,
 the hips for a tail), and nothing else with them but that one, where they join.
-Then "look at the ear": turned in the tool, the left ear pulled a fin of faces down to his shoulder. The fault was in his model: the
-bottom edge of each ear flap was welded to his chest and upper arm, 13 faces a side, so no weights could free it. At the user's word
-("if it's a problem from the model itself, fix the model in blender then re-import") `port/mods/bobby_ears.py` cut each ear's corners
-shared with his body free in Blender (headless, the faces as ear or body from `bobby_ears.json`), moving them 2 mm into the ear: the
-same 1365 triangles, 20 more corners, nothing else moved. And the tool keeps each bone's nearest places in one patch (in each piece
+Then "look at the ear": turned in the tool, the left ear pulled a fin of faces down to his shoulder. The tool now keeps each bone's
+nearest places in one patch, and that was the fix. A Blender script (bobby_ears.py, in git history) also cut the ear faces' corners
+shared with his body free, taking as ear every face most of whose corners went with an ear's bones, but that wasn't the fault, and it
+made holes (the user's word, 2026-11-22: "in his top right arm he has holes in his mesh"; 47 open edges against the model's own 11, his
+collar tag and the corners of his mouth). Joined by edges, each ear is one piece of 68 faces that meets his body only at its root by his
+head; the 3 faces on his left shoulder and 2 and 2 on his right that the cut took with the ears lie on his shoulders and touch only his
+body. Cut loose from it (2 mm apart, weighted apart), they opened from it as his arms and ears moved. So his model is the one from before
+the cut again (4ff65709^): with the patches, no shoulder corner goes with an ear's bones, nor is any face stretched by an ear below its
+root (the pack from before the cut, by the old weights, had 18). The tool keeps each bone's nearest places in one patch (in each piece
 of a model only its biggest patch; the rest go with whatever's nearest over the surface), so a shoulder's place nearer an ear's bone
 isn't the ear's, nor an ear's end nearer the shoulder the shoulder's. Turned hard now, his ear moves and nothing of his body does.
 

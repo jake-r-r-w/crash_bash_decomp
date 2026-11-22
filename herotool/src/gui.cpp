@@ -6267,11 +6267,28 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         last = now;
         made_check(T);
-        /* a test's: HEROTOOL_CAMERA's turn once the camera's posed, and HEROTOOL_PHOTO takes its photo then */
+        /* a test's: HEROTOOL_CAMERA=YAW[,PITCH,ZOOM,ACROSS,DOWN] once the camera's posed (HEROTOOL_CAMERA_POSE=MOVE@FRAME its pose), and
+           HEROTOOL_PHOTO takes its photo then */
         static bool turned = false, photographed = false;
         if (!turned && T.camera && T.cam_anim >= 0 && SDL_getenv("HEROTOOL_CAMERA") != nullptr) {
+            float c[5] = { 0, T.cam.pitch, T.cam.zoom, T.cam.px, T.cam.py };
+            const char *at = SDL_getenv("HEROTOOL_CAMERA");
+            for (int i = 0; i < 5 && at != nullptr; i++) {
+                c[i] = (float)SDL_atof(at);
+                at = strchr(at, ',');
+                at = at != nullptr ? at + 1 : nullptr;
+            }
             turned = true;
-            T.cam.yaw = (float)SDL_atof(SDL_getenv("HEROTOOL_CAMERA"));
+            T.cam.yaw = c[0], T.cam.pitch = c[1], T.cam.zoom = c[2], T.cam.px = c[3], T.cam.py = c[4];
+            if (const char *pose = SDL_getenv("HEROTOOL_CAMERA_POSE")) {
+                const char *f = strchr(pose, '@');
+                for (int a = 0; a < T.made[0].nanims; a++) {
+                    if (SDL_strncasecmp(T.made[0].anims[a].name, pose, f != nullptr ? (size_t)(f - pose) : strlen(pose)) == 0) {
+                        T.cam_anim = a;
+                    }
+                }
+                T.cam_frame = f != nullptr ? SDL_atoi(f + 1) : 0;
+            }
         }
         if (turned && !photographed && SDL_getenv("HEROTOOL_PHOTO") != nullptr) {
             photographed = true;
