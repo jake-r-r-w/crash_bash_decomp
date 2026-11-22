@@ -10,8 +10,12 @@ clips, sounds and card, and the game makes it into Crash Bash's models as it loa
 riding the polar bear (`pack_ride`, through `ride_make`), and in the eight kinds where the heroes ride or hold something else
 (`packfollow.c`): Crash's model of that kind followed frame by frame, as Pinstripe's were made, his tables of where Crash and his
 prop are copied, but posing the pack's own skeleton: its hips on Crash's, its trunk turned as his, each arm reaching (two-bone) for
-his hand, on the grip where there's one, its legs astride as his, on the pegs or the floor where he stands, else sat, and hidden in
-a tank's hatch or a race cart; the prop (painted gunmetal where Pinstripe's was) as it moves, or in its hand where he carries it.
+his hand, on the grip where there's one, its legs astride as his, on the pegs or the floor where he stands, else sat, and in
+a tank's hatch or a race cart its tail folded away and its legs drawn in to the hatch's width (its arms left where they are); the prop
+(painted gunmetal where Pinstripe's was) as it moves, or in its hand where he carries it. Where its body isn't Crash's shape: on the
+pegs its feet go to his soles (his shins stretch as he bounces) and its hips come down to where its legs reach them; what it carries
+turns out of its head (a ball fitted to all of it above its shoulders), and the keg (kept Crash's size) is pushed out of its side, its
+hand reaching after it.
 Bobby, the example, plays in every game (each checked with four of him), and online where everyone has him (Online, below). The
 hero tool (below) makes a pack of any standing two-legged model, rigged or not. A pack can take
 another hero as its template, its moves and props in every game (any of the eight; Templates, below).

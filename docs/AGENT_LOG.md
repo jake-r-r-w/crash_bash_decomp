@@ -667,6 +667,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: each kind of Bobby (Crash's template) looked at from four sides from `--dump-hero`, at the user's word ("his arms are
+  getting sucked into the tank ... look at each prop one by one"). Fixed in `packfollow.c`: the tank/race cart cut leaves the arms
+  alone; on the pogo his feet go to Crash's soles (Crash's shins stretch up as he bounces, so their middle left the pegs) and his hips
+  drop to where his legs reach; the mallet turns out of his head (`carry_clear`); the keg is pushed out of his side (`carry_push`,
+  it went through his chest). The ball car, dino, fish, race cart, bear, on foot and podium were fine. Open: his arms a little stiff.
+
 - 2026-11-22: template props cleaned, at the user's word ("fix coco's pogo handle and the prop slivers"). `prop_view.py` draws a
   map's prop in the model's own colours; with it every one of the 56 maps was looked at, and its face counts match `--dump-hero`'s.
   New in the maps: face boxes, NOT boxes (faces out), SKIP boxes (strips out) and `.skip` strip lists (HERO_PACKS.md, A prop's

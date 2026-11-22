@@ -653,13 +653,15 @@ typedef struct {
     V3 rest[PF_MAX_VERTS];       /* as it rests, in Crash Bash's units and axes, at its size on the prop about its hips */
     V3 bone[PACK_MAX_BONES];     /* and its bones' places */
     s32 pb[PB_COUNT];            /* its bones the posing moves */
-    s8 lower[PACK_MAX_BONES];    /* a bone of its legs (hidden below a cut) */
+    s8 lower[PACK_MAX_BONES];    /* a bone of its legs (1), tail (2) or arms (3), for a cut */
     s8 role[PACK_MAX_BONES];     /* which of PB_ a bone of its is, else -1 (it goes with its trunk, or the posed bone it hangs from) */
     Mat across;                  /* its trunk's frame as it rests (body_lie's columns) */
     float hip_height, crash_hip_height, sole;
     float k, ground, scale;      /* its rest pose to the game's units (k, ground), and its size on the prop */
     s32 own[FOLLOW_MOVES];       /* each move's clip of its own (KIND/MOVE), which it plays in place of following, or -1 */
     V3 feet_ref[2];
+    V3 head_mid;                 /* its head (all of it above its shoulders but its arms) as a ball as it rests, that what it carries */
+    float head_r;                /* is turned out of */
 } Packed;
 
 static Packed ThePack;
@@ -740,6 +742,151 @@ static s32 pack_points_at(void *ctx, s32 a, s32 f, FlagPoint *out, s32 max);
 
 /* How far either side of its hips what's below a hatch is drawn in to (the game's units), so it stays down inside the tank */
 #define HATCH_HALF 55.0f
+/* How much of its legs' length its hips are kept within of the pegs (a little bend left at the knee) */
+#define PEG_REACH 0.95f
+/* How much of its head's corners its head's ball holds, and how far (radians, in steps) what it carries can be turned out of it */
+#define HEAD_KEEP 0.85f
+#define CARRY_TURN_MOST 1.2f
+#define CARRY_TURN_STEPS 30
+/* How much of its own width what it carries may sink into its side (held snug against it) */
+#define CARRY_SNUG 0.12f
+
+/* Where its ankle goes on Crash's side ci (its foot bone ft): its sole on his. On pegs his lowest corner there is his sole (his shins and
+ * ankles stretch up as he bounces, the user's word, 2026-11-22: off the pogo's pegs); stood, his shoe's middle, its ankle above it */
+static V3 feet_target(const Packed *p, const Follow *c, const V3 *L, s32 ci, s32 ft) {
+    V3 target = mid_of(L, c->feet[ci], c->nfeet[ci]);
+    float sole = -1e9f;
+    s32 k;
+
+    if (c->kind->peg == NULL) {
+        target.y -= (p->sole - p->bone[ft].y) * 0.5f;
+        return target;
+    }
+    for (k = 0; k < c->nfeet[ci]; k++) {
+        sole = L[c->feet[ci][k]].y > sole ? L[c->feet[ci][k]].y : sole;
+    }
+    target.y = sole - (p->sole - p->bone[ft].y);
+    return target;
+}
+
+/* What it carries (about its hand, at, from Crash's, Hd) turned out of its head (a ball at head) as little as it can be, by up to
+ * CARRY_TURN_MOST: Crash's head is smaller, and his mallet over his shoulder went through the back of a bigger one (the user's word,
+ * 2026-11-22). Its farthest corner from its hand turns away from the head's middle */
+static Mat carry_clear(const Packed *p, const Follow *c, const V3 *L, V3 Hd, V3 at, V3 head) {
+    Mat none, turn;
+    V3 far = { 0, 0, 0 }, m, h, away;
+    float far_d = 0, best = 1e9f;
+    s32 k, step;
+
+    memset(&none, 0, sizeof(none));
+    none.m[0][0] = none.m[1][1] = none.m[2][2] = 1;
+    if (p->head_r <= 0) {
+        return none;
+    }
+    for (k = 0; k < c->prop.nvert; k++) {
+        V3 d = vsub(L[c->prop.corner_of[k]], Hd);
+
+        if (vlen(d) > far_d) {
+            far_d = vlen(d), far = d;
+        }
+    }
+    m = vnorm(far);
+    h = vnorm(vsub(head, at));
+    away = vsub(vmul(m, vdot(h, m)), h);
+    if (far_d <= 0 || vlen(away) < 1e-4f) {
+        return none;
+    }
+    away = vnorm(away);
+    turn = none;
+    for (step = 0; step <= CARRY_TURN_STEPS; step++) {
+        float t = CARRY_TURN_MOST * (float)step / CARRY_TURN_STEPS, in = 0;
+        Mat r = mat_arc(m, vadd(vmul(m, cosf(t)), vmul(away, sinf(t))));
+
+        for (k = 0; k < c->prop.nvert; k++) {
+            float d = p->head_r - vlen(vsub(vadd(at, mat_apply(&r, vsub(L[c->prop.corner_of[k]], Hd))), head));
+
+            in += d > 0 ? d : 0;
+        }
+        if (in < best) {
+            best = in, turn = r;
+        }
+        if (in <= 0) {
+            break;
+        }
+    }
+    return turn;
+}
+
+/* An arm (side 0 its left) reaching for target, its elbow bent towards hint */
+static void arm_reach(const Packed *p, Mat *Q, V3 *P, s32 side, V3 target, V3 hint) {
+    s32 up = p->pb[side ? PB_UPPER_R : PB_UPPER_L], fo = p->pb[side ? PB_FORE_R : PB_FORE_L], ha = p->pb[side ? PB_HAND_R : PB_HAND_L];
+    float l1 = vlen(vsub(p->bone[fo], p->bone[up])), l2 = vlen(vsub(p->bone[ha], p->bone[fo]));
+    V3 sh = P[up], elbow = two_bone(sh, target, l1, l2, hint), hand = vadd(elbow, vmul(vnorm(vsub(target, elbow)), l2));
+
+    Q[up] = mat_arc(vsub(p->bone[fo], p->bone[up]), vsub(elbow, sh));
+    Q[fo] = mat_arc(vsub(p->bone[ha], p->bone[fo]), vsub(hand, elbow));
+    P[fo] = elbow;
+    Q[ha] = Q[fo];
+    P[ha] = hand;
+}
+
+/* How far what it carries (about its hand, at, from Crash's, Hd, turned) is to go out of its body (the rest of it but its arms, legs,
+ * tail and head, beside it): out from its hips' line towards its middle, as far as its body goes out that way at its height, less
+ * CARRY_SNUG of its own width that way (held against it). Crash is thin, and his keg went through a wider body (the user's word,
+ * 2026-11-22) */
+static V3 carry_push(const Packed *p, const Follow *c, const V3 *L, V3 Hd, V3 at, const Mat *turn, V3 hips_at, const Mat *R) {
+    V3 mid = { 0, 0, 0 }, d, none = { 0, 0, 0 };
+    float lo = 1e9f, hi = -1e9f, in = 1e9f, out = -1e9f, body = -1e9f, head = -1e9f;
+    s32 k, j;
+
+    if (c->prop.nvert <= 0) {
+        return none;
+    }
+    for (k = 0; k < c->prop.nvert; k++) {
+        V3 q = vadd(at, mat_apply(turn, vsub(L[c->prop.corner_of[k]], Hd)));
+
+        mid = vadd(mid, q);
+        lo = q.y < lo ? q.y : lo;
+        hi = q.y > hi ? q.y : hi;
+    }
+    mid = vmul(mid, 1.0f / (float)c->prop.nvert);
+    d = v3(mid.x - hips_at.x, 0, mid.z - hips_at.z);
+    if (vlen(d) < 1) {
+        return none;
+    }
+    d = vnorm(d);
+    for (k = 0; k < c->prop.nvert; k++) {
+        float t = vdot(vsub(vadd(at, mat_apply(turn, vsub(L[c->prop.corner_of[k]], Hd))), hips_at), d);
+
+        in = t < in ? t : in;
+        out = t > out ? t : out;
+    }
+    /* its head's bottom: the top of its shoulders, which is the top of what's body here */
+    if (p->head_r > 0) {
+        head = hips_at.y + mat_apply(R, vsub(p->head_mid, p->bone[p->pb[PB_HIPS]])).y + p->head_r * 0.5f;
+    }
+    for (k = 0; k < p->n; k++) {
+        float other = 0;
+        V3 s;
+
+        for (j = 0; j < 4; j++) {
+            other += p->lower[p->pm->joint[k * 4 + j]] != 0 ? p->pm->weight[k * 4 + j] : 0;
+        }
+        if (other >= 0.5f) {
+            continue;
+        }
+        s = vadd(hips_at, mat_apply(R, vsub(p->rest[k], p->bone[p->pb[PB_HIPS]])));
+        if (s.y >= lo && s.y <= hi && s.y > head) {
+            float t = vdot(vsub(s, hips_at), d);
+
+            body = t > body ? t : body;
+        }
+    }
+    if (body <= -1e9f || in >= body - (out - in) * CARRY_SNUG) {
+        return none;
+    }
+    return vmul(d, body - (out - in) * CARRY_SNUG - in);
+}
 
 static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     static V3 F[FOLLOW_CORNERS], L[FOLLOW_CORNERS];
@@ -751,7 +898,8 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     float now[3][3];
     Mat body, R, rest_t;
     Moved mv;
-    V3 H, hips_at, up_world = { 0, -1, 0 };
+    V3 H, hips_at, up_world = { 0, -1, 0 }, hints[2], carry_at = { 0, 0, 0 };
+    Mat carry_turn;
     s32 i, j, k, side;
 
     if (!hm_model_at(&c->prop, c->anim[a], f, F)) {
@@ -785,6 +933,30 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
         own_frame(p, a, f, &mv, hips_at, L, out);
         return;
     }
+    /* its feet kept on the pegs: Crash's legs stretch as he bounces (the user's word, 2026-11-22: off the pogo's pegs, at its handle),
+     * so where its legs can't reach his feet from his hips, its hips come down until they do */
+    if (fk->peg != NULL) {
+        float drop = 0;
+
+        for (side = 0; side < 2; side++) {
+            s32 ci = side == 0 ? 1 : 0, th = p->pb[side ? PB_THIGH_R : PB_THIGH_L], sh = p->pb[side ? PB_SHIN_R : PB_SHIN_L];
+            s32 ft = p->pb[side ? PB_FOOT_R : PB_FOOT_L];
+            float reach = (vlen(vsub(p->bone[sh], p->bone[th])) + vlen(vsub(p->bone[ft], p->bone[sh]))) * PEG_REACH;
+            V3 hip = vadd(hips_at, mat_apply(&R, vsub(p->bone[th], p->bone[p->pb[PB_HIPS]]))), d, target;
+            float across;
+
+            if (c->nfeet[ci] <= 0) {
+                continue;
+            }
+            target = feet_target(p, c, L, ci, ft);
+            d = vsub(target, hip);
+            across = d.x * d.x + d.z * d.z;
+            if (across < reach * reach && d.y - sqrtf(reach * reach - across) > drop) {
+                drop = d.y - sqrtf(reach * reach - across);
+            }
+        }
+        hips_at.y += drop;
+    }
     for (k = 0; k < p->pm->nbones; k++) {
         Q[k] = R;
         P[k] = vadd(hips_at, mat_apply(&R, vsub(p->bone[k], p->bone[p->pb[PB_HIPS]])));
@@ -795,7 +967,7 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
         s32 ci = side == 0 ? 1 : 0, up = p->pb[side ? PB_UPPER_R : PB_UPPER_L], fo = p->pb[side ? PB_FORE_R : PB_FORE_L];
         s32 ha = p->pb[side ? PB_HAND_R : PB_HAND_L];
         V3 S = mid_of(L, c->shoulder[ci], c->nshoulder[ci]), E = mid_of(L, c->elbow[ci], c->nelbow[ci]), Hd = mid_of(L, c->hand[ci], c->nhand[ci]);
-        V3 sh = P[up], target, elbow, hand, hint;
+        V3 sh = P[up], target;
         float l1 = vlen(vsub(p->bone[fo], p->bone[up])), l2 = vlen(vsub(p->bone[ha], p->bone[fo]));
         float crash_arm = vlen(vsub(E, S)) + vlen(vsub(Hd, E));
 
@@ -804,15 +976,21 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
         } else {
             target = vadd(sh, vmul(vsub(Hd, S), crash_arm > 1 ? (l1 + l2) / crash_arm : 1));
         }
-        hint = vsub(E, vmul(vadd(S, Hd), 0.5f));
-        elbow = two_bone(sh, target, l1, l2, hint);
-        hand = vadd(elbow, vmul(vnorm(vsub(target, elbow)), l2));
-        Q[up] = mat_arc(vsub(p->bone[fo], p->bone[up]), vsub(elbow, sh));
-        P[up] = sh;
-        Q[fo] = mat_arc(vsub(p->bone[ha], p->bone[fo]), vsub(hand, elbow));
-        P[fo] = elbow;
-        Q[ha] = Q[fo];
-        P[ha] = hand;
+        hints[side] = vsub(E, vmul(vadd(S, Hd), 0.5f));
+        arm_reach(p, Q, P, side, target, hints[side]);
+    }
+    /* what it carries: turned out of its head, and (kept Crash's size, a keg) pushed out of its body, its hand reaching out after it */
+    if (fk->carry) {
+        s32 ci = fk->carry - 1, side = ci == 1 ? 0 : 1;
+        V3 Hd = mid_of(L, c->hand[ci], c->nhand[ci]), push;
+
+        carry_at = P[p->pb[side ? PB_HAND_R : PB_HAND_L]];
+        carry_turn = carry_clear(p, c, L, Hd, carry_at, vadd(hips_at, mat_apply(&R, vsub(p->head_mid, p->bone[p->pb[PB_HIPS]]))));
+        push = fk->carry_kept ? carry_push(p, c, L, Hd, carry_at, &carry_turn, hips_at, &R) : v3(0, 0, 0);
+        if (vlen(push) > 0) {
+            carry_at = vadd(carry_at, push);
+            arm_reach(p, Q, P, side, carry_at, hints[side]);
+        }
     }
     /* its legs: as Crash's astride, on the pegs or the floor stood, else sat */
     for (side = 0; side < 2; side++) {
@@ -830,9 +1008,7 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
             hint = vsub(kc, vmul(vadd(hc, ac), 0.5f));
         } else if (fk->peg != NULL || fk->stand) {
             /* its feet where Crash's are (on the pegs, or the floor), over his shoes, which are the prop's */
-            target = c->nfeet[ci] > 0 ? mid_of(L, c->feet[ci], c->nfeet[ci])
-                                      : vadd(hips_at, vsub(p->bone[ft], p->bone[p->pb[PB_HIPS]]));
-            target.y -= (p->sole - p->bone[ft].y) * 0.5f; /* its ankle above its foot's middle */
+            target = c->nfeet[ci] > 0 ? feet_target(p, c, L, ci, ft) : vadd(hips_at, vsub(p->bone[ft], p->bone[p->pb[PB_HIPS]]));
             hint = mat_apply(&R, v3(0, 0, -1));
         } else {
             /* sat: thighs forward, shins down */
@@ -868,7 +1044,7 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     /* the mesh with its bones */
     for (k = 0; k < p->n; k++) {
         V3 s = { 0, 0, 0 };
-        float lower = 0, tail = 0;
+        float lower = 0, tail = 0, arm = 0;
 
         for (j = 0; j < 4; j++) {
             s32 b = p->pm->joint[k * 4 + j];
@@ -880,13 +1056,14 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
             s = vadd(s, vmul(vadd(P[b], mat_apply(&Q[b], vsub(p->rest[k], p->bone[b]))), w));
             lower += p->lower[b] == 1 ? w : 0;
             tail += p->lower[b] == 2 ? w : 0;
+            arm += p->lower[b] == 3 ? w : 0;
         }
         /* in a tank's hatch or a race cart (the user's word, 2026-11-22: what's below showed through the tank, and then came to a
-           point): its tail folded away into its hips, and its legs and all of it below its hips drawn in to the hatch's width where
-           they are, down inside what it sits in, so nothing above changes shape */
+           point; and its arms drawn in with it): its tail folded away into its hips, and its legs and all of it below its hips drawn in to the hatch's width where
+           they are, down inside what it sits in, so nothing above changes shape, nor its arms, wherever its hands are */
         if (fk->cut > 0 && tail > 0.5f) {
             s = vadd(hips_at, v3(0, 8, 0));
-        } else if (fk->cut > 0 && (lower > 0.5f || s.y > hips_at.y + 4)) {
+        } else if (fk->cut > 0 && (lower > 0.5f || (arm < 0.5f && s.y > hips_at.y + 4))) {
             float dx = s.x - hips_at.x, dz = s.z - hips_at.z, d = sqrtf(dx * dx + dz * dz);
 
             if (d > HATCH_HALF) {
@@ -899,11 +1076,10 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
     }
     /* the prop, as it moves; or in the pack's hand, where Crash carries it */
     if (fk->carry) {
-        s32 ci = fk->carry - 1, side = ci == 1 ? 0 : 1;
-        V3 Hd = mid_of(L, c->hand[ci], c->nhand[ci]), at = P[p->pb[side ? PB_HAND_R : PB_HAND_L]];
+        V3 Hd = mid_of(L, c->hand[fk->carry - 1], c->nhand[fk->carry - 1]);
 
         for (k = 0; k < c->prop.nvert; k++) {
-            out[p->n + k] = hm_moved(&mv, vadd(at, vsub(L[c->prop.corner_of[k]], Hd)));
+            out[p->n + k] = hm_moved(&mv, vadd(carry_at, mat_apply(&carry_turn, vsub(L[c->prop.corner_of[k]], Hd))));
         }
         return;
     }
@@ -1592,6 +1768,43 @@ static s32 pack_bind(Packed *p, const char *id, const PackModel *pm, float k, fl
 }
 
 /* The pack as it rests, at its size on a kind, about its hips, and its bones' roles there */
+static int float_order(const void *a, const void *b) {
+    float x = *(const float *)a, y = *(const float *)b;
+
+    return x < y ? -1 : x > y;
+}
+
+/* its head as a ball: the middle of its corners above its shoulders (not its arms'), round as far as HEAD_KEEP of them */
+static void pack_head(Packed *p) {
+    static float far[PF_MAX_VERTS];
+    float top = p->bone[p->pb[PB_UPPER_L]].y < p->bone[p->pb[PB_UPPER_R]].y ? p->bone[p->pb[PB_UPPER_L]].y : p->bone[p->pb[PB_UPPER_R]].y;
+    V3 mid = { 0, 0, 0 };
+    s32 v, j, n = 0;
+
+    for (v = 0; v < p->n; v++) {
+        float arm = 0;
+
+        for (j = 0; j < 4; j++) {
+            arm += p->lower[p->pm->joint[v * 4 + j]] == 3 ? p->pm->weight[v * 4 + j] : 0;
+        }
+        if (p->rest[v].y < top && arm < 0.5f) {
+            mid = vadd(mid, p->rest[v]);
+            far[n++] = (float)v;
+        }
+    }
+    p->head_r = 0;
+    if (n < 8) {
+        return;
+    }
+    mid = vmul(mid, 1.0f / (float)n);
+    for (j = 0; j < n; j++) {
+        far[j] = vlen(vsub(p->rest[(s32)far[j]], mid));
+    }
+    qsort(far, (size_t)n, sizeof(float), float_order);
+    p->head_mid = mid;
+    p->head_r = far[(s32)((float)(n - 1) * HEAD_KEEP)];
+}
+
 static void pack_prep(Packed *p, const FollowKind *fk) {
     const PackModel *pm = p->pm;
     float (*world)[16] = BindWorld, *skinned = BindSkinned, k = p->k, ground = p->ground;
@@ -1620,10 +1833,20 @@ static void pack_prep(Packed *p, const FollowKind *fk) {
     for (i = 0; i < PB_COUNT; i++) {
         p->role[p->pb[i]] = (s8)i;
     }
+    /* its arms (3): the upper arms and every bone under them, which a cut leaves where they are */
+    for (b = 0; b < pm->nbones; b++) {
+        s32 up = b;
+
+        while (up >= 0 && up != p->pb[PB_UPPER_L] && up != p->pb[PB_UPPER_R]) {
+            up = pm->bones[up].parent;
+        }
+        p->lower[b] = up >= 0 ? 3 : p->lower[b];
+    }
     p->sole = -1e9f;
     for (v = 0; v < pm->nvert; v++) {
         p->sole = p->rest[v].y > p->sole ? p->rest[v].y : p->sole;
     }
+    pack_head(p);
     p->across = pack_frame(p);
     p->hip_height = (p->bone[p->pb[PB_FOOT_L]].y + p->bone[p->pb[PB_FOOT_R]].y) / 2 - p->bone[p->pb[PB_HIPS]].y;
 }
