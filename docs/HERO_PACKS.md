@@ -247,7 +247,10 @@ sounds and the mod's name, and **Export** writes the mod to the mods folder (bes
 there), or **Export and test in game** starts the game too, with it as player 1 in the game picked. `HEROTOOL_SHOT=FILE.png`
 saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it opens, for tests.
 
-**The preview** (the window's **In the games** tab): **Make it in every game** exports the hero to the tool's own folder (SDL's pref
+**The preview** (the window's **In the games** tab): the first time the tab's open for a model it's made by itself, and shown as
+**All the games**, a gallery of every kind at once, each playing its first move (2026-11-22, the user's word: the hero with all the
+props); one picked opens it big, with its moves (**One game, its moves**). **Make it again** makes it after a change. Making it
+exports the hero to the tool's own folder (SDL's pref
 path, `CrashBashPC/herotool/preview`) and starts the game with `--dump-hero ID FOLDER`: it reads the player's own settings, so it
 finds their game data, makes the hero as it does when it loads a pack, writes what it made and ends, in about a second, with no
 window. Each kind's model goes to `FOLDER/ID_KIND.hpv` as `made_write` writes it to the archive (`bonusheroes.c`, `made_dump`:
