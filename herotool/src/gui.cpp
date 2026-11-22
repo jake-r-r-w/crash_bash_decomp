@@ -121,11 +121,15 @@ struct Tool {
     char own_note[200] = "", watching[32] = ""; // (and the move watched, kept as it's made again)
     bool remake = false;
     // a change to a move of its own waiting on the user's yes (confirm_back): the game, its move and what it's to be
+    // the gizmo (GIZMO_TURN, _MOVE, _SIZE), the handle of it being dragged, and the key picked in the timeline, dragged or scrubbed
+    int gizmo = 0, handle = 0, key_sel = -1;
+    bool key_drag = false, key_moved = false, scrub = false;
     int ask_kind = -1, ask_move = -1, ask_to = OWN_TEMPLATE;
     char ask_name[32] = "";
     bool ask_open = false;
 };
 enum { KEY_FRAME, KEY_MOVE, KEY_GAME };
+enum { GIZMO_TURN, GIZMO_MOVE, GIZMO_SIZE };
 
 // The kinds of model the game makes (heropack.c's names), as the games call them
 const char *const KindTitles[PACK_KINDS] = { "On foot (Crate Crush, Ring Ding and the others)", "Polar Push: the polar bear", "Pogo",
@@ -868,6 +872,16 @@ bool adjusted_frame(Tool &T, int kind, int anim, int frame, std::vector<int16_t>
     return true;
 }
 
+// A bone of a pose by name, or -1
+int pack_bone_index(const KitPose *po, const char *name) {
+    for (int b = 0; b < po->nbones; b++) {
+        if (SDL_strcasecmp(po->names[b], name) == 0) {
+            return b;
+        }
+    }
+    return -1;
+}
+
 // Whether a bone is moved (a hand, a foot, the hips) rather than turned
 bool reach_bone(const char *name) {
     return SDL_strcasecmp(name, "hips") == 0 || SDL_strncasecmp(name, "hand", 4) == 0 || SDL_strncasecmp(name, "foot", 4) == 0;
@@ -928,6 +942,7 @@ void adj_undo(Tool &T) {
         T.redo.push_back(T.adj);
         T.adj = T.undo.back();
         T.undo.pop_back();
+        T.key_sel = -1;
     }
 }
 
@@ -936,6 +951,7 @@ void adj_redo(Tool &T) {
         T.undo.push_back(T.adj);
         T.adj = T.redo.back();
         T.redo.pop_back();
+        T.key_sel = -1;
     }
 }
 
@@ -1188,11 +1204,73 @@ void game_to_hero(const Posed &p, const float g[3], float out[3]) {
     }
 }
 
-// The joints over the picture of a game's model while adjusting it (the picture at im, shown at disp of its size): each bone's joint a
-// dot, picked by clicking, and the one picked changed by dragging: a hand, foot or the hips moved with the mouse (Shift: turned), any
-// other bone turned round its joint as far as the mouse goes round it
+// The joints over the picture of a game's model while adjusting it (the picture at im, shown at disp of its size), each a dot, picked by
+// clicking, and on the one picked a gizmo, as Blender has (the user's word, 2026-11-22: "a proper gizmo tool like blender has so we can
+// rotate, move and scale"): in the hero's own axes (red across, green up and down, blue front to back), rings to turn it about each and
+// a white ring about the line towards whoever's looking (GIZMO_TURN, R), arrows to move it along each (GIZMO_MOVE, G), and handles to
+// make it bigger along each (GIZMO_SIZE, S). Its middle, dragged: turned to point at the mouse, moved across the view, or bigger all over.
+enum { H_NONE, H_TURN, H_TURN_VIEW = H_TURN + 3, H_TURN_FREE, H_MOVE, H_MOVE_FREE = H_MOVE + 3, H_SIZE, H_SIZE_ALL = H_SIZE + 3 };
+
+// A direction in the game's axes as the view shows it: x right, y up, z towards whoever's looking (to_screen's turn and tilt, no more)
+void view_turn(const View &v, const float g[3], float out[3]) {
+    float p0 = g[0], p1 = -g[1], p2 = -g[2];
+    float c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
+    float pc = cosf(v.pitch * 3.14159265f / 180), ps = sinf(v.pitch * 3.14159265f / 180);
+    float x = p0 * c - p2 * s, z = p0 * s + p2 * c, y = p1;
+
+    out[0] = x;
+    out[1] = y * pc - z * ps;
+    out[2] = y * ps + z * pc;
+}
+
+// The hero's own axis i (as it stands: x to its left, y down, z to its back) in the game's axes, as the frame shows it (A trunk e_i)
+void hero_axis(const Posed &p, int i, float out[3]) {
+    float t[3] = { p.trunk[i], p.trunk[3 + i], p.trunk[6 + i] };
+
+    for (int r = 0; r < 3; r++) {
+        out[r] = p.A[r * 3] * t[0] + p.A[r * 3 + 1] * t[1] + p.A[r * 3 + 2] * t[2];
+    }
+}
+
+// The distance from a point to a segment, on the screen
+float seg_px(ImVec2 m, ImVec2 a, ImVec2 b) {
+    float dx = b.x - a.x, dy = b.y - a.y, l = dx * dx + dy * dy, t = l > 0 ? ((m.x - a.x) * dx + (m.y - a.y) * dy) / l : 0;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    return sqrtf((m.x - a.x - dx * t) * (m.x - a.x - dx * t) + (m.y - a.y - dy * t) * (m.y - a.y - dy * t));
+}
+
+// Whether a bone is moved with the move gizmo: the hips (all of it), a root, a hand or a foot (its arm or leg bending to reach)
+bool can_move(const KitPose *po, int b) {
+    return b >= 0 && (reach_bone(po->names[b]) || po->parent[b] < 0);
+}
+
+// Over the picture while adjusting: which gizmo it has, Turn (R), Move (G) or Size (S), the one on lit
+void gizmo_buttons(Tool &T) {
+    static const char *const Says[3] = { "Turn (R)", "Move (G)", "Size (S)" };
+    static const char *const Tips[3] = { "Turn the joint picked, and all on it: drag a ring, or its middle to point it at the mouse",
+                                         "Move the joint picked along an arrow, or with the mouse by its middle: the hips, hands and feet",
+                                         "Make the joint picked, and all on it, bigger or smaller along a handle, or all over by its middle" };
+    for (int i = 0; i < 3; i++) {
+        bool on = T.gizmo == i;
+        if (on) {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+        }
+        if (ImGui::Button(Says[i], ImVec2(U(90), 0))) {
+            T.gizmo = i;
+        }
+        if (on) {
+            ImGui::PopStyleColor();
+        }
+        ImGui::SetItemTooltip("%s", Tips[i]);
+        ImGui::SameLine();
+    }
+    ImGui::NewLine();
+}
+
 void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     static Posed ps;
+    static const ImU32 Axis[3] = { IM_COL32(235, 75, 75, 255), IM_COL32(120, 210, 70, 255), IM_COL32(80, 140, 245, 255) };
+    static const char *const AxisSays[3] = { "across (its left and right)", "up and down", "front to back" };
     const KitMade *mk = &T.made[T.kind];
     const KitPose *po = &T.poses[T.kind];
     int a = T.anim < mk->nanims ? T.anim : 0;
@@ -1215,11 +1293,69 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     if (T.sel >= po->nbones) {
         T.sel = -1;
     }
-    int hover = -1;
+    float pp = v.scale * v.zoom * disp, R = U(70);
+    // the gizmo's handles on the screen: each axis's direction there (per unit, and as seen), and whether it's towards the viewer. Its
+    // axes point as the panel's values say them, to its left, up and forward (Way: the hero's own y is down and its z to its back)
+    static const float Way[3] = { 1, -1, -1 };
+    float ax2[3][2], axlen[3], axz[3];
+    for (int i = 0; i < 3; i++) {
+        float g[3], s[3];
+        hero_axis(ps, i, g);
+        g[0] *= Way[i], g[1] *= Way[i], g[2] *= Way[i];
+        view_turn(v, g, s);
+        axlen[i] = sqrtf(s[0] * s[0] + s[1] * s[1]);
+        ax2[i][0] = axlen[i] > 1e-4f ? s[0] / axlen[i] : 0;
+        ax2[i][1] = axlen[i] > 1e-4f ? -s[1] / axlen[i] : 0;
+        axz[i] = s[2];
+    }
+    ImVec2 c = T.sel >= 0 ? ImVec2(sx[T.sel], sy[T.sel]) : ImVec2(0, 0);
+    // a ring about axis i: R about the joint, the circle in the plane of the other two, as seen
+    auto ring = [&](int i, ImVec2 *pts, int n) {
+        float u[3], w[3], gu[3], gw[3];
+        hero_axis(ps, (i + 1) % 3, gu);
+        hero_axis(ps, (i + 2) % 3, gw);
+        view_turn(v, gu, u);
+        view_turn(v, gw, w);
+        for (int k = 0; k < n; k++) {
+            float t = 6.2831853f * k / n, x = cosf(t) * u[0] + sinf(t) * w[0], y = cosf(t) * u[1] + sinf(t) * w[1];
+            pts[k] = ImVec2(c.x + x * R, c.y - y * R);
+        }
+    };
+    // what the mouse is over: a handle of the gizmo, else a joint
+    int over = H_NONE, hover = -1;
+    if (hovered && T.sel >= 0 && !T.dragging) {
+        float near = U(6);
+        if (T.gizmo == GIZMO_TURN) {
+            ImVec2 pts[48];
+            for (int i = 0; i < 3; i++) {
+                ring(i, pts, 48);
+                for (int k = 0; k < 48; k++) {
+                    float d = seg_px(mouse, pts[k], pts[(k + 1) % 48]);
+                    if (d < near) {
+                        near = d, over = H_TURN + i;
+                    }
+                }
+            }
+            float r = sqrtf((mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y));
+            if (over == H_NONE && fabsf(r - R * 1.25f) < U(6)) {
+                over = H_TURN_VIEW;
+            }
+        } else {
+            for (int i = 0; i < 3; i++) {
+                if (axlen[i] < 0.15f || (T.gizmo == GIZMO_MOVE && !can_move(po, T.sel))) {
+                    continue;
+                }
+                float d = seg_px(mouse, ImVec2(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14)), ImVec2(c.x + ax2[i][0] * R, c.y + ax2[i][1] * R));
+                if (d < near) {
+                    near = d, over = (T.gizmo == GIZMO_MOVE ? H_MOVE : H_SIZE) + i;
+                }
+            }
+        }
+    }
     float best = U(8) * U(8);
     for (int b = 0; b < po->nbones; b++) {
         float d2 = (mouse.x - sx[b]) * (mouse.x - sx[b]) + (mouse.y - sy[b]) * (mouse.y - sy[b]);
-        if (hovered && d2 < best) {
+        if (hovered && over == H_NONE && d2 < best) {
             best = d2, hover = b;
         }
         if (po->parent[b] >= 0) {
@@ -1231,105 +1367,188 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
         ImU32 col = po->part[b] == 3 ? IM_COL32(80, 200, 255, 255) : po->part[b] == 1 ? IM_COL32(120, 255, 120, 255)
                   : po->part[b] == 2 || SDL_strncasecmp(n, "ear", 3) == 0 || SDL_strncasecmp(n, "jaw", 3) == 0 ? IM_COL32(255, 160, 40, 255)
                                                                                                                  : IM_COL32(255, 230, 80, 255);
-        bool moved = reach_bone(n);
-        if (b == T.sel) {
-            dl->AddCircle(ImVec2(sx[b], sy[b]), U(9), IM_COL32(255, 255, 255, 255), 0, U(2.5f));
-        }
-        if (moved) {
+        if (reach_bone(n)) {
             dl->AddRectFilled(ImVec2(sx[b] - U(4), sy[b] - U(4)), ImVec2(sx[b] + U(4), sy[b] + U(4)), col);
         } else {
             dl->AddCircleFilled(ImVec2(sx[b], sy[b]), b == hover ? U(6) : U(4.5f), col);
         }
     }
-    if (hover >= 0 && !T.dragging) {
-        ImGui::SetTooltip("%s: %s", bone_title(po->names[hover]),
-                          reach_bone(po->names[hover]) ? "drag to move it (Shift: to turn it)" : "drag away from it to point what's on it at the mouse (Shift: turn it round)");
+    // the gizmo
+    if (T.sel >= 0) {
+        int lit = T.dragging ? T.handle : over;
+        if (T.gizmo == GIZMO_TURN) {
+            ImVec2 pts[48];
+            dl->AddCircle(c, R * 1.25f, lit == H_TURN_VIEW ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 140), 64,
+                          lit == H_TURN_VIEW ? U(3) : U(1.5f));
+            for (int i = 0; i < 3; i++) {
+                ring(i, pts, 48);
+                dl->AddPolyline(pts, 48, Axis[i], ImDrawFlags_Closed, lit == H_TURN + i ? U(3.5f) : U(2));
+            }
+            dl->AddCircle(c, U(9), IM_COL32(255, 255, 255, 255), 0, U(2));
+        } else {
+            for (int i = 0; i < 3; i++) {
+                if (axlen[i] < 0.15f || (T.gizmo == GIZMO_MOVE && !can_move(po, T.sel))) {
+                    continue;
+                }
+                ImVec2 e(c.x + ax2[i][0] * R, c.y + ax2[i][1] * R), s(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14));
+                float t = lit == (T.gizmo == GIZMO_MOVE ? H_MOVE : H_SIZE) + i ? U(3.5f) : U(2);
+                dl->AddLine(s, e, Axis[i], t);
+                if (T.gizmo == GIZMO_MOVE) {
+                    ImVec2 nrm(-ax2[i][1], ax2[i][0]);
+                    dl->AddTriangleFilled(ImVec2(e.x + ax2[i][0] * U(12), e.y + ax2[i][1] * U(12)), ImVec2(e.x + nrm.x * U(6), e.y + nrm.y * U(6)),
+                                          ImVec2(e.x - nrm.x * U(6), e.y - nrm.y * U(6)), Axis[i]);
+                } else {
+                    dl->AddRectFilled(ImVec2(e.x - U(5), e.y - U(5)), ImVec2(e.x + U(5), e.y + U(5)), Axis[i]);
+                }
+            }
+            bool mid = T.dragging && (T.handle == H_MOVE_FREE || T.handle == H_SIZE_ALL);
+            if (T.gizmo == GIZMO_SIZE || can_move(po, T.sel)) {
+                dl->AddCircle(c, U(12), mid ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 255, 255, 170), 0, mid ? U(3) : U(2));
+            }
+        }
     }
-    // pick, and start a change
+    if (T.sel >= 0 && T.gizmo == GIZMO_MOVE && !can_move(po, T.sel)) {
+        dl->AddText(ImVec2(c.x + U(14), c.y + U(10)), IM_COL32(255, 255, 255, 200), "turns only (R): the hips, hands and feet move");
+    }
+    if (!T.dragging) {
+        if (over >= H_TURN && over < H_TURN + 3) {
+            ImGui::SetTooltip("Drag round it to turn %s %s", bone_title(po->names[T.sel]), AxisSays[over - H_TURN]);
+        } else if (over == H_TURN_VIEW) {
+            ImGui::SetTooltip("Drag round it to turn %s as you look at it", bone_title(po->names[T.sel]));
+        } else if (over >= H_MOVE && over < H_MOVE + 3) {
+            ImGui::SetTooltip("Drag along it to move %s %s", bone_title(po->names[T.sel]), AxisSays[over - H_MOVE]);
+        } else if (over >= H_SIZE && over < H_SIZE + 3) {
+            ImGui::SetTooltip("Drag along it to make %s bigger or smaller %s", bone_title(po->names[T.sel]), AxisSays[over - H_SIZE]);
+        } else if (hover >= 0) {
+            ImGui::SetTooltip(hover == T.sel ? "%s: drag it to %s" : "%s: click to pick it", bone_title(po->names[hover]),
+                              T.gizmo == GIZMO_TURN ? "point what's on it at the mouse" : T.gizmo == GIZMO_MOVE ? "move it across the view"
+                                                                                                : "make it bigger or smaller all over");
+        }
+    }
+    // a click: a handle of the gizmo taken, or a joint picked (its middle taken, if it's the one picked already)
     if (hovered && ImGui::IsMouseClicked(0)) {
-        if (hover >= 0) {
+        int take = over;
+        if (take == H_NONE && hover >= 0 && hover == T.sel) {
+            take = T.gizmo == GIZMO_TURN ? H_TURN_FREE : T.gizmo == GIZMO_MOVE ? (can_move(po, T.sel) ? H_MOVE_FREE : H_TURN_FREE) : H_SIZE_ALL;
+        } else if (take == H_NONE && hover >= 0) {
             T.sel = hover;
         }
-        if (T.sel >= 0) {
+        if (take != H_NONE) {
             adj_snapshot(T);
             T.dragging = true;
+            T.handle = take;
             T.adj_playing = false;
         }
     }
     if (T.dragging && !ImGui::IsMouseDown(0)) {
         T.dragging = false;
+        T.handle = H_NONE;
     }
-    if (!T.dragging || T.sel < 0 || (io.MouseDelta.x == 0 && io.MouseDelta.y == 0) || !ImGui::IsMouseDragging(0, 2)) {
+    if (!T.dragging || T.sel < 0 || (io.MouseDelta.x == 0 && io.MouseDelta.y == 0)) {
         return;
     }
     PackAdjust *k = adj_key(T, mk->anims[a].name, po->names[T.sel], true);
     if (k == nullptr) {
         return;
     }
-    float pp = v.scale * v.zoom * disp;
-    if (reach_bone(po->names[T.sel]) && !io.KeyShift) {
-        // moved with the mouse across the view: at its own frame (or every frame) it's all there, so the joint goes with the mouse
-        float d[3] = { io.MouseDelta.x / pp, -io.MouseDelta.y / pp, 0 }, g[3], h[3];
-        view_to_game(v, d, g);
-        game_to_hero(ps, g, h);
-        for (int i = 0; i < 3; i++) {
-            k->reach[i] = fmaxf(-1000, fminf(1000, k->reach[i] + h[i]));
+    T.key_sel = (int)(k - T.adj.data());
+    int h = T.handle;
+    float jx = sx[T.sel], jy = sy[T.sel];
+    // the angle the mouse went round the joint (radians, as seen: anticlockwise more), from where it was
+    auto swept = [&]() {
+        float mx = mouse.x - jx, my = mouse.y - jy, px = mx - io.MouseDelta.x, py = my - io.MouseDelta.y;
+        if (mx * mx + my * my < U(10) * U(10) || px * px + py * py < U(10) * U(10)) {
+            return 0.0f;
         }
-    } else {
-        // turned about the line through its joint towards whoever's looking, to point at the mouse: its end (the middle of the
-        // joints on it, or on past its joint from the one it's on) turned to where the mouse is from its joint. Near its joint it's
-        // left be (which way it points is no way to tell), and with Shift, or where its end is too near its joint on the screen
-        // (pointing at whoever's looking), it's turned as far as the mouse goes round its joint
-        float jx = sx[T.sel], jy = sy[T.sel], ex = 0, ey = 0;
-        int n = 0;
-        for (int c = 0; c < po->nbones; c++) {
-            if (po->parent[c] == T.sel) {
-                ex += sx[c], ey += sy[c], n++;
+        float da = atan2f(-my, mx) - atan2f(-py, px);
+        return da > 3.14159265f ? da - 6.2831853f : da < -3.14159265f ? da + 6.2831853f : da;
+    };
+    if (h >= H_TURN && h < H_TURN + 3) {
+        // about its own axis: anticlockwise as seen is its turn's way if the axis is towards whoever's looking; its ring seen almost
+        // edge on, as far as the mouse goes along the ring
+        int i = h - H_TURN;
+        float da = swept() * 180 / 3.14159265f * (axz[i] >= 0 ? 1 : -1);
+        if (fabsf(axz[i]) < 0.3f) {
+            da = (io.MouseDelta.x * -ax2[i][1] + io.MouseDelta.y * ax2[i][0]) / R * 180 / 3.14159265f;
+        }
+        k->turn[i] = fmaxf(-360, fminf(360, k->turn[i] + da * Way[i]));
+    } else if (h == H_TURN_VIEW || h == H_TURN_FREE) {
+        // about the line towards whoever's looking: round as far as the mouse goes (the white ring), or to point at it (its middle:
+        // its end, the middle of the joints on it, or on past its joint from the one it's on, turned to the mouse)
+        float da = swept();
+        if (h == H_TURN_FREE) {
+            float ex = 0, ey = 0, mx = mouse.x - jx, my = mouse.y - jy;
+            int n = 0;
+            for (int b = 0; b < po->nbones; b++) {
+                if (po->parent[b] == T.sel) {
+                    ex += sx[b], ey += sy[b], n++;
+                }
+            }
+            if (n > 0) {
+                ex /= n, ey /= n;
+            } else if (po->parent[T.sel] >= 0) {
+                ex = jx + (jx - sx[po->parent[T.sel]]) * 0.5f, ey = jy + (jy - sy[po->parent[T.sel]]) * 0.5f;
+            }
+            if (mx * mx + my * my < U(12) * U(12)) {
+                return;
+            }
+            if ((n > 0 || po->parent[T.sel] >= 0) && (ex - jx) * (ex - jx) + (ey - jy) * (ey - jy) >= U(6) * U(6)) {
+                da = atan2f(-my, mx) - atan2f(-(ey - jy), ex - jx);
+                da = da > 3.14159265f ? da - 6.2831853f : da < -3.14159265f ? da + 6.2831853f : da;
             }
         }
-        if (n > 0) {
-            ex /= n, ey /= n;
-        } else if (po->parent[T.sel] >= 0) {
-            ex = jx + (jx - sx[po->parent[T.sel]]) * 0.5f, ey = jy + (jy - sy[po->parent[T.sel]]) * 0.5f;
-        }
-        float mx = mouse.x - jx, my = mouse.y - jy, px = mx - io.MouseDelta.x, py = my - io.MouseDelta.y;
-        if (mx * mx + my * my < U(12) * U(12)) {
-            return;
-        }
-        bool aim = !io.KeyShift && n + (po->parent[T.sel] >= 0) > 0 && (ex - jx) * (ex - jx) + (ey - jy) * (ey - jy) >= U(6) * U(6);
-        if (!aim && px * px + py * py < U(12) * U(12)) {
-            return;
-        }
-        float da = atan2f(-my, mx) - (aim ? atan2f(-(ey - jy), ex - jx) : atan2f(-py, px));
-        da = da > 3.14159265f ? da - 6.2831853f : da < -3.14159265f ? da + 6.2831853f : da;
-        float z[3] = { 0, 0, 1 }, g[3], h[3];
+        float z[3] = { 0, 0, 1 }, g[3], hh[3];
         view_to_game(v, z, g);
-        game_to_hero(ps, g, h);
+        game_to_hero(ps, g, hh);
         for (int i = 0; i < 3; i++) {
-            k->turn[i] = fmaxf(-360, fminf(360, k->turn[i] + h[i] * da * 180 / 3.14159265f));
+            k->turn[i] = fmaxf(-360, fminf(360, k->turn[i] + hh[i] * da * 180 / 3.14159265f));
+        }
+    } else if (h >= H_MOVE && h < H_MOVE + 3) {
+        // along its own axis: as far as the mouse went that way on the screen, in the game's units
+        int i = h - H_MOVE;
+        float along = io.MouseDelta.x * ax2[i][0] + io.MouseDelta.y * ax2[i][1], per = fmaxf(axlen[i], 0.15f) * pp;
+        k->reach[i] = fmaxf(-1000, fminf(1000, k->reach[i] + along / per * Way[i]));
+    } else if (h == H_MOVE_FREE) {
+        // across the view with the mouse
+        float d[3] = { io.MouseDelta.x / pp, -io.MouseDelta.y / pp, 0 }, g[3], hh[3];
+        view_to_game(v, d, g);
+        game_to_hero(ps, g, hh);
+        for (int i = 0; i < 3; i++) {
+            k->reach[i] = fmaxf(-1000, fminf(1000, k->reach[i] + hh[i]));
+        }
+    } else if (h >= H_SIZE && h <= H_SIZE_ALL) {
+        // bigger as the mouse goes out along its axis (all over: right or up), by a share of how far
+        float along = h == H_SIZE_ALL ? io.MouseDelta.x - io.MouseDelta.y : io.MouseDelta.x * ax2[h - H_SIZE][0] + io.MouseDelta.y * ax2[h - H_SIZE][1];
+        float f = 1 + along / U(150);
+        for (int i = 0; i < 3; i++) {
+            if (h == H_SIZE_ALL || i == h - H_SIZE) {
+                k->grow[i] = fmaxf(0.1f, fminf(10, (1 + k->grow[i]) * f)) - 1;
+            }
         }
     }
 }
 
-// Under the picture while adjusting: play or stop, the frame (its changes marked), and the changes before and after
+// Under the picture while adjusting, the keyframes (the user's word, 2026-11-22: "a key frame time line below the animation"): play
+// or stop, the changes before and after, and a sheet of the move's frames, a row for each joint changed in it (and the one picked): each
+// change at a frame a diamond (its fade a band either side), one to the whole move or every move here a bar. Click or drag the ruler to
+// go to a frame; click a key to go to it, drag it to move it to another frame, right-click it (or Delete) to take it away.
 void timeline(Tool &T, const KitMade *mk, int a, float width) {
+    const KitPose *po = &T.poses[T.kind];
     int frames = mk->anims[a].frames;
     const char *move = mk->anims[a].name;
+    ImGuiIO &io = ImGui::GetIO();
 
     T.frame = frames > 0 ? (T.frame % frames + frames) % frames : 0;
     if (ImGui::Button(T.adj_playing ? "Stop" : "Play", ImVec2(U(50), 0))) {
         T.adj_playing = !T.adj_playing;
     }
     ImGui::SetItemTooltip("Space");
-    auto key_frames = [&](std::vector<int> &at) {
-        for (auto &k : T.adj) {
-            if (k.kind == T.kind && k.at >= 0 && SDL_strcasecmp(k.move, move) == 0) {
-                at.push_back(k.at);
-            }
-        }
-    };
     std::vector<int> keys;
-    key_frames(keys);
+    for (auto &k : T.adj) {
+        if (k.kind == T.kind && k.at >= 0 && SDL_strcasecmp(k.move, move) == 0) {
+            keys.push_back(k.at);
+        }
+    }
     ImGui::SameLine();
     if (ImGui::ArrowButton("##before", ImGuiDir_Left)) {
         int to = -1;
@@ -1339,19 +1558,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         T.frame = to >= 0 ? to : T.frame;
         T.adj_playing = false;
     }
-    ImGui::SetItemTooltip("The change before this frame");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(width - U(200) > U(100) ? width - U(200) : U(100));
-    if (ImGui::SliderInt("##frame", &T.frame, 0, frames - 1, "frame %d")) {
-        T.adj_playing = false;
-    }
-    ImVec2 lo = ImGui::GetItemRectMin(), hi = ImGui::GetItemRectMax();
-    float grab = ImGui::GetStyle().GrabMinSize, x0 = lo.x + grab / 2 + 2, x1 = hi.x - grab / 2 - 2;
-    for (int f : keys) {
-        float x = frames > 1 ? x0 + (x1 - x0) * f / (frames - 1) : x0;
-        ImGui::GetWindowDrawList()->AddTriangleFilled(ImVec2(x - U(4), lo.y - 1), ImVec2(x + U(4), lo.y - 1), ImVec2(x, lo.y + U(5)),
-                                                      IM_COL32(255, 200, 60, 255));
-    }
+    ImGui::SetItemTooltip("The key before this frame");
     ImGui::SameLine();
     if (ImGui::ArrowButton("##after", ImGuiDir_Right)) {
         int to = frames;
@@ -1361,9 +1568,173 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         T.frame = to < frames ? to : T.frame;
         T.adj_playing = false;
     }
-    ImGui::SetItemTooltip("The change after this frame");
+    ImGui::SetItemTooltip("The key after this frame");
     ImGui::SameLine();
-    ImGui::Text("%d frames", frames);
+    ImGui::Text("frame %d of %d", T.frame, frames);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(U(110));
+    ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2fx");
+
+    // its rows: each joint with a change in this move (or every move here), and the one picked
+    std::vector<int> rows;
+    for (int b = 0; b < po->nbones; b++) {
+        bool has = b == T.sel;
+        for (auto &k : T.adj) {
+            has |= pack_adjust_for(&k, T.kind, move) && SDL_strcasecmp(k.bone, po->names[b]) == 0;
+        }
+        if (has) {
+            rows.push_back(b);
+        }
+    }
+    const float label = U(130), ruler = U(22), row = U(20);
+    float h = ruler + row * (rows.empty() ? 1 : (float)rows.size());
+    ImVec2 o = ImGui::GetCursorScreenPos();
+    ImGui::InvisibleButton("##sheet", ImVec2(width, h), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+    bool over = ImGui::IsItemHovered();
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    float x0 = o.x + label, cw = frames > 0 ? (width - label) / frames : 1;
+    auto fx = [&](float f) { return x0 + (f + 0.5f) * cw; };
+    auto xf = [&](float x) { int f = (int)floorf((x - x0) / cw); return f < 0 ? 0 : f >= frames ? frames - 1 : f; };
+    dl->AddRectFilled(o, ImVec2(o.x + width, o.y + h), IM_COL32(30, 30, 36, 255));
+    dl->AddRectFilled(ImVec2(x0, o.y), ImVec2(o.x + width, o.y + ruler), IM_COL32(45, 45, 54, 255));
+    // the ruler: a tick each frame, a number every so many
+    int every = cw >= U(28) ? 1 : cw >= U(12) ? 5 : 10;
+    for (int f = 0; f < frames; f++) {
+        float x = fx((float)f);
+        bool big = f % every == 0;
+        dl->AddLine(ImVec2(x, o.y + ruler - (big ? U(8) : U(4))), ImVec2(x, o.y + ruler), IM_COL32(150, 150, 160, 255));
+        char n[8];
+        snprintf(n, sizeof(n), "%d", f);
+        if (big && x + U(2) + ImGui::CalcTextSize(n).x <= o.x + width) {
+            dl->AddText(ImVec2(x + U(2), o.y + U(1)), IM_COL32(170, 170, 180, 255), n);
+        }
+    }
+    // the rows: a joint's name, its keys
+    struct Hit {
+        int key;
+        ImVec2 lo, hi;
+    };
+    std::vector<Hit> hits;
+    for (size_t r = 0; r < rows.size(); r++) {
+        int b = rows[r];
+        float y = o.y + ruler + row * r;
+        if (r % 2 == 1) {
+            dl->AddRectFilled(ImVec2(o.x, y), ImVec2(o.x + width, y + row), IM_COL32(36, 36, 44, 255));
+        }
+        if (b == T.sel) {
+            dl->AddRectFilled(ImVec2(o.x, y), ImVec2(o.x + label - U(4), y + row), IM_COL32(60, 80, 120, 255));
+        }
+        dl->AddText(ImVec2(o.x + U(4), y + U(3)), IM_COL32(220, 220, 225, 255), bone_title(po->names[b]));
+        for (int i = 0; i < (int)T.adj.size(); i++) {
+            const PackAdjust &k = T.adj[i];
+            if (!pack_adjust_for(&k, T.kind, move) || SDL_strcasecmp(k.bone, po->names[b]) != 0) {
+                continue;
+            }
+            bool picked = i == T.key_sel;
+            if (k.at < 0) {
+                // the whole move (green) or every move here (blue): a bar
+                ImU32 col = strcmp(k.move, "*") == 0 ? IM_COL32(90, 140, 230, picked ? 255 : 150) : IM_COL32(110, 200, 110, picked ? 255 : 150);
+                ImVec2 lo(x0, y + row * 0.35f), hi(o.x + width - U(2), y + row * 0.65f);
+                dl->AddRectFilled(lo, hi, col, U(3));
+                hits.push_back({ i, lo, hi });
+                continue;
+            }
+            float x = fx((float)k.at), s = U(6);
+            if (k.spread > 0) {
+                dl->AddRectFilled(ImVec2(fx((float)(k.at - k.spread)) - cw / 2, y + row * 0.4f), ImVec2(fx((float)(k.at + k.spread)) + cw / 2, y + row * 0.6f),
+                                  IM_COL32(255, 200, 60, 50));
+            }
+            ImVec2 m(x, y + row / 2);
+            dl->AddQuadFilled(ImVec2(m.x, m.y - s), ImVec2(m.x + s, m.y), ImVec2(m.x, m.y + s), ImVec2(m.x - s, m.y),
+                              picked ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 200, 60, 255));
+            hits.push_back({ i, ImVec2(m.x - s, m.y - s), ImVec2(m.x + s, m.y + s) });
+        }
+    }
+    if (rows.empty()) {
+        dl->AddText(ImVec2(o.x + U(4), o.y + ruler + U(3)), IM_COL32(150, 150, 160, 255), "Pick a joint in the picture to see its keys.");
+    }
+    // the frame shown, across it all
+    float px = fx((float)T.frame);
+    dl->AddRectFilled(ImVec2(px - cw / 2, o.y), ImVec2(px + cw / 2, o.y + ruler), IM_COL32(70, 110, 190, 255));
+    dl->AddLine(ImVec2(px, o.y), ImVec2(px, o.y + h), IM_COL32(110, 160, 255, 255), U(2));
+    // what's under the mouse, and what a click or a drag does
+    int under = -1;
+    for (auto &ht : hits) {
+        if (io.MousePos.x >= ht.lo.x - U(2) && io.MousePos.x <= ht.hi.x + U(2) && io.MousePos.y >= ht.lo.y - U(2) && io.MousePos.y <= ht.hi.y + U(2)) {
+            under = ht.key;
+        }
+    }
+    if (over && ImGui::IsMouseClicked(0)) {
+        T.adj_playing = false;
+        if (under >= 0) {
+            // a key picked: its joint, its frame, and the change it makes
+            const PackAdjust &k = T.adj[under];
+            T.key_sel = under;
+            T.sel = pack_bone_index(po, k.bone);
+            T.key_mode = k.at >= 0 ? KEY_FRAME : strcmp(k.move, "*") == 0 ? KEY_GAME : KEY_MOVE;
+            if (k.at >= 0) {
+                T.frame = k.at;
+                T.spread = k.spread;
+                T.key_drag = true;
+                T.key_moved = false;
+            }
+        } else if (io.MousePos.x >= x0) {
+            T.scrub = true;
+            T.key_sel = -1;
+        } else {
+            // a row's name: its joint picked
+            int r = (int)((io.MousePos.y - o.y - ruler) / row);
+            if (r >= 0 && r < (int)rows.size()) {
+                T.sel = rows[r];
+            }
+        }
+    }
+    if (!ImGui::IsMouseDown(0)) {
+        T.scrub = T.key_drag = false;
+    }
+    if (T.scrub) {
+        T.frame = xf(io.MousePos.x);
+    }
+    if (T.key_drag && T.key_sel >= 0 && T.key_sel < (int)T.adj.size() && T.adj[T.key_sel].at >= 0) {
+        // moved to the frame under the mouse (undone in one, once it's moved)
+        int f = xf(io.MousePos.x);
+        if (f != T.adj[T.key_sel].at) {
+            if (!T.key_moved) {
+                adj_snapshot(T);
+                T.key_moved = true;
+            }
+            T.adj[T.key_sel].at = f;
+        }
+        T.frame = f;
+    }
+    if (over && under >= 0 && !T.key_drag) {
+        const PackAdjust &k = T.adj[under];
+        if (k.at >= 0) {
+            ImGui::SetTooltip("%s, frame %d (fading over %d): click to go to it, drag to move it, right-click to take it away", bone_title(k.bone), k.at, k.spread);
+        } else {
+            ImGui::SetTooltip("%s, %s: right-click to take it away", bone_title(k.bone), strcmp(k.move, "*") == 0 ? "every move here" : "the whole move");
+        }
+    }
+    if (over && under >= 0 && ImGui::IsMouseClicked(1)) {
+        T.key_sel = under;
+        ImGui::OpenPopup("key");
+    }
+    if (ImGui::BeginPopup("key")) {
+        if (T.key_sel >= 0 && T.key_sel < (int)T.adj.size()) {
+            ImGui::TextDisabled("%s", bone_title(T.adj[T.key_sel].bone));
+            if (ImGui::MenuItem("Take this key away", "Delete")) {
+                adj_snapshot(T);
+                T.adj.erase(T.adj.begin() + T.key_sel);
+                T.key_sel = -1;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    if (T.key_sel >= 0 && T.key_sel < (int)T.adj.size() && !io.WantTextInput && ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
+        adj_snapshot(T);
+        T.adj.erase(T.adj.begin() + T.key_sel);
+        T.key_sel = -1;
+    }
 }
 
 // --- the views, with their markers ---
@@ -1845,6 +2216,9 @@ void editor_middle(Tool &T) {
     }
     float w = avail < PrevW ? avail : PrevW;
     bool adjusting = T.adjusting && T.have_pose[T.kind];
+    if (adjusting) {
+        gizmo_buttons(T);
+    }
     ImGui::Image((ImTextureID)(intptr_t)T.game_view.tex, ImVec2(w, w * PrevH / PrevW));
     ImVec2 im = ImGui::GetItemRectMin();
     bool hovered = ImGui::IsItemHovered();
@@ -1853,7 +2227,7 @@ void editor_middle(Tool &T) {
     if (adjusting) {
         adjust_view(T, im, w / PrevW, hovered);
         if (hovered && !T.dragging) {
-            ImGui::SetItemTooltip("Click a joint to pick it, then drag. The right mouse button turns the view; scroll to zoom.");
+            ImGui::SetItemTooltip("Click a joint to pick it, then drag its gizmo. The right mouse button turns the view; scroll to zoom.");
         }
     }
     ImGui::SetNextItemWidth(U(200));
@@ -1868,9 +2242,6 @@ void editor_middle(Tool &T) {
         ImGui::EndCombo();
     }
     if (adjusting && mk->nanims > 0) {
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(U(120));
-        ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
         timeline(T, mk, T.anim < mk->nanims ? T.anim : 0, w);
         return;
     }
@@ -2018,10 +2389,13 @@ void adjust_panel(Tool &T) {
         T.frame = mk->anims[a].frames > 0 ? (int)(T.made_t * 30) % mk->anims[a].frames : 0;
         T.adj_playing = false;
     }
-    hint("In the picture, click a joint to pick it, then drag. A hand, a foot or the hips (the squares) moves with the mouse, its arm or "
-         "leg bending to follow; from any other joint, drag the way you want what's on it to point (Shift: drag round it to turn it). "
-         "Turn the view with the right mouse button to move it forward or back. The values below set it exactly. Keys: Space plays, "
-         "the arrows step a frame, Ctrl+Z undoes, Ctrl+Y does it again.");
+    hint("In the picture, click a joint to pick it: on it is a gizmo, as Blender's. Turn (R): drag a ring to turn it about that axis "
+         "(red across, green up and down, blue front to back), the white one to turn it as you look at it, or its middle to point it at "
+         "the mouse. Move (G): drag an arrow to move it along that axis, or its middle to move it with the mouse (the hips, hands and "
+         "feet, the squares; an arm or leg bends to follow). Size (S): drag a handle to make it bigger or smaller that way, or its middle "
+         "for all over. Turn the view with the right mouse button. Under the picture, its keys: click one to go to it, drag it to "
+         "another frame, right-click it or press Delete to take it away. The values below set it exactly. Keys: Space plays, the "
+         "arrows step a frame, Ctrl+Z undoes, Ctrl+Y does it again.");
     // whose the move is: its own stays as it's made whoever it's based on; its template's becomes its own when it's first changed
     const BakedMove *copied = baked_of(T, T.kind, move);
     bool own = T.poses[T.kind].anims[a].own || copied != nullptr;
@@ -2059,10 +2433,13 @@ void adjust_panel(Tool &T) {
     if (T.sel >= 0 && T.sel < po->nbones) {
         const char *bone = po->names[T.sel];
         PackAdjust *k = adj_key(T, move, bone, false);
-        float turn[3] = { 0, 0, 0 }, reach[3] = { 0, 0, 0 };
+        float turn[3] = { 0, 0, 0 }, reach[3] = { 0, 0, 0 }, size[3] = { 1, 1, 1 };
         if (k != nullptr) {
             memcpy(turn, k->turn, sizeof(turn));
             memcpy(reach, k->reach, sizeof(reach));
+            for (int i = 0; i < 3; i++) {
+                size[i] = 1 + k->grow[i];
+            }
         }
         ImGui::SeparatorText(bone_title(bone));
         // its own axes as it stands: x to its left, y down, z to its back (turns about them; shown as a person would say them)
@@ -2090,9 +2467,21 @@ void adjust_panel(Tool &T) {
                 }
             }
         }
+        static const char *const Sizes[3] = { "Wider", "Taller", "Deeper" };
+        for (int i = 0; i < 3; i++) {
+            ImGui::SetNextItemWidth(U(200));
+            changed |= ImGui::DragFloat(Sizes[i], &size[i], 0.01f, 0.1f, 10, "x%.2f");
+            if (ImGui::IsItemActivated()) {
+                adj_snapshot(T);
+            }
+            ImGui::SetItemTooltip("Made bigger or smaller (x1 as it is), with all on it, about its joint");
+        }
         if (changed && (k = adj_key(T, move, bone, true)) != nullptr) {
             memcpy(k->turn, turn, sizeof(turn));
             memcpy(k->reach, reach, sizeof(reach));
+            for (int i = 0; i < 3; i++) {
+                k->grow[i] = fmaxf(0.1f, fminf(10, size[i])) - 1;
+            }
         }
         if (T.key_mode == KEY_FRAME) {
             ImGui::TextDisabled("At frame %d of %s.", T.frame, move);
@@ -2116,6 +2505,7 @@ void adjust_panel(Tool &T) {
                 }
             }
             T.adj = keep;
+            T.key_sel = -1;
         }
         ImGui::SetItemTooltip("Its changes in this move taken away (and those to every move here)");
     } else {
@@ -2143,6 +2533,7 @@ void adjust_panel(Tool &T) {
             }
         }
         T.adj = keep;
+        T.key_sel = -1;
     }
     ImGui::SetItemTooltip("All its changes in %s taken away", move);
     // its changes in this move: each picked to go to it, or taken away
@@ -2186,6 +2577,7 @@ void adjust_panel(Tool &T) {
     if (gone >= 0) {
         adj_snapshot(T);
         T.adj.erase(T.adj.begin() + gone);
+        T.key_sel = -1;
     }
     if (shown == 0) {
         ImGui::TextDisabled("None yet.");
@@ -2481,6 +2873,11 @@ void editor_window(Tool &T, SDL_Window *win) {
         }
         if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false)) {
             adj_redo(T);
+        }
+        // R, G and S pick the gizmo, as Blender's
+        if (!io.KeyCtrl && !T.dragging) {
+            T.gizmo = ImGui::IsKeyPressed(ImGuiKey_R, false) ? GIZMO_TURN : ImGui::IsKeyPressed(ImGuiKey_G, false) ? GIZMO_MOVE
+                    : ImGui::IsKeyPressed(ImGuiKey_S, false) ? GIZMO_SIZE : T.gizmo;
         }
     }
     ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -2858,9 +3255,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 T.sel = SDL_strcasecmp(T.poses[T.kind].names[b], bone) == 0 ? b : T.sel;
             }
             adjust_set = true;
-            /* and HEROTOOL_ADJUST_TURN / _REACH=X,Y,Z changes it there, as the panel's values would */
+            /* and HEROTOOL_ADJUST_TURN / _REACH / _SCALE=X,Y,Z changes it there, as the panel's values would; _GIZMO=N picks gizmo N */
             const char *turn = SDL_getenv("HEROTOOL_ADJUST_TURN"), *reach = SDL_getenv("HEROTOOL_ADJUST_REACH");
-            PackAdjust *k = T.sel >= 0 && (turn != nullptr || reach != nullptr)
+            const char *size = SDL_getenv("HEROTOOL_ADJUST_SCALE");
+            T.gizmo = SDL_getenv("HEROTOOL_GIZMO") != nullptr ? SDL_atoi(SDL_getenv("HEROTOOL_GIZMO")) : T.gizmo;
+            PackAdjust *k = T.sel >= 0 && (turn != nullptr || reach != nullptr || size != nullptr)
                                 ? adj_key(T, T.made[T.kind].anims[T.anim].name, T.poses[T.kind].names[T.sel], true)
                                 : nullptr;
             if (k != nullptr) {
@@ -2869,6 +3268,13 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 }
                 if (reach != nullptr) {
                     SDL_sscanf(reach, "%f,%f,%f", &k->reach[0], &k->reach[1], &k->reach[2]);
+                }
+                if (size != nullptr) {
+                    float g[3] = { 1, 1, 1 };
+                    SDL_sscanf(size, "%f,%f,%f", &g[0], &g[1], &g[2]);
+                    for (int i = 0; i < 3; i++) {
+                        k->grow[i] = g[i] - 1;
+                    }
                 }
             }
         }
@@ -2949,6 +3355,10 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             /* and HEROTOOL_LIVE=FILE the frame shown as it made it, its vertices (s16 x, y, z each), to set beside the game's */
             if (SDL_getenv("HEROTOOL_LIVE") != nullptr && T.page >= 0 && adjusted_frame(T, T.kind, T.anim, T.frame, T.live)) {
                 SDL_SaveFile(SDL_getenv("HEROTOOL_LIVE"), T.live.data(), T.live.size() * sizeof(int16_t));
+                char said[300], at[80];
+                SDL_snprintf(said, sizeof(said), "%s.txt", SDL_getenv("HEROTOOL_LIVE"));
+                SDL_snprintf(at, sizeof(at), "%s %d\n", T.made[T.kind].anims[T.anim].name, T.frame);
+                SDL_SaveFile(said, at, strlen(at));
             }
             done = true;
         }

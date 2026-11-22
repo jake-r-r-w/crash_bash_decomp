@@ -354,14 +354,15 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             pk->nstands++;
         }
     }
-    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "spread", "turn": [x, y, z], "reach": [x, y, z]}] */
+    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "spread", "turn": [x, y, z], "reach": [x, y, z],
+       "scale": [x, y, z]}] */
     {
         const JVal *list = jget(root, "adjust"), *a;
         int i;
 
         for (i = 0; (a = jat(list, i)) != NULL && out->nadjust < PACK_MAX_ADJUSTS; i++) {
             PackAdjust *d = &out->adjust[out->nadjust];
-            const JVal *turn = jget(a, "turn"), *reach = jget(a, "reach");
+            const JVal *turn = jget(a, "turn"), *reach = jget(a, "reach"), *scale = jget(a, "scale");
             const char *move = jstr(jget(a, "move")), *bone = jstr(jget(a, "bone"));
             int j;
 
@@ -383,6 +384,13 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
                 d->reach[j] = r != NULL && r->type == J_NUMBER ? (float)r->number : 0;
                 d->turn[j] = d->turn[j] < -360 ? -360 : d->turn[j] > 360 ? 360 : d->turn[j];
                 d->reach[j] = d->reach[j] < -1000 ? -1000 : d->reach[j] > 1000 ? 1000 : d->reach[j];
+                {
+                    const JVal *g = jat(scale, j);
+                    float s = g != NULL && g->type == J_NUMBER ? (float)g->number : 1;
+
+                    s = s < 0.1f ? 0.1f : s > 10 ? 10 : s;
+                    d->grow[j] = s - 1;
+                }
             }
             out->nadjust++;
         }

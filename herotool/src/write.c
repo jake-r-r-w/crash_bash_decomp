@@ -382,8 +382,9 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
             for (int i = 0; i < p->nadjust; i++) {
                 const PackAdjust *a = &p->adjust[i];
                 int turn = a->turn[0] != 0 || a->turn[1] != 0 || a->turn[2] != 0, reach = a->reach[0] != 0 || a->reach[1] != 0 || a->reach[2] != 0;
+                int grow = a->grow[0] != 0 || a->grow[1] != 0 || a->grow[2] != 0;
 
-                if (!turn && !reach) {
+                if (!turn && !reach && !grow) {
                     continue;
                 }
                 say(&hero, "%s\n    { \"kind\": \"%s\", \"move\": \"%s\", \"bone\": \"%s\"", said++ ? "," : ",\n  \"adjust\": [",
@@ -396,6 +397,9 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
                 }
                 if (reach) {
                     say(&hero, ", \"reach\": [%.4g, %.4g, %.4g]", a->reach[0], a->reach[1], a->reach[2]);
+                }
+                if (grow) {
+                    say(&hero, ", \"scale\": [%.4g, %.4g, %.4g]", 1 + a->grow[0], 1 + a->grow[1], 1 + a->grow[2]);
                 }
                 say(&hero, " }");
             }

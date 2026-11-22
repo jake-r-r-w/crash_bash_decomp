@@ -667,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's animation editor gets a Blender-like gizmo (turn rings, move arrows, size handles; R, G, S) and a
+  keyframe sheet under the picture (diamonds, fade bands, drag a key to another frame, Delete). A change can now scale a bone
+  (`"scale"`, `PackAdjust.grow`, heroadjust.c); the tool's frame and the game's the same exactly with one. HERO_PACKS.md, Adjusting
+  its moves. Test tools one at a time: they share the game's dump folder.
+
 - 2026-11-22: Bobby's ear fin: his model welded each ear flap's bottom to his shoulder (13 faces a side); fixed in Blender at the
   user's word (`port/mods/bobby_ears.py`, Blender 5.2 headless), and the tool keeps each bone's seed places in one patch (rig.c). His
   pack made again; an ear turned hard moves nothing of his body.

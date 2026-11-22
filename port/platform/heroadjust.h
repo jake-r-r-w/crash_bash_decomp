@@ -34,7 +34,7 @@ int pack_bone_named(const PackBones *bones, const char *name);
  * with all on it, about its joint), then each hand's and foot's reach (its arm or leg bent to it). 0 if none were there. */
 int pack_adjust_pose(const PackAdjust *adj, int nadj, int kind, const char *move, int frame, const PackBones *bones,
                      const float trunk[9], float (*P)[3], float (*Q)[9]);
-/* A bone and all on it turned by M (row-major) about where its joint is */
+/* A bone and all on it turned (and made bigger, if M does) by M (row-major) about where its joint is */
 void pack_turn_under(const PackBones *bones, int bone, const float M[9], float (*P)[3], float (*Q)[9]);
 
 /* Its mesh as it rests at its size on what it rides (the game's axes and units), and what bends it */

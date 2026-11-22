@@ -158,12 +158,15 @@ void pack_turn_under(const PackBones *bones, int bone, const float M[9], float (
 
 int pack_adjust_pose(const PackAdjust *adj, int nadj, int kind, const char *move, int frame, const PackBones *bones,
                      const float trunk[9], float (*P)[3], float (*Q)[9]) {
-    static float turn[PACK_MAX_BONES][3], reach[PACK_MAX_BONES][3];
+    static float turn[PACK_MAX_BONES][3], reach[PACK_MAX_BONES][3], size[PACK_MAX_BONES][3];
     static int depth[PACK_MAX_BONES];
     int i, b, k, any = 0, deepest = 0;
 
     memset(turn, 0, sizeof(turn));
     memset(reach, 0, sizeof(reach));
+    for (b = 0; b < PACK_MAX_BONES; b++) {
+        size[b][0] = size[b][1] = size[b][2] = 1;
+    }
     for (i = 0; i < nadj; i++) {
         float w;
 
@@ -174,6 +177,7 @@ int pack_adjust_pose(const PackAdjust *adj, int nadj, int kind, const char *move
         for (k = 0; k < 3; k++) {
             turn[b][k] += adj[i].turn[k] * w;
             reach[b][k] += adj[i].reach[k] * w;
+            size[b][k] *= 1 + adj[i].grow[k] * w;
         }
         any = 1;
     }
@@ -202,19 +206,37 @@ int pack_adjust_pose(const PackAdjust *adj, int nadj, int kind, const char *move
             }
         }
     }
-    /* each bone's turn, those nearest the hips first: its turn's axis is the hero's own (trunk), so it's trunk * turn * trunk' */
+    /* each bone's turn and size, those nearest the hips first: its axes are the hero's own (trunk), so it's trunk turn size trunk' (made
+       bigger along its axes, then turned) */
     for (i = 0; i <= deepest; i++) {
         for (b = 0; b < bones->nbones; b++) {
-            float len = v_len(turn[b]), ax[3], M[9];
+            float len = v_len(turn[b]), ax[3], M[9] = { 1, 0, 0, 0, 1, 0, 0, 0, 1 }, S[9], tt[9];
+            int sized = size[b][0] != 1 || size[b][1] != 1 || size[b][2] != 1;
 
-            if (depth[b] != i || len <= 1e-4f) {
+            if (depth[b] != i || (len <= 1e-4f && !sized)) {
                 continue;
             }
-            for (k = 0; k < 3; k++) {
-                ax[k] = turn[b][k] / len;
+            if (len > 1e-4f) {
+                for (k = 0; k < 3; k++) {
+                    ax[k] = turn[b][k] / len;
+                }
+                m_apply(trunk, ax, ax);
+                m_axis(ax, len * 3.14159265f / 180, M);
             }
-            m_apply(trunk, ax, ax);
-            m_axis(ax, len * 3.14159265f / 180, M);
+            if (sized) {
+                /* trunk diag(size) trunk', before the turn */
+                for (k = 0; k < 9; k++) {
+                    tt[k] = trunk[k] * size[b][k % 3];
+                }
+                for (k = 0; k < 3; k++) {
+                    int c;
+
+                    for (c = 0; c < 3; c++) {
+                        S[k * 3 + c] = tt[k * 3] * trunk[c * 3] + tt[k * 3 + 1] * trunk[c * 3 + 1] + tt[k * 3 + 2] * trunk[c * 3 + 2];
+                    }
+                }
+                m_mul(M, S, M);
+            }
             pack_turn_under(bones, b, M, P, Q);
         }
     }

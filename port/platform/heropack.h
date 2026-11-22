@@ -50,6 +50,7 @@ typedef struct {
     int spread;                     /* the frames either side it fades out over (0: that frame alone) */
     float turn[3];                  /* that bone and all on it turned about those axes (degrees, a turn's axis times its angle) */
     float reach[3];                 /* moved (the game's units): a hand or foot, its arm or leg bent to it; the hips, all of it */
+    float grow[3];                  /* that bone and all on it made bigger along those axes, as a share more ("scale" less 1: 0 none) */
 } PackAdjust;
 
 typedef struct {
