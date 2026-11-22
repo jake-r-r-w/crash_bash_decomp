@@ -254,6 +254,10 @@ struct Tool {
     std::vector<std::pair<int, int>> drag_orig;
     bool key_pending = false, box = false;
     float box_x = 0, box_y = 0;
+    // the timeline zoomed in (1 all of the move) from its first frame shown; the frame shown as a key's drag began, and the frame
+    // it's snapped to (-1 none)
+    float tl_zoom = 1, tl_first = 0;
+    int drag_frame0 = 0, snapped = -1;
     // how a new key fades (PACK_EASE_), and the key copied (Ctrl+C; empty none)
     int ease = PACK_EASE_SMOOTH;
     std::vector<PackAdjust> clip;
@@ -1467,6 +1471,13 @@ PackAdjust *panel_key(Tool &T, const char *move, const char *bone) {
         }
         return nullptr;
     }
+    // (the one picked, if it's that joint's there: another key at the same frame doesn't take its place)
+    if (T.key_sel >= 0 && T.key_sel < (int)T.adj.size() && T.key_mode == KEY_FRAME) {
+        PackAdjust &k = T.adj[T.key_sel];
+        if (k.at >= 0 && k.at <= T.frame && T.frame <= key_last(k) && pack_adjust_for(&k, T.kind, move) && SDL_strcasecmp(k.bone, bone) == 0) {
+            return &k;
+        }
+    }
     PackAdjust *k = adj_key(T, move, bone, false);
     if (k != nullptr && T.keys_sel.size() <= 1) {
         keys_only(T, (int)(k - T.adj.data()));
@@ -2132,15 +2143,39 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     ImVec2 o = ImGui::GetCursorScreenPos();
     ImGui::InvisibleButton("##sheet", ImVec2(width, h), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
     bool over = ImGui::IsItemHovered();
+    ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY); // (its wheel zooms it, not the window's scroll)
     ImDrawList *dl = ImGui::GetWindowDrawList();
-    float x0 = o.x + label, cw = frames > 0 ? (width - label) / frames : 1;
-    auto fx = [&](float f) { return x0 + (f + 0.5f) * cw; };
-    auto xf = [&](float x) { int f = (int)floorf((x - x0) / cw); return f < 0 ? 0 : f >= frames ? frames - 1 : f; };
+    // zoomed in on part of the move (the user's word, 2026-11-22: zoom and snapping): the wheel zooms about the mouse, Shift and the
+    // wheel (or a sideways wheel) scroll, Home shows all of it again; playing, it follows the frame shown
+    float x0 = o.x + label, span = width - label, most = std::max(1.0f, frames / 4.0f);
+    T.tl_zoom = std::max(1.0f, std::min(most, T.tl_zoom));
+    float shown = frames / T.tl_zoom;
+    if (over && io.MouseWheel != 0 && !io.KeyShift && io.MousePos.x >= x0) {
+        float at = T.tl_first + (io.MousePos.x - x0) / span * shown;
+        T.tl_zoom = std::max(1.0f, std::min(most, T.tl_zoom * powf(1.25f, io.MouseWheel)));
+        shown = frames / T.tl_zoom;
+        T.tl_first = at - (io.MousePos.x - x0) / span * shown;
+    }
+    float side = io.MouseWheelH + (io.KeyShift ? io.MouseWheel : 0);
+    if (over && side != 0) {
+        T.tl_first -= side * shown * 0.1f;
+    }
+    if (over && ImGui::IsKeyPressed(ImGuiKey_Home, false)) {
+        T.tl_zoom = 1, shown = (float)frames;
+    }
+    if (T.adj_playing && (T.frame < T.tl_first || T.frame >= T.tl_first + shown)) {
+        T.tl_first = T.frame - shown * 0.1f;
+    }
+    T.tl_first = std::max(0.0f, std::min(frames - shown, T.tl_first));
+    float cw = frames > 0 ? span / shown : 1;
+    auto fx = [&](float f) { return x0 + (f - T.tl_first + 0.5f) * cw; };
+    auto xf = [&](float x) { int f = (int)floorf((x - x0) / cw + T.tl_first); return f < 0 ? 0 : f >= frames ? frames - 1 : f; };
     dl->AddRectFilled(o, ImVec2(o.x + width, o.y + h), IM_COL32(30, 30, 36, 255));
     dl->AddRectFilled(ImVec2(x0, o.y), ImVec2(o.x + width, o.y + ruler), IM_COL32(45, 45, 54, 255));
     // the ruler: a tick each frame, a number every so many
     int every = cw >= U(28) ? 1 : cw >= U(12) ? 5 : 10;
-    for (int f = 0; f < frames; f++) {
+    dl->PushClipRect(ImVec2(x0, o.y), ImVec2(o.x + width, o.y + h), true);
+    for (int f = std::max(0, (int)T.tl_first - 1); f < std::min(frames, (int)(T.tl_first + shown) + 2); f++) {
         float x = fx((float)f);
         bool big = f % every == 0;
         dl->AddLine(ImVec2(x, o.y + ruler - (big ? U(8) : U(4))), ImVec2(x, o.y + ruler), IM_COL32(150, 150, 160, 255));
@@ -2150,6 +2185,12 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             dl->AddText(ImVec2(x + U(2), o.y + U(1)), IM_COL32(170, 170, 180, 255), n);
         }
     }
+    if (T.tl_zoom > 1) {
+        // the part of the move shown, under the ruler
+        dl->AddRectFilled(ImVec2(x0 + T.tl_first / frames * span, o.y + ruler - U(3)), ImVec2(x0 + (T.tl_first + shown) / frames * span, o.y + ruler),
+                          IM_COL32(110, 160, 255, 200));
+    }
+    dl->PopClipRect();
     // the rows: a joint's name, its keys, and each key's parts the mouse can take (later ones over earlier)
     struct Hit {
         int key, part;
@@ -2167,6 +2208,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             dl->AddRectFilled(ImVec2(o.x, y), ImVec2(o.x + label - U(4), y + row), IM_COL32(60, 80, 120, 255));
         }
         dl->AddText(ImVec2(o.x + U(4), y + U(3)), IM_COL32(220, 220, 225, 255), bone_title(po->names[b]));
+        dl->PushClipRect(ImVec2(x0, y), ImVec2(o.x + width, y + row), true);
         for (int i = 0; i < (int)T.adj.size(); i++) {
             const PackAdjust &k = T.adj[i];
             if (!pack_adjust_for(&k, T.kind, move) || SDL_strcasecmp(k.bone, po->names[b]) != 0) {
@@ -2241,18 +2283,26 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                 hits.push_back({ i, KEY_END, h0, h1 });
             }
         }
+        dl->PopClipRect();
     }
     if (rows.empty()) {
         dl->AddText(ImVec2(o.x + U(4), o.y + ruler + U(3)), IM_COL32(150, 150, 160, 255), "Click a joint");
     }
     // the frame shown, across it all
     float px = fx((float)T.frame);
+    dl->PushClipRect(ImVec2(x0, o.y), ImVec2(o.x + width, o.y + h), true);
     dl->AddRectFilled(ImVec2(px - cw / 2, o.y), ImVec2(px + cw / 2, o.y + ruler), IM_COL32(70, 110, 190, 255));
     dl->AddLine(ImVec2(px, o.y), ImVec2(px, o.y + h), IM_COL32(110, 160, 255, 255), U(2));
+    if (T.key_drag && T.snapped >= 0) {
+        // the frame a dragged key's snapped to
+        dl->AddLine(ImVec2(fx((float)T.snapped), o.y), ImVec2(fx((float)T.snapped), o.y + h), IM_COL32(255, 255, 255, 150), U(1));
+    }
+    dl->PopClipRect();
     // what's under the mouse, and what a click or a drag does
     int under = -1, part = KEY_BODY;
     for (auto &ht : hits) {
-        if (io.MousePos.x >= ht.lo.x - U(2) && io.MousePos.x <= ht.hi.x + U(2) && io.MousePos.y >= ht.lo.y - U(2) && io.MousePos.y <= ht.hi.y + U(2)) {
+        if (io.MousePos.x >= x0 && io.MousePos.x >= ht.lo.x - U(2) && io.MousePos.x <= ht.hi.x + U(2) && io.MousePos.y >= ht.lo.y - U(2)
+            && io.MousePos.y <= ht.hi.y + U(2)) {
             under = ht.key, part = ht.part;
         }
     }
@@ -2288,6 +2338,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                 T.key_pending = group;
                 T.key_part = part == KEY_BODY && io.KeyShift ? KEY_EITHER : part;
                 T.key_grab = xf(io.MousePos.x);
+                T.drag_frame0 = T.frame;
                 T.key_from = k.at;
                 T.key_to = key_last(k);
                 T.drag_orig.clear();
@@ -2317,7 +2368,8 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         if (!ImGui::IsMouseDown(0)) {
             // the keys the box was over picked
             for (auto &ht : hits) {
-                if (ht.hi.x >= lo.x && ht.lo.x <= hi.x && ht.hi.y >= lo.y && ht.lo.y <= hi.y && !key_picked(T, ht.key)) {
+                if (ht.hi.x >= lo.x && ht.lo.x <= hi.x && ht.hi.y >= lo.y && ht.lo.y <= hi.y && ht.hi.x >= x0 && ht.lo.x <= o.x + width
+                    && !key_picked(T, ht.key)) {
                     T.keys_sel.push_back(ht.key);
                     T.key_sel = ht.key;
                 }
@@ -2333,6 +2385,46 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     if (T.scrub) {
         T.frame = xf(io.MousePos.x);
     }
+    // snapping: a dragged key's frame (or end) to another key's first or last, or the frame shown as the drag began, the nearest within
+    // a few pixels (Ctrl: none); how far frame g goes to snap, and how far off it was
+    T.snapped = -1;
+    std::vector<int> snaps;
+    if (T.key_drag && !io.KeyCtrl) {
+        for (int i = 0; i < (int)T.adj.size(); i++) {
+            const PackAdjust &x = T.adj[i];
+            if (x.at >= 0 && pack_adjust_for(&x, T.kind, move) && !key_picked(T, i) && i != T.key_sel) {
+                snaps.push_back(x.at);
+                snaps.push_back(key_last(x));
+            }
+        }
+        snaps.push_back(T.drag_frame0);
+    }
+    auto snap_off = [&](int g, float *off_px) {
+        int by = 0, to = -1;
+        float best = U(8) + 1;
+        for (int c : snaps) {
+            float d = fabsf(fx((float)c) - fx((float)g));
+            if (d <= U(8) && d < best) {
+                best = d, by = c - g, to = c;
+            }
+        }
+        if (off_px != nullptr) {
+            *off_px = best;
+        }
+        if (to >= 0) {
+            T.snapped = to;
+        }
+        return by;
+    };
+    // (of two frames, its first and last, the one nearer one to snap to)
+    auto snap_pair = [&](int a, int b) {
+        float pa, pb;
+        int da = snap_off(a, &pa), sa = T.snapped;
+        T.snapped = -1;
+        int db = snap_off(b, &pb), sb = T.snapped;
+        T.snapped = pa <= pb ? sa : sb;
+        return pa <= pb ? da : db;
+    };
     if (T.key_drag && T.key_sel >= 0 && T.key_sel < (int)T.adj.size() && T.adj[T.key_sel].at >= 0) {
         // moved, or held over more frames or fewer, to the frame under the mouse (a step of the history once it's changed); several
         // picked, all of them moved as far, none past the move's ends
@@ -2348,7 +2440,13 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                     lo = std::min(lo, T.drag_orig[j].first), hi = std::max(hi, T.drag_orig[j].second), n++;
                 }
             }
-            int d = std::max(-lo, std::min(frames - 1 - hi, f - T.key_grab));
+            int d = f - T.key_grab;
+            for (size_t j = 0; j < T.keys_sel.size(); j++) {
+                if (T.keys_sel[j] == T.key_sel && T.drag_orig[j].first >= 0) {
+                    d += snap_pair(T.drag_orig[j].first + d, T.drag_orig[j].second + d);
+                }
+            }
+            d = std::max(-lo, std::min(frames - 1 - hi, d));
             bool changed = false;
             for (size_t j = 0; j < T.keys_sel.size(); j++) {
                 const PackAdjust &x = T.adj[T.keys_sel[j]];
@@ -2371,12 +2469,14 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             T.frame = f;
         } else {
             if (T.key_part == KEY_BODY) {
-                int d = std::max(-from, std::min(frames - 1 - to, f - T.key_grab));
+                int d = f - T.key_grab;
+                d += snap_pair(from + d, to + d);
+                d = std::max(-from, std::min(frames - 1 - to, d));
                 from += d, to += d;
             } else if (T.key_part == KEY_START) {
-                from = std::min(f, to);
+                from = std::min(f + snap_off(f, nullptr), to);
             } else if (T.key_part == KEY_END) {
-                to = std::max(f, from);
+                to = std::max(f + snap_off(f, nullptr), from);
             }
             if (from != k.at || to != key_last(k)) {
                 const char *b = bone_title(k.bone);
@@ -4151,7 +4251,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             // (a test's drag has the mouse: the real one's left out)
             bool mouse = e.type == SDL_EVENT_MOUSE_MOTION || e.type == SDL_EVENT_MOUSE_BUTTON_DOWN || e.type == SDL_EVENT_MOUSE_BUTTON_UP
                       || e.type == SDL_EVENT_MOUSE_WHEEL;
-            if (!(mouse && SDL_getenv("HEROTOOL_DRAG") != nullptr)) {
+            if (!(mouse && (SDL_getenv("HEROTOOL_DRAG") != nullptr || SDL_getenv("HEROTOOL_WHEEL") != nullptr))) {
                 ImGui_ImplSDL3_ProcessEvent(&e);
             }
             if (e.type == SDL_EVENT_KEY_DOWN && (e.key.mod & SDL_KMOD_CTRL) != 0) {
@@ -4394,6 +4494,17 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             dio.AddMousePosEvent(d[0] + (d[2] - d[0]) * t, d[1] + (d[3] - d[1]) * t);
             dio.AddMouseButtonEvent(d[5] != 0 ? 1 : 0, drag_step >= 2 && drag_step <= 12);
             dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && drag_step >= 1 && drag_step <= 13);
+        }
+        /* a test's wheel: HEROTOOL_WHEEL=X,Y,N turns the mouse wheel N notches at (X, Y) once a game's being adjusted, the mouse kept there */
+        static int wheel_step = -1;
+        if (SDL_getenv("HEROTOOL_WHEEL") != nullptr && SDL_getenv("HEROTOOL_DRAG") == nullptr && (wheel_step >= 0 || T.adjusting)) {
+            float w[3] = { 0, 0, 0 };
+            SDL_sscanf(SDL_getenv("HEROTOOL_WHEEL"), "%f,%f,%f", &w[0], &w[1], &w[2]);
+            wheel_step = wheel_step < 100 ? wheel_step + 1 : wheel_step;
+            ImGui::GetIO().AddMousePosEvent(w[0], w[1]);
+            if (wheel_step == 3) {
+                ImGui::GetIO().AddMouseWheelEvent(0, w[2]);
+            }
         }
         ImGui::NewFrame();
         if (T.home) {

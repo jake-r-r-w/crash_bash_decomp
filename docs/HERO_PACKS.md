@@ -464,7 +464,11 @@ picked (the user's word, 2026-11-22: "add multi-select for keys in the timeline"
 panel's): Ctrl+click picks one more (or not any more), dragging a box over an empty place in the rows picks those it's over (Ctrl: as
 well), Ctrl+A (or right-click an empty place, **Select all**) every key of the move, and clicking an empty place none. Dragging one of
 several moves them all as far (none past the move's ends; clicked and let go unmoved, it alone is picked), Delete takes them all away,
-the panel's **Fade** fades them all, and right-clicking one of them is for them all (**Fade**, the **Stretch** ones, **Delete**). Drag a diamond (a held
+the panel's **Fade** fades them all, and right-clicking one of them is for them all (**Fade**, the **Stretch** ones, **Delete**).
+The timeline **zooms** (the user's word, 2026-11-22: zoom and snapping): the wheel over it zooms about the mouse (to a quarter of the
+move's frames shown), Shift and the wheel (or a sideways wheel) scroll it, Home shows all of it again, a bar under the ruler says
+which part is shown, and playing it follows the frame shown. A dragged key (or its end) **snaps** to another key's first or last
+frame, or the frame shown as the drag began, the nearest within a few pixels (a line shows where); Ctrl and drag doesn't snap. Drag a diamond (a held
 key by its bar) to move it to other frames. To hold one over more frames or fewer: drag a held key's end, or a picked key's grips
 (the white bars either side), or Shift and drag a key the way it's to go. Right-click a key for **Copy**, **Paste**, **Paste
 mirrored**, **Fade**, **Stretch to end**, **Stretch to start**, **Stretch to whole move**, **Single frame** and **Delete** (or press
@@ -505,6 +509,6 @@ picks every key of the move and `HEROTOOL_PASTE2=FRAME[,1]` copies and pastes th
 `HEROTOOL_DRAG=X0,Y0,X1,Y1[,1[,1]]` drags the mouse in the window (the right button with the second 1; Shift with the first, down the frame before the press and up the frame after, as
 ImGui holds a press queued after a key's change for the next frame; the window's pixels, as `HEROTOOL_SHOT`'s picture's), and keeps
 it there after, the real mouse left out (ImGui's SDL backend gives the real one's place while the window has the focus);
-`HEROTOOL_LIVE=FILE` writes the frame shown as the tool made it (s16 x, y, z a vertex), and FILE.txt its move and frame, to set
+`HEROTOOL_WHEEL=X,Y,N` turns the wheel N notches at (X, Y) once it's adjusting, the mouse kept there; `HEROTOOL_LIVE=FILE` writes the frame shown as the tool made it (s16 x, y, z a vertex), and FILE.txt its move and frame, to set
 beside the game's. Run one test tool at a time, or each with its own `HEROTOOL_PREF`: each has the game make its models into its
 folder.
