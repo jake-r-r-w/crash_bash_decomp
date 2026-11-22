@@ -474,7 +474,12 @@ frame, or the frame shown as the drag began, the nearest within a few pixels (a 
 change to a joint's key (by its gizmo, its values, its fade or blend, its frames, or dragging it in the timeline) is made to its
 other side's key at that frame too, its mirror image (across, and its turns about up and front to back, the other way; its frames,
 fade and blend the same), the key made if there's none (`mirror_edit`); the other side's joint is ringed in purple. Checked: a left
-ear dragged by its gizmo, its right ear the mirror of it, and the game's frame the same exactly. Drag a diamond (a held
+ear dragged by its gizmo, its right ear the mirror of it, and the game's frame the same exactly.
+
+**Onion** (beside X-Mirror; the user's word, 2026-11-22: onion skin): ghosts of the frames some apart (its slider, 1 to 15) before
+(blue) and after (orange) the one shown, round the move, as the game makes them with the changes, drawn only where they stick out past
+the frame shown (over it, they hid the pose): each ghost's own nearest surface found apart (`raster_ghost`) and blended where the
+picture has nothing. Drag a diamond (a held
 key by its bar) to move it to other frames. To hold one over more frames or fewer: drag a held key's end, or a picked key's grips
 (the white bars either side), or Shift and drag a key the way it's to go. Right-click a key for **Copy**, **Paste**, **Paste
 mirrored**, **Fade**, **Stretch to end**, **Stretch to start**, **Stretch to whole move**, **Single frame** and **Delete** (or press
@@ -508,7 +513,7 @@ picked away, Ctrl+C and Ctrl+V copy and paste a key (Ctrl+Shift+V mirrored), Ctr
 hero.
 
 Its tests' settings: `HEROTOOL_ADJUST=BONE@FRAME` (or `@FROM-TO`, held) adjusts the page shown once it's made, that bone picked there
-(and `HEROTOOL_SHOW_FRAME=N` shows that frame after; `HEROTOOL_XMIRROR=1` turns X-Mirror on, the test's change mirrored; `HEROTOOL_ADJUST_FADE=EASE,N` its fade, hero.json's name, over N frames;
+(and `HEROTOOL_SHOW_FRAME=N` shows that frame after; `HEROTOOL_MOVE=NAME` watches that move; `HEROTOOL_ONION=STEP` onion skin; `HEROTOOL_XMIRROR=1` turns X-Mirror on, the test's change mirrored; `HEROTOOL_ADJUST_FADE=EASE,N` its fade, hero.json's name, over N frames;
 `HEROTOOL_PASTE=FRAME[,1[,BONE]]` copies it and pastes it at FRAME, mirrored with 1, onto BONE; then `HEROTOOL_SELECT_ALL=1`
 picks every key of the move and `HEROTOOL_PASTE2=FRAME[,1]` copies and pastes those);
 `HEROTOOL_ADJUST_TURN` / `_REACH` / `_SCALE=X,Y,Z` changes it; `HEROTOOL_GIZMO=N` picks the gizmo (0 turn, 1 move, 2 size);

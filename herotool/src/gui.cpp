@@ -260,6 +260,10 @@ struct Tool {
     int drag_frame0 = 0, snapped = -1;
     // X-Mirror: each change to a joint's key made to its other side's too, flipped
     bool xmirror = false;
+    // onion skin: the frames onion_step before and after the one shown, as ghosts (their vertices)
+    bool onion = false;
+    int onion_step = 4;
+    std::vector<int16_t> ghost[2];
     // how a new key fades (PACK_EASE_), and the key copied (Ctrl+C; empty none)
     int ease = PACK_EASE_SMOOTH;
     std::vector<PackAdjust> clip;
@@ -814,6 +818,35 @@ void made_check(Tool &T) {
 // left out, semi-transparent ones half over what's there. The game's axes are y down, so it's turned up the tool's way.
 void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &v, int PW, int PH, int ya, int yb);
 
+// A ghost of a made model's faces in frame vs (onion skin), in its rows ya to yb: its nearest surface's depth (gd) and light (gl)
+void raster_ghost(const KitMade *m, const int16_t *vs, float cx, float cz, const View &v, int PW, int PH, int ya, int yb, float *gd, float *gl) {
+    float c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
+
+    for (int t = 0; t < m->nfaces; t++) {
+        const KitMadeFace *f = &m->faces[t];
+        float p[3][3], sx[3], sy[3], sz[3];
+
+        for (int j = 0; j < 3; j++) {
+            const int16_t *q = vs + (size_t)f->v[j] * 3;
+            p[j][0] = q[0] - cx, p[j][1] = -q[1], p[j][2] = -q[2] - cz;
+            to_screen(v, p[j], sx[j], sy[j], sz[j]);
+        }
+        float e1[3], e2[3], n[3];
+        for (int i = 0; i < 3; i++) {
+            e1[i] = p[1][i] - p[0][i];
+            e2[i] = p[2][i] - p[0][i];
+        }
+        n[0] = e1[1] * e2[2] - e1[2] * e2[1];
+        n[1] = e1[2] * e2[0] - e1[0] * e2[2];
+        n[2] = e1[0] * e2[1] - e1[1] * e2[0];
+        float ln = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]), lit = 0.55f + 0.45f * (ln > 0 ? fabsf(n[0] * s + n[2] * c) / ln : 1);
+        fill_tri(sx, sy, sz, gd, PW, PH, ya, yb, [&](int at, float, float, float, float z) {
+            gd[at] = z;
+            gl[at] = lit;
+        });
+    }
+}
+
 // With what the game draws beside it (rides, still: their one frame), fitted to them all; its frame's vertices from live if given (made
 // again with its adjustments, adjusted_frame)
 // The floor under a game's model, as Blender's (the user's word, 2026-11-22: "a direction grid like blender"): the ground at ground (up
@@ -857,8 +890,9 @@ void floor_grid(View &v, int PW, int PH, float cx, float cz, float ground) {
     line(0, -Far, 0, Far, 130, 220, 80, 1, wide + 1);
 }
 
+// (ghost_before and ghost_after: onion skin's frames, as ghosts where they stick out past it, blue and orange)
 void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren, const KitMade *rides = nullptr, int nrides = 0,
-               const int16_t *live = nullptr) {
+               const int16_t *live = nullptr, const int16_t *ghost_before = nullptr, const int16_t *ghost_after = nullptr) {
     const int PW = v.w > 0 ? v.w : PrevW, PH = v.h > 0 ? v.h : PrevH;
 
     if (v.rgba == nullptr) {
@@ -872,6 +906,12 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     now.add(m), now.add(MadeGen), now.add(anim), now.add(rides), now.add(nrides), now.add(PW), now.add(PH);
     if (vs != nullptr) {
         now.add(vs, sizeof(int16_t) * 3 * (size_t)m->nvert);
+    }
+    for (const int16_t *g : { ghost_before, ghost_after }) {
+        now.add(g != nullptr);
+        if (g != nullptr) {
+            now.add(g, sizeof(int16_t) * 3 * (size_t)m->nvert);
+        }
     }
     if (drawn_same(v, now)) {
         return;
@@ -911,6 +951,11 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     v.oy = PH * 0.5f + (lo[1] + hi[1]) / 2 * pc * v.scale;
     v.zx = PW / 2.0f;
     v.zy = PH / 2.0f;
+    static std::vector<float> gd, gl;
+    if (ghost_before != nullptr || ghost_after != nullptr) {
+        gd.resize((size_t)PW * PH);
+        gl.resize((size_t)PW * PH);
+    }
     in_bands(PW, PH, [&](int ya, int yb) {
         std::fill(v.rgba + ya * PW, v.rgba + yb * PW, 0xFF3A3434u);
         std::fill(v.depth + ya * PW, v.depth + yb * PW, 1e30f);
@@ -918,6 +963,26 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
         for (int r = 0; r < nrides; r++) {
             if (rides[r].nanims > 0) {
                 raster_made(&rides[r], rides[r].anims[0].verts, cx, cz, v, PW, PH, ya, yb);
+            }
+        }
+        // onion skin: each ghost blended in where it sticks out past the frame shown, where nothing's drawn (over it, it hid the pose)
+        static const float Tint[2][3] = { { 90, 150, 255 }, { 255, 160, 60 } };
+        for (int g = 0; g < 2; g++) {
+            const int16_t *gv = g == 0 ? ghost_before : ghost_after;
+            if (gv == nullptr) {
+                continue;
+            }
+            std::fill(gd.begin() + (size_t)ya * PW, gd.begin() + (size_t)yb * PW, 1e30f);
+            raster_ghost(m, gv, cx, cz, v, PW, PH, ya, yb, gd.data(), gl.data());
+            for (int p = ya * PW; p < yb * PW; p++) {
+                if (gd[p] < 1e29f && v.depth[p] >= 1e29f) {
+                    unsigned was = v.rgba[p];
+                    float al = 0.5f, l = gl[p];
+                    unsigned R = (unsigned)fminf(255, (was & 255) * (1 - al) + Tint[g][0] * l * al);
+                    unsigned G = (unsigned)fminf(255, (was >> 8 & 255) * (1 - al) + Tint[g][1] * l * al);
+                    unsigned B = (unsigned)fminf(255, (was >> 16 & 255) * (1 - al) + Tint[g][2] * l * al);
+                    v.rgba[p] = 0xFF000000u | B << 16 | G << 8 | R;
+                }
             }
         }
     });
@@ -1854,6 +1919,24 @@ void gizmo_buttons(Tool &T) {
         ImGui::PopStyleColor();
     }
     ImGui::SetItemTooltip("Changes copy to the other side, flipped");
+    ImGui::SameLine();
+    on = T.onion;
+    if (on) {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+    }
+    if (ImGui::Button("Onion", ImVec2(U(70), 0))) {
+        T.onion = !T.onion;
+    }
+    if (on) {
+        ImGui::PopStyleColor();
+    }
+    ImGui::SetItemTooltip("Ghosts of the frames before (blue) and after (orange)");
+    if (T.onion) {
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(U(90));
+        ImGui::SliderInt("##onion", &T.onion_step, 1, 15, "%d apart");
+        ImGui::SetItemTooltip("Frames between the ghosts and the frame shown");
+    }
     ImGui::SameLine();
     ImGui::NewLine();
 }
@@ -4436,6 +4519,10 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 *strchr(bone, '@') = 0;
             }
             T.adjusting = true;
+            /* (HEROTOOL_MOVE=NAME: that move watched) */
+            for (int m = 0; SDL_getenv("HEROTOOL_MOVE") != nullptr && m < T.made[T.kind].nanims; m++) {
+                T.anim = SDL_strcasecmp(T.made[T.kind].anims[m].name, SDL_getenv("HEROTOOL_MOVE")) == 0 ? m : T.anim;
+            }
             T.frame = at != nullptr ? SDL_atoi(at + 1) : 0;
             for (int b = 0; b < T.poses[T.kind].nbones; b++) {
                 T.sel = SDL_strcasecmp(T.poses[T.kind].names[b], bone) == 0 ? b : T.sel;
@@ -4503,6 +4590,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             if (SDL_getenv("HEROTOOL_SHOW_FRAME") != nullptr) {
                 T.frame = SDL_atoi(SDL_getenv("HEROTOOL_SHOW_FRAME"));
             }
+            /* and HEROTOOL_ONION=STEP turns onion skin on, its ghosts that far apart */
+            if (SDL_getenv("HEROTOOL_ONION") != nullptr) {
+                T.onion = true;
+                T.onion_step = SDL_atoi(SDL_getenv("HEROTOOL_ONION"));
+            }
             /* and HEROTOOL_PLAY=1 plays it (as Space does) */
             T.adj_playing = SDL_getenv("HEROTOOL_PLAY") != nullptr ? true : T.adj_playing;
         }
@@ -4537,8 +4629,18 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             int f = mk->nanims > 0 ? adjusting ? T.frame % mk->anims[a].frames : (int)(T.made_t * 30) % mk->anims[a].frames : 0;
             lap(PR_GAME);
             bool live = adjusted_frame(T, T.kind, a, f, T.live);
+            // onion skin, while adjusting: the frames onion_step before and after (round the move), as the game makes them
+            const int16_t *ghosts[2] = { nullptr, nullptr };
+            if (adjusting && T.onion && mk->nanims > 0 && mk->anims[a].frames > 1) {
+                int n = mk->anims[a].frames, st = std::max(1, std::min(n - 1, T.onion_step));
+                for (int g = 0; g < 2; g++) {
+                    int at = ((f + (g == 0 ? -st : st)) % n + n) % n;
+                    ghosts[g] = adjusted_frame(T, T.kind, a, at, T.ghost[g]) ? T.ghost[g].data()
+                                                                             : mk->anims[a].verts + (size_t)at * mk->nvert * 3;
+                }
+            }
             lap(PR_ADJUST);
-            draw_made(mk, a, f, T.game_view, ren, T.rides[T.kind], T.nrides[T.kind], live ? T.live.data() : nullptr);
+            draw_made(mk, a, f, T.game_view, ren, T.rides[T.kind], T.nrides[T.kind], live ? T.live.data() : nullptr, ghosts[0], ghosts[1]);
         }
         lap(PR_GAME);
         if (T.m != nullptr && !T.home && T.page == PAGE_MODEL) {
