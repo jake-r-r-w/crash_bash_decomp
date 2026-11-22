@@ -294,7 +294,7 @@ and joints** (its rig, or the dots to place on its joints, and the tool's own mo
 model at once, each playing), and each game. In the middle the page's picture; on the right its choices, then **Hero details**
 (name, id, height, **Based on**: its template and whose place it takes, one choice), **Card and sounds** (Browse, the system's file
 chooser; **Face**, how much of it from the top is its head for its face, shown only with no card) and **Save** (**Save**, **Save and play** in a game picked). A game's page has **Prop from** (that game's
-ride or prop and moves from another hero than its template) and **Own moves**: only the game's moves (KitGames) that are its own
+ride or prop and moves from another hero than its template) and **Own animations**: only the game's moves (KitGames) that are its own
 there, its own copy of its template's (once it's changed: **from Crash**) or its clip (`GAME/MOVE`, a pack loaded to change; one given
 up is left out, `KitPack.drop`), each with **Use Crash's**; with none, a line says it has its template's (the user's word,
 2026-11-22: "less is more"; a row a move, most of them its template's, said nothing). The tool's own moves (**my MOVE**) aren't
@@ -320,7 +320,7 @@ does), scrolled to zoom, set back by a right double-click or Home, and show BREA
 the left button left to pick and drag joints (the user's word, 2026-11-22: the buttons swapped between watching and animating).
 Under each game in the gallery a choice of **whose ride or prop** it has there: its template's, or another hero's (the pogo stick
 or Cortex's jetpack, Tiny's keg ...), written as that kind's `"template"` in hero.json (`--template-in GAME=HERO` from the command
-line); picking one makes it again. On foot it's **Stands like**, which also has **Own moves** (its model's clips, and the
+line); picking one makes it again. On foot it's **Animations**, which also has **Its own** (its model's clips, and the
 tool's moves on it for the rest): a pack loaded that says no template (Bobby) is so, and is saved as it was, with no template, if
 it's based on Crash, else with `"own"` on foot (the user's word, 2026-11-22: the tool saved a template for Bobby, so on foot he
 followed Crash's moves). Cortex's and Brio's hover board is the game's jets, drawn in the game, not shown here.
@@ -419,25 +419,25 @@ followed move's do, and what it carries is turned out of its head (`carry_clear`
 was made from to the unit (the pogo's BREATHE, from Crash's; on foot, from Cortex's), and on Cortex's pogo the same BREATHE keeps its
 body's shape (1% to 2%, any turn or size aside, against 50% for a move still Cortex's).
 
-In the tool a game's **Own moves** lists its own there: **from Crash** (such a copy) or **its clip** (a clip it has, such a copy once
-it's saved). Giving one of its own back asks first (**Replace its own move?**: **Keep mine** or **Use
-Crash's**), and takes its changes with it. On foot, where it follows a hero, **Own moves** lists them, each with **Use Crash's**
-(asked the same). The page's **Animation** says whose the move is with a tag beside **Edit joints** (**Own move (from Crash)**, green,
-or **Crash's move**; its tooltip says the rest), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change (and after `HEROTOOL_DRAG`'s drag, once it's let go)
+In the tool a game's **Own animations** lists its own there: **from Crash** (such a copy) or **its clip** (a clip it has, such a copy once
+it's saved). Giving one of its own back asks first (**Replace its own animation?**: **Keep mine** or **Use
+Crash's**), and takes its changes with it. On foot, where it follows a hero, **Own animations** lists them, each with **Use Crash's**
+(asked the same). The page's **Animation** says whose the move is with a tag beside **Edit pose** (**Own animation (from Crash)**, green,
+or **Crash's animation**; its tooltip says the rest), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change (and after `HEROTOOL_DRAG`'s drag, once it's let go)
 (the game having made it again), and `HEROTOOL_ASK=MOVE` picks a move's template's, for tests.
 
-**In the tool**, each game's page has **Animation**: **Edit joints** puts a dot on every joint over the picture (squares for the
+**In the tool**, each game's page has **Animation**: **Edit pose** puts a dot on every joint over the picture (squares for the
 hips, hands and feet) and stops the move; its (?) is a card of the controls and keys. Click a joint to pick it: on it is a **gizmo**, as Blender's (the
 user's word, 2026-11-22: "a proper gizmo tool like blender has so we can rotate, move and scale"), in the hero's own axes as Blender's
 are for a character facing -Y: X red to its left, Y green to its back, Z blue up (`Way` in `adjust_view`, gui.cpp: the game's y is
-down), the panel's values lettered the same. Over the picture, **Turn (R)**, **Move (G)** and **Size (S)** pick which, as do those
+down), the panel's values lettered the same. Over the picture, **Rotate (R)**, **Move (G)** and **Scale (S)** pick which, as do those
 keys:
-- **Turn**: a ring about each axis, dragged round to turn it about that axis (a ring seen almost edge on, as far as the mouse goes
+- **Rotate**: a ring about each axis, dragged round to turn it about that axis (a ring seen almost edge on, as far as the mouse goes
   along it, its near side following the mouse); a white ring about the line towards whoever's looking; its middle, dragged, points
   what's on it at the mouse (its end, the joints on it, turned about that line).
 - **Move**: an arrow along each axis, dragged along it; its middle, dragged, moves it across the view with the mouse. Any joint moves,
   with all on it; a hand or foot bends its arm or leg to follow, and the hips move all of it.
-- **Size**: a handle along each axis, dragged out to make it bigger that way (in to make it smaller); its middle, dragged right or up,
+- **Scale**: a handle along each axis, dragged out to make it bigger that way (in to make it smaller); its middle, dragged right or up,
   bigger all over.
 
 The picture has a **floor grid**, as Blender's (the user's word, 2026-11-22: "a direction grid like blender"; `floor_grid`): on the
@@ -449,14 +449,20 @@ fitted to how tall the model looks from the view's tilt, its middle in the pictu
 straight above or below), so an arrow or ring can be had from any side (the pictures' Turn sliders went: right-drag does it). A change
 is made to the key picked if it's the joint's and covers the frame shown, else to a key at the frame shown, fading either side; a bar
 picked (every frame: a blue one every move in the game, a green one, from before, its whole move) takes the change, and the joint's
-heading says so ("Head, all moves"). Right-click a key for **In all moves** (the keys picked made every move's in the game, a blue bar)
-or, on a blue bar, **Just this move** (held all through the move shown); the user's word, 2026-11-22: All moves as a box was a mode
+heading says so ("Head, all animations"). Right-click a key for **In all animations** (the keys picked made every move's in the game, a blue bar)
+or, on a blue bar, **Just this animation** (held all through the move shown); the user's word, 2026-11-22: All moves as a box was a mode
 easily left on, so it's what a key's made into now (`keys_all_moves`; a change to every move makes them all its own). Under the joint's name, its values set
-it exactly: **Turn**, **Move** and **Size** rows of X, Y and Z, each field tinted its axis's colour as Blender's (`xyz_row`; X tips it
+it exactly: **Rotate**, **Move** and **Scale** rows of X, Y and Z, each field tinted its axis's colour as Blender's (`xyz_row`; X tips it
 forward, Y leans it to its left, Z turns it to its right; to its left, to its back, up; wider, deeper, taller, 1 as it is: each
-field's tooltip says it); **Reset joint** and **Reset move**, then the history. (Cut, as doing what's done elsewhere, the user's word,
+field's tooltip says it); **Reset bone** and **Reset animation**, then the history. (Cut, as doing what's done elsewhere, the user's word,
 2026-11-22, "less is more": the panel's Frames row, its Mirror button, its Undo and Redo buttons and its list of keys; the timeline,
 X-Mirror, Paste mirrored, Ctrl+Z and Ctrl+Y and the history do them.)
+
+**The tool's words** (the user's word, 2026-11-22: "clean up terminology across the entire tool. moves does not make much sense"):
+an **animation** is what the game plays (BREATHE, RUN ...; the game's code, KitGames and hero.json's "move" still say move), a **bone**
+is what's posed (its dot at its joint; **joints** only where the model's page places its dots to rig it), a **key** a change at frames,
+**Rotate**, **Move** and **Scale** what the gizmo and the values do (as Blender's: moving is only a bone's sliding), and **Fade** and
+**Blend** how a key comes and goes. The history's steps say the same: Rotated, Moved, Scaled, Stretched, Deleted, Pasted, Faded.
 
 The tool says as little as it can (the user's word, 2026-11-22: "its very wordy for a visual tool"): a word or two for a control,
 what it does in its tooltip, one (?) (the animation's controls card), short messages on the top bar, and no paragraphs; the right's
@@ -499,7 +505,7 @@ its model) change, not while something's dragged (`clip_scan`). On Bobby: BREATH
 head-dips put his jaw into his chest, and the mallet's ATTACK its handle through the back of his head, both found. Drag a diamond (a held
 key by its bar) to move it to other frames. To hold one over more frames or fewer: drag a held key's end, or a picked key's grips
 (the white bars either side), or Shift and drag a key the way it's to go. Right-click a key for **Copy**, **Paste**, **Paste
-mirrored**, **Fade**, **Stretch to end**, **Stretch to start**, **Stretch to whole move**, **Single frame** and **Delete** (or press
+mirrored**, **Fade**, **Stretch to end**, **Stretch to start**, **Stretch to whole animation**, **Single frame** and **Delete** (or press
 Delete). A change made at any
 frame it's held over is made to it (`adj_key`), so its head made bigger anywhere there is bigger all the way. The fade picked
 (**Fade**: its frames, its curve: Smooth, Steady, Slow start, Slow finish, Sudden, Overshoot, Bounce, Wobble, and **Blend**: into

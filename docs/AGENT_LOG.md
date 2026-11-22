@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's words made one set (the user: "moves does not make much sense"): animation (not move), bone while
+  posing (joints only on the model's page), Rotate / Move / Scale as Blender's, Edit pose, Reset bone and Reset animation, In all
+  animations, and history steps to match. Only what's shown changed; the code and hero.json keep "move". HERO_PACKS.md, The tool's words.
+
 - 2026-11-22: the hero tool's All moves box went (a mode easily left on): a key's right-click puts it **In all moves** (a blue bar) or
   a blue bar **Just this move**; a change goes to the key picked if it covers the frame, else the frame, and the joint's heading says
   "all moves" when it's a bar. Checked against the game both ways.
