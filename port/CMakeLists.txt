@@ -139,6 +139,9 @@ if(ANDROID)
   set_target_properties(crashbash PROPERTIES OUTPUT_NAME main)
 else()
   add_executable(crashbash ${PORT_SOURCES} $<TARGET_OBJECTS:game>)
+  # the example mods in the build's mods folder, as the downloads have them (package.mjs): Bobby, the hero packs' example
+  add_custom_command(TARGET crashbash POST_BUILD COMMAND "${CMAKE_COMMAND}" -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/mods/bobby" "$<TARGET_FILE_DIR:crashbash>/mods/bobby")
 endif()
 # The Windows program's own icon, a drawn one (platform/crashbash.rc)
 if(WIN32)

@@ -33,7 +33,11 @@ javac -nowarn -encoding UTF-8 -source 8 -target 8 -Xlint:-options -bootclasspath
 "$ANDROID_BUILD_TOOLS/aapt2" compile --dir port/android/res -o $OUT/res.zip
 "$ANDROID_BUILD_TOOLS/aapt2" link -o $OUT/unsigned.apk -I "$ANDROID_PLATFORM_JAR" --manifest port/android/AndroidManifest.xml \
     --min-sdk-version $ANDROID_MIN_SDK --target-sdk-version $TARGET_SDK --version-code $CODE --version-name $VERSION $OUT/res.zip
-(cd $OUT/apk && zip -qr ../unsigned.apk classes.dex lib)
+# the example mods, as zips in the APK's assets, put in the mods folder the first time the game makes it (platform/mods.c)
+mkdir -p $OUT/apk/assets
+rm -f $OUT/apk/assets/bobby.zip
+(cd port/mods && zip -qr -X "$OLDPWD/$OUT/apk/assets/bobby.zip" bobby)
+(cd $OUT/apk && zip -qr ../unsigned.apk classes.dex lib assets)
 "$ANDROID_BUILD_TOOLS/zipalign" -f -P 16 4 $OUT/unsigned.apk $OUT/aligned.apk
 
 if [ -n "$ANDROID_KEYSTORE" ]; then

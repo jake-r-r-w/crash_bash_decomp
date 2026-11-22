@@ -185,7 +185,9 @@ What's Android's own:
   run's to `log.txt`; The log).
   The game makes `discs/` and `mods/` itself at startup: Android doesn't let an app look in a folder something else made in its own
   storage (one adb made was "No such directory" to it), though it can read the files in it. Saves and settings are in the app's private
-  storage.
+  storage. The example mods (Bobby, HERO_PACKS.md) are zips in the APK's assets (`android/build.sh`), put in `mods/` once
+  (`examples_given` in settings.ini; an update from before them too), so one taken out stays out; the Windows and Linux downloads have
+  them in their `mods/` (`package.mjs`), and a build's own folder gets them after each build (CMakeLists.txt).
 - The first run asks for the disc image with Android's file chooser: the .bin, or an .iso (a .cue's .bin can't be found from it there).
 - WIDESCREEN is on by default, so a phone held sideways is filled (the user's word, 2026-11-09).
 - On-screen buttons (`platform/touch.c`), drawn over the picture on the window itself, so never in a test run's shots: a d-pad, the face

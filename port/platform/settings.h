@@ -34,6 +34,7 @@ typedef struct Settings {
        them, and stereo or mono. Offline they're the game's, kept in its saves */
     int online_music, online_sfx, online_stereo;
     int buttons_apart; /* the touch buttons in a part of the screen of their own, not over the picture (touch.c): Android's menus have it */
+    int examples_given; /* Android: the example mods (Bobby) put in its mods folder once, from the APK (mods.c), so one taken out stays out */
     int button_prompts; /* the face buttons' pictures: PROMPTS_AUTO, by player 1's last press, or always one (prompts.h) */
     int stick_deadzone; /* how far out a stick has to go to count, in percent: 0 is the game's own (controls.c, controls_stick) */
     int keys[NUM_CONTROLS];    /* each game button's key, an SDL scancode (controls.h) */
