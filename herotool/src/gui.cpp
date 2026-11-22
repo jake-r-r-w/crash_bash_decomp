@@ -376,6 +376,9 @@ struct Tool {
     // mouse card open, a short message over the picture (toast) and the time it was said, the status last made one, whether anything's
     // changed since it was saved, and each game's picture in the strip of them (a still of its first animation)
     bool bones = true, help = false, unsaved = false;
+    // the strip of games under the top bar shown (the user's word, 2026-11-22: "add a button to hide the top bar as a toggle"; kept for
+    // next time, strip.txt beside the sounds')
+    bool strip_shown = true;
     char toast[400] = "", toasted[2400] = "";
     double toast_at = -10;
     View strip[PACK_KINDS], face_view;
@@ -418,7 +421,7 @@ float ease_to(ImGuiID id, float to, float rate = 14) {
 enum {
     IC_BACK, IC_UNDO, IC_REDO, IC_SOUND, IC_MUTE, IC_GRID, IC_PLAY, IC_PAUSE, IC_PREV, IC_NEXT, IC_EYE, IC_EYE_OFF, IC_BONES,
     IC_ROTATE, IC_MOVE, IC_SCALE, IC_MIRROR, IC_ONION, IC_CLIP, IC_GAMEPAD, IC_HISTORY, IC_DOWN, IC_PERSON, IC_CUBE, IC_FOLDER,
-    IC_REFRESH, IC_CHECK, IC_SPARK, IC_CURSOR, IC_RIGHT, IC_CAMERA, IC_NONE = -1
+    IC_REFRESH, IC_CHECK, IC_SPARK, IC_CURSOR, IC_RIGHT, IC_CAMERA, IC_UP, IC_NONE = -1
 };
 
 // An icon, as the mocks' line icons: drawn in a 24-square (as an SVG's), s across, about c
@@ -443,6 +446,7 @@ void icon(ImDrawList *dl, int which, ImVec2 c, float s, ImU32 col) {
     case IC_BACK: poly({ 15, 18, 9, 12, 15, 6 }); break;
     case IC_RIGHT: poly({ 9, 6, 15, 12, 9, 18 }); break;
     case IC_DOWN: poly({ 6, 9, 12, 15, 18, 9 }); break;
+    case IC_UP: poly({ 6, 15, 12, 9, 18, 15 }); break;
     case IC_UNDO: poly({ 9, 14, 4, 9, 9, 4 }); L(4, 9, 14, 9); arc(14, 15, 6, -90, 90); L(14, 21, 11, 21); break;
     case IC_REDO: poly({ 15, 14, 20, 9, 15, 4 }); L(20, 9, 10, 9); arc(10, 15, 6, 270, 90); L(10, 21, 13, 21); break;
     case IC_SOUND:
@@ -4046,6 +4050,32 @@ void sound_load() {
     }
 }
 
+// The strip of games shown or not, kept for next time (strip.txt beside the sounds'); a test's folder has its own
+void strip_keep(const Tool &T) {
+    char *pref = pref_path(), path[1100];
+    if (pref == nullptr) {
+        return;
+    }
+    snprintf(path, sizeof(path), "%sstrip.txt", pref);
+    SDL_free(pref);
+    SDL_SaveFile(path, T.strip_shown ? "on\n" : "off\n", T.strip_shown ? 3 : 4);
+}
+
+void strip_load(Tool &T) {
+    char *pref = pref_path(), path[1100];
+    size_t n = 0;
+    if (pref == nullptr) {
+        return;
+    }
+    snprintf(path, sizeof(path), "%sstrip.txt", pref);
+    SDL_free(pref);
+    char *text = (char *)SDL_LoadFile(path, &n);
+    if (text != nullptr) {
+        T.strip_shown = strncmp(text, "off", 3) != 0;
+        SDL_free(text);
+    }
+}
+
 // To a page: a game's (a kind), the hero's own (PAGE_MODEL) or every game's (PAGE_ALL)
 void go_page(Tool &T, int page) {
     if (page == T.page) {
@@ -4082,6 +4112,35 @@ void top_bar(Tool &T) {
         go_page(T, all ? (T.have_made[T.kind] ? T.kind : PAGE_MODEL) : PAGE_ALL);
     }
     ImGui::SetItemTooltip("All games at a glance");
+    // the strip of games shown or hidden (more room for the picture); hidden, a menu of the pages in its place, named for the one shown
+    ImGui::SameLine(0, U(10));
+    mid(U(36));
+    if (button("##strip", T.strip_shown ? CARD : PERI, T.strip_shown ? INK : PERI_INK, U(36), T.strip_shown ? IC_UP : IC_DOWN,
+               T.strip_shown ? CUE_HIDE : CUE_SHOW, U(36))) {
+        T.strip_shown = !T.strip_shown;
+        strip_keep(T);
+    }
+    ImGui::SetItemTooltip(T.strip_shown ? "Hide the games (more room)" : "Show the games");
+    if (!T.strip_shown) {
+        ImGui::SameLine(0, U(10));
+        mid(ImGui::GetFrameHeight());
+        const char *shown = T.page == PAGE_MODEL ? "Your hero" : T.page == PAGE_ALL ? "All games" : KindChip[T.page];
+        if (menu_begin("##pages", shown, U(170))) {
+            if (menu_item("Your hero", T.page == PAGE_MODEL)) {
+                go_page(T, PAGE_MODEL);
+            }
+            if (menu_item("All games", T.page == PAGE_ALL)) {
+                go_page(T, PAGE_ALL);
+            }
+            for (int k = 0; k < PACK_KINDS; k++) {
+                if (menu_item(KindChip[k], T.page == k)) {
+                    go_page(T, k);
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::SetItemTooltip("The page shown: Your hero, All games or a game");
+    }
     ImGui::SameLine(0, U(10));
     mid(U(28));
     bool busy = T.maker != nullptr, stale = T.dirty && T.made_asked, warn = busy || stale || T.unsaved;
@@ -5984,7 +6043,11 @@ void editor_window(Tool &T, SDL_Window *win) {
                                        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoBringToFrontOnFocus);
     ImGui::PopStyleVar();
     top_bar(T);
-    games_strip(T);
+    if (T.strip_shown) {
+        games_strip(T);
+    } else {
+        ImGui::Dummy(ImVec2(0, U(4)));
+    }
     if (T.page == PAGE_MODEL) {
         model_page(T, win);
     } else if (T.page == PAGE_ALL) {
@@ -6132,6 +6195,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     if (SDL_getenv("HEROTOOL_SHOT") == nullptr && SDL_getenv("HEROTOOL_SAVE_TO") == nullptr && SDL_getenv("HEROTOOL_LIVE") == nullptr) {
         sound_init();
         sound_load();
+    }
+    strip_load(T);
+    /* a test's: HEROTOOL_NOSTRIP=1 hides the strip of games */
+    if (SDL_getenv("HEROTOOL_NOSTRIP") != nullptr) {
+        T.strip_shown = false;
     }
     ImGui_ImplSDL3_InitForSDLRenderer(win, ren);
     ImGui_ImplSDLRenderer3_Init(ren);

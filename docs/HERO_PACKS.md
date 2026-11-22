@@ -309,7 +309,9 @@ date or Making..., then undo, redo, sounds on or off, **Preview in GAME** with a
 picked, Polar Push 18, Pogo Painter 10, Ballistix 14, Tank Wars 6, Crash Dash 23, Splash Dash 25, Mallet Mash 29, Dragon Drop 28, Keg
 Kaboom 30, the podium 43; the user's word, 2026-11-22, "preview in x should changed based on what is open"), and **Save**), the **strip** of
 games under it (**Your hero** first, then each game as a chip with the hero in it, a still of its first animation; the page shown
-periwinkle and lifted), and the page. **Your hero** is the model's own page: its picture (**Joints**, the dots to place on its front
+periwinkle and lifted), and the page. The chevron beside All games hides the strip for more room (the user's word, 2026-11-22: "add a
+button to hide the top bar as a toggle"), a menu named for the page shown in its place to go to another; kept for next time
+(`strip.txt` in the tool's folder; `HEROTOOL_NOSTRIP=1` hides it for a test). **Your hero** is the model's own page: its picture (**Joints**, the dots to place on its front
 and side, or **Preview**, the tool's own moves on it; Joints only for a model without a rig), under it its **Card** and **Sounds** (a WAV for each, played with its
 button; else its base's), and on the right its **Model** (Open, Guess joints, Mirror, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
 id, height, **Based on**: its template and whose place it takes, one choice) and **Mod** (its author, the folders) cards.
