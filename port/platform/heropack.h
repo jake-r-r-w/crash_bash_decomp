@@ -36,6 +36,21 @@ typedef struct {
                                      * (1 Crash to 8 Rilla Roo; PackInfo.template_hero if 0): docs/HERO_PACKS.md, Templates */
 } PackKind;
 
+/* A change to its pose in a game's move, on top of what the game makes of it there (hero.json's "adjust", made with the hero tool's
+ * animation tools: docs/HERO_PACKS.md, Adjusting its moves; platform/heroadjust.c applies them). Its turns and moves are about the
+ * hero's own axes as it stands at rest, in the game's: x across (to its left), y down, z to its back. Several at a frame add up. */
+#define PACK_MAX_ADJUSTS 256
+#define PACK_ADJUST_NAME 32
+typedef struct {
+    int kind;                       /* PACK_KINDS' */
+    char move[PACK_ADJUST_NAME];    /* the move of its model of that kind, as the game made it (the tool's list), or "*" every one */
+    char bone[PACK_ADJUST_NAME];    /* its bone, by name (hips, chest, upperarm_l ...: the hero tool's) */
+    int at;                         /* the frame of that move it's at, or -1 for every frame */
+    int spread;                     /* the frames either side it fades out over (0: that frame alone) */
+    float turn[3];                  /* that bone and all on it turned about those axes (degrees, a turn's axis times its angle) */
+    float reach[3];                 /* moved (the game's units): a hand or foot, its arm or leg bent to it; the hips, all of it */
+} PackAdjust;
+
 typedef struct {
     char name[PACK_NAME];      /* in the game's capitals */
     char id[PACK_NAME];
@@ -50,6 +65,8 @@ typedef struct {
     char face[PACK_ANIM_NAME]; /* the clip its face is drawn from if it has no card */
     float face_turn;
     float face_head;           /* the share of its model, from the top, that's its head, for that face (0: the game's own share) */
+    PackAdjust adjust[PACK_MAX_ADJUSTS]; /* its moves adjusted ("adjust") */
+    int nadjust;
 } PackInfo;
 
 /* Its sounds: a file for each job the game has a hero's sound do (voice_<job>.wav, PackVoiceJobs), and for each of its base's 26

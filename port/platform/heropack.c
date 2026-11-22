@@ -351,6 +351,39 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             pk->nstands++;
         }
     }
+    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "spread", "turn": [x, y, z], "reach": [x, y, z]}] */
+    {
+        const JVal *list = jget(root, "adjust"), *a;
+        int i;
+
+        for (i = 0; (a = jat(list, i)) != NULL && out->nadjust < PACK_MAX_ADJUSTS; i++) {
+            PackAdjust *d = &out->adjust[out->nadjust];
+            const JVal *turn = jget(a, "turn"), *reach = jget(a, "reach");
+            const char *move = jstr(jget(a, "move")), *bone = jstr(jget(a, "bone"));
+            int j;
+
+            memset(d, 0, sizeof(*d));
+            d->kind = pack_kind_named(jstr(jget(a, "kind")));
+            if (d->kind < 0 || move == NULL || bone == NULL) {
+                continue;
+            }
+            SDL_strlcpy(d->move, move, sizeof(d->move));
+            SDL_strlcpy(d->bone, bone, sizeof(d->bone));
+            d->at = jint(jget(a, "at"), -1);
+            d->at = d->at < -1 ? -1 : d->at;
+            d->spread = jint(jget(a, "spread"), 0);
+            d->spread = d->spread < 0 ? 0 : d->spread > 200 ? 200 : d->spread;
+            for (j = 0; j < 3; j++) {
+                const JVal *t = jat(turn, j), *r = jat(reach, j);
+
+                d->turn[j] = t != NULL && t->type == J_NUMBER ? (float)t->number : 0;
+                d->reach[j] = r != NULL && r->type == J_NUMBER ? (float)r->number : 0;
+                d->turn[j] = d->turn[j] < -360 ? -360 : d->turn[j] > 360 ? 360 : d->turn[j];
+                d->reach[j] = d->reach[j] < -1000 ? -1000 : d->reach[j] > 1000 ? 1000 : d->reach[j];
+            }
+            out->nadjust++;
+        }
+    }
     /* every offset not said, but those it says */
     for (k = 0; k < PACK_SOUNDS; k++) {
         out->voices[k] = PACK_VOICE_UNSAID;

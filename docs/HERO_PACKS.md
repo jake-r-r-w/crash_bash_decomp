@@ -65,6 +65,8 @@ one's.
 - `voices`: each of its base's 26 sound offsets (EXTRA_HEROES.md, His sounds): a job (`"1": "laugh"`), `base` or `none`. An offset
   it doesn't name plays the job it does for the game's own heroes if the pack has that job's sound (0 name, 1 and 6 and 24 laugh, 2 to
   5 yelp, 11, 13 and 21 jump, 12 thud, 15 throw), else its base's.
+- `adjust`: its moves adjusted by hand (Adjusting its moves, below), each `{"kind", "move", "bone", "at", "spread", "turn": [x, y,
+  z], "reach": [x, y, z]}`.
 
 ### hero.glb
 
@@ -316,3 +318,46 @@ Checked: Bobby's model with its markers, and his first, shapes-built model with 
 markers, each four of him in Crate Crush.
 
 A model with no markers and no rig starts from the guess (`kit_guess_markers`, above), to drag where they belong.
+
+## Adjusting its moves
+
+The user's word (2026-11-22): "a full animation tool suite so that we can adjust the animation for the hero to fix issues like
+clipping". What the game makes of a pack in a game (following its template there, or its own clip) can be changed by hand, a joint
+at a time, and the change is kept in its hero.json (`adjust`) and made by the game as it makes the model.
+
+**A change** (`PackAdjust`, heropack.h) is to one bone in one game's move (`"move"`, the model's move as the game made it, the
+tool's list; `"*"` every move of that game): at one frame (`"at"`), all of it there and fading to none over `"spread"` frames each
+side (a cosine), or without `"at"` at every frame. Several at a frame add up. Its `turn` turns the bone and all on it about its joint
+(degrees about the hero's own axes as it stands at rest, in the game's: x to its left, y down, z to its back; an axis times its
+angle); its `reach` (the game's units, the same axes) moves a hand or foot, its arm or leg bent to reach it (two-bone, its elbow or
+knee bent the way it was), or the hips, all of it. They're made in that order: the hips' reach, the turns (those nearest the hips
+first), the hands' and feet's reach. A hand that carries something (the mallet, the keg) takes it with it.
+
+**One code for both** (`port/platform/heroadjust.c`, built into the game and the tool): `pack_adjust_pose` makes a pose's changes
+(each bone's joint and turn from rest, in the game's axes), and `pack_skin_posed` skins the mesh to it, with the tank's and race
+cart's cut. Every way the game poses a pack goes through `pose_finish` (packfollow.c): following its template (`frame_at`), its own
+clips in a game (`own_frame`) and on foot (`pack_follow_clip_frame`, packheroes.c's `foot_frame`; on foot it's bound by
+`pack_follow_foot_bind` where it follows no template there). The podium is made from its moves on foot, so it has their changes.
+Crash's polar bear is the one model it can't change: its rider is sat on the bear by `ride_make`, not posed (another hero's bear,
+its prop, can be).
+
+**What the tool makes it from**: with `--dump-hero` the game writes each kind's poses beside its model, `ID_KIND.pose` (HPP1,
+`pose_dump_begin`): the skeleton, the mesh as it rests at its size there and each frame's pose before its changes, with the frame's
+trunk turn and how it moves with what it rides. The tool's preview is exported without the changes (`Tool.bare`) and makes them
+itself on those poses, as the game would, so a change shows as it's made, with no waiting for the game. Checked: the tool's frame
+and the game's (from hero.json with the same change) the same to a unit, on the pogo, the tank, the mallet (its carrying hand) and
+on foot (an own clip).
+
+**In the tool**, each game's page has **Adjust its moves**: **Show its joints, to adjust it** puts a dot on every joint over the
+picture (squares for the hips, hands and feet), stops the move, and a timeline goes under it (play or stop, the frame, a mark at each
+change, the change before and after). Click a joint to pick it, then drag: a hand, foot or the hips moves with the mouse across the
+view (the arm or leg bending to follow); from any other joint, the drag says which way what's on it points (aimed: its end, the joints
+on it, turned to the mouse about the line towards whoever's looking; Shift turns it as far as the mouse goes round it). The right
+mouse button turns the view, so a drag from the side moves it forward or back. A change is made to **this frame** (fading over the
+frames picked), **the whole move**, or **every move here**. The picked joint's values set it exactly (tip forward, turn to its right,
+lean to its left; and to its left, up, forward for what moves); **Mirror to its other side** gives its changes in this move to its
+other side the other way round; **Reset this joint**, **Reset this move**, **Undo**, **Redo**, and the list of its changes in the move
+(picking one goes to it). Keys: Space plays, the arrows step a frame, Ctrl+Z, Ctrl+Y (or Ctrl+Shift+Z). Up to 256 changes a hero.
+Its tests' settings: `HEROTOOL_ADJUST=BONE@FRAME` adjusts the page shown once it's made, that bone picked there;
+`HEROTOOL_ADJUST_TURN` / `_REACH=X,Y,Z` changes it; `HEROTOOL_DRAG=X0,Y0,X1,Y1[,1]` drags the mouse in the window (Shift with 1);
+`HEROTOOL_LIVE=FILE` writes the frame shown as the tool made it (s16 x, y, z a vertex), to set beside the game's.

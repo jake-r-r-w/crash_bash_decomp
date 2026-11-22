@@ -117,6 +117,8 @@ typedef struct {
     float face_head;
     const char *voice[PACK_VOICE_JOBS]; /* each job's sound (PackVoiceJobs: name, laugh, yelp, ...), a WAV, or NULL for its base's */
     const char *card;                   /* its card in the character select, a PNG, or NULL for its face drawn from it */
+    const PackAdjust *adjust;           /* its moves adjusted in the games (hero.json's "adjust": the animation tools) */
+    int nadjust;
 } KitPack;
 int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, size_t why_size);
 /* rig.c: the markers as a JSON file kit_markers reads, and a first guess at them from the model's shape (a standing humanoid's
@@ -149,6 +151,29 @@ typedef struct {
 } KitMade;
 int kit_made_read(const char *path, KitMade *m);
 void kit_made_free(KitMade *m);
+/* pose.c: what a kind's model is made of, as --dump-hero writes it beside it (port/game/main/packfollow.c, pose_dump_begin): its
+ * skeleton, its mesh as it rests at its size there and each frame's pose before its adjustments, so the animation tools can make it
+ * again as they're changed (port/platform/heroadjust.c, as the game does) */
+#define KIT_POSE_HEAD 24 /* a frame's floats before its bones': hips 3, trunk 9, its move A 9 and b 3 (out = A at + b) */
+typedef struct {
+    char name[32];
+    int frames;
+    float *pose; /* frames x (KIT_POSE_HEAD + bones x 12): each bone's joint (3) and turn (9, row-major) after the head */
+} KitPoseAnim;
+typedef struct {
+    int nbones, nvert, nprop, hand, cut;
+    char (*names)[48];
+    int *parent;
+    float *bone;          /* 3 a bone, its joint as it rests */
+    signed char *part;    /* each bone's part: 1 a leg's, 2 the tail's, 3 an arm's */
+    float *rest;          /* 3 a vertex */
+    unsigned char *joint; /* 4 a vertex */
+    float *weight;        /* 4 a vertex */
+    KitPoseAnim *anims;
+    int nanims;
+} KitPose;
+int kit_pose_read(const char *path, KitPose *p);
+void kit_pose_free(KitPose *p);
 /* gui.cpp: the window, a model to open, the mods folder to write to and the game to test in (each NULL for none, or beside it) */
 int kit_gui(const char *model, const char *mods, const char *game);
 

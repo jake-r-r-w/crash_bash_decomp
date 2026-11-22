@@ -19,8 +19,10 @@
 #include "bash/modelbank.h"
 #include "bash/herodef.h"
 #include "bash/heromake.h"
+#include "bash/bonusheroes.h"
 #include "bash/packtemplate.h"
 #include "../../platform/heropack.h"
+#include "../../platform/heroadjust.h"
 
 #define FOLLOW_PART_MAX 128
 #define FOLLOW_CORNERS 1024
@@ -664,7 +666,23 @@ typedef struct {
     V3 feet_ref[2];
     V3 head_mid;                 /* its head (all of it above its shoulders but its arms) as a ball as it rests, that what it carries */
     float head_r;                /* is turned out of */
+    PackBones bones;             /* its skeleton's names and parents, for its adjustments (heroadjust.c) */
+    s32 adj_kind, adj_frame;     /* the kind, move and frame being made, which its adjustments are for */
+    const char *adj_move;
+    FILE *rec;                   /* where each frame's pose is written before it's adjusted (pose_dump_begin), or NULL, */
+    s32 recorded;                /* and how many have been, */
+    char rec_path[600];          /* to what */
+    const char *id;
 } Packed;
+
+/* Its moves adjusted (hero.json's "adjust": pack_follow_adjusts) */
+static const PackAdjust *Adjusts;
+static s32 NAdjusts;
+
+void pack_follow_adjusts(const PackAdjust *adj, s32 n) {
+    Adjusts = adj;
+    NAdjusts = n;
+}
 
 static Packed ThePack;
 
@@ -704,32 +722,32 @@ static void bear_fill_at(const Packed *p, const Moved *mv, const V3 *L, V3 *out)
 /* A move of its own clip (KIND/MOVE in its glTF) in place of the one it follows: its skeleton posed by that clip, across the length of
  * the move it's in place of, its hips on the followed hero's hips, at its size on the prop; the prop still as the followed hero's
  * move has it, or in its own hand where it carries it (docs/HERO_PACKS.md, Templates) */
+static void pose_finish(Packed *p, const Moved *mv, V3 hips_at, s32 cut, const Mat *trunk, V3 *P, Mat *Q, V3 *out, s32 hand,
+                        Mat *hand_turn, V3 *hand_was);
+static void pose_from_world(const Packed *p, const float (*world)[16], V3 anchor, float scale, V3 *P, Mat *Q);
+
 static void own_frame(Packed *p, s32 a, float f, const Moved *mv, V3 hips_at, const V3 *L, V3 *out) {
     static PackTrs local[PACK_MAX_BONES];
-    static float world[PACK_MAX_BONES][16], skinned[PF_MAX_VERTS * 3];
+    static float world[PACK_MAX_BONES][16];
+    static V3 P[PACK_MAX_BONES];
+    static Mat Q[PACK_MAX_BONES];
     const Follow *c = &p->c;
-    const PackClip *clip = &p->pm->clips[p->own[a]];
-    s32 frames = c->anims[a].frames, k, hb = p->pb[PB_HIPS];
-    float t = frames > 1 ? clip->length * f / (float)(frames - 1) : 0;
-    V3 hips;
+    const FollowKind *fk = c->kind;
+    s32 frames = c->anims[a].frames, k, ci = fk->carry - 1, hand = fk->carry ? p->pb[ci == 1 ? PB_HAND_L : PB_HAND_R] : -1;
+    float t = frames > 1 ? p->pm->clips[p->own[a]].length * f / (float)(frames - 1) : 0;
+    Mat trunk, hand_turn;
+    V3 hand_was;
 
     pack_pose_local(p->pm, p->own[a], t, local);
     pack_pose_world(p->pm, local, world);
-    pack_skin(p->pm, (const float(*)[16])world, skinned);
-    hips = v3(world[hb][12] * p->k, -(world[hb][13] - p->ground) * p->k, -world[hb][14] * p->k);
-    for (k = 0; k < p->n; k++) {
-        V3 at = v3(skinned[k * 3] * p->k, -(skinned[k * 3 + 1] - p->ground) * p->k, -skinned[k * 3 + 2] * p->k);
-
-        out[k] = hm_moved(mv, vadd(hips_at, vmul(vsub(at, hips), p->scale)));
-    }
-    if (c->kind->carry) {
-        s32 ci = c->kind->carry - 1, hand = p->pb[ci == 1 ? PB_HAND_R : PB_HAND_L];
+    pose_from_world(p, (const float(*)[16])world, hips_at, p->scale, P, Q);
+    trunk = Q[p->pb[PB_HIPS]];
+    pose_finish(p, mv, hips_at, fk->cut > 0, &trunk, P, Q, out, hand, &hand_turn, &hand_was);
+    if (fk->carry) {
         V3 Hd = mid_of(L, c->hand[ci], c->nhand[ci]);
-        V3 at = v3(world[hand][12] * p->k, -(world[hand][13] - p->ground) * p->k, -world[hand][14] * p->k);
 
-        at = vadd(hips_at, vmul(vsub(at, hips), p->scale));
         for (k = 0; k < c->prop.nvert; k++) {
-            out[p->n + k] = hm_moved(mv, vadd(at, vsub(L[c->prop.corner_of[k]], Hd)));
+            out[p->n + k] = hm_moved(mv, vadd(P[hand], mat_apply(&hand_turn, vsub(L[c->prop.corner_of[k]], Hd))));
         }
         return;
     }
@@ -742,8 +760,6 @@ static void own_frame(Packed *p, s32 a, float f, const Moved *mv, V3 hips_at, co
 static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out);
 static s32 pack_points_at(void *ctx, s32 a, s32 f, FlagPoint *out, s32 max);
 
-/* How far either side of its hips what's below a hatch is drawn in to (the game's units), so it stays down inside the tank */
-#define HATCH_HALF 55.0f
 /* How much of its legs' length its hips are kept within of the pegs (a little bend left at the knee) */
 #define PEG_REACH 0.95f
 /* How much of a trunk's lean past its kind's lean is kept */
@@ -819,6 +835,158 @@ static Mat carry_clear(const Packed *p, const Follow *c, const V3 *L, V3 Hd, V3 
         }
     }
     return turn;
+}
+
+/* --- a pose finished: recorded for the hero tool, adjusted, and its mesh skinned to it --- */
+
+/* A frame's pose before its adjustments, for the hero tool (pose_dump_begin): its hips (hips_at), its trunk's turn, how it moves with
+ * what it rides (mv, as out = A at + b, A row-major), and each bone's joint and turn */
+static void pose_record(Packed *p, const Moved *mv, V3 hips_at, const Mat *trunk, const V3 *P, const Mat *Q) {
+    float A[9];
+    V3 o;
+    s32 i;
+
+    if (p->rec == NULL) {
+        return;
+    }
+    o = hm_moved(mv, v3(0, 0, 0));
+    for (i = 0; i < 3; i++) {
+        V3 e = vsub(hm_moved(mv, v3(i == 0, i == 1, i == 2)), o);
+
+        A[i] = e.x, A[3 + i] = e.y, A[6 + i] = e.z;
+    }
+    fwrite(&hips_at, sizeof(float), 3, p->rec);
+    fwrite(trunk->m, sizeof(float), 9, p->rec);
+    fwrite(A, sizeof(float), 9, p->rec);
+    fwrite(&o, sizeof(float), 3, p->rec);
+    for (i = 0; i < p->pm->nbones; i++) {
+        fwrite(&P[i], sizeof(float), 3, p->rec);
+        fwrite(Q[i].m, sizeof(float), 9, p->rec);
+    }
+    p->recorded++;
+}
+
+/* A pose made (each bone's joint P and turn Q, its trunk's turn trunk): recorded for the hero tool, adjusted (its "adjust", heroadjust.c),
+ * and its mesh skinned to it (cut where it sits in something) and moved with what it rides (mv) into out. hand: the hand that carries
+ * something (-1 none), whose turn by its adjustments, and where it was before them, are handed back for what it carries */
+static void pose_finish(Packed *p, const Moved *mv, V3 hips_at, s32 cut, const Mat *trunk, V3 *P, Mat *Q, V3 *out, s32 hand,
+                        Mat *hand_turn, V3 *hand_was) {
+    static float S[PF_MAX_VERTS * 3];
+    PackSkin sk;
+    Mat was;
+    s32 k, i, j;
+
+    pose_record(p, mv, hips_at, trunk, P, Q);
+    if (hand >= 0) {
+        was = Q[hand];
+        *hand_was = P[hand];
+    }
+    pack_adjust_pose(Adjusts, NAdjusts, p->adj_kind, p->adj_move, p->adj_frame, &p->bones, &trunk->m[0][0], (float(*)[3])P,
+                     (float(*)[9])Q);
+    if (hand >= 0) {
+        Mat t;
+
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 3; j++) {
+                t.m[i][j] = was.m[j][i];
+            }
+        }
+        *hand_turn = mat_mul(&Q[hand], &t);
+    }
+    sk.nvert = p->n;
+    sk.rest = &p->rest[0].x;
+    sk.bone = &p->bone[0].x;
+    sk.joint = p->pm->joint;
+    sk.weight = p->pm->weight;
+    sk.part = p->lower;
+    pack_skin_posed(&sk, (const float(*)[3])P, (const float(*)[9])Q, &hips_at.x, cut, S);
+    for (k = 0; k < p->n; k++) {
+        out[k] = hm_moved(mv, v3(S[k * 3], S[k * 3 + 1], S[k * 3 + 2]));
+    }
+}
+
+/* A pose from glTF's world matrices (a clip's): each bone's joint in the game's axes and units, about anchor at scale (its hips
+ * there), and its turn from its rest (the game's axes are glTF's with y and z the other way: C R C) */
+static void pose_from_world(const Packed *p, const float (*world)[16], V3 anchor, float scale, V3 *P, Mat *Q) {
+    static const float C[3] = { 1, -1, -1 };
+    s32 hb = p->pb[PB_HIPS], b, i, j;
+    V3 hips = v3(world[hb][12] * p->k, -(world[hb][13] - p->ground) * p->k, -world[hb][14] * p->k);
+
+    for (b = 0; b < p->pm->nbones; b++) {
+        V3 at = v3(world[b][12] * p->k, -(world[b][13] - p->ground) * p->k, -world[b][14] * p->k);
+        float sk[16];
+
+        P[b] = vadd(anchor, vmul(vsub(at, hips), scale));
+        pack_mat_mul(world[b], p->pm->bones[b].rest_inv, sk);
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 3; j++) {
+                Q[b].m[i][j] = C[i] * C[j] * sk[j * 4 + i];
+            }
+        }
+    }
+}
+
+/* What a kind's model is made of, for the hero tool's animation tools (--dump-hero: FOLDER/ID_KIND.pose; docs/HERO_PACKS.md, Adjusting
+ * its moves), little-endian: "HPP1", u32 bones, u32 its vertices, u32 the prop's after them, s32 the bone of the hand that carries
+ * the prop (-1 none), s32 whether it's cut (in a tank's hatch or a race cart), u32 moves; each bone's name (48 bytes), s32 parent,
+ * f32 x 3 its joint as it rests, s32 its part (1 leg, 2 tail, 3 arm); each vertex's f32 x 3 as it rests, u8 x 4 bones, f32 x 4
+ * weights; each move's name (32 bytes) and u32 frames; then each frame of each move, its pose before its adjustments (pose_record):
+ * f32 x 3 hips, x 9 trunk, x 9 and x 3 its move (out = A at + b), and each bone's f32 x 3 joint and x 9 turn. */
+static s32 pose_dump_begin(Packed *p, s32 kind, s32 nprop, s32 hand, s32 cut, const MadeAnim *anims, s32 nanims) {
+    const char *folder = bonus_heroes_dump_folder();
+    char path[600], name[48];
+    u32 u[6];
+    s32 b, v, a;
+
+    if (folder == NULL || p->id == NULL) {
+        return 0;
+    }
+    snprintf(path, sizeof(path), "%s/%s_%s.pose", folder, p->id, pack_kind_name(kind));
+    if ((p->rec = fopen(path, "wb")) == NULL) {
+        return 0;
+    }
+    p->recorded = 0;
+    u[0] = (u32)p->pm->nbones, u[1] = (u32)p->n, u[2] = (u32)nprop, u[3] = (u32)hand, u[4] = (u32)cut, u[5] = (u32)nanims;
+    fwrite("HPP1", 1, 4, p->rec);
+    fwrite(u, 4, 6, p->rec);
+    for (b = 0; b < p->pm->nbones; b++) {
+        s32 part = p->lower[b], parent = p->pm->bones[b].parent;
+
+        memset(name, 0, sizeof(name));
+        snprintf(name, sizeof(name), "%s", p->pm->bones[b].name);
+        fwrite(name, 1, 48, p->rec);
+        fwrite(&parent, 4, 1, p->rec);
+        fwrite(&p->bone[b], sizeof(float), 3, p->rec);
+        fwrite(&part, 4, 1, p->rec);
+    }
+    for (v = 0; v < p->n; v++) {
+        fwrite(&p->rest[v], sizeof(float), 3, p->rec);
+        fwrite(&p->pm->joint[v * 4], 1, 4, p->rec);
+        fwrite(&p->pm->weight[v * 4], sizeof(float), 4, p->rec);
+    }
+    for (a = 0; a < nanims; a++) {
+        u32 frames = (u32)anims[a].frames;
+
+        memset(name, 0, sizeof(name));
+        snprintf(name, 32, "%s", anims[a].name);
+        fwrite(name, 1, 32, p->rec);
+        fwrite(&frames, 4, 1, p->rec);
+    }
+    snprintf(p->rec_path, sizeof(p->rec_path), "%s", path);
+    return 1;
+}
+
+/* The dump ended: kept if every frame was recorded (expected of them), else taken away */
+static void pose_dump_end(Packed *p, s32 expected) {
+    if (p->rec == NULL) {
+        return;
+    }
+    fclose(p->rec);
+    p->rec = NULL;
+    if (p->recorded != expected) {
+        printf("hero packs: %s's poses not written (%d frames of %d)\n", p->rec_path, p->recorded, expected);
+        remove(p->rec_path);
+    }
 }
 
 /* An arm (side 0 its left) reaching for target, its elbow bent towards hint */
@@ -1067,38 +1235,17 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
             P[k] = vadd(P[b], mat_apply(&Q[b], vsub(p->bone[k], p->bone[b])));
         }
     }
-    /* the mesh with its bones */
-    for (k = 0; k < p->n; k++) {
-        V3 s = { 0, 0, 0 };
-        float lower = 0, tail = 0, arm = 0;
+    /* its mesh with its bones, adjusted; what it carries goes with its hand */
+    {
+        s32 hand = fk->carry ? p->pb[fk->carry - 1 == 1 ? PB_HAND_L : PB_HAND_R] : -1;
+        Mat hand_turn;
+        V3 hand_was;
 
-        for (j = 0; j < 4; j++) {
-            s32 b = p->pm->joint[k * 4 + j];
-            float w = p->pm->weight[k * 4 + j];
-
-            if (w <= 0) {
-                continue;
-            }
-            s = vadd(s, vmul(vadd(P[b], mat_apply(&Q[b], vsub(p->rest[k], p->bone[b]))), w));
-            lower += p->lower[b] == 1 ? w : 0;
-            tail += p->lower[b] == 2 ? w : 0;
-            arm += p->lower[b] == 3 ? w : 0;
+        pose_finish(p, &mv, hips_at, fk->cut > 0, &R, P, Q, out, hand, &hand_turn, &hand_was);
+        if (hand >= 0) {
+            carry_at = vadd(P[hand], mat_apply(&hand_turn, vsub(carry_at, hand_was)));
+            carry_turn = mat_mul(&hand_turn, &carry_turn);
         }
-        /* in a tank's hatch or a race cart (the user's word, 2026-11-22: what's below showed through the tank, and then came to a
-           point; and its arms drawn in with it): its tail folded away into its hips, and its legs and all of it below its hips drawn in to the hatch's width where
-           they are, down inside what it sits in, so nothing above changes shape, nor its arms, wherever its hands are */
-        if (fk->cut > 0 && tail > 0.5f) {
-            s = vadd(hips_at, v3(0, 8, 0));
-        } else if (fk->cut > 0 && (lower > 0.5f || (arm < 0.5f && s.y > hips_at.y + 4))) {
-            float dx = s.x - hips_at.x, dz = s.z - hips_at.z, d = sqrtf(dx * dx + dz * dz);
-
-            if (d > HATCH_HALF) {
-                s.x = hips_at.x + dx * HATCH_HALF / d;
-                s.z = hips_at.z + dz * HATCH_HALF / d;
-            }
-            s.y = s.y > hips_at.y + 4 ? s.y : hips_at.y + 4;
-        }
-        out[k] = hm_moved(&mv, s);
     }
     /* the prop, as it moves; or in the pack's hand, where Crash carries it */
     if (fk->carry) {
@@ -1712,6 +1859,19 @@ static s32 pack_follow_one(Packed *p, const FollowKind *fk, const MadeFace *face
         mm.shared_colours = mm.nfaces * 3 * 2 > 0x1FFF;
     }
     ok = made_write(&mm, &out->tex[fk->kind], &out->tex_size[fk->kind], &out->mdl[fk->kind], &out->mdl_size[fk->kind]);
+    /* for the hero tool: each frame's pose (--dump-hero) */
+    if (ok && pose_dump_begin(p, fk->kind, c->prop.nvert, fk->carry ? p->pb[fk->carry - 1 == 1 ? PB_HAND_L : PB_HAND_R] : -1, fk->cut > 0,
+                              c->anims, fk->nmoves)) {
+        static V3 tmp[PF_MAX_VERTS + FOLLOW_CORNERS + 512];
+        s32 frames = 0;
+
+        for (i = 0; i < fk->nmoves; i++) {
+            for (k = 0; k < c->anims[i].frames; k++, frames++) {
+                pack_frame_at(p, i, k, tmp);
+            }
+        }
+        pose_dump_end(p, frames);
+    }
 done:
     free(all);
     free(imgs);
@@ -1722,6 +1882,11 @@ done:
 /* Its models of each kind where the game's heroes ride or hold something, followed as Crash's are (the top of this file): its rest pose
  * from its pack (pm, in glTF's axes), k its units to Crash Bash's on foot, and its feet's height there (ground) */
 static void pack_frame_at(void *ctx, s32 a, s32 f, V3 *out) {
+    Packed *p = ctx;
+
+    p->adj_kind = p->c.kind->kind;
+    p->adj_move = p->c.anims[a].name;
+    p->adj_frame = f;
     frame_at(ctx, a, (float)f, out);
 }
 
@@ -1787,6 +1952,13 @@ static s32 pack_bind(Packed *p, const char *id, const PackModel *pm, float k, fl
     p->k = k;
     p->ground = ground;
     p->n = pm->nvert;
+    p->id = id;
+    p->rec = NULL;
+    p->bones.nbones = pm->nbones;
+    for (b = 0; b < pm->nbones; b++) {
+        p->bones.name[b] = pm->bones[b].name;
+        p->bones.parent[b] = pm->bones[b].parent;
+    }
     pack_pose_local(pm, -1, 0, BindLocal);
     pack_pose_world(pm, BindLocal, world);
     pack_skin(pm, (const float(*)[16])world, BindSkinned);
@@ -1941,8 +2113,60 @@ s32 pack_follow_foot_moves(const char *const **names, s32 *frames) {
     return 5;
 }
 
-void pack_follow_foot_frame(s32 move, float f, V3 *out) {
+void pack_follow_foot_frame(s32 move, float f, const char *name, s32 frame, V3 *out) {
+    ThePack.adj_kind = KIND_FOOT;
+    ThePack.adj_move = name;
+    ThePack.adj_frame = frame;
     frame_at(&ThePack, move, f, out);
+}
+
+/* Made ready for its own clips' frames on foot, where it doesn't follow a template there (pack_follow_foot): 0 if it can't be (its
+ * skeleton hasn't the bones posing needs) */
+s32 pack_follow_foot_bind(const char *id, const PackModel *pm, float k, float ground) {
+    Packed *p = &ThePack;
+
+    if (!pack_bind(p, id, pm, k, ground)) {
+        return 0;
+    }
+    memset(&p->c, 0, sizeof(p->c));
+    p->c.kind = &FootKind;
+    pack_prep(p, &FootKind);
+    return 1;
+}
+
+/* A clip of its own on foot (packheroes.c's foot_frame) at t seconds, frame of its move name there: posed, adjusted and skinned as
+ * it stands, its hips where the clip has them */
+void pack_follow_clip_frame(s32 clip, float t, const char *name, s32 frame, V3 *out) {
+    static PackTrs local[PACK_MAX_BONES];
+    static float world[PACK_MAX_BONES][16];
+    static V3 P[PACK_MAX_BONES];
+    static Mat Q[PACK_MAX_BONES];
+    Packed *p = &ThePack;
+    s32 hb = p->pb[PB_HIPS];
+    Moved mv;
+    Mat trunk, ht;
+    V3 hips, hw;
+
+    memset(&mv, 0, sizeof(mv));
+    mv.m[0][0] = mv.m[1][1] = mv.m[2][2] = 1;
+    pack_pose_local(p->pm, clip, t, local);
+    pack_pose_world(p->pm, local, world);
+    hips = v3(world[hb][12] * p->k, -(world[hb][13] - p->ground) * p->k, -world[hb][14] * p->k);
+    pose_from_world(p, (const float(*)[16])world, hips, 1, P, Q);
+    trunk = Q[hb];
+    p->adj_kind = KIND_FOOT;
+    p->adj_move = name;
+    p->adj_frame = frame;
+    pose_finish(p, &mv, hips, 0, &trunk, P, Q, out, -1, &ht, &hw);
+}
+
+/* Its poses on foot for the hero tool, as packheroes.c makes its frames: begun, then each frame made, then ended */
+s32 pack_follow_foot_dump_begin(const MadeAnim *anims, s32 nanims) {
+    return pose_dump_begin(&ThePack, KIND_FOOT, 0, -1, 0, anims, nanims);
+}
+
+void pack_follow_foot_dump_end(s32 frames) {
+    pose_dump_end(&ThePack, frames);
 }
 
 void pack_follow_foot_end(void) {

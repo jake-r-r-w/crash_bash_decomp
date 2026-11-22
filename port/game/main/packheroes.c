@@ -52,7 +52,12 @@ void pack_follow_all(const char *id, const PackModel *pm, float k, float ground,
                      s32 nimages, const s32 *templates, HeroMade *out);
 s32 pack_follow_foot(const char *id, const PackModel *pm, float k, float ground, s32 hero);
 s32 pack_follow_foot_moves(const char *const **names, s32 *frames);
-void pack_follow_foot_frame(s32 move, float f, V3 *out);
+void pack_follow_foot_frame(s32 move, float f, const char *name, s32 frame, V3 *out);
+void pack_follow_adjusts(const PackAdjust *adj, s32 n);
+s32 pack_follow_foot_bind(const char *id, const PackModel *pm, float k, float ground);
+void pack_follow_clip_frame(s32 clip, float t, const char *name, s32 frame, V3 *out);
+s32 pack_follow_foot_dump_begin(const MadeAnim *anims, s32 nanims);
+void pack_follow_foot_dump_end(s32 frames);
 void pack_follow_foot_end(void);
 
 /* The template it follows on foot, or 0: its kind's own, or the pack's if hero.json says one, where there's a map of that hero on foot */
@@ -428,6 +433,8 @@ typedef struct {
     float k, ground;          /* glTF's metres to Crash Bash's units, and its feet's height as it rests */
     s32 follow[PACK_MAX_ANIMS]; /* each animation's move of its template on foot (packfollow.c), or -1 its clip */
     s32 sub;                  /* its frames to each of the template's */
+    const char *name[PACK_MAX_ANIMS]; /* each animation's name, which its adjustments (hero.json's "adjust") are for */
+    s32 bound;                /* whether packfollow.c poses its clips' frames, adjusted (pack_follow_foot_bind); else as they are */
 } Foot;
 
 static Foot TheFoot;
@@ -443,7 +450,11 @@ static void foot_frame(void *ctx, s32 anim, s32 f, V3 *out) {
     s32 v;
 
     if (ft->follow[anim] >= 0) {
-        pack_follow_foot_frame(ft->follow[anim], (float)f / (float)ft->sub, out);
+        pack_follow_foot_frame(ft->follow[anim], (float)f / (float)ft->sub, ft->name[anim], f, out);
+        return;
+    }
+    if (ft->bound) {
+        pack_follow_clip_frame(ft->clip[anim], t, ft->name[anim], f, out);
         return;
     }
     pack_pose_local(pm, ft->clip[anim], t, local);
@@ -647,6 +658,7 @@ static s32 make_pack(s32 slot, HeroMade *out) {
     TheFoot.pm = &pm;
     TheFoot.k = (float)s->info.height / (hi - lo);
     TheFoot.ground = lo;
+    pack_follow_adjusts(s->info.adjust, s->info.nadjust);
 
     /* its images */
     for (i = 0; i < pm.nimages; i++) {
@@ -661,6 +673,8 @@ static s32 make_pack(s32 slot, HeroMade *out) {
     }
     TheFoot.sub = s->info.kinds[KIND_FOOT].subframes;
     followed = foot_template(&s->info) > 0 && pack_follow_foot(s->info.id, &pm, TheFoot.k, TheFoot.ground, foot_template(&s->info));
+    /* its clips' frames posed by packfollow.c too, so its adjustments are made in them (the same skeleton, made ready on foot) */
+    TheFoot.bound = followed || pack_follow_foot_bind(s->info.id, &pm, TheFoot.k, TheFoot.ground);
     if (followed) {
         const char *const *fnames;
         s32 fframes[PACK_FOOT_MOVES], nf = pack_follow_foot_moves(&fnames, fframes), m;
@@ -683,6 +697,7 @@ static s32 make_pack(s32 slot, HeroMade *out) {
             anims[nanims].frames = TheFoot.frames[nanims];
             anims[nanims].mesh = 0;
             anims[nanims].step = TheFoot.sub;
+            TheFoot.name[nanims] = names[nanims];
             rest_anim = strcmp(names[nanims], "BREATHE") == 0 ? nanims : rest_anim;
             nanims++;
         }
@@ -714,6 +729,8 @@ static s32 make_pack(s32 slot, HeroMade *out) {
         anims[nanims].frames = frames;
         anims[nanims].mesh = 0;
         anims[nanims].step = sub;
+        TheFoot.name[nanims] = names[nanims];
+        TheFoot.follow[nanims] = -1;
         rest_anim = strcmp(names[nanims], "BREATHE") == 0 ? nanims : rest_anim;
         nanims++;
     }
@@ -726,6 +743,8 @@ static s32 make_pack(s32 slot, HeroMade *out) {
         anims[nanims].frames = 2;
         anims[nanims].mesh = 0;
         anims[nanims].step = 1;
+        TheFoot.name[nanims] = names[nanims];
+        TheFoot.follow[nanims] = -1;
         rest_anim = nanims++;
     }
 
@@ -813,6 +832,18 @@ static s32 make_pack(s32 slot, HeroMade *out) {
     if (!made_write(&mm, &out->tex[KIND_FOOT], &out->tex_size[KIND_FOOT], &out->mdl[KIND_FOOT], &out->mdl_size[KIND_FOOT])) {
         printf("hero packs: %s's model on foot can't be written\n", s->info.id);
         goto done;
+    }
+    /* for the hero tool: each frame's pose on foot (--dump-hero) */
+    if (TheFoot.bound && pack_follow_foot_dump_begin(anims, nanims)) {
+        static V3 game[PACK_MAX_VERTS];
+        s32 frames = 0;
+
+        for (i = 0; i < nanims; i++) {
+            for (j = 0; j < anims[i].frames; j++, frames++) {
+                foot_frame(&TheFoot, i, j, game);
+            }
+        }
+        pack_follow_foot_dump_end(frames);
     }
     /* on the tournament's podium: standing, its win as it cheers, and its hit as it loses, if it has them */
     {

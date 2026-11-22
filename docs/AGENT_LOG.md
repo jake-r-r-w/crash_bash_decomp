@@ -667,6 +667,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's animation tools, at the user's word ("a full animation tool suite ... to fix issues like clipping").
+  hero.json's `adjust` (PackAdjust): a bone's turn or reach in a game's move, at a frame fading over a spread, the whole move or every
+  move. `port/platform/heroadjust.c` makes them and skins the mesh, shared by the game (every pose path through packfollow.c's
+  `pose_finish`) and the tool (its preview made from the game's `ID_KIND.pose` poses, so a change shows at once). The tool: joints
+  over the picture, drag to move or aim, a timeline with keys, exact values, mirror, reset, undo. Checked the tool's frames against
+  the game's to a unit. "Plays like" and "Takes place of" merged into **Based on** the same day. Not done: Crash's polar bear (its
+  rider isn't posed); arms a little stiff (open).
+
 - 2026-11-22: each kind of Bobby (Crash's template) looked at from four sides from `--dump-hero`, at the user's word ("his arms are
   getting sucked into the tank ... look at each prop one by one"). Fixed in `packfollow.c`: the tank/race cart cut leaves the arms
   alone; on the pogo his feet go to Crash's soles (Crash's shins stretch up as he bounces, so their middle left the pegs) and his hips

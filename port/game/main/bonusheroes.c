@@ -270,6 +270,10 @@ void bonus_heroes_dump_to(const char *folder) {
     DumpFolder = folder;
 }
 
+const char *bonus_heroes_dump_folder(void) {
+    return DumpFolder;
+}
+
 static void dump_u32(FILE *f, u32 v) {
     u8 b[4];
 

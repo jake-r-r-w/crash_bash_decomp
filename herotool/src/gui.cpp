@@ -8,11 +8,13 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 #include <SDL3/SDL.h>
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 #include "kit.h"
+#include "heroadjust.h"
 
 namespace {
 
@@ -29,6 +31,8 @@ struct View {
     int w = 0, h = 0; // its size, if not the preview's (PrevW x PrevH): draw_made's only
     // looked at from above by pitch degrees, and zoomed about (zx, zy): dragged and scrolled in the views that allow it (look_around)
     float pitch = 0, zoom = 1, zx = 0, zy = 0;
+    // the game's x and z at the middle of what draw_made drew (its model's middle, which it's turned about)
+    float cx = 0, cz = 0;
 };
 
 enum { OWN_TEMPLATE = -1, OWN_CLIP = -2 };
@@ -77,7 +81,21 @@ struct Tool {
     // the start screen, till a model's opened or a hero loaded; a loaded hero's mod folder, which Export writes back to
     bool home = true;
     char loaded_mod[1100] = "";
+    // the animation tools (Adjust its moves; docs/HERO_PACKS.md): each kind's poses before its adjustments (the game's .pose), its
+    // adjustments (hero.json's "adjust"), what undo and redo go back and on to, the bone picked (the pose's, -1 none), what a change
+    // is made to (KEY_FRAME this frame, fading over spread frames each side; KEY_MOVE the whole move; KEY_GAME every move in this game),
+    // the frame shown, and a drag that's changing it
+    KitPose poses[PACK_KINDS] = {};
+    bool have_pose[PACK_KINDS] = {};
+    std::vector<PackAdjust> adj;
+    std::vector<std::vector<PackAdjust>> undo, redo;
+    bool adjusting = false, adj_playing = false, dragging = false, bare = false;
+    int sel = -1, key_mode = 0, spread = 4, frame = 0;
+    float adj_t = 0;
+    // the frame shown made again with its adjustments, and the picked bone's joint and each bone's on the screen
+    std::vector<int16_t> live;
 };
+enum { KEY_FRAME, KEY_MOVE, KEY_GAME };
 
 // The kinds of model the game makes (heropack.c's names), as the games call them
 const char *const KindTitles[PACK_KINDS] = { "On foot (Crate Crush, Ring Ding and the others)", "Polar Push: the polar bear", "Pogo",
@@ -192,13 +210,14 @@ void to_screen(const View &v, const float p[3], float &sx, float &sy, float &sz)
     sz = -z;
 }
 
-// A view's picture dragged to turn and tilt it, and scrolled to zoom it (the item just drawn); yaw the turn it's drawn with
-void look_around(View &v, float &yaw) {
+// A view's picture dragged to turn and tilt it, and scrolled to zoom it (the item just drawn); yaw the turn it's drawn with. button: the
+// mouse button that turns it (the right one while adjusting a move, whose left one picks and moves joints)
+void look_around(View &v, float &yaw, int button = 0) {
     if (!ImGui::IsItemHovered() && !(ImGui::IsItemActive())) {
         return;
     }
     ImGuiIO &io = ImGui::GetIO();
-    if (ImGui::IsMouseDragging(0)) {
+    if (ImGui::IsMouseDragging(button)) {
         yaw += io.MouseDelta.x * 0.5f;
         yaw = yaw > 180 ? yaw - 360 : yaw < -180 ? yaw + 360 : yaw;
         v.pitch = fmaxf(-60, fminf(80, v.pitch + io.MouseDelta.y * 0.4f));
@@ -206,10 +225,12 @@ void look_around(View &v, float &yaw) {
     if (io.MouseWheel != 0) {
         v.zoom = fmaxf(0.4f, fminf(6, v.zoom * powf(1.15f, io.MouseWheel)));
     }
-    if (ImGui::IsMouseDoubleClicked(0)) {
+    if (ImGui::IsMouseDoubleClicked(button)) {
         v.pitch = 12, v.zoom = 1, yaw = 30;
     }
-    ImGui::SetItemTooltip("Drag to turn it, scroll to zoom, double-click to set it back");
+    if (button == 0) {
+        ImGui::SetItemTooltip("Drag to turn it, scroll to zoom, double-click to set it back");
+    }
 }
 
 // A made model's breathing move, its rest (the polar bear's first is its fall), or its first
@@ -418,6 +439,9 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     p.height = T.height;
     p.face_head = T.face_head;
     p.card = T.card[0] ? T.card : nullptr;
+    // its adjustments, but not in what the preview's made from: the preview makes them itself, on the game's poses before them
+    p.adjust = T.adj.empty() || T.bare ? nullptr : T.adj.data();
+    p.nadjust = T.bare ? 0 : (int)T.adj.size();
     for (int j = 0; j < PACK_VOICE_JOBS; j++) {
         p.voice[j] = T.voice[j][0] ? T.voice[j] : nullptr;
     }
@@ -462,6 +486,10 @@ void made_forget(Tool &T) {
             kit_made_free(&T.made[k]);
         }
         T.have_made[k] = false;
+        if (T.have_pose[k]) {
+            kit_pose_free(&T.poses[k]);
+        }
+        T.have_pose[k] = false;
         for (int r = 0; r < T.nrides[k]; r++) {
             kit_made_free(&T.rides[k][r]);
         }
@@ -484,7 +512,10 @@ void make_in_game(Tool &T) {
     snprintf(T.made_dir, sizeof(T.made_dir), "%spreview-made", pref);
     SDL_CreateDirectory(T.made_dir);
     SDL_free((void *)pref);
-    if (!export_pack(T, false, mods)) {
+    T.bare = true;
+    bool exported = export_pack(T, false, mods);
+    T.bare = false;
+    if (!exported) {
         return;
     }
     const char *args[] = { T.game, "--mods-dir", mods, "--mod", T.id, "--dump-hero", T.id, T.made_dir, nullptr };
@@ -509,6 +540,19 @@ void made_check(Tool &T) {
         snprintf(path, sizeof(path), "%s/%s_%s.hpv", T.made_dir, T.id, pack_kind_name(k));
         T.have_made[k] = kit_made_read(path, &T.made[k]);
         have += T.have_made[k];
+        // what it's made of, for the animation tools: kept only where it fits the model (the same moves and frames)
+        snprintf(path, sizeof(path), "%s/%s_%s.pose", T.made_dir, T.id, pack_kind_name(k));
+        T.have_pose[k] = T.have_made[k] && kit_pose_read(path, &T.poses[k]);
+        if (T.have_pose[k]) {
+            bool fits = T.poses[k].nanims == T.made[k].nanims && T.poses[k].nvert + T.poses[k].nprop <= T.made[k].nvert;
+            for (int a = 0; fits && a < T.made[k].nanims; a++) {
+                fits = T.poses[k].anims[a].frames == T.made[k].anims[a].frames && strcmp(T.poses[k].anims[a].name, T.made[k].anims[a].name) == 0;
+            }
+            if (!fits) {
+                kit_pose_free(&T.poses[k]);
+                T.have_pose[k] = false;
+            }
+        }
         for (int r = 0; r < 2; r++) {
             snprintf(path, sizeof(path), "%s/%s_%s_ride%d.hpv", T.made_dir, T.id, pack_kind_name(k), r);
             if (kit_made_read(path, &T.rides[k][T.nrides[k]])) {
@@ -527,8 +571,10 @@ void made_check(Tool &T) {
 // left out, semi-transparent ones half over what's there. The game's axes are y down, so it's turned up the tool's way.
 void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &v, int PW, int PH);
 
-// With what the game draws beside it (rides, still: their one frame), fitted to them all
-void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren, const KitMade *rides = nullptr, int nrides = 0) {
+// With what the game draws beside it (rides, still: their one frame), fitted to them all; its frame's vertices from live if given (made
+// again with its adjustments, adjusted_frame)
+void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren, const KitMade *rides = nullptr, int nrides = 0,
+               const int16_t *live = nullptr) {
     const int PW = v.w > 0 ? v.w : PrevW, PH = v.h > 0 ? v.h : PrevH;
 
     if (v.rgba == nullptr) {
@@ -545,7 +591,7 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
         return;
     }
     const KitMadeAnim *a = &m->anims[anim < m->nanims ? anim : 0];
-    const int16_t *vs = a->verts + (size_t)(frame % a->frames) * m->nvert * 3;
+    const int16_t *vs = live != nullptr ? live : a->verts + (size_t)(frame % a->frames) * m->nvert * 3;
     // fitted to every frame of the move shown, so it doesn't jump about, nor leave the picture, as it moves
     float lo[3] = { 1e9f, 1e9f, 1e9f }, hi[3] = { -1e9f, -1e9f, -1e9f };
     for (int r = -1; r < nrides; r++) {
@@ -562,6 +608,8 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     float h = hi[1] - lo[1], w = sqrtf((hi[0] - lo[0]) * (hi[0] - lo[0]) + (hi[2] - lo[2]) * (hi[2] - lo[2]));
     v.scale = fminf(PH * 0.8f / (h > 0 ? h : 1), PW * 0.8f / (w > 0 ? w : 1));
     float cx = (lo[0] + hi[0]) / 2, cz = (lo[2] + hi[2]) / 2;
+    v.cx = cx;
+    v.cz = cz;
     v.ox = PW / 2.0f;
     v.oy = PH * 0.9f + lo[1] * v.scale;
     v.zx = PW / 2.0f;
@@ -645,6 +693,429 @@ void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &
             }
         }
     }
+}
+
+// --- the animation tools (Adjust its moves): a kind's move made again with its adjustments as the game makes it (heroadjust.c) ---
+
+// A frame's pose with its adjustments, and what it needs to turn a drag into the hero's own axes
+struct Posed {
+    float P[PACK_MAX_BONES][3], Q[PACK_MAX_BONES][9], trunk[9], A[9], b[3], hips[3];
+    float shown[PACK_MAX_BONES][3]; // each bone's joint where the model shows it (the game's axes)
+};
+
+// A frame of a kind's move as the game makes it with the hero's adjustments now: its pose before them (the game's .pose) adjusted and
+// its mesh skinned to it, what it carries with its hand, the rest as the game made it; false if there's no pose to make it from
+bool adjusted_frame(Tool &T, int kind, int anim, int frame, std::vector<int16_t> &out, Posed *posed = nullptr) {
+    static Posed mine;
+    static std::vector<float> S;
+    Posed *p = posed != nullptr ? posed : &mine;
+
+    if (kind < 0 || kind >= PACK_KINDS || !T.have_made[kind] || !T.have_pose[kind] || anim < 0 || anim >= T.made[kind].nanims) {
+        return false;
+    }
+    const KitMade *m = &T.made[kind];
+    const KitPose *po = &T.poses[kind];
+    const KitMadeAnim *ma = &m->anims[anim];
+    frame = ma->frames > 0 ? (frame % ma->frames + ma->frames) % ma->frames : 0;
+    const float *rec = po->anims[anim].pose + (size_t)frame * (KIT_POSE_HEAD + (size_t)po->nbones * 12);
+    memcpy(p->hips, rec, sizeof(float) * 3);
+    memcpy(p->trunk, rec + 3, sizeof(float) * 9);
+    memcpy(p->A, rec + 12, sizeof(float) * 9);
+    memcpy(p->b, rec + 21, sizeof(float) * 3);
+    for (int b = 0; b < po->nbones; b++) {
+        memcpy(p->P[b], rec + KIT_POSE_HEAD + b * 12, sizeof(float) * 3);
+        memcpy(p->Q[b], rec + KIT_POSE_HEAD + b * 12 + 3, sizeof(float) * 9);
+    }
+    float hand_q[9] = {}, hand_p[3] = {};
+    if (po->hand >= 0 && po->hand < po->nbones) {
+        memcpy(hand_q, p->Q[po->hand], sizeof(hand_q));
+        memcpy(hand_p, p->P[po->hand], sizeof(hand_p));
+    }
+    PackBones bones;
+    bones.nbones = po->nbones;
+    for (int b = 0; b < po->nbones; b++) {
+        bones.name[b] = po->names[b];
+        bones.parent[b] = po->parent[b];
+    }
+    pack_adjust_pose(T.adj.data(), (int)T.adj.size(), kind, ma->name, frame, &bones, p->trunk, p->P, p->Q);
+    PackSkin sk = { po->nvert, po->rest, po->bone, po->joint, po->weight, po->part };
+    S.resize((size_t)po->nvert * 3);
+    pack_skin_posed(&sk, (const float(*)[3])p->P, (const float(*)[9])p->Q, p->hips, po->cut, S.data());
+    out.assign(ma->verts + (size_t)frame * m->nvert * 3, ma->verts + (size_t)(frame + 1) * m->nvert * 3);
+    auto put = [&](int v, const float s[3]) {
+        for (int i = 0; i < 3; i++) {
+            float o = p->A[i * 3] * s[0] + p->A[i * 3 + 1] * s[1] + p->A[i * 3 + 2] * s[2] + p->b[i];
+            out[(size_t)v * 3 + i] = (int16_t)fmaxf(-32768, fminf(32767, floorf(o + 0.5f)));
+        }
+    };
+    for (int v = 0; v < po->nvert; v++) {
+        put(v, &S[(size_t)v * 3]);
+    }
+    // what it carries, turned and moved as its hand is by its adjustments (A is a turn, so A' undoes it)
+    if (po->hand >= 0 && po->hand < po->nbones && po->nprop > 0) {
+        float D[9];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                D[i * 3 + j] = p->Q[po->hand][i * 3] * hand_q[j * 3] + p->Q[po->hand][i * 3 + 1] * hand_q[j * 3 + 1]
+                             + p->Q[po->hand][i * 3 + 2] * hand_q[j * 3 + 2];
+            }
+        }
+        for (int v = po->nvert; v < po->nvert + po->nprop && v < m->nvert; v++) {
+            float g[3], L[3], d[3], s[3];
+            for (int i = 0; i < 3; i++) {
+                g[i] = out[(size_t)v * 3 + i] - p->b[i];
+            }
+            for (int i = 0; i < 3; i++) {
+                L[i] = p->A[i] * g[0] + p->A[3 + i] * g[1] + p->A[6 + i] * g[2];
+                d[i] = L[i] - hand_p[i];
+            }
+            for (int i = 0; i < 3; i++) {
+                s[i] = p->P[po->hand][i] + D[i * 3] * d[0] + D[i * 3 + 1] * d[1] + D[i * 3 + 2] * d[2];
+            }
+            put(v, s);
+        }
+    }
+    for (int b = 0; b < po->nbones; b++) {
+        for (int i = 0; i < 3; i++) {
+            p->shown[b][i] = p->A[i * 3] * p->P[b][0] + p->A[i * 3 + 1] * p->P[b][1] + p->A[i * 3 + 2] * p->P[b][2] + p->b[i];
+        }
+    }
+    return true;
+}
+
+// Whether a bone is moved (a hand, a foot, the hips) rather than turned
+bool reach_bone(const char *name) {
+    return SDL_strcasecmp(name, "hips") == 0 || SDL_strncasecmp(name, "hand", 4) == 0 || SDL_strncasecmp(name, "foot", 4) == 0;
+}
+
+// A bone's name as a person would say it: upperarm_l "Left upper arm"
+const char *bone_title(const char *name) {
+    static char out[80];
+    static const struct {
+        const char *bone, *says;
+    } Says[] = { { "upperarm", "upper arm" }, { "forearm", "forearm" }, { "hand", "hand" }, { "thigh", "thigh" }, { "shin", "shin" },
+                 { "foot", "foot" }, { "toe", "toes" }, { "ear", "ear" }, { "eye", "eye" } };
+    char base[64];
+    size_t n = strlen(name);
+    const char *side = n > 2 && name[n - 2] == '_' && (name[n - 1] == 'l' || name[n - 1] == 'L') ? "Left "
+                     : n > 2 && name[n - 2] == '_' && (name[n - 1] == 'r' || name[n - 1] == 'R') ? "Right "
+                                                                                                   : "";
+    SDL_strlcpy(base, name, sizeof(base));
+    if (side[0] != 0) {
+        base[n - 2] = 0;
+    }
+    const char *says = nullptr;
+    for (auto &s : Says) {
+        says = SDL_strcasecmp(base, s.bone) == 0 || (SDL_strcasecmp(s.bone, "toe") == 0 && SDL_strncasecmp(base, "toe", 3) == 0) ? s.says : says;
+    }
+    if (says == nullptr) {
+        for (char *c = base; *c != 0; c++) {
+            *c = *c == '_' ? ' ' : *c;
+        }
+        says = base;
+    }
+    snprintf(out, sizeof(out), "%s%s", side, says);
+    if (side[0] == 0 && out[0] >= 'a' && out[0] <= 'z') {
+        out[0] = (char)(out[0] - 'a' + 'A');
+    }
+    return out;
+}
+
+// Undo and redo: what its adjustments were before each change
+void adj_snapshot(Tool &T) {
+    T.undo.push_back(T.adj);
+    if (T.undo.size() > 300) {
+        T.undo.erase(T.undo.begin());
+    }
+    T.redo.clear();
+}
+
+void adj_undo(Tool &T) {
+    if (!T.undo.empty()) {
+        T.redo.push_back(T.adj);
+        T.adj = T.undo.back();
+        T.undo.pop_back();
+    }
+}
+
+void adj_redo(Tool &T) {
+    if (!T.redo.empty()) {
+        T.undo.push_back(T.adj);
+        T.adj = T.redo.back();
+        T.redo.pop_back();
+    }
+}
+
+// The adjustment a change of a bone in this move is made to, as T.key_mode says (this frame, the whole move, every move in this game):
+// the one there, else a new one if make (none if there are as many as a pack has room for)
+PackAdjust *adj_key(Tool &T, const char *move, const char *bone, bool make) {
+    int at = T.key_mode == KEY_FRAME ? T.frame : -1;
+    const char *mv = T.key_mode == KEY_GAME ? "*" : move;
+
+    for (auto &a : T.adj) {
+        if (a.kind == T.kind && a.at == at && SDL_strcasecmp(a.move, mv) == 0 && SDL_strcasecmp(a.bone, bone) == 0) {
+            if (make && T.key_mode == KEY_FRAME) {
+                a.spread = T.spread;
+            }
+            return &a;
+        }
+    }
+    if (!make) {
+        return nullptr;
+    }
+    if (T.adj.size() >= PACK_MAX_ADJUSTS) {
+        snprintf(T.status, sizeof(T.status), "That's as many changes as a hero has room for (%d): take some away first.", PACK_MAX_ADJUSTS);
+        return nullptr;
+    }
+    PackAdjust a = {};
+    a.kind = T.kind;
+    SDL_strlcpy(a.move, mv, sizeof(a.move));
+    SDL_strlcpy(a.bone, bone, sizeof(a.bone));
+    a.at = at;
+    a.spread = T.key_mode == KEY_FRAME ? T.spread : 0;
+    T.adj.push_back(a);
+    return &T.adj.back();
+}
+
+// A bone's other side (upperarm_l's upperarm_r), or "" if it has none
+const char *other_side(const char *name) {
+    static char out[PACK_ADJUST_NAME];
+    size_t n = strlen(name);
+
+    if (n < 3 || n >= sizeof(out) || name[n - 2] != '_' || (name[n - 1] != 'l' && name[n - 1] != 'r')) {
+        return "";
+    }
+    SDL_strlcpy(out, name, sizeof(out));
+    out[n - 1] = name[n - 1] == 'l' ? 'r' : 'l';
+    return out;
+}
+
+// A bone's changes in this move (and those to every move here) given to its other side, mirrored: across the other way, and its turns
+// about its up and its front-to-back the other way. Its other side's own there are replaced.
+void adj_mirror(Tool &T, const char *move, const char *bone) {
+    const char *other = other_side(bone);
+    std::vector<PackAdjust> keep, made;
+
+    if (other[0] == 0) {
+        return;
+    }
+    for (auto &a : T.adj) {
+        bool here = a.kind == T.kind && (SDL_strcasecmp(a.move, move) == 0 || strcmp(a.move, "*") == 0);
+        if (here && SDL_strcasecmp(a.bone, other) == 0) {
+            continue;
+        }
+        keep.push_back(a);
+        if (here && SDL_strcasecmp(a.bone, bone) == 0) {
+            PackAdjust m = a;
+            SDL_strlcpy(m.bone, other, sizeof(m.bone));
+            m.turn[1] = -m.turn[1], m.turn[2] = -m.turn[2];
+            m.reach[0] = -m.reach[0];
+            made.push_back(m);
+        }
+    }
+    keep.insert(keep.end(), made.begin(), made.end());
+    T.adj = keep;
+}
+
+// A direction in the view (x right, y up, z towards whoever's looking) in the game's axes (its turn and tilt undone: to_screen's)
+void view_to_game(const View &v, const float d[3], float out[3]) {
+    float c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
+    float pc = cosf(v.pitch * 3.14159265f / 180), ps = sinf(v.pitch * 3.14159265f / 180);
+    float y = d[1] * pc + d[2] * ps, z = -d[1] * ps + d[2] * pc, x = d[0];
+
+    out[0] = x * c + z * s;
+    out[1] = -y;
+    out[2] = -(-x * s + z * c);
+}
+
+// A direction in the game's axes, as a frame shows it, in the hero's own (its move and its trunk's turn undone: A' then trunk')
+void game_to_hero(const Posed &p, const float g[3], float out[3]) {
+    float L[3];
+
+    for (int i = 0; i < 3; i++) {
+        L[i] = p.A[i] * g[0] + p.A[3 + i] * g[1] + p.A[6 + i] * g[2];
+    }
+    for (int i = 0; i < 3; i++) {
+        out[i] = p.trunk[i] * L[0] + p.trunk[3 + i] * L[1] + p.trunk[6 + i] * L[2];
+    }
+}
+
+// The joints over the picture of a game's model while adjusting it (the picture at im, shown at disp of its size): each bone's joint a
+// dot, picked by clicking, and the one picked changed by dragging: a hand, foot or the hips moved with the mouse (Shift: turned), any
+// other bone turned round its joint as far as the mouse goes round it
+void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
+    static Posed ps;
+    const KitMade *mk = &T.made[T.kind];
+    const KitPose *po = &T.poses[T.kind];
+    int a = T.anim < mk->nanims ? T.anim : 0;
+    std::vector<int16_t> scratch;
+
+    if (!adjusted_frame(T, T.kind, a, T.frame, scratch, &ps)) {
+        return;
+    }
+    View &v = T.game_view;
+    ImGuiIO &io = ImGui::GetIO();
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    ImVec2 mouse = io.MousePos;
+    float sx[PACK_MAX_BONES], sy[PACK_MAX_BONES];
+    for (int b = 0; b < po->nbones; b++) {
+        float q[3] = { ps.shown[b][0] - v.cx, -ps.shown[b][1], -ps.shown[b][2] - v.cz }, x, y, z;
+        to_screen(v, q, x, y, z);
+        sx[b] = im.x + x * disp;
+        sy[b] = im.y + y * disp;
+    }
+    if (T.sel >= po->nbones) {
+        T.sel = -1;
+    }
+    int hover = -1;
+    float best = 64;
+    for (int b = 0; b < po->nbones; b++) {
+        float d2 = (mouse.x - sx[b]) * (mouse.x - sx[b]) + (mouse.y - sy[b]) * (mouse.y - sy[b]);
+        if (hovered && d2 < best) {
+            best = d2, hover = b;
+        }
+        if (po->parent[b] >= 0) {
+            dl->AddLine(ImVec2(sx[po->parent[b]], sy[po->parent[b]]), ImVec2(sx[b], sy[b]), IM_COL32(255, 255, 255, 90), 1.5f);
+        }
+    }
+    for (int b = 0; b < po->nbones; b++) {
+        const char *n = po->names[b];
+        ImU32 col = po->part[b] == 3 ? IM_COL32(80, 200, 255, 255) : po->part[b] == 1 ? IM_COL32(120, 255, 120, 255)
+                  : po->part[b] == 2 || SDL_strncasecmp(n, "ear", 3) == 0 || SDL_strncasecmp(n, "jaw", 3) == 0 ? IM_COL32(255, 160, 40, 255)
+                                                                                                                 : IM_COL32(255, 230, 80, 255);
+        bool moved = reach_bone(n);
+        if (b == T.sel) {
+            dl->AddCircle(ImVec2(sx[b], sy[b]), 9, IM_COL32(255, 255, 255, 255), 0, 2.5f);
+        }
+        if (moved) {
+            dl->AddRectFilled(ImVec2(sx[b] - 4, sy[b] - 4), ImVec2(sx[b] + 4, sy[b] + 4), col);
+        } else {
+            dl->AddCircleFilled(ImVec2(sx[b], sy[b]), b == hover ? 6.0f : 4.5f, col);
+        }
+    }
+    if (hover >= 0 && !T.dragging) {
+        ImGui::SetTooltip("%s: %s", bone_title(po->names[hover]),
+                          reach_bone(po->names[hover]) ? "drag to move it (Shift: to turn it)" : "drag away from it to point what's on it at the mouse (Shift: turn it round)");
+    }
+    // pick, and start a change
+    if (hovered && ImGui::IsMouseClicked(0)) {
+        if (hover >= 0) {
+            T.sel = hover;
+        }
+        if (T.sel >= 0) {
+            adj_snapshot(T);
+            T.dragging = true;
+            T.adj_playing = false;
+        }
+    }
+    if (T.dragging && !ImGui::IsMouseDown(0)) {
+        T.dragging = false;
+    }
+    if (!T.dragging || T.sel < 0 || (io.MouseDelta.x == 0 && io.MouseDelta.y == 0) || !ImGui::IsMouseDragging(0, 2)) {
+        return;
+    }
+    PackAdjust *k = adj_key(T, mk->anims[a].name, po->names[T.sel], true);
+    if (k == nullptr) {
+        return;
+    }
+    float pp = v.scale * v.zoom * disp;
+    if (reach_bone(po->names[T.sel]) && !io.KeyShift) {
+        // moved with the mouse across the view: at its own frame (or every frame) it's all there, so the joint goes with the mouse
+        float d[3] = { io.MouseDelta.x / pp, -io.MouseDelta.y / pp, 0 }, g[3], h[3];
+        view_to_game(v, d, g);
+        game_to_hero(ps, g, h);
+        for (int i = 0; i < 3; i++) {
+            k->reach[i] = fmaxf(-1000, fminf(1000, k->reach[i] + h[i]));
+        }
+    } else {
+        // turned about the line through its joint towards whoever's looking, to point at the mouse: its end (the middle of the
+        // joints on it, or on past its joint from the one it's on) turned to where the mouse is from its joint. Near its joint it's
+        // left be (which way it points is no way to tell), and with Shift, or where its end is too near its joint on the screen
+        // (pointing at whoever's looking), it's turned as far as the mouse goes round its joint
+        float jx = sx[T.sel], jy = sy[T.sel], ex = 0, ey = 0;
+        int n = 0;
+        for (int c = 0; c < po->nbones; c++) {
+            if (po->parent[c] == T.sel) {
+                ex += sx[c], ey += sy[c], n++;
+            }
+        }
+        if (n > 0) {
+            ex /= n, ey /= n;
+        } else if (po->parent[T.sel] >= 0) {
+            ex = jx + (jx - sx[po->parent[T.sel]]) * 0.5f, ey = jy + (jy - sy[po->parent[T.sel]]) * 0.5f;
+        }
+        float mx = mouse.x - jx, my = mouse.y - jy, px = mx - io.MouseDelta.x, py = my - io.MouseDelta.y;
+        if (mx * mx + my * my < 144) {
+            return;
+        }
+        bool aim = !io.KeyShift && n + (po->parent[T.sel] >= 0) > 0 && (ex - jx) * (ex - jx) + (ey - jy) * (ey - jy) >= 36;
+        if (!aim && px * px + py * py < 144) {
+            return;
+        }
+        float da = atan2f(-my, mx) - (aim ? atan2f(-(ey - jy), ex - jx) : atan2f(-py, px));
+        da = da > 3.14159265f ? da - 6.2831853f : da < -3.14159265f ? da + 6.2831853f : da;
+        float z[3] = { 0, 0, 1 }, g[3], h[3];
+        view_to_game(v, z, g);
+        game_to_hero(ps, g, h);
+        for (int i = 0; i < 3; i++) {
+            k->turn[i] = fmaxf(-360, fminf(360, k->turn[i] + h[i] * da * 180 / 3.14159265f));
+        }
+    }
+}
+
+// Under the picture while adjusting: play or stop, the frame (its changes marked), and the changes before and after
+void timeline(Tool &T, const KitMade *mk, int a, float width) {
+    int frames = mk->anims[a].frames;
+    const char *move = mk->anims[a].name;
+
+    T.frame = frames > 0 ? (T.frame % frames + frames) % frames : 0;
+    if (ImGui::Button(T.adj_playing ? "Stop" : "Play", ImVec2(50, 0))) {
+        T.adj_playing = !T.adj_playing;
+    }
+    ImGui::SetItemTooltip("Space");
+    auto key_frames = [&](std::vector<int> &at) {
+        for (auto &k : T.adj) {
+            if (k.kind == T.kind && k.at >= 0 && SDL_strcasecmp(k.move, move) == 0) {
+                at.push_back(k.at);
+            }
+        }
+    };
+    std::vector<int> keys;
+    key_frames(keys);
+    ImGui::SameLine();
+    if (ImGui::ArrowButton("##before", ImGuiDir_Left)) {
+        int to = -1;
+        for (int f : keys) {
+            to = f < T.frame && f > to ? f : to;
+        }
+        T.frame = to >= 0 ? to : T.frame;
+        T.adj_playing = false;
+    }
+    ImGui::SetItemTooltip("The change before this frame");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(width - 200 > 100 ? width - 200 : 100);
+    if (ImGui::SliderInt("##frame", &T.frame, 0, frames - 1, "frame %d")) {
+        T.adj_playing = false;
+    }
+    ImVec2 lo = ImGui::GetItemRectMin(), hi = ImGui::GetItemRectMax();
+    float grab = ImGui::GetStyle().GrabMinSize, x0 = lo.x + grab / 2 + 2, x1 = hi.x - grab / 2 - 2;
+    for (int f : keys) {
+        float x = frames > 1 ? x0 + (x1 - x0) * f / (frames - 1) : x0;
+        ImGui::GetWindowDrawList()->AddTriangleFilled(ImVec2(x - 4, lo.y - 1), ImVec2(x + 4, lo.y - 1), ImVec2(x, lo.y + 5),
+                                                      IM_COL32(255, 200, 60, 255));
+    }
+    ImGui::SameLine();
+    if (ImGui::ArrowButton("##after", ImGuiDir_Right)) {
+        int to = frames;
+        for (int f : keys) {
+            to = f > T.frame && f < to ? f : to;
+        }
+        T.frame = to < frames ? to : T.frame;
+        T.adj_playing = false;
+    }
+    ImGui::SetItemTooltip("The change after this frame");
+    ImGui::SameLine();
+    ImGui::Text("%d frames", frames);
 }
 
 // --- the views, with their markers ---
@@ -831,10 +1302,13 @@ void load_pack(Tool &T, const Found &f) {
         SDL_strlcpy(T.name, info.name, sizeof(T.name));
         T.height = info.height > 0 ? info.height : T.height;
         /* who it's based on: its template, else (a pack that says none) the hero whose place it takes; saved, it's both */
-        T.template_hero = info.template_hero >= 1 && info.template_hero <= 8 ? info.template_hero - 1
-                          : info.prefer >= 1 && info.prefer <= 8   ? info.prefer - 1
-                                                                    : 0;
+        T.template_hero = info.template_said && info.template_hero >= 1 && info.template_hero <= 8 ? info.template_hero - 1
+                          : info.prefer >= 1 && info.prefer <= 8                             ? info.prefer - 1
+                                                                                              : 0;
         T.face_head = info.face_head;
+        T.adj.assign(info.adjust, info.adjust + info.nadjust);
+        T.undo.clear();
+        T.redo.clear();
         for (int k = 0; k < PACK_KINDS; k++) {
             int th = info.kinds[k].template_hero;
             T.kind_template[k] = th >= 1 && th <= 8 && th - 1 != T.template_hero ? th - 1 : -1;
@@ -1117,18 +1591,35 @@ void editor_middle(Tool &T) {
         return;
     }
     float w = avail < PrevW ? avail : PrevW;
+    bool adjusting = T.adjusting && T.have_pose[T.kind];
     ImGui::Image((ImTextureID)(intptr_t)T.game_view.tex, ImVec2(w, w * PrevH / PrevW));
-    look_around(T.game_view, T.made_turn);
+    ImVec2 im = ImGui::GetItemRectMin();
+    bool hovered = ImGui::IsItemHovered();
+    look_around(T.game_view, T.made_turn, adjusting ? 1 : 0);
     const KitMade *mk = &T.made[T.kind];
+    if (adjusting) {
+        adjust_view(T, im, w / PrevW, hovered);
+        if (hovered && !T.dragging) {
+            ImGui::SetItemTooltip("Click a joint to pick it, then drag. The right mouse button turns the view; scroll to zoom.");
+        }
+    }
     ImGui::SetNextItemWidth(200);
     if (ImGui::BeginCombo("Watching", T.anim < mk->nanims ? mk->anims[T.anim].name : "")) {
         for (int a = 0; a < mk->nanims; a++) {
             if (ImGui::Selectable(mk->anims[a].name, a == T.anim)) {
                 T.anim = a;
                 T.made_t = 0;
+                T.frame = 0;
             }
         }
         ImGui::EndCombo();
+    }
+    if (adjusting && mk->nanims > 0) {
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
+        timeline(T, mk, T.anim < mk->nanims ? T.anim : 0, w);
+        return;
     }
     ImGui::SameLine();
     ImGui::SetNextItemWidth(160);
@@ -1136,6 +1627,193 @@ void editor_middle(Tool &T) {
     ImGui::SameLine();
     ImGui::SetNextItemWidth(120);
     ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
+}
+
+// A game's page, on the right: Adjust its moves (the animation tools), for fixing what the game makes of it there by hand
+void adjust_panel(Tool &T) {
+    if (!ImGui::CollapsingHeader("Adjust its moves", ImGuiTreeNodeFlags_DefaultOpen)) {
+        return;
+    }
+    if (T.kind == KIND_WARP_TOOL) {
+        ImGui::TextWrapped("The podium is made from its moves on foot: adjust them on On foot (they show here once it's saved and "
+                           "made again).");
+        return;
+    }
+    if (!T.have_pose[T.kind]) {
+        ImGui::TextWrapped(T.kind == 1 ? "Riding Crash's polar bear, it's sat on the bear by the game itself, so it can't be adjusted "
+                                         "here. It can on another hero's bear (Prop from, above)."
+                         : T.maker != nullptr ? "Making it..."
+                                              : "Not ready to adjust: Update the preview.");
+        return;
+    }
+    const KitMade *mk = &T.made[T.kind];
+    const KitPose *po = &T.poses[T.kind];
+    int a = T.anim < mk->nanims ? T.anim : 0;
+    const char *move = mk->anims[a].name;
+    int here = 0;
+    for (auto &k : T.adj) {
+        here += k.kind == T.kind;
+    }
+    if (ImGui::Checkbox("Show its joints, to adjust it", &T.adjusting) && T.adjusting) {
+        T.frame = mk->anims[a].frames > 0 ? (int)(T.made_t * 30) % mk->anims[a].frames : 0;
+        T.adj_playing = false;
+    }
+    hint("In the picture, click a joint to pick it, then drag. A hand, a foot or the hips (the squares) moves with the mouse, its arm or "
+         "leg bending to follow; from any other joint, drag the way you want what's on it to point (Shift: drag round it to turn it). "
+         "Turn the view with the right mouse button to move it forward or back. The values below set it exactly. Keys: Space plays, "
+         "the arrows step a frame, Ctrl+Z undoes, Ctrl+Y does it again.");
+    if (!T.adjusting) {
+        if (here > 0) {
+            ImGui::TextDisabled("%d change%s in this game.", here, here == 1 ? "" : "s");
+        }
+        return;
+    }
+    ImGui::Text("A change is made to");
+    ImGui::RadioButton("this frame", &T.key_mode, KEY_FRAME);
+    ImGui::SameLine();
+    ImGui::RadioButton("the whole move", &T.key_mode, KEY_MOVE);
+    ImGui::SameLine();
+    ImGui::RadioButton("every move here", &T.key_mode, KEY_GAME);
+    if (T.key_mode == KEY_FRAME) {
+        ImGui::SetNextItemWidth(160);
+        ImGui::SliderInt("Fades over", &T.spread, 0, 30, "%d frames");
+        hint("Either side of the frame: its change is all there at that frame and fades to none this many frames away.");
+    }
+    ImGui::Spacing();
+    if (T.sel >= 0 && T.sel < po->nbones) {
+        const char *bone = po->names[T.sel];
+        PackAdjust *k = adj_key(T, move, bone, false);
+        float turn[3] = { 0, 0, 0 }, reach[3] = { 0, 0, 0 };
+        if (k != nullptr) {
+            memcpy(turn, k->turn, sizeof(turn));
+            memcpy(reach, k->reach, sizeof(reach));
+        }
+        ImGui::SeparatorText(bone_title(bone));
+        // its own axes as it stands: x to its left, y down, z to its back (turns about them; shown as a person would say them)
+        static const char *const Turns[3] = { "Tip forward", "Turn to its right", "Lean to its left" };
+        bool changed = false;
+        for (int i = 0; i < 3; i++) {
+            ImGui::SetNextItemWidth(200);
+            changed |= ImGui::DragFloat(Turns[i], &turn[i], 0.5f, -180, 180, "%.1f deg");
+            if (ImGui::IsItemActivated()) {
+                adj_snapshot(T);
+            }
+        }
+        if (reach_bone(bone)) {
+            static const char *const Moves[3] = { "To its left", "Up", "Forward" };
+            static const float Way[3] = { 1, -1, -1 };
+            for (int i = 0; i < 3; i++) {
+                float shown = reach[i] * Way[i];
+                ImGui::SetNextItemWidth(200);
+                if (ImGui::DragFloat(Moves[i], &shown, 0.5f, -500, 500, "%.1f")) {
+                    reach[i] = shown * Way[i];
+                    changed = true;
+                }
+                if (ImGui::IsItemActivated()) {
+                    adj_snapshot(T);
+                }
+            }
+        }
+        if (changed && (k = adj_key(T, move, bone, true)) != nullptr) {
+            memcpy(k->turn, turn, sizeof(turn));
+            memcpy(k->reach, reach, sizeof(reach));
+        }
+        if (T.key_mode == KEY_FRAME) {
+            ImGui::TextDisabled("At frame %d of %s.", T.frame, move);
+        } else {
+            ImGui::TextDisabled(T.key_mode == KEY_MOVE ? "In all of %s." : "In every move here%s.", T.key_mode == KEY_MOVE ? move : "");
+        }
+        if (ImGui::Button(other_side(bone)[0] != 0 ? "Mirror to its other side" : "Mirror (it has no other side)")
+            && other_side(bone)[0] != 0) {
+            adj_snapshot(T);
+            adj_mirror(T, move, bone);
+        }
+        ImGui::SetItemTooltip("Its changes in this move given to its other side, the other way round");
+        ImGui::SameLine();
+        if (ImGui::Button("Reset this joint")) {
+            adj_snapshot(T);
+            std::vector<PackAdjust> keep;
+            for (auto &x : T.adj) {
+                if (!(x.kind == T.kind && pack_adjust_for(&x, T.kind, move) && SDL_strcasecmp(x.bone, bone) == 0)) {
+                    keep.push_back(x);
+                }
+            }
+            T.adj = keep;
+        }
+        ImGui::SetItemTooltip("Its changes in this move taken away (and those to every move here)");
+    } else {
+        ImGui::TextDisabled("Pick a joint in the picture.");
+    }
+    ImGui::Spacing();
+    ImGui::BeginDisabled(T.undo.empty());
+    if (ImGui::Button("Undo")) {
+        adj_undo(T);
+    }
+    ImGui::EndDisabled();
+    ImGui::SameLine();
+    ImGui::BeginDisabled(T.redo.empty());
+    if (ImGui::Button("Redo")) {
+        adj_redo(T);
+    }
+    ImGui::EndDisabled();
+    ImGui::SameLine();
+    if (ImGui::Button("Reset this move")) {
+        adj_snapshot(T);
+        std::vector<PackAdjust> keep;
+        for (auto &x : T.adj) {
+            if (!(x.kind == T.kind && SDL_strcasecmp(x.move, move) == 0)) {
+                keep.push_back(x);
+            }
+        }
+        T.adj = keep;
+    }
+    ImGui::SetItemTooltip("All its changes in %s taken away", move);
+    // its changes in this move: each picked to go to it, or taken away
+    ImGui::SeparatorText("Its changes in this move");
+    int shown = 0, gone = -1;
+    for (int i = 0; i < (int)T.adj.size(); i++) {
+        PackAdjust &x = T.adj[i];
+        if (!pack_adjust_for(&x, T.kind, move)) {
+            continue;
+        }
+        char line[160];
+        int b = -1;
+        for (int j = 0; j < po->nbones; j++) {
+            b = SDL_strcasecmp(po->names[j], x.bone) == 0 ? j : b;
+        }
+        snprintf(line, sizeof(line), "%s: %s%s##%d", bone_title(x.bone),
+                 x.at >= 0 ? "" : strcmp(x.move, "*") == 0 ? "every move here" : "the whole move", "", i);
+        if (x.at >= 0) {
+            snprintf(line, sizeof(line), "%s: frame %d, fading over %d##%d", bone_title(x.bone), x.at, x.spread, i);
+        }
+        ImGui::PushID(i);
+        if (ImGui::SmallButton("x")) {
+            gone = i;
+        }
+        ImGui::SetItemTooltip("Take it away");
+        ImGui::PopID();
+        ImGui::SameLine();
+        if (ImGui::Selectable(line, b == T.sel && (x.at < 0 || x.at == T.frame))) {
+            T.sel = b;
+            if (x.at >= 0) {
+                T.frame = x.at;
+                T.key_mode = KEY_FRAME;
+                T.spread = x.spread;
+            } else {
+                T.key_mode = strcmp(x.move, "*") == 0 ? KEY_GAME : KEY_MOVE;
+            }
+            T.adj_playing = false;
+        }
+        shown++;
+    }
+    if (gone >= 0) {
+        adj_snapshot(T);
+        T.adj.erase(T.adj.begin() + gone);
+    }
+    if (shown == 0) {
+        ImGui::TextDisabled("None yet.");
+    }
+    ImGui::TextDisabled("They're saved with the hero (Save to mods folder).");
 }
 
 void editor_right(Tool &T, SDL_Window *win) {
@@ -1281,6 +1959,9 @@ void editor_right(Tool &T, SDL_Window *win) {
             ImGui::TextWrapped("Its moves here are %s's.", HeroNames[T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero]);
         }
     }
+    if (T.page >= 0) {
+        adjust_panel(T);
+    }
     ImGui::Spacing();
 
     // the hero, whatever page
@@ -1370,6 +2051,27 @@ void editor_window(Tool &T, SDL_Window *win) {
     // made by itself the first time a game's page is open for a model
     if (T.page != PAGE_MODEL && !T.made_asked && T.maker == nullptr) {
         make_in_game(T);
+    }
+    // adjusting a move: Space plays or stops it, the arrows step a frame, Ctrl+Z undoes and Ctrl+Y (or Ctrl+Shift+Z) does it again
+    ImGuiIO &io = ImGui::GetIO();
+    if (T.adjusting && T.page >= 0 && T.have_pose[T.kind] && !io.WantTextInput) {
+        if (ImGui::IsKeyPressed(ImGuiKey_Space, false)) {
+            T.adj_playing = !T.adj_playing;
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) {
+            T.frame--;
+            T.adj_playing = false;
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_RightArrow)) {
+            T.frame++;
+            T.adj_playing = false;
+        }
+        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
+            io.KeyShift ? adj_redo(T) : adj_undo(T);
+        }
+        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false)) {
+            adj_redo(T);
+        }
     }
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
@@ -1564,13 +2266,44 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         last = now;
         made_check(T);
+        /* a test's: HEROTOOL_ADJUST=BONE@FRAME adjusts the game shown once it's made, that bone picked at that frame */
+        static bool adjust_set = false;
+        if (!adjust_set && SDL_getenv("HEROTOOL_ADJUST") != nullptr && T.page >= 0 && T.have_pose[T.kind]) {
+            char bone[64];
+            const char *at = strchr(SDL_getenv("HEROTOOL_ADJUST"), '@');
+            SDL_strlcpy(bone, SDL_getenv("HEROTOOL_ADJUST"), sizeof(bone));
+            if (strchr(bone, '@') != nullptr) {
+                *strchr(bone, '@') = 0;
+            }
+            T.adjusting = true;
+            T.frame = at != nullptr ? SDL_atoi(at + 1) : 0;
+            for (int b = 0; b < T.poses[T.kind].nbones; b++) {
+                T.sel = SDL_strcasecmp(T.poses[T.kind].names[b], bone) == 0 ? b : T.sel;
+            }
+            adjust_set = true;
+            /* and HEROTOOL_ADJUST_TURN / _REACH=X,Y,Z changes it there, as the panel's values would */
+            const char *turn = SDL_getenv("HEROTOOL_ADJUST_TURN"), *reach = SDL_getenv("HEROTOOL_ADJUST_REACH");
+            PackAdjust *k = T.sel >= 0 && (turn != nullptr || reach != nullptr)
+                                ? adj_key(T, T.made[T.kind].anims[T.anim].name, T.poses[T.kind].names[T.sel], true)
+                                : nullptr;
+            if (k != nullptr) {
+                if (turn != nullptr) {
+                    SDL_sscanf(turn, "%f,%f,%f", &k->turn[0], &k->turn[1], &k->turn[2]);
+                }
+                if (reach != nullptr) {
+                    SDL_sscanf(reach, "%f,%f,%f", &k->reach[0], &k->reach[1], &k->reach[2]);
+                }
+            }
+        }
         if (T.page == PAGE_ALL) {
             for (int k = 0; k < PACK_KINDS; k++) {
                 if (T.have_made[k] && T.made[k].nanims > 0) {
                     T.thumbs[k].yaw = T.made_turn;
                     T.thumbs[k].pitch = T.game_view.pitch;
-                    int b = breathe_of(&T.made[k]);
-                    draw_made(&T.made[k], b, (int)(T.made_t * 30) % T.made[k].anims[b].frames, T.thumbs[k], ren, T.rides[k], T.nrides[k]);
+                    int b = breathe_of(&T.made[k]), f = (int)(T.made_t * 30) % T.made[k].anims[b].frames;
+                    // with its adjustments now, where there's a pose to make them on
+                    bool live = adjusted_frame(T, k, b, f, T.live);
+                    draw_made(&T.made[k], b, f, T.thumbs[k], ren, T.rides[k], T.nrides[k], live ? T.live.data() : nullptr);
                 }
             }
         }
@@ -1579,9 +2312,18 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             int a = T.anim < mk->nanims ? T.anim : 0;
 
             T.game_view.yaw = T.made_turn;
-            // 30 frames a second, as the game plays a move a frame a tick; a kind made with more frames a tick has as many more
-            draw_made(mk, a, mk->nanims > 0 ? (int)(T.made_t * 30) % mk->anims[a].frames : 0, T.game_view, ren, T.rides[T.kind],
-                      T.nrides[T.kind]);
+            // 30 frames a second, as the game plays a move a frame a tick; a kind made with more frames a tick has as many more. While
+            // it's adjusted, the frame picked (played on if it's playing)
+            bool adjusting = T.adjusting && T.have_pose[T.kind];
+            if (adjusting && T.adj_playing && mk->nanims > 0) {
+                T.adj_t += dt * T.made_speed;
+                for (; T.adj_t >= 1 / 30.0f; T.adj_t -= 1 / 30.0f) {
+                    T.frame = (T.frame + 1) % mk->anims[a].frames;
+                }
+            }
+            int f = mk->nanims > 0 ? adjusting ? T.frame % mk->anims[a].frames : (int)(T.made_t * 30) % mk->anims[a].frames : 0;
+            bool live = adjusted_frame(T, T.kind, a, f, T.live);
+            draw_made(mk, a, f, T.game_view, ren, T.rides[T.kind], T.nrides[T.kind], live ? T.live.data() : nullptr);
         }
         if (T.m != nullptr) {
             // the front and side views at rest, the third playing the move
@@ -1593,6 +2335,19 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
+        /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT] presses the left button at (X0, Y0) in the window once it's adjusting, moves
+           to (X1, Y1) over ten frames and lets go (Shift held if SHIFT is 1), as a person's mouse would */
+        static int drag_step = -1;
+        if (SDL_getenv("HEROTOOL_DRAG") != nullptr && T.adjusting && drag_step < 14) {
+            float d[5] = { 0, 0, 0, 0, 0 };
+            SDL_sscanf(SDL_getenv("HEROTOOL_DRAG"), "%f,%f,%f,%f,%f", &d[0], &d[1], &d[2], &d[3], &d[4]);
+            ImGuiIO &dio = ImGui::GetIO();
+            drag_step++;
+            float t = drag_step < 2 ? 0 : drag_step > 11 ? 1 : (drag_step - 1) / 10.0f;
+            dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && drag_step >= 1 && drag_step <= 12);
+            dio.AddMousePosEvent(d[0] + (d[2] - d[0]) * t, d[1] + (d[3] - d[1]) * t);
+            dio.AddMouseButtonEvent(0, drag_step >= 1 && drag_step <= 12);
+        }
         ImGui::NewFrame();
         if (T.home) {
             start_screen(T, win);
@@ -1609,6 +2364,10 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             if (grab != nullptr) {
                 SDL_SavePNG(grab, shot);
                 SDL_DestroySurface(grab);
+            }
+            /* and HEROTOOL_LIVE=FILE the frame shown as it made it, its vertices (s16 x, y, z each), to set beside the game's */
+            if (SDL_getenv("HEROTOOL_LIVE") != nullptr && T.page >= 0 && adjusted_frame(T, T.kind, T.anim, T.frame, T.live)) {
+                SDL_SaveFile(SDL_getenv("HEROTOOL_LIVE"), T.live.data(), T.live.size() * sizeof(int16_t));
             }
             done = true;
         }

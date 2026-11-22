@@ -349,7 +349,36 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
                 say(&hero, ",\n    \"%s\": { \"template\": \"%s\" }", pack_kind_name(k), p->kind_template[k]);
             }
         }
-        say(&hero, "\n  }\n}\n");
+        say(&hero, "\n  }");
+        /* its moves adjusted (the animation tools): each with a turn or a reach */
+        {
+            int said = 0;
+
+            for (int i = 0; i < p->nadjust; i++) {
+                const PackAdjust *a = &p->adjust[i];
+                int turn = a->turn[0] != 0 || a->turn[1] != 0 || a->turn[2] != 0, reach = a->reach[0] != 0 || a->reach[1] != 0 || a->reach[2] != 0;
+
+                if (!turn && !reach) {
+                    continue;
+                }
+                say(&hero, "%s\n    { \"kind\": \"%s\", \"move\": \"%s\", \"bone\": \"%s\"", said++ ? "," : ",\n  \"adjust\": [",
+                    pack_kind_name(a->kind), a->move, a->bone);
+                if (a->at >= 0) {
+                    say(&hero, ", \"at\": %d, \"spread\": %d", a->at, a->spread);
+                }
+                if (turn) {
+                    say(&hero, ", \"turn\": [%.4g, %.4g, %.4g]", a->turn[0], a->turn[1], a->turn[2]);
+                }
+                if (reach) {
+                    say(&hero, ", \"reach\": [%.4g, %.4g, %.4g]", a->reach[0], a->reach[1], a->reach[2]);
+                }
+                say(&hero, " }");
+            }
+            if (said) {
+                say(&hero, "\n  ]");
+            }
+        }
+        say(&hero, "\n}\n");
         snprintf(path, sizeof(path), "%s/heroes/%s/hero.json", out, p->id);
         if (!write_file(path, hero.s, hero.n)) {
             snprintf(why, why_size, "can't write %s", path);

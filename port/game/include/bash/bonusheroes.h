@@ -34,6 +34,8 @@ void pack_heroes_scan(void);
 /* What's made written to FOLDER/<hero id>_<KIND>.hpv as it's made, for the hero tool's preview (--dump-hero; docs/HERO_PACKS.md, The
  * preview): every model of every kind, its faces, images and every frame, as herotool/src/preview.c reads them. */
 void bonus_heroes_dump_to(const char *folder);
+/* That folder, or NULL if there's none (packfollow.c writes each kind's poses there too: <id>_<KIND>.pose) */
+const char *bonus_heroes_dump_folder(void);
 /* And what the game draws with a hero beside its own model, the Ballistix car and the tank: FOLDER/<id>_<KIND>_ride<N>.hpv */
 void bonus_heroes_dump_rides(const char *id);
 
