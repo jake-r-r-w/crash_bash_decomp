@@ -313,19 +313,27 @@ static void control_value(char *text, size_t size, s32 n) {
     }
 }
 
-/* --- the Mods page: OPEN MODS FOLDER, HERO TOOL (the tool beside the program that makes a hero mod, herotool/, docs/HERO_PACKS.md;
-   not on Android), then the mods in their order, mod n - MODS_ROWS in row n --- */
+/* --- the Mods page: its links, OPEN MODS FOLDER and OPEN HERO TOOL (the tool beside the program that makes a hero mod, herotool/,
+   docs/HERO_PACKS.md; not on Android), which open something and have no value; a line, YOUR MODS, that the cursor passes over; then the
+   mods in their order, each ON or OFF, mod n - MODS_ROWS in row n (the user's word, 2026-11-22: what's a mod and what's a tool) --- */
 #define ROW_FOLDER 0
 #ifndef __ANDROID__
 #define ROW_HERO_TOOL 1
-#define MODS_ROWS 2
+#define ROW_MODS_LINE 2
 #else
 #define ROW_HERO_TOOL (-1)
-#define MODS_ROWS 1
+#define ROW_MODS_LINE 1
 #endif
+#define MODS_ROWS (ROW_MODS_LINE + 1)
+#define MODS_LINE "- - - - - YOUR MODS - - - - -"
 
 static s32 option_count(const MenuCategory *c) {
     return c->kind == KIND_MODS ? mods_count() + MODS_ROWS : c->count;
+}
+
+/* Whether row n is a page's line, which the cursor passes over */
+static s32 is_line(const MenuCategory *c, s32 n) {
+    return (c->kind == KIND_CONTROLS && n == ROW_LINE) || (c->kind == KIND_MODS && n == ROW_MODS_LINE);
 }
 
 static s32 mod_usable(const ModInfo *m) {
@@ -532,10 +540,6 @@ static void show_value(char *text, size_t size, const MenuCategory *c, s32 n) {
     if (c->kind == KIND_MODS) {
         const ModInfo *m = mods_info(n - MODS_ROWS);
 
-        if (n == ROW_HERO_TOOL) {
-            snprintf(text, size, "%s", mods_hero_tool_there() ? "OPEN" : "NOT HERE");
-            return;
-        }
         snprintf(text, size, "%s", n < MODS_ROWS || m == NULL ? "" : !mod_usable(m) ? "BROKEN" : m->on ? "ON" : "OFF");
         return;
     }
@@ -576,7 +580,10 @@ static const char *option_label(const MenuCategory *c, s32 n, s32 i) {
             return "OPEN MODS FOLDER";
         }
         if (n == ROW_HERO_TOOL) {
-            return "HERO TOOL";
+            return mods_hero_tool_there() ? "OPEN HERO TOOL" : "HERO TOOL NOT FOUND";
+        }
+        if (n == ROW_MODS_LINE) {
+            return MODS_LINE;
         }
         font_text(Labels[i], sizeof(Labels[i]), mods_info(n - MODS_ROWS)->name);
         return Labels[i];
@@ -1460,6 +1467,7 @@ static void update_options(s32 pressed) {
             }
             if (Option >= option_count(c)) {
                 Option = option_count(c) - 1;
+                Option -= is_line(c, Option);
             }
         }
     }
@@ -1467,15 +1475,13 @@ static void update_options(s32 pressed) {
     if (c->kind == KIND_DATA && folders_poll()) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((pressed & 0x40) && Option < option_count(c) - 1) {
-        Option++;
-        /* the CONTROLS page's line is passed over */
-        Option += controls && Option == ROW_LINE;
+    /* the CONTROLS and MODS pages' lines are passed over (on MODS, down to none if there are no mods) */
+    if ((pressed & 0x40) && Option + 1 + is_line(c, Option + 1) < option_count(c)) {
+        Option += 1 + is_line(c, Option + 1);
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if ((pressed & 0x10) && Option > 0) {
-        Option--;
-        Option -= controls && Option == ROW_LINE;
+        Option -= 1 + is_line(c, Option - 1);
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if (c->kind == KIND_MODS && Option >= MODS_ROWS && (pressed & (PAD_L1 | PAD_R1))) {
@@ -1611,7 +1617,7 @@ static s32 mouse_presses(void) {
 
             row = row_at(m.y, OPTION_TOP, OPTION_STEP, VISIBLE_OPTIONS);
             n = row >= 0 ? FirstShown + row : -1;
-            if (n >= option_count(c) || (c->kind == KIND_CONTROLS && n == ROW_LINE)) {
+            if (n >= option_count(c) || is_line(c, n)) {
                 n = -1;
             }
             if (n >= 0 && Screen == SCREEN_OPTIONS && point) {
