@@ -282,6 +282,7 @@ struct Tool {
     char id[32] = "myhero", name[32] = "MY HERO", author[64] = "", card[1024] = "";
     char voice[PACK_VOICE_JOBS][1024] = {};
     int height = 560, voice_job = 1, mode = 0, template_hero = 0; // template_hero: who it's based on (its template and its place)
+    int mode_page = -100; // the page Preview in last followed (mode: Modes')
     // on foot its own moves (its model's clips, and the tool's moves for the rest), not those of who it's based on: a pack that says no
     // template (Bobby) is so, and is saved so, as it was (the user's word, 2026-11-22)
     bool foot_own = false;
@@ -742,10 +743,14 @@ const int KIND_WARP_TOOL = PACK_KINDS - 1; // the podium: its model on foot's, n
 
 const char *const HeroNames[] = { "Crash", "Coco", "Cortex", "Brio", "Tiny", "Koala Kong", "Dingodile", "Rilla Roo" };
 const char *const Heroes[] = { "crash", "coco", "cortex", "brio", "tiny", "kong", "dingodile", "rilla" };
+// The games Preview in can start (the game's mode, main.c's level names in order), each with the kind of model it shows: a game's page
+// picks its own (the user's word, 2026-11-22: "preview in x should changed based on what is open"), the arrow any
 const struct {
     const char *name;
-    int mode;
-} Modes[] = { { "Crate Crush", 0 }, { "Ring Ding", 27 }, { "Polar Push", 18 }, { "Pogo", 10 }, { "Tournament podium", 43 } };
+    int mode, kind;
+} Modes[] = { { "Crate Crush", 0, 0 },  { "Ring Ding", 27, 0 },   { "Polar Push", 18, 1 },  { "Pogo Painter", 10, 2 },
+              { "Ballistix", 14, 3 },   { "Tank Wars", 6, 4 },    { "Crash Dash", 23, 5 },  { "Splash Dash", 25, 6 },
+              { "Mallet Mash", 29, 7 }, { "Dragon Drop", 28, 8 }, { "Keg Kaboom", 30, 9 }, { "Tournament podium", 43, 10 } };
 
 // --- posing: the standard skeleton's bones turned and moved as a move says, the mesh with them ---
 
@@ -4002,6 +4007,14 @@ void top_bar(Tool &T) {
     tag(busy ? "Making..." : stale ? "Preview out of date" : T.unsaved ? "Not saved yet" : "All saved", warn ? TINT_PERI : TINT_MINT,
         warn ? PERI_LIGHT : MINT_LIGHT, warn ? PERI : MINT);
     // on the right: undo, redo, sounds, preview it in a game (and which), save
+    // (a game's page opened: its own game, kept if the one picked already shows its kind, as Ring Ding on foot; the arrow picks
+    // another till the next page)
+    if (T.page != T.mode_page) {
+        T.mode_page = T.page;
+        for (int i = 0; T.page >= 0 && i < (int)(sizeof(Modes) / sizeof(Modes[0])) && Modes[T.mode].kind != T.page; i++) {
+            T.mode = Modes[i].kind == T.page ? i : T.mode;
+        }
+    }
     char play[64];
     snprintf(play, sizeof(play), "Preview in %s##play", Modes[T.mode].name);
     float rw = 3 * (bh + sp) + button_w(play, true) + U(36) + sp + U(100);

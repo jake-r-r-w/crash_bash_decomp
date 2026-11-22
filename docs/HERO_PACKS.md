@@ -301,7 +301,9 @@ previews and zoom in a folder of its own (not the open tool's).
 
 **The editor** (2026-11-22, the user's word: one window, simple; Graphite's layout since, The look below): a **top bar** (back to the
 heroes, the hero's name, **All games at a glance** on a grid button beside it, a status pill: All saved, Not saved yet, Preview out of
-date or Making..., then undo, redo, sounds on or off, **Preview in GAME** with an arrow to pick the game, and **Save**), the **strip** of
+date or Making..., then undo, redo, sounds on or off, **Preview in GAME** with an arrow to pick the game (a game's page opened picks its own: Crate Crush on foot, unless Ring Ding's
+picked, Polar Push 18, Pogo Painter 10, Ballistix 14, Tank Wars 6, Crash Dash 23, Splash Dash 25, Mallet Mash 29, Dragon Drop 28, Keg
+Kaboom 30, the podium 43; the user's word, 2026-11-22, "preview in x should changed based on what is open"), and **Save**), the **strip** of
 games under it (**Your hero** first, then each game as a chip with the hero in it, a still of its first animation; the page shown
 periwinkle and lifted), and the page. **Your hero** is the model's own page: its picture (**Joints**, the dots to place on its front
 and side, or **Preview**, the tool's own moves on it; Joints only for a model without a rig), under it its **Card** and **Sounds** (a WAV for each, played with its

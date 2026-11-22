@@ -667,6 +667,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's Preview in follows the page opened (each game's page its own game; every game in its arrow now).
 - 2026-11-22: the hero tool's start screen: no path to type, What the model needs (the game's limits), no zoom or zip notes, and each
   hero's picture (its card, else its face from its last made model). The mod's name is the hero's (no field). The card: Take a photo
   makes the hero page's picture a camera (turn, move, zoom, pose), its photo the card (`card.png` on Save); the face slider's gone.
