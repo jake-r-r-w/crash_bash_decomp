@@ -446,7 +446,8 @@ are for a character facing -Y: X (coral) to its left, Y (mint) to its back, Z (p
 down), the panel's values lettered the same. In a column on the picture under **Bones**, **Rotate (R)**, **Move (G)** and **Scale (S)** pick which (the gizmo the same size whatever the view, its
 arrows and handles as long as their axis looks, shorter as it points at you and faded nearly end on, each lettered: the user's word,
 2026-11-22, "it sort of moves as you tilt the camera"; tilting doesn't change the picture's size, and the bones and gizmo are worked
-out from the view the picture was drawn with), as do those
+out from the view the picture was drawn with; a little see-through, so the hero shows through it, and the handle under the mouse or
+being dragged solid: the user's word, 2026-11-22, "make it abit more sea-tru"), as do those
 keys:
 - **Rotate**: a ring about each axis, dragged round to turn it about that axis (a ring seen almost edge on, as far as the mouse goes
   along it, its near side following the mouse); a white ring about the line towards whoever's looking; its middle, dragged, points
@@ -492,8 +493,9 @@ is what's posed (its dot at its joint; **joints** only where the model's page pl
 **Blend** how a key comes and goes. The history's steps say the same: Rotated, Moved, Scaled, Stretched, Deleted, Pasted, Faded.
 
 The tool says as little as it can (the user's word, 2026-11-22: "its very wordy for a visual tool"): a word or two for a control,
-what it does in its tooltip, one (?) (the keys and mouse card), short messages floating over the picture a moment (a toast: the
-status, said once), and no paragraphs; the right's fields leave room for their labels at the window's scale.
+what it does in its tooltip, one (?) (the keys and mouse card), short messages in the picture's top right a moment, under its
+buttons (a toast: the status, said once; the user's word, 2026-11-22: "the pop ups should show in the top right of the animation
+window"; none for a move made its own, which the timeline's tag says), and no paragraphs; the right's fields leave room for their labels at the window's scale.
 
 **The look: Graphite** (the user's pick, 2026-11-22, from a design canvas of mocks: five warm, soft directions, then Sorbet's layout
 in three dark palettes; "graphite"). Neutral charcoal with soft round shapes and two pastels: **coral** (#F59E8B) for what does something
@@ -576,7 +578,7 @@ key to the whole move or every move here pastes as that (`key_copy`, `key_paste`
 **The undo history** (the user's word, 2026-11-22: "add undo history for keyframe moves in the timeline"): every change is a step
 with a name, as Blender's: "Turned Head", "Made Head bigger or smaller", "Moved Head's key to frames 32 to 82", "Held Head's key from
 frame 10 to 66", "Took away Head's key", "Mirrored ...", "Reset ..." (a drag's step said again as it goes, `adj_step_says`). The
-panel's **History** lists them, oldest first, the one it's at lit and those undone greyed; clicking one goes back (or on) to just
+panel's **History** lists them, oldest first (its bar only its name: the last step isn't said on it), the one it's at lit and those undone greyed; clicking one goes back (or on) to just
 after it (`adj_go`). Up to 300 steps. Keys: Space plays, the arrows step a frame, R, G and S pick the gizmo, Delete takes the key
 picked away, Ctrl+C and Ctrl+V copy and paste a key (Ctrl+Shift+V mirrored), Ctrl+Z, Ctrl+Y (or Ctrl+Shift+Z). Up to 256 changes a
 hero.

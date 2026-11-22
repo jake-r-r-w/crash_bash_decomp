@@ -327,10 +327,10 @@ struct Tool {
     // the frame shown made again with its adjustments, and the picked bone's joint and each bone's on the screen
     std::vector<int16_t> live;
     // its moves of its own copied from its template's (OWN_MADE), its moves on foot of its own given back to its template (their clips
-    // left out), what was last made its own (said on the page), and a preview asked for while one was being made
+    // left out), the move watched, and a preview asked for while one was being made
     std::vector<BakedMove> baked;
     std::vector<std::string> foot_back;
-    char own_note[200] = "", watching[32] = ""; // (and the move watched, kept as it's made again)
+    char watching[32] = ""; // (and the move watched, kept as it's made again)
     bool remake = false;
     // a change to a move of its own waiting on the user's yes (confirm_back): the game, its move and what it's to be
     // the gizmo (GIZMO_TURN, _MOVE, _SIZE), the handle of it being dragged, and the key picked in the timeline, dragged or scrubbed
@@ -684,16 +684,16 @@ void toast(Tool &T, const char *fmt, ...) {
     T.toast_at = ImGui::GetTime();
 }
 
-void draw_toast(Tool &T, ImVec2 bottom_middle, float wrap) {
+void draw_toast(Tool &T, ImVec2 top_right, float wrap) {
     double age = ImGui::GetTime() - T.toast_at, last = 2.6 + strlen(T.toast) * 0.02;
     if (T.toast[0] == 0 || age > last + 0.3) {
         return;
     }
-    float a = (float)(age < 0.25 ? age / 0.25 : age > last ? 1 - (age - last) / 0.3 : 1), rise = (1 - a) * U(12);
+    float a = (float)(age < 0.25 ? age / 0.25 : age > last ? 1 - (age - last) / 0.3 : 1), slide = (1 - a) * U(16);
     ImDrawList *dl = ImGui::GetForegroundDrawList();
     ImVec2 ts = ImGui::CalcTextSize(T.toast, nullptr, false, wrap);
     float w = ts.x + U(64), h = ts.y + U(22);
-    ImVec2 lo(bottom_middle.x - w / 2, bottom_middle.y - h + rise), hi(bottom_middle.x + w / 2, bottom_middle.y + rise);
+    ImVec2 lo(top_right.x - w + slide, top_right.y), hi(top_right.x + slide, top_right.y + h);
     auto al = [&](ImU32 c) { return (c & 0x00FFFFFFu) | (ImU32)(a * ((c >> 24) & 255)) << 24; };
     dl->AddRectFilled(ImVec2(lo.x, lo.y + U(4)), ImVec2(hi.x, hi.y + U(4)), al(SHADOW), h / 2 < U(24) ? h / 2 : U(24));
     dl->AddRectFilled(lo, hi, al(INK), h / 2 < U(24) ? h / 2 : U(24));
@@ -954,7 +954,6 @@ void open_model(Tool &T, const char *path) {
     T.model_view = 0;
     T.baked.clear();
     T.foot_back.clear();
-    T.own_note[0] = 0;
     own_init(T);
     SDL_strlcpy(T.model, path, sizeof(T.model));
     T.rigged = m->skinned && kit_map_rig(m, why, sizeof(why));
@@ -1234,11 +1233,6 @@ void made_check(Tool &T) {
     snprintf(T.status, sizeof(T.status), have != 0 ? "Made in %d of %d games"
                                                    : "The game didn't make it (it said %d): does it find its data when you start it yourself?",
              have != 0 ? have : code, PACK_KINDS);
-    // a move just made its own said so
-    if (T.own_note[0] != 0) {
-        snprintf(T.status, sizeof(T.status), "%s", T.own_note);
-        T.own_note[0] = 0;
-    }
 }
 
 // A made model's frame drawn: its faces textured as the PS1 does (the texel times its corner's colour, 128 as it is), clear texels
@@ -1930,8 +1924,8 @@ bool bake_move(Tool &T, int kind, int anim) {
             break;
         }
     }
-    snprintf(T.own_note, sizeof(T.own_note), "%s is now its own animation (from %s)",
-             pa->name, HeroNames[T.baked.back().from]);
+    // (not said: the timeline's tag says whose it is now; the user's word, 2026-11-22: "remove the pop up about creating a new
+    // animation")
     make_in_game(T);
     return true;
 }
@@ -2738,17 +2732,19 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             dl->AddCircle(ImVec2(sx[ob], sy[ob]), U(11), IM_COL32(200, 150, 255, 230), 0, U(2));
         }
     }
-    // the gizmo
+    // the gizmo, a little see-through (the user's word, 2026-11-22: "make it abit more sea-tru"), the handle under the mouse or being
+    // dragged solid
+    auto see = [](ImU32 col, bool solid) { return solid ? col : (col & 0x00FFFFFFu) | (ImU32)(((col >> 24) & 255) * 0.62f) << 24; };
     if (T.sel >= 0) {
         int lit = T.dragging ? T.handle : over;
         if (T.gizmo == GIZMO_TURN) {
             ImVec2 pts[48];
-            dl->AddCircle(c, R * 1.25f, lit == H_TURN_VIEW ? INK : (INK & 0x00FFFFFFu) | 0x8C000000u, 64, lit == H_TURN_VIEW ? U(3.5f) : U(2));
+            dl->AddCircle(c, R * 1.25f, lit == H_TURN_VIEW ? INK : (INK & 0x00FFFFFFu) | 0x60000000u, 64, lit == H_TURN_VIEW ? U(3.5f) : U(2));
             for (int i = 0; i < 3; i++) {
                 ring(i, pts, 48);
-                dl->AddPolyline(pts, 48, Axis[i], ImDrawFlags_Closed, lit == H_TURN + i ? U(5) : U(3));
+                dl->AddPolyline(pts, 48, see(Axis[i], lit == H_TURN + i), ImDrawFlags_Closed, lit == H_TURN + i ? U(5) : U(3));
             }
-            dl->AddCircle(c, U(9), INK, 0, U(2));
+            dl->AddCircle(c, U(9), see(INK, lit == H_TURN_FREE), 0, U(2));
         } else {
             for (int i = 0; i < 3; i++) {
                 if (axlen[i] < 0.12f) {
@@ -2756,7 +2752,8 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
                 }
                 // (nearly end on: faded, and not taken)
                 float fade = axlen[i] < 0.25f ? (axlen[i] - 0.12f) / 0.13f : 1, len = R * axlen[i];
-                ImU32 col = (Axis[i] & 0x00FFFFFFu) | (ImU32)(255 * (0.25f + 0.75f * fade)) << 24;
+                bool on = lit == (T.gizmo == GIZMO_MOVE ? H_MOVE : H_SIZE) + i;
+                ImU32 col = (Axis[i] & 0x00FFFFFFu) | (ImU32)(255 * (0.25f + 0.75f * fade) * (on ? 1 : 0.62f)) << 24;
                 ImVec2 e(c.x + ax2[i][0] * len, c.y + ax2[i][1] * len), s(c.x + ax2[i][0] * U(14), c.y + ax2[i][1] * U(14));
                 float t = lit == (T.gizmo == GIZMO_MOVE ? H_MOVE : H_SIZE) + i ? U(5) : U(3);
                 if (len > U(16)) {
@@ -2775,7 +2772,7 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
                 ImGui::PopFont();
             }
             bool mid = T.dragging && (T.handle == H_MOVE_FREE || T.handle == H_SIZE_ALL);
-            dl->AddCircle(c, U(12), mid ? INK : (INK & 0x00FFFFFFu) | 0xAA000000u, 0, mid ? U(3.5f) : U(2.5f));
+            dl->AddCircle(c, U(12), mid ? INK : (INK & 0x00FFFFFFu) | 0x70000000u, 0, mid ? U(3.5f) : U(2.5f));
         }
     }
     if (!T.dragging) {
@@ -3790,7 +3787,6 @@ void load_pack(Tool &T, const Found &f) {
         T.redo.clear();
         T.baked.clear();
         T.foot_back.clear();
-        T.own_note[0] = 0;
         for (int k = 0; k < PACK_KINDS; k++) {
             int th = info.kinds[k].template_hero;
             T.kind_template[k] = th >= 1 && th <= 8 && th - 1 != T.template_hero ? th - 1 : -1;
@@ -4109,7 +4105,8 @@ void help_card(Tool &T, ImVec2 at) {
 
 // The picture's own buttons, over it: Bones and the tools (its top left), X-Mirror, Onion and Clipping (top right), the keys and mouse
 // (bottom left; the axes are bottom right, view_axes)
-void picture_overlays(Tool &T, ImVec2 p, ImVec2 size) {
+float picture_overlays(Tool &T, ImVec2 p, ImVec2 size) {
+    float below = p.y + U(16);
     ImDrawList *dl = ImGui::GetWindowDrawList();
     ImVec2 keep = ImGui::GetCursorScreenPos();
     // Bones: shown to pose, or not, a clean view of the hero (Tab)
@@ -4195,7 +4192,9 @@ void picture_overlays(Tool &T, ImVec2 p, ImVec2 size) {
             ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - w, y));
             bool any = Clips.count[T.frame] > 0;
             tag(says, any ? TINT_CORAL : TINT_MINT, any ? CORAL : MINT_LIGHT, any ? CORAL : MINT);
+            y += U(28) + U(8);
         }
+        below = y;
     }
     // the keys and mouse (?), bottom left
     ImGui::SetCursorScreenPos(ImVec2(p.x + U(16), p.y + size.y - U(16) - U(40)));
@@ -4206,6 +4205,7 @@ void picture_overlays(Tool &T, ImVec2 p, ImVec2 size) {
         help_card(T, ImVec2(p.x + U(16), p.y + size.y - U(16) - U(40) - U(10)));
     }
     ImGui::SetCursorScreenPos(keep);
+    return below;
 }
 
 // A game's move's choice changed (Its moves here): one of its own given up only on the user's yes (ask_back), as it's work of theirs
@@ -4243,7 +4243,6 @@ void own_give_up(Tool &T, int kind, const char *move, int g, int m, int to) {
     if (g >= 0 && m >= 0) {
         T.ownmap[g][m] = to;
     }
-    T.own_note[0] = 0;
     make_in_game(T);
 }
 
@@ -4602,14 +4601,7 @@ void history_card(Tool &T) {
     ImGui::PushFont(FontTitle);
     float th = ImGui::GetTextLineHeight();
     dl->AddText(ImVec2(p.x + U(30), p.y + (h - th) / 2), INK, "History");
-    float hw = ImGui::CalcTextSize("History").x;
     ImGui::PopFont();
-    const char *last = T.undo.empty() ? "(start)" : T.undo.back().says.c_str();
-    ImVec2 ls = ImGui::CalcTextSize(last);
-    float room = w - U(30) - hw - U(16) - U(30);
-    ImGui::PushClipRect(ImVec2(p.x + U(40) + hw, p.y), ImVec2(p.x + w - U(28), p.y + h), true);
-    dl->AddText(ImVec2(p.x + w - U(30) - fminf(ls.x, room), p.y + (h - ls.y) / 2), MUTED, last);
-    ImGui::PopClipRect();
     float turn = ease_to(ImGui::GetID("##histturn"), *open ? 1 : 0, 16);
     icon(dl, turn > 0.5f ? IC_DOWN : IC_RIGHT, ImVec2(p.x + w - U(10), p.y + h / 2), U(18), MUTED);
     if (*open) {
@@ -5138,10 +5130,11 @@ void game_page(Tool &T) {
         }
         view_axes(v, T.made_turn, axes, hovered);
         look_around(v, T.made_turn, false);
+        float under = p.y + U(16);
         if (posable) {
-            picture_overlays(T, p, size);
+            under = picture_overlays(T, p, size);
         }
-        draw_toast(T, ImVec2(p.x + size.x / 2, p.y + size.y - U(22)), U(560));
+        draw_toast(T, ImVec2(p.x + size.x - U(16), under), U(420));
         ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + size.y + gap));
         if (posable) {
             ImGui::PushStyleColor(ImGuiCol_ChildBg, V4(CARD));
@@ -5262,7 +5255,7 @@ void model_page(Tool &T, SDL_Window *win) {
             dl->AddText(ImVec2(q.x + pad + i * w + (w - ts.x) / 2, q.y + pad + (h - ts.y) / 2), T.model_view == i ? PERI_INK : INK, tabs[i]);
         }
     }
-    draw_toast(T, ImVec2(p.x + size.x / 2, p.y + size.y - U(70)), U(560));
+    draw_toast(T, ImVec2(p.x + size.x - U(16), p.y + U(16) + (joints ? 0 : ImGui::GetFontSize() + U(18) + U(12))), U(420));
     ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + size.y + gap));
     float half = (main_w - gap) * 0.42f;
     face_card(T, win, half);
@@ -5540,7 +5533,7 @@ void start_screen(Tool &T, SDL_Window *win) {
         }
         dl->AddText(ImVec2(p.x + w - U(20) - hint_w, p.y + (bh - ImGui::GetTextLineHeight()) / 2), DIM, "Ctrl + / - zoom   Ctrl 0 reset");
     }
-    draw_toast(T, ImVec2(io.DisplaySize.x / 2, io.DisplaySize.y - U(110)), U(560));
+    draw_toast(T, ImVec2(x + w, U(40) + U(64) + U(12)), U(420));
     ImGui::End();
 }
 
@@ -5645,7 +5638,7 @@ void editor_window(Tool &T, SDL_Window *win) {
     }
     ask_back(T);
     if (T.page == PAGE_ALL) {
-        draw_toast(T, ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y - U(30)), U(560));
+        draw_toast(T, ImVec2(ImGui::GetIO().DisplaySize.x - U(18), U(14) + ImGui::GetFrameHeight() + U(16) + U(118) + U(50)), U(420));
     }
     ImGui::End();
 }

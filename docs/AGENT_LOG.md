@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's gizmo a little see-through (solid under the mouse or dragged); its pop-ups (toasts) in the picture's top
+  right under its buttons, on every page; no pop-up for a move made its own, nor its last step on the History bar ("Applied ...").
 - 2026-11-22: the hero tool's bone dots back to their colours by part (the user: "worked realy well before"); the gizmo steady as
   the view tilts: its arrows foreshortened and lettered (not stretched full length end on), the picture's fit no longer changes with
   its tilt, and the bones and gizmo drawn from the view the picture was (they ran a frame ahead of it while tilting).
