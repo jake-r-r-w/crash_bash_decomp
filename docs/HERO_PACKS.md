@@ -266,7 +266,11 @@ window. Each kind's model goes to `FOLDER/ID_KIND.hpv` as `made_write` writes it
 its images in RGBA, its faces, every frame of every move), so what the tool shows is what the game draws: the hero with each game's
 ride or prop, any move it has there, turned and slowed at will (`src/preview.c` reads them, `draw_made` draws them textured as the
 PS1 does). What the game draws beside the hero's model, the Ballistix car round it and the tank under it, is written too
-(`ID_KIND_rideN.hpv`, `bonus_heroes_dump_rides`: a mesh of the game's model placed as that game places it) and drawn with it, still.
+(`ID_KIND_rideN.hpv`, `bonus_heroes_dump_rides`: a mesh of the game's model placed as that game places it) and drawn with it, still:
+the tank as every tank game but Swamp Fox has it, its hull and the turret of the hero it plays like (Crash's and Coco's swirly gun,
+Dingodile's and Rilla Roo's flamer, the others' laser). A pack plays like its template in each game (its weight and speeds, the
+tank's turret and weapon) unless its kind says `"like"`; one that says no template, as the hero whose place it takes
+(packheroes.c). The previews are dragged to turn and tilt, scrolled to zoom, double-clicked to set back, and show BREATHE first.
 Under each game in the gallery a choice of **whose ride or prop** it has there: its template's, or another hero's (the pogo stick
 or Cortex's jetpack, Tiny's keg ...), written as that kind's `"template"` in hero.json (`--template-in GAME=HERO` from the command
 line); picking one makes it again. Cortex's and Brio's hover board is the game's jets, drawn in the game, not shown here.

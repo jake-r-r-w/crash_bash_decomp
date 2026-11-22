@@ -365,25 +365,47 @@ static void made_dump_to(const MadeModel *m, const char *path) {
 
 /* What the game draws with a hero beside its own model, which the tool's preview draws with it (bonus_heroes_dump_rides): a kind's ride,
    a mesh of a game's model placed as that game places it against the hero's model (its subengine's place less the hero's): the
-   Ballistix car round it (arkenoid.c: its first subengine, DB_BallsVehicle's 0x2004, the hero its second), and the tank (tank.c's mode
-   5: DB_TankVehicle's 0x2001, the hero itself 0x48 down in its hatch; its 0x2005 is only the gun's sight) */
+   Ballistix car round it (arkenoid.c: its first subengine, DB_BallsVehicle's 0x2004, the hero its second), and the tank as the tank
+   games but Swamp Fox draw it (tank.c, SetTankHeroIdle and the weapon's: DB_TankObjects2, its hull 0x4300, its animation 6's first
+   frame, and its turret by the hero it plays like: 0x2010 Crash's and Coco's, 0x2009 Dingodile's and Rilla Roo's, else 0x2011). A
+   mesh -1 is the turret, anim >= 0 the frame of an animation (on its own mesh) */
 static const struct {
-    s32 kind, bank, mesh, dy;
+    s32 kind, bank, mesh, anim;
 } Rides[] = {
-    { KIND_BALL, DB_BallsVehicle, 3, 0 },
-    { KIND_TANK, DB_TankVehicle, 0, -0x48 },
+    { KIND_BALL, DB_BallsVehicle, 3, -1 },
+    { KIND_TANK, DB_TankObjects2, 0, 6 },
+    { KIND_TANK, DB_TankObjects2, -1, -1 },
 };
 static const GamePart *RidePart;
-static s32 RideDy;
+static V3 RideAt[1024];
+static s32 RideAnimated;
 
 static void rides_frame(void *ctx, s32 anim, s32 f, V3 *out) {
     s32 k;
 
     (void)ctx, (void)anim, (void)f;
     for (k = 0; k < RidePart->nvert; k++) {
-        out[k] = RidePart->rest[RidePart->corner_of[k]];
-        out[k].y += (float)RideDy;
+        out[k] = RideAnimated ? RideAt[RidePart->corner_of[k]] : RidePart->rest[RidePart->corner_of[k]];
     }
+}
+
+static const FileEntry *file_anims(const ModelFile *m);
+
+/* The mesh an animation of a model moves, or -1 */
+static s32 anim_mesh(s32 bank, s32 anim) {
+    s32 size = 0, mesh = -1;
+    u8 *file = archive_own_file((s32)(HeroModelBank[bank].file - DatIndex), &size);
+    const ModelFile *m = (const ModelFile *)file;
+
+    if (file != NULL && anim >= 0 && anim < m->nMeshAnims) {
+        const FileEntry *e = &file_anims(m)[anim];
+        const u8 *h = (const u8 *)&e->mesh + e->mesh;
+
+        mesh = (s32)((h - (const u8 *)&m->meshes[0]) / (s32)sizeof(MeshHeader));
+        mesh = mesh >= 0 && mesh < m->nMeshes ? mesh : -1;
+    }
+    free(file);
+    return mesh;
 }
 
 static s32 ride_keep(void *ctx, const V3 *rest, s32 n, s32 textured) {
@@ -393,16 +415,27 @@ static s32 ride_keep(void *ctx, const V3 *rest, s32 n, s32 textured) {
 
 void bonus_heroes_dump_rides(const char *id) {
     static const MadeAnim Rest = { "REST", 1, 0, 1 };
-    s32 i, n[NUM_KINDS] = { 0 };
+    s32 i, n[NUM_KINDS] = { 0 }, x = extra_hero_named(id), like;
 
+    /* the hero its tank's like (its pack's, else its template's, packheroes.c), else the one whose place it takes */
+    like = x > EXTRA_NONE && x < NUM_EXTRA && HeroDefs[x] != NULL ? HeroDefs[x]->kinds[KIND_TANK].like : 0;
+    like = like > 0 ? like : x > EXTRA_NONE && x < NUM_EXTRA && HeroDefs[x] != NULL ? HeroDefs[x]->prefer : 1;
     for (i = 0; DumpFolder != NULL && i < (s32)(sizeof(Rides) / sizeof(Rides[0])); i++) {
         GamePart part;
         MadeModel mm;
         char path[600];
+        s32 mesh = Rides[i].mesh;
 
-        if (!hm_game_part_of(Rides[i].bank, Rides[i].mesh, ride_keep, NULL, &part)) {
+        if (Rides[i].anim >= 0) {
+            mesh = anim_mesh(Rides[i].bank, Rides[i].anim);
+        } else if (mesh < 0) {
+            mesh = (like == 1 || like == 2 ? 0x2010 : like == 7 || like == 8 ? 0x2009 : 0x2011) - 0x2001;
+        }
+        if (mesh < 0 || !hm_game_part_of(Rides[i].bank, mesh, ride_keep, NULL, &part)) {
             continue;
         }
+        RideAnimated = Rides[i].anim >= 0 && part.corners <= (s32)(sizeof(RideAt) / sizeof(RideAt[0]))
+                       && hm_model_at(&part, Rides[i].anim, 0, RideAt);
         memset(&mm, 0, sizeof(mm));
         mm.faces = part.faces;
         mm.nfaces = part.nfaces;
@@ -414,7 +447,6 @@ void bonus_heroes_dump_rides(const char *id) {
         mm.nvert = part.nvert;
         mm.frame = rides_frame;
         RidePart = &part;
-        RideDy = Rides[i].dy;
         snprintf(path, sizeof(path), "%s/%s_%s_ride%d.hpv", DumpFolder, id, pack_kind_name(Rides[i].kind), n[Rides[i].kind]++);
         made_dump_to(&mm, path);
         hm_part_free(&part);

@@ -146,7 +146,11 @@ static void slot_def(PackSlot *s, s32 slot) {
         d->kinds[k].stands = s->stands[k];
         d->kinds[k].otherwise = pk->otherwise[0] != 0 ? pk->otherwise : "BREATHE";
         d->kinds[k].keep_lift = pk->keep_lift;
-        d->kinds[k].like = pk->like;
+        /* it plays like its template there (its weight and speeds, the tank's turret and weapon), unless it says another; a pack that
+           doesn't say a template plays as the hero whose place it takes */
+        d->kinds[k].like = pk->like > 0 ? pk->like
+                         : pk->template_hero > 0 ? pk->template_hero
+                         : s->info.template_said && s->info.template_hero > 0 ? s->info.template_hero : 0;
         d->kinds[k].template_hero = pk->template_hero > 0 ? pk->template_hero : s->info.template_hero;
         d->kinds[k].subframes = pk->subframes;
     }

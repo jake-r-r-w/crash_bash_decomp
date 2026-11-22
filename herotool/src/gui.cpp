@@ -27,6 +27,8 @@ struct View {
     // model to screen: x across (from its axes, turned by yaw), y up, both scaled and moved to fit
     float yaw = 0, scale = 1, ox = 0, oy = 0;
     int w = 0, h = 0; // its size, if not the preview's (PrevW x PrevH): draw_made's only
+    // looked at from above by pitch degrees, and zoomed about (zx, zy): dragged and scrolled in the views that allow it (look_around)
+    float pitch = 0, zoom = 1, zx = 0, zy = 0;
 };
 
 enum { OWN_TEMPLATE = -1, OWN_CLIP = -2 };
@@ -174,11 +176,50 @@ void fit(const KitModel *m, View &v) {
 
 void to_screen(const View &v, const float p[3], float &sx, float &sy, float &sz) {
     float c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
-    float x = p[0] * c - p[2] * s, z = p[0] * s + p[2] * c;
+    float x = p[0] * c - p[2] * s, z = p[0] * s + p[2] * c, y = p[1];
 
+    if (v.pitch != 0) {
+        float pc = cosf(v.pitch * 3.14159265f / 180), ps = sinf(v.pitch * 3.14159265f / 180), y2 = y * pc - z * ps;
+        z = y * ps + z * pc;
+        y = y2;
+    }
     sx = v.ox + x * v.scale;
-    sy = v.oy - p[1] * v.scale;
+    sy = v.oy - y * v.scale;
+    if (v.zoom != 1) {
+        sx = v.zx + (sx - v.zx) * v.zoom;
+        sy = v.zy + (sy - v.zy) * v.zoom;
+    }
     sz = -z;
+}
+
+// A view's picture dragged to turn and tilt it, and scrolled to zoom it (the item just drawn); yaw the turn it's drawn with
+void look_around(View &v, float &yaw) {
+    if (!ImGui::IsItemHovered() && !(ImGui::IsItemActive())) {
+        return;
+    }
+    ImGuiIO &io = ImGui::GetIO();
+    if (ImGui::IsMouseDragging(0)) {
+        yaw += io.MouseDelta.x * 0.5f;
+        yaw = yaw > 180 ? yaw - 360 : yaw < -180 ? yaw + 360 : yaw;
+        v.pitch = fmaxf(-60, fminf(80, v.pitch + io.MouseDelta.y * 0.4f));
+    }
+    if (io.MouseWheel != 0) {
+        v.zoom = fmaxf(0.4f, fminf(6, v.zoom * powf(1.15f, io.MouseWheel)));
+    }
+    if (ImGui::IsMouseDoubleClicked(0)) {
+        v.pitch = 12, v.zoom = 1, yaw = 30;
+    }
+    ImGui::SetItemTooltip("Drag to turn it, scroll to zoom, double-click to set it back");
+}
+
+// A made model's breathing move, its rest (the polar bear's first is its fall), or its first
+int breathe_of(const KitMade *m) {
+    for (int a = 0; a < m->nanims; a++) {
+        if (SDL_strcasecmp(m->anims[a].name, "BREATHE") == 0) {
+            return a;
+        }
+    }
+    return 0;
 }
 
 void draw(const KitModel *m, const float (*pos)[3], View &v, SDL_Renderer *ren) {
@@ -474,7 +515,7 @@ void made_check(Tool &T) {
             }
         }
     }
-    T.anim = 0;
+    T.anim = T.have_made[T.kind] ? breathe_of(&T.made[T.kind]) : 0;
     T.made_t = 0;
     snprintf(T.status, sizeof(T.status), have != 0 ? "The game made it in %d of its %d games: pick one on the left to choose its prop and moves."
                                                    : "The game didn't make it (it said %d): does it find its data when you start it yourself?",
@@ -522,6 +563,8 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     float cx = (lo[0] + hi[0]) / 2, cz = (lo[2] + hi[2]) / 2;
     v.ox = PW / 2.0f;
     v.oy = PH * 0.9f + lo[1] * v.scale;
+    v.zx = PW / 2.0f;
+    v.zy = PH / 2.0f;
     raster_made(m, vs, cx, cz, v, PW, PH);
     for (int r = 0; r < nrides; r++) {
         if (rides[r].nanims > 0) {
@@ -974,7 +1017,7 @@ void editor_left(Tool &T) {
         if (ImGui::Selectable(label, T.page == k)) {
             T.page = k;
             T.kind = k;
-            T.anim = 0;
+            T.anim = T.have_made[k] ? breathe_of(&T.made[k]) : 0;
             T.made_t = 0;
         }
     }
@@ -1014,6 +1057,9 @@ void editor_middle(Tool &T) {
                                "ears and tail. A small dot is a bone's end.");
         } else {
             view_window(T, T.play, "move", false, 2);
+            T.play.zx = ViewW / 2.0f;
+            T.play.zy = ViewH / 2.0f;
+            look_around(T.play, T.turn);
             ImGui::SetNextItemWidth(180);
             ImGui::Combo("Move", &T.move, [](void *, int i) { return KitMoves[i].name; }, nullptr, KitMoveCount);
             ImGui::SameLine();
@@ -1045,7 +1091,7 @@ void editor_middle(Tool &T) {
                 if (ImGui::ImageButton("thumb", (ImTextureID)(intptr_t)T.thumbs[k].tex, ImVec2(ThumbW, ThumbH))) {
                     T.page = k;
                     T.kind = k;
-                    T.anim = 0;
+                    T.anim = breathe_of(&T.made[k]);
                     T.made_t = 0;
                 }
                 ImGui::SetItemTooltip("Open %s: its prop and moves", KindShort[k]);
@@ -1069,6 +1115,7 @@ void editor_middle(Tool &T) {
     }
     float w = avail < PrevW ? avail : PrevW;
     ImGui::Image((ImTextureID)(intptr_t)T.game_view.tex, ImVec2(w, w * PrevH / PrevW));
+    look_around(T.game_view, T.made_turn);
     const KitMade *mk = &T.made[T.kind];
     ImGui::SetNextItemWidth(200);
     if (ImGui::BeginCombo("Watching", T.anim < mk->nanims ? mk->anims[T.anim].name : "")) {
@@ -1345,7 +1392,8 @@ void editor_window(Tool &T, SDL_Window *win) {
         ImGui::TableNextColumn();
         editor_left(T);
         ImGui::TableNextColumn();
-        ImGui::BeginChild("middle", ImVec2(0, ImGui::GetContentRegionAvail().y));
+        ImGui::BeginChild("middle", ImVec2(0, ImGui::GetContentRegionAvail().y), 0,
+                          T.page != PAGE_ALL ? ImGuiWindowFlags_NoScrollWithMouse : 0);
         editor_middle(T);
         ImGui::EndChild();
         ImGui::TableNextColumn();
@@ -1388,6 +1436,8 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     if (mods != nullptr) {
         SDL_strlcpy(T.out, mods, sizeof(T.out));
     }
+    T.game_view.pitch = 12;
+    T.play.pitch = 8;
     for (int k = 0; k < PACK_KINDS; k++) {
         T.thumbs[k].w = ThumbW;
         T.thumbs[k].h = ThumbH;
@@ -1515,7 +1565,9 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             for (int k = 0; k < PACK_KINDS; k++) {
                 if (T.have_made[k] && T.made[k].nanims > 0) {
                     T.thumbs[k].yaw = T.made_turn;
-                    draw_made(&T.made[k], 0, (int)(T.made_t * 30) % T.made[k].anims[0].frames, T.thumbs[k], ren, T.rides[k], T.nrides[k]);
+                    T.thumbs[k].pitch = T.game_view.pitch;
+                    int b = breathe_of(&T.made[k]);
+                    draw_made(&T.made[k], b, (int)(T.made_t * 30) % T.made[k].anims[b].frames, T.thumbs[k], ren, T.rides[k], T.nrides[k]);
                 }
             }
         }
