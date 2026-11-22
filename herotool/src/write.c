@@ -194,6 +194,11 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
             if (k < KitMoveCount || m->src_of[KB_HIPS] < 0 || mlen <= 0 || mname[0] == 0) {
                 continue;
             }
+            for (k = 0; k < KIT_DROP_MOST && p->drop[k] != NULL && SDL_strcasecmp(p->drop[k], mname) != 0; k++) {
+            }
+            if (k < KIT_DROP_MOST && p->drop[k] != NULL) {
+                continue;
+            }
             clip = c;
         }
         own += clip >= 0;

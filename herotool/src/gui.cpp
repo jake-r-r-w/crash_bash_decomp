@@ -29,6 +29,10 @@ struct View {
     int w = 0, h = 0; // its size, if not the preview's (PrevW x PrevH): draw_made's only
 };
 
+enum { OWN_TEMPLATE = -1, OWN_CLIP = -2 };
+const int PAGE_MODEL = -2, PAGE_ALL = -1;
+enum { PICK_MODEL, PICK_CARD, PICK_VOICE };
+
 struct Tool {
     KitModel *m = nullptr;
     char model[1024] = "";
@@ -57,15 +61,17 @@ struct Tool {
     int kind = 0, anim = 0;
     float made_t = 0, made_turn = 30, made_speed = 1;
     View game_view;
-    bool show_games = false; // the tab brought forward once (the preview's test)
     // its own moves in the games' places (KIND/MOVE=OURS), and the one being added
-    char own[KIT_OWN_MOST][48] = {};
-    int nown = 0, own_game = 0, own_move = 1, own_ours = 0;
-    // the gallery of every game's at once (or one game's, big), and whether the game's been asked to make it for this model yet
+    // each game's moves (KitGames): OWN_TEMPLATE its template's, OWN_CLIP its model's own clip, else one of the tool's (KitMoves)
+    int ownmap[8][8] = {};
+    // the page shown (PAGE_MODEL, PAGE_ALL or a kind), the model page's view, and whether a change wants the preview made again
+    int page = -1, model_view = 0;
+    bool dirty = false;
+    // each game's tile on the page of them all, and whether the game's been asked to make it for this model yet
     View thumbs[PACK_KINDS];
     // each game's ride or prop from another hero than its template, -1 its template's (hero.json's kinds' "template")
     int kind_template[PACK_KINDS] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-    bool gallery = true, made_asked = false;
+    bool made_asked = false;
     // the start screen, till a model's opened or a hero loaded; a loaded hero's mod folder, which Export writes back to
     bool home = true;
     char loaded_mod[1100] = "";
@@ -81,6 +87,7 @@ const char *const KindShort[PACK_KINDS] = { "On foot", "Polar Push: bear", "Pogo
                                             "Crash Dash: cart", "Splash Dash: fish", "Mallet Mash: mallet", "Dragon Drop: dino",
                                             "Keg Kaboom: keg", "The podium" };
 
+const char *const HeroNames[] = { "Crash", "Coco", "Cortex", "Brio", "Tiny", "Koala Kong", "Dingodile", "Rilla Roo" };
 const char *const Heroes[] = { "crash", "coco", "cortex", "brio", "tiny", "kong", "dingodile", "rilla" };
 const struct {
     const char *name;
@@ -253,6 +260,9 @@ void reweigh(Tool &T) {
     }
 }
 
+void own_init(Tool &T);
+int own_clip_of(const Tool &T, int g, int m);
+
 void open_model(Tool &T, const char *path) {
     char why[512];
     KitModel *m = new KitModel();
@@ -271,6 +281,10 @@ void open_model(Tool &T, const char *path) {
     T.m = m;
     T.posed = new float[m->nvert][3];
     T.made_asked = false;
+    T.dirty = false;
+    T.page = PAGE_ALL;
+    T.model_view = 0;
+    own_init(T);
     SDL_strlcpy(T.model, path, sizeof(T.model));
     T.rigged = m->skinned && kit_map_rig(m, why, sizeof(why));
     if (!T.rigged) {
@@ -301,7 +315,7 @@ void open_model(Tool &T, const char *path) {
     snprintf(T.mod_name, sizeof(T.mod_name), "%s", T.id);
     snprintf(T.status, sizeof(T.status), "%s: %d triangles, %d vertices. %s", base, m->ntri, m->nvert,
              T.rigged ? "Its own rig is used: its bones were found by their names."
-                      : "No rig: drag the markers onto its joints in the front and side views.");
+                      : "It has no rig: place the dots on its joints under Model and joints.");
 }
 
 bool export_pack(Tool &T, bool test, const char *out = nullptr) {
@@ -341,8 +355,24 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     for (int k = 0; k < PACK_KINDS; k++) {
         p.kind_template[k] = T.kind_template[k] >= 0 && T.kind_template[k] < 8 ? Heroes[T.kind_template[k]] : nullptr;
     }
-    for (int o = 0; o < T.nown; o++) {
-        p.own[o] = T.own[o];
+    // each game's moves: one of the tool's written as GAME/MOVE; a model's own GAME/MOVE clip kept only where it's chosen
+    static char owns[KIT_OWN_MOST][64], drops[KIT_DROP_MOST][64];
+    int no = 0, nd = 0;
+    for (int g = 0; g < KitGameCount && g < 8; g++) {
+        for (int mv = 0; mv < 8 && KitGames[g].moves[mv] != nullptr; mv++) {
+            int sel = T.ownmap[g][mv];
+            if (sel >= 0 && no < KIT_OWN_MOST) {
+                snprintf(owns[no], sizeof(owns[0]), "%s/%s=%s", KitGames[g].kind, KitGames[g].moves[mv], KitMoves[sel].name);
+                p.own[no] = owns[no];
+                no++;
+            }
+            // (whether or not the model as it's read now has one: a pack saved since it was opened has its own)
+            if (sel != OWN_CLIP && nd < KIT_DROP_MOST) {
+                snprintf(drops[nd], sizeof(drops[0]), "%s/%s", KitGames[g].kind, KitGames[g].moves[mv]);
+                p.drop[nd] = drops[nd];
+                nd++;
+            }
+        }
     }
     p.height = T.height;
     p.face_head = T.face_head;
@@ -362,7 +392,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
         snprintf(T.status, sizeof(T.status), "%s", why);
     } else {
         ok = true;
-        snprintf(T.status, sizeof(T.status), "Exported to %s: put that folder in the game's mods folder (it's there if this is it).", folder);
+        snprintf(T.status, sizeof(T.status), "Saved to %s. It's in the game when that's the game's mods folder.", folder);
         if (test) {
             char mode[16];
             snprintf(mode, sizeof(mode), "%d", Modes[T.mode].mode);
@@ -406,6 +436,7 @@ void make_in_game(Tool &T) {
         return;
     }
     T.made_asked = true;
+    T.dirty = false;
     snprintf(mods, sizeof(mods), "%spreview", pref);
     SDL_CreateDirectory(mods);
     snprintf(T.made_dir, sizeof(T.made_dir), "%spreview-made", pref);
@@ -445,7 +476,7 @@ void made_check(Tool &T) {
     }
     T.anim = 0;
     T.made_t = 0;
-    snprintf(T.status, sizeof(T.status), have != 0 ? "The game made it in %d of its %d kinds of game: they're all under In the games."
+    snprintf(T.status, sizeof(T.status), have != 0 ? "The game made it in %d of its %d games: pick one on the left to choose its prop and moves."
                                                    : "The game didn't make it (it said %d): does it find its data when you start it yourself?",
              have != 0 ? have : code, PACK_KINDS);
 }
@@ -473,12 +504,13 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     }
     const KitMadeAnim *a = &m->anims[anim < m->nanims ? anim : 0];
     const int16_t *vs = a->verts + (size_t)(frame % a->frames) * m->nvert * 3;
-    // fitted to its first move's first frame, so it doesn't jump about as it moves
+    // fitted to every frame of the move shown, so it doesn't jump about, nor leave the picture, as it moves
     float lo[3] = { 1e9f, 1e9f, 1e9f }, hi[3] = { -1e9f, -1e9f, -1e9f };
     for (int r = -1; r < nrides; r++) {
         const KitMade *o = r < 0 ? m : &rides[r];
-        for (int i = 0; o->nanims > 0 && i < o->nvert; i++) {
-            float q[3] = { (float)o->anims[0].verts[i * 3], -(float)o->anims[0].verts[i * 3 + 1], -(float)o->anims[0].verts[i * 3 + 2] };
+        const KitMadeAnim *fa = r < 0 ? a : &o->anims[0];
+        for (int i = 0; o->nanims > 0 && i < o->nvert * (r < 0 ? fa->frames : 1); i++) {
+            float q[3] = { (float)fa->verts[i * 3], -(float)fa->verts[i * 3 + 1], -(float)fa->verts[i * 3 + 2] };
             for (int c = 0; c < 3; c++) {
                 lo[c] = fminf(lo[c], q[c]);
                 hi[c] = fmaxf(hi[c], q[c]);
@@ -776,20 +808,20 @@ void load_pack(Tool &T, const Found &f) {
         snprintf(path, sizeof(path), "%s/heroes/%s/voice_%s.wav", f.mod, f.id, PackVoiceJobs[j]);
         SDL_strlcpy(T.voice[j], SDL_GetPathInfo(path, &pi) ? path : "", sizeof(T.voice[0]));
     }
-    T.nown = 0;
     SDL_strlcpy(T.loaded_mod, f.mod, sizeof(T.loaded_mod));
     T.home = false;
-    snprintf(T.status, sizeof(T.status), "%s loaded from %s: change it, then Export to save it back there.", T.name, f.mod);
+    snprintf(T.status, sizeof(T.status), "%s, from %s: change what you like, then Save to mods folder puts it back there.", T.name, f.mod);
 }
 
 // The system's file chooser's pick, from whatever thread it answers on, for the main loop to open
 SDL_AtomicInt Picked;
 char PickedPath[1024];
 
-void SDLCALL picked(void *, const char *const *files, int) {
+// (what it's for: PICK_MODEL, PICK_CARD or PICK_VOICE and a job, plus 1, so 0 is nothing picked)
+void SDLCALL picked(void *what, const char *const *files, int) {
     if (files != nullptr && files[0] != nullptr) {
         SDL_strlcpy(PickedPath, files[0], sizeof(PickedPath));
-        SDL_SetAtomicInt(&Picked, 1);
+        SDL_SetAtomicInt(&Picked, (int)(intptr_t)what + 1);
     }
 }
 
@@ -820,7 +852,7 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::SetWindowFontScale(1.0f);
     ImGui::TextDisabled("Pick its 3D model, a .glb file (or drop one on this window).");
     if (ImGui::Button("Browse for a model...", ImVec2(200, 0))) {
-        SDL_ShowOpenFileDialog(picked, nullptr, win, Glb, 1, nullptr, false);
+        SDL_ShowOpenFileDialog(picked, (void *)(intptr_t)PICK_MODEL, win, Glb, 1, nullptr, false);
     }
     ImGui::SameLine();
     ImGui::SetNextItemWidth(w - 300);
@@ -867,6 +899,461 @@ void start_screen(Tool &T, SDL_Window *win) {
         ImGui::TextWrapped("%s", T.status);
     }
     ImGui::EndChild();
+    ImGui::End();
+}
+
+// --- the editor (the user's word, 2026-11-22: one window, simple): the hero's pages down the left (its model and joints, every game
+// at a glance, each game), the page's picture in the middle, and its choices on the right, with the hero's details and saving under
+// them. A game's choices are whose ride or prop it has there and, move by move, what it plays: its template's, its own clip, or one
+// of the tool's moves on it. The pictures are the game's own making of it, made again after a change. ---
+
+
+// The game whose moves can be its own (KitGames), for a kind of model; -1 none (on foot, the bear, the podium follow its template)
+int game_of(int kind) {
+    for (int g = 0; g < KitGameCount; g++) {
+        if (SDL_strcmp(KitGames[g].kind, pack_kind_name(kind)) == 0) {
+            return g;
+        }
+    }
+    return -1;
+}
+
+// The model's own clip for a game's move (GAME/MOVE), or -1
+int own_clip_of(const Tool &T, int g, int m) {
+    char name[64];
+
+    snprintf(name, sizeof(name), "%s/%s", KitGames[g].kind, KitGames[g].moves[m]);
+    for (int c = 0; T.m != nullptr && T.m->src != nullptr && c < T.m->src->nclips; c++) {
+        if (SDL_strcasecmp(T.m->src->clips[c].name, name) == 0) {
+            return c;
+        }
+    }
+    return -1;
+}
+
+// Each game's moves as a model opens: its own clip where it has one (a pack loaded to change), else its template's
+void own_init(Tool &T) {
+    for (int g = 0; g < KitGameCount && g < 8; g++) {
+        for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+            T.ownmap[g][m] = own_clip_of(T, g, m) >= 0 ? OWN_CLIP : OWN_TEMPLATE;
+        }
+    }
+}
+
+void browse(SDL_Window *win, int target, const SDL_DialogFileFilter *filter) {
+    SDL_ShowOpenFileDialog(picked, (void *)(intptr_t)target, win, filter, 1, nullptr, false);
+}
+
+const char *short_path(const char *path) {
+    const char *s = path;
+    for (const char *c = path; *c != 0; c++) {
+        s = *c == '/' || *c == '\\' ? c + 1 : s;
+    }
+    return s;
+}
+
+void hint(const char *text) {
+    ImGui::SameLine();
+    ImGui::TextDisabled("(?)");
+    ImGui::SetItemTooltip("%s", text);
+}
+
+void editor_left(Tool &T) {
+    ImGui::TextDisabled("YOUR HERO");
+    if (ImGui::Selectable("Model and joints", T.page == PAGE_MODEL)) {
+        T.page = PAGE_MODEL;
+    }
+    ImGui::Spacing();
+    ImGui::TextDisabled("IN THE GAMES");
+    if (ImGui::Selectable("All games at a glance", T.page == PAGE_ALL)) {
+        T.page = PAGE_ALL;
+    }
+    for (int k = 0; k < PACK_KINDS; k++) {
+        char label[96];
+        snprintf(label, sizeof(label), "%s%s##page%d", KindShort[k], !T.have_made[k] && T.made_asked && T.maker == nullptr ? "  (not made)" : "", k);
+        if (ImGui::Selectable(label, T.page == k)) {
+            T.page = k;
+            T.kind = k;
+            T.anim = 0;
+            T.made_t = 0;
+        }
+    }
+    ImGui::Spacing();
+    ImGui::Separator();
+    if (T.maker != nullptr) {
+        ImGui::TextWrapped("Making it in the games...");
+    } else if (T.dirty && T.made_asked) {
+        if (ImGui::Button("Update the preview", ImVec2(-1, 0))) {
+            make_in_game(T);
+        }
+        ImGui::TextDisabled("after your changes");
+    }
+}
+
+void editor_middle(Tool &T) {
+    float avail = ImGui::GetContentRegionAvail().x;
+
+    if (T.page == PAGE_MODEL) {
+        if (!T.rigged) {
+            if (ImGui::RadioButton("Place its joints", T.model_view == 0)) {
+                T.model_view = 0;
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Watch its moves", T.model_view == 1)) {
+                T.model_view = 1;
+            }
+        }
+        if (!T.rigged && T.model_view == 0) {
+            ImGui::Text("Front");
+            ImGui::SameLine(ViewW + 16);
+            ImGui::Text("Side");
+            view_window(T, T.front, "front", true, 0);
+            ImGui::SameLine();
+            view_window(T, T.side, "side", true, 1);
+            ImGui::TextWrapped("Drag each dot onto its joint in both views: yellow its body, blue its arms, green its legs, orange its jaw, "
+                               "ears and tail. A small dot is a bone's end.");
+        } else {
+            view_window(T, T.play, "move", false, 2);
+            ImGui::SetNextItemWidth(180);
+            ImGui::Combo("Move", &T.move, [](void *, int i) { return KitMoves[i].name; }, nullptr, KitMoveCount);
+            ImGui::SameLine();
+            ImGui::Checkbox("Play", &T.playing);
+            ImGui::SetNextItemWidth(180);
+            ImGui::SliderFloat("Turn", &T.turn, -180, 180, "%.0f");
+            ImGui::TextDisabled("The tool's own moves on your model, which a game's moves can use (on the right of a game's page).");
+        }
+        return;
+    }
+    bool any = false;
+    for (int k = 0; k < PACK_KINDS; k++) {
+        any |= T.have_made[k];
+    }
+    if (!any) {
+        ImGui::TextWrapped(T.maker != nullptr ? "The game's making your hero in every game: a moment..."
+                                              : "Not made yet. The game makes it as it will when it loads it.");
+        if (T.maker == nullptr && ImGui::Button("Make it")) {
+            make_in_game(T);
+        }
+        return;
+    }
+    if (T.page == PAGE_ALL) {
+        int cols = (int)(avail / (ThumbW + 16)) < 1 ? 1 : (int)(avail / (ThumbW + 16));
+        for (int k = 0; k < PACK_KINDS; k++) {
+            ImGui::PushID(k);
+            ImGui::BeginGroup();
+            if (T.have_made[k] && T.thumbs[k].tex != nullptr) {
+                if (ImGui::ImageButton("thumb", (ImTextureID)(intptr_t)T.thumbs[k].tex, ImVec2(ThumbW, ThumbH))) {
+                    T.page = k;
+                    T.kind = k;
+                    T.anim = 0;
+                    T.made_t = 0;
+                }
+                ImGui::SetItemTooltip("Open %s: its prop and moves", KindShort[k]);
+            } else {
+                ImGui::Dummy(ImVec2(ThumbW + 8, ThumbH + 8));
+            }
+            ImGui::TextUnformatted(KindShort[k]);
+            ImGui::EndGroup();
+            ImGui::PopID();
+            if ((k + 1) % cols != 0 && k + 1 < PACK_KINDS) {
+                ImGui::SameLine();
+            }
+        }
+        ImGui::SetNextItemWidth(200);
+        ImGui::SliderFloat("Turn##all", &T.made_turn, -180, 180, "%.0f");
+        return;
+    }
+    if (!T.have_made[T.kind]) {
+        ImGui::TextWrapped(T.maker != nullptr ? "Making it..." : "The game didn't make this one: see the message at the top.");
+        return;
+    }
+    float w = avail < PrevW ? avail : PrevW;
+    ImGui::Image((ImTextureID)(intptr_t)T.game_view.tex, ImVec2(w, w * PrevH / PrevW));
+    const KitMade *mk = &T.made[T.kind];
+    ImGui::SetNextItemWidth(200);
+    if (ImGui::BeginCombo("Watching", T.anim < mk->nanims ? mk->anims[T.anim].name : "")) {
+        for (int a = 0; a < mk->nanims; a++) {
+            if (ImGui::Selectable(mk->anims[a].name, a == T.anim)) {
+                T.anim = a;
+                T.made_t = 0;
+            }
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(160);
+    ImGui::SliderFloat("Turn##game", &T.made_turn, -180, 180, "%.0f");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(120);
+    ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
+}
+
+void editor_right(Tool &T, SDL_Window *win) {
+    static const SDL_DialogFileFilter Glb[] = { { "3D model (glTF binary)", "glb" } };
+    static const SDL_DialogFileFilter Png[] = { { "Picture (PNG)", "png" } };
+    static const SDL_DialogFileFilter Wav[] = { { "Sound (WAV)", "wav" } };
+
+    // the fields leave room for their labels
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 140);
+
+    // the page's own choices
+    if (T.page == PAGE_MODEL) {
+        ImGui::SeparatorText("Your model");
+        ImGui::TextWrapped("%s", short_path(T.model));
+        if (ImGui::Button("Open another model...")) {
+            browse(win, PICK_MODEL, Glb);
+        }
+        ImGui::Spacing();
+        if (T.rigged) {
+            ImGui::TextWrapped("It has a rig of its own: its bones were found by their names and are used as they are.");
+        } else {
+            ImGui::TextWrapped("It has no rig, so it gets one from the dots you place on its joints.");
+            ImGui::Checkbox("Left and right the same", &T.mirror);
+            hint("Moving one side's dot moves the other side's to match.");
+            if (ImGui::Button("Guess the joints again")) {
+                kit_guess_markers(T.m);
+                reweigh(T);
+            }
+            ImGui::Text("It also has:");
+            const char *opt[] = { "A jaw", "Ears", "A tail" };
+            const int first[] = { KB_JAW, KB_EAR_L1, KB_TAIL1 }, count[] = { 1, 4, 3 };
+            for (int o = 0; o < 3; o++) {
+                bool has = T.m->bones[first[o]].have;
+                if (o > 0) {
+                    ImGui::SameLine();
+                }
+                if (ImGui::Checkbox(opt[o], &has)) {
+                    float h = T.m->hi[1] - T.m->lo[1];
+                    for (int c = 0; c < count[o]; c++) {
+                        KitBone &k = T.m->bones[first[o] + c];
+                        k.have = has;
+                        if (has) {
+                            const KitBone &head = T.m->bones[KB_HEAD], &hips = T.m->bones[KB_HIPS];
+                            float side = (c == 2 || c == 3) && o == 1 ? -1.0f : 1.0f;
+                            if (o == 0) {
+                                k.at[0] = head.at[0], k.at[1] = head.at[1] + 0.02f * h, k.at[2] = head.at[2] + 0.04f * h;
+                                k.end[0] = k.at[0], k.end[1] = k.at[1] - 0.02f * h, k.end[2] = k.at[2] + 0.08f * h;
+                            } else if (o == 1) {
+                                float lower = (c == 1 || c == 3) ? 1.0f : 0.0f;
+                                k.at[0] = side * (0.07f + 0.02f * lower) * h, k.at[1] = head.end[1] - (0.04f + 0.08f * lower) * h;
+                                k.at[2] = head.at[2];
+                                k.end[0] = side * (0.09f + 0.02f * lower) * h, k.end[1] = k.at[1] - 0.08f * h, k.end[2] = head.at[2];
+                            } else {
+                                k.at[0] = 0, k.at[1] = hips.at[1] + 0.02f * h * c, k.at[2] = hips.at[2] - (0.08f + 0.07f * c) * h;
+                                k.end[0] = 0, k.end[1] = k.at[1] + 0.02f * h, k.end[2] = k.at[2] - 0.07f * h;
+                            }
+                        }
+                    }
+                    reweigh(T);
+                    T.dirty = true;
+                }
+            }
+            ImGui::SetNextItemWidth(160);
+            if (ImGui::SliderFloat("Arm lift", &T.m->arm_raise, 20, 160, "%.0f degrees")) {
+                T.dirty = true;
+            }
+            hint("How high it can raise its arms: less for short arms or a big head.");
+        }
+    } else if (T.page == PAGE_ALL) {
+        ImGui::SeparatorText("All games");
+        ImGui::TextWrapped("Your hero as the game makes it in each game, with that game's ride or prop. Pick one to choose its prop and "
+                           "moves.");
+    } else {
+        int k = T.kind, g = game_of(k);
+        ImGui::SeparatorText(KindTitles[k]);
+        if (k != KIND_WARP_TOOL) {
+            char now[64];
+            snprintf(now, sizeof(now), "%s's (its template)", HeroNames[T.template_hero]);
+            ImGui::Text(k == 0 ? "Stands like" : k == 1 ? "Rides the bear of" : "Prop from");
+            ImGui::SameLine(130);
+            ImGui::SetNextItemWidth(-1);
+            if (ImGui::BeginCombo("##from", T.kind_template[k] < 0 ? now : HeroNames[T.kind_template[k]])) {
+                if (ImGui::Selectable(now, T.kind_template[k] < 0)) {
+                    T.kind_template[k] = -1;
+                    make_in_game(T);
+                }
+                for (int h = 0; h < 8; h++) {
+                    if (h != T.template_hero && ImGui::Selectable(HeroNames[h], T.kind_template[k] == h)) {
+                        T.kind_template[k] = h;
+                        make_in_game(T);
+                    }
+                }
+                ImGui::EndCombo();
+            }
+        } else {
+            ImGui::TextWrapped("The podium is made from its moves on foot.");
+        }
+        ImGui::Spacing();
+        if (g >= 0) {
+            ImGui::Text("Its moves here");
+            hint("What it plays for each of this game's moves: the hero it follows, its model's own clip if it came with one, or "
+                 "one of the tool's moves on your model (see Model and joints).");
+            int from = T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero;
+            for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+                char now[80];
+                int sel = T.ownmap[g][m];
+                bool clip = own_clip_of(T, g, m) >= 0;
+                if (sel == OWN_TEMPLATE) {
+                    snprintf(now, sizeof(now), "%s's", HeroNames[from]);
+                } else if (sel == OWN_CLIP) {
+                    snprintf(now, sizeof(now), "its own clip");
+                } else {
+                    snprintf(now, sizeof(now), "my %s", KitMoves[sel].name);
+                }
+                ImGui::PushID(m);
+                ImGui::TextUnformatted(KitGames[g].moves[m]);
+                ImGui::SameLine(130);
+                ImGui::SetNextItemWidth(-1);
+                if (ImGui::BeginCombo("##move", now)) {
+                    char t[64];
+                    snprintf(t, sizeof(t), "%s's", HeroNames[from]);
+                    if (ImGui::Selectable(t, sel == OWN_TEMPLATE)) {
+                        T.ownmap[g][m] = OWN_TEMPLATE;
+                        make_in_game(T);
+                    }
+                    if (clip && ImGui::Selectable("its own clip", sel == OWN_CLIP)) {
+                        T.ownmap[g][m] = OWN_CLIP;
+                        make_in_game(T);
+                    }
+                    ImGui::Separator();
+                    for (int s = 0; s < KitMoveCount; s++) {
+                        snprintf(t, sizeof(t), "my %s", KitMoves[s].name);
+                        if (ImGui::Selectable(t, sel == s)) {
+                            T.ownmap[g][m] = s;
+                            make_in_game(T);
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+                ImGui::PopID();
+            }
+        } else {
+            ImGui::TextWrapped("Its moves here are %s's.", HeroNames[T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero]);
+        }
+    }
+    ImGui::Spacing();
+
+    // the hero, whatever page
+    if (ImGui::CollapsingHeader("Hero details", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::InputText("Name", T.name, sizeof(T.name), ImGuiInputTextFlags_CharsUppercase);
+        hint("As the game shows it, in capitals.");
+        ImGui::InputText("Id", T.id, sizeof(T.id), ImGuiInputTextFlags_CharsNoBlank);
+        hint("Its short name in files and online: small letters and digits.");
+        if (ImGui::InputInt("Height", &T.height, 10, 50)) {
+            T.height = T.height < 200 ? 200 : T.height > 900 ? 900 : T.height;
+            T.dirty = true;
+        }
+        hint("Standing, in the game's units: Crash is 452, most heroes about 650.");
+        if (ImGui::Combo("Plays like", &T.template_hero, HeroNames, 8)) {
+            T.dirty = true;
+        }
+        hint("Its template: the hero whose moves it makes, and whose ride or prop it has, in every game (each game can pick another).");
+        ImGui::Combo("Takes place of", &T.prefer, HeroNames, 8);
+        hint("Whose place in the game it takes when nobody's playing them.");
+        if (ImGui::SliderFloat("Face", &T.face_head, 0, 0.6f, T.face_head > 0 ? "top %.2f" : "the game's choice")) {
+            T.dirty = true;
+        }
+        hint("How much of the model, from the top, is its head: its face on the panel is drawn from that, if it has no card.");
+    }
+    if (ImGui::CollapsingHeader("Card and sounds")) {
+        ImGui::Text("Card");
+        hint("A picture for the character select (PNG). Without one, its face is drawn from the model.");
+        ImGui::SameLine(110);
+        ImGui::TextUnformatted(T.card[0] ? short_path(T.card) : "drawn from the model");
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Browse##card")) {
+            browse(win, PICK_CARD, Png);
+        }
+        if (T.card[0]) {
+            ImGui::SameLine();
+            if (ImGui::SmallButton("Clear##card")) {
+                T.card[0] = 0;
+            }
+        }
+        ImGui::Spacing();
+        ImGui::Text("Sounds");
+        hint("A WAV for each job. A job without one uses the sound of the hero whose place it takes.");
+        for (int j = 0; j < PACK_VOICE_JOBS; j++) {
+            ImGui::PushID(j);
+            ImGui::TextUnformatted(PackVoiceJobs[j]);
+            ImGui::SameLine(110);
+            ImGui::TextUnformatted(T.voice[j][0] ? short_path(T.voice[j]) : "-");
+            ImGui::SameLine();
+            if (ImGui::SmallButton("Browse")) {
+                browse(win, PICK_VOICE + j, Wav);
+            }
+            if (T.voice[j][0]) {
+                ImGui::SameLine();
+                if (ImGui::SmallButton("Clear")) {
+                    T.voice[j][0] = 0;
+                }
+            }
+            ImGui::PopID();
+        }
+    }
+    if (ImGui::CollapsingHeader("Save", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::InputText("Mod's name", T.mod_name, sizeof(T.mod_name));
+        ImGui::InputText("Author", T.author, sizeof(T.author));
+        if (ImGui::Button("Save to mods folder", ImVec2(-1, 30))) {
+            export_pack(T, false);
+        }
+        ImGui::SetItemTooltip("%s", T.loaded_mod[0] ? T.loaded_mod : T.out);
+        ImGui::SetNextItemWidth(160);
+        ImGui::Combo("##mode", &T.mode, [](void *, int i) { return Modes[i].name; }, nullptr, (int)(sizeof(Modes) / sizeof(Modes[0])));
+        ImGui::SameLine();
+        if (ImGui::Button("Save and play", ImVec2(-1, 0))) {
+            export_pack(T, true);
+        }
+        ImGui::SetItemTooltip("Saves it, then starts the game with you as it in the game picked.");
+        if (ImGui::TreeNode("Folders")) {
+            ImGui::Text("Mods folder");
+            path_field("##out", T.out, sizeof(T.out));
+            ImGui::Text("The game");
+            path_field("##game", T.game, sizeof(T.game));
+            ImGui::TreePop();
+        }
+    }
+    ImGui::PopItemWidth();
+}
+
+void editor_window(Tool &T, SDL_Window *win) {
+    // made by itself the first time a game's page is open for a model
+    if (T.page != PAGE_MODEL && !T.made_asked && T.maker == nullptr) {
+        make_in_game(T);
+    }
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+    ImGui::Begin("Hero tool", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+    if (ImGui::Button("< Start")) {
+        T.home = true;
+        find_heroes(T);
+    }
+    ImGui::SameLine();
+    ImGui::SetWindowFontScale(1.3f);
+    ImGui::TextUnformatted(T.name);
+    ImGui::SetWindowFontScale(1.0f);
+    ImGui::SameLine();
+    bool bad = SDL_strstr(T.status, "n't") != nullptr || SDL_strstr(T.status, "can't") != nullptr || SDL_strstr(T.status, "not ") != nullptr;
+    ImGui::PushStyleColor(ImGuiCol_Text, bad ? ImVec4(1.0f, 0.55f, 0.5f, 1) : ImVec4(0.65f, 0.65f, 0.7f, 1));
+    ImGui::TextWrapped("%s", T.status);
+    ImGui::PopStyleColor();
+    ImGui::Separator();
+    if (ImGui::BeginTable("editor", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV)) {
+        ImGui::TableSetupColumn("pages", ImGuiTableColumnFlags_WidthFixed, 190);
+        ImGui::TableSetupColumn("view", ImGuiTableColumnFlags_WidthStretch);
+        ImGui::TableSetupColumn("choices", ImGuiTableColumnFlags_WidthFixed, 410);
+        ImGui::TableNextColumn();
+        editor_left(T);
+        ImGui::TableNextColumn();
+        ImGui::BeginChild("middle", ImVec2(0, ImGui::GetContentRegionAvail().y));
+        editor_middle(T);
+        ImGui::EndChild();
+        ImGui::TableNextColumn();
+        ImGui::BeginChild("right", ImVec2(0, ImGui::GetContentRegionAvail().y));
+        editor_right(T, win);
+        ImGui::EndChild();
+        ImGui::EndTable();
+    }
     ImGui::End();
 }
 
@@ -921,6 +1408,28 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             }
         }
     }
+    /* a test's: HEROTOOL_PAGE=N shows that page (-2 the model's, -1 all the games, a kind) */
+    if (SDL_getenv("HEROTOOL_PAGE") != nullptr && T.m != nullptr) {
+        T.page = SDL_atoi(SDL_getenv("HEROTOOL_PAGE"));
+        T.kind = T.page >= 0 ? T.page : T.kind;
+    }
+    /* a test's: HEROTOOL_OWN=GAME/MOVE=MOVE picks one of the tool's moves for a game's move, as its page's list does */
+    if (SDL_getenv("HEROTOOL_OWN") != nullptr && T.m != nullptr) {
+        char o[96], *eq;
+        SDL_strlcpy(o, SDL_getenv("HEROTOOL_OWN"), sizeof(o));
+        if ((eq = SDL_strchr(o, '=')) != nullptr) {
+            *eq = 0;
+            for (int g = 0; g < KitGameCount && g < 8; g++) {
+                for (int mv = 0; mv < 8 && KitGames[g].moves[mv] != nullptr; mv++) {
+                    char n[64];
+                    snprintf(n, sizeof(n), "%s/%s", KitGames[g].kind, KitGames[g].moves[mv]);
+                    for (int s = 0; s < KitMoveCount && SDL_strcasecmp(n, o) == 0; s++) {
+                        T.ownmap[g][mv] = SDL_strcasecmp(KitMoves[s].name, eq + 1) == 0 ? s : T.ownmap[g][mv];
+                    }
+                }
+            }
+        }
+    }
     /* a test's: HEROTOOL_EXPORT=FOLDER exports to it once the model's open */
     if (SDL_getenv("HEROTOOL_EXPORT") != nullptr && T.m != nullptr) {
         SDL_strlcpy(T.out, SDL_getenv("HEROTOOL_EXPORT"), sizeof(T.out));
@@ -936,7 +1445,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     if (SDL_getenv("HEROTOOL_MAKE") != nullptr && T.m != nullptr) {
         T.kind = pack_kind_named(SDL_getenv("HEROTOOL_MAKE")) >= 0 ? pack_kind_named(SDL_getenv("HEROTOOL_MAKE")) : 0;
         make_in_game(T);
-        T.show_games = true;
+        T.page = PAGE_ALL;
+        if (SDL_getenv("HEROTOOL_PAGE") != nullptr) {
+            T.page = SDL_atoi(SDL_getenv("HEROTOOL_PAGE"));
+            T.kind = T.page >= 0 ? T.page : T.kind;
+        }
     }
     Uint64 last = SDL_GetTicks();
     bool done = false;
@@ -972,12 +1485,19 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             }
         }
         // a model picked in the system's chooser, from the start screen
-        if (SDL_GetAtomicInt(&Picked)) {
+        if (int what = SDL_GetAtomicInt(&Picked)) {
             SDL_SetAtomicInt(&Picked, 0);
-            SDL_strlcpy(T.model, PickedPath, sizeof(T.model));
-            T.loaded_mod[0] = 0;
-            open_model(T, T.model);
-            T.home = T.m == nullptr;
+            what--;
+            if (what == PICK_MODEL) {
+                SDL_strlcpy(T.model, PickedPath, sizeof(T.model));
+                T.loaded_mod[0] = 0;
+                open_model(T, T.model);
+                T.home = T.m == nullptr;
+            } else if (what == PICK_CARD) {
+                SDL_strlcpy(T.card, PickedPath, sizeof(T.card));
+            } else if (what >= PICK_VOICE && what < PICK_VOICE + PACK_VOICE_JOBS) {
+                SDL_strlcpy(T.voice[what - PICK_VOICE], PickedPath, sizeof(T.voice[0]));
+            }
         }
         Uint64 now = SDL_GetTicks();
         float dt = (now - last) / 1000.0f;
@@ -991,7 +1511,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         last = now;
         made_check(T);
-        if (T.gallery) {
+        if (T.page == PAGE_ALL) {
             for (int k = 0; k < PACK_KINDS; k++) {
                 if (T.have_made[k] && T.made[k].nanims > 0) {
                     T.thumbs[k].yaw = T.made_turn;
@@ -999,7 +1519,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 }
             }
         }
-        if (!T.gallery && T.have_made[T.kind]) {
+        if (T.page >= 0 && T.have_made[T.kind]) {
             const KitMade *mk = &T.made[T.kind];
             int a = T.anim < mk->nanims ? T.anim : 0;
 
@@ -1022,281 +1542,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         if (T.home) {
             start_screen(T, win);
         } else {
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-        ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
-        ImGui::Begin("Hero tool", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-        if (ImGui::Button("< Start screen")) {
-            T.home = true;
-            find_heroes(T);
-        }
-        ImGui::SameLine();
-        ImGui::TextWrapped("%s", T.status);
-        ImGui::Separator();
-        if (ImGui::BeginTable("main", 2, ImGuiTableFlags_Resizable)) {
-            ImGui::TableSetupColumn("views", ImGuiTableColumnFlags_WidthFixed, ViewW * 3 + 40);
-            ImGui::TableNextColumn();
-            if (T.m != nullptr && ImGui::BeginTabBar("tabs")) {
-                if (ImGui::BeginTabItem("The model and its moves")) {
-                ImGui::Text("Front");
-                ImGui::SameLine(ViewW + 16);
-                ImGui::Text("Side");
-                ImGui::SameLine(ViewW * 2 + 24);
-                ImGui::Text("%s", KitMoves[T.move].name);
-                view_window(T, T.front, "front", true, 0);
-                ImGui::SameLine();
-                view_window(T, T.side, "side", true, 1);
-                ImGui::SameLine();
-                view_window(T, T.play, "move", false, 2);
-                if (!T.rigged) {
-                    ImGui::TextWrapped("Drag each marker onto its joint (yellow: its middle, blue: arms, green: legs, orange: jaw, ears and tail; "
-                                       "the small dot is a bone's end). Its weights are worked out again as you let go.");
-                    ImGui::Checkbox("Mirror left and right", &T.mirror);
-                    ImGui::SameLine();
-                    if (ImGui::Button("Guess them again")) {
-                        kit_guess_markers(T.m);
-                        reweigh(T);
-                    }
-                    ImGui::SameLine();
-                    const char *opt[] = { "Jaw", "Ears", "Tail" };
-                    const int first[] = { KB_JAW, KB_EAR_L1, KB_TAIL1 }, count[] = { 1, 4, 3 };
-                    for (int o = 0; o < 3; o++) {
-                        bool has = T.m->bones[first[o]].have;
-                        ImGui::SameLine();
-                        if (ImGui::Checkbox(opt[o], &has)) {
-                            float h = T.m->hi[1] - T.m->lo[1];
-                            for (int c = 0; c < count[o]; c++) {
-                                KitBone &k = T.m->bones[first[o] + c];
-                                k.have = has;
-                                if (has) {
-                                    const KitBone &head = T.m->bones[KB_HEAD], &hips = T.m->bones[KB_HIPS];
-                                    float side = (c == 2 || c == 3) && o == 1 ? -1.0f : 1.0f;
-                                    if (o == 0) {
-                                        k.at[0] = head.at[0], k.at[1] = head.at[1] + 0.02f * h, k.at[2] = head.at[2] + 0.04f * h;
-                                        k.end[0] = k.at[0], k.end[1] = k.at[1] - 0.02f * h, k.end[2] = k.at[2] + 0.08f * h;
-                                    } else if (o == 1) {
-                                        float lower = (c == 1 || c == 3) ? 1.0f : 0.0f;
-                                        k.at[0] = side * (0.07f + 0.02f * lower) * h, k.at[1] = head.end[1] - (0.04f + 0.08f * lower) * h;
-                                        k.at[2] = head.at[2];
-                                        k.end[0] = side * (0.09f + 0.02f * lower) * h, k.end[1] = k.at[1] - 0.08f * h, k.end[2] = head.at[2];
-                                    } else {
-                                        k.at[0] = 0, k.at[1] = hips.at[1] + 0.02f * h * c, k.at[2] = hips.at[2] - (0.08f + 0.07f * c) * h;
-                                        k.end[0] = 0, k.end[1] = k.at[1] + 0.02f * h, k.end[2] = k.at[2] - 0.07f * h;
-                                    }
-                                }
-                            }
-                            reweigh(T);
-                        }
-                    }
-                    ImGui::SliderFloat("How high its arms can lift (degrees)", &T.m->arm_raise, 20, 160, "%.0f");
-                }
-                ImGui::SetNextItemWidth(200);
-                ImGui::Combo("Move", &T.move, [](void *, int i) { return KitMoves[i].name; }, nullptr, KitMoveCount);
-                ImGui::SameLine();
-                ImGui::Checkbox("Play", &T.playing);
-                ImGui::SameLine();
-                ImGui::SetNextItemWidth(200);
-                ImGui::SliderFloat("Turn", &T.turn, -180, 180, "%.0f");
-                ImGui::EndTabItem();
-                }
-                if (ImGui::BeginTabItem("In the games", nullptr, T.show_games ? ImGuiTabItemFlags_SetSelected : 0)) {
-                T.show_games = false;
-                // made by itself the first time the tab's open for a model; again by the button after a change
-                if (!T.made_asked && T.maker == nullptr) {
-                    T.made_asked = true;
-                    make_in_game(T);
-                }
-                ImGui::BeginDisabled(T.maker != nullptr);
-                if (ImGui::Button(T.maker != nullptr ? "Making it..." : "Make it again")) {
-                    make_in_game(T);
-                }
-                ImGui::EndDisabled();
-                ImGui::SameLine();
-                ImGui::TextDisabled("the game makes it as it will when it loads it, with each game's ride or prop (after a change)");
-                // its own moves in place of its template's, in a game: then made again to see them
-                ImGui::Text("Its own moves in the games, in place of %s's:", Heroes[T.template_hero]);
-                for (int o = 0; o < T.nown; o++) {
-                    ImGui::PushID(o);
-                    ImGui::BulletText("%s", T.own[o]);
-                    ImGui::SameLine();
-                    if (ImGui::SmallButton("Remove")) {
-                        memmove(T.own[o], T.own[o + 1], sizeof(T.own[0]) * (size_t)(T.nown - o - 1));
-                        T.nown--;
-                    }
-                    ImGui::PopID();
-                }
-                if (T.nown < KIT_OWN_MOST) {
-                    const KitGameMoves &g = KitGames[T.own_game];
-                    int gm = 0;
-                    while (gm < 8 && g.moves[gm] != nullptr) {
-                        gm++;
-                    }
-                    T.own_move = T.own_move < gm ? T.own_move : 0;
-                    ImGui::SetNextItemWidth(110);
-                    ImGui::Combo("##game", &T.own_game, [](void *, int i) { return KitGames[i].kind; }, nullptr, KitGameCount);
-                    ImGui::SameLine();
-                    ImGui::SetNextItemWidth(110);
-                    ImGui::Combo("##its", &T.own_move, [](void *d, int i) { return ((const KitGameMoves *)d)->moves[i]; }, (void *)&g, gm);
-                    ImGui::SameLine();
-                    ImGui::TextUnformatted("as");
-                    ImGui::SameLine();
-                    ImGui::SetNextItemWidth(130);
-                    ImGui::Combo("##ours", &T.own_ours, [](void *, int i) { return KitMoves[i].name; }, nullptr, KitMoveCount);
-                    ImGui::SameLine();
-                    if (ImGui::Button("Add")) {
-                        snprintf(T.own[T.nown++], sizeof(T.own[0]), "%s/%s=%s", g.kind, g.moves[T.own_move], KitMoves[T.own_ours].name);
-                    }
-                }
-                if (T.have_made[T.kind] || T.maker == nullptr) {
-                    bool any = false;
-                    for (int k = 0; k < PACK_KINDS; k++) {
-                        any |= T.have_made[k];
-                    }
-                    if (any) {
-                        ImGui::Separator();
-                        if (ImGui::RadioButton("All the games", T.gallery)) {
-                            T.gallery = true;
-                        }
-                        ImGui::SameLine();
-                        if (ImGui::RadioButton("One game, its moves", !T.gallery)) {
-                            T.gallery = false;
-                        }
-                        ImGui::SameLine();
-                        ImGui::SetNextItemWidth(160);
-                        ImGui::SliderFloat("Turn##all", &T.made_turn, -180, 180, "%.0f");
-                    }
-                    if (any && T.gallery) {
-                        // each game's at once, its first move playing: one picked opens it big, with its moves
-                        for (int k = 0; k < PACK_KINDS; k++) {
-                            ImGui::PushID(k);
-                            ImGui::BeginGroup();
-                            if (T.have_made[k] && T.thumbs[k].tex != nullptr) {
-                                if (ImGui::ImageButton("thumb", (ImTextureID)(intptr_t)T.thumbs[k].tex, ImVec2(ThumbW, ThumbH))) {
-                                    T.kind = k;
-                                    T.anim = 0;
-                                    T.made_t = 0;
-                                    T.gallery = false;
-                                }
-                            } else {
-                                ImGui::Dummy(ImVec2(ThumbW + 8, ThumbH + 8));
-                            }
-                            ImGui::TextUnformatted(T.have_made[k] ? KindShort[k] : "(not made)");
-                            // whose ride or prop it has here: the template's, or another hero's (made again to see it)
-                            if (k != KIND_WARP_TOOL) {
-                                char now[64];
-                                snprintf(now, sizeof(now), "%s's (template)", Heroes[T.template_hero]);
-                                ImGui::SetNextItemWidth(ThumbW + 8);
-                                if (ImGui::BeginCombo("##from", T.kind_template[k] < 0 ? now : Heroes[T.kind_template[k]])) {
-                                    if (ImGui::Selectable(now, T.kind_template[k] < 0)) {
-                                        T.kind_template[k] = -1;
-                                        make_in_game(T);
-                                    }
-                                    for (int h = 0; h < 8; h++) {
-                                        if (h != T.template_hero && ImGui::Selectable(Heroes[h], T.kind_template[k] == h)) {
-                                            T.kind_template[k] = h;
-                                            make_in_game(T);
-                                        }
-                                    }
-                                    ImGui::EndCombo();
-                                }
-                            }
-                            ImGui::EndGroup();
-                            ImGui::PopID();
-                            if (k % 4 != 3 && k + 1 < PACK_KINDS) {
-                                ImGui::SameLine();
-                            }
-                        }
-                    } else if (any) {
-                        ImGui::BeginGroup();
-                        if (T.have_made[T.kind]) {
-                            ImGui::Image((ImTextureID)(intptr_t)T.game_view.tex, ImVec2(PrevW, PrevH));
-                        } else {
-                            ImGui::Dummy(ImVec2(PrevW, PrevH));
-                        }
-                        ImGui::EndGroup();
-                        ImGui::SameLine();
-                        ImGui::BeginGroup();
-                        for (int k = 0; k < PACK_KINDS; k++) {
-                            ImGui::BeginDisabled(!T.have_made[k]);
-                            if (ImGui::RadioButton(KindTitles[k], T.kind == k)) {
-                                T.kind = k;
-                                T.anim = 0;
-                                T.made_t = 0;
-                            }
-                            ImGui::EndDisabled();
-                        }
-                        if (T.have_made[T.kind]) {
-                            const KitMade *mk = &T.made[T.kind];
-                            ImGui::SetNextItemWidth(200);
-                            if (ImGui::BeginCombo("Its move", T.anim < mk->nanims ? mk->anims[T.anim].name : "")) {
-                                for (int a = 0; a < mk->nanims; a++) {
-                                    if (ImGui::Selectable(mk->anims[a].name, a == T.anim)) {
-                                        T.anim = a;
-                                        T.made_t = 0;
-                                    }
-                                }
-                                ImGui::EndCombo();
-                            }
-                            ImGui::SetNextItemWidth(200);
-                            ImGui::SliderFloat("Turn##game", &T.made_turn, -180, 180, "%.0f");
-                            ImGui::SetNextItemWidth(200);
-                            ImGui::SliderFloat("Speed", &T.made_speed, 0, 2, "%.2f");
-                        }
-                        ImGui::EndGroup();
-                    }
-                }
-                ImGui::EndTabItem();
-                }
-                ImGui::EndTabBar();
-            }
-            ImGui::TableNextColumn();
-            ImGui::Text("Model (.glb)");
-            path_field("##model", T.model, sizeof(T.model));
-            if (ImGui::Button("Open")) {
-                char path[1024];
-                SDL_strlcpy(path, T.model, sizeof(path));
-                open_model(T, path);
-            }
-            ImGui::Separator();
-            ImGui::Text("The hero");
-            ImGui::InputText("Id", T.id, sizeof(T.id));
-            ImGui::InputText("Name (capitals)", T.name, sizeof(T.name));
-            ImGui::InputInt("Height", &T.height);
-            T.height = T.height < 200 ? 200 : T.height > 900 ? 900 : T.height;
-            ImGui::TextDisabled("Crash stands 452, most heroes about 650");
-            ImGui::Combo("Takes the place of", &T.prefer, Heroes, 8);
-            ImGui::Combo("Template", &T.template_hero, Heroes, 8);
-            ImGui::TextDisabled("whose moves it makes, and what it rides and holds, in each game");
-            ImGui::SliderFloat("Head for its face", &T.face_head, 0, 0.6f, T.face_head > 0 ? "%.2f of it" : "the game's own");
-            ImGui::Separator();
-            ImGui::Text("Card (.png)");
-            path_field("##card", T.card, sizeof(T.card));
-            ImGui::Text("Sounds (.wav)");
-            for (int j = 0; j < PACK_VOICE_JOBS; j++) {
-                ImGui::RadioButton(PackVoiceJobs[j], &T.voice_job, j);
-                ImGui::SameLine(90);
-                ImGui::PushID(j);
-                path_field("##voice", T.voice[j], sizeof(T.voice[0]));
-                ImGui::PopID();
-            }
-            ImGui::TextDisabled("Drop a .wav on the window for the job picked");
-            ImGui::Separator();
-            ImGui::InputText("Mod's name", T.mod_name, sizeof(T.mod_name));
-            ImGui::InputText("Author", T.author, sizeof(T.author));
-            ImGui::Text("Mods folder");
-            path_field("##out", T.out, sizeof(T.out));
-            if (ImGui::Button("Export") && T.m != nullptr) {
-                export_pack(T, false);
-            }
-            ImGui::Separator();
-            ImGui::Text("The game");
-            path_field("##game", T.game, sizeof(T.game));
-            ImGui::Combo("In", &T.mode, [](void *, int i) { return Modes[i].name; }, nullptr, (int)(sizeof(Modes) / sizeof(Modes[0])));
-            if (ImGui::Button("Export and test in game") && T.m != nullptr) {
-                export_pack(T, true);
-            }
-            ImGui::EndTable();
-        }
-        ImGui::End();
+            editor_window(T, win);
         }
         ImGui::Render();
         SDL_SetRenderDrawColor(ren, 30, 30, 34, 255);

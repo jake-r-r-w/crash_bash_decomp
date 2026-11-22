@@ -247,9 +247,18 @@ sounds and the mod's name, and **Export** writes the mod to the mods folder (bes
 there), or **Export and test in game** starts the game too, with it as player 1 in the game picked. `HEROTOOL_SHOT=FILE.png`
 saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it opens, for tests.
 
-**The preview** (the window's **In the games** tab): the first time the tab's open for a model it's made by itself, and shown as
-**All the games**, a gallery of every kind at once, each playing its first move (2026-11-22, the user's word: the hero with all the
-props); one picked opens it big, with its moves (**One game, its moves**). **Make it again** makes it after a change. Making it
+**The editor** (2026-11-22, the user's word: one window, simple; a UX pass): three columns. On the left the hero's pages: **Model
+and joints** (its rig, or the dots to place on its joints, and the tool's own moves on it), **All games at a glance** (every kind of
+model at once, each playing), and each game. In the middle the page's picture; on the right its choices, then **Hero details**
+(name, id, height, **Plays like**: its template, **Takes place of**, its face), **Card and sounds** (Browse, the system's file
+chooser) and **Save** (**Save to mods folder**, **Save and play** in a game picked). A game's page has **Prop from** (that game's
+ride or prop and moves from another hero than its template) and **Its moves here**: for each of the game's moves (KitGames) its
+template's, **its own clip** if the model has one (`GAME/MOVE`, a pack loaded to change), or **my MOVE**, one of the tool's moves
+(written as a `GAME/MOVE` clip; a model's own such clip not chosen is left out, `KitPack.drop`). A change of prop or move makes the
+preview again by itself; other changes show **Update the preview**. Its tests' settings: `HEROTOOL_PAGE=N` (-2 the model's, -1 all,
+a kind), `HEROTOOL_OWN=GAME/MOVE=MOVE`.
+
+**The preview**: the first time a game's page is open for a model it's made by itself. Making it
 exports the hero to the tool's own folder (SDL's pref
 path, `CrashBashPC/herotool/preview`) and starts the game with `--dump-hero ID FOLDER`: it reads the player's own settings, so it
 finds their game data, makes the hero as it does when it loads a pack, writes what it made and ends, in about a second, with no

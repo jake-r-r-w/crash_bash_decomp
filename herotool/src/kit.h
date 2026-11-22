@@ -95,6 +95,7 @@ int kit_clip_pose(const KitModel *m, int clip, float t, float rot[KB_COUNT][4], 
 /* The games' moves where a pack follows its template (port/game/main/packfollow.c's kinds: the same names for every hero), which its
    own moves can take the place of: each kind's name (heropack.c's) and its moves, NULL ended */
 #define KIT_OWN_MOST 16
+#define KIT_DROP_MOST 64
 typedef struct {
     const char *kind;
     const char *moves[8];
@@ -109,6 +110,9 @@ typedef struct {
     /* its own moves in a game in place of its template's: "KIND/MOVE=OURS", one of the standard moves (KitMoves) written as that game's
        move (a clip named KIND/MOVE, which the game plays in place of following there); NULL ends the list */
     const char *own[KIT_OWN_MOST + 1];
+    /* the model's own clips not to write (a GAME/MOVE clip of a pack loaded to change, its move now the template's or another), NULL
+       ended */
+    const char *drop[KIT_DROP_MOST + 1];
     int height;
     float face_head;
     const char *voice[PACK_VOICE_JOBS]; /* each job's sound (PackVoiceJobs: name, laugh, yelp, ...), a WAV, or NULL for its base's */
