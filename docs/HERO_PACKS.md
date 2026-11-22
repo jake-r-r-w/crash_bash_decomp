@@ -420,7 +420,7 @@ In the tool a game's **Moves** says each move's: its template's, **own (from Cra
 once it's saved), or one of the tool's. Replacing one of its own asks first (**Replace its own move?**: **Keep mine** or **Use
 Crash's**), and takes its changes with it. On foot, where it follows a hero, **Own moves** lists them, each with **Use Crash's**
 (asked the same). The page's **Animation** says whose the move is with a tag beside **Edit joints** (**Own move (from Crash)**, green,
-or **Crash's move**; its tooltip says the rest), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change
+or **Crash's move**; its tooltip says the rest), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change (and after `HEROTOOL_DRAG`'s drag, once it's let go)
 (the game having made it again), and `HEROTOOL_ASK=MOVE` picks a move's template's, for tests.
 
 **In the tool**, each game's page has **Animation**: **Edit joints** puts a dot on every joint over the picture (squares for the
@@ -468,7 +468,13 @@ the panel's **Fade** fades them all, and right-clicking one of them is for them 
 The timeline **zooms** (the user's word, 2026-11-22: zoom and snapping): the wheel over it zooms about the mouse (to a quarter of the
 move's frames shown), Shift and the wheel (or a sideways wheel) scroll it, Home shows all of it again, a bar under the ruler says
 which part is shown, and playing it follows the frame shown. A dragged key (or its end) **snaps** to another key's first or last
-frame, or the frame shown as the drag began, the nearest within a few pixels (a line shows where); Ctrl and drag doesn't snap. Drag a diamond (a held
+frame, or the frame shown as the drag began, the nearest within a few pixels (a line shows where); Ctrl and drag doesn't snap.
+
+**X-Mirror** (beside Turn, Move and Size; the user's word, 2026-11-22: mirror while editing, as Blender's): while it's on, each
+change to a joint's key (by its gizmo, its values, its fade or blend, its frames, or dragging it in the timeline) is made to its
+other side's key at that frame too, its mirror image (across, and its turns about up and front to back, the other way; its frames,
+fade and blend the same), the key made if there's none (`mirror_edit`); the other side's joint is ringed in purple. Checked: a left
+ear dragged by its gizmo, its right ear the mirror of it, and the game's frame the same exactly. Drag a diamond (a held
 key by its bar) to move it to other frames. To hold one over more frames or fewer: drag a held key's end, or a picked key's grips
 (the white bars either side), or Shift and drag a key the way it's to go. Right-click a key for **Copy**, **Paste**, **Paste
 mirrored**, **Fade**, **Stretch to end**, **Stretch to start**, **Stretch to whole move**, **Single frame** and **Delete** (or press
@@ -502,7 +508,7 @@ picked away, Ctrl+C and Ctrl+V copy and paste a key (Ctrl+Shift+V mirrored), Ctr
 hero.
 
 Its tests' settings: `HEROTOOL_ADJUST=BONE@FRAME` (or `@FROM-TO`, held) adjusts the page shown once it's made, that bone picked there
-(and `HEROTOOL_SHOW_FRAME=N` shows that frame after; `HEROTOOL_ADJUST_FADE=EASE,N` its fade, hero.json's name, over N frames;
+(and `HEROTOOL_SHOW_FRAME=N` shows that frame after; `HEROTOOL_XMIRROR=1` turns X-Mirror on, the test's change mirrored; `HEROTOOL_ADJUST_FADE=EASE,N` its fade, hero.json's name, over N frames;
 `HEROTOOL_PASTE=FRAME[,1[,BONE]]` copies it and pastes it at FRAME, mirrored with 1, onto BONE; then `HEROTOOL_SELECT_ALL=1`
 picks every key of the move and `HEROTOOL_PASTE2=FRAME[,1]` copies and pastes those);
 `HEROTOOL_ADJUST_TURN` / `_REACH` / `_SCALE=X,Y,Z` changes it; `HEROTOOL_GIZMO=N` picks the gizmo (0 turn, 1 move, 2 size);

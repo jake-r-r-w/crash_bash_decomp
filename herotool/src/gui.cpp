@@ -258,6 +258,8 @@ struct Tool {
     // it's snapped to (-1 none)
     float tl_zoom = 1, tl_first = 0;
     int drag_frame0 = 0, snapped = -1;
+    // X-Mirror: each change to a joint's key made to its other side's too, flipped
+    bool xmirror = false;
     // how a new key fades (PACK_EASE_), and the key copied (Ctrl+C; empty none)
     int ease = PACK_EASE_SMOOTH;
     std::vector<PackAdjust> clip;
@@ -1487,6 +1489,49 @@ PackAdjust *panel_key(Tool &T, const char *move, const char *bone) {
 
 const char *other_side(const char *name);
 
+// X-Mirror (the user's word, 2026-11-22: "mirror while editing", as Blender's): key i's other side's key made its mirror image (its
+// frames, fade and blend the same; across, and its turns about up and front to back, the other way), the one at was_at (its frame
+// before a move, else its frame now) or a new one. Only while X-Mirror's on, and for a joint with another side. (A new key's added at
+// the end: pointers into T.adj don't hold over it.)
+void mirror_edit(Tool &T, int i, int was_at) {
+    if (!T.xmirror || i < 0 || i >= (int)T.adj.size()) {
+        return;
+    }
+    char other[PACK_ADJUST_NAME];
+    SDL_strlcpy(other, other_side(T.adj[i].bone), sizeof(other));
+    if (other[0] == 0 || pack_bone_index(&T.poses[T.kind], other) < 0) {
+        return;
+    }
+    int m = -1;
+    for (int j = 0; j < (int)T.adj.size(); j++) {
+        const PackAdjust &x = T.adj[j];
+        if (j != i && x.kind == T.adj[i].kind && x.at == was_at && SDL_strcasecmp(x.move, T.adj[i].move) == 0 && SDL_strcasecmp(x.bone, other) == 0) {
+            m = j;
+        }
+    }
+    PackAdjust x = T.adj[i];
+    SDL_strlcpy(x.bone, other, sizeof(x.bone));
+    x.turn[1] = -x.turn[1], x.turn[2] = -x.turn[2];
+    x.reach[0] = -x.reach[0];
+    if (m >= 0) {
+        T.adj[m] = x;
+    } else if (T.adj.size() < PACK_MAX_ADJUSTS) {
+        T.adj.push_back(x);
+    }
+}
+
+// mirror_edit for each of keys (their places taken first, as a key it adds moves T.adj); keys then no use
+void mirror_all(Tool &T, std::vector<PackAdjust *> &keys) {
+    std::vector<int> at;
+    for (PackAdjust *x : keys) {
+        at.push_back((int)(x - T.adj.data()));
+    }
+    for (int i : at) {
+        mirror_edit(T, i, T.adj[i].at);
+    }
+    keys.clear();
+}
+
 // The keys picked (else the picked joint's at the frame shown) copied, to paste (the user's word, 2026-11-22: "add keyframe copy and
 // paste in the timeline")
 void key_copy(Tool &T) {
@@ -1797,6 +1842,19 @@ void gizmo_buttons(Tool &T) {
         ImGui::SetItemTooltip("%s", Tips[i]);
         ImGui::SameLine();
     }
+    ImGui::SameLine(0, U(16));
+    bool on = T.xmirror;
+    if (on) {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+    }
+    if (ImGui::Button("X-Mirror", ImVec2(U(90), 0))) {
+        T.xmirror = !T.xmirror;
+    }
+    if (on) {
+        ImGui::PopStyleColor();
+    }
+    ImGui::SetItemTooltip("Changes copy to the other side, flipped");
+    ImGui::SameLine();
     ImGui::NewLine();
 }
 
@@ -1906,6 +1964,13 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             dl->AddRectFilled(ImVec2(sx[b] - U(4), sy[b] - U(4)), ImVec2(sx[b] + U(4), sy[b] + U(4)), col);
         } else {
             dl->AddCircleFilled(ImVec2(sx[b], sy[b]), b == hover ? U(6) : U(4.5f), col);
+        }
+    }
+    // X-Mirror: the other side's joint ringed
+    if (T.sel >= 0 && T.xmirror && other_side(po->names[T.sel])[0] != 0) {
+        int ob = pack_bone_index(po, other_side(po->names[T.sel]));
+        if (ob >= 0) {
+            dl->AddCircle(ImVec2(sx[ob], sy[ob]), U(11), IM_COL32(200, 150, 255, 230), 0, U(2));
         }
     }
     // the gizmo
@@ -2061,6 +2126,7 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             }
         }
     }
+    mirror_edit(T, T.key_sel, T.adj[T.key_sel].at);
 }
 
 // Under the picture while adjusting, the keyframes (the user's word, 2026-11-22: "a key frame time line below the animation"): play
@@ -2484,8 +2550,10 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                     adj_snapshot(T, "%s's key", b);
                     T.key_moved = true;
                 }
+                int was = k.at;
                 k.at = from;
                 k.until = to;
+                mirror_edit(T, T.key_sel, was);
                 if (T.key_part == KEY_BODY) {
                     to > from ? adj_step_says(T, "Moved %s's key to frames %d to %d", b, from, to) : adj_step_says(T, "Moved %s's key to frame %d", b, from);
                 } else {
@@ -3406,6 +3474,7 @@ void adjust_panel(Tool &T) {
                 x->spread = T.spread;
             }
             adj_step_says(T, "Faded %s over %d frames", whose, T.spread);
+            mirror_all(T, fades);
         }
         // how it fades in and out (the user's word, 2026-11-22: "the transion effect should be chooseable")
         ImGui::SameLine();
@@ -3419,6 +3488,7 @@ void adjust_panel(Tool &T) {
                         for (PackAdjust *x : fades) {
                             x->ease = e;
                         }
+                        mirror_all(T, fades);
                     }
                 }
                 ImGui::SetItemTooltip("%s", EaseTips[e]);
@@ -3434,6 +3504,7 @@ void adjust_panel(Tool &T) {
             for (PackAdjust *x : fades) {
                 x->blend = blend;
             }
+            mirror_all(T, fades);
         }
         ImGui::EndDisabled();
         ImGui::SetItemTooltip("Flow into the joint's next key instead of fading out");
@@ -3487,6 +3558,7 @@ void adjust_panel(Tool &T) {
             for (int i = 0; i < 3; i++) {
                 k->grow[i] = fmaxf(0.1f, fminf(10, size[i])) - 1;
             }
+            mirror_edit(T, (int)(k - T.adj.data()), k->at);
         }
         if (T.key_mode == KEY_FRAME && (k = panel_key(T, move, bone)) != nullptr && k->at >= 0) {
             // the frames it's held over: from, to (the same: that frame alone), or all of them
@@ -3509,11 +3581,14 @@ void adjust_panel(Tool &T) {
                 adj_snapshot(T, "Held %s's key", bone_title(bone));
             }
             if (held) {
+                int was = k->at, me = (int)(k - T.adj.data());
                 k->at = std::max(0, std::min(from, to));
                 k->until = std::min(frames - 1, std::max(from, to));
                 T.frame = std::max(k->at, std::min(key_last(*k), T.frame));
                 adj_step_says(T, k->until > k->at ? "Held %s's key from frame %d to %d" : "Made %s's key frame %d alone", bone_title(bone), k->at,
                               k->until);
+                mirror_edit(T, me, was);
+                k = &T.adj[me];
             }
             ImGui::SameLine();
             if (ImGui::Button("All", ImVec2(U(46), 0))) {
@@ -4231,6 +4306,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     /* a test's picture of it: HEROTOOL_SHOT=FILE.png saves the window after a moment, and closes it */
     const char *shot = SDL_getenv("HEROTOOL_SHOT");
     int frames = 0;
+    int drag_step = -1; /* (a test drag's step: HEROTOOL_DRAG) */
     /* a test's: HEROTOOL_PROFILE=1 prints how long each part of a frame took, on average, every 60 frames */
     bool profile = SDL_getenv("HEROTOOL_PROFILE") != nullptr;
     enum { PR_THUMBS, PR_ADJUST, PR_GAME, PR_MODEL, PR_UI, PR_DRAW, PR_PRESENT, PR_N };
@@ -4344,7 +4420,9 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         /* a test's: HEROTOOL_SAVE_TO=FOLDER saves it there once HEROTOOL_ADJUST's change is made and the game's made it again */
         static bool adjust_set = false, adjust_saved = false;
-        if (adjust_set && !adjust_saved && SDL_getenv("HEROTOOL_SAVE_TO") != nullptr && T.maker == nullptr && !T.remake) {
+        /* (after a test drag, once it's let go) */
+        if (adjust_set && !adjust_saved && SDL_getenv("HEROTOOL_SAVE_TO") != nullptr && T.maker == nullptr && !T.remake
+            && (SDL_getenv("HEROTOOL_DRAG") == nullptr || drag_step > 14)) {
             export_pack(T, false, SDL_getenv("HEROTOOL_SAVE_TO"));
             printf("herotool: %s\n", T.status);
             adjust_saved = true;
@@ -4398,6 +4476,9 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                     k->blend = blend != 0; /* (EASE,N,1: blended into the next) */
                 }
                 keys_only(T, (int)(k - T.adj.data()));
+                /* (HEROTOOL_XMIRROR=1: X-Mirror on, this change mirrored as an edit's is) */
+                T.xmirror = SDL_getenv("HEROTOOL_XMIRROR") != nullptr;
+                mirror_edit(T, T.key_sel, T.adj[T.key_sel].at);
                 /* and HEROTOOL_PASTE=FRAME[,M[,BONE]] copies it and pastes it there (M: mirrored; onto BONE, else its own), as Ctrl+C and
                    Ctrl+V (Ctrl+Shift+V) do; then HEROTOOL_SELECT_ALL=1 picks every key of the move (Ctrl+A), and HEROTOOL_PASTE2=FRAME[,M]
                    copies those picked and pastes them there */
@@ -4481,7 +4562,6 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT[,BUTTON]] presses the left button (or the right) at (X0, Y0) in the window once a game's shown, moves
            to (X1, Y1) over ten frames and lets go (Shift held if SHIFT is 1), as a person's mouse would, and keeps it there after (the
            real mouse left out: the SDL backend gives where it is on the screen while the window has the focus) */
-        static int drag_step = -1;
         if (SDL_getenv("HEROTOOL_DRAG") != nullptr && (drag_step >= 0 || T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr))) {
             /* (a sixth, BUTTON: 0 the left, 1 the right) */
             float d[6] = { 0, 0, 0, 0, 0, 0 };
