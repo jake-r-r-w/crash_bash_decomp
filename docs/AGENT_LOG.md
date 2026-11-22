@@ -667,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool no longer lags (the user's word): a frame was 54 ms (the model page's views drawn on every page, the
+  game's picture every frame). Pictures are drawn only while shown and when changed, triangles filled across only their rows' spans,
+  in bands on threads; a frame is 0.3 to 7 ms now. `HEROTOOL_PROFILE`, `HEROTOOL_PREF` (a test's own folder). The model page's views
+  are fitted again when the window's scale changes (the model sat small in a corner).
+
 - 2026-11-22: the hero tool's preview gets Blender's floor grid and its axes in a corner (click one, or the keypad's 1, 3, 7, to look
   from there), and the gizmo Blender's axes (X red its left, Y green its back, Z blue up). Any joint moves now (the user: "why cant i
   move the ears?"): a bone that isn't a hand, foot or the hips moves with all on it (heroadjust.c); tool and game the same exactly.

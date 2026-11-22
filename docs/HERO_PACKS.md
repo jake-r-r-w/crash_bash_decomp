@@ -278,6 +278,17 @@ sounds and the mod's name, and **Export** writes the mod to the mods folder (bes
 there), or **Export and test in game** starts the game too, with it as player 1 in the game picked. `HEROTOOL_SHOT=FILE.png`
 saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it opens, for tests.
 
+**Its pictures** are drawn by the tool itself, on the processor (`draw`, `draw_made`), so drawing them is kept down (the user's
+word, 2026-11-22: "it lags abit"; a frame was 54 ms, 31 of them the model's three views drawn on every page and 22 the game's
+picture): a picture is drawn only while its page shows it, and again only when what it's drawn from has changed (`drawn_same`: the
+view's turn, tilt, zoom and size, and the frame's vertices; `MadeGen` counts the game's models read in), so a still picture costs
+nothing and a playing move a picture a frame of the game's (30 a second). A triangle is filled row by row across only what it
+covers, its corners' shares added as it goes (`fill_tri`), and a picture in bands of rows on as many threads as the machine has, to 8
+(`in_bands`; each band's pixels its own, in the same order, so the picture's the same). A move's fit to the picture is found once.
+Now (on a 16-thread machine, its pictures at 2.2 times): a game's page still 0.3 ms a frame, playing 3.8, every game at a glance 7,
+the model's page 4.6. `HEROTOOL_PROFILE=1` prints a frame's parts every 60 frames, and `HEROTOOL_PREF=FOLDER/` keeps a test's
+previews and zoom in a folder of its own (not the open tool's).
+
 **The editor** (2026-11-22, the user's word: one window, simple; a UX pass): three columns. On the left the hero's pages: **Model
 and joints** (its rig, or the dots to place on its joints, and the tool's own moves on it), **All games at a glance** (every kind of
 model at once, each playing), and each game. In the middle the page's picture; on the right its choices, then **Hero details**
@@ -440,4 +451,5 @@ Its tests' settings: `HEROTOOL_ADJUST=BONE@FRAME` adjusts the page shown once it
 `HEROTOOL_ADJUST_TURN` / `_REACH` / `_SCALE=X,Y,Z` changes it; `HEROTOOL_GIZMO=N` picks the gizmo (0 turn, 1 move, 2 size);
 `HEROTOOL_DRAG=X0,Y0,X1,Y1[,1]` drags the mouse in the window (Shift with 1; the window's pixels, as `HEROTOOL_SHOT`'s picture's);
 `HEROTOOL_LIVE=FILE` writes the frame shown as the tool made it (s16 x, y, z a vertex), and FILE.txt its move and frame, to set
-beside the game's. Run one test tool at a time: each has the game make its models into the same folder.
+beside the game's. Run one test tool at a time, or each with its own `HEROTOOL_PREF`: each has the game make its models into its
+folder.

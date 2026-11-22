@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <algorithm>
+#include <thread>
 #include <string>
 #include <vector>
 #include <SDL3/SDL.h>
@@ -44,7 +45,115 @@ struct View {
     float cx = 0, cz = 0;
     // a floor's grid under it, as Blender's (draw_made's: floor_grid)
     bool grid = false;
+    // what it was last drawn from (drawn_same), so a picture that wouldn't change isn't drawn again; and the move it was last fitted to
+    // (draw_made), its lowest and highest
+    std::vector<unsigned char> drawn;
+    const void *fit_of = nullptr;
+    int fit_anim = -1;
+    unsigned fit_gen = 0;
+    float fit_lo[3] = {}, fit_hi[3] = {};
 };
+
+// Each time the game's models are read in again (or let go), one more: what a picture was drawn from is known by it as well as by where
+// it is (a model read in again may be where the last one was)
+unsigned MadeGen = 1;
+
+// What a picture is drawn from, as bytes, to be set beside what it was last drawn from (drawn_same)
+struct DrawnFrom {
+    std::vector<unsigned char> k;
+    void add(const void *p, size_t n) {
+        k.insert(k.end(), (const unsigned char *)p, (const unsigned char *)p + n);
+    }
+    template <class V> void add(const V &x) {
+        add(&x, sizeof(x));
+    }
+};
+
+// A picture PW x PH made in bands of its rows, each band's fn(its first row, the row after it) on a thread of its own (as many as the
+// machine has, up to 8, a band at least 32768 pixels: a smaller one would take longer to start than it saves), so it's made in a share
+// of the time. Each band's pixels are its own, and made in the same order, so the picture is the same as made in one.
+template <class F> void in_bands(int PW, int PH, F fn) {
+    static const int most = (int)std::min(8u, std::max(1u, std::thread::hardware_concurrency()));
+    int n = std::min(most, std::max(1, PW * PH / 32768));
+    std::thread th[8];
+
+    if (n <= 1) {
+        fn(0, PH);
+        return;
+    }
+    for (int i = 0; i < n; i++) {
+        int ya = PH * i / n, yb = PH * (i + 1) / n;
+        th[i] = std::thread([&fn, ya, yb] { fn(ya, yb); });
+    }
+    for (int i = 0; i < n; i++) {
+        th[i].join();
+    }
+}
+
+// Whether a view would be drawn as it was last, from now (its turn, tilt, zoom, size and what's in it): if not, now is kept as what it
+// was drawn from. Its picture's made again only when this says it's changed (the user's word, 2026-11-22: "it lags abit").
+bool drawn_same(View &v, DrawnFrom &now) {
+    now.add(v.yaw), now.add(v.pitch), now.add(v.zoom), now.add(v.zx), now.add(v.zy), now.add(v.w), now.add(v.h), now.add(v.grid);
+    now.add(v.tex);
+    if (v.tex != nullptr && now.k == v.drawn) {
+        return true;
+    }
+    v.drawn.swap(now.k);
+    return false;
+}
+
+// A triangle's pixels on a picture PW wide and PH high whose middles are in it, in its rows ya to yb (yb not), and nearer than what's
+// there (depth), each as f(its index, its share of each corner a, b and d, its depth z). Row by row across only what it covers, its
+// shares added as it goes (no division a pixel): what both pictures are made with.
+template <class F>
+void fill_tri(const float sx[3], const float sy[3], const float sz[3], const float *depth, int PW, int PH, int ya, int yb, F f) {
+    float area = (sx[1] - sx[0]) * (sy[2] - sy[0]) - (sx[2] - sx[0]) * (sy[1] - sy[0]);
+
+    if (fabsf(area) < 1e-6f) {
+        return;
+    }
+    float inv = 1 / area;
+    // a corner's share at a pixel's middle (px, py) is A px + B py + C: corner 0's, corner 1's, and the rest corner 2's
+    float A0 = (sy[1] - sy[2]) * inv, B0 = (sx[2] - sx[1]) * inv, C0 = (sx[1] * sy[2] - sx[2] * sy[1]) * inv;
+    float A1 = (sy[2] - sy[0]) * inv, B1 = (sx[0] - sx[2]) * inv, C1 = (sx[2] * sy[0] - sx[0] * sy[2]) * inv;
+    float A2 = -A0 - A1;
+    int x0 = (int)fmaxf(0, floorf(fminf(sx[0], fminf(sx[1], sx[2])))), x1 = (int)fminf(PW - 1, ceilf(fmaxf(sx[0], fmaxf(sx[1], sx[2]))));
+    int y0 = (int)fmaxf((float)ya, floorf(fminf(sy[0], fminf(sy[1], sy[2]))));
+    int y1 = (int)fminf((float)(yb < PH ? yb : PH) - 1, ceilf(fmaxf(sy[0], fmaxf(sy[1], sy[2]))));
+    for (int y = y0; y <= y1; y++) {
+        float py = y + 0.5f, k0 = B0 * py + C0, k1 = B1 * py + C1, k2 = 1 - k0 - k1, lo = (float)x0, hi = (float)x1 + 1;
+        // the row's span where every share's at least 0 (a pixel more each end, each pixel tested as well)
+        auto keep = [&](float A, float K) {
+            if (A > 0) {
+                lo = fmaxf(lo, -K / A);
+            } else if (A < 0) {
+                hi = fminf(hi, -K / A);
+            } else if (K < 0) {
+                hi = lo - 2;
+            }
+        };
+        keep(A0, k0);
+        keep(A1, k1);
+        keep(A2, k2);
+        if (hi < lo - 1) {
+            continue;
+        }
+        int xs = (int)fmaxf((float)x0, floorf(lo - 0.5f)), xe = (int)fminf((float)x1, ceilf(hi - 0.5f));
+        float px = xs + 0.5f, a = A0 * px + k0, b = A1 * px + k1;
+        for (int x = xs; x <= xe; x++, a += A0, b += A1) {
+            float d = 1 - a - b;
+            if (a < 0 || b < 0 || d < 0) {
+                continue;
+            }
+            float z = a * sz[0] + b * sz[1] + d * sz[2];
+            int at = y * PW + x;
+            if (z >= depth[at]) {
+                continue;
+            }
+            f(at, a, b, d, z);
+        }
+    }
+}
 
 enum { OWN_TEMPLATE = -1, OWN_CLIP = -2, OWN_MADE = -3 };
 
@@ -288,10 +397,16 @@ void draw(const KitModel *m, const float (*pos)[3], View &v, SDL_Renderer *ren) 
         v.depth = new float[ViewW * ViewH];
         v.tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, ViewW, ViewH);
     }
-    for (int i = 0; i < ViewW * ViewH; i++) {
-        v.rgba[i] = 0xFF3A3434;
-        v.depth[i] = 1e30f;
+    DrawnFrom now;
+    now.add(m), now.add(m->ntri), now.add(m->nvert), now.add(v.scale), now.add(v.ox), now.add(v.oy), now.add(ViewW), now.add(ViewH);
+    now.add(pos, sizeof(float) * 3 * (size_t)m->nvert);
+    if (drawn_same(v, now)) {
+        return;
     }
+    float c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
+    in_bands(ViewW, ViewH, [&](int ya, int yb) {
+    std::fill(v.rgba + ya * ViewW, v.rgba + yb * ViewW, 0xFF3A3434u);
+    std::fill(v.depth + ya * ViewW, v.depth + yb * ViewW, 1e30f);
     for (int t = 0; t < m->ntri; t++) {
         float sx[3], sy[3], sz[3], n[3], e1[3], e2[3];
         const int *tri = m->tri[t];
@@ -307,49 +422,30 @@ void draw(const KitModel *m, const float (*pos)[3], View &v, SDL_Renderer *ren) 
         n[0] = e1[1] * e2[2] - e1[2] * e2[1];
         n[1] = e1[2] * e2[0] - e1[0] * e2[2];
         n[2] = e1[0] * e2[1] - e1[1] * e2[0];
-        float ln = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]), c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
+        float ln = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
         float facing = ln > 0 ? ((n[0] * s + n[2] * c) * 0.7f + n[1] * 0.5f) / ln : 0, lit = 0.55f + 0.45f * fmaxf(0, facing);
-        float area = (sx[1] - sx[0]) * (sy[2] - sy[0]) - (sx[2] - sx[0]) * (sy[1] - sy[0]);
-
-        if (fabsf(area) < 1e-6f) {
-            continue;
-        }
-        int x0 = (int)fmaxf(0, floorf(fminf(sx[0], fminf(sx[1], sx[2])))), x1 = (int)fminf(ViewW - 1, ceilf(fmaxf(sx[0], fmaxf(sx[1], sx[2]))));
-        int y0 = (int)fmaxf(0, floorf(fminf(sy[0], fminf(sy[1], sy[2])))), y1 = (int)fminf(ViewH - 1, ceilf(fmaxf(sy[0], fmaxf(sy[1], sy[2]))));
-        for (int y = y0; y <= y1; y++) {
-            for (int x = x0; x <= x1; x++) {
-                float px = x + 0.5f, py = y + 0.5f;
-                float a = ((sx[1] - px) * (sy[2] - py) - (sx[2] - px) * (sy[1] - py)) / area;
-                float b = ((sx[2] - px) * (sy[0] - py) - (sx[0] - px) * (sy[2] - py)) / area, d = 1 - a - b, z;
-
-                if (a < 0 || b < 0 || d < 0) {
-                    continue;
-                }
-                z = a * sz[0] + b * sz[1] + d * sz[2];
-                if (z >= v.depth[y * ViewW + x]) {
-                    continue;
-                }
-                float col[3];
-                for (int ch = 0; ch < 3; ch++) {
-                    col[ch] = (a * m->rgba[tri[0]][ch] + b * m->rgba[tri[1]][ch] + d * m->rgba[tri[2]][ch]) * 255;
-                }
-                if (im != nullptr) {
-                    float u = a * m->uv[tri[0]][0] + b * m->uv[tri[1]][0] + d * m->uv[tri[2]][0];
-                    float w = a * m->uv[tri[0]][1] + b * m->uv[tri[1]][1] + d * m->uv[tri[2]][1];
-                    int tx = (int)(u * im->w), ty = (int)(w * im->h);
-
-                    tx = tx < 0 ? 0 : tx >= im->w ? im->w - 1 : tx;
-                    ty = ty < 0 ? 0 : ty >= im->h ? im->h - 1 : ty;
-                    for (int ch = 0; ch < 3; ch++) {
-                        col[ch] = col[ch] * im->rgba[((size_t)ty * im->w + tx) * 4 + ch] / 255;
-                    }
-                }
-                unsigned r = (unsigned)fminf(255, col[0] * lit), g = (unsigned)fminf(255, col[1] * lit), bl = (unsigned)fminf(255, col[2] * lit);
-                v.depth[y * ViewW + x] = z;
-                v.rgba[y * ViewW + x] = 0xFF000000u | bl << 16 | g << 8 | r;
+        fill_tri(sx, sy, sz, v.depth, ViewW, ViewH, ya, yb, [&](int at, float a, float b, float d, float z) {
+            float col[3];
+            for (int ch = 0; ch < 3; ch++) {
+                col[ch] = (a * m->rgba[tri[0]][ch] + b * m->rgba[tri[1]][ch] + d * m->rgba[tri[2]][ch]) * 255;
             }
-        }
+            if (im != nullptr) {
+                float u = a * m->uv[tri[0]][0] + b * m->uv[tri[1]][0] + d * m->uv[tri[2]][0];
+                float w = a * m->uv[tri[0]][1] + b * m->uv[tri[1]][1] + d * m->uv[tri[2]][1];
+                int tx = (int)(u * im->w), ty = (int)(w * im->h);
+
+                tx = tx < 0 ? 0 : tx >= im->w ? im->w - 1 : tx;
+                ty = ty < 0 ? 0 : ty >= im->h ? im->h - 1 : ty;
+                for (int ch = 0; ch < 3; ch++) {
+                    col[ch] = col[ch] * im->rgba[((size_t)ty * im->w + tx) * 4 + ch] / 255;
+                }
+            }
+            unsigned r = (unsigned)fminf(255, col[0] * lit), g = (unsigned)fminf(255, col[1] * lit), bl = (unsigned)fminf(255, col[2] * lit);
+            v.depth[at] = z;
+            v.rgba[at] = 0xFF000000u | bl << 16 | g << 8 | r;
+        });
     }
+    });
     SDL_UpdateTexture(v.tex, nullptr, v.rgba, ViewW * 4);
 }
 
@@ -550,6 +646,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
 // each kind's model read back ---
 
 void made_forget(Tool &T) {
+    MadeGen++;
     for (int k = 0; k < PACK_KINDS; k++) {
         if (T.have_made[k]) {
             kit_made_free(&T.made[k]);
@@ -566,9 +663,21 @@ void made_forget(Tool &T) {
     }
 }
 
+// Where the tool keeps its own things (its previews, its zoom), to SDL_free: its folder for the user's settings, or a test's own
+// (HEROTOOL_PREF=FOLDER/, so a test doesn't touch what a tool that's open has there)
+char *pref_path() {
+    const char *test = SDL_getenv("HEROTOOL_PREF");
+
+    if (test != nullptr) {
+        SDL_CreateDirectory(test);
+        return SDL_strdup(test);
+    }
+    return SDL_GetPrefPath("CrashBashPC", "herotool");
+}
+
 void make_in_game(Tool &T) {
     char mods[1100];
-    const char *pref = SDL_GetPrefPath("CrashBashPC", "herotool");
+    const char *pref = pref_path();
 
     if (T.m == nullptr || T.maker != nullptr || pref == nullptr) {
         T.remake = T.m != nullptr && T.maker != nullptr;
@@ -619,6 +728,7 @@ void made_check(Tool &T) {
 
         snprintf(path, sizeof(path), "%s/%s_%s.hpv", T.made_dir, T.id, pack_kind_name(k));
         T.have_made[k] = kit_made_read(path, &T.made[k]);
+        MadeGen++;
         have += T.have_made[k];
         // what it's made of, for the animation tools: kept only where it fits the model (the same moves and frames)
         snprintf(path, sizeof(path), "%s/%s_%s.pose", T.made_dir, T.id, pack_kind_name(k));
@@ -661,7 +771,7 @@ void made_check(Tool &T) {
 
 // A made model's frame drawn: its faces textured as the PS1 does (the texel times its corner's colour, 128 as it is), clear texels
 // left out, semi-transparent ones half over what's there. The game's axes are y down, so it's turned up the tool's way.
-void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &v, int PW, int PH);
+void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &v, int PW, int PH, int ya, int yb);
 
 // With what the game draws beside it (rides, still: their one frame), fitted to them all; its frame's vertices from live if given (made
 // again with its adjustments, adjusted_frame)
@@ -715,29 +825,40 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
         v.depth = new float[PW * PH];
         v.tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, PW, PH);
     }
-    for (int i = 0; i < PW * PH; i++) {
-        v.rgba[i] = 0xFF3A3434;
-        v.depth[i] = 1e30f;
+    const KitMadeAnim *a = m->nanims > 0 ? &m->anims[anim < m->nanims ? anim : 0] : nullptr;
+    const int16_t *vs = a == nullptr ? nullptr : live != nullptr ? live : a->verts + (size_t)(frame % a->frames) * m->nvert * 3;
+    DrawnFrom now;
+    now.add(m), now.add(MadeGen), now.add(anim), now.add(rides), now.add(nrides), now.add(PW), now.add(PH);
+    if (vs != nullptr) {
+        now.add(vs, sizeof(int16_t) * 3 * (size_t)m->nvert);
     }
-    if (m->nanims == 0) {
+    if (drawn_same(v, now)) {
+        return;
+    }
+    if (a == nullptr) {
+        std::fill(v.rgba, v.rgba + PW * PH, 0xFF3A3434u);
         SDL_UpdateTexture(v.tex, nullptr, v.rgba, PW * 4);
         return;
     }
-    const KitMadeAnim *a = &m->anims[anim < m->nanims ? anim : 0];
-    const int16_t *vs = live != nullptr ? live : a->verts + (size_t)(frame % a->frames) * m->nvert * 3;
-    // fitted to every frame of the move shown, so it doesn't jump about, nor leave the picture, as it moves
-    float lo[3] = { 1e9f, 1e9f, 1e9f }, hi[3] = { -1e9f, -1e9f, -1e9f };
-    for (int r = -1; r < nrides; r++) {
-        const KitMade *o = r < 0 ? m : &rides[r];
-        const KitMadeAnim *fa = r < 0 ? a : &o->anims[0];
-        for (int i = 0; o->nanims > 0 && i < o->nvert * (r < 0 ? fa->frames : 1); i++) {
-            float q[3] = { (float)fa->verts[i * 3], -(float)fa->verts[i * 3 + 1], -(float)fa->verts[i * 3 + 2] };
-            for (int c = 0; c < 3; c++) {
-                lo[c] = fminf(lo[c], q[c]);
-                hi[c] = fmaxf(hi[c], q[c]);
+    // fitted to every frame of the move shown, so it doesn't jump about, nor leave the picture, as it moves (found once for the move)
+    if (v.fit_of != m || v.fit_anim != anim || v.fit_gen != MadeGen) {
+        float flo[3] = { 1e9f, 1e9f, 1e9f }, fhi[3] = { -1e9f, -1e9f, -1e9f };
+        for (int r = -1; r < nrides; r++) {
+            const KitMade *o = r < 0 ? m : &rides[r];
+            const KitMadeAnim *fa = r < 0 ? a : &o->anims[0];
+            for (int i = 0; o->nanims > 0 && i < o->nvert * (r < 0 ? fa->frames : 1); i++) {
+                float q[3] = { (float)fa->verts[i * 3], -(float)fa->verts[i * 3 + 1], -(float)fa->verts[i * 3 + 2] };
+                for (int c = 0; c < 3; c++) {
+                    flo[c] = fminf(flo[c], q[c]);
+                    fhi[c] = fmaxf(fhi[c], q[c]);
+                }
             }
         }
+        memcpy(v.fit_lo, flo, sizeof(flo));
+        memcpy(v.fit_hi, fhi, sizeof(fhi));
+        v.fit_of = m, v.fit_anim = anim, v.fit_gen = MadeGen;
     }
+    const float *lo = v.fit_lo, *hi = v.fit_hi;
     float h = hi[1] - lo[1], w = sqrtf((hi[0] - lo[0]) * (hi[0] - lo[0]) + (hi[2] - lo[2]) * (hi[2] - lo[2]));
     // as tall as it looks from the view's tilt (from above, as deep as it is), and its middle in the picture's
     float pc = cosf(v.pitch * 3.14159265f / 180), tall = fmaxf(h * fabsf(pc), w * fabsf(sinf(v.pitch * 3.14159265f / 180)));
@@ -749,12 +870,16 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     v.oy = PH * 0.5f + (lo[1] + hi[1]) / 2 * pc * v.scale;
     v.zx = PW / 2.0f;
     v.zy = PH / 2.0f;
-    raster_made(m, vs, cx, cz, v, PW, PH);
-    for (int r = 0; r < nrides; r++) {
-        if (rides[r].nanims > 0) {
-            raster_made(&rides[r], rides[r].anims[0].verts, cx, cz, v, PW, PH);
+    in_bands(PW, PH, [&](int ya, int yb) {
+        std::fill(v.rgba + ya * PW, v.rgba + yb * PW, 0xFF3A3434u);
+        std::fill(v.depth + ya * PW, v.depth + yb * PW, 1e30f);
+        raster_made(m, vs, cx, cz, v, PW, PH, ya, yb);
+        for (int r = 0; r < nrides; r++) {
+            if (rides[r].nanims > 0) {
+                raster_made(&rides[r], rides[r].anims[0].verts, cx, cz, v, PW, PH, ya, yb);
+            }
         }
-    }
+    });
     if (v.grid) {
         // on the game's ground (its y 0), or where the move's lowest is if that's far from it
         floor_grid(v, PW, PH, cx, cz, fabsf(lo[1]) > h * 0.25f ? lo[1] : 0);
@@ -762,8 +887,10 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     SDL_UpdateTexture(v.tex, nullptr, v.rgba, PW * 4);
 }
 
-// A made model's faces in frame vs, into the view's picture and depth
-void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &v, int PW, int PH) {
+// A made model's faces in frame vs, into the view's picture and depth, in its rows ya to yb (yb not)
+void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &v, int PW, int PH, int ya, int yb) {
+    float c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
+
     for (int t = 0; t < m->nfaces; t++) {
         const KitMadeFace *f = &m->faces[t];
         const KitMadeImage *im = f->image >= 0 && f->image < m->nimages ? &m->images[f->image] : nullptr;
@@ -782,55 +909,36 @@ void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &
         n[0] = e1[1] * e2[2] - e1[2] * e2[1];
         n[1] = e1[2] * e2[0] - e1[0] * e2[2];
         n[2] = e1[0] * e2[1] - e1[1] * e2[0];
-        float area = (sx[1] - sx[0]) * (sy[2] - sy[0]) - (sx[2] - sx[0]) * (sy[1] - sy[0]);
-        if (fabsf(area) < 1e-6f) {
-            continue;
-        }
-        float ln = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]), c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
+        float ln = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
         // its own light's baked in its colours: only a touch of the view's, so its shape reads
         float facing = ln > 0 ? fabsf(n[0] * s + n[2] * c) / ln : 1, lit = 0.8f + 0.25f * facing;
-        int x0 = (int)fmaxf(0, floorf(fminf(sx[0], fminf(sx[1], sx[2])))), x1 = (int)fminf(PW - 1, ceilf(fmaxf(sx[0], fmaxf(sx[1], sx[2]))));
-        int y0 = (int)fmaxf(0, floorf(fminf(sy[0], fminf(sy[1], sy[2])))), y1 = (int)fminf(PH - 1, ceilf(fmaxf(sy[0], fmaxf(sy[1], sy[2]))));
-        for (int y = y0; y <= y1; y++) {
-            for (int x = x0; x <= x1; x++) {
-                float px = x + 0.5f, py = y + 0.5f;
-                float a0 = ((sx[1] - px) * (sy[2] - py) - (sx[2] - px) * (sy[1] - py)) / area;
-                float b0 = ((sx[2] - px) * (sy[0] - py) - (sx[0] - px) * (sy[2] - py)) / area, d0 = 1 - a0 - b0;
-
-                if (a0 < 0 || b0 < 0 || d0 < 0) {
-                    continue;
-                }
-                float z = a0 * sz[0] + b0 * sz[1] + d0 * sz[2];
-                if (z >= v.depth[y * PW + x]) {
-                    continue;
-                }
-                float col[3];
-                for (int ch = 0; ch < 3; ch++) {
-                    col[ch] = a0 * f->rgb[0][ch] + b0 * f->rgb[1][ch] + d0 * f->rgb[2][ch];
-                }
-                if (im != nullptr) {
-                    int tx = (int)(a0 * f->uv[0][0] + b0 * f->uv[1][0] + d0 * f->uv[2][0]);
-                    int ty = (int)(a0 * f->uv[0][1] + b0 * f->uv[1][1] + d0 * f->uv[2][1]);
-                    tx = tx < 0 ? 0 : tx >= im->w ? im->w - 1 : tx;
-                    ty = ty < 0 ? 0 : ty >= im->h ? im->h - 1 : ty;
-                    const uint8_t *tex = im->rgba + ((size_t)ty * im->w + tx) * 4;
-                    if (tex[3] == 0) {
-                        continue;
-                    }
-                    for (int ch = 0; ch < 3; ch++) {
-                        col[ch] = col[ch] * tex[ch] / 128;
-                    }
-                }
-                unsigned r = (unsigned)fminf(255, col[0] * lit), g = (unsigned)fminf(255, col[1] * lit), bl = (unsigned)fminf(255, col[2] * lit);
-                unsigned was = v.rgba[y * PW + x];
-                if (f->semi) {
-                    r = (r + (was & 255)) / 2, g = (g + (was >> 8 & 255)) / 2, bl = (bl + (was >> 16 & 255)) / 2;
-                } else {
-                    v.depth[y * PW + x] = z;
-                }
-                v.rgba[y * PW + x] = 0xFF000000u | bl << 16 | g << 8 | r;
+        fill_tri(sx, sy, sz, v.depth, PW, PH, ya, yb, [&](int at, float a0, float b0, float d0, float z) {
+            float col[3];
+            for (int ch = 0; ch < 3; ch++) {
+                col[ch] = a0 * f->rgb[0][ch] + b0 * f->rgb[1][ch] + d0 * f->rgb[2][ch];
             }
-        }
+            if (im != nullptr) {
+                int tx = (int)(a0 * f->uv[0][0] + b0 * f->uv[1][0] + d0 * f->uv[2][0]);
+                int ty = (int)(a0 * f->uv[0][1] + b0 * f->uv[1][1] + d0 * f->uv[2][1]);
+                tx = tx < 0 ? 0 : tx >= im->w ? im->w - 1 : tx;
+                ty = ty < 0 ? 0 : ty >= im->h ? im->h - 1 : ty;
+                const uint8_t *tex = im->rgba + ((size_t)ty * im->w + tx) * 4;
+                if (tex[3] == 0) {
+                    return;
+                }
+                for (int ch = 0; ch < 3; ch++) {
+                    col[ch] = col[ch] * tex[ch] / 128;
+                }
+            }
+            unsigned r = (unsigned)fminf(255, col[0] * lit), g = (unsigned)fminf(255, col[1] * lit), bl = (unsigned)fminf(255, col[2] * lit);
+            unsigned was = v.rgba[at];
+            if (f->semi) {
+                r = (r + (was & 255)) / 2, g = (g + (was >> 8 & 255)) / 2, bl = (bl + (was >> 16 & 255)) / 2;
+            } else {
+                v.depth[at] = z;
+            }
+            v.rgba[at] = 0xFF000000u | bl << 16 | g << 8 | r;
+        });
     }
 }
 
@@ -1852,7 +1960,12 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
 // --- the views, with their markers ---
 
 void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
-    ImGui::Image((ImTextureID)(intptr_t)v.tex, ImVec2(ViewW, ViewH));
+    // (a view's drawn only while its page shows it, so the first time it's shown its picture comes a frame later)
+    if (v.tex == nullptr) {
+        ImGui::Dummy(ImVec2(ViewW, ViewH));
+    } else {
+        ImGui::Image((ImTextureID)(intptr_t)v.tex, ImVec2(ViewW, ViewH));
+    }
     ImVec2 at = ImGui::GetItemRectMin();
     if (!markers || T.rigged) {
         return;
@@ -3063,6 +3176,7 @@ void view_free(View &v) {
     v.rgba = nullptr;
     v.depth = nullptr;
     v.tex = nullptr;
+    v.drawn.clear();
 }
 
 // The window at scale s (Ui): its font made at that size, its style's sizes from the plain one (base), and its pictures that big
@@ -3089,6 +3203,12 @@ void ui_scale(Tool &T, const ImGuiStyle &base, float s) {
         T.thumbs[k].w = ThumbW;
         T.thumbs[k].h = ThumbH;
     }
+    // the model's views fitted again to their new size (they kept the old one's: the model small in a corner)
+    if (T.m != nullptr) {
+        fit(T.m, T.front);
+        fit(T.m, T.side);
+        fit(T.m, T.play);
+    }
 }
 
 // The scale for a screen: its display scale (Windows' 150%, 200%), or its height against an 800-line screen's if that's more (1.25 on a
@@ -3107,7 +3227,7 @@ float screen_scale(SDL_DisplayID d) {
 float Zoom = 1;
 
 void zoom_load() {
-    char *pref = SDL_GetPrefPath("CrashBashPC", "herotool"), path[1100];
+    char *pref = pref_path(), path[1100];
     size_t n = 0;
 
     if (pref == nullptr) {
@@ -3124,7 +3244,7 @@ void zoom_load() {
 }
 
 void zoom_keep() {
-    char *pref = SDL_GetPrefPath("CrashBashPC", "herotool"), path[1100], text[32];
+    char *pref = pref_path(), path[1100], text[32];
 
     if (pref == nullptr) {
         return;
@@ -3272,6 +3392,20 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     /* a test's picture of it: HEROTOOL_SHOT=FILE.png saves the window after a moment, and closes it */
     const char *shot = SDL_getenv("HEROTOOL_SHOT");
     int frames = 0;
+    /* a test's: HEROTOOL_PROFILE=1 prints how long each part of a frame took, on average, every 60 frames */
+    bool profile = SDL_getenv("HEROTOOL_PROFILE") != nullptr;
+    enum { PR_THUMBS, PR_ADJUST, PR_GAME, PR_MODEL, PR_UI, PR_DRAW, PR_PRESENT, PR_N };
+    static const char *const PrSays[PR_N] = { "thumbs", "adjusted", "game view", "model views", "ui", "draw ui", "present" };
+    double pr[PR_N] = {};
+    int pr_frames = 0;
+    Uint64 pr_at = 0;
+    auto lap = [&](int part) {
+        Uint64 n = SDL_GetPerformanceCounter();
+        if (profile && part >= 0) {
+            pr[part] += (double)(n - pr_at) * 1000.0 / (double)SDL_GetPerformanceFrequency();
+        }
+        pr_at = n;
+    };
     while (!done) {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
@@ -3408,6 +3542,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 }
             }
         }
+        lap(-1);
         if (T.page == PAGE_ALL) {
             for (int k = 0; k < PACK_KINDS; k++) {
                 if (T.have_made[k] && T.made[k].nanims > 0) {
@@ -3420,6 +3555,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 }
             }
         }
+        lap(PR_THUMBS);
         if (T.page >= 0 && T.have_made[T.kind]) {
             const KitMade *mk = &T.made[T.kind];
             int a = T.anim < mk->nanims ? T.anim : 0;
@@ -3435,17 +3571,24 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 }
             }
             int f = mk->nanims > 0 ? adjusting ? T.frame % mk->anims[a].frames : (int)(T.made_t * 30) % mk->anims[a].frames : 0;
+            lap(PR_GAME);
             bool live = adjusted_frame(T, T.kind, a, f, T.live);
+            lap(PR_ADJUST);
             draw_made(mk, a, f, T.game_view, ren, T.rides[T.kind], T.nrides[T.kind], live ? T.live.data() : nullptr);
         }
-        if (T.m != nullptr) {
-            // the front and side views at rest, the third playing the move
-            draw(T.m, T.m->pos, T.front, ren);
-            draw(T.m, T.m->pos, T.side, ren);
-            pose(T);
-            T.play.yaw = T.turn;
-            draw(T.m, T.posed, T.play, ren);
+        lap(PR_GAME);
+        if (T.m != nullptr && !T.home && T.page == PAGE_MODEL) {
+            // the front and side views at rest, or the third playing the move: as the model's page shows them, only while it's shown
+            if (!T.rigged && T.model_view == 0) {
+                draw(T.m, T.m->pos, T.front, ren);
+                draw(T.m, T.m->pos, T.side, ren);
+            } else {
+                pose(T);
+                T.play.yaw = T.turn;
+                draw(T.m, T.posed, T.play, ren);
+            }
         }
+        lap(PR_MODEL);
         if (fabsf(want_scale - Ui) > 0.01f) {
             ui_scale(T, base_style, want_scale);
             want_scale = Ui;
@@ -3472,9 +3615,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             editor_window(T, win);
         }
         ImGui::Render();
+        lap(PR_UI);
         SDL_SetRenderDrawColor(ren, 30, 30, 34, 255);
         SDL_RenderClear(ren);
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), ren);
+        lap(PR_DRAW);
         if (shot != nullptr && T.maker == nullptr && ++frames == 40) {
             SDL_Surface *grab = SDL_RenderReadPixels(ren, nullptr);
 
@@ -3493,6 +3638,16 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             done = true;
         }
         SDL_RenderPresent(ren);
+        lap(PR_PRESENT);
+        if (profile && ++pr_frames == 60) {
+            printf("herotool: a frame's");
+            for (int p = 0; p < PR_N; p++) {
+                printf(" %s %.2f ms%s", PrSays[p], pr[p] / pr_frames, p + 1 < PR_N ? "," : "\n");
+                pr[p] = 0;
+            }
+            fflush(stdout);
+            pr_frames = 0;
+        }
     }
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
