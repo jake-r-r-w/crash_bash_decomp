@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's start screen: no path to type, What the model needs (the game's limits), no zoom or zip notes, and each
+  hero's picture (its card, else its face from its last made model). The mod's name is the hero's (no field). The card: Take a photo
+  makes the hero page's picture a camera (turn, move, zoom, pose), its photo the card (`card.png` on Save); the face slider's gone.
+  No sound picking a bone by a click.
 - 2026-11-22: the hero tool's "Play in GAME" is now **Preview in GAME**, and it starts the game straight into that game
   (`--no-launcher`: before, the launcher waited for PLAY).
 - 2026-11-22: the hero tool's gizmo a little see-through (solid under the mouse or dragged); its pop-ups (toasts) in the picture's top

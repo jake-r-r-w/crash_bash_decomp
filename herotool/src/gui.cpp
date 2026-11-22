@@ -129,8 +129,9 @@ struct View {
     float yaw = 0, scale = 1, ox = 0, oy = 0;
     int w = 0, h = 0; // its size, if not the preview's (PrevW x PrevH): draw_made's only
     unsigned bg = 0xFF211E1Eu; // what's behind the hero (draw_made's; Graphite's picture, #1E1E21), see-through for the strip's
-    // looked at from above by pitch degrees, and zoomed about (zx, zy): dragged and scrolled in the views that allow it (look_around)
-    float pitch = 0, zoom = 1, zx = 0, zy = 0;
+    // looked at from above by pitch degrees, and zoomed about (zx, zy): dragged and scrolled in the views that allow it (look_around);
+    // and moved across by (px, py) of its height (draw_made's: the card's camera, right-dragged)
+    float pitch = 0, zoom = 1, zx = 0, zy = 0, px = 0, py = 0;
     // the game's x and z at the middle of what draw_made drew (its model's middle, which it's turned about)
     float cx = 0, cz = 0;
     // a floor's grid under it, as Blender's (draw_made's: floor_grid)
@@ -184,6 +185,7 @@ template <class F> void in_bands(int PW, int PH, F fn) {
 // was drawn from. Its picture's made again only when this says it's changed (the user's word, 2026-11-22: "it lags abit").
 bool drawn_same(View &v, DrawnFrom &now) {
     now.add(v.yaw), now.add(v.pitch), now.add(v.zoom), now.add(v.zx), now.add(v.zy), now.add(v.w), now.add(v.h), now.add(v.grid);
+    now.add(v.px), now.add(v.py);
     now.add(v.tex);
     if (v.tex != nullptr && now.k == v.drawn) {
         return true;
@@ -275,7 +277,9 @@ struct Tool {
     float (*posed)[3] = nullptr;
     View front, side, play;
     // the pack
-    char id[32] = "myhero", name[32] = "MY HERO", mod_name[64] = "My hero", author[64] = "", card[1024] = "";
+    // (the mod it's saved in is called as the hero is: the user's word, 2026-11-22, "The mod name should always be the same as the
+    // custom hero name")
+    char id[32] = "myhero", name[32] = "MY HERO", author[64] = "", card[1024] = "";
     char voice[PACK_VOICE_JOBS][1024] = {};
     int height = 560, voice_job = 1, mode = 0, template_hero = 0; // template_hero: who it's based on (its template and its place)
     // on foot its own moves (its model's clips, and the tool's moves for the rest), not those of who it's based on: a pack that says no
@@ -371,6 +375,15 @@ struct Tool {
     char toast[400] = "", toasted[2400] = "";
     double toast_at = -10;
     View strip[PACK_KINDS], face_view;
+    // the card's camera (the picture on the hero's page as one: its view, and the move and frame it's posed in), whether the card is a
+    // photo it took, and the card's picture (its PNG, read again when it's another or a new photo)
+    bool camera = false, card_photo = false;
+    View cam;
+    int cam_anim = -1, cam_frame = 0;
+    SDL_Texture *card_tex = nullptr;
+    char card_tex_of[1024] = "";
+    unsigned card_gen = 0, card_tex_gen = 0;
+    int card_tw = 0, card_th = 0;
 };
 enum { KEY_FRAME, KEY_MOVE, KEY_GAME };
 enum { GIZMO_TURN, GIZMO_MOVE, GIZMO_SIZE };
@@ -401,7 +414,7 @@ float ease_to(ImGuiID id, float to, float rate = 14) {
 enum {
     IC_BACK, IC_UNDO, IC_REDO, IC_SOUND, IC_MUTE, IC_GRID, IC_PLAY, IC_PAUSE, IC_PREV, IC_NEXT, IC_EYE, IC_EYE_OFF, IC_BONES,
     IC_ROTATE, IC_MOVE, IC_SCALE, IC_MIRROR, IC_ONION, IC_CLIP, IC_GAMEPAD, IC_HISTORY, IC_DOWN, IC_PERSON, IC_CUBE, IC_FOLDER,
-    IC_REFRESH, IC_CHECK, IC_SPARK, IC_CURSOR, IC_RIGHT, IC_NONE = -1
+    IC_REFRESH, IC_CHECK, IC_SPARK, IC_CURSOR, IC_RIGHT, IC_CAMERA, IC_NONE = -1
 };
 
 // An icon, as the mocks' line icons: drawn in a 24-square (as an SVG's), s across, about c
@@ -497,6 +510,10 @@ void icon(ImDrawList *dl, int which, ImVec2 c, float s, ImU32 col) {
         L(12, 12, 4, 7.5f);
         break;
     case IC_FOLDER: poly({ 3, 7, 3, 18, 21, 18, 21, 9, 11, 9, 9, 6, 3, 6 }, true); break;
+    case IC_CAMERA:
+        poly({ 3, 8, 3, 19, 21, 19, 21, 8, 16, 8, 14.5f, 5, 9.5f, 5, 8, 8 }, true);
+        ring(12, 13.5f, 3.6f);
+        break;
     case IC_CHECK: poly({ 5, 12, 10, 17, 19, 7 }); break;
     case IC_SPARK: poly({ 13, 3, 15, 9, 21, 11, 15, 13, 13, 19, 11, 13, 5, 11, 11, 9 }, true); break;
     case IC_CURSOR: poly({ 5, 3, 19, 11, 13, 12.5f, 10, 19 }, true); break;
@@ -982,7 +999,6 @@ void open_model(Tool &T, const char *path) {
     for (int i = 0; i <= n; i++) {
         T.name[i] = (char)SDL_toupper((unsigned char)T.id[i]);
     }
-    snprintf(T.mod_name, sizeof(T.mod_name), "%s", T.id);
     snprintf(T.status, sizeof(T.status), "%s: %d triangles, %d vertices, %s", base, m->ntri, m->nvert,
              T.rigged ? "rigged" : "no rig (place its joints)");
 }
@@ -1017,7 +1033,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     t->arm_raise = T.m->arm_raise;
     p.id = T.id;
     p.name = T.name;
-    p.mod_name = T.mod_name;
+    p.mod_name = T.name;
     p.author = T.author;
     p.prefer = Heroes[T.template_hero]; // who it's based on: whose place it takes, and its template (one choice, the user's word, 2026-11-22)
     p.template_hero = Heroes[T.template_hero];
@@ -1376,6 +1392,9 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     v.oy = PH * 0.5f + (lo[1] + hi[1]) / 2 * pc * v.scale;
     v.zx = PW / 2.0f;
     v.zy = PH / 2.0f;
+    // moved across (as it looks: the same however far it's zoomed)
+    v.ox += v.px * PH / v.zoom;
+    v.oy += v.py * PH / v.zoom;
     static std::vector<float> gd, gl;
     if (ghost_before != nullptr || ghost_after != nullptr) {
         gd.resize((size_t)PW * PH);
@@ -2796,12 +2815,11 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
         if (take == H_NONE && hover >= 0 && hover == T.sel) {
             take = T.gizmo == GIZMO_TURN ? H_TURN_FREE : T.gizmo == GIZMO_MOVE ? H_MOVE_FREE : H_SIZE_ALL;
         } else if (take == H_NONE && hover >= 0) {
+            // (picked without a sound: the user's word, 2026-11-22, "When clicking bones lets not play a sound it gets anoying")
             T.sel = hover;
-            sound_cue(CUE_PICK);
         } else if (take == H_NONE && T.sel >= 0) {
             // an empty part of the picture: let go of the bone picked (as Esc)
             T.sel = -1;
-            sound_cue(CUE_DROP);
         }
         if (take != H_NONE) {
             const char *b = bone_title(po->names[T.sel]);
@@ -3694,6 +3712,11 @@ void path_field(const char *label, char *buf, size_t size) {
 // The heroes in the mods folder's mod folders (heroes/<id>/hero.json): a zipped mod's aren't listed, as it's changed by unzipping it
 struct Found {
     char mod[1100], id[64], name[64];
+    // its picture (found_picture: its card, or its face as the tool last made it; nullptr none) and the part of it shown, looked for once
+    float face_head;
+    SDL_Texture *pic;
+    ImVec2 uv0, uv1;
+    bool looked;
 };
 const int MaxFound = 64;
 Found Founds[MaxFound];
@@ -3719,6 +3742,9 @@ SDL_EnumerationResult SDLCALL found_hero(void *ctx, const char *dir, const char 
             SDL_strlcpy(f.mod, mod, sizeof(f.mod));
             SDL_strlcpy(f.id, info.id[0] ? info.id : name, sizeof(f.id));
             SDL_strlcpy(f.name, info.name[0] ? info.name : name, sizeof(f.name));
+            f.face_head = info.face_head;
+            f.pic = nullptr;
+            f.looked = false;
         }
     }
     SDL_free(text);
@@ -3738,6 +3764,12 @@ SDL_EnumerationResult SDLCALL found_mod(void *, const char *dir, const char *nam
 }
 
 void find_heroes(const Tool &T) {
+    for (int i = 0; i < NumFound; i++) {
+        if (Founds[i].pic != nullptr) {
+            SDL_DestroyTexture(Founds[i].pic);
+        }
+        Founds[i].pic = nullptr;
+    }
     NumFound = 0;
     SDL_EnumerateDirectory(T.out, found_mod, nullptr);
 }
@@ -3799,13 +3831,14 @@ void load_pack(Tool &T, const Found &f) {
     SDL_free(text);
     snprintf(path, sizeof(path), "%s/mod.json", f.mod);
     text = SDL_LoadFile(path, &n);
-    json_string((const char *)text, "name", T.mod_name, sizeof(T.mod_name));
     json_string((const char *)text, "author", T.author, sizeof(T.author));
     SDL_free(text);
     // its card and sounds, as it has them; its own moves are already its clips (KIND/MOVE), so none are added
     SDL_PathInfo pi;
     snprintf(path, sizeof(path), "%s/heroes/%s/card.png", f.mod, f.id);
     SDL_strlcpy(T.card, SDL_GetPathInfo(path, &pi) ? path : "", sizeof(T.card));
+    T.card_photo = false;
+    T.camera = false;
     for (int j = 0; j < PACK_VOICE_JOBS; j++) {
         snprintf(path, sizeof(path), "%s/heroes/%s/voice_%s.wav", f.mod, f.id, PackVoiceJobs[j]);
         SDL_strlcpy(T.voice[j], SDL_GetPathInfo(path, &pi) ? path : "", sizeof(T.voice[0]));
@@ -3932,6 +3965,7 @@ void go_page(Tool &T, int page) {
     if (page == T.page) {
         return;
     }
+    T.camera = false;
     sound_cue(CUE_NAV);
     T.page = page;
     if (page >= 0) {
@@ -4934,15 +4968,213 @@ void hero_card(Tool &T) {
     card_end();
 }
 
-// The card's card: the picture for the character select (a PNG, or its face from the model, so much of it from the top)
+// The card's picture: as wide against its height as the character select shows a card (its 56 of 64 columns less a 5% inset each
+// side, by its 38 rows, a row 1.83 times as tall as a column is wide: extraheroes.c's SELECT_*), so a photo isn't stretched there
+const int CARD_W = 290, CARD_H = 400;
+
+// The card's PNG as a texture, read again when it's another or a new photo (nullptr: none, or it isn't one)
+SDL_Texture *card_texture(Tool &T, SDL_Renderer *ren) {
+    if (T.card[0] == 0) {
+        return nullptr;
+    }
+    if (strcmp(T.card_tex_of, T.card) != 0 || T.card_tex_gen != T.card_gen) {
+        if (T.card_tex != nullptr) {
+            SDL_DestroyTexture(T.card_tex);
+        }
+        T.card_tex = nullptr;
+        SDL_strlcpy(T.card_tex_of, T.card, sizeof(T.card_tex_of));
+        T.card_tex_gen = T.card_gen;
+        if (SDL_Surface *s = SDL_LoadPNG(T.card)) {
+            T.card_tex = SDL_CreateTextureFromSurface(ren, s);
+            T.card_tw = s->w, T.card_th = s->h;
+            SDL_DestroySurface(s);
+        }
+    }
+    return T.card_tex;
+}
+
+// The card's photo taken: what the camera sees drawn twice the card's size and halved (its edges smooth), on nothing (clear round it,
+// as the game lays a card over its own background), saved as a PNG in the tool's folder (photos/ID.png) and made the card; Save puts
+// it in the pack (card.png)
+bool take_photo(Tool &T, SDL_Renderer *ren) {
+    const KitMade *mk = &T.made[0];
+    View shot;
+    shot.w = CARD_W * 2, shot.h = CARD_H * 2, shot.bg = 0;
+    shot.yaw = T.cam.yaw, shot.pitch = T.cam.pitch, shot.zoom = T.cam.zoom, shot.px = T.cam.px, shot.py = T.cam.py;
+    draw_made(mk, T.cam_anim, T.cam_frame, shot, ren);
+    std::vector<unsigned> out((size_t)CARD_W * CARD_H);
+    for (int y = 0; y < CARD_H; y++) {
+        for (int x = 0; x < CARD_W; x++) {
+            unsigned r = 0, g = 0, b = 0, a = 0;
+            for (int j = 0; j < 2; j++) {
+                for (int i = 0; i < 2; i++) {
+                    unsigned c = shot.rgba[(size_t)(y * 2 + j) * shot.w + x * 2 + i], ca = c >> 24;
+                    r += (c & 255) * ca, g += (c >> 8 & 255) * ca, b += (c >> 16 & 255) * ca, a += ca;
+                }
+            }
+            out[(size_t)y * CARD_W + x] = a == 0 ? 0 : (r / a) | (g / a) << 8 | (b / a) << 16 | (a / 4) << 24;
+        }
+    }
+    view_free(shot);
+    char *pref = pref_path();
+    char path[1300];
+    if (pref == nullptr) {
+        snprintf(T.status, sizeof(T.status), "The photo has nowhere to go: %s", SDL_GetError());
+        return false;
+    }
+    snprintf(path, sizeof(path), "%sphotos", pref);
+    SDL_CreateDirectory(path);
+    snprintf(path, sizeof(path), "%sphotos/%s.png", pref, T.id);
+    SDL_free(pref);
+    SDL_Surface *s = SDL_CreateSurfaceFrom(CARD_W, CARD_H, SDL_PIXELFORMAT_ABGR8888, out.data(), CARD_W * 4);
+    bool ok = s != nullptr && SDL_SavePNG(s, path);
+    SDL_DestroySurface(s);
+    if (!ok) {
+        snprintf(T.status, sizeof(T.status), "The photo wasn't saved: %s", SDL_GetError());
+        return false;
+    }
+    SDL_strlcpy(T.card, path, sizeof(T.card));
+    T.card_photo = true;
+    T.card_gen++;
+    T.unsaved = true;
+    snprintf(T.status, sizeof(T.status), "Photo taken: it's the card");
+    return true;
+}
+
+// The card's camera, in the hero's page's picture (the user's word, 2026-11-22: "take a photo and use that. With full move him around
+// rotate etc."): the hero as the game has it on foot, in a frame the card's shape, dragged to turn and tilt it, right-dragged to move
+// it, the wheel to zoom, posed in any of its animations at any frame; Take photo makes that its card
+// The camera as it starts (and double-clicked): close on its head and chest, a little from its right, as the select's portraits are
+void cam_start(View &v) {
+    v.yaw = 20, v.pitch = 8, v.zoom = 2.2f, v.px = 0, v.py = 0.34f;
+}
+
+void camera_view(Tool &T, SDL_Window *win, ImVec2 p, ImVec2 size) {
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    float bh = ImGui::GetFontSize() + U(22);
+    ImGui::PushFont(FontTitle);
+    dl->AddText(ImVec2(p.x + U(24), p.y + U(16) + (bh - ImGui::GetTextLineHeight()) / 2), INK, "Card photo");
+    ImGui::PopFont();
+    float right = p.x + size.x - U(16);
+    if (!T.have_made[0] || T.made[0].nanims == 0) {
+        // not made yet: made now (the camera shows what the game has)
+        if (!T.made_asked && T.maker == nullptr) {
+            make_in_game(T);
+        }
+        const char *says = T.maker != nullptr ? "Making it in the games..." : "It isn't made yet";
+        ImVec2 ts = ImGui::CalcTextSize(says);
+        dl->AddText(ImVec2(p.x + (size.x - ts.x) / 2, p.y + (size.y - ts.y) / 2), MUTED, says);
+        ImGui::SetCursorScreenPos(ImVec2(right - button_w("Cancel", false), p.y + U(16)));
+        if (button("Cancel##cam", RAISED, INK, 0, IC_NONE, CUE_DROP, bh)) {
+            T.camera = false;
+        }
+        return;
+    }
+    const KitMade *mk = &T.made[0];
+    if (T.cam_anim < 0 || T.cam_anim >= mk->nanims) {
+        T.cam_anim = breathe_of(mk);
+        T.cam_frame = 0;
+        cam_start(T.cam);
+    }
+    int frames = mk->anims[T.cam_anim].frames;
+    T.cam_frame = std::max(0, std::min(frames - 1, T.cam_frame));
+    // on the right: the move and its frame it's posed in, Cancel, and Take photo
+    float take_w = button_w("Take photo", true), cancel_w = button_w("Cancel", false), menu_w = U(180), frame_w = U(150);
+    float x = right - take_w - U(10) - cancel_w - U(10) - (frames > 1 ? frame_w + U(10) : 0) - menu_w;
+    ImGui::SetCursorScreenPos(ImVec2(x, p.y + U(16) + (bh - ImGui::GetFrameHeight()) / 2));
+    if (menu_begin("##campose", mk->anims[T.cam_anim].name, menu_w, RAISED)) {
+        for (int a = 0; a < mk->nanims; a++) {
+            if (menu_item(mk->anims[a].name, a == T.cam_anim)) {
+                T.cam_anim = a;
+                T.cam_frame = 0;
+            }
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::SetItemTooltip("Its pose: one of its animations");
+    if (frames > 1) {
+        ImGui::SameLine(0, U(10));
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(RAISED));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+        ImGui::SetNextItemWidth(frame_w);
+        ImGui::SliderInt("##camframe", &T.cam_frame, 0, frames - 1, "frame %d");
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
+        ImGui::SetItemTooltip("Its frame in that animation");
+    }
+    ImGui::SetCursorScreenPos(ImVec2(right - take_w - U(10) - cancel_w, p.y + U(16)));
+    if (button("Cancel##cam", RAISED, INK, 0, IC_NONE, CUE_DROP, bh)) {
+        T.camera = false;
+    }
+    ImGui::SameLine(0, U(10));
+    if (button("Take photo##cam", CORAL, CORAL_INK, 0, IC_CAMERA, CUE_SAVE, bh) && take_photo(T, SDL_GetRenderer(win))) {
+        T.camera = false;
+    }
+    ImGui::SetItemTooltip("Make what's in the frame its card");
+    // the frame: as big as the picture has room for, the card's shape
+    float top = p.y + U(16) + bh + U(20), fh = p.y + size.y - U(44) - top, fw = fh * CARD_W / CARD_H;
+    if (fw > size.x - U(48)) {
+        fw = size.x - U(48);
+        fh = fw * CARD_H / CARD_W;
+    }
+    ImVec2 a(p.x + (size.x - fw) / 2, top), b(a.x + fw, a.y + fh);
+    View &v = T.cam;
+    if (v.w != (int)fw || v.h != (int)fh) {
+        view_free(v);
+        v.w = (int)fw, v.h = (int)fh;
+    }
+    v.bg = 0;
+    draw_made(mk, T.cam_anim, T.cam_frame, v, SDL_GetRenderer(win));
+    dl->AddRectFilled(a, b, TINT_PERI, U(22));
+    ImGui::SetCursorScreenPos(a);
+    ImGui::InvisibleButton("##camera", ImVec2(fw, fh), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle);
+    ImGuiIO &io = ImGui::GetIO();
+    if (ImGui::IsItemActive()) {
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+            v.yaw -= io.MouseDelta.x * 0.5f;
+            v.yaw = v.yaw > 180 ? v.yaw - 360 : v.yaw < -180 ? v.yaw + 360 : v.yaw;
+            v.pitch = fmaxf(-80, fminf(80, v.pitch + io.MouseDelta.y * 0.4f));
+        }
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Right) || ImGui::IsMouseDragging(ImGuiMouseButton_Middle)) {
+            v.px += io.MouseDelta.x / fh;
+            v.py += io.MouseDelta.y / fh;
+        }
+    }
+    if (ImGui::IsItemHovered()) {
+        if (io.MouseWheel != 0) {
+            v.zoom = fmaxf(0.5f, fminf(8, v.zoom * powf(1.15f, io.MouseWheel)));
+        }
+        if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+            cam_start(v);
+        }
+    }
+    if (v.tex != nullptr) {
+        ImVec2 in(0.5f / v.w, 0.5f / v.h);
+        dl->AddImageRounded((ImTextureID)(intptr_t)v.tex, a, b, in, ImVec2(1 - in.x, 1 - in.y), IM_COL32_WHITE, U(22));
+    }
+    dl->AddRect(a, b, PERI, U(22), 0, U(3));
+    ImGui::PushFont(FontSmall);
+    const char *hint = "Drag: turn     Right-drag: move     Wheel: zoom     Double-click: back";
+    ImVec2 hs = ImGui::CalcTextSize(hint);
+    dl->AddText(ImVec2(p.x + (size.x - hs.x) / 2, b.y + U(12)), DIM, hint);
+    ImGui::PopFont();
+}
+
+// The card's card: the picture for the character select: a photo of it (Take a photo: the picture above becomes a camera), a PNG, or
+// else its face drawn from its model by the game
 void face_card(Tool &T, SDL_Window *win, float w) {
     static const SDL_DialogFileFilter Png[] = { { "Picture (PNG)", "png" } };
     card("##face", CARD, w);
     ImVec2 p = ImGui::GetCursorScreenPos();
-    float pw = U(108), ph = U(136);
+    float pw = U(108), ph = pw * CARD_H / CARD_W;
     ImDrawList *dl = ImGui::GetWindowDrawList();
     dl->AddRectFilled(p, ImVec2(p.x + pw, p.y + ph), TINT_PERI, U(20));
-    if (T.card[0] == 0 && T.have_made[0] && T.face_view.tex != nullptr) {
+    SDL_Texture *tex = card_texture(T, SDL_GetRenderer(win));
+    if (tex != nullptr) {
+        // all of it, filling the card's shape (as the game does)
+        dl->AddImageRounded((ImTextureID)(intptr_t)tex, ImVec2(p.x + U(4), p.y + U(4)), ImVec2(p.x + pw - U(4), p.y + ph - U(4)), ImVec2(0, 0),
+                            ImVec2(1, 1), IM_COL32_WHITE, U(17));
+    } else if (T.card[0] == 0 && T.have_made[0] && T.face_view.tex != nullptr) {
         // its face from the model: the top of it from the front, on foot (as much as Face says: 0.36 if it's left to the game)
         float top = T.face_head > 0 ? T.face_head : 0.36f, half = top * 0.5f * pw / ph * 0.94f / 0.94f;
         dl->AddImageRounded((ImTextureID)(intptr_t)T.face_view.tex, ImVec2(p.x + U(4), p.y + U(4)), ImVec2(p.x + pw - U(4), p.y + ph - U(4)),
@@ -4954,7 +5186,11 @@ void face_card(Tool &T, SDL_Window *win, float w) {
     ImGui::SetCursorScreenPos(ImVec2(p.x + pw + U(16), p.y));
     ImGui::BeginGroup();
     heading("Card");
-    ImGui::TextColored(V4(MUTED), "%s", T.card[0] ? short_path(T.card) : "From the model");
+    ImGui::TextColored(V4(MUTED), "%s", T.card[0] ? (T.card_photo ? "A photo of it" : short_path(T.card)) : "Its face, from the model");
+    if (button("Take a photo##card", T.camera ? PERI : TINT_PERI, T.camera ? PERI_INK : PERI_LIGHT, 0, IC_CAMERA, CUE_OPEN)) {
+        T.camera = !T.camera;
+    }
+    ImGui::SetItemTooltip("Pose it in the picture above and take its card");
     if (button("Browse##card", RAISED, INK, 0, IC_FOLDER, CUE_OPEN)) {
         browse(win, PICK_CARD, Png);
     }
@@ -4963,18 +5199,10 @@ void face_card(Tool &T, SDL_Window *win, float w) {
         ImGui::SameLine(0, U(8));
         if (button("Clear##card", RAISED, INK, 0, IC_NONE, CUE_DROP)) {
             T.card[0] = 0;
+            T.card_photo = false;
             T.unsaved = true;
         }
-    } else {
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
-        ImGui::SetNextItemWidth(U(170));
-        if (ImGui::SliderFloat("##face", &T.face_head, 0, 0.6f, T.face_head > 0 ? "face: top %.2f" : "face: auto")) {
-            T.dirty = T.unsaved = true;
-        }
-        ImGui::PopStyleVar();
-        ImGui::PopStyleColor();
-        ImGui::SetItemTooltip("How much of it, from the top, is its head (its face, without a card)");
+        ImGui::SetItemTooltip("Back to its face, from the model");
     }
     ImGui::EndGroup();
     ImGui::SetCursorScreenPos(ImVec2(p.x, fmaxf(p.y + ph, ImGui::GetCursorScreenPos().y)));
@@ -5031,15 +5259,11 @@ void sounds_card(Tool &T, SDL_Window *win, float w) {
     card_end();
 }
 
-// The mod's card: what the mod it's saved in is called, who made it, and its folders
+// The mod's card: who made it, and its folders (it's called as the hero is)
 void mod_card(Tool &T) {
     card("##mod", CARD);
     heading("Mod");
     float cw = ImGui::GetContentRegionAvail().x - U(90);
-    row_label("Name", cw);
-    if (field("##modname", T.mod_name, sizeof(T.mod_name), cw, 0, DEEP)) {
-        T.unsaved = true;
-    }
     row_label("Author", cw);
     if (field("##author", T.author, sizeof(T.author), cw, 0, DEEP)) {
         T.unsaved = true;
@@ -5190,13 +5414,15 @@ void model_page(Tool &T, SDL_Window *win) {
     ImVec2 p = ImGui::GetCursorScreenPos(), size(main_w, fmaxf(U(300), avail.y - lower - gap));
     ImDrawList *dl = ImGui::GetWindowDrawList();
     dl->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), PICTURE, U(30));
-    bool joints = !T.rigged && T.model_view == 0;
+    bool joints = !T.rigged && T.model_view == 0 && !T.camera;
     {
         // the views as big as the picture has room for: two side by side (Joints), or one (Preview)
         int h = (int)fminf(U(600), size.y - (joints ? U(130) : U(40))), w = (int)fminf(h * 0.72f, joints ? (size.x - U(60)) / 2 : size.x - U(520));
         model_views_fit(T, std::max(w, 60), std::max(h, 80));
     }
-    if (joints) {
+    if (T.camera) {
+        camera_view(T, win, p, size);
+    } else if (joints) {
         // the front and the side, its dots on each, in the middle of the picture
         float vg = U(14), x0 = p.x + (size.x - 2 * ViewW - vg) / 2, y0 = p.y + U(70);
         const char *names[2] = { "Front", "Side" };
@@ -5236,7 +5462,7 @@ void model_page(Tool &T, SDL_Window *win) {
         ImGui::SameLine(0, U(10));
         toggle("Play##model", &T.playing, IC_PLAY, nullptr);
     }
-    if (!T.rigged) {
+    if (!T.rigged && !T.camera) {
         // Joints or Preview: a pill, its picked half sliding to it
         ImVec2 q(p.x + U(16), p.y + U(16));
         float w = U(104), h = U(38), pad = U(5);
@@ -5352,6 +5578,42 @@ void all_games_page(Tool &T) {
     ImGui::EndChild();
 }
 
+// A hero's picture on the start screen: its card (the top of it, square), else its face as the tool last made it (its model on foot
+// from the front, the top of it as much as its face share says, as the Card shows it), else none (its first letter)
+void found_picture(Found &f, SDL_Renderer *ren) {
+    char path[1400];
+
+    f.looked = true;
+    snprintf(path, sizeof(path), "%s/heroes/%s/card.png", f.mod, f.id);
+    if (SDL_Surface *s = SDL_LoadPNG(path)) {
+        f.pic = SDL_CreateTextureFromSurface(ren, s);
+        f.uv0 = ImVec2(0, 0), f.uv1 = ImVec2(1, s->h > 0 ? fminf(1, (float)s->w / s->h) : 1);
+        SDL_DestroySurface(s);
+        return;
+    }
+    char *pref = pref_path();
+    if (pref == nullptr) {
+        return;
+    }
+    snprintf(path, sizeof(path), "%spreview-made/%s_%s.hpv", pref, f.id, pack_kind_name(0));
+    SDL_free(pref);
+    KitMade mk = {};
+    if (!kit_made_read(path, &mk)) {
+        return;
+    }
+    if (mk.nanims > 0) {
+        View v;
+        v.w = v.h = (int)U(200), v.bg = 0;
+        draw_made(&mk, breathe_of(&mk), 0, v, ren);
+        f.pic = v.tex;
+        v.tex = nullptr;
+        view_free(v);
+        float top = f.face_head > 0 ? f.face_head : 0.36f, half = top * 0.5f * 0.94f;
+        f.uv0 = ImVec2(0.5f - half, 0.03f), f.uv1 = ImVec2(0.5f + half, 0.03f + top * 0.94f);
+    }
+    kit_made_free(&mk);
+}
+
 void start_screen(Tool &T, SDL_Window *win) {
     static const SDL_DialogFileFilter Glb[] = { { "3D model (glTF binary)", "glb" } };
     static bool looked = false;
@@ -5394,8 +5656,8 @@ void start_screen(Tool &T, SDL_Window *win) {
         }
         ImGui::SetCursorScreenPos(ImVec2(x, p.y + s + U(28)));
     }
-    float cw = (w - gap) / 2, ch = U(430), top = ImGui::GetCursorScreenPos().y;
-    // a new hero: a model dropped on the window, browsed for or its path typed
+    float cw = (w - gap) / 2, ch = U(460), top = ImGui::GetCursorScreenPos().y;
+    // a new hero: a model dropped on the window or browsed for, and what it has to be
     ImGui::SetCursorScreenPos(ImVec2(x, top));
     ImGui::PushStyleColor(ImGuiCol_ChildBg, V4(CARD));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(U(24), U(22)));
@@ -5405,7 +5667,7 @@ void start_screen(Tool &T, SDL_Window *win) {
     {
         ImDrawList *cl = ImGui::GetWindowDrawList();
         ImVec2 p = ImGui::GetCursorScreenPos();
-        float dw = ImGui::GetContentRegionAvail().x, dh = U(240);
+        float dw = ImGui::GetContentRegionAvail().x, dh = U(204);
         if (ImGui::InvisibleButton("##drop", ImVec2(dw, dh))) {
             sound_cue(CUE_OPEN);
             SDL_ShowOpenFileDialog(picked, (void *)(intptr_t)PICK_MODEL, win, Glb, 1, nullptr, false);
@@ -5414,40 +5676,45 @@ void start_screen(Tool &T, SDL_Window *win) {
         float t = ease_to(ImGui::GetItemID(), ImGui::IsItemHovered() ? 1 : 0, 14);
         cl->AddRectFilled(p, ImVec2(p.x + dw, p.y + dh), mix(DEEP, IM_COL32(0x20, 0x22, 0x30, 255), t), U(24));
         cl->AddRect(p, ImVec2(p.x + dw, p.y + dh), mix(IM_COL32(0x46, 0x45, 0x4B, 255), PERI, t), U(24), 0, U(2));
-        ImVec2 c(p.x + dw / 2, p.y + U(62));
-        cl->AddRectFilled(ImVec2(c.x - U(32), c.y - U(32)), ImVec2(c.x + U(32), c.y + U(32)), TINT_PERI, U(22));
-        icon(cl, IC_CUBE, c, U(32), PERI);
+        ImVec2 c(p.x + dw / 2, p.y + U(52));
+        cl->AddRectFilled(ImVec2(c.x - U(30), c.y - U(30)), ImVec2(c.x + U(30), c.y + U(30)), TINT_PERI, U(21));
+        icon(cl, IC_CUBE, c, U(30), PERI);
         const char *l1 = "Drop a model here", *l2 = "a .glb model, rigged or not", *l3 = "Browse...";
         ImGui::PushFont(FontTitle);
         ImVec2 s1 = ImGui::CalcTextSize(l1);
-        cl->AddText(ImVec2(c.x - s1.x / 2, p.y + U(110)), INK, l1);
+        cl->AddText(ImVec2(c.x - s1.x / 2, p.y + U(94)), INK, l1);
         ImGui::PopFont();
         ImVec2 s2 = ImGui::CalcTextSize(l2), s3 = ImGui::CalcTextSize(l3);
-        cl->AddText(ImVec2(c.x - s2.x / 2, p.y + U(142)), MUTED, l2);
-        float bw = s3.x + U(36), by = p.y + U(178);
+        cl->AddText(ImVec2(c.x - s2.x / 2, p.y + U(124)), MUTED, l2);
+        float bw = s3.x + U(36), by = p.y + U(152);
         cl->AddRect(ImVec2(c.x - bw / 2, by), ImVec2(c.x + bw / 2, by + U(38)), PERI, U(19), 0, U(2));
         cl->AddText(ImVec2(c.x - s3.x / 2, by + (U(38) - s3.y) / 2), PERI_LIGHT, l3);
         ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + dh + U(16)));
     }
     {
-        float bw = U(110), fw = ImGui::GetContentRegionAvail().x - bw - U(10);
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(U(16), U(11)));
-        ImGui::SetNextItemWidth(fw);
-        ImGui::InputTextWithHint("##newmodel", "or type its path", T.model, sizeof(T.model));
-        ImGui::PopStyleVar(2);
-        ImGui::PopStyleColor();
-        ImGui::SameLine(0, U(10));
-        if (button("Create", CORAL, CORAL_INK, bw, IC_NONE, T.model[0] != 0 ? CUE_MADE : CUE_DROP, ImGui::GetFontSize() + U(22))) {
-            if (T.model[0] != 0) {
-                T.loaded_mod[0] = 0;
-                open_model(T, T.model);
-                T.home = T.m == nullptr;
-            } else {
-                toast(T, "Drop, browse for or type a model first");
-            }
+        // what the model has to be (the game's limits, kit.h's and heropack.c's; the user's word, 2026-11-22: "You also need to
+        // specifiy any restrictions on the .glb")
+        static const char *const Needs[] = {
+            "A .glb file (glTF 2.0), its textures PNGs inside it, 8 at most",
+            "1365 triangles and 4096 vertices at most",
+            "Standing, facing forward (+Z, Blender's front), any size",
+            "Rigged with Mixamo, VRM, Blender or Unity bone names, or not rigged: you place its joints",
+            "Its textures share 256 x 256 texels in the game",
+        };
+        ImDrawList *cl = ImGui::GetWindowDrawList();
+        ImGui::PushFont(FontSmall);
+        ImGui::TextColored(V4(INK), "What the model needs");
+        ImGui::Dummy(ImVec2(0, U(2)));
+        float lh = ImGui::GetTextLineHeight(), tw = ImGui::GetContentRegionAvail().x - U(18);
+        for (const char *n : Needs) {
+            ImVec2 q = ImGui::GetCursorScreenPos();
+            cl->AddCircleFilled(ImVec2(q.x + U(6), q.y + lh / 2), U(2.5f), PERI);
+            ImGui::SetCursorScreenPos(ImVec2(q.x + U(18), q.y));
+            ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + tw);
+            ImGui::TextColored(V4(MUTED), "%s", n);
+            ImGui::PopTextWrapPos();
         }
+        ImGui::PopFont();
     }
     ImGui::EndChild();
     // the heroes made: open one to edit it
@@ -5456,7 +5723,7 @@ void start_screen(Tool &T, SDL_Window *win) {
     heading("Edit a hero");
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, U(4)));
-    ImGui::BeginChild("##found", ImVec2(0, ImGui::GetContentRegionAvail().y - U(64)), ImGuiChildFlags_AlwaysUseWindowPadding);
+    ImGui::BeginChild("##found", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
     for (int i = 0; i < NumFound; i++) {
         const char *mod = Founds[i].mod;
         for (const char *c = Founds[i].mod; *c != 0; c++) {
@@ -5472,11 +5739,21 @@ void start_screen(Tool &T, SDL_Window *win) {
         fl->AddRectFilled(a, b, mix(DEEP, RAISED, t), U(24));
         ImVec2 c(a.x + U(42), a.y + rh / 2);
         fl->AddRectFilled(ImVec2(c.x - U(30), c.y - U(30)), ImVec2(c.x + U(30), c.y + U(30)), ChipTint[i % 4], U(20));
-        char first[8] = { Founds[i].name[0] != 0 ? Founds[i].name[0] : '?', 0 };
-        ImGui::PushFont(FontBig);
-        ImVec2 fs = ImGui::CalcTextSize(first);
-        fl->AddText(ImVec2(c.x - fs.x / 2, c.y - fs.y / 2), INK, first);
-        ImGui::PopFont();
+        // its picture (the user's word, 2026-11-22: "Bobby has a hero picture. Might as well use that instead of the B"), else its
+        // first letter
+        if (!Founds[i].looked) {
+            found_picture(Founds[i], SDL_GetRenderer(win));
+        }
+        if (Founds[i].pic != nullptr) {
+            fl->AddImageRounded((ImTextureID)(intptr_t)Founds[i].pic, ImVec2(c.x - U(30), c.y - U(30)), ImVec2(c.x + U(30), c.y + U(30)),
+                                Founds[i].uv0, Founds[i].uv1, IM_COL32_WHITE, U(20));
+        } else {
+            char first[8] = { Founds[i].name[0] != 0 ? Founds[i].name[0] : '?', 0 };
+            ImGui::PushFont(FontBig);
+            ImVec2 fs = ImGui::CalcTextSize(first);
+            fl->AddText(ImVec2(c.x - fs.x / 2, c.y - fs.y / 2), INK, first);
+            ImGui::PopFont();
+        }
         ImGui::PushFont(FontTitle);
         fl->AddText(ImVec2(a.x + U(86), a.y + U(16)), INK, Founds[i].name);
         ImGui::PopFont();
@@ -5495,19 +5772,6 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::EndChild();
     ImGui::PopStyleVar();
     ImGui::PopStyleColor();
-    {
-        ImVec2 p = ImGui::GetCursorScreenPos();
-        float iw = ImGui::GetContentRegionAvail().x, ih = U(54);
-        ImDrawList *il = ImGui::GetWindowDrawList();
-        il->AddRectFilled(p, ImVec2(p.x + iw, p.y + ih), DEEP, U(20));
-        ImGui::PushFont(FontSmall);
-        il->AddCircle(ImVec2(p.x + U(24), p.y + ih / 2), U(9), MUTED, 0, U(1.8f));
-        il->AddText(ImVec2(p.x + U(21), p.y + ih / 2 - ImGui::GetTextLineHeight() / 2), MUTED, "i");
-        il->AddText(ImVec2(p.x + U(44), p.y + ih / 2 - ImGui::GetTextLineHeight() / 2), MUTED,
-                    "A zipped mod? Unzip it into the mods folder to edit it here.");
-        ImGui::PopFont();
-        ImGui::Dummy(ImVec2(iw, ih));
-    }
     ImGui::EndChild();
     ImGui::PopStyleVar(2);
     ImGui::PopStyleColor();
@@ -5518,12 +5782,12 @@ void start_screen(Tool &T, SDL_Window *win) {
         dl->AddRectFilled(p, ImVec2(p.x + w, p.y + bh), CARD, U(22));
         icon(dl, IC_FOLDER, ImVec2(p.x + U(28), p.y + bh / 2), U(20), MUTED);
         dl->AddText(ImVec2(p.x + U(48), p.y + (bh - ImGui::GetTextLineHeight()) / 2), MUTED, "Mods folder");
-        float lw = U(48) + ImGui::CalcTextSize("Mods folder").x + U(14), hint_w = ImGui::CalcTextSize("Ctrl + / - zoom   Ctrl 0 reset").x;
+        float lw = U(48) + ImGui::CalcTextSize("Mods folder").x + U(14);
         ImGui::SetCursorScreenPos(ImVec2(p.x + lw, p.y + (bh - ImGui::GetFontSize() - U(16)) / 2));
         ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(U(14), U(8)));
-        ImGui::SetNextItemWidth(w - lw - hint_w - U(100));
+        ImGui::SetNextItemWidth(w - lw - U(80));
         ImGui::InputText("##mods", T.out, sizeof(T.out));
         ImGui::PopStyleVar(2);
         ImGui::PopStyleColor();
@@ -5533,7 +5797,6 @@ void start_screen(Tool &T, SDL_Window *win) {
             find_heroes(T);
             toast(T, "%d hero%s found", NumFound, NumFound == 1 ? "" : "es");
         }
-        dl->AddText(ImVec2(p.x + w - U(20) - hint_w, p.y + (bh - ImGui::GetTextLineHeight()) / 2), DIM, "Ctrl + / - zoom   Ctrl 0 reset");
     }
     draw_toast(T, ImVec2(x + w, U(40) + U(64) + U(12)), U(420));
     ImGui::End();
@@ -5840,6 +6103,10 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         T.page = SDL_atoi(SDL_getenv("HEROTOOL_PAGE"));
         T.kind = T.page >= 0 ? T.page : T.kind;
     }
+    /* a test's: HEROTOOL_CAMERA=YAW opens the card's camera (on the hero's page) turned so */
+    if (SDL_getenv("HEROTOOL_CAMERA") != nullptr && T.m != nullptr) {
+        T.camera = true;
+    }
     /* a test's: HEROTOOL_OWN=GAME/MOVE=MOVE picks one of the tool's moves for a game's move, as its page's list does */
     if (SDL_getenv("HEROTOOL_OWN") != nullptr && T.m != nullptr) {
         char o[96], *eq;
@@ -5943,6 +6210,8 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                     T.home = T.home && T.m == nullptr;
                 } else if (n > 4 && SDL_strcasecmp(f + n - 4, ".png") == 0) {
                     SDL_strlcpy(T.card, f, sizeof(T.card));
+                    T.card_photo = false;
+                    T.unsaved = true;
                 } else if (n > 4 && SDL_strcasecmp(f + n - 4, ".wav") == 0) {
                     SDL_strlcpy(T.voice[T.voice_job], f, sizeof(T.voice[0]));
                 } else if (n > 5 && SDL_strcasecmp(f + n - 5, ".json") == 0 && T.m != nullptr) {
@@ -5967,6 +6236,8 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 T.home = T.m == nullptr;
             } else if (what == PICK_CARD) {
                 SDL_strlcpy(T.card, PickedPath, sizeof(T.card));
+                T.card_photo = false;
+                T.unsaved = true;
             } else if (what >= PICK_VOICE && what < PICK_VOICE + PACK_VOICE_JOBS) {
                 SDL_strlcpy(T.voice[what - PICK_VOICE], PickedPath, sizeof(T.voice[0]));
             }
@@ -5983,6 +6254,20 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         last = now;
         made_check(T);
+        /* a test's: HEROTOOL_CAMERA's turn once the camera's posed, and HEROTOOL_PHOTO takes its photo then */
+        static bool turned = false, photographed = false;
+        if (!turned && T.camera && T.cam_anim >= 0 && SDL_getenv("HEROTOOL_CAMERA") != nullptr) {
+            turned = true;
+            T.cam.yaw = (float)SDL_atof(SDL_getenv("HEROTOOL_CAMERA"));
+        }
+        if (turned && !photographed && SDL_getenv("HEROTOOL_PHOTO") != nullptr) {
+            photographed = true;
+            /* (and HEROTOOL_SAVE_TO=FOLDER, without HEROTOOL_ADJUST, saves it there with it) */
+            if (take_photo(T, ren) && SDL_getenv("HEROTOOL_SAVE_TO") != nullptr && SDL_getenv("HEROTOOL_ADJUST") == nullptr) {
+                export_pack(T, false, SDL_getenv("HEROTOOL_SAVE_TO"));
+                printf("herotool: %s\n", T.status);
+            }
+        }
         /* a test's: HEROTOOL_ASK=MOVE picks its template's for that move of the game shown, as its list would (asking first if it's
            its own) */
         static bool asked = false;

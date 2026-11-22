@@ -264,11 +264,16 @@ SDL3's renderer, the model drawn by a little software renderer of its own). It's
 word, 2026-11-22: far too small on a high resolution screen), on the screen the mouse is on: its display scale, or its height against
 an 800-line screen's if that's more (1.25 on a 1080-line screen), in quarters; its font made at that size, its style's sizes, the
 window and its pictures with it, and again as it's moved to another screen. Ctrl and + or - make it a tenth bigger or smaller, a
-share of the screen's kept for next time (zoom.txt in its own folder), Ctrl and 0 sets it back (`HEROTOOL_SCALE=S` for a test). With no model it starts on its **start screen**
-(2026-11-22, the user's word): **Create a new hero** (Browse, the system's file chooser; a path; or a `.glb` dropped on it), or
-**Edit a hero**, a list of every hero in the mods folder's unzipped mods (`heroes/<id>/hero.json`). Editing one opens the pack's
+share of the screen's kept for next time (zoom.txt in its own folder), Ctrl and 0 sets it back (`HEROTOOL_SCALE=S` for a test; not
+said on its screens, the user's word, 2026-11-22). With no model it starts on its **start screen** (2026-11-22, the user's word):
+**Create a new hero** (Browse, the system's file chooser, or a `.glb` dropped on it; no path to type), with **What the model needs**
+under it (the game's limits: a binary glTF 2.0 with its textures PNGs inside it, 8 at most, 1365 triangles and 4096 vertices,
+standing and facing +Z, rigged with Mixamo, VRM, Blender or Unity names or not rigged, its textures sharing 256 x 256 texels), or
+**Edit a hero**, a list of every hero in the mods folder's unzipped mods (`heroes/<id>/hero.json`), each with its picture: its card's
+top, else its face as the tool last made it (its model on foot from `preview-made/ID_foot.hpv` in the tool's folder, the top of it as
+its face share says), else its first letter (`found_picture`). Editing one opens the pack's
 own `hero.glb` (rigged on the standard skeleton, its moves its clips, so anyone's shared pack can be changed without its first
-model) and takes its name, height, who it's based on (its template, else whose place it takes) and face from hero.json, the mod's name and author from mod.json, and its
+model) and takes its name, height, who it's based on (its template, else whose place it takes) and face from hero.json, the mod's author from mod.json, and its
 card and sounds from its files; **Save** writes it back into that mod. `< Start screen` goes back to it (`HEROTOOL_LOAD=ID`
 loads a hero, for a test). Drop a `.glb` on it (or a `.png` for its card, a `.wav`
 for the sound job picked, a markers `.json`). Its front and side views show the model at rest with its markers, to drag onto its
@@ -276,7 +281,8 @@ joints (its left's mirror its right's, a bone's end is the next one's start, and
 the third plays the move picked, turning. A model with no markers beside it (`MODEL.glb.markers.json`, saved there on each
 export) starts from a guess (`kit_guess_markers`: a standing humanoid's proportions in its box, arms out if it's as wide as a
 T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, no markers. Then its name, height, who it's based on, card,
-sounds and the mod's name, and **Save** writes the mod to the mods folder (beside the tool by default, the game's if it's
+sounds and the mod's author, and **Save** (the mod's name is the hero's: the user's word, 2026-11-22, "The mod name should always be
+the same as the custom hero name") writes the mod to the mods folder (beside the tool by default, the game's if it's
 there), or **Preview in GAME** saves and starts the game too, straight into the game picked (no launcher: `--no-launcher` with
 `--mode`; the user's word, 2026-11-22, "open the mini game directly rather than needing the user to click play"), with it as player 1
 and the computer playing everyone (the game's TESTING demo). `HEROTOOL_SHOT=FILE.png`
@@ -298,10 +304,20 @@ heroes, the hero's name, **All games at a glance** on a grid button beside it, a
 date or Making..., then undo, redo, sounds on or off, **Preview in GAME** with an arrow to pick the game, and **Save**), the **strip** of
 games under it (**Your hero** first, then each game as a chip with the hero in it, a still of its first animation; the page shown
 periwinkle and lifted), and the page. **Your hero** is the model's own page: its picture (**Joints**, the dots to place on its front
-and side, or **Preview**, the tool's own moves on it; Joints only for a model without a rig), under it its **Card** (Browse, the
-system's file chooser; **Face**, how much of it from the top is its head, with no card) and **Sounds** (a WAV for each, played with its
+and side, or **Preview**, the tool's own moves on it; Joints only for a model without a rig), under it its **Card** and **Sounds** (a WAV for each, played with its
 button; else its base's), and on the right its **Model** (Open, Guess joints, Mirror, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
-id, height, **Based on**: its template and whose place it takes, one choice) and **Mod** (its name and author, the folders) cards.
+id, height, **Based on**: its template and whose place it takes, one choice) and **Mod** (its author, the folders) cards.
+**The card** (the user's word, 2026-11-22: "take a photo and use that. With full move him around rotate etc."): its picture in the
+character select and the games' panels, shown in the card's shape (290 x 400, as wide against its height as the select shows a card:
+its 56 of 64 columns less a 5% inset each side, by 38 rows each 1.83 times as tall as a column is wide, so a photo isn't stretched).
+**Take a photo** makes the page's picture a camera (`camera_view`): the hero as the game made it on foot, in a frame the card's shape,
+dragged to turn and tilt it, right-dragged (or middle) to move it, the wheel to zoom, double-clicked back to the start (close on its
+head and chest, a little from its right); its pose any of its animations at any frame. **Take photo** draws it twice the card's size
+on nothing and halves it (`take_photo`), saved as `photos/ID.png` in the tool's folder and made the card; **Save** puts it in the pack
+as `card.png`. Or **Browse** for a PNG, or **Clear** for its face drawn from its model by the game (its face share kept as hero.json has
+it; the tool no longer sets it). `HEROTOOL_CAMERA=YAW` opens the camera turned so and `HEROTOOL_PHOTO` takes the photo (with
+`HEROTOOL_SAVE_TO` and no `HEROTOOL_ADJUST`, saved there), for a test. A bone picked or let go by a click makes no sound (the user's
+word: "it gets anoying").
 **All games** is a tile for each game: the hero in it on the floor grid, turned as the slider says, what's its own there and whether
 it's squeezed in to sit. A game's page is its picture and timeline, and on the right its cards: the game's, Fade, the bone's and
 History. The game's card has **Prop from** (that game's
