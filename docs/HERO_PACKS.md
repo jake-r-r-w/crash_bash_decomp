@@ -454,7 +454,12 @@ Under the picture is its **timeline** (the user's word: "a key frame time line b
 and after, the frame, the speed, and a sheet of the move's frames: a ruler (click or drag it to go to a frame) with the frame shown
 across it all, and a row for each joint with a change in the move (and the joint picked; clicking a row's name picks it). A change
 at a frame is a diamond; one **held** over frames a bar between two diamonds; its fade a band either side; one to the whole move a
-green bar, to every move here a blue one. Click a key to pick it and go to it (its joint, its frame and fade). Drag a diamond (a held
+green bar, to every move here a blue one. Click a key to pick it and go to it (its joint, its frame and fade). **Several** can be
+picked (the user's word, 2026-11-22: "add multi-select for keys in the timeline"; `keys_sel`, `key_sel` the one picked last, the
+panel's): Ctrl+click picks one more (or not any more), dragging a box over an empty place in the rows picks those it's over (Ctrl: as
+well), Ctrl+A (or right-click an empty place, **Select all**) every key of the move, and clicking an empty place none. Dragging one of
+several moves them all as far (none past the move's ends; clicked and let go unmoved, it alone is picked), Delete takes them all away,
+the panel's **Fade** fades them all, and right-clicking one of them is for them all (**Fade**, the **Stretch** ones, **Delete**). Drag a diamond (a held
 key by its bar) to move it to other frames. To hold one over more frames or fewer: drag a held key's end, or a picked key's grips
 (the white bars either side), or Shift and drag a key the way it's to go. Right-click a key for **Copy**, **Paste**, **Paste
 mirrored**, **Fade**, **Stretch to end**, **Stretch to start**, **Stretch to whole move**, **Single frame** and **Delete** (or press
@@ -471,8 +476,9 @@ Clicking a key as it plays picks it and leaves it playing (moving a key wants it
 panel says to click one; a value changed then stops it and makes a key at the frame shown. `HEROTOOL_PLAY=1` plays it, for a test.
 
 **Copy and paste** (the user's word, 2026-11-22: "add keyframe copy and paste in the timeline"): Ctrl+C (or right-click, **Copy**)
-copies the key picked (else the picked joint's at the frame shown); Ctrl+V pastes it at the frame shown onto the joint picked, with
-its change, its fade and the frames it's held over, and Ctrl+Shift+V mirrored, its other side's way (as **Mirror**: across, and its
+copies the keys picked (else the picked joint's at the frame shown); Ctrl+V pastes them at the frame shown (the first there, the rest
+as far after it as they were), each with its change, its fade and the frames it's held over: copied from one joint, onto the joint
+picked; from several, each onto its own (mirrored, each onto its other side: a left ear's keys made the right ear's in one go). Ctrl+Shift+V pastes them mirrored, each its other side's way (as **Mirror**: across, and its
 turns about up and front to back, the other way). Right-click an empty place in a joint's row for **Paste here** (or **Paste
 mirrored**) at that frame, or a key for **Paste** over it. A key there already (at that frame, or to the whole move) is replaced; a
 key to the whole move or every move here pastes as that (`key_copy`, `key_paste`).
@@ -487,7 +493,8 @@ hero.
 
 Its tests' settings: `HEROTOOL_ADJUST=BONE@FRAME` (or `@FROM-TO`, held) adjusts the page shown once it's made, that bone picked there
 (and `HEROTOOL_SHOW_FRAME=N` shows that frame after; `HEROTOOL_ADJUST_FADE=EASE,N` its fade, hero.json's name, over N frames;
-`HEROTOOL_PASTE=FRAME[,1]` copies it and pastes it at FRAME, mirrored with 1);
+`HEROTOOL_PASTE=FRAME[,1[,BONE]]` copies it and pastes it at FRAME, mirrored with 1, onto BONE; then `HEROTOOL_SELECT_ALL=1`
+picks every key of the move and `HEROTOOL_PASTE2=FRAME[,1]` copies and pastes those);
 `HEROTOOL_ADJUST_TURN` / `_REACH` / `_SCALE=X,Y,Z` changes it; `HEROTOOL_GIZMO=N` picks the gizmo (0 turn, 1 move, 2 size);
 `HEROTOOL_DRAG=X0,Y0,X1,Y1[,1[,1]]` drags the mouse in the window (the right button with the second 1; Shift with the first, down the frame before the press and up the frame after, as
 ImGui holds a press queued after a key's change for the next frame; the window's pixels, as `HEROTOOL_SHOT`'s picture's), and keeps

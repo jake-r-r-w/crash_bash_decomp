@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's timeline picks several keys (Ctrl+click, a box, Ctrl+A): moved, deleted, faded and stretched together,
+  and copied and pasted keeping their spacing (from several joints, each onto its own; mirrored, onto its other side). Tool and game
+  the same exactly with a mirrored paste of two joints' keys. hero.json no longer gets `-0` for a flipped zero.
+
 - 2026-11-22: a red warning over the hero tool's Save button: ImGui's "conflicting ID" (the Save header and button had one label,
   as did the Prop from choice and the held key's first frame, `##from`). Gotcha: shortening a label can clash with another on
   screen; give one a `##` suffix (`Save##mod`, `##held_from`).
