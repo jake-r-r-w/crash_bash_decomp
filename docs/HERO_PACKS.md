@@ -555,6 +555,17 @@ move's frames shown), Shift and the wheel (or a sideways wheel) scroll it, Home 
 which part is shown, and playing it follows the frame shown. A dragged key (or its end) **snaps** to another key's first or last
 frame, or the frame shown as the drag began, the nearest within a few pixels (a line shows where); Ctrl and drag doesn't snap.
 
+**Stretch** (the first of the buttons top right; the user's word, 2026-11-22: "a non stretch toggle so that bones can only move and
+not extend or shirnk"), on to start: Move slides a bone with all on it, the one it hangs from getting longer or shorter. Off, moving a
+bone that isn't a hand, a foot or the hips (which never stretch: a hand or foot bends its arm or leg to reach, the hips move all) turns
+the one it hangs from about its joint instead, so this one's joint goes where it's dragged as near as it can at the same distance (along
+an arrow, as far as the mouse went that way; by its middle, towards the mouse): the turn is a key of that one's at the frame, as Rotate
+makes, and its history step says "Moved Head, rotating Neck". A bone on the hips (the spine, a thigh, the tail's first) can't move so
+(turning the hips would turn the legs too): a message says to rotate it or turn Stretch on. Checked: the head dragged 60 pixels with
+it off, the neck turned and every bone's length the same to a tenth (on, the head's bone went from 40.0 to 73.7), and the game's frame
+from the saved pack within 1 of the tool's. `HEROTOOL_NOSTRETCH=1` turns it off and `HEROTOOL_LENGTHS=1` prints where the bone picked
+is in the window and each bone's length, as it's shown and after each drag, for a test.
+
 **X-Mirror** (beside Turn, Move and Size; the user's word, 2026-11-22: mirror while editing, as Blender's): while it's on, each
 change to a joint's key (by its gizmo, its values, its fade or blend, its frames, or dragging it in the timeline) is made to its
 other side's key at that frame too, its mirror image (across, and its turns about up and front to back, the other way; its frames,

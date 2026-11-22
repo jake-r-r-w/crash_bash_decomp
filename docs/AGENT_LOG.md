@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's Stretch switch (top right, on to start): off, Move turns the bone a bone hangs from instead of stretching
+  it (a turn key on that one; hands, feet and the hips as before; a bone on the hips can't move so, and says so). Lengths checked
+  the same, the game's frame within 1 of the tool's. A test's drag needs the joint's place once the window's settled
+  (`HEROTOOL_LENGTHS` prints it again as it moves; the first frame's is before the window takes its size).
 - 2026-11-22: Bobby's shoulder holes (the user: "in his top right arm he has holes in his mesh") were the ear cut's: bobby_ears.py had
   taken a few shoulder faces (ear-weighted, touching only his body) with each ear, leaving 47 open edges. The fin it was for is the
   tool's patches' job, done; his model is the uncut one again (4ff65709^), the script and its json gone, his pack made again (11 open

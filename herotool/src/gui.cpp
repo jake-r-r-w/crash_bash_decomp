@@ -363,6 +363,9 @@ struct Tool {
     std::vector<int16_t> ghost[2];
     // the clipping finder on: its points on the picture, its frames in the timeline
     bool clipping = false;
+    // Stretch: Move slides a bone, the one it hangs from stretching to it; off, it turns the one it hangs from instead, every bone keeping
+    // its length (the user's word, 2026-11-22: "a non stretch toggle so that bones can only move and not extend or shirnk")
+    bool stretch = true;
     // how a new key fades (PACK_EASE_), and the key copied (Ctrl+C; empty none)
     int ease = PACK_EASE_SMOOTH;
     std::vector<PackAdjust> clip;
@@ -2627,6 +2630,7 @@ void clip_scan(Tool &T, int kind, int anim) {
 // Over the picture while adjusting: which gizmo it has, Turn (R), Move (G) or Size (S), the one on lit
 void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     static Posed ps;
+    static bool told_hips = false; // (Stretch off: a bone on the hips can't be moved, said once a drag)
     // the hero's own x (across), y (up and down) and z (front to back): Blender's X red, Z blue and Y green
     const ImU32 Axis[3] = { AXIS_X, AXIS_Z, AXIS_Y };
     static const char *const AxisSays[3] = { "X", "Z", "Y" };
@@ -2651,6 +2655,24 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     }
     if (T.sel >= po->nbones) {
         T.sel = -1;
+    }
+    /* a test's: HEROTOOL_LENGTHS=1 says where the bone picked is in the window, and each bone's distance from the one it hangs from, as
+       it's shown (again as it moves) and after each drag (Stretch off keeps them) */
+    static bool was_dragging = false;
+    static float said_x = -1e9f, said_y = -1e9f;
+    if (SDL_getenv("HEROTOOL_LENGTHS") != nullptr && T.sel >= 0) {
+        if ((!T.dragging && !was_dragging && fabsf(sx[T.sel] - said_x) + fabsf(sy[T.sel] - said_y) > 2) || (was_dragging && !T.dragging)) {
+            said_x = sx[T.sel], said_y = sy[T.sel];
+            printf("herotool: %s at %.0f,%.0f, lengths", po->names[T.sel], sx[T.sel], sy[T.sel]);
+            for (int b = 0; b < po->nbones; b++) {
+                if (po->parent[b] >= 0) {
+                    const float *x = ps.shown[b], *y = ps.shown[po->parent[b]];
+                    printf(" %s:%.1f", po->names[b], sqrtf((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) + (x[2] - y[2]) * (x[2] - y[2])));
+                }
+            }
+            printf("\n");
+        }
+        was_dragging = T.dragging;
     }
     // the clipping finder: the frame's points inside another part, red
     if (T.clipping) {
@@ -2831,13 +2853,21 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             if (take >= H_SIZE && take <= H_SIZE_ALL) {
                 adj_snapshot(T, "Scaled %s", b);
             } else if (take >= H_MOVE && take <= H_MOVE_FREE) {
-                adj_snapshot(T, "Moved %s", b);
+                int up = po->parent[T.sel];
+                if (!T.stretch && !reach_bone(po->names[T.sel]) && up >= 0) {
+                    char was[80];
+                    SDL_strlcpy(was, b, sizeof(was));
+                    adj_snapshot(T, "Moved %s, rotating %s", was, bone_title(po->names[up]));
+                } else {
+                    adj_snapshot(T, "Moved %s", b);
+                }
             } else {
                 adj_snapshot(T, "Rotated %s", b);
             }
             T.dragging = true;
             T.handle = take;
             T.adj_playing = false;
+            told_hips = false;
         }
     }
     if (T.dragging && !ImGui::IsMouseDown(0)) {
@@ -2847,13 +2877,64 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
     if (!T.dragging || T.sel < 0 || (io.MouseDelta.x == 0 && io.MouseDelta.y == 0)) {
         return;
     }
+    int h = T.handle;
+    float jx = sx[T.sel], jy = sy[T.sel];
+    // Stretch off, moving a bone that isn't a hand, a foot or the hips (they never stretch: a hand or foot bends its arm or leg to reach,
+    // the hips move all): the one it hangs from turned about its joint so this one's goes where it's dragged (along the axis, as far as
+    // the mouse went that way; dragged by its middle, under the mouse), as near as it can at the same distance; the turn a key of that
+    // one's at this frame, as Rotate makes. On the hips it can't move at all (turning the hips would turn the legs too): said so
+    if (!T.stretch && h >= H_MOVE && h <= H_MOVE_FREE && !reach_bone(po->names[T.sel]) && po->parent[T.sel] >= 0) {
+        int up = po->parent[T.sel];
+        if (SDL_strcasecmp(po->names[up], "hips") == 0) {
+            if (!told_hips) {
+                told_hips = true;
+                char who[80];
+                SDL_strlcpy(who, bone_title(po->names[T.sel]), sizeof(who));
+                toast(T, "%s hangs from the hips: rotate it, or turn Stretch on to move it", who);
+            }
+            return;
+        }
+        float d[3] = { 0, 0, 0 }, g[3] = { 0, 0, 0 };
+        if (h < H_MOVE + 3) {
+            int i = h - H_MOVE;
+            float along = io.MouseDelta.x * ax2[i][0] + io.MouseDelta.y * ax2[i][1], per = fmaxf(axlen[i], 0.15f) * pp, ax[3];
+            hero_axis(ps, i, ax);
+            for (int c = 0; c < 3; c++) {
+                g[c] = ax[c] * along / per;
+            }
+        } else {
+            d[0] = (mouse.x - jx) / pp, d[1] = -(mouse.y - jy) / pp;
+            view_to_game(v, d, g);
+        }
+        float u[3], w[3], n[3];
+        for (int c = 0; c < 3; c++) {
+            u[c] = ps.shown[T.sel][c] - ps.shown[up][c];
+            w[c] = u[c] + g[c];
+        }
+        n[0] = u[1] * w[2] - u[2] * w[1], n[1] = u[2] * w[0] - u[0] * w[2], n[2] = u[0] * w[1] - u[1] * w[0];
+        float nl = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]), dot = u[0] * w[0] + u[1] * w[1] + u[2] * w[2];
+        if (nl < 1e-6f) {
+            return;
+        }
+        float deg = atan2f(nl, dot) * 180 / 3.14159265f, axis[3] = { n[0] / nl, n[1] / nl, n[2] / nl }, hh[3];
+        game_to_hero(ps, axis, hh);
+        float hl = sqrtf(hh[0] * hh[0] + hh[1] * hh[1] + hh[2] * hh[2]);
+        PackAdjust *kp = hl > 1e-6f ? adj_key(T, mk->anims[a].name, po->names[up], true) : nullptr;
+        if (kp == nullptr) {
+            return;
+        }
+        for (int c = 0; c < 3; c++) {
+            kp->turn[c] = fmaxf(-360, fminf(360, kp->turn[c] + hh[c] / hl * deg));
+        }
+        keys_only(T, (int)(kp - T.adj.data()));
+        mirror_edit(T, T.key_sel, T.adj[T.key_sel].at);
+        return;
+    }
     PackAdjust *k = adj_key(T, mk->anims[a].name, po->names[T.sel], true);
     if (k == nullptr) {
         return;
     }
     keys_only(T, (int)(k - T.adj.data()));
-    int h = T.handle;
-    float jx = sx[T.sel], jy = sy[T.sel];
     // the angle the mouse went round the joint (radians, as seen: anticlockwise more), from where it was
     auto swept = [&]() {
         float mx = mouse.x - jx, my = mouse.y - jy, px = mx - io.MouseDelta.x, py = my - io.MouseDelta.y;
@@ -4204,19 +4285,20 @@ float picture_overlays(Tool &T, ImVec2 p, ImVec2 size) {
         }
         ImGui::EndDisabled();
     }
-    // X-Mirror, Onion and Clipping, top right (Onion's frames apart, and the points clipping here, under them while they're on)
+    // Stretch, X-Mirror, Onion and Clipping, top right (Onion's frames apart, and the points clipping here, under them while they're on)
     {
-        const char *names[3] = { "X-Mirror", "Onion", "Clipping" };
-        const char *tips[3] = { "Changes to one side made to the other too, flipped", "Ghosts of the frames before (blue) and after (orange)",
+        const char *names[4] = { "Stretch", "X-Mirror", "Onion", "Clipping" };
+        const char *tips[4] = { "Moving a bone stretches the one it hangs from. Off: it rotates that one instead, so no bone gets longer or shorter",
+                                "Changes to one side made to the other too, flipped", "Ghosts of the frames before (blue) and after (orange)",
                                 "Points of it inside another part (red), and the frames where (the timeline's red)" };
-        bool *flags[3] = { &T.xmirror, &T.onion, &T.clipping };
-        const int icons[3] = { IC_MIRROR, IC_ONION, IC_CLIP };
+        bool *flags[4] = { &T.stretch, &T.xmirror, &T.onion, &T.clipping };
+        const int icons[4] = { IC_SCALE, IC_MIRROR, IC_ONION, IC_CLIP };
         float total = 0;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             total += button_w(names[i], true) + (i > 0 ? U(8) : 0);
         }
         ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - total, p.y + U(16)));
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             if (i > 0) {
                 ImGui::SameLine(0, U(8));
             }
@@ -6347,7 +6429,9 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 }
             }
             T.no_fit[T.kind] = SDL_getenv("HEROTOOL_NOFIT") != nullptr ? true : T.no_fit[T.kind];
-            /* and HEROTOOL_ADJUST_TURN / _REACH / _SCALE=X,Y,Z changes it there, as the panel's values would; _GIZMO=N picks gizmo N */
+            /* and HEROTOOL_ADJUST_TURN / _REACH / _SCALE=X,Y,Z changes it there, as the panel's values would; _GIZMO=N picks gizmo N;
+               HEROTOOL_NOSTRETCH=1 turns Stretch off */
+            T.stretch = SDL_getenv("HEROTOOL_NOSTRETCH") == nullptr;
             const char *turn = SDL_getenv("HEROTOOL_ADJUST_TURN"), *reach = SDL_getenv("HEROTOOL_ADJUST_REACH");
             const char *size = SDL_getenv("HEROTOOL_ADJUST_SCALE");
             T.gizmo = SDL_getenv("HEROTOOL_GIZMO") != nullptr ? SDL_atoi(SDL_getenv("HEROTOOL_GIZMO")) : T.gizmo;
