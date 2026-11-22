@@ -667,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: five hero tool features at the user's word: keys that blend into the next (`"blend"`, `pack_adjust_share_among` in
+  heroadjust.c, the game too), the timeline's zoom and snapping, X-Mirror, onion skin, and a clipping finder (capsule cores per part,
+  red points and a timeline strip). Each checked by scripted drags and against the game where it changes the pack; a frame with onion
+  and clipping on while playing is about 5.5 ms. HERO_PACKS.md, Adjusting its moves.
+
 - 2026-11-22: the hero tool's timeline picks several keys (Ctrl+click, a box, Ctrl+A): moved, deleted, faded and stretched together,
   and copied and pasted keeping their spacing (from several joints, each onto its own; mirrored, onto its other side). Tool and game
   the same exactly with a mirrored paste of two joints' keys. hero.json no longer gets `-0` for a flipped zero.
