@@ -4169,7 +4169,7 @@ void editor_right(Tool &T, SDL_Window *win) {
         ImGui::Spacing();
         if (g >= 0) {
             ImGui::TextDisabled("Moves");
-            ImGui::SetItemTooltip("What it plays for each of this game's moves: a hero's, its own, or one of the tool's");
+            ImGui::SetItemTooltip("What it plays for each of this game's moves: its base's, or its own");
             int from = T.kind_template[k] >= 0 ? T.kind_template[k] : T.template_hero;
             for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
                 char now[80];
@@ -4201,12 +4201,10 @@ void editor_right(Tool &T, SDL_Window *win) {
                     if (clip && ImGui::Selectable("own clip", sel == OWN_CLIP) && sel != OWN_CLIP) {
                         own_change(T, k, g, m, OWN_CLIP);
                     }
-                    ImGui::Separator();
-                    for (int s = 0; s < KitMoveCount; s++) {
-                        snprintf(t, sizeof(t), "my %s", KitMoves[s].name);
-                        if (ImGui::Selectable(t, sel == s) && sel != s) {
-                            own_change(T, k, g, m, s);
-                        }
+                    // (the tool's own moves aren't offered: they never line up with a game's, the user's word, 2026-11-22; one a pack
+                    // has from before still shows while it's picked)
+                    if (sel >= 0) {
+                        ImGui::Selectable(now, true);
                     }
                     ImGui::EndCombo();
                 }

@@ -295,8 +295,10 @@ model at once, each playing), and each game. In the middle the page's picture; o
 (name, id, height, **Based on**: its template and whose place it takes, one choice, its face), **Card and sounds** (Browse, the system's file
 chooser) and **Save** (**Save**, **Save and play** in a game picked). A game's page has **Prop from** (that game's
 ride or prop and moves from another hero than its template) and **Moves**: for each of the game's moves (KitGames) its
-template's, **own clip** if the model has one (`GAME/MOVE`, a pack loaded to change), or **my MOVE**, one of the tool's moves
-(written as a `GAME/MOVE` clip; a model's own such clip not chosen is left out, `KitPack.drop`). A change of prop or move makes the
+template's, its own copy of it (once it's changed), or **own clip** if the model has one (`GAME/MOVE`, a pack loaded to change; one
+not chosen is left out, `KitPack.drop`). The tool's own moves (**my MOVE**) aren't offered there any more: they never line up with a
+game's (the user's word, 2026-11-22); a pack that has one from before still shows it while it's picked, and `HEROTOOL_OWN` still sets
+one for a test. A change of prop or move makes the
 preview again by itself; other changes show **Update preview**. Its tests' settings: `HEROTOOL_PAGE=N` (-2 the model's, -1 all,
 a kind), `HEROTOOL_OWN=GAME/MOVE=MOVE`.
 
@@ -417,7 +419,7 @@ was made from to the unit (the pogo's BREATHE, from Crash's; on foot, from Corte
 body's shape (1% to 2%, any turn or size aside, against 50% for a move still Cortex's).
 
 In the tool a game's **Moves** says each move's: its template's, **own (from Crash)**, **own clip** (a clip it has, such a copy
-once it's saved), or one of the tool's. Replacing one of its own asks first (**Replace its own move?**: **Keep mine** or **Use
+once it's saved). Replacing one of its own asks first (**Replace its own move?**: **Keep mine** or **Use
 Crash's**), and takes its changes with it. On foot, where it follows a hero, **Own moves** lists them, each with **Use Crash's**
 (asked the same). The page's **Animation** says whose the move is with a tag beside **Edit joints** (**Own move (from Crash)**, green,
 or **Crash's move**; its tooltip says the rest), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change (and after `HEROTOOL_DRAG`'s drag, once it's let go)
