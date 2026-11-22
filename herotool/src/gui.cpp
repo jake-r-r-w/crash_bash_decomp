@@ -248,6 +248,9 @@ struct Tool {
     // its end the way it's dragged), the frame it was taken at, where it was from and to; and the fade being changed (its step taken)
     int key_part = 0, key_grab = 0, key_from = 0, key_to = 0;
     bool fade_step = false;
+    // how a new key fades (PACK_EASE_), and the key copied (Ctrl+C; empty none)
+    int ease = PACK_EASE_SMOOTH;
+    std::vector<PackAdjust> clip;
     int ask_kind = -1, ask_move = -1, ask_to = OWN_TEMPLATE;
     char ask_name[32] = "";
     bool ask_open = false;
@@ -255,6 +258,20 @@ struct Tool {
 enum { KEY_FRAME, KEY_MOVE, KEY_GAME };
 enum { GIZMO_TURN, GIZMO_MOVE, GIZMO_SIZE };
 enum { KEY_BODY, KEY_START, KEY_END, KEY_EITHER };
+
+// Each way a key can fade in and out (PACK_EASE_), as the tool says it, and what it does
+const char *const EaseSays[PACK_EASES] = { "Smooth", "Steady", "Slow start", "Slow finish", "Sudden (no fade)", "Overshoot", "Bounce",
+                                           "Wobble" };
+const char *const EaseTips[PACK_EASES] = {
+    "Eases in and out of its change (as keys always did)",
+    "Fades in and out at an even rate",
+    "Barely changes at first, then quickly into its change",
+    "Changes quickly at first, then settles gently into its change",
+    "All of its change at once on its frames and none either side (its fade's frames don't count)",
+    "Goes a little past its change and back as it arrives",
+    "Bounces into its change",
+    "Springs past its change and back, less each time",
+};
 
 // The kinds of model the game makes (heropack.c's names), as the games call them
 const char *const KindTitles[PACK_KINDS] = { "On foot (Crate Crush, Ring Ding and the others)", "Polar Push: the polar bear", "Pogo",
@@ -1355,8 +1372,91 @@ PackAdjust *adj_key(Tool &T, const char *move, const char *bone, bool make) {
     SDL_strlcpy(a.bone, bone, sizeof(a.bone));
     a.at = at;
     a.spread = T.key_mode == KEY_FRAME ? T.spread : 0;
+    a.ease = T.ease;
     T.adj.push_back(a);
     return &T.adj.back();
+}
+
+// The key picked in the timeline (else the picked joint's at the frame shown) copied, to paste (the user's word, 2026-11-22: "add
+// keyframe copy and paste in the timeline")
+void key_copy(Tool &T) {
+    const KitMade *mk = &T.made[T.kind];
+    const KitPose *po = &T.poses[T.kind];
+    const PackAdjust *k = T.key_sel >= 0 && T.key_sel < (int)T.adj.size() ? &T.adj[T.key_sel] : nullptr;
+
+    if (k == nullptr && T.sel >= 0 && T.sel < po->nbones && mk->nanims > 0) {
+        k = adj_key(T, mk->anims[T.anim < mk->nanims ? T.anim : 0].name, po->names[T.sel], false);
+    }
+    if (k == nullptr) {
+        snprintf(T.status, sizeof(T.status), "Pick a key in the timeline to copy it.");
+        return;
+    }
+    T.clip.assign(1, *k);
+    snprintf(T.status, sizeof(T.status), "Copied %s's key: Ctrl+V pastes it at the frame shown on the joint picked (Ctrl+Shift+V mirrored, "
+             "for its other side).", bone_title(k->bone));
+}
+
+// The key copied pasted onto bone b at frame (a key to the whole move, or every move here, as that): what it changes, its fade, and
+// the frames it's held over, from there. Mirrored, its other side's way (as Mirror to its other side makes it). One there already (at
+// that frame, or to the whole move) is replaced.
+void key_paste(Tool &T, int b, int frame, bool mirrored) {
+    const KitMade *mk = &T.made[T.kind];
+    const KitPose *po = &T.poses[T.kind];
+
+    if (T.clip.empty() || b < 0 || b >= po->nbones || mk->nanims == 0) {
+        snprintf(T.status, sizeof(T.status), T.clip.empty() ? "Copy a key first (pick it in the timeline, then Ctrl+C)." : "Pick a joint to paste onto.");
+        return;
+    }
+    int a = T.anim < mk->nanims ? T.anim : 0, frames = mk->anims[a].frames;
+    PackAdjust k = T.clip[0];
+    char from[PACK_ADJUST_NAME];
+    SDL_strlcpy(from, k.bone, sizeof(from));
+    k.kind = T.kind;
+    if (strcmp(k.move, "*") != 0) {
+        SDL_strlcpy(k.move, mk->anims[a].name, sizeof(k.move));
+    }
+    SDL_strlcpy(k.bone, po->names[b], sizeof(k.bone));
+    if (k.at >= 0) {
+        int len = key_last(k) - k.at;
+        k.at = std::max(0, std::min(frames - 1, frame));
+        k.until = std::min(frames - 1, k.at + len);
+    }
+    if (mirrored) {
+        k.turn[1] = -k.turn[1], k.turn[2] = -k.turn[2];
+        k.reach[0] = -k.reach[0];
+    }
+    int there = -1;
+    for (int i = 0; i < (int)T.adj.size(); i++) {
+        const PackAdjust &x = T.adj[i];
+        if (x.kind == k.kind && x.at == k.at && SDL_strcasecmp(x.move, k.move) == 0 && SDL_strcasecmp(x.bone, k.bone) == 0) {
+            there = i;
+        }
+    }
+    if (there < 0 && T.adj.size() >= PACK_MAX_ADJUSTS) {
+        snprintf(T.status, sizeof(T.status), "That's as many changes as a hero has room for (%d): take some away first.", PACK_MAX_ADJUSTS);
+        return;
+    }
+    char at[40] = "";
+    if (k.at >= 0) {
+        snprintf(at, sizeof(at), " at frame %d", k.at);
+    }
+    if (SDL_strcasecmp(from, k.bone) == 0) {
+        adj_snapshot(T, "Pasted %s's key%s%s", bone_title(from), at, mirrored ? ", mirrored" : "");
+    } else {
+        char was[64];
+        SDL_strlcpy(was, bone_title(from), sizeof(was));
+        adj_snapshot(T, "Pasted %s's key onto %s%s%s", was, bone_title(k.bone), at, mirrored ? ", mirrored" : "");
+    }
+    own_before_change(T, k.move);
+    if (there >= 0) {
+        T.adj[there] = k;
+        T.key_sel = there;
+    } else {
+        T.adj.push_back(k);
+        T.key_sel = (int)T.adj.size() - 1;
+    }
+    T.sel = b;
+    T.frame = k.at >= 0 ? k.at : T.frame;
 }
 
 // A bone's other side (upperarm_l's upperarm_r, ear_l1's ear_r1), or "" if it has none
@@ -1934,9 +2034,17 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             int last = key_last(k);
             float xa = fx((float)k.at), xb = fx((float)last);
             ImU32 col = picked ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 200, 60, 255);
-            if (k.spread > 0) {
-                dl->AddRectFilled(ImVec2(fx((float)(k.at - k.spread)) - cw / 2, y + row * 0.4f), ImVec2(fx((float)(last + k.spread)) + cw / 2, y + row * 0.6f),
-                                  IM_COL32(255, 200, 60, 50));
+            if (k.spread > 0 && k.ease != PACK_EASE_SUDDEN) {
+                // its fade either side as its ease makes it: how much of it there is each frame, up from the row's foot
+                std::vector<ImVec2> pts;
+                float foot = y + row - U(2);
+                for (int g = std::max(0, k.at - k.spread - 1); g <= std::min(frames - 1, last + k.spread + 1); g++) {
+                    pts.push_back(ImVec2(fx((float)g), foot - pack_adjust_share(&k, g) * (row - U(5))));
+                }
+                for (size_t p = 0; p + 1 < pts.size(); p++) {
+                    dl->AddQuadFilled(ImVec2(pts[p].x, foot), pts[p], pts[p + 1], ImVec2(pts[p + 1].x, foot), IM_COL32(255, 200, 60, 35));
+                }
+                dl->AddPolyline(pts.data(), (int)pts.size(), IM_COL32(255, 200, 60, 140), 0, U(1.5f));
             }
             auto diamond = [&](float x) {
                 dl->AddQuadFilled(ImVec2(x, my - s), ImVec2(x + s, my), ImVec2(x, my + s), ImVec2(x - s, my), col);
@@ -1990,6 +2098,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             T.key_mode = k.at >= 0 ? KEY_FRAME : strcmp(k.move, "*") == 0 ? KEY_GAME : KEY_MOVE;
             if (k.at >= 0) {
                 T.spread = k.spread;
+                T.ease = k.ease;
                 T.key_drag = true;
                 T.key_moved = false;
                 T.key_part = part == KEY_BODY && io.KeyShift ? KEY_EITHER : part;
@@ -2066,14 +2175,62 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     if (over && under >= 0 && ImGui::IsMouseClicked(1)) {
         T.key_sel = under;
         ImGui::OpenPopup("key");
+    } else if (over && ImGui::IsMouseClicked(1) && io.MousePos.x >= x0) {
+        // an empty place in a joint's row: that joint and frame, to paste there
+        int r = (int)((io.MousePos.y - o.y - ruler) / row);
+        if (r >= 0 && r < (int)rows.size()) {
+            T.sel = rows[r];
+            T.frame = xf(io.MousePos.x);
+            T.key_sel = -1;
+            T.adj_playing = false;
+            ImGui::OpenPopup("here");
+        }
+    }
+    if (ImGui::BeginPopup("here")) {
+        ImGui::TextDisabled("%s, frame %d", T.sel >= 0 ? bone_title(po->names[T.sel]) : "", T.frame);
+        if (ImGui::MenuItem("Paste here", "Ctrl+V", false, !T.clip.empty())) {
+            key_paste(T, T.sel, T.frame, false);
+        }
+        if (ImGui::MenuItem("Paste here mirrored", "Ctrl+Shift+V", false, !T.clip.empty())) {
+            key_paste(T, T.sel, T.frame, true);
+        }
+        if (T.clip.empty()) {
+            ImGui::TextDisabled("(copy a key first: right-click it, or pick it and Ctrl+C)");
+        }
+        ImGui::EndPopup();
     }
     if (ImGui::BeginPopup("key")) {
         if (T.key_sel >= 0 && T.key_sel < (int)T.adj.size()) {
             PackAdjust &k = T.adj[T.key_sel];
             const char *b = bone_title(k.bone);
-            int last = key_last(k);
+            int last = key_last(k), paste = 0;
             ImGui::TextDisabled("%s", b);
-            if (k.at >= 0) {
+            // copied, or the one copied pasted over it (after the rest of the menu: a paste may move the keys)
+            if (ImGui::MenuItem("Copy", "Ctrl+C")) {
+                key_copy(T);
+            }
+            if (ImGui::MenuItem("Paste over it", nullptr, false, !T.clip.empty())) {
+                paste = 1;
+            }
+            if (ImGui::MenuItem("Paste over it mirrored", nullptr, false, !T.clip.empty())) {
+                paste = 2;
+            }
+            ImGui::Separator();
+            if (k.at >= 0 && ImGui::BeginMenu("Fade")) {
+                // how it fades in and out: each way, the one it has ticked
+                for (int e = 0; e < PACK_EASES; e++) {
+                    if (ImGui::MenuItem(EaseSays[e], nullptr, k.ease == e) && k.ease != e) {
+                        adj_snapshot(T, "Made %s's key fade: %s", b, EaseSays[e]);
+                        k.ease = e;
+                        T.ease = e;
+                    }
+                    ImGui::SetItemTooltip("%s", EaseTips[e]);
+                }
+                ImGui::EndMenu();
+            }
+            if (paste != 0) {
+                key_paste(T, pack_bone_index(po, k.bone), k.at >= 0 ? k.at : T.frame, paste == 2);
+            } else if (k.at >= 0) {
                 // held over more of the move: to its end, from its start, all through it; or its own frame again
                 if (ImGui::MenuItem("Hold it to the end of the move", nullptr, false, last < frames - 1)) {
                     adj_snapshot(T, "Held %s's key from frame %d to %d", b, k.at, frames - 1);
@@ -2806,10 +2963,14 @@ void adjust_panel(Tool &T) {
     ImGui::SameLine();
     ImGui::RadioButton("every move here", &T.key_mode, KEY_GAME);
     if (T.key_mode == KEY_FRAME) {
+        // the picked joint's key here: its fade shown, and changed with these (else they're what a new key gets)
+        PackAdjust *here_key = T.sel >= 0 && T.sel < po->nbones ? adj_key(T, move, po->names[T.sel], false) : nullptr;
+        if (here_key != nullptr && here_key->at >= 0) {
+            T.spread = here_key->spread;
+            T.ease = here_key->ease;
+        }
         ImGui::SetNextItemWidth(U(160));
         bool faded = ImGui::SliderInt("Fades over", &T.spread, 0, 30, "%d frames");
-        // (the picked joint's key here faded so too)
-        PackAdjust *here_key = T.sel >= 0 && T.sel < po->nbones ? adj_key(T, move, po->names[T.sel], false) : nullptr;
         if (ImGui::IsItemActivated()) {
             T.fade_step = false;
         }
@@ -2823,6 +2984,24 @@ void adjust_panel(Tool &T) {
         }
         hint("Either side of the frame (or the frames it's held over): its change is all there there and fades to none this many frames "
              "away.");
+        // how it fades in and out (the user's word, 2026-11-22: "the transion effect should be chooseable")
+        ImGui::SetNextItemWidth(U(160));
+        if (ImGui::BeginCombo("Fades like", EaseSays[T.ease >= 0 && T.ease < PACK_EASES ? T.ease : 0])) {
+            for (int e = 0; e < PACK_EASES; e++) {
+                if (ImGui::Selectable(EaseSays[e], e == T.ease) && e != T.ease) {
+                    T.ease = e;
+                    if (here_key != nullptr && here_key->at >= 0) {
+                        adj_snapshot(T, "Made %s's key fade: %s", bone_title(here_key->bone), EaseSays[e]);
+                        here_key->ease = e;
+                    }
+                }
+                ImGui::SetItemTooltip("%s", EaseTips[e]);
+            }
+            ImGui::EndCombo();
+        }
+        hint("How its change comes and goes over those frames: Smooth eases in and out; Steady at an even rate; Slow start or Slow "
+             "finish; Sudden all at once (no fade); Overshoot goes a little past it and back; Bounce bounces into it; Wobble springs "
+             "past it and back. The timeline draws each key's fade as it is.");
     }
     ImGui::Spacing();
     if (T.sel >= 0 && T.sel < po->nbones) {
@@ -3334,6 +3513,13 @@ void editor_window(Tool &T, SDL_Window *win) {
         if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false)) {
             adj_redo(T);
         }
+        // Ctrl+C copies a key, Ctrl+V pastes it at the frame shown on the joint picked (Ctrl+Shift+V mirrored)
+        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_C, false)) {
+            key_copy(T);
+        }
+        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_V, false)) {
+            key_paste(T, T.sel, T.frame, io.KeyShift);
+        }
         // R, G and S pick the gizmo, as Blender's
         if (!io.KeyCtrl && !T.dragging) {
             T.gizmo = ImGui::IsKeyPressed(ImGuiKey_R, false) ? GIZMO_TURN : ImGui::IsKeyPressed(ImGuiKey_G, false) ? GIZMO_MOVE
@@ -3775,7 +3961,22 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 if (at != nullptr && strchr(at, '-') != nullptr) {
                     k->until = SDL_atoi(strchr(at, '-') + 1);
                 }
+                /* (HEROTOOL_ADJUST_FADE=EASE,N: its fade, hero.json's name for it, over N frames) */
+                if (SDL_getenv("HEROTOOL_ADJUST_FADE") != nullptr) {
+                    char e[32] = "";
+                    int n = k->spread;
+                    SDL_sscanf(SDL_getenv("HEROTOOL_ADJUST_FADE"), "%31[^,],%d", e, &n);
+                    k->ease = pack_ease_named(e) >= 0 ? pack_ease_named(e) : k->ease;
+                    k->spread = n;
+                }
                 T.key_sel = (int)(k - T.adj.data());
+                /* and HEROTOOL_PASTE=FRAME[,M] copies it and pastes it there (M: mirrored), as Ctrl+C and Ctrl+V (Ctrl+Shift+V) do */
+                if (SDL_getenv("HEROTOOL_PASTE") != nullptr) {
+                    int to = 0, mirrored = 0;
+                    SDL_sscanf(SDL_getenv("HEROTOOL_PASTE"), "%d,%d", &to, &mirrored);
+                    key_copy(T);
+                    key_paste(T, T.sel, to, mirrored != 0);
+                }
             }
             /* and HEROTOOL_SHOW_FRAME=N shows that frame after (what HEROTOOL_LIVE writes) */
             if (SDL_getenv("HEROTOOL_SHOW_FRAME") != nullptr) {

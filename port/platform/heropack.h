@@ -49,6 +49,7 @@ typedef struct {
     int at;                         /* the frame of that move it's at, or -1 for every frame */
     int until;                      /* held there to this frame, all of it from at to until ("until"; at or before at: at alone) */
     int spread;                     /* the frames either side it fades out over (0: those frames alone) */
+    int ease;                       /* how it fades in and out there, PACK_EASE_ ("ease"; 0 smooth) */
     float turn[3];                  /* that bone and all on it turned about those axes (degrees, a turn's axis times its angle) */
     float reach[3];                 /* moved (the game's units): a hand or foot, its arm or leg bent to it; the hips, all of it; any
                                      * other bone, it and all on it */
@@ -85,6 +86,14 @@ int16_t *pack_wav_read(const uint8_t *wav, size_t size, int *frames);
 /* Samples as PS1 ADPCM, as the game plays its own (to free), and its bytes */
 uint8_t *pack_adpcm_encode(const int16_t *pcm, int frames, int *bytes);
 void pack_samples_free(int16_t *pcm);
+
+/* How a change fades in and out over its spread (PackAdjust.ease; the user's word, 2026-11-22: "the transion effect should be
+ * chooseable"): smooth (a cosine, the first), steady, slow at its far end, slow into its frames, none (all of it there and none either
+ * side), past it and back, bouncing, wobbling. hero.json's names for them, and a name's number (-1 none). */
+enum { PACK_EASE_SMOOTH, PACK_EASE_LINEAR, PACK_EASE_SLOW_START, PACK_EASE_SLOW_FINISH, PACK_EASE_SUDDEN, PACK_EASE_OVERSHOOT,
+       PACK_EASE_BOUNCE, PACK_EASE_WOBBLE, PACK_EASES };
+const char *pack_ease_name(int ease);
+int pack_ease_named(const char *name);
 
 /* hero.json's text into out; 0 and why (in capitals) if it isn't one. */
 int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, size_t problem_size);

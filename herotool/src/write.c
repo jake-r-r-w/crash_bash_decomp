@@ -395,6 +395,9 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
                         say(&hero, ", \"until\": %d", a->until);
                     }
                     say(&hero, ", \"spread\": %d", a->spread);
+                    if (a->ease != PACK_EASE_SMOOTH) {
+                        say(&hero, ", \"ease\": \"%s\"", pack_ease_name(a->ease));
+                    }
                 }
                 if (turn) {
                     say(&hero, ", \"turn\": [%.4g, %.4g, %.4g]", a->turn[0], a->turn[1], a->turn[2]);

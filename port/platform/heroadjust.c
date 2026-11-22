@@ -109,10 +109,49 @@ float pack_adjust_share(const PackAdjust *a, int frame) {
     /* all of it from at to until, fading either side */
     last = a->until > a->at ? a->until : a->at;
     d = frame < a->at ? a->at - frame : frame > last ? frame - last : 0;
-    if (a->spread <= 0 || d > a->spread) {
+    if (a->spread <= 0 || d > a->spread || a->ease == PACK_EASE_SUDDEN) {
         return d == 0 ? 1.0f : 0.0f;
     }
-    return 0.5f + 0.5f * cosf(3.14159265f * (float)d / (float)(a->spread + 1));
+    if (d == 0) {
+        return 1;
+    }
+    /* how near its frames it is, 0 far (where it's none) to 1 at them, and how much of it there is there, by its ease */
+    {
+        float u = 1 - (float)d / (float)(a->spread + 1), v = u - 1;
+
+        switch (a->ease) {
+        case PACK_EASE_LINEAR:
+            return u;
+        case PACK_EASE_SLOW_START:
+            return u * u;
+        case PACK_EASE_SLOW_FINISH:
+            return 1 - v * v;
+        case PACK_EASE_OVERSHOOT:
+            /* past all of it and back as it comes to its frames (an ease-out "back") */
+            return 1 + 2.70158f * v * v * v + 1.70158f * v * v;
+        case PACK_EASE_BOUNCE: {
+            /* an ease-out bounce: up to all of it, and bouncing off it */
+            float n = 7.5625f, w = 2.75f;
+
+            if (u < 1 / w) {
+                return n * u * u;
+            } else if (u < 2 / w) {
+                u -= 1.5f / w;
+                return n * u * u + 0.75f;
+            } else if (u < 2.5f / w) {
+                u -= 2.25f / w;
+                return n * u * u + 0.9375f;
+            }
+            u -= 2.625f / w;
+            return n * u * u + 0.984375f;
+        }
+        case PACK_EASE_WOBBLE:
+            /* an ease-out elastic: past all of it and back, smaller each time */
+            return powf(2, -10 * u) * sinf((10 * u - 0.75f) * 2.0943951f) + 1;
+        default:
+            return 0.5f + 0.5f * cosf(3.14159265f * (float)d / (float)(a->spread + 1));
+        }
+    }
 }
 
 int pack_bone_named(const PackBones *bones, const char *name) {

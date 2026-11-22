@@ -228,6 +228,24 @@ const char *const PackVoiceJobs[PACK_VOICE_JOBS] = { "name", "laugh", "yelp", "j
 static const char *const KindNames[PACK_KINDS] = { "foot", "polar", "pogo", "ball", "tank", "race", "splash", "mallet", "dino", "kegs", "warp" };
 static const char *const HeroNames[] = { "", "crash", "coco", "cortex", "brio", "tiny", "kong", "dingodile", "rilla" };
 
+static const char *const EaseNames[PACK_EASES] = { "smooth", "linear", "slow-start", "slow-finish", "sudden", "overshoot", "bounce",
+                                                   "wobble" };
+
+const char *pack_ease_name(int ease) {
+    return ease >= 0 && ease < PACK_EASES ? EaseNames[ease] : EaseNames[0];
+}
+
+int pack_ease_named(const char *name) {
+    int e;
+
+    for (e = 0; name != NULL && e < PACK_EASES; e++) {
+        if (SDL_strcasecmp(name, EaseNames[e]) == 0) {
+            return e;
+        }
+    }
+    return -1;
+}
+
 const char *pack_kind_name(int kind) {
     return kind >= 0 && kind < PACK_KINDS ? KindNames[kind] : "";
 }
@@ -354,7 +372,7 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             pk->nstands++;
         }
     }
-    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "until" (held to that frame), "spread",
+    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "until" (held to that frame), "spread", "ease",
        "turn": [x, y, z], "reach": [x, y, z], "scale": [x, y, z]}] */
     {
         const JVal *list = jget(root, "adjust"), *a;
@@ -379,6 +397,8 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             d->until = d->until < d->at ? d->at : d->until > 100000 ? 100000 : d->until;
             d->spread = jint(jget(a, "spread"), 0);
             d->spread = d->spread < 0 ? 0 : d->spread > 200 ? 200 : d->spread;
+            d->ease = pack_ease_named(jstr(jget(a, "ease")));
+            d->ease = d->ease < 0 ? PACK_EASE_SMOOTH : d->ease;
             for (j = 0; j < 3; j++) {
                 const JVal *t = jat(turn, j), *r = jat(reach, j);
 

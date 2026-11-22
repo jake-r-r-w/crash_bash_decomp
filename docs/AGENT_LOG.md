@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: hero tool keys copy and paste (Ctrl+C, Ctrl+V, Ctrl+Shift+V mirrored, and the timeline's menus), and each key's fade
+  is chosen (`"ease"`, `PackAdjust.ease`: smooth, linear, slow-start, slow-finish, sudden, overshoot, bounce, wobble; heroadjust.c's
+  share), drawn in its timeline row. Tool and game the same exactly with a bounce fade and a pasted key.
+
 - 2026-11-22: hero tool keys can be held over frames (`"until"`, `PackAdjust.until`; heroadjust.c's share): drag a held key's ends,
   a picked one's grips or Shift-drag, or right-click to hold it to the end, from the start or all through. An undo history with named
   steps, clicked to go back. Tool and game the same exactly with a held key. Gotcha: `HEROTOOL_DRAG` must keep the mouse after the
