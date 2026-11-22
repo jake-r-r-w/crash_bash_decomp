@@ -30,6 +30,7 @@
 
 int extra_hero_named(const char *id); /* game/main/extraheroes.c: --extra-hero's names */
 void bonus_heroes_dump_to(const char *folder); /* game/main/bonusheroes.c: --dump-hero */
+void bonus_heroes_dump_rides(const char *id);
 int bonus_heroes_have(int extra);
 
 static int Vblanks;
@@ -1082,6 +1083,7 @@ int main(int argc, char **argv) {
         bonus_heroes_dump_to(dump_hero_to);
         mods_apply_files();
         x = extra_hero_named(dump_hero);
+        bonus_heroes_dump_rides(dump_hero);
         printf("dump-hero: %s %s\n", dump_hero, x != 0 && bonus_heroes_have(x) ? "made" : "not made");
         return x != 0 && bonus_heroes_have(x) ? 0 : 1;
     }

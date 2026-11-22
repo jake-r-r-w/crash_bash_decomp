@@ -256,7 +256,11 @@ finds their game data, makes the hero as it does when it loads a pack, writes wh
 window. Each kind's model goes to `FOLDER/ID_KIND.hpv` as `made_write` writes it to the archive (`bonusheroes.c`, `made_dump`:
 its images in RGBA, its faces, every frame of every move), so what the tool shows is what the game draws: the hero with each game's
 ride or prop, any move it has there, turned and slowed at will (`src/preview.c` reads them, `draw_made` draws them textured as the
-PS1 does). Where the game draws part of a ride itself (the tank's hull) that part isn't in the hero's model, so it isn't shown.
+PS1 does). What the game draws beside the hero's model, the Ballistix car round it and the tank under it, is written too
+(`ID_KIND_rideN.hpv`, `bonus_heroes_dump_rides`: a mesh of the game's model placed as that game places it) and drawn with it, still.
+Under each game in the gallery a choice of **whose ride or prop** it has there: its template's, or another hero's (the pogo stick
+or Cortex's jetpack, Tiny's keg ...), written as that kind's `"template"` in hero.json (`--template-in GAME=HERO` from the command
+line); picking one makes it again. Cortex's and Brio's hover board is the game's jets, drawn in the game, not shown here.
 `HEROTOOL_MAKE=KIND` (heropack.c's names: foot, polar, pogo, ...) makes it as the window opens and shows that kind, for tests.
 
 **The command line**: `FOLDER` is a mod: put it in the game's mods folder. What it does, each step for any model (`src/`):

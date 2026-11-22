@@ -1,6 +1,6 @@
 /* The hero tool (docs/HERO_PACKS.md, The hero tool): anyone's glTF model made a hero pack the game plays.
  *
- *   herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--template HERO] [--own GAME/MOVE=MOVE] [--height N]
+ *   herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--template HERO] [--own GAME/MOVE=MOVE] [--template-in GAME=HERO] [--height N]
  *                                                               [--face-head SHARE] [--author NAME]
  *
  * With no arguments, or a model alone, it opens its window (gui.cpp) instead.
@@ -14,7 +14,7 @@
 #include "kit.h"
 
 static void usage(void) {
-    fprintf(stderr, "herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--template HERO] [--own GAME/MOVE=MOVE] [--height N]\n"
+    fprintf(stderr, "herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--prefer HERO] [--template HERO] [--own GAME/MOVE=MOVE] [--template-in GAME=HERO] [--height N]\n"
                     "                [--face-head SHARE] [--author NAME] [--card CARD.png] [--voice JOB=FILE.wav ...]\n"
                     "                [--mod-name NAME]\n"
                     "  HERO: crash, coco, cortex, brio, tiny, kong, dingodile or rilla, whose place it takes if it's free\n"
@@ -83,6 +83,24 @@ int main(int argc, char **argv) {
             p.name = v;
         } else if (strcmp(a, "--template") == 0) {
             p.template_hero = v;
+        } else if (strcmp(a, "--template-in") == 0) {
+            /* GAME=HERO: that game's ride or prop another hero's than its template's (the pogo stick or a jetpack) */
+            static char kinds[PACK_KINDS][64];
+            const char *eq = strchr(v, '=');
+            int k;
+
+            for (k = 0; eq != NULL && k < PACK_KINDS; k++) {
+                if ((size_t)(eq - v) == strlen(pack_kind_name(k)) && SDL_strncasecmp(v, pack_kind_name(k), (size_t)(eq - v)) == 0) {
+                    SDL_strlcpy(kinds[k], eq + 1, sizeof(kinds[k]));
+                    p.kind_template[k] = kinds[k];
+                    break;
+                }
+            }
+            if (eq == NULL || k >= PACK_KINDS) {
+                fprintf(stderr, "herotool: --template-in %s: GAME=HERO, GAME one of foot, polar, pogo, ball, tank, race, splash, mallet, "
+                                "dino, kegs\n", v);
+                return 2;
+            }
         } else if (strcmp(a, "--own") == 0) {
             int n = 0;
 

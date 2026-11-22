@@ -333,7 +333,18 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
                    "        [\"KICK\", \"ATTACK\"], [\"WIN\", \"WIN\", \"loop\"], [\"WIN2\", \"WIN\", \"loop\"], [\"TAUNT_A\", \"TAUNT\"],\n"
                    "        [\"FIRE1\", \"HOLD_THROW\"], [\"FIRE2\", \"HOLD_THROW\"], [\"FIRE3\", \"HOLD_THROW\"], [\"MINE\", \"PICKUP\"],\n"
                    "        [\"RECOIL\", \"HIT\"], [\"TAZING\", \"ATTACK\"], [\"LIGHT\", \"TAUNT\"],\n"
-                   "        [\"HIT\", \"HIT\", \"once\"], [\"DAZED\", \"HIT\", \"once\"], [\"DIE\", \"HIT\", \"once\"]\n      ]\n    }\n  }\n}\n");
+                   "        [\"HIT\", \"HIT\", \"once\"], [\"DAZED\", \"HIT\", \"once\"], [\"DIE\", \"HIT\", \"once\"]\n      ]");
+        if (p->kind_template[0] != NULL) {
+            say(&hero, ",\n      \"template\": \"%s\"", p->kind_template[0]);
+        }
+        say(&hero, "\n    }");
+        /* each other game whose ride or prop is another hero's than its template's */
+        for (int k = 1; k < PACK_KINDS; k++) {
+            if (p->kind_template[k] != NULL) {
+                say(&hero, ",\n    \"%s\": { \"template\": \"%s\" }", pack_kind_name(k), p->kind_template[k]);
+            }
+        }
+        say(&hero, "\n  }\n}\n");
         snprintf(path, sizeof(path), "%s/heroes/%s/hero.json", out, p->id);
         if (!write_file(path, hero.s, hero.n)) {
             snprintf(why, why_size, "can't write %s", path);

@@ -18,7 +18,7 @@ namespace {
 
 const int ViewW = 300, ViewH = 420;
 const int PrevW = 600, PrevH = 560; // the view of what the game made
-const int ThumbW = 220, ThumbH = 205; // each game's in the gallery of them all
+const int ThumbW = 220, ThumbH = 180; // each game's in the gallery of them all
 
 struct View {
     SDL_Texture *tex = nullptr;
@@ -49,6 +49,9 @@ struct Tool {
     // what the game made of it (the preview): each kind's model, the game making it, and what's shown
     KitMade made[PACK_KINDS] = {};
     bool have_made[PACK_KINDS] = {};
+    // what the game draws with it beside its own model in a game (the Ballistix car, the tank): drawn with it, as still
+    KitMade rides[PACK_KINDS][2] = {};
+    int nrides[PACK_KINDS] = {};
     SDL_Process *maker = nullptr;
     char made_dir[1100] = "";
     int kind = 0, anim = 0;
@@ -60,6 +63,8 @@ struct Tool {
     int nown = 0, own_game = 0, own_move = 1, own_ours = 0;
     // the gallery of every game's at once (or one game's, big), and whether the game's been asked to make it for this model yet
     View thumbs[PACK_KINDS];
+    // each game's ride or prop from another hero than its template, -1 its template's (hero.json's kinds' "template")
+    int kind_template[PACK_KINDS] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
     bool gallery = true, made_asked = false;
     // the start screen, till a model's opened or a hero loaded; a loaded hero's mod folder, which Export writes back to
     bool home = true;
@@ -71,6 +76,7 @@ const char *const KindTitles[PACK_KINDS] = { "On foot (Crate Crush, Ring Ding an
                                              "Ballistix: the car", "Tank", "Crash Dash: the race cart", "Splash Dash: the fish",
                                              "Mallet Mash: the mallet", "Dragon Drop: the dino", "Keg Kaboom: the keg", "The podium" };
 
+const int KIND_WARP_TOOL = PACK_KINDS - 1; // the podium: its model on foot's, nothing of its own to pick
 const char *const KindShort[PACK_KINDS] = { "On foot", "Polar Push: bear", "Pogo Painter: pogo", "Ballistix: car", "Tank",
                                             "Crash Dash: cart", "Splash Dash: fish", "Mallet Mash: mallet", "Dragon Drop: dino",
                                             "Keg Kaboom: keg", "The podium" };
@@ -332,6 +338,9 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     p.author = T.author;
     p.prefer = Heroes[T.prefer];
     p.template_hero = Heroes[T.template_hero];
+    for (int k = 0; k < PACK_KINDS; k++) {
+        p.kind_template[k] = T.kind_template[k] >= 0 && T.kind_template[k] < 8 ? Heroes[T.kind_template[k]] : nullptr;
+    }
     for (int o = 0; o < T.nown; o++) {
         p.own[o] = T.own[o];
     }
@@ -382,6 +391,10 @@ void made_forget(Tool &T) {
             kit_made_free(&T.made[k]);
         }
         T.have_made[k] = false;
+        for (int r = 0; r < T.nrides[k]; r++) {
+            kit_made_free(&T.rides[k][r]);
+        }
+        T.nrides[k] = 0;
     }
 }
 
@@ -423,6 +436,12 @@ void made_check(Tool &T) {
         snprintf(path, sizeof(path), "%s/%s_%s.hpv", T.made_dir, T.id, pack_kind_name(k));
         T.have_made[k] = kit_made_read(path, &T.made[k]);
         have += T.have_made[k];
+        for (int r = 0; r < 2; r++) {
+            snprintf(path, sizeof(path), "%s/%s_%s_ride%d.hpv", T.made_dir, T.id, pack_kind_name(k), r);
+            if (kit_made_read(path, &T.rides[k][T.nrides[k]])) {
+                T.nrides[k]++;
+            }
+        }
     }
     T.anim = 0;
     T.made_t = 0;
@@ -433,7 +452,10 @@ void made_check(Tool &T) {
 
 // A made model's frame drawn: its faces textured as the PS1 does (the texel times its corner's colour, 128 as it is), clear texels
 // left out, semi-transparent ones half over what's there. The game's axes are y down, so it's turned up the tool's way.
-void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren) {
+void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &v, int PW, int PH);
+
+// With what the game draws beside it (rides, still: their one frame), fitted to them all
+void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren, const KitMade *rides = nullptr, int nrides = 0) {
     const int PW = v.w > 0 ? v.w : PrevW, PH = v.h > 0 ? v.h : PrevH;
 
     if (v.rgba == nullptr) {
@@ -453,11 +475,14 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     const int16_t *vs = a->verts + (size_t)(frame % a->frames) * m->nvert * 3;
     // fitted to its first move's first frame, so it doesn't jump about as it moves
     float lo[3] = { 1e9f, 1e9f, 1e9f }, hi[3] = { -1e9f, -1e9f, -1e9f };
-    for (int i = 0; i < m->nvert; i++) {
-        float q[3] = { (float)m->anims[0].verts[i * 3], -(float)m->anims[0].verts[i * 3 + 1], -(float)m->anims[0].verts[i * 3 + 2] };
-        for (int c = 0; c < 3; c++) {
-            lo[c] = fminf(lo[c], q[c]);
-            hi[c] = fmaxf(hi[c], q[c]);
+    for (int r = -1; r < nrides; r++) {
+        const KitMade *o = r < 0 ? m : &rides[r];
+        for (int i = 0; o->nanims > 0 && i < o->nvert; i++) {
+            float q[3] = { (float)o->anims[0].verts[i * 3], -(float)o->anims[0].verts[i * 3 + 1], -(float)o->anims[0].verts[i * 3 + 2] };
+            for (int c = 0; c < 3; c++) {
+                lo[c] = fminf(lo[c], q[c]);
+                hi[c] = fmaxf(hi[c], q[c]);
+            }
         }
     }
     float h = hi[1] - lo[1], w = sqrtf((hi[0] - lo[0]) * (hi[0] - lo[0]) + (hi[2] - lo[2]) * (hi[2] - lo[2]));
@@ -465,6 +490,17 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
     float cx = (lo[0] + hi[0]) / 2, cz = (lo[2] + hi[2]) / 2;
     v.ox = PW / 2.0f;
     v.oy = PH * 0.9f + lo[1] * v.scale;
+    raster_made(m, vs, cx, cz, v, PW, PH);
+    for (int r = 0; r < nrides; r++) {
+        if (rides[r].nanims > 0) {
+            raster_made(&rides[r], rides[r].anims[0].verts, cx, cz, v, PW, PH);
+        }
+    }
+    SDL_UpdateTexture(v.tex, nullptr, v.rgba, PW * 4);
+}
+
+// A made model's faces in frame vs, into the view's picture and depth
+void raster_made(const KitMade *m, const int16_t *vs, float cx, float cz, View &v, int PW, int PH) {
     for (int t = 0; t < m->nfaces; t++) {
         const KitMadeFace *f = &m->faces[t];
         const KitMadeImage *im = f->image >= 0 && f->image < m->nimages ? &m->images[f->image] : nullptr;
@@ -533,7 +569,6 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
             }
         }
     }
-    SDL_UpdateTexture(v.tex, nullptr, v.rgba, PW * 4);
 }
 
 // --- the views, with their markers ---
@@ -722,6 +757,10 @@ void load_pack(Tool &T, const Found &f) {
         T.prefer = info.prefer >= 1 && info.prefer <= 8 ? info.prefer - 1 : 0;
         T.template_hero = info.template_hero >= 1 && info.template_hero <= 8 ? info.template_hero - 1 : 0;
         T.face_head = info.face_head;
+        for (int k = 0; k < PACK_KINDS; k++) {
+            int th = info.kinds[k].template_hero;
+            T.kind_template[k] = th >= 1 && th <= 8 && th - 1 != T.template_hero ? th - 1 : -1;
+        }
     }
     SDL_free(text);
     snprintf(path, sizeof(path), "%s/mod.json", f.mod);
@@ -941,8 +980,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             T.home = T.m == nullptr;
         }
         Uint64 now = SDL_GetTicks();
+        float dt = (now - last) / 1000.0f;
+        // the game's models play in the gallery and the big view alike (each move looped at its own length)
+        T.made_t += dt * T.made_speed;
         if (T.m != nullptr && T.playing) {
-            T.t += (now - last) / 1000.0f;
+            T.t += dt;
             if (T.t > KitMoves[T.move].length) {
                 T.t = 0;
             }
@@ -953,7 +995,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             for (int k = 0; k < PACK_KINDS; k++) {
                 if (T.have_made[k] && T.made[k].nanims > 0) {
                     T.thumbs[k].yaw = T.made_turn;
-                    draw_made(&T.made[k], 0, (int)(T.made_t * 30) % T.made[k].anims[0].frames, T.thumbs[k], ren);
+                    draw_made(&T.made[k], 0, (int)(T.made_t * 30) % T.made[k].anims[0].frames, T.thumbs[k], ren, T.rides[k], T.nrides[k]);
                 }
             }
         }
@@ -961,10 +1003,10 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             const KitMade *mk = &T.made[T.kind];
             int a = T.anim < mk->nanims ? T.anim : 0;
 
-            T.made_t += (now - last) / 1000.0f * T.made_speed;
             T.game_view.yaw = T.made_turn;
             // 30 frames a second, as the game plays a move a frame a tick; a kind made with more frames a tick has as many more
-            draw_made(mk, a, mk->nanims > 0 ? (int)(T.made_t * 30) % mk->anims[a].frames : 0, T.game_view, ren);
+            draw_made(mk, a, mk->nanims > 0 ? (int)(T.made_t * 30) % mk->anims[a].frames : 0, T.game_view, ren, T.rides[T.kind],
+                      T.nrides[T.kind]);
         }
         if (T.m != nullptr) {
             // the front and side views at rest, the third playing the move
@@ -1138,6 +1180,25 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                                 ImGui::Dummy(ImVec2(ThumbW + 8, ThumbH + 8));
                             }
                             ImGui::TextUnformatted(T.have_made[k] ? KindShort[k] : "(not made)");
+                            // whose ride or prop it has here: the template's, or another hero's (made again to see it)
+                            if (k != KIND_WARP_TOOL) {
+                                char now[64];
+                                snprintf(now, sizeof(now), "%s's (template)", Heroes[T.template_hero]);
+                                ImGui::SetNextItemWidth(ThumbW + 8);
+                                if (ImGui::BeginCombo("##from", T.kind_template[k] < 0 ? now : Heroes[T.kind_template[k]])) {
+                                    if (ImGui::Selectable(now, T.kind_template[k] < 0)) {
+                                        T.kind_template[k] = -1;
+                                        make_in_game(T);
+                                    }
+                                    for (int h = 0; h < 8; h++) {
+                                        if (h != T.template_hero && ImGui::Selectable(Heroes[h], T.kind_template[k] == h)) {
+                                            T.kind_template[k] = h;
+                                            make_in_game(T);
+                                        }
+                                    }
+                                    ImGui::EndCombo();
+                                }
+                            }
                             ImGui::EndGroup();
                             ImGui::PopID();
                             if (k % 4 != 3 && k + 1 < PACK_KINDS) {

@@ -284,19 +284,25 @@ static void dump_u16(FILE *f, u32 v) {
     fwrite(b, 1, 2, f);
 }
 
-static void made_dump(const MadeModel *m, const u8 *mdl) {
-    s32 i, j, k, x, y;
-    V3 *fv;
-    FILE *f;
+static void made_dump_to(const MadeModel *m, const char *path);
 
+static void made_dump(const MadeModel *m, const u8 *mdl) {
     if (DumpFolder == NULL || DumpCount >= DUMPS) {
         return;
     }
     snprintf(Dumps[DumpCount].path, sizeof(Dumps[DumpCount].path), "%s/made%d.hpv", DumpFolder, DumpCount);
-    if ((f = fopen(Dumps[DumpCount].path, "wb")) == NULL) {
+    Dumps[DumpCount++].mdl = mdl;
+    made_dump_to(m, Dumps[DumpCount - 1].path);
+}
+
+static void made_dump_to(const MadeModel *m, const char *path) {
+    s32 i, j, k, x, y;
+    V3 *fv;
+    FILE *f;
+
+    if ((f = fopen(path, "wb")) == NULL) {
         return;
     }
-    Dumps[DumpCount++].mdl = mdl;
     fwrite("HPV1", 1, 4, f);
     dump_u32(f, (u32)m->nimages);
     for (i = 0; i < m->nimages; i++) {
@@ -355,6 +361,64 @@ static void made_dump(const MadeModel *m, const u8 *mdl) {
     }
     free(fv);
     fclose(f);
+}
+
+/* What the game draws with a hero beside its own model, which the tool's preview draws with it (bonus_heroes_dump_rides): a kind's ride,
+   a mesh of a game's model placed as that game places it against the hero's model (its subengine's place less the hero's): the
+   Ballistix car round it (arkenoid.c: its first subengine, DB_BallsVehicle's 0x2004, the hero its second), and the tank (tank.c's mode
+   5: DB_TankVehicle's 0x2001, the hero itself 0x48 down in its hatch; its 0x2005 is only the gun's sight) */
+static const struct {
+    s32 kind, bank, mesh, dy;
+} Rides[] = {
+    { KIND_BALL, DB_BallsVehicle, 3, 0 },
+    { KIND_TANK, DB_TankVehicle, 0, -0x48 },
+};
+static const GamePart *RidePart;
+static s32 RideDy;
+
+static void rides_frame(void *ctx, s32 anim, s32 f, V3 *out) {
+    s32 k;
+
+    (void)ctx, (void)anim, (void)f;
+    for (k = 0; k < RidePart->nvert; k++) {
+        out[k] = RidePart->rest[RidePart->corner_of[k]];
+        out[k].y += (float)RideDy;
+    }
+}
+
+static s32 ride_keep(void *ctx, const V3 *rest, s32 n, s32 textured) {
+    (void)ctx, (void)rest, (void)n, (void)textured;
+    return 1;
+}
+
+void bonus_heroes_dump_rides(const char *id) {
+    static const MadeAnim Rest = { "REST", 1, 0, 1 };
+    s32 i, n[NUM_KINDS] = { 0 };
+
+    for (i = 0; DumpFolder != NULL && i < (s32)(sizeof(Rides) / sizeof(Rides[0])); i++) {
+        GamePart part;
+        MadeModel mm;
+        char path[600];
+
+        if (!hm_game_part_of(Rides[i].bank, Rides[i].mesh, ride_keep, NULL, &part)) {
+            continue;
+        }
+        memset(&mm, 0, sizeof(mm));
+        mm.faces = part.faces;
+        mm.nfaces = part.nfaces;
+        mm.meshes = 1;
+        mm.images = part.images;
+        mm.nimages = part.nimages;
+        mm.anims = &Rest;
+        mm.nanims = 1;
+        mm.nvert = part.nvert;
+        mm.frame = rides_frame;
+        RidePart = &part;
+        RideDy = Rides[i].dy;
+        snprintf(path, sizeof(path), "%s/%s_%s_ride%d.hpv", DumpFolder, id, pack_kind_name(Rides[i].kind), n[Rides[i].kind]++);
+        made_dump_to(&mm, path);
+        hm_part_free(&part);
+    }
 }
 
 /* A made hero's dumps named by their kinds: FOLDER/<id>_<KIND>.hpv */
