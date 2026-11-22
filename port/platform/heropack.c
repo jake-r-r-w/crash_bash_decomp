@@ -356,6 +356,7 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
         if (jstr(jget(kind, "template")) != NULL && SDL_strcasecmp(jstr(jget(kind, "template")), "own") == 0) {
             pk->template_hero = -1;
         }
+        pk->no_fit = jget(kind, "fit") != NULL && jget(kind, "fit")->type == J_FALSE;
         pk->subframes = jint(jget(kind, "subframes"), 1);
         pk->subframes = pk->subframes < 1 ? 1 : pk->subframes > 4 ? 4 : pk->subframes;
         copy_name(pk->otherwise, sizeof(pk->otherwise), jstr(jget(kind, "otherwise")), 0);
@@ -411,7 +412,7 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
                     const JVal *g = jat(scale, j);
                     float s = g != NULL && g->type == J_NUMBER ? (float)g->number : 1;
 
-                    s = s < 0.1f ? 0.1f : s > 10 ? 10 : s;
+                    s = s < 0 ? 0 : s > 10 ? 10 : s; /* (0: hidden, all of it at its joint) */
                     d->grow[j] = s - 1;
                 }
             }

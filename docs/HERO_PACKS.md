@@ -11,7 +11,8 @@ riding the polar bear (`pack_ride`, through `ride_make`), and in the eight kinds
 (`packfollow.c`): Crash's model of that kind followed frame by frame, as Pinstripe's were made, his tables of where Crash and his
 prop are copied, but posing the pack's own skeleton: its hips on Crash's, its trunk turned as his, each arm reaching (two-bone) for
 his hand, on the grip where there's one, its legs astride as his, on the pegs or the floor where he stands, else sat, and in
-a tank's hatch or a race cart its tail folded away and its legs drawn in to the hatch's width (its arms left where they are); the prop
+a tank's hatch or a race cart its tail folded away and its legs drawn in to the hatch's width (its arms left where they are), unless
+its pack says not (Fit in seat, below: then it's as it's posed, and its maker fits it, hiding bones); the prop
 (painted gunmetal where Pinstripe's was) as it moves, or in its hand where he carries it. Where its body isn't Crash's shape: on the
 pegs its feet go to his soles (his shins stretch as he bounces) and its hips come down to where its legs reach them; what it carries
 turns out of its head (a ball fitted to all of it above its shoulders), and the keg (kept Crash's size) is pushed out of its side, its
@@ -59,6 +60,7 @@ one's.
 - `kinds`: by name, `foot`, `polar`, `pogo`, `ball`, `tank`, `race`, `splash`, `mallet`, `dino`, `kegs`, `warp`. Each has its
   stand-ins for its base's animations (`[from, to, pace]`, pace `stretch`, `loop` or `once`: `HeroKind` in `herodef.h`, and
   EXTRA_HEROES.md, How one plays), `otherwise`, `keep_lift` (0 to 4096), `like` (a hero's name) and `subframes` (1 to 4).
+  `tank` and `race` can say `"fit": false`: not drawn in to sit in the hatch or the cart (the tool's Fit in seat off).
 - `face_head`: the share of its model, from the top, that's its head, for a face drawn from it on the panel and in the select
   (0.36 if it's left out); Bobby's is 0.26, as his long ears hang past his chin. A face drawn so stops where the panel's health bar
   starts.
@@ -66,7 +68,7 @@ one's.
   it doesn't name plays the job it does for the game's own heroes if the pack has that job's sound (0 name, 1 and 6 and 24 laugh, 2 to
   5 yelp, 11, 13 and 21 jump, 12 thud, 15 throw), else its base's.
 - `adjust`: its moves adjusted by hand (Adjusting its moves, below), each `{"kind", "move", "bone", "at", "until", "spread", "ease", "blend", "turn": [x, y,
-  z], "reach": [x, y, z], "scale": [x, y, z]}`.
+  z], "reach": [x, y, z], "scale": [x, y, z]}`. A scale of 0 (0 to 10) makes the bone and all on it nothing: hidden.
 
 ### hero.glb
 
@@ -454,9 +456,20 @@ or, on a blue bar, **Apply to this animation only** (held all through the move s
 easily left on, so it's what a key's made into now (`keys_all_moves`; a change to every move makes them all its own). Under the joint's name, its values set
 it exactly: **Rotate**, **Move** and **Scale** rows of X, Y and Z, each field tinted its axis's colour as Blender's (`xyz_row`; X tips it
 forward, Y leans it to its left, Z turns it to its right; to its left, to its back, up; wider, deeper, taller, 1 as it is: each
-field's tooltip says it); **Reset bone** and **Reset animation**, then the history. (Cut, as doing what's done elsewhere, the user's word,
+field's tooltip says it); **Reset bone**, **Hide** and **Reset animation**, then the history. (Cut, as doing what's done elsewhere, the user's word,
 2026-11-22, "less is more": the panel's Frames row, its Mirror button, its Undo and Redo buttons and its list of keys; the timeline,
 X-Mirror, Paste mirrored, Ctrl+Z and Ctrl+Y and the history do them.)
+
+**Fitting it into the tank or the race cart** (the user's word, 2026-11-22: the game's own squeeze, a pinch where it sits, "needs to be
+done in tool", so people can fit their own heroes however they want). Those two games' pages have **Fit in seat** (`no_fit`, a
+kind's `"fit": false`), on by default: the game's tail folded away and legs drawn in to the hatch's width, as before. Off, it's shown and
+played as it's posed, and fitted by hand: **Hide** (beside Reset bone; `bone_hide`) makes the bone picked, and all on it, nothing in
+every animation of that game, a grey bar in the timeline ("hidden in all animations"); with X-Mirror both sides. It's an ordinary key
+underneath, in all animations with Scale 0 (Scale goes down to 0 for it), so undo takes it back; with a hidden bone picked it's
+**Show**, which puts it back to Scale 1 (a key that did no more goes). Hiding doesn't make the animations its own as other changes in
+all of them do (`own_before_change`): it changes no pose, so they stay its template's. A hidden bone's values are greyed, and the
+clipping finder leaves what's hidden out. Which games can fit comes from the game's .pose (its cut flag, the capability), and the
+tool's preview follows the switch live.
 
 **The tool's words** (the user's word, 2026-11-22: "clean up terminology across the entire tool. moves does not make much sense"):
 an **animation** is what the game plays (BREATHE, RUN ...; the game's code, KitGames and hero.json's "move" still say move), a **bone**

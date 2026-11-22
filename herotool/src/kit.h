@@ -117,6 +117,7 @@ typedef struct {
     const char *id, *name, *prefer, *mod_name, *author;
     const char *template_hero;          /* the original hero it follows in every game, its moves and what it rides or holds (NULL Crash) */
     const char *kind_template[PACK_KINDS]; /* one game's own in place of that (heropack.c's kinds: the pogo stick or a jetpack), NULL as it */
+    int no_fit[PACK_KINDS];               /* a game's "fit": false (not drawn in to sit in a tank's hatch or a race cart) */
     /* its own moves in a game in place of its template's: "KIND/MOVE=OURS", one of the standard moves (KitMoves) written as that game's
        move (a clip named KIND/MOVE, which the game plays in place of following there); NULL ends the list */
     const char *own[KIT_OWN_MOST + 1];

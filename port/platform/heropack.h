@@ -35,6 +35,8 @@ typedef struct {
     int template_hero;              /* the original hero whose model of this kind it follows, its moves and what it rides or holds
                                      * (1 Crash to 8 Rilla Roo; PackInfo.template_hero if 0): docs/HERO_PACKS.md, Templates. -1
                                      * ("own"): none, its own moves there, though it says a template (on foot) */
+    int no_fit;                     /* "fit": false: not drawn in to sit in a tank's hatch or a race cart (its own adjustments fit it,
+                                     * hiding bones: the user's word, 2026-11-22) */
 } PackKind;
 
 /* A change to its pose in a game's move, on top of what the game makes of it there (hero.json's "adjust", made with the hero tool's

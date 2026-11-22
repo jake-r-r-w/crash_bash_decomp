@@ -368,10 +368,14 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
             say(&hero, ",\n      \"template\": \"%s\"", p->kind_template[0]);
         }
         say(&hero, "\n    }");
-        /* each other game whose ride or prop is another hero's than its template's */
+        /* each other game whose ride or prop is another hero's than its template's, or that it isn't drawn in to sit in */
         for (int k = 1; k < PACK_KINDS; k++) {
-            if (p->kind_template[k] != NULL) {
+            if (p->kind_template[k] != NULL && p->no_fit[k]) {
+                say(&hero, ",\n    \"%s\": { \"template\": \"%s\", \"fit\": false }", pack_kind_name(k), p->kind_template[k]);
+            } else if (p->kind_template[k] != NULL) {
                 say(&hero, ",\n    \"%s\": { \"template\": \"%s\" }", pack_kind_name(k), p->kind_template[k]);
+            } else if (p->no_fit[k]) {
+                say(&hero, ",\n    \"%s\": { \"fit\": false }", pack_kind_name(k));
             }
         }
         say(&hero, "\n  }");

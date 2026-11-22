@@ -54,6 +54,7 @@ s32 pack_follow_foot(const char *id, const PackModel *pm, float k, float ground,
 s32 pack_follow_foot_moves(const char *const **names, s32 *frames);
 void pack_follow_foot_frame(s32 move, float f, const char *name, s32 frame, V3 *out);
 void pack_follow_adjusts(const PackAdjust *adj, s32 n);
+void pack_follow_fits(const s32 *no_fit);
 s32 pack_follow_foot_bind(const char *id, const PackModel *pm, float k, float ground);
 void pack_follow_clip_frame(s32 clip, float t, const char *name, s32 frame, V3 *out);
 s32 pack_follow_foot_dump_begin(const MadeAnim *anims, s32 nanims, const s8 *own);
@@ -664,6 +665,14 @@ static s32 make_pack(s32 slot, HeroMade *out) {
     TheFoot.k = (float)s->info.height / (hi - lo);
     TheFoot.ground = lo;
     pack_follow_adjusts(s->info.adjust, s->info.nadjust);
+    {
+        s32 no_fit[PACK_KINDS], k;
+
+        for (k = 0; k < PACK_KINDS; k++) {
+            no_fit[k] = s->info.kinds[k].no_fit;
+        }
+        pack_follow_fits(no_fit);
+    }
 
     /* its images */
     for (i = 0; i < pm.nimages; i++) {

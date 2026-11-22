@@ -684,6 +684,17 @@ void pack_follow_adjusts(const PackAdjust *adj, s32 n) {
     NAdjusts = n;
 }
 
+/* Each kind whose pack says it's not drawn in to sit in a tank's hatch or a race cart (hero.json's kind's "fit": false) */
+static s32 NoFit[PACK_KINDS];
+
+void pack_follow_fits(const s32 *no_fit) {
+    s32 k;
+
+    for (k = 0; k < PACK_KINDS; k++) {
+        NoFit[k] = no_fit != NULL ? no_fit[k] : 0;
+    }
+}
+
 static Packed ThePack;
 
 /* its trunk's frame as it rests: up its spine, across its shoulders, forward */
@@ -907,6 +918,7 @@ static void pose_finish(Packed *p, const Moved *mv, V3 hips_at, s32 cut, const M
     sk.joint = p->pm->joint;
     sk.weight = p->pm->weight;
     sk.part = p->lower;
+    cut = cut && !(p->adj_kind >= 0 && p->adj_kind < PACK_KINDS && NoFit[p->adj_kind]);
     pack_skin_posed(&sk, (const float(*)[3])P, (const float(*)[9])Q, &hips_at.x, cut, S);
     for (k = 0; k < p->n; k++) {
         out[k] = hm_moved(mv, v3(S[k * 3], S[k * 3 + 1], S[k * 3 + 2]));

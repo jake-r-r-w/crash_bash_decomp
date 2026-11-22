@@ -217,6 +217,9 @@ struct Tool {
     View thumbs[PACK_KINDS];
     // each game's ride or prop from another hero than its template, -1 its template's (hero.json's kinds' "template")
     int kind_template[PACK_KINDS] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+    // each game it isn't drawn in to sit in (a tank's hatch, a race cart; hero.json's kind's "fit": false), Fit in seat off: its own
+    // keys fit it, hiding bones (the user's word, 2026-11-22)
+    bool no_fit[PACK_KINDS] = {};
     bool made_asked = false;
     // the start screen, till a model's opened or a hero loaded; a loaded hero's mod folder, which Export writes back to
     bool home = true;
@@ -601,6 +604,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     p.template_hero = Heroes[T.template_hero];
     for (int k = 0; k < PACK_KINDS; k++) {
         p.kind_template[k] = T.kind_template[k] >= 0 && T.kind_template[k] < 8 ? Heroes[T.kind_template[k]] : nullptr;
+        p.no_fit[k] = T.no_fit[k];
     }
     // its own moves on foot: based on Crash, it says no template (as a pack that never did, so one is saved as it was); else on foot "own"
     if (T.foot_own) {
@@ -1095,7 +1099,7 @@ bool adjusted_frame(Tool &T, int kind, int anim, int frame, std::vector<int16_t>
     pack_adjust_pose(T.adj.data(), (int)T.adj.size(), kind, ma->name, frame, &bones, p->trunk, p->P, p->Q);
     PackSkin sk = { po->nvert, po->rest, po->bone, po->joint, po->weight, po->part };
     S.resize((size_t)po->nvert * 3);
-    pack_skin_posed(&sk, (const float(*)[3])p->P, (const float(*)[9])p->Q, p->hips, po->cut, S.data());
+    pack_skin_posed(&sk, (const float(*)[3])p->P, (const float(*)[9])p->Q, p->hips, po->cut && !T.no_fit[kind], S.data());
     out.assign(ma->verts + (size_t)frame * m->nvert * 3, ma->verts + (size_t)(frame + 1) * m->nvert * 3);
     auto put = [&](int v, const float s[3]) {
         for (int i = 0; i < 3; i++) {
@@ -1638,6 +1642,86 @@ void mirror_all(Tool &T, std::vector<PackAdjust *> &keys) {
     keys.clear();
 }
 
+// A key that hides its bone (and all on it) in every animation of its game: one in all of them, Scale 0. The user's word, 2026-11-22:
+// a hero fitted into the tank (or a race cart) as its maker likes, by hiding bones, not by the game's squeeze (Fit in seat)
+bool key_hides(const PackAdjust &k) {
+    return k.at < 0 && strcmp(k.move, "*") == 0 && k.grow[0] <= -1 && k.grow[1] <= -1 && k.grow[2] <= -1;
+}
+
+// The key in all animations here of a bone (if hides, only one that hides it), -1 none
+int game_key(const Tool &T, const char *bone, bool hides) {
+    for (int i = 0; i < (int)T.adj.size(); i++) {
+        const PackAdjust &k = T.adj[i];
+        if (k.kind == T.kind && k.at < 0 && strcmp(k.move, "*") == 0 && SDL_strcasecmp(k.bone, bone) == 0 && (!hides || key_hides(k))) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Each bone of a kind's pose hidden there, by its own key or one of a bone it's on
+std::vector<char> hidden_bones(const Tool &T, int kind) {
+    const KitPose *po = &T.poses[kind];
+    std::vector<char> h((size_t)std::max(0, po->nbones), 0);
+    for (const PackAdjust &k : T.adj) {
+        int b;
+        if (k.kind == kind && key_hides(k) && (b = pack_bone_index(po, k.bone)) >= 0) {
+            h[b] = 1;
+        }
+    }
+    for (int b = 0; b < po->nbones; b++) {
+        for (int p = po->parent[b], n = 0; p >= 0 && n < po->nbones && !h[b]; p = po->parent[p], n++) {
+            h[b] = h[p];
+        }
+    }
+    return h;
+}
+
+// A bone hidden in every animation of this game, or shown again (and its other side, with X-Mirror), a step of the history: its key in
+// all of them made Scale 0 (one made if it has none), or put back to Scale 1 (and gone if it changes nothing else). Its animations
+// aren't made its own first (own_before_change): hiding changes no pose, so they stay its template's.
+void bone_hide(Tool &T, const char *bone, bool hide) {
+    char other[PACK_ADJUST_NAME] = "";
+    if (T.xmirror && other_side(bone)[0] != 0 && pack_bone_index(&T.poses[T.kind], other_side(bone)) >= 0) {
+        SDL_strlcpy(other, other_side(bone), sizeof(other));
+    }
+    adj_snapshot(T, hide ? "Hid %s" : "Showed %s", bone_title(bone));
+    for (const char *n : { bone, (const char *)other }) {
+        if (n[0] == 0) {
+            continue;
+        }
+        int i = game_key(T, n, !hide);
+        if (hide && i < 0) {
+            if (T.adj.size() >= PACK_MAX_ADJUSTS) {
+                snprintf(T.status, sizeof(T.status), "No room for more keys (%d)", PACK_MAX_ADJUSTS);
+                break;
+            }
+            PackAdjust a = {};
+            a.kind = T.kind;
+            SDL_strlcpy(a.move, "*", sizeof(a.move));
+            SDL_strlcpy(a.bone, n, sizeof(a.bone));
+            a.at = -1, a.until = -1;
+            T.adj.push_back(a);
+            i = (int)T.adj.size() - 1;
+        }
+        if (i < 0) {
+            continue;
+        }
+        PackAdjust &k = T.adj[i];
+        for (int c = 0; c < 3; c++) {
+            k.grow[c] = hide ? -1 : 0;
+        }
+        bool nothing = true;
+        for (int c = 0; c < 3; c++) {
+            nothing = nothing && k.turn[c] == 0 && k.reach[c] == 0;
+        }
+        if (!hide && nothing) {
+            T.adj.erase(T.adj.begin() + i);
+        }
+    }
+    keys_only(T, -1);
+}
+
 // The keys picked (else the picked joint's at the frame shown) copied, to paste (the user's word, 2026-11-22: "add keyframe copy and
 // paste in the timeline")
 void key_copy(Tool &T) {
@@ -2043,15 +2127,17 @@ void clip_points(Tool &T, int kind, const int16_t *vs, const float *J, std::vect
         capsule_ends(po, Clips.caps[c], J, &A[c * 3], &B[c * 3]);
     }
     out.clear();
+    // (what's hidden neither clips nor is clipped)
+    std::vector<char> hid = hidden_bones(T, kind);
     for (int v = 0; v < po->nvert + std::max(0, nprop); v++) {
         int own = v < po->nvert ? Clips.dom[v] : po->hand;
-        if (own < 0 || own >= nb) {
+        if (own < 0 || own >= nb || hid[own]) {
             continue;
         }
         float p[3] = { (float)vs[v * 3], (float)vs[v * 3 + 1], (float)vs[v * 3 + 2] };
         for (size_t c = 0; c < Clips.caps.size(); c++) {
             const Capsule &k = Clips.caps[c];
-            if (k.r <= 0 || Clips.gap[(size_t)own * nb + k.bone] <= 2) {
+            if (k.r <= 0 || Clips.gap[(size_t)own * nb + k.bone] <= 2 || hid[k.bone]) {
                 continue;
             }
             if (seg_dist(p, &A[c * 3], &B[c * 3]) < k.r) {
@@ -2076,6 +2162,7 @@ void clip_scan(Tool &T, int kind, int anim) {
             said = (said ^ b[i]) * 1099511628211ull;
         }
     }
+    said = (said ^ (unsigned char)T.no_fit[kind]) * 1099511628211ull;
     if (Clips.anim == anim && Clips.said == said && (int)Clips.count.size() == T.made[kind].anims[anim].frames) {
         return;
     }
@@ -2620,8 +2707,10 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             }
             bool picked = key_picked(T, i);
             if (k.at < 0) {
-                // the whole move (green) or every move here (blue): a bar
-                ImU32 col = strcmp(k.move, "*") == 0 ? IM_COL32(90, 140, 230, picked ? 255 : 150) : IM_COL32(110, 200, 110, picked ? 255 : 150);
+                // the whole move (green) or every move here (blue): a bar; grey, one that hides its bone
+                ImU32 col = key_hides(k)               ? IM_COL32(130, 130, 140, picked ? 255 : 150)
+                            : strcmp(k.move, "*") == 0 ? IM_COL32(90, 140, 230, picked ? 255 : 150)
+                                                       : IM_COL32(110, 200, 110, picked ? 255 : 150);
                 ImVec2 lo(x0, y + row * 0.35f), hi(o.x + width - U(2), y + row * 0.65f);
                 dl->AddRectFilled(lo, hi, col, U(3));
                 hits.push_back({ i, KEY_BODY, lo, hi });
@@ -2920,6 +3009,8 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         } else if (k.at >= 0) {
             ImGui::SetTooltip("%s  %d  %s %d%s\nShift-drag: stretch   Ctrl-click: pick more", bone_title(k.bone), k.at, EaseSays[k.ease], k.spread,
                               k.blend ? "  blend" : "");
+        } else if (key_hides(k)) {
+            ImGui::SetTooltip("%s  hidden in all animations", bone_title(k.bone));
         } else {
             ImGui::SetTooltip("%s  %s\nRight-click: %s", bone_title(k.bone), strcmp(k.move, "*") == 0 ? "all animations" : "whole animation",
                               strcmp(k.move, "*") == 0 ? "Apply to this animation only" : "Apply to all animations");
@@ -3275,6 +3366,7 @@ void load_pack(Tool &T, const Found &f) {
         for (int k = 0; k < PACK_KINDS; k++) {
             int th = info.kinds[k].template_hero;
             T.kind_template[k] = th >= 1 && th <= 8 && th - 1 != T.template_hero ? th - 1 : -1;
+            T.no_fit[k] = info.kinds[k].no_fit != 0;
         }
         T.foot_own = !info.template_said || info.kinds[0].template_hero < 0;
     }
@@ -3874,10 +3966,17 @@ void adjust_panel(Tool &T) {
                                                  "Up (its arm or leg bends to follow)" };
         float t3[3] = { turn[0], turn[2], turn[1] }, m3[3] = { reach[0], reach[2], -reach[1] + 0.0f }, s3[3] = { size[0], size[2], size[1] };
         bool taken_t = false, taken_m = false, taken_s = false;
+        // (hidden, by its own key or one on a bone it's on: its values change nothing that shows, so they're greyed)
+        bool hidden = game_key(T, bone, true) >= 0, unseen = hidden;
+        if (T.sel >= 0 && T.sel < T.poses[T.kind].nbones) {
+            unseen = unseen || hidden_bones(T, T.kind)[T.sel];
+        }
+        ImGui::BeginDisabled(unseen);
         bool changed_t = xyz_row("Rotate", t3, 0.5f, -180, 180, "%.1f", TurnSays, &taken_t);
         bool hand = reach_bone(bone) && SDL_strcasecmp(bone, "hips") != 0;
         bool changed_m = xyz_row("Move", m3, 0.5f, -500, 500, "%.1f", hand ? HandSays : MoveSays, &taken_m);
-        bool changed_s = xyz_row("Scale", s3, 0.01f, 0.1f, 10, "%.2f", SizeSays, &taken_s);
+        bool changed_s = xyz_row("Scale", s3, 0.01f, 0, 10, "%.2f", SizeSays, &taken_s);
+        ImGui::EndDisabled();
         if (taken_t) {
             adj_snapshot(T, "Rotated %s", bone_title(bone));
         }
@@ -3900,7 +3999,7 @@ void adjust_panel(Tool &T) {
             memcpy(k->turn, turn, sizeof(turn));
             memcpy(k->reach, reach, sizeof(reach));
             for (int i = 0; i < 3; i++) {
-                k->grow[i] = fmaxf(0.1f, fminf(10, size[i])) - 1;
+                k->grow[i] = fmaxf(0, fminf(10, size[i])) - 1;
             }
             mirror_edit(T, (int)(k - T.adj.data()), k->at);
         }
@@ -3919,6 +4018,11 @@ void adjust_panel(Tool &T) {
             keys_only(T, -1);
         }
         ImGui::SetItemTooltip("Remove this bone's keys in %s", move);
+        ImGui::SameLine();
+        if (ImGui::Button(hidden ? "Show" : "Hide")) {
+            bone_hide(T, bone, !hidden);
+        }
+        ImGui::SetItemTooltip(hidden ? "Show it again" : "Hide it, and all on it, in every animation of this game");
         ImGui::SameLine();
     } else {
         ImGui::TextDisabled("Click a bone in the picture");
@@ -4074,6 +4178,14 @@ void editor_right(Tool &T, SDL_Window *win) {
             }
         } else {
             ImGui::TextDisabled("Made from On foot's animations");
+        }
+        // where it sits in something (a tank's hatch, a race cart): drawn in to fit, as the game's heroes are, or as it's posed
+        if (T.have_pose[k] && T.poses[k].cut) {
+            bool fit = !T.no_fit[k];
+            if (ImGui::Checkbox("Fit in seat", &fit)) {
+                T.no_fit[k] = !fit;
+            }
+            ImGui::SetItemTooltip("Squeezed in to sit, as the game's heroes are. Off: as you pose it (Hide bones to fit it)");
         }
         ImGui::Spacing();
         if (g >= 0) {
@@ -4679,6 +4791,16 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                 T.sel = SDL_strcasecmp(T.poses[T.kind].names[b], bone) == 0 ? b : T.sel;
             }
             adjust_set = true;
+            /* and HEROTOOL_HIDE=1 hides it, as Hide does (with X-Mirror if HEROTOOL_XMIRROR; 2: and shows it again); HEROTOOL_NOFIT=1 turns
+               Fit in seat off */
+            if (SDL_getenv("HEROTOOL_HIDE") != nullptr && T.sel >= 0) {
+                T.xmirror = SDL_getenv("HEROTOOL_XMIRROR") != nullptr;
+                bone_hide(T, T.poses[T.kind].names[T.sel], true);
+                if (SDL_atoi(SDL_getenv("HEROTOOL_HIDE")) == 2) {
+                    bone_hide(T, T.poses[T.kind].names[T.sel], false);
+                }
+            }
+            T.no_fit[T.kind] = SDL_getenv("HEROTOOL_NOFIT") != nullptr ? true : T.no_fit[T.kind];
             /* and HEROTOOL_ADJUST_TURN / _REACH / _SCALE=X,Y,Z changes it there, as the panel's values would; _GIZMO=N picks gizmo N */
             const char *turn = SDL_getenv("HEROTOOL_ADJUST_TURN"), *reach = SDL_getenv("HEROTOOL_ADJUST_REACH");
             const char *size = SDL_getenv("HEROTOOL_ADJUST_SCALE");

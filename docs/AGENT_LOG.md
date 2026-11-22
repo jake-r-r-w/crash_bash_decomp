@@ -667,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the tank's and race cart's squeeze is the pack's choice (the user: fitting a hero in "needs to be done in tool"):
+  **Fit in seat** on those pages (on by default; hero.json's kind `"fit": false` off, honoured by packfollow.c's `pose_finish`), and
+  **Hide** / **Show** in the posing panel: a key in all animations with Scale 0 (Scale goes to 0 now), grey in the timeline, X-Mirror
+  both sides, undoable, not made its own. Tool against game 0 apart in the tank (thighs hidden, fit off) and the cart (tail hidden).
+
 - 2026-11-22: the hero tool's words made one set (the user: "moves does not make much sense"): animation (not move), bone while
   posing (joints only on the model's page), Rotate / Move / Scale as Blender's, Edit pose, Reset bone and Reset animation, In all
   animations, and history steps to match. Only what's shown changed; the code and hero.json keep "move". HERO_PACKS.md, The tool's words.
