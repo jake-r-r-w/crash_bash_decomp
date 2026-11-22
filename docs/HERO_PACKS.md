@@ -292,13 +292,14 @@ previews and zoom in a folder of its own (not the open tool's).
 **The editor** (2026-11-22, the user's word: one window, simple; a UX pass): three columns. On the left the hero's pages: **Model
 and joints** (its rig, or the dots to place on its joints, and the tool's own moves on it), **All games at a glance** (every kind of
 model at once, each playing), and each game. In the middle the page's picture; on the right its choices, then **Hero details**
-(name, id, height, **Based on**: its template and whose place it takes, one choice, its face), **Card and sounds** (Browse, the system's file
-chooser) and **Save** (**Save**, **Save and play** in a game picked). A game's page has **Prop from** (that game's
-ride or prop and moves from another hero than its template) and **Moves**: for each of the game's moves (KitGames) its
-template's, its own copy of it (once it's changed), or **own clip** if the model has one (`GAME/MOVE`, a pack loaded to change; one
-not chosen is left out, `KitPack.drop`). The tool's own moves (**my MOVE**) aren't offered there any more: they never line up with a
-game's (the user's word, 2026-11-22); a pack that has one from before still shows it while it's picked, and `HEROTOOL_OWN` still sets
-one for a test. A change of prop or move makes the
+(name, id, height, **Based on**: its template and whose place it takes, one choice), **Card and sounds** (Browse, the system's file
+chooser; **Face**, how much of it from the top is its head for its face, shown only with no card) and **Save** (**Save**, **Save and play** in a game picked). A game's page has **Prop from** (that game's
+ride or prop and moves from another hero than its template) and **Own moves**: only the game's moves (KitGames) that are its own
+there, its own copy of its template's (once it's changed: **from Crash**) or its clip (`GAME/MOVE`, a pack loaded to change; one given
+up is left out, `KitPack.drop`), each with **Use Crash's**; with none, a line says it has its template's (the user's word,
+2026-11-22: "less is more"; a row a move, most of them its template's, said nothing). The tool's own moves (**my MOVE**) aren't
+offered: they never line up with a game's; a pack that has one from before still lists it, to give it up, and `HEROTOOL_OWN` still
+sets one for a test. A change of prop or move makes the
 preview again by itself; other changes show **Update preview**. Its tests' settings: `HEROTOOL_PAGE=N` (-2 the model's, -1 all,
 a kind), `HEROTOOL_OWN=GAME/MOVE=MOVE`.
 
@@ -418,8 +419,8 @@ followed move's do, and what it carries is turned out of its head (`carry_clear`
 was made from to the unit (the pogo's BREATHE, from Crash's; on foot, from Cortex's), and on Cortex's pogo the same BREATHE keeps its
 body's shape (1% to 2%, any turn or size aside, against 50% for a move still Cortex's).
 
-In the tool a game's **Moves** says each move's: its template's, **own (from Crash)**, **own clip** (a clip it has, such a copy
-once it's saved). Replacing one of its own asks first (**Replace its own move?**: **Keep mine** or **Use
+In the tool a game's **Own moves** lists its own there: **from Crash** (such a copy) or **its clip** (a clip it has, such a copy once
+it's saved). Giving one of its own back asks first (**Replace its own move?**: **Keep mine** or **Use
 Crash's**), and takes its changes with it. On foot, where it follows a hero, **Own moves** lists them, each with **Use Crash's**
 (asked the same). The page's **Animation** says whose the move is with a tag beside **Edit joints** (**Own move (from Crash)**, green,
 or **Crash's move**; its tooltip says the rest), and changing **Based on** says how many of its own stay. `HEROTOOL_SAVE_TO=FOLDER` saves after `HEROTOOL_ADJUST`'s change (and after `HEROTOOL_DRAG`'s drag, once it's let go)
@@ -445,13 +446,14 @@ line red and its Y line green, drawn where the model doesn't hide it. In its top
 (`view_axes`): each axis lettered at its end, plain at the other; clicking one looks from there (the keypad's 1 from its front, 3
 from its left side, 7 from above, with Ctrl from the other side; `view_from`), its front at the bottom from above. The picture is
 fitted to how tall the model looks from the view's tilt, its middle in the picture's. The right mouse button turns the view (to
-straight above or below), so an arrow or ring can be had from any side. **Key** says what a change is made to: **Frame** (fading
-over the frames picked), **Move** (the whole move) or **All moves** (every move in the game). Under the joint's name, its values set
+straight above or below), so an arrow or ring can be had from any side (the pictures' Turn sliders went: right-drag does it). A change
+is made to the frame shown, fading either side, or with **All moves** ticked to every move in the game (a key to the whole move, from
+before, a green bar, is still changed when it's picked, but not made: a key stretched over the move does it). Under the joint's name, its values set
 it exactly: **Turn**, **Move** and **Size** rows of X, Y and Z, each field tinted its axis's colour as Blender's (`xyz_row`; X tips it
 forward, Y leans it to its left, Z turns it to its right; to its left, to its back, up; wider, deeper, taller, 1 as it is: each
-field's tooltip says it); **Mirror** gives its changes in this move to its other side the other way round (its size as it is);
-**Reset joint**, **Undo**, **Redo**, **Reset move**, the history, and **Keys (N)**, its keys in the move, folded away (picking one
-goes to it).
+field's tooltip says it); **Reset joint** and **Reset move**, then the history. (Cut, as doing what's done elsewhere, the user's word,
+2026-11-22, "less is more": the panel's Frames row, its Mirror button, its Undo and Redo buttons and its list of keys; the timeline,
+X-Mirror, Paste mirrored, Ctrl+Z and Ctrl+Y and the history do them.)
 
 The tool says as little as it can (the user's word, 2026-11-22: "its very wordy for a visual tool"): a word or two for a control,
 what it does in its tooltip, one (?) (the animation's controls card), short messages on the top bar, and no paragraphs; the right's
@@ -495,7 +497,7 @@ head-dips put his jaw into his chest, and the mallet's ATTACK its handle through
 key by its bar) to move it to other frames. To hold one over more frames or fewer: drag a held key's end, or a picked key's grips
 (the white bars either side), or Shift and drag a key the way it's to go. Right-click a key for **Copy**, **Paste**, **Paste
 mirrored**, **Fade**, **Stretch to end**, **Stretch to start**, **Stretch to whole move**, **Single frame** and **Delete** (or press
-Delete). The panel's **Frames** row says a held key's first and last frames (to type or drag) with **All**; a change made at any
+Delete). A change made at any
 frame it's held over is made to it (`adj_key`), so its head made bigger anywhere there is bigger all the way. The fade picked
 (**Fade**: its frames, its curve: Smooth, Steady, Slow start, Slow finish, Sudden, Overshoot, Bounce, Wobble, and **Blend**: into
 the joint's next key, a blue line to it in the timeline; right-click a key for **Blend into next** too) is the picked
@@ -511,7 +513,7 @@ panel says to click one; a value changed then stops it and makes a key at the fr
 **Copy and paste** (the user's word, 2026-11-22: "add keyframe copy and paste in the timeline"): Ctrl+C (or right-click, **Copy**)
 copies the keys picked (else the picked joint's at the frame shown); Ctrl+V pastes them at the frame shown (the first there, the rest
 as far after it as they were), each with its change, its fade and the frames it's held over: copied from one joint, onto the joint
-picked; from several, each onto its own (mirrored, each onto its other side: a left ear's keys made the right ear's in one go). Ctrl+Shift+V pastes them mirrored, each its other side's way (as **Mirror**: across, and its
+picked; from several, each onto its own (mirrored, each onto its other side: a left ear's keys made the right ear's in one go). Ctrl+Shift+V pastes them mirrored, each its other side's way (as X-Mirror makes it: across, and its
 turns about up and front to back, the other way). Right-click an empty place in a joint's row for **Paste here** (or **Paste
 mirrored**) at that frame, or a key for **Paste** over it. A key there already (at that frame, or to the whole move) is replaced; a
 key to the whole move or every move here pastes as that (`key_copy`, `key_paste`).

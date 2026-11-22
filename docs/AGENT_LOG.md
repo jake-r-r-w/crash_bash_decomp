@@ -667,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool cut down more ("less is more", the user): a game's page lists only its own moves (each with Use
+  Crash's), the pictures' Turn sliders went (right-drag), the panel's Key radios are an All moves box, and its Frames row, Mirror,
+  Undo/Redo and keys list went (the timeline, X-Mirror, Paste mirrored, Ctrl+Z/Y and the history do them); Face is under Card and
+  sounds, shown only with no card.
+
 - 2026-11-22: five hero tool features at the user's word: keys that blend into the next (`"blend"`, `pack_adjust_share_among` in
   heroadjust.c, the game too), the timeline's zoom and snapping, X-Mirror, onion skin, and a clipping finder (capsule cores per part,
   red points and a timeline strip). Each checked by scripted drags and against the game where it changes the pack; a frame with onion
