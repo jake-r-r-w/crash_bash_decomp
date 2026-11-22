@@ -1247,8 +1247,8 @@ void keys_all(Tool &T, const char *move) {
 
 void adj_snapshot(Tool &T, const char *says, ...);
 
-// The keys picked made every move's in this game ("In all animations": each a change at every frame of every move here, a blue bar), or
-// game-wide ones made this move's alone ("Just this animation": held all through it). The user's word, 2026-11-22: All moves as a box was a
+// The keys picked made every move's in this game ("Apply to all animations": each a change at every frame of every move here, a blue bar), or
+// game-wide ones made this move's alone ("Apply to this animation only": held all through it). The user's word, 2026-11-22: All moves as a box was a
 // mode left on by mistake; it's what a key's made into now. A change to every move makes them all its own (own_before_change).
 void own_before_change(Tool &T, const char *move);
 void keys_all_moves(Tool &T, bool all) {
@@ -1269,9 +1269,9 @@ void keys_all_moves(Tool &T, bool all) {
         return;
     }
     if (todo.size() == 1) {
-        adj_snapshot(T, all ? "Put %s's key in all animations" : "Put %s's key in this animation only", bone_title(T.adj[todo[0]].bone));
+        adj_snapshot(T, all ? "Applied %s's key to all animations" : "Applied %s's key to this animation only", bone_title(T.adj[todo[0]].bone));
     } else {
-        adj_snapshot(T, all ? "Put %d keys in all animations" : "Put %d keys in this animation only", (int)todo.size());
+        adj_snapshot(T, all ? "Applied %d keys to all animations" : "Applied %d keys to this animation only", (int)todo.size());
     }
     own_before_change(T, all ? "*" : move);
     for (int i : todo) {
@@ -2922,7 +2922,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                               k.blend ? "  blend" : "");
         } else {
             ImGui::SetTooltip("%s  %s\nRight-click: %s", bone_title(k.bone), strcmp(k.move, "*") == 0 ? "all animations" : "whole animation",
-                              strcmp(k.move, "*") == 0 ? "Just this animation" : "In all animations");
+                              strcmp(k.move, "*") == 0 ? "Apply to this animation only" : "Apply to all animations");
         }
     }
     if (over && under >= 0 && ImGui::IsMouseClicked(1)) {
@@ -3015,14 +3015,14 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             for (int i : ks) {
                 (strcmp(T.adj[i].move, "*") == 0 ? game : here) = true;
             }
-            if (here && ImGui::MenuItem("In all animations")) {
+            if (here && ImGui::MenuItem("Apply to all animations")) {
                 keys_all_moves(T, true);
             }
-            ImGui::SetItemTooltip("The change at every frame of every animation in this game (a blue bar)");
-            if (game && ImGui::MenuItem("Just this animation")) {
+            ImGui::SetItemTooltip("Select to apply this change to all animations in this game");
+            if (game && ImGui::MenuItem("Apply to this animation only")) {
                 keys_all_moves(T, false);
             }
-            ImGui::SetItemTooltip("The change in this animation alone, all through it");
+            ImGui::SetItemTooltip("Select to apply this change to this animation only");
             if (paste != 0) {
                 key_paste(T, pack_bone_index(po, k.bone), k.at >= 0 ? k.at : T.frame, paste == 2);
             } else if (!fk.empty()) {

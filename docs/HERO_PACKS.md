@@ -449,8 +449,8 @@ fitted to how tall the model looks from the view's tilt, its middle in the pictu
 straight above or below), so an arrow or ring can be had from any side (the pictures' Turn sliders went: right-drag does it). A change
 is made to the key picked if it's the joint's and covers the frame shown, else to a key at the frame shown, fading either side; a bar
 picked (every frame: a blue one every move in the game, a green one, from before, its whole move) takes the change, and the joint's
-heading says so ("Head, all animations"). Right-click a key for **In all animations** (the keys picked made every move's in the game, a blue bar)
-or, on a blue bar, **Just this animation** (held all through the move shown); the user's word, 2026-11-22: All moves as a box was a mode
+heading says so ("Head, all animations"). Right-click a key for **Apply to all animations** (the keys picked made every move's in the game, a blue bar)
+or, on a blue bar, **Apply to this animation only** (held all through the move shown); the user's word, 2026-11-22: All moves as a box was a mode
 easily left on, so it's what a key's made into now (`keys_all_moves`; a change to every move makes them all its own). Under the joint's name, its values set
 it exactly: **Rotate**, **Move** and **Scale** rows of X, Y and Z, each field tinted its axis's colour as Blender's (`xyz_row`; X tips it
 forward, Y leans it to its left, Z turns it to its right; to its left, to its back, up; wider, deeper, taller, 1 as it is: each
