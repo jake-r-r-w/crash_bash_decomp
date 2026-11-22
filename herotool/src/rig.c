@@ -122,6 +122,25 @@ typedef struct {
     float w[KB_COUNT];
 } Weights;
 
+/* What hangs off a hero (its ears, jaw and tail): each part's bones (first to last) and the bone it hangs from */
+static const struct {
+    int first, last, from;
+} Hanging[] = {
+    { KB_EAR_L1, KB_EAR_L2, KB_HEAD }, { KB_EAR_R1, KB_EAR_R2, KB_HEAD }, { KB_JAW, KB_JAW, KB_HEAD }, { KB_TAIL1, KB_TAIL3, KB_HIPS },
+};
+
+/* which of those parts a bone's in, or -1 */
+static int hanging(int b) {
+    int i;
+
+    for (i = 0; i < (int)(sizeof(Hanging) / sizeof(Hanging[0])); i++) {
+        if (b >= Hanging[i].first && b <= Hanging[i].last) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 void kit_weigh(KitModel *m) {
     float height = m->hi[1] - m->lo[1], middle = (m->hi[0] - m->lo[0]) * 0.02f, eps = height * 0.01f;
     Weights *W = calloc(m->nvert, sizeof(Weights)), *next = calloc(m->nvert, sizeof(Weights));
@@ -255,6 +274,33 @@ void kit_weigh(KitModel *m) {
             if (same[v] == v) {
                 W[v] = next[v];
             }
+        }
+    }
+    /* what hangs off it (an ear, the jaw, the tail) goes only with its own bones and the one it hangs from, and the rest of it never
+     * with those: its second nearest bone over the surface, and the smoothing, gave an ear's lower half its chest and arms, so its ears
+     * went with its shoulders (the user's word, 2026-11-22) */
+    for (v = 0; v < m->nvert; v++) {
+        int top = 0, part, in, from;
+        float sum = 0;
+
+        if (same[v] != v) {
+            continue;
+        }
+        for (b = 1; b < KB_COUNT; b++) {
+            top = W[v].w[b] > W[v].w[top] ? b : top;
+        }
+        part = hanging(top);
+        for (b = 0; b < KB_COUNT; b++) {
+            in = hanging(b);
+            from = in >= 0 ? Hanging[in].from : -1;
+            /* a part's corner: its part and what it hangs from; any other corner: no part's bones, but where it's what they hang from */
+            if (part >= 0 ? !(in == part || b == Hanging[part].from) : (in >= 0 && top != from)) {
+                W[v].w[b] = 0;
+            }
+            sum += W[v].w[b];
+        }
+        for (b = 0; b < KB_COUNT && sum > 0; b++) {
+            W[v].w[b] /= sum;
         }
     }
     /* the four biggest of each place's, for each of its copies */

@@ -234,6 +234,10 @@ his head, behind the flaps and short of their ends, so most of each long flap we
 Now each ear's two bones run down the middle of its flap, from its root on his head to its end beside his cheek, and the tool counts an
 ear as wide as a head (`Wide`, rig.c: a flap is wide, its corners far from its bone), so each flap goes with its own ear, the top half
 with the first bone and the lower half with the second.
+Then still "his ears are attached to his shoulders": a corner goes with the two bones nearest it over the surface, smoothed, and for
+most of an ear's that second was his chest (an arm's for some), so as his arms or chest moved the flaps' ends went with them. Now what
+hangs off a hero (each ear, the jaw, the tail; `Hanging`, rig.c) goes only with its own bones and the one it hangs from (the head,
+the hips for a tail), and nothing else with them but that one, where they join.
 
 ## The hero tool
 
@@ -290,7 +294,8 @@ PS1 does). What the game draws beside the hero's model, the Ballistix car round 
 the tank as every tank game but Swamp Fox has it, its hull and the turret of the hero it plays like (Crash's and Coco's swirly gun,
 Dingodile's and Rilla Roo's flamer, the others' laser). A pack plays like its template in each game (its weight and speeds, the
 tank's turret and weapon) unless its kind says `"like"`; one that says no template, as the hero whose place it takes
-(packheroes.c). The previews are dragged to turn and tilt, scrolled to zoom, double-clicked to set back, and show BREATHE first.
+(packheroes.c). The previews are dragged to turn and tilt (as if held: its front goes the way the mouse does), scrolled to zoom,
+double-clicked to set back, and show BREATHE first.
 Under each game in the gallery a choice of **whose ride or prop** it has there: its template's, or another hero's (the pogo stick
 or Cortex's jetpack, Tiny's keg ...), written as that kind's `"template"` in hero.json (`--template-in GAME=HERO` from the command
 line); picking one makes it again. On foot it's **Stands like**, which also has **itself: its own moves** (its model's clips, and the

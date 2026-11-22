@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: Bobby's ears off his shoulders: an ear's corners had his chest (and arms) as their second bone; now what hangs off a
+  hero (ears, jaw, tail) goes only with its own bones and what it hangs from (rig.c `Hanging`), his pack made again. The previews
+  turn the way they're dragged (they went back to front).
+
 - 2026-11-22: a hero's own moves protected from template changes (the user's word). The first change to a template's move copies it
   (the hero tool's `bake_move`, from the game's .pose) into a move of its own, a `KIND/MOVE` clip, which the change is made on; giving
   one up asks first. The game: a clip's hips come down on the pegs and its carried prop turns out of its head, as a followed move's,

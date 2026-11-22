@@ -248,7 +248,9 @@ void look_around(View &v, float &yaw, int button = 0) {
     }
     ImGuiIO &io = ImGui::GetIO();
     if (ImGui::IsMouseDragging(button)) {
-        yaw += io.MouseDelta.x * 0.5f;
+        // turned as the hand goes, as if it were held: its front goes the way the mouse does (the user's word, 2026-11-22: it went
+        // back to front)
+        yaw -= io.MouseDelta.x * 0.5f;
         yaw = yaw > 180 ? yaw - 360 : yaw < -180 ? yaw + 360 : yaw;
         v.pitch = fmaxf(-60, fminf(80, v.pitch + io.MouseDelta.y * 0.4f));
     }
@@ -2914,10 +2916,10 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
-        /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT] presses the left button at (X0, Y0) in the window once it's adjusting, moves
+        /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT] presses the left button at (X0, Y0) in the window once a game's shown, moves
            to (X1, Y1) over ten frames and lets go (Shift held if SHIFT is 1), as a person's mouse would */
         static int drag_step = -1;
-        if (SDL_getenv("HEROTOOL_DRAG") != nullptr && T.adjusting && drag_step < 14) {
+        if (SDL_getenv("HEROTOOL_DRAG") != nullptr && (T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr)) && drag_step < 14) {
             float d[5] = { 0, 0, 0, 0, 0 };
             SDL_sscanf(SDL_getenv("HEROTOOL_DRAG"), "%f,%f,%f,%f,%f", &d[0], &d[1], &d[2], &d[3], &d[4]);
             ImGuiIO &dio = ImGui::GetIO();
