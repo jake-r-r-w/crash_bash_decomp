@@ -47,7 +47,7 @@ struct Tool {
     // the pack
     char id[32] = "myhero", name[32] = "MY HERO", mod_name[64] = "My hero", author[64] = "", card[1024] = "";
     char voice[PACK_VOICE_JOBS][1024] = {};
-    int height = 560, prefer = 0, voice_job = 1, mode = 0, template_hero = 0;
+    int height = 560, voice_job = 1, mode = 0, template_hero = 0; // template_hero: who it's based on (its template and its place)
     float face_head = 0;
     char out[1024] = "", game[1024] = "";
     // a marker being dragged: its bone, whether it's the bone's end, and in which view
@@ -391,7 +391,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     p.name = T.name;
     p.mod_name = T.mod_name;
     p.author = T.author;
-    p.prefer = Heroes[T.prefer];
+    p.prefer = Heroes[T.template_hero]; // who it's based on: whose place it takes, and its template (one choice, the user's word, 2026-11-22)
     p.template_hero = Heroes[T.template_hero];
     for (int k = 0; k < PACK_KINDS; k++) {
         p.kind_template[k] = T.kind_template[k] >= 0 && T.kind_template[k] < 8 ? Heroes[T.kind_template[k]] : nullptr;
@@ -478,7 +478,8 @@ void make_in_game(Tool &T) {
     }
     T.made_asked = true;
     T.dirty = false;
-    snprintf(mods, sizeof(mods), "%spreview", pref);
+    /* a mods folder of its own for each hero, so the game makes only this one (one left by another hero isn't made again with it) */
+    snprintf(mods, sizeof(mods), "%spreviews/%s", pref, T.id);
     SDL_CreateDirectory(mods);
     snprintf(T.made_dir, sizeof(T.made_dir), "%spreview-made", pref);
     SDL_CreateDirectory(T.made_dir);
@@ -829,8 +830,10 @@ void load_pack(Tool &T, const Found &f) {
         SDL_strlcpy(T.id, info.id, sizeof(T.id));
         SDL_strlcpy(T.name, info.name, sizeof(T.name));
         T.height = info.height > 0 ? info.height : T.height;
-        T.prefer = info.prefer >= 1 && info.prefer <= 8 ? info.prefer - 1 : 0;
-        T.template_hero = info.template_hero >= 1 && info.template_hero <= 8 ? info.template_hero - 1 : 0;
+        /* who it's based on: its template, else (a pack that says none) the hero whose place it takes; saved, it's both */
+        T.template_hero = info.template_hero >= 1 && info.template_hero <= 8 ? info.template_hero - 1
+                          : info.prefer >= 1 && info.prefer <= 8   ? info.prefer - 1
+                                                                    : 0;
         T.face_head = info.face_head;
         for (int k = 0; k < PACK_KINDS; k++) {
             int th = info.kinds[k].template_hero;
@@ -1210,7 +1213,7 @@ void editor_right(Tool &T, SDL_Window *win) {
         ImGui::SeparatorText(KindTitles[k]);
         if (k != KIND_WARP_TOOL) {
             char now[64];
-            snprintf(now, sizeof(now), "%s's (its template)", HeroNames[T.template_hero]);
+            snprintf(now, sizeof(now), "%s's (who it's based on)", HeroNames[T.template_hero]);
             ImGui::Text(k == 0 ? "Stands like" : k == 1 ? "Rides the bear of" : "Prop from");
             ImGui::SameLine(130);
             ImGui::SetNextItemWidth(-1);
@@ -1291,12 +1294,12 @@ void editor_right(Tool &T, SDL_Window *win) {
             T.dirty = true;
         }
         hint("Standing, in the game's units: Crash is 452, most heroes about 650.");
-        if (ImGui::Combo("Plays like", &T.template_hero, HeroNames, 8)) {
+        if (ImGui::Combo("Based on", &T.template_hero, HeroNames, 8)) {
             T.dirty = true;
         }
-        hint("Its template: the hero whose moves it makes, and whose ride or prop it has, in every game (each game can pick another).");
-        ImGui::Combo("Takes place of", &T.prefer, HeroNames, 8);
-        hint("Whose place in the game it takes when nobody's playing them.");
+        hint("The hero it plays as: their moves, speed and reach, and their ride or prop in every game (each game can pick another "
+             "prop). It takes their place in the game, or the first free hero's if someone's playing them, and uses their sound "
+             "for any it hasn't one of.");
         if (ImGui::SliderFloat("Face", &T.face_head, 0, 0.6f, T.face_head > 0 ? "top %.2f" : "the game's choice")) {
             T.dirty = true;
         }
@@ -1319,7 +1322,7 @@ void editor_right(Tool &T, SDL_Window *win) {
         }
         ImGui::Spacing();
         ImGui::Text("Sounds");
-        hint("A WAV for each job. A job without one uses the sound of the hero whose place it takes.");
+        hint("A WAV for each job. A job without one uses the sound of the hero it's based on.");
         for (int j = 0; j < PACK_VOICE_JOBS; j++) {
             ImGui::PushID(j);
             ImGui::TextUnformatted(PackVoiceJobs[j]);

@@ -51,7 +51,9 @@ one's.
 ```
 
 - `prefer`: the original hero it borrows if nobody's playing it (`crash`, `coco`, `cortex`, `brio`, `tiny`, `kong`, `dingodile`,
-  `rilla`).
+  `rilla`). The tool writes the same hero here and as `"template"` (Templates, below), one choice it calls **Based on** (the user's
+  word, 2026-11-22: two settings that seemed to say the same thing); the game still reads the two apart, so an older pack whose two
+  differ plays as before.
 - `height`: standing, in the game's units (Crash 452, most heroes about 650). It's the one number of its model the game's play sees
   (the base's collision points are scaled to it), so it's a whole number in the JSON, never worked out from the mesh.
 - `kinds`: by name, `foot`, `polar`, `pogo`, `ball`, `tank`, `race`, `splash`, `mallet`, `dino`, `kegs`, `warp`. Each has its
@@ -214,7 +216,7 @@ put back, as they point to memory that's freed and made again when the packs cha
 `port/mods/bobby/` is made by the hero tool, as anyone's hero is:
 
 ```bash
-build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobby --name BOBBY --mod-name Bobby     --author "Crash Bash PC" --markers port/mods/bobby-model.glb.markers.json --out port/mods/bobby --height 540 --face-head 0.26 --prefer crash
+build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobby --name BOBBY --mod-name Bobby     --author "Crash Bash PC" --markers port/mods/bobby-model.glb.markers.json --out port/mods/bobby --height 540 --face-head 0.26 --based-on crash
 ```
 
 He's the user's dog, a long-haired black-and-tan miniature dachshund, stood up as a cartoon hero. His model is the user's own, made
@@ -230,7 +232,7 @@ so a pack it writes is one the game reads. It makes anyone's model a hero:
 
 ```bash
 cd herotool && cmake --preset windows-clang -DCMAKE_PREFIX_PATH=<SDL3's install> && cmake --build --preset windows-clang
-build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS.json --out FOLDER [--name NAME] [--prefer HERO]
+build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS.json --out FOLDER [--name NAME] [--based-on HERO]
                                        [--height N] [--face-head SHARE] [--author NAME]
 ```
 
@@ -239,14 +241,14 @@ SDL3's renderer, the model drawn by a little software renderer of its own). With
 (2026-11-22, the user's word): **Create a new hero** (Browse, the system's file chooser; a path; or a `.glb` dropped on it), or
 **Edit a hero**, a list of every hero in the mods folder's unzipped mods (`heroes/<id>/hero.json`). Editing one opens the pack's
 own `hero.glb` (rigged on the standard skeleton, its moves its clips, so anyone's shared pack can be changed without its first
-model) and takes its name, height, whose place, template and face from hero.json, the mod's name and author from mod.json, and its
+model) and takes its name, height, who it's based on (its template, else whose place it takes) and face from hero.json, the mod's name and author from mod.json, and its
 card and sounds from its files; **Export** writes it back into that mod. `< Start screen` goes back to it (`HEROTOOL_LOAD=ID`
 loads a hero, for a test). Drop a `.glb` on it (or a `.png` for its card, a `.wav`
 for the sound job picked, a markers `.json`). Its front and side views show the model at rest with its markers, to drag onto its
 joints (its left's mirror its right's, a bone's end is the next one's start, and its weights are worked out again on letting go);
 the third plays the move picked, turning. A model with no markers beside it (`MODEL.glb.markers.json`, saved there on each
 export) starts from a guess (`kit_guess_markers`: a standing humanoid's proportions in its box, arms out if it's as wide as a
-T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, no markers. Then its name, height, whose place, card,
+T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, no markers. Then its name, height, who it's based on, card,
 sounds and the mod's name, and **Export** writes the mod to the mods folder (beside the tool by default, the game's if it's
 there), or **Export and test in game** starts the game too, with it as player 1 in the game picked. `HEROTOOL_SHOT=FILE.png`
 saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it opens, for tests.
@@ -254,7 +256,7 @@ saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it 
 **The editor** (2026-11-22, the user's word: one window, simple; a UX pass): three columns. On the left the hero's pages: **Model
 and joints** (its rig, or the dots to place on its joints, and the tool's own moves on it), **All games at a glance** (every kind of
 model at once, each playing), and each game. In the middle the page's picture; on the right its choices, then **Hero details**
-(name, id, height, **Plays like**: its template, **Takes place of**, its face), **Card and sounds** (Browse, the system's file
+(name, id, height, **Based on**: its template and whose place it takes, one choice, its face), **Card and sounds** (Browse, the system's file
 chooser) and **Save** (**Save to mods folder**, **Save and play** in a game picked). A game's page has **Prop from** (that game's
 ride or prop and moves from another hero than its template) and **Its moves here**: for each of the game's moves (KitGames) its
 template's, **its own clip** if the model has one (`GAME/MOVE`, a pack loaded to change), or **my MOVE**, one of the tool's moves
@@ -264,7 +266,7 @@ a kind), `HEROTOOL_OWN=GAME/MOVE=MOVE`.
 
 **The preview**: the first time a game's page is open for a model it's made by itself. Making it
 exports the hero to the tool's own folder (SDL's pref
-path, `CrashBashPC/herotool/preview`) and starts the game with `--dump-hero ID FOLDER`: it reads the player's own settings, so it
+path, `CrashBashPC/herotool/previews/ID`, a mods folder of its own for each hero, so only that one is made) and starts the game with `--dump-hero ID FOLDER`: it reads the player's own settings, so it
 finds their game data, makes the hero as it does when it loads a pack, writes what it made and ends, in about a second, with no
 window. Each kind's model goes to `FOLDER/ID_KIND.hpv` as `made_write` writes it to the archive (`bonusheroes.c`, `made_dump`:
 its images in RGBA, its faces, every frame of every move), so what the tool shows is what the game draws: the hero with each game's
