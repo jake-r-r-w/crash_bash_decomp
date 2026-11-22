@@ -447,8 +447,11 @@ line red and its Y line green, drawn where the model doesn't hide it. In its top
 from its left side, 7 from above, with Ctrl from the other side; `view_from`), its front at the bottom from above. The picture is
 fitted to how tall the model looks from the view's tilt, its middle in the picture's. The right mouse button turns the view (to
 straight above or below), so an arrow or ring can be had from any side (the pictures' Turn sliders went: right-drag does it). A change
-is made to the frame shown, fading either side, or with **All moves** ticked to every move in the game (a key to the whole move, from
-before, a green bar, is still changed when it's picked, but not made: a key stretched over the move does it). Under the joint's name, its values set
+is made to the key picked if it's the joint's and covers the frame shown, else to a key at the frame shown, fading either side; a bar
+picked (every frame: a blue one every move in the game, a green one, from before, its whole move) takes the change, and the joint's
+heading says so ("Head, all moves"). Right-click a key for **In all moves** (the keys picked made every move's in the game, a blue bar)
+or, on a blue bar, **Just this move** (held all through the move shown); the user's word, 2026-11-22: All moves as a box was a mode
+easily left on, so it's what a key's made into now (`keys_all_moves`; a change to every move makes them all its own). Under the joint's name, its values set
 it exactly: **Turn**, **Move** and **Size** rows of X, Y and Z, each field tinted its axis's colour as Blender's (`xyz_row`; X tips it
 forward, Y leans it to its left, Z turns it to its right; to its left, to its back, up; wider, deeper, taller, 1 as it is: each
 field's tooltip says it); **Reset joint** and **Reset move**, then the history. (Cut, as doing what's done elsewhere, the user's word,
@@ -527,7 +530,7 @@ picked away, Ctrl+C and Ctrl+V copy and paste a key (Ctrl+Shift+V mirrored), Ctr
 hero.
 
 Its tests' settings: `HEROTOOL_ADJUST=BONE@FRAME` (or `@FROM-TO`, held) adjusts the page shown once it's made, that bone picked there
-(and `HEROTOOL_SHOW_FRAME=N` shows that frame after; `HEROTOOL_MOVE=NAME` watches that move; `HEROTOOL_ONION=STEP` onion skin; `HEROTOOL_CLIPPING=1` the clipping finder, each move's clipping printed; `HEROTOOL_XMIRROR=1` turns X-Mirror on, the test's change mirrored; `HEROTOOL_ADJUST_FADE=EASE,N` its fade, hero.json's name, over N frames;
+(and `HEROTOOL_SHOW_FRAME=N` shows that frame after; `HEROTOOL_MOVE=NAME` watches that move; `HEROTOOL_ONION=STEP` onion skin; `HEROTOOL_CLIPPING=1` the clipping finder, each move's clipping printed; `HEROTOOL_XMIRROR=1` turns X-Mirror on, the test's change mirrored; `HEROTOOL_ALLMOVES=1` puts the test's key in all moves (2: and back); `HEROTOOL_ADJUST_FADE=EASE,N` its fade, hero.json's name, over N frames;
 `HEROTOOL_PASTE=FRAME[,1[,BONE]]` copies it and pastes it at FRAME, mirrored with 1, onto BONE; then `HEROTOOL_SELECT_ALL=1`
 picks every key of the move and `HEROTOOL_PASTE2=FRAME[,1]` copies and pastes those);
 `HEROTOOL_ADJUST_TURN` / `_REACH` / `_SCALE=X,Y,Z` changes it; `HEROTOOL_GIZMO=N` picks the gizmo (0 turn, 1 move, 2 size);

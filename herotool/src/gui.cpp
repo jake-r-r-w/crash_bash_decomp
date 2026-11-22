@@ -1247,6 +1247,45 @@ void keys_all(Tool &T, const char *move) {
 
 void adj_snapshot(Tool &T, const char *says, ...);
 
+// The keys picked made every move's in this game ("In all moves": each a change at every frame of every move here, a blue bar), or
+// game-wide ones made this move's alone ("Just this move": held all through it). The user's word, 2026-11-22: All moves as a box was a
+// mode left on by mistake; it's what a key's made into now. A change to every move makes them all its own (own_before_change).
+void own_before_change(Tool &T, const char *move);
+void keys_all_moves(Tool &T, bool all) {
+    const KitMade *mk = &T.made[T.kind];
+    if (mk->nanims == 0) {
+        return;
+    }
+    int a = T.anim < mk->nanims ? T.anim : 0, frames = mk->anims[a].frames;
+    const char *move = mk->anims[a].name;
+    std::vector<int> todo;
+    for (int i : T.keys_sel) {
+        bool game = strcmp(T.adj[i].move, "*") == 0;
+        if (all ? !game : game) {
+            todo.push_back(i);
+        }
+    }
+    if (todo.empty()) {
+        return;
+    }
+    if (todo.size() == 1) {
+        adj_snapshot(T, all ? "Put %s's key in all moves" : "Made %s's key this move's alone", bone_title(T.adj[todo[0]].bone));
+    } else {
+        adj_snapshot(T, all ? "Put %d keys in all moves" : "Made %d keys this move's alone", (int)todo.size());
+    }
+    own_before_change(T, all ? "*" : move);
+    for (int i : todo) {
+        PackAdjust &k = T.adj[i];
+        if (all) {
+            SDL_strlcpy(k.move, "*", sizeof(k.move));
+            k.at = -1, k.until = -1, k.spread = 0, k.blend = 0;
+        } else {
+            SDL_strlcpy(k.move, move, sizeof(k.move));
+            k.at = 0, k.until = frames - 1, k.spread = 0;
+        }
+    }
+}
+
 // The keys picked taken away (the last first, so the others' places hold), a step of the history
 void keys_delete(Tool &T) {
     std::vector<int> ks = T.keys_sel;
@@ -2431,6 +2470,12 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     if (!key_picked(T, T.key_sel)) {
         T.key_sel = T.keys_sel.empty() ? -1 : T.keys_sel.back();
     }
+    // what a change goes to: a bar picked (every frame: the whole move, or every move here) of the joint picked, else the frame shown
+    T.key_mode = KEY_FRAME;
+    if (T.key_sel >= 0 && T.sel >= 0 && T.sel < po->nbones && T.adj[T.key_sel].at < 0
+        && SDL_strcasecmp(T.adj[T.key_sel].bone, po->names[T.sel]) == 0) {
+        T.key_mode = strcmp(T.adj[T.key_sel].move, "*") == 0 ? KEY_GAME : KEY_MOVE;
+    }
     if (ImGui::Button(T.adj_playing ? "Stop" : "Play", ImVec2(U(50), 0))) {
         T.adj_playing = !T.adj_playing;
     }
@@ -2876,7 +2921,8 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             ImGui::SetTooltip("%s  %d  %s %d%s\nShift-drag: stretch   Ctrl-click: pick more", bone_title(k.bone), k.at, EaseSays[k.ease], k.spread,
                               k.blend ? "  blend" : "");
         } else {
-            ImGui::SetTooltip("%s  %s", bone_title(k.bone), strcmp(k.move, "*") == 0 ? "all moves" : "whole move");
+            ImGui::SetTooltip("%s  %s\nRight-click: %s", bone_title(k.bone), strcmp(k.move, "*") == 0 ? "all moves" : "whole move",
+                              strcmp(k.move, "*") == 0 ? "Just this move" : "In all moves");
         }
     }
     if (over && under >= 0 && ImGui::IsMouseClicked(1)) {
@@ -2965,6 +3011,18 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                 }
             }
             ImGui::SetItemTooltip("Flow into the joint's next key instead of fading out");
+            bool here = false, game = false;
+            for (int i : ks) {
+                (strcmp(T.adj[i].move, "*") == 0 ? game : here) = true;
+            }
+            if (here && ImGui::MenuItem("In all moves")) {
+                keys_all_moves(T, true);
+            }
+            ImGui::SetItemTooltip("The change at every frame of every move in this game (a blue bar)");
+            if (game && ImGui::MenuItem("Just this move")) {
+                keys_all_moves(T, false);
+            }
+            ImGui::SetItemTooltip("The change in this move alone, all through it");
             if (paste != 0) {
                 key_paste(T, pack_bone_index(po, k.bone), k.at >= 0 ? k.at : T.frame, paste == 2);
             } else if (!fk.empty()) {
@@ -3715,13 +3773,6 @@ void adjust_panel(Tool &T) {
         }
         return;
     }
-    // what a change is made to: this frame (fading either side), or every move in this game (All moves). A key to the whole move
-    // (from before: a green bar in the timeline) is still changed when it's picked, but not made: a key stretched over it does that
-    bool all = T.key_mode == KEY_GAME;
-    if (ImGui::Checkbox("All moves", &all)) {
-        T.key_mode = all ? KEY_GAME : KEY_FRAME;
-    }
-    ImGui::SetItemTooltip("Changes go to every move in this game, not this frame");
     if (T.key_mode == KEY_FRAME) {
         // the picked joint's key here: its fade shown, and changed with these (else they're what a new key gets)
         PackAdjust *here_key = T.sel >= 0 && T.sel < po->nbones ? panel_key(T, move, po->names[T.sel]) : nullptr;
@@ -3810,7 +3861,10 @@ void adjust_panel(Tool &T) {
                 size[i] = 1 + k->grow[i];
             }
         }
-        ImGui::SeparatorText(bone_title(bone));
+        // (its heading says when its change goes to a bar picked: every move here, or its whole move)
+        char heading[96];
+        snprintf(heading, sizeof(heading), "%s%s", bone_title(bone), T.key_mode == KEY_GAME ? ", all moves" : T.key_mode == KEY_MOVE ? ", whole move" : "");
+        ImGui::SeparatorText(heading);
         // its own axes as it stands: x to its left, y down, z to its back, shown in Blender's order X, Y, Z (its x, z, y) and ways (Z
         // up: its y the other way for a move); what each does its tooltip
         static const char *const TurnSays[3] = { "Tip forward", "Lean to its left", "Turn to its right" };
@@ -4672,6 +4726,12 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                     SDL_sscanf(SDL_getenv("HEROTOOL_PASTE"), "%d,%d,%63s", &to, &mirrored, onto);
                     key_copy(T);
                     key_paste(T, onto[0] != 0 ? pack_bone_index(&T.poses[T.kind], onto) : T.sel, to, mirrored != 0);
+                }
+                if (SDL_getenv("HEROTOOL_ALLMOVES") != nullptr) {
+                    keys_all_moves(T, true);
+                    if (SDL_atoi(SDL_getenv("HEROTOOL_ALLMOVES")) == 2) {
+                        keys_all_moves(T, false);
+                    }
                 }
                 if (SDL_getenv("HEROTOOL_SELECT_ALL") != nullptr) {
                     keys_all(T, T.made[T.kind].anims[T.anim].name);

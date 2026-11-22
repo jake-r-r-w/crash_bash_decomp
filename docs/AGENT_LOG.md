@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: the hero tool's All moves box went (a mode easily left on): a key's right-click puts it **In all moves** (a blue bar) or
+  a blue bar **Just this move**; a change goes to the key picked if it covers the frame, else the frame, and the joint's heading says
+  "all moves" when it's a bar. Checked against the game both ways.
+
 - 2026-11-22: the hero tool cut down more ("less is more", the user): a game's page lists only its own moves (each with Use
   Crash's), the pictures' Turn sliders went (right-drag), the panel's Key radios are an All moves box, and its Frames row, Mirror,
   Undo/Redo and keys list went (the timeline, X-Mirror, Paste mirrored, Ctrl+Z/Y and the history do them); Face is under Card and
