@@ -1350,7 +1350,10 @@ void draw_made(const KitMade *m, int anim, int frame, View &v, SDL_Renderer *ren
         v.rgba = new unsigned[PW * PH];
         v.depth = new float[PW * PH];
         v.tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, PW, PH);
-        SDL_SetTextureBlendMode(v.tex, (v.bg >> 24) == 0xFF ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
+        // blended, an opaque one too: its picture's rounded corners' smoothing (vertices fading out) is then laid over what's under it;
+        // copied unblended, those pixels were the picture's own colour, part see-through, in the window itself (a pale line round the
+        // corners in a screenshot)
+        SDL_SetTextureBlendMode(v.tex, SDL_BLENDMODE_BLEND);
     }
     const KitMadeAnim *a = m->nanims > 0 ? &m->anims[anim < m->nanims ? anim : 0] : nullptr;
     const int16_t *vs = a == nullptr ? nullptr : live != nullptr ? live : a->verts + (size_t)(frame % a->frames) * m->nvert * 3;
