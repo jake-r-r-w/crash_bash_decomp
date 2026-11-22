@@ -3106,14 +3106,14 @@ void adjust_panel(Tool &T) {
             ImGui::TextUnformatted("Frames");
             ImGui::SameLine(U(60));
             ImGui::SetNextItemWidth(w);
-            bool held = ImGui::DragInt("##from", &from, 0.2f, 0, frames - 1, "%d");
+            bool held = ImGui::DragInt("##held_from", &from, 0.2f, 0, frames - 1, "%d");
             ImGui::SetItemTooltip("First frame it's all there");
             if (ImGui::IsItemActivated()) {
                 adj_snapshot(T, "Held %s's key", bone_title(bone));
             }
             ImGui::SameLine();
             ImGui::SetNextItemWidth(w);
-            held |= ImGui::DragInt("##to", &to, 0.2f, 0, frames - 1, "%d");
+            held |= ImGui::DragInt("##held_to", &to, 0.2f, 0, frames - 1, "%d");
             ImGui::SetItemTooltip("Last frame it's all there");
             if (ImGui::IsItemActivated()) {
                 adj_snapshot(T, "Held %s's key", bone_title(bone));
@@ -3286,7 +3286,7 @@ void editor_right(Tool &T, SDL_Window *win) {
             ImGui::TextDisabled("Rigged (its own bones)");
         } else {
             ImGui::TextDisabled("No rig: place its joints");
-            ImGui::Checkbox("Mirror", &T.mirror);
+            ImGui::Checkbox("Mirror##dots", &T.mirror);
             ImGui::SetItemTooltip("Moving one side's dot moves the other's");
             ImGui::SameLine();
             if (ImGui::Button("Guess joints")) {
@@ -3500,7 +3500,7 @@ void editor_right(Tool &T, SDL_Window *win) {
     if (ImGui::CollapsingHeader("Save", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::InputText("Mod's name", T.mod_name, sizeof(T.mod_name));
         ImGui::InputText("Author", T.author, sizeof(T.author));
-        if (ImGui::Button("Save", ImVec2(-1, U(30)))) {
+        if (ImGui::Button("Save##mod", ImVec2(-1, U(30)))) {
             export_pack(T, false);
         }
         ImGui::SetItemTooltip("%s", T.loaded_mod[0] ? T.loaded_mod : T.out);

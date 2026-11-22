@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: a red warning over the hero tool's Save button: ImGui's "conflicting ID" (the Save header and button had one label,
+  as did the Prop from choice and the held key's first frame, `##from`). Gotcha: shortening a label can clash with another on
+  screen; give one a `##` suffix (`Save##mod`, `##held_from`).
+
 - 2026-11-22: the hero tool's views turn with the right mouse button in every view (watching one turned with the left, editing with
   the right: the user's word); right double-click or Home sets one back. `HEROTOOL_DRAG`'s sixth value drags with the right button.
 
