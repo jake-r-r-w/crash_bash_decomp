@@ -354,8 +354,8 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             pk->nstands++;
         }
     }
-    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "spread", "turn": [x, y, z], "reach": [x, y, z],
-       "scale": [x, y, z]}] */
+    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "until" (held to that frame), "spread",
+       "turn": [x, y, z], "reach": [x, y, z], "scale": [x, y, z]}] */
     {
         const JVal *list = jget(root, "adjust"), *a;
         int i;
@@ -375,6 +375,8 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             SDL_strlcpy(d->bone, bone, sizeof(d->bone));
             d->at = jint(jget(a, "at"), -1);
             d->at = d->at < -1 ? -1 : d->at;
+            d->until = jint(jget(a, "until"), d->at);
+            d->until = d->until < d->at ? d->at : d->until > 100000 ? 100000 : d->until;
             d->spread = jint(jget(a, "spread"), 0);
             d->spread = d->spread < 0 ? 0 : d->spread > 200 ? 200 : d->spread;
             for (j = 0; j < 3; j++) {

@@ -101,12 +101,14 @@ int pack_adjust_for(const PackAdjust *a, int kind, const char *move) {
 }
 
 float pack_adjust_share(const PackAdjust *a, int frame) {
-    int d;
+    int d, last;
 
     if (a->at < 0) {
         return 1;
     }
-    d = frame > a->at ? frame - a->at : a->at - frame;
+    /* all of it from at to until, fading either side */
+    last = a->until > a->at ? a->until : a->at;
+    d = frame < a->at ? a->at - frame : frame > last ? frame - last : 0;
     if (a->spread <= 0 || d > a->spread) {
         return d == 0 ? 1.0f : 0.0f;
     }

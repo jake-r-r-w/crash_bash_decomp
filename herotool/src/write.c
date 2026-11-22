@@ -390,7 +390,11 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
                 say(&hero, "%s\n    { \"kind\": \"%s\", \"move\": \"%s\", \"bone\": \"%s\"", said++ ? "," : ",\n  \"adjust\": [",
                     pack_kind_name(a->kind), a->move, a->bone);
                 if (a->at >= 0) {
-                    say(&hero, ", \"at\": %d, \"spread\": %d", a->at, a->spread);
+                    say(&hero, ", \"at\": %d", a->at);
+                    if (a->until > a->at) {
+                        say(&hero, ", \"until\": %d", a->until);
+                    }
+                    say(&hero, ", \"spread\": %d", a->spread);
                 }
                 if (turn) {
                     say(&hero, ", \"turn\": [%.4g, %.4g, %.4g]", a->turn[0], a->turn[1], a->turn[2]);

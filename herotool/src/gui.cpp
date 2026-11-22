@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <algorithm>
+#include <cstdarg>
 #include <thread>
 #include <string>
 #include <vector>
@@ -157,6 +158,13 @@ void fill_tri(const float sx[3], const float sy[3], const float sz[3], const flo
 
 enum { OWN_TEMPLATE = -1, OWN_CLIP = -2, OWN_MADE = -3 };
 
+// A step of the undo history (the user's word, 2026-11-22: "add undo history"): its adjustments before it, and what it was, as the
+// history's list says it ("Moved Head's key to frame 32")
+struct Step {
+    std::vector<PackAdjust> adj;
+    std::string says;
+};
+
 // A move of its own copied from its template's (the animation tools, bake_move): as the game made it then, kept whatever it's based on
 struct BakedMove {
     int kind, from;           // the game (PACK_KINDS'), and the hero it was copied from (HeroNames')
@@ -220,7 +228,7 @@ struct Tool {
     KitPose poses[PACK_KINDS] = {};
     bool have_pose[PACK_KINDS] = {};
     std::vector<PackAdjust> adj;
-    std::vector<std::vector<PackAdjust>> undo, redo;
+    std::vector<Step> undo, redo;
     bool adjusting = false, adj_playing = false, dragging = false, bare = false;
     int sel = -1, key_mode = 0, spread = 4, frame = 0;
     float adj_t = 0;
@@ -236,12 +244,17 @@ struct Tool {
     // the gizmo (GIZMO_TURN, _MOVE, _SIZE), the handle of it being dragged, and the key picked in the timeline, dragged or scrubbed
     int gizmo = 0, handle = 0, key_sel = -1;
     bool key_drag = false, key_moved = false, scrub = false;
+    // a key dragged in the timeline: the part of it (KEY_BODY moved, KEY_START or KEY_END held over more frames or fewer, KEY_EITHER
+    // its end the way it's dragged), the frame it was taken at, where it was from and to; and the fade being changed (its step taken)
+    int key_part = 0, key_grab = 0, key_from = 0, key_to = 0;
+    bool fade_step = false;
     int ask_kind = -1, ask_move = -1, ask_to = OWN_TEMPLATE;
     char ask_name[32] = "";
     bool ask_open = false;
 };
 enum { KEY_FRAME, KEY_MOVE, KEY_GAME };
 enum { GIZMO_TURN, GIZMO_MOVE, GIZMO_SIZE };
+enum { KEY_BODY, KEY_START, KEY_END, KEY_EITHER };
 
 // The kinds of model the game makes (heropack.c's names), as the games call them
 const char *const KindTitles[PACK_KINDS] = { "On foot (Crate Crush, Ring Ding and the others)", "Polar Push: the polar bear", "Pogo",
@@ -1086,19 +1099,39 @@ const char *bone_title(const char *name) {
     return out;
 }
 
-// Undo and redo: what its adjustments were before each change
-void adj_snapshot(Tool &T) {
-    T.undo.push_back(T.adj);
+// Undo and redo: what its adjustments were before each change, and what the change was (printf's way), the history's step for it
+void adj_snapshot(Tool &T, const char *says, ...) {
+    char line[160];
+    va_list ap;
+
+    va_start(ap, says);
+    vsnprintf(line, sizeof(line), says, ap);
+    va_end(ap);
+    T.undo.push_back({ T.adj, line });
     if (T.undo.size() > 300) {
         T.undo.erase(T.undo.begin());
     }
     T.redo.clear();
 }
 
+// What the last step was, said again as it goes on (a drag's: where it's got to)
+void adj_step_says(Tool &T, const char *says, ...) {
+    char line[160];
+    va_list ap;
+
+    if (T.undo.empty()) {
+        return;
+    }
+    va_start(ap, says);
+    vsnprintf(line, sizeof(line), says, ap);
+    va_end(ap);
+    T.undo.back().says = line;
+}
+
 void adj_undo(Tool &T) {
     if (!T.undo.empty()) {
-        T.redo.push_back(T.adj);
-        T.adj = T.undo.back();
+        T.redo.push_back({ T.adj, T.undo.back().says });
+        T.adj = T.undo.back().adj;
         T.undo.pop_back();
         T.key_sel = -1;
     }
@@ -1106,11 +1139,26 @@ void adj_undo(Tool &T) {
 
 void adj_redo(Tool &T) {
     if (!T.redo.empty()) {
-        T.undo.push_back(T.adj);
-        T.adj = T.redo.back();
+        T.undo.push_back({ T.adj, T.redo.back().says });
+        T.adj = T.redo.back().adj;
         T.redo.pop_back();
         T.key_sel = -1;
     }
+}
+
+// The undo history gone to its step at: 0 before them all, as many as are done, more to do them again
+void adj_go(Tool &T, int at) {
+    while ((int)T.undo.size() > at && !T.undo.empty()) {
+        adj_undo(T);
+    }
+    while ((int)T.undo.size() < at && !T.redo.empty()) {
+        adj_redo(T);
+    }
+}
+
+// A key's last frame: held from at to until, or at alone
+int key_last(const PackAdjust &k) {
+    return k.until > k.at ? k.until : k.at;
 }
 
 int game_of(int kind);
@@ -1272,14 +1320,26 @@ void own_before_change(Tool &T, const char *move) {
 PackAdjust *adj_key(Tool &T, const char *move, const char *bone, bool make) {
     int at = T.key_mode == KEY_FRAME ? T.frame : -1;
     const char *mv = T.key_mode == KEY_GAME ? "*" : move;
+    PackAdjust *held = nullptr;
 
+    // the key at this frame, else one held over it (changed there, it's changed all the way it's held)
     for (auto &a : T.adj) {
-        if (a.kind == T.kind && a.at == at && SDL_strcasecmp(a.move, mv) == 0 && SDL_strcasecmp(a.bone, bone) == 0) {
-            if (make && T.key_mode == KEY_FRAME) {
-                a.spread = T.spread;
-            }
-            return &a;
+        if (a.kind != T.kind || SDL_strcasecmp(a.move, mv) != 0 || SDL_strcasecmp(a.bone, bone) != 0) {
+            continue;
         }
+        if (a.at == at) {
+            held = &a;
+            break;
+        }
+        if (held == nullptr && at >= 0 && a.at >= 0 && a.at <= at && at <= key_last(a)) {
+            held = &a;
+        }
+    }
+    if (held != nullptr) {
+        if (make && T.key_mode == KEY_FRAME) {
+            held->spread = T.spread;
+        }
+        return held;
     }
     if (!make) {
         return nullptr;
@@ -1654,7 +1714,14 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
             T.sel = hover;
         }
         if (take != H_NONE) {
-            adj_snapshot(T);
+            const char *b = bone_title(po->names[T.sel]);
+            if (take >= H_SIZE && take <= H_SIZE_ALL) {
+                adj_snapshot(T, "Made %s bigger or smaller", b);
+            } else if (take >= H_MOVE && take <= H_MOVE_FREE) {
+                adj_snapshot(T, "Moved %s", b);
+            } else {
+                adj_snapshot(T, "Turned %s", b);
+            }
             T.dragging = true;
             T.handle = take;
             T.adj_playing = false;
@@ -1749,9 +1816,12 @@ void adjust_view(Tool &T, ImVec2 im, float disp, bool hovered) {
 }
 
 // Under the picture while adjusting, the keyframes (the user's word, 2026-11-22: "a key frame time line below the animation"): play
-// or stop, the changes before and after, and a sheet of the move's frames, a row for each joint changed in it (and the one picked): each
-// change at a frame a diamond (its fade a band either side), one to the whole move or every move here a bar. Click or drag the ruler to
-// go to a frame; click a key to go to it, drag it to move it to another frame, right-click it (or Delete) to take it away.
+// or stop, the keys before and after, and a sheet of the move's frames, a row for each joint changed in it (and the one picked). A
+// change at a frame is a diamond; one held over frames (the user's word: "extend it along the entire animation and that will keep it
+// big") a bar between two; its fade a band either side; one to the whole move or every move here a long bar. Click or drag the ruler
+// to go to a frame. Click a key to pick it and go to it; drag it (a held one by its bar) to move it; drag a held one's end, a picked
+// one's grips either side, or Shift and drag one, to hold it over more frames or fewer; right-click it for more (held to the start,
+// the end, all through, or its own frame again; taken away), or press Delete. Each is a step of the undo history.
 void timeline(Tool &T, const KitMade *mk, int a, float width) {
     const KitPose *po = &T.poses[T.kind];
     int frames = mk->anims[a].frames;
@@ -1767,6 +1837,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     for (auto &k : T.adj) {
         if (k.kind == T.kind && k.at >= 0 && SDL_strcasecmp(k.move, move) == 0) {
             keys.push_back(k.at);
+            keys.push_back(key_last(k));
         }
     }
     ImGui::SameLine();
@@ -1829,15 +1900,16 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
             dl->AddText(ImVec2(x + U(2), o.y + U(1)), IM_COL32(170, 170, 180, 255), n);
         }
     }
-    // the rows: a joint's name, its keys
+    // the rows: a joint's name, its keys, and each key's parts the mouse can take (later ones over earlier)
     struct Hit {
-        int key;
+        int key, part;
         ImVec2 lo, hi;
     };
     std::vector<Hit> hits;
+    const float s = U(6), grip = U(6);
     for (size_t r = 0; r < rows.size(); r++) {
         int b = rows[r];
-        float y = o.y + ruler + row * r;
+        float y = o.y + ruler + row * r, my = y + row / 2;
         if (r % 2 == 1) {
             dl->AddRectFilled(ImVec2(o.x, y), ImVec2(o.x + width, y + row), IM_COL32(36, 36, 44, 255));
         }
@@ -1856,18 +1928,42 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
                 ImU32 col = strcmp(k.move, "*") == 0 ? IM_COL32(90, 140, 230, picked ? 255 : 150) : IM_COL32(110, 200, 110, picked ? 255 : 150);
                 ImVec2 lo(x0, y + row * 0.35f), hi(o.x + width - U(2), y + row * 0.65f);
                 dl->AddRectFilled(lo, hi, col, U(3));
-                hits.push_back({ i, lo, hi });
+                hits.push_back({ i, KEY_BODY, lo, hi });
                 continue;
             }
-            float x = fx((float)k.at), s = U(6);
+            int last = key_last(k);
+            float xa = fx((float)k.at), xb = fx((float)last);
+            ImU32 col = picked ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 200, 60, 255);
             if (k.spread > 0) {
-                dl->AddRectFilled(ImVec2(fx((float)(k.at - k.spread)) - cw / 2, y + row * 0.4f), ImVec2(fx((float)(k.at + k.spread)) + cw / 2, y + row * 0.6f),
+                dl->AddRectFilled(ImVec2(fx((float)(k.at - k.spread)) - cw / 2, y + row * 0.4f), ImVec2(fx((float)(last + k.spread)) + cw / 2, y + row * 0.6f),
                                   IM_COL32(255, 200, 60, 50));
             }
-            ImVec2 m(x, y + row / 2);
-            dl->AddQuadFilled(ImVec2(m.x, m.y - s), ImVec2(m.x + s, m.y), ImVec2(m.x, m.y + s), ImVec2(m.x - s, m.y),
-                              picked ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 200, 60, 255));
-            hits.push_back({ i, ImVec2(m.x - s, m.y - s), ImVec2(m.x + s, m.y + s) });
+            auto diamond = [&](float x) {
+                dl->AddQuadFilled(ImVec2(x, my - s), ImVec2(x + s, my), ImVec2(x, my + s), ImVec2(x - s, my), col);
+            };
+            if (last > k.at) {
+                // held: a bar from its first frame to its last, a diamond each end (the ends held over more frames or fewer)
+                dl->AddRectFilled(ImVec2(xa, my - row * 0.2f), ImVec2(xb, my + row * 0.2f), picked ? IM_COL32(255, 255, 255, 170) : IM_COL32(255, 200, 60, 150));
+                if (xb - xa > 2 * s) {
+                    hits.push_back({ i, KEY_BODY, ImVec2(xa + s, my - s), ImVec2(xb - s, my + s) });
+                }
+                diamond(xa);
+                diamond(xb);
+                hits.push_back({ i, KEY_START, ImVec2(xa - s, my - s), ImVec2(xa + s, my + s) });
+                hits.push_back({ i, KEY_END, ImVec2(xb - s, my - s), ImVec2(xb + s, my + s) });
+            } else {
+                diamond(xa);
+                hits.push_back({ i, KEY_BODY, ImVec2(xa - s, my - s), ImVec2(xa + s, my + s) });
+            }
+            if (picked) {
+                // grips either side, to hold it over more frames
+                ImVec2 g0(xa - s - U(3) - grip, my - row * 0.32f), g1(xa - s - U(3), my + row * 0.32f);
+                ImVec2 h0(xb + s + U(3), my - row * 0.32f), h1(xb + s + U(3) + grip, my + row * 0.32f);
+                dl->AddRectFilled(g0, g1, IM_COL32(255, 255, 255, 210), U(2));
+                dl->AddRectFilled(h0, h1, IM_COL32(255, 255, 255, 210), U(2));
+                hits.push_back({ i, KEY_START, g0, g1 });
+                hits.push_back({ i, KEY_END, h0, h1 });
+            }
         }
     }
     if (rows.empty()) {
@@ -1878,25 +1974,29 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     dl->AddRectFilled(ImVec2(px - cw / 2, o.y), ImVec2(px + cw / 2, o.y + ruler), IM_COL32(70, 110, 190, 255));
     dl->AddLine(ImVec2(px, o.y), ImVec2(px, o.y + h), IM_COL32(110, 160, 255, 255), U(2));
     // what's under the mouse, and what a click or a drag does
-    int under = -1;
+    int under = -1, part = KEY_BODY;
     for (auto &ht : hits) {
         if (io.MousePos.x >= ht.lo.x - U(2) && io.MousePos.x <= ht.hi.x + U(2) && io.MousePos.y >= ht.lo.y - U(2) && io.MousePos.y <= ht.hi.y + U(2)) {
-            under = ht.key;
+            under = ht.key, part = ht.part;
         }
     }
     if (over && ImGui::IsMouseClicked(0)) {
         T.adj_playing = false;
         if (under >= 0) {
-            // a key picked: its joint, its frame, and the change it makes
+            // a key picked: its joint, its frame, and the change it makes; taken to drag
             const PackAdjust &k = T.adj[under];
             T.key_sel = under;
             T.sel = pack_bone_index(po, k.bone);
             T.key_mode = k.at >= 0 ? KEY_FRAME : strcmp(k.move, "*") == 0 ? KEY_GAME : KEY_MOVE;
             if (k.at >= 0) {
-                T.frame = k.at;
                 T.spread = k.spread;
                 T.key_drag = true;
                 T.key_moved = false;
+                T.key_part = part == KEY_BODY && io.KeyShift ? KEY_EITHER : part;
+                T.key_grab = xf(io.MousePos.x);
+                T.key_from = k.at;
+                T.key_to = key_last(k);
+                T.frame = part == KEY_END ? T.key_to : k.at;
             }
         } else if (io.MousePos.x >= x0) {
             T.scrub = true;
@@ -1916,21 +2016,49 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         T.frame = xf(io.MousePos.x);
     }
     if (T.key_drag && T.key_sel >= 0 && T.key_sel < (int)T.adj.size() && T.adj[T.key_sel].at >= 0) {
-        // moved to the frame under the mouse (undone in one, once it's moved)
-        int f = xf(io.MousePos.x);
-        if (f != T.adj[T.key_sel].at) {
+        // moved, or held over more frames or fewer, to the frame under the mouse (a step of the history once it's changed)
+        PackAdjust &k = T.adj[T.key_sel];
+        int f = xf(io.MousePos.x), from = T.key_from, to = T.key_to;
+        if (T.key_part == KEY_EITHER && f != T.key_grab) {
+            T.key_part = f > T.key_grab ? KEY_END : KEY_START;
+        }
+        if (T.key_part == KEY_BODY) {
+            int d = std::max(-from, std::min(frames - 1 - to, f - T.key_grab));
+            from += d, to += d;
+        } else if (T.key_part == KEY_START) {
+            from = std::min(f, to);
+        } else if (T.key_part == KEY_END) {
+            to = std::max(f, from);
+        }
+        if (from != k.at || to != key_last(k)) {
+            const char *b = bone_title(k.bone);
             if (!T.key_moved) {
-                adj_snapshot(T);
+                adj_snapshot(T, "%s's key", b);
                 T.key_moved = true;
             }
-            T.adj[T.key_sel].at = f;
+            k.at = from;
+            k.until = to;
+            if (T.key_part == KEY_BODY) {
+                to > from ? adj_step_says(T, "Moved %s's key to frames %d to %d", b, from, to) : adj_step_says(T, "Moved %s's key to frame %d", b, from);
+            } else {
+                to > from ? adj_step_says(T, "Held %s's key from frame %d to %d", b, from, to) : adj_step_says(T, "Made %s's key frame %d alone", b, from);
+            }
         }
-        T.frame = f;
+        T.frame = T.key_part == KEY_START ? from : T.key_part == KEY_END ? to : f;
+    }
+    if ((over && under >= 0 && part != KEY_BODY) || (T.key_drag && (T.key_part == KEY_START || T.key_part == KEY_END))) {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
     }
     if (over && under >= 0 && !T.key_drag) {
         const PackAdjust &k = T.adj[under];
-        if (k.at >= 0) {
-            ImGui::SetTooltip("%s, frame %d (fading over %d): click to go to it, drag to move it, right-click to take it away", bone_title(k.bone), k.at, k.spread);
+        if (k.at >= 0 && part != KEY_BODY) {
+            ImGui::SetTooltip("Drag to hold %s's key over more frames or fewer", bone_title(k.bone));
+        } else if (k.at >= 0 && key_last(k) > k.at) {
+            ImGui::SetTooltip("%s, held from frame %d to %d (fading over %d): drag it to move it, its ends to hold it longer or shorter; "
+                              "right-click for more", bone_title(k.bone), k.at, key_last(k), k.spread);
+        } else if (k.at >= 0) {
+            ImGui::SetTooltip("%s, frame %d (fading over %d): drag it to move it; Shift and drag it (or once it's picked, its grips) to "
+                              "hold it over more frames; right-click for more", bone_title(k.bone), k.at, k.spread);
         } else {
             ImGui::SetTooltip("%s, %s: right-click to take it away", bone_title(k.bone), strcmp(k.move, "*") == 0 ? "every move here" : "the whole move");
         }
@@ -1941,9 +2069,34 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
     }
     if (ImGui::BeginPopup("key")) {
         if (T.key_sel >= 0 && T.key_sel < (int)T.adj.size()) {
-            ImGui::TextDisabled("%s", bone_title(T.adj[T.key_sel].bone));
+            PackAdjust &k = T.adj[T.key_sel];
+            const char *b = bone_title(k.bone);
+            int last = key_last(k);
+            ImGui::TextDisabled("%s", b);
+            if (k.at >= 0) {
+                // held over more of the move: to its end, from its start, all through it; or its own frame again
+                if (ImGui::MenuItem("Hold it to the end of the move", nullptr, false, last < frames - 1)) {
+                    adj_snapshot(T, "Held %s's key from frame %d to %d", b, k.at, frames - 1);
+                    k.until = frames - 1;
+                }
+                if (ImGui::MenuItem("Hold it from the start of the move", nullptr, false, k.at > 0)) {
+                    adj_snapshot(T, "Held %s's key from frame 0 to %d", b, last);
+                    k.until = last;
+                    k.at = 0;
+                }
+                if (ImGui::MenuItem("Hold it all through the move", nullptr, false, k.at > 0 || last < frames - 1)) {
+                    adj_snapshot(T, "Held %s's key all through %s", b, move);
+                    k.at = 0;
+                    k.until = frames - 1;
+                }
+                if (ImGui::MenuItem("Just its own frame again", nullptr, false, last > k.at)) {
+                    adj_snapshot(T, "Made %s's key frame %d alone", b, k.at);
+                    k.until = k.at;
+                }
+                ImGui::Separator();
+            }
             if (ImGui::MenuItem("Take this key away", "Delete")) {
-                adj_snapshot(T);
+                adj_snapshot(T, "Took away %s's key", b);
                 T.adj.erase(T.adj.begin() + T.key_sel);
                 T.key_sel = -1;
             }
@@ -1951,7 +2104,7 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
         ImGui::EndPopup();
     }
     if (T.key_sel >= 0 && T.key_sel < (int)T.adj.size() && !io.WantTextInput && ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
-        adj_snapshot(T);
+        adj_snapshot(T, "Took away %s's key", bone_title(T.adj[T.key_sel].bone));
         T.adj.erase(T.adj.begin() + T.key_sel);
         T.key_sel = -1;
     }
@@ -2654,8 +2807,22 @@ void adjust_panel(Tool &T) {
     ImGui::RadioButton("every move here", &T.key_mode, KEY_GAME);
     if (T.key_mode == KEY_FRAME) {
         ImGui::SetNextItemWidth(U(160));
-        ImGui::SliderInt("Fades over", &T.spread, 0, 30, "%d frames");
-        hint("Either side of the frame: its change is all there at that frame and fades to none this many frames away.");
+        bool faded = ImGui::SliderInt("Fades over", &T.spread, 0, 30, "%d frames");
+        // (the picked joint's key here faded so too)
+        PackAdjust *here_key = T.sel >= 0 && T.sel < po->nbones ? adj_key(T, move, po->names[T.sel], false) : nullptr;
+        if (ImGui::IsItemActivated()) {
+            T.fade_step = false;
+        }
+        if (faded && here_key != nullptr && here_key->spread != T.spread) {
+            if (!T.fade_step) {
+                adj_snapshot(T, "%s's fade", bone_title(here_key->bone));
+                T.fade_step = true;
+            }
+            here_key->spread = T.spread;
+            adj_step_says(T, "Faded %s's key over %d frames", bone_title(here_key->bone), T.spread);
+        }
+        hint("Either side of the frame (or the frames it's held over): its change is all there there and fades to none this many frames "
+             "away.");
     }
     ImGui::Spacing();
     if (T.sel >= 0 && T.sel < po->nbones) {
@@ -2680,7 +2847,7 @@ void adjust_panel(Tool &T) {
             ImGui::SetNextItemWidth(U(200));
             changed |= ImGui::DragFloat(Turns[i], &turn[i], 0.5f, -180, 180, "%.1f deg");
             if (ImGui::IsItemActivated()) {
-                adj_snapshot(T);
+                adj_snapshot(T, "Turned %s (its values)", bone_title(bone));
             }
         }
         // moved: a hand or foot its arm or leg bending to it, the hips all of it, any other joint it and all on it
@@ -2695,7 +2862,7 @@ void adjust_panel(Tool &T) {
                 changed = true;
             }
             if (ImGui::IsItemActivated()) {
-                adj_snapshot(T);
+                adj_snapshot(T, "Moved %s (its values)", bone_title(bone));
             }
             ImGui::SetItemTooltip(reach_bone(bone) ? SDL_strcasecmp(bone, "hips") == 0 ? "All of it moved" : "Its arm or leg bends to reach there"
                                                    : "Moved with all on it");
@@ -2706,7 +2873,7 @@ void adjust_panel(Tool &T) {
             ImGui::SetNextItemWidth(U(200));
             changed |= ImGui::DragFloat(Sizes[i], &size[i], 0.01f, 0.1f, 10, "x%.2f");
             if (ImGui::IsItemActivated()) {
-                adj_snapshot(T);
+                adj_snapshot(T, "Made %s bigger or smaller (its values)", bone_title(bone));
             }
             ImGui::SetItemTooltip("Made bigger or smaller (x1 as it is), with all on it, about its joint");
         }
@@ -2717,21 +2884,49 @@ void adjust_panel(Tool &T) {
                 k->grow[i] = fmaxf(0.1f, fminf(10, size[i])) - 1;
             }
         }
-        if (T.key_mode == KEY_FRAME) {
+        if (T.key_mode == KEY_FRAME && (k = adj_key(T, move, bone, false)) != nullptr && k->at >= 0) {
+            // the frames it's held over: from, to (the same: that frame alone)
+            int from = k->at, to = key_last(*k), frames = mk->anims[a].frames;
+            ImGui::SetNextItemWidth(U(110));
+            bool held = ImGui::DragInt("##from", &from, 0.2f, 0, frames - 1, "from frame %d");
+            if (ImGui::IsItemActivated()) {
+                adj_snapshot(T, "Held %s's key", bone_title(bone));
+            }
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(U(110));
+            held |= ImGui::DragInt("Held##to", &to, 0.2f, 0, frames - 1, "to frame %d");
+            if (ImGui::IsItemActivated()) {
+                adj_snapshot(T, "Held %s's key", bone_title(bone));
+            }
+            ImGui::SetItemTooltip("The frames its change is all there over (the same: that frame alone), fading either side");
+            if (held) {
+                k->at = std::max(0, std::min(from, to));
+                k->until = std::min(frames - 1, std::max(from, to));
+                T.frame = std::max(k->at, std::min(key_last(*k), T.frame));
+                adj_step_says(T, k->until > k->at ? "Held %s's key from frame %d to %d" : "Made %s's key frame %d alone", bone_title(bone), k->at,
+                              k->until);
+            }
+            if (ImGui::SmallButton("Hold it all through the move")) {
+                adj_snapshot(T, "Held %s's key all through %s", bone_title(bone), move);
+                k->at = 0;
+                k->until = frames - 1;
+            }
+            ImGui::SetItemTooltip("Its change all there in every frame of %s (drag its ends in the timeline to hold it over fewer)", move);
+        } else if (T.key_mode == KEY_FRAME) {
             ImGui::TextDisabled("At frame %d of %s.", T.frame, move);
         } else {
             ImGui::TextDisabled(T.key_mode == KEY_MOVE ? "In all of %s." : "In every move here%s.", T.key_mode == KEY_MOVE ? move : "");
         }
         if (ImGui::Button(other_side(bone)[0] != 0 ? "Mirror to its other side" : "Mirror (it has no other side)")
             && other_side(bone)[0] != 0) {
-            adj_snapshot(T);
+            adj_snapshot(T, "Mirrored %s to its other side", bone_title(bone));
             own_before_change(T, move);
             adj_mirror(T, move, bone);
         }
         ImGui::SetItemTooltip("Its changes in this move given to its other side, the other way round");
         ImGui::SameLine();
         if (ImGui::Button("Reset this joint")) {
-            adj_snapshot(T);
+            adj_snapshot(T, "Reset %s", bone_title(bone));
             std::vector<PackAdjust> keep;
             for (auto &x : T.adj) {
                 if (!(x.kind == T.kind && pack_adjust_for(&x, T.kind, move) && SDL_strcasecmp(x.bone, bone) == 0)) {
@@ -2759,7 +2954,7 @@ void adjust_panel(Tool &T) {
     ImGui::EndDisabled();
     ImGui::SameLine();
     if (ImGui::Button("Reset this move")) {
-        adj_snapshot(T);
+        adj_snapshot(T, "Reset %s", move);
         std::vector<PackAdjust> keep;
         for (auto &x : T.adj) {
             if (!(x.kind == T.kind && SDL_strcasecmp(x.move, move) == 0)) {
@@ -2770,6 +2965,35 @@ void adjust_panel(Tool &T) {
         T.key_sel = -1;
     }
     ImGui::SetItemTooltip("All its changes in %s taken away", move);
+    // the undo history: each step, the one it's at lit; clicked, gone back (or on) to it
+    if (ImGui::TreeNodeEx("History", ImGuiTreeNodeFlags_DefaultOpen)) {
+        int at = (int)T.undo.size(), all = at + (int)T.redo.size();
+        static int shown_at = -1;
+        ImGui::BeginChild("##history", ImVec2(0, U(130)), ImGuiChildFlags_Borders);
+        for (int i = 0; i <= all; i++) {
+            const char *says = i == 0 ? T.undo.size() >= 300 ? "(as far back as it goes)" : "(as it was)"
+                             : i <= at ? T.undo[i - 1].says.c_str()
+                                       : T.redo[T.redo.size() - (size_t)(i - at)].says.c_str();
+            ImGui::PushID(i);
+            if (i > at) {
+                ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+            }
+            if (ImGui::Selectable(says, i == at)) {
+                adj_go(T, i);
+            }
+            if (i > at) {
+                ImGui::PopStyleColor();
+            }
+            if (i == at && shown_at != at) {
+                ImGui::SetScrollHereY(1);
+            }
+            ImGui::PopID();
+        }
+        shown_at = at;
+        ImGui::EndChild();
+        ImGui::TreePop();
+    }
+    ImGui::SetItemTooltip("Each change made here: click one to go back to just after it (or on again, the greyed ones)");
     // its changes in this move: each picked to go to it, or taken away
     ImGui::SeparatorText("Its changes in this move");
     int shown = 0, gone = -1;
@@ -2785,7 +3009,9 @@ void adjust_panel(Tool &T) {
         }
         snprintf(line, sizeof(line), "%s: %s%s##%d", bone_title(x.bone),
                  x.at >= 0 ? "" : strcmp(x.move, "*") == 0 ? "every move here" : "the whole move", "", i);
-        if (x.at >= 0) {
+        if (x.at >= 0 && key_last(x) > x.at) {
+            snprintf(line, sizeof(line), "%s: frames %d to %d, fading over %d##%d", bone_title(x.bone), x.at, key_last(x), x.spread, i);
+        } else if (x.at >= 0) {
             snprintf(line, sizeof(line), "%s: frame %d, fading over %d##%d", bone_title(x.bone), x.at, x.spread, i);
         }
         ImGui::PushID(i);
@@ -2795,7 +3021,7 @@ void adjust_panel(Tool &T) {
         ImGui::SetItemTooltip("Take it away");
         ImGui::PopID();
         ImGui::SameLine();
-        if (ImGui::Selectable(line, b == T.sel && (x.at < 0 || x.at == T.frame))) {
+        if (ImGui::Selectable(line, b == T.sel && (x.at < 0 || (x.at <= T.frame && T.frame <= key_last(x))))) {
             T.sel = b;
             if (x.at >= 0) {
                 T.frame = x.at;
@@ -2809,7 +3035,7 @@ void adjust_panel(Tool &T) {
         shown++;
     }
     if (gone >= 0) {
-        adj_snapshot(T);
+        adj_snapshot(T, "Took away %s's change", bone_title(T.adj[gone].bone));
         T.adj.erase(T.adj.begin() + gone);
         T.key_sel = -1;
     }
@@ -3409,7 +3635,12 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     while (!done) {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
-            ImGui_ImplSDL3_ProcessEvent(&e);
+            // (a test's drag has the mouse: the real one's left out)
+            bool mouse = e.type == SDL_EVENT_MOUSE_MOTION || e.type == SDL_EVENT_MOUSE_BUTTON_DOWN || e.type == SDL_EVENT_MOUSE_BUTTON_UP
+                      || e.type == SDL_EVENT_MOUSE_WHEEL;
+            if (!(mouse && SDL_getenv("HEROTOOL_DRAG") != nullptr)) {
+                ImGui_ImplSDL3_ProcessEvent(&e);
+            }
             if (e.type == SDL_EVENT_KEY_DOWN && (e.key.mod & SDL_KMOD_CTRL) != 0) {
                 SDL_Keycode k = e.key.key;
                 bool bigger = k == SDLK_EQUALS || k == SDLK_PLUS || k == SDLK_KP_PLUS, smaller = k == SDLK_MINUS || k == SDLK_KP_MINUS;
@@ -3540,6 +3771,15 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                         k->grow[i] = g[i] - 1;
                     }
                 }
+                /* (BONE@FROM-TO: held from one to the other) */
+                if (at != nullptr && strchr(at, '-') != nullptr) {
+                    k->until = SDL_atoi(strchr(at, '-') + 1);
+                }
+                T.key_sel = (int)(k - T.adj.data());
+            }
+            /* and HEROTOOL_SHOW_FRAME=N shows that frame after (what HEROTOOL_LIVE writes) */
+            if (SDL_getenv("HEROTOOL_SHOW_FRAME") != nullptr) {
+                T.frame = SDL_atoi(SDL_getenv("HEROTOOL_SHOW_FRAME"));
             }
         }
         lap(-1);
@@ -3596,17 +3836,20 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
         /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT] presses the left button at (X0, Y0) in the window once a game's shown, moves
-           to (X1, Y1) over ten frames and lets go (Shift held if SHIFT is 1), as a person's mouse would */
+           to (X1, Y1) over ten frames and lets go (Shift held if SHIFT is 1), as a person's mouse would, and keeps it there after (the
+           real mouse left out: the SDL backend gives where it is on the screen while the window has the focus) */
         static int drag_step = -1;
-        if (SDL_getenv("HEROTOOL_DRAG") != nullptr && (T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr)) && drag_step < 14) {
+        if (SDL_getenv("HEROTOOL_DRAG") != nullptr && (drag_step >= 0 || T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr))) {
             float d[5] = { 0, 0, 0, 0, 0 };
             SDL_sscanf(SDL_getenv("HEROTOOL_DRAG"), "%f,%f,%f,%f,%f", &d[0], &d[1], &d[2], &d[3], &d[4]);
             ImGuiIO &dio = ImGui::GetIO();
-            drag_step++;
-            float t = drag_step < 2 ? 0 : drag_step > 11 ? 1 : (drag_step - 1) / 10.0f;
-            dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && drag_step >= 1 && drag_step <= 12);
+            // Shift down the frame before the press and up the frame after the release, and the mouse before it each frame: ImGui
+            // keeps a mouse move or press queued after a key's change for the frame after (its input trickling)
+            drag_step = drag_step < 100 ? drag_step + 1 : drag_step;
+            float t = drag_step < 3 ? 0 : drag_step > 12 ? 1 : (drag_step - 2) / 10.0f;
             dio.AddMousePosEvent(d[0] + (d[2] - d[0]) * t, d[1] + (d[3] - d[1]) * t);
-            dio.AddMouseButtonEvent(0, drag_step >= 1 && drag_step <= 12);
+            dio.AddMouseButtonEvent(0, drag_step >= 2 && drag_step <= 12);
+            dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && drag_step >= 1 && drag_step <= 13);
         }
         ImGui::NewFrame();
         if (T.home) {

@@ -47,7 +47,8 @@ typedef struct {
     char move[PACK_ADJUST_NAME];    /* the move of its model of that kind, as the game made it (the tool's list), or "*" every one */
     char bone[PACK_ADJUST_NAME];    /* its bone, by name (hips, chest, upperarm_l ...: the hero tool's) */
     int at;                         /* the frame of that move it's at, or -1 for every frame */
-    int spread;                     /* the frames either side it fades out over (0: that frame alone) */
+    int until;                      /* held there to this frame, all of it from at to until ("until"; at or before at: at alone) */
+    int spread;                     /* the frames either side it fades out over (0: those frames alone) */
     float turn[3];                  /* that bone and all on it turned about those axes (degrees, a turn's axis times its angle) */
     float reach[3];                 /* moved (the game's units): a hand or foot, its arm or leg bent to it; the hips, all of it; any
                                      * other bone, it and all on it */

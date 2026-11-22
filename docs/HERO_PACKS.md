@@ -65,7 +65,7 @@ one's.
 - `voices`: each of its base's 26 sound offsets (EXTRA_HEROES.md, His sounds): a job (`"1": "laugh"`), `base` or `none`. An offset
   it doesn't name plays the job it does for the game's own heroes if the pack has that job's sound (0 name, 1 and 6 and 24 laugh, 2 to
   5 yelp, 11, 13 and 21 jump, 12 thud, 15 throw), else its base's.
-- `adjust`: its moves adjusted by hand (Adjusting its moves, below), each `{"kind", "move", "bone", "at", "spread", "turn": [x, y,
+- `adjust`: its moves adjusted by hand (Adjusting its moves, below), each `{"kind", "move", "bone", "at", "until", "spread", "turn": [x, y,
   z], "reach": [x, y, z], "scale": [x, y, z]}`.
 
 ### hero.glb
@@ -364,8 +364,9 @@ clipping". What the game makes of a pack in a game (following its template there
 at a time, and the change is kept in its hero.json (`adjust`) and made by the game as it makes the model.
 
 **A change** (`PackAdjust`, heropack.h) is to one bone in one game's move (`"move"`, the model's move as the game made it, the
-tool's list; `"*"` every move of that game): at one frame (`"at"`), all of it there and fading to none over `"spread"` frames each
-side (a cosine), or without `"at"` at every frame. Several at a frame add up. Its `turn` turns the bone and all on it about its joint
+tool's list; `"*"` every move of that game): at one frame (`"at"`), or held from it to `"until"` (the user's word, 2026-11-22: "if i
+make his head realy big i can extend it along the entire animation and that will keep it big"), all of it there and fading to none
+over `"spread"` frames each side (a cosine), or without `"at"` at every frame. Several at a frame add up. Its `turn` turns the bone and all on it about its joint
 (degrees about the hero's own axes as it stands at rest, in the game's: x to its left, y down, z to its back; an axis times its
 angle); its `reach` (the game's units, the same axes) moves a hand or foot (a bone named hand... or foot...), its arm or leg bent to
 reach it (two-bone, its elbow or knee bent the way it was), the hips (or a root), all of it, or any other bone, it and all on it (an
@@ -442,14 +443,28 @@ gives its changes in this move to its other side the other way round (its size a
 Under the picture is its **timeline** (the user's word: "a key frame time line below the animation"): play or stop, the key before
 and after, the frame, the speed, and a sheet of the move's frames: a ruler (click or drag it to go to a frame) with the frame shown
 across it all, and a row for each joint with a change in the move (and the joint picked; clicking a row's name picks it). A change
-at a frame is a diamond, its fade a band either side; one to the whole move a green bar, to every move here a blue one. Click a key to
-go to it (its joint picked, its frame and fade), drag a diamond to another frame (undone in one), right-click it or press Delete to
-take it away. Keys: Space plays, the arrows step a frame, R, G and S pick the gizmo, Delete takes the key picked away, Ctrl+Z,
-Ctrl+Y (or Ctrl+Shift+Z). Up to 256 changes a hero.
+at a frame is a diamond; one **held** over frames a bar between two diamonds; its fade a band either side; one to the whole move a
+green bar, to every move here a blue one. Click a key to pick it and go to it (its joint, its frame and fade). Drag a diamond (a held
+key by its bar) to move it to other frames. To hold one over more frames or fewer: drag a held key's end, or a picked key's grips
+(the white bars either side), or Shift and drag a key the way it's to go. Right-click a key for **Hold it to the end of the move**,
+**from the start**, **all through the move**, **Just its own frame again**, and **Take this key away** (or press Delete). The panel
+says a held key's frames (**from frame**, **to frame**, to type or drag) with **Hold it all through the move**; a change made at any
+frame it's held over is made to it (`adj_key`), so its head made bigger anywhere there is bigger all the way. The fade picked
+(**Fades over**) is the picked joint's key's there too.
 
-Its tests' settings: `HEROTOOL_ADJUST=BONE@FRAME` adjusts the page shown once it's made, that bone picked there;
+**The undo history** (the user's word, 2026-11-22: "add undo history for keyframe moves in the timeline"): every change is a step
+with a name, as Blender's: "Turned Head", "Made Head bigger or smaller", "Moved Head's key to frames 32 to 82", "Held Head's key from
+frame 10 to 66", "Took away Head's key", "Mirrored ...", "Reset ..." (a drag's step said again as it goes, `adj_step_says`). The
+panel's **History** lists them, oldest first, the one it's at lit and those undone greyed; clicking one goes back (or on) to just
+after it (`adj_go`). Up to 300 steps. Keys: Space plays, the arrows step a frame, R, G and S pick the gizmo, Delete takes the key
+picked away, Ctrl+Z, Ctrl+Y (or Ctrl+Shift+Z). Up to 256 changes a hero.
+
+Its tests' settings: `HEROTOOL_ADJUST=BONE@FRAME` (or `@FROM-TO`, held) adjusts the page shown once it's made, that bone picked there
+(and `HEROTOOL_SHOW_FRAME=N` shows that frame after);
 `HEROTOOL_ADJUST_TURN` / `_REACH` / `_SCALE=X,Y,Z` changes it; `HEROTOOL_GIZMO=N` picks the gizmo (0 turn, 1 move, 2 size);
-`HEROTOOL_DRAG=X0,Y0,X1,Y1[,1]` drags the mouse in the window (Shift with 1; the window's pixels, as `HEROTOOL_SHOT`'s picture's);
+`HEROTOOL_DRAG=X0,Y0,X1,Y1[,1]` drags the mouse in the window (Shift with 1, down the frame before the press and up the frame after, as
+ImGui holds a press queued after a key's change for the next frame; the window's pixels, as `HEROTOOL_SHOT`'s picture's), and keeps
+it there after, the real mouse left out (ImGui's SDL backend gives the real one's place while the window has the focus);
 `HEROTOOL_LIVE=FILE` writes the frame shown as the tool made it (s16 x, y, z a vertex), and FILE.txt its move and frame, to set
 beside the game's. Run one test tool at a time, or each with its own `HEROTOOL_PREF`: each has the game make its models into its
 folder.

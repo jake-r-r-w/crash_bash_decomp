@@ -24,8 +24,8 @@ typedef struct {
 
 /* Whether an adjustment is for a kind's move (its name in any case; "*" every move of the kind) */
 int pack_adjust_for(const PackAdjust *a, int kind, const char *move);
-/* How much of it there is at a frame of its move: all of it at its own frame, fading out over its spread; all of it at every frame
- * if it's at none */
+/* How much of it there is at a frame of its move: all of it at its own frame (or held from it to until), fading out over its spread
+ * either side; all of it at every frame if it's at none */
 float pack_adjust_share(const PackAdjust *a, int frame);
 /* A bone by name (any case), or -1 */
 int pack_bone_named(const PackBones *bones, const char *name);

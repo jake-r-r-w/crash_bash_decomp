@@ -667,6 +667,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-22: hero tool keys can be held over frames (`"until"`, `PackAdjust.until`; heroadjust.c's share): drag a held key's ends,
+  a picked one's grips or Shift-drag, or right-click to hold it to the end, from the start or all through. An undo history with named
+  steps, clicked to go back. Tool and game the same exactly with a held key. Gotcha: `HEROTOOL_DRAG` must keep the mouse after the
+  drag (ImGui's SDL backend feeds the real cursor while the window has the focus) and put Shift down a frame before the press.
+
 - 2026-11-22: the hero tool no longer lags (the user's word): a frame was 54 ms (the model page's views drawn on every page, the
   game's picture every frame). Pictures are drawn only while shown and when changed, triangles filled across only their rows' spans,
   in bands on threads; a frame is 0.3 to 7 ms now. `HEROTOOL_PROFILE`, `HEROTOOL_PREF` (a test's own folder). The model page's views
