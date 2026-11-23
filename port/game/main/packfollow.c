@@ -695,6 +695,13 @@ void pack_follow_fits(const s32 *no_fit) {
     }
 }
 
+/* How high its arms go where they're free (hero.json's "arm_lift"), in radians from hanging down, 0 as high as its template's do */
+static float ArmLift;
+
+void pack_follow_arm_lift(s32 degrees) {
+    ArmLift = degrees > 0 && degrees < 180 ? (float)degrees * 0.0174532925f : 0;
+}
+
 static Packed ThePack;
 
 /* its trunk's frame as it rests: up its spine, across its shoulders, forward */
@@ -1011,12 +1018,43 @@ static void pose_dump_end(Packed *p, s32 expected) {
     }
 }
 
-/* An arm (side 0 its left) reaching for target, its elbow bent towards hint */
-static void arm_reach(const Packed *p, Mat *Q, V3 *P, s32 side, V3 target, V3 hint) {
+/* An arm turned down about its shoulder, bent as it is, where its upper arm goes higher than lift (radians from down, its trunk's) */
+static void arm_lower(V3 sh, V3 *elbow, V3 *hand, V3 down, V3 out, float lift) {
+    V3 u = vnorm(vsub(*elbow, sh)), axis = vcross(u, down), pt[2];
+    float c = vdot(u, down), now = acosf(c < -1 ? -1 : c > 1 ? 1 : c), by, cb, sb;
+    s32 i;
+
+    if (now <= lift) {
+        return;
+    }
+    /* straight up: turned down out to its side */
+    if (vlen(axis) < 1e-4f) {
+        axis = vcross(u, out);
+    }
+    axis = vnorm(axis);
+    by = now - lift, cb = cosf(by), sb = sinf(by);
+    pt[0] = vsub(*elbow, sh), pt[1] = vsub(*hand, sh);
+    for (i = 0; i < 2; i++) {
+        V3 v = pt[i];
+
+        pt[i] = vadd(vadd(vmul(v, cb), vmul(vcross(axis, v), sb)), vmul(axis, vdot(axis, v) * (1 - cb)));
+    }
+    *elbow = vadd(sh, pt[0]);
+    *hand = vadd(sh, pt[1]);
+}
+
+/* An arm (side 0 its left) reaching for target, its elbow bent towards hint; with a trunk (down, and its left), raised no higher than
+ * its pack says (ArmLift) */
+static void arm_reach(const Packed *p, Mat *Q, V3 *P, s32 side, V3 target, V3 hint, const Mat *trunk) {
     s32 up = p->pb[side ? PB_UPPER_R : PB_UPPER_L], fo = p->pb[side ? PB_FORE_R : PB_FORE_L], ha = p->pb[side ? PB_HAND_R : PB_HAND_L];
     float l1 = vlen(vsub(p->bone[fo], p->bone[up])), l2 = vlen(vsub(p->bone[ha], p->bone[fo]));
     V3 sh = P[up], elbow = two_bone(sh, target, l1, l2, hint), hand = vadd(elbow, vmul(vnorm(vsub(target, elbow)), l2));
 
+    if (trunk != NULL && ArmLift > 0) {
+        V3 down = v3(-trunk->m[0][1], -trunk->m[1][1], -trunk->m[2][1]), left = v3(trunk->m[0][0], trunk->m[1][0], trunk->m[2][0]);
+
+        arm_lower(sh, &elbow, &hand, vnorm(down), vmul(vnorm(left), side ? -1.0f : 1.0f), ArmLift);
+    }
     Q[up] = mat_arc(vsub(p->bone[fo], p->bone[up]), vsub(elbow, sh));
     Q[fo] = mat_arc(vsub(p->bone[ha], p->bone[fo]), vsub(hand, elbow));
     P[fo] = elbow;
@@ -1195,7 +1233,8 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
             target = vadd(sh, vmul(vsub(Hd, S), crash_arm > 1 ? (l1 + l2) / crash_arm : 1));
         }
         hints[side] = vsub(E, vmul(vadd(S, Hd), 0.5f));
-        arm_reach(p, Q, P, side, target, hints[side]);
+        /* free (not on a grip), raised no higher than its pack says it can */
+        arm_reach(p, Q, P, side, target, hints[side], fk->grip != NULL && !fk->carry ? NULL : &body);
     }
     /* what it carries: turned out of its head, and (kept Crash's size, a keg) pushed out of its body, its hand reaching out after it */
     if (fk->carry) {
@@ -1207,7 +1246,7 @@ static void frame_at(void *ctx, s32 a, float f, V3 *out) {
         push = fk->carry_kept ? carry_push(p, c, L, Hd, carry_at, &carry_turn, hips_at, &R) : v3(0, 0, 0);
         if (vlen(push) > 0) {
             carry_at = vadd(carry_at, push);
-            arm_reach(p, Q, P, side, carry_at, hints[side]);
+            arm_reach(p, Q, P, side, carry_at, hints[side], NULL);
         }
     }
     /* its legs: as Crash's astride, on the pegs or the floor stood, else sat */

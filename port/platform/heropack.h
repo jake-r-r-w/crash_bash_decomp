@@ -73,6 +73,8 @@ typedef struct {
     char face[PACK_ANIM_NAME]; /* the clip its face is drawn from if it has no card */
     float face_turn;
     float face_head;           /* the share of its model, from the top, that's its head, for that face (0: the game's own share) */
+    int arm_lift;              /* how high its arms go where they're free, in degrees from hanging down ("arm_lift": a short-armed hero
+                                * with a big head can't reach over it), 0 as high as its template's do */
     PackAdjust adjust[PACK_MAX_ADJUSTS]; /* its moves adjusted ("adjust") */
     int nadjust;
 } PackInfo;

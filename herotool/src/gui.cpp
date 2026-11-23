@@ -1167,6 +1167,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     }
     p.height = T.height;
     p.face_head = T.face_head;
+    p.arm_lift = T.m->arm_raise < 179.5f ? (int)lroundf(T.m->arm_raise) : 0; // (at the top, none)
     p.card = T.card[0] ? T.card : nullptr;
     // its adjustments, but not in what the preview's made from: the preview makes them itself, on the game's poses before them
     p.adjust = T.adj.empty() || T.bare ? nullptr : T.adj.data();
@@ -4672,6 +4673,7 @@ void load_pack(Tool &T, const Found &f) {
                           : info.prefer >= 1 && info.prefer <= 8                             ? info.prefer - 1
                                                                                               : 0;
         T.face_head = info.face_head;
+        T.m->arm_raise = info.arm_lift > 0 ? (float)info.arm_lift : 180;
         T.adj.assign(info.adjust, info.adjust + info.nadjust);
         T.undo.clear();
         T.redo.clear();
@@ -5819,25 +5821,30 @@ void model_card(Tool &T, SDL_Window *win) {
                 T.unsaved = true;
             }
         }
-        row_label("Arm lift", U(190));
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(CARD));
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
-        ImGui::SetNextItemWidth(U(190));
-        float lift_was = T.m->arm_raise;
-        if (ImGui::SliderFloat("##armlift", &T.m->arm_raise, 20, 160, "%.0f deg")) {
-            T.dirty = true;
-            T.unsaved = true;
-        }
-        if (ImGui::IsItemActivated()) {
-            float now = T.m->arm_raise;
-            T.m->arm_raise = lift_was;
-            joint_snapshot(T, "Arm lift");
-            T.m->arm_raise = now;
-        }
-        ImGui::PopStyleVar();
-        ImGui::PopStyleColor();
-        ImGui::SetItemTooltip("How high it can raise its arms (less for short arms or a big head)");
     }
+    // how high its arms go, rigged or not: in every game where they're free (its template's moves, hero.json's "arm_lift") and its own
+    // moves from the list; at the top, no limit (the user's word, 2026-11-23: "the arm lift does not seem to do anything and is default
+    // maxed out": it had only held back the tool's own moves, at most 160)
+    row_label("Arm lift", U(190));
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(CARD));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+    ImGui::SetNextItemWidth(U(190));
+    float lift_was = T.m->arm_raise;
+    if (ImGui::SliderFloat("##armlift", &T.m->arm_raise, 20, 180, T.m->arm_raise >= 179.5f ? "No limit" : "%.0f deg",
+                           ImGuiSliderFlags_AlwaysClamp)) {
+        T.dirty = true;
+        T.unsaved = true;
+    }
+    if (ImGui::IsItemActivated()) {
+        float now = T.m->arm_raise;
+        T.m->arm_raise = lift_was;
+        joint_snapshot(T, "Arm lift");
+        T.m->arm_raise = now;
+    }
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor();
+    ImGui::SetItemTooltip("How high it raises its arms in every game, in degrees from hanging down. Lower it for short arms or a big "
+                          "head, so its hands don't go through it");
     card_end();
 }
 
@@ -7942,6 +7949,15 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                            (int)T.baked.size(), T.maker != nullptr ? "yes" : "no");
                 }
             }
+        }
+        /* a test's: HEROTOOL_ARM_LIFT=DEGREES sets its Arm lift once it's open (180 none) and makes it again in the games */
+        static bool lifted = false;
+        if (!lifted && SDL_getenv("HEROTOOL_ARM_LIFT") != nullptr && T.m != nullptr && !T.home && !T.choosing) {
+            lifted = true;
+            T.m->arm_raise = SDL_clamp((float)SDL_atof(SDL_getenv("HEROTOOL_ARM_LIFT")), 20.0f, 180.0f);
+            T.dirty = T.unsaved = true;
+            make_in_game(T);
+            printf("herotool: arm lift %.0f, making %s\n", T.m->arm_raise, T.maker != nullptr || T.remake ? "yes" : "no");
         }
         /* a test's: HEROTOOL_ADD=1 saves the hero open and adds it to the game, as Save then Add to game do, once it's open */
         static bool added = false;

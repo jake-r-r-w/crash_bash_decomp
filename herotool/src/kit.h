@@ -56,7 +56,8 @@ typedef struct {
     uint8_t *atlas;
     uint8_t *png;
     size_t png_size;
-    /* how high it may raise its arms: degrees from hanging (160 all the way up; less for short arms and a big head) */
+    /* how high it may raise its arms: degrees from hanging (180 no limit; less for short arms and a big head), in its own moves and,
+       as its pack's "arm_lift", its template's in every game */
     float arm_raise;
     /* its own rig, if it has one (a skinned mesh): its bones' names, parents and places as it rests, and each vertex's bones in it */
     int nsrc;
@@ -128,6 +129,7 @@ typedef struct {
     const char *drop[KIT_DROP_MOST + 1];
     int height;
     float face_head;
+    int arm_lift;                       /* how high its arms go in the games where they're free, degrees from hanging; 0 no limit */
     const char *voice[PACK_VOICE_JOBS]; /* each job's sound (PackVoiceJobs: name, laugh, yelp, ...), a WAV, or NULL for its base's */
     const char *card;                   /* its card in the character select, a PNG, or NULL for its face drawn from it */
     const PackAdjust *adjust;           /* its moves adjusted in the games (hero.json's "adjust": the animation tools) */

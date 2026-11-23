@@ -336,6 +336,8 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
     out->face_turn = v != NULL && v->type == J_NUMBER ? (float)v->number : 0;
     v = jget(root, "face_head");
     out->face_head = v != NULL && v->type == J_NUMBER && v->number > 0.05 && v->number <= 1 ? (float)v->number : 0;
+    out->arm_lift = jint(jget(root, "arm_lift"), 0);
+    out->arm_lift = out->arm_lift >= 20 && out->arm_lift < 180 ? out->arm_lift : 0;
     for (k = 0; k < PACK_KINDS; k++) {
         out->kinds[k].keep_lift = 0x1000;
         out->kinds[k].subframes = 1;

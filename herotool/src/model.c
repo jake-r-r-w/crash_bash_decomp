@@ -18,7 +18,7 @@ int kit_read(const char *path, KitModel *m, char *why, size_t why_size) {
     int i, j;
 
     memset(m, 0, sizeof(*m));
-    m->arm_raise = 160;
+    m->arm_raise = 180;
     if (glb == NULL) {
         snprintf(why, why_size, "can't read %s", path);
         return 0;
