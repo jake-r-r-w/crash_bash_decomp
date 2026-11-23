@@ -484,8 +484,8 @@ static void plain_name(const char *name, char *out, size_t size) {
     out[n] = 0;
 }
 
-/* whether bone c carries on from b (the bone after it in its chain), not one that branches off it */
-static int carries_on(int b, int c) {
+/* whether bone c carries on from b (the bone after it in its chain), not one that branches off it (the tool's joints move so too) */
+int kit_carries_on(int b, int c) {
     return KitBoneParent[c] == b && c != KB_UPPERARM_L && c != KB_UPPERARM_R && c != KB_JAW && c != KB_EAR_L1 && c != KB_EAR_R1
         && c != KB_THIGH_L && c != KB_THIGH_R && c != KB_TAIL1;
 }
@@ -500,7 +500,7 @@ static void ends(KitModel *m) {
         if (!m->bones[b].have) {
             continue;
         }
-        for (c = 0; c < KB_COUNT && !(m->bones[c].have && carries_on(b, c)); c++) {
+        for (c = 0; c < KB_COUNT && !(m->bones[c].have && kit_carries_on(b, c)); c++) {
         }
         if (c < KB_COUNT) {
             memcpy(m->bones[b].end, m->bones[c].at, sizeof(m->bones[b].end));

@@ -28,6 +28,8 @@ enum {
 };
 #define KB_NEEDED (KB_FOOT_R + 1)
 extern const char *const KitBoneNames[KB_COUNT];
+/* whether bone c carries on from b (the next in its chain: its start is b's end), not one that branches off it (an arm off the chest) */
+int kit_carries_on(int b, int c);
 extern const int KitBoneParent[KB_COUNT];
 
 typedef struct {

@@ -346,7 +346,11 @@ test drag). **Guess joints** asks first ("the Guess joints option is destructive
 moving the joints"), move with the right button, and go back with a right double-click or Home, both alike up and down, so a joint's
 at one height in each; the dots stay in their view. **Mirror** ("the mirror does not always work") places the other side's joint
 across the hips (the body's middle; across x 0 it was off for a model not built about it), and what joins it with it: only its one
-dot had moved, so its arm or leg came apart. Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
+dot had moved, so its arm or leg came apart. A joint moved takes only the one joint it is with it: a bone's end and the start of the
+bone that carries on from it (`kit_carries_on`, the rig's own rule: the hips' end and the spine's, the chest's and the neck's), never
+a bone branching off there; before, every bone starting within half its height went, so the spine took the thighs and the neck the
+shoulders (the user's word, 2026-11-23: "when i move the spine node on the hero setup it turns into thigh _r. nek also turns into
+upperarm_r"). And the dot taken is the nearest, a bone's own before another's end on it (the spine's, not the hips' end). Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
 with it. `HEROTOOL_MARKERS=BONE` prints where a bone's dot is and every joint after a drag, and `HEROTOOL_DRAG` and `_WHEEL` work
 there, for a test. On the right, a column that scrolls, its **Model** (Open, Guess joints, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
 id, **Height**: as tall as one of the heroes, picked from a menu, or its own, typed or stepped by 10 from 200 to 900, the user's

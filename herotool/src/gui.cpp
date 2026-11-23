@@ -3943,6 +3943,8 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     ImVec2 lo(at.x, at.y), hi(at.x + vw(v), at.y + vh(v));
     bool in_view = mouse.x >= lo.x && mouse.x < hi.x && mouse.y >= lo.y && mouse.y < hi.y;
     dl->PushClipRect(lo, hi, true);
+    float pick_d2 = 1e30f;
+    int pick_bone = -1, pick_end = 0;
     // its grid, behind the dots (the user's word, 2026-11-23: "It needs a toggable grid"): a line each step of a round size near a tenth of
     // its height, across through its middle (x 0 front, z 0 side) and up from its feet, those two brighter
     if (T.joint_grid) {
@@ -3973,26 +3975,30 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             ImVec2 c(at.x + sx[e], at.y + sy[e]);
             dl->AddCircleFilled(c, e ? U(4) : U(7), GROUND);
             dl->AddCircleFilled(c, e ? U(3) : U(5.5f), col);
-            if (T.drag_bone < 0 && in_view && ImGui::IsMouseClicked(0) && (mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < U(7) * U(7)) {
-                joint_snapshot(T, "Moved %s%s", KitBoneNames[b], e ? "'s end" : "");
-                T.drag_bone = b, T.drag_end = e, T.drag_view = which;
-                // a rigged model's joints placed by hand: the tool weights it to them from now (its own clips kept, export_pack)
-                if (T.rigged) {
-                    T.rigged = false;
-                    snprintf(T.status, sizeof(T.status), "Its joints are yours to place now: the tool weights it to them");
-                }
-            }
-        }
-        if (ImGui::IsItemHovered()) {
-            for (int e = 0; e < 2; e++) {
-                ImVec2 c(at.x + sx[e], at.y + sy[e]);
-                if ((mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < U(7) * U(7)) {
-                    ImGui::SetTooltip("%s%s", KitBoneNames[b], e ? " (its end)" : "");
-                }
+            // the dot under the mouse: the nearest, a bone's own (its start) before another's end there (the spine's, not the hips'
+            // end on it: taken as the hips' end, a drag took every bone starting near it, its thighs too; the user's word, 2026-11-23:
+            // "when i move the spine node on the hero setup it turns into thigh _r")
+            float d2 = (mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y);
+            if (d2 < U(8) * U(8) && (d2 + 0.5f < pick_d2 || (fabsf(d2 - pick_d2) <= 0.5f && e == 0 && pick_end == 1))) {
+                pick_d2 = d2, pick_bone = b, pick_end = e;
             }
         }
     }
     dl->PopClipRect();
+    if (pick_bone >= 0 && in_view) {
+        if (T.drag_bone < 0 && ImGui::IsMouseClicked(0)) {
+            joint_snapshot(T, "Moved %s%s", KitBoneNames[pick_bone], pick_end ? "'s end" : "");
+            T.drag_bone = pick_bone, T.drag_end = pick_end, T.drag_view = which;
+            // a rigged model's joints placed by hand: the tool weights it to them from now (its own clips kept, export_pack)
+            if (T.rigged) {
+                T.rigged = false;
+                snprintf(T.status, sizeof(T.status), "Its joints are yours to place now: the tool weights it to them");
+            }
+        }
+        if (ImGui::IsItemHovered() && T.drag_bone < 0) {
+            ImGui::SetTooltip("%s%s", KitBoneNames[pick_bone], pick_end ? " (its end)" : "");
+        }
+    }
     // dragging: across and up in the front view, through and up in the side view
     if (T.drag_bone >= 0 && T.drag_view == which) {
         if (ImGui::IsMouseDown(0)) {
@@ -4005,18 +4011,18 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
                 p[2] = -mx;
             }
             // a joint's dot put somewhere, and what joins it with it: a bone's end is the next one's start
+            // a joint's dot put somewhere, and the one joint it is with it: a bone's end and the start of the bone that carries on from it
+            // (kit_carries_on: the hips' end and the spine's start, the chest's and the neck's), never a bone that branches off there (a
+            // thigh off the hips, an arm off the chest; before, every bone starting within half its height went: the user's word,
+            // 2026-11-23, "nek also turns into upperarm_r")
             auto place = [&](int bone, int end, const float *to) {
                 float *d = end ? T.m->bones[bone].end : T.m->bones[bone].at;
                 memcpy(d, to, sizeof(float) * 3);
                 for (int c = 0; c < KB_COUNT; c++) {
-                    if (T.m->bones[c].have && KitBoneParent[c] == bone && end) {
-                        float *q = T.m->bones[c].at;
-                        if (fabsf(q[0] - d[0]) + fabsf(q[1] - d[1]) + fabsf(q[2] - d[2]) < 0.5f * (T.m->hi[1] - T.m->lo[1])) {
-                            memcpy(q, d, sizeof(float) * 3);
-                        }
+                    if (T.m->bones[c].have && end && kit_carries_on(bone, c)) {
+                        memcpy(T.m->bones[c].at, d, sizeof(float) * 3);
                     }
-                    if (T.m->bones[c].have && c == KitBoneParent[bone] && !end && bone != KB_UPPERARM_L && bone != KB_UPPERARM_R
-                        && bone != KB_THIGH_L && bone != KB_THIGH_R && bone < KB_JAW) {
+                    if (T.m->bones[c].have && !end && kit_carries_on(c, bone)) {
                         memcpy(T.m->bones[c].end, d, sizeof(float) * 3);
                     }
                 }
