@@ -329,21 +329,30 @@ Kaboom 30, the podium 43; the user's word, 2026-11-22, "preview in x should chan
 games under it (**Hero Setup** first, then each game as a chip with the hero in it, a still of its first animation; the page shown
 periwinkle and lifted), and the page. The chevron beside All games hides the strip for more room (the user's word, 2026-11-22: "add a
 button to hide the top bar as a toggle"), a menu named for the page shown in its place to go to another; kept for next time
-(`strip.txt` in the tool's folder; `HEROTOOL_NOSTRIP=1` hides it for a test). **Hero Setup** (the user's word, 2026-11-23: "the your hero page should be renamed") is the model's own page: its picture, three views side by side, all at once (the user's word, 2026-11-23: "the joints and preview
-should all show at the same time"): **Front** and **Side** with the dots to place on its joints (for any model: "That should always
-be available"; `HEROTOOL_JOINTS=2` as if a dot were moved, with `HEROTOOL_SAVE_TO` saved), and **Preview**, the tool's own moves on
-it (its move and Play in the picture's bottom right, the legend of the dots' colours small in its bottom left: "the legend should be
-smaller and in the bottom left corner"). The joints' views zoom with the wheel about the mouse ("i should also be able to zoom in when
+(`strip.txt` in the tool's folder; `HEROTOOL_NOSTRIP=1` hides it for a test). **Hero Setup** (the user's word, 2026-11-23: "the your hero page should be renamed") is the model's own page: its picture the page's whole height, three views all at once (the user's word, 2026-11-23: "the joints and
+preview should all show at the same time"): **Front** and **Side** big ("the front and side should be much bigger") with the dots to
+place on its joints (for any model: "That should always be available"; `HEROTOOL_JOINTS=2` as if a dot were moved, with
+`HEROTOOL_SAVE_TO` saved), and **Preview**, the tool's own moves on it, small at the side ("the preview should not be in the main
+focus but of to the side and smaller"), its move and Play under it, under **Mirror** and **Grid** in the top right corner (as a
+game's page has its own there: "the mirror button needs to be in the joint window like the animation window does"); the legend of the
+dots' colours small in its bottom left ("the legend should be smaller and in the bottom left corner"). Each view's its own size
+(`View`'s w and h, `vw`/`vh`). **Grid** ("It needs a toggable grid"), on to start, lines behind the dots each step of a round size near
+a tenth of its height, through its middle (x 0 front, z 0 side) and up from its feet, those two brighter. Its joints have their own
+**undo and redo** ("the joint tool needs undo and redo"): the top bar's, Ctrl+Z and Ctrl+Y (Ctrl+Shift+Z) on Hero Setup, a step for
+each dot moved, Guess joints, Jaw, Ears or Tail on or off and Arm lift (`joint_snapshot`), the rig's own weights back if it was rigged
+then; checked: the left elbow dragged, then undone, both elbows back where the model's markers file has them (`HEROTOOL_UNDO=1` after a
+test drag). **Guess joints** asks first ("the Guess joints option is destructive so needs to be a confirmation": Keep mine or Guess;
+`HEROTOOL_ASK_GUESS=1`). The joints' views zoom with the wheel about the mouse ("i should also be able to zoom in when
 moving the joints"), move with the right button, and go back with a right double-click or Home, both alike up and down, so a joint's
 at one height in each; the dots stay in their view. **Mirror** ("the mirror does not always work") places the other side's joint
 across the hips (the body's middle; across x 0 it was off for a model not built about it), and what joins it with it: only its one
 dot had moved, so its arm or leg came apart. Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
 with it. `HEROTOOL_MARKERS=BONE` prints where a bone's dot is and every joint after a drag, and `HEROTOOL_DRAG` and `_WHEEL` work
-there, for a test. Under it its **Card** and **Sounds** (a WAV for each, played with its
-button; else its base's), and on the right its **Model** (Open, Guess joints, Mirror, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
+there, for a test. On the right, a column that scrolls, its **Model** (Open, Guess joints, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
 id, **Height**: as tall as one of the heroes, picked from a menu, or its own, typed or stepped by 10 from 200 to 900, the user's
 word, 2026-11-23: "select a height from a selection of the exisiting heros OR set your own", **Based on**: its template and whose
-place it takes, one choice) and **Mod** (its author, the folders) cards.
+place it takes, one choice), **Card**, **Sounds** (a WAV for each, played with its button; else its base's; one column there) and
+**Mod** (its author, the folders) cards.
 **The card** (the user's word, 2026-11-22: "take a photo and use that. With full move him around rotate etc."): its picture in the
 character select and the games' panels, shown in the card's shape (290 x 400, as wide against its height as the select shows a card:
 its 56 of 64 columns less a 5% inset each side, by 38 rows each 1.83 times as tall as a column is wide, so a photo isn't stretched).

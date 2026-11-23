@@ -120,6 +120,10 @@ void graphite_style(ImGuiStyle &s) {
 }
 
 int ViewW = 300, ViewH = 420;
+// A model's view's own size, if it has one (Hero Setup's: its joints' views big, its preview small), else the views' (ViewW x ViewH)
+struct View;
+int vw(const View &v);
+int vh(const View &v);
 int PrevW = 600, PrevH = 560; // the view of what the game made
 int ThumbW = 220, ThumbH = 180; // each game's in the gallery of them all
 
@@ -294,6 +298,17 @@ struct Tool {
     int drag_bone = -1, drag_end = 0, drag_view = 0;
     // the joints' view being moved with the right button (-1 none)
     int pan_view = -1;
+    // the joints' undo and redo (Hero Setup's own, as a game's page's are its keys'): each the joints, arm lift and rig as they were
+    // before a change, and what the change was
+    struct JointStep {
+        KitBone bones[KB_COUNT];
+        float arm_raise;
+        bool rigged;
+        std::string says;
+    };
+    std::vector<JointStep> joint_undo, joint_redo;
+    // the joints' grid on, and Guess joints being asked
+    bool joint_grid = true, ask_guess = false;
     // what the game made of it (the preview): each kind's model, the game making it, and what's shown
     KitMade made[PACK_KINDS] = {};
     bool have_made[PACK_KINDS] = {};
@@ -845,12 +860,20 @@ void pose(Tool &T) {
 
 // --- drawing it: a little software renderer, its texture sampled, lit from the front ---
 
+int vw(const View &v) {
+    return v.w > 0 ? v.w : ViewW;
+}
+
+int vh(const View &v) {
+    return v.h > 0 ? v.h : ViewH;
+}
+
 void fit(const KitModel *m, View &v) {
     float h = m->hi[1] - m->lo[1], w = fmaxf(m->hi[0] - m->lo[0], m->hi[2] - m->lo[2]);
 
-    v.scale = fminf(ViewH * 0.85f / h, ViewW * 0.85f / (w > 0 ? w : 1));
-    v.ox = ViewW / 2.0f;
-    v.oy = ViewH * 0.93f + m->lo[1] * v.scale;
+    v.scale = fminf(vh(v) * 0.85f / h, vw(v) * 0.85f / (w > 0 ? w : 1));
+    v.ox = vw(v) / 2.0f;
+    v.oy = vh(v) * 0.93f + m->lo[1] * v.scale;
 }
 
 void to_screen(const View &v, const float p[3], float &sx, float &sy, float &sz) {
@@ -908,21 +931,22 @@ int breathe_of(const KitMade *m) {
 }
 
 void draw(const KitModel *m, const float (*pos)[3], View &v, SDL_Renderer *ren) {
+    const int PW = vw(v), PH = vh(v);
     if (v.rgba == nullptr) {
-        v.rgba = new unsigned[ViewW * ViewH];
-        v.depth = new float[ViewW * ViewH];
-        v.tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, ViewW, ViewH);
+        v.rgba = new unsigned[PW * PH];
+        v.depth = new float[PW * PH];
+        v.tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, PW, PH);
     }
     DrawnFrom now;
-    now.add(m), now.add(m->ntri), now.add(m->nvert), now.add(v.scale), now.add(v.ox), now.add(v.oy), now.add(ViewW), now.add(ViewH);
+    now.add(m), now.add(m->ntri), now.add(m->nvert), now.add(v.scale), now.add(v.ox), now.add(v.oy), now.add(PW), now.add(PH);
     now.add(pos, sizeof(float) * 3 * (size_t)m->nvert);
     if (drawn_same(v, now)) {
         return;
     }
     float c = cosf(v.yaw * 3.14159265f / 180), s = sinf(v.yaw * 3.14159265f / 180);
-    in_bands(ViewW, ViewH, [&](int ya, int yb) {
-    std::fill(v.rgba + ya * ViewW, v.rgba + yb * ViewW, 0xFF262222u); // (Graphite: #222226)
-    std::fill(v.depth + ya * ViewW, v.depth + yb * ViewW, 1e30f);
+    in_bands(PW, PH, [&](int ya, int yb) {
+    std::fill(v.rgba + ya * PW, v.rgba + yb * PW, 0xFF262222u); // (Graphite: #222226)
+    std::fill(v.depth + ya * PW, v.depth + yb * PW, 1e30f);
     for (int t = 0; t < m->ntri; t++) {
         float sx[3], sy[3], sz[3], n[3], e1[3], e2[3];
         const int *tri = m->tri[t];
@@ -940,7 +964,7 @@ void draw(const KitModel *m, const float (*pos)[3], View &v, SDL_Renderer *ren) 
         n[2] = e1[0] * e2[1] - e1[1] * e2[0];
         float ln = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
         float facing = ln > 0 ? ((n[0] * s + n[2] * c) * 0.7f + n[1] * 0.5f) / ln : 0, lit = 0.55f + 0.45f * fmaxf(0, facing);
-        fill_tri(sx, sy, sz, v.depth, ViewW, ViewH, ya, yb, [&](int at, float a, float b, float d, float z) {
+        fill_tri(sx, sy, sz, v.depth, PW, PH, ya, yb, [&](int at, float a, float b, float d, float z) {
             float col[3];
             for (int ch = 0; ch < 3; ch++) {
                 col[ch] = (a * m->rgba[tri[0]][ch] + b * m->rgba[tri[1]][ch] + d * m->rgba[tri[2]][ch]) * 255;
@@ -962,7 +986,7 @@ void draw(const KitModel *m, const float (*pos)[3], View &v, SDL_Renderer *ren) 
         });
     }
     });
-    SDL_UpdateTexture(v.tex, nullptr, v.rgba, ViewW * 4);
+    SDL_UpdateTexture(v.tex, nullptr, v.rgba, PW * 4);
 }
 
 // --- the model ---
@@ -996,6 +1020,8 @@ bool open_model(Tool &T, const char *path) {
     T.made_asked = false;
     T.dirty = false;
     T.page = PAGE_ALL;
+    T.joint_undo.clear();
+    T.joint_redo.clear();
     T.baked.clear();
     T.foot_back.clear();
     own_init(T);
@@ -1207,6 +1233,73 @@ void made_forget(Tool &T) {
         }
         T.nrides[k] = 0;
     }
+}
+
+// Its joints as they are (before a change), a step of their undo history
+void joint_snapshot(Tool &T, const char *says, ...) {
+    if (T.m == nullptr) {
+        return;
+    }
+    Tool::JointStep st;
+    memcpy(st.bones, T.m->bones, sizeof(st.bones));
+    st.arm_raise = T.m->arm_raise;
+    st.rigged = T.rigged;
+    char line[160];
+    va_list ap;
+    va_start(ap, says);
+    vsnprintf(line, sizeof(line), says, ap);
+    va_end(ap);
+    st.says = line;
+    T.joint_undo.push_back(st);
+    if (T.joint_undo.size() > 300) {
+        T.joint_undo.erase(T.joint_undo.begin());
+    }
+    T.joint_redo.clear();
+    T.unsaved = true;
+}
+
+// Its joints put back as a step had them: its rig's own weights again if it was rigged then, else the tool's to the joints
+void joint_restore(Tool &T, const Tool::JointStep &st) {
+    memcpy(T.m->bones, st.bones, sizeof(st.bones));
+    T.m->arm_raise = st.arm_raise;
+    if (st.rigged && !T.rigged) {
+        char why[256];
+        T.rigged = kit_map_rig(T.m, why, sizeof(why));
+        memcpy(T.m->bones, st.bones, sizeof(st.bones));
+    } else if (!st.rigged) {
+        T.rigged = false;
+        kit_weigh(T.m);
+    }
+    T.dirty = T.unsaved = true;
+}
+
+// A joints' step undone (its state now kept to be done again), or done again
+void joint_undo_step(Tool &T) {
+    if (T.m == nullptr || T.joint_undo.empty()) {
+        return;
+    }
+    Tool::JointStep now;
+    memcpy(now.bones, T.m->bones, sizeof(now.bones));
+    now.arm_raise = T.m->arm_raise, now.rigged = T.rigged, now.says = T.joint_undo.back().says;
+    T.joint_redo.push_back(now);
+    Tool::JointStep st = T.joint_undo.back();
+    T.joint_undo.pop_back();
+    joint_restore(T, st);
+    snprintf(T.status, sizeof(T.status), "Undone: %s", st.says.c_str());
+}
+
+void joint_redo_step(Tool &T) {
+    if (T.m == nullptr || T.joint_redo.empty()) {
+        return;
+    }
+    Tool::JointStep now;
+    memcpy(now.bones, T.m->bones, sizeof(now.bones));
+    now.arm_raise = T.m->arm_raise, now.rigged = T.rigged, now.says = T.joint_redo.back().says;
+    T.joint_undo.push_back(now);
+    Tool::JointStep st = T.joint_redo.back();
+    T.joint_redo.pop_back();
+    joint_restore(T, st);
+    snprintf(T.status, sizeof(T.status), "Done again: %s", st.says.c_str());
 }
 
 // A new hero from a model, the start screen's (the user's word, 2026-11-23, on starting one): nothing of the last one's kept (its card,
@@ -3788,9 +3881,9 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
 void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     // (a view's drawn only while its page shows it, so the first time it's shown its picture comes a frame later)
     ImVec2 p0 = ImGui::GetCursorScreenPos();
-    ImGui::Dummy(ImVec2(ViewW, ViewH));
+    ImGui::Dummy(ImVec2((float)vw(v), (float)vh(v)));
     if (v.tex != nullptr) {
-        ImGui::GetWindowDrawList()->AddImageRounded((ImTextureID)(intptr_t)v.tex, p0, ImVec2(p0.x + ViewW, p0.y + ViewH), ImVec2(0, 0), ImVec2(1, 1),
+        ImGui::GetWindowDrawList()->AddImageRounded((ImTextureID)(intptr_t)v.tex, p0, ImVec2(p0.x + vw(v), p0.y + vh(v)), ImVec2(0, 0), ImVec2(1, 1),
                                                     IM_COL32_WHITE, U(24));
     }
     ImVec2 at = ImGui::GetItemRectMin();
@@ -3805,11 +3898,11 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
         View &other = which == 0 ? T.side : T.front;
         float mx = io.MousePos.x - at.x, my = io.MousePos.y - at.y;
         float h = T.m->hi[1] - T.m->lo[1], w = fmaxf(T.m->hi[0] - T.m->lo[0], T.m->hi[2] - T.m->lo[2]);
-        float base = fminf(ViewH * 0.85f / h, ViewW * 0.85f / (w > 0 ? w : 1));
+        float base = fminf(vh(v) * 0.85f / h, vw(v) * 0.85f / (w > 0 ? w : 1));
         if (io.MouseWheel != 0 && ImGui::IsItemHovered()) {
             float s1 = fmaxf(base * 0.6f, fminf(base * 12, v.scale * powf(1.2f, io.MouseWheel))), f = s1 / v.scale;
             v.ox = mx - (mx - v.ox) * f, v.oy = my - (my - v.oy) * f, v.scale = s1;
-            other.ox = ViewW / 2.0f - (ViewW / 2.0f - other.ox) * f, other.oy = my - (my - other.oy) * f, other.scale = s1;
+            other.ox = vw(other) / 2.0f - (vw(other) / 2.0f - other.ox) * f, other.oy = my - (my - other.oy) * f, other.scale = s1;
         }
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsItemHovered()) {
             T.pan_view = which;
@@ -3847,9 +3940,25 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
         }
     }
     // (the dots kept in their view, zoomed in: drawn only there, and taken only there)
-    ImVec2 lo(at.x, at.y), hi(at.x + ViewW, at.y + ViewH);
+    ImVec2 lo(at.x, at.y), hi(at.x + vw(v), at.y + vh(v));
     bool in_view = mouse.x >= lo.x && mouse.x < hi.x && mouse.y >= lo.y && mouse.y < hi.y;
     dl->PushClipRect(lo, hi, true);
+    // its grid, behind the dots (the user's word, 2026-11-23: "It needs a toggable grid"): a line each step of a round size near a tenth of
+    // its height, across through its middle (x 0 front, z 0 side) and up from its feet, those two brighter
+    if (T.joint_grid) {
+        float h = T.m->hi[1] - T.m->lo[1], step = powf(10, floorf(log10f(h / 10)));
+        step *= h / 10 / step >= 5 ? 5 : h / 10 / step >= 2 ? 2 : 1;
+        float x0 = (0 - v.ox) / v.scale, x1 = (vw(v) - v.ox) / v.scale;
+        for (int k = (int)floorf(fminf(x0, x1) / step); k <= (int)ceilf(fmaxf(x0, x1) / step); k++) {
+            float sx = at.x + v.ox + k * step * v.scale;
+            dl->AddLine(ImVec2(sx, lo.y), ImVec2(sx, hi.y), k == 0 ? IM_COL32(237, 235, 239, 70) : IM_COL32(237, 235, 239, 22), k == 0 ? U(1.5f) : U(1));
+        }
+        float y0 = (v.oy - vh(v)) / v.scale, y1 = v.oy / v.scale;
+        for (int k = (int)floorf((y0 - T.m->lo[1]) / step); k <= (int)ceilf((y1 - T.m->lo[1]) / step); k++) {
+            float sy = at.y + v.oy - (T.m->lo[1] + k * step) * v.scale;
+            dl->AddLine(ImVec2(lo.x, sy), ImVec2(hi.x, sy), k == 0 ? IM_COL32(237, 235, 239, 70) : IM_COL32(237, 235, 239, 22), k == 0 ? U(1.5f) : U(1));
+        }
+    }
     for (int b = 0; b < KB_COUNT; b++) {
         KitBone &k = T.m->bones[b];
         if (!k.have) {
@@ -3865,6 +3974,7 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             dl->AddCircleFilled(c, e ? U(4) : U(7), GROUND);
             dl->AddCircleFilled(c, e ? U(3) : U(5.5f), col);
             if (T.drag_bone < 0 && in_view && ImGui::IsMouseClicked(0) && (mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < U(7) * U(7)) {
+                joint_snapshot(T, "Moved %s%s", KitBoneNames[b], e ? "'s end" : "");
                 T.drag_bone = b, T.drag_end = e, T.drag_view = which;
                 // a rigged model's joints placed by hand: the tool weights it to them from now (its own clips kept, export_pack)
                 if (T.rigged) {
@@ -4315,15 +4425,17 @@ void top_bar(Tool &T) {
     float rw = 3 * (bh + sp) + button_w(play, true) + U(36) + sp + U(100);
     ImGui::SameLine(ImGui::GetWindowWidth() - st.WindowPadding.x - rw);
     mid(bh);
-    ImGui::BeginDisabled(T.undo.empty());
+    // (on Hero Setup its joints', else its keys')
+    bool joints = T.page == PAGE_MODEL;
+    ImGui::BeginDisabled(joints ? T.joint_undo.empty() : T.undo.empty());
     if (icon_button("##undo", IC_UNDO, "Undo (Ctrl+Z)", CARD, INK, bh, CUE_OFF)) {
-        adj_undo(T);
+        joints ? joint_undo_step(T) : adj_undo(T);
     }
     ImGui::EndDisabled();
     ImGui::SameLine(0, sp);
-    ImGui::BeginDisabled(T.redo.empty());
+    ImGui::BeginDisabled(joints ? T.joint_redo.empty() : T.redo.empty());
     if (icon_button("##redo", IC_REDO, "Redo (Ctrl+Y)", CARD, INK, bh, CUE_ON)) {
-        adj_redo(T);
+        joints ? joint_redo_step(T) : adj_redo(T);
     }
     ImGui::EndDisabled();
     ImGui::SameLine(0, sp);
@@ -5147,14 +5259,10 @@ void model_card(Tool &T, SDL_Window *win) {
         ImGui::SetItemTooltip("Its own weights. Move a joint in Joints and the tool weights it instead (its animations kept)");
     } else {
         tag("No rig: place its joints", CARD, PERI_LIGHT, PERI);
-        if (button("Guess joints", PERI, PERI_INK, 0, IC_SPARK, CUE_GUESS)) {
-            kit_guess_markers(T.m);
-            reweigh(T);
-            T.unsaved = true;
+        if (button("Guess joints", PERI, PERI_INK, 0, IC_SPARK, CUE_OPEN)) {
+            T.ask_guess = true;
         }
-        ImGui::SetItemTooltip("Put the dots where its shape says its joints are");
-        ImGui::SameLine(0, U(8));
-        toggle("Mirror##dots", &T.mirror, IC_MIRROR, "Moving one side's dot moves the other's", 0, CARD);
+        ImGui::SetItemTooltip("Put the dots where its shape says its joints are (asked first: yours go)");
         ImGui::AlignTextToFramePadding();
         ImGui::TextColored(V4(MUTED), "Has");
         const char *opt[] = { "Jaw", "Ears", "Tail" };
@@ -5163,6 +5271,7 @@ void model_card(Tool &T, SDL_Window *win) {
             bool has = T.m->bones[first[o]].have;
             ImGui::SameLine(0, U(8));
             if (toggle(opt[o], &has, IC_NONE, nullptr, 0, CARD)) {
+                joint_snapshot(T, "%s %s", opt[o], has ? "on" : "off");
                 float h = T.m->hi[1] - T.m->lo[1];
                 for (int c = 0; c < count[o]; c++) {
                     KitBone &k = T.m->bones[first[o] + c];
@@ -5193,9 +5302,16 @@ void model_card(Tool &T, SDL_Window *win) {
         ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(CARD));
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
         ImGui::SetNextItemWidth(U(190));
+        float lift_was = T.m->arm_raise;
         if (ImGui::SliderFloat("##armlift", &T.m->arm_raise, 20, 160, "%.0f deg")) {
             T.dirty = true;
             T.unsaved = true;
+        }
+        if (ImGui::IsItemActivated()) {
+            float now = T.m->arm_raise;
+            T.m->arm_raise = lift_was;
+            joint_snapshot(T, "Arm lift");
+            T.m->arm_raise = now;
         }
         ImGui::PopStyleVar();
         ImGui::PopStyleColor();
@@ -5558,13 +5674,14 @@ void sounds_card(Tool &T, SDL_Window *win, float w) {
     ImGui::PushFont(FontSmall);
     ImGui::TextColored(V4(DIM), "a WAV for each; without one, %s's", HeroNames[T.template_hero]);
     ImGui::PopFont();
-    float cw = (ImGui::GetContentRegionAvail().x - U(8)) / 2, h = U(40);
+    int cols = ImGui::GetContentRegionAvail().x > U(480) ? 2 : 1;
+    float cw = (ImGui::GetContentRegionAvail().x - U(8) * (cols - 1)) / cols, h = U(40);
     ImVec2 base = ImGui::GetCursorScreenPos();
     char from[64];
     snprintf(from, sizeof(from), "%s's", HeroNames[T.template_hero]);
     for (int j = 0; j < PACK_VOICE_JOBS; j++) {
         ImGui::PushID(j);
-        ImVec2 p(base.x + (j % 2) * (cw + U(8)), base.y + (j / 2) * (h + U(6)));
+        ImVec2 p(base.x + (j % cols) * (cw + U(8)), base.y + (j / cols) * (h + U(6)));
         ImDrawList *dl = ImGui::GetWindowDrawList();
         dl->AddRectFilled(p, ImVec2(p.x + cw, p.y + h), DEEP, U(16));
         ImGui::SetCursorScreenPos(ImVec2(p.x + U(5), p.y + U(5)));
@@ -5592,8 +5709,8 @@ void sounds_card(Tool &T, SDL_Window *win, float w) {
         }
         ImGui::PopID();
     }
-    ImGui::SetCursorScreenPos(ImVec2(base.x, base.y + ((PACK_VOICE_JOBS + 1) / 2) * (h + U(6)) - U(6)));
-    ImGui::Dummy(ImVec2(2 * cw + U(8), 0));
+    ImGui::SetCursorScreenPos(ImVec2(base.x, base.y + ((PACK_VOICE_JOBS + cols - 1) / cols) * (h + U(6)) - U(6)));
+    ImGui::Dummy(ImVec2(cols * cw + U(8) * (cols - 1), 0));
     card_end();
 }
 
@@ -5729,58 +5846,106 @@ void game_page(Tool &T) {
 // The hero's own page: its model (Joints: its dots placed on its front and side; Preview: the tool's animations on it), its card and
 // sounds under it, and its model, details and mod on the right
 // The model's views at w by h (made again at that size, and the model fitted to them, when it changes)
-void model_views_fit(Tool &T, int w, int h) {
-    if (w == ViewW && h == ViewH) {
-        return;
-    }
-    ViewW = w, ViewH = h;
+void model_views_fit(Tool &T, int w, int h, int pw, int ph) {
     View *vs[3] = { &T.front, &T.side, &T.play };
-    for (View *v : vs) {
-        view_free(*v);
+    const int ws[3] = { w, w, pw }, hs[3] = { h, h, ph };
+    for (int i = 0; i < 3; i++) {
+        if (vs[i]->w == ws[i] && vs[i]->h == hs[i]) {
+            continue;
+        }
+        view_free(*vs[i]);
+        vs[i]->w = ws[i], vs[i]->h = hs[i];
         if (T.m != nullptr) {
-            fit(T.m, *v);
+            fit(T.m, *vs[i]);
         }
     }
+}
+
+// Guess joints, asked first: the dots it has go (Undo brings them back)
+void guess_ask(Tool &T) {
+    if (T.ask_guess) {
+        ImGui::OpenPopup("##guessjoints");
+        T.ask_guess = false;
+    }
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(U(26), U(22)));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, U(24));
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, V4(CARD));
+    bool asking = ImGui::BeginPopupModal("##guessjoints", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar(2);
+    if (!asking) {
+        return;
+    }
+    ImGui::PushFont(FontTitle);
+    ImGui::TextUnformatted("Guess its joints?");
+    ImGui::PopFont();
+    ImGui::Spacing();
+    ImGui::TextColored(V4(MUTED), "The dots you've placed are replaced.");
+    ImGui::Spacing();
+    if (button("Keep mine##guess", RAISED, INK, U(140), IC_NONE, CUE_DROP) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+        ImGui::CloseCurrentPopup();
+    }
+    ImGui::SameLine(0, U(10));
+    if (button("Guess##guess", PERI, PERI_INK, U(140), IC_SPARK, CUE_GUESS)) {
+        joint_snapshot(T, "Guessed its joints");
+        kit_guess_markers(T.m);
+        T.rigged = false;
+        reweigh(T);
+        T.dirty = T.unsaved = true;
+        ImGui::CloseCurrentPopup();
+    }
+    ImGui::EndPopup();
 }
 
 void model_page(Tool &T, SDL_Window *win) {
     ImVec2 avail = ImGui::GetContentRegionAvail();
     float right_w = U(356), gap = U(16), main_w = avail.x - right_w - gap;
-    float lower = U(16) * 2 + FontTitle->FontSize + U(12) + ((PACK_VOICE_JOBS + 1) / 2) * U(46);
-    ImGui::BeginChild("##main", ImVec2(main_w, avail.y), 0, ImGuiWindowFlags_NoScrollWithMouse);
-    main_w -= avail.y - lower - gap < U(300) ? ImGui::GetStyle().ScrollbarSize + U(4) : 0;
-    ImVec2 p = ImGui::GetCursorScreenPos(), size(main_w, fmaxf(U(300), avail.y - lower - gap));
+    ImGui::BeginChild("##main", ImVec2(main_w, avail.y), 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    ImVec2 p = ImGui::GetCursorScreenPos(), size(main_w, avail.y);
     ImDrawList *dl = ImGui::GetWindowDrawList();
     dl->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), PICTURE, U(30));
-    // the front and the side (their joints to drag) and the preview (the tool's own moves on it), side by side, all at once (the user's
-    // word, 2026-11-23: "the joints and preview should all show at the same time"), as big as the picture has room for over its foot's
-    // row: the legend in its bottom left corner, the preview's move and Play in its bottom right
-    float top = U(14), foot = ImGui::GetFrameHeight() + U(24), vg = U(14);
+    // the front and the side (their joints to drag) big, and the preview (the tool's own moves on it) small at the side under Mirror and
+    // Grid, its move and Play under it; all at once (the user's word, 2026-11-23: "the front and side should be much bigger, the preview
+    // should not be in the main focus but of to the side and smaller"); the dots' legend in the picture's bottom left corner
+    float top = U(14), foot = ImGui::GetFrameHeight() + U(24), vg = U(14), bar = ImGui::GetFrameHeight();
+    float side_w = fminf(U(250), size.x * 0.22f), pw = side_w, ph = fminf(pw / 0.72f, size.y - top - bar - U(12) - bar - U(40));
+    float left_w = size.x - side_w - U(16) * 3;
     {
-        int h = (int)fminf(U(600), size.y - top - foot), w = (int)fminf(h * 0.72f, (size.x - U(32) - 2 * vg) / 3);
-        model_views_fit(T, std::max(w, 60), std::max(h, 80));
+        int h = (int)fminf(U(1200), size.y - top - foot), w = (int)fminf(h * 0.72f, (left_w - vg) / 2);
+        model_views_fit(T, std::max(w, 60), std::max(h, 80), std::max((int)pw, 60), std::max((int)ph, 80));
     }
+    float side_x = p.x + size.x - U(16) - side_w;
     if (T.camera) {
         camera_view(T, win, p, size);
     } else {
-        float x0 = p.x + (size.x - 3 * ViewW - 2 * vg) / 2, y0 = p.y + top;
+        float x0 = p.x + U(16) + (left_w - 2 * vw(T.front) - vg) / 2, y0 = p.y + top;
         const char *names[2] = { "Front", "Side" };
         View *views[2] = { &T.front, &T.side };
         for (int i = 0; i < 2; i++) {
-            ImGui::SetCursorScreenPos(ImVec2(x0 + i * (ViewW + vg), y0));
+            ImGui::SetCursorScreenPos(ImVec2(x0 + i * (vw(T.front) + vg), y0));
             view_window(T, *views[i], names[i], true, i);
-            ImGui::SetCursorScreenPos(ImVec2(x0 + i * (ViewW + vg) + U(12), y0 + U(12)));
+            ImGui::SetCursorScreenPos(ImVec2(x0 + i * (vw(T.front) + vg) + U(12), y0 + U(12)));
             tag(names[i], RAISED, MUTED);
         }
-        ImGui::SetCursorScreenPos(ImVec2(x0 + 2 * (ViewW + vg), y0));
+        // Mirror and Grid, top right, as a game's page has its own there (the user's word, 2026-11-23: "the mirror button needs to be in
+        // the joint window like the animation window does")
+        float tw = button_w("Mirror", true) + U(8) + button_w("Grid", true);
+        ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - tw, p.y + U(16)));
+        toggle("Mirror##joints", &T.mirror, IC_MIRROR, "Moving one side's dot moves the other's, mirrored across its hips");
+        ImGui::SameLine(0, U(8));
+        toggle("Grid##joints", &T.joint_grid, IC_GRID, "A grid behind the joints: a line each step through its middle and up from its feet");
+        // the preview, small, at the side
+        float py = p.y + U(16) + bar + U(12);
+        ImGui::SetCursorScreenPos(ImVec2(side_x, py));
         view_window(T, T.play, "move", false, 2);
-        T.play.zx = ViewW / 2.0f;
-        T.play.zy = ViewH / 2.0f;
+        T.play.zx = vw(T.play) / 2.0f;
+        T.play.zy = vh(T.play) / 2.0f;
         look_around(T.play, T.turn);
-        ImGui::SetCursorScreenPos(ImVec2(x0 + 2 * (ViewW + vg) + U(12), y0 + U(12)));
+        ImGui::SetCursorScreenPos(ImVec2(side_x + U(10), py + U(10)));
         tag("Preview", RAISED, MUTED);
-        ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - U(200) - U(10) - button_w("Play", true), p.y + size.y - U(12) - ImGui::GetFrameHeight()));
-        if (menu_begin("##preview", KitMoves[T.move].name, U(200), RAISED)) {
+        float play_w = button_w("Play", true);
+        ImGui::SetCursorScreenPos(ImVec2(side_x, py + vh(T.play) + U(10)));
+        if (menu_begin("##preview", KitMoves[T.move].name, side_w - play_w - U(8), RAISED)) {
             for (int i = 0; i < KitMoveCount; i++) {
                 if (menu_item(KitMoves[i].name, T.move == i)) {
                     T.move = i;
@@ -5789,9 +5954,9 @@ void model_page(Tool &T, SDL_Window *win) {
             ImGui::EndCombo();
         }
         ImGui::SetItemTooltip("The tool's built-in animations on your model (on foot, its own uses them for any it hasn't got)");
-        ImGui::SameLine(0, U(10));
+        ImGui::SameLine(0, U(8));
         toggle("Play##model", &T.playing, IC_PLAY, nullptr);
-        // the legend: small, in the corner (the user's word, 2026-11-23: "the legend should be smaller and in the bottom left corner")
+        // the legend: small, in the corner
         static const char *const Parts[4] = { "body", "arms", "legs", "jaw, ears, tail" };
         const ImU32 Cols[4] = { IM_COL32(0xF2, 0xD5, 0x8A, 255), PERI, MINT, CORAL };
         ImGui::PushFont(FontSmall);
@@ -5803,18 +5968,18 @@ void model_page(Tool &T, SDL_Window *win) {
         }
         ImGui::PopFont();
     }
-    draw_toast(T, ImVec2(p.x + size.x - U(16), p.y + U(16)), U(420));
-    ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + size.y + gap));
-    float half = (main_w - gap) * 0.42f;
-    face_card(T, win, half);
-    ImGui::SameLine(0, gap);
-    sounds_card(T, win, main_w - half - gap);
+    draw_toast(T, ImVec2(side_x - U(16), p.y + U(16)), U(420));
+    guess_ask(T);
     ImGui::EndChild();
     ImGui::SameLine(0, gap);
     ImGui::BeginChild("##cards", ImVec2(right_w, avail.y));
     model_card(T, win);
     card_gap();
     hero_card(T);
+    card_gap();
+    face_card(T, win, 0);
+    card_gap();
+    sounds_card(T, win, 0);
     card_gap();
     mod_card(T);
     ImGui::EndChild();
@@ -6378,6 +6543,17 @@ void editor_window(Tool &T, SDL_Window *win) {
     // adjusting a move: Space plays or stops it, the arrows step a frame, Ctrl+Z undoes and Ctrl+Y (or Ctrl+Shift+Z) does it again;
     // Tab shows the bones or hides them, Esc lets go of the bone picked
     ImGuiIO &io = ImGui::GetIO();
+    // on Hero Setup, its joints' undo and redo: Ctrl+Z, and Ctrl+Y (or Ctrl+Shift+Z)
+    if (T.page == PAGE_MODEL && !T.camera && !io.WantTextInput && io.KeyCtrl) {
+        if (ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
+            io.KeyShift ? joint_redo_step(T) : joint_undo_step(T);
+            sound_cue(io.KeyShift ? CUE_ON : CUE_OFF);
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_Y, false)) {
+            joint_redo_step(T);
+            sound_cue(CUE_ON);
+        }
+    }
     if (T.adjusting && T.page >= 0 && T.have_pose[T.kind] && !io.WantTextInput) {
         if (ImGui::IsKeyPressed(ImGuiKey_Space, false)) {
             T.adj_playing = !T.adj_playing;
@@ -6698,6 +6874,10 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     if (SDL_getenv("HEROTOOL_PAGE") != nullptr && T.m != nullptr) {
         T.page = SDL_atoi(SDL_getenv("HEROTOOL_PAGE"));
         T.kind = T.page >= 0 ? T.page : T.kind;
+    }
+    /* a test's: HEROTOOL_ASK_GUESS=1 asks Guess joints' question, as its button does */
+    if (SDL_getenv("HEROTOOL_ASK_GUESS") != nullptr) {
+        T.ask_guess = true;
     }
     /* a test's: HEROTOOL_JOINTS=2 takes its joints as placed by hand (as a dot dragged), and with HEROTOOL_SAVE_TO=FOLDER (no
        HEROTOOL_ADJUST) saves it there */
@@ -7147,6 +7327,19 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             dio.AddMousePosEvent(d[0] + (d[2] - d[0]) * t, d[1] + (d[3] - d[1]) * t);
             dio.AddMouseButtonEvent(d[5] != 0 ? 1 : 0, drag_step >= 2 && drag_step <= 12);
             dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && drag_step >= 1 && drag_step <= 13);
+        }
+        /* a test's: HEROTOOL_UNDO=1 undoes Hero Setup's last joints' step once its test drag's let go, and says where its joints are then */
+        static bool undone = false;
+        if (!undone && SDL_getenv("HEROTOOL_UNDO") != nullptr && drag_step > 16 && T.m != nullptr) {
+            undone = true;
+            joint_undo_step(T);
+            for (int b = 0; b < KB_COUNT; b++) {
+                const KitBone &k = T.m->bones[b];
+                if (k.have) {
+                    printf("herotool: undone %s %.4f,%.4f,%.4f to %.4f,%.4f,%.4f\n", KitBoneNames[b], k.at[0], k.at[1], k.at[2], k.end[0], k.end[1],
+                           k.end[2]);
+                }
+            }
         }
         /* a test's wheel: HEROTOOL_WHEEL=X,Y,N turns the mouse wheel N notches at (X, Y) once a game's being adjusted, the mouse kept there */
         static int wheel_step = -1;

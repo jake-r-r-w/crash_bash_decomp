@@ -667,6 +667,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Hero Setup's joint tool: undo and redo of its own (joint_snapshot; the top bar's and Ctrl+Z/Y there), a grid to switch,
+  Front and Side big over the page's whole height (Card and Sounds moved to the right column), Preview small at the side, Mirror and
+  Grid top right, Guess joints asked first. Views have their own sizes now (vw, vh).
 - 2026-11-23: Hero Setup shows front, side and preview at once (no Joints/Preview pill), the joints' views zoom (wheel at the mouse)
   and move (right-drag), Mirror fixed (across the hips, the mirrored joint's joined bone moved too: an arm came apart), the legend
   small in the corner; the delete question just the full path.
