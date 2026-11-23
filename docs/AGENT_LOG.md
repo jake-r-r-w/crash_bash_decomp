@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: the start screen's trash red on hover (and Delete), the question naming what goes from the mods folder (the user asked
+  why bobby/heroes/bobby: it was from the mod's folder; a mod holds heroes/ID, so it's mods/bobby/heroes/bobby, or all of mods/bobby).
 - 2026-11-23: the hero tool's onboarding: a trash on each hero (asked; its folder, its mod if that's all, the tool's leftovers), a new
   hero asked Who is it based on? first (eight tiles, their heights from PackTemplateHeight) and made that tall, then Hero Setup (Your
   hero renamed); Joints for any model (a rigged one's moved joint makes it the tool's to weight, its clips kept: export maps its rig

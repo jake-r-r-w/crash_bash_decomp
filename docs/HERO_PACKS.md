@@ -282,7 +282,10 @@ top, else its face as the tool last made it (its model on foot from `preview-mad
 its face share says), else its first letter (`found_picture`), and a trash (the user's word, 2026-11-23: "a trash icon on your heros so
 you can delete them fully"): asked first, it deletes the hero's folder (`heroes/ID`), its mod too if nothing but its mod.json is left
 in it (another hero of the mod's, or anything else, stays), and what the tool kept of it (its preview's models, the folder they're
-made from, its card's photo; `delete_hero`; `HEROTOOL_DELETE=ID` does it for a test, `HEROTOOL_ASK_DELETE=ID` asks). A new hero
+made from, its card's photo; `delete_hero`; `HEROTOOL_DELETE=ID` does it for a test, `HEROTOOL_ASK_DELETE=ID` asks). The trash is red as
+the mouse is on it, as is the question's Delete, and the question says what goes from the mods folder: the whole mod's folder
+(`mods/bobby`, this hero all there is in it, `mod_goes`) or the hero's (`mods/MOD/heroes/ID`, the rest of its mod staying).
+`HEROTOOL_HOVER=X,Y` holds the mouse there, for a test of what a hover shows. A new hero
 (a model browsed for or dropped on the start screen; `new_hero`) keeps nothing of the last one's (its card, sounds, changes and their
 history, own moves, what the games made of it) and asks first **Who is it based on?** (the user's word, 2026-11-23: "When you import a
 new hero you need to first choose who to use as a template / based on"; `base_chooser`): the eight, each with how tall it stands (the

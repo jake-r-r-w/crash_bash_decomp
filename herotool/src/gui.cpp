@@ -41,6 +41,8 @@ const ImU32 DEEP = IM_COL32(0x1F, 0x1F, 0x22, 255), PICTURE = IM_COL32(0x1E, 0x1
 const ImU32 HOVER = IM_COL32(0x3A, 0x3A, 0x40, 255);
 const ImU32 INK = IM_COL32(0xED, 0xEB, 0xEF, 255), MUTED = IM_COL32(0xBE, 0xBB, 0xC4, 255), DIM = IM_COL32(0x9A, 0x97, 0xA1, 255);
 const ImU32 CORAL = IM_COL32(0xF5, 0x9E, 0x8B, 255), CORAL_INK = IM_COL32(0x2A, 0x15, 0x12, 255);
+// deleting: red, its icon white (the user's word, 2026-11-23: "the trash icon should be red when hovered")
+const ImU32 RED = IM_COL32(0xE5, 0x48, 0x4D, 255), RED_INK = IM_COL32(0xFF, 0xFF, 0xFF, 255);
 const ImU32 PERI = IM_COL32(0xA9, 0xB8, 0xF5, 255), PERI_INK = IM_COL32(0x16, 0x1B, 0x33, 255), PERI_LIGHT = IM_COL32(0xC9, 0xD3, 0xFA, 255);
 const ImU32 PERI_DEEP = IM_COL32(0x71, 0x83, 0xC9, 255);
 const ImU32 MINT = IM_COL32(0x9E, 0xD8, 0xBE, 255), MINT_LIGHT = IM_COL32(0xB6, 0xE2, 0xC6, 255);
@@ -5894,6 +5896,33 @@ bool folder_only(const char *path, const char *keep) {
     return o.only;
 }
 
+// What's in a folder, by name
+SDL_EnumerationResult SDLCALL names_in(void *v, const char *, const char *name) {
+    ((std::vector<std::string> *)v)->push_back(name);
+    return SDL_ENUM_CONTINUE;
+}
+
+// Whether a hero's delete takes its whole mod: nothing in its heroes folder but it, nor in its mod but that and its mod.json (as
+// delete_hero does it)
+bool mod_goes(const Found &f) {
+    std::vector<std::string> heroes, mod;
+    char path[1400];
+    snprintf(path, sizeof(path), "%s/heroes", f.mod);
+    SDL_EnumerateDirectory(path, names_in, &heroes);
+    SDL_EnumerateDirectory(f.mod, names_in, &mod);
+    for (auto &n : heroes) {
+        if (SDL_strcmp(n.c_str(), f.id) != 0) {
+            return false;
+        }
+    }
+    for (auto &n : mod) {
+        if (SDL_strcasecmp(n.c_str(), "heroes") != 0 && SDL_strcasecmp(n.c_str(), "mod.json") != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // A hero deleted, fully: its folder in its mod (heroes/ID), the mod too if nothing else is in it but its mod.json (another hero, or
 // anything else of the mod's, stays), and what the tool kept of it (its preview's models, the folder its preview was made from, its card's
 // photo). Said in the status; false if any of its folder stays
@@ -6114,8 +6143,11 @@ void start_screen(Tool &T, SDL_Window *win) {
         {
             ImVec2 keep = ImGui::GetCursorScreenPos();
             float s = U(40);
-            ImGui::SetCursorScreenPos(ImVec2(b.x - U(52) - s, a.y + (rh - s) / 2));
-            if (icon_button("##trash", IC_TRASH, "Delete this hero", RAISED, INK, s, CUE_OPEN)) {
+            ImVec2 tp(b.x - U(52) - s, a.y + (rh - s) / 2);
+            ImGui::SetCursorScreenPos(tp);
+            bool on = ImGui::IsWindowHovered() && ImGui::IsMouseHoveringRect(tp, ImVec2(tp.x + s, tp.y + s));
+            float red = ease_to(ImGui::GetID("##trashred"), on ? 1 : 0, 18);
+            if (icon_button("##trash", IC_TRASH, "Delete this hero", mix(RAISED, RED, red), mix(INK, RED_INK, red), s, CUE_OPEN)) {
                 Deleting = i;
                 DeleteAsk = true;
                 hit = false;
@@ -6151,8 +6183,17 @@ void start_screen(Tool &T, SDL_Window *win) {
             ImGui::PopFont();
             ImGui::Spacing();
             ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + U(420));
-            ImGui::TextColored(V4(MUTED), "Its folder goes for good (%s/heroes/%s), and its mod's if nothing else is in it. This can't be undone.",
-                               short_path(f.mod), f.id);
+            // (from the mods folder: mods/MOD/heroes/ID; the whole mod's folder if this hero's all there is in it)
+            char where[600];
+            bool whole = mod_goes(f);
+            if (whole) {
+                snprintf(where, sizeof(where), "Its mod's folder goes for good, %s/%s (this hero's all there is in it).", short_path(T.out),
+                         short_path(f.mod));
+            } else {
+                snprintf(where, sizeof(where), "Its folder goes for good, %s/%s/heroes/%s (the rest of its mod stays).", short_path(T.out),
+                         short_path(f.mod), f.id);
+            }
+            ImGui::TextColored(V4(MUTED), "%s This can't be undone.", where);
             ImGui::PopTextWrapPos();
             ImGui::Spacing();
             if (button("Keep it##delete", RAISED, INK, U(130), IC_NONE, CUE_DROP) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
@@ -6160,7 +6201,7 @@ void start_screen(Tool &T, SDL_Window *win) {
                 ImGui::CloseCurrentPopup();
             }
             ImGui::SameLine(0, U(10));
-            if (button("Delete##delete", CORAL, CORAL_INK, U(130), IC_TRASH, CUE_HIDE)) {
+            if (button("Delete##delete", RED, RED_INK, U(130), IC_TRASH, CUE_HIDE)) {
                 delete_hero(T, f);
                 Deleting = -1;
                 find_heroes(T);
@@ -7033,6 +7074,13 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
+        /* a test's: HEROTOOL_HOVER=X,Y keeps the mouse there (the window's pixels), for what a hover shows */
+        if (const char *hv = SDL_getenv("HEROTOOL_HOVER")) {
+            float hx = 0, hy = 0;
+            if (SDL_sscanf(hv, "%f,%f", &hx, &hy) == 2) {
+                ImGui::GetIO().AddMousePosEvent(hx, hy);
+            }
+        }
         /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT[,BUTTON]] presses the left button (or the right) at (X0, Y0) in the window once a game's shown, moves
            to (X1, Y1) over ten frames and lets go (Shift held if SHIFT is 1), as a person's mouse would, and keeps it there after (the
            real mouse left out: the SDL backend gives where it is on the screen while the window has the focus) */
