@@ -34,6 +34,7 @@
 #include "../../platform/settings.h"
 #include "../../platform/mods.h"
 #include "../../platform/gfx.h"
+#include "../../platform/heropack.h"
 
 unsigned char *archive_own_file(int entry, int *size);
 
@@ -1345,39 +1346,8 @@ static void draw_face(const HeroDef *x, const u8 *file, const obj_textureset *ts
     free(depth);
 }
 
-/* A hero card on the panel (64 x 32 texels, as the game's faces are, which fill it across and down to row 24): right across, its head
- * CARD_FACE_ROWS texels tall as theirs are, from CARD_TOP down, and what hangs from it (Roo's tongue) on down to CARD_BAR, the health
- * bar's top, so it goes on behind the bar. */
-#define CARD_FACE_ROWS 24.0f
-#define CARD_TOP 0.6f
-#define CARD_BAR 26
-
-/* Its own game's face for it (bonusheroes.c), drawn into the top left fw x fh of a picture `stride` wide: across it but `inset` of its
- * width each side, a card row `rows` texels tall from oy, and none of it from row `stop` on; each pixel the mean of the card's under
- * it. */
-static void card_face(const u32 *card, s32 cw, s32 ch, u32 *out, s32 stride, s32 fw, s32 fh, float inset, float rows, float oy, s32 stop) {
-    float cols = fw * (1 - 2 * inset) / cw, ox = fw * inset;
-    s32 px, py, i, j;
-
-    for (py = 0; py < fh; py++) {
-        for (px = 0; px < fw; px++) {
-            u32 r = 0, g = 0, b = 0, a = 0;
-
-            for (j = 0; j < 4; j++) {
-                for (i = 0; i < 4; i++) {
-                    s32 x = (s32)floorf((px + (i + 0.5f) / 4 - ox) / cols), y = (s32)floorf((py + (j + 0.5f) / 4 - oy) / rows);
-                    u32 c = x >= 0 && y >= 0 && x < cw && y < ch && py < stop ? card[y * cw + x] : 0, ca = c >> 24;
-
-                    r += (c & 0xFF) * ca;
-                    g += (c >> 8 & 0xFF) * ca;
-                    b += (c >> 16 & 0xFF) * ca;
-                    a += ca;
-                }
-            }
-            out[py * stride + px] = a == 0 ? 0 : (r / a) | (g / a) << 8 | (b / a) << 16 | (a / 16) << 24;
-        }
-    }
-}
+/* A hero card on the panel and in the select: heropack.c's pack_card_panel and pack_card_select, which the hero tool's card preview
+ * draws with too, so it shows what the game will */
 
 /* Its face for the panel, w x h texels: its own game's, at the panel's texels as the others are, or else drawn from its model; made
  * once, when its model and textures are loaded. */
@@ -1403,7 +1373,7 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
         if ((out = malloc(sizeof(u32) * (size_t)fw * fh)) == NULL) {
             return NULL;
         }
-        card_face(card, cw, ch, out, fw, fw, fh, 0, CARD_FACE_ROWS * h / 32 / (head > 0 ? head : ch), CARD_TOP * h / 32, CARD_BAR * h / 32);
+        pack_card_panel(card, cw, ch, head, out, fw, fh);
         goto made;
     }
     /* its textures: its model on foot's, if that's loaded; else read from its file (a game where it rides, and loads only that model) */
@@ -1529,11 +1499,10 @@ const GfxTex *extra_hero_face(s32 index, s32 w, s32 h) {
  * portrait one of the game's in its place on the screen, and as it's drawn the extra hero's own instead: its face on a gradient, as the
  * others' are. Picked, it stands on its stand in its own model, which loads while the select's up. */
 
-#define SELECT_ROWS 38      /* of a portrait's 64 rows, those the game's own use, and of its 64 columns: the rest is clear, and */
-#define SELECT_COLS 56      /* the frame's border shows there */
-#define SELECT_ASPECT 1.83f /* and how much taller than wide the select shows its texels, a row to each of 240 lines */
+#define SELECT_ROWS PACK_SELECT_ROWS /* of a portrait's 64 rows, those the game's own use, and of its 64 columns: the rest is clear, */
+#define SELECT_COLS PACK_SELECT_COLS /* and the frame's border shows there (heropack.h) */
+#define SELECT_ASPECT 1.83f /* and how much taller than wide a face drawn from a model is drawn for the select */
 #define SELECT_ROOM 1.06f   /* the share of those a face drawn from a model fills: a close-up, as the others are, its ears to the edges */
-#define SELECT_INSET 0.05f  /* and a hero card's room each side, so its ears clear the frame */
 
 static const subengine *SelectPortrait[EXTRA_CARDS_MAX]; /* each card's portrait, while the select's up */
 static s32 SelectHero[EXTRA_CARDS_MAX], SelectCards;
@@ -1612,27 +1581,8 @@ s32 extra_hero_select_scale(s32 extra) {
     return target;
 }
 
-/* A portrait's picture, fw x fh: its top left pw x ph (the game's own portraits' SELECT_COLS x SELECT_ROWS) a gradient from yellow
- * to orange, that his blue shows against, with face (as wide as the picture, or none) over it; the rest clear. */
-static void select_picture(u32 *out, s32 fw, s32 fh, s32 pw, s32 ph, const u32 *face) {
-    s32 x, y, k;
-
-    for (y = 0; y < fh; y++) {
-        u32 bg[3];
-
-        bg[0] = 255;
-        bg[1] = (u32)(224 - 104 * y / (ph > 0 ? ph : 1));
-        bg[2] = (u32)(72 - 56 * y / (ph > 0 ? ph : 1));
-        for (x = 0; x < fw; x++) {
-            u32 c = y < ph && x < pw && face != NULL ? face[y * fw + x] : 0, a = c >> 24, mixed = 0xFF000000u;
-
-            for (k = 0; k < 3; k++) {
-                mixed |= ((c >> (k * 8) & 0xFF) * a + bg[k] * (255 - a)) / 255 << (k * 8);
-            }
-            out[y * fw + x] = y < ph && x < pw ? mixed : 0;
-        }
-    }
-}
+/* A portrait's picture: heropack.c's pack_select_picture (its top left the gradient, with its face over it) */
+#define select_picture pack_select_picture
 
 void extra_hero_forget_pictures(s32 extra) {
     if (extra <= EXTRA_NONE || extra >= NUM_EXTRA) {
@@ -1671,12 +1621,8 @@ static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
         return NULL;
     }
     if (card != NULL) {
-        /* all of it, across the part of the picture the game's own use, and down it (Roo's, his tongue too), or as tall as its
-         * game shows it and in the middle of it (card_aspect) */
-        float aspect = bonus_heroes_card_aspect(extra), cols = pw * (1 - 2 * SELECT_INSET) / cw;
-        float rows = aspect > 0 ? cols / (SELECT_ASPECT * aspect) : (float)ph / ch;
-
-        card_face(card, cw, ch, face, fw, pw, ph, SELECT_INSET, rows, aspect > 0 ? (ph - ch * rows) / 2 : 0, ph);
+        /* all of it on the gradient, across the part of the picture the game's own use and down it (heropack.c, as the tool shows it) */
+        pack_card_select(card, cw, ch, out, fw, fh);
     } else {
         u32 *big = malloc(sizeof(u32) * (size_t)bw * bh);
         u8 *file = foot_file(extra);
@@ -1704,8 +1650,8 @@ static const u32 *portrait_of(s32 extra, s32 w, s32 h) {
         }
         free(big);
         free(file);
+        select_picture(out, fw, fh, pw, ph, face);
     }
-    select_picture(out, fw, fh, pw, ph, face);
     free(face);
     free(Portrait[extra]);
     Portrait[extra] = out;

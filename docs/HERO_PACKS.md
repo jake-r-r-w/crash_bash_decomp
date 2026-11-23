@@ -398,16 +398,24 @@ word, 2026-11-23: "select a height from a selection of the exisiting heros OR se
 place it takes, one choice: changed, its height goes with it if it was the last one's (a height of its own stays) and every game's
 made again at once with their moves, its own animations kept, the user's word, 2026-11-23: "if the base hero is changed like from brio
 to tiny (height or moves) it should rebuild them all but not replace any custom animations"; `rebase`, `HEROTOOL_REBASE=HERO` for a
-test: the frog from Crash's 452 to Tiny's 724 and Bobby's own 540 kept, a Tank animation of its own kept from Crash to Brio), **Card**, **Sounds** (a WAV for each, played with its button; else its base's; one column there) and
-**Mod** (its author, the folders) cards.
+test: the frog from Crash's 452 to Tiny's 724 and Bobby's own 540 kept, a Tank animation of its own kept from Crash to Brio), **Card** and **Sounds** (a WAV for each, played with its button; else its base's; one column there) cards. **Author** is the Hero card's
+last row: there's no Mod card (the user's word, 2026-11-23: "remove the whole mod section in the hero setup. move mod author to be under
+hero"; the mod's called as the hero is, and its folders are the tool's own and the game's mods folder, as the launcher starts it).
 **The card** (the user's word, 2026-11-22: "take a photo and use that. With full move him around rotate etc."): its picture in the
-character select and the games' panels, shown in the card's shape (290 x 400, as wide against its height as the select shows a card:
-its 56 of 64 columns less a 5% inset each side, by 38 rows each 1.83 times as tall as a column is wide, so a photo isn't stretched).
+character select and the games' panels, shown in the card's shape (290 x 350, as wide against its height as the select shows a card:
+its 56 of 64 columns less a 5% inset each side, by 38 rows each 1.6 times as tall as a column is wide, `PACK_TEXEL_TALL`, measured off
+the game: 140 x 152 pixels of a 1280 x 960 window for its 56 x 38, and widescreen keeps it; so a photo isn't stretched. It had been
+290 x 400, for 1.83, and came out 14% wider).
 **Take a photo** makes the page's picture a camera (`camera_view`): the hero as the game made it on foot, in a frame the card's shape,
 dragged to turn and tilt it, right-dragged (or middle) to move it, the wheel to zoom, double-clicked back to the start (close on its
 head and chest, a little from its right); its pose any of its animations at any frame. **Take photo** draws it twice the card's size
 on nothing and halves it (`take_photo`), saved as `photos/ID.png` in the tool's folder and made the card; **Save** puts it in the pack
-as `card.png`. Or **Browse** for a PNG, or **Clear** for its face drawn from its model by the game (its face share kept as hero.json has
+as `card.png`. Beside the frame, live, is what the game will make of it (the user's word, 2026-11-23: "When you are taking a picture it
+should show the preview of what it will look like in game exactly"; `in_game_preview`): **In the character select**, the portrait in
+the third row's frame, and **In play, on the panel**, its face there. Both are made by the game's own code from what Take photo would
+save (`photo_pixels`): `pack_card_select` and `pack_card_panel` in heropack.c, which extraheroes.c draws with (moved there from it,
+the select and the panel pixel for pixel as they were), and drawn as the game draws them, sharp texels 1.6 times as tall as wide. The
+panel has the whole card in its face's 24 rows, as it always has. Or **Browse** for a PNG, or **Clear** for its face drawn from its model by the game (its face share kept as hero.json has
 it; the tool no longer sets it). `HEROTOOL_CAMERA=YAW` opens the camera turned so and `HEROTOOL_PHOTO` takes the photo (with
 `HEROTOOL_SAVE_TO` and no `HEROTOOL_ADJUST`, saved there), for a test. A bone picked or let go by a click makes no sound (the user's
 word: "it gets anoying").

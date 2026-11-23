@@ -1036,6 +1036,70 @@ void pack_skin(const PackModel *m, const float (*world)[16], float *out) {
     }
 }
 
+void pack_card_face(const uint32_t *card, int cw, int ch, uint32_t *out, int stride, int fw, int fh, float inset, float rows, float oy, int stop) {
+    float cols = fw * (1 - 2 * inset) / cw, ox = fw * inset;
+    int px, py, i, j;
+
+    for (py = 0; py < fh; py++) {
+        for (px = 0; px < fw; px++) {
+            uint32_t r = 0, g = 0, b = 0, a = 0;
+
+            for (j = 0; j < 4; j++) {
+                for (i = 0; i < 4; i++) {
+                    int x = (int)floorf((px + (i + 0.5f) / 4 - ox) / cols), y = (int)floorf((py + (j + 0.5f) / 4 - oy) / rows);
+                    uint32_t c = x >= 0 && y >= 0 && x < cw && y < ch && py < stop ? card[y * cw + x] : 0, ca = c >> 24;
+
+                    r += (c & 0xFF) * ca;
+                    g += (c >> 8 & 0xFF) * ca;
+                    b += (c >> 16 & 0xFF) * ca;
+                    a += ca;
+                }
+            }
+            out[py * stride + px] = a == 0 ? 0 : (r / a) | (g / a) << 8 | (b / a) << 16 | (a / 16) << 24;
+        }
+    }
+}
+
+void pack_select_picture(uint32_t *out, int fw, int fh, int pw, int ph, const uint32_t *face) {
+    int x, y, k;
+
+    for (y = 0; y < fh; y++) {
+        uint32_t bg[3];
+
+        bg[0] = 255;
+        bg[1] = (uint32_t)(224 - 104 * y / (ph > 0 ? ph : 1));
+        bg[2] = (uint32_t)(72 - 56 * y / (ph > 0 ? ph : 1));
+        for (x = 0; x < fw; x++) {
+            uint32_t c = y < ph && x < pw && face != NULL ? face[y * fw + x] : 0, a = c >> 24, mixed = 0xFF000000u;
+
+            for (k = 0; k < 3; k++) {
+                mixed |= ((c >> (k * 8) & 0xFF) * a + bg[k] * (255 - a)) / 255 << (k * 8);
+            }
+            out[y * fw + x] = y < ph && x < pw ? mixed : 0;
+        }
+    }
+}
+
+/* across the part of the portrait the game's own use (but its inset), and down all of it */
+void pack_card_select(const uint32_t *card, int cw, int ch, uint32_t *out, int w, int h) {
+    int ph = h > PACK_SELECT_ROWS ? PACK_SELECT_ROWS : h, pw = w > PACK_SELECT_COLS ? PACK_SELECT_COLS : w;
+    uint32_t *face = (uint32_t *)calloc((size_t)w * h, sizeof(uint32_t));
+
+    if (face == NULL) {
+        memset(out, 0, sizeof(uint32_t) * (size_t)w * h);
+        return;
+    }
+    pack_card_face(card, cw, ch, face, w, pw, ph, PACK_SELECT_INSET, (float)ph / ch, 0, ph);
+    pack_select_picture(out, w, h, pw, ph, face);
+    free(face);
+}
+
+/* right across, its head 24 texels tall as the game's own faces are, from 0.6 down, and what hangs from it on down to row 26, the
+   health bar's top, so it goes on behind the bar (64 x 32's; as much more for a bigger one) */
+void pack_card_panel(const uint32_t *card, int cw, int ch, int head, uint32_t *out, int w, int h) {
+    pack_card_face(card, cw, ch, out, w, w, h, 0, 24.0f * h / 32 / (head > 0 ? head : ch), 0.6f * h / 32, 26 * h / 32);
+}
+
 uint32_t *pack_png_read(const uint8_t *png, size_t size, int *w, int *h) {
     PackImage im;
     cgltf_image fake;

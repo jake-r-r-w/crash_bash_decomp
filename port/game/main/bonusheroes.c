@@ -2614,10 +2614,6 @@ const u32 *bonus_heroes_card(s32 extra, s32 *w, s32 *h, s32 *head) {
     return Made[extra].card;
 }
 
-float bonus_heroes_card_aspect(s32 extra) {
-    return bonus_heroes_have(extra) && Made[extra].card != NULL ? Made[extra].card_aspect : 0;
-}
-
 void bonus_heroes_voice(s32 extra, s32 voice) {
     /* its laugh one at a time, a new one starting it again, as a hero's taunt sound does (its move's 0x800A, on its own sound) */
     static short laughing = -1;

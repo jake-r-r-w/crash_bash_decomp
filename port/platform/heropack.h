@@ -174,6 +174,21 @@ void pack_skin(const PackModel *m, const float (*world)[16], float *out);
 /* A PNG (a card) as w x h pixels, red | green << 8 | blue << 16 | alpha << 24, to free; NULL if it isn't one */
 uint32_t *pack_png_read(const uint8_t *png, size_t size, int *w, int *h);
 
+/* Its card (cw x ch, as pack_png_read gives) as the game shows it (extraheroes.c), here so the hero tool's preview is the same:
+ * pack_card_face draws it into the top left fw x fh of a picture stride wide: across it but inset of its width each side, a card row
+ * rows texels tall from oy, and none of it from row stop on; each pixel the mean of the card's under it (4 x 4 samples).
+ * pack_select_picture: a select's portrait, fw x fh, its top left pw x ph a gradient from yellow to orange with face (fw wide, or NULL)
+ * over it, the rest clear. pack_card_select: the card in a portrait w x h texels (the select's 64 x 64), pack_card_panel: on the panel,
+ * the face over its health bar (64 x 32), head the card's rows that are its head (its height, for a pack) */
+#define PACK_SELECT_ROWS 38      /* of a portrait's 64 rows, those the game's own use, and of its 64 columns: the rest is clear, and */
+#define PACK_SELECT_COLS 56      /* the frame's border shows there */
+#define PACK_SELECT_INSET 0.05f  /* a card's room each side, so its ears clear the frame */
+#define PACK_TEXEL_TALL 1.6f     /* how much taller than wide the select and the panel show a texel (512 x 240 on 4:3; widescreen too) */
+void pack_card_face(const uint32_t *card, int cw, int ch, uint32_t *out, int stride, int fw, int fh, float inset, float rows, float oy, int stop);
+void pack_select_picture(uint32_t *out, int fw, int fh, int pw, int ph, const uint32_t *face);
+void pack_card_select(const uint32_t *card, int cw, int ch, uint32_t *out, int w, int h);
+void pack_card_panel(const uint32_t *card, int cw, int ch, int head, uint32_t *out, int w, int h);
+
 /* 4x4 column-major helpers, for posing a skeleton by hand */
 void pack_trs_matrix(const PackTrs *p, float out[16]);
 void pack_mat_mul(const float a[16], const float b[16], float out[16]);

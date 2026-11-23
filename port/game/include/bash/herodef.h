@@ -67,8 +67,6 @@ typedef struct {
     HeroSound sound[NUM_VOICES];
     const u32 *card;
     s32 card_w, card_h, card_head;
-    float card_aspect;   /* how wide its pixels are as its game shows them, against their height, kept in the select's portrait (0: the
-                          * card's stretched to fill it) */
 } HeroMade;
 
 typedef struct HeroDef {

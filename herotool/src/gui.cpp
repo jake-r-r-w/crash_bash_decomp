@@ -418,6 +418,10 @@ struct Tool {
     View cam;
     int cam_anim = -1, cam_frame = 0;
     SDL_Texture *card_tex = nullptr;
+    // what the game will make of the photo the camera would take (camera_view's preview): the select's portrait (64 x 64) and the
+    // panel's face (64 x 32), made again when the camera, its pose or the hero changes (cam_was)
+    SDL_Texture *in_select = nullptr, *in_play = nullptr;
+    char cam_was[160] = "";
     char card_tex_of[1024] = "";
     unsigned card_gen = 0, card_tex_gen = 0;
     int card_tw = 0, card_th = 0;
@@ -4532,11 +4536,6 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     (void)title;
 }
 
-void path_field(const char *label, char *buf, size_t size) {
-    ImGui::SetNextItemWidth(-1);
-    ImGui::InputText(label, buf, size);
-}
-
 // --- the start screen: make a new hero from a model, or change one in the mods folder (the user's word, 2026-11-22) ---
 
 // The heroes in the mods folder's mod folders (heroes/<id>/hero.json): a zipped mod's aren't listed, as it's changed by unzipping it
@@ -5937,12 +5936,20 @@ void hero_card(Tool &T) {
         ImGui::EndCombo();
     }
     ImGui::SetItemTooltip("Plays as this hero: their animations, speed, ride or prop, and sounds it hasn't got");
+    // who made it (its mod's author; the mod's called as the hero is, and its folders are the tool's own and the game's: no Mod card,
+    // the user's word, 2026-11-23: "remove the whole mod section in the hero setup. move mod author to be under hero")
+    row_label("Author", cw);
+    if (field("##author", T.author, sizeof(T.author), cw)) {
+        T.unsaved = true;
+    }
+    ImGui::SetItemTooltip("Who made it, as the game's mods list says");
     card_end();
 }
 
 // The card's picture: as wide against its height as the character select shows a card (its 56 of 64 columns less a 5% inset each
-// side, by its 38 rows, a row 1.83 times as tall as a column is wide: extraheroes.c's SELECT_*), so a photo isn't stretched there
-const int CARD_W = 290, CARD_H = 400;
+// side, by its 38 rows, a row PACK_TEXEL_TALL, 1.6, times as tall as a column is wide, measured off the game: heropack.h), so a photo
+// isn't stretched there (it had been 290 x 400, for 1.83, and came out 14% wider)
+const int CARD_W = 290, CARD_H = 350;
 
 // The card's PNG as a texture, read again when it's another or a new photo (nullptr: none, or it isn't one)
 SDL_Texture *card_texture(Tool &T, SDL_Renderer *ren) {
@@ -5965,10 +5972,10 @@ SDL_Texture *card_texture(Tool &T, SDL_Renderer *ren) {
     return T.card_tex;
 }
 
-// The card's photo taken: what the camera sees drawn twice the card's size and halved (its edges smooth), on nothing (clear round it,
+// The card's photo: what the camera sees drawn twice the card's size and halved (photo_pixels, which the preview shows too) (its edges smooth), on nothing (clear round it,
 // as the game lays a card over its own background), saved as a PNG in the tool's folder (photos/ID.png) and made the card; Save puts
 // it in the pack (card.png)
-bool take_photo(Tool &T, SDL_Renderer *ren) {
+std::vector<unsigned> photo_pixels(Tool &T, SDL_Renderer *ren) {
     const KitMade *mk = &T.made[0];
     View shot;
     shot.w = CARD_W * 2, shot.h = CARD_H * 2, shot.bg = 0;
@@ -5988,6 +5995,11 @@ bool take_photo(Tool &T, SDL_Renderer *ren) {
         }
     }
     view_free(shot);
+    return out;
+}
+
+bool take_photo(Tool &T, SDL_Renderer *ren) {
+    std::vector<unsigned> out = photo_pixels(T, ren);
     char *pref = pref_path();
     char path[1300];
     if (pref == nullptr) {
@@ -6011,6 +6023,72 @@ bool take_photo(Tool &T, SDL_Renderer *ren) {
     T.unsaved = true;
     snprintf(T.status, sizeof(T.status), "Photo taken: it's the card");
     return true;
+}
+
+// The game's look of the photo the camera would take, beside its frame (the user's word, 2026-11-23: "When you are taking a picture it
+// should show the preview of what it will look like in game exactly"): made by the game's own code (heropack.c's pack_card_select
+// and pack_card_panel, which extraheroes.c draws with) from what Take photo would save, and drawn as the game does: its texels sharp,
+// each PACK_TEXEL_TALL times as tall as wide (the select's 140 x 152 pixels of a 1280 x 960 window for 56 x 38), the select's in its
+// frame (7 of those pixels of the third row's orange, then black: 18 left, 15 right, 12 above, 8 below, measured off the game's)
+const float InGameW = 7 + 18 + 140 + 15 + 7, InGameH = 8 + 12 + 152 + 8 + 8 + 128; // (in a 1280 x 960 window's pixels)
+
+// how big, for a frame fh tall: the two and their names in its height, at most 1.6 times the game's 1280 x 960
+float in_game_scale(float fh) {
+    float k = (fh - U(28) * 2 - U(20)) / InGameH;
+    return std::max(0.5f, std::min(1.6f * U(1), k));
+}
+
+SDL_Texture *texels_texture(SDL_Renderer *ren, SDL_Texture *tex, const uint32_t *px, int w, int h) {
+    if (tex == nullptr) {
+        tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, w, h);
+        if (tex == nullptr) {
+            return nullptr;
+        }
+        SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
+        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+    }
+    SDL_UpdateTexture(tex, nullptr, px, w * 4);
+    return tex;
+}
+
+std::vector<unsigned> photo_pixels(Tool &T, SDL_Renderer *ren);
+
+void in_game_preview(Tool &T, SDL_Renderer *ren, ImVec2 at, float k) {
+    char now[160];
+    snprintf(now, sizeof(now), "%g %g %g %g %g %d %d %u", T.cam.yaw, T.cam.pitch, T.cam.zoom, T.cam.px, T.cam.py, T.cam_anim, T.cam_frame, MadeGen);
+    if (strcmp(now, T.cam_was) != 0 || T.in_select == nullptr || T.in_play == nullptr) {
+        std::vector<unsigned> card = photo_pixels(T, ren);
+        static uint32_t select[64 * 64], play[64 * 32];
+        pack_card_select(card.data(), CARD_W, CARD_H, select, 64, 64);
+        pack_card_panel(card.data(), CARD_W, CARD_H, CARD_H, play, 64, 32);
+        T.in_select = texels_texture(ren, T.in_select, select, 64, 64);
+        T.in_play = texels_texture(ren, T.in_play, play, 64, 32);
+        SDL_strlcpy(T.cam_was, now, sizeof(T.cam_was));
+    }
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    float col = 140.0f / 56 * k, row = col * PACK_TEXEL_TALL; // a texel on screen
+    ImGui::PushFont(FontSmall);
+    dl->AddText(at, MUTED, "In the character select");
+    float y = at.y + U(28);
+    // the frame: the third row's orange, black, and the portrait's 64 x 64 texels at its top left (its 56 x 38 the picture)
+    ImVec2 o(at.x, y), e(at.x + InGameW * k, y + (8 + 12 + 152 + 8 + 8) * k);
+    dl->AddRectFilled(o, e, IM_COL32(0xFF, 0xC0, 0x00, 255));
+    dl->AddRectFilled(ImVec2(o.x + 7 * k, o.y + 8 * k), ImVec2(e.x - 7 * k, e.y - 8 * k), IM_COL32(0, 0, 0, 255));
+    ImVec2 pic(o.x + (7 + 18) * k, o.y + (8 + 12) * k);
+    ImGui::PushClipRect(ImVec2(o.x + 7 * k, o.y + 8 * k), ImVec2(e.x - 7 * k, e.y - 8 * k), true);
+    if (T.in_select != nullptr) {
+        dl->AddImage((ImTextureID)(intptr_t)T.in_select, pic, ImVec2(pic.x + 64 * col, pic.y + 64 * row));
+    }
+    ImGui::PopClipRect();
+    y = e.y + U(20);
+    dl->AddText(ImVec2(at.x, y), MUTED, "In play, on the panel");
+    y += U(28);
+    ImVec2 q(at.x, y), r(at.x + 64 * col, y + 32 * row);
+    dl->AddRectFilled(ImVec2(q.x - U(6), q.y - U(6)), ImVec2(r.x + U(6), r.y + U(6)), DEEP, U(10));
+    if (T.in_play != nullptr) {
+        dl->AddImage((ImTextureID)(intptr_t)T.in_play, q, r);
+    }
+    ImGui::PopFont();
 }
 
 // The card's camera, in the hero's page's picture (the user's word, 2026-11-22: "take a photo and use that. With full move him around
@@ -6083,13 +6161,18 @@ void camera_view(Tool &T, SDL_Window *win, ImVec2 p, ImVec2 size) {
         T.camera = false;
     }
     ImGui::SetItemTooltip("Make what's in the frame its card");
-    // the frame: as big as the picture has room for, the card's shape
+    // the frame: as big as the picture has room for, the card's shape; beside it, the game's look (in_game_preview), the two in the
+    // middle together
     float top = p.y + U(16) + bh + U(20), fh = p.y + size.y - U(44) - top, fw = fh * CARD_W / CARD_H;
-    if (fw > size.x - U(48)) {
-        fw = size.x - U(48);
+    float k = in_game_scale(fh), side = InGameW * k + U(40);
+    if (fw > size.x - U(48) - side) {
+        fw = size.x - U(48) - side;
         fh = fw * CARD_H / CARD_W;
+        k = in_game_scale(fh);
+        side = InGameW * k + U(40);
     }
-    ImVec2 a(p.x + (size.x - fw) / 2, top), b(a.x + fw, a.y + fh);
+    ImVec2 a(p.x + (size.x - fw - side) / 2, top), b(a.x + fw, a.y + fh);
+    in_game_preview(T, SDL_GetRenderer(win), ImVec2(b.x + U(40), top), k);
     View &v = T.cam;
     if (v.w != (int)fw || v.h != (int)fh) {
         view_free(v);
@@ -6229,35 +6312,6 @@ void sounds_card(Tool &T, SDL_Window *win, float w) {
     }
     ImGui::SetCursorScreenPos(ImVec2(base.x, base.y + ((PACK_VOICE_JOBS + cols - 1) / cols) * (h + U(6)) - U(6)));
     ImGui::Dummy(ImVec2(cols * cw + U(8) * (cols - 1), 0));
-    card_end();
-}
-
-// The mod's card: who made it, and its folders (it's called as the hero is)
-void mod_card(Tool &T) {
-    card("##mod", CARD);
-    heading("Mod");
-    float cw = ImGui::GetContentRegionAvail().x - U(90);
-    row_label("Author", cw);
-    if (field("##author", T.author, sizeof(T.author), cw, 0, DEEP)) {
-        T.unsaved = true;
-    }
-    ImGui::PushStyleColor(ImGuiCol_Text, V4(MUTED));
-    if (ImGui::TreeNode("Folders")) {
-        ImGui::PopStyleColor();
-        char home[1100];
-        heroes_home(home, sizeof(home));
-        ImGui::TextColored(V4(MUTED), "Its own (Save)");
-        ImGui::PushTextWrapPos(0);
-        ImGui::TextUnformatted(home);
-        ImGui::PopTextWrapPos();
-        ImGui::TextColored(V4(MUTED), "The game's mods folder (Add to game)");
-        path_field("##out", T.out, sizeof(T.out));
-        ImGui::TextColored(V4(MUTED), "The game");
-        path_field("##game", T.game, sizeof(T.game));
-        ImGui::TreePop();
-    } else {
-        ImGui::PopStyleColor();
-    }
     card_end();
 }
 
@@ -6504,8 +6558,6 @@ void model_page(Tool &T, SDL_Window *win) {
     face_card(T, win, 0);
     card_gap();
     sounds_card(T, win, 0);
-    card_gap();
-    mod_card(T);
     ImGui::EndChild();
 }
 
