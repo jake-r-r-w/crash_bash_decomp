@@ -667,6 +667,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Hero Setup's Straighten renamed Snap (the user's word).
 - 2026-11-23: Straighten did nothing from its menu: the left click on the menu also reached the view under it, which let go of the
   joints picked and began a box first. The views take a click only when they're hovered now. A lesson: test a menu by clicking it
   (HEROTOOL_DRAG2 right-click, DRAG3 the item), not by calling what it calls.

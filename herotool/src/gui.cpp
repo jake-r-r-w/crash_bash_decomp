@@ -3944,7 +3944,7 @@ void joint_put(Tool &T, int b, int e, const float *q) {
     }
 }
 
-// Straighten: the joints picked onto one line of the grid in the view (the user's word, 2026-11-23: "did not work for the spine. maybe the
+// Snap (Straighten first; renamed, the user's word, 2026-11-23: "rename straighten to snap"): the joints picked onto one line of the grid in the view (the user's word, 2026-11-23: "did not work for the spine. maybe the
 // straighten can snap to the closes grid line"): up and down if they're spread more that way (a spine: across, the front view's x or the
 // side view's z, made the nearest line's to their middle), else across (an arm held out: their height the nearest line's); the grid's
 // lines (grid_step, through x 0 and z 0 and up from its feet) while it's shown, else their middle. A step of the undo; false if fewer
@@ -3965,7 +3965,7 @@ bool joints_to_grid(Tool &T, int which) {
     int n = (int)T.joint_sel.size(), axis = hi[0] - lo[0] <= hi[1] - lo[1] ? 0 : 1; // 0: a line up and down (their across set), 1: across
     float mean = sum[axis] / n, step = grid_step(T.m), base = axis == 0 ? 0 : T.m->lo[1];
     float to = T.joint_grid ? base + roundf((mean - base) / step) * step : mean;
-    joint_snapshot(T, "Straightened %d joints", n);
+    joint_snapshot(T, "Snapped %d joints", n);
     std::vector<std::pair<int, int>> sel = T.joint_sel;
     for (auto &j : sel) {
         const float *p = j.second ? T.m->bones[j.first].end : T.m->bones[j.first].at;
@@ -3975,7 +3975,7 @@ bool joints_to_grid(Tool &T, int which) {
     }
     reweigh(T);
     T.dirty = T.unsaved = true;
-    snprintf(T.status, sizeof(T.status), "Straightened %d joints, %s", n, axis == 0 ? "up and down" : "across");
+    snprintf(T.status, sizeof(T.status), "Snapped %d joints, %s", n, axis == 0 ? "up and down" : "across");
     if (SDL_getenv("HEROTOOL_MARKERS") != nullptr) {
         printf("herotool: %s\n", T.status);
         for (int b = 0; b < KB_COUNT; b++) {
@@ -4086,7 +4086,7 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
         }
         if (ImGui::IsItemHovered() && T.drag_bone < 0) {
             ImGui::SetItemTooltip("Drag a dot onto its joint   Drag round dots, or Ctrl-click them: pick several, then drag one   Right-click: "
-                                  "straighten them   Wheel: zoom   Right-drag: move   Right double-click: back");
+                                  "snap them   Wheel: zoom   Right-drag: move   Right double-click: back");
         }
     }
     if (!ImGui::IsMouseDown(ImGuiMouseButton_Right) && T.pan_view == which) {
@@ -4208,7 +4208,7 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     }
     if (ImGui::BeginPopup("##jointmenu")) {
         char says[48];
-        snprintf(says, sizeof(says), "Straighten (%d joints)", (int)T.joint_sel.size());
+        snprintf(says, sizeof(says), "Snap (%d joints)", (int)T.joint_sel.size());
         ImGui::BeginDisabled(T.joint_sel.size() < 2);
         if (menu_item(says, false)) {
             joints_to_grid(T, which);

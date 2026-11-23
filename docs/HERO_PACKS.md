@@ -358,7 +358,7 @@ picked ringed white; dragging one of them moves them all as far as the mouse goe
 other side's too unless that's picked itself (one step of the undo). Esc lets go of them. Checked: the arm boxed in the side view and
 its elbow dragged, shoulder, elbow and hand of both arms moved alike, the chest and neck not (`HEROTOOL_DRAG2`, a second test drag
 after the first). A right click (not a drag: that moves the view) on them opens their menu (a dot not picked taken alone first):
-**Straighten** (the user's word, 2026-11-23: "select nodes right click and be able to straighten", then "did not work for the spine.
+**Snap** (Straighten first, renamed at the user's word, 2026-11-23: "rename straighten to snap"; "select nodes right click and be able to straighten", then "did not work for the spine.
 maybe the straighten can snap to the closes grid line") puts the picked on one line of the grid in the view clicked: up and down if
 they're spread more that way (a spine: the front view's x or the side view's z made the nearest line's to their middle), else across
 (an arm held out: their height the nearest line's); the grid's lines (`grid_step`, through x 0 and z 0 and up from its feet) while it's
@@ -369,9 +369,9 @@ down and out; `joints_straighten`, three or more). **Let go of them**. Checked: 
 spine, chest, neck and head all at z 0.05, the line nearest their middle, the shoulder and tail not moved; and the left arm lined up
 between its ends in the front view, its elbow and hand on the line from its shoulder to its hand's end, the right arm the mirror
 (`HEROTOOL_STRAIGHTEN=VIEW`, or `line`, after a test drag). The views take a click only when the mouse is over them, not over their
-menu: a click on its Straighten had also let go of those picked and begun a box in the view under it, before the menu saw them, so it
+menu: a click on its Snap (then Straighten) had also let go of those picked and begun a box in the view under it, before the menu saw them, so it
 did nothing (the user's word, 2026-11-23: "its not working on the body. the nodes never move", on a frog of theirs). Checked through
-the menu itself on a copy of it: its body boxed in the side view, right-clicked and Straighten clicked, hips to head on one line
+the menu itself on a copy of it: its body boxed in the side view, right-clicked and Snap clicked, hips to head on one line
 (`HEROTOOL_DRAG3`, a third test drag, and `HEROTOOL_SHOT_FRAME=N` for the picture after them). Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
 with it. `HEROTOOL_MARKERS=BONE` prints where a bone's dot is and every joint after a drag, and `HEROTOOL_DRAG` and `_WHEEL` work
 there, for a test. On the right, a column that scrolls, its **Model** (Open, Guess joints, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
