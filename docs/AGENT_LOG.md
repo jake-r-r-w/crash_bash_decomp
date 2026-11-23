@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: A pack's panel face is the top of its card, unsquashed (pack_card_panel, game and tool alike); the card preview has the
+  panel's health bar and fruit under it, placed as measured off the game.
 - 2026-11-23: Hero Setup: no Mod card (Author under Hero); the card camera shows the game's look beside it (select and panel, by the
   game's own card code, now heropack.c's pack_card_select/pack_card_panel, the game's output unchanged pixel for pixel); the card is
   290 x 350, the select's real shape (its texels 1.6 tall, measured; 1.83 had made photos 14% wider).

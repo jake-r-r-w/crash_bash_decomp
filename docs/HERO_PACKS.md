@@ -414,8 +414,13 @@ as `card.png`. Beside the frame, live, is what the game will make of it (the use
 should show the preview of what it will look like in game exactly"; `in_game_preview`): **In the character select**, the portrait in
 the third row's frame, and **In play, on the panel**, its face there. Both are made by the game's own code from what Take photo would
 save (`photo_pixels`): `pack_card_select` and `pack_card_panel` in heropack.c, which extraheroes.c draws with (moved there from it,
-the select and the panel pixel for pixel as they were), and drawn as the game draws them, sharp texels 1.6 times as tall as wide. The
-panel has the whole card in its face's 24 rows, as it always has. Or **Browse** for a PNG, or **Clear** for its face drawn from its model by the game (its face share kept as hero.json has
+the select pixel for pixel as it was), and drawn as the game draws them, sharp texels 1.6 times as tall as wide. On the panel the face is
+the top of the card, unsquashed: as many of its rows as are as tall against its width as the face's 24 rows show against its 64
+columns (`pack_card_panel`; the user's word, 2026-11-23, "Yes, change it": it had squeezed the whole card into them), on down to the
+health bar; and the preview has the bar under it as the game does (measured off the game's with a card of one colour: the face 157 x
+104 of a 1280 x 960 window, the bar 127 x 24 at (40, 108) from its top left, green to 120, `#7DFB3E` to `#315310`, then red,
+`#BF0000`; and the fruit round (14, 120) over its end, drawn by the tool, as the game's is its art: "add health bar under like it
+does in the game"). Or **Browse** for a PNG, or **Clear** for its face drawn from its model by the game (its face share kept as hero.json has
 it; the tool no longer sets it). `HEROTOOL_CAMERA=YAW` opens the camera turned so and `HEROTOOL_PHOTO` takes the photo (with
 `HEROTOOL_SAVE_TO` and no `HEROTOOL_ADJUST`, saved there), for a test. A bone picked or let go by a click makes no sound (the user's
 word: "it gets anoying").

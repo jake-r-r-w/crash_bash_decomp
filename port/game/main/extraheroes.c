@@ -1373,7 +1373,7 @@ static const u32 *face_of(s32 extra, s32 w, s32 h) {
         if ((out = malloc(sizeof(u32) * (size_t)fw * fh)) == NULL) {
             return NULL;
         }
-        pack_card_panel(card, cw, ch, head, out, fw, fh);
+        pack_card_panel(card, cw, ch, out, fw, fh);
         goto made;
     }
     /* its textures: its model on foot's, if that's loaded; else read from its file (a game where it rides, and loads only that model) */

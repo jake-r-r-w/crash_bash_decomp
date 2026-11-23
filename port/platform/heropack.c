@@ -1094,10 +1094,14 @@ void pack_card_select(const uint32_t *card, int cw, int ch, uint32_t *out, int w
     free(face);
 }
 
-/* right across, its head 24 texels tall as the game's own faces are, from 0.6 down, and what hangs from it on down to row 26, the
-   health bar's top, so it goes on behind the bar (64 x 32's; as much more for a bigger one) */
-void pack_card_panel(const uint32_t *card, int cw, int ch, int head, uint32_t *out, int w, int h) {
-    pack_card_face(card, cw, ch, out, w, w, h, 0, 24.0f * h / 32 / (head > 0 ? head : ch), 0.6f * h / 32, 26 * h / 32);
+/* right across, the top of it (head) 24 texels tall as the game's own faces are, from 0.6 down, and on below that to row 26, the
+   health bar's top, so it goes on behind the bar (64 x 32's; as much more for a bigger one). head: as many of its rows as are as tall
+   against its width as those 24 rows show against the 64 columns (each PACK_TEXEL_TALL), so it isn't squashed (the user's word,
+   2026-11-23: "Yes, change it": the whole card had been squeezed into them) */
+void pack_card_panel(const uint32_t *card, int cw, int ch, uint32_t *out, int w, int h) {
+    float rows = 24.0f * h / 32, head = cw * rows * PACK_TEXEL_TALL / w;
+
+    pack_card_face(card, cw, ch, out, w, w, h, 0, rows / head, 0.6f * h / 32, 26 * h / 32);
 }
 
 uint32_t *pack_png_read(const uint8_t *png, size_t size, int *w, int *h) {

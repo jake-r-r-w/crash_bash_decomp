@@ -6030,7 +6030,12 @@ bool take_photo(Tool &T, SDL_Renderer *ren) {
 // and pack_card_panel, which extraheroes.c draws with) from what Take photo would save, and drawn as the game does: its texels sharp,
 // each PACK_TEXEL_TALL times as tall as wide (the select's 140 x 152 pixels of a 1280 x 960 window for 56 x 38), the select's in its
 // frame (7 of those pixels of the third row's orange, then black: 18 left, 15 right, 12 above, 8 below, measured off the game's)
-const float InGameW = 7 + 18 + 140 + 15 + 7, InGameH = 8 + 12 + 152 + 8 + 8 + 128; // (in a 1280 x 960 window's pixels)
+// The panel, as it is from the face's top left in the same window's pixels (measured off the game's with a card of one colour): its
+// face 157 x 104 (64 x 26 texels: none from row 26 on), the health bar 127 x 24 at (40, 108), green to 120 (#7DFB3E at its top to
+// #315310 at its foot, panel.c's InitHealthIcons) and red after (#BF0000), and the fruit round (14, 120), 29 x 24 across, over the bar's
+// end and under the face (drawn here: the game's own is its art). The user's word, 2026-11-23: "add health bar under like it does in
+// the game"
+const float InGameW = 7 + 18 + 140 + 15 + 7, InGameH = 8 + 12 + 152 + 8 + 8 + 145; // (in a 1280 x 960 window's pixels)
 
 // how big, for a frame fh tall: the two and their names in its height, at most 1.6 times the game's 1280 x 960
 float in_game_scale(float fh) {
@@ -6060,7 +6065,7 @@ void in_game_preview(Tool &T, SDL_Renderer *ren, ImVec2 at, float k) {
         std::vector<unsigned> card = photo_pixels(T, ren);
         static uint32_t select[64 * 64], play[64 * 32];
         pack_card_select(card.data(), CARD_W, CARD_H, select, 64, 64);
-        pack_card_panel(card.data(), CARD_W, CARD_H, CARD_H, play, 64, 32);
+        pack_card_panel(card.data(), CARD_W, CARD_H, play, 64, 32);
         T.in_select = texels_texture(ren, T.in_select, select, 64, 64);
         T.in_play = texels_texture(ren, T.in_play, play, 64, 32);
         SDL_strlcpy(T.cam_was, now, sizeof(T.cam_was));
@@ -6083,10 +6088,18 @@ void in_game_preview(Tool &T, SDL_Renderer *ren, ImVec2 at, float k) {
     y = e.y + U(20);
     dl->AddText(ImVec2(at.x, y), MUTED, "In play, on the panel");
     y += U(28);
-    ImVec2 q(at.x, y), r(at.x + 64 * col, y + 32 * row);
-    dl->AddRectFilled(ImVec2(q.x - U(6), q.y - U(6)), ImVec2(r.x + U(6), r.y + U(6)), DEEP, U(10));
+    ImVec2 f(at.x + 15 * k, y);
+    auto P = [&](float px, float py) { return ImVec2(f.x + px * k, f.y + py * k); };
+    dl->AddRectFilled(ImVec2(at.x - U(6), y - U(6)), ImVec2(P(167, 0).x + U(6), P(0, 145).y + U(6)), DEEP, U(10));
+    ImU32 top = IM_COL32(0x7D, 0xFB, 0x3E, 255), foot = IM_COL32(0x31, 0x53, 0x10, 255);
+    dl->AddRectFilledMultiColor(P(40, 108), P(120, 132), top, top, foot, foot);
+    dl->AddRectFilled(P(120, 108), P(167, 132), IM_COL32(0xBF, 0, 0, 255));
+    dl->AddEllipseFilled(P(14, 120), ImVec2(29 * k, 24 * k), IM_COL32(0xB8, 0x5A, 0x00, 255));
+    dl->AddEllipseFilled(P(12, 118), ImVec2(26 * k, 21 * k), IM_COL32(0xFF, 0x7F, 0x08, 255));
+    dl->AddEllipseFilled(P(17, 123), ImVec2(17 * k, 13 * k), IM_COL32(0xFF, 0xAA, 0x08, 255));
+    dl->AddEllipseFilled(P(0, 106), ImVec2(12 * k, 7 * k), IM_COL32(0xE8, 0x3A, 0x14, 255));
     if (T.in_play != nullptr) {
-        dl->AddImage((ImTextureID)(intptr_t)T.in_play, q, r);
+        dl->AddImage((ImTextureID)(intptr_t)T.in_play, P(0, 0), P(157, 128));
     }
     ImGui::PopFont();
 }
