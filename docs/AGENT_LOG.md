@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Add to game greyed till saved (only a Save marks it saved now: the preview's own copy for the games had cleared Not
+  saved yet); Based on changed remakes every game at once, its height the new base's if it was the old one's, its own moves kept.
 - 2026-11-23: the hero tool's Save keeps the hero in its own folder (heroes/ in its pref folder), nothing beside the model (no
   markers file); Add to game copies the hero into the game's mods folder and runs `crashbash --add-hero MOD` (new: switches the mod
   on in the player's settings and quits). The start screen lists both folders with In the game / Not in the game; delete takes both.

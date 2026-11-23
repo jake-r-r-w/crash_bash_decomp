@@ -1208,10 +1208,12 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
         snprintf(T.status, sizeof(T.status), "%s", why);
     } else {
         ok = true;
-        T.unsaved = false;
         snprintf(T.status, sizeof(T.status), "Saved to %s", folder);
-        // (the tool's copy is the one it's opened from now)
+        // (saved only by a save: the copy the games make the preview from, or a test's, isn't it; written there, it was taken for saved,
+        // All saved and Add to game with it, though the tool's own copy was as it had been)
         if (saving) {
+            T.unsaved = false;
+            // (the tool's copy is the one it's opened from now)
             SDL_strlcpy(T.loaded_mod, folder, sizeof(T.loaded_mod));
         }
         if (test) {
@@ -1269,12 +1271,21 @@ SDL_EnumerationResult SDLCALL copy_in(void *ctx, const char *dir, const char *na
     return SDL_ENUM_CONTINUE;
 }
 
-// Add to game (the user's word, 2026-11-23: Save keeps it "in the tool", and a button "installs"): saved first, then its hero's folder put
+// Add to game (the user's word, 2026-11-23: Save keeps it "in the tool", and a button "installs"): once it's saved, its hero's folder put
 // in the game's mods folder (MOD/heroes/ID in place of what was there, and the mod's mod.json if it's new there: another hero of the mod's
 // there stays), and the game asked to switch the mod on (crashbash --add-hero MOD: a hero mod that's on puts its heroes in the select).
 // Said in the status
+// Whether the hero open is saved in the tool's own folder as it is now (Add to game puts that copy in the game)
+bool saved_in_tool(const Tool &T) {
+    char home[1100];
+    heroes_home(home, sizeof(home));
+    return !T.unsaved && T.loaded_mod[0] != 0 && home[0] != 0 && SDL_strncmp(T.loaded_mod, home, strlen(home)) == 0;
+}
+
 bool add_to_game(Tool &T) {
-    if (!export_pack(T, false)) {
+    // (its saved copy: the button's greyed out till it's saved, the user's word, 2026-11-23)
+    if (!saved_in_tool(T)) {
+        snprintf(T.status, sizeof(T.status), "Save it first: Add to game puts its saved copy in the game");
         return false;
     }
     char mod[128], from[1400], dest[1100], to[1400], path[1400], back[1400];
@@ -4913,10 +4924,20 @@ void top_bar(Tool &T) {
         ImGui::EndPopup();
     }
     ImGui::SameLine(0, sp);
+    // (greyed out till it's saved as it is: the user's word, 2026-11-23, "the add to game button should be greyed out until saved")
+    bool can_add = saved_in_tool(T);
+    ImGui::BeginDisabled(!can_add);
     if (button("Add to game", TINT_PERI, PERI_LIGHT, 0, IC_CHECK, CUE_SAVE)) {
         add_to_game(T);
     }
-    ImGui::SetItemTooltip("Saves it, puts it in the game's mods folder (%s) and switches it on there", T.out);
+    ImGui::EndDisabled();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled | ImGuiHoveredFlags_ForTooltip)) {
+        if (can_add) {
+            ImGui::SetTooltip("Puts its saved copy in the game's mods folder (%s) and switches it on there", T.out);
+        } else {
+            ImGui::SetTooltip("Save it first");
+        }
+    }
     ImGui::SameLine(0, sp);
     if (button("Save", CORAL, CORAL_INK, U(100), IC_NONE, CUE_SAVE)) {
         export_pack(T, false);
@@ -5790,6 +5811,34 @@ bool field(const char *id, char *buf, size_t size, float w, ImGuiInputTextFlags 
     return changed;
 }
 
+// Based on another (the user's word, 2026-11-23: "if the base hero is changed like from brio to tiny (height or moves) it should rebuild
+// them all but not replace any custom animations"): its height theirs if it was the last one's (a height of its own kept), and every game
+// made again now with their moves, its own animations as they were (its moves of its own and its clips: what's its own in each game,
+// ownmap and baked, isn't touched, nor a game's own Prop from)
+void rebase(Tool &T, int h) {
+    if (h == T.template_hero || h < 0 || h >= 8) {
+        return;
+    }
+    if (T.height == HeroHeights[T.template_hero]) {
+        T.height = HeroHeights[h];
+    }
+    T.template_hero = h;
+    T.dirty = T.unsaved = true;
+    int mine = (int)T.baked.size();
+    for (int g = 0; g < KitGameCount && g < 8; g++) {
+        for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+            mine += T.ownmap[g][m] == OWN_CLIP || T.ownmap[g][m] >= 0;
+        }
+    }
+    make_in_game(T);
+    if (mine > 0) {
+        toast(T, "Based on %s, %d tall: made again in every game, its %d own animations kept", HeroNames[h], T.height, mine);
+    } else {
+        toast(T, "Based on %s, %d tall: made again in every game", HeroNames[h], T.height);
+    }
+    SDL_strlcpy(T.toasted, T.status, sizeof(T.toasted));
+}
+
 // The hero's card: its name, id, height and who it's based on
 void hero_card(Tool &T) {
     card("##hero", TINT_MINT);
@@ -5860,18 +5909,7 @@ void hero_card(Tool &T) {
     if (menu_begin("##base", HeroNames[T.template_hero], cw)) {
         for (int h = 0; h < 8; h++) {
             if (menu_item(HeroNames[h], T.template_hero == h) && h != T.template_hero) {
-                T.template_hero = h;
-                T.dirty = T.unsaved = true;
-                int mine = (int)T.baked.size();
-                for (int g = 0; g < KitGameCount && g < 8; g++) {
-                    for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
-                        mine += T.ownmap[g][m] == OWN_CLIP || T.ownmap[g][m] >= 0;
-                    }
-                }
-                if (mine > 0) {
-                    snprintf(T.status, sizeof(T.status), "Based on %s: its %d own animations stay. Update the preview to see it.",
-                             HeroNames[T.template_hero], mine);
-                }
+                rebase(T, h);
             }
         }
         ImGui::EndCombo();
@@ -7830,10 +7868,36 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             dio.AddMouseButtonEvent(d[5] != 0 ? 1 : 0, st >= 2 && st <= 12);
             dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && st >= 1 && st <= 13);
         }
-        /* a test's: HEROTOOL_ADD=1 adds the hero open to the game, as its button does, once it's open */
+        /* a test's: HEROTOOL_REBASE=HERO bases the hero open on another once it's made, as Based on does, and says what it's doing */
+        static bool rebased = false;
+        if (!rebased && SDL_getenv("HEROTOOL_REBASE") != nullptr && T.m != nullptr && !T.home && !T.choosing && T.have_made[0] && T.maker == nullptr) {
+            rebased = true;
+            for (int h = 0; h < 8; h++) {
+                if (SDL_strcasecmp(SDL_getenv("HEROTOOL_REBASE"), Heroes[h]) == 0) {
+                    int own = 0;
+                    for (int g = 0; g < KitGameCount && g < 8; g++) {
+                        for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+                            own += T.ownmap[g][m] != OWN_TEMPLATE;
+                        }
+                    }
+                    printf("herotool: before: based on %s, %d tall, %d own moves, %d baked\n", Heroes[T.template_hero], T.height, own, (int)T.baked.size());
+                    rebase(T, h);
+                    own = 0;
+                    for (int g = 0; g < KitGameCount && g < 8; g++) {
+                        for (int m = 0; m < 8 && KitGames[g].moves[m] != nullptr; m++) {
+                            own += T.ownmap[g][m] != OWN_TEMPLATE;
+                        }
+                    }
+                    printf("herotool: after: based on %s, %d tall, %d own moves, %d baked, making %s\n", Heroes[T.template_hero], T.height, own,
+                           (int)T.baked.size(), T.maker != nullptr ? "yes" : "no");
+                }
+            }
+        }
+        /* a test's: HEROTOOL_ADD=1 saves the hero open and adds it to the game, as Save then Add to game do, once it's open */
         static bool added = false;
         if (!added && SDL_getenv("HEROTOOL_ADD") != nullptr && T.m != nullptr && !T.home && !T.choosing) {
             added = true;
+            export_pack(T, false);
             bool did = add_to_game(T);
             printf("herotool: add to game %s: %s\n", did ? "done" : "not done", T.status);
         }

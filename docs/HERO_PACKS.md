@@ -307,7 +307,9 @@ tool weights it to the joints instead, its own clips kept as its rig still maps 
 sounds and the mod's author, and **Save** (the mod's name is the hero's: the user's word, 2026-11-22, "The mod name should always be
 the same as the custom hero name") writes the mod, all of it, into the tool's own folder (`heroes/` in its
 folder, AppData's on Windows; `heroes_home`): `MOD/mod.json` and `MOD/heroes/ID/`, MOD the mod it was opened from's name, else its id.
-**Add to game** (the user's word, 2026-11-23: Save keeps it in the tool, a button installs it) saves it, puts its hero's folder in the
+**Add to game** (the user's word, 2026-11-23: Save keeps it in the tool, a button installs it), greyed out till it's saved as it is
+("the add to game button should be greyed out until saved"; `saved_in_tool`: only a Save marks it saved, not the copy the games make
+its preview from, which had shown All saved), puts its saved hero's folder in the
 game's mods folder (MOD/heroes/ID in place of what was there, kept aside till the new one's in; the mod's mod.json if it's new there;
 another hero of the mod's stays), and asks the game to switch the mod on: `crashbash --add-hero MOD` (port/main.c) turns it on in the
 player's own settings (wherever folders.ini has them) and quits; a hero mod that's on puts its heroes in the select (there's no switch
@@ -386,7 +388,10 @@ with it. `HEROTOOL_MARKERS=BONE` prints where a bone's dot is and every joint af
 there, for a test. On the right, a column that scrolls, its **Model** (Open, Guess joints, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
 id, **Height**: as tall as one of the heroes, picked from a menu, or its own, typed or stepped by 10 from 200 to 900, the user's
 word, 2026-11-23: "select a height from a selection of the exisiting heros OR set your own", **Based on**: its template and whose
-place it takes, one choice), **Card**, **Sounds** (a WAV for each, played with its button; else its base's; one column there) and
+place it takes, one choice: changed, its height goes with it if it was the last one's (a height of its own stays) and every game's
+made again at once with their moves, its own animations kept, the user's word, 2026-11-23: "if the base hero is changed like from brio
+to tiny (height or moves) it should rebuild them all but not replace any custom animations"; `rebase`, `HEROTOOL_REBASE=HERO` for a
+test: the frog from Crash's 452 to Tiny's 724 and Bobby's own 540 kept, a Tank animation of its own kept from Crash to Brio), **Card**, **Sounds** (a WAV for each, played with its button; else its base's; one column there) and
 **Mod** (its author, the folders) cards.
 **The card** (the user's word, 2026-11-22: "take a photo and use that. With full move him around rotate etc."): its picture in the
 character select and the games' panels, shown in the card's shape (290 x 400, as wide against its height as the select shows a card:
