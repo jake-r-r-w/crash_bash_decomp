@@ -163,6 +163,8 @@ typedef struct {
     int nanims;
 } KitMade;
 int kit_made_read(const char *path, KitMade *m);
+/* On Windows, the terminal it's started from if its output goes nowhere (winconsole.c: it's a window program there) */
+void kit_terminal(void);
 void kit_made_free(KitMade *m);
 /* pose.c: what a kind's model is made of, as --dump-hero writes it beside it (port/game/main/packfollow.c, pose_dump_begin): its
  * skeleton, its mesh as it rests at its size there and each frame's pose before its adjustments, so the animation tools can make it

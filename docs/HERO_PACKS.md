@@ -264,7 +264,11 @@ build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS
 ```
 
 **The window**: `herotool` with no arguments, or a model alone (`herotool MODEL.glb`), opens it (`src/gui.cpp`, Dear ImGui on
-SDL3's renderer, the model drawn by a little software renderer of its own). It's as big as its screen wants (`ui_scale`, the user's
+SDL3's renderer, the model drawn by a little software renderer of its own). On Windows it's a window program, with no console
+window (the user's word, 2026-11-23: "when it opens a command window opens with it can that not happen?"): started from a terminal
+with its output going nowhere it writes there (`src/winconsole.c`), and sent to a file or a pipe its output goes there as before;
+and it starts the game (making the preview, Preview in) in the background (`start_game`), so a game built with a console opens none
+either, its end seen but not what it said at it (a make that fails says so without it). It's as big as its screen wants (`ui_scale`, the user's
 word, 2026-11-22: far too small on a high resolution screen), on the screen the mouse is on: its display scale, or its height against
 an 800-line screen's if that's more (1.25 on a 1080-line screen), in quarters; its font made at that size, its style's sizes, the
 window and its pictures with it, and again as it's moved to another screen. Ctrl and + or - make it a tenth bigger or smaller, a

@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
     KitPack p;
     int i;
 
+    kit_terminal();
     memset(&p, 0, sizeof(p));
     p.prefer = "crash";
     p.height = 560;

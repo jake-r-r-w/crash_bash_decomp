@@ -54,7 +54,7 @@ set(IMGUI_SOURCES ${imgui_SOURCE_DIR}/imgui.cpp ${imgui_SOURCE_DIR}/imgui_draw.c
 
 set(PORT ${CMAKE_CURRENT_SOURCE_DIR}/../port)
 add_executable(herotool src/herotool.c src/model.c src/atlas.c src/rig.c src/moves.c src/write.c src/preview.c src/pose.c src/gui.cpp
-  src/sound.c ${FONT_DIR}/fredoka.c ${IMGUI_SOURCES} ${PORT}/platform/heropack.c ${PORT}/platform/heroadjust.c)
+  src/sound.c src/winconsole.c ${FONT_DIR}/fredoka.c ${IMGUI_SOURCES} ${PORT}/platform/heropack.c ${PORT}/platform/heroadjust.c)
 add_custom_command(TARGET herotool POST_BUILD COMMAND "${CMAKE_COMMAND}" -E copy_if_different
   "${FONT_DIR}/Fredoka-OFL.txt" "$<TARGET_FILE_DIR:herotool>/Fredoka-OFL.txt")
 target_include_directories(herotool PRIVATE src ${PORT}/platform ${cgltf_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
@@ -71,6 +71,10 @@ else()
 endif()
 if(UNIX)
   target_link_libraries(herotool PRIVATE m)
+endif()
+# on Windows a window program, no console window with it (src/winconsole.c: the terminal it's started from, if any)
+if(WIN32)
+  set_target_properties(herotool PROPERTIES WIN32_EXECUTABLE TRUE)
 endif()
 # its pictures are made on several threads (gui.cpp, in_bands)
 set(THREADS_PREFER_PTHREAD_FLAG ON)

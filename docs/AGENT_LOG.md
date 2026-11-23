@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: the hero tool's no console window on Windows (WIN32_EXECUTABLE; winconsole.c attaches to a terminal it's typed in;
+  output to a file or pipe as before) and starts the game in the background there (SDL's background: no console for a console
+  game, its end still waited for, its exit code always 0, checked with two small test programs). Not on Linux: SDL's background
+  can't be waited for there. import still makes Bobby's pack byte for byte.
 - 2026-11-22: the hero tool's game pictures drawn blended (they were copied unblended when opaque): their rounded corners' smoothing
   left part see-through pixels in the window, a pale line round the corners in a test screenshot (188 of them; now none). A gotcha
   for checking shots: a pixel's alpha under 255 shows pale over a viewer's white though its colour is dark.

@@ -1015,6 +1015,23 @@ void open_model(Tool &T, const char *path) {
              T.rigged ? "rigged" : "no rig (place its joints)");
 }
 
+// The game started, to make the preview or to play: on Windows in the background, so a game built with a console doesn't open one beside
+// the tool (a window program, it has none for the game to share: the user's word, 2026-11-23, "when it opens a command window opens with
+// it can that not happen?"); its end is still seen, not what it said at it. Elsewhere as it is (in the background there it couldn't be
+// waited for)
+SDL_Process *start_game(const char *const *args) {
+#ifdef _WIN32
+    SDL_PropertiesID p = SDL_CreateProperties();
+    SDL_SetPointerProperty(p, SDL_PROP_PROCESS_CREATE_ARGS_POINTER, (void *)args);
+    SDL_SetBooleanProperty(p, SDL_PROP_PROCESS_CREATE_BACKGROUND_BOOLEAN, true);
+    SDL_Process *proc = SDL_CreateProcessWithProperties(p);
+    SDL_DestroyProperties(p);
+    return proc;
+#else
+    return SDL_CreateProcess(args, false);
+#endif
+}
+
 bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     char why[512], markers[1100];
     KitModel *t = new KitModel();
@@ -1129,7 +1146,7 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
             // needing the user to click play")
             const char *args[] = { T.game, "--mods-dir", T.out, "--mod", T.id, "--extra-hero", "0", T.id, "--mode", mode, "--skip-intro",
                                    "--skip-loading", "--no-launcher", nullptr };
-            SDL_Process *proc = SDL_CreateProcess(args, false);
+            SDL_Process *proc = start_game(args);
 
             if (proc == nullptr) {
                 snprintf(T.status, sizeof(T.status), "Saved, but the game didn't start (%s): is it at %s?", SDL_GetError(), T.game);
@@ -1201,7 +1218,7 @@ void make_in_game(Tool &T) {
         return;
     }
     const char *args[] = { T.game, "--mods-dir", mods, "--mod", T.id, "--dump-hero", T.id, T.made_dir, nullptr };
-    T.maker = SDL_CreateProcess(args, false);
+    T.maker = start_game(args);
     snprintf(T.status, sizeof(T.status), T.maker != nullptr ? "Making..." : "The game didn't start (%s): is it at %s?",
              SDL_GetError(), T.game);
 }
@@ -1260,9 +1277,14 @@ void made_check(Tool &T) {
     if (T.anim != was) {
         T.made_t = 0;
     }
-    snprintf(T.status, sizeof(T.status), have != 0 ? "Made in %d of %d games"
-                                                   : "The game didn't make it (it said %d): does it find its data when you start it yourself?",
-             have != 0 ? have : code, PACK_KINDS);
+    // (on Windows what it said at its end isn't known: started in the background, start_game)
+    if (have != 0) {
+        snprintf(T.status, sizeof(T.status), "Made in %d of %d games", have, PACK_KINDS);
+    } else if (code != 0) {
+        snprintf(T.status, sizeof(T.status), "The game didn't make it (it said %d): does it find its data when you start it yourself?", code);
+    } else {
+        snprintf(T.status, sizeof(T.status), "The game didn't make it: does it find its data when you start it yourself?");
+    }
 }
 
 // A made model's frame drawn: its faces textured as the PS1 does (the texel times its corner's colour, 128 as it is), clear texels
