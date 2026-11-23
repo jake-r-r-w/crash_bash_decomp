@@ -298,6 +298,13 @@ struct Tool {
     int drag_bone = -1, drag_end = 0, drag_view = 0;
     // the joints' view being moved with the right button (-1 none)
     int pan_view = -1;
+    // the joints picked to move together (each a bone and its start 0 or end 1: the user's word, 2026-11-23, "if i click and drag i should
+    // be able to move many of the bones at the same time"), the box picking them being drawn (its view, -1 none, and where it began),
+    // and whether they're being moved as one
+    std::vector<std::pair<int, int>> joint_sel;
+    int jbox_view = -1;
+    float jbox_x = 0, jbox_y = 0;
+    bool multi_drag = false;
     // the joints' undo and redo (Hero Setup's own, as a game's page's are its keys'): each the joints, arm lift and rig as they were
     // before a change, and what the change was
     struct JointStep {
@@ -1022,6 +1029,7 @@ bool open_model(Tool &T, const char *path) {
     T.page = PAGE_ALL;
     T.joint_undo.clear();
     T.joint_redo.clear();
+    T.joint_sel.clear();
     T.baked.clear();
     T.foot_back.clear();
     own_init(T);
@@ -3878,6 +3886,32 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
 
 // --- the views, with their markers ---
 
+// A bone's other side's (upperarm_l's upperarm_r, ear_l1's ear_r1), else -1
+int mirror_bone(int b) {
+    const char *name = KitBoneNames[b];
+    size_t len = strlen(name);
+    for (int o = 0; o < KB_COUNT; o++) {
+        const char *on = KitBoneNames[o];
+        if (o != b && strlen(on) == len
+            && ((strncmp(on, name, len - 1) == 0 && ((name[len - 1] == 'l' && on[len - 1] == 'r') || (name[len - 1] == 'r' && on[len - 1] == 'l')))
+                // (ears' and others' names end in a digit: ear_l1, ear_r1)
+                || (len > 2 && strncmp(on, name, len - 2) == 0 && on[len - 1] == name[len - 1]
+                    && ((name[len - 2] == 'l' && on[len - 2] == 'r') || (name[len - 2] == 'r' && on[len - 2] == 'l'))))) {
+            return o;
+        }
+    }
+    return -1;
+}
+
+bool joint_picked(const Tool &T, int b, int e) {
+    for (auto &j : T.joint_sel) {
+        if (j.first == b && j.second == e) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     // (a view's drawn only while its page shows it, so the first time it's shown its picture comes a frame later)
     ImVec2 p0 = ImGui::GetCursorScreenPos();
@@ -3916,7 +3950,8 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             fit(T.m, T.side);
         }
         if (ImGui::IsItemHovered() && T.drag_bone < 0) {
-            ImGui::SetItemTooltip("Drag a dot onto its joint   Wheel: zoom   Right-drag: move   Right double-click: back");
+            ImGui::SetItemTooltip("Drag a dot onto its joint   Drag round dots, or Ctrl-click them: pick several, then drag one   Wheel: zoom   "
+                                  "Right-drag: move   Right double-click: back");
         }
     }
     if (!ImGui::IsMouseDown(ImGuiMouseButton_Right) && T.pan_view == which) {
@@ -3927,14 +3962,14 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     /* a test's: HEROTOOL_MARKERS=BONE says where that bone's start is in the front view (again as it moves), and every joint's place
        after each drag */
     if (const char *mk = SDL_getenv("HEROTOOL_MARKERS")) {
-        static float said_x = -1e9f, said_y = -1e9f;
-        for (int b = 0; which == 0 && b < KB_COUNT; b++) {
+        static float said_x[2] = { -1e9f, -1e9f }, said_y[2] = { -1e9f, -1e9f };
+        for (int b = 0; which < 2 && b < KB_COUNT; b++) {
             if (T.m->bones[b].have && SDL_strcmp(KitBoneNames[b], mk) == 0) {
                 float x, y, z;
                 to_screen(v, T.m->bones[b].at, x, y, z);
-                if (fabsf(at.x + x - said_x) + fabsf(at.y + y - said_y) > 2) {
-                    said_x = at.x + x, said_y = at.y + y;
-                    printf("herotool: %s at %.0f,%.0f\n", mk, said_x, said_y);
+                if (fabsf(at.x + x - said_x[which]) + fabsf(at.y + y - said_y[which]) > 2) {
+                    said_x[which] = at.x + x, said_y[which] = at.y + y;
+                    printf("herotool: %s at %.0f,%.0f%s\n", mk, said_x[which], said_y[which], which ? " (side)" : "");
                 }
             }
         }
@@ -3975,6 +4010,9 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             ImVec2 c(at.x + sx[e], at.y + sy[e]);
             dl->AddCircleFilled(c, e ? U(4) : U(7), GROUND);
             dl->AddCircleFilled(c, e ? U(3) : U(5.5f), col);
+            if (joint_picked(T, b, e)) {
+                dl->AddCircle(c, e ? U(7) : U(10), INK, 0, U(2));
+            }
             // the dot under the mouse: the nearest, a bone's own (its start) before another's end there (the spine's, not the hips'
             // end on it: taken as the hips' end, a drag took every bone starting near it, its thighs too; the user's word, 2026-11-23:
             // "when i move the spine node on the hero setup it turns into thigh _r")
@@ -3985,22 +4023,112 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
         }
     }
     dl->PopClipRect();
-    if (pick_bone >= 0 && in_view) {
-        if (T.drag_bone < 0 && ImGui::IsMouseClicked(0)) {
-            joint_snapshot(T, "Moved %s%s", KitBoneNames[pick_bone], pick_end ? "'s end" : "");
-            T.drag_bone = pick_bone, T.drag_end = pick_end, T.drag_view = which;
+    // a click: on a dot, it's taken (with Ctrl or Shift, added to those picked or let go of), or those picked, it among them, all moved
+    // together; on nothing, a box begun to pick those in it (with Ctrl or Shift, as well as those picked)
+    ImGuiIO &kio = ImGui::GetIO();
+    bool adding = kio.KeyCtrl || kio.KeyShift;
+    if (in_view && T.drag_bone < 0 && T.jbox_view < 0 && ImGui::IsMouseClicked(0)) {
+        auto to_hand = [&]() {
             // a rigged model's joints placed by hand: the tool weights it to them from now (its own clips kept, export_pack)
             if (T.rigged) {
                 T.rigged = false;
                 snprintf(T.status, sizeof(T.status), "Its joints are yours to place now: the tool weights it to them");
             }
+        };
+        if (pick_bone >= 0 && adding) {
+            if (joint_picked(T, pick_bone, pick_end)) {
+                T.joint_sel.erase(std::remove(T.joint_sel.begin(), T.joint_sel.end(), std::make_pair(pick_bone, pick_end)), T.joint_sel.end());
+            } else {
+                T.joint_sel.push_back({ pick_bone, pick_end });
+            }
+        } else if (pick_bone >= 0 && joint_picked(T, pick_bone, pick_end) && T.joint_sel.size() > 1) {
+            joint_snapshot(T, "Moved %d joints", (int)T.joint_sel.size());
+            T.drag_bone = pick_bone, T.drag_end = pick_end, T.drag_view = which, T.multi_drag = true;
+            to_hand();
+        } else if (pick_bone >= 0) {
+            T.joint_sel.assign(1, { pick_bone, pick_end });
+            joint_snapshot(T, "Moved %s%s", KitBoneNames[pick_bone], pick_end ? "'s end" : "");
+            T.drag_bone = pick_bone, T.drag_end = pick_end, T.drag_view = which, T.multi_drag = false;
+            to_hand();
+        } else {
+            if (!adding) {
+                T.joint_sel.clear();
+            }
+            T.jbox_view = which, T.jbox_x = mouse.x, T.jbox_y = mouse.y;
         }
-        if (ImGui::IsItemHovered() && T.drag_bone < 0) {
-            ImGui::SetTooltip("%s%s", KitBoneNames[pick_bone], pick_end ? " (its end)" : "");
+    }
+    if (pick_bone >= 0 && in_view && ImGui::IsItemHovered() && T.drag_bone < 0 && T.jbox_view < 0) {
+        ImGui::SetTooltip("%s%s", KitBoneNames[pick_bone], pick_end ? " (its end)" : "");
+    }
+    // the box: drawn as it's dragged, and those in it picked when it's let go
+    if (T.jbox_view == which) {
+        ImVec2 a(fminf(T.jbox_x, mouse.x), fminf(T.jbox_y, mouse.y)), b(fmaxf(T.jbox_x, mouse.x), fmaxf(T.jbox_y, mouse.y));
+        if (ImGui::IsMouseDown(0)) {
+            dl->PushClipRect(lo, hi, true);
+            dl->AddRectFilled(a, b, (PERI & 0x00FFFFFFu) | 0x30000000u, U(4));
+            dl->AddRect(a, b, PERI, U(4), 0, U(1.5f));
+            dl->PopClipRect();
+        } else {
+            if (b.x - a.x > U(3) || b.y - a.y > U(3)) {
+                for (int bb = 0; bb < KB_COUNT; bb++) {
+                    for (int e = 0; T.m->bones[bb].have && e < 2; e++) {
+                        float x, y, z;
+                        to_screen(v, e ? T.m->bones[bb].end : T.m->bones[bb].at, x, y, z);
+                        ImVec2 c(at.x + x, at.y + y);
+                        if (c.x >= a.x && c.x <= b.x && c.y >= a.y && c.y <= b.y && !joint_picked(T, bb, e)) {
+                            T.joint_sel.push_back({ bb, e });
+                        }
+                    }
+                }
+            }
+            T.jbox_view = -1;
         }
     }
     // dragging: across and up in the front view, through and up in the side view
-    if (T.drag_bone >= 0 && T.drag_view == which) {
+    if (T.drag_bone >= 0 && T.drag_view == which && T.multi_drag && !ImGui::IsMouseDown(0)) {
+        T.multi_drag = false;
+    }
+    if (T.drag_bone >= 0 && T.drag_view == which && T.multi_drag && ImGui::IsMouseDown(0)) {
+        // those picked moved together as far as the mouse went (across and up in the front view, through and up in the side view), each
+        // with the one joint it is (the bone carrying on from it), and with Mirror on each one's other side's too, mirrored, unless
+        // it's picked itself; a place moved once however many of those it's in
+        ImGuiIO &mio = ImGui::GetIO();
+        float dx = mio.MouseDelta.x / v.scale, d3[3] = { which == 0 ? dx : 0, -mio.MouseDelta.y / v.scale, which == 0 ? 0 : -dx };
+        std::vector<float *> moved, mirrored;
+        auto add = [&](std::vector<float *> &list, int b, int e) {
+            auto put = [&](float *q) {
+                if (std::find(list.begin(), list.end(), q) == list.end()) {
+                    list.push_back(q);
+                }
+            };
+            put(e ? T.m->bones[b].end : T.m->bones[b].at);
+            for (int c = 0; c < KB_COUNT; c++) {
+                if (T.m->bones[c].have && e && kit_carries_on(b, c)) {
+                    put(T.m->bones[c].at);
+                }
+                if (T.m->bones[c].have && !e && kit_carries_on(c, b)) {
+                    put(T.m->bones[c].end);
+                }
+            }
+        };
+        for (auto &j : T.joint_sel) {
+            add(moved, j.first, j.second);
+        }
+        for (auto &j : T.joint_sel) {
+            int o = mirror_bone(j.first);
+            if (T.mirror && o >= 0 && T.m->bones[o].have && !joint_picked(T, o, j.second)) {
+                add(mirrored, o, j.second);
+            }
+        }
+        for (float *q : moved) {
+            q[0] += d3[0], q[1] += d3[1], q[2] += d3[2];
+        }
+        for (float *q : mirrored) {
+            if (std::find(moved.begin(), moved.end(), q) == moved.end()) {
+                q[0] -= d3[0], q[1] += d3[1], q[2] += d3[2];
+            }
+        }
+    } else if (T.drag_bone >= 0 && T.drag_view == which) {
         if (ImGui::IsMouseDown(0)) {
             const float *was = T.drag_end ? T.m->bones[T.drag_bone].end : T.m->bones[T.drag_bone].at;
             float mx = (mouse.x - at.x - v.ox) / v.scale, my = (v.oy - (mouse.y - at.y)) / v.scale, p[3] = { was[0], my, was[2] };
@@ -6549,6 +6677,10 @@ void editor_window(Tool &T, SDL_Window *win) {
     // adjusting a move: Space plays or stops it, the arrows step a frame, Ctrl+Z undoes and Ctrl+Y (or Ctrl+Shift+Z) does it again;
     // Tab shows the bones or hides them, Esc lets go of the bone picked
     ImGuiIO &io = ImGui::GetIO();
+    // on Hero Setup, Esc lets go of the joints picked
+    if (T.page == PAGE_MODEL && !T.camera && !io.WantTextInput && ImGui::IsKeyPressed(ImGuiKey_Escape, false)) {
+        T.joint_sel.clear();
+    }
     // on Hero Setup, its joints' undo and redo: Ctrl+Z, and Ctrl+Y (or Ctrl+Shift+Z)
     if (T.page == PAGE_MODEL && !T.camera && !io.WantTextInput && io.KeyCtrl) {
         if (ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
@@ -7324,15 +7456,21 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             && (drag_step >= 0 || T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr) || setup_frames > 5)) {
             /* (a sixth, BUTTON: 0 the left, 1 the right) */
             float d[6] = { 0, 0, 0, 0, 0, 0 };
-            SDL_sscanf(SDL_getenv("HEROTOOL_DRAG"), "%f,%f,%f,%f,%f,%f", &d[0], &d[1], &d[2], &d[3], &d[4], &d[5]);
+            drag_step = drag_step < 100 ? drag_step + 1 : drag_step;
+            /* (and HEROTOOL_DRAG2, the same, a second drag after the first: a box then a move) */
+            const char *spec = SDL_getenv("HEROTOOL_DRAG");
+            int st = drag_step;
+            if (SDL_getenv("HEROTOOL_DRAG2") != nullptr && drag_step >= 18) {
+                spec = SDL_getenv("HEROTOOL_DRAG2"), st = drag_step - 18;
+            }
+            SDL_sscanf(spec, "%f,%f,%f,%f,%f,%f", &d[0], &d[1], &d[2], &d[3], &d[4], &d[5]);
             ImGuiIO &dio = ImGui::GetIO();
             // Shift down the frame before the press and up the frame after the release, and the mouse before it each frame: ImGui
             // keeps a mouse move or press queued after a key's change for the frame after (its input trickling)
-            drag_step = drag_step < 100 ? drag_step + 1 : drag_step;
-            float t = drag_step < 3 ? 0 : drag_step > 12 ? 1 : (drag_step - 2) / 10.0f;
+            float t = st < 3 ? 0 : st > 12 ? 1 : (st - 2) / 10.0f;
             dio.AddMousePosEvent(d[0] + (d[2] - d[0]) * t, d[1] + (d[3] - d[1]) * t);
-            dio.AddMouseButtonEvent(d[5] != 0 ? 1 : 0, drag_step >= 2 && drag_step <= 12);
-            dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && drag_step >= 1 && drag_step <= 13);
+            dio.AddMouseButtonEvent(d[5] != 0 ? 1 : 0, st >= 2 && st <= 12);
+            dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && st >= 1 && st <= 13);
         }
         /* a test's: HEROTOOL_UNDO=1 undoes Hero Setup's last joints' step once its test drag's let go, and says where its joints are then */
         static bool undone = false;

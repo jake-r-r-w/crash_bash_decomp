@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Hero Setup's joints pick several (a box dragged on nothing, Ctrl- or Shift-click), then move together by dragging one
+  (each with its joined joint, Mirror's other side unless picked); Esc lets go. HEROTOOL_DRAG2 for a second test drag.
 - 2026-11-23: Hero Setup's spine took the thighs and the neck the shoulders when dragged (a joint moved every bone starting within
   half the model's height of it, and the click took the hips' end over the spine's own dot): now only the bone that carries on
   (rig.c's kit_carries_on, made shared) and a bone's own dot first. Checked by test drags: the thighs and shoulders stay put.

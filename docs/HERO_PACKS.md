@@ -350,7 +350,14 @@ dot had moved, so its arm or leg came apart. A joint moved takes only the one jo
 bone that carries on from it (`kit_carries_on`, the rig's own rule: the hips' end and the spine's, the chest's and the neck's), never
 a bone branching off there; before, every bone starting within half its height went, so the spine took the thighs and the neck the
 shoulders (the user's word, 2026-11-23: "when i move the spine node on the hero setup it turns into thigh _r. nek also turns into
-upperarm_r"). And the dot taken is the nearest, a bone's own before another's end on it (the spine's, not the hips' end). Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
+upperarm_r"). And the dot taken is the nearest, a bone's own before another's end on it (the spine's, not the hips' end). Several move at once (the
+user's word, 2026-11-23: "if i click and drag i should be able to move many of the bones at the same time. For example the side view
+its hard to move all of the arm stuff one by one"): dragging on nothing draws a box and picks the dots in it (in the side view both
+sides' at once, one over the other), Ctrl- or Shift-click picks one more or lets it go (and a box with them adds to those picked), the
+picked ringed white; dragging one of them moves them all as far as the mouse goes, each with the one joint it is, and with Mirror its
+other side's too unless that's picked itself (one step of the undo). Esc lets go of them. Checked: the arm boxed in the side view and
+its elbow dragged, shoulder, elbow and hand of both arms moved alike, the chest and neck not (`HEROTOOL_DRAG2`, a second test drag
+after the first). Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
 with it. `HEROTOOL_MARKERS=BONE` prints where a bone's dot is and every joint after a drag, and `HEROTOOL_DRAG` and `_WHEEL` work
 there, for a test. On the right, a column that scrolls, its **Model** (Open, Guess joints, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
 id, **Height**: as tall as one of the heroes, picked from a menu, or its own, typed or stepped by 10 from 200 to 900, the user's
