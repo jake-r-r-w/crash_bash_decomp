@@ -667,6 +667,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Straighten snaps the picked joints onto the grid's nearest line (up and down or across, by their spread; their middle
+  with the grid off): between the farthest two it failed on the spine (the front view's tail and jaw dots boxed with it). That's Line up
+  between the ends now. A test window's size follows the screen the mouse is on: take a joint's place and drag in the same go.
 - 2026-11-23: Hero Setup's joints: a right click (not a drag) opens their menu, Straighten (the picked on the line between the two
   farthest apart, with Mirror's side) and Let go of them.
 - 2026-11-23: Hero Setup's joints pick several (a box dragged on nothing, Ctrl- or Shift-click), then move together by dragging one

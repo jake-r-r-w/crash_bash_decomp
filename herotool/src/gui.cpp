@@ -3887,6 +3887,12 @@ void timeline(Tool &T, const KitMade *mk, int a, float width) {
 // --- the views, with their markers ---
 
 // A bone's other side's (upperarm_l's upperarm_r, ear_l1's ear_r1), else -1
+// The joints' grid's step: a round size near a tenth of the model's height (1, 2 or 5 times a power of ten)
+float grid_step(const KitModel *m) {
+    float h = m->hi[1] - m->lo[1], step = powf(10, floorf(log10f(h / 10)));
+    return step * (h / 10 / step >= 5 ? 5 : h / 10 / step >= 2 ? 2 : 1);
+}
+
 int mirror_bone(int b) {
     const char *name = KitBoneNames[b];
     size_t len = strlen(name);
@@ -3916,6 +3922,64 @@ bool joint_picked(const Tool &T, int b, int e) {
 // farthest apart stay, and each of the others goes to where it's nearest on the line from one to the other (between them), with the one
 // joint it is (the bone carrying on from it), and with Mirror its other side's mirrored across the hips unless that's picked itself; a
 // step of the undo. False if fewer than three are picked
+// A joint put at q: its place, and the one joint it is (its bone's end and the start of the one carrying on), and with Mirror its other
+// side's mirrored across the hips unless that's picked itself
+void joint_put(Tool &T, int b, int e, const float *q) {
+    auto set = [&](int bb, int ee, const float *to) {
+        memcpy(ee ? T.m->bones[bb].end : T.m->bones[bb].at, to, sizeof(float) * 3);
+        for (int c = 0; c < KB_COUNT; c++) {
+            if (T.m->bones[c].have && ee && kit_carries_on(bb, c)) {
+                memcpy(T.m->bones[c].at, to, sizeof(float) * 3);
+            }
+            if (T.m->bones[c].have && !ee && kit_carries_on(c, bb)) {
+                memcpy(T.m->bones[c].end, to, sizeof(float) * 3);
+            }
+        }
+    };
+    set(b, e, q);
+    int o = mirror_bone(b);
+    if (T.mirror && o >= 0 && T.m->bones[o].have && !joint_picked(T, o, e)) {
+        float mid = T.m->bones[KB_HIPS].have ? T.m->bones[KB_HIPS].at[0] : (T.m->lo[0] + T.m->hi[0]) / 2, m[3] = { 2 * mid - q[0], q[1], q[2] };
+        set(o, e, m);
+    }
+}
+
+// Straighten: the joints picked onto one line of the grid in the view (the user's word, 2026-11-23: "did not work for the spine. maybe the
+// straighten can snap to the closes grid line"): up and down if they're spread more that way (a spine: across, the front view's x or the
+// side view's z, made the nearest line's to their middle), else across (an arm held out: their height the nearest line's); the grid's
+// lines (grid_step, through x 0 and z 0 and up from its feet) while it's shown, else their middle. A step of the undo; false if fewer
+// than two are picked
+bool joints_to_grid(Tool &T, int which) {
+    if (T.m == nullptr || T.joint_sel.size() < 2) {
+        return false;
+    }
+    int across = which == 0 ? 0 : 2;
+    float lo[2] = { 1e9f, 1e9f }, hi[2] = { -1e9f, -1e9f }, sum[2] = { 0, 0 };
+    for (auto &j : T.joint_sel) {
+        const float *p = j.second ? T.m->bones[j.first].end : T.m->bones[j.first].at;
+        float c[2] = { p[across], p[1] };
+        for (int i = 0; i < 2; i++) {
+            lo[i] = fminf(lo[i], c[i]), hi[i] = fmaxf(hi[i], c[i]), sum[i] += c[i];
+        }
+    }
+    int n = (int)T.joint_sel.size(), axis = hi[0] - lo[0] <= hi[1] - lo[1] ? 0 : 1; // 0: a line up and down (their across set), 1: across
+    float mean = sum[axis] / n, step = grid_step(T.m), base = axis == 0 ? 0 : T.m->lo[1];
+    float to = T.joint_grid ? base + roundf((mean - base) / step) * step : mean;
+    joint_snapshot(T, "Straightened %d joints", n);
+    std::vector<std::pair<int, int>> sel = T.joint_sel;
+    for (auto &j : sel) {
+        const float *p = j.second ? T.m->bones[j.first].end : T.m->bones[j.first].at;
+        float q[3] = { p[0], p[1], p[2] };
+        q[axis == 0 ? across : 1] = to;
+        joint_put(T, j.first, j.second, q);
+    }
+    reweigh(T);
+    T.dirty = T.unsaved = true;
+    snprintf(T.status, sizeof(T.status), "Straightened %d joints, %s", n, axis == 0 ? "up and down" : "across");
+    return true;
+}
+
+// Line up between the ends: the old Straighten, for a line that isn't up and down or across (an arm held down and out)
 bool joints_straighten(Tool &T) {
     if (T.m == nullptr || T.joint_sel.size() < 3) {
         return false;
@@ -3935,7 +3999,7 @@ bool joints_straighten(Tool &T) {
     if (far <= 0) {
         return false;
     }
-    joint_snapshot(T, "Straightened %d joints", (int)T.joint_sel.size());
+    joint_snapshot(T, "Lined up %d joints", (int)T.joint_sel.size());
     float A[3], B[3];
     memcpy(A, pt(T.joint_sel[a].first, T.joint_sel[a].second), sizeof(A));
     memcpy(B, pt(T.joint_sel[z].first, T.joint_sel[z].second), sizeof(B));
@@ -3970,7 +4034,7 @@ bool joints_straighten(Tool &T) {
     }
     reweigh(T);
     T.dirty = T.unsaved = true;
-    snprintf(T.status, sizeof(T.status), "Straightened %d joints", (int)T.joint_sel.size());
+    snprintf(T.status, sizeof(T.status), "Lined up %d joints", (int)T.joint_sel.size());
     return true;
 }
 
@@ -4045,8 +4109,7 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     // its grid, behind the dots (the user's word, 2026-11-23: "It needs a toggable grid"): a line each step of a round size near a tenth of
     // its height, across through its middle (x 0 front, z 0 side) and up from its feet, those two brighter
     if (T.joint_grid) {
-        float h = T.m->hi[1] - T.m->lo[1], step = powf(10, floorf(log10f(h / 10)));
-        step *= h / 10 / step >= 5 ? 5 : h / 10 / step >= 2 ? 2 : 1;
+        float step = grid_step(T.m);
         float x0 = (0 - v.ox) / v.scale, x1 = (vw(v) - v.ox) / v.scale;
         for (int k = (int)floorf(fminf(x0, x1) / step); k <= (int)ceilf(fmaxf(x0, x1) / step); k++) {
             float sx = at.x + v.ox + k * step * v.scale;
@@ -4134,16 +4197,20 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     if (ImGui::BeginPopup("##jointmenu")) {
         char says[48];
         snprintf(says, sizeof(says), "Straighten (%d joints)", (int)T.joint_sel.size());
-        ImGui::BeginDisabled(T.joint_sel.size() < 3);
+        ImGui::BeginDisabled(T.joint_sel.size() < 2);
         if (menu_item(says, false)) {
+            joints_to_grid(T, which);
+        }
+        ImGui::EndDisabled();
+        ImGui::SetItemTooltip(T.joint_sel.size() < 2 ? "Pick two or more first: drag a box round them, or Ctrl-click them"
+                                                      : T.joint_grid ? "Onto the nearest grid line: up and down, or across, whichever way they're spread"
+                                                                     : "In a line up and down, or across, whichever way they're spread (with the grid on, onto its nearest line)");
+        ImGui::BeginDisabled(T.joint_sel.size() < 3);
+        if (menu_item("Line up between the ends", false)) {
             joints_straighten(T);
         }
         ImGui::EndDisabled();
-        if (T.joint_sel.size() < 3) {
-            ImGui::SetItemTooltip("Pick three or more first: drag a box round them, or Ctrl-click them");
-        } else {
-            ImGui::SetItemTooltip("In a line: the two farthest apart stay, the others go onto the line between them");
-        }
+        ImGui::SetItemTooltip("On the line between the two farthest apart (a line that isn't up and down or across)");
         ImGui::BeginDisabled(T.joint_sel.empty());
         if (menu_item("Let go of them", false)) {
             T.joint_sel.clear();
@@ -7564,11 +7631,13 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             dio.AddMouseButtonEvent(d[5] != 0 ? 1 : 0, st >= 2 && st <= 12);
             dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && st >= 1 && st <= 13);
         }
-        /* a test's: HEROTOOL_STRAIGHTEN=1 straightens Hero Setup's joints picked once its test drag's let go (a box round them) */
+        /* a test's: HEROTOOL_STRAIGHTEN=VIEW straightens Hero Setup's joints picked onto the grid in that view (0 front, 1 side), or "line"
+           lines them up between the ends, once its test drag's let go (a box round them) */
         static bool straightened = false;
         if (!straightened && SDL_getenv("HEROTOOL_STRAIGHTEN") != nullptr && drag_step > 16 && T.m != nullptr) {
             straightened = true;
-            bool did = joints_straighten(T);
+            const char *how = SDL_getenv("HEROTOOL_STRAIGHTEN");
+            bool did = SDL_strcmp(how, "line") == 0 ? joints_straighten(T) : joints_to_grid(T, SDL_atoi(how));
             printf("herotool: straightened %d: %s\n", (int)T.joint_sel.size(), did ? "yes" : "no");
             for (int b = 0; b < KB_COUNT; b++) {
                 const KitBone &k = T.m->bones[b];
