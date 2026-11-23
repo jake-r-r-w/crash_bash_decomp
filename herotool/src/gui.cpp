@@ -4540,6 +4540,33 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     (void)title;
 }
 
+// A folder opened in the system's file manager, as the game's launcher opens its mods folder (port/platform/mods.c): on Windows by its
+// path, whatever's in its name, elsewhere as a file:// address. A test's HEROTOOL_NO_OPEN=1 only says it, opening nothing
+void open_folder(const char *path) {
+    char url[1500];
+#ifdef _WIN32
+    SDL_strlcpy(url, path, sizeof(url));
+    for (int i = 0; url[i] != 0; i++) {
+        url[i] = url[i] == '/' ? '\\' : url[i];
+    }
+#else
+    char *out = url + snprintf(url, sizeof(url), "file://");
+    for (const char *c = path; *c != 0 && out < url + sizeof(url) - 4; c++) {
+        unsigned char ch = (unsigned char)*c;
+        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || strchr("/-_.~", ch) != nullptr) {
+            *out++ = (char)ch;
+        } else {
+            out += snprintf(out, 4, "%%%02X", ch);
+        }
+    }
+    *out = 0;
+#endif
+    printf("herotool: open %s\n", url);
+    if (SDL_getenv("HEROTOOL_NO_OPEN") == nullptr && !SDL_OpenURL(url)) {
+        printf("herotool: couldn't open %s: %s\n", url, SDL_GetError());
+    }
+}
+
 // --- the start screen: make a new hero from a model, or change one in the mods folder (the user's word, 2026-11-22) ---
 
 // The heroes in the mods folder's mod folders (heroes/<id>/hero.json): a zipped mod's aren't listed, as it's changed by unzipping it
@@ -6972,6 +6999,29 @@ void start_screen(Tool &T, SDL_Window *win) {
             (void)mod;
         }
         icon(fl, IC_RIGHT, ImVec2(b.x - U(24), a.y + rh / 2), U(20), MUTED);
+        // its folder, opened (the user's word, 2026-11-23: "add a folder icon next to the edit a hero that lets you open the local
+        // files for that hero"): the copy it opens, the tool's own if it has one, else the game's
+        {
+            ImVec2 keep = ImGui::GetCursorScreenPos();
+            float s = U(40);
+            ImVec2 op(b.x - U(52) - s - U(10) - s, a.y + (rh - s) / 2);
+            ImGui::SetCursorScreenPos(op);
+            bool on = ImGui::IsWindowHovered() && ImGui::IsMouseHoveringRect(op, ImVec2(op.x + s, op.y + s));
+            float lit = ease_to(ImGui::GetID("##folderlit"), on ? 1 : 0, 18);
+            char folder[1300];
+            snprintf(folder, sizeof(folder), "%s/heroes/%s", Founds[i].mod, Founds[i].id);
+#ifdef _WIN32
+            for (char *c = folder; *c != 0; c++) {
+                *c = *c == '/' ? '\\' : *c;
+            }
+#endif
+            // (its tooltip just the folder, as the delete's question is: the user's word, 2026-11-23, "keep it simple")
+            if (icon_button("##folder", IC_FOLDER, folder, mix(RAISED, PERI, lit), mix(INK, PERI_INK, lit), s, CUE_OPEN)) {
+                open_folder(folder);
+                hit = false;
+            }
+            ImGui::SetCursorScreenPos(keep);
+        }
         // its trash: deleted, asked first
         {
             ImVec2 keep = ImGui::GetCursorScreenPos();
@@ -7953,11 +8003,13 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT[,BUTTON]] presses the left button (or the right) at (X0, Y0) in the window once a game's shown, moves
            to (X1, Y1) over ten frames and lets go (Shift held if SHIFT is 1), as a person's mouse would, and keeps it there after (the
            real mouse left out: the SDL backend gives where it is on the screen while the window has the focus) */
-        /* (or on Hero Setup, its views settled) */
-        static int setup_frames = 0;
+        /* (or on Hero Setup, its views settled, or on the start screen, a click there) */
+        static int setup_frames = 0, home_frames = 0;
         setup_frames = !T.home && !T.choosing && T.page == PAGE_MODEL ? setup_frames + 1 : 0;
+        home_frames = T.home ? home_frames + 1 : 0;
         if (SDL_getenv("HEROTOOL_DRAG") != nullptr
-            && (drag_step >= 0 || T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr) || setup_frames > 5)) {
+            && (drag_step >= 0 || T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr) || setup_frames > 5
+                || home_frames > 5)) {
             /* (a sixth, BUTTON: 0 the left, 1 the right) */
             float d[6] = { 0, 0, 0, 0, 0, 0 };
             drag_step = drag_step < 100 ? drag_step + 1 : drag_step;

@@ -667,6 +667,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: The hero tool's start screen: a folder button beside each hero's trash opens its files (`open_folder`).
 - 2026-11-23: The hero tool has its own icon (herotool/icon.ps1 draws src/herotool.ico; herotool.rc), its window's too.
 - 2026-11-23: The card camera's pop-ups show beside its title, no longer over its pose menu (`draw_toast` from its left).
 - 2026-11-23: Esc closes a test run, anything with TESTING on screen (`--mode`, the hero tool's Preview, `--aim`, `--adventure`;

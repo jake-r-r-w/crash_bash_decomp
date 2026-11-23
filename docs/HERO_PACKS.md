@@ -287,6 +287,11 @@ made from, its card's photo; `delete_hero`; `HEROTOOL_DELETE=ID` does it for a t
 the mouse is on it, as is the question's Delete, and the question is the hero's name and the full path going, no more (the user's
 word, 2026-11-23: "just put the full path its going to delete remove the words keep it simple"): its whole mod's folder when the hero's
 all there is in it (`mod_goes`), else the hero's (MOD/heroes/ID), with backslashes throughout on Windows.
+Beside the trash, a folder (the user's word, 2026-11-23: "add a folder icon next to the edit a hero that lets you open the local
+files for that hero"): it opens the hero's folder, the copy it opens (the tool's own if it has one, else the game's: MOD/heroes/ID),
+in the system's file manager as the launcher opens the mods folder (`open_folder`, `SDL_OpenURL`: the path on Windows, a file://
+address elsewhere), its tooltip that folder alone. `HEROTOOL_DRAG` clicks on the start screen too, and `HEROTOOL_NO_OPEN=1` says
+what would open without opening it, for a test.
 `HEROTOOL_HOVER=X,Y` holds the mouse there, for a test of what a hover shows. A new hero
 (a model browsed for or dropped on the start screen; `new_hero`) keeps nothing of the last one's (its card, sounds, changes and their
 history, own moves, what the games made of it) and asks first **Who is it based on?** (the user's word, 2026-11-23: "When you import a
