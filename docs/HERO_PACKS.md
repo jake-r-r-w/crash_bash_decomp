@@ -357,7 +357,12 @@ sides' at once, one over the other), Ctrl- or Shift-click picks one more or lets
 picked ringed white; dragging one of them moves them all as far as the mouse goes, each with the one joint it is, and with Mirror its
 other side's too unless that's picked itself (one step of the undo). Esc lets go of them. Checked: the arm boxed in the side view and
 its elbow dragged, shoulder, elbow and hand of both arms moved alike, the chest and neck not (`HEROTOOL_DRAG2`, a second test drag
-after the first). Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
+after the first). A right click (not a drag: that moves the view) on them opens their menu (a dot not picked taken alone first):
+**Straighten** puts the picked in a line (the user's word, 2026-11-23: "select nodes right click and be able to straighten"), the two
+farthest apart staying and each other going to where it's nearest on the line between them, with the one joint it is and Mirror's
+other side, a step of the undo (`joints_straighten`, three or more picked); **Let go of them**. Checked: the left arm boxed in the front
+view and straightened, its elbow and hand on the line from its shoulder to its hand's end (a third and three fifths along), the right
+arm the mirror, the chest not moved (`HEROTOOL_STRAIGHTEN=1` after a test drag). Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
 with it. `HEROTOOL_MARKERS=BONE` prints where a bone's dot is and every joint after a drag, and `HEROTOOL_DRAG` and `_WHEEL` work
 there, for a test. On the right, a column that scrolls, its **Model** (Open, Guess joints, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
 id, **Height**: as tall as one of the heroes, picked from a menu, or its own, typed or stepped by 10 from 200 to 900, the user's

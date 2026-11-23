@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Hero Setup's joints: a right click (not a drag) opens their menu, Straighten (the picked on the line between the two
+  farthest apart, with Mirror's side) and Let go of them.
 - 2026-11-23: Hero Setup's joints pick several (a box dragged on nothing, Ctrl- or Shift-click), then move together by dragging one
   (each with its joined joint, Mirror's other side unless picked); Esc lets go. HEROTOOL_DRAG2 for a second test drag.
 - 2026-11-23: Hero Setup's spine took the thighs and the neck the shoulders when dragged (a joint moved every bone starting within

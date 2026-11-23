@@ -3912,6 +3912,68 @@ bool joint_picked(const Tool &T, int b, int e) {
     return false;
 }
 
+// The joints picked put in a straight line (the user's word, 2026-11-23: "select nodes right click and be able to straighten"): the two
+// farthest apart stay, and each of the others goes to where it's nearest on the line from one to the other (between them), with the one
+// joint it is (the bone carrying on from it), and with Mirror its other side's mirrored across the hips unless that's picked itself; a
+// step of the undo. False if fewer than three are picked
+bool joints_straighten(Tool &T) {
+    if (T.m == nullptr || T.joint_sel.size() < 3) {
+        return false;
+    }
+    auto pt = [&](int b, int e) { return e ? T.m->bones[b].end : T.m->bones[b].at; };
+    int a = 0, z = 1;
+    float far = -1;
+    for (size_t i = 0; i < T.joint_sel.size(); i++) {
+        for (size_t j = i + 1; j < T.joint_sel.size(); j++) {
+            const float *p = pt(T.joint_sel[i].first, T.joint_sel[i].second), *q = pt(T.joint_sel[j].first, T.joint_sel[j].second);
+            float d = (p[0] - q[0]) * (p[0] - q[0]) + (p[1] - q[1]) * (p[1] - q[1]) + (p[2] - q[2]) * (p[2] - q[2]);
+            if (d > far) {
+                far = d, a = (int)i, z = (int)j;
+            }
+        }
+    }
+    if (far <= 0) {
+        return false;
+    }
+    joint_snapshot(T, "Straightened %d joints", (int)T.joint_sel.size());
+    float A[3], B[3];
+    memcpy(A, pt(T.joint_sel[a].first, T.joint_sel[a].second), sizeof(A));
+    memcpy(B, pt(T.joint_sel[z].first, T.joint_sel[z].second), sizeof(B));
+    float mid = T.m->bones[KB_HIPS].have ? T.m->bones[KB_HIPS].at[0] : (T.m->lo[0] + T.m->hi[0]) / 2;
+    // a joint put at q: its place, and the one joint it is (its bone's end and the start of the one carrying on)
+    auto put = [&](int b, int e, const float *q) {
+        memcpy(pt(b, e), q, sizeof(float) * 3);
+        for (int c = 0; c < KB_COUNT; c++) {
+            if (T.m->bones[c].have && e && kit_carries_on(b, c)) {
+                memcpy(T.m->bones[c].at, q, sizeof(float) * 3);
+            }
+            if (T.m->bones[c].have && !e && kit_carries_on(c, b)) {
+                memcpy(T.m->bones[c].end, q, sizeof(float) * 3);
+            }
+        }
+    };
+    for (size_t k = 0; k < T.joint_sel.size(); k++) {
+        if ((int)k == a || (int)k == z) {
+            continue;
+        }
+        int b = T.joint_sel[k].first, e = T.joint_sel[k].second;
+        const float *p = pt(b, e);
+        float t = ((p[0] - A[0]) * (B[0] - A[0]) + (p[1] - A[1]) * (B[1] - A[1]) + (p[2] - A[2]) * (B[2] - A[2])) / far;
+        t = t < 0 ? 0 : t > 1 ? 1 : t;
+        float q[3] = { A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t, A[2] + (B[2] - A[2]) * t };
+        put(b, e, q);
+        int o = mirror_bone(b);
+        if (T.mirror && o >= 0 && T.m->bones[o].have && !joint_picked(T, o, e)) {
+            float m[3] = { 2 * mid - q[0], q[1], q[2] };
+            put(o, e, m);
+        }
+    }
+    reweigh(T);
+    T.dirty = T.unsaved = true;
+    snprintf(T.status, sizeof(T.status), "Straightened %d joints", (int)T.joint_sel.size());
+    return true;
+}
+
 void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     // (a view's drawn only while its page shows it, so the first time it's shown its picture comes a frame later)
     ImVec2 p0 = ImGui::GetCursorScreenPos();
@@ -3950,8 +4012,8 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             fit(T.m, T.side);
         }
         if (ImGui::IsItemHovered() && T.drag_bone < 0) {
-            ImGui::SetItemTooltip("Drag a dot onto its joint   Drag round dots, or Ctrl-click them: pick several, then drag one   Wheel: zoom   "
-                                  "Right-drag: move   Right double-click: back");
+            ImGui::SetItemTooltip("Drag a dot onto its joint   Drag round dots, or Ctrl-click them: pick several, then drag one   Right-click: "
+                                  "straighten them   Wheel: zoom   Right-drag: move   Right double-click: back");
         }
     }
     if (!ImGui::IsMouseDown(ImGuiMouseButton_Right) && T.pan_view == which) {
@@ -4060,6 +4122,36 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     if (pick_bone >= 0 && in_view && ImGui::IsItemHovered() && T.drag_bone < 0 && T.jbox_view < 0) {
         ImGui::SetTooltip("%s%s", KitBoneNames[pick_bone], pick_end ? " (its end)" : "");
     }
+    // a right click (not a drag: that moves the view) opens the joints' menu, a dot under it not picked taken alone first
+    ImGui::PushID(which);
+    if (in_view && ImGui::IsMouseReleased(ImGuiMouseButton_Right) && kio.MouseDragMaxDistanceSqr[ImGuiMouseButton_Right] < U(4) * U(4)
+        && T.drag_bone < 0) {
+        if (pick_bone >= 0 && !joint_picked(T, pick_bone, pick_end)) {
+            T.joint_sel.assign(1, { pick_bone, pick_end });
+        }
+        ImGui::OpenPopup("##jointmenu");
+    }
+    if (ImGui::BeginPopup("##jointmenu")) {
+        char says[48];
+        snprintf(says, sizeof(says), "Straighten (%d joints)", (int)T.joint_sel.size());
+        ImGui::BeginDisabled(T.joint_sel.size() < 3);
+        if (menu_item(says, false)) {
+            joints_straighten(T);
+        }
+        ImGui::EndDisabled();
+        if (T.joint_sel.size() < 3) {
+            ImGui::SetItemTooltip("Pick three or more first: drag a box round them, or Ctrl-click them");
+        } else {
+            ImGui::SetItemTooltip("In a line: the two farthest apart stay, the others go onto the line between them");
+        }
+        ImGui::BeginDisabled(T.joint_sel.empty());
+        if (menu_item("Let go of them", false)) {
+            T.joint_sel.clear();
+        }
+        ImGui::EndDisabled();
+        ImGui::EndPopup();
+    }
+    ImGui::PopID();
     // the box: drawn as it's dragged, and those in it picked when it's let go
     if (T.jbox_view == which) {
         ImVec2 a(fminf(T.jbox_x, mouse.x), fminf(T.jbox_y, mouse.y)), b(fmaxf(T.jbox_x, mouse.x), fmaxf(T.jbox_y, mouse.y));
@@ -7471,6 +7563,20 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             dio.AddMousePosEvent(d[0] + (d[2] - d[0]) * t, d[1] + (d[3] - d[1]) * t);
             dio.AddMouseButtonEvent(d[5] != 0 ? 1 : 0, st >= 2 && st <= 12);
             dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && st >= 1 && st <= 13);
+        }
+        /* a test's: HEROTOOL_STRAIGHTEN=1 straightens Hero Setup's joints picked once its test drag's let go (a box round them) */
+        static bool straightened = false;
+        if (!straightened && SDL_getenv("HEROTOOL_STRAIGHTEN") != nullptr && drag_step > 16 && T.m != nullptr) {
+            straightened = true;
+            bool did = joints_straighten(T);
+            printf("herotool: straightened %d: %s\n", (int)T.joint_sel.size(), did ? "yes" : "no");
+            for (int b = 0; b < KB_COUNT; b++) {
+                const KitBone &k = T.m->bones[b];
+                if (k.have) {
+                    printf("herotool: straight %s %.4f,%.4f,%.4f to %.4f,%.4f,%.4f\n", KitBoneNames[b], k.at[0], k.at[1], k.at[2], k.end[0], k.end[1],
+                           k.end[2]);
+                }
+            }
         }
         /* a test's: HEROTOOL_UNDO=1 undoes Hero Setup's last joints' step once its test drag's let go, and says where its joints are then */
         static bool undone = false;
