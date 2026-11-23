@@ -1,0 +1,3 @@
+// The hero tool's own icon, drawn (herotool/icon.ps1): Explorer's and the taskbar's, and its window's (SDL takes a program's first icon
+// for its windows)
+1 ICON "herotool.ico"

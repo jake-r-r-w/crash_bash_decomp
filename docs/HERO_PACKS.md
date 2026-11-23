@@ -268,7 +268,7 @@ SDL3's renderer, the model drawn by a little software renderer of its own). On W
 window (the user's word, 2026-11-23: "when it opens a command window opens with it can that not happen?"): started from a terminal
 with its output going nowhere it writes there (`src/winconsole.c`), and sent to a file or a pipe its output goes there as before;
 and it starts the game (making the preview, Preview in) in the background (`start_game`), so a game built with a console opens none
-either, its end seen but not what it said at it (a make that fails says so without it). It's as big as its screen wants (`ui_scale`, the user's
+either, its end seen but not what it said at it (a make that fails says so without it). Its icon is its own (the user's word, 2026-11-23: "can you give the tool exe a logo"): drawn by `herotool/icon.ps1`, no game art, the game's rounded square (port/release/icons.ps1) in the tool's periwinkle with a hero's figure in white and a coral spark, `src/herotool.ico` built in by `src/herotool.rc`, Explorer's, the taskbar's and its window's (SDL takes a program's first icon). It's as big as its screen wants (`ui_scale`, the user's
 word, 2026-11-22: far too small on a high resolution screen), on the screen the mouse is on: its display scale, or its height against
 an 800-line screen's if that's more (1.25 on a 1080-line screen), in quarters; its font made at that size, its style's sizes, the
 window and its pictures with it, and again as it's moved to another screen. Ctrl and + or - make it a tenth bigger or smaller, a
