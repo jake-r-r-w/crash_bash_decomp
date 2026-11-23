@@ -289,8 +289,9 @@ word, 2026-11-23: "just put the full path its going to delete remove the words k
 all there is in it (`mod_goes`), else the hero's (MOD/heroes/ID), with backslashes throughout on Windows.
 Beside the trash, a folder (the user's word, 2026-11-23: "add a folder icon next to the edit a hero that lets you open the local
 files for that hero"): it opens the hero's folder, the copy it opens (the tool's own if it has one, else the game's: MOD/heroes/ID),
-in the system's file manager as the launcher opens the mods folder (`open_folder`, `SDL_OpenURL`: the path on Windows, a file://
-address elsewhere), its tooltip that folder alone. `HEROTOOL_DRAG` clicks on the start screen too, and `HEROTOOL_NO_OPEN=1` says
+in the system's file manager (`open_folder`: on Windows Explorer started with its path, as SDL_OpenURL's ShellExecute from the
+tool said a folder that's there wasn't, "Location is not available" (the user's, 2026-11-23); elsewhere SDL_OpenURL with a file://
+address), its tooltip that folder alone. `HEROTOOL_DRAG` clicks on the start screen too, and `HEROTOOL_NO_OPEN=1` says
 what would open without opening it, for a test.
 `HEROTOOL_HOVER=X,Y` holds the mouse there, for a test of what a hover shows. A new hero
 (a model browsed for or dropped on the start screen; `new_hero`) keeps nothing of the last one's (its card, sounds, changes and their
@@ -310,12 +311,20 @@ writes nothing beside a model: the user's word, 2026-11-23, "I think it should j
 T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, its joints its rig's (Joints shows them; one moved, the
 tool weights it to the joints instead, its own clips kept as its rig still maps them, `export_pack`; no markers file in a pack's folder). Then its name, height, who it's based on, card,
 sounds and the mod's author, and **Save** (the mod's name is the hero's: the user's word, 2026-11-22, "The mod name should always be
-the same as the custom hero name") writes the mod, all of it, into the tool's own folder (`heroes/` in its
-folder, AppData's on Windows; `heroes_home`): `MOD/mod.json` and `MOD/heroes/ID/`, MOD the mod it was opened from's name, else its id.
+the same as the custom hero name") writes the mod, all of it, into the tool's own heroes folder, their source: `heroes/` beside the tool (`heroes_home`; the user's word,
+2026-11-23: "There is 2. One where the source of the mod is. One where the output of this tool ends up" and "The source for the hero mod
+should be in a folder next to the tool not in app data. So when the game and tool is next cut the tool ships alongside the exe. It will
+also ship with Bobby and not the frog"): `MOD/mod.json` and `MOD/heroes/ID/`, MOD the mod it was opened from's name, else its id. If
+it can't be made there, it's `heroes/` in the tool's folder for the user's settings (AppData's on Windows, where it had been: those
+were moved beside the tool, that folder kept as `heroes.old`), as a test's is (`HEROTOOL_PREF`; `HEROTOOL_BESIDE=1` beside it all the
+same). The tool's other things (its previews, photos, the strip's toggle) stay in that settings folder. A release has Bobby there
+(`package.mjs`: `heroes/bobby` as well as `mods/bobby`), and so has a build, once (`port/cmake/copy_if_missing.cmake`: not again over a
+Bobby the tool has saved). The welcome page's foot shows both folders, **Your heroes** (beside the tool) and **The game's mods** (Add
+to game's; another can be typed), each with a button that opens it.
 **Add to game** (the user's word, 2026-11-23: Save keeps it in the tool, a button installs it), greyed out till it's saved as it is
 ("the add to game button should be greyed out until saved"; `saved_in_tool`: only a Save marks it saved, not the copy the games make
 its preview from, which had shown All saved), puts its saved hero's folder in the
-game's mods folder (MOD/heroes/ID in place of what was there, kept aside till the new one's in; the mod's mod.json if it's new there;
+game's mods folder, the output (MOD/heroes/ID in place of what was there, kept aside till the new one's in; the mod's mod.json if it's new there;
 another hero of the mod's stays), and asks the game to switch the mod on: `crashbash --add-hero MOD` (port/main.c) turns it on in the
 player's own settings (wherever folders.ini has them) and quits; a hero mod that's on puts its heroes in the select (there's no switch
 of their own). A hero only in the game, opened and saved, is copied into the tool's folder. `HEROTOOL_ADD=1` adds the hero open, for a

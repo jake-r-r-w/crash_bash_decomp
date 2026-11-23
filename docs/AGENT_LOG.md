@@ -667,6 +667,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: The hero tool's heroes (their source, Save's) are in heroes/ beside it, not AppData (the user's two moved there, AppData's
+  kept as heroes.old); releases and builds put Bobby there; the welcome page shows both folders; folders open through explorer.exe
+  (SDL_OpenURL had said "Location is not available").
 - 2026-11-23: The hero tool's start screen: a folder button beside each hero's trash opens its files (`open_folder`).
 - 2026-11-23: The hero tool has its own icon (herotool/icon.ps1 draws src/herotool.ico; herotool.rc), its window's too.
 - 2026-11-23: The card camera's pop-ups show beside its title, no longer over its pose menu (`draw_toast` from its left).

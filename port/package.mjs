@@ -187,6 +187,9 @@ fs.writeFileSync(path.join(dir, 'recomplauncher.json'), launcher_json);
 fs.mkdirSync(path.join(dir, 'mods'));
 /* Bobby, the hero packs' example (docs/HERO_PACKS.md), as the folder the tool exports */
 fs.cpSync(path.join(PORT, 'mods/bobby'), path.join(dir, 'mods/bobby'), { recursive: true });
+/* and as the hero tool's own (heroes/ beside it, its heroes' source, where its Save keeps them: the user's word, 2026-11-23, "the
+   tool ships alongside the exe. It will also ship with Bobby"): him alone, nothing of a machine's own heroes */
+fs.cpSync(path.join(PORT, 'mods/bobby'), path.join(dir, 'heroes/bobby'), { recursive: true });
 fs.writeFileSync(path.join(dir, 'mods', 'README.txt'), eol('Put mods here, as their zips. They show up on the Mods page, under Settings in\nthe menu the game opens with.\n'));
 
 check_program(fs.readFileSync(exe), 'the program');

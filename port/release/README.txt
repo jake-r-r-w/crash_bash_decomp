@@ -122,10 +122,12 @@ a keg.
 
 To make one, open HERO TOOL on the Mods page (or run @TOOL@ beside the game).
 Give it a model as a .glb (glTF's one-file form): a standing two-legged
-character of up to 1365 triangles, rigged or not. Drag the markers onto its
-joints if it hasn't a skeleton, look at its moves, give it a name, a card
-picture (.png) and sounds (.wav) if you like, and export it. It goes in the
-mods folder as a mod, and "Export and test in game" starts the game with it.
+character of up to 1365 triangles, rigged or not. Pick who it's based on, drag
+the dots onto its joints if it hasn't a skeleton, look at its moves, give it a
+name, a card (a photo of it, or a .png) and sounds (.wav) if you like. Save
+keeps it in the heroes folder beside the tool, where Bobby's is too; Add to
+game puts it in the mods folder and turns it on, and Preview starts the game
+with it. Esc closes a preview.
 Mods with heroes can be shared like any other: every player online needs the
 same one to play its hero.
 

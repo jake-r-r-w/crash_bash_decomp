@@ -1480,9 +1480,20 @@ char *pref_path() {
     return SDL_GetPrefPath("CrashBashPC", "herotool");
 }
 
-// The tool's own folder for its heroes (the user's word, 2026-11-23: Save "in the tool", Add to game puts it in the game): heroes/ in its
-// folder (pref_path), each a mod (MOD/mod.json, MOD/heroes/ID/...), made if it isn't there; false if there's no such place
+// The tool's own folder for its heroes, their source (the user's word, 2026-11-23: Save "in the tool", Add to game puts it in the game,
+// the game's mods folder its output): heroes/ beside the tool (the user's word, 2026-11-23: "The source for the hero mod should be in a
+// folder next to the tool not in app data", so it ships beside it with Bobby in it), each a mod (MOD/mod.json, MOD/heroes/ID/...), made
+// if it isn't there; else, if it can't be made there, heroes/ in the tool's folder for the user's settings (pref_path), as a test's
+// always is (HEROTOOL_PREF, unless HEROTOOL_BESIDE=1, a test of the folder beside it); false if there's no such place
 bool heroes_home(char *out, size_t size) {
+    const char *base = SDL_getenv("HEROTOOL_PREF") == nullptr || SDL_getenv("HEROTOOL_BESIDE") != nullptr ? SDL_GetBasePath() : nullptr;
+    if (base != nullptr) {
+        snprintf(out, size, "%sheroes", base);
+        SDL_PathInfo info;
+        if ((SDL_GetPathInfo(out, &info) && info.type == SDL_PATHTYPE_DIRECTORY) || SDL_CreateDirectory(out)) {
+            return true;
+        }
+    }
     char *pref = pref_path();
     if (pref == nullptr) {
         out[0] = 0;
@@ -4562,9 +4573,24 @@ void open_folder(const char *path) {
     *out = 0;
 #endif
     printf("herotool: open %s\n", url);
-    if (SDL_getenv("HEROTOOL_NO_OPEN") == nullptr && !SDL_OpenURL(url)) {
+    if (SDL_getenv("HEROTOOL_NO_OPEN") != nullptr) {
+        return;
+    }
+#ifdef _WIN32
+    // on Windows, Explorer started with it: the system's open (SDL_OpenURL's ShellExecute) from the tool said a folder that's there
+    // wasn't ("Location is not available", the user's, 2026-11-23), as a shell call can from a program's own thread set up otherwise
+    const char *args[] = { "explorer.exe", url, nullptr };
+    SDL_Process *p = SDL_CreateProcess(args, false);
+    if (p == nullptr) {
+        printf("herotool: couldn't open %s: %s\n", url, SDL_GetError());
+    } else {
+        SDL_DestroyProcess(p); // (it goes on: only SDL's hold on it is let go)
+    }
+#else
+    if (!SDL_OpenURL(url)) {
         printf("herotool: couldn't open %s: %s\n", url, SDL_GetError());
     }
+#endif
 }
 
 // --- the start screen: make a new hero from a model, or change one in the mods folder (the user's word, 2026-11-22) ---
@@ -7110,27 +7136,58 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::EndChild();
     ImGui::PopStyleVar(2);
     ImGui::PopStyleColor();
-    // the mods folder, out of the way at the bottom
+    // its two folders, out of the way at the bottom (the user's word, 2026-11-23: "There is 2. One where the source of the mod is. One
+    // where the output of this tool ends up"): its heroes, beside it (heroes_home: Save), and the game's mods folder (Add to game), each
+    // opened by its folder button; the game's can be another, typed
     {
-        float bh = U(58), y = fmaxf(top + ch + U(24), io.DisplaySize.y - bh - U(28));
-        ImVec2 p(x, y);
-        dl->AddRectFilled(p, ImVec2(p.x + w, p.y + bh), CARD, U(22));
-        icon(dl, IC_FOLDER, ImVec2(p.x + U(28), p.y + bh / 2), U(20), MUTED);
-        dl->AddText(ImVec2(p.x + U(48), p.y + (bh - ImGui::GetTextLineHeight()) / 2), MUTED, "The game's mods folder");
-        float lw = U(48) + ImGui::CalcTextSize("The game's mods folder").x + U(14);
-        ImGui::SetCursorScreenPos(ImVec2(p.x + lw, p.y + (bh - ImGui::GetFontSize() - U(16)) / 2));
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(U(14), U(8)));
-        ImGui::SetNextItemWidth(w - lw - U(80));
-        ImGui::InputText("##mods", T.out, sizeof(T.out));
-        ImGui::PopStyleVar(2);
-        ImGui::PopStyleColor();
-        ImGui::SameLine(0, U(8));
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - U(3));
-        if (icon_button("##refresh", IC_REFRESH, "Look for heroes again", RAISED, INK, ImGui::GetFontSize() + U(22))) {
-            find_heroes(T);
-            toast(T, "%d hero%s found", NumFound, NumFound == 1 ? "" : "es");
+        float rh = U(58), bh = rh * 2 + U(8), y = fmaxf(top + ch + U(24), io.DisplaySize.y - bh - U(28));
+        float ib = ImGui::GetFontSize() + U(22);
+        const char *says[2] = { "Your heroes", "The game's mods" };
+        float lw = U(48) + fmaxf(ImGui::CalcTextSize(says[0]).x, ImGui::CalcTextSize(says[1]).x) + U(18);
+        char home[1100];
+        heroes_home(home, sizeof(home));
+        for (int row = 0; row < 2; row++) {
+            ImVec2 p(x, y + row * (rh + U(8)));
+            ImGui::PushID(row);
+            dl->AddRectFilled(p, ImVec2(p.x + w, p.y + rh), CARD, U(22));
+            icon(dl, IC_FOLDER, ImVec2(p.x + U(28), p.y + rh / 2), U(20), MUTED);
+            dl->AddText(ImVec2(p.x + U(48), p.y + (rh - ImGui::GetTextLineHeight()) / 2), MUTED, says[row]);
+            float fw = w - lw - U(16) - (row == 0 ? ib + U(8) : 2 * (ib + U(8)));
+            ImGui::SetCursorScreenPos(ImVec2(p.x + lw, p.y + (rh - ImGui::GetFontSize() - U(16)) / 2));
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(U(14), U(8)));
+            ImGui::SetNextItemWidth(fw);
+            if (row == 0) {
+                // (where it is, as it's beside the tool: not to be typed)
+                ImGui::PushStyleColor(ImGuiCol_Text, V4(MUTED));
+                ImGui::InputText("##home", home, sizeof(home), ImGuiInputTextFlags_ReadOnly);
+                ImGui::PopStyleColor();
+                ImGui::SetItemTooltip("Where Save keeps your heroes, beside the tool");
+            } else {
+                ImGui::InputText("##mods", T.out, sizeof(T.out));
+                ImGui::SetItemTooltip("Where Add to game puts a hero, the game's mods folder");
+            }
+            ImGui::PopStyleVar(2);
+            ImGui::PopStyleColor();
+            ImGui::SameLine(0, U(8));
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - U(3));
+            float by = ImGui::GetCursorPosY();
+            if (icon_button("##open", IC_FOLDER, "Open it", RAISED, INK, ib, CUE_OPEN)) {
+                if (row == 1) {
+                    SDL_CreateDirectory(T.out);
+                }
+                open_folder(row == 0 ? home : T.out);
+            }
+            if (row == 1) {
+                ImGui::SameLine(0, U(8));
+                ImGui::SetCursorPosY(by);
+                if (icon_button("##refresh", IC_REFRESH, "Look for heroes again", RAISED, INK, ib)) {
+                    find_heroes(T);
+                    toast(T, "%d hero%s found", NumFound, NumFound == 1 ? "" : "es");
+                }
+            }
+            ImGui::PopID();
         }
     }
     draw_toast(T, ImVec2(x + w, U(40) + U(64) + U(12)), U(420));

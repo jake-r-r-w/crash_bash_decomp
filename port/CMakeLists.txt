@@ -142,6 +142,10 @@ else()
   # the example mods in the build's mods folder, as the downloads have them (package.mjs): Bobby, the hero packs' example
   add_custom_command(TARGET crashbash POST_BUILD COMMAND "${CMAKE_COMMAND}" -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/mods/bobby" "$<TARGET_FILE_DIR:crashbash>/mods/bobby")
+  # and as the hero tool's own beside it (heroes/, its heroes' source: docs/HERO_PACKS.md), only if he isn't there, as it's the
+  # tool's Save that changes him
+  add_custom_command(TARGET crashbash POST_BUILD COMMAND "${CMAKE_COMMAND}" "-DSRC=${CMAKE_CURRENT_SOURCE_DIR}/mods/bobby"
+    "-DDST=$<TARGET_FILE_DIR:crashbash>/heroes/bobby" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_if_missing.cmake")
 endif()
 # The Windows program's own icon, a drawn one (platform/crashbash.rc)
 if(WIN32)
