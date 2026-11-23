@@ -388,7 +388,8 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
                 int turn = a->turn[0] != 0 || a->turn[1] != 0 || a->turn[2] != 0, reach = a->reach[0] != 0 || a->reach[1] != 0 || a->reach[2] != 0;
                 int grow = a->grow[0] != 0 || a->grow[1] != 0 || a->grow[2] != 0;
 
-                if (!turn && !reach && !grow) {
+                /* (a key at a frame with none of them is one still: a chain's way back to rest; one for every frame isn't) */
+                if (!turn && !reach && !grow && a->at < 0) {
                     continue;
                 }
                 say(&hero, "%s\n    { \"kind\": \"%s\", \"move\": \"%s\", \"bone\": \"%s\"", said++ ? "," : ",\n  \"adjust\": [",

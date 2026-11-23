@@ -221,7 +221,7 @@ put back, as they point to memory that's freed and made again when the packs cha
 `port/mods/bobby/` is made by the hero tool, as anyone's hero is:
 
 ```bash
-build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobby --name BOBBY --mod-name Bobby     --author "Crash Bash PC" --markers port/mods/bobby-model.glb.markers.json --out port/mods/bobby --height 540 --face-head 0.26
+build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobby --name BOBBY --mod-name Bobby     --author "Crash Bash PC" --markers port/mods/bobby-model.glb.markers.json --out port/mods/bobby --height 540 --face-head 0.26 --adjust port/mods/bobby-adjust.json
 ```
 
 He's the user's dog, a long-haired black-and-tan miniature dachshund, stood up as a cartoon hero. His model is the user's own, made
@@ -230,6 +230,14 @@ the two smallest of its first export's 1367 taken out at the user's word, one te
 (`bobby-model.glb.markers.json`) place his skeleton, ears, jaw and tail too, and `arm_raise` keeps his short arms from going into his big
 head. The photos aren't in the repo. Its command says no template (no `--based-on`): his pack never has, so on foot he plays his own
 moves; made again so, the pack is the one in the repo byte for byte.
+
+His ears flop on the pogo stick (the user's word, 2026-11-23: "can you make bobbys ear flop up and down when he is jumping on the
+pogo stick?"): `bobby-adjust.json`, moves adjusted as the animation tools make them (`--adjust`; the tool shows them on its Pogo
+Painter page's timeline, Left ear 1 and the rest, to change there). In each of the pogo's moves that bounces (BREATHE, the bounce
+round and round; JUMP; WIN; TAZING's little hops), keyed to it by his hips' height each frame (its pose dump): each ear's upper bone
+lifted out and up in the air, up to 45 to 50 degrees at the top (a turn about z, the left ear's less than 0 and the right's more),
+and pressed down a little as he lands and pushes off; its lower bone half as much a frame later, so it flops. Each key `blend`s into
+the next. DAZED has none. The game made with them changes his pogo model alone, every other kind byte for byte as before.
 
 His ears (2026-11-22, the user's word: "his ears are not wired up correctly i cant move them"): their markers ran down the back of
 his head, behind the flaps and short of their ends, so most of each long flap went with his head and its lower half with his chest.
@@ -260,7 +268,7 @@ so a pack it writes is one the game reads. It makes anyone's model a hero:
 ```bash
 cd herotool && cmake --preset windows-clang -DCMAKE_PREFIX_PATH=<SDL3's install> && cmake --build --preset windows-clang
 build/herotool/windows-clang/herotool import MODEL.glb --id ID --markers MARKERS.json --out FOLDER [--name NAME] [--based-on HERO]
-                                       [--height N] [--face-head SHARE] [--author NAME]
+                                       [--height N] [--face-head SHARE] [--author NAME] [--adjust ADJUST.json]
 ```
 
 **The window**: `herotool` with no arguments, or a model alone (`herotool MODEL.glb`), opens it (`src/gui.cpp`, Dear ImGui on

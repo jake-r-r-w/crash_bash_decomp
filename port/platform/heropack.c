@@ -287,6 +287,81 @@ static void copy_name(char *out, size_t size, const char *s, int capitals) {
     }
 }
 
+/* A list of a pack's moves adjusted, its "adjust" (hero.json's, or a file of its own: pack_adjusts_read): how many of most, into out */
+static int read_adjusts(const JVal *list, PackAdjust *out, int most) {
+    int n = 0;
+
+    /* each: [{"kind", "move", "bone", "at" (or none: every frame), "until" (held to that frame), "spread", "ease", "blend",
+       "turn": [x, y, z], "reach": [x, y, z], "scale": [x, y, z]}] */
+    {
+        const JVal *a;
+        int i;
+
+        for (i = 0; (a = jat(list, i)) != NULL && n < most; i++) {
+            PackAdjust *d = &out[n];
+            const JVal *turn = jget(a, "turn"), *reach = jget(a, "reach"), *scale = jget(a, "scale");
+            const char *move = jstr(jget(a, "move")), *bone = jstr(jget(a, "bone"));
+            int j;
+
+            memset(d, 0, sizeof(*d));
+            d->kind = pack_kind_named(jstr(jget(a, "kind")));
+            if (d->kind < 0 || move == NULL || bone == NULL) {
+                continue;
+            }
+            SDL_strlcpy(d->move, move, sizeof(d->move));
+            SDL_strlcpy(d->bone, bone, sizeof(d->bone));
+            d->at = jint(jget(a, "at"), -1);
+            d->at = d->at < -1 ? -1 : d->at;
+            d->until = jint(jget(a, "until"), d->at);
+            d->until = d->until < d->at ? d->at : d->until > 100000 ? 100000 : d->until;
+            d->spread = jint(jget(a, "spread"), 0);
+            d->spread = d->spread < 0 ? 0 : d->spread > 200 ? 200 : d->spread;
+            d->ease = pack_ease_named(jstr(jget(a, "ease")));
+            d->ease = d->ease < 0 ? PACK_EASE_SMOOTH : d->ease;
+            d->blend = jget(a, "blend") != NULL && jget(a, "blend")->type == J_TRUE;
+            for (j = 0; j < 3; j++) {
+                const JVal *t = jat(turn, j), *r = jat(reach, j);
+
+                d->turn[j] = t != NULL && t->type == J_NUMBER ? (float)t->number : 0;
+                d->reach[j] = r != NULL && r->type == J_NUMBER ? (float)r->number : 0;
+                d->turn[j] = d->turn[j] < -360 ? -360 : d->turn[j] > 360 ? 360 : d->turn[j];
+                d->reach[j] = d->reach[j] < -1000 ? -1000 : d->reach[j] > 1000 ? 1000 : d->reach[j];
+                {
+                    const JVal *g = jat(scale, j);
+                    float s = g != NULL && g->type == J_NUMBER ? (float)g->number : 1;
+
+                    s = s < 0 ? 0 : s > 10 ? 10 : s; /* (0: hidden, all of it at its joint) */
+                    d->grow[j] = s - 1;
+                }
+            }
+            n++;
+        }
+    }
+    return n;
+}
+
+int pack_adjusts_read(const char *text, size_t size, PackAdjust *out, int most, char *problem, size_t problem_size) {
+    JText t;
+    JVal *root;
+    int n;
+
+    t.at = text;
+    t.end = text + size;
+    t.depth = 0;
+    if (size >= 3 && (unsigned char)text[0] == 0xEF && (unsigned char)text[1] == 0xBB && (unsigned char)text[2] == 0xBF) {
+        t.at += 3;
+    }
+    root = jvalue(&t);
+    if (root == NULL || root->type != J_OBJECT || jget(root, "adjust") == NULL) {
+        jfree(root);
+        say(problem, problem_size, "IT ISN'T JSON WITH AN ADJUST LIST");
+        return -1;
+    }
+    n = read_adjusts(jget(root, "adjust"), out, most);
+    jfree(root);
+    return n;
+}
+
 int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, size_t problem_size) {
     JText t;
     JVal *root;
@@ -373,52 +448,7 @@ int pack_info_read(const char *text, size_t size, PackInfo *out, char *problem, 
             pk->nstands++;
         }
     }
-    /* its moves adjusted: [{"kind", "move", "bone", "at" (or none: every frame), "until" (held to that frame), "spread", "ease", "blend",
-       "turn": [x, y, z], "reach": [x, y, z], "scale": [x, y, z]}] */
-    {
-        const JVal *list = jget(root, "adjust"), *a;
-        int i;
-
-        for (i = 0; (a = jat(list, i)) != NULL && out->nadjust < PACK_MAX_ADJUSTS; i++) {
-            PackAdjust *d = &out->adjust[out->nadjust];
-            const JVal *turn = jget(a, "turn"), *reach = jget(a, "reach"), *scale = jget(a, "scale");
-            const char *move = jstr(jget(a, "move")), *bone = jstr(jget(a, "bone"));
-            int j;
-
-            memset(d, 0, sizeof(*d));
-            d->kind = pack_kind_named(jstr(jget(a, "kind")));
-            if (d->kind < 0 || move == NULL || bone == NULL) {
-                continue;
-            }
-            SDL_strlcpy(d->move, move, sizeof(d->move));
-            SDL_strlcpy(d->bone, bone, sizeof(d->bone));
-            d->at = jint(jget(a, "at"), -1);
-            d->at = d->at < -1 ? -1 : d->at;
-            d->until = jint(jget(a, "until"), d->at);
-            d->until = d->until < d->at ? d->at : d->until > 100000 ? 100000 : d->until;
-            d->spread = jint(jget(a, "spread"), 0);
-            d->spread = d->spread < 0 ? 0 : d->spread > 200 ? 200 : d->spread;
-            d->ease = pack_ease_named(jstr(jget(a, "ease")));
-            d->ease = d->ease < 0 ? PACK_EASE_SMOOTH : d->ease;
-            d->blend = jget(a, "blend") != NULL && jget(a, "blend")->type == J_TRUE;
-            for (j = 0; j < 3; j++) {
-                const JVal *t = jat(turn, j), *r = jat(reach, j);
-
-                d->turn[j] = t != NULL && t->type == J_NUMBER ? (float)t->number : 0;
-                d->reach[j] = r != NULL && r->type == J_NUMBER ? (float)r->number : 0;
-                d->turn[j] = d->turn[j] < -360 ? -360 : d->turn[j] > 360 ? 360 : d->turn[j];
-                d->reach[j] = d->reach[j] < -1000 ? -1000 : d->reach[j] > 1000 ? 1000 : d->reach[j];
-                {
-                    const JVal *g = jat(scale, j);
-                    float s = g != NULL && g->type == J_NUMBER ? (float)g->number : 1;
-
-                    s = s < 0 ? 0 : s > 10 ? 10 : s; /* (0: hidden, all of it at its joint) */
-                    d->grow[j] = s - 1;
-                }
-            }
-            out->nadjust++;
-        }
-    }
+    out->nadjust = read_adjusts(jget(root, "adjust"), out->adjust, PACK_MAX_ADJUSTS);
     /* every offset not said, but those it says */
     for (k = 0; k < PACK_SOUNDS; k++) {
         out->voices[k] = PACK_VOICE_UNSAID;

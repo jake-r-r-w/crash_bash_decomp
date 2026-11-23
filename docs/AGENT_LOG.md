@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Bobby's ears flop on the pogo stick: 160 keys (port/mods/bobby-adjust.json, timed to the bounce from the pose dump),
+  in his pack by the command's new `--adjust` (heropack.c `pack_adjusts_read`); the tool keeps a key of nothing at a frame now.
 - 2026-11-23: The hero tool's heroes (their source, Save's) are in heroes/ beside it, not AppData (the user's two moved there, AppData's
   kept as heroes.old); releases and builds put Bobby there; the welcome page shows both folders; folders open through explorer.exe
   (SDL_OpenURL had said "Location is not available").

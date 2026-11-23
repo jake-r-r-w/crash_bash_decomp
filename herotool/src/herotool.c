@@ -16,13 +16,14 @@
 static void usage(void) {
     fprintf(stderr, "herotool import MODEL.glb --id ID [--markers MARKERS.json] --out FOLDER [--name NAME] [--based-on HERO] [--own GAME/MOVE=MOVE] [--template-in GAME=HERO] [--height N]\n"
                     "                [--face-head SHARE] [--author NAME] [--card CARD.png] [--voice JOB=FILE.wav ...]\n"
-                    "                [--mod-name NAME]\n"
+                    "                [--mod-name NAME] [--adjust ADJUST.json]\n"
                     "  HERO: crash, coco, cortex, brio, tiny, kong, dingodile or rilla, who it's based on: the hero it plays as (their\n"
                     "        moves and their ride or prop in every game, GAME=HERO another's there) and whose place it takes if it's free\n"
                     "  MARKERS: where its joints are, for a model with no rig of its own (a rigged one's are its bones)\n"
                     "  JOB: the sound's job: name (the announcer's, short), laugh (taunt, win), yelp (hurt), jump, land, thud (a fall),\n"
                     "       throw, fire (an attack's own sound); a job it has no sound for is its base hero's\n"
-                    "  N: its height standing, in the game's units (Crash 452, most heroes about 650)\n");
+                    "  N: its height standing, in the game's units (Crash 452, most heroes about 650)\n"
+                    "  ADJUST: its moves adjusted, a JSON file with hero.json's \"adjust\" list, as the animation tools write it\n");
 }
 
 static int id_ok(const char *id) {
@@ -106,6 +107,22 @@ int main(int argc, char **argv) {
                                 "dino, kegs\n", v);
                 return 2;
             }
+        } else if (strcmp(a, "--adjust") == 0) {
+            /* its moves adjusted: a JSON file with hero.json's "adjust" list ({"adjust": [...]}), as the animation tools write it
+               (Bobby's ears on the pogo stick: port/mods/bobby-adjust.json) */
+            static PackAdjust adj[PACK_MAX_ADJUSTS];
+            size_t n = 0;
+            char *text = (char *)SDL_LoadFile(v, &n);
+            int got = text != NULL ? pack_adjusts_read(text, n, adj, PACK_MAX_ADJUSTS, why, sizeof(why)) : -1;
+
+            if (got < 0) {
+                fprintf(stderr, "herotool: --adjust %s: %s\n", v, text == NULL ? SDL_GetError() : why);
+                SDL_free(text);
+                return 2;
+            }
+            SDL_free(text);
+            p.adjust = adj;
+            p.nadjust = got;
         } else if (strcmp(a, "--own") == 0) {
             int n = 0;
 

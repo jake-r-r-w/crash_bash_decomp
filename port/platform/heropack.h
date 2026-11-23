@@ -171,6 +171,10 @@ void pack_pose_world(const PackModel *m, const PackTrs *local, float (*world)[16
 /* The mesh's vertices where those bones put them (3 a vertex, glTF's axes) */
 void pack_skin(const PackModel *m, const float (*world)[16], float *out);
 
+/* A file of moves adjusted alone, {"adjust": [...]} as hero.json has them: how many of most it has, into out; -1 (and why) if it isn't
+ * one (the hero tool's --adjust) */
+int pack_adjusts_read(const char *text, size_t size, PackAdjust *out, int most, char *problem, size_t problem_size);
+
 /* A PNG (a card) as w x h pixels, red | green << 8 | blue << 16 | alpha << 24, to free; NULL if it isn't one */
 uint32_t *pack_png_read(const uint8_t *png, size_t size, int *w, int *h);
 
