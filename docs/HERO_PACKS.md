@@ -279,7 +279,16 @@ under it (the game's limits: a binary glTF 2.0 with its textures PNGs inside it,
 standing and facing +Z, rigged with Mixamo, VRM, Blender or Unity names or not rigged, its textures sharing 256 x 256 texels), or
 **Edit a hero**, a list of every hero in the mods folder's unzipped mods (`heroes/<id>/hero.json`), each with its picture: its card's
 top, else its face as the tool last made it (its model on foot from `preview-made/ID_foot.hpv` in the tool's folder, the top of it as
-its face share says), else its first letter (`found_picture`). Editing one opens the pack's
+its face share says), else its first letter (`found_picture`), and a trash (the user's word, 2026-11-23: "a trash icon on your heros so
+you can delete them fully"): asked first, it deletes the hero's folder (`heroes/ID`), its mod too if nothing but its mod.json is left
+in it (another hero of the mod's, or anything else, stays), and what the tool kept of it (its preview's models, the folder they're
+made from, its card's photo; `delete_hero`; `HEROTOOL_DELETE=ID` does it for a test, `HEROTOOL_ASK_DELETE=ID` asks). A new hero
+(a model browsed for or dropped on the start screen; `new_hero`) keeps nothing of the last one's (its card, sounds, changes and their
+history, own moves, what the games made of it) and asks first **Who is it based on?** (the user's word, 2026-11-23: "When you import a
+new hero you need to first choose who to use as a template / based on"; `base_chooser`): the eight, each with how tall it stands (the
+game's `PackTemplateHeight`: Crash 452, Coco 627, Cortex 440, Brio 606, Tiny 724, Koala Kong 666, Dingodile 697, Rilla Roo 733) and a
+bar beside the others; its pick its base and its height ("the model should be resized to that hero"), then its **Hero Setup**
+("when you first import you should land on" it; `HEROTOOL_NEW=MODEL.glb` and `HEROTOOL_BASE=HERO` for a test). Editing one opens the pack's
 own `hero.glb` (rigged on the standard skeleton, its moves its clips, so anyone's shared pack can be changed without its first
 model) and takes its name, height, who it's based on (its template, else whose place it takes) and face from hero.json, the mod's author from mod.json, and its
 card and sounds from its files; **Save** writes it back into that mod. `< Start screen` goes back to it (`HEROTOOL_LOAD=ID`
@@ -288,7 +297,8 @@ for the sound job picked, a markers `.json`). Its front and side views show the 
 joints (its left's mirror its right's, a bone's end is the next one's start, and its weights are worked out again on letting go);
 the third plays the move picked, turning. A model with no markers beside it (`MODEL.glb.markers.json`, saved there on each
 export) starts from a guess (`kit_guess_markers`: a standing humanoid's proportions in its box, arms out if it's as wide as a
-T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, no markers. Then its name, height, who it's based on, card,
+T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, its joints its rig's (Joints shows them; one moved, the
+tool weights it to the joints instead, its own clips kept as its rig still maps them, `export_pack`; no markers file in a pack's folder). Then its name, height, who it's based on, card,
 sounds and the mod's author, and **Save** (the mod's name is the hero's: the user's word, 2026-11-22, "The mod name should always be
 the same as the custom hero name") writes the mod to the mods folder (beside the tool by default, the game's if it's
 there), or **Preview in GAME** saves and starts the game too, straight into the game picked (no launcher: `--no-launcher` with
@@ -312,13 +322,16 @@ heroes, the hero's name, **All games at a glance** on a grid button beside it, a
 date or Making..., then undo, redo, sounds on or off, **Preview in GAME** with an arrow to pick the game (a game's page opened picks its own: Crate Crush on foot, unless Ring Ding's
 picked, Polar Push 18, Pogo Painter 10, Ballistix 14, Tank Wars 6, Crash Dash 23, Splash Dash 25, Mallet Mash 29, Dragon Drop 28, Keg
 Kaboom 30, the podium 43; the user's word, 2026-11-22, "preview in x should changed based on what is open"), and **Save**), the **strip** of
-games under it (**Your hero** first, then each game as a chip with the hero in it, a still of its first animation; the page shown
+games under it (**Hero Setup** first, then each game as a chip with the hero in it, a still of its first animation; the page shown
 periwinkle and lifted), and the page. The chevron beside All games hides the strip for more room (the user's word, 2026-11-22: "add a
 button to hide the top bar as a toggle"), a menu named for the page shown in its place to go to another; kept for next time
-(`strip.txt` in the tool's folder; `HEROTOOL_NOSTRIP=1` hides it for a test). **Your hero** is the model's own page: its picture (**Joints**, the dots to place on its front
-and side, or **Preview**, the tool's own moves on it; Joints only for a model without a rig), under it its **Card** and **Sounds** (a WAV for each, played with its
+(`strip.txt` in the tool's folder; `HEROTOOL_NOSTRIP=1` hides it for a test). **Hero Setup** (the user's word, 2026-11-23: "the your hero page should be renamed") is the model's own page: its picture (**Joints**, the dots to place on its front
+and side, or **Preview**, the tool's own moves on it; Joints for any model, the user's word, 2026-11-23: "That should always be
+available", first for one with no rig; `HEROTOOL_JOINTS=1`, 2 also as if a dot were moved, with `HEROTOOL_SAVE_TO` saved), under it its **Card** and **Sounds** (a WAV for each, played with its
 button; else its base's), and on the right its **Model** (Open, Guess joints, Mirror, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
-id, height, **Based on**: its template and whose place it takes, one choice) and **Mod** (its author, the folders) cards.
+id, **Height**: as tall as one of the heroes, picked from a menu, or its own, typed or stepped by 10 from 200 to 900, the user's
+word, 2026-11-23: "select a height from a selection of the exisiting heros OR set your own", **Based on**: its template and whose
+place it takes, one choice) and **Mod** (its author, the folders) cards.
 **The card** (the user's word, 2026-11-22: "take a photo and use that. With full move him around rotate etc."): its picture in the
 character select and the games' panels, shown in the card's shape (290 x 400, as wide against its height as the select shows a card:
 its 56 of 64 columns less a 5% inset each side, by 38 rows each 1.83 times as tall as a column is wide, so a photo isn't stretched).

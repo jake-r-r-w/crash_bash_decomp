@@ -376,6 +376,8 @@ struct Tool {
     // mouse card open, a short message over the picture (toast) and the time it was said, the status last made one, whether anything's
     // changed since it was saved, and each game's picture in the strip of them (a still of its first animation)
     bool bones = true, help = false, unsaved = false;
+    // a new hero's first question being asked: who it's based on (base_chooser)
+    bool choosing = false;
     // the strip of games under the top bar shown (the user's word, 2026-11-22: "add a button to hide the top bar as a toggle"; kept for
     // next time, strip.txt beside the sounds')
     bool strip_shown = true;
@@ -421,7 +423,7 @@ float ease_to(ImGuiID id, float to, float rate = 14) {
 enum {
     IC_BACK, IC_UNDO, IC_REDO, IC_SOUND, IC_MUTE, IC_GRID, IC_PLAY, IC_PAUSE, IC_PREV, IC_NEXT, IC_EYE, IC_EYE_OFF, IC_BONES,
     IC_ROTATE, IC_MOVE, IC_SCALE, IC_MIRROR, IC_ONION, IC_CLIP, IC_GAMEPAD, IC_HISTORY, IC_DOWN, IC_PERSON, IC_CUBE, IC_FOLDER,
-    IC_REFRESH, IC_CHECK, IC_SPARK, IC_CURSOR, IC_RIGHT, IC_CAMERA, IC_UP, IC_NONE = -1
+    IC_REFRESH, IC_CHECK, IC_SPARK, IC_CURSOR, IC_RIGHT, IC_CAMERA, IC_UP, IC_TRASH, IC_NONE = -1
 };
 
 // An icon, as the mocks' line icons: drawn in a 24-square (as an SVG's), s across, about c
@@ -447,6 +449,13 @@ void icon(ImDrawList *dl, int which, ImVec2 c, float s, ImU32 col) {
     case IC_RIGHT: poly({ 9, 6, 15, 12, 9, 18 }); break;
     case IC_DOWN: poly({ 6, 9, 12, 15, 18, 9 }); break;
     case IC_UP: poly({ 6, 15, 12, 9, 18, 15 }); break;
+    case IC_TRASH:
+        L(4, 7, 20, 7);
+        poly({ 9, 7, 9, 4.5f, 15, 4.5f, 15, 7 });
+        poly({ 6, 7, 7.2f, 20, 16.8f, 20, 18, 7 });
+        L(10, 10.5f, 10, 16.5f);
+        L(14, 10.5f, 14, 16.5f);
+        break;
     case IC_UNDO: poly({ 9, 14, 4, 9, 9, 4 }); L(4, 9, 14, 9); arc(14, 15, 6, -90, 90); L(14, 21, 11, 21); break;
     case IC_REDO: poly({ 15, 14, 20, 9, 15, 4 }); L(20, 9, 10, 9); arc(10, 15, 6, 270, 90); L(10, 21, 13, 21); break;
     case IC_SOUND:
@@ -749,6 +758,9 @@ const char *const KindTitles[PACK_KINDS] = { "On foot (Crate Crush, Ring Ding an
 const int KIND_WARP_TOOL = PACK_KINDS - 1; // the podium: its model on foot's, nothing of its own to pick
 
 const char *const HeroNames[] = { "Crash", "Coco", "Cortex", "Brio", "Tiny", "Koala Kong", "Dingodile", "Rilla Roo" };
+// How tall each stands, in the game's units: its model on foot's (port/game/main/packtemplates.c, PackTemplateHeight, 1 Crash to 8
+// Rilla Roo there)
+const int HeroHeights[] = { 452, 627, 440, 606, 724, 666, 697, 733 };
 const char *const Heroes[] = { "crash", "coco", "cortex", "brio", "tiny", "kong", "dingodile", "rilla" };
 // The games Preview in can start (the game's mode, main.c's level names in order), each with the kind of model it shows: a game's page
 // picks its own (the user's word, 2026-11-22: "preview in x should changed based on what is open"), the arrow any
@@ -960,7 +972,7 @@ void reweigh(Tool &T) {
 void own_init(Tool &T);
 int own_clip_of(const Tool &T, int g, int m);
 
-void open_model(Tool &T, const char *path) {
+bool open_model(Tool &T, const char *path) {
     char why[512];
     KitModel *m = new KitModel();
 
@@ -968,7 +980,7 @@ void open_model(Tool &T, const char *path) {
         snprintf(T.status, sizeof(T.status), "%s", why);
         kit_free(m);
         delete m;
-        return;
+        return false;
     }
     if (T.m != nullptr) {
         kit_free(T.m);
@@ -980,7 +992,6 @@ void open_model(Tool &T, const char *path) {
     T.made_asked = false;
     T.dirty = false;
     T.page = PAGE_ALL;
-    T.model_view = 0;
     T.baked.clear();
     T.foot_back.clear();
     own_init(T);
@@ -996,6 +1007,9 @@ void open_model(Tool &T, const char *path) {
         }
         kit_weigh(m);
     }
+    // (its joints to place first if it has no rig of its own; Joints is there for any, the user's word, 2026-11-23: "That should always
+    // be available")
+    T.model_view = T.rigged ? 1 : 0;
     fit(m, T.front);
     fit(m, T.side);
     fit(m, T.play);
@@ -1013,6 +1027,7 @@ void open_model(Tool &T, const char *path) {
     }
     snprintf(T.status, sizeof(T.status), "%s: %d triangles, %d vertices, %s", base, m->ntri, m->nvert,
              T.rigged ? "rigged" : "no rig (place its joints)");
+    return true;
 }
 
 // The game started, to make the preview or to play: on Windows in the background, so a game built with a console doesn't open one beside
@@ -1053,11 +1068,20 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     if (T.rigged) {
         kit_map_rig(t, why, sizeof(why));
     } else {
+        // (a model with a rig of its own whose joints were placed by hand: its rig mapped still, as its own clips go by it, then the
+        // joints placed and the tool's weights)
+        if (t->skinned) {
+            char rig_why[256];
+            kit_map_rig(t, rig_why, sizeof(rig_why));
+        }
         memcpy(t->bones, T.m->bones, sizeof(t->bones));
         t->arm_raise = T.m->arm_raise;
         kit_weigh(t);
-        snprintf(markers, sizeof(markers), "%s.markers.json", T.model);
-        kit_save_markers(T.m, markers);
+        // (beside the model it's made from; a pack's own hero.glb keeps them as its skeleton)
+        if (T.loaded_mod[0] == 0) {
+            snprintf(markers, sizeof(markers), "%s.markers.json", T.model);
+            kit_save_markers(T.m, markers);
+        }
     }
     t->arm_raise = T.m->arm_raise;
     p.id = T.id;
@@ -1179,6 +1203,40 @@ void made_forget(Tool &T) {
         }
         T.nrides[k] = 0;
     }
+}
+
+// A new hero from a model, the start screen's (the user's word, 2026-11-23, on starting one): nothing of the last one's kept (its card,
+// sounds, changes and their history, its own moves, what the games made of it), its page Hero Setup, and who it's based on asked first
+// (base_chooser: it starts their height). False if the model didn't open (why's the status)
+bool new_hero(Tool &T, const char *path) {
+    T.loaded_mod[0] = 0;
+    if (!open_model(T, path)) {
+        return false;
+    }
+    made_forget(T);
+    T.card[0] = 0;
+    T.card_photo = false;
+    T.camera = false;
+    for (int j = 0; j < PACK_VOICE_JOBS; j++) {
+        T.voice[j][0] = 0;
+    }
+    T.adj.clear();
+    T.undo.clear();
+    T.redo.clear();
+    T.face_head = 0;
+    T.foot_own = false;
+    for (int k = 0; k < PACK_KINDS; k++) {
+        T.kind_template[k] = -1;
+        T.no_fit[k] = false;
+    }
+    T.kind = 0, T.anim = 0, T.frame = 0, T.sel = -1, T.key_sel = -1;
+    T.keys_sel.clear();
+    T.watching[0] = 0;
+    T.page = PAGE_MODEL;
+    T.home = false;
+    T.choosing = true;
+    T.unsaved = true;
+    return true;
 }
 
 // Where the tool keeps its own things (its previews, its zoom), to SDL_free: its folder for the user's settings, or a test's own
@@ -3732,7 +3790,7 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
                                                     IM_COL32_WHITE, U(24));
     }
     ImVec2 at = ImGui::GetItemRectMin();
-    if (!markers || T.rigged) {
+    if (!markers) {
         return;
     }
     ImDrawList *dl = ImGui::GetWindowDrawList();
@@ -3753,6 +3811,11 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             dl->AddCircleFilled(c, e ? U(3) : U(5.5f), col);
             if (T.drag_bone < 0 && ImGui::IsMouseClicked(0) && (mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < U(7) * U(7)) {
                 T.drag_bone = b, T.drag_end = e, T.drag_view = which;
+                // a rigged model's joints placed by hand: the tool weights it to them from now (its own clips kept, export_pack)
+                if (T.rigged) {
+                    T.rigged = false;
+                    snprintf(T.status, sizeof(T.status), "Its joints are yours to place now: the tool weights it to them");
+                }
             }
         }
         if (ImGui::IsItemHovered()) {
@@ -3812,6 +3875,7 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
         } else {
             T.drag_bone = -1;
             reweigh(T);
+            T.dirty = T.unsaved = true;
         }
     }
     (void)title;
@@ -3836,6 +3900,8 @@ struct Found {
 const int MaxFound = 64;
 Found Founds[MaxFound];
 int NumFound = 0;
+int Deleting = -1; // the hero whose delete is being asked (DeleteAsk: its trash just clicked)
+bool DeleteAsk = false;
 
 struct FindCtx {
     const char *mod;
@@ -4149,9 +4215,9 @@ void top_bar(Tool &T) {
     if (!T.strip_shown) {
         ImGui::SameLine(0, U(10));
         mid(ImGui::GetFrameHeight());
-        const char *shown = T.page == PAGE_MODEL ? "Your hero" : T.page == PAGE_ALL ? "All games" : KindChip[T.page];
+        const char *shown = T.page == PAGE_MODEL ? "Hero Setup" : T.page == PAGE_ALL ? "All games" : KindChip[T.page];
         if (menu_begin("##pages", shown, U(170))) {
-            if (menu_item("Your hero", T.page == PAGE_MODEL)) {
+            if (menu_item("Hero Setup", T.page == PAGE_MODEL)) {
                 go_page(T, PAGE_MODEL);
             }
             if (menu_item("All games", T.page == PAGE_ALL)) {
@@ -4164,7 +4230,7 @@ void top_bar(Tool &T) {
             }
             ImGui::EndCombo();
         }
-        ImGui::SetItemTooltip("The page shown: Your hero, All games or a game");
+        ImGui::SetItemTooltip("The page shown: Hero Setup, All games or a game");
     }
     ImGui::SameLine(0, U(10));
     mid(U(28));
@@ -4270,7 +4336,7 @@ void games_strip(Tool &T) {
     if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseWheel != 0) {
         ImGui::SetScrollX(ImGui::GetScrollX() - ImGui::GetIO().MouseWheel * U(90));
     }
-    chip(T, PAGE_MODEL, "Your hero", nullptr, TINT_PERI, true);
+    chip(T, PAGE_MODEL, "Hero Setup", nullptr, TINT_PERI, true);
     for (int k = 0; k < PACK_KINDS; k++) {
         chip(T, k, KindChip[k], T.have_made[k] ? T.strip[k].tex : nullptr, ChipTint[k % 4], T.have_made[k]);
     }
@@ -5014,6 +5080,7 @@ void model_card(Tool &T, SDL_Window *win) {
     }
     if (T.rigged) {
         tag("Rigged (its own bones)", TINT_MINT, MINT_LIGHT, MINT);
+        ImGui::SetItemTooltip("Its own weights. Move a joint in Joints and the tool weights it instead (its animations kept)");
     } else {
         tag("No rig: place its joints", CARD, PERI_LIGHT, PERI);
         if (button("Guess joints", PERI, PERI_INK, 0, IC_SPARK, CUE_GUESS)) {
@@ -5102,21 +5169,49 @@ void hero_card(Tool &T) {
     ImGui::SetItemTooltip("Short name for files and online");
     row_label("Height", cw);
     {
+        // as tall as one of the heroes, or its own (the number under it, typed or stepped)
+        int as = -1;
+        for (int h = 0; h < 8; h++) {
+            as = T.height == HeroHeights[h] ? h : as;
+        }
+        char shown[48];
+        if (as >= 0) {
+            snprintf(shown, sizeof(shown), "As %s", HeroNames[as]);
+        } else {
+            snprintf(shown, sizeof(shown), "Its own");
+        }
+        if (menu_begin("##heightas", shown, cw)) {
+            for (int h = 0; h < 8; h++) {
+                char item[48];
+                snprintf(item, sizeof(item), "%s  %d", HeroNames[h], HeroHeights[h]);
+                if (menu_item(item, as == h) && T.height != HeroHeights[h]) {
+                    T.height = HeroHeights[h];
+                    T.dirty = T.unsaved = true;
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::SetItemTooltip("As tall as one of the heroes, or a height of its own (the number)");
+        row_label("", cw);
         float b = ImGui::GetFrameHeight() + U(6);
         if (button("-##shorter", CARD, INK, b, IC_NONE, CUE_DOWN, b)) {
             T.height = T.height - 10 < 200 ? 200 : T.height - 10;
             T.dirty = T.unsaved = true;
         }
         ImGui::SameLine(0, U(6));
-        char hs[16];
-        snprintf(hs, sizeof(hs), "%d", T.height);
-        ImVec2 p = ImGui::GetCursorScreenPos();
         float w = cw - 2 * b - U(12);
-        ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + w, p.y + b), CARD, U(14));
-        ImVec2 ts = ImGui::CalcTextSize(hs);
-        ImGui::GetWindowDrawList()->AddText(ImVec2(p.x + (w - ts.x) / 2, p.y + (b - ts.y) / 2), INK, hs);
-        ImGui::Dummy(ImVec2(w, b));
-        ImGui::SetItemTooltip("Crash is 452, most heroes about 650");
+        int typed = T.height;
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(CARD));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(14));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2((w - ImGui::CalcTextSize("000").x) / 2, (b - ImGui::GetFontSize()) / 2));
+        ImGui::SetNextItemWidth(w);
+        if (ImGui::InputInt("##height", &typed, 0, 0) && typed >= 200 && typed <= 900 && typed != T.height) {
+            T.height = typed;
+            T.dirty = T.unsaved = true;
+        }
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor();
+        ImGui::SetItemTooltip("Its height standing, in the game's units (200 to 900): type it, or step it");
         ImGui::SameLine(0, U(6));
         if (button("+##taller", CARD, INK, b, IC_NONE, CUE_UP, b)) {
             T.height = T.height + 10 > 900 ? 900 : T.height + 10;
@@ -5593,7 +5688,7 @@ void model_page(Tool &T, SDL_Window *win) {
     ImVec2 p = ImGui::GetCursorScreenPos(), size(main_w, fmaxf(U(300), avail.y - lower - gap));
     ImDrawList *dl = ImGui::GetWindowDrawList();
     dl->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), PICTURE, U(30));
-    bool joints = !T.rigged && T.model_view == 0 && !T.camera;
+    bool joints = T.model_view == 0 && !T.camera;
     {
         // the views as big as the picture has room for: two side by side (Joints), or one (Preview)
         int h = (int)fminf(U(600), size.y - (joints ? U(130) : U(40))), w = (int)fminf(h * 0.72f, joints ? (size.x - U(60)) / 2 : size.x - U(520));
@@ -5641,8 +5736,8 @@ void model_page(Tool &T, SDL_Window *win) {
         ImGui::SameLine(0, U(10));
         toggle("Play##model", &T.playing, IC_PLAY, nullptr);
     }
-    if (!T.rigged && !T.camera) {
-        // Joints or Preview: a pill, its picked half sliding to it
+    if (!T.camera) {
+        // Joints or Preview: a pill, its picked half sliding to it (Joints for any model: a rigged one's are its rig's till one's moved)
         ImVec2 q(p.x + U(16), p.y + U(16));
         float w = U(104), h = U(38), pad = U(5);
         dl->AddRectFilled(ImVec2(q.x, q.y + U(3)), ImVec2(q.x + 2 * w + 2 * pad, q.y + h + 2 * pad + U(3)), SHADOW, (h + 2 * pad) / 2);
@@ -5755,6 +5850,82 @@ void all_games_page(Tool &T) {
     ImGui::SetCursorScreenPos(ImVec2(origin.x, origin.y + ((PACK_KINDS + cols - 1) / cols) * (th + foot + gap)));
     ImGui::Dummy(ImVec2(0, 0));
     ImGui::EndChild();
+}
+
+// A folder and all in it gone (SDL_RemovePath takes a file or an empty folder); false if any of it stays
+SDL_EnumerationResult SDLCALL remove_in(void *ok, const char *dir, const char *name);
+bool remove_tree(const char *path) {
+    SDL_PathInfo info;
+    bool ok = true;
+
+    if (!SDL_GetPathInfo(path, &info)) {
+        return true;
+    }
+    if (info.type == SDL_PATHTYPE_DIRECTORY) {
+        SDL_EnumerateDirectory(path, remove_in, &ok);
+    }
+    return SDL_RemovePath(path) && ok;
+}
+
+SDL_EnumerationResult SDLCALL remove_in(void *ok, const char *dir, const char *name) {
+    char path[1400];
+    snprintf(path, sizeof(path), "%s%s", dir, name);
+    if (!remove_tree(path)) {
+        *(bool *)ok = false;
+    }
+    return SDL_ENUM_CONTINUE;
+}
+
+// Whether a folder has nothing in it but what's named (or nothing at all)
+struct OnlyCtx {
+    const char *keep;
+    bool only;
+};
+SDL_EnumerationResult SDLCALL only_in(void *c, const char *, const char *name) {
+    OnlyCtx *o = (OnlyCtx *)c;
+    if (o->keep == nullptr || SDL_strcasecmp(name, o->keep) != 0) {
+        o->only = false;
+    }
+    return SDL_ENUM_CONTINUE;
+}
+bool folder_only(const char *path, const char *keep) {
+    OnlyCtx o = { keep, true };
+    SDL_EnumerateDirectory(path, only_in, &o);
+    return o.only;
+}
+
+// A hero deleted, fully: its folder in its mod (heroes/ID), the mod too if nothing else is in it but its mod.json (another hero, or
+// anything else of the mod's, stays), and what the tool kept of it (its preview's models, the folder its preview was made from, its card's
+// photo). Said in the status; false if any of its folder stays
+bool delete_hero(Tool &T, const Found &f) {
+    char path[1400];
+    snprintf(path, sizeof(path), "%s/heroes/%s", f.mod, f.id);
+    bool ok = remove_tree(path);
+    snprintf(path, sizeof(path), "%s/heroes", f.mod);
+    if (ok && folder_only(path, nullptr)) {
+        SDL_RemovePath(path);
+        if (folder_only(f.mod, "mod.json")) {
+            remove_tree(f.mod);
+        }
+    }
+    if (char *pref = pref_path()) {
+        for (int k = 0; k < PACK_KINDS; k++) {
+            for (const char *end : { ".hpv", ".pose", "_ride0.hpv", "_ride1.hpv" }) {
+                snprintf(path, sizeof(path), "%spreview-made/%s_%s%s", pref, f.id, pack_kind_name(k), end);
+                SDL_RemovePath(path);
+            }
+        }
+        snprintf(path, sizeof(path), "%spreviews/%s", pref, f.id);
+        remove_tree(path);
+        snprintf(path, sizeof(path), "%sphotos/%s.png", pref, f.id);
+        SDL_RemovePath(path);
+        SDL_free(pref);
+    }
+    if (SDL_strcmp(T.loaded_mod, f.mod) == 0) {
+        T.loaded_mod[0] = 0;
+    }
+    snprintf(T.status, sizeof(T.status), ok ? "Deleted %s" : "%s wasn't all deleted: is a file of it open?", f.name);
+    return ok;
 }
 
 // A hero's picture on the start screen: its card (the top of it, square), else its face as the tool last made it (its model on foot
@@ -5912,6 +6083,7 @@ void start_screen(Tool &T, SDL_Window *win) {
         ImDrawList *fl = ImGui::GetWindowDrawList();
         ImVec2 p = ImGui::GetCursorScreenPos();
         float rw = ImGui::GetContentRegionAvail().x, rh = U(80);
+        ImGui::SetNextItemAllowOverlap();
         bool hit = ImGui::InvisibleButton("##hero", ImVec2(rw, rh));
         float t = ease_to(ImGui::GetItemID(), ImGui::IsItemHovered() ? 1 : 0, 16);
         ImVec2 a(p.x + t * U(4), p.y), b(p.x + rw, p.y + rh);
@@ -5938,6 +6110,18 @@ void start_screen(Tool &T, SDL_Window *win) {
         ImGui::PopFont();
         fl->AddText(ImVec2(a.x + U(86), a.y + U(46)), MUTED, mod);
         icon(fl, IC_RIGHT, ImVec2(b.x - U(24), a.y + rh / 2), U(20), MUTED);
+        // its trash: deleted, asked first
+        {
+            ImVec2 keep = ImGui::GetCursorScreenPos();
+            float s = U(40);
+            ImGui::SetCursorScreenPos(ImVec2(b.x - U(52) - s, a.y + (rh - s) / 2));
+            if (icon_button("##trash", IC_TRASH, "Delete this hero", RAISED, INK, s, CUE_OPEN)) {
+                Deleting = i;
+                DeleteAsk = true;
+                hit = false;
+            }
+            ImGui::SetCursorScreenPos(keep);
+        }
         if (hit) {
             sound_cue(CUE_OPEN);
             load_pack(T, Founds[i]);
@@ -5947,6 +6131,45 @@ void start_screen(Tool &T, SDL_Window *win) {
     }
     if (NumFound == 0) {
         ImGui::TextColored(V4(MUTED), "None yet: make one on the left");
+    }
+    // a hero's delete, asked first: it can't be undone (opened here, out of the rows' own ids)
+    if (DeleteAsk) {
+        ImGui::OpenPopup("##deletehero");
+        DeleteAsk = false;
+    }
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(U(26), U(22)));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, U(24));
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, V4(CARD));
+    bool asking = ImGui::BeginPopupModal("##deletehero", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar(2);
+    if (asking) {
+        if (Deleting >= 0 && Deleting < NumFound) {
+            const Found &f = Founds[Deleting];
+            ImGui::PushFont(FontTitle);
+            ImGui::Text("Delete %s?", f.name);
+            ImGui::PopFont();
+            ImGui::Spacing();
+            ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + U(420));
+            ImGui::TextColored(V4(MUTED), "Its folder goes for good (%s/heroes/%s), and its mod's if nothing else is in it. This can't be undone.",
+                               short_path(f.mod), f.id);
+            ImGui::PopTextWrapPos();
+            ImGui::Spacing();
+            if (button("Keep it##delete", RAISED, INK, U(130), IC_NONE, CUE_DROP) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+                Deleting = -1;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine(0, U(10));
+            if (button("Delete##delete", CORAL, CORAL_INK, U(130), IC_TRASH, CUE_HIDE)) {
+                delete_hero(T, f);
+                Deleting = -1;
+                find_heroes(T);
+                ImGui::CloseCurrentPopup();
+            }
+        } else {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
     ImGui::EndChild();
     ImGui::PopStyleVar();
@@ -5981,7 +6204,75 @@ void start_screen(Tool &T, SDL_Window *win) {
     ImGui::End();
 }
 
+// A new hero's first question (the user's word, 2026-11-23: "When you import a new hero you need to first choose who to use as a
+// template / based on" and "the model should be resized to that hero"): who it's based on, the eight each with how tall they stand (a
+// bar beside them, the tallest's full); it's made their height (a hero's or its own after, Hero Setup's Height), then Hero Setup
+void base_chooser(Tool &T) {
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(io.DisplaySize);
+    ImGui::Begin("Based on", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar);
+    float w = fminf(U(900), io.DisplaySize.x - U(40)), x = (io.DisplaySize.x - w) / 2, gap = U(16);
+    float tw = (w - 3 * gap) / 4, th = U(150), total = U(96) + 2 * th + gap + U(80);
+    float y = fmaxf(U(30), (io.DisplaySize.y - total) / 2);
+    ImDrawList *dl = ImGui::GetWindowDrawList();
+    ImGui::SetCursorScreenPos(ImVec2(x, y));
+    ImGui::PushFont(FontBig);
+    ImGui::Text("Who is %s based on?", T.name);
+    ImGui::PopFont();
+    ImGui::SetCursorScreenPos(ImVec2(x, y + U(42)));
+    ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + w);
+    ImGui::TextColored(V4(MUTED), "It plays as them: their animations, speed, ride or prop, and their sounds till it has its own. It starts as tall "
+                                  "as they are.");
+    ImGui::PopTextWrapPos();
+    float tallest = 0;
+    for (int h = 0; h < 8; h++) {
+        tallest = fmaxf(tallest, (float)HeroHeights[h]);
+    }
+    for (int h = 0; h < 8; h++) {
+        ImVec2 p(x + (h % 4) * (tw + gap), y + U(96) + (h / 4) * (th + gap));
+        ImGui::SetCursorScreenPos(p);
+        ImGui::PushID(h);
+        bool hit = ImGui::InvisibleButton("##base", ImVec2(tw, th));
+        float t = ease_to(ImGui::GetItemID(), ImGui::IsItemHovered() ? 1 : 0, 16);
+        ImGui::PopID();
+        ImVec2 a(p.x, p.y - t * U(4)), b(p.x + tw, p.y + th - t * U(4));
+        dl->AddRectFilled(ImVec2(a.x, a.y + U(3)), ImVec2(b.x, b.y + U(3)), SHADOW, U(24));
+        dl->AddRectFilled(a, b, mix(CARD, PERI, t), U(24));
+        ImU32 ink = mix(INK, PERI_INK, t), soft = mix(MUTED, PERI_INK, t);
+        ImGui::PushFont(FontTitle);
+        dl->AddText(ImVec2(a.x + U(18), a.y + U(18)), ink, HeroNames[h]);
+        ImGui::PopFont();
+        char says[32];
+        snprintf(says, sizeof(says), "%d tall", HeroHeights[h]);
+        dl->AddText(ImVec2(a.x + U(18), a.y + U(48)), soft, says);
+        // how tall, beside the others: a bar from the tile's foot
+        float bar = (th - U(36)) * HeroHeights[h] / tallest;
+        dl->AddRectFilled(ImVec2(b.x - U(30), b.y - U(18) - bar), ImVec2(b.x - U(18), b.y - U(18)), mix(PERI_LIGHT, PERI_INK, t), U(6));
+        if (hit) {
+            T.template_hero = h;
+            T.height = HeroHeights[h];
+            T.choosing = false;
+            T.dirty = T.unsaved = true;
+            sound_cue(CUE_NAV);
+            snprintf(T.status, sizeof(T.status), "Based on %s, %d tall", HeroNames[h], HeroHeights[h]);
+        }
+    }
+    ImGui::SetCursorScreenPos(ImVec2(x, y + U(96) + 2 * th + gap + U(24)));
+    if (button("Back##chooser", RAISED, INK, 0, IC_BACK, CUE_DROP)) {
+        T.choosing = false;
+        T.home = true;
+        find_heroes(T);
+    }
+    ImGui::SetItemTooltip("Back to your heroes (this one isn't kept)");
+    ImGui::End();
+}
+
 void editor_window(Tool &T, SDL_Window *win) {
+    if (T.choosing) {
+        base_chooser(T);
+        return;
+    }
     // made by itself the first time a game's page is open for a model
     if (T.page != PAGE_MODEL && !T.made_asked && T.maker == nullptr) {
         make_in_game(T);
@@ -6277,6 +6568,35 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         open_model(T, start);
         T.home = T.m == nullptr;
     }
+    /* a test's: HEROTOOL_DELETE=ID deletes that hero, as its trash does (said yes to); HEROTOOL_NEW=MODEL.glb starts a new hero from it, as
+       the start screen does, and HEROTOOL_BASE=HERO answers who it's based on (crash, coco, ...) */
+    if (SDL_getenv("HEROTOOL_DELETE") != nullptr) {
+        find_heroes(T);
+        for (int i = 0; i < NumFound; i++) {
+            if (SDL_strcmp(Founds[i].id, SDL_getenv("HEROTOOL_DELETE")) == 0) {
+                delete_hero(T, Founds[i]);
+                printf("herotool: %s\n", T.status);
+            }
+        }
+        find_heroes(T);
+    }
+    /* (HEROTOOL_ASK_DELETE=ID asks that hero's delete, as its trash does) */
+    if (SDL_getenv("HEROTOOL_ASK_DELETE") != nullptr) {
+        find_heroes(T);
+        for (int i = 0; i < NumFound; i++) {
+            if (SDL_strcmp(Founds[i].id, SDL_getenv("HEROTOOL_ASK_DELETE")) == 0) {
+                Deleting = i, DeleteAsk = true;
+            }
+        }
+    }
+    if (SDL_getenv("HEROTOOL_NEW") != nullptr) {
+        new_hero(T, SDL_getenv("HEROTOOL_NEW"));
+        for (int h = 0; h < 8 && SDL_getenv("HEROTOOL_BASE") != nullptr; h++) {
+            if (SDL_strcasecmp(SDL_getenv("HEROTOOL_BASE"), Heroes[h]) == 0) {
+                T.template_hero = h, T.height = HeroHeights[h], T.choosing = false;
+            }
+        }
+    }
     /* a test's: HEROTOOL_LOAD=ID loads that hero from the mods folder, as the start screen's list does */
     if (SDL_getenv("HEROTOOL_LOAD") != nullptr) {
         find_heroes(T);
@@ -6290,6 +6610,19 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     if (SDL_getenv("HEROTOOL_PAGE") != nullptr && T.m != nullptr) {
         T.page = SDL_atoi(SDL_getenv("HEROTOOL_PAGE"));
         T.kind = T.page >= 0 ? T.page : T.kind;
+    }
+    /* a test's: HEROTOOL_JOINTS=1 shows Joints on Hero Setup; 2 takes its joints as placed by hand too (as a dot dragged), and with
+       HEROTOOL_SAVE_TO=FOLDER (no HEROTOOL_ADJUST) saves it there */
+    if (SDL_getenv("HEROTOOL_JOINTS") != nullptr) {
+        T.model_view = 0;
+        if (SDL_atoi(SDL_getenv("HEROTOOL_JOINTS")) == 2 && T.m != nullptr) {
+            T.rigged = false;
+            reweigh(T);
+            if (SDL_getenv("HEROTOOL_SAVE_TO") != nullptr && SDL_getenv("HEROTOOL_ADJUST") == nullptr) {
+                export_pack(T, false, SDL_getenv("HEROTOOL_SAVE_TO"));
+                printf("herotool: %s\n", T.status);
+            }
+        }
     }
     /* a test's: HEROTOOL_CAMERA=YAW opens the card's camera (on the hero's page) turned so */
     if (SDL_getenv("HEROTOOL_CAMERA") != nullptr && T.m != nullptr) {
@@ -6392,10 +6725,12 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             } else if (e.type == SDL_EVENT_DROP_FILE && e.drop.data != nullptr) {
                 const char *f = e.drop.data;
                 size_t n = strlen(f);
-                if (n > 4 && SDL_strcasecmp(f + n - 4, ".glb") == 0) {
+                if (n > 4 && SDL_strcasecmp(f + n - 4, ".glb") == 0 && T.home) {
+                    new_hero(T, f);
+                } else if (n > 4 && SDL_strcasecmp(f + n - 4, ".glb") == 0) {
+                    // (on a hero's pages: its model another)
                     T.loaded_mod[0] = 0;
                     open_model(T, f);
-                    T.home = T.home && T.m == nullptr;
                 } else if (n > 4 && SDL_strcasecmp(f + n - 4, ".png") == 0) {
                     SDL_strlcpy(T.card, f, sizeof(T.card));
                     T.card_photo = false;
@@ -6417,11 +6752,13 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         if (int what = SDL_GetAtomicInt(&Picked)) {
             SDL_SetAtomicInt(&Picked, 0);
             what--;
-            if (what == PICK_MODEL) {
+            if (what == PICK_MODEL && T.home) {
+                new_hero(T, PickedPath);
+            } else if (what == PICK_MODEL) {
+                // (its Model card's Open...: its model another)
                 SDL_strlcpy(T.model, PickedPath, sizeof(T.model));
                 T.loaded_mod[0] = 0;
                 open_model(T, T.model);
-                T.home = T.m == nullptr;
             } else if (what == PICK_CARD) {
                 SDL_strlcpy(T.card, PickedPath, sizeof(T.card));
                 T.card_photo = false;
@@ -6680,7 +7017,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         lap(PR_GAME);
         if (T.m != nullptr && !T.home && T.page == PAGE_MODEL) {
             // the front and side views at rest, or the third playing the move: as the model's page shows them, only while it's shown
-            if (!T.rigged && T.model_view == 0) {
+            if (T.model_view == 0 && !T.camera) {
                 draw(T.m, T.m->pos, T.front, ren);
                 draw(T.m, T.m->pos, T.side, ren);
             } else {

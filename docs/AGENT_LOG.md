@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: the hero tool's onboarding: a trash on each hero (asked; its folder, its mod if that's all, the tool's leftovers), a new
+  hero asked Who is it based on? first (eight tiles, their heights from PackTemplateHeight) and made that tall, then Hero Setup (Your
+  hero renamed); Joints for any model (a rigged one's moved joint makes it the tool's to weight, its clips kept: export maps its rig
+  still); Height a hero's or its own. A new hero kept the last one's card, sounds and keys before: reset now (`new_hero`).
 - 2026-11-23: the hero tool's no console window on Windows (WIN32_EXECUTABLE; winconsole.c attaches to a terminal it's typed in;
   output to a file or pipe as before) and starts the game in the background there (SDL's background: no console for a console
   game, its end still waited for, its exit code always 0, checked with two small test programs). Not on Linux: SDL's background
