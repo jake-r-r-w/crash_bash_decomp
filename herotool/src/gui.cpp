@@ -4628,16 +4628,19 @@ SDL_EnumerationResult SDLCALL found_hero(void *ctx, const char *dir, const char 
     if (text != nullptr && NumFound < MaxFound) {
         static PackInfo info; // (static: big, its moves adjusted at most PACK_MAX_ADJUSTS)
         char why[256];
+        bool read = pack_info_read((const char *)text, n, &info, why, sizeof(why));
 
-        const char *id = info.id[0] ? info.id : name;
+        // its id, from this hero.json, read first (not the last one's: the user's, 2026-11-23, "i deleted the other bobby thats not in
+        // the game and when i press it he is still in the menu": the frog read as Bobby's copy, its row gone, Bobby's own twice)
+        const char *id = read && info.id[0] ? info.id : name;
         int at = -1;
-        for (int i = 0; i < NumFound; i++) {
+        for (int i = 0; read && i < NumFound; i++) {
             at = SDL_strcmp(Founds[i].id, id) == 0 ? i : at;
         }
-        if (at >= 0 && pack_info_read((const char *)text, n, &info, why, sizeof(why))) {
+        if (at >= 0) {
             // (the game's copy of one the tool has: noted, the tool's still the one opened)
             SDL_strlcpy(fc->tool ? Founds[at].tool_mod : Founds[at].game_mod, mod, sizeof(Founds[at].game_mod));
-        } else if (pack_info_read((const char *)text, n, &info, why, sizeof(why))) {
+        } else if (read) {
             Found &f = Founds[NumFound++];
             SDL_strlcpy(f.mod, mod, sizeof(f.mod));
             SDL_strlcpy(f.tool_mod, fc->tool ? mod : "", sizeof(f.tool_mod));

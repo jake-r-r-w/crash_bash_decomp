@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Fixed the hero list taking each hero for a copy of the one read before it (found_hero read the id before reading
+  its hero.json; broken by making its PackInfo static): the frog was folded into Bobby, who showed twice, and deleting the phantom did nothing.
 - 2026-11-23: Bobby's ears flop in every game's jumps (704 keys, bobby-adjust.json: on foot, the dino, the keg and mallet games,
   the falls and the dolphin's leap); PACK_MAX_ADJUSTS 256 to 1024 (the tool's PackInfo copies static).
 - 2026-11-23: Bobby's ears flop on the pogo stick: 160 keys (port/mods/bobby-adjust.json, timed to the bounce from the pose dump),
