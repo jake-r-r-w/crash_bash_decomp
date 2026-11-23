@@ -559,7 +559,7 @@ int platform_idle(void) {
 int main(int argc, char **argv) {
     const char *Image = NULL;
     const char *dump_files_to = NULL;
-    const char *dump_hero = NULL, *dump_hero_to = NULL;
+    const char *dump_hero = NULL, *dump_hero_to = NULL, *add_hero = NULL;
     int antialias = 0, smooth = 0, widescreen = 0, upscale = 0, level_flags = 0, sharp_icons = 0, buttons_apart = 0;
     int i;
     int window_w = 0, window_h = 0, render_w = -1, render_h = -1, cheat_menu = 0, boss_beat = 0, bot = 0, cheats = 0, aim = 0, stall = 0;
@@ -810,6 +810,9 @@ int main(int argc, char **argv) {
             texpack_dump_to(argv[++i]);
         } else if (strcmp(argv[i], "--dump-files") == 0 && i + 1 < argc) {
             dump_files_to = argv[++i];
+        } else if (strcmp(argv[i], "--add-hero") == 0 && i + 1 < argc) {
+            /* the hero tool's Add to game (docs/HERO_PACKS.md, The hero tool): a mod it's just put in the mods folder switched on */
+            add_hero = argv[++i];
         } else if (strcmp(argv[i], "--dump-hero") == 0 && i + 2 < argc) {
             /* the hero tool's preview (docs/HERO_PACKS.md, The preview): a pack's hero made, what's made written out, and no game */
             dump_hero = argv[++i];
@@ -911,6 +914,28 @@ int main(int argc, char **argv) {
         }
     }
     crashlog_system();
+    /* --add-hero MOD, the hero tool's Add to game: that mod on in the player's settings (a hero mod that's on puts its heroes in the
+       select), kept, and no game. A mod the game hasn't seen is on anyway when it first finds it; this is for one turned off before */
+    if (add_hero != NULL) {
+        Settings *s = settings();
+        int known = 0;
+
+        for (i = 0; i < s->num_mods; i++) {
+            if (SDL_strcasecmp(s->mods[i].id, add_hero) == 0) {
+                s->mods[i].on = 1;
+                known = 1;
+            }
+        }
+        if (!known && s->num_mods < SETTINGS_MODS) {
+            SDL_strlcpy(s->mods[s->num_mods].id, add_hero, sizeof(s->mods[0].id));
+            s->mods[s->num_mods++].on = 1;
+        }
+        if (!testing) {
+            settings_save();
+        }
+        printf("add-hero: %s on\n", add_hero);
+        return 0;
+    }
     /* --prepare, RecompLauncher's setup step (docs/PORT.md, RecompLauncher): the game's data from --game's disc image, where the game's
        own first run puts it, with how far it's got in "progress" lines, and no window. 0 when it's done. */
     if (prepare) {

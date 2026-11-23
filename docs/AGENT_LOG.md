@@ -667,6 +667,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: the hero tool's Save keeps the hero in its own folder (heroes/ in its pref folder), nothing beside the model (no
+  markers file); Add to game copies the hero into the game's mods folder and runs `crashbash --add-hero MOD` (new: switches the mod
+  on in the player's settings and quits). The start screen lists both folders with In the game / Not in the game; delete takes both.
+  There's no custom heroes switch any more (a hero mod that's on is enough). Port builds copy the repo's Bobby over the game's mods/bobby.
 - 2026-11-23: Hero Setup's Straighten renamed Snap (the user's word).
 - 2026-11-23: Straighten did nothing from its menu: the left click on the menu also reached the view under it, which let go of the
   joints picked and began a box first. The views take a click only when they're hovered now. A lesson: test a menu by clicking it

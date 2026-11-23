@@ -277,11 +277,12 @@ said on its screens, the user's word, 2026-11-22). With no model it starts on it
 **Create a new hero** (Browse, the system's file chooser, or a `.glb` dropped on it; no path to type), with **What the model needs**
 under it (the game's limits: a binary glTF 2.0 with its textures PNGs inside it, 8 at most, 1365 triangles and 4096 vertices,
 standing and facing +Z, rigged with Mixamo, VRM, Blender or Unity names or not rigged, its textures sharing 256 x 256 texels), or
-**Edit a hero**, a list of every hero in the mods folder's unzipped mods (`heroes/<id>/hero.json`), each with its picture: its card's
+**Edit a hero**, a list of every hero in the tool's own folder and the game's mods folder's unzipped mods (`heroes/<id>/hero.json`), one
+row a hero (the tool's copy opened if it has one), each saying whether it's **In the game** or **Not in the game**, and with its picture: its card's
 top, else its face as the tool last made it (its model on foot from `preview-made/ID_foot.hpv` in the tool's folder, the top of it as
 its face share says), else its first letter (`found_picture`), and a trash (the user's word, 2026-11-23: "a trash icon on your heros so
-you can delete them fully"): asked first, it deletes the hero's folder (`heroes/ID`), its mod too if nothing but its mod.json is left
-in it (another hero of the mod's, or anything else, stays), and what the tool kept of it (its preview's models, the folder they're
+you can delete them fully"): asked first, it deletes the hero's folder (`heroes/ID`) in each place it is, the tool's and the game's, each
+mod too if nothing but its mod.json is left in it (another hero of the mod's, or anything else, stays), and what the tool kept of it (its preview's models, the folder they're
 made from, its card's photo; `delete_hero`; `HEROTOOL_DELETE=ID` does it for a test, `HEROTOOL_ASK_DELETE=ID` asks). The trash is red as
 the mouse is on it, as is the question's Delete, and the question is the hero's name and the full path going, no more (the user's
 word, 2026-11-23: "just put the full path its going to delete remove the words keep it simple"): its whole mod's folder when the hero's
@@ -299,14 +300,22 @@ card and sounds from its files; **Save** writes it back into that mod. `< Start 
 loads a hero, for a test). Drop a `.glb` on it (or a `.png` for its card, a `.wav`
 for the sound job picked, a markers `.json`). Its front and side views show the model at rest with its markers, to drag onto its
 joints (its left's mirror its right's, a bone's end is the next one's start, and its weights are worked out again on letting go);
-the third plays the move picked, turning. A model with no markers beside it (`MODEL.glb.markers.json`, saved there on each
-export) starts from a guess (`kit_guess_markers`: a standing humanoid's proportions in its box, arms out if it's as wide as a
+the third plays the move picked, turning. A model with no markers beside it (`MODEL.glb.markers.json`, read if it's there; the tool
+writes nothing beside a model: the user's word, 2026-11-23, "I think it should just be all self contained") starts from a guess (`kit_guess_markers`: a standing humanoid's proportions in its box, arms out if it's as wide as a
 T-pose; Jaw, Ears and Tail add theirs). A rigged model's bones are its own, its joints its rig's (Joints shows them; one moved, the
 tool weights it to the joints instead, its own clips kept as its rig still maps them, `export_pack`; no markers file in a pack's folder). Then its name, height, who it's based on, card,
 sounds and the mod's author, and **Save** (the mod's name is the hero's: the user's word, 2026-11-22, "The mod name should always be
-the same as the custom hero name") writes the mod to the mods folder (beside the tool by default, the game's if it's
-there), or **Preview in GAME** saves and starts the game too, straight into the game picked (no launcher: `--no-launcher` with
-`--mode`; the user's word, 2026-11-22, "open the mini game directly rather than needing the user to click play"), with it as player 1
+the same as the custom hero name") writes the mod, all of it, into the tool's own folder (`heroes/` in its
+folder, AppData's on Windows; `heroes_home`): `MOD/mod.json` and `MOD/heroes/ID/`, MOD the mod it was opened from's name, else its id.
+**Add to game** (the user's word, 2026-11-23: Save keeps it in the tool, a button installs it) saves it, puts its hero's folder in the
+game's mods folder (MOD/heroes/ID in place of what was there, kept aside till the new one's in; the mod's mod.json if it's new there;
+another hero of the mod's stays), and asks the game to switch the mod on: `crashbash --add-hero MOD` (port/main.c) turns it on in the
+player's own settings (wherever folders.ini has them) and quits; a hero mod that's on puts its heroes in the select (there's no switch
+of their own). A hero only in the game, opened and saved, is copied into the tool's folder. `HEROTOOL_ADD=1` adds the hero open, for a
+test (with `CRASHBASH_USER_FOLDER` the game's settings a test's own). Checked in scratch folders: a new hero added (its mod in the
+tool's folder and the game's, `mod=on` in the game's settings, nothing beside its model), a hero only in the game added back (the tool's
+copy made, the game's replaced), and one deleted from both. Or **Preview in GAME** saves and starts the game too, straight into the game picked (no launcher: `--no-launcher` with
+`--mode`; the user's word, 2026-11-22, "open the mini game directly rather than needing the user to click play"), from the tool's own copy (it needn't be added to the game), with it as player 1
 and the computer playing everyone (the game's TESTING demo). `HEROTOOL_SHOT=FILE.png`
 saves a picture of it and closes it, and `HEROTOOL_EXPORT=FOLDER` exports as it opens, for tests.
 

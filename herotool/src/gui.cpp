@@ -404,6 +404,9 @@ struct Tool {
     bool bones = true, help = false, unsaved = false;
     // a new hero's first question being asked: who it's based on (base_chooser)
     bool choosing = false;
+    // the game's mod holding the hero open, if it's in the game (its mods folder: Add to game puts it there); its own copy's the tool's
+    // (loaded_mod, saved in the tool's folder, heroes_home)
+    char game_mod[1100] = "";
     // the strip of games under the top bar shown (the user's word, 2026-11-22: "add a button to hide the top bar as a toggle"; kept for
     // next time, strip.txt beside the sounds')
     bool strip_shown = true;
@@ -1085,6 +1088,10 @@ SDL_Process *start_game(const char *const *args) {
 #endif
 }
 
+bool heroes_home(char *out, size_t size);
+const char *short_path(const char *path);
+bool remove_tree(const char *path);
+
 bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     char why[512], markers[1100];
     KitModel *t = new KitModel();
@@ -1095,8 +1102,12 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
         delete t;
         return false;
     }
-    if (out == nullptr) {
-        out = T.out;
+    // (Save: in the tool's own folder, the mod it came from's name kept, else its id; a test or the preview's folder: by its id there)
+    char home[1100];
+    bool saving = out == nullptr;
+    if (saving) {
+        heroes_home(home, sizeof(home));
+        out = home;
     }
     if (!kit_read(T.model, t, why, sizeof(why))) {
         snprintf(T.status, sizeof(T.status), "%s", why);
@@ -1115,11 +1126,9 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
         memcpy(t->bones, T.m->bones, sizeof(t->bones));
         t->arm_raise = T.m->arm_raise;
         kit_weigh(t);
-        // (beside the model it's made from; a pack's own hero.glb keeps them as its skeleton)
-        if (T.loaded_mod[0] == 0) {
-            snprintf(markers, sizeof(markers), "%s.markers.json", T.model);
-            kit_save_markers(T.m, markers);
-        }
+        // (its joints aren't written beside the model it's made from: all it is is in its pack, its hero.glb's skeleton; the user's word,
+        // 2026-11-23, "when we save we seem to generate a file next to the original model. I think it should just be all self contained")
+        (void)markers;
     }
     t->arm_raise = T.m->arm_raise;
     p.id = T.id;
@@ -1189,8 +1198,8 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     }
     char folder[1100];
     // a hero loaded from a mod goes back into it; a new one is a mod of its own, named by its id
-    if (T.loaded_mod[0] != 0 && out == T.out) {
-        SDL_strlcpy(folder, T.loaded_mod, sizeof(folder));
+    if (saving) {
+        snprintf(folder, sizeof(folder), "%s/%s", out, T.loaded_mod[0] != 0 ? short_path(T.loaded_mod) : T.id);
     } else {
         snprintf(folder, sizeof(folder), "%s/%s", out, T.id);
     }
@@ -1201,13 +1210,18 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
         ok = true;
         T.unsaved = false;
         snprintf(T.status, sizeof(T.status), "Saved to %s", folder);
+        // (the tool's copy is the one it's opened from now)
+        if (saving) {
+            SDL_strlcpy(T.loaded_mod, folder, sizeof(T.loaded_mod));
+        }
         if (test) {
             char mode[16];
             snprintf(mode, sizeof(mode), "%d", Modes[T.mode].mode);
             // (straight into the game, its launcher skipped: the user's word, 2026-11-22, "open the mini game directly rather than
             // needing the user to click play")
-            const char *args[] = { T.game, "--mods-dir", T.out, "--mod", T.id, "--extra-hero", "0", T.id, "--mode", mode, "--skip-intro",
-                                   "--skip-loading", "--no-launcher", nullptr };
+            // (the tool's own copy, just saved: it needn't be in the game to be seen in it)
+            const char *args[] = { T.game, "--mods-dir", out, "--mod", short_path(folder), "--extra-hero", "0", T.id, "--mode", mode,
+                                   "--skip-intro", "--skip-loading", "--no-launcher", nullptr };
             SDL_Process *proc = start_game(args);
 
             if (proc == nullptr) {
@@ -1220,6 +1234,99 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     kit_free(t);
     delete t;
     return ok;
+}
+
+// A folder and all in it copied to another (made); false if any of it wasn't
+SDL_EnumerationResult SDLCALL copy_in(void *to, const char *dir, const char *name);
+bool copy_tree(const char *from, const char *to) {
+    SDL_PathInfo info;
+    if (!SDL_GetPathInfo(from, &info)) {
+        return false;
+    }
+    if (info.type != SDL_PATHTYPE_DIRECTORY) {
+        return SDL_CopyFile(from, to);
+    }
+    SDL_CreateDirectory(to);
+    struct Pair {
+        const char *to;
+        bool ok;
+    } pr = { to, true };
+    SDL_EnumerateDirectory(from, copy_in, &pr);
+    return pr.ok;
+}
+
+SDL_EnumerationResult SDLCALL copy_in(void *ctx, const char *dir, const char *name) {
+    struct Pair {
+        const char *to;
+        bool ok;
+    } *pr = (Pair *)ctx;
+    char a[1400], b[1400];
+    snprintf(a, sizeof(a), "%s%s", dir, name);
+    snprintf(b, sizeof(b), "%s/%s", pr->to, name);
+    if (!copy_tree(a, b)) {
+        pr->ok = false;
+    }
+    return SDL_ENUM_CONTINUE;
+}
+
+// Add to game (the user's word, 2026-11-23: Save keeps it "in the tool", and a button "installs"): saved first, then its hero's folder put
+// in the game's mods folder (MOD/heroes/ID in place of what was there, and the mod's mod.json if it's new there: another hero of the mod's
+// there stays), and the game asked to switch the mod on (crashbash --add-hero MOD: a hero mod that's on puts its heroes in the select).
+// Said in the status
+bool add_to_game(Tool &T) {
+    if (!export_pack(T, false)) {
+        return false;
+    }
+    char mod[128], from[1400], dest[1100], to[1400], path[1400], back[1400];
+    SDL_strlcpy(mod, short_path(T.loaded_mod), sizeof(mod));
+    if (T.game_mod[0] != 0) {
+        SDL_strlcpy(dest, T.game_mod, sizeof(dest));
+    } else {
+        snprintf(dest, sizeof(dest), "%s/%s", T.out, mod);
+    }
+    SDL_CreateDirectory(T.out);
+    SDL_CreateDirectory(dest);
+    snprintf(path, sizeof(path), "%s/heroes", dest);
+    SDL_CreateDirectory(path);
+    snprintf(from, sizeof(from), "%s/heroes/%s", T.loaded_mod, T.id);
+    snprintf(to, sizeof(to), "%s/heroes/%s", dest, T.id);
+    // (the game's copy kept aside till the new one's in, then let go of)
+    snprintf(back, sizeof(back), "%s.was", to);
+    remove_tree(back);
+    SDL_PathInfo pi;
+    bool had = SDL_GetPathInfo(to, &pi);
+    if (had && !SDL_RenamePath(to, back)) {
+        snprintf(T.status, sizeof(T.status), "It isn't in the game: %s couldn't be changed (is the game open?)", to);
+        return false;
+    }
+    if (!copy_tree(from, to)) {
+        remove_tree(to);
+        if (had) {
+            SDL_RenamePath(back, to);
+        }
+        snprintf(T.status, sizeof(T.status), "It isn't in the game: it couldn't be copied to %s", to);
+        return false;
+    }
+    remove_tree(back);
+    snprintf(path, sizeof(path), "%s/mod.json", dest);
+    if (!SDL_GetPathInfo(path, &pi)) {
+        snprintf(from, sizeof(from), "%s/mod.json", T.loaded_mod);
+        SDL_CopyFile(from, path);
+    }
+    SDL_strlcpy(T.game_mod, dest, sizeof(T.game_mod));
+    // the game switches it on in its own settings (where they are is its to know), and says so
+    const char *args[] = { T.game, "--add-hero", mod, nullptr };
+    SDL_Process *proc = start_game(args);
+    if (proc == nullptr) {
+        snprintf(T.status, sizeof(T.status), "In the game's mods folder, but the game didn't start to switch it on (%s): is it at %s?", SDL_GetError(),
+                 T.game);
+        return false;
+    }
+    int code = 0;
+    SDL_WaitProcess(proc, true, &code);
+    SDL_DestroyProcess(proc);
+    snprintf(T.status, sizeof(T.status), "In the game: %s", to);
+    return true;
 }
 
 // --- what the game makes of it: exported to the tool's own folder, the game started to make it and write it out (--dump-hero), and
@@ -1315,6 +1422,7 @@ void joint_redo_step(Tool &T) {
 // (base_chooser: it starts their height). False if the model didn't open (why's the status)
 bool new_hero(Tool &T, const char *path) {
     T.loaded_mod[0] = 0;
+    T.game_mod[0] = 0;
     if (!open_model(T, path)) {
         return false;
     }
@@ -1354,6 +1462,20 @@ char *pref_path() {
         return SDL_strdup(test);
     }
     return SDL_GetPrefPath("CrashBashPC", "herotool");
+}
+
+// The tool's own folder for its heroes (the user's word, 2026-11-23: Save "in the tool", Add to game puts it in the game): heroes/ in its
+// folder (pref_path), each a mod (MOD/mod.json, MOD/heroes/ID/...), made if it isn't there; false if there's no such place
+bool heroes_home(char *out, size_t size) {
+    char *pref = pref_path();
+    if (pref == nullptr) {
+        out[0] = 0;
+        return false;
+    }
+    snprintf(out, size, "%sheroes", pref);
+    SDL_free(pref);
+    SDL_CreateDirectory(out);
+    return true;
 }
 
 void make_in_game(Tool &T) {
@@ -4369,13 +4491,15 @@ void path_field(const char *label, char *buf, size_t size) {
 
 // The heroes in the mods folder's mod folders (heroes/<id>/hero.json): a zipped mod's aren't listed, as it's changed by unzipping it
 struct Found {
-    char mod[1100], id[64], name[64];
+    // the copy opened (the tool's if it has one, else the game's), and each place's mod holding it ("" not there)
+    char mod[1100], id[64], name[64], tool_mod[1100], game_mod[1100];
     // its picture (found_picture: its card, or its face as the tool last made it; nullptr none) and the part of it shown, looked for once
     float face_head;
     SDL_Texture *pic;
     ImVec2 uv0, uv1;
     bool looked;
 };
+bool heroes_home(char *out, size_t size);
 const int MaxFound = 64;
 Found Founds[MaxFound];
 int NumFound = 0;
@@ -4384,10 +4508,12 @@ bool DeleteAsk = false;
 
 struct FindCtx {
     const char *mod;
+    bool tool; // in the tool's own folder, else the game's mods folder
 };
 
 SDL_EnumerationResult SDLCALL found_hero(void *ctx, const char *dir, const char *name) {
-    const char *mod = (const char *)ctx;
+    const FindCtx *fc = (const FindCtx *)ctx;
+    const char *mod = fc->mod;
     char path[1400];
     size_t n = 0;
 
@@ -4397,9 +4523,19 @@ SDL_EnumerationResult SDLCALL found_hero(void *ctx, const char *dir, const char 
         PackInfo info;
         char why[256];
 
-        if (pack_info_read((const char *)text, n, &info, why, sizeof(why))) {
+        const char *id = info.id[0] ? info.id : name;
+        int at = -1;
+        for (int i = 0; i < NumFound; i++) {
+            at = SDL_strcmp(Founds[i].id, id) == 0 ? i : at;
+        }
+        if (at >= 0 && pack_info_read((const char *)text, n, &info, why, sizeof(why))) {
+            // (the game's copy of one the tool has: noted, the tool's still the one opened)
+            SDL_strlcpy(fc->tool ? Founds[at].tool_mod : Founds[at].game_mod, mod, sizeof(Founds[at].game_mod));
+        } else if (pack_info_read((const char *)text, n, &info, why, sizeof(why))) {
             Found &f = Founds[NumFound++];
             SDL_strlcpy(f.mod, mod, sizeof(f.mod));
+            SDL_strlcpy(f.tool_mod, fc->tool ? mod : "", sizeof(f.tool_mod));
+            SDL_strlcpy(f.game_mod, fc->tool ? "" : mod, sizeof(f.game_mod));
             SDL_strlcpy(f.id, info.id[0] ? info.id : name, sizeof(f.id));
             SDL_strlcpy(f.name, info.name[0] ? info.name : name, sizeof(f.name));
             f.face_head = info.face_head;
@@ -4411,14 +4547,15 @@ SDL_EnumerationResult SDLCALL found_hero(void *ctx, const char *dir, const char 
     return SDL_ENUM_CONTINUE;
 }
 
-SDL_EnumerationResult SDLCALL found_mod(void *, const char *dir, const char *name) {
+SDL_EnumerationResult SDLCALL found_mod(void *where, const char *dir, const char *name) {
     char mod[1100], heroes[1200];
     SDL_PathInfo info;
 
     snprintf(mod, sizeof(mod), "%s%s", dir, name);
     snprintf(heroes, sizeof(heroes), "%s/heroes", mod);
     if (SDL_GetPathInfo(heroes, &info) && info.type == SDL_PATHTYPE_DIRECTORY) {
-        SDL_EnumerateDirectory(heroes, found_hero, mod);
+        FindCtx fc = { mod, where != nullptr };
+        SDL_EnumerateDirectory(heroes, found_hero, &fc);
     }
     return SDL_ENUM_CONTINUE;
 }
@@ -4431,6 +4568,12 @@ void find_heroes(const Tool &T) {
         Founds[i].pic = nullptr;
     }
     NumFound = 0;
+    // the tool's own first (the copy opened), then the game's
+    char home[1100];
+    static bool tool = true;
+    if (heroes_home(home, sizeof(home))) {
+        SDL_EnumerateDirectory(home, found_mod, &tool);
+    }
     SDL_EnumerateDirectory(T.out, found_mod, nullptr);
 }
 
@@ -4504,6 +4647,7 @@ void load_pack(Tool &T, const Found &f) {
         SDL_strlcpy(T.voice[j], SDL_GetPathInfo(path, &pi) ? path : "", sizeof(T.voice[0]));
     }
     SDL_strlcpy(T.loaded_mod, f.mod, sizeof(T.loaded_mod));
+    SDL_strlcpy(T.game_mod, f.game_mod, sizeof(T.game_mod));
     T.home = false;
     snprintf(T.status, sizeof(T.status), "Editing %s (%s)", T.name, short_path(f.mod));
 }
@@ -4727,7 +4871,7 @@ void top_bar(Tool &T) {
     }
     char play[64];
     snprintf(play, sizeof(play), "Preview in %s##play", Modes[T.mode].name);
-    float rw = 3 * (bh + sp) + button_w(play, true) + U(36) + sp + U(100);
+    float rw = 3 * (bh + sp) + button_w(play, true) + U(36) + sp + button_w("Add to game", true) + sp + U(100);
     ImGui::SameLine(ImGui::GetWindowWidth() - st.WindowPadding.x - rw);
     mid(bh);
     // (on Hero Setup its joints', else its keys')
@@ -4754,7 +4898,7 @@ void top_bar(Tool &T) {
     if (button(play, TINT_MINT, MINT_LIGHT, 0, IC_GAMEPAD, CUE_SAVE)) {
         export_pack(T, true);
     }
-    ImGui::SetItemTooltip("Save, then see it in %s", Modes[T.mode].name);
+    ImGui::SetItemTooltip("Save, then see it in %s (it needn't be added to the game)", Modes[T.mode].name);
     ImGui::SameLine(0, U(2));
     if (button("##modes", TINT_MINT, MINT_LIGHT, U(36), IC_DOWN, CUE_OPEN)) {
         ImGui::OpenPopup("##playin");
@@ -4769,10 +4913,19 @@ void top_bar(Tool &T) {
         ImGui::EndPopup();
     }
     ImGui::SameLine(0, sp);
+    if (button("Add to game", TINT_PERI, PERI_LIGHT, 0, IC_CHECK, CUE_SAVE)) {
+        add_to_game(T);
+    }
+    ImGui::SetItemTooltip("Saves it, puts it in the game's mods folder (%s) and switches it on there", T.out);
+    ImGui::SameLine(0, sp);
     if (button("Save", CORAL, CORAL_INK, U(100), IC_NONE, CUE_SAVE)) {
         export_pack(T, false);
     }
-    ImGui::SetItemTooltip("%s", T.loaded_mod[0] ? T.loaded_mod : T.out);
+    {
+        char home[1100];
+        heroes_home(home, sizeof(home));
+        ImGui::SetItemTooltip("Saves it in the tool's own folder (%s); Add to game puts it in the game", T.loaded_mod[0] ? T.loaded_mod : home);
+    }
     ImGui::SetCursorPosY(top + bh + U(10));
 }
 
@@ -6031,7 +6184,13 @@ void mod_card(Tool &T) {
     ImGui::PushStyleColor(ImGuiCol_Text, V4(MUTED));
     if (ImGui::TreeNode("Folders")) {
         ImGui::PopStyleColor();
-        ImGui::TextColored(V4(MUTED), "Mods folder");
+        char home[1100];
+        heroes_home(home, sizeof(home));
+        ImGui::TextColored(V4(MUTED), "Its own (Save)");
+        ImGui::PushTextWrapPos(0);
+        ImGui::TextUnformatted(home);
+        ImGui::PopTextWrapPos();
+        ImGui::TextColored(V4(MUTED), "The game's mods folder (Add to game)");
         path_field("##out", T.out, sizeof(T.out));
         ImGui::TextColored(V4(MUTED), "The game");
         path_field("##game", T.game, sizeof(T.game));
@@ -6418,14 +6577,14 @@ SDL_EnumerationResult SDLCALL names_in(void *v, const char *, const char *name) 
 
 // Whether a hero's delete takes its whole mod: nothing in its heroes folder but it, nor in its mod but that and its mod.json (as
 // delete_hero does it)
-bool mod_goes(const Found &f) {
+bool mod_goes(const char *mod_path, const char *id) {
     std::vector<std::string> heroes, mod;
     char path[1400];
-    snprintf(path, sizeof(path), "%s/heroes", f.mod);
+    snprintf(path, sizeof(path), "%s/heroes", mod_path);
     SDL_EnumerateDirectory(path, names_in, &heroes);
-    SDL_EnumerateDirectory(f.mod, names_in, &mod);
+    SDL_EnumerateDirectory(mod_path, names_in, &mod);
     for (auto &n : heroes) {
-        if (SDL_strcmp(n.c_str(), f.id) != 0) {
+        if (SDL_strcmp(n.c_str(), id) != 0) {
             return false;
         }
     }
@@ -6442,13 +6601,21 @@ bool mod_goes(const Found &f) {
 // photo). Said in the status; false if any of its folder stays
 bool delete_hero(Tool &T, const Found &f) {
     char path[1400];
-    snprintf(path, sizeof(path), "%s/heroes/%s", f.mod, f.id);
-    bool ok = remove_tree(path);
-    snprintf(path, sizeof(path), "%s/heroes", f.mod);
-    if (ok && folder_only(path, nullptr)) {
-        SDL_RemovePath(path);
-        if (folder_only(f.mod, "mod.json")) {
-            remove_tree(f.mod);
+    bool ok = true;
+    // (each copy: the tool's and the game's)
+    for (const char *mod : { f.tool_mod, f.game_mod }) {
+        if (mod[0] == 0) {
+            continue;
+        }
+        snprintf(path, sizeof(path), "%s/heroes/%s", mod, f.id);
+        bool gone = remove_tree(path);
+        ok = ok && gone;
+        snprintf(path, sizeof(path), "%s/heroes", mod);
+        if (gone && folder_only(path, nullptr)) {
+            SDL_RemovePath(path);
+            if (folder_only(mod, "mod.json")) {
+                remove_tree(mod);
+            }
         }
     }
     if (char *pref = pref_path()) {
@@ -6464,8 +6631,9 @@ bool delete_hero(Tool &T, const Found &f) {
         SDL_RemovePath(path);
         SDL_free(pref);
     }
-    if (SDL_strcmp(T.loaded_mod, f.mod) == 0) {
+    if (SDL_strcmp(T.loaded_mod, f.tool_mod) == 0 || SDL_strcmp(T.loaded_mod, f.game_mod) == 0) {
         T.loaded_mod[0] = 0;
+        T.game_mod[0] = 0;
     }
     snprintf(T.status, sizeof(T.status), ok ? "Deleted %s" : "%s wasn't all deleted: is a file of it open?", f.name);
     return ok;
@@ -6651,7 +6819,16 @@ void start_screen(Tool &T, SDL_Window *win) {
         ImGui::PushFont(FontTitle);
         fl->AddText(ImVec2(a.x + U(86), a.y + U(16)), INK, Founds[i].name);
         ImGui::PopFont();
-        fl->AddText(ImVec2(a.x + U(86), a.y + U(46)), MUTED, mod);
+        {
+            // in the game, or the tool's only
+            bool in_game = Founds[i].game_mod[0] != 0;
+            ImGui::PushFont(FontSmall);
+            const char *says = in_game ? "In the game" : "Not in the game";
+            fl->AddCircleFilled(ImVec2(a.x + U(90), a.y + U(55)), U(3.5f), in_game ? MINT : DIM);
+            fl->AddText(ImVec2(a.x + U(100), a.y + U(55) - ImGui::GetTextLineHeight() / 2), in_game ? MINT_LIGHT : DIM, says);
+            ImGui::PopFont();
+            (void)mod;
+        }
         icon(fl, IC_RIGHT, ImVec2(b.x - U(24), a.y + rh / 2), U(20), MUTED);
         // its trash: deleted, asked first
         {
@@ -6699,18 +6876,24 @@ void start_screen(Tool &T, SDL_Window *win) {
             ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + U(560));
             // (the full path going: its mod's folder if this hero's all there is in it, else its own; no more words, the user's word,
             // 2026-11-23: "just put the full path its going to delete remove the words keep it simple")
-            char going[1400];
-            if (mod_goes(f)) {
-                snprintf(going, sizeof(going), "%s", f.mod);
-            } else {
-                snprintf(going, sizeof(going), "%s/heroes/%s", f.mod, f.id);
-            }
+            // (each copy going, the tool's and the game's)
+            for (const char *mod : { f.tool_mod, f.game_mod }) {
+                if (mod[0] == 0) {
+                    continue;
+                }
+                char going[1400];
+                if (mod_goes(mod, f.id)) {
+                    snprintf(going, sizeof(going), "%s", mod);
+                } else {
+                    snprintf(going, sizeof(going), "%s/heroes/%s", mod, f.id);
+                }
 #ifdef _WIN32
-            for (char *c = going; *c != 0; c++) {
-                *c = *c == '/' ? '\\' : *c; // (one way round on Windows)
-            }
+                for (char *c = going; *c != 0; c++) {
+                    *c = *c == '/' ? '\\' : *c; // (one way round on Windows)
+                }
 #endif
-            ImGui::TextColored(V4(MUTED), "%s", going);
+                ImGui::TextColored(V4(MUTED), "%s", going);
+            }
             ImGui::PopTextWrapPos();
             ImGui::Spacing();
             if (button("Keep it##delete", RAISED, INK, U(130), IC_NONE, CUE_DROP) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
@@ -6741,8 +6924,8 @@ void start_screen(Tool &T, SDL_Window *win) {
         ImVec2 p(x, y);
         dl->AddRectFilled(p, ImVec2(p.x + w, p.y + bh), CARD, U(22));
         icon(dl, IC_FOLDER, ImVec2(p.x + U(28), p.y + bh / 2), U(20), MUTED);
-        dl->AddText(ImVec2(p.x + U(48), p.y + (bh - ImGui::GetTextLineHeight()) / 2), MUTED, "Mods folder");
-        float lw = U(48) + ImGui::CalcTextSize("Mods folder").x + U(14);
+        dl->AddText(ImVec2(p.x + U(48), p.y + (bh - ImGui::GetTextLineHeight()) / 2), MUTED, "The game's mods folder");
+        float lw = U(48) + ImGui::CalcTextSize("The game's mods folder").x + U(14);
         ImGui::SetCursorScreenPos(ImVec2(p.x + lw, p.y + (bh - ImGui::GetFontSize() - U(16)) / 2));
         ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(DEEP));
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
@@ -7646,6 +7829,13 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             dio.AddMousePosEvent(d[0] + (d[2] - d[0]) * t, d[1] + (d[3] - d[1]) * t);
             dio.AddMouseButtonEvent(d[5] != 0 ? 1 : 0, st >= 2 && st <= 12);
             dio.AddKeyEvent(ImGuiMod_Shift, d[4] != 0 && st >= 1 && st <= 13);
+        }
+        /* a test's: HEROTOOL_ADD=1 adds the hero open to the game, as its button does, once it's open */
+        static bool added = false;
+        if (!added && SDL_getenv("HEROTOOL_ADD") != nullptr && T.m != nullptr && !T.home && !T.choosing) {
+            added = true;
+            bool did = add_to_game(T);
+            printf("herotool: add to game %s: %s\n", did ? "done" : "not done", T.status);
         }
         /* a test's: HEROTOOL_STRAIGHTEN=VIEW straightens Hero Setup's joints picked onto the grid in that view (0 front, 1 side), or "line"
            lines them up between the ends, once its test drag's let go (a box round them) */
