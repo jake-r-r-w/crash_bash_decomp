@@ -37,6 +37,14 @@ static Controller Slots[MAX_PADS];
 static int KeyPressed = -1, ButtonPressed = -1;
 static int UsingPad = -1; /* the last press was on a controller (1) or the keyboard (0), or there's been none (-1) */
 static bool PretendKeys[SDL_SCANCODE_COUNT];
+/* Esc pressed in a test run, TESTING on the screen (a --mode game, as the hero tool's Preview starts, or a boss or Adventure test): it
+   closes it as the window's close does, the next time the events are read (the user's word, 2026-11-23: "is it possible to map esc key
+   to close the test down"); a pretend Esc (--key-press N ESCAPE) too, for a test */
+static int EscClosing;
+
+static int esc_closes(void) {
+    return settings()->testing || settings()->test_aim || settings()->test_adventure;
+}
 /* What player 1 last pressed with, for the button prompts (prompts.h): PROMPT_DEVICE_, or -1 for nothing yet. A mouse moved this far, in
    the window's pixels, counts too, but not a nudge */
 static int P1Device = -1;
@@ -790,6 +798,8 @@ int host_poll(void) {
             if (e.key.key == SDLK_RETURN && (e.key.mod & SDL_KMOD_ALT) && !e.key.repeat) {
                 settings()->fullscreen = !Fullscreen;
                 settings_apply();
+            } else if (e.key.scancode == SDL_SCANCODE_ESCAPE && !e.key.repeat && esc_closes()) {
+                EscClosing = 1;
             } else if (!e.key.repeat) {
                 KeyPressed = e.key.scancode;
                 UsingPad = 0;
@@ -852,6 +862,11 @@ int host_poll(void) {
         default:
             break;
         }
+    }
+    if (EscClosing) {
+        printf("sdl: Esc closed the test\n");
+        settings_save();
+        return 0;
     }
     /* (or the touch buttons have taken a part of it from the picture, or given it back) */
     if (touch_area_changed() || resized) {
@@ -1042,6 +1057,9 @@ int host_button_pressed_any(void) {
 
 void host_pretend_key(int key, int down) {
     if (key > SDL_SCANCODE_UNKNOWN && key < SDL_SCANCODE_COUNT) {
+        if (down && !PretendKeys[key] && key == SDL_SCANCODE_ESCAPE && esc_closes()) {
+            EscClosing = 1;
+        }
         if (down && !PretendKeys[key]) {
             KeyPressed = key;
             UsingPad = 0;
