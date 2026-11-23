@@ -667,6 +667,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Hero Setup's dots are called by their joints (knee, not shin; joint_name), in their tooltips and undo steps.
 - 2026-11-23: Add to game greyed till saved (only a Save marks it saved now: the preview's own copy for the games had cleared Not
   saved yet); Based on changed remakes every game at once, its height the new base's if it was the old one's, its own moves kept.
 - 2026-11-23: the hero tool's Save keeps the hero in its own folder (heroes/ in its pref folder), nothing beside the model (no

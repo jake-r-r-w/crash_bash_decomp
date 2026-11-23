@@ -4026,6 +4026,45 @@ float grid_step(const KitModel *m) {
     return step * (h / 10 / step >= 5 ? 5 : h / 10 / step >= 2 ? 2 : 1);
 }
 
+// A dot's joint as a person names it (the user's word, 2026-11-23: "Name dots by joint", "a knee is not a shin"): a bone's start is the
+// joint it turns at (a shin's start the knee, a hand's the wrist), its end the start of the bone carrying on from it (the same joint,
+// named the same), or its tip (fingertips, toes, the top of the head); left or right as the hero's own. In a buffer of its own a call,
+// for two at once (the undo's words)
+const char *joint_name(const KitModel *m, int b, int e) {
+    static char out[4][48];
+    static int turn = 0;
+    // (%s its side, "left " or "right ", where it reads: the middle of the left ear, the left ear's tip)
+    static const char *const Starts[KB_COUNT] = {
+        "pelvis", "waist", "chest", "neck", "head",
+        "%sshoulder", "%selbow", "%swrist", "%sshoulder", "%selbow", "%swrist",
+        "%ship", "%sknee", "%sankle", "%ship", "%sknee", "%sankle",
+        "jaw", "%sear", "middle of %sear", "%sear", "middle of %sear", "base of tail", "middle of tail", "end of tail",
+    };
+    static const char *const Tips[KB_COUNT] = {
+        "waist", "chest", "neck", "head", "top of head",
+        "%selbow", "%swrist", "%sfingertips", "%selbow", "%swrist", "%sfingertips",
+        "%sknee", "%sankle", "%stoes", "%sknee", "%sankle", "%stoes",
+        "chin", "middle of %sear", "%sear tip", "middle of %sear", "%sear tip", "middle of tail", "end of tail", "tail tip",
+    };
+    char *o = out[turn++ & 3];
+    int bone = b;
+    const char *says = Starts[b];
+    if (e) {
+        // its end: the start of the bone that carries on from it, if it has one, else its tip
+        says = Tips[b];
+        for (int c = 0; c < KB_COUNT; c++) {
+            if (m != nullptr && m->bones[c].have && kit_carries_on(b, c)) {
+                bone = c, says = Starts[c];
+            }
+        }
+    }
+    int at = side_letter(KitBoneNames[bone]);
+    const char *side = at < 0 ? "" : (KitBoneNames[bone][at] | 32) == 'l' ? "left " : "right ";
+    snprintf(o, 48, says, side);
+    o[0] = (char)SDL_toupper((unsigned char)o[0]);
+    return o;
+}
+
 int mirror_bone(int b) {
     const char *name = KitBoneNames[b];
     size_t len = strlen(name);
@@ -4317,7 +4356,10 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             to_hand();
         } else if (pick_bone >= 0) {
             T.joint_sel.assign(1, { pick_bone, pick_end });
-            joint_snapshot(T, "Moved %s%s", KitBoneNames[pick_bone], pick_end ? "'s end" : "");
+            char moved[48];
+            SDL_strlcpy(moved, joint_name(T.m, pick_bone, pick_end), sizeof(moved));
+            moved[0] = (char)SDL_tolower((unsigned char)moved[0]);
+            joint_snapshot(T, "Moved %s", moved);
             T.drag_bone = pick_bone, T.drag_end = pick_end, T.drag_view = which, T.multi_drag = false;
             to_hand();
         } else {
@@ -4328,7 +4370,7 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
         }
     }
     if (pick_bone >= 0 && on_view && T.drag_bone < 0 && T.jbox_view < 0) {
-        ImGui::SetTooltip("%s%s", KitBoneNames[pick_bone], pick_end ? " (its end)" : "");
+        ImGui::SetTooltip("%s", joint_name(T.m, pick_bone, pick_end));
     }
     // a right click (not a drag: that moves the view) opens the joints' menu, a dot under it not picked taken alone first
     ImGui::PushID(which);
@@ -7404,6 +7446,14 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
     if (SDL_getenv("HEROTOOL_PAGE") != nullptr && T.m != nullptr) {
         T.page = SDL_atoi(SDL_getenv("HEROTOOL_PAGE"));
         T.kind = T.page >= 0 ? T.page : T.kind;
+    }
+    /* a test's: HEROTOOL_JOINT_NAMES=1 says what each dot's called (its bone, start or end, and its joint's name) */
+    if (SDL_getenv("HEROTOOL_JOINT_NAMES") != nullptr && T.m != nullptr) {
+        for (int b = 0; b < KB_COUNT; b++) {
+            for (int e = 0; T.m->bones[b].have && e < 2; e++) {
+                printf("herotool: dot %s %s: %s\n", KitBoneNames[b], e ? "end" : "start", joint_name(T.m, b, e));
+            }
+        }
     }
     /* a test's: HEROTOOL_ASK_GUESS=1 asks Guess joints' question, as its button does */
     if (SDL_getenv("HEROTOOL_ASK_GUESS") != nullptr) {

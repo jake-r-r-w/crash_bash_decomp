@@ -361,7 +361,12 @@ dot had moved, so its arm or leg came apart. A joint moved takes only the one jo
 bone that carries on from it (`kit_carries_on`, the rig's own rule: the hips' end and the spine's, the chest's and the neck's), never
 a bone branching off there; before, every bone starting within half its height went, so the spine took the thighs and the neck the
 shoulders (the user's word, 2026-11-23: "when i move the spine node on the hero setup it turns into thigh _r. nek also turns into
-upperarm_r"). And the dot taken is the nearest, a bone's own before another's end on it (the spine's, not the hips' end). Several move at once (the
+upperarm_r"). And the dot taken is the nearest, a bone's own before another's end on it (the spine's, not the hips' end). Each dot is called by its
+joint (the user's word, 2026-11-23: "Name dots by joint", "a knee is not a shin"; `joint_name`): a bone's start the joint it turns at
+(pelvis, waist, chest, neck, head; shoulder, elbow, wrist; hip, knee, ankle; jaw; an ear's base and middle; the tail's base, middle and
+end), its end the start of the bone carrying on from it, named the same (the thigh's end and the shin's start both the knee), or its
+tip (fingertips, toes, top of head, chin, ear tip, tail tip); left or right as the hero's own. Its tooltip and its undo step ("Moved
+left knee") say so (`HEROTOOL_JOINT_NAMES=1` prints them all). Several move at once (the
 user's word, 2026-11-23: "if i click and drag i should be able to move many of the bones at the same time. For example the side view
 its hard to move all of the arm stuff one by one"): dragging on nothing draws a box and picks the dots in it (in the side view both
 sides' at once, one over the other), Ctrl- or Shift-click picks one more or lets it go (and a box with them adds to those picked), the
