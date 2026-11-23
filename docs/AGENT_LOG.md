@@ -667,6 +667,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: The card camera's pop-ups show beside its title, no longer over its pose menu (`draw_toast` from its left).
 - 2026-11-23: Esc closes a test run, anything with TESTING on screen (`--mode`, the hero tool's Preview, `--aim`, `--adventure`;
   sdl.c `EscClosing`, by `settings()->testing`, as `test_mode` is cleared once the game starts).
 - 2026-11-23: A pack's panel face is the top of its card, unsquashed (pack_card_panel, game and tool alike); the card preview has the

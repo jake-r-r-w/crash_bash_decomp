@@ -408,7 +408,7 @@ the game: 140 x 152 pixels of a 1280 x 960 window for its 56 x 38, and widescree
 290 x 400, for 1.83, and came out 14% wider).
 **Take a photo** makes the page's picture a camera (`camera_view`): the hero as the game made it on foot, in a frame the card's shape,
 dragged to turn and tilt it, right-dragged (or middle) to move it, the wheel to zoom, double-clicked back to the start (close on its
-head and chest, a little from its right); its pose any of its animations at any frame. **Take photo** draws it twice the card's size
+head and chest, a little from its right); its pose any of its animations at any frame. Its pop-ups (Made in ..., Making...) show beside its title, wrapped to fit before its pose menu, not over its controls (the user's word, 2026-11-23: "Fix the pop-up"). **Take photo** draws it twice the card's size
 on nothing and halves it (`take_photo`), saved as `photos/ID.png` in the tool's folder and made the card; **Save** puts it in the pack
 as `card.png`. Beside the frame, live, is what the game will make of it (the user's word, 2026-11-23: "When you are taking a picture it
 should show the preview of what it will look like in game exactly"; `in_game_preview`): **In the character select**, the portrait in

@@ -750,7 +750,8 @@ void toast(Tool &T, const char *fmt, ...) {
     T.toast_at = ImGui::GetTime();
 }
 
-void draw_toast(Tool &T, ImVec2 top_right, float wrap) {
+// (from_left: at is its top left, not its top right)
+void draw_toast(Tool &T, ImVec2 top_right, float wrap, bool from_left = false) {
     double age = ImGui::GetTime() - T.toast_at, last = 2.6 + strlen(T.toast) * 0.02;
     if (T.toast[0] == 0 || age > last + 0.3) {
         return;
@@ -759,6 +760,9 @@ void draw_toast(Tool &T, ImVec2 top_right, float wrap) {
     ImDrawList *dl = ImGui::GetForegroundDrawList();
     ImVec2 ts = ImGui::CalcTextSize(T.toast, nullptr, false, wrap);
     float w = ts.x + U(64), h = ts.y + U(22);
+    if (from_left) {
+        top_right.x += w;
+    }
     ImVec2 lo(top_right.x - w + slide, top_right.y), hi(top_right.x + slide, top_right.y + h);
     auto al = [&](ImU32 c) { return (c & 0x00FFFFFFu) | (ImU32)(a * ((c >> 24) & 255)) << 24; };
     dl->AddRectFilled(ImVec2(lo.x, lo.y + U(4)), ImVec2(hi.x, hi.y + U(4)), al(SHADOW), h / 2 < U(24) ? h / 2 : U(24));
@@ -6117,8 +6121,17 @@ void camera_view(Tool &T, SDL_Window *win, ImVec2 p, ImVec2 size) {
     float bh = ImGui::GetFontSize() + U(22);
     ImGui::PushFont(FontTitle);
     dl->AddText(ImVec2(p.x + U(24), p.y + U(16) + (bh - ImGui::GetTextLineHeight()) / 2), INK, "Card photo");
+    float title_w = ImGui::CalcTextSize("Card photo").x;
     ImGui::PopFont();
     float right = p.x + size.x - U(16);
+    // its pop-ups between its title and its controls on the right (till), not over them (the user's word, 2026-11-23: "Fix the
+    // pop-up": they'd covered its pose menu), wrapped to fit there
+    auto toast_before = [&](float till) {
+        float from = p.x + U(24) + title_w + U(24), room = till - U(16) - from - U(64);
+        if (room > U(80)) {
+            draw_toast(T, ImVec2(from, p.y + U(16) + (bh - ImGui::GetTextLineHeight() - U(22)) / 2), room, true);
+        }
+    };
     if (!T.have_made[0] || T.made[0].nanims == 0) {
         // not made yet: made now (the camera shows what the game has)
         if (!T.made_asked && T.maker == nullptr) {
@@ -6127,6 +6140,7 @@ void camera_view(Tool &T, SDL_Window *win, ImVec2 p, ImVec2 size) {
         const char *says = T.maker != nullptr ? "Making it in the games..." : "It isn't made yet";
         ImVec2 ts = ImGui::CalcTextSize(says);
         dl->AddText(ImVec2(p.x + (size.x - ts.x) / 2, p.y + (size.y - ts.y) / 2), MUTED, says);
+        toast_before(right - button_w("Cancel", false));
         ImGui::SetCursorScreenPos(ImVec2(right - button_w("Cancel", false), p.y + U(16)));
         if (button("Cancel##cam", RAISED, INK, 0, IC_NONE, CUE_DROP, bh)) {
             T.camera = false;
@@ -6144,6 +6158,7 @@ void camera_view(Tool &T, SDL_Window *win, ImVec2 p, ImVec2 size) {
     // on the right: the move and its frame it's posed in, Cancel, and Take photo
     float take_w = button_w("Take photo", true), cancel_w = button_w("Cancel", false), menu_w = U(180), frame_w = U(150);
     float x = right - take_w - U(10) - cancel_w - U(10) - (frames > 1 ? frame_w + U(10) : 0) - menu_w;
+    toast_before(x);
     ImGui::SetCursorScreenPos(ImVec2(x, p.y + U(16) + (bh - ImGui::GetFrameHeight()) / 2));
     if (menu_begin("##campose", mk->anims[T.cam_anim].name, menu_w, RAISED)) {
         for (int a = 0; a < mk->nanims; a++) {
@@ -6559,7 +6574,9 @@ void model_page(Tool &T, SDL_Window *win) {
         }
         ImGui::PopFont();
     }
-    draw_toast(T, ImVec2(side_x - U(16), p.y + U(16)), U(420));
+    if (!T.camera) {
+        draw_toast(T, ImVec2(side_x - U(16), p.y + U(16)), U(420));
+    }
     guess_ask(T);
     ImGui::EndChild();
     ImGui::SameLine(0, gap);
