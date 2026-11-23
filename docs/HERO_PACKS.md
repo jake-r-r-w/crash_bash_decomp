@@ -64,10 +64,6 @@ one's.
 - `face_head`: the share of its model, from the top, that's its head, for a face drawn from it on the panel and in the select
   (0.36 if it's left out); Bobby's is 0.26, as his long ears hang past his chin. A face drawn so stops where the panel's health bar
   starts.
-- `arm_lift`: how high its arms go where they're free (not on a grip), in degrees from hanging down, 20 to 179; left out, as high as
-  its template's do. A move it follows has each arm turned down about its shoulder, bent as it is, where its upper arm would go higher
-  from its trunk's down than that (`arm_lower`, packfollow.c; a carried keg goes with the hand). Only how it looks: what it carries is
-  placed from the hand, and nothing the game keeps reads it. The tool's Arm lift.
 - `voices`: each of its base's 26 sound offsets (EXTRA_HEROES.md, His sounds): a job (`"1": "laugh"`), `base` or `none`. An offset
   it doesn't name plays the job it does for the game's own heroes if the pack has that job's sound (0 name, 1 and 6 and 24 laugh, 2 to
   5 yelp, 11, 13 and 21 jump, 12 thud, 15 throw), else its base's.
@@ -231,9 +227,8 @@ build/herotool/windows-clang/herotool import port/mods/bobby-model.glb --id bobb
 He's the user's dog, a long-haired black-and-tan miniature dachshund, stood up as a cartoon hero. His model is the user's own, made
 from photos of him (`port/mods/bobby-model.glb`, beside the markers, as a folder there would be a mod of its own): 1365 triangles,
 the two smallest of its first export's 1367 taken out at the user's word, one texture, no rig, so the markers
-(`bobby-model.glb.markers.json`) place his skeleton, ears, jaw and tail too, and `arm_raise` (40) keeps his short arms from going into his big
-head in the tool's own moves (a new hero made from it in the tool starts with an Arm lift of 40; his pack, made by the command, has no
-`arm_lift`). The photos aren't in the repo. Its command says no template (no `--based-on`): his pack never has, so on foot he plays his own
+(`bobby-model.glb.markers.json`) place his skeleton, ears, jaw and tail too, and `arm_raise` keeps his short arms from going into his big
+head. The photos aren't in the repo. Its command says no template (no `--based-on`): his pack never has, so on foot he plays his own
 moves; made again so, the pack is the one in the repo byte for byte.
 
 His ears (2026-11-22, the user's word: "his ears are not wired up correctly i cant move them"): their markers ran down the back of
@@ -355,7 +350,7 @@ dots' colours small in its bottom left ("the legend should be smaller and in the
 (`View`'s w and h, `vw`/`vh`). **Grid** ("It needs a toggable grid"), on to start, lines behind the dots each step of a round size near
 a tenth of its height, through its middle (x 0 front, z 0 side) and up from its feet, those two brighter. Its joints have their own
 **undo and redo** ("the joint tool needs undo and redo"): the top bar's, Ctrl+Z and Ctrl+Y (Ctrl+Shift+Z) on Hero Setup, a step for
-each dot moved, Guess joints, Jaw, Ears or Tail on or off and Arm lift (`joint_snapshot`), the rig's own weights back if it was rigged
+each dot moved, Guess joints, Jaw, Ears or Tail on or off (`joint_snapshot`), the rig's own weights back if it was rigged
 then; checked: the left elbow dragged, then undone, both elbows back where the model's markers file has them (`HEROTOOL_UNDO=1` after a
 test drag). **Guess joints** asks first ("the Guess joints option is destructive so needs to be a confirmation": Keep mine or Guess;
 `HEROTOOL_ASK_GUESS=1`). The joints' views zoom with the wheel about the mouse ("i should also be able to zoom in when
@@ -395,11 +390,9 @@ did nothing (the user's word, 2026-11-23: "its not working on the body. the node
 the menu itself on a copy of it: its body boxed in the side view, right-clicked and Snap clicked, hips to head on one line
 (`HEROTOOL_DRAG3`, a third test drag, and `HEROTOOL_SHOT_FRAME=N` for the picture after them). Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
 with it. `HEROTOOL_MARKERS=BONE` prints where a bone's dot is and every joint after a drag, and `HEROTOOL_DRAG` and `_WHEEL` work
-there, for a test. On the right, a column that scrolls, its **Model** (Open, Guess joints, Has: Jaw, Ears, Tail,
-and **Arm lift** for any model, rigged or not: how high its arms go in every game, from 20 degrees to No limit at the top, its default,
-saved as `arm_lift`; the user's word, 2026-11-23: "the arm lift does not seem to do anything and is default maxed out": it had held
-back only the tool's own moves, at most 160, and was shown only for a model without a rig; `HEROTOOL_ARM_LIFT=DEGREES` sets it once
-it's open and makes it again in the games, for a test), **Hero** (name,
+there, for a test. On the right, a column that scrolls, its **Model** (Open, Guess joints, Has: Jaw, Ears, Tail; no Arm lift since
+the user's word, 2026-11-23, "remove the arm lift. it does not make sense anymore": it held back only the tool's own moves, never its
+template's in the games, and a version that did those too was taken out with it), **Hero** (name,
 id, **Height**: as tall as one of the heroes, picked from a menu, or its own, typed or stepped by 10 from 200 to 900, the user's
 word, 2026-11-23: "select a height from a selection of the exisiting heros OR set your own", **Based on**: its template and whose
 place it takes, one choice: changed, its height goes with it if it was the last one's (a height of its own stays) and every game's
@@ -466,8 +459,8 @@ followed Crash's moves). Cortex's and Brio's hover board is the game's jets, dra
    ignored), its own weights kept, a bone it has that the game hasn't (fingers, twists) giving its weight to the one it hangs from;
    else **from markers** (`rig.c`, `--markers`): a JSON file of where each bone starts, by name (hips, spine, chest, neck,
    head, both arms' upperarm, forearm and hand, both legs' thigh, shin and foot; a jaw, ears and a tail if it has them), with
-   `NAME_tip` for a chain's end and `arm_raise`, how many degrees its arms can lift before its paws are in its head (160, the most the slider had, or
-   more, read as no limit). Bobby's is
+   `NAME_tip` for a chain's end and `arm_raise`, how many degrees its arms can lift before its paws are in its head (160 if it's left out), for the
+   tool's own moves only; nothing in the window sets it. Bobby's is
    `port/mods/bobby-model.glb.markers.json`. The tool's window will let them be dragged onto the model.
 4. **Weighs each corner** (`rig.c`): each place on its surface starts with the bone it's nearest (a trunk bone's distance counted
    for less, as a trunk is wide round its bones), and every place goes with the two it's nearest over the surface from those, so an

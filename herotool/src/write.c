@@ -357,9 +357,6 @@ int kit_write(const KitModel *m, const KitPack *p, const char *out, char *why, s
         if (p->face_head > 0) {
             say(&hero, "  \"face_head\": %g,\n", p->face_head);
         }
-        if (p->arm_lift > 0 && p->arm_lift < 180) {
-            say(&hero, "  \"arm_lift\": %d,\n", p->arm_lift);
-        }
         say(&hero, "  \"kinds\": {\n    \"foot\": {\n      \"subframes\": 2,\n      \"otherwise\": \"BREATHE\",\n      \"stands\": [\n"
                    "        [\"MEDIUM\", \"RUN\"], [\"SKATE\", \"RUN\"], [\"SLIDE\", \"RUN\"], [\"SWIM\", \"RUN\"], [\"FLIP\", \"JUMP\"],\n"
                    "        [\"FALL\", \"JUMP\"], [\"PUSH\", \"RUN\"], [\"TRANS\", \"RUN\"], [\"BARGE\", \"RUN\"], [\"BANK\", \"BREATHE\"],\n"

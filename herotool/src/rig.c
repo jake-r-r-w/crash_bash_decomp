@@ -3,7 +3,7 @@
  * The skeleton is the standard one (KitBoneNames), placed from markers: a JSON file of where each bone starts in the model, by name,
  * and where a bone at a chain's end ends ("head_tip", "hand_l_tip", ...), in the model's own units, as the hero tool's window lets
  * them be dragged. The first 17 bones are needed; a jaw, ears and a tail are the model's if it has them. "arm_raise" (degrees) says
- * how high its arms can go before its paws are in its head (180, no limit, by default; 160, the most there was, read as that).
+ * how high its arms can go before its paws are in its head (160 by default: straight up).
  *
  * Each corner's bones, for any model (no rules about where its parts are): its side's limbs and ears and the bones down its middle are
  * all it can have (a corner of the left half never goes with the right arm); each place on its surface starts with the bone it's
@@ -95,7 +95,6 @@ int kit_markers(KitModel *m, const char *path, char *why, size_t why_size) {
     }
     if ((at = strstr(text, "\"arm_raise\"")) != NULL && (at = strchr(at, ':')) != NULL) {
         m->arm_raise = (float)SDL_strtod(at + 1, NULL);
-        m->arm_raise = m->arm_raise >= 160 || m->arm_raise < 20 ? 180 : m->arm_raise;
     }
     SDL_free(text);
     return 1;
@@ -651,7 +650,7 @@ void kit_guess_markers(KitModel *m) {
     };
 
     memset(m->bones, 0, sizeof(m->bones));
-    m->arm_raise = 180;
+    m->arm_raise = 160;
     for (b = 0; b < (int)(sizeof(Body) / sizeof(Body[0])); b++) {
         KitBone *k = &m->bones[Body[b].bone];
 

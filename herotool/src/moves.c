@@ -3,8 +3,8 @@
  * The body's bones (hips to head, the jaw, ears and tail) turn from how they rest. The limbs are aimed instead: each move says where
  * an upper arm or thigh points, as turns from hanging straight down (x: forward with less than 0; z: out from the body), and where its
  * lower half points from there; and each bone is turned from its own rest direction to that. So a model made with its arms out in a T,
- * hanging, or held up begging moves the same. A raised arm goes no higher than the model's arm_raise (Arm lift in the tool: a
- * short-armed hero with a big head can't reach over it; 180 no limit). Distances are for a hero 0.955 tall, scaled to the model. */
+ * hanging, or held up begging moves the same. A raised arm goes no higher than the model's arm_raise (its markers say: a short-armed
+ * hero with a big head can't reach over it). Distances are for a hero 0.955 tall, scaled to the model. */
 #include <math.h>
 #include <string.h>
 #include "kit.h"
@@ -357,7 +357,7 @@ void kit_pose(const KitModel *model, int m, float t, float rot[KB_COUNT][4], flo
     q_mul(world[KB_HIPS], rot[KB_SPINE], world[KB_SPINE]);
     q_mul(world[KB_SPINE], rot[KB_CHEST], world[KB_CHEST]);
     for (side = 0; side < 2; side++) {
-        float up = model->arm_raise >= 180 ? p.arm[side][0] : fmaxf(p.arm[side][0], -model->arm_raise);
+        float up = fmaxf(p.arm[side][0], -model->arm_raise);
         int u = side ? KB_UPPERARM_R : KB_UPPERARM_L, f = side ? KB_FOREARM_R : KB_FOREARM_L, h = side ? KB_HAND_R : KB_HAND_L;
         int th = side ? KB_THIGH_R : KB_THIGH_L, sh = side ? KB_SHIN_R : KB_SHIN_L, ft = side ? KB_FOOT_R : KB_FOOT_L;
 

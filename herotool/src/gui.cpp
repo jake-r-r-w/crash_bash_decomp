@@ -305,11 +305,10 @@ struct Tool {
     int jbox_view = -1;
     float jbox_x = 0, jbox_y = 0;
     bool multi_drag = false;
-    // the joints' undo and redo (Hero Setup's own, as a game's page's are its keys'): each the joints, arm lift and rig as they were
+    // the joints' undo and redo (Hero Setup's own, as a game's page's are its keys'): each the joints and rig as they were
     // before a change, and what the change was
     struct JointStep {
         KitBone bones[KB_COUNT];
-        float arm_raise;
         bool rigged;
         std::string says;
     };
@@ -1167,7 +1166,6 @@ bool export_pack(Tool &T, bool test, const char *out = nullptr) {
     }
     p.height = T.height;
     p.face_head = T.face_head;
-    p.arm_lift = T.m->arm_raise < 179.5f ? (int)lroundf(T.m->arm_raise) : 0; // (at the top, none)
     p.card = T.card[0] ? T.card : nullptr;
     // its adjustments, but not in what the preview's made from: the preview makes them itself, on the game's poses before them
     p.adjust = T.adj.empty() || T.bare ? nullptr : T.adj.data();
@@ -1369,7 +1367,6 @@ void joint_snapshot(Tool &T, const char *says, ...) {
     }
     Tool::JointStep st;
     memcpy(st.bones, T.m->bones, sizeof(st.bones));
-    st.arm_raise = T.m->arm_raise;
     st.rigged = T.rigged;
     char line[160];
     va_list ap;
@@ -1388,7 +1385,6 @@ void joint_snapshot(Tool &T, const char *says, ...) {
 // Its joints put back as a step had them: its rig's own weights again if it was rigged then, else the tool's to the joints
 void joint_restore(Tool &T, const Tool::JointStep &st) {
     memcpy(T.m->bones, st.bones, sizeof(st.bones));
-    T.m->arm_raise = st.arm_raise;
     if (st.rigged && !T.rigged) {
         char why[256];
         T.rigged = kit_map_rig(T.m, why, sizeof(why));
@@ -1407,7 +1403,7 @@ void joint_undo_step(Tool &T) {
     }
     Tool::JointStep now;
     memcpy(now.bones, T.m->bones, sizeof(now.bones));
-    now.arm_raise = T.m->arm_raise, now.rigged = T.rigged, now.says = T.joint_undo.back().says;
+    now.rigged = T.rigged, now.says = T.joint_undo.back().says;
     T.joint_redo.push_back(now);
     Tool::JointStep st = T.joint_undo.back();
     T.joint_undo.pop_back();
@@ -1421,7 +1417,7 @@ void joint_redo_step(Tool &T) {
     }
     Tool::JointStep now;
     memcpy(now.bones, T.m->bones, sizeof(now.bones));
-    now.arm_raise = T.m->arm_raise, now.rigged = T.rigged, now.says = T.joint_redo.back().says;
+    now.rigged = T.rigged, now.says = T.joint_redo.back().says;
     T.joint_undo.push_back(now);
     Tool::JointStep st = T.joint_redo.back();
     T.joint_redo.pop_back();
@@ -4673,7 +4669,6 @@ void load_pack(Tool &T, const Found &f) {
                           : info.prefer >= 1 && info.prefer <= 8                             ? info.prefer - 1
                                                                                               : 0;
         T.face_head = info.face_head;
-        T.m->arm_raise = info.arm_lift > 0 ? (float)info.arm_lift : 180;
         T.adj.assign(info.adjust, info.adjust + info.nadjust);
         T.undo.clear();
         T.redo.clear();
@@ -5755,8 +5750,9 @@ void game_card(Tool &T) {
     card_end();
 }
 
-// The model's card: its file (and another opened), its rig, and for one placed by hand: guess its joints, Mirror, what it has
-// (a jaw, ears, a tail) and how high it raises its arms
+// The model's card: its file (and another opened), its rig, and for one placed by hand: guess its joints and what it has (a jaw,
+// ears, a tail). (No Arm lift: the user's word, 2026-11-23, "remove the arm lift. it does not make sense anymore"; it had held back
+// only the tool's own moves, never its template's in the games)
 void model_card(Tool &T, SDL_Window *win) {
     static const SDL_DialogFileFilter Glb[] = { { "3D model (glTF binary)", "glb" } };
     card("##model", TINT_PERI);
@@ -5822,29 +5818,6 @@ void model_card(Tool &T, SDL_Window *win) {
             }
         }
     }
-    // how high its arms go, rigged or not: in every game where they're free (its template's moves, hero.json's "arm_lift") and its own
-    // moves from the list; at the top, no limit (the user's word, 2026-11-23: "the arm lift does not seem to do anything and is default
-    // maxed out": it had only held back the tool's own moves, at most 160)
-    row_label("Arm lift", U(190));
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, V4(CARD));
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, U(16));
-    ImGui::SetNextItemWidth(U(190));
-    float lift_was = T.m->arm_raise;
-    if (ImGui::SliderFloat("##armlift", &T.m->arm_raise, 20, 180, T.m->arm_raise >= 179.5f ? "No limit" : "%.0f deg",
-                           ImGuiSliderFlags_AlwaysClamp)) {
-        T.dirty = true;
-        T.unsaved = true;
-    }
-    if (ImGui::IsItemActivated()) {
-        float now = T.m->arm_raise;
-        T.m->arm_raise = lift_was;
-        joint_snapshot(T, "Arm lift");
-        T.m->arm_raise = now;
-    }
-    ImGui::PopStyleVar();
-    ImGui::PopStyleColor();
-    ImGui::SetItemTooltip("How high it raises its arms in every game, in degrees from hanging down. Lower it for short arms or a big "
-                          "head, so its hands don't go through it");
     card_end();
 }
 
@@ -7949,15 +7922,6 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
                            (int)T.baked.size(), T.maker != nullptr ? "yes" : "no");
                 }
             }
-        }
-        /* a test's: HEROTOOL_ARM_LIFT=DEGREES sets its Arm lift once it's open (180 none) and makes it again in the games */
-        static bool lifted = false;
-        if (!lifted && SDL_getenv("HEROTOOL_ARM_LIFT") != nullptr && T.m != nullptr && !T.home && !T.choosing) {
-            lifted = true;
-            T.m->arm_raise = SDL_clamp((float)SDL_atof(SDL_getenv("HEROTOOL_ARM_LIFT")), 20.0f, 180.0f);
-            T.dirty = T.unsaved = true;
-            make_in_game(T);
-            printf("herotool: arm lift %.0f, making %s\n", T.m->arm_raise, T.maker != nullptr || T.remake ? "yes" : "no");
         }
         /* a test's: HEROTOOL_ADD=1 saves the hero open and adds it to the game, as Save then Add to game do, once it's open */
         static bool added = false;

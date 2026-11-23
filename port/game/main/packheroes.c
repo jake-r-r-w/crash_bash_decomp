@@ -51,7 +51,6 @@ OVL_HERE
 void pack_follow_all(const char *id, const PackModel *pm, float k, float ground, const MadeFace *faces, s32 nfaces, const MadeImage *images,
                      s32 nimages, const s32 *templates, HeroMade *out);
 s32 pack_follow_foot(const char *id, const PackModel *pm, float k, float ground, s32 hero);
-void pack_follow_arm_lift(s32 degrees);
 s32 pack_follow_foot_moves(const char *const **names, s32 *frames);
 void pack_follow_foot_frame(s32 move, float f, const char *name, s32 frame, V3 *out);
 void pack_follow_adjusts(const PackAdjust *adj, s32 n);
@@ -666,7 +665,6 @@ static s32 make_pack(s32 slot, HeroMade *out) {
     TheFoot.k = (float)s->info.height / (hi - lo);
     TheFoot.ground = lo;
     pack_follow_adjusts(s->info.adjust, s->info.nadjust);
-    pack_follow_arm_lift(s->info.arm_lift);
     {
         s32 no_fit[PACK_KINDS], k;
 
