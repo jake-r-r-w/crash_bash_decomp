@@ -667,6 +667,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Hero Setup shows front, side and preview at once (no Joints/Preview pill), the joints' views zoom (wheel at the mouse)
+  and move (right-drag), Mirror fixed (across the hips, the mirrored joint's joined bone moved too: an arm came apart), the legend
+  small in the corner; the delete question just the full path.
 - 2026-11-23: the start screen's trash red on hover (and Delete), the question naming what goes from the mods folder (the user asked
   why bobby/heroes/bobby: it was from the mod's folder; a mod holds heroes/ID, so it's mods/bobby/heroes/bobby, or all of mods/bobby).
 - 2026-11-23: the hero tool's onboarding: a trash on each hero (asked; its folder, its mod if that's all, the tool's leftovers), a new

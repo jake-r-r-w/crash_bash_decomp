@@ -283,8 +283,9 @@ its face share says), else its first letter (`found_picture`), and a trash (the 
 you can delete them fully"): asked first, it deletes the hero's folder (`heroes/ID`), its mod too if nothing but its mod.json is left
 in it (another hero of the mod's, or anything else, stays), and what the tool kept of it (its preview's models, the folder they're
 made from, its card's photo; `delete_hero`; `HEROTOOL_DELETE=ID` does it for a test, `HEROTOOL_ASK_DELETE=ID` asks). The trash is red as
-the mouse is on it, as is the question's Delete, and the question says what goes from the mods folder: the whole mod's folder
-(`mods/bobby`, this hero all there is in it, `mod_goes`) or the hero's (`mods/MOD/heroes/ID`, the rest of its mod staying).
+the mouse is on it, as is the question's Delete, and the question is the hero's name and the full path going, no more (the user's
+word, 2026-11-23: "just put the full path its going to delete remove the words keep it simple"): its whole mod's folder when the hero's
+all there is in it (`mod_goes`), else the hero's (MOD/heroes/ID), with backslashes throughout on Windows.
 `HEROTOOL_HOVER=X,Y` holds the mouse there, for a test of what a hover shows. A new hero
 (a model browsed for or dropped on the start screen; `new_hero`) keeps nothing of the last one's (its card, sounds, changes and their
 history, own moves, what the games made of it) and asks first **Who is it based on?** (the user's word, 2026-11-23: "When you import a
@@ -328,9 +329,17 @@ Kaboom 30, the podium 43; the user's word, 2026-11-22, "preview in x should chan
 games under it (**Hero Setup** first, then each game as a chip with the hero in it, a still of its first animation; the page shown
 periwinkle and lifted), and the page. The chevron beside All games hides the strip for more room (the user's word, 2026-11-22: "add a
 button to hide the top bar as a toggle"), a menu named for the page shown in its place to go to another; kept for next time
-(`strip.txt` in the tool's folder; `HEROTOOL_NOSTRIP=1` hides it for a test). **Hero Setup** (the user's word, 2026-11-23: "the your hero page should be renamed") is the model's own page: its picture (**Joints**, the dots to place on its front
-and side, or **Preview**, the tool's own moves on it; Joints for any model, the user's word, 2026-11-23: "That should always be
-available", first for one with no rig; `HEROTOOL_JOINTS=1`, 2 also as if a dot were moved, with `HEROTOOL_SAVE_TO` saved), under it its **Card** and **Sounds** (a WAV for each, played with its
+(`strip.txt` in the tool's folder; `HEROTOOL_NOSTRIP=1` hides it for a test). **Hero Setup** (the user's word, 2026-11-23: "the your hero page should be renamed") is the model's own page: its picture, three views side by side, all at once (the user's word, 2026-11-23: "the joints and preview
+should all show at the same time"): **Front** and **Side** with the dots to place on its joints (for any model: "That should always
+be available"; `HEROTOOL_JOINTS=2` as if a dot were moved, with `HEROTOOL_SAVE_TO` saved), and **Preview**, the tool's own moves on
+it (its move and Play in the picture's bottom right, the legend of the dots' colours small in its bottom left: "the legend should be
+smaller and in the bottom left corner"). The joints' views zoom with the wheel about the mouse ("i should also be able to zoom in when
+moving the joints"), move with the right button, and go back with a right double-click or Home, both alike up and down, so a joint's
+at one height in each; the dots stay in their view. **Mirror** ("the mirror does not always work") places the other side's joint
+across the hips (the body's middle; across x 0 it was off for a model not built about it), and what joins it with it: only its one
+dot had moved, so its arm or leg came apart. Checked: the left elbow dragged, the right one its mirror and the right upper arm's end
+with it. `HEROTOOL_MARKERS=BONE` prints where a bone's dot is and every joint after a drag, and `HEROTOOL_DRAG` and `_WHEEL` work
+there, for a test. Under it its **Card** and **Sounds** (a WAV for each, played with its
 button; else its base's), and on the right its **Model** (Open, Guess joints, Mirror, Has: Jaw, Ears, Tail, Arm lift), **Hero** (name,
 id, **Height**: as tall as one of the heroes, picked from a menu, or its own, typed or stepped by 10 from 200 to 900, the user's
 word, 2026-11-23: "select a height from a selection of the exisiting heros OR set your own", **Based on**: its template and whose

@@ -292,6 +292,8 @@ struct Tool {
     char out[1024] = "", game[1024] = "";
     // a marker being dragged: its bone, whether it's the bone's end, and in which view
     int drag_bone = -1, drag_end = 0, drag_view = 0;
+    // the joints' view being moved with the right button (-1 none)
+    int pan_view = -1;
     // what the game made of it (the preview): each kind's model, the game making it, and what's shown
     KitMade made[PACK_KINDS] = {};
     bool have_made[PACK_KINDS] = {};
@@ -3795,8 +3797,59 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     if (!markers) {
         return;
     }
+    // zoomed by the wheel about the mouse, moved by dragging with the right button, and back by double-clicking it (or Home): both views
+    // alike up and down, so a joint's at the same height in each (the user's word, 2026-11-23: "i should also be able to zoom in when
+    // moving the joints")
+    if (ImGui::IsItemHovered() || (T.pan_view == which && ImGui::IsMouseDown(ImGuiMouseButton_Right))) {
+        ImGuiIO &io = ImGui::GetIO();
+        View &other = which == 0 ? T.side : T.front;
+        float mx = io.MousePos.x - at.x, my = io.MousePos.y - at.y;
+        float h = T.m->hi[1] - T.m->lo[1], w = fmaxf(T.m->hi[0] - T.m->lo[0], T.m->hi[2] - T.m->lo[2]);
+        float base = fminf(ViewH * 0.85f / h, ViewW * 0.85f / (w > 0 ? w : 1));
+        if (io.MouseWheel != 0 && ImGui::IsItemHovered()) {
+            float s1 = fmaxf(base * 0.6f, fminf(base * 12, v.scale * powf(1.2f, io.MouseWheel))), f = s1 / v.scale;
+            v.ox = mx - (mx - v.ox) * f, v.oy = my - (my - v.oy) * f, v.scale = s1;
+            other.ox = ViewW / 2.0f - (ViewW / 2.0f - other.ox) * f, other.oy = my - (my - other.oy) * f, other.scale = s1;
+        }
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsItemHovered()) {
+            T.pan_view = which;
+        }
+        if (T.pan_view == which && ImGui::IsMouseDragging(ImGuiMouseButton_Right, 2)) {
+            v.ox += io.MouseDelta.x, v.oy += io.MouseDelta.y;
+            other.oy += io.MouseDelta.y;
+        }
+        if (ImGui::IsItemHovered() && (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Right) || ImGui::IsKeyPressed(ImGuiKey_Home, false))) {
+            fit(T.m, T.front);
+            fit(T.m, T.side);
+        }
+        if (ImGui::IsItemHovered() && T.drag_bone < 0) {
+            ImGui::SetItemTooltip("Drag a dot onto its joint   Wheel: zoom   Right-drag: move   Right double-click: back");
+        }
+    }
+    if (!ImGui::IsMouseDown(ImGuiMouseButton_Right) && T.pan_view == which) {
+        T.pan_view = -1;
+    }
     ImDrawList *dl = ImGui::GetWindowDrawList();
     ImVec2 mouse = ImGui::GetIO().MousePos;
+    /* a test's: HEROTOOL_MARKERS=BONE says where that bone's start is in the front view (again as it moves), and every joint's place
+       after each drag */
+    if (const char *mk = SDL_getenv("HEROTOOL_MARKERS")) {
+        static float said_x = -1e9f, said_y = -1e9f;
+        for (int b = 0; which == 0 && b < KB_COUNT; b++) {
+            if (T.m->bones[b].have && SDL_strcmp(KitBoneNames[b], mk) == 0) {
+                float x, y, z;
+                to_screen(v, T.m->bones[b].at, x, y, z);
+                if (fabsf(at.x + x - said_x) + fabsf(at.y + y - said_y) > 2) {
+                    said_x = at.x + x, said_y = at.y + y;
+                    printf("herotool: %s at %.0f,%.0f\n", mk, said_x, said_y);
+                }
+            }
+        }
+    }
+    // (the dots kept in their view, zoomed in: drawn only there, and taken only there)
+    ImVec2 lo(at.x, at.y), hi(at.x + ViewW, at.y + ViewH);
+    bool in_view = mouse.x >= lo.x && mouse.x < hi.x && mouse.y >= lo.y && mouse.y < hi.y;
+    dl->PushClipRect(lo, hi, true);
     for (int b = 0; b < KB_COUNT; b++) {
         KitBone &k = T.m->bones[b];
         if (!k.have) {
@@ -3811,7 +3864,7 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             ImVec2 c(at.x + sx[e], at.y + sy[e]);
             dl->AddCircleFilled(c, e ? U(4) : U(7), GROUND);
             dl->AddCircleFilled(c, e ? U(3) : U(5.5f), col);
-            if (T.drag_bone < 0 && ImGui::IsMouseClicked(0) && (mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < U(7) * U(7)) {
+            if (T.drag_bone < 0 && in_view && ImGui::IsMouseClicked(0) && (mouse.x - c.x) * (mouse.x - c.x) + (mouse.y - c.y) * (mouse.y - c.y) < U(7) * U(7)) {
                 T.drag_bone = b, T.drag_end = e, T.drag_view = which;
                 // a rigged model's joints placed by hand: the tool weights it to them from now (its own clips kept, export_pack)
                 if (T.rigged) {
@@ -3829,55 +3882,64 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             }
         }
     }
+    dl->PopClipRect();
     // dragging: across and up in the front view, through and up in the side view
     if (T.drag_bone >= 0 && T.drag_view == which) {
         if (ImGui::IsMouseDown(0)) {
-            float *p = T.drag_end ? T.m->bones[T.drag_bone].end : T.m->bones[T.drag_bone].at;
-            float mx = (mouse.x - at.x - v.ox) / v.scale, my = (v.oy - (mouse.y - at.y)) / v.scale;
+            const float *was = T.drag_end ? T.m->bones[T.drag_bone].end : T.m->bones[T.drag_bone].at;
+            float mx = (mouse.x - at.x - v.ox) / v.scale, my = (v.oy - (mouse.y - at.y)) / v.scale, p[3] = { was[0], my, was[2] };
 
-            p[1] = my;
             if (which == 0) {
                 p[0] = mx;
             } else {
                 p[2] = -mx;
             }
-            // what joins it moves with it: a bone's end is the next one's start
-            for (int c = 0; c < KB_COUNT; c++) {
-                if (T.m->bones[c].have && KitBoneParent[c] == T.drag_bone && T.drag_end) {
-                    float *q = T.m->bones[c].at;
-                    if (fabsf(q[0] - p[0]) + fabsf(q[1] - p[1]) + fabsf(q[2] - p[2]) < 0.5f * (T.m->hi[1] - T.m->lo[1])) {
-                        memcpy(q, p, sizeof(float) * 3);
+            // a joint's dot put somewhere, and what joins it with it: a bone's end is the next one's start
+            auto place = [&](int bone, int end, const float *to) {
+                float *d = end ? T.m->bones[bone].end : T.m->bones[bone].at;
+                memcpy(d, to, sizeof(float) * 3);
+                for (int c = 0; c < KB_COUNT; c++) {
+                    if (T.m->bones[c].have && KitBoneParent[c] == bone && end) {
+                        float *q = T.m->bones[c].at;
+                        if (fabsf(q[0] - d[0]) + fabsf(q[1] - d[1]) + fabsf(q[2] - d[2]) < 0.5f * (T.m->hi[1] - T.m->lo[1])) {
+                            memcpy(q, d, sizeof(float) * 3);
+                        }
+                    }
+                    if (T.m->bones[c].have && c == KitBoneParent[bone] && !end && bone != KB_UPPERARM_L && bone != KB_UPPERARM_R
+                        && bone != KB_THIGH_L && bone != KB_THIGH_R && bone < KB_JAW) {
+                        memcpy(T.m->bones[c].end, d, sizeof(float) * 3);
                     }
                 }
-                if (T.m->bones[c].have && c == KitBoneParent[T.drag_bone] && !T.drag_end && T.drag_bone != KB_UPPERARM_L
-                    && T.drag_bone != KB_UPPERARM_R && T.drag_bone != KB_THIGH_L && T.drag_bone != KB_THIGH_R && T.drag_bone < KB_JAW) {
-                    memcpy(T.m->bones[c].end, p, sizeof(float) * 3);
-                }
-            }
-            // and its other side's, mirrored
+            };
+            place(T.drag_bone, T.drag_end, p);
+            // and its other side's, mirrored across the hips (the body's middle)
             const char *name = KitBoneNames[T.drag_bone];
             size_t len = strlen(name);
-            if (T.mirror) {
-                for (int o = 0; o < KB_COUNT; o++) {
-                    const char *on = KitBoneNames[o];
-                    if (o != T.drag_bone && strlen(on) == len && strncmp(on, name, len - 1) == 0
-                        && ((name[len - 1] == 'l' && on[len - 1] == 'r') || (name[len - 1] == 'r' && on[len - 1] == 'l'))) {
-                        float *q = T.drag_end ? T.m->bones[o].end : T.m->bones[o].at;
-                        q[0] = -p[0], q[1] = p[1], q[2] = p[2];
-                    }
-                    // ears' and others' names end in a digit: ear_l1, ear_r1
-                    if (o != T.drag_bone && strlen(on) == len && len > 2 && name[len - 2] != on[len - 2]
-                        && strncmp(on, name, len - 2) == 0 && on[len - 1] == name[len - 1]
-                        && ((name[len - 2] == 'l' && on[len - 2] == 'r') || (name[len - 2] == 'r' && on[len - 2] == 'l'))) {
-                        float *q = T.drag_end ? T.m->bones[o].end : T.m->bones[o].at;
-                        q[0] = -p[0], q[1] = p[1], q[2] = p[2];
-                    }
+            float mid = T.m->bones[KB_HIPS].have ? T.m->bones[KB_HIPS].at[0] : (T.m->lo[0] + T.m->hi[0]) / 2;
+            for (int o = 0; T.mirror && o < KB_COUNT; o++) {
+                const char *on = KitBoneNames[o];
+                bool pair = o != T.drag_bone && strlen(on) == len
+                            && ((strncmp(on, name, len - 1) == 0 && ((name[len - 1] == 'l' && on[len - 1] == 'r') || (name[len - 1] == 'r' && on[len - 1] == 'l')))
+                                // (ears' and others' names end in a digit: ear_l1, ear_r1)
+                                || (len > 2 && strncmp(on, name, len - 2) == 0 && on[len - 1] == name[len - 1]
+                                    && ((name[len - 2] == 'l' && on[len - 2] == 'r') || (name[len - 2] == 'r' && on[len - 2] == 'l'))));
+                if (pair && T.m->bones[o].have) {
+                    float q[3] = { 2 * mid - p[0], p[1], p[2] };
+                    place(o, T.drag_end, q);
                 }
             }
         } else {
             T.drag_bone = -1;
             reweigh(T);
             T.dirty = T.unsaved = true;
+            if (SDL_getenv("HEROTOOL_MARKERS") != nullptr) {
+                for (int b = 0; b < KB_COUNT; b++) {
+                    const KitBone &k = T.m->bones[b];
+                    if (k.have) {
+                        printf("herotool: %s %.4f,%.4f,%.4f to %.4f,%.4f,%.4f\n", KitBoneNames[b], k.at[0], k.at[1], k.at[2], k.end[0], k.end[1], k.end[2]);
+                    }
+                }
+            }
         }
     }
     (void)title;
@@ -5690,17 +5752,18 @@ void model_page(Tool &T, SDL_Window *win) {
     ImVec2 p = ImGui::GetCursorScreenPos(), size(main_w, fmaxf(U(300), avail.y - lower - gap));
     ImDrawList *dl = ImGui::GetWindowDrawList();
     dl->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), PICTURE, U(30));
-    bool joints = T.model_view == 0 && !T.camera;
+    // the front and the side (their joints to drag) and the preview (the tool's own moves on it), side by side, all at once (the user's
+    // word, 2026-11-23: "the joints and preview should all show at the same time"), as big as the picture has room for over its foot's
+    // row: the legend in its bottom left corner, the preview's move and Play in its bottom right
+    float top = U(14), foot = ImGui::GetFrameHeight() + U(24), vg = U(14);
     {
-        // the views as big as the picture has room for: two side by side (Joints), or one (Preview)
-        int h = (int)fminf(U(600), size.y - (joints ? U(130) : U(40))), w = (int)fminf(h * 0.72f, joints ? (size.x - U(60)) / 2 : size.x - U(520));
+        int h = (int)fminf(U(600), size.y - top - foot), w = (int)fminf(h * 0.72f, (size.x - U(32) - 2 * vg) / 3);
         model_views_fit(T, std::max(w, 60), std::max(h, 80));
     }
     if (T.camera) {
         camera_view(T, win, p, size);
-    } else if (joints) {
-        // the front and the side, its dots on each, in the middle of the picture
-        float vg = U(14), x0 = p.x + (size.x - 2 * ViewW - vg) / 2, y0 = p.y + U(70);
+    } else {
+        float x0 = p.x + (size.x - 3 * ViewW - 2 * vg) / 2, y0 = p.y + top;
         const char *names[2] = { "Front", "Side" };
         View *views[2] = { &T.front, &T.side };
         for (int i = 0; i < 2; i++) {
@@ -5709,23 +5772,14 @@ void model_page(Tool &T, SDL_Window *win) {
             ImGui::SetCursorScreenPos(ImVec2(x0 + i * (ViewW + vg) + U(12), y0 + U(12)));
             tag(names[i], RAISED, MUTED);
         }
-        ImGui::SetCursorScreenPos(ImVec2(p.x + U(18), p.y + size.y - U(16) - U(28)));
-        ImGui::AlignTextToFramePadding();
-        ImGui::TextColored(V4(MUTED), "Drag the dots onto its joints:");
-        static const char *const Parts[4] = { "body", "arms", "legs", "jaw, ears, tail" };
-        const ImU32 Cols[4] = { IM_COL32(0xF2, 0xD5, 0x8A, 255), PERI, MINT, CORAL };
-        for (int i = 0; i < 4; i++) {
-            ImGui::SameLine(0, U(8));
-            tag(Parts[i], RAISED, INK, Cols[i]);
-        }
-    } else {
-        float x0 = p.x + (size.x - ViewW) / 2, y0 = p.y + (size.y - ViewH) / 2;
-        ImGui::SetCursorScreenPos(ImVec2(x0, y0));
+        ImGui::SetCursorScreenPos(ImVec2(x0 + 2 * (ViewW + vg), y0));
         view_window(T, T.play, "move", false, 2);
         T.play.zx = ViewW / 2.0f;
         T.play.zy = ViewH / 2.0f;
         look_around(T.play, T.turn);
-        ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - U(200) - U(10) - button_w("Play", true), p.y + U(16)));
+        ImGui::SetCursorScreenPos(ImVec2(x0 + 2 * (ViewW + vg) + U(12), y0 + U(12)));
+        tag("Preview", RAISED, MUTED);
+        ImGui::SetCursorScreenPos(ImVec2(p.x + size.x - U(16) - U(200) - U(10) - button_w("Play", true), p.y + size.y - U(12) - ImGui::GetFrameHeight()));
         if (menu_begin("##preview", KitMoves[T.move].name, U(200), RAISED)) {
             for (int i = 0; i < KitMoveCount; i++) {
                 if (menu_item(KitMoves[i].name, T.move == i)) {
@@ -5737,29 +5791,19 @@ void model_page(Tool &T, SDL_Window *win) {
         ImGui::SetItemTooltip("The tool's built-in animations on your model (on foot, its own uses them for any it hasn't got)");
         ImGui::SameLine(0, U(10));
         toggle("Play##model", &T.playing, IC_PLAY, nullptr);
-    }
-    if (!T.camera) {
-        // Joints or Preview: a pill, its picked half sliding to it (Joints for any model: a rigged one's are its rig's till one's moved)
-        ImVec2 q(p.x + U(16), p.y + U(16));
-        float w = U(104), h = U(38), pad = U(5);
-        dl->AddRectFilled(ImVec2(q.x, q.y + U(3)), ImVec2(q.x + 2 * w + 2 * pad, q.y + h + 2 * pad + U(3)), SHADOW, (h + 2 * pad) / 2);
-        dl->AddRectFilled(q, ImVec2(q.x + 2 * w + 2 * pad, q.y + h + 2 * pad), RAISED, (h + 2 * pad) / 2);
-        float x = ease_to(ImGui::GetID("##mvthumb"), (float)T.model_view, 14);
-        dl->AddRectFilled(ImVec2(q.x + pad + x * w, q.y + pad), ImVec2(q.x + pad + (x + 1) * w, q.y + pad + h), PERI, h / 2);
-        const char *tabs[2] = { "Joints", "Preview" };
-        for (int i = 0; i < 2; i++) {
-            ImGui::SetCursorScreenPos(ImVec2(q.x + pad + i * w, q.y + pad));
-            ImGui::PushID(i);
-            if (ImGui::InvisibleButton("##mv", ImVec2(w, h)) && T.model_view != i) {
-                T.model_view = i;
-                sound_cue(CUE_TAP);
-            }
-            ImGui::PopID();
-            ImVec2 ts = ImGui::CalcTextSize(tabs[i]);
-            dl->AddText(ImVec2(q.x + pad + i * w + (w - ts.x) / 2, q.y + pad + (h - ts.y) / 2), T.model_view == i ? PERI_INK : INK, tabs[i]);
+        // the legend: small, in the corner (the user's word, 2026-11-23: "the legend should be smaller and in the bottom left corner")
+        static const char *const Parts[4] = { "body", "arms", "legs", "jaw, ears, tail" };
+        const ImU32 Cols[4] = { IM_COL32(0xF2, 0xD5, 0x8A, 255), PERI, MINT, CORAL };
+        ImGui::PushFont(FontSmall);
+        float lh = ImGui::GetTextLineHeight(), lx = p.x + U(20), ly = p.y + size.y - U(12) - (ImGui::GetFrameHeight() + lh) / 2 - U(2);
+        for (int i = 0; i < 4; i++) {
+            dl->AddCircleFilled(ImVec2(lx + U(4), ly + lh / 2), U(3.5f), Cols[i]);
+            dl->AddText(ImVec2(lx + U(12), ly), MUTED, Parts[i]);
+            lx += U(12) + ImGui::CalcTextSize(Parts[i]).x + U(14);
         }
+        ImGui::PopFont();
     }
-    draw_toast(T, ImVec2(p.x + size.x - U(16), p.y + U(16) + (joints ? 0 : ImGui::GetFontSize() + U(18) + U(12))), U(420));
+    draw_toast(T, ImVec2(p.x + size.x - U(16), p.y + U(16)), U(420));
     ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + size.y + gap));
     float half = (main_w - gap) * 0.42f;
     face_card(T, win, half);
@@ -6182,18 +6226,21 @@ void start_screen(Tool &T, SDL_Window *win) {
             ImGui::Text("Delete %s?", f.name);
             ImGui::PopFont();
             ImGui::Spacing();
-            ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + U(420));
-            // (from the mods folder: mods/MOD/heroes/ID; the whole mod's folder if this hero's all there is in it)
-            char where[600];
-            bool whole = mod_goes(f);
-            if (whole) {
-                snprintf(where, sizeof(where), "Its mod's folder goes for good, %s/%s (this hero's all there is in it).", short_path(T.out),
-                         short_path(f.mod));
+            ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + U(560));
+            // (the full path going: its mod's folder if this hero's all there is in it, else its own; no more words, the user's word,
+            // 2026-11-23: "just put the full path its going to delete remove the words keep it simple")
+            char going[1400];
+            if (mod_goes(f)) {
+                snprintf(going, sizeof(going), "%s", f.mod);
             } else {
-                snprintf(where, sizeof(where), "Its folder goes for good, %s/%s/heroes/%s (the rest of its mod stays).", short_path(T.out),
-                         short_path(f.mod), f.id);
+                snprintf(going, sizeof(going), "%s/heroes/%s", f.mod, f.id);
             }
-            ImGui::TextColored(V4(MUTED), "%s This can't be undone.", where);
+#ifdef _WIN32
+            for (char *c = going; *c != 0; c++) {
+                *c = *c == '/' ? '\\' : *c; // (one way round on Windows)
+            }
+#endif
+            ImGui::TextColored(V4(MUTED), "%s", going);
             ImGui::PopTextWrapPos();
             ImGui::Spacing();
             if (button("Keep it##delete", RAISED, INK, U(130), IC_NONE, CUE_DROP) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
@@ -6652,8 +6699,8 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         T.page = SDL_atoi(SDL_getenv("HEROTOOL_PAGE"));
         T.kind = T.page >= 0 ? T.page : T.kind;
     }
-    /* a test's: HEROTOOL_JOINTS=1 shows Joints on Hero Setup; 2 takes its joints as placed by hand too (as a dot dragged), and with
-       HEROTOOL_SAVE_TO=FOLDER (no HEROTOOL_ADJUST) saves it there */
+    /* a test's: HEROTOOL_JOINTS=2 takes its joints as placed by hand (as a dot dragged), and with HEROTOOL_SAVE_TO=FOLDER (no
+       HEROTOOL_ADJUST) saves it there */
     if (SDL_getenv("HEROTOOL_JOINTS") != nullptr) {
         T.model_view = 0;
         if (SDL_atoi(SDL_getenv("HEROTOOL_JOINTS")) == 2 && T.m != nullptr) {
@@ -7057,11 +7104,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         lap(PR_GAME);
         if (T.m != nullptr && !T.home && T.page == PAGE_MODEL) {
-            // the front and side views at rest, or the third playing the move: as the model's page shows them, only while it's shown
-            if (T.model_view == 0 && !T.camera) {
+            // the front and side views at rest and the third playing the move, all at once as the model's page shows them, only while it's
+            // shown (and not its card's camera)
+            if (!T.camera) {
                 draw(T.m, T.m->pos, T.front, ren);
                 draw(T.m, T.m->pos, T.side, ren);
-            } else {
                 pose(T);
                 T.play.yaw = T.turn;
                 draw(T.m, T.posed, T.play, ren);
@@ -7084,7 +7131,11 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         /* a test's drag: HEROTOOL_DRAG=X0,Y0,X1,Y1[,SHIFT[,BUTTON]] presses the left button (or the right) at (X0, Y0) in the window once a game's shown, moves
            to (X1, Y1) over ten frames and lets go (Shift held if SHIFT is 1), as a person's mouse would, and keeps it there after (the
            real mouse left out: the SDL backend gives where it is on the screen while the window has the focus) */
-        if (SDL_getenv("HEROTOOL_DRAG") != nullptr && (drag_step >= 0 || T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr))) {
+        /* (or on Hero Setup, its views settled) */
+        static int setup_frames = 0;
+        setup_frames = !T.home && !T.choosing && T.page == PAGE_MODEL ? setup_frames + 1 : 0;
+        if (SDL_getenv("HEROTOOL_DRAG") != nullptr
+            && (drag_step >= 0 || T.adjusting || (T.page >= 0 && T.have_made[T.kind] && T.maker == nullptr) || setup_frames > 5)) {
             /* (a sixth, BUTTON: 0 the left, 1 the right) */
             float d[6] = { 0, 0, 0, 0, 0, 0 };
             SDL_sscanf(SDL_getenv("HEROTOOL_DRAG"), "%f,%f,%f,%f,%f,%f", &d[0], &d[1], &d[2], &d[3], &d[4], &d[5]);
@@ -7099,7 +7150,7 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         }
         /* a test's wheel: HEROTOOL_WHEEL=X,Y,N turns the mouse wheel N notches at (X, Y) once a game's being adjusted, the mouse kept there */
         static int wheel_step = -1;
-        if (SDL_getenv("HEROTOOL_WHEEL") != nullptr && SDL_getenv("HEROTOOL_DRAG") == nullptr && (wheel_step >= 0 || T.adjusting)) {
+        if (SDL_getenv("HEROTOOL_WHEEL") != nullptr && SDL_getenv("HEROTOOL_DRAG") == nullptr && (wheel_step >= 0 || T.adjusting || setup_frames > 5)) {
             float w[3] = { 0, 0, 0 };
             SDL_sscanf(SDL_getenv("HEROTOOL_WHEEL"), "%f,%f,%f", &w[0], &w[1], &w[2]);
             wheel_step = wheel_step < 100 ? wheel_step + 1 : wheel_step;
