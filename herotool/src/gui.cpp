@@ -4626,7 +4626,7 @@ SDL_EnumerationResult SDLCALL found_hero(void *ctx, const char *dir, const char 
     snprintf(path, sizeof(path), "%s%s/hero.json", dir, name);
     void *text = SDL_LoadFile(path, &n);
     if (text != nullptr && NumFound < MaxFound) {
-        PackInfo info;
+        static PackInfo info; // (static: big, its moves adjusted at most PACK_MAX_ADJUSTS)
         char why[256];
 
         const char *id = info.id[0] ? info.id : name;
@@ -4715,7 +4715,7 @@ void load_pack(Tool &T, const Found &f) {
     }
     snprintf(path, sizeof(path), "%s/heroes/%s/hero.json", f.mod, f.id);
     void *text = SDL_LoadFile(path, &n);
-    PackInfo info;
+    static PackInfo info; // (static: big, its moves adjusted at most PACK_MAX_ADJUSTS)
     if (text != nullptr && pack_info_read((const char *)text, n, &info, why, sizeof(why))) {
         SDL_strlcpy(T.id, info.id, sizeof(T.id));
         SDL_strlcpy(T.name, info.name, sizeof(T.name));

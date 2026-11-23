@@ -42,7 +42,7 @@ typedef struct {
 /* A change to its pose in a game's move, on top of what the game makes of it there (hero.json's "adjust", made with the hero tool's
  * animation tools: docs/HERO_PACKS.md, Adjusting its moves; platform/heroadjust.c applies them). Its turns and moves are about the
  * hero's own axes as it stands at rest, in the game's: x across (to its left), y down, z to its back. Several at a frame add up. */
-#define PACK_MAX_ADJUSTS 256
+#define PACK_MAX_ADJUSTS 1024 /* (Bobby has 704: his ears flop in every jump; 256 till 2026-11-23) */
 #define PACK_ADJUST_NAME 32
 typedef struct {
     int kind;                       /* PACK_KINDS' */

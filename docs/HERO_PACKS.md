@@ -237,7 +237,13 @@ Painter page's timeline, Left ear 1 and the rest, to change there). In each of t
 round and round; JUMP; WIN; TAZING's little hops), keyed to it by his hips' height each frame (its pose dump): each ear's upper bone
 lifted out and up in the air, up to 45 to 50 degrees at the top (a turn about z, the left ear's less than 0 and the right's more),
 and pressed down a little as he lands and pushes off; its lower bone half as much a frame later, so it flops. Each key `blend`s into
-the next. DAZED has none. The game made with them changes his pogo model alone, every other kind byte for byte as before.
+the next. DAZED has none. And in every other game's jumps too (the user's word, the same day: "need it for all games jumping
+animations too"), found by how far each move lifts his hips: on foot his own JUMP (a crouch, in the air from 18 to 51 of its 73
+frames, down at 54) and WIN (a hop each 30 frames), whose lower bones lag two frames, as a frame there is half a game's; Dragon Drop's
+dino's RUN (its gallop), SLIDE and WIN; Keg Kaboom's JUMP, WIN, HIT (thrown up and down) and MEDIUM (the walk with the keg, a little
+each step); Mallet Mash's MEDIUM and HIT; and the falls, Crash Dash's and Splash Dash's FALL, and the dolphin's leap, Splash Dash's
+WIN. 704 keys in all (PACK_MAX_ADJUSTS 1024, 256 till then), the polar bear, Ballistix and the tank none: made by the game, those
+three and the pogo are as they were, and making him still takes about a second.
 
 His ears (2026-11-22, the user's word: "his ears are not wired up correctly i cant move them"): their markers ran down the back of
 his head, behind the flaps and short of their ends, so most of each long flap went with his head and its lower half with his chest.
