@@ -4,7 +4,7 @@
 
 Crash Bash (USA, `SCUS_945.70`) for the PlayStation, decompiled to C. It gives you two things:
 
-- **A native port**: a 64-bit game for Windows, Linux and Android, with widescreen, mods, extra heroes and online play. Not an emulator.
+- **A native port**: a 64-bit game for Windows, Linux and Android, with widescreen, mods, heroes of your own and online play. Not an emulator.
 - **A matching decomp**: C that rebuilds the retail disc byte for byte.
 
 You need your own copy of the game for either. None of its files are included.
@@ -32,7 +32,7 @@ On Android, install the `.apk` from the same release, and the first time it asks
 | **Upscaling**     | Textures at 2x or 4x                                   |
 | **Icons**         | Crisp hero and boss pictures, or the original's        |
 | **Mods**          | Textures, game files and patches from zips, on a Mods page |
-| **Extra heroes**  | Ripper Roo and Pinstripe, from your own Crash Bandicoot (USA), in every game |
+| **Custom heroes** | Your own, from a 3D model, in every game, made with the hero tool; Bobby, a dachshund, comes as an example |
 | **Online play**   | Up to four players on their own machines, with no servers: by your network, a join code or a virtual network |
 | **Controllers**   | Up to four players on one machine, with a screen to put the controllers in order; analog sticks, with a deadzone of your choosing, and rumble, or the keyboard; every key and button can be changed; the menus work with the mouse too |
 | **Touch**         | On Android, faint buttons over the picture, or a controller |
@@ -52,6 +52,12 @@ ONLINE, in the menu the game opens with, has HOST GAME and JOIN GAME. Everyone n
 - **Where that can't work**, as on a phone's hotspot or with UPnP turned off, everyone can join the same virtual network (Hamachi, Radmin VPN, ZeroTier or Tailscale). The host's screen shows the address to join at there.
 
 Every machine runs the whole game and only the button presses travel, so nothing goes through a server. Each player has a small tag over their picture, its dot green, orange or red with their connection, and the sound and picture settings stay each player's own. The release's `README.txt` says more, and [docs/PORT.md](docs/PORT.md) (Online play) has how it works.
+
+### Custom heroes
+
+The port comes with a **hero tool** (`herotool.exe`, next to the game, or HERO TOOL on the Mods page) for making heroes of your
+own from a 3D model (`.glb`). A hero plays like one of the originals you pick, with your model, card and sounds, in every game and
+online. [herotool/README.md](herotool/README.md) shows how to use it.
 
 ### Build the port yourself
 
@@ -100,7 +106,9 @@ To keep game files out of your commits: `git config core.hooksPath tools/hooks`.
 |---|---|
 | [PORT.md](docs/PORT.md) | The port: its design, building, running and testing it, and online play |
 | [MODDING.md](docs/MODDING.md) | Making mods for the port |
-| [EXTRA_HEROES.md](docs/EXTRA_HEROES.md) | The port's extra heroes, and adding one |
+| [herotool/README.md](herotool/README.md) | Using the hero tool: making a hero of your own |
+| [HERO_PACKS.md](docs/HERO_PACKS.md) | Custom heroes in detail: the pack format, how the game makes them, the tool |
+| [EXTRA_HEROES.md](docs/EXTRA_HEROES.md) | The retired disc heroes (Ripper Roo and Pinstripe), for the record |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | How the game works |
 | [PLAYING.md](docs/PLAYING.md) | Playing a disc build, editing the game data |
 | [ASSETS.md](docs/ASSETS.md) | The game's file formats |

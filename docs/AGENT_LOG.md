@@ -667,6 +667,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: herotool/README.md, a how-to for the hero tool, linked from the main README (Custom heroes; its features row and docs
+  table no longer name Roo and Pinstripe).
 - 2026-11-23: Fixed the hero list taking each hero for a copy of the one read before it (found_hero read the id before reading
   its hero.json; broken by making its PackInfo static): the frog was folded into Bobby, who showed twice, and deleting the phantom did nothing.
 - 2026-11-23: Bobby's ears flop in every game's jumps (704 keys, bobby-adjust.json: on foot, the dino, the keg and mallet games,
