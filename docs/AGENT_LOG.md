@@ -667,6 +667,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-23: Straighten did nothing from its menu: the left click on the menu also reached the view under it, which let go of the
+  joints picked and began a box first. The views take a click only when they're hovered now. A lesson: test a menu by clicking it
+  (HEROTOOL_DRAG2 right-click, DRAG3 the item), not by calling what it calls.
 - 2026-11-23: Straighten snaps the picked joints onto the grid's nearest line (up and down or across, by their spread; their middle
   with the grid off): between the farthest two it failed on the spine (the front view's tail and jaw dots boxed with it). That's Line up
   between the ends now. A test window's size follows the screen the mouse is on: take a joint's place and drag in the same go.

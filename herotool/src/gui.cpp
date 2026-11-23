@@ -3976,6 +3976,15 @@ bool joints_to_grid(Tool &T, int which) {
     reweigh(T);
     T.dirty = T.unsaved = true;
     snprintf(T.status, sizeof(T.status), "Straightened %d joints, %s", n, axis == 0 ? "up and down" : "across");
+    if (SDL_getenv("HEROTOOL_MARKERS") != nullptr) {
+        printf("herotool: %s\n", T.status);
+        for (int b = 0; b < KB_COUNT; b++) {
+            const KitBone &k = T.m->bones[b];
+            if (k.have) {
+                printf("herotool: now %s %.4f,%.4f,%.4f\n", KitBoneNames[b], k.at[0], k.at[1], k.at[2]);
+            }
+        }
+    }
     return true;
 }
 
@@ -4151,8 +4160,11 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
     // a click: on a dot, it's taken (with Ctrl or Shift, added to those picked or let go of), or those picked, it among them, all moved
     // together; on nothing, a box begun to pick those in it (with Ctrl or Shift, as well as those picked)
     ImGuiIO &kio = ImGui::GetIO();
+    // (only a click on the view itself: one on its menu over it had let go of those picked and begun a box, before the menu's Straighten
+    // saw them, so it did nothing; the user's word, 2026-11-23: "its not working on the body. the nodes never move")
+    bool on_view = in_view && ImGui::IsItemHovered();
     bool adding = kio.KeyCtrl || kio.KeyShift;
-    if (in_view && T.drag_bone < 0 && T.jbox_view < 0 && ImGui::IsMouseClicked(0)) {
+    if (on_view && T.drag_bone < 0 && T.jbox_view < 0 && ImGui::IsMouseClicked(0)) {
         auto to_hand = [&]() {
             // a rigged model's joints placed by hand: the tool weights it to them from now (its own clips kept, export_pack)
             if (T.rigged) {
@@ -4182,12 +4194,12 @@ void view_window(Tool &T, View &v, const char *title, bool markers, int which) {
             T.jbox_view = which, T.jbox_x = mouse.x, T.jbox_y = mouse.y;
         }
     }
-    if (pick_bone >= 0 && in_view && ImGui::IsItemHovered() && T.drag_bone < 0 && T.jbox_view < 0) {
+    if (pick_bone >= 0 && on_view && T.drag_bone < 0 && T.jbox_view < 0) {
         ImGui::SetTooltip("%s%s", KitBoneNames[pick_bone], pick_end ? " (its end)" : "");
     }
     // a right click (not a drag: that moves the view) opens the joints' menu, a dot under it not picked taken alone first
     ImGui::PushID(which);
-    if (in_view && ImGui::IsMouseReleased(ImGuiMouseButton_Right) && kio.MouseDragMaxDistanceSqr[ImGuiMouseButton_Right] < U(4) * U(4)
+    if (on_view && ImGui::IsMouseReleased(ImGuiMouseButton_Right) && kio.MouseDragMaxDistanceSqr[ImGuiMouseButton_Right] < U(4) * U(4)
         && T.drag_bone < 0) {
         if (pick_bone >= 0 && !joint_picked(T, pick_bone, pick_end)) {
             T.joint_sel.assign(1, { pick_bone, pick_end });
@@ -7622,6 +7634,10 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
             if (SDL_getenv("HEROTOOL_DRAG2") != nullptr && drag_step >= 18) {
                 spec = SDL_getenv("HEROTOOL_DRAG2"), st = drag_step - 18;
             }
+            /* (and HEROTOOL_DRAG3, a third after the second: a click on a menu the second opened) */
+            if (SDL_getenv("HEROTOOL_DRAG3") != nullptr && drag_step >= 36) {
+                spec = SDL_getenv("HEROTOOL_DRAG3"), st = drag_step - 36;
+            }
             SDL_sscanf(spec, "%f,%f,%f,%f,%f,%f", &d[0], &d[1], &d[2], &d[3], &d[4], &d[5]);
             ImGuiIO &dio = ImGui::GetIO();
             // Shift down the frame before the press and up the frame after the release, and the mouse before it each frame: ImGui
@@ -7683,7 +7699,8 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         SDL_RenderClear(ren);
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), ren);
         lap(PR_DRAW);
-        if (shot != nullptr && T.maker == nullptr && ++frames == 40) {
+        /* (HEROTOOL_SHOT_FRAME=N takes it N frames in, not 40: after a test's drags) */
+        if (shot != nullptr && T.maker == nullptr && ++frames == (SDL_getenv("HEROTOOL_SHOT_FRAME") ? SDL_atoi(SDL_getenv("HEROTOOL_SHOT_FRAME")) : 40)) {
             SDL_Surface *grab = SDL_RenderReadPixels(ren, nullptr);
 
             if (grab != nullptr) {
