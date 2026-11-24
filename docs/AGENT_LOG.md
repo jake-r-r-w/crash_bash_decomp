@@ -677,7 +677,7 @@ Newest first, a few lines each. Details are in the commits.
 
 - 2026-11-24: Releases have the hero tool in its own herotool/ folder with Bobby in its heroes/, and none in the game's mods/ (the
   user's word): he goes in only by the tool's Add to game. The launcher looks in herotool/ first; the tool alone takes the game one
-  folder up. Builds no longer copy him into mods/; Android still does, once (no tool there). Checked on a packaged copy: launcher's
+  folder up. Builds no longer copy him into mods/, nor does Android (its APK has no bobby.zip and no examples_given setting since, the user's word). Checked on a packaged copy: launcher's
   HERO TOOL starts it, Add to game puts Bobby in ../mods switched on. Next release previewed (1.5.0 notes drafted in scratch/).
 
 - 2026-11-24: The log has every setting (start, PLAY, online), each controller (name, SDL kind, USB ids, wired or wireless, player),

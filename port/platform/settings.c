@@ -39,7 +39,6 @@ void settings_defaults(void) {
     Current.online_sfx = 100;
     Current.online_stereo = 1;
     Current.buttons_apart = 0;
-    Current.examples_given = 0;
     Current.stick_deadzone = 0;
     Current.button_prompts = PROMPTS_AUTO;
     controls_default_keys(Current.keys);
@@ -139,8 +138,6 @@ void settings_load(void) {
             Current.icons = a != 0;
         } else if (sscanf(line, "buttons_apart=%d", &a) == 1) {
             Current.buttons_apart = a != 0;
-        } else if (sscanf(line, "examples_given=%d", &a) == 1) {
-            Current.examples_given = a != 0;
         } else if (sscanf(line, "button_prompts=%15s", word) == 1 && prompts_from_id(word) >= 0) {
             Current.button_prompts = prompts_from_id(word);
         } else if (sscanf(line, "stick_deadzone=%d", &a) == 1 && a >= 0 && a <= 90) {
@@ -251,9 +248,6 @@ static void save_settings(void) {
     fprintf(f, "; The heroes' and bosses' icons made crisp\nicons=%d\n\n", Current.icons);
     fprintf(f, "; Android: the touch buttons in a part of the screen of their own, not over the picture\nbuttons_apart=%d\n",
             Current.buttons_apart);
-#ifdef SDL_PLATFORM_ANDROID
-    fprintf(f, "; Android: the example mods have been put in the mods folder (once)\nexamples_given=%d\n", Current.examples_given);
-#endif
     fprintf(f, "; The buttons the game's text shows: auto (what player 1 last pressed with), original, xbox, playstation, nintendo, "
                "steamdeck or keyboard\nbutton_prompts=%s\n", prompts_id(Current.button_prompts));
     fprintf(f, "; How far a stick has to move to count, in percent, up to 90: 0 is the game's own\nstick_deadzone=%d\n\n",

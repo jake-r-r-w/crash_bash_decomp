@@ -337,8 +337,9 @@ goes in the game only by the tool's Add to game (`package.mjs`; the user's word,
 with the bobby ... remove bobby from the mods folder so that someone would have to go into the tool to add him"). The launcher's HERO
 TOOL looks for `herotool/herotool.exe`, then `herotool.exe` beside the program (`mods.c`, `hero_tool_path`), and the tool run on its own
 takes the game and its `mods` one folder up when the game isn't beside it. A build has Bobby beside its tool, once
-(`port/cmake/copy_if_missing.cmake`: not again over a Bobby the tool has saved), and not in its `mods/` either. Android still puts
-him in its mods folder once, from the APK (`mods.c`, `examples_given`), as it has no tool. The welcome page's foot shows both folders, **Your heroes** (beside the tool) and **The game's mods** (Add
+(`port/cmake/copy_if_missing.cmake`: not again over a Bobby the tool has saved), and not in its `mods/` either. Nor does Android
+put him in its mods folder any more (it did once, from the APK, till 2026-11-24, the user's word): with no tool there, his mod is
+copied over from a PC as any hero's is. The welcome page's foot shows both folders, **Your heroes** (beside the tool) and **The game's mods** (Add
 to game's; another can be typed), each with a button that opens it.
 **Add to game** (the user's word, 2026-11-23: Save keeps it in the tool, a button installs it), greyed out till it's saved as it is
 ("the add to game button should be greyed out until saved"; `saved_in_tool`: only a Save marks it saved, not the copy the games make

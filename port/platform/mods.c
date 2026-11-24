@@ -156,39 +156,6 @@ static void default_roots(void) {
         return;
     }
     n = standard_places(places, "mods");
-#ifdef SDL_PLATFORM_ANDROID
-    /* The example mods (Bobby, docs/HERO_PACKS.md), in the APK as zips (port/android/build.sh), put in the mods folder once
-       (Settings.examples_given; an update from before them too), as the Windows and Linux downloads come with them in theirs: a player
-       who takes one out keeps it out */
-    if (!settings()->examples_given) {
-        SDL_PathInfo info;
-
-        if ((SDL_GetPathInfo(places[0], &info) && info.type == SDL_PATHTYPE_DIRECTORY) || SDL_CreateDirectory(places[0])) {
-            static const char *const Examples[] = { "bobby.zip" };
-            size_t k, size;
-            int given = 1;
-
-            for (k = 0; k < sizeof(Examples) / sizeof(Examples[0]); k++) {
-                void *bytes = SDL_LoadFile(Examples[k], &size);
-                char to[1100];
-
-                SDL_snprintf(to, sizeof(to), "%s%s", places[0], Examples[k]);
-                if (bytes == NULL || !SDL_SaveFile(to, bytes, size)) {
-                    fprintf(stderr, "mods: the example %s couldn't be put in %s: %s\n", Examples[k], places[0], SDL_GetError());
-                    given = 0;
-                } else {
-                    printf("mods: the example %s put in %s\n", Examples[k], places[0]);
-                }
-                SDL_free(bytes);
-            }
-            /* (tried again next time if one couldn't be) */
-            if (given) {
-                settings()->examples_given = 1;
-                settings_save();
-            }
-        }
-    }
-#endif
     for (i = 0; i < n; i++) {
         add_root(places[i], 0);
     }
