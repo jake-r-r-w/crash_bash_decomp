@@ -10,6 +10,8 @@ void crashlog_open(const char *folder, int testing);
 const char *crashlog_path(void);
 /* The first lines: the version and build, and the machine it's on */
 void crashlog_system(void);
+/* The system it's on: Windows 11 Pro 24H2, build ...; Debian GNU/Linux 12, Linux ...; Android 14 (API 34), maker model */
+const char *crashlog_system_name(void);
 /* Catches a crash, to say what and where in the log, and on a player's run, in a message too */
 void crashlog_install(void);
 /* The time of day, for a line of the log */

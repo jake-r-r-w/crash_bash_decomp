@@ -1017,6 +1017,7 @@ static void start_game(void) {
         printf("launcher: play at vblank %d\n", platform_vblanks());
     }
     settings_save();
+    settings_log("play");
     settings()->launcher = 0;
     if (settings()->test_restart) {
         platform_restart(0);

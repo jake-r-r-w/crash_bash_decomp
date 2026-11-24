@@ -486,6 +486,7 @@ void platform_online_start(void) {
     OnlineFromLauncher = 1;
     settings()->launcher = 0;
     settings()->game_clock_sound = 1;
+    settings_log("online");
     host_audio_by_clock(1);
     net_record();
     platform_restart(1);
@@ -1062,12 +1063,7 @@ int main(int argc, char **argv) {
     memcpy(settings()->test_extra, extra, sizeof(extra));
     memcpy(settings()->test_heroes, heroes, sizeof(heroes));
     {
-        const Settings *s = settings();
-
-        printf("settings: %s %dx%d, render %dx%d, %d FPS, vsync %d, widescreen %d, antialias %d, smooth %d, upscale %d, icons %d, "
-               "extra heroes %d, mods %d\n", s->fullscreen ? "fullscreen" : s->maximized ? "maximised" : "window", s->window_w, s->window_h,
-               s->render_w, s->render_h, s->fps, s->vsync, s->widescreen, s->antialias, s->smooth, s->upscale, s->icons, s->extra_heroes,
-               s->num_mods);
+        settings_log("start");
         /* where everything's kept, for a report: beside the program (portable.txt or the DATA page) or in the user's folder */
         if (!testing) {
             static const char *const where[NUM_WHERE] = { "beside the program", "in the user's folder", "in a folder of the player's" };

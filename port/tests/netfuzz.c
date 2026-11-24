@@ -83,6 +83,11 @@ int platform_local_pad_rumbles(int port) {
     return port == 0;
 }
 
+/* the machine in a line, for the others' logs */
+void host_about(char *out, size_t size) {
+    snprintf(out, size, "a fuzzer");
+}
+
 int platform_idle(void) {
     return 1;
 }

@@ -74,6 +74,8 @@ void settings_save(void);
 /* The settings that change the game, as another machine has them, for an online game: the player's own are still what's saved. */
 void settings_borrow(int skip_intro, int skip_loading, int cheat_menu, int extra_heroes);
 void settings_return(void);
+/* Every setting a player can change, into the run's log: when says why (start, play, online) */
+void settings_log(const char *when);
 
 /* The window and renderer take up the settings as soon as they can. */
 void settings_apply(void);

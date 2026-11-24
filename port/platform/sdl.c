@@ -4,6 +4,7 @@
 #include <SDL3/SDL_main.h>
 #include <stdio.h>
 #include "controllers.h"
+#include "crashlog.h"
 #include "controls.h"
 #include "platform.h"
 #include "gfx.h"
@@ -466,11 +467,66 @@ void host_pretend_stick(int n, int x, int y) {
 
 /* --- plugging in and pulling out --- */
 
+/* What a controller is, for a run's log: its name, its kind as SDL knows it (xbox360, ps5, switchpro...), its USB ids and how it's
+   connected, so a report says what was in the player's hands. */
+static void controller_text(const Controller *c, char *out, size_t size) {
+    const char *name = SDL_GetGamepadName(c->pad), *kind = SDL_GetGamepadStringForType(SDL_GetGamepadType(c->pad));
+    SDL_JoystickConnectionState how = SDL_GetGamepadConnectionState(c->pad);
+
+    snprintf(out, size, "%s (%s, %04X:%04X, %s%s)", name != NULL ? name : "?", kind != NULL ? kind : "unknown kind",
+             (unsigned)SDL_GetGamepadVendor(c->pad), (unsigned)SDL_GetGamepadProduct(c->pad),
+             how == SDL_JOYSTICK_CONNECTION_WIRED ? "wired" : how == SDL_JOYSTICK_CONNECTION_WIRELESS ? "wireless" : "connection unknown",
+             SDL_IsJoystickVirtual(c->id) ? ", pretend" : "");
+}
+
 static void controller_log(const char *what, const Controller *c, int slot) {
+    char text[256];
+
     if (settings()->no_save) {
         printf("pads: %s %s player %d at vblank %d\n", SDL_GetGamepadNameForID(c->id) != NULL ? SDL_GetGamepadNameForID(c->id) : "?",
                what, slot + 1, platform_vblanks());
     }
+    controller_text(c, text, sizeof(text));
+    printf("controller: %s %s player %d\n", text, what, slot + 1);
+}
+
+/* This machine for another's log, in an online game (net.c): its system, what player 1 last played with, and every controller */
+void host_about(char *out, size_t size) {
+    static const char *const device[] = { "keyboard", "mouse", "controller", "touch buttons" };
+    size_t at;
+    int i, any = 0;
+
+    at = (size_t)snprintf(out, size, "%s; player 1 on the %s; controllers by player:", crashlog_system_name(),
+                          device[host_prompt_device() & 3]);
+    for (i = 0; i < MAX_PADS && at < size; i++) {
+        if (Slots[i].pad != NULL) {
+            const char *name = SDL_GetGamepadName(Slots[i].pad), *kind = SDL_GetGamepadStringForType(SDL_GetGamepadType(Slots[i].pad));
+
+            at += (size_t)snprintf(out + at, size - at, "%s %d %s (%s)", any++ ? "," : "", i + 1, name != NULL ? name : "?",
+                                   kind != NULL ? kind : "unknown kind");
+        }
+    }
+    if (!any && at < size) {
+        snprintf(out + at, size - at, " none");
+    }
+}
+
+/* What player 1 is playing with, into the log whenever it changes: the keyboard, the mouse, a controller (which) or the touch buttons */
+static void device_log(void) {
+    static int logged = -1;
+    char text[256];
+
+    if (P1Device < 0 || P1Device == logged) {
+        return;
+    }
+    logged = P1Device;
+    if (P1Device == PROMPT_DEVICE_PAD && Slots[0].pad != NULL) {
+        controller_text(&Slots[0], text, sizeof(text));
+    } else {
+        snprintf(text, sizeof(text), "%s", P1Device == PROMPT_DEVICE_KEYS ? "the keyboard" : P1Device == PROMPT_DEVICE_MOUSE ? "the mouse"
+                 : P1Device == PROMPT_DEVICE_TOUCH ? "the touch buttons" : "a controller");
+    }
+    printf("input: player 1 is playing with %s\n", text);
 }
 
 /* Which of the machine's controllers this copy of the game uses (--controllers), for several copies on one PC, as when an online game's
@@ -572,6 +628,11 @@ static void open_pads(void) {
             plug(ids[i]);
         }
         SDL_free(ids);
+    }
+    for (i = 0; i < MAX_PADS && Slots[i].pad == NULL; i++) {
+    }
+    if (i == MAX_PADS) {
+        printf("controller: none plugged in\n");
     }
 }
 
@@ -757,6 +818,7 @@ int host_poll(void) {
     int resized = 0;
 
     pretend_clicks_age();
+    device_log();
 
     while (SDL_PollEvent(&e)) {
         switch (e.type) {

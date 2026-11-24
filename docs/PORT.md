@@ -529,7 +529,17 @@ another file stayed.
 What it says, so that a report needs nothing else (added after two reports of 1.3.0 crashing, 2026-11-19, whose log had none of it):
 
 - First, the version, the commit it was built from (`+` for changes not committed, from CMake's configure), the system and its build,
-  the CPU, the memory, the picture settings, and the GPU with its driver (`gfx:`).
+  the CPU, the memory, and the GPU with its driver (`gfx:`).
+- Every setting a player can change (`settings (start):`, `platform/settings.c`, `settings_log`): picture, frame rate, the intro and
+  loading, the cheat menu, button prompts, the stick's deadzone, online sound, every key and controller button, and the mods on and
+  off. Again as `settings (play):` when the launcher's PLAY starts the game, and `settings (online):` when an online game does, as
+  the launcher may have changed them (added for a report of an online game parting, 2026-11-24).
+- The controllers (`controller:`, in `platform/sdl.c`): each as it's plugged in or pulled out, by its name, SDL's kind for it (xbox360,
+  ps5, switchpro...), its USB ids, wired or wireless, and the player it is; `none plugged in` at the start if there are none. And
+  `input:` whenever player 1 changes what they play with: the keyboard, the mouse, the touch buttons or a controller (which).
+- Online, each machine tells the others what it is (`host_about`, in the join and the welcome, 250 characters at most, and only what
+  prints is kept of what arrives): its system, what player 1 plays with, and every controller by player. The host's log says it of
+  each joiner (`online: machine 2 is ...`), and a joiner's of the host (`online: the host, machine 1, is ...`).
 - A line as each level starts: its name and mode, the time, how many players and in teams, who the computer has, the heroes,
   Adventure, online.
 - A crash (`crash:` lines): what it was (an access violation, a stack overflow, a signal) and whether it was reading, writing or

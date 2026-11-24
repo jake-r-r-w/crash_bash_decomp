@@ -282,11 +282,21 @@ static void cpu_text(char *out, int size) {
 }
 #endif
 
+/* The system's name, as the log's first lines have it: an online game tells the others (net.c) */
+const char *crashlog_system_name(void) {
+    static char os[400];
+
+    if (os[0] == 0) {
+        system_text(os, sizeof(os));
+    }
+    return os;
+}
+
 void crashlog_system(void) {
     char when[32], os[400], cpu[160];
 
     crashlog_time(when, sizeof(when));
-    system_text(os, sizeof(os));
+    SDL_strlcpy(os, crashlog_system_name(), sizeof(os));
     cpu_text(cpu, sizeof(cpu));
     printf("Crash Bash port %s (commit %s, built %s), started %s\n", BASH_VERSION, BASH_COMMIT, __DATE__, when);
     printf("system: %s\n", os);

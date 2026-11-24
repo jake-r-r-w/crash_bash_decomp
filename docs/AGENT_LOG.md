@@ -103,6 +103,14 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
+- **Port, online: a player's 1.4.1 Adventure parted as Beach Ball began, three games running (2026-11-22, a joiner's log the user
+  passed on):** `the games differ` a second or two after BEACH BALL loads, every other level fine. Not reproduced (2026-11-24) with
+  two copies here online or by offline fingerprints, under the joiner's picture settings, 30/60/120 FPS, sound by the game's clock, a
+  3-step delay with lag and loss, every challenge, Bobby, a lost sector in each file only Beach Ball reads, or Linux against Windows.
+  Not covered: real players' presses in Beach Ball (the test player hands its hero to the computer), and what the host ran (unknown;
+  the joiner waited 438 s of a 12-minute game for it). Next: the reporter's `last-online-game.txt` (saves folder), replayed here
+  under each of those to see which changes the fingerprint; logs now name each machine's system and controllers (PORT.md, The log).
+
 - **Port, online play, left from step 4:** nobody has played through the launcher's ONLINE screens yet but the tests. A second game
   hosted and joined after the first, in the same run, is in `online` now, and so is the host's code typed with a controller.
   Not tried: hosting for real on a network (the tests'
@@ -666,6 +674,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-24: The log has every setting (start, PLAY, online), each controller (name, SDL kind, USB ids, wired or wireless, player),
+  what player 1 plays with, and online, each machine's system and controllers from the others (`host_about` in the join and welcome).
+  From a report of an online Adventure parting at Beach Ball, not reproduced (Open leads). fuzz, online, pads, controls, menu pass.
 
 - 2026-11-23: herotool/README.md, a how-to for the hero tool, linked from the main README (Custom heroes; its features row and docs
   table no longer name Roo and Pinstripe).

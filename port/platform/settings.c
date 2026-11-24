@@ -276,3 +276,34 @@ static void save_settings(void) {
     }
     fclose(f);
 }
+
+/* Every setting a player can change, for a run's log (crashlog.c): what a report needs to try the same thing. As the game starts, and
+   again when the launcher's PLAY or an online game starts it, as the launcher may have changed them. */
+void settings_log(const char *when) {
+    const Settings *s = &Current;
+    char line[2048];
+    size_t at;
+    int i;
+
+    printf("settings (%s): %s %dx%d%s, render %dx%d, %d FPS, vsync %d, widescreen %d, antialias %d, smooth %d, upscale %d, icons %d\n",
+           when, s->fullscreen ? "fullscreen" : "window", s->window_w, s->window_h, s->maximized ? " maximised" : "", s->render_w,
+           s->render_h, s->fps, s->vsync, s->widescreen, s->antialias, s->smooth, s->upscale, s->icons);
+    printf("settings (%s): skip intro %d, skip loading %d, cheat menu %d, extra heroes %d, prompts %s, stick deadzone %d%%, "
+           "touch buttons apart %d, online sound: music %d, fx %d, %s\n", when, s->skip_intro, s->skip_loading, s->cheat_menu,
+           s->extra_heroes, prompts_id(s->button_prompts), s->stick_deadzone, s->buttons_apart, s->online_music, s->online_sfx,
+           s->online_stereo ? "stereo" : "mono");
+    for (at = 0, i = 0; i < NUM_CONTROLS && at < sizeof(line); i++) {
+        at += (size_t)snprintf(line + at, sizeof(line) - at, "%s%s %s", i ? ", " : "", control_file_id(i), controls_key_id(s->keys[i]));
+    }
+    printf("settings (%s): keys: %s\n", when, line);
+    for (at = 0, i = 0; i < NUM_CONTROLS && at < sizeof(line); i++) {
+        at += (size_t)snprintf(line + at, sizeof(line) - at, "%s%s %s", i ? ", " : "", control_file_id(i),
+                               controls_button_id(s->buttons[i]));
+    }
+    printf("settings (%s): controller buttons: %s\n", when, line);
+    line[0] = 0;
+    for (at = 0, i = 0; i < s->num_mods && at < sizeof(line); i++) {
+        at += (size_t)snprintf(line + at, sizeof(line) - at, "%s%s %s", i ? ", " : "", s->mods[i].id, s->mods[i].on ? "on" : "off");
+    }
+    printf("settings (%s): mods: %s\n", when, s->num_mods != 0 ? line : "none");
+}

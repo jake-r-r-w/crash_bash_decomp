@@ -50,6 +50,7 @@ typedef int SOCKET;
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include "controllers.h"
 #include "mods.h"
 #include "net.h"
 #include "platform.h"
@@ -62,6 +63,7 @@ typedef int SOCKET;
 #define MACHINES 4
 #define PADS 4
 #define HEROES_SAID 16 /* a joiner's hero packs it says it has, at most */
+#define ABOUT_MOST 250 /* a machine in a line, for the others' logs (host_about), at most */
 #define HEROES MODS_HEROES_ONLY /* and the most a game plays */
 #define PAD_BYTES 7 /* what's there, the buttons, the sticks */
 #define RECORD_BYTES (PADS * PAD_BYTES)
@@ -205,6 +207,35 @@ static uint8_t *put(uint8_t *p, uint32_t v, int bytes) {
         v >>= 8;
     }
     return p;
+}
+
+/* A machine in a line, for the others' logs: its system and controllers (host_about), its length in a byte first. Only for a log, and
+   only what prints is kept of what arrives; one that's missing or cut short is nothing. */
+static uint8_t *put_about(uint8_t *p) {
+    char about[ABOUT_MOST + 1];
+    size_t n;
+
+    host_about(about, sizeof(about));
+    n = strlen(about);
+    p = put(p, (uint32_t)n, 1);
+    memcpy(p, about, n);
+    return p + n;
+}
+
+static void get_about(Reader *r, char *out, size_t size) {
+    uint32_t n = get(r, 1), i;
+    size_t at = 0;
+
+    out[0] = 0;
+    if (r->bad || (uint32_t)(r->end - r->p) < n) {
+        return;
+    }
+    for (i = 0; i < n; i++, r->p++) {
+        if (at + 1 < size) {
+            out[at++] = *r->p >= 0x20 && *r->p < 0x7F ? (char)*r->p : '?';
+        }
+    }
+    out[at] = 0;
 }
 
 static uint8_t *begin(uint8_t *p, int type) {
@@ -599,12 +630,13 @@ static uint32_t data_hash(void) {
 }
 
 static void send_welcome(const struct sockaddr_in *to, uint32_t nonce, int refused, int machine) {
-    uint8_t buf[32], *p = begin(buf, T_WELCOME);
+    uint8_t buf[32 + ABOUT_MOST], *p = begin(buf, T_WELCOME);
 
     p = put(p, nonce, 4);
     p = put(p, (uint32_t)refused, 1);
     p = put(p, (uint32_t)machine, 1);
     p = put(p, Session, 4);
+    p = put_about(p);
     send_packet(to, buf, p);
 }
 
@@ -650,6 +682,12 @@ static void host_takes(int type, Reader *r, const struct sockaddr_in *from) {
             }
             say("%s has joined, with %d controller%s and %d hero pack%s: %d here", address_text(from), mc->pads, mc->pads == 1 ? "" : "s",
                 mc->num_heroes, mc->num_heroes == 1 ? "" : "s", NumMachines + 1);
+            {
+                char about[ABOUT_MOST + 1];
+
+                get_about(r, about, sizeof(about));
+                say("machine %d is %s", NumMachines + 1, about[0] != 0 ? about : "unknown");
+            }
             send_welcome(from, nonce, 0, NumMachines++);
         }
         return;
@@ -754,8 +792,12 @@ static void joiner_takes(int type, Reader *r, const struct sockaddr_in *from) {
         if (refused != 0) {
             Refused = (int)refused;
         } else if (machine >= 1 && machine < MACHINES) {
+            char about[ABOUT_MOST + 1];
+
             Welcomed = 1;
             Session = session;
+            get_about(r, about, sizeof(about));
+            say("the host, machine 1, is %s", about[0] != 0 ? about : "unknown");
         }
         host->heard = SDL_GetTicks();
         return;
@@ -1978,7 +2020,7 @@ int net_lobby_poll(void) {
         } else if (now - LobbyBegan > (Uint64)AskFor) {
             lobby_fail("Nobody's hosting a game at that address");
         } else if (now - LobbySent >= 250 || LobbySent == 0) {
-            uint8_t buf[64 + HEROES_SAID * 8], *p = begin(buf, T_JOIN);
+            uint8_t buf[64 + HEROES_SAID * 8 + ABOUT_MOST], *p = begin(buf, T_JOIN);
             int k;
 
             LobbySent = now;
@@ -1992,6 +2034,7 @@ int net_lobby_poll(void) {
                 p = put(p, (uint32_t)Own[k], 4);
                 p = put(p, (uint32_t)(Own[k] >> 32), 4);
             }
+            p = put_about(p);
             send_packet(&Machines[0].addr, buf, p);
         }
     } else if (Lobby == LOBBY_IN) {

@@ -3,6 +3,8 @@
 #ifndef CONTROLLERS_H
 #define CONTROLLERS_H
 
+#include <stddef.h>
+
 int host_controllers(void);                  /* how many are plugged in */
 const char *host_controller_name(int player); /* player's (0 to 3), or NULL if it has none */
 int host_controller_pressed(int player);     /* the buttons its controller's pressed since this was last asked (PAD_ bits) */
@@ -22,6 +24,8 @@ void host_controller_buzz(int player);       /* a short rumble, so its player kn
 /* Several copies of the game on one PC (--controllers): this one uses all the controllers (-1), none (0), or only the Nth found, from 1,
    and that one whether or not its window has the focus. Before the window opens. */
 void host_controllers_use(int which);
+/* This machine in a line, for another's log in an online game (net.c): its system, what player 1 plays with, and every controller */
+void host_about(char *out, size_t size);
 
 /* Pretend controllers, for test runs: SDL's virtual gamepads, plugged in, pressed and pulled out as real ones are (--pretend-pads).
    A press is of the buttons where the game's are by default, whatever they're set to now. */
