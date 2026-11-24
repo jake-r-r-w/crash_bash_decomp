@@ -39,7 +39,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   - Windows (Direct3D 12) builds on the host with CMake. Linux (Vulkan) builds and is tested in `tools/dl`'s container, on a virtual
     screen with software Vulkan: never yet on a real Linux desktop and graphics card. Android (Vulkan) builds in `tools/da`, is
     tested in the emulator, and works on the user's phone; a phone that folds has only been tried in the emulator (7.15), as has its MOBILE FOLD option. No Mac.
-  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.4.1 (2026-11-21, mouse buttons bound to controls work in the game's menus; v1.4.0, 2026-11-20, the team games' crash fixed, logs, RecompLauncher and achievements; v1.3.0, 2026-11-18, button prompts and mouse buttons; v1.2.0, 2026-11-13, phones that fold and the DATA page;
+  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.5.0 (2026-11-24, custom heroes and the hero tool in place of Ripper Roo and Pinstripe, and fuller logs; v1.4.1, 2026-11-21, mouse buttons bound to controls work in the game's menus; v1.4.0, 2026-11-20, the team games' crash fixed, logs, RecompLauncher and achievements; v1.3.0, 2026-11-18, button prompts and mouse buttons; v1.2.0, 2026-11-13, phones that fold and the DATA page;
     v1.1.0, 2026-11-11, the sticks' deadzone and the mouse in every menu; v1.0.0, 2026-11-10, brought online play and couch play), for
     Windows, Linux and Android.
     `node port/package.mjs` makes them (PORT.md, A release).
@@ -675,7 +675,7 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
-- 2026-11-24: 1.5.0 prepared, not published (needs the user's OK): version raised, port/release/NOTES-1.5.0.md (custom heroes and the
+- 2026-11-24: 1.5.0 published at the user's word (v1.5.0, commit 530507f6, the zip, tar.gz and APK). Prepared first: version raised, port/release/NOTES-1.5.0.md (custom heroes and the
   hero tool in place of Ripper Roo and Pinstripe from the Crash Bandicoot disc, logs). Packages in build/port/release; 1.4.0's release
   checks (build/port/rel150-*.sh) all pass on the packaged Windows, Linux and Android builds. `heroes --android` now pushes the repo's
   hero mods to the phone as zips, as the APK brings none; an emulator needs CRASHBSH.DAT pushed after an uninstall.
