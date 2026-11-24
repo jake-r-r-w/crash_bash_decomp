@@ -690,6 +690,26 @@ function pack_mods() {
         }
         on.push('--mod', mod.name);
     }
+    if (ANDROID && on.length !== 0) {
+        /* the phone has no copy of its own (the APK brings none since 2026-11-24), and the app can't list a folder adb made in its
+           storage, only read the files in it: each mod as a zip in the app's own mods folder, which the game makes as it starts, and
+           known there by the zip's name */
+        const zips = [];
+
+        for (let k = 1; k < on.length; k += 2) {
+            const zip = path.join(OUT, `${on[k]}.zip`);
+
+            fs.mkdirSync(OUT, { recursive: true });
+            fs.rmSync(zip, { force: true });
+            /* Windows' own tar, which writes a zip (package.mjs): Git Bash's would take C: for a remote host */
+            spawnSync(WINDOWS ? path.join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'tar.exe') : 'zip',
+                WINDOWS ? ['-a', '-c', '-f', zip, '-C', path.join(mods, on[k]), ...fs.readdirSync(path.join(mods, on[k])).sort()] : ['-qr', zip, '.'],
+                { cwd: path.join(mods, on[k]), stdio: 'inherit' });
+            adb(['push', zip, `${ANDROID_DIR}/mods/${on[k]}.zip`]);
+            zips.push('--mod', `${on[k]}.zip`);
+        }
+        return { ids, args: ['--mods-dir', `${ANDROID_DIR}/mods`, ...zips] };
+    }
     return { ids, args: on.length !== 0 ? ['--mods-dir', path.relative(ROOT, mods).replaceAll('\\', '/'), ...on] : [] };
 }
 

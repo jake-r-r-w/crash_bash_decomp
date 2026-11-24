@@ -675,6 +675,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-24: 1.5.0 prepared, not published (needs the user's OK): version raised, port/release/NOTES-1.5.0.md (custom heroes and the
+  hero tool in place of Ripper Roo and Pinstripe from the Crash Bandicoot disc, logs). Packages in build/port/release; 1.4.0's release
+  checks (build/port/rel150-*.sh) all pass on the packaged Windows, Linux and Android builds. `heroes --android` now pushes the repo's
+  hero mods to the phone as zips, as the APK brings none; an emulator needs CRASHBSH.DAT pushed after an uninstall.
+
 - 2026-11-24: Releases have the hero tool in its own herotool/ folder with Bobby in its heroes/, and none in the game's mods/ (the
   user's word): he goes in only by the tool's Add to game. The launcher looks in herotool/ first; the tool alone takes the game one
   folder up. Builds no longer copy him into mods/, nor does Android (its APK has no bobby.zip and no examples_given setting since, the user's word). Checked on a packaged copy: launcher's
