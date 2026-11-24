@@ -1568,6 +1568,14 @@ async function controls(args) {
                    '--mouse', '290', '-100', '200', 'up', '--mouse', '310', '-100', '200', 'click', '--frames', '360'],
             want: ['stick deadzone 10', 'stick deadzone 20'],
         },
+        {
+            /* 40 s on the launcher, then PLAY by the mouse, which is no press of the game's pads: the main menu, not its demo straight
+               away, as the frames counted idle on the launcher had started it (a player's report, 2026-11-24) */
+            name: 'mouse: PLAY clicked after 40 s on the launcher, and the main menu, not a demo',
+            args: ['--mouse', '2400', '0', '-46', 'click', '--frames', '3600'],
+            want: ['play'],
+            check: text => /^mode (?!40 )d+ at vblank/m.test(text) ? 'a demo started' : null,
+        },
     ];
 
     fs.rmSync(dir, { recursive: true, force: true });
@@ -1577,7 +1585,8 @@ async function controls(args) {
                             { timeout: MODE_TIMEOUT });
         const crash = crash_where(exe, r.text);
         const got = r.text.split(/\r?\n/).filter(l => /^(controls|launcher): /.test(l)).map(l => l.replace(/^\w+: /, '').replace(/ at vblank \d+$/, ''));
-        const wrong = crash ?? (r.code !== 0 ? `exit ${r.code}` : got.join('|') !== c.want.join('|') ? `got ${got.join(', ') || 'nothing'}` : null);
+        const wrong = crash ?? (r.code !== 0 ? `exit ${r.code}` : got.join('|') !== c.want.join('|') ? `got ${got.join(', ') || 'nothing'}`
+            : c.check != null ? c.check(r.text) : null);
 
         return [c.name, { pass: wrong == null, what: wrong ?? `case${i}.txt` }];
     }));

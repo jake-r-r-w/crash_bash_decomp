@@ -675,6 +675,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-24: A while on the launcher, then PLAY by mouse, went straight into the main menu's demo (a player's report): the launcher's
+  clicks aren't the game's pad presses, so joypad_idle_count ran on. start_game resets it; the controls suite has the case. After 1.5.0.
+
 - 2026-11-24: 1.5.0 published at the user's word (v1.5.0, commit 530507f6, the zip, tar.gz and APK). Prepared first: version raised, port/release/NOTES-1.5.0.md (custom heroes and the
   hero tool in place of Ripper Roo and Pinstripe from the Crash Bandicoot disc, logs). Packages in build/port/release; 1.4.0's release
   checks (build/port/rel150-*.sh) all pass on the packaged Windows, Linux and Android builds. `heroes --android` now pushes the repo's

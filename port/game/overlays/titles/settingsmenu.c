@@ -1019,6 +1019,10 @@ static void start_game(void) {
     settings_save();
     settings_log("play");
     settings()->launcher = 0;
+    /* the time on the launcher isn't the main menu's: a click on PLAY, or anything else the mouse does here, is no press of the game's
+       pads, so the frames counted idle went on, and the main menu's first frame started its demo when they'd passed 15 s (a player's
+       report, 2026-11-24). Only here, and the same on every machine: an online game starts the game again from its beginning */
+    joypad_idle_count = 0;
     if (settings()->test_restart) {
         platform_restart(0);
     }
