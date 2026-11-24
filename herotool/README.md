@@ -3,12 +3,13 @@
 Make a hero of your own for the PC port of Crash Bash from a 3D model, and play as them in every game. A custom hero plays like one
 of the eight original heroes you pick (their moves, speed, ride and props), with your model, card and sounds.
 
-Bobby, a dachshund, comes with it as an example.
+Bobby, a dachshund, comes with it as an example. He isn't in the game until you add him: open him and press **Add to game**.
 
 ## Opening it
 
 - From the game: **Settings**, then the **Mods** page, then **HERO TOOL**.
-- Or run `herotool.exe` (`herotool` on Linux), which sits next to the game's program.
+- Or run `herotool.exe` (`herotool` on Linux), in the `herotool` folder next to the game's program. Run on its own, it finds the game
+  and its mods folder one folder up.
 
 It isn't on Android. A hero made on a PC plays there once its mod is copied over.
 
@@ -18,7 +19,7 @@ It isn't on Android. A hero made on a PC plays there once its mod is copied over
 - **Edit a hero**: your heroes, each saying whether it's **In the game**. Click one to open it. Its folder button opens its files, and
   its trash deletes it from the tool and the game (you're asked first).
 - At the bottom, the tool's two folders, each with a button to open it:
-  - **Your heroes**, next to the tool: where **Save** keeps them. This is your heroes' source.
+  - **Your heroes**, the `heroes` folder next to the tool: where **Save** keeps them. This is your heroes' source.
   - **The game's mods**: where **Add to game** puts them. This is what the game plays.
 
 ## What the model needs

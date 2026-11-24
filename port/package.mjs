@@ -106,7 +106,7 @@ if (ANDROID) {
 
 run('cmake', ['--preset', PRESET, ...(LINUX ? [] : [`-DCMAKE_PREFIX_PATH=${sdl_dir}`])], PORT);
 run('cmake', ['--build', '--preset', PRESET], PORT);
-/* the hero tool (herotool/, docs/HERO_PACKS.md), beside the program: the launcher's HERO TOOL starts it */
+/* the hero tool (herotool/, docs/HERO_PACKS.md), in its own folder beside the program: the launcher's HERO TOOL starts it */
 const TOOL = path.join(ROOT, 'herotool'), TOOL_PRESET = LINUX ? 'linux-clang' : 'windows-clang';
 const TOOL_BUILD = path.join(ROOT, 'build/herotool', TOOL_PRESET);
 run('cmake', ['--preset', TOOL_PRESET, ...(LINUX ? [] : [`-DCMAKE_PREFIX_PATH=${sdl_dir}`])], TOOL);
@@ -145,9 +145,12 @@ fs.rmSync(dir, { recursive: true, force: true });
 fs.mkdirSync(dir, { recursive: true });
 fs.copyFileSync(exe, path.join(dir, program_name));
 fs.chmodSync(path.join(dir, program_name), 0o755);
+/* the hero tool in a folder of its own, with its heroes (the user's word, 2026-11-24: "the hero tool ... moved into its own folder with
+   the bobby"): the launcher's HERO TOOL looks there, and the tool run on its own finds the game one folder up */
 const tool_name = LINUX ? 'herotool' : 'herotool.exe';
-fs.copyFileSync(path.join(TOOL_BUILD, tool_name), path.join(dir, tool_name));
-fs.chmodSync(path.join(dir, tool_name), 0o755);
+fs.mkdirSync(path.join(dir, 'herotool'));
+fs.copyFileSync(path.join(TOOL_BUILD, tool_name), path.join(dir, 'herotool', tool_name));
+fs.chmodSync(path.join(dir, 'herotool', tool_name), 0o755);
 let readme = fs.readFileSync(path.join(PORT, 'release/README.txt'), 'utf8').replaceAll('@VERSION@', version);
 for (const [key, text] of Object.entries(SYSTEM)) {
     readme = readme.replaceAll(`@${key}@`, text);
@@ -183,13 +186,12 @@ fs.writeFileSync(path.join(dir, 'LICENSE.txt'), eol(`${fs.readFileSync(path.join
 const launcher_json = fs.readFileSync(path.join(PORT, 'release/recomplauncher.json'), 'utf8');
 JSON.parse(launcher_json);
 fs.writeFileSync(path.join(dir, 'recomplauncher.json'), launcher_json);
-/* where mods go, so it's there to drop them in */
+/* where mods go, so it's there to drop them in: empty, as Bobby goes in the game only by the tool's Add to game (the user's word,
+   2026-11-24: "remove bobby from the mods folder so that someone would have to go into the tool to add him to the game") */
 fs.mkdirSync(path.join(dir, 'mods'));
-/* Bobby, the hero packs' example (docs/HERO_PACKS.md), as the folder the tool exports */
-fs.cpSync(path.join(PORT, 'mods/bobby'), path.join(dir, 'mods/bobby'), { recursive: true });
-/* and as the hero tool's own (heroes/ beside it, its heroes' source, where its Save keeps them: the user's word, 2026-11-23, "the
-   tool ships alongside the exe. It will also ship with Bobby"): him alone, nothing of a machine's own heroes */
-fs.cpSync(path.join(PORT, 'mods/bobby'), path.join(dir, 'heroes/bobby'), { recursive: true });
+/* Bobby, the hero packs' example (docs/HERO_PACKS.md), as the hero tool's own (heroes/ beside it, its heroes' source, where its Save
+   keeps them): him alone, nothing of a machine's own heroes */
+fs.cpSync(path.join(PORT, 'mods/bobby'), path.join(dir, 'herotool/heroes/bobby'), { recursive: true });
 fs.writeFileSync(path.join(dir, 'mods', 'README.txt'), eol('Put mods here, as their zips. They show up on the Mods page, under Settings in\nthe menu the game opens with.\n'));
 
 check_program(fs.readFileSync(exe), 'the program');

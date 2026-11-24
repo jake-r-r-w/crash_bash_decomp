@@ -331,9 +331,14 @@ should be in a folder next to the tool not in app data. So when the game and too
 also ship with Bobby and not the frog"): `MOD/mod.json` and `MOD/heroes/ID/`, MOD the mod it was opened from's name, else its id. If
 it can't be made there, it's `heroes/` in the tool's folder for the user's settings (AppData's on Windows, where it had been: those
 were moved beside the tool, that folder kept as `heroes.old`), as a test's is (`HEROTOOL_PREF`; `HEROTOOL_BESIDE=1` beside it all the
-same). The tool's other things (its previews, photos, the strip's toggle) stay in that settings folder. A release has Bobby there
-(`package.mjs`: `heroes/bobby` as well as `mods/bobby`), and so has a build, once (`port/cmake/copy_if_missing.cmake`: not again over a
-Bobby the tool has saved). The welcome page's foot shows both folders, **Your heroes** (beside the tool) and **The game's mods** (Add
+same). The tool's other things (its previews, photos, the strip's toggle) stay in that settings folder. A release has the tool in a
+folder of its own beside the program, `herotool/`, with Bobby in its `heroes/` and nowhere else: the game's `mods/` is empty, so Bobby
+goes in the game only by the tool's Add to game (`package.mjs`; the user's word, 2026-11-24: "the hero tool be moved into its own folder
+with the bobby ... remove bobby from the mods folder so that someone would have to go into the tool to add him"). The launcher's HERO
+TOOL looks for `herotool/herotool.exe`, then `herotool.exe` beside the program (`mods.c`, `hero_tool_path`), and the tool run on its own
+takes the game and its `mods` one folder up when the game isn't beside it. A build has Bobby beside its tool, once
+(`port/cmake/copy_if_missing.cmake`: not again over a Bobby the tool has saved), and not in its `mods/` either. Android still puts
+him in its mods folder once, from the APK (`mods.c`, `examples_given`), as it has no tool. The welcome page's foot shows both folders, **Your heroes** (beside the tool) and **The game's mods** (Add
 to game's; another can be typed), each with a button that opens it.
 **Add to game** (the user's word, 2026-11-23: Save keeps it in the tool, a button installs it), greyed out till it's saved as it is
 ("the add to game button should be greyed out until saved"; `saved_in_tool`: only a Save marks it saved, not the copy the games make

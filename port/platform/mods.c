@@ -970,24 +970,36 @@ void mods_open_folder(void) {
 
 /* --- the hero tool --- */
 
-static void hero_tool_path(char *out, size_t size, const char *name) {
+#ifdef _WIN32
+#define PROGRAM_END ".exe"
+#else
+#define PROGRAM_END ""
+#endif
+
+/* A program beside this one */
+static void beside_program(char *out, size_t size, const char *name) {
     const char *base = platform_base_path();
 
-    SDL_snprintf(out, size, "%s%s%s", base != NULL ? base : "", name,
-#ifdef _WIN32
-                 ".exe"
-#else
-                 ""
-#endif
-    );
+    SDL_snprintf(out, size, "%s%s" PROGRAM_END, base != NULL ? base : "", name);
+}
+
+/* The hero tool: in its own folder beside the program, with its heroes (a download's, package.mjs), or beside the program (a build) */
+static int hero_tool_path(char *out, size_t size) {
+    const char *base = platform_base_path();
+    SDL_PathInfo info;
+
+    SDL_snprintf(out, size, "%sherotool/herotool" PROGRAM_END, base != NULL ? base : "");
+    if (SDL_GetPathInfo(out, &info) && info.type == SDL_PATHTYPE_FILE) {
+        return 1;
+    }
+    beside_program(out, size, "herotool");
+    return SDL_GetPathInfo(out, &info) && info.type == SDL_PATHTYPE_FILE;
 }
 
 int mods_hero_tool_there(void) {
     char path[1100];
-    SDL_PathInfo info;
 
-    hero_tool_path(path, sizeof(path), "herotool");
-    return SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE;
+    return hero_tool_path(path, sizeof(path));
 }
 
 void mods_open_hero_tool(void) {
@@ -996,7 +1008,7 @@ void mods_open_hero_tool(void) {
     int n = standard_places(places, "mods"), i;
     SDL_Process *proc;
 
-    if (!mods_hero_tool_there()) {
+    if (!hero_tool_path(tool, sizeof(tool))) {
         return;
     }
     for (i = 0; i < n - 1 && mods == NULL; i++) {
@@ -1006,8 +1018,7 @@ void mods_open_hero_tool(void) {
             mods = places[i];
         }
     }
-    hero_tool_path(tool, sizeof(tool), "herotool");
-    hero_tool_path(game, sizeof(game), "crashbash");
+    beside_program(game, sizeof(game), "crashbash");
     args[0] = tool;
     args[1] = "--mods";
     args[2] = mods != NULL ? mods : places[0];

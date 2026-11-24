@@ -111,23 +111,26 @@ always did until you turn them on:
 CUSTOM HEROES
 
 Heroes of your own can play, made from a 3D model. Each is in a mod, as a hero
-pack, and Bobby, a dachshund, comes in the mods folder as an example. A hero
-mod that's on puts its hero in the character select: turn it on or off on the
-Mods page, under Settings in the menu the game opens with. Up to four have a card
-each in the character select, in a third row under the others, and the computer
-players can pick them too. Each plays in every game, doing as Crash does: riding
-the polar bear, bouncing on the pogo stick, in the Ballistix car, the tank and
-the race cart, riding the dolphin and the dino, swinging the mallet and carrying
-a keg.
+pack, made with the hero tool. A hero mod that's on puts its hero in the
+character select: turn it on or off on the Mods page, under Settings in the menu
+the game opens with. Up to four have a card each in the character select, in a
+third row under the others, and the computer players can pick them too. Each
+plays in every game, doing as Crash does: riding the polar bear, bouncing on the
+pogo stick, in the Ballistix car, the tank and the race cart, riding the dolphin
+and the dino, swinging the mallet and carrying a keg.
 
-To make one, open HERO TOOL on the Mods page (or run @TOOL@ beside the game).
-Give it a model as a .glb (glTF's one-file form): a standing two-legged
+To make one, open HERO TOOL on the Mods page (or run @TOOL@ in the herotool
+folder). Give it a model as a .glb (glTF's one-file form): a standing two-legged
 character of up to 1365 triangles, rigged or not. Pick who it's based on, drag
 the dots onto its joints if it hasn't a skeleton, look at its moves, give it a
 name, a card (a photo of it, or a .png) and sounds (.wav) if you like. Save
-keeps it in the heroes folder beside the tool, where Bobby's is too; Add to
-game puts it in the mods folder and turns it on, and Preview starts the game
-with it. Esc closes a preview.
+keeps it in the heroes folder in the herotool folder; Add to game puts it in the
+mods folder and turns it on, and Preview starts the game with it. Esc closes a
+preview.
+
+Bobby, a dachshund, comes in the hero tool as an example. He isn't in the game
+until you add him: open him in the hero tool and press Add to game.
+
 Mods with heroes can be shared like any other: every player online needs the
 same one to play its hero.
 

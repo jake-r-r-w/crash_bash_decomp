@@ -310,7 +310,7 @@ static void control_value(char *text, size_t size, s32 n) {
     }
 }
 
-/* --- the Mods page: its links, OPEN MODS FOLDER and OPEN HERO TOOL (the tool beside the program that makes a hero mod, herotool/,
+/* --- the Mods page: its links, OPEN MODS FOLDER and OPEN HERO TOOL (the tool in herotool/ beside the program that makes a hero mod, herotool/,
    docs/HERO_PACKS.md; not on Android), which open something and have no value; a line, YOUR MODS, that the cursor passes over; then the
    mods in their order, each ON or OFF, mod n - MODS_ROWS in row n (the user's word, 2026-11-22: what's a mod and what's a tool) --- */
 #define ROW_FOLDER 0

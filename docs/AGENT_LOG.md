@@ -675,6 +675,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-24: Releases have the hero tool in its own herotool/ folder with Bobby in its heroes/, and none in the game's mods/ (the
+  user's word): he goes in only by the tool's Add to game. The launcher looks in herotool/ first; the tool alone takes the game one
+  folder up. Builds no longer copy him into mods/; Android still does, once (no tool there). Checked on a packaged copy: launcher's
+  HERO TOOL starts it, Add to game puts Bobby in ../mods switched on. Next release previewed (1.5.0 notes drafted in scratch/).
+
 - 2026-11-24: The log has every setting (start, PLAY, online), each controller (name, SDL kind, USB ids, wired or wireless, player),
   what player 1 plays with, and online, each machine's system and controllers from the others (`host_about` in the join and welcome).
   From a report of an online Adventure parting at Beach Ball, not reproduced (Open leads). fuzz, online, pads, controls, menu pass.

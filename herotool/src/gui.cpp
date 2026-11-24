@@ -7553,16 +7553,28 @@ extern "C" int kit_gui(const char *start, const char *mods, const char *game) {
         SDL_free(all);
         printf("herotool: the window at %.2f\n", Ui);
     }
-    // where it writes and what it starts: beside it, if it's beside the game
+    // where it writes and what it starts, run on its own (the launcher says both): the game beside it, as a build has them, or one
+    // folder up, as a download has it, in herotool/ beside the game with its heroes (port/package.mjs)
     const char *base = SDL_GetBasePath();
-    snprintf(T.out, sizeof(T.out), "%smods", base != nullptr ? base : "");
-    snprintf(T.game, sizeof(T.game), "%scrashbash%s", base != nullptr ? base : "",
+    const char *end =
 #ifdef _WIN32
-             ".exe"
+        ".exe";
 #else
-             ""
+        "";
 #endif
-    );
+    snprintf(T.out, sizeof(T.out), "%smods", base != nullptr ? base : "");
+    snprintf(T.game, sizeof(T.game), "%scrashbash%s", base != nullptr ? base : "", end);
+    {
+        char up[1100];
+        SDL_PathInfo info;
+        if (base != nullptr && !(SDL_GetPathInfo(T.game, &info) && info.type == SDL_PATHTYPE_FILE)) {
+            snprintf(up, sizeof(up), "%s../crashbash%s", base, end);
+            if (SDL_GetPathInfo(up, &info) && info.type == SDL_PATHTYPE_FILE) {
+                SDL_strlcpy(T.game, up, sizeof(T.game));
+                snprintf(T.out, sizeof(T.out), "%s../mods", base);
+            }
+        }
+    }
     if (mods != nullptr) {
         SDL_strlcpy(T.out, mods, sizeof(T.out));
     }

@@ -32,7 +32,7 @@ On Android, install the `.apk` from the same release, and the first time it asks
 | **Upscaling**     | Textures at 2x or 4x                                   |
 | **Icons**         | Crisp hero and boss pictures, or the original's        |
 | **Mods**          | Textures, game files and patches from zips, on a Mods page |
-| **Custom heroes** | Your own, from a 3D model, in every game, made with the hero tool; Bobby, a dachshund, comes as an example |
+| **Custom heroes** | Your own, from a 3D model, in every game, made with the hero tool; Bobby, a dachshund, comes in the tool as an example |
 | **Online play**   | Up to four players on their own machines, with no servers: by your network, a join code or a virtual network |
 | **Controllers**   | Up to four players on one machine, with a screen to put the controllers in order; analog sticks, with a deadzone of your choosing, and rumble, or the keyboard; every key and button can be changed; the menus work with the mouse too |
 | **Touch**         | On Android, faint buttons over the picture, or a controller |
@@ -55,7 +55,7 @@ Every machine runs the whole game and only the button presses travel, so nothing
 
 ### Custom heroes
 
-The port comes with a **hero tool** (`herotool.exe`, next to the game, or HERO TOOL on the Mods page) for making heroes of your
+The port comes with a **hero tool** (`herotool.exe`, in the `herotool` folder next to the game, or HERO TOOL on the Mods page) for making heroes of your
 own from a 3D model (`.glb`). A hero plays like one of the originals you pick, with your model, card and sounds, in every game and
 online. [herotool/README.md](herotool/README.md) shows how to use it.
 
