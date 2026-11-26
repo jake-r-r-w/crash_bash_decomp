@@ -128,6 +128,8 @@ s32 SysGetLenScaled(const char *s, s32 num, s32 den);
 void pal_font_glyphs(s16 *lookup, u8 *flags);
 /* PC: the game's English words in this machine's language, from the European disc (platform/archive.c): only what's drawn */
 const char *pal_text(const char *english);
+/* PC: a mode text string of the game's as this machine draws it, in its language (overlays/engine/modetext.c), else itself */
+const u8 *ModeTextHeard(const u8 *s);
 void texture_upload_anim(obj_texture *t, s32 base, obj_textureset *set);
 void SetupLevelSpecs(ArenaDef *arg0);
 void InitSysFont(void);

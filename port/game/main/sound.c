@@ -94,6 +94,37 @@ done:
     sound_reset_counter();
 }
 
+/* PC: the file each bank slot is loading, for its copy in this machine's language (the European disc's voices and speech): only heard,
+   the game's bank stays the English one (platform/audio.c, Heard) */
+unsigned char *archive_language_copy(int entry, int *size);
+#define PC_DAT_FILES 992 /* DatIndex's entries (main.c) */
+static struct {
+    sfx_machine_bank_info *slot;
+    s32 entry;
+} SlotEntries[16];
+
+static void heard_language(s16 id, sfx_machine_bank_info *slot) {
+    s32 i, entry = -1, size = 0;
+    u8 *copy;
+    VabFile *f;
+
+    for (i = 0; i < 16; i++) {
+        if (SlotEntries[i].slot == slot) {
+            entry = SlotEntries[i].entry;
+            SlotEntries[i].slot = NULL;
+            break;
+        }
+    }
+    copy = entry >= 0 ? archive_language_copy(entry, &size) : NULL;
+    f = (VabFile *)copy;
+    if (copy != NULL && size >= 8 && f->head >= 0 && f->head + 0x20 < size && f->body >= 0 && f->body < size) {
+        audio_bank_heard(id, FILE_AT(copy, f->head), FILE_AT(copy, f->body), (u32)(size - f->body));
+    } else {
+        audio_bank_heard(id, NULL, NULL, 0);
+    }
+    free(copy);
+}
+
 void vab_loaded(void *data, sfx_machine_bank_info *slot) {
     u8 *head;
     u8 *body;
@@ -112,6 +143,7 @@ void vab_loaded(void *data, sfx_machine_bank_info *slot) {
     body = FILE_AT(data, ((VabFile *)data)->body);
     id = audio_bank_open(slot->head, -1);
     audio_bank_load(body, id);
+    heard_language(id, slot);
     VabHeadId = id;
     VabLoading = data;
     SfxBankLoading = slot;
@@ -305,6 +337,16 @@ void sfx_table_init(void) {
 }
 
 void machine_load_sfx(file *arg0, sfx_machine_bank_info *slot) {
+    s32 i;
+
+    /* PC: which file, for vab_loaded's copy in the machine's language */
+    for (i = 0; i < 16; i++) {
+        if (SlotEntries[i].slot == NULL || SlotEntries[i].slot == slot) {
+            SlotEntries[i].slot = slot;
+            SlotEntries[i].entry = arg0 >= DatIndex && arg0 < DatIndex + PC_DAT_FILES ? (s32)(arg0 - DatIndex) : -1;
+            break;
+        }
+    }
     slot->handle = asload_permanent_callback(arg0, vab_loaded, slot);
 }
 

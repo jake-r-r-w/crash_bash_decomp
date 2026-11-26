@@ -1,6 +1,7 @@
 /* Translates every mode text file named on the command line. The retail files hold 161 lists and 2,058 records
  * (docs/ASSETS.md). Then each game mode's pause table is walked as the game walks it, down to its records and their text. */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "common.h"
@@ -14,6 +15,34 @@ extern PlaceRec ***PauseMenuTexts[45];
 extern u8 ModeTextData[];
 
 unsigned char HeapArena[8];
+
+/* the rest of the game, as the USA's data has it: no European mode text, no languages */
+extern const unsigned PalModeTextBase;
+extern const unsigned short PalModeTextRoots[5][45];
+/* MODETEXT_PAL=1: the files are the European disc's English */
+int pal_mode_text(int language, unsigned *base, const unsigned short **roots) {
+    if (getenv("MODETEXT_PAL") == NULL) {
+        return 0;
+    }
+    *base = PalModeTextBase;
+    *roots = PalModeTextRoots[language];
+    return 1;
+}
+int archive_language(void) {
+    return 0;
+}
+unsigned char *archive_language_copy(int entry, int *size) {
+    return NULL;
+}
+file DatIndex[1];
+file *ModeTextFilesLang[14];
+u16 ModeTypes[136];
+int pal_mode_text_model(int model) {
+    return model;
+}
+int pal_mode_text_glyph(int glyph) {
+    return glyph;
+}
 
 static int in_buffer(const void *p) {
     return (const u8 *)p >= ModeTextBuffer && (const u8 *)p < ModeTextBuffer + 0x4660;
@@ -104,6 +133,9 @@ int main(int argc, char **argv) {
         for (j = 0; j < 33; j++) {
             int r = 0;
             int sets = walk_table(PauseMenuTexts[j], &r);
+            if (getenv("MODETEXT_DUMP") != NULL && sets > 0) {
+                printf("%s mode %d: %d sets, %d records\n", argv[i], j, sets, r);
+            }
             if (sets > 0 && r > 0 && !mode_ok[j]) {
                 mode_ok[j] = 1;
                 reached += sets;

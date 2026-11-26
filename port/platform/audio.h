@@ -35,6 +35,9 @@ void audio_reverb_depth(short left, short right);
 short audio_bank_open(unsigned char *head, short bank);
 short audio_bank_load(unsigned char *samples, short bank);
 void audio_bank_close(short bank);
+/* PC: an open bank's copy in this machine's language (the European disc's voices and speech): its head and samples, room bytes of them
+   there, or NULL for none. Only heard: the game's voices and what it reads of them stay the English bank's (audio.c, Heard). */
+void audio_bank_heard(short bank, const unsigned char *head, const unsigned char *samples, uint32_t room);
 short audio_bank_program(short bank, short prog, AudioProgram *out);
 short audio_bank_tone(short bank, short prog, short tone, AudioTone *out);
 

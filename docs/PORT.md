@@ -613,24 +613,36 @@ clear (`dbase_init_all`).
 
 With the European disc's data the launcher's GAME page has a LANGUAGE row (English, French, German, Italian, Spanish; `settings.ini`
 `language=`, `--language ID` for a test run). It's each machine's own, never the game's (`GAME->language` stays 0), so online players
-can each have theirs: nothing in the game's state changes with it, which `--fingerprints 1` in each language shows (the same, every
-step, through the menus and the hero select, 2026-11-26).
+can each have theirs. The game reads every file in English on every machine (`archive_read` never gives a language's copy), and only
+what's drawn and heard comes from the language's (`archive_language_copy`): `--fingerprints 1` is the same in every language, every step,
+through the menus, the hero select, the warp room, the rules and a game (Adventure's start, 3981 steps, 2026-11-26).
 
-- **Text files** (the modes' rules and objectives, 08D to 098): read in the language (`archive_read`, its `PAL_TEXT` files), each
-  language's copy padded to the longest, so the heap is laid out the same in all of them.
+- **The mode text** (each mode's rules, objectives and pause menus, 08D to 098). The European files are another format than the USA's:
+  loaded 0x50 later (0x800AECB0), their panel records 7 words where the USA's are 9 (type, flags and x in the first; `modetext.c` reads
+  both, every field checked against the USA's English by `pal_table.mjs`), with some model banks numbered otherwise (`PalModeTextModels`)
+  and the font's glyphs in the European order, and the roots of each mode's menus from the European engine's own table, one for each
+  language (`PalModeTextRoots`). Read with the USA's layout, the European rules never showed, in any language (fixed 2026-11-26). The game
+  reads the English. For drawing, `ModeTextLanguage` reads the language's copy beside it and pairs their strings set by set (a mode's
+  menus are 9 sets of pages): each set's strings in order, each once, aligned by how they're drawn (the record's font and whether it's
+  centred), as a language can have a wording more or lay a set out on more pages. `DrawSysText` and `SysGetLen` draw and measure the
+  pair (`ModeTextHeard`). The layout stays the English's, so a translation with more lines than its English is drawn smaller, to fit
+  (at most to half): the European game gives it a page more, which would change the game.
 - **Words in the code** (menus, the pause menu, the hero select's title...): the European code's five-language sets, found by
   `pal_table.mjs` and written into the made file, then `pal_text` gives `DrawSysText` and `SysGetLen` the language's in place of the
   English. A word only the disc's program has needs the disc image (a `CRASHBSH.DAT` alone hasn't it): it stays English then.
+- **Voices and speech** (the heroes' voices 0B6 to 0E1 and 110 to 116, the cutscenes' 0F5 to 10F): the game's banks are the English
+  ones, so its voices, their timing and what it sees of them (the fingerprint's sound) are the same everywhere. When a bank loads,
+  `sound.c` gives the mixer the language's copy of the same file (`audio_bank_heard`), the same programs and tones with that language's
+  samples. A note on it plays its English voice unheard and a heard voice beside it, outside the game's 24, with the language's sample:
+  it follows the English voice's volume, pitch and key-off, and plays on to its own end (`audio.c`, Heard).
 - **Letters**: the European font's accented letters (`PalGlyphs`, from its `InitSysFont`), with its flags: 4 for an accent above, a
   taller picture, which `DrawSysText` draws 6 lines higher on the big page and 2 on the small, as the European one does (Ç's cedilla is
   below and has none on the big page).
 - **The hero select's player tags**: P1 in English, J1 in French and Spanish, S1 in German, G1 in Italian (the main menu's pictures,
   above).
 
-Still English: the voices and cutscene speech (read in English, `PAL_SOUND`: their samples are laid out otherwise in each language, so
-the heap would differ; playing the language's beside the English's timing is to come), and the words drawn as pictures (PAUSED, the
-rules' headings). A change of language in the launcher shows in what's read after it; the main menu's tags change when the title screens
-next load.
+Still English: the words drawn as pictures (PAUSED, RULES). A change of language in the launcher shows in what's read after it: the next
+mode's text and sound banks, and the main menu's tags when the title screens next load.
 
 ## RecompLauncher
 

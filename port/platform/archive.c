@@ -265,9 +265,35 @@ const char *pal_text(const char *english) {
     return english;
 }
 
+static void read_dat(int32_t sector, int32_t count, uint8_t *buf);
+
+uint8_t *archive_language_copy(int entry, int *size) {
+    int L = language();
+    int32_t n;
+    uint8_t *buf;
+
+    if (L == 0 || LangSector == NULL || LangKind == NULL || entry < 0 || entry >= DatIndexCount || LangKind[entry] == 0 ||
+        LangSector[entry][L - 1] == 0 || (Replaced != NULL && Replaced[entry] != NULL)) {
+        return NULL;
+    }
+    n = Original != NULL ? Original[entry].size : DatIndex[entry].size;
+    if (n <= 0 || (buf = malloc((size_t)SECTORS(n) * SECTOR_BYTES)) == NULL) {
+        return NULL;
+    }
+    read_dat(LangSector[entry][L - 1], SECTORS(n), buf);
+    *size = n;
+    return buf;
+}
+
 int archive_languages(void) {
     archive_open();
     return Languages;
+}
+
+static int language(void);
+
+int archive_language(void) {
+    return language();
 }
 
 /* The language this machine reads the files of: 0 English, 1 French, 2 German, 3 Italian, 4 Spanish (settings.h) */
@@ -350,7 +376,10 @@ void archive_read(int sector, int count, void *buf) {
     if (LogReads) {
         log_read(sector, count);
     }
-    if (NumReplaced == 0 && NumPutRight == 0 && language() == 0) {
+    /* every file as the game has it, in English: a language's copies are only read for what's drawn and heard (archive_language_copy),
+       so the game is the same in any. (The mode text was read in the language once: its layout differs by language, and a game in
+       French went otherwise, 2026-11-26.) */
+    if (NumReplaced == 0 && NumPutRight == 0) {
         read_dat(sector, count, out);
         return;
     }
@@ -378,9 +407,6 @@ void archive_read(int sector, int count, void *buf) {
                 memcpy(out, put_right_now(i) + from, copy);
             }
             memset(out + copy, 0, want - copy);
-        } else if (i >= 0 && language() != 0 && LangSector != NULL && LangKind[i] == PAL_TEXT && LangSector[i][language() - 1] != 0) {
-            /* a file this machine reads in its language: that language's copy, as long as the English's (paldata.c) */
-            read_dat(LangSector[i][language() - 1] + off, run, out);
         } else {
             /* the game's own file, or the archive before its first: where it was */
             read_dat(i < 0 ? sector : (Original != NULL ? Original[i].sector : DatIndex[i].sector) + off, run, out);

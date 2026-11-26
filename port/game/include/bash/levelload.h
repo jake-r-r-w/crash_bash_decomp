@@ -145,6 +145,8 @@ extern file *ModeOverlayFiles[];
 extern u8 *ModeTextLoadAddr;
 extern u8 ModeTextBuffer[];
 s32 ModeTextTranslate(s32 len);
+/* PC: the mode text just loaded, in this machine's language: only what's drawn (modetext.c) */
+void ModeTextLanguage(file *p);
 extern PlaceRec ***PauseMenuTexts[45];
 
 void LoadModeFiles(void);

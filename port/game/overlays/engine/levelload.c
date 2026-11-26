@@ -21,6 +21,7 @@ u8 *LoadModeOverlay(void) {
     if (p != NULL) {
         load_file_direct(p, ModeTextLoadAddr);
         ModeTextTranslate(p->size);
+        ModeTextLanguage(p);
     }
     p = ModeOverlayFiles[ModeTypes[g->mode * 3] - 0x101];
     if (p != ModeOverlayLoaded) {

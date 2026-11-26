@@ -675,6 +675,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-26: European languages, second part: speech in the language, and the mode text put right. The game now reads every file in
+  English and only what's drawn and heard is the language's. A French Adventure went otherwise than an English one: the mode text (rules,
+  pause menus) was read in the language, and its layout differs. Looking into it showed the European mode text had never been read right,
+  even in English (the rules never showed): another load address, 7-word records, its own roots and bank numbers (modetext.c,
+  PalModeTextRoots/Models from pal_table.mjs). Translations are paired set by set (ModeTextHeard), smaller where they have more lines.
+  Voices: a heard voice in the language beside each unheard English one (audio.c Heard, sound.c heard_language). Fingerprints the same
+  in en/fr/de through Adventure's start (3981 steps). PORT.md, Languages. Gotcha: modetext_test's 161/2058/33 expectation fails on the
+  USA files cut straight from the DAT (119/1541/23) before this too; MODETEXT_PAL=1 runs it on the European English (33 of 33 walk).
+  Next: the word pictures (PAUSED, RULES), and a cutscene's speech heard (not yet listened to).
+
 - 2026-11-26: European data: the hero select's boxes were black (the user saw it). The main menu's pictures (082) have more on the
   European disc: its P1-P4 tags have a frame for each language (7, not 2), so the faces were later and the loader took them as frames.
   Put right as the archive reads it (archive.c put_right, paldata.c pal_put_right; PORT.md, The European disc), so data made before is

@@ -283,6 +283,83 @@ const ENGINE_ENTRY = 1348, OVERLAY_ENTRIES = [848, ...Array.from({ length: 13 },
 if (pal[ENGINE_ENTRY][1] !== 374020) throw new Error("the European engine isn't the archive's file " + ENGINE_ENTRY);
 const blobs = [{ id: -1, bytes: palExe, base: 0x80010000 - 0x800 }, { id: ENGINE_ENTRY, bytes: P(ENGINE_ENTRY), base: 0x8007A498 },
     ...OVERLAY_ENTRIES.map(e => ({ id: e, bytes: P(e), base: 0x800B29B8 }))];
+/* The mode text's roots (modetext.c): the European mode text files load 0x50 later than the USA's (their pointers say where), and its
+   engine has a table for each language of where each game mode's pause and rules menus start in its file (45 pointers, 0 for none),
+   where the USA has one. The game reads the English (the same on every machine) and draws the language's strings, found by walking
+   both files from the same root (modetext.c); so the five tables, in the code's language order. */
+const MODES = 45;
+const modeTypes = (() => { const m = fs.readFileSync(path.join(ROOT, 'port/game/main/main.c'), 'utf8').match(/u16 ModeTypes\[\d+\] = \{([^}]*)\}/); return m[1].split(',').map(s => s.trim()).filter(Boolean).map(Number); })();
+const modeFiles = (() => { const m = fs.readFileSync(path.join(ROOT, 'port/game/overlays/engine/levelload.c'), 'utf8').match(/file \*ModeTextFilesLang\[14\] = \{([^}]*)\}/); return m[1].replace(/\/\*[^]*?\*\//g, '').split(',').map(s => s.trim()).filter(Boolean).map(s => s === '0' ? -1 : Number(s.match(/DatIndex\[(\d+)\]/)[1])); })();
+const textOf = (e, L) => L === 0 ? P(map[e]) : P(langFiles.find(f => f.e === e).v[L - 1]);
+/* the load address: the one whose first string (at 4) the file points at, of the USA's and the 0x50 later one seen */
+const textBase = (() => {
+    const b = P(map[text]), hits = base => { let n = 0; for (let p = 4; p + 4 <= b.length; p += 4) n += b.readUInt32LE(p) === base + 4; return n; };
+    const base = [0x800AECB0, 0x800AEC60].sort((a, c) => hits(c) - hits(a))[0];
+    if (hits(base) === 0) throw new Error("the European mode text's load address wasn't found");
+    return base;
+})();
+const rootTables = [];
+{
+    const isRoot = x => x === 0 || (x >= textBase && x < textBase + 0x4660 && !(x & 3));
+    for (let f = 0; f < pal.length && rootTables.length === 0; f++) {
+        const eng = P(f);
+        for (let i = 0; i + MODES * 4 * 5 <= eng.length && rootTables.length === 0; i += 4) {
+            let ok = true;
+            for (let t = 0; t < 5 && ok; t++) for (let k = 0; k < MODES && ok; k++) { const x = eng.readUInt32LE(i + (t * MODES + k) * 4); ok = k >= 33 || (isRoot(x) && x !== 0); }
+            if (ok) {
+                for (let t = 0; t < 5; t++) rootTables.push(Array.from({ length: MODES }, (_, k) => { const x = eng.readUInt32LE(i + (t * MODES + k) * 4); return k >= 33 || !isRoot(x) || x === 0 ? 0 : x - textBase; }));
+                console.log(`the mode text roots: the European file ${f}, at ${i.toString(16)}`);
+            }
+        }
+    }
+    if (rootTables.length !== 5) throw new Error("the European mode text roots weren't found");
+}
+/* which table is which language's: its roots in that language's files are each a pointer into the file */
+const modeRoots = [0, 1, 2, 3, 4].map(L => {
+    const score = t => { let n = 0; for (let m = 0; m < 33; m++) { const e = modeFiles[modeTypes[m * 3] - 0x101]; if (e < 0) continue; const b = textOf(e, L), r = rootTables[t][m]; if (r > 4 && r + 4 <= b.length) { const x = b.readUInt32LE(r); if (x >= textBase && x < textBase + b.length) n++; } } return n; };
+    const best = [0, 1, 2, 3, 4].map(t => [t, score(t)]).sort((a, c) => c[1] - a[1]);
+    if (best[0][1] < 30 || best[0][1] === best[1][1]) throw new Error(`the ${LANG_NAMES[L]} mode text roots aren't clear: ${best.map(b => b.join(':')).join(' ')}`);
+    return rootTables[best[0][0]];
+});
+console.log(`the mode text: base ${textBase.toString(16)}, each language's roots found`);
+
+/* Its records are 7 words where the USA's are 9 (modetext.c reads both), and name the European engine's model banks, some of which are
+   numbered otherwise: each European bank a record names, the USA's, from the panel lists both discs' English have (the same strings
+   in the same lists), every field the same but these and where things are. */
+const modelMap = new Map();
+{
+    const strAt = (d, o) => { let e = o; while (e < d.length && d[e]) e++; return d.toString('latin1', o, e); };
+    const s16 = v => (v << 16) >> 16;
+    const listStart = (d, o, len) => { while (o - len >= 0) { const t = d.readUInt32LE(o - len) & 0xFF; if (t < 2 || t > 0x20) break; o -= len; } return o; };
+    const textRecs = (d, base, len, at) => { const m = new Map(); for (let o = 0; o + len <= d.length; o += 4) { const t = d.readUInt32LE(o) & 0xFF, x = d.readUInt32LE(o + at); if (t === 3 && x >= base + 4 && x < base + d.length) { const s = strAt(d, x - base); if (s.length > 5 && !m.has(s)) m.set(s, o); } } return m; };
+    let lists = 0;
+    for (let e = text; e < text + texts; e++) {
+        const u = U(e), p = P(map[e]);
+        const um = textRecs(u, 0x800AEC60, 0x24, 0x14), pm = textRecs(p, textBase, 0x1C, 0x10), done = new Set();
+        for (const [s, uo] of um) {
+            if (!pm.has(s)) continue;
+            let a = listStart(u, uo, 0x24), b = listStart(p, pm.get(s), 0x1C);
+            if (done.has(a)) continue;
+            done.add(a);
+            const pairs = [];
+            for (; a + 0x24 <= u.length && b + 0x1C <= p.length; a += 0x24, b += 0x1C) {
+                const ut = u.readUInt32LE(a), pt = p.readUInt32LE(b) & 0xFF;
+                if (ut < 2 || ut > 0x20 || pt < 2 || pt > 0x20) break;
+                pairs.push([ut, s16(u.readUInt32LE(a + 0x1C)), pt, s16(p.readUInt32LE(b + 0x18))]);
+            }
+            if (!pairs.every(([ut, , pt]) => ut === pt)) continue;
+            lists++;
+            for (const [, um2, , pm2] of pairs) {
+                if (pm2 === um2) continue;
+                if (modelMap.has(pm2) && modelMap.get(pm2) !== um2) throw new Error(`the European model bank ${pm2} is the USA's ${modelMap.get(pm2)} and ${um2}`);
+                modelMap.set(pm2, um2);
+            }
+        }
+    }
+    if (lists < 50) throw new Error(`the mode text's panel lists: only ${lists} the same on both discs`);
+    console.log(`the mode text: ${lists} panel lists the same on both discs, ${modelMap.size} model banks numbered otherwise`);
+}
+
 const cstr = (b, at) => { let e = at; while (e < b.length && b[e] !== 0) e++; return { s: b.subarray(at, e).toString('latin1'), end: e }; };
 const good = s => s.length > 0 && s.length < 300 && !/[\x00-\x09\x0b\x0c\x0e-\x1f]/.test(s);
 /* where an address is, seen from blob from: the overlays all load at one place, so an overlay's pointer is into itself, the program or
@@ -416,6 +493,17 @@ ${picsFrames.map(String).join(', ').replace(/(.{1,126})(, |$)/g, '    $1,\n').re
 /* and for one with a frame for each language, the European English one's picture (-1: none), the others following it */
 const short PalPicturesLanguage[PAL_PICTURES_COUNT] = {
 ${picsLanguage.map(String).join(', ').replace(/(.{1,126})(, |$)/g, '    $1,\n').replace(/,,\n$/, ',\n')}};
+
+/* the European mode text's load address, and each language's roots in its files: each game mode's pause and rules menus (modetext.c) */
+const unsigned PalModeTextBase = 0x${textBase.toString(16).toUpperCase()}u;
+/* the model banks the European mode text's records name that the USA's numbers otherwise: European, USA */
+const short PalModeTextModels[][2] = {
+${[...modelMap.entries()].sort((a, c) => a[0] - c[0]).map(([p, u]) => `    { ${p}, ${u} },`).join('\n')}
+};
+const int PalModeTextModelCount = ${modelMap.size};
+const unsigned short PalModeTextRoots[PAL_LANGUAGES][PAL_MODES] = {
+${modeRoots.map(r => '    { ' + r.map(x => '0x' + x.toString(16).toUpperCase()).join(', ') + ' },').join('\n')}
+};
 
 /* the USA files with a version for each language: the French's, German's, Italian's and Spanish's place and size (the English is PalFiles') */
 const PalLanguageFile PalLanguageFiles[] = {

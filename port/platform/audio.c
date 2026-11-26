@@ -59,6 +59,7 @@ typedef struct {
     int level, pan1, pan2; /* for a note: the bank's, program's and tone's volumes together, and the tone's and program's pans */
     int seq, channel, note, velocity;
     int reverb; /* the tone asks for it */
+    int quiet;  /* PC: a voice another plays the language's sample for (heard voices, below): it runs, for the game, unheard */
 } Voice;
 
 typedef struct {
@@ -89,6 +90,19 @@ typedef struct {
 
 static Bank Banks[NUM_BANKS];
 static Voice Voices[NUM_VOICES];
+
+/* Heard banks and voices: the European disc's voices and speech in this machine's language. The game reads every sound bank in English
+   (archive.c, PAL_SOUND), so its voices, their timing and what it sees of them are the same on every machine; a bank with a copy in the
+   language (audio_bank_heard) has it here, the same programs and tones with the language's samples. A note on such a bank plays its
+   English voice unheard, for the game, and a heard voice beside it with the language's sample, which follows its volume, pitch and
+   key-off, and plays on to its own end. Nothing the game reads comes from these. */
+#define HEARD_VOICES 16
+static Bank Heard[NUM_BANKS];
+static Voice HeardVoices[HEARD_VOICES];
+static uint8_t *HeardOwn[HEARD_VOICES]; /* each heard voice's own copy of its sample, so a bank closed under it doesn't matter */
+static uint32_t HeardRoom[HEARD_VOICES];
+static int HeardOwner[HEARD_VOICES], HeardGen[HEARD_VOICES];
+static int VoiceGen[FX_VOICES]; /* a game voice's notes, counted: a heard voice follows only the note it was started for */
 static Seq Seqs[NUM_SEQS];
 static uint32_t VoiceMask; /* the voices the game's effects still hold: theirs until it lets them go, even once silent */
 static int Mute;
@@ -447,11 +461,18 @@ void audio_mix(int16_t *out, int frames) {
             ToNextStep = SAMPLES_PER_STEP;
             step_sequencers();
         }
-        for (j = 0; j < NUM_VOICES; j++) {
-            Voice *v = &Voices[j];
+        for (j = 0; j < NUM_VOICES + HEARD_VOICES; j++) {
+            Voice *v = j < NUM_VOICES ? &Voices[j] : &HeardVoices[j - NUM_VOICES];
             int s;
 
             if (v->state == ENV_OFF) {
+                continue;
+            }
+            if (v->quiet) {
+                env_step(v);
+                if (v->state != ENV_OFF) {
+                    advance(v);
+                }
                 continue;
             }
             s = (next_sample(v) * v->env) >> 15;
@@ -462,7 +483,7 @@ void audio_mix(int16_t *out, int frames) {
                 v->vol_r += (v->to_r - v->vol_r) >> VOLUME_RAMP;
                 vl = (s * v->vol_l) >> 14;
                 vr = (s * v->vol_r) >> 14;
-                if (j < FX_VOICES) {
+                if (j < FX_VOICES || j >= NUM_VOICES) {
                     vl = vl * FX_LEVEL >> 8;
                     vr = vr * FX_LEVEL >> 8;
                 }
@@ -573,6 +594,139 @@ void snd_vblank(void) {
 
 /* Sound banks: a copy of what's needed, as the game frees its own after the transfer. */
 
+static void heard_close(int vab) {
+    free(Heard[vab].tone);
+    free(Heard[vab].samples);
+    memset(&Heard[vab], 0, sizeof(Heard[vab]));
+}
+
+void audio_bank_heard(short vab, const unsigned char *head, const unsigned char *samples, uint32_t room) {
+    Bank *h;
+    uint16_t nprog, nsample, size;
+    uint32_t off = 0;
+    int i;
+
+    if (vab < 0 || vab >= NUM_BANKS) {
+        return;
+    }
+    host_audio_lock();
+    heard_close(vab);
+    h = &Heard[vab];
+    if (head == NULL || samples == NULL || !Banks[vab].used || memcmp(head, "pBAV", 4) != 0) {
+        host_audio_unlock();
+        return;
+    }
+    memcpy(&nprog, head + 0x12, 2);
+    memcpy(&nsample, head + 0x16, 2);
+    /* the same bank in another language: its programs and samples as many as the English's */
+    if (nprog != Banks[vab].nprog || (nsample > MAX_SAMPLE ? MAX_SAMPLE : nsample) != Banks[vab].nsample) {
+        host_audio_unlock();
+        return;
+    }
+    h->nprog = nprog;
+    h->nsample = Banks[vab].nsample;
+    h->master = head[0x18];
+    memcpy(h->prog, head + VAB_PROGRAMS_AT, sizeof(h->prog));
+    h->tone = malloc(sizeof(AudioTone) * 16 * (nprog ? nprog : 1));
+    if (h->tone == NULL) {
+        host_audio_unlock();
+        return;
+    }
+    memcpy(h->tone, head + VAB_TONES_AT, sizeof(AudioTone) * 16 * nprog);
+    h->sample_end[0] = 0;
+    for (i = 1; i <= h->nsample; i++) {
+        memcpy(&size, head + VAB_TONES_AT + sizeof(AudioTone) * 16 * nprog + i * 2, 2);
+        off += (uint32_t)size * 8;
+        h->sample_end[i] = off;
+    }
+    h->samples_size = off;
+    if (off > room || (h->samples = malloc(off ? off : 1)) == NULL) {
+        heard_close(vab);
+        host_audio_unlock();
+        return;
+    }
+    memcpy(h->samples, samples, off);
+    h->used = 1;
+    host_audio_unlock();
+}
+
+static Voice *start_voice(Voice *v, const Bank *b, int prog, int tone);
+static uint32_t note_pitch(double note, int center, int shift);
+
+/* A heard voice for game voice v's new note on a bank's program and tone, if the bank has a heard copy (the lock held). */
+static void heard_note(Voice *v, int vab, int prog, int tone, double note) {
+    int n = (int)(v - Voices), k, pick = -1;
+    const Bank *h;
+    const AudioTone *t;
+    uint32_t from, bytes;
+    Voice *hv;
+
+    if (n < 0 || n >= FX_VOICES) {
+        return;
+    }
+    VoiceGen[n]++;
+    if (vab < 0 || vab >= NUM_BANKS || !Heard[vab].used) {
+        return;
+    }
+    h = &Heard[vab];
+    t = &h->tone[prog * 16 + tone];
+    if (prog >= h->nprog || t->vag <= 0 || t->vag > h->nsample) {
+        return;
+    }
+    for (k = 0; k < HEARD_VOICES && pick < 0; k++) {
+        if (HeardVoices[k].state == ENV_OFF) {
+            pick = k;
+        }
+    }
+    for (k = 0; k < HEARD_VOICES && pick < 0; k++) {
+        if (HeardVoices[k].state == ENV_RELEASE) {
+            pick = k;
+        }
+    }
+    if (pick < 0) {
+        return;
+    }
+    from = h->sample_end[t->vag - 1];
+    bytes = h->sample_end[t->vag] - from;
+    if (bytes > HeardRoom[pick]) {
+        uint8_t *more = realloc(HeardOwn[pick], bytes);
+
+        if (more == NULL) {
+            return;
+        }
+        HeardOwn[pick] = more;
+        HeardRoom[pick] = bytes;
+    }
+    memcpy(HeardOwn[pick], h->samples + from, bytes);
+    hv = &HeardVoices[pick];
+    if (start_voice(hv, h, prog, tone) == NULL) {
+        return;
+    }
+    hv->data = HeardOwn[pick];
+    hv->pos = hv->loop = 0;
+    hv->end = bytes;
+    hv->pitch = note_pitch(note, hv->center, hv->shift);
+    hv->vol_l = v->vol_l;
+    hv->vol_r = v->vol_r;
+    hv->to_l = v->to_l;
+    hv->to_r = v->to_r;
+    HeardOwner[pick] = n;
+    HeardGen[pick] = VoiceGen[n];
+    v->quiet = 1;
+}
+
+/* The heard voice following game voice n's note now, or NULL */
+static Voice *heard_of(int n) {
+    int k;
+
+    for (k = 0; k < HEARD_VOICES; k++) {
+        if (HeardVoices[k].state != ENV_OFF && HeardOwner[k] == n && HeardGen[k] == VoiceGen[n]) {
+            return &HeardVoices[k];
+        }
+    }
+    return NULL;
+}
+
 short audio_bank_open(unsigned char *addr, short vab) {
     Bank *b;
     uint16_t nprog, nsample, size;
@@ -593,6 +747,7 @@ short audio_bank_open(unsigned char *addr, short vab) {
         return -1;
     }
     b = &Banks[vab];
+    heard_close(vab);
     memcpy(&nprog, addr + 0x12, 2);
     memcpy(&nsample, addr + 0x16, 2);
     b->used = 1;
@@ -659,6 +814,7 @@ void audio_bank_close(short vab) {
     }
     Seqs[vab].open = 0;
     Seqs[vab].playing = 0;
+    heard_close(vab);
     free(Banks[vab].tone);
     memset(&Banks[vab], 0, sizeof(Banks[vab]));
     for (i = 0; i < 8; i++) {
@@ -786,6 +942,7 @@ short audio_note_on(short vab, short prog, short tone, short note, short fine, s
         v->vol_l = v->to_l = l;
         v->vol_r = v->to_r = r;
     }
+    heard_note(v, vab, prog, tone, note + fine / 128.0);
     host_audio_unlock();
     return (short)(v - Voices);
 }
@@ -825,6 +982,7 @@ short audio_play_sample(const unsigned char *adpcm, uint32_t bytes, uint32_t pit
     v->vol_l = v->to_l = left < 0 ? 0 : left > 0x3FFF ? 0x3FFF : left;
     v->vol_r = v->to_r = right < 0 ? 0 : right > 0x3FFF ? 0x3FFF : right;
     v->state = ENV_ATTACK;
+    VoiceGen[v - Voices]++;
     host_audio_unlock();
     return (short)(v - Voices);
 }
@@ -850,6 +1008,14 @@ short audio_voice_off(short voice) {
         Voices[voice].state = ENV_RELEASE;
         Voices[voice].env_wait = 0;
     }
+    {
+        Voice *hv = heard_of(voice);
+
+        if (hv != NULL) {
+            hv->state = ENV_RELEASE;
+            hv->env_wait = 0;
+        }
+    }
     host_audio_unlock();
     return 0;
 }
@@ -861,6 +1027,9 @@ void audio_voices_all_off(void) {
     for (i = 0; i < NUM_VOICES; i++) {
         Voices[i].state = ENV_OFF;
     }
+    for (i = 0; i < HEARD_VOICES; i++) {
+        HeardVoices[i].state = ENV_OFF;
+    }
     host_audio_unlock();
 }
 
@@ -870,6 +1039,13 @@ short audio_voice_pitch(short voice, short vab, short prog, short old_note, shor
     }
     host_audio_lock();
     Voices[voice].pitch = note_pitch(new_note + new_fine / 128.0, Voices[voice].center, Voices[voice].shift);
+    {
+        Voice *hv = heard_of(voice);
+
+        if (hv != NULL) {
+            hv->pitch = note_pitch(new_note + new_fine / 128.0, hv->center, hv->shift);
+        }
+    }
     host_audio_unlock();
     return 0;
 }
@@ -881,6 +1057,14 @@ short audio_voice_volume(short voice, short left, short right) {
     host_audio_lock();
     Voices[voice].to_l = left * 129;
     Voices[voice].to_r = right * 129;
+    {
+        Voice *hv = heard_of(voice);
+
+        if (hv != NULL) {
+            hv->to_l = left * 129;
+            hv->to_r = right * 129;
+        }
+    }
     host_audio_unlock();
     return 0;
 }
@@ -1319,6 +1503,8 @@ void audio_restart(void) {
     }
     audio_reset();
     memset(Voices, 0, sizeof(Voices));
+    memset(HeardVoices, 0, sizeof(HeardVoices));
+    memset(VoiceGen, 0, sizeof(VoiceGen));
     memset(Seqs, 0, sizeof(Seqs));
     memset(ReverbRing, 0, sizeof(ReverbRing));
     ReverbPos = ReverbHalf = 0;

@@ -9,6 +9,7 @@
 #define PAL_FONT_GLYPHS 109        /* the USA font's */
 #define PAL_INTERFACE_PICTURES 46  /* the USA interface's */
 #define PAL_PICTURES_COUNT 126     /* the USA main menu's (082) */
+#define PAL_MODES 45               /* the game's modes, each with its pause and rules menus' root in its mode text */
 
 /* what's done with a file: copied as it is; the font's or the interface's pictures put in the USA's order; or none (the USA has a file
    the European disc hasn't, that the game never reads); or copied as it is, and its pictures put in the USA's order as it's read (the
@@ -68,6 +69,19 @@ extern const unsigned short PalTagSize[2];
 extern const short PalPicturesOrder[PAL_PICTURES_COUNT];
 extern const signed char PalPicturesFrames[PAL_PICTURES_COUNT];
 extern const short PalPicturesLanguage[PAL_PICTURES_COUNT];
+/* The European mode text's load address (its pointers' base), and each language's root for each mode in its files (0: none) */
+extern const unsigned PalModeTextBase;
+extern const unsigned short PalModeTextRoots[PAL_LANGUAGES][PAL_MODES];
+/* the model banks its records name that the USA numbers otherwise: European, USA */
+extern const short PalModeTextModels[][2];
+extern const int PalModeTextModelCount;
+
+/* The mode text as the European data has it, for modetext.c: 1 and its base and a language's roots (0 English, the game's own), or 0 for
+   the USA's */
+int pal_mode_text(int language, unsigned *base, const unsigned short **roots);
+/* A European mode text record's model bank as the USA numbers it, and a European font glyph as the made font has it (paldata.c) */
+int pal_mode_text_model(int model);
+int pal_mode_text_glyph(int glyph);
 
 /* Reads size bytes at byte at of the European CRASHBSH.DAT: 0 if it can't */
 typedef int (*PalRead)(void *ctx, uint64_t at, void *buf, size_t size);

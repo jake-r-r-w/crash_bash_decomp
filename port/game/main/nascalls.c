@@ -1024,6 +1024,31 @@ static void draw_slash(s32 xy, s32 back, u32 top, u32 bottom) {
     }
 }
 
+/* PC: a size for the glyphs DrawSysText draws now, num / den of theirs (1 / 1 but for a translation with more lines than its English;
+   texture_corners) */
+static s32 GlyphNum = 1, GlyphDen = 1;
+
+/* PC: a string's lines */
+static s32 text_lines(const u8 *s) {
+    s32 n = 1;
+
+    for (; *s != 0; s++) {
+        n += *s == '\n' || *s == '\r';
+    }
+    return n;
+}
+
+/* PC: a line's x (TextAlignX's) for text drawn at num / den: a centred one centred still */
+static s16 text_scaled_x(s16 arg0, s16 x, s32 num, s32 den) {
+    s32 centre;
+
+    if (num == den || (arg0 & 0xC000) != 0x8000) {
+        return x;
+    }
+    centre = (arg0 & 0x3FFF) != 0 ? (arg0 & 0x3FFF) : 320;
+    return (s16)(centre - (centre - x) * num / den);
+}
+
 void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     s32 xy;
     s32 col;
@@ -1038,10 +1063,25 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     s32 ny;
     s32 oy;
 
-    /* PC: in this machine's language, if the European disc has these words (only what's drawn: online play is the same) */
-    s = (u8 *)pal_text((const char *)s);
+    const u8 *english = s;
+    s32 num = 1, den = 1;
+
+    /* PC: in this machine's language, if the European disc has these words (only what's drawn: online play is the same). One with more
+       lines than its English is drawn smaller, to its English's room, as the layout is the English's (the European game gives it a page
+       more, which would change the game): at most to half */
+    s = (u8 *)pal_text((const char *)ModeTextHeard(s));
+    if (s != english) {
+        s32 le = text_lines(english), ll = text_lines(s);
+
+        if (ll > le) {
+            num = le * 2 < ll ? 1 : le;
+            den = le * 2 < ll ? 2 : ll;
+        }
+    }
+    GlyphNum = num;
+    GlyphDen = den;
     xy = arg1 << 16;
-    x0 = TextAlignX(arg0, s);
+    x0 = text_scaled_x(arg0, TextAlignX(arg0, s), num, den);
     col = 0;
     if (arg5 != 0) {
         TextFlashColour((u8 *)&arg3, (u8 *)&arg4);
@@ -1063,13 +1103,13 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                 }
                 y = xy >> 16;
                 xy &= 0xFFFF;
-                xy |= (y + n * 2) << 16;
+                xy |= (y + n * 2 * num / den) << 16;
             } else {
                 ny = xy >> 16;
                 xy &= 0xFFFF;
-                xy |= (ny + SysFontWidth[FontPage << 8] * 2) << 16;
+                xy |= (ny + SysFontWidth[FontPage << 8] * 2 * num / den) << 16;
             }
-            x0 = TextAlignX(arg0, s);
+            x0 = text_scaled_x(arg0, TextAlignX(arg0, s), num, den);
         } else {
             i = c + (FontPage << 8);
             w = SysFontWidth[i];
@@ -1080,7 +1120,7 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
             g = ((s16 (*)[256])&SysFontLookUp[c])[FontPage][0];
             if (g != -1) {
                 xy &= 0xFFFF0000;
-                xy |= (u16)(x0 + col * 640 / ScreenRect->w);
+                xy |= (u16)(x0 + col * num / den * 640 / ScreenRect->w);
                 if (fl & 1) {
                     if (fl & 4) {
                         oy = xy >> 16;
@@ -1099,7 +1139,7 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                        (only the European data's letters have it) */
                     oy = xy >> 16;
                     xy &= 0xFFFF;
-                    xy |= (oy - (FontPage != 0 ? 2 : 6) * 2) << 16;
+                    xy |= (oy - (FontPage != 0 ? 2 : 6) * 2 * num / den) << 16;
                     texture_draw_quad((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], xy, 0, arg3, arg3, arg4, arg4);
                     xy &= 0xFFFF;
                     xy |= oy << 16;
@@ -1108,13 +1148,14 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                 }
             } else if (c == '/' || c == '\\') {
                 xy &= 0xFFFF0000;
-                xy |= (u16)(x0 + col * 640 / ScreenRect->w);
+                xy |= (u16)(x0 + col * num / den * 640 / ScreenRect->w);
                 draw_slash(xy, c == '\\', arg3, arg4);
             }
             col += w;
         }
         c = *s++;
     }
+    GlyphNum = GlyphDen = 1;
 }
 
 void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
@@ -1939,7 +1980,7 @@ void InitSysFontModel(void) {
 }
 
 s32 SysGetLen(char *s) {
-    s = (char *)pal_text(s);
+    s = (char *)pal_text((const char *)ModeTextHeard((const u8 *)s));
     s32 sum;
     s32 c;
     s32 d;
@@ -2923,15 +2964,16 @@ static void texture_face(DrawFace *d, obj_texture *f, u32 asked) {
 static void texture_corners(DVECTOR c[4], obj_texture *f, s32 xy) {
     s16 x = (s16)xy * ScreenRect->w / 640;
     s16 y = (s16)(xy >> 16) / 2;
+    s32 fw = f->w * GlyphNum / GlyphDen, fh = f->h * GlyphNum / GlyphDen;
 
     c[0].vx = x;
     c[0].vy = y;
-    c[1].vx = x + f->w - 1;
+    c[1].vx = x + fw - 1;
     c[1].vy = y;
     c[2].vx = x;
-    c[2].vy = y + f->h - 1;
-    c[3].vx = x + f->w - 1;
-    c[3].vy = y + f->h - 1;
+    c[2].vy = y + fh - 1;
+    c[3].vx = x + fw - 1;
+    c[3].vy = y + fh - 1;
 }
 
 s32 texture_draw_quad(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3) {

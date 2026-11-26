@@ -30,6 +30,11 @@ void archive_open(void);
 int archive_from_europe(void);
 /* Whether it has the European disc's five languages, which each machine reads its own of (settings.h, language) */
 int archive_languages(void);
+/* The language this machine draws and plays (0 English, the game's own; settings.h), 0 without the European disc's languages */
+int archive_language(void);
+/* A file's copy in this machine's language (the European disc's mode text, voices and speech), to free, or NULL: only for what's drawn
+   and heard beside the English the game reads (modetext.c, audio.c; archive.c) */
+unsigned char *archive_language_copy(int entry, int *size);
 /* An English string of the game's in this machine's language, if the European disc has it (archive.c), else itself */
 const char *pal_text(const char *english);
 void archive_read(int sector, int count, void *buf);

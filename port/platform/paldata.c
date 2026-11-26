@@ -488,3 +488,43 @@ void pal_font_glyphs(int16_t *lookup, uint8_t *flags) {
         flags[PalGlyphs[i].page * 256 + PalGlyphs[i].code] = PalGlyphs[i].flags;
     }
 }
+
+int pal_mode_text(int language, unsigned *base, const unsigned short **roots) {
+    if (!archive_from_europe() || language < 0 || language >= PAL_LANGUAGES) {
+        return 0;
+    }
+    *base = PalModeTextBase;
+    *roots = PalModeTextRoots[language];
+    return 1;
+}
+
+int pal_mode_text_model(int model) {
+    int i;
+
+    for (i = 0; i < PalModeTextModelCount; i++) {
+        if (PalModeTextModels[i][0] == model) {
+            return PalModeTextModels[i][1];
+        }
+    }
+    return model;
+}
+
+int pal_mode_text_glyph(int glyph) {
+    int i, n = PAL_FONT_GLYPHS;
+
+    for (i = 0; i < PAL_FONT_GLYPHS; i++) {
+        if (PalFontOrder[i] == glyph) {
+            return i;
+        }
+    }
+    /* one of the European font's own, after the USA's in the made font, in its order */
+    for (i = 0; i < glyph; i++) {
+        int j, used = 0;
+
+        for (j = 0; j < PAL_FONT_GLYPHS && !used; j++) {
+            used = PalFontOrder[j] == i;
+        }
+        n += !used;
+    }
+    return n;
+}
