@@ -39,7 +39,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   - Windows (Direct3D 12) builds on the host with CMake. Linux (Vulkan) builds and is tested in `tools/dl`'s container, on a virtual
     screen with software Vulkan: never yet on a real Linux desktop and graphics card. Android (Vulkan) builds in `tools/da`, is
     tested in the emulator, and works on the user's phone; a phone that folds has only been tried in the emulator (7.15), as has its MOBILE FOLD option. No Mac.
-  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.5.1 (2026-11-24, PLAY after a while on the launcher no longer starts the demo; v1.5.0, 2026-11-24, custom heroes and the hero tool in place of Ripper Roo and Pinstripe, and fuller logs; v1.4.1, 2026-11-21, mouse buttons bound to controls work in the game's menus; v1.4.0, 2026-11-20, the team games' crash fixed, logs, RecompLauncher and achievements; v1.3.0, 2026-11-18, button prompts and mouse buttons; v1.2.0, 2026-11-13, phones that fold and the DATA page;
+  - Releases are on GitHub, each with the user's OK: v0.1.0 (2026-11-01) to v1.5.2 (2026-11-26, the hero tool starts on any PC and has no debug information; v1.5.1, 2026-11-24, PLAY after a while on the launcher no longer starts the demo; v1.5.0, 2026-11-24, custom heroes and the hero tool in place of Ripper Roo and Pinstripe, and fuller logs; v1.4.1, 2026-11-21, mouse buttons bound to controls work in the game's menus; v1.4.0, 2026-11-20, the team games' crash fixed, logs, RecompLauncher and achievements; v1.3.0, 2026-11-18, button prompts and mouse buttons; v1.2.0, 2026-11-13, phones that fold and the DATA page;
     v1.1.0, 2026-11-11, the sticks' deadzone and the mouse in every menu; v1.0.0, 2026-11-10, brought online play and couch play), for
     Windows, Linux and Android.
     `node port/package.mjs` makes them (PORT.md, A release).
@@ -674,6 +674,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- 2026-11-26: 1.5.2 published at the user's word: the hero tool's two fixes. 1.5.1's checks pass on all three packages; from a copy
+  of the Windows zip outside the repo, System32 alone on the PATH: the tool made Bobby in 11 of 11 games and added him, the game
+  played, the Mods page started the tool. 1.5.0 and 1.5.1's Windows tools still hold this PC's paths (the user's to decide).
 
 - 2026-11-26: The hero tool in 1.5.0 and 1.5.1 wouldn't start on Windows (a player's report: libc++.dll, libunwind.dll not found): it
   needed llvm-mingw's C++ runtime, on this PC's PATH only. Linked in now (-static; Linux -static-libstdc++), and package.mjs
