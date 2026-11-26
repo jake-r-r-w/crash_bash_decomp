@@ -675,6 +675,13 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-26: The port reads the European disc (SCES-02834; issue 3, the user's go-ahead): its archive made into a USA-ordered one with
+  its own table at the end (platform/paldata.c, paltable.c from port/pal_table.mjs, archive.c read_own_table; PORT.md, The European
+  disc), the font and interface pictures in USA order, the English of its five languages. From an image, --prepare or a European
+  CRASHBSH.DAT; CRC-checked. modes, bosses, online, hero bobby pass on it, Linux converts the same bytes; Android built, not run.
+  It showed up a hero-pack bug: dbase_init_all cleared only the game's 0x11A banks, not the packs' (stale pointer, crash online).
+  Not released.
+
 - 2026-11-26: 1.5.2 published at the user's word: the hero tool's two fixes. 1.5.1's checks pass on all three packages; from a copy
   of the Windows zip outside the repo, System32 alone on the PATH: the tool made Bobby in 11 of 11 games and added him, the game
   played, the Mods page started the tool. 1.5.0 and 1.5.1's Windows tools still hold this PC's paths (the user's to decide).

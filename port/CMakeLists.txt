@@ -126,7 +126,7 @@ set_property(SOURCE ${core_sources} APPEND PROPERTY COMPILE_DEFINITIONS "OVL_NAM
 
 set(PORT_SOURCES main.c platform/overlays.c platform/maths.c platform/archive.c platform/discimage.c platform/clock.c platform/pad.c platform/saves.c platform/folders.c
   platform/audio.c platform/sdl.c platform/gfx.c platform/upscale.c platform/texpack.c platform/mods.c platform/heropack.c platform/heroadjust.c platform/zipread.c platform/bps.c platform/settings.c
-  platform/touch.c platform/controls.c platform/prompts.c platform/net.c platform/portmap.c platform/crashlog.c platform/achievements.c ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c)
+  platform/touch.c platform/controls.c platform/prompts.c platform/paldata.c platform/paltable.c platform/net.c platform/portmap.c platform/crashlog.c platform/achievements.c ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c)
 # The button prompts' pictures, Kenney's Input Prompts (CC0, assets/prompts/License.txt), built in as data (platform/prompts.c)
 file(GLOB PROMPT_PNGS CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/assets/prompts/*.png)
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/prompt_pngs.c

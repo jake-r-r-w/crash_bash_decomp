@@ -1,5 +1,6 @@
 /* Pulls the game's archive out of the player's own disc image, for the first time it runs: a .cue with its .bin, a raw .bin or an .iso. Only
- * the one file is read, by the disc's own ISO 9660 directories. SDL's file calls, so a path can hold any characters. */
+ * the one file is read, by the disc's own ISO 9660 directories. SDL's file calls, so a path can hold any characters. The USA disc's is
+ * copied as it is; the European disc's (SCES-02834) is made into one the USA game reads as it's read (paldata.c). */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,6 +8,7 @@
 #include <SDL3/SDL.h>
 #include "platform.h"
 #include "folders.h"
+#include "paldata.h"
 
 #define SECTOR_BYTES 2048
 #define RAW_SECTOR_BYTES 2352
@@ -28,6 +30,34 @@ static int read_at(Disc *d, Sint64 at, void *buf, size_t size) {
 
 static int read_sector(Disc *d, uint32_t sector, void *buf) {
     return read_at(d, (Sint64)sector * d->stride + d->skip, buf, SECTOR_BYTES);
+}
+
+/* paldata.c's reader: bytes of the European archive, by its sectors on the disc */
+typedef struct {
+    Disc *disc;
+    DiscFile file;
+} DiscDat;
+
+static int read_dat_bytes(void *ctx, uint64_t at, void *buf, size_t size) {
+    DiscDat *dd = ctx;
+    uint8_t sector[SECTOR_BYTES], *out = buf;
+
+    if (at + size > dd->file.size) {
+        return 0;
+    }
+    while (size > 0) {
+        uint32_t s = (uint32_t)(at / SECTOR_BYTES), off = (uint32_t)(at % SECTOR_BYTES);
+        size_t n = SECTOR_BYTES - off < size ? SECTOR_BYTES - off : size;
+
+        if (!read_sector(dd->disc, dd->file.sector + s, sector)) {
+            return 0;
+        }
+        memcpy(out, sector + off, n);
+        out += n;
+        at += n;
+        size -= n;
+    }
+    return 1;
 }
 
 static uint32_t le32(const uint8_t *p) {
@@ -166,7 +196,15 @@ const char *disc_extract_progress(const char *image, const char *out, void (*pro
         goto done;
     }
     if (!find_in(&d, &root, "SCUS_945.70", &exe)) {
-        problem = "That's another version of Crash Bash. Only the USA version's data is supported.";
+        DiscDat dd = { &d, dat };
+
+        if (find_in(&d, &root, "SCES_028.34", &exe) && pal_is_size(dat.size)) {
+            /* the European disc: its files, in the USA's order */
+            printf("data: the European disc (SCES-02834), made into the USA game's\n");
+            problem = pal_convert(read_dat_bytes, &dd, out, progress);
+            goto done;
+        }
+        problem = "That's another version of Crash Bash. Only the USA (SCUS-94570) and European (SCES-02834) versions are supported.";
         goto done;
     }
     /* a stopped copy mustn't look like the data next time */
@@ -308,14 +346,14 @@ int disc_first_run(const char *out, const char *first) {
     }
 
     SDL_snprintf(android_message, sizeof(android_message),
-                 "Crash Bash needs the game's data, from your own copy of Crash Bash (USA).\n\n"
+                 "Crash Bash needs the game's data, from your own copy of Crash Bash (USA or Europe).\n\n"
                  "Choose your disc image (the .bin, or an .iso) and it's copied once, so you won't need the image again. "
                  "Or copy CRASHBSH.DAT from the disc to %s on this device.", base);
     SDL_snprintf(android_none, sizeof(android_none),
                  "There's no way to choose a file here. Put your disc image (the .bin, or an .iso) or CRASHBSH.DAT in %s on this "
                  "device, and start it again.", base);
 #else
-    const char *message = "Crash Bash needs the game's data, from your own copy of Crash Bash (USA).\n\n"
+    const char *message = "Crash Bash needs the game's data, from your own copy of Crash Bash (USA or Europe).\n\n"
                           "Choose your disc image (a .cue, .iso or .bin) and it's copied once, so you won't need the image again. "
                           "Or copy CRASHBSH.DAT from the disc into the same folder as this program.";
 #endif

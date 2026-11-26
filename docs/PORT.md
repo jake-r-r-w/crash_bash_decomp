@@ -566,6 +566,41 @@ file start`, `done loading`, `mode2`) are gone from the port's copy.
 A release from before 1.4.0 has only the crash's first line and raw addresses. Those are the release's own build: `cmake --preset
 windows-release` at its tag, linked again with `-Wl,-Map=FILE` (the same bytes, but for the timestamp), maps them to functions.
 
+## The European disc
+
+The port plays the USA game's C, and reads its data from the European disc too (SCES-02834, GitHub issue 3; 2026-11-26), in English.
+The USA game reads `CRASHBSH.DAT` through the USA disc's table of its files (`DatIndex`), so the European archive is made into one in
+the USA's order, once, where a USA disc's copy would go: from a disc image (`discimage.c`, the first run's chooser, an image beside the
+program, `--image`/`--game` and RecompLauncher's `--prepare`), or from a European `CRASHBSH.DAT` put where the game looks for its data
+(`main.c`, made into the data folder, which is used from then on). `platform/paldata.c` makes it; its table, `platform/paltable.c`,
+is made by `node port/pal_table.mjs` from both discs here (`disc/` and `protos/PAL_retail/`) and holds only where each file is: none
+of either game's data is in the port.
+
+What's in the European archive: the same files, in its own order (1,349 of them to the USA's 992), 844 of the 977 the port reads
+byte for byte; most of the rest its own versions, as long or a little longer (a texture redrawn, a model whose numbers point at its
+texture's own order, the warp rooms' signs); and five languages where the USA has one, in the order Spanish, Italian, German, French,
+English: the mode text (`08D`..`098`) and the cutscene speech. `pal_table.mjs` lines the two up by the files that are the same (the
+longest run in the same order on both), takes the files between two of those one for one where both have as many, the last of the
+five texts, and the one overlay group whose order differs by hand. The USA's cutscene speech `0E2`..`0F4` has none there and nothing
+reads it; the code files (the overlays and the engine) are the port's own C and are left out.
+
+Two files the code picks pictures from by number, so their pictures are put in the USA's order as they're copied: the font
+(`SysFontLookUp` gives a picture's number; the European one has the accented letters too, so the USA's letters were 3 to 11 places
+later, and the game's words came out wrong: TESTING read QBPQFKD), and the interface, whose pause and rules words follow four places
+earlier, as the European one hasn't the USA's P1 to P4 tags (those are clear pictures of their size). Both are matched by each
+picture's colours, every USA one found.
+
+The made file ends with its table: the 992 files' sectors and sizes, then the count, 1, and `CBUSAIDX`. `archive_open` reads it in
+place of the game's table (`read_own_table`, before anything else reads the archive: `main.c` opens it first, before the mods and the
+start's saved sections), and each file group's size changes as its span does. The whole European file is checked by its CRC first, so
+another pressing or a damaged copy is said and not made into something wrong.
+
+Checked (2026-11-26): every mode plays, its pictures at two moments the USA's but for slight differences in 4 of the 39 (a light's
+shade, an animation's phase); the bosses beaten; online play, two European machines; the hero packs in every game; the loading,
+menu and title screens the USA's but for the European disc's own logo. A European machine and a USA one can't play together online:
+their data differs, and joining says so. The fix the European data showed up was the hero packs' banks, which a level's load didn't
+clear (`dbase_init_all`).
+
 ## RecompLauncher
 
 [RecompLauncher](https://recomplauncher.com) installs PC recomps from their GitHub releases and keeps them up to date; the port is listed
@@ -573,8 +608,8 @@ there as `crash-bash-decomp`, and players already run it from there (a crash rep
 `port/release/recomplauncher.json`, goes at the top of the Windows zip and the Linux tarball (`package.mjs`), next to the program. It
 follows RecompLauncher's agent guide (`https://recomplauncher.com/sdk-files/recomplauncher-agent.md`), all three of its levels:
 
-- **Setup.** The player picks their disc image; the launcher checks it's the USA disc (`SCUS_945.70` on it, serial SCUS-94570) and
-  reads all of it, with a "verified" badge for Redump's dump (disc 512: 178,220,448 bytes, CRC-32 `69a6cd83`, the Original, Greatest
+- **Setup.** The player picks their disc image; the launcher checks it's the USA or the European disc, by its serial (SCUS-94570 or SCES-02834: `iso9660`
+  names only one program, so it's by serial since the European disc, 2026-11-26), and reads all of it, with a "verified" badge for Redump's dump (disc 512: 178,220,448 bytes, CRC-32 `69a6cd83`, the Original, Greatest
   Hits and Collector's editions alike). Then it runs `crashbash --prepare --portable --game IMAGE`, which copies `CRASHBSH.DAT` out of it to
   where the game's own first run puts it (`own_data_path`), printing `progress 0.42 ...` lines, with no window, and exits 0 (2: no
   `--game`, 4: not a disc image it reads). `--game` is `--image` by another name. Play starts the program with `--portable`.

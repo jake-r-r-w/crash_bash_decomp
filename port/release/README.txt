@@ -3,7 +3,10 @@ CRASH BASH PORT - version @VERSION@
 A native 64-bit @SYSTEM@ version of Crash Bash, built from the decompiled source
 at https://github.com/jake-r-r-w/crash_bash_decomp. It isn't an emulator.
 
-This download has no game data. You need your own copy of Crash Bash (USA).
+This download has no game data. You need your own copy of Crash Bash, the USA
+release (SCUS-94570) or the European one (SCES-02834). With the European disc
+the game plays in English, as the USA version does, with the European disc's
+own art and logos.
 
 
 GETTING STARTED
@@ -208,7 +211,7 @@ names it), and say what you were doing.
 
 KNOWN LIMITS
 
-- Only the USA version's data is supported.
+- The USA and European versions' data are supported; the Japanese isn't.
 - The whole Adventure has been played through to 200% by a test player, but that
   player needed weakened opponents for many of the challenges, so the hardest
   ones have had less testing at full strength.

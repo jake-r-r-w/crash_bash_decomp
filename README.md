@@ -12,7 +12,7 @@ You need your own copy of the game for either. None of its files are included.
 ## Native port
 
 1. Download the zip for Windows or the `.tar.gz` for Linux from the [latest release](https://github.com/jake-r-r-w/crash_bash_decomp/releases/latest) and unpack it.
-2. Put the disc image of your legal copy of Crash Bash (USA) (a `.cue` with its `.bin`, a raw `.bin` or an `.iso`) next to `crashbash.exe` (`crashbash` on Linux), or copy `CRASHBSH.DAT` from the `CRASHBSH` folder on it there.
+2. Put the disc image of your legal copy of Crash Bash, the USA or the European release (a `.cue` with its `.bin`, a raw `.bin` or an `.iso`) next to `crashbash.exe` (`crashbash` on Linux), or copy `CRASHBSH.DAT` from the `CRASHBSH` folder on it there.
 3. Run `crashbash.exe` (`crashbash` on Linux).
 
 Or install it with [RecompLauncher](https://recomplauncher.com/game/crash-bash-decomp), which sets it up from your disc image, keeps it up to date and shows its settings.
@@ -41,7 +41,7 @@ On Android, install the `.apk` from the same release, and the first time it asks
 | **Cheat menu**    | The original's hidden cheats, in the pause menu        |
 | **Achievements**  | In [RecompLauncher](https://recomplauncher.com/game/crash-bash-decomp), with [Recomp Achievements](https://github.com/elripalda/RecompAchievements): trophies, gems, crystals, relics, the bosses and 200% |
 
-It needs 64-bit Windows 10 or 11 and Direct3D 12, 64-bit Linux with glibc 2.34 or newer (Ubuntu 22.04, Debian 12, Fedora 35 and later) and Vulkan, or Android 8.0 or newer with Vulkan. The Linux version hasn't been played on a real Linux PC with a graphics card yet, only in software. There's no Mac version. Only the USA version's data is supported. Playing with several controllers at once, and online play between two homes, haven't been tested by people yet.
+It needs 64-bit Windows 10 or 11 and Direct3D 12, 64-bit Linux with glibc 2.34 or newer (Ubuntu 22.04, Debian 12, Fedora 35 and later) and Vulkan, or Android 8.0 or newer with Vulkan. The Linux version hasn't been played on a real Linux PC with a graphics card yet, only in software. There's no Mac version. The USA and European discs are supported (the European disc plays in English); the Japanese isn't. Playing with several controllers at once, and online play between two homes, haven't been tested by people yet.
 
 ### Playing online
 

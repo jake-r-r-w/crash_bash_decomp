@@ -6,8 +6,8 @@
   "requires": ["start", "setup", "exit_codes", "settings.ini", "settings.args", "settings.choices", "settings.slider", "settings.bindings", "settings.groups"],
   "game": {
     "kind": "iso",
-    "label": "Your disc image of the USA PlayStation release of Crash Bash (SCUS-94570): its .bin, or an .iso.",
-    "check": { "iso9660": "SCUS_945.70", "ids": ["SCUS-94570"] },
+    "label": "Your disc image of Crash Bash for the PlayStation, the USA release (SCUS-94570) or the European one (SCES-02834): its .bin, or an .iso.",
+    "check": { "ids": ["SCUS-94570", "SCES-02834"] },
     "dumps": [
       { "name": "USA", "size": 178220448, "crc32": "69a6cd83" }
     ]

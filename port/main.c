@@ -27,6 +27,7 @@
 #include "platform/folders.h"
 #include "platform/crashlog.h"
 #include "platform/achievements.h"
+#include "platform/paldata.h"
 
 int extra_hero_named(const char *id); /* game/main/extraheroes.c: --extra-hero's names */
 void bonus_heroes_dump_to(const char *folder); /* game/main/bonusheroes.c: --dump-hero */
@@ -1092,6 +1093,23 @@ int main(int argc, char **argv) {
             return 0;
         }
     }
+    /* a European CRASHBSH.DAT where the game looks for its data (beside it, say), as it is on the disc: made into the USA game's once, in
+       the data folder, which is used from then on, on every start (paldata.c; docs/PORT.md, The European disc) */
+    if (pal_is_file(platform_data_path())) {
+        const char *out = own_data_path();
+
+        if (!pal_is_converted(out)) {
+            const char *problem;
+
+            printf("data: %s is the European disc's, made into the USA game's in %s\n", platform_data_path(), out);
+            if ((problem = pal_convert_file(platform_data_path(), out, NULL)) != NULL) {
+                platform_fatal(problem);
+            }
+        }
+        DataPath = out;
+    }
+    /* first, so that a converted archive's own table is the game's before anything reads or copies it (archive.c) */
+    archive_open();
     if (dump_files_to != NULL) {
         return dump_files(dump_files_to);
     }

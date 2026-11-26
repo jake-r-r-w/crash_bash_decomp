@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include "paldata.h"
 #include "platform.h"
 
 #define SECTOR_BYTES 2048
@@ -28,6 +29,7 @@ extern ArchiveGroup FileGroups[];
 extern int32_t FileGroupCount;
 
 static SDL_IOStream *Dat;
+static int Converted; /* the data was made from the European disc (paldata.c) */
 
 /* What the tables were before anything was replaced, and the replacements by entry */
 static ArchiveEntry *Original;
@@ -35,6 +37,64 @@ static int32_t *OriginalGroupSize;
 static uint8_t **Replaced;
 static int32_t *ReplacedSize;
 static int NumReplaced;
+
+/* A CRASHBSH.DAT made from the European disc (paldata.c) has the USA's files in another place each, and ends with their table: it's
+   the game's table from here on, before anything else reads it (main.c opens the archive first), and each group's size changes by as
+   much as the span of its files does. */
+static void read_own_table(void) {
+    Sint64 size = SDL_GetIOSize(Dat);
+    uint8_t foot[16], *table;
+    int64_t *was;
+    int32_t count, i;
+
+    if (size < 16 || SDL_SeekIO(Dat, size - 16, SDL_IO_SEEK_SET) < 0 || SDL_ReadIO(Dat, foot, 16) != 16 ||
+        memcmp(foot + 8, PAL_TABLE_MAGIC, 8) != 0) {
+        return;
+    }
+    count = (int32_t)(foot[0] | foot[1] << 8 | foot[2] << 16 | (uint32_t)foot[3] << 24);
+    if (count <= 0 || count > DatIndexCount || (Sint64)count * 8 + 16 > size) {
+        return;
+    }
+    table = malloc((size_t)count * 8);
+    was = malloc(sizeof(int64_t) * (size_t)FileGroupCount);
+    if (table == NULL || was == NULL || SDL_SeekIO(Dat, size - 16 - (Sint64)count * 8, SDL_IO_SEEK_SET) < 0 ||
+        SDL_ReadIO(Dat, table, (size_t)count * 8) != (size_t)count * 8) {
+        free(table);
+        free(was);
+        return;
+    }
+    for (i = 0; i < FileGroupCount; i++) {
+        const ArchiveGroup *g = &FileGroups[i];
+
+        was[i] = g->count > 0 && g->first + g->count <= count
+                     ? (int64_t)(DatIndex[g->first + g->count - 1].sector + SECTORS(DatIndex[g->first + g->count - 1].size) - DatIndex[g->first].sector)
+                     : -1;
+    }
+    for (i = 0; i < count; i++) {
+        const uint8_t *p = table + i * 8;
+
+        DatIndex[i].sector = (int32_t)(p[0] | p[1] << 8 | p[2] << 16 | (uint32_t)p[3] << 24);
+        DatIndex[i].size = (int32_t)(p[4] | p[5] << 8 | p[6] << 16 | (uint32_t)p[7] << 24);
+    }
+    for (i = 0; i < FileGroupCount; i++) {
+        const ArchiveGroup *g = &FileGroups[i];
+
+        if (was[i] >= 0) {
+            int64_t now = DatIndex[g->first + g->count - 1].sector + SECTORS(DatIndex[g->first + g->count - 1].size) - DatIndex[g->first].sector;
+
+            FileGroups[i].size = (int32_t)(FileGroups[i].size + (now - was[i]) * SECTOR_BYTES);
+        }
+    }
+    free(table);
+    free(was);
+    Converted = 1;
+    printf("data: made from the European disc, its own table of %d files\n", (int)count);
+}
+
+int archive_from_europe(void) {
+    archive_open();
+    return Converted;
+}
 
 void archive_open(void) {
     if (Dat != NULL) {
@@ -44,8 +104,9 @@ void archive_open(void) {
         Dat = SDL_IOFromFile(platform_data_path(), "rb");
     }
     if (Dat == NULL) {
-        platform_fatal("Can't find the game's data.\n\nCopy CRASHBSH.DAT from your own copy of Crash Bash (USA) into the same folder as this program. It's in the CRASHBSH folder on the disc.");
+        platform_fatal("Can't find the game's data.\n\nCopy CRASHBSH.DAT from your own copy of Crash Bash (USA or Europe) into the same folder as this program. It's in the CRASHBSH folder on the disc.");
     }
+    read_own_table();
 }
 
 static void read_dat(int32_t sector, int32_t count, uint8_t *buf) {

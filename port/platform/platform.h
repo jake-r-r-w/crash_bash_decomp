@@ -26,6 +26,8 @@ const char *platform_data_path(void);
 /* The program's folder, ending in a slash (on Android the app's folder in shared storage), or NULL. */
 const char *platform_base_path(void);
 void archive_open(void);
+/* Whether the data was made from the European disc (paldata.c; it opens the archive) */
+int archive_from_europe(void);
 void archive_read(int sector, int count, void *buf);
 /* A mod's files in place of the archive's (archive.c): how many entries it has and how big one is as the game has it, a replacement
    (bytes it takes, or NULL for the game's own), and laying the archive out again for what's replaced, before the game reads on. */
