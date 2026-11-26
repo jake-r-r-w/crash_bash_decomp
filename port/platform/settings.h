@@ -36,6 +36,8 @@ typedef struct Settings {
     int buttons_apart; /* the touch buttons in a part of the screen of their own, not over the picture (touch.c): Android's menus have it */
     int button_prompts; /* the face buttons' pictures: PROMPTS_AUTO, by player 1's last press, or always one (prompts.h) */
     int stick_deadzone; /* how far out a stick has to go to count, in percent: 0 is the game's own (controls.c, controls_stick) */
+    int language;      /* the European disc's language this machine reads and shows: 0 English, 1 French, 2 German, 3 Italian, 4 Spanish
+                          (archive.c, paldata.c). Each machine's own, never the game's state, so online play is the same whichever */
     int keys[NUM_CONTROLS];    /* each game button's key, an SDL scancode (controls.h) */
     int buttons[NUM_CONTROLS]; /* and its controller button, SDL's or a trigger */
     ModChoice mods[SETTINGS_MODS]; /* the mods in the player's order, first first */
@@ -69,6 +71,9 @@ Settings *settings(void);
 
 void settings_defaults(void);
 void settings_load(void);
+/* A language's id in settings.ini (en, fr, de, it, es) and its number, or -1 */
+const char *settings_language_id(int language);
+int settings_language_from_id(const char *id);
 void settings_save(void);
 /* The settings that change the game, as another machine has them, for an online game: the player's own are still what's saved. */
 void settings_borrow(int skip_intro, int skip_loading, int cheat_menu, int extra_heroes);

@@ -166,8 +166,180 @@ for (let e = 0; e < ENTRIES; e++) if (map[e] < 0 && usaSize(e) > 0) left.push(e)
 for (const e of left) kind[e] = 'none';
 console.log(`${same} the same, ${map.filter(p => p >= 0).length - same} the European disc's own, ${left.length} with none: ${left.map(e => e.toString(16)).join(' ')}`);
 
+/* The other four languages (docs/PORT.md, The European disc, Languages): each of these USA files has a version for each language on the
+   European disc, in sets in the order Spanish, Italian, German, French, English (data), where the game's code has them English, French,
+   German, Italian, Spanish (the languages here are the code's: 1 French to 4 Spanish). The English is the one mapped above, last in its
+   set, so the others are a set's length before it, one set each: the mode text (12), the cutscene speech (27), and the heroes' voices
+   with the sounds after them (51). */
+const LANG_NAMES = ['English', 'French', 'German', 'Italian', 'Spanish'];
+const langGroups = [
+    { name: 'mode text', entries: Array.from({ length: 12 }, (_, k) => 0x8D + k), stride: 12 },
+    { name: 'cutscene speech', entries: Array.from({ length: 27 }, (_, k) => 0xF5 + k), stride: 27 },
+    { name: 'voices and sounds', entries: [...Array.from({ length: 44 }, (_, k) => 0xB6 + k), ...Array.from({ length: 7 }, (_, k) => 0x110 + k)], stride: 51 },
+];
+const langFiles = [];
+for (const g of langGroups) {
+    let kept = 0;
+    for (const e of g.entries) {
+        const en = map[e];
+        if (en < 0) throw new Error(`${g.name}: USA ${e.toString(16)} has no English`);
+        const v = [1, 2, 3, 4].map(L => en - L * g.stride); /* French a set before the English, German two, Italian three, Spanish four */
+        for (const [i, p] of v.entries()) {
+            /* the same kind of file: a mode text's first word is its number, 12 more a set before; anything else's starts the same */
+            const head = g.name === 'mode text' ? P(p).readUInt32LE(0) === P(en).readUInt32LE(0) + 12 * (i + 1)
+                                                : P(p).subarray(0, 4).compare(P(en).subarray(0, 4)) === 0;
+            if (p < 0 || !head || pal[p][1] > pal[en][1] * 2 || pal[p][1] * 2 < pal[en][1]) {
+                throw new Error(`${g.name}: USA ${e.toString(16)}'s language version ${p} isn't the same kind of file as its English ${en}`);
+            }
+        }
+        if (v.every(p => P(p).equals(P(en)))) continue; /* the same in every language */
+        langFiles.push({ e, v, sound: g.name !== 'mode text' });
+        kept++;
+    }
+    console.log(`${g.name}: ${kept} of ${g.entries.length} differ by language`);
+}
+/* the mode text's languages, by their first words: the French says OBJECTIF */
+if (!P(langFiles.find(f => f.e === text).v[0]).toString('latin1').includes('OBJECTIF')) {
+    throw new Error("the mode text's language a set before the English isn't the French");
+}
+
+/* The European font's letters past the USA's: the accented ones, each code a glyph, as its program's InitSysFont sets them (a run of li
+   reg, 0x30NN; sh reg, code * 2 (base)); in the converted font's order, the USA's glyphs first and the European's others after. Its last
+   four stores on each page are the button icons, which the USA has at 0xFC to 0xFF too, and keep. */
+function fontStores(exe, aPage0, aPage1) {
+    const regs = new Map(), rec = [];
+    for (let i = 0x800; i + 4 <= exe.length; i += 4) {
+        const w = exe.readUInt32LE(i), op = w >>> 26, rs = (w >> 21) & 31, rt = (w >> 16) & 31, imm = w & 0xFFFF;
+        if ((op === 9 || op === 13) && rs === 0) { regs.set(rt, imm); continue; }
+        if (op === 41 && rt !== 0 && regs.has(rt)) { rec.push({ at: i, base: rs, off: imm << 16 >> 16, v: regs.get(rt) }); continue; }
+        if (op === 2 || op === 3 || (op === 0 && (w & 63) === 8)) regs.clear();
+    }
+    const a0 = rec.find(r => r.v === aPage0 && rec.some(q => q.base === r.base && q.v === aPage1 && q.off - r.off === 0x200));
+    if (a0 === undefined) throw new Error("the European program's InitSysFont wasn't found");
+    return rec.filter(r => r.base === a0.base && Math.abs(r.at - a0.at) < 0x4000).map(r => {
+        const rel = (r.off - a0.off) / 2 + 0x41;
+        return { page: rel >= 256 ? 1 : 0, c: rel % 256, g: r.v & 0xFFF, v: r.v };
+    }).filter(r => (r.v & 0xF000) === 0x3000);
+}
+const leftovers = fp.map((_, i) => i).filter(i => !fontOrder.includes(i));
+const ourGlyph = p => fontOrder.includes(p) ? fontOrder.indexOf(p) : fontOrder.length + leftovers.indexOf(p);
+/* A on each page: the USA's glyph 0x3A and 0x02, which are the European font's fontOrder[...] */
+const stores = fontStores(palExe, 0x3000 | fontOrder[0x3A], 0x3000 | fontOrder[0x02]);
+const accents = new Map();
+for (const page of [0, 1]) {
+    const high = stores.filter(r => r.page === page && r.c >= 0x80);
+    for (const r of high.slice(0, -4)) accents.set(`${page}:${r.c}`, { page, c: r.c, g: ourGlyph(r.g) });
+}
+console.log(`the font: ${accents.size} letters past the USA's, on its two pages`);
+
+/* The game's words in the five languages, where the European code has them: its program (only on a disc image: -1), its engine and its
+   overlays (archive files, where each loads). Two kinds: a message's five strings one after another, English first, with a table of
+   five pointers to them; and a menu's array of strings for each language, with a table of five pointers to the arrays, each one's
+   strings in the same order. Each is where its English and translations are, by blob and offset: the converter copies them from the
+   player's disc, and the game draws a translation in place of the English it matches (paldata.c, pal_text). */
+const ENGINE_ENTRY = 1348, OVERLAY_ENTRIES = [848, ...Array.from({ length: 13 }, (_, i) => 1077 + i)];
+if (pal[ENGINE_ENTRY][1] !== 374020) throw new Error("the European engine isn't the archive's file " + ENGINE_ENTRY);
+const blobs = [{ id: -1, bytes: palExe, base: 0x80010000 - 0x800 }, { id: ENGINE_ENTRY, bytes: P(ENGINE_ENTRY), base: 0x8007A498 },
+    ...OVERLAY_ENTRIES.map(e => ({ id: e, bytes: P(e), base: 0x800B29B8 }))];
+const cstr = (b, at) => { let e = at; while (e < b.length && b[e] !== 0) e++; return { s: b.subarray(at, e).toString('latin1'), end: e }; };
+const good = s => s.length > 0 && s.length < 300 && !/[\x00-\x09\x0b\x0c\x0e-\x1f]/.test(s);
+/* where an address is, seen from blob from: the overlays all load at one place, so an overlay's pointer is into itself, the program or
+   the engine, never another overlay */
+const seen = from => [from, ...blobs.filter(b => b !== from && b.id !== -2 && (b.id === -1 || b.id === ENGINE_ENTRY))];
+const stringAt = (addr, from) => { for (const b of seen(from)) { const o = addr - b.base; if (o >= 0 && o < b.bytes.length && o % 4 === 0) { const { s, end } = cstr(b.bytes, o); if (good(s)) return { b, o, s, end }; } } return null; };
+const msgs = new Map();
+const pendingList = new Set(); /* messages that may be the middle of a list: checked against the game's English, below */
+const messageAt = new Set(); /* where each message set's table is */ /* English -> { blob, offs[5] } */
+const keep = (en, tr) => { if (!msgs.has(en.s) && tr.every(x => x.b === en.b)) msgs.set(en.s, { blob: en.b.id, offs: [en.o, ...tr.map(x => x.o)] }); };
+/* menus first: a table of five pointers to five arrays of strings is surer than five strings in a row, which a menu's own English
+   array looks like too */
+for (const pass of ['menus', 'messages']) {
+    for (const c of blobs) {
+        for (let q = 0; q + 20 <= c.bytes.length; q += 4) {
+            const ptr = [0, 1, 2, 3, 4].map(k => c.bytes.readUInt32LE(q + 4 * k));
+            if (pass === 'messages') {
+                /* a message: five strings one after another */
+                const str = ptr.map(p => stringAt(p, c));
+                if (str.every(x => x !== null) && str.every((x, k) => k === 4 || (str[k + 1].b === x.b && str[k + 1].o === ((x.end + 4) & ~3)))) {
+                    /* not the middle of a list: the pointer before it to the string right before it, an English one (EASY, MEDIUM, HARD
+                       and the other languages' after them looked like a message from HARD on) */
+                    const before = q >= 4 ? stringAt(c.bytes.readUInt32LE(q - 4), c) : null;
+                    const mine = !msgs.has(str[0].s);
+                    keep(str[0], str.slice(1));
+                    messageAt.add(c.id + ':' + q);
+                    /* a set right after another set is a run of messages (EXIT after the sound settings); one inside a list isn't */
+                    if (mine && before !== null && before.b === str[0].b && ((before.end + 4) & ~3) === str[0].o && /^[ -~]*$/.test(before.s)) {
+                        pendingList.add({ en: str[0].s, at: c.id + ':' + (q - 20) });
+                    }
+                }
+                continue;
+            }
+            /* a menu: five arrays of string pointers, each string at the same place in each */
+            const arr = ptr.map(p => { for (const b of seen(c)) { const o = p - b.base; if (o >= 0 && o + 12 <= b.bytes.length && o % 4 === 0) return { b, o }; } return null; });
+            if (arr.some(x => x === null) || new Set(arr.map(x => x.b.id + ':' + x.o)).size < 5) continue;
+            const rows = arr.map(x => { const r = []; for (let k = 0; k < 64 && x.o + 4 * k + 4 <= x.b.bytes.length; k++) { const s = stringAt(x.b.bytes.readUInt32LE(x.o + 4 * k), x.b); if (s === null) break; r.push(s); } return r; });
+            const n = Math.min(...rows.map(r => r.length));
+            if (n < 3) continue;
+            /* five arrays apart: not five places in one list (the level names) */
+            const spans = arr.map(x => [x.b.id, x.o, x.o + 4 * n]).sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+            if (spans.some((s, k) => k > 0 && s[0] === spans[k - 1][0] && s[1] < spans[k - 1][2])) continue;
+            for (let k = 0; k < n; k++) keep(rows[0][k], rows.slice(1).map(r => r[k]));
+        }
+    }
+}
+/* Only the words the USA game's code has a language table for (its Lang... tables, each a pointer for each language that the USA's all
+   point at its English): their strings, followed through the tables and the arrays and structures of strings they point at. A set whose
+   English is one of those, by its letters (the European English is spaced and stopped a little otherwise), is kept. */
+const cSource = (() => { const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else if (p.endsWith('.c')) all.push(fs.readFileSync(p, 'utf8')); } }; walk(path.join(ROOT, 'port/game')); return all.join('\n'); })();
+const unescape = s => s.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\"/g, '"').replace(/\\x([0-9A-Fa-f]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16))).replace(/\\\\/g, '\\');
+const stringDefs = new Map([...cSource.matchAll(/\b(\w+)\[\]\s*=\s*"((?:[^"\\]|\\.)*)"/g)].map(m => [m[1], unescape(m[2])]));
+const bodyOf = name => { const m = cSource.match(new RegExp(`\\b${name}\\s*(?:\\[[^\\]]*\\])*\\s*=\\s*\\{`)); if (!m) return null; let i = m.index + m[0].length, depth = 1, s = i; while (depth > 0 && i < cSource.length) { if (cSource[i] === '{') depth++; else if (cSource[i] === '}') depth--; i++; } return cSource.slice(s, i - 1); };
+const langKeys = new Set();
+const follow = (name, depth) => {
+    if (stringDefs.has(name)) { langKeys.add(stringDefs.get(name)); return; }
+    if (depth > 2) return;
+    const body = bodyOf(name);
+    if (body === null) return;
+    for (const m of body.matchAll(/"((?:[^"\\]|\\.)*)"/g)) langKeys.add(unescape(m[1]));
+    for (const m of body.matchAll(/&?\s*\(?\s*(?:void\s*\*\s*\)\s*&?)?\s*\b([A-Z]\w+)\b/g)) follow(m[1], depth + 1);
+};
+for (const m of cSource.matchAll(/\b(Lang\w+|PauseMenuSetsByLang)\s*\[[^\]]*\]\s*=/g)) follow(m[1], 0);
+/* and the menus' own words: the strings the title menus, the game's flow and the pause menus define */
+for (const file of ['overlays/titles/titles.c', 'overlays/engine/gameflow.c', 'overlays/engine/pause.c']) {
+    for (const m of fs.readFileSync(path.join(ROOT, 'port/game', file), 'utf8').matchAll(/\b(\w+)\[\]\s*=\s*"((?:[^"\\]|\\.)*)"/g)) langKeys.add(unescape(m[2]));
+}
+for (const [name, s] of stringDefs) if (/^PauseText/.test(name)) langKeys.add(s);
+const letters = s => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
+const langLetters = new Set([...langKeys].map(letters).filter(l => l.length > 0));
+console.log(`the words the USA code has language tables for: ${langKeys.size}`);
+for (const [en] of [...msgs]) if (!langKeys.has(en) && !langLetters.has(letters(en))) msgs.delete(en);
+/* not in the middle of a list of the game's English, nor with German where French or Spanish should be */
+for (const [en, v] of [...msgs]) {
+    const b = blobs.find(x => x.id === v.blob), tr = v.offs.slice(1).map(o => cstr(b.bytes, o).s);
+    const german = s => /[ÄÖÜäöüß]/.test(s.replace(/ü (BUTTON|TASTE)|ü-TASTE|TOUCHE ü|TECLA ü|PULSA ü|TASTO ü|ü/g, ''));
+    /* and four languages that start alike where the English doesn't are four of one language's messages, not a translation */
+    const first = s => s.trim().split(/[\s|]+/).filter(Boolean)[0] ?? '';
+    const alike = tr.every(s => first(s) === first(tr[0])) && first(tr[0]) !== first(en) && first(tr[0]).length > 1;
+    if (german(tr[0]) || german(tr[3]) || alike) msgs.delete(en);
+}
+for (const { en, at } of pendingList) {
+    const v = msgs.get(en);
+    if (v === undefined || messageAt.has(at)) continue;
+    const b = blobs.find(x => x.id === v.blob), prev = (() => { let o = v.offs[0] - 2; while (o > 0 && b.bytes[o - 1] !== 0) o--; return cstr(b.bytes, o).s; })();
+    if (langKeys.has(prev)) msgs.delete(en);
+}
+/* and not a list of the game's English names one after another (the level names, the modes'), whose "translations" are the next ones */
+for (const [en, v] of [...msgs]) {
+    const b = blobs.find(x => x.id === v.blob);
+    if (v.offs.slice(1).some(o => { const s = cstr(b.bytes, o).s; return s !== en && langKeys.has(s); })) msgs.delete(en);
+}
+const palStrings = [...msgs.entries()];
+console.log(`the words: ${palStrings.length} English strings with their four languages (${palStrings.filter(([, v]) => v.blob === -1).length} in the program, which only a disc image has)`);
+if (!['SELECT A GAME SAVE', 'CONTINUE', 'QUIT GAME', 'EXIT'].every(s => msgs.has(s))) throw new Error("the European code's words weren't found: " + ['SELECT A GAME SAVE', 'CONTINUE', 'QUIT GAME', 'EXIT'].filter(s => !msgs.has(s)).join(', '));
+console.log('  CONTINUE ->', msgs.get('CONTINUE').offs.slice(1).map(o => cstr(blobs.find(b => b.id === msgs.get('CONTINUE').blob).bytes, o).s).join(' | '));
+
 const crc = zlib.crc32(palDat) >>> 0;
-const kinds = { copy: 'PAL_COPY', font: 'PAL_FONT', interface: 'PAL_INTERFACE', none: 'PAL_NONE' };
+const kinds ={ copy: 'PAL_COPY', font: 'PAL_FONT', interface: 'PAL_INTERFACE', none: 'PAL_NONE' };
 let c = `/* The European disc's (SCES-02834) files as the USA game has them: made by port/pal_table.mjs from both discs, numbers only. Each USA
  * file's place and size in the European CRASHBSH.DAT, and what's done with it (platform/paldata.c; docs/PORT.md, The European disc). */
 #include "paldata.h"
@@ -191,6 +363,26 @@ ${fontOrder.map(String).join(', ').replace(/(.{1,126})(, |$)/g, '    $1,\n').rep
 const short PalInterfaceOrder[PAL_INTERFACE_PICTURES] = {
 ${ifaceOrder.map(String).join(', ').replace(/(.{1,126})(, |$)/g, '    $1,\n').replace(/,,\n$/, ',\n')}};
 const unsigned short PalTagSize[2] = { ${tagSize[0]}, ${tagSize[1]} };
+
+/* the USA files with a version for each language: the French's, German's, Italian's and Spanish's place and size (the English is PalFiles') */
+const PalLanguageFile PalLanguageFiles[] = {
+${langFiles.map(f => `    { ${f.e}, ${f.sound ? 'PAL_SOUND' : 'PAL_TEXT'}, { ${f.v.map(p => `{ ${pal[p][0]}, ${pal[p][1]} }`).join(', ')} } }, /* ${f.e.toString(16).toUpperCase().padStart(3, '0')} */`).join('\n')}
+};
+const int PalLanguageFileCount = ${langFiles.length};
+
+/* the font's letters past the USA's (its accented ones): page, code (Latin-1, as the European text has them), glyph in the made font */
+const PalGlyph PalGlyphs[] = {
+${[...accents.values()].map(a => `    { ${a.page}, 0x${a.c.toString(16).toUpperCase()}, ${a.g} },`).join('\n')}
+};
+const int PalGlyphCount = ${accents.size};
+
+/* the game's words: where each English string and its French, German, Italian and Spanish are in the European code: the sector and size
+   in the European CRASHBSH.DAT of its engine or overlay, or -1 and its size for its program file, then the five offsets in it
+   (paldata.c copies them from the player's disc) */
+const PalString PalStrings[] = {
+${palStrings.map(([en, v]) => `    { ${v.blob === -1 ? -1 : pal[v.blob][0]}, ${v.blob === -1 ? palExe.length : pal[v.blob][1]}, { ${v.offs.join(', ')} } }, /* ${JSON.stringify(en).slice(1, -1).replace(/\*\//g, '* /').slice(0, 60)} */`).join('\n')}
+};
+const int PalStringCount = ${palStrings.length};
 `;
 fs.writeFileSync(path.join(ROOT, 'port/platform/paltable.c'), c);
 console.log(`port/platform/paltable.c: ${ENTRIES} files, the font's ${fontOrder.length} glyphs, the interface's ${ifaceOrder.length} pictures; European CRASHBSH.DAT ${palDat.length} bytes, CRC ${crc.toString(16)}`);

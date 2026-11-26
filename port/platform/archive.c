@@ -12,6 +12,7 @@
 #include <SDL3/SDL.h>
 #include "paldata.h"
 #include "platform.h"
+#include "settings.h"
 
 #define SECTOR_BYTES 2048
 #define SECTORS(bytes) (((bytes) + SECTOR_BYTES - 1) / SECTOR_BYTES)
@@ -30,6 +31,11 @@ extern int32_t FileGroupCount;
 
 static SDL_IOStream *Dat;
 static int Converted; /* the data was made from the European disc (paldata.c) */
+/* And its languages: for each file with a version for each, where the French's, German's, Italian's and Spanish's are in the file (its
+   own sector, as it was made), or 0; and the one this machine reads (settings.h, language: never the game's own, which stays English) */
+static int32_t (*LangSector)[PAL_LANGUAGES - 1];
+static uint8_t *LangKind; /* PAL_TEXT (read in its language) or PAL_SOUND (read in English: audio.c plays its language) */
+static int Languages;
 
 /* What the tables were before anything was replaced, and the replacements by entry */
 static ArchiveEntry *Original;
@@ -41,27 +47,114 @@ static int NumReplaced;
 /* A CRASHBSH.DAT made from the European disc (paldata.c) has the USA's files in another place each, and ends with their table: it's
    the game's table from here on, before anything else reads it (main.c opens the archive first), and each group's size changes by as
    much as the span of its files does. */
+static uint32_t le32(const uint8_t *p) {
+    return (uint32_t)p[0] | (uint32_t)p[1] << 8 | (uint32_t)p[2] << 16 | (uint32_t)p[3] << 24;
+}
+
+/* The words in the five languages (paldata.c), and this machine's for each English one */
+static char *Words;
+static const char *(*WordSet)[PAL_LANGUAGES];
+static char (*WordLetters)[64];
+static int NumWords;
+
+static void letters_of(const char *s, char *out, size_t room) {
+    size_t n = 0;
+
+    for (; *s != 0 && n + 1 < room; s++) {
+        char c = *s >= 'a' && *s <= 'z' ? (char)(*s - 'a' + 'A') : *s;
+
+        if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+            out[n++] = c;
+        }
+    }
+    out[n] = 0;
+}
+
+static void read_words(uint32_t sector, uint32_t size) {
+    uint32_t i, n = 0;
+    char *p;
+
+    if (size == 0 || (Words = malloc(size + 1)) == NULL) {
+        return;
+    }
+    if (SDL_SeekIO(Dat, (Sint64)sector * SECTOR_BYTES, SDL_IO_SEEK_SET) < 0 || SDL_ReadIO(Dat, Words, size) != size) {
+        free(Words);
+        Words = NULL;
+        return;
+    }
+    Words[size] = 0;
+    for (i = 0; i < size; i++) {
+        n += Words[i] == 0;
+    }
+    NumWords = (int)(n / PAL_LANGUAGES);
+    WordSet = calloc((size_t)NumWords + 1, sizeof(*WordSet));
+    WordLetters = calloc((size_t)NumWords + 1, sizeof(*WordLetters));
+    if (WordSet == NULL || WordLetters == NULL) {
+        NumWords = 0;
+        return;
+    }
+    for (p = Words, i = 0; i < (uint32_t)NumWords * PAL_LANGUAGES; i++) {
+        WordSet[i / PAL_LANGUAGES][i % PAL_LANGUAGES] = p;
+        p += strlen(p) + 1;
+    }
+    for (i = 0; i < (uint32_t)NumWords; i++) {
+        letters_of(WordSet[i][0], WordLetters[i], sizeof(WordLetters[i]));
+    }
+}
+
 static void read_own_table(void) {
     Sint64 size = SDL_GetIOSize(Dat);
-    uint8_t foot[16], *table;
+    uint8_t foot[28], *table, *lang;
+    uint32_t words_sector = 0, words_size = 0;
+    int32_t footer;
     int64_t *was;
-    int32_t count, i;
+    int32_t count, langs = 0, version, i, L;
+    Sint64 bytes;
 
-    if (size < 16 || SDL_SeekIO(Dat, size - 16, SDL_IO_SEEK_SET) < 0 || SDL_ReadIO(Dat, foot, 16) != 16 ||
-        memcmp(foot + 8, PAL_TABLE_MAGIC, 8) != 0) {
+    if (size < 28 || SDL_SeekIO(Dat, size - 28, SDL_IO_SEEK_SET) < 0 || SDL_ReadIO(Dat, foot, 28) != 28 ||
+        memcmp(foot + 20, PAL_TABLE_MAGIC, 8) != 0) {
         return;
     }
-    count = (int32_t)(foot[0] | foot[1] << 8 | foot[2] << 16 | (uint32_t)foot[3] << 24);
-    if (count <= 0 || count > DatIndexCount || (Sint64)count * 8 + 16 > size) {
+    /* version 1: the files' table, its count; 2: the languages' table and its count before them; 3: where the words are, before that */
+    version = (int32_t)le32(foot + 16);
+    count = (int32_t)le32(foot + 12);
+    footer = version == 1 ? 16 : version == 2 ? 20 : 28;
+    if (version >= 2 && version <= 3) {
+        langs = (int32_t)le32(foot + 8);
+    } else if (version != 1) {
         return;
     }
-    table = malloc((size_t)count * 8);
+    if (version == 3) {
+        words_sector = le32(foot);
+        words_size = le32(foot + 4);
+    }
+    bytes = (Sint64)count * 8 + (Sint64)langs * 20;
+    if (count <= 0 || count > DatIndexCount || langs < 0 || langs > count || bytes + 20 > size) {
+        return;
+    }
+    table = malloc((size_t)bytes);
     was = malloc(sizeof(int64_t) * (size_t)FileGroupCount);
-    if (table == NULL || was == NULL || SDL_SeekIO(Dat, size - 16 - (Sint64)count * 8, SDL_IO_SEEK_SET) < 0 ||
-        SDL_ReadIO(Dat, table, (size_t)count * 8) != (size_t)count * 8) {
+    if (table == NULL || was == NULL || SDL_SeekIO(Dat, size - footer - bytes, SDL_IO_SEEK_SET) < 0 ||
+        SDL_ReadIO(Dat, table, (size_t)bytes) != (size_t)bytes) {
         free(table);
         free(was);
         return;
+    }
+    lang = table + (size_t)count * 8;
+    if (langs > 0 && (LangSector = calloc((size_t)DatIndexCount, sizeof(*LangSector))) != NULL &&
+        (LangKind = calloc((size_t)DatIndexCount, 1)) != NULL) {
+        for (i = 0; i < langs; i++) {
+            int32_t entry = (int32_t)(le32(lang + i * 20) & 0xFFFFFF);
+
+            if (entry >= 0 && entry < count) {
+                LangKind[entry] = (uint8_t)(le32(lang + i * 20) >> 24);
+            }
+
+            for (L = 0; entry >= 0 && entry < count && L < PAL_LANGUAGES - 1; L++) {
+                LangSector[entry][L] = (int32_t)le32(lang + i * 20 + 4 + L * 4);
+            }
+        }
+        Languages = 1;
     }
     for (i = 0; i < FileGroupCount; i++) {
         const ArchiveGroup *g = &FileGroups[i];
@@ -87,8 +180,43 @@ static void read_own_table(void) {
     }
     free(table);
     free(was);
+    read_words(words_sector, words_size);
     Converted = 1;
-    printf("data: made from the European disc, its own table of %d files\n", (int)count);
+    printf("data: made from the European disc, its own table of %d files%s\n", (int)count, Languages ? ", and its five languages" : "");
+}
+
+const char *pal_text(const char *english) {
+    char key[64];
+    int L = settings()->language, i;
+
+    if (NumWords == 0 || english == NULL || L <= 0 || L >= PAL_LANGUAGES || !Languages) {
+        return english;
+    }
+    for (i = 0; i < NumWords; i++) {
+        if (strcmp(WordSet[i][0], english) == 0) {
+            return WordSet[i][L][0] != 0 ? WordSet[i][L] : english;
+        }
+    }
+    /* the European English is spaced and stopped a little otherwise: by its letters */
+    letters_of(english, key, sizeof(key));
+    for (i = 0; key[0] != 0 && i < NumWords; i++) {
+        if (strcmp(WordLetters[i], key) == 0) {
+            return WordSet[i][L][0] != 0 ? WordSet[i][L] : english;
+        }
+    }
+    return english;
+}
+
+int archive_languages(void) {
+    archive_open();
+    return Languages;
+}
+
+/* The language this machine reads the files of: 0 English, 1 French, 2 German, 3 Italian, 4 Spanish (settings.h) */
+static int language(void) {
+    int l = settings()->language;
+
+    return Languages && l > 0 && l < PAL_LANGUAGES ? l : 0;
 }
 
 int archive_from_europe(void) {
@@ -164,7 +292,7 @@ void archive_read(int sector, int count, void *buf) {
     if (LogReads) {
         log_read(sector, count);
     }
-    if (NumReplaced == 0) {
+    if (NumReplaced == 0 && language() == 0) {
         read_dat(sector, count, out);
         return;
     }
@@ -175,7 +303,7 @@ void archive_read(int sector, int count, void *buf) {
         int32_t run = next - sector < count ? next - sector : count;
         int32_t off = sector - start;
 
-        if (i >= 0 && Replaced[i] != NULL) {
+        if (i >= 0 && Replaced != NULL && Replaced[i] != NULL) {
             int64_t from = (int64_t)off * SECTOR_BYTES, have = ReplacedSize[i] - from;
             size_t want = (size_t)run * SECTOR_BYTES, copy = have <= 0 ? 0 : (size_t)have < want ? (size_t)have : want;
 
@@ -183,9 +311,12 @@ void archive_read(int sector, int count, void *buf) {
                 memcpy(out, Replaced[i] + from, copy);
             }
             memset(out + copy, 0, want - copy);
+        } else if (i >= 0 && language() != 0 && LangSector != NULL && LangKind[i] == PAL_TEXT && LangSector[i][language() - 1] != 0) {
+            /* a file this machine reads in its language: that language's copy, as long as the English's (paldata.c) */
+            read_dat(LangSector[i][language() - 1] + off, run, out);
         } else {
             /* the game's own file, or the archive before its first: where it was */
-            read_dat(i < 0 ? sector : Original[i].sector + off, run, out);
+            read_dat(i < 0 ? sector : (Original != NULL ? Original[i].sector : DatIndex[i].sector) + off, run, out);
         }
         out += (size_t)run * SECTOR_BYTES;
         sector += run;
@@ -293,4 +424,10 @@ uint8_t *archive_own_file(int entry, int *size) {
         *size = e->size;
     }
     return buf;
+}
+
+void archive_entry_now(int entry, int *sector, int *size) {
+    archive_open();
+    *sector = entry >= 0 && entry < DatIndexCount ? DatIndex[entry].sector : 0;
+    *size = entry >= 0 && entry < DatIndexCount ? DatIndex[entry].size : 0;
 }

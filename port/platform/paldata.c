@@ -14,6 +14,7 @@
 
 #include <SDL3/SDL.h>
 #include "paldata.h"
+#include "platform.h"
 
 #define SECTOR 2048
 #define CHUNK (1024 * 1024)
@@ -139,17 +140,92 @@ static int write_all(SDL_IOStream *to, const void *buf, size_t size) {
     return size == 0 || SDL_WriteIO(to, buf, size) == size;
 }
 
-const char *pal_convert(PalRead read, void *ctx, const char *out, void (*progress)(double done)) {
+/* A file's bytes, then zeros to as long as it's to be (its languages' longest), then to the end of its last sector */
+static int write_file(SDL_IOStream *to, const uint8_t *bytes, uint32_t size, uint32_t as_long, uint64_t *written) {
+    static const uint8_t zeros[SECTOR];
+    uint32_t pad = as_long - size + (SECTOR - as_long % SECTOR) % SECTOR;
+
+    if (!write_all(to, bytes, size)) {
+        return 0;
+    }
+    while (pad > 0) {
+        uint32_t n = pad < SECTOR ? pad : SECTOR;
+
+        if (!write_all(to, zeros, n)) {
+            return 0;
+        }
+        pad -= n;
+    }
+    *written += (as_long + SECTOR - 1) / SECTOR * SECTOR;
+    return 1;
+}
+
+/* Which of PalLanguageFiles a USA file is, or -1 */
+static int language_file(int entry) {
+    int j;
+
+    for (j = 0; j < PalLanguageFileCount; j++) {
+        if (PalLanguageFiles[j].entry == entry) {
+            return j;
+        }
+    }
+    return -1;
+}
+
+/* A file's longest language: what the game is told it is, so every machine's game has the same, whichever its language */
+static uint32_t longest(int j) {
+    uint32_t most = PalFiles[PalLanguageFiles[j].entry].size;
+    int L;
+
+    for (L = 0; L < PAL_LANGUAGES - 1; L++) {
+        most = PalLanguageFiles[j].v[L].size > most ? PalLanguageFiles[j].v[L].size : most;
+    }
+    return most;
+}
+
+/* A string at an offset of a blob of the European code: from the program file, or from the archive (its engine or an overlay) */
+static int read_word(PalRead read, void *ctx, const uint8_t *exe, size_t exe_size, const PalString *s, int lang, char *out, size_t room) {
+    size_t n;
+
+    if (s->sector < 0) {
+        if (exe == NULL || s->offs[lang] >= exe_size) {
+            return 0;
+        }
+        for (n = 0; n + 1 < room && s->offs[lang] + n < exe_size && exe[s->offs[lang] + n] != 0; n++) {
+            out[n] = (char)exe[s->offs[lang] + n];
+        }
+    } else {
+        uint8_t buf[512];
+        size_t want = s->size - s->offs[lang] < sizeof(buf) ? s->size - s->offs[lang] : sizeof(buf);
+
+        if (s->offs[lang] >= s->size || !read(ctx, (uint64_t)s->sector * SECTOR + s->offs[lang], buf, want)) {
+            return 0;
+        }
+        for (n = 0; n + 1 < room && n < want && buf[n] != 0; n++) {
+            out[n] = (char)buf[n];
+        }
+    }
+    out[n] = 0;
+    return 1;
+}
+
+const char *pal_convert(PalRead read, void *ctx, const uint8_t *exe, size_t exe_size, const char *out, void (*progress)(double done)) {
     const char *problem = NULL;
-    uint8_t *buf = malloc(CHUNK), *file = NULL, zeros[SECTOR] = { 0 };
+    uint8_t *buf = malloc(CHUNK), *file = NULL;
     uint32_t crc = 0;
-    uint8_t table[PAL_FILES * 8 + 16];
+    /* the table at the end: each file's sector and size; each language file's entry and its four others' sectors; their counts, the
+       version and the mark */
+    size_t table_size = PAL_FILES * 8 + (size_t)PalLanguageFileCount * 20 + 28;
+    uint8_t *table = malloc(table_size), *lang = table != NULL ? table + PAL_FILES * 8 : NULL;
+    int j, L;
     uint64_t at, written = 0;
     char *temp = NULL;
     SDL_IOStream *to = NULL;
     int e;
 
-    if (buf == NULL) {
+    if (buf == NULL || table == NULL) {
+        free(buf);
+        free(table);
         return "Out of memory.";
     }
     /* the whole European file, by its CRC: the one paltable.c was made from */
@@ -180,7 +256,7 @@ const char *pal_convert(PalRead read, void *ctx, const char *out, void (*progres
     /* each USA file, from the European one, a sector apart as in the game's own */
     for (e = 0; e < PAL_FILES; e++) {
         const PalFile *f = &PalFiles[e];
-        uint32_t size = f->kind == PAL_NONE ? 0 : f->size, made = size;
+        uint32_t size = f->kind == PAL_NONE ? 0 : f->size, made = size, as_long;
         const uint8_t *bytes;
         uint8_t *redone = NULL;
 
@@ -199,14 +275,15 @@ const char *pal_convert(PalRead read, void *ctx, const char *out, void (*progres
             }
             bytes = redone;
         }
+        /* a file with a version for each language is as long as its longest, here and in each language's copy (below) */
+        as_long = (j = language_file(e)) >= 0 ? longest(j) : made;
         put32(table + e * 8, (uint32_t)(written / SECTOR));
-        put32(table + e * 8 + 4, made);
-        if (!write_all(to, bytes, made) || !write_all(to, zeros, (SECTOR - made % SECTOR) % SECTOR)) {
+        put32(table + e * 8 + 4, as_long);
+        if (!write_file(to, bytes, made, as_long, &written)) {
             free(redone);
             problem = "The data can't be written. Is the disk full?";
             goto done;
         }
-        written += (made + SECTOR - 1) / SECTOR * SECTOR;
         free(redone);
         free(file);
         file = NULL;
@@ -214,11 +291,67 @@ const char *pal_convert(PalRead read, void *ctx, const char *out, void (*progres
             progress(0.5 + 0.5 * e / PAL_FILES);
         }
     }
-    /* their table, then its size and the mark that says it's there */
-    put32(table + PAL_FILES * 8, PAL_FILES);
-    put32(table + PAL_FILES * 8 + 4, 1);
-    memcpy(table + PAL_FILES * 8 + 8, PAL_TABLE_MAGIC, 8);
-    if (!write_all(to, table, sizeof(table))) {
+    /* the other four languages' versions, each as long as its longest, after all of them */
+    for (j = 0; j < PalLanguageFileCount; j++) {
+        const PalLanguageFile *lf = &PalLanguageFiles[j];
+
+        put32(lang + j * 20, (uint32_t)lf->entry | (uint32_t)lf->kind << 24);
+        for (L = 0; L < PAL_LANGUAGES - 1; L++) {
+            file = malloc(lf->v[L].size);
+            if (file == NULL || !read(ctx, (uint64_t)lf->v[L].sector * SECTOR, file, lf->v[L].size)) {
+                problem = file == NULL ? "Out of memory." : "The European disc's data can't be read: the image may be damaged.";
+                goto done;
+            }
+            put32(lang + j * 20 + 4 + L * 4, (uint32_t)(written / SECTOR));
+            if (!write_file(to, file, lf->v[L].size, longest(j), &written)) {
+                problem = "The data can't be written. Is the disk full?";
+                goto done;
+            }
+            free(file);
+            file = NULL;
+        }
+    }
+    /* the words: each one's five languages, English first, one after another, each ending in a zero; one only the program file has, from
+       a CRASHBSH.DAT alone, five empty strings (it stays English) */
+    {
+        uint64_t start = written, size = 0;
+        int k;
+
+        for (j = 0; j < PalStringCount; j++) {
+            char word[512];
+            int have = 1;
+
+            for (L = 0; L < PAL_LANGUAGES && have; L++) {
+                have = read_word(read, ctx, exe, exe_size, &PalStrings[j], L, word, sizeof(word));
+            }
+            for (L = 0; L < PAL_LANGUAGES; L++) {
+                if (!have || !read_word(read, ctx, exe, exe_size, &PalStrings[j], L, word, sizeof(word))) {
+                    word[0] = 0;
+                }
+                if (!write_all(to, word, strlen(word) + 1)) {
+                    problem = "The data can't be written. Is the disk full?";
+                    goto done;
+                }
+                size += strlen(word) + 1;
+            }
+        }
+        k = (int)((SECTOR - size % SECTOR) % SECTOR);
+        while (k-- > 0) {
+            if (!write_all(to, "", 1)) {
+                problem = "The data can't be written. Is the disk full?";
+                goto done;
+            }
+        }
+        written += (size + SECTOR - 1) / SECTOR * SECTOR;
+        put32(table + table_size - 28, (uint32_t)(start / SECTOR));
+        put32(table + table_size - 24, (uint32_t)size);
+    }
+    /* their table, then its counts, its version and the mark that says it's there */
+    put32(table + table_size - 20, (uint32_t)PalLanguageFileCount);
+    put32(table + table_size - 16, PAL_FILES);
+    put32(table + table_size - 12, PAL_TABLE_VERSION);
+    memcpy(table + table_size - 8, PAL_TABLE_MAGIC, 8);
+    if (!write_all(to, table, table_size)) {
         problem = "The data can't be written. Is the disk full?";
         goto done;
     }
@@ -244,6 +377,7 @@ done:
     }
     free(file);
     free(buf);
+    free(table);
     return problem;
 }
 
@@ -260,7 +394,7 @@ const char *pal_convert_file(const char *dat, const char *out, void (*progress)(
     if (io == NULL) {
         return "The European disc's CRASHBSH.DAT can't be opened.";
     }
-    problem = pal_convert(read_file, io, out, progress);
+    problem = pal_convert(read_file, io, NULL, 0, out, progress);
     SDL_CloseIO(io);
     return problem;
 }
@@ -273,7 +407,11 @@ int pal_is_converted(const char *path) {
     if (io != NULL) {
         Sint64 size = SDL_GetIOSize(io);
 
-        is = size >= 16 && SDL_SeekIO(io, size - 8, SDL_IO_SEEK_SET) >= 0 && SDL_ReadIO(io, mark, 8) == 8 && memcmp(mark, PAL_TABLE_MAGIC, 8) == 0;
+        uint8_t version[4];
+
+        /* this version's: one made before the languages is made again */
+        is = size >= 16 && SDL_SeekIO(io, size - 12, SDL_IO_SEEK_SET) >= 0 && SDL_ReadIO(io, version, 4) == 4 && SDL_ReadIO(io, mark, 8) == 8 &&
+             memcmp(mark, PAL_TABLE_MAGIC, 8) == 0 && u32(version) == PAL_TABLE_VERSION;
         SDL_CloseIO(io);
     }
     return is;
@@ -283,4 +421,15 @@ int pal_is_file(const char *path) {
     SDL_PathInfo info;
 
     return path != NULL && SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE && pal_is_size((int64_t)info.size);
+}
+
+void pal_font_glyphs(int16_t *lookup) {
+    int i;
+
+    if (!archive_from_europe()) {
+        return;
+    }
+    for (i = 0; i < PalGlyphCount; i++) {
+        lookup[PalGlyphs[i].page * 256 + PalGlyphs[i].code] = (int16_t)(0x3000 | PalGlyphs[i].glyph);
+    }
 }

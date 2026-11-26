@@ -414,6 +414,36 @@ int platform_vblanks(void) {
     return Vblanks;
 }
 
+/* --dump-read: one entry as the game reads it (archive_read: its language's and mods' too), for a test. */
+static const char *dump_read_to;
+static int dump_read_entry = -1;
+
+static int dump_read(int entry, const char *to) {
+    int size = archive_entry_size(entry), sectors, now_sector = 0, now_size = 0;
+    unsigned char *buf;
+    SDL_IOStream *io;
+
+    archive_entry_now(entry, &now_sector, &now_size);
+    if (size <= 0) {
+        fprintf(stderr, "--dump-read: no entry %X\n", entry);
+        return 1;
+    }
+    sectors = (now_size + 2047) / 2048;
+    buf = malloc((size_t)sectors * 2048);
+    if (buf == NULL) {
+        return 1;
+    }
+    archive_read(now_sector, sectors, buf);
+    io = SDL_IOFromFile(to, "wb");
+    if (io != NULL) {
+        SDL_WriteIO(io, buf, (size_t)now_size);
+        SDL_CloseIO(io);
+    }
+    printf("--dump-read: %X, %d bytes, to %s\n", entry, now_size, to);
+    free(buf);
+    return io != NULL ? 0 : 1;
+}
+
 /* --dump-files: the archive's files but its code, named as a mod's files/ has them, for making one. */
 static int dump_files(const char *folder) {
     int entry, n = 0;
@@ -583,7 +613,7 @@ int main(int argc, char **argv) {
     int extra[4] = { 0 }, extra_heroes = 0, heroes[4] = { 0 };
     const char *extra_names[4] = { NULL, NULL, NULL, NULL };
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
-    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1, prompts = -1, check_crash = 0;
+    int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1, prompts = -1, check_crash = 0, language = -1;
     int prepare = 0;
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
@@ -775,6 +805,8 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "--key-bind") == 0 && i + 2 < argc && NumKeyBinds < MAX_KEY_BINDS) {
             KeyBinds[NumKeyBinds][0] = argv[++i];
             KeyBinds[NumKeyBinds++][1] = argv[++i];
+        } else if (strcmp(argv[i], "--language") == 0 && i + 1 < argc) {
+            language = settings_language_from_id(argv[++i]);
         } else if (strcmp(argv[i], "--stick-deadzone") == 0 && i + 1 < argc) {
             stick_deadzone = atoi(argv[++i]);
         } else if ((strcmp(argv[i], "--pad-unplug") == 0 || strcmp(argv[i], "--pad-plug") == 0) && i + 2 < argc && NumPadEvents < MAX_PRESSES) {
@@ -827,6 +859,9 @@ int main(int argc, char **argv) {
             texpack_dump_to(argv[++i]);
         } else if (strcmp(argv[i], "--dump-files") == 0 && i + 1 < argc) {
             dump_files_to = argv[++i];
+        } else if (strcmp(argv[i], "--dump-read") == 0 && i + 2 < argc) {
+            dump_read_entry = (int)strtol(argv[++i], NULL, 16);
+            dump_read_to = argv[++i];
         } else if (strcmp(argv[i], "--add-hero") == 0 && i + 1 < argc) {
             /* the hero tool's Add to game (docs/HERO_PACKS.md, The hero tool): a mod it's just put in the mods folder switched on */
             add_hero = argv[++i];
@@ -1052,6 +1087,9 @@ int main(int argc, char **argv) {
             }
         }
     }
+    if (language >= 0) {
+        settings()->language = language;
+    }
     if (stick_deadzone >= 0 && stick_deadzone <= 90) {
         settings()->stick_deadzone = stick_deadzone;
     }
@@ -1125,6 +1163,10 @@ int main(int argc, char **argv) {
     }
     /* first, so that a converted archive's own table is the game's before anything reads or copies it (archive.c) */
     archive_open();
+    /* --dump-read ENTRY FILE: an archive entry (hex) as the game reads it, its language's and mods' too, for a test */
+    if (dump_read_to != NULL) {
+        return dump_read(dump_read_entry, dump_read_to);
+    }
     if (dump_files_to != NULL) {
         return dump_files(dump_files_to);
     }

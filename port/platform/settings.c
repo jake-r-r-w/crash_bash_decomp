@@ -8,6 +8,23 @@
 
 static Settings Current;
 
+static const char *const LanguageIds[] = { "en", "fr", "de", "it", "es" };
+
+const char *settings_language_id(int language) {
+    return language >= 0 && language < 5 ? LanguageIds[language] : "en";
+}
+
+int settings_language_from_id(const char *id) {
+    int i;
+
+    for (i = 0; i < 5; i++) {
+        if (strncmp(id, LanguageIds[i], 2) == 0 && (id[2] == 0 || id[2] == '\n' || id[2] == '\r' || id[2] == ' ')) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 Settings *settings(void) {
     return &Current;
 }
@@ -40,6 +57,7 @@ void settings_defaults(void) {
     Current.online_stereo = 1;
     Current.buttons_apart = 0;
     Current.stick_deadzone = 0;
+    Current.language = 0;
     Current.button_prompts = PROMPTS_AUTO;
     controls_default_keys(Current.keys);
     controls_default_buttons(Current.buttons);
@@ -140,6 +158,8 @@ void settings_load(void) {
             Current.buttons_apart = a != 0;
         } else if (sscanf(line, "button_prompts=%15s", word) == 1 && prompts_from_id(word) >= 0) {
             Current.button_prompts = prompts_from_id(word);
+        } else if (strncmp(line, "language=", 9) == 0 && settings_language_from_id(line + 9) >= 0) {
+            Current.language = settings_language_from_id(line + 9);
         } else if (sscanf(line, "stick_deadzone=%d", &a) == 1 && a >= 0 && a <= 90) {
             Current.stick_deadzone = a;
         } else if (sscanf(line, "online_music=%d", &a) == 1 && a >= 0 && a <= 100) {
@@ -252,6 +272,8 @@ static void save_settings(void) {
                "steamdeck or keyboard\nbutton_prompts=%s\n", prompts_id(Current.button_prompts));
     fprintf(f, "; How far a stick has to move to count, in percent, up to 90: 0 is the game's own\nstick_deadzone=%d\n\n",
             Current.stick_deadzone);
+    fprintf(f, "; The European disc's language: en, fr, de, it or es (the USA disc's is English only)\nlanguage=%s\n\n",
+            settings_language_id(Current.language));
     fprintf(f, "; Online games: music and effects volumes, 0 to 100, and stereo\nonline_music=%d\nonline_sfx=%d\nonline_stereo=%d\n\n",
             Current.online_music, Current.online_sfx, Current.online_stereo);
     fprintf(f, "; Each game button's key (SDL's name for it, or Mouse Left, Mouse Middle, Mouse Right, Mouse Back or Mouse Forward)\n");
@@ -283,8 +305,8 @@ void settings_log(const char *when) {
            when, s->fullscreen ? "fullscreen" : "window", s->window_w, s->window_h, s->maximized ? " maximised" : "", s->render_w,
            s->render_h, s->fps, s->vsync, s->widescreen, s->antialias, s->smooth, s->upscale, s->icons);
     printf("settings (%s): skip intro %d, skip loading %d, cheat menu %d, extra heroes %d, prompts %s, stick deadzone %d%%, "
-           "touch buttons apart %d, online sound: music %d, fx %d, %s\n", when, s->skip_intro, s->skip_loading, s->cheat_menu,
-           s->extra_heroes, prompts_id(s->button_prompts), s->stick_deadzone, s->buttons_apart, s->online_music, s->online_sfx,
+           "touch buttons apart %d, language %s, online sound: music %d, fx %d, %s\n", when, s->skip_intro, s->skip_loading, s->cheat_menu,
+           s->extra_heroes, prompts_id(s->button_prompts), s->stick_deadzone, s->buttons_apart, settings_language_id(s->language), s->online_music, s->online_sfx,
            s->online_stereo ? "stereo" : "mono");
     for (at = 0, i = 0; i < NUM_CONTROLS && at < sizeof(line); i++) {
         at += (size_t)snprintf(line + at, sizeof(line) - at, "%s%s %s", i ? ", " : "", control_file_id(i), controls_key_id(s->keys[i]));

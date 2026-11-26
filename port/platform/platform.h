@@ -28,11 +28,17 @@ const char *platform_base_path(void);
 void archive_open(void);
 /* Whether the data was made from the European disc (paldata.c; it opens the archive) */
 int archive_from_europe(void);
+/* Whether it has the European disc's five languages, which each machine reads its own of (settings.h, language) */
+int archive_languages(void);
+/* An English string of the game's in this machine's language, if the European disc has it (archive.c), else itself */
+const char *pal_text(const char *english);
 void archive_read(int sector, int count, void *buf);
 /* A mod's files in place of the archive's (archive.c): how many entries it has and how big one is as the game has it, a replacement
    (bytes it takes, or NULL for the game's own), and laying the archive out again for what's replaced, before the game reads on. */
 int archive_entries(void);
 int archive_entry_size(int entry);
+/* Where an entry is now and how long, as the game reads it */
+void archive_entry_now(int entry, int *sector, int *size);
 void archive_replace(int entry, unsigned char *bytes, int size);
 void archive_replace_none(void);
 void archive_lay_out(void);

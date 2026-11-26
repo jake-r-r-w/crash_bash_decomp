@@ -3,6 +3,7 @@
  * copied as it is; the European disc's (SCES-02834) is made into one the USA game reads as it's read (paldata.c). */
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <SDL3/SDL.h>
@@ -201,7 +202,20 @@ const char *disc_extract_progress(const char *image, const char *out, void (*pro
         if (find_in(&d, &root, "SCES_028.34", &exe) && pal_is_size(dat.size)) {
             /* the European disc: its files, in the USA's order */
             printf("data: the European disc (SCES-02834), made into the USA game's\n");
-            problem = pal_convert(read_dat_bytes, &dd, out, progress);
+            /* its program file too, for the words only it has */
+            uint8_t *program = malloc(exe.size), sector[SECTOR_BYTES];
+            uint32_t at;
+
+            for (at = 0; program != NULL && at < exe.size; at += SECTOR_BYTES) {
+                if (!read_sector(&d, exe.sector + at / SECTOR_BYTES, sector)) {
+                    free(program);
+                    program = NULL;
+                    break;
+                }
+                memcpy(program + at, sector, exe.size - at < SECTOR_BYTES ? exe.size - at : SECTOR_BYTES);
+            }
+            problem = pal_convert(read_dat_bytes, &dd, program, program != NULL ? exe.size : 0, out, progress);
+            free(program);
             goto done;
         }
         problem = "That's another version of Crash Bash. Only the USA (SCUS-94570) and European (SCES-02834) versions are supported.";

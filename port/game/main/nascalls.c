@@ -895,6 +895,8 @@ void InitSysFont(void) {
     SysFontWidth[0x1FD] = 32;
     SysFontWidth[0x1FE] = 32;
     SysFontWidth[0x1FF] = 32;
+    /* PC: the European disc's font's accented letters, which its languages' text has (platform/paldata.c) */
+    pal_font_glyphs(SysFontLookUp);
 }
 
 s16 TextAlignX(s16 x, u8 *s) {
@@ -1036,6 +1038,8 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     s32 ny;
     s32 oy;
 
+    /* PC: in this machine's language, if the European disc has these words (only what's drawn: online play is the same) */
+    s = (u8 *)pal_text((const char *)s);
     xy = arg1 << 16;
     x0 = TextAlignX(arg0, s);
     col = 0;
@@ -1925,6 +1929,7 @@ void InitSysFontModel(void) {
 }
 
 s32 SysGetLen(char *s) {
+    s = (char *)pal_text(s);
     s32 sum;
     s32 c;
     s32 d;

@@ -18,7 +18,45 @@ typedef struct PalFile {
     uint8_t kind;
 } PalFile;
 
+/* The languages, as the game's code numbers them: a setting of each machine's own (settings.h), never the game's */
+#define PAL_LANGUAGES 5 /* English, French, German, Italian, Spanish */
+
+/* A USA file with a version for each language: the French's, German's, Italian's and Spanish's place and size in the European
+   CRASHBSH.DAT (the English is PalFiles') */
+/* A language file's kind: text the game reads in its language (the archive's reads give it), or a sound pack, which the game reads in
+   English, so every machine's game has the same voices and their timing, and the mixer plays its language's alongside (audio.c) */
+enum { PAL_TEXT = 1, PAL_SOUND = 2 };
+
+typedef struct PalLanguageFile {
+    uint16_t entry;
+    uint8_t kind;
+    struct {
+        uint32_t sector, size;
+    } v[PAL_LANGUAGES - 1];
+} PalLanguageFile;
+
+/* A letter of the European font's that the USA's hasn't: page (0 the big font, 1 the small), Latin-1 code, glyph in the made font */
+typedef struct PalGlyph {
+    uint8_t page, code;
+    uint16_t glyph;
+} PalGlyph;
+
+/* One of the game's words in the five languages, where the European code has it: the engine's or overlay's sector and size in the
+   European CRASHBSH.DAT (-1: the disc's program file, which a disc image has and a CRASHBSH.DAT alone hasn't), and each language's
+   offset in it, English first */
+typedef struct PalString {
+    int32_t sector;
+    uint32_t size;
+    uint32_t offs[PAL_LANGUAGES];
+} PalString;
+
 /* paltable.c, made by port/pal_table.mjs */
+extern const PalString PalStrings[];
+extern const int PalStringCount;
+extern const PalLanguageFile PalLanguageFiles[];
+extern const int PalLanguageFileCount;
+extern const PalGlyph PalGlyphs[];
+extern const int PalGlyphCount;
 extern const unsigned PalDatSize, PalDatCrc;
 extern const PalFile PalFiles[PAL_FILES];
 extern const short PalFontOrder[PAL_FONT_GLYPHS];
@@ -32,15 +70,20 @@ typedef int (*PalRead)(void *ctx, uint64_t at, void *buf, size_t size);
 int pal_is_size(int64_t size);
 /* The European CRASHBSH.DAT read by read, made into out: the USA's files in the USA's order, then their table (archive.c reads it).
    NULL, or what's wrong: another European disc's, or it can't be read or written. progress, if not NULL, from 0 to 1 */
-const char *pal_convert(PalRead read, void *ctx, const char *out, void (*progress)(double done));
-/* The same, from a CRASHBSH.DAT file */
+const char *pal_convert(PalRead read, void *ctx, const uint8_t *exe, size_t exe_size, const char *out, void (*progress)(double done));
+/* The same, from a CRASHBSH.DAT file (no program file: the words that are only in it stay English) */
 const char *pal_convert_file(const char *dat, const char *out, void (*progress)(double done));
 
 /* Whether a file is one made by pal_convert, or a European CRASHBSH.DAT as it is on the disc */
 int pal_is_converted(const char *path);
 int pal_is_file(const char *path);
 
-/* A converted file ends with its table: the last bytes, PAL_TABLE_MAGIC, after the table's size */
+/* The font's letters past the USA's, put in its table (SysFontLookUp: 2 pages of 256) when the data is the European disc's */
+void pal_font_glyphs(int16_t *lookup);
+
+/* A converted file ends with its table: the last bytes, PAL_TABLE_MAGIC, after the table's size; version 2 has the languages' too, and
+   3 where the words are (archive.c) */
+#define PAL_TABLE_VERSION 3 /* 3: the words too */
 #define PAL_TABLE_MAGIC "CBUSAIDX"
 
 #endif
