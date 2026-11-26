@@ -717,7 +717,10 @@ Two things had to change for it:
 ### ONLINE in the launcher (step 4)
 
 The launcher's top menu is PLAY, ONLINE, SETTINGS and QUIT (`game/overlays/titles/settingsmenu.c`), and ONLINE has HOST GAME and
-JOIN GAME, in the game's own menus, as the players screen is:
+JOIN GAME, in the game's own menus, as the players screen is. At the bottom right of each of its pages is the version and the
+repo's address (`draw_foot`, the user's word, 2026-11-26), in the small font at half its size (`DrawSysTextScaled`, the port's own, with
+the slashes as lines and each _ a line two spaces wide, as the font has neither), out at a wide view's edge; a click on the address
+opens it in the browser (`platform_open_url`; a test run only says so):
 
 - **HOST GAME** opens a game on port 47000 (`NET_PORT`) and lists who's here: this PC's players, and each machine that's joined, by
   its address and ping. Under it is the address for the others to join at, this machine's on its network. START (or Cross) begins

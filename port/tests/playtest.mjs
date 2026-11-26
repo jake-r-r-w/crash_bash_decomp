@@ -1569,6 +1569,13 @@ async function controls(args) {
             want: ['stick deadzone 10', 'stick deadzone 20'],
         },
         {
+            /* the foot's repo address, at the bottom right, opens it in the browser (a test run says so and opens nothing); a click left
+               of it, on nothing, does nothing */
+            name: 'mouse: the repo address at the foot clicked opens it, a click beside it nothing',
+            args: ['--mouse', '150', '240', '234', 'click', '--mouse', '180', '0', '234', 'click', '--frames', '220'],
+            want: ['opened https://github.com/jake-r-r-w/crash_bash_decomp'],
+        },
+        {
             /* 40 s on the launcher, then PLAY by the mouse, which is no press of the game's pads: the main menu, not its demo straight
                away, as the frames counted idle on the launcher had started it (a player's report, 2026-11-24) */
             name: 'mouse: PLAY clicked after 40 s on the launcher, and the main menu, not a demo',

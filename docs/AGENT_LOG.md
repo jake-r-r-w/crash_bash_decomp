@@ -675,6 +675,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-26: The launcher shows the version and the repo's address at the bottom right of every page, half-size small font
+  (DrawSysTextScaled), at a wide view's edge; a click opens it (platform_open_url). controls suite has the click.
+
 - 2026-11-26: The port reads the European disc (SCES-02834; issue 3, the user's go-ahead): its archive made into a USA-ordered one with
   its own table at the end (platform/paldata.c, paltable.c from port/pal_table.mjs, archive.c read_own_table; PORT.md, The European
   disc), the font and interface pictures in USA order, the English of its five languages. From an image, --prepare or a European

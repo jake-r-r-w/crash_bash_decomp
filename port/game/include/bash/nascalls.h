@@ -121,6 +121,9 @@ s32 CheckSolidCollision(NAS *nas);
 void pads_read(void);
 void textureset_release(obj_textureset *arg0);
 void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5);
+/* PC: text at num / den of the font's size (main/nascalls.c), and its width */
+s32 DrawSysTextScaled(s32 x, s32 y, const char *s, u32 colour, s32 num, s32 den);
+s32 SysGetLenScaled(const char *s, s32 num, s32 den);
 void texture_upload_anim(obj_texture *t, s32 base, obj_textureset *set);
 void SetupLevelSpecs(ArenaDef *arg0);
 void InitSysFont(void);

@@ -42,6 +42,10 @@ unsigned char *archive_own_file(int entry, int *size);
 void archive_log_reads(void);
 void platform_wait_vblanks(int count);
 void platform_fatal(const char *message);
+/* The program's version (CMake's project version), for the launcher's foot */
+const char *platform_version(void);
+/* A web page in the system's browser */
+void platform_open_url(const char *url);
 /* The game's archive from a disc image: what went wrong, or NULL with it at out (discimage.c). */
 const char *disc_extract(const char *image, const char *out);
 /* And with how far it's got, from 0 to 1, every 2 MB (--prepare) */

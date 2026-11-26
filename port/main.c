@@ -106,6 +106,21 @@ static void platform_exit(int code) {
 }
 
 /* Something's stopped the game from starting, and whoever double-clicked it should hear why. */
+const char *platform_version(void) {
+    return BASH_VERSION;
+}
+
+void platform_open_url(const char *url) {
+    /* a test run says so, and leaves the browser alone */
+    if (settings()->no_save) {
+        printf("launcher: opened %s at vblank %d\n", url, Vblanks);
+        return;
+    }
+    if (!SDL_OpenURL(url)) {
+        fprintf(stderr, "%s: %s\n", url, SDL_GetError());
+    }
+}
+
 void platform_fatal(const char *message) {
     fprintf(stderr, "%s\n", message);
     if (StopAt < 0) {

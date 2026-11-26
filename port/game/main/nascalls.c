@@ -2952,6 +2952,66 @@ s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color) {
     return f->advance * 640 / ScreenRect->w;
 }
 
+/* PC: text in the font that's in use (FontPage), num / den of its size, its top left at x, y in text's units (640 across, 480 down),
+   one colour: for small words of the port's own (the launcher's foot). Only what the font has, on one line; it returns how wide it was,
+   in text's units. */
+s32 DrawSysTextScaled(s32 x, s32 y, const char *s, u32 colour, s32 num, s32 den) {
+    s32 col = 0;
+
+    if (ScreenRect == NULL || sysfont_dbase == NULL || sysfont_dbase->textures.tex == NULL) {
+        return 0;
+    }
+    for (; *s != 0; s++) {
+        u8 c = (u8)*s;
+        s32 g = ((s16 (*)[256])&SysFontLookUp[c])[FontPage][0];
+        s32 w = SysFontWidth[c + (FontPage << 8)];
+
+        if (g != -1) {
+            obj_texture *f = (obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF];
+            DrawFace d;
+            DVECTOR q[4];
+            s16 left = (s16)((x + col * 640 / ScreenRect->w * num / den) * ScreenRect->w / 640), top = (s16)(y / 2);
+            s16 fw = (s16)(f->w * num / den), fh = (s16)(f->h * num / den);
+
+            draw_face_colour(&d, FadeColor((colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF));
+            texture_face(&d, f, colour);
+            q[0].vx = left;
+            q[0].vy = top;
+            q[1].vx = left + fw - 1;
+            q[1].vy = top;
+            q[2].vx = left;
+            q[2].vy = top + fh - 1;
+            q[3].vx = left + fw - 1;
+            q[3].vy = top + fh - 1;
+            draw_face_quad(RenderState.layer, &d, q);
+        } else if (c == '/') {
+            /* the font has none: a line, as DrawSysText's draw_slash, across the height of a capital */
+            s16 left = (s16)((x + col * 640 / ScreenRect->w * num / den) * ScreenRect->w / 640), top = (s16)(y / 2);
+            s16 high = (s16)(SysFontWidth[FontPage << 8] * num / den);
+            DVECTOR from, to;
+            u32 shade = FadeColor((colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF);
+
+            from.vx = left;
+            from.vy = (s16)(top + high - 1);
+            to.vx = (s16)(left + (w * num / den > 1 ? w * num / den - 1 : 1));
+            to.vy = top;
+            draw_line(RenderState.layer, from, to, shade, shade);
+        }
+        col += w;
+    }
+    return col * 640 / ScreenRect->w * num / den;
+}
+
+/* Its width, as DrawSysTextScaled draws it */
+s32 SysGetLenScaled(const char *s, s32 num, s32 den) {
+    s32 col = 0;
+
+    for (; ScreenRect != NULL && *s != 0; s++) {
+        col += SysFontWidth[(u8)*s + (FontPage << 8)];
+    }
+    return ScreenRect != NULL ? col * 640 / ScreenRect->w * num / den : 0;
+}
+
 s32 texture_draw_3d(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     DrawFace d;
     DVECTOR c[4];

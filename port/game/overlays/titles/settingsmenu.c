@@ -203,6 +203,9 @@ static char Address[ADDRESS_CHARS + 1];
 static char Joining[32];
 static char Message[2][HELP_CHARS + 1];
 static s32 layout(s32 screen);
+static s32 foot_clicked(float x, float y);
+const char *platform_version(void); /* platform.h, whose pad bits this file has its own of */
+void platform_open_url(const char *url);
 static s32 TopCursor;
 static s32 Category;  /* NUM_CATEGORIES is BACK */
 static s32 Option;
@@ -1583,6 +1586,9 @@ static s32 mouse_presses(void) {
     if (!m.on) {
         return out;
     }
+    if (m.left && foot_clicked(m.x, m.y)) {
+        return out;
+    }
     point = m.moved || m.left;
     switch (Screen) {
     case SCREEN_TOP:
@@ -1783,8 +1789,89 @@ static void draw_deadzone(void) {
     }
 }
 
+/* --- the foot: the version and the repo, at the bottom right of every page, in the small font (the user's word, 2026-11-26); the
+   repo's address opens it in the browser when it's clicked --- */
+#define REPO_URL "https://github.com/jake-r-r-w/crash_bash_decomp"
+#define REPO_TEXT "GITHUB.COM/JAKE-R-R-W/CRASH_BASH_DECOMP" /* the font has no _: those are drawn as lines */
+#define FOOT_Y 0x1D2      /* its top, in text's units (640 across, 480 down), under the hint at the foot */
+#define FOOT_RIGHT 0x26C  /* and its right, as far in from the picture's right as the hint's ends are; a wide view's right, as far in */
+#define FOOT_SCALE 1, 2   /* the small font at half its size */
+#define FOOT_COLOUR 0x808080u
+static s32 FootLink[4]; /* where the address is, in text's units: left, top, right, bottom; the mouse's click there opens it */
+
+static s32 foot_width(const char *text) {
+    s32 page = FontPage, wide;
+
+    FontPage = 1;
+    wide = SysGetLenScaled(text, FOOT_SCALE);
+    FontPage = page;
+    return wide;
+}
+
+static void draw_foot(void) {
+    char version[32], link[sizeof(REPO_TEXT) * 2];
+    s32 page = FontPage, x, i, k, h, right;
+    DVECTOR xy[4];
+    u32 c[4];
+
+    if (ScreenRect == NULL || sysfont_dbase == NULL || sysfont_dbase->textures.tex == NULL) {
+        return;
+    }
+    snprintf(version, sizeof(version), "V%s   ", platform_version());
+    /* each _ two spaces wide, for its line to be seen at this size */
+    for (i = 0, k = 0; REPO_TEXT[i] != 0; i++) {
+        if (REPO_TEXT[i] == '_') {
+            link[k++] = ' ';
+        }
+        link[k++] = REPO_TEXT[i] == '_' ? ' ' : REPO_TEXT[i];
+    }
+    link[k] = 0;
+    right = FOOT_RIGHT + gfx_view_extra() * 640 / ScreenRect->w;
+    x = right - foot_width(version) - foot_width(link);
+    FontPage = 1; /* the small one */
+    h = SysFontWidth[FontPage << 8] / 2;
+    x += DrawSysTextScaled(x, FOOT_Y, version, FOOT_COLOUR, FOOT_SCALE);
+    DrawSysTextScaled(x, FOOT_Y, link, FOOT_COLOUR, FOOT_SCALE);
+    FontPage = page;
+    FootLink[0] = x;
+    FootLink[1] = FOOT_Y;
+    FootLink[2] = right;
+    FootLink[3] = FOOT_Y + h * 2;
+    /* each _ a line at the foot of its place, the text's grey */
+    for (i = 0; link[i] != 0; i++) {
+        if (link[i] == ' ' && link[i + 1] == ' ') {
+            char before[sizeof(link)];
+            s32 at, wide, j;
+
+            memcpy(before, link, (size_t)i);
+            before[i] = 0;
+            at = (x + foot_width(before)) * ScreenRect->w / 640;
+            wide = foot_width("  ") * ScreenRect->w / 640;
+            for (j = 0; j < 4; j++) {
+                xy[j].vx = (s16)(at + ((j & 1) ? wide - 1 : 0));
+                xy[j].vy = (s16)(FOOT_Y / 2 + h - 1 + ((j & 2) ? 1 : 0));
+                c[j] = FOOT_COLOUR;
+            }
+            draw_plain_quad(RenderState.layer, xy, c, GFX_OPAQUE);
+            i++;
+        }
+    }
+}
+
+/* The mouse's left click, at x, y from the picture's middle in text's units: on the address, it opens it */
+static s32 foot_clicked(float x, float y) {
+    x += 320;
+    y += 240;
+    if (FootLink[2] > FootLink[0] && x >= FootLink[0] && x <= FootLink[2] && y >= FootLink[1] - 2 && y <= FootLink[3] + 2) {
+        platform_open_url(REPO_URL);
+        return 1;
+    }
+    return 0;
+}
+
 static void SettingsMenuRender(void) {
     RenderTitlesBackdropAndMenu();
+    draw_foot();
     draw_deadzone();
     gfx_set_viewport(&LogoView, &LogoCamera);
     RenderState.modelDp = ScreenFade.amount;
