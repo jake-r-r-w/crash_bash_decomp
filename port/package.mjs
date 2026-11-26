@@ -132,7 +132,8 @@ if (ANDROID) {
 run('cmake', ['--preset', PRESET, ...(LINUX ? [] : [`-DCMAKE_PREFIX_PATH=${sdl_dir}`])], PORT);
 run('cmake', ['--build', '--preset', PRESET], PORT);
 /* the hero tool (herotool/, docs/HERO_PACKS.md), in its own folder beside the program: the launcher's HERO TOOL starts it */
-const TOOL = path.join(ROOT, 'herotool'), TOOL_PRESET = LINUX ? 'linux-clang' : 'windows-clang';
+/* its release presets, as the game's: no debug information, which held this PC's paths and the user's name in 1.5.0 and 1.5.1's tool */
+const TOOL = path.join(ROOT, 'herotool'), TOOL_PRESET = LINUX ? 'linux-release' : 'windows-release';
 const TOOL_BUILD = path.join(ROOT, 'build/herotool', TOOL_PRESET);
 run('cmake', ['--preset', TOOL_PRESET, ...(LINUX ? [] : [`-DCMAKE_PREFIX_PATH=${sdl_dir}`])], TOOL);
 run('cmake', ['--build', '--preset', TOOL_PRESET], TOOL);
@@ -221,6 +222,7 @@ fs.writeFileSync(path.join(dir, 'mods', 'README.txt'), eol('Put mods here, as th
 
 check_program(fs.readFileSync(exe), 'the program');
 check_imports(path.join(dir, program_name), 'the program');
+check_program(fs.readFileSync(path.join(dir, 'herotool', tool_name)), 'the hero tool');
 check_imports(path.join(dir, 'herotool', tool_name), 'the hero tool');
 for (const file of fs.readdirSync(dir)) {
     if (/\.(dat|bin|cue|iso)$/i.test(file)) {

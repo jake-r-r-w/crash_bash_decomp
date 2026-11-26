@@ -679,6 +679,10 @@ Newest first, a few lines each. Details are in the commits.
   needed llvm-mingw's C++ runtime, on this PC's PATH only. Linked in now (-static; Linux -static-libstdc++), and package.mjs
   refuses a program needing a library a player hasn't (check_imports). Checked with only System32 on the PATH: the new tool starts,
   the published 1.5.1 one doesn't. Not released yet.
+- 2026-11-26: Looked for more of the same: the tool was built with its everyday preset (debug information: this PC's paths and the
+  user's name, in 1.5.0 and 1.5.1's downloads); now its own release presets, 11.3 MB to 5.6 MB, and check_program reads it too.
+  Android's libmain.so needs only Android's libraries and the APK's libSDL3.so. The packaged game and tool, from a copy outside the
+  repo with only System32 on the PATH: a level played, Bobby made in 11 of 11 games.
 
 - 2026-11-24: 1.5.1 published at the user's word, with the launcher's idle-demo fix alone: modes, heroes, menu, mouse and controls
   on the packaged Windows build, modes, heroes, menu and controls on Linux, modes and heroes on Android (build/port/rel151-*.sh).

@@ -17,15 +17,39 @@
       "cacheVariables": { "CMAKE_C_COMPILER": "x86_64-w64-mingw32-clang" }
     },
     {
+      "name": "windows-release",
+      "displayName": "Windows x86-64, Clang, for publishing (port/package.mjs): no debug information, which holds the build machine's paths",
+      "inherits": "windows-clang",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_FLAGS_RELEASE": "-O2 -DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG",
+        "CMAKE_EXE_LINKER_FLAGS": "-Wl,--strip-debug"
+      }
+    },
+    {
       "name": "linux-clang",
       "displayName": "Linux x86-64, Clang",
       "inherits": "base",
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
       "cacheVariables": { "CMAKE_C_COMPILER": "clang", "CMAKE_CXX_COMPILER": "clang++" }
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux x86-64, Clang, for publishing (port/package.mjs, in tools/dl)",
+      "inherits": "linux-clang",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_FLAGS_RELEASE": "-O2 -DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG",
+        "CMAKE_EXE_LINKER_FLAGS": "-Wl,--strip-debug"
+      }
     }
   ],
   "buildPresets": [
     { "name": "windows-clang", "configurePreset": "windows-clang" },
-    { "name": "linux-clang", "configurePreset": "linux-clang" }
+    { "name": "windows-release", "configurePreset": "windows-release" },
+    { "name": "linux-clang", "configurePreset": "linux-clang" },
+    { "name": "linux-release", "configurePreset": "linux-release" }
   ]
 }
