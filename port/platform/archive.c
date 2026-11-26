@@ -113,7 +113,7 @@ static void put_right(int32_t count) {
     for (e = 0; e < count && e < PAL_FILES; e++) {
         uint8_t *bytes;
 
-        if (PalFiles[e].kind != PAL_PICTURES || DatIndex[e].size <= 0) {
+        if ((PalFiles[e].kind != PAL_PICTURES && PalFiles[e].kind != PAL_INTERFACE) || DatIndex[e].size <= 0) {
             continue;
         }
         bytes = malloc((size_t)DatIndex[e].size);
@@ -127,11 +127,14 @@ static void put_right(int32_t count) {
             free(bytes);
             return;
         }
+        /* the main menu's pictures put right; an interface as it is in English, the language's otherwise (pal_put_right) */
         PutRight[e] = pal_put_right(e, bytes, (uint32_t)DatIndex[e].size, 0);
-        printf("data: file %03X's pictures %s\n", (unsigned)e, PutRight[e] != NULL ? "put in the USA's order" : "aren't as this expects: left");
-        if (PutRight[e] == NULL) {
-            free(bytes);
-            continue;
+        if (PalFiles[e].kind == PAL_PICTURES) {
+            printf("data: file %03X's pictures %s\n", (unsigned)e, PutRight[e] != NULL ? "put right" : "aren't as this expects: left");
+            if (PutRight[e] == NULL) {
+                free(bytes);
+                continue;
+            }
         }
         PutRightStored[e] = bytes;
         NumPutRight++;
@@ -150,13 +153,17 @@ static const uint8_t *put_right_now(int32_t i) {
         for (e = 0; e < DatIndexCount; e++) {
             uint8_t *made;
 
-            if (PutRightStored[e] != NULL && (made = pal_put_right(e, PutRightStored[e], (uint32_t)(Original != NULL ? Original[e].size : DatIndex[e].size), PutRightLanguage)) != NULL) {
-                free(PutRight[e]);
-                PutRight[e] = made;
+            if (PutRightStored[e] != NULL) {
+                made = pal_put_right(e, PutRightStored[e], (uint32_t)(Original != NULL ? Original[e].size : DatIndex[e].size), PutRightLanguage);
+                if (made != NULL || PalFiles[e].kind == PAL_INTERFACE) {
+                    free(PutRight[e]);
+                    PutRight[e] = made;
+                }
             }
         }
     }
-    return PutRight[i];
+    /* none (an interface in English): the file as the archive has it */
+    return PutRight[i] != NULL ? PutRight[i] : PutRightStored[i];
 }
 
 static void read_own_table(void) {

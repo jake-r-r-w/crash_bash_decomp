@@ -655,8 +655,9 @@ const PalLanguageFile PalLanguageFiles[] = {
     { 275, PAL_SOUND, { { 31098, 200242 }, { 29130, 190482 }, { 27166, 201218 }, { 25194, 198402 } } }, /* 113 */
     { 277, PAL_SOUND, { { 31201, 79518 }, { 29229, 77710 }, { 27270, 78382 }, { 25296, 78158 } } }, /* 115 */
     { 278, PAL_SOUND, { { 31240, 80820 }, { 29267, 77380 }, { 27309, 78724 }, { 25335, 78436 } } }, /* 116 */
+    { 312, PAL_WORDS, { { 35264, 44296 }, { 35209, 44296 }, { 35159, 44296 }, { 35106, 44296 } } }, /* 138 */
 };
-const int PalLanguageFileCount = 88;
+const int PalLanguageFileCount = 89;
 
 /* the font's letters past the USA's (its accented ones): page, code (Latin-1, as the European text has them), glyph in the made font */
 const PalGlyph PalGlyphs[] = {

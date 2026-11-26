@@ -236,6 +236,23 @@ if (!P(langFiles.find(f => f.e === text).v[0]).toString('latin1').includes('OBJE
     throw new Error("the mode text's language a set before the English isn't the French");
 }
 
+/* The interface's words drawn as pictures (the pause frame's PAUSED and RULES): the European disc has the interface once more for each
+   other language, the same pictures but those, in the order Spanish, Italian, German, French, before the first of the English's copies.
+   They're the interface's (0x138's) language versions: every interface file the game reads is drawn with the language's (archive.c). */
+{
+    const en = pictures(P(map[0x138])), frame = en[34].key;
+    const others = pal.map((_, p) => p).filter(p => {
+        if (p === map[0x138] || pal[p][1] !== pal[map[0x138]][1] || P(p).equals(P(map[0x138]))) return false;
+        const o = pictures(P(p));
+        return o.length === en.length && o[34].key === frame && o.every((q, i) => q.w === en[i].w && q.h === en[i].h) && o.some((q, i) => q.key !== en[i].key);
+    });
+    const distinct = others.filter((p, i) => !others.slice(0, i).some(q => P(q).equals(P(p))));
+    if (distinct.length !== 4) throw new Error(`the interface's languages: ${distinct.length} found, not 4`);
+    /* the disc's order is Spanish, Italian, German, French: the code's French first */
+    langFiles.push({ e: 0x138, v: [distinct[3], distinct[2], distinct[1], distinct[0]], words: true });
+    console.log(`the interface's words: its languages the European files ${distinct.join(' ')}`);
+}
+
 /* The European font's letters past the USA's: the accented ones, each code a glyph, as its program's InitSysFont sets them (a run of li
    reg, 0x30NN; sh reg, code * 2 (base)); in the converted font's order, the USA's glyphs first and the European's others after. Its last
    four stores on each page are the button icons, which the USA has at 0xFC to 0xFF too, and keep. And each one's flags (sb reg, code
@@ -507,7 +524,7 @@ ${modeRoots.map(r => '    { ' + r.map(x => '0x' + x.toString(16).toUpperCase()).
 
 /* the USA files with a version for each language: the French's, German's, Italian's and Spanish's place and size (the English is PalFiles') */
 const PalLanguageFile PalLanguageFiles[] = {
-${langFiles.map(f => `    { ${f.e}, ${f.sound ? 'PAL_SOUND' : 'PAL_TEXT'}, { ${f.v.map(p => `{ ${pal[p][0]}, ${pal[p][1]} }`).join(', ')} } }, /* ${f.e.toString(16).toUpperCase().padStart(3, '0')} */`).join('\n')}
+${langFiles.map(f => `    { ${f.e}, ${f.words ? 'PAL_WORDS' : f.sound ? 'PAL_SOUND' : 'PAL_TEXT'}, { ${f.v.map(p => `{ ${pal[p][0]}, ${pal[p][1]} }`).join(', ')} } }, /* ${f.e.toString(16).toUpperCase().padStart(3, '0')} */`).join('\n')}
 };
 const int PalLanguageFileCount = ${langFiles.length};
 

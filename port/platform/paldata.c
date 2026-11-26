@@ -282,6 +282,7 @@ const char *pal_convert(PalRead read, void *ctx, const uint8_t *exe, size_t exe_
         }
         /* a file with a version for each language is as long as its longest, here and in each language's copy (below) */
         as_long = (j = language_file(e)) >= 0 ? longest(j) : made;
+        as_long = as_long > made ? as_long : made; /* the interface, put in the USA's order, is longer than the European's */
         put32(table + e * 8, (uint32_t)(written / SECTOR));
         put32(table + e * 8 + 4, as_long);
         if (!write_file(to, bytes, made, as_long, &written)) {
@@ -424,11 +425,37 @@ static int picture_places(const uint8_t *b, uint32_t size, uint32_t *at, int n) 
     return (int)images;
 }
 
+/* An interface file in the language: the language's interface (the one file the European disc has for each, PAL_WORDS), put in the USA's
+   order as the English's is, as long */
+static uint8_t *interface_words(uint32_t size) {
+    uint8_t *lang, *out = NULL, *made_out;
+    uint32_t made = 0;
+    int i, n = 0;
+
+    for (i = 0; i < PalLanguageFileCount && PalLanguageFiles[i].kind != PAL_WORDS; i++) {
+    }
+    if (i == PalLanguageFileCount || (lang = archive_language_copy(PalLanguageFiles[i].entry, &n)) == NULL) {
+        return NULL;
+    }
+    if (n >= 8 && u32(lang + 4) <= (uint32_t)n && (made_out = reorder(lang, u32(lang + 4), PalInterfaceOrder, PAL_INTERFACE_PICTURES,
+                                                                       PalTagSize, NULL, &made)) != NULL) {
+        if (made <= size && (out = calloc(size, 1)) != NULL) {
+            memcpy(out, made_out, made);
+        }
+        free(made_out);
+    }
+    free(lang);
+    return out;
+}
+
 uint8_t *pal_put_right(int entry, const uint8_t *bytes, uint32_t size, int language) {
     static uint32_t at[512];
     uint8_t *out;
     int i, had;
 
+    if (entry >= 0 && entry < PAL_FILES && PalFiles[entry].kind == PAL_INTERFACE) {
+        return language > 0 && language < PAL_LANGUAGES ? interface_words(size) : NULL;
+    }
     if (entry < 0 || entry >= PAL_FILES || PalFiles[entry].kind != PAL_PICTURES || (had = picture_places(bytes, size, at, 512)) <= 0 ||
         had > 512 || (out = malloc(size)) == NULL) {
         return NULL;

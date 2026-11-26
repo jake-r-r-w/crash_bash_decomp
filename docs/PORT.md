@@ -643,9 +643,15 @@ through the menus, the hero select, the warp room, the rules and a game (Adventu
   below and has none on the big page).
 - **The hero select's player tags**: P1 in English, J1 in French and Spanish, S1 in German, G1 in Italian (the main menu's pictures,
   above).
+- **The pause frame's words** (PAUSED and RULES, pictures in the interface): the European disc has the interface once more for each
+  other language, the same 42 pictures with those redrawn (PAUSE, PAUSA, REGLES, SPIELREGELN...; its files 649, 653, 657 and 661,
+  Spanish to French, before the English's). The converter keeps them as the interface's (0x138's) language copies (`PAL_WORDS`), and
+  every interface file the game reads is the language's, put in the USA's order as the English's is (`archive.c` put_right,
+  `pal_put_right`): what's drawn only, so the fingerprints stay the same (2981 steps of Adventure with a pause, 2026-11-26). Data made
+  before this hasn't those copies and keeps the English words.
 
-Still English: the words drawn as pictures (PAUSED, RULES). A change of language in the launcher shows in what's read after it: the next
-mode's text and sound banks, and the main menu's tags when the title screens next load.
+A change of language in the launcher shows in what's read after it: the next mode's text, interface and sound banks, and the main menu's
+tags when the title screens next load.
 
 ## RecompLauncher
 

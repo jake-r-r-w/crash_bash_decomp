@@ -28,7 +28,8 @@ typedef struct PalFile {
    CRASHBSH.DAT (the English is PalFiles') */
 /* A language file's kind: text the game reads in its language (the archive's reads give it), or a sound pack, which the game reads in
    English, so every machine's game has the same voices and their timing, and the mixer plays its language's alongside (audio.c) */
-enum { PAL_TEXT = 1, PAL_SOUND = 2 };
+/* PAL_WORDS: the interface (the pause frame's PAUSED and RULES pictures), drawn in the language (archive.c, pal_put_right) */
+enum { PAL_TEXT = 1, PAL_SOUND = 2, PAL_WORDS = 3 };
 
 typedef struct PalLanguageFile {
     uint16_t entry;

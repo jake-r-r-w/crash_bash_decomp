@@ -675,6 +675,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-26: European languages: the pause frame's word pictures (PAUSE, REGLES, SPIELREGELN...) in the language. The European disc's
+  interface comes once more per language (its files 649-661); pal_table.mjs finds them as 0x138's PAL_WORDS copies, and every interface
+  file read is the language's, USA-ordered (archive.c put_right, paldata.c interface_words; the converter pads 0x138 to its USA-ordered
+  size). Fingerprints the same en/fr/es; needs the data made again (older conversions keep English words).
+
 - 2026-11-26: European data: the hero select's heroes had wrong pictures on them (the user saw it). The main menu's models (083) differ
   from the USA's and name its pictures (082) in the European order, which put_right had changed to the USA's. 082 now stays European
   (only the tags' frames and language), and the code's USA numbers for its sprites are turned into the European's (prims.c, draw.c;
