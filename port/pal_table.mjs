@@ -138,7 +138,7 @@ function pictures(b) {
         const w = b.readUInt16LE(p), h = b.readUInt16LE(p + 2), f = b.readUInt16LE(p + 12), clut = cluts[f >> 1] ?? [], px = b.subarray(p + 20, p + 20 + w * h * 2);
         const cols = [];
         if (f & 1) for (const v of px) cols.push(clut[v]); else for (const v of px) cols.push(clut[v & 15], clut[v >> 4]);
-        out.push({ w, h, key: `${w}x${h}:${cols.join(',')}` });
+        out.push({ w, h, flags: b.readUInt16LE(p + 14), frames: b.readInt32LE(p + 16), key: `${w}x${h}:${cols.join(',')}` });
         p += 20 + w * h * 2;
     }
     return out;
@@ -160,6 +160,39 @@ ifaceOrder.forEach((j, i) => {
     if (i < 34 && ip[i].key !== iu[i].key) throw new Error(`interface picture ${i} isn't the European's`);
 });
 const tagSize = [iu[34].w, iu[34].h];
+
+/* Any other texture set the European disc has its pictures of in another order: the main menu's (082), with the hero select's portraits,
+   has more pictures before them. The game picks them by number, so it's read in the USA's order (archive.c: put right as the archive
+   opens, so data made before this is too). A USA picture the European one hasn't is the European's of its size in the same place (a
+   piece of a word, redrawn). One file only, which is what the table has room for. */
+const isSet = b => b.length >= 0x20 && b.readUInt32LE(0) === 8 && b.readUInt32LE(4) === b.length && b.readUInt32LE(0x18) === 0;
+let picsOrder = null, picsFrames = null, picsLanguage = null;
+for (let e = 0; e < ENTRIES; e++) {
+    if (kind[e] !== 'copy' || map[e] < 0 || usaSize(e) === 0 || !isSet(U(e)) || !isSet(P(map[e])) || U(e).equals(P(map[e]))) continue;
+    const pu = pictures(U(e)), pp = pictures(P(map[e]));
+    const order = pu.map(g => pp.findIndex(q => q.key === g.key));
+    if (order.every((j, i) => j === i)) continue;
+    order.forEach((j, i) => {
+        if (j < 0 && i < pp.length && pp[i].w === pu[i].w && pp[i].h === pu[i].h && !order.includes(i)) order[i] = i;
+        if (order[i] < 0) throw new Error(`file ${e.toString(16)}: its picture ${i} isn't in the European one`);
+    });
+    /* a picture with frames (flags 2: it and the next ones, frames of them; the hero select's player tags, P1 and 1P) has one for
+       each language after them on the European disc: its frames are the USA's, and those follow the rest */
+    order.forEach((j, i) => {
+        if (pp[j].flags !== pu[i].flags) throw new Error(`file ${e.toString(16)}: its picture ${i}'s flags aren't the European's`);
+    });
+    picsFrames = order.map((j, i) => pp[j].frames !== pu[i].frames ? pu[i].frames : 0);
+    /* and a picture whose European frames are the USA's and then one for each language: where the English one is, for the machine's
+       language's in place of its first (the tags are P1 in English, J1 in French...) */
+    picsLanguage = order.map((j, i) => pu[i].frames > 0 && pp[j].frames === pu[i].frames + 5 ? j + pu[i].frames : -1);
+    if (picsOrder !== null && (picsOrder.length !== order.length || picsOrder.some((j, i) => j !== order[i]))) {
+        throw new Error(`file ${e.toString(16)}: a second texture set in another order`);
+    }
+    picsOrder = order;
+    kind[e] = 'pictures';
+    console.log(`file ${e.toString(16)}: its ${pu.length} pictures in the USA's order, of the European's ${pp.length}`);
+}
+if (picsOrder === null) throw new Error("the main menu's pictures are in the same order: this expects them not to be");
 
 const left = [];
 for (let e = 0; e < ENTRIES; e++) if (map[e] < 0 && usaSize(e) > 0) left.push(e);
@@ -205,15 +238,23 @@ if (!P(langFiles.find(f => f.e === text).v[0]).toString('latin1').includes('OBJE
 
 /* The European font's letters past the USA's: the accented ones, each code a glyph, as its program's InitSysFont sets them (a run of li
    reg, 0x30NN; sh reg, code * 2 (base)); in the converted font's order, the USA's glyphs first and the European's others after. Its last
-   four stores on each page are the button icons, which the USA has at 0xFC to 0xFF too, and keep. */
-function fontStores(exe, aPage0, aPage1) {
-    const regs = new Map(), rec = [];
+   four stores on each page are the button icons, which the USA has at 0xFC to 0xFF too, and keep. And each one's flags (sb reg, code
+   (flags' base)): 4 for a letter with its accent above, which the European DrawSysText draws higher (nascalls.c). */
+function fontStores(exe, aPage0, aPage1, flagsOut) {
+    const regs = new Map(), rec = [], bytes = [];
     for (let i = 0x800; i + 4 <= exe.length; i += 4) {
-        const w = exe.readUInt32LE(i), op = w >>> 26, rs = (w >> 21) & 31, rt = (w >> 16) & 31, imm = w & 0xFFFF;
+        const w = exe.readUInt32LE(i), op = w >>> 26, rs = (w >> 21) & 31, rt = (w >> 16) & 31, rd = (w >> 11) & 31, imm = w & 0xFFFF;
         if ((op === 9 || op === 13) && rs === 0) { regs.set(rt, imm); continue; }
+        /* a move (addu rd, rs, zero) */
+        if (op === 0 && (w & 63) === 33 && rt === 0) { if (regs.has(rs)) regs.set(rd, regs.get(rs)); else regs.delete(rd); continue; }
         if (op === 41 && rt !== 0 && regs.has(rt)) { rec.push({ at: i, base: rs, off: imm << 16 >> 16, v: regs.get(rt) }); continue; }
+        if (op === 40 && rt !== 0 && regs.has(rt)) { bytes.push({ at: i, base: rs, off: imm << 16 >> 16, v: regs.get(rt) }); continue; }
         if (op === 2 || op === 3 || (op === 0 && (w & 63) === 8)) regs.clear();
     }
+    /* the flags' stores: the run with the button icons' 1 at 0xFC to 0xFF and 0x1FC to 0x1FF, the code itself the offset */
+    const icon = bytes.find(r => r.off === 0xFC && r.v === 1 && bytes.some(q => q.base === r.base && q.off === 0x1FC && Math.abs(q.at - r.at) < 0x1000));
+    if (icon === undefined) throw new Error("the European program's font flags weren't found");
+    for (const r of bytes) if (r.base === icon.base && Math.abs(r.at - icon.at) < 0x1000 && r.off >= 0x80 && r.off < 0x200) flagsOut.set(r.off, r.v);
     const a0 = rec.find(r => r.v === aPage0 && rec.some(q => q.base === r.base && q.v === aPage1 && q.off - r.off === 0x200));
     if (a0 === undefined) throw new Error("the European program's InitSysFont wasn't found");
     return rec.filter(r => r.base === a0.base && Math.abs(r.at - a0.at) < 0x4000).map(r => {
@@ -224,11 +265,12 @@ function fontStores(exe, aPage0, aPage1) {
 const leftovers = fp.map((_, i) => i).filter(i => !fontOrder.includes(i));
 const ourGlyph = p => fontOrder.includes(p) ? fontOrder.indexOf(p) : fontOrder.length + leftovers.indexOf(p);
 /* A on each page: the USA's glyph 0x3A and 0x02, which are the European font's fontOrder[...] */
-const stores = fontStores(palExe, 0x3000 | fontOrder[0x3A], 0x3000 | fontOrder[0x02]);
+const glyphFlags = new Map();
+const stores = fontStores(palExe, 0x3000 | fontOrder[0x3A], 0x3000 | fontOrder[0x02], glyphFlags);
 const accents = new Map();
 for (const page of [0, 1]) {
     const high = stores.filter(r => r.page === page && r.c >= 0x80);
-    for (const r of high.slice(0, -4)) accents.set(`${page}:${r.c}`, { page, c: r.c, g: ourGlyph(r.g) });
+    for (const r of high.slice(0, -4)) accents.set(`${page}:${r.c}`, { page, c: r.c, g: ourGlyph(r.g), flags: glyphFlags.get(page * 256 + r.c) ?? 0 });
 }
 console.log(`the font: ${accents.size} letters past the USA's, on its two pages`);
 
@@ -292,7 +334,8 @@ for (const pass of ['menus', 'messages']) {
    English is one of those, by its letters (the European English is spaced and stopped a little otherwise), is kept. */
 const cSource = (() => { const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else if (p.endsWith('.c')) all.push(fs.readFileSync(p, 'utf8')); } }; walk(path.join(ROOT, 'port/game')); return all.join('\n'); })();
 const unescape = s => s.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\"/g, '"').replace(/\\x([0-9A-Fa-f]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16))).replace(/\\\\/g, '\\');
-const stringDefs = new Map([...cSource.matchAll(/\b(\w+)\[\]\s*=\s*"((?:[^"\\]|\\.)*)"/g)].map(m => [m[1], unescape(m[2])]));
+/* a string's definition, with its size or none, to its first zero (some keep the bytes the disc has after it) */
+const stringDefs = new Map([...cSource.matchAll(/\b(\w+)\[\w*\]\s*=\s*"((?:[^"\\]|\\.)*)"/g)].map(m => [m[1], unescape(m[2]).split('\0')[0]]));
 const bodyOf = name => { const m = cSource.match(new RegExp(`\\b${name}\\s*(?:\\[[^\\]]*\\])*\\s*=\\s*\\{`)); if (!m) return null; let i = m.index + m[0].length, depth = 1, s = i; while (depth > 0 && i < cSource.length) { if (cSource[i] === '{') depth++; else if (cSource[i] === '}') depth--; i++; } return cSource.slice(s, i - 1); };
 const langKeys = new Set();
 const follow = (name, depth) => {
@@ -306,7 +349,7 @@ const follow = (name, depth) => {
 for (const m of cSource.matchAll(/\b(Lang\w+|PauseMenuSetsByLang)\s*\[[^\]]*\]\s*=/g)) follow(m[1], 0);
 /* and the menus' own words: the strings the title menus, the game's flow and the pause menus define */
 for (const file of ['overlays/titles/titles.c', 'overlays/engine/gameflow.c', 'overlays/engine/pause.c']) {
-    for (const m of fs.readFileSync(path.join(ROOT, 'port/game', file), 'utf8').matchAll(/\b(\w+)\[\]\s*=\s*"((?:[^"\\]|\\.)*)"/g)) langKeys.add(unescape(m[2]));
+    for (const m of fs.readFileSync(path.join(ROOT, 'port/game', file), 'utf8').matchAll(/\b(\w+)\[\w*\]\s*=\s*"((?:[^"\\]|\\.)*)"/g)) langKeys.add(unescape(m[2]).split('\0')[0]);
 }
 for (const [name, s] of stringDefs) if (/^PauseText/.test(name)) langKeys.add(s);
 const letters = s => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -339,7 +382,7 @@ if (!['SELECT A GAME SAVE', 'CONTINUE', 'QUIT GAME', 'EXIT'].every(s => msgs.has
 console.log('  CONTINUE ->', msgs.get('CONTINUE').offs.slice(1).map(o => cstr(blobs.find(b => b.id === msgs.get('CONTINUE').blob).bytes, o).s).join(' | '));
 
 const crc = zlib.crc32(palDat) >>> 0;
-const kinds ={ copy: 'PAL_COPY', font: 'PAL_FONT', interface: 'PAL_INTERFACE', none: 'PAL_NONE' };
+const kinds = { copy: 'PAL_COPY', font: 'PAL_FONT', interface: 'PAL_INTERFACE', none: 'PAL_NONE', pictures: 'PAL_PICTURES' };
 let c = `/* The European disc's (SCES-02834) files as the USA game has them: made by port/pal_table.mjs from both discs, numbers only. Each USA
  * file's place and size in the European CRASHBSH.DAT, and what's done with it (platform/paldata.c; docs/PORT.md, The European disc). */
 #include "paldata.h"
@@ -364,6 +407,16 @@ const short PalInterfaceOrder[PAL_INTERFACE_PICTURES] = {
 ${ifaceOrder.map(String).join(', ').replace(/(.{1,126})(, |$)/g, '    $1,\n').replace(/,,\n$/, ',\n')}};
 const unsigned short PalTagSize[2] = { ${tagSize[0]}, ${tagSize[1]} };
 
+/* the main menu's pictures (082) in the USA's order, each the European's: the rest of the European ones follow (archive.c) */
+const short PalPicturesOrder[PAL_PICTURES_COUNT] = {
+${picsOrder.map(String).join(', ').replace(/(.{1,126})(, |$)/g, '    $1,\n').replace(/,,\n$/, ',\n')}};
+/* and each one's frames where they aren't the European's (0: as they are) */
+const signed char PalPicturesFrames[PAL_PICTURES_COUNT] = {
+${picsFrames.map(String).join(', ').replace(/(.{1,126})(, |$)/g, '    $1,\n').replace(/,,\n$/, ',\n')}};
+/* and for one with a frame for each language, the European English one's picture (-1: none), the others following it */
+const short PalPicturesLanguage[PAL_PICTURES_COUNT] = {
+${picsLanguage.map(String).join(', ').replace(/(.{1,126})(, |$)/g, '    $1,\n').replace(/,,\n$/, ',\n')}};
+
 /* the USA files with a version for each language: the French's, German's, Italian's and Spanish's place and size (the English is PalFiles') */
 const PalLanguageFile PalLanguageFiles[] = {
 ${langFiles.map(f => `    { ${f.e}, ${f.sound ? 'PAL_SOUND' : 'PAL_TEXT'}, { ${f.v.map(p => `{ ${pal[p][0]}, ${pal[p][1]} }`).join(', ')} } }, /* ${f.e.toString(16).toUpperCase().padStart(3, '0')} */`).join('\n')}
@@ -372,7 +425,7 @@ const int PalLanguageFileCount = ${langFiles.length};
 
 /* the font's letters past the USA's (its accented ones): page, code (Latin-1, as the European text has them), glyph in the made font */
 const PalGlyph PalGlyphs[] = {
-${[...accents.values()].map(a => `    { ${a.page}, 0x${a.c.toString(16).toUpperCase()}, ${a.g} },`).join('\n')}
+${[...accents.values()].map(a => `    { ${a.page}, 0x${a.c.toString(16).toUpperCase()}, ${a.flags}, ${a.g} },`).join('\n')}
 };
 const int PalGlyphCount = ${accents.size};
 

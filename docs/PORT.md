@@ -590,6 +590,14 @@ later, and the game's words came out wrong: TESTING read QBPQFKD), and the inter
 earlier, as the European one hasn't the USA's P1 to P4 tags (those are clear pictures of their size). Both are matched by each
 picture's colours, every USA one found.
 
+A third, the main menu's pictures (082), with the hero select's faces and P1 to P4 tags, is put right as it's read instead
+(`archive.c`, `put_right`; `pal_put_right`), so data made before this was found is right too: it's as long either way. Its tags are
+pictures with frames (flags 3: the tag and the next, P1 and 1P, shown in turn), and the European ones have seven, the USA's two and then
+one for each language (P1, J1, S1, G1, J1). The loader took seven, the faces after them with them, and the hero select's boxes were black
+(2026-11-26). The pictures are put in the USA's order with the USA's frames, the language ones after the rest, and the first frame is
+this machine's language's: what's drawn only, so the game is the same in any. `pal_table.mjs` finds any texture set whose pictures are
+in another order (only this one) and stops if there's a second.
+
 The made file ends with its table: the 992 files' sectors and sizes, then the count, 1, and `CBUSAIDX`. `archive_open` reads it in
 place of the game's table (`read_own_table`, before anything else reads the archive: `main.c` opens it first, before the mods and the
 start's saved sections), and each file group's size changes as its span does. The whole European file is checked by its CRC first, so
@@ -600,6 +608,29 @@ shade, an animation's phase); the bosses beaten; online play, two European machi
 menu and title screens the USA's but for the European disc's own logo. A European machine and a USA one can't play together online:
 their data differs, and joining says so. The fix the European data showed up was the hero packs' banks, which a level's load didn't
 clear (`dbase_init_all`).
+
+### Languages
+
+With the European disc's data the launcher's GAME page has a LANGUAGE row (English, French, German, Italian, Spanish; `settings.ini`
+`language=`, `--language ID` for a test run). It's each machine's own, never the game's (`GAME->language` stays 0), so online players
+can each have theirs: nothing in the game's state changes with it, which `--fingerprints 1` in each language shows (the same, every
+step, through the menus and the hero select, 2026-11-26).
+
+- **Text files** (the modes' rules and objectives, 08D to 098): read in the language (`archive_read`, its `PAL_TEXT` files), each
+  language's copy padded to the longest, so the heap is laid out the same in all of them.
+- **Words in the code** (menus, the pause menu, the hero select's title...): the European code's five-language sets, found by
+  `pal_table.mjs` and written into the made file, then `pal_text` gives `DrawSysText` and `SysGetLen` the language's in place of the
+  English. A word only the disc's program has needs the disc image (a `CRASHBSH.DAT` alone hasn't it): it stays English then.
+- **Letters**: the European font's accented letters (`PalGlyphs`, from its `InitSysFont`), with its flags: 4 for an accent above, a
+  taller picture, which `DrawSysText` draws 6 lines higher on the big page and 2 on the small, as the European one does (Ç's cedilla is
+  below and has none on the big page).
+- **The hero select's player tags**: P1 in English, J1 in French and Spanish, S1 in German, G1 in Italian (the main menu's pictures,
+  above).
+
+Still English: the voices and cutscene speech (read in English, `PAL_SOUND`: their samples are laid out otherwise in each language, so
+the heap would differ; playing the language's beside the English's timing is to come), and the words drawn as pictures (PAUSED, the
+rules' headings). A change of language in the launcher shows in what's read after it; the main menu's tags change when the title screens
+next load.
 
 ## RecompLauncher
 

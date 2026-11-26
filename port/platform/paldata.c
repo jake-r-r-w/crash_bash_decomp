@@ -39,9 +39,11 @@ static void put32(uint8_t *p, uint32_t v) {
 }
 
 /* A texture set's pictures in another order (docs/ASSETS.md, Texture sets): picture i of the new one is the old one's order[i], or, for
-   -1, a clear one of the size given; the old ones not named follow in their own order. Its colours and the rest stay as they were. NULL
-   if it isn't a texture set this can do (an animated one names its pictures by number). */
-static uint8_t *reorder(const uint8_t *b, uint32_t size, const short *order, int n, const unsigned short *clear, uint32_t *out_size) {
+   -1, a clear one of the size given; the old ones not named follow in their own order. frames, if not NULL, gives picture i's number of
+   frames where it isn't the old one's (0: as it was). Its colours and the rest stay as they were. NULL if it isn't a texture set this can
+   do (an animated one names its pictures by number). */
+static uint8_t *reorder(const uint8_t *b, uint32_t size, const short *order, int n, const unsigned short *clear, const signed char *frames,
+                        uint32_t *out_size) {
     uint32_t images, start, at, i, k, total;
     uint32_t *from, *len;
     uint8_t *used, *out;
@@ -92,6 +94,9 @@ static uint8_t *reorder(const uint8_t *b, uint32_t size, const short *order, int
     for (j = 0; j < n; j++) {
         if (order[j] >= 0) {
             memcpy(out + k, b + from[order[j]], len[order[j]]);
+            if (frames != NULL && frames[j] != 0) {
+                put32(out + k + 16, (uint32_t)frames[j]);
+            }
             k += len[order[j]];
         } else {
             /* a clear one: the first picture's head (its colours and depth), this size, every texel the colour 0, which is clear */
@@ -267,8 +272,8 @@ const char *pal_convert(PalRead read, void *ctx, const uint8_t *exe, size_t exe_
         }
         bytes = file;
         if (f->kind == PAL_FONT || f->kind == PAL_INTERFACE) {
-            redone = f->kind == PAL_FONT ? reorder(file, size, PalFontOrder, PAL_FONT_GLYPHS, PalTagSize, &made)
-                                         : reorder(file, size, PalInterfaceOrder, PAL_INTERFACE_PICTURES, PalTagSize, &made);
+            redone = f->kind == PAL_FONT ? reorder(file, size, PalFontOrder, PAL_FONT_GLYPHS, PalTagSize, NULL, &made)
+                                         : reorder(file, size, PalInterfaceOrder, PAL_INTERFACE_PICTURES, PalTagSize, NULL, &made);
             if (redone == NULL) {
                 problem = "The European disc's font or interface isn't as this expects.";
                 goto done;
@@ -399,6 +404,55 @@ const char *pal_convert_file(const char *dat, const char *out, void (*progress)(
     return problem;
 }
 
+/* Where each picture of a texture set is, up to n of them: how many it has, or -1 if it isn't one */
+static int picture_places(const uint8_t *b, uint32_t size, uint32_t *at, int n) {
+    uint32_t p, i, images;
+
+    if (size < 0x20 || u32(b) != 8) {
+        return -1;
+    }
+    images = u16(b + 8);
+    for (p = 0x0C + u32(b + 0x0C), i = 0; i < images; i++) {
+        if (p + 20 > size || p + 20 + (uint32_t)u16(b + p) * u16(b + p + 2) * 2 > size) {
+            return -1;
+        }
+        if ((int)i < n) {
+            at[i] = p;
+        }
+        p += 20 + (uint32_t)u16(b + p) * u16(b + p + 2) * 2;
+    }
+    return (int)images;
+}
+
+uint8_t *pal_put_right(int entry, const uint8_t *bytes, uint32_t size, int language) {
+    static uint32_t was[512], now[PAL_PICTURES_COUNT];
+    uint32_t made = 0;
+    uint8_t *out;
+    int i, had;
+
+    if (entry < 0 || entry >= PAL_FILES || PalFiles[entry].kind != PAL_PICTURES) {
+        return NULL;
+    }
+    out = reorder(bytes, size, PalPicturesOrder, PAL_PICTURES_COUNT, PalTagSize, PalPicturesFrames, &made);
+    if (out != NULL && made != size) {
+        free(out);
+        out = NULL;
+    }
+    /* a picture with a frame for each language: its first is the language's, the same size, with its colours */
+    if (out != NULL && language > 0 && language < PAL_LANGUAGES && (had = picture_places(bytes, size, was, 512)) > 0 && had <= 512 &&
+        picture_places(out, made, now, PAL_PICTURES_COUNT) >= PAL_PICTURES_COUNT) {
+        for (i = 0; i < PAL_PICTURES_COUNT; i++) {
+            int from = PalPicturesLanguage[i] < 0 ? -1 : PalPicturesLanguage[i] + language;
+
+            if (from >= 0 && from < had && u16(bytes + was[from]) == u16(out + now[i]) && u16(bytes + was[from] + 2) == u16(out + now[i] + 2)) {
+                memcpy(out + now[i] + 12, bytes + was[from] + 12, 2);
+                memcpy(out + now[i] + 20, bytes + was[from] + 20, (size_t)u16(out + now[i]) * u16(out + now[i] + 2) * 2);
+            }
+        }
+    }
+    return out;
+}
+
 int pal_is_converted(const char *path) {
     SDL_IOStream *io = path != NULL ? SDL_IOFromFile(path, "rb") : NULL;
     char mark[8];
@@ -423,7 +477,7 @@ int pal_is_file(const char *path) {
     return path != NULL && SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE && pal_is_size((int64_t)info.size);
 }
 
-void pal_font_glyphs(int16_t *lookup) {
+void pal_font_glyphs(int16_t *lookup, uint8_t *flags) {
     int i;
 
     if (!archive_from_europe()) {
@@ -431,5 +485,6 @@ void pal_font_glyphs(int16_t *lookup) {
     }
     for (i = 0; i < PalGlyphCount; i++) {
         lookup[PalGlyphs[i].page * 256 + PalGlyphs[i].code] = (int16_t)(0x3000 | PalGlyphs[i].glyph);
+        flags[PalGlyphs[i].page * 256 + PalGlyphs[i].code] = PalGlyphs[i].flags;
     }
 }

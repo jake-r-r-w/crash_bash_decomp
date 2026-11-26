@@ -124,8 +124,8 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5);
 /* PC: text at num / den of the font's size (main/nascalls.c), and its width */
 s32 DrawSysTextScaled(s32 x, s32 y, const char *s, u32 colour, s32 num, s32 den);
 s32 SysGetLenScaled(const char *s, s32 num, s32 den);
-/* PC: the European font's accented letters into SysFontLookUp (platform/paldata.c) */
-void pal_font_glyphs(s16 *lookup);
+/* PC: the European font's accented letters into SysFontLookUp and SysFontFlags (platform/paldata.c) */
+void pal_font_glyphs(s16 *lookup, u8 *flags);
 /* PC: the game's English words in this machine's language, from the European disc (platform/archive.c): only what's drawn */
 const char *pal_text(const char *english);
 void texture_upload_anim(obj_texture *t, s32 base, obj_textureset *set);

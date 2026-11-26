@@ -36,6 +36,10 @@ static int Converted; /* the data was made from the European disc (paldata.c) */
 static int32_t (*LangSector)[PAL_LANGUAGES - 1];
 static uint8_t *LangKind; /* PAL_TEXT (read in its language) or PAL_SOUND (read in English: audio.c plays its language) */
 static int Languages;
+/* Files the archive has otherwise than the game reads them (paldata.c, pal_put_right), by entry, or NULL: as the archive has them, and
+   as the game reads them in the language they were last made in */
+static uint8_t **PutRightStored, **PutRight;
+static int NumPutRight, PutRightLanguage = -1;
 
 /* What the tables were before anything was replaced, and the replacements by entry */
 static ArchiveEntry *Original;
@@ -100,6 +104,59 @@ static void read_words(uint32_t sector, uint32_t size) {
     for (i = 0; i < (uint32_t)NumWords; i++) {
         letters_of(WordSet[i][0], WordLetters[i], sizeof(WordLetters[i]));
     }
+}
+
+/* A converted archive's files whose pictures are in the European order, in the USA's (PAL_PICTURES): the same size, so nothing moves */
+static void put_right(int32_t count) {
+    int32_t e;
+
+    for (e = 0; e < count && e < PAL_FILES; e++) {
+        uint8_t *bytes;
+
+        if (PalFiles[e].kind != PAL_PICTURES || DatIndex[e].size <= 0) {
+            continue;
+        }
+        bytes = malloc((size_t)DatIndex[e].size);
+        if (bytes == NULL || SDL_SeekIO(Dat, (Sint64)DatIndex[e].sector * SECTOR_BYTES, SDL_IO_SEEK_SET) < 0 ||
+            SDL_ReadIO(Dat, bytes, (size_t)DatIndex[e].size) != (size_t)DatIndex[e].size) {
+            free(bytes);
+            continue;
+        }
+        if (PutRight == NULL && ((PutRight = calloc((size_t)count, sizeof(uint8_t *))) == NULL ||
+                                 (PutRightStored = calloc((size_t)count, sizeof(uint8_t *))) == NULL)) {
+            free(bytes);
+            return;
+        }
+        PutRight[e] = pal_put_right(e, bytes, (uint32_t)DatIndex[e].size, 0);
+        printf("data: file %03X's pictures %s\n", (unsigned)e, PutRight[e] != NULL ? "put in the USA's order" : "aren't as this expects: left");
+        if (PutRight[e] == NULL) {
+            free(bytes);
+            continue;
+        }
+        PutRightStored[e] = bytes;
+        NumPutRight++;
+    }
+    PutRightLanguage = 0;
+}
+
+static int language(void);
+
+/* One of them as the game reads it now, in this machine's language */
+static const uint8_t *put_right_now(int32_t i) {
+    int32_t e;
+
+    if (PutRightLanguage != language()) {
+        PutRightLanguage = language();
+        for (e = 0; e < DatIndexCount; e++) {
+            uint8_t *made;
+
+            if (PutRightStored[e] != NULL && (made = pal_put_right(e, PutRightStored[e], (uint32_t)(Original != NULL ? Original[e].size : DatIndex[e].size), PutRightLanguage)) != NULL) {
+                free(PutRight[e]);
+                PutRight[e] = made;
+            }
+        }
+    }
+    return PutRight[i];
 }
 
 static void read_own_table(void) {
@@ -181,6 +238,7 @@ static void read_own_table(void) {
     free(table);
     free(was);
     read_words(words_sector, words_size);
+    put_right(count);
     Converted = 1;
     printf("data: made from the European disc, its own table of %d files%s\n", (int)count, Languages ? ", and its five languages" : "");
 }
@@ -292,7 +350,7 @@ void archive_read(int sector, int count, void *buf) {
     if (LogReads) {
         log_read(sector, count);
     }
-    if (NumReplaced == 0 && language() == 0) {
+    if (NumReplaced == 0 && NumPutRight == 0 && language() == 0) {
         read_dat(sector, count, out);
         return;
     }
@@ -309,6 +367,15 @@ void archive_read(int sector, int count, void *buf) {
 
             if (copy != 0) {
                 memcpy(out, Replaced[i] + from, copy);
+            }
+            memset(out + copy, 0, want - copy);
+        } else if (i >= 0 && PutRightStored != NULL && PutRightStored[i] != NULL) {
+            /* one the archive has otherwise: as the game reads it, as long */
+            int64_t from = (int64_t)off * SECTOR_BYTES, have = (Original != NULL ? Original[i].size : DatIndex[i].size) - from;
+            size_t want = (size_t)run * SECTOR_BYTES, copy = have <= 0 ? 0 : (size_t)have < want ? (size_t)have : want;
+
+            if (copy != 0) {
+                memcpy(out, put_right_now(i) + from, copy);
             }
             memset(out + copy, 0, want - copy);
         } else if (i >= 0 && language() != 0 && LangSector != NULL && LangKind[i] == PAL_TEXT && LangSector[i][language() - 1] != 0) {
@@ -421,6 +488,9 @@ uint8_t *archive_own_file(int entry, int *size) {
     buf = malloc((size_t)SECTORS(e->size) * SECTOR_BYTES + 1);
     if (buf != NULL) {
         read_dat(e->sector, SECTORS(e->size), buf);
+        if (PutRightStored != NULL && PutRightStored[entry] != NULL) {
+            memcpy(buf, put_right_now(entry), (size_t)e->size);
+        }
         *size = e->size;
     }
     return buf;

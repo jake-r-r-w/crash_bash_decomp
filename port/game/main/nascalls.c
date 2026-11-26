@@ -896,7 +896,7 @@ void InitSysFont(void) {
     SysFontWidth[0x1FE] = 32;
     SysFontWidth[0x1FF] = 32;
     /* PC: the European disc's font's accented letters, which its languages' text has (platform/paldata.c) */
-    pal_font_glyphs(SysFontLookUp);
+    pal_font_glyphs(SysFontLookUp, SysFontFlags);
 }
 
 s16 TextAlignX(s16 x, u8 *s) {
@@ -1093,6 +1093,16 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                     } else {
                         texture_draw((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], xy, 0, 0x808080);
                     }
+                } else if (fl & 4) {
+                    /* PC: a letter of the European font's with its accent above, a taller picture: as the European DrawSysText draws it, 6
+                       lines higher on the big page and 2 on the small (here in half lines, texture_corners), so its letter is on the line
+                       (only the European data's letters have it) */
+                    oy = xy >> 16;
+                    xy &= 0xFFFF;
+                    xy |= (oy - (FontPage != 0 ? 2 : 6) * 2) << 16;
+                    texture_draw_quad((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], xy, 0, arg3, arg3, arg4, arg4);
+                    xy &= 0xFFFF;
+                    xy |= oy << 16;
                 } else {
                     texture_draw_quad((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], xy, 0, arg3, arg3, arg4, arg4);
                 }

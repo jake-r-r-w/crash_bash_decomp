@@ -675,6 +675,16 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-26: European data: the hero select's boxes were black (the user saw it). The main menu's pictures (082) have more on the
+  European disc: its P1-P4 tags have a frame for each language (7, not 2), so the faces were later and the loader took them as frames.
+  Put right as the archive reads it (archive.c put_right, paldata.c pal_put_right; PORT.md, The European disc), so data made before is
+  right too; the tags in the machine's language (J1 in French). Also: the launcher's LANGUAGE row (GAME page, European data only),
+  CHARACTER SELECT found (pal_table.mjs read only `X[] = "..."` strings, not `X[20]`), and accented capitals drawn on the line (the
+  European InitSysFont's flag 4, raised 6 / 2 lines as its DrawSysText does). PORT.md, Languages. Fingerprints the same in all five;
+  European modes 39/39, USA identical 17/17, controls 9/9. Gotcha: test runs read CRASHBSH.DAT from the user folder (AppData's held a
+  European copy since 19:30), so a USA run needs CRASHBASH_USER_FOLDER set to a folder with the USA data. Next: speech in the
+  language (audio.c, a voice only heard beside the English one), the word pictures (PAUSED, rules headings).
+
 - 2026-11-26: The launcher shows the version and the repo's address at the bottom right of every page, half-size small font
   (DrawSysTextScaled), at a wide view's edge; a click opens it (platform_open_url). controls suite has the click.
 

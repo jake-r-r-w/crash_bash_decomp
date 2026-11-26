@@ -8,10 +8,12 @@
 #define PAL_FILES 992              /* the USA archive's files */
 #define PAL_FONT_GLYPHS 109        /* the USA font's */
 #define PAL_INTERFACE_PICTURES 46  /* the USA interface's */
+#define PAL_PICTURES_COUNT 126     /* the USA main menu's (082) */
 
 /* what's done with a file: copied as it is; the font's or the interface's pictures put in the USA's order; or none (the USA has a file
-   the European disc hasn't, that the game never reads) */
-enum { PAL_COPY, PAL_FONT, PAL_INTERFACE, PAL_NONE };
+   the European disc hasn't, that the game never reads); or copied as it is, and its pictures put in the USA's order as it's read (the
+   main menu's, PalPicturesOrder: archive.c, so data made before that is put right too) */
+enum { PAL_COPY, PAL_FONT, PAL_INTERFACE, PAL_NONE, PAL_PICTURES };
 
 typedef struct PalFile {
     uint32_t sector, size; /* in the European CRASHBSH.DAT */
@@ -38,6 +40,7 @@ typedef struct PalLanguageFile {
 /* A letter of the European font's that the USA's hasn't: page (0 the big font, 1 the small), Latin-1 code, glyph in the made font */
 typedef struct PalGlyph {
     uint8_t page, code;
+    uint8_t flags; /* the European InitSysFont's: 4, its accent above (nascalls.c's DrawSysText draws it higher) */
     uint16_t glyph;
 } PalGlyph;
 
@@ -62,6 +65,9 @@ extern const PalFile PalFiles[PAL_FILES];
 extern const short PalFontOrder[PAL_FONT_GLYPHS];
 extern const short PalInterfaceOrder[PAL_INTERFACE_PICTURES];
 extern const unsigned short PalTagSize[2];
+extern const short PalPicturesOrder[PAL_PICTURES_COUNT];
+extern const signed char PalPicturesFrames[PAL_PICTURES_COUNT];
+extern const short PalPicturesLanguage[PAL_PICTURES_COUNT];
 
 /* Reads size bytes at byte at of the European CRASHBSH.DAT: 0 if it can't */
 typedef int (*PalRead)(void *ctx, uint64_t at, void *buf, size_t size);
@@ -74,12 +80,17 @@ const char *pal_convert(PalRead read, void *ctx, const uint8_t *exe, size_t exe_
 /* The same, from a CRASHBSH.DAT file (no program file: the words that are only in it stay English) */
 const char *pal_convert_file(const char *dat, const char *out, void (*progress)(double done));
 
+/* A file of a converted archive as the game reads it in a language (the machine's: only drawn), if it isn't as the archive has it
+   (PAL_PICTURES): a copy as long, to free, or NULL */
+uint8_t *pal_put_right(int entry, const uint8_t *bytes, uint32_t size, int language);
+
 /* Whether a file is one made by pal_convert, or a European CRASHBSH.DAT as it is on the disc */
 int pal_is_converted(const char *path);
 int pal_is_file(const char *path);
 
-/* The font's letters past the USA's, put in its table (SysFontLookUp: 2 pages of 256) when the data is the European disc's */
-void pal_font_glyphs(int16_t *lookup);
+/* The font's letters past the USA's, put in its tables (SysFontLookUp and SysFontFlags: 2 pages of 256) when the data is the European
+   disc's */
+void pal_font_glyphs(int16_t *lookup, uint8_t *flags);
 
 /* A converted file ends with its table: the last bytes, PAL_TABLE_MAGIC, after the table's size; version 2 has the languages' too, and
    3 where the words are (archive.c) */
