@@ -697,7 +697,11 @@ void dbase_set(obj_dbase *db, u8 *data, u8 *base) {
 void dbase_init_all(void) {
     s32 i;
 
-    for (i = 0; i < 0x11A; i++) {
+    /* PC: every bank, the hero packs' too (DB_Bonus on, after the game's own 0x11A): a level's load empties the heap, and a pack's bank
+       left out still pointed into the last level's, so the next level read whatever was there now as its model. With the USA disc's
+       data it was still the model; with the European disc's, the heap laid out otherwise, an online game's quit back to the title read
+       garbage and crashed (2026-11-26) */
+    for (i = 0; i < DB_COUNT; i++) {
         dbase_init(&HeroModelBank[i]);
     }
 }
