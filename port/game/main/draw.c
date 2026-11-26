@@ -6,6 +6,9 @@
 #include "../../platform/prompts.h"
 #include "bash/extraheroes.h"
 
+/* PC: a main menu picture's USA number, from the data's (platform/paldata.c) */
+int pal_mainmenu_usa(int picture);
+
 /* The game's drawing on the native renderer. image and palette are ids of the game's own data, and a uv is in the texture's own texels. */
 
 #define MAX_IMAGES 0x4000
@@ -97,6 +100,7 @@ static s32 is_icon(const obj_textureset *ts, s32 index) {
         return 0;
     }
     if (ts == &HeroModelBank[DB_MainmenuModels].textures) {
+        index = pal_mainmenu_usa(index); /* the USA's number of it: the European data has these pictures in its own order */
         return (index >= HERO_PORTRAITS_FIRST && index <= HERO_PORTRAITS_LAST) || index == HERO_PORTRAITS_MORE || index == HERO_PORTRAITS_MORE + 1;
     }
     for (i = 0; i < NumMarkedIcons; i++) {
@@ -363,7 +367,7 @@ static const GfxTex *tex_of(u16 image, u16 palette) {
         }
     }
     if (ts == &HeroModelBank[DB_MainmenuModels].textures && DrawingSprite) {
-        const GfxTex *face = extra_hero_menu_portrait(im->index, t->w, t->h);
+        const GfxTex *face = extra_hero_menu_portrait(pal_mainmenu_usa(im->index), t->w, t->h);
 
         if (face != NULL) {
             return face;

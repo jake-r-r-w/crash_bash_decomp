@@ -97,6 +97,10 @@ const char *pal_convert_file(const char *dat, const char *out, void (*progress)(
 /* A file of a converted archive as the game reads it in a language (the machine's: only drawn), if it isn't as the archive has it
    (PAL_PICTURES): a copy as long, to free, or NULL */
 uint8_t *pal_put_right(int entry, const uint8_t *bytes, uint32_t size, int language);
+/* The main menu's pictures (082), which the European data has in its own order: a USA number of the game's code as the European's, and
+   back (-1: none); themselves with the USA's data */
+int pal_mainmenu_picture(int usa);
+int pal_mainmenu_usa(int picture);
 
 /* Whether a file is one made by pal_convert, or a European CRASHBSH.DAT as it is on the disc */
 int pal_is_converted(const char *path);

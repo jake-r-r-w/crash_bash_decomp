@@ -594,9 +594,12 @@ A third, the main menu's pictures (082), with the hero select's faces and P1 to 
 (`archive.c`, `put_right`; `pal_put_right`), so data made before this was found is right too: it's as long either way. Its tags are
 pictures with frames (flags 3: the tag and the next, P1 and 1P, shown in turn), and the European ones have seven, the USA's two and then
 one for each language (P1, J1, S1, G1, J1). The loader took seven, the faces after them with them, and the hero select's boxes were black
-(2026-11-26). The pictures are put in the USA's order with the USA's frames, the language ones after the rest, and the first frame is
-this machine's language's: what's drawn only, so the game is the same in any. `pal_table.mjs` finds any texture set whose pictures are
-in another order (only this one) and stops if there's a second.
+(2026-11-26). The pictures stay in the European order, as the main menu's models (083, laid out otherwise than the USA's) name them
+by it: put in the USA's order, the hero select's heroes had other pictures on them. Only the tags' frames are the USA's, and their first
+frame is this machine's language's: what's drawn only, so the game is the same in any. The game's code names these pictures by the USA's
+numbers, so a sprite from this bank (`prims.c`) and the portrait checks (`draw.c`) go through `pal_mainmenu_picture` and
+`pal_mainmenu_usa`. `pal_table.mjs` finds any texture set whose pictures are in another order (only this one) and stops if there's a
+second.
 
 The made file ends with its table: the 992 files' sectors and sizes, then the count, 1, and `CBUSAIDX`. `archive_open` reads it in
 place of the game's table (`read_own_table`, before anything else reads the archive: `main.c` opens it first, before the mods and the

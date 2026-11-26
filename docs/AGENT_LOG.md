@@ -675,6 +675,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-26: European data: the hero select's heroes had wrong pictures on them (the user saw it). The main menu's models (083) differ
+  from the USA's and name its pictures (082) in the European order, which put_right had changed to the USA's. 082 now stays European
+  (only the tags' frames and language), and the code's USA numbers for its sprites are turned into the European's (prims.c, draw.c;
+  pal_mainmenu_picture/usa). Main menu, hero select and level select pixel-identical to the USA's; hero pack loads.
+
 - 2026-11-26: European languages, second part: speech in the language, and the mode text put right. The game now reads every file in
   English and only what's drawn and heard is the language's. A French Adventure went otherwise than an English one: the mode text (rules,
   pause menus) was read in the language, and its layout differs. Looking into it showed the European mode text had never been read right,

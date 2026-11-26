@@ -5,6 +5,9 @@
 #include "bash/extraheroes.h"
 #include "bash/menumouse.h"
 
+/* PC: a main menu picture's USA number as the data has it (platform/paldata.c) */
+int pal_mainmenu_picture(int usa);
+
 static inline void prims_pool_clear(PrimList *l) {
     l->f4 = 0;
     l->f8 = NULL;
@@ -1199,7 +1202,14 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
             otz = d->otz;
         }
         if ((u32)otz < (u32)RenderState.otLen) {
-            texture_draw(&RenderState.dbase->textures.tex[a & 0xFFF],
+            s32 pic = a & 0xFFF;
+
+            /* PC: the main menu's pictures are in the European order with the European disc's data, which its models name them by;
+               the code's numbers are the USA's (platform/paldata.c) */
+            if (RenderState.dbase == &HeroModelBank[DB_MainmenuModels]) {
+                pic = pal_mainmenu_picture(pic);
+            }
+            texture_draw(&RenderState.dbase->textures.tex[pic],
                           x, otz, g);
         }
         return;

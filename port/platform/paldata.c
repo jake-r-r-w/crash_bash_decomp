@@ -425,32 +425,52 @@ static int picture_places(const uint8_t *b, uint32_t size, uint32_t *at, int n) 
 }
 
 uint8_t *pal_put_right(int entry, const uint8_t *bytes, uint32_t size, int language) {
-    static uint32_t was[512], now[PAL_PICTURES_COUNT];
-    uint32_t made = 0;
+    static uint32_t at[512];
     uint8_t *out;
     int i, had;
 
-    if (entry < 0 || entry >= PAL_FILES || PalFiles[entry].kind != PAL_PICTURES) {
+    if (entry < 0 || entry >= PAL_FILES || PalFiles[entry].kind != PAL_PICTURES || (had = picture_places(bytes, size, at, 512)) <= 0 ||
+        had > 512 || (out = malloc(size)) == NULL) {
         return NULL;
     }
-    out = reorder(bytes, size, PalPicturesOrder, PAL_PICTURES_COUNT, PalTagSize, PalPicturesFrames, &made);
-    if (out != NULL && made != size) {
-        free(out);
-        out = NULL;
-    }
-    /* a picture with a frame for each language: its first is the language's, the same size, with its colours */
-    if (out != NULL && language > 0 && language < PAL_LANGUAGES && (had = picture_places(bytes, size, was, 512)) > 0 && had <= 512 &&
-        picture_places(out, made, now, PAL_PICTURES_COUNT) >= PAL_PICTURES_COUNT) {
-        for (i = 0; i < PAL_PICTURES_COUNT; i++) {
-            int from = PalPicturesLanguage[i] < 0 ? -1 : PalPicturesLanguage[i] + language;
+    /* its pictures stay in the European order, which its models (083) name them by: the game's code names them by the USA's, which
+       pal_mainmenu_picture gives (prims.c). Each USA picture's frames, where the European has its languages' after them (the player tags),
+       and the first of those the language's, the same size, with its colours. */
+    memcpy(out, bytes, size);
+    for (i = 0; i < PAL_PICTURES_COUNT; i++) {
+        int j = PalPicturesOrder[i], from = PalPicturesLanguage[i] < 0 ? -1 : PalPicturesLanguage[i] + language;
 
-            if (from >= 0 && from < had && u16(bytes + was[from]) == u16(out + now[i]) && u16(bytes + was[from] + 2) == u16(out + now[i] + 2)) {
-                memcpy(out + now[i] + 12, bytes + was[from] + 12, 2);
-                memcpy(out + now[i] + 20, bytes + was[from] + 20, (size_t)u16(out + now[i]) * u16(out + now[i] + 2) * 2);
-            }
+        if (j < 0 || j >= had) {
+            continue;
+        }
+        if (PalPicturesFrames[i] != 0) {
+            put32(out + at[j] + 16, (uint32_t)PalPicturesFrames[i]);
+        }
+        if (language > 0 && language < PAL_LANGUAGES && from >= 0 && from < had && u16(bytes + at[from]) == u16(bytes + at[j]) &&
+            u16(bytes + at[from] + 2) == u16(bytes + at[j] + 2)) {
+            memcpy(out + at[j] + 12, bytes + at[from] + 12, 2);
+            memcpy(out + at[j] + 20, bytes + at[from] + 20, (size_t)u16(bytes + at[j]) * u16(bytes + at[j] + 2) * 2);
         }
     }
     return out;
+}
+
+int pal_mainmenu_picture(int usa) {
+    return archive_from_europe() && usa >= 0 && usa < PAL_PICTURES_COUNT && PalPicturesOrder[usa] >= 0 ? PalPicturesOrder[usa] : usa;
+}
+
+int pal_mainmenu_usa(int picture) {
+    int i;
+
+    if (!archive_from_europe()) {
+        return picture;
+    }
+    for (i = 0; i < PAL_PICTURES_COUNT; i++) {
+        if (PalPicturesOrder[i] == picture) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 int pal_is_converted(const char *path) {
