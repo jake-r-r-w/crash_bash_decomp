@@ -675,6 +675,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-26: The language in the game's own menus too (the user: the European game had it): a row on the main menu's Options page,
+  European data only (titles.c options_place). Gotcha: a `\xC7` written through a JS template string lands as UTF-8 bytes in the C file
+  (FRAN  AIS); check new C strings for non-ASCII bytes.
+
 - 2026-11-26: European languages: the pause frame's word pictures (PAUSE, REGLES, SPIELREGELN...) in the language. The European disc's
   interface comes once more per language (its files 649-661); pal_table.mjs finds them as 0x138's PAL_WORDS copies, and every interface
   file read is the language's, USA-ordered (archive.c put_right, paldata.c interface_words; the converter pads 0x138 to its USA-ordered

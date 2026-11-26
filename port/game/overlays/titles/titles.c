@@ -293,6 +293,43 @@ PlaceRec OptionsControllerPlace[23] = {
 };
 s32 OptionsCursor = 0;
 s32 OptionsPage = 0;
+
+/* PC: with the European disc's data, a row more on the Options page, between VIDEO and EXIT: the language, by its own name, as the
+   European game's Options page has it (the launcher's GAME page has it too). It's each machine's own (settings.h, language): only what's
+   drawn and heard follows it, and online only a machine's own player changes its own (own_press), as on the VIDEO page. */
+int archive_languages(void);
+static const char *const LanguageRowNames[] = { "<ENGLISH>", "<FRAN\xC7" "AIS>", "<DEUTSCH>", "<ITALIANO>", "<ESPA\xD1" "OL>" };
+#define LANGUAGE_ROW 3
+static char TextLanguageRow[16];
+static void *LangLanguageRow[1] = { TextLanguageRow };
+static PlaceRec OptionsPlaceLanguage[9];
+
+static s32 options_rows(void) {
+    return archive_languages() ? 5 : 4;
+}
+
+static void language_row_text(void) {
+    s32 l = settings()->language;
+
+    snprintf(TextLanguageRow, sizeof(TextLanguageRow), "%s", LanguageRowNames[l >= 0 && l < 5 ? l : 0]);
+}
+
+/* The page's records: the game's own, or with the language's row and EXIT under it, the panel round them a row longer */
+static PlaceRec *options_place(void) {
+    if (!archive_languages()) {
+        return OptionsPlace;
+    }
+    memcpy(OptionsPlaceLanguage, OptionsPlace, sizeof(PlaceRec) * 6);
+    OptionsPlaceLanguage[2].scale += 0x28; /* its bottom */
+    OptionsPlaceLanguage[6] = OptionsPlace[5];
+    OptionsPlaceLanguage[6].y = 0x46;
+    OptionsPlaceLanguage[6].data = &LangLanguageRow;
+    OptionsPlaceLanguage[7] = OptionsPlace[6];
+    OptionsPlaceLanguage[7].y = 0x6E;
+    memset(&OptionsPlaceLanguage[8], 0, sizeof(PlaceRec));
+    language_row_text();
+    return OptionsPlaceLanguage;
+}
 process_info OptionsScreen = { OptionsInit, OptionsUpdate, OptionsRender, OptionsQuit, 0 };
 process_info RunGame = { RunGameInit, RunGameUpdate, RunGameRender, RunGameQuit, 0 };
 camera_info_tag TitlesCamera = {0};
@@ -1156,7 +1193,18 @@ void OptionsUpdate(void) {
     switch (OptionsPage) {
     case 0:
         sub[OptionsCursor + 3].unk7C = 0;
-        if ((((PadState *)Pads)->pressed & 0x40) && OptionsCursor < 3) {
+        /* PC: the language's row: left and right change it (the sound on every machine, the language on the presser's) */
+        if (options_rows() == 5 && OptionsCursor == LANGUAGE_ROW && (Pads[0].pressed & 0xA0)) {
+            if (own_press(0)) {
+                Settings *s = settings();
+
+                s->language = (s->language + ((Pads[0].pressed & 0x20) ? 1 : 4)) % 5;
+                settings_save();
+                language_row_text();
+            }
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if ((((PadState *)Pads)->pressed & 0x40) && OptionsCursor < options_rows() - 1) {
             OptionsCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -1180,9 +1228,13 @@ void OptionsUpdate(void) {
                 OptionsPage = 3;
                 place_video_page();
                 break;
-            case 3:
-                process_control_back(&MenuProcessControl);
-                break;
+            default:
+                /* PC: EXIT, the last row; on the language's, Cross does nothing */
+                if (OptionsCursor == options_rows() - 1) {
+                    process_control_back(&MenuProcessControl);
+                    break;
+                }
+                return;
             }
             OptionsCursor = 0;
         }
@@ -1304,7 +1356,7 @@ void OptionsUpdate(void) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         OptionsPage = 0;
         OptionsCursor = 0;
-        PlaceEngineSlot(4, (PlaceRec *)OptionsPlace);
+        PlaceEngineSlot(4, options_place());
     }
 }
 
@@ -1320,8 +1372,8 @@ void OptionsRender(void) {
     menu_mouse_list(0, OptionsCursor, 0);
     switch (OptionsPage) {
     case 0:
-        for (i = 0; i < 4; i++) {
-            menu_mouse_sub(i, &sub[3 + i], 0);
+        for (i = 0; i < options_rows(); i++) {
+            menu_mouse_sub(i, &sub[3 + i], options_rows() == 5 && i == LANGUAGE_ROW ? MENU_VALUES : 0);
         }
         break;
     case 1:
@@ -1445,7 +1497,7 @@ void OptionsQuit(void) {
 }
 
 void OptionsInit(void) {
-    PlaceEngineSlot(4, (PlaceRec *)OptionsPlace);
+    PlaceEngineSlot(4, options_place());
     OptionsCursor = 0;
     OptionsPage = 0;
 }

@@ -615,8 +615,11 @@ clear (`dbase_init_all`).
 ### Languages
 
 With the European disc's data the launcher's GAME page has a LANGUAGE row (English, French, German, Italian, Spanish; `settings.ini`
-`language=`, `--language ID` for a test run). It's each machine's own, never the game's (`GAME->language` stays 0), so online players
-can each have theirs. The game reads every file in English on every machine (`archive_read` never gives a language's copy), and only
+`language=`, `--language ID` for a test run), and so does the main menu's Options page, between VIDEO and EXIT, as the European game's
+has it: the language by its own name, left and right to change it, and the page in the new language at once (`titles.c`,
+`options_place`; the USA's data keeps the game's own four rows). It's each machine's own, never the game's (`GAME->language` stays 0), so
+online players can each have theirs: online only a machine's own player changes its own (`own_press`), while the move's sound plays on
+every machine (the same presses from English and from French give the same fingerprints, 2026-11-26). The game reads every file in English on every machine (`archive_read` never gives a language's copy), and only
 what's drawn and heard comes from the language's (`archive_language_copy`): `--fingerprints 1` is the same in every language, every step,
 through the menus, the hero select, the warp room, the rules and a game (Adventure's start, 3981 steps, 2026-11-26).
 
