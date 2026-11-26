@@ -72,6 +72,14 @@ endif()
 if(UNIX)
   target_link_libraries(herotool PRIVATE m)
 endif()
+# The C++ runtime inside the program, as a player's machine hasn't the toolchain's: on Windows llvm-mingw's libc++.dll and
+# libunwind.dll, which 1.5.0 and 1.5.1's tool needed and wouldn't start without on any PC but this one (a player's report,
+# 2026-11-26); on Linux libstdc++, which an older system has older than the container's. package.mjs checks what each program needs.
+if(WIN32)
+  target_link_options(herotool PRIVATE -static)
+elseif(UNIX)
+  target_link_options(herotool PRIVATE -static-libstdc++)
+endif()
 # on Windows a window program, no console window with it (src/winconsole.c: the terminal it's started from, if any)
 if(WIN32)
   set_target_properties(herotool PROPERTIES WIN32_EXECUTABLE TRUE)

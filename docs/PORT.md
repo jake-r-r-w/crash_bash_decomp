@@ -268,7 +268,11 @@ read as an s32), and what's left differs only in arguments of the same size, or 
 `node port/package.mjs`, with `TC` set to the toolchain, builds `build/port/release/crash-bash-port-VERSION-windows-x64.zip` (up to
 0.3.2 they were `crash-bash-pc-...`; renamed at the user's word, 2026-11-09, the published ones left as they are): the program
 with no console window or debug information (its symbol table stays, for a crash's report: The log), its README (`port/release/README.txt`), `recomplauncher.json` (RecompLauncher) and the licences, zipped by Windows' own `tar.exe` so the paths in the zip have `/` (PowerShell's `Compress-Archive`, used up to 1.3.0, wrote `mods\README.txt`). The version is the `project()` one in
-`port/CMakeLists.txt`. It fails if the program holds a sample of the game's archive or this machine's paths, and it publishes nothing. Try
+`port/CMakeLists.txt`. It fails if the program holds a sample of the game's archive or this machine's paths, or if the program or the hero tool needs a
+library a player's system hasn't got (`check_imports`: on Windows any DLL the toolchain has, as 1.5.0 and 1.5.1's tool needed libc++.dll and
+libunwind.dll and started on no PC but this one; on Linux anything past glibc's own), and it publishes nothing. The tool links its C++ runtime
+in (`-static` on Windows, `-static-libstdc++` on Linux, herotool/CMakeLists.txt). A test here can't see such a gap, as the toolchain is on
+this PC's PATH: run a program with only `C:\Windows\System32` on it to see what a player's PC does. Try
 the zip with `playtest.mjs ... --exe`, and unzipped by itself, with and without `CRASHBSH.DAT`. The release's notes are in `port/release/`,
 `NOTES-VERSION.md`, and a GitHub release is called "Crash Bash Port VERSION", as its notes' heading (the user's name, 2026-11-09; the
 first six were "Crash Bash for PC", and were renamed): `gh release create vVERSION ZIP TAR.GZ --title "Crash Bash Port VERSION"

@@ -675,6 +675,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-26: The hero tool in 1.5.0 and 1.5.1 wouldn't start on Windows (a player's report: libc++.dll, libunwind.dll not found): it
+  needed llvm-mingw's C++ runtime, on this PC's PATH only. Linked in now (-static; Linux -static-libstdc++), and package.mjs
+  refuses a program needing a library a player hasn't (check_imports). Checked with only System32 on the PATH: the new tool starts,
+  the published 1.5.1 one doesn't. Not released yet.
+
 - 2026-11-24: 1.5.1 published at the user's word, with the launcher's idle-demo fix alone: modes, heroes, menu, mouse and controls
   on the packaged Windows build, modes, heroes, menu and controls on Linux, modes and heroes on Android (build/port/rel151-*.sh).
 

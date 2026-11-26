@@ -37,6 +37,31 @@ if (LINUX) {
 }
 const run = (cmd, args, cwd = ROOT) => execFileSync(cmd, args, { cwd, env, stdio: ['ignore', 'pipe', 'inherit'] }).toString();
 
+/* What a program may need that a player's machine has: on Windows its own DLLs, never one of the toolchain's (1.5.0 and 1.5.1's hero
+   tool needed llvm-mingw's libc++.dll and libunwind.dll, there on this PC's PATH and on no player's: it wouldn't start, 2026-11-26); on
+   Linux only what every glibc system has */
+const LINUX_SYSTEM_LIBS = /^(libc|libm|libgcc_s|libpthread|libdl|librt|ld-linux-x86-64)\.so(\.\d+)*$/;
+function check_imports(file, what) {
+    if (LINUX) {
+        const needed = [...run('objdump', ['-p', file]).matchAll(/^\s*NEEDED\s+(\S+)/gm)].map(m => m[1]);
+        const extra = needed.filter(n => !LINUX_SYSTEM_LIBS.test(n));
+
+        if (extra.length !== 0) {
+            throw new Error(`${what} needs ${extra.join(', ')}, which a player's Linux mightn't have`);
+        }
+        console.log(`${what} needs ${needed.join(', ')}`);
+        return;
+    }
+    const dlls = [...run('llvm-objdump', ['-p', file]).matchAll(/DLL Name: (\S+)/g)].map(m => m[1]);
+    const toolchain = [path.join(process.env.TC, 'bin'), path.join(process.env.TC, 'deps/bin')];
+    const extra = dlls.filter(d => /^lib/i.test(d) || /^SDL/i.test(d) || toolchain.some(dir => fs.existsSync(path.join(dir, d))));
+
+    if (extra.length !== 0) {
+        throw new Error(`${what} needs ${extra.join(', ')}, which only the toolchain has: link it in (-static)`);
+    }
+    console.log(`${what} needs only Windows' own DLLs (${dlls.length})`);
+}
+
 /* What a program mustn't hold: this machine's paths, or any of the game's archive but for its code */
 function check_program(program, what) {
     const home = process.env.USERPROFILE ?? process.env.HOME ?? '';
@@ -195,6 +220,8 @@ fs.cpSync(path.join(PORT, 'mods/bobby'), path.join(dir, 'herotool/heroes/bobby')
 fs.writeFileSync(path.join(dir, 'mods', 'README.txt'), eol('Put mods here, as their zips. They show up on the Mods page, under Settings in\nthe menu the game opens with.\n'));
 
 check_program(fs.readFileSync(exe), 'the program');
+check_imports(path.join(dir, program_name), 'the program');
+check_imports(path.join(dir, 'herotool', tool_name), 'the hero tool');
 for (const file of fs.readdirSync(dir)) {
     if (/\.(dat|bin|cue|iso)$/i.test(file)) {
         throw new Error(`${file} is in the package`);
