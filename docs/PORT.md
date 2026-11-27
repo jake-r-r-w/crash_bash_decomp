@@ -635,7 +635,11 @@ through the menus, the hero select, the warp room, the rules and a game (Adventu
   (at most to half): the European game gives it a page more, which would change the game.
 - **Words in the code** (menus, the pause menu, the hero select's title...): the European code's five-language sets, found by
   `pal_table.mjs` and written into the made file, then `pal_text` gives `DrawSysText` and `SysGetLen` the language's in place of the
-  English. A word only the disc's program has needs the disc image (a `CRASHBSH.DAT` alone hasn't it): it stays English then.
+  English. A word only the disc's program has needs the disc image (a `CRASHBSH.DAT` alone hasn't it): it stays English then. The sets
+  come four ways: five strings in a row with a table of pointers to them; five arrays of strings; a table of five pointers to strings
+  apart; and, for the title menus (the main menu, players, Adventure, battle), a table of five pointers to a copy of the menu's panel
+  records for each language, whose strings in the same places are one word. That last is surest, and takes a word's place from a run of
+  five strings (a menu's English list looks like one); it was missing until 2026-11-27, and the main menu stayed English.
 - **Voices and speech** (the heroes' voices 0B6 to 0E1 and 110 to 116, the cutscenes' 0F5 to 10F): the game's banks are the English
   ones, so its voices, their timing and what it sees of them (the fingerprint's sound) are the same everywhere. When a bank loads,
   `sound.c` gives the mixer the language's copy of the same file (`audio_bank_heard`), the same programs and tones with that language's

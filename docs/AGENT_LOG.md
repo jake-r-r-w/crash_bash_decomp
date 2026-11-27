@@ -675,6 +675,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-27: European languages: the title menus' words (SELECT GAME TYPE, ADVENTURE MODE, players, Adventure, battle) were English (the
+  user saw it). The European titles keep a copy of each menu's records per language with a 5-pointer table to them; pal_table.mjs pairs
+  their strings now (and a 5-pointer table to strings apart). Also: a European record's first word like 0x80860003 (type 3, x 0x8086
+  centred) was taken for a pointer and ended a list; pointers are 0x800A-0x800B only (modetext.c REC_TYPE; mode text counts unchanged).
+  Fingerprints same en/fr/de, European modes 39/39. Set PAL_WORDS_LIST=1 to print the words the generator keeps.
+
 - 2026-11-26: The language in the game's own menus too (the user: the European game had it): a row on the main menu's Options page,
   European data only (titles.c options_place). Gotcha: a `\xC7` written through a JS template string lands as UTF-8 bytes in the C file
   (FRAN  AIS); check new C strings for non-ASCII bytes.

@@ -92,9 +92,9 @@ static s32 strings_end(const u8 *d, s32 len) {
 static s32 Europe;
 #define REC_LEN (Europe ? 0x1C : MODE_TEXT_REC)
 #define REC_DATA (Europe ? 0x10 : 0x14)
-/* (a European record's type is its first byte: a pointer, 0x800Axxxx and so on, isn't one, though its first byte can look it, as no x is
-   0x8001 to 0x80FF) */
-#define REC_TYPE(w) (Europe ? ((w) >> 24 == 0x80 && ((w) >> 16 & 0xFF) != 0 ? 0x7FFF : (s32)((w) & 0xFF)) : (s32)(w))
+/* (a European record's type is its first byte: a pointer into the mode text, 0x800Axxxx or 0x800Bxxxx, isn't one, though its first byte
+   can look it. Only those: an x of 0x8086 is centred and moved over, 0x80860003 a record) */
+#define REC_TYPE(w) (Europe ? ((w) >> 24 == 0x80 && (((w) >> 16 & 0xFF) == 0x0A || ((w) >> 16 & 0xFF) == 0x0B) ? 0x7FFF : (s32)((w) & 0xFF)) : (s32)(w))
 
 /* Which words are the start of something pointed at (a target), and which the records of a panel list (types 2 to 0x20, ending at one
    below 2, each MODE_TEXT_REC bytes) are: the records' words, or 1 for each */

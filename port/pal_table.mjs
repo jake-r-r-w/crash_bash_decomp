@@ -449,6 +449,58 @@ for (const [name, s] of stringDefs) if (/^PauseText/.test(name)) langKeys.add(s)
 const letters = s => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
 const langLetters = new Set([...langKeys].map(letters).filter(l => l.length > 0));
 console.log(`the words the USA code has language tables for: ${langKeys.size}`);
+/* A third kind, after the others: a language table of five pointers each to a string, apart (the title menus' words: each language's
+   strings are together, ADVENTURE MODE, BATTLE MODE... then MODE AVENTURE, MODE COMBAT...), where the code's Lang tables point. The
+   English is one of the game's words and the other four aren't (a list of the English isn't a translation); a language whose word is
+   the English's points at the English (OPTIONS in French). */
+{
+    let found = 0;
+    for (const c of blobs) {
+        for (let q = 0; q + 20 <= c.bytes.length; q += 4) {
+            const ptr = [0, 1, 2, 3, 4].map(k => c.bytes.readUInt32LE(q + 4 * k));
+            if (ptr[0] === ptr[1] && ptr[0] === ptr[2]) continue;
+            const str = ptr.map(p => stringAt(p, c));
+            if (str.some(x => x === null) || str.some(x => x.b !== str[0].b) || !langLetters.has(letters(str[0].s)) || msgs.has(str[0].s)) continue;
+            const others = str.slice(1).filter((x, k) => ptr[k + 1] !== ptr[0]);
+            if (others.length < 3 || others.some(x => langKeys.has(x.s) || langLetters.has(letters(x.s)))) continue;
+            keep(str[0], str.slice(1));
+            found++;
+        }
+    }
+    console.log(`the words in language tables of five strings apart: ${found}`);
+}
+/* And a fourth: the title menus keep a copy of each menu's panel records for each language, each pointing at its own language's strings
+   (MainMenuPlace's records, then the French's...), with a language table of five pointers to the five lists. A list's records are the
+   same kinds in the same order in each, so the strings in the same place in each are one word in five languages. The records are the
+   European format's (7 words: the type in the first byte, the data at 0x10; modetext.c). */
+{
+    let found = 0;
+    const records = (b, o) => {
+        const r = [];
+        for (let k = 0; k < 64 && o >= 0 && o + 0x1C <= b.length; k++, o += 0x1C) {
+            const w0 = b.readUInt32LE(o), t = w0 & 0xFF;
+            if (t < 2 || t > 0x20 || (w0 >>> 24 === 0x80 && ((w0 >>> 16) & 0xFF) >= 0x0A && ((w0 >>> 16) & 0xFF) <= 0x0D)) break;
+            r.push({ t, d: b.readUInt32LE(o + 0x10) });
+        }
+        return r;
+    };
+    for (const c of blobs) {
+        for (let q = 0; q + 20 <= c.bytes.length; q += 4) {
+            const ptr = [0, 1, 2, 3, 4].map(k => c.bytes.readUInt32LE(q + 4 * k));
+            if (new Set(ptr).size < 3 || ptr.some(p => p - c.base < 0 || p - c.base >= c.bytes.length || (p - c.base) % 4 !== 0)) continue;
+            const lists = ptr.map(p => records(c.bytes, p - c.base));
+            if (lists[0].length < 2 || lists.some(l => l.length !== lists[0].length || l.some((r, k) => r.t !== lists[0][k].t))) continue;
+            for (let k = 0; k < lists[0].length; k++) {
+                const str = lists.map(l => stringAt(l[k].d, c));
+                if (str.some(x => x === null) || str.some(x => x.b !== str[0].b) || !langLetters.has(letters(str[0].s))) continue;
+                /* surer than a run of five strings, which a menu's English list looks like: it takes the word's place */
+                msgs.set(str[0].s, { blob: str[0].b.id, offs: str.map(x => x.o) });
+                found++;
+            }
+        }
+    }
+    console.log(`the words in the title menus' records for each language: ${found}`);
+}
 for (const [en] of [...msgs]) if (!langKeys.has(en) && !langLetters.has(letters(en))) msgs.delete(en);
 /* not in the middle of a list of the game's English, nor with German where French or Spanish should be */
 for (const [en, v] of [...msgs]) {
@@ -471,6 +523,7 @@ for (const [en, v] of [...msgs]) {
     if (v.offs.slice(1).some(o => { const s = cstr(b.bytes, o).s; return s !== en && langKeys.has(s); })) msgs.delete(en);
 }
 const palStrings = [...msgs.entries()];
+if (process.env.PAL_WORDS_LIST) console.log(palStrings.map(([en]) => en).join(' | '));
 console.log(`the words: ${palStrings.length} English strings with their four languages (${palStrings.filter(([, v]) => v.blob === -1).length} in the program, which only a disc image has)`);
 if (!['SELECT A GAME SAVE', 'CONTINUE', 'QUIT GAME', 'EXIT'].every(s => msgs.has(s))) throw new Error("the European code's words weren't found: " + ['SELECT A GAME SAVE', 'CONTINUE', 'QUIT GAME', 'EXIT'].filter(s => !msgs.has(s)).join(', '));
 console.log('  CONTINUE ->', msgs.get('CONTINUE').offs.slice(1).map(o => cstr(blobs.find(b => b.id === msgs.get('CONTINUE').blob).bytes, o).s).join(' | '));
