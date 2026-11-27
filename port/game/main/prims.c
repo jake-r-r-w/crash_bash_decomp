@@ -15,8 +15,13 @@ static inline void prims_pool_clear(PrimList *l) {
     l->f10 = NULL;
 }
 
+/* PC: how many times the prim sets' pool has been made (language_model, below) */
+static s32 PrimsGeneration;
+
 void prims_init(s32 *cfg) {
     s32 cnt;
+
+    PrimsGeneration++;
     u8 *p;
     u8 *q;
     u8 *next;
@@ -1219,6 +1224,58 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
     }
 }
 
+/* PC: the European disc's LOADING and its countdown (in the panel's models, DB_Interface) in this machine's language. The game loads the
+   English ones, the same on every machine, and only a draw uses the language's: draw_object gives the bank the language's model for as
+   long as it draws (the same meshes, 2 and 35, and pictures, pal_table.mjs checks). Its meshes' prim sets are its own; they're let go
+   when it changes, and forgotten when the pool's made again, as a level loads (its refs into the old one mean nothing then). */
+unsigned char *archive_language_copy(int entry, int *size);
+int archive_language(void);
+#define LANGUAGE_LOADING_MODEL 0x137   /* the archive's file with the LOADING model's languages (paltable.c) */
+#define LANGUAGE_INTERFACE_MODEL 0x139 /* and the panel's models' */
+
+static struct {
+    ModelFile *model;          /* the language's, or NULL */
+    const ModelFile *english;  /* the bank's model it's drawn for */
+    s32 language, generation;
+} HeardModels[2];
+
+static void heard_model_drop(s32 k) {
+    ModelFile *m = HeardModels[k].model;
+    s32 i;
+
+    for (i = 0; m != NULL && i < m->nMeshes; i++) {
+        if (HeardModels[k].generation == PrimsGeneration) {
+            primset_invalidate(&m->meshes[i].set);
+        }
+        m->meshes[i].set.off = 0;
+    }
+}
+
+static ModelFile *language_model(const obj_dbase *db) {
+    s32 k = db == &HeroModelBank[DB_Loading] ? 0 : db == &HeroModelBank[DB_Interface] ? 1 : -1, L, n = 0;
+
+    if (k < 0 || db->data == NULL || (L = archive_language()) == 0) {
+        return NULL;
+    }
+    if (HeardModels[k].language != L || HeardModels[k].english != db->data || HeardModels[k].generation != PrimsGeneration) {
+        heard_model_drop(k);
+        if (HeardModels[k].language != L) {
+            free(HeardModels[k].model);
+            HeardModels[k].model = (ModelFile *)archive_language_copy(k == 0 ? LANGUAGE_LOADING_MODEL : LANGUAGE_INTERFACE_MODEL, &n);
+            /* only a model like the English one: its meshes as many */
+            if (HeardModels[k].model != NULL && (n < (s32)sizeof(ModelFile) || HeardModels[k].model->tag != db->data->tag ||
+                                                 HeardModels[k].model->nMeshes != db->data->nMeshes)) {
+                free(HeardModels[k].model);
+                HeardModels[k].model = NULL;
+            }
+            HeardModels[k].language = L;
+        }
+        HeardModels[k].english = db->data;
+        HeardModels[k].generation = PrimsGeneration;
+    }
+    return HeardModels[k].model;
+}
+
 void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
     GteSetup s;
     obj_dbase *model;
@@ -1239,6 +1296,11 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
         /* PC: an extra hero is drawn in its own model where the game gives it its base's (extraheroes.c) */
         model = (obj_dbase *)extra_hero_dbase(arg0, arg0->u6C.dbase);
         if (model != NULL) {
+            ModelFile *own = model->data, *heard = language_model(model);
+
+            if (heard != NULL) {
+                model->data = heard;
+            }
             RenderState.dbase = model;
             colors = model->data;
             if (colors != NULL) {
@@ -1260,6 +1322,7 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
                 draw_depth(0);
                 draw_owner(NULL);
             }
+            model->data = own;
         }
     }
 }

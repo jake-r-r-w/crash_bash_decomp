@@ -655,7 +655,17 @@ through the menus, the hero select, the warp room, the rules and a game (Adventu
   Spanish to French, before the English's). The converter keeps them as the interface's (0x138's) language copies (`PAL_WORDS`), and
   every interface file the game reads is the language's, put in the USA's order as the English's is (`archive.c` put_right,
   `pal_put_right`): what's drawn only, so the fingerprints stay the same (2981 steps of Adventure with a pause, 2026-11-26). Data made
-  before this hasn't those copies and keeps the English words.
+  before this hasn't those copies and keeps the English words. Each interface's textures say at 0x14 how big its models are, which the
+  game loads them by (`dbase_textures_loaded`): the language's are given the English's size, so nothing loads otherwise.
+- **LOADING and the countdown** (3 2 1 GO: LADE and LOS in German...): models, the LOADING screen's (DB_Loading) and the panel's
+  (DB_Interface, the countdown's mesh 4 among them). The European disc has each language's beside its interface (Spanish 647 and 648
+  before 649, its panel models 650 after; English 671 to 674, USA 0x136 to 0x139): the same meshes, as many, and the same pictures,
+  but the words' shapes, so the files are other sizes. The game loads the English ones, as every machine must (the heap would differ),
+  and `draw_object` gives the bank the language's model for as long as it draws (`prims.c`, `language_model`; `PAL_MODEL`, the
+  converter keeping the four languages' of 0x137 and 0x139). The countdown's timing is the game's code's, not the model's. The copy's
+  meshes have prim sets of their own, from the pool outside what the game goes by: let go when the copy changes, and forgotten when the
+  pool's made again as a level loads. Fingerprints the same in English, French and German through Adventure's start, its loading and
+  countdown included (3981 steps, 2026-11-27).
 
 A change of language in the launcher shows in what's read after it: the next mode's text, interface and sound banks, and the main menu's
 tags when the title screens next load.

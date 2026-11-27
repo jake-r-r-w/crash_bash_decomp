@@ -427,7 +427,7 @@ static int picture_places(const uint8_t *b, uint32_t size, uint32_t *at, int n) 
 
 /* An interface file in the language: the language's interface (the one file the European disc has for each, PAL_WORDS), put in the USA's
    order as the English's is, as long */
-static uint8_t *interface_words(uint32_t size) {
+static uint8_t *interface_words(const uint8_t *english, uint32_t size) {
     uint8_t *lang, *out = NULL, *made_out;
     uint32_t made = 0;
     int i, n = 0;
@@ -441,6 +441,8 @@ static uint8_t *interface_words(uint32_t size) {
                                                                        PalTagSize, NULL, &made)) != NULL) {
         if (made <= size && (out = calloc(size, 1)) != NULL) {
             memcpy(out, made_out, made);
+            /* the English's models' size, which the game loads them by (dbase_textures_loaded): the language's models are only drawn */
+            memcpy(out + 0x14, english + 0x14, 4);
         }
         free(made_out);
     }
@@ -454,7 +456,7 @@ uint8_t *pal_put_right(int entry, const uint8_t *bytes, uint32_t size, int langu
     int i, had;
 
     if (entry >= 0 && entry < PAL_FILES && PalFiles[entry].kind == PAL_INTERFACE) {
-        return language > 0 && language < PAL_LANGUAGES ? interface_words(size) : NULL;
+        return language > 0 && language < PAL_LANGUAGES ? interface_words(bytes, size) : NULL;
     }
     if (entry < 0 || entry >= PAL_FILES || PalFiles[entry].kind != PAL_PICTURES || (had = picture_places(bytes, size, at, 512)) <= 0 ||
         had > 512 || (out = malloc(size)) == NULL) {

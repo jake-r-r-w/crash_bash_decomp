@@ -251,6 +251,20 @@ if (!P(langFiles.find(f => f.e === text).v[0]).toString('latin1').includes('OBJE
     /* the disc's order is Spanish, Italian, German, French: the code's French first */
     langFiles.push({ e: 0x138, v: [distinct[3], distinct[2], distinct[1], distinct[0]], words: true });
     console.log(`the interface's words: its languages the European files ${distinct.join(' ')}`);
+    /* and beside each language's interface, its models (the countdown's 3 2 1 GO among them) after it, and its LOADING model's textures
+       and model before it, as the English's are (0x136 to 0x139). The textures are the English's but for the model's size (at 0x14);
+       the models have the English's meshes, as many, and use its pictures, so a draw can use them in the English's place (prims.c,
+       language_model). A model's tag, its meshes as many, and each texture file's size the model's, or this isn't that disc. */
+    const nMeshes = b => b.readUInt32LE(0) === 0x0C160029 ? b.readInt32LE(0x54) : -1;
+    for (const [e, rel, size] of [[0x137, -1, -2], [0x139, 1, 0]]) {
+        const v = [distinct[3], distinct[2], distinct[1], distinct[0]].map(p => p + rel);
+        v.forEach(p => {
+            if (nMeshes(P(p)) < 0 || nMeshes(P(p)) !== nMeshes(P(map[e]))) throw new Error(`the European file ${p} isn't a language's version of USA ${e.toString(16)}`);
+            if (P(p + size - rel).readUInt32LE(0x14) !== pal[p][1]) throw new Error(`the European file ${p}'s textures don't say its size`);
+        });
+        langFiles.push({ e, v, model: true });
+    }
+    console.log(`the LOADING and panel models' languages: the European files ${langFiles.slice(-2).flatMap(f => f.v).join(' ')}`);
 }
 
 /* The European font's letters past the USA's: the accented ones, each code a glyph, as its program's InitSysFont sets them (a run of li
@@ -577,7 +591,7 @@ ${modeRoots.map(r => '    { ' + r.map(x => '0x' + x.toString(16).toUpperCase()).
 
 /* the USA files with a version for each language: the French's, German's, Italian's and Spanish's place and size (the English is PalFiles') */
 const PalLanguageFile PalLanguageFiles[] = {
-${langFiles.map(f => `    { ${f.e}, ${f.words ? 'PAL_WORDS' : f.sound ? 'PAL_SOUND' : 'PAL_TEXT'}, { ${f.v.map(p => `{ ${pal[p][0]}, ${pal[p][1]} }`).join(', ')} } }, /* ${f.e.toString(16).toUpperCase().padStart(3, '0')} */`).join('\n')}
+${langFiles.map(f => `    { ${f.e}, ${f.model ? 'PAL_MODEL' : f.words ? 'PAL_WORDS' : f.sound ? 'PAL_SOUND' : 'PAL_TEXT'}, { ${f.v.map(p => `{ ${pal[p][0]}, ${pal[p][1]} }`).join(', ')} } }, /* ${f.e.toString(16).toUpperCase().padStart(3, '0')} */`).join('\n')}
 };
 const int PalLanguageFileCount = ${langFiles.length};
 

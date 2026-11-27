@@ -675,6 +675,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-27: European languages: LOADING and the countdown (LADE, LOS...) in the language, drawn only: prims.c language_model swaps
+  DB_Loading's / DB_Interface's data for one draw_object call (the bank itself stays, so draw.c's texture-set checks hold). Gotcha: a
+  texture file's 0x14 is its model's size, which dbase_textures_loaded loads by; the language interface keeps the English's. PORT.md,
+  Languages.
+
 - 2026-11-27: European languages: the title menus' words (SELECT GAME TYPE, ADVENTURE MODE, players, Adventure, battle) were English (the
   user saw it). The European titles keep a copy of each menu's records per language with a 5-pointer table to them; pal_table.mjs pairs
   their strings now (and a 5-pointer table to strings apart). Also: a European record's first word like 0x80860003 (type 3, x 0x8086
