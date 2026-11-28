@@ -707,7 +707,10 @@ The objects are now counted only from `ResetNasLists` until the main heap is nex
 
 ## Saves from a PS1 memory card
 
-The launcher's DATA page has IMPORT PS1 MEMORY CARD (a player's ask, 2026-11-28: a save with every game won, from an emulator): the
+The DATA page (the user's pick of three drawn layouts, 2026-11-28): a row for each folder, its place by left and right and Cross for a
+folder of one's own (the CHOOSE ... FOLDER rows it had were folded in), then a PS1 MEMORY CARD line and the card's two rows.
+
+The launcher's DATA page has, under its PS1 MEMORY CARD line, IMPORT FROM A CARD (a player's ask, 2026-11-28: a save with every game won, from an emulator): the
 system's file chooser, then the card's Crash Bash saves into the port's slots, and what happened in the page's help (`platform/cardimport.c`;
 `--import-card FILE` does it and stops, `--pick-card FILE` is a test run's pick as if chosen). It reads a 128 KB card image (RetroArch's
 `.srm`, `.mcd`, `.mcr`: "MC", 15 directory frames, 15 blocks) or the save alone (one 8 KB block, "SC"), the USA disc's (BASCUS-94570)
@@ -725,7 +728,7 @@ is copied first to `before-import/` beside the saves. Checked (2026-11-28) with 
 awards, and a European-layout card made from it (the same slot to the byte); not yet with a card from the European game itself. Not on
 Android, which has no DATA page.
 
-And EXPORT PS1 MEMORY CARD, the other way (the user's ask, 2026-11-28): the system's save chooser, then the slots, read fresh from their
+And EXPORT TO A CARD, the other way (the user's ask, 2026-11-28): the system's save chooser, then the slots, read fresh from their
 files, as the USA game's save onto that card if it's one (its other games' saves stay: the game's own entry is written over, or the first
 free one taken) or onto a new formatted card (`card_export`; `--pick-export FILE` a test run's pick). The save block is built as
 `src/main/card.c` builds it (`card_export_block`, `game/main/card.c`): the PsyQ header, the title with each slot's completion in

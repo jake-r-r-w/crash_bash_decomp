@@ -675,6 +675,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-28: The DATA page tidied (the user picked layout A of three mockups): one row per folder (Cross picks a folder), a PS1
+  MEMORY CARD line, IMPORT FROM A CARD and EXPORT TO A CARD.
 - 2026-11-28: PS1 memory card export too (DATA > EXPORT PS1 MEMORY CARD): the USA save block rebuilt as the game does, the same to the
   byte as a real card's; onto an existing card (others kept) or a new one.
 - 2026-11-28: PS1 memory card import (a player's ask): launcher DATA > IMPORT PS1 MEMORY CARD, or --import-card FILE

@@ -62,12 +62,13 @@ typedef struct {
    buttons (controls.h) */
 enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS, KIND_CONTROLS, KIND_DATA };
 
-/* The DATA page's rows: where each kind is kept (FOLDER_, folders.h), then a row each to pick a folder for it */
-#define ROW_CHOOSE NUM_FOLDERS
-/* and last, IMPORT PS1 MEMORY CARD: a card's saves into the slots (platform/cardimport.c) */
-#define ROW_IMPORT (NUM_FOLDERS * 2)
-#define ROW_EXPORT (NUM_FOLDERS * 2 + 1) /* and EXPORT PS1 MEMORY CARD: the slots onto one, for an emulator */
-#define DATA_ROWS (NUM_FOLDERS * 2 + 2)
+/* The DATA page's rows (the user's pick of three layouts, 2026-11-28): where each kind is kept (FOLDER_, folders.h), left and right
+   through the places it can be and Cross to pick a folder of one's own; then a line, and the PS1 memory card's import and export */
+#define ROW_DATA_LINE NUM_FOLDERS
+#define DATA_LINE "- - - PS1 MEMORY CARD - - -"
+#define ROW_IMPORT (NUM_FOLDERS + 1) /* a card's saves into the slots (platform/cardimport.c) */
+#define ROW_EXPORT (NUM_FOLDERS + 2) /* the slots onto one, for an emulator */
+#define DATA_ROWS (NUM_FOLDERS + 3)
 
 /* The CONTROLS page's rows: STICK DEADZONE first (the user's word on where it goes, 2026-11-10), then BUTTON PROMPTS, a line under them
    that the cursor passes over, one for each of the game's buttons, and RESET TO DEFAULTS */
@@ -347,7 +348,7 @@ static s32 option_count(const MenuCategory *c) {
 
 /* Whether row n is a page's line, which the cursor passes over */
 static s32 is_line(const MenuCategory *c, s32 n) {
-    return (c->kind == KIND_CONTROLS && n == ROW_LINE) || (c->kind == KIND_MODS && n == ROW_MODS_LINE);
+    return (c->kind == KIND_CONTROLS && n == ROW_LINE) || (c->kind == KIND_MODS && n == ROW_MODS_LINE) || (c->kind == KIND_DATA && n == ROW_DATA_LINE);
 }
 
 static s32 mod_usable(const ModInfo *m) {
@@ -421,7 +422,6 @@ static void move_mod(s32 dir) {
 /* --- the Data page --- */
 
 static const char *const DataNames[NUM_FOLDERS] = { "SAVES", "SETTINGS", "GAME DATA" };
-static const char *const ChooseNames[NUM_FOLDERS] = { "CHOOSE SAVES FOLDER", "CHOOSE SETTINGS FOLDER", "CHOOSE GAME DATA FOLDER" };
 
 static void change_data(s32 n, s32 dir) {
     s32 kind = n % NUM_FOLDERS, where = folders_where(kind), i;
@@ -436,10 +436,7 @@ static void change_data(s32 n, s32 dir) {
         }
         return;
     }
-    if (n >= ROW_CHOOSE) {
-        if (dir > 0) {
-            folders_choose(kind);
-        }
+    if (n >= NUM_FOLDERS) {
         return;
     }
     /* the next place it can be, either way round */
@@ -458,23 +455,14 @@ static void change_data(s32 n, s32 dir) {
 }
 
 static const char *data_label(s32 n, s32 i) {
-    if (n == ROW_IMPORT) {
-        return "IMPORT PS1 MEMORY CARD";
-    }
-    if (n == ROW_EXPORT) {
-        return "EXPORT PS1 MEMORY CARD";
-    }
-    if (n < ROW_CHOOSE) {
-        return DataNames[n];
-    }
     (void)i;
-    return ChooseNames[n % NUM_FOLDERS];
+    return n == ROW_IMPORT ? "IMPORT FROM A CARD" : n == ROW_EXPORT ? "EXPORT TO A CARD" : n == ROW_DATA_LINE ? DATA_LINE : DataNames[n];
 }
 
 static void data_value(char *text, size_t size, s32 n) {
     static const char *const WhereNames[NUM_WHERE] = { "GAME FOLDER", "USER FOLDER", "YOUR FOLDER" };
 
-    if (n < ROW_CHOOSE) {
+    if (n < NUM_FOLDERS) {
         snprintf(text, size, "%s", WhereNames[folders_where(n)]);
     } else {
         text[0] = 0;
@@ -498,6 +486,10 @@ static void data_help(s32 n) {
     if (n == ROW_IMPORT) {
         snprintf(Help[0], sizeof(Help[0]), "AN EMULATOR'S .SRM, .MCD OR .MCR, USA OR EUROPE");
         snprintf(Help[1], sizeof(Help[1]), "ITS SAVES REPLACE YOURS: THOSE ARE KEPT");
+        return;
+    }
+    if (n >= NUM_FOLDERS && n != ROW_EXPORT) {
+        Help[0][0] = Help[1][0] = '\0';
         return;
     }
     if (n == ROW_EXPORT) {
@@ -1013,7 +1005,8 @@ static void show_screen(void) {
         set_row(&sub[SUB_CATEGORY + i], i < NUM_CATEGORIES ? Categories[i].label : i == NUM_CATEGORIES ? "BACK" : "", colour);
     }
     set_row(&sub[SUB_NAV], mods && Option >= MODS_ROWS ? "\xFC ON OR OFF, L1 - R1 MOVE IT UP OR DOWN, \xFE BACK"
-                           : mods || (data && Option >= ROW_CHOOSE) ? "UP - DOWN CHOOSE, \xFC BUTTON TO OPEN, \xFE BACK"
+                           : data && Option < NUM_FOLDERS ? "LEFT - RIGHT WHERE, \xFC PICK A FOLDER, \xFE BACK"
+                           : mods || data ? "UP - DOWN CHOOSE, \xFC BUTTON TO OPEN, \xFE BACK"
                            : controls && Waiting >= 0 ? ""
                            /* a CONTROLS row's own: the help over it says how (the user's word on what was there: "super cluttered") */
                            : controls && Screen == SCREEN_OPTIONS && (Option == ROW_DEADZONE || Option == ROW_PROMPTS) ? "UP - DOWN CHOOSE, LEFT - RIGHT CHANGE, \xFE BACK"
@@ -1042,7 +1035,7 @@ static void show_screen(void) {
             value[0] = '\0';
             show_value(value, sizeof(value), c, n);
             /* left and right change an option's value; a key or button is changed by pressing the new one */
-            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && (!controls || n == ROW_DEADZONE || n == ROW_PROMPTS) && !(data && n >= ROW_CHOOSE) ? "< %s >" : "%s", value);
+            snprintf(Values[i], sizeof(Values[i]), lit && value[0] != '\0' && (!controls || n == ROW_DEADZONE || n == ROW_PROMPTS) && !(data && n >= NUM_FOLDERS) ? "< %s >" : "%s", value);
             sub[SUB_VALUE(i)].unk7C = lit || (controls && Waiting >= 0 && Waiting == ROW_CONTROL(n)) ? TEXT_SMALL_LIT : TEXT_SMALL;
             /* (the deadzone's name is longer than a button's, so its value is further out; PROMPTS' longest value, PLAYSTATION, needs it in) */
             sub[SUB_VALUE(i)].XYZ.x = controls ? (n == ROW_PROMPTS ? CONTROL_VALUE_X_WORDS : n == ROW_DEADZONE ? DEADZONE_VALUE_X : CONTROL_VALUE_X_WORDS) : VALUE_X;
@@ -1574,6 +1567,10 @@ static void update_options(s32 pressed) {
     }
     if (controls) {
         update_controls(pressed);
+    } else if (c->kind == KIND_DATA && Option < NUM_FOLDERS && (pressed & 0x4000)) {
+        /* a folder's row: Cross picks a folder of one's own, left and right go through the places it can be */
+        folders_choose(Option);
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
     } else if (pressed & (0x20 | 0x4000)) {
         change_setting(c, Option, 1);
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
