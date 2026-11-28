@@ -617,7 +617,7 @@ static const char *clip_move(const char *clip, s32 kind) {
 static s32 make_pack(s32 slot, HeroMade *out) {
     static PackModel pm;
     static MadeFace faces[MADE_MAX_FACES];
-    static MadeImage images[PACK_MAX_IMAGES];
+    static MadeImage images[MADE_MAX_IMAGES];
     static MadeAnim anims[PACK_MAX_ANIMS];
     static char names[PACK_MAX_ANIMS][PACK_ANIM_NAME];
     static float rest[PACK_MAX_VERTS * 3];

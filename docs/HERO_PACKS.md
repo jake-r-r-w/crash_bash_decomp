@@ -79,7 +79,8 @@ glTF 2.0, binary. The platform reads it with cgltf (`platform/heropack.c`) into 
 - Clips: named `MOVE` or `foot/MOVE` for on foot (`BREATHE`, `RUN`, ...), in capitals as the game names them; another kind's are
   `KIND/MOVE` (`ball/BANK`), for the phases to come. A clip's second is 30 of the game's ticks, times `subframes` frames: a move has
   128 frames at most, so a clip is at most 4.2 s at 1 subframe, 2.1 s at 2, 1 s at 4. No `BREATHE` clip: its rest pose stands in.
-- Limits, the game's: 1365 triangles (a frame's 4096 corners) and 4096 vertices, 8 images.
+- Limits, the game's: 1365 triangles (a frame's 4096 corners) and 4096 vertices, 32 images (`MADE_MAX_IMAGES`;
+  the tool reads up to 256 of a model's, a model of many small swatches as Sketchfab exports some, and lays them out as one).
 - Materials: the base colour (factor, `COLOR_0` and texture, PNG only, made a power of two up to 256 texels and 255 colours), alpha
   mode BLEND for a half-see-through face, `KHR_materials_unlit` for an unlit one. Its light is baked into its corners' colours as
   the game's heroes' is (a soft wrapped light, `PackLight`).

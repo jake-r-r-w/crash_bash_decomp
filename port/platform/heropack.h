@@ -13,7 +13,9 @@
 #define PACK_ANIM_NAME 48
 #define PACK_MAX_STANDS 48
 #define PACK_MAX_BONES 128
-#define PACK_MAX_IMAGES 8
+/* a model's images read: enough for one made of many small swatches (a Sketchfab export's one an material, 29 of them in one).
+   The tool lays them all out in one image for the game; the game itself keeps MADE_MAX_IMAGES (32) of a pack's. */
+#define PACK_MAX_IMAGES 256
 #define PACK_MAX_CLIPS 128
 
 /* --- hero.json --- */
