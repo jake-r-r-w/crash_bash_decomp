@@ -195,7 +195,11 @@ void *TextDifficulties[1][3] = {
         &TextHard,
     },
 };
-void *TextBattleKinds[1][2] = { { &TextPressButtonToStart, &TextPressButtonToStart } };
+/* PC: the tournament's its own string, the same words: in another language a tournament's start line is the second of the European's
+   two (platform/archive.c, pal_text_second) */
+static const char TextPressButtonToStartTournament[] = "PRESS \xFC BUTTON TO START";
+void *TextBattleKinds[1][2] = { { &TextPressButtonToStart, (void *)&TextPressButtonToStartTournament } };
+void pal_text_second(const char *english);
 process_info BattleOptions = { BattleOptionsInit, BattleOptionsUpdate, BattleOptionsRender, BattleOptionsQuit, 0 };
 /* The menu chains MenuChainNext/Back walk (MenuChainPos): each starts at its second entry, so
  * backing out of the first screen reaches the main menu before it. A Resume pointer is where a
@@ -1547,6 +1551,7 @@ void BattleOptionsQuit(void) {
 }
 
 void BattleOptionsInit(void) {
+    pal_text_second(TextPressButtonToStartTournament);
     PlaceEngineSlot(0, (PlaceRec *)BattleOptionsPlace);
     BattleOptionsState = 2;
 }

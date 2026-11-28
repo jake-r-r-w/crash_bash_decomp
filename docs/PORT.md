@@ -675,6 +675,17 @@ through the menus, the hero select, the warp room, the rules and a game (Adventu
 A change of language in the launcher shows in what's read after it: the next mode's text, interface and sound banks, and the main menu's
 tags when the title screens next load.
 
+What's still English, and why (a pass over the game on 2026-11-28, `CRASHBASH_LOG_UNTRANSLATED=1`: each string drawn in English while
+another language is set, once, as `untranslated:` in the log; the Adventure bot, every mode with its pause, and the Battle and
+Tournament menus, in French): the modes' and arenas' names, the credits, VS, and the warp room's challenge lines (PRESS LEFT - RIGHT TO
+SELECT CHALLENGE, YOU ALREADY HAVE A TROPHY...), none of which the European disc has in other languages; and the port's own (TESTING,
+the VIDEO row). That pass found and fixed: the save and load prompts (the generator read `\374` in the C as text), the difficulties and
+the start line (arrays of each language's few words: `TextDifficulties[lang][3]`, `TextBattleKinds[lang][2]`, the tournament's the second
+of two with the same English, `pal_text_second`), and SysPrintAt3d's text, which hadn't gone through `pal_text`. It also found a
+fingerprint fault: while a level loads the main heap is emptied and `NASActiveHead` points into whatever's loaded there next, another
+language's file on another machine, so a French and an English Tournament were told apart for 65 steps though the games were the same.
+The objects are now counted only from `ResetNasLists` until the main heap is next emptied (`NasHeapLive`).
+
 ## RecompLauncher
 
 [RecompLauncher](https://recomplauncher.com) installs PC recomps from their GitHub releases and keeps them up to date; the port is listed

@@ -675,6 +675,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-28: European languages, a pass over the game (CRASHBASH_LOG_UNTRANSLATED=1 logs English drawn in another language): save/load
+  prompts, difficulties, battle/tournament start lines and SysPrintAt3d now translate; what's left English the European disc doesn't
+  translate either (PORT.md, Languages). Found a fingerprint fault worth knowing for online: objects_part walked a stale NASActiveHead
+  while a level loaded (heap emptied, list not yet reset), reading loaded file bytes; now NasHeapLive (main.c mal_init / ResetNasLists).
+  Possibly relevant to the open Beach Ball desync lead only if machines' heaps held different files there (different data or mods).
+
 - 2026-11-27: European languages: LOADING and the countdown (LADE, LOS...) in the language, drawn only: prims.c language_model swaps
   DB_Loading's / DB_Interface's data for one draw_object call (the bank itself stays, so draw.c's texture-set checks hold). Gotcha: a
   texture file's 0x14 is its model's size, which dbase_textures_loaded loads by; the language interface keeps the English's. PORT.md,

@@ -37,6 +37,8 @@ int archive_language(void);
 unsigned char *archive_language_copy(int entry, int *size);
 /* An English string of the game's in this machine's language, if the European disc has it (archive.c), else itself */
 const char *pal_text(const char *english);
+/* A string of the game's that wants the second of two words with the same English (archive.c) */
+void pal_text_second(const char *english);
 void archive_read(int sector, int count, void *buf);
 /* A mod's files in place of the archive's (archive.c): how many entries it has and how big one is as the game has it, a replacement
    (bytes it takes, or NULL for the game's own), and laying the archive out again for what's replaced, before the game reads on. */

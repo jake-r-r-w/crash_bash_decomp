@@ -1309,9 +1309,17 @@ mal *mal_next_free_block(mal *blk) {
 
 
 
+/* PC: whether the objects' list (ResetNasLists) is in the main heap now, for the fingerprint: emptying the main heap for a level's load
+   leaves NASActiveHead pointing into what's loaded there next (game/main/fingerprint.c) */
+s32 NasHeapLive;
+
 mal *mal_init(_mal_area *heap, u8 *start, s32 size) {
     mal *blk;
     mal *end;
+
+    if (heap == &MainHeap) {
+        NasHeapLive = 0;
+    }
 
     blk = (mal *)start;
     blk->size = ((u32)(size + 3) >> 2) - 12;

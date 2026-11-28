@@ -58,12 +58,16 @@ static u32 heroes_part(void) {
 }
 
 /* Every object in play: which it is, what kind, its state and where it is. */
+extern s32 NasHeapLive;
+
 static u32 objects_part(void) {
     u32 h = FOLD_START;
     NAS *nas;
     s32 n;
 
-    for (nas = NASActiveHead, n = 0; nas != NULL && in_heap(nas, sizeof(*nas)) && n < 4096; nas = nas->Tag.Child, n++) {
+    /* none while a level loads: the main heap's been emptied, and NASActiveHead points into whatever file is loaded there now, which
+       can be another language's on another machine (main.c, NasHeapLive; a French and an English Tournament parted, 2026-11-28) */
+    for (nas = NasHeapLive ? NASActiveHead : NULL, n = 0; nas != NULL && in_heap(nas, sizeof(*nas)) && n < 4096; nas = nas->Tag.Child, n++) {
         EXTengine *eng = nas->Engine;
 
         h = fold_word(h, place(nas));

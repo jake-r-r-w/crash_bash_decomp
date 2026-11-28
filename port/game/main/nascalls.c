@@ -276,6 +276,7 @@ void InitNasHeap(s32 arg0) {
     if (NasHeapMem != NULL) {
         NasHeapSetUp(NasHeapMem, size);
     }
+
 }
 
 void ResetNasHeap(void) {
@@ -1028,6 +1029,40 @@ static void draw_slash(s32 xy, s32 back, u32 top, u32 bottom) {
    texture_corners) */
 static s32 GlyphNum = 1, GlyphDen = 1;
 
+/* PC: for a test run (CRASHBASH_LOG_UNTRANSLATED set), each string drawn as it is while the machine's language isn't English,
+   once: what the European disc's words haven't given (docs/PORT.md, Languages) */
+int archive_language(void);
+static void log_untranslated(const u8 *s) {
+    static u32 seen[2048];
+    static s32 nseen, on = -1;
+    const u8 *p;
+    u32 h = 2166136261u;
+    s32 i, letters = 0;
+
+    if (on < 0) {
+        on = getenv("CRASHBASH_LOG_UNTRANSLATED") != NULL;
+    }
+    if (!on || archive_language() == 0) {
+        return;
+    }
+    for (p = s; *p != 0; p++) {
+        h = (h ^ *p) * 16777619u;
+        letters += (*p >= 'A' && *p <= 'Z') || (*p >= 'a' && *p <= 'z');
+    }
+    if (letters < 2) {
+        return;
+    }
+    for (i = 0; i < nseen; i++) {
+        if (seen[i] == h) {
+            return;
+        }
+    }
+    if (nseen < 2048) {
+        seen[nseen++] = h;
+    }
+    printf("untranslated: %s\n", (const char *)s);
+}
+
 /* PC: a string's lines */
 static s32 text_lines(const u8 *s) {
     s32 n = 1;
@@ -1070,6 +1105,9 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
        lines than its English is drawn smaller, to its English's room, as the layout is the English's (the European game gives it a page
        more, which would change the game): at most to half */
     s = (u8 *)pal_text((const char *)ModeTextHeard(s));
+    if (s == english) {
+        log_untranslated(s);
+    }
     if (s != english) {
         s32 le = text_lines(english), ll = text_lines(s);
 
@@ -1163,7 +1201,13 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
     s32 c;
     s32 n;
     u8 *p;
+    const char *english = s;
 
+    /* PC: in this machine's language too, as DrawSysText (only what's drawn) */
+    s = (char *)pal_text((const char *)ModeTextHeard((const u8 *)s));
+    if (s == english) {
+        log_untranslated((const u8 *)s);
+    }
     pos = *arg0;
     if ((arg0->x & 0xC000) == 0x8000) {
         p = s;
@@ -2403,6 +2447,12 @@ void ResetNasLists(void) {
     NASActiveHead = NULL;
     NASActiveTail = NULL;
     World_floor_level = 0;
+    /* PC: the fingerprint's objects are this list from here (main.c, NasHeapLive) */
+    {
+        extern s32 NasHeapLive;
+
+        NasHeapLive = 1;
+    }
     VelocityCalc = 1;
     BuildNASFreeList();
     for (i = 1; i < 16; i++) {

@@ -398,6 +398,7 @@ const good = s => s.length > 0 && s.length < 300 && !/[\x00-\x09\x0b\x0c\x0e-\x1
 const seen = from => [from, ...blobs.filter(b => b !== from && b.id !== -2 && (b.id === -1 || b.id === ENGINE_ENTRY))];
 const stringAt = (addr, from) => { for (const b of seen(from)) { const o = addr - b.base; if (o >= 0 && o < b.bytes.length && o % 4 === 0) { const { s, end } = cstr(b.bytes, o); if (good(s)) return { b, o, s, end }; } } return null; };
 const msgs = new Map();
+const sure = new Set(); /* words the record lists and the language arrays gave: no run of five strings' filter takes them back */
 const pendingList = new Set(); /* messages that may be the middle of a list: checked against the game's English, below */
 const messageAt = new Set(); /* where each message set's table is */ /* English -> { blob, offs[5] } */
 const keep = (en, tr) => { if (!msgs.has(en.s) && tr.every(x => x.b === en.b)) msgs.set(en.s, { blob: en.b.id, offs: [en.o, ...tr.map(x => x.o)] }); };
@@ -441,7 +442,7 @@ for (const pass of ['menus', 'messages']) {
    point at its English): their strings, followed through the tables and the arrays and structures of strings they point at. A set whose
    English is one of those, by its letters (the European English is spaced and stopped a little otherwise), is kept. */
 const cSource = (() => { const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else if (p.endsWith('.c')) all.push(fs.readFileSync(p, 'utf8')); } }; walk(path.join(ROOT, 'port/game')); return all.join('\n'); })();
-const unescape = s => s.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\"/g, '"').replace(/\\x([0-9A-Fa-f]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16))).replace(/\\\\/g, '\\');
+const unescape = s => s.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\"/g, '"').replace(/\\x([0-9A-Fa-f]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16))).replace(/\\([0-7]{1,3})/g, (_, o) => String.fromCharCode(parseInt(o, 8))).replace(/\\\\/g, '\\'); /* and octal: "PRESS \374 BUTTON TO SAVE" */
 /* a string's definition, with its size or none, to its first zero (some keep the bytes the disc has after it) */
 const stringDefs = new Map([...cSource.matchAll(/\b(\w+)\[\w*\]\s*=\s*"((?:[^"\\]|\\.)*)"/g)].map(m => [m[1], unescape(m[2]).split('\0')[0]]));
 const bodyOf = name => { const m = cSource.match(new RegExp(`\\b${name}\\s*(?:\\[[^\\]]*\\])*\\s*=\\s*\\{`)); if (!m) return null; let i = m.index + m[0].length, depth = 1, s = i; while (depth > 0 && i < cSource.length) { if (cSource[i] === '{') depth++; else if (cSource[i] === '}') depth--; i++; } return cSource.slice(s, i - 1); };
@@ -512,11 +513,40 @@ console.log(`the words the USA code has language tables for: ${langKeys.size}`);
                 if (str.some(x => x === null) || str.some(x => x.b !== str[0].b) || !isKey(str[0].s)) continue;
                 /* surer than a run of five strings, which a menu's English list looks like: it takes the word's place */
                 msgs.set(str[0].s, { blob: str[0].b.id, offs: str.map(x => x.o) });
+                sure.add(str[0].s);
                 found++;
             }
         }
     }
     console.log(`the words in the title menus' records for each language: ${found}`);
+}
+/* And a fifth: an array of a few words for each language, one language after another (the difficulties: EASY MEDIUM HARD FACILE NORMAL
+   DIFFICILE...; the start line's battle and tournament: the USA's TextDifficulties[lang][3], TextBattleKinds[lang][2]). The English row's
+   words are the game's and the others aren't. Where the English row has a word twice (PRESS ü BUTTON TO START, for a battle and a
+   tournament) the second is kept as its own, its key the word and \u0001: archive.c's pal_text gives it for a string the game asks the
+   second of (pal_text_second). */
+{
+    let found = 0;
+    for (const c of blobs) {
+        for (let q = 0; q + 40 <= c.bytes.length; q += 4) {
+            for (const n of [2, 3]) {
+                if (q + 20 * n > c.bytes.length) continue;
+                const ptr = Array.from({ length: 5 * n }, (_, k) => c.bytes.readUInt32LE(q + 4 * k));
+                const str = ptr.map(p => stringAt(p, c));
+                if (str.some(x => x === null) || str.some(x => x.b !== str[0].b)) continue;
+                const rows = [0, 1, 2, 3, 4].map(L => str.slice(L * n, L * n + n));
+                if (!rows[0].every(x => isKey(x.s)) || rows.slice(1).some(r => r.some((x, k) => ptr[rows.indexOf(r) * n + k] !== ptr[k] && isKey(x.s)))) continue;
+                if (new Set(ptr).size < 3 * n) continue;
+                rows[0].forEach((x, k) => {
+                    const before = rows[0].slice(0, k).filter(y => y.s === x.s).length;
+                    msgs.set(x.s + '\u0001'.repeat(before), { blob: c.id, offs: rows.map(r => r[k].o) });
+                    sure.add(x.s + '\u0001'.repeat(before));
+                    found++;
+                });
+            }
+        }
+    }
+    console.log(`the words in arrays of each language's few: ${found}`);
 }
 for (const [en] of [...msgs]) if (!langKeys.has(en) && !isKey(en)) msgs.delete(en);
 /* not in the middle of a list of the game's English, nor with German where French or Spanish should be */
@@ -530,7 +560,7 @@ for (const [en, v] of [...msgs]) {
 }
 for (const { en, at } of pendingList) {
     const v = msgs.get(en);
-    if (v === undefined || messageAt.has(at)) continue;
+    if (v === undefined || messageAt.has(at) || sure.has(en)) continue;
     const b = blobs.find(x => x.id === v.blob), prev = (() => { let o = v.offs[0] - 2; while (o > 0 && b.bytes[o - 1] !== 0) o--; return cstr(b.bytes, o).s; })();
     if (langKeys.has(prev)) msgs.delete(en);
 }

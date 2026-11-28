@@ -250,15 +250,32 @@ static void read_own_table(void) {
     printf("data: made from the European disc, its own table of %d files%s\n", (int)count, Languages ? ", and its five languages" : "");
 }
 
+/* Strings of the game's that want the second of two words with the same English (the start line's PRESS ü BUTTON TO START: a battle's,
+   then a tournament's, pal_table.mjs) */
+static const char *Seconds[8];
+
+void pal_text_second(const char *english) {
+    int i;
+
+    for (i = 0; i < 8 && Seconds[i] != NULL && Seconds[i] != english; i++) {
+    }
+    if (i < 8) {
+        Seconds[i] = english;
+    }
+}
+
 const char *pal_text(const char *english) {
     char key[64];
-    int L = settings()->language, i;
+    int L = settings()->language, i, skip = 0;
 
     if (NumWords == 0 || english == NULL || L <= 0 || L >= PAL_LANGUAGES || !Languages) {
         return english;
     }
+    for (i = 0; i < 8 && Seconds[i] != NULL; i++) {
+        skip |= Seconds[i] == english;
+    }
     for (i = 0; i < NumWords; i++) {
-        if (strcmp(WordSet[i][0], english) == 0) {
+        if (strcmp(WordSet[i][0], english) == 0 && skip-- <= 0) {
             return WordSet[i][L][0] != 0 ? WordSet[i][L] : english;
         }
     }
@@ -273,6 +290,15 @@ const char *pal_text(const char *english) {
     for (i = 0; strncmp(key, "PRESS", 5) == 0 && key[5] != 0 && i < NumWords; i++) {
         if (strcmp(WordLetters[i], key + 5) == 0) {
             return WordSet[i][L][0] != 0 ? WordSet[i][L] : english;
+        }
+    }
+    /* and with BATTLE after it: the USA's PRESS ü BUTTON TO START BATTLE is the European's battle start line, the first of its two */
+    if (strlen(key) > 6 && strcmp(key + strlen(key) - 6, "BATTLE") == 0) {
+        key[strlen(key) - 6] = 0;
+        for (i = 0; i < NumWords; i++) {
+            if (strcmp(WordLetters[i], key) == 0) {
+                return WordSet[i][L][0] != 0 ? WordSet[i][L] : english;
+            }
         }
     }
     return english;
