@@ -764,6 +764,8 @@ int main(int argc, char **argv) {
             boss_beat = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--cheat-menu") == 0) {
             cheat_menu = 1;
+        } else if (strcmp(argv[i], "--pick-export") == 0 && i + 1 < argc) {
+            card_export_pretend(argv[++i]);
         } else if (strcmp(argv[i], "--pick-card") == 0 && i + 1 < argc) {
             card_import_pretend(argv[++i]);
         } else if (strcmp(argv[i], "--import-card") == 0 && i + 1 < argc) {

@@ -154,3 +154,57 @@ void card_clear_slot(CardSlot *slot) {
         slot->summary[i] = 0;
     }
 }
+
+/* PC: the slots as the game's save on a PS1 memory card, for an emulator (platform/cardexport.c; docs/PORT.md, Saves from a PS1 memory
+   card): one 0x2000-byte block as src/main/card.c's card_make_header and card_save write it. The PsyQ header ("SC", two icon frames,
+   one block), the title (CRASH BASH and each slot's completion, in Shift-JIS), the icon's colours at 0x60 and frames at 0x80, the four
+   slots from 0x200, the flags at 0x850 (1) and the slots' sum at 0x85C, which the game checks as it loads. How many saves it has. */
+int save_icon_frames(unsigned char frames[0x100], unsigned short colours[16]);
+
+static u16 sjis(u8 c) {
+    static const char marks[] = "!\"#$%()*+,-./:;?";
+    static const u16 codes[] = { 0x8149, 0x8168, 0x8194, 0x8190, 0x8193, 0x8169, 0x816A, 0x8196, 0x817B, 0x8143, 0x817C, 0x8144, 0x815E,
+                                 0x8146, 0x8147, 0x8148 };
+    const char *m;
+
+    if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+        return (u16)(0x8200 | (c + 0x1F));
+    }
+    if (c >= 'a' && c <= 'z') {
+        return (u16)(0x8200 | (c + 0x20));
+    }
+    m = c != 0 ? strchr(marks, c) : NULL;
+    return m != NULL ? codes[m - marks] : 0x8140;
+}
+
+int card_export_block(unsigned char *out) {
+    char title[] = "CRASH BASH %000 %000 %000 %000";
+    u32 sum = 0, *w;
+    s32 i, n = 0, at;
+
+    memset(out, 0, 0x2000);
+    out[0] = 'S';
+    out[1] = 'C';
+    out[2] = 0x12; /* two icon frames, shown in turn */
+    out[3] = 1;    /* one block */
+    for (i = 0; i < 4; i++) {
+        n += *(s32 *)CardSlots[i].summary != 0;
+        itoa_div_end(title + 0xC + i * 5, *(s32 *)CardSlots[i].summary != 0 ? count_completion((u8 *)&CardSlots[i].state) : 0, 100);
+    }
+    for (i = 0, at = 4; i < 32; i++, at += 2) {
+        u16 c = sjis(i < (s32)strlen(title) ? (u8)title[i] : ' ');
+
+        out[at] = (u8)(c >> 8);
+        out[at + 1] = (u8)c;
+    }
+    if (!save_icon_frames(out + 0x80, (unsigned short *)(out + 0x60))) {
+        memset(out + 0x60, 0, 0x120);
+    }
+    memcpy(out + 0x200, CardSlots, sizeof(CardSlot) * 4);
+    out[0x850] = 1;
+    for (w = (u32 *)(out + 0x200); w < (u32 *)(out + 0x850); w++) {
+        sum += *w;
+    }
+    memcpy(out + 0x85C, &sum, 4);
+    return n;
+}

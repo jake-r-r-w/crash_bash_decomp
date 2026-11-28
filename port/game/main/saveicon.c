@@ -44,3 +44,25 @@ void save_icon_to_window(void) {
     }
     host_set_icon(rgba, ICON_SIZE, ICON_SIZE);
 }
+
+/* PC: the icon as the PS1 wrote it into a save (src/main/card.c's card_make_header): its two 16x16 4-bit frames, 0x80 bytes each, and
+   the second's 16 colours, for a memory card the port writes (card_export_block, card.c). 0 if the font isn't loaded. */
+int save_icon_frames(unsigned char frames[0x100], unsigned short colours[16]) {
+    obj_dbase *db = &HeroModelBank[DB_Font];
+    const obj_textureset *ts = &db->textures;
+    const obj_texture *t, *p;
+
+    if (ts->tex == NULL || ts->ent == NULL || ts->base == NULL || (ICON_PALETTE_TEXTURE & 0xFFF) >= ts->nTex) {
+        return 0;
+    }
+    t = dbase_texture_ptr(db, ICON_TEXTURE);
+    p = dbase_texture_ptr(db, ICON_PALETTE_TEXTURE);
+    if (t == NULL || p == NULL || t->w != ICON_SIZE || t->h != ICON_SIZE || p->w != ICON_SIZE || p->h != ICON_SIZE || t->flag != 0 ||
+        p->clut >= ts->nEnt || ts->ent[p->clut].w != 16) {
+        return 0;
+    }
+    memcpy(frames, (const u8 *)ts->base + t->pix, 0x80);
+    memcpy(frames + 0x80, (const u8 *)ts->base + p->pix, 0x80);
+    memcpy(colours, (const u8 *)ts->base + ts->ent[p->clut].off, 32);
+    return 1;
+}

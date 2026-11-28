@@ -16,4 +16,13 @@ int card_import_poll(char *message, size_t room);
 /* A test run: as if path had been chosen (--pick-card FILE) */
 void card_import_pretend(const char *path);
 
+/* And the other way: the port's saves as the USA game's save on a card image, onto the card at path if it's one (its other games' saves
+   stay), else a new card. NULL when it's done, with what it did in report; else what's wrong. The chooser, a test run's pick and the
+   poll, as the import's. */
+const char *card_export(const char *path, char *report, size_t room);
+void card_export_choose(void *window);
+void card_export_pretend(const char *path);
+int card_export_ready(void);
+int card_export_poll(char *message, size_t room);
+
 #endif

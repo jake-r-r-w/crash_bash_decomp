@@ -200,3 +200,155 @@ int card_import_poll(char *message, size_t room) {
     SDL_snprintf(message, room, "%s", problem != NULL ? problem : report);
     return problem != NULL ? -1 : 1;
 }
+
+/* --- export: the port's saves onto a memory card, for an emulator --- */
+
+int card_export_block(unsigned char *out); /* game/main/card.c */
+
+/* A frame's last byte: the XOR of its others */
+static void frame_sum(unsigned char *f) {
+    unsigned char x = 0;
+    int i;
+
+    for (i = 0; i < FRAME - 1; i++) {
+        x ^= f[i];
+    }
+    f[FRAME - 1] = x;
+}
+
+/* A newly formatted card: the header frame, 15 free directory frames, 20 empty frames of the broken-sector list, the header again */
+static void format_card(unsigned char *card) {
+    int i;
+
+    memset(card, 0, CARD_BYTES);
+    card[0] = 'M';
+    card[1] = 'C';
+    frame_sum(card);
+    for (i = 1; i < 16; i++) {
+        unsigned char *f = card + i * FRAME;
+
+        f[0] = 0xA0;
+        f[8] = f[9] = 0xFF;
+        frame_sum(f);
+    }
+    for (i = 16; i < 36; i++) {
+        unsigned char *f = card + i * FRAME;
+
+        memset(f, 0xFF, 4);
+        f[8] = f[9] = 0xFF;
+        frame_sum(f);
+    }
+    memcpy(card + 63 * FRAME, card, FRAME);
+}
+
+const char *card_export(const char *path, char *report, size_t room) {
+    unsigned char *card, *old;
+    size_t size = 0;
+    int i, at = -1, saves, kept;
+    char temp[1200];
+
+    report[0] = '\0';
+    if ((card = SDL_malloc(CARD_BYTES)) == NULL) {
+        return "OUT OF MEMORY";
+    }
+    /* onto the card that's there, if it's one: its other games' saves stay; else a new card */
+    old = SDL_LoadFile(path, &size);
+    kept = old != NULL && size == CARD_BYTES && old[0] == 'M' && old[1] == 'C';
+    if (old != NULL && !kept) {
+        SDL_free(old);
+        SDL_free(card);
+        return "THAT FILE ISN'T A PS1 MEMORY CARD";
+    }
+    if (kept) {
+        memcpy(card, old, CARD_BYTES);
+    } else {
+        format_card(card);
+    }
+    SDL_free(old);
+    /* the game's own file if the card has it, else the first free entry */
+    for (i = 1; i < 16 && at < 0; i++) {
+        const unsigned char *f = card + i * FRAME;
+
+        if (f[0] == 0x51 && memcmp(f + 0x0A, Names[0].name, strlen(Names[0].name)) == 0) {
+            at = i;
+        }
+    }
+    for (i = 1; i < 16 && at < 0; i++) {
+        if (card[i * FRAME] == 0xA0 || card[i * FRAME] == 0x00) {
+            at = i;
+        }
+    }
+    if (at < 0) {
+        SDL_free(card);
+        return "THE CARD IS FULL: IT NEEDS ONE FREE BLOCK";
+    }
+    {
+        unsigned char *f = card + at * FRAME;
+
+        memset(f, 0, FRAME);
+        f[0] = 0x51;
+        f[5] = 0x20; /* 0x2000 bytes */
+        f[8] = f[9] = 0xFF;
+        memcpy(f + 0x0A, Names[0].name, strlen(Names[0].name));
+        frame_sum(f);
+    }
+    saves = card_export_block(card + at * BLOCK);
+    if (saves == 0) {
+        SDL_free(card);
+        return "THERE ARE NO SAVES TO EXPORT";
+    }
+    /* written whole beside it, then moved over it */
+    SDL_snprintf(temp, sizeof(temp), "%s.new", path);
+    if (!SDL_SaveFile(temp, card, CARD_BYTES) || !SDL_RenamePath(temp, path)) {
+        SDL_RemovePath(temp);
+        SDL_free(card);
+        return "THE CARD CAN'T BE WRITTEN";
+    }
+    SDL_free(card);
+    SDL_snprintf(report, room, "EXPORTED %d %s FOR THE USA GAME%s", saves, saves == 1 ? "SAVE" : "SAVES", kept ? ", ONTO THAT CARD" : "");
+    printf("card export: %s: %s\n", path, report);
+    return NULL;
+}
+
+static char ExportPicked[1100];
+static SDL_AtomicInt ExportReady;
+
+static void SDLCALL export_picked(void *userdata, const char *const *list, int filter) {
+    (void)userdata;
+    (void)filter;
+    if (list == NULL || list[0] == NULL || SDL_GetAtomicInt(&ExportReady)) {
+        return;
+    }
+    SDL_strlcpy(ExportPicked, list[0], sizeof(ExportPicked));
+    SDL_SetAtomicInt(&ExportReady, 1);
+}
+
+void card_export_choose(void *window) {
+    static const SDL_DialogFileFilter filters[] = {
+        { "PS1 memory card", "srm;mcd;mcr" },
+    };
+
+    SDL_ShowSaveFileDialog(export_picked, NULL, window, filters, 1, "CrashBash.srm");
+}
+
+void card_export_pretend(const char *path) {
+    SDL_strlcpy(ExportPicked, path, sizeof(ExportPicked));
+    SDL_SetAtomicInt(&ExportReady, 1);
+}
+
+int card_export_ready(void) {
+    return SDL_GetAtomicInt(&ExportReady);
+}
+
+int card_export_poll(char *message, size_t room) {
+    char report[96];
+    const char *problem;
+
+    if (!SDL_GetAtomicInt(&ExportReady)) {
+        return 0;
+    }
+    problem = card_export(ExportPicked, report, sizeof(report));
+    SDL_SetAtomicInt(&ExportReady, 0);
+    SDL_snprintf(message, room, "%s", problem != NULL ? problem : report);
+    return problem != NULL ? -1 : 1;
+}

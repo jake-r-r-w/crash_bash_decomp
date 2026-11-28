@@ -66,7 +66,8 @@ enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS, KIND_CONTROLS, KIND_DATA };
 #define ROW_CHOOSE NUM_FOLDERS
 /* and last, IMPORT PS1 MEMORY CARD: a card's saves into the slots (platform/cardimport.c) */
 #define ROW_IMPORT (NUM_FOLDERS * 2)
-#define DATA_ROWS (NUM_FOLDERS * 2 + 1)
+#define ROW_EXPORT (NUM_FOLDERS * 2 + 1) /* and EXPORT PS1 MEMORY CARD: the slots onto one, for an emulator */
+#define DATA_ROWS (NUM_FOLDERS * 2 + 2)
 
 /* The CONTROLS page's rows: STICK DEADZONE first (the user's word on where it goes, 2026-11-10), then BUTTON PROMPTS, a line under them
    that the cursor passes over, one for each of the game's buttons, and RESET TO DEFAULTS */
@@ -425,9 +426,13 @@ static const char *const ChooseNames[NUM_FOLDERS] = { "CHOOSE SAVES FOLDER", "CH
 static void change_data(s32 n, s32 dir) {
     s32 kind = n % NUM_FOLDERS, where = folders_where(kind), i;
 
-    if (n == ROW_IMPORT) {
+    if (n == ROW_IMPORT || n == ROW_EXPORT) {
         if (dir > 0) {
-            card_import_choose(host_window());
+            if (n == ROW_IMPORT) {
+                card_import_choose(host_window());
+            } else {
+                card_export_choose(host_window());
+            }
         }
         return;
     }
@@ -455,6 +460,9 @@ static void change_data(s32 n, s32 dir) {
 static const char *data_label(s32 n, s32 i) {
     if (n == ROW_IMPORT) {
         return "IMPORT PS1 MEMORY CARD";
+    }
+    if (n == ROW_EXPORT) {
+        return "EXPORT PS1 MEMORY CARD";
     }
     if (n < ROW_CHOOSE) {
         return DataNames[n];
@@ -490,6 +498,11 @@ static void data_help(s32 n) {
     if (n == ROW_IMPORT) {
         snprintf(Help[0], sizeof(Help[0]), "AN EMULATOR'S .SRM, .MCD OR .MCR, USA OR EUROPE");
         snprintf(Help[1], sizeof(Help[1]), "ITS SAVES REPLACE YOURS: THOSE ARE KEPT");
+        return;
+    }
+    if (n == ROW_EXPORT) {
+        snprintf(Help[0], sizeof(Help[0]), "YOUR SAVES ON A CARD FOR AN EMULATOR");
+        snprintf(Help[1], sizeof(Help[1]), "FOR THE USA GAME: ONTO A CARD, ITS OTHERS KEPT");
         return;
     }
 
@@ -1525,8 +1538,15 @@ static void update_options(s32 pressed) {
         static char imported[96];
         s32 done = card_import_poll(imported, sizeof(imported));
 
+        /* or the saves exported, the slots read fresh from their files first */
+        if (done == 0 && card_export_ready()) {
+            card_init();
+            done = card_export_poll(imported, sizeof(imported));
+            done = done > 0 ? 2 : done;
+        }
+
         if (done != 0) {
-            if (done > 0) {
+            if (done == 1) {
                 card_init();
             }
             say_message(imported);

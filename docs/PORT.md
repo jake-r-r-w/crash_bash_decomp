@@ -725,6 +725,13 @@ is copied first to `before-import/` beside the saves. Checked (2026-11-28) with 
 awards, and a European-layout card made from it (the same slot to the byte); not yet with a card from the European game itself. Not on
 Android, which has no DATA page.
 
+And EXPORT PS1 MEMORY CARD, the other way (the user's ask, 2026-11-28): the system's save chooser, then the slots, read fresh from their
+files, as the USA game's save onto that card if it's one (its other games' saves stay: the game's own entry is written over, or the first
+free one taken) or onto a new formatted card (`card_export`; `--pick-export FILE` a test run's pick). The save block is built as
+`src/main/card.c` builds it (`card_export_block`, `game/main/card.c`): the PsyQ header, the title with each slot's completion in
+Shift-JIS, the icon's frames and colours from the font (`save_icon_frames`), the slots, the flags and the sum. A save the PS1 game made,
+imported and exported again, is the same block to the byte. Always the USA game's: the European's two extra option words aren't known.
+
 ## RecompLauncher
 
 [RecompLauncher](https://recomplauncher.com) installs PC recomps from their GitHub releases and keeps them up to date; the port is listed

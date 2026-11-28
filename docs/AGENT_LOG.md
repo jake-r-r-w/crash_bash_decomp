@@ -675,6 +675,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-28: PS1 memory card export too (DATA > EXPORT PS1 MEMORY CARD): the USA save block rebuilt as the game does, the same to the
+  byte as a real card's; onto an existing card (others kept) or a new one.
 - 2026-11-28: PS1 memory card import (a player's ask): launcher DATA > IMPORT PS1 MEMORY CARD, or --import-card FILE
   (platform/cardimport.c; PORT.md, Saves from a PS1 memory card). USA saves as they are; European slots are 8 bytes longer (its
   options 0x18 to 0x10), found from both programs' code, not a real European card: worth confirming with one if a player sends it.
