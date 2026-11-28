@@ -494,7 +494,7 @@ static void data_help(s32 n) {
     }
     if (n == ROW_EXPORT) {
         snprintf(Help[0], sizeof(Help[0]), "YOUR SAVES ON A CARD FOR AN EMULATOR");
-        snprintf(Help[1], sizeof(Help[1]), "FOR THE USA GAME: ONTO A CARD, ITS OTHERS KEPT");
+        snprintf(Help[1], sizeof(Help[1]), "USA OR EUROPE: ONTO A CARD, ITS OTHERS KEPT");
         return;
     }
 

@@ -678,6 +678,8 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-28: EXPORT TO A CARD asks USA or EUROPE first (a message box, the user's ask); the European save it writes is the same
+  block to the byte as the one the European game wrote in RetroArch.
 - 2026-11-28: The card import checked with the European game in RetroArch: it loads a converted save and saves it back unchanged
   but for play time, name and level, and the port imports that. The European game wants the flags word (0x870) at 2. Its disc runs
   in RetroArch only from a .cue with the redump .sbi beside it (LibCrypt: without, any adventure jumps to 0x6766BD35).

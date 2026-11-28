@@ -158,7 +158,10 @@ void card_clear_slot(CardSlot *slot) {
 /* PC: the slots as the game's save on a PS1 memory card, for an emulator (platform/cardexport.c; docs/PORT.md, Saves from a PS1 memory
    card): one 0x2000-byte block as src/main/card.c's card_make_header and card_save write it. The PsyQ header ("SC", two icon frames,
    one block), the title (CRASH BASH and each slot's completion, in Shift-JIS), the icon's colours at 0x60 and frames at 0x80, the four
-   slots from 0x200, the flags at 0x850 (1) and the slots' sum at 0x85C, which the game checks as it loads. How many saves it has. */
+   slots from 0x200, the flags at 0x850 (1) and the slots' sum at 0x85C, which the game checks as it loads. How many saves it has.
+   Or the European game's (europe): each slot 8 bytes longer, two more option words at the state's 0xE0 (left 0, as that game keeps
+   them) and its frame rate 50, so the flags at 0x870, which it wants at 2, and the sum at 0x87C (platform/cardimport.c says how that
+   was found). */
 int save_icon_frames(unsigned char frames[0x100], unsigned short colours[16]);
 
 static u16 sjis(u8 c) {
@@ -177,15 +180,17 @@ static u16 sjis(u8 c) {
     return m != NULL ? codes[m - marks] : 0x8140;
 }
 
-int card_export_block(unsigned char *out) {
+_Static_assert(sizeof(CardSlot) == 0x194, "a slot as the USA game's card has it");
+
+int card_export_block(unsigned char *out, int europe) {
     char title[] = "CRASH BASH %000 %000 %000 %000";
     u32 sum = 0, *w;
-    s32 i, n = 0, at;
+    s32 i, n = 0, at, flags = europe ? 0x870 : 0x850;
 
     memset(out, 0, 0x2000);
     out[0] = 'S';
     out[1] = 'C';
-    out[2] = 0x12; /* two icon frames, shown in turn */
+    out[2] = europe ? 0x11 : 0x12; /* two icon frames shown in turn; the European game's save says one, its frames the same */
     out[3] = 1;    /* one block */
     for (i = 0; i < 4; i++) {
         n += *(s32 *)CardSlots[i].summary != 0;
@@ -200,11 +205,24 @@ int card_export_block(unsigned char *out) {
     if (!save_icon_frames(out + 0x80, (unsigned short *)(out + 0x60))) {
         memset(out + 0x60, 0, 0x120);
     }
-    memcpy(out + 0x200, CardSlots, sizeof(CardSlot) * 4);
-    out[0x850] = 1;
-    for (w = (u32 *)(out + 0x200); w < (u32 *)(out + 0x850); w++) {
+    if (!europe) {
+        memcpy(out + 0x200, CardSlots, sizeof(CardSlot) * 4);
+    } else {
+        for (i = 0; i < 4; i++) {
+            const u8 *from = (const u8 *)&CardSlots[i];
+            u8 *to = out + 0x200 + i * 0x19C;
+
+            memcpy(to, from, 8 + 0xE0);
+            memcpy(to + 8 + 0xE8, from + 8 + 0xE0, sizeof(CardSlot) - 8 - 0xE0);
+            if (*(s32 *)CardSlots[i].summary != 0) {
+                to[8 + 0x21] = 50; /* GameState.fps */
+            }
+        }
+    }
+    out[flags] = europe ? 2 : 1;
+    for (w = (u32 *)(out + 0x200); w < (u32 *)(out + flags); w++) {
         sum += *w;
     }
-    memcpy(out + 0x85C, &sum, 4);
+    memcpy(out + flags + 0xC, &sum, 4);
     return n;
 }

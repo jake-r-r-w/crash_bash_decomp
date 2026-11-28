@@ -205,7 +205,7 @@ int card_import_poll(char *message, size_t room) {
 
 /* --- export: the port's saves onto a memory card, for an emulator --- */
 
-int card_export_block(unsigned char *out); /* game/main/card.c */
+int card_export_block(unsigned char *out, int europe); /* game/main/card.c */
 
 /* A frame's last byte: the XOR of its others */
 static void frame_sum(unsigned char *f) {
@@ -243,7 +243,8 @@ static void format_card(unsigned char *card) {
     memcpy(card + 63 * FRAME, card, FRAME);
 }
 
-const char *card_export(const char *path, char *report, size_t room) {
+const char *card_export(const char *path, int europe, char *report, size_t room) {
+    const char *name = Names[europe ? 1 : 0].name;
     unsigned char *card, *old;
     size_t size = 0;
     int i, at = -1, saves, kept;
@@ -271,7 +272,7 @@ const char *card_export(const char *path, char *report, size_t room) {
     for (i = 1; i < 16 && at < 0; i++) {
         const unsigned char *f = card + i * FRAME;
 
-        if (f[0] == 0x51 && memcmp(f + 0x0A, Names[0].name, strlen(Names[0].name)) == 0) {
+        if (f[0] == 0x51 && memcmp(f + 0x0A, name, strlen(name) + 1) == 0) {
             at = i;
         }
     }
@@ -291,10 +292,10 @@ const char *card_export(const char *path, char *report, size_t room) {
         f[0] = 0x51;
         f[5] = 0x20; /* 0x2000 bytes */
         f[8] = f[9] = 0xFF;
-        memcpy(f + 0x0A, Names[0].name, strlen(Names[0].name));
+        memcpy(f + 0x0A, name, strlen(name));
         frame_sum(f);
     }
-    saves = card_export_block(card + at * BLOCK);
+    saves = card_export_block(card + at * BLOCK, europe);
     if (saves == 0) {
         SDL_free(card);
         return "THERE ARE NO SAVES TO EXPORT";
@@ -307,13 +308,15 @@ const char *card_export(const char *path, char *report, size_t room) {
         return "THE CARD CAN'T BE WRITTEN";
     }
     SDL_free(card);
-    SDL_snprintf(report, room, "EXPORTED %d %s FOR THE USA GAME%s", saves, saves == 1 ? "SAVE" : "SAVES", kept ? ", ONTO THAT CARD" : "");
+    SDL_snprintf(report, room, "EXPORTED %d %s FOR THE %s GAME%s", saves, saves == 1 ? "SAVE" : "SAVES", europe ? "EUROPEAN" : "USA",
+                 kept ? ", ONTO THAT CARD" : "");
     printf("card export: %s: %s\n", path, report);
     return NULL;
 }
 
 static char ExportPicked[1100];
 static SDL_AtomicInt ExportReady;
+static int ExportEurope; /* which game's save the card gets: asked before the chooser opens */
 
 static void SDLCALL export_picked(void *userdata, const char *const *list, int filter) {
     (void)userdata;
@@ -329,11 +332,31 @@ void card_export_choose(void *window) {
     static const SDL_DialogFileFilter filters[] = {
         { "PS1 memory card", "srm;mcd;mcr" },
     };
+    /* the user's ask (2026-11-28): which game's save, then where */
+    static const SDL_MessageBoxButtonData buttons[] = {
+        { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "USA" },
+        { 0, 1, "EUROPE" },
+        { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, -1, "CANCEL" },
+    };
+    const SDL_MessageBoxData box = {
+        SDL_MESSAGEBOX_INFORMATION, (SDL_Window *)window, "Export to a PS1 memory card",
+        "Which game is the card for? The USA game (BASCUS-94570) or the European one (BESCES-02834)?",
+        (int)(sizeof(buttons) / sizeof(buttons[0])), buttons, NULL,
+    };
+    int pressed = -1;
 
-    SDL_ShowSaveFileDialog(export_picked, NULL, window, filters, 1, "CrashBash.srm");
+    if (SDL_GetAtomicInt(&ExportReady)) {
+        return; /* a pick waiting already (a test run's) */
+    }
+    if (!SDL_ShowMessageBox(&box, &pressed) || pressed < 0) {
+        return;
+    }
+    ExportEurope = pressed == 1;
+    SDL_ShowSaveFileDialog(export_picked, NULL, window, filters, 1, ExportEurope ? "CrashBash-Europe.srm" : "CrashBash.srm");
 }
 
-void card_export_pretend(const char *path) {
+void card_export_pretend(const char *path, int europe) {
+    ExportEurope = europe;
     SDL_strlcpy(ExportPicked, path, sizeof(ExportPicked));
     SDL_SetAtomicInt(&ExportReady, 1);
 }
@@ -349,7 +372,7 @@ int card_export_poll(char *message, size_t room) {
     if (!SDL_GetAtomicInt(&ExportReady)) {
         return 0;
     }
-    problem = card_export(ExportPicked, report, sizeof(report));
+    problem = card_export(ExportPicked, ExportEurope, report, sizeof(report));
     SDL_SetAtomicInt(&ExportReady, 0);
     SDL_snprintf(message, room, "%s", problem != NULL ? problem : report);
     return problem != NULL ? -1 : 1;

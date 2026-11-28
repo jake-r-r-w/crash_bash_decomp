@@ -730,12 +730,15 @@ flags word at 0x870 has to be 2 there, the USA's 1, or it says there's no Crash 
 it and saved it back with only the play time, name and level fields changed, and the port imported that card to the same slot to the
 byte. Not on Android, which has no DATA page.
 
-And EXPORT TO A CARD, the other way (the user's ask, 2026-11-28): the system's save chooser, then the slots, read fresh from their
-files, as the USA game's save onto that card if it's one (its other games' saves stay: the game's own entry is written over, or the first
-free one taken) or onto a new formatted card (`card_export`; `--pick-export FILE` a test run's pick). The save block is built as
+And EXPORT TO A CARD, the other way (the user's ask, 2026-11-28): a message box asks which game the card is for, USA or EUROPE (the
+user's ask, the same day), then the system's save chooser, then the slots, read fresh from their files, as that game's save onto that card if it's one (its other games' saves stay: the game's own entry is written over, or the first
+free one taken) or onto a new formatted card (`card_export`; `--pick-export FILE` or `--pick-export-europe FILE` a test run's pick,
+which skips the message box). The save block is built as
 `src/main/card.c` builds it (`card_export_block`, `game/main/card.c`): the PsyQ header, the title with each slot's completion in
 Shift-JIS, the icon's frames and colours from the font (`save_icon_frames`), the slots, the flags and the sum. A save the PS1 game made,
-imported and exported again, is the same block to the byte. Always the USA game's: the European's two extra option words aren't known.
+imported and exported again, is the same block to the byte. For the European game each slot gets its two extra option words as 0 and
+the frame rate 50, the flags word at 0x870 is 2 and the sum at 0x87C, and the header says one icon frame (0x11) as that game's does: a
+save the European game wrote (in RetroArch), imported and exported again for it, is the same block to the byte too.
 
 ## RecompLauncher
 
