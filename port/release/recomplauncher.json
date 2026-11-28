@@ -159,6 +159,18 @@
       "defaults": { "skip_loading": "0" }
     },
     {
+      "id": "language", "label": "Language", "group": "Game",
+      "help": "The language of the game's words and voices. The European disc has all five; the USA disc is English only. Online, each player has their own.",
+      "choices": [
+        { "label": "English", "set": { "language": "en" } },
+        { "label": "Français", "set": { "language": "fr" } },
+        { "label": "Deutsch", "set": { "language": "de" } },
+        { "label": "Italiano", "set": { "language": "it" } },
+        { "label": "Español", "set": { "language": "es" } }
+      ],
+      "defaults": { "language": "en" }
+    },
+    {
       "id": "prompts", "label": "Button prompts", "group": "Controls",
       "help": "The buttons the game's text shows. Automatic follows what player 1 last pressed with.",
       "choices": [

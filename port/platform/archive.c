@@ -269,6 +269,12 @@ const char *pal_text(const char *english) {
             return WordSet[i][L][0] != 0 ? WordSet[i][L] : english;
         }
     }
+    /* and the USA's with PRESS before the European English (PRESS LEFT - RIGHT TO CHANGE ARENA: LEFT - RIGHT TO CHANGE ARENA) */
+    for (i = 0; strncmp(key, "PRESS", 5) == 0 && key[5] != 0 && i < NumWords; i++) {
+        if (strcmp(WordLetters[i], key + 5) == 0) {
+            return WordSet[i][L][0] != 0 ? WordSet[i][L] : english;
+        }
+    }
     return english;
 }
 

@@ -617,7 +617,7 @@ clear (`dbase_init_all`).
 
 ### Languages
 
-With the European disc's data the launcher's GAME page has a LANGUAGE row (English, French, German, Italian, Spanish; `settings.ini`
+RecompLauncher's Game settings have a Language too,  in settings.ini, English by default. With the European disc's data the launcher's GAME page has a LANGUAGE row (English, French, German, Italian, Spanish; `settings.ini`
 `language=`, `--language ID` for a test run), and so does the main menu's Options page, between VIDEO and EXIT, as the European game's
 has it: the language by its own name, left and right to change it, and the page in the new language at once (`titles.c`,
 `options_place`; the USA's data keeps the game's own four rows). It's each machine's own, never the game's (`GAME->language` stays 0), so
@@ -642,7 +642,9 @@ through the menus, the hero select, the warp room, the rules and a game (Adventu
   come four ways: five strings in a row with a table of pointers to them; five arrays of strings; a table of five pointers to strings
   apart; and, for the title menus (the main menu, players, Adventure, battle), a table of five pointers to a copy of the menu's panel
   records for each language, whose strings in the same places are one word. That last is surest, and takes a word's place from a run of
-  five strings (a menu's English list looks like one); it was missing until 2026-11-27, and the main menu stayed English.
+  five strings (a menu's English list looks like one); it was missing until 2026-11-27, and the main menu stayed English. A USA word with PRESS before the European English is the same word (PRESS LEFT - RIGHT TO CHANGE ARENA, the European
+  LEFT - RIGHT TO CHANGE ARENA: the level select's hints, 2026-11-28). The modes' and arenas' names stay English, as the European game
+  has them: its program has them once.
 - **Voices and speech** (the heroes' voices 0B6 to 0E1 and 110 to 116, the cutscenes' 0F5 to 10F): the game's banks are the English
   ones, so its voices, their timing and what it sees of them (the fingerprint's sound) are the same everywhere. When a bank loads,
   `sound.c` gives the mixer the language's copy of the same file (`audio_bank_heard`), the same programs and tones with that language's

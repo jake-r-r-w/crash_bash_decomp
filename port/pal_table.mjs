@@ -462,6 +462,9 @@ for (const file of ['overlays/titles/titles.c', 'overlays/engine/gameflow.c', 'o
 for (const [name, s] of stringDefs) if (/^PauseText/.test(name)) langKeys.add(s);
 const letters = s => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
 const langLetters = new Set([...langKeys].map(letters).filter(l => l.length > 0));
+/* one of the game's words: by its letters, or the USA's with PRESS before it (the European English says LEFT - RIGHT TO CHANGE ARENA
+   where the USA's says PRESS LEFT - RIGHT...; archive.c's pal_text matches so too) */
+const isKey = s => langLetters.has(letters(s)) || (letters(s).length > 0 && langLetters.has('PRESS' + letters(s)));
 console.log(`the words the USA code has language tables for: ${langKeys.size}`);
 /* A third kind, after the others: a language table of five pointers each to a string, apart (the title menus' words: each language's
    strings are together, ADVENTURE MODE, BATTLE MODE... then MODE AVENTURE, MODE COMBAT...), where the code's Lang tables point. The
@@ -474,7 +477,7 @@ console.log(`the words the USA code has language tables for: ${langKeys.size}`);
             const ptr = [0, 1, 2, 3, 4].map(k => c.bytes.readUInt32LE(q + 4 * k));
             if (ptr[0] === ptr[1] && ptr[0] === ptr[2]) continue;
             const str = ptr.map(p => stringAt(p, c));
-            if (str.some(x => x === null) || str.some(x => x.b !== str[0].b) || !langLetters.has(letters(str[0].s)) || msgs.has(str[0].s)) continue;
+            if (str.some(x => x === null) || str.some(x => x.b !== str[0].b) || !isKey(str[0].s) || msgs.has(str[0].s)) continue;
             const others = str.slice(1).filter((x, k) => ptr[k + 1] !== ptr[0]);
             if (others.length < 3 || others.some(x => langKeys.has(x.s) || langLetters.has(letters(x.s)))) continue;
             keep(str[0], str.slice(1));
@@ -506,7 +509,7 @@ console.log(`the words the USA code has language tables for: ${langKeys.size}`);
             if (lists[0].length < 2 || lists.some(l => l.length !== lists[0].length || l.some((r, k) => r.t !== lists[0][k].t))) continue;
             for (let k = 0; k < lists[0].length; k++) {
                 const str = lists.map(l => stringAt(l[k].d, c));
-                if (str.some(x => x === null) || str.some(x => x.b !== str[0].b) || !langLetters.has(letters(str[0].s))) continue;
+                if (str.some(x => x === null) || str.some(x => x.b !== str[0].b) || !isKey(str[0].s)) continue;
                 /* surer than a run of five strings, which a menu's English list looks like: it takes the word's place */
                 msgs.set(str[0].s, { blob: str[0].b.id, offs: str.map(x => x.o) });
                 found++;
@@ -515,7 +518,7 @@ console.log(`the words the USA code has language tables for: ${langKeys.size}`);
     }
     console.log(`the words in the title menus' records for each language: ${found}`);
 }
-for (const [en] of [...msgs]) if (!langKeys.has(en) && !langLetters.has(letters(en))) msgs.delete(en);
+for (const [en] of [...msgs]) if (!langKeys.has(en) && !isKey(en)) msgs.delete(en);
 /* not in the middle of a list of the game's English, nor with German where French or Spanish should be */
 for (const [en, v] of [...msgs]) {
     const b = blobs.find(x => x.id === v.blob), tr = v.offs.slice(1).map(o => cstr(b.bytes, o).s);
