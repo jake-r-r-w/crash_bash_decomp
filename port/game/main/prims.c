@@ -1251,6 +1251,59 @@ static void heard_model_drop(s32 k) {
     }
 }
 
+/* A mesh's width across, from its box */
+static s32 mesh_width(const MeshHeader *h) {
+    const MeshVerts *v = (const MeshVerts *)((const u8 *)&h->verts + h->verts);
+
+    return v->box.max[0] - v->box.min[0];
+}
+
+/* A language's LOADING word that's wider than the English one (CARICAMENTO, CHARGEMENT) swings its ends past where the English's go, and
+   they're cut off at the back: each of the copy's meshes that's wider than the English's is drawn no wider, its vertices (to the mesh's
+   end) and box scaled. Only the copy, only drawn. */
+static void model_fit_width(ModelFile *m, const ModelFile *english) {
+    s32 i, k, n, want, have;
+
+    for (i = 0; i < m->nMeshes && i < english->nMeshes; i++) {
+        MeshHeader *h = &m->meshes[i];
+        MeshVerts *v = (MeshVerts *)((u8 *)&h->verts + h->verts);
+
+        want = mesh_width(&english->meshes[i]);
+        have = mesh_width(h);
+        if (want <= 0 || have <= want) {
+            continue;
+        }
+        /* the vertices run to the next of the mesh's blocks (its UVs, textures, colours...), whichever's first after them */
+        {
+            const s32 *offs = &h->runs;
+            u8 *next = (u8 *)&h->end + h->end;
+            s32 j;
+
+            for (j = 0; j < 7; j++) {
+                u8 *at = (u8 *)&offs[j] + offs[j];
+
+                if (offs[j] != 0 && at > (u8 *)v->v && at < next) {
+                    next = at;
+                }
+            }
+            n = (s32)((next - (u8 *)v->v) / (s32)sizeof(FlagPoint));
+        }
+        for (k = 0; k < 3; k++) {
+            v->box.min[k] = (s16)(v->box.min[k] * want / have);
+            v->box.max[k] = (s16)(v->box.max[k] * want / have);
+        }
+        v->box.center.vx = (s16)(v->box.center.vx * want / have);
+        v->box.center.vy = (s16)(v->box.center.vy * want / have);
+        v->box.center.vz = (s16)(v->box.center.vz * want / have);
+        v->box.center.pad = (s16)(v->box.center.pad * want / have);
+        for (k = 0; k < n && k < 0x4000; k++) {
+            v->v[k].vx = (s16)(v->v[k].vx * want / have);
+            v->v[k].vy = (s16)(v->v[k].vy * want / have);
+            v->v[k].vz = (s16)(v->v[k].vz * want / have);
+        }
+    }
+}
+
 static ModelFile *language_model(const obj_dbase *db) {
     s32 k = db == &HeroModelBank[DB_Loading] ? 0 : db == &HeroModelBank[DB_Interface] ? 1 : -1, L, n = 0;
 
@@ -1267,6 +1320,9 @@ static ModelFile *language_model(const obj_dbase *db) {
                                                  HeardModels[k].model->nMeshes != db->data->nMeshes)) {
                 free(HeardModels[k].model);
                 HeardModels[k].model = NULL;
+            }
+            if (k == 0 && HeardModels[k].model != NULL) {
+                model_fit_width(HeardModels[k].model, db->data);
             }
             HeardModels[k].language = L;
         }
@@ -1369,6 +1425,9 @@ s32 draw_gouraud_quad(void *arg0, u32 flags) {
 
 /* A wide view shows past the sides of the 4:3 screen. A menu's panel that reaches a side of that ran off the screen there, as its title bars do, so it carries
    on out past the wide view's side too, rather than show an end that was never meant to be seen. Its left and right, in the 640 units of a screen-space panel. */
+/* PC: a panel drawn round a translation that's longer than its English (main/nascalls.c) */
+void text_fit_panel(s32 *left, s32 *right, s32 top, s32 bottom, u32 flags);
+
 static void wide_panel_sides(s32 *left, s32 *right, u32 flags) {
     s32 extra = gfx_view_extra() * 640 / ScreenRect->w;
     s32 origin = ((GfxScreen *)RenderState.screen)->x;
@@ -1398,6 +1457,7 @@ void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
         x -= ((GfxScreen *)RenderState.screen)->x;
         w += x;
     }
+    text_fit_panel(&x, &w, (s16)arg0[1], (s16)arg0[4], arg2);
     wide_panel_sides(&x, &w, arg2);
     l = x - arg3;
     q.v[0].x = l;
@@ -1496,6 +1556,7 @@ void draw_panel_rect(void *arg0, u32 hidden) {
             }
             w += x;
         }
+        text_fit_panel(&x, &w, (s16)r[1], (s16)r[4], f);
         wide_panel_sides(&x, &w, f);
         if (arg0) {
             q.v[0].x = x;

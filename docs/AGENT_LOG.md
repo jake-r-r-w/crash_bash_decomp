@@ -675,6 +675,12 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-28: European languages fitted to the English layout, drawing only: panels widen round translations (nascalls.c text_fit_*,
+  prims.c draw_panel_rect/frame), over-wide lines shrink, and a wider LOADING word is scaled to the English's width (prims.c
+  model_fit_width). Also fixed MEDIUM (paired with animation names) and the sound page's FX volume (<090%> took a prompt). Shots of every
+  menu in fr/de/it/es (PORT.md, Languages). Tip: a running game's crashbash.exe can be renamed aside to build while it's open; the
+  game window can be captured with PrintWindow even when it's behind others (SetProcessDPIAware first on a scaled display).
+
 - 2026-11-28: European languages, a pass over the game (CRASHBASH_LOG_UNTRANSLATED=1 logs English drawn in another language): save/load
   prompts, difficulties, battle/tournament start lines and SysPrintAt3d now translate; what's left English the European disc doesn't
   translate either (PORT.md, Languages). Found a fingerprint fault worth knowing for online: objects_part walked a stale NASActiveHead

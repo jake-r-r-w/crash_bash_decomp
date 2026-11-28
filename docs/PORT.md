@@ -675,6 +675,25 @@ through the menus, the hero select, the warp room, the rules and a game (Adventu
 A change of language in the launcher shows in what's read after it: the next mode's text, interface and sound banks, and the main menu's
 tags when the title screens next load.
 
+Translations are longer than the English the menus were laid out for, so they're fitted, drawing only (2026-11-28, the user saw words
+over the yellow frames):
+- **Panels widen round them.** `DrawSysText` keeps each translation's box for the frame (`text_fit_note`, in `nascalls.c`); a
+  screen-space panel, plain or framed (`draw_panel_rect`, `draw_panel_frame`), takes the last frame's boxes whose middle is in its height
+  and that reach into it, and is drawn wide enough to hold them with a margin (`text_fit_panel`). English is never noted, so the
+  English's layout is the game's own.
+- **A line wider than the screen is drawn smaller** to fit 620 of its 640, as well as one with more lines than its English.
+- **The LOADING word**: a language's that's wider than the English's (CARICAMENTO, CHARGEMENT) swung its ends out of the picture as it
+  turned. Each of the copy's meshes wider than the English's is scaled to its width, vertices to the mesh's next block (its UVs, not
+  its `end`: textures and colours lie between) and box with them (`model_fit_width`, `prims.c`).
+- Checked by shots of every menu in French, German, Italian and Spanish: the main, players, Adventure, battle type, battle options,
+  options and its sound, controller and video pages, the hero and level selects, the pause menu and the rules. On the sound page the
+  Italian and Spanish labels come up to their values (the game's places for both), within the frame.
+
+The same sweep found two pairings the generator had wrong: MEDIUM's "translations" were the animations' names DIE, ATTACK, HOLD... (a
+run of pointers that happened to start with EASY MEDIUM HARD), and the sound page's `<090%>` (the volume the game writes in) took a
+prompt. Arrays of each language's few words now have to be one of the USA code's own (`TextDifficulties`, `TextBattleKinds`), in order;
+and a string with no letters is never translated.
+
 What's still English, and why (a pass over the game on 2026-11-28, `CRASHBASH_LOG_UNTRANSLATED=1`: each string drawn in English while
 another language is set, once, as `untranslated:` in the log; the Adventure bot, every mode with its pause, and the Battle and
 Tournament menus, in French): the modes' and arenas' names, the credits, VS, and the warp room's challenge lines (PRESS LEFT - RIGHT TO

@@ -1073,6 +1073,96 @@ static s32 text_lines(const u8 *s) {
     return n;
 }
 
+/* PC: the widest line of a string, in the font's columns */
+static s32 text_widest(const u8 *s) {
+    s32 most = 0, n = 0;
+
+    for (; *s != 0; s++) {
+        if (*s == '\n' || *s == '\r') {
+            n = 0;
+            if (*s == '\r' && s[1] != 0 && s[2] != 0) {
+                s += 2;
+            }
+            continue;
+        }
+        if (!(SysFontFlags[*s + (FontPage << 8)] & 2)) {
+            n += SysFontWidth[*s + (FontPage << 8)];
+        }
+        most = n > most ? n : most;
+    }
+    return most;
+}
+
+/* PC: the menus' panels round a translation. The game's layout is the English's, and another language's words are often longer: a
+   screen-space panel (draw_panel_rect, draw_panel_frame) is drawn wider, to hold what's drawn in it past its sides. Each translation's
+   box, where DrawSysText drew it, is kept for the frame; a panel takes the last frame's, as it's drawn before its text. Only drawn: the
+   game's panels stay as they are. English text is never noted, so the English's layout is the game's own. */
+#define TEXT_FIT_MAX 64
+#define TEXT_FIT_MARGIN 12 /* 640ths: room between the words and the frame */
+#define TEXT_FIT_WIDE 620  /* the widest a line's drawn, in 640ths */
+typedef struct {
+    s16 x0, x1, y0, y1;
+} TextFitBox;
+static TextFitBox TextFitNow[TEXT_FIT_MAX], TextFitLast[TEXT_FIT_MAX], TextFitOne;
+static s32 TextFitNumNow, TextFitNumLast, TextFitFrame = -1;
+
+static void text_fit_frame(void) {
+    if (TextFitFrame != FrameCount) {
+        memcpy(TextFitLast, TextFitNow, sizeof(TextFitNow));
+        TextFitNumLast = TextFitNumNow;
+        TextFitNumNow = 0;
+        TextFitFrame = FrameCount;
+    }
+}
+
+static void text_fit_begin(void) {
+    text_fit_frame();
+    TextFitOne.x0 = 0x7FFF;
+    TextFitOne.x1 = -0x7FFF;
+    TextFitOne.y0 = 0x7FFF;
+    TextFitOne.y1 = -0x7FFF;
+}
+
+static void text_fit_note(s32 x, s32 y, s32 h) {
+    TextFitOne.x0 = (s16)(x < TextFitOne.x0 ? x : TextFitOne.x0);
+    TextFitOne.x1 = (s16)(x > TextFitOne.x1 ? x : TextFitOne.x1);
+    TextFitOne.y0 = (s16)(y < TextFitOne.y0 ? y : TextFitOne.y0);
+    TextFitOne.y1 = (s16)(y + h > TextFitOne.y1 ? y + h : TextFitOne.y1);
+}
+
+static void text_fit_done(void) {
+    if (TextFitOne.x0 <= TextFitOne.x1 && TextFitNumNow < TEXT_FIT_MAX) {
+        TextFitNow[TextFitNumNow++] = TextFitOne;
+    }
+}
+
+void text_fit_panel(s32 *left, s32 *right, s32 top, s32 bottom, u32 flags) {
+    GfxScreen *screen = (GfxScreen *)RenderState.screen;
+    s32 i, l, r, t, b;
+
+    text_fit_frame();
+    if (!(flags & 0x10000000) || TextFitNumLast == 0 || screen == NULL) {
+        return;
+    }
+    l = screen->x + *left;
+    r = screen->x + *right;
+    t = screen->y + (top < bottom ? top : bottom);
+    b = screen->y + (top < bottom ? bottom : top);
+    for (i = 0; i < TextFitNumLast; i++) {
+        const TextFitBox *x = &TextFitLast[i];
+        s32 mid = (x->y0 + x->y1) / 2;
+
+        /* its words in the panel's height, and some of them across it */
+        if (mid < t || mid > b || x->x1 < l || x->x0 > r) {
+            continue;
+        }
+        l = x->x0 - TEXT_FIT_MARGIN < l ? x->x0 - TEXT_FIT_MARGIN : l;
+        r = x->x1 + TEXT_FIT_MARGIN > r ? x->x1 + TEXT_FIT_MARGIN : r;
+    }
+    *left = l - screen->x;
+    *right = r - screen->x;
+}
+
 /* PC: a line's x (TextAlignX's) for text drawn at num / den: a centred one centred still */
 static s16 text_scaled_x(s16 arg0, s16 x, s32 num, s32 den) {
     s32 centre;
@@ -1099,7 +1189,7 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     s32 oy;
 
     const u8 *english = s;
-    s32 num = 1, den = 1;
+    s32 num = 1, den = 1, noting;
 
     /* PC: in this machine's language, if the European disc has these words (only what's drawn: online play is the same). One with more
        lines than its English is drawn smaller, to its English's room, as the layout is the English's (the European game gives it a page
@@ -1115,6 +1205,19 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
             num = le * 2 < ll ? 1 : le;
             den = le * 2 < ll ? 2 : ll;
         }
+        /* and one wider than the screen is drawn smaller to fit it, as the English never is */
+        {
+            s32 widest = text_widest(s) * 640 / ScreenRect->w;
+
+            if (widest * num > TEXT_FIT_WIDE * den) {
+                num = TEXT_FIT_WIDE;
+                den = widest;
+            }
+        }
+    }
+    noting = s != english;
+    if (noting) {
+        text_fit_begin();
     }
     GlyphNum = num;
     GlyphDen = den;
@@ -1190,8 +1293,16 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                 draw_slash(xy, c == '\\', arg3, arg4);
             }
             col += w;
+            /* PC: where a translation's drawn, for its panel to fit round it (text_fit_panel) */
+            if (noting) {
+                text_fit_note(x0 + col * num / den * 640 / ScreenRect->w, (s16)(xy >> 16), SysFontWidth[FontPage << 8] * 2 * num / den);
+                text_fit_note(x0, (s16)(xy >> 16), SysFontWidth[FontPage << 8] * 2 * num / den);
+            }
         }
         c = *s++;
+    }
+    if (noting) {
+        text_fit_done();
     }
     GlyphNum = GlyphDen = 1;
 }

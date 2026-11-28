@@ -271,6 +271,12 @@ const char *pal_text(const char *english) {
     if (NumWords == 0 || english == NULL || L <= 0 || L >= PAL_LANGUAGES || !Languages) {
         return english;
     }
+    /* no letters, no words: a number (the sound page's <090%>, which the game writes the volume into) is the same in any language */
+    for (i = 0; english[i] != 0 && !((english[i] >= 'A' && english[i] <= 'Z') || (english[i] >= 'a' && english[i] <= 'z')); i++) {
+    }
+    if (english[i] == 0) {
+        return english;
+    }
     for (i = 0; i < 8 && Seconds[i] != NULL; i++) {
         skip |= Seconds[i] == english;
     }

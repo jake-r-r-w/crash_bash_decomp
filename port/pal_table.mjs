@@ -527,6 +527,11 @@ console.log(`the words the USA code has language tables for: ${langKeys.size}`);
    second of (pal_text_second). */
 {
     let found = 0;
+    /* the USA code's own such arrays, [1][n] for its one language: a European one is the same words in the same order, so a run of
+       pointers one along (MEDIUM HARD, FACILE NORMAL...) isn't taken for one */
+    const usaRows = [...cSource.matchAll(/void\s*\*\s*\w+\[1\]\[(\d+)\]\s*=\s*\{\s*\{([^}]*)\}/g)]
+        .map(m => m[2].split(',').map(s => s.trim().replace(/^\(void \*\)/, '').replace(/^&/, '')).filter(Boolean).map(name => stringDefs.get(name)))
+        .filter(row => row.every(s => s !== undefined)).map(row => row.map(letters).join('|'));
     for (const c of blobs) {
         for (let q = 0; q + 40 <= c.bytes.length; q += 4) {
             for (const n of [2, 3]) {
@@ -535,8 +540,13 @@ console.log(`the words the USA code has language tables for: ${langKeys.size}`);
                 const str = ptr.map(p => stringAt(p, c));
                 if (str.some(x => x === null) || str.some(x => x.b !== str[0].b)) continue;
                 const rows = [0, 1, 2, 3, 4].map(L => str.slice(L * n, L * n + n));
+                if (!usaRows.includes(rows[0].map(x => letters(x.s)).join('|'))) continue;
                 if (!rows[0].every(x => isKey(x.s)) || rows.slice(1).some(r => r.some((x, k) => ptr[rows.indexOf(r) * n + k] !== ptr[k] && isKey(x.s)))) continue;
-                if (new Set(ptr).size < 3 * n) continue;
+                if (new Set(ptr).size <= 2 * n) continue; /* (languages share words: FACILE is French and Italian) */
+                /* a language table's words are together, the English's first (a run of pointers that happens to start with the game's
+                   words and go on to others is anything: MEDIUM's "translations" were DIE, ATTACK, HOLD... the animations' names) */
+                const offs = str.map(x => x.o);
+                if (Math.max(...offs) - Math.min(...offs) > 0x400 || rows[0].some(x => x.o > Math.min(...rows.slice(1).flat().map(y => y.o)))) continue;
                 rows[0].forEach((x, k) => {
                     const before = rows[0].slice(0, k).filter(y => y.s === x.s).length;
                     msgs.set(x.s + '\u0001'.repeat(before), { blob: c.id, offs: rows.map(r => r[k].o) });
@@ -546,9 +556,9 @@ console.log(`the words the USA code has language tables for: ${langKeys.size}`);
             }
         }
     }
-    console.log(`the words in arrays of each language's few: ${found}`);
+    console.log(`the words in arrays of each language's few: ${found} (the USA's arrays: ${usaRows.length})`);
 }
-for (const [en] of [...msgs]) if (!langKeys.has(en) && !isKey(en)) msgs.delete(en);
+for (const [en] of [...msgs]) if ((!langKeys.has(en) && !isKey(en)) || !/[A-Za-z]/.test(en)) msgs.delete(en); /* (and no numbers: <090%>) */
 /* not in the middle of a list of the game's English, nor with German where French or Spanish should be */
 for (const [en, v] of [...msgs]) {
     const b = blobs.find(x => x.id === v.blob), tr = v.offs.slice(1).map(o => cstr(b.bytes, o).s);
