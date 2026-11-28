@@ -6,7 +6,9 @@
  * summary (the heroes picked) and the game's state. That's what the port keeps, one slot to a file (saves.c), so a USA slot comes across
  * as it is. The European game's state is 8 bytes longer: its options are 0x18 bytes to the USA's 0x10 (two more words after the
  * vibration's), so its slot is 0x19C and everything after the options sits 8 later (the awards at 0xEC, not 0xE4: both programs'
- * code). Those two words are dropped, and its language and frame rate (50) are made the USA game's (0, 60).
+ * code). Those two words are dropped, and its language and frame rate (50) are made the USA game's (0, 60). After the slots, the European
+ * save has its flags word at 0x870 and the slots' sum at 0x87C; it loads only a save whose flags word is 2 (the USA's is 1 at 0x850:
+ * the European exe at 0x8002CD3C), which the import doesn't need.
  *
  * Every slot is checked as the game would check a save from another machine (card_check), and only then are any written; what was
  * in a slot it writes over is copied first to before-import/ beside the saves. */

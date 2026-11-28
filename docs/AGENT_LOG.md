@@ -260,6 +260,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Gotchas
 
+- **The European disc in RetroArch needs a .cue and its .sbi** (2026-11-28): loaded from the .bin alone, PCSX ReARMed doesn't use
+  the redump .sbi beside it, LibCrypt decodes with the wrong key and any adventure jumps to 0x6766BD35. `protos/PAL_retail/` has the
+  .cue and .sbi (ignored). RetroArch's network RetroPad doesn't reach that game either: someone at the pad has to drive it.
 - **The Linux container's clang has no sanitizer runtimes** (2026-11-10): clang 14 in `tools/dl` links nothing with
   `-fsanitize=address`, so the `linux-asan` preset doesn't build there, and there's no libFuzzer. GCC's ASan works in it. The
   Windows toolchain's clang 22 has ASan, UBSan and libFuzzer (`build/port/asan`, and `netfuzz`, which links libFuzzer by hand as
@@ -675,6 +678,9 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-28: The card import checked with the European game in RetroArch: it loads a converted save and saves it back unchanged
+  but for play time, name and level, and the port imports that. The European game wants the flags word (0x870) at 2. Its disc runs
+  in RetroArch only from a .cue with the redump .sbi beside it (LibCrypt: without, any adventure jumps to 0x6766BD35).
 - 2026-11-28: The DATA page tidied (the user picked layout A of three mockups): one row per folder (Cross picks a folder), a PS1
   MEMORY CARD line, IMPORT FROM A CARD and EXPORT TO A CARD.
 - 2026-11-28: PS1 memory card export too (DATA > EXPORT PS1 MEMORY CARD): the USA save block rebuilt as the game does, the same to the

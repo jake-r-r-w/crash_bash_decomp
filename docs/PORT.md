@@ -725,8 +725,10 @@ rate to 60 (the European's 50).
 
 Every slot that's used must pass `card_check`, as a save from another machine does, before any is written; then each one written over
 is copied first to `before-import/` beside the saves. Checked (2026-11-28) with a USA card's save, which the game then loaded with its
-awards, and a European-layout card made from it (the same slot to the byte); not yet with a card from the European game itself. Not on
-Android, which has no DATA page.
+awards, and with the European game itself (the European disc in RetroArch): it loaded that save converted to its layout (the
+flags word at 0x870 has to be 2 there, the USA's 1, or it says there's no Crash Bash data: its card code at 0x8002CD3C), played
+it and saved it back with only the play time, name and level fields changed, and the port imported that card to the same slot to the
+byte. Not on Android, which has no DATA page.
 
 And EXPORT TO A CARD, the other way (the user's ask, 2026-11-28): the system's save chooser, then the slots, read fresh from their
 files, as the USA game's save onto that card if it's one (its other games' saves stay: the game's own entry is written over, or the first
