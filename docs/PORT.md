@@ -539,6 +539,9 @@ What it says, so that a report needs nothing else (added after two reports of 1.
   loading, the cheat menu, button prompts, the stick's deadzone, online sound, every key and controller button, and the mods on and
   off. Again as `settings (play):` when the launcher's PLAY starts the game, and `settings (online):` when an online game does, as
   the launcher may have changed them (added for a report of an online game parting, 2026-11-24).
+- Which disc's game it is (`game:`, in `main.c` once the data's open): `the USA disc (SCUS-94570)`, or `the European disc
+  (SCES-02834), in fr` with the language it shows and plays; and when the European data was made before its languages, that it needs
+  making again (the user's word, 2026-11-28).
 - The controllers (`controller:`, in `platform/sdl.c`): each as it's plugged in or pulled out, by its name, SDL's kind for it (xbox360,
   ps5, switchpro...), its USB ids, wired or wireless, and the player it is; `none plugged in` at the start if there are none. And
   `input:` whenever player 1 changes what they play with: the keyboard, the mouse, the touch buttons or a controller (which).

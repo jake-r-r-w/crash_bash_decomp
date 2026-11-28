@@ -1163,6 +1163,13 @@ int main(int argc, char **argv) {
     }
     /* first, so that a converted archive's own table is the game's before anything reads or copies it (archive.c) */
     archive_open();
+    /* which disc's game this is, for a log someone sends (the user's word, 2026-11-28): the USA's or the European's, and its language */
+    if (archive_from_europe()) {
+        printf("game: the European disc (SCES-02834), in %s%s\n", settings_language_id(archive_language()),
+               archive_languages() ? "" : " (its languages need its data made again)");
+    } else {
+        printf("game: the USA disc (SCUS-94570)\n");
+    }
     /* --dump-read ENTRY FILE: an archive entry (hex) as the game reads it, its language's and mods' too, for a test */
     if (dump_read_to != NULL) {
         return dump_read(dump_read_entry, dump_read_to);
