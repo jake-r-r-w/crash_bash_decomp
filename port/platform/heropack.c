@@ -679,10 +679,17 @@ static int add_primitive(PackModel *m, const cgltf_data *d, const cgltf_node *no
     if (prim->material != NULL) {
         const cgltf_material *mat = prim->material;
 
-        if (mat->has_pbr_metallic_roughness) {
-            const cgltf_texture *tex = mat->pbr_metallic_roughness.base_color_texture.texture;
+        /* A model in the older specular-glossiness form (Sketchfab's exports, among others) keeps
+           its colour and picture in the extension's diffuse; the metallic-roughness part, when it
+           has one too, is only the fallback for readers without the extension. */
+        if (mat->has_pbr_specular_glossiness || mat->has_pbr_metallic_roughness) {
+            const cgltf_texture *tex = mat->has_pbr_specular_glossiness
+                ? mat->pbr_specular_glossiness.diffuse_texture.texture
+                : mat->pbr_metallic_roughness.base_color_texture.texture;
 
-            memcpy(factor, mat->pbr_metallic_roughness.base_color_factor, sizeof(factor));
+            memcpy(factor, mat->has_pbr_specular_glossiness ? mat->pbr_specular_glossiness.diffuse_factor
+                                                            : mat->pbr_metallic_roughness.base_color_factor,
+                   sizeof(factor));
             if (tex != NULL && tex->image != NULL) {
                 image = (int)(tex->image - d->images);
                 image = image < m->nimages ? image : -1;
