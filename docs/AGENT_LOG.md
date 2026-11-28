@@ -675,6 +675,10 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- 2026-11-28: PS1 memory card import (a player's ask): launcher DATA > IMPORT PS1 MEMORY CARD, or --import-card FILE
+  (platform/cardimport.c; PORT.md, Saves from a PS1 memory card). USA saves as they are; European slots are 8 bytes longer (its
+  options 0x18 to 0x10), found from both programs' code, not a real European card: worth confirming with one if a player sends it.
+
 - 2026-11-28: European languages fitted to the English layout, drawing only: panels widen round translations (nascalls.c text_fit_*,
   prims.c draw_panel_rect/frame), over-wide lines shrink, and a wider LOADING word is scaled to the English's width (prims.c
   model_fit_width). Also fixed MEDIUM (paired with animation names) and the sound page's FX volume (<090%> took a prompt). Shots of every

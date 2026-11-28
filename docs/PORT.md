@@ -705,6 +705,26 @@ fingerprint fault: while a level loads the main heap is emptied and `NASActiveHe
 language's file on another machine, so a French and an English Tournament were told apart for 65 steps though the games were the same.
 The objects are now counted only from `ResetNasLists` until the main heap is next emptied (`NasHeapLive`).
 
+## Saves from a PS1 memory card
+
+The launcher's DATA page has IMPORT PS1 MEMORY CARD (a player's ask, 2026-11-28: a save with every game won, from an emulator): the
+system's file chooser, then the card's Crash Bash saves into the port's slots, and what happened in the page's help (`platform/cardimport.c`;
+`--import-card FILE` does it and stops, `--pick-card FILE` is a test run's pick as if chosen). It reads a 128 KB card image (RetroArch's
+`.srm`, `.mcd`, `.mcr`: "MC", 15 directory frames, 15 blocks) or the save alone (one 8 KB block, "SC"), the USA disc's (BASCUS-94570)
+or the European disc's (BESCES-02834), whichever data the port plays.
+
+The port's slot files hold what the game keeps on the card (`CardSlot`, 0x194 bytes: 8 of summary, then the game's 0x18C of state), so a
+USA slot comes across as it is. The European game's slots are 0x19C: its options are 0x18 bytes to the USA's 0x10, two more words after
+the vibration's (its options block at 0x8005C3D8, before its game state at 0x8005C3F0: the code reads words at both), so everything
+after the saved options sits 8 later (the awards at 0xEC, not 0xE4, in both engines' LevelRequirementMet; the slot size 0x19C and their
+end 0x870 in its card code, where the USA's has 0x194 and 0x850). Those two words are dropped, the language is set to 0 and the frame
+rate to 60 (the European's 50).
+
+Every slot that's used must pass `card_check`, as a save from another machine does, before any is written; then each one written over
+is copied first to `before-import/` beside the saves. Checked (2026-11-28) with a USA card's save, which the game then loaded with its
+awards, and a European-layout card made from it (the same slot to the byte); not yet with a card from the European game itself. Not on
+Android, which has no DATA page.
+
 ## RecompLauncher
 
 [RecompLauncher](https://recomplauncher.com) installs PC recomps from their GitHub releases and keeps them up to date; the port is listed

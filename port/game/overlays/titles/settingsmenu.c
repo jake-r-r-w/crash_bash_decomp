@@ -17,6 +17,7 @@
 #include <string.h>
 #include "../../../platform/controllers.h"
 #include "../../../platform/controls.h"
+#include "../../../platform/cardimport.h"
 #include "../../../platform/folders.h"
 #include "../../../platform/mods.h"
 #include "../../../platform/net.h"
@@ -40,6 +41,8 @@ void platform_online_stop(const char *why);
 const char *platform_launcher_message(void);
 int host_typed(void);
 int platform_vblanks(void);
+void *host_window(void);
+void card_init(void);
 int archive_languages(void);
 
 enum {
@@ -61,7 +64,9 @@ enum { KIND_OPTIONS, KIND_VIDEO, KIND_MODS, KIND_CONTROLS, KIND_DATA };
 
 /* The DATA page's rows: where each kind is kept (FOLDER_, folders.h), then a row each to pick a folder for it */
 #define ROW_CHOOSE NUM_FOLDERS
-#define DATA_ROWS (NUM_FOLDERS * 2)
+/* and last, IMPORT PS1 MEMORY CARD: a card's saves into the slots (platform/cardimport.c) */
+#define ROW_IMPORT (NUM_FOLDERS * 2)
+#define DATA_ROWS (NUM_FOLDERS * 2 + 1)
 
 /* The CONTROLS page's rows: STICK DEADZONE first (the user's word on where it goes, 2026-11-10), then BUTTON PROMPTS, a line under them
    that the cursor passes over, one for each of the game's buttons, and RESET TO DEFAULTS */
@@ -208,6 +213,8 @@ static s32 JoinMoved, JoinFound; /* whether the cursor's been moved, and how man
 static char Address[ADDRESS_CHARS + 1];
 static char Joining[32];
 static char Message[2][HELP_CHARS + 1];
+/* frames left to show a memory card's import, on the DATA page, in its help's place */
+static s32 ImportShown;
 static s32 layout(s32 screen);
 static s32 foot_clicked(float x, float y);
 const char *platform_version(void); /* platform.h, whose pad bits this file has its own of */
@@ -418,6 +425,12 @@ static const char *const ChooseNames[NUM_FOLDERS] = { "CHOOSE SAVES FOLDER", "CH
 static void change_data(s32 n, s32 dir) {
     s32 kind = n % NUM_FOLDERS, where = folders_where(kind), i;
 
+    if (n == ROW_IMPORT) {
+        if (dir > 0) {
+            card_import_choose(host_window());
+        }
+        return;
+    }
     if (n >= ROW_CHOOSE) {
         if (dir > 0) {
             folders_choose(kind);
@@ -440,6 +453,9 @@ static void change_data(s32 n, s32 dir) {
 }
 
 static const char *data_label(s32 n, s32 i) {
+    if (n == ROW_IMPORT) {
+        return "IMPORT PS1 MEMORY CARD";
+    }
     if (n < ROW_CHOOSE) {
         return DataNames[n];
     }
@@ -470,6 +486,12 @@ static void data_value(char *text, size_t size, s32 n) {
 static void data_help(s32 n) {
     char path[1024];
     size_t length, i, cut = 0;
+
+    if (n == ROW_IMPORT) {
+        snprintf(Help[0], sizeof(Help[0]), "AN EMULATOR'S .SRM, .MCD OR .MCR, USA OR EUROPE");
+        snprintf(Help[1], sizeof(Help[1]), "ITS SAVES REPLACE YOURS: THOSE ARE KEPT");
+        return;
+    }
 
     snprintf(path, sizeof(path), "%s", folders_path(n % NUM_FOLDERS));
     length = strlen(path);
@@ -990,6 +1012,11 @@ static void show_screen(void) {
     if (mods || data) {
         set_row(&sub[SUB_HELP_MORE], Help[1], TEXT_SMALL);
     }
+    if (ImportShown > 0) {
+        ImportShown--;
+        set_row(&sub[SUB_HELP], Message[0], TEXT_SMALL);
+        set_row(&sub[SUB_HELP_MORE], Message[1], TEXT_SMALL);
+    }
     for (i = 0; i < VISIBLE_OPTIONS; i++) {
         s32 n = FirstShown + i;
 
@@ -1492,6 +1519,20 @@ static void update_options(s32 pressed) {
     /* a folder picked in the system's chooser, which the page shows as it's taken up */
     if (c->kind == KIND_DATA && folders_poll()) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    /* a memory card picked in the system's chooser: its saves into the slots, which the game reads again, and what happened said */
+    {
+        static char imported[96];
+        s32 done = card_import_poll(imported, sizeof(imported));
+
+        if (done != 0) {
+            if (done > 0) {
+                card_init();
+            }
+            say_message(imported);
+            ImportShown = 240;
+            PlaySfx(done > 0 ? 0x192 : 0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
     }
     /* the CONTROLS and MODS pages' lines are passed over (on MODS, down to none if there are no mods) */
     if ((pressed & 0x40) && Option + 1 + is_line(c, Option + 1) < option_count(c)) {

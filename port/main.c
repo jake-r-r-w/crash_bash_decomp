@@ -23,6 +23,7 @@
 #include "platform/controls.h"
 #include "platform/texpack.h"
 #include "platform/settings.h"
+#include "platform/cardimport.h"
 #include "platform/saves.h"
 #include "platform/folders.h"
 #include "platform/crashlog.h"
@@ -614,6 +615,7 @@ int main(int argc, char **argv) {
     const char *extra_names[4] = { NULL, NULL, NULL, NULL };
     int draw_every = 0, test_sound = 0, test_adventure = 0, test_challenge = -1, no_launcher = 0, launcher = 0, skip_intro = 0, skip_loading = 0, testing = 0, fps = 0, test_mode = -1, tile = 0, tiles = 0;
     int fingerprints = 0, game_clock_sound = 0, online, no_sound = 0, restart_on_play = 0, stick_deadzone = -1, prompts = -1, check_crash = 0, language = -1;
+    const char *import_card = NULL;
     int prepare = 0;
     NetOptions net = { .joiners = 1, .differ_at = -1, .vanish_at = -1, .stall_at = -1 };
 
@@ -762,6 +764,10 @@ int main(int argc, char **argv) {
             boss_beat = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--cheat-menu") == 0) {
             cheat_menu = 1;
+        } else if (strcmp(argv[i], "--pick-card") == 0 && i + 1 < argc) {
+            card_import_pretend(argv[++i]);
+        } else if (strcmp(argv[i], "--import-card") == 0 && i + 1 < argc) {
+            import_card = argv[++i];
         } else if (strcmp(argv[i], "--saves") == 0 && i + 1 < argc) {
             SavesFolder = argv[++i];
         } else if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -1055,6 +1061,17 @@ int main(int argc, char **argv) {
         SDL_strlcpy(folder, folders_path(FOLDER_SAVES), sizeof(folder));
         folder[strlen(folder) - 1] = '\0';
         saves_set_folder(folder);
+    }
+    /* --import-card FILE: a PS1 memory card's Crash Bash saves into the save slots, and stop (cardimport.c) */
+    if (import_card != NULL) {
+        char report[96];
+        const char *problem = card_import(import_card, report, sizeof(report));
+
+        printf("card import: %s\n", problem != NULL ? problem : report);
+        if (problem != NULL && report[0] != 0) {
+            printf("card import: %s\n", report);
+        }
+        return problem != NULL ? 2 : 0;
     }
     settings()->test_mode = test_mode;
     settings()->test_level_flags = level_flags;
